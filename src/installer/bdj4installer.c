@@ -1847,10 +1847,10 @@ installerConvertStart (installer_t *installer)
 
   locidx = 0;
   snprintf (tbuff, sizeof (tbuff), "%s/%s/%" PRId64 "/tcl/bin/tclsh",
-      installer->bdj3loc, sysvarsGetStr (SV_OS_NAME), sysvarsGetNum (SVL_OSBITS));
+      installer->bdj3loc, sysvarsGetStr (SV_OS_NAME), sysvarsGetNum (SVL_OS_BITS));
   locs [locidx++] = mdstrdup (tbuff);
   snprintf (tbuff, sizeof (tbuff), "%s/Applications/BallroomDJ.app/Contents/%s/%" PRId64 "/tcl/bin/tclsh",
-      installer->home, sysvarsGetStr (SV_OS_NAME), sysvarsGetNum (SVL_OSBITS));
+      installer->home, sysvarsGetStr (SV_OS_NAME), sysvarsGetNum (SVL_OS_BITS));
   locs [locidx++] = mdstrdup (tbuff);
   snprintf (tbuff, sizeof (tbuff), "%s/local/bin/tclsh", installer->home);
   locs [locidx++] = mdstrdup (tbuff);
@@ -1858,7 +1858,7 @@ installerConvertStart (installer_t *installer)
   locs [locidx++] = mdstrdup (tbuff);
   /* for testing; low priority */
   snprintf (tbuff, sizeof (tbuff), "%s/../%s/%" PRId64 "/tcl/bin/tclsh",
-      installer->bdj3loc, sysvarsGetStr (SV_OS_NAME), sysvarsGetNum (SVL_OSBITS));
+      installer->bdj3loc, sysvarsGetStr (SV_OS_NAME), sysvarsGetNum (SVL_OS_BITS));
   locs [locidx++] = mdstrdup (tbuff);
   locs [locidx++] = mdstrdup ("/opt/local/bin/tclsh");
   locs [locidx++] = mdstrdup ("/usr/bin/tclsh");
@@ -2074,10 +2074,10 @@ installerVLCDownload (installer_t *installer)
   if (isWindows ()) {
     snprintf (installer->dlfname, sizeof (installer->dlfname),
         "vlc-%s-win%" PRId64 ".exe",
-        installer->vlcversion, sysvarsGetNum (SVL_OSBITS));
+        installer->vlcversion, sysvarsGetNum (SVL_OS_BITS));
     snprintf (url, sizeof (url),
         "https://get.videolan.org/vlc/last/win%" PRId64 "/%s",
-        sysvarsGetNum (SVL_OSBITS), installer->dlfname);
+        sysvarsGetNum (SVL_OS_BITS), installer->dlfname);
   }
   if (isMacOS ()) {
     char    *arch;

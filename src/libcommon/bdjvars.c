@@ -17,9 +17,43 @@
 #include "mdebug.h"
 #include "sysvars.h"
 
+/* for debugging */
+static const char *bdjvarsdesc [BDJV_MAX] = {
+  [BDJV_DELETE_PFX] = "DELETE_PFX",
+  [BDJV_INST_DATATOP] = "INST_DATATOP",
+  [BDJV_INST_NAME] = "INST_NAME",
+  [BDJV_INST_TARGET] = "INST_TARGET",
+  [BDJV_MUSIC_DIR] = "MUSIC_DIR",
+  [BDJV_ORIGINAL_EXT] = "ORIGINAL_EXT",
+  [BDJV_TS_SECTION] = "TS_SECTION",
+  [BDJV_TS_TEST] = "TS_TEST",
+  [BDJV_UNIQUE_NAME] = "UNIQUE_NAME",
+};
+
+static const char *bdjvarsldesc [BDJVL_MAX] = {
+  [BDJVL_DELETE_PFX_LEN] = "DELETE_PFX_LEN",
+  [BDJVL_NUM_PORTS] = "NUM_PORTS",
+  [BDJVL_PORT_BPM_COUNTER] = "PORT_BPM_COUNTER",
+  [BDJVL_PORT_CONFIGUI] = "PORT_CONFIGUI",
+  [BDJVL_PORT_DBUPDATE] = "PORT_DBUPDATE",
+  [BDJVL_PORT_HELPERUI] = "PORT_HELPERUI",
+  [BDJVL_PORT_MAIN] = "PORT_MAIN",
+  [BDJVL_PORT_MANAGEUI] = "PORT_MANAGEUI",
+  [BDJVL_PORT_MARQUEE] = "PORT_MARQUEE",
+  [BDJVL_PORT_MOBILEMQ] = "PORT_MOBILEMQ",
+  [BDJVL_PORT_PLAYER] = "PORT_PLAYER",
+  [BDJVL_PORT_PLAYERUI] = "PORT_PLAYERUI",
+  [BDJVL_PORT_REMCTRL] = "PORT_REMCTRL",
+  [BDJVL_PORT_STARTERUI] = "PORT_STARTERUI",
+  [BDJVL_PORT_TEST_SUITE] = "PORT_TEST_SUITE",
+};
+
 static char *   bdjvars [BDJV_MAX];
 static int64_t  bdjvarsl [BDJVL_MAX];
 static bool     initialized = false;
+
+static void    bdjvarsAdjustPorts (void);
+static void    bdjvarsSetUniqueName (void);
 
 void
 bdjvarsInit (void)
@@ -46,6 +80,7 @@ bdjvarsInit (void)
 
     bdjvarsl [BDJVL_NUM_PORTS] = BDJVL_NUM_PORTS;
     bdjvarsAdjustPorts ();
+    bdjvarsSetUniqueName ();
     initialized = true;
   }
 }
@@ -61,6 +96,13 @@ bdjvarsCleanup (void)
     initialized = false;
   }
   return;
+}
+
+void
+bdjvarsUpdateData (void)
+{
+  bdjvarsAdjustPorts ();
+  bdjvarsSetUniqueName ();
 }
 
 char *
@@ -103,7 +145,27 @@ bdjvarsSetStr (bdjvarkey_t idx, const char *str)
   bdjvars [idx] = mdstrdup (str);
 }
 
-void
+bool
+bdjvarsIsInitialized (void)
+{
+  return initialized;
+}
+
+const char *
+bdjvarsDesc (bdjvarkey_t idx)
+{
+  return bdjvarsdesc [idx];
+}
+
+const char *
+bdjvarslDesc (bdjvarkeyl_t idx)
+{
+  return bdjvarsldesc [idx];
+}
+
+/* internal routines */
+
+static void
 bdjvarsAdjustPorts (void)
 {
   int       idx = sysvarsGetNum (SVL_PROFILE_IDX);
@@ -111,13 +173,26 @@ bdjvarsAdjustPorts (void)
 
   port = sysvarsGetNum (SVL_BASEPORT) +
       bdjvarsGetNum (BDJVL_NUM_PORTS) * idx;
-  for (int i = BDJVL_MAIN_PORT; i < BDJVL_NUM_PORTS; ++i) {
+  for (int i = BDJVL_PORT_MAIN; i < BDJVL_NUM_PORTS; ++i) {
     bdjvarsl [i] = port++;
   }
 }
 
-bool
-bdjvarsIsInitialized (void)
+static void
+bdjvarsSetUniqueName (void)
 {
-  return initialized;
+  int   profidx = 0;
+  int   altidx = 0;
+  char  tbuff [MAXPATHLEN];
+
+  snprintf (tbuff, sizeof (tbuff), "%s", BDJ4_NAME);
+  altidx = sysvarsGetNum (SVL_ALTIDX);
+  profidx = sysvarsGetNum (SVL_PROFILE_IDX);
+  if (altidx != 0) {
+    snprintf (tbuff, sizeof (tbuff), "%s.%02d.%02d", BDJ4_NAME, altidx, profidx);
+  } else if (profidx != 0) {
+    snprintf (tbuff, sizeof (tbuff), "%s.%02d", BDJ4_NAME, profidx);
+  }
+  bdjvars [BDJV_UNIQUE_NAME] = mdstrdup (tbuff);
 }
+

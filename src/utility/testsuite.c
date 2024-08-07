@@ -278,7 +278,7 @@ main (int argc, char *argv [])
   progstateSetCallback (testsuite.progstate, STATE_CLOSING,
       tsClosingCallback, &testsuite);
 
-  listenPort = bdjvarsGetNum (BDJVL_TEST_SUITE_PORT);
+  listenPort = bdjvarsGetNum (BDJVL_PORT_TEST_SUITE);
   sockhMainLoop (listenPort, tsProcessMsg, tsProcessing, &testsuite);
 
   /* for the results display */

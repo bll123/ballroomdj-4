@@ -387,7 +387,7 @@ main (int argc, char * argv[])
       }
       case 'p': {
         if (optarg != NULL) {
-          sysvarsSetNum (SVL_PROFILE_IDX, atol (optarg));
+          sysvarsSetNum (SVL_PROFILE_IDX, atoi (optarg));
         }
         break;
       }
@@ -629,7 +629,7 @@ main (int argc, char * argv[])
   targc = 0;
   for (int i = 0; i < argc; ++i) {
     if (targc >= BDJ4_LAUNCHER_MAX_ARGS) {
-      fprintf (stderr, "too many arguments\n");
+      fprintf (stderr, "ERR: too many arguments\n");
       exit (1);
     }
     targ = bdj4argGet (bdj4arg, i, argv [i]);
@@ -639,8 +639,8 @@ main (int argc, char * argv[])
     targv [targc++] = "--datatopdir";
     targv [targc++] = sysvarsGetStr (SV_BDJ4_DIR_DATATOP);
   }
-  if (targc >= (BDJ4_LAUNCHER_MAX_ARGS - 2)) {
-    fprintf (stderr, "too many arguments\n");
+  if (targc >= (BDJ4_LAUNCHER_MAX_ARGS - 4)) {
+    fprintf (stderr, "ERR: too many arguments\n");
     exit (1);
   }
   targv [targc++] = "--bdj4";

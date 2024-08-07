@@ -436,7 +436,7 @@ main (int argc, char *argv[])
     long loglevel = 0;
 
     gNewProfile = false;
-    listenPort = bdjvarsGetNum (BDJVL_STARTERUI_PORT);
+    listenPort = bdjvarsGetNum (BDJVL_PORT_STARTERUI);
     starter.conn = connInit (ROUTE_STARTERUI);
 
     sockhMainLoop (listenPort, starterProcessMsg, starterMainLoop, &starter);
@@ -1720,7 +1720,7 @@ starterGetProfiles (startui_t *starter)
     starterResetProfile (starter, starter->currprofile);
   }
 
-  bdjvarsAdjustPorts ();
+  bdjvarsUpdateData ();
 
   if (dispidx == 0) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "clean old locks");
@@ -1750,7 +1750,7 @@ starterResetProfile (startui_t *starter, int profidx)
     uiWindowSetTitle (starter->wcont [START_W_WINDOW], bdjoptGetStr (OPT_P_PROFILENAME));
     uiutilsSetProfileColor (starter->wcont [START_W_PROFILE_ACCENT]);
     starterLoadOptions (starter);
-    bdjvarsAdjustPorts ();
+    bdjvarsUpdateData ();
   }
 }
 

@@ -8,32 +8,33 @@
 #include <stdint.h>
 
 typedef enum {
-  BDJV_ORIGINAL_EXT,
   BDJV_DELETE_PFX,
+  BDJV_INST_DATATOP,      // installers, argument
+  BDJV_INST_NAME,         // installers, argument
+  BDJV_INST_TARGET,       // installers, argument
   BDJV_MUSIC_DIR,         // dbupdate/updater, argument
+  BDJV_ORIGINAL_EXT,
   BDJV_TS_SECTION,        // testsuite, argument
   BDJV_TS_TEST,           // testsutie, argument
-  BDJV_INST_DATATOP,      // installers, argument
-  BDJV_INST_TARGET,       // installers, argument
-  BDJV_INST_NAME,         // installers, argument
+  BDJV_UNIQUE_NAME,       // BDJ4(.alt)?(.profile)?
   BDJV_MAX,
 } bdjvarkey_t;
 
 typedef enum {
   /* the ports must precede any other bdjvars keys */
-  BDJVL_MAIN_PORT,
-  BDJVL_PLAYER_PORT,
-  BDJVL_PLAYERUI_PORT,
-  BDJVL_CONFIGUI_PORT,
-  BDJVL_HELPERUI_PORT,
-  BDJVL_MANAGEUI_PORT,
-  BDJVL_MOBILEMQ_PORT,
-  BDJVL_REMCTRL_PORT,
-  BDJVL_MARQUEE_PORT,
-  BDJVL_STARTERUI_PORT,
-  BDJVL_DBUPDATE_PORT,
-  BDJVL_BPM_COUNTER_PORT,
-  BDJVL_TEST_SUITE_PORT,
+  BDJVL_PORT_MAIN,
+  BDJVL_PORT_PLAYER,
+  BDJVL_PORT_PLAYERUI,
+  BDJVL_PORT_CONFIGUI,
+  BDJVL_PORT_HELPERUI,
+  BDJVL_PORT_MANAGEUI,
+  BDJVL_PORT_MOBILEMQ,
+  BDJVL_PORT_REMCTRL,
+  BDJVL_PORT_MARQUEE,
+  BDJVL_PORT_STARTERUI,
+  BDJVL_PORT_DBUPDATE,
+  BDJVL_PORT_BPM_COUNTER,
+  BDJVL_PORT_TEST_SUITE,
   BDJVL_NUM_PORTS,
   /* insert non-port keys here */
   BDJVL_DELETE_PFX_LEN,
@@ -43,10 +44,12 @@ typedef enum {
 void    bdjvarsInit (void);
 bool    bdjvarsIsInitialized (void);
 void    bdjvarsCleanup (void);
+void    bdjvarsUpdateData (void);
 char *  bdjvarsGetStr (bdjvarkey_t idx);
 void    bdjvarsSetNum (bdjvarkeyl_t idx, int64_t value);
 void    bdjvarsSetStr (bdjvarkey_t idx, const char *str);
 int64_t bdjvarsGetNum (bdjvarkeyl_t idx);
-void    bdjvarsAdjustPorts (void);
+const char  *bdjvarsDesc (bdjvarkey_t idx);
+const char  *bdjvarslDesc (bdjvarkeyl_t idx);
 
 #endif /* INC_BDJVARS_H */

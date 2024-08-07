@@ -124,7 +124,7 @@ main (int argc, char *argv[])
 
   remctrlData.websrv = websrvInit (remctrlData.port, remctrlEventHandler, &remctrlData);
 
-  listenPort = bdjvarsGetNum (BDJVL_REMCTRL_PORT);
+  listenPort = bdjvarsGetNum (BDJVL_PORT_REMCTRL);
   sockhMainLoop (listenPort, remctrlProcessMsg, remctrlProcessing, &remctrlData);
   connFree (remctrlData.conn);
   progstateFree (remctrlData.progstate);

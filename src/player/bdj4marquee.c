@@ -205,7 +205,7 @@ main (int argc, char *argv[])
     marquee.hideonstart = true;
   }
 
-  listenPort = bdjvarsGetNum (BDJVL_MARQUEE_PORT);
+  listenPort = bdjvarsGetNum (BDJVL_PORT_MARQUEE);
   marquee.mqLen = bdjoptGetNum (OPT_P_MQQLEN);
   marquee.mqShowInfo = bdjoptGetNum (OPT_P_MQ_SHOW_INFO);
   marquee.conn = connInit (ROUTE_MARQUEE);

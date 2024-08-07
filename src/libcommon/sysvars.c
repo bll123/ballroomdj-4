@@ -129,9 +129,8 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
 
 static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
   [SVL_ALTIDX] = { "ALTIDX" },
-  [SVL_DATAPATH] = { "DATAPATH" },
   [SVL_BASEPORT] = { "BASEPORT" },
-  [SVL_PROFILE_IDX] = { "BDJIDX" },
+  [SVL_DATAPATH] = { "DATAPATH" },
   [SVL_HOME_SZ] = { "HOME_SZ" },
   [SVL_INITIAL_PORT] = { "INITIAL_PORT" },
   [SVL_IS_LINUX] = { "IS_LINUX" },
@@ -144,7 +143,8 @@ static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
   [SVL_LOCALE_SET] = { "LOCALE_SET" },
   [SVL_LOCALE_SYS_SET] = { "LOCALE_SYS_SET" },
   [SVL_NUM_PROC] = { "NUM_PROC" },
-  [SVL_OSBITS] = { "OSBITS" },
+  [SVL_OS_BITS] = { "OS_BITS" },
+  [SVL_PROFILE_IDX] = { "PROFILE_IDX" },
   [SVL_USER_ID] = { "USER_ID" },
   [SVL_VLC_VERSION] = { "VLC_VERSION" },
 };
@@ -247,19 +247,19 @@ sysvarsInit (const char *argv0, int flags)
   /* dwNumberOfProcessors may not reflect the number of system processors */
   if (winsysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_INTEL) {
     strlcpy (sysvars [SV_OS_ARCH], "intel", SV_MAX_SZ);
-    lsysvars [SVL_OSBITS] = 32;
+    lsysvars [SVL_OS_BITS] = 32;
   }
   if (winsysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_ARM) {
     strlcpy (sysvars [SV_OS_ARCH], "arm", SV_MAX_SZ);
-    lsysvars [SVL_OSBITS] = 32;
+    lsysvars [SVL_OS_BITS] = 32;
   }
   if (winsysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_ARM64) {
     strlcpy (sysvars [SV_OS_ARCH], "arm", SV_MAX_SZ);
-    lsysvars [SVL_OSBITS] = 64;
+    lsysvars [SVL_OS_BITS] = 64;
   }
   if (winsysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) {
     strlcpy (sysvars [SV_OS_ARCH], "amd64", SV_MAX_SZ);
-    lsysvars [SVL_OSBITS] = 64;
+    lsysvars [SVL_OS_BITS] = 64;
   }
 #endif
 
@@ -291,9 +291,9 @@ sysvarsInit (const char *argv0, int flags)
 
   stringAsciiToLower (sysvars [SV_OS_NAME]);
   if (sizeof (void *) == 8) {
-    lsysvars [SVL_OSBITS] = 64;
+    lsysvars [SVL_OS_BITS] = 64;
   } else {
-    lsysvars [SVL_OSBITS] = 32;
+    lsysvars [SVL_OS_BITS] = 32;
   }
 
   if (strcmp (sysvars [SV_OS_NAME], "darwin") == 0) {

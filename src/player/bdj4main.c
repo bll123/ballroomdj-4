@@ -273,7 +273,7 @@ main (int argc, char *argv[])
   mainData.musicQueue = musicqAlloc (mainData.musicdb);
   mainData.announceList = slistAlloc ("announcements", LIST_ORDERED, NULL);
 
-  listenPort = bdjvarsGetNum (BDJVL_MAIN_PORT);
+  listenPort = bdjvarsGetNum (BDJVL_PORT_MAIN);
   sockhMainLoop (listenPort, mainProcessMsg, mainProcessing, &mainData);
   connFree (mainData.conn);
   progstateFree (mainData.progstate);

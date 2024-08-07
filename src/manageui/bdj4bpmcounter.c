@@ -173,7 +173,7 @@ main (int argc, char *argv[])
   bdj4startup (argc, argv, NULL, "bpmc", ROUTE_BPM_COUNTER, &flags);
   logProcBegin ();
 
-  listenPort = bdjvarsGetNum (BDJVL_BPM_COUNTER_PORT);
+  listenPort = bdjvarsGetNum (BDJVL_PORT_BPM_COUNTER);
   bpmcounter.conn = connInit (ROUTE_BPM_COUNTER);
 
   pathbldMakePath (tbuff, sizeof (tbuff),

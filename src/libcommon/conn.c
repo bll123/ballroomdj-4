@@ -63,19 +63,19 @@ connInit (bdjmsgroute_t routefrom)
 
   if (! initialized) {
     connports [ROUTE_NONE] = 0;
-    connports [ROUTE_MAIN] = bdjvarsGetNum (BDJVL_MAIN_PORT);
-    connports [ROUTE_PLAYERUI] = bdjvarsGetNum (BDJVL_PLAYERUI_PORT);
-    connports [ROUTE_MANAGEUI] = bdjvarsGetNum (BDJVL_MANAGEUI_PORT);
-    connports [ROUTE_CONFIGUI] = bdjvarsGetNum (BDJVL_CONFIGUI_PORT);
-    connports [ROUTE_PLAYER] = bdjvarsGetNum (BDJVL_PLAYER_PORT);
-    connports [ROUTE_MOBILEMQ] = bdjvarsGetNum (BDJVL_MOBILEMQ_PORT);
-    connports [ROUTE_REMCTRL] = bdjvarsGetNum (BDJVL_REMCTRL_PORT);
-    connports [ROUTE_MARQUEE] = bdjvarsGetNum (BDJVL_MARQUEE_PORT);
-    connports [ROUTE_STARTERUI] = bdjvarsGetNum (BDJVL_STARTERUI_PORT);
-    connports [ROUTE_DBUPDATE] = bdjvarsGetNum (BDJVL_DBUPDATE_PORT);
-    connports [ROUTE_HELPERUI] = bdjvarsGetNum (BDJVL_HELPERUI_PORT);
-    connports [ROUTE_BPM_COUNTER] = bdjvarsGetNum (BDJVL_BPM_COUNTER_PORT);
-    connports [ROUTE_TEST_SUITE] = bdjvarsGetNum (BDJVL_TEST_SUITE_PORT);
+    connports [ROUTE_MAIN] = bdjvarsGetNum (BDJVL_PORT_MAIN);
+    connports [ROUTE_PLAYERUI] = bdjvarsGetNum (BDJVL_PORT_PLAYERUI);
+    connports [ROUTE_MANAGEUI] = bdjvarsGetNum (BDJVL_PORT_MANAGEUI);
+    connports [ROUTE_CONFIGUI] = bdjvarsGetNum (BDJVL_PORT_CONFIGUI);
+    connports [ROUTE_PLAYER] = bdjvarsGetNum (BDJVL_PORT_PLAYER);
+    connports [ROUTE_MOBILEMQ] = bdjvarsGetNum (BDJVL_PORT_MOBILEMQ);
+    connports [ROUTE_REMCTRL] = bdjvarsGetNum (BDJVL_PORT_REMCTRL);
+    connports [ROUTE_MARQUEE] = bdjvarsGetNum (BDJVL_PORT_MARQUEE);
+    connports [ROUTE_STARTERUI] = bdjvarsGetNum (BDJVL_PORT_STARTERUI);
+    connports [ROUTE_DBUPDATE] = bdjvarsGetNum (BDJVL_PORT_DBUPDATE);
+    connports [ROUTE_HELPERUI] = bdjvarsGetNum (BDJVL_PORT_HELPERUI);
+    connports [ROUTE_BPM_COUNTER] = bdjvarsGetNum (BDJVL_PORT_BPM_COUNTER);
+    connports [ROUTE_TEST_SUITE] = bdjvarsGetNum (BDJVL_PORT_TEST_SUITE);
     connports [ROUTE_ALTINST] = 0;
     initialized = true;
   }

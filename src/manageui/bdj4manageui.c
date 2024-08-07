@@ -561,7 +561,7 @@ main (int argc, char *argv[])
   manage.songdb = songdbAlloc (manage.musicdb);
   manage.minfo.dispsel = dispselAlloc (DISP_SEL_LOAD_MANAGE);
 
-  listenPort = bdjvarsGetNum (BDJVL_MANAGEUI_PORT);
+  listenPort = bdjvarsGetNum (BDJVL_PORT_MANAGEUI);
   manage.conn = connInit (ROUTE_MANAGEUI);
 
   pathbldMakePath (tbuff, sizeof (tbuff),

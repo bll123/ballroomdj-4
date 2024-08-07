@@ -346,7 +346,7 @@ main (int argc, char *argv[])
   }
   plui.dispsel = dispselAlloc (DISP_SEL_LOAD_PLAYER);
 
-  listenPort = bdjvarsGetNum (BDJVL_PLAYERUI_PORT);
+  listenPort = bdjvarsGetNum (BDJVL_PORT_PLAYERUI);
   plui.conn = connInit (ROUTE_PLAYERUI);
 
   pathbldMakePath (tbuff, sizeof (tbuff),

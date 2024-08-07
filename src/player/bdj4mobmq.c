@@ -134,7 +134,7 @@ main (int argc, char *argv[])
     mobmqdata.webclient = webclientAlloc (&mobmqdata.mobmqwebresp, mobmqWebResponseCallback);
   }
 
-  listenPort = bdjvarsGetNum (BDJVL_MOBILEMQ_PORT);
+  listenPort = bdjvarsGetNum (BDJVL_PORT_MOBILEMQ);
   sockhMainLoop (listenPort, mobmqProcessMsg, mobmqProcessing, &mobmqdata);
   connFree (mobmqdata.conn);
   progstateFree (mobmqdata.progstate);

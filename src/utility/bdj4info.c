@@ -24,6 +24,7 @@
 #include "bdj4.h"
 #include "bdj4arg.h"
 #include "bdjopt.h"
+#include "bdjvars.h"
 #include "fileop.h"
 #include "localeutil.h"
 #include "mdebug.h"
@@ -71,6 +72,8 @@ main (int argc, char *argv [])
     { "bdj4info",     no_argument,        NULL,   0 },
     { "bdj4",         no_argument,        NULL,   'B' },
     { "datatopdir",   required_argument,  NULL,   't' },
+    { "profile",      required_argument,  NULL,   'p' },
+    { "locale",       required_argument,  NULL,   'L' },
     /* ignored */
     { "debugself",    no_argument,        NULL,   0 },
     { "nodetach",     no_argument,        NULL,   0 },
@@ -88,6 +91,11 @@ main (int argc, char *argv [])
 
   bdj4arg = bdj4argInit (argc, argv);
 
+  targ = bdj4argGet (bdj4arg, 0, argv [0]);
+  sysvarsInit (targ, SYSVARS_FLAG_ALL);
+  localeInit ();
+  bdjvarsInit ();
+
   while ((c = getopt_long_only (argc, bdj4argGetArgv (bdj4arg),
       "Bt:", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -98,6 +106,24 @@ main (int argc, char *argv [])
             sysvarsSetStr (SV_BDJ4_DIR_DATATOP, targ);
             sysvarsSetNum (SVL_DATAPATH, SYSVARS_DATAPATH_ALT);
           }
+        }
+        break;
+      }
+      case 'p': {
+        if (optarg != NULL) {
+          sysvarsSetNum (SVL_PROFILE_IDX, atoi (optarg));
+        }
+        break;
+      }
+      case 'L': {
+        if (optarg != NULL) {
+          char    tbuff [40];
+
+          sysvarsSetStr (SV_LOCALE, optarg);
+          snprintf (tbuff, sizeof (tbuff), "%.2s", optarg);
+          sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
+          sysvarsSetNum (SVL_LOCALE_SET, 1);
+          localeSetup ();
         }
         break;
       }
@@ -116,9 +142,7 @@ main (int argc, char *argv [])
     exit (1);
   }
 
-  targ = bdj4argGet (bdj4arg, 0, argv [0]);
-  sysvarsInit (targ, SYSVARS_FLAG_ALL);
-  localeInit ();
+  bdjvarsUpdateData ();
 
   fprintf (stdout, " i: bool   %d\n", (int) sizeof (bool));
   fprintf (stdout, " i: short  %d %d\n", (int) sizeof (short), SHRT_MAX);
@@ -174,8 +198,17 @@ main (int argc, char *argv [])
     fprintf (stdout, "sl: %-20s %" PRId64 " (%d)\n", sysvarslDesc (i), sysvarsGetNum (i), i);
   }
 
+  for (int i = 0; i < BDJV_MAX; ++i) {
+    fprintf (stdout, " v: %-20s %s (%d)\n", bdjvarsDesc (i), bdjvarsGetStr (i), i);
+  }
+  for (int i = 0; i < BDJVL_MAX; ++i) {
+    fprintf (stdout, "vl: %-20s %" PRId64 " (%d)\n", bdjvarslDesc (i), bdjvarsGetNum (i), i);
+  }
+
   bdjoptInit ();
   bdjoptDump ();
+
+  bdjvarsCleanup ();
   bdjoptCleanup ();
   localeCleanup ();
   bdj4argCleanup (bdj4arg);

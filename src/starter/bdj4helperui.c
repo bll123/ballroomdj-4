@@ -130,7 +130,7 @@ main (int argc, char *argv[])
   bdj4startup (argc, argv, NULL, "help", ROUTE_HELPERUI, &flags);
   logProcBegin ();
 
-  listenPort = bdjvarsGetNum (BDJVL_HELPERUI_PORT);
+  listenPort = bdjvarsGetNum (BDJVL_PORT_HELPERUI);
   helper.conn = connInit (ROUTE_HELPERUI);
 
   pathbldMakePath (tbuff, sizeof (tbuff),

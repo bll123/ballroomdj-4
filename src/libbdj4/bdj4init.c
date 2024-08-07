@@ -313,7 +313,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     exit (1);
   }
 
-  bdjvarsAdjustPorts ();
+  bdjvarsUpdateData ();
 
   if ((*flags & BDJ4_INIT_NO_LOCK) != BDJ4_INIT_NO_LOCK) {
     rc = lockAcquire (lockName (route), PATHBLD_MP_USEIDX);

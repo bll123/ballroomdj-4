@@ -318,7 +318,6 @@ dbusMessageAppendArray (dbus_t *dbus, const char *sdata, ...)
   const char      *str;
 
   va_start (args, sdata);
-  dbusFreeData (dbus);
 
   if (strcmp (sdata, "as") == 0) {
     str = va_arg (args, const char *);
@@ -329,7 +328,8 @@ dbusMessageAppendArray (dbus_t *dbus, const char *sdata, ...)
     str = va_arg (args, const char *);
     v = va_arg (args, void *);
 # if DBUS_DEBUG
-  dumpResult ("aa-v", v);
+    fprintf (stderr, "aa-v: %s\n", str);
+    dumpResult ("aa-v", v);
 # endif
     g_variant_builder_add (&dbus->gvbuild, "{sv}", str, v);
     ++dbus->acount;
@@ -346,7 +346,7 @@ dbusMessageFinalizeArray (dbus_t *dbus)
   if (dbus->acount > 0) {
     tv = g_variant_builder_end (&dbus->gvbuild);
 # if DBUS_DEBUG
-  dumpResult ("fin-arr", tv);
+    dumpResult ("fin-arr", tv);
 # endif
     rv = tv;
   } else {
@@ -730,11 +730,18 @@ dumpResult (const char *tag, GVariant *data)
       fprintf (stderr, "  array: %s\n", tstr);
     }
   } else {
-    char    *ts;
+    if (g_variant_is_container (data)) {
+      const char  *ts;
+      ts = g_variant_get_data (data);
+      fprintf (stderr, "  data-c: %s\n", ts);
+    }
+    if (! g_variant_is_container (data)) {
+      char    *ts;
 
-    ts = g_variant_print (data, true);
-    fprintf (stderr, "  data: %s\n", ts);
-    free (ts);
+      ts = g_variant_print (data, true);
+      fprintf (stderr, "  data: %s\n", ts);
+      free (ts);
+    }
   }
   fflush (stderr);
 }

@@ -33,7 +33,7 @@ START_TEST(bdjvars_init)
   bdjvarsInit ();
   ck_assert_int_eq (sysvarsGetNum (SVL_BASEPORT) +
       bdjvarsGetNum (BDJVL_NUM_PORTS) * sysvarsGetNum (SVL_PROFILE_IDX),
-      bdjvarsGetNum (BDJVL_MAIN_PORT));
+      bdjvarsGetNum (BDJVL_PORT_MAIN));
   ck_assert_int_eq (bdjvarsIsInitialized (), 1);
   bdjvarsCleanup ();
   ck_assert_int_eq (bdjvarsIsInitialized (), 0);
@@ -50,7 +50,7 @@ START_TEST(bdjvars_init_idx)
   bdjvarsInit ();
   ck_assert_int_eq (sysvarsGetNum (SVL_BASEPORT) +
       bdjvarsGetNum (BDJVL_NUM_PORTS) * sysvarsGetNum (SVL_PROFILE_IDX),
-      bdjvarsGetNum (BDJVL_MAIN_PORT));
+      bdjvarsGetNum (BDJVL_PORT_MAIN));
   sysvarsSetNum (SVL_PROFILE_IDX, 0);
   bdjvarsCleanup ();
 }
@@ -64,10 +64,10 @@ START_TEST(bdjvars_adjust)
 
   bdjvarsInit ();
   sysvarsSetNum (SVL_PROFILE_IDX, 3);
-  bdjvarsAdjustPorts ();
+  bdjvarsUpdateData ();
   ck_assert_int_eq (sysvarsGetNum (SVL_BASEPORT) +
       bdjvarsGetNum (BDJVL_NUM_PORTS) * sysvarsGetNum (SVL_PROFILE_IDX),
-      bdjvarsGetNum (BDJVL_MAIN_PORT));
+      bdjvarsGetNum (BDJVL_PORT_MAIN));
   sysvarsSetNum (SVL_PROFILE_IDX, 0);
   bdjvarsCleanup ();
 }
@@ -80,8 +80,8 @@ START_TEST(bdjvars_set)
   mdebugSubTag ("bdjvars_set");
 
   bdjvarsInit ();
-  bdjvarsSetNum (BDJVL_BPM_COUNTER_PORT, 12);
-  ck_assert_int_eq (bdjvarsGetNum (BDJVL_BPM_COUNTER_PORT), 12);
+  bdjvarsSetNum (BDJVL_PORT_BPM_COUNTER, 12);
+  ck_assert_int_eq (bdjvarsGetNum (BDJVL_PORT_BPM_COUNTER), 12);
   bdjvarsSetStr (BDJV_MUSIC_DIR, "test");
   ck_assert_str_eq (bdjvarsGetStr (BDJV_MUSIC_DIR), "test");
   bdjvarsCleanup ();

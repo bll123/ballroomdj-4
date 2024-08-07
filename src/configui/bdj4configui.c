@@ -242,7 +242,7 @@ main (int argc, char *argv[])
   }
   confui.gui.quickeditLookup = llist;
 
-  listenPort = bdjvarsGetNum (BDJVL_CONFIGUI_PORT);
+  listenPort = bdjvarsGetNum (BDJVL_PORT_CONFIGUI);
   confui.conn = connInit (ROUTE_CONFIGUI);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
