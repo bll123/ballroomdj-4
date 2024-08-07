@@ -12,6 +12,7 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
+#include "bdjvars.h"
 #include "callback.h"
 #include "controller.h"
 #include "pathbld.h"
@@ -41,10 +42,6 @@ controllerInit (const char *contpkg)
 {
   controller_t  *cont;
   char          dlpath [MAXPATHLEN];
-  char          instname [200];
-  char          temp [40];
-  int           altidx;
-  int           profidx;
 
   cont = mdmalloc (sizeof (controller_t));
   cont->contdata = NULL;
@@ -77,20 +74,8 @@ controllerInit (const char *contpkg)
   cont->contiSetCurrent = dylibLookup (cont->dlHandle, "contiSetCurrent");
 #pragma clang diagnostic pop
 
-  strlcpy (instname, BDJ4_NAME, sizeof (instname));
-  altidx = sysvarsGetNum (SVL_ALTIDX);
-  if (altidx > 0) {
-    snprintf (temp, sizeof (temp), "-%02d", altidx);
-    strlcat (instname, temp, sizeof (instname));
-  }
-  profidx = sysvarsGetNum (SVL_PROFILE_IDX);
-  if (altidx > 0 || profidx > 0) {
-    snprintf (temp, sizeof (temp), "-%02d", profidx);
-    strlcat (instname, temp, sizeof (instname));
-  }
-
   if (cont->contiInit != NULL) {
-    cont->contdata = cont->contiInit (instname);
+    cont->contdata = cont->contiInit (bdjvarsGetStr (BDJV_INSTANCE_NAME));
   }
   return cont;
 }

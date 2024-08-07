@@ -20,6 +20,7 @@
 /* for debugging */
 static const char *bdjvarsdesc [BDJV_MAX] = {
   [BDJV_DELETE_PFX] = "DELETE_PFX",
+  [BDJV_INSTANCE_NAME] = "INSTANCE_NAME",
   [BDJV_INST_DATATOP] = "INST_DATATOP",
   [BDJV_INST_NAME] = "INST_NAME",
   [BDJV_INST_TARGET] = "INST_TARGET",
@@ -27,7 +28,6 @@ static const char *bdjvarsdesc [BDJV_MAX] = {
   [BDJV_ORIGINAL_EXT] = "ORIGINAL_EXT",
   [BDJV_TS_SECTION] = "TS_SECTION",
   [BDJV_TS_TEST] = "TS_TEST",
-  [BDJV_UNIQUE_NAME] = "UNIQUE_NAME",
 };
 
 static const char *bdjvarsldesc [BDJVL_MAX] = {
@@ -193,6 +193,6 @@ bdjvarsSetUniqueName (void)
   } else if (profidx != 0) {
     snprintf (tbuff, sizeof (tbuff), "%s.%02d", BDJ4_NAME, profidx);
   }
-  bdjvars [BDJV_UNIQUE_NAME] = mdstrdup (tbuff);
+  bdjvars [BDJV_INSTANCE_NAME] = mdstrdup (tbuff);
 }
 

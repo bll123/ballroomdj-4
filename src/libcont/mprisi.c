@@ -175,6 +175,7 @@ static const char *repeatstr [MPRIS_REPEAT_MAX] = {
 };
 
 typedef struct contdata {
+  char                *instname;
   dbus_t              *dbus;
   callback_t          *cb;
   nlist_t             *chgprop;
@@ -215,6 +216,7 @@ contiInit (const char *instname)
   contdata_t  *contdata;
 
   contdata = mdmalloc (sizeof (contdata_t));
+  contdata->instname = mdstrdup (instname);
   contdata->cb = NULL;
   contdata->chgprop = nlistAlloc ("cont-mprisi-prop", LIST_ORDERED, NULL);
   contdata->metadata = NULL;
@@ -243,6 +245,7 @@ contiFree (contdata_t *contdata)
     return;
   }
 
+  dataFree (contdata->instname);
   nlistFree (contdata->chgprop);
   nlistFree (contdata->metadata);
   if (contdata->dbus != NULL && contdata->root_interface_id >= 0) {
@@ -521,7 +524,7 @@ fprintf (stderr, "-- mprisi-prop-get: %s %s\n", intfc, prop);
       dbusMessageSetData (contdata->dbus, "b", false, NULL);
       rc = true;
     } else if (strcmp (prop, "Identity") == 0) {
-      dbusMessageSetData (contdata->dbus, "s", BDJ4_NAME, NULL);
+      dbusMessageSetData (contdata->dbus, "s", contdata->instname, NULL);
       rc = true;
     } else if (strcmp (prop, "DesktopEntry") == 0) {
       dbusMessageSetData (contdata->dbus, "s", BDJ4_NAME, NULL);

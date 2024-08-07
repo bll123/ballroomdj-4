@@ -9,6 +9,7 @@
 
 typedef enum {
   BDJV_DELETE_PFX,
+  BDJV_INSTANCE_NAME,       // BDJ4(.alt)?(.profile)?
   BDJV_INST_DATATOP,      // installers, argument
   BDJV_INST_NAME,         // installers, argument
   BDJV_INST_TARGET,       // installers, argument
@@ -16,7 +17,6 @@ typedef enum {
   BDJV_ORIGINAL_EXT,
   BDJV_TS_SECTION,        // testsuite, argument
   BDJV_TS_TEST,           // testsutie, argument
-  BDJV_UNIQUE_NAME,       // BDJ4(.alt)?(.profile)?
   BDJV_MAX,
 } bdjvarkey_t;
 
