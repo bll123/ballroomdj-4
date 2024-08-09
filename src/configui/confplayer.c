@@ -241,17 +241,4 @@ confuiLoadControllerIntfcList (confuigui_t *gui)
       /* CONTEXT: configuration: controller: no controller */
       _("None"));
   nlistSetStr (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].sbkeylist, 0, "");
-
-#if 1
-{
-nlistidx_t iter;
-nlistidx_t key;
-  nlistStartIterator (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].displist, &iter);
-  while ((key = nlistIterateKey (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].displist, &iter)) != LIST_LOC_INVALID) {
-    fprintf (stderr, "key: %d\n", key);
-    fprintf (stderr, "  disp: %s\n", nlistGetStr (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].displist, key));
-    fprintf (stderr, "  sbkey: %s\n", nlistGetStr (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].sbkeylist, key));
-  }
-}
-#endif
 }
