@@ -24,6 +24,7 @@
       Odtwarzacz muzyki z sali balowej,
       Leitor de música de salão,
       Ballroom Музыкальный плеер,
+      Баллроом Мусиц Плаиер,
       Musikspelare för balsalar,
       програвач бальної музики,
       Máy nghe nhạc Ballroom,
@@ -144,6 +145,7 @@ playlists and sequenced playlists.</p>
             <li><a href="index.html.pl-PL">Polski</a></li>
             <li><a href="index.html.pt-PT">Português</a></li>
             <li><a href="index.html.ru">Русский</a></li>
+            <li><a href="index.html.sr-Cyrl">српски</a></li>
             <li><a href="index.html.sv">Svenska</a></li>
             <li><a href="index.html.uk">Українська</a></li>
             <li><a href="index.html.vi">Tiếng Việt</a></li>

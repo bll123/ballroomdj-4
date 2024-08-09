@@ -52,6 +52,8 @@ syntax: regexp
 ^locale/pt_PT/
 ^locale/ru
 ^locale/ru_RU/
+^locale/sr
+^locale/sr_RS/
 ^locale/sv
 ^locale/sv_SE/
 ^locale/uk

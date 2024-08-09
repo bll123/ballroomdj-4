@@ -219,6 +219,18 @@ QDANCE
 KEY
 ..18
 LONG
+..sr_RS
+SHORT
+..sr
+DISPLAY
+..српски
+STDROUNDS
+..стандардроундс
+QDANCE
+..КуеуеДанце
+KEY
+..19
+LONG
 ..sv_SE
 SHORT
 ..sv
@@ -229,7 +241,7 @@ STDROUNDS
 QDANCE
 ..QueueDance
 KEY
-..19
+..20
 LONG
 ..uk_UA
 SHORT
@@ -241,7 +253,7 @@ STDROUNDS
 QDANCE
 ..QueueDance
 KEY
-..20
+..21
 LONG
 ..vi_VN
 SHORT
@@ -253,7 +265,7 @@ STDROUNDS
 QDANCE
 ..Hàng đợi khiêu vũ
 KEY
-..21
+..22
 LONG
 ..zh_CN
 SHORT
@@ -265,7 +277,7 @@ STDROUNDS
 QDANCE
 ..队列舞蹈
 KEY
-..22
+..23
 LONG
 ..zh_TW
 SHORT

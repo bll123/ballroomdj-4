@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="sr-Cyrl">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
   <meta name="yandex-verification" content="52297d544556772d" />
   <meta name="google-site-verification" content="ah8fN8rvRWoqb1FzT4B-uAfR1MwRdWvYzhyAFKXFWS8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- WT_021 -->
-  <title>BallroomDJ 4 - 볼룸 음악 플레이어</title>
+  <title>БаллроомДЈ 4 - Баллроом Мусиц Плаиер</title>
   <!-- WT_022 -->
-  <meta name="Description" content="BallroomDJ 4 - 볼룸 음악 플레이어">
+  <meta name="Description" content="БаллроомДЈ 4 - Баллроом Мусиц Плаиер">
   <meta name="Keywords" content="Ballroom Music Player,
       Přehrávač taneční hudby,
       Ballroom musikafspiller,
@@ -46,13 +46,13 @@
     <div class="menuwidget">
       <!-- WT_023 -->
       <img src="/img/menu.svg"
-          alt="메뉴"
+          alt="Мени"
           onclick="javascript:setDisplay('menu');">
     </div>
     <div>
       <!-- WT_001 -->
       <img src="/img/ballroomdj4.svg"
-        alt="BallroomDJ 4 - 연회장 음악 플레이어"
+        alt="БаллроомДЈ 4 - Тхе Баллроом Мусиц Плаиер"
         width="50%" style="max-width: 420px">
     </div>
     <div class="donatewidget">
@@ -74,7 +74,7 @@
               onclick="javascript:setDisplay('bdj3');">BallroomDJ 3</li>
           <!-- WT_002 -->
           <li id="" class="menuitem"
-              onclick="javascript:setDisplay('donate');">기부하기</li>
+              onclick="javascript:setDisplay('donate');">Донирајте</li>
         </ul>
       </div>
     </div>
@@ -82,44 +82,44 @@
       <div class="dflex">
         <div class="tleft dtext">
           <!-- WT_003 -->
-          <p>BallroomDJ 4(BDJ4)는 데스크톱 및 노트북 컴퓨터용으로 설계된 음악 플레이어입니다(일부 태블릿에서도 작동). 별도의 조작 없이 저녁 내내 음악을 재생할 수 있도록 설계되었습니다.</p>
+          <p>БаллроомДЈ 4 (БДЈ4) је музички плејер дизајниран за десктоп и лаптоп рачунаре (и радиће на неким таблетима). Дизајниран је тако да може да пушта музику цело вече без икакве интервенције.</p>
           <!-- WT_004 -->
-          <p>BDJ4는 고도로 사용자 정의가 가능하며 볼룸 댄스 음악을 구성하고 노래 목록, 자동 재생 목록 및 시퀀스 재생 목록을 만들 수 있는 기능을 제공합니다.</p>
+          <p>БДЈ4 је веома прилагодљив и пружа могућности за организовање музике за балске плесове и креирање листа песама, аутоматских плејлиста и секвенцираних плејлиста.</p>
           <!-- WT_005 -->
-          <p>BDJ4는 Windows, MacOS 및 Linux에서 실행됩니다.</p>
+          <p>БДЈ4 ради на Виндовс, МацОС и Линук.</p>
           <!-- WT_006 -->
           <p><b><a target="_blank"
               href="https://sourceforge.net/projects/ballroomdj4/files/"
-              >BallroomDJ 4 다운로드</a></b>&nbsp;&nbsp;&nbsp;(<span>최신 버전</span> <b>#VERSION#</b>)</p>
+              >Преузмите БаллроомДЈ 4</a></b>&nbsp;&nbsp;&nbsp;(<span>најновија верзија</span> <b>#VERSION#</b>)</p>
           <!-- WT_007 -->
           <p><a target="_blank"
               href="https://sourceforge.net/p/ballroomdj4/wiki/en-Change%20Log"
-              >변경 로그</a></p>
+              >Дневник промена</a></p>
           <!-- WT_008 -->
           <p><a target="_blank"
-              href="https://ballroomdj.org/forum/">BDJ4 포럼</a></p>
+              href="https://ballroomdj.org/forum/">БДЈ4 Форум</a></p>
           <!-- WT_009 -->
           <p><a target="_blank"
               href="https://sourceforge.net/p/ballroomdj4/wiki/Home/"
-              >BDJ4 위키</a></p>
+              >БДЈ4 Вики</a></p>
           <!-- WT_010 -->
           <p><a target="_blank"
               href="https://sourceforge.net/p/ballroomdj4/wiki/en-Features/"
-              >BDJ4 특징</a></p>
+              >БДЈ4 карактеристике</a></p>
           <!-- WT_011 -->
           <p><a target="_blank"
               href="https://crowdin.com/project/ballroomdj-4"
-              >BallroomDJ 4 번역 도움말</a></p>
+              >Помоћ у преводу БаллроомДЈ 4</a></p>
           <!-- WT_012 -->
-          <p>BallroomDJ 4 출시 공지를 확인할 수 있는 다른 사이트도 있습니다:</p>
+          <p>Други сајтови на којима се могу наћи најаве издања БаллроомДЈ 4:</p>
           <!-- WT_013 -->
           <p><a target="_blank"
               href="https://freshcode.club/projects/bdj4"
-              >freshcode.club의 BDJ4</a></p>
+              >БДЈ4 на фресхцоде.цлуб</a></p>
           <!-- WT_014 -->
           <p><a target="_blank"
               href="https://www.pro-linux.de/cgi-bin/DBApp/check.cgi?ShowAppDetail.01.17981.100"
-              >pro-linux.de의 BallroomDJ</a>  (Deutsch)</p>
+              >БаллроомДЈ на про-линук.де</a>  (Deutsch)</p>
         </div>
         <div class="tleft dlang">
           <ul>
@@ -154,19 +154,19 @@
     <div id="dbdj3" class="mdiv dispnone">
       <div class="tleft dinlineblock">
         <!-- WT_015 -->
-        <p>BallroomDJ는 이전의 연회장 음악 플레이어였습니다. 더 이상 지원되지 않습니다.</p>
+        <p>БаллроомДЈ је био претходни плејер за балску музику. Више није подржано.</p>
         <!-- WT_016 -->
-        <p>BallroomDJ의 모든 사용자는 BallroomDJ 4로 전환할 것을 권장합니다.</p>
+        <p>Сви корисници БаллроомДЈ-а се позивају да пређу на БаллроомДЈ 4</p>
         <!-- WT_017 -->
         <p><a target="_blank"
             href="https://sourceforge.net/projects/ballroomdj/files/"
-            >BallroomDJ 3 다운로드</a></p>
+            >Преузмите БаллроомДЈ 3</a></p>
       </div>
     </div>
 
     <div id="ddonate" class="mdiv dispnone tleft">
       <!-- WT_018 -->
-      <p>BDJ4에 기부하기</p>
+      <p>Донирајте БДЈ4</p>
       <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
         <input type="hidden" name="cmd" value="_s-xclick" />
         <input type="hidden" name="hosted_button_id" value="BLTFRDM5KHNDJ" />
@@ -174,9 +174,9 @@
         <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
       </form>
       <!-- WT_019 -->
-      <p>BDJ4가 사용하는 소프트웨어 프로젝트에 기부하세요:</p>
+      <p>Донирајте софтверским пројектима које БДЈ4 користи:</p>
       <!-- WT_020 -->
-      <p><a href="https://videolan.org">VLC</a> (맨 위에 있는 기부 버튼)</p>
+      <p><a href="https://videolan.org">VLC</a> (дугме за донирање на самом врху)</p>
       <p><a href="https://curl.se/donation.html">Curl</a></p>
       <p><a href="https://www.msys2.org/#donations">MSYS2</a> (Windows)</p>
       <p><a href="https://ffmpeg.org/donations.html">ffmpeg</a></p>

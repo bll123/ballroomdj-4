@@ -1,113 +1,113 @@
-# == Tiếng Việt
-# -- vietnamese
+# == српски
+# -- serbian-cyrillic
 msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-09-27\n"
-"PO-Revision-Date: 2024-08-09 19:41\n"
+"PO-Revision-Date: 2024-08-09 20:37\n"
 "Last-Translator: manually generated\n"
-"Language-Team: Vietnamese\n"
-"Language: vi\n"
+"Language-Team: Serbian (Cyrillic)\n"
+"Language: sr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Crowdin-Project: ballroomdj-4\n"
 "X-Crowdin-Project-ID: 518374\n"
-"X-Crowdin-Language: vi\n"
+"X-Crowdin-Language: sr\n"
 "X-Crowdin-File: web-en_GB.po\n"
 "X-Crowdin-File-ID: 141\n"
 
 #. CONTEXT: website : ballroomdj 3 information text
 msgid "All users of BallroomDJ are urged to convert to BallroomDJ 4"
-msgstr "Tất cả người dùng BallroomDJ được khuyến khích chuyển đổi sang BallroomDJ 4"
+msgstr "Сви корисници БаллроомДЈ-а се позивају да пређу на БаллроомДЈ 4"
 
 #. CONTEXT: website : title, description
 msgid "BallroomDJ 4 - Ballroom Music Player"
-msgstr "BallroomDJ 4 - Máy nghe nhạc Ballroom"
+msgstr "БаллроомДЈ 4 - Баллроом Мусиц Плаиер"
 
 #. CONTEXT: website : descriptive text A
 msgid "BallroomDJ 4 (BDJ4) is a music player designed for desktop and laptop computers (and will work on some tablets). It is designed to be able to play music for the entire evening without any intervention."
-msgstr "BallroomDJ 4 (BDJ4) là trình phát nhạc được thiết kế cho máy tính để bàn và máy tính xách tay (và sẽ hoạt động trên một số máy tính bảng). Nó được thiết kế để có thể phát nhạc trong toàn bộ buổi tối mà không cần bất kỳ sự can thiệp nào."
+msgstr "БаллроомДЈ 4 (БДЈ4) је музички плејер дизајниран за десктоп и лаптоп рачунаре (и радиће на неким таблетима). Дизајниран је тако да може да пушта музику цело вече без икакве интервенције."
 
 #. CONTEXT: website : image alt-text for main logo
 msgid "BallroomDJ 4 - The Ballroom Music Player"
-msgstr "BallroomDJ 4 - Trình phát nhạc Ballroom"
+msgstr "БаллроомДЈ 4 - Тхе Баллроом Мусиц Плаиер"
 
 #. CONTEXT: website : resource link
 msgid "BallroomDJ at pro-linux.de"
-msgstr "BallroomDJ tại pro-linux.de"
+msgstr "БаллроомДЈ на про-линук.де"
 
 #. CONTEXT: website : ballroomdj 3 descriptive text
 msgid "BallroomDJ was the previous ballroom music player. It is no longer supported."
-msgstr "BallroomDJ là trình phát nhạc khiêu vũ trước đây. Hiện không còn được hỗ trợ nữa."
+msgstr "БаллроомДЈ је био претходни плејер за балску музику. Више није подржано."
 
 #. CONTEXT: website : resource link
 msgid "BDJ4 at freshcode.club"
-msgstr "BDJ4 tại freshcode.club"
+msgstr "БДЈ4 на фресхцоде.цлуб"
 
 #. CONTEXT: website : link
 msgid "BDJ4 Features"
-msgstr "Tính năng của BDJ4"
+msgstr "БДЈ4 карактеристике"
 
 #. CONTEXT: website : link
 msgid "BDJ4 Forum"
-msgstr "Diễn đàn BDJ4"
+msgstr "БДЈ4 Форум"
 
 #. CONTEXT: website : descriptive text B
 msgid "BDJ4 is highly customizable and provides facilities to organize ballroom dance music and create song lists, automatic playlists and sequenced playlists."
-msgstr "BDJ4 có khả năng tùy chỉnh cao và cung cấp các tiện ích để sắp xếp nhạc khiêu vũ và tạo danh sách bài hát, danh sách phát tự động và danh sách phát theo trình tự."
+msgstr "БДЈ4 је веома прилагодљив и пружа могућности за организовање музике за балске плесове и креирање листа песама, аутоматских плејлиста и секвенцираних плејлиста."
 
 #. CONTEXT: website : descriptive text C
 msgid "BDJ4 runs on Windows, MacOS and Linux."
-msgstr "BDJ4 chạy trên Windows, MacOS và Linux."
+msgstr "БДЈ4 ради на Виндовс, МацОС и Линук."
 
 #. CONTEXT: website : link
 msgid "BDJ4 Wiki"
-msgstr "Wiki BDJ4"
+msgstr "БДЈ4 Вики"
 
 #. CONTEXT: website : link
 msgid "Change Log"
-msgstr "Nhật ký thay đổi"
+msgstr "Дневник промена"
 
 #. CONTEXT: website : menu item
 msgid "Donate"
-msgstr "Quyên tặng"
+msgstr "Донирајте"
 
 #. CONTEXT: website : donation description
 msgid "Donate to software projects that BDJ4 uses:"
-msgstr "Quyên góp cho các dự án phần mềm mà BDJ4 sử dụng:"
+msgstr "Донирајте софтверским пројектима које БДЈ4 користи:"
 
 #. CONTEXT: website : link
 msgid "Download BallroomDJ 3"
-msgstr "Tải BallroomDJ 3"
+msgstr "Преузмите БаллроомДЈ 3"
 
 #. CONTEXT: website : link
 msgid "Download BallroomDJ 4"
-msgstr "Tải BallroomDJ 4"
+msgstr "Преузмите БаллроомДЈ 4"
 
 #. CONTEXT: website : link to crowdin
 msgid "Help Translate BallroomDJ 4"
-msgstr "Trợ giúp dịch BallroomDJ 4"
+msgstr "Помоћ у преводу БаллроомДЈ 4"
 
 #. CONTEXT: website : information text
 msgid "latest version"
-msgstr "phiên bản mới nhất"
+msgstr "најновија верзија"
 
 #. CONTEXT: website : image alt-text for menu
 msgid "Menu"
-msgstr "Thực đơn"
+msgstr "Мени"
 
 #. CONTEXT: website : information text
 msgid "Other sites where BallroomDJ 4 release announcements can be found:"
-msgstr "Các trang web khác có thể tìm thấy thông báo phát hành BallroomDJ 4:"
+msgstr "Други сајтови на којима се могу наћи најаве издања БаллроомДЈ 4:"
 
 #. CONTEXT: website : donate information text
 msgid " (donate button at very top)"
-msgstr " (nút quyên góp ở trên cùng)"
+msgstr " (дугме за донирање на самом врху)"
 
 #. CONTEXT: website : donate text
 msgid "Donate to BDJ4"
-msgstr "Quyên góp cho BDJ4"
+msgstr "Донирајте БДЈ4"
 

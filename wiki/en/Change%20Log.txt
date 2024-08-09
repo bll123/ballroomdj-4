@@ -9,7 +9,7 @@
 * Bug Fixes:
     * Improve logging on MacOS so it is not so slow.
 * Translations:
-    * Added Vietnamese (Tiếng Việt), Afrikaans.  Machine translated and poor quality.
+    * Added Vietnamese (Tiếng Việt), Afrikaans, Serbian (српски).  Machine translated and poor quality.
 * New Features:
     * Linux: Added MPRIS support.
 

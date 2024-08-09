@@ -6,5 +6,8 @@ AddLanguage hu .hu
 AddLanguage nb .nb-NO
 AddLanguage pl .pl-PL
 AddLanguage pt .pt-PT
+AddLanguage sr-Cryl .sr-Cyrl
+AddLanguage sr-Latn .sr-Cyrl
+AddLanguage sr .sr-Cyrl
 AddLanguage uk .uk
 Options +MultiViews
