@@ -84,6 +84,7 @@ enum {
   PLUI_CB_FONT_SZ_CHG,
   PLUI_CB_DRAG_DROP,
   PLUI_CB_CONTROLLER,
+  PLUI_CB_CONT_URI,
   PLUI_CB_MAX,
 };
 
@@ -260,7 +261,8 @@ static void     pluiReloadSave (playerui_t *plui, int mqidx);
 static void     pluiReloadSaveCurrent (playerui_t *plui);
 static bool     pluiEventEvent (void *udata);
 static bool     pluiExportMP3 (void *udata);
-static bool     pluiControllerCallback (void *udata, int32_t val, int32_t cmd);
+static bool     pluiControllerCallback (void *udata, int32_t cm, int32_t val);
+static bool     pluiControllerURICallback (void *udata, const char *uri, int32_t cmd);
 static int32_t  pluiDragDropCallback (void *udata, const char *uri);
 
 static int gKillReceived = 0;
@@ -1057,7 +1059,11 @@ pluiInitDataCallback (void *udata, programstate_t programState)
     controllerSetup (plui->controller);
     plui->callbacks [PLUI_CB_CONTROLLER] =
         callbackInitII (pluiControllerCallback, plui);
-    controllerSetCallback (plui->controller, plui->callbacks [PLUI_CB_CONTROLLER]);
+    plui->callbacks [PLUI_CB_CONT_URI] =
+        callbackInitSI (pluiControllerURICallback, plui);
+    controllerSetCallbacks (plui->controller,
+        plui->callbacks [PLUI_CB_CONTROLLER],
+        plui->callbacks [PLUI_CB_CONT_URI]);
     uiplayerSetController (plui->uiplayer, plui->controller);
     rc = STATE_FINISHED;
   }
@@ -2115,12 +2121,53 @@ pluiDragDropCallback (void *udata, const char *uri)
 }
 
 static bool
-pluiControllerCallback (void *udata, int32_t val, int32_t cmd)
+pluiControllerCallback (void *udata, int32_t cmd, int32_t val)
 {
-//  playerui_t    *plui = udata;
+  playerui_t    *plui = udata;
   bool          rc = false;
 
 fprintf (stderr, "plui-cb: cmd: %d val: %d\n", cmd, val);
+  switch (cmd) {
+    case CONTROLLER_PLAY: {
+fprintf (stderr, "  play\n");
+      connSendMessage (plui->conn, ROUTE_MAIN, MSG_CMD_PLAY, NULL);
+      break;
+    }
+    case CONTROLLER_PAUSE: {
+fprintf (stderr, "  pause\n");
+      connSendMessage (plui->conn, ROUTE_MAIN, MSG_CMD_PLAYPAUSE, NULL);
+      break;
+    }
+    case CONTROLLER_PLAYPAUSE: {
+fprintf (stderr, "  play-pause\n");
+      connSendMessage (plui->conn, ROUTE_MAIN, MSG_CMD_PLAYPAUSE, NULL);
+      break;
+    }
+    case CONTROLLER_STOP: {
+fprintf (stderr, "  stop\n");
+      connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_STOP, NULL);
+      break;
+    }
+    case CONTROLLER_NEXT: {
+fprintf (stderr, "  next\n");
+      connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
+      break;
+    }
+  }
+
+  return rc;
+}
+
+static bool
+pluiControllerURICallback (void *udata, const char *uri, int32_t cmd)
+{
+  playerui_t    *plui = udata;
+  bool          rc = false;
+
+  if (cmd != CONTROLLER_OPEN_URI) {
+    return false;
+  }
+fprintf (stderr, "plui: set-uri %s\n", uri);
 
   return rc;
 }

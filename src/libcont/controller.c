@@ -28,7 +28,7 @@ typedef struct controller {
   void              (*contiSetup) (contdata_t *contdata);
   void              (*contiFree) (contdata_t *contdata);
   bool              (*contiCheckReady) (contdata_t *contdata);
-  void              (*contiSetCallback) (contdata_t *contdata, callback_t *cb);
+  void              (*contiSetCallbacks) (contdata_t *contdata, callback_t *cb, callback_t *cburi);
   void              (*contiSetPlayState) (contdata_t *contdata, int state);
   void              (*contiSetRepeatState) (contdata_t *contdata, bool state);
   void              (*contiSetPosition) (contdata_t *contdata, int32_t pos);
@@ -65,7 +65,7 @@ controllerInit (const char *contpkg)
   cont->contiSetup = dylibLookup (cont->dlHandle, "contiSetup");
   cont->contiFree = dylibLookup (cont->dlHandle, "contiFree");
   cont->contiCheckReady = dylibLookup (cont->dlHandle, "contiCheckReady");
-  cont->contiSetCallback = dylibLookup (cont->dlHandle, "contiSetCallback");
+  cont->contiSetCallbacks = dylibLookup (cont->dlHandle, "contiSetCallbacks");
   cont->contiSetPlayState = dylibLookup (cont->dlHandle, "contiSetPlayState");
   cont->contiSetRepeatState = dylibLookup (cont->dlHandle, "contiSetRepeatState");
   cont->contiSetPosition = dylibLookup (cont->dlHandle, "contiSetPosition");
@@ -125,14 +125,14 @@ controllerCheckReady (controller_t *cont)
 }
 
 void
-controllerSetCallback (controller_t *cont, callback_t *cb)
+controllerSetCallbacks (controller_t *cont, callback_t *cb, callback_t *cburi)
 {
   if (cont == NULL || cb == NULL) {
     return;
   }
 
-  if (cont->contdata != NULL && cont->contiSetCallback != NULL) {
-    cont->contiSetCallback (cont->contdata, cb);
+  if (cont->contdata != NULL && cont->contiSetCallbacks != NULL) {
+    cont->contiSetCallbacks (cont->contdata, cb, cburi);
   }
 }
 

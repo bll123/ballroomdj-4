@@ -23,7 +23,7 @@ enum {
   CONTROLLER_NEXT,
   CONTROLLER_SEEK,      // long arg
   CONTROLLER_SET_POS,   // long arg
-  CONTROLLER_URI,       // string arg
+  CONTROLLER_OPEN_URI,  // string arg
   CONTROLLER_QUIT,
 };
 
@@ -35,7 +35,7 @@ controller_t *controllerInit (const char *contpkg);
 void controllerFree (controller_t *cont);
 void controllerSetup (controller_t *cont);
 bool controllerCheckReady (controller_t *cont);
-void controllerSetCallback (controller_t *cont, callback_t *cb);
+void controllerSetCallbacks (controller_t *cont, callback_t *cb, callback_t *cburi);
 void controllerSetPlayState (controller_t *cont, int state);
 void controllerSetRepeatState (controller_t *cont, bool state);
 void controllerSetPosition (controller_t *cont, int32_t pos);
@@ -49,7 +49,7 @@ contdata_t *contiInit (const char *instname);
 void contiFree (contdata_t *contdata);
 void contiSetup (contdata_t *contdata);
 bool contiCheckReady (contdata_t *contdata);
-void contiSetCallback (contdata_t *contdata, callback_t *cb);
+void contiSetCallbacks (contdata_t *contdata, callback_t *cb, callback_t *cburi);
 void contiSetPlayState (contdata_t *contdata, int state);
 void contiSetRepeatState (contdata_t *contdata, bool state);
 void contiSetPosition (contdata_t *contdata, int32_t pos);
