@@ -82,11 +82,11 @@
       <div class="dflex">
         <div class="tleft dtext">
           <!-- WT_003 -->
-          <p>БаллроомДЈ 4 (БДЈ4) је музички плејер дизајниран за десктоп и лаптоп рачунаре (и радиће на неким таблетима). Дизајниран је тако да може да пушта музику цело вече без икакве интервенције.</p>
+          <p>БаллроомДЈ 4 (BDJ4) је музички плејер дизајниран за десктоп и лаптоп рачунаре (и радиће на неким таблетима). Дизајниран је тако да може да пушта музику цело вече без икакве интервенције.</p>
           <!-- WT_004 -->
-          <p>БДЈ4 је веома прилагодљив и пружа могућности за организовање музике за балске плесове и креирање листа песама, аутоматских плејлиста и секвенцираних плејлиста.</p>
+          <p>BDJ4 је веома прилагодљив и пружа могућности за организовање музике за балске плесове и креирање листа песама, аутоматских плејлиста и секвенцираних плејлиста.</p>
           <!-- WT_005 -->
-          <p>БДЈ4 ради на Виндовс, МацОС и Линук.</p>
+          <p>BDJ4 ради на Виндовс, МацОС и Линук.</p>
           <!-- WT_006 -->
           <p><b><a target="_blank"
               href="https://sourceforge.net/projects/ballroomdj4/files/"
@@ -97,15 +97,15 @@
               >Дневник промена</a></p>
           <!-- WT_008 -->
           <p><a target="_blank"
-              href="https://ballroomdj.org/forum/">БДЈ4 Форум</a></p>
+              href="https://ballroomdj.org/forum/">BDJ4 Форум</a></p>
           <!-- WT_009 -->
           <p><a target="_blank"
               href="https://sourceforge.net/p/ballroomdj4/wiki/Home/"
-              >БДЈ4 Вики</a></p>
+              >BDJ4 Вики</a></p>
           <!-- WT_010 -->
           <p><a target="_blank"
               href="https://sourceforge.net/p/ballroomdj4/wiki/en-Features/"
-              >БДЈ4 карактеристике</a></p>
+              >BDJ4 карактеристике</a></p>
           <!-- WT_011 -->
           <p><a target="_blank"
               href="https://crowdin.com/project/ballroomdj-4"
@@ -115,7 +115,7 @@
           <!-- WT_013 -->
           <p><a target="_blank"
               href="https://freshcode.club/projects/bdj4"
-              >БДЈ4 на фресхцоде.цлуб</a></p>
+              >BDJ4 на фресхцоде.цлуб</a></p>
           <!-- WT_014 -->
           <p><a target="_blank"
               href="https://www.pro-linux.de/cgi-bin/DBApp/check.cgi?ShowAppDetail.01.17981.100"
@@ -166,7 +166,7 @@
 
     <div id="ddonate" class="mdiv dispnone tleft">
       <!-- WT_018 -->
-      <p>Донирајте БДЈ4</p>
+      <p>Донирајте BDJ4</p>
       <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
         <input type="hidden" name="cmd" value="_s-xclick" />
         <input type="hidden" name="hosted_button_id" value="BLTFRDM5KHNDJ" />
@@ -174,7 +174,7 @@
         <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
       </form>
       <!-- WT_019 -->
-      <p>Донирајте софтверским пројектима које БДЈ4 користи:</p>
+      <p>Донирајте софтверским пројектима које BDJ4 користи:</p>
       <!-- WT_020 -->
       <p><a href="https://videolan.org">VLC</a> (дугме за донирање на самом врху)</p>
       <p><a href="https://curl.se/donation.html">Curl</a></p>

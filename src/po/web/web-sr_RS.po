@@ -29,7 +29,7 @@ msgstr "БаллроомДЈ 4 - Баллроом Мусиц Плаиер"
 
 #. CONTEXT: website : descriptive text A
 msgid "BallroomDJ 4 (BDJ4) is a music player designed for desktop and laptop computers (and will work on some tablets). It is designed to be able to play music for the entire evening without any intervention."
-msgstr "БаллроомДЈ 4 (БДЈ4) је музички плејер дизајниран за десктоп и лаптоп рачунаре (и радиће на неким таблетима). Дизајниран је тако да може да пушта музику цело вече без икакве интервенције."
+msgstr "БаллроомДЈ 4 (BDJ4) је музички плејер дизајниран за десктоп и лаптоп рачунаре (и радиће на неким таблетима). Дизајниран је тако да може да пушта музику цело вече без икакве интервенције."
 
 #. CONTEXT: website : image alt-text for main logo
 msgid "BallroomDJ 4 - The Ballroom Music Player"
@@ -45,27 +45,27 @@ msgstr "БаллроомДЈ је био претходни плејер за б
 
 #. CONTEXT: website : resource link
 msgid "BDJ4 at freshcode.club"
-msgstr "БДЈ4 на фресхцоде.цлуб"
+msgstr "BDJ4 на фресхцоде.цлуб"
 
 #. CONTEXT: website : link
 msgid "BDJ4 Features"
-msgstr "БДЈ4 карактеристике"
+msgstr "BDJ4 карактеристике"
 
 #. CONTEXT: website : link
 msgid "BDJ4 Forum"
-msgstr "БДЈ4 Форум"
+msgstr "BDJ4 Форум"
 
 #. CONTEXT: website : descriptive text B
 msgid "BDJ4 is highly customizable and provides facilities to organize ballroom dance music and create song lists, automatic playlists and sequenced playlists."
-msgstr "БДЈ4 је веома прилагодљив и пружа могућности за организовање музике за балске плесове и креирање листа песама, аутоматских плејлиста и секвенцираних плејлиста."
+msgstr "BDJ4 је веома прилагодљив и пружа могућности за организовање музике за балске плесове и креирање листа песама, аутоматских плејлиста и секвенцираних плејлиста."
 
 #. CONTEXT: website : descriptive text C
 msgid "BDJ4 runs on Windows, MacOS and Linux."
-msgstr "БДЈ4 ради на Виндовс, МацОС и Линук."
+msgstr "BDJ4 ради на Виндовс, МацОС и Линук."
 
 #. CONTEXT: website : link
 msgid "BDJ4 Wiki"
-msgstr "БДЈ4 Вики"
+msgstr "BDJ4 Вики"
 
 #. CONTEXT: website : link
 msgid "Change Log"
@@ -77,7 +77,7 @@ msgstr "Донирајте"
 
 #. CONTEXT: website : donation description
 msgid "Donate to software projects that BDJ4 uses:"
-msgstr "Донирајте софтверским пројектима које БДЈ4 користи:"
+msgstr "Донирајте софтверским пројектима које BDJ4 користи:"
 
 #. CONTEXT: website : link
 msgid "Download BallroomDJ 3"
@@ -109,5 +109,5 @@ msgstr " (дугме за донирање на самом врху)"
 
 #. CONTEXT: website : donate text
 msgid "Donate to BDJ4"
-msgstr "Донирајте БДЈ4"
+msgstr "Донирајте BDJ4"
 
