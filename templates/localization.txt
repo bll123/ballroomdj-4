@@ -1,7 +1,19 @@
 # localization
-# generated 2024-07-28
+# generated 2024-08-09
 KEY
 ..0
+LONG
+..af_ZA
+SHORT
+..af
+DISPLAY
+..Afrikaans
+STDROUNDS
+..standaardrondes
+QDANCE
+..QueueDance
+KEY
+..1
 LONG
 ..cs_CZ
 SHORT
@@ -13,7 +25,7 @@ STDROUNDS
 QDANCE
 ..QueueDance
 KEY
-..1
+..2
 LONG
 ..da_DK
 SHORT
@@ -25,7 +37,7 @@ STDROUNDS
 QDANCE
 ..QueueDance
 KEY
-..2
+..3
 LONG
 ..de_DE
 SHORT
@@ -37,7 +49,7 @@ STDROUNDS
 QDANCE
 ..Schlangentanz
 KEY
-..3
+..4
 LONG
 ..en_GB
 SHORT
@@ -49,7 +61,7 @@ STDROUNDS
 QDANCE
 ..QueueDance
 KEY
-..4
+..5
 LONG
 ..en_US
 SHORT
@@ -61,7 +73,7 @@ STDROUNDS
 QDANCE
 ..QueueDance
 KEY
-..5
+..6
 LONG
 ..es_ES
 SHORT
@@ -73,7 +85,7 @@ STDROUNDS
 QDANCE
 ..Danza en cola
 KEY
-..6
+..7
 LONG
 ..fi_FI
 SHORT
@@ -85,7 +97,7 @@ STDROUNDS
 QDANCE
 ..Jonotanssi
 KEY
-..7
+..8
 LONG
 ..fr_FR
 SHORT
@@ -97,7 +109,7 @@ STDROUNDS
 QDANCE
 ..Danse en file d'attente
 KEY
-..8
+..9
 LONG
 ..hu_HU
 SHORT
@@ -109,7 +121,7 @@ STDROUNDS
 QDANCE
 ..QueueDance
 KEY
-..9
+..10
 LONG
 ..it_IT
 SHORT
@@ -121,7 +133,7 @@ STDROUNDS
 QDANCE
 ..Ballo in coda
 KEY
-..10
+..11
 LONG
 ..ja_JP
 SHORT
@@ -133,7 +145,7 @@ STDROUNDS
 QDANCE
 ..キューダンス
 KEY
-..11
+..12
 LONG
 ..ko_KR
 SHORT
@@ -145,7 +157,7 @@ STDROUNDS
 QDANCE
 ..큐댄스
 KEY
-..12
+..13
 LONG
 ..nl_BE
 SHORT
@@ -157,7 +169,7 @@ STDROUNDS
 QDANCE
 ..Dans In Wachtrij
 KEY
-..13
+..14
 LONG
 ..nb_NO
 SHORT
@@ -169,7 +181,7 @@ STDROUNDS
 QDANCE
 ..QueueDance
 KEY
-..14
+..15
 LONG
 ..pl_PL
 SHORT
@@ -181,7 +193,7 @@ STDROUNDS
 QDANCE
 ..Taniec w kolejce
 KEY
-..15
+..16
 LONG
 ..pt_PT
 SHORT
@@ -193,7 +205,7 @@ STDROUNDS
 QDANCE
 ..QueueDance
 KEY
-..16
+..17
 LONG
 ..ru_RU
 SHORT
@@ -205,7 +217,7 @@ STDROUNDS
 QDANCE
 ..Танец в очередь
 KEY
-..17
+..18
 LONG
 ..sv_SE
 SHORT
@@ -217,7 +229,7 @@ STDROUNDS
 QDANCE
 ..QueueDance
 KEY
-..18
+..19
 LONG
 ..uk_UA
 SHORT
@@ -229,7 +241,19 @@ STDROUNDS
 QDANCE
 ..QueueDance
 KEY
-..19
+..20
+LONG
+..vi_VN
+SHORT
+..vi
+DISPLAY
+..Tiếng Việt
+STDROUNDS
+..vòng tiêu chuẩn
+QDANCE
+..Hàng đợi khiêu vũ
+KEY
+..21
 LONG
 ..zh_CN
 SHORT
@@ -241,7 +265,7 @@ STDROUNDS
 QDANCE
 ..队列舞蹈
 KEY
-..20
+..22
 LONG
 ..zh_TW
 SHORT

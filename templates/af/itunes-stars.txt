@@ -1,0 +1,25 @@
+# itunes-stars
+# 2023-1-2
+# version 1
+version
+..1
+10
+..Arm
+20
+..Arm
+30
+..Arm
+40
+..Arm
+50
+..Arm
+60
+..Goed
+70
+..Goed
+80
+..Groot
+90
+..Groot
+100
+..Groot

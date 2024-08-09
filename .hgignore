@@ -16,6 +16,8 @@ syntax: regexp
 ^img/profile0[0-9]
 ^licenses/
 ^locale/locales.txt$
+^locale/af
+^locale/af_ZA/
 ^locale/cs
 ^locale/cs_CZ/
 ^locale/da
@@ -54,6 +56,8 @@ syntax: regexp
 ^locale/sv_SE/
 ^locale/uk
 ^locale/uk_UA/
+^locale/vi
+^locale/vi_VN/
 ^locale/zh
 ^locale/zh_CN/
 ^locale/zh

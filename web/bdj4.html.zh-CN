@@ -26,6 +26,7 @@
       Ballroom Музыкальный плеер,
       Musikspelare för balsalar,
       програвач бальної музики,
+      Máy nghe nhạc Ballroom,
       舞厅音乐播放器,
       舞廳音樂播放器,
       ballroom music dj, ballroom dance dj,
@@ -121,6 +122,7 @@
         </div>
         <div class="tleft dlang">
           <ul>
+            <li><a href="index.html.af">Afrikaans</a></li>
             <li><a href="index.html.cs">čeština</a></li>
             <li><a href="index.html.da">Dansk</a></li>
             <li><a href="index.html.de">Deutsch</a></li>
@@ -139,6 +141,7 @@
             <li><a href="index.html.ru">Русский</a></li>
             <li><a href="index.html.sv">Svenska</a></li>
             <li><a href="index.html.uk">Українська</a></li>
+            <li><a href="index.html.vi">Tiếng Việt</a></li>
             <li><a href="index.html.zh-CN">简体中文</a></li>
             <li><a href="index.html.zh-TW">繁體中文</a></li>
           </ul>

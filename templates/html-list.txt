@@ -1,5 +1,5 @@
 # html-list
-# generated 2024-07-28
+# generated 2024-08-09
 KEY
 ..0
 LOCALE
@@ -27,13 +27,37 @@ FILE
 KEY
 ..3
 LOCALE
+..af
+TITLE
+..Afrikaans Flex Dark
+FILE
+..af/bdj-flex-dark.html
+KEY
+..4
+LOCALE
+..af
+TITLE
+..Afrikaans Flex
+FILE
+..af/bdj-flex.html
+KEY
+..5
+LOCALE
+..af
+TITLE
+..Afrikaans HTML 5
+FILE
+..af/bdj.html
+KEY
+..6
+LOCALE
 ..cs
 TITLE
 ..čeština Flex Dark
 FILE
 ..cs/bdj-flex-dark.html
 KEY
-..4
+..7
 LOCALE
 ..cs
 TITLE
@@ -41,7 +65,7 @@ TITLE
 FILE
 ..cs/bdj-flex.html
 KEY
-..5
+..8
 LOCALE
 ..cs
 TITLE
@@ -49,7 +73,7 @@ TITLE
 FILE
 ..cs/bdj.html
 KEY
-..6
+..9
 LOCALE
 ..da
 TITLE
@@ -57,7 +81,7 @@ TITLE
 FILE
 ..da/bdj-flex-dark.html
 KEY
-..7
+..10
 LOCALE
 ..da
 TITLE
@@ -65,7 +89,7 @@ TITLE
 FILE
 ..da/bdj-flex.html
 KEY
-..8
+..11
 LOCALE
 ..da
 TITLE
@@ -73,7 +97,7 @@ TITLE
 FILE
 ..da/bdj.html
 KEY
-..9
+..12
 LOCALE
 ..de
 TITLE
@@ -81,7 +105,7 @@ TITLE
 FILE
 ..de/bdj-flex-dark.html
 KEY
-..10
+..13
 LOCALE
 ..de
 TITLE
@@ -89,7 +113,7 @@ TITLE
 FILE
 ..de/bdj-flex.html
 KEY
-..11
+..14
 LOCALE
 ..de
 TITLE
@@ -97,7 +121,7 @@ TITLE
 FILE
 ..de/bdj.html
 KEY
-..12
+..15
 LOCALE
 ..es
 TITLE
@@ -105,7 +129,7 @@ TITLE
 FILE
 ..es/bdj-flex-dark.html
 KEY
-..13
+..16
 LOCALE
 ..es
 TITLE
@@ -113,7 +137,7 @@ TITLE
 FILE
 ..es/bdj-flex.html
 KEY
-..14
+..17
 LOCALE
 ..es
 TITLE
@@ -121,7 +145,7 @@ TITLE
 FILE
 ..es/bdj.html
 KEY
-..15
+..18
 LOCALE
 ..fi
 TITLE
@@ -129,7 +153,7 @@ TITLE
 FILE
 ..fi/bdj-flex-dark.html
 KEY
-..16
+..19
 LOCALE
 ..fi
 TITLE
@@ -137,7 +161,7 @@ TITLE
 FILE
 ..fi/bdj-flex.html
 KEY
-..17
+..20
 LOCALE
 ..fi
 TITLE
@@ -145,7 +169,7 @@ TITLE
 FILE
 ..fi/bdj.html
 KEY
-..18
+..21
 LOCALE
 ..fr
 TITLE
@@ -153,7 +177,7 @@ TITLE
 FILE
 ..fr/bdj-flex-dark.html
 KEY
-..19
+..22
 LOCALE
 ..fr
 TITLE
@@ -161,7 +185,7 @@ TITLE
 FILE
 ..fr/bdj-flex.html
 KEY
-..20
+..23
 LOCALE
 ..fr
 TITLE
@@ -169,7 +193,7 @@ TITLE
 FILE
 ..fr/bdj.html
 KEY
-..21
+..24
 LOCALE
 ..hu
 TITLE
@@ -177,7 +201,7 @@ TITLE
 FILE
 ..hu/bdj-flex-dark.html
 KEY
-..22
+..25
 LOCALE
 ..hu
 TITLE
@@ -185,7 +209,7 @@ TITLE
 FILE
 ..hu/bdj-flex.html
 KEY
-..23
+..26
 LOCALE
 ..hu
 TITLE
@@ -193,7 +217,7 @@ TITLE
 FILE
 ..hu/bdj.html
 KEY
-..24
+..27
 LOCALE
 ..it
 TITLE
@@ -201,7 +225,7 @@ TITLE
 FILE
 ..it/bdj-flex-dark.html
 KEY
-..25
+..28
 LOCALE
 ..it
 TITLE
@@ -209,7 +233,7 @@ TITLE
 FILE
 ..it/bdj-flex.html
 KEY
-..26
+..29
 LOCALE
 ..it
 TITLE
@@ -217,7 +241,7 @@ TITLE
 FILE
 ..it/bdj.html
 KEY
-..27
+..30
 LOCALE
 ..ja
 TITLE
@@ -225,7 +249,7 @@ TITLE
 FILE
 ..ja/bdj-flex-dark.html
 KEY
-..28
+..31
 LOCALE
 ..ja
 TITLE
@@ -233,7 +257,7 @@ TITLE
 FILE
 ..ja/bdj-flex.html
 KEY
-..29
+..32
 LOCALE
 ..ja
 TITLE
@@ -241,7 +265,7 @@ TITLE
 FILE
 ..ja/bdj.html
 KEY
-..30
+..33
 LOCALE
 ..ko
 TITLE
@@ -249,7 +273,7 @@ TITLE
 FILE
 ..ko/bdj-flex-dark.html
 KEY
-..31
+..34
 LOCALE
 ..ko
 TITLE
@@ -257,7 +281,7 @@ TITLE
 FILE
 ..ko/bdj-flex.html
 KEY
-..32
+..35
 LOCALE
 ..ko
 TITLE
@@ -265,7 +289,7 @@ TITLE
 FILE
 ..ko/bdj.html
 KEY
-..33
+..36
 LOCALE
 ..nb
 TITLE
@@ -273,7 +297,7 @@ TITLE
 FILE
 ..nb/bdj-flex-dark.html
 KEY
-..34
+..37
 LOCALE
 ..nb
 TITLE
@@ -281,7 +305,7 @@ TITLE
 FILE
 ..nb/bdj-flex.html
 KEY
-..35
+..38
 LOCALE
 ..nb
 TITLE
@@ -289,7 +313,7 @@ TITLE
 FILE
 ..nb/bdj.html
 KEY
-..36
+..39
 LOCALE
 ..nl
 TITLE
@@ -297,7 +321,7 @@ TITLE
 FILE
 ..nl/bdj-flex-dark.html
 KEY
-..37
+..40
 LOCALE
 ..nl
 TITLE
@@ -305,7 +329,7 @@ TITLE
 FILE
 ..nl/bdj-flex.html
 KEY
-..38
+..41
 LOCALE
 ..nl
 TITLE
@@ -313,7 +337,7 @@ TITLE
 FILE
 ..nl/bdj.html
 KEY
-..39
+..42
 LOCALE
 ..pl
 TITLE
@@ -321,7 +345,7 @@ TITLE
 FILE
 ..pl/bdj-flex-dark.html
 KEY
-..40
+..43
 LOCALE
 ..pl
 TITLE
@@ -329,7 +353,7 @@ TITLE
 FILE
 ..pl/bdj-flex.html
 KEY
-..41
+..44
 LOCALE
 ..pl
 TITLE
@@ -337,7 +361,7 @@ TITLE
 FILE
 ..pl/bdj.html
 KEY
-..42
+..45
 LOCALE
 ..pt
 TITLE
@@ -345,7 +369,7 @@ TITLE
 FILE
 ..pt/bdj-flex-dark.html
 KEY
-..43
+..46
 LOCALE
 ..pt
 TITLE
@@ -353,7 +377,7 @@ TITLE
 FILE
 ..pt/bdj-flex.html
 KEY
-..44
+..47
 LOCALE
 ..pt
 TITLE
@@ -361,7 +385,7 @@ TITLE
 FILE
 ..pt/bdj.html
 KEY
-..45
+..48
 LOCALE
 ..ru
 TITLE
@@ -369,7 +393,7 @@ TITLE
 FILE
 ..ru/bdj-flex-dark.html
 KEY
-..46
+..49
 LOCALE
 ..ru
 TITLE
@@ -377,7 +401,7 @@ TITLE
 FILE
 ..ru/bdj-flex.html
 KEY
-..47
+..50
 LOCALE
 ..ru
 TITLE
@@ -385,7 +409,7 @@ TITLE
 FILE
 ..ru/bdj.html
 KEY
-..48
+..51
 LOCALE
 ..sv
 TITLE
@@ -393,7 +417,7 @@ TITLE
 FILE
 ..sv/bdj-flex-dark.html
 KEY
-..49
+..52
 LOCALE
 ..sv
 TITLE
@@ -401,7 +425,7 @@ TITLE
 FILE
 ..sv/bdj-flex.html
 KEY
-..50
+..53
 LOCALE
 ..sv
 TITLE
@@ -409,7 +433,7 @@ TITLE
 FILE
 ..sv/bdj.html
 KEY
-..51
+..54
 LOCALE
 ..uk
 TITLE
@@ -417,7 +441,7 @@ TITLE
 FILE
 ..uk/bdj-flex-dark.html
 KEY
-..52
+..55
 LOCALE
 ..uk
 TITLE
@@ -425,7 +449,7 @@ TITLE
 FILE
 ..uk/bdj-flex.html
 KEY
-..53
+..56
 LOCALE
 ..uk
 TITLE
@@ -433,7 +457,31 @@ TITLE
 FILE
 ..uk/bdj.html
 KEY
-..54
+..57
+LOCALE
+..vi
+TITLE
+..Tiếng Việt Flex Dark
+FILE
+..vi/bdj-flex-dark.html
+KEY
+..58
+LOCALE
+..vi
+TITLE
+..Tiếng Việt Flex
+FILE
+..vi/bdj-flex.html
+KEY
+..59
+LOCALE
+..vi
+TITLE
+..Tiếng Việt HTML 5
+FILE
+..vi/bdj.html
+KEY
+..60
 LOCALE
 ..zh_CN
 TITLE
@@ -441,7 +489,7 @@ TITLE
 FILE
 ..zh_CN/bdj-flex-dark.html
 KEY
-..55
+..61
 LOCALE
 ..zh_CN
 TITLE
@@ -449,7 +497,7 @@ TITLE
 FILE
 ..zh_CN/bdj-flex.html
 KEY
-..56
+..62
 LOCALE
 ..zh_CN
 TITLE
@@ -457,7 +505,7 @@ TITLE
 FILE
 ..zh_CN/bdj.html
 KEY
-..57
+..63
 LOCALE
 ..zh_TW
 TITLE
@@ -465,7 +513,7 @@ TITLE
 FILE
 ..zh_TW/bdj-flex-dark.html
 KEY
-..58
+..64
 LOCALE
 ..zh_TW
 TITLE
@@ -473,7 +521,7 @@ TITLE
 FILE
 ..zh_TW/bdj-flex.html
 KEY
-..59
+..65
 LOCALE
 ..zh_TW
 TITLE

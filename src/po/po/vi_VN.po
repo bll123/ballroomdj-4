@@ -1,0 +1,2269 @@
+# == Tiếng Việt
+# -- vietnamese
+msgid ""
+msgstr ""
+"Project-Id-Version: ballroomdj-4\n"
+"Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
+"POT-Creation-Date: 2024-07-28\n"
+"PO-Revision-Date: 2024-08-09\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: Vietnamese\n"
+"Language: vi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: ballroomdj-4\n"
+"X-Crowdin-Project-ID: 518374\n"
+"X-Crowdin-Language: vi\n"
+"X-Crowdin-File: en_GB.po\n"
+"X-Crowdin-File-ID: 126\n"
+
+#. CONTEXT: song editor: status msg: (song end must be greater than song start)
+#, c-format
+msgid "%1$s must be greater than %2$s"
+msgstr "%1$s phải lớn hơn %2$s"
+
+#. CONTEXT: configuration: the ACRCloud API Host
+#, c-format
+msgid "%s API Host"
+msgstr "%s Máy chủ API"
+
+#. CONTEXT: configuration: the ACRCloud API Key
+#, c-format
+msgid "%s API Key"
+msgstr "%s Khóa API"
+
+#. CONTEXT: configuration: the ACRCloud API Secret Key
+#, c-format
+msgid "%s API Secret Key"
+msgstr "%s Khóa bí mật API"
+
+#. CONTEXT: configuration: configuration user interface window title
+#, c-format
+msgid "%s Configuration"
+msgstr "%s Cấu hình"
+
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 download)
+#, c-format
+msgid "%s Download"
+msgstr "%s Tải xuống"
+
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 forums)
+#, c-format
+msgid "%s Forums"
+msgstr "%s Diễn đàn"
+
+#. CONTEXT: helperui: the window title for the BDJ4 helper
+#, c-format
+msgid "%s Helper"
+msgstr "%s Người trợ giúp"
+
+#. CONTEXT: alternate installation: window title
+#. CONTEXT: installer: window title
+#, c-format
+msgid "%s Installer"
+msgstr "%s Trình cài đặt"
+
+#. CONTEXT: installer: label for entry field asking for BDJ3 location
+#, c-format
+msgid "%s Location"
+msgstr "%s Vị trí"
+
+#. CONTEXT: managementui: management user interface window title
+#, c-format
+msgid "%s Management"
+msgstr "%s Quản lý"
+
+#. CONTEXT: configuration: itunes: the itunes media folder
+#, c-format
+msgid "%s Media Folder"
+msgstr "%s Thư mục phương tiện"
+
+#. CONTEXT: playerui: main window title
+#, c-format
+msgid "%s Player"
+msgstr "%s Người chơi"
+
+#. CONTEXT: MacOS: reason for disabling sleep: BDJ4 Player is Active
+#, c-format
+msgid "%s Player is Active"
+msgstr "%s Người chơi đang hoạt động"
+
+#. CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist)
+#, c-format
+msgid "%s Playlist"
+msgstr "%s Danh sách phát"
+
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets)
+#, c-format
+msgid "%s Support Tickets"
+msgstr "%s Vé hỗ trợ"
+
+#. CONTEXT: starterui: basic support dialog, version display
+#, c-format
+msgid "%s Version"
+msgstr "%s Phiên bản"
+
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 wiki)
+#, c-format
+msgid "%s Wiki"
+msgstr "%s Wiki"
+
+#. CONTEXT: configuration: itunes: the itunes xml file
+#, c-format
+msgid "%s XML File"
+msgstr "%s Tệp XML"
+
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+#, c-format
+msgid "%s data will be converted."
+msgstr "%s dữ liệu sẽ được chuyển đổi."
+
+#. CONTEXT: database update: status message
+#, c-format
+msgid "%s files found"
+msgstr "%s tập tin được tìm thấy"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "%s installed."
+msgstr "%s đã cài đặt."
+
+#. CONTEXT: installer: display of package status
+#, c-format
+msgid "%s is installed"
+msgstr "%s đã được cài đặt"
+
+#. CONTEXT: manage ui: status message: itunes is not configured
+#, c-format
+msgid "%s is not configured."
+msgstr "%s chưa được cấu hình."
+
+#. CONTEXT: installer: display of package status
+#, c-format
+msgid "%s is not installed"
+msgstr "%s chưa được cài đặt"
+
+#. CONTEXT: song editor: status msg: (song start may not exceed the song duration)
+#. CONTEXT: song editor: status msg: (song end may not exceed the song duration)
+#, c-format
+msgid "%s may not exceed the song duration"
+msgstr "%s không được vượt quá thời lượng bài hát"
+
+#. CONTEXT: validation: characters not allowed
+#, c-format
+msgid "%s: *'\":|<>^ characters are not allowed."
+msgstr "%s: *'\":|<>^ không được phép sử dụng ký tự."
+
+#. CONTEXT: validation: invalid time (hours/minutes)
+#. CONTEXT: validation: invalid time (minutes/seconds)
+#. CONTEXT: validation: invalid time (hours/minutes/seconds)
+#. CONTEXT: validation: invalid time (hour/min/sec.sec)
+#, c-format
+msgid "%s: Invalid time (%s)."
+msgstr "%s: Thời gian không hợp lệ (%s)."
+
+#. CONTEXT: validation: must be numeric
+#. CONTEXT: validation: must be a numeric value
+#, c-format
+msgid "%s: Must be numeric."
+msgstr "%s: Phải là số."
+
+#. CONTEXT: validation: a value must be set
+#, c-format
+msgid "%s: Must be set."
+msgstr "%s: Phải được thiết lập."
+
+#. CONTEXT: validation: slashes ( / and \\ ) are not allowed
+#, c-format
+msgid "%s: Slashes are not allowed."
+msgstr "%s: Không được phép sử dụng dấu gạch chéo."
+
+#. CONTEXT: validation: spaces are not allowed
+#, c-format
+msgid "%s: Spaces are not allowed."
+msgstr "%s: Không được phép có khoảng trắng."
+
+#. CONTEXT: playerui: button: reset speed to 100%
+msgid "100%"
+msgstr "100%"
+
+#. CONTEXT: configuration: dance time signature
+msgid "2/4"
+msgstr "2/4"
+
+#. CONTEXT: configuration: dance time signature
+msgid "3/4"
+msgstr "3/4"
+
+#. CONTEXT: configuration: dance time signature
+msgid "4/4"
+msgstr "4/4"
+
+#. CONTEXT: configuration: marquee: the accent color used for the marquee
+#. CONTEXT: configuration: the accent color to use for the user interface
+msgid "Accent Colour"
+msgstr "Màu nhấn mạnh"
+
+#. CONTEXT: update database: select database update action
+msgid "Action"
+msgstr "Hoạt động"
+
+#. CONTEXT: the 'Mix' action failed
+msgid "Action failed"
+msgstr "Hành động không thành công"
+
+#. CONTEXT: managementui: menu selection: actions for song editor
+#. CONTEXT: managementui: menu selection: actions for music manager
+#. CONTEXT: managementui: menu selection: actions for song list
+#. CONTEXT: playerui: menu selection: actions for the player
+#. CONTEXT: starterui: action menu for the starter user interface
+msgid "Actions"
+msgstr "Hành động"
+
+#. CONTEXT: configuration: queue: whether the queue is active
+msgid "Active"
+msgstr "Tích cực"
+
+#. CONTEXT: configuration: table edit: button: add new selection
+msgid "Add New"
+msgstr "Thêm mới"
+
+#. CONTEXT: apply adjustments: adjust speed/song start/song end checkbox
+msgid "Adjust Speed, Song Start and Song End"
+msgstr "Điều chỉnh tốc độ, bắt đầu bài hát và kết thúc bài hát"
+
+#. CONTEXT: configuration file: dance level
+msgid "Advanced"
+msgstr "Trình độ cao"
+
+#. CONTEXT: label: album
+msgid "Album"
+msgstr "Album"
+
+#. CONTEXT: label: album artist
+msgid "Album Artist"
+msgstr "Nghệ sĩ Album"
+
+#. CONTEXT: label: album artist sort order
+msgid "Album Artist Sort Order"
+msgstr "Album Nghệ sĩ Sắp xếp Thứ tự"
+
+#. CONTEXT: label: album sort order
+msgid "Album Sort Order"
+msgstr "Thứ tự sắp xếp album"
+
+#. CONTEXT: song-selection: filter: all dances are selected
+#. CONTEXT: song selection filter: a filter: all dances are selected
+msgid "All Dances"
+msgstr "Tất cả các điệu nhảy"
+
+#. CONTEXT: genre: a filter: all genres are displayed in the song selection
+msgid "All Genres"
+msgstr "Tất cả các thể loại"
+
+#. CONTEXT: level: a filter: all dance levels will be listed
+#. CONTEXT: level: a filter: all dance levels are displayed in the song selection
+msgid "All Levels"
+msgstr "Tất cả các cấp độ"
+
+#. CONTEXT: rating: a filter: all dance ratings will be listed
+#. CONTEXT: rating: a filter: all dance ratings are displayed in the song selection
+msgid "All Ratings"
+msgstr "Tất cả xếp hạng"
+
+#. CONTEXT: configuration: write audio file tags: write all tags (BDJ and standard) to the audio file
+msgid "All Tags"
+msgstr "Tất cả các thẻ"
+
+#. CONTEXT: playlist management: allowed keywords
+msgid "Allowed Keywords"
+msgstr "Từ khóa được phép"
+
+#. CONTEXT: import from bdj4: error message if the target song list already exists
+msgid "Already Exists"
+msgstr "Đã tồn tại"
+
+#. CONTEXT: configuration: dances: play the selected announcement before the dance is played
+msgid "Announcement"
+msgstr "Thông báo"
+
+#. CONTEXT: status: a filter: all dance status will be listed
+#. CONTEXT: status: a filter: all dance status are displayed in the song selection
+msgid "Any Status"
+msgstr "Bất kỳ trạng thái nào"
+
+#. CONTEXT: song selection filter: filter dialog: applies the selections
+msgid "Apply"
+msgstr "Áp dụng"
+
+#. CONTEXT: apply adjustment dialog: title for the dialog
+#. CONTEXT: apply adjustment dialog: apply adjustments
+#. CONTEXT: managementui: song editor menu: apply adjustments
+msgid "Apply Adjustments"
+msgstr "Áp dụng điều chỉnh"
+
+#. CONTEXT: managementui: song editor menu: apply edit all
+msgid "Apply Edit All"
+msgstr "Áp dụng Chỉnh sửa Tất cả"
+
+#. CONTEXT: configuration file: dance
+msgid "Argentine Tango"
+msgstr "Tango Argentina"
+
+#. CONTEXT: label: artist
+msgid "Artist"
+msgstr "Nghệ sĩ"
+
+#. CONTEXT: label: artist sort order
+msgid "Artist Sort Order"
+msgstr "Thứ tự sắp xếp nghệ sĩ"
+
+#. CONTEXT: starterui: sending support message: checkbox: option to send data files
+msgid "Attach Data Files"
+msgstr "Đính kèm tập tin dữ liệu"
+
+#. CONTEXT: starterui: sending support message: checkbox: option to send database
+msgid "Attach Database"
+msgstr "Đính kèm cơ sở dữ liệu"
+
+#. CONTEXT: configuration: which audio interface to use
+msgid "Audio"
+msgstr "Âm thanh"
+
+#. CONTEXT: external request: enter the audio file location
+msgid "Audio File"
+msgstr "Tập tin âm thanh"
+
+#. CONTEXT: select audio file: file selection dialog: audio file filter
+msgid "Audio Files"
+msgstr "Tập tin âm thanh"
+
+#. CONTEXT: configuration: display settings for: Audio Identification
+#. CONTEXT: managementui: name of audio identification notebook tab
+msgid "Audio ID"
+msgstr "ID âm thanh"
+
+#. CONTEXT: configuration: display settings for: Audio ID match listing
+msgid "Audio ID Match List"
+msgstr "Danh sách khớp ID âm thanh"
+
+#. CONTEXT: configuration: which audio sink (output) to use
+msgid "Audio Output"
+msgstr "Đầu ra âm thanh"
+
+#. CONTEXT: configuration: checkbox: is automatic organization enabled
+msgid "Auto Organise"
+msgstr "Tự động tổ chức"
+
+#. CONTEXT: playlist management: default playlist type
+#. CONTEXT: playlist management: type of playlist
+msgid "Automatic"
+msgstr "Tự động"
+
+#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
+msgid "BDJ Tags Only"
+msgstr "Chỉ thẻ BDJ"
+
+#. CONTEXT: installer: status message
+msgid "BDJ3 database version is too old."
+msgstr "Phiên bản cơ sở dữ liệu BDJ3 quá cũ."
+
+#. CONTEXT: configuration: Whether to display BPM as BPM or MPM
+#. CONTEXT: label: beats per minute
+#. CONTEXT: bpm counter: BPM
+msgid "BPM"
+msgstr "Nhịp tim"
+
+#. CONTEXT: bpm counter: title of window
+msgid "BPM Counter"
+msgstr "Bộ đếm BPM"
+
+#. CONTEXT: configuration file: genre
+msgid "Ballroom Dance"
+msgstr "Khiêu vũ khiêu vũ"
+
+#. CONTEXT: tooltip for desktop icon
+msgid "Ballroom Music Player"
+msgstr "Máy nghe nhạc khiêu vũ"
+
+#. CONTEXT: bpm counter: number of beats
+msgid "Beats"
+msgstr "Nhịp đập"
+
+#. CONTEXT: managementui: song editor menu: cancel edit all
+msgid "Cancel Edit All"
+msgstr "Hủy Sửa tất cả"
+
+#. CONTEXT: database update: status message: number of files that cannot be renamed
+msgid "Cannot Rename"
+msgstr "Không thể đổi tên"
+
+#. CONTEXT: configuration file: dance
+msgid "Cha Cha"
+msgstr "Cha Cha"
+
+#. CONTEXT: database update: check for new audio files
+msgid "Check For New"
+msgstr "Kiểm tra mới"
+
+#. CONTEXT: database update: check for new: help text
+msgid "Checks for new audio files."
+msgstr "Kiểm tra các tập tin âm thanh mới."
+
+#. CONTEXT: configuration file: genre
+msgid "Classical"
+msgstr "Cổ điển"
+
+#. CONTEXT: configuration: genre: title of the classical setting column
+msgid "Classical?"
+msgstr "Cổ điển?"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Clear & Play"
+msgstr "Xóa & Chơi"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: music queue: button: clear the queue
+msgid "Clear Queue"
+msgstr "Xóa hàng đợi"
+
+#. CONTEXT: managementui: menu selection: music manager: clear same-song mark
+msgid "Clear Same Song Mark"
+msgstr "Xóa Dấu Bài Hát Giống Nhau"
+
+#. CONTEXT: bpm counter: instructions, line 1
+msgid "Click the mouse in the blue box in time with the beat."
+msgstr "Nhấp chuột vào ô màu xanh theo nhịp điệu."
+
+#. CONTEXT: select folder dialog: close
+#. CONTEXT: select file dialog: close
+#. CONTEXT: export playlist: closes the dialog
+#. CONTEXT: select file: closes the dialog
+#. CONTEXT: song selection filter: filter dialog: closes the dialog
+#. CONTEXT: apply adjustment dialog: closes the dialog
+#. CONTEXT: copy tags dialog: closes the dialog
+#. CONTEXT: export/import bdj4 dialog: closes the dialog
+#. CONTEXT: external request dialog: closes the dialog
+#. CONTEXT: quick edit dialog: closes the dialog
+#. CONTEXT: bpm counter: close button
+#. CONTEXT: import from itunes: closes the dialog
+#. CONTEXT: create from playlist: closes the dialog
+#. CONTEXT: playerui: marquee font size dialog: action button
+#. CONTEXT: helperui: close the helper window
+#. CONTEXT: starterui: support dialog: closes the dialog
+#. CONTEXT: starterui: support message dialog: closes the dialog
+msgid "Close"
+msgstr "Đóng"
+
+#. CONTEXT: database update: check for new audio files
+msgid "Compact"
+msgstr "Nhỏ gọn"
+
+#. CONTEXT: database update: compact: help text
+msgid "Compact the database.  Use after audio files have been deleted."
+msgstr "Nén cơ sở dữ liệu. Sử dụng sau khi các tệp âm thanh đã bị xóa."
+
+#. CONTEXT: configuration file: status
+#. CONTEXT: copy audio tags: copy of audio tags completed
+#. CONTEXT: database update: status message
+msgid "Complete"
+msgstr "Hoàn thành"
+
+#. CONTEXT: configuration: The completion message displayed on the marquee when a playlist is finished
+msgid "Completion Message"
+msgstr "Tin nhắn hoàn thành"
+
+#. CONTEXT: label: composer
+msgid "Composer"
+msgstr "Nhà soạn nhạc"
+
+#. CONTEXT: label: composer sort order
+msgid "Composer Sort Order"
+msgstr "Trình tự sắp xếp của nhà soạn nhạc"
+
+#. CONTEXT: label: conductor
+msgid "Conductor"
+msgstr "Người chỉ huy"
+
+#. CONTEXT: starterui: button: starts the configuration user interface
+msgid "Configure"
+msgstr "Cấu hình"
+
+#. CONTEXT: configuration: which controller to use
+msgid "Controller"
+msgstr ""
+
+#. CONTEXT: installer: status message
+msgid "Conversion complete."
+msgstr "Chuyển đổi hoàn tất."
+
+#. CONTEXT: installer: checkbox: convert the BallroomDJ 3 installation
+#, c-format
+msgid "Convert %s"
+msgstr "Chuyển đổi %s"
+
+#. CONTEXT: copy tags dialog: title for the dialog
+#. CONTEXT: copy tags dialog: copy audio tags button
+#. CONTEXT: managementui: song editor menu: copy audio tags
+msgid "Copy Audio Tags"
+msgstr "Sao chép thẻ âm thanh"
+
+#. CONTEXT: manageui: failure status message
+#, c-format
+msgid "Copy already exists."
+msgstr "Bản sao đã tồn tại."
+
+#. CONTEXT: installer: status message
+msgid "Copy finished."
+msgstr "Đã sao chép xong."
+
+#. CONTEXT: managementui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#. CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#. CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#, c-format
+msgid "Copy of %s"
+msgstr "Bản sao của %s"
+
+#. CONTEXT: installer: status message
+msgid "Copying files."
+msgstr "Đang sao chép tập tin."
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+msgid "Copying template files."
+msgstr "Sao chép các tập tin mẫu."
+
+#. CONTEXT: playlist management: count column header
+msgid "Count"
+msgstr "Đếm"
+
+#. CONTEXT: create from playlist: creates the new songlist
+msgid "Create"
+msgstr "Tạo nên"
+
+#. CONTEXT: managementui: menu selection: song list: edit menu: create copy
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: create copy
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: create copy
+msgid "Create Copy"
+msgstr "Tạo bản sao"
+
+#. CONTEXT: starterui: selection to create a new profile
+msgid "Create Profile"
+msgstr "Tạo hồ sơ"
+
+#. CONTEXT: starterui: menu item: create shortcut for profile
+msgid "Create Shortcut for Profile"
+msgstr "Tạo phím tắt cho hồ sơ"
+
+#. CONTEXT: managementui: menu selection: song list: actions menu: create a song list from a playlist
+#. CONTEXT: create from playlist: title for the dialog
+msgid "Create from Playlist"
+msgstr "Tạo từ danh sách phát"
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+msgid "Creating folder structure."
+msgstr "Tạo cấu trúc thư mục."
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+msgid "Creating shortcut."
+msgstr "Tạo lối tắt."
+
+#. CONTEXT: audio identification: the data for the current song
+msgid "Current"
+msgstr "Hiện hành"
+
+#. CONTEXT: configuration: display settings for: Player User Interface
+msgid "Current Song"
+msgstr "Bài hát hiện tại"
+
+#. CONTEXT: label: dance
+msgid "Dance"
+msgstr "Nhảy"
+
+#. CONTEXT: label: dance level
+msgid "Dance Level"
+msgstr "Cấp độ khiêu vũ"
+
+#. CONTEXT: label: dance rating
+msgid "Dance Rating"
+msgstr "Xếp hạng khiêu vũ"
+
+#. CONTEXT: playlist management: notebook tab title: dances
+msgid "Dances"
+msgstr "Các điệu nhảy"
+
+#. CONTEXT: configuration: checkbox: the database will load the dance from the audio file genre tag
+msgid "Database Loads Dance From Genre"
+msgstr "Tải cơ sở dữ liệu Nhảy từ thể loại"
+
+#. CONTEXT: label: date
+msgid "Date"
+msgstr "Ngày"
+
+#. CONTEXT: label: date added to the database
+msgid "Date Added"
+msgstr "Ngày thêm"
+
+#. CONTEXT: configuration: debug options that can be turned on and off
+msgid "Debug"
+msgstr "Gỡ lỗi"
+
+#. CONTEXT: configuration: level: title of the default selection column
+#. CONTEXT: configuration: audio: The default audio sink (audio output)
+#. CONTEXT: user interface: default setting display
+msgid "Default"
+msgstr "Mặc định"
+
+#. CONTEXT: configuration: the volume used when starting the player
+msgid "Default Volume"
+msgstr "Âm lượng mặc định"
+
+#. CONTEXT: configuration: table edit: button: delete selection
+#. CONTEXT: managementui: menu selection: song list: edit menu: delete song list
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: delete sequence
+msgid "Delete"
+msgstr "Xóa bỏ"
+
+#. CONTEXT: starterui: menu item: delete profile
+msgid "Delete Profile"
+msgstr "Xóa Hồ Sơ"
+
+#. CONTEXT: configuration: dialog display settings
+msgid "Dialogs"
+msgstr "Các hộp thoại"
+
+#. CONTEXT: label: disc number
+msgid "Disc"
+msgstr "Đĩa"
+
+#. CONTEXT: configuration: display settings: which set of display settings to update
+#. CONTEXT: configuration: queue: whether to display the queue
+msgid "Display"
+msgstr "Trưng bày"
+
+#. CONTEXT: configuration: change which fields are displayed in different contexts
+msgid "Display Settings"
+msgstr "Cài đặt hiển thị"
+
+#. CONTEXT: configuration: write audio file tags: do not write any tags to the audio file
+msgid "Don't Write"
+msgstr "Đừng viết"
+
+#. CONTEXT: starterui: basic support dialog: support option (download latest version)
+msgid "Download Latest Version"
+msgstr "Tải xuống phiên bản mới nhất"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Download of %s failed."
+msgstr "Tải xuống %s không thành công."
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Downloading %s."
+msgstr "Đang tải xuống %s."
+
+#. CONTEXT: label: duration of the song
+msgid "Duration"
+msgstr "Khoảng thời gian"
+
+#. CONTEXT: starterui: sending support message: user's e-mail address
+msgid "E-Mail Address"
+msgstr "Địa chỉ E-Mail"
+
+#. CONTEXT: configuration file: dance level
+msgid "Easy"
+msgstr "Dễ"
+
+#. CONTEXT: music queue: edit the selected song
+#. CONTEXT: song-selection: edit the selected song
+#. CONTEXT: managementui: menu selection: song list: edit menu
+#. CONTEXT: playlist management: menu selection: playlist: edit menu
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu
+msgid "Edit"
+msgstr "Biên tập"
+
+#. CONTEXT: song editor: display indicator that the song editor is in edit all mode
+#. CONTEXT: managementui: song editor menu: edit all
+msgid "Edit All"
+msgstr "Chỉnh sửa tất cả"
+
+#. CONTEXT: configuration: edit the dance table
+msgid "Edit Dances"
+msgstr "Chỉnh sửa điệu nhảy"
+
+#. CONTEXT: configuration: edit genres table
+msgid "Edit Genres"
+msgstr "Chỉnh sửa thể loại"
+
+#. CONTEXT: configuration: edit the dance levels table
+msgid "Edit Levels"
+msgstr "Chỉnh sửa cấp độ"
+
+#. CONTEXT: configuration: edit the dance ratings table
+msgid "Edit Ratings"
+msgstr "Chỉnh sửa xếp hạng"
+
+#. CONTEXT: managementui: notebook tab title: edit sequences
+msgid "Edit Sequences"
+msgstr "Chỉnh sửa chuỗi"
+
+#. CONTEXT: managementui: notebook tab title: edit song lists
+msgid "Edit Song Lists"
+msgstr "Chỉnh sửa danh sách bài hát"
+
+#. CONTEXT: configuration: edit status table
+msgid "Edit Status"
+msgstr "Chỉnh sửa trạng thái"
+
+#. CONTEXT: configuration: remote control: checkbox: enable/disable
+msgid "Enable Remote Control"
+msgstr "Bật điều khiển từ xa"
+
+#. CONTEXT: installer: where BDJ4 gets installed
+msgid "Enter the destination folder where BDJ4 will be installed."
+msgstr "Nhập thư mục đích mà BDJ4 sẽ được cài đặt."
+
+#. CONTEXT: installer: asking where BallroomDJ 3 is installed
+#, c-format
+msgid "Enter the folder where %s is installed."
+msgstr "Vào thư mục nơi %s được cài đặt."
+
+#. CONTEXT: alternate installation: installation instructions
+msgid "Enter the name of the new installation."
+msgstr "Nhập tên cài đặt mới."
+
+#. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
+#. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
+#. CONTEXT: installer: status message
+msgid "Error: Folder already exists."
+msgstr "Lỗi: Thư mục đã tồn tại."
+
+#. CONTEXT: alternate installation: failure message
+#. CONTEXT: installer: failure message
+msgid "Error: Unable to set working folder."
+msgstr "Lỗi: Không thể thiết lập thư mục làm việc."
+
+#. CONTEXT: configuration: examples displayed for the audio file organization path
+msgid "Examples"
+msgstr "Ví dụ"
+
+#. CONTEXT: alternate installation: exits the alternate installer
+#. CONTEXT: installer: exits the installer
+#. CONTEXT: starterui: button: exits BDJ4 (exits everything)
+msgid "Exit"
+msgstr "Ra"
+
+#. CONTEXT: update database: exit BDJ4 and restart
+#, c-format
+msgid "Exit %s and restart."
+msgstr "Thoát %s và khởi động lại."
+
+#. CONTEXT: export playlist dialog: export button
+#. CONTEXT: export/import bdj4 dialog: export button
+#. CONTEXT: managementui: menu selection: export actions for song list
+#. CONTEXT: playerui: menu selection: export
+msgid "Export"
+msgstr "Xuất khẩu"
+
+#. CONTEXT: export playlist: title of dialog
+#. CONTEXT: managementui: export playlist: title of save dialog
+#. CONTEXT: managementui: menu selection: song list: export
+msgid "Export Playlist"
+msgstr "Xuất danh sách phát"
+
+#. CONTEXT: export playlist: type of export
+msgid "Export Type"
+msgstr "Loại xuất khẩu"
+
+#. CONTEXT: player ui: menu selection: export: export as MP3
+#. CONTEXT: export as mp3: title of save dialog
+#, c-format
+msgid "Export as %s"
+msgstr "Xuất dưới dạng %s"
+
+#. CONTEXT: export for ballroomdj: title of dialog
+#. CONTEXT: managementui: menu selection: song list: export: export for ballroomdj
+#, c-format
+msgid "Export for %s"
+msgstr "Xuất cho %s"
+
+#. CONTEXT: export playlist: export folder location
+#. CONTEXT: export/import bdj4: export folder location
+msgid "Export to"
+msgstr "Xuất khẩu sang"
+
+#. CONTEXT: external request dialog: title for the dialog
+#. CONTEXT: playerui: menu selection: action: external request
+msgid "External Request"
+msgstr "Yêu cầu bên ngoài"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: fade out the song and stop playing it
+msgid "Fade"
+msgstr "Phai"
+
+#. CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song
+msgid "Fade In Time"
+msgstr "Mờ dần theo thời gian"
+
+#. CONTEXT: configuration: queue: the amount of time to do a volume fade-out when playing a song
+msgid "Fade Out Time"
+msgstr "Thời gian mờ dần"
+
+#. CONTEXT: label: favorite marker
+msgid "Favourite"
+msgstr "Yêu thích"
+
+#. CONTEXT: configuration: itunes: which fields should be imported from itunes
+msgid "Fields to Import"
+msgstr "Các trường để nhập"
+
+#. CONTEXT: audio identification: label for displaying the audio file path
+#. CONTEXT: song editor: label for displaying the audio file path
+msgid "File"
+msgstr "Tài liệu"
+
+#. CONTEXT: configuration: filter display: song selection filters
+#. CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog
+#. CONTEXT: song selection filter: title for the filter dialog
+msgid "Filter Songs"
+msgstr "Lọc bài hát"
+
+#. CONTEXT: audio identification: first song
+#. CONTEXT: song editor : first song
+msgid "First"
+msgstr "Đầu tiên"
+
+#. CONTEXT: select folder dialog: filter on folders.
+msgid "Folder"
+msgstr "Thư mục"
+
+#. CONTEXT: configuration: the font to use for the user interface
+msgid "Font"
+msgstr "Phông chữ"
+
+#. CONTEXT: playerui: menu selection: marquee: change the marquee font size
+#. CONTEXT: playerui: marquee font size dialog: the font size selector
+msgid "Font Size"
+msgstr "Kích thước phông chữ"
+
+#. CONTEXT: configuration file: dance
+msgid "Foxtrot"
+msgstr "điệu nhảy Foxtrot"
+
+#. CONTEXT: configuration: queue: the amount of time to wait inbetween songs
+#. CONTEXT: playlist management: Gap between songs
+msgid "Gap Between Songs"
+msgstr "Khoảng cách giữa các bài hát"
+
+#. CONTEXT: configuration: general options that apply to everything
+msgid "General"
+msgstr "Tổng quan"
+
+#. CONTEXT: label: genre
+msgid "Genre"
+msgstr "Thể loại"
+
+#. CONTEXT: configuration file: rating
+msgid "Good"
+msgstr "Tốt"
+
+#. CONTEXT: configuration file: rating
+msgid "Great"
+msgstr "Tuyệt"
+
+#. CONTEXT: configuration: remote control: the HTML template to use
+msgid "HTML Template"
+msgstr "Mẫu HTML"
+
+#. CONTEXT: HTTP response code (error)
+msgid "HTTP Code"
+msgstr "Mã HTTP"
+
+#. CONTEXT: playlist management: hide unselected dances
+msgid "Hide Unselected"
+msgstr "Ẩn Chưa chọn"
+
+#. CONTEXT: configuration: dances: high BPM (or MPM) setting
+#. CONTEXT: playlist management: high bpm/mpm column header
+#, c-format
+msgid "High %s"
+msgstr "Cao %s"
+
+#. CONTEXT: playlist management: High Dance Level
+msgid "High Dance Level"
+msgstr "Trình độ khiêu vũ cao"
+
+#. CONTEXT: configuration: display settings for: history
+#. CONTEXT: playlist: the name of the history song list
+#. CONTEXT: playerui: name of the history tab : displayed played songs
+#. CONTEXT: playerui: name of the saved history playlist
+msgid "History"
+msgstr "Lịch sử"
+
+#. CONTEXT: installer: instructions
+msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
+msgstr "Nếu chưa cài đặt BallroomDJ 3, hãy để mục này trống."
+
+#. CONTEXT: export/import bdj4 dialog: import button
+#. CONTEXT: import from itunes: import the selected itunes playlist
+#. CONTEXT: managementui: menu selection: import actions for song list
+msgid "Import"
+msgstr "Nhập khẩu"
+
+#. CONTEXT: managementui: menu selection: song list: import
+#. CONTEXT: managementui: song list import: title of dialog
+msgid "Import Playlist"
+msgstr "Nhập danh sách phát"
+
+#. CONTEXT: export/import bdj4: import folder location
+msgid "Import from"
+msgstr "Nhập khẩu từ"
+
+#. CONTEXT: import from ballroomdj: title of dialog
+#. CONTEXT: import from itunes: title for the dialog
+#. CONTEXT: managementui: menu selection: song list: import: import from ballroomdj
+#. CONTEXT: managementui: menu selection: song list: import: import from itunes
+#, c-format
+msgid "Import from %s"
+msgstr "Nhập từ %s"
+
+#. CONTEXT: alternate installation: status message
+msgid "Initial Setup."
+msgstr "Thiết lập ban đầu."
+
+#. CONTEXT: alternate installation: install BDJ4 in the alternate location
+#. CONTEXT: installer: start the installation process
+msgid "Install"
+msgstr "Cài đặt"
+
+#. CONTEXT: alternate installation: dialog title for selecting location
+#. CONTEXT: installer: dialog title for selecting install location
+msgid "Install Location"
+msgstr "Vị trí cài đặt"
+
+#. CONTEXT: installer: status message
+msgid "Installation aborted."
+msgstr "Quá trình cài đặt bị hủy bỏ."
+
+#. CONTEXT: installer: status message
+msgid "Installation complete."
+msgstr "Quá trình cài đặt hoàn tất."
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Installing %s."
+msgstr "Đang cài đặt %s."
+
+#. CONTEXT: configuration: mobile marquee type: internet
+msgid "Internet"
+msgstr "internet"
+
+#. CONTEXT: Send support message: Error message for invalid e-mail.
+msgid "Invalid E-Mail Address."
+msgstr "Địa chỉ E-mail không hợp lệ."
+
+#. CONTEXT: alternate installation: the selected folder is not valid
+#. CONTEXT: installer: the selected folder is not valid
+#. CONTEXT: export/import bdj4: invalid target folder
+msgid "Invalid Folder"
+msgstr "Thư mục không hợp lệ"
+
+#. CONTEXT: alternate installer: invalid name status message
+msgid "Invalid Name"
+msgstr "Tên không hợp lệ"
+
+#. CONTEXT: copy audio tags: one of the files does not exist
+msgid "Invalid Selections"
+msgstr "Lựa chọn không hợp lệ"
+
+#. CONTEXT: Saving Song List: Error message for invalid song list name.
+#. CONTEXT: Saving Playlist: Error message for invalid playlist name.
+#. CONTEXT: Saving Sequence: Error message for invalid sequence name.
+msgid "Invalid name. Using old name."
+msgstr "Tên không hợp lệ. Sử dụng tên cũ."
+
+#. CONTEXT: configuration file: genre
+msgid "Jazz"
+msgstr "nhạc Jazz"
+
+#. CONTEXT: configuration file: dance
+msgid "Jive"
+msgstr "Nhảy Jive"
+
+#. CONTEXT: label: keyword (used to filter out songs)
+msgid "Keyword"
+msgstr "Từ khóa"
+
+#. CONTEXT: label: when the database entry was last updated
+msgid "Last Updated"
+msgstr "Cập nhật lần cuối"
+
+#. CONTEXT: starterui: basic support dialog, latest version display
+msgid "Latest Version"
+msgstr "Phiên bản mới nhất"
+
+#. CONTEXT: label: dance level (short name for listing)
+msgid "Level"
+msgstr "Mức độ"
+
+#. CONTEXT: configuration: the font to use for the queues and song lists
+msgid "Listing Font"
+msgstr "Phông chữ liệt kê"
+
+#. CONTEXT: managementui: menu selection: song list: edit menu: load
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: load
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: load
+msgid "Load"
+msgstr "Trọng tải"
+
+#. CONTEXT: database update: status message: files found in the database
+msgid "Loaded from Database"
+msgstr "Đã tải từ Cơ sở dữ liệu"
+
+#. CONTEXT: configuration: mobile marquee type: local
+msgid "Local"
+msgstr "Địa phương"
+
+#. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
+msgid "Locale"
+msgstr "Địa phương"
+
+#. CONTEXT: installer: status message
+msgid "Located 'tclsh'."
+msgstr "Nằm ở 'tclsh'."
+
+#. CONTEXT: configuration: dances: low BPM (or MPM) setting
+#. CONTEXT: playlist management: low bpm/mpm column header
+#, c-format
+msgid "Low %s"
+msgstr "Thấp %s"
+
+#. CONTEXT: playlist management: Low Dance Level
+msgid "Low Dance Level"
+msgstr "Mức độ khiêu vũ thấp"
+
+#. CONTEXT: label: measures per minute
+#. CONTEXT: bpm counter: MPM
+msgid "MPM"
+msgstr "MPM"
+
+#. CONTEXT: starterui: button: starts the management user interface
+msgid "Manage"
+msgstr "Quản lý"
+
+#. CONTEXT: managementui: menu selection: music manager: set same-song mark
+msgid "Mark as Same Song"
+msgstr "Đánh dấu là cùng một bài hát"
+
+#. CONTEXT: configuration: display settings for: Marquee (song display screen)
+#. CONTEXT: configuration: options associated with the marquee (suggested: song display)
+#. CONTEXT: marquee: marquee window title (suggested: song display)
+#. CONTEXT: playerui: menu selection: marquee related options (suggested: song display)
+msgid "Marquee"
+msgstr "Lều bạt"
+
+#. CONTEXT: label: marquee display (alternate display for the marquee, replaces dance)
+msgid "Marquee Display"
+msgstr "Màn hình Marquee"
+
+#. CONTEXT: configuration: The font to use for the marquee display
+msgid "Marquee Font"
+msgstr "Phông chữ Marquee"
+
+#. CONTEXT: playerui: marquee font size dialog: window title
+msgid "Marquee Font Size"
+msgstr "Kích thước phông chữ Marquee"
+
+#. CONTEXT: configuration: The theme to use for the marquee display
+msgid "Marquee Theme"
+msgstr "Chủ đề Marquee"
+
+#. CONTEXT: playlist management: max play time column header (keep short)
+msgid ""
+"Maximum\n"
+"Play Time"
+msgstr "Tối đa\n"
+"Thời gian chơi"
+
+#. CONTEXT: configuration: queue: the maximum amount of time to play a song
+#. CONTEXT: playlist management: maximum play time
+msgid "Maximum Play Time"
+msgstr "Thời gian chơi tối đa"
+
+#. CONTEXT: starterui: sending support message: message text
+msgid "Message"
+msgstr "Tin nhắn"
+
+#. CONTEXT: configuration: show-marquee: minimize
+msgid "Minimised"
+msgstr "Thu nhỏ"
+
+#. CONTEXT: managementui: menu selection: song list: actions menu: rearrange the songs and create a new mix
+msgid "Mix"
+msgstr "Trộn"
+
+#. CONTEXT: configuration: qr code: title display for mobile marquee
+#. CONTEXT: configuration: options associated with the mobile marquee
+msgid "Mobile Marquee"
+msgstr "Lều di động"
+
+#. CONTEXT: configuration: qr code: title display for mobile remote control
+#. CONTEXT: configuration: options associated with mobile remote control
+msgid "Mobile Remote Control"
+msgstr "Điều khiển từ xa di động"
+
+#. CONTEXT: configuration: table edit: button: move selection down
+#. CONTEXT: music queue: button: move the selected song down in the queue
+#. CONTEXT: side-by-side list: button: move the selected field down
+msgid "Move Down"
+msgstr "Di chuyển xuống"
+
+#. CONTEXT: configuration: table edit: button: move selection up
+#. CONTEXT: music queue: button: move the selected song up in the queue
+#. CONTEXT: side-by-side list: button: move the selected field up
+msgid "Move Up"
+msgstr "Di chuyển lên"
+
+#. CONTEXT: music queue: button: move the selected song to the top of the queue
+msgid "Move to Top"
+msgstr "Di chuyển lên đầu trang"
+
+#. CONTEXT: configuration: the music folder where the user stores their music
+#. CONTEXT: update database: music folder to process
+msgid "Music Folder"
+msgstr "Thư mục nhạc"
+
+#. CONTEXT: configuration: display settings for: music manager
+#. CONTEXT: managementui: name of music manager notebook tab
+#. CONTEXT: managementui: name of song selection notebook tab
+msgid "Music Manager"
+msgstr "Quản lý âm nhạc"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+#. CONTEXT: configuration: display settings for: music queue
+msgid "Music Queue"
+msgstr "Hàng đợi âm nhạc"
+
+#. CONTEXT: configuration: music queue configuration
+msgid "Music Queues"
+msgstr "Hàng đợi âm nhạc"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Mute"
+msgstr "Tắt tiếng"
+
+#. CONTEXT: alternate installation: name (for shortcut)
+msgid "Name"
+msgstr "Tên"
+
+#. CONTEXT: configuration file: status
+#. CONTEXT: status: default status (new) when status is not set
+msgid "New"
+msgstr "Mới"
+
+#. CONTEXT: alternate installation: message indicating the action that will be taken
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "New %s installation."
+msgstr "Cài đặt %s mới."
+
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist
+msgid "New Automatic Playlist"
+msgstr "Danh sách phát tự động mới"
+
+#. CONTEXT: configuration: dance name that is set when adding a new dance
+msgid "New Dance"
+msgstr "Vũ điệu mới"
+
+#. CONTEXT: database update: status message: new files saved to the database
+msgid "New Files"
+msgstr "Tập tin mới"
+
+#. CONTEXT: configuration: genre name that is set when adding a new genre
+msgid "New Genre"
+msgstr "Thể loại mới"
+
+#. CONTEXT: configuration: level name that is set when adding a new level
+msgid "New Level"
+msgstr "Cấp độ mới"
+
+#. CONTEXT: playlist management: default name for a new playlist
+msgid "New Playlist"
+msgstr "Danh sách phát mới"
+
+#. CONTEXT: starterui: name of the new profile (New profile 9)
+#, c-format
+msgid "New Profile %d"
+msgstr "Hồ sơ mới %d"
+
+#. CONTEXT: configuration: rating name that is set when adding a new rating
+msgid "New Rating"
+msgstr "Đánh giá mới"
+
+#. CONTEXT: sequence editor: default name for a new sequence
+msgid "New Sequence"
+msgstr "Chuỗi mới"
+
+#. CONTEXT: managementui: song list: default name for a new song list
+msgid "New Song List"
+msgstr "Danh sách bài hát mới"
+
+#. CONTEXT: export/import bdj4: new song list name
+msgid "New Song List Name"
+msgstr "Tên danh sách bài hát mới"
+
+#. CONTEXT: configuration: status name that is set when adding a new status
+msgid "New Status"
+msgstr "Trạng thái mới"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: audio identification: next song
+#. CONTEXT: song editor : next song
+#. CONTEXT: helperui: proceed to the next step
+msgid "Next"
+msgstr "Kế tiếp"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: tooltip: start playing the next song (immediate)
+msgid "Next Song"
+msgstr "Bài hát tiếp theo"
+
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+msgid "No folder specified."
+msgstr "Không có thư mục nào được chỉ định."
+
+#. CONTEXT: starterui: no internet connection
+msgid "No internet connection"
+msgstr "Không có kết nối internet"
+
+#. CONTEXT: configuration file: genre
+#. CONTEXT: configuration: controller: no controller
+msgid "None"
+msgstr "Không có"
+
+#. CONTEXT: configuration file: dance level
+msgid "Normal"
+msgstr "Bình thường"
+
+#. CONTEXT: marquee: displayed when nothing is set to be played
+#. CONTEXT: mobile marquee: playback is not active
+msgid "Not Playing"
+msgstr "Không chơi"
+
+#. CONTEXT: installer: the location entered is not a valid BDJ3 location.
+#, c-format
+msgid "Not a valid %s folder."
+msgstr "Không phải là thư mục %s hợp lệ."
+
+#. CONTEXT: label: notes
+msgid "Notes"
+msgstr "Ghi chú"
+
+#. CONTEXT: configuration: show-marquee: off
+#. CONTEXT: configuration: mobile marquee type: off
+msgid "Off"
+msgstr "Tắt"
+
+#. CONTEXT: managementui: menu selection: song list: options menu
+#. CONTEXT: playerui: menu selection: options for the player
+msgid "Options"
+msgstr "Tùy chọn"
+
+#. CONTEXT: configuration: dance levels: instructions
+msgid "Order from easiest to most advanced."
+msgstr "Sắp xếp từ dễ nhất đến nâng cao nhất."
+
+#. CONTEXT: configuration: dance ratings: information on how to order the ratings
+msgid "Order from the lowest rating to the highest rating."
+msgstr "Sắp xếp theo thứ tự từ xếp hạng thấp nhất đến xếp hạng cao nhất."
+
+#. CONTEXT: configuration: options associated with how audio files are organized
+msgid "Organisation"
+msgstr "Tổ chức"
+
+#. CONTEXT: configuration: the audio file organization path
+msgid "Organisation Path"
+msgstr "Đường dẫn tổ chức"
+
+#. CONTEXT: database update: status message: other files that cannot be processed
+msgid "Other Files"
+msgstr "Các tập tin khác"
+
+#. CONTEXT: configuration file: dance
+msgid "Paso Doble"
+msgstr "Bước đôi"
+
+#. CONTEXT: configuration: mobile marquee: internet: password
+#. CONTEXT: configuration: remote control: the password for sign-on to remote control
+msgid "Password"
+msgstr "Mật khẩu"
+
+#. CONTEXT: configuration: queue: pause each song
+msgid "Pause Each Song"
+msgstr "Tạm dừng mỗi bài hát"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: pause at the end of the song (toggle)
+msgid "Pause at End"
+msgstr "Tạm dừng ở cuối"
+
+#. CONTEXT: music queue: tooltip: play the selected song
+#. CONTEXT: song-selection: tooltip: play the selected songs
+#. CONTEXT: song editor : play song
+msgid "Play"
+msgstr "Chơi"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: tooltip: play or pause the song
+msgid "Play / Pause"
+msgstr "Phát / Tạm dừng"
+
+#. CONTEXT: configuration: queue: whether to play announcements
+#. CONTEXT: playlist management: Play Announcements
+msgid "Play Announcements"
+msgstr "Phát thông báo"
+
+#. CONTEXT: configuration: queue: play when queued (verb)
+msgid "Play When Queued"
+msgstr "Chơi khi xếp hàng"
+
+#. CONTEXT: configuration: status: title of the "playable" column
+msgid "Play?"
+msgstr "Chơi?"
+
+#. CONTEXT: configuration: filter display: checkbox: status is playable
+#. CONTEXT: song selection filter: a filter: the song status is marked as playable
+msgid "Playable Status"
+msgstr "Trạng thái có thể chơi"
+
+#. CONTEXT: configuration: options associated with the player
+#. CONTEXT: configuration: which player interface to use
+#. CONTEXT: starterui: button: starts the player user interface
+msgid "Player"
+msgstr "Người chơi"
+
+#. CONTEXT: select file: file type for the file selection dialog (playlist)
+#. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
+#. CONTEXT: create from playlist: select the playlist to use
+#. CONTEXT: playlist management: label for playlist name
+msgid "Playlist"
+msgstr "Danh sách phát"
+
+#. CONTEXT: managementui: notebook tab title: playlist management
+msgid "Playlist Management"
+msgstr "Quản lý danh sách phát"
+
+#. CONTEXT: playlist management: label for playlist name
+msgid "Playlist Type"
+msgstr "Loại danh sách phát"
+
+#. CONTEXT: managementui: export playlist: name of file export type
+#. CONTEXT: managementui: song list import: name of file import type
+msgid "Playlists"
+msgstr "Danh sách phát"
+
+#. CONTEXT: installer: status message
+#. CONTEXT: apply adjustments: please wait... status message
+#. CONTEXT: please wait... status message
+#. CONTEXT: management ui: please wait... status message
+#. CONTEXT: export as mp3: please wait... status message
+#. CONTEXT: starter ui: please wait... status message
+msgid "Please wait…"
+msgstr "Vui lòng đợi…"
+
+#. CONTEXT: please wait... (count/total) status message
+#, c-format
+msgid "Please wait… (%1$d/%2$d)"
+msgstr "Vui lòng đợi… (%1$d/%2$d)"
+
+#. CONTEXT: configuration file: rating
+msgid "Poor"
+msgstr "Nghèo"
+
+#. CONTEXT: configuration: the port to use for the mobile marquee
+#. CONTEXT: configuration: remote control: the port to use for remote control
+msgid "Port"
+msgstr "Cảng"
+
+#. CONTEXT: playerui: the current position of the song during song playback
+msgid "Position"
+msgstr "Chức vụ"
+
+#. CONTEXT: label: lock audio file location
+msgid "Prevent Rename"
+msgstr "Ngăn chặn đổi tên"
+
+#. CONTEXT: audio identification: previous song
+#. CONTEXT: song editor : previous song
+msgid "Previous"
+msgstr "Trước"
+
+#. CONTEXT: alternate installation: status message
+msgid "Process aborted."
+msgstr "Quá trình đã bị hủy bỏ."
+
+#. CONTEXT: starterui: profile to be used when starting BDJ4
+msgid "Profile"
+msgstr "Hồ sơ"
+
+#. CONTEXT: configuration: the profile accent color (identifies profile)
+msgid "Profile Colour"
+msgstr "Màu sắc hồ sơ"
+
+#. CONTEXT: configuration: the name of this profile
+msgid "Profile Name"
+msgstr "Tên hồ sơ"
+
+#. CONTEXT: starterui: profile is already in use
+msgid "Profile in use"
+msgstr "Hồ sơ đang sử dụng"
+
+#. CONTEXT: starter: status message
+msgid "Profile may not be deleted."
+msgstr "Hồ sơ không thể bị xóa."
+
+#. CONTEXT: configuration: mobile marquee: the link to display the QR code for the mobile marquee
+#. CONTEXT: configuration: remote control: the link to display the QR code for remote control
+msgid "QR Code"
+msgstr "Mã QR"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
+#. CONTEXT: (verb) song-selection: queue a song to be played
+#. CONTEXT: (verb) external request dialog: queue the selected file
+msgid "Queue"
+msgstr "Hàng đợi"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button)
+msgid "Queue 5"
+msgstr "Hàng đợi 5"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue B"
+msgstr "Hàng đợi B"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue C"
+msgstr "Hàng đợi C"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue D"
+msgstr "Hàng đợi D"
+
+#. CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue
+msgid "Queue Dance"
+msgstr "Nhảy theo hàng"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue E"
+msgstr "Hàng đợi E"
+
+#. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee
+#. CONTEXT: (noun) configuration: the number of items loaded into the music queue
+msgid "Queue Length"
+msgstr "Chiều dài hàng đợi"
+
+#. CONTEXT: (noun) configuration: queue: the name of the music queue
+msgid "Queue Name"
+msgstr "Tên hàng đợi"
+
+#. CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue'
+msgid "Queue Playlist"
+msgstr "Danh sách phát hàng đợi"
+
+#. CONTEXT: The name of the 'queuedance' playlist file
+#. CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button
+#. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
+#. CONTEXT: player: the name of the special playlist for queueing a dance
+msgid "QueueDance"
+msgstr "Hàng đợi khiêu vũ"
+
+#. CONTEXT: (noun) configuration: queue: select which queue to configure
+msgid "Queue_noun"
+msgstr "Hàng đợi"
+
+#. CONTEXT: configuration: filter display: quick edit filters
+#. CONTEXT: quick edit: title of dialog
+msgid "Quick Edit"
+msgstr "Chỉnh sửa nhanh"
+
+#. CONTEXT: playerui: menu selection: action: quick edit current song
+msgid "Quick Edit: Current"
+msgstr "Sửa nhanh: Hiện tại"
+
+#. CONTEXT: playerui: menu selection: action: quick edit selected song
+msgid "Quick Edit: Selected"
+msgstr "Chỉnh sửa nhanh: Đã chọn"
+
+#. CONTEXT: configuration file: dance
+msgid "Quickstep"
+msgstr "Bước nhanh"
+
+#. CONTEXT: configuration: itunes: label for itunes rating conversion
+#. CONTEXT: label: dance rating (short name for listing)
+msgid "Rating"
+msgstr "Xếp hạng"
+
+#. CONTEXT: alternate installation: checkbox: re-install
+#. CONTEXT: installer: checkbox: re-install BDJ4
+msgid "Re-Install"
+msgstr "Cài đặt lại"
+
+#. CONTEXT: alternate installation: message indicating the action that will be taken
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "Re-install %s.  Overwrites existing configuration."
+msgstr "Cài đặt lại %s. Ghi đè lên cấu hình hiện có."
+
+#. CONTEXT: database update: rebuilds the database
+msgid "Rebuild Database"
+msgstr "Xây dựng lại cơ sở dữ liệu"
+
+#. CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen
+msgid "Recover Marquee"
+msgstr "Phục hồi Marquee"
+
+#. CONTEXT: player-ui: error message
+msgid "Recovered from crash."
+msgstr "Phục hồi sau sự cố."
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Registering %s."
+msgstr "Đang đăng ký %s."
+
+#. CONTEXT: playerui: menu selection: action: reload
+msgid "Reload"
+msgstr "Tải lại"
+
+#. CONTEXT: music queue: button: remove the song from the queue
+#. CONTEXT: side-by-side list: button: remove the selected field
+msgid "Remove"
+msgstr "Di dời"
+
+#. CONTEXT: managementui: menu selection: music manager: remove song
+msgid "Remove Song"
+msgstr "Xóa bài hát"
+
+#. CONTEXT: database update: status message: number of files renamed
+msgid "Renamed"
+msgstr "Đã đổi tên"
+
+#. CONTEXT: database update: reorganize : help text
+msgid "Renames the audio files based on the organization settings."
+msgstr "Đổi tên các tệp âm thanh dựa trên cài đặt tổ chức."
+
+#. CONTEXT: database update: reorganize : renames audio files based on organization settings
+msgid "Reorganise"
+msgstr "Tổ chức lại"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Repeat"
+msgstr "Lặp lại"
+
+#. CONTEXT: database update: rebuild: help text
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
+msgstr "Thay thế toàn bộ cơ sở dữ liệu BallroomDJ. Mọi thay đổi đối với cơ sở dữ liệu sẽ bị mất."
+
+#. CONTEXT: configuration: display settings for: requests
+#. CONTEXT: playerui: name of request tab : lists the songs in the database
+msgid "Request"
+msgstr "Lời yêu cầu"
+
+#. CONTEXT: song selection filter: filter dialog: resets the selections
+#. CONTEXT: bpm counter: reset button
+msgid "Reset"
+msgstr "Cài lại"
+
+#. CONTEXT: apply adjustment dialog: restore original file
+#. CONTEXT: managementui: song editor menu: restore original
+msgid "Restore Original"
+msgstr "Khôi phục bản gốc"
+
+#. CONTEXT: playerui: button: tooltip: return to the beginning of the song
+msgid "Return to beginning of song"
+msgstr "Trở lại đầu bài hát"
+
+#. CONTEXT: configuration file: genre
+msgid "Rock"
+msgstr "Đá"
+
+#. CONTEXT: configuration file: dance
+msgid "Rumba"
+msgstr "Điệu Rumba"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Running conversion script: %s."
+msgstr "Đang chạy tập lệnh chuyển đổi: %s."
+
+#. CONTEXT: configuration file: dance
+msgid "Salsa"
+msgstr "Điệu Salsa"
+
+#. CONTEXT: configuration file: dance
+msgid "Samba"
+msgstr "Điệu Samba"
+
+#. CONTEXT: audio identification: save data
+#. CONTEXT: song editor : save data
+#. CONTEXT: quick edit dialog: save button
+#. CONTEXT: bpm counter: save button
+msgid "Save"
+msgstr "Cứu"
+
+#. CONTEXT: alternate installer: status message
+#. CONTEXT: installer: status message
+msgid "Saving install location."
+msgstr "Đang lưu vị trí cài đặt."
+
+#. CONTEXT: configuration: scaling factor for the user interface
+msgid "Scale"
+msgstr "Tỉ lệ"
+
+#. CONTEXT: audio identification: the score or rating of each match
+msgid "Score"
+msgstr "Điểm"
+
+#. CONTEXT: song selection filter: a filter: filter the song selection with a search for text
+msgid "Search"
+msgstr "Tìm kiếm"
+
+#. CONTEXT: bpm counter: number of seconds
+msgid "Seconds"
+msgstr "Giây"
+
+#. CONTEXT: song-selection: select a song to be added to the song list
+#. CONTEXT: select folder dialog: select folder
+#. CONTEXT: select file dialog: select file
+#. CONTEXT: side-by-side list: button: add the selected field
+#. CONTEXT: select file: selects the file
+#. CONTEXT: managementui: config: button: add the selected songs to the song list
+msgid "Select"
+msgstr "Lựa chọn"
+
+#. CONTEXT: select file: title of window: select <file-type>
+#, c-format
+msgid "Select %s"
+msgstr "Chọn %s"
+
+#. CONTEXT: installer: dialog title for selecting BDJ3 location
+#, c-format
+msgid "Select %s Location"
+msgstr "Chọn %s Vị trí"
+
+#. CONTEXT: configuration: itunes media folder selection dialog: window title
+#, c-format
+msgid "Select %s Media Location"
+msgstr "Chọn %s Vị trí phương tiện"
+
+#. CONTEXT: configuration: itunes xml file selection dialog: window title
+#, c-format
+msgid "Select %s XML File"
+msgstr "Chọn %s Tệp XML"
+
+#. CONTEXT: select audio file: dialog title for selecting audio files
+#, c-format
+msgid "Select Audio File"
+msgstr "Chọn tập tin âm thanh"
+
+#. CONTEXT: external request: dance drop-down
+msgid "Select Dance"
+msgstr "Chọn Nhảy"
+
+#. CONTEXT: configuration: file selection dialog: window title
+msgid "Select File"
+msgstr "Chọn tập tin"
+
+#. CONTEXT: export/import bdj4 folder selection dialog: window title
+msgid "Select Folder"
+msgstr "Chọn thư mục"
+
+#. CONTEXT: configuration: folder selection dialog: window title
+#. CONTEXT: update database: dialog title for selecting database music folder
+#, c-format
+msgid "Select Music Folder Location"
+msgstr "Chọn vị trí thư mục nhạc"
+
+#. CONTEXT: audio identification: the data for the selected matched song
+msgid "Selected"
+msgstr "Đã chọn"
+
+#. CONTEXT: starterui: basic support dialog: button: support option
+#. CONTEXT: starterui: support message dialog: sends the support message
+msgid "Send Support Message"
+msgstr "Gửi tin nhắn hỗ trợ"
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending %s"
+msgstr "Đang gửi %s"
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending %s Information"
+msgstr "Đang gửi %s Thông tin"
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending Diagnostics"
+msgstr "Gửi chẩn đoán"
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending Support Message"
+msgstr "Gửi tin nhắn hỗ trợ"
+
+#. CONTEXT: select file: file type for the file selection dialog (sequence)
+#. CONTEXT: playlist management: type of playlist
+#. CONTEXT: sequence editor: label for sequence name
+#. CONTEXT: sequence editor: sequence name
+#. CONTEXT: sequence editor: title for the sequence list
+msgid "Sequence"
+msgstr "Sự liên tiếp"
+
+#. CONTEXT: playerui: select the current queue for playback
+msgid "Set Queue for Playback"
+msgstr "Đặt hàng đợi để phát lại"
+
+#. CONTEXT: starterui: menu item: install in alternate folder
+#, c-format
+msgid "Set Up Alternate Folder"
+msgstr "Thiết lập thư mục thay thế"
+
+#. CONTEXT: playlist management: notebook tab title: settings
+msgid "Settings"
+msgstr "Cài đặt"
+
+#. CONTEXT: alternate installation: status message
+msgid "Setup complete."
+msgstr "Thiết lập hoàn tất."
+
+#. CONTEXT: configuration: queue: whether to show the extra queue buttons (queue dance, queue 5)
+msgid "Show Extra Queue Buttons"
+msgstr "Hiển thị các nút hàng đợi bổ sung"
+
+#. CONTEXT: playerui: menu checkbox: show the extra queues (in addition to the main music queue)
+msgid "Show Extra Queues"
+msgstr "Hiển thị hàng đợi bổ sung"
+
+#. CONTEXT: configuration: show-marquee: selection
+msgid "Show Marquee"
+msgstr "Hiển thị Marquee"
+
+#. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee
+msgid "Show Song Information"
+msgstr "Hiển thị thông tin bài hát"
+
+#. CONTEXT: configuration: whether or not to show the speed reset button
+msgid "Show Speed Reset"
+msgstr "Hiển thị tốc độ thiết lập lại"
+
+#. CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux.
+msgid "Shutdown Script"
+msgstr "Tập lệnh tắt máy"
+
+#. CONTEXT: configuration: display settings for: side-by-side song list (suggestion: combined view: song list)
+msgid "Side-by-Side Song List"
+msgstr "Danh sách bài hát song song"
+
+#. CONTEXT: configuration: display settings for: side-by-side song selection (suggestion: combined view: song selection)
+msgid "Side-by-Side Song Selection"
+msgstr "Lựa chọn bài hát song song"
+
+#. CONTEXT: managementui: menu checkbox: side-by-side view (suggestion: combined view)
+msgid "Side-by-Side View"
+msgstr "Xem cạnh nhau"
+
+#. CONTEXT: installer: status message
+msgid "Skipping conversion."
+msgstr "Bỏ qua chuyển đổi."
+
+#. CONTEXT: managementui: name of song editor notebook tab
+msgid "Song Editor"
+msgstr "Biên tập bài hát"
+
+#. CONTEXT: configuration: display settings for: song editor column N
+#, c-format
+msgid "Song Editor - Column %d"
+msgstr "Biên tập bài hát - Cột %d"
+
+#. CONTEXT: label: time to end the song
+msgid "Song End"
+msgstr "Bài hát kết thúc"
+
+#. CONTEXT: configuration: display settings for: song list
+#. CONTEXT: music queue: label for song list name
+#. CONTEXT: music queue: song list name
+#. CONTEXT: select file: file type for the file selection dialog (song list)
+#. CONTEXT: export/import bdj4: playlist: select the song list
+#. CONTEXT: managementui: name of side-by-side view tab
+#. CONTEXT: managementui: name of song list notebook tab
+#. CONTEXT: playlist management: type of playlist
+msgid "Song List"
+msgstr "Danh sách bài hát"
+
+#. CONTEXT: configuration: display settings for: song selection
+#. CONTEXT: managementui: name of song selection notebook tab
+msgid "Song Selection"
+msgstr "Lựa chọn bài hát"
+
+#. CONTEXT: label: time to start the song
+msgid "Song Start"
+msgstr "Bài hát bắt đầu"
+
+#. CONTEXT: statistics: Label for number of songs in song list
+msgid "Songs"
+msgstr "Bài hát"
+
+#. CONTEXT: song selection filter: a filter: select the method to sort the song selection display
+msgid "Sort by"
+msgstr "Sắp xếp theo"
+
+#. CONTEXT: audio identification: the audio identification source
+#. CONTEXT: song editor: copy tags: source file
+msgid "Source"
+msgstr "Nguồn"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow)
+#. CONTEXT: playerui: the current speed for song playback
+msgid "Speed"
+msgstr "Tốc độ"
+
+#. CONTEXT: label: speed adjustment for playback
+msgid "Speed Adjustment"
+msgstr "Điều chỉnh tốc độ"
+
+#. CONTEXT: update database: button to start the database update process
+msgid "Start"
+msgstr "Bắt đầu"
+
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: start new sequence
+msgid "Start New Sequence"
+msgstr "Bắt đầu chuỗi mới"
+
+#. CONTEXT: managementui: menu selection: song list: edit menu: start new song list
+msgid "Start New Song List"
+msgstr "Bắt đầu danh sách bài hát mới"
+
+#. CONTEXT: installer: status message
+msgid "Starting conversion process."
+msgstr "Bắt đầu quá trình chuyển đổi."
+
+#. CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux.
+msgid "Startup Script"
+msgstr "Kịch bản khởi động"
+
+#. CONTEXT: managementui: name of statistics tab
+msgid "Statistics"
+msgstr "Thống kê"
+
+#. CONTEXT: label: status
+msgid "Status"
+msgstr "Trạng thái"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: update database: button to stop the database update process
+msgid "Stop"
+msgstr "Dừng lại"
+
+#. CONTEXT: playlist management: stop after
+msgid "Stop After"
+msgstr "Dừng lại sau"
+
+#. CONTEXT: starterui: menu item: stop all BDJ4 processes
+#, c-format
+msgid "Stop All %s Processes"
+msgstr "Dừng tất cả %s Tiến trình"
+
+#. CONTEXT: configuration: queue: the time when playback will stop
+#. CONTEXT: playlist management: stop at
+msgid "Stop At"
+msgstr "dừng lại ở"
+
+#. CONTEXT: database update: status message
+msgid "Stopped by User"
+msgstr "Đã dừng bởi Người dùng"
+
+#. CONTEXT: starterui: sending support message: subject of message
+msgid "Subject"
+msgstr "Chủ thể"
+
+#. CONTEXT: starterui: button: support : support information
+#. CONTEXT: starterui: title for the support dialog
+msgid "Support"
+msgstr "Ủng hộ"
+
+#. CONTEXT: starterui: title for the support message dialog
+msgid "Support Message"
+msgstr "Tin nhắn hỗ trợ"
+
+#. CONTEXT: starterui: basic support dialog, list of support options
+msgid "Support options"
+msgstr "Tùy chọn hỗ trợ"
+
+#. CONTEXT: managementui: menu selection: song list: actions menu: swap two songs
+msgid "Swap"
+msgstr "Tráo đổi"
+
+#. CONTEXT: playerui: menu checkbox: when a queue is emptied, switch playback to the next queue
+msgid "Switch Queue When Empty"
+msgstr "Chuyển hàng đợi khi trống"
+
+#. CONTEXT: configuration: mobile marquee: internet: tag
+msgid "Tag"
+msgstr "Nhãn"
+
+#. CONTEXT: configuration: dances: tags associated with the dance
+#. CONTEXT: label: tags (for use by the user)
+#. CONTEXT: playlist management: tags
+msgid "Tags"
+msgstr "Thẻ"
+
+#. CONTEXT: configuration file: dance
+msgid "Tango"
+msgstr "Điệu Tango"
+
+#. CONTEXT: song editor: copy tags: target file
+msgid "Target"
+msgstr "Mục tiêu"
+
+#. CONTEXT: configuration file: The completion message displayed on the marquee when the playlist is finished.
+msgid "Thank You Dancers"
+msgstr "Cảm ơn các vũ công"
+
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+msgid "The conversion process will not be run."
+msgstr "Quá trình chuyển đổi sẽ không được thực hiện."
+
+#. CONTEXT: installer: instructions
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
+msgstr "Quá trình chuyển đổi chỉ chạy đối với các cài đặt mới và cài đặt lại."
+
+#. CONTEXT: configuration: the theme to use for the user interface
+msgid "Theme"
+msgstr "Chủ đề"
+
+#. CONTEXT: create from playlist: set the maximum time for the song list
+msgid "Time Limit"
+msgstr "Giới hạn thời gian"
+
+#. CONTEXT: configuration: dances: time signature for the dance
+msgid "Time Signature"
+msgstr "Chữ ký thời gian"
+
+#. CONTEXT: configuration: the title to display on the mobile marquee
+#. CONTEXT: label: title
+msgid "Title"
+msgstr "Tiêu đề"
+
+#. CONTEXT: label: title sort order
+msgid "Title Sort Order"
+msgstr "Tiêu đề Sắp xếp theo thứ tự"
+
+#. CONTEXT: music queue: button: set playback to pause after the selected song is played (toggle)
+msgid "Toggle Pause"
+msgstr "Chuyển đổi tạm dừng"
+
+#. CONTEXT: playerui: button: tooltip: toggle the repeat song on and off
+msgid "Toggle Repeat"
+msgstr "Chuyển đổi Lặp lại"
+
+#. CONTEXT: label: total disc count (short name for listing)
+msgid "Tot. Discs"
+msgstr "Tổng số đĩa"
+
+#. CONTEXT: label: total track count (short name for listing)
+msgid "Tot. Tracks"
+msgstr "Tổng số bài hát"
+
+#. CONTEXT: label: total disc count
+msgid "Total Discs"
+msgstr "Tổng số đĩa"
+
+#. CONTEXT: database update: status message: total number of files found
+msgid "Total Files"
+msgstr "Tổng số tập tin"
+
+#. CONTEXT: statistics: Label for total song list duration
+msgid "Total Time"
+msgstr "Tổng thời gian"
+
+#. CONTEXT: label: total track count
+msgid "Total Tracks"
+msgstr "Tổng số bài hát"
+
+#. CONTEXT: label: track number
+msgid "Track"
+msgstr "Theo dõi"
+
+#. CONTEXT: apply adjustments: trim silence checkbox
+msgid "Trim Silence"
+msgstr "Cắt im lặng"
+
+#. CONTEXT: managementui: menu selection: song list: actions menu: truncate the song list
+msgid "Truncate"
+msgstr "Cắt bớt"
+
+#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+#. CONTEXT: configuration: which audio tags will be written to the audio file
+msgid "Type"
+msgstr "Kiểu"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Unable to determine %s version."
+msgstr "Không thể xác định phiên bản %s ."
+
+#. CONTEXT: installer: failure message
+#, c-format
+msgid "Unable to locate %s."
+msgstr "Không thể định vị được %s."
+
+#. CONTEXT: installer: status message
+msgid "Unable to locate BDJ3 database."
+msgstr "Không thể tìm thấy cơ sở dữ liệu BDJ3."
+
+#. CONTEXT: managementui: menu selection: music manager: undo song removal
+msgid "Undo Song Removal"
+msgstr "Hoàn tác xóa bài hát"
+
+#. CONTEXT: configuration file: rating
+msgid "Unrated"
+msgstr "Chưa được xếp hạng"
+
+#. CONTEXT: managementui: notebook tab title: update database
+msgid "Update Database"
+msgstr "Cập nhật cơ sở dữ liệu"
+
+#. CONTEXT: database update: update from itunes
+#, c-format
+msgid "Update from %s"
+msgstr "Cập nhật từ %s"
+
+#. CONTEXT: database update: updates the database using the tags from the audio files
+msgid "Update from Audio File Tags"
+msgstr "Cập nhật từ Thẻ tệp âm thanh"
+
+#. CONTEXT: database update: status message: number of files updated in the database
+#. CONTEXT: database update: status message: number of files updated
+msgid "Updated"
+msgstr "Đã cập nhật"
+
+#. CONTEXT: database update: update from itunes: help text
+#, c-format
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
+msgstr "Cập nhật thông tin trong cơ sở dữ liệu BallroomDJ từ cơ sở dữ liệu %s ."
+
+#. CONTEXT: database update: update from audio file tags: help text
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
+msgstr "Cập nhật thông tin trong cơ sở dữ liệu BallroomDJ từ các thẻ tệp âm thanh."
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Updating %s."
+msgstr "Đang cập nhật %s."
+
+#. CONTEXT: alternate installation: message indicating the action that will be taken
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "Updating existing %s installation."
+msgstr "Đang cập nhật bản cài đặt %s hiện có."
+
+#. CONTEXT: configuration: remote control: the user ID for sign-on to remote control
+msgid "User ID"
+msgstr "ID người dùng"
+
+#. CONTEXT: configuration: options associated with the user interface
+msgid "User Interface"
+msgstr "Giao diện người dùng"
+
+#. CONTEXT: installer: status message
+msgid "Verification complete."
+msgstr "Xác minh hoàn tất."
+
+#. CONTEXT: installer: status message
+msgid "Verification failed."
+msgstr "Xác minh không thành công."
+
+#. CONTEXT: installer: status message
+msgid "Verifying installation."
+msgstr "Đang xác minh cài đặt."
+
+#. CONTEXT: configuration file: dance
+msgid "Viennese Waltz"
+msgstr "Điệu Valse của Viên"
+
+#. CONTEXT: configuration: show-marquee: visible
+msgid "Visible"
+msgstr "Dễ thấy"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: The current volume of the song
+msgid "Volume"
+msgstr "Âm lượng"
+
+#. CONTEXT: label: volume adjustment for playback
+msgid "Volume Adjustment"
+msgstr "Điều chỉnh âm lượng"
+
+#. CONTEXT: configuration file: dance
+msgid "Waltz"
+msgstr "Điệu vanxơ"
+
+#. CONTEXT: configuration: level: title of the weight column
+#. CONTEXT: configuration: rating: title of the weight column
+#. CONTEXT: playlist management: tag weight
+msgid "Weight"
+msgstr "Cân nặng"
+
+#. CONTEXT: configuration file: dance
+msgid "West Coast Swing"
+msgstr "Bờ Tây Swing"
+
+#. CONTEXT: bpm counter: instructions, line 2
+msgid "When the BPM value is stable, select the Save button."
+msgstr "Khi giá trị BPM ổn định, hãy chọn nút Lưu."
+
+#. CONTEXT: configuration: which audio tags will be written to the audio file
+msgid "Write Audio File Tags"
+msgstr "Viết thẻ tập tin âm thanh"
+
+#. CONTEXT: database update: writes the tags in the database to the audio files
+msgid "Write Tags to Audio Files"
+msgstr "Viết thẻ vào tệp âm thanh"
+
+#. CONTEXT: database update: write tags to audio files: help text
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
+msgstr "Ghi thẻ tệp âm thanh bằng cách sử dụng thông tin từ cơ sở dữ liệu BallroomDJ."
+
+#. CONTEXT: configuration: dialog: XML file types
+msgid "XML Files"
+msgstr "Các tập tin XML"
+
+#. CONTEXT: configuration file: dance type
+msgid "club"
+msgstr "câu lạc bộ"
+
+#. CONTEXT: The prefix name for an audio file marked for deletion (may be abbreviated)
+msgid "delete"
+msgstr "xóa bỏ"
+
+#. CONTEXT: configuration: dance speed
+msgid "fast"
+msgstr "nhanh"
+
+#. CONTEXT: configuration file: dance type
+msgid "latin"
+msgstr "tiếng latinh"
+
+#. CONTEXT: configuration: dance speed
+msgid "normal"
+msgstr "Bình thường"
+
+#. CONTEXT: The suffix for an original audio file (may be abbreviated)
+msgid "original"
+msgstr "nguyên bản"
+
+#. CONTEXT: configuration: dance speed
+msgid "slow"
+msgstr "chậm"
+
+#. CONTEXT: configuration file: dance type
+msgid "standard"
+msgstr "tiêu chuẩn"
+
+#. CONTEXT: The name of the 'standardrounds' playlist file
+msgid "standardrounds"
+msgstr "vòng tiêu chuẩn"
+
+#. CONTEXT: title of a getting started help section
+msgid "How to get Support"
+msgstr "Làm thế nào để nhận được hỗ trợ"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_get_support"
+msgstr "Để được hỗ trợ, hãy chọn nút 'Hỗ trợ'. Có các liên kết đến wiki, diễn đàn và hệ thống phiếu yêu cầu hỗ trợ. Hoặc sử dụng nút 'Gửi tin nhắn hỗ trợ' để gửi tin nhắn."
+
+#. CONTEXT: title of a getting started help section
+msgid "Check the Dance for Each Song"
+msgstr "Kiểm tra điệu nhảy cho từng bài hát"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_check_dance"
+msgstr "=> Chọn 'Music Manager' ở phía bên trái của cửa sổ 'BDJ4 Management'. <br> Cuộn qua danh sách các bài hát và kiểm tra để đảm bảo rằng điệu nhảy được thiết lập cho từng bài hát. <br>Để thiết lập điệu nhảy cho một bài hát: => Chọn bài hát. => Chọn tab 'Song Editor' (bên dưới trình phát, phía trên danh sách các bài hát). => Bên cạnh nhãn 'Dance', sử dụng lựa chọn thả xuống dance và chọn điệu nhảy cho bài hát. => Ở phía trên bên phải của tab 'Song Editor', chọn nút 'Save'. <br> Bạn có thể chuyển lại tab 'Music Manager' và kiểm tra các bài hát khác cần có dance set. => Để cửa sổ 'BDJ4 Management' mở."
+
+#. CONTEXT: title of a getting started help section
+msgid "Build the Database for the First Time"
+msgstr "Xây dựng cơ sở dữ liệu lần đầu tiên"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_build_db"
+msgstr "Để hoạt động, BallroomDJ 4 duy trì cơ sở dữ liệu của tất cả các bài hát của bạn. Cơ sở dữ liệu này phải được xây dựng lần đầu tiên. => Chọn nút 'Quản lý'. => Trong cửa sổ 'Quản lý BDJ4', chọn mục 'Cập nhật cơ sở dữ liệu' ở phía bên trái của cửa sổ. <br> Lựa chọn mặc định 'Kiểm tra mới' được sử dụng khi bạn thêm hoặc xóa bài hát khỏi bộ sưu tập nhạc của mình. => Thay đổi lựa chọn thành 'Xây dựng lại cơ sở dữ liệu'. => Chọn nút 'Bắt ​​đầu'. => Đợi quá trình xây dựng lại cơ sở dữ liệu hoàn tất. => Để cửa sổ 'Quản lý BDJ4' mở."
+
+#. CONTEXT: title of a getting started help section
+msgid "Create an Example Playlist"
+msgstr "Tạo một danh sách phát mẫu"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_create_playlist"
+msgstr "=> Chọn 'Chỉnh sửa danh sách bài hát' ở phía bên trái của cửa sổ 'Quản lý BDJ4'. <br> Phía bên phải của phần dưới của cửa sổ là danh sách các bài hát của bạn. => Chọn một bài hát bằng cách nhấp vào bài hát đó. => Bây giờ, hãy chọn nút mũi tên trái ở giữa phần dưới. <br> Thao tác này sẽ thêm bài hát bạn đã chọn vào danh sách bài hát đang được tạo. => Chọn một vài bài hát và thêm từng bài hát vào danh sách bài hát. <br> Phía trên danh sách bài hát là hộp nhập có tên 'Danh sách bài hát mới'. => Nhấp vào hộp và đổi tên danh sách bài hát. => Đóng cửa sổ 'Quản lý BDJ4'. Danh sách bài hát sẽ tự động được lưu."
+
+#. CONTEXT: title of a getting started help section
+msgid "Set the Location of the Music Folder"
+msgstr "Thiết lập vị trí của thư mục nhạc"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_music_location"
+msgstr "Bước đầu tiên là cấu hình vị trí thư mục nhạc của bạn. => Chọn nút 'Cấu hình'. <br> Trong cửa sổ 'Cấu hình BDJ4', phần 'Chung' được hiển thị. Mục đầu tiên trong 'Chung' là 'Thư mục nhạc'. => Thay đổi 'Thư mục nhạc' thành vị trí nhạc của bạn. => Để cửa sổ 'Cấu hình BDJ4' mở."
+
+#. CONTEXT: title of a getting started help section
+msgid "Verify the Configured Dances"
+msgstr "Xác minh các điệu nhảy đã cấu hình"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_configure_dances"
+msgstr "Tên của các điệu nhảy phải khớp với những gì bạn sử dụng. => Chọn 'Chỉnh sửa điệu nhảy' ở phía bên trái của cửa sổ 'Cấu hình BDJ4'. <br> Xem lại danh sách các điệu nhảy. Nếu một điệu nhảy có tên khác với tên bạn sử dụng, hãy chọn điệu nhảy đó và đổi tên. Nếu một điệu nhảy bạn sử dụng bị thiếu, hãy chọn nút 'Thêm' và thêm điệu nhảy đó. Nếu có những điệu nhảy bạn sẽ không bao giờ sử dụng, hãy chọn điệu nhảy đó, sau đó chọn nút 'Xóa'. => Đóng cửa sổ 'Cấu hình BDJ4'."
+
+#. CONTEXT: title of a getting started help section
+msgid "Introduction / Getting Started"
+msgstr "Giới thiệu / Bắt đầu"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_intro"
+msgstr "Tiện ích này sẽ hướng dẫn bạn qua một vài bước để giúp bạn bắt đầu. => Chọn nút 'Tiếp theo' để tiếp tục bước tiếp theo."
+
+#. CONTEXT: title of a getting started help section
+msgid "Play a Playlist"
+msgstr "Phát danh sách phát"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_play_playlist"
+msgstr "Bây giờ bạn sẽ phát danh sách phát vừa tạo. => Chọn nút 'Trình phát'. => Trong cửa sổ trình phát, chọn menu thả xuống 'Danh sách phát hàng đợi'. => Chọn tên danh sách phát mà bạn đã nhập trước đó."
+
+#. CONTEXT: title of a getting started help section
+msgid "How is the Music Organised"
+msgstr "Âm nhạc được tổ chức như thế nào"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_music_org"
+msgstr "Thiết lập phương pháp tổ chức rất quan trọng để BallroomDJ 4 có thể xác định thông tin về bài hát của bạn khi cơ sở dữ liệu được xây dựng. => Chọn 'Tổ chức' ở phía bên trái của cửa sổ 'Cấu hình BDJ4'. <br> Nhiều người sắp xếp nhạc của họ bằng cách đặt từng điệu nhảy vào một thư mục riêng. <br> Tổ chức mặc định là 'Dance/Title'. Nếu bạn đã cài đặt iTunes, đường dẫn tổ chức sẽ được đặt thành 'Album Artist/Album/Disc - Track0 Title'. => Chọn phương pháp tổ chức bạn sử dụng cho các bài hát của mình trong danh sách thả xuống 'Organisation Path'. <br> Nếu đường dẫn tổ chức bạn cần không có, hãy chọn nút 'support' trong cửa sổ khởi động và gửi tin nhắn hỗ trợ. Hầu như bất kỳ đường dẫn tổ chức nào cũng có thể được cấu hình. <br> Nếu tệp âm thanh của bạn có điệu nhảy được lưu trữ trong thẻ âm thanh thể loại, hãy bật 'Database Loads Dance from Genre'. => Để cửa sổ 'BDJ4 Configuration' mở."
+

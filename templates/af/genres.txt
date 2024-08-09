@@ -1,0 +1,37 @@
+# genres
+# 2022-8-4
+# version 1
+version
+..1
+count
+..5
+KEY
+..0
+GENRE
+..Geen
+CLASSICAL
+..0
+KEY
+..1
+GENRE
+..Baldans
+CLASSICAL
+..0
+KEY
+..2
+GENRE
+..Klassiek
+CLASSICAL
+..1
+KEY
+..3
+GENRE
+..Jazz
+CLASSICAL
+..0
+KEY
+..4
+GENRE
+..Rots
+CLASSICAL
+..0

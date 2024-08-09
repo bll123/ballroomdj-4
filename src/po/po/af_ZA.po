@@ -1,0 +1,2269 @@
+# == Afrikaans
+# -- afrikaans
+msgid ""
+msgstr ""
+"Project-Id-Version: ballroomdj-4\n"
+"Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
+"POT-Creation-Date: 2024-07-28\n"
+"PO-Revision-Date: 2024-08-09\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: Afrikaans\n"
+"Language: af\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: ballroomdj-4\n"
+"X-Crowdin-Project-ID: 518374\n"
+"X-Crowdin-Language: af\n"
+"X-Crowdin-File: en_GB.po\n"
+"X-Crowdin-File-ID: 126\n"
+
+#. CONTEXT: song editor: status msg: (song end must be greater than song start)
+#, c-format
+msgid "%1$s must be greater than %2$s"
+msgstr "%1$s moet groter as %2$swees"
+
+#. CONTEXT: configuration: the ACRCloud API Host
+#, c-format
+msgid "%s API Host"
+msgstr "%s API-gasheer"
+
+#. CONTEXT: configuration: the ACRCloud API Key
+#, c-format
+msgid "%s API Key"
+msgstr "%s API-sleutel"
+
+#. CONTEXT: configuration: the ACRCloud API Secret Key
+#, c-format
+msgid "%s API Secret Key"
+msgstr "%s API geheime sleutel"
+
+#. CONTEXT: configuration: configuration user interface window title
+#, c-format
+msgid "%s Configuration"
+msgstr "%s Konfigurasie"
+
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 download)
+#, c-format
+msgid "%s Download"
+msgstr "%s Aflaai"
+
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 forums)
+#, c-format
+msgid "%s Forums"
+msgstr "%s Forums"
+
+#. CONTEXT: helperui: the window title for the BDJ4 helper
+#, c-format
+msgid "%s Helper"
+msgstr "%s Helper"
+
+#. CONTEXT: alternate installation: window title
+#. CONTEXT: installer: window title
+#, c-format
+msgid "%s Installer"
+msgstr "%s Installeerder"
+
+#. CONTEXT: installer: label for entry field asking for BDJ3 location
+#, c-format
+msgid "%s Location"
+msgstr "%s Ligging"
+
+#. CONTEXT: managementui: management user interface window title
+#, c-format
+msgid "%s Management"
+msgstr "%s Bestuur"
+
+#. CONTEXT: configuration: itunes: the itunes media folder
+#, c-format
+msgid "%s Media Folder"
+msgstr "%s Mediavouer"
+
+#. CONTEXT: playerui: main window title
+#, c-format
+msgid "%s Player"
+msgstr "%s Speler"
+
+#. CONTEXT: MacOS: reason for disabling sleep: BDJ4 Player is Active
+#, c-format
+msgid "%s Player is Active"
+msgstr "%s Speler is aktief"
+
+#. CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist)
+#, c-format
+msgid "%s Playlist"
+msgstr "%s Snitlys"
+
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets)
+#, c-format
+msgid "%s Support Tickets"
+msgstr "%s Ondersteuningskaartjies"
+
+#. CONTEXT: starterui: basic support dialog, version display
+#, c-format
+msgid "%s Version"
+msgstr "%s Weergawe"
+
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 wiki)
+#, c-format
+msgid "%s Wiki"
+msgstr "%s Wiki"
+
+#. CONTEXT: configuration: itunes: the itunes xml file
+#, c-format
+msgid "%s XML File"
+msgstr "%s XML-lêer"
+
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+#, c-format
+msgid "%s data will be converted."
+msgstr "%s data sal omgeskakel word."
+
+#. CONTEXT: database update: status message
+#, c-format
+msgid "%s files found"
+msgstr "%s lêers gevind"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "%s installed."
+msgstr "%s geïnstalleer."
+
+#. CONTEXT: installer: display of package status
+#, c-format
+msgid "%s is installed"
+msgstr "%s is geïnstalleer"
+
+#. CONTEXT: manage ui: status message: itunes is not configured
+#, c-format
+msgid "%s is not configured."
+msgstr "%s is nie opgestel nie."
+
+#. CONTEXT: installer: display of package status
+#, c-format
+msgid "%s is not installed"
+msgstr "%s is nie geïnstalleer nie"
+
+#. CONTEXT: song editor: status msg: (song start may not exceed the song duration)
+#. CONTEXT: song editor: status msg: (song end may not exceed the song duration)
+#, c-format
+msgid "%s may not exceed the song duration"
+msgstr "%s mag nie die liedjie duur oorskry nie"
+
+#. CONTEXT: validation: characters not allowed
+#, c-format
+msgid "%s: *'\":|<>^ characters are not allowed."
+msgstr "%s: *'\":|<>^ karakters word nie toegelaat nie."
+
+#. CONTEXT: validation: invalid time (hours/minutes)
+#. CONTEXT: validation: invalid time (minutes/seconds)
+#. CONTEXT: validation: invalid time (hours/minutes/seconds)
+#. CONTEXT: validation: invalid time (hour/min/sec.sec)
+#, c-format
+msgid "%s: Invalid time (%s)."
+msgstr "%s: Ongeldige tyd (%s)."
+
+#. CONTEXT: validation: must be numeric
+#. CONTEXT: validation: must be a numeric value
+#, c-format
+msgid "%s: Must be numeric."
+msgstr "%s: Moet numeries wees."
+
+#. CONTEXT: validation: a value must be set
+#, c-format
+msgid "%s: Must be set."
+msgstr "%s: Moet gestel word."
+
+#. CONTEXT: validation: slashes ( / and \\ ) are not allowed
+#, c-format
+msgid "%s: Slashes are not allowed."
+msgstr "%s: Skerpetekens word nie toegelaat nie."
+
+#. CONTEXT: validation: spaces are not allowed
+#, c-format
+msgid "%s: Spaces are not allowed."
+msgstr "%s: Spasies word nie toegelaat nie."
+
+#. CONTEXT: playerui: button: reset speed to 100%
+msgid "100%"
+msgstr "100%"
+
+#. CONTEXT: configuration: dance time signature
+msgid "2/4"
+msgstr "2/4"
+
+#. CONTEXT: configuration: dance time signature
+msgid "3/4"
+msgstr "3/4"
+
+#. CONTEXT: configuration: dance time signature
+msgid "4/4"
+msgstr "4/4"
+
+#. CONTEXT: configuration: marquee: the accent color used for the marquee
+#. CONTEXT: configuration: the accent color to use for the user interface
+msgid "Accent Colour"
+msgstr "Aksentkleur"
+
+#. CONTEXT: update database: select database update action
+msgid "Action"
+msgstr "Aksie"
+
+#. CONTEXT: the 'Mix' action failed
+msgid "Action failed"
+msgstr "Handeling het misluk"
+
+#. CONTEXT: managementui: menu selection: actions for song editor
+#. CONTEXT: managementui: menu selection: actions for music manager
+#. CONTEXT: managementui: menu selection: actions for song list
+#. CONTEXT: playerui: menu selection: actions for the player
+#. CONTEXT: starterui: action menu for the starter user interface
+msgid "Actions"
+msgstr "Aksies"
+
+#. CONTEXT: configuration: queue: whether the queue is active
+msgid "Active"
+msgstr "Aktief"
+
+#. CONTEXT: configuration: table edit: button: add new selection
+msgid "Add New"
+msgstr "Voeg nuwe by"
+
+#. CONTEXT: apply adjustments: adjust speed/song start/song end checkbox
+msgid "Adjust Speed, Song Start and Song End"
+msgstr "Pas spoed, liedjiebegin en liedeinde aan"
+
+#. CONTEXT: configuration file: dance level
+msgid "Advanced"
+msgstr "Gevorderd"
+
+#. CONTEXT: label: album
+msgid "Album"
+msgstr "Album"
+
+#. CONTEXT: label: album artist
+msgid "Album Artist"
+msgstr "Album Kunstenaar"
+
+#. CONTEXT: label: album artist sort order
+msgid "Album Artist Sort Order"
+msgstr "Album Kunstenaar Sorteer volgorde"
+
+#. CONTEXT: label: album sort order
+msgid "Album Sort Order"
+msgstr "Album Sorteer volgorde"
+
+#. CONTEXT: song-selection: filter: all dances are selected
+#. CONTEXT: song selection filter: a filter: all dances are selected
+msgid "All Dances"
+msgstr "Alle danse"
+
+#. CONTEXT: genre: a filter: all genres are displayed in the song selection
+msgid "All Genres"
+msgstr "Alle genres"
+
+#. CONTEXT: level: a filter: all dance levels will be listed
+#. CONTEXT: level: a filter: all dance levels are displayed in the song selection
+msgid "All Levels"
+msgstr "Alle vlakke"
+
+#. CONTEXT: rating: a filter: all dance ratings will be listed
+#. CONTEXT: rating: a filter: all dance ratings are displayed in the song selection
+msgid "All Ratings"
+msgstr "Alle graderings"
+
+#. CONTEXT: configuration: write audio file tags: write all tags (BDJ and standard) to the audio file
+msgid "All Tags"
+msgstr "Alle Tags"
+
+#. CONTEXT: playlist management: allowed keywords
+msgid "Allowed Keywords"
+msgstr "Toegelate sleutelwoorde"
+
+#. CONTEXT: import from bdj4: error message if the target song list already exists
+msgid "Already Exists"
+msgstr "Bestaan reeds"
+
+#. CONTEXT: configuration: dances: play the selected announcement before the dance is played
+msgid "Announcement"
+msgstr "Aankondiging"
+
+#. CONTEXT: status: a filter: all dance status will be listed
+#. CONTEXT: status: a filter: all dance status are displayed in the song selection
+msgid "Any Status"
+msgstr "Enige Status"
+
+#. CONTEXT: song selection filter: filter dialog: applies the selections
+msgid "Apply"
+msgstr "Doen aansoek"
+
+#. CONTEXT: apply adjustment dialog: title for the dialog
+#. CONTEXT: apply adjustment dialog: apply adjustments
+#. CONTEXT: managementui: song editor menu: apply adjustments
+msgid "Apply Adjustments"
+msgstr "Pas aanpassings toe"
+
+#. CONTEXT: managementui: song editor menu: apply edit all
+msgid "Apply Edit All"
+msgstr "Pas Redigeer alles toe"
+
+#. CONTEXT: configuration file: dance
+msgid "Argentine Tango"
+msgstr "Argentynse Tango"
+
+#. CONTEXT: label: artist
+msgid "Artist"
+msgstr "Kunstenaar"
+
+#. CONTEXT: label: artist sort order
+msgid "Artist Sort Order"
+msgstr "Sorteervolgorde van kunstenaars"
+
+#. CONTEXT: starterui: sending support message: checkbox: option to send data files
+msgid "Attach Data Files"
+msgstr "Heg datalêers aan"
+
+#. CONTEXT: starterui: sending support message: checkbox: option to send database
+msgid "Attach Database"
+msgstr "Heg databasis aan"
+
+#. CONTEXT: configuration: which audio interface to use
+msgid "Audio"
+msgstr "Oudio"
+
+#. CONTEXT: external request: enter the audio file location
+msgid "Audio File"
+msgstr "Oudiolêer"
+
+#. CONTEXT: select audio file: file selection dialog: audio file filter
+msgid "Audio Files"
+msgstr "Oudiolêers"
+
+#. CONTEXT: configuration: display settings for: Audio Identification
+#. CONTEXT: managementui: name of audio identification notebook tab
+msgid "Audio ID"
+msgstr "Oudio-ID"
+
+#. CONTEXT: configuration: display settings for: Audio ID match listing
+msgid "Audio ID Match List"
+msgstr "Oudio ID Match Lys"
+
+#. CONTEXT: configuration: which audio sink (output) to use
+msgid "Audio Output"
+msgstr "Oudio-uitset"
+
+#. CONTEXT: configuration: checkbox: is automatic organization enabled
+msgid "Auto Organise"
+msgstr "Outo-organiseer"
+
+#. CONTEXT: playlist management: default playlist type
+#. CONTEXT: playlist management: type of playlist
+msgid "Automatic"
+msgstr "Outomatiese"
+
+#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
+msgid "BDJ Tags Only"
+msgstr "Slegs BDJ-etikette"
+
+#. CONTEXT: installer: status message
+msgid "BDJ3 database version is too old."
+msgstr "BDJ3-databasisweergawe is te oud."
+
+#. CONTEXT: configuration: Whether to display BPM as BPM or MPM
+#. CONTEXT: label: beats per minute
+#. CONTEXT: bpm counter: BPM
+msgid "BPM"
+msgstr "BPM"
+
+#. CONTEXT: bpm counter: title of window
+msgid "BPM Counter"
+msgstr "BPM-teller"
+
+#. CONTEXT: configuration file: genre
+msgid "Ballroom Dance"
+msgstr "Baldans"
+
+#. CONTEXT: tooltip for desktop icon
+msgid "Ballroom Music Player"
+msgstr "Ballroom Musiekspeler"
+
+#. CONTEXT: bpm counter: number of beats
+msgid "Beats"
+msgstr "Beats"
+
+#. CONTEXT: managementui: song editor menu: cancel edit all
+msgid "Cancel Edit All"
+msgstr "Kanselleer Wysig alles"
+
+#. CONTEXT: database update: status message: number of files that cannot be renamed
+msgid "Cannot Rename"
+msgstr "Kan nie hernoem nie"
+
+#. CONTEXT: configuration file: dance
+msgid "Cha Cha"
+msgstr "Cha Cha"
+
+#. CONTEXT: database update: check for new audio files
+msgid "Check For New"
+msgstr "Kyk vir nuwe"
+
+#. CONTEXT: database update: check for new: help text
+msgid "Checks for new audio files."
+msgstr "Kontroleer vir nuwe oudiolêers."
+
+#. CONTEXT: configuration file: genre
+msgid "Classical"
+msgstr "Klassiek"
+
+#. CONTEXT: configuration: genre: title of the classical setting column
+msgid "Classical?"
+msgstr "Klassiek?"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Clear & Play"
+msgstr "Maak skoon en speel"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: music queue: button: clear the queue
+msgid "Clear Queue"
+msgstr "Maak tou skoon"
+
+#. CONTEXT: managementui: menu selection: music manager: clear same-song mark
+msgid "Clear Same Song Mark"
+msgstr "Duidelik dieselfde liedjie merk"
+
+#. CONTEXT: bpm counter: instructions, line 1
+msgid "Click the mouse in the blue box in time with the beat."
+msgstr "Klik met die muis in die blou blokkie betyds met die maatslag."
+
+#. CONTEXT: select folder dialog: close
+#. CONTEXT: select file dialog: close
+#. CONTEXT: export playlist: closes the dialog
+#. CONTEXT: select file: closes the dialog
+#. CONTEXT: song selection filter: filter dialog: closes the dialog
+#. CONTEXT: apply adjustment dialog: closes the dialog
+#. CONTEXT: copy tags dialog: closes the dialog
+#. CONTEXT: export/import bdj4 dialog: closes the dialog
+#. CONTEXT: external request dialog: closes the dialog
+#. CONTEXT: quick edit dialog: closes the dialog
+#. CONTEXT: bpm counter: close button
+#. CONTEXT: import from itunes: closes the dialog
+#. CONTEXT: create from playlist: closes the dialog
+#. CONTEXT: playerui: marquee font size dialog: action button
+#. CONTEXT: helperui: close the helper window
+#. CONTEXT: starterui: support dialog: closes the dialog
+#. CONTEXT: starterui: support message dialog: closes the dialog
+msgid "Close"
+msgstr "Maak toe"
+
+#. CONTEXT: database update: check for new audio files
+msgid "Compact"
+msgstr "Kompak"
+
+#. CONTEXT: database update: compact: help text
+msgid "Compact the database.  Use after audio files have been deleted."
+msgstr "Kompakteer die databasis. Gebruik nadat oudiolêers uitgevee is."
+
+#. CONTEXT: configuration file: status
+#. CONTEXT: copy audio tags: copy of audio tags completed
+#. CONTEXT: database update: status message
+msgid "Complete"
+msgstr "Voltooi"
+
+#. CONTEXT: configuration: The completion message displayed on the marquee when a playlist is finished
+msgid "Completion Message"
+msgstr "Voltooiingsboodskap"
+
+#. CONTEXT: label: composer
+msgid "Composer"
+msgstr "Komponis"
+
+#. CONTEXT: label: composer sort order
+msgid "Composer Sort Order"
+msgstr "Komponis Sorteervolgorde"
+
+#. CONTEXT: label: conductor
+msgid "Conductor"
+msgstr "Dirigent"
+
+#. CONTEXT: starterui: button: starts the configuration user interface
+msgid "Configure"
+msgstr "Stel op"
+
+#. CONTEXT: configuration: which controller to use
+msgid "Controller"
+msgstr ""
+
+#. CONTEXT: installer: status message
+msgid "Conversion complete."
+msgstr "Omskakeling voltooi."
+
+#. CONTEXT: installer: checkbox: convert the BallroomDJ 3 installation
+#, c-format
+msgid "Convert %s"
+msgstr "Skakel %som"
+
+#. CONTEXT: copy tags dialog: title for the dialog
+#. CONTEXT: copy tags dialog: copy audio tags button
+#. CONTEXT: managementui: song editor menu: copy audio tags
+msgid "Copy Audio Tags"
+msgstr "Kopieer oudio-etikette"
+
+#. CONTEXT: manageui: failure status message
+#, c-format
+msgid "Copy already exists."
+msgstr "Afskrif bestaan reeds."
+
+#. CONTEXT: installer: status message
+msgid "Copy finished."
+msgstr "Kopie voltooi."
+
+#. CONTEXT: managementui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#. CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#. CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#, c-format
+msgid "Copy of %s"
+msgstr "Afskrif van %s"
+
+#. CONTEXT: installer: status message
+msgid "Copying files."
+msgstr "Kopieer lêers."
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+msgid "Copying template files."
+msgstr "Kopieer sjabloonlêers."
+
+#. CONTEXT: playlist management: count column header
+msgid "Count"
+msgstr "Tel"
+
+#. CONTEXT: create from playlist: creates the new songlist
+msgid "Create"
+msgstr "Skep"
+
+#. CONTEXT: managementui: menu selection: song list: edit menu: create copy
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: create copy
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: create copy
+msgid "Create Copy"
+msgstr "Skep kopie"
+
+#. CONTEXT: starterui: selection to create a new profile
+msgid "Create Profile"
+msgstr "Skep profiel"
+
+#. CONTEXT: starterui: menu item: create shortcut for profile
+msgid "Create Shortcut for Profile"
+msgstr "Skep kortpad vir profiel"
+
+#. CONTEXT: managementui: menu selection: song list: actions menu: create a song list from a playlist
+#. CONTEXT: create from playlist: title for the dialog
+msgid "Create from Playlist"
+msgstr "Skep vanaf snitlys"
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+msgid "Creating folder structure."
+msgstr "Skep vouerstruktuur."
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+msgid "Creating shortcut."
+msgstr "Skep kortpad."
+
+#. CONTEXT: audio identification: the data for the current song
+msgid "Current"
+msgstr "Huidige"
+
+#. CONTEXT: configuration: display settings for: Player User Interface
+msgid "Current Song"
+msgstr "Huidige liedjie"
+
+#. CONTEXT: label: dance
+msgid "Dance"
+msgstr "Dans"
+
+#. CONTEXT: label: dance level
+msgid "Dance Level"
+msgstr "Dansvlak"
+
+#. CONTEXT: label: dance rating
+msgid "Dance Rating"
+msgstr "Dansgradering"
+
+#. CONTEXT: playlist management: notebook tab title: dances
+msgid "Dances"
+msgstr "Danse"
+
+#. CONTEXT: configuration: checkbox: the database will load the dance from the audio file genre tag
+msgid "Database Loads Dance From Genre"
+msgstr "Databasis vragte Dans uit genre"
+
+#. CONTEXT: label: date
+msgid "Date"
+msgstr "Datum"
+
+#. CONTEXT: label: date added to the database
+msgid "Date Added"
+msgstr "Datum bygevoeg"
+
+#. CONTEXT: configuration: debug options that can be turned on and off
+msgid "Debug"
+msgstr "Ontfout"
+
+#. CONTEXT: configuration: level: title of the default selection column
+#. CONTEXT: configuration: audio: The default audio sink (audio output)
+#. CONTEXT: user interface: default setting display
+msgid "Default"
+msgstr "Verstek"
+
+#. CONTEXT: configuration: the volume used when starting the player
+msgid "Default Volume"
+msgstr "Verstek volume"
+
+#. CONTEXT: configuration: table edit: button: delete selection
+#. CONTEXT: managementui: menu selection: song list: edit menu: delete song list
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: delete sequence
+msgid "Delete"
+msgstr "Vee uit"
+
+#. CONTEXT: starterui: menu item: delete profile
+msgid "Delete Profile"
+msgstr "Vee profiel uit"
+
+#. CONTEXT: configuration: dialog display settings
+msgid "Dialogs"
+msgstr "Dialoë"
+
+#. CONTEXT: label: disc number
+msgid "Disc"
+msgstr "skyf"
+
+#. CONTEXT: configuration: display settings: which set of display settings to update
+#. CONTEXT: configuration: queue: whether to display the queue
+msgid "Display"
+msgstr "Vertoon"
+
+#. CONTEXT: configuration: change which fields are displayed in different contexts
+msgid "Display Settings"
+msgstr "Vertoon instellings"
+
+#. CONTEXT: configuration: write audio file tags: do not write any tags to the audio file
+msgid "Don't Write"
+msgstr "Moenie skryf nie"
+
+#. CONTEXT: starterui: basic support dialog: support option (download latest version)
+msgid "Download Latest Version"
+msgstr "Laai nuutste weergawe af"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Download of %s failed."
+msgstr "Aflaai van %s het misluk."
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Downloading %s."
+msgstr "Laai tans %saf."
+
+#. CONTEXT: label: duration of the song
+msgid "Duration"
+msgstr "Duur"
+
+#. CONTEXT: starterui: sending support message: user's e-mail address
+msgid "E-Mail Address"
+msgstr "E-posadres"
+
+#. CONTEXT: configuration file: dance level
+msgid "Easy"
+msgstr "Maklik"
+
+#. CONTEXT: music queue: edit the selected song
+#. CONTEXT: song-selection: edit the selected song
+#. CONTEXT: managementui: menu selection: song list: edit menu
+#. CONTEXT: playlist management: menu selection: playlist: edit menu
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu
+msgid "Edit"
+msgstr "Wysig"
+
+#. CONTEXT: song editor: display indicator that the song editor is in edit all mode
+#. CONTEXT: managementui: song editor menu: edit all
+msgid "Edit All"
+msgstr "Wysig alles"
+
+#. CONTEXT: configuration: edit the dance table
+msgid "Edit Dances"
+msgstr "Redigeer Danse"
+
+#. CONTEXT: configuration: edit genres table
+msgid "Edit Genres"
+msgstr "Wysig genres"
+
+#. CONTEXT: configuration: edit the dance levels table
+msgid "Edit Levels"
+msgstr "Wysig vlakke"
+
+#. CONTEXT: configuration: edit the dance ratings table
+msgid "Edit Ratings"
+msgstr "Wysig graderings"
+
+#. CONTEXT: managementui: notebook tab title: edit sequences
+msgid "Edit Sequences"
+msgstr "Wysig reekse"
+
+#. CONTEXT: managementui: notebook tab title: edit song lists
+msgid "Edit Song Lists"
+msgstr "Wysig liedjielyste"
+
+#. CONTEXT: configuration: edit status table
+msgid "Edit Status"
+msgstr "Wysig Status"
+
+#. CONTEXT: configuration: remote control: checkbox: enable/disable
+msgid "Enable Remote Control"
+msgstr "Aktiveer afstandbeheer"
+
+#. CONTEXT: installer: where BDJ4 gets installed
+msgid "Enter the destination folder where BDJ4 will be installed."
+msgstr "Voer die bestemmingsgids in waar BDJ4 geïnstalleer sal word."
+
+#. CONTEXT: installer: asking where BallroomDJ 3 is installed
+#, c-format
+msgid "Enter the folder where %s is installed."
+msgstr "Voer die gids in waar %s geïnstalleer is."
+
+#. CONTEXT: alternate installation: installation instructions
+msgid "Enter the name of the new installation."
+msgstr "Voer die naam van die nuwe installasie in."
+
+#. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
+#. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
+#. CONTEXT: installer: status message
+msgid "Error: Folder already exists."
+msgstr "Fout: gids bestaan reeds."
+
+#. CONTEXT: alternate installation: failure message
+#. CONTEXT: installer: failure message
+msgid "Error: Unable to set working folder."
+msgstr "Fout: Kan nie werkende vouer stel nie."
+
+#. CONTEXT: configuration: examples displayed for the audio file organization path
+msgid "Examples"
+msgstr "Voorbeelde"
+
+#. CONTEXT: alternate installation: exits the alternate installer
+#. CONTEXT: installer: exits the installer
+#. CONTEXT: starterui: button: exits BDJ4 (exits everything)
+msgid "Exit"
+msgstr "Verlaat"
+
+#. CONTEXT: update database: exit BDJ4 and restart
+#, c-format
+msgid "Exit %s and restart."
+msgstr "Verlaat %s en herbegin."
+
+#. CONTEXT: export playlist dialog: export button
+#. CONTEXT: export/import bdj4 dialog: export button
+#. CONTEXT: managementui: menu selection: export actions for song list
+#. CONTEXT: playerui: menu selection: export
+msgid "Export"
+msgstr "Uitvoer"
+
+#. CONTEXT: export playlist: title of dialog
+#. CONTEXT: managementui: export playlist: title of save dialog
+#. CONTEXT: managementui: menu selection: song list: export
+msgid "Export Playlist"
+msgstr "Voer snitlys uit"
+
+#. CONTEXT: export playlist: type of export
+msgid "Export Type"
+msgstr "Tipe uitvoer"
+
+#. CONTEXT: player ui: menu selection: export: export as MP3
+#. CONTEXT: export as mp3: title of save dialog
+#, c-format
+msgid "Export as %s"
+msgstr "Voer uit as %s"
+
+#. CONTEXT: export for ballroomdj: title of dialog
+#. CONTEXT: managementui: menu selection: song list: export: export for ballroomdj
+#, c-format
+msgid "Export for %s"
+msgstr "Voer uit vir %s"
+
+#. CONTEXT: export playlist: export folder location
+#. CONTEXT: export/import bdj4: export folder location
+msgid "Export to"
+msgstr "Uitvoer na"
+
+#. CONTEXT: external request dialog: title for the dialog
+#. CONTEXT: playerui: menu selection: action: external request
+msgid "External Request"
+msgstr "Eksterne versoek"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: fade out the song and stop playing it
+msgid "Fade"
+msgstr "Vervaag"
+
+#. CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song
+msgid "Fade In Time"
+msgstr "Vervaag in tyd"
+
+#. CONTEXT: configuration: queue: the amount of time to do a volume fade-out when playing a song
+msgid "Fade Out Time"
+msgstr "Vervaag tyd"
+
+#. CONTEXT: label: favorite marker
+msgid "Favourite"
+msgstr "Gunsteling"
+
+#. CONTEXT: configuration: itunes: which fields should be imported from itunes
+msgid "Fields to Import"
+msgstr "Velde om in te voer"
+
+#. CONTEXT: audio identification: label for displaying the audio file path
+#. CONTEXT: song editor: label for displaying the audio file path
+msgid "File"
+msgstr "Lêer"
+
+#. CONTEXT: configuration: filter display: song selection filters
+#. CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog
+#. CONTEXT: song selection filter: title for the filter dialog
+msgid "Filter Songs"
+msgstr "Filter liedjies"
+
+#. CONTEXT: audio identification: first song
+#. CONTEXT: song editor : first song
+msgid "First"
+msgstr "Eerstens"
+
+#. CONTEXT: select folder dialog: filter on folders.
+msgid "Folder"
+msgstr "Folder"
+
+#. CONTEXT: configuration: the font to use for the user interface
+msgid "Font"
+msgstr "Lettertipe"
+
+#. CONTEXT: playerui: menu selection: marquee: change the marquee font size
+#. CONTEXT: playerui: marquee font size dialog: the font size selector
+msgid "Font Size"
+msgstr "Lettergrootte"
+
+#. CONTEXT: configuration file: dance
+msgid "Foxtrot"
+msgstr "Foxtrot"
+
+#. CONTEXT: configuration: queue: the amount of time to wait inbetween songs
+#. CONTEXT: playlist management: Gap between songs
+msgid "Gap Between Songs"
+msgstr "Gaping tussen liedjies"
+
+#. CONTEXT: configuration: general options that apply to everything
+msgid "General"
+msgstr "Algemeen"
+
+#. CONTEXT: label: genre
+msgid "Genre"
+msgstr "Genre"
+
+#. CONTEXT: configuration file: rating
+msgid "Good"
+msgstr "Goed"
+
+#. CONTEXT: configuration file: rating
+msgid "Great"
+msgstr "Groot"
+
+#. CONTEXT: configuration: remote control: the HTML template to use
+msgid "HTML Template"
+msgstr "HTML-sjabloon"
+
+#. CONTEXT: HTTP response code (error)
+msgid "HTTP Code"
+msgstr "HTTP-kode"
+
+#. CONTEXT: playlist management: hide unselected dances
+msgid "Hide Unselected"
+msgstr "Versteek ongekies"
+
+#. CONTEXT: configuration: dances: high BPM (or MPM) setting
+#. CONTEXT: playlist management: high bpm/mpm column header
+#, c-format
+msgid "High %s"
+msgstr "Hoog %s"
+
+#. CONTEXT: playlist management: High Dance Level
+msgid "High Dance Level"
+msgstr "Hoë dansvlak"
+
+#. CONTEXT: configuration: display settings for: history
+#. CONTEXT: playlist: the name of the history song list
+#. CONTEXT: playerui: name of the history tab : displayed played songs
+#. CONTEXT: playerui: name of the saved history playlist
+msgid "History"
+msgstr "Geskiedenis"
+
+#. CONTEXT: installer: instructions
+msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
+msgstr "As daar geen BallroomDJ 3-installasie is nie, laat die inskrywing leeg."
+
+#. CONTEXT: export/import bdj4 dialog: import button
+#. CONTEXT: import from itunes: import the selected itunes playlist
+#. CONTEXT: managementui: menu selection: import actions for song list
+msgid "Import"
+msgstr "Invoer"
+
+#. CONTEXT: managementui: menu selection: song list: import
+#. CONTEXT: managementui: song list import: title of dialog
+msgid "Import Playlist"
+msgstr "Voer snitlys in"
+
+#. CONTEXT: export/import bdj4: import folder location
+msgid "Import from"
+msgstr "Voer in vanaf"
+
+#. CONTEXT: import from ballroomdj: title of dialog
+#. CONTEXT: import from itunes: title for the dialog
+#. CONTEXT: managementui: menu selection: song list: import: import from ballroomdj
+#. CONTEXT: managementui: menu selection: song list: import: import from itunes
+#, c-format
+msgid "Import from %s"
+msgstr "Voer in vanaf %s"
+
+#. CONTEXT: alternate installation: status message
+msgid "Initial Setup."
+msgstr "Aanvanklike opstelling."
+
+#. CONTEXT: alternate installation: install BDJ4 in the alternate location
+#. CONTEXT: installer: start the installation process
+msgid "Install"
+msgstr "Installeer"
+
+#. CONTEXT: alternate installation: dialog title for selecting location
+#. CONTEXT: installer: dialog title for selecting install location
+msgid "Install Location"
+msgstr "Installeer ligging"
+
+#. CONTEXT: installer: status message
+msgid "Installation aborted."
+msgstr "Installasie gestop."
+
+#. CONTEXT: installer: status message
+msgid "Installation complete."
+msgstr "Installasie voltooi."
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Installing %s."
+msgstr "Installeer tans %s."
+
+#. CONTEXT: configuration: mobile marquee type: internet
+msgid "Internet"
+msgstr "Internet"
+
+#. CONTEXT: Send support message: Error message for invalid e-mail.
+msgid "Invalid E-Mail Address."
+msgstr "Ongeldige e-posadres."
+
+#. CONTEXT: alternate installation: the selected folder is not valid
+#. CONTEXT: installer: the selected folder is not valid
+#. CONTEXT: export/import bdj4: invalid target folder
+msgid "Invalid Folder"
+msgstr "Ongeldige vouer"
+
+#. CONTEXT: alternate installer: invalid name status message
+msgid "Invalid Name"
+msgstr "Ongeldige naam"
+
+#. CONTEXT: copy audio tags: one of the files does not exist
+msgid "Invalid Selections"
+msgstr "Ongeldige keuses"
+
+#. CONTEXT: Saving Song List: Error message for invalid song list name.
+#. CONTEXT: Saving Playlist: Error message for invalid playlist name.
+#. CONTEXT: Saving Sequence: Error message for invalid sequence name.
+msgid "Invalid name. Using old name."
+msgstr "Ongeldige naam. Gebruik ou naam."
+
+#. CONTEXT: configuration file: genre
+msgid "Jazz"
+msgstr "Jazz"
+
+#. CONTEXT: configuration file: dance
+msgid "Jive"
+msgstr "Jive"
+
+#. CONTEXT: label: keyword (used to filter out songs)
+msgid "Keyword"
+msgstr "Sleutelwoord"
+
+#. CONTEXT: label: when the database entry was last updated
+msgid "Last Updated"
+msgstr "Laas opgedateer"
+
+#. CONTEXT: starterui: basic support dialog, latest version display
+msgid "Latest Version"
+msgstr "Nuutste weergawe"
+
+#. CONTEXT: label: dance level (short name for listing)
+msgid "Level"
+msgstr "Vlak"
+
+#. CONTEXT: configuration: the font to use for the queues and song lists
+msgid "Listing Font"
+msgstr "Lys lettertipe"
+
+#. CONTEXT: managementui: menu selection: song list: edit menu: load
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: load
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: load
+msgid "Load"
+msgstr "Laai"
+
+#. CONTEXT: database update: status message: files found in the database
+msgid "Loaded from Database"
+msgstr "Gelaai vanaf databasis"
+
+#. CONTEXT: configuration: mobile marquee type: local
+msgid "Local"
+msgstr "Plaaslik"
+
+#. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
+msgid "Locale"
+msgstr "Lokaal"
+
+#. CONTEXT: installer: status message
+msgid "Located 'tclsh'."
+msgstr "Geleë 'tclsh'."
+
+#. CONTEXT: configuration: dances: low BPM (or MPM) setting
+#. CONTEXT: playlist management: low bpm/mpm column header
+#, c-format
+msgid "Low %s"
+msgstr "Laag %s"
+
+#. CONTEXT: playlist management: Low Dance Level
+msgid "Low Dance Level"
+msgstr "Lae dansvlak"
+
+#. CONTEXT: label: measures per minute
+#. CONTEXT: bpm counter: MPM
+msgid "MPM"
+msgstr "MPM"
+
+#. CONTEXT: starterui: button: starts the management user interface
+msgid "Manage"
+msgstr "Bestuur"
+
+#. CONTEXT: managementui: menu selection: music manager: set same-song mark
+msgid "Mark as Same Song"
+msgstr "Merk as dieselfde liedjie"
+
+#. CONTEXT: configuration: display settings for: Marquee (song display screen)
+#. CONTEXT: configuration: options associated with the marquee (suggested: song display)
+#. CONTEXT: marquee: marquee window title (suggested: song display)
+#. CONTEXT: playerui: menu selection: marquee related options (suggested: song display)
+msgid "Marquee"
+msgstr "Markiestent"
+
+#. CONTEXT: label: marquee display (alternate display for the marquee, replaces dance)
+msgid "Marquee Display"
+msgstr "Markiestent vertoon"
+
+#. CONTEXT: configuration: The font to use for the marquee display
+msgid "Marquee Font"
+msgstr "Marquee Font"
+
+#. CONTEXT: playerui: marquee font size dialog: window title
+msgid "Marquee Font Size"
+msgstr "Marquee Font Grootte"
+
+#. CONTEXT: configuration: The theme to use for the marquee display
+msgid "Marquee Theme"
+msgstr "Marquee Tema"
+
+#. CONTEXT: playlist management: max play time column header (keep short)
+msgid ""
+"Maximum\n"
+"Play Time"
+msgstr "Maksimum\n"
+"Speeltyd"
+
+#. CONTEXT: configuration: queue: the maximum amount of time to play a song
+#. CONTEXT: playlist management: maximum play time
+msgid "Maximum Play Time"
+msgstr "Maksimum speeltyd"
+
+#. CONTEXT: starterui: sending support message: message text
+msgid "Message"
+msgstr "Boodskap"
+
+#. CONTEXT: configuration: show-marquee: minimize
+msgid "Minimised"
+msgstr "Geminimaliseer"
+
+#. CONTEXT: managementui: menu selection: song list: actions menu: rearrange the songs and create a new mix
+msgid "Mix"
+msgstr "Meng"
+
+#. CONTEXT: configuration: qr code: title display for mobile marquee
+#. CONTEXT: configuration: options associated with the mobile marquee
+msgid "Mobile Marquee"
+msgstr "Mobiele markiestent"
+
+#. CONTEXT: configuration: qr code: title display for mobile remote control
+#. CONTEXT: configuration: options associated with mobile remote control
+msgid "Mobile Remote Control"
+msgstr "Mobiele afstandbeheer"
+
+#. CONTEXT: configuration: table edit: button: move selection down
+#. CONTEXT: music queue: button: move the selected song down in the queue
+#. CONTEXT: side-by-side list: button: move the selected field down
+msgid "Move Down"
+msgstr "Beweeg af"
+
+#. CONTEXT: configuration: table edit: button: move selection up
+#. CONTEXT: music queue: button: move the selected song up in the queue
+#. CONTEXT: side-by-side list: button: move the selected field up
+msgid "Move Up"
+msgstr "Beweeg op"
+
+#. CONTEXT: music queue: button: move the selected song to the top of the queue
+msgid "Move to Top"
+msgstr "Skuif na bo"
+
+#. CONTEXT: configuration: the music folder where the user stores their music
+#. CONTEXT: update database: music folder to process
+msgid "Music Folder"
+msgstr "Musiek gids"
+
+#. CONTEXT: configuration: display settings for: music manager
+#. CONTEXT: managementui: name of music manager notebook tab
+#. CONTEXT: managementui: name of song selection notebook tab
+msgid "Music Manager"
+msgstr "Musiekbestuurder"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+#. CONTEXT: configuration: display settings for: music queue
+msgid "Music Queue"
+msgstr "Musiek tou"
+
+#. CONTEXT: configuration: music queue configuration
+msgid "Music Queues"
+msgstr "Musiek toue"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Mute"
+msgstr "Demp"
+
+#. CONTEXT: alternate installation: name (for shortcut)
+msgid "Name"
+msgstr "Naam"
+
+#. CONTEXT: configuration file: status
+#. CONTEXT: status: default status (new) when status is not set
+msgid "New"
+msgstr "Nuut"
+
+#. CONTEXT: alternate installation: message indicating the action that will be taken
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "New %s installation."
+msgstr "Nuwe %s installasie."
+
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist
+msgid "New Automatic Playlist"
+msgstr "Nuwe outomatiese snitlys"
+
+#. CONTEXT: configuration: dance name that is set when adding a new dance
+msgid "New Dance"
+msgstr "Nuwe Dans"
+
+#. CONTEXT: database update: status message: new files saved to the database
+msgid "New Files"
+msgstr "Nuwe lêers"
+
+#. CONTEXT: configuration: genre name that is set when adding a new genre
+msgid "New Genre"
+msgstr "Nuwe Genre"
+
+#. CONTEXT: configuration: level name that is set when adding a new level
+msgid "New Level"
+msgstr "Nuwe vlak"
+
+#. CONTEXT: playlist management: default name for a new playlist
+msgid "New Playlist"
+msgstr "Nuwe snitlys"
+
+#. CONTEXT: starterui: name of the new profile (New profile 9)
+#, c-format
+msgid "New Profile %d"
+msgstr "Nuwe profiel %d"
+
+#. CONTEXT: configuration: rating name that is set when adding a new rating
+msgid "New Rating"
+msgstr "Nuwe gradering"
+
+#. CONTEXT: sequence editor: default name for a new sequence
+msgid "New Sequence"
+msgstr "Nuwe reeks"
+
+#. CONTEXT: managementui: song list: default name for a new song list
+msgid "New Song List"
+msgstr "Nuwe Liedjie Lys"
+
+#. CONTEXT: export/import bdj4: new song list name
+msgid "New Song List Name"
+msgstr "Nuwe Liedjie Lys Naam"
+
+#. CONTEXT: configuration: status name that is set when adding a new status
+msgid "New Status"
+msgstr "Nuwe Status"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: audio identification: next song
+#. CONTEXT: song editor : next song
+#. CONTEXT: helperui: proceed to the next step
+msgid "Next"
+msgstr "Volgende"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: tooltip: start playing the next song (immediate)
+msgid "Next Song"
+msgstr "Volgende Liedjie"
+
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+msgid "No folder specified."
+msgstr "Geen vouer gespesifiseer nie."
+
+#. CONTEXT: starterui: no internet connection
+msgid "No internet connection"
+msgstr "Geen internet konneksie nie"
+
+#. CONTEXT: configuration file: genre
+#. CONTEXT: configuration: controller: no controller
+msgid "None"
+msgstr "Geen"
+
+#. CONTEXT: configuration file: dance level
+msgid "Normal"
+msgstr "Normaal"
+
+#. CONTEXT: marquee: displayed when nothing is set to be played
+#. CONTEXT: mobile marquee: playback is not active
+msgid "Not Playing"
+msgstr "Speel nie"
+
+#. CONTEXT: installer: the location entered is not a valid BDJ3 location.
+#, c-format
+msgid "Not a valid %s folder."
+msgstr "Nie 'n geldige %s vouer nie."
+
+#. CONTEXT: label: notes
+msgid "Notes"
+msgstr "Notas"
+
+#. CONTEXT: configuration: show-marquee: off
+#. CONTEXT: configuration: mobile marquee type: off
+msgid "Off"
+msgstr "Af"
+
+#. CONTEXT: managementui: menu selection: song list: options menu
+#. CONTEXT: playerui: menu selection: options for the player
+msgid "Options"
+msgstr "Opsies"
+
+#. CONTEXT: configuration: dance levels: instructions
+msgid "Order from easiest to most advanced."
+msgstr "Bestel van maklikste tot mees gevorderde."
+
+#. CONTEXT: configuration: dance ratings: information on how to order the ratings
+msgid "Order from the lowest rating to the highest rating."
+msgstr "Bestel van die laagste gradering tot die hoogste gradering."
+
+#. CONTEXT: configuration: options associated with how audio files are organized
+msgid "Organisation"
+msgstr "Organisasie"
+
+#. CONTEXT: configuration: the audio file organization path
+msgid "Organisation Path"
+msgstr "Organisasie pad"
+
+#. CONTEXT: database update: status message: other files that cannot be processed
+msgid "Other Files"
+msgstr "Ander lêers"
+
+#. CONTEXT: configuration file: dance
+msgid "Paso Doble"
+msgstr "Paso Doble"
+
+#. CONTEXT: configuration: mobile marquee: internet: password
+#. CONTEXT: configuration: remote control: the password for sign-on to remote control
+msgid "Password"
+msgstr "Wagwoord"
+
+#. CONTEXT: configuration: queue: pause each song
+msgid "Pause Each Song"
+msgstr "Onderbreek elke liedjie"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: pause at the end of the song (toggle)
+msgid "Pause at End"
+msgstr "Pouse aan die einde"
+
+#. CONTEXT: music queue: tooltip: play the selected song
+#. CONTEXT: song-selection: tooltip: play the selected songs
+#. CONTEXT: song editor : play song
+msgid "Play"
+msgstr "Speel"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: tooltip: play or pause the song
+msgid "Play / Pause"
+msgstr "Speel / Pouse"
+
+#. CONTEXT: configuration: queue: whether to play announcements
+#. CONTEXT: playlist management: Play Announcements
+msgid "Play Announcements"
+msgstr "Speel Aankondigings"
+
+#. CONTEXT: configuration: queue: play when queued (verb)
+msgid "Play When Queued"
+msgstr "Speel wanneer in tou staan"
+
+#. CONTEXT: configuration: status: title of the "playable" column
+msgid "Play?"
+msgstr "Speel?"
+
+#. CONTEXT: configuration: filter display: checkbox: status is playable
+#. CONTEXT: song selection filter: a filter: the song status is marked as playable
+msgid "Playable Status"
+msgstr "Speelbare status"
+
+#. CONTEXT: configuration: options associated with the player
+#. CONTEXT: configuration: which player interface to use
+#. CONTEXT: starterui: button: starts the player user interface
+msgid "Player"
+msgstr "Speler"
+
+#. CONTEXT: select file: file type for the file selection dialog (playlist)
+#. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
+#. CONTEXT: create from playlist: select the playlist to use
+#. CONTEXT: playlist management: label for playlist name
+msgid "Playlist"
+msgstr "Snitlys"
+
+#. CONTEXT: managementui: notebook tab title: playlist management
+msgid "Playlist Management"
+msgstr "Snitlysbestuur"
+
+#. CONTEXT: playlist management: label for playlist name
+msgid "Playlist Type"
+msgstr "Tipe snitlys"
+
+#. CONTEXT: managementui: export playlist: name of file export type
+#. CONTEXT: managementui: song list import: name of file import type
+msgid "Playlists"
+msgstr "Snitlyste"
+
+#. CONTEXT: installer: status message
+#. CONTEXT: apply adjustments: please wait... status message
+#. CONTEXT: please wait... status message
+#. CONTEXT: management ui: please wait... status message
+#. CONTEXT: export as mp3: please wait... status message
+#. CONTEXT: starter ui: please wait... status message
+msgid "Please wait…"
+msgstr "Wag asseblief…"
+
+#. CONTEXT: please wait... (count/total) status message
+#, c-format
+msgid "Please wait… (%1$d/%2$d)"
+msgstr "Wag asseblief… (%1$d/%2$d)"
+
+#. CONTEXT: configuration file: rating
+msgid "Poor"
+msgstr "Arm"
+
+#. CONTEXT: configuration: the port to use for the mobile marquee
+#. CONTEXT: configuration: remote control: the port to use for remote control
+msgid "Port"
+msgstr "Port"
+
+#. CONTEXT: playerui: the current position of the song during song playback
+msgid "Position"
+msgstr "Posisie"
+
+#. CONTEXT: label: lock audio file location
+msgid "Prevent Rename"
+msgstr "Voorkom Hernoem"
+
+#. CONTEXT: audio identification: previous song
+#. CONTEXT: song editor : previous song
+msgid "Previous"
+msgstr "Vorige"
+
+#. CONTEXT: alternate installation: status message
+msgid "Process aborted."
+msgstr "Proses gestop."
+
+#. CONTEXT: starterui: profile to be used when starting BDJ4
+msgid "Profile"
+msgstr "Profiel"
+
+#. CONTEXT: configuration: the profile accent color (identifies profile)
+msgid "Profile Colour"
+msgstr "Profiel kleur"
+
+#. CONTEXT: configuration: the name of this profile
+msgid "Profile Name"
+msgstr "Profiel Naam"
+
+#. CONTEXT: starterui: profile is already in use
+msgid "Profile in use"
+msgstr "Profiel in gebruik"
+
+#. CONTEXT: starter: status message
+msgid "Profile may not be deleted."
+msgstr "Profiel mag nie uitgevee word nie."
+
+#. CONTEXT: configuration: mobile marquee: the link to display the QR code for the mobile marquee
+#. CONTEXT: configuration: remote control: the link to display the QR code for remote control
+msgid "QR Code"
+msgstr "QR-kode"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
+#. CONTEXT: (verb) song-selection: queue a song to be played
+#. CONTEXT: (verb) external request dialog: queue the selected file
+msgid "Queue"
+msgstr "Tou"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button)
+msgid "Queue 5"
+msgstr "Tou 5"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue B"
+msgstr "Tou B"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue C"
+msgstr "Tou C"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue D"
+msgstr "Tou D"
+
+#. CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue
+msgid "Queue Dance"
+msgstr "Tou Dans"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue E"
+msgstr "Tou E"
+
+#. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee
+#. CONTEXT: (noun) configuration: the number of items loaded into the music queue
+msgid "Queue Length"
+msgstr "Tou lengte"
+
+#. CONTEXT: (noun) configuration: queue: the name of the music queue
+msgid "Queue Name"
+msgstr "Waglys Naam"
+
+#. CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue'
+msgid "Queue Playlist"
+msgstr "Tou snitlys"
+
+#. CONTEXT: The name of the 'queuedance' playlist file
+#. CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button
+#. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
+#. CONTEXT: player: the name of the special playlist for queueing a dance
+msgid "QueueDance"
+msgstr "QueueDance"
+
+#. CONTEXT: (noun) configuration: queue: select which queue to configure
+msgid "Queue_noun"
+msgstr "Tou"
+
+#. CONTEXT: configuration: filter display: quick edit filters
+#. CONTEXT: quick edit: title of dialog
+msgid "Quick Edit"
+msgstr "Vinnige wysiging"
+
+#. CONTEXT: playerui: menu selection: action: quick edit current song
+msgid "Quick Edit: Current"
+msgstr "Vinnige wysiging: Huidig"
+
+#. CONTEXT: playerui: menu selection: action: quick edit selected song
+msgid "Quick Edit: Selected"
+msgstr "Vinnige wysiging: Gekies"
+
+#. CONTEXT: configuration file: dance
+msgid "Quickstep"
+msgstr "Quickstep"
+
+#. CONTEXT: configuration: itunes: label for itunes rating conversion
+#. CONTEXT: label: dance rating (short name for listing)
+msgid "Rating"
+msgstr "Gradering"
+
+#. CONTEXT: alternate installation: checkbox: re-install
+#. CONTEXT: installer: checkbox: re-install BDJ4
+msgid "Re-Install"
+msgstr "Herinstalleer"
+
+#. CONTEXT: alternate installation: message indicating the action that will be taken
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "Re-install %s.  Overwrites existing configuration."
+msgstr "Herinstalleer %s. Oorskryf bestaande konfigurasie."
+
+#. CONTEXT: database update: rebuilds the database
+msgid "Rebuild Database"
+msgstr "Herbou databasis"
+
+#. CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen
+msgid "Recover Marquee"
+msgstr "Herwin Marquee"
+
+#. CONTEXT: player-ui: error message
+msgid "Recovered from crash."
+msgstr "Na ongeluk herstel."
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Registering %s."
+msgstr "Registreer %s."
+
+#. CONTEXT: playerui: menu selection: action: reload
+msgid "Reload"
+msgstr "Herlaai"
+
+#. CONTEXT: music queue: button: remove the song from the queue
+#. CONTEXT: side-by-side list: button: remove the selected field
+msgid "Remove"
+msgstr "Verwyder"
+
+#. CONTEXT: managementui: menu selection: music manager: remove song
+msgid "Remove Song"
+msgstr "Verwyder liedjie"
+
+#. CONTEXT: database update: status message: number of files renamed
+msgid "Renamed"
+msgstr "Hernoem"
+
+#. CONTEXT: database update: reorganize : help text
+msgid "Renames the audio files based on the organization settings."
+msgstr "Hernoem die oudiolêers gebaseer op die organisasie-instellings."
+
+#. CONTEXT: database update: reorganize : renames audio files based on organization settings
+msgid "Reorganise"
+msgstr "Herorganiseer"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Repeat"
+msgstr "Herhaal"
+
+#. CONTEXT: database update: rebuild: help text
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
+msgstr "Vervang die BallroomDJ-databasis in sy geheel. Alle veranderinge aan die databasis sal verlore gaan."
+
+#. CONTEXT: configuration: display settings for: requests
+#. CONTEXT: playerui: name of request tab : lists the songs in the database
+msgid "Request"
+msgstr "Versoek"
+
+#. CONTEXT: song selection filter: filter dialog: resets the selections
+#. CONTEXT: bpm counter: reset button
+msgid "Reset"
+msgstr "Stel terug"
+
+#. CONTEXT: apply adjustment dialog: restore original file
+#. CONTEXT: managementui: song editor menu: restore original
+msgid "Restore Original"
+msgstr "Herstel oorspronklike"
+
+#. CONTEXT: playerui: button: tooltip: return to the beginning of the song
+msgid "Return to beginning of song"
+msgstr "Keer terug na die begin van die liedjie"
+
+#. CONTEXT: configuration file: genre
+msgid "Rock"
+msgstr "Rots"
+
+#. CONTEXT: configuration file: dance
+msgid "Rumba"
+msgstr "Rumba"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Running conversion script: %s."
+msgstr "Lopende omskakelingskrip: %s."
+
+#. CONTEXT: configuration file: dance
+msgid "Salsa"
+msgstr "Salsa"
+
+#. CONTEXT: configuration file: dance
+msgid "Samba"
+msgstr "Samba"
+
+#. CONTEXT: audio identification: save data
+#. CONTEXT: song editor : save data
+#. CONTEXT: quick edit dialog: save button
+#. CONTEXT: bpm counter: save button
+msgid "Save"
+msgstr "Stoor"
+
+#. CONTEXT: alternate installer: status message
+#. CONTEXT: installer: status message
+msgid "Saving install location."
+msgstr "Stoor tans installasieligging."
+
+#. CONTEXT: configuration: scaling factor for the user interface
+msgid "Scale"
+msgstr "Skaal"
+
+#. CONTEXT: audio identification: the score or rating of each match
+msgid "Score"
+msgstr "Telling"
+
+#. CONTEXT: song selection filter: a filter: filter the song selection with a search for text
+msgid "Search"
+msgstr "Soek"
+
+#. CONTEXT: bpm counter: number of seconds
+msgid "Seconds"
+msgstr "Sekondes"
+
+#. CONTEXT: song-selection: select a song to be added to the song list
+#. CONTEXT: select folder dialog: select folder
+#. CONTEXT: select file dialog: select file
+#. CONTEXT: side-by-side list: button: add the selected field
+#. CONTEXT: select file: selects the file
+#. CONTEXT: managementui: config: button: add the selected songs to the song list
+msgid "Select"
+msgstr "Kies"
+
+#. CONTEXT: select file: title of window: select <file-type>
+#, c-format
+msgid "Select %s"
+msgstr "Kies %s"
+
+#. CONTEXT: installer: dialog title for selecting BDJ3 location
+#, c-format
+msgid "Select %s Location"
+msgstr "Kies %s Ligging"
+
+#. CONTEXT: configuration: itunes media folder selection dialog: window title
+#, c-format
+msgid "Select %s Media Location"
+msgstr "Kies %s Medialigging"
+
+#. CONTEXT: configuration: itunes xml file selection dialog: window title
+#, c-format
+msgid "Select %s XML File"
+msgstr "Kies %s XML-lêer"
+
+#. CONTEXT: select audio file: dialog title for selecting audio files
+#, c-format
+msgid "Select Audio File"
+msgstr "Kies oudiolêer"
+
+#. CONTEXT: external request: dance drop-down
+msgid "Select Dance"
+msgstr "Kies Dans"
+
+#. CONTEXT: configuration: file selection dialog: window title
+msgid "Select File"
+msgstr "Kies Lêer"
+
+#. CONTEXT: export/import bdj4 folder selection dialog: window title
+msgid "Select Folder"
+msgstr "Kies Folder"
+
+#. CONTEXT: configuration: folder selection dialog: window title
+#. CONTEXT: update database: dialog title for selecting database music folder
+#, c-format
+msgid "Select Music Folder Location"
+msgstr "Kies Musiekgidsligging"
+
+#. CONTEXT: audio identification: the data for the selected matched song
+msgid "Selected"
+msgstr "Gekies"
+
+#. CONTEXT: starterui: basic support dialog: button: support option
+#. CONTEXT: starterui: support message dialog: sends the support message
+msgid "Send Support Message"
+msgstr "Stuur ondersteuningsboodskap"
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending %s"
+msgstr "Stuur tans %s"
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending %s Information"
+msgstr "Stuur %s inligting"
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending Diagnostics"
+msgstr "Stuur diagnostiek"
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending Support Message"
+msgstr "Stuur ondersteuningsboodskap"
+
+#. CONTEXT: select file: file type for the file selection dialog (sequence)
+#. CONTEXT: playlist management: type of playlist
+#. CONTEXT: sequence editor: label for sequence name
+#. CONTEXT: sequence editor: sequence name
+#. CONTEXT: sequence editor: title for the sequence list
+msgid "Sequence"
+msgstr "Volgorde"
+
+#. CONTEXT: playerui: select the current queue for playback
+msgid "Set Queue for Playback"
+msgstr "Stel waglys vir afspeel"
+
+#. CONTEXT: starterui: menu item: install in alternate folder
+#, c-format
+msgid "Set Up Alternate Folder"
+msgstr "Stel alternatiewe gids op"
+
+#. CONTEXT: playlist management: notebook tab title: settings
+msgid "Settings"
+msgstr "Instellings"
+
+#. CONTEXT: alternate installation: status message
+msgid "Setup complete."
+msgstr "Opstelling voltooi."
+
+#. CONTEXT: configuration: queue: whether to show the extra queue buttons (queue dance, queue 5)
+msgid "Show Extra Queue Buttons"
+msgstr "Wys ekstra tou-knoppies"
+
+#. CONTEXT: playerui: menu checkbox: show the extra queues (in addition to the main music queue)
+msgid "Show Extra Queues"
+msgstr "Wys ekstra toue"
+
+#. CONTEXT: configuration: show-marquee: selection
+msgid "Show Marquee"
+msgstr "Wys Marquee"
+
+#. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee
+msgid "Show Song Information"
+msgstr "Wys Liedjie Inligting"
+
+#. CONTEXT: configuration: whether or not to show the speed reset button
+msgid "Show Speed Reset"
+msgstr "Wys spoedterugstelling"
+
+#. CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux.
+msgid "Shutdown Script"
+msgstr "Afsluitskrif"
+
+#. CONTEXT: configuration: display settings for: side-by-side song list (suggestion: combined view: song list)
+msgid "Side-by-Side Song List"
+msgstr "Sy-aan-sy Liedjie Lys"
+
+#. CONTEXT: configuration: display settings for: side-by-side song selection (suggestion: combined view: song selection)
+msgid "Side-by-Side Song Selection"
+msgstr "Sy-aan-sy Liedjie Keuse"
+
+#. CONTEXT: managementui: menu checkbox: side-by-side view (suggestion: combined view)
+msgid "Side-by-Side View"
+msgstr "Sy-aan-sy-aansig"
+
+#. CONTEXT: installer: status message
+msgid "Skipping conversion."
+msgstr "Slaan omskakeling oor."
+
+#. CONTEXT: managementui: name of song editor notebook tab
+msgid "Song Editor"
+msgstr "Liedredakteur"
+
+#. CONTEXT: configuration: display settings for: song editor column N
+#, c-format
+msgid "Song Editor - Column %d"
+msgstr "Liedjieredakteur - Kolom %d"
+
+#. CONTEXT: label: time to end the song
+msgid "Song End"
+msgstr "Liedjie Einde"
+
+#. CONTEXT: configuration: display settings for: song list
+#. CONTEXT: music queue: label for song list name
+#. CONTEXT: music queue: song list name
+#. CONTEXT: select file: file type for the file selection dialog (song list)
+#. CONTEXT: export/import bdj4: playlist: select the song list
+#. CONTEXT: managementui: name of side-by-side view tab
+#. CONTEXT: managementui: name of song list notebook tab
+#. CONTEXT: playlist management: type of playlist
+msgid "Song List"
+msgstr "Liedjie Lys"
+
+#. CONTEXT: configuration: display settings for: song selection
+#. CONTEXT: managementui: name of song selection notebook tab
+msgid "Song Selection"
+msgstr "Liedjie Keuse"
+
+#. CONTEXT: label: time to start the song
+msgid "Song Start"
+msgstr "Liedjie begin"
+
+#. CONTEXT: statistics: Label for number of songs in song list
+msgid "Songs"
+msgstr "Liedjies"
+
+#. CONTEXT: song selection filter: a filter: select the method to sort the song selection display
+msgid "Sort by"
+msgstr "Sorteer volgens"
+
+#. CONTEXT: audio identification: the audio identification source
+#. CONTEXT: song editor: copy tags: source file
+msgid "Source"
+msgstr "Bron"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow)
+#. CONTEXT: playerui: the current speed for song playback
+msgid "Speed"
+msgstr "Spoed"
+
+#. CONTEXT: label: speed adjustment for playback
+msgid "Speed Adjustment"
+msgstr "Spoedaanpassing"
+
+#. CONTEXT: update database: button to start the database update process
+msgid "Start"
+msgstr "Begin"
+
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: start new sequence
+msgid "Start New Sequence"
+msgstr "Begin nuwe reeks"
+
+#. CONTEXT: managementui: menu selection: song list: edit menu: start new song list
+msgid "Start New Song List"
+msgstr "Begin nuwe liedjielys"
+
+#. CONTEXT: installer: status message
+msgid "Starting conversion process."
+msgstr "Begin omskakelingsproses."
+
+#. CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux.
+msgid "Startup Script"
+msgstr "Opstartskrif"
+
+#. CONTEXT: managementui: name of statistics tab
+msgid "Statistics"
+msgstr "Statistiek"
+
+#. CONTEXT: label: status
+msgid "Status"
+msgstr "Status"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: update database: button to stop the database update process
+msgid "Stop"
+msgstr "Stop"
+
+#. CONTEXT: playlist management: stop after
+msgid "Stop After"
+msgstr "Stop Na"
+
+#. CONTEXT: starterui: menu item: stop all BDJ4 processes
+#, c-format
+msgid "Stop All %s Processes"
+msgstr "Stop alle %s prosesse"
+
+#. CONTEXT: configuration: queue: the time when playback will stop
+#. CONTEXT: playlist management: stop at
+msgid "Stop At"
+msgstr "Stop By"
+
+#. CONTEXT: database update: status message
+msgid "Stopped by User"
+msgstr "Gestop deur gebruiker"
+
+#. CONTEXT: starterui: sending support message: subject of message
+msgid "Subject"
+msgstr "Onderwerp"
+
+#. CONTEXT: starterui: button: support : support information
+#. CONTEXT: starterui: title for the support dialog
+msgid "Support"
+msgstr "Ondersteuning"
+
+#. CONTEXT: starterui: title for the support message dialog
+msgid "Support Message"
+msgstr "Ondersteuningsboodskap"
+
+#. CONTEXT: starterui: basic support dialog, list of support options
+msgid "Support options"
+msgstr "Ondersteuning opsies"
+
+#. CONTEXT: managementui: menu selection: song list: actions menu: swap two songs
+msgid "Swap"
+msgstr "Ruil"
+
+#. CONTEXT: playerui: menu checkbox: when a queue is emptied, switch playback to the next queue
+msgid "Switch Queue When Empty"
+msgstr "Skakel waglys wanneer leeg"
+
+#. CONTEXT: configuration: mobile marquee: internet: tag
+msgid "Tag"
+msgstr "Merk"
+
+#. CONTEXT: configuration: dances: tags associated with the dance
+#. CONTEXT: label: tags (for use by the user)
+#. CONTEXT: playlist management: tags
+msgid "Tags"
+msgstr "Merkers"
+
+#. CONTEXT: configuration file: dance
+msgid "Tango"
+msgstr "Tango"
+
+#. CONTEXT: song editor: copy tags: target file
+msgid "Target"
+msgstr "Teiken"
+
+#. CONTEXT: configuration file: The completion message displayed on the marquee when the playlist is finished.
+msgid "Thank You Dancers"
+msgstr "Dankie Dansers"
+
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+msgid "The conversion process will not be run."
+msgstr "Die omskakelingsproses sal nie uitgevoer word nie."
+
+#. CONTEXT: installer: instructions
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
+msgstr "Die omskakelingsproses sal slegs loop vir nuwe installasies en vir herinstallasies."
+
+#. CONTEXT: configuration: the theme to use for the user interface
+msgid "Theme"
+msgstr "Tema"
+
+#. CONTEXT: create from playlist: set the maximum time for the song list
+msgid "Time Limit"
+msgstr "Tydsbeperking"
+
+#. CONTEXT: configuration: dances: time signature for the dance
+msgid "Time Signature"
+msgstr "Tydmaatteken"
+
+#. CONTEXT: configuration: the title to display on the mobile marquee
+#. CONTEXT: label: title
+msgid "Title"
+msgstr "Titel"
+
+#. CONTEXT: label: title sort order
+msgid "Title Sort Order"
+msgstr "Titel Sorteer volgorde"
+
+#. CONTEXT: music queue: button: set playback to pause after the selected song is played (toggle)
+msgid "Toggle Pause"
+msgstr "Wissel Pouse"
+
+#. CONTEXT: playerui: button: tooltip: toggle the repeat song on and off
+msgid "Toggle Repeat"
+msgstr "Wissel Herhaal"
+
+#. CONTEXT: label: total disc count (short name for listing)
+msgid "Tot. Discs"
+msgstr "Tot. Skyfies"
+
+#. CONTEXT: label: total track count (short name for listing)
+msgid "Tot. Tracks"
+msgstr "Tot. Spore"
+
+#. CONTEXT: label: total disc count
+msgid "Total Discs"
+msgstr "Totale skywe"
+
+#. CONTEXT: database update: status message: total number of files found
+msgid "Total Files"
+msgstr "Totale lêers"
+
+#. CONTEXT: statistics: Label for total song list duration
+msgid "Total Time"
+msgstr "Totale Tyd"
+
+#. CONTEXT: label: total track count
+msgid "Total Tracks"
+msgstr "Totale snitte"
+
+#. CONTEXT: label: track number
+msgid "Track"
+msgstr "Spoor"
+
+#. CONTEXT: apply adjustments: trim silence checkbox
+msgid "Trim Silence"
+msgstr "Sny Stilte"
+
+#. CONTEXT: managementui: menu selection: song list: actions menu: truncate the song list
+msgid "Truncate"
+msgstr "Knip af"
+
+#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+#. CONTEXT: configuration: which audio tags will be written to the audio file
+msgid "Type"
+msgstr "Tik"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Unable to determine %s version."
+msgstr "Kan nie %s weergawe bepaal nie."
+
+#. CONTEXT: installer: failure message
+#, c-format
+msgid "Unable to locate %s."
+msgstr "Kan nie %sopspoor nie."
+
+#. CONTEXT: installer: status message
+msgid "Unable to locate BDJ3 database."
+msgstr "Kan nie BDJ3-databasis opspoor nie."
+
+#. CONTEXT: managementui: menu selection: music manager: undo song removal
+msgid "Undo Song Removal"
+msgstr "Ontdoen liedjieverwydering"
+
+#. CONTEXT: configuration file: rating
+msgid "Unrated"
+msgstr "Ongegradeer"
+
+#. CONTEXT: managementui: notebook tab title: update database
+msgid "Update Database"
+msgstr "Dateer databasis op"
+
+#. CONTEXT: database update: update from itunes
+#, c-format
+msgid "Update from %s"
+msgstr "Opdatering vanaf %s"
+
+#. CONTEXT: database update: updates the database using the tags from the audio files
+msgid "Update from Audio File Tags"
+msgstr "Opdateer vanaf oudiolêeretikette"
+
+#. CONTEXT: database update: status message: number of files updated in the database
+#. CONTEXT: database update: status message: number of files updated
+msgid "Updated"
+msgstr "Opgedateer"
+
+#. CONTEXT: database update: update from itunes: help text
+#, c-format
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
+msgstr "Dateer die inligting in die BallroomDJ-databasis op vanaf die %s -databasis."
+
+#. CONTEXT: database update: update from audio file tags: help text
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
+msgstr "Dateer die inligting in die BallroomDJ-databasis op vanaf die klanklêeretikette."
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Updating %s."
+msgstr "Dateer tans %sop."
+
+#. CONTEXT: alternate installation: message indicating the action that will be taken
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "Updating existing %s installation."
+msgstr "Opdatering van bestaande %s installasie."
+
+#. CONTEXT: configuration: remote control: the user ID for sign-on to remote control
+msgid "User ID"
+msgstr "Gebruikers-ID"
+
+#. CONTEXT: configuration: options associated with the user interface
+msgid "User Interface"
+msgstr "Gebruikerskoppelvlak"
+
+#. CONTEXT: installer: status message
+msgid "Verification complete."
+msgstr "Verifikasie voltooi."
+
+#. CONTEXT: installer: status message
+msgid "Verification failed."
+msgstr "Verifikasie het misluk."
+
+#. CONTEXT: installer: status message
+msgid "Verifying installation."
+msgstr "Verifieer tans installasie."
+
+#. CONTEXT: configuration file: dance
+msgid "Viennese Waltz"
+msgstr "Weense Wals"
+
+#. CONTEXT: configuration: show-marquee: visible
+msgid "Visible"
+msgstr "Sigbaar"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: The current volume of the song
+msgid "Volume"
+msgstr "Volume"
+
+#. CONTEXT: label: volume adjustment for playback
+msgid "Volume Adjustment"
+msgstr "Volume aanpassing"
+
+#. CONTEXT: configuration file: dance
+msgid "Waltz"
+msgstr "Wals"
+
+#. CONTEXT: configuration: level: title of the weight column
+#. CONTEXT: configuration: rating: title of the weight column
+#. CONTEXT: playlist management: tag weight
+msgid "Weight"
+msgstr "Gewig"
+
+#. CONTEXT: configuration file: dance
+msgid "West Coast Swing"
+msgstr "Weskus Swaai"
+
+#. CONTEXT: bpm counter: instructions, line 2
+msgid "When the BPM value is stable, select the Save button."
+msgstr "Wanneer die BPM-waarde stabiel is, kies die Stoor-knoppie."
+
+#. CONTEXT: configuration: which audio tags will be written to the audio file
+msgid "Write Audio File Tags"
+msgstr "Skryf oudiolêeretikette"
+
+#. CONTEXT: database update: writes the tags in the database to the audio files
+msgid "Write Tags to Audio Files"
+msgstr "Skryf etikette na oudiolêers"
+
+#. CONTEXT: database update: write tags to audio files: help text
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
+msgstr "Skryf die klanklêeretikette deur die inligting van die BallroomDJ-databasis te gebruik."
+
+#. CONTEXT: configuration: dialog: XML file types
+msgid "XML Files"
+msgstr "XML-lêers"
+
+#. CONTEXT: configuration file: dance type
+msgid "club"
+msgstr "klub"
+
+#. CONTEXT: The prefix name for an audio file marked for deletion (may be abbreviated)
+msgid "delete"
+msgstr "skrap"
+
+#. CONTEXT: configuration: dance speed
+msgid "fast"
+msgstr "vinnig"
+
+#. CONTEXT: configuration file: dance type
+msgid "latin"
+msgstr "Latyns"
+
+#. CONTEXT: configuration: dance speed
+msgid "normal"
+msgstr "normaal"
+
+#. CONTEXT: The suffix for an original audio file (may be abbreviated)
+msgid "original"
+msgstr "oorspronklike"
+
+#. CONTEXT: configuration: dance speed
+msgid "slow"
+msgstr "stadig"
+
+#. CONTEXT: configuration file: dance type
+msgid "standard"
+msgstr "standaard"
+
+#. CONTEXT: The name of the 'standardrounds' playlist file
+msgid "standardrounds"
+msgstr "standaardrondes"
+
+#. CONTEXT: title of a getting started help section
+msgid "How to get Support"
+msgstr "Hoe om ondersteuning te kry"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_get_support"
+msgstr "Om ondersteuning te kry, kies die 'Ondersteuning'-knoppie. Daar is skakels na die wiki, forums en probleemkaartjiestelsel. Of gebruik die 'Stuur Ondersteuningsboodskap'-knoppie om 'n boodskap te stuur."
+
+#. CONTEXT: title of a getting started help section
+msgid "Check the Dance for Each Song"
+msgstr "Kyk na die dans vir elke liedjie"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_check_dance"
+msgstr "=> Kies 'Musiekbestuurder' aan die linkerkant van die 'BDJ4 Bestuur'-venster. <br> Blaai deur die lys liedjies en maak seker dat die dans vir elke liedjie gestel is. <br>Om die dans vir 'n liedjie te stel: => Kies die liedjie. => Kies die 'Song Editor'-oortjie (onder die speler, bo die lys liedjies). => Gebruik die dans-aftreklys langs die 'Dans'-etiket en kies die dans vir die liedjie. => Kies die 'Stoor'-knoppie regs bo op die 'Liedjieredakteur'-oortjie. <br> Jy kan terugskakel na die 'Musiekbestuurder'-oortjie en kyk vir ander liedjies waarvoor die dans gestel moet word. => Laat die 'BDJ4 Management' venster oop."
+
+#. CONTEXT: title of a getting started help section
+msgid "Build the Database for the First Time"
+msgstr "Bou die databasis vir die eerste keer"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_build_db"
+msgstr "Om te kan funksioneer, hou BallroomDJ 4 'n databasis van al jou liedjies. Hierdie databasis moet vir die eerste keer gebou word. => Kies die 'Bestuur'-knoppie. => In die 'BDJ4 Management'-venster, kies die 'Dateer databasis'-afdeling aan die linkerkant van die venster. <br> Die verstekkeuring 'Kyk vir nuut' word gebruik wanneer jy liedjies by jou musiekversameling byvoeg of verwyder. => Verander die keuse na 'Herbou databasis'. => Kies die 'Begin'-knoppie. => Wag vir die herbou van die databasis om te voltooi. => Laat die 'BDJ4 Management' venster oop."
+
+#. CONTEXT: title of a getting started help section
+msgid "Create an Example Playlist"
+msgstr "Skep 'n voorbeeldsnitlys"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_create_playlist"
+msgstr "=> Kies 'Edit Song Lists' in die linkerkant van die 'BDJ4 Management' venster. <br> Aan die regterkant van die onderste gedeelte van die venster is 'n lys van jou liedjies. => Kies 'n liedjie deur daarop te klik. => Kies nou die linkerpyltjie-knoppie in die middel van die onderste gedeelte. <br> Dit sal die liedjie wat jy gekies het by die liedjielys voeg wat geskep word. => Kies 'n paar liedjies en voeg elkeen van hulle by die liedjielys. <br> Bo die liedjielys is 'n inskrywingskassie met die naam 'Nuwe Liedjielys' daarin. => Klik in die blokkie en verander die naam van die liedjielys. => Maak die 'BDJ4 Management' venster toe. Die liedjielys word outomaties gestoor."
+
+#. CONTEXT: title of a getting started help section
+msgid "Set the Location of the Music Folder"
+msgstr "Stel die ligging van die musiekgids in"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_music_location"
+msgstr "Die eerste stap is om die ligging van jou musieklêergids op te stel. => Kies die 'Konfigureer'-knoppie. <br> In die 'BDJ4-konfigurasie'-venster word die 'Algemeen'-afdeling vertoon. Die eerste item in 'General' is die 'Music Folder'. => Verander die 'Music Folder' na die ligging van jou musiek. => Laat die 'BDJ4 Configuration' venster oop."
+
+#. CONTEXT: title of a getting started help section
+msgid "Verify the Configured Dances"
+msgstr "Verifieer die gekonfigureerde danse"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_configure_dances"
+msgstr "Die name van die danse moet ooreenstem met wat jy gebruik. => Kies 'Redigeer danse' aan die linkerkant van die 'BDJ4-konfigurasie'-venster. <br> Hersien die lys danse. As 'n dans 'n ander naam het as wat jy gebruik, kies die dans en verander die naam. As 'n dans wat jy gebruik ontbreek, kies die 'Voeg by'-knoppie en voeg die dans by. As daar danse is wat jy nooit sal gebruik nie, kies die dans en kies dan die 'Verwyder'-knoppie. => Maak die 'BDJ4 Configuration' venster toe."
+
+#. CONTEXT: title of a getting started help section
+msgid "Introduction / Getting Started"
+msgstr "Inleiding / Aan die gang"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_intro"
+msgstr "Hierdie hulpprogram sal jou deur 'n paar stappe lei om jou te help om aan die gang te kom. => Kies die 'Volgende'-knoppie om voort te gaan na die volgende stap."
+
+#. CONTEXT: title of a getting started help section
+msgid "Play a Playlist"
+msgstr "Speel 'n snitlys"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_play_playlist"
+msgstr "Nou sal jy die snitlys speel wat pas geskep is. => Kies die 'Speler'-knoppie. => In die spelervenster, kies die 'Wou-snitlys'-aftreklys. => Kies die naam van die snitlys wat jy voorheen ingevoer het."
+
+#. CONTEXT: title of a getting started help section
+msgid "How is the Music Organised"
+msgstr "Hoe word die musiek georganiseer"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_music_org"
+msgstr "Die instelling van die organisasiemetode is belangrik sodat BallroomDJ 4 die inligting oor jou liedjies kan bepaal wanneer die databasis gebou word. => Kies 'Organisasie' aan die linkerkant van die 'BDJ4-konfigurasie'-venster. <br> Baie mense het hul musiek georganiseer deur elke dans in 'n aparte vouer te plaas. <br> Die verstekorganisasie is 'Dans/Titel'. As jy iTunes geïnstalleer het, sal die organisasiepad op 'Album Kunstenaar/Album/Skyf - Snit0 Titel' gestel word. => Kies die organisasiemetode wat jy vir jou liedjies gebruik in die 'Organisasiepad'-aftreklys. <br> As die organisasiepad wat jy benodig nie teenwoordig is nie, kies die 'ondersteuning'-knoppie in die beginvenster en stuur 'n ondersteuningsboodskap. Byna enige organisasiepad kan gekonfigureer word. <br> As jou oudiolêers die dans in die genre-oudiomerker gestoor het, skakel 'Databasis laai dans vanaf genre' aan. => Laat die 'BDJ4 Configuration' venster oop."
+

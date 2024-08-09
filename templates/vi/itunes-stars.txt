@@ -1,0 +1,25 @@
+# itunes-stars
+# 2023-1-2
+# version 1
+version
+..1
+10
+..Nghèo
+20
+..Nghèo
+30
+..Nghèo
+40
+..Nghèo
+50
+..Nghèo
+60
+..Tốt
+70
+..Tốt
+80
+..Tuyệt
+90
+..Tuyệt
+100
+..Tuyệt

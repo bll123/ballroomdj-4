@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2024-06-17\n"
-"PO-Revision-Date: 2024-07-28\n"
+"POT-Creation-Date: 2024-07-28\n"
+"PO-Revision-Date: 2024-08-09\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh\n"
@@ -254,8 +254,8 @@ msgstr "专辑艺术家排序"
 msgid "Album Sort Order"
 msgstr "相册排序"
 
-#. CONTEXT: song selection filter: a filter: all dances are selected
 #. CONTEXT: song-selection: filter: all dances are selected
+#. CONTEXT: song selection filter: a filter: all dances are selected
 msgid "All Dances"
 msgstr "所有舞蹈"
 
@@ -437,16 +437,16 @@ msgstr "清除同一首歌标记"
 msgid "Click the mouse in the blue box in time with the beat."
 msgstr "随着节拍在蓝色方框内点击鼠标。"
 
+#. CONTEXT: select folder dialog: close
+#. CONTEXT: select file dialog: close
+#. CONTEXT: export playlist: closes the dialog
+#. CONTEXT: select file: closes the dialog
+#. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: apply adjustment dialog: closes the dialog
 #. CONTEXT: copy tags dialog: closes the dialog
 #. CONTEXT: export/import bdj4 dialog: closes the dialog
-#. CONTEXT: export playlist: closes the dialog
 #. CONTEXT: external request dialog: closes the dialog
 #. CONTEXT: quick edit dialog: closes the dialog
-#. CONTEXT: select file: closes the dialog
-#. CONTEXT: song selection filter: filter dialog: closes the dialog
-#. CONTEXT: select folder dialog: close
-#. CONTEXT: select file dialog: close
 #. CONTEXT: bpm counter: close button
 #. CONTEXT: import from itunes: closes the dialog
 #. CONTEXT: create from playlist: closes the dialog
@@ -490,6 +490,10 @@ msgstr "音乐指挥"
 #. CONTEXT: starterui: button: starts the configuration user interface
 msgid "Configure"
 msgstr "配置"
+
+#. CONTEXT: configuration: which controller to use
+msgid "Controller"
+msgstr ""
 
 #. CONTEXT: installer: status message
 msgid "Conversion complete."
@@ -760,8 +764,8 @@ msgstr "退出"
 msgid "Exit %s and restart."
 msgstr "退出 %s 并重新启动。"
 
-#. CONTEXT: export/import bdj4 dialog: export button
 #. CONTEXT: export playlist dialog: export button
+#. CONTEXT: export/import bdj4 dialog: export button
 #. CONTEXT: managementui: menu selection: export actions for song list
 #. CONTEXT: playerui: menu selection: export
 msgid "Export"
@@ -789,8 +793,8 @@ msgstr "导出为 %s"
 msgid "Export for %s"
 msgstr "导出至 %s"
 
-#. CONTEXT: export/import bdj4: export folder location
 #. CONTEXT: export playlist: export folder location
+#. CONTEXT: export/import bdj4: export folder location
 msgid "Export to"
 msgstr "出口到"
 
@@ -826,8 +830,8 @@ msgid "File"
 msgstr "文件"
 
 #. CONTEXT: configuration: filter display: song selection filters
-#. CONTEXT: song selection filter: title for the filter dialog
 #. CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog
+#. CONTEXT: song selection filter: title for the filter dialog
 msgid "Filter Songs"
 msgstr "筛选歌曲"
 
@@ -1115,14 +1119,14 @@ msgid "Mobile Remote Control"
 msgstr "移动遥控器"
 
 #. CONTEXT: configuration: table edit: button: move selection down
-#. CONTEXT: side-by-side list: button: move the selected field down
 #. CONTEXT: music queue: button: move the selected song down in the queue
+#. CONTEXT: side-by-side list: button: move the selected field down
 msgid "Move Down"
 msgstr "向下移动"
 
 #. CONTEXT: configuration: table edit: button: move selection up
-#. CONTEXT: side-by-side list: button: move the selected field up
 #. CONTEXT: music queue: button: move the selected song up in the queue
+#. CONTEXT: side-by-side list: button: move the selected field up
 msgid "Move Up"
 msgstr "向上移动"
 
@@ -1239,6 +1243,7 @@ msgid "No internet connection"
 msgstr "无网络连接"
 
 #. CONTEXT: configuration file: genre
+#. CONTEXT: configuration: controller: no controller
 msgid "None"
 msgstr "无"
 
@@ -1309,8 +1314,8 @@ msgid "Pause at End"
 msgstr "结束时暂停"
 
 #. CONTEXT: music queue: tooltip: play the selected song
-#. CONTEXT: song editor : play song
 #. CONTEXT: song-selection: tooltip: play the selected songs
+#. CONTEXT: song editor : play song
 msgid "Play"
 msgstr "游戏"
 
@@ -1429,9 +1434,9 @@ msgid "QR Code"
 msgstr "QR 码"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: (verb) external request dialog: queue the selected file
 #. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
 #. CONTEXT: (verb) song-selection: queue a song to be played
+#. CONTEXT: (verb) external request dialog: queue the selected file
 msgid "Queue"
 msgstr "排队"
 
@@ -1538,8 +1543,8 @@ msgstr "注册 %s."
 msgid "Reload"
 msgstr "重新加载"
 
-#. CONTEXT: side-by-side list: button: remove the selected field
 #. CONTEXT: music queue: button: remove the song from the queue
+#. CONTEXT: side-by-side list: button: remove the selected field
 msgid "Remove"
 msgstr "移除"
 
@@ -1610,8 +1615,8 @@ msgid "Samba"
 msgstr "桑巴"
 
 #. CONTEXT: audio identification: save data
-#. CONTEXT: quick edit dialog: save button
 #. CONTEXT: song editor : save data
+#. CONTEXT: quick edit dialog: save button
 #. CONTEXT: bpm counter: save button
 msgid "Save"
 msgstr "节省"
@@ -1637,11 +1642,11 @@ msgstr "搜索"
 msgid "Seconds"
 msgstr "秒数"
 
-#. CONTEXT: side-by-side list: button: add the selected field
-#. CONTEXT: select file: selects the file
 #. CONTEXT: song-selection: select a song to be added to the song list
 #. CONTEXT: select folder dialog: select folder
 #. CONTEXT: select file dialog: select file
+#. CONTEXT: side-by-side list: button: add the selected field
+#. CONTEXT: select file: selects the file
 #. CONTEXT: managementui: config: button: add the selected songs to the song list
 msgid "Select"
 msgstr "选择"
@@ -1797,10 +1802,10 @@ msgid "Song End"
 msgstr "歌曲结束"
 
 #. CONTEXT: configuration: display settings for: song list
-#. CONTEXT: export/import bdj4: playlist: select the song list
 #. CONTEXT: music queue: label for song list name
 #. CONTEXT: music queue: song list name
 #. CONTEXT: select file: file type for the file selection dialog (song list)
+#. CONTEXT: export/import bdj4: playlist: select the song list
 #. CONTEXT: managementui: name of side-by-side view tab
 #. CONTEXT: managementui: name of song list notebook tab
 #. CONTEXT: playlist management: type of playlist
@@ -1978,11 +1983,11 @@ msgstr "切换重复"
 
 #. CONTEXT: label: total disc count (short name for listing)
 msgid "Tot. Discs"
-msgstr ""
+msgstr "光盘总数"
 
 #. CONTEXT: label: total track count (short name for listing)
 msgid "Tot. Tracks"
-msgstr ""
+msgstr "轨道总数"
 
 #. CONTEXT: label: total disc count
 msgid "Total Discs"
