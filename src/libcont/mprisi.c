@@ -25,6 +25,7 @@
 #include "mpris-player.h"
 
 #include "bdj4.h"
+#include "bdj4ui.h"     // for speed constants
 #include "callback.h"
 #include "controller.h"
 #include "dbusi.h"
@@ -264,7 +265,7 @@ contiSetPlayState (contdata_t *contdata, int state)
     case PL_STATE_PLAYING: {
       nstate = MPRIS_STATUS_PLAY;
       canplay = false;
-      canpause = false;
+      canpause = true;
       canseek = true;
       break;
     }
@@ -282,8 +283,14 @@ contiSetPlayState (contdata_t *contdata, int state)
       canseek = true;
       break;
     }
+    case PL_STATE_IN_GAP: {
+      nstate = MPRIS_STATUS_PLAY;
+      canplay = false;
+      canpause = false;
+      canseek = false;
+      break;
+    }
     case PL_STATE_UNKNOWN:
-    case PL_STATE_IN_GAP:
     case PL_STATE_STOPPED: {
       nstate = MPRIS_STATUS_STOP;
       canplay = true;
@@ -461,8 +468,10 @@ mprisInitializePlayer (contdata_t *contdata)
   mpris_media_player2_player_set_rate (contdata->mprisplayer, 0.0);
   mpris_media_player2_player_set_volume (contdata->mprisplayer, true);
   mpris_media_player2_player_set_position (contdata->mprisplayer, 0);
-  mpris_media_player2_player_set_minimum_rate (contdata->mprisplayer, 0.7);
-  mpris_media_player2_player_set_maximum_rate (contdata->mprisplayer, 1.3);
+  mpris_media_player2_player_set_minimum_rate (contdata->mprisplayer,
+      SPD_LOWER / 100.0);
+  mpris_media_player2_player_set_maximum_rate (contdata->mprisplayer,
+      SPD_UPPER / 100.0);
   mpris_media_player2_player_set_shuffle (contdata->mprisplayer, false);
   mpris_media_player2_player_set_can_go_next (contdata->mprisplayer, false);
   mpris_media_player2_player_set_can_go_previous (contdata->mprisplayer, false);
@@ -477,7 +486,7 @@ mprisInitializePlayer (contdata_t *contdata)
       G_CALLBACK (mprisPlay), contdata);
   g_signal_connect (contdata->mprisplayer, "handle-pause",
       G_CALLBACK (mprisPause), contdata);
-  g_signal_connect (contdata->mprisplayer, "handle-playpause",
+  g_signal_connect (contdata->mprisplayer, "handle-play-pause",
       G_CALLBACK (mprisPlayPause), contdata);
   g_signal_connect (contdata->mprisplayer, "handle-stop",
       G_CALLBACK (mprisStop), contdata);
@@ -494,6 +503,11 @@ mprisNext (mprisMediaPlayer2Player *player,
     GDBusMethodInvocation *invocation,
     void *udata)
 {
+  contdata_t  *contdata = udata;
+
+  if (contdata->cb != NULL) {
+    callbackHandlerII (contdata->cb, 0, CONTROLLER_NEXT);
+  }
   mpris_media_player2_player_complete_next (player, invocation);
   return true;
 }
@@ -503,6 +517,11 @@ mprisPlay (mprisMediaPlayer2Player *player,
     GDBusMethodInvocation *invocation,
     void *udata)
 {
+  contdata_t  *contdata = udata;
+
+  if (contdata->cb != NULL) {
+    callbackHandlerII (contdata->cb, 0, CONTROLLER_PLAY);
+  }
   mpris_media_player2_player_complete_next (player, invocation);
   return true;
 }
@@ -512,6 +531,11 @@ mprisPause (mprisMediaPlayer2Player *player,
     GDBusMethodInvocation *invocation,
     void *udata)
 {
+  contdata_t  *contdata = udata;
+
+  if (contdata->cb != NULL) {
+    callbackHandlerII (contdata->cb, 0, CONTROLLER_PAUSE);
+  }
   mpris_media_player2_player_complete_next (player, invocation);
   return true;
 }
@@ -521,6 +545,11 @@ mprisPlayPause (mprisMediaPlayer2Player *player,
     GDBusMethodInvocation *invocation,
     void *udata)
 {
+  contdata_t  *contdata = udata;
+
+  if (contdata->cb != NULL) {
+    callbackHandlerII (contdata->cb, 0, CONTROLLER_PLAYPAUSE);
+  }
   mpris_media_player2_player_complete_next (player, invocation);
   return true;
 }
@@ -530,6 +559,11 @@ mprisStop (mprisMediaPlayer2Player *player,
     GDBusMethodInvocation *invocation,
     void *udata)
 {
+  contdata_t  *contdata = udata;
+
+  if (contdata->cb != NULL) {
+    callbackHandlerII (contdata->cb, 0, CONTROLLER_STOP);
+  }
   mpris_media_player2_player_complete_next (player, invocation);
   return true;
 }

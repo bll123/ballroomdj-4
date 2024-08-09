@@ -901,7 +901,6 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, char *data)
   }
   uiWidgetSetState (uiplayer->wcont [UIPL_W_SONG_BEGIN_B], state);
 
-fprintf (stderr, "call cont-set-play-state %p\n", uiplayer->controller);
   controllerSetPlayState (uiplayer->controller, uiplayer->playerState);
   switch (uiplayer->playerState) {
     case PL_STATE_UNKNOWN:

@@ -28,7 +28,7 @@
 #include "mdebug.h"
 #include "tmutil.h"
 
-#define DBUS_DEBUG 1
+#define DBUS_DEBUG 0
 
 enum {
   DBUS_STATE_CLOSED,
@@ -117,18 +117,12 @@ dbusConnClose (dbus_t *dbus)
 
   if (dbus->data != NULL) {
     mdextfree (dbus->data);
-// fprintf (stderr, "data-unref: %d\n", G_IS_OBJECT (dbus->data));
-//    if (G_IS_OBJECT (dbus->data)) {
-//      g_variant_unref (dbus->data);
-//    }
+    /* fails if unref-d */
   }
 
   if (dbus->result != NULL) {
     mdextfree (dbus->result);
-//fprintf (stderr, "result-unref: %d\n", G_IS_OBJECT (dbus->result));
-//    if (G_IS_OBJECT (dbus->result)) {
-      g_variant_unref (dbus->result);
-//    }
+    g_variant_unref (dbus->result);
   }
 
   if (dbus->busid != DBUS_INVALID_BUS) {
@@ -137,7 +131,6 @@ dbusConnClose (dbus_t *dbus)
 
   if (dbus->dconn != NULL) {
     mdextfree (dbus->dconn);
-fprintf (stderr, "dconn-unref: %d\n", G_IS_OBJECT (dbus->dconn));
     g_object_unref (dbus->dconn);
   }
 
@@ -318,7 +311,6 @@ dbusMessage (dbus_t *dbus, const char *bus, const char *objpath,
 
   if (dbus->result != NULL) {
     mdextfree (dbus->result);
-fprintf (stderr, "msg:result-unref: %d\n", G_IS_OBJECT (dbus->result));
     g_variant_unref (dbus->result);
   }
   dbus->result = NULL;
@@ -426,7 +418,6 @@ dbusResultGet (dbus_t *dbus, ...)
         break;
       }
       mdextfree (ival);
-fprintf (stderr, "ival-unref: %d\n", G_IS_OBJECT (ival));
       g_variant_unref (ival);
     }
     va_end (args);
@@ -485,7 +476,6 @@ dbusNameLost (GDBusConnection *connection, const char *name, gpointer udata)
     return;
   }
 
-fprintf (stderr, "  lost %s\n", name);
   dbus->busstate = DBUS_NAME_CLOSED;
 }
 
