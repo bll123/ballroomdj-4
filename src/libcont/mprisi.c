@@ -402,7 +402,6 @@ contiSetCurrent (contdata_t *contdata, const char *album,
     return;
   }
 
-fprintf (stderr, "-- set-current: %s %s\n", artist, title);
   nlistFree (contdata->metadata);
   contdata->metadata = nlistAlloc ("cont-mprisi-meta", LIST_ORDERED, NULL);
 

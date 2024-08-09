@@ -2151,6 +2151,8 @@ pluiControllerCallback (void *udata, int32_t cmd, int32_t val)
     case CONTROLLER_SEEK: {
       char    tmp [40];
 
+fprintf (stderr, "cont: seek: %d\n", val);
+// ### this is not working.
       snprintf (tmp, sizeof (tmp), "%d", val);
       connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_SEEK, tmp);
       break;
@@ -2181,12 +2183,9 @@ pluiControllerURICallback (void *udata, const char *uri, int32_t cmd)
   if (cmd != CONTROLLER_OPEN_URI) {
     return false;
   }
-fprintf (stderr, "plui: set-uri %s\n", uri);
 
   audiosrcFullPath (uri, ffn, sizeof (ffn), 0, NULL);
   tfn = audiosrcRelativePath (ffn, 0);
-fprintf (stderr, "  ffn: %s\n", ffn);
-fprintf (stderr, "  tfn: %s\n", tfn);
   dbsong = dbGetByName (plui->musicdb, tfn);
   if (dbsong != NULL) {
     tagdata = songTagList (dbsong);
@@ -2195,7 +2194,6 @@ fprintf (stderr, "  tfn: %s\n", tfn);
   }
   if (slistGetCount (tagdata) == 0) {
     slistFree (tagdata);
-fprintf (stderr, "  no tag data\n");
     return false;
   }
 
