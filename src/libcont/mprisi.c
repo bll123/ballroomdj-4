@@ -300,8 +300,6 @@ contiSetPlayState (contdata_t *contdata, int state)
   if (contdata->playstatus != nstate) {
     mpris_media_player2_player_set_playback_status (contdata->mprisplayer,
         playstatusstr [nstate]);
-//    nlistSetNum (contdata->chgprop, MPRIS_PROP_PB_STATUS, nstate);
-//    mprisSendPropertyChange (contdata);
     contdata->playstatus = nstate;
   }
 }
@@ -322,8 +320,6 @@ contiSetRepeatState (contdata_t *contdata, bool state)
   if (contdata->repeatstatus != nstate) {
     mpris_media_player2_player_set_loop_status (contdata->mprisplayer,
         repeatstr [nstate]);
-//    nlistSetNum (contdata->chgprop, MPRIS_PROP_REPEAT_STATUS, nstate);
-//    mprisSendPropertyChange (contdata);
     contdata->repeatstatus = nstate;
   }
 }
@@ -354,8 +350,6 @@ contiSetRate (contdata_t *contdata, int rate)
 
     dval = (double) rate / 100.0;
     mpris_media_player2_player_set_rate (contdata->mprisplayer, dval);
-//    nlistSetDouble (contdata->chgprop, MPRIS_PROP_RATE, dval);
-//    mprisSendPropertyChange (contdata);
   }
   contdata->rate = rate;
 }
@@ -372,8 +366,6 @@ contiSetVolume (contdata_t *contdata, int volume)
 
     dval = (double) volume / 100.0;
     mpris_media_player2_player_set_volume (contdata->mprisplayer, dval);
-//    nlistSetDouble (contdata->chgprop, MPRIS_PROP_VOLUME, dval);
-//    mprisSendPropertyChange (contdata);
   }
   contdata->volume = volume;
 }
@@ -432,10 +424,8 @@ contiSetCurrent (contdata_t *contdata, const char *album,
   tv = dbusMessageFinalizeArray (contdata->dbus);
   contdata->metav = tv;
 
-//  nlistSetNum (contdata->chgprop, MPRIS_PROP_METADATA, 1);
   mpris_media_player2_player_set_metadata (contdata->mprisplayer, contdata->metav);
   mpris_media_player2_player_set_can_go_next (contdata->mprisplayer, true);
-//  mprisSendPropertyChange (contdata);
 }
 
 /* internal routines */

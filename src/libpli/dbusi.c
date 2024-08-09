@@ -44,7 +44,6 @@ enum {
 
 typedef struct dbus {
   GDBusConnection *dconn;
-  GDBusNodeInfo   *idata;
   GVariant        *tvariant;
   GVariant        *data;
   GVariant        *result;
@@ -53,24 +52,15 @@ typedef struct dbus {
   int             busid;
   _Atomic(int)    state;
   _Atomic(int)    busstate;
-  dbusCBmethod_t  cbmethod;
-  dbusCBpropget_t cbpropget;
   void            *userdata;
 } dbus_t;
 
 static void dbusFreeData (dbus_t *dbus);
 static void dbusNameAcquired (GDBusConnection *connection, const char *name, gpointer udata);
 static void dbusNameLost (GDBusConnection *connection, const char *name, gpointer udata);
-static void dbusMethodHandler (GDBusConnection *connection, const char *sender, const char *objpath, const char *interface_name, const char *method_name, GVariant *parameters, GDBusMethodInvocation *invocation, gpointer udata);
-static GVariant * dbusPropertyGetHandler (GDBusConnection *connection, const char *sender, const char *objpath, const char *interface_name, const char *property_name, GError **error, gpointer udata);
-static gboolean dbusPropertySetHandler (GDBusConnection *connection, const char *sender, const char *objpath, const char *interface_name, const char *property_name, GVariant *value, GError **error, gpointer udata);
 # if DBUS_DEBUG
 static void dumpResult (const char *tag, GVariant *data);
 # endif
-
-static const GDBusInterfaceVTable vtable = {
-  dbusMethodHandler, dbusPropertyGetHandler, dbusPropertySetHandler, { 0 }
-};
 
 dbus_t *
 dbusConnInit (void)
@@ -79,13 +69,11 @@ dbusConnInit (void)
 
   dbus = mdmalloc (sizeof (dbus_t));
   dbus->dconn = NULL;
-  dbus->idata = NULL;
   dbus->data = NULL;
   dbus->result = NULL;
   dbus->busid = DBUS_INVALID_BUS;
   dbus->state = DBUS_STATE_WAIT;
   dbus->busstate = DBUS_NAME_CLOSED;
-  dbus->cbmethod = NULL;
   dbus->userdata = NULL;
 
   dbus->dconn = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
@@ -143,10 +131,6 @@ dbusConnClose (dbus_t *dbus)
 //    }
   }
 
-  if (dbus->idata != NULL) {
-    g_dbus_node_info_unref (dbus->idata);
-  }
-
   if (dbus->busid != DBUS_INVALID_BUS) {
     g_bus_unown_name (dbus->busid);
   }
@@ -160,7 +144,6 @@ fprintf (stderr, "dconn-unref: %d\n", G_IS_OBJECT (dbus->dconn));
   /* apparently, the data variant does not need to be unref'd */
 
   dbus->dconn = NULL;
-  dbus->idata = NULL;
   dbus->data = NULL;
   dbus->result = NULL;
   dbus->state = DBUS_STATE_CLOSED;
@@ -217,10 +200,12 @@ dbusMessageSetData (dbus_t *dbus, const char *sdata, ...)
   va_end (args);
 }
 
+#if 0 /* keep this for now */
+
 /* want to get the types from the children, i don't know another way */
 /* how to create an 'a{sv}' given the variant container */
 void
-dbusMessageSetDataTuple (dbus_t *dbus, const char *sdata, ...)
+dbusMessageSetDataTuple (dbus_t *dbus, const char *sdata, ...)  /* KEEP */
 {
   va_list   args;
   GVariant  **children;
@@ -253,50 +238,7 @@ dbusMessageSetDataTuple (dbus_t *dbus, const char *sdata, ...)
   dumpResult ("data-va", dbus->data);
 # endif
 }
-
-void
-dbusMessageSetDataArray (dbus_t *dbus, const char *sdata, ...)
-{
-  va_list         args;
-  GVariant        *v;
-  GVariant        *tv;
-  const char      *str;
-
-  va_start (args, sdata);
-  dbusFreeData (dbus);
-  dbus->acount = 0;
-  g_variant_builder_init (&dbus->gvbuild, G_VARIANT_TYPE (sdata));
-
-  if (strcmp (sdata, "as") == 0) {
-    while ((str = va_arg (args, const char *)) != NULL) {
-      ++dbus->acount;
-      g_variant_builder_add (&dbus->gvbuild, "s", str);
-    }
-  }
-  if (strcmp (sdata, "a{sv}") == 0) {
-    str = va_arg (args, const char *);
-    v = va_arg (args, void *);
-    ++dbus->acount;
-    g_variant_builder_add (&dbus->gvbuild, "{sv}", str, v);
-  }
-  tv = g_variant_builder_end (&dbus->gvbuild);
-  dbus->data = tv;
-  mdextalloc (dbus->data);
-# if DBUS_DEBUG
-  dumpResult ("data-va-a", dbus->data);
-# endif
-  va_end (args);
-}
-
-void *
-dbusMessageEmptyArray (const char *sdata)
-{
-  GVariant          *ta;
-
-  /* builder cannot build an empty array! */
-  ta = g_variant_new_array (G_VARIANT_TYPE (sdata + 1), NULL, 0);
-  return ta;
-}
+#endif
 
 void
 dbusMessageInitArray (dbus_t *dbus, const char *sdata)
@@ -498,83 +440,6 @@ fprintf (stderr, "ival-unref: %d\n", G_IS_OBJECT (ival));
 }
 
 void
-dbusSetIntrospectionData (dbus_t *dbus, const char *introspection_xml)
-{
-  GError      *error = NULL;
-
-  if (dbus == NULL) {
-    return;
-  }
-
-  dbus->idata = g_dbus_node_info_new_for_xml (introspection_xml, &error);
-  if (error != NULL) {
-    fprintf (stderr, "ERR: %s\n", error->message);
-  }
-}
-
-int
-dbusRegisterObject (dbus_t *dbus, const char *objpath, const char *intfc)
-{
-  GDBusInterfaceInfo  *info;
-  int                 intfcid;
-  GError              *error = NULL;
-
-  if (dbus == NULL || dbus->idata == NULL) {
-    return 0;
-  }
-
-  info = g_dbus_node_info_lookup_interface (dbus->idata, intfc);
-
-fprintf (stderr, "register: %s %s %p\n", objpath, intfc, info);
-  intfcid = g_dbus_connection_register_object (
-      dbus->dconn, objpath, info, &vtable, dbus, NULL, &error);
-  if (error != NULL) {
-    fprintf (stderr, "ERR: %s\n", error->message);
-  }
-
-  return intfcid;
-}
-
-void
-dbusUnregisterObject (dbus_t *dbus, int intfcid)
-{
-  if (dbus == NULL || dbus->dconn == NULL) {
-    return;
-  }
-  g_dbus_connection_unregister_object (dbus->dconn, intfcid);
-}
-
-void
-dbusSetCallbacks (dbus_t *dbus, void *udata, dbusCBmethod_t cbmethod,
-    dbusCBpropget_t cbpropget)
-{
-  if (dbus == NULL) {
-    return;
-  }
-
-  dbus->cbmethod = cbmethod;
-  dbus->cbpropget = cbpropget;
-  dbus->userdata = udata;
-}
-
-void
-dbusEmitSignal (dbus_t *dbus, const char *objpath,
-    const char *intfc, const char *property)
-{
-  GError              *gerror = NULL;
-
-# if DBUS_DEBUG
-  fprintf (stderr, "== %s\n   %s\n   %s\n", objpath, intfc, property);
-  dumpResult ("emit", dbus->data);
-# endif
-  g_dbus_connection_emit_signal (dbus->dconn, NULL,
-      objpath, intfc, property, dbus->data, &gerror);
-  if (gerror != NULL) {
-    fprintf (stderr, "ERR: %s\n", gerror->message);
-  }
-}
-
-void
 dbusSetInterfaceSkeleton (dbus_t *dbus, void *skel, const char *objpath)
 {
   GError  *gerror = NULL;
@@ -622,69 +487,6 @@ dbusNameLost (GDBusConnection *connection, const char *name, gpointer udata)
 
 fprintf (stderr, "  lost %s\n", name);
   dbus->busstate = DBUS_NAME_CLOSED;
-}
-
-static void
-dbusMethodHandler (GDBusConnection *connection,
-    const char *sender,
-    const char *objpath,
-    const char *intfc,
-    const char *method,
-    GVariant *parameters,
-    GDBusMethodInvocation *invocation,
-    gpointer udata)
-{
-  dbus_t    *dbus = udata;
-
-fprintf (stderr, "dbus-method: %s %s %s\n", objpath, intfc, method);
-# if DBUS_DEBUG
-  dumpResult ("  method-params", parameters);
-# endif
-
-  if (dbus->cbmethod != NULL) {
-    dbus->cbmethod (intfc, method, dbus->userdata);
-  }
-
-  g_dbus_method_invocation_return_value (invocation, NULL);
-  return;
-}
-
-static GVariant *
-dbusPropertyGetHandler (GDBusConnection *connection,
-    const char *sender,
-    const char *objpath,
-    const char *intfc,
-    const char *property,
-    GError **error,
-    gpointer udata)
-{
-  dbus_t    *dbus = udata;
-
-fprintf (stderr, "dbus-prop-get: %s %s %s\n", objpath, intfc, property);
-
-  if (dbus->cbpropget != NULL) {
-    if (dbus->cbpropget (intfc, property, dbus->userdata) == false) {
-      g_set_error (error, G_DBUS_ERROR,
-          G_DBUS_ERROR_UNKNOWN_PROPERTY,
-          "Unknown property %s", property);
-    }
-  }
-
-  return dbus->data;
-}
-
-static gboolean
-dbusPropertySetHandler (GDBusConnection *connection,
-    const char *sender,
-    const char *objpath,
-    const char *intfc,
-    const char *property,
-    GVariant *value,
-    GError **error,
-    gpointer udata)
-{
-fprintf (stderr, "dbus-prop-set: %s %s %s\n", objpath, intfc, property);
-  return TRUE;
 }
 
 # if DBUS_DEBUG
