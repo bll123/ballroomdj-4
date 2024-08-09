@@ -457,16 +457,12 @@ uiextreqProcessAudioFile (uiextreq_t *uiextreq)
       dbsong = dbGetByName (uiextreq->musicdb, tfn);
       if (dbsong != NULL) {
         tagdata = songTagList (dbsong);
-        if (slistGetCount (tagdata) == 0) {
-          slistFree (tagdata);
-          return;
-        }
       } else {
         tagdata = audiotagParseData (ffn, &rewrite);
-        if (slistGetCount (tagdata) == 0) {
-          slistFree (tagdata);
-          return;
-        }
+      }
+      if (slistGetCount (tagdata) == 0) {
+        slistFree (tagdata);
+        return;
       }
 
       /* set favorite to the imported symbol */

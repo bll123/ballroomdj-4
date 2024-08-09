@@ -13,7 +13,8 @@
 #include <unistd.h>
 #include <math.h>
 
-#include "audiosrc.h"   // for file prefix
+#include "audiosrc.h"
+#include "audiotag.h"
 #include "bdj4.h"
 #include "bdj4init.h"
 #include "bdj4intl.h"
@@ -2126,31 +2127,36 @@ pluiControllerCallback (void *udata, int32_t cmd, int32_t val)
   playerui_t    *plui = udata;
   bool          rc = false;
 
-fprintf (stderr, "plui-cb: cmd: %d val: %d\n", cmd, val);
   switch (cmd) {
     case CONTROLLER_PLAY: {
-fprintf (stderr, "  play\n");
       connSendMessage (plui->conn, ROUTE_MAIN, MSG_CMD_PLAY, NULL);
       break;
     }
     case CONTROLLER_PAUSE: {
-fprintf (stderr, "  pause\n");
       connSendMessage (plui->conn, ROUTE_MAIN, MSG_CMD_PLAYPAUSE, NULL);
       break;
     }
     case CONTROLLER_PLAYPAUSE: {
-fprintf (stderr, "  play-pause\n");
       connSendMessage (plui->conn, ROUTE_MAIN, MSG_CMD_PLAYPAUSE, NULL);
       break;
     }
     case CONTROLLER_STOP: {
-fprintf (stderr, "  stop\n");
       connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_STOP, NULL);
       break;
     }
     case CONTROLLER_NEXT: {
-fprintf (stderr, "  next\n");
       connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
+      break;
+    }
+    case CONTROLLER_SEEK: {
+      char    tmp [40];
+
+      snprintf (tmp, sizeof (tmp), "%d", val);
+      connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_SEEK, tmp);
+      break;
+    }
+    case CONTROLLER_QUIT: {
+      pluiCloseWin (plui);
       break;
     }
   }
@@ -2162,12 +2168,62 @@ static bool
 pluiControllerURICallback (void *udata, const char *uri, int32_t cmd)
 {
   playerui_t    *plui = udata;
-  bool          rc = false;
+  song_t        *song;
+  song_t        *dbsong;
+  dbidx_t       dbidx;
+  char          *tbuff;
+  char          *tmp;
+  char          ffn [MAXPATHLEN];
+  const char    *tfn;
+  int           rewrite = 0;
+  slist_t       *tagdata;
 
   if (cmd != CONTROLLER_OPEN_URI) {
     return false;
   }
 fprintf (stderr, "plui: set-uri %s\n", uri);
 
-  return rc;
+  audiosrcFullPath (uri, ffn, sizeof (ffn), 0, NULL);
+  tfn = audiosrcRelativePath (ffn, 0);
+fprintf (stderr, "  ffn: %s\n", ffn);
+fprintf (stderr, "  tfn: %s\n", tfn);
+  dbsong = dbGetByName (plui->musicdb, tfn);
+  if (dbsong != NULL) {
+    tagdata = songTagList (dbsong);
+  } else {
+    tagdata = audiotagParseData (uri, &rewrite);
+  }
+  if (slistGetCount (tagdata) == 0) {
+    slistFree (tagdata);
+fprintf (stderr, "  no tag data\n");
+    return false;
+  }
+
+  slistSetStr (tagdata, tagdefs [TAG_FAVORITE].tag, "imported");
+
+  /* populate the song from the tag data */
+  song = songAlloc ();
+  songFromTagList (song, tagdata);
+  songSetStr (song, TAG_URI, ffn);
+  songSetNum (song, TAG_DB_FLAGS, MUSICDB_TEMP);
+
+  tbuff = mdmalloc (BDJMSG_MAX);
+  dbidx = dbAddTemporarySong (plui->musicdb, song);
+  tmp = songCreateSaveData (song);
+  snprintf (tbuff, BDJMSG_MAX, "%s%c%" PRId32 "%c%s",
+      songGetStr (song, TAG_URI),
+      MSG_ARGS_RS, dbidx,
+      MSG_ARGS_RS, tmp);
+  connSendMessage (plui->conn, ROUTE_MAIN, MSG_DB_ENTRY_TEMP_ADD, tbuff);
+  dataFree (tbuff);
+  dataFree (tmp);
+
+  uimusicqSetSelectLocation (plui->uimusicq, plui->musicqRequestIdx, 0);
+  pluiQueueProcess (plui, dbidx);
+  uimusicqMoveTop (plui->uimusicq, plui->musicqRequestIdx, 1);
+  connSendMessage (plui->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG_PLAY, NULL);
+
+  slistFree (tagdata);
+
+  return true;
 }

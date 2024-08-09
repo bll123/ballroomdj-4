@@ -148,6 +148,7 @@ typedef struct contdata {
 
 static void mprisInitializeRoot (contdata_t *contdata);
 static void mprisInitializePlayer (contdata_t *contdata);
+static gboolean mprisQuit (mprisMediaPlayer2 *root, GDBusMethodInvocation *invocation, void *udata);
 static gboolean mprisNext (mprisMediaPlayer2Player *player, GDBusMethodInvocation *invocation, void *udata);
 static gboolean mprisPlay (mprisMediaPlayer2Player *player, GDBusMethodInvocation *invocation, void *udata);
 static gboolean mprisPause (mprisMediaPlayer2Player *player, GDBusMethodInvocation *invocation, void *udata);
@@ -186,7 +187,7 @@ contiInit (const char *instname)
   contdata->playstate = PL_STATE_STOPPED;
   contdata->playstatus = MPRIS_PB_STATUS_STOP;
   contdata->repeatstatus = MPRIS_REPEAT_NONE;
-  contdata->pos = 0.0;
+  contdata->pos = 0;
   contdata->rate = 100;
   contdata->volume = 0;
   contdata->seek_expected = false;
@@ -346,10 +347,13 @@ contiSetPosition (contdata_t *contdata, int32_t pos)
   }
 
   if (contdata->pos != pos) {
-    mpris_media_player2_player_set_position (contdata->mprisplayer, pos);
-    mpris_media_player2_player_emit_seeked (contdata->mprisplayer, pos);
+    int64_t   tpos;
+
+    tpos = pos * 1000 * 1000;
+    mpris_media_player2_player_set_position (contdata->mprisplayer, tpos);
+    mpris_media_player2_player_emit_seeked (contdata->mprisplayer, tpos);
+    contdata->pos = pos;
   }
-  contdata->pos = pos;
 }
 
 void
@@ -448,7 +452,6 @@ fprintf (stderr, "-- set-current: %s %s\n", artist, title);
 static void
 mprisInitializeRoot (contdata_t *contdata)
 {
-
   contdata->mprisroot = mpris_media_player2_skeleton_new ();
 
   mpris_media_player2_set_can_quit (contdata->mprisroot, true);
@@ -458,6 +461,9 @@ mprisInitializeRoot (contdata_t *contdata)
   mpris_media_player2_set_desktop_entry (contdata->mprisroot, BDJ4_NAME);
   mpris_media_player2_set_supported_mime_types (contdata->mprisroot, mimetypes);
   mpris_media_player2_set_supported_uri_schemes (contdata->mprisroot, urischemes);
+
+  g_signal_connect (contdata->mprisroot, "handle-quit",
+      G_CALLBACK (mprisQuit), contdata);
 
   dbusSetInterfaceSkeleton (contdata->dbus, contdata->mprisroot,
       objpath [MPRIS_OBJP_MP2]);
@@ -507,6 +513,20 @@ mprisInitializePlayer (contdata_t *contdata)
 
   dbusSetInterfaceSkeleton (contdata->dbus, contdata->mprisplayer,
       objpath [MPRIS_OBJP_MP2]);
+}
+
+static gboolean
+mprisQuit (mprisMediaPlayer2 *root,
+    GDBusMethodInvocation *invocation,
+    void *udata)
+{
+  contdata_t  *contdata = udata;
+
+  if (contdata->cb != NULL) {
+    callbackHandlerII (contdata->cb, CONTROLLER_QUIT, 0);
+  }
+  mpris_media_player2_complete_quit (root, invocation);
+  return true;
 }
 
 static gboolean
@@ -589,6 +609,7 @@ mprisSetPosition (mprisMediaPlayer2Player* player,
   contdata_t  *contdata = udata;
 
   if (contdata->cb != NULL) {
+    position /= 1000 * 1000;
     callbackHandlerII (contdata->cb, CONTROLLER_SET_POS, position);
   }
   mpris_media_player2_player_complete_set_position (player, invocation);
@@ -604,6 +625,8 @@ mprisSeek (mprisMediaPlayer2Player* player,
   contdata_t  *contdata = udata;
 
   if (contdata->cb != NULL) {
+    offset /= 1000 * 1000;
+    offset += contdata->pos;
     callbackHandlerII (contdata->cb, CONTROLLER_SEEK, offset);
   }
   mpris_media_player2_player_complete_seek (player, invocation);
@@ -619,7 +642,7 @@ mprisOpenURI (mprisMediaPlayer2Player *player,
   contdata_t  *contdata = udata;
 
   if (contdata->cburi != NULL) {
-    callbackHandlerSI (contdata->cb, uri, CONTROLLER_OPEN_URI);
+    callbackHandlerSI (contdata->cburi, uri, CONTROLLER_OPEN_URI);
   }
   mpris_media_player2_player_complete_open_uri (player, invocation);
   return true;
