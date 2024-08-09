@@ -988,8 +988,8 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
 
   /* playedtime */
   position = ps->playedtime;
-  dval = (double) ps->playedtime;    // used below
-  controllerSetPosition (uiplayer->controller, dval);
+  dval = (double) ps->playedtime;    // used below for scale
+  controllerSetPosition (uiplayer->controller, ps->playedtime);
 
   /* duration */
   ddur = (double) ps->duration;

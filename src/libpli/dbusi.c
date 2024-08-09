@@ -40,7 +40,6 @@ enum {
   DBUS_TIMEOUT = 500,
   /* documentation states that the bus id will never be zero */
   DBUS_INVALID_BUS = 0,
-  DBUS_VTABLE_MAX = 2,
 };
 
 typedef struct dbus {
@@ -52,7 +51,6 @@ typedef struct dbus {
   GVariantBuilder gvbuild;
   int             acount;
   int             busid;
-  int             vtableidx;
   _Atomic(int)    state;
   _Atomic(int)    busstate;
   dbusCBmethod_t  cbmethod;
@@ -70,10 +68,8 @@ static gboolean dbusPropertySetHandler (GDBusConnection *connection, const char 
 static void dumpResult (const char *tag, GVariant *data);
 # endif
 
-/* each registration requires its own vtable entry */
-static GDBusInterfaceVTable vtable [DBUS_VTABLE_MAX] = {
-  { dbusMethodHandler, dbusPropertyGetHandler, dbusPropertySetHandler, { 0 }, },
-  { dbusMethodHandler, dbusPropertyGetHandler, dbusPropertySetHandler, { 0 }, },
+static const GDBusInterfaceVTable vtable = {
+  dbusMethodHandler, dbusPropertyGetHandler, dbusPropertySetHandler, { 0 }
 };
 
 dbus_t *
@@ -84,7 +80,6 @@ dbusConnInit (void)
   dbus = mdmalloc (sizeof (dbus_t));
   dbus->dconn = NULL;
   dbus->idata = NULL;
-  dbus->vtableidx = 0;
   dbus->data = NULL;
   dbus->result = NULL;
   dbus->busid = DBUS_INVALID_BUS;
@@ -319,19 +314,19 @@ dbusMessageAppendArray (dbus_t *dbus, const char *sdata, ...)
 
   va_start (args, sdata);
 
-  if (strcmp (sdata, "as") == 0) {
+  if (strcmp (sdata, "s") == 0) {
     str = va_arg (args, const char *);
-    g_variant_builder_add (&dbus->gvbuild, "s", str);
+    g_variant_builder_add (&dbus->gvbuild, sdata, str);
     ++dbus->acount;
   }
-  if (strcmp (sdata, "a{sv}") == 0) {
+  if (strcmp (sdata, "{sv}") == 0) {
     str = va_arg (args, const char *);
     v = va_arg (args, void *);
 # if DBUS_DEBUG
     fprintf (stderr, "aa-v: %s\n", str);
     dumpResult ("aa-v", v);
 # endif
-    g_variant_builder_add (&dbus->gvbuild, "{sv}", str, v);
+    g_variant_builder_add (&dbus->gvbuild, sdata, str, v);
     ++dbus->acount;
   }
   va_end (args);
@@ -527,17 +522,12 @@ dbusRegisterObject (dbus_t *dbus, const char *objpath, const char *intfc)
   if (dbus == NULL || dbus->idata == NULL) {
     return 0;
   }
-  /* each registration requires its own vtable entry */
-  /* otherwise it does not work */
-  if (dbus->vtableidx >= DBUS_VTABLE_MAX) {
-    return 0;
-  }
 
   info = g_dbus_node_info_lookup_interface (dbus->idata, intfc);
 
+fprintf (stderr, "register: %s %s %p\n", objpath, intfc, info);
   intfcid = g_dbus_connection_register_object (
-      dbus->dconn, objpath, info, &vtable [dbus->vtableidx], dbus, NULL, &error);
-  ++dbus->vtableidx;
+      dbus->dconn, objpath, info, &vtable, dbus, NULL, &error);
   if (error != NULL) {
     fprintf (stderr, "ERR: %s\n", error->message);
   }
@@ -579,6 +569,18 @@ dbusEmitSignal (dbus_t *dbus, const char *objpath,
 # endif
   g_dbus_connection_emit_signal (dbus->dconn, NULL,
       objpath, intfc, property, dbus->data, &gerror);
+  if (gerror != NULL) {
+    fprintf (stderr, "ERR: %s\n", gerror->message);
+  }
+}
+
+void
+dbusSetInterfaceSkeleton (dbus_t *dbus, void *skel, const char *objpath)
+{
+  GError  *gerror = NULL;
+
+  g_dbus_interface_skeleton_export (
+      (GDBusInterfaceSkeleton *) skel, dbus->dconn, objpath, &gerror);
   if (gerror != NULL) {
     fprintf (stderr, "ERR: %s\n", gerror->message);
   }

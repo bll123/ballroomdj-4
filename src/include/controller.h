@@ -9,6 +9,8 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+
 #include "callback.h"
 #include "ilist.h"
 
@@ -41,7 +43,7 @@ bool controllerCheckReady (controller_t *cont);
 void controllerSetCallback (controller_t *cont, callback_t *cb);
 void controllerSetPlayState (controller_t *cont, int state);
 void controllerSetRepeatState (controller_t *cont, bool state);
-void controllerSetPosition (controller_t *cont, double pos);
+void controllerSetPosition (controller_t *cont, int32_t pos);
 void controllerSetRate (controller_t *cont, int rate);
 void controllerSetVolume (controller_t *cont, int volume);
 void controllerSetCurrent (controller_t *cont, const char *album, const char *albumartist, const char *artist, const char *title, int32_t trackid, int32_t duration);
@@ -55,7 +57,7 @@ bool contiCheckReady (contdata_t *contdata);
 void contiSetCallback (contdata_t *contdata, callback_t *cb);
 void contiSetPlayState (contdata_t *contdata, int state);
 void contiSetRepeatState (contdata_t *contdata, bool state);
-void contiSetPosition (contdata_t *contdata, double pos);
+void contiSetPosition (contdata_t *contdata, int32_t pos);
 void contiSetRate (contdata_t *contdata, int rate);
 void contiSetVolume (contdata_t *contdata, int volume);
 void contiSetCurrent (contdata_t *contdata, const char *album, const char *albumartist, const char *artist, const char *title, int32_t trackid, int32_t duration);

@@ -31,7 +31,7 @@ typedef struct controller {
   void              (*contiSetCallback) (contdata_t *contdata, callback_t *cb);
   void              (*contiSetPlayState) (contdata_t *contdata, int state);
   void              (*contiSetRepeatState) (contdata_t *contdata, bool state);
-  void              (*contiSetPosition) (contdata_t *contdata, double pos);
+  void              (*contiSetPosition) (contdata_t *contdata, int32_t pos);
   void              (*contiSetRate) (contdata_t *contdata, int rate);
   void              (*contiSetVolume) (contdata_t *contdata, int volume);
   void              (*contiSetCurrent) (contdata_t *contdata, const char *album, const char *albumartist, const char *artist, const char *title, int32_t trackid, int32_t duration);
@@ -161,7 +161,7 @@ controllerSetRepeatState (controller_t *cont, bool state)
 }
 
 void
-controllerSetPosition (controller_t *cont, double pos)
+controllerSetPosition (controller_t *cont, int32_t pos)
 {
   if (cont == NULL) {
     return;

@@ -68,6 +68,8 @@ pkg_check_modules (GIO gio-2.0)
 pkg_check_modules (GLIB glib-2.0)
 pkg_check_modules (JSONC json-c)
 
+find_program (GDBUSCODEGEN NAMES gdbus-codegen)
+
 if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
   pkg_check_modules (GTK gtk+-3.0)
 endif()

@@ -1,9 +1,8 @@
 /*
  * Copyright 2024 Brad Lanam Pleasant Hill CA
  *
- * Using the framework from:
- *    https://github.com/hoyon/mpv-mpris/blob/master/mpris.c
- *    Copyright (c) 2017 Ho-Yon Mak (MIT License)
+ * References:
+ *    https://github.com/w0rp/xmms2-mpris/tree/master/src
  *
  * Note that the glib main loop must be called by something.
  * When using the GTK UI, this is done by GTK, and no special
@@ -22,6 +21,9 @@
 
 #include <glib.h>
 
+#include "mpris-root.h"
+#include "mpris-player.h"
+
 #include "bdj4.h"
 #include "callback.h"
 #include "controller.h"
@@ -31,58 +33,25 @@
 #include "nlist.h"
 #include "tmutil.h"
 
-static const char *introspection_xml =
-    "<node>\n"
-    "  <interface name=\"org.mpris.MediaPlayer2\">\n"
-    "    <method name=\"Raise\"></method>\n"
-    "    <method name=\"Quit\"></method>\n"
-    "    <property name=\"CanQuit\" type=\"b\" access=\"read\"/>\n"
-    "    <property name=\"Fullscreen\" type=\"b\" access=\"read\"/>\n"
-    "    <property name=\"CanSetFullscreen\" type=\"b\" access=\"read\"/>\n"
-    "    <property name=\"CanRaise\" type=\"b\" access=\"read\"/>\n"
-    "    <property name=\"HasTrackList\" type=\"b\" access=\"read\"/>\n"
-    "    <property name=\"Identity\" type=\"s\" access=\"read\"/>\n"
-    "    <property name=\"DesktopEntry\" type=\"s\" access=\"read\"/>\n"
-    "    <property name=\"SupportedUriSchemes\" type=\"as\" access=\"read\"/>\n"
-    "    <property name=\"SupportedMimeTypes\" type=\"as\" access=\"read\"/>\n"
-    "  </interface>\n"
-    "  <interface name=\"org.mpris.MediaPlayer2.Player\">\n"
-    "    <method name=\"Next\"></method>\n"
-    "    <method name=\"Previous\"></method>\n"
-    "    <method name=\"Pause\"></method>\n"
-    "    <method name=\"PlayPause\"></method>\n"
-    "    <method name=\"Stop\"></method>\n"
-    "    <method name=\"Play\"></method>\n"
-    "    <method name=\"Seek\">\n"
-    "      <arg type=\"x\" name=\"Offset\" direction=\"in\"/>\n"
-    "    </method>\n"
-    "    <method name=\"SetPosition\">\n"
-    "      <arg type=\"o\" name=\"TrackId\" direction=\"in\"/>\n"
-    "      <arg type=\"x\" name=\"Offset\" direction=\"in\"/>\n"
-    "    </method>\n"
-    "    <method name=\"OpenUri\">\n"
-    "      <arg type=\"s\" name=\"Uri\" direction=\"in\"/>\n"
-    "    </method>\n"
-    "    <signal name=\"Seeked\">\n"
-    "      <arg type=\"x\" name=\"Position\" direction=\"out\"/>\n"
-    "    </signal>\n"
-    "    <property name=\"PlaybackStatus\" type=\"s\" access=\"read\"/>\n"
-    "    <property name=\"LoopStatus\" type=\"s\" access=\"readwrite\"/>\n"
-    "    <property name=\"Rate\" type=\"d\" access=\"readwrite\"/>\n"
-    "    <property name=\"Shuffle\" type=\"b\" access=\"read\"/>\n"
-    "    <property name=\"Metadata\" type=\"a{sv}\" access=\"read\"/>\n"
-    "    <property name=\"Volume\" type=\"d\" access=\"readwrite\"/>\n"
-    "    <property name=\"Position\" type=\"x\" access=\"read\"/>\n"
-    "    <property name=\"MinimumRate\" type=\"d\" access=\"read\"/>\n"
-    "    <property name=\"MaximumRate\" type=\"d\" access=\"read\"/>\n"
-    "    <property name=\"CanGoNext\" type=\"b\" access=\"read\"/>\n"
-    "    <property name=\"CanGoPrevious\" type=\"b\" access=\"read\"/>\n"
-    "    <property name=\"CanPlay\" type=\"b\" access=\"read\"/>\n"
-    "    <property name=\"CanPause\" type=\"b\" access=\"read\"/>\n"
-    "    <property name=\"CanSeek\" type=\"b\" access=\"read\"/>\n"
-    "    <property name=\"CanControl\" type=\"b\" access=\"read\"/>\n"
-    "  </interface>\n"
-    "</node>\n";
+static const char *urischemes [] = {
+  "file",
+  NULL,
+};
+
+static const char *mimetypes [] = {
+  "audio/mpeg",
+  "audio/x-mpeg",
+  "audio/mp4",
+  "application/ogg",
+  "application/x-ogg",
+  "audio/wav",
+  "audio/x-wav",
+  "audio/3gpp",
+  "audio/3gpp2",
+  "audio/x-matroska",
+  "application/xspf+xml",
+  NULL,
+};
 
 enum {
   MPRIS_OBJP_DBUS,
@@ -111,25 +80,6 @@ static const char *interface [MPRIS_INTFC_MAX] = {
 };
 
 enum {
-  MPRIS_PROP_PB_STATUS,
-  MPRIS_PROP_REPEAT_STATUS,
-  MPRIS_PROP_RATE,
-  MPRIS_PROP_METADATA,
-  MPRIS_PROP_VOLUME,
-  MPRIS_PROP_POSITION,
-  MPRIS_PROP_MAX,
-};
-
-static const char *propstr [MPRIS_PROP_MAX] = {
-  [MPRIS_PROP_PB_STATUS] = "PlaybackStatus",
-  [MPRIS_PROP_REPEAT_STATUS] = "LoopStatus",
-  [MPRIS_PROP_RATE] = "Rate",
-  [MPRIS_PROP_METADATA] = "Metadata",
-  [MPRIS_PROP_VOLUME] = "Volume",
-  [MPRIS_PROP_POSITION] = "Position",
-};
-
-enum {
   MPRIS_METADATA_ALBUM,
   MPRIS_METADATA_ALBUMARTIST,
   MPRIS_METADATA_ARTIST,
@@ -155,7 +105,7 @@ enum {
   MPRIS_STATUS_MAX,
 };
 
-static const char *statusstr [MPRIS_STATUS_MAX] = {
+static const char *playstatusstr [MPRIS_STATUS_MAX] = {
   [MPRIS_STATUS_PLAY] = "Playing",
   [MPRIS_STATUS_PAUSE] = "Paused",
   [MPRIS_STATUS_STOP] = "Stopped",
@@ -177,15 +127,16 @@ static const char *repeatstr [MPRIS_REPEAT_MAX] = {
 typedef struct contdata {
   char                *instname;
   dbus_t              *dbus;
+  mprisMediaPlayer2   *mprisroot;
+  mprisMediaPlayer2Player *mprisplayer;
   callback_t          *cb;
   nlist_t             *chgprop;
   nlist_t             *metadata;
   void                *metav;
-  int                 root_interface_id;
-  int                 player_interface_id;
+  int                 playstate;      // BDJ4 play state
   int                 playstatus;
   int                 repeatstatus;
-  double              pos;
+  int32_t             pos;
   int                 rate;
   int                 volume;
   bool                seek_expected : 1;
@@ -193,9 +144,13 @@ typedef struct contdata {
   bool                paused : 1;
 } contdata_t;
 
-static bool mprisiMethodCallback (const char *intfc, const char *method, void *udata);
-static bool mprisiPropertyGetCallback (const char *intfc, const char *method, void *udata);
-static void mprisSendPropertyChange (contdata_t *contdata);
+static void mprisInitializeRoot (contdata_t *contdata);
+static void mprisInitializePlayer (contdata_t *contdata);
+static gboolean mprisNext (mprisMediaPlayer2Player *player, GDBusMethodInvocation *invocation, void *udata);
+static gboolean mprisPlay (mprisMediaPlayer2Player *player, GDBusMethodInvocation *invocation, void *udata);
+static gboolean mprisPause (mprisMediaPlayer2Player *player, GDBusMethodInvocation *invocation, void *udata);
+static gboolean mprisPlayPause (mprisMediaPlayer2Player *player, GDBusMethodInvocation *invocation, void *udata);
+static gboolean mprisStop (mprisMediaPlayer2Player *player, GDBusMethodInvocation *invocation, void *udata);
 
 void
 contiDesc (char **ret, int max)
@@ -218,11 +173,12 @@ contiInit (const char *instname)
   contdata = mdmalloc (sizeof (contdata_t));
   contdata->instname = mdstrdup (instname);
   contdata->cb = NULL;
+  contdata->mprisroot = NULL;
+  contdata->mprisplayer = NULL;
   contdata->chgprop = nlistAlloc ("cont-mprisi-prop", LIST_ORDERED, NULL);
   contdata->metadata = NULL;
   contdata->metav = NULL;
-  contdata->root_interface_id = -1;
-  contdata->player_interface_id = -1;
+  contdata->playstate = PL_STATE_STOPPED;
   contdata->playstatus = MPRIS_STATUS_STOP;
   contdata->repeatstatus = MPRIS_REPEAT_NONE;
   contdata->pos = 0.0;
@@ -248,10 +204,6 @@ contiFree (contdata_t *contdata)
 
   nlistFree (contdata->chgprop);
   nlistFree (contdata->metadata);
-  if (contdata->dbus != NULL && contdata->root_interface_id >= 0) {
-    dbusUnregisterObject (contdata->dbus, contdata->root_interface_id);
-    dbusUnregisterObject (contdata->dbus, contdata->player_interface_id);
-  }
   if (contdata->dbus != NULL) {
     dbusConnClose (contdata->dbus);
   }
@@ -262,15 +214,8 @@ contiFree (contdata_t *contdata)
 void
 contiSetup (contdata_t *contdata)
 {
-  dbusSetIntrospectionData (contdata->dbus, introspection_xml);
-
-  contdata->root_interface_id = dbusRegisterObject (contdata->dbus,
-      objpath [MPRIS_OBJP_MP2], interface [MPRIS_INTFC_MP2]);
-  contdata->player_interface_id = dbusRegisterObject (contdata->dbus,
-      objpath [MPRIS_OBJP_MP2], interface [MPRIS_INTFC_MP2_PLAYER]);
-
-  dbusSetCallbacks (contdata->dbus, contdata,
-      mprisiMethodCallback, mprisiPropertyGetCallback);
+  mprisInitializeRoot (contdata);
+  mprisInitializePlayer (contdata);
 }
 
 bool
@@ -304,33 +249,61 @@ void
 contiSetPlayState (contdata_t *contdata, int state)
 {
   int   nstate = MPRIS_STATUS_STOP;
+  bool  canplay = false;
+  bool  canpause = false;
+  bool  canseek = false;
 
   if (contdata == NULL) {
     return;
   }
 
+  contdata->playstate = state;
+
   switch (state) {
     case PL_STATE_LOADING:
-    case PL_STATE_PLAYING:
-    case PL_STATE_IN_FADEOUT:
-    case PL_STATE_IN_GAP: {
+    case PL_STATE_PLAYING: {
       nstate = MPRIS_STATUS_PLAY;
+      canplay = false;
+      canpause = false;
+      canseek = true;
+      break;
+    }
+    case PL_STATE_IN_FADEOUT: {
+      nstate = MPRIS_STATUS_PLAY;
+      canplay = false;
+      canpause = false;
+      canseek = false;
       break;
     }
     case PL_STATE_PAUSED: {
       nstate = MPRIS_STATUS_PAUSE;
+      canplay = true;
+      canpause = false;
+      canseek = true;
       break;
     }
-    default: {
+    case PL_STATE_UNKNOWN:
+    case PL_STATE_IN_GAP:
+    case PL_STATE_STOPPED: {
       nstate = MPRIS_STATUS_STOP;
+      canplay = true;
+      canpause = false;
+      canseek = false;
       break;
     }
   }
+
+  mpris_media_player2_player_set_can_play (contdata->mprisplayer, canplay);
+  mpris_media_player2_player_set_can_pause (contdata->mprisplayer, canpause);
+  mpris_media_player2_player_set_can_seek (contdata->mprisplayer, canseek);
+
   if (contdata->playstatus != nstate) {
-    nlistSetNum (contdata->chgprop, MPRIS_PROP_PB_STATUS, nstate);
-    mprisSendPropertyChange (contdata);
+    mpris_media_player2_player_set_playback_status (contdata->mprisplayer,
+        playstatusstr [nstate]);
+//    nlistSetNum (contdata->chgprop, MPRIS_PROP_PB_STATUS, nstate);
+//    mprisSendPropertyChange (contdata);
+    contdata->playstatus = nstate;
   }
-  contdata->playstatus = nstate;
 }
 
 void
@@ -347,19 +320,25 @@ contiSetRepeatState (contdata_t *contdata, bool state)
     nstate = MPRIS_REPEAT_TRACK;
   }
   if (contdata->repeatstatus != nstate) {
-    nlistSetNum (contdata->chgprop, MPRIS_PROP_REPEAT_STATUS, nstate);
-    mprisSendPropertyChange (contdata);
+    mpris_media_player2_player_set_loop_status (contdata->mprisplayer,
+        repeatstr [nstate]);
+//    nlistSetNum (contdata->chgprop, MPRIS_PROP_REPEAT_STATUS, nstate);
+//    mprisSendPropertyChange (contdata);
+    contdata->repeatstatus = nstate;
   }
-  contdata->repeatstatus = nstate;
 }
 
 void
-contiSetPosition (contdata_t *contdata, double pos)
+contiSetPosition (contdata_t *contdata, int32_t pos)
 {
   if (contdata == NULL) {
     return;
   }
 
+  if (contdata->pos != pos) {
+    mpris_media_player2_player_set_position (contdata->mprisplayer, pos);
+    mpris_media_player2_player_emit_seeked (contdata->mprisplayer, pos);
+  }
   contdata->pos = pos;
 }
 
@@ -374,8 +353,9 @@ contiSetRate (contdata_t *contdata, int rate)
     double    dval;
 
     dval = (double) rate / 100.0;
-    nlistSetDouble (contdata->chgprop, MPRIS_PROP_RATE, dval);
-    mprisSendPropertyChange (contdata);
+    mpris_media_player2_player_set_rate (contdata->mprisplayer, dval);
+//    nlistSetDouble (contdata->chgprop, MPRIS_PROP_RATE, dval);
+//    mprisSendPropertyChange (contdata);
   }
   contdata->rate = rate;
 }
@@ -391,8 +371,9 @@ contiSetVolume (contdata_t *contdata, int volume)
     double    dval;
 
     dval = (double) volume / 100.0;
-    nlistSetDouble (contdata->chgprop, MPRIS_PROP_VOLUME, dval);
-    mprisSendPropertyChange (contdata);
+    mpris_media_player2_player_set_volume (contdata->mprisplayer, dval);
+//    nlistSetDouble (contdata->chgprop, MPRIS_PROP_VOLUME, dval);
+//    mprisSendPropertyChange (contdata);
   }
   contdata->volume = volume;
 }
@@ -445,253 +426,122 @@ contiSetCurrent (contdata_t *contdata, const char *album,
     } else {
       tv = dbusMessageBuild ("s", nlistGetStr (contdata->metadata, mkey));
     }
-    dbusMessageAppendArray (contdata->dbus, "a{sv}",
+    dbusMessageAppendArray (contdata->dbus, "{sv}",
         metadatastr [mkey], tv, NULL);
   }
   tv = dbusMessageFinalizeArray (contdata->dbus);
   contdata->metav = tv;
 
-  nlistSetNum (contdata->chgprop, MPRIS_PROP_METADATA, 1);
-  mprisSendPropertyChange (contdata);
+//  nlistSetNum (contdata->chgprop, MPRIS_PROP_METADATA, 1);
+  mpris_media_player2_player_set_metadata (contdata->mprisplayer, contdata->metav);
+  mpris_media_player2_player_set_can_go_next (contdata->mprisplayer, true);
+//  mprisSendPropertyChange (contdata);
 }
 
 /* internal routines */
 
-static bool
-mprisiMethodCallback (const char *intfc, const char *method, void *udata)
+static void
+mprisInitializeRoot (contdata_t *contdata)
 {
-  contdata_t    *contdata = udata;
-  int           cmd = CONTROLLER_NONE;
-  long          val = 0;
 
-fprintf (stderr, "-- mprisi-method: %s %s\n", intfc, method);
+  contdata->mprisroot = mpris_media_player2_skeleton_new ();
 
-  if (contdata == NULL || contdata->cb == NULL) {
-    return true;
-  }
+  mpris_media_player2_set_can_quit (contdata->mprisroot, true);
+  mpris_media_player2_set_can_raise (contdata->mprisroot, false);
+  mpris_media_player2_set_has_track_list (contdata->mprisroot, false);
+  mpris_media_player2_set_identity (contdata->mprisroot, BDJ4_NAME);
+  mpris_media_player2_set_desktop_entry (contdata->mprisroot, BDJ4_NAME);
+  mpris_media_player2_set_supported_mime_types (contdata->mprisroot, mimetypes);
+  mpris_media_player2_set_supported_uri_schemes (contdata->mprisroot, urischemes);
 
-  if (strcmp (method, "Play") == 0) {
-    cmd = CONTROLLER_PLAY;
-  } else if (strcmp (method, "PlayPause") == 0) {
-    cmd = CONTROLLER_PLAYPAUSE;
-  } else if (strcmp (method, "Pause") == 0) {
-    cmd = CONTROLLER_PAUSE;
-  } else if (strcmp (method, "Stop") == 0) {
-    cmd = CONTROLLER_STOP;
-  } else if (strcmp (method, "Next") == 0) {
-    cmd = CONTROLLER_NEXT;
-  } else if (strcmp (method, "Previous") == 0) {
-    cmd = CONTROLLER_PREVIOUS;
-  } else if (strcmp (method, "Seek") == 0) {
-    cmd = CONTROLLER_SEEK;
-  } else if (strcmp (method, "SetPosition") == 0) {
-    cmd = CONTROLLER_SET_POS;
-  } else if (strcmp (method, "OpenUri") == 0) {
-    cmd = CONTROLLER_URI;
-  } else if (strcmp (method, "Raise") == 0) {
-    cmd = CONTROLLER_RAISE;
-  } else if (strcmp (method, "Quit") == 0) {
-    cmd = CONTROLLER_QUIT;
-  }
-
-  callbackHandlerII (contdata->cb, val, cmd);
-
-  return true;
-}
-
-static bool
-mprisiPropertyGetCallback (const char *intfc, const char *prop, void *udata)
-{
-  contdata_t    *contdata = udata;
-  bool          rc = false;
-fprintf (stderr, "-- mprisi-prop-get: %s %s\n", intfc, prop);
-
-  dbusMessageInit (contdata->dbus);
-
-  if (strcmp (intfc, interface [MPRIS_INTFC_MP2]) == 0) {
-    if (strcmp (prop, "CanQuit") == 0) {
-      dbusMessageSetData (contdata->dbus, "b", true, NULL);
-      rc = true;
-    } else if (strcmp (prop, "Fullscreen") == 0) {
-      dbusMessageSetData (contdata->dbus, "b", false, NULL);
-      rc = true;
-    } else if (strcmp (prop, "CanSetFullscreen") == 0) {
-      dbusMessageSetData (contdata->dbus, "b", false, NULL);
-      rc = true;
-    } else if (strcmp (prop, "CanRaise") == 0) {
-      dbusMessageSetData (contdata->dbus, "b", false, NULL);
-      rc = true;
-    } else if (strcmp (prop, "HasTrackList") == 0) {
-      dbusMessageSetData (contdata->dbus, "b", false, NULL);
-      rc = true;
-    } else if (strcmp (prop, "Identity") == 0) {
-      dbusMessageSetData (contdata->dbus, "s", BDJ4_NAME, NULL);
-      rc = true;
-    } else if (strcmp (prop, "DesktopEntry") == 0) {
-      dbusMessageSetData (contdata->dbus, "s", BDJ4_NAME, NULL);
-      rc = true;
-    } else if (strcmp (prop, "SupportedUriSchemes") == 0) {
-      rc = true;
-      dbusMessageSetDataArray (contdata->dbus, "as",
-          "file",
-          NULL);
-    } else if (strcmp (prop, "SupportedMimeTypes") == 0) {
-      rc = true;
-      /* this is the list from vlc w/o video */
-      dbusMessageSetDataArray (contdata->dbus, "as",
-          "audio/mpeg",
-          "audio/x-mpeg",
-          "audio/mp4",
-          "application/ogg",
-          "application/x-ogg",
-          "audio/wav",
-          "audio/x-wav",
-          "audio/3gpp",
-          "audio/3gpp2",
-          "audio/x-matroska",
-          "application/xspf+xml",
-          NULL);
-    }
-  }
-
-  if (strcmp (intfc, interface [MPRIS_INTFC_MP2_PLAYER]) == 0) {
-    if (strcmp (prop, propstr [MPRIS_PROP_PB_STATUS]) == 0) {
-      dbusMessageSetData (contdata->dbus, "s", statusstr [contdata->playstatus], NULL);
-      rc = true;
-    } else if (strcmp (prop, propstr [MPRIS_PROP_REPEAT_STATUS]) == 0) {
-      dbusMessageSetData (contdata->dbus, "s", repeatstr [contdata->repeatstatus], NULL);
-      rc = true;
-    } else if (strcmp (prop, propstr [MPRIS_PROP_RATE]) == 0) {
-      dbusMessageSetData (contdata->dbus, "d", (double) contdata->rate, NULL);
-      rc = true;
-    } else if (strcmp (prop, "Shuffle") == 0) {
-      dbusMessageSetData (contdata->dbus, "b", false, NULL);
-      rc = true;
-    } else if (strcmp (prop, propstr [MPRIS_PROP_METADATA]) == 0) {
-      if (contdata->metav != NULL) {
-        dbusMessageSetData (contdata->dbus, "a{sv}", contdata->metav, NULL);
-        rc = true;
-      }
-    } else if (strcmp (prop, propstr [MPRIS_PROP_VOLUME]) == 0) {
-      dbusMessageSetData (contdata->dbus, "d", (double) contdata->volume, NULL);
-      rc = true;
-    } else if (strcmp (prop, propstr [MPRIS_PROP_POSITION]) == 0) {
-      dbusMessageSetData (contdata->dbus, "x", (double) contdata->pos, NULL);
-      rc = true;
-    } else if (strcmp (prop, "MinimumRate") == 0) {
-      dbusMessageSetData (contdata->dbus, "d", 0.7, NULL);
-      rc = true;
-    } else if (strcmp (prop, "MaximumRate") == 0) {
-      dbusMessageSetData (contdata->dbus, "d", 1.3, NULL);
-      rc = true;
-    } else if (strcmp (prop, "CanGoNext") == 0) {
-      bool    tstate = false;
-
-      if (contdata->playstatus != MPRIS_STATUS_STOP) {
-        tstate = true;
-      }
-      dbusMessageSetData (contdata->dbus, "b", tstate, NULL);
-      rc = true;
-    } else if (strcmp (prop, "CanGoPrevious") == 0) {
-      dbusMessageSetData (contdata->dbus, "b", false, NULL);
-      rc = true;
-    } else if (strcmp (prop, "CanPlay") == 0) {
-      bool  pstate = false;
-
-      if (contdata->playstatus != MPRIS_STATUS_PLAY) {
-        pstate = true;
-      }
-      dbusMessageSetData (contdata->dbus, "b", pstate, NULL);
-      rc = true;
-    } else if (strcmp (prop, "CanPause") == 0) {
-      bool  pstate = false;
-
-      if (contdata->playstatus == MPRIS_STATUS_PLAY) {
-        pstate = true;
-      }
-      dbusMessageSetData (contdata->dbus, "b", pstate, NULL);
-      rc = true;
-    } else if (strcmp (prop, "CanSeek") == 0) {
-      bool  pstate = false;
-
-      if (contdata->playstatus != MPRIS_STATUS_STOP) {
-        pstate = true;
-      }
-      dbusMessageSetData (contdata->dbus, "b", pstate, NULL);
-      rc = true;
-    } else if (strcmp (prop, "CanControl") == 0) {
-      dbusMessageSetData (contdata->dbus, "b", true, NULL);
-      rc = true;
-    }
-  }
-
-  return rc;
+  dbusSetInterfaceSkeleton (contdata->dbus, contdata->mprisroot,
+      objpath [MPRIS_OBJP_MP2]);
 }
 
 static void
-mprisSendPropertyChange (contdata_t *contdata)
+mprisInitializePlayer (contdata_t *contdata)
 {
-  nlistidx_t  iter;
-  nlistidx_t  key;
 
-  if (nlistGetCount (contdata->chgprop) == 0) {
-    return;
-  }
+  contdata->mprisplayer = mpris_media_player2_player_skeleton_new ();
 
-fprintf (stderr, "mprisi: send-prop-chg\n");
-  dbusMessageInit (contdata->dbus);
-  nlistStartIterator (contdata->chgprop, &iter);
-  while ((key = nlistIterateKey (contdata->chgprop, &iter)) >= 0) {
-    int         val = 0;
-    double      dval = 0.0;
-    const char  *str = NULL;
-    void        *tvv = NULL;
-    void        *tv = NULL;
-    void        *sv = NULL;
-    void        *emptyv = NULL;
+  mpris_media_player2_player_set_playback_status (contdata->mprisplayer,
+      playstatusstr [MPRIS_STATUS_STOP]);
+  mpris_media_player2_player_set_loop_status (contdata->mprisplayer,
+      repeatstr [MPRIS_REPEAT_NONE]);
+  mpris_media_player2_player_set_rate (contdata->mprisplayer, 0.0);
+  mpris_media_player2_player_set_volume (contdata->mprisplayer, true);
+  mpris_media_player2_player_set_position (contdata->mprisplayer, 0);
+  mpris_media_player2_player_set_minimum_rate (contdata->mprisplayer, 0.7);
+  mpris_media_player2_player_set_maximum_rate (contdata->mprisplayer, 1.3);
+  mpris_media_player2_player_set_shuffle (contdata->mprisplayer, false);
+  mpris_media_player2_player_set_can_go_next (contdata->mprisplayer, false);
+  mpris_media_player2_player_set_can_go_previous (contdata->mprisplayer, false);
+  mpris_media_player2_player_set_can_play (contdata->mprisplayer, false);
+  mpris_media_player2_player_set_can_pause (contdata->mprisplayer, false);
+  mpris_media_player2_player_set_can_seek (contdata->mprisplayer, false);
+  mpris_media_player2_player_set_can_control (contdata->mprisplayer, true);
 
-    switch (key) {
-      case MPRIS_PROP_PB_STATUS: {
-        val = nlistGetNum (contdata->chgprop, key);
-        str = statusstr [val];
-        break;
-      }
-      case MPRIS_PROP_REPEAT_STATUS: {
-        val = nlistGetNum (contdata->chgprop, key);
-        str = repeatstr [val];
-        break;
-      }
-      case MPRIS_PROP_METADATA: {
-        tvv = contdata->metav;
-        break;
-      }
-      default: {
-        dval = nlistGetDouble (contdata->chgprop, key);
-        break;
-      }
-    }
+  g_signal_connect (contdata->mprisplayer, "handle-next",
+      G_CALLBACK (mprisNext), contdata);
+  g_signal_connect (contdata->mprisplayer, "handle-play",
+      G_CALLBACK (mprisPlay), contdata);
+  g_signal_connect (contdata->mprisplayer, "handle-pause",
+      G_CALLBACK (mprisPause), contdata);
+  g_signal_connect (contdata->mprisplayer, "handle-playpause",
+      G_CALLBACK (mprisPlayPause), contdata);
+  g_signal_connect (contdata->mprisplayer, "handle-stop",
+      G_CALLBACK (mprisStop), contdata);
+//  g_signal_connect (contdata->mprisplayer, "handle-set-position", G_CALLBACK (mpris_set_position), NULL);
+//  g_signal_connect (contdata->mprisplayer, "handle-seek", (GCallback) mpris_seek_position, NULL);
+//  g_signal_connect (contdata->mprisplayer, "notify::volume", (GCallback) mpris_volume_changed, NULL);
 
-    if (str != NULL) {
-      tvv = dbusMessageBuild ("s", str, NULL);
-    } else if (tvv == NULL) {
-      tvv = dbusMessageBuild ("d", dval, NULL);
-    }
-    dbusMessageInitArray (contdata->dbus, "a{sv}");
-    dbusMessageAppendArray (contdata->dbus, "a{sv}", propstr [key], tvv, NULL);
-    tv = dbusMessageFinalizeArray (contdata->dbus);
-    emptyv = dbusMessageEmptyArray ("as");
-    sv = dbusMessageBuild ("s", interface [MPRIS_INTFC_MP2_PLAYER], NULL);
-    /* need to set the type from the children's types */
-    dbusMessageSetDataTuple (contdata->dbus, "(sa{sv}as)",
-        sv, tv, emptyv, NULL);
-  }
+  dbusSetInterfaceSkeleton (contdata->dbus, contdata->mprisplayer,
+      objpath [MPRIS_OBJP_MP2]);
+}
 
-  dbusEmitSignal (contdata->dbus,
-      objpath [MPRIS_OBJP_MP2], interface [MPRIS_INTFC_DBUS_PROP],
-      "PropertiesChanged");
+static gboolean
+mprisNext (mprisMediaPlayer2Player *player,
+    GDBusMethodInvocation *invocation,
+    void *udata)
+{
+  mpris_media_player2_player_complete_next (player, invocation);
+  return true;
+}
 
-  nlistFree (contdata->chgprop);
-  contdata->chgprop = nlistAlloc ("mprisi-chgprop", LIST_ORDERED, NULL);
+static gboolean
+mprisPlay (mprisMediaPlayer2Player *player,
+    GDBusMethodInvocation *invocation,
+    void *udata)
+{
+  mpris_media_player2_player_complete_next (player, invocation);
+  return true;
+}
+
+static gboolean
+mprisPause (mprisMediaPlayer2Player *player,
+    GDBusMethodInvocation *invocation,
+    void *udata)
+{
+  mpris_media_player2_player_complete_next (player, invocation);
+  return true;
+}
+
+static gboolean
+mprisPlayPause (mprisMediaPlayer2Player *player,
+    GDBusMethodInvocation *invocation,
+    void *udata)
+{
+  mpris_media_player2_player_complete_next (player, invocation);
+  return true;
+}
+
+static gboolean
+mprisStop (mprisMediaPlayer2Player *player,
+    GDBusMethodInvocation *invocation,
+    void *udata)
+{
+  mpris_media_player2_player_complete_next (player, invocation);
+  return true;
 }
 
 #endif /* __linux__ */
