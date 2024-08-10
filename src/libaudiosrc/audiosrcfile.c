@@ -165,13 +165,34 @@ audiosrcfilePrepClean (const char *tempnm)
   }
 }
 
+const char *
+audiosrcfilePrefix (void)
+{
+  return AS_FILE_PFX;
+}
+
+void
+audiosrcfileURI (const char *sfname, char *buff, size_t sz,
+    int pfxlen, const char *oldfn)
+{
+  *buff = '\0';
+
+  if (sfname == NULL || buff == NULL) {
+    return;
+  }
+
+  strlcpy (buff, AS_FILE_PFX, sizeof (buff));
+  audiosrcFullPath (sfname, buff + AS_FILE_PFX_LEN, sz - AS_FILE_PFX_LEN,
+      pfxlen, oldfn);
+}
+
 void
 audiosrcfileFullPath (const char *sfname, char *buff, size_t sz,
     int pfxlen, const char *oldfn)
 {
   *buff = '\0';
 
-  if (sfname == NULL) {
+  if (sfname == NULL || buff == NULL) {
     return;
   }
 
@@ -202,6 +223,10 @@ audiosrcfileRelativePath (const char *sfname, int pfxlen)
   const char  *musicdir;
   size_t      musicdirlen;
   const char  *p = sfname;
+
+  if (sfname == NULL) {
+    return NULL;
+  }
 
   if (strncmp (p, AS_FILE_PFX, AS_FILE_PFX_LEN) == 0) {
     p += AS_FILE_PFX_LEN;

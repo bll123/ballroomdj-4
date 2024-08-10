@@ -189,9 +189,9 @@ bdjvarsSetUniqueName (void)
   altidx = sysvarsGetNum (SVL_ALTIDX);
   profidx = sysvarsGetNum (SVL_PROFILE_IDX);
   if (altidx != 0) {
-    snprintf (tbuff, sizeof (tbuff), "%s-%02d-%02d", BDJ4_NAME, altidx, profidx);
+    snprintf (tbuff, sizeof (tbuff), "%s.a%02d-p%02d", BDJ4_NAME, altidx, profidx);
   } else if (profidx != 0) {
-    snprintf (tbuff, sizeof (tbuff), "%s-%02d", BDJ4_NAME, profidx);
+    snprintf (tbuff, sizeof (tbuff), "%s.p%02d", BDJ4_NAME, profidx);
   }
   bdjvars [BDJV_INSTANCE_NAME] = mdstrdup (tbuff);
 }

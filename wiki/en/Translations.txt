@@ -9,6 +9,7 @@ Current Translations and Status:
 
  Language|Status|Translator
  --------|------|----------
+ Afrikaans|Machine Translated<br>Very poor quality|
  čeština|Machine Translated<br>Very poor quality|
  Dansk|Machine Translated<br>Very poor quality|
  Deutsch|Machine Translated<br>Very poor quality|
@@ -26,8 +27,10 @@ Current Translations and Status:
  Polski|Machine Translated<br>Very poor quality|
  Português|Machine Translated<br>Very poor quality|
  Русский‬|OK<br>Still needs work|
+ српски|Machine Translated<br>Very poor quality|
  Svenska‬|Machine Translated<br>Very poor quality|
  Українська‬|Machine Translated<br>Very poor quality|
+ Tiếng Việt|Machine Translated<br>Very poor quality|
  简体中文‬|Machine Translated<br>Very poor quality|
  繁體中文‬|Machine Translated<br>Very poor quality|
 

@@ -26,8 +26,10 @@
       <annotation name='org.freedesktop.DBus.Property.EmitsChangedSignal' value='false'/>
     </property>
     <property type='a{sv}' access='read' name='Metadata'/>
-    <property type='d' access='readwrite' name='Volume'/>
-    <property type='x' access='read' name='Position'/>
+    <property type='d' access='read' name='Volume'/>
+    <property type='x' access='read' name='Position'>
+      <annotation name='org.freedesktop.DBus.Property.EmitsChangedSignal' value='false'/>
+    </property>
     <property type='d' access='read' name='MinimumRate'/>
     <property type='d' access='read' name='MaximumRate'/>
     <property type='b' access='read' name='CanGoNext'/>

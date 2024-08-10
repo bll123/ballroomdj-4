@@ -24,11 +24,24 @@ enum {
   CONTROLLER_SEEK,      // long arg
   CONTROLLER_OPEN_URI,  // string arg
   CONTROLLER_REPEAT,
+  CONTROLLER_RATE,
   CONTROLLER_QUIT,
 };
 
 typedef struct controller controller_t;
 typedef struct contdata contdata_t;
+
+typedef struct {
+  const char    *album;
+  const char    *albumartist;
+  const char    *artist;
+  const char    *title;
+  const char    *uri;
+  const char    *arturi;
+  const char    *genre;
+  int32_t       trackid;
+  int32_t       duration;
+} contmetadata_t;
 
 const char *controllerDesc (void);
 controller_t *controllerInit (const char *contpkg);
@@ -41,7 +54,8 @@ void controllerSetRepeatState (controller_t *cont, bool state);
 void controllerSetPosition (controller_t *cont, int32_t pos);
 void controllerSetRate (controller_t *cont, int rate);
 void controllerSetVolume (controller_t *cont, int volume);
-void controllerSetCurrent (controller_t *cont, const char *album, const char *albumartist, const char *artist, const char *title, int32_t trackid, int32_t duration);
+void controllerInitMetadata (contmetadata_t *cmetadata);
+void controllerSetCurrent (controller_t *cont, contmetadata_t *cmetadata);
 ilist_t *controllerInterfaceList (void);
 
 void contiDesc (char **ret, int max);
@@ -55,7 +69,7 @@ void contiSetRepeatState (contdata_t *contdata, bool state);
 void contiSetPosition (contdata_t *contdata, int32_t pos);
 void contiSetRate (contdata_t *contdata, int rate);
 void contiSetVolume (contdata_t *contdata, int volume);
-void contiSetCurrent (contdata_t *contdata, const char *album, const char *albumartist, const char *artist, const char *title, int32_t trackid, int32_t duration);
+void contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

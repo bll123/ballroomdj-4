@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <math.h>
 
+#include "audiosrc.h"
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdj4ui.h"
@@ -22,6 +23,7 @@
 #include "controller.h"
 #include "dance.h"
 #include "dispsel.h"
+#include "genre.h"
 #include "ilist.h"
 #include "log.h"
 #include "mdebug.h"
@@ -1046,6 +1048,9 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
   int               tagidx;
   slistidx_t        seliteridx;
   mp_musicqstatus_t mqstatus;
+  contmetadata_t    cmetadata;
+  char              uri [MAXPATHLEN];
+  genre_t           *genres;
 
   logProcBegin ();
 
@@ -1073,10 +1078,18 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
 
   sellist = dispselGetList (uiplayer->dispsel, DISP_SEL_CURRSONG);
 
-  controllerSetCurrent (uiplayer->controller, songGetStr (song, TAG_ALBUM),
-      songGetStr (song, TAG_ALBUMARTIST), songGetStr (song, TAG_ARTIST),
-      songGetStr (song, TAG_TITLE), mqstatus.uniqueidx,
-      songGetNum (song, TAG_DURATION));
+  controllerInitMetadata (&cmetadata);
+  genres = bdjvarsdfGet (BDJVDF_GENRES);
+  audiosrcURI (songGetStr (song, TAG_URI), uri, sizeof (uri), 0, NULL);
+  cmetadata.uri = uri;
+  cmetadata.album = songGetStr (song, TAG_ALBUM);
+  cmetadata.albumartist = songGetStr (song, TAG_ALBUMARTIST);
+  cmetadata.artist = songGetStr (song, TAG_ARTIST);
+  cmetadata.title = songGetStr (song, TAG_TITLE);
+  cmetadata.genre = genreGetGenre (genres, songGetNum (song, TAG_GENRE));
+  cmetadata.trackid = mqstatus.uniqueidx;
+  cmetadata.duration = songGetNum (song, TAG_DURATION);
+  controllerSetCurrent (uiplayer->controller, &cmetadata);
 
   idx = UIPL_W_INFO_DISP_A;
   slistStartIterator (sellist, &seliteridx);

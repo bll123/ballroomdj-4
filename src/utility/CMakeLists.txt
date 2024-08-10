@@ -97,14 +97,16 @@ target_link_libraries (plisinklist PRIVATE
   ${ICUI18N_LDFLAGS}
 )
 
-add_executable (dbustest dbustest.c)
-target_include_directories (dbustest
-  PRIVATE "${GLIB_INCLUDE_DIRS}"
-)
-target_link_libraries (dbustest PRIVATE
-  objdbusi libbdj4common
-  ${GLIB_LDFLAGS}
-)
+if (NOT WIN32 AND NOT APPLE)
+  add_executable (dbustest dbustest.c)
+  target_include_directories (dbustest
+    PRIVATE "${GLIB_INCLUDE_DIRS}"
+  )
+  target_link_libraries (dbustest PRIVATE
+    objdbusi libbdj4common
+    ${GLIB_LDFLAGS}
+  )
+endif()
 
 add_executable (aesed aesed.c)
 target_link_libraries (aesed PRIVATE
@@ -172,12 +174,17 @@ install (TARGETS
   tmusicsetup
   ttagdbchk
   plisinklist
-  dbustest
   aesed
   vsed
   uitest
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
+if (NOT WIN32 AND NOT APPLE)
+  install (TARGETS
+    dbustest
+    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  )
+endif()
 if (LIBVLC_FOUND OR LIBVLC4_FOUND)
   install (TARGETS
     vlcversion
@@ -194,7 +201,9 @@ updateRPath (tdbsetval)
 updateRPath (testsuite)
 updateRPath (tmusicsetup)
 updateRPath (ttagdbchk)
-updateRPath (dbustest)
+if (NOT WIN32 AND NOT APPLE)
+  updateRPath (dbustest)
+endif()
 updateRPath (plisinklist)
 updateRPath (vsed)
 updateRPath (aesed)

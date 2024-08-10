@@ -2108,6 +2108,7 @@ pluiDragDropCallback (void *udata, const char *uri)
   int           mqidx;
   int32_t       rownum;
 
+  /* only file:// are handled at this time */
   if (strncmp (uri, AS_FILE_PFX, AS_FILE_PFX_LEN) != 0) {
     return UICB_STOP;
   }

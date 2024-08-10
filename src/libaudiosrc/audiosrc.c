@@ -125,11 +125,47 @@ audiosrcPrepClean (const char *sfname, const char *tempnm)
   }
 }
 
+const char *
+audiosrcPrefix (const char *sfname)
+{
+  const char  *pfx = "";
+  int         type = AUDIOSRC_TYPE_FILE;
+
+  type = audiosrcGetType (sfname);
+  if (type == AUDIOSRC_TYPE_FILE) {
+    pfx = audiosrcfilePrefix ();
+  }
+
+  return pfx;
+}
+
+void
+audiosrcURI (const char *sfname, char *uri, size_t sz,
+    int pfxlen, const char *oldfn)
+{
+  int     type = AUDIOSRC_TYPE_FILE;
+
+  if (uri == NULL) {
+    return;
+  }
+
+  type = audiosrcGetType (sfname);
+
+  *uri = '\0';
+  if (type == AUDIOSRC_TYPE_FILE) {
+    audiosrcfileURI (sfname, uri, sz, pfxlen, oldfn);
+  }
+}
+
 void
 audiosrcFullPath (const char *sfname, char *fullpath, size_t sz,
     int pfxlen, const char *oldfn)
 {
   int     type = AUDIOSRC_TYPE_FILE;
+
+  if (fullpath == NULL) {
+    return;
+  }
 
   type = audiosrcGetType (sfname);
 

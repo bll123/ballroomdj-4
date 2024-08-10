@@ -59,10 +59,7 @@ xspfExport (musicdb_t *musicdb, nlist_t *list,
     if (song == NULL) {
       continue;
     }
-    pfx = "";
-    if (audiosrcGetType (songGetStr (song, TAG_URI)) == AUDIOSRC_TYPE_FILE) {
-      pfx = AS_FILE_PFX;
-    }
+    pfx = audiosrcPrefix (songGetStr (song, TAG_URI));
 
     fprintf (fh, "    <track>\n");
 

@@ -87,6 +87,9 @@ enum {
   MPRIS_METADATA_TITLE,
   MPRIS_METADATA_TRACKID,
   MPRIS_METADATA_DURATION,
+  MPRIS_METADATA_URI,
+  MPRIS_METADATA_ART_URI,
+  MPRIS_METADATA_GENRE,
   MPRIS_METADATA_MAX,
 };
 
@@ -97,6 +100,9 @@ static const char *metadatastr [MPRIS_METADATA_MAX] = {
   [MPRIS_METADATA_TITLE] = "xesam:title",
   [MPRIS_METADATA_TRACKID] = "mpris:trackid",
   [MPRIS_METADATA_DURATION] = "mpris:length",
+  [MPRIS_METADATA_URI] = "xesam:url",
+  [MPRIS_METADATA_ART_URI] = "xesam:url",
+  [MPRIS_METADATA_GENRE] = "xesam:genre",
 };
 
 enum {
@@ -155,6 +161,7 @@ static gboolean mprisSetPosition (mprisMediaPlayer2Player* player, GDBusMethodIn
 static gboolean mprisSeek (mprisMediaPlayer2Player* player, GDBusMethodInvocation* invocation, gint64 offset, void *udata);
 static gboolean mprisOpenURI (mprisMediaPlayer2Player *player, GDBusMethodInvocation *invocation, const gchar *uri, void *udata);
 static gboolean mprisRepeat (mprisMediaPlayer2Player *player, GDBusMethodInvocation *invocation, void *udata);
+static gboolean mprisRate (mprisMediaPlayer2Player *player, GDBusMethodInvocation *invocation, void *udata);
 
 void
 contiDesc (char **ret, int max)
@@ -345,9 +352,9 @@ contiSetPosition (contdata_t *contdata, int32_t pos)
     int64_t   tpos;
     int32_t   pdiff;
 
-    tpos = pos * 1000 * 1000;
-    mpris_media_player2_player_set_position (contdata->mprisplayer, tpos);
+    tpos = pos * 1000;    // microseconds
     pdiff = pos - contdata->pos;
+    mpris_media_player2_player_set_position (contdata->mprisplayer, tpos);
     if (pdiff < 0 || pdiff > 300) {
       /* the seek signal is only supposed to be sent when there is */
       /* a large change */
@@ -390,9 +397,7 @@ contiSetVolume (contdata_t *contdata, int volume)
 }
 
 void
-contiSetCurrent (contdata_t *contdata, const char *album,
-    const char *albumartist, const char *artist, const char *title,
-    int32_t trackid, int32_t duration)
+contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
 {
   char        tbuff [200];
   nlistidx_t  miter;
@@ -406,25 +411,37 @@ contiSetCurrent (contdata_t *contdata, const char *album,
   nlistFree (contdata->metadata);
   contdata->metadata = nlistAlloc ("cont-mprisi-meta", LIST_ORDERED, NULL);
 
-  if (trackid >= 0) {
-    snprintf (tbuff, sizeof (tbuff), "/org/bdj4/playlist/%" PRId32, trackid);
+  if (cmetadata->trackid >= 0) {
+    snprintf (tbuff, sizeof (tbuff), "/org/bdj4/playlist/%" PRId32,
+        cmetadata->trackid);
   } else {
-    snprintf (tbuff, sizeof (tbuff), "/noplaylist");
+    snprintf (tbuff, sizeof (tbuff), "/NoTrack");
   }
   nlistSetStr (contdata->metadata, MPRIS_METADATA_TRACKID, tbuff);
-  nlistSetNum (contdata->metadata, MPRIS_METADATA_DURATION, duration);
 
-  if (title != NULL && *title) {
-    nlistSetStr (contdata->metadata, MPRIS_METADATA_TITLE, title);
+  nlistSetNum (contdata->metadata, MPRIS_METADATA_DURATION, cmetadata->duration);
+
+  if (cmetadata->title != NULL) {
+    nlistSetStr (contdata->metadata, MPRIS_METADATA_TITLE, cmetadata->title);
   }
-  if (artist != NULL && *artist) {
-    nlistSetStr (contdata->metadata, MPRIS_METADATA_ARTIST, artist);
+  if (cmetadata->artist != NULL) {
+    nlistSetStr (contdata->metadata, MPRIS_METADATA_ARTIST, cmetadata->artist);
   }
-  if (album != NULL && *album) {
-    nlistSetStr (contdata->metadata, MPRIS_METADATA_ALBUM, album);
+  if (cmetadata->album != NULL) {
+    nlistSetStr (contdata->metadata, MPRIS_METADATA_ALBUM, cmetadata->album);
   }
-  if (albumartist != NULL && *albumartist) {
-    nlistSetStr (contdata->metadata, MPRIS_METADATA_ALBUMARTIST, albumartist);
+  if (cmetadata->albumartist != NULL) {
+    nlistSetStr (contdata->metadata, MPRIS_METADATA_ALBUMARTIST,
+        cmetadata->albumartist);
+  }
+  if (cmetadata->genre != NULL) {
+    nlistSetStr (contdata->metadata, MPRIS_METADATA_GENRE, cmetadata->genre);
+  }
+  if (cmetadata->uri != NULL) {
+    nlistSetStr (contdata->metadata, MPRIS_METADATA_URI, cmetadata->uri);
+  }
+  if (cmetadata->arturi != NULL) {
+    nlistSetStr (contdata->metadata, MPRIS_METADATA_ART_URI, cmetadata->arturi);
   }
 
   nlistStartIterator (contdata->metadata, &miter);
@@ -512,6 +529,8 @@ mprisInitializePlayer (contdata_t *contdata)
       G_CALLBACK (mprisOpenURI), contdata);
   g_signal_connect (contdata->mprisplayer, "notify::loop-status",
       G_CALLBACK (mprisRepeat), contdata);
+  g_signal_connect (contdata->mprisplayer, "notify::rate",
+      G_CALLBACK (mprisRate), contdata);
 
   dbusSetInterfaceSkeleton (contdata->dbus, contdata->mprisplayer,
       objpath [MPRIS_OBJP_MP2]);
@@ -611,7 +630,7 @@ mprisSetPosition (mprisMediaPlayer2Player* player,
   contdata_t  *contdata = udata;
 
   if (contdata->cb != NULL) {
-    position /= 1000 * 1000;
+    position /= 1000;     // microseconds
     callbackHandlerII (contdata->cb, CONTROLLER_SEEK, position);
   }
   mpris_media_player2_player_complete_set_position (player, invocation);
@@ -627,7 +646,7 @@ mprisSeek (mprisMediaPlayer2Player* player,
   contdata_t  *contdata = udata;
 
   if (contdata->cb != NULL) {
-    offset /= 1000 * 1000;
+    offset /= 1000;   // microseconds
     offset += contdata->pos;
     callbackHandlerII (contdata->cb, CONTROLLER_SEEK, offset);
   }
@@ -668,14 +687,50 @@ mprisRepeat (mprisMediaPlayer2Player *player,
     }
   }
 
+  if (repid == contdata->repeatstatus) {
+    return true;
+  }
+  /* MPRIS_REPEAT_PLAYLIST is not valid for BDJ4 */
+  if (repid == MPRIS_REPEAT_PLAYLIST) {
+    return false;
+  }
+
   if (repid == MPRIS_REPEAT_TRACK) {
     repflag = true;
   }
-  /* MPRIS_REPEAT_PLAYLIST is not valid for BDJ4 */
 
   if (contdata->cb != NULL) {
     callbackHandlerII (contdata->cb, CONTROLLER_REPEAT, repflag);
   }
+  contdata->repeatstatus = repid;
+
+  return true;
+}
+
+static gboolean
+mprisRate (mprisMediaPlayer2Player *player,
+    GDBusMethodInvocation *invocation,
+    void *udata)
+{
+  contdata_t  *contdata = udata;
+  double      nrate;
+  int         rate;
+
+  nrate = mpris_media_player2_player_get_rate (player);
+  nrate *= 100.0;
+  rate = nrate;
+
+  if (contdata->rate == rate) {
+    return true;
+  }
+  if (rate < SPD_LOWER || rate > SPD_UPPER) {
+    return false;
+  }
+
+  if (contdata->cb != NULL) {
+    callbackHandlerII (contdata->cb, CONTROLLER_RATE, rate);
+  }
+  contdata->rate = rate;
 
   return true;
 }

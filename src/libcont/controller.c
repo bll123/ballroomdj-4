@@ -34,7 +34,7 @@ typedef struct controller {
   void              (*contiSetPosition) (contdata_t *contdata, int32_t pos);
   void              (*contiSetRate) (contdata_t *contdata, int rate);
   void              (*contiSetVolume) (contdata_t *contdata, int volume);
-  void              (*contiSetCurrent) (contdata_t *contdata, const char *album, const char *albumartist, const char *artist, const char *title, int32_t trackid, int32_t duration);
+  void              (*contiSetCurrent) (contdata_t *contdata, contmetadata_t *cmetadata);
 } controller_t;
 
 controller_t *
@@ -197,17 +197,31 @@ controllerSetVolume (controller_t *cont, int volume)
 }
 
 void
-controllerSetCurrent (controller_t *cont, const char *album,
-    const char *albumartist, const char *artist, const char *title,
-    int32_t trackid, int32_t duration)
+controllerInitMetadata (contmetadata_t *cmetadata)
 {
-  if (cont == NULL) {
+  if (cmetadata == NULL) {
+    return;
+  }
+  cmetadata->album = NULL;
+  cmetadata->albumartist = NULL;
+  cmetadata->artist = NULL;
+  cmetadata->title = NULL;
+  cmetadata->genre = NULL;
+  cmetadata->uri = NULL;
+  cmetadata->arturi = NULL;
+  cmetadata->trackid = 0;
+  cmetadata->duration = 0;
+}
+
+void
+controllerSetCurrent (controller_t *cont, contmetadata_t *cmetadata)
+{
+  if (cont == NULL || cmetadata == NULL) {
     return;
   }
 
   if (cont->contdata != NULL && cont->contiSetCurrent != NULL) {
-    cont->contiSetCurrent (cont->contdata, album, albumartist, artist, title,
-        trackid, duration);
+    cont->contiSetCurrent (cont->contdata, cmetadata);
   }
 }
 
