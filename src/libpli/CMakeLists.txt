@@ -44,25 +44,17 @@ if (LIBVLC4_FOUND)
   )
 endif()
 
-# make this an object in case something else needs it
-# but leave it in libpli/ for now
-add_library (objdbusi OBJECT dbusi.c)
-target_include_directories (objdbusi
-  PRIVATE "${GIO_INCLUDE_DIRS}"
-)
-target_link_libraries (objdbusi PRIVATE
-  ${GIO_LDFLAGS}
-)
-
-add_library (libplimpris SHARED plimpris.c mprisi.c)
-target_include_directories (libplimpris
-  PRIVATE "${GLIB_INCLUDE_DIRS}"
-)
-target_link_libraries (libplimpris PRIVATE
-  libbdj4common
-  objdbusi
-  ${GIO_LDFLAGS}
-)
+if (NOT WIN32 AND NOT APPLE)
+  add_library (libplimpris SHARED plimpris.c mprisi.c)
+  target_include_directories (libplimpris
+    PRIVATE "${GLIB_INCLUDE_DIRS}"
+  )
+  target_link_libraries (libplimpris PRIVATE
+    libbdj4common
+    objdbusi
+    ${GIO_LDFLAGS}
+  )
+endif()
 
 add_library (libpligst SHARED pligst.c gsti.c)
 target_include_directories (libpligst
@@ -78,10 +70,15 @@ target_link_libraries (libpligst PRIVATE
 install (TARGETS
   libbdj4pli
   libplinull
-  libplimpris
   libpligst
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
+if (NOT WIN32 AND NOT APPLE)
+  install (TARGETS
+    libplimpris
+    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  )
+endif()
 
 if (LIBVLC_FOUND)
   install (TARGETS
@@ -101,6 +98,8 @@ endif()
 
 updateRPath (libbdj4pli)
 updateRPath (libplinull)
-updateRPath (libplimpris)
+if (NOT WIN32 AND NOT APPLE)
+  updateRPath (libplimpris)
+endif()
 updateRPath (libpligst)
 

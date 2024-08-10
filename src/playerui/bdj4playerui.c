@@ -2151,10 +2151,18 @@ pluiControllerCallback (void *udata, int32_t cmd, int32_t val)
     case CONTROLLER_SEEK: {
       char    tmp [40];
 
-fprintf (stderr, "cont: seek: %d\n", val);
-// ### this is not working.
       snprintf (tmp, sizeof (tmp), "%d", val);
       connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_SEEK, tmp);
+      break;
+    }
+    case CONTROLLER_REPEAT: {
+      bool    repflag;
+
+      repflag = uiplayerGetRepeat (plui->uiplayer);
+      if (val != repflag) {
+        /* only toggle repeat if it does not match the current setting */
+        connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_REPEAT, NULL);
+      }
       break;
     }
     case CONTROLLER_QUIT: {

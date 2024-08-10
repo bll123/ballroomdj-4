@@ -15,60 +15,13 @@ target_link_libraries (libbdj4cont PRIVATE
 )
 
 if (NOT WIN32 AND NOT APPLE)
-  add_custom_command (
-    OUTPUT
-      ${PROJECT_SOURCE_DIR}/libcont/mpris-root.c
-      ${PROJECT_SOURCE_DIR}/libcont/mpris-root.h
-    COMMAND
-      pwd
-    # gdbus-codegen claims indicates that --generate-c-code is deprecated,
-    # so the command must be run twice for the header and body.
-    COMMAND
-      ${GDBUSCODEGEN}
-          --interface-prefix org.mpris.
-          --c-namespace mpris
-          --header
-          --output ${PROJECT_SOURCE_DIR}/libcont/mpris-root.h
-          ${PROJECT_SOURCE_DIR}/libcont/mpris-root.xml
-    COMMAND
-      ${GDBUSCODEGEN}
-          --interface-prefix org.mpris.
-          --c-namespace mpris
-          --body
-          --output ${PROJECT_SOURCE_DIR}/libcont/mpris-root.c
-          ${PROJECT_SOURCE_DIR}/libcont/mpris-root.xml
-    DEPENDS mpris-root.xml
-  )
-  add_custom_command (
-    OUTPUT
-      ${PROJECT_SOURCE_DIR}/libcont/mpris-player.c
-      ${PROJECT_SOURCE_DIR}/libcont/mpris-player.h
-    COMMAND
-      pwd
-    COMMAND
-      ${GDBUSCODEGEN}
-          --interface-prefix org.mpris.
-          --c-namespace mpris
-          --header
-          --output ${PROJECT_SOURCE_DIR}/libcont/mpris-player.h
-          ${PROJECT_SOURCE_DIR}/libcont/mpris-player.xml
-    COMMAND
-      ${GDBUSCODEGEN}
-          --interface-prefix org.mpris.
-          --c-namespace mpris
-          --body
-          --output ${PROJECT_SOURCE_DIR}/libcont/mpris-player.c
-          ${PROJECT_SOURCE_DIR}/libcont/mpris-player.xml
-    DEPENDS mpris-player.xml
-  )
-
-  add_library (libcontmpris SHARED mprisi.c mpris-root.c mpris-player.c)
+  add_library (libcontmpris SHARED mprisi.c)
   target_include_directories (libcontmpris
     PRIVATE "${GLIB_INCLUDE_DIRS}"
   )
   target_link_libraries (libcontmpris PRIVATE
     libbdj4common
-    objdbusi
+    objmprisroot objmprisplayer objdbusi
     ${GIO_LDFLAGS}
   )
 endif()

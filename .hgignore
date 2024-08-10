@@ -67,8 +67,10 @@ syntax: regexp
 ^packages/
 ^plocal/
 ^src/build/
-^src/libcont/mpris-root\.[ch]$
-^src/libcont/mpris-player\.[ch]$
+^src/libmpris/mpris-root\.c$
+^src/include/mpris-root\.h$
+^src/libmpris/mpris-player\.c$
+^src/include/mpris-player\.h$
 ^src/po/.*\.bak$
 ^src/po/.*\.backup$
 ^src/po/.*\.debug$

@@ -149,6 +149,7 @@ typedef struct uiplayer {
   /* speed/seek enabled */
   bool            speeddisabled : 1;
   bool            seekdisabled : 1;
+  bool            repeat : 1;
 } uiplayer_t;
 
 static bool  uiplayerInitCallback (void *udata, programstate_t programState);
@@ -196,6 +197,7 @@ uiplayerInit (const char *tag, progstate_t *progstate,
   }
 
   uiplayer->uibuilt = false;
+  uiplayer->repeat = false;
 
   progstateSetCallback (uiplayer->progstate, STATE_CONNECTING, uiplayerInitCallback, uiplayer);
   progstateSetCallback (uiplayer->progstate, STATE_CLOSING, uiplayerClosingCallback, uiplayer);
@@ -787,6 +789,16 @@ uiplayerGetVolumeSpeed (uiplayer_t *uiplayer, int *baseVolume, double *volume, d
   *speed = uiScaleGetValue (uiplayer->wcont [UIPL_W_SPEED]);
 }
 
+bool
+uiplayerGetRepeat (uiplayer_t *uiplayer)
+{
+  if (uiplayer == NULL) {
+    return false;
+  }
+
+  return uiplayer->repeat;
+}
+
 /* internal routines */
 
 static bool
@@ -949,6 +961,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
 
   /* repeat */
   uiplayer->repeatLock = true;
+  uiplayer->repeat = ps->repeat;
   if (ps->repeat) {
     uiImageClear (uiplayer->images [UIPL_IMG_REPEAT]);
     uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_REPEAT], uiplayer->images [UIPL_PIX_REPEAT]);

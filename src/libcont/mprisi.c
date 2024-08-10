@@ -141,9 +141,6 @@ typedef struct contdata {
   int32_t             pos;
   int                 rate;
   int                 volume;
-  bool                seek_expected : 1;
-  bool                idle : 1;
-  bool                paused : 1;
 } contdata_t;
 
 static void mprisInitializeRoot (contdata_t *contdata);
@@ -157,6 +154,7 @@ static gboolean mprisStop (mprisMediaPlayer2Player *player, GDBusMethodInvocatio
 static gboolean mprisSetPosition (mprisMediaPlayer2Player* player, GDBusMethodInvocation* invocation, const gchar *track_id, gint64 position, void *udata);
 static gboolean mprisSeek (mprisMediaPlayer2Player* player, GDBusMethodInvocation* invocation, gint64 offset, void *udata);
 static gboolean mprisOpenURI (mprisMediaPlayer2Player *player, GDBusMethodInvocation *invocation, const gchar *uri, void *udata);
+static gboolean mprisRepeat (mprisMediaPlayer2Player *player, GDBusMethodInvocation *invocation, void *udata);
 
 void
 contiDesc (char **ret, int max)
@@ -190,9 +188,6 @@ contiInit (const char *instname)
   contdata->pos = 0;
   contdata->rate = 100;
   contdata->volume = 0;
-  contdata->seek_expected = false;
-  contdata->idle = false;
-  contdata->paused = false;
 
   contdata->dbus = dbusConnInit ();
   dbusConnectAcquireName (contdata->dbus, contdata->instname,
@@ -348,10 +343,16 @@ contiSetPosition (contdata_t *contdata, int32_t pos)
 
   if (contdata->pos != pos) {
     int64_t   tpos;
+    int32_t   pdiff;
 
     tpos = pos * 1000 * 1000;
     mpris_media_player2_player_set_position (contdata->mprisplayer, tpos);
-    mpris_media_player2_player_emit_seeked (contdata->mprisplayer, tpos);
+    pdiff = pos - contdata->pos;
+    if (pdiff < 0 || pdiff > 300) {
+      /* the seek signal is only supposed to be sent when there is */
+      /* a large change */
+      mpris_media_player2_player_emit_seeked (contdata->mprisplayer, tpos);
+    }
     contdata->pos = pos;
   }
 }
@@ -509,6 +510,8 @@ mprisInitializePlayer (contdata_t *contdata)
       G_CALLBACK (mprisSeek), contdata);
   g_signal_connect (contdata->mprisplayer, "handle-open-uri",
       G_CALLBACK (mprisOpenURI), contdata);
+  g_signal_connect (contdata->mprisplayer, "notify::loop-status",
+      G_CALLBACK (mprisRepeat), contdata);
 
   dbusSetInterfaceSkeleton (contdata->dbus, contdata->mprisplayer,
       objpath [MPRIS_OBJP_MP2]);
@@ -609,7 +612,7 @@ mprisSetPosition (mprisMediaPlayer2Player* player,
 
   if (contdata->cb != NULL) {
     position /= 1000 * 1000;
-    callbackHandlerII (contdata->cb, CONTROLLER_SET_POS, position);
+    callbackHandlerII (contdata->cb, CONTROLLER_SEEK, position);
   }
   mpris_media_player2_player_complete_set_position (player, invocation);
   return true;
@@ -647,5 +650,34 @@ mprisOpenURI (mprisMediaPlayer2Player *player,
   return true;
 }
 
+static gboolean
+mprisRepeat (mprisMediaPlayer2Player *player,
+    GDBusMethodInvocation *invocation,
+    void *udata)
+{
+  contdata_t  *contdata = udata;
+  const char  *repstatus;
+  int         repid = MPRIS_REPEAT_NONE;
+  bool        repflag = false;
+
+  repstatus = mpris_media_player2_player_get_loop_status (player);
+  for (int i = 0; i < MPRIS_REPEAT_MAX; ++i) {
+    if (strcmp (repstatus, repeatstr [i]) == 0) {
+      repid = i;
+      break;
+    }
+  }
+
+  if (repid == MPRIS_REPEAT_TRACK) {
+    repflag = true;
+  }
+  /* MPRIS_REPEAT_PLAYLIST is not valid for BDJ4 */
+
+  if (contdata->cb != NULL) {
+    callbackHandlerII (contdata->cb, CONTROLLER_REPEAT, repflag);
+  }
+
+  return true;
+}
 
 #endif /* __linux__ */

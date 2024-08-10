@@ -27,5 +27,6 @@ dbidx_t uiplayerGetCurrSongIdx (uiplayer_t *uiplayer);
 void  uiplayerDisableSpeed (uiplayer_t *uiplayer);
 void  uiplayerDisableSeek (uiplayer_t *uiplayer);
 void  uiplayerGetVolumeSpeed (uiplayer_t *uiplayer, int *baseVolume, double *volume, double *speed);
+bool  uiplayerGetRepeat (uiplayer_t *uiplayer);
 
 #endif /* INC_UIPLAYER_H */

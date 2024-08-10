@@ -22,8 +22,8 @@ enum {
   CONTROLLER_STOP,
   CONTROLLER_NEXT,
   CONTROLLER_SEEK,      // long arg
-  CONTROLLER_SET_POS,   // long arg
   CONTROLLER_OPEN_URI,  // string arg
+  CONTROLLER_REPEAT,
   CONTROLLER_QUIT,
 };
 

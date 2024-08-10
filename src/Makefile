@@ -203,7 +203,8 @@ distclean:
 	@-$(RM) -rf build
 	@-$(MAKE) clean
 	@-$(RM) -f ../install/manifest.txt ../install/manifest-src.txt
-	@-$(RM) -f libcont/mpris-root.[ch] libcont/mpris-player.[ch]
+	@-$(RM) -f libmpris/mpris-root.c libmpris/mpris-player.c
+	@-$(RM) -f include/mpris-root.h include/mpris-player.h
 	@-$(RM) -f testall.log
 	@mkdir build
 

@@ -110,8 +110,9 @@ add_subdirectory (libbdj4)
 
 add_subdirectory (libaudioid)
 add_subdirectory (libati)
-add_subdirectory (libpli)
 add_subdirectory (libvol)
+add_subdirectory (libmpris)
+add_subdirectory (libpli)
 add_subdirectory (libcont)
 
 # executables, no gui
