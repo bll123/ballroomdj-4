@@ -6,10 +6,12 @@
 
 **4.12.0 2024-7---**
 
+**4.11.4 2024-7---**
+
 * Bug Fixes:
     * Improve logging on MacOS so it is not so slow.
 * Translations:
-    * Added Vietnamese (Tiếng Việt), Afrikaans, Serbian (српски).  Machine translated and poor quality.
+    * Added Vietnamese (Tiếng Việt), Afrikaans, Serbian (српски). Machine translated and very poor quality.
 * New Features:
     * Linux: Added MPRIS support.
 

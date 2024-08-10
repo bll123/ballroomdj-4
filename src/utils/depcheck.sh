@@ -63,6 +63,13 @@ for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h \
     build/*)
       continue
       ;;
+    *mongoose.c)
+      continue
+      ;;
+    *mpris-root.[ch]|*mpris-player.[ch])
+      # generated file
+      continue
+      ;;
     *potemplates.c)
       # temporary file
       continue
@@ -109,6 +116,12 @@ if [[ $rc -ne 0 ]]; then
   exit $grc
 fi
 for fn in include/*.h include/ui/*.h config.h.in; do
+  case $fn in
+    *mpris-root.h|*mpris-player.h)
+      # generated file
+      continue
+      ;;
+  esac
   inc=$(grep '^#ifndef INC_' $fn | sed -e 's/.*INC_//' -e 's/_H/.h/' -e 's/-/_/g' -e 's/\.in//')
   tnm=$(echo $fn | sed -e 's,include/,,' -e 's,ui/,,' -e 's/-/_/g' -e 's/\.in//')
   if [[ $tnm != ${inc@L} ]]; then

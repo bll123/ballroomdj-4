@@ -182,7 +182,7 @@ audiosrcfileURI (const char *sfname, char *buff, size_t sz,
   }
 
   strlcpy (buff, AS_FILE_PFX, sizeof (buff));
-  audiosrcFullPath (sfname, buff + AS_FILE_PFX_LEN, sz - AS_FILE_PFX_LEN,
+  audiosrcfileFullPath (sfname, buff + AS_FILE_PFX_LEN, sz - AS_FILE_PFX_LEN,
       pfxlen, oldfn);
 }
 
