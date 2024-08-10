@@ -174,15 +174,15 @@ function copyreleasefiles {
       ;;
     macos)
       rm -f ${stage}/bin/libplimpris*
+      rm -f ${stage}/bin/libcontmpris*   # should not exist
       rm -f ${stage}/bin/libpligst*
-      rm -f ${stage}/bin/libcontmpris*
       rm -f ${stage}/bin/bdj4winmksc
       ;;
     win64)
       rm -f ${stage}/bin/bdj4g
       rm -f ${stage}/bin/libplimpris*
+      rm -f ${stage}/bin/libcontmpris*   # should not exist
       rm -f ${stage}/bin/libpligst*
-      rm -f ${stage}/bin/libcontmpris*
       ;;
   esac
 }
