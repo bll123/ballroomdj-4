@@ -909,7 +909,7 @@ msgstr "Историја"
 
 #. CONTEXT: installer: instructions
 msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
-msgstr "Ако нема инсталације БаллроомДЈ 3, оставите унос празан."
+msgstr "Ако нема инсталације BallroomDJ 3, оставите унос празан."
 
 #. CONTEXT: export/import bdj4 dialog: import button
 #. CONTEXT: import from itunes: import the selected itunes playlist
@@ -1573,7 +1573,7 @@ msgstr "Понови"
 msgid ""
 "Replaces the BallroomDJ database in its entirety. All changes to the "
 "database will be lost."
-msgstr "Замењује БаллроомДЈ базу података у целини. Све промене у бази података ће бити изгубљене."
+msgstr "Замењује BallroomDJ базу података у целини. Све промене у бази података ће бити изгубљене."
 
 #. CONTEXT: configuration: display settings for: requests
 #. CONTEXT: playerui: name of request tab : lists the songs in the database
@@ -2067,12 +2067,12 @@ msgstr "Ажурирано"
 #, c-format
 msgid ""
 "Updates the information in the BallroomDJ database from the %s database."
-msgstr "Ажурира информације у БаллроомДЈ бази података из %s базе података."
+msgstr "Ажурира информације у BallroomDJ бази података из %s базе података."
 
 #. CONTEXT: database update: update from audio file tags: help text
 msgid ""
 "Updates the information in the BallroomDJ database from the audio file tags."
-msgstr "Ажурира информације у БаллроомДЈ бази података из ознака аудио датотека."
+msgstr "Ажурира информације у BallroomDJ бази података из ознака аудио датотека."
 
 #. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
@@ -2153,7 +2153,7 @@ msgstr "Упишите ознаке у аудио датотеке"
 msgid ""
 "Writes the audio file tags using the information from the BallroomDJ "
 "database."
-msgstr "Записује ознаке аудио датотека користећи информације из БаллроомДЈ базе података."
+msgstr "Записује ознаке аудио датотека користећи информације из BallroomDJ базе података."
 
 #. CONTEXT: configuration: dialog: XML file types
 msgid "XML Files"

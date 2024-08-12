@@ -1,45 +1,99 @@
 [Wiki Home](Home)
 
-Directory Layout
+### Directory Layout
+
+ Directory|Notes
+ ---------|-----
+ bin|binaries
+ conv|BDJ3 Conversion utilities
+ data|BDJ4 data
+ devel|Development flags
+ http|Files for mobile marquee and mobile remote control
+ img|Images
+ install|Installation utilities, scripts, data
+ licenses|License information
+ locale|Processed locale files
+ packages|Third-party software
+ pkg|Packaging utilities
+ plocal|Third-party libraries
+ scripts|Helper scripts for the BDJ4 installation
+ src|Source, see below
+ templates|Templates for the data files
+ test-templates|Templates for testing
+ test-templates/tests|testsuite test scripts
+ tmp|BDJ4 Temporary files
+ web|Website files and helper scripts
+ wiki|Sourceforge wiki files
+ wiki-i|Sourceforge wiki images
+
+### src/ Directory Layout
+
+##### General
+
+ Directory|Notes
+ ---------|-----
+ libcommon|common utilities that do not use lists nor libicu
+ libbasic|lists, basic utilities that use lists or libicu
+ libbdj4|bdj4 specific utilities
+ libdylib|dynamic library handling
+ libwebsrv|web server (uses mongoose)
+ mongoose|third-party web server
+
+##### Audio Interaces
+
+ Directory|Notes
+ ---------|-----
+ libati|audio tagging interface.
+This was written as a dynamic library since at one
+point, both mutagen and the bdj4-ati interfaces
+were in process.
+ libaudioid|audio identification
+ libaudiosrc|audio source interface.  This should probably be
+re-worked so that each audio source type is a dynamic library.  Then
+it will be easier to add in new source types.
+ libcont|music controller
+ libpli|player interface (dynamic libraries)
+ libmpris|Linux MPRIS interface
+ libvol|volume interface (dynamic libraries)
+
+##### User Interface
+
+ Directory|Notes
+ ---------|-----
+ libuicommon|bdj4 major ui for both player and manager (libbdj4uic)
+ libuiintfc|bdj4 general ui interfaces (libbdj4uii)
+ libuimanage|bdj4 major/minor ui specific to manageui (libbdj4uim)
+ libuiplayer|bdj4 minor ui specific to playerui (libbdj4uip)
+ libuiwcont|ui widget container
+
+ Directory|Notes
+ ---------|-----
+ libuigtk3|gtk3 gui layer
+ libuinull|null gui layer
+
+##### Applications
+
+ Directory|Notes
+ ---------|-----
+ configui|configuration ui
+ installer|installer, updater
+ manageui|management ui
+ player|the main player process, the player process,
+marquee, mobile marquee and remote control.
+Only the marquee has ui linked in.
+ playerui|player ui
+ starter|the launcher and starter process
+
+##### Other
 
  Directory|Notes
  ---------|-----
  build|cmake build directory
  check|C language test programs
- configui|configuration ui
  include|include files
- installer|installer, updater
- libati|audio tagging interface
-this was written as a dynamic library since at one
-point, both mutagen and the bdj4-ati interfaces
-were in process.
- libaudioid|audio identification
- libaudiosrc|audio source interface
- libbasic|lists, basic utilities that use lists or libicu
- libbdj4|bdj4 specific utilities
- libcommon|common utilities that do not use lists nor libicu
- libcont|music controller (not yet in use)
- libdylib|dynamic library handling
- libpli|player interface (dynamic libraries)
- libuicommon|bdj4 major ui for both player and manager (libbdj4uic)
- libuigtk3|gtk3 user interface layer
- libuiintfc|bdj4 general ui (libbdj4uii)
- libuimanage|bdj4 major/minor ui specific to manageui (libbdj4uim)
- libuinull|null user interface layer
- libuiplayer|bdj4 mnior ui specific to playerui (libbdj4uim)
- libuiwcont|ui widget container
- libvol|volume interface (dynamic libraries)
- libwebsrv|web server (uses mongoose)
- manageui|management ui
- mongoose|third-party web server
- player|the main player process, the player process,
-marquee, mobile marquee and remote control
-only the marquee has ui linked in
- playerui|player ui
  po|localization
- starter|the launcher and starter process
- utility|various utility programs used in testing
  utils|various utility scripts and files
+ utility|various utility programs used in testing
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-01 08:21:53; BDJ4 version 4.11.3.1)_
+<br>_(Updated 2024-08-10 13:37:26; BDJ4 version 4.11.3.1)_

@@ -21,27 +21,27 @@ msgstr ""
 
 #. CONTEXT: website : ballroomdj 3 information text
 msgid "All users of BallroomDJ are urged to convert to BallroomDJ 4"
-msgstr "Сви корисници БаллроомДЈ-а се позивају да пређу на БаллроомДЈ 4"
+msgstr "Сви корисници BallroomDJ-а се позивају да пређу на BallroomDJ 4"
 
 #. CONTEXT: website : title, description
 msgid "BallroomDJ 4 - Ballroom Music Player"
-msgstr "БаллроомДЈ 4 - Баллроом Мусиц Плаиер"
+msgstr "BallroomDJ 4 - Баллроом Мусиц Плаиер"
 
 #. CONTEXT: website : descriptive text A
 msgid "BallroomDJ 4 (BDJ4) is a music player designed for desktop and laptop computers (and will work on some tablets). It is designed to be able to play music for the entire evening without any intervention."
-msgstr "БаллроомДЈ 4 (BDJ4) је музички плејер дизајниран за десктоп и лаптоп рачунаре (и радиће на неким таблетима). Дизајниран је тако да може да пушта музику цело вече без икакве интервенције."
+msgstr "BallroomDJ 4 (BDJ4) је музички плејер дизајниран за десктоп и лаптоп рачунаре (и радиће на неким таблетима). Дизајниран је тако да може да пушта музику цело вече без икакве интервенције."
 
 #. CONTEXT: website : image alt-text for main logo
 msgid "BallroomDJ 4 - The Ballroom Music Player"
-msgstr "БаллроомДЈ 4 - Тхе Баллроом Мусиц Плаиер"
+msgstr "BallroomDJ 4 - Тхе Баллроом Мусиц Плаиер"
 
 #. CONTEXT: website : resource link
 msgid "BallroomDJ at pro-linux.de"
-msgstr "БаллроомДЈ на про-линук.де"
+msgstr "BallroomDJ на про-линук.де"
 
 #. CONTEXT: website : ballroomdj 3 descriptive text
 msgid "BallroomDJ was the previous ballroom music player. It is no longer supported."
-msgstr "БаллроомДЈ је био претходни плејер за балску музику. Више није подржано."
+msgstr "BallroomDJ је био претходни плејер за балску музику. Више није подржано."
 
 #. CONTEXT: website : resource link
 msgid "BDJ4 at freshcode.club"
@@ -81,15 +81,15 @@ msgstr "Донирајте софтверским пројектима које 
 
 #. CONTEXT: website : link
 msgid "Download BallroomDJ 3"
-msgstr "Преузмите БаллроомДЈ 3"
+msgstr "Преузмите BallroomDJ 3"
 
 #. CONTEXT: website : link
 msgid "Download BallroomDJ 4"
-msgstr "Преузмите БаллроомДЈ 4"
+msgstr "Преузмите BallroomDJ 4"
 
 #. CONTEXT: website : link to crowdin
 msgid "Help Translate BallroomDJ 4"
-msgstr "Помоћ у преводу БаллроомДЈ 4"
+msgstr "Помоћ у преводу BallroomDJ 4"
 
 #. CONTEXT: website : information text
 msgid "latest version"
@@ -101,7 +101,7 @@ msgstr "Мени"
 
 #. CONTEXT: website : information text
 msgid "Other sites where BallroomDJ 4 release announcements can be found:"
-msgstr "Други сајтови на којима се могу наћи најаве издања БаллроомДЈ 4:"
+msgstr "Други сајтови на којима се могу наћи најаве издања BallroomDJ 4:"
 
 #. CONTEXT: website : donate information text
 msgid " (donate button at very top)"

@@ -3,8 +3,8 @@
 
   package | url
   ------- | ---
-  check | https://libcheck.github.io/check/
-  &nbsp; | https://github.com/libcheck/check/releases
+  check | https://libcheck.github.io/check/<br>
+  https://github.com/libcheck/check/releases
   chromaprint | https://acoustid.org/chromaprint
   curl | https://curl.se/
   ffmpeg | https://ffmpeg.org/download.html#build-windows
@@ -21,4 +21,4 @@
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2024-08-10 13:41:48; BDJ4 version 4.11.3.1)_

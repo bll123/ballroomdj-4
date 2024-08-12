@@ -64,7 +64,8 @@ count=$(ls -1 $INSTSTAGE/bdj4-installer-* | grep ${VERSION} | wc -l)
 # 2023-12-4 fedora failing due to some weird volume thing
 # 2024-1-15 fedora dropped
 # 2024-1-15 manjaro linux (arch) dropped (icu updated)
-if [[ $count -ne 6 ]]; then
+# 2024-8-11 debian-11 dropped
+if [[ $count -ne 5 ]]; then
   echo "Failed: not all platforms built."
   exit 1
 fi

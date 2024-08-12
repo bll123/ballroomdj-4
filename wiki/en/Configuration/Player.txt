@@ -16,6 +16,9 @@ __Audio Output__: Selects which audio output device will be used to
 play the audio.  If the selected device is not currently connected,
 the default device will be used.
 
+__Controller__: Select the media controller.  At this time, only
+Linux&nbsp;MPRIS is implemented.
+
 __Default Volume__: Sets the volume level when BDJ4 first starts.
 
 __Queue Length__: The number of songs the music queue is filled with.
@@ -31,4 +34,4 @@ displayed in the player.
 <br><span style="color:#4559bf;">__Configure / Player__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-01 08:21:53; BDJ4 version 4.11.3.1)_
+<br>_(Updated 2024-08-11 17:23:06; BDJ4 version 4.11.4)_

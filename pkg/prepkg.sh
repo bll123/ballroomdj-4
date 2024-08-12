@@ -81,7 +81,7 @@ if [[ $rc -ne 0 ]]; then
   grc=1
 fi
 
-grep '^#define DBUS_DEBUG 0' src/libpli/dbusi.c > /dev/null 2>&1
+grep '^#define DBUS_DEBUG 0' src/libmpris/dbusi.c > /dev/null 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "dbus debugging is on"

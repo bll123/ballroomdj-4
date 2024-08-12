@@ -412,7 +412,7 @@ contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
   contdata->metadata = nlistAlloc ("cont-mprisi-meta", LIST_ORDERED, NULL);
 
   if (cmetadata->trackid >= 0) {
-    snprintf (tbuff, sizeof (tbuff), "/org/bdj4/playlist/%" PRId32,
+    snprintf (tbuff, sizeof (tbuff), "/org/bdj4/%" PRId32,
         cmetadata->trackid);
   } else {
     snprintf (tbuff, sizeof (tbuff), "/NoTrack");

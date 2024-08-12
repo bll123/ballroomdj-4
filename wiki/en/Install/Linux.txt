@@ -71,7 +71,6 @@ Download the Linux installer from sourceforge.
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
 Choose the appropriate installer.
-<br>The Debian 11 installer is built on MX Linux 21.
 <br>The Debian 12 installer is built on MX Linux 23.
 <br>The OpenSUSE installer is built on OpenSUSE 15.6.
 
@@ -118,4 +117,4 @@ Visit the
 wiki page.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-01 08:21:53; BDJ4 version 4.11.3.1)_
+<br>_(Updated 2024-08-11 17:23:06; BDJ4 version 4.11.4)_

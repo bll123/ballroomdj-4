@@ -6,9 +6,9 @@
   <meta name="google-site-verification" content="ah8fN8rvRWoqb1FzT4B-uAfR1MwRdWvYzhyAFKXFWS8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- WT_021 -->
-  <title>БаллроомДЈ 4 - Баллроом Мусиц Плаиер</title>
+  <title>BallroomDJ 4 - Баллроом Мусиц Плаиер</title>
   <!-- WT_022 -->
-  <meta name="Description" content="БаллроомДЈ 4 - Баллроом Мусиц Плаиер">
+  <meta name="Description" content="BallroomDJ 4 - Баллроом Мусиц Плаиер">
   <meta name="Keywords" content="Ballroom Music Player,
       Přehrávač taneční hudby,
       Ballroom musikafspiller,
@@ -52,7 +52,7 @@
     <div>
       <!-- WT_001 -->
       <img src="/img/ballroomdj4.svg"
-        alt="БаллроомДЈ 4 - Тхе Баллроом Мусиц Плаиер"
+        alt="BallroomDJ 4 - Тхе Баллроом Мусиц Плаиер"
         width="50%" style="max-width: 420px">
     </div>
     <div class="donatewidget">
@@ -82,7 +82,7 @@
       <div class="dflex">
         <div class="tleft dtext">
           <!-- WT_003 -->
-          <p>БаллроомДЈ 4 (BDJ4) је музички плејер дизајниран за десктоп и лаптоп рачунаре (и радиће на неким таблетима). Дизајниран је тако да може да пушта музику цело вече без икакве интервенције.</p>
+          <p>BallroomDJ 4 (BDJ4) је музички плејер дизајниран за десктоп и лаптоп рачунаре (и радиће на неким таблетима). Дизајниран је тако да може да пушта музику цело вече без икакве интервенције.</p>
           <!-- WT_004 -->
           <p>BDJ4 је веома прилагодљив и пружа могућности за организовање музике за балске плесове и креирање листа песама, аутоматских плејлиста и секвенцираних плејлиста.</p>
           <!-- WT_005 -->
@@ -90,7 +90,7 @@
           <!-- WT_006 -->
           <p><b><a target="_blank"
               href="https://sourceforge.net/projects/ballroomdj4/files/"
-              >Преузмите БаллроомДЈ 4</a></b>&nbsp;&nbsp;&nbsp;(<span>најновија верзија</span> <b>#VERSION#</b>)</p>
+              >Преузмите BallroomDJ 4</a></b>&nbsp;&nbsp;&nbsp;(<span>најновија верзија</span> <b>#VERSION#</b>)</p>
           <!-- WT_007 -->
           <p><a target="_blank"
               href="https://sourceforge.net/p/ballroomdj4/wiki/en-Change%20Log"
@@ -109,9 +109,9 @@
           <!-- WT_011 -->
           <p><a target="_blank"
               href="https://crowdin.com/project/ballroomdj-4"
-              >Помоћ у преводу БаллроомДЈ 4</a></p>
+              >Помоћ у преводу BallroomDJ 4</a></p>
           <!-- WT_012 -->
-          <p>Други сајтови на којима се могу наћи најаве издања БаллроомДЈ 4:</p>
+          <p>Други сајтови на којима се могу наћи најаве издања BallroomDJ 4:</p>
           <!-- WT_013 -->
           <p><a target="_blank"
               href="https://freshcode.club/projects/bdj4"
@@ -119,7 +119,7 @@
           <!-- WT_014 -->
           <p><a target="_blank"
               href="https://www.pro-linux.de/cgi-bin/DBApp/check.cgi?ShowAppDetail.01.17981.100"
-              >БаллроомДЈ на про-линук.де</a>  (Deutsch)</p>
+              >BallroomDJ на про-линук.де</a>  (Deutsch)</p>
         </div>
         <div class="tleft dlang">
           <ul>
@@ -154,13 +154,13 @@
     <div id="dbdj3" class="mdiv dispnone">
       <div class="tleft dinlineblock">
         <!-- WT_015 -->
-        <p>БаллроомДЈ је био претходни плејер за балску музику. Више није подржано.</p>
+        <p>BallroomDJ је био претходни плејер за балску музику. Више није подржано.</p>
         <!-- WT_016 -->
-        <p>Сви корисници БаллроомДЈ-а се позивају да пређу на БаллроомДЈ 4</p>
+        <p>Сви корисници BallroomDJ-а се позивају да пређу на BallroomDJ 4</p>
         <!-- WT_017 -->
         <p><a target="_blank"
             href="https://sourceforge.net/projects/ballroomdj/files/"
-            >Преузмите БаллроомДЈ 3</a></p>
+            >Преузмите BallroomDJ 3</a></p>
       </div>
     </div>
 
