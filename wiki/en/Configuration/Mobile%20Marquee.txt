@@ -54,4 +54,4 @@ will show your computer's name, not what is shown in the example).
 <br><span style="color:#4559bf;">__Mobile Device / Mobile Marquee__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-11 17:23:06; BDJ4 version 4.11.4)_
+<br>_(Updated 2024-08-12 15:25:55; BDJ4 version 4.11.4)_

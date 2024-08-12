@@ -29,4 +29,4 @@ to change the order of the genres to match your preference.
 <br><span style="color:#4559bf;">__Configure / Edit Genres__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-11 17:23:06; BDJ4 version 4.11.4)_
+<br>_(Updated 2024-08-12 15:25:55; BDJ4 version 4.11.4)_
