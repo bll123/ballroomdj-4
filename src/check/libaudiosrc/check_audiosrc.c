@@ -30,16 +30,19 @@
 
 typedef struct {
   const char  *test;
-  const char  *result;
+  const char  *relpath;
+  const char  *fullpath;
   int         type;
 } chk_audsrc_t;
 
 static chk_audsrc_t tvalues [] = {
-  { "abc123", "/testpath/abc123", AUDIOSRC_TYPE_FILE },
-  { "/stuff", "/stuff", AUDIOSRC_TYPE_FILE },
-  { "C:/there", "C:/there", AUDIOSRC_TYPE_FILE },
-  { "d:/here", "d:/here", AUDIOSRC_TYPE_FILE },
-  { "d:/here", "d:/here", AUDIOSRC_TYPE_FILE },
+  { "abc123", "abc123", "/testpath/abc123", AUDIOSRC_TYPE_FILE },
+  { "/stuff", "/stuff", "/stuff", AUDIOSRC_TYPE_FILE },
+  { "C:/there", "C:/there", "C:/there", AUDIOSRC_TYPE_FILE },
+  { "d:/here", "d:/here", "d:/here", AUDIOSRC_TYPE_FILE },
+  { "d:/here", "d:/here", "d:/here", AUDIOSRC_TYPE_FILE },
+  { "unknown://stuff", "", "", AUDIOSRC_TYPE_NONE },
+  { "file:///testpath/def456", "def456", "/testpath/def456", AUDIOSRC_TYPE_FILE },
 };
 enum {
   tvaluesz = sizeof (tvalues) / sizeof (chk_audsrc_t),
@@ -81,8 +84,7 @@ enum {
 };
 static int fcount = 0;
 static int dcount = 0;
-static const char *datatop;
-
+static const char *datatop = NULL;
 
 static void
 teardown (void)
@@ -92,6 +94,7 @@ teardown (void)
       diropDeleteDir (lvalues [i].name, DIROP_ALL);
     }
   }
+  audiosrcCleanup ();
   bdjoptCleanup ();
   bdjvarsCleanup ();
 }
@@ -108,6 +111,7 @@ setup (void)
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "/testpath");
   bdjvarsInit ();
+  audiosrcInit ();
 
   for (int i = 0; i < lvaluesz; ++i) {
     lvalues [i].flag = 0;
@@ -137,6 +141,9 @@ START_TEST(audiosrc_gettype)
 
   for (int i = 0; i < tvaluesz; ++i) {
     rc = audiosrcGetType (tvalues [i].test);
+    if (rc != tvalues [i].type) {
+      fprintf (stderr, "gt: %s %d\n", tvalues [i].test, rc);
+    }
     ck_assert_int_eq (rc, tvalues [i].type);
   }
 }
@@ -150,8 +157,8 @@ START_TEST(audiosrc_fullpath)
   mdebugSubTag ("audiosrc_fullpath");
 
   for (int i = 0; i < tvaluesz; ++i) {
-    audiosrcFullPath (tvalues [i].test, tbuff, sizeof (tbuff), 0, NULL);
-    ck_assert_str_eq (tbuff, tvalues [i].result);
+    audiosrcFullPath (tvalues [i].test, tbuff, sizeof (tbuff), NULL, 0);
+    ck_assert_str_eq (tbuff, tvalues [i].fullpath);
   }
 }
 END_TEST
@@ -164,8 +171,13 @@ START_TEST(audiosrc_relpath)
   mdebugSubTag ("audiosrc_relpath");
 
   for (int i = 0; i < tvaluesz; ++i) {
-    res = audiosrcRelativePath (tvalues [i].result, 0);
-    ck_assert_str_eq (res, tvalues [i].test);
+    if (tvalues [i].type != AUDIOSRC_TYPE_FILE) {
+      continue;
+    }
+    res = audiosrcRelativePath (tvalues [i].test, 0);
+    ck_assert_str_eq (res, tvalues [i].relpath);
+    res = audiosrcRelativePath (tvalues [i].fullpath, 0);
+    ck_assert_str_eq (res, tvalues [i].relpath);
   }
 }
 END_TEST
@@ -178,6 +190,7 @@ START_TEST(audiosrc_exists)
   mdebugSubTag ("audiosrc_exists");
 
   bdjoptSetStr (OPT_M_DIR_MUSIC, datatop);
+  audiosrcPostInit ();
 
   val = audiosrcExists ("tmp/abc");
   ck_assert_int_eq (val, false);
@@ -196,6 +209,7 @@ START_TEST(audiosrc_hasorig)
   mdebugSubTag ("audiosrc_hasorig");
 
   bdjoptSetStr (OPT_M_DIR_MUSIC, datatop);
+  audiosrcPostInit ();
 
   val = audiosrcOriginalExists ("tmp/abc");
   ck_assert_int_eq (val, false);
@@ -215,6 +229,7 @@ START_TEST(audiosrc_prep)
   mdebugSubTag ("audiosrc_prep");
 
   bdjoptSetStr (OPT_M_DIR_MUSIC, datatop);
+  audiosrcPostInit ();
 
   for (int i = 0; i < lvaluesz; ++i) {
     if (lvalues [i].type == CHK_FILE) {
@@ -239,6 +254,7 @@ START_TEST(audiosrc_iterate)
   mdebugSubTag ("audiosrc_iterate");
 
   bdjoptSetStr (OPT_M_DIR_MUSIC, datatop);
+  audiosrcPostInit ();
 
   asiter = audiosrcStartIterator ("tmp/abc");
   c = audiosrcIterCount (asiter);
@@ -274,6 +290,7 @@ START_TEST(audiosrc_remove)
   mdebugSubTag ("audiosrc_remove");
 
   bdjoptSetStr (OPT_M_DIR_MUSIC, datatop);
+  audiosrcPostInit ();
 
   val = audiosrcExists (lvalues [1].name);
   ck_assert_int_eq (val, true);

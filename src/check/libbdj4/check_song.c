@@ -16,7 +16,10 @@
 
 #include <check.h>
 
+#include "audiosrc.h"
+#include "bdj4.h"
 #include "bdjopt.h"
+#include "bdjvars.h"
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
 #include "mdebug.h"
@@ -45,13 +48,19 @@ setup (void)
   templateFileCopy ("ratings.txt", "ratings.txt");
   templateFileCopy ("favorites.txt", "favorites.txt");
   filemanipCopy ("test-templates/status.txt", "data/status.txt");
+  bdjoptInit ();
+  bdjvarsInit ();
   bdjvarsdfloadInit ();
+  audiosrcInit ();
 }
 
 static void
 teardown (void)
 {
+  audiosrcCleanup ();
   bdjvarsdfloadCleanup ();
+  bdjoptCleanup ();
+  bdjvarsCleanup ();
 }
 
 START_TEST(song_alloc)
@@ -368,14 +377,16 @@ START_TEST(song_audio_file)
   song_t      *song = NULL;
   char        *data;
   FILE        *fh;
+  char        origmdir [MAXPATHLEN];
   char        tbuff [200];
   bool        rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_audio_file");
   mdebugSubTag ("song_audio_file");
 
-  bdjoptInit ();
+  strlcpy (origmdir, bdjoptGetStr (OPT_M_DIR_MUSIC), sizeof (origmdir));
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
+  audiosrcPostInit ();
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
 
   for (int i = 0; i < songparsedatasz; ++i) {
@@ -400,7 +411,8 @@ START_TEST(song_audio_file)
 
   diropDeleteDir (bdjoptGetStr (OPT_M_DIR_MUSIC), DIROP_ALL);
 
-  bdjoptCleanup ();
+  bdjoptSetStr (OPT_M_DIR_MUSIC, origmdir);
+  audiosrcPostInit ();
 }
 END_TEST
 

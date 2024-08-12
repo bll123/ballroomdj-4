@@ -163,10 +163,10 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
     int     pfxlen;
 
     pfxlen = songGetNum (song, TAG_PREFIX_LEN);
-    audiosrcFullPath (oldfn, ffn, sizeof (ffn), pfxlen, oldfn);
+    audiosrcFullPath (oldfn, ffn, sizeof (ffn), oldfn, pfxlen);
     /* the prefix length and old filename must be supplied */
     /* in order to generate the new filename properly */
-    audiosrcFullPath (newfn, newffn, sizeof (newffn), pfxlen, oldfn);
+    audiosrcFullPath (newfn, newffn, sizeof (newffn), oldfn, pfxlen);
 
     if (*newffn && fileopFileExists (newffn)) {
       *flags |= SONGDB_RET_REN_FILE_EXISTS;
@@ -291,7 +291,7 @@ songdbNewName (songdb_t *songdb, song_t *song, char *newuri, size_t sz)
   *newuri = '\0';
   songfname = songGetStr (song, TAG_URI);
   audiosrcFullPath (songfname, ffn, sizeof (ffn),
-      songGetNum (song, TAG_PREFIX_LEN), songfname);
+      songfname, songGetNum (song, TAG_PREFIX_LEN));
   if (audiosrcGetType (ffn) != AUDIOSRC_TYPE_FILE) {
     return false;
   }
@@ -339,7 +339,7 @@ songdbWriteAudioTags (song_t *song)
   }
 
   audiosrcFullPath (fn, ffn, sizeof (ffn),
-      songGetNum (song, TAG_PREFIX_LEN), fn);
+      fn, songGetNum (song, TAG_PREFIX_LEN));
   tagdata = audiotagParseData (ffn, &rewrite);
   newtaglist = songTagList (song);
   audiotagWriteTags (ffn, tagdata, newtaglist, AF_REWRITE_NONE, AT_UPDATE_MOD_TIME);

@@ -15,6 +15,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "audiosrc.h"
 #include "audiotag.h"
 #include "bdj4.h"
 #include "bdj4arg.h"
@@ -345,6 +346,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   bdjoptInit ();
   tagdefInit ();
   audiotagInit ();
+  audiosrcInit ();
 
   if (! loglevelset) {
     loglevel = bdjoptGetNum (OPT_G_DEBUGLVL);
@@ -429,6 +431,7 @@ bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb)
   }
 
   mstimestart (&mt);
+  audiosrcCleanup ();
   tagdefCleanup ();
   bdjoptCleanup ();
   dbClose (musicdb);

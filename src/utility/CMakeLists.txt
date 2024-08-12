@@ -41,7 +41,7 @@ if (WIN32)
   target_compile_options (dmkmfromdb PRIVATE -municode)
 endif()
 target_link_libraries (dmkmfromdb PRIVATE
-  libbdj4 libbdj4basic libbdj4common
+  libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
 )
 addIntlLibrary (dmkmfromdb)
@@ -51,7 +51,7 @@ if (WIN32)
   target_compile_options (tdbcompare PRIVATE -municode)
 endif()
 target_link_libraries (tdbcompare PRIVATE
-  libbdj4ati libbdj4 libbdj4basic libbdj4common
+  libbdj4ati libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
 )
 
@@ -60,7 +60,7 @@ if (WIN32)
   target_compile_options (tdbsetval PRIVATE -municode)
 endif()
 target_link_libraries (tdbsetval PRIVATE
-  libbdj4ati libbdj4 libbdj4basic libbdj4common
+  libbdj4ati libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
 )
 
@@ -77,7 +77,7 @@ if (WIN32)
   target_compile_options (tmusicsetup PRIVATE -municode)
 endif()
 target_link_libraries (tmusicsetup PRIVATE
-  libbdj4ati libbdj4 libbdj4basic libbdj4common
+  libbdj4ati libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
 )
 addIntlLibrary (tmusicsetup)
@@ -87,7 +87,7 @@ if (WIN32)
   target_compile_options (ttagdbchk PRIVATE -municode)
 endif()
 target_link_libraries (ttagdbchk PRIVATE
-  libbdj4ati libbdj4 libbdj4basic libbdj4common
+  libbdj4ati libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
 )
 

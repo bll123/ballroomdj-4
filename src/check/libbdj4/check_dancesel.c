@@ -19,7 +19,9 @@
 
 #include <check.h>
 
+#include "audiosrc.h"
 #include "bdjopt.h"
+#include "bdjvars.h"
 #include "bdjvarsdf.h"
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
@@ -63,7 +65,9 @@ setup (void)
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
   bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_NONE);
+  bdjvarsInit ();
   bdjvarsdfloadInit ();
+  audiosrcInit ();
   db = dbOpen (dbfn);
 }
 
@@ -71,7 +75,9 @@ static void
 teardown (void)
 {
   dbClose (db);
+  audiosrcCleanup ();
   bdjvarsdfloadCleanup ();
+  bdjvarsCleanup ();
   bdjoptCleanup ();
 }
 

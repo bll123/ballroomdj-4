@@ -545,7 +545,7 @@ dbupdateProcessing (void *udata)
         tsongfn = audiosrcRelativePath (fn, 0);
       }
       if (dbupdate->iterfromdb) {
-        audiosrcFullPath (fn, ffn, sizeof (ffn), 0, NULL);
+        audiosrcFullPath (fn, ffn, sizeof (ffn), NULL, 0);
       }
       song = dbGetByName (dbupdate->musicdb, tsongfn);
       relfn = ffn + dbupdate->prefixlen;
@@ -920,6 +920,8 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
 
   logProcBegin ();
 
+  audiosrcCleanIterator (dbupdate->asiter);
+
   bdj4shutdown (ROUTE_DBUPDATE, dbupdate->musicdb);
   dbClose (dbupdate->newmusicdb);
 
@@ -931,7 +933,6 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
   orgFree (dbupdate->org);
   orgFree (dbupdate->orgold);
   regexFree (dbupdate->badfnregex);
-  audiosrcCleanIterator (dbupdate->asiter);
   queueFree (dbupdate->tagdataq);
 
   logProcEnd ("");

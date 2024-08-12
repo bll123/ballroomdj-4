@@ -14,10 +14,12 @@
 #include <unistd.h>
 #include <math.h>
 
+#include "audiosrc.h"
 #include "audiotag.h"
 #include "bdj4.h"
 #include "bdj4arg.h"
 #include "bdjopt.h"
+#include "bdjvars.h"
 #include "bdjvarsdfload.h"
 #include "fileop.h"
 #include "localeutil.h"
@@ -119,8 +121,10 @@ main (int argc, char *argv [])
   sysvarsInit (targ, SYSVARS_FLAG_ALL);
   localeInit ();
   bdjoptInit ();
+  bdjvarsInit ();
   audiotagInit ();
   bdjvarsdfloadInit ();
+  audiosrcInit ();
 
   if (! loglevelset) {
     loglevel = bdjoptGetNum (OPT_G_DEBUGLVL);
@@ -334,8 +338,10 @@ main (int argc, char *argv [])
     dbClose (db [i]);
   }
 
+  audiosrcCleanup ();
   bdjvarsdfloadCleanup ();
   audiotagCleanup ();
+  bdjvarsCleanup ();
   bdjoptCleanup ();
   localeCleanup ();
   logEnd ();

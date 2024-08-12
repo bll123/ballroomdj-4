@@ -239,7 +239,7 @@ acrLookup (audioidacr_t *acr, const song_t *song, audioid_resp_t *resp)
 
   tm = time (NULL);
 
-  audiosrcFullPath (fn, ffn, sizeof (ffn), 0, NULL);
+  audiosrcFullPath (fn, ffn, sizeof (ffn), NULL, 0);
   if (! fileopFileExists (ffn)) {
     return 0;
   }

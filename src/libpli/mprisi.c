@@ -1,5 +1,10 @@
 /*
  * Copyright 2023-2024 Brad Lanam Pleasant Hill CA
+ *
+ * This could be converted to use the mpris-root and mpris-player interface,
+ * but the exposed interfaces don't seem much cleaner than just calling
+ * dbus directly.
+ *
  */
 #include "config.h"
 

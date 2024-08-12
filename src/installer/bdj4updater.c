@@ -255,6 +255,7 @@ main (int argc, char *argv [])
     tval = bdjoptGetStr (OPT_M_DIR_MUSIC);
     if (tval == NULL || ! *tval) {
       bdjoptSetStr (OPT_M_DIR_MUSIC, homemusicdir);
+      audiosrcPostInit ();
       bdjoptchanged = true;
     }
 
@@ -336,6 +337,7 @@ main (int argc, char *argv [])
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "have itunes");
     /* set the music dir to the itunes media folder */
     bdjoptSetStr (OPT_M_DIR_MUSIC, bdjoptGetStr (OPT_M_DIR_ITUNES_MEDIA));
+    audiosrcPostInit ();
     /* set the organization path to the itunes standard */
     /* album-artist / album / disc-tracknum0 title */
     bdjoptSetStr (OPT_G_ORGPATH,
@@ -708,7 +710,7 @@ main (int argc, char *argv [])
       slist_t     *newtaglist;
       slistidx_t  siteridx;
 
-      audiosrcFullPath (songGetStr (song, TAG_URI), ffn, sizeof (ffn), 0, NULL);
+      audiosrcFullPath (songGetStr (song, TAG_URI), ffn, sizeof (ffn), NULL, 0);
 
       if (processflags [UPD_FIX_AF_TAGS]) {
         pathinfo_t    *pi;
@@ -1265,7 +1267,7 @@ updaterGetSongCreationTime (song_t *song)
   char      tbuff [MAXPATHLEN];
   time_t    ctime;
 
-  audiosrcFullPath (songGetStr (song, TAG_URI), ffn, sizeof (ffn), 0, NULL);
+  audiosrcFullPath (songGetStr (song, TAG_URI), ffn, sizeof (ffn), NULL, 0);
   ctime = fileopCreateTime (ffn);
   if (audiosrcOriginalExists (ffn)) {
     snprintf (tbuff, sizeof (tbuff), "%s%s", ffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));

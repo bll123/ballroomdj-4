@@ -15,9 +15,7 @@
 #include "audiosrc.h"
 #include "bdj4.h"
 #include "bdj4intl.h"
-#include "bdjopt.h"
 #include "bdjstring.h"
-#include "bdjvars.h"
 #include "dirlist.h"
 #include "fileop.h"
 #include "filemanip.h"
@@ -34,31 +32,103 @@ typedef struct asiterdata {
   slistidx_t      fliter;
 } asiterdata_t;
 
-static void audiosrcfileMakeTempName (const char *ffn, char *tempnm, size_t maxlen);
+typedef struct asdata {
+  const char    *musicdir;
+  const char    *delpfx;
+  const char    *origext;
+  size_t        musicdirlen;
+} asdata_t;
+
+static void audiosrcfileMakeTempName (asdata_t *asdata, const char *ffn, char *tempnm, size_t maxlen);
 
 static long globalcount = 0;
 
+void
+asiDesc (char **ret, int max)
+{
+  int         c = 0;
+
+  if (max < 2) {
+    return;
+  }
+
+  ret [c++] = "file";
+  ret [c++] = NULL;
+}
+
+asdata_t *
+asiInit (const char *delpfx, const char *origext)
+{
+  asdata_t    *asdata;
+
+  asdata = mdmalloc (sizeof (asdata_t));
+  asdata->musicdir = "";
+  asdata->musicdirlen = 0;
+  asdata->delpfx = delpfx;
+  asdata->origext = origext;
+  return asdata;
+}
+
+void
+asiPostInit (asdata_t *asdata, const char *musicdir)
+{
+  asdata->musicdir = musicdir;
+  asdata->musicdirlen = strlen (asdata->musicdir);
+}
+
+void
+asiFree (asdata_t *asdata)
+{
+  if (asdata == NULL) {
+    return;
+  }
+
+  mdfree (asdata);
+}
+
+int
+asiTypeIdent (void)
+{
+  return AUDIOSRC_TYPE_FILE;
+}
+
 bool
-audiosrcfileExists (const char *nm)
+asiIsTypeMatch (asdata_t *asdata, const char *nm)
+{
+  bool    rc = false;
+
+  if (strncmp (nm, AS_FILE_PFX, AS_FILE_PFX_LEN) == 0) {
+    rc = true;
+  } else if (fileopIsAbsolutePath (nm)) {
+    rc = true;
+  }
+  /* audiosrc.c handles relative path names by assuming that any uri */
+  /* without a protocol identifier is a file type */
+
+  return rc;
+}
+
+bool
+asiExists (asdata_t *asdata, const char *nm)
 {
   bool    exists;
   char    ffn [MAXPATHLEN];
 
-  audiosrcfileFullPath (nm, ffn, sizeof (ffn), 0, NULL);
+  asiFullPath (asdata, nm, ffn, sizeof (ffn), NULL, 0);
   exists = fileopFileExists (ffn);
   return exists;
 }
 
 bool
-audiosrcfileOriginalExists (const char *nm)
+asiOriginalExists (asdata_t *asdata, const char *nm)
 {
   bool    exists;
   char    ffn [MAXPATHLEN];
   char    origfn [MAXPATHLEN];
 
-  audiosrcfileFullPath (nm, ffn, sizeof (ffn), 0, NULL);
+  asiFullPath (asdata, nm, ffn, sizeof (ffn), NULL, 0);
   snprintf (origfn, sizeof (origfn), "%s%s",
-      ffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
+      ffn, asdata->origext);
   exists = fileopFileExists (origfn);
   if (! exists) {
     snprintf (origfn, sizeof (origfn), "%s%s", ffn, BDJ4_GENERIC_ORIG_EXT);
@@ -71,22 +141,21 @@ audiosrcfileOriginalExists (const char *nm)
 
 /* does not actually remove the file, renames it with a 'delete-' prefix */
 bool
-audiosrcfileRemove (const char *nm)
+asiRemove (asdata_t *asdata, const char *nm)
 {
   int           rc = false;
   char          ffn [MAXPATHLEN];
   char          newnm [MAXPATHLEN];
   pathinfo_t    *pi;
 
-  audiosrcfileFullPath (nm, ffn, sizeof (ffn), 0, NULL);
+  asiFullPath (asdata, nm, ffn, sizeof (ffn), NULL, 0);
   if (! fileopFileExists (ffn)) {
     return false;
   }
 
   pi = pathInfo (ffn);
   snprintf (newnm, sizeof (newnm), "%.*s/%s%.*s",
-      (int) pi->dlen, pi->dirname,
-      bdjvarsGetStr (BDJV_DELETE_PFX),
+      (int) pi->dlen, pi->dirname, asdata->delpfx,
       (int) pi->flen, pi->filename);
   pathInfoFree (pi);
 
@@ -100,7 +169,7 @@ audiosrcfileRemove (const char *nm)
 }
 
 bool
-audiosrcfilePrep (const char *sfname, char *tempnm, size_t sz)
+asiPrep (asdata_t *asdata, const char *sfname, char *tempnm, size_t sz)
 {
   char      ffn [MAXPATHLEN];
   mstime_t  mstm;
@@ -116,8 +185,8 @@ audiosrcfilePrep (const char *sfname, char *tempnm, size_t sz)
   }
 
   mstimestart (&mstm);
-  audiosrcfileFullPath (sfname, ffn, sizeof (ffn), 0, NULL);
-  audiosrcfileMakeTempName (ffn, tempnm, sz);
+  asiFullPath (asdata, sfname, ffn, sizeof (ffn), NULL, 0);
+  audiosrcfileMakeTempName (asdata, ffn, tempnm, sz);
 
   /* VLC still cannot handle internationalized names. */
   /* I wonder how they handle them internally. */
@@ -154,7 +223,7 @@ audiosrcfilePrep (const char *sfname, char *tempnm, size_t sz)
 }
 
 void
-audiosrcfilePrepClean (const char *tempnm)
+asiPrepClean (asdata_t *asdata, const char *tempnm)
 {
   if (tempnm == NULL) {
     return;
@@ -166,14 +235,14 @@ audiosrcfilePrepClean (const char *tempnm)
 }
 
 const char *
-audiosrcfilePrefix (void)
+asiPrefix (asdata_t *asdata)
 {
   return AS_FILE_PFX;
 }
 
 void
-audiosrcfileURI (const char *sfname, char *buff, size_t sz,
-    int pfxlen, const char *oldfn)
+asiURI (asdata_t *asdata, const char *sfname, char *buff, size_t sz,
+    const char *prefix, int pfxlen)
 {
   *buff = '\0';
 
@@ -182,13 +251,13 @@ audiosrcfileURI (const char *sfname, char *buff, size_t sz,
   }
 
   strlcpy (buff, AS_FILE_PFX, sizeof (buff));
-  audiosrcfileFullPath (sfname, buff + AS_FILE_PFX_LEN, sz - AS_FILE_PFX_LEN,
-      pfxlen, oldfn);
+  asiFullPath (asdata, sfname, buff + AS_FILE_PFX_LEN, sz - AS_FILE_PFX_LEN,
+      prefix, pfxlen);
 }
 
 void
-audiosrcfileFullPath (const char *sfname, char *buff, size_t sz,
-    int pfxlen, const char *oldfn)
+asiFullPath (asdata_t *asdata, const char *sfname, char *buff, size_t sz,
+    const char *prefix, int pfxlen)
 {
   *buff = '\0';
 
@@ -209,19 +278,17 @@ audiosrcfileFullPath (const char *sfname, char *buff, size_t sz,
     /* from a relative filename, */
     /* the prefix length and old filename must be set */
     /* the prefix length includes the trailing slash */
-    if (pfxlen > 0 && oldfn != NULL) {
-      snprintf (buff, sz, "%.*s%s", pfxlen, oldfn, sfname);
+    if (pfxlen > 0 && prefix != NULL) {
+      snprintf (buff, sz, "%.*s%s", pfxlen, prefix, sfname);
     } else {
-      snprintf (buff, sz, "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC), sfname);
+      snprintf (buff, sz, "%s/%s", asdata->musicdir, sfname);
     }
   }
 }
 
 const char *
-audiosrcfileRelativePath (const char *sfname, int pfxlen)
+asiRelativePath (asdata_t *asdata, const char *sfname, int pfxlen)
 {
-  const char  *musicdir;
-  size_t      musicdirlen;
   const char  *p = sfname;
 
   if (sfname == NULL) {
@@ -239,10 +306,8 @@ audiosrcfileRelativePath (const char *sfname, int pfxlen)
     if (pfxlen > 0) {
       p += pfxlen;
     } else {
-      musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
-      musicdirlen = strlen (musicdir);
-      if (strncmp (p, musicdir, musicdirlen) == 0) {
-        p += musicdirlen + 1;
+      if (strncmp (p, asdata->musicdir, asdata->musicdirlen) == 0) {
+        p += asdata->musicdirlen + 1;
       }
     }
   }
@@ -251,7 +316,7 @@ audiosrcfileRelativePath (const char *sfname, int pfxlen)
 }
 
 size_t
-audiosrcfileDir (const char *sfname, char *buff, size_t sz, int pfxlen)
+asiDir (asdata_t *asdata, const char *sfname, char *buff, size_t sz, int pfxlen)
 {
   size_t    rc = 0;
 
@@ -265,15 +330,15 @@ audiosrcfileDir (const char *sfname, char *buff, size_t sz, int pfxlen)
     snprintf (buff, sz, "%.*s", pfxlen, sfname);
     rc = pfxlen;
   } else {
-    snprintf (buff, sz, "%s", bdjoptGetStr (OPT_M_DIR_MUSIC));
-    rc = strlen (buff);
+    snprintf (buff, sz, "%s", asdata->musicdir);
+    rc = asdata->musicdirlen;
   }
 
   return rc;
 }
 
 asiterdata_t *
-audiosrcfileStartIterator (const char *dir)
+asiStartIterator (asdata_t *asdata, const char *dir)
 {
   asiterdata_t  *asidata;
 
@@ -295,7 +360,7 @@ audiosrcfileStartIterator (const char *dir)
 }
 
 void
-audiosrcfileCleanIterator (asiterdata_t *asidata)
+asiCleanIterator (asdata_t *asdata, asiterdata_t *asidata)
 {
   if (asidata == NULL) {
     return;
@@ -308,7 +373,7 @@ audiosrcfileCleanIterator (asiterdata_t *asidata)
 }
 
 int32_t
-audiosrcfileIterCount (asiterdata_t *asidata)
+asiIterCount (asdata_t *asdata, asiterdata_t *asidata)
 {
   int32_t   c = 0;
 
@@ -321,7 +386,7 @@ audiosrcfileIterCount (asiterdata_t *asidata)
 }
 
 const char *
-audiosrcfileIterate (asiterdata_t *asidata)
+asiIterate (asdata_t *asdata, asiterdata_t *asidata)
 {
   const char    *rval = NULL;
 
@@ -336,7 +401,7 @@ audiosrcfileIterate (asiterdata_t *asidata)
 /* internal routines */
 
 static void
-audiosrcfileMakeTempName (const char *ffn, char *tempnm, size_t maxlen)
+audiosrcfileMakeTempName (asdata_t *asdata, const char *ffn, char *tempnm, size_t maxlen)
 {
   char        tnm [MAXPATHLEN];
   size_t      idx;

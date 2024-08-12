@@ -258,8 +258,10 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
     filemanipCopy (from, tbuff);
 
     bdjoptSetStr (OPT_M_DIR_MUSIC, eibdj4->musicdir);
+    audiosrcPostInit ();
     eibdj4->eimusicdb = dbOpen (eibdj4->dbfname);
     bdjoptSetStr (OPT_M_DIR_MUSIC, eibdj4->origmusicdir);
+    audiosrcPostInit ();
     dbStartBatch (eibdj4->eimusicdb);
     dbDisableLastUpdateTime (eibdj4->eimusicdb);
 
@@ -372,7 +374,7 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
           pathInfoFree (pi);
         }
 
-        audiosrcFullPath (origuri, ffn, sizeof (ffn), 0, NULL);
+        audiosrcFullPath (origuri, ffn, sizeof (ffn), NULL, 0);
         filemanipCopy (ffn, tbuff);
       }
 
@@ -412,8 +414,10 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
     char        tbuff [MAXPATHLEN];
 
     bdjoptSetStr (OPT_M_DIR_MUSIC, eibdj4->musicdir);
+    audiosrcPostInit ();
     eibdj4->eimusicdb = dbOpen (eibdj4->dbfname);
     bdjoptSetStr (OPT_M_DIR_MUSIC, eibdj4->origmusicdir);
+    audiosrcPostInit ();
 
     dbDisableLastUpdateTime (eibdj4->musicdb);
 
@@ -463,7 +467,7 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
 // ### need bypass path
       nsonguri = orgMakeSongPath (eibdj4->org, song, "");
 
-      audiosrcFullPath (nsonguri, nfn, sizeof (nfn), 0, NULL);
+      audiosrcFullPath (nsonguri, nfn, sizeof (nfn), NULL, 0);
       snprintf (ifn, sizeof (ifn), "%s/%s", eibdj4->musicdir, songuri);
 
       tsong = dbGetByName (eibdj4->musicdb, nsonguri);

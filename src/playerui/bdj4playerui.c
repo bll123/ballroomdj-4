@@ -2193,7 +2193,7 @@ pluiControllerURICallback (void *udata, const char *uri, int32_t cmd)
     return false;
   }
 
-  audiosrcFullPath (uri, ffn, sizeof (ffn), 0, NULL);
+  audiosrcFullPath (uri, ffn, sizeof (ffn), NULL, 0);
   tfn = audiosrcRelativePath (ffn, 0);
   dbsong = dbGetByName (plui->musicdb, tfn);
   if (dbsong != NULL) {

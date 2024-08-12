@@ -14,6 +14,7 @@
 #include <unistd.h>
 
 #include "ati.h"
+#include "audiosrc.h"
 #include "audiofile.h"
 #include "audiotag.h"
 #include "bdj4arg.h"
@@ -22,6 +23,7 @@
 #include "datafile.h"
 #include "bdj4.h"
 #include "bdjopt.h"
+#include "bdjvars.h"
 #include "bdjvarsdfload.h"
 #include "dirop.h"
 #include "filemanip.h"
@@ -230,6 +232,7 @@ main (int argc, char *argv [])
   sysvarsInit (targ, SYSVARS_FLAG_ALL);
   localeInit ();
   bdjoptInit ();
+  bdjvarsInit ();
   tagdefInit ();
   audiotagInit ();
 
@@ -245,6 +248,7 @@ main (int argc, char *argv [])
   bdjoptSetStr (OPT_M_DIR_MUSIC, tmusicdir);
   bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_ALL);
   bdjvarsdfloadInit ();
+  audiosrcInit ();
 
   if (! loglevelset) {
     loglevel = bdjoptGetNum (OPT_G_DEBUGLVL);
@@ -363,9 +367,11 @@ main (int argc, char *argv [])
   dbEndBatch (db);
   dbClose (db);
 
+  audiosrcCleanup ();
   bdjvarsdfloadCleanup ();
   audiotagCleanup ();
   tagdefCleanup ();
+  bdjvarsCleanup ();
   bdjoptCleanup ();
   localeCleanup ();
   logEnd ();

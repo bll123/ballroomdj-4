@@ -7,15 +7,23 @@ include (../utils/bdj4macros.cmake)
 
 add_library (libbdj4audiosrc SHARED
   audiosrc.c
-  audiosrcfile.c
 )
 target_link_libraries (libbdj4audiosrc PRIVATE
   libbdj4basic libbdj4common
 )
 
+add_library (libasfile SHARED
+  audiosrcfile.c
+)
+target_link_libraries (libasfile PRIVATE
+  libbdj4basic libbdj4common
+)
+
 install (TARGETS
   libbdj4audiosrc
+  libasfile
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
 updateRPath (libbdj4audiosrc)
+updateRPath (libasfile)

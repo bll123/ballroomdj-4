@@ -41,7 +41,7 @@ check_libaudiosrc (SRunner *sr)
    *    remove          complete 2023-12-9
    */
 
-  s = audiosrc_suite();
+  s = audiosrc_suite ();
   srunner_add_suite (sr, s);
 }
 

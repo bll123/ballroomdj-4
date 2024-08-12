@@ -16,7 +16,8 @@ count=$(ls -1 $INSTSTAGE/bdj4-installer-* | wc -l)
 # 2023-12-4 fedora testing failed due to weird volume issue
 # 2024-1-15 fedora dropped
 # 2024-1-15 manjaro linux (arch) dropped (icu updated)
-if [[ $count -ne 6 ]]; then
+# 2024-8-11 debian 11 dropped
+if [[ $count -ne 5 ]]; then
   echo "Failed: not all platforms built."
   exit 1
 fi

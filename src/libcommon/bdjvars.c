@@ -55,6 +55,7 @@ static bool     initialized = false;
 static void    bdjvarsAdjustPorts (void);
 static void    bdjvarsSetUniqueName (void);
 
+/* must be called after sysvarsInit() */
 void
 bdjvarsInit (void)
 {
