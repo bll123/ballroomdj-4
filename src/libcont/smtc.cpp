@@ -1,7 +1,10 @@
 /*
  * Copyright 2024 Brad Lanam Pleasant Hill CA
  *
-// ### add in the source url
+ * Framework from
+ *  https://github.com/spmn/vlc-win10smtc/tree/master
+ *  GPLv3 License
+ *
  */
 #include "config.h"
 
