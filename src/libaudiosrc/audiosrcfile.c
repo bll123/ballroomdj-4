@@ -44,7 +44,7 @@ static void audiosrcfileMakeTempName (asdata_t *asdata, const char *ffn, char *t
 static long globalcount = 0;
 
 void
-asiDesc (char **ret, int max)
+asiDesc (const char **ret, int max)
 {
   int         c = 0;
 

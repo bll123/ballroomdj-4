@@ -28,6 +28,19 @@ enum {
   CONTROLLER_QUIT,
 };
 
+enum {
+  CONT_METADATA_ALBUM,
+  CONT_METADATA_ALBUMARTIST,
+  CONT_METADATA_ARTIST,
+  CONT_METADATA_TITLE,
+  CONT_METADATA_TRACKID,
+  CONT_METADATA_DURATION,
+  CONT_METADATA_URI,
+  CONT_METADATA_ART_URI,
+  CONT_METADATA_GENRE,
+  CONT_METADATA_MAX,
+};
+
 typedef struct controller controller_t;
 typedef struct contdata contdata_t;
 
@@ -58,7 +71,7 @@ void controllerInitMetadata (contmetadata_t *cmetadata);
 void controllerSetCurrent (controller_t *cont, contmetadata_t *cmetadata);
 ilist_t *controllerInterfaceList (void);
 
-void contiDesc (char **ret, int max);
+void contiDesc (const char **ret, int max);
 contdata_t *contiInit (const char *instname);
 void contiFree (contdata_t *contdata);
 void contiSetup (contdata_t *contdata);

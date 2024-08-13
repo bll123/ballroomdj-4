@@ -90,7 +90,7 @@ plistate_t    pliiState (plidata_t *pliData);
 int           pliiSetAudioDevice (plidata_t *pliData, const char *dev, int plidevtype);
 int           pliiAudioDeviceList (plidata_t *pliData, volsinklist_t *);
 int           pliiSupported (plidata_t *pliData);
-void          pliiDesc (char **ret, int max);
+void          pliiDesc (const char **ret, int max);
 int           pliiGetVolume (plidata_t *pliData);
 
 #endif

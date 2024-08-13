@@ -26,7 +26,7 @@ typedef struct plidata {
 } plidata_t;
 
 void
-pliiDesc (char **ret, int max)
+pliiDesc (const char **ret, int max)
 {
   int         c = 0;
 

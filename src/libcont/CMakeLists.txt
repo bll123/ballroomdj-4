@@ -5,6 +5,8 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
+find_package (CppWinRT)
+
 add_library (libbdj4cont SHARED
   controller.c
 )
@@ -20,11 +22,21 @@ if (NOT WIN32 AND NOT APPLE)
     PRIVATE "${GLIB_INCLUDE_DIRS}"
   )
   target_link_libraries (libcontmpris PRIVATE
-    libbdj4common
+    libbdj4basic libbdj4common
     objmprisroot objmprisplayer objdbusi
     ${GIO_LDFLAGS}
   )
 endif()
+
+#if (WIN32)
+#  add_library (libcontsmtc SHARED smtc.cpp)
+#  target_compile_options (libcontsmtc PRIVATE
+#    -fcoroutines
+#  )
+#  target_link_libraries (libcontsmtc PRIVATE
+#    libbdj4basic libbdj4common
+#  )
+#endif()
 
 install (TARGETS
   libbdj4cont
@@ -37,8 +49,17 @@ if (NOT WIN32 AND NOT APPLE)
     DESTINATION ${PROJECT_SOURCE_DIR}/../bin
   )
 endif()
+#if (WIN32)
+#  install (TARGETS
+#    libcontsmtc
+#    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+#  )
+#endif()
 
 updateRPath (libbdj4cont)
 if (NOT WIN32 AND NOT APPLE)
   updateRPath (libcontmpris)
 endif()
+#if (WIN32)
+#  updateRPath (libcontsmtc)
+#endif()

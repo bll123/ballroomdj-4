@@ -80,29 +80,16 @@ static const char *interface [MPRIS_INTFC_MAX] = {
   [MPRIS_INTFC_MP2_PLAYER] = "org.mpris.MediaPlayer2.Player",
 };
 
-enum {
-  MPRIS_METADATA_ALBUM,
-  MPRIS_METADATA_ALBUMARTIST,
-  MPRIS_METADATA_ARTIST,
-  MPRIS_METADATA_TITLE,
-  MPRIS_METADATA_TRACKID,
-  MPRIS_METADATA_DURATION,
-  MPRIS_METADATA_URI,
-  MPRIS_METADATA_ART_URI,
-  MPRIS_METADATA_GENRE,
-  MPRIS_METADATA_MAX,
-};
-
-static const char *metadatastr [MPRIS_METADATA_MAX] = {
-  [MPRIS_METADATA_ALBUM] = "xesam:album",
-  [MPRIS_METADATA_ALBUMARTIST] = "xesam:albumArtist",
-  [MPRIS_METADATA_ARTIST] = "xesam:artist",
-  [MPRIS_METADATA_TITLE] = "xesam:title",
-  [MPRIS_METADATA_TRACKID] = "mpris:trackid",
-  [MPRIS_METADATA_DURATION] = "mpris:length",
-  [MPRIS_METADATA_URI] = "xesam:url",
-  [MPRIS_METADATA_ART_URI] = "xesam:url",
-  [MPRIS_METADATA_GENRE] = "xesam:genre",
+static const char *metadatastr [CONT_METADATA_MAX] = {
+  [CONT_METADATA_ALBUM] = "xesam:album",
+  [CONT_METADATA_ALBUMARTIST] = "xesam:albumArtist",
+  [CONT_METADATA_ARTIST] = "xesam:artist",
+  [CONT_METADATA_TITLE] = "xesam:title",
+  [CONT_METADATA_TRACKID] = "mpris:trackid",
+  [CONT_METADATA_DURATION] = "mpris:length",
+  [CONT_METADATA_URI] = "xesam:url",
+  [CONT_METADATA_ART_URI] = "xesam:url",
+  [CONT_METADATA_GENRE] = "xesam:genre",
 };
 
 enum {
@@ -138,7 +125,6 @@ typedef struct contdata {
   mprisMediaPlayer2Player *mprisplayer;
   callback_t          *cb;
   callback_t          *cburi;
-  nlist_t             *chgprop;
   nlist_t             *metadata;
   void                *metav;
   int                 playstate;      // BDJ4 play state
@@ -164,7 +150,7 @@ static gboolean mprisRepeat (mprisMediaPlayer2Player *player, GDBusMethodInvocat
 static gboolean mprisRate (mprisMediaPlayer2Player *player, GDBusMethodInvocation *invocation, void *udata);
 
 void
-contiDesc (char **ret, int max)
+contiDesc (const char **ret, int max)
 {
   int         c = 0;
 
@@ -186,7 +172,6 @@ contiInit (const char *instname)
   contdata->cb = NULL;
   contdata->mprisroot = NULL;
   contdata->mprisplayer = NULL;
-  contdata->chgprop = nlistAlloc ("cont-mprisi-prop", LIST_ORDERED, NULL);
   contdata->metadata = NULL;
   contdata->metav = NULL;
   contdata->playstate = PL_STATE_STOPPED;
@@ -210,7 +195,6 @@ contiFree (contdata_t *contdata)
     return;
   }
 
-  nlistFree (contdata->chgprop);
   nlistFree (contdata->metadata);
   if (contdata->dbus != NULL) {
     dbusConnClose (contdata->dbus);
@@ -417,39 +401,39 @@ contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
   } else {
     snprintf (tbuff, sizeof (tbuff), "/NoTrack");
   }
-  nlistSetStr (contdata->metadata, MPRIS_METADATA_TRACKID, tbuff);
+  nlistSetStr (contdata->metadata, CONT_METADATA_TRACKID, tbuff);
 
-  nlistSetNum (contdata->metadata, MPRIS_METADATA_DURATION, cmetadata->duration);
+  nlistSetNum (contdata->metadata, CONT_METADATA_DURATION, cmetadata->duration);
 
   if (cmetadata->title != NULL) {
-    nlistSetStr (contdata->metadata, MPRIS_METADATA_TITLE, cmetadata->title);
+    nlistSetStr (contdata->metadata, CONT_METADATA_TITLE, cmetadata->title);
   }
   if (cmetadata->artist != NULL) {
-    nlistSetStr (contdata->metadata, MPRIS_METADATA_ARTIST, cmetadata->artist);
+    nlistSetStr (contdata->metadata, CONT_METADATA_ARTIST, cmetadata->artist);
   }
   if (cmetadata->album != NULL) {
-    nlistSetStr (contdata->metadata, MPRIS_METADATA_ALBUM, cmetadata->album);
+    nlistSetStr (contdata->metadata, CONT_METADATA_ALBUM, cmetadata->album);
   }
   if (cmetadata->albumartist != NULL) {
-    nlistSetStr (contdata->metadata, MPRIS_METADATA_ALBUMARTIST,
+    nlistSetStr (contdata->metadata, CONT_METADATA_ALBUMARTIST,
         cmetadata->albumartist);
   }
   if (cmetadata->genre != NULL) {
-    nlistSetStr (contdata->metadata, MPRIS_METADATA_GENRE, cmetadata->genre);
+    nlistSetStr (contdata->metadata, CONT_METADATA_GENRE, cmetadata->genre);
   }
   if (cmetadata->uri != NULL) {
-    nlistSetStr (contdata->metadata, MPRIS_METADATA_URI, cmetadata->uri);
+    nlistSetStr (contdata->metadata, CONT_METADATA_URI, cmetadata->uri);
   }
   if (cmetadata->arturi != NULL) {
-    nlistSetStr (contdata->metadata, MPRIS_METADATA_ART_URI, cmetadata->arturi);
+    nlistSetStr (contdata->metadata, CONT_METADATA_ART_URI, cmetadata->arturi);
   }
 
   nlistStartIterator (contdata->metadata, &miter);
   dbusMessageInitArray (contdata->dbus, "a{sv}");
   while ((mkey = nlistIterateKey (contdata->metadata, &miter)) >= 0) {
-    if (mkey == MPRIS_METADATA_DURATION) {
+    if (mkey == CONT_METADATA_DURATION) {
       tv = dbusMessageBuild ("x", nlistGetNum (contdata->metadata, mkey));
-    } else if (mkey == MPRIS_METADATA_TRACKID) {
+    } else if (mkey == CONT_METADATA_TRACKID) {
       tv = dbusMessageBuild ("o", nlistGetStr (contdata->metadata, mkey));
     } else {
       tv = dbusMessageBuild ("s", nlistGetStr (contdata->metadata, mkey));

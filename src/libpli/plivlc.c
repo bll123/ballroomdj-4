@@ -62,7 +62,7 @@ enum {
 static void pliiWaitUntilPlaying (plidata_t *pliData);
 
 void
-pliiDesc (char **ret, int max)
+pliiDesc (const char **ret, int max)
 {
   int   c = 0;
 

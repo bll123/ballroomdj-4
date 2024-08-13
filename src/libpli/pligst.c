@@ -29,7 +29,7 @@ typedef struct plidata {
 static void pliiWaitUntilPlaying (plidata_t *plidata);
 
 void
-pliiDesc (char **ret, int max)
+pliiDesc (const char **ret, int max)
 {
   int         c = 0;
 

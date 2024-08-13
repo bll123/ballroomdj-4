@@ -54,7 +54,8 @@ endif()
 
 if (WIN32)
   add_library (libvolwin SHARED volwin.cpp)
-  target_compile_options (libvolwin PRIVATE -static-libstdc++)
+#  target_compile_options (libvolwin PRIVATE -static-libstdc++)
+  target_link_options (libvolwin PRIVATE -static-libstdc++)
   target_link_libraries (libvolwin PRIVATE
     objfileop
     objosutils

@@ -27,9 +27,10 @@ typedef struct plidata {
 } plidata_t;
 
 void
-pliiDesc (char **ret, int max)
+pliiDesc (const char **ret, int max)
 {
-  mprisGetPlayerList (NULL, ret, max);
+  mprisGetPlayerList (NULL, (char **) ret, max);
+// ### memory leak: the list is not being freed
 }
 
 plidata_t *

@@ -31,9 +31,10 @@ target_link_libraries (bdj4tags PRIVATE
 )
 addIntlLibrary (bdj4tags)
 
-add_executable (bdj4winmksc bdj4winmksc.cpp)
 if (WIN32)
+  add_executable (bdj4winmksc bdj4winmksc.cpp)
   target_compile_options (bdj4winmksc PRIVATE -municode)
+  target_link_options (libvolwin PRIVATE -static-libstdc++)
 endif()
 
 add_executable (dmkmfromdb dmkmfromdb.c)
@@ -166,7 +167,6 @@ endif()
 install (TARGETS
   bdj4info
   bdj4tags
-  bdj4winmksc
   dmkmfromdb
   tdbcompare
   tdbsetval
@@ -179,6 +179,12 @@ install (TARGETS
   uitest
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
+if (WIN32)
+  install (TARGETS
+    bdj4winmksc
+    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  )
+endif()
 if (NOT WIN32 AND NOT APPLE)
   install (TARGETS
     dbustest
@@ -194,7 +200,9 @@ endif()
 
 updateRPath (bdj4info)
 updateRPath (bdj4tags)
-updateRPath (bdj4winmksc)
+if (WIN32)
+  updateRPath (bdj4winmksc)
+endif()
 updateRPath (dmkmfromdb)
 updateRPath (tdbcompare)
 updateRPath (tdbsetval)

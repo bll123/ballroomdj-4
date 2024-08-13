@@ -42,7 +42,7 @@ void audiosrcCleanIterator (asiter_t *asiiter);
 int32_t audiosrcIterCount (asiter_t *asiter);
 const char *audiosrcIterate (asiter_t *asiter);
 
-void asiDesc (char **ret, int max);
+void asiDesc (const char **ret, int max);
 asdata_t *asiInit (const char *delpfx, const char *origext);
 void asiFree (asdata_t *asdata);
 void asiPostInit (asdata_t *asdata, const char *musicdir);

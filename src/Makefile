@@ -9,6 +9,7 @@ BINDIR = ../bin
 BUILDDIR = build
 CLANG = clang
 CLANGXX = clang++
+CLANGDIR = ucrt64
 
 # bdj4 options
 BDJ4_UI = GTK3
@@ -48,6 +49,10 @@ sanitizeaddress:
 .PHONY: sanitizeaddressclang
 sanitizeaddressclang:
 	BDJ4_BUILD=SanitizeAddress $(MAKE) cmakeclang
+
+.PHONY: sanitizeaddressclang64
+sanitizeaddressclang64:
+	BDJ4_BUILD=SanitizeAddress $(MAKE) cmakeclang64
 
 .PHONY: sanitizeundef
 sanitizeundef:
@@ -96,6 +101,11 @@ cmakesinglecpuverbose:
 	  VERBOSE=1 $(MAKE) build; \
 	fi
 
+# for the windows clang64 msys2 environment
+.PHONY: cmakeclang64
+cmakeclang64:
+	CLANGDIR=clang64 $(MAKE) cmakeclang
+
 .PHONY: cmakeclang
 cmakeclang:
 	@if test $$(uname -s) = Linux; then \
@@ -105,8 +115,8 @@ cmakeclang:
 	  CC=$(CLANG) CXX=$(CLANGXX) $(MAKE) cmake-unix; \
 	  pmode=--parallel $(MAKE) build; \
 	else \
-	  CC=/ucrt64/bin/clang.exe \
-	  CXX=/ucrt64/bin/clang++.exe \
+	  CC=/$(CLANGDIR)/bin/clang.exe \
+	  CXX=/$(CLANGDIR)/bin/clang++.exe \
 	  $(MAKE) cmake-windows; \
 	  $(MAKE) build; \
 	fi

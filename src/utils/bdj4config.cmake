@@ -379,10 +379,11 @@ if (NOT WIN32)
   endif()
 
   add_compile_options (-DMG_ARCH=MG_ARCH_UNIX)
-else()
+endif()
+if (WIN32)
   add_compile_options (-DMG_ARCH=MG_ARCH_WIN32)
   add_link_options (-static-libgcc)
-  add_link_options (-static-libstdc++)
+#  add_link_options (-static-libstdc++)
 endif()
 
 #### checks for include files
