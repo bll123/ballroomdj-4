@@ -5,8 +5,6 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
-find_package (CppWinRT)
-
 add_library (libbdj4cont SHARED
   controller.c
 )
