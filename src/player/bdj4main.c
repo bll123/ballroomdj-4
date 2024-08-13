@@ -844,7 +844,6 @@ mainHandshakeCallback (void *tmaindata, programstate_t programState)
 static void
 mainStartMarquee (maindata_t *mainData)
 {
-  const char  *theme;
   const char  *targv [2];
   int         idx = 0;
   int         flags = 0;
@@ -857,10 +856,13 @@ mainStartMarquee (maindata_t *mainData)
     return;
   }
 
+#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
   /* set the theme for the marquee */
-  theme = bdjoptGetStr (OPT_MP_MQ_THEME);
-#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
-  osSetEnv ("GTK_THEME", theme);
+  {
+    const char *theme;
+    theme = bdjoptGetStr (OPT_MP_MQ_THEME);
+    osSetEnv ("GTK_THEME", theme);
+  }
 #endif
 
   targv [idx++] = NULL;

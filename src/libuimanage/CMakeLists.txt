@@ -18,8 +18,8 @@ target_include_directories (libbdj4uim
   PRIVATE ${GTK_INCLUDE_DIRS}
 )
 if (APPLE)
-  target_link_libraries (libbdj4uim PRIVATE
-    "-framework Cocoa"
+  target_link_options (libbdj4uim PRIVATE
+    -framework Cocoa
   )
 endif()
 target_link_libraries (libbdj4uim PRIVATE

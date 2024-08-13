@@ -93,13 +93,17 @@ typedef union {
     uivirtlist_t  *uivirtlist;
 } uiwcontint_t;
 
-# if BDJ4_USE_GTK3 /* gtk3 */
+# if BDJ4_UI_GTK3 /* gtk3 */
 #  include "ui/uigtk3-int.h"
-# endif /* BDJ4_USE_GTK3 */
+# endif /* BDJ4_UI_GTK3 */
 
-# if BDJ4_USE_NULLUI
+# if BDJ4_UI_NULL
 #  include "ui/uinull-int.h"
-# endif /* BDJ4_USE_NULLUI */
+# endif /* BDJ4_UI_NULL */
+
+# if BDJ4_UI_MACOS
+#  include "ui/uimacos-int.h"
+# endif /* BDJ4_UI_MACOS */
 
 typedef struct uiwcont {
   uiwconttype_t   wbasetype;

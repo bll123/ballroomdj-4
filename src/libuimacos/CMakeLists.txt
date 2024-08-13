@@ -5,45 +5,48 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
-add_library (libuinull SHARED
-  uibox.c
-  uibutton.c
-  uichgind.c
-  uiclipboard.c
-  uidialog.c
-  uidragdrop.c
-  uientry.c
-  uievents.c
-  uiimage.c
-  uilabel.c
-  uilink.c
-  uimenu.c
-  uimiscbutton.c
-  uinotebook.c
-  uipanedwindow.c
-  uipbar.c
-  uiscale.c
-  uiscrollbar.c
-  uisep.c
-  uisizegrp.c
-  uispinbox.c
-  uiswitch.c
-  uitextbox.c
-  uitoggle.c
-  uiui.c
-  uiwidget.c
-  uiwindow.c
+add_library (libuimacos SHARED
+  uibox.m
+  uibutton.m
+  uichgind.m
+  uiclipboard.m
+  uidialog.m
+  uidragdrop.m
+  uientry.m
+  uievents.m
+  uiimage.m
+  uilabel.m
+  uilink.m
+  uimenu.m
+  uimiscbutton.m
+  uinotebook.m
+  uipanedwindow.m
+  uipbar.m
+  uiscale.m
+  uiscrollbar.m
+  uisep.m
+  uisizegrp.m
+  uispinbox.m
+  uiswitch.m
+  uitextbox.m
+  uitoggle.m
+  uiui.m
+  uiwidget.m
+  uiwindow.m
 )
-target_link_libraries (libuinull PRIVATE
+target_link_libraries (libuimacos PRIVATE
   objuiwcont libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
 )
-addIntlLibrary (libuinull)
-addWinSockLibrary (libuinull)
+target_link_options (libuimacos PRIVATE
+  -framework Cocoa
+)
+addIntlLibrary (libuimacos)
+addWinSockLibrary (libuimacos)
 
 install (TARGETS
-  libuinull
+  libuimacos
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
-updateRPath (libuinull)
+updateRPath (libuimacos)

@@ -7,11 +7,14 @@
 #include "uiclass.h"
 #include "uiwcont.h"
 
-#if BDJ4_USE_GTK3
+#if BDJ4_UI_GTK3
 # include "ui-gtk3.h"
 #endif
-#if BDJ4_USE_NULLUI
+#if BDJ4_UI_NULL
 # include "ui-null.h"
+#endif
+#if BDJ4_UI_MACOS
+# include "ui-macos.h"
 #endif
 
 #include "ui/uibox.h"

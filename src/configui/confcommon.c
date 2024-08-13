@@ -41,7 +41,9 @@
 #include "webclient.h"
 
 static nlist_t * confuiGetThemeList (void);
+#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
 static slist_t * confuiGetThemeNames (slist_t *themelist, slist_t *filelist);
+#endif
 static char * confuiMakeQRCodeFile (char *title, char *uri);
 static void confuiUpdateOrgExample (org_t *org, const char *data, uiwcont_t *uiwidgetp);
 static bool confuiSearchDispSel (confuigui_t *gui, int selidx, const char *disp);
@@ -387,7 +389,7 @@ confuiGetThemeList (void)
   slistidx_t  iteridx;
   const char  *nm;
   int         count;
-#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
+#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
   char        tbuff [MAXPATHLEN];
   slist_t     *filelist = NULL;
 #endif
@@ -397,7 +399,7 @@ confuiGetThemeList (void)
   sthemelist = slistAlloc ("cu-themes-s", LIST_ORDERED, NULL);
   themelist = nlistAlloc ("cu-themes", LIST_ORDERED, NULL);
 
-#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
+#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
   if (isWindows ()) {
     snprintf (tbuff, sizeof (tbuff), "%s/plocal/share/themes",
         sysvarsGetStr (SV_BDJ4_DIR_MAIN));
@@ -443,27 +445,24 @@ confuiGetThemeList (void)
   return themelist;
 }
 
+/* ui-macos and ui-null do not have themes */
+#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
+
 static slist_t *
 confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
 {
   slistidx_t    iteridx;
   const char    *fn;
   pathinfo_t    *pi;
-#if BDJ4_USE_NULLUI
-  static char   *srchdir = "null";
-#endif
-#if BDJ4_USE_GTK3
+# if BDJ4_UI_GTK3
   static char   *srchdir = "gtk-3.0";
-#endif
-#if BDJ4_USE_GTK4
+# endif
+# if BDJ4_UI_GTK4
   static char   *srchdir = "gtk-4.0";
-#endif
-#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
+# endif
+# if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
   static char   *srchfn = "gtk.css";
-#endif
-#if BDJ4_USE_NULLUI
-  static char   *srchfn = "null";
-#endif
+# endif
 
   logProcBegin ();
   if (filelist == NULL) {
@@ -504,6 +503,7 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
   logProcEnd ("");
   return themelist;
 }
+#endif  /* ui-gtk3 or ui-gtk4 */
 
 static char *
 confuiMakeQRCodeFile (char *title, char *uri)

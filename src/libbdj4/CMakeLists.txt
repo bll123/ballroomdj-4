@@ -69,8 +69,8 @@ target_link_libraries (libbdj4 PRIVATE
   z
 )
 if (APPLE)
-  target_link_libraries (libbdj4 PRIVATE
-    "-framework Cocoa"
+  target_link_options (libbdj4 PRIVATE
+    -framework Cocoa
   )
 endif()
 addIntlLibrary (libbdj4)

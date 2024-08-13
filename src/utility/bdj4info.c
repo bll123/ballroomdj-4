@@ -17,7 +17,7 @@
 #include <unistd.h>
 #include <limits.h>
 
-#if BDJ4_USE_GTK3
+#if BDJ4_UI_GTK3
 # include <gtk/gtk.h>
 #endif
 
@@ -163,18 +163,18 @@ main (int argc, char *argv [])
 #endif
   fprintf (stdout, " c: atomics %d\n", c);
   fprintf (stdout, " c: __STDC_VERSION__ %ld\n", __STDC_VERSION__);
-#if BDJ4_USE_GTK3
+#if BDJ4_UI_GTK3
   fprintf (stdout, "ui: GTK3\n");
 #endif
-#if BDJ4_USE_GTK4
+#if BDJ4_UI_GTK4
   fprintf (stdout, "ui: GTK4\n");
 #endif
-#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
+#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
   fprintf (stdout, " i: gboolean %d\n", (int) sizeof (gboolean));
   fprintf (stdout, " i: gint  %d\n", (int) sizeof (gint));
   fprintf (stdout, " i: glong %d\n", (int) sizeof (glong));
 #endif
-#if BDJ4_USE_NULLUI
+#if BDJ4_UI_NULL
   fprintf (stdout, "ui: null\n");
 #endif
 

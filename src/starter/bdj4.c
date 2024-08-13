@@ -11,7 +11,7 @@
 #include <getopt.h>
 #include <unistd.h>
 
-#if BDJ4_GUI_LAUNCHER && BDJ4_USE_GTK3
+#if BDJ4_GUI_LAUNCHER && BDJ4_UI_GTK3
 # include <gtk/gtk.h>
 #endif
 
@@ -154,7 +154,7 @@ main (int argc, char * argv[])
 
   bdj4arg = bdj4argInit (argc, argv);
 
-#if BDJ4_GUI_LAUNCHER && (BDJ4_USE_GTK3 || BDJ4_USE_GTK4)
+#if BDJ4_GUI_LAUNCHER && (BDJ4_UI_GTK3 || BDJ4_UI_GTK4)
   /* for macos; turns the launcher into a gui program, then the icon */
   /* shows up in the dock */
   gtk_init (&argc, NULL);
@@ -164,7 +164,7 @@ main (int argc, char * argv[])
 
   targ = bdj4argGet (bdj4arg, 0, argv [0]);
   sysvarsInit (targ, SYSVARS_FLAG_BASIC);
-#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
+#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
   if (getenv ("GTK_THEME") != NULL) {
     havetheme = true;
   }
@@ -394,7 +394,7 @@ main (int argc, char * argv[])
       case 'T': {
         if (optarg != NULL) {
           targ = bdj4argGet (bdj4arg, optind - 1, optarg);
-#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
+#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
           osSetEnv ("GTK_THEME", targ);
 #endif
         }
@@ -402,7 +402,7 @@ main (int argc, char * argv[])
         break;
       }
       case 'S': {
-#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
+#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
         osSetEnv ("GDK_SCALE", optarg);
 #endif
         havescale = true;
@@ -444,7 +444,7 @@ main (int argc, char * argv[])
     }
   }
 
-#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
+#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
   osSetEnv ("GTK_CSD", "0");
 #endif
 
@@ -563,7 +563,7 @@ main (int argc, char * argv[])
       fprintf (stderr, "final PATH=%s\n", getenv ("PATH"));
     }
 
-#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
+#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
     osSetEnv ("PANGOCAIRO_BACKEND", "fc");
 #endif
 
@@ -581,7 +581,7 @@ main (int argc, char * argv[])
       mdextfclose (fh);
       fclose (fh);
       stringTrim (buff);
-#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
+#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
       osSetEnv ("GTK_THEME", buff);
 #endif
       havetheme = true;
@@ -599,14 +599,14 @@ main (int argc, char * argv[])
       mdextfclose (fh);
       fclose (fh);
       stringTrim (buff);
-#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
+#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
       osSetEnv ("GDK_SCALE", buff);
 #endif
       havescale = true;
     }
   }
 
-#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
+#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
   if (! havetheme && isWindows ()) {
     osSetEnv ("GTK_THEME", "Windows-10-Dark");
   }
@@ -618,7 +618,7 @@ main (int argc, char * argv[])
   /* launch the program */
 
   if (debugself) {
-#if BDJ4_USE_GTK3 || BDJ4_USE_GTK4
+#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
     fprintf (stderr, "GTK_THEME=%s\n", getenv ("GTK_THEME"));
     fprintf (stderr, "GTK_CSD=%s\n", getenv ("GTK_CSD"));
     fprintf (stderr, "PANGOCAIRO_BACKEND=%s\n", getenv ("PANGOCAIRO_BACKEND"));

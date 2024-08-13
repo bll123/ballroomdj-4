@@ -22,24 +22,31 @@ find_package (Iconv)
 # check for all supported ui interfaces
 if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3" OR
     BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4" OR
-    BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null")
+    BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null" OR
+    BDJ4_UI STREQUAL "macos" OR BDJ4_UI STREQUAL "MacOS" OR
+        BDJ4_UI STREQUAL "Macos")
 else()
   message (FATAL_ERROR "BDJ4_UI (${BDJ4_UI}) not supported")
 endif()
 
 if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
-  add_compile_options (-DBDJ4_USE_GTK3=1)
+  add_compile_options (-DBDJ4_UI_GTK3=1)
   set (BDJ4_UI_LIB libuigtk3)
 endif()
 
 if (BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
-  add_compile_options (-DBDJ4_USE_GTK4=1)
+  add_compile_options (-DBDJ4_UI_GTK4=1)
   set (BDJ4_UI_LIB libuigtk4)
 endif()
 
 if (BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null")
-  add_compile_options (-DBDJ4_USE_NULLUI=1)
+  add_compile_options (-DBDJ4_UI_NULL=1)
   set (BDJ4_UI_LIB libuinull)
+endif()
+
+if (BDJ4_UI STREQUAL "macos" OR BDJ4_UI STREQUAL "MacOS" OR BDJ4_UI STREQUAL "Macos")
+  add_compile_options (-DBDJ4_UI_MACOS=1)
+  set (BDJ4_UI_LIB libuimacos)
 endif()
 
 #### bits / check supported platforms
@@ -383,7 +390,6 @@ endif()
 if (WIN32)
   add_compile_options (-DMG_ARCH=MG_ARCH_WIN32)
   add_link_options (-static-libgcc)
-#  add_link_options (-static-libstdc++)
 endif()
 
 #### checks for include files

@@ -31,7 +31,7 @@ grc=0
 # check for unused functions
 echo "## checking for unused functions"
 grep -E '^[a-zA-Z0-9]* \(' */*.c */*.cpp */*.m |
-  grep -E -v '(:main|:fprintf|uinull|KEEP|UNUSED|TESTING)' |
+  grep -E -v '(:main|:fprintf|uinull|uimacos|KEEP|UNUSED|TESTING)' |
   grep -E -v '(rlogError|rlogProcBegin|rlogProcEnd)' |
   sed -e 's, (.*,,' -e 's,.*:,,' |
   sort > ${TUFUNC}
@@ -119,6 +119,9 @@ for fn in include/*.h include/ui/*.h config.h.in; do
   case $fn in
     *mpris-root.h|*mpris-player.h)
       # generated file
+      continue
+      ;;
+    *uimacos-int.h)
       continue
       ;;
   esac

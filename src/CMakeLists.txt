@@ -120,12 +120,7 @@ add_subdirectory (utility)
 
 # ui libraries
 add_subdirectory (libuiwcont)
-if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
-  add_subdirectory (libuigtk3)
-endif()
-if (BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null")
-  add_subdirectory (libuinull)
-endif()
+add_subdirectory (${BDJ4_UI_LIB})
 add_subdirectory (libuibase)
 add_subdirectory (libuiintfc)
 add_subdirectory (libuicommon)
