@@ -30,8 +30,8 @@ __Show Speed Reset__: The 'Reset Speed to 100%' button will be
 displayed in the player.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Player](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Player-F.png)
+![Player](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Player-G.png)
 <br><span style="color:#4559bf;">__Configure / Player__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-12 15:25:55; BDJ4 version 4.11.4)_
+<br>_(Updated 2024-08-13 07:39:47; BDJ4 version 4.11.4)_
