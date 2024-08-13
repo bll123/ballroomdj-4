@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 Brad Lanam Pleasant Hill CA
+ * Copyright 2024 Brad Lanam Pleasant Hill CA
  */
 #include "config.h"
 
@@ -79,6 +79,7 @@
 // This will close/terminate the application when the main window is closed.
 - (void)windowWillClose:(NSNotification *)notification {
     Window *window = notification.object;
+    NSLog(@"Window: closing");
     if (window.isMainWindow) {
         [NSApp terminate:nil];
     }
@@ -114,6 +115,7 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   uiwin->wtype = WCONT_T_WINDOW;
   uiwin->uidata.widget = win;
   uiwin->uidata.packwidget = win;
+  fprintf (stderr, "created main-win '%s'\n", title);
   return uiwin;
 }
 
@@ -129,6 +131,7 @@ uiWindowSetTitle (uiwcont_t *uiwindow, const char *title)
 
   win = uiwindow->uidata.widget;
   [win setTitle:nstitle];
+  fprintf (stderr, "win: set title '%s'\n", title);
   return;
 }
 

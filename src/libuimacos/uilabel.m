@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 Brad Lanam Pleasant Hill CA
+ * Copyright 2024 Brad Lanam Pleasant Hill CA
  */
 #include "config.h"
 
@@ -8,6 +8,9 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <Cocoa/Cocoa.h>
+#import <Foundation/NSObject.h>
 
 #include "uiwcont.h"
 
@@ -19,13 +22,37 @@
 uiwcont_t *
 uiCreateLabel (const char *label)
 {
-  return NULL;
+  uiwcont_t   *uiwidget;
+  NSTextField *widget;
+
+fprintf (stderr, "box: create label '%s'\n", label);
+  widget = [NSTextField alloc];
+  [widget setBezeled:NO];
+  [widget setDrawsBackground:NO];
+  [widget setEditable:NO];
+  [widget setStringValue: [NSString stringWithUTF8String: label]];
+//  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
+//  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
+
+  uiwidget = uiwcontAlloc ();
+  uiwidget->wbasetype = WCONT_T_LABEL;
+  uiwidget->wtype = WCONT_T_LABEL;
+  uiwidget->uidata.widget = widget;
+  uiwidget->uidata.packwidget = widget;
+  return uiwidget;
 }
 
 uiwcont_t *
-uiCreateColonLabel (const char *label)
+uiCreateColonLabel (const char *txt)
 {
-  return NULL;
+  char      tbuff [300];
+
+  if (txt == NULL) {
+    return NULL;
+  }
+
+  snprintf (tbuff, sizeof (tbuff), "%s:", txt);
+  return uiCreateLabel (tbuff);
 }
 
 void
@@ -49,6 +76,9 @@ uiLabelSetFont (uiwcont_t *uiwidget, const char *font)
 void
 uiLabelSetText (uiwcont_t *uiwidget, const char *text)
 {
+  NSTextField *widget = uiwidget->uidata.widget;
+
+  [widget setStringValue: [NSString stringWithUTF8String: text]];
   return;
 }
 

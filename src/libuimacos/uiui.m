@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 Brad Lanam Pleasant Hill CA
+ * Copyright 2024 Brad Lanam Pleasant Hill CA
  */
 #include "config.h"
 
@@ -14,6 +14,7 @@
 #include <Cocoa/Cocoa.h>
 #import <Foundation/NSObject.h>
 
+#include "oslocale.h"
 #include "tmutil.h"
 #include "uiclass.h"
 
@@ -60,6 +61,9 @@ uiUIInitialize (int direction)
   appDelegate = [[[AppDelegate alloc] init] autorelease];
   [NSApp setDelegate:appDelegate];
 
+//  if (direction == TEXT_DIR_RTL) {
+//    [NSApp userInterfaceLayoutDirection:rightToLeft];
+//  }
   return;
 }
 
