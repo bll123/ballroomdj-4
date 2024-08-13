@@ -1080,7 +1080,7 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
 
   controllerInitMetadata (&cmetadata);
   genres = bdjvarsdfGet (BDJVDF_GENRES);
-  audiosrcURI (songGetStr (song, TAG_URI), uri, sizeof (uri), 0, NULL);
+  audiosrcURI (songGetStr (song, TAG_URI), uri, sizeof (uri), NULL, 0);
   cmetadata.uri = uri;
   cmetadata.album = songGetStr (song, TAG_ALBUM);
   cmetadata.albumartist = songGetStr (song, TAG_ALBUMARTIST);
