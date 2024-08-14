@@ -57,6 +57,9 @@ uiLabelSetTooltip (uiwcont_t *uiwidget, const char *txt)
     return;
   }
 
+// ### this will be very slow, as the old tool tips need to be removed.
+// will probably be better to create a custom method and save the data
+// for that label and use the dynamic methods.
   nstf = uiwidget->uidata.widget;
   [nstf addToolTip: [NSString stringWithUTF8String: txt]];
   return;

@@ -1962,10 +1962,6 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       }
     }
 
-    if (! coldata->aligncenter) {
-      uiSizeGroupAdd (coldata->szgrp, col->uiwidget);
-    }
-
     if (coldata->baseclass != NULL) {
       uiWidgetAddClass (col->uiwidget, coldata->baseclass);
     }
@@ -1975,7 +1971,6 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       }
       if (coldata->ellipsize) {
         uiLabelEllipsizeOn (col->uiwidget);
-        uiSizeGroupAdd (row->szgrp, col->uiwidget);
       }
     }
 
@@ -2015,6 +2010,21 @@ uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
   }
 
   uiBoxPackStart (vl->wcont [VL_W_MAIN_VBOX], row->hbox);
+  for (int colidx = 0; colidx < vl->numcols; ++colidx) {
+    uivlcoldata_t *coldata;
+    uivlcol_t     *col;
+
+    coldata = &vl->coldata [colidx];
+    col = &row->cols [colidx];
+
+    if (! coldata->aligncenter) {
+      uiSizeGroupAdd (coldata->szgrp, col->uiwidget);
+    }
+    if (coldata->ellipsize) {
+      uiSizeGroupAdd (row->szgrp, col->uiwidget);
+    }
+  }
+
   /* any initial pack should be cleared */
   uivlClearRowDisp (vl, row->dispidx);
 }

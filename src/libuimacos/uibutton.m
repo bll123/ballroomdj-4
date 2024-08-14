@@ -84,8 +84,9 @@ uiCreateButton (callback_t *uicb, char *title, char *imagenm)
     uibutton->image = image;
     [widget setImage: image];
     [widget setTitle:@""];
-//### not working
-//    [widget addToolTip: [NSString stringWithUTF8String: title]];
+// ### not working
+//    [widget addToolTipRect: widget.frame
+//        owner: [NSString stringWithUTF8String: title]];
   } else {
     [widget setTitle: [NSString stringWithUTF8String: title]];
   }

@@ -24,7 +24,9 @@ uiImageNew (void)
 uiwcont_t *
 uiImageFromFile (const char *fn)
 {
-  return NULL;
+  uiwcont_t *uiwidget = NULL;
+
+  return uiwidget;
 }
 
 uiwcont_t *
@@ -36,6 +38,10 @@ uiImageScaledFromFile (const char *fn, int scale)
 void
 uiImageClear (uiwcont_t *uiwidget)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_IMAGE, "image-clr")) {
+    return;
+  }
+
   return;
 }
 
