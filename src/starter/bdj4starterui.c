@@ -712,8 +712,8 @@ starterBuildUI (startui_t  *starter)
       _("Player"), NULL);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiBoxPackStart (bvbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_PLAYER] = uiwidgetp;
 
@@ -725,8 +725,8 @@ starterBuildUI (startui_t  *starter)
       _("Manage"), NULL);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiBoxPackStart (bvbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_MANAGE] = uiwidgetp;
 
@@ -738,8 +738,8 @@ starterBuildUI (startui_t  *starter)
       _("Configure"), NULL);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiBoxPackStart (bvbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_CONFIG] = uiwidgetp;
 
@@ -751,8 +751,8 @@ starterBuildUI (startui_t  *starter)
       _("Support"), NULL);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiBoxPackStart (bvbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_SUPPORT] = uiwidgetp;
 
@@ -762,8 +762,8 @@ starterBuildUI (startui_t  *starter)
       _("Exit"), NULL);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiBoxPackStart (bvbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_EXIT] = uiwidgetp;
 

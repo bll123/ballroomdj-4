@@ -51,6 +51,14 @@ uiLabelAddClass (const char *classnm, const char *color)
 void
 uiLabelSetTooltip (uiwcont_t *uiwidget, const char *txt)
 {
+  NSTextField *nstf;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_LABEL, "label-set-tooltip")) {
+    return;
+  }
+
+  nstf = uiwidget->uidata.widget;
+  [nstf addToolTip: [NSString stringWithUTF8String: txt]];
   return;
 }
 
@@ -63,8 +71,13 @@ uiLabelSetFont (uiwcont_t *uiwidget, const char *font)
 void
 uiLabelSetText (uiwcont_t *uiwidget, const char *text)
 {
-  NSTextField *widget = uiwidget->uidata.widget;
+  NSTextField *widget;
 
+  if (! uiwcontValid (uiwidget, WCONT_T_LABEL, "label-set-tooltip")) {
+    return;
+  }
+
+  widget = uiwidget->uidata.widget;
   [widget setStringValue: [NSString stringWithUTF8String: text]];
   return;
 }

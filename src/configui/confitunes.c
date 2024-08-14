@@ -203,8 +203,8 @@ confuiBuildUIiTunes (confuigui_t *gui)
     uiBoxPackStart (vbox, hbox);
 
     uiwidgetp = uiCreateLabel (tbuff);
-    uiSizeGroupAdd (szgrpr, uiwidgetp);
     uiBoxPackStart (hbox, uiwidgetp);
+    uiSizeGroupAdd (szgrpr, uiwidgetp);
     uiwcontFree (uiwidgetp);
 
     gui->itunes->uirating [i] = uiratingSpinboxCreate (hbox, UIRATING_NORM);

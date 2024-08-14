@@ -1252,8 +1252,8 @@ uisongeditAddEntry (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
       uisongeditEntryChgCB, seint, UIENTRY_IMMEDIATE);
 
   uiWidgetAlignHorizFill (entryp);
-  uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_ENTRY], entryp);
   uiBoxPackStartExpand (hbox, entryp);
+  uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_ENTRY], entryp);
   logProcEnd ("");
 }
 
@@ -1276,8 +1276,8 @@ uisongeditAddSpinboxInt (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   }
   uiSpinboxSetValueChangedCallback (uiwidgetp,
       seint->callbacks [UISE_CB_CHANGED]);
-  uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_SPIN_NUM], uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_SPIN_NUM], uiwidgetp);
   logProcEnd ("");
 }
 
@@ -1290,8 +1290,8 @@ uisongeditAddLabel (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   logProcBegin ();
   seint = uisongedit->seInternalData;
   uiwidgetp = uiCreateLabel ("");
-  uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_ENTRY], uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_ENTRY], uiwidgetp);
   seint->items [seint->itemcount].uiwidgetp = uiwidgetp;
   logProcEnd ("");
 }
@@ -1337,8 +1337,8 @@ uisongeditAddSpinboxTime (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   uiSpinboxTimeSetValueChangedCallback (sbp,
       seint->callbacks [UISE_CB_CHANGED]);
 
-  uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_SPIN_TIME], sbp);
   uiBoxPackStart (hbox, sbp);
+  uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_SPIN_TIME], sbp);
   logProcEnd ("");
 }
 
@@ -1373,13 +1373,13 @@ uisongeditAddScale (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
       uisongeditScaleDisplayCallback, &seint->items [seint->itemcount]);
   uiScaleSetCallback (uiwidgetp, seint->items [seint->itemcount].callback);
 
-  uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_SCALE], uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_SCALE], uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("100%");
   uiLabelAlignEnd (uiwidgetp);
-  uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_SCALE_DISP], uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_SCALE_DISP], uiwidgetp);
   seint->items [seint->itemcount].display = uiwidgetp;
   logProcEnd ("");
 }

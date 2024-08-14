@@ -48,6 +48,7 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
   }
 
   gtk_box_pack_start (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, FALSE, FALSE, 0);
+  uiwidget->packed = true;
 }
 
 void
@@ -61,6 +62,7 @@ uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   }
 
   gtk_box_pack_start (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, TRUE, TRUE, 0);
+  uiwidget->packed = true;
 }
 
 void
@@ -74,6 +76,7 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
   }
 
   gtk_box_pack_end (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, FALSE, FALSE, 0);
+  uiwidget->packed = true;
 }
 
 void
@@ -86,6 +89,7 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
     return;
   }
   gtk_box_pack_end (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, TRUE, TRUE, 0);
+  uiwidget->packed = true;
 }
 
 void
@@ -112,6 +116,9 @@ uiCreateBox (int orientation)
   uiwidget->wtype = WCONT_T_VBOX;
   if (orientation == GTK_ORIENTATION_HORIZONTAL) {
     uiwidget->wtype = WCONT_T_HBOX;
+  }
+  if (orientation == GTK_ORIENTATION_VERTICAL) {
+    uiwidget->wtype = WCONT_T_VBOX;
   }
   uiwidget->uidata.widget = box;
   uiwidget->uidata.packwidget = box;

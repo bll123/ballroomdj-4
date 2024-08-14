@@ -429,6 +429,7 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   }
 
   gtk_container_add (GTK_CONTAINER (uiwindow->uidata.widget), uiwidget->uidata.widget);
+  uiwidget->packed = true;
 }
 
 void

@@ -395,14 +395,14 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
     uiBoxPackStart (vbox, hbox);
 
     uiwidgetp = uiCreateColonLabel (bpmcounter->disptxt [i]);
-    uiSizeGroupAdd (szgrp, uiwidgetp);
     uiBoxPackStart (hbox, uiwidgetp);
+    uiSizeGroupAdd (szgrp, uiwidgetp);
     bpmcounter->dispwidget [i] = uiwidgetp;
 
     bpmcounter->dispvalue [i] = uiCreateLabel ("");
     uiLabelAlignEnd (bpmcounter->dispvalue [i]);
-    uiSizeGroupAdd (szgrpDisp, bpmcounter->dispvalue [i]);
     uiBoxPackStart (hbox, bpmcounter->dispvalue [i]);
+    uiSizeGroupAdd (szgrpDisp, bpmcounter->dispvalue [i]);
   }
 
   /* right side */

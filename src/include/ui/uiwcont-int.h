@@ -80,8 +80,8 @@ typedef struct uibuttonbase {
   callback_t  *releasecb;
   mstime_t    repeatTimer;
   int         repeatMS;
-  bool        repeatOn;
-  bool        repeating;
+  bool        repeatOn : 1;
+  bool        repeating : 1;
 } uibuttonbase_t;
 
 typedef struct uibutton uibutton_t;
@@ -127,6 +127,7 @@ typedef struct uiwcont {
   uiwconttype_t   wtype;
   uiwcontint_t    uiint;
   uispecific_t    uidata;
+  bool            packed : 1;
 } uiwcont_t;
 
 static inline bool

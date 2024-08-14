@@ -80,6 +80,7 @@ static datafilekey_t bdjoptprofiledfkeys [] = {
   { "MQQLEN",               OPT_P_MQQLEN,               VALUE_NUM, NULL, DF_NORM },
   { "MQSHOWINFO",           OPT_P_MQ_SHOW_INFO,         VALUE_NUM, convBoolean, DF_NORM },
   { "MQ_ACCENT_COL",        OPT_P_MQ_ACCENT_COL,        VALUE_STR, NULL, DF_NORM },
+  { "MQ_BG_COL",            OPT_P_MQ_BG_COL,            VALUE_STR, NULL, DF_NORM },
   { "MQ_INFO_COL",          OPT_P_MQ_INFO_COL,          VALUE_STR, NULL, DF_NORM },
   { "MQ_INFO_SEP",          OPT_P_MQ_INFO_SEP,          VALUE_STR, NULL, DF_NORM },
   { "MQ_TEXT_COL",          OPT_P_MQ_TEXT_COL,          VALUE_STR, NULL, DF_NORM },
@@ -346,6 +347,11 @@ bdjoptInit (void)
       nlistSetNum (bdjopt->bdjoptList, OPT_P_MOBMQ_TYPE, MOBMQ_TYPE_LOCAL);
     }
     /* mobmq-tag and mobmq-key can be left unset */
+  }
+
+  /* added for macos ui */
+  if (nlistGetStr (bdjopt->bdjoptList, OPT_P_MQ_BG_COL) == NULL) {
+    nlistSetStr (bdjopt->bdjoptList, OPT_P_MQ_BG_COL, "#f6f5f4");
   }
 }
 

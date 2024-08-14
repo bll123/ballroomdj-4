@@ -362,8 +362,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
         /* CONTEXT: playerui: button: reset speed to 100% */
         _("100%"), NULL);
     uiWidgetAddClass (uiwidgetp, "bdj-spd-reset");
-    uiSizeGroupAdd (szgrpScaleButton, uiwidgetp);
     uiBoxPackEnd (hbox, uiwidgetp);
+    uiSizeGroupAdd (szgrpScaleButton, uiwidgetp);
     uiplayer->wcont [UIPL_W_BUTTON_SPD_RESET] = uiwidgetp;
   }
 
@@ -445,8 +445,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* size group B */
   uiplayer->wcont [UIPL_W_SEEK_DISP] = uiCreateLabel ("0:00");
   uiLabelAlignEnd (uiplayer->wcont [UIPL_W_SEEK_DISP]);
-  uiSizeGroupAdd (szgrpScaleDisp, uiplayer->wcont [UIPL_W_SEEK_DISP]);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SEEK_DISP]);
+  uiSizeGroupAdd (szgrpScaleDisp, uiplayer->wcont [UIPL_W_SEEK_DISP]);
 
   /* size group C */
   uiplayer->wcont [UIPL_W_SEEK] = uiCreateScale (

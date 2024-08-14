@@ -130,17 +130,6 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
 
   windowDelegate = [[IWindowDelegate alloc] init];
   [win setDelegate:windowDelegate];
-{
-NSTextField *l;
-  int       grav = NSStackViewGravityTop;
-
-l = [[NSTextField alloc] init];
-[l setBezeled:NO];
-[l setDrawsBackground:NO];
-[l setEditable:NO];
-[l setStringValue: [NSString stringWithUTF8String: title]];
-[[win contentView] addView: l inGravity:grav];
-}
 
   uiwin = uiwcontAlloc ();
   uiwin->wbasetype = WCONT_T_WINDOW;
@@ -329,17 +318,8 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
 
   win = uiwindow->uidata.widget;
   widget = uiwidget->uidata.packwidget;
-{
-NSTextField *l;
-
-l = [[NSTextField alloc] init];
-[l setBezeled:NO];
-[l setDrawsBackground:NO];
-[l setEditable:NO];
-[l setStringValue: @"win"];
-[[win contentView] addView: l inGravity:grav];
-}
   [[win contentView] addView: widget inGravity:grav];
+  uiwidget->packed = true;
   return;
 }
 

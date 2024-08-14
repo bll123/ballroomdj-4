@@ -44,7 +44,13 @@ typedef struct uibutton {
 }
 
 - (IBAction) OnButton1Click: (id) sender {
+  uibuttonbase_t  *bbase;
+
   fprintf (stderr, "b: button-1 click\n");
+  bbase = &uiwidget->uiint.uibuttonbase;
+  if (bbase->cb != NULL) {
+    callbackHandler (bbase->cb);
+  }
 }
 
 @end
@@ -75,17 +81,14 @@ uiCreateButton (callback_t *uicb, char *title, char *imagenm)
         PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
     ns = [NSString stringWithUTF8String: imagenm];
     image = [[NSImage alloc] initWithContentsOfFile: ns];
-//    gtk_widget_set_tooltip_text (widget, title);
     uibutton->image = image;
     [widget setImage: image];
     [widget setTitle:@""];
+//### not working
+//    [widget addToolTip: [NSString stringWithUTF8String: title]];
   } else {
     [widget setTitle: [NSString stringWithUTF8String: title]];
   }
-//  if (uicb != NULL) {
-//    g_signal_connect (widget, "clicked",
-//        G_CALLBACK (uiButtonSignalHandler), uibutton);
-//  }
 
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_BUTTON;
@@ -140,6 +143,14 @@ uiButtonSetImageIcon (uiwcont_t *uiwidget, const char *nm)
 void
 uiButtonAlignLeft (uiwcont_t *uiwidget)
 {
+  IButton   *button;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-align-left")) {
+    return;
+  }
+
+  button = uiwidget->uidata.widget;
+  [button setAlignment: NSTextAlignmentNatural];
   return;
 }
 

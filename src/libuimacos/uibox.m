@@ -24,6 +24,7 @@
 }
 @end
 
+#include "uigeneral.h"    // debug flag
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"
@@ -61,6 +62,7 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
     grav = NSStackViewGravityTop;
   }
   [box addView: widget inGravity: grav];
+  uiwidget->packed = true;
   return;
 }
 
@@ -77,10 +79,8 @@ uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.packwidget;
-  if (uibox->wtype == WCONT_T_VBOX) {
-    grav = NSStackViewGravityTop;
-  }
   [box addView: widget inGravity: grav];
+  uiwidget->packed = true;
   return;
 }
 
@@ -101,6 +101,7 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
     grav = NSStackViewGravityBottom;
   }
   [box addView: widget inGravity: grav];
+  uiwidget->packed = true;
   return;
 }
 
@@ -117,10 +118,8 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.packwidget;
-  if (uibox->wtype == WCONT_T_VBOX) {
-    grav = NSStackViewGravityBottom;
-  }
   [box addView: widget inGravity: grav];
+  uiwidget->packed = true;
   return;
 }
 
@@ -142,36 +141,23 @@ uiCreateBox (int orientation)
   [box setOrientation: orientation];
   [box setTranslatesAutoresizingMaskIntoConstraints: NO];
 
+#if MACOS_UI_DEBUG
+  [box setFocusRingType: NSFocusRingTypeExterior];
+  [box setWantsLayer: YES];
+  [[box layer] setBorderWidth: 2.0];
+#endif
+
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_BOX;
-  uiwidget->wtype = WCONT_T_VBOX;
+
   if (orientation == NSUserInterfaceLayoutOrientationHorizontal) {
     uiwidget->wtype = WCONT_T_HBOX;
-{
-NSTextField *l;
-int         grav = NSStackViewGravityLeading;
-
-l = [[NSTextField alloc] init];
-[l setBezeled:NO];
-[l setDrawsBackground:NO];
-[l setEditable:NO];
-[l setStringValue: @"h"];
-[box addView: l inGravity: grav];
-}
-    } else {
-{
-NSTextField *l;
-int         grav = NSStackViewGravityTop;
-
-l = [[NSTextField alloc] init];
-[l setBezeled:NO];
-[l setDrawsBackground:NO];
-[l setEditable:NO];
-[l setStringValue: @"v"];
-[box addView: l inGravity: grav];
-}
-    }
-  uiwidget->wtype = WCONT_T_VBOX;
+    [box setAlignment: NSLayoutAttributeTop];
+  }
+  if (orientation == NSUserInterfaceLayoutOrientationVertical) {
+    uiwidget->wtype = WCONT_T_VBOX;
+    [box setAlignment: NSLayoutAttributeLeading];
+  }
   uiwidget->uidata.widget = box;
   uiwidget->uidata.packwidget = box;
   return uiwidget;
