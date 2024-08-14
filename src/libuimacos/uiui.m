@@ -53,7 +53,6 @@ uiUIInitialize (int direction)
 {
   id  appDelegate;
 
-fprintf (stderr, "app-create\n");
   [NSApplication sharedApplication];
   [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
   [NSApp setPresentationOptions:NSApplicationPresentationDefault];
@@ -83,7 +82,6 @@ uiUIProcessEvents (void)
   }
 
   if (haveev) {
-fprintf (stderr, "upd-win\n");
     [NSApp updateWindows];
   }
 }

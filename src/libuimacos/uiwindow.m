@@ -42,7 +42,6 @@
 @implementation Window
 - (instancetype)init {
 
-fprintf (stderr, "init-win\n");
   [super initWithContentRect:NSMakeRect(100, 100, 300, 300)
       styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
           NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable
@@ -106,7 +105,6 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   id        windowDelegate;
 
   win = [[Window alloc] init];
-fprintf (stderr, "win: %p\n", win);
   [win setTitle:nstitle];
   [win makeMainWindow];
 
@@ -127,7 +125,6 @@ fprintf (stderr, "win: %p\n", win);
   uiwin->wtype = WCONT_T_WINDOW;
   uiwin->uidata.widget = win;
   uiwin->uidata.packwidget = win;
-  fprintf (stderr, "created main-win '%s'\n", title);
   return uiwin;
 }
 
@@ -143,7 +140,6 @@ uiWindowSetTitle (uiwcont_t *uiwindow, const char *title)
 
   win = uiwindow->uidata.widget;
   [win setTitle:nstitle];
-  fprintf (stderr, "win: set title '%s'\n", title);
   return;
 }
 
@@ -310,7 +306,6 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
 
   win = uiwindow->uidata.widget;
   widget = uiwidget->uidata.widget;
-fprintf (stderr, "win: %p widget: %p\n", win, widget);
   [[win contentView] addSubview:widget];
   return;
 }

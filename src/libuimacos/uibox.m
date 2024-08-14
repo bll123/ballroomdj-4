@@ -47,7 +47,6 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
 
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.widget;
-fprintf (stderr, "box: ps\n");
   if (uibox->wtype == WCONT_T_VBOX) {
     grav = NSStackViewGravityTop;
   }
@@ -68,7 +67,6 @@ uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.widget;
-fprintf (stderr, "box: pse\n");
   if (uibox->wtype == WCONT_T_VBOX) {
     grav = NSStackViewGravityTop;
   }
@@ -89,7 +87,6 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
 
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.widget;
-fprintf (stderr, "box: pe\n");
   if (uibox->wtype == WCONT_T_VBOX) {
     grav = NSStackViewGravityBottom;
   }
@@ -110,7 +107,6 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.widget;
-fprintf (stderr, "box: pee\n");
   if (uibox->wtype == WCONT_T_VBOX) {
     grav = NSStackViewGravityBottom;
   }
@@ -134,9 +130,6 @@ uiCreateBox (int orientation)
 
   box = [[NSStackView alloc] init];
   [box setOrientation: orientation];
-
-fprintf (stderr, "box: create %d\n", orientation);
-fprintf (stderr, "box: %p\n", box);
 
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_BOX;

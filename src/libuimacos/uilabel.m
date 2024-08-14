@@ -25,7 +25,6 @@ uiCreateLabel (const char *label)
   uiwcont_t   *uiwidget;
   NSTextField *widget;
 
-fprintf (stderr, "box: create label '%s'\n", label);
   widget = [[NSTextField alloc] init];
   [widget setBezeled:NO];
   [widget setDrawsBackground:NO];

@@ -35,7 +35,6 @@ osuiSetIcon (const char *fname)
 void
 osuiFinalize (void)
 {
-fprintf (stderr, "finish-launching\n");
   [NSApp finishLaunching];
   return;
 }

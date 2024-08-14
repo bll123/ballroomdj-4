@@ -42,7 +42,6 @@ uiCreateButton (callback_t *uicb, char *title, char *imagenm)
   uibutton = mdmalloc (sizeof (uibutton_t));
   uibutton->image = NULL;
 
-fprintf (stderr, "box: create button '%s' '%s'\n", title, imagenm);
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_BUTTON;
   uiwidget->wtype = WCONT_T_BUTTON;
