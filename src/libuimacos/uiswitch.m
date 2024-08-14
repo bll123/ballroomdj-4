@@ -11,11 +11,11 @@
 #include <ctype.h>
 #include <math.h>
 
-#include "bdj4.h"
+#include <Cocoa/Cocoa.h>
+#import <Foundation/NSObject.h>
+
 #include "callback.h"
 #include "mdebug.h"
-#include "pathbld.h"
-#include "uiclass.h"
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"
@@ -32,7 +32,25 @@ typedef struct uiswitch {
 uiwcont_t *
 uiCreateSwitch (int value)
 {
-  return NULL;
+  uiwcont_t   *uiwidget;
+  NSSwitch    *widget = nil;
+
+//  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
+//  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
+  widget = [[NSSwitch alloc] init];
+  [widget setState: NSControlStateValueOff];
+  if (value) {
+    [widget setState: NSControlStateValueOn];
+  }
+  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+
+  uiwidget = uiwcontAlloc ();
+  uiwidget->wbasetype = WCONT_T_SWITCH;
+  uiwidget->wtype = WCONT_T_SWITCH;
+  uiwidget->uidata.widget = widget;
+  uiwidget->uidata.packwidget = widget;
+
+  return uiwidget;
 }
 
 void

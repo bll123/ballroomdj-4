@@ -35,7 +35,6 @@
 #include "uidance.h"
 #include "uiextreq.h"
 #include "uiselectfile.h"
-#include "uiutils.h"
 
 enum {
   UIEXTREQ_CB_DIALOG,
@@ -236,7 +235,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiutilsCreateColonLabel (
+  uiwidgetp = uiCreateColonLabel (
       /* CONTEXT: external request: enter the audio file location */
       _("Audio File"));
   uiBoxPackStart (hbox, uiwidgetp);
@@ -272,7 +271,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiutilsCreateColonLabel (tagdefs [TAG_ARTIST].displayname);
+  uiwidgetp = uiCreateColonLabel (tagdefs [TAG_ARTIST].displayname);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
@@ -289,7 +288,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiutilsCreateColonLabel (tagdefs [TAG_TITLE].displayname);
+  uiwidgetp = uiCreateColonLabel (tagdefs [TAG_TITLE].displayname);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
@@ -306,7 +305,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiutilsCreateColonLabel (tagdefs [TAG_DANCE].displayname);
+  uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCE].displayname);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
@@ -324,7 +323,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiutilsCreateColonLabel (tagdefs [TAG_MQDISPLAY].displayname);
+  uiwidgetp = uiCreateColonLabel (tagdefs [TAG_MQDISPLAY].displayname);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);

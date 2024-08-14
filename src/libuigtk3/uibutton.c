@@ -20,6 +20,7 @@
 #include "pathbld.h"
 #include "tmutil.h"
 #include "uiclass.h"
+#include "uigeneral.h"
 #include "uiwcont.h"
 
 #include "ui-gtk3.h"
@@ -32,33 +33,21 @@
 
 static void uiButtonSignalHandler (GtkButton *b, gpointer udata);
 static void uiButtonRepeatSignalHandler (GtkButton *b, gpointer udata);
-static bool uiButtonPressCallback (void *udata);
-static bool uiButtonReleaseCallback (void *udata);
 
 typedef struct uibutton {
-  GtkWidget   *image;
-  mstime_t    repeatTimer;
-  int         repeatMS;
-  callback_t  *cb;
-  callback_t  *presscb;
-  callback_t  *releasecb;
-  bool        repeatOn;
-  bool        repeating;
+  GtkWidget       *image;
 } uibutton_t;
 
 uiwcont_t *
 uiCreateButton (callback_t *uicb, char *title, char *imagenm)
 {
-  uiwcont_t   *uiwidget;
-  uibutton_t  *uibutton;
-  GtkWidget   *widget;
+  uiwcont_t       *uiwidget;
+  uibutton_t      *uibutton;
+  uibuttonbase_t  *bbase;
+  GtkWidget       *widget;
 
   uibutton = mdmalloc (sizeof (uibutton_t));
   uibutton->image = NULL;
-
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_BUTTON;
-  uiwidget->wtype = WCONT_T_BUTTON;
 
   widget = gtk_button_new ();
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
@@ -80,23 +69,28 @@ uiCreateButton (callback_t *uicb, char *title, char *imagenm)
   } else {
     gtk_button_set_label (GTK_BUTTON (widget), title);
   }
-  if (uicb != NULL) {
-    g_signal_connect (widget, "clicked",
-        G_CALLBACK (uiButtonSignalHandler), uibutton);
-  }
 
-  uibutton->cb = uicb;
-  uibutton->presscb = callbackInit (uiButtonPressCallback,
-      uiwidget, "button-repeat-press");
-  uibutton->releasecb = callbackInit (uiButtonReleaseCallback,
-      uiwidget, "button-repeat-release");
-  uibutton->repeating = false;
-  uibutton->repeatOn = false;
-  uibutton->repeatMS = 250;
-
+  uiwidget = uiwcontAlloc ();
+  uiwidget->wbasetype = WCONT_T_BUTTON;
+  uiwidget->wtype = WCONT_T_BUTTON;
   uiwidget->uidata.widget = widget;
   uiwidget->uidata.packwidget = widget;
   uiwidget->uiint.uibutton = uibutton;
+
+  bbase = &uiwidget->uiint.uibuttonbase;
+  bbase->cb = uicb;
+  bbase->presscb = callbackInit (uiButtonPressCallback,
+      uiwidget, "button-repeat-press");
+  bbase->releasecb = callbackInit (uiButtonReleaseCallback,
+      uiwidget, "button-repeat-release");
+  bbase->repeating = false;
+  bbase->repeatOn = false;
+  bbase->repeatMS = 250;
+
+  if (uicb != NULL) {
+    g_signal_connect (widget, "clicked",
+        G_CALLBACK (uiButtonSignalHandler), uiwidget);
+  }
 
   return uiwidget;
 }
@@ -104,16 +98,18 @@ uiCreateButton (callback_t *uicb, char *title, char *imagenm)
 void
 uiButtonFree (uiwcont_t *uiwidget)
 {
-  uibutton_t *uibutton;
+  uibutton_t      *uibutton;
+  uibuttonbase_t  *bbase;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-free")) {
     return;
   }
 
   uibutton = uiwidget->uiint.uibutton;
+  bbase = &uiwidget->uiint.uibuttonbase;
 
-  callbackFree (uibutton->presscb);
-  callbackFree (uibutton->releasecb);
+  callbackFree (bbase->presscb);
+  callbackFree (bbase->releasecb);
   mdfree (uibutton);
 }
 
@@ -217,47 +213,20 @@ uiButtonSetText (uiwcont_t *uiwidget, const char *txt)
 void
 uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms)
 {
-  uibutton_t    *uibutton;
+  uibuttonbase_t    *bbase;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-repeat")) {
     return;
   }
 
-  uibutton = uiwidget->uiint.uibutton;
+  bbase = &uiwidget->uiint.uibuttonbase;
 
-  uibutton->repeatMS = repeatms;
-  uibutton->repeatOn = true;
+  bbase->repeatMS = repeatms;
+  bbase->repeatOn = true;
   g_signal_connect (uiwidget->uidata.widget, "pressed",
-      G_CALLBACK (uiButtonRepeatSignalHandler), uibutton->presscb);
+      G_CALLBACK (uiButtonRepeatSignalHandler), bbase->presscb);
   g_signal_connect (uiwidget->uidata.widget, "released",
-      G_CALLBACK (uiButtonRepeatSignalHandler), uibutton->releasecb);
-}
-
-bool
-uiButtonCheckRepeat (uiwcont_t *uiwidget)
-{
-  uibutton_t  *uibutton;
-  bool        rc = false;
-
-  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-repeat")) {
-    return rc;
-  }
-
-  uibutton = uiwidget->uiint.uibutton;
-
-  if (uibutton->repeating) {
-    if (mstimeCheck (&uibutton->repeatTimer)) {
-      if (uibutton->cb != NULL) {
-        uibutton->repeating = false;
-        callbackHandler (uibutton->cb);
-        mstimeset (&uibutton->repeatTimer, uibutton->repeatMS);
-        uibutton->repeating = true;
-      }
-    }
-    rc = true;
-  }
-
-  return rc;
+      G_CALLBACK (uiButtonRepeatSignalHandler), bbase->releasecb);
 }
 
 /* internal routines */
@@ -265,19 +234,25 @@ uiButtonCheckRepeat (uiwcont_t *uiwidget)
 static void
 uiButtonSignalHandler (GtkButton *b, gpointer udata)
 {
-  uibutton_t  *uibutton = udata;
+  uiwcont_t       *uiwidget = udata;
+  uibutton_t      *uibutton;
+  uibuttonbase_t  *bbase;
 
-  if (uibutton == NULL) {
-    return;
-  }
-  if (uibutton->repeatOn) {
-    return;
-  }
-  if (uibutton->cb == NULL) {
+  if (uiwidget == NULL) {
     return;
   }
 
-  callbackHandler (uibutton->cb);
+  uibutton = uiwidget->uiint.uibutton;
+  bbase = &uiwidget->uiint.uibuttonbase;
+
+  if (bbase->repeatOn) {
+    return;
+  }
+  if (bbase->cb == NULL) {
+    return;
+  }
+
+  callbackHandler (bbase->cb);
 }
 
 static void
@@ -288,49 +263,3 @@ uiButtonRepeatSignalHandler (GtkButton *b, gpointer udata)
   callbackHandler (uicb);
 }
 
-static bool
-uiButtonPressCallback (void *udata)
-{
-  uiwcont_t   *uiwidget = udata;
-  uibutton_t  *uibutton;
-  callback_t  *uicb;
-
-  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-state")) {
-    return UICB_CONT;
-  }
-
-  uibutton = uiwidget->uiint.uibutton;
-  uicb = uibutton->cb;
-
-  uibutton->repeating = false;
-  uicb = uibutton->cb;
-  if (uicb == NULL) {
-    return UICB_CONT;
-  }
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: button-press");
-  if (uicb != NULL) {
-    callbackHandler (uicb);
-  }
-  /* the first time the button is pressed, the repeat timer should have */
-  /* a longer initial delay. */
-  mstimeset (&uibutton->repeatTimer, uibutton->repeatMS * 3);
-  uibutton->repeating = true;
-  return UICB_CONT;
-}
-
-static bool
-uiButtonReleaseCallback (void *udata)
-{
-  uiwcont_t   *uiwidget = udata;
-  uibutton_t  *uibutton;
-
-  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-state")) {
-    return UICB_CONT;
-  }
-
-  uibutton = uiwidget->uiint.uibutton;
-
-  uibutton->repeating = false;
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: button-release");
-  return UICB_CONT;
-}

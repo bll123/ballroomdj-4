@@ -14,6 +14,16 @@
 #include <Cocoa/Cocoa.h>
 #import <Foundation/NSObject.h>
 
+@interface IBox : NSStackView {}
+- (BOOL) isFlipped;
+@end
+
+@implementation IBox
+- (BOOL) isFlipped {
+  return YES;
+}
+@end
+
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"
@@ -37,9 +47,9 @@ uiCreateHorizBox (void)
 void
 uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
-  NSStackView *box;
-  NSView      *widget = NULL;
-  int         grav = NSStackViewGravityLeading;
+  IBox    *box;
+  NSView  *widget = NULL;
+  int     grav = NSStackViewGravityLeading;
 
   if (uibox == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
@@ -57,9 +67,9 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
 void
 uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
-  NSStackView    *box;
-  NSView        *widget = NULL;
-  int         grav = NSStackViewGravityLeading;
+  IBox    *box;
+  NSView  *widget = NULL;
+  int     grav = NSStackViewGravityLeading;
 
   if (uibox == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
@@ -77,8 +87,8 @@ uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 void
 uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
-  NSStackView    *box;
-  NSView        *widget = NULL;
+  IBox        *box;
+  NSView      *widget = NULL;
   int         grav = NSStackViewGravityTrailing;
 
   if (uibox == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
@@ -97,8 +107,8 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
 void
 uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
-  NSStackView    *box;
-  NSView        *widget = NULL;
+  IBox        *box;
+  NSView      *widget = NULL;
   int         grav = NSStackViewGravityTrailing;
 
   if (uibox == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
@@ -126,9 +136,9 @@ static uiwcont_t *
 uiCreateBox (int orientation)
 {
   uiwcont_t   *uiwidget;
-  NSStackView  *box = NULL;
+  IBox        *box = NULL;
 
-  box = [[NSStackView alloc] init];
+  box = [[IBox alloc] init];
   [box setOrientation: orientation];
   [box setTranslatesAutoresizingMaskIntoConstraints: NO];
 

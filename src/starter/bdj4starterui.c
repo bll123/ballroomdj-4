@@ -667,7 +667,7 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: profile to be used when starting BDJ4 */
-  uiwidgetp = uiutilsCreateColonLabel (_("Profile"));
+  uiwidgetp = uiCreateColonLabel (_("Profile"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
@@ -1429,7 +1429,7 @@ starterProcessSupport (void *udata)
 
   /* CONTEXT: starterui: basic support dialog, version display */
   snprintf (tbuff, sizeof (tbuff), _("%s Version"), BDJ4_NAME);
-  uiwidgetp = uiutilsCreateColonLabel (tbuff);
+  uiwidgetp = uiCreateColonLabel (tbuff);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
@@ -1450,7 +1450,7 @@ starterProcessSupport (void *udata)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: basic support dialog, latest version display */
-  uiwidgetp = uiutilsCreateColonLabel (_("Latest Version"));
+  uiwidgetp = uiCreateColonLabel (_("Latest Version"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
@@ -1511,7 +1511,7 @@ starterProcessSupport (void *udata)
   /* begin line */
 
   /* CONTEXT: starterui: basic support dialog, list of support options */
-  uiwidgetp = uiutilsCreateColonLabel (_("Support options"));
+  uiwidgetp = uiCreateColonLabel (_("Support options"));
   uiBoxPackStart (vbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
@@ -1935,7 +1935,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: sending support message: user's e-mail address */
-  uiwidgetp = uiutilsCreateColonLabel (_("E-Mail Address"));
+  uiwidgetp = uiCreateColonLabel (_("E-Mail Address"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
@@ -1954,7 +1954,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: sending support message: subject of message */
-  uiwidgetp = uiutilsCreateColonLabel (_("Subject"));
+  uiwidgetp = uiCreateColonLabel (_("Subject"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
@@ -1965,7 +1965,7 @@ starterCreateSupportMsgDialog (void *udata)
 
   /* line 3 */
   /* CONTEXT: starterui: sending support message: message text */
-  uiwidgetp = uiutilsCreateColonLabel (_("Message"));
+  uiwidgetp = uiCreateColonLabel (_("Message"));
   uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 

@@ -44,5 +44,6 @@
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 #include "ui/uiwindow.h"
+#include "uigeneral.h"
 
 #endif /* INC_UI_H */

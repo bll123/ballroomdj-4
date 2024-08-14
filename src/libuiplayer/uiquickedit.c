@@ -31,7 +31,6 @@
 #include "uilevel.h"
 #include "uiquickedit.h"
 #include "uirating.h"
-#include "uiutils.h"
 #include "validate.h"
 
 enum {
@@ -367,7 +366,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
     uiWidgetExpandHoriz (hbox);
     uiBoxPackStart (vbox, hbox);
 
-    uiwidgetp = uiutilsCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
+    uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
     uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
     uiBoxPackStart (hbox, uiwidgetp);
 
@@ -381,7 +380,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
     uiWidgetExpandHoriz (hbox);
     uiBoxPackStart (vbox, hbox);
 
-    uiwidgetp = uiutilsCreateColonLabel (tagdefs [TAG_DANCELEVEL].displayname);
+    uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCELEVEL].displayname);
     uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
     uiBoxPackStart (hbox, uiwidgetp);
 
@@ -395,7 +394,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
     uiWidgetExpandHoriz (hbox);
     uiBoxPackStart (vbox, hbox);
 
-    uiwidgetp = uiutilsCreateColonLabel (tagdefs [TAG_FAVORITE].displayname);
+    uiwidgetp = uiCreateColonLabel (tagdefs [TAG_FAVORITE].displayname);
     uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
     uiBoxPackStart (hbox, uiwidgetp);
 
@@ -499,7 +498,7 @@ uiqeAddScale (uiqe_t *uiqe, uiwcont_t *hbox, int scidx)
   }
   uiqe->scaledata [scidx].tagkey = tagkey;
 
-  uiwidgetp = uiutilsCreateColonLabel (tagdefs [tagkey].displayname);
+  uiwidgetp = uiCreateColonLabel (tagdefs [tagkey].displayname);
   uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
   uiqe->scaledata [scidx].label = uiwidgetp;

@@ -325,12 +325,12 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   uiBoxPackStart (vbox, hbox);
 
   if (currtype == UIEIBDJ4_EXPORT) {
-    uiwidgetp = uiutilsCreateColonLabel (
+    uiwidgetp = uiCreateColonLabel (
         /* CONTEXT: export/import bdj4: export folder location */
         _("Export to"));
   }
   if (currtype == UIEIBDJ4_IMPORT) {
-    uiwidgetp = uiutilsCreateColonLabel (
+    uiwidgetp = uiCreateColonLabel (
         /* CONTEXT: export/import bdj4: import folder location */
         _("Import from"));
   }
@@ -376,7 +376,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
     uiBoxPackStart (vbox, hbox);
 
     /* CONTEXT: export/import bdj4: playlist: select the song list */
-    uiwidgetp = uiutilsCreateColonLabel (_("Song List"));
+    uiwidgetp = uiCreateColonLabel (_("Song List"));
     uiBoxPackStart (hbox, uiwidgetp);
     uiSizeGroupAdd (szgrp, uiwidgetp);
     uiwcontFree (uiwidgetp);
@@ -393,7 +393,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
-    uiwidgetp = uiutilsCreateColonLabel (
+    uiwidgetp = uiCreateColonLabel (
         /* CONTEXT: export/import bdj4: new song list name */
         _("New Song List Name"));
     uiBoxPackStart (hbox, uiwidgetp);

@@ -35,7 +35,7 @@ add_library (libuimacos SHARED
   uiwindow.m
 )
 target_link_libraries (libuimacos PRIVATE
-  objuiwcont libbdj4 libbdj4basic libbdj4common
+  objuigeneral libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
 )
 target_link_options (libuimacos PRIVATE

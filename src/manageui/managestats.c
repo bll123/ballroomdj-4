@@ -27,7 +27,6 @@
 #include "tagdef.h"
 #include "tmutil.h"
 #include "ui.h"
-#include "uiutils.h"
 
 enum {
   STATS_COLS = 5,
@@ -108,7 +107,7 @@ manageBuildUIStats (managestats_t *managestats)
   uiBoxPackStart (managestats->vboxmain, hbox);
 
   /* CONTEXT: statistics: Label for number of songs in song list */
-  uiwidgetp = uiutilsCreateColonLabel (_("Songs"));
+  uiwidgetp = uiCreateColonLabel (_("Songs"));
   uiWidgetSetMarginEnd (uiwidgetp, 2);
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
@@ -119,7 +118,7 @@ manageBuildUIStats (managestats_t *managestats)
 
   /* total time (same horiz row) */
   /* CONTEXT: statistics: Label for total song list duration */
-  uiwidgetp = uiutilsCreateColonLabel (_("Total Time"));
+  uiwidgetp = uiCreateColonLabel (_("Total Time"));
   uiWidgetSetMarginStart (uiwidgetp, 10);
   uiWidgetSetMarginEnd (uiwidgetp, 2);
   uiBoxPackStart (hbox, uiwidgetp);

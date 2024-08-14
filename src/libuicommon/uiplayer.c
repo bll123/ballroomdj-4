@@ -390,7 +390,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   /* size group D */
   /* CONTEXT: playerui: the current speed for song playback */
-  uiwidgetp = uiutilsCreateColonLabel (_("Speed"));
+  uiwidgetp = uiCreateColonLabel (_("Speed"));
   uiLabelAlignEnd (uiwidgetp);
   uiWidgetSetMarginEnd (uiwidgetp, 1);
   uiBoxPackEnd (hbox, uiwidgetp);
@@ -459,7 +459,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   /* size group D */
   /* CONTEXT: playerui: the current position of the song during song playback */
-  uiwidgetp = uiutilsCreateColonLabel (_("Position"));
+  uiwidgetp = uiCreateColonLabel (_("Position"));
   uiLabelAlignEnd (uiwidgetp);
   uiWidgetSetMarginEnd (uiwidgetp, 1);
   uiBoxPackEnd (hbox, uiwidgetp);
@@ -578,7 +578,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   /* size group D */
   /* CONTEXT: playerui: The current volume of the song */
-  uiwidgetp = uiutilsCreateColonLabel (_("Volume"));
+  uiwidgetp = uiCreateColonLabel (_("Volume"));
   uiLabelAlignEnd (uiwidgetp);
   uiWidgetSetMarginEnd (uiwidgetp, 1);
   uiBoxPackEnd (hbox, uiwidgetp);

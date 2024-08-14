@@ -470,7 +470,7 @@ confuiMakeItemLabel (uiwcont_t *boxp, uiwcont_t *szgrp, const char *txt, int ind
   if (*ttxt == '\0') {
     uiwidgetp = uiCreateLabel (ttxt);
   } else {
-    uiwidgetp = uiutilsCreateColonLabel (ttxt);
+    uiwidgetp = uiCreateColonLabel (ttxt);
   }
   uiBoxPackStart (boxp, uiwidgetp);
   if (szgrp != NULL) {

@@ -18,6 +18,7 @@
 #include "callback.h"
 #include "mdebug.h"
 #include "pathbld.h"
+#include "uigeneral.h"
 
 #include "ui/uiwcont-int.h"
 
@@ -26,28 +27,44 @@
 #include "ui/uibutton.h"
 
 typedef struct uibutton {
-  NSImage     *image;
-  callback_t  *cb;
-  callback_t  *presscb;
-  callback_t  *releasecb;
+  NSImage         *image;
 } uibutton_t;
+
+@interface IButton : NSButton {
+  uiwcont_t   *uiwidget;
+}
+- (void) setUIWidget: (uiwcont_t *) tuiwidget;
+- (IBAction) OnButton1Click: (id) sender;
+@end
+
+@implementation IButton
+
+- (void) setUIWidget: (uiwcont_t *) tuiwidget {
+  uiwidget = tuiwidget;
+}
+
+- (IBAction) OnButton1Click: (id) sender {
+  fprintf (stderr, "b: button-1 click\n");
+}
+
+@end
 
 uiwcont_t *
 uiCreateButton (callback_t *uicb, char *title, char *imagenm)
 {
-  uiwcont_t   *uiwidget;
-  uibutton_t  *uibutton;
-  NSButton    *widget = nil;
+  uiwcont_t       *uiwidget;
+  uibutton_t      *uibutton;
+  uibuttonbase_t  *bbase;
+  IButton         *widget = nil;
 
   uibutton = mdmalloc (sizeof (uibutton_t));
   uibutton->image = NULL;
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_BUTTON;
-  uiwidget->wtype = WCONT_T_BUTTON;
-
 //  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
 //  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
+
+  widget = [[IButton alloc] init];
+
   if (imagenm != NULL) {
     NSString    *ns;
     NSImage     *image;
@@ -60,11 +77,9 @@ uiCreateButton (callback_t *uicb, char *title, char *imagenm)
     image = [[NSImage alloc] initWithContentsOfFile: ns];
 //    gtk_widget_set_tooltip_text (widget, title);
     uibutton->image = image;
-    widget = [[NSButton alloc] init];
-    [[widget init] setImage: image];
+    [widget setImage: image];
     [widget setTitle:@""];
   } else {
-    widget = [[NSButton alloc] init];
     [widget setTitle: [NSString stringWithUTF8String: title]];
   }
 //  if (uicb != NULL) {
@@ -72,25 +87,28 @@ uiCreateButton (callback_t *uicb, char *title, char *imagenm)
 //        G_CALLBACK (uiButtonSignalHandler), uibutton);
 //  }
 
-  [widget setAutoresizingMask:NSViewMinXMargin | NSViewMinYMargin];
-  [widget setBezelStyle:NSBezelStyleRounded];
-  [widget setTarget:widget];
-  [widget setAction:@selector(OnButton1Click:)];
-  [widget setAction:@selector(OnButton2Click:)];
-  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
-
-  uibutton->cb = uicb;
-//  uibutton->presscb = callbackInit (uiButtonPressCallback,
-//      uiwidget, "button-repeat-press");
-//  uibutton->releasecb = callbackInit (uiButtonReleaseCallback,
-//      uiwidget, "button-repeat-release");
-//  uibutton->repeating = false;
-//  uibutton->repeatOn = false;
-//  uibutton->repeatMS = 250;
-
+  uiwidget = uiwcontAlloc ();
+  uiwidget->wbasetype = WCONT_T_BUTTON;
+  uiwidget->wtype = WCONT_T_BUTTON;
   uiwidget->uidata.widget = widget;
   uiwidget->uidata.packwidget = widget;
   uiwidget->uiint.uibutton = uibutton;
+
+  [widget setBezelStyle: NSBezelStyleRounded];
+  [widget setTarget: widget];
+  [widget setUIWidget: uiwidget];
+  [widget setAction: @selector(OnButton1Click:)];
+  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+
+  bbase = &uiwidget->uiint.uibuttonbase;
+  bbase->cb = uicb;
+  bbase->presscb = callbackInit (uiButtonPressCallback,
+      uiwidget, "button-repeat-press");
+  bbase->releasecb = callbackInit (uiButtonReleaseCallback,
+      uiwidget, "button-repeat-release");
+  bbase->repeating = false;
+  bbase->repeatOn = false;
+  bbase->repeatMS = 250;
 
   return uiwidget;
 }
@@ -149,8 +167,3 @@ uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms)
   return;
 }
 
-bool
-uiButtonCheckRepeat (uiwcont_t *uiwidget)
-{
-  return false;
-}

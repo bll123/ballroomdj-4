@@ -20,10 +20,11 @@
 #include "ui/uiwcont-int.h"
 
 #include "ui/uiui.h"
+#include "ui/uibox.h"
 #include "ui/uiwidget.h"
 #include "ui/uiwindow.h"
 
-@interface WindowDelegate : NSObject
+@interface IWindowDelegate : NSObject
 - (void)windowDidBecomeKey:(NSNotification *)notification;
 - (void)windowDidBecomeMain:(NSNotification *)notification;
 - (void)windowDidResignKey:(NSNotification *)notification;
@@ -35,23 +36,25 @@
 - (IBAction) OnButton2Click:(id)sender;
 @end
 
-@interface Window : NSWindow {}
+@interface IWindow : NSWindow {}
 - (instancetype)init;
 @end
 
-@implementation Window
+@implementation IWindow
 - (instancetype)init {
 
   [super initWithContentRect:NSMakeRect(100, 100, 300, 300)
       styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
           NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable
-      backing:NSBackingStoreBuffered defer:NO];
+      backing:NSBackingStoreBuffered
+      defer:NO];
   [self setIsVisible:YES];
   return self;
 }
+
 @end
 
-@implementation WindowDelegate : NSObject
+@implementation IWindowDelegate : NSObject
 
 - (void)windowDidBecomeKey:(NSNotification *)notification {
     NSLog(@"Window: become key");
@@ -77,6 +80,7 @@
 - (BOOL)canBecomeMainWindow {
     return YES;
 }
+
 - (IBAction) OnButton1Click:(id)sender {
 NSLog(@"button-1");
 }
@@ -87,7 +91,7 @@ NSLog(@"button-2");
 
 // This will close/terminate the application when the main window is closed.
 - (void)windowWillClose:(NSNotification *)notification {
-    Window *window = notification.object;
+    IWindow *window = notification.object;
 NSLog(@"Window: closing");
     if (window.isMainWindow) {
       [NSApp terminate:nil];
@@ -100,12 +104,19 @@ uiwcont_t *
 uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
 {
   uiwcont_t *uiwin;
-  Window    *win = NULL;
-  NSString  *nstitle = [NSString stringWithUTF8String: title];
+  IWindow   *win = NULL;
+  uiwcont_t *uibox;
   id        windowDelegate;
 
-  win = [[Window alloc] init];
-  [win setTitle:nstitle];
+  win = [[IWindow alloc] init];
+  uibox = uiCreateVertBox ();
+  if (title != NULL) {
+    NSString  *nstitle;
+
+    nstitle = [NSString stringWithUTF8String: title];
+    [win setTitle: nstitle];
+  }
+  [win setContentView: uibox->uidata.widget];
   [win makeMainWindow];
 
   if (imagenm != NULL) {
@@ -117,17 +128,18 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
     [image release];
   }
 
-  windowDelegate = [[WindowDelegate alloc] init];
+  windowDelegate = [[IWindowDelegate alloc] init];
   [win setDelegate:windowDelegate];
 {
 NSTextField *l;
+  int       grav = NSStackViewGravityTop;
 
 l = [[NSTextField alloc] init];
 [l setBezeled:NO];
 [l setDrawsBackground:NO];
 [l setEditable:NO];
 [l setStringValue: [NSString stringWithUTF8String: title]];
-[[win contentView] addSubview: l];
+[[win contentView] addView: l inGravity:grav];
 }
 
   uiwin = uiwcontAlloc ();
@@ -141,7 +153,7 @@ l = [[NSTextField alloc] init];
 void
 uiWindowSetTitle (uiwcont_t *uiwindow, const char *title)
 {
-  Window    *win = NULL;
+  IWindow   *win = NULL;
   NSString  *nstitle = [NSString stringWithUTF8String: title];
 
   if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-set-title")) {
@@ -307,8 +319,9 @@ uiWindowSetNoMaximize (uiwcont_t *uiwindow)
 void
 uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
 {
-  NSWindow  *win;
+  IWindow   *win;
   NSView    *widget = NULL;
+  int       grav = NSStackViewGravityTop;
 
   if (uiwindow == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
@@ -316,7 +329,17 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
 
   win = uiwindow->uidata.widget;
   widget = uiwidget->uidata.packwidget;
-  [[win contentView] addSubview: widget];
+{
+NSTextField *l;
+
+l = [[NSTextField alloc] init];
+[l setBezeled:NO];
+[l setDrawsBackground:NO];
+[l setEditable:NO];
+[l setStringValue: @"win"];
+[[win contentView] addView: l inGravity:grav];
+}
+  [[win contentView] addView: widget inGravity:grav];
   return;
 }
 

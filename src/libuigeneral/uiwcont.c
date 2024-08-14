@@ -24,7 +24,7 @@ uiwcontAlloc (void)
   uiwidget->wtype = WCONT_T_UNKNOWN;
   uiwidget->uidata.widget = NULL;
   uiwidget->uidata.packwidget = NULL;          // often the same as widget
-  uiwidget->uiint.voidwidget = NULL;    // union
+  memset (&uiwidget->uiint, 0, sizeof (uiwcontint_t));
   return uiwidget;
 }
 

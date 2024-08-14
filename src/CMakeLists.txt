@@ -108,6 +108,7 @@ add_subdirectory (libbasic)
 add_subdirectory (libaudiosrc)
 add_subdirectory (libbdj4)
 
+# dynamic shared libraries
 add_subdirectory (libaudioid)
 add_subdirectory (libati)
 add_subdirectory (libvol)
@@ -119,7 +120,7 @@ add_subdirectory (libcont)
 add_subdirectory (utility)
 
 # ui libraries
-add_subdirectory (libuiwcont)
+add_subdirectory (libuigeneral)
 add_subdirectory (${BDJ4_UI_LIB})
 add_subdirectory (libuibase)
 add_subdirectory (libuiintfc)

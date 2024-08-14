@@ -14,6 +14,7 @@
 
 #include "bdj4intl.h"
 #include "bdjopt.h"
+#include "callback.h"
 #include "istring.h"
 #include "itunes.h"
 #include "log.h"
@@ -27,8 +28,6 @@
 #include "procutil.h"
 #include "sysvars.h"
 #include "ui.h"
-#include "uiutils.h"
-#include "callback.h"
 
 enum {
   MANAGE_DB_CHECK_NEW,
@@ -208,7 +207,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiBoxPackStart (vboxp, hbox);
 
   /* CONTEXT: update database: select database update action */
-  uiwidgetp = uiutilsCreateColonLabel (_("Action"));
+  uiwidgetp = uiCreateColonLabel (_("Action"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 2);
@@ -250,7 +249,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiBoxPackStart (vboxp, hbox);
 
   /* CONTEXT: update database: music folder to process */
-  uiwidgetp = uiutilsCreateColonLabel (_("Music Folder"));
+  uiwidgetp = uiCreateColonLabel (_("Music Folder"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 2);
   uiSizeGroupAdd (szgrp, uiwidgetp);

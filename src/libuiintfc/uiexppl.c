@@ -29,7 +29,6 @@
 #include "sysvars.h"
 #include "ui.h"
 #include "uiexppl.h"
-#include "uiutils.h"
 #include "validate.h"
 
 enum {
@@ -251,7 +250,7 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiutilsCreateColonLabel (
+  uiwidgetp = uiCreateColonLabel (
       /* CONTEXT: export playlist: type of export*/
       _("Export Type"));
   uiBoxPackStart (hbox, uiwidgetp);
@@ -271,7 +270,7 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiutilsCreateColonLabel (
+  uiwidgetp = uiCreateColonLabel (
       /* CONTEXT: export playlist: export folder location */
       _("Export to"));
   uiBoxPackStart (hbox, uiwidgetp);

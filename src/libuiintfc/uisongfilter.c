@@ -507,7 +507,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uisf->wcont [UISF_W_PLAYLIST] = hbox;
 
   /* CONTEXT: song selection filter: a filter: select a playlist to work with (music manager) */
-  uiwidgetp = uiutilsCreateColonLabel (_("Playlist"));
+  uiwidgetp = uiCreateColonLabel (_("Playlist"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
@@ -527,7 +527,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: song selection filter: a filter: select the method to sort the song selection display */
-  uiwidgetp = uiutilsCreateColonLabel (_("Sort by"));
+  uiwidgetp = uiCreateColonLabel (_("Sort by"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uisf->labels [UISF_LABEL_SORTBY] = uiwidgetp;
@@ -550,7 +550,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: song selection filter: a filter: filter the song selection with a search for text */
-  uiwidgetp = uiutilsCreateColonLabel (_("Search"));
+  uiwidgetp = uiCreateColonLabel (_("Search"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uisf->labels [UISF_LABEL_SEARCH] = uiwidgetp;
@@ -567,7 +567,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
-    uiwidgetp = uiutilsCreateColonLabel (tagdefs [TAG_GENRE].displayname);
+    uiwidgetp = uiCreateColonLabel (tagdefs [TAG_GENRE].displayname);
     uiBoxPackStart (hbox, uiwidgetp);
     uiSizeGroupAdd (szgrp, uiwidgetp);
     uisf->labels [UISF_LABEL_GENRE] = uiwidgetp;
@@ -585,7 +585,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
-    uiwidgetp = uiutilsCreateColonLabel (tagdefs [TAG_DANCE].displayname);
+    uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCE].displayname);
     uiBoxPackStart (hbox, uiwidgetp);
     uiSizeGroupAdd (szgrp, uiwidgetp);
     uisf->labels [UISF_LABEL_DANCE] = uiwidgetp;
@@ -605,7 +605,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
-    uiwidgetp = uiutilsCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
+    uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
     uiBoxPackStart (hbox, uiwidgetp);
     uiSizeGroupAdd (szgrp, uiwidgetp);
     uisf->labels [UISF_LABEL_DANCE_RATING] = uiwidgetp;
@@ -620,7 +620,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
-    uiwidgetp = uiutilsCreateColonLabel (tagdefs [TAG_DANCELEVEL].displayname);
+    uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCELEVEL].displayname);
     uiBoxPackStart (hbox, uiwidgetp);
     uiSizeGroupAdd (szgrp, uiwidgetp);
     uisf->labels [UISF_LABEL_DANCE_LEVEL] = uiwidgetp;
@@ -635,7 +635,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
-    uiwidgetp = uiutilsCreateColonLabel (tagdefs [TAG_STATUS].displayname);
+    uiwidgetp = uiCreateColonLabel (tagdefs [TAG_STATUS].displayname);
     uiBoxPackStart (hbox, uiwidgetp);
     uiSizeGroupAdd (szgrp, uiwidgetp);
     uisf->labels [UISF_LABEL_STATUS] = uiwidgetp;
@@ -650,7 +650,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
-    uiwidgetp = uiutilsCreateColonLabel (tagdefs [TAG_FAVORITE].displayname);
+    uiwidgetp = uiCreateColonLabel (tagdefs [TAG_FAVORITE].displayname);
     uiBoxPackStart (hbox, uiwidgetp);
     uiSizeGroupAdd (szgrp, uiwidgetp);
     uisf->labels [UISF_LABEL_FAVORITE] = uiwidgetp;
@@ -665,7 +665,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiBoxPackStart (vbox, hbox);
 
     /* CONTEXT: song selection filter: a filter: the song status is marked as playable */
-    uiwidgetp = uiutilsCreateColonLabel (_("Playable Status"));
+    uiwidgetp = uiCreateColonLabel (_("Playable Status"));
     uiBoxPackStart (hbox, uiwidgetp);
     uiSizeGroupAdd (szgrp, uiwidgetp);
     uisf->labels [UISF_LABEL_PLAY_STATUS] = uiwidgetp;

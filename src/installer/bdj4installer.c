@@ -706,7 +706,7 @@ installerBuildUI (installer_t *installer)
 
   /* CONTEXT: installer: label for entry field asking for BDJ3 location */
   snprintf (tbuff, sizeof (tbuff), _("%s Location"), BDJ3_NAME);
-  uiwidgetp = uiutilsCreateColonLabel (tbuff);
+  uiwidgetp = uiCreateColonLabel (tbuff);
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
@@ -761,7 +761,7 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiutilsCreateColonLabel ("VLC");
+  uiwidgetp = uiCreateColonLabel ("VLC");
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);

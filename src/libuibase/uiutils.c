@@ -195,16 +195,3 @@ uiutilsAddFavoriteClasses (void)
   favclassinit = true;
 }
 
-uiwcont_t *
-uiutilsCreateColonLabel (const char *txt)
-{
-  char      tbuff [400];
-
-  if (txt == NULL) {
-    return NULL;
-  }
-
-  snprintf (tbuff, sizeof (tbuff), "%s:", txt);
-  return uiCreateLabel (tbuff);
-}
-

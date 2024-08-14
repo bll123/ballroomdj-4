@@ -2117,7 +2117,7 @@ manageiTunesCreateDialog (manageui_t *manage)
 
   /* CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist) */
   snprintf (tbuff, sizeof (tbuff), _("%s Playlist"), ITUNES_NAME);
-  uiwidgetp = uiutilsCreateColonLabel (tbuff);
+  uiwidgetp = uiCreateColonLabel (tbuff);
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
@@ -2689,7 +2689,7 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: create from playlist: select the playlist to use */
-  uiwidgetp = uiutilsCreateColonLabel (_("Playlist"));
+  uiwidgetp = uiCreateColonLabel (_("Playlist"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
@@ -2702,7 +2702,7 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: create from playlist: set the maximum time for the song list */
-  uiwidgetp = uiutilsCreateColonLabel (_("Time Limit"));
+  uiwidgetp = uiCreateColonLabel (_("Time Limit"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);

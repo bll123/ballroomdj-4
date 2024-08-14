@@ -21,7 +21,6 @@ void uiButtonSetText (uiwcont_t *uiwidget, const char *txt);
 void uiButtonSetReliefNone (uiwcont_t *uiwidget);
 void uiButtonSetFlat (uiwcont_t *uiwidget);
 void uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms);
-bool uiButtonCheckRepeat (uiwcont_t *uiwidget);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

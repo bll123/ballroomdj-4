@@ -25,7 +25,6 @@
 #include "ui.h"
 #include "uicopytags.h"
 #include "uiselectfile.h"
-#include "uiutils.h"
 
 enum {
   UICT_CB_DIALOG,
@@ -214,7 +213,7 @@ uicopytagsCreateDialog (uict_t *uict)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: song editor: copy tags: source file */
-  uiwidgetp = uiutilsCreateColonLabel (_("Source"));
+  uiwidgetp = uiCreateColonLabel (_("Source"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
@@ -240,7 +239,7 @@ uicopytagsCreateDialog (uict_t *uict)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: song editor: copy tags: target file */
-  uiwidgetp = uiutilsCreateColonLabel (_("Target"));
+  uiwidgetp = uiCreateColonLabel (_("Target"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 

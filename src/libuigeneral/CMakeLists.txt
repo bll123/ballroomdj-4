@@ -5,10 +5,12 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
-add_library (objuiwcont OBJECT
+add_library (objuigeneral OBJECT
+  uibutton.c
+  uilabel.c
   uiwcont.c
   uiwcontfree.c
 )
-target_include_directories (objuiwcont
+target_include_directories (objuigeneral
   PRIVATE ${GTK_INCLUDE_DIRS}
 )

@@ -8,6 +8,8 @@
 extern "C" {
 #endif
 
+#include "tmutil.h"
+
 #include "ui/uidialog.h"
 
 /* partially in use. */
@@ -72,6 +74,16 @@ enum {
   WCONT_EMPTY_WIDGET = 0x0001,
 };
 
+typedef struct uibuttonbase {
+  callback_t  *cb;
+  callback_t  *presscb;
+  callback_t  *releasecb;
+  mstime_t    repeatTimer;
+  int         repeatMS;
+  bool        repeatOn;
+  bool        repeating;
+} uibuttonbase_t;
+
 typedef struct uibutton uibutton_t;
 typedef struct uientry uientry_t;
 typedef struct uievent uievent_t;
@@ -84,9 +96,12 @@ typedef struct uivirtlist uivirtlist_t;
 
 typedef union {
     void          *voidwidget;
-    uibutton_t    *uibutton;
+    struct {
+      uibuttonbase_t  uibuttonbase;
+      uibutton_t      *uibutton;
+    };
     uientry_t     *uientry;
-    uievent_t       *uievent;
+    uievent_t     *uievent;
     uimenu_t      *uimenu;
     uiscrollbar_t *uiscrollbar;
     uispinbox_t   *uispinbox;

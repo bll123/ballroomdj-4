@@ -80,9 +80,3 @@ uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms)
 {
   return;
 }
-
-bool
-uiButtonCheckRepeat (uiwcont_t *uiwidget)
-{
-  return false;
-}
