@@ -13,6 +13,7 @@
 
 #include <Cocoa/Cocoa.h>
 #import <Foundation/NSObject.h>
+#import <Foundation/NSDebug.h>
 
 #include "oslocale.h"
 #include "tmutil.h"
@@ -28,7 +29,7 @@ int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 - (void)keyDown:(NSEvent *)theEvent;
 - (void)keyUp:(NSEvent *)theEvent;
 
-//- (BOOL)acceptsFirstResponder;
+- (BOOL)acceptsFirstResponder;
 - (BOOL)canBecomeKeyWindow;
 - (BOOL)canBecomeMainWindow;
 @end
@@ -37,7 +38,7 @@ int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 - (void)keyDown:(NSEvent *)theEvent {}
 - (void)keyUp:(NSEvent *)theEvent {}
 
-//- (BOOL)acceptsFirstResponder { return YES; }
+- (BOOL)acceptsFirstResponder { return YES; }
 - (BOOL)canBecomeKeyWindow { return YES; }
 - (BOOL)canBecomeMainWindow { return YES; }
 @end
@@ -61,6 +62,9 @@ uiUIInitialize (int direction)
   appDelegate = [[AppDelegate alloc] init];
   [NSApp setDelegate:appDelegate];
 
+  NSDebugEnabled = YES;
+  NSZombieEnabled = YES;
+
 //  if (direction == TEXT_DIR_RTL) {
 //    [NSApp userInterfaceLayoutDirection:rightToLeft];
 //  }
@@ -74,7 +78,7 @@ uiUIProcessEvents (void)
   bool    haveev = false;
 
   while ((currev = [NSApp nextEventMatchingMask: NSUIntegerMax
-        untilDate: nil
+        untilDate: [NSDate distantPast]
         inMode: NSDefaultRunLoopMode
         dequeue: YES])) {;
     [NSApp sendEvent:currev];

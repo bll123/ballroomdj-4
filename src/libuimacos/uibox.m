@@ -46,7 +46,7 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
   }
 
   box = uibox->uidata.widget;
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->uidata.packwidget;
   if (uibox->wtype == WCONT_T_VBOX) {
     grav = NSStackViewGravityTop;
   }
@@ -66,7 +66,7 @@ uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   }
 
   box = uibox->uidata.widget;
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->uidata.packwidget;
   if (uibox->wtype == WCONT_T_VBOX) {
     grav = NSStackViewGravityTop;
   }
@@ -79,14 +79,14 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   NSStackView    *box;
   NSView        *widget = NULL;
-  int         grav = NSStackViewGravityLeading;
+  int         grav = NSStackViewGravityTrailing;
 
   if (uibox == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
   }
 
   box = uibox->uidata.widget;
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->uidata.packwidget;
   if (uibox->wtype == WCONT_T_VBOX) {
     grav = NSStackViewGravityBottom;
   }
@@ -99,14 +99,14 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   NSStackView    *box;
   NSView        *widget = NULL;
-  int         grav = NSStackViewGravityLeading;
+  int         grav = NSStackViewGravityTrailing;
 
   if (uibox == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
   }
 
   box = uibox->uidata.widget;
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->uidata.packwidget;
   if (uibox->wtype == WCONT_T_VBOX) {
     grav = NSStackViewGravityBottom;
   }
@@ -130,13 +130,37 @@ uiCreateBox (int orientation)
 
   box = [[NSStackView alloc] init];
   [box setOrientation: orientation];
+  [box setTranslatesAutoresizingMaskIntoConstraints: NO];
 
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_BOX;
   uiwidget->wtype = WCONT_T_VBOX;
   if (orientation == NSUserInterfaceLayoutOrientationHorizontal) {
     uiwidget->wtype = WCONT_T_HBOX;
-  }
+{
+NSTextField *l;
+int         grav = NSStackViewGravityLeading;
+
+l = [[NSTextField alloc] init];
+[l setBezeled:NO];
+[l setDrawsBackground:NO];
+[l setEditable:NO];
+[l setStringValue: @"h"];
+[box addView: l inGravity: grav];
+}
+    } else {
+{
+NSTextField *l;
+int         grav = NSStackViewGravityTop;
+
+l = [[NSTextField alloc] init];
+[l setBezeled:NO];
+[l setDrawsBackground:NO];
+[l setEditable:NO];
+[l setStringValue: @"v"];
+[box addView: l inGravity: grav];
+}
+    }
   uiwidget->wtype = WCONT_T_VBOX;
   uiwidget->uidata.widget = box;
   uiwidget->uidata.packwidget = box;

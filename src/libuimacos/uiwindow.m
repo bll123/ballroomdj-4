@@ -119,6 +119,16 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
 
   windowDelegate = [[WindowDelegate alloc] init];
   [win setDelegate:windowDelegate];
+{
+NSTextField *l;
+
+l = [[NSTextField alloc] init];
+[l setBezeled:NO];
+[l setDrawsBackground:NO];
+[l setEditable:NO];
+[l setStringValue: [NSString stringWithUTF8String: title]];
+[[win contentView] addSubview: l];
+}
 
   uiwin = uiwcontAlloc ();
   uiwin->wbasetype = WCONT_T_WINDOW;
@@ -305,8 +315,8 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   }
 
   win = uiwindow->uidata.widget;
-  widget = uiwidget->uidata.widget;
-  [[win contentView] addSubview:widget];
+  widget = uiwidget->uidata.packwidget;
+  [[win contentView] addSubview: widget];
   return;
 }
 

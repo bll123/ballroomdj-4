@@ -76,6 +76,8 @@ uiCreateButton (callback_t *uicb, char *title, char *imagenm)
   [widget setBezelStyle:NSBezelStyleRounded];
   [widget setTarget:widget];
   [widget setAction:@selector(OnButton1Click:)];
+  [widget setAction:@selector(OnButton2Click:)];
+  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
   uibutton->cb = uicb;
 //  uibutton->presscb = callbackInit (uiButtonPressCallback,
