@@ -402,7 +402,7 @@ altinstBuildUI (altinst_t *altinst)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: alternate installation: name (for shortcut) */
-  uiwidgetp = uiCreateColonLabel (_("Name"));
+  uiwidgetp = uiutilsCreateColonLabel (_("Name"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 

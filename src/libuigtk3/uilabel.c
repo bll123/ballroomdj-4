@@ -40,19 +40,6 @@ uiCreateLabel (const char *label)
   return uiwidget;
 }
 
-uiwcont_t *
-uiCreateColonLabel (const char *txt)
-{
-  char      tbuff [300];
-
-  if (txt == NULL) {
-    return NULL;
-  }
-
-  snprintf (tbuff, sizeof (tbuff), "%s:", txt);
-  return uiCreateLabel (tbuff);
-}
-
 void
 uiLabelAddClass (const char *classnm, const char *color)
 {

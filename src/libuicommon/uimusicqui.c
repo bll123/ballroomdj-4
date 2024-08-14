@@ -210,7 +210,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     uiBoxPackStart (uimusicq->ui [ci].mainbox, hbox);
 
     /* CONTEXT: music queue: label for song list name */
-    uiwidgetp = uiCreateColonLabel (_("Song List"));
+    uiwidgetp = uiutilsCreateColonLabel (_("Song List"));
     uiWidgetSetMarginStart (uiwidgetp, 2);
     uiWidgetSetMarginEnd (uiwidgetp, 2);
     uiBoxPackStart (hbox, uiwidgetp);

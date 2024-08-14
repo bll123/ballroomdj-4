@@ -27,6 +27,7 @@
 #include "uidd.h"
 #include "uiduallist.h"
 #include "uinbutil.h"
+#include "uiutils.h"
 #include "validate.h"
 
 enum {
@@ -469,7 +470,7 @@ confuiMakeItemLabel (uiwcont_t *boxp, uiwcont_t *szgrp, const char *txt, int ind
   if (*ttxt == '\0') {
     uiwidgetp = uiCreateLabel (ttxt);
   } else {
-    uiwidgetp = uiCreateColonLabel (ttxt);
+    uiwidgetp = uiutilsCreateColonLabel (ttxt);
   }
   uiBoxPackStart (boxp, uiwidgetp);
   if (szgrp != NULL) {

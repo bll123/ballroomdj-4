@@ -43,6 +43,7 @@
 #include "uisong.h"
 #include "uisongsel.h"
 #include "uisongedit.h"
+#include "uiutils.h"
 #include "validate.h"
 
 enum {
@@ -427,7 +428,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   seint->wcont [UISE_W_BUTTON_COPY_TEXT] = uiwidgetp;
 
   /* CONTEXT: song editor: label for displaying the audio file path */
-  uiwidgetp = uiCreateColonLabel (_("File"));
+  uiwidgetp = uiutilsCreateColonLabel (_("File"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);
   uiwcontFree (uiwidgetp);
@@ -1133,7 +1134,7 @@ uisongeditAddItem (uisongedit_t *uisongedit, uiwcont_t *hbox, uiwcont_t *sg, int
     seint->items [seint->itemcount].changed = false;
     seint->items [seint->itemcount].lastchanged = false;
 
-    uiwidgetp = uiCreateColonLabel (tagdefs [tagkey].displayname);
+    uiwidgetp = uiutilsCreateColonLabel (tagdefs [tagkey].displayname);
     uiWidgetSetMarginEnd (uiwidgetp, 4);
     uiBoxPackStart (hbox, uiwidgetp);
     uiSizeGroupAdd (sg, uiwidgetp);

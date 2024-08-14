@@ -38,6 +38,7 @@
 #include "tagdef.h"
 #include "ui.h"
 #include "uiplayer.h"
+#include "uiutils.h"
 
 enum {
   /* for volume and speed */
@@ -389,7 +390,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   /* size group D */
   /* CONTEXT: playerui: the current speed for song playback */
-  uiwidgetp = uiCreateColonLabel (_("Speed"));
+  uiwidgetp = uiutilsCreateColonLabel (_("Speed"));
   uiLabelAlignEnd (uiwidgetp);
   uiWidgetSetMarginEnd (uiwidgetp, 1);
   uiBoxPackEnd (hbox, uiwidgetp);
@@ -458,7 +459,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   /* size group D */
   /* CONTEXT: playerui: the current position of the song during song playback */
-  uiwidgetp = uiCreateColonLabel (_("Position"));
+  uiwidgetp = uiutilsCreateColonLabel (_("Position"));
   uiLabelAlignEnd (uiwidgetp);
   uiWidgetSetMarginEnd (uiwidgetp, 1);
   uiBoxPackEnd (hbox, uiwidgetp);
@@ -577,7 +578,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   /* size group D */
   /* CONTEXT: playerui: The current volume of the song */
-  uiwidgetp = uiCreateColonLabel (_("Volume"));
+  uiwidgetp = uiutilsCreateColonLabel (_("Volume"));
   uiLabelAlignEnd (uiwidgetp);
   uiWidgetSetMarginEnd (uiwidgetp, 1);
   uiBoxPackEnd (hbox, uiwidgetp);

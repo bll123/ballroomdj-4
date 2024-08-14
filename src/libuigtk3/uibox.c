@@ -109,7 +109,10 @@ uiCreateBox (int orientation)
   box = gtk_box_new (orientation, 0);
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_BOX;
-  uiwidget->wtype = WCONT_T_BOX;
+  uiwidget->wtype = WCONT_T_VBOX;
+  if (orientation == GTK_ORIENTATION_HORIZONTAL) {
+    uiwidget->wtype = WCONT_T_HBOX;
+  }
   uiwidget->uidata.widget = box;
   uiwidget->uidata.packwidget = box;
   return uiwidget;

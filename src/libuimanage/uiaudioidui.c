@@ -38,6 +38,7 @@
 #include "uiaudioid.h"
 #include "uisong.h"
 #include "uisongsel.h"
+#include "uiutils.h"
 #include "uivirtlist.h"
 #include "uivlutil.h"
 
@@ -342,7 +343,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiBoxPackStart (hbox, audioidint->wcont [UIAUDID_W_AUDIOID_IMG]);
 
   /* CONTEXT: audio identification: label for displaying the audio file path */
-  uiwidgetp = uiCreateColonLabel (_("File"));
+  uiwidgetp = uiutilsCreateColonLabel (_("File"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);
   uiwcontFree (uiwidgetp);
@@ -727,7 +728,7 @@ uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx, int idx)
 
   /* line: label, curr-rb, sel-rb */
 
-  uiwidgetp = uiCreateColonLabel (tagdefs [tagidx].displayname);
+  uiwidgetp = uiutilsCreateColonLabel (tagdefs [tagidx].displayname);
   uiWidgetSetMarginEnd (uiwidgetp, 4);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_LABEL], uiwidgetp);

@@ -142,7 +142,7 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
   uiBoxPackStart (vboxp, hbox);
 
   /* CONTEXT: sequence editor: label for sequence name */
-  uiwidgetp = uiCreateColonLabel (_("Sequence"));
+  uiwidgetp = uiutilsCreateColonLabel (_("Sequence"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 

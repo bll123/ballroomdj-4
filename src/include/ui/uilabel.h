@@ -11,7 +11,6 @@ extern "C" {
 #include "uiwcont.h"
 
 uiwcont_t *uiCreateLabel (const char *label);
-uiwcont_t *uiCreateColonLabel (const char *label);
 void  uiLabelAddClass (const char *classnm, const char *color);
 void uiLabelSetTooltip (uiwcont_t *uiwidget, const char *txt);
 void  uiLabelSetFont (uiwcont_t *uilabel, const char *font);

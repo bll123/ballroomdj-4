@@ -37,52 +37,84 @@ uiCreateHorizBox (void)
 void
 uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
-  NSStackView   *box = uibox->uidata.widget;
+  NSStackView *box;
+  NSView      *widget = NULL;
+  int         grav = NSStackViewGravityLeading;
 
-  if (uiwidget == NULL) {
+  if (uibox == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
   }
+
+  box = uibox->uidata.widget;
+  widget = uiwidget->uidata.widget;
 fprintf (stderr, "box: ps\n");
-  [box addSubview:uiwidget->uidata.widget];
+  if (uibox->wtype == WCONT_T_VBOX) {
+    grav = NSStackViewGravityTop;
+  }
+  [box addView: widget inGravity: grav];
   return;
 }
 
 void
 uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
-  NSStackView   *box = uibox->uidata.widget;
+  NSStackView    *box;
+  NSView        *widget = NULL;
+  int         grav = NSStackViewGravityLeading;
 
-  if (uiwidget == NULL) {
+  if (uibox == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
   }
+
+  box = uibox->uidata.widget;
+  widget = uiwidget->uidata.widget;
 fprintf (stderr, "box: pse\n");
-  [box addSubview:uiwidget->uidata.widget];
+  if (uibox->wtype == WCONT_T_VBOX) {
+    grav = NSStackViewGravityTop;
+  }
+  [box addView: widget inGravity: grav];
   return;
 }
 
 void
 uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
-  NSStackView   *box = uibox->uidata.widget;
+  NSStackView    *box;
+  NSView        *widget = NULL;
+  int         grav = NSStackViewGravityLeading;
 
-  if (uiwidget == NULL) {
+  if (uibox == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
   }
+
+  box = uibox->uidata.widget;
+  widget = uiwidget->uidata.widget;
 fprintf (stderr, "box: pe\n");
-  [box addSubview:uiwidget->uidata.widget];
+  if (uibox->wtype == WCONT_T_VBOX) {
+    grav = NSStackViewGravityBottom;
+  }
+  [box addView: widget inGravity: grav];
   return;
 }
 
 void
 uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
-  NSStackView   *box = uibox->uidata.widget;
+  NSStackView    *box;
+  NSView        *widget = NULL;
+  int         grav = NSStackViewGravityLeading;
 
-  if (uiwidget == NULL) {
+  if (uibox == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
   }
+
+  box = uibox->uidata.widget;
+  widget = uiwidget->uidata.widget;
 fprintf (stderr, "box: pee\n");
-  [box addSubview:uiwidget->uidata.widget];
+  if (uibox->wtype == WCONT_T_VBOX) {
+    grav = NSStackViewGravityBottom;
+  }
+  [box addView: widget inGravity: grav];
   return;
 }
 
@@ -98,15 +130,21 @@ static uiwcont_t *
 uiCreateBox (int orientation)
 {
   uiwcont_t   *uiwidget;
-  NSStackView *box;
+  NSStackView  *box = NULL;
+
+  box = [[NSStackView alloc] init];
+  [box setOrientation: orientation];
 
 fprintf (stderr, "box: create %d\n", orientation);
-  box = [[NSStackView alloc] autorelease];
-  [box setOrientation:orientation];
+fprintf (stderr, "box: %p\n", box);
 
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_BOX;
-  uiwidget->wtype = WCONT_T_BOX;
+  uiwidget->wtype = WCONT_T_VBOX;
+  if (orientation == NSUserInterfaceLayoutOrientationHorizontal) {
+    uiwidget->wtype = WCONT_T_HBOX;
+  }
+  uiwidget->wtype = WCONT_T_VBOX;
   uiwidget->uidata.widget = box;
   uiwidget->uidata.packwidget = box;
   return uiwidget;

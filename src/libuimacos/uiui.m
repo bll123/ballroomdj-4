@@ -28,7 +28,7 @@ int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 - (void)keyDown:(NSEvent *)theEvent;
 - (void)keyUp:(NSEvent *)theEvent;
 
-- (BOOL)acceptsFirstResponder;
+//- (BOOL)acceptsFirstResponder;
 - (BOOL)canBecomeKeyWindow;
 - (BOOL)canBecomeMainWindow;
 @end
@@ -37,7 +37,7 @@ int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 - (void)keyDown:(NSEvent *)theEvent {}
 - (void)keyUp:(NSEvent *)theEvent {}
 
-- (BOOL)acceptsFirstResponder { return YES; }
+//- (BOOL)acceptsFirstResponder { return YES; }
 - (BOOL)canBecomeKeyWindow { return YES; }
 - (BOOL)canBecomeMainWindow { return YES; }
 @end
@@ -53,12 +53,13 @@ uiUIInitialize (int direction)
 {
   id  appDelegate;
 
+fprintf (stderr, "app-create\n");
   [NSApplication sharedApplication];
   [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
   [NSApp setPresentationOptions:NSApplicationPresentationDefault];
   [NSApp activateIgnoringOtherApps:YES];
 
-  appDelegate = [[[AppDelegate alloc] init] autorelease];
+  appDelegate = [[AppDelegate alloc] init];
   [NSApp setDelegate:appDelegate];
 
 //  if (direction == TEXT_DIR_RTL) {
@@ -82,6 +83,7 @@ uiUIProcessEvents (void)
   }
 
   if (haveev) {
+fprintf (stderr, "upd-win\n");
     [NSApp updateWindows];
   }
 }

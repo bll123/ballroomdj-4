@@ -27,6 +27,7 @@
 #include "procutil.h"
 #include "sysvars.h"
 #include "ui.h"
+#include "uiutils.h"
 #include "callback.h"
 
 enum {
@@ -207,7 +208,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiBoxPackStart (vboxp, hbox);
 
   /* CONTEXT: update database: select database update action */
-  uiwidgetp = uiCreateColonLabel (_("Action"));
+  uiwidgetp = uiutilsCreateColonLabel (_("Action"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 2);
@@ -249,7 +250,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiBoxPackStart (vboxp, hbox);
 
   /* CONTEXT: update database: music folder to process */
-  uiwidgetp = uiCreateColonLabel (_("Music Folder"));
+  uiwidgetp = uiutilsCreateColonLabel (_("Music Folder"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 2);
   uiSizeGroupAdd (szgrp, uiwidgetp);

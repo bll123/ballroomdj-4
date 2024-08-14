@@ -26,7 +26,7 @@ uiCreateLabel (const char *label)
   NSTextField *widget;
 
 fprintf (stderr, "box: create label '%s'\n", label);
-  widget = [NSTextField alloc];
+  widget = [[NSTextField alloc] init];
   [widget setBezeled:NO];
   [widget setDrawsBackground:NO];
   [widget setEditable:NO];
@@ -40,19 +40,6 @@ fprintf (stderr, "box: create label '%s'\n", label);
   uiwidget->uidata.widget = widget;
   uiwidget->uidata.packwidget = widget;
   return uiwidget;
-}
-
-uiwcont_t *
-uiCreateColonLabel (const char *txt)
-{
-  char      tbuff [300];
-
-  if (txt == NULL) {
-    return NULL;
-  }
-
-  snprintf (tbuff, sizeof (tbuff), "%s:", txt);
-  return uiCreateLabel (tbuff);
 }
 
 void

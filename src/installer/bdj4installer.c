@@ -51,6 +51,7 @@
 #include "tmutil.h"
 #include "templateutil.h"
 #include "ui.h"
+#include "uiutils.h"
 #include "webclient.h"
 
 /* installation states */
@@ -705,7 +706,7 @@ installerBuildUI (installer_t *installer)
 
   /* CONTEXT: installer: label for entry field asking for BDJ3 location */
   snprintf (tbuff, sizeof (tbuff), _("%s Location"), BDJ3_NAME);
-  uiwidgetp = uiCreateColonLabel (tbuff);
+  uiwidgetp = uiutilsCreateColonLabel (tbuff);
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
@@ -760,7 +761,7 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateColonLabel ("VLC");
+  uiwidgetp = uiutilsCreateColonLabel ("VLC");
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);

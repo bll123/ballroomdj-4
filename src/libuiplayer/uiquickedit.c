@@ -367,7 +367,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
     uiWidgetExpandHoriz (hbox);
     uiBoxPackStart (vbox, hbox);
 
-    uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
+    uiwidgetp = uiutilsCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
     uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
     uiBoxPackStart (hbox, uiwidgetp);
 
@@ -381,7 +381,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
     uiWidgetExpandHoriz (hbox);
     uiBoxPackStart (vbox, hbox);
 
-    uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCELEVEL].displayname);
+    uiwidgetp = uiutilsCreateColonLabel (tagdefs [TAG_DANCELEVEL].displayname);
     uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
     uiBoxPackStart (hbox, uiwidgetp);
 
@@ -395,7 +395,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
     uiWidgetExpandHoriz (hbox);
     uiBoxPackStart (vbox, hbox);
 
-    uiwidgetp = uiCreateColonLabel (tagdefs [TAG_FAVORITE].displayname);
+    uiwidgetp = uiutilsCreateColonLabel (tagdefs [TAG_FAVORITE].displayname);
     uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
     uiBoxPackStart (hbox, uiwidgetp);
 
@@ -499,7 +499,7 @@ uiqeAddScale (uiqe_t *uiqe, uiwcont_t *hbox, int scidx)
   }
   uiqe->scaledata [scidx].tagkey = tagkey;
 
-  uiwidgetp = uiCreateColonLabel (tagdefs [tagkey].displayname);
+  uiwidgetp = uiutilsCreateColonLabel (tagdefs [tagkey].displayname);
   uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
   uiqe->scaledata [scidx].label = uiwidgetp;

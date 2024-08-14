@@ -11,6 +11,11 @@
 #include <ctype.h>
 #include <math.h>
 
+#include <Cocoa/Cocoa.h>
+#import <Foundation/NSObject.h>
+
+#include "mdebug.h"
+
 #include "ui/uiwcont-int.h"
 
 #include "ui/uiui.h"
@@ -24,7 +29,37 @@ typedef struct uientry {
 uiwcont_t *
 uiEntryInit (int entrySize, int maxSize)
 {
-  return NULL;
+  uiwcont_t *uiwidget;
+  uientry_t *uientry;
+
+  uientry = mdmalloc (sizeof (uientry_t));
+//  uientry->entrySize = entrySize;
+//  uientry->maxSize = maxSize;
+//  uientry->buffer = NULL;
+//  uientry->validateFunc = NULL;
+//  uientry->label = "";
+//  uientry->udata = NULL;
+//  mstimeset (&uientry->validateTimer, TM_TIMER_OFF);
+//  uientry->valdelay = false;
+//  uientry->valid = true;
+//  uientry->buffer = gtk_entry_buffer_new (NULL, -1);
+
+  uiwidget = uiwcontAlloc ();
+  uiwidget->wbasetype = WCONT_T_ENTRY;
+  uiwidget->wtype = WCONT_T_ENTRY;
+  uiwidget->uiint.uientry = uientry;
+  uiwidget->uidata.widget = [[NSTextField alloc] init];
+  uiwidget->uidata.packwidget = uiwidget->uidata.widget;
+
+//  gtk_entry_set_width_chars (GTK_ENTRY (uiwidget->uidata.widget), uientry->entrySize);
+//  gtk_entry_set_max_length (GTK_ENTRY (uiwidget->uidata.widget), uientry->maxSize);
+//  gtk_entry_set_input_purpose (GTK_ENTRY (uiwidget->uidata.widget), GTK_INPUT_PURPOSE_FREE_FORM);
+//  gtk_widget_set_margin_top (uiwidget->uidata.widget, uiBaseMarginSz);
+//  gtk_widget_set_margin_start (uiwidget->uidata.widget, uiBaseMarginSz * 2);
+//  gtk_widget_set_halign (uiwidget->uidata.widget, GTK_ALIGN_START);
+//  gtk_widget_set_hexpand (uiwidget->uidata.widget, FALSE);
+
+  return uiwidget;
 }
 
 void

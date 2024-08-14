@@ -1597,7 +1597,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playerui: marquee font size dialog: the font size selector */
-  uiwidgetp = uiCreateColonLabel (_("Font Size"));
+  uiwidgetp = uiutilsCreateColonLabel (_("Font Size"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 

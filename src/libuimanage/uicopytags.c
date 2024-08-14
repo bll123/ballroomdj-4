@@ -17,14 +17,15 @@
 #include "bdj4intl.h"
 #include "bdj4ui.h"
 #include "bdjopt.h"
+#include "callback.h"
 #include "fileop.h"
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
 #include "ui.h"
-#include "callback.h"
 #include "uicopytags.h"
 #include "uiselectfile.h"
+#include "uiutils.h"
 
 enum {
   UICT_CB_DIALOG,
@@ -213,7 +214,7 @@ uicopytagsCreateDialog (uict_t *uict)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: song editor: copy tags: source file */
-  uiwidgetp = uiCreateColonLabel (_("Source"));
+  uiwidgetp = uiutilsCreateColonLabel (_("Source"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
@@ -239,7 +240,7 @@ uicopytagsCreateDialog (uict_t *uict)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: song editor: copy tags: target file */
-  uiwidgetp = uiCreateColonLabel (_("Target"));
+  uiwidgetp = uiutilsCreateColonLabel (_("Target"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 

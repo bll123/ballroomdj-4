@@ -18,6 +18,7 @@
 #include "bdj4intl.h"
 #include "bdj4ui.h"
 #include "bdjopt.h"
+#include "callback.h"
 #include "dance.h"
 #include "datafile.h"
 #include "fileop.h"
@@ -31,10 +32,10 @@
 #include "songfav.h"
 #include "tagdef.h"
 #include "ui.h"
-#include "callback.h"
 #include "uidance.h"
 #include "uiextreq.h"
 #include "uiselectfile.h"
+#include "uiutils.h"
 
 enum {
   UIEXTREQ_CB_DIALOG,
@@ -235,7 +236,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateColonLabel (
+  uiwidgetp = uiutilsCreateColonLabel (
       /* CONTEXT: external request: enter the audio file location */
       _("Audio File"));
   uiBoxPackStart (hbox, uiwidgetp);
@@ -271,7 +272,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateColonLabel (tagdefs [TAG_ARTIST].displayname);
+  uiwidgetp = uiutilsCreateColonLabel (tagdefs [TAG_ARTIST].displayname);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
@@ -288,7 +289,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateColonLabel (tagdefs [TAG_TITLE].displayname);
+  uiwidgetp = uiutilsCreateColonLabel (tagdefs [TAG_TITLE].displayname);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
@@ -305,7 +306,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCE].displayname);
+  uiwidgetp = uiutilsCreateColonLabel (tagdefs [TAG_DANCE].displayname);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
@@ -323,7 +324,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateColonLabel (tagdefs [TAG_MQDISPLAY].displayname);
+  uiwidgetp = uiutilsCreateColonLabel (tagdefs [TAG_MQDISPLAY].displayname);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);

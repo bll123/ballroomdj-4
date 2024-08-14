@@ -22,12 +22,6 @@ uiCreateLabel (const char *label)
   return NULL;
 }
 
-uiwcont_t *
-uiCreateColonLabel (const char *label)
-{
-  return NULL;
-}
-
 void
 uiLabelAddClass (const char *classnm, const char *color)
 {

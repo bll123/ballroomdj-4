@@ -42,7 +42,7 @@ uiCreateButton (callback_t *uicb, char *title, char *imagenm)
   uibutton = mdmalloc (sizeof (uibutton_t));
   uibutton->image = NULL;
 
-fprintf (stderr, "box: create button '%s'\n", title);
+fprintf (stderr, "box: create button '%s' '%s'\n", title, imagenm);
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_BUTTON;
   uiwidget->wtype = WCONT_T_BUTTON;
@@ -61,17 +61,22 @@ fprintf (stderr, "box: create button '%s'\n", title);
     image = [[NSImage alloc] initWithContentsOfFile: ns];
 //    gtk_widget_set_tooltip_text (widget, title);
     uibutton->image = image;
-    widget = [NSButton alloc];
+    widget = [[NSButton alloc] init];
     [[widget init] setImage: image];
     [widget setTitle:@""];
   } else {
-    widget = [NSButton alloc];
+    widget = [[NSButton alloc] init];
     [widget setTitle: [NSString stringWithUTF8String: title]];
   }
 //  if (uicb != NULL) {
 //    g_signal_connect (widget, "clicked",
 //        G_CALLBACK (uiButtonSignalHandler), uibutton);
 //  }
+
+  [widget setAutoresizingMask:NSViewMinXMargin | NSViewMinYMargin];
+  [widget setBezelStyle:NSBezelStyleRounded];
+  [widget setTarget:widget];
+  [widget setAction:@selector(OnButton1Click:)];
 
   uibutton->cb = uicb;
 //  uibutton->presscb = callbackInit (uiButtonPressCallback,

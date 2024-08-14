@@ -31,6 +31,8 @@
 - (void)windowWillClose:(NSNotification *)notification;
 - (BOOL)canBecomeKeyWindow;
 - (BOOL)canBecomeMainWindow;
+- (IBAction) OnButton1Click:(id)sender;
+- (IBAction) OnButton2Click:(id)sender;
 @end
 
 @interface Window : NSWindow {}
@@ -40,6 +42,7 @@
 @implementation Window
 - (instancetype)init {
 
+fprintf (stderr, "init-win\n");
   [super initWithContentRect:NSMakeRect(100, 100, 300, 300)
       styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
           NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable
@@ -75,13 +78,20 @@
 - (BOOL)canBecomeMainWindow {
     return YES;
 }
+- (IBAction) OnButton1Click:(id)sender {
+NSLog(@"button-1");
+}
+
+- (IBAction) OnButton2Click:(id)sender {
+NSLog(@"button-2");
+}
 
 // This will close/terminate the application when the main window is closed.
 - (void)windowWillClose:(NSNotification *)notification {
     Window *window = notification.object;
-    NSLog(@"Window: closing");
+NSLog(@"Window: closing");
     if (window.isMainWindow) {
-        [NSApp terminate:nil];
+      [NSApp terminate:nil];
     }
 }
 
@@ -95,9 +105,10 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   NSString  *nstitle = [NSString stringWithUTF8String: title];
   id        windowDelegate;
 
-  win = [[[Window alloc] init] autorelease];
-  [win makeMainWindow];
+  win = [[Window alloc] init];
+fprintf (stderr, "win: %p\n", win);
   [win setTitle:nstitle];
+  [win makeMainWindow];
 
   if (imagenm != NULL) {
     NSImage *image = nil;
@@ -105,6 +116,7 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
     NSString *ns = [NSString stringWithUTF8String: imagenm];
     image = [[NSImage alloc] initWithContentsOfFile: ns];
     [[NSApplication sharedApplication] setApplicationIconImage:image];
+    [image release];
   }
 
   windowDelegate = [[WindowDelegate alloc] init];
@@ -289,6 +301,17 @@ uiWindowSetNoMaximize (uiwcont_t *uiwindow)
 void
 uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
 {
+  NSWindow  *win;
+  NSView    *widget = NULL;
+
+  if (uiwindow == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+    return;
+  }
+
+  win = uiwindow->uidata.widget;
+  widget = uiwidget->uidata.widget;
+fprintf (stderr, "win: %p widget: %p\n", win, widget);
+  [[win contentView] addSubview:widget];
   return;
 }
 
