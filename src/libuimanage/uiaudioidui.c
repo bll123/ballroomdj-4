@@ -338,8 +338,8 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   audioidint->wcont [UIAUDID_W_AUDIOID_IMG] = uiImageNew ();
   uiImageClear (audioidint->wcont [UIAUDID_W_AUDIOID_IMG]);
   uiWidgetSetSizeRequest (audioidint->wcont [UIAUDID_W_AUDIOID_IMG], 24, -1);
-  uiWidgetSetMarginStart (audioidint->wcont [UIAUDID_W_AUDIOID_IMG], 1);
   uiBoxPackStart (hbox, audioidint->wcont [UIAUDID_W_AUDIOID_IMG]);
+  uiWidgetSetMarginStart (audioidint->wcont [UIAUDID_W_AUDIOID_IMG], 1);
 
   /* CONTEXT: audio identification: label for displaying the audio file path */
   uiwidgetp = uiCreateColonLabel (_("File"));
@@ -414,10 +414,10 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   }
 
   col = uiCreateVertBox ();
-  uiWidgetSetAllMargins (col, 4);
   uiWidgetExpandHoriz (col);
   uiWidgetExpandVert (col);
   uiBoxPackStartExpand (hbox, col);
+  uiWidgetSetAllMargins (col, 4);
 
   uiwcontFree (hbox);
 
@@ -427,8 +427,8 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiBoxPackStart (col, hbox);
 
   uiwidgetp = uiCreateLabel (" ");
-  uiWidgetSetMarginEnd (uiwidgetp, 4);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginEnd (uiwidgetp, 4);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_LABEL], uiwidgetp);
   uiwcontFree (uiwidgetp);
 
@@ -437,8 +437,8 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   /* CONTEXT: audio identification: the data for the current song */
   uiwidgetp = uiCreateLabel (_("Current"));
   uiLabelSetFont (uiwidgetp, tbuff);
-  uiWidgetSetMarginEnd (uiwidgetp, 4);
   uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiWidgetSetMarginEnd (uiwidgetp, 4);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_ITEM_COL_A], uiwidgetp);
   uiwcontFree (uiwidgetp);
 
@@ -728,8 +728,8 @@ uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx, int idx)
   /* line: label, curr-rb, sel-rb */
 
   uiwidgetp = uiCreateColonLabel (tagdefs [tagidx].displayname);
-  uiWidgetSetMarginEnd (uiwidgetp, 4);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginEnd (uiwidgetp, 4);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_LABEL], uiwidgetp);
   uiwcontFree (uiwidgetp);
 

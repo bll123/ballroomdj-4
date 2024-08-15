@@ -319,10 +319,10 @@ uiqeCreateDialog (uiqe_t *uiqe)
       );
 
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 4);
   uiWidgetExpandHoriz (vbox);
   uiWidgetExpandVert (vbox);
   uiDialogPackInDialog (uiqe->wcont [UIQE_W_DIALOG], vbox);
+  uiWidgetSetAllMargins (vbox, 4);
 
   /* begin line: title display */
   hbox = uiCreateHorizBox ();
@@ -338,8 +338,8 @@ uiqeCreateDialog (uiqe_t *uiqe)
   uiwidgetp = uiCreateLabel ("");
   uiLabelEllipsizeOn (uiwidgetp);
   uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
-  uiWidgetSetMarginStart (uiwidgetp, 10);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 10);
   uiqe->wcont [UIQE_W_TITLE_DISP] = uiwidgetp;
 
   /* begin line: speed scale */
@@ -510,12 +510,14 @@ uiqeAddScale (uiqe_t *uiqe, uiwcont_t *hbox, int scidx)
   uiScaleSetCallback (uiwidgetp, uiqe->scaledata [scidx].scalecb);
 
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 2);
+
   uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_SCALE], uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("100%");
-  uiWidgetSetMarginStart (uiwidgetp, 2);
   uiLabelAlignEnd (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 2);
   uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_SCALE_DISP], uiwidgetp);
   uiqe->scaledata [scidx].scaledisp = uiwidgetp;
   logProcEnd ("");

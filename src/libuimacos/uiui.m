@@ -18,6 +18,7 @@
 #include "oslocale.h"
 #include "tmutil.h"
 #include "uiclass.h"
+#include "uigeneral.h"
 
 #include "ui/uiwcont-int.h"
 

@@ -211,8 +211,8 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     uiBoxPackStart (ssint->wcont [SONGSEL_W_MAIN_VBOX], thbox);
 
     uiwidgetp = uiCreateLabel (" ");
-    uiWidgetSetMarginBottom (uiwidgetp, 5);
     uiBoxPackStart (thbox, uiwidgetp);
+    uiWidgetSetMarginBottom (uiwidgetp, 5);
     uiwcontFree (uiwidgetp);
     uiwcontFree (thbox);
   }

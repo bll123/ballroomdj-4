@@ -36,20 +36,48 @@
 - (IBAction) OnButton2Click:(id)sender;
 @end
 
-@interface IWindow : NSWindow {}
-- (instancetype)init;
+@interface IWindow : NSWindow { }
+@property uiwcont_t *uibox;
+- (instancetype) init;
+- (void) awakeFromNib;
 @end
 
 @implementation IWindow
+
 - (instancetype)init {
 
-  [super initWithContentRect:NSMakeRect(100, 100, 300, 300)
+  [super initWithContentRect:NSMakeRect(10, 10, 100, 100)
       styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
           NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable
       backing:NSBackingStoreBuffered
       defer:NO];
   [self setIsVisible:YES];
   return self;
+}
+
+- (void)awakeFromNib {
+  IWindow*  w = self;
+  NSRect    f;
+  NSStackView *box;
+  NSView    *clg;
+  NSSize    nssz;
+
+  box = [w contentView];
+// ### this doesn't seem to work.
+// but leave it here just in case.
+  nssz = [box fittingSize];
+  f.size.height = nssz.height;
+  f.size.width  = nssz.width;
+  [w setFrame:f display:YES];
+
+// ### this doesn't seem to be working either
+  clg = w.contentLayoutGuide;
+//  [clg.leadingAnchor constraintEqualToAnchor: box.leadingAnchor].active = YES;
+//  [clg.trailingAnchor constraintEqualToAnchor: box.trailingAnchor].active = YES;
+//  [clg.topAnchor constraintEqualToAnchor: box.topAnchor].active = YES;
+//  [clg.bottomAnchor constraintEqualToAnchor: box.bottomAnchor].active = YES;
+  [clg.heightAnchor constraintEqualToAnchor: box.heightAnchor].active = YES;
+  [clg.widthAnchor constraintEqualToAnchor: box.widthAnchor].active = YES;
 }
 
 @end
@@ -103,10 +131,11 @@ NSLog(@"Window: closing");
 uiwcont_t *
 uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
 {
-  uiwcont_t *uiwin;
-  IWindow   *win = NULL;
-  uiwcont_t *uibox;
-  id        windowDelegate;
+  uiwcont_t     *uiwin;
+  IWindow       *win = NULL;
+  uiwcont_t     *uibox;
+  NSStackView   *box;
+  id            windowDelegate;
 
   win = [[IWindow alloc] init];
   uibox = uiCreateVertBox ();
@@ -116,8 +145,12 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
     nstitle = [NSString stringWithUTF8String: title];
     [win setTitle: nstitle];
   }
-  [win setContentView: uibox->uidata.widget];
+
+  box = uibox->uidata.widget;
+  [win setContentView: box];
   [win makeMainWindow];
+
+  uibox->packed = true;
 
   if (imagenm != NULL) {
     NSImage *image = nil;
@@ -136,6 +169,12 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   uiwin->wtype = WCONT_T_WINDOW;
   uiwin->uidata.widget = win;
   uiwin->uidata.packwidget = win;
+  uiwin->packed = true;
+
+  uiWidgetSetAllMargins (uibox, 2);
+  uiWidgetExpandHoriz (uibox);
+  uiWidgetExpandVert (uibox);
+
   return uiwin;
 }
 
@@ -302,15 +341,27 @@ uiWindowFind (uiwcont_t *window)
 void
 uiWindowSetNoMaximize (uiwcont_t *uiwindow)
 {
+  int      sm;
+  IWindow  *win;
+
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-set-nomax")) {
+    return;
+  }
+
+  win = uiwindow->uidata.widget;
+  sm = win.styleMask;
+  sm &= ~NSWindowStyleMaskResizable;
+  win.styleMask = sm;
   return;
 }
 
 void
 uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
 {
-  IWindow   *win;
-  NSView    *widget = NULL;
-  int       grav = NSStackViewGravityTop;
+  NSWindow    *win;
+  NSView      *widget = NULL;
+  NSStackView *box;
+  int         grav = NSStackViewGravityTop;
 
   if (uiwindow == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
@@ -318,7 +369,8 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
 
   win = uiwindow->uidata.widget;
   widget = uiwidget->uidata.packwidget;
-  [[win contentView] addView: widget inGravity:grav];
+  box = [win contentView];
+  [box addView: widget inGravity: grav];
   uiwidget->packed = true;
   return;
 }

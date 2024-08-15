@@ -205,15 +205,15 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
       uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
     hbox = uiCreateHorizBox ();
-    uiWidgetSetMarginTop (hbox, 1);
     uiWidgetExpandHoriz (hbox);
     uiBoxPackStart (uimusicq->ui [ci].mainbox, hbox);
+    uiWidgetSetMarginTop (hbox, 1);
 
     /* CONTEXT: music queue: label for song list name */
     uiwidgetp = uiCreateColonLabel (_("Song List"));
+    uiBoxPackStart (hbox, uiwidgetp);
     uiWidgetSetMarginStart (uiwidgetp, 2);
     uiWidgetSetMarginEnd (uiwidgetp, 2);
-    uiBoxPackStart (hbox, uiwidgetp);
     uiwcontFree (uiwidgetp);
 
     uiwidgetp = uiEntryInit (20, 100);
@@ -237,9 +237,9 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   }
 
   hbox = uiCreateHorizBox ();
-  uiWidgetSetMarginTop (hbox, 1);
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (uimusicq->ui [ci].mainbox, hbox);
+  uiWidgetSetMarginTop (hbox, 1);
 
   /* dispseltype can be a music queue, history, */
   /* a song list or side-by-side song list */
@@ -295,9 +295,9 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         mqint->callbacks [MQINT_CB_AUDIO_REMOVE],
         /* CONTEXT: music queue: button: remove the song from the queue */
         _("Remove"), "button_audioremove");
+    uiBoxPackStart (hbox, uiwidgetp);
     uiWidgetSetMarginStart (uiwidgetp, 3);
     uiWidgetSetMarginEnd (uiwidgetp, 2);
-    uiBoxPackStart (hbox, uiwidgetp);
     mqint->wcont [UIMUSICQ_W_BUTTON_REMOVE] = uiwidgetp;
   }
 
@@ -308,8 +308,8 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         mqint->callbacks [MQINT_CB_CLEAR_QUEUE],
         /* CONTEXT: music queue: button: clear the queue */
         _("Clear Queue"), NULL);
-    uiWidgetSetMarginStart (uiwidgetp, 2);
     uiBoxPackStart (hbox, uiwidgetp);
+    uiWidgetSetMarginStart (uiwidgetp, 2);
     mqint->wcont [UIMUSICQ_W_BUTTON_CLEAR_QUEUE] = uiwidgetp;
   }
 

@@ -35,8 +35,6 @@ uiCreateSwitch (int value)
   uiwcont_t   *uiwidget;
   NSSwitch    *widget = nil;
 
-//  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-//  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   widget = [[NSSwitch alloc] init];
   [widget setState: NSControlStateValueOff];
   if (value) {

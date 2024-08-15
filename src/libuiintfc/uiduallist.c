@@ -116,9 +116,9 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiBoxPackStartExpand (mainvbox, hbox);
 
   vbox = uiCreateVertBox ();
+  uiBoxPackStartExpand (hbox, vbox);
   uiWidgetSetMarginStart (vbox, 8);
   uiWidgetSetMarginTop (vbox, 8);
-  uiBoxPackStartExpand (hbox, vbox);
 
   if (sourcetitle != NULL) {
     uiwidgetp = uiCreateLabel (sourcetitle);
@@ -136,9 +136,9 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uivlSetRowFillCallback (uivl, uiduallistVLFillSourceCB, duallist);
 
   dvbox = uiCreateVertBox ();
+  uiBoxPackStart (hbox, dvbox);
   uiWidgetSetAllMargins (dvbox, 4);
   uiWidgetSetMarginTop (dvbox, 64);
-  uiBoxPackStart (hbox, dvbox);
 
   uiwidgetp = uiCreateButton (duallist->callbacks [DL_CB_SELECT],
       /* CONTEXT: side-by-side list: button: add the selected field */
@@ -156,9 +156,9 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
 
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
+  uiBoxPackStartExpand (hbox, vbox);
   uiWidgetSetMarginStart (vbox, 8);
   uiWidgetSetMarginTop (vbox, 8);
-  uiBoxPackStartExpand (hbox, vbox);
 
   if (targettitle != NULL) {
     uiwidgetp = uiCreateLabel (targettitle);
@@ -177,10 +177,10 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
 
   uiwcontFree (dvbox);
   dvbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (dvbox, 4);
-  uiWidgetSetMarginTop (dvbox, 64);
   uiWidgetAlignVertStart (dvbox);
   uiBoxPackStart (hbox, dvbox);
+  uiWidgetSetAllMargins (dvbox, 4);
+  uiWidgetSetMarginTop (dvbox, 64);
 
   uiwidgetp = uiCreateButton (duallist->callbacks [DL_CB_MOVEPREV],
       /* CONTEXT: side-by-side list: button: move the selected field up */

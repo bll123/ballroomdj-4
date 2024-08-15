@@ -670,10 +670,10 @@ installerBuildUI (installer_t *installer)
 
   /* begin line : separator */
   uiwidgetp = uiCreateHorizSeparator ();
-  uiWidgetSetMarginTop (uiwidgetp, 4);
-  uiWidgetSetMarginBottom (uiwidgetp, 2);
   uiWidgetAddClass (uiwidgetp, INST_SEP_CLASS);
   uiBoxPackStart (vbox, uiwidgetp);
+  uiWidgetSetMarginTop (uiwidgetp, 4);
+  uiWidgetSetMarginBottom (uiwidgetp, 2);
   uiwcontFree (uiwidgetp);
 
   /* begin line : instructions a */
@@ -722,8 +722,8 @@ installerBuildUI (installer_t *installer)
       installer->callbacks [INST_CB_BDJ3LOC_DIR],
       "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
-  uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 0);
   installer->wcont [INST_W_BUTTON_BDJ3LOC_DIR] = uiwidgetp;
 
   uiwcontFree (hbox);
@@ -750,10 +750,10 @@ installerBuildUI (installer_t *installer)
 
   /* begin line : separator */
   uiwidgetp = uiCreateHorizSeparator ();
-  uiWidgetSetMarginTop (uiwidgetp, 4);
-  uiWidgetSetMarginBottom (uiwidgetp, 2);
   uiWidgetAddClass (uiwidgetp, INST_SEP_CLASS);
   uiBoxPackStart (vbox, uiwidgetp);
+  uiWidgetSetMarginTop (uiwidgetp, 4);
+  uiWidgetSetMarginBottom (uiwidgetp, 2);
   uiwcontFree (uiwidgetp);
 
   /* begin line : vlc message */
@@ -767,9 +767,9 @@ installerBuildUI (installer_t *installer)
   uiwcontFree (uiwidgetp);
 
   installer->wcont [INST_W_VLC_MSG] = uiCreateLabel ("");
-  uiWidgetSetMarginStart (installer->wcont [INST_W_VLC_MSG], 4);
   uiWidgetAddClass (installer->wcont [INST_W_VLC_MSG], INST_HL_CLASS);
   uiBoxPackStart (hbox, installer->wcont [INST_W_VLC_MSG]);
+  uiWidgetSetMarginStart (installer->wcont [INST_W_VLC_MSG], 4);
 
   uiwcontFree (hbox);
 

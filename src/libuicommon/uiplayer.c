@@ -307,8 +307,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_STOP]);
   uiWidgetSetSizeRequest (uiplayer->images [UIPL_IMG_STATUS], 18, -1);
-  uiWidgetSetMarginStart (uiplayer->images [UIPL_IMG_STATUS], 1);
   uiBoxPackStart (statusbox, uiplayer->images [UIPL_IMG_STATUS]);
+  uiWidgetSetMarginStart (uiplayer->images [UIPL_IMG_STATUS], 1);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_play", ".svg",
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
@@ -331,8 +331,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiplayer->images [UIPL_IMG_REPEAT] = uiImageNew ();
   uiImageClear (uiplayer->images [UIPL_IMG_REPEAT]);
   uiWidgetSetSizeRequest (uiplayer->images [UIPL_IMG_REPEAT], 18, -1);
-  uiWidgetSetMarginStart (uiplayer->images [UIPL_IMG_REPEAT], 1);
   uiBoxPackStart (statusbox, uiplayer->images [UIPL_IMG_REPEAT]);
+  uiWidgetSetMarginStart (uiplayer->images [UIPL_IMG_REPEAT], 1);
 
   for (int i = UIPL_W_INFO_DISP_A; i <= UIPL_W_INFO_DISP_I; ++i) {
     uiwidgetp = uiCreateLabel ("");
@@ -383,6 +383,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiplayer->wcont [UIPL_W_SPEED] = uiCreateScale (
       SPD_LOWER, SPD_UPPER, SPD_INCA, SPD_INCB, 100.0, SPD_DIGITS);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SPEED]);
+  uiWidgetSetMarginStart (uiplayer->wcont [UIPL_W_SPEED], 2);
   uiSizeGroupAdd (szgrpScale, uiplayer->wcont [UIPL_W_SPEED]);
   uiplayer->callbacks [UIPL_CB_SPEED] = callbackInitD (
       uiplayerSpeedCallback, uiplayer);
@@ -392,8 +393,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* CONTEXT: playerui: the current speed for song playback */
   uiwidgetp = uiCreateColonLabel (_("Speed"));
   uiLabelAlignEnd (uiwidgetp);
-  uiWidgetSetMarginEnd (uiwidgetp, 1);
   uiBoxPackEnd (hbox, uiwidgetp);
+  uiWidgetSetMarginEnd (uiwidgetp, 1);
   uiSizeGroupAdd (szgrpScaleLabel, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
@@ -415,8 +416,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (hbox, uiplayer->wcont [UIPL_W_COUNTDOWN_TIMER]);
 
   uiwidgetp = uiCreateLabel (" / ");
-  uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 0);
   uiwcontFree (uiwidgetp);
 
   uiplayer->wcont [UIPL_W_DURATION] = uiCreateLabel (" 0:00");
@@ -452,6 +453,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiplayer->wcont [UIPL_W_SEEK] = uiCreateScale (
       0.0, 180000.0, 1000.0, 10000.0, 0.0, 0);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SEEK]);
+  uiWidgetSetMarginStart (uiplayer->wcont [UIPL_W_SEEK], 2);
   uiSizeGroupAdd (szgrpScale, uiplayer->wcont [UIPL_W_SEEK]);
   uiplayer->callbacks [UIPL_CB_SEEK] = callbackInitD (
       uiplayerSeekCallback, uiplayer);
@@ -461,8 +463,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* CONTEXT: playerui: the current position of the song during song playback */
   uiwidgetp = uiCreateColonLabel (_("Position"));
   uiLabelAlignEnd (uiwidgetp);
-  uiWidgetSetMarginEnd (uiwidgetp, 1);
   uiBoxPackEnd (hbox, uiwidgetp);
+  uiWidgetSetMarginEnd (uiwidgetp, 1);
   uiSizeGroupAdd (szgrpScaleLabel, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
@@ -571,6 +573,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiplayer->wcont [UIPL_W_VOLUME] = uiCreateScale (
       VOL_LOWER, VOL_UPPER, VOL_INCA, VOL_INCB, 0.0, VOL_DIGITS);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_VOLUME]);
+  uiWidgetSetMarginStart (uiplayer->wcont [UIPL_W_VOLUME], 2);
   uiSizeGroupAdd (szgrpScale, uiplayer->wcont [UIPL_W_VOLUME]);
   uiplayer->callbacks [UIPL_CB_VOLUME] = callbackInitD (
       uiplayerVolumeCallback, uiplayer);
@@ -580,8 +583,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* CONTEXT: playerui: The current volume of the song */
   uiwidgetp = uiCreateColonLabel (_("Volume"));
   uiLabelAlignEnd (uiwidgetp);
-  uiWidgetSetMarginEnd (uiwidgetp, 1);
   uiBoxPackEnd (hbox, uiwidgetp);
+  uiWidgetSetMarginEnd (uiwidgetp, 1);
   uiSizeGroupAdd (szgrpScaleLabel, uiwidgetp);
   uiwcontFree (uiwidgetp);
 

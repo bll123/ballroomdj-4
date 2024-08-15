@@ -376,8 +376,8 @@ marqueeBuildUI (marquee_t *marquee)
   uiWindowSetDefaultSize (marquee->wcont [MQ_W_WINDOW], x, y);
 
   mainvbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (mainvbox, 10);
   uiWindowPackInWindow (marquee->wcont [MQ_W_WINDOW], mainvbox);
+  uiWidgetSetAllMargins (mainvbox, 10);
   uiWidgetExpandHoriz (mainvbox);
   uiWidgetExpandVert (mainvbox);
   marquee->marginTotal = 20;
@@ -438,9 +438,9 @@ marqueeBuildUI (marquee_t *marquee)
   marquee->wcont [MQ_W_SEP] = uiCreateHorizSeparator ();
   uiWidgetAddClass (marquee->wcont [MQ_W_SEP], MQ_ACCENT_CLASS);
   uiWidgetExpandHoriz (marquee->wcont [MQ_W_SEP]);
+  uiBoxPackEnd (vbox, marquee->wcont [MQ_W_SEP]);
   uiWidgetSetMarginTop (marquee->wcont [MQ_W_SEP], 2);
   uiWidgetSetMarginBottom (marquee->wcont [MQ_W_SEP], 4);
-  uiBoxPackEnd (vbox, marquee->wcont [MQ_W_SEP]);
 
   marquee->marqueeLabs = mdmalloc (sizeof (uiwcont_t *) * marquee->mqLen);
 
@@ -449,8 +449,8 @@ marqueeBuildUI (marquee_t *marquee)
     uiWidgetAlignHorizStart (marquee->marqueeLabs [i]);
     uiWidgetExpandHoriz (marquee->marqueeLabs [i]);
     uiWidgetDisableFocus (marquee->marqueeLabs [i]);
-    uiWidgetSetMarginTop (marquee->marqueeLabs [i], 4);
     uiBoxPackStart (mainvbox, marquee->marqueeLabs [i]);
+    uiWidgetSetMarginTop (marquee->marqueeLabs [i], 4);
   }
 
   marqueeSetFont (marquee, nlistGetNum (marquee->options, MQ_FONT_SZ));

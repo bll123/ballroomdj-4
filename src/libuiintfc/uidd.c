@@ -120,10 +120,6 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
 
   uiwidget = uiCreateButton (dd->callbacks [DD_CB_BUTTON], NULL,
       "button_down_small");
-  if (isMacOS () || isWindows ()) {
-    /* work around gtk not vertically centering the image */
-    uiButtonSetImageMarginTop (uiwidget, 3);
-  }
   uiButtonAlignLeft (uiwidget);
   uiButtonSetImagePosRight (uiwidget);
   uiWidgetAlignHorizStart (uiwidget);
@@ -134,6 +130,10 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
   }
   if (where == DD_PACK_END) {
     uiBoxPackEnd (boxp, uiwidget);
+  }
+  if (isMacOS () || isWindows ()) {
+    /* work around gtk not vertically centering the image */
+    uiButtonSetImageMarginTop (uiwidget, 3);
   }
   dd->wcont [DD_W_BUTTON] = uiwidget;
   uiddSetButtonText (dd, dd->title);
@@ -267,8 +267,8 @@ uiddCreateDialog (uidd_t *dd)
   uiWidgetAddClass (dd->wcont [DD_W_DIALOG_WIN], DD_DARKBG_CLASS);
 
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 4);
   uiWindowPackInWindow (dd->wcont [DD_W_DIALOG_WIN], vbox);
+  uiWidgetSetAllMargins (vbox, 4);
 
   count = ilistGetCount (dd->ddlist);
   dispcount = count;

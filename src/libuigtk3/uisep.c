@@ -32,7 +32,6 @@ uiCreateHorizSeparator (void)
   uiwidget->uidata.widget = sep;
   uiwidget->uidata.packwidget = sep;
   uiWidgetExpandHoriz (uiwidget);
-  uiWidgetSetMarginTop (uiwidget, uiBaseMarginSz);
   return uiwidget;
 }
 

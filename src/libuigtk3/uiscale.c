@@ -52,9 +52,6 @@ uiCreateScale (double lower, double upper,
   uiwidget->uidata.widget = scale;
   uiwidget->uidata.packwidget = scale;
 
-  uiWidgetSetMarginTop (uiwidget, 1);
-  uiWidgetSetMarginStart (uiwidget, 2);
-
   return uiwidget;
 }
 

@@ -44,10 +44,10 @@ uiutilsAddProfileColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
   cbox = uiCreateHorizBox ();
   uiWidgetAlignHorizCenter (cbox);
   uiWidgetAlignVertCenter (cbox);
-  uiWidgetSetMarginStart (cbox, 4);
   uiWidgetSetSizeRequest (cbox, PROFILE_BOX_SZ, PROFILE_BOX_SZ);
   uiutilsSetProfileColor (cbox);
   uiBoxPackEnd (hbox, cbox);
+  uiWidgetSetMarginStart (cbox, 4);
   uiWidgetShowAll (hbox);
 
   accent->cbox = cbox;

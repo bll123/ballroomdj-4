@@ -120,8 +120,8 @@ confuiBuildUIEditDances (confuigui_t *gui)
   confuiCreateDanceTable (gui);
 
   dvbox = uiCreateVertBox ();
-  uiWidgetSetMarginStart (dvbox, 8);
   uiBoxPackStart (hbox, dvbox);
+  uiWidgetSetMarginStart (dvbox, 8);
 
   confuiMakeItemEntry (gui, dvbox, szgrp, tagdefs [TAG_DANCE].displayname,
       CONFUI_ENTRY_DANCE_DANCE, -1, "", CONFUI_NO_INDENT);

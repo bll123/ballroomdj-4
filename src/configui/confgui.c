@@ -47,13 +47,14 @@ confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, int i
 
   logProcBegin ();
   uiwidgetp = uiCreateLabel (txt);
+  uiNotebookAppendPage (gui->notebook, boxp, uiwidgetp);
   uiWidgetSetAllMargins (uiwidgetp, 0);
+  uinbutilIDAdd (gui->nbtabid, id);
+  uiwcontFree (uiwidgetp);
+
   uiWidgetExpandHoriz (boxp);
   uiWidgetExpandVert (boxp);
   uiWidgetSetAllMargins (boxp, 2);
-  uiNotebookAppendPage (gui->notebook, boxp, uiwidgetp);
-  uinbutilIDAdd (gui->nbtabid, id);
-  uiwcontFree (uiwidgetp);
 
   logProcEnd ("");
 }
@@ -108,8 +109,8 @@ confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp,
 
   uiwidgetp = uiCreateButton (gui->uiitem [widx].callback, "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
-  uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 0);
   gui->uiitem [widx].uibutton = uiwidgetp;
 
   uiwcontFree (hbox);
@@ -188,8 +189,8 @@ confuiMakeItemFontButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   confuiMakeItemLabel (hbox, szgrp, txt, CONFUI_NO_INDENT);
 
   uiwidgetp = uiCreateFontButton (fontname);
-  uiWidgetSetMarginStart (uiwidgetp, 4);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
 
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
@@ -215,8 +216,8 @@ confuiMakeItemColorButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   confuiMakeItemLabel (hbox, szgrp, txt, CONFUI_NO_INDENT);
 
   uiwidgetp = uiCreateColorButton (color);
-  uiWidgetSetMarginStart (uiwidgetp, 4);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
 
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
@@ -261,8 +262,8 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   uiSpinboxTextSet (uiwidgetp, 0,
       nlistGetCount (list), maxWidth, list, keylist, NULL);
   uiSpinboxTextSetValue (uiwidgetp, value);
-  uiWidgetSetMarginStart (uiwidgetp, 4);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
   if (szgrpB != NULL) {
     uiSizeGroupAdd (szgrpB, uiwidgetp);
   }
@@ -312,8 +313,8 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp,
     uiSpinboxSetRange (uiwidgetp, 0.0, 1440000.0);
   }
   uiSpinboxTimeSetValue (uiwidgetp, value);
-  uiWidgetSetMarginStart (uiwidgetp, 4);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
   if (szgrpB != NULL) {
     uiSizeGroupAdd (szgrpB, uiwidgetp);
   }
@@ -341,8 +342,8 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   uiwidgetp = uiSpinboxIntCreate ();
   uiSpinboxSet (uiwidgetp, (double) min, (double) max);
   uiSpinboxSetValue (uiwidgetp, (double) value);
-  uiWidgetSetMarginStart (uiwidgetp, 4);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
   if (szgrpB != NULL) {
     uiSizeGroupAdd (szgrpB, uiwidgetp);
   }
@@ -377,8 +378,8 @@ confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp
   uiwidgetp = uiSpinboxDoubleCreate ();
   uiSpinboxSet (uiwidgetp, min, max);
   uiSpinboxSetValue (uiwidgetp, value);
-  uiWidgetSetMarginStart (uiwidgetp, 4);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
   if (szgrpB != NULL) {
     uiSizeGroupAdd (szgrpB, uiwidgetp);
   }
@@ -405,8 +406,8 @@ confuiMakeItemSwitch (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   confuiMakeItemLabel (hbox, szgrp, txt, indent);
 
   uiwidgetp = uiCreateSwitch (value);
-  uiWidgetSetMarginStart (uiwidgetp, 4);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
 
@@ -436,8 +437,8 @@ confuiMakeItemLabelDisp (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 
   confuiMakeItemLabel (hbox, szgrp, txt, CONFUI_NO_INDENT);
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetMarginStart (uiwidgetp, 4);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
 
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
@@ -456,8 +457,8 @@ confuiMakeItemCheckButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   gui->uiitem [widx].basetype = CONFUI_CHECK_BUTTON;
   gui->uiitem [widx].outtype = CONFUI_OUT_BOOL;
   uiwidgetp = uiCreateCheckButton (txt, value);
-  uiWidgetSetMarginStart (uiwidgetp, 4);
   uiBoxPackStart (boxp, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd ("");
@@ -541,7 +542,6 @@ confuiMakeItemEntryBasic (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   confuiMakeItemLabel (boxp, szgrp, txt, indent);
   uiwidgetp = uiEntryInit (gui->uiitem [widx].entrysz, gui->uiitem [widx].entrymaxsz);
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
-  uiWidgetSetMarginStart (uiwidgetp, 4);
   if (expand == CONFUI_EXPAND) {
     uiWidgetAlignHorizFill (uiwidgetp);
     uiWidgetExpandHoriz (uiwidgetp);
@@ -550,6 +550,8 @@ confuiMakeItemEntryBasic (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   if (expand == CONFUI_NO_EXPAND) {
     uiBoxPackStart (boxp, uiwidgetp);
   }
+  uiWidgetSetMarginStart (uiwidgetp, 4);
+
   if (disp != NULL) {
     uiEntrySetValue (gui->uiitem [widx].uiwidgetp, disp);
   } else {

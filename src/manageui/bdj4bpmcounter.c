@@ -350,8 +350,8 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       _("BPM Counter"), imgbuff);
 
   vboxmain = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vboxmain, 4);
   uiWindowPackInWindow (bpmcounter->wcont [BPM_W_WINDOW], vboxmain);
+  uiWidgetSetAllMargins (vboxmain, 4);
 
   uiutilsAddProfileColorDisplay (vboxmain, &accent);
   hbox = accent.hbox;
@@ -425,8 +425,8 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiButtonSetReliefNone (uiwidgetp);
   uiButtonSetFlat (uiwidgetp);
   uiWidgetDisableFocus (uiwidgetp);
-  uiWidgetSetAllMargins (uiwidgetp, 0);
   uiBoxPackEnd (hbox, uiwidgetp);
+  uiWidgetSetAllMargins (uiwidgetp, 0);
   bpmcounter->wcont [BPM_W_BUTTON_BLUEBOX] = uiwidgetp;
 
   /* buttons */
@@ -440,8 +440,8 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       bpmcounter->callbacks [BPMCOUNT_CB_SAVE],
       /* CONTEXT: bpm counter: save button */
       _("Save"), NULL);
-  uiWidgetSetMarginTop (uiwidgetp, 2);
   uiBoxPackEnd (hbox, uiwidgetp);
+  uiWidgetSetMarginTop (uiwidgetp, 2);
   bpmcounter->wcont [BPM_W_BUTTON_SAVE] = uiwidgetp;
 
   bpmcounter->callbacks [BPMCOUNT_CB_RESET] = callbackInit (
@@ -450,16 +450,16 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       bpmcounter->callbacks [BPMCOUNT_CB_RESET],
       /* CONTEXT: bpm counter: reset button */
       _("Reset"), NULL);
-  uiWidgetSetMarginTop (uiwidgetp, 2);
   uiBoxPackEnd (hbox, uiwidgetp);
+  uiWidgetSetMarginTop (uiwidgetp, 2);
   bpmcounter->wcont [BPM_W_BUTTON_RESET] = uiwidgetp;
 
   uiwidgetp = uiCreateButton (
       bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
       /* CONTEXT: bpm counter: close button */
       _("Close"), NULL);
-  uiWidgetSetMarginTop (uiwidgetp, 2);
   uiBoxPackEnd (hbox, uiwidgetp);
+  uiWidgetSetMarginTop (uiwidgetp, 2);
   bpmcounter->wcont [BPM_W_BUTTON_CLOSE] = uiwidgetp;
 
   x = nlistGetNum (bpmcounter->options, BPMCOUNTER_POSITION_X);

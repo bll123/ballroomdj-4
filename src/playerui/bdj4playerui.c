@@ -747,8 +747,8 @@ pluiBuildUI (playerui_t *plui)
     if (tabtype == UI_TAB_MUSICQ) {
       plui->musicqImage [i] = uiImageNew ();
       uiImageSetFromPixbuf (plui->musicqImage [i], plui->wcont [PLUI_W_LED_ON]);
-      uiWidgetSetMarginStart (plui->musicqImage [i], 1);
       uiBoxPackStart (hbox, plui->musicqImage [i]);
+      uiWidgetSetMarginStart (plui->musicqImage [i], 1);
 
       uimusicqDragDropSetURICallback (plui->uimusicq, i, plui->callbacks [PLUI_CB_DRAG_DROP]);
     }

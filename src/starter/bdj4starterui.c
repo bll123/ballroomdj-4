@@ -602,13 +602,13 @@ starterBuildUI (startui_t  *starter)
   uiWindowSetNoMaximize (starter->wcont [START_W_WINDOW]);
 
   vbox = uiCreateVertBox ();
+  uiWindowPackInWindow (starter->wcont [START_W_WINDOW], vbox);
   uiWidgetSetAllMargins (vbox, 4);
   if (isMacOS ()) {
     /* macos has a bug where the starter window does not have the proper */
     /* right margin */
     uiWidgetSetMarginEnd (vbox, 6);
   }
-  uiWindowPackInWindow (starter->wcont [START_W_WINDOW], vbox);
 
   uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
@@ -663,8 +663,8 @@ starterBuildUI (startui_t  *starter)
   /* line 1 */
 
   hbox = uiCreateHorizBox ();
-  uiWidgetSetMarginTop (hbox, 4);
   uiBoxPackStart (vbox, hbox);
+  uiWidgetSetMarginTop (hbox, 4);
 
   /* CONTEXT: starterui: profile to be used when starting BDJ4 */
   uiwidgetp = uiCreateColonLabel (_("Profile"));
@@ -678,9 +678,9 @@ starterBuildUI (startui_t  *starter)
       nlistGetCount (starter->proflist), starter->maxProfileWidth,
       starter->proflist, NULL, starterSetProfile);
   uiSpinboxTextSetValue (uiwidgetp, dispidx);
-  uiWidgetSetMarginStart (uiwidgetp, 4);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
   starter->wcont [START_W_PROFILE_SEL] = uiwidgetp;
 
   uiwcontFree (hbox);
@@ -710,9 +710,9 @@ starterBuildUI (startui_t  *starter)
       starter->callbacks [START_CB_PLAYER],
       /* CONTEXT: starterui: button: starts the player user interface */
       _("Player"), NULL);
-  uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiBoxPackStart (bvbox, uiwidgetp);
+  uiWidgetSetMarginTop (uiwidgetp, 2);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_PLAYER] = uiwidgetp;
@@ -723,9 +723,9 @@ starterBuildUI (startui_t  *starter)
       starter->callbacks [START_CB_MANAGE],
       /* CONTEXT: starterui: button: starts the management user interface */
       _("Manage"), NULL);
-  uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiBoxPackStart (bvbox, uiwidgetp);
+  uiWidgetSetMarginTop (uiwidgetp, 2);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_MANAGE] = uiwidgetp;
@@ -736,9 +736,9 @@ starterBuildUI (startui_t  *starter)
       starter->callbacks [START_CB_CONFIG],
       /* CONTEXT: starterui: button: starts the configuration user interface */
       _("Configure"), NULL);
-  uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiBoxPackStart (bvbox, uiwidgetp);
+  uiWidgetSetMarginTop (uiwidgetp, 2);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_CONFIG] = uiwidgetp;
@@ -749,9 +749,9 @@ starterBuildUI (startui_t  *starter)
       starter->callbacks [START_CB_SUPPORT],
       /* CONTEXT: starterui: button: support : support information */
       _("Support"), NULL);
-  uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiBoxPackStart (bvbox, uiwidgetp);
+  uiWidgetSetMarginTop (uiwidgetp, 2);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_SUPPORT] = uiwidgetp;
@@ -760,9 +760,9 @@ starterBuildUI (startui_t  *starter)
       starter->callbacks [START_CB_EXIT],
       /* CONTEXT: starterui: button: exits BDJ4 (exits everything) */
       _("Exit"), NULL);
-  uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiBoxPackStart (bvbox, uiwidgetp);
+  uiWidgetSetMarginTop (uiwidgetp, 2);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_EXIT] = uiwidgetp;
@@ -1408,8 +1408,8 @@ starterProcessSupport (void *udata)
   szgrp = uiCreateSizeGroupHoriz ();
 
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 2);
   uiDialogPackInDialog (uidialog, vbox);
+  uiWidgetSetAllMargins (vbox, 2);
 
   /* status message line */
   uiutilsAddProfileColorDisplay (vbox, &accent);
@@ -1911,8 +1911,8 @@ starterCreateSupportMsgDialog (void *udata)
   szgrp = uiCreateSizeGroupHoriz ();
 
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 2);
   uiDialogPackInDialog (uidialog, vbox);
+  uiWidgetSetAllMargins (vbox, 2);
 
   /* profile color line */
   uiutilsAddProfileColorDisplay (vbox, &accent);

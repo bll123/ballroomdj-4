@@ -378,8 +378,8 @@ uitestUIButtons (uitest_t *uitest)
   uitest->wcont [UITEST_W_B] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetMarginStart (uiwidgetp, 4);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
   uitest->wcont [UITEST_W_B_MSG] = uiwidgetp;
 
   uiwcontFree (hbox);

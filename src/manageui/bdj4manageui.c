@@ -853,6 +853,7 @@ manageBuildUI (manageui_t *manage)
   /* CONTEXT: managementui: notebook tab title: playlist management */
   uiwidgetp = uiCreateLabel (_("Playlist Management"));
   uiNotebookAppendPage (manage->wcont [MANAGE_W_MAIN_NB], vbox, uiwidgetp);
+  uiWidgetSetAllMargins (vbox, 2);
   uinbutilIDAdd (manage->nbtabid [MANAGE_NB_MAIN], MANAGE_TAB_MAIN_PLMGMT);
   uiwcontFree (uiwidgetp);
 
@@ -1048,11 +1049,11 @@ manageBuildUISongListEditor (manageui_t *manage)
   /* management */
 
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 2);
 
   /* CONTEXT: managementui: notebook tab title: edit song lists */
   uiwidgetp = uiCreateLabel (_("Edit Song Lists"));
   uiNotebookAppendPage (manage->wcont [MANAGE_W_MAIN_NB], vbox, uiwidgetp);
+  uiWidgetSetAllMargins (vbox, 2);
   uinbutilIDAdd (manage->nbtabid [MANAGE_NB_MAIN], MANAGE_TAB_MAIN_SL);
   uiwcontFree (uiwidgetp);
 
@@ -1084,9 +1085,9 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   vbox = uiCreateVertBox ();
 
+  uiBoxPackStart (hbox, vbox);
   uiWidgetSetAllMargins (vbox, 4);
   uiWidgetSetMarginTop (vbox, 64);
-  uiBoxPackStart (hbox, vbox);
 
   manage->callbacks [MANAGE_CB_SBS_SELECT] = callbackInit (
       uisongselSelectCallback, manage->slsbssongsel, NULL);
@@ -2109,8 +2110,8 @@ manageiTunesCreateDialog (manageui_t *manage)
       );
 
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 4);
   uiDialogPackInDialog (manage->wcont [MANAGE_W_ITUNES_SEL_DIALOG], vbox);
+  uiWidgetSetAllMargins (vbox, 4);
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
@@ -2236,10 +2237,10 @@ manageBuildUIMusicManager (manageui_t *manage)
   logProcBegin ();
   /* music manager */
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 2);
   /* CONTEXT: managementui: name of music manager notebook tab */
   uiwidgetp = uiCreateLabel (_("Music Manager"));
   uiNotebookAppendPage (manage->wcont [MANAGE_W_MAIN_NB], vbox, uiwidgetp);
+  uiWidgetSetAllMargins (vbox, 2);
   uinbutilIDAdd (manage->nbtabid [MANAGE_NB_MAIN], MANAGE_TAB_MAIN_MM);
   uiwcontFree (uiwidgetp);
 
@@ -2682,8 +2683,8 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
       );
 
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 4);
   uiDialogPackInDialog (manage->wcont [MANAGE_W_CFPL_DIALOG], vbox);
+  uiWidgetSetAllMargins (vbox, 4);
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);

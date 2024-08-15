@@ -226,10 +226,10 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
       );
 
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 4);
   uiWidgetExpandHoriz (vbox);
   uiWidgetExpandVert (vbox);
   uiDialogPackInDialog (uiextreq->wcont [UIEXTREQ_W_DIALOG], vbox);
+  uiWidgetSetAllMargins (vbox, 4);
 
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
@@ -261,8 +261,8 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
       uiextreq->callbacks [UIEXTREQ_CB_AUDIO_FILE],
       "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
-  uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 0);
   uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE_CHOOSER] = uiwidgetp;
 
   uiwcontFree (hbox);

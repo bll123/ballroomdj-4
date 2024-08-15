@@ -187,8 +187,6 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   szgrpNum = uiCreateSizeGroupHoriz ();       // numeric widgets
   szgrpText = uiCreateSizeGroupHoriz ();      // text widgets
 
-  uiWidgetSetAllMargins (vboxp, 2);
-
   tophbox = uiCreateHorizBox ();
   uiWidgetAlignVertStart (tophbox);
   uiBoxPackStart (vboxp, tophbox);
@@ -212,8 +210,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
-  uiWidgetSetMarginStart (hbox, 20);
   uiBoxPackStart (tophbox, hbox);
+  uiWidgetSetMarginStart (hbox, 20);
 
   /* CONTEXT: playlist management: label for playlist name */
   uiwidgetp = uiCreateColonLabel (_("Playlist Type"));
@@ -233,10 +231,10 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   /* settings */
 
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 4);
   /* CONTEXT: playlist management: notebook tab title: settings */
   uiwidgetp = uiCreateLabel (_("Settings"));
   uiNotebookAppendPage (managepl->wcont [MPL_W_NB], vbox, uiwidgetp);
+  uiWidgetSetAllMargins (vbox, 4);
   uinbutilIDAdd (managepl->tabids, MPL_TAB_SETTINGS);
   uiwcontFree (uiwidgetp);
 
@@ -432,8 +430,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* CONTEXT: playlist management: tag weight */
   uiwidgetp = uiCreateColonLabel (_("Weight"));
-  uiWidgetSetMarginStart (uiwidgetp, 2);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 2);
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiSpinboxIntCreate ();
@@ -447,10 +445,10 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   /* dance settings : holds the list of dances with settings */
 
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 4);
   /* CONTEXT: playlist management: notebook tab title: dances */
   uiwidgetp = uiCreateLabel (_("Dances"));
   uiNotebookAppendPage (managepl->wcont [MPL_W_NB], vbox, uiwidgetp);
+  uiWidgetSetAllMargins (vbox, 4);
   uinbutilIDAdd (managepl->tabids, MPL_TAB_DANCES);
   uiwcontFree (uiwidgetp);
 

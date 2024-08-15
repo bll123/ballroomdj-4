@@ -239,11 +239,11 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
       );
 
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 4);
   uiWidgetExpandHoriz (vbox);
   uiWidgetExpandVert (vbox);
   uiDialogPackInDialog (
       uiexppl->wcont [UIEXPPL_W_DIALOG], vbox);
+  uiWidgetSetAllMargins (vbox, 4);
 
   /* spinbox for export type */
   hbox = uiCreateHorizBox ();
@@ -291,8 +291,8 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiwidgetp = uiCreateButton (
       uiexppl->callbacks [UIEXPPL_CB_TARGET], "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
-  uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 0);
   uiexppl->wcont [UIEXPPL_W_TGT_BUTTON] = uiwidgetp;
 
   uiwcontFree (hbox);

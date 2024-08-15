@@ -31,7 +31,6 @@ uiCreateNotebook (void)
   nb = [[NSTabView alloc] init];
   [nb setTabPosition: NSTabPositionTop];
 //  gtk_notebook_set_show_border (GTK_NOTEBOOK (nb), TRUE);
-//  gtk_nb_set_margin_top (nb, uiBaseMarginSz * 2);
 //  gtk_widget_set_hexpand (nb, TRUE);
 //  gtk_widget_set_vexpand (nb, FALSE);
 //  gtk_notebook_set_tab_pos (GTK_NOTEBOOK (nb), GTK_POS_TOP);
@@ -81,7 +80,7 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
 // be displayed.
 // macos position-left also needs to have horizontal tabs.
   lab = uilabel->uidata.widget;
-  tabv.label = [lab stringValue];
+  tabv.label = @"test-nb"; // [lab stringValue];
   [tabv setView: uibox->uidata.widget];
   nb = uinotebook->uidata.widget;
   [nb addTabViewItem: tabv];

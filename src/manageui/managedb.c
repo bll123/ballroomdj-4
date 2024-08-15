@@ -209,8 +209,8 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   /* CONTEXT: update database: select database update action */
   uiwidgetp = uiCreateColonLabel (_("Action"));
   uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 2);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   managedb->dbspinbox = uiSpinboxTextCreate (managedb);
@@ -304,9 +304,9 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
 
   uiwidgetp = uiCreateProgressBar ();
   uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
+  uiBoxPackStart (vboxp, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 2);
   uiWidgetSetMarginEnd (uiwidgetp, 2);
-  uiBoxPackStart (vboxp, uiwidgetp);
   managedb->wcont [MDB_W_DB_PROGRESS] = uiwidgetp;
 
   uiwidgetp = uiTextBoxCreate (200, bdjoptGetStr (OPT_P_UI_ACCENT_COL));

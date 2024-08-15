@@ -31,8 +31,6 @@ uiCreateLabel (const char *label)
   [widget setEditable:NO];
   [widget setStringValue: [NSString stringWithUTF8String: label]];
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
-//  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-//  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
 
   uiwidget = uiwcontAlloc ();
   uiwidget->wbasetype = WCONT_T_LABEL;
@@ -60,8 +58,9 @@ uiLabelSetTooltip (uiwcont_t *uiwidget, const char *txt)
 // ### this will be very slow, as the old tool tips need to be removed.
 // will probably be better to create a custom method and save the data
 // for that label and use the dynamic methods.
+// ### not working
   nstf = uiwidget->uidata.widget;
-  [nstf addToolTip: [NSString stringWithUTF8String: txt]];
+//  [nstf addToolTip: [NSString stringWithUTF8String: txt]];
   return;
 }
 

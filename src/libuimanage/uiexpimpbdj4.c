@@ -295,11 +295,11 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
       );
 
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 4);
   uiWidgetExpandHoriz (vbox);
   uiWidgetExpandVert (vbox);
   uiDialogPackInDialog (
       uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_DIALOG], vbox);
+  uiWidgetSetAllMargins (vbox, 4);
 
   /* status msg */
   hbox = uiCreateHorizBox ();
@@ -364,8 +364,8 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
       uieibdj4->callbacks [UIEIBDJ4_CB_TARGET],
       "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
-  uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 0);
   uieibdj4->dialog [currtype].targetButton = uiwidgetp;
 
   if (currtype == UIEIBDJ4_IMPORT) {

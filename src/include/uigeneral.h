@@ -26,4 +26,7 @@ bool uiButtonReleaseCallback (void *udata);
 /* uilabel.c */
 uiwcont_t * uiCreateColonLabel (const char *txt);
 
+/* uifont.c */
+void uiFontInfo (const char *font, char *buff, size_t sz, int *fontsz);
+
 #endif /* INC_UIGENERAL_H */

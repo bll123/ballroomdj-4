@@ -19,8 +19,59 @@
 #include "ui/uiwindow.h"
 
 typedef struct uiselect {
-    int         junk;
+  uiwcont_t   *window;
+  const char  *label;
+  const char  *startpath;
+  const char  *dfltname;
+  const char  *mimefiltername;
+  const char  *mimetype;
 } uiselect_t;
+
+@interface IDWindow : NSWindow { }
+@property uiwcont_t *uibox;
+- (instancetype) init;
+- (void) awakeFromNib;
+@end
+
+@implementation IDWindow
+
+- (instancetype)init {
+
+  [super initWithContentRect:NSMakeRect(10, 10, 100, 100)
+      styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
+          NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable
+      backing:NSBackingStoreBuffered
+      defer:NO];
+  [self setIsVisible:YES];
+  return self;
+}
+
+- (void)awakeFromNib {
+  IWindow*  w = self;
+  NSRect    f;
+  NSStackView *box;
+  NSView    *clg;
+  NSSize    nssz;
+
+  box = [w contentView];
+// ### this doesn't seem to work.
+// but leave it here just in case.
+  nssz = [box fittingSize];
+  f.size.height = nssz.height;
+  f.size.width  = nssz.width;
+  [w setFrame:f display:YES];
+
+// ### this doesn't seem to be working either
+  clg = w.contentLayoutGuide;
+//  [clg.leadingAnchor constraintEqualToAnchor: box.leadingAnchor].active = YES;
+//  [clg.trailingAnchor constraintEqualToAnchor: box.trailingAnchor].active = YES;
+//  [clg.topAnchor constraintEqualToAnchor: box.topAnchor].active = YES;
+//  [clg.bottomAnchor constraintEqualToAnchor: box.bottomAnchor].active = YES;
+  [clg.heightAnchor constraintEqualToAnchor: box.heightAnchor].active = YES;
+  [clg.widthAnchor constraintEqualToAnchor: box.widthAnchor].active = YES;
+}
+
+@end
 
 uiselect_t *
 uiSelectInit (uiwcont_t *window, const char *label,
@@ -53,7 +104,41 @@ uiwcont_t *
 uiCreateDialog (uiwcont_t *window,
     callback_t *uicb, const char *title, ...)
 {
-  return NULL;
+  uiwcont_t     *uiwin;
+  IWindow       *win = NULL;
+  uiwcont_t     *uibox;
+  NSStackView   *box;
+  id            windowDelegate;
+
+  win = [[IWindow alloc] init];
+  uibox = uiCreateVertBox ();
+  if (title != NULL) {
+    NSString  *nstitle;
+
+    nstitle = [NSString stringWithUTF8String: title];
+    [win setTitle: nstitle];
+  }
+
+  box = uibox->uidata.widget;
+  [win setContentView: box];
+
+  uibox->packed = true;
+
+//  windowDelegate = [[IWindowDelegate alloc] init];
+//  [win setDelegate:windowDelegate];
+
+  uiwin = uiwcontAlloc ();
+  uiwin->wbasetype = WCONT_T_WINDOW;
+  uiwin->wtype = WCONT_T_DIALOG_WINDOW;
+  uiwin->uidata.widget = win;
+  uiwin->uidata.packwidget = win;
+  uiwin->packed = true;
+
+  uiWidgetSetAllMargins (uibox, 2);
+  uiWidgetExpandHoriz (uibox);
+  uiWidgetExpandVert (uibox);
+
+  return uiwin;
 }
 
 void

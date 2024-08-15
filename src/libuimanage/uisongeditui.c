@@ -408,8 +408,8 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   seint->wcont [UISE_W_AUDIOID_IMG] = uiImageNew ();
   uiImageClear (seint->wcont [UISE_W_AUDIOID_IMG]);
   uiWidgetSetSizeRequest (seint->wcont [UISE_W_AUDIOID_IMG], 24, -1);
-  uiWidgetSetMarginStart (seint->wcont [UISE_W_AUDIOID_IMG], 1);
   uiBoxPackStart (hbox, seint->wcont [UISE_W_AUDIOID_IMG]);
+  uiWidgetSetMarginStart (seint->wcont [UISE_W_AUDIOID_IMG], 1);
 
   uiwidgetp = uiCreateLabel (" ");
   uiBoxPackStart (hbox, uiwidgetp);
@@ -422,8 +422,8 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
       seint->callbacks [UISE_CB_COPY_TEXT],
       "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "edit-copy");
-  uiWidgetSetMarginStart (uiwidgetp, 1);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 1);
   seint->wcont [UISE_W_BUTTON_COPY_TEXT] = uiwidgetp;
 
   /* CONTEXT: song editor: label for displaying the audio file path */
@@ -490,10 +490,10 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
     /* otherwise it takes up space in the song editor display */
     if (count > 0) {
       col = uiCreateVertBox ();
-      uiWidgetSetAllMargins (col, 4);
       uiWidgetExpandHoriz (col);
       uiWidgetExpandVert (col);
       uiBoxPackStartExpand (hbox, col);
+      uiWidgetSetAllMargins (col, 4);
 
       uisongeditAddDisplay (uisongedit, col,
           seint->szgrp [UISE_SZGRP_LABEL_A + i - DISP_SEL_SONGEDIT_A], i);
@@ -1134,8 +1134,8 @@ uisongeditAddItem (uisongedit_t *uisongedit, uiwcont_t *hbox, uiwcont_t *sg, int
     seint->items [seint->itemcount].lastchanged = false;
 
     uiwidgetp = uiCreateColonLabel (tagdefs [tagkey].displayname);
-    uiWidgetSetMarginEnd (uiwidgetp, 4);
     uiBoxPackStart (hbox, uiwidgetp);
+    uiWidgetSetMarginEnd (uiwidgetp, 4);
     uiSizeGroupAdd (sg, uiwidgetp);
     seint->items [seint->itemcount].label = uiwidgetp;
   }
@@ -1374,6 +1374,7 @@ uisongeditAddScale (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   uiScaleSetCallback (uiwidgetp, seint->items [seint->itemcount].callback);
 
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 2);
   uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_SCALE], uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("100%");

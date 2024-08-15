@@ -371,10 +371,10 @@ altinstBuildUI (altinst_t *altinst)
   uiWindowSetDefaultSize (altinst->wcont [ALT_W_WINDOW], 1000, 600);
 
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 4);
   uiWidgetExpandHoriz (vbox);
   uiWidgetExpandVert (vbox);
   uiWindowPackInWindow (altinst->wcont [ALT_W_WINDOW], vbox);
+  uiWidgetSetAllMargins (vbox, 4);
 
   uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
@@ -435,8 +435,8 @@ altinstBuildUI (altinst_t *altinst)
       altinst->callbacks [ALT_CB_TARGET_DIR],
       "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
-  uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 0);
   altinst->wcont [ALT_W_BUTTON_TARGET_DIR] = uiwidgetp;
   if (isMacOS ()) {
     uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);

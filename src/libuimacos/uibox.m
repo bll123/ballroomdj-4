@@ -30,6 +30,7 @@
 #include "ui/uiwcont-int.h"
 
 #include "ui/uibox.h"
+#include "ui/uiwidget.h"
 
 static uiwcont_t * uiCreateBox (int orientation);
 
@@ -62,6 +63,8 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
     grav = NSStackViewGravityTop;
   }
   [box addView: widget inGravity: grav];
+  uiWidgetSetMarginTop (uiwidget, 1);
+  uiWidgetSetMarginStart (uiwidget, 1);
   uiwidget->packed = true;
   return;
 }
@@ -80,6 +83,8 @@ uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.packwidget;
   [box addView: widget inGravity: grav];
+  uiWidgetSetMarginTop (uiwidget, 1);
+  uiWidgetSetMarginStart (uiwidget, 1);
   uiwidget->packed = true;
   return;
 }
@@ -100,7 +105,9 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
   if (uibox->wtype == WCONT_T_VBOX) {
     grav = NSStackViewGravityBottom;
   }
-  [box addView: widget inGravity: grav];
+  [box insertView: widget atIndex: 0 inGravity: grav];
+  uiWidgetSetMarginTop (uiwidget, 1);
+  uiWidgetSetMarginStart (uiwidget, 1);
   uiwidget->packed = true;
   return;
 }
@@ -118,7 +125,9 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.packwidget;
-  [box addView: widget inGravity: grav];
+  [box insertView: widget atIndex: 0 inGravity: grav];
+  uiWidgetSetMarginTop (uiwidget, 1);
+  uiWidgetSetMarginStart (uiwidget, 1);
   uiwidget->packed = true;
   return;
 }
@@ -140,6 +149,7 @@ uiCreateBox (int orientation)
   box = [[IBox alloc] init];
   [box setOrientation: orientation];
   [box setTranslatesAutoresizingMaskIntoConstraints: NO];
+  box.spacing = 1.0;
 
 #if MACOS_UI_DEBUG
   [box setFocusRingType: NSFocusRingTypeExterior];

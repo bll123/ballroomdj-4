@@ -7,6 +7,7 @@ include (../utils/bdj4macros.cmake)
 
 add_library (objuigeneral OBJECT
   uibutton.c
+  uifont.c
   uilabel.c
   uiwcont.c
   uiwcontfree.c
