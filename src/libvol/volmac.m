@@ -88,7 +88,7 @@ voliProcess (volaction_t action, const char *sinkname,
   /* get the system output device */
   propertyAOPA.mSelector = kAudioHardwarePropertyDefaultSystemOutputDevice;
   propertyAOPA.mScope = kAudioObjectPropertyScopeGlobal;
-  propertyAOPA.mElement = kAudioObjectPropertyElementMaster;
+  propertyAOPA.mElement = kAudioObjectPropertyElementMain;
 
   propSize = sizeof (systemDeviceID);
   AudioObjectGetPropertyData (
@@ -106,7 +106,7 @@ voliProcess (volaction_t action, const char *sinkname,
   /* get the default output device */
   propertyAOPA.mSelector = kAudioHardwarePropertyDefaultOutputDevice;
   propertyAOPA.mScope = kAudioObjectPropertyScopeGlobal;
-  propertyAOPA.mElement = kAudioObjectPropertyElementMaster;
+  propertyAOPA.mElement = kAudioObjectPropertyElementMain;
 
   propSize = sizeof (defaultDeviceID);
   AudioObjectGetPropertyData (
@@ -159,7 +159,7 @@ voliProcess (volaction_t action, const char *sinkname,
 
     propertyAOPA.mSelector = kAudioHardwarePropertyDevices;
     propertyAOPA.mScope = kAudioObjectPropertyScopeGlobal;
-    propertyAOPA.mElement = kAudioObjectPropertyElementMaster;
+    propertyAOPA.mElement = kAudioObjectPropertyElementMain;
 
     error = AudioObjectGetPropertyDataSize (kAudioObjectSystemObject,
         &propertyAOPA, 0, NULL, &propSize);
@@ -186,7 +186,7 @@ voliProcess (volaction_t action, const char *sinkname,
 
       propertyAOPA.mSelector = kAudioDevicePropertyStreamConfiguration;
       propertyAOPA.mScope = kAudioObjectPropertyScopeOutput;
-      propertyAOPA.mElement = kAudioObjectPropertyElementMaster;
+      propertyAOPA.mElement = kAudioObjectPropertyElementMain;
       error = AudioObjectGetPropertyData (audioDeviceList [i],
           &propertyAOPA, 0, NULL, &propSize, &streamConfiguration);
       ccount = 0;
@@ -210,7 +210,7 @@ voliProcess (volaction_t action, const char *sinkname,
 
       propertyAOPA.mSelector = kAudioDevicePropertyDeviceNameCFString;
       propertyAOPA.mScope = kAudioObjectPropertyScopeGlobal;
-      propertyAOPA.mElement = kAudioObjectPropertyElementMaster;
+      propertyAOPA.mElement = kAudioObjectPropertyElementMain;
       error = AudioObjectGetPropertyData (audioDeviceList [i],
           &propertyAOPA, 0, NULL, &propSize, &result);
       sinklist->sinklist [sinkidx].description = mdstrdup ([result UTF8String]);
@@ -254,7 +254,7 @@ voliProcess (volaction_t action, const char *sinkname,
 
   propertyAOPA.mSelector = kAudioDevicePropertyVolumeScalar;
   propertyAOPA.mScope = kAudioDevicePropertyScopeOutput;
-  propertyAOPA.mElement = kAudioObjectPropertyElementMaster;
+  propertyAOPA.mElement = kAudioObjectPropertyElementMain;
 
   if (action == VOL_SET) {
     propSize = sizeof (volume);
@@ -283,7 +283,7 @@ voliProcess (volaction_t action, const char *sinkname,
   }
 
   if (vol != NULL && (action == VOL_SET || action == VOL_GET)) {
-    propertyAOPA.mElement = kAudioObjectPropertyElementMaster;
+    propertyAOPA.mElement = kAudioObjectPropertyElementMain;
     propSize = sizeof (volume);
     status = AudioObjectGetPropertyData (
         outputDeviceID,
