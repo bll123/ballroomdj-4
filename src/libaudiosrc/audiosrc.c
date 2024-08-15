@@ -215,6 +215,10 @@ audiosrcCleanup (void)
 void
 audiosrcPostInit (void)
 {
+  if (audiosrc == NULL) {
+    return;
+  }
+
   for (int i = 0; audiosrc->asdylib != NULL && i < audiosrc->ascount; ++i) {
     asdylib_t   *asdylib;
 
@@ -230,6 +234,13 @@ int
 audiosrcGetType (const char *nm)
 {
   int       type = AUDIOSRC_TYPE_NONE;
+
+  if (audiosrc == NULL) {
+    return type;
+  }
+  if (nm == NULL) {
+    return type;
+  }
 
   /* it is not particularly useful to try and cache the type, */
   /* as in most cases, the name being processed will be constantly */
@@ -264,7 +275,9 @@ audiosrcExists (const char *nm)
   bool      exists = false;
   asdylib_t *asdylib;
 
-
+  if (audiosrc == NULL) {
+    return false;
+  }
   if (nm == NULL) {
     return false;
   }
@@ -286,6 +299,9 @@ audiosrcOriginalExists (const char *nm)
   bool      exists = false;
   asdylib_t *asdylib;
 
+  if (audiosrc == NULL) {
+    return false;
+  }
   if (nm == NULL) {
     return false;
   }
@@ -307,6 +323,13 @@ audiosrcRemove (const char *nm)
   asdylib_t *asdylib;
   bool      rc = false;
 
+  if (audiosrc == NULL) {
+    return rc;
+  }
+  if (nm == NULL) {
+    return rc;
+  }
+
   type = audiosrcGetType (nm);
   asdylib = audiosrcGetDylibByType (type);
 
@@ -324,6 +347,13 @@ audiosrcPrep (const char *sfname, char *tempnm, size_t sz)
   asdylib_t *asdylib;
   bool      rc = false;
 
+  if (audiosrc == NULL) {
+    return rc;
+  }
+  if (sfname == NULL || tempnm == NULL) {
+    return rc;
+  }
+
   type = audiosrcGetType (sfname);
   asdylib = audiosrcGetDylibByType (type);
 
@@ -340,6 +370,13 @@ audiosrcPrepClean (const char *sfname, const char *tempnm)
   int       type = AUDIOSRC_TYPE_NONE;
   asdylib_t *asdylib;
 
+  if (audiosrc == NULL) {
+    return;
+  }
+  if (sfname == NULL || tempnm == NULL) {
+    return;
+  }
+
   type = audiosrcGetType (sfname);
   asdylib = audiosrcGetDylibByType (type);
 
@@ -354,6 +391,13 @@ audiosrcPrefix (const char *sfname)
   const char  *pfx = "";
   int         type = AUDIOSRC_TYPE_NONE;
   asdylib_t   *asdylib;
+
+  if (audiosrc == NULL) {
+    return NULL;
+  }
+  if (sfname == NULL) {
+    return NULL;
+  }
 
   type = audiosrcGetType (sfname);
   asdylib = audiosrcGetDylibByType (type);
@@ -372,7 +416,10 @@ audiosrcURI (const char *sfname, char *uri, size_t sz,
   int       type = AUDIOSRC_TYPE_NONE;
   asdylib_t *asdylib;
 
-  if (uri == NULL) {
+  if (audiosrc == NULL) {
+    return;
+  }
+  if (sfname == NULL || uri == NULL) {
     return;
   }
 
@@ -392,7 +439,10 @@ audiosrcFullPath (const char *sfname,
   int       type = AUDIOSRC_TYPE_NONE;
   asdylib_t *asdylib;
 
-  if (fullpath == NULL) {
+  if (audiosrc == NULL) {
+    return;
+  }
+  if (sfname == NULL || fullpath == NULL) {
     return;
   }
 
@@ -412,6 +462,13 @@ audiosrcRelativePath (const char *sfname, int pfxlen)
   const char  *p = sfname;
   asdylib_t   *asdylib;
 
+  if (audiosrc == NULL) {
+    return sfname;
+  }
+  if (sfname == NULL) {
+    return sfname;
+  }
+
   type = audiosrcGetType (sfname);
   asdylib = audiosrcGetDylibByType (type);
 
@@ -428,6 +485,13 @@ audiosrcDir (const char *sfname, char *dir, size_t sz, int pfxlen)
   int       type = AUDIOSRC_TYPE_NONE;
   size_t    rc = 0;
   asdylib_t *asdylib;
+
+  if (audiosrc == NULL) {
+    return 0;
+  }
+  if (sfname == NULL) {
+    return 0;
+  }
 
   type = audiosrcGetType (sfname);
   asdylib = audiosrcGetDylibByType (type);
@@ -447,6 +511,9 @@ audiosrcStartIterator (const char *uri)
   int       type;
   asdylib_t *asdylib;
 
+  if (audiosrc == NULL) {
+    return NULL;
+  }
   if (uri == NULL) {
     return NULL;
   }
@@ -477,6 +544,9 @@ audiosrcCleanIterator (asiter_t *asiter)
 {
   asdylib_t   *asdylib;
 
+  if (audiosrc == NULL) {
+    return;
+  }
   if (asiter == NULL) {
     return;
   }

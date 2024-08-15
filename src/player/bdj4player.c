@@ -360,9 +360,14 @@ playerClosingCallback (void *tpdata, programstate_t programState)
 
   logProcBegin ();
 
-  bdj4shutdown (ROUTE_PLAYER, NULL);
-
   volumeSet (playerData->volume, playerData->currentSink, 0);
+
+  /* the prep queues need to be freed before audiosrc is cleaned */
+  queueFree (playerData->prepQueue);
+  queueFree (playerData->prepRequestQueue);
+  queueFree (playerData->playRequest);
+
+  bdj4shutdown (ROUTE_PLAYER, NULL);
 
   if (playerData->pli != NULL) {
     pliStop (playerData->pli);
@@ -376,10 +381,6 @@ playerClosingCallback (void *tpdata, programstate_t programState)
       playerData->currentSong = NULL;
     }
   }
-
-  queueFree (playerData->prepQueue);
-  queueFree (playerData->prepRequestQueue);
-  queueFree (playerData->playRequest);
 
   /* do the volume reset last, give time for the player to stop */
 
