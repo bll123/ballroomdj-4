@@ -26,6 +26,7 @@
 #include "bdj4ui.h"     // for speed constants
 #include "callback.h"
 #include "controller.h"
+#include "log.h"
 #include "mdebug.h"
 #include "player.h"
 #include "nlist.h"
@@ -36,20 +37,25 @@
 
 using namespace winrt::Windows::Media;
 
-typedef struct intf_sys intf_sys_t;
+typedef struct mpintfc mpintfc_t;
 
 typedef struct contdata {
   char                *instname;
   callback_t          *cb;
   callback_t          *cburi;
   nlist_t             *metadata;
-  void                *metav;
   int                 playstate;      // BDJ4 play state
+  MediaPlaybackStatus playstatus;     // Windows playback status
   int32_t             pos;
   int                 rate;
   int                 volume;
-  intf_sys_t          *sys;
+  mpintfc_t          *sys;
 } contdata_t;
+
+void smtcNext (contdata_t *contdata);
+void smtcPlay (contdata_t *contdata);
+void smtcPause (contdata_t *contdata);
+void smtcStop (contdata_t *contdata);
 
 void
 contiDesc (const char **ret, int max)
@@ -64,59 +70,55 @@ contiDesc (const char **ret, int max)
   ret [c++] = NULL;
 }
 
-struct intf_sys
+struct mpintfc
 {
-  intf_sys (const intf_sys&) = delete;
-  void operator= (const intf_sys&) = delete;
+  mpintfc (const mpintfc&) = delete;
+  void operator= (const mpintfc&) = delete;
 
-  explicit intf_sys (contdata_t *intf) :
+  explicit mpintfc (contdata_t *contdata) :
       mediaPlayer { nullptr },
       defaultArt { nullptr },
-//        contdata { contdata },
-//        playlist { nullptr, }, // pl_Get (intf) },
-//        input { nullptr },
-      advertise { false },
-      metadata_advertised { false }
+      contdata { contdata }
   {
+    logBasic ("constructor\n");
   }
 
-  void InitializeMediaPlayer()
+  void
+  smtcMediaPlayerInit()
   {
-    winrt::init_apartment();
+    logBasic ("start-init\n");
+//    winrt::init_apartment();
 
+    logBasic ("  init-b\n");
     mediaPlayer = Playback::MediaPlayer ();
     mediaPlayer.CommandManager ().IsEnabled (false);
+    logBasic ("  init-c\n");
 
     SMTC().ButtonPressed (
-        [this](SystemMediaTransportControls sender, SystemMediaTransportControlsButtonPressedEventArgs args) {
-//                playlist_Lock(playlist);
+        [this] (SystemMediaTransportControls sender,
+        SystemMediaTransportControlsButtonPressedEventArgs args) {
 
-    switch (args.Button()) {
-            case SystemMediaTransportControlsButton::Play: {
-//                    playlist_Play(playlist);
-                break;
-            }
-
-            case SystemMediaTransportControlsButton::Pause: {
-//                    playlist_Pause(playlist);
-                break;
-            }
-
-            case SystemMediaTransportControlsButton::Stop: {
-//                    playlist_Stop(playlist);
-                break;
-            }
-
-            case SystemMediaTransportControlsButton::Next: {
-//                    playlist_Next(playlist);
-                break;
-            }
-
-            case SystemMediaTransportControlsButton::Previous: {
-//                    playlist_Prev(playlist);
-                break;
-            }
-
+        switch (args.Button()) {
+          case SystemMediaTransportControlsButton::Play: {
+            smtcPlay (contdata);
+            break;
+          }
+          case SystemMediaTransportControlsButton::Pause: {
+            smtcPause (contdata);
+            break;
+          }
+          case SystemMediaTransportControlsButton::Stop: {
+            smtcStop (contdata);
+            break;
+          }
+          case SystemMediaTransportControlsButton::Next: {
+            smtcNext (contdata);
+            break;
+          }
+          case SystemMediaTransportControlsButton::Previous: {
+            /* not supported */
+            break;
+          }
           case SystemMediaTransportControlsButton::ChannelDown:
           case SystemMediaTransportControlsButton::ChannelUp:
           case SystemMediaTransportControlsButton::FastForward:
@@ -124,107 +126,121 @@ struct intf_sys
           case SystemMediaTransportControlsButton::Record: {
             break;
           }
-      }
+        } /* switch on button type */
+      } /* button-pressed */
+    );  /* button-pressed def */
 
-//                playlist_Unlock(playlist);
-        }
-    );
+    logBasic ("  init-d\n");
 
-    SMTC ().IsPlayEnabled (true);
-    SMTC ().IsPauseEnabled (true);
-    SMTC ().IsStopEnabled (true);
+    SMTC ().IsPlayEnabled (false);
+    SMTC ().IsPauseEnabled (false);
+    SMTC ().IsStopEnabled (false);
     SMTC ().IsPreviousEnabled (false);
-    SMTC ().IsNextEnabled (true);
+    SMTC ().IsNextEnabled (false);
 
     SMTC ().PlaybackStatus (MediaPlaybackStatus::Closed);
     SMTC ().IsEnabled (true);
 
+    logBasic ("  init-e\n");
+
     winrt::Windows::Foundation::Uri uri{ DEFAULT_THUMBNAIL_URI };
     defaultArt = winrt::Windows::Storage::Streams::RandomAccessStreamReference::CreateFromUri (uri);
 
-    Disp ().Thumbnail (defaultArt);
-    Disp ().Type (MediaPlaybackType::Music);
-    Disp ().Update ();
+    logBasic ("  init-f\n");
+    smtcUpdater ().Thumbnail (defaultArt);
+    smtcUpdater ().Type (MediaPlaybackType::Music);
+    smtcUpdater ().Update ();
+    logBasic ("  init-g\n");
   }
 
-  void UninitializeMediaPlayer()
+  void
+  smtcMediaPlayerStop (void)
   {
+    logBasic ("mp-stop\n");
     mediaPlayer = Playback::MediaPlayer (nullptr);
-    winrt::uninit_apartment ();
+//    winrt::uninit_apartment ();
   }
 
-  void AdvertiseState ()
+  void
+  smtcSendPlaybackStatus (MediaPlaybackStatus nstate)
   {
-    static_assert ((int)MediaPlaybackStatus::Closed == 0, "Treat default case explicitely");
-
-//        static std::unordered_map<input_state_e, MediaPlaybackStatus> map = {
-//            {OPENING_S, MediaPlaybackStatus::Changing},
-//            {PLAYING_S, MediaPlaybackStatus::Playing},
-//            {PAUSE_S, MediaPlaybackStatus::Paused},
-//            {END_S, MediaPlaybackStatus::Stopped}
-//        };
-    // Default/implicit case: set playback status to `Closed`
-
-//        SMTC ().PlaybackStatus (map[input_state]);
-    Disp ().Update ();
+    logBasic ("mp-send-pb-status\n");
+    SMTC ().PlaybackStatus (nstate);
+    smtcUpdater ().Update ();
   }
 
-  void ReadAndAdvertiseMetadata ()
+  void
+  smtcSetPlay (bool val)
   {
-//        if (!input) {
-//            return;
-//        }
+    logBasic ("mp-set-play\n");
+    SMTC ().IsPlayEnabled (val);
+    smtcUpdater ().Update ();
+  }
 
-//        input_item_t* item = input_GetItem (input);
-    winrt::hstring title, artist;
+  void
+  smtcSetPause (bool val)
+  {
+    logBasic ("mp-set-pause\n");
+    SMTC ().IsPauseEnabled (val);
+    smtcUpdater ().Update ();
+  }
 
-    auto to_hstring = [](char* buf, winrt::hstring def) {
-        winrt::hstring ret;
+  void
+  smtcSetNextEnabled (void)
+  {
+    logBasic ("mp-set-next\n");
+    SMTC ().IsNextEnabled (true);
+    smtcUpdater ().Update ();
+  }
 
-        if (buf) {
-            ret = winrt::to_hstring(buf);
-//                libvlc_free (buf);
-        }
-        else {
-            ret = def;
-        }
+  void
+  smtcSendMetadata (void)
+  {
+    winrt::hstring tstr;
 
-        return ret;
+    logBasic ("mp-send-metadata\n");
+    auto to_hstring = [] (const char * buf, winrt::hstring def) {
+      winrt::hstring ret;
+
+      if (buf) {
+        ret = winrt::to_hstring (buf);
+      } else {
+        ret = def;
+      }
+
+      return ret;
     };
 
-//        title = to_hstring (input_item_GetTitleFbName(item), L"Unknown Title");
-//        artist = to_hstring (input_item_GetArtist(item), L"Unknown Artist");
-
-    Disp().MusicProperties().Title(title);
-    Disp().MusicProperties().Artist(artist);
+    tstr = to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_TITLE), L"Unknown Title");
+    smtcUpdater ().MusicProperties ().Title (tstr);
+    tstr = to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_ARTIST), L"Unknown Artist");
+    smtcUpdater ().MusicProperties ().Artist (tstr);
+    tstr = to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_ALBUM), L"Unknown Album");
+    smtcUpdater ().MusicProperties ().AlbumTitle (tstr);
+    tstr = to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_ALBUMARTIST), L"Unknown Album Artist");
+    smtcUpdater ().MusicProperties ().AlbumArtist (tstr);
+//    tstr = to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_GENRE), L"Unknown Genre");
+//    smtcUpdater ().MusicProperties ().Genres (tstr);
 
     // TODO: use artwork provided by ID3tag (if exists)
-    Disp().Thumbnail(defaultArt);
+    smtcUpdater ().Thumbnail (defaultArt);
 
-    Disp().Update();
+    smtcUpdater ().Update ();
   }
 
-  SystemMediaTransportControls SMTC() {
-    return mediaPlayer.SystemMediaTransportControls();
+  SystemMediaTransportControls
+  SMTC () {
+    return mediaPlayer.SystemMediaTransportControls ();
   }
 
-  SystemMediaTransportControlsDisplayUpdater Disp() {
-    return SMTC().DisplayUpdater();
+  SystemMediaTransportControlsDisplayUpdater
+  smtcUpdater () {
+    return SMTC().DisplayUpdater ();
   }
 
   Playback::MediaPlayer mediaPlayer;
   winrt::Windows::Storage::Streams::RandomAccessStreamReference defaultArt;
-
-//    intf_thread_t* intf;
-//    playlist_t* playlist;
-//    input_thread_t* input;
-//    input_state_e input_state;
-//    vlc_thread_t thread;
-//    vlc_mutex_t lock;
-//    vlc_cond_t wait;
-
-  bool advertise;
-  bool metadata_advertised; // was the last song advertised to Windows?
+  contdata_t *contdata;
 };
 
 contdata_t *
@@ -232,17 +248,19 @@ contiInit (const char *instname)
 {
   contdata_t  *contdata;
 
+  logBasic ("c-init\n");
   contdata = (contdata_t *) mdmalloc (sizeof (contdata_t));
   contdata->instname = mdstrdup (instname);
   contdata->cb = NULL;
   contdata->metadata = NULL;
-  contdata->metav = NULL;
   contdata->playstate = PL_STATE_STOPPED;
+  contdata->playstatus = MediaPlaybackStatus::Closed;
   contdata->pos = 0;
   contdata->rate = 100;
   contdata->volume = 0;
 
-  contdata->sys = new intf_sys (contdata);
+  contdata->sys = new mpintfc (contdata);
+  logBasic ("c-init-fin\n");
 
   return contdata;
 }
@@ -254,6 +272,8 @@ contiFree (contdata_t *contdata)
     return;
   }
 
+  contdata->sys->smtcSendPlaybackStatus (MediaPlaybackStatus::Closed);
+  contdata->sys->smtcMediaPlayerStop ();
   delete contdata->sys;
 
   nlistFree (contdata->metadata);
@@ -264,7 +284,9 @@ contiFree (contdata_t *contdata)
 void
 contiSetup (contdata_t *contdata)
 {
-  contdata->sys->InitializeMediaPlayer ();
+  logBasic ("c-setup\n");
+  contdata->sys->smtcMediaPlayerInit ();
+  logBasic ("c-setup-fin\n");
   return;
 }
 
@@ -291,41 +313,43 @@ contiSetCallbacks (contdata_t *contdata, callback_t *cb, callback_t *cburi)
 void
 contiSetPlayState (contdata_t *contdata, int state)
 {
-  bool  canplay = false;
-  bool  canpause = false;
-  bool  canseek = false;
+  MediaPlaybackStatus nstate = contdata->playstatus;
+  bool                canplay = false;
+  bool                canpause = false;
+  bool                canseek = false;
 
   if (contdata == NULL) {
     return;
   }
 
+  logBasic ("c-set-play-state\n");
   contdata->playstate = state;
 
   switch (state) {
     case PL_STATE_LOADING:
     case PL_STATE_PLAYING: {
-//      nstate = MPRIS_PB_STATUS_PLAY;
+      nstate = MediaPlaybackStatus::Playing;
       canplay = false;
       canpause = true;
       canseek = true;
       break;
     }
     case PL_STATE_IN_FADEOUT: {
-//      nstate = MPRIS_PB_STATUS_PLAY;
+      nstate = MediaPlaybackStatus::Playing;
       canplay = false;
       canpause = false;
       canseek = false;
       break;
     }
     case PL_STATE_PAUSED: {
-//      nstate = MPRIS_PB_STATUS_PAUSE;
+      nstate = MediaPlaybackStatus::Paused;
       canplay = true;
       canpause = false;
       canseek = true;
       break;
     }
     case PL_STATE_IN_GAP: {
-//      nstate = MPRIS_PB_STATUS_PLAY;
+      nstate = MediaPlaybackStatus::Changing;
       canplay = false;
       canpause = false;
       canseek = false;
@@ -333,7 +357,7 @@ contiSetPlayState (contdata_t *contdata, int state)
     }
     case PL_STATE_UNKNOWN:
     case PL_STATE_STOPPED: {
-//      nstate = MPRIS_PB_STATUS_PAUSE;
+      nstate = MediaPlaybackStatus::Stopped;
       canplay = true;
       canpause = false;
       canseek = false;
@@ -341,15 +365,13 @@ contiSetPlayState (contdata_t *contdata, int state)
     }
   }
 
-//  mpris_media_player2_player_set_can_play (contdata->mprisplayer, canplay);
-//  mpris_media_player2_player_set_can_pause (contdata->mprisplayer, canpause);
-//  mpris_media_player2_player_set_can_seek (contdata->mprisplayer, canseek);
+  contdata->sys->smtcSetPlay (canplay);
+  contdata->sys->smtcSetPause (canpause);
 
-//  if (contdata->playstatus != nstate) {
-//    mpris_media_player2_player_set_playback_status (contdata->mprisplayer,
-//        playstatusstr [nstate]);
-//    contdata->playstatus = nstate;
-//  }
+  if (contdata->playstatus != nstate) {
+    contdata->sys->smtcSendPlaybackStatus (nstate);
+    contdata->playstatus = nstate;
+  }
 }
 
 void
@@ -361,6 +383,7 @@ contiSetRepeatState (contdata_t *contdata, bool state)
     return;
   }
 
+  logBasic ("c-set-repeat-state\n");
 //  if (contdata->repeatstatus != nstate) {
 //    mpris_media_player2_player_set_loop_status (contdata->mprisplayer,
 //        repeatstr [nstate]);
@@ -398,6 +421,7 @@ contiSetRate (contdata_t *contdata, int rate)
     return;
   }
 
+  logBasic ("c-set-rate\n");
   if (contdata->rate != rate) {
     double    dval;
 
@@ -418,7 +442,6 @@ contiSetVolume (contdata_t *contdata, int volume)
     double    dval;
 
     dval = (double) volume / 100.0;
-//    mpris_media_player2_player_set_volume (contdata->mprisplayer, dval);
   }
   contdata->volume = volume;
 }
@@ -427,14 +450,12 @@ void
 contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
 {
   char        tbuff [200];
-  nlistidx_t  miter;
-  nlistidx_t  mkey;
-//  void        *tv;
 
   if (contdata == NULL) {
     return;
   }
 
+  logBasic ("c-set-current\n");
   nlistFree (contdata->metadata);
   contdata->metadata = nlistAlloc ("cont-mprisi-meta", LIST_ORDERED, NULL);
 
@@ -470,144 +491,42 @@ contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
   if (cmetadata->arturi != NULL) {
     nlistSetStr (contdata->metadata, CONT_METADATA_ART_URI, cmetadata->arturi);
   }
+  logBasic ("  curr-b\n");
 
-  nlistStartIterator (contdata->metadata, &miter);
-//  dbusMessageInitArray (contdata->dbus, "a{sv}");
-  while ((mkey = nlistIterateKey (contdata->metadata, &miter)) >= 0) {
-//    if (mkey == CONT_METADATA_DURATION) {
-//      tv = dbusMessageBuild ("x", nlistGetNum (contdata->metadata, mkey));
-//    } else if (mkey == CONT_METADATA_TRACKID) {
-//      tv = dbusMessageBuild ("o", nlistGetStr (contdata->metadata, mkey));
-//    } else {
-//      tv = dbusMessageBuild ("s", nlistGetStr (contdata->metadata, mkey));
-//    }
-//    dbusMessageAppendArray (contdata->dbus, "{sv}",
-//        metadatastr [mkey], tv, NULL);
+  contdata->sys->smtcSendMetadata ();
+  contdata->sys->smtcSetNextEnabled ();
+  logBasic ("  curr-c\n");
+}
+
+void
+smtcNext (contdata_t *contdata)
+{
+  if (contdata->cb != NULL) {
+    callbackHandlerII (contdata->cb, CONTROLLER_NEXT, 0);
   }
-//  tv = dbusMessageFinalizeArray (contdata->dbus);
-//  contdata->metav = tv;
-
-//  mpris_media_player2_player_set_metadata (contdata->mprisplayer, contdata->metav);
-//  mpris_media_player2_player_set_can_go_next (contdata->mprisplayer, true);
 }
 
-#if 0
-
-int InputEvent (vlc_object_t* object, char const* cmd,
-    vlc_value_t oldval, vlc_value_t newval, void* data)
+void
+smtcPlay (contdata_t *contdata)
 {
-    VLC_UNUSED(cmd);
-    VLC_UNUSED(oldval);
-
-    intf_thread_t* intf = (intf_thread_t*)data;
-    intf_sys* sys = intf->p_sys;
-    input_thread_t* input = (input_thread_t*)object;
-
-    if (newval.i_int == INPUT_EVENT_STATE) {
-        input_state_e state = (input_state_e)var_GetInteger(input, "state");
-
-        // send update to winrt thread
-        vlc_mutex_lock(&sys->lock);
-        sys->advertise = true;
-        sys->input_state = state;
-        vlc_cond_signal(&sys->wait);
-        vlc_mutex_unlock(&sys->lock);
-    }
-    else if (newval.i_int == INPUT_EVENT_DEAD) {
-        assert(sys->input);
-        vlc_object_release(sys->input);
-        sys->input = nullptr;
-    }
-
-    return VLC_SUCCESS;
+  if (contdata->cb != NULL) {
+    callbackHandlerII (contdata->cb, CONTROLLER_PLAY, 0);
+  }
 }
 
-int PlaylistEvent (vlc_object_t* object, char const* cmd,
-    vlc_value_t oldval, vlc_value_t newval, void* data)
+void
+smtcPause (contdata_t *contdata)
 {
-    VLC_UNUSED(object); VLC_UNUSED(cmd); VLC_UNUSED(oldval);
-
-    intf_thread_t* intf = (intf_thread_t*)data;
-    intf_sys* sys = intf->p_sys;
-    input_thread_t* input = (input_thread_t*)newval.p_address;
-
-    if (input == nullptr) {
-      return VLC_SUCCESS;
-    }
-
-    sys->metadata_advertised = false; // new song, mark it as unadvertised
-    sys->input = (input_thread_t*)vlc_object_hold(input);
-    var_AddCallback(input, "intf-event", InputEvent, intf);
-
-    return VLC_SUCCESS;
+  if (contdata->cb != NULL) {
+    callbackHandlerII (contdata->cb, CONTROLLER_PAUSE, 0);
+  }
 }
 
-void* Thread (void* handle)
+void
+smtcStop (contdata_t *contdata)
 {
-    intf_thread_t* intf = (intf_thread_t*) handle;
-    intf_sys* sys = intf->p_sys;
-    int canc;
-
-    sys->InitializeMediaPlayer ();
-    vlc_cleanup_push(
-        [](void* sys) {
-            ((intf_sys*)sys)->UninitializeMediaPlayer();
-        },
-        sys
-    );
-
-    while (1) {
-        vlc_mutex_lock(&sys->lock);
-        mutex_cleanup_push(&sys->lock);
-
-        while (!sys->advertise) {
-            vlc_cond_wait(&sys->wait, &sys->lock);
-        }
-
-        canc = vlc_savecancel();
-
-        sys->AdvertiseState();
-        if (sys->input_state >= PLAYING_S && !sys->metadata_advertised) {
-            sys->ReadAndAdvertiseMetadata();
-            sys->metadata_advertised = true;
-        }
-        sys->advertise = false;
-
-        vlc_restorecancel(canc);
-
-        vlc_cleanup_pop();
-        vlc_mutex_unlock(&sys->lock);
-    }
-
-    vlc_cleanup_pop();
-    sys->UninitializeMediaPlayer(); // irrelevant; control flow shouldn't get here unless some UB occurs
-    return nullptr;
+  if (contdata->cb != NULL) {
+    callbackHandlerII (contdata->cb, CONTROLLER_STOP, 0);
+  }
 }
 
-int Open(vlc_object_t* object)
-{
-    intf_thread_t* intf = (intf_thread_t*)object;
-    intf_sys* sys = new intf_sys (intf);
-
-    intf->p_sys = sys;
-
-    if (!sys) {
-      return 1;
-        return VLC_EGENERIC;
-    }
-
-    vlc_mutex_init(&sys->lock);
-    vlc_cond_init(&sys->wait);
-
-    if (vlc_clone(&sys->thread, Thread, intf, VLC_THREAD_PRIORITY_LOW)) {
-        vlc_mutex_destroy(&sys->lock);
-        vlc_cond_destroy(&sys->wait);
-        delete sys;
-        return VLC_EGENERIC;
-    }
-
-    var_AddCallback(sys->playlist, "input-current", PlaylistEvent, intf);
-    return VLC_SUCCESS;
-}
-
-#endif

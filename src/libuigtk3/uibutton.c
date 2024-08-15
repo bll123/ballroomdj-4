@@ -235,14 +235,12 @@ static void
 uiButtonSignalHandler (GtkButton *b, gpointer udata)
 {
   uiwcont_t       *uiwidget = udata;
-  uibutton_t      *uibutton;
   uibuttonbase_t  *bbase;
 
   if (uiwidget == NULL) {
     return;
   }
 
-  uibutton = uiwidget->uiint.uibutton;
   bbase = &uiwidget->uiint.uibuttonbase;
 
   if (bbase->repeatOn) {

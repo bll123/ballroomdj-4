@@ -5,6 +5,7 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
+# the various main ui libraries (libuigtk3, libuimacos) will link this in
 add_library (objuigeneral OBJECT
   uibutton.c
   uifont.c
