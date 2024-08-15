@@ -2016,6 +2016,11 @@ uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
     uivlcol_t     *col;
 
     coldata = &vl->coldata [colidx];
+
+    if (coldata->hidden == VL_COL_DISABLE) {
+      continue;
+    }
+
     col = &row->cols [colidx];
 
     if (! coldata->aligncenter) {
