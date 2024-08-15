@@ -7,6 +7,10 @@
 #include "callback.h"
 #include "uiwcont.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct uirating uirating_t;
 
 enum {
@@ -21,5 +25,9 @@ void uiratingSetValue (uirating_t *uirating, int value);
 void uiratingSetState (uirating_t *uirating, int state);
 void uiratingSizeGroupAdd (uirating_t *uirating, uiwcont_t *sg);
 void uiratingSetChangedCallback (uirating_t *uirating, callback_t *cb);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIRATING_H */

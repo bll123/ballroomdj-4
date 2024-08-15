@@ -13,6 +13,10 @@
 
 # include "pli.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct vlcdata vlcdata_t;
 
 ssize_t           vlcGetDuration (vlcdata_t *vlcdata);
@@ -32,6 +36,10 @@ int               vlcSetAudioDev (vlcdata_t *vlcdata, const char *dev, int plide
 bool              vlcVersionLinkCheck (void);
 bool              vlcVersionCheck (void);
 int               vlcGetVolume (vlcdata_t *vlcdata);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* _hdr_vlc_vlc */
 

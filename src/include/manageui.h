@@ -16,6 +16,10 @@
 #include "uiwcont.h"
 #include "uisongsel.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   MANAGE_PRELOAD,
   MANAGE_PRELOAD_FORCE,
@@ -111,5 +115,9 @@ void manageAudioIdMainLoop (manageaudioid_t *maudioid);
 void manageAudioIdLoad (manageaudioid_t *maudioid, song_t *song, dbidx_t dbidx);
 void manageAudioIdSetSaveCallback (manageaudioid_t *maudioid, callback_t *cb);
 void manageAudioIdSavePosition (manageaudioid_t *maudioid);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_MANAGEUI_H */

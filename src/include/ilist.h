@@ -8,6 +8,10 @@
 #include "nlist.h"
 #include "slist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   ILIST_SET,
   ILIST_GET,
@@ -55,6 +59,8 @@ void      ilistDumpInfo (ilist_t *list);
 ilistidx_t   ilistGetAllocCount (ilist_t *list);
 int       ilistGetOrdering (ilist_t *list);
 
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
+
 #endif /* INC_ILIST_H */
-
-

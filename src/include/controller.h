@@ -5,14 +5,14 @@
 #ifndef INC_CONTROLLER_H
 #define INC_CONTROLLER_H
 
-#if defined (__cplusplus) || defined (c_plusplus)
-extern "C" {
-#endif
-
 #include <stdint.h>
 
 #include "callback.h"
 #include "ilist.h"
+
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
 
 enum {
   CONTROLLER_NONE,

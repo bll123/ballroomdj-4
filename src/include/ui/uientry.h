@@ -4,12 +4,12 @@
 #ifndef INC_UIENTRY_H
 #define INC_UIENTRY_H
 
+#include "callback.h"
+#include "uiwcont.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
-
-#include "callback.h"
-#include "uiwcont.h"
 
 typedef int (*uientryval_t)(uiwcont_t *uiwidget, const char *label, void *udata);
 

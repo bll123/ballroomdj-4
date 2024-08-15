@@ -6,6 +6,10 @@
 
 #include <stdint.h>
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 /* supported types */
 enum {
   AUDIOSRC_TYPE_NONE,
@@ -62,5 +66,9 @@ asiterdata_t *asiStartIterator (asdata_t *asdata, const char *dir);
 void asiCleanIterator (asdata_t *asdata, asiterdata_t *asidata);
 int32_t asiIterCount (asdata_t *asdata, asiterdata_t *asidata);
 const char *asiIterate (asdata_t *asdata, asiterdata_t *asidata);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_AUDIOSRC_H */

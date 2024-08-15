@@ -8,6 +8,10 @@
 #include "nlist.h"
 #include "uiwcont.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   UIEIBDJ4_EXPORT,
   UIEIBDJ4_IMPORT,
@@ -26,5 +30,9 @@ char    *uieibdj4GetDir (uieibdj4_t *uieibdj4);
 const char  *uieibdj4GetPlaylist (uieibdj4_t *uieibdj4);
 const char  *uieibdj4GetNewName (uieibdj4_t *uieibdj4);
 void uieibdj4UpdateStatus (uieibdj4_t *uieibdj4, int count, int tot);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIEXPIMPBDJ4_H */

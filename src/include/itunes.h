@@ -6,6 +6,10 @@
 
 #include "nlist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   ITUNES_STARS_10,
   ITUNES_STARS_20,
@@ -40,5 +44,9 @@ nlist_t * itunesGetPlaylistData (itunes_t *itunes, const char *skey);
 void  itunesStartIteratePlaylists (itunes_t *itunes);
 const char *itunesIteratePlaylists (itunes_t *itunes);
 
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_ITUNES_H */

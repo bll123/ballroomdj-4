@@ -4,12 +4,12 @@
 #ifndef INC_UIMENU_H
 #define INC_UIMENU_H
 
+#include "callback.h"
+#include "uiwcont.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
-
-#include "callback.h"
-#include "uiwcont.h"
 
 enum {
   UIUTILS_MENU_MAX = 10,

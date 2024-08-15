@@ -6,6 +6,10 @@
 
 #include <stdint.h>
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef int32_t qidx_t;
 
 typedef void (*queueFree_t)(void *);
@@ -29,5 +33,9 @@ void    queueStartIterator (queue_t *q, qidx_t *idx);
 void    *queueIterateData (queue_t *q, qidx_t *idx);
 void    *queueIterateRemoveNode (queue_t *q, qidx_t *idx);
 int     queueDebugSearchDist (queue_t *q);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_QUEUE_H */

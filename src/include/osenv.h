@@ -4,17 +4,17 @@
 #ifndef INC_OSENV_H
 #define INC_OSENV_H
 
+#include "config.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
-
-#include "config.h"
 
 void    osGetEnv (const char *name, char *buff, size_t sz);
 int     osSetEnv (const char *name, const char *value);
 
 #if defined (__cplusplus) || defined (c_plusplus)
-}
+} /* extern C */
 #endif
 
 #endif /* INC_OSENV_H */

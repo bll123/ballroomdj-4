@@ -7,6 +7,10 @@
 #include "musicdb.h"
 #include "song.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 /* the return flags are used by the database update process */
 enum {
   SONGDB_NONE                 = 0,
@@ -31,5 +35,9 @@ size_t songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rr
 songdb_t *songdbAlloc (musicdb_t *musicdb);
 void  songdbFree (songdb_t *songdb);
 void  songdbSetMusicDB (songdb_t *songdb, musicdb_t *musicdb);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_SONGDB_H */

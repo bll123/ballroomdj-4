@@ -7,6 +7,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   BDJV_DELETE_PFX,
   BDJV_INSTANCE_NAME,       // BDJ4(.alt)?(.profile)?
@@ -51,5 +55,9 @@ void    bdjvarsSetStr (bdjvarkey_t idx, const char *str);
 int64_t bdjvarsGetNum (bdjvarkeyl_t idx);
 const char  *bdjvarsDesc (bdjvarkey_t idx);
 const char  *bdjvarslDesc (bdjvarkeyl_t idx);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_BDJVARS_H */

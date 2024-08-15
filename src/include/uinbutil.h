@@ -6,6 +6,10 @@
 
 #include <stdbool.h>
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   UI_TAB_MUSICQ,
   UI_TAB_HISTORY,
@@ -27,5 +31,9 @@ int  uinbutilIDGet (uinbtabid_t *nbtabid, int idx);
 int  uinbutilIDGetPage (uinbtabid_t *nbtabid, int id);
 void uinbutilIDStartIterator (uinbtabid_t *nbtabid, int *iteridx);
 int  uinbutilIDIterate (uinbtabid_t *nbtabid, int *iteridx);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UINBUTIL_H */

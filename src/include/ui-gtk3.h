@@ -4,6 +4,10 @@
 #ifndef INC_UI_GTK3_H
 #define INC_UI_GTK3_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 /* these are defined based on the gtk values */
 /* would change for a different gui package */
 enum {
@@ -23,5 +27,9 @@ enum {
   UI_FOREACH_STOP = true,
   UI_FOREACH_CONT = false,
 };
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UI_GTK3_H */

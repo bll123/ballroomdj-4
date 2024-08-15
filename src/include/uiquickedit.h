@@ -9,6 +9,10 @@
 #include "nlist.h"
 #include "uiwcont.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct uiqe uiqe_t;
 
 typedef struct {
@@ -25,5 +29,9 @@ void    uiqeFree (uiqe_t *uiqe);
 void    uiqeSetResponseCallback (uiqe_t *uiqe, callback_t *uicb);
 bool    uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double vol, int basevol);
 const uiqesave_t  *uiqeGetResponseData (uiqe_t *uiqe);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIQUICKEDIT_H */

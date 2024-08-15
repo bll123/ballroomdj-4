@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   ASF_GUID_LEN = 16,
 };
@@ -150,5 +154,9 @@ static guidlist_t asf_guids [ASF_GUID_MAX] = {
   [ASF_GUID_VIDEO_MEDIA] =
       { "BC19EFC0-5B4D-11CF-A8FD-00805F5C442B", "video-media" },
 };
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_ATIBDJ4ASF_H */

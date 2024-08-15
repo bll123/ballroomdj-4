@@ -12,7 +12,7 @@ int     osChangeDir (const char *path);
 void    osGetCurrentDir (char *buff, size_t sz);
 
 #if defined (__cplusplus) || defined (c_plusplus)
-}
+} /* extern C */
 #endif
 
 #endif /* INC_OSDIRUTIL_H */

@@ -14,6 +14,10 @@
 #include "progstate.h"
 #include "uiwcont.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct uiplayer uiplayer_t;
 
 uiplayer_t  * uiplayerInit (const char *tag, progstate_t *progstate, conn_t *conn, musicdb_t *musicdb, dispsel_t *dispsel);
@@ -28,5 +32,9 @@ void  uiplayerDisableSpeed (uiplayer_t *uiplayer);
 void  uiplayerDisableSeek (uiplayer_t *uiplayer);
 void  uiplayerGetVolumeSpeed (uiplayer_t *uiplayer, int *baseVolume, double *volume, double *speed);
 bool  uiplayerGetRepeat (uiplayer_t *uiplayer);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIPLAYER_H */

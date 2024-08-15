@@ -4,6 +4,10 @@
 #ifndef INC_BDJMSG_H
 #define INC_BDJMSG_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 /* when a new route is added, update: */
 /* conn.c : needs to know the port for each route */
 /* bdjmsg.c: debugging information for the route */
@@ -218,5 +222,9 @@ void      msgDecode (char *msgbuff, bdjmsgroute_t *routefrom,
               bdjmsgroute_t *route, bdjmsgmsg_t *msg, char *args, size_t alen);
 const char *msgDebugText (bdjmsgmsg_t msg);
 const char *msgRouteDebugText (bdjmsgroute_t route);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_BDJMSG_H */

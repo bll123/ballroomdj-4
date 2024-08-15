@@ -21,6 +21,10 @@
 # pragma clang diagnostic pop
 #endif
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #if _typ_SOCKET
  typedef SOCKET Sock_t;
 #else
@@ -70,5 +74,9 @@ int           sockWriteStr (Sock_t, char *s, size_t slen);
 int           sockWriteBinary (Sock_t, char *data, size_t dlen);
 bool          socketInvalid (Sock_t sock);
 bool          sockWaitClosed (sockinfo_t *sockinfo);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_SOCK_H */

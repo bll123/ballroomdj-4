@@ -4,6 +4,10 @@
 #ifndef INC_UI_MACOS_H
 #define INC_UI_MACOS_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 /* 2024-8-13 these are all wrong */
 enum {
   UICB_STOP = true,
@@ -22,5 +26,9 @@ enum {
   UI_FOREACH_STOP = true,
   UI_FOREACH_CONT = false,
 };
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UI_MACOS_H */

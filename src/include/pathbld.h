@@ -4,6 +4,10 @@
 #ifndef INC_PATHBLD_H
 #define INC_PATHBLD_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   PATHBLD_MP_NONE         = 0,
   /* relative paths */
@@ -43,5 +47,9 @@ typedef enum {
 
 char *        pathbldMakePath (char *buff, size_t buffsz,
                   const char *base, const char *extension, int flags);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_PATHBLD_H */

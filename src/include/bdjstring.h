@@ -6,6 +6,10 @@
 
 #include "config.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 char *    stringAsciiToLower (char *s);
 char *    stringAsciiToUpper (char *s);
 void      stringTrim (char *s);
@@ -26,6 +30,10 @@ size_t strlcpy(char *dst, const char *src, size_t siz);
 #  undef snprintf   // undo mongoose snprintf define
 # endif
 # define snprintf(s,ssz,fmt,...) _sprintf_p (s, ssz, fmt __VA_OPT__(,) __VA_ARGS__)
+#endif
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
 #endif
 
 #endif /* INC_BDJSTRING_H */

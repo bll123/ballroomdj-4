@@ -7,6 +7,10 @@
 #include "datafile.h"
 #include "slist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   DISP_SEL_LOAD_PLAYER    = 0x0001,
   DISP_SEL_LOAD_MANAGE    = 0x0002,
@@ -48,5 +52,9 @@ dispsel_t * dispselAlloc (int loadtype);
 void      dispselFree (dispsel_t *dispsel);
 slist_t   * dispselGetList (dispsel_t *dispsel, dispselsel_t idx);
 void      dispselSave (dispsel_t *dispsel, dispselsel_t idx, slist_t *list);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_DISPSEL_H */

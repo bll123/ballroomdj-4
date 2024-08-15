@@ -8,6 +8,10 @@
 #include "song.h"
 #include "tagdef.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct audioid audioid_t;
 typedef struct audioidmb audioidmb_t;
 typedef struct audioidacoustid audioidacoustid_t;
@@ -112,5 +116,9 @@ int acoustidLookup (audioidacoustid_t *acoustid, const song_t *song, audioid_res
 audioidacr_t * acrInit (void);
 void acrFree (audioidacr_t *acr);
 int acrLookup (audioidacr_t *acr, const song_t *song, audioid_resp_t *resp);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_AUDIOID_H */

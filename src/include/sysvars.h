@@ -6,6 +6,10 @@
 
 #include <stdint.h>
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   SV_AUDIOID_MUSICBRAINZ_URI,
   SV_AUDIOID_ACOUSTID_URI,
@@ -147,5 +151,9 @@ bool    isWindows (void);
 bool    isLinux (void);
 sysversinfo_t *sysvarsParseVersionFile (const char *path);
 void    sysvarsParseVersionFileFree (sysversinfo_t *versinfo);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_SYSVARS_H */

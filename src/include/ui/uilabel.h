@@ -4,11 +4,11 @@
 #ifndef INC_UILABEL_H
 #define INC_UILABEL_H
 
+#include "uiwcont.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
-
-#include "uiwcont.h"
 
 uiwcont_t *uiCreateLabel (const char *label);
 void  uiLabelAddClass (const char *classnm, const char *color);

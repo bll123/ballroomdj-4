@@ -9,6 +9,10 @@
 #include "nlist.h"
 #include "slist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   SONG_NORM,
   SONG_UNADJUSTED_DURATION,
@@ -40,5 +44,9 @@ void      songSetChanged (song_t *song);
 bool      songHasSonglistChange (song_t *song);
 void      songClearChanged (song_t *song);
 //void      songDump (song_t *song);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_SONG_H */

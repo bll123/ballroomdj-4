@@ -7,6 +7,10 @@
 #include "datafile.h"
 #include "nlist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   AUTOSEL_BEG_COUNT,
   AUTOSEL_BEG_FAST,
@@ -35,5 +39,9 @@ autosel_t     *autoselAlloc (void);
 void          autoselFree (autosel_t *);
 double        autoselGetDouble (autosel_t *autosel, autoselkey_t idx);
 ssize_t       autoselGetNum (autosel_t *autosel, autoselkey_t idx);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_AUTOSEL_H */

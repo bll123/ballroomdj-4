@@ -7,6 +7,10 @@
 #include "datafile.h"
 #include "ilist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   SONGLIST_URI,
   SONGLIST_TITLE,
@@ -38,5 +42,9 @@ void songlistSetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx, const cha
 void songlistClear (songlist_t *sl);
 void songlistSave (songlist_t *sl, int tmflag, int distvers);
 int songlistDistVersion (songlist_t *sl);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_SONGLIST_H */

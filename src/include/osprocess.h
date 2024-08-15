@@ -4,13 +4,13 @@
 #ifndef INC_OSPROCESS_H
 #define INC_OSPROCESS_H
 
-#if defined (__cplusplus) || defined (c_plusplus)
-extern "C" {
-#endif
-
 #include "config.h"
 
 #include <sys/types.h>
+
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
 
 enum {
   OS_PROC_NONE      = 0,
@@ -25,7 +25,7 @@ int osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_
 char *osRunProgram (const char *prog, ...);
 
 #if defined (__cplusplus) || defined (c_plusplus)
-}
+} /* extern C */
 #endif
 
 #endif /* INC_OSPROCESS_H */

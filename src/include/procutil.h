@@ -13,6 +13,10 @@
 #include "conn.h"
 #include "log.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   PROCUTIL_NO_DETACH,
   PROCUTIL_DETACH,
@@ -49,5 +53,9 @@ void        procutilCloseProcess (procutil_t *process, conn_t *conn,
     bdjmsgroute_t route);
 void        procutilForceStop (procutil_t *process, int flags,
     bdjmsgroute_t route);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_PROCUTIL_H */

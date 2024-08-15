@@ -10,6 +10,10 @@
 #include "datafile.h"
 #include "slist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   ET_COMBOBOX,
   ET_ENTRY,
@@ -126,5 +130,9 @@ extern tagdef_t tagdefs [TAG_KEY_MAX];
 void        tagdefInit (void);
 void        tagdefCleanup (void);
 tagdefkey_t tagdefLookup (const char *str);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_TAGDEF_H */

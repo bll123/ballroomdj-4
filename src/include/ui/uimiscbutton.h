@@ -4,11 +4,11 @@
 #ifndef INC_UIMISCBUTTON_H
 #define INC_UIMISCBUTTON_H
 
+#include "uiwcont.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
-
-#include "uiwcont.h"
 
 uiwcont_t *uiCreateFontButton (const char *fontname);
 const char * uiFontButtonGetFont (uiwcont_t *uiwidget);

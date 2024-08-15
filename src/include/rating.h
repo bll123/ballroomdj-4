@@ -7,6 +7,10 @@
 #include "datafile.h"
 #include "ilist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   RATING_RATING,
   RATING_WEIGHT,
@@ -32,5 +36,9 @@ void        ratingStartIterator (rating_t *ratings, ilistidx_t *iteridx);
 ilistidx_t  ratingIterate (rating_t *ratings, ilistidx_t *iteridx);
 void        ratingConv (datafileconv_t *conv);
 void        ratingSave (rating_t *ratings, ilist_t *list);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_RATING_H */

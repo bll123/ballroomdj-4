@@ -18,6 +18,10 @@
 
 #include "uiwcont.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 /* uibutton.c */
 bool uiButtonCheckRepeat (uiwcont_t *uiwidget);
 bool uiButtonPressCallback (void *udata);
@@ -28,5 +32,9 @@ uiwcont_t * uiCreateColonLabel (const char *txt);
 
 /* uifont.c */
 void uiFontInfo (const char *font, char *buff, size_t sz, int *fontsz);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIGENERAL_H */

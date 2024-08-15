@@ -4,12 +4,12 @@
 #ifndef INC_UIDRAGDROP_H
 #define INC_UIDRAGDROP_H
 
+#include "callback.h"
+#include "uiwcont.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
-
-#include "callback.h"
-#include "uiwcont.h"
 
 void uiDragDropSetDestURICallback (uiwcont_t *uiwcont, callback_t *cb);
 

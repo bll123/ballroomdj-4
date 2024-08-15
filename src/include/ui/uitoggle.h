@@ -4,12 +4,12 @@
 #ifndef INC_UITOGGLE_H
 #define INC_UITOGGLE_H
 
+#include "callback.h"
+#include "uiwcont.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
-
-#include "callback.h"
-#include "uiwcont.h"
 
 uiwcont_t *uiCreateCheckButton (const char *txt, int value);
 uiwcont_t *uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value);

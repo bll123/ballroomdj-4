@@ -4,6 +4,10 @@
 #ifndef INC_UI_NULL_H
 #define INC_UI_NULL_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   UICB_STOP = true,
   UICB_CONT = false,
@@ -20,5 +24,9 @@ enum {
   UI_FOREACH_STOP = true,
   UI_FOREACH_CONT = false,
 };
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UI_NULL_H */

@@ -7,6 +7,10 @@
 #include <stdbool.h>
 #include <curl/curl.h>
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef void (*webclientcb_t)(void *userdata, const char *resp, size_t len);
 
 typedef struct webclient webclient_t;
@@ -27,5 +31,9 @@ void  webclientClose (webclient_t *webclient);
 void  webclientSetTimeout (webclient_t *webclient, long timeout);
 void  webclientSpoofUserAgent (webclient_t *webclient);
 void  webclientCompressFile (const char *infn, const char *outfn);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_WEBCLIENT_H */

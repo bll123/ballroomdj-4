@@ -4,6 +4,10 @@
 #ifndef INC_UIWCONT_H
 #define INC_UIWCONT_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct uiwcont uiwcont_t;
 
 /* general routines that are called by the ui specific code */
@@ -19,5 +23,9 @@ const char * uiwcontDesc (int wtype);
 
 /* uiwcontFree() will also call any widget-specific free procedures */
 void  uiwcontFree (uiwcont_t *uiwidget);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIWCONT_H */

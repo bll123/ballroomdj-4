@@ -6,6 +6,10 @@
 
 #include <gtk/gtk.h>
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct uispecific {
   GtkWidget     *packwidget;
   union {
@@ -16,5 +20,9 @@ typedef struct uispecific {
     GtkAdjustment *adjustment;
   };
 } uispecific_t;
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIGTK3_INT_H */

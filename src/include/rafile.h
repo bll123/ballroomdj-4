@@ -7,6 +7,10 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef int32_t rafileidx_t;
 
 typedef struct rafile rafile_t;
@@ -33,5 +37,9 @@ void          raEndBatch (rafile_t *rafile);
 rafileidx_t   raGetSize (rafile_t *rafile);
 rafileidx_t   raGetVersion (rafile_t *rafile);
 #define RRN_TO_OFFSET(rrn)  (((rrn) - 1L) * RAFILE_REC_SIZE + RAFILE_HDR_SIZE)
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_RAFILE_H */

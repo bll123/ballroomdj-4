@@ -8,6 +8,10 @@
 #include "nlist.h"
 #include "uiwcont.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   SELFILE_PLAYLIST,
   SELFILE_SEQUENCE,
@@ -28,5 +32,9 @@ void selectFileDialog (int type, uiwcont_t *window, nlist_t *options, callback_t
 void selectFileFree (uiselectfile_t *selectfile);
 bool selectAudioFileCallback (void *udata);
 bool selectAllFileCallback (void *udata);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UISELECTFILE_H */

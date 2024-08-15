@@ -7,6 +7,10 @@
 
 #include <stdint.h>
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct callback callback_t;
 
 typedef bool  (*callbackFunc)(void *udata);
@@ -36,5 +40,9 @@ callback_t *callbackInitII (callbackFuncII cb, void *udata);
 callback_t *callbackInitS (callbackFuncS cb, void *udata);
 callback_t *callbackInitSS (callbackFuncSS cb, void *udata);
 callback_t *callbackInitSI (callbackFuncSI cb, void *udata);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_CALLBACK_H */

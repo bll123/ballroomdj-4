@@ -11,6 +11,10 @@
 #include "queue.h"
 #include "tagdef.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   /* must match the number of music queues defined in bdj4.h (BDJ4_QUEUE_MAX) */
   MUSICQ_PB_A,
@@ -75,5 +79,9 @@ time_t      musicqGetDuration (musicq_t *musicq, musicqidx_t musicqidx);
 const char *musicqGetDance (musicq_t *musicq, musicqidx_t musicqidx, qidx_t idx);
 const char *musicqGetData (musicq_t *musicq, musicqidx_t musicqidx, qidx_t idx, tagdefkey_t tagidx);
 musicqidx_t musicqNextQueue (musicqidx_t musicqidx);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_MUSICQ_H */

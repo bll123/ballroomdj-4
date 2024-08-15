@@ -4,12 +4,12 @@
 #ifndef INC_UIBOX_H
 #define INC_UIBOX_H
 
+#include "callback.h"
+#include "uiwcont.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
-
-#include "callback.h"
-#include "uiwcont.h"
 
 uiwcont_t *uiCreateVertBox (void);
 uiwcont_t *uiCreateHorizBox (void);

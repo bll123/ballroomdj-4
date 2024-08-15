@@ -6,6 +6,10 @@
 
 #include <stdbool.h>
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct dbus dbus_t;
 
 enum {
@@ -37,5 +41,9 @@ void dbusMessageSetDataString (dbus_t *dbus, const char *sdata, ...);
 bool dbusMessage (dbus_t *dbus, const char *bus, const char *objpath, const char *intfc, const char *method);
 bool dbusResultGet (dbus_t *dbus, ...);
 void dbusSetInterfaceSkeleton (dbus_t *dbus, void *skel, const char *objpath);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_DBUSI_H */

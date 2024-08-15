@@ -4,12 +4,12 @@
 #ifndef INC_UINOTEBOOK_H
 #define INC_UINOTEBOOK_H
 
+#include "callback.h"
+#include "uiwcont.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
-
-#include "callback.h"
-#include "uiwcont.h"
 
 uiwcont_t *uiCreateNotebook (void);
 void  uiNotebookTabPositionLeft (uiwcont_t *uiwidget);

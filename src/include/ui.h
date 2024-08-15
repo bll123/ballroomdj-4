@@ -46,4 +46,8 @@
 #include "ui/uiwindow.h"
 #include "uigeneral.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
+
 #endif /* INC_UI_H */

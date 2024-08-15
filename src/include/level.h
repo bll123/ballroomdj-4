@@ -7,6 +7,10 @@
 #include "datafile.h"
 #include "ilist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   LEVEL_LEVEL,
   LEVEL_DEFAULT_FLAG,
@@ -37,5 +41,9 @@ void        levelStartIterator (level_t *levels, ilistidx_t *iteridx);
 ilistidx_t  levelIterate (level_t *levels, ilistidx_t *iteridx);
 void        levelConv (datafileconv_t *conv);
 void        levelSave (level_t *levels, ilist_t *list);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_LEVEL_H */

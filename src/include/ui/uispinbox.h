@@ -4,16 +4,16 @@
 #ifndef INC_UISPINBOX_H
 #define INC_UISPINBOX_H
 
-#if defined (__cplusplus) || defined (c_plusplus)
-extern "C" {
-#endif
-
 #include <stdint.h>
 
 #include "callback.h"
 #include "nlist.h"
 #include "slist.h"
 #include "uiwcont.h"
+
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
 
 enum {
   SB_TEXT,

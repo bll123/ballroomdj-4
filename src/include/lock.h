@@ -8,9 +8,17 @@
 
 #include "bdjmsg.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 char  * lockName (bdjmsgroute_t route);
 pid_t lockExists (char *, int);
 int   lockAcquire (char *, int);
 int   lockRelease (char *, int);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_LOCK_H */

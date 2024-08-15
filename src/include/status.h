@@ -7,6 +7,10 @@
 #include "datafile.h"
 #include "ilist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   STATUS_STATUS,
   STATUS_PLAY_FLAG,
@@ -28,5 +32,9 @@ void        statusStartIterator (status_t *status, ilistidx_t *iteridx);
 ilistidx_t  statusIterate (status_t *status, ilistidx_t *iteridx);
 void        statusConv (datafileconv_t *conv);
 void        statusSave (status_t *status, ilist_t *list);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_STATUS_H */

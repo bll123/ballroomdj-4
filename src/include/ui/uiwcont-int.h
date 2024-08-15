@@ -4,13 +4,13 @@
 #ifndef INC_UIWCONT_INT_H
 #define INC_UIWCONT_INT_H
 
-#if defined (__cplusplus) || defined (c_plusplus)
-extern "C" {
-#endif
-
 #include "tmutil.h"
 
 #include "ui/uidialog.h"
+
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
 
 /* partially in use. */
 /* The widget container will be more generic and */

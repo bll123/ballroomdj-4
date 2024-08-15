@@ -6,6 +6,10 @@
 
 #include <stdbool.h>
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "callback.h"
 #include "conn.h"
 #include "dispsel.h"
@@ -138,6 +142,10 @@ void  uimusicqSwap (uimusicq_t *uimusicq, int mqidx);
 void  uimusicqCreatePlaylistList (uimusicq_t *uimusicq);
 void  uimusicqTruncateQueue (uimusicq_t *uimusicq, int mqidx, nlistidx_t idx);
 void  uimusicqPlay (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIMUSICQ_H */
 

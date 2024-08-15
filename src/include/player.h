@@ -4,6 +4,10 @@
 #ifndef INC_PLAYER_H
 #define INC_PLAYER_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   PL_STATE_UNKNOWN,
   PL_STATE_STOPPED,
@@ -18,5 +22,9 @@ typedef enum {
 enum {
   PL_UNIQUE_ANN = -2,
 };
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_PLAYER_H */

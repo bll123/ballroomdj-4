@@ -4,12 +4,12 @@
 #ifndef INC_UISCALE_H
 #define INC_UISCALE_H
 
+#include "callback.h"
+#include "uiwcont.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
-
-#include "callback.h"
-#include "uiwcont.h"
 
 uiwcont_t *uiCreateScale (double lower, double upper,
     double stepinc, double pageinc, double initvalue, int digits);

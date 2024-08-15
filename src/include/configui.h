@@ -18,6 +18,10 @@
 #include "uivirtlist.h"
 #include "uiwcont.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 /* base type */
 typedef enum {
   CONFUI_NONE,
@@ -552,5 +556,9 @@ bool confuiTableAdd (void *udata);
 
 /* confui.c */
 void confuiBuildUIUserInterface (confuigui_t *gui);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_CONFIGUI_H */

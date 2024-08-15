@@ -11,6 +11,10 @@
 #include "uiwcont.h"
 #include "ui/uientry.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   VL_TYPE_NONE,
   VL_TYPE_CHECKBOX,
@@ -125,5 +129,9 @@ void  uivlDisplay (uivirtlist_t *vl);
 void uivlUpdateDisplay (uivirtlist_t *vl);
 void  uivlPopulate (uivirtlist_t *vl);
 uiwcont_t *uivlGetEventHandler (uivirtlist_t *vl);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIVIRTLIST_H */

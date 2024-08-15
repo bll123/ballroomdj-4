@@ -11,6 +11,10 @@
 #include "musicdb.h"
 #include "nlist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   SONG_FILTER_MPM_HIGH,
   SONG_FILTER_MPM_LOW,
@@ -70,5 +74,9 @@ int           songfilterGetNum (songfilter_t *sf, int key);
 dbidx_t       songfilterGetByIdx (songfilter_t *sf, nlistidx_t lookupIdx);
 char *        songfilterGetSort (songfilter_t *sf);
 dbidx_t       songfilterGetCount (songfilter_t *sf);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_SONGFILTER_H */

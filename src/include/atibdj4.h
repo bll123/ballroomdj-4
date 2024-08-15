@@ -7,6 +7,10 @@
 #include "ati.h"
 #include "slist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct atidatatag atidatatag_t;
 
 typedef struct atidata {
@@ -87,5 +91,9 @@ void atibdj4FreeSavedRIFFTags (atisaved_t *atisaved, int tagtype, int filetype);
 int  atibdj4RestoreRIFFTags (atidata_t *atidata, atisaved_t *atisaved, const char *ffn, int tagtype, int filetype);
 void atibdj4CleanRIFFTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
 void atibdj4LogRIFFVersion (void);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_ATIBDJ4_H */

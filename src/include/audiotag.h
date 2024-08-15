@@ -6,6 +6,10 @@
 
 #include "slist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   AT_KEEP_MOD_TIME,
   AT_UPDATE_MOD_TIME,
@@ -29,5 +33,9 @@ void    audiotagFreeSavedTags (const char *ffn, void *sdata);
 int     audiotagRestoreTags (const char *ffn, void *sdata);
 void    audiotagCleanTags (const char *ffn);
 void    audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_AUDIOTAG_H */

@@ -9,6 +9,10 @@
 #include "tmutil.h"
 #include "volsink.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   PLI_CMD_STATUS_WAIT,
   PLI_CMD_STATUS_OK,
@@ -92,5 +96,9 @@ int           pliiAudioDeviceList (plidata_t *pliData, volsinklist_t *);
 int           pliiSupported (plidata_t *pliData);
 void          pliiDesc (const char **ret, int max);
 int           pliiGetVolume (plidata_t *pliData);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif

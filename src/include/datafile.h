@@ -9,6 +9,10 @@
 #include "slist.h"
 #include "ilist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   DFTYPE_NONE,
   DFTYPE_LIST,
@@ -102,5 +106,9 @@ char *datafileGetFname (datafile_t *df);
 list_t *datafileGetData (datafile_t *df);
 listidx_t parseGetAllocCount (parseinfo_t *pi);
 
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_DATAFILE_H */

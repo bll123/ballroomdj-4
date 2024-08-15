@@ -4,11 +4,11 @@
 #ifndef INC_UIIMAGE_H
 #define INC_UIIMAGE_H
 
+#include "uiwcont.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
-
-#include "uiwcont.h"
 
 uiwcont_t *uiImageNew (void);
 uiwcont_t *uiImageFromFile (const char *fn);

@@ -4,6 +4,10 @@
 #ifndef INC_SUPPORT_H
 #define INC_SUPPORT_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   SUPPORT_NO_COMPRESSION,
   SUPPORT_COMPRESSED,
@@ -15,5 +19,9 @@ support_t * supportAlloc (void);
 void supportFree (support_t *support);
 void supportGetLatestVersion (support_t *support, char *buff, size_t sz);
 void supportSendFile (support_t *support, const char *ident, const char *origfn, int compflag);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_SUPPORT_H */

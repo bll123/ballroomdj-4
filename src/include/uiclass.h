@@ -4,6 +4,10 @@
 #ifndef INC_UICLASS_H
 #define INC_UICLASS_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #define ACCENT_CLASS "bdj-accent"
 #define CHGIND_CHANGED_CLASS "bdj-chgindchanged"
 #define CHGIND_ERROR_CLASS "bdj-chginderror"
@@ -25,5 +29,9 @@
 #define SELECTED_CLASS "bdj-selected"
 #define SPINBOX_READONLY_CLASS "bdj-sb-readonly"
 #define SWITCH_CLASS "bdj-switch"
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UICLASS_H */

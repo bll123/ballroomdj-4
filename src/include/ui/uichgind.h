@@ -4,11 +4,11 @@
 #ifndef INC_UICHGIND_H
 #define INC_UICHGIND_H
 
+#include "uiwcont.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
-
-#include "uiwcont.h"
 
 uiwcont_t *uiCreateChangeIndicator (uiwcont_t *boxp);
 void  uichgindMarkNormal (uiwcont_t *uiwidget);

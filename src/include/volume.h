@@ -4,11 +4,11 @@
 #ifndef INC_VOLUME_H
 #define INC_VOLUME_H
 
+#include "ilist.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
-
-#include "ilist.h"
 
 typedef struct volsinklist volsinklist_t;
 

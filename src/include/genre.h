@@ -8,6 +8,10 @@
 #include "ilist.h"
 #include "slist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   GENRE_GENRE,
   GENRE_CLASSICAL_FLAG,
@@ -33,5 +37,9 @@ ilistidx_t genreIterate (genre_t *genres, ilistidx_t *iteridx);
 void      genreConv (datafileconv_t *conv);
 slist_t   *genreGetList (genre_t *genres);
 void      genreSave (genre_t *genres, ilist_t *list);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_GENRE_H */

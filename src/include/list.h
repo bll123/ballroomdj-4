@@ -7,6 +7,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef int32_t listidx_t;
 typedef int64_t listnum_t;
 
@@ -36,5 +40,9 @@ enum {
 
 typedef struct list list_t;
 typedef void (*listFree_t)(void *);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_LIST_H */

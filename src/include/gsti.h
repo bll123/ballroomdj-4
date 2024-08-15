@@ -6,6 +6,10 @@
 
 #include "pli.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct gsti gsti_t;
 
 gsti_t *gstiInit (const char *plinm);
@@ -21,5 +25,9 @@ void gstiStop (gsti_t *gsti);
 bool gstiSetPosition (gsti_t *gsti, int64_t pos);
 bool gstiSetRate (gsti_t *gsti, double rate);
 int gstiGetVolume (gsti_t *gsti);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_GSTI_H */

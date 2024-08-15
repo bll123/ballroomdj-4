@@ -6,10 +6,18 @@
 
 #include "conn.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 void starterStopAllProcesses (conn_t *conn);
 void starterRemoveAllLocks (void);
 void starterCleanVolumeReg (void);
 void starterPlayerStartup (void);
 void starterPlayerShutdown (void);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_STARTUTIL_H */

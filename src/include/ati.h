@@ -12,6 +12,10 @@ extern "C" {
 #include "nlist.h"
 #include "tagdef.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #define LIBATI_PFX  "libati"
 
 enum {

@@ -10,6 +10,10 @@
 #include "song.h"
 #include "slist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef int32_t dbidx_t;
 
 typedef struct musicdb musicdb_t;
@@ -51,5 +55,9 @@ song_t    *dbIterate (musicdb_t *db, dbidx_t *dbidx, slistidx_t *iteridx);
 void      dbBackup (void);
 dbidx_t   dbAddTemporarySong (musicdb_t *db, song_t *song);
 /* void      dbDumpSongList (musicdb_t *db); */ // for debugging
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_MUSICDB_H */

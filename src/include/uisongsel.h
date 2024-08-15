@@ -7,6 +7,10 @@
 #include <stdbool.h>
 #include <sys/types.h>
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "conn.h"
 #include "dispsel.h"
 #include "msgparse.h"
@@ -99,6 +103,10 @@ void uisongselCopySelectList (uisongsel_t *uisongsel, uisongsel_t *peer);
 /* uisongselcommon.c */
 void  uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx);
 void  uisongselPlayProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UISONGSEL_H */
 

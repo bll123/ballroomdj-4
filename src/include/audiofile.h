@@ -4,6 +4,10 @@
 #ifndef INC_AUDIOFILE_H
 #define INC_AUDIOFILE_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   /* some of the AF_ flags are only internal to audiotag.c */
   AF_REWRITE_NONE     = 0,
@@ -27,5 +31,9 @@ enum {
   AFILE_TYPE_ASF,     // advanced system format, .wma
   AFILE_TYPE_MAX,
 };
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_AUDIOFILE_H */

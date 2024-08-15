@@ -4,6 +4,10 @@
 #ifndef INC_BDJ4_H
 #define INC_BDJ4_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #if ! defined (MAXPATHLEN)
 enum {
   MAXPATHLEN = 1024,
@@ -112,5 +116,9 @@ enum {
 #define MACOS_APP_EXT       ".app"
 #define MACOS_APP_PREFIX    "/Contents/MacOS"
 #define MACOS_DIR_LIBDATA   "/Library/Application Support"
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_BDJ4_H */

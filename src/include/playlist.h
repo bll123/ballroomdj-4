@@ -18,6 +18,10 @@
 #include "songlist.h"
 #include "songsel.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   PLAYLIST_ALLOWED_KEYWORDS,      //
   PLAYLIST_ANNOUNCE,              //
@@ -99,5 +103,9 @@ void      playlistCheckAndCreate (const char *name, pltype_t pltype);
 void      playlistDelete (const char *name);
 void      playlistCopy (const char *oldname, const char *newname);
 pltype_t  playlistGetType (const char *name);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_PLAYLIST_H */

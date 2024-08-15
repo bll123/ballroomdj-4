@@ -8,6 +8,10 @@
 #include "nlist.h"
 #include "song.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   AA_NORMVOL_MAX,
   AA_NORMVOL_TARGET,
@@ -29,5 +33,9 @@ aa_t * aaAlloc (void);
 void aaFree (aa_t *aa);
 bool aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags);
 void aaAdjust (musicdb_t *musicdb, song_t *song, const char *infn, const char *outfn, long dur, int fadein, int fadeout, int gap);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_AUDIOADJUST_H */

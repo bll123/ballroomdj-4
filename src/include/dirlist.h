@@ -6,6 +6,10 @@
 
 #include "slist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   DIRLIST_FILES = 0x01,
   DIRLIST_DIRS  = 0x02,
@@ -17,5 +21,9 @@ enum {
 /* dirlist.c */
 slist_t * dirlistBasicDirList (const char *dir, const char *extension);
 slist_t * dirlistRecursiveDirList (const char *dir, int flags);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_DIRLIST_H */

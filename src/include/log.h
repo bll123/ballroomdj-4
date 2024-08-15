@@ -10,6 +10,10 @@
 
 #include "player.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 /*
  * log tags:
  *  alt  - alt-setup
@@ -131,5 +135,9 @@ void rlogProcEnd (const char *suffix, const char *fn, int line, const char *func
 void rlogError (const char *msg, int err, const char *fn, int line, const char *func);
 void rlogVarMsg (logidx_t, loglevel_t level, const char *fn, int line, const char *func, const char *fmt, ...)
     __attribute__ ((format (printf, 6, 7)));
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_LOG_H */

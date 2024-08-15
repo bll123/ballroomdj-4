@@ -14,6 +14,10 @@
 #include "uisongsel.h"
 #include "uiwcont.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct se_internal se_internal_t;
 
 typedef struct {
@@ -57,6 +61,10 @@ void  uisongeditSetPlayButtonState (uisongedit_t *uisongedit, int active);
 void  uisongeditEditAllSetFields (uisongedit_t *uisongedit, int editflag);
 void  uisongeditClearChanged (uisongedit_t *uisongedit, int editallflag);
 bool  uisongeditEditAllApply (uisongedit_t *uisongedit);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UISONGEDIT_H */
 

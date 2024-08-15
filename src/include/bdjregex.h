@@ -4,6 +4,10 @@
 #ifndef INC_BDJREGEX_H
 #define INC_BDJREGEX_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct bdjregex bdjregex_t;
 
 bdjregex_t * regexInit (const char *pattern);
@@ -14,5 +18,9 @@ char ** regexGet (bdjregex_t *rx, const char *str);
 void regexGetFree (char **val);
 char *regexReplace (bdjregex_t *rx, const char *str, const char *repl);
 char *regexReplaceLiteral (const char *str, const char *tgt, const char *repl);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_BDJREGEX_H */

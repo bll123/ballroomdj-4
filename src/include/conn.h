@@ -10,6 +10,10 @@
 #include "sock.h"
 #include "bdjmsg.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct conn conn_t;
 
 /**
@@ -109,6 +113,10 @@ bool      connIsConnected (conn_t *conn, bdjmsgroute_t route);
 bool      connHaveHandshake (conn_t *conn, bdjmsgroute_t route);
 
 bool      connWaitClosed (conn_t *conn, int *stopwaitcount);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_CONN_H */
 

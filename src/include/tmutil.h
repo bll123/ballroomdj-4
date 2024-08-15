@@ -9,6 +9,10 @@
 #include <sys/time.h>
 #include <unistd.h>
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #if ! _typ_suseconds_t && ! defined (BDJ_TYPEDEF_USECONDS)
  typedef useconds_t suseconds_t;
  #define BDJ_TYPEDEF_USECONDS 1
@@ -54,5 +58,9 @@ time_t    tmutilStringToUTC (const char *str, const char *fmt);
 
 /* linux does not define this by default */
 char * strptime (const char *buf, const char *fmt, struct tm *tm);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_TMUTIL_H */

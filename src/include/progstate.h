@@ -7,6 +7,10 @@
 #include "ilist.h"
 #include "tmutil.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   STATE_NOT_RUNNING,
   STATE_INITIALIZING,
@@ -42,5 +46,9 @@ programstate_t  progstateShutdownProcess (progstate_t *progstate);
 programstate_t  progstateCurrState (progstate_t *progstate);
 void            progstateLogTime (progstate_t *progstate, char *label);
 const char      *progstateDebug (progstate_t *progstate);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_PROGSTATE_H */

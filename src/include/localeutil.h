@@ -6,6 +6,10 @@
 
 #include "slist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 char *_gettext (const char *str);
 
 enum {
@@ -23,6 +27,10 @@ void  localeCleanup (void);
 const char *localeGetStr (int key);
 slist_t *localeGetDisplayList (void);
 void  localeDebug (const char *tag);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_LOCALEUTIL_H */
 

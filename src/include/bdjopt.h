@@ -9,6 +9,10 @@
 #include "datafile.h"
 #include "nlist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   WRITE_TAGS_NONE,
   WRITE_TAGS_BDJ_ONLY,
@@ -179,5 +183,9 @@ void    bdjoptConvMarqueeShow (datafileconv_t *conv);
 void    bdjoptConvDanceselMethod (datafileconv_t *conv);
 void    bdjoptConvMobMQType (datafileconv_t *conv);
 
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_BDJOPT_H */

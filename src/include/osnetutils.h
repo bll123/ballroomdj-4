@@ -6,6 +6,14 @@
 
 #include <sys/types.h>
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 char          *getHostname (char *buff, size_t sz);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_OSNETUTILS_H */

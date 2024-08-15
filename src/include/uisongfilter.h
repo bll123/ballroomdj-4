@@ -9,6 +9,10 @@
 #include "songfilter.h"
 #include "uiwcont.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct uisongfilter uisongfilter_t;
 
 /* uisongfilter.c */
@@ -24,5 +28,9 @@ void uisfSetPlaylist (uisongfilter_t *uisf, char *slname);
 void uisfClearPlaylist (uisongfilter_t *uisf);
 void uisfSetDanceIdx (uisongfilter_t *uisf, int danceIdx);
 songfilter_t *uisfGetSongFilter (uisongfilter_t *uisf);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UISONGFILTER_H */

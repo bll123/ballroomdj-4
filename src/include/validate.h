@@ -4,6 +4,10 @@
 #ifndef INC_VALIDATE_H
 #define INC_VALIDATE_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   VAL_NONE          = 0,
   VAL_NOT_EMPTY     = (1 << 0),
@@ -19,5 +23,9 @@ enum {
 };
 
 bool validate (char *buff, size_t sz, const char *label, const char *str, int flags);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_VALIDATE_H */

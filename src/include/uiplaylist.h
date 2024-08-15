@@ -7,6 +7,10 @@
 #include "callback.h"
 #include "uiwcont.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct uiplaylist uiplaylist_t;
 
 enum {
@@ -23,5 +27,9 @@ const char *uiplaylistGetKey (uiplaylist_t *uiplaylist);
 void uiplaylistSetKey (uiplaylist_t *uiplaylist, const char *fn);
 void uiplaylistSizeGroupAdd (uiplaylist_t *uiplaylist, uiwcont_t *sg);
 void uiplaylistSetSelectCallback (uiplaylist_t *uiplaylist, callback_t *cb);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIPLAYLIST_H */

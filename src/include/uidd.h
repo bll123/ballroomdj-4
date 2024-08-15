@@ -8,6 +8,10 @@
 #include "ilist.h"
 #include "uiwcont.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct uidd uidd_t;
 
 enum {
@@ -38,5 +42,9 @@ void uiddSetSelectionByNumKey (uidd_t *dd, ilistidx_t key);
 void uiddSetSelectionByStrKey (uidd_t *dd, const char *key);
 void uiddSetState (uidd_t *dd, int state);
 const char *uiddGetSelectionStr (uidd_t *dd);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIDD_H */

@@ -4,13 +4,13 @@
 #ifndef INC_OSUTILS_H
 #define INC_OSUTILS_H
 
-#if defined (__cplusplus) || defined (c_plusplus)
-extern "C" {
-#endif
-
 #include "config.h"
 
 #include <stdbool.h>
+
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
 
 #if _lib_MultiByteToWideChar
 # define OS_FS_CHAR_TYPE wchar_t
@@ -31,7 +31,7 @@ char    *osRegistryGet (char *key, char *name);
 char    *osGetSystemFont (const char *gsettingspath);
 
 #if defined (__cplusplus) || defined (c_plusplus)
-}
+} /* extern C */
 #endif
 
 #endif /* INC_OSUTILS_H */

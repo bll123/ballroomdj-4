@@ -6,6 +6,10 @@
 
 #include "datafile.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   BDJVDF_AUTO_SEL,
   BDJVDF_DANCES,
@@ -21,5 +25,9 @@ typedef enum {
 
 void  * bdjvarsdfGet (bdjvarkeydf_t idx);
 void  bdjvarsdfSet (bdjvarkeydf_t idx, void *data);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_BDJVARSDF_H */

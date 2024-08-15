@@ -7,6 +7,10 @@
 #include "slist.h"
 #include "uiwcont.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   DL_LIST_SOURCE,
   DL_LIST_TARGET,
@@ -29,5 +33,9 @@ void uiduallistSet (uiduallist_t *uiduallist, slist_t *slist, int which);
 bool uiduallistIsChanged (uiduallist_t *duallist);
 void uiduallistClearChanged (uiduallist_t *duallist);
 slist_t * uiduallistGetList (uiduallist_t *duallist);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIDUALLIST_H */

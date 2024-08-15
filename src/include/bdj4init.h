@@ -8,6 +8,10 @@
 #include "log.h"
 #include "musicdb.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   BDJ4_INIT_ALL                 = 0,      // uses db, datafiles, locks
   BDJ4_INIT_NO_DB_LOAD          = (1 << 0),
@@ -48,5 +52,9 @@ loglevel_t bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     char *tag, bdjmsgroute_t route, uint32_t *flags);
 musicdb_t * bdj4ReloadDatabase (musicdb_t *musicdb);
 void bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_BDJ4INIT_H */

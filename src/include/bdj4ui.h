@@ -4,6 +4,10 @@
 #ifndef INC_BDJ4UI_H
 #define INC_BDJ4UI_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 /* various dynamic options */
 enum {
   PLUI_HIDE_MARQUEE_ON_START,
@@ -76,5 +80,9 @@ enum {
 #define VOL_UPPER 100.0
 #define VOL_INCA 1.0
 #define VOL_INCB 10.0
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_BDJ4UI_H */

@@ -6,6 +6,10 @@
 
 #include "list.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef list_t      nlist_t;
 typedef listidx_t   nlistidx_t;
 typedef listnum_t   nlistnum_t;
@@ -55,5 +59,9 @@ void        nlistDumpInfo (nlist_t *list);
 bool        nlistDebugIsCached (list_t *list, listidx_t key);
 nlistidx_t  nlistGetAllocCount (nlist_t *list);
 int         nlistGetOrdering (nlist_t *list);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_NLIST_H */

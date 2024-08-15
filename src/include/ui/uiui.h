@@ -4,11 +4,11 @@
 #ifndef INC_UIUI_H
 #define INC_UIUI_H
 
+#include "uiwcont.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
-
-#include "uiwcont.h"
 
 enum {
   UIUTILS_BASE_MARGIN_SZ = 2,

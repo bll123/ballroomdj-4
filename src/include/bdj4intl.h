@@ -9,7 +9,15 @@
 # include <libintl.h>
 #endif
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #define GETTEXT_DOMAIN "bdj4"
 #define _(str) gettext (str)
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_BDJ4INTL_H */

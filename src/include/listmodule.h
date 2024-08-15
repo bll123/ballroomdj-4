@@ -6,6 +6,10 @@
 
 #include "list.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   LIST_KEY_STR,
   LIST_KEY_NUM,
@@ -66,5 +70,9 @@ listidx_t   listGetAllocCount (keytype_t keytype, list_t *list);
 void        listDumpInfo (keytype_t keytype, list_t *list);
 bool        listDebugIsCached (keytype_t keytype, list_t *list, listidx_t key);
 int         listGetOrdering (keytype_t keytype, list_t *list);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_LISTMODULE_H */

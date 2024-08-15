@@ -16,6 +16,10 @@
 #include "uisongsel.h"
 #include "uiwcont.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct aid_internal aid_internal_t;
 
 typedef struct {
@@ -45,6 +49,10 @@ void  uiaudioidResetItemDisplay (uiaudioid_t *uiaudioid);
 void  uiaudioidSetItemDisplay (uiaudioid_t *uiaudioid, nlist_t *dlist);
 void  uiaudioidFinishItemDisplay (uiaudioid_t *uiaudioid);
 void  uiaudioidUIMainLoop (uiaudioid_t *uiaudioid);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIAUDIOID_H */
 

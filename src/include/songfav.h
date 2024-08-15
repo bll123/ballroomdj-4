@@ -6,6 +6,10 @@
 
 #include "datafile.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   SONGFAV_NAME,
   SONGFAV_DISPLAY,
@@ -27,5 +31,9 @@ int   songFavoriteGetCount (songfav_t *songfav);
 int   songFavoriteGetNextValue (songfav_t *songfav, int value);
 const char * songFavoriteGetStr (songfav_t *songfav, ilistidx_t key, int idx);
 void  songFavoriteConv (datafileconv_t *conv);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_SONGFAV_H */

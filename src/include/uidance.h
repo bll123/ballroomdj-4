@@ -8,6 +8,10 @@
 #include "ilist.h"
 #include "uiwcont.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   UIDANCE_PACK_START,
   UIDANCE_PACK_END,
@@ -25,5 +29,9 @@ ilistidx_t uidanceGetKey (uidance_t *uidance);
 void uidanceSetKey (uidance_t *uidance, ilistidx_t dkey);
 void uidanceSetState (uidance_t *uidance, int state);
 void uidanceSetCallback (uidance_t *uidance, callback_t *cb);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIDANCE_H */

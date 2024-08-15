@@ -10,6 +10,10 @@
 #include "nlist.h"
 #include "queue.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef double  danceProb_t;
 
 typedef ilistidx_t (*danceselQueueLookup_t)(void *userdata, ilistidx_t idx);
@@ -23,5 +27,9 @@ void            danceselDecrementBase (dancesel_t *dancesel, ilistidx_t danceIdx
 void            danceselAddCount (dancesel_t *dancesel, ilistidx_t danceIdx);
 void            danceselAddPlayed (dancesel_t *dancesel, ilistidx_t danceIdx);
 ilistidx_t      danceselSelect (dancesel_t *dancesel, ilistidx_t priorHistCount);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_DANCESEL_H */

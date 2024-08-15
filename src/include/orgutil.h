@@ -8,6 +8,10 @@
 #include "song.h"
 #include "tagdef.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   ORG_TAG_BYPASS = TAG_KEY_MAX,
   ORG_WIN_CHARS   = (1 << 0),
@@ -47,5 +51,9 @@ int     orgIterateTagKey (org_t *org, slistidx_t *iteridx);
 int     orgIterateOrgKey (org_t *org, slistidx_t *iteridx);
 int     orgGetTagKey (int orgkey);
 const char *orgGetText (org_t *org, slistidx_t idx);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_ORGUTIL_H */

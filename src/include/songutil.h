@@ -6,6 +6,10 @@
 
 #include "datafile.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   SONG_ADJUST_NONE    = 0,
   /* normalize didn't work, not currently in use, but keep it here */
@@ -37,5 +41,9 @@ ssize_t songutilAdjustPosReal (ssize_t pos, int speed);
 ssize_t songutilNormalizePosition (ssize_t pos, int speed);
 int   songutilAdjustBPM (int bpm, int speed);
 int   songutilNormalizeBPM (int bpm, int speed);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_SONGUTIL_H */

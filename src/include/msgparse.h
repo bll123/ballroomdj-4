@@ -8,6 +8,10 @@
 #include "musicdb.h"
 #include "musicq.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 /* used for music queue update processing */
 typedef struct {
   dbidx_t   dbidx;
@@ -66,5 +70,9 @@ void msgbuildQueuePlaylist (char *buff, size_t sz, int mqidx, const char *fn, in
 
 void msgbuildMusicQStatus (char *buff, size_t sz, dbidx_t dbidx, int32_t uniqueidx);
 void msgparseMusicQStatus (mp_musicqstatus_t *mqstatus, char *data);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_MSGPARSE_H */

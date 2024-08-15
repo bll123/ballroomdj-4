@@ -4,12 +4,12 @@
 #ifndef INC_UIWIDGET_H
 #define INC_UIWIDGET_H
 
+#include "callback.h"
+#include "uiwcont.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
-
-#include "callback.h"
-#include "uiwcont.h"
 
 /* widget interface */
 void  uiWidgetSetState (uiwcont_t *uiwidget, int state);

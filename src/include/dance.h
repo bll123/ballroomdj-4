@@ -8,6 +8,10 @@
 #include "ilist.h"
 #include "slist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   DANCE_ANNOUNCE,           //
   DANCE_DANCE,              //
@@ -65,5 +69,9 @@ ilistidx_t    danceAdd (dance_t *dances, char *name);
 int           danceGetTimeSignature (ilistidx_t danceIdx);
 int           danceConvertBPMtoMPM (int danceidx, int bpm, int forceflag);
 int           danceConvertMPMtoBPM (int danceidx, int bpm);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_DANCE_H */

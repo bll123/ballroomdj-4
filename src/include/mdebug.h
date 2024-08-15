@@ -6,6 +6,10 @@
 
 #include <stdint.h>
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #define MDEBUG_ENABLE_BACKTRACE 0
 
 #if defined (BDJ4_MEM_DEBUG)
@@ -66,7 +70,7 @@ char *mdebugBacktrace (void);
 #endif
 
 #if defined (__cplusplus) || defined (c_plusplus)
-}
+} /* extern C */
 #endif
 
 #endif /* INC_MDEBUG_H */

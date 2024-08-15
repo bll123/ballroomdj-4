@@ -8,6 +8,10 @@
 #include <stdio.h>
 #include <time.h>
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 bool    fileopFileExists (const char *fname);
 ssize_t fileopSize (const char *fname);
 time_t  fileopModTime (const char *fname);
@@ -18,5 +22,9 @@ int     fileopDelete (const char *fname);
 FILE    * fileopOpen (const char *fname, const char *mode);
 void    fileopSync (FILE *fh);
 bool    fileopIsAbsolutePath (const char *fname);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_FILEOP_H */

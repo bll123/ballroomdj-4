@@ -4,11 +4,11 @@
 #ifndef INC_UIPANEDWINDOW_H
 #define INC_UIPANEDWINDOW_H
 
+#include "uiwcont.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
-
-#include "uiwcont.h"
 
 uiwcont_t *uiPanedWindowCreateVert (void);
 void uiPanedWindowPackStart (uiwcont_t *panedwin, uiwcont_t *box);

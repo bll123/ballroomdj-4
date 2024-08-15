@@ -6,6 +6,10 @@
 
 #include "list.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef list_t      slist_t;
 typedef listidx_t   slistidx_t;
 typedef listorder_t slistorder_t;
@@ -46,5 +50,9 @@ listidx_t slistIterateGetIdx (list_t *list, slistidx_t *idx);
 slistidx_t slistGetAllocCount (slist_t *list);
 void      slistDumpInfo (slist_t *list);
 int       slistGetOrdering (slist_t *list);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_SLIST_H */

@@ -4,11 +4,11 @@
 #ifndef INC_UITEXTBOX_H
 #define INC_UITEXTBOX_H
 
+#include "uiwcont.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
-
-#include "uiwcont.h"
 
 uiwcont_t *uiTextBoxCreate (int height, const char *hlcolor);
 void  uiTextBoxFree (uiwcont_t *uiwidget);

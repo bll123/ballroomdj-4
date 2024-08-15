@@ -6,6 +6,10 @@
 
 #include "uiwcont.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct {
   uiwcont_t   *hbox;
   uiwcont_t   *cbox;
@@ -21,5 +25,9 @@ void uiutilsFontInfo (const char *font, char *buff, size_t sz, int *fontsz);
 void uiutilsNewFontSize (char *buff, size_t sz, const char *font, const char *style, int newsz);
 void uiutilsAddFavoriteClasses (void);
 uiwcont_t * uiCreateColonLabel (const char *txt);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UIUTILS_H */

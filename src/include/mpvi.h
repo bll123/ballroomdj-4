@@ -13,6 +13,10 @@
 #include "pli.h"
 #include "volsink.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct mpvData mpvData_t;
 
 ssize_t           mpvGetDuration (mpvData_t *mpvData);
@@ -33,6 +37,10 @@ int               mpvMedia (mpvData_t *mpvdata, const char *fn);
 mpvData_t *       mpvInit (void);
 void              mpvClose (mpvData_t *mpvData);
 void              mpvRelease (mpvData_t *mpvData);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* _hdr_mpv_client */
 

@@ -7,6 +7,10 @@
 #include "musicdb.h"
 #include "nlist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   EIBDJ4_EXPORT,
   EIBDJ4_IMPORT,
@@ -22,5 +26,9 @@ void eibdj4SetNewName (eibdj4_t *eibdj4, const char *name);
 void eibdj4GetCount (eibdj4_t *eibdj4, int *count, int *tot);
 bool eibdj4Process (eibdj4_t *eibdj4);
 bool eibdj4DatabaseChanged (eibdj4_t *eibdj4);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_EXPIMPBDJ4_H */

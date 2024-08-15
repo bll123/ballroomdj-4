@@ -7,6 +7,10 @@
 #include "nlist.h"
 #include "uiwcont.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct uict uict_t;
 
 uict_t  *uicopytagsInit (uiwcont_t *windowp, nlist_t *opts);
@@ -16,5 +20,9 @@ void    uicopytagsProcess (uict_t *uict);
 int     uicopytagsState (uict_t *uict);
 void    uicopytagsReset (uict_t *uict);
 const char * uicopytagsGetFilename (uict_t *uict);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_UICOPYTAGS_H */

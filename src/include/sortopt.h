@@ -7,10 +7,18 @@
 #include "datafile.h"
 #include "slist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct sortopt sortopt_t;
 
 sortopt_t     *sortoptAlloc (void);
 void          sortoptFree (sortopt_t *);
 slist_t       *sortoptGetList (sortopt_t *);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_SORTOPT_H */

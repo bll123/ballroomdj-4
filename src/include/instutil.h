@@ -6,6 +6,10 @@
 
 #include "sysvars.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   INST_ATI_BDJ4,
   INST_ATI_MAX,
@@ -52,5 +56,9 @@ void  instutilRegister (const char *data);
 void  instutilOldVersionString (sysversinfo_t *versinfo, char *buff, size_t sz);
 void  instutilInstallCleanTmp (const char *rundir);
 void  instutilCreateDataDirectories (void);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_INSTUTIL_H */

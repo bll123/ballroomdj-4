@@ -7,6 +7,10 @@
 #include "datafile.h"
 #include "nlist.h"
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 enum {
   QUICKEDIT_DISP_SPEED,
   QUICKEDIT_DISP_VOLUME,
@@ -22,5 +26,9 @@ quickedit_t * quickeditAlloc (void);
 void        quickeditFree (quickedit_t *qe);
 nlist_t     * quickeditGetList (quickedit_t *qe);
 void        quickeditSave (quickedit_t *qe, nlist_t *dispsel);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_QUICKEDIT_H */

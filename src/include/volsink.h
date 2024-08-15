@@ -4,6 +4,10 @@
 #ifndef INC_VOLSINK_H
 #define INC_VOLSINK_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef struct volsinkitem {
   char      *name;
   char      *description;
@@ -17,5 +21,9 @@ typedef struct volsinklist {
   int             count;
   volsinkitem_t   *sinklist;
 } volsinklist_t;
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_VOLSINK_H */
