@@ -3,8 +3,10 @@
  *
  * Framework from
  *  https://github.com/spmn/vlc-win10smtc/tree/master
- *  GPLv3 License
- *
+ *    GPLv3 License
+ * References:
+ *  https://github.com/AlienCowEatCake/audacious-win-smtc
+ *    Uses msys2 to build, but the link is different than what i needed.
  */
 #include "config.h"
 
@@ -29,6 +31,7 @@
 #include "nlist.h"
 #include "tmutil.h"
 
+// ### remove
 #define DEFAULT_THUMBNAIL_URI L"https://upload.wikimedia.org/wikipedia/commons/3/38/VLC_icon.png"
 
 using namespace winrt::Windows::Media;
@@ -63,96 +66,96 @@ contiDesc (const char **ret, int max)
 
 struct intf_sys
 {
-    intf_sys (const intf_sys&) = delete;
-    void operator= (const intf_sys&) = delete;
+  intf_sys (const intf_sys&) = delete;
+  void operator= (const intf_sys&) = delete;
 
-    explicit intf_sys (contdata_t *intf) :
-        mediaPlayer { nullptr },
-        defaultArt { nullptr },
+  explicit intf_sys (contdata_t *intf) :
+      mediaPlayer { nullptr },
+      defaultArt { nullptr },
 //        contdata { contdata },
 //        playlist { nullptr, }, // pl_Get (intf) },
 //        input { nullptr },
-        advertise { false },
-        metadata_advertised { false }
-    {
-    }
+      advertise { false },
+      metadata_advertised { false }
+  {
+  }
 
-    void InitializeMediaPlayer()
-    {
-        winrt::init_apartment();
+  void InitializeMediaPlayer()
+  {
+    winrt::init_apartment();
 
-        mediaPlayer = Playback::MediaPlayer ();
-        mediaPlayer.CommandManager ().IsEnabled (false);
+    mediaPlayer = Playback::MediaPlayer ();
+    mediaPlayer.CommandManager ().IsEnabled (false);
 
-        SMTC().ButtonPressed (
-            [this](SystemMediaTransportControls sender, SystemMediaTransportControlsButtonPressedEventArgs args) {
+    SMTC().ButtonPressed (
+        [this](SystemMediaTransportControls sender, SystemMediaTransportControlsButtonPressedEventArgs args) {
 //                playlist_Lock(playlist);
 
-        switch (args.Button()) {
-                case SystemMediaTransportControlsButton::Play: {
+    switch (args.Button()) {
+            case SystemMediaTransportControlsButton::Play: {
 //                    playlist_Play(playlist);
-                    break;
-                }
-
-                case SystemMediaTransportControlsButton::Pause: {
-//                    playlist_Pause(playlist);
-                    break;
-                }
-
-                case SystemMediaTransportControlsButton::Stop: {
-//                    playlist_Stop(playlist);
-                    break;
-                }
-
-                case SystemMediaTransportControlsButton::Next: {
-//                    playlist_Next(playlist);
-                    break;
-                }
-
-                case SystemMediaTransportControlsButton::Previous: {
-//                    playlist_Prev(playlist);
-                    break;
-                }
-
-              case SystemMediaTransportControlsButton::ChannelDown:
-              case SystemMediaTransportControlsButton::ChannelUp:
-              case SystemMediaTransportControlsButton::FastForward:
-              case SystemMediaTransportControlsButton::Rewind:
-              case SystemMediaTransportControlsButton::Record: {
                 break;
-              }
+            }
+
+            case SystemMediaTransportControlsButton::Pause: {
+//                    playlist_Pause(playlist);
+                break;
+            }
+
+            case SystemMediaTransportControlsButton::Stop: {
+//                    playlist_Stop(playlist);
+                break;
+            }
+
+            case SystemMediaTransportControlsButton::Next: {
+//                    playlist_Next(playlist);
+                break;
+            }
+
+            case SystemMediaTransportControlsButton::Previous: {
+//                    playlist_Prev(playlist);
+                break;
+            }
+
+          case SystemMediaTransportControlsButton::ChannelDown:
+          case SystemMediaTransportControlsButton::ChannelUp:
+          case SystemMediaTransportControlsButton::FastForward:
+          case SystemMediaTransportControlsButton::Rewind:
+          case SystemMediaTransportControlsButton::Record: {
+            break;
           }
+      }
 
 //                playlist_Unlock(playlist);
-            }
-        );
+        }
+    );
 
-        SMTC ().IsPlayEnabled (true);
-        SMTC ().IsPauseEnabled (true);
-        SMTC ().IsStopEnabled (true);
-        SMTC ().IsPreviousEnabled (false);
-        SMTC ().IsNextEnabled (true);
+    SMTC ().IsPlayEnabled (true);
+    SMTC ().IsPauseEnabled (true);
+    SMTC ().IsStopEnabled (true);
+    SMTC ().IsPreviousEnabled (false);
+    SMTC ().IsNextEnabled (true);
 
-        SMTC ().PlaybackStatus (MediaPlaybackStatus::Closed);
-        SMTC ().IsEnabled (true);
+    SMTC ().PlaybackStatus (MediaPlaybackStatus::Closed);
+    SMTC ().IsEnabled (true);
 
-        winrt::Windows::Foundation::Uri uri{ DEFAULT_THUMBNAIL_URI };
-        defaultArt = winrt::Windows::Storage::Streams::RandomAccessStreamReference::CreateFromUri (uri);
+    winrt::Windows::Foundation::Uri uri{ DEFAULT_THUMBNAIL_URI };
+    defaultArt = winrt::Windows::Storage::Streams::RandomAccessStreamReference::CreateFromUri (uri);
 
-        Disp ().Thumbnail (defaultArt);
-        Disp ().Type (MediaPlaybackType::Music);
-        Disp ().Update ();
-    }
+    Disp ().Thumbnail (defaultArt);
+    Disp ().Type (MediaPlaybackType::Music);
+    Disp ().Update ();
+  }
 
-    void UninitializeMediaPlayer()
-    {
-        mediaPlayer = Playback::MediaPlayer (nullptr);
-        winrt::uninit_apartment ();
-    }
+  void UninitializeMediaPlayer()
+  {
+    mediaPlayer = Playback::MediaPlayer (nullptr);
+    winrt::uninit_apartment ();
+  }
 
-    void AdvertiseState ()
-    {
-        static_assert ((int)MediaPlaybackStatus::Closed == 0, "Treat default case explicitely");
+  void AdvertiseState ()
+  {
+    static_assert ((int)MediaPlaybackStatus::Closed == 0, "Treat default case explicitely");
 
 //        static std::unordered_map<input_state_e, MediaPlaybackStatus> map = {
 //            {OPENING_S, MediaPlaybackStatus::Changing},
@@ -160,57 +163,57 @@ struct intf_sys
 //            {PAUSE_S, MediaPlaybackStatus::Paused},
 //            {END_S, MediaPlaybackStatus::Stopped}
 //        };
-        // Default/implicit case: set playback status to `Closed`
+    // Default/implicit case: set playback status to `Closed`
 
 //        SMTC ().PlaybackStatus (map[input_state]);
-        Disp ().Update ();
-    }
+    Disp ().Update ();
+  }
 
-    void ReadAndAdvertiseMetadata ()
-    {
+  void ReadAndAdvertiseMetadata ()
+  {
 //        if (!input) {
 //            return;
 //        }
 
 //        input_item_t* item = input_GetItem (input);
-        winrt::hstring title, artist;
+    winrt::hstring title, artist;
 
-        auto to_hstring = [](char* buf, winrt::hstring def) {
-            winrt::hstring ret;
+    auto to_hstring = [](char* buf, winrt::hstring def) {
+        winrt::hstring ret;
 
-            if (buf) {
-                ret = winrt::to_hstring(buf);
+        if (buf) {
+            ret = winrt::to_hstring(buf);
 //                libvlc_free (buf);
-            }
-            else {
-                ret = def;
-            }
+        }
+        else {
+            ret = def;
+        }
 
-            return ret;
-        };
+        return ret;
+    };
 
 //        title = to_hstring (input_item_GetTitleFbName(item), L"Unknown Title");
 //        artist = to_hstring (input_item_GetArtist(item), L"Unknown Artist");
 
-        Disp().MusicProperties().Title(title);
-        Disp().MusicProperties().Artist(artist);
+    Disp().MusicProperties().Title(title);
+    Disp().MusicProperties().Artist(artist);
 
-        // TODO: use artwork provided by ID3tag (if exists)
-        Disp().Thumbnail(defaultArt);
+    // TODO: use artwork provided by ID3tag (if exists)
+    Disp().Thumbnail(defaultArt);
 
-        Disp().Update();
-    }
+    Disp().Update();
+  }
 
-    SystemMediaTransportControls SMTC() {
-        return mediaPlayer.SystemMediaTransportControls();
-    }
+  SystemMediaTransportControls SMTC() {
+    return mediaPlayer.SystemMediaTransportControls();
+  }
 
-    SystemMediaTransportControlsDisplayUpdater Disp() {
-        return SMTC().DisplayUpdater();
-    }
+  SystemMediaTransportControlsDisplayUpdater Disp() {
+    return SMTC().DisplayUpdater();
+  }
 
-    Playback::MediaPlayer mediaPlayer;
-    winrt::Windows::Storage::Streams::RandomAccessStreamReference defaultArt;
+  Playback::MediaPlayer mediaPlayer;
+  winrt::Windows::Storage::Streams::RandomAccessStreamReference defaultArt;
 
 //    intf_thread_t* intf;
 //    playlist_t* playlist;
@@ -220,8 +223,8 @@ struct intf_sys
 //    vlc_mutex_t lock;
 //    vlc_cond_t wait;
 
-    bool advertise;
-    bool metadata_advertised; // was the last song advertised to Windows?
+  bool advertise;
+  bool metadata_advertised; // was the last song advertised to Windows?
 };
 
 contdata_t *

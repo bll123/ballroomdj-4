@@ -26,15 +26,22 @@ if (NOT WIN32 AND NOT APPLE)
   )
 endif()
 
-#if (WIN32)
-#  add_library (libcontsmtc SHARED smtc.cpp)
-#  target_compile_options (libcontsmtc PRIVATE
-#    -fcoroutines
-#  )
-#  target_link_libraries (libcontsmtc PRIVATE
-#    libbdj4basic libbdj4common
-#  )
-#endif()
+if (WIN32)
+  add_library (libcontsmtc SHARED smtc.cpp)
+  if (CMAKE_COMPILER_IS_GNUCXX AND
+      CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 10 AND
+      CMAKE_CXX_COMPILER_VERSION VERSION_LESS 11)
+    target_compile_options (libcontsmtc PRIVATE
+      -fcoroutines
+    )
+  endif()
+  target_link_libraries (libcontsmtc PRIVATE
+    libbdj4basic libbdj4common
+    # i don't know what the windowsapp library is, but it seems to
+    # solve the linkage issues.
+    windowsapp
+  )
+endif()
 
 install (TARGETS
   libbdj4cont
@@ -47,17 +54,18 @@ if (NOT WIN32 AND NOT APPLE)
     DESTINATION ${PROJECT_SOURCE_DIR}/../bin
   )
 endif()
-#if (WIN32)
-#  install (TARGETS
-#    libcontsmtc
-#    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
-#  )
-#endif()
+
+if (WIN32)
+  install (TARGETS
+    libcontsmtc
+    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  )
+endif()
 
 updateRPath (libbdj4cont)
 if (NOT WIN32 AND NOT APPLE)
   updateRPath (libcontmpris)
 endif()
-#if (WIN32)
-#  updateRPath (libcontsmtc)
-#endif()
+if (WIN32)
+  updateRPath (libcontsmtc)
+endif()

@@ -8,7 +8,12 @@ set (CMAKE_C_COMPILER_WORKS 1)
 set (CMAKE_CXX_COMPILER_WORKS 1)
 
 set (BDJ4_VERSION ${BDJ4_BUILD_VERS})
-project (BDJ4 VERSION ${BDJ4_VERSION})
+project (BDJ4
+  VERSION ${BDJ4_VERSION}
+  DESCRIPTION "BallroomDJ 4"
+  HOMEPAGE_URL "https://ballroomdj4.sourceforge.io"
+  LANGUAGES C CXX OBJC
+)
 set (BDJ4ICON bdj4_icon.ico)
 set (BDJ4INSTICON bdj4_icon_inst.ico)
 
@@ -19,6 +24,10 @@ set (CMAKE_SHARED_LIBRARY_PREFIX "")
 set (CMAKE_STATIC_LIBRARY_PREFIX "")
 set (CMAKE_INSTALL_PREFIX "")
 set (CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/../plocal;/opt/local)
+
+# required for libcont/smtc.cpp
+set (CMAKE_CXX_STANDARD 20)
+set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # this doesn't seem to help with locating header files...
 include_directories (
