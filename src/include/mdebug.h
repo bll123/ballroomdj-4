@@ -40,10 +40,6 @@ extern "C" {
 # define dataFree dataFree_r
 #endif
 
-#if defined (__cplusplus) || defined (c_plusplus)
-extern "C" {
-#endif
-
 void mdfree_r (void *data, const char *fn, int lineno);
 void mdextfree_r (void *data, const char *fn, int lineno);
 void * mdmalloc_r (size_t sz, const char *fn, int lineno);
