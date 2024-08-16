@@ -2524,6 +2524,7 @@ manageSonglistLoad (void *udata)
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: load songlist");
+  uiLabelSetText (manage->minfo.statusMsg, "");
   manageSonglistSave (manage);
   selectFileDialog (SELFILE_SONGLIST, manage->minfo.window, manage->minfo.options,
       manage->callbacks [MANAGE_CB_SL_SEL_FILE]);
@@ -2549,6 +2550,7 @@ manageSonglistCopy (void *udata)
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy songlist");
+  uiLabelSetText (manage->minfo.statusMsg, "");
   manageSonglistSave (manage);
 
   oname = uimusicqGetSonglistName (manage->currmusicq);
@@ -2572,6 +2574,7 @@ manageSonglistNew (void *udata)
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new songlist");
+  uiLabelSetText (manage->minfo.statusMsg, "");
   manageSonglistSave (manage);
 
   /* CONTEXT: managementui: song list: default name for a new song list */
@@ -2597,11 +2600,12 @@ manageSonglistDelete (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new songlist");
   oname = uimusicqGetSonglistName (manage->currmusicq);
 
-  manageDeletePlaylist (manage->minfo.statusMsg, oname);
+  manageDeletePlaylist (oname);
   /* no save */
   dataFree (manage->sloldname);
   manage->sloldname = NULL;
   manageSonglistNew (manage);
+  manageDeleteStatus (manage->minfo.statusMsg, oname);
   mdfree (oname);
   logProcEnd ("");
   return UICB_CONT;

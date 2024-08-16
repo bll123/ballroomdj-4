@@ -46,13 +46,18 @@ manageCreatePlaylistCopy (uiwcont_t *errorMsg,
 }
 
 void
-manageDeletePlaylist (uiwcont_t *statusMsg, const char *name)
+manageDeletePlaylist (const char *name)
+{
+  playlistDelete (name);
+}
+
+void
+manageDeleteStatus (uiwcont_t *statusMsg, const char *name)
 {
   char  tbuff [MAXPATHLEN];
 
-  playlistDelete (name);
-
-  snprintf (tbuff, sizeof (tbuff), "%s deleted.", name);
+  /* CONTEXT: manageui: status message when deleting a song list/playlist/sequence */
+  snprintf (tbuff, sizeof (tbuff), _("%s deleted."), name);
   uiLabelSetText (statusMsg, tbuff);
 }
 

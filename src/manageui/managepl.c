@@ -665,6 +665,7 @@ managePlaylistNew (managepl_t *managepl, int preloadflag)
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new playlist");
+  uiLabelSetText (managepl->minfo->statusMsg, "");
   if (preloadflag == MANAGE_STD) {
     managePlaylistSave (managepl);
   }
@@ -693,6 +694,7 @@ managePlaylistLoad (void *udata)
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: load playlist");
+  uiLabelSetText (managepl->minfo->statusMsg, "");
   managePlaylistSave (managepl);
   selectFileDialog (SELFILE_PLAYLIST, managepl->minfo->window,
       managepl->minfo->options, managepl->callbacks [MPL_CB_SEL_FILE]);
@@ -824,11 +826,10 @@ managePlaylistDelete (void *udata)
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete playlist");
   oname = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME]);
-  manageDeletePlaylist (managepl->minfo->statusMsg, oname);
+  manageDeletePlaylist (oname);
   manageResetChanged (managepl);
-
   managePlaylistNew (managepl, MANAGE_STD);
-
+  manageDeleteStatus (managepl->minfo->statusMsg, oname);
   mdfree (oname);
   logProcEnd ("");
   return UICB_CONT;

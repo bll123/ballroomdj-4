@@ -402,6 +402,7 @@ manageSequenceLoad (void *udata)
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: load sequence");
+  uiLabelSetText (manageseq->minfo->statusMsg, "");
   manageSequenceSave (manageseq);
   selectFileDialog (SELFILE_SEQUENCE, manageseq->minfo->window,
       manageseq->minfo->options,
@@ -458,6 +459,7 @@ manageSequenceNew (void *udata)
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new sequence");
+  uiLabelSetText (manageseq->minfo->statusMsg, "");
   manageSequenceSave (manageseq);
 
   strlcpy (tbuff, manageseq->newseqname, sizeof (tbuff));
@@ -483,9 +485,10 @@ manageSequenceDelete (void *udata)
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete sequence");
   oname = manageGetEntryValue (manageseq->seqname);
-  manageDeletePlaylist (manageseq->minfo->statusMsg, oname);
+  manageDeletePlaylist (oname);
   uiduallistClearChanged (manageseq->seqduallist);
   manageSequenceNew (manageseq);
+  manageDeleteStatus (manageseq->minfo->statusMsg, oname);
   mdfree (oname);
   logProcEnd ("");
   return UICB_CONT;
