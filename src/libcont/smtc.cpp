@@ -32,8 +32,7 @@
 #include "nlist.h"
 #include "tmutil.h"
 
-// ### remove
-#define DEFAULT_THUMBNAIL_URI L"https://upload.wikimedia.org/wikipedia/commons/3/38/VLC_icon.png"
+#define DEFAULT_THUMBNAIL_URI L"file://img/bdj4_icon.png"
 
 using namespace winrt::Windows::Media;
 
@@ -87,7 +86,7 @@ struct mpintfc
   smtcMediaPlayerInit()
   {
     logBasic ("start-init\n");
-//    winrt::init_apartment();
+    /* using coinitialize, or the winrt apartment thing causes a crash */
 
     logBasic ("  init-b\n");
     mediaPlayer = Playback::MediaPlayer ();
@@ -158,7 +157,6 @@ struct mpintfc
   {
     logBasic ("mp-stop\n");
     mediaPlayer = Playback::MediaPlayer (nullptr);
-//    winrt::uninit_apartment ();
   }
 
   void

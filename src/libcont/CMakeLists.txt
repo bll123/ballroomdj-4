@@ -37,8 +37,7 @@ if (WIN32)
   endif()
   target_link_libraries (libcontsmtc PRIVATE
     libbdj4basic libbdj4common
-    # i don't know what the windowsapp library is, but it seems to
-    # solve the linkage issues.
+    # the windowapp library is an umbrella library for winrt.
     windowsapp
   )
 endif()

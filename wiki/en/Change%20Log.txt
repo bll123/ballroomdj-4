@@ -6,6 +6,11 @@
 
 **4.11.5 2024-8---**
 
+* New Features:
+    * Windows: Added SMTC support (Media Overlay).
+* Internal:
+    * Code cleanup.
+
 -->
 
 **4.11.4 2024-8-11**
