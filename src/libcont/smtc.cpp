@@ -28,13 +28,15 @@
 #include "controller.h"
 #include "log.h"
 #include "mdebug.h"
+#include "pathutil.h"
 #include "player.h"
 #include "nlist.h"
 #include "tmutil.h"
 
-#define DEFAULT_THUMBNAIL_URI L"file://img/bdj4_icon.png"
+#define DEFAULT_THUMBNAIL_URI L"https://ballroomdj4.sourceforge.io/img/bdj4_icon.png"
 
 using namespace winrt::Windows::Media;
+using namespace winrt::Windows;
 
 typedef struct mpintfc mpintfc_t;
 
@@ -79,19 +81,17 @@ struct mpintfc
       defaultArt { nullptr },
       contdata { contdata }
   {
-    logBasic ("constructor\n");
   }
 
   void
-  smtcMediaPlayerInit()
+  smtcMediaPlayerInit (void)
   {
-    logBasic ("start-init\n");
-    /* using coinitialize, or the winrt apartment thing causes a crash */
+    winrt::hstring  tstr;
 
-    logBasic ("  init-b\n");
+    /* initializing the 'apartment' causes a crash */
+
     mediaPlayer = Playback::MediaPlayer ();
     mediaPlayer.CommandManager ().IsEnabled (false);
-    logBasic ("  init-c\n");
 
     SMTC().ButtonPressed (
         [this] (SystemMediaTransportControls sender,
@@ -129,8 +129,6 @@ struct mpintfc
       } /* button-pressed */
     );  /* button-pressed def */
 
-    logBasic ("  init-d\n");
-
     SMTC ().IsPlayEnabled (false);
     SMTC ().IsPauseEnabled (false);
     SMTC ().IsStopEnabled (false);
@@ -140,29 +138,25 @@ struct mpintfc
     SMTC ().PlaybackStatus (MediaPlaybackStatus::Closed);
     SMTC ().IsEnabled (true);
 
-    logBasic ("  init-e\n");
-
+    /* why is it so difficult to open a file? */
+    /* create-from-uri also cannot handle the file:// protocol */
     winrt::Windows::Foundation::Uri uri{ DEFAULT_THUMBNAIL_URI };
-    defaultArt = winrt::Windows::Storage::Streams::RandomAccessStreamReference::CreateFromUri (uri);
+    defaultArt = Storage::Streams::RandomAccessStreamReference::CreateFromUri (uri);
 
-    logBasic ("  init-f\n");
     smtcUpdater ().Thumbnail (defaultArt);
     smtcUpdater ().Type (MediaPlaybackType::Music);
     smtcUpdater ().Update ();
-    logBasic ("  init-g\n");
   }
 
   void
   smtcMediaPlayerStop (void)
   {
-    logBasic ("mp-stop\n");
     mediaPlayer = Playback::MediaPlayer (nullptr);
   }
 
   void
   smtcSendPlaybackStatus (MediaPlaybackStatus nstate)
   {
-    logBasic ("mp-send-pb-status\n");
     SMTC ().PlaybackStatus (nstate);
     smtcUpdater ().Update ();
   }
@@ -170,7 +164,6 @@ struct mpintfc
   void
   smtcSetPlay (bool val)
   {
-    logBasic ("mp-set-play\n");
     SMTC ().IsPlayEnabled (val);
     smtcUpdater ().Update ();
   }
@@ -178,7 +171,6 @@ struct mpintfc
   void
   smtcSetPause (bool val)
   {
-    logBasic ("mp-set-pause\n");
     SMTC ().IsPauseEnabled (val);
     smtcUpdater ().Update ();
   }
@@ -186,7 +178,6 @@ struct mpintfc
   void
   smtcSetNextEnabled (void)
   {
-    logBasic ("mp-set-next\n");
     SMTC ().IsNextEnabled (true);
     smtcUpdater ().Update ();
   }
@@ -196,31 +187,19 @@ struct mpintfc
   {
     winrt::hstring tstr;
 
-    logBasic ("mp-send-metadata\n");
-    auto to_hstring = [] (const char * buf, winrt::hstring def) {
-      winrt::hstring ret;
 
-      if (buf) {
-        ret = winrt::to_hstring (buf);
-      } else {
-        ret = def;
-      }
-
-      return ret;
-    };
-
-    tstr = to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_TITLE), L"Unknown Title");
+    tstr = winrt::to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_TITLE));
     smtcUpdater ().MusicProperties ().Title (tstr);
-    tstr = to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_ARTIST), L"Unknown Artist");
+    tstr = winrt::to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_ARTIST));
     smtcUpdater ().MusicProperties ().Artist (tstr);
-    tstr = to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_ALBUM), L"Unknown Album");
+    tstr = winrt::to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_ALBUM));
     smtcUpdater ().MusicProperties ().AlbumTitle (tstr);
-    tstr = to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_ALBUMARTIST), L"Unknown Album Artist");
+    tstr = winrt::to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_ALBUMARTIST));
     smtcUpdater ().MusicProperties ().AlbumArtist (tstr);
-//    tstr = to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_GENRE), L"Unknown Genre");
+//    tstr = winrt::to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_GENRE));
 //    smtcUpdater ().MusicProperties ().Genres (tstr);
 
-    // TODO: use artwork provided by ID3tag (if exists)
+    // TODO: artwork
     smtcUpdater ().Thumbnail (defaultArt);
 
     smtcUpdater ().Update ();
@@ -233,11 +212,12 @@ struct mpintfc
 
   SystemMediaTransportControlsDisplayUpdater
   smtcUpdater () {
+    /* this is actually the older method */
     return SMTC().DisplayUpdater ();
   }
 
   Playback::MediaPlayer mediaPlayer;
-  winrt::Windows::Storage::Streams::RandomAccessStreamReference defaultArt;
+  Storage::Streams::RandomAccessStreamReference defaultArt;
   contdata_t *contdata;
 };
 
@@ -246,7 +226,6 @@ contiInit (const char *instname)
 {
   contdata_t  *contdata;
 
-  logBasic ("c-init\n");
   contdata = (contdata_t *) mdmalloc (sizeof (contdata_t));
   contdata->instname = mdstrdup (instname);
   contdata->cb = NULL;
@@ -258,7 +237,6 @@ contiInit (const char *instname)
   contdata->volume = 0;
 
   contdata->sys = new mpintfc (contdata);
-  logBasic ("c-init-fin\n");
 
   return contdata;
 }
@@ -282,9 +260,7 @@ contiFree (contdata_t *contdata)
 void
 contiSetup (contdata_t *contdata)
 {
-  logBasic ("c-setup\n");
   contdata->sys->smtcMediaPlayerInit ();
-  logBasic ("c-setup-fin\n");
   return;
 }
 
@@ -320,7 +296,6 @@ contiSetPlayState (contdata_t *contdata, int state)
     return;
   }
 
-  logBasic ("c-set-play-state\n");
   contdata->playstate = state;
 
   switch (state) {
@@ -381,7 +356,6 @@ contiSetRepeatState (contdata_t *contdata, bool state)
     return;
   }
 
-  logBasic ("c-set-repeat-state\n");
 //  if (contdata->repeatstatus != nstate) {
 //    mpris_media_player2_player_set_loop_status (contdata->mprisplayer,
 //        repeatstr [nstate]);
@@ -419,7 +393,6 @@ contiSetRate (contdata_t *contdata, int rate)
     return;
   }
 
-  logBasic ("c-set-rate\n");
   if (contdata->rate != rate) {
     double    dval;
 
@@ -453,7 +426,6 @@ contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
     return;
   }
 
-  logBasic ("c-set-current\n");
   nlistFree (contdata->metadata);
   contdata->metadata = nlistAlloc ("cont-mprisi-meta", LIST_ORDERED, NULL);
 
@@ -465,6 +437,8 @@ contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
   }
   nlistSetStr (contdata->metadata, CONT_METADATA_TRACKID, tbuff);
 
+  nlistSetNum (contdata->metadata, CONT_METADATA_SONGSTART, cmetadata->songstart);
+  nlistSetNum (contdata->metadata, CONT_METADATA_SONGEND, cmetadata->songend);
   nlistSetNum (contdata->metadata, CONT_METADATA_DURATION, cmetadata->duration);
 
   if (cmetadata->title != NULL) {
@@ -489,11 +463,9 @@ contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
   if (cmetadata->arturi != NULL) {
     nlistSetStr (contdata->metadata, CONT_METADATA_ART_URI, cmetadata->arturi);
   }
-  logBasic ("  curr-b\n");
 
   contdata->sys->smtcSendMetadata ();
   contdata->sys->smtcSetNextEnabled ();
-  logBasic ("  curr-c\n");
 }
 
 void

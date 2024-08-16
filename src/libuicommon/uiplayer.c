@@ -1091,6 +1091,8 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
   cmetadata.artist = songGetStr (song, TAG_ARTIST);
   cmetadata.title = songGetStr (song, TAG_TITLE);
   cmetadata.genre = genreGetGenre (genres, songGetNum (song, TAG_GENRE));
+  cmetadata.songstart = songGetNum (song, TAG_SONGSTART);
+  cmetadata.songend = songGetNum (song, TAG_SONGEND);
   cmetadata.trackid = mqstatus.uniqueidx;
   cmetadata.duration = songGetNum (song, TAG_DURATION);
   controllerSetCurrent (uiplayer->controller, &cmetadata);
