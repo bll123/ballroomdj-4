@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-07-28\n"
-"PO-Revision-Date: 2024-08-16\n"
+"PO-Revision-Date: 2024-08-17\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Chinese Traditional\n"
 "Language: zh\n"
@@ -444,12 +444,12 @@ msgstr "隨著節拍及時點擊藍色框中的滑鼠。"
 
 #. CONTEXT: select folder dialog: close
 #. CONTEXT: select file dialog: close
-#. CONTEXT: export playlist: closes the dialog
 #. CONTEXT: select file: closes the dialog
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: apply adjustment dialog: closes the dialog
 #. CONTEXT: copy tags dialog: closes the dialog
 #. CONTEXT: export/import bdj4 dialog: closes the dialog
+#. CONTEXT: export playlist: closes the dialog
 #. CONTEXT: external request dialog: closes the dialog
 #. CONTEXT: quick edit dialog: closes the dialog
 #. CONTEXT: bpm counter: close button
@@ -769,8 +769,8 @@ msgstr "出口"
 msgid "Exit %s and restart."
 msgstr "退出 %s 並重新啟動。"
 
-#. CONTEXT: export playlist dialog: export button
 #. CONTEXT: export/import bdj4 dialog: export button
+#. CONTEXT: export playlist dialog: export button
 #. CONTEXT: managementui: menu selection: export actions for song list
 #. CONTEXT: playerui: menu selection: export
 msgid "Export"
@@ -798,8 +798,8 @@ msgstr "導出為 %s"
 msgid "Export for %s"
 msgstr "導出為 %s"
 
-#. CONTEXT: export playlist: export folder location
 #. CONTEXT: export/import bdj4: export folder location
+#. CONTEXT: export playlist: export folder location
 msgid "Export to"
 msgstr "輸出到"
 

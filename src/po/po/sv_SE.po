@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-07-28\n"
-"PO-Revision-Date: 2024-08-16\n"
+"PO-Revision-Date: 2024-08-17\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Swedish\n"
 "Language: sv\n"
@@ -444,12 +444,12 @@ msgstr "Klicka med musen i den blå rutan i takt med rytmen."
 
 #. CONTEXT: select folder dialog: close
 #. CONTEXT: select file dialog: close
-#. CONTEXT: export playlist: closes the dialog
 #. CONTEXT: select file: closes the dialog
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: apply adjustment dialog: closes the dialog
 #. CONTEXT: copy tags dialog: closes the dialog
 #. CONTEXT: export/import bdj4 dialog: closes the dialog
+#. CONTEXT: export playlist: closes the dialog
 #. CONTEXT: external request dialog: closes the dialog
 #. CONTEXT: quick edit dialog: closes the dialog
 #. CONTEXT: bpm counter: close button
@@ -769,8 +769,8 @@ msgstr "Avsluta"
 msgid "Exit %s and restart."
 msgstr "Avsluta %s och starta om."
 
-#. CONTEXT: export playlist dialog: export button
 #. CONTEXT: export/import bdj4 dialog: export button
+#. CONTEXT: export playlist dialog: export button
 #. CONTEXT: managementui: menu selection: export actions for song list
 #. CONTEXT: playerui: menu selection: export
 msgid "Export"
@@ -798,8 +798,8 @@ msgstr "Exportera som %s"
 msgid "Export for %s"
 msgstr "Export till %s"
 
-#. CONTEXT: export playlist: export folder location
 #. CONTEXT: export/import bdj4: export folder location
+#. CONTEXT: export playlist: export folder location
 msgid "Export to"
 msgstr "Exportera till"
 
