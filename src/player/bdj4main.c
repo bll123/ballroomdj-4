@@ -996,18 +996,6 @@ mainSendMarqueeData (maindata_t *mainData)
     return;
   }
 
-  if (mainData->playerState == PL_STATE_STOPPED &&
-      mainData->finished) {
-    logMsg (LOG_DBG, LOG_INFO, "sending finished");
-    if (marqueeactive) {
-      mainSendFinished (mainData);
-    }
-    if (mobmarqueeactive) {
-      dataFree (jbuff);
-    }
-    return;
-  }
-
   mqLen = bdjoptGetNum (OPT_P_MQQLEN);
   mqidx = mainData->musicqPlayIdx;
   musicqLen = 0;
@@ -1027,6 +1015,28 @@ mainSendMarqueeData (maindata_t *mainData)
     strlcat (jbuff, tbuff, BDJMSG_MAX);
     snprintf (tbuff, sizeof (tbuff), "\"title\" : \"%s\"", title);
     strlcat (jbuff, tbuff, BDJMSG_MAX);
+  }
+
+  if (mainData->playerState == PL_STATE_STOPPED &&
+      mainData->finished) {
+    logMsg (LOG_DBG, LOG_INFO, "sending finished");
+    if (marqueeactive) {
+      mainSendFinished (mainData);
+    }
+    if (mobmarqueeactive) {
+      /* special case to finalize the mobile marquee display */
+      snprintf (tbuff, sizeof (tbuff), "\"current\" : \"%s\"",
+          bdjoptGetStr (OPT_P_COMPLETE_MSG));
+      strlcat (jbuff, ", ", BDJMSG_MAX);
+      strlcat (jbuff, tbuff, BDJMSG_MAX);
+      strlcat (jbuff, ", ", BDJMSG_MAX);
+      strlcat (jbuff, "\"skip\" : \"true\"", BDJMSG_MAX);
+      strlcat (jbuff, " }", BDJMSG_MAX);
+      connSendMessage (mainData->conn, ROUTE_MOBILEMQ, MSG_MARQUEE_DATA, jbuff);
+      dataFree (jbuff);
+    }
+    logProcEnd ("finished");
+    return;
   }
 
   if (marqueeactive) {
@@ -1156,7 +1166,7 @@ mainSendMarqueeData (maindata_t *mainData)
   if (mobmarqueeactive) {
     if (marqueeidx == 0) {
       strlcat (jbuff, ", ", BDJMSG_MAX);
-      strlcat (jbuff, "\"skip\" : \"true\"", sizeof (jbuff));
+      strlcat (jbuff, "\"skip\" : \"true\"", BDJMSG_MAX);
     }
     strlcat (jbuff, " }", BDJMSG_MAX);
     connSendMessage (mainData->conn, ROUTE_MOBILEMQ, MSG_MARQUEE_DATA, jbuff);

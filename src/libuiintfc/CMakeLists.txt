@@ -9,7 +9,6 @@ add_library (libbdj4uii SHARED
   uidance.c
   uidd.c
   uiduallist.c
-  uiexppl.c
   uifavorite.c
   uigenre.c
   uilevel.c

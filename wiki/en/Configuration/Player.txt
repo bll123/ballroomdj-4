@@ -16,8 +16,8 @@ __Audio Output__: Selects which audio output device will be used to
 play the audio.  If the selected device is not currently connected,
 the default device will be used.
 
-__Controller__: Select the media controller.  At this time, only
-Linux&nbsp;MPRIS is implemented.
+__Controller__: Select the media controller.  At this time,
+Linux&nbsp;MPRIS and Windows&nbsp;SMTC are implemented.
 
 __Default Volume__: Sets the volume level when BDJ4 first starts.
 
