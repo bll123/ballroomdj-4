@@ -136,7 +136,6 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
   logProcBegin ();
 
   /* edit sequences */
-  uiWidgetSetAllMargins (vboxp, 2);
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxp, hbox);

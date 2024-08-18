@@ -223,8 +223,8 @@ helperBuildUI (helperui_t  *helper)
   helper->wcont [HELPER_W_WINDOW] = uiCreateMainWindow (helper->closeCallback, tbuff, imgbuff);
 
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 2);
   uiWindowPackInWindow (helper->wcont [HELPER_W_WINDOW], vbox);
+  uiWidgetSetAllMargins (vbox, 2);
 
   helper->wcont [HELPER_W_TEXTBOX] = uiTextBoxCreate (400,
         bdjoptGetStr (OPT_P_UI_ACCENT_COL));

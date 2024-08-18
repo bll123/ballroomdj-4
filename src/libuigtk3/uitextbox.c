@@ -60,11 +60,10 @@ uiTextBoxCreate (int height, const char *hlcolor)
   uiwidget->uidata.widget = gtk_text_view_new_with_buffer (tb->buffer->uidata.buffer);
   uiwidget->uidata.packwidget = tb->scw->uidata.packwidget;
   gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (uiwidget->uidata.widget), GTK_WRAP_WORD);
+  uiWindowPackInWindow (tb->scw, uiwidget);
   uiWidgetSetAllMargins (uiwidget, 2);
   uiWidgetSetSizeRequest (uiwidget, -1, -1);
   uiWidgetAlignVertStart (uiwidget);
-
-  uiWindowPackInWindow (tb->scw, uiwidget);
 
   return uiwidget;
 }

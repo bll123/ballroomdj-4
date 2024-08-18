@@ -359,8 +359,8 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   vl->callbacks [VL_CB_MOTION_WIN] = callbackInitI (uivlMotionEvent, vl);
 
   vl->wcont [VL_W_VBOX] = uiCreateVertBox ();
-  uiWidgetAlignHorizFill (vl->wcont [VL_W_VBOX]);
   uiBoxPackStartExpand (boxp, vl->wcont [VL_W_VBOX]);
+  uiWidgetAlignHorizFill (vl->wcont [VL_W_VBOX]);
 
   /* a scrolled window is necessary to allow the window to shrink */
   /* keep the minimum height very small so that drop-downs do not get */
@@ -377,7 +377,6 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   }
 
   vl->wcont [VL_W_MAIN_VBOX] = uiCreateVertBox ();
-  uiWidgetExpandHoriz (vl->wcont [VL_W_MAIN_VBOX]);
   if (vl->keyhandling) {
     /* in order to handle key events */
     uiWidgetEnableFocus (vl->wcont [VL_W_MAIN_VBOX]);
@@ -1586,6 +1585,7 @@ uivlDisplay (uivirtlist_t *vl)
       uiWidgetAddClass (uiwidget, LISTING_CLASS);
     }
     uiBoxPackStart (vl->wcont [VL_W_SB_VBOX], uiwidget);
+    uiWidgetAlignVertBaseline (uiwidget);
     uiwcontFree (uiwidget);
 
     for (int colidx = 0; colidx < vl->numcols; ++colidx) {
@@ -1800,6 +1800,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
   /* the mouse button event handler adjusts for this column */
   uiwidget = uiCreateLabel ("\xe2\x80\x8a");
   uiBoxPackStart (row->hbox, uiwidget);
+  uiWidgetAlignVertBaseline (uiwidget);
   if (vl->uselistingfont) {
     /* setting this to list-fav-class allows gtk to calculate the */
     /* row height better, otherwise there are annoying display glitches */
@@ -1907,16 +1908,6 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       continue;
     }
 
-// ### need to move to pack-row
-    uiWidgetSetAllMargins (col->uiwidget, 0);
-    if (isheading) {
-      uiWidgetAlignVertEnd (col->uiwidget);
-    }
-    uiWidgetSetMarginEnd (col->uiwidget, 3);
-    if (type == VL_TYPE_IMAGE) {
-      uiWidgetSetMarginStart (col->uiwidget, 1);
-    }
-
     if (coldata->alignend) {
       uiLabelAlignEnd (col->uiwidget);
     } else if (coldata->aligncenter) {
@@ -2006,14 +1997,23 @@ uivlGetRow (uivirtlist_t *vl, int32_t rownum)
 static void
 uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
 {
+  bool  isheading = false;
+
   if (vl == NULL || row == NULL) {
     return;
   }
 
   uiBoxPackStart (vl->wcont [VL_W_MAIN_VBOX], row->hbox);
+  uiWidgetExpandHoriz (vl->wcont [VL_W_MAIN_VBOX]);
+
+  if (vl->dispheading && row->dispidx == VL_ROW_HEADING_IDX) {
+    isheading = true;
+  }
+
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
     uivlcoldata_t *coldata;
     uivlcol_t     *col;
+    int           type;
 
     coldata = &vl->coldata [colidx];
 
@@ -2023,11 +2023,28 @@ uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
 
     col = &row->cols [colidx];
 
+    type = coldata [colidx].type;
+    switch (type) {
+      case VL_TYPE_LABEL: {
+        uiWidgetAlignVertBaseline (col->uiwidget);
+        break;
+      }
+    }
+
     if (! coldata->aligncenter) {
       uiSizeGroupAdd (coldata->szgrp, col->uiwidget);
     }
     if (coldata->ellipsize) {
       uiSizeGroupAdd (row->szgrp, col->uiwidget);
+    }
+
+    uiWidgetSetAllMargins (col->uiwidget, 0);
+    if (isheading) {
+      uiWidgetAlignVertEnd (col->uiwidget);
+    }
+    uiWidgetSetMarginEnd (col->uiwidget, 3);
+    if (type == VL_TYPE_IMAGE) {
+      uiWidgetSetMarginStart (col->uiwidget, 1);
     }
   }
 

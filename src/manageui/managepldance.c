@@ -114,9 +114,9 @@ manageplDanceBuildUI (mpldance_t *mpldnc, uiwcont_t *vboxp)
   char        tbuff [100];
 
   hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vboxp, hbox);
   uiWidgetSetAllMargins (hbox, 2);
   uiWidgetAlignHorizEnd (hbox);
-  uiBoxPackStart (vboxp, hbox);
 
   /* CONTEXT: playlist management: hide unselected dances */
   uiwidgetp = uiCreateCheckButton (_("Hide Unselected"), 0);

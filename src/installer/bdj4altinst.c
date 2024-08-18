@@ -371,10 +371,10 @@ altinstBuildUI (altinst_t *altinst)
   uiWindowSetDefaultSize (altinst->wcont [ALT_W_WINDOW], 1000, 600);
 
   vbox = uiCreateVertBox ();
-  uiWidgetExpandHoriz (vbox);
-  uiWidgetExpandVert (vbox);
   uiWindowPackInWindow (altinst->wcont [ALT_W_WINDOW], vbox);
   uiWidgetSetAllMargins (vbox, 4);
+  uiWidgetExpandHoriz (vbox);
+  uiWidgetExpandVert (vbox);
 
   uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;

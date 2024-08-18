@@ -339,18 +339,19 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
     if (i == UIPL_W_INFO_DISP_A) {
       uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
     }
-    uiWidgetAlignHorizStart (uiwidgetp);
     if ((i - UIPL_W_INFO_DISP_A) % 2 == 0) {
       uiLabelEllipsizeOn (uiwidgetp);
     }
     uiBoxPackStart (hbox, uiwidgetp);
+    uiWidgetAlignVertBaseline (uiwidgetp);
+    uiWidgetAlignHorizStart (uiwidgetp);
     uiplayer->wcont [i] = uiwidgetp;
   }
 
   /* expanding label to take space */
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetExpandHoriz (uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   if (showspd) {
@@ -375,8 +376,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   /* size group B */
   uiplayer->wcont [UIPL_W_SPEED_DISP] = uiCreateLabel ("100");
-  uiLabelAlignEnd (uiplayer->wcont [UIPL_W_SPEED_DISP]);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SPEED_DISP]);
+  uiLabelAlignEnd (uiplayer->wcont [UIPL_W_SPEED_DISP]);
   uiSizeGroupAdd (szgrpScaleDisp, uiplayer->wcont [UIPL_W_SPEED_DISP]);
 
   /* size group C */
@@ -412,8 +413,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiwcontFree (uiwidgetp);
 
   uiplayer->wcont [UIPL_W_COUNTDOWN_TIMER] = uiCreateLabel (" 0:00");
-  uiLabelAlignEnd (uiplayer->wcont [UIPL_W_COUNTDOWN_TIMER]);
   uiBoxPackStart (hbox, uiplayer->wcont [UIPL_W_COUNTDOWN_TIMER]);
+  uiLabelAlignEnd (uiplayer->wcont [UIPL_W_COUNTDOWN_TIMER]);
 
   uiwidgetp = uiCreateLabel (" / ");
   uiBoxPackStart (hbox, uiwidgetp);
@@ -421,12 +422,12 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiwcontFree (uiwidgetp);
 
   uiplayer->wcont [UIPL_W_DURATION] = uiCreateLabel (" 0:00");
-  uiLabelAlignEnd (uiplayer->wcont [UIPL_W_DURATION]);
   uiBoxPackStart (hbox, uiplayer->wcont [UIPL_W_DURATION]);
+  uiLabelAlignEnd (uiplayer->wcont [UIPL_W_DURATION]);
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetExpandHoriz (uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   if (showspd) {
@@ -445,9 +446,9 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   /* size group B */
   uiplayer->wcont [UIPL_W_SEEK_DISP] = uiCreateLabel ("0:00");
-  uiLabelAlignEnd (uiplayer->wcont [UIPL_W_SEEK_DISP]);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SEEK_DISP]);
   uiSizeGroupAdd (szgrpScaleDisp, uiplayer->wcont [UIPL_W_SEEK_DISP]);
+  uiLabelAlignEnd (uiplayer->wcont [UIPL_W_SEEK_DISP]);
 
   /* size group C */
   uiplayer->wcont [UIPL_W_SEEK] = uiCreateScale (
@@ -462,8 +463,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* size group D */
   /* CONTEXT: playerui: the current position of the song during song playback */
   uiwidgetp = uiCreateColonLabel (_("Position"));
-  uiLabelAlignEnd (uiwidgetp);
   uiBoxPackEnd (hbox, uiwidgetp);
+  uiLabelAlignEnd (uiwidgetp);
   uiWidgetSetMarginEnd (uiwidgetp, 1);
   uiSizeGroupAdd (szgrpScaleLabel, uiwidgetp);
   uiwcontFree (uiwidgetp);

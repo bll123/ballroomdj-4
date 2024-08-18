@@ -840,6 +840,7 @@ manageBuildUI (manageui_t *manage)
   /* CONTEXT: managementui: notebook tab title: edit sequences */
   uiwidgetp = uiCreateLabel (_("Edit Sequences"));
   uiNotebookAppendPage (manage->wcont [MANAGE_W_MAIN_NB], vbox, uiwidgetp);
+  uiWidgetSetAllMargins (vbox, 2);
   uinbutilIDAdd (manage->nbtabid [MANAGE_NB_MAIN], MANAGE_TAB_MAIN_SEQ);
   uiwcontFree (uiwidgetp);
 

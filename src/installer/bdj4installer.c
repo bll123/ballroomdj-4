@@ -601,10 +601,10 @@ installerBuildUI (installer_t *installer)
   uiWindowSetDefaultSize (installer->wcont [INST_W_WINDOW], 1000, 600);
 
   vbox = uiCreateVertBox ();
+  uiWindowPackInWindow (installer->wcont [INST_W_WINDOW], vbox);
   uiWidgetSetAllMargins (vbox, 4);
   uiWidgetExpandHoriz (vbox);
   uiWidgetExpandVert (vbox);
-  uiWindowPackInWindow (installer->wcont [INST_W_WINDOW], vbox);
 
   /* begin line : status message */
   hbox = uiCreateHorizBox ();

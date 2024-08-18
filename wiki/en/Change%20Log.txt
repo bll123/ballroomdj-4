@@ -8,6 +8,7 @@
 
 * Bug Fixes:
     * Mobile Marquee: Fix a minor issue.  Add completion message.
+    * Fixed some minor display alignment issues.
 * New Features:
     * Windows: Added SMTC support (Media Overlay).
 * Internal:

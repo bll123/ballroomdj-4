@@ -183,8 +183,8 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
       );
 
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 4);
   uiDialogPackInDialog (uiaa->aaDialog, vbox);
+  uiWidgetSetAllMargins (vbox, 4);
 
   /* status message */
   hbox = uiCreateHorizBox ();
