@@ -121,4 +121,4 @@ gravity group to match what gtk does.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2024-08-15 07:40:24; BDJ4 version 4.11.4)_
+<br>_(Updated 2024-08-19 13:11:58; BDJ4 version 4.11.5)_

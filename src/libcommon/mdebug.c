@@ -66,7 +66,7 @@ enum {
 typedef struct {
   ssize_t       addr;
   mdebugtype_t  type;
-  const char    *fn;
+  char          *fn;
   int           lineno;
   char          subtag [MAXSUBTAG];
   long          loc;
@@ -267,11 +267,12 @@ mdebugInit (const char *tag)
     for (int i = 0; i < MDEBUG_MAX; ++i) {
       mdebugcounts [i] = 0;
     }
-#if MDEBUG_ENABLE_BACKTRACE
     for (int i = 0; i < mdebugcounts [MDEBUG_INT_ALLOC]; ++i) {
+#if MDEBUG_ENABLE_BACKTRACE
       mdebug [i].bt = NULL;
-    }
 #endif
+      mdebug [i].fn = NULL;
+    }
     initialized = true;
   }
 }
@@ -335,13 +336,17 @@ void
 mdebugCleanup (void)
 {
   if (initialized) {
-#if MDEBUG_ENABLE_BACKTRACE
     for (int i = 0; i < mdebugcounts [MDEBUG_INT_ALLOC]; ++i) {
+#if MDEBUG_ENABLE_BACKTRACE
       if (mdebug [i].bt != NULL) {
         free (mdebug [i].bt);
       }
-    }
 #endif
+      if (mdebug [i].fn != NULL && strcmp (mdebug [i].fn, "null") != 0) {
+        free (mdebug [i].fn);
+      }
+    }
+
     if (mdebug != NULL) {
       free (mdebug);
       mdebug = NULL;
@@ -431,11 +436,12 @@ mdebugResize (void)
     mdebugcounts [MDEBUG_INT_ALLOC] += MDEBUG_ALLOC_BUMP;
     mdebug = realloc (mdebug, mdebugcounts [MDEBUG_INT_ALLOC] *
         sizeof (mdebug_t));
-#if MDEBUG_ENABLE_BACKTRACE
     for (int i = tval; i < mdebugcounts [MDEBUG_INT_ALLOC]; ++i) {
+#if MDEBUG_ENABLE_BACKTRACE
       mdebug [i].bt = NULL;
-    }
 #endif
+      mdebug [i].fn = NULL;
+    }
   }
 }
 
@@ -447,7 +453,7 @@ mdebugAdd (void *data, mdebugtype_t type, const char *fn, int lineno, ssize_t sz
   tidx = mdebugcounts [MDEBUG_COUNT];
   mdebug [tidx].addr = (ssize_t) data;
   mdebug [tidx].type = type;
-  mdebug [tidx].fn = (fn == NULL ? "null" : fn);
+  mdebug [tidx].fn = (fn == NULL ? "null" : strdup (fn));
   mdebug [tidx].lineno = lineno;
   mdebug [tidx].loc = mdebugcounts [MDEBUG_COUNT];
   mdebug [tidx].sz = sz;
@@ -477,6 +483,9 @@ mdebugDel (int32_t idx)
   }
   mdebug [idx].bt = NULL;
 #endif
+  if (mdebug [idx].fn != NULL && strcmp (mdebug [idx].fn, "null") != 0) {
+    free (mdebug [idx].fn);
+  }
 
   mdebugcounts [MDEBUG_MEM_CURR] -= mdebug [idx].sz;
 
@@ -485,6 +494,8 @@ mdebugDel (int32_t idx)
     mdebug [i].loc = i;
   }
   mdebugcounts [MDEBUG_COUNT] -= 1;
+  mdebug [mdebugcounts [MDEBUG_COUNT]].fn = NULL;
+  mdebug [mdebugcounts [MDEBUG_COUNT]].bt = NULL;
 }
 
 static int32_t

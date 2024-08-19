@@ -91,4 +91,4 @@ playback will automatically switch back to the main music queue, and
 playback will continue from the main music queue.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-12 15:25:55; BDJ4 version 4.11.4)_
+<br>_(Updated 2024-08-19 13:11:58; BDJ4 version 4.11.5)_

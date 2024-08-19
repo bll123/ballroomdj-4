@@ -116,7 +116,7 @@ dbusConnClose (dbus_t *dbus)
   }
 
   if (dbus->data != NULL) {
-    mdextfree (dbus->data);
+    // mdextfree (dbus->data);
     /* fails if unref-d */
   }
 
@@ -453,6 +453,7 @@ dbusFreeData (dbus_t *dbus)
 
   mdextfree (dbus->data);
   g_variant_unref (dbus->data);
+  dbus->data = NULL;
 }
 
 static void

@@ -69,6 +69,10 @@ voliCleanup (void **udata)
 
   volnull = *udata;
   mdfree (volnull);
+  for (int i = 0; i < MAX_SINKS; ++i) {
+    mdfree (gsinklist.sinklist [i].name);
+    mdfree (gsinklist.sinklist [i].description);
+  }
   mdfree (gsinklist.sinklist);
   ginit = false;
   return;
@@ -105,6 +109,7 @@ voliProcess (volaction_t action, const char *sinkname,
 
   if (*udata == NULL) {
     volnull = mdmalloc (sizeof (*volnull));
+    *udata = volnull;
     volnull->currsink = 0;
     volnull->defsink = 0;
     volnull->changed = false;

@@ -4,8 +4,7 @@
 
 ## Installing BallroomDJ 4 on Mac OS
 
-Supported Platforms as of 2024-3-16: Big&nbsp;Sur,
-Monterey, Ventura, Sonoma.
+Supported Platforms as of 2024-8-19: Monterey, Ventura, Sonoma.
 <br>If you want an earlier version supported, please
 [let&nbsp;me&nbsp;know](en-Getting%20Help)
 
@@ -102,4 +101,4 @@ Visit the
 wiki page.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-12 15:25:55; BDJ4 version 4.11.4)_
+<br>_(Updated 2024-08-19 13:11:58; BDJ4 version 4.11.5)_
