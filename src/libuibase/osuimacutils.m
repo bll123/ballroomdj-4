@@ -22,14 +22,12 @@
 void
 osuiSetIcon (const char *fname)
 {
-#if 0
   NSImage *image = nil;
 
   NSString *ns = [NSString stringWithUTF8String: fname];
   image = [[NSImage alloc] initWithContentsOfFile: ns];
   [[NSApplication sharedApplication] setApplicationIconImage:image];
   [image release];
-#endif
 }
 
 void

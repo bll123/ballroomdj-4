@@ -800,8 +800,8 @@ manageBuildUI (manageui_t *manage)
   manageInitializeUI (manage);
 
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 4);
   uiWindowPackInWindow (manage->minfo.window, vbox);
+  uiWidgetSetAllMargins (vbox, 4);
 
   uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;

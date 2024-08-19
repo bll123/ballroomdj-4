@@ -37,6 +37,8 @@ typedef struct {
   bool      changed;
 } volnull_t;
 
+static void volnullInitSinkList (void);
+
 void
 voliDesc (const char **ret, int max)
 {
@@ -80,26 +82,14 @@ voliProcess (volaction_t action, const char *sinkname,
   int           usersink = -1;
   int           defsink = -1;
 
-  if (! ginit) {
-    gsinklist.sinklist = NULL;
-    gsinklist.count = MAX_SINKS;
-    gsinklist.sinklist = mdrealloc (gsinklist.sinklist,
-        gsinklist.count * sizeof (volsinkitem_t));
-    gsinklist.sinklist [0].name = mdstrdup ("no-volume");
-    gsinklist.sinklist [0].description = mdstrdup ("No Volume");
-    gsinklist.sinklist [1].name = mdstrdup ("silence");
-    gsinklist.sinklist [1].description = mdstrdup ("Silence");
-    gsinklist.sinklist [2].name = mdstrdup ("quiet");
-    gsinklist.sinklist [2].description = mdstrdup ("Quiet");
-    for (int i = 0; i < MAX_SINKS; ++i) {
-      gsinklist.sinklist [i].defaultFlag = 0;
-      gsinklist.sinklist [i].idxNumber = i;
-      gsinklist.sinklist [i].nmlen = 0;
-      if (gsinklist.sinklist [i].name != NULL) {
-        gsinklist.sinklist [i].nmlen = strlen (gsinklist.sinklist [i].name);
-      }
-    }
-    ginit = true;
+  volnullInitSinkList ();
+
+  if (action == VOL_HAVE_SINK_LIST) {
+    return true;
+  }
+
+  if (udata == NULL) {
+    return -1;
   }
 
   for (int i = 0; i < MAX_SINKS; ++i) {
@@ -118,23 +108,15 @@ voliProcess (volaction_t action, const char *sinkname,
     volnull->currsink = 0;
     volnull->defsink = 0;
     volnull->changed = false;
-    gsinklist.sinklist [volnull->defsink].defaultFlag = 1;
+    gsinklist.sinklist [volnull->defsink].defaultFlag = true;
   } else {
     volnull = *udata;
     if (defsink >= 0 && volnull->defsink != defsink) {
-      gsinklist.sinklist [volnull->defsink].defaultFlag = 0;
+      gsinklist.sinklist [volnull->defsink].defaultFlag = false;
       volnull->defsink = defsink;
-      gsinklist.sinklist [volnull->defsink].defaultFlag = 1;
+      gsinklist.sinklist [volnull->defsink].defaultFlag = true;
       volnull->changed = true;
     }
-  }
-
-  if (udata == NULL) {
-    return -1;
-  }
-
-  if (action == VOL_HAVE_SINK_LIST) {
-    return 0;
   }
 
   if (action == VOL_CHK_SINK) {
@@ -173,4 +155,34 @@ voliProcess (volaction_t action, const char *sinkname,
   }
 
   return 0;
+}
+
+/* internal routines */
+
+static void
+volnullInitSinkList (void)
+{
+  if (ginit) {
+    return;
+  }
+
+  gsinklist.sinklist = NULL;
+  gsinklist.count = MAX_SINKS;
+  gsinklist.sinklist = mdrealloc (gsinklist.sinklist,
+      gsinklist.count * sizeof (volsinkitem_t));
+  gsinklist.sinklist [0].name = mdstrdup ("no-volume");
+  gsinklist.sinklist [0].description = mdstrdup ("No Volume");
+  gsinklist.sinklist [1].name = mdstrdup ("silence");
+  gsinklist.sinklist [1].description = mdstrdup ("Silence");
+  gsinklist.sinklist [2].name = mdstrdup ("quiet");
+  gsinklist.sinklist [2].description = mdstrdup ("Quiet");
+  for (int i = 0; i < MAX_SINKS; ++i) {
+    gsinklist.sinklist [i].defaultFlag = false;
+    gsinklist.sinklist [i].idxNumber = i;
+    gsinklist.sinklist [i].nmlen = 0;
+    if (gsinklist.sinklist [i].name != NULL) {
+      gsinklist.sinklist [i].nmlen = strlen (gsinklist.sinklist [i].name);
+    }
+  }
+  ginit = true;
 }

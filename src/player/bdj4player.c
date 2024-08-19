@@ -1666,6 +1666,10 @@ playerInitSinkList (playerdata_t *playerData)
 
   logProcBegin ();
 
+  if (playerData == NULL) {
+    return;
+  }
+
   volumeFreeSinkList (&playerData->sinklist);
   volumeInitSinkList (&playerData->sinklist);
 
@@ -1677,6 +1681,7 @@ playerInitSinkList (playerdata_t *playerData)
       ++count;
     }
   }
+
   if (*playerData->sinklist.defname) {
     playerData->actualSink = playerData->sinklist.defname;
   } else {

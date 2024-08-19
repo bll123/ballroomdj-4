@@ -2023,7 +2023,7 @@ uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
 
     col = &row->cols [colidx];
 
-    type = coldata [colidx].type;
+    type = coldata->type;
     switch (type) {
       case VL_TYPE_LABEL: {
         uiWidgetAlignVertBaseline (col->uiwidget);

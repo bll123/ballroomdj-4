@@ -53,7 +53,7 @@ static int64_t  bdjvarsl [BDJVL_MAX];
 static bool     initialized = false;
 
 static void    bdjvarsAdjustPorts (void);
-static void    bdjvarsSetUniqueName (void);
+static void    bdjvarsSetInstanceName (void);
 
 /* must be called after sysvarsInit() */
 void
@@ -81,7 +81,7 @@ bdjvarsInit (void)
 
     bdjvarsl [BDJVL_NUM_PORTS] = BDJVL_NUM_PORTS;
     bdjvarsAdjustPorts ();
-    bdjvarsSetUniqueName ();
+    bdjvarsSetInstanceName ();
     initialized = true;
   }
 }
@@ -103,7 +103,7 @@ void
 bdjvarsUpdateData (void)
 {
   bdjvarsAdjustPorts ();
-  bdjvarsSetUniqueName ();
+  bdjvarsSetInstanceName ();
 }
 
 char *
@@ -143,6 +143,9 @@ bdjvarsSetStr (bdjvarkey_t idx, const char *str)
     return;
   }
 
+  if (bdjvars [idx] != NULL) {
+    mdfree (bdjvars [idx]);
+  }
   bdjvars [idx] = mdstrdup (str);
 }
 
@@ -180,7 +183,7 @@ bdjvarsAdjustPorts (void)
 }
 
 static void
-bdjvarsSetUniqueName (void)
+bdjvarsSetInstanceName (void)
 {
   int   profidx = 0;
   int   altidx = 0;
@@ -193,6 +196,10 @@ bdjvarsSetUniqueName (void)
     snprintf (tbuff, sizeof (tbuff), "%s.a%02d-p%02d", BDJ4_NAME, altidx, profidx);
   } else if (profidx != 0) {
     snprintf (tbuff, sizeof (tbuff), "%s.p%02d", BDJ4_NAME, profidx);
+  }
+
+  if (bdjvars [BDJV_INSTANCE_NAME] != NULL) {
+    mdfree (bdjvars [BDJV_INSTANCE_NAME]);
   }
   bdjvars [BDJV_INSTANCE_NAME] = mdstrdup (tbuff);
 }
