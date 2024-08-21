@@ -8,6 +8,7 @@
 
 * Bug Fixes:
     * Database Update: Reorganize: Fix a crash.
+    * Database Update: Improve processing speed for certain operations.
 
 -->
 

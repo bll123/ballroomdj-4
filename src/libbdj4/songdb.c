@@ -191,12 +191,14 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
     if (dorename) {
       rc = filemanipMove (ffn, newffn);
       if (rc != 0) {
-        logMsg (LOG_DBG, LOG_IMPORTANT, "unable to rename %s %s", oldfn, newffn);
+        logMsg (LOG_DBG, LOG_IMPORTANT, "unable to rename %s", ffn);
+        logMsg (LOG_DBG, LOG_IMPORTANT, "  to %s", newffn);
         *flags |= SONGDB_RET_RENAME_FAIL;
         dorename = false;
       } else {
         *flags |= SONGDB_RET_RENAME_SUCCESS;
-        logMsg (LOG_DBG, LOG_IMPORTANT, "rename %s to %s", oldfn, newffn);
+        logMsg (LOG_DBG, LOG_IMPORTANT, "rename %s", ffn);
+        logMsg (LOG_DBG, LOG_IMPORTANT, "  to %s", newffn);
         renamesuccess = true;
       }
     }

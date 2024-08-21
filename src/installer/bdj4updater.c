@@ -546,6 +546,7 @@ main (int argc, char *argv [])
 
     for (int i = 0; i < BDJOPT_MAX_PROFILES; ++i) {
       sysvarsSetNum (SVL_PROFILE_IDX, i);
+
       pathbldMakePath (tbuff, sizeof (tbuff), "ds-mm", BDJ4_CONFIG_EXT,
           PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
       if (! fileopFileExists (tbuff)) {

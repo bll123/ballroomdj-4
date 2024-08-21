@@ -87,24 +87,24 @@ enum {
 };
 
 enum {
+  C_AUDIO_TAGS_PARSED,
   C_FILE_COUNT,
   C_FILE_PROC,
-  C_FILE_SKIPPED,
   C_FILE_QUEUED,
-  C_QUEUE_MAX,
+  C_FILE_SKIPPED,
   C_IN_DB,
   C_NEW,
+  C_QUEUE_MAX,
+  C_RENAMED,
+  C_RENAME_FAIL,
+  C_SKIP_BAD,
+  C_SKIP_BDJ_OLD_DIR,
+  C_SKIP_DEL,
+  C_SKIP_NON_AUDIO,
+  C_SKIP_NO_TAGS,
+  C_SKIP_ORIG,
   C_UPDATED,
   C_WRITE_TAGS,
-  C_RENAMED,
-  C_CANNOT_RENAME,
-  C_BAD,
-  C_NON_AUDIO,
-  C_ORIG_SKIP,
-  C_DEL_SKIP,
-  C_BDJ_OLD_DIR,
-  C_NULL_DATA,
-  C_NO_TAGS,
   C_MAX,
 };
 
@@ -182,8 +182,8 @@ static void     dbupdateTagDataFree (void *data);
 static void     dbupdateProcessFileQueue (dbupdate_t *dbupdate);
 static void     dbupdateProcessFile (dbupdate_t *dbupdate, tagdataitem_t *tdi);
 static void     dbupdateWriteTags (dbupdate_t *dbupdate, tagdataitem_t *tdi, slist_t *tagdata);
-static void     dbupdateFromiTunes (dbupdate_t *dbupdate, tagdataitem_t *tdi, slist_t *tagdata);
-static void     dbupdateReorganize (dbupdate_t *dbupdate, tagdataitem_t *tdi, slist_t *tagdata, int songdbdefault);
+static void     dbupdateFromiTunes (dbupdate_t *dbupdate, tagdataitem_t *tdi);
+static void     dbupdateReorganize (dbupdate_t *dbupdate, tagdataitem_t *tdi, int songdbdefault);
 static void     dbupdateSigHandler (int sig);
 static void     dbupdateOutputProgress (dbupdate_t *dbupdate);
 static bool     checkOldDirList (dbupdate_t *dbupdate, const char *fn);
@@ -528,7 +528,7 @@ dbupdateProcessing (void *udata)
 
       if (audiosrcGetType (fn) != AUDIOSRC_TYPE_FILE) {
         dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
-        dbupdateIncCount (dbupdate, C_NON_AUDIO);
+        dbupdateIncCount (dbupdate, C_SKIP_NON_AUDIO);
         logMsg (LOG_DBG, LOG_DBUPDATE, "  audsrc-skip-not-file");
         continue;
       }
@@ -564,7 +564,7 @@ dbupdateProcessing (void *udata)
             pathInfoExtCheck (pi, ".txt") ||
             pathInfoExtCheck (pi, ".svg")) {
           dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
-          dbupdateIncCount (dbupdate, C_NON_AUDIO);
+          dbupdateIncCount (dbupdate, C_SKIP_NON_AUDIO);
           logMsg (LOG_DBG, LOG_DBUPDATE, "  skip-not-audio");
           pathInfoFree (pi);
           continue;
@@ -572,7 +572,7 @@ dbupdateProcessing (void *udata)
         if (pathInfoExtCheck (pi, BDJ4_GENERIC_ORIG_EXT) ||
             pathInfoExtCheck (pi, bdjvarsGetStr (BDJV_ORIGINAL_EXT))) {
           dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
-          dbupdateIncCount (dbupdate, C_ORIG_SKIP);
+          dbupdateIncCount (dbupdate, C_SKIP_ORIG);
           logMsg (LOG_DBG, LOG_DBUPDATE, "  skip-orig");
           pathInfoFree (pi);
           continue;
@@ -580,7 +580,7 @@ dbupdateProcessing (void *udata)
         if (strncmp (pi->filename, bdjvarsGetStr (BDJV_DELETE_PFX),
             bdjvarsGetNum (BDJVL_DELETE_PFX_LEN)) == 0) {
           dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
-          dbupdateIncCount (dbupdate, C_DEL_SKIP);
+          dbupdateIncCount (dbupdate, C_SKIP_DEL);
           logMsg (LOG_DBG, LOG_DBUPDATE, "  skip-del");
           pathInfoFree (pi);
           continue;
@@ -590,7 +590,7 @@ dbupdateProcessing (void *udata)
         if (dbupdate->haveolddirlist &&
             checkOldDirList (dbupdate, fn)) {
           dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
-          dbupdateIncCount (dbupdate, C_BDJ_OLD_DIR);
+          dbupdateIncCount (dbupdate, C_SKIP_BDJ_OLD_DIR);
           logMsg (LOG_DBG, LOG_DBUPDATE, "  skip-old-dir");
           continue;
         }
@@ -657,8 +657,8 @@ dbupdateProcessing (void *udata)
 
       if (regexMatch (dbupdate->badfnregex, fn)) {
         dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
-        dbupdateIncCount (dbupdate, C_BAD);
-        logMsg (LOG_DBG, LOG_DBUPDATE, "  bad fn-regex (%" PRId32 ") ", dbupdate->counts [C_BAD]);
+        dbupdateIncCount (dbupdate, C_SKIP_BAD);
+        logMsg (LOG_DBG, LOG_DBUPDATE, "  bad fn-regex (%" PRId32 ") ", dbupdate->counts [C_SKIP_BAD]);
 
         continue;
       }
@@ -708,8 +708,8 @@ dbupdateProcessing (void *udata)
               dbupdate->counts [C_NEW],
               dbupdate->counts [C_UPDATED],
               dbupdate->counts [C_RENAMED],
-              dbupdate->counts [C_CANNOT_RENAME],
-              dbupdate->counts [C_NON_AUDIO],
+              dbupdate->counts [C_RENAME_FAIL],
+              dbupdate->counts [C_SKIP_NON_AUDIO],
               dbupdate->counts [C_WRITE_TAGS]);
         }
         fflush (stdout);
@@ -773,9 +773,9 @@ dbupdateProcessing (void *udata)
         snprintf (tbuff, sizeof (tbuff), "%s : %" PRId32 "", _("Renamed"), dbupdate->counts [C_RENAMED]);
         connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
       }
-      if (dbupdate->counts [C_CANNOT_RENAME] > 0) {
+      if (dbupdate->counts [C_RENAME_FAIL] > 0) {
         /* CONTEXT: database update: status message: number of files that cannot be renamed */
-        snprintf (tbuff, sizeof (tbuff), "%s : %" PRId32 "", _("Cannot Rename"), dbupdate->counts [C_CANNOT_RENAME]);
+        snprintf (tbuff, sizeof (tbuff), "%s : %" PRId32 "", _("Cannot Rename"), dbupdate->counts [C_RENAME_FAIL]);
         connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
       }
     }
@@ -789,9 +789,10 @@ dbupdateProcessing (void *udata)
 
     /* CONTEXT: database update: status message: other files that cannot be processed */
     snprintf (tbuff, sizeof (tbuff), "%s : %" PRId32 "", _("Other Files"),
-        dbupdate->counts [C_BAD] + dbupdate->counts [C_NULL_DATA] +
-        dbupdate->counts [C_NO_TAGS] + dbupdate->counts [C_NON_AUDIO] +
-        dbupdate->counts [C_BDJ_OLD_DIR] + dbupdate->counts [C_DEL_SKIP]);
+        dbupdate->counts [C_SKIP_BAD] +
+        dbupdate->counts [C_SKIP_NO_TAGS] + dbupdate->counts [C_SKIP_NON_AUDIO] +
+        dbupdate->counts [C_SKIP_ORIG] +
+        dbupdate->counts [C_SKIP_BDJ_OLD_DIR] + dbupdate->counts [C_SKIP_DEL]);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 
     if (dbupdate->stoprequest) {
@@ -807,23 +808,23 @@ dbupdateProcessing (void *udata)
     logMsg (LOG_DBG, LOG_IMPORTANT, "-- finish: %" PRId64 " ms stop-req: %d",
         (int64_t) mstimeend (&dbupdate->starttm), dbupdate->stoprequest);
     logMsg (LOG_DBG, LOG_IMPORTANT, "    found: %" PRId32 "", dbupdate->counts [C_FILE_COUNT]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "  skipped: %" PRId32 "", dbupdate->counts [C_FILE_SKIPPED]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "  %" PRId32 "", dbupdate->counts [C_FILE_SKIPPED]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "   queued: %" PRId32 "", dbupdate->counts [C_FILE_QUEUED]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "processed: %" PRId32 "", dbupdate->counts [C_FILE_PROC]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "queue-max: %" PRId32 "", dbupdate->counts [C_QUEUE_MAX]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "    in-db: %" PRId32 "", dbupdate->counts [C_IN_DB]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "audio-tag: %" PRId32 "", dbupdate->counts [C_AUDIO_TAGS_PARSED]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "      new: %" PRId32 "", dbupdate->counts [C_NEW]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "  updated: %" PRId32 "", dbupdate->counts [C_UPDATED]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "  renamed: %" PRId32 "", dbupdate->counts [C_RENAMED]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "no rename: %" PRId32 "", dbupdate->counts [C_CANNOT_RENAME]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "no rename: %" PRId32 "", dbupdate->counts [C_RENAME_FAIL]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "write-tag: %" PRId32 "", dbupdate->counts [C_WRITE_TAGS]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "      bad: %" PRId32 "", dbupdate->counts [C_BAD]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "     null: %" PRId32 "", dbupdate->counts [C_NULL_DATA]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "  no tags: %" PRId32 "", dbupdate->counts [C_NO_TAGS]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "not-audio: %" PRId32 "", dbupdate->counts [C_NON_AUDIO]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "orig-skip: %" PRId32 "", dbupdate->counts [C_ORIG_SKIP]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, " del-skip: %" PRId32 "", dbupdate->counts [C_DEL_SKIP]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "  old-dir: %" PRId32 "", dbupdate->counts [C_BDJ_OLD_DIR]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "      bad: %" PRId32 "", dbupdate->counts [C_SKIP_BAD]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "  no tags: %" PRId32 "", dbupdate->counts [C_SKIP_NO_TAGS]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "not-audio: %" PRId32 "", dbupdate->counts [C_SKIP_NON_AUDIO]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "orig-skip: %" PRId32 "", dbupdate->counts [C_SKIP_ORIG]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, " del-skip: %" PRId32 "", dbupdate->counts [C_SKIP_DEL]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "  old-dir: %" PRId32 "", dbupdate->counts [C_SKIP_BDJ_OLD_DIR]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "max-write: %" PRIu64, (uint64_t) dbupdate->maxWriteLen);
 
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_PROGRESS, "END");
@@ -999,25 +1000,34 @@ dbupdateProcessFileQueue (dbupdate_t *dbupdate)
 static void
 dbupdateProcessFile (dbupdate_t *dbupdate, tagdataitem_t *tdi)
 {
-  slist_t     *tagdata;
+  slist_t     *tagdata = NULL;
   slistidx_t  orgiteridx;
   int         tagkey;
   dbidx_t     rrn;
   song_t      *song = NULL;
-  const char  *val;
+  const char  *val = NULL;
   int         rewrite;
   int         songdbflags;
 
   logMsg (LOG_DBG, LOG_DBUPDATE, "__ process %s", tdi->ffn);
 
-  tagdata = audiotagParseData (tdi->ffn, &rewrite);
-  if (slistGetCount (tagdata) == 0) {
-    /* if there is not even a duration, then file is no good */
-    /* probably not an audio file */
-    logMsg (LOG_DBG, LOG_DBUPDATE, "  no tags");
-    dbupdateIncCount (dbupdate, C_NO_TAGS);
-    dbupdateIncCount (dbupdate, C_FILE_PROC);
-    return;
+  if (! dbupdate->updfromitunes &&
+      ! dbupdate->reorganize &&
+      ! dbupdate->compact) {
+    /* write-tags needs the tag-data to determine updates */
+    /* new audio files need the tag-data */
+    /* compact gets the tag-data from the database */
+
+    tagdata = audiotagParseData (tdi->ffn, &rewrite);
+    dbupdateIncCount (dbupdate, C_AUDIO_TAGS_PARSED);
+    if (slistGetCount (tagdata) == 0) {
+      /* if there is not even a duration, then file is no good */
+      /* probably not an audio file */
+      logMsg (LOG_DBG, LOG_DBUPDATE, "  no tags");
+      dbupdateIncCount (dbupdate, C_SKIP_NO_TAGS);
+      dbupdateIncCount (dbupdate, C_FILE_PROC);
+      return;
+    }
   }
 
   /* write-tags has its own processing */
@@ -1029,15 +1039,13 @@ dbupdateProcessFile (dbupdate_t *dbupdate, tagdataitem_t *tdi)
 
   /* update-from-itunes has its own processing */
   if (dbupdate->updfromitunes) {
-    dbupdateFromiTunes (dbupdate, tdi, tagdata);
-    slistFree (tagdata);
+    dbupdateFromiTunes (dbupdate, tdi);
     return;
   }
 
   /* reorganize has its own processing */
   if (dbupdate->reorganize) {
-    dbupdateReorganize (dbupdate, tdi, tagdata, SONGDB_FORCE_RENAME);
-    slistFree (tagdata);
+    dbupdateReorganize (dbupdate, tdi, SONGDB_FORCE_RENAME);
     return;
   }
 
@@ -1133,6 +1141,10 @@ dbupdateProcessFile (dbupdate_t *dbupdate, tagdataitem_t *tdi)
       char        tbuff [40];
       ssize_t     val;
 
+      if (dbupdate->compact) {
+        /* compact can get the tagdata from the song, there are no changes */
+        tagdata = songTagList (song);
+      }
       if (! dbupdate->compact) {
         rrn = songGetNum (song, TAG_RRN);
       }
@@ -1200,7 +1212,7 @@ dbupdateWriteTags (dbupdate_t *dbupdate, tagdataitem_t *tdi, slist_t *tagdata)
 }
 
 static void
-dbupdateFromiTunes (dbupdate_t *dbupdate, tagdataitem_t *tdi, slist_t *tagdata)
+dbupdateFromiTunes (dbupdate_t *dbupdate, tagdataitem_t *tdi)
 {
   song_t      *song = NULL;
   slist_t     *newtaglist = NULL;
@@ -1272,7 +1284,7 @@ dbupdateFromiTunes (dbupdate_t *dbupdate, tagdataitem_t *tdi, slist_t *tagdata)
 
 static void
 dbupdateReorganize (dbupdate_t *dbupdate, tagdataitem_t *tdi,
-    slist_t *tagdata, int songdbdefault)
+    int songdbdefault)
 {
   song_t      *song = NULL;
   int         songdbflags = songdbdefault;
@@ -1382,15 +1394,15 @@ dbupdateWriteSong (dbupdate_t *dbupdate, song_t *song,
   }
 
   if ((*songdbflags & SONGDB_RET_NULL) == SONGDB_RET_NULL) {
-    dbupdateIncCount (dbupdate, C_BAD);
+    dbupdateIncCount (dbupdate, C_SKIP_BAD);
     dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
-    logMsg (LOG_DBG, LOG_DBUPDATE, "  bad-null (%" PRId32 ") ", dbupdate->counts [C_BAD]);
+    logMsg (LOG_DBG, LOG_DBUPDATE, "  bad-null (%" PRId32 ") ", dbupdate->counts [C_SKIP_BAD]);
   } else if ((*songdbflags & SONGDB_RET_RENAME_SUCCESS) == SONGDB_RET_RENAME_SUCCESS) {
     dbupdateIncCount (dbupdate, C_RENAMED);
   } else if ((*songdbflags & SONGDB_RET_REN_FILE_EXISTS) == SONGDB_RET_REN_FILE_EXISTS) {
-    dbupdateIncCount (dbupdate, C_CANNOT_RENAME);
+    dbupdateIncCount (dbupdate, C_RENAME_FAIL);
   } else if ((*songdbflags & SONGDB_RET_RENAME_FAIL) == SONGDB_RET_RENAME_FAIL) {
-    dbupdateIncCount (dbupdate, C_CANNOT_RENAME);
+    dbupdateIncCount (dbupdate, C_RENAME_FAIL);
   }
 }
 
