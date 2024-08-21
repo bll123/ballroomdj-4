@@ -65,7 +65,8 @@ uiSizeGroupAdd (uiwcont_t *uisg, uiwcont_t *uiwidget)
     return;
   }
 
-  [widget.trailingAnchor constraintEqualToAnchor: first.trailingAnchor].active = YES;
+  [widget.layoutMarginsGuide.trailingAnchor
+      constraintEqualToAnchor: first.layoutMarginsGuide.trailingAnchor].active = YES;
   return;
 }
 

@@ -12,9 +12,13 @@
 #include <math.h>
 #include <stdarg.h>
 
+#include <Cocoa/Cocoa.h>
+#import <Foundation/NSObject.h>
+
 #include "ui/uiwcont-int.h"
 
 #include "ui/uidialog.h"
+#include "ui/uibox.h"
 #include "ui/uiwidget.h"
 #include "ui/uiwindow.h"
 
@@ -47,7 +51,7 @@ typedef struct uiselect {
 }
 
 - (void)awakeFromNib {
-  IWindow*  w = self;
+  IDWindow*  w = self;
   NSRect    f;
   NSStackView *box;
   NSView    *clg;
@@ -105,12 +109,12 @@ uiCreateDialog (uiwcont_t *window,
     callback_t *uicb, const char *title, ...)
 {
   uiwcont_t     *uiwin;
-  IWindow       *win = NULL;
+  IDWindow      *win = NULL;
   uiwcont_t     *uibox;
   NSStackView   *box;
   id            windowDelegate;
 
-  win = [[IWindow alloc] init];
+  win = [[IDWindow alloc] init];
   uibox = uiCreateVertBox ();
   if (title != NULL) {
     NSString  *nstitle;
@@ -124,7 +128,7 @@ uiCreateDialog (uiwcont_t *window,
 
   uibox->packed = true;
 
-//  windowDelegate = [[IWindowDelegate alloc] init];
+//  windowDelegate = [[IDWindowDelegate alloc] init];
 //  [win setDelegate:windowDelegate];
 
   uiwin = uiwcontAlloc ();

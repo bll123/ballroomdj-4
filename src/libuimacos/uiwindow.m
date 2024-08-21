@@ -57,27 +57,12 @@
 
 - (void)awakeFromNib {
   IWindow*  w = self;
-  NSRect    f;
   NSStackView *box;
-  NSView    *clg;
-  NSSize    nssz;
 
   box = [w contentView];
-// ### this doesn't seem to work.
-// but leave it here just in case.
-  nssz = [box fittingSize];
-  f.size.height = nssz.height;
-  f.size.width  = nssz.width;
-  [w setFrame:f display:YES];
-
-// ### this doesn't seem to be working either
-  clg = w.contentLayoutGuide;
-//  [clg.leadingAnchor constraintEqualToAnchor: box.leadingAnchor].active = YES;
-//  [clg.trailingAnchor constraintEqualToAnchor: box.trailingAnchor].active = YES;
-//  [clg.topAnchor constraintEqualToAnchor: box.topAnchor].active = YES;
-//  [clg.bottomAnchor constraintEqualToAnchor: box.bottomAnchor].active = YES;
-  [clg.heightAnchor constraintEqualToAnchor: box.heightAnchor].active = YES;
-  [clg.widthAnchor constraintEqualToAnchor: box.widthAnchor].active = YES;
+  [box setAutoresizingMask:
+      NSViewWidthSizable | NSViewMinXMargin | NSViewMaxXMargin |
+      NSViewHeightSizable | NSViewMinYMargin | NSViewMaxYMargin];
 }
 
 @end

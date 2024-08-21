@@ -41,8 +41,7 @@ uiWidgetExpandHoriz (uiwcont_t *uiwidget)
   if ([widget superview] == nil) {
     return;
   }
-  [widget.widthAnchor
-      constraintEqualToAnchor: [widget superview].widthAnchor].active = YES;
+  [widget setAutoresizingMask: NSViewWidthSizable | NSViewMinXMargin | NSViewMaxXMargin];
   return;
 }
 
@@ -59,8 +58,7 @@ uiWidgetExpandVert (uiwcont_t *uiwidget)
   if ([widget superview] == nil) {
     return;
   }
-  [widget.heightAnchor
-      constraintEqualToAnchor: [widget superview].heightAnchor].active = YES;
+  [widget setAutoresizingMask: NSViewHeightSizable | NSViewMinYMargin | NSViewMaxYMargin];
   return;
 }
 
@@ -68,8 +66,7 @@ void
 uiWidgetSetAllMargins (uiwcont_t *uiwidget, int mult)
 {
   NSView    *widget;
-  NSView    *cont;
-  int       val;
+  double    val;
 
   if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
@@ -77,23 +74,10 @@ uiWidgetSetAllMargins (uiwcont_t *uiwidget, int mult)
 
   widget = uiwidget->uidata.widget;
   if ([widget superview] == nil) {
-//    fprintf (stderr, "ERR: all: widget is not packed\n");
+    fprintf (stderr, "ERR: all: widget is not packed\n");
     return;
   }
-  cont = [widget superview];
-  val = uiBaseMarginSz * mult;
-  [widget.leadingAnchor
-      constraintEqualToAnchor: widget.layoutMarginsGuide.leadingAnchor
-      constant: val].active = YES;
-  [widget.trailingAnchor
-      constraintEqualToAnchor: widget.layoutMarginsGuide.trailingAnchor
-      constant: (- val)].active = YES;
-  [widget.topAnchor
-      constraintEqualToAnchor: widget.layoutMarginsGuide.topAnchor
-      constant: val].active = YES;
-  [widget.bottomAnchor
-      constraintEqualToAnchor: widget.layoutMarginsGuide.bottomAnchor
-      constant: (- val)].active = YES;
+  val = (double) (uiBaseMarginSz * mult);
 
   return;
 }
@@ -102,8 +86,7 @@ void
 uiWidgetSetMarginTop (uiwcont_t *uiwidget, int mult)
 {
   NSView    *widget;
-  NSView    *cont;
-  int       val;
+  double    val;
 
   if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
@@ -111,14 +94,10 @@ uiWidgetSetMarginTop (uiwcont_t *uiwidget, int mult)
 
   widget = uiwidget->uidata.widget;
   if ([widget superview] == nil) {
-//    fprintf (stderr, "ERR: top: widget is not packed\n");
+    fprintf (stderr, "ERR: top: widget is not packed\n");
     return;
   }
-  cont = [widget superview];
-  val = uiBaseMarginSz * mult;
-  [widget.topAnchor
-      constraintEqualToAnchor: widget.layoutMarginsGuide.topAnchor
-      constant: val].active = YES;
+  val = (double) (uiBaseMarginSz * mult);
 
   return;
 }
@@ -127,8 +106,7 @@ void
 uiWidgetSetMarginBottom (uiwcont_t *uiwidget, int mult)
 {
   NSView    *widget;
-  NSView    *cont;
-  int       val;
+  double    val;
 
   if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
@@ -136,14 +114,10 @@ uiWidgetSetMarginBottom (uiwcont_t *uiwidget, int mult)
 
   widget = uiwidget->uidata.widget;
   if ([widget superview] == nil) {
-//    fprintf (stderr, "ERR: bottom: widget is not packed\n");
+    fprintf (stderr, "ERR: bottom: widget is not packed\n");
     return;
   }
-  cont = [widget superview];
-  val = uiBaseMarginSz * mult;
-  [widget.bottomAnchor
-      constraintEqualToAnchor: widget.layoutMarginsGuide.bottomAnchor
-      constant: (- val)].active = YES;
+  val = (double) (uiBaseMarginSz * mult);
 
   return;
 }
@@ -153,7 +127,7 @@ uiWidgetSetMarginStart (uiwcont_t *uiwidget, int mult)
 {
   NSView    *widget;
   NSView    *cont;
-  int       val;
+  double    val;
 
   if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
@@ -161,14 +135,10 @@ uiWidgetSetMarginStart (uiwcont_t *uiwidget, int mult)
 
   widget = uiwidget->uidata.widget;
   if ([widget superview] == nil) {
-//    fprintf (stderr, "ERR: start: widget is not packed\n");
+    fprintf (stderr, "ERR: start: widget is not packed\n");
     return;
   }
-  cont = [widget superview];
-  val = uiBaseMarginSz * mult;
-  [widget.leadingAnchor
-      constraintEqualToAnchor: widget.layoutMarginsGuide.leadingAnchor
-      constant: val].active = YES;
+  val = (double) (uiBaseMarginSz * mult);
 
   return;
 }
@@ -186,14 +156,10 @@ uiWidgetSetMarginEnd (uiwcont_t *uiwidget, int mult)
 
   widget = uiwidget->uidata.widget;
   if ([widget superview] == nil) {
-//    fprintf (stderr, "ERR: end: widget is not packed\n");
+    fprintf (stderr, "ERR: end: widget is not packed\n");
     return;
   }
-  cont = [widget superview];
   val = uiBaseMarginSz * mult;
-  [widget.trailingAnchor
-      constraintEqualToAnchor: widget.layoutMarginsGuide.trailingAnchor
-      constant: (- val)].active = YES;
 
   return;
 }
@@ -201,42 +167,119 @@ uiWidgetSetMarginEnd (uiwcont_t *uiwidget, int mult)
 void
 uiWidgetAlignHorizFill (uiwcont_t *uiwidget)
 {
+  NSView    *widget;
+
+  if (uiwidget == NULL) {
+    return;
+  }
+
+  widget = uiwidget->uidata.widget;
+  if ([widget superview] == nil) {
+    return;
+  }
+  [widget setAutoresizingMask: NSViewWidthSizable | NSViewMinXMargin | NSViewMaxXMargin];
   return;
 }
 
 void
 uiWidgetAlignHorizStart (uiwcont_t *uiwidget)
 {
+  NSView    *widget;
+
+  if (uiwidget == NULL) {
+    return;
+  }
+
+  widget = uiwidget->uidata.widget;
+  if ([widget superview] == nil) {
+    return;
+  }
+  [widget setAutoresizingMask: NSViewMaxXMargin];
   return;
 }
 
 void
 uiWidgetAlignHorizEnd (uiwcont_t *uiwidget)
 {
+  NSView    *widget;
+
+  if (uiwidget == NULL) {
+    return;
+  }
+
+  widget = uiwidget->uidata.widget;
+  if ([widget superview] == nil) {
+    return;
+  }
+  [widget setAutoresizingMask: NSViewMinXMargin];
   return;
 }
 
 void
 uiWidgetAlignHorizCenter (uiwcont_t *uiwidget)
 {
+  NSView    *widget;
+
+  if (uiwidget == NULL) {
+    return;
+  }
+
+  widget = uiwidget->uidata.widget;
+  if ([widget superview] == nil) {
+    return;
+  }
+  [widget setAutoresizingMask: NSViewMinXMargin | NSViewMaxXMargin];
   return;
 }
 
 void
 uiWidgetAlignVertFill (uiwcont_t *uiwidget)
 {
+  NSView    *widget;
+
+  if (uiwidget == NULL) {
+    return;
+  }
+
+  widget = uiwidget->uidata.widget;
+  if ([widget superview] == nil) {
+    return;
+  }
+  [widget setAutoresizingMask: NSViewHeightSizable | NSViewMinYMargin | NSViewMaxYMargin];
   return;
 }
 
 void
 uiWidgetAlignVertStart (uiwcont_t *uiwidget)
 {
+  NSView    *widget;
+
+  if (uiwidget == NULL) {
+    return;
+  }
+
+  widget = uiwidget->uidata.widget;
+  if ([widget superview] == nil) {
+    return;
+  }
+  [widget setAutoresizingMask: NSViewMaxYMargin];
   return;
 }
 
 void
 uiWidgetAlignVertCenter (uiwcont_t *uiwidget)
 {
+  NSView    *widget;
+
+  if (uiwidget == NULL) {
+    return;
+  }
+
+  widget = uiwidget->uidata.widget;
+  if ([widget superview] == nil) {
+    return;
+  }
+  [widget setAutoresizingMask: NSViewMinYMargin | NSViewMaxYMargin];
   return;
 }
 
@@ -249,6 +292,17 @@ uiWidgetAlignVertBaseline (uiwcont_t *uiwidget)
 void
 uiWidgetAlignVertEnd (uiwcont_t *uiwidget)
 {
+  NSView    *widget;
+
+  if (uiwidget == NULL) {
+    return;
+  }
+
+  widget = uiwidget->uidata.widget;
+  if ([widget superview] == nil) {
+    return;
+  }
+  [widget setAutoresizingMask: NSViewMinYMargin];
   return;
 }
 
