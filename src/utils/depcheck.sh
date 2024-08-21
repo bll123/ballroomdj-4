@@ -60,6 +60,9 @@ for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h \
     */*.sh ../*/*.sh CMakeLists.txt */CMakeLists.txt Makefile \
     po/Makefile* */*.awk config.h.in */*.cmake; do
   case $fn in
+    *src/tt.sh|*src/z.sh)
+      continue
+      ;;
     build/*)
       continue
       ;;
@@ -157,7 +160,7 @@ main (int argc, char *argv [])
 }
 _HERE_
   cc -c \
-      -DBDJ4_USE_GTK3=1 \
+      -DBDJ4_UI_GTK3=1 \
       -I build -I include \
       $(pkg-config --cflags gtk+-3.0) \
       $(pkg-config --cflags glib-2.0) \

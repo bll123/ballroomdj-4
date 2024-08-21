@@ -433,7 +433,7 @@ main (int argc, char *argv[])
   osuiFinalize ();
 
   while (! gStopProgram) {
-    long loglevel = 0;
+    loglevel_t    loglevel = 0;
 
     gNewProfile = false;
     listenPort = bdjvarsGetNum (BDJVL_PORT_STARTERUI);
@@ -445,8 +445,10 @@ main (int argc, char *argv[])
       connDisconnectAll (starter.conn);
       connFree (starter.conn);
       logEnd ();
-      loglevel = bdjoptGetNum (OPT_G_DEBUGLVL);
-      logStart (lockName (ROUTE_STARTERUI), "strt", loglevel);
+      if (starter.newprofile != sysvarsGetNum (SVL_PROFILE_IDX)) {
+        loglevel = bdjoptGetNum (OPT_G_DEBUGLVL);
+        logStart (lockName (ROUTE_STARTERUI), "strt", loglevel);
+      }
     }
   }
 
@@ -1672,7 +1674,7 @@ starterGetProfiles (startui_t *starter)
         profileinuse = false;
       }
 
-      if (i == starter->currprofile) {
+      if (starter->currprofile == i) {
         dispidx = count;
       }
 
@@ -1686,7 +1688,7 @@ starterGetProfiles (startui_t *starter)
       }
       ++count;
     } else if (availprof == -1) {
-      if (i == starter->currprofile) {
+      if (starter->currprofile == i) {
         profileinuse = true;
       }
       availprof = i;
@@ -1746,9 +1748,12 @@ starterResetProfile (startui_t *starter, int profidx)
   /* the check-profile function will do the actual creation of a new profile */
   /* if a button is pressed */
   if (profidx != starter->newprofile) {
+    char    oldcolor [40];
+
+    strlcpy (oldcolor, bdjoptGetStr (OPT_P_UI_PROFILE_COL), sizeof (oldcolor));
     bdjoptInit ();
     uiWindowSetTitle (starter->wcont [START_W_WINDOW], bdjoptGetStr (OPT_P_PROFILENAME));
-    uiutilsSetProfileColor (starter->wcont [START_W_PROFILE_ACCENT]);
+    uiutilsSetProfileColor (starter->wcont [START_W_PROFILE_ACCENT], oldcolor);
     starterLoadOptions (starter);
     bdjvarsUpdateData ();
   }
@@ -1792,12 +1797,19 @@ starterCheckProfile (startui_t *starter)
   uiLabelSetText (starter->wcont [START_W_STATUS_MSG], "");
 
   if (sysvarsGetNum (SVL_PROFILE_IDX) == starter->newprofile) {
-    char  tbuff [100];
-    int   profidx;
+    char        tbuff [100];
+    int         profidx;
+    char        oldcolor [40];
+    loglevel_t  loglevel = 0;
+
+    strlcpy (oldcolor, bdjoptGetStr (OPT_P_UI_PROFILE_COL), sizeof (oldcolor));
 
     instutilCreateDataDirectories ();
     bdjoptInit ();
     profidx = sysvarsGetNum (SVL_PROFILE_IDX);
+
+    loglevel = bdjoptGetNum (OPT_G_DEBUGLVL);
+    logStart (lockName (ROUTE_STARTERUI), "strt", loglevel);
 
     /* CONTEXT: starterui: name of the new profile (New profile 9) */
     snprintf (tbuff, sizeof (tbuff), _("New Profile %d"), profidx);
@@ -1807,7 +1819,7 @@ starterCheckProfile (startui_t *starter)
     /* select a completely random color */
     createRandomColor (tbuff, sizeof (tbuff));
     bdjoptSetStr (OPT_P_UI_PROFILE_COL, tbuff);
-    uiutilsSetProfileColor (starter->wcont [START_W_PROFILE_ACCENT]);
+    uiutilsSetProfileColor (starter->wcont [START_W_PROFILE_ACCENT], oldcolor);
 
     bdjoptSave ();
 
@@ -1833,10 +1845,14 @@ starterCheckProfile (startui_t *starter)
 static bool
 starterDeleteProfile (void *udata)
 {
-  startui_t *starter = udata;
+  startui_t   *starter = udata;
+  char        oldcolor [40];
+  pid_t       pid;
 
+  pid = lockExists (lockName (ROUTE_STARTERUI), PATHBLD_MP_USEIDX);
   if (starter->currprofile == 0 ||
-      starter->currprofile == starter->newprofile) {
+      starter->currprofile == starter->newprofile ||
+      pid > 0) {
     /* CONTEXT: starter: status message */
     uiLabelSetText (starter->wcont [START_W_STATUS_MSG], _("Profile may not be deleted."));
     return UICB_STOP;
@@ -1844,8 +1860,12 @@ starterDeleteProfile (void *udata)
 
   logEnd ();
 
+  strlcpy (oldcolor, bdjoptGetStr (OPT_P_UI_PROFILE_COL), sizeof (oldcolor));
   bdjoptDeleteProfile ();
   starterResetProfile (starter, 0);
+  bdjoptInit ();
+  uiutilsSetProfileColor (starter->wcont [START_W_PROFILE_ACCENT], oldcolor);
+
   starterRebuildProfileList (starter);
 
   return UICB_CONT;

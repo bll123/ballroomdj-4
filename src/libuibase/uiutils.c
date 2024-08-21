@@ -45,7 +45,7 @@ uiutilsAddProfileColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
   uiWidgetAlignHorizCenter (cbox);
   uiWidgetAlignVertCenter (cbox);
   uiWidgetSetSizeRequest (cbox, PROFILE_BOX_SZ, PROFILE_BOX_SZ);
-  uiutilsSetProfileColor (cbox);
+  uiutilsSetProfileColor (cbox, NULL);
   uiBoxPackEnd (hbox, cbox);
   uiWidgetSetMarginStart (cbox, 4);
   uiWidgetShowAll (hbox);
@@ -55,7 +55,7 @@ uiutilsAddProfileColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
 }
 
 void
-uiutilsSetProfileColor (uiwcont_t *uiwidgetp)
+uiutilsSetProfileColor (uiwcont_t *uiwidgetp, const char *oldcolor)
 {
   char        classnm [100];
   char        bclassnm [100];
@@ -64,6 +64,11 @@ uiutilsSetProfileColor (uiwcont_t *uiwidgetp)
   tcolor = bdjoptGetStr (OPT_P_UI_PROFILE_COL);
   if (tcolor == NULL || ! *tcolor) {
     tcolor = "#ffa600";
+  }
+
+  if (oldcolor != NULL) {
+    snprintf (classnm, sizeof (classnm), "profcol%s", oldcolor + 1);
+    uiWidgetRemoveClass (uiwidgetp, classnm);
   }
 
   snprintf (classnm, sizeof (classnm), "profcol%s", tcolor + 1);

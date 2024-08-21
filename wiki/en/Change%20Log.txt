@@ -4,11 +4,14 @@
 
 <!--
 
-**4.11.6 2024-8-19**
+**4.11.7 2024-8-19**
+
+**4.11.6 2024-8---**
 
 * Bug Fixes:
     * Database Update: Reorganize: Fix a crash.
     * Database Update: Improve processing speed for certain operations.
+    * Starter: Fix profile color display.
 
 -->
 

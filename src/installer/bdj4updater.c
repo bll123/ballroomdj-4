@@ -546,7 +546,6 @@ main (int argc, char *argv [])
 
     for (int i = 0; i < BDJOPT_MAX_PROFILES; ++i) {
       sysvarsSetNum (SVL_PROFILE_IDX, i);
-
       pathbldMakePath (tbuff, sizeof (tbuff), "ds-mm", BDJ4_CONFIG_EXT,
           PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
       if (! fileopFileExists (tbuff)) {
@@ -939,7 +938,7 @@ updaterCleanFiles (void)
     if (*pattern == '\0') {
       continue;
     }
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "pattern: %s", pattern); //
+    // logMsg (LOG_INSTALL, LOG_IMPORTANT, "pattern: %s", pattern); //
 
     /* on any change of directory or flag, process what has been queued */
     if (strcmp (pattern, "::macosonly") == 0 ||
@@ -995,7 +994,7 @@ updaterCleanFiles (void)
     }
 
     snprintf (fullpattern, sizeof (fullpattern), "%s/%s", basedir, pattern);
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "clean %s", fullpattern); //
+    // logMsg (LOG_INSTALL, LOG_IMPORTANT, "clean %s", fullpattern); //
     rx = regexInit (fullpattern);
     nlistSetData (cleanlist, count, rx);
     ++count;
