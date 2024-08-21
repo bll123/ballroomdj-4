@@ -54,8 +54,6 @@
 #include "bdjvars.h"
 #include "conn.h"
 #include "dance.h"
-#include "dirlist.h"
-#include "dirop.h"
 #include "fileop.h"
 #include "filemanip.h"
 #include "itunes.h"
@@ -179,7 +177,7 @@ static bool     dbupdateHandshakeCallback (void *tdbupdate, programstate_t progr
 static bool     dbupdateStoppingCallback (void *tdbupdate, programstate_t programState);
 static bool     dbupdateStopWaitCallback (void *tdbupdate, programstate_t programState);
 static bool     dbupdateClosingCallback (void *tdbupdate, programstate_t programState);
-static void     dbupdateQueueFile (dbupdate_t *dbupdate, const char *fn, const char *tsongfn, const char *relfn);
+static void     dbupdateQueueFile (dbupdate_t *dbupdate, const char *ffn, const char *tsongfn, const char *relfn);
 static void     dbupdateTagDataFree (void *data);
 static void     dbupdateProcessFileQueue (dbupdate_t *dbupdate);
 static void     dbupdateProcessFile (dbupdate_t *dbupdate, tagdataitem_t *tdi);
@@ -548,11 +546,14 @@ dbupdateProcessing (void *udata)
         audiosrcFullPath (fn, ffn, sizeof (ffn), NULL, 0);
       }
       song = dbGetByName (dbupdate->musicdb, tsongfn);
-      relfn = ffn + dbupdate->prefixlen;
-      // fprintf (stderr, "     fn: %s\n", fn);
-      // fprintf (stderr, "    ffn: %s\n", ffn);
-      // fprintf (stderr, "tsongfn: %s\n", tsongfn);
-      // fprintf (stderr, "relfn-a: %s\n", relfn);
+      relfn = tsongfn;
+      if (dbupdate->prefixlen > 0) {
+        relfn = ffn + dbupdate->prefixlen;
+      }
+      // fprintf (stderr, "--    fn: %s\n", fn);        //
+      // fprintf (stderr, "     ffn: %s\n", ffn);       //
+      // fprintf (stderr, " tsongfn: %s\n", tsongfn);   //
+      // fprintf (stderr, " relfn-a: %s\n", relfn);     //
 
       if (dbupdate->iterfromaudiosrc) {
         pi = pathInfo (fn);
@@ -604,8 +605,10 @@ dbupdateProcessing (void *udata)
 
         if (song != NULL) {
           pfxlen = songGetNum (song, TAG_PREFIX_LEN);
-          relfn = fn + pfxlen;
-          // fprintf (stderr, "relfn-b: %s\n", relfn);
+          if (pfxlen > 0) {
+            relfn = fn + pfxlen;
+            // fprintf (stderr, "relfn-b: %s\n", relfn);     //
+          }
 
           if (dbupdate->compact && prevsong != NULL) {
             const char  *puri;
@@ -940,7 +943,7 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
 }
 
 static void
-dbupdateQueueFile (dbupdate_t *dbupdate, const char *fn,
+dbupdateQueueFile (dbupdate_t *dbupdate, const char *ffn,
     const char *songfn, const char *relfn)
 {
   tagdataitem_t *tdi;
@@ -954,7 +957,7 @@ dbupdateQueueFile (dbupdate_t *dbupdate, const char *fn,
   }
 
   tdi = mdmalloc (sizeof (tagdataitem_t));
-  tdi->ffn = mdstrdup (fn);
+  tdi->ffn = mdstrdup (ffn);
   tdi->songfn = mdstrdup (songfn);
   tdi->relfn = mdstrdup (relfn);
   queuePush (dbupdate->tagdataq, tdi);

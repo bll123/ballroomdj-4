@@ -4,7 +4,14 @@
 
 <!--
 
-**4.11.5 2024-8---**
+**4.11.6 2024-8-19**
+
+* Bug Fixes:
+    * Database Update: Reorganize: Fix a crash.
+
+-->
+
+**4.11.5 2024-8-19**
 
 * Bug Fixes:
     * Mobile Marquee: Fix a minor issue.  Add completion message.
@@ -13,8 +20,6 @@
     * Windows: Added SMTC support (Media Overlay).
 * Internal:
     * Code cleanup.
-
--->
 
 **4.11.4 2024-8-11**
 
@@ -1021,4 +1026,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-19 13:11:58; BDJ4 version 4.11.5)_
+<br>_(Updated 2024-08-19 13:16:09; BDJ4 version 4.11.5)_

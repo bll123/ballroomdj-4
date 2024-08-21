@@ -55,7 +55,9 @@ osDirOpen (const char *dirname)
     strlcat (dirh->dirname, "/*", len);
   }
 #else
+  dirh->dirname = mdstrdup (dirname);
   dirh->dh = opendir (dirname);
+  mdextalloc (dirh->dh);
 #endif
 
   return dirh;
@@ -64,17 +66,25 @@ osDirOpen (const char *dirname)
 char *
 osDirIterate (dirhandle_t *dirh)
 {
-  char      *fname;
-
+  char      *fname = NULL;
 #if _lib_FindFirstFileW
   WIN32_FIND_DATAW filedata;
   BOOL             rc;
+#else
+  struct dirent   *dirent = NULL;
+#endif
 
+  if (dirh == NULL) {
+    return NULL;
+  }
+
+#if _lib_FindFirstFileW
   if (dirh->dhandle == INVALID_HANDLE_VALUE) {
     wchar_t         *wdirname;
 
     wdirname = osToWideChar (dirh->dirname);
     dirh->dhandle = FindFirstFileW (wdirname, &filedata);
+    mdextalloc (dirh->dhandle);
     rc = 0;
     if (dirh->dhandle != INVALID_HANDLE_VALUE) {
       rc = 1;
@@ -89,7 +99,9 @@ osDirIterate (dirhandle_t *dirh)
     fname = osFromWideChar (filedata.cFileName);
   }
 #else
-  struct dirent   *dirent;
+  if (dirh->dh == NULL) {
+    return NULL;
+  }
 
   dirent = readdir (dirh->dh);
   fname = NULL;
@@ -105,15 +117,24 @@ osDirIterate (dirhandle_t *dirh)
 void
 osDirClose (dirhandle_t *dirh)
 {
+  if (dirh == NULL) {
+    return;
+  }
+
 #if _lib_FindFirstFileW
   if (dirh->dhandle != INVALID_HANDLE_VALUE) {
+    mdextfree (dirh->dhandle);
     FindClose (dirh->dhandle);
   }
+  dirh->dhandle = INVALID_HANDLE_VALUE;
 #else
-  closedir (dirh->dh);
+  if (dirh->dh != NULL) {
+    mdextfree (dirh->dh);
+    closedir (dirh->dh);
+  }
+  dirh->dh = NULL;
 #endif
   dataFree (dirh->dirname);
   dirh->dirname = NULL;
   mdfree (dirh);
 }
-

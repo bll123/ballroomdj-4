@@ -22,7 +22,7 @@ bearer=""
 tmpfile=tmp/wiki-tmp.txt
 compfile=tmp/wiki-comp.txt
 filelist=tmp/wiki-files.txt
-dt=$(date '+%Y-%m-%d %H:%M:%S')
+dt=$(date '+%Y-%m-%d')
 forceflag=F
 
 versstr=$(pkgcurrvers)

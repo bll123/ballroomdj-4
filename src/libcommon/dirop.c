@@ -69,11 +69,13 @@ diropDeleteDir (const char *dirname, int flags)
       if (fileopIsDirectory (temp)) {
         if (! diropDeleteDir (temp, flags)) {
           mdfree (fname);
+          osDirClose (dh);
           return false;
         }
       } else {
         if ((flags & DIROP_ONLY_IF_EMPTY) == DIROP_ONLY_IF_EMPTY) {
           mdfree (fname);
+          osDirClose (dh);
           return false;
         }
         fileopDelete (temp);
