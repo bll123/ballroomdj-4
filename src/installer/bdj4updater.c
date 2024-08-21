@@ -556,6 +556,11 @@ main (int argc, char *argv [])
       if (! fileopFileExists (tbuff)) {
         bdjoptDeleteProfile ();
       }
+      pathbldMakePath (tbuff, sizeof (tbuff), "bdjconfig", BDJ4_CONFIG_EXT,
+          PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+      if (! fileopFileExists (tbuff)) {
+        bdjoptDeleteProfile ();
+      }
     }
     sysvarsSetNum (SVL_PROFILE_IDX, origprofile);
   }
