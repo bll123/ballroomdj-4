@@ -496,13 +496,12 @@ atibdj4AddMP3Tag (atidata_t *atidata, nlist_t *datalist,
       if (tagkey == TAG_DISCNUMBER) {
         tot = nlistGetStr (datalist, TAG_DISCTOTAL);
       }
-      if (tot != NULL) {
+      if (tot != NULL && *tot) {
         snprintf (tbuff, sizeof (tbuff), "%s/%s", val, tot);
         val = tbuff;
       }
     }
   }
-
 
   /* find any existing frame with this tag */
   idx = 0;

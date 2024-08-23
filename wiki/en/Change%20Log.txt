@@ -12,6 +12,7 @@
     * Database Update: Reorganize: Fix a crash.
     * Database Update: Improve processing speed for certain operations.
     * Starter: Fix profile color display.
+    * Audio File Tags: Fix minor issue writing disc number and track number.
 
 -->
 

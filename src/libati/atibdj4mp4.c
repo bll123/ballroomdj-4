@@ -159,7 +159,7 @@ atibdj4WriteMP4Tags (atidata_t *atidata, const char *ffn,
         if (tagkey == TAG_DISCNUMBER) {
           tot = nlistGetStr (datalist, TAG_DISCTOTAL);
         }
-        if (tot != NULL) {
+        if (tot != NULL && *tot) {
           snprintf (tbuff, sizeof (tbuff), "%s/%s", val, tot);
           val = tbuff;
         }
