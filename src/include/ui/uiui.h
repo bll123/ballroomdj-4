@@ -30,6 +30,7 @@ void  uiInitUILog (void);
 
 /* ui interface specific */
 void  uiwcontUIInit (uiwcont_t *uiwidget);
+void  uiwcontUIWidgetInit (uiwcont_t *uiwidget);
 void  uiwcontUIFree (uiwcont_t *uiwidget);
 
 #if defined (__cplusplus) || defined (c_plusplus)

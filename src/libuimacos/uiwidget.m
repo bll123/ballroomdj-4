@@ -17,18 +17,12 @@
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"
+#include "ui/uimacos-int.h"
 
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 
-typedef struct {
-  /* to hold the margin information for the widget */
-  NSEdgeInsets  margins;
-  NSDictionary  *viewBindings;
-  NSDictionary  *metrics;
-} macosmargin_t;
-
-static void uiWidgetInitMargins (uiwcont_t *uiwidget);
+static void uiWidgetUpdateMargins (uiwcont_t *uiwidget);
 
 /* widget interface */
 
@@ -90,12 +84,12 @@ uiWidgetSetAllMargins (uiwcont_t *uiwidget, int mult)
   }
   val = (double) (uiBaseMarginSz * mult);
 
-  uiWidgetInitMargins (uiwidget);
   margins = uiwidget->uidata.margins;
   margins->margins.left = val;
   margins->margins.right = val;
   margins->margins.top = val;
   margins->margins.bottom = val;
+  uiWidgetUpdateMargins (uiwidget);
 
   return;
 }
@@ -118,9 +112,9 @@ uiWidgetSetMarginTop (uiwcont_t *uiwidget, int mult)
   }
   val = (double) (uiBaseMarginSz * mult);
 
-  uiWidgetInitMargins (uiwidget);
   margins = uiwidget->uidata.margins;
   margins->margins.top = val;
+  uiWidgetUpdateMargins (uiwidget);
 
   return;
 }
@@ -143,9 +137,9 @@ uiWidgetSetMarginBottom (uiwcont_t *uiwidget, int mult)
   }
   val = (double) (uiBaseMarginSz * mult);
 
-  uiWidgetInitMargins (uiwidget);
   margins = uiwidget->uidata.margins;
   margins->margins.bottom = val;
+  uiWidgetUpdateMargins (uiwidget);
 
   return;
 }
@@ -168,7 +162,6 @@ uiWidgetSetMarginStart (uiwcont_t *uiwidget, int mult)
   }
   val = (double) (uiBaseMarginSz * mult);
 
-  uiWidgetInitMargins (uiwidget);
   margins = uiwidget->uidata.margins;
   margins->margins.left = val;
 
@@ -193,7 +186,6 @@ uiWidgetSetMarginEnd (uiwcont_t *uiwidget, int mult)
   }
   val = uiBaseMarginSz * mult;
 
-  uiWidgetInitMargins (uiwidget);
   margins = uiwidget->uidata.margins;
   margins->margins.right = val;
 
@@ -442,42 +434,32 @@ uiWidgetSetEnterCallback (uiwcont_t *uiwidget, callback_t *uicb)
 /* internal routines */
 
 static void
-uiWidgetInitMargins (uiwcont_t *uiwidget)
+uiWidgetUpdateMargins (uiwcont_t *uiwidget)
 {
   NSView        *view = uiwidget->uidata.widget;
   macosmargin_t *margins;
 
-  if (uiwidget->uidata.margins != NULL) {
+  margins = uiwidget->uidata.margins;
+
+  if (uiwidget->wbasetype == WCONT_T_BOX) {
+    NSStackView *stackview = uiwidget->uidata.widget;
+
+    stackview.edgeInsets = margins->margins;
     return;
   }
 
-  margins = mdmalloc (sizeof (macosmargin_t));
-  uiwidget->uidata.margins = margins;
+  [margins->lguide.leadingAnchor
+      constraintEqualToAnchor: view.leadingAnchor
+      constant: margins->margins.left].active = YES;
+  [margins->lguide.trailingAnchor
+      constraintEqualToAnchor: view.trailingAnchor
+      constant: margins->margins.right].active = YES;
+  [margins->lguide.topAnchor
+      constraintEqualToAnchor: view.topAnchor
+      constant: margins->margins.top].active = YES;
+  [margins->lguide.bottomAnchor
+      constraintEqualToAnchor: view.bottomAnchor
+      constant: margins->margins.bottom].active = YES;
 
-  margins->margins = NSEdgeInsetsMake (0, 0, 0, 0);
-  margins->viewBindings = NSDictionaryOfVariableBindings (view);
-  // ### TODO left and right need to be swapped for RTL languages
-  margins->metrics = @{
-      @"marginLeft" : @(margins->margins.left),
-      @"marginRight" : @(margins->margins.right),
-      @"marginBottom" : @(margins->margins.bottom),
-      @"marginTop" : @(margins->margins.top)
-      };
-
-if (uiwidget->wbasetype != WCONT_T_BUTTON) {
-return;
-}
-
-fprintf (stderr, "ml: %p \n", &margins->margins.left);
-fprintf (stderr, "view: %p \n", view);
-  [view addConstraints: [NSLayoutConstraint
-      constraintsWithVisualFormat:@"H:|-(marginLeft)-[view]-(marginRight)-|"
-      options:0
-      metrics:margins->metrics
-      views:margins->viewBindings]];
-  [view addConstraints: [NSLayoutConstraint
-      constraintsWithVisualFormat:@"V:|-(marginTop)-[view]-(marginBottom)-|"
-      options:0
-      metrics:margins->metrics
-      views:margins->viewBindings]];
+  view.needsDisplay = YES;
 }

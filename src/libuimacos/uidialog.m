@@ -131,11 +131,10 @@ uiCreateDialog (uiwcont_t *window,
 //  windowDelegate = [[IDWindowDelegate alloc] init];
 //  [win setDelegate:windowDelegate];
 
-  uiwin = uiwcontAlloc ();
-  uiwin->wbasetype = WCONT_T_WINDOW;
-  uiwin->wtype = WCONT_T_DIALOG_WINDOW;
-  uiwin->uidata.widget = win;
-  uiwin->uidata.packwidget = win;
+  uiwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_DIALOG_WINDOW);
+  uiwcontSetWidget (uiwin, win, NULL);
+//  uiwin->uidata.widget = win;
+//  uiwin->uidata.packwidget = win;
   uiwin->packed = true;
 
   uiWidgetSetAllMargins (uibox, 2);

@@ -22,6 +22,7 @@
 #include "uigeneral.h"
 
 #include "ui/uiwcont-int.h"
+#include "ui/uimacos-int.h"
 
 #include "ui/uiui.h"
 
@@ -143,7 +144,58 @@ uiInitUILog (void)
 void
 uiwcontUIInit (uiwcont_t *uiwidget)
 {
-  uiwidget->uidata.margins = NULL;
+  macosmargin_t *margins;
+
+  if (uiwidget->uidata.margins != NULL) {
+    return;
+  }
+
+  margins = mdmalloc (sizeof (macosmargin_t));
+  uiwidget->uidata.margins = margins;
+
+  margins->margins = NSEdgeInsetsMake (0, 0, 0, 0);
+  margins->lguide = NULL;
+}
+
+void
+uiwcontUIWidgetInit (uiwcont_t *uiwidget)
+{
+  NSView        *view = uiwidget->uidata.widget;
+  macosmargin_t *margins = uiwidget->uidata.margins;
+
+  if (uiwidget->wbasetype == WCONT_T_WINDOW) {
+    return;
+  }
+
+  if (uiwidget->wbasetype == WCONT_T_BOX) {
+    NSStackView *stackview = uiwidget->uidata.widget;
+
+    stackview.edgeInsets = margins->margins;
+    return;
+  }
+
+  margins->lguide = [[NSLayoutGuide alloc] init];
+  [view addLayoutGuide: margins->lguide];
+
+  if (margins->lguide == nil) {
+    fprintf (stderr, "ERR: %d/%s %d/%s has nil anchor\n",
+        uiwidget->wbasetype, uiwcontDesc (uiwidget->wbasetype),
+        uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
+    return;
+  }
+
+  [margins->lguide.leadingAnchor
+      constraintEqualToAnchor: view.leadingAnchor
+      constant: margins->margins.left].active = YES;
+  [margins->lguide.trailingAnchor
+      constraintEqualToAnchor: view.trailingAnchor
+      constant: margins->margins.right].active = YES;
+  [margins->lguide.topAnchor
+      constraintEqualToAnchor: view.topAnchor
+      constant: margins->margins.top].active = YES;
+  [margins->lguide.bottomAnchor
+      constraintEqualToAnchor: view.bottomAnchor
+      constant: margins->margins.bottom].active = YES;
 }
 
 void

@@ -42,11 +42,10 @@ uiCreateVerticalScrollbar (double upper)
   widget = gtk_scrollbar_new (GTK_ORIENTATION_VERTICAL, adjustment);
   sb->adjustment = adjustment;
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_SCROLLBAR;
-  uiwidget->wtype = WCONT_T_SCROLLBAR;
-  uiwidget->uidata.widget = widget;
-  uiwidget->uidata.packwidget = widget;
+  uiwidget = uiwcontAlloc (WCONT_T_SCROLLBAR, WCONT_T_SCROLLBAR);
+  uiwcontSetWidget (uiwidget, widget, NULL);
+//  uiwidget->uidata.widget = widget;
+//  uiwidget->uidata.packwidget = widget;
   uiwidget->uiint.uiscrollbar = sb;
 
   uiWidgetExpandVert (uiwidget);

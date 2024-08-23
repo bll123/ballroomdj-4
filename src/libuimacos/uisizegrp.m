@@ -23,12 +23,7 @@ uiCreateSizeGroupHoriz (void)
 {
   uiwcont_t   *uiwidget;
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_SIZE_GROUP;
-  uiwidget->wtype = WCONT_T_SIZE_GROUP;
-  uiwidget->uidata.widget = NULL;
-  uiwidget->uidata.packwidget = NULL;
-
+  uiwidget = uiwcontAlloc (WCONT_T_SIZE_GROUP, WCONT_T_SIZE_GROUP);
   return uiwidget;
 }
 

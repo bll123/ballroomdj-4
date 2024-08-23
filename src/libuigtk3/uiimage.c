@@ -25,11 +25,10 @@ uiImageNew (void)
   GtkWidget *image;
 
   image = gtk_image_new ();
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_IMAGE;
-  uiwidget->wtype = WCONT_T_IMAGE;
-  uiwidget->uidata.widget = image;
-  uiwidget->uidata.packwidget = image;
+  uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
+  uiwcontSetWidget (uiwidget, image, NULL);
+//  uiwidget->uidata.widget = image;
+//  uiwidget->uidata.packwidget = image;
 
   uiWidgetAlignHorizCenter (uiwidget);
   uiWidgetAlignVertCenter (uiwidget);
@@ -48,9 +47,7 @@ uiImageFromFile (const char *fn)
   pixbuf = gdk_pixbuf_new_from_file (fn, NULL);
   if (pixbuf != NULL) {
     image = gtk_image_new_from_pixbuf (pixbuf);
-    uiwidget = uiwcontAlloc ();
-    uiwidget->wbasetype = WCONT_T_IMAGE;
-    uiwidget->wtype = WCONT_T_IMAGE;
+    uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
     uiwidget->uidata.widget = image;
     uiwidget->uidata.packwidget = image;
     g_object_unref (pixbuf);
@@ -73,9 +70,7 @@ uiImageScaledFromFile (const char *fn, int scale)
   if (pixbuf != NULL) {
     image = gtk_image_new ();
     gtk_image_set_from_pixbuf (GTK_IMAGE (image), pixbuf);
-    uiwidget = uiwcontAlloc ();
-    uiwidget->wbasetype = WCONT_T_IMAGE;
-    uiwidget->wtype = WCONT_T_IMAGE;
+    uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
     uiwidget->uidata.widget = image;
     uiwidget->uidata.packwidget = image;
     g_object_unref (pixbuf);

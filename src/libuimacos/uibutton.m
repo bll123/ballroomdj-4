@@ -35,6 +35,7 @@ typedef struct uibutton {
 }
 - (void) setUIWidget: (uiwcont_t *) tuiwidget;
 - (IBAction) OnButton1Click: (id) sender;
+- (BOOL) isFlipped;
 @end
 
 @implementation IButton
@@ -53,6 +54,10 @@ typedef struct uibutton {
   }
 }
 
+- (BOOL) isFlipped {
+  return YES;
+}
+
 @end
 
 uiwcont_t *
@@ -67,7 +72,6 @@ uiCreateButton (callback_t *uicb, char *title, char *imagenm)
   uibutton->image = NULL;
 
   widget = [[IButton alloc] init];
-fprintf (stderr, "button: %p\n", widget);
 
   if (imagenm != NULL) {
     NSString    *ns;
@@ -89,11 +93,8 @@ fprintf (stderr, "button: %p\n", widget);
     [widget setTitle: [NSString stringWithUTF8String: title]];
   }
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_BUTTON;
-  uiwidget->wtype = WCONT_T_BUTTON;
-  uiwidget->uidata.widget = widget;
-  uiwidget->uidata.packwidget = widget;
+  uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_BUTTON);
+  uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uibutton = uibutton;
 
   [widget setBezelStyle: NSBezelStyleRounded];

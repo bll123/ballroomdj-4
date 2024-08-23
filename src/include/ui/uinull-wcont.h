@@ -1,24 +1,24 @@
 /*
  * Copyright 2024 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIMACOS_INT_H
-#define INC_UIMACOS_INT_H
+#ifndef INC_UINULL_WCONT_H
+#define INC_UINULL_WCONT_H
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
 
+/* the structure must contain a member named widget */
+/* and a member named packwidget */
 typedef struct uispecific {
-  void              *packwidget;
+  void      *packwidget;
   union {
-    void            *widget;
+    void    *widget;
   };
-  /* to hold the margin information and margin constraints for the widget */
-  void              *margins;
 } uispecific_t;
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
 #endif
 
-#endif /* INC_UIMACOS_INT_H */
+#endif /* INC_UINULL_WCONT_H */

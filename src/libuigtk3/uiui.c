@@ -453,6 +453,12 @@ uiwcontUIInit (uiwcont_t *uiwidget)
 }
 
 void
+uiwcontUIWidgetInit (uiwcont_t *uiwidget)
+{
+  return;
+}
+
+void
 uiwcontUIFree (uiwcont_t *uiwidget)
 {
   return;

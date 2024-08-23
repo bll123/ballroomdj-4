@@ -143,7 +143,7 @@ uiBoxSetSizeChgCallback (uiwcont_t *uiwindow, callback_t *uicb)
 static uiwcont_t *
 uiCreateBox (int orientation)
 {
-  uiwcont_t   *uiwidget;
+  uiwcont_t   *uiwidget = NULL;
   IBox        *box = NULL;
 
   box = [[IBox alloc] init];
@@ -157,19 +157,15 @@ uiCreateBox (int orientation)
   [[box layer] setBorderWidth: 2.0];
 #endif
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_BOX;
-
   if (orientation == NSUserInterfaceLayoutOrientationHorizontal) {
-    uiwidget->wtype = WCONT_T_HBOX;
+    uiwidget = uiwcontAlloc (WCONT_T_BOX, WCONT_T_HBOX);
     [box setAlignment: NSLayoutAttributeTop];
   }
   if (orientation == NSUserInterfaceLayoutOrientationVertical) {
-    uiwidget->wtype = WCONT_T_VBOX;
+    uiwidget = uiwcontAlloc (WCONT_T_BOX, WCONT_T_VBOX);
     [box setAlignment: NSLayoutAttributeLeading];
   }
-  uiwidget->uidata.widget = box;
-  uiwidget->uidata.packwidget = box;
+  uiwcontSetWidget (uiwidget, box, NULL);
   return uiwidget;
 }
 

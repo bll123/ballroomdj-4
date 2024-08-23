@@ -16,13 +16,13 @@
 #include "ui/uiui.h"
 
 uiwcont_t *
-uiwcontAlloc (void)
+uiwcontAlloc (int basetype, int type)
 {
   uiwcont_t    *uiwidget;
 
   uiwidget = mdmalloc (sizeof (uiwcont_t));
-  uiwidget->wbasetype = WCONT_T_UNKNOWN;
-  uiwidget->wtype = WCONT_T_UNKNOWN;
+  uiwidget->wbasetype = basetype;
+  uiwidget->wtype = type;
   uiwidget->uidata.widget = NULL;
   uiwidget->uidata.packwidget = NULL;          // often the same as widget
   uiwidget->packed = false;
@@ -44,6 +44,21 @@ uiwcontBaseFree (uiwcont_t *uiwidget)
   uiwidget->uidata.widget = NULL;
   uiwidget->uidata.packwidget = NULL;
   mdfree (uiwidget);
+}
+
+void
+uiwcontSetWidget (uiwcont_t *uiwidget, void *widget, void *packwidget)
+{
+  if (uiwidget == NULL || widget == NULL) {
+    return;
+  }
+
+  uiwidget->uidata.widget = widget;
+  uiwidget->uidata.packwidget = packwidget;
+  if (packwidget == NULL) {
+    uiwidget->uidata.packwidget = widget;
+  }
+  uiwcontUIWidgetInit (uiwidget);
 }
 
 /* for debugging */

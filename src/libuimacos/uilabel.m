@@ -19,24 +19,33 @@
 #include "ui/uiui.h"
 #include "ui/uilabel.h"
 
+@interface ILabel : NSTextField {}
+- (BOOL) isFlipped;
+@end
+
+@implementation ILabel
+- (BOOL) isFlipped {
+  return YES;
+}
+@end
+
 uiwcont_t *
 uiCreateLabel (const char *label)
 {
   uiwcont_t   *uiwidget;
-  NSTextField *widget;
+  ILabel      *widget;
 
-  widget = [[NSTextField alloc] init];
+  widget = [[ILabel alloc] init];
   [widget setBezeled:NO];
   [widget setDrawsBackground:NO];
   [widget setEditable:NO];
   [widget setStringValue: [NSString stringWithUTF8String: label]];
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_LABEL;
-  uiwidget->wtype = WCONT_T_LABEL;
-  uiwidget->uidata.widget = widget;
-  uiwidget->uidata.packwidget = widget;
+  uiwidget = uiwcontAlloc (WCONT_T_LABEL, WCONT_T_LABEL);
+  uiwcontSetWidget (uiwidget, widget, NULL);
+//  uiwidget->uidata.widget = widget;
+//  uiwidget->uidata.packwidget = widget;
   return uiwidget;
 }
 
@@ -49,7 +58,7 @@ uiLabelAddClass (const char *classnm, const char *color)
 void
 uiLabelSetTooltip (uiwcont_t *uiwidget, const char *txt)
 {
-  NSTextField *nstf;
+  ILabel *nstf;
 
   if (! uiwcontValid (uiwidget, WCONT_T_LABEL, "label-set-tooltip")) {
     return;
@@ -73,7 +82,7 @@ uiLabelSetFont (uiwcont_t *uiwidget, const char *font)
 void
 uiLabelSetText (uiwcont_t *uiwidget, const char *text)
 {
-  NSTextField *widget;
+  ILabel *widget;
 
   if (! uiwcontValid (uiwidget, WCONT_T_LABEL, "label-set-tooltip")) {
     return;

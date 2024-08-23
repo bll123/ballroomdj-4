@@ -51,9 +51,7 @@ uiCreateSwitch (int value)
   /* the gtk switch is different in every theme, some of which are not */
   /* great.  use a toggle button instead and set our own image */
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_SWITCH;
-  uiwidget->wtype = WCONT_T_SWITCH;
+  uiwidget = uiwcontAlloc (WCONT_T_SWITCH, WCONT_T_SWITCH);
 
   uiswitch = mdmalloc (sizeof (uiswitch_t));
   uiswitch->switchoffimg = NULL;
@@ -70,8 +68,9 @@ uiCreateSwitch (int value)
   uiWidgetMakePersistent (uiswitch->switchonimg);
 
   widget = gtk_toggle_button_new ();
-  uiwidget->uidata.widget = widget;
-  uiwidget->uidata.packwidget = widget;
+  uiwcontSetWidget (uiwidget, widget, NULL);
+//  uiwidget->uidata.widget = widget;
+//  uiwidget->uidata.packwidget = widget;
   uiwidget->uiint.uiswitch = uiswitch;
 
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);

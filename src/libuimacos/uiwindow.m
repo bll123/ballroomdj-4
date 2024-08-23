@@ -60,9 +60,7 @@
   NSStackView *box;
 
   box = [w contentView];
-  [box setAutoresizingMask:
-      NSViewWidthSizable | NSViewMinXMargin | NSViewMaxXMargin |
-      NSViewHeightSizable | NSViewMinYMargin | NSViewMaxYMargin];
+  [box setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
 }
 
 @end
@@ -149,11 +147,10 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   windowDelegate = [[IWindowDelegate alloc] init];
   [win setDelegate:windowDelegate];
 
-  uiwin = uiwcontAlloc ();
-  uiwin->wbasetype = WCONT_T_WINDOW;
-  uiwin->wtype = WCONT_T_WINDOW;
-  uiwin->uidata.widget = win;
-  uiwin->uidata.packwidget = win;
+  uiwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_WINDOW);
+  uiwcontSetWidget (uiwin, win, NULL);
+//  uiwin->uidata.widget = win;
+//  uiwin->uidata.packwidget = win;
   uiwin->packed = true;
 
   uiWidgetSetAllMargins (uibox, 2);
@@ -336,7 +333,7 @@ uiWindowSetNoMaximize (uiwcont_t *uiwindow)
   win = uiwindow->uidata.widget;
   sm = win.styleMask;
   sm &= ~NSWindowStyleMaskResizable;
-  win.styleMask = sm;
+//  win.styleMask = sm;
   return;
 }
 
@@ -344,8 +341,8 @@ void
 uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
 {
   NSWindow    *win;
-  NSView      *widget = NULL;
-  NSStackView *box;
+  NSStackView *widget = NULL;
+  NSStackView *winbox;
   int         grav = NSStackViewGravityTop;
 
   if (uiwindow == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
@@ -354,9 +351,18 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
 
   win = uiwindow->uidata.widget;
   widget = uiwidget->uidata.packwidget;
-  box = [win contentView];
-  [box addView: widget inGravity: grav];
+  winbox = [win contentView];
+  [winbox addView: widget inGravity: grav];
   uiwidget->packed = true;
+
+  [widget.leadingAnchor
+      constraintEqualToAnchor: winbox.leadingAnchor].active = YES;
+  [widget.trailingAnchor
+      constraintEqualToAnchor: winbox.trailingAnchor].active = YES;
+  [widget.topAnchor
+      constraintEqualToAnchor: winbox.topAnchor].active = YES;
+  [widget.bottomAnchor
+      constraintEqualToAnchor: winbox.bottomAnchor].active = YES;
   return;
 }
 

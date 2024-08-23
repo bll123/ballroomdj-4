@@ -101,8 +101,9 @@ uiSpinboxTextCreate (void *udata)
   uispinbox->udata = udata;
 
   uiwidget->wtype = WCONT_T_SPINBOX_TEXT;
-  uiwidget->uidata.widget = widget;
-  uiwidget->uidata.packwidget = widget;
+  uiwcontSetWidget (uiwidget, widget, NULL);
+//  uiwidget->uidata.widget = widget;
+//  uiwidget->uidata.packwidget = widget;
   uiEventSetKeyCallback (uispinbox->uievent, uiwidget, uispinbox->presscb);
 
   uiWidgetAddClass (uiwidget, SPINBOX_READONLY_CLASS);
@@ -235,8 +236,9 @@ uiSpinboxTimeCreate (int sbtype, void *udata,
   uispinbox->udata = udata;
 
   uiwidget->wtype = WCONT_T_SPINBOX_TIME;
-  uiwidget->uidata.widget = widget;
-  uiwidget->uidata.packwidget = widget;
+  uiwcontSetWidget (uiwidget, widget, NULL);
+//  uiwidget->uidata.widget = widget;
+//  uiwidget->uidata.packwidget = widget;
 
   g_signal_connect (widget, "output",
       G_CALLBACK (uiSpinboxTimeDisplay), uiwidget);
@@ -285,9 +287,7 @@ uiSpinboxIntCreate (void)
   uiwcont_t   *uiwidget;
   GtkWidget   *spinbox;
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_SPINBOX;
-  uiwidget->wtype = WCONT_T_SPINBOX_NUM;
+  uiwidget = uiwcontAlloc (WCONT_T_SPINBOX, WCONT_T_SPINBOX_NUM);
 
   spinbox = gtk_spin_button_new (NULL, 0.0, 0);
   gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spinbox), TRUE);
@@ -297,8 +297,9 @@ uiSpinboxIntCreate (void)
   gtk_widget_set_margin_top (spinbox, uiBaseMarginSz);
   gtk_widget_set_margin_start (spinbox, uiBaseMarginSz);
 
-  uiwidget->uidata.widget = spinbox;
-  uiwidget->uidata.packwidget = spinbox;
+  uiwcontSetWidget (uiwidget, spinbox, NULL);
+//  uiwidget->uidata.widget = spinbox;
+//  uiwidget->uidata.packwidget = spinbox;
 
   g_signal_connect (spinbox, "input",
       G_CALLBACK (uiSpinboxNumInput), NULL);
@@ -312,9 +313,7 @@ uiSpinboxDoubleCreate (void)
   uiwcont_t   *uiwidget;
   GtkWidget   *spinbox;
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_SPINBOX;
-  uiwidget->wtype = WCONT_T_SPINBOX_DOUBLE;
+  uiwidget = uiwcontAlloc (WCONT_T_SPINBOX, WCONT_T_SPINBOX_DOUBLE);
 
   spinbox = gtk_spin_button_new (NULL, 0.0, 1);
   gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spinbox), TRUE);
@@ -324,8 +323,9 @@ uiSpinboxDoubleCreate (void)
   gtk_widget_set_margin_top (spinbox, uiBaseMarginSz);
   gtk_widget_set_margin_start (spinbox, uiBaseMarginSz);
 
-  uiwidget->uidata.widget = spinbox;
-  uiwidget->uidata.packwidget = spinbox;
+  uiwcontSetWidget (uiwidget, spinbox, NULL);
+//  uiwidget->uidata.widget = spinbox;
+//  uiwidget->uidata.packwidget = spinbox;
 
   g_signal_connect (spinbox, "input",
       G_CALLBACK (uiSpinboxDoubleInput), NULL);
@@ -350,8 +350,9 @@ uiSpinboxDoubleDefaultCreate (void)
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
 
   uiwidget->wtype = WCONT_T_SPINBOX_DOUBLE_DFLT;
-  uiwidget->uidata.widget = widget;
-  uiwidget->uidata.packwidget = widget;
+  uiwcontSetWidget (uiwidget, widget, NULL);
+//  uiwidget->uidata.widget = widget;
+//  uiwidget->uidata.packwidget = widget;
 
   g_signal_connect (widget, "output",
       G_CALLBACK (uiSpinboxDoubleDefaultDisplay), uiwidget);
@@ -521,9 +522,7 @@ uiSpinboxInit (void)
   uiwcont_t   *uiwidget;
   uispinbox_t *uispinbox;
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_SPINBOX;
-  uiwidget->wtype = WCONT_T_SPINBOX;
+  uiwidget = uiwcontAlloc (WCONT_T_SPINBOX, WCONT_T_SPINBOX);
 
   uispinbox = mdmalloc (sizeof (uispinbox_t));
   uispinbox->convcb = NULL;

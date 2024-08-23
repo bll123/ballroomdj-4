@@ -42,11 +42,10 @@ uiCreateSwitch (int value)
   }
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_SWITCH;
-  uiwidget->wtype = WCONT_T_SWITCH;
-  uiwidget->uidata.widget = widget;
-  uiwidget->uidata.packwidget = widget;
+  uiwidget = uiwcontAlloc (WCONT_T_SWITCH, WCONT_T_SWITCH);
+  uiwcontSetWidget (uiwidget, widget, NULL);
+//  uiwidget->uidata.widget = widget;
+//  uiwidget->uidata.packwidget = widget;
 
   return uiwidget;
 }

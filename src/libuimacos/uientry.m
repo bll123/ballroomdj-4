@@ -29,8 +29,9 @@ typedef struct uientry {
 uiwcont_t *
 uiEntryInit (int entrySize, int maxSize)
 {
-  uiwcont_t *uiwidget;
-  uientry_t *uientry;
+  uiwcont_t   *uiwidget;
+  uientry_t   *uientry;
+  NSTextField *widget;
 
   uientry = mdmalloc (sizeof (uientry_t));
 //  uientry->entrySize = entrySize;
@@ -44,12 +45,11 @@ uiEntryInit (int entrySize, int maxSize)
 //  uientry->valid = true;
 //  uientry->buffer = gtk_entry_buffer_new (NULL, -1);
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_ENTRY;
-  uiwidget->wtype = WCONT_T_ENTRY;
+  widget = [[NSTextField alloc] init];
+
+  uiwidget = uiwcontAlloc (WCONT_T_ENTRY, WCONT_T_ENTRY);
+  uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uientry = uientry;
-  uiwidget->uidata.widget = [[NSTextField alloc] init];
-  uiwidget->uidata.packwidget = uiwidget->uidata.widget;
 
 //  gtk_entry_set_width_chars (GTK_ENTRY (uiwidget->uidata.widget), uientry->entrySize);
 //  gtk_entry_set_max_length (GTK_ENTRY (uiwidget->uidata.widget), uientry->maxSize);

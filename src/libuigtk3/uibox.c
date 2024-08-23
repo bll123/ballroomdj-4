@@ -107,21 +107,19 @@ uiBoxSetSizeChgCallback (uiwcont_t *uiwindow, callback_t *uicb)
 static uiwcont_t *
 uiCreateBox (int orientation)
 {
-  uiwcont_t *uiwidget;
+  uiwcont_t *uiwidget = NULL;
   GtkWidget *box;
 
   box = gtk_box_new (orientation, 0);
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_BOX;
-  uiwidget->wtype = WCONT_T_VBOX;
   if (orientation == GTK_ORIENTATION_HORIZONTAL) {
-    uiwidget->wtype = WCONT_T_HBOX;
+    uiwidget = uiwcontAlloc (WCONT_T_BOX, WCONT_T_HBOX);
   }
   if (orientation == GTK_ORIENTATION_VERTICAL) {
-    uiwidget->wtype = WCONT_T_VBOX;
+    uiwidget = uiwcontAlloc (WCONT_T_BOX, WCONT_T_VBOX);
   }
-  uiwidget->uidata.widget = box;
-  uiwidget->uidata.packwidget = box;
+  uiwcontSetWidget (uiwidget, box, NULL);
+//  uiwidget->uidata.widget = box;
+//  uiwidget->uidata.packwidget = box;
   return uiwidget;
 }
 

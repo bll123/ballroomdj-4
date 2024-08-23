@@ -35,11 +35,10 @@ uiCreateNotebook (void)
 //  gtk_widget_set_vexpand (nb, FALSE);
 //  gtk_notebook_set_tab_pos (GTK_NOTEBOOK (nb), GTK_POS_TOP);
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_NOTEBOOK;
-  uiwidget->wtype = WCONT_T_NOTEBOOK;
-  uiwidget->uidata.widget = nb;
-  uiwidget->uidata.packwidget = nb;
+  uiwidget = uiwcontAlloc (WCONT_T_NOTEBOOK, WCONT_T_NOTEBOOK);
+  uiwcontSetWidget (uiwidget, nb, NULL);
+//  uiwidget->uidata.widget = nb;
+//  uiwidget->uidata.packwidget = nb;
   return uiwidget;
 }
 

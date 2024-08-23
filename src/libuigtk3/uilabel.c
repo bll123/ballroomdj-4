@@ -32,11 +32,10 @@ uiCreateLabel (const char *label)
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_LABEL;
-  uiwidget->wtype = WCONT_T_LABEL;
-  uiwidget->uidata.widget = widget;
-  uiwidget->uidata.packwidget = widget;
+  uiwidget = uiwcontAlloc (WCONT_T_LABEL, WCONT_T_LABEL);
+  uiwcontSetWidget (uiwidget, widget, NULL);
+//  uiwidget->uidata.widget = widget;
+//  uiwidget->uidata.packwidget = widget;
   return uiwidget;
 }
 

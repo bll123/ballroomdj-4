@@ -46,11 +46,10 @@ uiCreateScale (double lower, double upper,
   gtk_scale_set_has_origin (GTK_SCALE (scale), TRUE);
   gtk_range_set_value (GTK_RANGE (scale), initvalue);
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_SCALE;
-  uiwidget->wtype = WCONT_T_SCALE;
-  uiwidget->uidata.widget = scale;
-  uiwidget->uidata.packwidget = scale;
+  uiwidget = uiwcontAlloc (WCONT_T_SCALE, WCONT_T_SCALE);
+  uiwcontSetWidget (uiwidget, scale, NULL);
+//  uiwidget->uidata.widget = scale;
+//  uiwidget->uidata.packwidget = scale;
 
   return uiwidget;
 }

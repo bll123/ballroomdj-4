@@ -112,15 +112,15 @@ typedef union {
 } uiwcontint_t;
 
 # if BDJ4_UI_GTK3 /* gtk3 */
-#  include "ui/uigtk3-int.h"
+#  include "ui/uigtk3-wcont.h"
 # endif /* BDJ4_UI_GTK3 */
 
 # if BDJ4_UI_NULL
-#  include "ui/uinull-int.h"
+#  include "ui/uinull-wcont.h"
 # endif /* BDJ4_UI_NULL */
 
 # if BDJ4_UI_MACOS
-#  include "ui/uimacos-int.h"
+#  include "ui/uimacos-wcont.h"
 # endif /* BDJ4_UI_MACOS */
 
 typedef struct uiwcont {
