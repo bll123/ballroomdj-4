@@ -57,7 +57,7 @@ osDirOpen (const char *dirname)
 #else
   dirh->dirname = mdstrdup (dirname);
   dirh->dh = opendir (dirname);
-  mdextalloc (dirh->dh);
+  mdextfopen (dirh->dh);
 #endif
 
   return dirh;
@@ -84,7 +84,7 @@ osDirIterate (dirhandle_t *dirh)
 
     wdirname = osToWideChar (dirh->dirname);
     dirh->dhandle = FindFirstFileW (wdirname, &filedata);
-    mdextalloc (dirh->dhandle);
+    mdextfopen (dirh->dhandle);
     rc = 0;
     if (dirh->dhandle != INVALID_HANDLE_VALUE) {
       rc = 1;
@@ -123,13 +123,13 @@ osDirClose (dirhandle_t *dirh)
 
 #if _lib_FindFirstFileW
   if (dirh->dhandle != INVALID_HANDLE_VALUE) {
-    mdextfree (dirh->dhandle);
+    mdextfclose (dirh->dhandle);
     FindClose (dirh->dhandle);
   }
   dirh->dhandle = INVALID_HANDLE_VALUE;
 #else
   if (dirh->dh != NULL) {
-    mdextfree (dirh->dh);
+    mdextfclose (dirh->dh);
     closedir (dirh->dh);
   }
   dirh->dh = NULL;

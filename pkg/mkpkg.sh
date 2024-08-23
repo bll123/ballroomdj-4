@@ -122,6 +122,7 @@ function copyreleasefiles {
   # img/profile[1-9] may be left over from testing
   # 2024-1-16 do not ship the pli-mpv interface either.
   # 2024-6-3 for the time being, do not ship libplivlc4
+  # 2024-8-23 for a long time, do not ship libuimacos
   rm -f \
       ${stage}/bin/aesed* \
       ${stage}/bin/bdj4se* \
@@ -133,6 +134,7 @@ function copyreleasefiles {
       ${stage}/bin/libplimpv* \
       ${stage}/bin/libplinull* \
       ${stage}/bin/libplivlc4* \
+      ${stage}/bin/libuimacos* \
       ${stage}/bin/libvolnull* \
       ${stage}/bin/plisinklist* \
       ${stage}/bin/tdbcompare* \

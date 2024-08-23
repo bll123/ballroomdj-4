@@ -381,8 +381,9 @@ if (NOT WIN32)
   if (APPLE)
     # 10.14 = Mojave, 10.15 = Catalina
     # 11 = Big Sur, 12 = Monterey, 13 = Ventura, 14 = Sonoma
-    # update this in pkg/MacOS/Info.plist also
-    set (CMAKE_OSX_DEPLOYMENT_TARGET 12)
+    # 15 = Sequoia
+    # update this in pkg/macos/Info.plist also
+    set (CMAKE_OSX_DEPLOYMENT_TARGET 11)
   endif()
 
   add_compile_options (-DMG_ARCH=MG_ARCH_UNIX)
