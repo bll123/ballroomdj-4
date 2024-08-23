@@ -138,3 +138,15 @@ uiInitUILog (void)
 {
   return;
 }
+
+void
+uiwcontInit (uiwcont_t *uiwidget)
+{
+  uiwidget->viewBindings = NULL;
+  uiwidget->metrics = @{
+      @"marginLeft" : @(margins.left),
+      @"marginRight" : @(margins.right),
+      @"marginBottom" : @(margins.bottom),
+      @"marginTop" : @(margins.top)
+      };
+}

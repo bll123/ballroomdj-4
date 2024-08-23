@@ -27,6 +27,7 @@ void  uiAddColorClass (const char *classnm, const char *color);
 void  uiAddBGColorClass (const char *classnm, const char *color);
 void  uiAddProgressbarClass (const char *classnm, const char *color);
 void  uiInitUILog (void);
+void  uiwcontInit (uiwcont_t *uiwidget);      // ui interface specific init
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

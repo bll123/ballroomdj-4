@@ -80,3 +80,10 @@ uiInitUILog (void)
 {
   return;
 }
+
+void
+uiwcontInit (uiwcont_t *uiwidget)
+{
+  return;
+}
+

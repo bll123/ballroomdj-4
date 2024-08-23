@@ -74,6 +74,7 @@ enum {
   WCONT_EMPTY_WIDGET = 0x0001,
 };
 
+/* used in all ui interfaces */
 typedef struct uibuttonbase {
   callback_t  *cb;
   callback_t  *presscb;

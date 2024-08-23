@@ -445,3 +445,10 @@ uiSetRowHighlight (char *tbuff, size_t sz, const char *accentColor,
       classnm, classnm, classnm, tmpcolor);
   strlcat (tbuff, wbuff, sz);
 }
+
+void
+uiwcontInit (uiwcont_t *uiwidget)
+{
+  return;
+}
+

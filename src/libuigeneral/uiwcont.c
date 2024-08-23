@@ -26,6 +26,7 @@ uiwcontAlloc (void)
   uiwidget->uidata.packwidget = NULL;          // often the same as widget
   uiwidget->packed = false;
   memset (&uiwidget->uiint, 0, sizeof (uiwcontint_t));
+  uiwcontInit (uiwidget);                     // ui interface specific
   return uiwidget;
 }
 

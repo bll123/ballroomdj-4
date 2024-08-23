@@ -4,6 +4,9 @@
 #ifndef INC_UIMACOS_INT_H
 #define INC_UIMACOS_INT_H
 
+#include <Cocoa/Cocoa.h>
+#import <Foundation/NSObject.h>
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
@@ -11,8 +14,11 @@ extern "C" {
 typedef struct uispecific {
   void          *packwidget;
   union {
-    void        *widget;
+    void          *widget;
   };
+  /* to hold the margin information for the widget */
+  NSDictionary  *viewBindings;
+  NSDictionary  *metrics;
 } uispecific_t;
 
 #if defined (__cplusplus) || defined (c_plusplus)
