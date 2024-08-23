@@ -16,6 +16,7 @@
 #import <Foundation/NSDebug.h>
 
 #include "oslocale.h"
+#include "mdebug.h"
 #include "tmutil.h"
 #include "uiclass.h"
 #include "uigeneral.h"
@@ -140,13 +141,13 @@ uiInitUILog (void)
 }
 
 void
-uiwcontInit (uiwcont_t *uiwidget)
+uiwcontUIInit (uiwcont_t *uiwidget)
 {
-  uiwidget->viewBindings = NULL;
-  uiwidget->metrics = @{
-      @"marginLeft" : @(margins.left),
-      @"marginRight" : @(margins.right),
-      @"marginBottom" : @(margins.bottom),
-      @"marginTop" : @(margins.top)
-      };
+  uiwidget->uidata.margins = NULL;
+}
+
+void
+uiwcontUIFree (uiwcont_t *uiwidget)
+{
+  dataFree (uiwidget->uidata.margins);
 }

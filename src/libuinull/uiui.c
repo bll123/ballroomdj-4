@@ -82,7 +82,13 @@ uiInitUILog (void)
 }
 
 void
-uiwcontInit (uiwcont_t *uiwidget)
+uiwcontUIInit (uiwcont_t *uiwidget)
+{
+  return;
+}
+
+void
+uiwcontUIInit (uiwcont_t *uiwidget)
 {
   return;
 }

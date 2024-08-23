@@ -67,6 +67,7 @@ uiCreateButton (callback_t *uicb, char *title, char *imagenm)
   uibutton->image = NULL;
 
   widget = [[IButton alloc] init];
+fprintf (stderr, "button: %p\n", widget);
 
   if (imagenm != NULL) {
     NSString    *ns;

@@ -13,6 +13,7 @@
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"
+#include "ui/uiui.h"
 
 uiwcont_t *
 uiwcontAlloc (void)
@@ -26,7 +27,7 @@ uiwcontAlloc (void)
   uiwidget->uidata.packwidget = NULL;          // often the same as widget
   uiwidget->packed = false;
   memset (&uiwidget->uiint, 0, sizeof (uiwcontint_t));
-  uiwcontInit (uiwidget);                     // ui interface specific
+  uiwcontUIInit (uiwidget);                     // ui interface specific
   return uiwidget;
 }
 
@@ -37,8 +38,11 @@ uiwcontBaseFree (uiwcont_t *uiwidget)
     return;
   }
 
+  uiwcontUIFree (uiwidget);                     // ui interface specific
   uiwidget->wbasetype = WCONT_T_UNKNOWN;
   uiwidget->wtype = WCONT_T_UNKNOWN;
+  uiwidget->uidata.widget = NULL;
+  uiwidget->uidata.packwidget = NULL;
   mdfree (uiwidget);
 }
 
