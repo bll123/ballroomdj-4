@@ -149,8 +149,6 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
 
   uiwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_WINDOW);
   uiwcontSetWidget (uiwin, win, NULL);
-//  uiwin->uidata.widget = win;
-//  uiwin->uidata.packwidget = win;
   uiwin->packed = true;
 
   uiWidgetSetAllMargins (uibox, 2);

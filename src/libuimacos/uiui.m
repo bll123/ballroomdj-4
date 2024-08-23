@@ -154,7 +154,7 @@ uiwcontUIInit (uiwcont_t *uiwidget)
   uiwidget->uidata.margins = margins;
 
   margins->margins = NSEdgeInsetsMake (0, 0, 0, 0);
-  margins->lguide = NULL;
+  margins->container = NULL;
 }
 
 void
@@ -174,28 +174,13 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
     return;
   }
 
-  margins->lguide = [[NSLayoutGuide alloc] init];
-  [view addLayoutGuide: margins->lguide];
+  margins->container = [[NSStackView alloc] init];
+  margins->container.edgeInsets = margins->margins;
+  [margins->container addView: view inGravity: NSStackViewGravityLeading];
 
-  if (margins->lguide == nil) {
-    fprintf (stderr, "ERR: %d/%s %d/%s has nil anchor\n",
-        uiwidget->wbasetype, uiwcontDesc (uiwidget->wbasetype),
-        uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
-    return;
+  if (uiwidget->uidata.widget == uiwidget->uidata.packwidget) {
+    uiwidget->uidata.packwidget = margins->container;
   }
-
-  [margins->lguide.leadingAnchor
-      constraintEqualToAnchor: view.leadingAnchor
-      constant: margins->margins.left].active = YES;
-  [margins->lguide.trailingAnchor
-      constraintEqualToAnchor: view.trailingAnchor
-      constant: margins->margins.right].active = YES;
-  [margins->lguide.topAnchor
-      constraintEqualToAnchor: view.topAnchor
-      constant: margins->margins.top].active = YES;
-  [margins->lguide.bottomAnchor
-      constraintEqualToAnchor: view.bottomAnchor
-      constant: margins->margins.bottom].active = YES;
 }
 
 void

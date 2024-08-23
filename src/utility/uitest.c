@@ -471,6 +471,8 @@ uitestUIButtons (uitest_t *uitest)
   uiwidgetp = uiCreateToggleButton ("toggle image", NULL, "tool-tip",
       uitest->images [UITEST_TB_I_LED_OFF], 0);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAlignHorizCenter (uiwidgetp);
+  uiWidgetAlignVertCenter (uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
@@ -1175,8 +1177,12 @@ uitestUINotebook (uitest_t *uitest)
   hbox = uiCreateHorizBox ();
   uiwidgetp = uiCreateLabel ("One");
   uiBoxPackStart (hbox, uiwidgetp);
+
   uiwcontFree (uiwidgetp);
   uiBoxPackStart (hbox, uitest->images [UITEST_NB1_I_LED_OFF]);
+  uiWidgetAlignHorizCenter (uiwidgetp);
+  uiWidgetAlignVertCenter (uiwidgetp);
+
   uiNotebookAppendPage (uitest->wcont [UITEST_W_NB_HI], vboxb, hbox);
   uiWidgetSetAllMargins (vboxb, 4);
   uiWidgetShowAll (hbox);
@@ -1204,7 +1210,11 @@ uitestUINotebook (uitest_t *uitest)
   uiwidgetp = uiCreateLabel ("Two");
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
+
   uiBoxPackStart (hbox, uitest->images [UITEST_NB2_I_LED_OFF]);
+  uiWidgetAlignHorizCenter (uiwidgetp);
+  uiWidgetAlignVertCenter (uiwidgetp);
+
   uiNotebookAppendPage (uitest->wcont [UITEST_W_NB_HI], vboxb, hbox);
   uiWidgetSetAllMargins (vboxb, 4);
   uiWidgetShowAll (hbox);

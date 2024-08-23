@@ -218,9 +218,9 @@ uicopytagsCreateDialog (uict_t *uict)
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiEntryInit (50, 200);
+  uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
-  uiBoxPackStartExpand (hbox, uiwidgetp);
   uict->source = uiwidgetp;
   uiEntrySetValidate (uict->source, "",
       uiEntryValidateFile, NULL, UIENTRY_DELAYED);
@@ -244,9 +244,9 @@ uicopytagsCreateDialog (uict_t *uict)
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiEntryInit (50, 200);
+  uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
-  uiBoxPackStartExpand (hbox, uiwidgetp);
   uict->target = uiwidgetp;
   uiEntrySetValidate (uiwidgetp, "",
       uiEntryValidateFile, NULL, UIENTRY_DELAYED);

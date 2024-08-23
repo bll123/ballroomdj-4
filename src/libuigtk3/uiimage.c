@@ -30,9 +30,6 @@ uiImageNew (void)
 //  uiwidget->uidata.widget = image;
 //  uiwidget->uidata.packwidget = image;
 
-  uiWidgetAlignHorizCenter (uiwidget);
-  uiWidgetAlignVertCenter (uiwidget);
-
   return uiwidget;
 }
 

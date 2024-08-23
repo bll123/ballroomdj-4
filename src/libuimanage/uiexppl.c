@@ -279,9 +279,9 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
 
   uiwidgetp = uiEntryInit (50, MAXPATHLEN);
   uiEntrySetValue (uiwidgetp, "");
+  uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
-  uiBoxPackStartExpand (hbox, uiwidgetp);
   uiexppl->wcont [UIEXPPL_W_TARGET] = uiwidgetp;
 
   uiEntrySetValidate (uiwidgetp, "",

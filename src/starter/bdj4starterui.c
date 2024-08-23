@@ -710,8 +710,8 @@ starterBuildUI (startui_t  *starter)
       starter->callbacks [START_CB_PLAYER],
       /* CONTEXT: starterui: button: starts the player user interface */
       _("Player"), NULL);
-  uiWidgetAlignHorizStart (uiwidgetp);
   uiBoxPackStart (bvbox, uiwidgetp);
+  uiWidgetAlignHorizStart (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
@@ -723,8 +723,8 @@ starterBuildUI (startui_t  *starter)
       starter->callbacks [START_CB_MANAGE],
       /* CONTEXT: starterui: button: starts the management user interface */
       _("Manage"), NULL);
-  uiWidgetAlignHorizStart (uiwidgetp);
   uiBoxPackStart (bvbox, uiwidgetp);
+  uiWidgetAlignHorizStart (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
@@ -736,8 +736,8 @@ starterBuildUI (startui_t  *starter)
       starter->callbacks [START_CB_CONFIG],
       /* CONTEXT: starterui: button: starts the configuration user interface */
       _("Configure"), NULL);
-  uiWidgetAlignHorizStart (uiwidgetp);
   uiBoxPackStart (bvbox, uiwidgetp);
+  uiWidgetAlignHorizStart (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
@@ -749,8 +749,8 @@ starterBuildUI (startui_t  *starter)
       starter->callbacks [START_CB_SUPPORT],
       /* CONTEXT: starterui: button: support : support information */
       _("Support"), NULL);
-  uiWidgetAlignHorizStart (uiwidgetp);
   uiBoxPackStart (bvbox, uiwidgetp);
+  uiWidgetAlignHorizStart (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
@@ -760,8 +760,8 @@ starterBuildUI (startui_t  *starter)
       starter->callbacks [START_CB_EXIT],
       /* CONTEXT: starterui: button: exits BDJ4 (exits everything) */
       _("Exit"), NULL);
-  uiWidgetAlignHorizStart (uiwidgetp);
   uiBoxPackStart (bvbox, uiwidgetp);
+  uiWidgetAlignHorizStart (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);

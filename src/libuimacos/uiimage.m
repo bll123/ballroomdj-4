@@ -40,8 +40,6 @@ uiImageFromFile (const char *fn)
 
   uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
   uiwcontSetWidget (uiwidget, imgv, NULL);
-//  uiwidget->uidata.widget = imgv;
-//  uiwidget->uidata.packwidget = imgv;
 
   uiWidgetAlignHorizCenter (uiwidget);
   uiWidgetAlignVertCenter (uiwidget);
@@ -67,8 +65,6 @@ uiImageScaledFromFile (const char *fn, int scale)
 
   uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
   uiwcontSetWidget (uiwidget, imgv, NULL);
-//  uiwidget->uidata.widget = imgv;
-//  uiwidget->uidata.packwidget = imgv;
 
   uiWidgetAlignHorizCenter (uiwidget);
   uiWidgetAlignVertCenter (uiwidget);
@@ -90,8 +86,6 @@ uiImageClear (uiwcont_t *uiwidget)
   imgv = [[NSImageView alloc] init];
   [imgv setImage: image];
   uiwcontSetWidget (uiwidget, imgv, NULL);
-//  uiwidget->uidata.widget = imgv;
-//  uiwidget->uidata.packwidget = imgv;
   return;
 }
 

@@ -612,9 +612,9 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (vbox, hbox);
 
   installer->wcont [INST_W_STATUS_MSG] = uiCreateLabel ("");
-  uiWidgetAlignHorizEnd (installer->wcont [INST_W_STATUS_MSG]);
   uiWidgetAddClass (installer->wcont [INST_W_STATUS_MSG], INST_HL_CLASS);
   uiBoxPackEndExpand (hbox, installer->wcont [INST_W_STATUS_MSG]);
+  uiWidgetAlignHorizEnd (installer->wcont [INST_W_STATUS_MSG]);
 
   /* begin line : target instructions */
   uiwidgetp = uiCreateLabel (
@@ -631,9 +631,9 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiEntryInit (80, MAXPATHLEN);
+  uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
-  uiBoxPackStartExpand (hbox, uiwidgetp);
   installer->wcont [INST_W_TARGET] = uiwidgetp;
 
   installer->callbacks [INST_CB_TARGET_DIR] = callbackInit (
@@ -711,9 +711,9 @@ installerBuildUI (installer_t *installer)
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiEntryInit (80, MAXPATHLEN);
+  uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
-  uiBoxPackStartExpand (hbox, uiwidgetp);
   installer->wcont [INST_W_BDJ3_LOC] = uiwidgetp;
 
   installer->callbacks [INST_CB_BDJ3LOC_DIR] = callbackInit (

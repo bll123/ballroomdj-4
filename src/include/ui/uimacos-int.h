@@ -4,13 +4,15 @@
 #ifndef INC_UIMACOS_INT_H
 #define INC_UIMACOS_INT_H
 
+#include <Cocoa/Cocoa.h>
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
 
 typedef struct macosmargin {
   NSEdgeInsets  margins;
-  NSLayoutGuide *lguide;
+  NSStackView   *container;
 } macosmargin_t;
 
 #if defined (__cplusplus) || defined (c_plusplus)

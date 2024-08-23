@@ -280,9 +280,9 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiWidgetExpandHoriz (audioidint->wcont [UIAUDID_W_MAIN_VBOX]);
 
   hbox = uiCreateHorizBox ();
+  uiBoxPackStart (audioidint->wcont [UIAUDID_W_MAIN_VBOX], hbox);
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
-  uiBoxPackStart (audioidint->wcont [UIAUDID_W_MAIN_VBOX], hbox);
 
   audioidint->callbacks [UIAUDID_CB_FIRST] = callbackInit (
       uiaudioidFirstSelection, uiaudioid, "audioid: first");
@@ -331,14 +331,16 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   /* audio-identification logo, modified indicator, */
   /* copy button, file label, filename */
   hbox = uiCreateHorizBox ();
+  uiBoxPackStart (audioidint->wcont [UIAUDID_W_MAIN_VBOX], hbox);
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
-  uiBoxPackStart (audioidint->wcont [UIAUDID_W_MAIN_VBOX], hbox);
 
   audioidint->wcont [UIAUDID_W_AUDIOID_IMG] = uiImageNew ();
   uiImageClear (audioidint->wcont [UIAUDID_W_AUDIOID_IMG]);
   uiWidgetSetSizeRequest (audioidint->wcont [UIAUDID_W_AUDIOID_IMG], 24, -1);
   uiBoxPackStart (hbox, audioidint->wcont [UIAUDID_W_AUDIOID_IMG]);
+  uiWidgetAlignHorizCenter (audioidint->wcont [UIAUDID_W_AUDIOID_IMG]);
+  uiWidgetAlignVertCenter (audioidint->wcont [UIAUDID_W_AUDIOID_IMG]);
   uiWidgetSetMarginStart (audioidint->wcont [UIAUDID_W_AUDIOID_IMG], 1);
 
   /* CONTEXT: audio identification: label for displaying the audio file path */
@@ -357,9 +359,9 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiwcontFree (hbox);
 
   pw = uiPanedWindowCreateVert ();
+  uiBoxPackStartExpand (audioidint->wcont [UIAUDID_W_MAIN_VBOX], pw);
   uiWidgetExpandHoriz (pw);
   uiWidgetAlignHorizFill (pw);
-  uiBoxPackStartExpand (audioidint->wcont [UIAUDID_W_MAIN_VBOX], pw);
   uiWidgetAddClass (pw, ACCENT_CLASS);
   audioidint->wcont [UIAUDID_W_PANED_WINDOW] = pw;
 
@@ -396,9 +398,9 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiPanedWindowPackEnd (pw, uiwidgetp);
 
   hbox = uiCreateHorizBox ();
+  uiWindowPackInWindow (uiwidgetp, hbox);
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
-  uiWindowPackInWindow (uiwidgetp, hbox);
 
   uiwcontFree (uiwidgetp);
 

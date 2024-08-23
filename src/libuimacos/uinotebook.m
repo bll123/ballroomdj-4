@@ -37,8 +37,6 @@ uiCreateNotebook (void)
 
   uiwidget = uiwcontAlloc (WCONT_T_NOTEBOOK, WCONT_T_NOTEBOOK);
   uiwcontSetWidget (uiwidget, nb, NULL);
-//  uiwidget->uidata.widget = nb;
-//  uiwidget->uidata.packwidget = nb;
   return uiwidget;
 }
 

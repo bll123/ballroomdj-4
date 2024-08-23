@@ -205,7 +205,7 @@ uiWidgetAlignHorizFill (uiwcont_t *uiwidget)
   if ([widget superview] == nil) {
     return;
   }
-  [widget setAutoresizingMask: NSViewWidthSizable | NSViewMinXMargin | NSViewMaxXMargin];
+  [widget setAutoresizingMask: NSViewWidthSizable];
   return;
 }
 
@@ -448,18 +448,6 @@ uiWidgetUpdateMargins (uiwcont_t *uiwidget)
     return;
   }
 
-  [margins->lguide.leadingAnchor
-      constraintEqualToAnchor: view.leadingAnchor
-      constant: margins->margins.left].active = YES;
-  [margins->lguide.trailingAnchor
-      constraintEqualToAnchor: view.trailingAnchor
-      constant: margins->margins.right].active = YES;
-  [margins->lguide.topAnchor
-      constraintEqualToAnchor: view.topAnchor
-      constant: margins->margins.top].active = YES;
-  [margins->lguide.bottomAnchor
-      constraintEqualToAnchor: view.bottomAnchor
-      constant: margins->margins.bottom].active = YES;
-
+  margins->container.edgeInsets = margins->margins;
   view.needsDisplay = YES;
 }

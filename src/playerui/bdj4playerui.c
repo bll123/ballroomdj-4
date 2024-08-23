@@ -748,6 +748,8 @@ pluiBuildUI (playerui_t *plui)
       plui->musicqImage [i] = uiImageNew ();
       uiImageSetFromPixbuf (plui->musicqImage [i], plui->wcont [PLUI_W_LED_ON]);
       uiBoxPackStart (hbox, plui->musicqImage [i]);
+      uiWidgetAlignHorizCenter (plui->musicqImage [i]);
+      uiWidgetAlignVertCenter (plui->musicqImage [i]);
       uiWidgetSetMarginStart (plui->musicqImage [i], 1);
 
       uimusicqDragDropSetURICallback (plui->uimusicq, i, plui->callbacks [PLUI_CB_DRAG_DROP]);
