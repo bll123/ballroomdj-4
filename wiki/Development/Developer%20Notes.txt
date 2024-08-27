@@ -13,4 +13,4 @@
 <br>[Software](Development-Software)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-19 13:11:58; BDJ4 version 4.11.5)_
+<br>_(Updated 2024-08-27 09:20:09; BDJ4 version 4.11.6)_

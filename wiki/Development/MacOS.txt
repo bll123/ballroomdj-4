@@ -77,38 +77,53 @@ sudo port install autossh di rlwrap                   # for bll
 
 In progress.
 
-Margins are a problem.  AppKit has constraints, but these work as
-relative adjustments against neighbors, and having info on neighbors
-ahead of time is not particularly reasonable.  Also, everything has
-to be packed before a constraint will work.
+Constraints (alignment, fill):
 
-layoutMarginsGuide looked perfect, but does not seem to work, or I am
-using it wrong.   I am going to try adding my own layout guide to the
-nsview (widget) and see what happens.
+Constraints are difficult to use, as the constraints require the
+widgets to be packed, and require that the neighboring widgets exist.
+This is not a good design for dynamic layouts.
 
 Since the constraints require the widgets to be packed, all of the
 size-group, margin, etc. changes must be moved after the pack
-statement.  This is not a big issue.  Some are done already.
+statement.  This is not a big issue.  Many are done already.
+
+One possiblity is to keep track of the previous widget packed into the
+stack-view (separate start and end), then constraints can be set up
+with the current and the previous widget.  Not sure how to handle
+centered and fill objects though.
+
+I am wondering how these contraints work when a button is hidden.
+
+Notebook:
 
 Having the notebook put the tabs on the left doesn't work well.  MacOS
 configures the tabs with vertical text, rather than horizontal text.
-The nstabviewitem is not very configurable. I will probably need to do
-my own tabs, which is possible, they have controls to do that.  And
-getting the selection image into the tab is problematic also, so doing
-my own tabs will work out fine.
+
+Need to re-work this to use a nstabviewcontroller so that the tabs can
+be formatted better.  Also need nstabviewcontroller to get the images
+into the tabs. Will need to set Tab-Style-Unspecified and create my
+own buttons.
 
 I also have the weird placement of 'set queue for playback' button.
-With gtk this button is forced into the notebook view.  If I do my own
-tabs, I can place this without any issue.   There are a couple of
-options here.  a) I can re-work the gui so that the button placement is
-different, though that gets back to the original problem of where to
-put it. b) Since I'm going to have to write my own tab handling for
-macos, placement will be easy.  But this doesn't solve the issue for
-other guis in the future.
+With gtk this button is forced into the notebook view.  If I write my
+own tab handler, I can place this without any issue.  There are a
+couple of options here.  (a) I can re-work the gui so that the button
+placement is different, though that gets back to the original problem
+of where to put it. (b) Since I'm going to have to write my own tab
+handling for macos, placement will be easy.  But this doesn't solve
+the issue for other guis in the future.
+
+Fonts:
 
 There doesn't seem to be any easy way to change the font for all
 widgets.  I think the system-font size can be set, so that's one
 option.  May need to set the font individually for every widget.
+
+Text Spinbox:
+
+I think, again, I will need to write my own.  This can be copied from
+the GTK style.  The native GTK version can be replaced, as their
+callbacks are complicated.
 
 Solved issues:
 
@@ -119,6 +134,12 @@ size group.
 Pack End: This works by using add-view at-index within the trailing
 gravity group to match what gtk does.
 
+Margins: Could not find a good way to do this.  Ended up wrapping all
+widgets in an NSView, which is not the recommended way.  The layout
+guides seemed to need constraints, and constraints are hard to use due
+to being relative to the neighbors and requiring all neighbors to be
+packed.
+
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2024-08-19 13:11:58; BDJ4 version 4.11.5)_
+<br>_(Updated 2024-08-27 09:20:09; BDJ4 version 4.11.6)_

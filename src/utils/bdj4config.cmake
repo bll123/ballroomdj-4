@@ -382,7 +382,7 @@ if (NOT WIN32)
     # 10.14 = Mojave, 10.15 = Catalina
     # 11 = Big Sur, 12 = Monterey, 13 = Ventura, 14 = Sonoma
     # 15 = Sequoia
-    # update this in pkg/macos/Info.plist also
+    # IMPORTANT: update this in pkg/macos/Info.plist also
     set (CMAKE_OSX_DEPLOYMENT_TARGET 11)
   endif()
 
