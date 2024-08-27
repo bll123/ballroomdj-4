@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-07-28\n"
-"PO-Revision-Date: 2024-08-17\n"
+"PO-Revision-Date: 2024-08-27\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Swedish\n"
 "Language: sv\n"
@@ -259,8 +259,8 @@ msgstr "Album Artist Sorteringsordning"
 msgid "Album Sort Order"
 msgstr "Sorteringsordning för album"
 
-#. CONTEXT: song-selection: filter: all dances are selected
 #. CONTEXT: song selection filter: a filter: all dances are selected
+#. CONTEXT: song-selection: filter: all dances are selected
 msgid "All Dances"
 msgstr "Alla danser"
 
@@ -442,10 +442,10 @@ msgstr "Klar Same Song Mark"
 msgid "Click the mouse in the blue box in time with the beat."
 msgstr "Klicka med musen i den blå rutan i takt med rytmen."
 
+#. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
 #. CONTEXT: select file dialog: close
 #. CONTEXT: select file: closes the dialog
-#. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: apply adjustment dialog: closes the dialog
 #. CONTEXT: copy tags dialog: closes the dialog
 #. CONTEXT: export/import bdj4 dialog: closes the dialog
@@ -835,8 +835,8 @@ msgid "File"
 msgstr "Fil"
 
 #. CONTEXT: configuration: filter display: song selection filters
-#. CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog
 #. CONTEXT: song selection filter: title for the filter dialog
+#. CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog
 msgid "Filter Songs"
 msgstr "Filtrera låtar"
 
@@ -1349,8 +1349,8 @@ msgstr "Status för spelbarhet"
 msgid "Player"
 msgstr "Spelare"
 
-#. CONTEXT: select file: file type for the file selection dialog (playlist)
 #. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
+#. CONTEXT: select file: file type for the file selection dialog (playlist)
 #. CONTEXT: create from playlist: select the playlist to use
 #. CONTEXT: playlist management: label for playlist name
 msgid "Playlist"
