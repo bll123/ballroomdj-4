@@ -34,7 +34,6 @@ enum {
 typedef struct uisongsel {
   const char        *tag;
   conn_t            *conn;
-  dbidx_t           idxStart;
   ilistidx_t        danceIdx;
   nlist_t           *options;
   dispsel_t         *dispsel;
@@ -76,7 +75,6 @@ void  uisongselSetSelectionCallback (uisongsel_t *uisongsel, callback_t *uicb);
 void  uisongselSetQueueCallback (uisongsel_t *uisongsel, callback_t *uicb);
 void  uisongselSetPlayCallback (uisongsel_t *uisongsel, callback_t *uicb);
 void  uisongselSetSongSaveCallback (uisongsel_t *uisongsel, callback_t *uicb);
-/* song filter */
 void  uisongselSetEditCallback (uisongsel_t *uisongsel, callback_t *uicb);
 void  uisongselProcessMusicQueueData (uisongsel_t *uisongsel, mp_musicqupdate_t *musicqupdate);
 

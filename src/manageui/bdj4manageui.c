@@ -962,8 +962,8 @@ manageInitializeUI (manageui_t *manage)
   uimusicqSetManageIdx (manage->slmusicq, manage->musicqManageIdx);
   manage->slstats = manageStatsInit (manage->conn, manage->musicdb);
   manage->slsongsel = uisongselInit ("m-sl-songsel", manage->conn,
-      manage->musicdb, manage->minfo.dispsel, manage->samesong, manage->minfo.options,
-      manage->uisongfilter, DISP_SEL_SONGSEL);
+      manage->musicdb, manage->minfo.dispsel, manage->samesong,
+      manage->minfo.options, manage->uisongfilter, DISP_SEL_SONGSEL);
   manage->callbacks [MANAGE_CB_PLAY_SL] = callbackInitII (
       managePlayProcessSonglist, manage);
   uisongselSetPlayCallback (manage->slsongsel,
@@ -976,8 +976,8 @@ manageInitializeUI (manageui_t *manage)
   manage->slsbsmusicq = uimusicqInit ("m-sbs-sl", manage->conn,
       manage->musicdb, manage->minfo.dispsel, DISP_SEL_SBS_SONGLIST);
   manage->slsbssongsel = uisongselInit ("m-sbs-songsel", manage->conn,
-      manage->musicdb, manage->minfo.dispsel, manage->samesong, manage->minfo.options,
-      manage->uisongfilter, DISP_SEL_SBS_SONGSEL);
+      manage->musicdb, manage->minfo.dispsel, manage->samesong,
+      manage->minfo.options, manage->uisongfilter, DISP_SEL_SBS_SONGSEL);
   uimusicqSetPlayIdx (manage->slsbsmusicq, manage->musicqPlayIdx);
   uimusicqSetManageIdx (manage->slsbsmusicq, manage->musicqManageIdx);
   manage->callbacks [MANAGE_CB_PLAY_SL_SBS] = callbackInitII (
@@ -992,8 +992,8 @@ manageInitializeUI (manageui_t *manage)
   manage->mmplayer = uiplayerInit ("mm-player", manage->progstate, manage->conn,
       manage->musicdb, manage->minfo.dispsel);
   manage->mmsongsel = uisongselInit ("m-mm-songsel", manage->conn,
-      manage->musicdb, manage->minfo.dispsel, manage->samesong, manage->minfo.options,
-      manage->uisongfilter, DISP_SEL_MM);
+      manage->musicdb, manage->minfo.dispsel, manage->samesong,
+      manage->minfo.options, manage->uisongfilter, DISP_SEL_MM);
   manage->callbacks [MANAGE_CB_PLAY_MM] = callbackInitII (
       managePlayProcessMusicManager, manage);
   uisongselSetPlayCallback (manage->mmsongsel,
@@ -3689,6 +3689,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int mainlasttab)
 
     if (manage->slcurrtab == MANAGE_TAB_SL_SONGSEL || manage->sbssonglist) {
       /* the song filter must be updated, as it is shared */
+      /* the apply-song-filter call will reset the apply-callback correctly */
       uisfClearPlaylist (manage->uisongfilter);
       manage->selbypass = true;
       if (manage->sbssonglist) {
@@ -3745,6 +3746,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int mainlasttab)
         uisfSetPlaylist (manage->uisongfilter, slname);
         mdfree (slname);
         manage->selbypass = true;
+        /* the apply-song-filter call will reset the apply-callback correctly */
         uisongselApplySongFilter (manage->mmsongsel);
         manage->selbypass = false;
         manage->lastmmdisp = MANAGE_DISP_SONG_LIST;
@@ -3763,6 +3765,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int mainlasttab)
           lasttab == MANAGE_TAB_SL_SONGSEL) {
         uisfClearPlaylist (manage->uisongfilter);
         manage->selbypass = true;
+        /* the apply-song-filter call will reset the apply-callback correctly */
         uisongselApplySongFilter (manage->mmsongsel);
         manage->selbypass = false;
         if (manage->sbssonglist) {

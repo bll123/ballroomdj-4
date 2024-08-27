@@ -48,7 +48,6 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uisongsel->samesong = samesong;
   uisongsel->dispselType = dispselType;
   uisongsel->options = options;
-  uisongsel->idxStart = 0;
   uisongsel->danceIdx = -1;
   uisongsel->uidance = NULL;
   uisongsel->newselcb = NULL;
@@ -63,9 +62,11 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
 
   uisongsel->numrows = dbCount (musicdb);
 
+  /* there is only one song-filter object, and multiple callbacks */
+  /* the callback for the song-filter will be set each time */
+  /* before calling uisf-dialog */
   uisongsel->sfapplycb = callbackInit (
       uisongselApplySongFilter, uisongsel, NULL);
-  uisfSetApplyCallback (uisf, uisongsel->sfapplycb);
 
   uisongsel->sfdanceselcb = callbackInitI (
       uisongselDanceSelectCallback, uisongsel);

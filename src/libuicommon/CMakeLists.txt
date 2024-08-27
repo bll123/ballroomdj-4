@@ -10,6 +10,7 @@ add_library (libbdj4uic SHARED
   uimusicqcommon.c
   uimusicqui.c
   uiplayer.c
+  uisongfilter.c
   uisongsel.c
   uisongselcommon.c
   uisongselui.c

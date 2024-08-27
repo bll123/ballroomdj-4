@@ -117,6 +117,7 @@ static bool uisongselUIDanceSelectCallback (void *udata, int32_t idx, int32_t co
 static bool uisongselSongEditCallback (void *udata);
 static void uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
 static void uisongselFillMark (uisongsel_t *uisongsel, ss_internal_t *ssint, dbidx_t dbidx, int32_t rownum);
+static bool uisongselStartSFDialog (void *udata);
 
 void
 uisongselUIInit (uisongsel_t *uisongsel)
@@ -284,7 +285,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
       ssint->callbacks [SONGSEL_CB_DANCE_SEL]);
 
   ssint->callbacks [SONGSEL_CB_FILTER] = callbackInit (
-      uisfDialog, uisongsel->uisongfilter, "songsel: filters");
+      uisongselStartSFDialog, uisongsel, "songsel: filters");
   uiwidgetp = uiCreateButton (
       ssint->callbacks [SONGSEL_CB_FILTER],
       /* CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog */
@@ -439,16 +440,26 @@ uisongselApplySongFilter (void *udata)
   ssint = uisongsel->ssInternalData;
   ssint->inapply = true;
 
+  uisfSetApplyCallback (uisongsel->uisongfilter, uisongsel->sfapplycb);
+
   uidanceSetKey (uisongsel->uidance,
       songfilterGetNum (uisongsel->songfilter, SONG_FILTER_DANCE_IDX));
 
   uisongsel->numrows = songfilterProcess (
       uisongsel->songfilter, uisongsel->musicdb);
-  uisongsel->idxStart = 0;
 
   uisongselPopulateData (uisongsel);
 
   ssint->inapply = false;
+
+  if (uisongsel->numrows > 0 && uisongsel->newselcb != NULL) {
+    dbidx_t   dbidx;
+
+    dbidx = uivlGetRowColumnNum (ssint->uivl, 0, SONGSEL_COL_DBIDX);
+    if (dbidx >= 0) {
+      callbackHandlerI (uisongsel->newselcb, dbidx);
+    }
+  }
 
   logProcEnd ("");
   return UICB_CONT;
@@ -922,6 +933,7 @@ uisongselSongEditCallback (void *udata)
 {
   uisongsel_t     *uisongsel = udata;
   dbidx_t         dbidx;
+  int             rc = UICB_CONT;
 
 
   logProcBegin ();
@@ -933,8 +945,11 @@ uisongselSongEditCallback (void *udata)
     }
     callbackHandlerI (uisongsel->newselcb, dbidx);
   }
+  if (uisongsel->editcb != NULL) {
+    rc = callbackHandler (uisongsel->editcb);
+  }
   logProcEnd ("");
-  return callbackHandler (uisongsel->editcb);
+  return rc;
 }
 
 static void
@@ -1039,4 +1054,21 @@ uisongselFillMark (uisongsel_t *uisongsel, ss_internal_t *ssint,
   if (classnm != NULL) {
     uivlSetRowColumnClass (ssint->uivl, rownum, SONGSEL_COL_MARK, classnm);
   }
+}
+
+static bool
+uisongselStartSFDialog (void *udata)
+{
+  uisongsel_t     *uisongsel = udata;
+  uisongfilter_t  *uisf = uisongsel->uisongfilter;
+  bool            rc;
+
+  /* because there is only one song filter object, the correct callback */
+  /* must be set each time before the song filter is called */
+// ### this still doesn't work, as the filter dialog is designed to
+// be left open.  ugh.
+// the callback needs to be applied on a context switch
+  uisfSetApplyCallback (uisf, uisongsel->sfapplycb);
+  rc = uisfDialog (uisf);
+  return rc;
 }

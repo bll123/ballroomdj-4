@@ -17,7 +17,6 @@ add_library (libbdj4uii SHARED
   uirating.c
   uiselectfile.c
   uisong.c
-  uisongfilter.c
   uistatus.c
   uivirtlist.c
   uivlutil.c

@@ -9,10 +9,12 @@
 **4.11.6 2024-8---**
 
 * Bug Fixes:
-    * Database Update: Reorganize: Fix a crash.
-    * Database Update: Improve processing speed for certain operations.
-    * Starter: Fix profile color display.
     * Audio File Tags: Fix minor issue writing disc number and track number.
+    * Database Update: Improve processing speed for certain operations.
+    * Database Update: Reorganize: Fix a crash.
+    * Management: Fix incorrect selection for song editor after filtering songs.
+    * Management: Song Selection: Fix song filter not updating display.
+    * Starter: Fix profile color display.
 
 -->
 
