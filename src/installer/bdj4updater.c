@@ -149,7 +149,7 @@ main (int argc, char *argv [])
   musicdb_t   *musicdb = NULL;
   uint32_t    flags;
   const char  *targv [10];
-  int         targc;
+  int         targc = 0;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("updt");
@@ -838,6 +838,13 @@ main (int argc, char *argv [])
   if (updlistallocated) {
     nlistFree (updlist);
   }
+
+  /* clean up all volreg and tmp */
+
+  volregClearBDJ4Flag ();
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      VOLREG_BDJ3_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CONFIG);
+  fileopDelete (tbuff);
 
   /* bdj4cleantmp will remove the volreg file and volreg lock and completely */
   /* clean up the tmp directory */

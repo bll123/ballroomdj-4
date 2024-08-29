@@ -6,6 +6,9 @@
 
 **4.11.7 2024-8---**
 
+* Bug Fixes:
+    * Updater: Clean up all temporary files on an update.
+
 -->
 
 **4.11.6 2024-8-27**
