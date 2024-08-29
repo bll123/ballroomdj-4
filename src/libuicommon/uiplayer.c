@@ -689,16 +689,12 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
   uiplayer_t    *uiplayer = udata;
-  char          *targs = NULL;
 
   if (uiplayer == NULL) {
     return 0;
   }
 
   logProcBegin ();
-  if (args != NULL) {
-    targs = mdstrdup (args);
-  }
 
   switch (route) {
     case ROUTE_NONE:
@@ -706,19 +702,19 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     case ROUTE_PLAYERUI: {
       switch (msg) {
         case MSG_PLAYER_STATE: {
-          uiplayerProcessPlayerState (uiplayer, targs);
+          uiplayerProcessPlayerState (uiplayer, args);
           break;
         }
         case MSG_PLAY_PAUSEATEND_STATE: {
-          uiplayerProcessPauseatend (uiplayer, atol (targs));
+          uiplayerProcessPauseatend (uiplayer, atol (args));
           break;
         }
         case MSG_PLAYER_STATUS_DATA: {
-          uiplayerProcessPlayerStatusData (uiplayer, targs);
+          uiplayerProcessPlayerStatusData (uiplayer, args);
           break;
         }
         case MSG_MUSICQ_STATUS_DATA: {
-          uiplayerProcessMusicqStatusData (uiplayer, targs);
+          uiplayerProcessMusicqStatusData (uiplayer, args);
           break;
         }
         case MSG_PLAYER_SUPPORT: {
@@ -744,8 +740,6 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       break;
     }
   }
-
-  dataFree (targs);
 
   logProcEnd ("");
   return 0;

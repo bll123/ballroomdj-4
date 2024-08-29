@@ -570,12 +570,8 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
   marquee_t   *marquee = udata;
-  char        *targs = NULL;
 
   logProcBegin ();
-  if (args != NULL) {
-    targs = mdstrdup (args);
-  }
 
   if (msg != MSG_MARQUEE_TIMER) {
     logMsg (LOG_DBG, LOG_MSGS, "rcvd: from:%d/%s route:%d/%s msg:%d/%s args:%s",
@@ -597,15 +593,15 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_MARQUEE_DATA: {
-          marqueePopulate (marquee, targs);
+          marqueePopulate (marquee, args);
           break;
         }
         case MSG_MARQUEE_TIMER: {
-          marqueeSetTimer (marquee, targs);
+          marqueeSetTimer (marquee, args);
           break;
         }
         case MSG_MARQUEE_SET_FONT_SZ: {
-          marqueeSetFont (marquee, atoi (targs));
+          marqueeSetFont (marquee, atoi (args));
           break;
         }
         case MSG_WINDOW_FIND: {
@@ -626,8 +622,6 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       break;
     }
   }
-
-  dataFree (targs);
 
   logProcEnd ("");
 

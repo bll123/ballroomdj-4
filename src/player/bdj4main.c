@@ -347,13 +347,8 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
   maindata_t  *mainData;
-  char        *targs = NULL;
 
   mainData = (maindata_t *) udata;
-
-  if (args != NULL) {
-    targs = mdstrdup (args);
-  }
 
   if (msg != MSG_PLAYER_STATUS_DATA) {
     logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
@@ -385,28 +380,28 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_QUEUE_CLEAR: {
           /* clears both the playlist queue and the music queue */
           logMsg (LOG_DBG, LOG_MSGS, "got: queue-clear");
-          mainQueueClear (mainData, targs);
+          mainQueueClear (mainData, args);
           break;
         }
         case MSG_QUEUE_PLAYLIST: {
-          logMsg (LOG_DBG, LOG_MSGS, "got: playlist-queue %s", targs);
-          mainQueuePlaylist (mainData, targs);
+          logMsg (LOG_DBG, LOG_MSGS, "got: playlist-queue %s", args);
+          mainQueuePlaylist (mainData, args);
           break;
         }
         case MSG_QUEUE_DANCE: {
-          mainQueueDance (mainData, targs, 1);
+          mainQueueDance (mainData, args, 1);
           break;
         }
         case MSG_QUEUE_DANCE_5: {
-          mainQueueDance (mainData, targs, 5);
+          mainQueueDance (mainData, args, 5);
           break;
         }
         case MSG_QUEUE_SWITCH_EMPTY: {
-          mainData->switchQueueWhenEmpty = atoi (targs);
+          mainData->switchQueueWhenEmpty = atoi (args);
           break;
         }
         case MSG_QUEUE_MIX: {
-          mainMusicQueueMix (mainData, targs);
+          mainMusicQueueMix (mainData, args);
           break;
         }
         case MSG_CMD_PLAY: {
@@ -432,7 +427,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_PLAYBACK_FINISH_STOP: {
-          mainPlaybackFinishStopProcess (mainData, targs);
+          mainPlaybackFinishStopProcess (mainData, args);
           if (mainData->waitforpbfinish) {
             mainMusicQueuePlay (mainData);
             mainData->waitforpbfinish = false;
@@ -450,60 +445,60 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_PL_OVERRIDE_STOP_TIME: {
           /* this message overrides the stop time for the */
           /* next queue-playlist message */
-          mainData->ploverridestoptime = atol (targs);
+          mainData->ploverridestoptime = atol (args);
           break;
         }
         case MSG_PL_CLEAR_QUEUE: {
-          mainPlaylistClearQueue (mainData, targs);
+          mainPlaylistClearQueue (mainData, args);
           break;
         }
         case MSG_MUSICQ_TOGGLE_PAUSE: {
-          mainTogglePause (mainData, targs);
+          mainTogglePause (mainData, args);
           break;
         }
         case MSG_MUSICQ_MOVE_DOWN: {
-          mainMusicqMove (mainData, targs, MOVE_DOWN);
+          mainMusicqMove (mainData, args, MOVE_DOWN);
           break;
         }
         case MSG_MUSICQ_MOVE_TOP: {
-          mainMusicqMoveTop (mainData, targs);
+          mainMusicqMoveTop (mainData, args);
           break;
         }
         case MSG_MUSICQ_MOVE_UP: {
-          mainMusicqMove (mainData, targs, MOVE_UP);
+          mainMusicqMove (mainData, args, MOVE_UP);
           break;
         }
         case MSG_MUSICQ_REMOVE: {
-          mainMusicqRemove (mainData, targs);
+          mainMusicqRemove (mainData, args);
           break;
         }
         case MSG_MUSICQ_SWAP: {
-          mainMusicqSwap (mainData, targs);
+          mainMusicqSwap (mainData, args);
           break;
         }
         case MSG_MUSICQ_TRUNCATE: {
-          mainMusicqClear (mainData, targs);
+          mainMusicqClear (mainData, args);
           break;
         }
         case MSG_MUSICQ_INSERT: {
-          mainMusicqInsert (mainData, routefrom, targs);
+          mainMusicqInsert (mainData, routefrom, args);
           break;
         }
         case MSG_MUSICQ_SET_PLAYBACK: {
-          mainMusicqSetPlayback (mainData, targs);
+          mainMusicqSetPlayback (mainData, args);
           break;
         }
         case MSG_MUSICQ_SET_LEN: {
           /* a temporary setting used for the song list editor */
-          bdjoptSetNum (OPT_G_PLAYERQLEN, atol (targs));
+          bdjoptSetNum (OPT_G_PLAYERQLEN, atol (args));
           break;
         }
         case MSG_MUSICQ_DATA_SUSPEND: {
-          mainMusicqSetSuspend (mainData, targs, true);
+          mainMusicqSetSuspend (mainData, args, true);
           break;
         }
         case MSG_MUSICQ_DATA_RESUME: {
-          mainMusicqSetSuspend (mainData, targs, false);
+          mainMusicqSetSuspend (mainData, args, false);
           break;
         }
         case MSG_PLAYER_ANN_FINISHED: {
@@ -511,7 +506,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_PLAYER_STATE: {
-          mainProcessPlayerState (mainData, targs);
+          mainProcessPlayerState (mainData, args);
           break;
         }
         case MSG_GET_DANCE_LIST: {
@@ -523,7 +518,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_PLAYER_STATUS_DATA: {
-          mainSendPlayerStatus (mainData, targs);
+          mainSendPlayerStatus (mainData, args);
           mainSendRemctrlData (mainData);
           break;
         }
@@ -536,17 +531,18 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_DB_ENTRY_UPDATE: {
-          dbLoadEntry (mainData->musicdb, atol (targs));
+fprintf (stderr, "db-load-entry %s\n", args);
+          dbLoadEntry (mainData->musicdb, atol (args));
           mainSetMusicQueuesChanged (mainData);
           break;
         }
         case MSG_DB_ENTRY_REMOVE: {
-          dbMarkEntryRemoved (mainData->musicdb, atol (targs));
+          dbMarkEntryRemoved (mainData->musicdb, atol (args));
           mainSetMusicQueuesChanged (mainData);
           break;
         }
         case MSG_DB_ENTRY_UNREMOVE: {
-          dbClearEntryRemoved (mainData->musicdb, atol (targs));
+          dbClearEntryRemoved (mainData->musicdb, atol (args));
           mainSetMusicQueuesChanged (mainData);
           break;
         }
@@ -561,11 +557,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_MAIN_REQ_QUEUE_INFO: {
-          mainQueueInfoRequest (mainData, routefrom, targs);
+          mainQueueInfoRequest (mainData, routefrom, args);
           break;
         }
         case MSG_DB_ENTRY_TEMP_ADD: {
-          mainAddTemporarySong (mainData, targs);
+          mainAddTemporarySong (mainData, args);
           break;
         }
         case MSG_CHK_MAIN_MUSICQ: {
@@ -577,43 +573,43 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_CHK_MAIN_SET_GAP: {
-          bdjoptSetNumPerQueue (OPT_Q_GAP, atoi (targs), mainData->musicqPlayIdx);
+          bdjoptSetNumPerQueue (OPT_Q_GAP, atoi (args), mainData->musicqPlayIdx);
           mainMusicqSendQueueConfig (mainData);
           break;
         }
         case MSG_CHK_MAIN_SET_MAXPLAYTIME: {
-          bdjoptSetNumPerQueue (OPT_Q_MAXPLAYTIME, atol (targs), mainData->musicqPlayIdx);
+          bdjoptSetNumPerQueue (OPT_Q_MAXPLAYTIME, atol (args), mainData->musicqPlayIdx);
           break;
         }
         case MSG_CHK_MAIN_SET_STOPATTIME: {
-          mainData->stopTime [mainData->musicqPlayIdx] = atol (targs);
+          mainData->stopTime [mainData->musicqPlayIdx] = atol (args);
           mainData->nStopTime [mainData->musicqPlayIdx] =
               mainCalcStopTime (mainData->stopTime [mainData->musicqPlayIdx]);
           break;
         }
         case MSG_CHK_MAIN_SET_PLAYANNOUNCE: {
-          bdjoptSetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, atoi (targs), mainData->musicqPlayIdx);
+          bdjoptSetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, atoi (args), mainData->musicqPlayIdx);
           break;
         }
         case MSG_CHK_MAIN_SET_QUEUE_ACTIVE: {
-          bdjoptSetNumPerQueue (OPT_Q_ACTIVE, atoi (targs), mainData->musicqPlayIdx);
+          bdjoptSetNumPerQueue (OPT_Q_ACTIVE, atoi (args), mainData->musicqPlayIdx);
           break;
         }
         case MSG_CHK_MAIN_SET_PLAY_WHEN_QUEUED: {
-          bdjoptSetNumPerQueue (OPT_Q_PLAY_WHEN_QUEUED, atoi (targs), mainData->musicqPlayIdx);
+          bdjoptSetNumPerQueue (OPT_Q_PLAY_WHEN_QUEUED, atoi (args), mainData->musicqPlayIdx);
           break;
         }
         case MSG_CHK_MAIN_SET_PAUSE_EACH_SONG: {
-          bdjoptSetNumPerQueue (OPT_Q_PAUSE_EACH_SONG, atoi (targs), mainData->musicqPlayIdx);
+          bdjoptSetNumPerQueue (OPT_Q_PAUSE_EACH_SONG, atoi (args), mainData->musicqPlayIdx);
           break;
         }
         case MSG_CHK_MAIN_SET_FADEIN: {
-          bdjoptSetNumPerQueue (OPT_Q_FADEINTIME, atoi (targs), mainData->musicqPlayIdx);
+          bdjoptSetNumPerQueue (OPT_Q_FADEINTIME, atoi (args), mainData->musicqPlayIdx);
           mainMusicqSendQueueConfig (mainData);
           break;
         }
         case MSG_CHK_MAIN_SET_FADEOUT: {
-          bdjoptSetNumPerQueue (OPT_Q_FADEOUTTIME, atoi (targs), mainData->musicqPlayIdx);
+          bdjoptSetNumPerQueue (OPT_Q_FADEOUTTIME, atoi (args), mainData->musicqPlayIdx);
           mainMusicqSendQueueConfig (mainData);
           break;
         }
@@ -629,7 +625,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
           /* currently not in use by the test suite */
           method = DANCESEL_METHOD_WINDOWED;
-          if (strcmp (targs, "windowed") == 0) {
+          if (strcmp (args, "windowed") == 0) {
             method = DANCESEL_METHOD_WINDOWED;
           }
           bdjoptSetNum (OPT_G_DANCESEL_METHOD, method);
@@ -645,8 +641,6 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       break;
     }
   }
-
-  dataFree (targs);
 
   return 0;
 }
@@ -1619,6 +1613,7 @@ mainPrepSong (maindata_t *mainData, int prepflag, int mqidx,
     } /* announcements are on */
   } /* if this is a normal song */
 
+fprintf (stderr, "prep: %d %s\n", (int) uniqueidx, sfname);
   snprintf (tbuff, sizeof (tbuff), "%s%c%" PRId64 "%c%" PRId64 "%c%d%c%.1f%c%d%c%" PRId32,
       sfname, MSG_ARGS_RS,
       (int64_t) dur, MSG_ARGS_RS,

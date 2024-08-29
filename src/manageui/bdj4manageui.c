@@ -1412,15 +1412,12 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
   manageui_t  *manage = udata;
-  char        *targs;
 
   if (msg != MSG_PLAYER_STATUS_DATA) {
     logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
         routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }
-
-  targs = mdstrdup (args);
 
   switch (route) {
     case ROUTE_NONE:
@@ -1458,11 +1455,11 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_DB_PROGRESS: {
-          manageDbProgressMsg (manage->managedb, targs);
+          manageDbProgressMsg (manage->managedb, args);
           break;
         }
         case MSG_DB_STATUS_MSG: {
-          manageDbStatusMsg (manage->managedb, targs);
+          manageDbStatusMsg (manage->managedb, args);
           break;
         }
         case MSG_DB_FINISH: {
@@ -1480,7 +1477,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mp_musicqupdate_t   *musicqupdate;
           nlistidx_t          newcount = 0;
 
-          musicqupdate = msgparseMusicQueueData (targs);
+          musicqupdate = msgparseMusicQueueData (args);
           if (musicqupdate == NULL) {
             break;
           }
@@ -1502,7 +1499,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_SONG_SELECT: {
           mp_songselect_t   *songselect;
 
-          songselect = msgparseSongSelect (targs);
+          songselect = msgparseSongSelect (args);
           uimusicqProcessSongSelect (manage->currmusicq, songselect);
           msgparseSongSelectFree (songselect);
           break;
@@ -1511,7 +1508,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           int   val;
           char  tmp [40];
 
-          val = atoi (targs);
+          val = atoi (args);
           manage->pluiActive = val;
           uimusicqSetPlayButtonState (manage->slmusicq, val);
           uimusicqSetPlayButtonState (manage->slsbsmusicq, val);
@@ -1529,7 +1526,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_DB_ENTRY_UPDATE: {
-          dbLoadEntry (manage->musicdb, atol (targs));
+          dbLoadEntry (manage->musicdb, atol (args));
           manageRePopulateData (manage);
           if (manage->maincurrtab == MANAGE_TAB_MAIN_MM &&
               manage->mmcurrtab == MANAGE_TAB_SONGEDIT) {
@@ -1556,8 +1553,6 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       break;
     }
   }
-
-  mdfree (targs);
 
   uiplayerProcessMsg (routefrom, route, msg, args, manage->slplayer);
   uiplayerProcessMsg (routefrom, route, msg, args, manage->mmplayer);

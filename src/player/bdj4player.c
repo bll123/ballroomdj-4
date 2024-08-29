@@ -72,7 +72,7 @@ enum {
 typedef struct {
   uint64_t      ident;
   char          *songname;
-  char          *tempname;
+  char          tempname [MAXPATHLEN];
   int32_t       dur;
   int32_t       plidur;
   listnum_t     songstart;
@@ -1009,7 +1009,7 @@ playerSongPrep (playerdata_t *playerData, char *args)
 
   npq = mdmalloc (sizeof (prepqueue_t));
   npq->ident = PREP_QUEUE_IDENT;
-  npq->tempname = NULL;
+  *npq->tempname = '\0';
   npq->songname = NULL;
 
   npq->songname = mdstrdup (p);
@@ -1078,7 +1078,6 @@ void
 playerProcessPrepRequest (playerdata_t *playerData)
 {
   prepqueue_t     *npq;
-  char            tempnm [MAXPATHLEN];
   int             rc;
 
   logProcBegin ();
@@ -1089,12 +1088,11 @@ playerProcessPrepRequest (playerdata_t *playerData)
     return;
   }
 
-  rc = audiosrcPrep (npq->songname, tempnm, sizeof (tempnm));
+  rc = audiosrcPrep (npq->songname, npq->tempname, sizeof (npq->tempname));
   if (! rc) {
     logProcEnd ("unable-to-prep");
     return;
   }
-  npq->tempname = mdstrdup (tempnm);
   queuePush (playerData->prepQueue, npq);
   logMsg (LOG_DBG, LOG_INFO, "prep-do: %" PRId32 " %s r:%d p:%" PRId32, npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
   logProcEnd ("");
@@ -1603,7 +1601,7 @@ playerPrepQueueFree (void *data)
 
   audiosrcPrepClean (pq->songname, pq->tempname);
   dataFree (pq->songname);
-  dataFree (pq->tempname);
+  *pq->tempname = '\0';
   mdfree (pq);
 
   logProcEnd ("");

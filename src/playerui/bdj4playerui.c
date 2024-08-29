@@ -1077,13 +1077,8 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
   playerui_t  *plui = udata;
-  char        *targs = NULL;
 
   logProcBegin ();
-
-  if (args != NULL) {
-    targs = mdstrdup (args);
-  }
 
   if (PLUI_DBG_MSGS == 1 ||
       (msg != MSG_MUSIC_QUEUE_DATA &&
@@ -1117,36 +1112,36 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_QUEUE_SWITCH: {
-          pluiSetPlaybackQueue (plui, atoi (targs), PLUI_UPDATE_MAIN);
+          pluiSetPlaybackQueue (plui, atoi (args), PLUI_UPDATE_MAIN);
           break;
         }
         case MSG_MARQUEE_IS_MAX: {
-          pluisetMarqueeIsMaximized (plui, targs);
+          pluisetMarqueeIsMaximized (plui, args);
           break;
         }
         case MSG_MARQUEE_FONT_SIZES: {
-          pluisetMarqueeFontSizes (plui, targs);
+          pluisetMarqueeFontSizes (plui, args);
           break;
         }
         case MSG_DB_ENTRY_UPDATE: {
-          dbLoadEntry (plui->musicdb, atol (targs));
+          dbLoadEntry (plui->musicdb, atol (args));
           uisongselPopulateData (plui->uisongsel);
           break;
         }
         case MSG_DB_ENTRY_REMOVE: {
-          dbMarkEntryRemoved (plui->musicdb, atol (targs));
+          dbMarkEntryRemoved (plui->musicdb, atol (args));
           uisongselPopulateData (plui->uisongsel);
           break;
         }
         case MSG_DB_ENTRY_UNREMOVE: {
-          dbClearEntryRemoved (plui->musicdb, atol (targs));
+          dbClearEntryRemoved (plui->musicdb, atol (args));
           uisongselPopulateData (plui->uisongsel);
           break;
         }
         case MSG_SONG_SELECT: {
           mp_songselect_t   *songselect;
 
-          songselect = msgparseSongSelect (targs);
+          songselect = msgparseSongSelect (args);
           uimusicqProcessSongSelect (plui->uimusicq, songselect);
           msgparseSongSelectFree (songselect);
           break;
@@ -1158,7 +1153,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
             break;
           }
 
-          musicqupdate = msgparseMusicQueueData (targs);
+          musicqupdate = msgparseMusicQueueData (args);
           if (musicqupdate == NULL) {
             break;
           }
@@ -1208,7 +1203,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_SONG_FINISH: {
           uiLabelSetText (plui->wcont [PLUI_W_STATUS_MSG], "");
           uiLabelSetText (plui->wcont [PLUI_W_ERROR_MSG], "");
-          pluiPushHistory (plui, targs);
+          pluiPushHistory (plui, args);
           break;
         }
         case MSG_MAIN_START_RECONN: {
@@ -1225,7 +1220,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_MAIN_CURR_PLAY: {
           int     mqidx;
 
-          mqidx = atoi (targs);
+          mqidx = atoi (args);
           pluiSetPlaybackQueue (plui, mqidx, PLUI_NO_UPDATE);
           break;
         }
@@ -1255,8 +1250,6 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       break;
     }
   }
-
-  dataFree (targs);
 
   /* due to the db update message, these must be applied afterwards */
   uiplayerProcessMsg (routefrom, route, msg, args, plui->uiplayer);
