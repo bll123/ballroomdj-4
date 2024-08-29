@@ -6,13 +6,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 
 #include "bdjmsg.h"
 #include "bdjstring.h"
 
 enum {
-  LSZ = 4,
+  LSZ = sizeof (uint32_t),      /* four bytes */
 };
 #define MSG_RS      '~'
 
@@ -158,27 +159,25 @@ const char *bdjmsgtxt [MSG_MAX] = {
 
 size_t
 msgEncode (bdjmsgroute_t routefrom, bdjmsgroute_t route,
-    bdjmsgmsg_t msg, const char *args, char *msgbuff, size_t mlen)
+    bdjmsgmsg_t msg, char *msgbuff, size_t mlen)
 {
   size_t      len;
 
-
-  if (args == NULL) {
-    args = "";
-  }
-  len = (size_t) snprintf (msgbuff, mlen, "%0*d%c%0*d%c%0*d%c%s",
-      LSZ, routefrom, MSG_RS, LSZ, route, MSG_RS, LSZ, msg, MSG_RS, args);
+  len = (size_t) snprintf (msgbuff, mlen, "%0*d%c%0*d%c%0*d%c",
+      LSZ, routefrom, MSG_RS, LSZ, route, MSG_RS, LSZ, msg, MSG_RS);
   msgbuff [mlen - 1] = '\0';
   if (len >= mlen) {
     len = mlen - 1;
   }
+  /* always send the null byte so that there will be an empty args string */
+  /* if the additional args are not specified */
   ++len;
   return len;
 }
 
 void
 msgDecode (char *msgbuff, bdjmsgroute_t *routefrom, bdjmsgroute_t *route,
-    bdjmsgmsg_t *msg, char *args, size_t alen)
+    bdjmsgmsg_t *msg, char **args)
 {
   char        *p = NULL;
 
@@ -190,8 +189,7 @@ msgDecode (char *msgbuff, bdjmsgroute_t *routefrom, bdjmsgroute_t *route,
   *msg = (bdjmsgmsg_t) atol (p);
   p += LSZ + 1;
   if (args != NULL) {
-    *args = '\0';
-    strlcpy (args, p, alen);
+    *args = p;
   }
 }
 

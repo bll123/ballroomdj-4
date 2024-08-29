@@ -1689,10 +1689,18 @@ pluisetMarqueeFontSizes (playerui_t *plui, char *args)
   char      *p;
   char      *tokstr;
 
+  if (args == NULL) {
+    return;
+  }
+
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
-  plui->marqueeFontSize = atoi (p);
+  if (p != NULL) {
+    plui->marqueeFontSize = atoi (p);
+  }
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  plui->marqueeFontSizeFS = atoi (p);
+  if (p != NULL) {
+    plui->marqueeFontSizeFS = atoi (p);
+  }
 }
 
 static bool

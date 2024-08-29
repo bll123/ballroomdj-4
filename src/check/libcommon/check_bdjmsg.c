@@ -25,15 +25,17 @@
 
 START_TEST(bdjmsg_encode)
 {
-  char    tmp [100];
-  char    buff [100];
+  char    tmp [BDJMSG_MAX_PFX];
+  char    buff [BDJMSG_MAX_PFX];
+  size_t  len;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjmsg_encode");
   mdebugSubTag ("bdjmsg_encode");
 
-  msgEncode (ROUTE_MAIN, ROUTE_STARTERUI, MSG_EXIT_REQUEST,
-      "def", buff, sizeof (buff));
-  snprintf (tmp, sizeof (tmp), "%04d~%04d~%04d~def",
+  len = msgEncode (ROUTE_MAIN, ROUTE_STARTERUI, MSG_EXIT_REQUEST,
+      buff, sizeof (buff));
+  ck_assert_int_eq (len, BDJMSG_MAX_PFX);
+  snprintf (tmp, sizeof (tmp), "%04d~%04d~%04d~",
       ROUTE_MAIN, ROUTE_STARTERUI, MSG_EXIT_REQUEST);
   ck_assert_str_eq (buff, tmp);
 }
@@ -41,22 +43,24 @@ END_TEST
 
 START_TEST(bdjmsg_decode)
 {
-  char    buff [2048];
+  char    buff [BDJMSG_MAX_PFX];
+  size_t  len;
   bdjmsgroute_t rf;
   bdjmsgroute_t rt;
   bdjmsgmsg_t   msg;
-  char    args [200];
+  char    *args = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjmsg_decode");
   mdebugSubTag ("bdjmsg_decode");
 
-  msgEncode (ROUTE_MAIN, ROUTE_STARTERUI, MSG_EXIT_REQUEST,
-      "def", buff, sizeof (buff));
-  msgDecode (buff, &rf, &rt, &msg, args, sizeof (args));
+  len = msgEncode (ROUTE_MAIN, ROUTE_STARTERUI, MSG_EXIT_REQUEST,
+      buff, sizeof (buff));
+  ck_assert_int_eq (len, BDJMSG_MAX_PFX);
+  msgDecode (buff, &rf, &rt, &msg, &args);
   ck_assert_int_eq (rf, ROUTE_MAIN);
   ck_assert_int_eq (rt, ROUTE_STARTERUI);
   ck_assert_int_eq (msg, MSG_EXIT_REQUEST);
-  ck_assert_str_eq (args, "def");
+  ck_assert_str_eq (args, "");
 }
 END_TEST
 
