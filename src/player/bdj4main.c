@@ -1838,7 +1838,9 @@ mainNextSongPlay (maindata_t *mainData)
   if (currlen > 1) {
     connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
   }
-  if (mainData->playerState == PL_STATE_STOPPED) {
+  /* the internal manage-playback queue is set to play-when-queued */
+  if (mainData->musicqPlayIdx != MUSICQ_MNG_PB &&
+      mainData->playerState == PL_STATE_STOPPED) {
     mainMusicQueuePlay (mainData);
   }
   if (mainData->playerState == PL_STATE_PAUSED) {

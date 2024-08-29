@@ -265,6 +265,8 @@ if [[ -f devel/srcdist.txt ]]; then
   issrcdist=T
 fi
 
+DEVTMP=devel/tmp
+
 if [[ $insttest == F && $isprimary == T && $tag == linux ]]; then
   mksrcpkg=T
 fi
@@ -313,11 +315,11 @@ fi
 
 if [[ $mksrcpkg == T && $insttest == F ]]; then
   bver=$(pkgbasevers)
-  stagedir=tmp/${spkgnm}-${bver}
+  stagedir=${DEVTMP}/${spkgnm}-${bver}
   manfn=manifest.txt
   manfnpath=${stagedir}/install/${manfn}
   chksumfn=checksum.txt
-  chksumfntmp=tmp/${chksumfn}
+  chksumfntmp=${DEVTMP}/${chksumfn}
   chksumfnpath=${stagedir}/install/${chksumfn}
 
   case $tag in
@@ -351,9 +353,9 @@ if [[ $mksrcpkg == T && $insttest == F ]]; then
       ./pkg/mkchecksum.sh ${manfnpath} ${chksumfntmp}
       mv -f ${chksumfntmp} ${chksumfnpath}
 
-      (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${nm}.tar.gz
+      (cd ${DEVTMP};tar -c -z -f ${cwd}/${nm}.tar.gz $(basename $stagedir))
       echo "## source package ${nm}.tar.gz created"
-      (cd tmp;zip -q -9 -r -o ../${nm}.zip $(basename $stagedir))
+      (cd ${DEVTMP};zip -q -9 -r -o ${cwd}/${nm}.zip $(basename $stagedir))
       echo "## source package ${nm}.zip created"
       rm -rf ${stagedir}
       ;;
@@ -377,7 +379,7 @@ if [[ $mksrcpkg == T && $insttest == F ]]; then
         rsync -aS ${d} ${stagedir}/${dir}
       done
 
-      (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${nm}
+      (cd ${DEVTMP};tar -c -z -f ${cwd}/${nm} $(basename $stagedir))
       echo "## additional source package ${nm} created"
       sourceonly=T
       rm -rf ${stagedir}
@@ -414,7 +416,7 @@ if [[ $mksrcpkg == T && $insttest == F ]]; then
         rsync -aS ${d} ${stagedir}/${dir}
       done
 
-      (cd tmp;zip -q -9 -r -o ../${nm} $(basename $stagedir))
+      (cd ${DEVTMP};zip -q -9 -r -o ../${nm} $(basename $stagedir))
       echo "## additional source package ${nm} created"
       sourceonly=T
 
@@ -431,7 +433,7 @@ fi
 
 echo "-- $(date +%T) create release package"
 
-stagedir=tmp/${instdir}
+stagedir=${DEVTMP}/${instdir}
 
 macosbase=""
 case $tag in
@@ -443,12 +445,12 @@ esac
 manfn=manifest.txt
 manfnpath=${stagedir}${macosbase}/install/${manfn}
 chksumfn=checksum.txt
-chksumfntmp=tmp/${chksumfn}
+chksumfntmp=${DEVTMP}/${chksumfn}
 chksumfnpath=${stagedir}${macosbase}/install/${chksumfn}
-tmpnm=tmp/tfile.dat
-tmpcab=tmp/bdj4-install.cab
-tmpsep=tmp/sep.txt
-tmpmac=tmp/macos
+tmpnm=${DEVTMP}/tfile.dat
+tmpcab=${DEVTMP}/bdj4-install.cab
+tmpsep=${DEVTMP}/sep.txt
+tmpmac=${DEVTMP}/macos
 
 nm=$(pkginstnm)
 
@@ -477,7 +479,7 @@ case $tag in
 
     setLibVol $stagedir libvolpa
     echo "-- $(date +%T) creating install package"
-    (cd tmp;tar -c -J -f - $(basename $stagedir)) > ${tmpnm}
+    (cd ${DEVTMP};tar -c -J -f ${cwd}/${tmpnm} $(basename $stagedir))
     if [[ ! -f bin/bdj4se ]]; then
       echo "bin/bdj4se not located"
       exit 1
@@ -530,7 +532,7 @@ case $tag in
     fi
 
     echo "-- $(date +%T) creating install package"
-    (cd tmp;tar -c -J -f - $(basename $stagedir)) > ${tmpnm}
+    (cd ${DEVTMP};tar -c -J -f ${cwd}/${tmpnm} $(basename $stagedir))
     if [[ ! -f bin/bdj4se ]]; then
       echo "bin/bdj4se not located"
       exit 1
@@ -579,7 +581,7 @@ case $tag in
     echo "-- $(date +%T) creating install package"
     test -f $tmpcab && rm -f $tmpcab
     (
-      cd tmp;
+      cd ${DEVTMP};
       ../pkg/pkgmakecab.sh
     )
     if [[ ! -f $tmpcab ]]; then

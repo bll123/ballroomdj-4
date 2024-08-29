@@ -41,7 +41,10 @@ fi
 . src/utils/pkgnm.sh
 pkgnmgetdata
 
+DEVTMP=devel/tmp
+
 # make sure the tmp dir exists
+test -d ${DEVTMP} || mkdir ${DEVTMP}
 test -d tmp || mkdir tmp
 
 grc=0
@@ -268,7 +271,7 @@ if [[ $platform == windows ]]; then
     fi
   done
 
-  dlllistfn=tmp/dll-list.txt
+  dlllistfn=${DEVTMP}/dll-list.txt
   > $dlllistfn
 
   for fn in plocal/bin/*.dll bin/*.exe $chkdlllist ; do

@@ -12,16 +12,18 @@ cwd=$(pwd)
 
 . src/utils/pkgnm.sh
 
+DEVTMP=devel/tmp
+
 sfuser=bll123
 project=ballroomdj4
 baseurl=https://sourceforge.net/rest/p/${project}/wiki
 accessurl=${baseurl}/has_access
 useragent=bdj4-wikiput.sh
-cookiejar=tmp/cookiejar.txt
+cookiejar=${DEVTMP}/cookiejar.txt
 bearer=""
-tmpfile=tmp/wiki-tmp.txt
-compfile=tmp/wiki-comp.txt
-filelist=tmp/wiki-files.txt
+tmpfile=${DEVTMP}/wiki-tmp.txt
+compfile=${DEVTMP}/wiki-comp.txt
+filelist=${DEVTMP}/wiki-files.txt
 dt=$(date '+%Y-%m-%d %H:%M:%S')
 forceflag=F
 

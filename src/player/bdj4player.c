@@ -367,19 +367,19 @@ playerClosingCallback (void *tpdata, programstate_t programState)
   queueFree (playerData->prepRequestQueue);
   queueFree (playerData->playRequest);
 
+  if (playerData->currentSong != NULL) {
+    if (playerData->currentSong->announce != PREP_ANNOUNCE) {
+      playerPrepQueueFree (playerData->currentSong);
+      playerData->currentSong = NULL;
+    }
+  }
+
   bdj4shutdown (ROUTE_PLAYER, NULL);
 
   if (playerData->pli != NULL) {
     pliStop (playerData->pli);
     pliClose (playerData->pli);
     pliFree (playerData->pli);
-  }
-
-  if (playerData->currentSong != NULL) {
-    if (playerData->currentSong->announce != PREP_ANNOUNCE) {
-      playerPrepQueueFree (playerData->currentSong);
-      playerData->currentSong = NULL;
-    }
   }
 
   /* do the volume reset last, give time for the player to stop */
@@ -1193,7 +1193,7 @@ playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx, const char
     if (! found) {
       /* this usually happens when a song is prepped and then immediately */
       /* played before it has had time to be prepped (e.g. during tests) */
-      logMsg (LOG_ERR, LOG_IMPORTANT, "WARN: song %s not prepped; processing queue", sfname);
+      logMsg (LOG_ERR, LOG_IMPORTANT, "song %s not prepped; processing queue count %d", sfname,count);
       playerProcessPrepRequest (playerData);
       ++count;
     }
@@ -1682,7 +1682,8 @@ playerInitSinkList (playerdata_t *playerData)
     }
   }
 
-  if (*playerData->sinklist.defname) {
+  if (playerData->sinklist.defname != NULL &&
+      *playerData->sinklist.defname) {
     playerData->actualSink = playerData->sinklist.defname;
   } else {
     playerData->actualSink = VOL_DEFAULT_NAME;

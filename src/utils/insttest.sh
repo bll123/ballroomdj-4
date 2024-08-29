@@ -83,11 +83,12 @@ case $systype in
     ;;
 esac
 
-TARGETTOPDIR=${cwd}/tmp/BDJ4dev
-TARGETTOPALTDIR=${cwd}/tmp/BDJ4altdev
+DEVTMP=devel/tmp
+TARGETTOPDIR=${cwd}/${DEVTMP}/BDJ4dev
+TARGETTOPALTDIR=${cwd}/${DEVTMP}/BDJ4altdev
 if [[ $tag == macos ]]; then
-  TARGETTOPDIR=${cwd}/tmp/BDJ4dev.app
-  TARGETTOPALTDIR=${cwd}/tmp/BDJ4altdev.app
+  TARGETTOPDIR=${cwd}/${DEVTMP}/BDJ4dev.app
+  TARGETTOPALTDIR=${cwd}/${DEVTMP}/BDJ4altdev.app
 fi
 TARGETDIR=${TARGETTOPDIR}${macdir}
 TARGETALTDIR=${TARGETTOPALTDIR}${macdir}
@@ -102,10 +103,10 @@ fi
 IMGDIR="${DATATOPDIR}/img"
 DATADIR="${DATATOPDIR}/data"
 HTTPDIR="${DATATOPDIR}/http"
-UNPACKDIR="${cwd}/tmp/bdj4-install"
-UNPACKDIRBASE="${cwd}/tmp/bdj4-install${macdir}"
+UNPACKDIR="${cwd}/${DEVTMP}/bdj4-install"
+UNPACKDIRBASE="${cwd}/${DEVTMP}/bdj4-install${macdir}"
 UNPACKDIRSAVE="$UNPACKDIR.save"
-LOG="tmp/insttest-log.txt"
+LOG="${DEVTMP}/insttest-log.txt"
 
 fn="templates/ds-audioid-list.txt"
 AUDIOIDLISTVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
