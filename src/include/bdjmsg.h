@@ -206,6 +206,8 @@ enum {
 /* 1000 (the max player queue length) long playlist message */
 enum {
   BDJMSG_MAX_ARGS = 20000,
+  /* the prefix consists of 3 4-char numerics with separators */
+  /* and a null byte */
   BDJMSG_MAX_PFX = (sizeof (uint32_t) + 1) * 3 + 1,
   BDJMSG_MAX = BDJMSG_MAX_PFX + BDJMSG_MAX_ARGS,
 };

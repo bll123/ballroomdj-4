@@ -273,6 +273,7 @@ itunesSaveFields (itunes_t *itunes)
 
   datafileSave (itunes->fieldsdf, NULL, newlist, DF_NO_OFFSET,
       datafileDistVersion (itunes->fieldsdf));
+  slistFree (newlist);
 }
 
 void

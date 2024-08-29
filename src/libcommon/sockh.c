@@ -77,6 +77,7 @@ sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
   char        msgbuff [BDJMSG_MAX_PFX];
   size_t      pfxlen;
   int         rc;
+  size_t      alen;
 
   if (sock == INVALID_SOCKET) {
     return -1;
@@ -88,7 +89,12 @@ sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
     /* if args is specified, do not send the null byte */
     pfxlen -= 1;
   }
-  rc = sockWriteBinary (sock, msgbuff, pfxlen, args);
+  alen = 0;
+  if (args != NULL) {
+    /* write out the null byte also.  the args string must be terminated */
+    alen = strlen (args) + 1;
+  }
+  rc = sockWriteBinary (sock, msgbuff, pfxlen, args, alen);
   if (rc == 0 &&
       msg != MSG_MUSICQ_STATUS_DATA && msg != MSG_PLAYER_STATUS_DATA) {
     logMsg (LOG_DBG, LOG_SOCKET, "sent: msg:%d/%s to %d/%s rc:%d pfx:%s args:%s",

@@ -1427,6 +1427,8 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
   d = NULL;
 
   if (type == TS_TYPE_MSG && p != NULL) {
+    char    *td;
+
     if (strcmp (p, "stoptime") == 0) {
       time_t    stoptime;
 
@@ -1444,8 +1446,9 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
       p = tmp;
     }
 
-    d = regexReplaceLiteral (p, "~", MSG_ARGS_RS_STR);
-    d = regexReplaceLiteral (d, "%HISTQ%", testsuite->histqueue);
+    td = regexReplaceLiteral (p, "~", MSG_ARGS_RS_STR);
+    d = regexReplaceLiteral (td, "%HISTQ%", testsuite->histqueue);
+    dataFree (td);
   }
   if (type == TS_TYPE_GET) {
     testsuite->waitRoute = route;

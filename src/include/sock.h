@@ -69,7 +69,7 @@ Sock_t        sockCheck (sockinfo_t *);
 Sock_t        sockAccept (Sock_t, int *);
 Sock_t        sockConnect (uint16_t port, int *connerr, Sock_t clsock);
 char *        sockReadBuff (Sock_t, size_t *, char *data, size_t dlen);
-int           sockWriteBinary (Sock_t, const char *data, size_t dlen, const char *args);
+int           sockWriteBinary (Sock_t, const char *data, size_t dlen, const char *args, size_t alen);
 bool          socketInvalid (Sock_t sock);
 bool          sockWaitClosed (sockinfo_t *sockinfo);
 

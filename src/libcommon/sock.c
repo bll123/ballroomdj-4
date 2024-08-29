@@ -487,10 +487,10 @@ sockReadBuff (Sock_t sock, size_t *rlen, char *data, size_t maxlen)
 }
 
 int
-sockWriteBinary (Sock_t sock, const char *data, size_t dlen, const char *args)
+sockWriteBinary (Sock_t sock, const char *data, size_t dlen,
+    const char *args, size_t alen)
 {
   uint32_t    sendlen;
-  size_t      alen;
   ssize_t     rc;
 
   if (socketInvalid (sock)) {
@@ -498,10 +498,6 @@ sockWriteBinary (Sock_t sock, const char *data, size_t dlen, const char *args)
   }
 
   sendlen = (uint32_t) dlen;
-  alen = 0;
-  if (args != NULL) {
-    alen = strlen (args);
-  }
   sendlen += alen;
   sendlen = htonl (sendlen);
   rc = sockWriteData (sock, (char *) &sendlen, sizeof (sendlen));

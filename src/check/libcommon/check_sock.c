@@ -178,11 +178,11 @@ connectWrite (void *id)
 
   memset (datab, 'a', 4096);
   c = connectWait ();
-  rc = sockWriteBinary (c, data, strlen (data) + 1, NULL);
+  rc = sockWriteBinary (c, data, strlen (data) + 1, NULL, 0);
   if (rc != 0) { gthreadrc = 1; }
-  rc = sockWriteBinary (c, data, strlen (data), datac);
+  rc = sockWriteBinary (c, data, strlen (data), datac, strlen (datac));
   if (rc != 0) { gthreadrc = 1; }
-  rc = sockWriteBinary (c, datab, 4096, NULL);
+  rc = sockWriteBinary (c, datab, 4096, NULL, 0);
   if (rc != 0) { gthreadrc = 1; }
   mssleep (200);
   sockClose (c);
@@ -203,11 +203,11 @@ connectWriteClose (void *id)
 
   memset (datab, 'a', 4096);
   c = connectWait ();
-  rc = sockWriteBinary (c, data, strlen (data) + 1, NULL);
+  rc = sockWriteBinary (c, data, strlen (data) + 1, NULL, 0);
   if (rc != 0) { gthreadrc = 1; }
-  rc = sockWriteBinary (c, data, strlen (data), datac);
+  rc = sockWriteBinary (c, data, strlen (data), datac, strlen (datac));
   if (rc != 0) { gthreadrc = 1; }
-  rc = sockWriteBinary (c, datab, 4096, NULL);
+  rc = sockWriteBinary (c, datab, 4096, NULL, 0);
   if (rc != 0) { gthreadrc = 1; }
   sockClose (c);
 #if _lib_pthread_create
@@ -230,11 +230,11 @@ connectWriteCloseFail (void *id)
 #endif
   memset (datab, 'a', 4096);
   c = connectWait ();
-  rc = sockWriteBinary (c, data, strlen (data) + 1, NULL);
+  rc = sockWriteBinary (c, data, strlen (data) + 1, NULL, 0);
   if (rc != 0) { gthreadrc = 1; }
-  rc = sockWriteBinary (c, data, strlen (data), datac);
+  rc = sockWriteBinary (c, data, strlen (data), datac, strlen (datac));
   if (rc != 0) { gthreadrc = 1; }
-  rc = sockWriteBinary (c, datab, 4096, NULL);
+  rc = sockWriteBinary (c, datab, 4096, NULL, 0);
   if (rc != 0) { gthreadrc = 1; }
   mssleep (200);
   sockClose (c);

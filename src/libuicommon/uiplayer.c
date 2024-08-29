@@ -689,6 +689,7 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
   uiplayer_t    *uiplayer = udata;
+  char          *targs = NULL;
 
   if (uiplayer == NULL) {
     return 0;
@@ -696,29 +697,35 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   logProcBegin ();
 
+  /* the management ui has two uiplayer instances */
+  /* therefore the original message must be preserved */
+  if (args != NULL) {
+    targs = mdstrdup (args);
+  }
+
   switch (route) {
     case ROUTE_NONE:
     case ROUTE_MANAGEUI:
     case ROUTE_PLAYERUI: {
       switch (msg) {
         case MSG_PLAYER_STATE: {
-          uiplayerProcessPlayerState (uiplayer, args);
+          uiplayerProcessPlayerState (uiplayer, targs);
           break;
         }
         case MSG_PLAY_PAUSEATEND_STATE: {
-          uiplayerProcessPauseatend (uiplayer, atol (args));
+          uiplayerProcessPauseatend (uiplayer, atol (targs));
           break;
         }
         case MSG_PLAYER_STATUS_DATA: {
-          uiplayerProcessPlayerStatusData (uiplayer, args);
+          uiplayerProcessPlayerStatusData (uiplayer, targs);
           break;
         }
         case MSG_MUSICQ_STATUS_DATA: {
-          uiplayerProcessMusicqStatusData (uiplayer, args);
+          uiplayerProcessMusicqStatusData (uiplayer, targs);
           break;
         }
         case MSG_PLAYER_SUPPORT: {
-          uiplayer->pliSupported = atoi (args);
+          uiplayer->pliSupported = atoi (targs);
           if (! pliCheckSupport (uiplayer->pliSupported, PLI_SUPPORT_SPEED)) {
             uiplayerDisableSpeed (uiplayer);
           }
@@ -740,6 +747,8 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       break;
     }
   }
+
+  dataFree (targs);
 
   logProcEnd ("");
   return 0;

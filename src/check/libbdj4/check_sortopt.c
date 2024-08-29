@@ -38,6 +38,7 @@ setup (void)
 static void
 teardown (void)
 {
+  tagdefCleanup ();
   bdjoptCleanup ();
 }
 

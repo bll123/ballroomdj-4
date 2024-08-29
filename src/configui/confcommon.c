@@ -453,7 +453,6 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
 {
   slistidx_t    iteridx;
   const char    *fn;
-  pathinfo_t    *pi;
 # if BDJ4_UI_GTK3
   static char   *srchdir = "gtk-3.0";
 # endif
@@ -477,14 +476,19 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
 
   while ((fn = slistIterateKey (filelist, &iteridx)) != NULL) {
     if (fileopIsDirectory (fn)) {
-      pi = pathInfo (fn);
-      if (pi->flen == strlen (srchdir) &&
-          strncmp (pi->filename, srchdir, strlen (srchdir)) == 0) {
-        char  tbuff [MAXPATHLEN];
-        char  tmp [MAXPATHLEN];
+      pathinfo_t    *dpi;
+
+      dpi = pathInfo (fn);
+
+      if (dpi->flen == strlen (srchdir) &&
+          strncmp (dpi->filename, srchdir, strlen (srchdir)) == 0) {
+        pathinfo_t  *pi;
+        char        tbuff [MAXPATHLEN];
+        char        tmp [MAXPATHLEN];
 
         snprintf (tmp, sizeof (tmp), "%s/%s", fn, srchfn);
         if (! fileopFileExists (tmp)) {
+          pathInfoFree (dpi);
           continue;
         }
 
@@ -495,8 +499,10 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
         pi = pathInfo (tbuff);
         strlcpy (tmp, pi->filename, pi->flen + 1);
         slistSetNum (themelist, tmp, 0);
+        pathInfoFree (pi);
       }
-      pathInfoFree (pi);
+
+      pathInfoFree (dpi);
     } /* is directory */
   } /* for each file */
 
