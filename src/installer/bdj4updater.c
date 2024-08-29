@@ -148,6 +148,8 @@ main (int argc, char *argv [])
   nlist_t     *updlist = NULL;
   musicdb_t   *musicdb = NULL;
   uint32_t    flags;
+  const char  *targv [10];
+  int         targc;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("updt");
@@ -201,21 +203,6 @@ main (int argc, char *argv [])
     converted = nlistGetNum (updlist, UPD_CONVERTED);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "converted (from-file): %d", converted);
   }
-
-  /* Always remove the volreg.txt and flag files on an update.  */
-  /* This helps prevents any issues with the volume. */
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CACHE);
-  fileopDelete (tbuff);
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      VOLREG_FN, BDJ4_LOCK_EXT, PATHBLD_MP_DIR_CACHE);
-  fileopDelete (tbuff);
-  volregClearBDJ4Flag ();
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      VOLREG_BDJ3_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CONFIG);
-  fileopDelete (tbuff);
-
-  logMsg (LOG_INSTALL, LOG_INFO, "cleaned volreg/flag");
 
   /* always figure out where the home music dir is */
   /* this is used on new installs to set the music dir */
@@ -851,6 +838,17 @@ main (int argc, char *argv [])
   if (updlistallocated) {
     nlistFree (updlist);
   }
+
+  /* bdj4cleantmp will remove the volreg file and volreg lock and completely */
+  /* clean up the tmp directory */
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      "bdj4cleantmp", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_EXEC);
+  targv [targc++] = tbuff;
+  targv [targc++] = "--bdj4";
+  targv [targc++] = NULL;
+  osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
+
+  logMsg (LOG_INSTALL, LOG_INFO, "ran clean-tmp");
 
 finish:
   bdj4shutdown (ROUTE_NONE, NULL);

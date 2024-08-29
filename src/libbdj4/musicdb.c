@@ -512,7 +512,7 @@ dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn)
   song = songAlloc ();
   songParse (song, data, rrn);
   if (! songAudioSourceExists (song)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "song %s not found",
+    logMsg (LOG_DBG, LOG_IMPORTANT, "WARN: song %s not found",
         songGetStr (song, TAG_URI));
     songFree (song);
     song = NULL;
