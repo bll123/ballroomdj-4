@@ -40,7 +40,7 @@ void      dbClose (musicdb_t *db);
 dbidx_t   dbCount (musicdb_t *db);
 int       dbLoad (musicdb_t *);
 void      dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx);
-void      dbMarkEntryRenamed (musicdb_t *musicdb, dbidx_t dbidx);
+void      dbMarkEntryRenamed (musicdb_t *musicdb, const char *olduri, const char *newuri, dbidx_t dbidx);
 void      dbMarkEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx);
 void      dbClearEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx);
 void      dbStartBatch (musicdb_t *db);

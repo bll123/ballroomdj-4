@@ -696,6 +696,7 @@ START_TEST(musicdb_rename)
   bdjoptSetNum (OPT_G_AUTOORGANIZE, true);
 
   song = dbGetByName (db, "argentinetango05.mp3");
+  ck_assert_ptr_nonnull (song);
   dbidx = songGetNum (song, TAG_DBIDX);
   snprintf (ouri, sizeof (ouri), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
       songGetStr (song, TAG_URI));
@@ -707,10 +708,13 @@ START_TEST(musicdb_rename)
   dbWriteSong (db, song);
 
   dbLoadEntry (db, dbidx);
+  dbMarkEntryRenamed (db, "argentinetango05.mp3", "at-rename.mp3", dbidx);
+
+  dbsong = dbGetByName (db, "argentinetango05.mp3");
+  ck_assert_ptr_null (dbsong);
 
   dbsong = dbGetByIdx (db, dbidx);
-  ck_assert_str_eq ("at-rename.mp3", songGetStr (dbsong, TAG_URI));
-  dbsong = dbGetByName (db, "argentinetango05.mp3");
+  ck_assert_ptr_nonnull (dbsong);
   ck_assert_str_eq ("at-rename.mp3", songGetStr (dbsong, TAG_URI));
 
   dbStartIterator (db, &iteridx);

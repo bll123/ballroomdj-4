@@ -110,9 +110,9 @@ songdbWriteDB (songdb_t *songdb, dbidx_t dbidx)
 size_t
 songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
 {
-  char        newfn [MAXPATHLEN];
+  char        newuri [MAXPATHLEN];
   char        newffn [MAXPATHLEN];
-  char        oldfn [MAXPATHLEN];
+  char        olduri [MAXPATHLEN];
   char        ffn [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
   char        dirbuff [MAXPATHLEN];
@@ -145,11 +145,11 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
     return 0;
   }
 
-  strlcpy (oldfn, songGetStr (song, TAG_URI), sizeof (oldfn));
-  *newfn = '\0';
+  strlcpy (olduri, songGetStr (song, TAG_URI), sizeof (olduri));
+  *newuri = '\0';
 
   if (renameallow) {
-    if (songdbNewName (songdb, song, newfn, sizeof (newfn))) {
+    if (songdbNewName (songdb, song, newuri, sizeof (newuri))) {
       dorename = true;
     }
   }
@@ -164,10 +164,10 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
     int     pfxlen;
 
     pfxlen = songGetNum (song, TAG_PREFIX_LEN);
-    audiosrcFullPath (oldfn, ffn, sizeof (ffn), oldfn, pfxlen);
+    audiosrcFullPath (olduri, ffn, sizeof (ffn), olduri, pfxlen);
     /* the prefix length and old filename must be supplied */
     /* in order to generate the new filename properly */
-    audiosrcFullPath (newfn, newffn, sizeof (newffn), oldfn, pfxlen);
+    audiosrcFullPath (newuri, newffn, sizeof (newffn), olduri, pfxlen);
 
     if (*newffn && fileopFileExists (newffn)) {
       *flags |= SONGDB_RET_REN_FILE_EXISTS;
@@ -212,7 +212,7 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
       strlcat (neworigffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT), sizeof (newffn));
       rc = filemanipMove (tbuff, neworigffn);
       if (rc != 0) {
-        logMsg (LOG_DBG, LOG_IMPORTANT, "unable to rename original %s %s", oldfn, tbuff);
+        logMsg (LOG_DBG, LOG_IMPORTANT, "unable to rename original %s %s", olduri, tbuff);
         *flags |= SONGDB_RET_ORIG_RENAME_FAIL;
       }
     }
@@ -222,7 +222,7 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
       size_t  tdirlen;
 
       /* only reset the URI if the song was actually renamed */
-      songSetStr (song, TAG_URI, newfn);
+      songSetStr (song, TAG_URI, newuri);
       if (pfxlen > 0) {
         /* for a secondary directory, the full name must be used for the URI */
         songSetStr (song, TAG_URI, newffn);
@@ -264,9 +264,14 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
     songdbWriteAudioTags (song);
   }
 
+  if (renamesuccess) {
+    dbMarkEntryRenamed (songdb->musicdb, olduri, newuri,
+        songGetNum (song, TAG_DBIDX));
+  }
+
   if (songHasSonglistChange (song) || renamesuccess) {
     /* need to update all songlists if file/title/dance changed. */
-    songdbUpdateAllSonglists (song, oldfn);
+    songdbUpdateAllSonglists (song, olduri);
   }
   songClearChanged (song);
 
