@@ -51,9 +51,6 @@ enum {
   SOCK_CONN_ERROR,
 };
 
-#define SOCK_READ_TIMEOUT   2
-#define SOCK_WRITE_TIMEOUT  2
-
 #if ! _define_INVALID_SOCKET
 # define INVALID_SOCKET -1
 #endif

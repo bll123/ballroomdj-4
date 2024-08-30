@@ -676,6 +676,55 @@ START_TEST(musicdb_remove)
 }
 END_TEST
 
+START_TEST(musicdb_rename)
+{
+  musicdb_t *db;
+  song_t    *song;
+  song_t    *tsong;
+  song_t    *dbsong;
+  dbidx_t   dbidx;
+  dbidx_t   tdbidx;
+  dbidx_t   curridx;
+  dbidx_t   iteridx;
+  char      ouri [MAXPATHLEN];
+  char      nuri [MAXPATHLEN];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_rename");
+  mdebugSubTag ("musicdb_rename");
+
+  db = dbOpen (dbfn);
+  bdjoptSetNum (OPT_G_AUTOORGANIZE, true);
+
+  song = dbGetByName (db, "argentinetango05.mp3");
+  dbidx = songGetNum (song, TAG_DBIDX);
+  snprintf (ouri, sizeof (ouri), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
+      songGetStr (song, TAG_URI));
+
+  songSetStr (song, TAG_URI, "at-rename.mp3");
+  snprintf (nuri, sizeof (nuri), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
+      songGetStr (song, TAG_URI));
+  filemanipMove (ouri, nuri);
+  dbWriteSong (db, song);
+
+  dbLoadEntry (db, dbidx);
+
+  dbsong = dbGetByIdx (db, dbidx);
+  ck_assert_str_eq ("at-rename.mp3", songGetStr (dbsong, TAG_URI));
+  dbsong = dbGetByName (db, "argentinetango05.mp3");
+  ck_assert_str_eq ("at-rename.mp3", songGetStr (dbsong, TAG_URI));
+
+  dbStartIterator (db, &iteridx);
+  while ((tsong = dbIterate (db, &curridx, &iteridx)) != NULL) {
+    tdbidx = songGetNum (tsong, TAG_DBIDX);
+    if (tdbidx == dbidx) {
+      ck_assert_str_eq ("at-rename.mp3", songGetStr (tsong, TAG_URI));
+      break;
+    }
+  }
+
+  dbClose (db);
+}
+END_TEST
 
 START_TEST(musicdb_db)
 {
@@ -778,6 +827,7 @@ musicdb_suite (void)
   tcase_add_test (tc, musicdb_load_entry);
   tcase_add_test (tc, musicdb_temp);
   tcase_add_test (tc, musicdb_remove);
+  tcase_add_test (tc, musicdb_rename);
   tcase_add_test (tc, musicdb_cleanup);
   tcase_add_test (tc, musicdb_db);
   suite_add_tcase (s, tc);

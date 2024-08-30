@@ -49,6 +49,11 @@
 #include "sock.h"
 #include "tmutil.h"
 
+enum {
+  SOCK_READ_TIMEOUT = 2,
+  SOCK_WRITE_TIMEOUT = 2,
+};
+
 typedef struct {
   Sock_t          sock;
   bool            havedata;

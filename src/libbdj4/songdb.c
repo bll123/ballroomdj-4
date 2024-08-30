@@ -263,6 +263,7 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
   if (bdjoptGetNum (OPT_G_WRITETAGS) != WRITE_TAGS_NONE) {
     songdbWriteAudioTags (song);
   }
+
   if (songHasSonglistChange (song) || renamesuccess) {
     /* need to update all songlists if file/title/dance changed. */
     songdbUpdateAllSonglists (song, oldfn);
