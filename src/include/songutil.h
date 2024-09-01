@@ -14,6 +14,7 @@ enum {
   SONG_ADJUST_NONE    = 0,
   /* normalize didn't work, not currently in use, but keep it here */
   SONG_ADJUST_NORM    = (1 << 0),
+  /* trim is no longer in use */
   SONG_ADJUST_TRIM    = (1 << 1),
   /* song-adjust-adjust adjusts the speed, song-start and song-end */
   SONG_ADJUST_ADJUST  = (1 << 2),

@@ -52,15 +52,23 @@ typedef struct aa {
   nlist_t         *values;
 } aa_t;
 
-static datafilekey_t aadfkeys [AA_KEY_MAX] = {
-  { "NORMVOL_MAX",            AA_NORMVOL_MAX,         VALUE_DOUBLE, NULL, DF_NORM },
-  { "NORMVOL_TARGET",         AA_NORMVOL_TARGET,      VALUE_DOUBLE, NULL, DF_NORM },
-  { "TRIMSILENCE_PERIOD",     AA_TRIMSILENCE_PERIOD,  VALUE_NUM,    NULL, DF_NORM },
-  { "TRIMSILENCE_START",      AA_TRIMSILENCE_START,   VALUE_DOUBLE, NULL, DF_NORM },
-  { "TRIMSILENCE_THRESHOLD",  AA_TRIMSILENCE_THRESHOLD, VALUE_NUM,  NULL, DF_NORM },
+enum {
+  AA_TRIMSILENCE_NOISE,
+  AA_TRIMSILENCE_DURATION,
+  AA_KEY_MAX,
 };
 
-static void aaTrimSilence (musicdb_t *musicdb, dbidx_t dbidx, const char *infn, const char *outfn);
+static datafilekey_t aadfkeys [AA_KEY_MAX] = {
+  { "TRIMSILENCE_DURATION",   AA_TRIMSILENCE_DURATION,  VALUE_DOUBLE, NULL, DF_NORM },
+  { "TRIMSILENCE_NOISE",      AA_TRIMSILENCE_NOISE,     VALUE_NUM,    NULL, DF_NORM },
+};
+
+static const char * const SILENCE_START_STR = { "silence_start:" };
+static const char * const SILENCE_DUR_STR = { "silence_duration:" };
+#define SILENCE_START_LEN (strlen (SILENCE_START_STR))
+#define SILENCE_DUR_LEN (strlen (SILENCE_DUR_STR))
+
+
 static void aaApplySpeed (song_t *song, const char *infn, const char *outfn, int speed, int gap);
 static void aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx, const char *infn, const char *songfn);
 static void aaSetDuration (musicdb_t *musicdb, song_t *song, const char *ffn);
@@ -175,23 +183,6 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
   /* the adjust flags must be reset, as the user may have selected */
   /* different settings */
   songSetNum (song, TAG_ADJUSTFLAGS, SONG_ADJUST_NONE);
-
-  /* trim silence is done first */
-  if ((aaflags & SONG_ADJUST_TRIM) == SONG_ADJUST_TRIM) {
-    aaTrimSilence (musicdb, dbidx, infn, outfn);
-    if (fileopFileExists (outfn)) {
-      long    adjflags;
-
-      filemanipMove (outfn, fullfn);
-      infn = fullfn;
-      adjflags = songGetNum (song, TAG_ADJUSTFLAGS);
-      adjflags |= SONG_ADJUST_TRIM;
-      songSetNum (song, TAG_ADJUSTFLAGS, adjflags);
-      changed = true;
-    } else {
-      fileopDelete (outfn);
-    }
-  }
 
   /* any adjustments to the song are made */
   if ((aaflags & SONG_ADJUST_ADJUST) == SONG_ADJUST_ADJUST) {
@@ -311,7 +302,7 @@ aaAdjust (musicdb_t *musicdb, song_t *song,
 
   if (songstart > 0) {
     /* seek start before input file is accurate and fast */
-    snprintf (sstmp, sizeof (sstmp), "%d" PRId32 "ms", songstart);
+    snprintf (sstmp, sizeof (sstmp), "%" PRId32 "ms", songstart);
     targv [targc++] = "-ss";
     targv [targc++] = sstmp;
   }
@@ -391,25 +382,30 @@ aaAdjust (musicdb_t *musicdb, song_t *song,
   return;
 }
 
-static void
-aaTrimSilence (musicdb_t *musicdb, dbidx_t dbidx,
-    const char *infn, const char *outfn)
+int
+aaSilenceDetect (const char *infn, double *sstart, double *send)
 {
   aa_t        *aa;
   const char  *targv [40];
   int         targc = 0;
   char        ffargs [300];
-  int         rc;
+  int         rc = 1;
   mstime_t    etm;
-  song_t      *song = NULL;
   char        *resp;
+  char        *p = NULL;
+  char        *lp = NULL;
+  bool        beg = false;
+  double      startloc = 0.0;
 
-  song = dbGetByIdx (musicdb, dbidx);
-  if (song == NULL) {
-    return;
+
+  if (infn == NULL) {
+    return -1;
   }
 
+  *sstart = 0.0;
+  *send = 0.0;
   mstimestart (&etm);
+
   aa = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
 
   targv [targc++] = sysvarsGetStr (SV_PATH_FFMPEG);
@@ -423,33 +419,79 @@ aaTrimSilence (musicdb_t *musicdb, dbidx_t dbidx,
   targv [targc++] = infn;
 
   snprintf (ffargs, sizeof (ffargs),
-      "silenceremove=start_periods=%d:start_silence=%.2f:start_threshold=%ddB:detection=peak,aformat=dblp,areverse,silenceremove=start_periods=%d:start_silence=%.2f:start_threshold=%ddB:detection=peak,aformat=dblp,areverse",
-      (int) nlistGetNum (aa->values, AA_TRIMSILENCE_PERIOD),
-      nlistGetDouble (aa->values, AA_TRIMSILENCE_START),
-      (int) nlistGetNum (aa->values, AA_TRIMSILENCE_THRESHOLD),
-      (int) nlistGetNum (aa->values, AA_TRIMSILENCE_PERIOD),
-      nlistGetDouble (aa->values, AA_TRIMSILENCE_START),
-      (int) nlistGetNum (aa->values, AA_TRIMSILENCE_THRESHOLD));
+      "silencedetect=noise=%ddB:duration=%.2f",
+      (int) nlistGetNum (aa->values, AA_TRIMSILENCE_NOISE),
+      nlistGetDouble (aa->values, AA_TRIMSILENCE_DURATION));
   targv [targc++] = "-af";
   targv [targc++] = ffargs;
 
-  targv [targc++] = "-q:a";
-  targv [targc++] = "0";
-  targv [targc++] = outfn;
+  targv [targc++] = "-f";
+  targv [targc++] = "null";
+  targv [targc++] = "-";
   targv [targc++] = NULL;
 
   resp = mdmalloc (AA_RESP_BUFF_SZ);
-  rc = aaProcess ("aa-trim", targv, targc, resp);
-  logMsg (LOG_DBG, LOG_INFO, "aa-trim: elapsed: %ld",
-      (long) mstimeend (&etm));
+  rc = aaProcess ("aa-silence-detect", targv, targc, resp);
 
-  if (rc == 0) {
-    aaSetDuration (musicdb, song, outfn);
+  if (rc != 0) {
+    return rc;
   }
 
+  /* [silencedetect @ 0x56141ab93d00] silence_start: 0 */
+  /* [silencedetect @ 0x56141ab93d00] silence_end: 3 | silence_duration: 3 */
+  /*   there may be more lines present with silence_start/silence_end pairs */
+  /* [silencedetect @ 0x56141ab93d00] silence_start: 33.6343 */
+  /* size=N/A time=00:00:36.13 bitrate=N/A speed= 675x */
+  /* video:0kB audio:6225kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: unknown */
+  /* [silencedetect @ 0x55ed21549d00] silence_end: 36.1343 | silence_duration: 2.5 */
+
+  p = strstr (resp, SILENCE_START_STR);
+  while (p != NULL) {
+    /* there is silence, unknown location */
+
+    lp = p;
+    p += SILENCE_START_LEN;
+    p += 1;
+    startloc = atof (p);
+    if (startloc == 0.0) {
+      beg = true;
+    }
+
+    if (beg) {
+      /* silence was found at the beginning */
+
+      beg = false;
+      p = strstr (p + 1, SILENCE_DUR_STR);
+      if (p != NULL) {
+        p += SILENCE_DUR_LEN;
+        p += 1;
+        *sstart = atof (p);
+      }
+    }
+
+    if (p != NULL) {
+      p = strstr (p + 1, SILENCE_START_STR);
+    }
+  }
+
+  if (lp != NULL) {
+    /* check and see if this is a silence detect block at the end */
+    p = strstr (lp, "time=");
+    if (p != NULL) {
+      *send = startloc;
+    }
+  }
+
+  logMsg (LOG_DBG, LOG_INFO, "aa-silence-detect: elapsed: %ld",
+      (long) mstimeend (&etm));
+  logMsg (LOG_DBG, LOG_INFO, "aa-silence-detect: start: %.2f end: %.2f",
+      *sstart, *send);
+
   dataFree (resp);
-  return;
+  return rc;
 }
+
+/* internal routines */
 
 static void
 aaApplySpeed (song_t *song, const char *infn, const char *outfn,
@@ -512,6 +554,7 @@ aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx,
   int         songdbflags;
   int32_t     rrn;
   song_t      *tsong;
+  int32_t     dur;
 
   rrn = songGetNum (song, TAG_RRN);
   tagdata = audiotagParseData (infn, &rewrite);
@@ -526,8 +569,9 @@ aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx,
   songSetNum (song, TAG_SONGSTART, songGetNum (tsong, TAG_SONGSTART));
   songSetNum (song, TAG_SONGEND, songGetNum (tsong, TAG_SONGEND));
   songSetNum (song, TAG_SPEEDADJUSTMENT, songGetNum (tsong, TAG_SPEEDADJUSTMENT));
-  songSetNum (song, TAG_VOLUMEADJUSTPERC, songGetNum (tsong, TAG_VOLUMEADJUSTPERC));
   songSetNum (song, TAG_BPM, songGetNum (tsong, TAG_BPM));
+  dur = atol (slistGetStr (tagdata, tagdefs [TAG_DURATION].tag));
+  songSetNum (song, TAG_DURATION, dur);
 
   songdb = songdbAlloc (musicdb);
   songdbflags = SONGDB_NONE;
@@ -544,7 +588,7 @@ aaSetDuration (musicdb_t *musicdb, song_t *song, const char *ffn)
 {
   slist_t     *tagdata;
   int         rewrite;
-  long        dur;
+  int32_t     dur;
 
   if (! fileopFileExists (ffn)) {
     return;

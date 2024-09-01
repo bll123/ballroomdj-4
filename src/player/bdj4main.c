@@ -531,7 +531,6 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_DB_ENTRY_UPDATE: {
-fprintf (stderr, "db-load-entry %s\n", args);
           dbLoadEntry (mainData->musicdb, atol (args));
           mainSetMusicQueuesChanged (mainData);
           break;
@@ -1613,7 +1612,6 @@ mainPrepSong (maindata_t *mainData, int prepflag, int mqidx,
     } /* announcements are on */
   } /* if this is a normal song */
 
-fprintf (stderr, "prep: %d %s\n", (int) uniqueidx, sfname);
   snprintf (tbuff, sizeof (tbuff), "%s%c%" PRId64 "%c%" PRId64 "%c%d%c%.1f%c%d%c%" PRId32,
       sfname, MSG_ARGS_RS,
       (int64_t) dur, MSG_ARGS_RS,

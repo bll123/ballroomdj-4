@@ -7,11 +7,14 @@
 **4.11.7 2024-8---**
 
 * Bug Fixes:
-    * Auto Re-Organize: Fix issues handling renamed audio files.
-    * Player: Fix an issue where temporary song files were not cleaned.
+    * Auto Organize: Fix issues handling renamed audio files.
+    * Export as MP3: Fix.
+    * Player: Fix an issue where temporary audio files were not cleaned.
     * Updater: Clean up all temporary files on an update.
 * Changes:
     * Song Editor: Apply Adjustments and Restore Original will no longer be available.
+* New Features:
+    * Song Editor: Trim Silence: Detects silence and sets song start and song end.
 
 -->
 
