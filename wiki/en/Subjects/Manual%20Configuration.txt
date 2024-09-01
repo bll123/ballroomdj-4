@@ -11,7 +11,7 @@ The defaults are standard, latin and club.
 
 ###### data/bdjconfig.txt
 
- * CLOCKDISP : Clock Display
+  * CLOCKDISP : Clock Display
     The default is "local".
     * local
       standard display
@@ -22,6 +22,8 @@ The defaults are standard, latin and club.
     * time24
       hh:mm
     * off
+  * AUD_ADJ_DISP : display apply adjustments and restore original
+    The default is off.
 
 ###### data/profile00/bdjconfig.txt
 

@@ -411,10 +411,12 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiBoxPackStart (hbox, seint->wcont [UISE_W_AUDIOID_IMG]);
   uiWidgetSetMarginStart (seint->wcont [UISE_W_AUDIOID_IMG], 1);
 
-  uiwidgetp = uiCreateLabel (" ");
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, DARKACCENT_CLASS);
-  seint->wcont [UISE_W_MODIFIED] = uiwidgetp;
+  if (bdjoptGetNum (OPT_G_AUD_ADJ_DISP)) {
+    uiwidgetp = uiCreateLabel (" ");
+    uiBoxPackStart (hbox, uiwidgetp);
+    uiWidgetAddClass (uiwidgetp, DARKACCENT_CLASS);
+    seint->wcont [UISE_W_MODIFIED] = uiwidgetp;
+  }
 
   seint->callbacks [UISE_CB_COPY_TEXT] = callbackInit (
       uisongeditCopyPath, uisongedit, "songedit: copy-text");
@@ -535,10 +537,13 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
     uiImageSetFromPixbuf (seint->wcont [UISE_W_AUDIOID_IMG], seint->wcont [UISE_W_MUSICBRAINZ]);
   }
 
-  val = songGetNum (song, TAG_ADJUSTFLAGS);
-  uiLabelSetText (seint->wcont [UISE_W_MODIFIED], " ");
-  if (val != SONG_ADJUST_NONE) {
-    uiLabelSetText (seint->wcont [UISE_W_MODIFIED], "*");
+  if (seint->wcont [UISE_W_MODIFIED] != NULL) {
+    val = songGetNum (song, TAG_ADJUSTFLAGS);
+
+    uiLabelSetText (seint->wcont [UISE_W_MODIFIED], " ");
+    if (val != SONG_ADJUST_NONE) {
+      uiLabelSetText (seint->wcont [UISE_W_MODIFIED], "*");
+    }
   }
 
   for (int count = 0; count < seint->itemcount; ++count) {

@@ -52,6 +52,7 @@ static datafilekey_t bdjoptglobaldfkeys [] = {
   { "ACRCLOUD_API_HOST",    OPT_G_ACRCLOUD_API_HOST,  VALUE_STR, NULL, DF_NORM },
   { "ACRCLOUD_API_KEY",     OPT_G_ACRCLOUD_API_KEY,   VALUE_STR, NULL, DF_NORM },
   { "ACRCLOUD_API_SECRET",  OPT_G_ACRCLOUD_API_SECRET, VALUE_STR, NULL, DF_NORM },
+  { "AUD_ADJ_DISP",         OPT_G_AUD_ADJ_DISP,       VALUE_NUM, convBoolean, DF_NORM },
   { "AUTOORGANIZE",         OPT_G_AUTOORGANIZE,       VALUE_NUM, convBoolean, DF_NORM },
   { "BPM",                  OPT_G_BPM,                VALUE_NUM, bdjoptConvBPM, DF_NORM },
   { "CLOCKDISP",            OPT_G_CLOCK_DISP,         VALUE_NUM, bdjoptConvClock, DF_NORM },
@@ -352,6 +353,11 @@ bdjoptInit (void)
   /* added for macos ui */
   if (nlistGetStr (bdjopt->bdjoptList, OPT_P_MQ_BG_COL) == NULL) {
     nlistSetStr (bdjopt->bdjoptList, OPT_P_MQ_BG_COL, "#f6f5f4");
+  }
+
+  /* added 4.11.7, audio-adjust and restore-original will not be shown */
+  if (nlistGetNum (bdjopt->bdjoptList, OPT_G_AUD_ADJ_DISP) < 0) {
+    nlistSetNum (bdjopt->bdjoptList, OPT_G_AUD_ADJ_DISP, false);
   }
 }
 

@@ -1649,37 +1649,39 @@ manageSongEditMenu (manageui_t *manage)
       manage->callbacks [MANAGE_MENU_CB_SE_CANCEL_EDIT_ALL]);
   uiwcontFree (menuitem);
 
-  uiMenuAddSeparator (menu);
+  if (bdjoptGetNum (OPT_G_AUD_ADJ_DISP)) {
+    uiMenuAddSeparator (menu);
 
-  manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ] = callbackInit (
-      manageApplyAdjDialog, manage, NULL);
-  uisongeditSetApplyAdjCallback (manage->mmsongedit, manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
-  /* CONTEXT: managementui: song editor menu: apply adjustments */
-  menuitem = uiMenuCreateItem (menu, _("Apply Adjustments"),
-      manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
-  p = sysvarsGetStr (SV_PATH_FFMPEG);
-  if (p == NULL || ! *p) {
-    uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
-  }
-  uiwcontFree (menuitem);
+    manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ] = callbackInit (
+        manageApplyAdjDialog, manage, NULL);
+    uisongeditSetApplyAdjCallback (manage->mmsongedit, manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
+    /* CONTEXT: managementui: song editor menu: apply adjustments */
+    menuitem = uiMenuCreateItem (menu, _("Apply Adjustments"),
+        manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
+    p = sysvarsGetStr (SV_PATH_FFMPEG);
+    if (p == NULL || ! *p) {
+      uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
+    }
+    uiwcontFree (menuitem);
 
-  manage->callbacks [MANAGE_MENU_CB_SE_RESTORE_ORIG] = callbackInit (
-      manageRestoreOrigCallback, manage, NULL);
-  /* CONTEXT: managementui: song editor menu: restore original */
-  menuitem = uiMenuCreateItem (menu, _("Restore Original"),
-      manage->callbacks [MANAGE_MENU_CB_SE_RESTORE_ORIG]);
-  manage->wcont [MANAGE_W_MENUITEM_RESTORE_ORIG] = menuitem;
-  if (manage->enablerestoreorig) {
-    uiWidgetSetState (menuitem, UIWIDGET_ENABLE);
-  } else {
-    uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
+    manage->callbacks [MANAGE_MENU_CB_SE_RESTORE_ORIG] = callbackInit (
+        manageRestoreOrigCallback, manage, NULL);
+    /* CONTEXT: managementui: song editor menu: restore original */
+    menuitem = uiMenuCreateItem (menu, _("Restore Original"),
+        manage->callbacks [MANAGE_MENU_CB_SE_RESTORE_ORIG]);
+    manage->wcont [MANAGE_W_MENUITEM_RESTORE_ORIG] = menuitem;
+    if (manage->enablerestoreorig) {
+      uiWidgetSetState (menuitem, UIWIDGET_ENABLE);
+    } else {
+      uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
+    }
+    /* a missing audio adjust file will not stop startup */
+    tempp = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
+    if (tempp == NULL) {
+      uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
+    }
+    /* do not free this menu item here */
   }
-  /* a missing audio adjust file will not stop startup */
-  tempp = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
-  if (tempp == NULL) {
-    uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
-  }
-  /* do not free this menu item here */
 
   uiMenuSetInitialized (manage->wcont [MANAGE_W_MENU_SONGEDIT]);
   uiwcontFree (menu);

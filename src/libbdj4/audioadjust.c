@@ -508,28 +508,34 @@ aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx,
 {
   slist_t     *tagdata;
   int         rewrite;
-  size_t      tval;
-  dbidx_t     rrn;
   songdb_t    *songdb;
   int         songdbflags;
+  int32_t     rrn;
+  song_t      *tsong;
 
   rrn = songGetNum (song, TAG_RRN);
-  tval = songGetNum (song, TAG_DBADDDATE);
   tagdata = audiotagParseData (infn, &rewrite);
   slistSetStr (tagdata, tagdefs [TAG_ADJUSTFLAGS].tag, NULL);
+  tsong = songAlloc ();
+  songFromTagList (tsong, tagdata);
 
-  /* the data in the database must be replaced with the original data */
-  songFromTagList (song, tagdata);
-  songSetStr (song, TAG_URI, songfn);
-  /* reset the values that are only in the database back to the original */
-  songSetNum (song, TAG_DBADDDATE, tval);
-  songSetNum (song, TAG_RRN, rrn);
+  /* keep the current tags */
+  /* only restore song-start, song-end, speed-adjustment, volume-adjustment */
+  /* also bpm, as it changes due to speed */
+  songSetStr (song, TAG_ADJUSTFLAGS, NULL);
+  songSetNum (song, TAG_SONGSTART, songGetNum (tsong, TAG_SONGSTART));
+  songSetNum (song, TAG_SONGEND, songGetNum (tsong, TAG_SONGEND));
+  songSetNum (song, TAG_SPEEDADJUSTMENT, songGetNum (tsong, TAG_SPEEDADJUSTMENT));
+  songSetNum (song, TAG_VOLUMEADJUSTPERC, songGetNum (tsong, TAG_VOLUMEADJUSTPERC));
+  songSetNum (song, TAG_BPM, songGetNum (tsong, TAG_BPM));
+
   songdb = songdbAlloc (musicdb);
   songdbflags = SONGDB_NONE;
   songdbWriteDBSong (songdb, song, &songdbflags, rrn);
   songdbFree (songdb);
 
   slistFree (tagdata);
+  songFree (tsong);
 }
 
 
