@@ -619,6 +619,11 @@ main (int argc, char *argv [])
     updaterCopyProfileIfNotPresent ("ds-currsong", BDJ4_CONFIG_EXT, UPD_NO_FORCE);
   }
 
+  {
+    /* 4.11.7 2023-9-5 (version number bump) audioadjust.txt */
+    updaterCopyVersionCheck (AUDIOADJ_FN, BDJ4_CONFIG_EXT, 5);
+  }
+
   /* now re-load the data files */
 
   bdjvarsdfloadCleanup ();
