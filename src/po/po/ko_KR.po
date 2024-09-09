@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-07-28\n"
-"PO-Revision-Date: 2024-08-27\n"
+"PO-Revision-Date: 2024-09-09\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Korean\n"
 "Language: ko\n"
@@ -70,7 +70,7 @@ msgstr "%s 설치 관리자"
 msgid "%s Location"
 msgstr "%s 위치"
 
-#. CONTEXT: managementui: management user interface window title
+#. CONTEXT: manage-ui: management user interface window title
 #, c-format
 msgid "%s Management"
 msgstr "%s 관리"
@@ -219,9 +219,9 @@ msgstr "액션"
 msgid "Action failed"
 msgstr "작업 실패"
 
-#. CONTEXT: managementui: menu selection: actions for song editor
-#. CONTEXT: managementui: menu selection: actions for music manager
-#. CONTEXT: managementui: menu selection: actions for song list
+#. CONTEXT: manage-ui: menu selection: actions for song editor
+#. CONTEXT: manage-ui: menu selection: actions for music manager
+#. CONTEXT: manage-ui: menu selection: actions for song list
 #. CONTEXT: playerui: menu selection: actions for the player
 #. CONTEXT: starterui: action menu for the starter user interface
 msgid "Actions"
@@ -305,11 +305,11 @@ msgstr "신청하기"
 
 #. CONTEXT: apply adjustment dialog: title for the dialog
 #. CONTEXT: apply adjustment dialog: apply adjustments
-#. CONTEXT: managementui: song editor menu: apply adjustments
+#. CONTEXT: manage-ui: song editor menu: apply adjustments
 msgid "Apply Adjustments"
 msgstr "조정 적용"
 
-#. CONTEXT: managementui: song editor menu: apply edit all
+#. CONTEXT: manage-ui: song editor menu: apply edit all
 msgid "Apply Edit All"
 msgstr "모두 편집 적용"
 
@@ -346,7 +346,7 @@ msgid "Audio Files"
 msgstr "오디오 파일"
 
 #. CONTEXT: configuration: display settings for: Audio Identification
-#. CONTEXT: managementui: name of audio identification notebook tab
+#. CONTEXT: manage-ui: name of audio identification notebook tab
 msgid "Audio ID"
 msgstr "오디오 ID"
 
@@ -397,7 +397,7 @@ msgstr "볼룸 음악 플레이어"
 msgid "Beats"
 msgstr "Beats"
 
-#. CONTEXT: managementui: song editor menu: cancel edit all
+#. CONTEXT: manage-ui: song editor menu: cancel edit all
 msgid "Cancel Edit All"
 msgstr "모두 편집 취소"
 
@@ -434,7 +434,7 @@ msgstr "클리어 & 플레이"
 msgid "Clear Queue"
 msgstr "대기열 지우기"
 
-#. CONTEXT: managementui: menu selection: music manager: clear same-song mark
+#. CONTEXT: manage-ui: menu selection: music manager: clear same-song mark
 msgid "Clear Same Song Mark"
 msgstr "동일한 노래 마크 지우기"
 
@@ -511,7 +511,7 @@ msgstr "변환 %s"
 
 #. CONTEXT: copy tags dialog: title for the dialog
 #. CONTEXT: copy tags dialog: copy audio tags button
-#. CONTEXT: managementui: song editor menu: copy audio tags
+#. CONTEXT: manage-ui: song editor menu: copy audio tags
 msgid "Copy Audio Tags"
 msgstr "오디오 태그 복사"
 
@@ -524,7 +524,7 @@ msgstr "복사본이 이미 존재합니다."
 msgid "Copy finished."
 msgstr "복사가 완료되었습니다."
 
-#. CONTEXT: managementui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#. CONTEXT: manage-ui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #. CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #. CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #, c-format
@@ -548,7 +548,7 @@ msgstr "Count"
 msgid "Create"
 msgstr "만들기"
 
-#. CONTEXT: managementui: menu selection: song list: edit menu: create copy
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: create copy
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: create copy
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: create copy
 msgid "Create Copy"
@@ -562,7 +562,7 @@ msgstr "프로필 만들기"
 msgid "Create Shortcut for Profile"
 msgstr "프로필 바로 가기 만들기"
 
-#. CONTEXT: managementui: menu selection: song list: actions menu: create a song list from a playlist
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: create a song list from a playlist
 #. CONTEXT: create from playlist: title for the dialog
 msgid "Create from Playlist"
 msgstr "재생목록에서 만들기"
@@ -628,7 +628,7 @@ msgid "Default Volume"
 msgstr "기본 볼륨"
 
 #. CONTEXT: configuration: table edit: button: delete selection
-#. CONTEXT: managementui: menu selection: song list: edit menu: delete song list
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: delete song list
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: delete sequence
 msgid "Delete"
@@ -687,14 +687,14 @@ msgstr "쉬운"
 
 #. CONTEXT: music queue: edit the selected song
 #. CONTEXT: song-selection: edit the selected song
-#. CONTEXT: managementui: menu selection: song list: edit menu
+#. CONTEXT: manage-ui: menu selection: song list: edit menu
 #. CONTEXT: playlist management: menu selection: playlist: edit menu
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu
 msgid "Edit"
 msgstr "편집"
 
 #. CONTEXT: song editor: display indicator that the song editor is in edit all mode
-#. CONTEXT: managementui: song editor menu: edit all
+#. CONTEXT: manage-ui: song editor menu: edit all
 msgid "Edit All"
 msgstr "모두 편집"
 
@@ -714,11 +714,11 @@ msgstr "레벨 편집"
 msgid "Edit Ratings"
 msgstr "평점 편집"
 
-#. CONTEXT: managementui: notebook tab title: edit sequences
+#. CONTEXT: manage-ui: notebook tab title: edit sequences
 msgid "Edit Sequences"
 msgstr "시퀀스 편집"
 
-#. CONTEXT: managementui: notebook tab title: edit song lists
+#. CONTEXT: manage-ui: notebook tab title: edit song lists
 msgid "Edit Song Lists"
 msgstr "노래 목록 편집"
 
@@ -771,14 +771,14 @@ msgstr "%s 을 종료하고 다시 시작합니다."
 
 #. CONTEXT: export/import bdj4 dialog: export button
 #. CONTEXT: export playlist dialog: export button
-#. CONTEXT: managementui: menu selection: export actions for song list
+#. CONTEXT: manage-ui: menu selection: export actions for song list
 #. CONTEXT: playerui: menu selection: export
 msgid "Export"
 msgstr "내보내기"
 
 #. CONTEXT: export playlist: title of dialog
 #. CONTEXT: managementui: export playlist: title of save dialog
-#. CONTEXT: managementui: menu selection: song list: export
+#. CONTEXT: manage-ui: menu selection: song list: export
 msgid "Export Playlist"
 msgstr "재생목록 내보내기"
 
@@ -793,7 +793,7 @@ msgid "Export as %s"
 msgstr "%s으로 내보내기"
 
 #. CONTEXT: export for ballroomdj: title of dialog
-#. CONTEXT: managementui: menu selection: song list: export: export for ballroomdj
+#. CONTEXT: manage-ui: menu selection: song list: export: export for ballroomdj
 #, c-format
 msgid "Export for %s"
 msgstr "%s으로 내보내기"
@@ -918,12 +918,12 @@ msgstr "BallroomDJ 3가 설치되어 있지 않은 경우 입력란을 비워둡
 
 #. CONTEXT: export/import bdj4 dialog: import button
 #. CONTEXT: import from itunes: import the selected itunes playlist
-#. CONTEXT: managementui: menu selection: import actions for song list
+#. CONTEXT: manage-ui: menu selection: import actions for song list
 msgid "Import"
 msgstr "가져오기"
 
-#. CONTEXT: managementui: menu selection: song list: import
-#. CONTEXT: managementui: song list import: title of dialog
+#. CONTEXT: manage-ui: menu selection: song list: import
+#. CONTEXT: manage-ui: song list import: title of dialog
 msgid "Import Playlist"
 msgstr "재생 목록 가져오기"
 
@@ -933,8 +933,8 @@ msgstr "다음에서 가져오기"
 
 #. CONTEXT: import from ballroomdj: title of dialog
 #. CONTEXT: import from itunes: title for the dialog
-#. CONTEXT: managementui: menu selection: song list: import: import from ballroomdj
-#. CONTEXT: managementui: menu selection: song list: import: import from itunes
+#. CONTEXT: manage-ui: menu selection: song list: import: import from ballroomdj
+#. CONTEXT: manage-ui: menu selection: song list: import: import from itunes
 #, c-format
 msgid "Import from %s"
 msgstr "%s에서 가져오기"
@@ -1022,7 +1022,7 @@ msgstr "레벨"
 msgid "Listing Font"
 msgstr "목록 글꼴"
 
-#. CONTEXT: managementui: menu selection: song list: edit menu: load
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: load
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: load
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: load
 msgid "Load"
@@ -1063,7 +1063,7 @@ msgstr "MPM"
 msgid "Manage"
 msgstr "관리"
 
-#. CONTEXT: managementui: menu selection: music manager: set same-song mark
+#. CONTEXT: manage-ui: menu selection: music manager: set same-song mark
 msgid "Mark as Same Song"
 msgstr "같은 곡으로 표시"
 
@@ -1110,7 +1110,7 @@ msgstr "메시지"
 msgid "Minimised"
 msgstr "최소화"
 
-#. CONTEXT: managementui: menu selection: song list: actions menu: rearrange the songs and create a new mix
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: rearrange the songs and create a new mix
 msgid "Mix"
 msgstr "믹스"
 
@@ -1146,8 +1146,8 @@ msgid "Music Folder"
 msgstr "음악 폴더"
 
 #. CONTEXT: configuration: display settings for: music manager
-#. CONTEXT: managementui: name of music manager notebook tab
-#. CONTEXT: managementui: name of song selection notebook tab
+#. CONTEXT: manage-ui: name of music manager notebook tab
+#. CONTEXT: manage-ui: name of song selection notebook tab
 msgid "Music Manager"
 msgstr "음악 관리자"
 
@@ -1216,7 +1216,7 @@ msgstr "새로운 등급"
 msgid "New Sequence"
 msgstr "새 시퀀스"
 
-#. CONTEXT: managementui: song list: default name for a new song list
+#. CONTEXT: manage-ui: song list: default name for a new song list
 msgid "New Song List"
 msgstr "신곡 목록"
 
@@ -1276,7 +1276,7 @@ msgstr "참고"
 msgid "Off"
 msgstr "꺼짐"
 
-#. CONTEXT: managementui: menu selection: song list: options menu
+#. CONTEXT: manage-ui: menu selection: song list: options menu
 #. CONTEXT: playerui: menu selection: options for the player
 msgid "Options"
 msgstr "옵션"
@@ -1361,7 +1361,7 @@ msgstr "플레이어"
 msgid "Playlist"
 msgstr "재생 목록"
 
-#. CONTEXT: managementui: notebook tab title: playlist management
+#. CONTEXT: manage-ui: notebook tab title: playlist management
 msgid "Playlist Management"
 msgstr "재생 목록 관리"
 
@@ -1370,7 +1370,7 @@ msgid "Playlist Type"
 msgstr "재생 목록 유형"
 
 #. CONTEXT: managementui: export playlist: name of file export type
-#. CONTEXT: managementui: song list import: name of file import type
+#. CONTEXT: manage-ui: song list import: name of file import type
 msgid "Playlists"
 msgstr "재생 목록"
 
@@ -1554,7 +1554,7 @@ msgstr "다시 로드"
 msgid "Remove"
 msgstr "제거"
 
-#. CONTEXT: managementui: menu selection: music manager: remove song
+#. CONTEXT: manage-ui: menu selection: music manager: remove song
 msgid "Remove Song"
 msgstr "노래 제거"
 
@@ -1591,7 +1591,7 @@ msgid "Reset"
 msgstr "초기화"
 
 #. CONTEXT: apply adjustment dialog: restore original file
-#. CONTEXT: managementui: song editor menu: restore original
+#. CONTEXT: manage-ui: song editor menu: restore original
 msgid "Restore Original"
 msgstr "원본 복원"
 
@@ -1653,7 +1653,7 @@ msgstr "초"
 #. CONTEXT: select file dialog: select file
 #. CONTEXT: side-by-side list: button: add the selected field
 #. CONTEXT: select file: selects the file
-#. CONTEXT: managementui: config: button: add the selected songs to the song list
+#. CONTEXT: manage-ui: config: button: add the selected songs to the song list
 msgid "Select"
 msgstr "선택"
 
@@ -1786,7 +1786,7 @@ msgstr "나란히 배치된 노래 목록"
 msgid "Side-by-Side Song Selection"
 msgstr "나란히 노래 선택"
 
-#. CONTEXT: managementui: menu checkbox: side-by-side view (suggestion: combined view)
+#. CONTEXT: manage-ui: menu checkbox: side-by-side view (suggestion: combined view)
 msgid "Side-by-Side View"
 msgstr "나란히 보기"
 
@@ -1794,7 +1794,7 @@ msgstr "나란히 보기"
 msgid "Skipping conversion."
 msgstr "변환 건너뛰기."
 
-#. CONTEXT: managementui: name of song editor notebook tab
+#. CONTEXT: manage-ui: name of song editor notebook tab
 msgid "Song Editor"
 msgstr "노래 편집기"
 
@@ -1812,14 +1812,14 @@ msgstr "노래 끝"
 #. CONTEXT: music queue: song list name
 #. CONTEXT: select file: file type for the file selection dialog (song list)
 #. CONTEXT: export/import bdj4: playlist: select the song list
-#. CONTEXT: managementui: name of side-by-side view tab
-#. CONTEXT: managementui: name of song list notebook tab
+#. CONTEXT: manage-ui: name of side-by-side view tab
+#. CONTEXT: manage-ui: name of song list notebook tab
 #. CONTEXT: playlist management: type of playlist
 msgid "Song List"
 msgstr "노래 목록"
 
 #. CONTEXT: configuration: display settings for: song selection
-#. CONTEXT: managementui: name of song selection notebook tab
+#. CONTEXT: manage-ui: name of song selection notebook tab
 msgid "Song Selection"
 msgstr "노래 선택"
 
@@ -1858,7 +1858,7 @@ msgstr "시작"
 msgid "Start New Sequence"
 msgstr "새 시퀀스 시작"
 
-#. CONTEXT: managementui: menu selection: song list: edit menu: start new song list
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: start new song list
 msgid "Start New Song List"
 msgstr "새 노래 목록 시작"
 
@@ -1870,7 +1870,7 @@ msgstr "전환 프로세스 시작."
 msgid "Startup Script"
 msgstr "시작 스크립트"
 
-#. CONTEXT: managementui: name of statistics tab
+#. CONTEXT: manage-ui: name of statistics tab
 msgid "Statistics"
 msgstr "통계"
 
@@ -1918,7 +1918,7 @@ msgstr "지원 메시지"
 msgid "Support options"
 msgstr "지원 옵션"
 
-#. CONTEXT: managementui: menu selection: song list: actions menu: swap two songs
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: swap two songs
 msgid "Swap"
 msgstr "스왑"
 
@@ -2016,10 +2016,11 @@ msgid "Track"
 msgstr "트랙"
 
 #. CONTEXT: apply adjustments: trim silence checkbox
+#. CONTEXT: manage-ui: song editor menu: trim silence
 msgid "Trim Silence"
 msgstr "트림 침묵"
 
-#. CONTEXT: managementui: menu selection: song list: actions menu: truncate the song list
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: truncate the song list
 msgid "Truncate"
 msgstr "잘라내기"
 
@@ -2042,7 +2043,7 @@ msgstr "%s을 찾을 수 없습니다."
 msgid "Unable to locate BDJ3 database."
 msgstr "BDJ3 데이터베이스를 찾을 수 없습니다."
 
-#. CONTEXT: managementui: menu selection: music manager: undo song removal
+#. CONTEXT: manage-ui: menu selection: music manager: undo song removal
 msgid "Undo Song Removal"
 msgstr "노래 제거 실행 취소"
 
@@ -2050,7 +2051,7 @@ msgstr "노래 제거 실행 취소"
 msgid "Unrated"
 msgstr "평가 없음"
 
-#. CONTEXT: managementui: notebook tab title: update database
+#. CONTEXT: manage-ui: notebook tab title: update database
 msgid "Update Database"
 msgstr "데이터베이스 업데이트"
 

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-07-28\n"
-"PO-Revision-Date: 2024-08-27\n"
+"PO-Revision-Date: 2024-09-09\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Afrikaans\n"
 "Language: af\n"
@@ -70,7 +70,7 @@ msgstr "%s Installeerder"
 msgid "%s Location"
 msgstr "%s Ligging"
 
-#. CONTEXT: managementui: management user interface window title
+#. CONTEXT: manage-ui: management user interface window title
 #, c-format
 msgid "%s Management"
 msgstr "%s Bestuur"
@@ -219,9 +219,9 @@ msgstr "Aksie"
 msgid "Action failed"
 msgstr "Handeling het misluk"
 
-#. CONTEXT: managementui: menu selection: actions for song editor
-#. CONTEXT: managementui: menu selection: actions for music manager
-#. CONTEXT: managementui: menu selection: actions for song list
+#. CONTEXT: manage-ui: menu selection: actions for song editor
+#. CONTEXT: manage-ui: menu selection: actions for music manager
+#. CONTEXT: manage-ui: menu selection: actions for song list
 #. CONTEXT: playerui: menu selection: actions for the player
 #. CONTEXT: starterui: action menu for the starter user interface
 msgid "Actions"
@@ -305,11 +305,11 @@ msgstr "Doen aansoek"
 
 #. CONTEXT: apply adjustment dialog: title for the dialog
 #. CONTEXT: apply adjustment dialog: apply adjustments
-#. CONTEXT: managementui: song editor menu: apply adjustments
+#. CONTEXT: manage-ui: song editor menu: apply adjustments
 msgid "Apply Adjustments"
 msgstr "Pas aanpassings toe"
 
-#. CONTEXT: managementui: song editor menu: apply edit all
+#. CONTEXT: manage-ui: song editor menu: apply edit all
 msgid "Apply Edit All"
 msgstr "Pas Redigeer alles toe"
 
@@ -346,7 +346,7 @@ msgid "Audio Files"
 msgstr "Oudiolêers"
 
 #. CONTEXT: configuration: display settings for: Audio Identification
-#. CONTEXT: managementui: name of audio identification notebook tab
+#. CONTEXT: manage-ui: name of audio identification notebook tab
 msgid "Audio ID"
 msgstr "Oudio-ID"
 
@@ -397,7 +397,7 @@ msgstr "Ballroom Musiekspeler"
 msgid "Beats"
 msgstr "Beats"
 
-#. CONTEXT: managementui: song editor menu: cancel edit all
+#. CONTEXT: manage-ui: song editor menu: cancel edit all
 msgid "Cancel Edit All"
 msgstr "Kanselleer Wysig alles"
 
@@ -434,7 +434,7 @@ msgstr "Maak skoon en speel"
 msgid "Clear Queue"
 msgstr "Maak tou skoon"
 
-#. CONTEXT: managementui: menu selection: music manager: clear same-song mark
+#. CONTEXT: manage-ui: menu selection: music manager: clear same-song mark
 msgid "Clear Same Song Mark"
 msgstr "Duidelik dieselfde liedjie merk"
 
@@ -511,7 +511,7 @@ msgstr "Skakel %som"
 
 #. CONTEXT: copy tags dialog: title for the dialog
 #. CONTEXT: copy tags dialog: copy audio tags button
-#. CONTEXT: managementui: song editor menu: copy audio tags
+#. CONTEXT: manage-ui: song editor menu: copy audio tags
 msgid "Copy Audio Tags"
 msgstr "Kopieer oudio-etikette"
 
@@ -524,7 +524,7 @@ msgstr "Afskrif bestaan reeds."
 msgid "Copy finished."
 msgstr "Kopie voltooi."
 
-#. CONTEXT: managementui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#. CONTEXT: manage-ui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #. CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #. CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #, c-format
@@ -548,7 +548,7 @@ msgstr "Tel"
 msgid "Create"
 msgstr "Skep"
 
-#. CONTEXT: managementui: menu selection: song list: edit menu: create copy
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: create copy
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: create copy
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: create copy
 msgid "Create Copy"
@@ -562,7 +562,7 @@ msgstr "Skep profiel"
 msgid "Create Shortcut for Profile"
 msgstr "Skep kortpad vir profiel"
 
-#. CONTEXT: managementui: menu selection: song list: actions menu: create a song list from a playlist
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: create a song list from a playlist
 #. CONTEXT: create from playlist: title for the dialog
 msgid "Create from Playlist"
 msgstr "Skep vanaf snitlys"
@@ -628,7 +628,7 @@ msgid "Default Volume"
 msgstr "Verstek volume"
 
 #. CONTEXT: configuration: table edit: button: delete selection
-#. CONTEXT: managementui: menu selection: song list: edit menu: delete song list
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: delete song list
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: delete sequence
 msgid "Delete"
@@ -687,14 +687,14 @@ msgstr "Maklik"
 
 #. CONTEXT: music queue: edit the selected song
 #. CONTEXT: song-selection: edit the selected song
-#. CONTEXT: managementui: menu selection: song list: edit menu
+#. CONTEXT: manage-ui: menu selection: song list: edit menu
 #. CONTEXT: playlist management: menu selection: playlist: edit menu
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu
 msgid "Edit"
 msgstr "Wysig"
 
 #. CONTEXT: song editor: display indicator that the song editor is in edit all mode
-#. CONTEXT: managementui: song editor menu: edit all
+#. CONTEXT: manage-ui: song editor menu: edit all
 msgid "Edit All"
 msgstr "Wysig alles"
 
@@ -714,11 +714,11 @@ msgstr "Wysig vlakke"
 msgid "Edit Ratings"
 msgstr "Wysig graderings"
 
-#. CONTEXT: managementui: notebook tab title: edit sequences
+#. CONTEXT: manage-ui: notebook tab title: edit sequences
 msgid "Edit Sequences"
 msgstr "Wysig reekse"
 
-#. CONTEXT: managementui: notebook tab title: edit song lists
+#. CONTEXT: manage-ui: notebook tab title: edit song lists
 msgid "Edit Song Lists"
 msgstr "Wysig liedjielyste"
 
@@ -771,14 +771,14 @@ msgstr "Verlaat %s en herbegin."
 
 #. CONTEXT: export/import bdj4 dialog: export button
 #. CONTEXT: export playlist dialog: export button
-#. CONTEXT: managementui: menu selection: export actions for song list
+#. CONTEXT: manage-ui: menu selection: export actions for song list
 #. CONTEXT: playerui: menu selection: export
 msgid "Export"
 msgstr "Uitvoer"
 
 #. CONTEXT: export playlist: title of dialog
 #. CONTEXT: managementui: export playlist: title of save dialog
-#. CONTEXT: managementui: menu selection: song list: export
+#. CONTEXT: manage-ui: menu selection: song list: export
 msgid "Export Playlist"
 msgstr "Voer snitlys uit"
 
@@ -793,7 +793,7 @@ msgid "Export as %s"
 msgstr "Voer uit as %s"
 
 #. CONTEXT: export for ballroomdj: title of dialog
-#. CONTEXT: managementui: menu selection: song list: export: export for ballroomdj
+#. CONTEXT: manage-ui: menu selection: song list: export: export for ballroomdj
 #, c-format
 msgid "Export for %s"
 msgstr "Voer uit vir %s"
@@ -918,12 +918,12 @@ msgstr "As daar geen BallroomDJ 3-installasie is nie, laat die inskrywing leeg."
 
 #. CONTEXT: export/import bdj4 dialog: import button
 #. CONTEXT: import from itunes: import the selected itunes playlist
-#. CONTEXT: managementui: menu selection: import actions for song list
+#. CONTEXT: manage-ui: menu selection: import actions for song list
 msgid "Import"
 msgstr "Invoer"
 
-#. CONTEXT: managementui: menu selection: song list: import
-#. CONTEXT: managementui: song list import: title of dialog
+#. CONTEXT: manage-ui: menu selection: song list: import
+#. CONTEXT: manage-ui: song list import: title of dialog
 msgid "Import Playlist"
 msgstr "Voer snitlys in"
 
@@ -933,8 +933,8 @@ msgstr "Voer in vanaf"
 
 #. CONTEXT: import from ballroomdj: title of dialog
 #. CONTEXT: import from itunes: title for the dialog
-#. CONTEXT: managementui: menu selection: song list: import: import from ballroomdj
-#. CONTEXT: managementui: menu selection: song list: import: import from itunes
+#. CONTEXT: manage-ui: menu selection: song list: import: import from ballroomdj
+#. CONTEXT: manage-ui: menu selection: song list: import: import from itunes
 #, c-format
 msgid "Import from %s"
 msgstr "Voer in vanaf %s"
@@ -1022,7 +1022,7 @@ msgstr "Vlak"
 msgid "Listing Font"
 msgstr "Lys lettertipe"
 
-#. CONTEXT: managementui: menu selection: song list: edit menu: load
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: load
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: load
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: load
 msgid "Load"
@@ -1063,7 +1063,7 @@ msgstr "MPM"
 msgid "Manage"
 msgstr "Bestuur"
 
-#. CONTEXT: managementui: menu selection: music manager: set same-song mark
+#. CONTEXT: manage-ui: menu selection: music manager: set same-song mark
 msgid "Mark as Same Song"
 msgstr "Merk as dieselfde liedjie"
 
@@ -1110,7 +1110,7 @@ msgstr "Boodskap"
 msgid "Minimised"
 msgstr "Geminimaliseer"
 
-#. CONTEXT: managementui: menu selection: song list: actions menu: rearrange the songs and create a new mix
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: rearrange the songs and create a new mix
 msgid "Mix"
 msgstr "Meng"
 
@@ -1146,8 +1146,8 @@ msgid "Music Folder"
 msgstr "Musiek gids"
 
 #. CONTEXT: configuration: display settings for: music manager
-#. CONTEXT: managementui: name of music manager notebook tab
-#. CONTEXT: managementui: name of song selection notebook tab
+#. CONTEXT: manage-ui: name of music manager notebook tab
+#. CONTEXT: manage-ui: name of song selection notebook tab
 msgid "Music Manager"
 msgstr "Musiekbestuurder"
 
@@ -1216,7 +1216,7 @@ msgstr "Nuwe gradering"
 msgid "New Sequence"
 msgstr "Nuwe reeks"
 
-#. CONTEXT: managementui: song list: default name for a new song list
+#. CONTEXT: manage-ui: song list: default name for a new song list
 msgid "New Song List"
 msgstr "Nuwe Liedjie Lys"
 
@@ -1276,7 +1276,7 @@ msgstr "Notas"
 msgid "Off"
 msgstr "Af"
 
-#. CONTEXT: managementui: menu selection: song list: options menu
+#. CONTEXT: manage-ui: menu selection: song list: options menu
 #. CONTEXT: playerui: menu selection: options for the player
 msgid "Options"
 msgstr "Opsies"
@@ -1361,7 +1361,7 @@ msgstr "Speler"
 msgid "Playlist"
 msgstr "Snitlys"
 
-#. CONTEXT: managementui: notebook tab title: playlist management
+#. CONTEXT: manage-ui: notebook tab title: playlist management
 msgid "Playlist Management"
 msgstr "Snitlysbestuur"
 
@@ -1370,7 +1370,7 @@ msgid "Playlist Type"
 msgstr "Tipe snitlys"
 
 #. CONTEXT: managementui: export playlist: name of file export type
-#. CONTEXT: managementui: song list import: name of file import type
+#. CONTEXT: manage-ui: song list import: name of file import type
 msgid "Playlists"
 msgstr "Snitlyste"
 
@@ -1554,7 +1554,7 @@ msgstr "Herlaai"
 msgid "Remove"
 msgstr "Verwyder"
 
-#. CONTEXT: managementui: menu selection: music manager: remove song
+#. CONTEXT: manage-ui: menu selection: music manager: remove song
 msgid "Remove Song"
 msgstr "Verwyder liedjie"
 
@@ -1591,7 +1591,7 @@ msgid "Reset"
 msgstr "Stel terug"
 
 #. CONTEXT: apply adjustment dialog: restore original file
-#. CONTEXT: managementui: song editor menu: restore original
+#. CONTEXT: manage-ui: song editor menu: restore original
 msgid "Restore Original"
 msgstr "Herstel oorspronklike"
 
@@ -1653,7 +1653,7 @@ msgstr "Sekondes"
 #. CONTEXT: select file dialog: select file
 #. CONTEXT: side-by-side list: button: add the selected field
 #. CONTEXT: select file: selects the file
-#. CONTEXT: managementui: config: button: add the selected songs to the song list
+#. CONTEXT: manage-ui: config: button: add the selected songs to the song list
 msgid "Select"
 msgstr "Kies"
 
@@ -1786,7 +1786,7 @@ msgstr "Sy-aan-sy Liedjie Lys"
 msgid "Side-by-Side Song Selection"
 msgstr "Sy-aan-sy Liedjie Keuse"
 
-#. CONTEXT: managementui: menu checkbox: side-by-side view (suggestion: combined view)
+#. CONTEXT: manage-ui: menu checkbox: side-by-side view (suggestion: combined view)
 msgid "Side-by-Side View"
 msgstr "Sy-aan-sy-aansig"
 
@@ -1794,7 +1794,7 @@ msgstr "Sy-aan-sy-aansig"
 msgid "Skipping conversion."
 msgstr "Slaan omskakeling oor."
 
-#. CONTEXT: managementui: name of song editor notebook tab
+#. CONTEXT: manage-ui: name of song editor notebook tab
 msgid "Song Editor"
 msgstr "Liedredakteur"
 
@@ -1812,14 +1812,14 @@ msgstr "Liedjie Einde"
 #. CONTEXT: music queue: song list name
 #. CONTEXT: select file: file type for the file selection dialog (song list)
 #. CONTEXT: export/import bdj4: playlist: select the song list
-#. CONTEXT: managementui: name of side-by-side view tab
-#. CONTEXT: managementui: name of song list notebook tab
+#. CONTEXT: manage-ui: name of side-by-side view tab
+#. CONTEXT: manage-ui: name of song list notebook tab
 #. CONTEXT: playlist management: type of playlist
 msgid "Song List"
 msgstr "Liedjie Lys"
 
 #. CONTEXT: configuration: display settings for: song selection
-#. CONTEXT: managementui: name of song selection notebook tab
+#. CONTEXT: manage-ui: name of song selection notebook tab
 msgid "Song Selection"
 msgstr "Liedjie Keuse"
 
@@ -1858,7 +1858,7 @@ msgstr "Begin"
 msgid "Start New Sequence"
 msgstr "Begin nuwe reeks"
 
-#. CONTEXT: managementui: menu selection: song list: edit menu: start new song list
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: start new song list
 msgid "Start New Song List"
 msgstr "Begin nuwe liedjielys"
 
@@ -1870,7 +1870,7 @@ msgstr "Begin omskakelingsproses."
 msgid "Startup Script"
 msgstr "Opstartskrif"
 
-#. CONTEXT: managementui: name of statistics tab
+#. CONTEXT: manage-ui: name of statistics tab
 msgid "Statistics"
 msgstr "Statistiek"
 
@@ -1918,7 +1918,7 @@ msgstr "Ondersteuningsboodskap"
 msgid "Support options"
 msgstr "Ondersteuning opsies"
 
-#. CONTEXT: managementui: menu selection: song list: actions menu: swap two songs
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: swap two songs
 msgid "Swap"
 msgstr "Ruil"
 
@@ -2016,10 +2016,11 @@ msgid "Track"
 msgstr "Spoor"
 
 #. CONTEXT: apply adjustments: trim silence checkbox
+#. CONTEXT: manage-ui: song editor menu: trim silence
 msgid "Trim Silence"
 msgstr "Sny Stilte"
 
-#. CONTEXT: managementui: menu selection: song list: actions menu: truncate the song list
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: truncate the song list
 msgid "Truncate"
 msgstr "Knip af"
 
@@ -2042,7 +2043,7 @@ msgstr "Kan nie %sopspoor nie."
 msgid "Unable to locate BDJ3 database."
 msgstr "Kan nie BDJ3-databasis opspoor nie."
 
-#. CONTEXT: managementui: menu selection: music manager: undo song removal
+#. CONTEXT: manage-ui: menu selection: music manager: undo song removal
 msgid "Undo Song Removal"
 msgstr "Ontdoen liedjieverwydering"
 
@@ -2050,7 +2051,7 @@ msgstr "Ontdoen liedjieverwydering"
 msgid "Unrated"
 msgstr "Ongegradeer"
 
-#. CONTEXT: managementui: notebook tab title: update database
+#. CONTEXT: manage-ui: notebook tab title: update database
 msgid "Update Database"
 msgstr "Dateer databasis op"
 
