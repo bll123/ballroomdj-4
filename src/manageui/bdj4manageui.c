@@ -1494,11 +1494,8 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
             /* the music queue data is used to display the mark */
             /* indicating that the song is already in the song list */
-            if (manage->sbssonglist) {
-              uisongselProcessMusicQueueData (manage->slsbssongsel, musicqupdate);
-            } else {
-              uisongselProcessMusicQueueData (manage->slsongsel, musicqupdate);
-            }
+            uisongselProcessMusicQueueData (manage->slsbssongsel, musicqupdate);
+            uisongselProcessMusicQueueData (manage->slsongsel, musicqupdate);
           }
           if (newcount > 0) {
             manage->musicqupdated = true;
