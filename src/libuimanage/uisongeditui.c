@@ -708,6 +708,22 @@ uisongeditSetBPMValue (uisongedit_t *uisongedit, int val)
 }
 
 void
+uisongeditSetSongStartEnd (uisongedit_t *uisongedit,
+    int32_t startval, int32_t endval)
+{
+  se_internal_t *seint;
+
+  seint = uisongedit->seInternalData;
+
+  if (seint->songstartidx >= 0 && startval > 0) {
+    uiSpinboxTimeSetValue (seint->items [seint->songstartidx].uiwidgetp, startval);
+  }
+  if (seint->songendidx >= 0 && endval > 0) {
+    uiSpinboxTimeSetValue (seint->items [seint->songendidx].uiwidgetp, endval);
+  }
+}
+
+void
 uisongeditSetPlayButtonState (uisongedit_t *uisongedit, int active)
 {
   se_internal_t *seint;

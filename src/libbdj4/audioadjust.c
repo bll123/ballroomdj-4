@@ -445,6 +445,13 @@ aaSilenceDetect (const char *infn, double *sstart, double *send)
   /* video:0kB audio:6225kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: unknown */
   /* [silencedetect @ 0x55ed21549d00] silence_end: 36.1343 | silence_duration: 2.5 */
 
+  /* [silencedetect @ 0x5600a35c8000] silence_start: 0 */
+  /* [silencedetect @ 0x5600a35c8000] silence_end: 3 | silence_duration: 3 */
+  /* [silencedetect @ 0x5600a35c8000] silence_start: 16.9165 */
+  /* [silencedetect @ 0x5600a35c8000] silence_end: 18.9165 | silence_duration: 2 */
+  /* size=N/A time=00:00:35.59 bitrate=N/A speed= 658x */
+  /* video:0kB audio:6132kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: unknown */
+
   p = strstr (resp, SILENCE_START_STR);
   while (p != NULL) {
     /* there is silence, unknown location */
@@ -475,9 +482,13 @@ aaSilenceDetect (const char *infn, double *sstart, double *send)
   }
 
   if (lp != NULL) {
-    /* check and see if this is a silence detect block at the end */
+    char    *tp = NULL;
+
+    /* a silence detect block at the end of the song will have the */
+    /* time= field, then the silence_duration string in that order */
     p = strstr (lp, "time=");
-    if (p != NULL) {
+    tp = strstr (lp, SILENCE_DUR_STR);
+    if (p != NULL && tp != NULL && p < tp) {
       *send = startloc;
     }
   }

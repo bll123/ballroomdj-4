@@ -1909,6 +1909,8 @@ manageTrimSilence (void *udata)
   char          ffn [MAXPATHLEN];
   double        sstart;
   double        send;
+  int32_t       startval;
+  int32_t       endval;
   int           rc;
 
   if (manage->songeditdbidx < 0) {
@@ -1918,6 +1920,11 @@ manageTrimSilence (void *udata)
   song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
   audiosrcFullPath (songGetStr (song, TAG_URI), ffn, sizeof (ffn), NULL, 0);
   rc = aaSilenceDetect (ffn, &sstart, &send);
+  if (rc == 0) {
+    startval = (int32_t) (sstart * 1000.0);
+    endval = (int32_t) (send * 1000.0);
+    uisongeditSetSongStartEnd (manage->mmsongedit, startval, endval);
+  }
 
   return UICB_CONT;
 }
