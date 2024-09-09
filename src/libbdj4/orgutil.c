@@ -357,11 +357,11 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
   int             grpnum = ORG_FIRST_GRP;
   bool            grpok = false;
   bool            doclean = false;
+  bool            havetitle = false;
   datafileconv_t  conv;
   pathinfo_t      *pi;
   const char      *fn;
   const char      *ext;
-  size_t          nlen;
 
   fn = songGetStr (song, TAG_URI);
   pi = pathInfo (fn);
@@ -429,6 +429,9 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
           }
         } else {
           datap = songGetStr (song, orginfo->tagkey);
+        }
+        if (orginfo->orgkey == ORG_TITLE && datap != NULL && *datap) {
+          havetitle = true;
         }
         doclean = true;
       }
@@ -511,9 +514,8 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
     strlcat (newpath, gbuff, sizeof (newpath));
   }
 
-  /* if there is no filename, restore the original name */
-  nlen = strlen (newpath);
-  if (nlen == 0 || newpath [nlen - 1] == '/') {
+  /* if there is no title, restore the original name */
+  if (! havetitle) {
     snprintf (gbuff, sizeof (gbuff), "%.*s", (int) pi->blen, pi->basename);
     strlcat (newpath, gbuff, sizeof (newpath));
   }
