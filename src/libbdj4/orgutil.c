@@ -297,11 +297,12 @@ orgGetFromPath (org_t *org, const char *path, tagdefkey_t tagkey)
     if (org->rxdata != NULL) {
       regexGetFree (org->rxdata);
     }
+    logMsg (LOG_DBG, LOG_DBUPDATE, "org: path %s", path);
     strlcpy (org->cachepath, path, sizeof (org->cachepath));
     org->rxdata = regexGet (org->rx, path);
     org->rxlen = 0;
     while (org->rxdata [c] != NULL) {
-      // fprintf (stderr, "%d %s\n", c, org->rxdata [c]);
+      logMsg (LOG_DBG, LOG_DBUPDATE, "  org: idx: %d data: ~%s~", c, org->rxdata [c]);
       ++c;
     }
     org->rxlen = c;
@@ -349,7 +350,7 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
   const char      *tdata;
   const char      *datap;
   char            *retval;
-  char            tbuff [MAXPATHLEN];
+  char            newpath [MAXPATHLEN];
   char            gbuff [MAXPATHLEN];
   char            tmp [40];
   orginfo_t       *orginfo;
@@ -360,12 +361,13 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
   pathinfo_t      *pi;
   const char      *fn;
   const char      *ext;
+  size_t          nlen;
 
   fn = songGetStr (song, TAG_URI);
   pi = pathInfo (fn);
   ext = pi->extension;
 
-  *tbuff = '\0';
+  *newpath = '\0';
   *gbuff = '\0';
   slistStartIterator (org->orgparsed, &iteridx);
   while ((p = slistIterateKey (org->orgparsed, &iteridx)) != NULL) {
@@ -375,7 +377,7 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
     orginfo = slistGetData (org->orgparsed, p);
     if (orginfo->groupnum != grpnum) {
       if (grpok) {
-        strlcat (tbuff, gbuff, sizeof (tbuff));
+        strlcat (newpath, gbuff, sizeof (newpath));
       }
       *gbuff = '\0';
       grpok = false;
@@ -506,13 +508,20 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
   }
 
   if (grpok) {
-    strlcat (tbuff, gbuff, sizeof (tbuff));
+    strlcat (newpath, gbuff, sizeof (newpath));
   }
 
-  strlcat (tbuff, ext, sizeof (tbuff));
+  /* if there is no filename, restore the original name */
+  nlen = strlen (newpath);
+  if (nlen == 0 || newpath [nlen - 1] == '/') {
+    snprintf (gbuff, sizeof (gbuff), "%.*s", (int) pi->blen, pi->basename);
+    strlcat (newpath, gbuff, sizeof (newpath));
+  }
+
+  strlcat (newpath, ext, sizeof (newpath));
   pathInfoFree (pi);
 
-  retval = mdstrdup (tbuff);
+  retval = mdstrdup (newpath);
   return retval;
 }
 
