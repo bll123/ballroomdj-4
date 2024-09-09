@@ -9,6 +9,7 @@
 * Bug Fixes:
     * Auto Organize: Fix issues handling renamed audio files.
     * Export as MP3: Fix.
+    * Management: Song Selection: Fix mark display for songs in song list.
     * Player: Fix an issue where temporary audio files were not cleaned.
     * Updater: Clean up all temporary files on an update.
 * Changes:

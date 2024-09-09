@@ -1491,6 +1491,14 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
             uimusicqSetMusicQueueData (manage->slsbsmusicq, musicqupdate);
             newcount = manageLoadMusicQueue (manage, musicqupdate->mqidx);
             manageStatsProcessData (manage->slstats, musicqupdate);
+
+            /* the music queue data is used to display the mark */
+            /* indicating that the song is already in the song list */
+            if (manage->sbssonglist) {
+              uisongselProcessMusicQueueData (manage->slsbssongsel, musicqupdate);
+            } else {
+              uisongselProcessMusicQueueData (manage->slsongsel, musicqupdate);
+            }
           }
           if (newcount > 0) {
             manage->musicqupdated = true;
@@ -3278,6 +3286,7 @@ manageLoadMusicQueue (manageui_t *manage, int mqidx)
 
   uimusicqProcessMusicQueueData (manage->currmusicq, mqidx);
   newcount = uimusicqGetCount (manage->currmusicq);
+
   return newcount;
 }
 
