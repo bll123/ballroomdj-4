@@ -581,8 +581,8 @@ case $tag in
     echo "-- $(date +%T) creating install package"
     test -f $tmpcab && rm -f $tmpcab
     (
-      cd ${DEVTMP};
-      ../pkg/pkgmakecab.sh
+      cd ${DEVTMP}
+      ${cwd}/pkg/pkgmakecab.sh
     )
     if [[ ! -f $tmpcab ]]; then
       echo "ERR: no cabinet."
