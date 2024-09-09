@@ -11,6 +11,7 @@
     * Export as MP3: Fix.
     * Management: Song Selection: Fix mark display for songs in song list.
     * Player: Fix an issue where temporary audio files were not cleaned.
+    * Re-Organize: Fix issues renaming audio files with no tag information.
     * Updater: Clean up all temporary files on an update.
 * Changes:
     * Song Editor: Apply Adjustments and Restore Original will no longer be available.

@@ -96,6 +96,10 @@ __Actions&nbsp;/&nbsp;Cancel&nbsp;Edit&nbsp;All__ cancels the
 batch edit process. The changes made to the current song will be
 reverted.
 
+__Actions&nbsp;/&nbsp;Trim&nbsp;Silense__ processes the audio file and
+if there is silence at the beginning or end of the song, sets the song
+start and song end.  The changes must be saved.
+
 ##### Using the BPM Counter
 
 Before using the BPM Counter, the BPM setting should be added to the
