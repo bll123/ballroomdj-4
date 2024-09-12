@@ -512,6 +512,11 @@ main (int argc, char *argv [])
     updaterCopyVersionCheck (SORTOPT_FN, BDJ4_CONFIG_EXT, 3);
   }
 
+  {
+    /* 4.12.1 2024-9-12 new file bdjuri.txt */
+    updaterCopyIfNotPresent ("bdjuri", BDJ4_CONFIG_EXT, NULL);
+  }
+
   /* The datafiles must be loaded for the MPM update process */
 
   if (bdjvarsdfloadInit () < 0) {

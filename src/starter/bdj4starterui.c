@@ -389,7 +389,7 @@ main (int argc, char *argv[])
   starterLoadOptions (&starter);
 
   snprintf (uri, sizeof (uri), "%s%s",
-      sysvarsGetStr (SV_HOST_DOWNLOAD), sysvarsGetStr (SV_URI_DOWNLOAD));
+      bdjoptGetStr (OPT_HOST_DOWNLOAD), bdjoptGetStr (OPT_URI_DOWNLOAD));
   starter.linkinfo [START_LINK_CB_DOWNLOAD].uri = mdstrdup (uri);
   if (isMacOS ()) {
     starter.linkinfo [START_LINK_CB_DOWNLOAD].macoscb = callbackInit (
@@ -397,7 +397,7 @@ main (int argc, char *argv[])
   }
 
   snprintf (uri, sizeof (uri), "%s%s",
-      sysvarsGetStr (SV_HOST_WIKI), sysvarsGetStr (SV_URI_WIKI));
+      bdjoptGetStr (OPT_HOST_WIKI), bdjoptGetStr (OPT_URI_WIKI));
   starter.linkinfo [START_LINK_CB_WIKI].uri = mdstrdup (uri);
   if (isMacOS ()) {
     starter.linkinfo [START_LINK_CB_WIKI].macoscb = callbackInit (
@@ -405,7 +405,7 @@ main (int argc, char *argv[])
   }
 
   snprintf (uri, sizeof (uri), "%s%s",
-      sysvarsGetStr (SV_HOST_FORUM), sysvarsGetStr (SV_URI_FORUM));
+      bdjoptGetStr (OPT_HOST_FORUM), bdjoptGetStr (OPT_URI_FORUM));
   starter.linkinfo [START_LINK_CB_FORUM].uri = mdstrdup (uri);
   if (isMacOS ()) {
     starter.linkinfo [START_LINK_CB_FORUM].macoscb = callbackInit (
@@ -413,7 +413,7 @@ main (int argc, char *argv[])
   }
 
   snprintf (uri, sizeof (uri), "%s%s",
-      sysvarsGetStr (SV_HOST_TICKET), sysvarsGetStr (SV_URI_TICKET));
+      bdjoptGetStr (OPT_HOST_TICKET), bdjoptGetStr (OPT_URI_TICKET));
   starter.linkinfo [START_LINK_CB_TICKETS].uri = mdstrdup (uri);
   if (isMacOS ()) {
     starter.linkinfo [START_LINK_CB_TICKETS].macoscb = callbackInit (
@@ -1480,7 +1480,7 @@ starterProcessSupport (void *udata)
       }
 
       snprintf (uri, sizeof (uri), "%s%s/v%s/bdj4-installer-%s%s%s-%s%s",
-          sysvarsGetStr (SV_HOST_DOWNLOAD), sysvarsGetStr (SV_URI_DOWNLOAD),
+          bdjoptGetStr (OPT_HOST_DOWNLOAD), bdjoptGetStr (OPT_URI_DOWNLOAD),
           starter->latestversion, sysvarsGetStr (SV_OS_PLATFORM),
           sysvarsGetStr (SV_OS_DIST_TAG), sysvarsGetStr (SV_OS_ARCH_TAG),
           starter->latestversion, sysvarsGetStr (SV_OS_EXEC_EXT));

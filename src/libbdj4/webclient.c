@@ -17,6 +17,7 @@
 
 #include "bdj4.h"
 #include "bdj4intl.h"
+#include "bdjopt.h"
 #include "log.h"
 #include "mdebug.h"
 #include "filedata.h"
@@ -480,7 +481,7 @@ webclientSetUserAgent (CURL *curl)
 
   snprintf (tbuff, sizeof (tbuff),
       "BDJ4/%s ( %s/ )", sysvarsGetStr (SV_BDJ4_VERSION),
-      sysvarsGetStr (SV_HOST_WEB));
+      bdjoptGetStr (OPT_URI_HOMEPAGE));
   curl_easy_setopt (curl, CURLOPT_USERAGENT, tbuff);
 }
 

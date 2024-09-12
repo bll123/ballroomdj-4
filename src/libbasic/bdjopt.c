@@ -25,8 +25,18 @@
 #include "sysvars.h"
 #include "tmutil.h"
 
-static int  bdjoptQueueIndex (nlistidx_t idx, int musiqc);
-static void bdjoptCreateNewConfigs (void);
+typedef enum {
+  OPTTYPE_URI,
+  OPTTYPE_GLOBAL,
+  OPTTYPE_PROFILE,
+  OPTTYPE_QUEUE,
+  OPTTYPE_MACHINE,
+  OPTTYPE_MACH_PROF,
+  OPTTYPE_MAX,
+} bdjopttype_t;
+
+static const char * const BDJ_URIFN = "bdjuri";
+static const char * const BDJ_CONFIG_BASEFN = "bdjconfig";
 
 typedef struct {
   int           currprofile;
@@ -39,10 +49,6 @@ typedef struct {
   int           distvers [OPTTYPE_MAX];
   nlist_t       *bdjoptList;
 } bdjopt_t;
-
-enum {
-  BDJOPT_G_VERSION = 2,
-};
 
 static bdjopt_t   *bdjopt = NULL;
 static bool       vlccheckdone = false;
@@ -143,6 +149,28 @@ static datafilekey_t bdjoptmachprofdfkeys [] = {
   { "UI_THEME",             OPT_MP_UI_THEME,              VALUE_STR, NULL, DF_NORM },
 };
 
+static datafilekey_t bdjopturidfkeys [] = {
+  { "DOWNLOAD_HOST",        OPT_HOST_DOWNLOAD,            VALUE_STR, NULL, DF_NORM },
+  { "DOWNLOAD_URI",         OPT_URI_DOWNLOAD,             VALUE_STR, NULL, DF_NORM },
+  { "FORUM_HOST",           OPT_HOST_FORUM,               VALUE_STR, NULL, DF_NORM },
+  { "FORUM_URI",            OPT_URI_FORUM,                VALUE_STR, NULL, DF_NORM },
+  { "HOMEPAGE_URI",         OPT_URI_HOMEPAGE,             VALUE_STR, NULL, DF_NORM },
+  { "MOBMQ_HOST",           OPT_HOST_MOBMQ,               VALUE_STR, NULL, DF_NORM },
+  { "MOBMQ_HTML_URI",       OPT_URI_MOBMQ_HTML,           VALUE_STR, NULL, DF_NORM },
+  { "MOBMQ_PHP_URI",        OPT_URI_MOBMQ_PHP,            VALUE_STR, NULL, DF_NORM },
+  { "SUPPORT_HOST",         OPT_HOST_SUPPORT,             VALUE_STR, NULL, DF_NORM },
+  { "SUPPORT_URI",          OPT_URI_SUPPORT,              VALUE_STR, NULL, DF_NORM },
+  { "TICKET_HOST",          OPT_HOST_TICKET,              VALUE_STR, NULL, DF_NORM },
+  { "TICKET_URI",           OPT_URI_TICKET,               VALUE_STR, NULL, DF_NORM },
+  { "VERSION_HOST",         OPT_HOST_VERSION,             VALUE_STR, NULL, DF_NORM },
+  { "VERSION_URI",          OPT_URI_VERSION,              VALUE_STR, NULL, DF_NORM },
+  { "WIKI_HOST",            OPT_HOST_WIKI,                VALUE_STR, NULL, DF_NORM },
+  { "WIKI_URI",             OPT_URI_WIKI,                 VALUE_STR, NULL, DF_NORM },
+};
+
+static int  bdjoptQueueIndex (nlistidx_t idx, int musiqc);
+static void bdjoptCreateNewConfigs (void);
+
 void
 bdjoptInit (void)
 {
@@ -167,21 +195,25 @@ bdjoptInit (void)
     bdjopt->distvers [i] = 1;
   }
 
+  bdjopt->dfkeys [OPTTYPE_URI] = bdjopturidfkeys;
   bdjopt->dfkeys [OPTTYPE_GLOBAL] = bdjoptglobaldfkeys;
   bdjopt->dfkeys [OPTTYPE_PROFILE] = bdjoptprofiledfkeys;
   bdjopt->dfkeys [OPTTYPE_QUEUE] = bdjoptqueuedfkeys;
   bdjopt->dfkeys [OPTTYPE_MACHINE] = bdjoptmachinedfkeys;
   bdjopt->dfkeys [OPTTYPE_MACH_PROF] = bdjoptmachprofdfkeys;
+  bdjopt->dfcount [OPTTYPE_URI] = sizeof (bdjopturidfkeys) / sizeof (datafilekey_t);
   bdjopt->dfcount [OPTTYPE_GLOBAL] = sizeof (bdjoptglobaldfkeys) / sizeof (datafilekey_t);
   bdjopt->dfcount [OPTTYPE_PROFILE] = sizeof (bdjoptprofiledfkeys) / sizeof (datafilekey_t);
   bdjopt->dfcount [OPTTYPE_QUEUE] = sizeof (bdjoptqueuedfkeys) / sizeof (datafilekey_t);
   bdjopt->dfcount [OPTTYPE_MACHINE] = sizeof (bdjoptmachinedfkeys) / sizeof (datafilekey_t);
   bdjopt->dfcount [OPTTYPE_MACH_PROF] = sizeof (bdjoptmachprofdfkeys) / sizeof (datafilekey_t);
+  bdjopt->tag [OPTTYPE_URI] = "bdjopt-uri";
   bdjopt->tag [OPTTYPE_GLOBAL] = "bdjopt-g";
   bdjopt->tag [OPTTYPE_PROFILE] = "bdjopt-p";
   bdjopt->tag [OPTTYPE_QUEUE] = "bdjopt-q";
   bdjopt->tag [OPTTYPE_MACHINE] = "bdjopt-m";
   bdjopt->tag [OPTTYPE_MACH_PROF] = "bdjopt-mp";
+  bdjopt->shorttag [OPTTYPE_URI] = "uri";
   bdjopt->shorttag [OPTTYPE_GLOBAL] = "g";
   bdjopt->shorttag [OPTTYPE_PROFILE] = "p";
   bdjopt->shorttag [OPTTYPE_QUEUE] = "q";
@@ -189,6 +221,11 @@ bdjoptInit (void)
   bdjopt->shorttag [OPTTYPE_MACH_PROF] = "mp";
 
   bdjopt->currprofile = sysvarsGetNum (SVL_PROFILE_IDX);
+
+  /* uri */
+  pathbldMakePath (path, sizeof (path), BDJ_URIFN,
+      BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+  bdjopt->fname [OPTTYPE_URI] = mdstrdup (path);
 
   /* global */
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
@@ -219,20 +256,20 @@ bdjoptInit (void)
     bdjoptCreateNewConfigs ();
   }
 
-  bdjopt->df [OPTTYPE_GLOBAL] = datafileAllocParse (
-      bdjopt->tag [OPTTYPE_GLOBAL], DFTYPE_KEY_VAL,
-      bdjopt->fname [OPTTYPE_GLOBAL],
-      bdjopt->dfkeys [OPTTYPE_GLOBAL], bdjopt->dfcount [OPTTYPE_GLOBAL],
+  bdjopt->df [OPTTYPE_URI] = datafileAllocParse (
+      bdjopt->tag [OPTTYPE_URI], DFTYPE_KEY_VAL,
+      bdjopt->fname [OPTTYPE_URI],
+      bdjopt->dfkeys [OPTTYPE_URI], bdjopt->dfcount [OPTTYPE_URI],
       DF_NO_OFFSET, NULL);
-  bdjopt->distvers [OPTTYPE_GLOBAL] = datafileDistVersion (bdjopt->df [OPTTYPE_GLOBAL]);
+  bdjopt->distvers [OPTTYPE_URI] = datafileDistVersion (bdjopt->df [OPTTYPE_URI]);
 
   for (int i = 0; i < OPTTYPE_MAX; ++i) {
-    if (i == OPTTYPE_GLOBAL || i == OPTTYPE_QUEUE) {
+    if (i == OPTTYPE_URI || i == OPTTYPE_QUEUE) {
       continue;
     }
     bdjopt->df [i] = datafileAllocParse (bdjopt->tag [i], DFTYPE_KEY_VAL,
         bdjopt->fname [i], bdjopt->dfkeys [i], bdjopt->dfcount [i],
-        DF_NO_OFFSET, bdjopt->df [OPTTYPE_GLOBAL]);
+        DF_NO_OFFSET, bdjopt->df [OPTTYPE_URI]);
     bdjopt->distvers [i] = datafileDistVersion (bdjopt->df [i]);
   }
 
@@ -248,11 +285,11 @@ bdjoptInit (void)
     bdjopt->df [OPTTYPE_QUEUE] = datafileAllocParse (
         bdjopt->tag [OPTTYPE_QUEUE], DFTYPE_KEY_VAL, path,
         bdjopt->dfkeys [OPTTYPE_QUEUE], bdjopt->dfcount [OPTTYPE_QUEUE],
-        offset, bdjopt->df [OPTTYPE_GLOBAL]);
+        offset, bdjopt->df [OPTTYPE_URI]);
     bdjopt->distvers [OPTTYPE_QUEUE] = datafileDistVersion (bdjopt->df [OPTTYPE_QUEUE]);
   }
 
-  bdjopt->bdjoptList = datafileGetList (bdjopt->df [OPTTYPE_GLOBAL]);
+  bdjopt->bdjoptList = datafileGetList (bdjopt->df [OPTTYPE_URI]);
   if (bdjopt->bdjoptList == NULL) {
     bdjopt->bdjoptList = nlistAlloc ("bdjopt-list", LIST_ORDERED, NULL);
   }
@@ -537,11 +574,8 @@ bdjoptSave (void)
   }
 
   for (int i = 0; i < OPTTYPE_MAX; ++i) {
-    if (i == OPTTYPE_QUEUE) {
+    if (i == OPTTYPE_URI || i == OPTTYPE_QUEUE) {
       continue;
-    }
-    if (i == OPTTYPE_GLOBAL) {
-      nlistSetVersion (bdjopt->bdjoptList, BDJOPT_G_VERSION);
     }
     datafileSave (bdjopt->df [i], NULL, bdjopt->bdjoptList,
         DF_NO_OFFSET, bdjopt->distvers [i]);
@@ -876,12 +910,15 @@ bdjoptCreateNewConfigs (void)
     return;
   }
 
+#if 0
+// ### ??? why trying to copy global?
   /* global */
   sysvarsSetNum (SVL_PROFILE_IDX, 0);
   pathbldMakePath (path, sizeof (path),
       BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   sysvarsSetNum (SVL_PROFILE_IDX, bdjopt->currprofile);
   filemanipCopy (path, bdjopt->fname [OPTTYPE_GLOBAL]);
+#endif
 
   /* profile */
   sysvarsSetNum (SVL_PROFILE_IDX, 0);
@@ -908,12 +945,15 @@ bdjoptCreateNewConfigs (void)
     filemanipCopy (fpath, tpath);
   }
 
+#if 0
+// ### ??? why trying to copy per-machine?
   /* per machine */
   sysvarsSetNum (SVL_PROFILE_IDX, 0);
   pathbldMakePath (path, sizeof (path),
       BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME);
   sysvarsSetNum (SVL_PROFILE_IDX, bdjopt->currprofile);
   filemanipCopy (path, bdjopt->fname [OPTTYPE_MACHINE]);
+#endif
 
   /* per machine per profile */
   sysvarsSetNum (SVL_PROFILE_IDX, 0);

@@ -2,7 +2,7 @@
 # 2023-10-20
 # version 3
 version
-..2
+..1
 DEFAULTVOLUME
 ..30
 COMPLETEMSG

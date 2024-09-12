@@ -467,8 +467,8 @@ instutilRegister (const char *data)
   instweb.webresponse = NULL;
   instweb.webresplen = 0;
   webclient = webclientAlloc (&instweb, instutilWebResponseCallback);
-  snprintf (uri, sizeof (uri), "%s/%s",
-      sysvarsGetStr (SV_HOST_SUPPORTMSG), sysvarsGetStr (SV_URI_REGISTER));
+  snprintf (uri, sizeof (uri), "%s%s",
+      sysvarsGetStr (SV_HOST_REGISTER), sysvarsGetStr (SV_URI_REGISTER));
 
   snprintf (tbuff, sizeof (tbuff),
       "key=%s"

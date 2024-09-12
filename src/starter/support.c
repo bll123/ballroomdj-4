@@ -11,6 +11,7 @@
 #include <inttypes.h>
 
 #include "bdj4.h"
+#include "bdjopt.h"
 #include "bdjstring.h"
 #include "fileop.h"
 #include "mdebug.h"
@@ -58,8 +59,8 @@ supportGetLatestVersion (support_t *support, char *buff, size_t sz)
     return;
   }
 
-  snprintf (uri, sizeof (uri), "%s/%s",
-      sysvarsGetStr (SV_HOST_WEB), sysvarsGetStr (SV_WEB_VERSION_FILE));
+  snprintf (uri, sizeof (uri), "%s%s",
+      bdjoptGetStr (OPT_HOST_VERSION), bdjoptGetStr (OPT_URI_VERSION));
   webclientGet (support->webclient, uri);
   if (support->webresponse != NULL) {
     strlcpy (buff, support->webresponse, sz);
@@ -104,7 +105,7 @@ supportSendFile (support_t *support, const char *ident,
   }
 
   snprintf (uri, sizeof (uri), "%s%s",
-      sysvarsGetStr (SV_HOST_SUPPORTMSG), sysvarsGetStr (SV_URI_SUPPORTMSG));
+      bdjoptGetStr (OPT_HOST_SUPPORT), bdjoptGetStr (OPT_URI_SUPPORT));
   query [qc++] = "key";
   query [qc++] = "9034545";
   query [qc++] = "ident";

@@ -18,13 +18,13 @@
 
 #include <check.h>
 
+#include "bdjopt.h"
 #include "check_bdj.h"
 #include "mdebug.h"
 #include "fileop.h"
 #include "mdebug.h"
 #include "webclient.h"
 #include "log.h"
-#include "sysvars.h"
 
 static void checkWebclientCB (void *udata, const char *resp, size_t len);
 
@@ -36,6 +36,17 @@ typedef struct {
 #define DLFILE "tmp/wc-dl.txt"
 #define UPFILE "tmp/wc-up.txt"
 
+static void
+setup (void)
+{
+  bdjoptInit ();
+}
+
+static void
+teardown (void)
+{
+  bdjoptCleanup ();
+}
 
 START_TEST(webclient_alloc)
 {
@@ -61,7 +72,7 @@ START_TEST(webclient_get)
   wc = webclientAlloc (&r, checkWebclientCB);
   webclientSetTimeout (wc, 10);
   snprintf (tbuff, sizeof (tbuff), "%s/%s",
-      sysvarsGetStr (SV_HOST_WEB), sysvarsGetStr (SV_WEB_VERSION_FILE));
+      bdjoptGetStr (OPT_HOST_VERSION), bdjoptGetStr (OPT_URI_VERSION));
   webclientGet (wc, tbuff);
   ck_assert_ptr_nonnull (r.resp);
   ck_assert_int_ge (r.len, 5);
@@ -82,8 +93,8 @@ START_TEST(webclient_dl)
   mdebugSubTag ("webclient_dl");
 
   wc = webclientAlloc (&r, checkWebclientCB);
-  snprintf (tbuff, sizeof (tbuff), "%s/%s",
-      sysvarsGetStr (SV_HOST_WEB), sysvarsGetStr (SV_WEB_VERSION_FILE));
+  snprintf (tbuff, sizeof (tbuff), "%s%s",
+      bdjoptGetStr (OPT_HOST_VERSION), bdjoptGetStr (OPT_URI_VERSION));
   webclientGet (wc, tbuff);
   ck_assert_ptr_nonnull (r.resp);
   ck_assert_int_ge (r.len, 5);
@@ -115,7 +126,7 @@ START_TEST(webclient_post)
 
   wc = webclientAlloc (&r, checkWebclientCB);
   snprintf (tbuff, sizeof (tbuff), "%s/%s",
-      sysvarsGetStr (SV_HOST_SUPPORTMSG), "bdj4tester.php");
+      bdjoptGetStr (OPT_HOST_SUPPORT), "bdj4tester.php");
   snprintf (query, sizeof (query), "key=8634556&testdata=abc123");
   webclientPost (wc, tbuff, query);
   ck_assert_ptr_nonnull (r.resp);
@@ -149,7 +160,7 @@ START_TEST(webclient_upload_plain)
 
   wc = webclientAlloc (&r, checkWebclientCB);
   snprintf (tbuff, sizeof (tbuff), "%s/%s",
-      sysvarsGetStr (SV_HOST_SUPPORTMSG), "bdj4tester.php");
+      bdjoptGetStr (OPT_HOST_SUPPORT), "bdj4tester.php");
   query [qc++] = "key";
   query [qc++] = "8634556";
   query [qc++] = "origfn";
@@ -163,7 +174,7 @@ START_TEST(webclient_upload_plain)
 
 
   snprintf (tbuff, sizeof (tbuff), "%s/tmptest/%s",
-      sysvarsGetStr (SV_HOST_SUPPORTMSG), UPFILE);
+      bdjoptGetStr (OPT_HOST_SUPPORT), UPFILE);
   webclientDownload (wc, tbuff, DLFILE);
   exists = fileopFileExists (DLFILE);
   sz = fileopSize (DLFILE);
@@ -206,7 +217,7 @@ START_TEST(webclient_upload_gzip)
 
   wc = webclientAlloc (&r, checkWebclientCB);
   snprintf (tbuff, sizeof (tbuff), "%s/%s",
-      sysvarsGetStr (SV_HOST_SUPPORTMSG), "bdj4tester.php");
+      bdjoptGetStr (OPT_HOST_SUPPORT), "bdj4tester.php");
   query [qc++] = "key";
   query [qc++] = "8634556";
   query [qc++] = "origfn";
@@ -219,7 +230,7 @@ START_TEST(webclient_upload_gzip)
   ck_assert_str_eq (r.resp, "OK");
 
   snprintf (tbuff, sizeof (tbuff), "%s/tmptest/%s",
-      sysvarsGetStr (SV_HOST_SUPPORTMSG), UPFILE);
+      bdjoptGetStr (OPT_HOST_SUPPORT), UPFILE);
   webclientDownload (wc, tbuff, DLFILE);
   exists = fileopFileExists (DLFILE);
   sz = fileopSize (DLFILE);
@@ -249,6 +260,7 @@ webclient_suite (void)
   s = suite_create ("webclient");
   tc = tcase_create ("webclient");
   tcase_set_tags (tc, "libbdj4");
+  tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, webclient_alloc);
   tcase_add_test (tc, webclient_get);
   tcase_add_test (tc, webclient_dl);

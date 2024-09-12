@@ -360,8 +360,8 @@ mobmqInternetProcess (mobmqdata_t *mobmqdata)
   char          tbuff [4096];
 
   data = mobmqBuildResponse (mobmqdata);
-  snprintf (uri, sizeof (uri), "%s/%s",
-      sysvarsGetStr (SV_HOST_MOBMQ), sysvarsGetStr (SV_URI_MOBMQ_PHP));
+  snprintf (uri, sizeof (uri), "%s%s",
+      bdjoptGetStr (OPT_HOST_MOBMQ), bdjoptGetStr (OPT_URI_MOBMQ_PHP));
   snprintf (tbuff, sizeof (tbuff),
       "key=%s"
       "&mobmqtag=%s"

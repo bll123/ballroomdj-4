@@ -143,8 +143,8 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
         bdjoptGetNum (OPT_P_MOBMQ_PORT));
   }
   if (type == MOBMQ_TYPE_INTERNET) {
-    snprintf (uridisp, sizeof (uridisp), "%s/%s?mobmqtag=%s",
-        sysvarsGetStr (SV_HOST_MOBMQ), sysvarsGetStr (SV_URI_MOBMQ_HTML),
+    snprintf (uridisp, sizeof (uridisp), "%s%s?mobmqtag=%s",
+        bdjoptGetStr (OPT_HOST_MOBMQ), bdjoptGetStr (OPT_URI_MOBMQ_HTML),
         bdjoptGetStr (OPT_P_MOBMQ_TAG));
   }
 

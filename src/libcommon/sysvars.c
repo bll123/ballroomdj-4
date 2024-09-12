@@ -80,14 +80,8 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_FILE_INST_PATH] = { "FILE_INST_PATH" },
   [SV_FONT_DEFAULT] = { "FONT_DEFAULT" },
   [SV_HOME] = { "HOME" },
-  [SV_HOST_DOWNLOAD] = { "HOST_DOWNLOAD" },
-  [SV_HOST_FORUM] = { "HOST_FORUM" },
   [SV_HOSTNAME] = { "HOSTNAME" },
-  [SV_HOST_SUPPORTMSG] = { "HOST_SUPPORTMSG" },
-  [SV_HOST_TICKET] = { "HOST_TICKET" },
-  [SV_HOST_WEB] = { "HOST_WEB" },
-  [SV_HOST_WIKI] = { "HOST_WIKI" },
-  [SV_HOST_MOBMQ] = { "HOST_MOBMQ" },
+  [SV_HOST_REGISTER] = { "HOST_REGISTER" },
   [SV_LOCALE] = { "LOCALE" },
   [SV_LOCALE_ORIG] = { "LOCALE_ORIG" },
   [SV_LOCALE_ORIG_SHORT] = { "LOCALE_ORIG_SHORT" },
@@ -113,18 +107,9 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_PATH_XDGUSERDIR] = { "PATH_XDGUSERDIR" },
   [SV_SHLIB_EXT] = { "SHLIB_EXT" },
   [SV_THEME_DEFAULT] = { "THEME_DEFAULT" },
-  [SV_URI_DOWNLOAD] = { "URI_DOWNLOAD" },
-  [SV_URI_FORUM] = { "URI_FORUM" },
   [SV_URI_REGISTER] = { "URI_REGISTER" },
-  [SV_URI_SUPPORTMSG] = { "URI_SUPPORTMSG" },
-  [SV_URI_TICKET] = { "URI_TICKET" },
-  [SV_URI_WIKI] = { "URI_WIKI" },
-  [SV_URI_MOBMQ_HTML] = { "URI_MOBMQ_HTML" },
-  [SV_URI_MOBMQ_PHP] = { "URI_MOBMQ_PHP" },
-  [SV_USER_AGENT] = { "USER_AGENT" },
   [SV_USER_MUNGE] = { "USER_MUNGE" },
   [SV_USER] = { "USER" },
-  [SV_WEB_VERSION_FILE] = { "WEB_VERSION_FILE" },
 };
 
 static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
@@ -536,22 +521,8 @@ sysvarsInit (const char *argv0, int flags)
 
   strlcpy (sysvars [SV_SHLIB_EXT], SHLIB_EXT, SV_MAX_SZ);
 
-  strlcpy (sysvars [SV_HOST_DOWNLOAD], "https://sourceforge.net", SV_MAX_SZ);
-  strlcpy (sysvars [SV_HOST_FORUM], "https://ballroomdj.org", SV_MAX_SZ);
-  strlcpy (sysvars [SV_HOST_SUPPORTMSG], "https://ballroomdj.org", SV_MAX_SZ);
-  strlcpy (sysvars [SV_HOST_TICKET], "https://sourceforge.net", SV_MAX_SZ);
-  strlcpy (sysvars [SV_HOST_WEB], "https://ballroomdj4.sourceforge.io", SV_MAX_SZ);
-  strlcpy (sysvars [SV_HOST_WIKI], "https://sourceforge.net", SV_MAX_SZ);
-  strlcpy (sysvars [SV_HOST_MOBMQ], "https://ballroomdj.org", SV_MAX_SZ);
-  strlcpy (sysvars [SV_URI_DOWNLOAD], "/projects/ballroomdj4/files", SV_MAX_SZ);
-  strlcpy (sysvars [SV_URI_FORUM], "/forum/index.php", SV_MAX_SZ);
+  strlcpy (sysvars [SV_HOST_REGISTER], "https://ballroomdj.org", SV_MAX_SZ);
   strlcpy (sysvars [SV_URI_REGISTER], "/bdj4register.php", SV_MAX_SZ);
-  strlcpy (sysvars [SV_URI_SUPPORTMSG], "/bdj4support.php", SV_MAX_SZ);
-  strlcpy (sysvars [SV_URI_TICKET], "/p/ballroomdj4/tickets/", SV_MAX_SZ);
-  strlcpy (sysvars [SV_URI_WIKI], "/p/ballroomdj4/wiki/Home", SV_MAX_SZ);
-  strlcpy (sysvars [SV_URI_MOBMQ_HTML], "bdj4marquee.html", SV_MAX_SZ);
-  strlcpy (sysvars [SV_URI_MOBMQ_PHP], "bdj4marquee.php", SV_MAX_SZ);
-  strlcpy (sysvars [SV_WEB_VERSION_FILE], "bdj4version.txt", SV_MAX_SZ);
 
   for (size_t i = 0; i < CACERT_FILE_COUNT; ++i) {
     if (fileopFileExists (cacertFiles [i])) {
@@ -677,9 +648,6 @@ sysvarsInit (const char *argv0, int flags)
 
   snprintf (tbuff, sizeof (tbuff), "%s/%s", sysvars [SV_DIR_CACHE_BASE], BDJ4_NAME);
   strlcpy (sysvars [SV_DIR_CACHE], tbuff, SV_MAX_SZ);
-
-  snprintf (sysvars [SV_USER_AGENT], SV_MAX_SZ, "%s/%s ( %s )",
-      BDJ4_NAME, sysvars [SV_BDJ4_VERSION], sysvars [SV_HOST_WEB]);
 
   sysvarsCheckPaths (NULL);
 

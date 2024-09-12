@@ -2,7 +2,7 @@
 # 2022-9-12
 # version 3
 version
-..3
+..1
 ACOUSTID_KEY
 ..ENCTFdHUmEcJxkaKAAABRY=
 ACRCLOUD_API_KEY
