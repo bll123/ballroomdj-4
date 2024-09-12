@@ -1,0 +1,2266 @@
+# == română
+# -- romanian
+msgid ""
+msgstr ""
+"Project-Id-Version: ballroomdj-4\n"
+"Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
+"POT-Creation-Date: 2024-09-09\n"
+"PO-Revision-Date: 2024-09-12 03:58\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: Romanian\n"
+"Language: ro\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100>0 && n%100<20)) ? 1 : 2);\n"
+"X-Crowdin-Project: ballroomdj-4\n"
+"X-Crowdin-Project-ID: 518374\n"
+"X-Crowdin-Language: ro\n"
+"X-Crowdin-File: en_GB.po\n"
+"X-Crowdin-File-ID: 126\n"
+
+#. CONTEXT: song editor: status msg: (song end must be greater than song start)
+#, c-format
+msgid "%1$s must be greater than %2$s"
+msgstr "%1$s trebuie să fie mai mare decât %2$s"
+
+#. CONTEXT: configuration: the ACRCloud API Host
+#, c-format
+msgid "%s API Host"
+msgstr "%s Gazdă API"
+
+#. CONTEXT: configuration: the ACRCloud API Key
+#, c-format
+msgid "%s API Key"
+msgstr "%s Cheie API"
+
+#. CONTEXT: configuration: the ACRCloud API Secret Key
+#, c-format
+msgid "%s API Secret Key"
+msgstr "%s Cheie secretă API"
+
+#. CONTEXT: configuration: configuration user interface window title
+#, c-format
+msgid "%s Configuration"
+msgstr "%s Configurație"
+
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 download)
+#, c-format
+msgid "%s Download"
+msgstr "%s Descărcare"
+
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 forums)
+#, c-format
+msgid "%s Forums"
+msgstr "%s Forumuri"
+
+#. CONTEXT: helperui: the window title for the BDJ4 helper
+#, c-format
+msgid "%s Helper"
+msgstr "%s Ajutor"
+
+#. CONTEXT: alternate installation: window title
+#. CONTEXT: installer: window title
+#, c-format
+msgid "%s Installer"
+msgstr "%s Instalator"
+
+#. CONTEXT: installer: label for entry field asking for BDJ3 location
+#, c-format
+msgid "%s Location"
+msgstr "%s Locație"
+
+#. CONTEXT: manage-ui: management user interface window title
+#, c-format
+msgid "%s Management"
+msgstr "%s Management"
+
+#. CONTEXT: configuration: itunes: the itunes media folder
+#, c-format
+msgid "%s Media Folder"
+msgstr "%s Dosar media"
+
+#. CONTEXT: playerui: main window title
+#, c-format
+msgid "%s Player"
+msgstr "%s Jucător"
+
+#. CONTEXT: MacOS: reason for disabling sleep: BDJ4 Player is Active
+#, c-format
+msgid "%s Player is Active"
+msgstr "%s Jucătorul este activ"
+
+#. CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist)
+#, c-format
+msgid "%s Playlist"
+msgstr "%s Playlist"
+
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets)
+#, c-format
+msgid "%s Support Tickets"
+msgstr "%s Bilete de asistență"
+
+#. CONTEXT: starterui: basic support dialog, version display
+#, c-format
+msgid "%s Version"
+msgstr "%s Versiune"
+
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 wiki)
+#, c-format
+msgid "%s Wiki"
+msgstr "%s Wiki"
+
+#. CONTEXT: configuration: itunes: the itunes xml file
+#, c-format
+msgid "%s XML File"
+msgstr "%s Fișier XML"
+
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+#, c-format
+msgid "%s data will be converted."
+msgstr "%s datele vor fi convertite."
+
+#. CONTEXT: manageui: status message when deleting a song list/playlist/sequence
+#, c-format
+msgid "%s deleted."
+msgstr "%s șters."
+
+#. CONTEXT: database update: status message
+#, c-format
+msgid "%s files found"
+msgstr "%s fișiere găsite"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "%s installed."
+msgstr "%s instalat."
+
+#. CONTEXT: installer: display of package status
+#, c-format
+msgid "%s is installed"
+msgstr "%s este instalat"
+
+#. CONTEXT: manage ui: status message: itunes is not configured
+#, c-format
+msgid "%s is not configured."
+msgstr "%s nu este configurat."
+
+#. CONTEXT: installer: display of package status
+#, c-format
+msgid "%s is not installed"
+msgstr "%s nu este instalat"
+
+#. CONTEXT: song editor: status msg: (song start may not exceed the song duration)
+#. CONTEXT: song editor: status msg: (song end may not exceed the song duration)
+#, c-format
+msgid "%s may not exceed the song duration"
+msgstr "%s nu poate depăși durata melodiei"
+
+#. CONTEXT: validation: characters not allowed
+#, c-format
+msgid "%s: *'\":|<>^ characters are not allowed."
+msgstr "%s: *'\"\":|<>^ caracterele nu sunt permise."
+
+#. CONTEXT: validation: invalid time (hours/minutes)
+#. CONTEXT: validation: invalid time (minutes/seconds)
+#. CONTEXT: validation: invalid time (hours/minutes/seconds)
+#. CONTEXT: validation: invalid time (hour/min/sec.sec)
+#, c-format
+msgid "%s: Invalid time (%s)."
+msgstr "%s: Timp invalid (%s)."
+
+#. CONTEXT: validation: must be numeric
+#. CONTEXT: validation: must be a numeric value
+#, c-format
+msgid "%s: Must be numeric."
+msgstr "%s: Trebuie să fie numeric."
+
+#. CONTEXT: validation: a value must be set
+#, c-format
+msgid "%s: Must be set."
+msgstr "%s: Trebuie să fie setat."
+
+#. CONTEXT: validation: slashes ( / and \\ ) are not allowed
+#, c-format
+msgid "%s: Slashes are not allowed."
+msgstr "%s: Slashes nu sunt permise."
+
+#. CONTEXT: validation: spaces are not allowed
+#, c-format
+msgid "%s: Spaces are not allowed."
+msgstr "%s: Spațiile nu sunt permise."
+
+#. CONTEXT: playerui: button: reset speed to 100%
+msgid "100%"
+msgstr "100%"
+
+#. CONTEXT: configuration: dance time signature
+msgid "2/4"
+msgstr "2/4"
+
+#. CONTEXT: configuration: dance time signature
+msgid "3/4"
+msgstr "3/4"
+
+#. CONTEXT: configuration: dance time signature
+msgid "4/4"
+msgstr "4/4"
+
+#. CONTEXT: configuration: marquee: the accent color used for the marquee
+#. CONTEXT: configuration: the accent color to use for the user interface
+msgid "Accent Colour"
+msgstr "Culoare Accent"
+
+#. CONTEXT: update database: select database update action
+msgid "Action"
+msgstr "Acțiune"
+
+#. CONTEXT: the 'Mix' action failed
+msgid "Action failed"
+msgstr "Acțiune eșuată"
+
+#. CONTEXT: manage-ui: menu selection: actions for song editor
+#. CONTEXT: manage-ui: menu selection: actions for music manager
+#. CONTEXT: manage-ui: menu selection: actions for song list
+#. CONTEXT: playerui: menu selection: actions for the player
+#. CONTEXT: starterui: action menu for the starter user interface
+msgid "Actions"
+msgstr "Acțiuni"
+
+#. CONTEXT: configuration: queue: whether the queue is active
+msgid "Active"
+msgstr "Activ"
+
+#. CONTEXT: configuration: table edit: button: add new selection
+msgid "Add New"
+msgstr "Adaugă nou"
+
+#. CONTEXT: apply adjustments: adjust speed/song start/song end checkbox
+msgid "Adjust Speed, Song Start and Song End"
+msgstr "Reglați viteza, începutul și sfârșitul cântecului"
+
+#. CONTEXT: configuration file: dance level
+msgid "Advanced"
+msgstr "Avansat"
+
+#. CONTEXT: label: album
+msgid "Album"
+msgstr "Album"
+
+#. CONTEXT: label: album artist
+msgid "Album Artist"
+msgstr "Album Artist"
+
+#. CONTEXT: label: album artist sort order
+msgid "Album Artist Sort Order"
+msgstr "Album Artist Ordine de sortare"
+
+#. CONTEXT: label: album sort order
+msgid "Album Sort Order"
+msgstr "Ordinea de sortare a albumului"
+
+#. CONTEXT: song selection filter: a filter: all dances are selected
+#. CONTEXT: song-selection: filter: all dances are selected
+msgid "All Dances"
+msgstr "Toate dansurile"
+
+#. CONTEXT: genre: a filter: all genres are displayed in the song selection
+msgid "All Genres"
+msgstr "Toate genurile"
+
+#. CONTEXT: level: a filter: all dance levels will be listed
+#. CONTEXT: level: a filter: all dance levels are displayed in the song selection
+msgid "All Levels"
+msgstr "Toate nivelurile"
+
+#. CONTEXT: rating: a filter: all dance ratings will be listed
+#. CONTEXT: rating: a filter: all dance ratings are displayed in the song selection
+msgid "All Ratings"
+msgstr "Toate ratingurile"
+
+#. CONTEXT: configuration: write audio file tags: write all tags (BDJ and standard) to the audio file
+msgid "All Tags"
+msgstr "Toate etichetele"
+
+#. CONTEXT: playlist management: allowed keywords
+msgid "Allowed Keywords"
+msgstr "Cuvinte cheie permise"
+
+#. CONTEXT: import from bdj4: error message if the target song list already exists
+msgid "Already Exists"
+msgstr "Există deja"
+
+#. CONTEXT: configuration: dances: play the selected announcement before the dance is played
+msgid "Announcement"
+msgstr "Anunț"
+
+#. CONTEXT: status: a filter: all dance status will be listed
+#. CONTEXT: status: a filter: all dance status are displayed in the song selection
+msgid "Any Status"
+msgstr "Orice statut"
+
+#. CONTEXT: song selection filter: filter dialog: applies the selections
+msgid "Apply"
+msgstr "Aplicați"
+
+#. CONTEXT: apply adjustment dialog: title for the dialog
+#. CONTEXT: apply adjustment dialog: apply adjustments
+#. CONTEXT: manage-ui: song editor menu: apply adjustments
+msgid "Apply Adjustments"
+msgstr "Aplicați ajustări"
+
+#. CONTEXT: manage-ui: song editor menu: apply edit all
+msgid "Apply Edit All"
+msgstr "Aplicați Editați toate"
+
+#. CONTEXT: configuration file: dance
+msgid "Argentine Tango"
+msgstr "Tango argentinian"
+
+#. CONTEXT: label: artist
+msgid "Artist"
+msgstr "Artist"
+
+#. CONTEXT: label: artist sort order
+msgid "Artist Sort Order"
+msgstr "Ordinea de sortare a artiștilor"
+
+#. CONTEXT: starterui: sending support message: checkbox: option to send data files
+msgid "Attach Data Files"
+msgstr "Atașați fișiere de date"
+
+#. CONTEXT: starterui: sending support message: checkbox: option to send database
+msgid "Attach Database"
+msgstr "Atașați baza de date"
+
+#. CONTEXT: configuration: which audio interface to use
+msgid "Audio"
+msgstr "Audio"
+
+#. CONTEXT: external request: enter the audio file location
+msgid "Audio File"
+msgstr "Fișier audio"
+
+#. CONTEXT: select audio file: file selection dialog: audio file filter
+msgid "Audio Files"
+msgstr "Fișiere audio"
+
+#. CONTEXT: configuration: display settings for: Audio Identification
+#. CONTEXT: manage-ui: name of audio identification notebook tab
+msgid "Audio ID"
+msgstr "ID audio"
+
+#. CONTEXT: configuration: display settings for: Audio ID match listing
+msgid "Audio ID Match List"
+msgstr "Lista de potrivire ID audio"
+
+#. CONTEXT: configuration: which audio sink (output) to use
+msgid "Audio Output"
+msgstr "Ieșire audio"
+
+#. CONTEXT: configuration: checkbox: is automatic organization enabled
+msgid "Auto Organise"
+msgstr "Organizare automată"
+
+#. CONTEXT: playlist management: default playlist type
+#. CONTEXT: playlist management: type of playlist
+msgid "Automatic"
+msgstr "Automată"
+
+#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
+msgid "BDJ Tags Only"
+msgstr "Numai etichete BDJ"
+
+#. CONTEXT: installer: status message
+msgid "BDJ3 database version is too old."
+msgstr "Versiunea bazei de date BDJ3 este prea veche."
+
+#. CONTEXT: configuration: Whether to display BPM as BPM or MPM
+#. CONTEXT: label: beats per minute
+#. CONTEXT: bpm counter: BPM
+msgid "BPM"
+msgstr "BPM"
+
+#. CONTEXT: bpm counter: title of window
+msgid "BPM Counter"
+msgstr "Contor BPM"
+
+#. CONTEXT: configuration file: genre
+msgid "Ballroom Dance"
+msgstr "Dans de salon"
+
+#. CONTEXT: tooltip for desktop icon
+msgid "Ballroom Music Player"
+msgstr "Ballroom Music Player"
+
+#. CONTEXT: bpm counter: number of beats
+msgid "Beats"
+msgstr "Bătăi"
+
+#. CONTEXT: manage-ui: song editor menu: cancel edit all
+msgid "Cancel Edit All"
+msgstr "Anulare Editare Toate"
+
+#. CONTEXT: database update: status message: number of files that cannot be renamed
+msgid "Cannot Rename"
+msgstr "Nu se poate redenumi"
+
+#. CONTEXT: configuration file: dance
+msgid "Cha Cha"
+msgstr "Cha Cha"
+
+#. CONTEXT: database update: check for new audio files
+msgid "Check For New"
+msgstr "Verificare pentru nou"
+
+#. CONTEXT: database update: check for new: help text
+msgid "Checks for new audio files."
+msgstr "Verifică fișierele audio noi."
+
+#. CONTEXT: configuration file: genre
+msgid "Classical"
+msgstr "Clasic"
+
+#. CONTEXT: configuration: genre: title of the classical setting column
+msgid "Classical?"
+msgstr "Clasic?"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Clear & Play"
+msgstr "Clear & Play"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: music queue: button: clear the queue
+msgid "Clear Queue"
+msgstr "Ștergeți coada"
+
+#. CONTEXT: manage-ui: menu selection: music manager: clear same-song mark
+msgid "Clear Same Song Mark"
+msgstr "Ștergeți marcajul Same Song"
+
+#. CONTEXT: bpm counter: instructions, line 1
+msgid "Click the mouse in the blue box in time with the beat."
+msgstr "Faceți clic cu mouse-ul în caseta albastră în ritmul ritmului."
+
+#. CONTEXT: song selection filter: filter dialog: closes the dialog
+#. CONTEXT: select folder dialog: close
+#. CONTEXT: select file dialog: close
+#. CONTEXT: select file: closes the dialog
+#. CONTEXT: apply adjustment dialog: closes the dialog
+#. CONTEXT: copy tags dialog: closes the dialog
+#. CONTEXT: export/import bdj4 dialog: closes the dialog
+#. CONTEXT: export playlist: closes the dialog
+#. CONTEXT: external request dialog: closes the dialog
+#. CONTEXT: quick edit dialog: closes the dialog
+#. CONTEXT: bpm counter: close button
+#. CONTEXT: import from itunes: closes the dialog
+#. CONTEXT: create from playlist: closes the dialog
+#. CONTEXT: playerui: marquee font size dialog: action button
+#. CONTEXT: helperui: close the helper window
+#. CONTEXT: starterui: support dialog: closes the dialog
+#. CONTEXT: starterui: support message dialog: closes the dialog
+msgid "Close"
+msgstr "Închidere"
+
+#. CONTEXT: database update: check for new audio files
+msgid "Compact"
+msgstr "Compact"
+
+#. CONTEXT: database update: compact: help text
+msgid "Compact the database.  Use after audio files have been deleted."
+msgstr "Compactează baza de date.  Utilizați după ce fișierele audio au fost șterse."
+
+#. CONTEXT: configuration file: status
+#. CONTEXT: copy audio tags: copy of audio tags completed
+#. CONTEXT: database update: status message
+msgid "Complete"
+msgstr "Completați"
+
+#. CONTEXT: configuration: The completion message displayed on the marquee when a playlist is finished
+msgid "Completion Message"
+msgstr "Mesaj de finalizare"
+
+#. CONTEXT: label: composer
+msgid "Composer"
+msgstr "Compozitor"
+
+#. CONTEXT: label: composer sort order
+msgid "Composer Sort Order"
+msgstr "Compozitor Ordine de sortare"
+
+#. CONTEXT: label: conductor
+msgid "Conductor"
+msgstr "Conductor"
+
+#. CONTEXT: starterui: button: starts the configuration user interface
+msgid "Configure"
+msgstr "Configurare"
+
+#. CONTEXT: configuration: which controller to use
+msgid "Controller"
+msgstr "Controler"
+
+#. CONTEXT: installer: status message
+msgid "Conversion complete."
+msgstr "Conversie completă."
+
+#. CONTEXT: installer: checkbox: convert the BallroomDJ 3 installation
+#, c-format
+msgid "Convert %s"
+msgstr "Conversie %s"
+
+#. CONTEXT: copy tags dialog: title for the dialog
+#. CONTEXT: copy tags dialog: copy audio tags button
+#. CONTEXT: manage-ui: song editor menu: copy audio tags
+msgid "Copy Audio Tags"
+msgstr "Copiere audio Tag-uri"
+
+#. CONTEXT: manageui: failure status message
+#, c-format
+msgid "Copy already exists."
+msgstr "Copia există deja."
+
+#. CONTEXT: installer: status message
+msgid "Copy finished."
+msgstr "Copie terminată."
+
+#. CONTEXT: manage-ui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#. CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#. CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#, c-format
+msgid "Copy of %s"
+msgstr "Copie de pe %s"
+
+#. CONTEXT: installer: status message
+msgid "Copying files."
+msgstr "Copierea fișierelor."
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+msgid "Copying template files."
+msgstr "Copierea fișierelor șablon."
+
+#. CONTEXT: playlist management: count column header
+msgid "Count"
+msgstr "Numărătoarea"
+
+#. CONTEXT: create from playlist: creates the new songlist
+msgid "Create"
+msgstr "Creați"
+
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: create copy
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: create copy
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: create copy
+msgid "Create Copy"
+msgstr "Creați o copie"
+
+#. CONTEXT: starterui: selection to create a new profile
+msgid "Create Profile"
+msgstr "Crearea profilului"
+
+#. CONTEXT: starterui: menu item: create shortcut for profile
+msgid "Create Shortcut for Profile"
+msgstr "Creați o comandă rapidă pentru profil"
+
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: create a song list from a playlist
+#. CONTEXT: create from playlist: title for the dialog
+msgid "Create from Playlist"
+msgstr "Creați din lista de redare"
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+msgid "Creating folder structure."
+msgstr "Crearea structurii de foldere."
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+msgid "Creating shortcut."
+msgstr "Crearea comenzii rapide."
+
+#. CONTEXT: audio identification: the data for the current song
+msgid "Current"
+msgstr "Actual"
+
+#. CONTEXT: configuration: display settings for: Player User Interface
+msgid "Current Song"
+msgstr "Cântec actual"
+
+#. CONTEXT: label: dance
+msgid "Dance"
+msgstr "Dans"
+
+#. CONTEXT: label: dance level
+msgid "Dance Level"
+msgstr "Nivel de dans"
+
+#. CONTEXT: label: dance rating
+msgid "Dance Rating"
+msgstr "Evaluarea dansului"
+
+#. CONTEXT: playlist management: notebook tab title: dances
+msgid "Dances"
+msgstr "Dansuri"
+
+#. CONTEXT: configuration: checkbox: the database will load the dance from the audio file genre tag
+msgid "Database Loads Dance From Genre"
+msgstr "Baza de date încarcă dansul din gen"
+
+#. CONTEXT: label: date
+msgid "Date"
+msgstr "Data"
+
+#. CONTEXT: label: date added to the database
+msgid "Date Added"
+msgstr "Data adăugării"
+
+#. CONTEXT: configuration: debug options that can be turned on and off
+msgid "Debug"
+msgstr "Depanare"
+
+#. CONTEXT: configuration: level: title of the default selection column
+#. CONTEXT: configuration: audio: The default audio sink (audio output)
+#. CONTEXT: user interface: default setting display
+msgid "Default"
+msgstr "Implicit"
+
+#. CONTEXT: configuration: the volume used when starting the player
+msgid "Default Volume"
+msgstr "Volum implicit"
+
+#. CONTEXT: configuration: table edit: button: delete selection
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: delete song list
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: delete sequence
+msgid "Delete"
+msgstr "Ștergeți"
+
+#. CONTEXT: starterui: menu item: delete profile
+msgid "Delete Profile"
+msgstr "Ștergeți profilul"
+
+#. CONTEXT: configuration: dialog display settings
+msgid "Dialogs"
+msgstr "Dialoguri"
+
+#. CONTEXT: label: disc number
+msgid "Disc"
+msgstr "Disc"
+
+#. CONTEXT: configuration: display settings: which set of display settings to update
+#. CONTEXT: configuration: queue: whether to display the queue
+msgid "Display"
+msgstr "Afișaj"
+
+#. CONTEXT: configuration: change which fields are displayed in different contexts
+msgid "Display Settings"
+msgstr "Setări afișaj"
+
+#. CONTEXT: configuration: write audio file tags: do not write any tags to the audio file
+msgid "Don't Write"
+msgstr "Nu scrieți"
+
+#. CONTEXT: starterui: basic support dialog: support option (download latest version)
+msgid "Download Latest Version"
+msgstr "Descărcați ultima versiune"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Download of %s failed."
+msgstr "Descărcarea %s a eșuat."
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Downloading %s."
+msgstr "Descărcarea %s."
+
+#. CONTEXT: label: duration of the song
+msgid "Duration"
+msgstr "Durată"
+
+#. CONTEXT: starterui: sending support message: user's e-mail address
+msgid "E-Mail Address"
+msgstr "Adresa de e-mail"
+
+#. CONTEXT: configuration file: dance level
+msgid "Easy"
+msgstr "Ușor"
+
+#. CONTEXT: music queue: edit the selected song
+#. CONTEXT: song-selection: edit the selected song
+#. CONTEXT: manage-ui: menu selection: song list: edit menu
+#. CONTEXT: playlist management: menu selection: playlist: edit menu
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu
+msgid "Edit"
+msgstr "Editare"
+
+#. CONTEXT: song editor: display indicator that the song editor is in edit all mode
+#. CONTEXT: manage-ui: song editor menu: edit all
+msgid "Edit All"
+msgstr "Editează toate"
+
+#. CONTEXT: configuration: edit the dance table
+msgid "Edit Dances"
+msgstr "Edit Dansuri"
+
+#. CONTEXT: configuration: edit genres table
+msgid "Edit Genres"
+msgstr "Genuri de editare"
+
+#. CONTEXT: configuration: edit the dance levels table
+msgid "Edit Levels"
+msgstr "Editarea nivelurilor"
+
+#. CONTEXT: configuration: edit the dance ratings table
+msgid "Edit Ratings"
+msgstr "Editare evaluări"
+
+#. CONTEXT: manage-ui: notebook tab title: edit sequences
+msgid "Edit Sequences"
+msgstr "Editarea secvențelor"
+
+#. CONTEXT: manage-ui: notebook tab title: edit song lists
+msgid "Edit Song Lists"
+msgstr "Editarea listelor de melodii"
+
+#. CONTEXT: configuration: edit status table
+msgid "Edit Status"
+msgstr "Editare stare"
+
+#. CONTEXT: configuration: remote control: checkbox: enable/disable
+msgid "Enable Remote Control"
+msgstr "Activarea telecomenzii"
+
+#. CONTEXT: installer: where BDJ4 gets installed
+msgid "Enter the destination folder where BDJ4 will be installed."
+msgstr "Introduceți folderul de destinație în care va fi instalat BDJ4."
+
+#. CONTEXT: installer: asking where BallroomDJ 3 is installed
+#, c-format
+msgid "Enter the folder where %s is installed."
+msgstr "Introduceți folderul în care este instalat %s ."
+
+#. CONTEXT: alternate installation: installation instructions
+msgid "Enter the name of the new installation."
+msgstr "Introduceți numele noii instalații."
+
+#. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
+#. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
+#. CONTEXT: installer: status message
+msgid "Error: Folder already exists."
+msgstr "Eroare: Folder already exists."
+
+#. CONTEXT: alternate installation: failure message
+#. CONTEXT: installer: failure message
+msgid "Error: Unable to set working folder."
+msgstr "Eroare: Imposibilitatea de a seta folderul de lucru."
+
+#. CONTEXT: configuration: examples displayed for the audio file organization path
+msgid "Examples"
+msgstr "Exemple"
+
+#. CONTEXT: alternate installation: exits the alternate installer
+#. CONTEXT: installer: exits the installer
+#. CONTEXT: starterui: button: exits BDJ4 (exits everything)
+msgid "Exit"
+msgstr "Ieșire"
+
+#. CONTEXT: update database: exit BDJ4 and restart
+#, c-format
+msgid "Exit %s and restart."
+msgstr "Ieșiți din %s și reporniți."
+
+#. CONTEXT: export/import bdj4 dialog: export button
+#. CONTEXT: export playlist dialog: export button
+#. CONTEXT: manage-ui: menu selection: export actions for song list
+#. CONTEXT: playerui: menu selection: export
+msgid "Export"
+msgstr "Export"
+
+#. CONTEXT: export playlist: title of dialog
+#. CONTEXT: managementui: export playlist: title of save dialog
+#. CONTEXT: manage-ui: menu selection: song list: export
+msgid "Export Playlist"
+msgstr "Export Playlist"
+
+#. CONTEXT: export playlist: type of export
+msgid "Export Type"
+msgstr "Tip export"
+
+#. CONTEXT: player ui: menu selection: export: export as MP3
+#. CONTEXT: export as mp3: title of save dialog
+#, c-format
+msgid "Export as %s"
+msgstr "Exportați ca %s"
+
+#. CONTEXT: export for ballroomdj: title of dialog
+#. CONTEXT: manage-ui: menu selection: song list: export: export for ballroomdj
+#, c-format
+msgid "Export for %s"
+msgstr "Export pentru %s"
+
+#. CONTEXT: export/import bdj4: export folder location
+#. CONTEXT: export playlist: export folder location
+msgid "Export to"
+msgstr "Export către"
+
+#. CONTEXT: external request dialog: title for the dialog
+#. CONTEXT: playerui: menu selection: action: external request
+msgid "External Request"
+msgstr "Cerere externă"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: fade out the song and stop playing it
+msgid "Fade"
+msgstr "Dispare"
+
+#. CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song
+msgid "Fade In Time"
+msgstr "Fade In Time"
+
+#. CONTEXT: configuration: queue: the amount of time to do a volume fade-out when playing a song
+msgid "Fade Out Time"
+msgstr "Fade Out Time"
+
+#. CONTEXT: label: favorite marker
+msgid "Favourite"
+msgstr "Favorit"
+
+#. CONTEXT: configuration: itunes: which fields should be imported from itunes
+msgid "Fields to Import"
+msgstr "Câmpuri pentru import"
+
+#. CONTEXT: audio identification: label for displaying the audio file path
+#. CONTEXT: song editor: label for displaying the audio file path
+msgid "File"
+msgstr "Fișier"
+
+#. CONTEXT: configuration: filter display: song selection filters
+#. CONTEXT: song selection filter: title for the filter dialog
+#. CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog
+msgid "Filter Songs"
+msgstr "Filtrează melodii"
+
+#. CONTEXT: audio identification: first song
+#. CONTEXT: song editor : first song
+msgid "First"
+msgstr "În primul rând"
+
+#. CONTEXT: select folder dialog: filter on folders.
+msgid "Folder"
+msgstr "Dosar"
+
+#. CONTEXT: configuration: the font to use for the user interface
+msgid "Font"
+msgstr "Font"
+
+#. CONTEXT: playerui: menu selection: marquee: change the marquee font size
+#. CONTEXT: playerui: marquee font size dialog: the font size selector
+msgid "Font Size"
+msgstr "Dimensiunea fontului"
+
+#. CONTEXT: configuration file: dance
+msgid "Foxtrot"
+msgstr "Foxtrot"
+
+#. CONTEXT: configuration: queue: the amount of time to wait inbetween songs
+#. CONTEXT: playlist management: Gap between songs
+msgid "Gap Between Songs"
+msgstr "Între cântece"
+
+#. CONTEXT: configuration: general options that apply to everything
+msgid "General"
+msgstr "Generalități"
+
+#. CONTEXT: label: genre
+msgid "Genre"
+msgstr "Gen"
+
+#. CONTEXT: configuration file: rating
+msgid "Good"
+msgstr "Bun"
+
+#. CONTEXT: configuration file: rating
+msgid "Great"
+msgstr "Mare"
+
+#. CONTEXT: configuration: remote control: the HTML template to use
+msgid "HTML Template"
+msgstr "Șablon HTML"
+
+#. CONTEXT: HTTP response code (error)
+msgid "HTTP Code"
+msgstr "Cod HTTP"
+
+#. CONTEXT: playlist management: hide unselected dances
+msgid "Hide Unselected"
+msgstr "Ascundeți Neselectat"
+
+#. CONTEXT: configuration: dances: high BPM (or MPM) setting
+#. CONTEXT: playlist management: high bpm/mpm column header
+#, c-format
+msgid "High %s"
+msgstr "Mare %s"
+
+#. CONTEXT: playlist management: High Dance Level
+msgid "High Dance Level"
+msgstr "Nivel înalt de dans"
+
+#. CONTEXT: configuration: display settings for: history
+#. CONTEXT: playlist: the name of the history song list
+#. CONTEXT: playerui: name of the history tab : displayed played songs
+#. CONTEXT: playerui: name of the saved history playlist
+msgid "History"
+msgstr "Istoric"
+
+#. CONTEXT: installer: instructions
+msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
+msgstr "Dacă nu există nicio instalare BallroomDJ 3, lăsați intrarea goală."
+
+#. CONTEXT: export/import bdj4 dialog: import button
+#. CONTEXT: import from itunes: import the selected itunes playlist
+#. CONTEXT: manage-ui: menu selection: import actions for song list
+msgid "Import"
+msgstr "Import"
+
+#. CONTEXT: manage-ui: menu selection: song list: import
+#. CONTEXT: manage-ui: song list import: title of dialog
+msgid "Import Playlist"
+msgstr "Import Playlist"
+
+#. CONTEXT: export/import bdj4: import folder location
+msgid "Import from"
+msgstr "Import din"
+
+#. CONTEXT: import from ballroomdj: title of dialog
+#. CONTEXT: import from itunes: title for the dialog
+#. CONTEXT: manage-ui: menu selection: song list: import: import from ballroomdj
+#. CONTEXT: manage-ui: menu selection: song list: import: import from itunes
+#, c-format
+msgid "Import from %s"
+msgstr "Importați din %s"
+
+#. CONTEXT: alternate installation: status message
+msgid "Initial Setup."
+msgstr "Configurare inițială."
+
+#. CONTEXT: alternate installation: install BDJ4 in the alternate location
+#. CONTEXT: installer: start the installation process
+msgid "Install"
+msgstr "Instalați"
+
+#. CONTEXT: alternate installation: dialog title for selecting location
+#. CONTEXT: installer: dialog title for selecting install location
+msgid "Install Location"
+msgstr "Locația de instalare"
+
+#. CONTEXT: installer: status message
+msgid "Installation aborted."
+msgstr "Instalare întreruptă."
+
+#. CONTEXT: installer: status message
+msgid "Installation complete."
+msgstr "Instalarea este completă."
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Installing %s."
+msgstr "Instalarea %s."
+
+#. CONTEXT: configuration: mobile marquee type: internet
+msgid "Internet"
+msgstr "Internet"
+
+#. CONTEXT: Send support message: Error message for invalid e-mail.
+msgid "Invalid E-Mail Address."
+msgstr "Adresa de e-mail invalidă."
+
+#. CONTEXT: alternate installation: the selected folder is not valid
+#. CONTEXT: installer: the selected folder is not valid
+#. CONTEXT: export/import bdj4: invalid target folder
+msgid "Invalid Folder"
+msgstr "Dosar invalid"
+
+#. CONTEXT: alternate installer: invalid name status message
+msgid "Invalid Name"
+msgstr "Nume invalid"
+
+#. CONTEXT: copy audio tags: one of the files does not exist
+msgid "Invalid Selections"
+msgstr "Selecții invalide"
+
+#. CONTEXT: Saving Song List: Error message for invalid song list name.
+#. CONTEXT: Saving Playlist: Error message for invalid playlist name.
+#. CONTEXT: Saving Sequence: Error message for invalid sequence name.
+msgid "Invalid name. Using old name."
+msgstr "Nume invalid. Utilizarea numelui vechi."
+
+#. CONTEXT: configuration file: genre
+msgid "Jazz"
+msgstr "Jazz"
+
+#. CONTEXT: configuration file: dance
+msgid "Jive"
+msgstr "Jive"
+
+#. CONTEXT: label: keyword (used to filter out songs)
+msgid "Keyword"
+msgstr "Cuvânt cheie"
+
+#. CONTEXT: label: when the database entry was last updated
+msgid "Last Updated"
+msgstr "Ultima actualizare"
+
+#. CONTEXT: starterui: basic support dialog, latest version display
+msgid "Latest Version"
+msgstr "Cea mai recentă versiune"
+
+#. CONTEXT: label: dance level (short name for listing)
+msgid "Level"
+msgstr "Nivel"
+
+#. CONTEXT: configuration: the font to use for the queues and song lists
+msgid "Listing Font"
+msgstr "Listare Font"
+
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: load
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: load
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: load
+msgid "Load"
+msgstr "Încărcare"
+
+#. CONTEXT: database update: status message: files found in the database
+msgid "Loaded from Database"
+msgstr "Încărcat din baza de date"
+
+#. CONTEXT: configuration: mobile marquee type: local
+msgid "Local"
+msgstr "Local"
+
+#. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
+msgid "Locale"
+msgstr "Local"
+
+#. CONTEXT: installer: status message
+msgid "Located 'tclsh'."
+msgstr "Localizat \"tclsh\"."
+
+#. CONTEXT: configuration: dances: low BPM (or MPM) setting
+#. CONTEXT: playlist management: low bpm/mpm column header
+#, c-format
+msgid "Low %s"
+msgstr "Scăzut %s"
+
+#. CONTEXT: playlist management: Low Dance Level
+msgid "Low Dance Level"
+msgstr "Nivel scăzut de dans"
+
+#. CONTEXT: label: measures per minute
+#. CONTEXT: bpm counter: MPM
+msgid "MPM"
+msgstr "MPM"
+
+#. CONTEXT: starterui: button: starts the management user interface
+msgid "Manage"
+msgstr "Gestionați"
+
+#. CONTEXT: manage-ui: menu selection: music manager: set same-song mark
+msgid "Mark as Same Song"
+msgstr "Marcați ca același cântec"
+
+#. CONTEXT: configuration: display settings for: Marquee (song display screen)
+#. CONTEXT: configuration: options associated with the marquee (suggested: song display)
+#. CONTEXT: marquee: marquee window title (suggested: song display)
+#. CONTEXT: playerui: menu selection: marquee related options (suggested: song display)
+msgid "Marquee"
+msgstr "Marquee"
+
+#. CONTEXT: label: marquee display (alternate display for the marquee, replaces dance)
+msgid "Marquee Display"
+msgstr "Afișaj marchiză"
+
+#. CONTEXT: configuration: The font to use for the marquee display
+msgid "Marquee Font"
+msgstr "Font Marquee"
+
+#. CONTEXT: playerui: marquee font size dialog: window title
+msgid "Marquee Font Size"
+msgstr "Dimensiunea fontului Marquee"
+
+#. CONTEXT: configuration: The theme to use for the marquee display
+msgid "Marquee Theme"
+msgstr "Tema Marquee"
+
+#. CONTEXT: playlist management: max play time column header (keep short)
+msgid "Maximum\n"
+"Play Time"
+msgstr "Timp maxim\n"
+"de redare"
+
+#. CONTEXT: configuration: queue: the maximum amount of time to play a song
+#. CONTEXT: playlist management: maximum play time
+msgid "Maximum Play Time"
+msgstr "Timp maxim de redare"
+
+#. CONTEXT: starterui: sending support message: message text
+msgid "Message"
+msgstr "Mesaj"
+
+#. CONTEXT: configuration: show-marquee: minimize
+msgid "Minimised"
+msgstr "Minimizate"
+
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: rearrange the songs and create a new mix
+msgid "Mix"
+msgstr "Se amestecă"
+
+#. CONTEXT: configuration: qr code: title display for mobile marquee
+#. CONTEXT: configuration: options associated with the mobile marquee
+msgid "Mobile Marquee"
+msgstr "Cortul mobil"
+
+#. CONTEXT: configuration: qr code: title display for mobile remote control
+#. CONTEXT: configuration: options associated with mobile remote control
+msgid "Mobile Remote Control"
+msgstr "Telecomandă mobilă"
+
+#. CONTEXT: configuration: table edit: button: move selection down
+#. CONTEXT: music queue: button: move the selected song down in the queue
+#. CONTEXT: side-by-side list: button: move the selected field down
+msgid "Move Down"
+msgstr "Mutare în jos"
+
+#. CONTEXT: configuration: table edit: button: move selection up
+#. CONTEXT: music queue: button: move the selected song up in the queue
+#. CONTEXT: side-by-side list: button: move the selected field up
+msgid "Move Up"
+msgstr "Mișcați-vă în sus"
+
+#. CONTEXT: music queue: button: move the selected song to the top of the queue
+msgid "Move to Top"
+msgstr "Mutare în partea de sus"
+
+#. CONTEXT: configuration: the music folder where the user stores their music
+#. CONTEXT: update database: music folder to process
+msgid "Music Folder"
+msgstr "Folder de muzică"
+
+#. CONTEXT: configuration: display settings for: music manager
+#. CONTEXT: manage-ui: name of music manager notebook tab
+#. CONTEXT: manage-ui: name of song selection notebook tab
+msgid "Music Manager"
+msgstr "Manager muzical"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+#. CONTEXT: configuration: display settings for: music queue
+msgid "Music Queue"
+msgstr "Coada de muzică"
+
+#. CONTEXT: configuration: music queue configuration
+msgid "Music Queues"
+msgstr "Cozi muzicale"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Mute"
+msgstr "Mută"
+
+#. CONTEXT: alternate installation: name (for shortcut)
+msgid "Name"
+msgstr "Nume și prenume"
+
+#. CONTEXT: configuration file: status
+#. CONTEXT: status: default status (new) when status is not set
+msgid "New"
+msgstr "Nou"
+
+#. CONTEXT: alternate installation: message indicating the action that will be taken
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "New %s installation."
+msgstr "Noua instalație %s ."
+
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist
+msgid "New Automatic Playlist"
+msgstr "Playlist automat nou"
+
+#. CONTEXT: configuration: dance name that is set when adding a new dance
+msgid "New Dance"
+msgstr "Dans nou"
+
+#. CONTEXT: database update: status message: new files saved to the database
+msgid "New Files"
+msgstr "Fișiere noi"
+
+#. CONTEXT: configuration: genre name that is set when adding a new genre
+msgid "New Genre"
+msgstr "Gen nou"
+
+#. CONTEXT: configuration: level name that is set when adding a new level
+msgid "New Level"
+msgstr "Nivel nou"
+
+#. CONTEXT: playlist management: default name for a new playlist
+msgid "New Playlist"
+msgstr "Playlist nou"
+
+#. CONTEXT: starterui: name of the new profile (New profile 9)
+#, c-format
+msgid "New Profile %d"
+msgstr "Profil nou %d"
+
+#. CONTEXT: configuration: rating name that is set when adding a new rating
+msgid "New Rating"
+msgstr "Evaluare nouă"
+
+#. CONTEXT: sequence editor: default name for a new sequence
+msgid "New Sequence"
+msgstr "Secvență nouă"
+
+#. CONTEXT: manage-ui: song list: default name for a new song list
+msgid "New Song List"
+msgstr "Lista melodiilor noi"
+
+#. CONTEXT: export/import bdj4: new song list name
+msgid "New Song List Name"
+msgstr "Nume listă melodii noi"
+
+#. CONTEXT: configuration: status name that is set when adding a new status
+msgid "New Status"
+msgstr "Stare nouă"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: audio identification: next song
+#. CONTEXT: song editor : next song
+#. CONTEXT: helperui: proceed to the next step
+msgid "Next"
+msgstr "Următorul"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: tooltip: start playing the next song (immediate)
+msgid "Next Song"
+msgstr "Cântecul următor"
+
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+msgid "No folder specified."
+msgstr "Nu a fost specificat niciun dosar."
+
+#. CONTEXT: starterui: no internet connection
+msgid "No internet connection"
+msgstr "Fără conexiune la internet"
+
+#. CONTEXT: configuration file: genre
+#. CONTEXT: configuration: controller: no controller
+msgid "None"
+msgstr "Niciuna"
+
+#. CONTEXT: configuration file: dance level
+msgid "Normal"
+msgstr "Normal"
+
+#. CONTEXT: marquee: displayed when nothing is set to be played
+#. CONTEXT: mobile marquee: playback is not active
+msgid "Not Playing"
+msgstr "Nu se joacă"
+
+#. CONTEXT: installer: the location entered is not a valid BDJ3 location.
+#, c-format
+msgid "Not a valid %s folder."
+msgstr "Nu este un folder %s valid."
+
+#. CONTEXT: label: notes
+msgid "Notes"
+msgstr "Note"
+
+#. CONTEXT: configuration: show-marquee: off
+#. CONTEXT: configuration: mobile marquee type: off
+msgid "Off"
+msgstr "Oprit"
+
+#. CONTEXT: manage-ui: menu selection: song list: options menu
+#. CONTEXT: playerui: menu selection: options for the player
+msgid "Options"
+msgstr "Opțiuni"
+
+#. CONTEXT: configuration: dance levels: instructions
+msgid "Order from easiest to most advanced."
+msgstr "Ordonați de la cele mai simple la cele mai avansate."
+
+#. CONTEXT: configuration: dance ratings: information on how to order the ratings
+msgid "Order from the lowest rating to the highest rating."
+msgstr "Ordonați de la cel mai mic rating la cel mai mare rating."
+
+#. CONTEXT: configuration: options associated with how audio files are organized
+msgid "Organisation"
+msgstr "Organizație"
+
+#. CONTEXT: configuration: the audio file organization path
+msgid "Organisation Path"
+msgstr "Calea de organizare"
+
+#. CONTEXT: database update: status message: other files that cannot be processed
+msgid "Other Files"
+msgstr "Alte fișiere"
+
+#. CONTEXT: configuration file: dance
+msgid "Paso Doble"
+msgstr "Paso Doble"
+
+#. CONTEXT: configuration: mobile marquee: internet: password
+#. CONTEXT: configuration: remote control: the password for sign-on to remote control
+msgid "Password"
+msgstr "Parolă"
+
+#. CONTEXT: configuration: queue: pause each song
+msgid "Pause Each Song"
+msgstr "Pauză pentru fiecare melodie"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: pause at the end of the song (toggle)
+msgid "Pause at End"
+msgstr "Pauză la sfârșit"
+
+#. CONTEXT: music queue: tooltip: play the selected song
+#. CONTEXT: song-selection: tooltip: play the selected songs
+#. CONTEXT: song editor : play song
+msgid "Play"
+msgstr "Joc"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: tooltip: play or pause the song
+msgid "Play / Pause"
+msgstr "Redare / Pauză"
+
+#. CONTEXT: configuration: queue: whether to play announcements
+#. CONTEXT: playlist management: Play Announcements
+msgid "Play Announcements"
+msgstr "Anunțuri de joc"
+
+#. CONTEXT: configuration: queue: play when queued (verb)
+msgid "Play When Queued"
+msgstr "Redare la coadă"
+
+#. CONTEXT: configuration: status: title of the "playable" column
+msgid "Play?"
+msgstr "Joaca?"
+
+#. CONTEXT: configuration: filter display: checkbox: status is playable
+#. CONTEXT: song selection filter: a filter: the song status is marked as playable
+msgid "Playable Status"
+msgstr "Stare jucabilă"
+
+#. CONTEXT: configuration: options associated with the player
+#. CONTEXT: configuration: which player interface to use
+#. CONTEXT: starterui: button: starts the player user interface
+msgid "Player"
+msgstr "Jucător"
+
+#. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
+#. CONTEXT: select file: file type for the file selection dialog (playlist)
+#. CONTEXT: create from playlist: select the playlist to use
+#. CONTEXT: playlist management: label for playlist name
+msgid "Playlist"
+msgstr "Playlist"
+
+#. CONTEXT: manage-ui: notebook tab title: playlist management
+msgid "Playlist Management"
+msgstr "Gestionarea listei de redare"
+
+#. CONTEXT: playlist management: label for playlist name
+msgid "Playlist Type"
+msgstr "Tip listă de redare"
+
+#. CONTEXT: managementui: export playlist: name of file export type
+#. CONTEXT: manage-ui: song list import: name of file import type
+msgid "Playlists"
+msgstr "Liste de redare"
+
+#. CONTEXT: installer: status message
+#. CONTEXT: apply adjustments: please wait... status message
+#. CONTEXT: please wait... status message
+#. CONTEXT: management ui: please wait... status message
+#. CONTEXT: export as mp3: please wait... status message
+#. CONTEXT: starter ui: please wait... status message
+msgid "Please wait…"
+msgstr "Vă rugăm să așteptați…"
+
+#. CONTEXT: please wait... (count/total) status message
+#, c-format
+msgid "Please wait… (%1$d/%2$d)"
+msgstr "Vă rugăm să așteptați… (%1$d/%2$d)"
+
+#. CONTEXT: configuration file: rating
+msgid "Poor"
+msgstr "Slabă"
+
+#. CONTEXT: configuration: the port to use for the mobile marquee
+#. CONTEXT: configuration: remote control: the port to use for remote control
+msgid "Port"
+msgstr "Port"
+
+#. CONTEXT: playerui: the current position of the song during song playback
+msgid "Position"
+msgstr "Poziția"
+
+#. CONTEXT: label: lock audio file location
+msgid "Prevent Rename"
+msgstr "Prevenirea redenumirii"
+
+#. CONTEXT: audio identification: previous song
+#. CONTEXT: song editor : previous song
+msgid "Previous"
+msgstr "Articolul precedent"
+
+#. CONTEXT: alternate installation: status message
+msgid "Process aborted."
+msgstr "Proces întrerupt."
+
+#. CONTEXT: starterui: profile to be used when starting BDJ4
+msgid "Profile"
+msgstr "Profil"
+
+#. CONTEXT: configuration: the profile accent color (identifies profile)
+msgid "Profile Colour"
+msgstr "Culoarea profilului"
+
+#. CONTEXT: configuration: the name of this profile
+msgid "Profile Name"
+msgstr "Nume profil"
+
+#. CONTEXT: starterui: profile is already in use
+msgid "Profile in use"
+msgstr "Profil în uz"
+
+#. CONTEXT: starter: status message
+msgid "Profile may not be deleted."
+msgstr "Profilul nu poate fi șters."
+
+#. CONTEXT: configuration: mobile marquee: the link to display the QR code for the mobile marquee
+#. CONTEXT: configuration: remote control: the link to display the QR code for remote control
+msgid "QR Code"
+msgstr "Cod QR"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
+#. CONTEXT: (verb) song-selection: queue a song to be played
+#. CONTEXT: (verb) external request dialog: queue the selected file
+msgid "Queue"
+msgstr "Coadă"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button)
+msgid "Queue 5"
+msgstr "Coada 5"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue B"
+msgstr "Coada B"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue C"
+msgstr "Coada C"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue D"
+msgstr "Coada D"
+
+#. CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue
+msgid "Queue Dance"
+msgstr "Dans la coadă"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue E"
+msgstr "Coada E"
+
+#. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee
+#. CONTEXT: (noun) configuration: the number of items loaded into the music queue
+msgid "Queue Length"
+msgstr "Lungimea cozii"
+
+#. CONTEXT: (noun) configuration: queue: the name of the music queue
+msgid "Queue Name"
+msgstr "Nume coadă"
+
+#. CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue'
+msgid "Queue Playlist"
+msgstr "Coadă de redare"
+
+#. CONTEXT: The name of the 'queuedance' playlist file
+#. CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button
+#. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
+#. CONTEXT: player: the name of the special playlist for queueing a dance
+msgid "QueueDance"
+msgstr "QueueDance"
+
+#. CONTEXT: (noun) configuration: queue: select which queue to configure
+msgid "Queue_noun"
+msgstr "Coadă"
+
+#. CONTEXT: configuration: filter display: quick edit filters
+#. CONTEXT: quick edit: title of dialog
+msgid "Quick Edit"
+msgstr "Editare rapidă"
+
+#. CONTEXT: playerui: menu selection: action: quick edit current song
+msgid "Quick Edit: Current"
+msgstr "Editare rapidă: Current"
+
+#. CONTEXT: playerui: menu selection: action: quick edit selected song
+msgid "Quick Edit: Selected"
+msgstr "Editare rapidă: Selectat"
+
+#. CONTEXT: configuration file: dance
+msgid "Quickstep"
+msgstr "Quickstep"
+
+#. CONTEXT: configuration: itunes: label for itunes rating conversion
+#. CONTEXT: label: dance rating (short name for listing)
+msgid "Rating"
+msgstr "Evaluare"
+
+#. CONTEXT: alternate installation: checkbox: re-install
+#. CONTEXT: installer: checkbox: re-install BDJ4
+msgid "Re-Install"
+msgstr "Reinstalare"
+
+#. CONTEXT: alternate installation: message indicating the action that will be taken
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "Re-install %s.  Overwrites existing configuration."
+msgstr "Re-instalează %s.  Suprascrie configurația existentă."
+
+#. CONTEXT: database update: rebuilds the database
+msgid "Rebuild Database"
+msgstr "Reconstruirea bazei de date"
+
+#. CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen
+msgid "Recover Marquee"
+msgstr "Recuperarea Marquee"
+
+#. CONTEXT: player-ui: error message
+msgid "Recovered from crash."
+msgstr "Recuperat din accident."
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Registering %s."
+msgstr "Înregistrarea %s."
+
+#. CONTEXT: playerui: menu selection: action: reload
+msgid "Reload"
+msgstr "Reîncărcare"
+
+#. CONTEXT: music queue: button: remove the song from the queue
+#. CONTEXT: side-by-side list: button: remove the selected field
+msgid "Remove"
+msgstr "Eliminați"
+
+#. CONTEXT: manage-ui: menu selection: music manager: remove song
+msgid "Remove Song"
+msgstr "Eliminați melodia"
+
+#. CONTEXT: database update: status message: number of files renamed
+msgid "Renamed"
+msgstr "Redenumit"
+
+#. CONTEXT: database update: reorganize : help text
+msgid "Renames the audio files based on the organization settings."
+msgstr "Redenumește fișierele audio în funcție de setările de organizare."
+
+#. CONTEXT: database update: reorganize : renames audio files based on organization settings
+msgid "Reorganise"
+msgstr "Reorganizare"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Repeat"
+msgstr "Repetați"
+
+#. CONTEXT: database update: rebuild: help text
+msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgstr "Înlocuiește baza de date BallroomDJ în întregime. Toate modificările aduse bazei de date vor fi pierdute."
+
+#. CONTEXT: configuration: display settings for: requests
+#. CONTEXT: playerui: name of request tab : lists the songs in the database
+msgid "Request"
+msgstr "Cerere"
+
+#. CONTEXT: song selection filter: filter dialog: resets the selections
+#. CONTEXT: bpm counter: reset button
+msgid "Reset"
+msgstr "Resetare"
+
+#. CONTEXT: apply adjustment dialog: restore original file
+#. CONTEXT: manage-ui: song editor menu: restore original
+msgid "Restore Original"
+msgstr "Restaurarea originalului"
+
+#. CONTEXT: playerui: button: tooltip: return to the beginning of the song
+msgid "Return to beginning of song"
+msgstr "Reveniți la începutul cântecului"
+
+#. CONTEXT: configuration file: genre
+msgid "Rock"
+msgstr "Rock"
+
+#. CONTEXT: configuration file: dance
+msgid "Rumba"
+msgstr "Rumba"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Running conversion script: %s."
+msgstr "Rulează scriptul de conversie: %s."
+
+#. CONTEXT: configuration file: dance
+msgid "Salsa"
+msgstr "Salsa"
+
+#. CONTEXT: configuration file: dance
+msgid "Samba"
+msgstr "Samba"
+
+#. CONTEXT: audio identification: save data
+#. CONTEXT: song editor : save data
+#. CONTEXT: quick edit dialog: save button
+#. CONTEXT: bpm counter: save button
+msgid "Save"
+msgstr "Salvați"
+
+#. CONTEXT: alternate installer: status message
+#. CONTEXT: installer: status message
+msgid "Saving install location."
+msgstr "Salvarea locației de instalare."
+
+#. CONTEXT: configuration: scaling factor for the user interface
+msgid "Scale"
+msgstr "Scară"
+
+#. CONTEXT: audio identification: the score or rating of each match
+msgid "Score"
+msgstr "Punctaj"
+
+#. CONTEXT: song selection filter: a filter: filter the song selection with a search for text
+msgid "Search"
+msgstr "Căutare"
+
+#. CONTEXT: bpm counter: number of seconds
+msgid "Seconds"
+msgstr "Secunde"
+
+#. CONTEXT: song-selection: select a song to be added to the song list
+#. CONTEXT: select folder dialog: select folder
+#. CONTEXT: select file dialog: select file
+#. CONTEXT: side-by-side list: button: add the selected field
+#. CONTEXT: select file: selects the file
+#. CONTEXT: manage-ui: config: button: add the selected songs to the song list
+msgid "Select"
+msgstr "Selectați"
+
+#. CONTEXT: select file: title of window: select <file-type>
+#, c-format
+msgid "Select %s"
+msgstr "Selectați %s"
+
+#. CONTEXT: installer: dialog title for selecting BDJ3 location
+#, c-format
+msgid "Select %s Location"
+msgstr "Selectați %s Locație"
+
+#. CONTEXT: configuration: itunes media folder selection dialog: window title
+#, c-format
+msgid "Select %s Media Location"
+msgstr "Selectați %s Locație media"
+
+#. CONTEXT: configuration: itunes xml file selection dialog: window title
+#, c-format
+msgid "Select %s XML File"
+msgstr "Selectați %s Fișier XML"
+
+#. CONTEXT: select audio file: dialog title for selecting audio files
+#, c-format
+msgid "Select Audio File"
+msgstr "Selectați fișierul audio"
+
+#. CONTEXT: external request: dance drop-down
+msgid "Select Dance"
+msgstr "Selectați dansul"
+
+#. CONTEXT: configuration: file selection dialog: window title
+msgid "Select File"
+msgstr "Selectați fișierul"
+
+#. CONTEXT: export/import bdj4 folder selection dialog: window title
+msgid "Select Folder"
+msgstr "Selectați dosarul"
+
+#. CONTEXT: configuration: folder selection dialog: window title
+#. CONTEXT: update database: dialog title for selecting database music folder
+#, c-format
+msgid "Select Music Folder Location"
+msgstr "Selectați locația folderului de muzică"
+
+#. CONTEXT: audio identification: the data for the selected matched song
+msgid "Selected"
+msgstr "Selectate"
+
+#. CONTEXT: starterui: basic support dialog: button: support option
+#. CONTEXT: starterui: support message dialog: sends the support message
+msgid "Send Support Message"
+msgstr "Trimiteți un mesaj de asistență"
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending %s"
+msgstr "Trimiterea %s"
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending %s Information"
+msgstr "Trimiterea de informații %s"
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending Diagnostics"
+msgstr "Trimiterea diagnosticelor"
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending Support Message"
+msgstr "Trimiterea unui mesaj de asistență"
+
+#. CONTEXT: select file: file type for the file selection dialog (sequence)
+#. CONTEXT: playlist management: type of playlist
+#. CONTEXT: sequence editor: label for sequence name
+#. CONTEXT: sequence editor: sequence name
+#. CONTEXT: sequence editor: title for the sequence list
+msgid "Sequence"
+msgstr "Secvență"
+
+#. CONTEXT: playerui: select the current queue for playback
+msgid "Set Queue for Playback"
+msgstr "Setați coada pentru redare"
+
+#. CONTEXT: starterui: menu item: install in alternate folder
+#, c-format
+msgid "Set Up Alternate Folder"
+msgstr "Configurați dosarul alternativ"
+
+#. CONTEXT: playlist management: notebook tab title: settings
+msgid "Settings"
+msgstr "Setări"
+
+#. CONTEXT: alternate installation: status message
+msgid "Setup complete."
+msgstr "Configurare completă."
+
+#. CONTEXT: configuration: queue: whether to show the extra queue buttons (queue dance, queue 5)
+msgid "Show Extra Queue Buttons"
+msgstr "Afișați butoane de coadă suplimentare"
+
+#. CONTEXT: playerui: menu checkbox: show the extra queues (in addition to the main music queue)
+msgid "Show Extra Queues"
+msgstr "Afișați cozile suplimentare"
+
+#. CONTEXT: configuration: show-marquee: selection
+msgid "Show Marquee"
+msgstr "Show Marquee"
+
+#. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee
+msgid "Show Song Information"
+msgstr "Afișați informații despre cântec"
+
+#. CONTEXT: configuration: whether or not to show the speed reset button
+msgid "Show Speed Reset"
+msgstr "Afișați resetarea vitezei"
+
+#. CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux.
+msgid "Shutdown Script"
+msgstr "Script de închidere"
+
+#. CONTEXT: configuration: display settings for: side-by-side song list (suggestion: combined view: song list)
+msgid "Side-by-Side Song List"
+msgstr "Lista de cântece Side-by-Side"
+
+#. CONTEXT: configuration: display settings for: side-by-side song selection (suggestion: combined view: song selection)
+msgid "Side-by-Side Song Selection"
+msgstr "Selectarea melodiilor unul lângă altul"
+
+#. CONTEXT: manage-ui: menu checkbox: side-by-side view (suggestion: combined view)
+msgid "Side-by-Side View"
+msgstr "Vedere laterală"
+
+#. CONTEXT: installer: status message
+msgid "Skipping conversion."
+msgstr "Renunțarea la conversie."
+
+#. CONTEXT: manage-ui: name of song editor notebook tab
+msgid "Song Editor"
+msgstr "Editor de cântece"
+
+#. CONTEXT: configuration: display settings for: song editor column N
+#, c-format
+msgid "Song Editor - Column %d"
+msgstr "Song Editor - Column %d"
+
+#. CONTEXT: label: time to end the song
+msgid "Song End"
+msgstr "Sfârșitul cântecului"
+
+#. CONTEXT: configuration: display settings for: song list
+#. CONTEXT: music queue: label for song list name
+#. CONTEXT: music queue: song list name
+#. CONTEXT: select file: file type for the file selection dialog (song list)
+#. CONTEXT: export/import bdj4: playlist: select the song list
+#. CONTEXT: manage-ui: name of side-by-side view tab
+#. CONTEXT: manage-ui: name of song list notebook tab
+#. CONTEXT: playlist management: type of playlist
+msgid "Song List"
+msgstr "Lista melodiilor"
+
+#. CONTEXT: configuration: display settings for: song selection
+#. CONTEXT: manage-ui: name of song selection notebook tab
+msgid "Song Selection"
+msgstr "Selectarea melodiilor"
+
+#. CONTEXT: label: time to start the song
+msgid "Song Start"
+msgstr "Start cântec"
+
+#. CONTEXT: statistics: Label for number of songs in song list
+msgid "Songs"
+msgstr "Cântece"
+
+#. CONTEXT: song selection filter: a filter: select the method to sort the song selection display
+msgid "Sort by"
+msgstr "Sortare după"
+
+#. CONTEXT: audio identification: the audio identification source
+#. CONTEXT: song editor: copy tags: source file
+msgid "Source"
+msgstr "Sursa"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow)
+#. CONTEXT: playerui: the current speed for song playback
+msgid "Speed"
+msgstr "Viteza"
+
+#. CONTEXT: label: speed adjustment for playback
+msgid "Speed Adjustment"
+msgstr "Reglarea vitezei"
+
+#. CONTEXT: update database: button to start the database update process
+msgid "Start"
+msgstr "Start"
+
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: start new sequence
+msgid "Start New Sequence"
+msgstr "Start secvență nouă"
+
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: start new song list
+msgid "Start New Song List"
+msgstr "Începe o listă nouă de melodii"
+
+#. CONTEXT: installer: status message
+msgid "Starting conversion process."
+msgstr "Începerea procesului de conversie."
+
+#. CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux.
+msgid "Startup Script"
+msgstr "Script de pornire"
+
+#. CONTEXT: manage-ui: name of statistics tab
+msgid "Statistics"
+msgstr "Statistică"
+
+#. CONTEXT: label: status
+msgid "Status"
+msgstr "Statutul"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: update database: button to stop the database update process
+msgid "Stop"
+msgstr "Oprire"
+
+#. CONTEXT: playlist management: stop after
+msgid "Stop After"
+msgstr "Oprire după"
+
+#. CONTEXT: starterui: menu item: stop all BDJ4 processes
+#, c-format
+msgid "Stop All %s Processes"
+msgstr "Opriți toate procesele %s"
+
+#. CONTEXT: configuration: queue: the time when playback will stop
+#. CONTEXT: playlist management: stop at
+msgid "Stop At"
+msgstr "Oprire la"
+
+#. CONTEXT: database update: status message
+msgid "Stopped by User"
+msgstr "Întrerupt de utilizator"
+
+#. CONTEXT: starterui: sending support message: subject of message
+msgid "Subject"
+msgstr "Subiect"
+
+#. CONTEXT: starterui: button: support : support information
+#. CONTEXT: starterui: title for the support dialog
+msgid "Support"
+msgstr "Sprijin"
+
+#. CONTEXT: starterui: title for the support message dialog
+msgid "Support Message"
+msgstr "Mesaj de asistență"
+
+#. CONTEXT: starterui: basic support dialog, list of support options
+msgid "Support options"
+msgstr "Opțiuni de asistență"
+
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: swap two songs
+msgid "Swap"
+msgstr "Swap"
+
+#. CONTEXT: playerui: menu checkbox: when a queue is emptied, switch playback to the next queue
+msgid "Switch Queue When Empty"
+msgstr "Comutare coadă când este goală"
+
+#. CONTEXT: configuration: mobile marquee: internet: tag
+msgid "Tag"
+msgstr "Etichetă"
+
+#. CONTEXT: configuration: dances: tags associated with the dance
+#. CONTEXT: label: tags (for use by the user)
+#. CONTEXT: playlist management: tags
+msgid "Tags"
+msgstr "Etichete"
+
+#. CONTEXT: configuration file: dance
+msgid "Tango"
+msgstr "Tango"
+
+#. CONTEXT: song editor: copy tags: target file
+msgid "Target"
+msgstr "Țintă"
+
+#. CONTEXT: configuration file: The completion message displayed on the marquee when the playlist is finished.
+msgid "Thank You Dancers"
+msgstr "Mulțumesc dansatorilor"
+
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+msgid "The conversion process will not be run."
+msgstr "Procesul de conversie nu va fi rulat."
+
+#. CONTEXT: installer: instructions
+msgid "The conversion process will only run for new installations and for re-installations."
+msgstr "Procesul de conversie va rula numai pentru instalațiile noi și pentru reinstalări."
+
+#. CONTEXT: configuration: the theme to use for the user interface
+msgid "Theme"
+msgstr "Tema"
+
+#. CONTEXT: create from playlist: set the maximum time for the song list
+msgid "Time Limit"
+msgstr "Termen limită"
+
+#. CONTEXT: configuration: dances: time signature for the dance
+msgid "Time Signature"
+msgstr "Semnătura timpului"
+
+#. CONTEXT: configuration: the title to display on the mobile marquee
+#. CONTEXT: label: title
+msgid "Title"
+msgstr "Titlu"
+
+#. CONTEXT: label: title sort order
+msgid "Title Sort Order"
+msgstr "Titlu Ordine de sortare"
+
+#. CONTEXT: music queue: button: set playback to pause after the selected song is played (toggle)
+msgid "Toggle Pause"
+msgstr "Comutare pauză"
+
+#. CONTEXT: playerui: button: tooltip: toggle the repeat song on and off
+msgid "Toggle Repeat"
+msgstr "Toggle Repeat"
+
+#. CONTEXT: label: total disc count (short name for listing)
+msgid "Tot. Discs"
+msgstr "Tot. Discuri"
+
+#. CONTEXT: label: total track count (short name for listing)
+msgid "Tot. Tracks"
+msgstr "Tot. Piese"
+
+#. CONTEXT: label: total disc count
+msgid "Total Discs"
+msgstr "Total discuri"
+
+#. CONTEXT: database update: status message: total number of files found
+msgid "Total Files"
+msgstr "Total fișiere"
+
+#. CONTEXT: statistics: Label for total song list duration
+msgid "Total Time"
+msgstr "Timp total"
+
+#. CONTEXT: label: total track count
+msgid "Total Tracks"
+msgstr "Total trasee"
+
+#. CONTEXT: label: track number
+msgid "Track"
+msgstr "Track"
+
+#. CONTEXT: apply adjustments: trim silence checkbox
+#. CONTEXT: manage-ui: song editor menu: trim silence
+msgid "Trim Silence"
+msgstr "Trim Silence"
+
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: truncate the song list
+msgid "Truncate"
+msgstr "Trunchiați"
+
+#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+#. CONTEXT: configuration: which audio tags will be written to the audio file
+msgid "Type"
+msgstr "Tip"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Unable to determine %s version."
+msgstr "Nu se poate determina versiunea %s ."
+
+#. CONTEXT: installer: failure message
+#, c-format
+msgid "Unable to locate %s."
+msgstr "Nu se poate localiza %s."
+
+#. CONTEXT: installer: status message
+msgid "Unable to locate BDJ3 database."
+msgstr "Nu se poate localiza baza de date BDJ3."
+
+#. CONTEXT: manage-ui: menu selection: music manager: undo song removal
+msgid "Undo Song Removal"
+msgstr "Anularea eliminării melodiei"
+
+#. CONTEXT: configuration file: rating
+msgid "Unrated"
+msgstr "Neevaluat"
+
+#. CONTEXT: manage-ui: notebook tab title: update database
+msgid "Update Database"
+msgstr "Actualizarea bazei de date"
+
+#. CONTEXT: database update: update from itunes
+#, c-format
+msgid "Update from %s"
+msgstr "Informații actualizate de la %s"
+
+#. CONTEXT: database update: updates the database using the tags from the audio files
+msgid "Update from Audio File Tags"
+msgstr "Actualizare de la Etichetele fișierelor audio"
+
+#. CONTEXT: database update: status message: number of files updated in the database
+#. CONTEXT: database update: status message: number of files updated
+msgid "Updated"
+msgstr "Actualizat"
+
+#. CONTEXT: database update: update from itunes: help text
+#, c-format
+msgid "Updates the information in the BallroomDJ database from the %s database."
+msgstr "Actualizează informațiile din baza de date BallroomDJ din baza de date %s ."
+
+#. CONTEXT: database update: update from audio file tags: help text
+msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgstr "Actualizează informațiile din baza de date BallroomDJ din etichetele fișierului audio."
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Updating %s."
+msgstr "Actualizarea %s."
+
+#. CONTEXT: alternate installation: message indicating the action that will be taken
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "Updating existing %s installation."
+msgstr "Actualizarea instalației existente %s ."
+
+#. CONTEXT: configuration: remote control: the user ID for sign-on to remote control
+msgid "User ID"
+msgstr "ID utilizator"
+
+#. CONTEXT: configuration: options associated with the user interface
+msgid "User Interface"
+msgstr "Interfața cu utilizatorul"
+
+#. CONTEXT: installer: status message
+msgid "Verification complete."
+msgstr "Verificare completă."
+
+#. CONTEXT: installer: status message
+msgid "Verification failed."
+msgstr "Verificarea a eșuat."
+
+#. CONTEXT: installer: status message
+msgid "Verifying installation."
+msgstr "Verificarea instalării."
+
+#. CONTEXT: configuration file: dance
+msgid "Viennese Waltz"
+msgstr "Vals vienez"
+
+#. CONTEXT: configuration: show-marquee: visible
+msgid "Visible"
+msgstr "Vizibil"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: The current volume of the song
+msgid "Volume"
+msgstr "Volum"
+
+#. CONTEXT: label: volume adjustment for playback
+msgid "Volume Adjustment"
+msgstr "Reglarea volumului"
+
+#. CONTEXT: configuration file: dance
+msgid "Waltz"
+msgstr "Vals"
+
+#. CONTEXT: configuration: level: title of the weight column
+#. CONTEXT: configuration: rating: title of the weight column
+#. CONTEXT: playlist management: tag weight
+msgid "Weight"
+msgstr "Greutate"
+
+#. CONTEXT: configuration file: dance
+msgid "West Coast Swing"
+msgstr "Coasta de Vest Swing"
+
+#. CONTEXT: bpm counter: instructions, line 2
+msgid "When the BPM value is stable, select the Save button."
+msgstr "Când valoarea BPM este stabilă, selectați butonul Salvare."
+
+#. CONTEXT: configuration: which audio tags will be written to the audio file
+msgid "Write Audio File Tags"
+msgstr "Write Audio File Tags"
+
+#. CONTEXT: database update: writes the tags in the database to the audio files
+msgid "Write Tags to Audio Files"
+msgstr "Scrieți etichete în fișierele audio"
+
+#. CONTEXT: database update: write tags to audio files: help text
+msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgstr "Scrie etichetele fișierului audio folosind informațiile din baza de date BallroomDJ."
+
+#. CONTEXT: configuration: dialog: XML file types
+msgid "XML Files"
+msgstr "Fișiere XML"
+
+#. CONTEXT: configuration file: dance type
+msgid "club"
+msgstr "club"
+
+#. CONTEXT: The prefix name for an audio file marked for deletion (may be abbreviated)
+msgid "delete"
+msgstr "ștergere"
+
+#. CONTEXT: configuration: dance speed
+msgid "fast"
+msgstr "rapid"
+
+#. CONTEXT: configuration file: dance type
+msgid "latin"
+msgstr "latină"
+
+#. CONTEXT: configuration: dance speed
+msgid "normal"
+msgstr "normal"
+
+#. CONTEXT: The suffix for an original audio file (may be abbreviated)
+msgid "original"
+msgstr "original"
+
+#. CONTEXT: configuration: dance speed
+msgid "slow"
+msgstr "lent"
+
+#. CONTEXT: configuration file: dance type
+msgid "standard"
+msgstr "standard"
+
+#. CONTEXT: The name of the 'standardrounds' playlist file
+msgid "standardrounds"
+msgstr "runde standard"
+
+#. CONTEXT: title of a getting started help section
+msgid "How to get Support"
+msgstr "Cum să obțineți asistență"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_get_support"
+msgstr "Pentru a obține asistență, selectați butonul „Suport”. Există link-uri către wiki, forumuri și sistemul de ticketing pentru probleme. Sau utilizați butonul „Trimite mesaj de asistență” pentru a trimite un mesaj."
+
+#. CONTEXT: title of a getting started help section
+msgid "Check the Dance for Each Song"
+msgstr "Verifică dansul pentru fiecare cântec"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_check_dance"
+msgstr "=> Selectați „Music Manager” în partea stângă a ferestrei „BDJ4 Management”. <br> Derulați lista de melodii și verificați pentru a vă asigura că dansul este setat pentru fiecare melodie. <br>Pentru a seta dansul pentru o melodie: => Selectați melodia. => Selectați fila „Editor de melodii” (sub player, deasupra listei de melodii). => Lângă eticheta „Dans”, folosiți selecția derulantă de dans și selectați dansul pentru cântec. => În partea dreaptă sus a filei „Editor de melodii”, selectați butonul „Salvare”. <br> Puteți reveni la fila „Manager muzical” și puteți verifica alte melodii care trebuie să aibă set de dans. => Lăsați fereastra „BDJ4 Management” deschisă."
+
+#. CONTEXT: title of a getting started help section
+msgid "Build the Database for the First Time"
+msgstr "Construiți baza de date pentru prima dată"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_build_db"
+msgstr "Pentru a funcționa, BallroomDJ 4 menține o bază de date cu toate melodiile tale. Această bază de date trebuie construită pentru prima dată. => Selectați butonul „Gestionați”. => În fereastra „BDJ4 Management”, selectați secțiunea „Actualizați baza de date” din partea stângă a ferestrei. <br> Selecția implicită „Check for New” este utilizată atunci când adăugați sau eliminați melodii din colecția dvs. de muzică. => Schimbați selecția la „Reconstruiți baza de date”. => Selectați butonul „Start”. => Așteptați ca reconstrucția bazei de date să se termine. => Lăsați fereastra „BDJ4 Management” deschisă."
+
+#. CONTEXT: title of a getting started help section
+msgid "Create an Example Playlist"
+msgstr "Creați un exemplu de listă de redare"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_create_playlist"
+msgstr "=> Selectați „Editați liste de melodii” în partea stângă a ferestrei „BDJ4 Management”. <br> În partea dreaptă a secțiunii inferioare a ferestrei este o listă cu melodiile tale. => Selectați o melodie făcând clic pe ea. => Acum selectați butonul săgeată stânga din mijlocul secțiunii inferioare. <br> Aceasta va adăuga melodia pe care ați selectat-o ​​la lista de melodii care este creată. => Selectați câteva melodii și adăugați fiecare dintre ele la lista de melodii. <br> Deasupra listei de melodii este o casetă de introducere cu numele „New Song List” în ea. => Faceți clic în casetă și schimbați numele listei de melodii. => Închide fereastra „BDJ4 Management”. Lista de melodii este salvată automat."
+
+#. CONTEXT: title of a getting started help section
+msgid "Set the Location of the Music Folder"
+msgstr "Setați locația folderului de muzică"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_music_location"
+msgstr "Primul pas este să configurați locația folderului de muzică. => Selectați butonul „Configurare”. <br> În fereastra „Configurare BDJ4”, este afișată secțiunea „General”. Primul articol din „General” este „Folderul de muzică”. => Schimbați „Folderul de muzică” la locația muzicii dvs. => Lăsați fereastra „Configurație BDJ4” deschisă."
+
+#. CONTEXT: title of a getting started help section
+msgid "Verify the Configured Dances"
+msgstr "Verificarea dansurilor configurate"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_configure_dances"
+msgstr "Numele dansurilor trebuie să se potrivească cu ceea ce folosești. => Selectați „Editați dansuri” în partea stângă a ferestrei „Configurare BDJ4”. <br> Revizuiește lista de dansuri. Dacă un dans are un alt nume decât cel folosit, selectați dansul și schimbați numele. Dacă lipsește un dans pe care îl folosiți, selectați butonul „Adăugați” și adăugați dansul. Dacă există dansuri pe care nu le vei folosi niciodată, selectează dansul, apoi selectează butonul „Eliminare”. => Închide fereastra „Configurare BDJ4”."
+
+#. CONTEXT: title of a getting started help section
+msgid "Introduction / Getting Started"
+msgstr "Introducere / Noțiuni introductive"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_intro"
+msgstr "Acest utilitar vă va ghida prin câțiva pași pentru a vă ajuta să începeți. => Selectați butonul „Următorul” pentru a continua cu pasul următor."
+
+#. CONTEXT: title of a getting started help section
+msgid "Play a Playlist"
+msgstr "Redarea unei liste de redare"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_play_playlist"
+msgstr "Acum veți reda lista de redare care tocmai a fost creată. => Selectați butonul „Player”. => În fereastra playerului, selectați meniul drop-down „Listă de redare în coadă”. => Selectați numele listei de redare pe care ați introdus-o anterior."
+
+#. CONTEXT: title of a getting started help section
+msgid "How is the Music Organised"
+msgstr "Cum este organizată muzica"
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_music_org"
+msgstr "Setarea metodei de organizare este importantă pentru ca BallroomDJ 4 să poată determina informațiile despre melodiile tale atunci când baza de date este construită. => Selectați „Organizare” în partea stângă a ferestrei „Configurare BDJ4”. <br> Mulți oameni își organizează muzica punând fiecare dans într-un folder separat. <br> Organizația implicită este „Dans/Titlu”. Dacă aveți iTunes instalat, calea organizației va fi setată la „Artist album/Album/Disc - Titlul piesei0”. => Selectați metoda de organizare pe care o utilizați pentru melodiile dvs. în meniul derulant „Calea organizației”. <br> Dacă calea organizației de care aveți nevoie nu este prezentă, selectați butonul „asistență” din fereastra de pornire și trimiteți un mesaj de asistență. Aproape orice cale de organizare poate fi configurată. <br> Dacă fișierele dvs. audio au dansul stocat în eticheta audio de gen, activați „Database Loads Dance from Genre”. => Lăsați fereastra „Configurație BDJ4” deschisă."
+

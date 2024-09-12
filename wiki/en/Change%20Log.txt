@@ -4,7 +4,14 @@ n[Wiki Home](Home)
 
 <!--
 
-**4.11.7 2024-8---**
+**4.12.1 2024-9-9**
+
+* Translations
+    * Added romanian, machine translated, very poor quality
+
+-->
+
+**4.12.0 2024-9-9**
 
 * Bug Fixes:
     * Auto Organize: Fix issues handling renamed audio files.
@@ -17,8 +24,6 @@ n[Wiki Home](Home)
     * Song Editor: Apply Adjustments and Restore Original will no longer be available.
 * New Features:
     * Song Editor: Trim Silence: Detects silence and sets song start and song end.
-
--->
 
 **4.11.6 2024-8-27**
 
@@ -1045,4 +1050,4 @@ n[Wiki Home](Home)
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-09-09 12:42:11; BDJ4 version 4.12.0)_
+<br>_(Updated 2024-09-09 12:47:31; BDJ4 version 4.12.0)_

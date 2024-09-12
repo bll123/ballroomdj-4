@@ -50,6 +50,8 @@ syntax: regexp
 ^locale/pl_PL/
 ^locale/pt
 ^locale/pt_PT/
+^locale/ro
+^locale/ro_RO/
 ^locale/ru
 ^locale/ru_RU/
 ^locale/sr

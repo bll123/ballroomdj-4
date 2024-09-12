@@ -26,6 +26,7 @@ Current Translations and Status:
  norsk|Machine Translated<br>Very poor quality|
  Polski|Machine Translated<br>Very poor quality|
  Português|Machine Translated<br>Very poor quality|
+ română|Machine Translated<br>Very poor quality|
  Русский‬|OK<br>Still needs work|
  српски|Machine Translated<br>Very poor quality|
  Svenska‬|Machine Translated<br>Very poor quality|
