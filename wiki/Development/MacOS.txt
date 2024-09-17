@@ -1,68 +1,90 @@
 [Wiki Home](Home)
 <br>[Developer Notes](Development-Developer%20Notes)
 
-====== VLC Installation for development:
+###### VLC Installation for development:
+
+Start the VLC installer, drag the VLC installation to /Applications as
+normal.
 
 Start the VLC installer, drag the VLC installation to
 $HOME/Applications.  Rename to VLC3.app and VLC4.app.
 
-====== Setting up MacOS
+###### Setting up MacOS
 
-VNC:
+* VNC:
+    * General / Sharing:
+        * Turn on screen sharing.
+        * Screen Sharing: set VNC password
+        * Turn on remote login.
+        * For both screen sharing and remote login, make sure the allowed users and groups are correct.
 
-https://apple.stackexchange.com/questions/339114/allowing-vnc-to-control-computer-under-10-14-mojave
+* Users & Groups:
+    * For each user:
+        * Right click on user, advanced options, change directory to point
+          to /Volumes/Users (Mojave and prior currently have symlinks).
+          Need an extra admin account to change other accounts.
+    * Add user to _developer group:
+        * sudo dscl . append /Groups/_developer GroupMembership <username>
 
-<br>Open : system preferences / security & privacy / privacy / accessibility
-<br>Using the finder :
-<br>Drag this file : /System/Library/CoreServices/RemoteManagement/
-<br>      AppleVNCServer.bundle/Contents/MacOS/AppleVNCServer
-<br>The bundle has to be opened with a right-click, show package contents.
-<br>Drag this file also: sshd-keygen-wrapper
 
-<br>Older Mac OS X: login screen picture:
-<br>/Library/Caches/com.apple.desktop.admin.png
-<br>Mojave: replace:
-<br>/Library/Desktop Pictures/Mojave.heic (really a .png)
+* Lock Screen:
+    * login options : change to name and password.
+    * add message to indicate which mac.
 
-<br>Sharing:
-<br> Turn on screen sharing and remote login.
-<br> Change computer name.
-<br> screen sharing: set VNC password
-<br> For both screen sharing and remote login, make sure the allowed users
-<br>and groups are correct.
-<br> For each user:
-<br> Right click on user, advanced options, change directory to point
-to /Volumes/Users (Mojave and prior currently have symlinks).
-Need an extra admin account to change other accounts.
-<br> Users:
-<br> login options : change to name and password.
+* Sound:
+    * turn off ui sounds
+    * turn down alert sounds
 
-Add terminal with full disk access:
-<br>Security & Privacy / Privacy / Full Disk Access : turn on terminal.
+* Mouse:
+    * will need to plug in a mouse and reboot to have this visible.
+      might need to be on the console.
+    * turn off so-called natural scrolling
 
-Add user to _developer group:
-<br>sudo dscl . append /Groups/_developer GroupMembership <username>
+* General / About:
+    * set host name
 
-/etc/paths:
-<br>/opt/local/bin
+* Networking:
+    * set up DNS servers
+        * 1.1.1.1
+        * 8.8.8.8
+        * 2606:4700:4700::1111
+        * 2001:4860:4860::8888
 
-/etc/postfix/main.cf:
-<br>default_transport = smtp:localhost:8025
+* Add terminal with full disk access:
+    * Security & Privacy
+        * Privacy
+            * Full Disk Access : add terminal.
 
-scutil --set HostName bll-mac.ballroomdj.org
+* /etc/paths:
+    * /opt/local/bin
 
-# to reset the keychain password
-<br>security set-keychain-password
+* /etc/postfix/main.cf:
+    * default_transport = smtp:localhost:8025 (or 8031)
 
-# run this first to get all the bdj4 requirements installed
+* Set hostname:
+    * scutil --set HostName bll-mac.ballroomdj.org
+
+* /etc/ssh:
+    * Copy the \*key\* files from one of the other multi-boot instances
+      that all of the ssh keys for one machine are the same.
+
+###### To reset the keychain password
+
+security set-keychain-password
+
+###### Software
+
+Run this first to get all the bdj4 requirements installed
 <br>$HOME/bdj4/install/macos-pre-install-macports.sh
 
-sudo port install autossh di rlwrap                   # for bll
-<br>sudo port install check cmake pkgconfig sshpass   # for bdj4.
+sudo port install autossh di rlwrap                   -- for bll
+<br>sudo port install check gmake cmake pkgconfig sshpass   -- for bdj4.
 <br>sudo port uninstall gtk3
 <br>sudo port install gtk3-devel
 
-  To boot into safe mode:
+###### Boot options
+
+To boot into safe mode:
 <br>    Hold down the Shift key.
 <br>  To select a partition to boot:
 <br>    Hold down the Alt key.
@@ -73,7 +95,10 @@ sudo port install autossh di rlwrap                   # for bll
 <br>  To restart to restore from the internet:
 <br>    Alt-D
 
-====== MacOS GUI (Cocoa AppKit)
+To check the command line tools version:
+<br>  pkgutil --pkg-info=com.apple.pkg.CLTools_Executables
+
+###### MacOS GUI (Cocoa AppKit)
 
 In progress.
 
@@ -142,4 +167,4 @@ packed.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2024-08-27 09:20:09; BDJ4 version 4.11.6)_
+<br>_(Updated 2024-09-17 06:27:27; BDJ4 version 4.12.0)_

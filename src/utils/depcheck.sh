@@ -56,9 +56,10 @@ done
 # check for missing copyrights
 echo "## checking for missing copyright"
 
+# this is run from the src/ directory
 for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h \
     */*.sh ../*/*.sh CMakeLists.txt */CMakeLists.txt Makefile \
-    po/Makefile* */*.awk config.h.in */*.cmake; do
+    po/Makefile* */*.awk config.h.in */*.cmake ../pkg/macos/*.plist; do
   case $fn in
     *src/tt.sh|*src/z.sh)
       continue
@@ -78,10 +79,6 @@ for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h \
       continue
       ;;
     ../dev/*)
-      continue
-      ;;
-    libcont/*)
-      # ignore for now
       continue
       ;;
     utils/dumpvars.cmake)
