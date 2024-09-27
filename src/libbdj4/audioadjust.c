@@ -253,6 +253,8 @@ aaAdjust (musicdb_t *musicdb, song_t *song,
   const char  *ftstr = "tri";
   mstime_t    etm;
   char        *resp;
+  char        *afp = aftext;
+  char        *afend = aftext + sizeof (aftext);
 
   mstimestart (&etm);
   *aftext = '\0';
@@ -327,7 +329,7 @@ aaAdjust (musicdb_t *musicdb, song_t *song,
     snprintf (tmp, sizeof (tmp),
         "%safade=t=in:curve=tri:d=%dms",
         afprefix, fadein);
-    strlcat (aftext, tmp, sizeof (aftext));
+    afp = stpecpy (afp, afend, tmp);
     afprefix = ", ";
   }
 
@@ -335,7 +337,7 @@ aaAdjust (musicdb_t *musicdb, song_t *song,
     snprintf (tmp, sizeof (tmp),
         "%safade=t=out:curve=%s:st=%" PRId32 "ms:d=%dms",
         afprefix, ftstr, calcdur - fadeout, fadeout);
-    strlcat (aftext, tmp, sizeof (aftext));
+    afp = stpecpy (afp, afend, tmp);
     afprefix = ", ";
   }
 
@@ -343,7 +345,7 @@ aaAdjust (musicdb_t *musicdb, song_t *song,
   /* otherwise, do it here. */
   if (speed == 100 && gap > 0) {
     snprintf (tmp, sizeof (tmp), "%sapad=pad_dur=%dms", afprefix, gap);
-    strlcat (aftext, tmp, sizeof (aftext));
+    afp = stpecpy (afp, afend, tmp);
     afprefix = ", ";
   }
 
@@ -514,6 +516,8 @@ aaApplySpeed (song_t *song, const char *infn, const char *outfn,
   char        *resp;
   char        tmp [60];
   const char  *afprefix = "";
+  char        *afp = aftext;
+  char        *afend = aftext + sizeof (aftext);
 
   *aftext = '\0';
 
@@ -530,13 +534,13 @@ aaApplySpeed (song_t *song, const char *infn, const char *outfn,
   if (speed > 0 && speed != 100) {
     snprintf (tmp, sizeof (tmp), "%srubberband=tempo=%.2f",
         afprefix, (double) speed / 100.0);
-    strlcat (aftext, tmp, sizeof (aftext));
+    afp = stpecpy (afp, afend, tmp);
     afprefix = ", ";
   }
 
   if (gap > 0) {
     snprintf (tmp, sizeof (tmp), "%sapad=pad_dur=%dms", afprefix, gap);
-    strlcat (aftext, tmp, sizeof (aftext));
+    afp = stpecpy (afp, afend, tmp);
     afprefix = ", ";
   }
 
@@ -619,11 +623,13 @@ aaProcess (const char *tag, const char *targv [], int targc, char *resp)
   rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, AA_RESP_BUFF_SZ, NULL);
   if (rc != 0 || logCheck (LOG_DBG, LOG_AUDIO_ADJUST)) {
     char  cmd [1000];
+    char  *p = cmd;
+    char  *end = cmd + sizeof (cmd);
 
     *cmd = '\0';
     for (int i = 0; i < targc - 1; ++i) {
-      strlcat (cmd, targv [i], sizeof (cmd));;
-      strlcat (cmd, " ", sizeof (cmd));;
+      p = stpecpy (p, end, targv [i]);
+      p = stpecpy (p, end, " ");
     }
     logMsg (LOG_DBG, LOG_IMPORTANT, "%s: cmd: %s", tag, cmd);
     logMsg (LOG_DBG, LOG_IMPORTANT, "%s: rc: %d", tag, rc);

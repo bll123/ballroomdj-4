@@ -272,7 +272,7 @@ sysvarsInit (const char *argv0, int flags)
     } else if (strcmp (sysvars [SV_OS_VERS], "6.3") == 0) {
       p = stpecpy (p, end, "8.1");
     } else {
-      p = stpecpy (p, end, sysvar [SV_OS_VERS]);
+      p = stpecpy (p, end, sysvars [SV_OS_VERS]);
     }
     p = stpecpy (p, end, " ");
     p = stpecpy (p, end, sysvars [SV_OS_BUILD]);

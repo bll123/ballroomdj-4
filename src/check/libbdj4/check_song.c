@@ -498,6 +498,8 @@ START_TEST(song_tag_list)
   char        tbuff [3096];
   const char  *tag;
   datafileconv_t conv;
+  char        *p = tbuff;
+  char        *end = tbuff + sizeof (tbuff);
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_tag_list");
   mdebugSubTag ("song_tag_list");
@@ -517,6 +519,7 @@ START_TEST(song_tag_list)
     /* to generate the output string for the database */
     snprintf (tbuff, sizeof (tbuff), "%s\n..%s\n", tagdefs [TAG_URI].tag,
         slistGetStr (tlist, tagdefs [TAG_URI].tag));
+    p = tbuff + strlen (tbuff);
     slistStartIterator (tlist, &iteridx);
     while ((tag = slistIterateKey (tlist, &iteridx)) != NULL) {
       if (strcmp (tag, tagdefs [TAG_URI].tag) == 0) {
@@ -526,12 +529,12 @@ START_TEST(song_tag_list)
           strcmp (tag, tagdefs [TAG_RRN].tag) == 0) {
         continue;
       }
-      strlcat (tbuff, tag, sizeof (tbuff));
-      strlcat (tbuff, "\n", sizeof (tbuff));
-      strlcat (tbuff, "..", sizeof (tbuff));
+      p = stpecpy (p, end, tag);
+      p = stpecpy (p, end, "\n");
+      p = stpecpy (p, end, "..");
       cdata = slistGetStr (tlist, tag);
-      strlcat (tbuff, cdata, sizeof (tbuff));
-      strlcat (tbuff, "\n", sizeof (tbuff));
+      p = stpecpy (p, end, cdata);
+      p = stpecpy (p, end, "\n");
     }
     slistFree (tlist);
 

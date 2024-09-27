@@ -18,9 +18,6 @@ int       versionCompare (const char *v1, const char *v2);
 
 char * stpecpy (char *dst, char end[0], const char *restrict src);
 
-#if ! _lib_strlcat
-size_t strlcat(char *dst, const char *src, size_t siz);
-#endif
 #if ! _lib_strlcpy
 size_t strlcpy(char *dst, const char *src, size_t siz);
 #endif

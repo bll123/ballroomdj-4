@@ -40,9 +40,9 @@ dRandom (void)
   lval = random ();
   dval = (double) lval / (double) UINT_MAX;
 #endif
-#if ! _lib_random && _lib_rand_s
+#if _lib_rand_s
   rand_s (&ival);
-  dval = (double) ival / (double) RAND_MAX;
+  dval = (double) ival / (double) UINT_MAX;
 #endif
   return dval;
 }
@@ -64,11 +64,11 @@ sRandom (void)
     }
   }
 
-#if _lib_random
+#if _lib_srandom
   srandom (seed);
   initialized = true;
 #endif
-#if ! _lib_random && _lib_srand
+#if ! _lib_srandom && _lib_srand
   srand (seed);
   initialized = true;
 #endif

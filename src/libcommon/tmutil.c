@@ -228,14 +228,14 @@ tmutilDisp (char *buff, size_t sz, int type)
 #if _lib_GetDateFormatEx
     wchar_t     wtmp [200];
     char        *tmp;
-    char        *p;
+    char        *p = buff;
+    char        *end = buff + sz;
 
     GetDateFormatEx (LOCALE_NAME_USER_DEFAULT, DATE_LONGDATE, NULL,
         NULL, wtmp, 200, NULL);
     tmp = osFromWideChar (wtmp);
-    p = buff;
     if (tmp != NULL) {
-      p = stpecpy (p, buff + sz, tmp);
+      p = stpecpy (p, end, tmp);
       mdfree (tmp);
     }
 # if _lib_GetTimeFormatEx
@@ -243,10 +243,8 @@ tmutilDisp (char *buff, size_t sz, int type)
         NULL, wtmp, 200);
     tmp = osFromWideChar (wtmp);
     if (tmp != NULL) {
-
-      p = buff;
-      p = stpecpy (p, buff + sz, " ");
-      p = stpecpy (p, buff + sz, tmp);
+      p = stpecpy (p, end, " ");
+      p = stpecpy (p, end, tmp);
       mdfree (tmp);
     }
 # endif

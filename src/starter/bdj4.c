@@ -561,13 +561,16 @@ main (int argc, char * argv[])
     snprintf (tbuff, sz, "C:\\Program Files\\VideoLAN\\%s", vlctag);
     p = stpecpy (p, end, tbuff);
     p = stpecpy (p, end, ";");
-    osGetEnv ("PATH", tbuff, sizeof (tbuff));
+    osGetEnv ("PATH", tbuff, sz);
+    if (debugself) {
+      fprintf (stderr, "sys path: %s\n", tbuff);
+    }
     p = stpecpy (p, end, tbuff);
 
     osSetEnv ("PATH", path);
 
     if (debugself) {
-      osGetEnv ("PATH", tbuff, sizeof (tbuff));
+      osGetEnv ("PATH", tbuff, sz);
       fprintf (stderr, "final PATH=%s\n", tbuff);
     }
 

@@ -394,7 +394,7 @@ START_TEST(datafile_keyval_dfkey)
   mdebugSubTag ("datafile_keyval_dfkey");
   fn = "tmp/dftestb1.txt";
   /* F is removed */
-  tstr = "# test 6a\n# version 6\nversion\n..7\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
+  tstr = "# test 6a\n# version 6\nversion\n..1\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", tstr);
   mdextfclose (fh);
@@ -508,7 +508,7 @@ START_TEST(datafile_keyval_dfkey_missing)
   mdebugSubTag ("datafile_keyval_dfkey_missing");
   fn = "tmp/dftestb2.txt";
   /* F is removed */
-  tstr = "# test 6b\n# version 6\nversion\n..7\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
+  tstr = "# test 6b\n# version 6\nversion\n..1\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", tstr);
   mdextfclose (fh);
@@ -614,7 +614,7 @@ START_TEST(datafile_keyval_df_extra)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_df_extra");
   mdebugSubTag ("datafile_keyval_df_extra");
   fn = "tmp/dftestc.txt";
-  tstr = "# test 7\n# version 7\nversion\n..8\nA\n..a\nB\n..5\nQQ\n..qq\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
+  tstr = "# test 7\n# version 7\nversion\n..1\nA\n..a\nB\n..5\nQQ\n..qq\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", tstr);
   mdextfclose (fh);
@@ -726,7 +726,7 @@ START_TEST(datafile_indirect)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_indirect");
   mdebugSubTag ("datafile_indirect");
   fn = "tmp/dftestd.txt";
-  tstr = "# version 8\nversion\n..9\nKEY\n..0\nA\n..a\nB\n..0\n"
+  tstr = "# version 8\nversion\n..1\nKEY\n..0\nA\n..a\nB\n..0\n"
       "KEY\n..1\nA\n..a\nB\n..1\n"
       "KEY\n..2\nA\n..a\nB\n..2\n"
       "KEY\n..3\nA\n..a\nB\n..3\n";
@@ -818,7 +818,7 @@ START_TEST(datafile_indirect_missing)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_indirect_missing");
   mdebugSubTag ("datafile_indirect_missing");
   fn = "tmp/dfteste.txt";
-  tstr = "# version 9\nversion\n..10\nKEY\n..0\nA\n..a\nB\n..0\n"
+  tstr = "# version 9\nversion\n..1\nKEY\n..0\nA\n..a\nB\n..0\n"
       "KEY\n..1\nA\n..a\n"
       "KEY\n..2\nA\n..a\nB\n..2\n"
       "KEY\n..3\nB\n..3\n";
@@ -920,7 +920,7 @@ START_TEST(datafile_keyval_savelist)
   mdebugSubTag ("datafile_keyval_savelist");
   fn = "tmp/dftestf.txt";
   /* F is removed */
-  tstr = "# version 10\nversion\n..11\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
+  tstr = "# version 10\nversion\n..1\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", tstr);
   mdextfclose (fh);
@@ -1004,7 +1004,7 @@ START_TEST(datafile_keyval_savebuffer)
   mdebugSubTag ("datafile_keyval_savebuffer");
   fn = "tmp/dftestg.txt";
   /* F is removed */
-  tstr = "# version 11\nversion\n..12\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
+  tstr = "# version 11\nversion\n..1\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", tstr);
   mdextfclose (fh);
@@ -1087,7 +1087,7 @@ START_TEST(datafile_keyval_save)
   mdebugSubTag ("datafile_keyval_save");
   fn = "tmp/dftesti.txt";
   /* F is removed */
-  tstr = "# version 12\nversion\n..13\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
+  tstr = "# version 12\nversion\n..1\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fileopOpen (fn, "w");
   fprintf (fh, "%s", tstr);
   mdextfclose (fh);
@@ -1261,7 +1261,7 @@ START_TEST(datafile_indirect_save)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_indirect_save");
   mdebugSubTag ("datafile_indirect_save");
   fn = "tmp/dftestm.txt";
-  tstr = "# version 13\nversion\n..14\nKEY\n..0\nA\n..a\nB\n..0\n"
+  tstr = "# version 13\nversion\n..1\nKEY\n..0\nA\n..a\nB\n..0\n"
       "KEY\n..1\nA\n..b\nB\n..2\n"
       "KEY\n..2\nA\n..c\nB\n..3\n"
       "KEY\n..3\nA\n..d\nB\n..4\n";

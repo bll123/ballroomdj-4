@@ -140,6 +140,8 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, audioid_resp_t *resp)
 {
   char          uri [MAXPATHLEN];
   mstime_t      starttm;
+  char          *p = uri;
+  char          *end = uri + sizeof (uri);
 
   /* musicbrainz prefers only one call per second */
   mstimestart (&starttm);
@@ -150,9 +152,9 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, audioid_resp_t *resp)
   logMsg (LOG_DBG, LOG_IMPORTANT, "mb: wait time: %" PRId64 "ms",
       (int64_t) mstimeend (&starttm));
 
-  strlcpy (uri, sysvarsGetStr (SV_AUDIOID_MUSICBRAINZ_URI), sizeof (uri));
-  strlcat (uri, "/recording/", sizeof (uri));
-  strlcat (uri, recid, sizeof (uri));
+  p = stpecpy (p, end, sysvarsGetStr (SV_AUDIOID_MUSICBRAINZ_URI));
+  p = stpecpy (p, end, "/recording/");
+  p = stpecpy (p, end, recid);
   /* artist-credits retrieves the additional artists for the song */
   /* media is needed to get the track number and track total */
   /* work-rels is needed to get the work-id */
@@ -162,7 +164,7 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, audioid_resp_t *resp)
   /* musicbrainz limits the number of responses to 25, and there appears */
   /* to be many duplicates.  I could use better filtering. */
   /* for this reason, musicbrainz is not used as the primary source. */
-  strlcat (uri, "?inc=artist-credits+work-rels+releases+artists+media+isrcs", sizeof (uri));
+  p = stpecpy (p, end, "?inc=artist-credits+work-rels+releases+artists+media+isrcs");
   logMsg (LOG_DBG, LOG_AUDIO_ID, "audioid: mb: uri: %s", uri);
 
 #if MUSICBRAINZ_REUSE

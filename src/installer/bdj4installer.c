@@ -1078,13 +1078,15 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
   bool        found = false;
   char        tbuff [MAXPATHLEN];
   char        tdir [MAXPATHLEN];
+  char        *p = tdir;
+  char        *end = tdir + sizeof (tdir);
 
-  strlcpy (tdir, dir, sizeof (tdir));
+  p = stpecpy (p, end, dir);
 
   if (isMacOS ()) {
     /* on macos, the .app extension must always exist */
     if (strstr (tdir, MACOS_APP_EXT) == NULL) {
-      strlcat (tdir, MACOS_APP_EXT, sizeof (tdir));
+      p = stpecpy (p, end, MACOS_APP_EXT);
     }
   }
 
@@ -1749,6 +1751,8 @@ installerConvertStart (installer_t *installer)
   char    *tokptrb;
   char    *vnm;
   int     ok;
+  char    *b3vp;
+  char    *b3vend;
 
 
   if (! installer->convprocess) {
@@ -1817,6 +1821,8 @@ installerConvertStart (installer_t *installer)
   *installer->bdj3version = '\0';
   snprintf (tbuff, sizeof (tbuff), "%s/VERSION.txt",
       installer->bdj3loc);
+  b3vp = installer->bdj3version;
+  b3vend = installer->bdj3version + sizeof (installer->bdj3version);
   if (isMacOS () && ! fileopFileExists (tbuff)) {
     snprintf (tbuff, sizeof (tbuff),
         "%s/Applications/BallroomDJ.app%s/VERSION.txt",
@@ -1829,7 +1835,7 @@ installerConvertStart (installer_t *installer)
       vnm = strtok_r (tp, "=", &tokptrb);
       p = strtok_r (NULL, "=", &tokptrb);
       if (strcmp (vnm, "VERSION") == 0) {
-        strlcat (installer->bdj3version, p, sizeof (installer->bdj3version));
+        b3vp = stpecpy (b3vp, b3vend, p);
         stringTrim (installer->bdj3version);
         break;
       }

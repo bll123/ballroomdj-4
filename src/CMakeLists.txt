@@ -80,7 +80,6 @@ add_library (objstring OBJECT
   libcommon/mdebug.c
   libcommon/bdjstring.c
   libcommon/stpecpy.c
-  libcommon/strlcat.c
   libcommon/strlcpy.c
 )
 

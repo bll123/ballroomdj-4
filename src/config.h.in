@@ -130,7 +130,6 @@ extern "C" {
 #cmakedefine01 _lib_statx
 #cmakedefine01 _lib_stpecpy
 #cmakedefine01 _lib_strlcpy
-#cmakedefine01 _lib_strlcat
 #cmakedefine01 _lib_strptime
 #cmakedefine01 _lib_strtok_r
 #cmakedefine01 _lib_symlink
