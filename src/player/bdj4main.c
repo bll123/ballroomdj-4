@@ -900,6 +900,9 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
   int         dispidx;
   int32_t     uniqueidx;
   int64_t     qDuration;
+  char        *p;
+  char        *end;
+
 
   logProcBegin ();
 
@@ -912,6 +915,8 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
   snprintf (sbuff, BDJMSG_MAX, "%d%c%" PRId64 "%c%" PRId32 "%c",
       musicqidx, MSG_ARGS_RS, qDuration, MSG_ARGS_RS,
       dbidx, MSG_ARGS_RS);
+  p = sbuff + strlen (sbuff);
+  end = sbuff + BDJMSG_MAX;
 
   /* main keeps the current song in queue position 0 */
   for (int i = 1; i < musicqLen; ++i) {
@@ -924,19 +929,19 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
 
     dispidx = musicqGetDispIdx (mainData->musicQueue, musicqidx, i);
     snprintf (tbuff, sizeof (tbuff), "%d%c", dispidx, MSG_ARGS_RS);
-    strlcat (sbuff, tbuff, BDJMSG_MAX);
+    p = stpecpy (p, end, tbuff);
     uniqueidx = musicqGetUniqueIdx (mainData->musicQueue, musicqidx, i);
     snprintf (tbuff, sizeof (tbuff), "%" PRId32 "%c", uniqueidx, MSG_ARGS_RS);
-    strlcat (sbuff, tbuff, BDJMSG_MAX);
+    p = stpecpy (p, end, tbuff);
     snprintf (tbuff, sizeof (tbuff), "%" PRId32 "%c", dbidx, MSG_ARGS_RS);
-    strlcat (sbuff, tbuff, BDJMSG_MAX);
+    p = stpecpy (p, end, tbuff);
     flags = musicqGetFlags (mainData->musicQueue, musicqidx, i);
     pauseind = false;
     if ((flags & MUSICQ_FLAG_PAUSE) == MUSICQ_FLAG_PAUSE) {
       pauseind = true;
     }
     snprintf (tbuff, sizeof (tbuff), "%d%c", pauseind, MSG_ARGS_RS);
-    strlcat (sbuff, tbuff, BDJMSG_MAX);
+    p = stpecpy (p, end, tbuff);
   }
 
   /* only the displayable queues need to be updated in the playerui */
@@ -971,6 +976,10 @@ mainSendMarqueeData (maindata_t *mainData)
   char        *jbuff = NULL;
   bool        marqueeactive = false;
   bool        mobmarqueeactive = false;
+  char        *jp = NULL;
+  char        *jend = NULL;
+  char        *sp = NULL;
+  char        *send = NULL;
 
   logProcBegin ();
   mainData->marqueeChanged = false;
@@ -979,6 +988,8 @@ mainSendMarqueeData (maindata_t *mainData)
     mobmarqueeactive = true;
     jbuff = mdmalloc (BDJMSG_MAX);
     jbuff [0] = '\0';
+    jp = jbuff;
+    jend = jbuff + BDJMSG_MAX;
   }
   if (mainData->marqueestarted) {
     marqueeactive = true;
@@ -1003,11 +1014,11 @@ mainSendMarqueeData (maindata_t *mainData)
     if (title == NULL) {
       title = "";
     }
-    strlcpy (jbuff, "{ ", BDJMSG_MAX);
+    jp = stpecpy (jp, jend, "{ ");
     snprintf (tbuff, sizeof (tbuff), "\"mqlen\" : \"%d\", ", mqLen);
-    strlcat (jbuff, tbuff, BDJMSG_MAX);
+    jp = stpecpy (jp, jend, tbuff);
     snprintf (tbuff, sizeof (tbuff), "\"title\" : \"%s\"", title);
-    strlcat (jbuff, tbuff, BDJMSG_MAX);
+    jp = stpecpy (jp, jend, tbuff);
   }
 
   if (mainData->playerState == PL_STATE_STOPPED &&
@@ -1020,11 +1031,11 @@ mainSendMarqueeData (maindata_t *mainData)
       /* special case to finalize the mobile marquee display */
       snprintf (tbuff, sizeof (tbuff), "\"current\" : \"%s\"",
           bdjoptGetStr (OPT_P_COMPLETE_MSG));
-      strlcat (jbuff, ", ", BDJMSG_MAX);
-      strlcat (jbuff, tbuff, BDJMSG_MAX);
-      strlcat (jbuff, ", ", BDJMSG_MAX);
-      strlcat (jbuff, "\"skip\" : \"true\"", BDJMSG_MAX);
-      strlcat (jbuff, " }", BDJMSG_MAX);
+      jp = stpecpy (jp, jend, ", ");
+      jp = stpecpy (jp, jend, tbuff);
+      jp = stpecpy (jp, jend, ", ");
+      jp = stpecpy (jp, jend, "\"skip\" : \"true\"");
+      jp = stpecpy (jp, jend, " }");
       connSendMessage (mainData->conn, ROUTE_MOBILEMQ, MSG_MARQUEE_DATA, jbuff);
       dataFree (jbuff);
     }
@@ -1035,6 +1046,8 @@ mainSendMarqueeData (maindata_t *mainData)
   if (marqueeactive) {
     sbuff = mdmalloc (BDJMSG_MAX);
     sbuff [0] = '\0';
+    sp = sbuff;
+    send = sbuff + BDJMSG_MAX;
   }
 
   currTime = mstime ();
@@ -1112,7 +1125,7 @@ mainSendMarqueeData (maindata_t *mainData)
     if (marqueeactive) {
       /* dance display */
       snprintf (tbuff, sizeof (tbuff), "%s%c", dstr, MSG_ARGS_RS);
-      strlcat (sbuff, tbuff, BDJMSG_MAX);
+      sp = stpecpy (sp, send, tbuff);
     }
 
     if (mobmarqueeactive) {
@@ -1124,8 +1137,8 @@ mainSendMarqueeData (maindata_t *mainData)
         }
         snprintf (tbuff, sizeof (tbuff), "\"mq%d\" : \"%s\"", marqueeidx, dstr);
       }
-      strlcat (jbuff, ", ", BDJMSG_MAX);
-      strlcat (jbuff, tbuff, BDJMSG_MAX);
+      jp = stpecpy (jp, jend, ", ");
+      jp = stpecpy (jp, jend, tbuff);
     }
 
     ++marqueeidx;
@@ -1149,7 +1162,7 @@ mainSendMarqueeData (maindata_t *mainData)
         tstr = MSG_ARGS_EMPTY_STR;
       }
       snprintf (tbuff, sizeof (tbuff), "%s%c", tstr, MSG_ARGS_RS);
-      strlcat (sbuff, tbuff, BDJMSG_MAX);
+      sp = stpecpy (sp, send, tbuff);
     }
 
     connSendMessage (mainData->conn, ROUTE_MARQUEE, MSG_MARQUEE_DATA, sbuff);
@@ -1158,10 +1171,10 @@ mainSendMarqueeData (maindata_t *mainData)
 
   if (mobmarqueeactive) {
     if (marqueeidx == 0) {
-      strlcat (jbuff, ", ", BDJMSG_MAX);
-      strlcat (jbuff, "\"skip\" : \"true\"", BDJMSG_MAX);
+      jp = stpecpy (jp, jend, ", ");
+      jp = stpecpy (jp, jend, "\"skip\" : \"true\"");
     }
-    strlcat (jbuff, " }", BDJMSG_MAX);
+    jp = stpecpy (jp, jend, " }");
     connSendMessage (mainData->conn, ROUTE_MOBILEMQ, MSG_MARQUEE_DATA, jbuff);
     dataFree (jbuff);
   }
@@ -2257,6 +2270,8 @@ mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route)
   char          tbuff [200];
   char          *rbuff = NULL;
   slistidx_t    iteridx;
+  char          *rp;
+  char          *rend;
 
   logProcBegin ();
 
@@ -2265,12 +2280,14 @@ mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route)
 
   rbuff = mdmalloc (BDJMSG_MAX);
   rbuff [0] = '\0';
+  rp = rbuff;
+  rend = rbuff + BDJMSG_MAX;
   slistStartIterator (danceList, &iteridx);
   while ((dancenm = slistIterateKey (danceList, &iteridx)) != NULL) {
     idx = slistGetNum (danceList, dancenm);
     snprintf (tbuff, sizeof (tbuff), "%" PRId32 "%c%s%c",
         idx, MSG_ARGS_RS, dancenm, MSG_ARGS_RS);
-    strlcat (rbuff, tbuff, BDJMSG_MAX);
+    rp = stpecpy (rp, rend, tbuff);
   }
 
   connSendMessage (mainData->conn, route, MSG_DANCE_LIST_DATA, rbuff);
@@ -2287,6 +2304,8 @@ mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route)
   char          tbuff [200];
   char          *rbuff = NULL;
   slistidx_t    iteridx;
+  char          *rp;
+  char          *rend;
 
   logProcBegin ();
 
@@ -2294,12 +2313,14 @@ mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route)
 
   rbuff = mdmalloc (BDJMSG_MAX);
   rbuff [0] = '\0';
+  rp = rbuff;
+  rend = rbuff + BDJMSG_MAX;
   slistStartIterator (plList, &iteridx);
   while ((plnm = slistIterateKey (plList, &iteridx)) != NULL) {
     plfnm = slistGetStr (plList, plnm);
     snprintf (tbuff, sizeof (tbuff), "%s%c%s%c",
         plfnm, MSG_ARGS_RS, plnm, MSG_ARGS_RS);
-    strlcat (rbuff, tbuff, BDJMSG_MAX);
+    rp = stpecpy (rp, rend, tbuff);
   }
 
   slistFree (plList);
@@ -2318,6 +2339,10 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
   int         jsonflag;
   const char  *p;
   mp_playerstatus_t *ps;
+  char        *tp;
+  char        *tend;
+  char        *jp;
+  char        *jend;
 
   logProcBegin ();
 
@@ -2330,12 +2355,14 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
 
     /* for marquee */
     timerbuff = mdmalloc (BDJMSG_MAX);
+    tp = timerbuff;
+    tend = timerbuff + BDJMSG_MAX;
 
     snprintf (tbuff, sizeof (tbuff), "%" PRIu32 "%c", ps->playedtime, MSG_ARGS_RS);
-    strlcpy (timerbuff, tbuff, BDJMSG_MAX);
+    tp = stpecpy (tp, tend, tbuff);
 
     snprintf (tbuff, sizeof (tbuff), "%" PRId32, ps->duration);
-    strlcat (timerbuff, tbuff, BDJMSG_MAX);
+    tp = stpecpy (tp, tend, tbuff);
 
     connSendMessage (mainData->conn, ROUTE_MARQUEE, MSG_MARQUEE_TIMER, timerbuff);
     dataFree (timerbuff);
@@ -2348,8 +2375,10 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
 
   jsbuff = mdmalloc (BDJMSG_MAX);
   *jsbuff = '\0';
+  jp = jsbuff;
+  jend = jsbuff + BDJMSG_MAX;
 
-  strlcpy (jsbuff, "{ ", BDJMSG_MAX);
+  jp = stpecpy (jp, jend, "{ ");
 
   p = "stop";
   switch (mainData->playerState) {
@@ -2378,39 +2407,39 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
 
   snprintf (tbuff, sizeof (tbuff),
       "\"playstate\" : \"%s\"", p);
-  strlcat (jsbuff, tbuff, BDJMSG_MAX);
+  jp = stpecpy (jp, jend, tbuff);
 
   snprintf (tbuff, sizeof (tbuff),
       "\"repeat\" : \"%d\"", ps->repeat);
-  strlcat (jsbuff, ", ", BDJMSG_MAX);
-  strlcat (jsbuff, tbuff, BDJMSG_MAX);
+  jp = stpecpy (jp, jend, ", ");
+  jp = stpecpy (jp, jend, tbuff);
 
   snprintf (tbuff, sizeof (tbuff),
       "\"pauseatend\" : \"%d\"", ps->pauseatend);
-  strlcat (jsbuff, ", ", BDJMSG_MAX);
-  strlcat (jsbuff, tbuff, BDJMSG_MAX);
+  jp = stpecpy (jp, jend, ", ");
+  jp = stpecpy (jp, jend, tbuff);
 
   snprintf (tbuff, sizeof (tbuff),
       "\"vol\" : \"%d%%\"", ps->currentVolume);
-  strlcat (jsbuff, ", ", BDJMSG_MAX);
-  strlcat (jsbuff, tbuff, BDJMSG_MAX);
+  jp = stpecpy (jp, jend, ", ");
+  jp = stpecpy (jp, jend, tbuff);
 
   snprintf (tbuff, sizeof (tbuff),
       "\"speed\" : \"%d%%\"", ps->currentSpeed);
-  strlcat (jsbuff, ", ", BDJMSG_MAX);
-  strlcat (jsbuff, tbuff, BDJMSG_MAX);
+  jp = stpecpy (jp, jend, ", ");
+  jp = stpecpy (jp, jend, tbuff);
 
   snprintf (tbuff, sizeof (tbuff),
       "\"playedtime\" : \"%s\"",
       tmutilToMS (ps->playedtime, tbuff2, sizeof (tbuff2)));
-  strlcat (jsbuff, ", ", BDJMSG_MAX);
-  strlcat (jsbuff, tbuff, BDJMSG_MAX);
+  jp = stpecpy (jp, jend, ", ");
+  jp = stpecpy (jp, jend, tbuff);
 
   snprintf (tbuff, sizeof (tbuff),
       "\"duration\" : \"%s\"",
       tmutilToMS (ps->duration, tbuff2, sizeof (tbuff2)));
-  strlcat (jsbuff, ", ", BDJMSG_MAX);
-  strlcat (jsbuff, tbuff, BDJMSG_MAX);
+  jp = stpecpy (jp, jend, ", ");
+  jp = stpecpy (jp, jend, tbuff);
 
   /* the javascript is built as two pieces */
   /* the complete js message will be put together by bdj4rc.c */
@@ -2432,6 +2461,8 @@ mainSendRemctrlData (maindata_t *mainData)
   const char  *data;
   dbidx_t     dbidx;
   song_t      *song;
+  char        *jp;
+  char        *jend;
 
   if (! bdjoptGetNum (OPT_P_REMOTECONTROL)) {
     return;
@@ -2441,22 +2472,24 @@ mainSendRemctrlData (maindata_t *mainData)
 
   jsbuff = mdmalloc (BDJMSG_MAX);
   *jsbuff = '\0';
+  jp = jsbuff;
+  jend = jsbuff + BDJMSG_MAX;
 
   /* the javascript is built as two pieces */
   /* the complete js message will be put together by bdj4rc.c */
 
   snprintf (tbuff, sizeof (tbuff),
       "\"qlength\" : \"%" PRId32 "\"", musicqLen);
-  strlcat (jsbuff, ", ", BDJMSG_MAX);
-  strlcat (jsbuff, tbuff, BDJMSG_MAX);
+  jp = stpecpy (jp, jend, ", ");
+  jp = stpecpy (jp, jend, tbuff);
 
   /* dance */
   data = musicqGetDance (mainData->musicQueue, mainData->musicqPlayIdx, 0);
   if (data == NULL) { data = ""; }
   snprintf (tbuff, sizeof (tbuff),
       "\"dance\" : \"%s\"", data);
-  strlcat (jsbuff, ", ", BDJMSG_MAX);
-  strlcat (jsbuff, tbuff, BDJMSG_MAX);
+  jp = stpecpy (jp, jend, ", ");
+  jp = stpecpy (jp, jend, tbuff);
 
   dbidx = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
   song = dbGetByIdx (mainData->musicdb, dbidx);
@@ -2466,19 +2499,18 @@ mainSendRemctrlData (maindata_t *mainData)
   if (data == NULL) { data = ""; }
   snprintf (tbuff, sizeof (tbuff),
       "\"artist\" : \"%s\"", data);
-  strlcat (jsbuff, ", ", BDJMSG_MAX);
-  strlcat (jsbuff, tbuff, BDJMSG_MAX);
+  jp = stpecpy (jp, jend, ", ");
+  jp = stpecpy (jp, jend, tbuff);
 
   /* title */
   data = songGetStr (song, TAG_TITLE);
   if (data == NULL) { data = ""; }
   snprintf (tbuff, sizeof (tbuff),
       "\"title\" : \"%s\"", data);
-  strlcat (jsbuff, ", ", BDJMSG_MAX);
-  strlcat (jsbuff, tbuff, BDJMSG_MAX);
+  jp = stpecpy (jp, jend, ", ");
+  jp = stpecpy (jp, jend, tbuff);
 
-  strlcat (jsbuff, " }", BDJMSG_MAX);
-
+  jp = stpecpy (jp, jend, " }");
   connSendMessage (mainData->conn, ROUTE_REMCTRL, MSG_CURR_SONG_DATA, jsbuff);
 
   dataFree (jsbuff);
@@ -3100,6 +3132,8 @@ mainQueueInfoRequest (maindata_t *mainData, bdjmsgroute_t routefrom,
   slistidx_t  dbidx;
   song_t      *song;
   int         musicqidx;
+  char        *sp;
+  char        *send;
 
   logProcBegin ();
 
@@ -3116,6 +3150,8 @@ mainQueueInfoRequest (maindata_t *mainData, bdjmsgroute_t routefrom,
   sbuff = mdmalloc (BDJMSG_MAX);
   *sbuff = '\0';
   snprintf (sbuff, BDJMSG_MAX, "%" PRId32 "%c", musicqLen, MSG_ARGS_RS);
+  sp = sbuff + strlen (sbuff);
+  send = sbuff + BDJMSG_MAX;
 
   for (int i = 0; i <= musicqLen; ++i) {
     int32_t     dur;
@@ -3131,16 +3167,16 @@ mainQueueInfoRequest (maindata_t *mainData, bdjmsgroute_t routefrom,
     plidx = musicqGetPlaylistIdx (mainData->musicQueue, musicqidx, i);
 
     snprintf (tbuff, sizeof (tbuff), "%d%c", dbidx, MSG_ARGS_RS);
-    strlcat (sbuff, tbuff, BDJMSG_MAX);
+    sp = stpecpy (sp, send, tbuff);
 
     dur = mainCalculateSongDuration (mainData, song, plidx, musicqidx, MAIN_CALC_NO_SPEED);
     snprintf (tbuff, sizeof (tbuff), "%" PRId32 "%c", dur, MSG_ARGS_RS);
-    strlcat (sbuff, tbuff, BDJMSG_MAX);
+    sp = stpecpy (sp, send, tbuff);
 
     gap = mainGetGap (mainData, musicqidx, i);
 
     snprintf (tbuff, sizeof (tbuff), "%" PRId32 "%c", gap, MSG_ARGS_RS);
-    strlcat (sbuff, tbuff, BDJMSG_MAX);
+    sp = stpecpy (sp, send, tbuff);
   }
 
   connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_MAIN_QUEUE_INFO, sbuff);

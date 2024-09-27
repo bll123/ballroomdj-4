@@ -832,7 +832,7 @@ sysvarsCheckPaths (const char *otherpaths)
   char    *tsep;
   char    *tokstr;
   char    tbuff [MAXPATHLEN];
-  char    tpath [4096];
+  char    tpath [16384];
 
   sysvarsSetStr (SV_PATH_ACRCLOUD, "");
   /* crontab is used on macos during installation */

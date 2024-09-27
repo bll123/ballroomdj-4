@@ -115,27 +115,6 @@ versionCompare (const char *v1, const char *v2) /* UNUSED */
 }
 #endif
 
-/* a more efficient way of appending strings, the length must be tracked */
-/* used by musicdb.c */
-size_t
-stringAppend (char *str, size_t maxsz, size_t currsz, const char *data)
-{
-  const char  *d = data;
-  char        *s = str;
-
-  if (str == NULL || data == NULL) {
-    return currsz;
-  }
-  s += currsz;
-  --maxsz;
-  while (*d != '\0' && currsz < maxsz) {
-    *s++ = *d++;
-    ++currsz;
-  }
-  *s = '\0';
-  return currsz;
-}
-
 /* internal routines */
 
 #if 0

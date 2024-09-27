@@ -146,42 +146,6 @@ START_TEST(bdjstring_version_compare)
 END_TEST
 #endif
 
-START_TEST(bdjstring_append)
-{
-  char    buff [10];
-  size_t  blen = 0;
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjstring_append");
-  mdebugSubTag ("bdjstring_append");
-
-  blen = stringAppend (buff, sizeof (buff), blen, "abcde");
-  ck_assert_int_eq (blen, 5);
-  ck_assert_str_eq (buff, "abcde");
-  blen = stringAppend (buff, sizeof (buff), blen, "wxyz");
-  ck_assert_int_eq (blen, 9);
-  ck_assert_str_eq (buff, "abcdewxyz");
-
-  blen = 0;
-  blen = stringAppend (buff, sizeof (buff), blen, "abcde");
-  ck_assert_int_eq (blen, 5);
-  ck_assert_str_eq (buff, "abcde");
-  blen = stringAppend (buff, sizeof (buff), blen, "vwxyz");
-  ck_assert_int_eq (blen, 9);
-  ck_assert_str_eq (buff, "abcdevwxy");
-
-  blen = 0;
-  blen = stringAppend (buff, sizeof (buff), blen, "abcde");
-  ck_assert_int_eq (blen, 5);
-  ck_assert_str_eq (buff, "abcde");
-  blen = stringAppend (buff, sizeof (buff), blen, "wx");
-  ck_assert_int_eq (blen, 7);
-  ck_assert_str_eq (buff, "abcdewx");
-  blen = stringAppend (buff, sizeof (buff), blen, "yz");
-  ck_assert_int_eq (blen, 9);
-  ck_assert_str_eq (buff, "abcdewxyz");
-}
-END_TEST
-
 Suite *
 bdjstring_suite (void)
 {
@@ -196,7 +160,6 @@ bdjstring_suite (void)
   tcase_add_test (tc, bdjstring_string_trim);
   tcase_add_test (tc, bdjstring_string_trim_char);
   // tcase_add_test (tc, bdjstring_version_compare);
-  tcase_add_test (tc, bdjstring_append);
   suite_add_tcase (s, tc);
   return s;
 }

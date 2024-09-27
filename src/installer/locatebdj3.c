@@ -24,6 +24,8 @@ locatebdj3 (void)
   char          *loc;
   char          home [MAXPATHLEN];
   char          tbuff [MAXPATHLEN];
+  char          *tp = tbuff;
+  char          *tend = tbuff + sizeof (tbuff);
 
 
   /* make it possible to specify a location via the environment */
@@ -45,20 +47,22 @@ locatebdj3 (void)
   }
 
   /* Linux, old MacOS, recent windows: $HOME/BallroomDJ */
-  strlcpy (tbuff, home, MAXPATHLEN);
-  strlcat (tbuff, "/", MAXPATHLEN);
-  strlcat (tbuff, "BallroomDJ", MAXPATHLEN);
+  stpecpy (tp, tend, home);
+  stpecpy (tp, tend, "/");
+  stpecpy (tp, tend, "BallroomDJ");
 
   if (locationcheck (tbuff)) {
     return mdstrdup (tbuff);
   }
 
   /* windows: %USERPROFILE%/Desktop/BallroomDJ */
-  strlcpy (tbuff, home, MAXPATHLEN);
-  strlcat (tbuff, "/", MAXPATHLEN);
-  strlcat (tbuff, "Desktop", MAXPATHLEN);
-  strlcat (tbuff, "/", MAXPATHLEN);
-  strlcat (tbuff, "BallroomDJ", MAXPATHLEN);
+  *tbuff = '\0';
+  tp = tbuff;
+  stpecpy (tp, tend, home);
+  stpecpy (tp, tend, "/");
+  stpecpy (tp, tend, "Desktop");
+  stpecpy (tp, tend, "/");
+  stpecpy (tp, tend, "BallroomDJ");
 
   if (locationcheck (tbuff)) {
     return mdstrdup (tbuff);
@@ -66,22 +70,22 @@ locatebdj3 (void)
 
   /* macos $HOME/Library/Application Support/BallroomDJ */
   /* this is not the main install dir, but the data directory */
-  strlcpy (tbuff, home, MAXPATHLEN);
-  strlcat (tbuff, "/", MAXPATHLEN);
-  strlcat (tbuff, "Library", MAXPATHLEN);
-  strlcat (tbuff, "/", MAXPATHLEN);
-  strlcat (tbuff, "Application Support", MAXPATHLEN);
-  strlcat (tbuff, "/", MAXPATHLEN);
-  strlcat (tbuff, "BallroomDJ", MAXPATHLEN);
+  *tbuff = '\0';
+  tp = tbuff;
+  stpecpy (tp, tend, home);
+  stpecpy (tp, tend, "/Library/Application Support/");
+  stpecpy (tp, tend, "BallroomDJ");
 
   if (locationcheck (tbuff)) {
     return mdstrdup (tbuff);
   }
 
   /* my personal location */
-  strlcpy (tbuff, home, MAXPATHLEN);
-  strlcat (tbuff, "/", MAXPATHLEN);
-  strlcat (tbuff, "music-local", MAXPATHLEN);
+  *tbuff = '\0';
+  tp = tbuff;
+  stpecpy (tp, tend, home);
+  stpecpy (tp, tend, "/");
+  stpecpy (tp, tend, "music-local");
 
   if (locationcheck (tbuff)) {
     return mdstrdup (tbuff);

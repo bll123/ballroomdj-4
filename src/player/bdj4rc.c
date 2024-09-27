@@ -236,12 +236,16 @@ remctrlEventHandler (struct mg_connection *c, int ev,
             "");
       } else {
         char    *jsbuff;
+        char    *jp;
+        char    *jend;
 
         jsbuff = mdmalloc (BDJMSG_MAX);
         *jsbuff = '\0';
+        jp = jsbuff;
+        jend = jsbuff + BDJMSG_MAX;
 
-        strlcpy (jsbuff, remctrlData->playerStatus, BDJMSG_MAX);
-        strlcat (jsbuff, remctrlData->currSong, BDJMSG_MAX);
+        jp = stpecpy (jp, jend, remctrlData->playerStatus);
+        jp = stpecpy (jp, jend, remctrlData->currSong);
 
         mg_http_reply (c, 200,
             "Content-type: text/plain; charset=utf-8\r\n"
@@ -550,6 +554,8 @@ remctrlProcessDanceList (remctrldata_t *remctrlData, char *danceList)
   char        *tokstr;
   char        tbuff [200];
   char        obuff [3096];
+  char        *p = obuff;
+  char        *end = obuff + sizeof (obuff);
 
   obuff [0] = '\0';
 
@@ -557,7 +563,7 @@ remctrlProcessDanceList (remctrldata_t *remctrlData, char *danceList)
   dstr = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   while (didx != NULL) {
     snprintf (tbuff, sizeof (tbuff), "<option value=\"%ld\">%s</option>\n", atol (didx), dstr);
-    strlcat (obuff, tbuff, sizeof (obuff));
+    p = stpecpy (p, end, tbuff);
     didx = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
     dstr = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   }
@@ -577,6 +583,8 @@ remctrlProcessPlaylistList (remctrldata_t *remctrlData, char *playlistList)
   char        *tokstr;
   char        tbuff [200];
   char        obuff [3096];
+  char        *p = obuff;
+  char        *end = obuff + sizeof (obuff);
 
   obuff [0] = '\0';
 
@@ -584,7 +592,7 @@ remctrlProcessPlaylistList (remctrldata_t *remctrlData, char *playlistList)
   plnm = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   while (fnm != NULL) {
     snprintf (tbuff, sizeof (tbuff), "<option value=\"%s\">%s</option>\n", fnm, plnm);
-    strlcat (obuff, tbuff, sizeof (obuff));
+    p = stpecpy (p, end, tbuff);
     fnm = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
     plnm = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   }

@@ -44,7 +44,7 @@ static const char *currcss = NULL;
 static GLogWriterOutput uiGtkLogger (GLogLevelFlags logLevel, const GLogField* fields, gsize n_fields, gpointer udata);
 static void uiAddScreenCSS (const char *css);
 static void uicssParseError (GtkCssProvider* self, GtkCssSection* section, GError* error, gpointer udata);
-static void uiSetRowHighlight (char *tbuff, size_t sz, const char *accentColor, const char *color, const char *classnm, double shadeval, int type);
+static char *uiSetRowHighlight (char *currp, char *endp, const char *accentColor, const char *color, const char *classnm, double shadeval, int type);
 
 int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 int uiTextDirection = TEXT_DIR_DEFAULT;
@@ -131,6 +131,8 @@ uiSetUICSS (const char *uifont, const char *listingfont,
   char            wbuff [400];
   char            *p;
   int             sz = 0;
+  char            *tp = tbuff;
+  char            *tend = tbuff + sizeof (tbuff);
 
   if (rowselColor == NULL || ! *rowselColor) {
     rowselColor = accentColor;
@@ -150,14 +152,14 @@ uiSetUICSS (const char *uifont, const char *listingfont,
 
   *tbuff = '\0';
   if (p != NULL) {
-    strlcat (tbuff, p, sizeof (tbuff));
+    tp = stpecpy (tp, tend, p);
     mdfree (p);
   }
 
   if (uifont != NULL && *uifont) {
     char  tmp [100];
 
-    strlcpy (tmp, uifont, sizeof (tmp));
+    stpecpy (tmp, tmp + sizeof (tmp), uifont);
     p = strrchr (tmp, ' ');
     if (p != NULL) {
       ++p;
@@ -170,18 +172,18 @@ uiSetUICSS (const char *uifont, const char *listingfont,
     }
 
     snprintf (wbuff, sizeof (wbuff), "* { font-family: '%s'; }\n", tmp);
-    strlcat (tbuff, wbuff, sizeof (tbuff));
+    tp = stpecpy (tp, tend, wbuff);
   }
 
   snprintf (wbuff, sizeof (wbuff),
       "label.%s { font-weight: bold; }\n", HEADING_CLASS);
-  strlcat (tbuff, wbuff, sizeof (tbuff));
+  tp = stpecpy (tp, tend, wbuff);
 
   if (listingfont != NULL && *listingfont) {
     char  tmp [100];
     int   listingsz = 0;
 
-    strlcpy (tmp, listingfont, sizeof (tmp));
+    stpecpy (tmp, tmp + sizeof (tmp), listingfont);
     p = strrchr (tmp, ' ');
     if (p != NULL) {
       ++p;
@@ -205,17 +207,17 @@ uiSetUICSS (const char *uifont, const char *listingfont,
       snprintf (wbuff, sizeof (wbuff),
           ".%s { font-family: '%s'; font-size: %dpt; }\n",
           LISTING_CLASS, tmp, listingsz);
-      strlcat (tbuff, wbuff, sizeof (tbuff));
+      tp = stpecpy (tp, tend, wbuff);
 
       snprintf (wbuff, sizeof (wbuff),
           "label.%s { font-size: %dpt; font-weight: bold; }\n",
           LIST_FAV_CLASS, favsz);
-      strlcat (tbuff, wbuff, sizeof (tbuff));
+      tp = stpecpy (tp, tend, wbuff);
 
       snprintf (wbuff, sizeof (wbuff),
           "label.%s { font-size: %dpt; font-weight: bold; }\n",
           LIST_HEAD_CLASS, headsz);
-      strlcat (tbuff, wbuff, sizeof (tbuff));
+      tp = stpecpy (tp, tend, wbuff);
     }
   }
 
@@ -223,16 +225,16 @@ uiSetUICSS (const char *uifont, const char *listingfont,
     int   tsz;
 
     snprintf (wbuff, sizeof (wbuff), " * { font-size: %dpt; }\n", sz);
-    strlcat (tbuff, wbuff, sizeof (tbuff));
+    tp = stpecpy (tp, tend, wbuff);
 
     tsz = sz - 2;
     snprintf (wbuff, sizeof (wbuff), " menuitem label { font-size: %dpt; }\n", tsz);
-    strlcat (tbuff, wbuff, sizeof (tbuff));
+    tp = stpecpy (tp, tend, wbuff);
 
     tsz = sz - 1;
     snprintf (wbuff, sizeof (wbuff), " .%s tab label { font-size: %dpt; }\n",
         LEFT_NB_CLASS, tsz);
-    strlcat (tbuff, wbuff, sizeof (tbuff));
+    tp = stpecpy (tp, tend, wbuff);
 
     tsz = sz - 3;
     if (accentColor != NULL) {
@@ -240,62 +242,62 @@ uiSetUICSS (const char *uifont, const char *listingfont,
     } else {
       snprintf (wbuff, sizeof (wbuff), " button.bdj-spd-reset label { font-size: %dpt; }\n", tsz);
     }
-    strlcat (tbuff, wbuff, sizeof (tbuff));
+    tp = stpecpy (tp, tend, wbuff);
   }
 
   if (accentColor != NULL) {
     snprintf (wbuff, sizeof (wbuff),
         "label.%s { color: %s; }\n", ACCENT_CLASS, accentColor);
-    strlcat (tbuff, wbuff, sizeof (tbuff));
+    tp = stpecpy (tp, tend, wbuff);
     snprintf (wbuff, sizeof (wbuff),
         "label.%s { color: shade(%s,0.7); }\n", DARKACCENT_CLASS, accentColor);
-    strlcat (tbuff, wbuff, sizeof (tbuff));
+    tp = stpecpy (tp, tend, wbuff);
 
     snprintf (wbuff, sizeof (wbuff),
         "entry.%s { color: %s; }\n", ACCENT_CLASS, accentColor);
-    strlcat (tbuff, wbuff, sizeof (tbuff));
+    tp = stpecpy (tp, tend, wbuff);
 
     snprintf (wbuff, sizeof (wbuff),
         "progressbar.%s > trough > progress { background-color: %s; }\n",
         ACCENT_CLASS, accentColor);
-    strlcat (tbuff, wbuff, sizeof (tbuff));
+    tp = stpecpy (tp, tend, wbuff);
 
     snprintf (wbuff, sizeof (wbuff),
         "menu separator { background-color: shade(%s,0.5); margin-right: 12px; margin-left: 8px; }\n",
         accentColor);
-    strlcat (tbuff, wbuff, sizeof (tbuff));
+    tp = stpecpy (tp, tend, wbuff);
 
     snprintf (wbuff, sizeof (wbuff),
         "paned.%s > separator { background-color: %s; padding-bottom: 0px; }\n",
         ACCENT_CLASS, accentColor);
-    strlcat (tbuff, wbuff, sizeof (tbuff));
+    tp = stpecpy (tp, tend, wbuff);
   }
 
   if (rowselColor != NULL) {
-    uiSetRowHighlight (tbuff, sizeof (tbuff), accentColor,
+    tp = uiSetRowHighlight (tp, tend, accentColor,
         rowselColor, SELECTED_CLASS, 0.55, UIUI_SHADE);
   }
 
   if (rowhlColor != NULL) {
-    uiSetRowHighlight (tbuff, sizeof (tbuff), accentColor,
+    tp = uiSetRowHighlight (tp, tend, accentColor,
         rowhlColor, ROW_HL_CLASS, 0.2, UIUI_MIX);
   }
 
   if (errorColor != NULL) {
     snprintf (wbuff, sizeof (wbuff),
         "label.%s { color: %s; }\n", ERROR_CLASS, errorColor);
-    strlcat (tbuff, wbuff, sizeof (tbuff));
+    tp = stpecpy (tp, tend, wbuff);
   }
 
   if (markColor != NULL) {
     snprintf (wbuff, sizeof (wbuff),
         "label.%s { color: %s; }\n", MARK_CLASS, markColor);
-    strlcat (tbuff, wbuff, sizeof (tbuff));
+    tp = stpecpy (tp, tend, wbuff);
   }
 
   /* as of 2023-1-29, the length is 2600+ */
   if (strlen (tbuff) >= sizeof (tbuff)) {
-    fprintf (stderr, "possible css overflow: %zd\n", strlen (tbuff));
+    fprintf (stderr, "WARN: possible css overflow: %zd\n", strlen (tbuff));
   }
   uiAddScreenCSS (tbuff);
 }
@@ -407,8 +409,8 @@ uicssParseError (GtkCssProvider* self, GtkCssSection* section,
   fprintf (stderr, "ERR: CSS parse: %s\n", error->message);
 }
 
-static void
-uiSetRowHighlight (char *tbuff, size_t sz, const char *accentColor,
+static char *
+uiSetRowHighlight (char *tp, char *tend, const char *accentColor,
     const char *color, const char *classnm, double shadeval, int type)
 {
   char    tmpcolor [40];
@@ -426,7 +428,7 @@ uiSetRowHighlight (char *tbuff, size_t sz, const char *accentColor,
           color, (int) shadeval, (int) ((shadeval - (int) shadeval) * 100.0));
     }
   } else {
-    strlcpy (tmpcolor, color, sizeof (tmpcolor));
+    stpecpy (tmpcolor, tmpcolor + sizeof (tmpcolor), color);
   }
   /* the problem with using the standard selected-bg-color with virtlist */
   /* is it matches the radio button and check button colors */
@@ -436,12 +438,14 @@ uiSetRowHighlight (char *tbuff, size_t sz, const char *accentColor,
   snprintf (wbuff, sizeof (wbuff),
       "box.horizontal.%s { background-color: %s; }\n",
       classnm, tmpcolor);
-  strlcat (tbuff, wbuff, sz);
+  tp = stpecpy (tp, tend, wbuff);
   snprintf (wbuff, sizeof (wbuff),
       "spinbutton.%s, "
       "spinbutton.%s entry, "
       "spinbutton.%s button "
       "{ background-color: %s; }\n",
       classnm, classnm, classnm, tmpcolor);
-  strlcat (tbuff, wbuff, sz);
+  tp = stpecpy (tp, tend, wbuff);
+
+  return tp;
 }

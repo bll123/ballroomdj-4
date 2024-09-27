@@ -908,7 +908,7 @@ starterMainLoop (void *tstarter)
       subj = uiEntryGetValue (starter->wcont [START_W_SUPPORT_SUBJECT]);
       msg = uiTextBoxGetValue (starter->wcont [START_W_SUPPORT_TEXTBOX]);
 
-      strlcpy (tbuff, "support.txt", sizeof (tbuff));
+      stpecpy (tbuff, tbuff + sizeof (tbuff), "support.txt");
       fh = fileopOpen (tbuff, "w");
       if (fh != NULL) {
         fprintf (fh, "Ident  : %s\n", starter->ident);
@@ -939,8 +939,8 @@ starterMainLoop (void *tstarter)
 
       pathbldMakePath (prog, sizeof (prog),
           "bdj4info", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_EXEC);
-      strlcpy (arg, "--bdj4", sizeof (arg));
-      strlcpy (tbuff, "bdj4info.txt", sizeof (tbuff));
+      stpecpy (arg, arg + sizeof (arg), "--bdj4");
+      stpecpy (tbuff, tbuff + sizeof (tbuff), "bdj4info.txt");
       targv [targc++] = prog;
       targv [targc++] = arg;
       targv [targc++] = NULL;
@@ -948,7 +948,7 @@ starterMainLoop (void *tstarter)
       supportSendFile (starter->support, starter->ident, tbuff, SUPPORT_COMPRESSED);
       fileopDelete (tbuff);
 
-      strlcpy (tbuff, "VERSION.txt", sizeof (tbuff));
+      stpecpy (tbuff, tbuff + sizeof (tbuff), "VERSION.txt");
       supportSendFile (starter->support, starter->ident, tbuff, SUPPORT_NO_COMPRESSION);
 
       starter->startState = START_STATE_SUPPORT_SEND_FILES_DATA;
@@ -1040,7 +1040,7 @@ starterMainLoop (void *tstarter)
       break;
     }
     case START_STATE_SUPPORT_SEND_DIAG: {
-      strlcpy (tbuff, "core", sizeof (tbuff));
+      stpecpy (tbuff, tbuff + sizeof (tbuff), "core");
       if (fileopFileExists (tbuff)) {
         supportSendFile (starter->support, starter->ident, tbuff, SUPPORT_COMPRESSED);
         fileopDelete (tbuff);
@@ -1072,7 +1072,7 @@ starterMainLoop (void *tstarter)
 
       senddb = uiToggleButtonIsActive (starter->wcont [START_W_SUPPORT_SEND_DB]);
       if (senddb) {
-        strlcpy (tbuff, "data/musicdb.dat", sizeof (tbuff));
+        stpecpy (tbuff, tbuff + sizeof (tbuff), "data/musicdb.dat");
         supportSendFile (starter->support, starter->ident, tbuff, SUPPORT_COMPRESSED);
       }
       starter->startState = START_STATE_SUPPORT_FINISH;
@@ -1473,7 +1473,7 @@ starterProcessSupport (void *udata)
       char  *p;
       char  uri [MAXPATHLEN];
 
-      strlcpy (starter->latestversion, starter->latestversiondisp, sizeof (starter->latestversion));
+      stpecpy (starter->latestversion, starter->latestversion + sizeof (starter->latestversion), starter->latestversiondisp);
       p = strchr (starter->latestversion, ' ');
       if (p != NULL) {
         *p = '\0';
@@ -1750,7 +1750,7 @@ starterResetProfile (startui_t *starter, int profidx)
   if (profidx != starter->newprofile) {
     char    oldcolor [40];
 
-    strlcpy (oldcolor, bdjoptGetStr (OPT_P_UI_PROFILE_COL), sizeof (oldcolor));
+    stpecpy (oldcolor, oldcolor + sizeof (oldcolor), bdjoptGetStr (OPT_P_UI_PROFILE_COL));
     bdjoptInit ();
     uiWindowSetTitle (starter->wcont [START_W_WINDOW], bdjoptGetStr (OPT_P_PROFILENAME));
     uiutilsSetProfileColor (starter->wcont [START_W_PROFILE_ACCENT], oldcolor);
@@ -1802,7 +1802,7 @@ starterCheckProfile (startui_t *starter)
     char        oldcolor [40];
     loglevel_t  loglevel = 0;
 
-    strlcpy (oldcolor, bdjoptGetStr (OPT_P_UI_PROFILE_COL), sizeof (oldcolor));
+    stpecpy (oldcolor, oldcolor + sizeof (oldcolor), bdjoptGetStr (OPT_P_UI_PROFILE_COL));
 
     instutilCreateDataDirectories ();
     bdjoptInit ();
@@ -1860,7 +1860,7 @@ starterDeleteProfile (void *udata)
 
   logEnd ();
 
-  strlcpy (oldcolor, bdjoptGetStr (OPT_P_UI_PROFILE_COL), sizeof (oldcolor));
+  stpecpy (oldcolor, oldcolor + sizeof (oldcolor), bdjoptGetStr (OPT_P_UI_PROFILE_COL));
   bdjoptDeleteProfile ();
   starterResetProfile (starter, 0);
   bdjoptInit ();
@@ -2118,6 +2118,8 @@ starterSendFiles (startui_t *starter)
   const char  *origfn;
   char        ifn [MAXPATHLEN];
   char        tbuff [100];
+  char        *p;
+  char        *end = ifn + sizeof (ifn);
 
   if (starter->supportInFname != NULL) {
     origfn = starter->supportInFname;
@@ -2147,9 +2149,10 @@ starterSendFiles (startui_t *starter)
     }
   }
 
-  strlcpy (ifn, starter->supportDir, sizeof (ifn));
-  strlcat (ifn, "/", sizeof (ifn));
-  strlcat (ifn, fn, sizeof (ifn));
+  p = ifn;
+  p = stpecpy (p, end, starter->supportDir);
+  p = stpecpy (p, end, "/");
+  p = stpecpy (p, end, fn);
   starter->supportInFname = mdstrdup (ifn);
   /* CONTEXT: starterui: support: status message */
   snprintf (tbuff, sizeof (tbuff), _("Sending %s"), ifn);

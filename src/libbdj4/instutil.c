@@ -82,7 +82,7 @@ instutilCreateLauncher (const char *name, const char *maindir,
     targv [targc++] = buff;
 
     /* working dir */
-    strlcpy (tbuff, workdir, sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), workdir);
     pathDisplayPath (tbuff, sizeof (tbuff));
     targv [targc++] = tbuff;
 
@@ -189,7 +189,7 @@ instutilCopyTemplates (void)
       continue;
     }
 
-    strlcpy (from, fname, sizeof (from));
+    stpecpy (from, from + sizeof (from), fname);
 
     if (strcmp (fname, "bdj-flex-dark.html") == 0) {
       templateHttpCopy (from, "bdj4remote.html");
@@ -211,14 +211,14 @@ instutilCopyTemplates (void)
       pathInfoFree (pi);
       continue;
     } else if (strncmp (fname, "bdjconfig", 9) == 0) {
-      strlcpy (from, fname, sizeof (from));
+      stpecpy (from, from + sizeof (from), fname);
       snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
 
       /* use pathbldMakePath without specifying PATHBLD_MP_DREL_DATA */
       /* as templateFileCopy builds the path with that prefix */
 
       if (pathInfoExtCheck (pi, ".g")) {
-        strlcpy (to, tbuff, sizeof (to));
+        stpecpy (to, to + sizeof (to), tbuff);
       } else if (pathInfoExtCheck (pi, ".p")) {
         pathbldMakePath (to, sizeof (to), tbuff, "", PATHBLD_MP_USEIDX);
       } else if (pathInfoExtCheck (pi, ".txt")) {
@@ -243,7 +243,7 @@ instutilCopyTemplates (void)
         pathInfoExtCheck (pi, BDJ4_PL_DANCE_EXT) ||
         pathInfoExtCheck (pi, BDJ4_PLAYLIST_EXT) ) {
 
-      strlcpy (tbuff, fname, sizeof (tbuff));
+      stpecpy (tbuff, tbuff + sizeof (tbuff), fname);
 
       fkey = -1;
       if (strncmp (pi->basename, "standardrounds", pi->blen) == 0) {
@@ -253,8 +253,8 @@ instutilCopyTemplates (void)
         fkey = LOCALE_KEY_QDANCE;
       }
 
-      strlcpy (tbuff, fname, sizeof (tbuff));
-      strlcpy (from, fname, sizeof (from));
+      stpecpy (tbuff, tbuff + sizeof (tbuff), fname);
+      stpecpy (from, from + sizeof (from), fname);
 
       /* localization specific filenames */
       if (fkey != -1) {
@@ -270,7 +270,7 @@ instutilCopyTemplates (void)
       if (strncmp (pi->basename, "ds-", 3) == 0) {
         pathbldMakePath (to, sizeof (to), tbuff, "", PATHBLD_MP_USEIDX);
       } else {
-        strlcpy (to, tbuff, sizeof (to));
+        stpecpy (to, to + sizeof (to), tbuff);
       }
     } else {
       /* unknown extension */
@@ -330,6 +330,8 @@ void
 instutilGetMusicDir (char *homemusicdir, size_t sz)
 {
   const char    *home;
+  char          *hp = homemusicdir;
+  char          *hend = homemusicdir + sz;
 
   home = sysvarsGetStr (SV_HOME);
 
@@ -353,7 +355,7 @@ instutilGetMusicDir (char *homemusicdir, size_t sz)
       /* xdg-user-dir returns the home folder if the music dir does */
       /* not exist */
       if (*data && strcmp (data, home) != 0) {
-        strlcpy (homemusicdir, data, sz);
+        stpecpy (hp, hend, data);
       } else {
         snprintf (homemusicdir, sz, "%s/Music", home);
       }
@@ -369,16 +371,16 @@ instutilGetMusicDir (char *homemusicdir, size_t sz)
         "My Music");
     if (data != NULL && *data) {
       /* windows returns the path with %USERPROFILE% */
-      strlcpy (homemusicdir, home, sz);
-      strlcat (homemusicdir, data + 13, sz);
+      hp = stpecpy (hp, hend, home);
+      hp = stpecpy (hp, hend, data + 13);
     } else {
       data = osRegistryGet (
           "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders",
           "My Music");
       if (data != NULL && *data) {
         /* windows returns the path with %USERPROFILE% */
-        strlcpy (homemusicdir, home, sz);
-        strlcat (homemusicdir, data + 13, sz);
+        hp = stpecpy (hp, hend, home);
+        hp = stpecpy (hp, hend, data + 13);
       }
     }
   }
@@ -398,6 +400,8 @@ instutilAppendNameToTarget (char *buff, size_t sz, const char *name, int macoson
   const char  *suffix;
   char        fname [100];
   int         rc;
+  char        *p = buff;
+  char        *end = buff + sz;
 
   if (macosonly && ! isMacOS ()) {
     return;
@@ -418,8 +422,9 @@ instutilAppendNameToTarget (char *buff, size_t sz, const char *name, int macoson
       pi->flen == strlen (fname);
   if (! rc) {
     stringTrimChar (buff, '/');
-    strlcat (buff, "/", sz);
-    strlcat (buff, fname, sz);
+    p = buff + strlen (buff);
+    p = stpecpy (p, end, "/");
+    p = stpecpy (p, end, fname);
   }
   pathInfoFree (pi);
 }
@@ -500,27 +505,29 @@ void
 instutilOldVersionString (sysversinfo_t *versinfo, char *buff, size_t sz)
 {
   char    *rlvl;
+  char    *p = buff + strlen (buff);
+  char    *end = buff + sz;
 
-  strlcat (buff, versinfo->version, sz);
+  p = stpecpy (p, end, versinfo->version);
   rlvl = versinfo->releaselevel;
   if (strcmp (versinfo->releaselevel, "production") == 0) {
     rlvl = "";
   }
   if (*rlvl) {
-    strlcat (buff, "-", sz);
-    strlcat (buff, rlvl, sz);
+    p = stpecpy (p, end, "-");
+    p = stpecpy (p, end, rlvl);
   }
   if (*versinfo->dev) {
-    strlcat (buff, "-", sz);
-    strlcat (buff, versinfo->dev, sz);
+    p = stpecpy (p, end, "-");
+    p = stpecpy (p, end, versinfo->dev);
   }
   if (*versinfo->builddate) {
-    strlcat (buff, "-", sz);
-    strlcat (buff, versinfo->builddate, sz);
+    p = stpecpy (p, end, "-");
+    p = stpecpy (p, end, versinfo->builddate);
   }
   if (*versinfo->build) {
-    strlcat (buff, "-", sz);
-    strlcat (buff, versinfo->build, sz);
+    p = stpecpy (p, end, "-");
+    p = stpecpy (p, end, versinfo->build);
   }
 }
 
@@ -535,9 +542,9 @@ instutilInstallCleanTmp (const char *rundir)
     char    *tmp;
     FILE    *fh;
 
-    strlcpy (tbuff, rundir, sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), rundir);
     tmp = regexReplaceLiteral (rundir, sysvarsGetStr (SV_USER), WINUSERNAME);
-    strlcpy (tbuff, tmp, sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), tmp);
     mdfree (tmp);
     pathDisplayPath (tbuff, sizeof (tbuff));
     snprintf (tfn, sizeof (tfn), "%s/bdj4clean.bat",
