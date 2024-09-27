@@ -19,9 +19,16 @@
 #include <check.h>
 
 #include "check_bdj.h"
-#include "mdebug.h"
 #include "colorutils.h"
 #include "log.h"
+#include "mdebug.h"
+#include "osrandom.h"
+
+static void
+setup (void)
+{
+  sRandom ();
+}
 
 START_TEST(colorutils_chk)
 {
@@ -49,6 +56,7 @@ colorutils_suite (void)
   s = suite_create ("colorutils");
   tc = tcase_create ("colorutils");
   tcase_set_tags (tc, "libcommon");
+  tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, colorutils_chk);
   suite_add_tcase (s, tc);
   return s;

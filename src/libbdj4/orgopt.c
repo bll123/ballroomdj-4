@@ -39,6 +39,9 @@ orgoptAlloc (void)
   const char    *value;
   char          dispstr [MAXPATHLEN];
   char          path [MAXPATHLEN];
+  char          *dp;
+  char          *dend = dispstr + sizeof (dispstr);
+
 
   pathbldMakePath (path, sizeof (path),
       ORGOPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
@@ -67,18 +70,19 @@ orgoptAlloc (void)
     org = orgAlloc (value);
 
     dispstr [0] = '\0';
+    dp = dispstr;
     orgStartIterator (org, &piteridx);
     while ((orgkey = orgIterateOrgKey (org, &piteridx)) >= 0) {
       if (orgkey == ORG_TEXT) {
         const char  *tmp;
         /* leading or trailing characters */
         tmp = orgGetText (org, piteridx);
-        strlcat (dispstr, tmp, sizeof (dispstr));
+        dp = stpecpy (dp, dend, tmp);
       } else {
         tagkey = orgGetTagKey (orgkey);
-        strlcat (dispstr, tagdefs [tagkey].displayname, sizeof (dispstr));
+        dp = stpecpy (dp, dend, tagdefs [tagkey].displayname);
         if (orgkey == ORG_TRACKNUM0) {
-          strlcat (dispstr, "0", sizeof (dispstr));
+          dp = stpecpy (dp, dend, "0");
         }
       }
     }

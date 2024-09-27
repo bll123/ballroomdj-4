@@ -283,16 +283,16 @@ fileopDelete (const char *fname)
 FILE *
 fileopOpen (const char *fname, const char *mode)
 {
-  FILE          *fh;
+  FILE          *fh = NULL;
 
-#if _lib__wfopen
+#if _lib__wfopen_s
   {
     wchar_t       *tfname = NULL;
     wchar_t       *tmode = NULL;
 
     tfname = osToWideChar (fname);
     tmode = osToWideChar (mode);
-    fh = _wfopen (tfname, tmode);
+    _wfopen_s (&fh, tfname, tmode);
     mdextfopen (fh);
     mdfree (tfname);
     mdfree (tmode);

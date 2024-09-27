@@ -172,6 +172,7 @@ sysvarsInit (const char *argv0, int flags)
   char          altpath [SV_MAX_SZ+1];
   char          buff [SV_MAX_SZ+1];
   char          *p;
+  char          *end;
   size_t        dlen;
   bool          alternatepath = false;
   sysversinfo_t *versinfo;
@@ -192,15 +193,15 @@ sysvarsInit (const char *argv0, int flags)
   osGetCurrentDir (tcwd, sizeof (tcwd));
   pathNormalizePath (tcwd, SV_MAX_SZ);
 
-  strlcpy (sysvars [SV_OS_NAME], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_OS_PLATFORM], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_OS_DISP], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_OS_VERS], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_OS_ARCH], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_OS_ARCH_TAG], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_OS_DIST_TAG], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_OS_BUILD], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_OS_EXEC_EXT], "", SV_MAX_SZ);
+  sysvarsSetStr (SV_OS_NAME, "");
+  sysvarsSetStr (SV_OS_PLATFORM, "");
+  sysvarsSetStr (SV_OS_DISP, "");
+  sysvarsSetStr (SV_OS_VERS, "");
+  sysvarsSetStr (SV_OS_ARCH, "");
+  sysvarsSetStr (SV_OS_ARCH_TAG, "");
+  sysvarsSetStr (SV_OS_DIST_TAG, "");
+  sysvarsSetStr (SV_OS_BUILD, "");
+  sysvarsSetStr (SV_OS_EXEC_EXT, "");
   lsysvars [SVL_IS_MSYS] = false;
   lsysvars [SVL_IS_LINUX] = false;
   lsysvars [SVL_IS_WINDOWS] = false;
@@ -209,10 +210,10 @@ sysvarsInit (const char *argv0, int flags)
 
 #if _lib_uname
   uname (&ubuf);
-  strlcpy (sysvars [SV_OS_NAME], ubuf.sysname, SV_MAX_SZ);
-  strlcpy (sysvars [SV_OS_DISP], ubuf.sysname, SV_MAX_SZ);
-  strlcpy (sysvars [SV_OS_VERS], ubuf.version, SV_MAX_SZ);
-  strlcpy (sysvars [SV_OS_ARCH], ubuf.machine, SV_MAX_SZ);
+  sysvarsSetStr (SV_OS_NAME, ubuf.sysname);
+  sysvarsSetStr (SV_OS_DISP, ubuf.sysname);
+  sysvarsSetStr (SV_OS_VERS, ubuf.version);
+  sysvarsSetStr (SV_OS_ARCH, ubuf.machine);
 #endif
 #if _lib_RtlGetVersion
   memset (&osvi, 0, sizeof (RTL_OSVERSIONINFOEXW));
@@ -224,54 +225,58 @@ sysvarsInit (const char *argv0, int flags)
   snprintf (sysvars [SV_OS_BUILD], SV_MAX_SZ, "%ld", osvi.dwBuildNumber);
   if (osvi.dwBuildNumber >= 22000) {
     /* this is the official way to determine windows 11 at this time */
-    strlcpy (sysvars [SV_OS_VERS], "11.0", SV_MAX_SZ);
+    sysvarsSetStr (SV_OS_VERS, "11.0");
   }
 #endif
 #if _lib_GetNativeSystemInfo
   GetNativeSystemInfo (&winsysinfo);
   /* dwNumberOfProcessors may not reflect the number of system processors */
   if (winsysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_INTEL) {
-    strlcpy (sysvars [SV_OS_ARCH], "intel", SV_MAX_SZ);
+    sysvarsSetStr (SV_OS_ARCH, "intel");
     lsysvars [SVL_OS_BITS] = 32;
   }
   if (winsysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_ARM) {
-    strlcpy (sysvars [SV_OS_ARCH], "arm", SV_MAX_SZ);
+    sysvarsSetStr (SV_OS_ARCH, "arm");
     lsysvars [SVL_OS_BITS] = 32;
   }
   if (winsysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_ARM64) {
-    strlcpy (sysvars [SV_OS_ARCH], "arm", SV_MAX_SZ);
+    sysvarsSetStr (SV_OS_ARCH, "arm");
     lsysvars [SVL_OS_BITS] = 64;
   }
   if (winsysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) {
-    strlcpy (sysvars [SV_OS_ARCH], "amd64", SV_MAX_SZ);
+    sysvarsSetStr (SV_OS_ARCH, "amd64");
     lsysvars [SVL_OS_BITS] = 64;
   }
 #endif
 
 /* is a windows machine */
 #if _lib_GetNativeSystemInfo || _lib_RtlGetVersion
-  strlcpy (sysvars [SV_OS_EXEC_EXT], ".exe", SV_MAX_SZ);
-  strlcpy (sysvars [SV_OS_NAME], "windows", SV_MAX_SZ);
-  strlcpy (sysvars [SV_OS_DISP], "Windows ", SV_MAX_SZ);
-  if (strcmp (sysvars [SV_OS_VERS], "5.0") == 0) {
-    strlcat (sysvars [SV_OS_DISP], "2000", SV_MAX_SZ);
-  } else if (strcmp (sysvars [SV_OS_VERS], "5.1") == 0) {
-    strlcat (sysvars [SV_OS_DISP], "XP", SV_MAX_SZ);
-  } else if (strcmp (sysvars [SV_OS_VERS], "5.2") == 0) {
-    strlcat (sysvars [SV_OS_DISP], "XP Pro", SV_MAX_SZ);
-  } else if (strcmp (sysvars [SV_OS_VERS], "6.0") == 0) {
-    strlcat (sysvars [SV_OS_DISP], "Vista", SV_MAX_SZ);
-  } else if (strcmp (sysvars [SV_OS_VERS], "6.1") == 0) {
-    strlcat (sysvars [SV_OS_DISP], "7", SV_MAX_SZ);
-  } else if (strcmp (sysvars [SV_OS_VERS], "6.2") == 0) {
-    strlcat (sysvars [SV_OS_DISP], "8.0", SV_MAX_SZ);
-  } else if (strcmp (sysvars [SV_OS_VERS], "6.3") == 0) {
-    strlcat (sysvars [SV_OS_DISP], "8.1", SV_MAX_SZ);
-  } else {
-    strlcat (sysvars [SV_OS_DISP], sysvars [SV_OS_VERS], SV_MAX_SZ);
+  {
+    sysvarsSetStr (SV_OS_EXEC_EXT, ".exe");
+    sysvarsSetStr (SV_OS_NAME, "windows");
+    p = sysvars [SV_OS_DISP];
+    end = sysvars [SV_OS_DISP] + SV_MAX_SZ;
+    p = stpecpy (p, end, "Windows ");
+    if (strcmp (sysvars [SV_OS_VERS], "5.0") == 0) {
+      p = stpecpy (p, end, "2000");
+    } else if (strcmp (sysvars [SV_OS_VERS], "5.1") == 0) {
+      p = stpecpy (p, end, "XP");
+    } else if (strcmp (sysvars [SV_OS_VERS], "5.2") == 0) {
+      p = stpecpy (p, end, "XP Pro");
+    } else if (strcmp (sysvars [SV_OS_VERS], "6.0") == 0) {
+      p = stpecpy (p, end, "Vista");
+    } else if (strcmp (sysvars [SV_OS_VERS], "6.1") == 0) {
+      p = stpecpy (p, end, "7");
+    } else if (strcmp (sysvars [SV_OS_VERS], "6.2") == 0) {
+      p = stpecpy (p, end, "8.0");
+    } else if (strcmp (sysvars [SV_OS_VERS], "6.3") == 0) {
+      p = stpecpy (p, end, "8.1");
+    } else {
+      p = stpecpy (p, end, sysvar [SV_OS_VERS]);
+    }
+    p = stpecpy (p, end, " ");
+    p = stpecpy (p, end, sysvars [SV_OS_BUILD]);
   }
-  strlcat (sysvars [SV_OS_DISP], " ", SV_MAX_SZ);
-  strlcat (sysvars [SV_OS_DISP], sysvars [SV_OS_BUILD], SV_MAX_SZ);
 #endif
 
   stringAsciiToLower (sysvars [SV_OS_NAME]);
@@ -283,23 +288,23 @@ sysvarsInit (const char *argv0, int flags)
 
   if (strcmp (sysvars [SV_OS_NAME], "darwin") == 0) {
     lsysvars [SVL_IS_MACOS] = true;
-    strlcpy (sysvars [SV_OS_PLATFORM], "macos", SV_MAX_SZ);
+    sysvarsSetStr (SV_OS_PLATFORM, "macos");
     /* arch will be arm64 or x86_64 */
     /* be sure to include the leading - */
     if (strcmp (sysvars [SV_OS_ARCH], "x86_64") == 0) {
-      strlcpy (sysvars [SV_OS_ARCH_TAG], "-intel", SV_MAX_SZ);
+      sysvarsSetStr (SV_OS_ARCH_TAG, "-intel");
     }
     if (strcmp (sysvars [SV_OS_ARCH], "arm64") == 0) {
-      strlcpy (sysvars [SV_OS_ARCH_TAG], "-applesilicon", SV_MAX_SZ);
+      sysvarsSetStr (SV_OS_ARCH_TAG, "-applesilicon");
     }
   }
   if (strcmp (sysvars [SV_OS_NAME], "linux") == 0) {
     lsysvars [SVL_IS_LINUX] = true;
-    strlcpy (sysvars [SV_OS_PLATFORM], "linux", SV_MAX_SZ);
+    sysvarsSetStr (SV_OS_PLATFORM, "linux");
   }
   if (strcmp (sysvars [SV_OS_NAME], "windows") == 0) {
     lsysvars [SVL_IS_WINDOWS] = true;
-    strlcpy (sysvars [SV_OS_PLATFORM], "win64", SV_MAX_SZ);
+    sysvarsSetStr (SV_OS_PLATFORM, "win64");
   }
 
   osGetEnv ("MSYSTEM", tbuff, SV_MAX_SZ);
@@ -319,7 +324,7 @@ sysvarsInit (const char *argv0, int flags)
   }
   lsysvars [SVL_HOME_SZ] = strlen (sysvars [SV_HOME]);
   dlen = strlen (sysvars [SV_USER]);
-  strlcpy (sysvars [SV_USER_MUNGE], sysvars [SV_USER], SV_MAX_SZ);
+  sysvarsSetStr (SV_USER_MUNGE, sysvars [SV_USER]);
   for (size_t i = 0; i < dlen; ++i) {
     if (sysvars [SV_USER_MUNGE][i] == ' ') {
       sysvars [SV_USER_MUNGE][i] = '-';
@@ -330,20 +335,22 @@ sysvarsInit (const char *argv0, int flags)
   lsysvars [SVL_USER_ID] = getuid ();
 #endif
 
-  strlcpy (tbuff, argv0, sizeof (tbuff));
-  strlcpy (buff, argv0, sizeof (buff));
+  stpecpy (tbuff, tbuff + SV_MAX_SZ, argv0);
+  stpecpy (buff, buff + SV_MAX_SZ, argv0);
 
   pathNormalizePath (buff, SV_MAX_SZ);
   /* handle relative pathnames */
   if ((strlen (buff) > 2 && *(buff + 1) == ':' && *(buff + 2) != '/') ||
      (*buff != '/' && strlen (buff) > 1 && *(buff + 1) != ':')) {
-    strlcpy (tbuff, tcwd, sizeof (tbuff));
-    strlcat (tbuff, "/", sizeof (tbuff));
-    strlcat (tbuff, buff, sizeof (tbuff));
+    p = tbuff;
+    end = tbuff + sizeof (tbuff);
+    p = stpecpy (p, end, tcwd);
+    p = stpecpy (p, end, "/");
+    p = stpecpy (p, end, buff);
   }
 
   /* save this path so that it can be used to check for a data dir */
-  strlcpy (altpath, tbuff, sizeof (altpath));
+  stpecpy (altpath, altpath + SV_MAX_SZ, tbuff);
   pathStripPath (altpath, sizeof (altpath));
   pathNormalizePath (altpath, sizeof (altpath));
 
@@ -360,7 +367,7 @@ sysvarsInit (const char *argv0, int flags)
   *sysvars [SV_BDJ4_DIR_EXEC] = '\0';
   if (p != NULL) {
     *p = '\0';
-    strlcpy (sysvars [SV_BDJ4_DIR_EXEC], buff, SV_MAX_SZ);
+    sysvarsSetStr (SV_BDJ4_DIR_EXEC, buff);
   }
 
   /* strip off '/bin' */
@@ -368,7 +375,7 @@ sysvarsInit (const char *argv0, int flags)
   *sysvars [SV_BDJ4_DIR_MAIN] = '\0';
   if (p != NULL) {
     *p = '\0';
-    strlcpy (sysvars [SV_BDJ4_DIR_MAIN], buff, SV_MAX_SZ);
+    sysvarsSetStr (SV_BDJ4_DIR_MAIN, buff);
   }
 
   /* the readonly file lives in the top level of the main dir */
@@ -382,13 +389,17 @@ sysvarsInit (const char *argv0, int flags)
     /* and there is no 'readonly.txt' file */
     /* a change of directories is contra-indicated. */
 
-    strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], tcwd, SV_MAX_SZ);
+    sysvarsSetStr (SV_BDJ4_DIR_DATATOP, tcwd);
     lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_LOCAL;
   } else {
     bool found = false;
 
     /* check for a data directory in the original run-path */
     if (alternatepath) {
+      char    *bp;
+      char    *bend = buff + SV_MAX_SZ;
+
+
       if (isMacOS ()) {
         /* altpath is something like: */
         /* /Users/bll/Applications/BDJ4alt.app/Contents/MacOS/bin/bdj4g */
@@ -409,11 +420,12 @@ sysvarsInit (const char *argv0, int flags)
               *p = '\0';
             }
 
-            strlcpy (buff, sysvars [SV_HOME], SV_MAX_SZ);
-            strlcat (buff, "/Library/Application Support/", SV_MAX_SZ);
-            strlcat (buff, tp, SV_MAX_SZ);
+            bp = buff;
+            bp = stpecpy (bp, bend, sysvars [SV_HOME]);
+            bp = stpecpy (bp, bend, "/Library/Application Support/");
+            bp = stpecpy (bp, bend, tp);
             if (fileopIsDirectory (buff)) {
-              strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], buff, SV_MAX_SZ);
+              sysvarsSetStr (SV_BDJ4_DIR_DATATOP, buff);
               found = true;
             }
           }
@@ -435,7 +447,7 @@ sysvarsInit (const char *argv0, int flags)
         snprintf (tbuff, sizeof (tbuff), "%s/%s%s",
             altpath, READONLY_FN, BDJ4_CONFIG_EXT);
         tlen = strlen (altpath);
-        strlcat (altpath, "/data", sizeof (altpath));
+        stpecpy (altpath + tlen, altpath + sizeof (altpath), "/data");
         if (fileopFileExists (tbuff)) {
           lsysvars [SVL_IS_READONLY] = true;
         }
@@ -443,7 +455,7 @@ sysvarsInit (const char *argv0, int flags)
         if (fileopIsDirectory (altpath) && lsysvars [SVL_IS_READONLY] == false) {
           /* remove the /data suffix */
           altpath [tlen] = '\0';
-          strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], altpath, SV_MAX_SZ);
+          sysvarsSetStr (SV_BDJ4_DIR_DATATOP, altpath);
           found = true;
           lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_ALT;
         }
@@ -467,9 +479,11 @@ sysvarsInit (const char *argv0, int flags)
           char        tmp [MAXPATHLEN];
           ssize_t     offset;
           const char  *tp;
+          char        *bend = buff + SV_MAX_SZ;
+          char        *bp;
 
           /* extract the name of the app from the main-dir */
-          strlcpy (tmp, sysvars [SV_BDJ4_DIR_MAIN], sizeof (tmp));
+          stpecpy (tmp, tmp + sizeof (tmp), sysvars [SV_BDJ4_DIR_MAIN]);
           tp = BDJ4_NAME;
           if (strstr (tmp, MACOS_APP_PREFIX) != NULL) {
             offset = strlen (tmp) -
@@ -484,12 +498,13 @@ sysvarsInit (const char *argv0, int flags)
             }
           }
 
-          strlcpy (buff, sysvars [SV_HOME], SV_MAX_SZ);
-          strlcat (buff, "/Library/Application Support/", SV_MAX_SZ);
-          strlcat (buff, tp, SV_MAX_SZ);
-          strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], buff, SV_MAX_SZ);
+          bp = buff;
+          bp = stpecpy (bp, bend, sysvars [SV_HOME]);
+          bp = stpecpy (bp, bend, "/Library/Application Support/");
+          bp = stpecpy (bp, bend, tp);
+          sysvarsSetStr (SV_BDJ4_DIR_DATATOP, buff);
         } else {
-          strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
+          sysvarsSetStr (SV_BDJ4_DIR_DATATOP, sysvars [SV_BDJ4_DIR_MAIN]);
         }
       }
     }
@@ -498,42 +513,52 @@ sysvarsInit (const char *argv0, int flags)
   /* on mac os, the data directory is separated */
   /* full path is also needed so that symlinked bdj4 directories will work */
 
-  strlcpy (sysvars [SV_BDJ4_DREL_DATA], "data", SV_MAX_SZ);
+  sysvarsSetStr (SV_BDJ4_DREL_DATA, "data");
 
-  strlcpy (sysvars [SV_BDJ4_DIR_IMG], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
-  strlcat (sysvars [SV_BDJ4_DIR_IMG], "/img", SV_MAX_SZ);
+  p = sysvars [SV_BDJ4_DIR_IMG];
+  end = sysvars [SV_BDJ4_DIR_IMG] + SV_MAX_SZ,
+  p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
+  p = stpecpy (p, end, "/img");
 
-  strlcpy (sysvars [SV_BDJ4_DIR_INST], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
-  strlcat (sysvars [SV_BDJ4_DIR_INST], "/install", SV_MAX_SZ);
+  p = sysvars [SV_BDJ4_DIR_INST];
+  end = sysvars [SV_BDJ4_DIR_INST] + SV_MAX_SZ;
+  p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
+  stpecpy (p, end, "/install");
 
-  strlcpy (sysvars [SV_BDJ4_DIR_LOCALE], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
-  strlcat (sysvars [SV_BDJ4_DIR_LOCALE], "/locale", SV_MAX_SZ);
+  p = sysvars [SV_BDJ4_DIR_LOCALE];
+  end = sysvars [SV_BDJ4_DIR_LOCALE] + SV_MAX_SZ;
+  p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
+  stpecpy (p, end, "/locale");
 
-  strlcpy (sysvars [SV_BDJ4_DIR_TEMPLATE], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
-  strlcat (sysvars [SV_BDJ4_DIR_TEMPLATE], "/templates", SV_MAX_SZ);
+  p = sysvars [SV_BDJ4_DIR_TEMPLATE];
+  end = sysvars [SV_BDJ4_DIR_TEMPLATE] + SV_MAX_SZ;
+  p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
+  stpecpy (p, end, "/templates");
 
-  strlcpy (sysvars [SV_BDJ4_DIR_SCRIPT], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
-  strlcat (sysvars [SV_BDJ4_DIR_SCRIPT], "/scripts", SV_MAX_SZ);
+  p = sysvars [SV_BDJ4_DIR_SCRIPT];
+  end = sysvars [SV_BDJ4_DIR_SCRIPT] + SV_MAX_SZ;
+  p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
+  stpecpy (p, end, "/scripts");
 
-  strlcpy (sysvars [SV_BDJ4_DREL_HTTP], "http", SV_MAX_SZ);
-  strlcpy (sysvars [SV_BDJ4_DREL_TMP], "tmp", SV_MAX_SZ);
-  strlcpy (sysvars [SV_BDJ4_DREL_IMG], "img", SV_MAX_SZ);
+  sysvarsSetStr (SV_BDJ4_DREL_HTTP, "http");
+  sysvarsSetStr (SV_BDJ4_DREL_TMP, "tmp");
+  sysvarsSetStr (SV_BDJ4_DREL_IMG, "img");
 
-  strlcpy (sysvars [SV_SHLIB_EXT], SHLIB_EXT, SV_MAX_SZ);
+  sysvarsSetStr (SV_SHLIB_EXT, SHLIB_EXT);
 
-  strlcpy (sysvars [SV_HOST_REGISTER], "https://ballroomdj.org", SV_MAX_SZ);
-  strlcpy (sysvars [SV_URI_REGISTER], "/bdj4register.php", SV_MAX_SZ);
+  sysvarsSetStr (SV_HOST_REGISTER, "https://ballroomdj.org");
+  sysvarsSetStr (SV_URI_REGISTER, "/bdj4register.php");
 
   for (size_t i = 0; i < CACERT_FILE_COUNT; ++i) {
     if (fileopFileExists (cacertFiles [i])) {
-      strlcpy (sysvars [SV_CA_FILE], cacertFiles [i], SV_MAX_SZ);
+      sysvarsSetStr (SV_CA_FILE, cacertFiles [i]);
       break;
     }
     if (*cacertFiles [i] != '/') {
       snprintf (tbuff, sizeof (tbuff), "%s/%s",
           sysvars [SV_BDJ4_DIR_MAIN], cacertFiles [i]);
       if (fileopFileExists (tbuff)) {
-        strlcpy (sysvars [SV_CA_FILE], tbuff, SV_MAX_SZ);
+        sysvarsSetStr (SV_CA_FILE, tbuff);
         break;
       }
     }
@@ -543,12 +568,12 @@ sysvarsInit (const char *argv0, int flags)
   /* so these defaults are all wrong */
   /* the locale is reset by localeinit */
   /* localeinit will also convert the windows names to something normal */
-  strlcpy (sysvars [SV_LOCALE_SYSTEM], "en_GB.UTF-8", SV_MAX_SZ);
-  strlcpy (sysvars [SV_LOCALE_ORIG], "en_GB", SV_MAX_SZ);
-  strlcpy (sysvars [SV_LOCALE_ORIG_SHORT], "en", SV_MAX_SZ);
-  strlcpy (sysvars [SV_LOCALE], "en_GB", SV_MAX_SZ);
-  strlcpy (sysvars [SV_LOCALE_SHORT], "en", SV_MAX_SZ);
-  strlcpy (sysvars [SV_LOCALE_RADIX], ".", SV_MAX_SZ);
+  sysvarsSetStr (SV_LOCALE_SYSTEM, "en_GB.UTF-8");
+  sysvarsSetStr (SV_LOCALE_ORIG, "en_GB");
+  sysvarsSetStr (SV_LOCALE_ORIG_SHORT, "en");
+  sysvarsSetStr (SV_LOCALE, "en_GB");
+  sysvarsSetStr (SV_LOCALE_SHORT, "en");
+  sysvarsSetStr (SV_LOCALE_RADIX, ".");
 
   lsysvars [SVL_LOCALE_SET] = SYSVARS_LOCALE_NOT_SET;
   lsysvars [SVL_LOCALE_SYS_SET] = SYSVARS_LOCALE_NOT_SET;
@@ -568,7 +593,7 @@ sysvarsInit (const char *argv0, int flags)
     stringTrim (tbuff);
     if (*tbuff) {
       /* save the system locale */
-      strlcpy (sysvars [SV_LOCALE_SYSTEM], tbuff, SV_MAX_SZ);
+      sysvarsSetStr (SV_LOCALE_SYSTEM, tbuff);
       /* do not mark locale-set, only locale-sys-set */
       lsysvars [SVL_LOCALE_SYS_SET] = SYSVARS_LOCALE_SET;
       /* localeInit() will set locale-orig and the other variables */
@@ -589,27 +614,27 @@ sysvarsInit (const char *argv0, int flags)
     stringTrim (tbuff);
     if (*tbuff) {
       if (strcmp (tbuff, sysvars [SV_LOCALE_SYSTEM]) != 0) {
-        strlcpy (sysvars [SV_LOCALE], tbuff, SV_MAX_SZ);
+        sysvarsSetStr (SV_LOCALE, tbuff);
         snprintf (buff, sizeof (buff), "%-.2s", tbuff);
-        strlcpy (sysvars [SV_LOCALE_SHORT], buff, SV_MAX_SZ);
+        sysvarsSetStr (SV_LOCALE_SHORT, buff);
         lsysvars [SVL_LOCALE_SET] = SYSVARS_LOCALE_SET;
       }
     }
   }
 
-  strlcpy (sysvars [SV_BDJ4_VERSION], "unknown", SV_MAX_SZ);
+  sysvarsSetStr (SV_BDJ4_VERSION, "unknown");
   snprintf (buff, sizeof (buff), "%s/VERSION.txt", sysvars [SV_BDJ4_DIR_MAIN]);
   versinfo = sysvarsParseVersionFile (buff);
-  strlcpy (sysvars [SV_BDJ4_VERSION], versinfo->version, SV_MAX_SZ);
-  strlcpy (sysvars [SV_BDJ4_BUILD], versinfo->build, SV_MAX_SZ);
-  strlcpy (sysvars [SV_BDJ4_BUILDDATE], versinfo->builddate, SV_MAX_SZ);
-  strlcpy (sysvars [SV_BDJ4_RELEASELEVEL], versinfo->releaselevel, SV_MAX_SZ);
-  strlcpy (sysvars [SV_BDJ4_DEVELOPMENT], versinfo->dev, SV_MAX_SZ);
+  sysvarsSetStr (SV_BDJ4_VERSION, versinfo->version);
+  sysvarsSetStr (SV_BDJ4_BUILD, versinfo->build);
+  sysvarsSetStr (SV_BDJ4_BUILDDATE, versinfo->builddate);
+  sysvarsSetStr (SV_BDJ4_RELEASELEVEL, versinfo->releaselevel);
+  sysvarsSetStr (SV_BDJ4_DEVELOPMENT, versinfo->dev);
   sysvarsParseVersionFileFree (versinfo);
 
   snprintf (buff, sizeof (buff), "%s/DIST.txt", sysvars [SV_BDJ4_DIR_MAIN]);
   distinfo = sysvarsParseDistFile (buff);
-  strlcpy (sysvars [SV_OS_DIST_TAG], distinfo->dist, SV_MAX_SZ);
+  sysvarsSetStr (SV_OS_DIST_TAG, distinfo->dist);
   sysvarsParseDistFileFree (distinfo);
 
   if (isWindows ()) {
@@ -625,14 +650,14 @@ sysvarsInit (const char *argv0, int flags)
   pathNormalizePath (sysvars [SV_DIR_CONFIG_BASE], SV_MAX_SZ);
 
   snprintf (tbuff, sizeof (tbuff), "%s/%s", sysvars [SV_DIR_CONFIG_BASE], BDJ4_NAME);
-  strlcpy (sysvars [SV_DIR_CONFIG], tbuff, SV_MAX_SZ);
+  sysvarsSetStr (SV_DIR_CONFIG, tbuff);
 
   snprintf (tbuff, sizeof (tbuff), "%s/%s%s%s", sysvars [SV_DIR_CONFIG],
       ALT_COUNT_FN, sysvars [SV_BDJ4_DEVELOPMENT], BDJ4_CONFIG_EXT);
-  strlcpy (sysvars [SV_FILE_ALTCOUNT], tbuff, SV_MAX_SZ);
+  sysvarsSetStr (SV_FILE_ALTCOUNT, tbuff);
   snprintf (tbuff, sizeof (tbuff), "%s/%s%s%s", sysvars [SV_DIR_CONFIG],
       INST_PATH_FN, sysvars [SV_BDJ4_DEVELOPMENT], BDJ4_CONFIG_EXT);
-  strlcpy (sysvars [SV_FILE_INST_PATH], tbuff, SV_MAX_SZ);
+  sysvarsSetStr (SV_FILE_INST_PATH, tbuff);
 
   if (isWindows ()) {
     snprintf (sysvars [SV_DIR_CACHE_BASE], SV_MAX_SZ,
@@ -647,7 +672,7 @@ sysvarsInit (const char *argv0, int flags)
   pathNormalizePath (sysvars [SV_DIR_CACHE_BASE], SV_MAX_SZ);
 
   snprintf (tbuff, sizeof (tbuff), "%s/%s", sysvars [SV_DIR_CACHE_BASE], BDJ4_NAME);
-  strlcpy (sysvars [SV_DIR_CACHE], tbuff, SV_MAX_SZ);
+  sysvarsSetStr (SV_DIR_CACHE, tbuff);
 
   sysvarsCheckPaths (NULL);
 
@@ -656,10 +681,12 @@ sysvarsInit (const char *argv0, int flags)
     char  *data;
     char  *tdata;
 
-    strlcpy (sysvars [SV_OS_DISP], "macOS", SV_MAX_SZ);
+    sysvarsSetStr (SV_OS_DISP, "macOS");
     data = osRunProgram (sysvars [SV_TEMP_A], "-ProductVersion", NULL);
     stringTrim (data);
-    strlcpy (sysvars [SV_OS_VERS], data, SV_MAX_SZ);
+    p = sysvars [SV_OS_VERS];
+    end = sysvars [SV_OS_VERS] + SV_MAX_SZ;
+    p = stpecpy (p, end, data);
     dataFree (data);
 
     tdata = osRunProgram (sysvars [SV_TEMP_A], "-ProductVersionExtra", NULL);
@@ -669,21 +696,23 @@ sysvarsInit (const char *argv0, int flags)
       stringTrim (tdata);
       len = strlen (tdata);
       *(tdata + len - 1) = '\0';
-      strlcat (sysvars [SV_OS_VERS], "-", SV_MAX_SZ);
-      strlcat (sysvars [SV_OS_VERS], tdata + 1, SV_MAX_SZ);
+      p = stpecpy (p, end, "-");
+      p = stpecpy (p, end, tdata + 1);
     }
     dataFree (tdata);
 
-    strlcpy (sysvars [SV_OS_BUILD], "", SV_MAX_SZ);
+    sysvarsSetStr (SV_OS_BUILD, "");
     data = osRunProgram (sysvars [SV_TEMP_A], "-BuildVersion", NULL);
     stringTrim (data);
-    strlcpy (sysvars [SV_OS_BUILD], data, SV_MAX_SZ);
+    sysvarsSetStr (SV_OS_BUILD, data);
     dataFree (data);
 
     data = sysvars [SV_OS_VERS];
     if (data != NULL) {
-      strlcat (sysvars [SV_OS_DISP], " ", SV_MAX_SZ);
-      strlcat (sysvars [SV_OS_DISP], data, SV_MAX_SZ);
+      p = sysvars [SV_OS_DISP];
+      end = sysvars [SV_OS_DISP] + SV_MAX_SZ;
+      stpecpy (p, end, " ");
+      stpecpy (p, end, data);
     }
   }
   if (strcmp (sysvars [SV_OS_NAME], "linux") == 0) {
@@ -799,20 +828,21 @@ void
 sysvarsCheckPaths (const char *otherpaths)
 {
   char    *p;
+  char    *end;
   char    *tsep;
   char    *tokstr;
   char    tbuff [MAXPATHLEN];
   char    tpath [4096];
 
-  strlcpy (sysvars [SV_PATH_ACRCLOUD], "", SV_MAX_SZ);
+  sysvarsSetStr (SV_PATH_ACRCLOUD, "");
   /* crontab is used on macos during installation */
-  strlcpy (sysvars [SV_PATH_CRONTAB], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_PATH_FFMPEG], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_PATH_FPCALC], "", SV_MAX_SZ);
+  sysvarsSetStr (SV_PATH_CRONTAB, "");
+  sysvarsSetStr (SV_PATH_FFMPEG, "");
+  sysvarsSetStr (SV_PATH_FPCALC, "");
   /* gsettings is used on linux to get the current theme */
-  strlcpy (sysvars [SV_PATH_GSETTINGS], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_PATH_XDGUSERDIR], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_TEMP_A], "", SV_MAX_SZ);
+  sysvarsSetStr (SV_PATH_GSETTINGS, "");
+  sysvarsSetStr (SV_PATH_XDGUSERDIR, "");
+  sysvarsSetStr (SV_TEMP_A, "");
 
   tsep = ":";
   if (isWindows ()) {
@@ -820,13 +850,16 @@ sysvarsCheckPaths (const char *otherpaths)
   }
   osGetEnv ("PATH", tpath, sizeof (tpath));
   stringTrimChar (tpath, *tsep);
-  strlcat (tpath, tsep, sizeof (tpath));
+  p = tpath + strlen (tpath);
+  end = tpath + sizeof (tpath);
+  p = stpecpy (p, end, tsep);
   if (otherpaths != NULL && *otherpaths) {
-    strlcat (tpath, otherpaths, sizeof (tpath));
+    p = stpecpy (p, end, otherpaths);
   }
+
   p = strtok_r (tpath, tsep, &tokstr);
   while (p != NULL) {
-    strlcpy (tbuff, p, sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), p);
     pathNormalizePath (tbuff, sizeof (tbuff));
     stringTrimChar (tbuff, '/');
 
@@ -865,37 +898,40 @@ sysvarsCheckPaths (const char *otherpaths)
     p = strtok_r (NULL, tsep, &tokstr);
   }
 
-  strlcpy (sysvars [SV_AUDIOID_MUSICBRAINZ_URI],
-      "https://musicbrainz.org/ws/2", SV_MAX_SZ);
-  strlcpy (sysvars [SV_AUDIOID_ACOUSTID_URI],
-      "https://api.acoustid.org/v2/lookup", SV_MAX_SZ);
+  sysvarsSetStr (SV_AUDIOID_MUSICBRAINZ_URI, "https://musicbrainz.org/ws/2");
+  sysvarsSetStr (SV_AUDIOID_ACOUSTID_URI, "https://api.acoustid.org/v2/lookup");
 
   lsysvars [SVL_VLC_VERSION] = 3;     // unknown at this point
-  strlcpy (sysvars [SV_PATH_VLC], "", SV_MAX_SZ);
+  sysvarsSetStr (SV_PATH_VLC, "");
   if (isWindows ()) {
-    strlcpy (tbuff, "C:/Program Files/VideoLAN/VLC", sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff),
+        "C:/Program Files/VideoLAN/VLC");
   }
   if (isMacOS ()) {
     if (fileopFileExists ("/Applications/VLC.app/Contents/MacOS/lib/libvlc.dylib")) {
-      strlcpy (tbuff, "/Applications/VLC.app/Contents/MacOS/lib/", sizeof (tbuff));
+      stpecpy (tbuff, tbuff + sizeof (tbuff),
+          "/Applications/VLC.app/Contents/MacOS/lib/");
     }
     if (fileopFileExists ("/Applications/VLC.app/Contents/Frameworks/libvlc.dylib")) {
-      strlcpy (tbuff, "/Applications/VLC.app/Contents/Frameworks", sizeof (tbuff));
+      stpecpy (tbuff, tbuff + sizeof (tbuff),
+          "/Applications/VLC.app/Contents/Frameworks");
       lsysvars [SVL_VLC_VERSION] = 4;
     }
   }
   if (isLinux ()) {
-    strlcpy (tbuff, "/usr/lib/x86_64-linux-gnu/libvlc.so.5", sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff),
+        "/usr/lib/x86_64-linux-gnu/libvlc.so.5");
   }
   if (fileopIsDirectory (tbuff) || fileopFileExists (tbuff)) {
-    strlcpy (sysvars [SV_PATH_VLC], tbuff, SV_MAX_SZ);
+    sysvarsSetStr (SV_PATH_VLC, tbuff);
   } else {
     /* one more try for linux (opensuse) */
     if (isLinux ()) {
-      strlcpy (tbuff, "/usr/lib64/libvlc.so.5", sizeof (tbuff));
+      stpecpy (tbuff, tbuff + sizeof (tbuff),
+          "/usr/lib64/libvlc.so.5");
     }
     if (fileopFileExists (tbuff)) {
-      strlcpy (sysvars [SV_PATH_VLC], tbuff, SV_MAX_SZ);
+      sysvarsSetStr (SV_PATH_VLC, tbuff);
     }
   }
 }
@@ -928,7 +964,7 @@ sysvarsSetStr (sysvarkey_t idx, const char *value)
     return;
   }
 
-  strlcpy (sysvars [idx], value, SV_MAX_SZ);
+  stpecpy (sysvars [idx], sysvars [idx] + SV_MAX_SZ, value);
 }
 
 void
@@ -1065,7 +1101,7 @@ checkForFile (char *path, int idx, ...)
   while (! found && (fn = va_arg (valist, char *)) != NULL) {
     snprintf (buff, sizeof (buff), "%s/%s%s", path, fn, sysvars [SV_OS_EXEC_EXT]);
     if (fileopFileExists (buff)) {
-      strlcpy (sysvars [idx], buff, SV_MAX_SZ);
+      sysvarsSetStr (idx, buff);
       found = true;
     }
   }
@@ -1095,35 +1131,35 @@ svGetLinuxOSInfo (char *fn)
   while (fgets (tbuff, sizeof (tbuff), fh) != NULL) {
     if (! haveprettyname &&
         strncmp (tbuff, prettytag, strlen (prettytag)) == 0) {
-      strlcpy (buff, tbuff + strlen (prettytag) + 1, sizeof (buff));
+      stpecpy (buff, buff + sizeof (buff), tbuff + strlen (prettytag) + 1);
       stringTrim (buff);
       stringTrimChar (buff, '"');
-      strlcpy (sysvars [SV_OS_DISP], buff, SV_MAX_SZ);
+      sysvarsSetStr (SV_OS_DISP, buff);
       haveprettyname = true;
       rc = true;
     }
     if (! haveprettyname &&
         strncmp (tbuff, desctag, strlen (desctag)) == 0) {
-      strlcpy (buff, tbuff + strlen (desctag) + 1, sizeof (buff));
+      stpecpy (buff, buff + sizeof (buff), tbuff + strlen (desctag) + 1);
       stringTrim (buff);
       stringTrimChar (buff, '"');
-      strlcpy (sysvars [SV_OS_DISP], buff, SV_MAX_SZ);
+      sysvarsSetStr (SV_OS_DISP, buff);
       haveprettyname = true;
       rc = true;
     }
     if (! havevers &&
         strncmp (tbuff, reltag, strlen (reltag)) == 0) {
-      strlcpy (buff, tbuff + strlen (reltag), sizeof (buff));
+      stpecpy (buff, buff + sizeof (buff), tbuff + strlen (reltag));
       stringTrim (buff);
-      strlcpy (sysvars [SV_OS_VERS], buff, SV_MAX_SZ);
+      sysvarsSetStr (SV_OS_VERS, buff);
       rc = true;
     }
     if (! havevers &&
         strncmp (tbuff, verstag, strlen (verstag)) == 0) {
-      strlcpy (buff, tbuff + strlen (verstag) + 1, sizeof (buff));
+      stpecpy (buff, buff + sizeof (buff), tbuff + strlen (verstag) + 1);
       stringTrim (buff);
       stringTrimChar (buff, '"');
-      strlcpy (sysvars [SV_OS_VERS], buff, SV_MAX_SZ);
+      sysvarsSetStr (SV_OS_VERS, buff);
       rc = true;
     }
   }
@@ -1145,7 +1181,7 @@ svGetLinuxDefaultTheme (void)
     stringTrim (tptr);
     stringTrimChar (tptr, '\'');
     if (strlen (tptr) > 0) {
-      strlcpy (sysvars [SV_THEME_DEFAULT], tptr + 1, SV_MAX_SZ);
+      sysvarsSetStr (SV_THEME_DEFAULT, tptr + 1);
     }
   }
   mdfree (tptr);
@@ -1158,7 +1194,7 @@ svGetSystemFont (void)
 
   tptr = osGetSystemFont (sysvars [SV_PATH_GSETTINGS]);
   if (tptr != NULL) {
-    strlcpy (sysvars [SV_FONT_DEFAULT], tptr, SV_MAX_SZ);
+    sysvarsSetStr (SV_FONT_DEFAULT, tptr);
     mdfree (tptr);
   }
 }

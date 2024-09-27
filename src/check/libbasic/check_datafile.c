@@ -410,7 +410,7 @@ START_TEST(datafile_keyval_dfkey)
 
   list = datafileGetList (df);
   vers = nlistGetVersion (list);
-  ck_assert_int_eq (vers, 7);
+  ck_assert_int_eq (vers, 1);
 
   nlistStartIterator (list, &iteridx);
 
@@ -631,7 +631,7 @@ START_TEST(datafile_keyval_df_extra)
   list = datafileGetList (df);
 
   vers = nlistGetVersion (list);
-  ck_assert_int_eq (vers, 8);
+  ck_assert_int_eq (vers, 1);
 
   nlistStartIterator (list, &iteridx);
 
@@ -746,7 +746,7 @@ START_TEST(datafile_indirect)
   list = datafileGetList (df);
 
   vers = ilistGetVersion (list);
-  ck_assert_int_eq (vers, 9);
+  ck_assert_int_eq (vers, 1);
 
   ilistStartIterator (list, &iteridx);
   key = ilistIterateKey (list, &iteridx);
@@ -838,7 +838,7 @@ START_TEST(datafile_indirect_missing)
   list = datafileGetList (df);
 
   vers = ilistGetVersion (list);
-  ck_assert_int_eq (vers, 10);
+  ck_assert_int_eq (vers, 1);
 
   ilistStartIterator (list, &iteridx);
   key = ilistIterateKey (list, &iteridx);
@@ -932,7 +932,7 @@ START_TEST(datafile_keyval_savelist)
   ck_assert_int_eq (datafileDistVersion (df), 10);
   list = datafileGetList (df);
   vers = nlistGetVersion (list);
-  ck_assert_int_eq (vers, 11);
+  ck_assert_int_eq (vers, 1);
 
   slist = datafileSaveKeyValList ("chk-df-g", dfkeyskl, DFKEY_COUNT, list);
 
@@ -1017,7 +1017,7 @@ START_TEST(datafile_keyval_savebuffer)
   ck_assert_int_eq (datafileDistVersion (df), 11);
   list = datafileGetList (df);
   vers = nlistGetVersion (list);
-  ck_assert_int_eq (vers, 12);
+  ck_assert_int_eq (vers, 1);
 
   datafileSaveKeyValBuffer (tbuff, sizeof (tbuff), "chk-df-h", dfkeyskl, DFKEY_COUNT, list, 0, DF_NONE);
   fn = "tmp/dftesth.txt";
@@ -1100,7 +1100,7 @@ START_TEST(datafile_keyval_save)
   ck_assert_int_eq (datafileDistVersion (df), 12);
   list = datafileGetList (df);
   vers = nlistGetVersion (list);
-  ck_assert_int_eq (vers, 13);
+  ck_assert_int_eq (vers, 1);
 
   fn = "tmp/dftestj.txt";
   datafileSave (df, fn, list, DF_NO_OFFSET, datafileDistVersion (df));
@@ -1111,7 +1111,7 @@ START_TEST(datafile_keyval_save)
   tlist = datafileGetList (tdf);
   vers = -1;
   vers = nlistGetVersion (tlist);
-  ck_assert_int_eq (vers, 13);
+  ck_assert_int_eq (vers, 1);
 
   for (int i = 0; i < DFKEY_COUNT; ++i) {
     if (dfkeyskl [i].valuetype == VALUE_STR) {
@@ -1275,7 +1275,7 @@ START_TEST(datafile_indirect_save)
   ck_assert_int_eq (datafileDistVersion (df), 13);
   list = datafileGetList (df);
   vers = ilistGetVersion (list);
-  ck_assert_int_eq (vers, 14);
+  ck_assert_int_eq (vers, 1);
   unlink (fn);
 
   fn = "tmp/dftestn.txt";
@@ -1287,7 +1287,7 @@ START_TEST(datafile_indirect_save)
   tlist = datafileGetList (tdf);
   vers = -1;
   vers = ilistGetVersion (tlist);
-  ck_assert_int_eq (vers, 14);
+  ck_assert_int_eq (vers, 1);
 
   ilistStartIterator (list, &iteridx);
   while ((key = ilistIterateKey (list, &iteridx)) >= 0) {

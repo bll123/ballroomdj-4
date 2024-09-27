@@ -41,6 +41,8 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
   wchar_t             *wbuff = NULL;
   wchar_t             *woutfname = NULL;
   HANDLE              outhandle = INVALID_HANDLE_VALUE;
+  char                *p;
+  char                *end = buff + sizeof (buff);
 
   memset (&si, '\0', sizeof (si));
   si.cb = sizeof (si);
@@ -69,12 +71,13 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
   }
 
   buff [0] = '\0';
+  p = buff;
   idx = 0;
   while (targv [idx] != NULL) {
     /* quote everything on windows. the batch files must be adjusted to suit */
     snprintf (tbuff, sizeof (tbuff), "\"%s\"", targv [idx++]);
-    strlcat (buff, tbuff, MAXPATHLEN);
-    strlcat (buff, " ", MAXPATHLEN);
+    p = stpecpy (p, end, tbuff);
+    p = stpecpy (p, end, " ");
   }
   wbuff = osToWideChar (buff);
 
@@ -160,6 +163,8 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
   SECURITY_ATTRIBUTES sao;
   DWORD               rbytes;
   DWORD               rc = 0;
+  char                *p;
+  char                *end = buff + sizeof (buff);
 
   flags |= OS_PROC_WAIT;      // required
 
@@ -195,12 +200,13 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
   si.dwFlags |= STARTF_USESTDHANDLES;
 
   buff [0] = '\0';
+  p = buff;
   idx = 0;
   while (targv [idx] != NULL) {
     /* quote everything on windows. the batch files must be adjusted to suit */
     snprintf (tbuff, sizeof (tbuff), "\"%s\"", targv [idx++]);
-    strlcat (buff, tbuff, MAXPATHLEN);
-    strlcat (buff, " ", MAXPATHLEN);
+    stpecpy (p, end, tbuff);
+    stpecpy (p, end, " ");
   }
   wbuff = osToWideChar (buff);
 

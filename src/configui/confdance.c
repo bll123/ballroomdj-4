@@ -500,7 +500,7 @@ confuiDanceValidateAnnouncement (uiwcont_t *entry, confuigui_t *gui)
     return UIENTRY_ERROR;
   }
 
-  strlcpy (nfn, fn, sizeof (nfn));
+  stpecpy (nfn, nfn + sizeof (nfn), fn);
   pathNormalizePath (nfn, sizeof (nfn));
 
   if (*nfn == '\0') {

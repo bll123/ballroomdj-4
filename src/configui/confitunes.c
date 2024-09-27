@@ -149,7 +149,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
   *tbuff = '\0';
   tdata = bdjoptGetStr (OPT_M_DIR_ITUNES_MEDIA);
   if (tdata != NULL) {
-    strlcpy (tbuff, tdata, sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), tdata);
   }
 
   /* CONTEXT: configuration: itunes: the itunes media folder */
@@ -163,7 +163,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
   *tbuff = '\0';
   tdata = bdjoptGetStr (OPT_M_ITUNES_XML_FILE);
   if (tdata != NULL) {
-    strlcpy (tbuff, tdata, sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), tdata);
   }
 
   /* CONTEXT: configuration: itunes: the itunes xml file */
@@ -188,15 +188,19 @@ confuiBuildUIiTunes (confuigui_t *gui)
 
   /* itunes uses 10..100 mapping to 0.5,1,1.5,...,4.5,5 stars */
   for (int i = 0; i < ITUNES_STARS_MAX; ++i) {
+    char    *p;
+    char    *end = tbuff + sizeof (tbuff);
+
     *tbuff = '\0';
+    p = tbuff;
     for (int j = 0; j < i; j += 2) {
       // black star
-      strlcat (tbuff, "\xe2\x98\x85", sizeof (tbuff));
+      p = stpecpy (p, end, "\xe2\x98\x85");
     }
     if (i % 2 == 0) {
       // star with left half black does not work on windows. "\xe2\xaf\xaa"
       // left half black star does not work on windows "\xe2\xaf\xa8"
-      strlcat (tbuff, "\xc2\xbd", sizeof (tbuff));
+      p = stpecpy (p, end, "\xc2\xbd");
     }
 
     hbox = uiCreateHorizBox ();
@@ -301,7 +305,7 @@ confuiSelectiTunesFile (void *udata)
   logProcBegin ();
   /* CONTEXT: configuration: itunes xml file selection dialog: window title */
   snprintf (tbuff, sizeof (tbuff), _("Select %s XML File"), ITUNES_NAME);
-  strlcpy (dirbuff, bdjoptGetStr (OPT_M_ITUNES_XML_FILE), sizeof (dirbuff));
+  stpecpy (dirbuff, dirbuff + sizeof (dirbuff), bdjoptGetStr (OPT_M_ITUNES_XML_FILE));
   pi = pathInfo (dirbuff);
   dirbuff [pi->dlen] = '\0';
   pathInfoFree (pi);

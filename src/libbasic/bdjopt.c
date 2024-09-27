@@ -910,16 +910,6 @@ bdjoptCreateNewConfigs (void)
     return;
   }
 
-#if 0
-// ### ??? why trying to copy global?
-  /* global */
-  sysvarsSetNum (SVL_PROFILE_IDX, 0);
-  pathbldMakePath (path, sizeof (path),
-      BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-  sysvarsSetNum (SVL_PROFILE_IDX, bdjopt->currprofile);
-  filemanipCopy (path, bdjopt->fname [OPTTYPE_GLOBAL]);
-#endif
-
   /* profile */
   sysvarsSetNum (SVL_PROFILE_IDX, 0);
   pathbldMakePath (path, sizeof (path),
@@ -944,16 +934,6 @@ bdjoptCreateNewConfigs (void)
 
     filemanipCopy (fpath, tpath);
   }
-
-#if 0
-// ### ??? why trying to copy per-machine?
-  /* per machine */
-  sysvarsSetNum (SVL_PROFILE_IDX, 0);
-  pathbldMakePath (path, sizeof (path),
-      BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME);
-  sysvarsSetNum (SVL_PROFILE_IDX, bdjopt->currprofile);
-  filemanipCopy (path, bdjopt->fname [OPTTYPE_MACHINE]);
-#endif
 
   /* per machine per profile */
   sysvarsSetNum (SVL_PROFILE_IDX, 0);

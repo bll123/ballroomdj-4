@@ -54,6 +54,7 @@ aesencrypt (const char *str, char *buff, size_t sz)
   char              *data;
   int               rc;
   short             savelen;
+  char              *p;
 
   aesInit ();
 
@@ -108,8 +109,9 @@ aesencrypt (const char *str, char *buff, size_t sz)
 
   data = g_base64_encode ((const guchar *) tmp, tlen);
   mdextalloc (data);
-  strlcpy (buff, AES_E_PFX, sz);
-  strlcat (buff, data, sz);
+  p = buff;
+  p = stpecpy (p, buff + sz, AES_E_PFX);
+  p = stpecpy (p, buff + sz, data);
   mdfree (data);  // allocated by glib
 
   gcry_cipher_close (gch);

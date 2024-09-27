@@ -3,32 +3,45 @@
  */
 #include "config.h"
 
+#define _CRT_RAND_S
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <unistd.h>
 #include <time.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <limits.h>
 
+#include "fileop.h"
 #include "osrandom.h"
+#include "tmutil.h"
+
+static const char * URANDOM_FN = "/dev/urandom";
+static bool initialized = false;
 
 double
 dRandom (void)
 {
-  double      dval;
-
-#if _lib_drand48
-  dval = drand48 ();
+  double        dval = 0.0;
+#if _lib_random
+  unsigned long lval;
 #endif
-#if ! _lib_drand48 && _lib_random
-  long    lval;
+#if _lib_rand_s
+  unsigned int  ival;
+#endif
 
+  if (! initialized) {
+    sRandom ();
+    initialized = true;
+    fprintf (stderr, "WARN: osrandom: not initialized\n");
+  }
+
+#if _lib_random
   lval = random ();
-  dval = (double) ival / (double) LONG_MAX;
+  dval = (double) lval / (double) UINT_MAX;
 #endif
-#if ! _lib_drand48 && ! _lib_random && _lib_rand
-  int       ival;
-
-  ival = rand ();
+#if ! _lib_random && _lib_rand_s
+  rand_s (&ival);
   dval = (double) ival / (double) RAND_MAX;
 #endif
   return dval;
@@ -37,17 +50,26 @@ dRandom (void)
 void
 sRandom (void)
 {
-  long  pid = (long) getpid ();
-  long  seed = (ssize_t) time (NULL) ^ (pid + (pid << 15));
+  ssize_t       pid = (long) getpid ();
+  unsigned int  seed = (ssize_t) mstime () ^ (pid + (pid << 15));
 
-#if _lib_srand48
-  srand48 (seed);
+  /* the /dev/urandom file exists on linux and macos */
+  if (fileopFileExists (URANDOM_FN)) {
+    int     fd;
+
+    fd = open (URANDOM_FN, O_RDONLY);
+    if (fd >= 0) {
+      (void) ! read (fd, &seed, sizeof (seed));
+      close (fd);
+    }
+  }
+
+#if _lib_random
+  srandom (seed);
+  initialized = true;
 #endif
-#if ! _lib_srand48 && _lib_random
-  srandom ((unsigned int) seed);
-#endif
-#if ! _lib_srand48 && ! _lib_random && _lib_srand
-  srand ((unsigned int) seed);
+#if ! _lib_random && _lib_srand
+  srand (seed);
+  initialized = true;
 #endif
 }
-

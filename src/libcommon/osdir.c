@@ -46,13 +46,17 @@ osDirOpen (const char *dirname)
 #if _lib_FindFirstFileW
   {
     size_t        len = 0;
+    char          *p;
+    char          *end;
 
     dirh->dhandle = INVALID_HANDLE_VALUE;
     len = strlen (dirname) + 3;
     dirh->dirname = mdmalloc (len);
-    strlcpy (dirh->dirname, dirname, len);
+    p = dirh->dirname;
+    end = dirh->dirname + len;
+    p = stpecpy (p, end, dirname);
     stringTrimChar (dirh->dirname, '/');
-    strlcat (dirh->dirname, "/*", len);
+    p = stpecpy (p, end, "/*");
   }
 #else
   dirh->dirname = mdstrdup (dirname);

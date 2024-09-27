@@ -33,6 +33,7 @@ START_TEST(osrandom_chk)
   sRandom ();
   dval = dRandom ();
   dvalb = dRandom ();
+  ck_assert_float_gt (dval, 0.0);
   ck_assert_float_ne (dval, 1.0);
   ck_assert_float_ne (dvalb, 1.0);
   ck_assert_float_ne (dval, dvalb);

@@ -204,12 +204,18 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
     }
 
     if (dorename && audiosrcOriginalExists (ffn)) {
-      char  neworigffn [MAXPATHLEN];
+      char    neworigffn [MAXPATHLEN];
+      char    *p;
+      char    *end;
 
-      strlcpy (tbuff, ffn, sizeof (tbuff));
-      strlcat (tbuff, bdjvarsGetStr (BDJV_ORIGINAL_EXT), sizeof (tbuff));
-      strlcpy (neworigffn, newffn, sizeof (neworigffn));
-      strlcat (neworigffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT), sizeof (newffn));
+      p = tbuff;
+      end = tbuff + sizeof (tbuff);
+      p = stpecpy (p, end, ffn);
+      p = stpecpy (p, end, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
+      p = neworigffn;
+      end = neworigffn + sizeof (neworigffn);
+      p = stpecpy (p, end, newffn);
+      p = stpecpy (p, end, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
       rc = filemanipMove (tbuff, neworigffn);
       if (rc != 0) {
         logMsg (LOG_DBG, LOG_IMPORTANT, "unable to rename original %s %s", olduri, tbuff);

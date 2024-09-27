@@ -497,7 +497,7 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
         pathInfoFree (pi);
 
         pi = pathInfo (tbuff);
-        strlcpy (tmp, pi->filename, pi->flen + 1);
+        stpecpy (tmp, tmp + pi->flen + 1, pi->filename);
         slistSetNum (themelist, tmp, 0);
         pathInfoFree (pi);
       }

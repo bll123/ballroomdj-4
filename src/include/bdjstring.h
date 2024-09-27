@@ -17,6 +17,8 @@ void      stringTrimChar (char *s, unsigned char c);
 int       versionCompare (const char *v1, const char *v2);
 size_t    stringAppend (char *str, size_t maxsz, size_t currsz, const char *data);
 
+char * stpecpy (char *dst, char end[0], const char *restrict src);
+
 #if ! _lib_strlcat
 size_t strlcat(char *dst, const char *src, size_t siz);
 #endif
