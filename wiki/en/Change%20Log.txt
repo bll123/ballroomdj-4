@@ -4,8 +4,13 @@
 
 <!--
 
-**4.12.1 2024-9-9**
+**4.12.2 2024-9-9**
 
+**4.12.1 2024-9-28**
+
+* Bug Fixes:
+    * Updater: Fix crash when updating old versions of dances.txt.
+    * PENDING: Song Editor: Fix traversal of multiple selections in the music manager.
 * Translations
     * Added romanian, machine translated, very poor quality
 

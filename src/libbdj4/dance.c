@@ -251,7 +251,6 @@ danceSave (dance_t *dances, ilist_t *list, int newdistvers)
   if (newdistvers > distvers) {
     distvers = newdistvers;
   }
-  ilistSetVersion (list, DANCE_DF_VERSION);
   datafileSave (dances->df, NULL, list, DF_NO_OFFSET, distvers);
   danceCreateDanceList (dances);
 }
@@ -333,6 +332,20 @@ danceConvertMPMtoBPM (int danceidx, int bpm)
   return bpm;
 }
 
+int
+danceGetDistVersion (dance_t *dances)
+{
+  int   distvers = 0;
+
+  if (dances == NULL) {
+    return 0;
+  }
+
+  distvers = datafileDistVersion (dances->df);
+  return distvers;
+}
+
+
 
 /* internal routines */
 
@@ -391,11 +404,6 @@ danceCreateDanceList (dance_t *dances)
 {
   ilistidx_t  iteridx;
   int         key;
-  bool        fixbpm = false;
-
-  if (ilistGetVersion (dances->dances) == DANCE_BPM_VERSION) {
-    fixbpm = true;
-  }
 
   slistFree (dances->danceList);
   dances->danceList = slistAlloc ("dance-list", LIST_UNORDERED, NULL);
@@ -407,18 +415,6 @@ danceCreateDanceList (dance_t *dances)
 
     val = ilistGetStr (dances->dances, key, DANCE_DANCE);
     slistSetNum (dances->danceList, val, key);
-
-    if (fixbpm) {
-      int   tval;
-
-      tval = ilistGetNum (dances->dances, key, DANCE_MPM_HIGH);
-      tval = danceConvertBPMtoMPM (key, tval, DANCE_FORCE_CONV);
-      ilistSetNum (dances->dances, key, DANCE_MPM_HIGH, tval);
-
-      tval = ilistGetNum (dances->dances, key, DANCE_MPM_LOW);
-      tval = danceConvertBPMtoMPM (key, tval, DANCE_FORCE_CONV);
-      ilistSetNum (dances->dances, key, DANCE_MPM_LOW, tval);
-    }
   }
   slistSort (dances->danceList);
 }
