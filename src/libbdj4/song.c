@@ -582,7 +582,7 @@ songGetClassicalWork (const song_t *song, char *work, size_t sz)
   title = nlistGetStr (song->songInfo, TAG_TITLE);
   p = strchr (title, ':');
   if (p != NULL) {
-    strlcpy (work, title, sz);
+    stpecpy (work, work + sz, title);
     p = strchr (work, ':');
     *p = '\0';
   }

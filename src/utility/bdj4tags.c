@@ -88,7 +88,7 @@ main (int argc, char *argv [])
       case 'C': {
         if (optarg != NULL) {
           targ = bdj4argGet (bdj4arg, optind - 1, optarg);
-          strlcpy (origcwd, targ, sizeof (origcwd));
+          stpecpy (origcwd, origcwd + sizeof (origcwd), targ);
         }
         break;
       }
@@ -133,7 +133,7 @@ main (int argc, char *argv [])
   }
 
   targ = bdj4argGet (bdj4arg, fidx, argv [fidx]);
-  strlcpy (infn, targ, sizeof (infn));
+  stpecpy (infn, infn + sizeof (infn), targ);
 
   if (! fileopFileExists (infn)) {
     /* try a relative path name */

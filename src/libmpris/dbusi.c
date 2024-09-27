@@ -404,7 +404,7 @@ dbusResultGet (dbus_t *dbus, ...)
 
         g_variant_get (tv, type, &tstr);
         mdextalloc (tstr);
-        strlcpy (trackid, tstr, DBUS_MAX_TRACKID);
+        stpecpy (trackid, trackid + DBUS_MAX_TRACKID, tstr);
         mdfree (tstr);
         ++rc;
       }

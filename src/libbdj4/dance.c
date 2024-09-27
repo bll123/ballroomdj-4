@@ -80,7 +80,7 @@ danceAlloc (const char *altfname)
   char        fname [MAXPATHLEN];
 
   if (altfname != NULL) {
-    strlcpy (fname, altfname, sizeof (fname));
+    stpecpy (fname, fname + sizeof (fname), altfname);
   } else {
     pathbldMakePath (fname, sizeof (fname), DANCE_FN,
         BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);

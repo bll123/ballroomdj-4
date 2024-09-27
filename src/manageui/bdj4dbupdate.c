@@ -538,7 +538,7 @@ dbupdateProcessing (void *udata)
       /* if the filename is from the db iterator, */
       /*    it could be a full path or a relative path */
       tsongfn = fn;
-      strlcpy (ffn, fn, sizeof (ffn));
+      stpecpy (ffn, ffn + sizeof (ffn), fn);
       if (dbupdate->iterfromaudiosrc) {
         tsongfn = audiosrcRelativePath (fn, 0);
       }

@@ -250,7 +250,7 @@ asiURI (asdata_t *asdata, const char *sfname, char *buff, size_t sz,
     return;
   }
 
-  strlcpy (buff, AS_FILE_PFX, sizeof (buff));
+  stpecpy (buff, buff + sizeof (buff), AS_FILE_PFX);
   asiFullPath (asdata, sfname, buff + AS_FILE_PFX_LEN, sz - AS_FILE_PFX_LEN,
       prefix, pfxlen);
 }
@@ -270,7 +270,7 @@ asiFullPath (asdata_t *asdata, const char *sfname, char *buff, size_t sz,
   }
 
   if (fileopIsAbsolutePath (sfname)) {
-    strlcpy (buff, sfname, sz);
+    stpecpy (buff, buff + sz, sfname);
   } else {
     /* in most cases, the sfname passed in is either relative to */
     /* the music-dir, or is a full path, and the prefix-length and old name */

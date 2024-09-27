@@ -208,7 +208,7 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
       ffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
   /* check for .original filename */
   if (! fileopFileExists (infn)) {
-    strlcpy (infn, ffn, sizeof (infn));
+    stpecpy (infn, infn + sizeof (infn), ffn);
   }
 
   mstimestart (&starttm);
@@ -239,7 +239,7 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: fp: %" PRId64 "ms",
       (int64_t) mstimeend (&starttm));
 
-  strlcpy (uri, sysvarsGetStr (SV_AUDIOID_ACOUSTID_URI), sizeof (uri));
+  stpecpy (uri, uri + sizeof (uri), sysvarsGetStr (SV_AUDIOID_ACOUSTID_URI));
   /* if meta-compress is on the track artists are not generated */
   snprintf (query, ACOUSTID_BUFF_SZ,
       "client=%s"

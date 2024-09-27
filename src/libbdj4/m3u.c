@@ -106,7 +106,7 @@ m3uImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
         ++p;
       }
       if (*p) {
-        strlcpy (plname, p, plsz);
+        stpecpy (plname, plname + plsz, p);
       }
       continue;
     }

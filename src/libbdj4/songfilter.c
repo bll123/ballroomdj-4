@@ -867,7 +867,7 @@ songfilterCheckStr (const char *str, char *searchstr)
     return found;
   }
 
-  strlcpy (tbuff, str, sizeof (tbuff));
+  stpecpy (tbuff, tbuff + sizeof (tbuff), str);
   istringToLower (tbuff);
   if (strstr (tbuff, searchstr) != NULL) {
     found = true;

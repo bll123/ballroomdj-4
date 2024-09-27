@@ -83,7 +83,7 @@ aesencrypt (const char *str, char *buff, size_t sz)
   gcry_cipher_final (gch);
 
   tlen = len;
-  strlcpy (tstr, str, sizeof (tstr));
+  stpecpy (tstr, tstr + sizeof (tstr), str);
   savelen = (int16_t) len;
   rem = ((tlen / AES_KEY_SZ) * AES_KEY_SZ) - tlen;
   if (rem < (ssize_t) sizeof (int16_t)) {

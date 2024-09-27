@@ -148,7 +148,7 @@ localeSetup (void)
     osGetLocale (lbuff, sizeof (lbuff));
     sysvarsSetStr (SV_LOCALE_SYSTEM, lbuff);
   } else {
-    strlcpy (lbuff, sysvarsGetStr (SV_LOCALE_SYSTEM), sizeof (lbuff));
+    stpecpy (lbuff, lbuff + sizeof (lbuff), sysvarsGetStr (SV_LOCALE_SYSTEM));
   }
   snprintf (tbuff, sizeof (tbuff), "%-.5s", lbuff);
   /* windows uses en-US rather than en_US */
@@ -167,7 +167,7 @@ localeSetup (void)
     sysvarsSetStr (SV_LOCALE_SHORT, sbuff);
   }
 
-  strlcpy (lbuff, sysvarsGetStr (SV_LOCALE), sizeof (lbuff));
+  stpecpy (lbuff, lbuff + sizeof (lbuff), sysvarsGetStr (SV_LOCALE));
 
   if (isWindows ()) {
     if (atof (sysvarsGetStr (SV_OS_VERS)) >= 10.0) {
@@ -184,7 +184,7 @@ localeSetup (void)
   if (useutf8ext) {
     snprintf (tbuff, sizeof (tbuff), "%s.UTF-8", lbuff);
   } else {
-    strlcpy (tbuff, lbuff, sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), lbuff);
   }
 
   /* windows doesn't work without this */

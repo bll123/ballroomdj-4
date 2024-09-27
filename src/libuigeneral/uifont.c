@@ -20,7 +20,7 @@ uiFontInfo (const char *font, char *buff, size_t sz, int *fontsz) /* UNUSED */
   size_t      i;
   ssize_t     idx = -1;
 
-  strlcpy (buff, font, sz);
+  stpecpy (buff, buff + sz, font);
 
   i = strlen (buff) - 1;
   while (i != 0 && (isdigit (buff [i]) || isspace (buff [i]))) {

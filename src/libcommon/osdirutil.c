@@ -43,7 +43,7 @@ osGetCurrentDir (char *buff, size_t len)
   wcwd = _wgetcwd (NULL, 0);
   mdextalloc (wcwd);
   tmp = osFromWideChar (wcwd);
-  strlcpy (buff, tmp, len);
+  stpecpy (buff, buff + len, tmp);
   mdextfree (wcwd);
   mdfree (tmp);
 #else

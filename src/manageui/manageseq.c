@@ -461,7 +461,7 @@ manageSequenceNew (void *udata)
   uiLabelSetText (manageseq->minfo->statusMsg, "");
   manageSequenceSave (manageseq);
 
-  strlcpy (tbuff, manageseq->newseqname, sizeof (tbuff));
+  stpecpy (tbuff, tbuff + sizeof (tbuff), manageseq->newseqname);
   manageSetSequenceName (manageseq, tbuff);
   manageseq->seqbackupcreated = false;
   tlist = slistAlloc ("tmp-sequence", LIST_UNORDERED, NULL);

@@ -145,7 +145,7 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
     return 0;
   }
 
-  strlcpy (olduri, songGetStr (song, TAG_URI), sizeof (olduri));
+  stpecpy (olduri, olduri + sizeof (olduri), songGetStr (song, TAG_URI));
   *newuri = '\0';
 
   if (renameallow) {
@@ -251,7 +251,7 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
           break;
         }
         pathInfoFree (pi);
-        strlcpy (dirbuff, tbuff, sizeof (dirbuff));
+        stpecpy (dirbuff, dirbuff + sizeof (dirbuff), tbuff);
         pi = pathInfo (dirbuff);
       }
       pathInfoFree (pi);
@@ -333,7 +333,7 @@ songdbNewName (songdb_t *songdb, song_t *song, char *newuri, size_t sz)
     return false;
   }
 
-  strlcpy (newuri, tnewfn, sz);
+  stpecpy (newuri, newuri + sz, tnewfn);
   dataFree (tnewfn);
 
   return true;

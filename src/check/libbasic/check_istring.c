@@ -138,7 +138,7 @@ START_TEST(istring_tolower)
   istringInit ("de_DE");
 
   for (int i = 0; i < tvaluesz; ++i) {
-    strlcpy (tbuff, tvalues [i].u, sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), tvalues [i].u);
     istringToLower (tbuff);
     rc = strcmp (tbuff, tvalues [i].l);
     ck_assert_int_eq (rc, 0);

@@ -326,7 +326,7 @@ getDefaultSink (char *defsinkname, size_t sz)
   }
   waitop (op);
   pa_threaded_mainloop_unlock (gstate.pamainloop);
-  strlcpy (defsinkname, cbdata.defname, sz);
+  stpecpy (defsinkname, defsinkname + sz, cbdata.defname);
 }
 
 static void
@@ -337,7 +337,8 @@ serverInfoCallback (
 {
   pacallback_t  *cbdata = (pacallback_t *) userdata;
 
-  strlcpy (cbdata->defname, i->default_sink_name, sizeof (cbdata->defname));
+  stpecpy (cbdata->defname, cbdata->defname + sizeof (cbdata->defname),
+      i->default_sink_name);
   pa_threaded_mainloop_signal (gstate.pamainloop, 0);
 }
 

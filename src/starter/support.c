@@ -63,7 +63,7 @@ supportGetLatestVersion (support_t *support, char *buff, size_t sz)
       bdjoptGetStr (OPT_HOST_VERSION), bdjoptGetStr (OPT_URI_VERSION));
   webclientGet (support->webclient, uri);
   if (support->webresponse != NULL) {
-    strlcpy (buff, support->webresponse, sz);
+    stpecpy (buff, buff + sz, support->webresponse);
     stringTrim (buff);
   }
 }
@@ -85,7 +85,7 @@ supportSendFile (support_t *support, const char *ident,
   if (! fileopFileExists (origfn)) {
     return;
   }
-  strlcpy (fn, origfn, sizeof (fn));
+  stpecpy (fn, fn + sizeof (fn), origfn);
   if (compflag == SUPPORT_COMPRESSED) {
     pi = pathInfo (origfn);
     pathbldMakePath (fn, sizeof (fn),

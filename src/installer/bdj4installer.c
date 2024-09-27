@@ -356,7 +356,7 @@ main (int argc, char *argv[])
   installer.hostname = sysvarsGetStr (SV_HOSTNAME);
   installer.home = sysvarsGetStr (SV_HOME);
 
-  strlcpy (buff, installer.home, sizeof (buff));
+  stpecpy (buff, buff + sizeof (buff), installer.home);
   if (isMacOS ()) {
     snprintf (buff, sizeof (buff), "%s/Applications", installer.home);
   }
@@ -374,7 +374,7 @@ main (int argc, char *argv[])
       char    *tmp = NULL;
 
       tmp = regexReplaceLiteral (buff, "%USERNAME%", sysvarsGetStr (SV_USER));
-      strlcpy (buff, tmp, sizeof (buff));
+      stpecpy (buff, buff + sizeof (buff), tmp);
       dataFree (tmp);
     }
   }
@@ -424,7 +424,7 @@ main (int argc, char *argv[])
       case 'u': {
         if (optarg != NULL) {
           targ = bdj4argGet (bdj4arg, optind - 1, optarg);
-          strlcpy (installer.unpackdir, targ, sizeof (installer.unpackdir));
+          stpecpy (installer.unpackdir, installer.unpackdir + sizeof (installer.unpackdir), targ);
         }
         break;
       }
@@ -587,10 +587,10 @@ installerBuildUI (installer_t *installer)
   uiLabelAddClass (INST_HL_CLASS, INST_HL_COLOR);
   uiSeparatorAddClass (INST_SEP_CLASS, INST_SEP_COLOR);
 
-  strlcpy (imgbuff, "img/bdj4_icon_inst.png", sizeof (imgbuff));
+  stpecpy (imgbuff, imgbuff + sizeof (imgbuff), "img/bdj4_icon_inst.png");
   osuiSetIcon (imgbuff);
 
-  strlcpy (imgbuff, "img/bdj4_icon_inst.svg", sizeof (imgbuff));
+  stpecpy (imgbuff, imgbuff + sizeof (imgbuff), "img/bdj4_icon_inst.svg");
   /* CONTEXT: installer: window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Installer"), BDJ4_NAME);
   installer->callbacks [INST_CB_EXIT] = callbackInit (
@@ -1056,7 +1056,7 @@ installerValidateTarget (uiwcont_t *entry, const char *label, void *udata)
   installer->invaltarget = true;
 
   dir = uiEntryGetValue (installer->wcont [INST_W_TARGET]);
-  strlcpy (tbuff, dir, sizeof (tbuff));
+  stpecpy (tbuff, tbuff + sizeof (tbuff), dir);
   pathNormalizePath (tbuff, strlen (tbuff));
 
   /* only call the validation process if the directory has changed */
@@ -1094,13 +1094,13 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
     exists = true;
     found = instutilCheckForExistingInstall (tdir, installer->macospfx);
     if (! found) {
-      strlcpy (tbuff, tdir, sizeof (tbuff));
+      stpecpy (tbuff, tbuff + sizeof (tbuff), tdir);
       instutilAppendNameToTarget (tbuff, sizeof (tbuff), NULL, true);
       exists = fileopIsDirectory (tbuff);
       if (exists) {
         found = instutilCheckForExistingInstall (tbuff, installer->macospfx);
         if (found) {
-          strlcpy (tdir, tbuff, sizeof (tdir));
+          stpecpy (tdir, tdir + sizeof (tdir), tbuff);
         }
       }
     }
@@ -1244,7 +1244,7 @@ installerValidateBDJ3Loc (uiwcont_t *entry, const char *label, void *udata)
   /* bdj3 location validation */
 
   dir = uiEntryGetValue (installer->wcont [INST_W_BDJ3_LOC]);
-  strlcpy (tbuff, dir, sizeof (tbuff));
+  stpecpy (tbuff, tbuff + sizeof (tbuff), dir);
   pathNormalizePath (tbuff, strlen (tbuff));
 
   installer->convdirok = false;
@@ -1296,7 +1296,7 @@ installerSetPaths (installer_t *installer)
 {
   installerSetRundir (installer, installer->target);
 
-  strlcpy (installer->datatopdir, installer->rundir, sizeof (installer->datatopdir));
+  stpecpy (installer->datatopdir, installer->datatopdir + sizeof (installer->datatopdir), installer->rundir);
   if (isMacOS ()) {
     snprintf (installer->datatopdir, sizeof (installer->datatopdir),
         "%s%s/%s", installer->home, MACOS_DIR_LIBDATA, installer->name);
@@ -1322,7 +1322,7 @@ installerTargetDirDialog (void *udata)
   if (fn != NULL) {
     char        tbuff [MAXPATHLEN];
 
-    strlcpy (tbuff, fn, sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), fn);
     /* after the user selected a folder via a button, */
     /* want the /BDJ4 appended */
     instutilAppendNameToTarget (tbuff, sizeof (tbuff), NULL, false);
@@ -1342,7 +1342,7 @@ installerSetBDJ3LocEntry (installer_t *installer, const char *bdj3loc)
 {
   char    tbuff [MAXPATHLEN];
 
-  strlcpy (tbuff, bdj3loc, sizeof (tbuff));
+  stpecpy (tbuff, tbuff + sizeof (tbuff), bdj3loc);
   pathDisplayPath (tbuff, sizeof (tbuff));
   if (installer->guienabled) {
     uiEntrySetValue (installer->wcont [INST_W_BDJ3_LOC], tbuff);
@@ -1465,7 +1465,7 @@ installerVerifyInstall (installer_t *installer)
 
   if (isWindows ()) {
     /* verification on windows is too slow */
-    strlcpy (tmp, "OK", sizeof (tmp));
+    stpecpy (tmp, tmp + sizeof (tmp), "OK");
   } else {
     snprintf (tbuff, sizeof (tbuff), ".%s/install/verifychksum.sh",
         installer->macospfx);
@@ -1629,7 +1629,7 @@ installerCopyFiles (installer_t *installer)
     *tmp = '\0';
     trundir = regexReplaceLiteral (installer->rundir,
         sysvarsGetStr (SV_USER), WINUSERNAME);
-    strlcpy (tmp, trundir, sizeof (tmp));
+    stpecpy (tmp, tmp + sizeof (tmp), trundir);
     dataFree (trundir);
     pathDisplayPath (tmp, sizeof (tmp));
 
@@ -1873,7 +1873,7 @@ installerConvertStart (installer_t *installer)
 
   locidx = 0;
   while (locs [locidx] != NULL) {
-    strlcpy (tbuff, locs [locidx], sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), locs [locidx]);
     if (isWindows ()) {
       snprintf (tbuff, sizeof (tbuff), "%s.exe", locs [locidx]);
     }
@@ -2031,7 +2031,7 @@ installerSaveLocale (installer_t *installer)
     return;
   }
 
-  strlcpy (tbuff, "data/localeorig.txt", sizeof (tbuff));
+  stpecpy (tbuff, tbuff + sizeof (tbuff), "data/localeorig.txt");
   fh = fileopOpen (tbuff, "w");
   if (fh != NULL) {
     fprintf (fh, "%s\n", sysvarsGetStr (SV_LOCALE_SYSTEM));
@@ -2256,7 +2256,7 @@ installerUpdateProcessInit (installer_t *installer)
     FILE    *fh;
     char    tbuff [MAXPATHLEN];
 
-    strlcpy (tbuff, "data/locale.txt", sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), "data/locale.txt");
     fh = fileopOpen (tbuff, "w");
     fprintf (fh, "%s\n", sysvarsGetStr (SV_LOCALE));
     mdextfclose (fh);
@@ -2349,7 +2349,7 @@ installerUpdateAltProcessInit (installer_t *installer)
     FILE    *fh;
     char    tbuff [MAXPATHLEN];
 
-    strlcpy (tbuff, "data/locale.txt", sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), "data/locale.txt");
     fh = fileopOpen (tbuff, "w");
     fprintf (fh, "%s\n", sysvarsGetStr (SV_LOCALE));
     mdextfclose (fh);
@@ -2479,7 +2479,7 @@ installerCleanup (installer_t *installer)
 
       ndata = regexReplaceLiteral (installer->unpackdir,
           sysvarsGetStr (SV_USER), WINUSERNAME);
-      strlcpy (buff, ndata, sizeof (buff));
+      stpecpy (buff, buff + sizeof (buff), ndata);
       dataFree (ndata);
       pathDisplayPath (buff, strlen (buff));
       ndata = regexReplaceLiteral (fdata, "#UNPACKDIR#", buff);
@@ -2593,7 +2593,7 @@ installerVLCGetVersion (installer_t *installer)
     if (p != NULL) {
       p += strlen (srchvlc);
       e = strstr (p, "-");
-      strlcpy (installer->vlcversion, p, e - p + 1);
+      stpecpy (installer->vlcversion, installer->vlcversion + (e - p + 1), p);
     }
   }
 }

@@ -422,7 +422,7 @@ uiexpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
     return UIENTRY_ERROR;
   }
 
-  strlcpy (tbuff, str, sizeof (tbuff));
+  stpecpy (tbuff, tbuff + sizeof (tbuff), str);
   pathNormalizePath (tbuff, sizeof (tbuff));
 
   pi = pathInfo (tbuff);
@@ -482,7 +482,6 @@ uiexpplExportTypeCallback (void *udata)
       ! pathInfoExtCheck (pi, exptypes [uiexppl->exptype].ext)) {
     char        tbuff [MAXPATHLEN];
 
-    strlcpy (tbuff, str, sizeof (tbuff));
     snprintf (tbuff, sizeof (tbuff), "%.*s/%.*s%s",
         (int) pi->dlen, pi->dirname,
         (int) pi->blen, pi->basename,

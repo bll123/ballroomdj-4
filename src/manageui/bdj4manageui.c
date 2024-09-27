@@ -2989,7 +2989,7 @@ manageSonglistLoadFile (void *udata, const char *fn, int preloadflag)
   snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
   connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_DATA_RESUME, tbuff);
 
-  strlcpy (tbuff, fn, sizeof (tbuff));
+  stpecpy (tbuff, tbuff + sizeof (tbuff), fn);
   /* CONTEXT: playlist: the name of the history song list */
   if (strcmp (fn, _("History")) == 0 ||
       strcmp (fn, "History") == 0) {
@@ -3343,7 +3343,7 @@ managePlaylistImport (void *udata)
 
   /* CONTEXT: manage-ui: song list: default name for a new song list */
   manageSetSonglistName (manage, _("New Song List"));
-  strlcpy (nplname, manage->sloldname, sizeof (nplname));
+  stpecpy (nplname, nplname + sizeof (nplname), manage->sloldname);
 
   selectdata = uiSelectInit (manage->minfo.window,
       /* CONTEXT: manage-ui: song list import: title of dialog */
@@ -3369,7 +3369,7 @@ managePlaylistImport (void *udata)
 
     pi = pathInfo (fn);
     len = pi->blen + 1 > sizeof (nplname) ? sizeof (nplname) : pi->blen + 1;
-    strlcpy (nplname, pi->basename, len);
+    stpecpy (nplname, nplname + len, pi->basename);
 
     if (pathInfoExtCheck (pi, ".m3u") || pathInfoExtCheck (pi, ".m3u8")) {
       list = m3uImport (manage->musicdb, fn, nplname, sizeof (nplname));

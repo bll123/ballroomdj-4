@@ -42,7 +42,7 @@ dylibLoad (const char *path)
   handle = dlopen (path, RTLD_LAZY);
 #endif
 #if _lib_LoadLibraryW
-  strlcpy (npath, path, sizeof (npath));
+  stpecpy (npath, npath + sizeof (npath), path);
   pathDisplayPath (npath, sizeof (npath));
   wpath = osToWideChar (npath);
   libhandle = LoadLibraryW (wpath);

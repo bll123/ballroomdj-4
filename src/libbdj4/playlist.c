@@ -453,7 +453,7 @@ playlistGetConfigListStr (playlist_t *pl, playlistkey_t key, char *buff, size_t 
   convTextList (&conv);
 
   if (conv.strval != NULL) {
-    strlcpy (buff, conv.strval, sz);
+    stpecpy (buff, buff + sz, conv.strval);
     mdfree (conv.strval);
   }
 }
@@ -685,7 +685,7 @@ playlistGetPlaylistList (int flag, const char *dir)
     ext = BDJ4_PLAYLIST_EXT;
   }
   if (flag == PL_LIST_DIR) {
-    strlcpy (tfn, dir, sizeof (tfn));
+    stpecpy (tfn, tfn + sizeof (tfn), dir);
     ext = BDJ4_PLAYLIST_EXT;
   }
   filelist = dirlistBasicDirList (tfn, ext);
@@ -693,7 +693,7 @@ playlistGetPlaylistList (int flag, const char *dir)
   slistStartIterator (filelist, &iteridx);
   while ((tplfnm = slistIterateKey (filelist, &iteridx)) != NULL) {
     pi = pathInfo (tplfnm);
-    strlcpy (tfn, pi->basename, pi->blen + 1);
+    stpecpy (tfn, tfn + pi->blen + 1, pi->basename);
     tfn [pi->blen] = '\0';
     pathInfoFree (pi);
 

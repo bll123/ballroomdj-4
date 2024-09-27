@@ -122,7 +122,7 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
     return changed;
   }
 
-  strlcpy (songfn, songGetStr (song, TAG_URI), sizeof (songfn));
+  stpecpy (songfn, songfn + sizeof (songfn), songGetStr (song, TAG_URI));
   if (audiosrcGetType (songfn) != AUDIOSRC_TYPE_FILE) {
     return changed;
   }

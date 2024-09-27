@@ -84,7 +84,7 @@ dyInterfaceList (const char *pfx, const char *funcnm)
 #if BDJ4_DYLIB_DEBUG
         fprintf (logfh, "  desc: %d %s\n", c, desc);
 #endif
-        strlcpy (tmp, fn, sizeof (tmp));
+        stpecpy (tmp, tmp + sizeof (tmp), fn);
         tmp [strlen (tmp) - strlen (sysvarsGetStr (SV_SHLIB_EXT))] = '\0';
         ilistSetStr (interfaces, ikey, DYI_LIB, tmp);
         ilistSetStr (interfaces, ikey, DYI_DESC, desc);

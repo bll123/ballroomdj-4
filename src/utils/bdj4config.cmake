@@ -575,8 +575,6 @@ check_function_exists (srandom _lib_srandom)
 # requires _GNU_SOURCE to be declared, but statx is still located correctly.
 check_function_exists (statx _lib_statx)
 check_function_exists (stpecpy _lib_stpecpy)
-check_function_exists (strlcat _lib_strlcat)
-check_function_exists (strlcpy _lib_strlcpy)
 check_function_exists (strptime _lib_strptime)
 check_function_exists (strtok_r _lib_strtok_r)
 check_function_exists (symlink _lib_symlink)

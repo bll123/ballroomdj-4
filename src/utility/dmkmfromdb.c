@@ -114,7 +114,7 @@ main (int argc, char *argv [])
   tagdefInit ();
 
   osGetCurrentDir (cwd, sizeof (cwd));
-  strlcpy (dbfn, "data/musicdb.dat", sizeof (dbfn));
+  stpecpy (dbfn, dbfn + sizeof (dbfn), "data/musicdb.dat");
   snprintf (tofdir, sizeof (tofdir), "%s/%s",
       sysvarsGetStr (SV_BDJ4_DIR_MAIN), tmusicorig);
   snprintf (tmdir, sizeof (tmdir), "%s/%s",
@@ -152,9 +152,9 @@ main (int argc, char *argv [])
       dkey = songGetNum (song, TAG_DANCE);
       if (dkey < 0) {
         /* unknown dance, just use waltz music */
-        strlcpy (tdnc, "waltz", sizeof (tdnc));
+        stpecpy (tdnc, tdnc + sizeof (tdnc), "waltz");
       } else {
-        strlcpy (tdnc, danceGetStr (dances, dkey, DANCE_DANCE), sizeof (tdnc));
+        stpecpy (tdnc, tdnc + sizeof (tdnc), danceGetStr (dances, dkey, DANCE_DANCE));
         stripSpaces (tdnc);
         stringAsciiToLower (tdnc);
       }

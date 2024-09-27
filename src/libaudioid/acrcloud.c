@@ -247,7 +247,7 @@ acrLookup (audioidacr_t *acr, const song_t *song, audioid_resp_t *resp)
       ffn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
   /* check for .original filename */
   if (! fileopFileExists (infn)) {
-    strlcpy (infn, ffn, sizeof (infn));
+    stpecpy (infn, infn + sizeof (infn), ffn);
   }
 
   pathbldMakePath (fpfn, sizeof (fpfn), "acrcloud-fp", BDJ4_CONFIG_EXT,

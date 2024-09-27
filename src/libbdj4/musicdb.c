@@ -429,7 +429,7 @@ dbCreateSongEntryFromSong (char *tbuff, size_t sz, song_t *song,
   }
 
   sbuff = songCreateSaveData (song);
-  strlcpy (tbuff, sbuff, sz);
+  stpecpy (tbuff, tbuff + sz, sbuff);
   mdfree (sbuff);
 
   return -1;

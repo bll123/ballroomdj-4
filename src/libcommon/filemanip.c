@@ -72,9 +72,9 @@ filemanipCopy (const char *fname, const char *nfn)
   origtm = fileopModTime (fname);
 
   if (isWindows ()) {
-    strlcpy (tfname, fname, sizeof (tfname));
+    stpecpy (tfname, tfname + sizeof (tfname), fname);
     pathDisplayPath (tfname, sizeof (tfname));
-    strlcpy (tnfn, nfn, sizeof (tnfn));
+    stpecpy (tnfn, tnfn + sizeof (tnfn), nfn);
     pathDisplayPath (tnfn, sizeof (tnfn));
     origtm = fileopModTime (tfname);
 #if _lib_CopyFileW
@@ -142,7 +142,7 @@ filemanipBackup (const char *fname, int count)
     snprintf (nfn, sizeof (nfn), "%s.bak.%d", fname, i);
     snprintf (ofn, sizeof (ofn), "%s.bak.%d", fname, i - 1);
     if (i - 1 == 0) {
-      strlcpy (ofn, fname, sizeof (ofn));
+      stpecpy (ofn, ofn + sizeof (ofn), fname);
     }
     if (fileopFileExists (ofn)) {
       if ((i - 1) != 0) {

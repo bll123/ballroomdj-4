@@ -135,7 +135,7 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
   }
 
   if ((flags & PATHBLD_LOCK_FFN) == PATHBLD_LOCK_FFN) {
-    strlcpy (tfn, fn, sizeof (tfn));
+    stpecpy (tfn, tfn + sizeof (tfn), fn);
   } else {
     pathbldMakePath (tfn, sizeof (tfn), fn, BDJ4_LOCK_EXT,
         flags | PATHBLD_MP_DIR_LOCK);
@@ -192,7 +192,7 @@ lockReleasePid (char *fn, pid_t pid, int flags)
   }
 
   if ((flags & PATHBLD_LOCK_FFN) == PATHBLD_LOCK_FFN) {
-    strlcpy (tfn, fn, sizeof (tfn));
+    stpecpy (tfn, tfn + sizeof (tfn), fn);
   } else {
     pathbldMakePath (tfn, sizeof (tfn), fn, BDJ4_LOCK_EXT,
         flags | PATHBLD_MP_DIR_LOCK);

@@ -36,19 +36,19 @@ START_TEST(path_normpath)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- path_normpath");
   mdebugSubTag ("path_normpath");
 
-  strlcpy (to, "/tmp/abc.txt", sizeof (to));
+  stpecpy (to, to + sizeof (to), "/tmp/abc.txt");
   pathNormalizePath (to, sizeof (to));
   ck_assert_str_eq (to, "/tmp/abc.txt");
 
-  strlcpy (to, "\\tmp\\abc.txt", sizeof (to));
+  stpecpy (to, to + sizeof (to), "\\tmp\\abc.txt");
   pathNormalizePath (to, sizeof (to));
   ck_assert_str_eq (to, "/tmp/abc.txt");
 
-  strlcpy (to, "C:/tmp/abc.txt", sizeof (to));
+  stpecpy (to, to + sizeof (to), "C:/tmp/abc.txt");
   pathNormalizePath (to, sizeof (to));
   ck_assert_str_eq (to, "C:/tmp/abc.txt");
 
-  strlcpy (to, "C:\\tmp\\abc.txt", sizeof (to));
+  stpecpy (to, to + sizeof (to), "C:\\tmp\\abc.txt");
   pathNormalizePath (to, sizeof (to));
   ck_assert_str_eq (to, "C:/tmp/abc.txt");
 }
@@ -61,27 +61,27 @@ START_TEST(path_strippath)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- path_normpath");
   mdebugSubTag ("path_normpath");
 
-  strlcpy (to, "/tmp/abc.txt", sizeof (to));
+  stpecpy (to, to + sizeof (to), "/tmp/abc.txt");
   pathStripPath (to, sizeof (to));
   ck_assert_str_eq (to, "/tmp/abc.txt");
 
-  strlcpy (to, "./tmp/abc.txt", sizeof (to));
+  stpecpy (to, to + sizeof (to), "./tmp/abc.txt");
   pathStripPath (to, sizeof (to));
   ck_assert_str_eq (to, "tmp/abc.txt");
 
-  strlcpy (to, "/tmp/../dir/abc.txt", sizeof (to));
+  stpecpy (to, to + sizeof (to), "/tmp/../dir/abc.txt");
   pathStripPath (to, sizeof (to));
   ck_assert_str_eq (to, "/dir/abc.txt");
 
-  strlcpy (to, "/tmp/one/../dir/abc.txt", sizeof (to));
+  stpecpy (to, to + sizeof (to), "/tmp/one/../dir/abc.txt");
   pathStripPath (to, sizeof (to));
   ck_assert_str_eq (to, "/tmp/dir/abc.txt");
 
-  strlcpy (to, "/tmp/../abc.txt", sizeof (to));
+  stpecpy (to, to + sizeof (to), "/tmp/../abc.txt");
   pathStripPath (to, sizeof (to));
   ck_assert_str_eq (to, "/abc.txt");
 
-  strlcpy (to, "/tmp/./abc.txt", sizeof (to));
+  stpecpy (to, to + sizeof (to), "/tmp/./abc.txt");
   pathStripPath (to, sizeof (to));
   ck_assert_str_eq (to, "/tmp/abc.txt");
 }
@@ -101,7 +101,7 @@ START_TEST(path_realpath)
   osGetCurrentDir (cwd, sizeof (cwd));
   pathNormalizePath (cwd, sizeof (cwd));
 
-  strlcpy (from, "tmp/abc.txt", sizeof (from));
+  stpecpy (from, from + sizeof (from), "tmp/abc.txt");
   fh = fileopOpen (from, "w");
   mdextfclose (fh);
   fclose (fh);
@@ -111,12 +111,12 @@ START_TEST(path_realpath)
   pathNormalizePath (to, sizeof (to));
   ck_assert_str_eq (to, actual);
 
-  strlcpy (from, "tmp/../tmp/abc.txt", sizeof (from));
+  stpecpy (from, from + sizeof (from), "tmp/../tmp/abc.txt");
   pathRealPath (to, from, sizeof (to));
   pathNormalizePath (to, sizeof (to));
   ck_assert_str_eq (to, actual);
 
-  strlcpy (from, actual, sizeof (from));
+  stpecpy (from, from + sizeof (from), actual);
   pathRealPath (to, from, sizeof (to));
   pathNormalizePath (to, sizeof (to));
   ck_assert_str_eq (to, actual);

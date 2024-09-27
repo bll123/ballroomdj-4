@@ -302,7 +302,7 @@ orgGetFromPath (org_t *org, const char *path, tagdefkey_t tagkey)
       regexGetFree (org->rxdata);
     }
     logMsg (LOG_DBG, LOG_DBUPDATE, "org: path %s", path);
-    strlcpy (org->cachepath, path, sizeof (org->cachepath));
+    stpecpy (org->cachepath, org->cachepath + sizeof (org->cachepath), path);
     org->rxdata = regexGet (org->rx, path);
     org->rxlen = 0;
     while (org->rxdata [c] != NULL) {

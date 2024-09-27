@@ -208,7 +208,7 @@ main (int argc, char *argv [])
   /* this is used on new installs to set the music dir */
   /* also needed to check for the itunes dir every time */
   /* 4.3.3: the installer now sets the music dir, do not reset it */
-  strlcpy (homemusicdir, bdjoptGetStr (OPT_M_DIR_MUSIC), sizeof (homemusicdir));
+  stpecpy (homemusicdir, homemusicdir + sizeof (homemusicdir), bdjoptGetStr (OPT_M_DIR_MUSIC));
   logMsg (LOG_INSTALL, LOG_INFO, "homemusicdir: %s", homemusicdir);
 
   for (int i = UPD_FIRST; i < UPD_MAX; ++i) {

@@ -93,8 +93,8 @@ eibdj4Init (musicdb_t *musicdb, const char *dirname, int eiflag)
   eibdj4->state = BDJ4_STATE_START;
   eibdj4->dbchanged = false;
 
-  strlcpy (eibdj4->origmusicdir,
-      bdjoptGetStr (OPT_M_DIR_MUSIC), sizeof (eibdj4->origmusicdir));
+  stpecpy (eibdj4->origmusicdir, eibdj4->origmusicdir + sizeof (eibdj4->origmusicdir),
+      bdjoptGetStr (OPT_M_DIR_MUSIC));
   snprintf (eibdj4->musicdir, sizeof (eibdj4->musicdir),
       "%s/music", eibdj4->dirname);
   snprintf (eibdj4->datadir, sizeof (eibdj4->datadir),
@@ -310,7 +310,7 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
             (tagdefkey_t) ORG_TAG_BYPASS);
       }
       tstr = orgMakeSongPath (eibdj4->orgexp, song, bypass);
-      strlcpy (nsonguri, tstr, sizeof (nsonguri));
+      stpecpy (nsonguri, nsonguri + sizeof (nsonguri), tstr);
       mdfree (tstr);
 
       /* tbuff holds new full pathname of the exported song */

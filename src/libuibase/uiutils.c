@@ -158,7 +158,7 @@ uiutilsNewFontSize (char *buff, size_t sz, const char *font, const char *style, 
   char        fontname [200];
   size_t      i;
 
-  strlcpy (fontname, font, sizeof (fontname));
+  stpecpy (fontname, fontname + sizeof (fontname), font);
 
   i = strlen (fontname) - 1;
   while (i != 0 && (isdigit (fontname [i]) || isspace (fontname [i]))) {

@@ -38,7 +38,7 @@ osGetEnv (const char *name, char *buff, size_t sz)
   mdfree (wname);
   if (rv > 0) {
     tenv = osFromWideChar (wenv);
-    strlcpy (buff, tenv, sz);
+    stpecpy (buff, buff + sz, tenv);
     mdfree (tenv);
   }
 #else
@@ -47,7 +47,7 @@ osGetEnv (const char *name, char *buff, size_t sz)
   *buff = '\0';
   tptr = getenv (name);
   if (tptr != NULL) {
-    strlcpy (buff, tptr, sz);
+    stpecpy (buff, buff + sz, tptr);
   }
 #endif
 }

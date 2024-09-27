@@ -114,7 +114,7 @@ diropMakeRecursiveDir (const char *dirname)
   char    tbuff [MAXPATHLEN];
   char    *p = NULL;
 
-  strlcpy (tbuff, dirname, MAXPATHLEN);
+  stpecpy (tbuff, tbuff + MAXPATHLEN, dirname);
   stringTrimChar (tbuff, '/');
 
   for (p = tbuff + 1; *p; p++) {

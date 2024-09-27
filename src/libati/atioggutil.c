@@ -116,7 +116,7 @@ atioggParseVorbisComment (const char *kw, char *buff, size_t sz)
   if (len >= sz) {
     len = sz - 1;
   }
-  strlcpy (buff, kw, len + 1);
+  stpecpy (buff, buff + len + 1, kw);
   buff [len] = '\0';
   ++val;
 

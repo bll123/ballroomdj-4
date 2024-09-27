@@ -122,7 +122,7 @@ istringToLower (char *str)
   *dest = '\0';
   rsz = ucasemap_utf8ToLower (ucsm, dest, sz + 1, str, sz, &status);
   if (rsz <= sz && status == U_ZERO_ERROR) {
-    strlcpy (str, dest, sz);
+    stpecpy (str, str + sz, dest);
     mdfree (dest);
   }
 }

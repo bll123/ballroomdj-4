@@ -226,7 +226,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   /* as it has the left-arrow button.  Saves real estate. */
   if (uisongsel->dispselType == DISP_SEL_SONGSEL) {
     /* CONTEXT: song-selection: select a song to be added to the song list */
-    strlcpy (tbuff, _("Select"), sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), _("Select"));
     ssint->callbacks [SONGSEL_CB_SELECT] = callbackInit (
         uisongselSelectCallback, uisongsel, "songsel: select");
     uiwidgetp = uiCreateButton (
@@ -249,7 +249,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
 
   if (uisongsel->dispselType == DISP_SEL_REQUEST) {
     /* CONTEXT: (verb) song-selection: queue a song to be played */
-    strlcpy (tbuff, _("Queue"), sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), _("Queue"));
     ssint->callbacks [SONGSEL_CB_QUEUE] = callbackInit (
         uisongselQueueCallback, uisongsel, "songsel: queue");
     uiwidgetp = uiCreateButton (
@@ -267,7 +267,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
       uisongsel->dispselType == DISP_SEL_SBS_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_MM) {
     /* CONTEXT: song-selection: tooltip: play the selected songs */
-    strlcpy (tbuff, _("Play"), sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), _("Play"));
     ssint->callbacks [SONGSEL_CB_PLAY] = callbackInit (
         uisongselPlayCallback, uisongsel, "songsel: play");
     uiwidgetp = uiCreateButton (

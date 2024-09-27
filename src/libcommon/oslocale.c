@@ -34,10 +34,10 @@ osGetLocale (char *buff, size_t sz)
   LCIDToLocaleName ((LCID) langid, locbuff, LOCALE_NAME_MAX_LENGTH,
       LOCALE_ALLOW_NEUTRAL_NAMES);
   tbuff = osFromWideChar (locbuff);
-  strlcpy (buff, tbuff, sz);
+  stpecpy (buff, buff + sz, tbuff);
   mdfree (tbuff);
 #else
-  strlcpy (buff, setlocale (LC_MESSAGES, NULL), sz);
+  stpecpy (buff, buff + sz, setlocale (LC_MESSAGES, NULL));
 #endif
   return buff;
 }

@@ -1054,7 +1054,7 @@ uiaudioidFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum)
       /* which has already been converted */
       str = nlistGetStr (dlist, tagidx);
       if (rownum == 0) {
-        strlcpy (tmp, str, sizeof (tmp));
+        stpecpy (tmp, tmp + sizeof (tmp), str);
       } else {
         if (str != NULL) {
           dur = atol (str);

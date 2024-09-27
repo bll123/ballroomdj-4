@@ -384,7 +384,7 @@ START_TEST(song_audio_file)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_audio_file");
   mdebugSubTag ("song_audio_file");
 
-  strlcpy (origmdir, bdjoptGetStr (OPT_M_DIR_MUSIC), sizeof (origmdir));
+  stpecpy (origmdir, origmdir + sizeof (origmdir), bdjoptGetStr (OPT_M_DIR_MUSIC));
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   audiosrcPostInit ();
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));

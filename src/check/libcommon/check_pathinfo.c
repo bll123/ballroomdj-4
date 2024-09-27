@@ -96,7 +96,7 @@ START_TEST(pathinfo_chk)
 
     if (pi->dlen > 0) {
       pathInfoGetDir (pi, tbuff, sizeof (tbuff));
-      strlcpy (tmp, tests [i].path, sizeof (tmp));
+      stpecpy (tmp, tmp + sizeof (tmp), tests [i].path);
       tmp [pi->dlen] = '\0';
       ck_assert_str_eq (tbuff, tmp);
     }
