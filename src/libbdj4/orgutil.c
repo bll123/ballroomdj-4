@@ -126,9 +126,9 @@ orgAlloc (const char *orgpath)
   org->havetitle = false;
   org->orgparsed = slistAlloc ("orgpath", LIST_UNORDERED, orgutilInfoFree);
   /* do not anchor to the beginning -- it may be a full path */
+  *org->regexstr = '\0';
   rep = org->regexstr;
   reend = org->regexstr + sizeof (org->regexstr);
-  rep = stpecpy (rep, reend, "");
   *org->cachepath = '\0';
   org->rxdata = NULL;
   if (isWindows ()) {

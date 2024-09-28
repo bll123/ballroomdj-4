@@ -802,8 +802,8 @@ tsScriptSection (testsuite_t *testsuite, const char *tcmd)
   char    *tstr = NULL;
 
   if (testsuite->processsection) {
-    stpecpy (testsuite->testnum, testsuite->testnum + sizeof (testsuite->testnum), "");
-    stpecpy (testsuite->testname, testsuite->testname + sizeof (testsuite->testname), "");
+    *testsuite->testnum = '\0';
+    *testsuite->testname = '\0';
     printResults (testsuite, &testsuite->sresults);
     if (testsuite->runsection) {
       testsuite->processsection = false;

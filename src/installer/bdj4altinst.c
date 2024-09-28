@@ -277,6 +277,7 @@ main (int argc, char *argv[])
       dataFree (altinst.name);
       altinst.name = mdmalloc (pi->flen + 1);
       stpecpy (altinst.name, altinst.name + pi->flen + 1, pi->filename);
+      altinst.name [pi->flen] = '\0';
       pathInfoFree (pi);
     }
 
@@ -1306,6 +1307,7 @@ altinstSetTargetDir (altinst_t *altinst, const char *fn)
   dataFree (altinst->basedir);
   altinst->basedir = mdmalloc (pi->dlen + 1);
   stpecpy (altinst->basedir, altinst->basedir + pi->dlen + 1, pi->dirname);
+  altinst->basedir [pi->dlen] = '\0';
   pathInfoFree (pi);
 }
 

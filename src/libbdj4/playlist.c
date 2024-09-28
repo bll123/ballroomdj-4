@@ -700,6 +700,7 @@ playlistGetPlaylistList (int flag, const char *dir)
       len = sizeof (tfn);
     }
     stpecpy (tfn, tfn + len, pi->basename);
+    tfn [pi->blen] = '\0';
     pathInfoFree (pi);
 
     if (strncmp (tfn, RELOAD_FN, strlen (RELOAD_FN)) == 0) {

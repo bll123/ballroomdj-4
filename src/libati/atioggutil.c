@@ -117,6 +117,7 @@ atioggParseVorbisComment (const char *kw, char *buff, size_t sz)
     len = sz;
   }
   stpecpy (buff, buff + len, kw);
+  buff [len] = '\0';
   ++val;
 
   return val;
