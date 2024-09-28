@@ -22,6 +22,7 @@
 
 static char *plistateTxt [PLI_STATE_MAX] = {
   [PLI_STATE_NONE] = "none",
+  [PLI_STATE_IDLE] = "idle",
   [PLI_STATE_OPENING] = "opening",
   [PLI_STATE_BUFFERING] = "buffering",
   [PLI_STATE_PLAYING] = "playing",

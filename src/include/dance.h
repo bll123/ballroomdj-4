@@ -69,7 +69,6 @@ ilistidx_t    danceAdd (dance_t *dances, char *name);
 int           danceGetTimeSignature (ilistidx_t danceIdx);
 int           danceConvertBPMtoMPM (int danceidx, int bpm, int forceflag);
 int           danceConvertMPMtoBPM (int danceidx, int bpm);
-int           danceGetDistVersion (dance_t *dances);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

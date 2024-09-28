@@ -61,7 +61,7 @@ typedef struct playlist {
 
 enum {
   PL_BPM_VERSION = 1,
-  PL_DANCE_VERSION = 2,
+  PL_CURR_VERSION = 2,
   PL_IDENT = 0x0074736c79616c70,
 };
 
@@ -810,7 +810,7 @@ playlistSave (playlist_t *pl, const char *name)
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
       BDJ4_PL_DANCE_EXT, PATHBLD_MP_DREL_DATA);
 
-  ilistSetVersion (pl->pldances, PL_DANCE_VERSION);
+  ilistSetVersion (pl->pldances, PL_CURR_VERSION);
   datafileSave (pl->pldancesdf, tfn, pl->pldances, DF_NO_OFFSET,
       datafileDistVersion (pl->pldancesdf));
 }

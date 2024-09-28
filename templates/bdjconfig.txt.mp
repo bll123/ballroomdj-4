@@ -2,7 +2,7 @@
 # 2022-8-4
 # version 1
 version
-..2
+..1
 AUDIOSINK
 ..
 LISTINGFONT

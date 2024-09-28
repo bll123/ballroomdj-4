@@ -216,7 +216,8 @@ orgAlloc (const char *orgpath)
       char *tmp;
       tmp = regexEscape (tfirst);
       rep = stpecpy (rep, reend, tmp);
-      mdfree (tmp);
+      mdextfree (tmp);
+      free (tmp);
     }
     if (isnumeric) {
       rep = stpecpy (rep, reend, "(\\d+)");
@@ -234,7 +235,8 @@ orgAlloc (const char *orgpath)
       char  *tmp;
       tmp = regexEscape (tlast);
       rep = stpecpy (rep, reend, tmp);
-      mdfree (tmp);   // allocated by glib
+      mdextfree (tmp);   // allocated by glib
+      free (tmp);
     }
     if (isoptional) {
       /* optional group */

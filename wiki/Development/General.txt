@@ -69,6 +69,7 @@ it will be easier to add in new source types.
  Directory|Notes
  ---------|-----
  libuigtk3|gtk3 gui layer
+ libuimacos|macos gui layer
  libuinull|null gui layer
 
 ##### Applications

@@ -49,6 +49,7 @@ regexFree (bdjregex_t *rx)
   }
 }
 
+/* the caller must free the allocated string */
 char *
 regexEscape (const char *str)
 {

@@ -50,10 +50,6 @@ static const char * const DF_VERSION_STR      = "version";
 static const char * const DF_VERSION_DIST_STR = "# version ";
 static const char * const DF_VERSION_FMT      = "# version %d";
 
-enum {
-  DF_BASE_VERSION = 1,
-};
-
 static ssize_t  parse (parseinfo_t *pi, char *data, parsetype_t parsetype, int *vers);
 static void     datafileFreeData (datafile_t *df);
 static list_t   *datafileParseMerge (list_t *nlist, char *data, const char *name, datafiletype_t dftype, datafilekey_t *dfkeys, int dfkeycount, int offset, int *distvers);
@@ -681,7 +677,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
 
     if (inc == 2 && strcmp (tkeystr, DF_VERSION_STR) == 0) {
       /* ignore set version and replace with correct version */
-      int     version = DF_BASE_VERSION;
+      int     version = atoi (tvalstr);
 
       if (dftype == DFTYPE_INDIRECT) {
         ilistSetVersion (datalist, version);

@@ -527,35 +527,6 @@ main (int argc, char *argv [])
 
   logMsg (LOG_INSTALL, LOG_INFO, "loaded data files A");
 
-  /* the dance BPMs cannot be fixed unless the dances are already */
-  /* loaded */
-  {
-    int         distvers = 0;
-    dance_t     *dances;
-    slistidx_t  diteridx;
-    ilistidx_t  dkey;
-
-    dances = bdjvarsdfGet (BDJVDF_DANCES);
-    distvers = danceGetDistVersion (dances);
-    /* old distributions of dances.txt had MPM/BPM as BPM */
-    /* new versions only save as MPM */
-    if (distvers < 2) {
-      danceStartIterator (dances, &diteridx);
-
-      while ((dkey = danceIterate (dances, &diteridx)) >= 0) {
-        int   tval;
-
-        tval = danceGetNum (dances, dkey, DANCE_MPM_HIGH);
-        tval = danceConvertBPMtoMPM (dkey, tval, DANCE_FORCE_CONV);
-        danceSetNum (dances, dkey, DANCE_MPM_HIGH, tval);
-
-        tval = danceGetNum (dances, dkey, DANCE_MPM_LOW);
-        tval = danceConvertBPMtoMPM (dkey, tval, DANCE_FORCE_CONV);
-        danceSetNum (dances, dkey, DANCE_MPM_LOW, tval);
-      }
-    }
-  }
-
   {
     int     origprofile;
 
