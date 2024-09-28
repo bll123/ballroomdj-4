@@ -485,6 +485,7 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
         pathinfo_t  *pi;
         char        tbuff [MAXPATHLEN];
         char        tmp [MAXPATHLEN];
+        size_t      len;
 
         snprintf (tmp, sizeof (tmp), "%s/%s", fn, srchfn);
         if (! fileopFileExists (tmp)) {
@@ -497,7 +498,11 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
         pathInfoFree (pi);
 
         pi = pathInfo (tbuff);
-        stpecpy (tmp, tmp + pi->flen + 1, pi->filename);
+        len = pi->flen + 1;
+        if (len > sizeof (tmp)) {
+          len = sizeof (tmp);
+        }
+        stpecpy (tmp, tmp + len, pi->filename);
         slistSetNum (themelist, tmp, 0);
         pathInfoFree (pi);
       }

@@ -3364,11 +3364,15 @@ managePlaylistImport (void *udata)
     int         mqidx;
     dbidx_t     dbidx;
     nlistidx_t  iteridx;
-    int         len;
+    size_t      len;
     pathinfo_t  *pi;
 
     pi = pathInfo (fn);
-    len = pi->blen + 1 > sizeof (nplname) ? sizeof (nplname) : pi->blen + 1;
+
+    len = pi->blen + 1;
+    if (len > sizeof (nplname)) {
+      len = sizeof (nplname);
+    }
     stpecpy (nplname, nplname + len, pi->basename);
 
     if (pathInfoExtCheck (pi, ".m3u") || pathInfoExtCheck (pi, ".m3u8")) {

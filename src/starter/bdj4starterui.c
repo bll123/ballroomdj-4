@@ -334,9 +334,9 @@ main (int argc, char *argv[])
   starter.supportInFname = NULL;
   starter.webclient = NULL;
   starter.lastPluiStart = mstime ();
-  strcpy (starter.ident, "");
-  strcpy (starter.latestversion, "");
-  strcpy (starter.latestversiondisp, "");
+  *starter.ident = '\0';
+  *starter.latestversion = '\0';
+  *starter.latestversiondisp = '\0';
   for (int i = 0; i < ROUTE_MAX; ++i) {
     starter.startreq [i] = 0;
     starter.mainstart [i] = 0;

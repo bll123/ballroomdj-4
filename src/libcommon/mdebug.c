@@ -17,6 +17,7 @@
 # include <execinfo.h>
 #endif
 
+#include "bdjstring.h"
 #include "mdebug.h"
 
 typedef enum {
@@ -262,7 +263,7 @@ mdebugInit (const char *tag)
   if (! initialized) {
     mdebugcounts [MDEBUG_INT_ALLOC] += MDEBUG_ALLOC_BUMP;
     mdebug = realloc (mdebug, mdebugcounts [MDEBUG_INT_ALLOC] * sizeof (mdebug_t));
-    strcpy (mdebugtag, tag);
+    stpecpy (mdebugtag, mdebugtag + sizeof (mdebugtag), tag);
     *mdebugsubtag = '\0';
     for (int i = 0; i < MDEBUG_MAX; ++i) {
       mdebugcounts [i] = 0;
@@ -280,7 +281,7 @@ mdebugInit (const char *tag)
 void
 mdebugSubTag (const char *tag)
 {
-  strcpy (mdebugsubtag, tag);
+  stpecpy (mdebugsubtag, mdebugsubtag + sizeof (mdebugsubtag), tag);
 }
 
 void
@@ -457,7 +458,7 @@ mdebugAdd (void *data, mdebugtype_t type, const char *fn, int lineno, ssize_t sz
   mdebug [tidx].lineno = lineno;
   mdebug [tidx].loc = mdebugcounts [MDEBUG_COUNT];
   mdebug [tidx].sz = sz;
-  strncpy (mdebug [tidx].subtag, mdebugsubtag, MAXSUBTAG);
+  stpecpy (mdebug [tidx].subtag, mdebug [tidx].subtag + MAXSUBTAG, mdebugsubtag);
 #if MDEBUG_ENABLE_BACKTRACE
   mdebug [tidx].bt = mdebugBacktrace ();
 #endif

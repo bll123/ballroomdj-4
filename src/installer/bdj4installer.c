@@ -339,9 +339,9 @@ main (int argc, char *argv[])
   installer.loglevel = LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_REDIR_INST;
   osGetCurrentDir (installer.currdir, sizeof (installer.currdir));
   installer.webclient = NULL;
-  strcpy (installer.vlcversion, "");
-  strcpy (installer.oldversion, "");
-  strcpy (installer.bdj3version, "");
+  *installer.vlcversion = '\0';
+  *installer.oldversion = '\0';
+  *installer.bdj3version = '\0';
 
   /* the data in sysvars will not be correct.  don't use it.  */
   /* the installer only needs the home, hostname, os info and locale */

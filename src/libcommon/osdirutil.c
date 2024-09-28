@@ -34,7 +34,7 @@ osChangeDir (const char *path)
 }
 
 void
-osGetCurrentDir (char *buff, size_t len)
+osGetCurrentDir (char *buff, size_t sz)
 {
 #if _lib__wgetcwd
   wchar_t *wcwd;
@@ -43,11 +43,12 @@ osGetCurrentDir (char *buff, size_t len)
   wcwd = _wgetcwd (NULL, 0);
   mdextalloc (wcwd);
   tmp = osFromWideChar (wcwd);
-  stpecpy (buff, buff + len, tmp);
+  stpecpy (buff, buff + sz, tmp);
   mdextfree (wcwd);
+  free (wcwd);
   mdfree (tmp);
 #else
-  (void) ! getcwd (buff, len);
+  (void) ! getcwd (buff, sz);
 #endif
 }
 

@@ -692,9 +692,14 @@ playlistGetPlaylistList (int flag, const char *dir)
 
   slistStartIterator (filelist, &iteridx);
   while ((tplfnm = slistIterateKey (filelist, &iteridx)) != NULL) {
+    size_t    len;
+
     pi = pathInfo (tplfnm);
-    stpecpy (tfn, tfn + pi->blen + 1, pi->basename);
-    tfn [pi->blen] = '\0';
+    len = pi->blen + 1;
+    if (len > sizeof (tfn)) {
+      len = sizeof (tfn);
+    }
+    stpecpy (tfn, tfn + len, pi->basename);
     pathInfoFree (pi);
 
     if (strncmp (tfn, RELOAD_FN, strlen (RELOAD_FN)) == 0) {

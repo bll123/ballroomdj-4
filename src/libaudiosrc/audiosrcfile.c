@@ -410,7 +410,8 @@ audiosrcfileMakeTempName (asdata_t *asdata, const char *ffn, char *tempnm, size_
   pi = pathInfo (ffn);
 
   idx = 0;
-  for (const char *p = pi->filename; *p && idx < maxlen && idx < pi->flen; ++p) {
+  for (const char *p = pi->filename;
+      *p && idx < maxlen && idx < pi->flen; ++p) {
     if ((isascii (*p) && isalnum (*p)) ||
         *p == '.' || *p == '-' || *p == '_') {
       tnm [idx++] = *p;
