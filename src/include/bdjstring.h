@@ -18,9 +18,6 @@ int       versionCompare (const char *v1, const char *v2);
 
 char * stpecpy (char *dst, char end[0], const char *restrict src);
 
-#if ! _lib_strlcpy
-size_t strlcpy(char *dst, const char *src, size_t siz);
-#endif
 /* windows snprintf does not support positional parameters. */
 /* use _sprintf_p instead */
 #if _lib__sprintf_p

@@ -6,15 +6,16 @@
 
 **4.12.2 2024-9-9**
 
-**4.12.1 2024-9-28**
+**4.12.1 2024-9---**
 
 * Bug Fixes:
     * Updater: Fix crash when updating old versions of dances.txt.
-    * PENDING: Song Editor: Fix traversal of multiple selections in the music manager.
+    * Song Editor: Fix bug traversing multiple selections and off-screen selections.
 * Translations:
-    * Added romanian, machine translated, very poor quality
+    * Added Romanian, machine translated, very poor quality.
 * Internal:
     * Improve random number seeding/generation on Linux and MacOS.
+    * Efficiency improvements.
 
 -->
 

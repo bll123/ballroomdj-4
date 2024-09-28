@@ -665,7 +665,9 @@ uisongselMoveSelection (void *udata, int direction)
     if (uisongsel->newselcb != NULL) {
       dbidx_t   dbidx;
 
-      dbidx = uivlGetRowColumnNum (ssint->uivl, ssint->selectListKey, SONGSEL_COL_DBIDX);
+      /* the db-idx must be retrieved from the song filter, not the */
+      /* virtual list, as the selection may not be currently displayed */
+      dbidx = songfilterGetByIdx (uisongsel->songfilter, ssint->selectListKey);
       if (dbidx >= 0) {
         callbackHandlerI (uisongsel->newselcb, dbidx);
       }
