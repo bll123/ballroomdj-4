@@ -387,6 +387,7 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
   char        sortkey [1024];
   song_t      *song;
   pltype_t    pltype = PLTYPE_NONE;
+  mstime_t    sftimer;
 
   logProcBegin ();
 
@@ -399,6 +400,7 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
     return 0;
   }
 
+  mstimestart (&sftimer);
   slistFree (sf->sortList);
   sf->sortList = NULL;
   nlistFree (sf->indexList);
@@ -463,6 +465,8 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
 
   slistSort (sf->sortList);
   nlistSort (sf->indexList);
+  logMsg (LOG_DBG, LOG_IMPORTANT, "sf-process: %" PRId64 " ms %s",
+      (int64_t) mstimeend (&sftimer), sf->sortselection);
 
   logProcEnd ("");
   return nlistGetCount (sf->indexList);
