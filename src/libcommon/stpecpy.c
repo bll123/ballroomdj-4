@@ -20,20 +20,20 @@ stpecpy (char *dst, char end[0], const char *restrict src)
 {
   char  *p;
 
+#if defined (BDJ4_MEM_DEBUG)
   if (dst == NULL) {
     fprintf (stderr, "ERR: stpecpy: null destination\n");
+    return end;
+  }
+  if (end == NULL) {
+    fprintf (stderr, "ERR: stpecpy: null end pointer\n");
     return end;
   }
   if (src == NULL) {
     fprintf (stderr, "ERR: stpecpy: null source\n");
     return end;
   }
-
-  if (src [strlen (src)] != '\0') {
-    fprintf (stderr, "ERR: stpecpy: source string is not null terminated\n");
-    // raise (SIGSEGV);
-    return end;
-  }
+#endif
 
   if (dst == end) {
     return end;
