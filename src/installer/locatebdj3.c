@@ -47,9 +47,9 @@ locatebdj3 (void)
   }
 
   /* Linux, old MacOS, recent windows: $HOME/BallroomDJ */
-  stpecpy (tp, tend, home);
-  stpecpy (tp, tend, "/");
-  stpecpy (tp, tend, "BallroomDJ");
+  tp = stpecpy (tp, tend, home);
+  tp = stpecpy (tp, tend, "/");
+  tp = stpecpy (tp, tend, "BallroomDJ");
 
   if (locationcheck (tbuff)) {
     return mdstrdup (tbuff);
@@ -58,11 +58,11 @@ locatebdj3 (void)
   /* windows: %USERPROFILE%/Desktop/BallroomDJ */
   *tbuff = '\0';
   tp = tbuff;
-  stpecpy (tp, tend, home);
-  stpecpy (tp, tend, "/");
-  stpecpy (tp, tend, "Desktop");
-  stpecpy (tp, tend, "/");
-  stpecpy (tp, tend, "BallroomDJ");
+  tp = stpecpy (tp, tend, home);
+  tp = stpecpy (tp, tend, "/");
+  tp = stpecpy (tp, tend, "Desktop");
+  tp = stpecpy (tp, tend, "/");
+  tp = stpecpy (tp, tend, "BallroomDJ");
 
   if (locationcheck (tbuff)) {
     return mdstrdup (tbuff);
@@ -72,9 +72,9 @@ locatebdj3 (void)
   /* this is not the main install dir, but the data directory */
   *tbuff = '\0';
   tp = tbuff;
-  stpecpy (tp, tend, home);
-  stpecpy (tp, tend, "/Library/Application Support/");
-  stpecpy (tp, tend, "BallroomDJ");
+  tp = stpecpy (tp, tend, home);
+  tp = stpecpy (tp, tend, "/Library/Application Support/");
+  tp = stpecpy (tp, tend, "BallroomDJ");
 
   if (locationcheck (tbuff)) {
     return mdstrdup (tbuff);
@@ -83,9 +83,9 @@ locatebdj3 (void)
   /* my personal location */
   *tbuff = '\0';
   tp = tbuff;
-  stpecpy (tp, tend, home);
-  stpecpy (tp, tend, "/");
-  stpecpy (tp, tend, "music-local");
+  tp = stpecpy (tp, tend, home);
+  tp = stpecpy (tp, tend, "/");
+  tp = stpecpy (tp, tend, "music-local");
 
   if (locationcheck (tbuff)) {
     return mdstrdup (tbuff);

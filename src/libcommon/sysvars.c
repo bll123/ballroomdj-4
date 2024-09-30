@@ -523,22 +523,22 @@ sysvarsInit (const char *argv0, int flags)
   p = sysvars [SV_BDJ4_DIR_INST];
   end = sysvars [SV_BDJ4_DIR_INST] + SV_MAX_SZ;
   p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
-  stpecpy (p, end, "/install");
+  p = stpecpy (p, end, "/install");
 
   p = sysvars [SV_BDJ4_DIR_LOCALE];
   end = sysvars [SV_BDJ4_DIR_LOCALE] + SV_MAX_SZ;
   p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
-  stpecpy (p, end, "/locale");
+  p = stpecpy (p, end, "/locale");
 
   p = sysvars [SV_BDJ4_DIR_TEMPLATE];
   end = sysvars [SV_BDJ4_DIR_TEMPLATE] + SV_MAX_SZ;
   p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
-  stpecpy (p, end, "/templates");
+  p = stpecpy (p, end, "/templates");
 
   p = sysvars [SV_BDJ4_DIR_SCRIPT];
   end = sysvars [SV_BDJ4_DIR_SCRIPT] + SV_MAX_SZ;
   p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
-  stpecpy (p, end, "/scripts");
+  p = stpecpy (p, end, "/scripts");
 
   sysvarsSetStr (SV_BDJ4_DREL_HTTP, "http");
   sysvarsSetStr (SV_BDJ4_DREL_TMP, "tmp");
@@ -711,8 +711,8 @@ sysvarsInit (const char *argv0, int flags)
     if (data != NULL) {
       p = sysvars [SV_OS_DISP];
       end = sysvars [SV_OS_DISP] + SV_MAX_SZ;
-      stpecpy (p, end, " ");
-      stpecpy (p, end, data);
+      p = stpecpy (p, end, " ");
+      p = stpecpy (p, end, data);
     }
   }
   if (strcmp (sysvars [SV_OS_NAME], "linux") == 0) {
