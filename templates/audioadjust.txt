@@ -2,7 +2,7 @@
 # 2023-9-1
 # version 5
 version
-..1
+..2
 #
 # variables for trim silence detection
 # trimsilence-noise : numeric, decibels (-37)

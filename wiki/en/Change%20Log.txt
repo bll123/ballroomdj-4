@@ -9,9 +9,9 @@
 **4.12.1 2024-9---**
 
 * Bug Fixes:
-    * Updater: Fix crash when updating old versions of dances.txt.
-    * Song Editor: Fix bug traversing multiple selections and off-screen selections.
     * MacOS: Fix possible incorrect locale installations.
+    * Song Editor: Fix bug traversing multiple selections and off-screen selections.
+    * Updater: Fix crash when updating old versions of dances.txt.
 * Translations:
     * Added Romanian, machine translated, very poor quality.
 * Internal:
