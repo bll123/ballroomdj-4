@@ -21,8 +21,8 @@ get player CHK_PLAYER_STATUS
 chk playstate paused
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 qdbidx 10 songplaysentcount 1
-mssleep 300
 msg main CMD_PLAYPAUSE
+mssleep 200
 get player CHK_PLAYER_STATUS
 chk playstate playing
 get main CHK_MAIN_MUSICQ
