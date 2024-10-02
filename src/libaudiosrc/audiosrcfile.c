@@ -72,6 +72,9 @@ asiInit (const char *delpfx, const char *origext)
 void
 asiPostInit (asdata_t *asdata, const char *musicdir)
 {
+  if (musicdir == NULL) {
+    return;
+  }
   asdata->musicdir = musicdir;
   asdata->musicdirlen = strlen (asdata->musicdir);
 }

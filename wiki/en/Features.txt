@@ -5,7 +5,7 @@
 * Supported Platforms as of 2023-8-19
     * Windows 10, Windows 11
       [Install / Installing on Windows](en-Install-Windows)
-    * MacOS Big Sur, Monterey, Ventura, Sonoma
+    * MacOS Big Sur, Monterey, Ventura, Sonoma, Sequoia
       [Install / Installing on MacOS](en-Install-MacOS)
     * Linux (Only OpenSUSE and Debian are packaged, other Linux distributions must be built from source)
       [Install / Installing on Linux](en-Install-Linux)

@@ -147,6 +147,13 @@ if [[ $rc -ne 0 ]]; then
   grc=1
 fi
 
+grep '^#define BDJ4_DEBUG_CSS 0' src/libuigtk3/uiui.c > /dev/null 2>&1
+rc=$?
+if [[ $rc -ne 0 ]]; then
+  echo "css debugging is on"
+  grc=1
+fi
+
 #grep '^#define MACOS_UI_DEBUG 0' src/include/uigeneral.h > /dev/null 2>&1
 #rc=$?
 #if [[ $rc -ne 0 ]]; then

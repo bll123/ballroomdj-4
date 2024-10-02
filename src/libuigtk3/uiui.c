@@ -31,6 +31,8 @@
 
 #include "ui/uiui.h"
 
+#define BDJ4_DEBUG_CSS 0
+
 enum {
   UIUI_MIX,
   UIUI_SHADE,
@@ -299,6 +301,9 @@ uiSetUICSS (const char *uifont, const char *listingfont,
   if (strlen (tbuff) >= sizeof (tbuff)) {
     fprintf (stderr, "WARN: possible css overflow: %zd\n", strlen (tbuff));
   }
+#if BDJ4_DEBUG_CSS
+  unlink ("css.txt");
+#endif
   uiAddScreenCSS (tbuff);
 }
 
@@ -389,6 +394,15 @@ uiAddScreenCSS (const char *css)
         GTK_STYLE_PROVIDER (tcss),
         GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
   }
+#if BDJ4_DEBUG_CSS
+  {
+    FILE    *fh;
+
+    fh = fopen ("css.txt", "a");
+    fprintf (fh, "%s", css);
+    fclose (fh);
+  }
+#endif
 }
 
 /* internal routines */

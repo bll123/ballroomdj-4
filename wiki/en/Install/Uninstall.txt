@@ -15,7 +15,7 @@ this script using the following command.
 
     :::bash
     cd Downloads
-    bash macos-uninstall-bdj4-v5.sh
+    bash macos-uninstall-bdj4-v6.sh
 
 This script performs the following actions.  The script will ask for
 confirmation before performing each action.

@@ -11,13 +11,6 @@ $HOME/Applications.  Rename to VLC3.app and VLC4.app.
 
 ###### Setting up MacOS
 
-* VNC:
-    * General / Sharing:
-        * Turn on screen sharing.
-        * Screen Sharing: set VNC password
-        * Turn on remote login.
-        * For both screen sharing and remote login, make sure the allowed users and groups are correct.
-
 * Users & Groups:
     * For each user:
         * Right click on user, advanced options, change directory to point
@@ -26,19 +19,22 @@ $HOME/Applications.  Rename to VLC3.app and VLC4.app.
     * Add user to _developer group:
         * sudo dscl . append /Groups/_developer GroupMembership <username>
 
+* VNC:
+    * General / Sharing:
+        * Turn on screen sharing.
+        * Screen Sharing: set VNC password
+        * Turn on remote login.
+        * For both screen sharing and remote login, make sure the allowed users and groups are correct.
 
 * Lock Screen:
     * login options : change to name and password.
     * add message to indicate which mac.
+    * turn off screen saver
+    * turn off 'turn off display'
 
 * Sound:
     * turn off ui sounds
     * turn down alert sounds
-
-* Mouse:
-    * will need to plug in a mouse and reboot to have this visible.
-      might need to be on the console.
-    * turn off so-called natural scrolling
 
 * General / About:
     * set host name
@@ -50,7 +46,13 @@ $HOME/Applications.  Rename to VLC3.app and VLC4.app.
         * 2606:4700:4700::1111
         * 2001:4860:4860::8888
 
+* Mouse:
+    * will need to plug in a mouse and reboot to have this visible.
+      might need to be on the console.
+    * turn off so-called natural scrolling
+
 * Add terminal with full disk access:
+  Not necessary w/sequoia.
     * Security & Privacy
         * Privacy
             * Full Disk Access : add terminal.

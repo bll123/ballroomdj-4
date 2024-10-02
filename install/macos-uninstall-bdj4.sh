@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2024 Brad Lanam Pleasant Hill CA
 #
-ver=5
+ver=6
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -79,7 +79,7 @@ echo "Uninstall the BallroomDJ 4 Application and Data? "
 gr=$(getresponse)
 if [[ $gr == Y ]]; then
   # config dir
-  instloc="${confdir}/instdir.txt"
+  instloc="${confdir}/installdir.txt"
 
   doremove "$instloc"
 

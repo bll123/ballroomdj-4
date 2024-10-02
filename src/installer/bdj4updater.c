@@ -41,6 +41,7 @@
 #include "mdebug.h"
 #include "musicdb.h"
 #include "nlist.h"
+#include "osdirutil.h"
 #include "osprocess.h"
 #include "osutils.h"
 #include "pathbld.h"
@@ -95,6 +96,9 @@ enum {
   /* 2024-4-26 4.9.0 */
   /* fix any bad date-added in the new format */
   UPD_FIX_DB_DATE_ADDED_B,
+  /* 2024-9-2 4.12.1 */
+  /* fix any locale dirs that are not symlinks (usually macos) */
+  UPD_FIX_LOCALE,
   UPD_MAX,
 };
 enum {
@@ -109,6 +113,7 @@ static datafilekey_t upddfkeys[] = {
   { "FIX_DB_DATE_ADDED", UPD_FIX_DB_DATE_ADDED, VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_DATE_ADD_B", UPD_FIX_DB_DATE_ADDED_B, VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_DISCNUM",   UPD_FIX_DB_DISCNUM, VALUE_NUM, NULL, DF_NORM },
+  { "FIX_LOCALE",       UPD_FIX_LOCALE,     VALUE_NUM, NULL, DF_NORM },
 };
 enum {
   UPD_DF_COUNT = (sizeof (upddfkeys) / sizeof (datafilekey_t))
@@ -127,6 +132,7 @@ static void updaterCopyHTMLVersionCheck (const char *fn, const char *ext, int cu
 static void updaterCopyCSSVersionCheck (const char *fn, const char *ext, int currvers);
 static void updaterRenameProfileFile (const char *oldfn, const char *fn, const char *ext);
 static time_t updaterGetSongCreationTime (song_t *song);
+static void updaterFixLocales (void);
 
 int
 main (int argc, char *argv [])
@@ -843,6 +849,12 @@ main (int argc, char *argv [])
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-discnum: %" PRId32, counters [UPD_FIX_DB_DISCNUM]);
   }
 
+  if (statusflags [UPD_FIX_LOCALE] == UPD_NOT_DONE) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.12.1 : check and fix locale dirs");
+    updaterFixLocales ();
+    nlistSetNum (updlist, UPD_FIX_LOCALE, UPD_COMPLETE);
+  }
+
   datafileSave (df, NULL, updlist, DF_NO_OFFSET, datafileDistVersion (df));
   datafileFree (df);
   if (updlistallocated) {
@@ -1295,4 +1307,60 @@ updaterGetSongCreationTime (song_t *song)
   }
 
   return ctime;
+}
+
+
+static void
+updaterFixLocales (void)
+{
+  slist_t     *filelist;
+  slistidx_t  iteridx;
+  const char  *fn;
+  const char  *prevfn = NULL;
+  char        cwd [MAXPATHLEN];
+  char        edir [MAXPATHLEN];
+  bool        isbad = false;
+
+  if (isWindows ()) {
+    return;
+  }
+
+  osGetCurrentDir (cwd, sizeof (cwd));
+  pathbldMakePath (edir, sizeof (edir), "", "", PATHBLD_MP_DIR_MAIN);
+  osChangeDir (edir);
+
+  filelist = dirlistRecursiveDirList ("locale",
+      DIRLIST_FILES | DIRLIST_DIRS | DIRLIST_LINKS);
+  slistStartIterator (filelist, &iteridx);
+  while ((fn = slistIterateKey (filelist, &iteridx)) != NULL) {
+    size_t      len = 0;
+    bool        isdir = false;
+    bool        islink = false;
+
+    if (strstr (fn, "LC_MESSAGES") != NULL) {
+      continue;
+    }
+
+    isdir = fileopIsDirectory (fn);
+    islink = osIsLink (fn);
+    len = strlen (fn);
+
+    if (isbad && isdir && len > 9) {
+      diropDeleteDir (prevfn, DIROP_ALL);
+      /* skip 'locale/' */
+      osCreateLink (fn + 7, prevfn);
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "fix %s", prevfn);
+      isbad = false;
+    }
+
+    /* locale/XX = 9 chars */
+    if (isdir && ! islink && len == 9) {
+      prevfn = fn;
+      isbad = true;
+    }
+  }
+  slistFree (filelist);
+
+  osChangeDir (cwd);
+  return;
 }
