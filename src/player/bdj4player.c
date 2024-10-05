@@ -1128,11 +1128,15 @@ playerSongPlay (playerdata_t *playerData, char *args)
   logMsg (LOG_DBG, LOG_BASIC, "play request: %" PRId32 " %s", uniqueidx, p);
   pq = playerLocatePreppedSong (playerData, uniqueidx, p);
   if (pq == NULL) {
+    /* no history */
+    connSendMessage (playerData->conn, ROUTE_MAIN, MSG_PLAYBACK_FINISH, "0");
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: not prepped: %s", p);
     logProcEnd ("not-prepped");
     return;
   }
   if (! fileopFileExists (pq->tempname)) {
+    /* no history */
+    connSendMessage (playerData->conn, ROUTE_MAIN, MSG_PLAYBACK_FINISH, "0");
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: no file: %s", pq->tempname);
     logProcEnd ("no-file");
     return;
@@ -1198,6 +1202,17 @@ playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx, const char
   }
 
   if (! found) {
+    /* push a junk entry on to the prep-queue as if the song actually */
+    /* existed.  This allows other processing to proceed normally */
+    pq = mdmalloc (sizeof (prepqueue_t));
+    pq->ident = PREP_QUEUE_IDENT;
+    pq->songname = NULL;
+    *pq->tempname = '\0';
+    pq->dur = 0;
+    pq->plidur = 0;
+    pq->songstart = 0;
+    queuePushHead (playerData->prepQueue, pq);
+
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: unable to locate song %s", sfname);
     logProcEnd ("not-found");
     return NULL;
@@ -1319,9 +1334,9 @@ playerNextSong (playerdata_t *playerData)
         playerData->currentSong = NULL;
       }
     } else {
-      /* stopped */
       prepqueue_t     *tpq;
 
+      /* stopped */
       tpq = queuePop (playerData->prepQueue);
       playerPrepQueueFree (tpq);
       playerData->gap = playerData->priorGap;
