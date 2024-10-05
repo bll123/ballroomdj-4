@@ -393,6 +393,9 @@ songdbUpdateAllSonglists (song_t *song, const char *olduri)
     songlistStartIterator (songlist, &sliter);
     while ((key = songlistIterate (songlist, &sliter)) >= 0) {
       tfn = songlistGetStr (songlist, key, SONGLIST_URI);
+      if (tfn == NULL) {
+        continue;
+      }
       if (strcmp (tfn, songuri) == 0) {
         if (newuri != NULL) {
           songlistSetStr (songlist, key, SONGLIST_URI, newuri);
