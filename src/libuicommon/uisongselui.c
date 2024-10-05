@@ -544,7 +544,7 @@ uisongselGetSelectedList (uisongsel_t *uisongsel)
   nlistSetSize (tlist, uivlSelectionCount (ssint->uivl));
   uivlStartSelectionIterator (ssint->uivl, &vliteridx);
   while ((rowidx = uivlIterateSelection (ssint->uivl, &vliteridx)) >= 0) {
-    dbidx = uivlGetRowColumnNum (ssint->uivl, rowidx, SONGSEL_COL_DBIDX);
+    dbidx = songfilterGetByIdx (uisongsel->songfilter, rowidx);
     nlistSetNum (tlist, dbidx, 0);
   }
   nlistSort (tlist);
@@ -715,7 +715,7 @@ uisongselQueueHandler (uisongsel_t *uisongsel, int mqidx, int action)
 
   uivlStartSelectionIterator (ssint->uivl, &vliteridx);
   while ((rowidx = uivlIterateSelection (ssint->uivl, &vliteridx)) >= 0) {
-    dbidx = uivlGetRowColumnNum (ssint->uivl, rowidx, SONGSEL_COL_DBIDX);
+    dbidx = songfilterGetByIdx (uisongsel->songfilter, rowidx);
     if (action == UISONGSEL_QUEUE) {
       uisongselQueueProcess (uisongsel, dbidx);
     }
@@ -826,8 +826,7 @@ uisongselRightClickCallback (void *udata, uivirtlist_t *vl,
     nlistidx_t  genreidx;
     bool        clflag;
 
-    dbidx = uivlGetRowColumnNum (ssint->uivl, rowidx, SONGSEL_COL_DBIDX);
-
+    dbidx = songfilterGetByIdx (uisongsel->songfilter, rowidx);
     song = dbGetByIdx (uisongsel->musicdb, dbidx);
     genreidx = songGetNum (song, TAG_GENRE);
     clflag = genreGetClassicalFlag (ssint->genres, genreidx);
@@ -918,7 +917,7 @@ uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int co
   if (uisongsel->newselcb != NULL) {
     dbidx_t   dbidx;
 
-    dbidx = uivlGetRowColumnNum (ssint->uivl, ssint->selectListKey, SONGSEL_COL_DBIDX);
+    dbidx = songfilterGetByIdx (uisongsel->songfilter, ssint->selectListKey);
     if (dbidx >= 0) {
       callbackHandlerI (uisongsel->newselcb, dbidx);
     }

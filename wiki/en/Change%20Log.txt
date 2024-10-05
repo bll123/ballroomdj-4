@@ -10,6 +10,7 @@
 
 * Bug Fixes:
     * Database Update: Fix crash when processing a bad songlist file.
+    * Music Manager: Fix processing of multiple songs (same song, &etc.).
 
 -->
 
