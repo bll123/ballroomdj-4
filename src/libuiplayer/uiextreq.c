@@ -17,6 +17,7 @@
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdj4ui.h"
+#include "bdjstring.h"
 #include "bdjopt.h"
 #include "callback.h"
 #include "dance.h"
@@ -27,6 +28,7 @@
 #include "musicdb.h"
 #include "nlist.h"
 #include "pathinfo.h"
+#include "pathutil.h"
 #include "slist.h"
 #include "song.h"
 #include "songfav.h"
@@ -439,6 +441,7 @@ static void
 uiextreqProcessAudioFile (uiextreq_t *uiextreq)
 {
   const char  *ffn;
+  char        wfn [MAXPATHLEN];
 
   if (uiextreq == NULL) {
     return;
@@ -447,18 +450,21 @@ uiextreqProcessAudioFile (uiextreq_t *uiextreq)
   uiextreqClearSong (uiextreq);
   ffn = uiEntryGetValue (uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE]);
   if (*ffn) {
-    if (fileopFileExists (ffn)) {
+    stpecpy (wfn, wfn + sizeof (wfn), ffn);
+    pathNormalizePath (wfn, strlen (wfn));
+
+    if (fileopFileExists (wfn)) {
       const char      *tfn;
       slist_t         *tagdata;
       int             rewrite;
       song_t          *dbsong;
 
-      tfn = audiosrcRelativePath (ffn, 0);
+      tfn = audiosrcRelativePath (wfn, 0);
       dbsong = dbGetByName (uiextreq->musicdb, tfn);
       if (dbsong != NULL) {
         tagdata = songTagList (dbsong);
       } else {
-        tagdata = audiotagParseData (ffn, &rewrite);
+        tagdata = audiotagParseData (wfn, &rewrite);
       }
       if (slistGetCount (tagdata) == 0) {
         slistFree (tagdata);
@@ -473,7 +479,7 @@ uiextreqProcessAudioFile (uiextreq_t *uiextreq)
       uiextreq->song = songAlloc ();
       /* populate the song from the tag data */
       songFromTagList (uiextreq->song, tagdata);
-      songSetStr (uiextreq->song, TAG_URI, ffn);
+      songSetStr (uiextreq->song, TAG_URI, wfn);
       songSetNum (uiextreq->song, TAG_DB_FLAGS, MUSICDB_TEMP);
 
       slistFree (tagdata);

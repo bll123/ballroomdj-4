@@ -2928,12 +2928,11 @@ mainAddTemporarySong (maindata_t *mainData, char *args)
   dbidx_t dbidx;
 
 
-  song = songAlloc ();
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   if (p == NULL) {
-    songFree (song);
     return;
   }
+  song = songAlloc ();
   songSetStr (song, TAG_URI, p);
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);

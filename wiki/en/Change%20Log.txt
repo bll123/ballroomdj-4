@@ -6,11 +6,13 @@
 
 **4.12.3 2024-10---**
 
-**4.12.2 2024-10---**
+**4.12.2 2024-10-6**
 
 * Bug Fixes:
-    * Database Update: Fix crash when processing a bad songlist file.
-    * Music Manager: Fix processing of multiple songs (same song, &etc.).
+    * Fix crashes when processing a bad songlist file.
+    * Music Manager: Fix processing when multiple selections are active.
+    * File Selection: Fix non-functional filtering on MacOS and Windows (announcements, external requests, etc.).
+    * Player: External Requests: Fix on Windows.
 
 -->
 
