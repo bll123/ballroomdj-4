@@ -95,4 +95,4 @@ button to remove the old dance name.
 
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-27 09:20:09; BDJ4 version 4.11.6)_
+<br>_(Updated 2024-10-07 11:49:26; BDJ4 version 4.12.2)_
