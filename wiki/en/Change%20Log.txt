@@ -16,6 +16,7 @@
     * Player: External Requests: Fix on Windows.
     * Player: Fix a hang on a bad audio file path.
     * Player: Fix processing on bad audio file paths.
+    * Song Filter: Fix internal issues.
 
 -->
 

@@ -3,12 +3,12 @@
 
 * Platforms:
     * debian-12 (MX Linux 23)
-    * debian-11 (MX Linux 21)
     * opensuse (OpenSUSE 15.5)
     * windows (Windows 10)
     * macos intel (bll-mac MacOS Sonoma)
     * macos applesilicon (bll-mac-m1 MacOS Sonoma)
 * Platforms for testing only:
+    * debian-11 (MX Linux 21)
     * fedora (Fedora 38)
     * arch (Manjaro 23)
 

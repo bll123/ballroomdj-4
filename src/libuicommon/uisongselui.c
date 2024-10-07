@@ -39,7 +39,6 @@
 #include "uivlutil.h"
 
 enum {
-  SONGSEL_COL_DBIDX,
   SONGSEL_COL_MARK,
   SONGSEL_COL_MAX,
 };
@@ -320,7 +319,6 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   ssint->colcount = slistGetCount (sellist) + SONGSEL_COL_MAX;
   uivlSetNumColumns (uivl, ssint->colcount);
 
-  uivlMakeColumn (uivl, "dbidx", SONGSEL_COL_DBIDX, VL_TYPE_INTERNAL_NUMERIC);
   uivlMakeColumn (uivl, "mark", SONGSEL_COL_MARK, VL_TYPE_LABEL);
   /* see comments in fill-mark */
   uivlSetColumnClass (uivl, SONGSEL_COL_MARK, LIST_NO_DISP);
@@ -440,6 +438,8 @@ uisongselApplySongFilter (void *udata)
   ssint = uisongsel->ssInternalData;
   ssint->inapply = true;
 
+  /* the callback must be set every time, as the song filter is re-used */
+  /* by multiple song-selection ui's */
   uisfSetApplyCallback (uisongsel->uisongfilter, uisongsel->sfapplycb);
 
   uidanceSetKey (uisongsel->uidance,
@@ -455,7 +455,7 @@ uisongselApplySongFilter (void *udata)
   if (uisongsel->numrows > 0 && uisongsel->newselcb != NULL) {
     dbidx_t   dbidx;
 
-    dbidx = uivlGetRowColumnNum (ssint->uivl, 0, SONGSEL_COL_DBIDX);
+    dbidx = songfilterGetByIdx (uisongsel->songfilter, 0);
     if (dbidx >= 0) {
       callbackHandlerI (uisongsel->newselcb, dbidx);
     }
@@ -578,7 +578,7 @@ uisongselSetSelection (uisongsel_t *uisongsel, int32_t rowidx)
   uivlSetSelection (ssint->uivl, rowidx);
 
   if (uivlSelectionCount (ssint->uivl) == 1) {
-    uisongsel->lastdbidx = uivlGetRowColumnNum (ssint->uivl, rowidx, SONGSEL_COL_DBIDX);
+    uisongsel->lastdbidx = songfilterGetByIdx (uisongsel->songfilter, rowidx);
   }
 
   logProcEnd ("");
@@ -781,7 +781,7 @@ uisongselRowClickCallback (void *udata, uivirtlist_t *vl,
 
   ssint = uisongsel->ssInternalData;
   if (uivlSelectionCount (ssint->uivl) == 1) {
-    uisongsel->lastdbidx = uivlGetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX);
+    uisongsel->lastdbidx = songfilterGetByIdx (uisongsel->songfilter, rownum);
   }
 
   if (ssint->favcolumn < 0 || colidx != ssint->favcolumn) {
@@ -790,7 +790,7 @@ uisongselRowClickCallback (void *udata, uivirtlist_t *vl,
   }
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: songsel: change favorite");
-  dbidx = uivlGetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX);
+  dbidx = songfilterGetByIdx (uisongsel->songfilter, rownum);
   if (dbidx < 0) {
     logProcEnd ("bad-dbidx");
     return;
@@ -906,7 +906,7 @@ uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int co
   }
 
   if (uivlSelectionCount (ssint->uivl) == 1) {
-    uisongsel->lastdbidx = uivlGetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX);
+    uisongsel->lastdbidx = songfilterGetByIdx (uisongsel->songfilter, rownum);
   }
 
   /* the selection has changed, reset the iterator and set the select key */
@@ -975,8 +975,6 @@ uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   }
 
   ssint->inchange = true;
-
-  uivlSetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX, dbidx);
 
   tdlist = uisongGetDisplayList (ssint->sellist, NULL, song);
   slistStartIterator (ssint->sellist, &seliteridx);
@@ -1064,11 +1062,6 @@ uisongselStartSFDialog (void *udata)
   uisongfilter_t  *uisf = uisongsel->uisongfilter;
   bool            rc;
 
-  /* because there is only one song filter object, the correct callback */
-  /* must be set each time before the song filter is called */
-// ### this still doesn't work, as the filter dialog is designed to
-// be left open.  ugh.
-// the callback needs to be applied on a context switch
   uisfSetApplyCallback (uisf, uisongsel->sfapplycb);
   rc = uisfDialog (uisf);
   return rc;

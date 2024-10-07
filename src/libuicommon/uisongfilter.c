@@ -108,6 +108,7 @@ typedef struct uisongfilter {
 } uisongfilter_t;
 
 /* song filter handling */
+static void uisfFreeDialog (uisongfilter_t *uisf);
 static void uisfDisableWidgets (uisongfilter_t *uisf);
 static void uisfEnableWidgets (uisongfilter_t *uisf);
 static void uisfCreateDialog (uisongfilter_t *uisf);
@@ -179,24 +180,11 @@ uisfFree (uisongfilter_t *uisf)
   }
 
   dataFree (uisf->playlistname);
-  for (int i = 0; i < UISF_W_MAX; ++i) {
-    uiwcontFree (uisf->wcont [i]);
-  }
-  uiplaylistFree (uisf->uiplaylist);
-  uidanceFree (uisf->uidance);
-  uigenreFree (uisf->uigenre);
-  uiratingFree (uisf->uirating);
-  uilevelFree (uisf->uilevel);
-  uistatusFree (uisf->uistatus);
-  uifavoriteFree (uisf->uifavorite);
+  uisfFreeDialog (uisf);
   sortoptFree (uisf->sortopt);
   songfilterFree (uisf->songfilter);
   playlistFree (uisf->playlist);
-  uiddFree (uisf->ddsortby);
   ilistFree (uisf->ddsortbylist);
-  for (int i = 0; i < UISF_LABEL_MAX; ++i) {
-    uiwcontFree (uisf->labels [i]);
-  }
   for (int i = 0; i < UISF_CB_MAX; ++i) {
     callbackFree (uisf->callbacks [i]);
   }
@@ -283,10 +271,11 @@ uisfSetPlaylist (uisongfilter_t *uisf, char *plname)
   if (uisf == NULL) {
     return;
   }
-
-  uiplaylistSetKey (uisf->uiplaylist, plname);
   dataFree (uisf->playlistname);
   uisf->playlistname = mdstrdup (plname);
+  if (uisf->uiplaylist != NULL) {
+    uiplaylistSetKey (uisf->uiplaylist, plname);
+  }
   songfilterSetData (uisf->songfilter, SONG_FILTER_PLAYLIST, plname);
   songfilterSetNum (uisf->songfilter, SONG_FILTER_PL_TYPE,
       playlistGetType (plname));
@@ -301,9 +290,11 @@ uisfClearPlaylist (uisongfilter_t *uisf)
     return;
   }
 
-  uiplaylistSetKey (uisf->uiplaylist, "");
   dataFree (uisf->playlistname);
   uisf->playlistname = NULL;
+  if (uisf->uiplaylist != NULL) {
+    uiplaylistSetKey (uisf->uiplaylist, "");
+  }
   songfilterClear (uisf->songfilter, SONG_FILTER_PLAYLIST);
   uisfUpdateFilterDialogDisplay (uisf);
 }
@@ -337,6 +328,39 @@ uisfGetSongFilter (uisongfilter_t *uisf)
 }
 
 /* internal routines */
+
+static void
+uisfFreeDialog (uisongfilter_t *uisf)
+{
+  if (uisf == NULL) {
+    return;
+  }
+
+  for (int i = 0; i < UISF_W_MAX; ++i) {
+    uiwcontFree (uisf->wcont [i]);
+    uisf->wcont [i] = NULL;
+  }
+  uiplaylistFree (uisf->uiplaylist);
+  uisf->uiplaylist = NULL;
+  uidanceFree (uisf->uidance);
+  uisf->uidance = NULL;
+  uigenreFree (uisf->uigenre);
+  uisf->uigenre = NULL;
+  uiratingFree (uisf->uirating);
+  uisf->uirating = NULL;
+  uilevelFree (uisf->uilevel);
+  uisf->uilevel = NULL;
+  uistatusFree (uisf->uistatus);
+  uisf->uistatus = NULL;
+  uifavoriteFree (uisf->uifavorite);
+  uisf->uifavorite = NULL;
+  uiddFree (uisf->ddsortby);
+  uisf->ddsortby = NULL;
+  for (int i = 0; i < UISF_LABEL_MAX; ++i) {
+    uiwcontFree (uisf->labels [i]);
+    uisf->labels [i] = NULL;
+  }
+}
 
 static void
 uisfInitDisplay (uisongfilter_t *uisf)
@@ -714,8 +738,7 @@ uisfResponseHandler (void *udata, int32_t responseid)
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: sf: del window");
-      uiwcontFree (uisf->wcont [UISF_W_DIALOG]);
-      uisf->wcont [UISF_W_DIALOG] = NULL;
+      uisfFreeDialog (uisf);
       break;
     }
     case RESPONSE_CLOSE: {

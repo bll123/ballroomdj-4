@@ -3731,6 +3731,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int mainlasttab)
   if (manage->maincurrtab == MANAGE_TAB_MAIN_SL) {
     bool    plinuse;
 
+fprintf (stderr,  "-- to-sl\n");
     /* save current playlist-in-use status */
     plinuse = uisfPlaylistInUse (manage->uisongfilter);
     uisfHidePlaylistDisplay (manage->uisongfilter);
@@ -3755,12 +3756,14 @@ manageSetDisplayPerSelection (manageui_t *manage, int mainlasttab)
 
       /* get the selection from mm, and set it for the sle */
       nidx = uisongselGetSelectLocation (manage->mmsongsel);
+fprintf (stderr, "  from-mm: sel-loc: %d\n", nidx);
       uimusicqSetSelectLocation (manage->currmusicq, manage->musicqManageIdx, nidx);
     }
 
     /* switching from music-manager */
     if (mainlasttab == MANAGE_TAB_MAIN_MM &&
         manage->lastmmdisp == MANAGE_DISP_SONG_SEL) {
+fprintf (stderr, "  from-mm: copy-sel:\n");
       if (manage->sbssonglist) {
         uisongselCopySelectList (manage->mmsongsel, manage->slsbssongsel);
       } else {
@@ -3774,6 +3777,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int mainlasttab)
     char    *slname;
     int     lasttab;
 
+fprintf (stderr,  "-- to-mm\n");
     /* use a copy, as it will change */
     lasttab = manage->lasttabsel;
     uisfShowPlaylistDisplay (manage->uisongfilter);
@@ -3799,6 +3803,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int mainlasttab)
         manage->selbypass = false;
         manage->lastmmdisp = MANAGE_DISP_SONG_LIST;
         idx = uimusicqGetSelectLocation (manage->currmusicq, manage->musicqManageIdx);
+fprintf (stderr,  "  mq-loc: %d\n", idx);
         uisongselSetSelection (manage->mmsongsel, idx);
       }
     }
@@ -3816,6 +3821,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int mainlasttab)
         /* the apply-song-filter call will reset the apply-callback correctly */
         uisongselApplySongFilter (manage->mmsongsel);
         manage->selbypass = false;
+fprintf (stderr,  "  copy-sel-list\n");
         if (manage->sbssonglist) {
           uisongselCopySelectList (manage->slsbssongsel, manage->mmsongsel);
         } else {
