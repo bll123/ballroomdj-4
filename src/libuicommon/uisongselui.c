@@ -455,6 +455,7 @@ uisongselApplySongFilter (void *udata)
   if (uisongsel->numrows > 0 && uisongsel->newselcb != NULL) {
     dbidx_t   dbidx;
 
+    uivlSetSelection (ssint->uivl, 0);
     dbidx = songfilterGetByIdx (uisongsel->songfilter, 0);
     if (dbidx >= 0) {
       callbackHandlerI (uisongsel->newselcb, dbidx);

@@ -6,19 +6,20 @@
 
 **4.12.3 2024-10---**
 
+-->
+
 **4.12.2 2024-10-7**
 
 * Bug Fixes:
     * Configuration: Edit Dances: Fix announcement display on Windows.
+    * External Requests: Fix on Windows.
     * File Selection: Remove non-functional filtering on MacOS and Windows (announcements, external requests, etc.).
     * Fix crashes when processing a bad songlist file.
     * Music Manager: Fix processing when multiple selections are active.
-    * Player: External Requests: Fix on Windows.
+    * Music Manager: Reset selection when the song filter is applied.
     * Player: Fix a hang on a bad audio file path.
     * Player: Fix processing on bad audio file paths.
-    * Song Filter: Fix internal issues.
-
--->
+    * Song Filter Dialog: Fix internal issues.
 
 **4.12.1 2024-10-2**
 
