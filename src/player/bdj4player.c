@@ -202,6 +202,7 @@ static void     playerChkPlayerSong (playerdata_t *playerData, int routefrom);
 static void     playerResetVolume (playerdata_t *playerData);
 static void     playerSetAudioSinkEnv (playerdata_t *playerData, bool isdefault);
 static const char * playerGetAudioInterface (void);
+/* static void playerDumpPrepQueue (playerdata_t *playerData, const char *tag); */
 
 static int  gKillReceived = 0;
 
@@ -2200,3 +2201,19 @@ playerGetAudioInterface (void)
 
   return bdjoptGetStr (OPT_M_PLAYER_INTFC);
 }
+
+#if 0
+static void
+playerDumpPrepQueue (playerdata_t *playerData, const char *tag)  /* TESTING */
+{
+  prepqueue_t       *pq = NULL;
+  int               count;
+
+  count = 0;
+  queueStartIterator (playerData->prepQueue, &playerData->prepiteridx);
+  while ((pq = queueIterateData (playerData->prepQueue, &playerData->prepiteridx)) != NULL) {
+    fprintf (stderr, "  pq: /%s/ %d %s\n", tag, count, pq->songname);
+    ++count;
+  }
+}
+#endif

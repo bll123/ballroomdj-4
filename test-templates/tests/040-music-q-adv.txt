@@ -141,6 +141,7 @@ chk prepqueuecount 0
 # empty queue
 msg main QUEUE_CLEAR 0
 msg main MUSICQ_INSERT 0~999~16
+mssleep 200
 msg main CMD_NEXTSONG_PLAY 0
 mssleep 1500
 get player CHK_PLAYER_STATUS
@@ -153,6 +154,7 @@ chk prepqueuecount 0 playstate playing
 # playing song
 msg main QUEUE_CLEAR 0
 msg main MUSICQ_INSERT 0~999~18
+mssleep 200
 msg main CMD_NEXTSONG_PLAY 0
 mssleep 1500
 get player CHK_PLAYER_STATUS
@@ -169,6 +171,7 @@ wait playstate paused
 mssleep 1000
 msg main QUEUE_CLEAR 0
 msg main MUSICQ_INSERT 0~999~20
+mssleep 200
 msg main CMD_NEXTSONG_PLAY 0
 mssleep 1500
 resptimeout 2000
