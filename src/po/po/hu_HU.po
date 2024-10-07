@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2024-09-12 03:58\n"
+"PO-Revision-Date: 2024-10-07\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Hungarian\n"
 "Language: hu\n"
@@ -1091,7 +1091,8 @@ msgid "Marquee Theme"
 msgstr "Marquee téma"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "Maximális\n"
 "játékidő"
@@ -1574,7 +1575,9 @@ msgid "Repeat"
 msgstr "Ismétlés"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "Teljes egészében helyettesíti a BallroomDJ adatbázist. Az adatbázis minden módosítása elveszik."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1900,7 +1903,7 @@ msgstr "Megállította a felhasználó"
 
 #. CONTEXT: starterui: sending support message: subject of message
 msgid "Subject"
-msgstr "Tárgy:"
+msgstr "Tárgy"
 
 #. CONTEXT: starterui: button: support : support information
 #. CONTEXT: starterui: title for the support dialog
@@ -1950,7 +1953,9 @@ msgid "The conversion process will not be run."
 msgstr "A konverziós folyamat nem fog lefutni."
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "Az átalakítási folyamat csak új telepítések és újratelepítések esetén fut le."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -2066,11 +2071,13 @@ msgstr "Frissített"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "Frissíti a BallroomDJ adatbázisban lévő információkat a %s adatbázisból."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Frissíti a BallroomDJ adatbázisban lévő információkat az audiofájlok címkéiből."
 
 #. CONTEXT: alternate installation: status message
@@ -2149,7 +2156,9 @@ msgid "Write Tags to Audio Files"
 msgstr "Címkék írása hangfájlokhoz"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "Kiírja az audiofájlok címkéit a BallroomDJ adatbázisból származó információk felhasználásával."
 
 #. CONTEXT: configuration: dialog: XML file types

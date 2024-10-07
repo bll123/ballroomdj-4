@@ -2,10 +2,10 @@
 # -- english/gb
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.12.0\n"
+"Project-Id-Version: ballroomdj-4 4.12.2\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2024-09-09\n"
+"POT-Creation-Date: 2024-10-07\n"
+"PO-Revision-Date: 2024-10-07\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
