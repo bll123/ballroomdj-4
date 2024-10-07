@@ -29,6 +29,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
+#include "pathdisp.h"
 #include "pathutil.h"
 #include "slist.h"
 #include "ui.h"
@@ -207,6 +208,7 @@ confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t dkey)
   int             timesig;
   uivirtlist_t    *uivl;
   int32_t         rownum;
+  char            tstr [MAXPATHLEN];
 
 
   uivl = gui->tables [CONFUI_ID_DANCE].uivl;
@@ -243,7 +245,9 @@ confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t dkey)
 
   sval = danceGetStr (dances, dkey, DANCE_ANNOUNCE);
   widx = CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT;
-  uiEntrySetValue (gui->uiitem [widx].uiwidgetp, sval);
+  stpecpy (tstr, tstr + sizeof (tstr), sval);
+  pathDisplayPath (tstr, strlen (tstr));
+  uiEntrySetValue (gui->uiitem [widx].uiwidgetp, tstr);
   uiEntryValidateClear (gui->uiitem [widx].uiwidgetp);
 
   num = danceGetNum (dances, dkey, DANCE_MPM_HIGH);
@@ -349,7 +353,13 @@ confuiDanceEntryChg (uiwcont_t *entry, void *udata, int widx)
     logProcEnd ("in-dance-select");
     return UIENTRY_OK;
   }
+  if (gui->tablecurr != CONFUI_ID_DANCE) {
+    logProcEnd ("not-table-dance");
+    return UIENTRY_OK;
+  }
 
+  /* note that in gtk this is a constant pointer to the current value */
+  /* and the value changes due to the validation */
   str = uiEntryGetValue (entry);
   if (str == NULL) {
     logProcEnd ("null-string");
@@ -376,7 +386,12 @@ confuiDanceEntryChg (uiwcont_t *entry, void *udata, int widx)
   if (widx == CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT) {
     entryrc = confuiDanceValidateAnnouncement (entry, gui);
     if (entryrc == UIENTRY_OK) {
-      danceSetStr (dances, dkey, itemidx, str);
+      char    nstr [MAXPATHLEN];
+
+      /* save the normalized version */
+      stpecpy (nstr, nstr + sizeof (nstr), str);
+      pathNormalizePath (nstr, strlen (nstr));
+      danceSetStr (dances, dkey, itemidx, nstr);
     }
   }
   if (widx == CONFUI_ENTRY_DANCE_TAGS) {
@@ -448,6 +463,10 @@ confuiDanceSpinboxChg (void *udata, int widx)
     logProcEnd ("in-dance-select");
     return;
   }
+  if (gui->tablecurr != CONFUI_ID_DANCE) {
+    logProcEnd ("not-table-dance");
+    return;
+  }
 
   itemidx = gui->uiitem [widx].danceitemidx;
 
@@ -514,15 +533,14 @@ confuiDanceValidateAnnouncement (uiwcont_t *entry, confuigui_t *gui)
 
     if (fileopFileExists (ffn)) {
       if (strcmp (rfn, nfn) != 0) {
+        pathDisplayPath (nfn, strlen (nfn));
         uiEntrySetValue (entry, rfn);
       }
       rc = UIENTRY_OK;
     }
   }
 
-  /* sanitizeaddress indicates a buffer underflow error */
-  /* if tablecurr is set to CONFUI_ID_NONE */
-  /* also this validation routine gets called at most any time, but */
+  /* this validation routine gets called at most any time, but */
   /* the changed flag should only be set for the edit dance tab */
   if (rc == UIENTRY_OK && gui->tablecurr == CONFUI_ID_DANCE) {
     gui->tables [gui->tablecurr].changed = true;
