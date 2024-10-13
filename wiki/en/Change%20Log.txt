@@ -9,6 +9,8 @@
 * Bug Fixes:
     * Edit Song Lists: Statistics: Use the default font, not the listing font.
     * Linux: Run temporary file cleanup on reboot.
+* New Features:
+    * Player: Marquee menu: Hide/Show.
 
 -->
 

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2024-09-12 03:58\n"
+"PO-Revision-Date: 2024-10-13\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Chinese Traditional\n"
 "Language: zh\n"
@@ -891,6 +891,10 @@ msgstr "HTML模板"
 msgid "HTTP Code"
 msgstr "HTTP 程式碼"
 
+#. CONTEXT: playerui: menu selection: marquee: hide the marquee
+msgid "Hide"
+msgstr ""
+
 #. CONTEXT: playlist management: hide unselected dances
 msgid "Hide Unselected"
 msgstr "隱藏未選定的"
@@ -1091,7 +1095,8 @@ msgid "Marquee Theme"
 msgstr "跑馬燈主題"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "最長遊戲時間"
 
@@ -1573,7 +1578,9 @@ msgid "Repeat"
 msgstr "重複"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "完全替換 BallroomDJ 資料庫。資料庫的所有變更都將遺失。"
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1749,6 +1756,10 @@ msgstr "設定"
 #. CONTEXT: alternate installation: status message
 msgid "Setup complete."
 msgstr "設定完成。"
+
+#. CONTEXT: playerui: menu selection: marquee: show the marquee
+msgid "Show"
+msgstr ""
 
 #. CONTEXT: configuration: queue: whether to show the extra queue buttons (queue dance, queue 5)
 msgid "Show Extra Queue Buttons"
@@ -1949,7 +1960,9 @@ msgid "The conversion process will not be run."
 msgstr "轉換過程將不會運作。"
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "轉換過程僅針對新安裝和重新安裝運行。"
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -2065,11 +2078,13 @@ msgstr "更新"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "從 %s 資料庫更新 BallroomDJ 資料庫中的資訊。"
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "從音訊檔案標籤更新 BallroomDJ 資料庫中的資訊。"
 
 #. CONTEXT: alternate installation: status message
@@ -2148,7 +2163,9 @@ msgid "Write Tags to Audio Files"
 msgstr "將標籤寫入音訊文件"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "使用 BallroomDJ 資料庫中的資訊寫入音訊檔案標籤。"
 
 #. CONTEXT: configuration: dialog: XML file types

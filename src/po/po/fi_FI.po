@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2024-10-07\n"
+"PO-Revision-Date: 2024-10-13\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Finnish\n"
 "Language: fi\n"
@@ -891,6 +891,10 @@ msgstr "HTML-malli"
 msgid "HTTP Code"
 msgstr "HTTP-koodi"
 
+#. CONTEXT: playerui: menu selection: marquee: hide the marquee
+msgid "Hide"
+msgstr ""
+
 #. CONTEXT: playlist management: hide unselected dances
 msgid "Hide Unselected"
 msgstr "Piilota valitsemattomat"
@@ -1753,6 +1757,10 @@ msgstr "Asetukset"
 #. CONTEXT: alternate installation: status message
 msgid "Setup complete."
 msgstr "Asennus valmis."
+
+#. CONTEXT: playerui: menu selection: marquee: show the marquee
+msgid "Show"
+msgstr ""
 
 #. CONTEXT: configuration: queue: whether to show the extra queue buttons (queue dance, queue 5)
 msgid "Show Extra Queue Buttons"

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2024-09-12 03:58\n"
+"PO-Revision-Date: 2024-10-13\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Serbian (Cyrillic)\n"
 "Language: sr\n"
@@ -891,6 +891,10 @@ msgstr "ХТМЛ шаблон"
 msgid "HTTP Code"
 msgstr "ХТТП код"
 
+#. CONTEXT: playerui: menu selection: marquee: hide the marquee
+msgid "Hide"
+msgstr ""
+
 #. CONTEXT: playlist management: hide unselected dances
 msgid "Hide Unselected"
 msgstr "Сакриј неодабрано"
@@ -1091,7 +1095,8 @@ msgid "Marquee Theme"
 msgstr "Маркуее Тхеме"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "Максимално\n"
 "време репродукције"
@@ -1574,7 +1579,9 @@ msgid "Repeat"
 msgstr "Понови"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "Замењује BallroomDJ базу података у целини. Све промене у бази података ће бити изгубљене."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1750,6 +1757,10 @@ msgstr "Подешавања"
 #. CONTEXT: alternate installation: status message
 msgid "Setup complete."
 msgstr "Подешавање је завршено."
+
+#. CONTEXT: playerui: menu selection: marquee: show the marquee
+msgid "Show"
+msgstr ""
 
 #. CONTEXT: configuration: queue: whether to show the extra queue buttons (queue dance, queue 5)
 msgid "Show Extra Queue Buttons"
@@ -1950,7 +1961,9 @@ msgid "The conversion process will not be run."
 msgstr "Процес конверзије неће бити покренут."
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "Процес конверзије ће се изводити само за нове инсталације и поновне инсталације."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -2066,11 +2079,13 @@ msgstr "Ажурирано"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "Ажурира информације у BallroomDJ бази података из %s базе података."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Ажурира информације у BallroomDJ бази података из ознака аудио датотека."
 
 #. CONTEXT: alternate installation: status message
@@ -2149,7 +2164,9 @@ msgid "Write Tags to Audio Files"
 msgstr "Упишите ознаке у аудио датотеке"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "Записује ознаке аудио датотека користећи информације из BallroomDJ базе података."
 
 #. CONTEXT: configuration: dialog: XML file types
