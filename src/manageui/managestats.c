@@ -97,7 +97,6 @@ manageBuildUIStats (managestats_t *managestats)
   uiwcont_t   *uiwidgetp;
   uiwcont_t   *hbox;
   uiwcont_t   *chbox;
-  const char  *listingFont;
 
   managestats->vboxmain = uiCreateVertBox ();
 
@@ -128,15 +127,12 @@ manageBuildUIStats (managestats_t *managestats)
   uiLabelAlignEnd (managestats->tottimedisp);
   uiBoxPackStart (hbox, managestats->tottimedisp);
 
-  listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
-
   for (int i = 0; i < STATS_MAX_DISP; ++i) {
     managestats->dancedisp [i] = uiCreateLabel ("");
     if (i % 2 == 1) {
       uiWidgetSetSizeRequest (managestats->dancedisp [i], 30, -1);
       uiLabelAlignEnd (managestats->dancedisp [i]);
     }
-    uiLabelSetFont (managestats->dancedisp [i], listingFont);
   }
 
   /* horizontal box to hold the columns */
