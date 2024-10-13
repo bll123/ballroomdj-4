@@ -6,6 +6,10 @@
 
 **4.12.3 2024-10---**
 
+* Bug Fixes:
+    * Edit Song Lists: Statistics: Use the default font, not the listing font.
+    * Linux: Run temporary file cleanup on reboot.
+
 -->
 
 **4.12.2 2024-10-7**

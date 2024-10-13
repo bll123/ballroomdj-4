@@ -571,42 +571,50 @@ instutilInstallCleanTmp (const char *rundir)
     }
     dataFree (cttext);
   }
-  if (isMacOS ()) {
+
+  /* 2024-10-13 */
+  /* it turns out, with empirical testing that linux supports @reboot also, */
+  /* despite a lack of documentation. */
+  if (isMacOS () || isLinux ()) {
     const char  *targv [5];
     int         targc = 0;
-    char        *cttext;
+    char        *cttext = NULL;
     size_t      sz = 0;
     char        tfn [MAXPATHLEN];
     char        tstr [MAXPATHLEN];
-    FILE        *fh;
+    FILE        *fh = NULL;
+    const char  *tmp;
 
-    targv [targc++] = sysvarsGetStr (SV_PATH_CRONTAB);
-    targv [targc++] = "-l";
-    targv [targc++] = NULL;
-    snprintf (tfn, sizeof (tfn), "/tmp/bdj4-ict.txt");
-    osProcessStart (targv, OS_PROC_WAIT, NULL, tfn);
-    cttext = filedataReadAll (tfn, &sz);
-    if (cttext == NULL) {
-      cttext = mdstrdup ("");
-    }
-    snprintf (tstr, sizeof (tstr),
-        "@reboot %s/bin/bdj4 --bdj4cleantmp\n", rundir);
-    if (strstr (cttext, "bdj4cleantmp") == NULL) {
-      fh = fopen (tfn, "a");
-      mdextfopen (fh);
-      if (fh != NULL) {
-        fputs (tstr, fh);
-        mdextfclose (fh);
-        fclose (fh);
-      }
-      targc = 0;
-      targv [targc++] = sysvarsGetStr (SV_PATH_CRONTAB);
-      targv [targc++] = tfn;
+    tmp = sysvarsGetStr (SV_PATH_CRONTAB);
+    if (tmp != NULL && *tmp) {
+      targv [targc++] = tmp;
+      targv [targc++] = "-l";
       targv [targc++] = NULL;
-      osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
+      snprintf (tfn, sizeof (tfn), "/tmp/bdj4-ict.txt");
+      osProcessStart (targv, OS_PROC_WAIT, NULL, tfn);
+      cttext = filedataReadAll (tfn, &sz);
+      if (cttext == NULL) {
+        cttext = mdstrdup ("");
+      }
+      snprintf (tstr, sizeof (tstr),
+          "@reboot %s/bin/bdj4 --bdj4cleantmp\n", rundir);
+      if (strstr (cttext, "bdj4cleantmp") == NULL) {
+        fh = fopen (tfn, "a");
+        mdextfopen (fh);
+        if (fh != NULL) {
+          fputs (tstr, fh);
+          mdextfclose (fh);
+          fclose (fh);
+        }
+        targc = 0;
+        targv [targc++] = sysvarsGetStr (SV_PATH_CRONTAB);
+        targv [targc++] = tfn;
+        targv [targc++] = NULL;
+        osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
+      }
+      fileopDelete (tfn);
+      dataFree (cttext);
     }
-    fileopDelete (tfn);
-    dataFree (cttext);
   }
 }
 

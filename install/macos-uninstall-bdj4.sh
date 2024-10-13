@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2024 Brad Lanam Pleasant Hill CA
 #
-ver=6
+ver=7
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -107,7 +107,7 @@ if [[ $gr == Y ]]; then
   test -d "$dir" && rmdir "$dir" > /dev/null 2>&1
 
   # crontab
-  crontab -l | sed -e '/BDJ4/ d' > $TMP
+  crontab -l | sed -e '/bdj4cleantmp/ d' > $TMP
   crontab $TMP
   rm -f $TMP
 
