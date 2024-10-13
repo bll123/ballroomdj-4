@@ -6,8 +6,8 @@
 while test ! \( -d src -a -d web -a -d wiki \); do
   cd ..
 done
-cwd=$(pwd)
 cd src/po
+cwd=$(pwd)
 
 TMPLDIR=../../templates
 HTMLLIST=${TMPLDIR}/html-list.txt

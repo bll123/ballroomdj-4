@@ -267,6 +267,19 @@ uiMenuClear (uiwcont_t *uiwidget)
   }
 }
 
+void
+uiMenuItemSetText (uiwcont_t *uiwidget, const char *txt)
+{
+  GtkWidget   *menuitem;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_MENU_ITEM, "menu-item-set-text")) {
+    return;
+  }
+
+  menuitem = uiwidget->uidata.widget;
+  gtk_menu_item_set_label (GTK_MENU_ITEM (menuitem), txt);
+}
+
 /* internal routines */
 
 static void

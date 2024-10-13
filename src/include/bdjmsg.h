@@ -159,8 +159,10 @@ typedef enum {
   /* to/from marquee */
   MSG_MARQUEE_TIMER,        // args: played time, duration
   MSG_MARQUEE_SET_FONT_SZ,  // args: font-size
-  MSG_MARQUEE_IS_MAX,       // args: boolean flag
   MSG_MARQUEE_FONT_SIZES,   // args: font-size, font-size-fs
+  MSG_MARQUEE_HIDE,
+  MSG_MARQUEE_SHOW,
+  MSG_MARQUEE_STATUS,       // args: bool: isicon bool: ismax
 
   /* to/from dbupdate */
   MSG_DB_STOP_REQ,

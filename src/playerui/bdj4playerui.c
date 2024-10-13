@@ -66,6 +66,7 @@ enum {
   PLUI_MENU_CB_EXTRA_QUEUE,
   PLUI_MENU_CB_SWITCH_QUEUE,
   PLUI_MENU_CB_REQ_EXT_DIALOG,
+  PLUI_MENU_CB_MQ_HIDE_SHOW,
   PLUI_MENU_CB_MQ_FONT_SZ,
   PLUI_MENU_CB_MQ_FIND,
   PLUI_MENU_CB_EXP_MP3,
@@ -100,6 +101,7 @@ enum {
   PLUI_W_MQ_SZ,
   PLUI_W_STATUS_MSG,
   PLUI_W_ERROR_MSG,
+  PLUI_W_MENU_MQ_HIDE_SHOW,
   PLUI_W_MENU_QE_CURR,
   PLUI_W_MENU_QE_SEL,
   PLUI_W_MENU_EXT_REQ,
@@ -129,7 +131,6 @@ typedef struct {
   int             musicqManageIdx;
   dispsel_t       *dispsel;
   uint32_t        dbgflags;
-  int             marqueeIsMaximized;
   int             marqueeFontSize;
   int             marqueeFontSizeFS;
   mstime_t        marqueeFontSizeCheck;
@@ -170,6 +171,8 @@ typedef struct {
   bool            mainalready : 1;
   bool            mainreattach : 1;
   bool            marqueeoff : 1;
+  bool            mqisiconified : 1;
+  bool            mqismaximized : 1;
   bool            mqfontsizeactive : 1;
   bool            optionsalloc : 1;
   bool            reloadinit : 1;
@@ -245,8 +248,9 @@ static void     pluiCreateMarqueeFontSizeDialog (playerui_t *plui);
 static bool     pluiMarqueeFontSizeDialogResponse (void *udata, int32_t responseid);
 static bool     pluiMarqueeFontSizeChg (void *udata);
 static bool     pluiMarqueeRecover (void *udata);
-static void     pluisetMarqueeIsMaximized (playerui_t *plui, char *args);
-static void     pluisetMarqueeFontSizes (playerui_t *plui, char *args);
+static bool     pluiMarqueeHideShow (void *udata);
+static void     pluiSetMarqueeStatus (playerui_t *plui, char *args);
+static void     pluiSetMarqueeFontSizes (playerui_t *plui, char *args);
 static bool     pluiQueueProcess (void *udata, int32_t dbidx);
 static bool     pluiSongSaveCallback (void *udata, int32_t dbidx);
 static bool     pluiClearQueueCallback (void *udata);
@@ -294,7 +298,7 @@ main (int argc, char *argv[])
   plui.musicqPlayIdx = MUSICQ_PB_A;
   plui.musicqRequestIdx = MUSICQ_PB_A;
   plui.musicqManageIdx = MUSICQ_PB_A;
-  plui.marqueeIsMaximized = false;
+  plui.mqismaximized = false;
   plui.marqueeFontSize = 36;
   plui.marqueeFontSizeFS = 60;
   mstimeset (&plui.marqueeFontSizeCheck, TM_TIMER_OFF);
@@ -633,6 +637,15 @@ pluiBuildUI (playerui_t *plui)
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
+  if (plui->marqueeoff == false) {
+    plui->callbacks [PLUI_MENU_CB_MQ_HIDE_SHOW] = callbackInit (
+        pluiMarqueeHideShow, plui, NULL);
+    /* CONTEXT: playerui: menu selection: marquee: show the marquee */
+    menuitem = uiMenuCreateItem (menu, _("Show"),
+        plui->callbacks [PLUI_MENU_CB_MQ_HIDE_SHOW]);
+    plui->wcont [PLUI_W_MENU_MQ_HIDE_SHOW] = menuitem;
+  }
+
   plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ] = callbackInit (
       pluiMarqueeFontSizeDialog, plui, NULL);
   /* CONTEXT: playerui: menu selection: marquee: change the marquee font size */
@@ -895,7 +908,7 @@ pluiMainLoop (void *tplui)
     char        tbuff [40];
     int         sz;
 
-    if (plui->marqueeIsMaximized) {
+    if (plui->mqismaximized) {
       sz = plui->marqueeFontSizeFS;
     } else {
       sz = plui->marqueeFontSize;
@@ -1115,12 +1128,12 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           pluiSetPlaybackQueue (plui, atoi (args), PLUI_UPDATE_MAIN);
           break;
         }
-        case MSG_MARQUEE_IS_MAX: {
-          pluisetMarqueeIsMaximized (plui, args);
+        case MSG_MARQUEE_FONT_SIZES: {
+          pluiSetMarqueeFontSizes (plui, args);
           break;
         }
-        case MSG_MARQUEE_FONT_SIZES: {
-          pluisetMarqueeFontSizes (plui, args);
+        case MSG_MARQUEE_STATUS: {
+          pluiSetMarqueeStatus (plui, args);
           break;
         }
         case MSG_DB_ENTRY_UPDATE: {
@@ -1549,7 +1562,7 @@ pluiMarqueeFontSizeDialog (void *udata)
     pluiCreateMarqueeFontSizeDialog (plui);
   }
 
-  if (plui->marqueeIsMaximized) {
+  if (plui->mqismaximized) {
     sz = plui->marqueeFontSizeFS;
   } else {
     sz = plui->marqueeFontSize;
@@ -1651,7 +1664,7 @@ pluiMarqueeFontSizeChg (void *udata)
 
   value = uiSpinboxGetValue (plui->wcont [PLUI_W_MQ_SZ]);
   fontsz = (int) round (value);
-  if (plui->marqueeIsMaximized) {
+  if (plui->mqismaximized) {
     plui->marqueeFontSizeFS = fontsz;
   } else {
     plui->marqueeFontSize = fontsz;
@@ -1675,16 +1688,56 @@ pluiMarqueeRecover (void *udata)
 }
 
 
-static void
-pluisetMarqueeIsMaximized (playerui_t *plui, char *args)
+static bool
+pluiMarqueeHideShow (void *udata)
 {
-  int   val = atoi (args);
+  playerui_t  *plui = udata;
+  int         msg;
 
-  plui->marqueeIsMaximized = val;
+  if (plui->marqueeoff) {
+    return UICB_CONT;
+  }
+
+  msg = MSG_MARQUEE_SHOW;
+  if (plui->mqisiconified == false) {
+    msg = MSG_MARQUEE_HIDE;
+  }
+
+  connSendMessage (plui->conn, ROUTE_MARQUEE, msg, NULL);
+  return UICB_CONT;
+}
+
+
+static void
+pluiSetMarqueeStatus (playerui_t *plui, char *args)
+{
+  char      *p;
+  char      *tokstr;
+
+  if (args == NULL) {
+    return;
+  }
+
+  p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL) {
+    plui->mqisiconified = atoi (p);
+  }
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL) {
+    plui->mqismaximized = atoi (p);
+  }
+
+  if (plui->mqisiconified) {
+    /* CONTEXT: playerui: menu selection: marquee: show the marquee */
+    uiMenuItemSetText (plui->wcont [PLUI_W_MENU_MQ_HIDE_SHOW], _("Show"));
+  } else {
+    /* CONTEXT: playerui: menu selection: marquee: hide the marquee */
+    uiMenuItemSetText (plui->wcont [PLUI_W_MENU_MQ_HIDE_SHOW], _("Hide"));
+  }
 }
 
 static void
-pluisetMarqueeFontSizes (playerui_t *plui, char *args)
+pluiSetMarqueeFontSizes (playerui_t *plui, char *args)
 {
   char      *p;
   char      *tokstr;
