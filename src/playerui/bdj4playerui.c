@@ -637,14 +637,12 @@ pluiBuildUI (playerui_t *plui)
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
-  if (plui->marqueeoff == false) {
-    plui->callbacks [PLUI_MENU_CB_MQ_HIDE_SHOW] = callbackInit (
-        pluiMarqueeHideShow, plui, NULL);
-    /* CONTEXT: playerui: menu selection: marquee: show the marquee */
-    menuitem = uiMenuCreateItem (menu, _("Show"),
-        plui->callbacks [PLUI_MENU_CB_MQ_HIDE_SHOW]);
-    plui->wcont [PLUI_W_MENU_MQ_HIDE_SHOW] = menuitem;
-  }
+  plui->callbacks [PLUI_MENU_CB_MQ_HIDE_SHOW] = callbackInit (
+      pluiMarqueeHideShow, plui, NULL);
+  /* CONTEXT: playerui: menu selection: marquee: show the marquee */
+  menuitem = uiMenuCreateItem (menu, _("Show"),
+      plui->callbacks [PLUI_MENU_CB_MQ_HIDE_SHOW]);
+  plui->wcont [PLUI_W_MENU_MQ_HIDE_SHOW] = menuitem;
 
   plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ] = callbackInit (
       pluiMarqueeFontSizeDialog, plui, NULL);
