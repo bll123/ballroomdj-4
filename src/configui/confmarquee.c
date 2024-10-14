@@ -57,13 +57,13 @@ confuiBuildUIMarquee (confuigui_t *gui)
 
   /* CONTEXT: configuration: The theme to use for the marquee display */
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Marquee Theme"),
-      CONFUI_SPINBOX_MQ_THEME, OPT_MP_MQ_THEME,
+      CONFUI_SPINBOX_MQ_THEME, OPT_M_MQ_THEME,
       CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_MQ_THEME].listidx, NULL);
 
   /* CONTEXT: configuration: The font to use for the marquee display */
   confuiMakeItemFontButton (gui, vbox, szgrp, _("Marquee Font"),
-      CONFUI_WIDGET_MQ_FONT, OPT_MP_MQFONT,
-      bdjoptGetStr (OPT_MP_MQFONT));
+      CONFUI_WIDGET_MQ_FONT, OPT_M_MQ_FONT,
+      bdjoptGetStr (OPT_M_MQ_FONT));
 
   /* CONTEXT: (noun) configuration: the length of the queue displayed on the marquee */
   confuiMakeItemSpinboxNum (gui, vbox, szgrp, NULL, _("Queue Length"),

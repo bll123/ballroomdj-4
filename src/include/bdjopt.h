@@ -97,21 +97,24 @@ typedef enum {
   /* bdj4 is complete.  It will be removed in a later version */
   OPT_M_DIR_OLD_SKIP,
   OPT_M_ITUNES_XML_FILE,
+  OPT_M_LISTING_FONT,
+  OPT_M_MQ_FONT,
+  OPT_M_MQ_THEME,
   OPT_M_PLAYER_INTFC,
   OPT_M_PLAYER_INTFC_NM,
+  OPT_M_PLAYEROPTIONS,
   OPT_M_SCALE,
   OPT_M_SHUTDOWN_SCRIPT,
   OPT_M_STARTUP_SCRIPT,
+  OPT_M_UI_FONT,
+  OPT_M_UI_THEME,
   OPT_M_VOLUME_INTFC,
   OPT_MP_AUDIOSINK,
-  OPT_MP_LISTING_FONT,
-  OPT_MP_MQFONT,
-  OPT_MP_MQ_THEME,
-  OPT_MP_PLAYEROPTIONS,
-  OPT_MP_PLAYERSHUTDOWNSCRIPT,
-  OPT_MP_PLAYERSTARTSCRIPT,
-  OPT_MP_UIFONT,
-  OPT_MP_UI_THEME,
+  OPT_MP_LISTING_FONT,        // deprecated
+  OPT_MP_MQFONT,              // deprecated
+  OPT_MP_MQ_THEME,            // deprecated
+  OPT_MP_UIFONT,              // deprecated
+  OPT_MP_UI_THEME,            // deprecated
   OPT_P_COMPLETE_MSG,
   OPT_P_DEFAULTVOLUME,
   OPT_P_FADETYPE,

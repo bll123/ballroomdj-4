@@ -1,8 +1,8 @@
 # config-machine
-# 2023-10-25
-# version 1
+# 2024-10-14
+# version 2
 version
-..1
+..2
 AUDIOTAG
 ..libatibdj4
 CONTROLLER
@@ -13,15 +13,27 @@ DIRITUNESMEDIA
 ..
 ITUNESXMLFILE
 ..
+LISTING_FONT
+..
+MQ_FONT
+..
+MQ_THEME
+..Adwaita
 PLAYER
 ..libplivlc
 PLAYER_I_NM
+..
+PLAYEROPTIONS
 ..
 SCALE
 ..1
 SHUTDOWNSCRIPT
 ..
 STARTUPSCRIPT
+..
+UI_FONT
+..
+UI_THEME
 ..
 VOLUME
 ..libvolnull

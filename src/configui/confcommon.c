@@ -82,14 +82,14 @@ confuiLoadThemeList (confuigui_t *gui)
   const char  *mqtheme;
   const char  *uitheme;
 
-  p = bdjoptGetStr (OPT_MP_UI_THEME);
+  p = bdjoptGetStr (OPT_M_UI_THEME);
   /* use the system default if the ui theme is empty */
   if (p == NULL || ! *p) {
     usesys = true;
   }
 
-  mqtheme = bdjoptGetStr (OPT_MP_MQ_THEME);
-  uitheme = bdjoptGetStr (OPT_MP_UI_THEME);
+  mqtheme = bdjoptGetStr (OPT_M_MQ_THEME);
+  uitheme = bdjoptGetStr (OPT_M_UI_THEME);
 
   tlist = confuiGetThemeList ();
   nlistStartIterator (tlist, &iteridx);

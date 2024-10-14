@@ -265,20 +265,20 @@ main (int argc, char *argv [])
         if (isMacOS ()) {
           uifont = "Arial Regular 16";
         }
-        bdjoptSetStr (OPT_MP_UIFONT, uifont);
+        bdjoptSetStr (OPT_M_UI_FONT, uifont);
 
         /* windows does not have a narrow font pre-installed */
         uifont = "Arial 11";
         if (isMacOS ()) {
           uifont = "Arial Narrow Regular 15";
         }
-        bdjoptSetStr (OPT_MP_MQFONT, uifont);
+        bdjoptSetStr (OPT_M_MQ_FONT, uifont);
 
         uifont = "Arial 10";
         if (isMacOS ()) {
           uifont = "Arial Regular 15";
         }
-        bdjoptSetStr (OPT_MP_LISTING_FONT, uifont);
+        bdjoptSetStr (OPT_M_LISTING_FONT, uifont);
 
         bdjoptchanged = true;
       }
@@ -357,11 +357,11 @@ main (int argc, char *argv [])
     char        tbuff [MAXPATHLEN];
 
     /* 4.3.3 change name of macos theme  */
-    tval = bdjoptGetStr (OPT_MP_UI_THEME);
+    tval = bdjoptGetStr (OPT_M_UI_THEME);
     if (tval != NULL && strncmp (tval, pfx, len) == 0) {
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.3.3 : chg name of ui theme");
       snprintf (tbuff, sizeof (tbuff), "%s-solid", tval + len);
-      bdjoptSetStr (OPT_MP_UI_THEME, tbuff);
+      bdjoptSetStr (OPT_M_UI_THEME, tbuff);
       bdjoptchanged = true;
       snprintf (tbuff, sizeof (tbuff), "%s/.themes/macOS-Mojave-dark",
           sysvarsGetStr (SV_HOME));
@@ -408,11 +408,11 @@ main (int argc, char *argv [])
     /* 4.11.0, on macos, Default, Emacs and Mac were not really themes */
     /* translate these to Adwaita */
     if (isMacOS ()) {
-      tval = bdjoptGetStr (OPT_MP_UI_THEME);
+      tval = bdjoptGetStr (OPT_M_UI_THEME);
       if (strcmp (tval, "Default") == 0 ||
           strcmp (tval, "Emacs") == 0 ||
           strcmp (tval, "Mac") == 0) {
-        bdjoptSetStr (OPT_MP_UI_THEME, "Adwaita:dark");
+        bdjoptSetStr (OPT_M_UI_THEME, "Adwaita:dark");
         bdjoptchanged = true;
       }
     }

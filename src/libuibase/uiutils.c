@@ -84,7 +84,7 @@ uiutilsGetCurrentFont (void)
 {
   const char  *tstr;
 
-  tstr = bdjoptGetStr (OPT_MP_UIFONT);
+  tstr = bdjoptGetStr (OPT_M_UI_FONT);
   if (tstr == NULL || ! *tstr) {
     tstr = sysvarsGetStr (SV_FONT_DEFAULT);
   }
@@ -96,9 +96,9 @@ uiutilsGetListingFont (void)
 {
   const char  *tstr;
 
-  tstr = bdjoptGetStr (OPT_MP_LISTING_FONT);
+  tstr = bdjoptGetStr (OPT_M_LISTING_FONT);
   if (tstr == NULL || ! *tstr) {
-    tstr = bdjoptGetStr (OPT_MP_UIFONT);
+    tstr = bdjoptGetStr (OPT_M_UI_FONT);
     if (tstr == NULL || ! *tstr) {
       tstr = sysvarsGetStr (SV_FONT_DEFAULT);
     }

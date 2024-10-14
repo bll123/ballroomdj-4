@@ -1,23 +1,7 @@
 # config-machine-profile
-# 2022-8-4
-# version 1
+# 2024-10-14
+# version 2
 version
-..1
+..2
 AUDIOSINK
-..
-LISTINGFONT
-..
-MQFONT
-..
-MQ_THEME
-..Adwaita
-PLAYEROPTIONS
-..
-PLAYERSHUTDOWNSCRIPT
-..
-PLAYERSTARTSCRIPT
-..
-UIFONT
-..
-UI_THEME
 ..

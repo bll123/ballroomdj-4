@@ -8,6 +8,7 @@
 
 * Bug Fixes:
     * Edit Song Lists: Statistics: Use the default font, not the listing font.
+    * Internal: Move font and theme settings to per-machine from per-machine-per-profile.
     * Linux: Run temporary file cleanup on reboot.
 * New Features:
     * Player: Marquee menu: Hide/Show.

@@ -853,7 +853,7 @@ mainStartMarquee (maindata_t *mainData)
   /* set the theme for the marquee */
   {
     const char *theme;
-    theme = bdjoptGetStr (OPT_MP_MQ_THEME);
+    theme = bdjoptGetStr (OPT_M_MQ_THEME);
     osSetEnv ("GTK_THEME", theme);
   }
 #endif

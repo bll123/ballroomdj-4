@@ -945,9 +945,9 @@ marqueeSetFont (marquee_t *marquee, int sz)
 
   logProcBegin ();
 
-  f = bdjoptGetStr (OPT_MP_MQFONT);
+  f = bdjoptGetStr (OPT_M_MQ_FONT);
   if (f == NULL) {
-    f = bdjoptGetStr (OPT_MP_UIFONT);
+    f = bdjoptGetStr (OPT_M_UI_FONT);
   }
   if (f == NULL) {
     f = "";

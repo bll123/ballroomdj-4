@@ -122,6 +122,7 @@ static datafilekey_t bdjoptqueuedfkeys [] = {
   { "STOP_AT_TIME",         OPT_Q_STOP_AT_TIME,         VALUE_NUM, NULL, DF_NORM },
 };
 
+/* must be ascii sorted, use LANG=C <editor> bdjopt.c */
 static datafilekey_t bdjoptmachinedfkeys [] = {
   { "AUDIOTAG",           OPT_M_AUDIOTAG_INTFC,     VALUE_STR, NULL, DF_NORM },
   { "CONTROLLER",         OPT_M_CONTROLLER_INTFC,   VALUE_STR, NULL, DF_NORM },
@@ -129,24 +130,28 @@ static datafilekey_t bdjoptmachinedfkeys [] = {
   { "DIRMUSIC",           OPT_M_DIR_MUSIC,          VALUE_STR, NULL, DF_NORM },
   { "DIROLDSKIP",         OPT_M_DIR_OLD_SKIP,       VALUE_STR, NULL, DF_NORM },
   { "ITUNESXMLFILE",      OPT_M_ITUNES_XML_FILE,    VALUE_STR, NULL, DF_NORM },
+  { "LISTING_FONT",       OPT_M_LISTING_FONT,       VALUE_STR, NULL, DF_NORM },
+  { "MQ_FONT",            OPT_M_MQ_FONT,            VALUE_STR, NULL, DF_NORM },
+  { "MQ_THEME",           OPT_M_MQ_THEME,           VALUE_STR, NULL, DF_NORM },
   { "PLAYER",             OPT_M_PLAYER_INTFC,       VALUE_STR, NULL, DF_NORM },
+  { "PLAYEROPTIONS",      OPT_M_PLAYEROPTIONS,      VALUE_STR, NULL, DF_NORM },
   { "PLAYER_I_NM",        OPT_M_PLAYER_INTFC_NM,    VALUE_STR, NULL, DF_NORM },
   { "SCALE",              OPT_M_SCALE,              VALUE_NUM, NULL, DF_NORM },
   { "SHUTDOWNSCRIPT",     OPT_M_SHUTDOWN_SCRIPT,    VALUE_STR, NULL, DF_NORM },
   { "STARTUPSCRIPT",      OPT_M_STARTUP_SCRIPT,     VALUE_STR, NULL, DF_NORM },
+  { "UI_FONT",            OPT_M_UI_FONT,            VALUE_STR, NULL, DF_NORM },
+  { "UI_THEME",           OPT_M_UI_THEME,           VALUE_STR, NULL, DF_NORM },
   { "VOLUME",             OPT_M_VOLUME_INTFC,       VALUE_STR, NULL, DF_NORM },
 };
 
 static datafilekey_t bdjoptmachprofdfkeys [] = {
   { "AUDIOSINK",            OPT_MP_AUDIOSINK,             VALUE_STR, NULL, DF_NORM },
-  { "LISTINGFONT",          OPT_MP_LISTING_FONT,          VALUE_STR, NULL, DF_NORM },
-  { "MQFONT",               OPT_MP_MQFONT,                VALUE_STR, NULL, DF_NORM },
-  { "MQ_THEME",             OPT_MP_MQ_THEME,              VALUE_STR, NULL, DF_NORM },
-  { "PLAYEROPTIONS",        OPT_MP_PLAYEROPTIONS,         VALUE_STR, NULL, DF_NORM },
-  { "PLAYERSHUTDOWNSCRIPT", OPT_MP_PLAYERSHUTDOWNSCRIPT,  VALUE_STR, NULL, DF_NORM },
-  { "PLAYERSTARTSCRIPT",    OPT_MP_PLAYERSTARTSCRIPT,     VALUE_STR, NULL, DF_NORM },
-  { "UIFONT",               OPT_MP_UIFONT,                VALUE_STR, NULL, DF_NORM },
-  { "UI_THEME",             OPT_MP_UI_THEME,              VALUE_STR, NULL, DF_NORM },
+  /* the following have been moved into the per-machine settings */
+  { "LISTINGFONT",          OPT_MP_LISTING_FONT,          VALUE_STR, NULL, DF_NO_WRITE },
+  { "MQFONT",               OPT_MP_MQFONT,                VALUE_STR, NULL, DF_NO_WRITE },
+  { "MQ_THEME",             OPT_MP_MQ_THEME,              VALUE_STR, NULL, DF_NO_WRITE },
+  { "UIFONT",               OPT_MP_UIFONT,                VALUE_STR, NULL, DF_NO_WRITE },
+  { "UI_THEME",             OPT_MP_UI_THEME,              VALUE_STR, NULL, DF_NO_WRITE },
 };
 
 static datafilekey_t bdjopturidfkeys [] = {
@@ -176,6 +181,7 @@ bdjoptInit (void)
 {
   char          path [MAXPATHLEN];
   const char    *pli;
+  const char    *tstr;
 
   if (bdjopt != NULL) {
     bdjoptCleanup ();
@@ -395,6 +401,33 @@ bdjoptInit (void)
   /* added 4.11.7, audio-adjust and restore-original will not be shown */
   if (nlistGetNum (bdjopt->bdjoptList, OPT_G_AUD_ADJ_DISP) < 0) {
     nlistSetNum (bdjopt->bdjoptList, OPT_G_AUD_ADJ_DISP, false);
+  }
+
+  /* 4.12.3, moved font and theme to per-machine from per-machine-per-profile */
+  tstr = nlistGetStr (bdjopt->bdjoptList, OPT_M_UI_FONT);
+  if (tstr == NULL) {
+    tstr = nlistGetStr (bdjopt->bdjoptList, OPT_MP_UIFONT);
+    nlistSetStr (bdjopt->bdjoptList, OPT_M_UI_FONT, tstr);
+  }
+  tstr = nlistGetStr (bdjopt->bdjoptList, OPT_M_UI_THEME);
+  if (tstr == NULL) {
+    tstr = nlistGetStr (bdjopt->bdjoptList, OPT_MP_UI_THEME);
+    nlistSetStr (bdjopt->bdjoptList, OPT_M_UI_THEME, tstr);
+  }
+  tstr = nlistGetStr (bdjopt->bdjoptList, OPT_M_MQ_FONT);
+  if (tstr == NULL) {
+    tstr = nlistGetStr (bdjopt->bdjoptList, OPT_MP_MQFONT);
+    nlistSetStr (bdjopt->bdjoptList, OPT_M_MQ_FONT, tstr);
+  }
+  tstr = nlistGetStr (bdjopt->bdjoptList, OPT_M_MQ_THEME);
+  if (tstr == NULL) {
+    tstr = nlistGetStr (bdjopt->bdjoptList, OPT_MP_MQ_THEME);
+    nlistSetStr (bdjopt->bdjoptList, OPT_M_MQ_THEME, tstr);
+  }
+  tstr = nlistGetStr (bdjopt->bdjoptList, OPT_M_LISTING_FONT);
+  if (tstr == NULL) {
+    tstr = nlistGetStr (bdjopt->bdjoptList, OPT_MP_LISTING_FONT);
+    nlistSetStr (bdjopt->bdjoptList, OPT_M_LISTING_FONT, tstr);
   }
 }
 
