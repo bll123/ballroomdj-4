@@ -653,7 +653,6 @@ marqueeCloseCallback (void *udata)
       marqueeSaveWindowPosition (marquee);
     }
 
-logBasic ("user-close-win\n");
     marquee->mqIconifyAction = true;
     uiWindowIconify (marquee->wcont [MQ_W_WINDOW]);
     marquee->isiconified = true;
@@ -742,7 +741,6 @@ marqueeWinState (void *udata, int isiconified, int ismaximized)
 
   logProcBegin ();
 
-logBasic ("win-state %d %d (%d)\n", isiconified, ismaximized, marquee->mqIconifyAction);
   if (isiconified >= 0) {
     if (marquee->mqIconifyAction) {
       marquee->mqIconifyAction = false;
