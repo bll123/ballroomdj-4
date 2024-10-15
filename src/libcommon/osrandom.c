@@ -3,7 +3,6 @@
  */
 #include "config.h"
 
-#define _CRT_RAND_S
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
