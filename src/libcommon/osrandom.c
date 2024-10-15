@@ -11,6 +11,16 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <limits.h>
+#include <assert.h>
+
+#if _hdr_windows
+/* required for bcrypt.h */
+# define WIN32_LEAN_AND_MEAN 1
+# include <windows.h>
+#endif
+#if _hdr_bcrypt
+# include <bcrypt.h>
+#endif
 
 #include "fileop.h"
 #include "osrandom.h"
@@ -23,12 +33,7 @@ double
 dRandom (void)
 {
   double        dval = 0.0;
-#if _lib_random
-  unsigned long lval;
-#endif
-#if _lib_rand_s
-  unsigned int  ival;
-#endif
+  unsigned long tval;
 
   if (! initialized) {
     sRandom ();
@@ -36,13 +41,15 @@ dRandom (void)
     fprintf (stderr, "WARN: osrandom: not initialized\n");
   }
 
-#if _lib_random
-  lval = random ();
-  dval = (double) lval / (double) UINT_MAX;
+#if _lib_BCryptGenRandom
+  BCryptGenRandom (NULL, (PUCHAR) &tval, sizeof (tval),
+      BCRYPT_USE_SYSTEM_PREFERRED_RNG);
+  dval = (double) tval / (double) ULONG_MAX;
 #endif
-#if _lib_rand_s
-  rand_s (&ival);
-  dval = (double) ival / (double) UINT_MAX;
+#if _lib_random
+  tval = random ();
+  /* random() returns a long, but the range is for an int */
+  dval = (double) tval / (double) INT_MAX;
 #endif
   return dval;
 }
@@ -67,9 +74,9 @@ sRandom (void)
 #if _lib_srandom
   srandom (seed);
   initialized = true;
+  assert (sizeof (int) == 4);   /* make sure INT_MAX is 2^32-1 */
 #endif
-#if ! _lib_srandom && _lib_srand
-  srand (seed);
+#if _lib_BCryptGenRandom
   initialized = true;
 #endif
 }

@@ -55,6 +55,7 @@ addIntlLibrary (libbdj4common)
 addWinSockLibrary (libbdj4common)
 # for RtlGetVersion
 addWinNtdllLibrary (libbdj4common)
+addWinBcryptLibrary (libbdj4common)
 
 install (TARGETS
   libbdj4common

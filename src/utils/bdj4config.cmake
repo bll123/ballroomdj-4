@@ -396,8 +396,8 @@ endif()
 #### checks for include files
 
 set (CMAKE_REQUIRED_INCLUDES
-  /opt/local/include
   ${PROJECT_SOURCE_DIR}/../plocal/include
+  /opt/local/include
 )
 
 check_include_file (alsa/asoundlib.h _hdr_alsa_asoundlib)
@@ -425,6 +425,9 @@ check_include_file (unistd.h _hdr_unistd)
 check_include_file (windows.h _hdr_windows)
 check_include_file (winsock2.h _hdr_winsock2)
 check_include_file (ws2tcpip.h _hdr_ws2tcpip)
+
+# bcrypt requires windows.h
+check_include_file (bcrypt.h _hdr_bcrypt "-include windows.h")
 
 set (CMAKE_REQUIRED_INCLUDES ${PIPEWIRE_INCLUDE_DIRS})
 check_include_file (pipewire/pipewire.h _hdr_pipewire_pipewire)
@@ -471,8 +474,10 @@ check_include_file (sys/xattr.h _sys_xattr)
 
 #### checks for functions
 
-set (CMAKE_REQUIRED_INCLUDES windows.h;intrin.h;tchar.h)
 check_function_exists (__cpuid _lib___cpuid)
+set (CMAKE_REQUIRED_LIBRARIES Bcrypt)
+check_function_exists (BCryptGenRandom _lib_BCryptGenRandom "-include windows.h -include bcrypt.h")
+set (CMAKE_REQUIRED_LIBRARIES "")
 check_function_exists (CloseHandle _lib_CloseHandle)
 check_function_exists (CompareStringEx _lib_CompareStringEx)
 check_function_exists (CopyFileW _lib_CopyFileW)
@@ -491,7 +496,9 @@ check_function_exists (LoadLibraryW _lib_LoadLibraryW)
 check_function_exists (MultiByteToWideChar _lib_MultiByteToWideChar)
 check_function_exists (OpenProcess _lib_OpenProcess)
 check_function_exists (RemoveDirectoryW _lib_RemoveDirectoryW)
-# check_function_exists (RtlGetVersion _lib_RtlGetVersion)
+set (CMAKE_REQUIRED_LIBRARIES ntdll)
+check_function_exists (RtlGetVersion _lib_RtlGetVersion)
+set (CMAKE_REQUIRED_LIBRARIES "")
 check_function_exists (Sleep _lib_Sleep)
 check_function_exists (TerminateProcess _lib_TerminateProcess)
 check_function_exists (WideCharToMultiByte _lib_WideCharToMultiByte)
@@ -509,18 +516,15 @@ check_function_exists (_wrename _lib__wrename)
 check_function_exists (_wstat64 _lib__wstat64)
 check_function_exists (_wunlink _lib__wunlink)
 check_function_exists (_wutime _lib__wutime)
-set (CMAKE_REQUIRED_INCLUDES "")
 
 # these do exist
 if (WIN32)
-  set (_lib_RtlGetVersion 1)
   set (_lib_gmtime_s 1)
   set (_lib_localtime_s 1)
-  set (_lib_rand_s 1)
   set (_lib__sprintf_p 1)
 endif()
 
-set (CMAKE_REQUIRED_INCLUDES winsock2.h;ws2tcpip.h;windows.h)
+
 set (CMAKE_REQUIRED_LIBRARIES ws2_32)
 check_function_exists (ioctlsocket _lib_ioctlsocket)
 check_function_exists (select _lib_select)
@@ -528,20 +532,16 @@ check_function_exists (socket _lib_socket)
 check_function_exists (WSACleanup _lib_WSACleanup)
 check_function_exists (WSAGetLastError _lib_WSAGetLastError)
 check_function_exists (WSAStartup _lib_WSAStartup)
-set (CMAKE_REQUIRED_INCLUDES "")
 set (CMAKE_REQUIRED_LIBRARIES "")
 
 set (CMAKE_REQUIRED_LIBRARIES "${CMAKE_DL_LIBS}")
 check_function_exists (dlopen _lib_dlopen)
 set (CMAKE_REQUIRED_LIBRARIES "")
 
-set (CMAKE_REQUIRED_INCLUDES pthread.h)
 set (CMAKE_REQUIRED_LIBRARIES pthread)
 check_function_exists (pthread_create _lib_pthread_create)
-set (CMAKE_REQUIRED_INCLUDES "")
 set (CMAKE_REQUIRED_LIBRARIES "")
 
-set (CMAKE_REQUIRED_INCLUDES libintl.h)
 if (Intl_LIBRARY)
    set (CMAKE_REQUIRED_LIBRARIES ${Intl_LIBRARY} ${Iconv_LIBRARY})
 endif()
@@ -549,7 +549,6 @@ check_function_exists (bind_textdomain_codeset _lib_bind_textdomain_codeset)
 # this is needed on windows
 # libintl has prefixes, for the check, use the prefixed name
 check_function_exists (libintl_wbindtextdomain _lib_wbindtextdomain)
-set (CMAKE_REQUIRED_INCLUDES "")
 set (CMAKE_REQUIRED_LIBRARIES "")
 
 check_function_exists (backtrace _lib_backtrace)
@@ -570,7 +569,6 @@ check_function_exists (setenv _lib_setenv)
 check_function_exists (setrlimit _lib_setrlimit)
 check_function_exists (sigaction _lib_sigaction)
 check_function_exists (signal _lib_signal)
-check_function_exists (srand _lib_srand)
 check_function_exists (srandom _lib_srandom)
 # requires _GNU_SOURCE to be declared, but statx is still located correctly.
 check_function_exists (statx _lib_statx)

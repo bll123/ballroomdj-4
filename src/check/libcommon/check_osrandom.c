@@ -25,7 +25,7 @@
 
 START_TEST(osrandom_chk)
 {
-  double    dval, dvalb;
+  double    dval, dvalb, dvalc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osrandom_chk");
   mdebugSubTag ("osrandom_chk");
@@ -33,13 +33,16 @@ START_TEST(osrandom_chk)
   sRandom ();
   dval = dRandom ();
   dvalb = dRandom ();
-  ck_assert_float_gt (dval, 0.00001);
+  dvalc = dRandom ();
   ck_assert_float_lt (dval, 1.0);
   ck_assert_float_ne (dval, 1.0);
-  ck_assert_float_gt (dvalb, 0.00001);
   ck_assert_float_lt (dvalb, 1.0);
   ck_assert_float_ne (dvalb, 1.0);
+  ck_assert_float_lt (dvalc, 1.0);
+  ck_assert_float_ne (dvalc, 1.0);
   ck_assert_float_ne (dval, dvalb);
+  ck_assert_float_ne (dvalb, dvalc);
+  ck_assert_float_ne (dval, dvalc);
 }
 END_TEST
 
