@@ -8,7 +8,9 @@
 
 * Bug Fixes:
     * Edit Song Lists: Statistics: Use the default font, not the listing font.
+    * Installer: Set the button text to 'Upgrade' for upgrades.
     * Internal: Move font and theme settings to per-machine from per-machine-per-profile.
+    * Internal: Random numbers: Fix Linux/MacOS, improve Windows.
     * Linux: Run temporary file cleanup on reboot.
 * New Features:
     * Player: Marquee menu: Hide/Show.

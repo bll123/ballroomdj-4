@@ -630,7 +630,7 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiEntryInit (80, MAXPATHLEN);
+  uiwidgetp = uiEntryInit (60, MAXPATHLEN);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
@@ -710,7 +710,7 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiEntryInit (80, MAXPATHLEN);
+  uiwidgetp = uiEntryInit (60, MAXPATHLEN);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
@@ -1172,16 +1172,22 @@ installerTargetFeedbackMsg (installer_t *installer)
     /* CONTEXT: installer: message indicating the action that will be taken */
     snprintf (tbuff, sizeof (tbuff), _("Re-install %s.  Overwrites existing configuration."), BDJ4_NAME);
     uiLabelSetText (installer->wcont [INST_W_FEEDBACK_MSG], tbuff);
+    /* CONTEXT: installer: start the installation process */
+    uiButtonSetText (installer->wcont [INST_W_BUTTON_INSTALL], _("Install"));
   }
   if (installer->updateinstall && ! installer->reinstall) {
     /* CONTEXT: installer: message indicating the action that will be taken */
     snprintf (tbuff, sizeof (tbuff), _("Updating existing %s installation."), BDJ4_NAME);
     uiLabelSetText (installer->wcont [INST_W_FEEDBACK_MSG], tbuff);
+    /* CONTEXT: installer: start the upgrade process */
+    uiButtonSetText (installer->wcont [INST_W_BUTTON_INSTALL], _("Upgrade"));
   }
   if (installer->newinstall) {
     /* CONTEXT: installer: message indicating the action that will be taken */
     snprintf (tbuff, sizeof (tbuff), _("New %s installation."), BDJ4_NAME);
     uiLabelSetText (installer->wcont [INST_W_FEEDBACK_MSG], tbuff);
+    /* CONTEXT: installer: start the installation process */
+    uiButtonSetText (installer->wcont [INST_W_BUTTON_INSTALL], _("Install"));
   }
   if (installer->targetexists && ! installer->updateinstall) {
     /* CONTEXT: installer: the selected folder exists and is not a BDJ4 installation */

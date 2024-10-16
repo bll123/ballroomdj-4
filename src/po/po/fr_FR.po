@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2024-10-13\n"
+"PO-Revision-Date: 2024-10-16\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -2099,6 +2099,10 @@ msgstr "Mise à jour de %s."
 #, c-format
 msgid "Updating existing %s installation."
 msgstr "Mise à jour de l'installation existante de %s ."
+
+#. CONTEXT: installer: start the upgrade process
+msgid "Upgrade"
+msgstr ""
 
 #. CONTEXT: configuration: remote control: the user ID for sign-on to remote control
 msgid "User ID"
