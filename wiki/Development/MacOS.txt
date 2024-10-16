@@ -165,8 +165,8 @@ Margins: Could not find a good way to do this.  Ended up wrapping all
 widgets in an NSView, which is not the recommended way.  The layout
 guides seemed to need constraints, and constraints are hard to use due
 to being relative to the neighbors and requiring all neighbors to be
-packed.
+packed.  This may be re-worked if tracking the previous item works.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2024-10-02 16:02:00; BDJ4 version 4.12.1)_
+<br>_(Updated 2024-10-16 09:35:17; BDJ4 version 4.12.3)_

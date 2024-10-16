@@ -4,7 +4,11 @@
 
 <!--
 
-**4.12.3 2024-10---**
+**4.12.4 2024-10---**
+
+-->
+
+**4.12.3 2024-10-16**
 
 * Bug Fixes:
     * Edit Song Lists: Statistics: Use the default font, not the listing font.
@@ -14,8 +18,6 @@
     * Linux: Run temporary file cleanup on reboot.
 * New Features:
     * Player: Marquee menu: Hide/Show.
-
--->
 
 **4.12.2 2024-10-7**
 
@@ -1079,4 +1081,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-10-07 11:51:26; BDJ4 version 4.12.2)_
+<br>_(Updated 2024-10-16 09:35:17; BDJ4 version 4.12.3)_

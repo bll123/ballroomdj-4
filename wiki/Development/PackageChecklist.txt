@@ -5,8 +5,8 @@
     * debian-12 (MX Linux 23)
     * opensuse (OpenSUSE 15.5)
     * windows (Windows 10)
-    * macos intel (bll-mac MacOS Sonoma)
-    * macos applesilicon (bll-mac-m1 MacOS Sonoma)
+    * macos intel (bll-mac MacOS Sequoia)
+    * macos applesilicon (bll-mac-m1 MacOS Sequoia)
 * Platforms for testing only:
     * debian-11 (MX Linux 21)
     * fedora (Fedora 38)
@@ -65,4 +65,4 @@ On Windows, the packages should be cleaned up first.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2024-10-07 11:51:26; BDJ4 version 4.12.2)_
+<br>_(Updated 2024-10-16 09:35:17; BDJ4 version 4.12.3)_

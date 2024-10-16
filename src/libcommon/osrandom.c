@@ -47,7 +47,7 @@ dRandom (void)
 #endif
 #if _lib_random
   tval = random ();
-  /* random() returns a long, but the range is for an int */
+  /* random() returns a long, but the range is for a signed int */
   dval = (double) tval / (double) INT_MAX;
 #endif
   return dval;
