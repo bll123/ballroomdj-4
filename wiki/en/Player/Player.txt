@@ -195,9 +195,15 @@ See: [Player&nbsp;/&nbsp;Reload](en-Player-Reload)
 
 ##### Marquee Menu
 
+If the marquee is set to _Off_ in _Configure&nbsp;/&nbsp;Marquee_, the
+marquee menu will be disabled.
+
 <div markdown style="margin-right: 20px; text-align: center;">
-![player-marquee-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-marquee-menu-C.png)
+![player-marquee-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-marquee-menu-D.png)
 <br><span style="color:#4559bf;">__Player / Marquee Menu__</span> </div>
+
+__Marquee / Hide/Show__: Hide or show the marquee.  Only one of _Hide_
+or _Show_ will be active.
 
 __Marquee / Font Size__: Starts a dialog where the marquee's font size may be
 changed.  The font size will be changed immediately.

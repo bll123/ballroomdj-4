@@ -22,8 +22,9 @@ The defaults are standard, latin and club.
     * time24
       hh:mm
     * off
-  * AUD_ADJ_DISP : display apply adjustments and restore original
-    The default is off.
+  * AUD_ADJ_DISP : display 'apply adjustments' and 'restore original'
+    in the song editor. The default is off.  These functions will be
+    removed in the future.
 
 ###### data/profile00/bdjconfig.txt
 
@@ -37,6 +38,8 @@ The defaults are standard, latin and club.
   * MQ_INFO_SEP
     Separator character(s) for the marquee information display.
     The default is a slash (/).
+  * MQ_BG_COL
+    The marquee background color.
   * MQ_INFO_COL
     Marquee Artist/Title Line Color.
     Must be specified as #rrggbb.

@@ -75,7 +75,7 @@ __Previous__ to switch to a different song, then switch back.
 ##### Actions Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![se-actions](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-actions-B.png)
+![se-actions](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-actions-C.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor / Actions Menu__</span> </div>
 
 __MPM__ (or __BPM__) starts the BPM/MPM Counter.
