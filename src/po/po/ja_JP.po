@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2024-10-16\n"
+"PO-Revision-Date: 2024-10-18\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
@@ -194,9 +194,17 @@ msgstr "%s: スペースは使用できません。"
 msgid "100%"
 msgstr "100%"
 
+#. CONTEXT: configuration: player: clock: 12-hour time
+msgid "12-Hour Clock"
+msgstr ""
+
 #. CONTEXT: configuration: dance time signature
 msgid "2/4"
 msgstr "2/4"
+
+#. CONTEXT: configuration: player: clock: 24-hour time
+msgid "24-Hour Clock"
+msgstr ""
 
 #. CONTEXT: configuration: dance time signature
 msgid "3/4"
@@ -206,7 +214,7 @@ msgstr "3/4"
 msgid "4/4"
 msgstr "4/4"
 
-#. CONTEXT: configuration: marquee: the accent color used for the marquee
+#. CONTEXT: configuration: marquee: the accent color
 #. CONTEXT: configuration: the accent color to use for the user interface
 msgid "Accent Colour"
 msgstr "アクセントカラー"
@@ -385,6 +393,10 @@ msgstr "ビーム伝搬法"
 msgid "BPM Counter"
 msgstr "BPMカウンター"
 
+#. CONTEXT: configuration: marquee: the background color
+msgid "Background Colour"
+msgstr ""
+
 #. CONTEXT: configuration file: genre
 msgid "Ballroom Dance"
 msgstr "社交ダンス"
@@ -441,6 +453,10 @@ msgstr "クリア・セイム・ソング・マーク"
 #. CONTEXT: bpm counter: instructions, line 1
 msgid "Click the mouse in the blue box in time with the beat."
 msgstr "ビートに合わせて青いボックスの中でマウスをクリックします。"
+
+#. CONTEXT: configuration: the clock format
+msgid "Clock"
+msgstr ""
 
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
@@ -743,6 +759,10 @@ msgstr "%s がインストールされているフォルダを入力してくだ
 msgid "Enter the name of the new installation."
 msgstr "新しいインストールの名前を入力します。"
 
+#. CONTEXT: configuration: the error color to use for the user interface
+msgid "Error Colour"
+msgstr ""
+
 #. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: status message
@@ -768,6 +788,10 @@ msgstr "出口"
 #, c-format
 msgid "Exit %s and restart."
 msgstr "%s を終了し、再起動する。"
+
+#. CONTEXT: configuration: player: fade-type: exponential sine
+msgid "Exponential Sine"
+msgstr ""
 
 #. CONTEXT: export/import bdj4 dialog: export button
 #. CONTEXT: export playlist dialog: export button
@@ -820,6 +844,10 @@ msgstr "フェード・イン・タイム"
 #. CONTEXT: configuration: queue: the amount of time to do a volume fade-out when playing a song
 msgid "Fade Out Time"
 msgstr "フェードアウト時間"
+
+#. CONTEXT: configuration: the clock format
+msgid "Fade Type"
+msgstr ""
 
 #. CONTEXT: label: favorite marker
 msgid "Favourite"
@@ -891,6 +919,10 @@ msgstr "HTMLテンプレート"
 msgid "HTTP Code"
 msgstr "HTTPコード"
 
+#. CONTEXT: configuration: player: fade-type: half sine
+msgid "Half Sine"
+msgstr ""
+
 #. CONTEXT: playerui: menu selection: marquee: hide the marquee
 msgid "Hide"
 msgstr ""
@@ -915,6 +947,10 @@ msgstr "ハイ・ダンス・レベル"
 #. CONTEXT: playerui: name of the saved history playlist
 msgid "History"
 msgstr "歴史"
+
+#. CONTEXT: configuration: player: clock: ISO
+msgid "ISO"
+msgstr ""
 
 #. CONTEXT: installer: instructions
 msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
@@ -942,6 +978,10 @@ msgstr "輸入元"
 #, c-format
 msgid "Import from %s"
 msgstr "%sからのインポート"
+
+#. CONTEXT: configuration: marquee: dance information color
+msgid "Information Colour"
+msgstr ""
 
 #. CONTEXT: alternate installation: status message
 msgid "Initial Setup."
@@ -998,6 +1038,10 @@ msgstr "無効な選択"
 msgid "Invalid name. Using old name."
 msgstr ""
 
+#. CONTEXT: configuration: player: fade-type: inverted parabola
+msgid "Inverted Parabola"
+msgstr ""
+
 #. CONTEXT: configuration file: genre
 msgid "Jazz"
 msgstr "ジャズ"
@@ -1037,6 +1081,7 @@ msgid "Loaded from Database"
 msgstr "データベースからロード"
 
 #. CONTEXT: configuration: mobile marquee type: local
+#. CONTEXT: configuration: player: clock: local
 msgid "Local"
 msgstr ""
 
@@ -1276,6 +1321,7 @@ msgstr "備考"
 
 #. CONTEXT: configuration: show-marquee: off
 #. CONTEXT: configuration: mobile marquee type: off
+#. CONTEXT: configuration: player: clock: off
 msgid "Off"
 msgstr "オフ"
 
@@ -1441,6 +1487,14 @@ msgstr "プロフィールは削除できません。"
 #. CONTEXT: configuration: remote control: the link to display the QR code for remote control
 msgid "QR Code"
 msgstr "QRコード"
+
+#. CONTEXT: configuration: player: fade-type: quadratic
+msgid "Quadratic"
+msgstr ""
+
+#. CONTEXT: configuration: player: fade-type: quarter sine
+msgid "Quarter Sine"
+msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
@@ -2022,6 +2076,10 @@ msgstr "全トラック"
 msgid "Track"
 msgstr "トラック"
 
+#. CONTEXT: configuration: player: fade-type: triangle
+msgid "Triangle"
+msgstr ""
+
 #. CONTEXT: apply adjustments: trim silence checkbox
 #. CONTEXT: manage-ui: song editor menu: trim silence
 msgid "Trim Silence"
@@ -2057,6 +2115,10 @@ msgstr "曲の削除を元に戻す"
 #. CONTEXT: configuration file: rating
 msgid "Unrated"
 msgstr "未評価"
+
+#. CONTEXT: configuration: marquee: upcoming dance color
+msgid "Upcoming Dance Colour"
+msgstr ""
 
 #. CONTEXT: manage-ui: notebook tab title: update database
 msgid "Update Database"
