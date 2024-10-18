@@ -169,4 +169,4 @@ song editor is:
  Volume Adjustment|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-09-09 12:42:11; BDJ4 version 4.12.0)_
+<br>_(Updated 2024-10-18 06:59:37; BDJ4 version 4.12.3)_

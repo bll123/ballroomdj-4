@@ -251,4 +251,4 @@ has songs queued and start playing songs from it.
 <br>[Configure / Marquee](en-Configuration-Marquee)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-27 09:20:09; BDJ4 version 4.11.6)_
+<br>_(Updated 2024-10-18 06:59:37; BDJ4 version 4.12.3)_
