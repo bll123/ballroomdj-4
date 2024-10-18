@@ -687,7 +687,7 @@ void
 bdjoptConvBPM (datafileconv_t *conv)
 {
   bdjbpm_t   nbpm = BPM_BPM;
-  char       *sval = NULL;
+  const char *sval = NULL;
 
   if (conv->invt == VALUE_STR) {
     conv->outvt = VALUE_NUM;
@@ -712,8 +712,8 @@ bdjoptConvBPM (datafileconv_t *conv)
 void
 bdjoptConvClock (datafileconv_t *conv)
 {
-  int   nclock = TM_CLOCK_LOCAL;
-  char  *sval = NULL;
+  int         nclock = TM_CLOCK_LOCAL;
+  const char  *sval = NULL;
 
   if (conv->invt == VALUE_STR) {
     conv->outvt = VALUE_NUM;
@@ -751,7 +751,7 @@ void
 bdjoptConvFadeType (datafileconv_t *conv)
 {
   bdjfadetype_t   fadetype = FADETYPE_TRIANGLE;
-  char            *sval;
+  const char      *sval;
 
   if (conv->invt == VALUE_STR) {
     conv->outvt = VALUE_NUM;
@@ -792,7 +792,7 @@ void
 bdjoptConvWriteTags (datafileconv_t *conv)
 {
   bdjwritetags_t  wtag = WRITE_TAGS_NONE;
-  char            *sval;
+  const char      *sval;
 
   if (conv->invt == VALUE_STR) {
     conv->outvt = VALUE_NUM;
@@ -824,7 +824,7 @@ void
 bdjoptConvMarqueeShow (datafileconv_t *conv)
 {
   bdjmarqueeshow_t  mqshow = MARQUEE_SHOW_VISIBLE;
-  char              *sval;
+  const char        *sval;
 
   if (conv->invt == VALUE_STR) {
     conv->outvt = VALUE_NUM;
@@ -855,8 +855,8 @@ bdjoptConvMarqueeShow (datafileconv_t *conv)
 void
 bdjoptConvDanceselMethod (datafileconv_t *conv)
 {
-  int   method = DANCESEL_METHOD_WINDOWED;
-  char  *sval = NULL;
+  int         method = DANCESEL_METHOD_WINDOWED;
+  const char  *sval = NULL;
 
   if (conv->invt == VALUE_STR) {
     conv->outvt = VALUE_NUM;
@@ -877,8 +877,8 @@ bdjoptConvDanceselMethod (datafileconv_t *conv)
 void
 bdjoptConvMobMQType (datafileconv_t *conv)
 {
-  int   type = MOBMQ_TYPE_LOCAL;
-  char  *sval = NULL;
+  int         type = MOBMQ_TYPE_LOCAL;
+  const char  *sval = NULL;
 
   if (conv->invt == VALUE_STR) {
     conv->outvt = VALUE_NUM;

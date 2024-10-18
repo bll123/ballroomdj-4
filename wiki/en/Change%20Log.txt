@@ -4,7 +4,14 @@
 
 <!--
 
+**4.12.5 2024-10---**
+
 **4.12.4 2024-10---**
+
+* New Features:
+    * Configure: Marquee: Colors can now be configured via the user interface.
+    * Configure: Player: The clock display and the fade type can now be configured via the user interface.
+    * Configure: User Interface: Colors can now be configured via the user interface.
 
 -->
 

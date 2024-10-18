@@ -19,6 +19,7 @@
 #include "configui.h"
 #include "log.h"
 #include "sysvars.h"
+#include "tmutil.h"
 #include "ui.h"
 
 void
@@ -68,6 +69,11 @@ confuiBuildUIUserInterface (confuigui_t *gui)
   confuiMakeItemColorButton (gui, vbox, szgrp, _("Accent Colour"),
       CONFUI_WIDGET_UI_ACCENT_COLOR, OPT_P_UI_ACCENT_COL,
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+
+  /* CONTEXT: configuration: the error color to use for the user interface */
+  confuiMakeItemColorButton (gui, vbox, szgrp, _("Error Colour"),
+      CONFUI_WIDGET_UI_ERROR_COLOR, OPT_P_UI_ERROR_COL,
+      bdjoptGetStr (OPT_P_UI_ERROR_COL));
 
   uiwcontFree (vbox);
   uiwcontFree (szgrp);

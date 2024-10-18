@@ -42,6 +42,36 @@ confuiInitPlayer (confuigui_t *gui)
 {
   char            *volintfc;
 
+  confuiSpinboxTextInitDataNum (gui, "cu-player-clock",
+      CONFUI_SPINBOX_PLAYER_CLOCK,
+      /* CONTEXT: configuration: player: clock: off */
+      TM_CLOCK_OFF, _("Off"),
+      /* CONTEXT: configuration: player: clock: local */
+      TM_CLOCK_LOCAL, _("Local"),
+      /* CONTEXT: configuration: player: clock: ISO */
+      TM_CLOCK_ISO, _("ISO"),
+      /* CONTEXT: configuration: player: clock: 12-hour time */
+      TM_CLOCK_TIME_12, _("12-Hour Clock"),
+      /* CONTEXT: configuration: player: clock: 24-hour time */
+      TM_CLOCK_TIME_24, _("24-Hour Clock"),
+      -1);
+
+  confuiSpinboxTextInitDataNum (gui, "cu-player-fade-type",
+      CONFUI_SPINBOX_PLAYER_FADE_TYPE,
+      /* CONTEXT: configuration: player: fade-type: exponential sine */
+      FADETYPE_EXPONENTIAL_SINE, _("Exponential Sine"),
+      /* CONTEXT: configuration: player: fade-type: half sine */
+      FADETYPE_HALF_SINE, _("Half Sine"),
+      /* CONTEXT: configuration: player: fade-type: inverted parabola */
+      FADETYPE_INVERTED_PARABOLA, _("Inverted Parabola"),
+      /* CONTEXT: configuration: player: fade-type: quadratic */
+      FADETYPE_QUADRATIC, _("Quadratic"),
+      /* CONTEXT: configuration: player: fade-type: quarter sine */
+      FADETYPE_QUARTER_SINE, _("Quarter Sine"),
+      /* CONTEXT: configuration: player: fade-type: triangle */
+      FADETYPE_TRIANGLE, _("Triangle"),
+      -1);
+
   confuiLoadPlayerIntfcList (gui);
   confuiLoadControllerIntfcList (gui);
 
@@ -107,10 +137,20 @@ confuiBuildUIPlayer (confuigui_t *gui)
       CONFUI_ENTRY_COMPLETE_MSG, OPT_P_COMPLETE_MSG,
       bdjoptGetStr (OPT_P_COMPLETE_MSG), CONFUI_NO_INDENT);
 
+  /* CONTEXT: configuration: the clock format */
+  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Fade Type"),
+      CONFUI_SPINBOX_PLAYER_FADE_TYPE, OPT_P_FADETYPE, CONFUI_OUT_NUM,
+      bdjoptGetNum (OPT_P_FADETYPE), NULL);
+
   /* CONTEXT: configuration: whether or not to show the speed reset button */
   confuiMakeItemSwitch (gui, vbox, szgrp, _("Show Speed Reset"),
       CONFUI_SWITCH_SHOW_SPD_CONTROL, OPT_P_SHOW_SPD_CONTROL,
       bdjoptGetNum (OPT_P_SHOW_SPD_CONTROL), NULL, 0);
+
+  /* CONTEXT: configuration: the clock format */
+  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Clock"),
+      CONFUI_SPINBOX_PLAYER_CLOCK, OPT_G_CLOCK_DISP, CONFUI_OUT_NUM,
+      bdjoptGetNum (OPT_G_CLOCK_DISP), NULL);
 
   uiwcontFree (vbox);
   uiwcontFree (szgrp);

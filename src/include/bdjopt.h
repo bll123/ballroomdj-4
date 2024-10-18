@@ -110,11 +110,11 @@ typedef enum {
   OPT_M_UI_THEME,
   OPT_M_VOLUME_INTFC,
   OPT_MP_AUDIOSINK,
-  OPT_MP_LISTING_FONT,        // deprecated
-  OPT_MP_MQFONT,              // deprecated
-  OPT_MP_MQ_THEME,            // deprecated
-  OPT_MP_UIFONT,              // deprecated
-  OPT_MP_UI_THEME,            // deprecated
+  OPT_MP_LISTING_FONT,        // deprecated, replaced with OPT_M_LISTING_FONT
+  OPT_MP_MQFONT,              // deprecated, replaced with OPT_M_MQ_FONT
+  OPT_MP_MQ_THEME,            // deprecated, replaced with OPT_M_MQ_THEME
+  OPT_MP_UIFONT,              // deprecated, replaced with OPT_M_UI_FONT
+  OPT_MP_UI_THEME,            // deprecated, replaced with OPT_M_UI_THEME
   OPT_P_COMPLETE_MSG,
   OPT_P_DEFAULTVOLUME,
   OPT_P_FADETYPE,
@@ -128,10 +128,10 @@ typedef enum {
   OPT_P_MQ_ACCENT_COL,
   OPT_P_MQ_BG_COL,
   OPT_P_MQ_INFO_COL,
+  OPT_P_MQ_INFO_SEP,
   OPT_P_MQQLEN,
   OPT_P_MQ_SHOW_INFO,
   OPT_P_MQ_TEXT_COL,
-  OPT_P_MQ_INFO_SEP,
   OPT_P_PLAYER_UI_SEP,
   OPT_P_PROFILENAME,
   OPT_P_REMCONTROLPASS,

@@ -11,51 +11,18 @@ The defaults are standard, latin and club.
 
 ###### data/bdjconfig.txt
 
-  * CLOCKDISP : Clock Display
-    The default is "local".
-    * local
-      standard display
-    * iso
-      day-of-week yyyy-mm-dd hh:mm
-    * time12
-      hh:mm am/pm
-    * time24
-      hh:mm
-    * off
   * AUD_ADJ_DISP : display 'apply adjustments' and 'restore original'
     in the song editor. The default is off.  These functions will be
     removed in the future.
 
 ###### data/profile00/bdjconfig.txt
 
-  * FADETYPE : Fade Type
-    triangle (blue), quartersine (red), halfsine (green),
-    exponentialsine (cyan), invertedparabola (black), quadratic (magenta)
-<div markdown style="margin-right: 20px; text-align: center;">
-![fadeimg-D](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/fadeimg-D.png)
-<br><span style="color:#4559bf;">__Fade Types__</span> </div>
-    The default is "triangle".
   * MQ_INFO_SEP
     Separator character(s) for the marquee information display.
     The default is a slash (/).
-  * MQ_BG_COL
-    The marquee background color.
-  * MQ_INFO_COL
-    Marquee Artist/Title Line Color.
-    Must be specified as #rrggbb.
-    The default is #444444 (dark grey).
-  * MQ_TEXT_COL
-    Marquee Text Color.
-    Must be specified as #rrggbb.
-    The default is #000000 (black).
   * PLAYER_UI_SEP
     Separator character(s) for the player song display.
     The default is a colon (:).
-  * UI_ERROR_COL
-    User Interface Error Color.
-    The color of error messages.
-    Must be specified as #rrggbb.
-    The default is #ff2222.
   * UI_MARK_COL
     User Interface Mark Color.
     The color for the request list in-queue mark.
