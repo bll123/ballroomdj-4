@@ -26,6 +26,7 @@ enum {
   SONGDB_RET_SUCCESS          = (1 << 8),
   SONGDB_RET_WRITE_FAIL       = (1 << 9),
   SONGDB_RET_BAD_URI          = (1 << 10),
+  SONGDB_RET_TEMP             = (1 << 11),
 };
 
 typedef struct songdb songdb_t;

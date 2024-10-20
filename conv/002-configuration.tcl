@@ -62,7 +62,8 @@ set nnm bdjconfig
 set mpath $hostname
 set mppath [file join $hostname profiles]
 set col {}
-foreach path [list {} profiles $mpath $mppath] {
+# process MP first so that the fonts can be moved to M
+foreach path [list {} profiles $mppath $mpath] {
   foreach sfx $suffixlist pfx $nprefixlist {
     if { $path eq $mpath && $sfx ne {.txt} } {
       # these are really old filenames from old versions of ballroomdj
@@ -152,16 +153,16 @@ foreach path [list {} profiles $mpath $mppath] {
       puts $ofh "# [clock format [clock seconds] -gmt 1 -format {%Y-%m-%d %H:%M:%S}]"
       puts $ofh "version"
       if { $path eq {} } {
-        puts $ofh "..3"
+        puts $ofh "..1"
       }
       if { $path eq "profiles" } {
-        puts $ofh "..3"
+        puts $ofh "..2"
       }
       if { $path eq $mpath } {
-        puts $ofh "..1"
+        puts $ofh "..2"
       }
       if { $path eq $mppath } {
-        puts $ofh "..1"
+        puts $ofh "..2"
       }
 
       while { [gets $ifh line] >= 0 } {
@@ -253,6 +254,9 @@ foreach path [list {} profiles $mpath $mppath] {
           set key DIRMUSIC
           set musicdir $value
         }
+        # fonts renamed and moved to M
+        if { $key eq "UIFONT" } { set key "UI_FONT" }
+        if { $key eq "MQFONT" } { set key "MQ_FONT" }
 
         if { $key eq "ORIGINALDIR" ||
             $key eq "DELETEDIR" ||
@@ -265,12 +269,13 @@ foreach path [list {} profiles $mpath $mppath] {
         # force these off so that the BDJ3 files will not be affected.
         if { $key eq "WRITETAGS" } { set value NONE }
         if { $key eq "AUTOORGANIZE" } { set value no }
-        if { $key eq "UIFONT" } {
+        if { $key eq "UI_FONT" } {
           regsub -all "\{" $value {} value
           regsub -all "\}" $value {} value
+          set uifont $value
         }
         if { $key eq "LISTINGFONTSIZE" } {
-          set key LISTINGFONT
+          set key LISTING_FONT
           set value {}
           if { $::tcl_platform(os) eq "Linux" } {
             set value [exec gsettings get org.gnome.desktop.interface font-name]
@@ -282,6 +287,7 @@ foreach path [list {} profiles $mpath $mppath] {
           if { $::tcl_platform(os) eq "Darwin" } {
             set value "Arial Regular 16"
           }
+          set listingfont $value
         }
 
         if { $key eq "MQSHOWARTIST" } {
@@ -320,7 +326,7 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "FADEOUTTIME" && $value eq {} } {
           set value 0
         }
-        if { $key eq "UIFONT" && $value eq {} } {
+        if { $key eq "UI_FONT" && $value eq {} } {
           if { $::tcl_platform(os) eq "Linux" } {
             set value [exec gsettings get org.gnome.desktop.interface font-name]
             regsub -all {'} $value {} value
@@ -331,11 +337,13 @@ foreach path [list {} profiles $mpath $mppath] {
           if { $::tcl_platform(os) eq "Darwin" } {
             set value "Arial Regular 17"
           }
+          set uifont $value
         }
-        if { $key eq "MQFONT" && $value ne {} } {
+        if { $key eq "MQ_FONT" && $value ne {} } {
           set value [join $value { }]
+          set mqfont $value
         }
-        if { $key eq "MQFONT" && $value eq {} } {
+        if { $key eq "MQ_FONT" && $value eq {} } {
           if { $::tcl_platform(platform) eq "windows" } {
             # windows has no narrow fonts installed by default
             set value "Arial Regular 14"
@@ -343,6 +351,7 @@ foreach path [list {} profiles $mpath $mppath] {
           if { $::tcl_platform(os) eq "Darwin" } {
             set value "Arial Narrow Regular 17"
           }
+          set mqfont $value
         }
         if { $key eq "GAP" && $value eq {} } {
           set value 0
@@ -399,7 +408,9 @@ foreach path [list {} profiles $mpath $mppath] {
         } elseif { $key eq "QUEUE_NAME_B" } {
           puts $qofh1 QUEUE_NAME
           puts $qofh1 "..$value"
-        } else {
+        } elseif { $key ne "UI_FONT" &&
+            $key ne "MQ_FONT" &&
+            $key ne "LISTING_FONT" } {
           puts $ofh $key
           puts $ofh "..$value"
         }
@@ -417,12 +428,7 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh CLOCKDISP
         puts $ofh "..local"
         puts $ofh DEBUGLVL
-        if { $::tcl_platform(os) eq "Darwin" } {
-          # logging on macos is really slow
-          puts $ofh "..0"
-        } else {
-          puts $ofh "..11"
-        }
+        puts $ofh "..11"
       }
       if { $path eq "profiles" } {
         puts $ofh MARQUEE_SHOW
@@ -483,11 +489,14 @@ foreach path [list {} profiles $mpath $mppath] {
         }
         puts $ofh ITUNESXMLFILE
         puts $ofh "..$value"
-      }
-      if { $path eq $mppath } {
-        # audiosink is moved from machine to machine-profile
-        puts $ofh AUDIOSINK
-        puts $ofh "..${audiosink}"
+
+        # 4.12.4 listing-font moved from MP to M
+        puts $ofh "LISTING_FONT"
+        puts $ofh "..${listingfont}"
+
+        # 4.12.4 mq-font moved from MP to M
+        puts $ofh "MQ_FONT"
+        puts $ofh "..${mqfont}"
 
         puts $ofh MQ_THEME
         set value Adwaita
@@ -496,6 +505,11 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $::tcl_platform(os) eq "Darwin" } { set value MacOS }
         puts $ofh "..${value}"
 
+        # 4.12.4 ui-font moved from MP to M
+        puts $ofh "UI_FONT"
+        puts $ofh "..${uifont}"
+
+        # 4.12.4 ui-theme moved from MP to M
         puts $ofh UI_THEME
         set value Adwaita  ; # just something as a default
         if { $::tcl_platform(os) eq "Linux" } {
@@ -508,6 +522,11 @@ foreach path [list {} profiles $mpath $mppath] {
         set tfh [open [file join $datatopdir data theme.txt] w]
         puts $tfh "${value}"
         close $tfh
+      }
+      if { $path eq $mppath } {
+        # audiosink is moved from machine to machine-profile
+        puts $ofh AUDIOSINK
+        puts $ofh "..${audiosink}"
       }
 
       if { $musicdir ne {} && [llength $olddirlist] > 0 } {

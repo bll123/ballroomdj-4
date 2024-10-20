@@ -1791,7 +1791,17 @@ static bool
 pluiSongSaveCallback (void *udata, int32_t dbidx)
 {
   playerui_t  *plui = udata;
+  song_t      *song;
   char        tmp [40];
+
+  song = dbGetByIdx (plui->musicdb, dbidx);
+  if (song == NULL) {
+    return UICB_CONT;
+  }
+  if (songGetNum (song, TAG_DB_FLAGS) != MUSICDB_STD) {
+    /* do not save temporary songs */
+    return UICB_CONT;
+  }
 
   songdbWriteDB (plui->songdb, dbidx);
 
@@ -1923,7 +1933,6 @@ pluiQuickEditCallback (void *udata)
   }
 
   qeresp = uiqeGetResponseData (plui->uiqe);
-
   if (qeresp == NULL) {
     return UICB_CONT;
   }
@@ -1936,7 +1945,10 @@ pluiQuickEditCallback (void *udata)
   songSetDouble (song, TAG_VOLUMEADJUSTPERC, qeresp->voladj);
   songSetNum (song, TAG_DANCERATING, qeresp->rating);
   songSetNum (song, TAG_DANCELEVEL, qeresp->level);
-  songSetNum (song, TAG_FAVORITE, qeresp->favorite);
+  /* do not change the favorite setting on external requests */
+  if (songGetNum (song, TAG_DB_FLAGS) == MUSICDB_STD) {
+    songSetNum (song, TAG_FAVORITE, qeresp->favorite);
+  }
 
   pluiSongSaveCallback (plui, qeresp->dbidx);
 

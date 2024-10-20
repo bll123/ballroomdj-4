@@ -601,7 +601,7 @@ START_TEST(musicdb_temp)
   songSetNum (song, TAG_DURATION, 20000);
   songSetStr (song, TAG_ARTIST, "temp-artist");
   songSetStr (song, TAG_TITLE, "temp-title");
-  songSetNum (song, TAG_DB_FLAGS, MUSICDB_NONE);
+  songSetNum (song, TAG_DB_FLAGS, MUSICDB_STD);
   /* sets the temporary flag */
   dbidx = dbAddTemporarySong (db, song);
   ck_assert_int_ne (dbidx, -1);
@@ -643,7 +643,7 @@ START_TEST(musicdb_remove)
   dbMarkEntryRemoved (db, dbidx);
   ck_assert_int_eq (MUSICDB_REMOVED, songGetNum (song, TAG_DB_FLAGS));
   dbClearEntryRemoved (db, dbidx);
-  ck_assert_int_eq (MUSICDB_NONE, songGetNum (song, TAG_DB_FLAGS));
+  ck_assert_int_eq (MUSICDB_STD, songGetNum (song, TAG_DB_FLAGS));
   dbMarkEntryRemoved (db, dbidx);
 
   dbsong = dbGetByIdx (db, dbidx);

@@ -20,7 +20,7 @@ typedef struct musicdb musicdb_t;
 
 /* music db flags */
 enum {
-  MUSICDB_NONE,
+  MUSICDB_STD,
   MUSICDB_TEMP,
   MUSICDB_REMOVED,
 };

@@ -75,6 +75,11 @@ confuiBuildUIUserInterface (confuigui_t *gui)
       CONFUI_WIDGET_UI_ERROR_COLOR, OPT_P_UI_ERROR_COL,
       bdjoptGetStr (OPT_P_UI_ERROR_COL));
 
+  /* CONTEXT: configuration: user interface: the song mark color for songs in the song list */
+  confuiMakeItemColorButton (gui, vbox, szgrp, _("Song Mark Colour"),
+      CONFUI_WIDGET_UI_MARK_COLOR, OPT_P_UI_MARK_COL,
+      bdjoptGetStr (OPT_P_UI_MARK_COL));
+
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 

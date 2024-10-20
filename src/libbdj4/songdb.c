@@ -136,6 +136,11 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
     *flags |= SONGDB_RET_NO_CHANGE;
     return 0;
   }
+  /* do not write temporary or removed songs */
+  if (songGetNum (song, TAG_DB_FLAGS) != MUSICDB_STD) {
+    *flags |= SONGDB_RET_TEMP;
+    return 0;
+  }
 
   renameallow = (bdjoptGetNum (OPT_G_AUTOORGANIZE) == true) ||
       ((*flags & SONGDB_FORCE_RENAME) == SONGDB_FORCE_RENAME);

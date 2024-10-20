@@ -175,7 +175,7 @@ dbLoad (musicdb_t *musicdb)
     slistSetNum (musicdb->songbyname, songGetStr (song, TAG_URI), dbidx);
     nlistSetData (musicdb->songbyidx, dbidx, song);
     songSetNum (song, TAG_DBIDX, dbidx);
-    songSetNum (song, TAG_DB_FLAGS, MUSICDB_NONE);
+    songSetNum (song, TAG_DB_FLAGS, MUSICDB_STD);
     ++dbidx;
   }
 
@@ -274,7 +274,7 @@ dbClearEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx)
     musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   }
   song = nlistGetData (musicdb->songbyidx, dbidx);
-  songSetNum (song, TAG_DB_FLAGS, MUSICDB_NONE);
+  songSetNum (song, TAG_DB_FLAGS, MUSICDB_STD);
   dbRebuildDanceCounts (musicdb);
 }
 
@@ -387,7 +387,7 @@ dbWriteSong (musicdb_t *musicdb, song_t *song)
   }
 
   /* do not write temporary or removed songs */
-  if (songGetNum (song, TAG_DB_FLAGS) != MUSICDB_NONE) {
+  if (songGetNum (song, TAG_DB_FLAGS) != MUSICDB_STD) {
     return 0;
   }
 
@@ -584,7 +584,7 @@ dbRebuildDanceCounts (musicdb_t *musicdb)
   while ((song = nlistIterateValueData (musicdb->songbyidx, &iteridx)) != NULL) {
     ilistidx_t    dkey;
 
-    if (songGetNum (song, TAG_DB_FLAGS) != MUSICDB_NONE) {
+    if (songGetNum (song, TAG_DB_FLAGS) != MUSICDB_STD) {
       continue;
     }
 

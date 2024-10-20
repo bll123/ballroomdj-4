@@ -8,6 +8,8 @@
 
 **4.12.4 2024-10---**
 
+* Bug Fixes:
+    * Player: Quick Edit: Fix for external requests.
 * New Features:
     * Configure: Marquee: Colors can now be configured via the user interface.
     * Configure: Player: The clock display and the fade type can now be configured via the user interface.
