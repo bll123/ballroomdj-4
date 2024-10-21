@@ -329,8 +329,9 @@ uiddDisplay (void *udata)
     nx -= ((nx + dw) - mw);
     changed = true;
   }
-  if (ny + dh > mh) {
-    ny -= ((ny + dh) - mh);
+  /* add 32 to account for the window title-bar */
+  if (ny + dh > mh - 32) {
+    ny -= ((ny + dh) - (mh - 32));
     changed = true;
   }
   if (changed) {
