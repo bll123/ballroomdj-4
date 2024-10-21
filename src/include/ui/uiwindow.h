@@ -40,6 +40,7 @@ void uiWindowFind (uiwcont_t *window);
 void uiWindowSetNoMaximize (uiwcont_t *uiwindow);
 void uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget);
 void uiWindowClearFocus (uiwcont_t *uiwindow);
+void uiWindowGetMonitorSize (uiwcont_t *uiwindow, int *width, int *height);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

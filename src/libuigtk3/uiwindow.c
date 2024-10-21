@@ -369,16 +369,6 @@ uiWindowNoDim (uiwcont_t *uiwindow)
 }
 
 void
-uiWindowSetMappedCallback (uiwcont_t *uiwindow, callback_t *uicb)
-{
-  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-set-mapped-cb")) {
-    return;
-  }
-
-  uiWidgetSetMappedCallback (uiwindow, uicb);
-}
-
-void
 uiWindowPresent (uiwcont_t *uiwindow)
 {
   if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-present")) {
@@ -450,6 +440,28 @@ uiWindowClearFocus (uiwcont_t *uiwidget)
   }
 
   gtk_window_set_focus (GTK_WINDOW (uiwidget->uidata.widget), NULL);
+}
+
+void
+uiWindowGetMonitorSize (uiwcont_t *uiwindow, int *width, int *height)
+{
+  GdkWindow     *gdkwin;
+  GdkScreen     *screen;
+  GdkDisplay    *display;
+  GdkMonitor    *monitor;
+  GdkRectangle  rect;
+
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-get-mon-sz")) {
+    return;
+  }
+
+  gdkwin = gtk_widget_get_window (uiwindow->uidata.widget);
+  screen = gtk_window_get_screen (GTK_WINDOW (uiwindow->uidata.widget));
+  display = gdk_screen_get_display (screen);
+  monitor = gdk_display_get_monitor_at_window (display, gdkwin);
+  gdk_monitor_get_geometry (monitor, &rect);
+  *width = rect.width - rect.x;
+  *height = rect.height - rect.y;
 }
 
 /* internal routines */

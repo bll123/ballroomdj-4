@@ -300,7 +300,12 @@ uiddDisplay (void *udata)
 {
   uidd_t    *dd = udata;
   int       x, y, ws;
+  int       h, w;
+  int       dh, dw;
+  int       mh, mw;
   int       bx, by;
+  int       nx, ny;
+  bool      changed;
 
 
   uiddCreateDialog (dd);
@@ -308,11 +313,30 @@ uiddDisplay (void *udata)
   bx = 0;
   by = 0;
   uiWindowGetPosition (dd->parentwin, &x, &y, &ws);
+  uiWindowGetSize (dd->parentwin, &w, &h);
   uiWidgetGetPosition (dd->wcont [DD_W_BUTTON], &bx, &by);
   uiWidgetShowAll (dd->wcont [DD_W_DIALOG_WIN]);
   uivlPopulate (dd->uivl);
-  uiWindowMove (dd->wcont [DD_W_DIALOG_WIN], bx + x + 4, by + y + 4 + 30, -1);
+  nx = bx + x + 4;
+  ny = by + y + 30;
+  uiWindowMove (dd->wcont [DD_W_DIALOG_WIN], nx, ny, -1);
   uiWindowPresent (dd->wcont [DD_W_DIALOG_WIN]);
+
+  uiWindowGetSize (dd->wcont [DD_W_DIALOG_WIN], &dw, &dh);
+  uiWindowGetMonitorSize (dd->parentwin, &mw, &mh);
+  changed = false;
+  if (nx + dw > mw) {
+    nx -= ((nx + dw) - mw);
+    changed = true;
+  }
+  if (ny + dh > mh) {
+    ny -= ((ny + dh) - mh);
+    changed = true;
+  }
+  if (changed) {
+    uiWindowMove (dd->wcont [DD_W_DIALOG_WIN], nx, ny, -1);
+  }
+
   dd->open = true;
   uivlUpdateDisplay (dd->uivl);
 
