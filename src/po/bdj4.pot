@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-18 08:20-0700\n"
+"POT-Creation-Date: 2024-10-21 07:18-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -239,6 +239,10 @@ msgstr ""
 
 #. CONTEXT: configuration: table edit: button: add new selection
 msgid "Add New"
+msgstr ""
+
+#. CONTEXT: playerui: menu selection: action: add to database
+msgid "Add to Database"
 msgstr ""
 
 #. CONTEXT: apply adjustments: adjust speed/song start/song end checkbox
@@ -1875,6 +1879,10 @@ msgstr ""
 #. CONTEXT: manage-ui: name of song list notebook tab
 #. CONTEXT: playlist management: type of playlist
 msgid "Song List"
+msgstr ""
+
+#. CONTEXT: configuration: user interface: the song mark color for songs in the song list
+msgid "Song Mark Colour"
 msgstr ""
 
 #. CONTEXT: configuration: display settings for: song selection

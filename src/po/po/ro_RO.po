@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2024-10-18\n"
+"PO-Revision-Date: 2024-10-21\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Romanian\n"
 "Language: ro\n"
@@ -242,6 +242,10 @@ msgstr "Activ"
 #. CONTEXT: configuration: table edit: button: add new selection
 msgid "Add New"
 msgstr "Adaugă nou"
+
+#. CONTEXT: playerui: menu selection: action: add to database
+msgid "Add to Database"
+msgstr ""
 
 #. CONTEXT: apply adjustments: adjust speed/song start/song end checkbox
 msgid "Adjust Speed, Song Start and Song End"
@@ -1879,6 +1883,10 @@ msgstr "Sfârșitul cântecului"
 #. CONTEXT: playlist management: type of playlist
 msgid "Song List"
 msgstr "Lista melodiilor"
+
+#. CONTEXT: configuration: user interface: the song mark color for songs in the song list
+msgid "Song Mark Colour"
+msgstr ""
 
 #. CONTEXT: configuration: display settings for: song selection
 #. CONTEXT: manage-ui: name of song selection notebook tab
