@@ -44,7 +44,6 @@ void  uiWidgetGetPosition (uiwcont_t *widget, int *x, int *y);
 void  uiWidgetAddClass (uiwcont_t *uiwidget, const char *class);
 void  uiWidgetRemoveClass (uiwcont_t *uiwidget, const char *class);
 void  uiWidgetSetTooltip (uiwcont_t *uiwidget, const char *tooltip);
-void  uiWidgetSetMappedCallback (uiwcont_t *uiwidget, callback_t *uicb);
 void  uiWidgetSetSizeChgCallback (uiwcont_t *uiwidget, callback_t *uicb);
 void uiWidgetSetEnterCallback (uiwcont_t *uiwidget, callback_t *uicb);
 

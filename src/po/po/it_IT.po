@@ -243,10 +243,6 @@ msgstr "Attivo"
 msgid "Add New"
 msgstr "Aggiungi nuovo"
 
-#. CONTEXT: playerui: menu selection: action: add to database
-msgid "Add to Database"
-msgstr ""
-
 #. CONTEXT: apply adjustments: adjust speed/song start/song end checkbox
 msgid "Adjust Speed, Song Start and Song End"
 msgstr "Regolare la velocità, l'inizio e la fine del brano"

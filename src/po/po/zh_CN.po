@@ -243,10 +243,6 @@ msgstr "活跃"
 msgid "Add New"
 msgstr "新增"
 
-#. CONTEXT: playerui: menu selection: action: add to database
-msgid "Add to Database"
-msgstr ""
-
 #. CONTEXT: apply adjustments: adjust speed/song start/song end checkbox
 msgid "Adjust Speed, Song Start and Song End"
 msgstr "调整速度、歌曲开始和歌曲结束"

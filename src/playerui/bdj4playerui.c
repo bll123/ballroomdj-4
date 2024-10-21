@@ -48,6 +48,7 @@
 #include "sockh.h"
 #include "song.h"
 #include "songdb.h"
+#include "songfav.h"
 #include "sysvars.h"
 #include "tmutil.h"
 #include "ui.h"
@@ -88,6 +89,7 @@ enum {
   PLUI_CB_DRAG_DROP,
   PLUI_CB_CONTROLLER,
   PLUI_CB_CONT_URI,
+  PLUI_CB_NEW_SEL_SONGLIST,
   PLUI_CB_MAX,
 };
 
@@ -271,6 +273,7 @@ static bool     pluiExportMP3 (void *udata);
 static bool     pluiControllerCallback (void *udata, int32_t cm, int32_t val);
 static bool     pluiControllerURICallback (void *udata, const char *uri, int32_t cmd);
 static int32_t  pluiDragDropCallback (void *udata, const char *uri);
+static bool     pluiNewSelectionSonglist (void *udata, int32_t dbidx);
 
 static int gKillReceived = 0;
 
@@ -607,14 +610,6 @@ pluiBuildUI (playerui_t *plui)
       plui->callbacks [PLUI_MENU_CB_EXT_REQ_DIALOG]);
   plui->wcont [PLUI_W_MENU_EXT_REQ] = menuitem;
 
-// ### fix, need callback
-  plui->callbacks [PLUI_MENU_CB_ADD_TO_DB] = callbackInit (
-      NULL, plui, NULL);
-  /* CONTEXT: playerui: menu selection: action: add to database */
-  menuitem = uiMenuCreateItem (menu, _("Add to Database"),
-      plui->callbacks [PLUI_MENU_CB_ADD_TO_DB]);
-  plui->wcont [PLUI_W_MENU_ADD_TO_DB] = menuitem;
-
   plui->callbacks [PLUI_MENU_CB_QE_CURRENT] = callbackInit (
       pluiQuickEditCurrent, plui, NULL);
   /* CONTEXT: playerui: menu selection: action: quick edit current song */
@@ -855,6 +850,11 @@ pluiInitializeUI (playerui_t *plui)
       plui->callbacks [PLUI_CB_QUEUE_SL]);
   uimusicqSetQueueCallback (plui->uimusicq,
       plui->callbacks [PLUI_CB_QUEUE_SL]);
+
+  plui->callbacks [PLUI_CB_NEW_SEL_SONGLIST] = callbackInitI (
+      pluiNewSelectionSonglist, plui);
+  uimusicqSetSelectionCallback (plui->uimusicq,
+      plui->callbacks [PLUI_CB_NEW_SEL_SONGLIST]);
 }
 
 
@@ -2307,4 +2307,24 @@ pluiControllerURICallback (void *udata, const char *uri, int32_t cmd)
   slistFree (tagdata);
 
   return true;
+}
+
+static bool
+pluiNewSelectionSonglist (void *udata, int32_t dbidx)
+{
+  playerui_t    *plui = udata;
+  song_t        *song;
+
+  song = dbGetByIdx (plui->musicdb, dbidx);
+  if (song == NULL) {
+    return UICB_CONT;
+  }
+
+  if (songGetNum (song, TAG_DB_FLAGS) == MUSICDB_TEMP) {
+    uiWidgetSetState (plui->wcont [PLUI_W_MENU_ADD_TO_DB], UIWIDGET_ENABLE);
+  } else {
+    uiWidgetSetState (plui->wcont [PLUI_W_MENU_ADD_TO_DB], UIWIDGET_DISABLE);
+  }
+
+  return UICB_CONT;
 }

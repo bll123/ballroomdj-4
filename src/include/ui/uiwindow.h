@@ -33,7 +33,6 @@ uiwcont_t *uiCreateDialogWindow (uiwcont_t *parentwin, uiwcont_t *attachment, ca
 void uiWindowSetDoubleClickCallback (uiwcont_t *uiwindow, callback_t *uicb);
 void uiWindowSetWinStateCallback (uiwcont_t *uiwindow, callback_t *uicb);
 void uiWindowNoDim (uiwcont_t *uiwidget);
-void uiWindowSetMappedCallback (uiwcont_t *uiwidget, callback_t *uicb);
 void uiWindowPresent (uiwcont_t *uiwidget);
 void uiWindowRaise (uiwcont_t *uiwidget);
 void uiWindowFind (uiwcont_t *window);
