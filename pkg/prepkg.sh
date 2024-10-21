@@ -309,14 +309,14 @@ if [[ $platform == windows ]]; then
   # stage the other required gtk files.
 
   # various gtk stuff
-  rsync -aS --delete /${libtag}/lib/gdk-pixbuf-2.0 plocal/lib
-  rsync -aS --delete /${libtag}/lib/girepository-1.0 plocal/lib
+  rsync --info=copy,del -aS --delete /${libtag}/lib/gdk-pixbuf-2.0 plocal/lib
+  rsync --info=copy,del -aS --delete /${libtag}/lib/girepository-1.0 plocal/lib
   mkdir -p plocal/share/icons
-  rsync -aS --delete /${libtag}/share/icons/* plocal/share/icons
+  rsync --info=copy,del -aS --delete /${libtag}/share/icons/* plocal/share/icons
   mkdir -p plocal/share/glib-2.0
-  rsync -aS --delete /${libtag}/share/glib-2.0/schemas plocal/share/glib-2.0
+  rsync --info=copy,del -aS --delete /${libtag}/share/glib-2.0/schemas plocal/share/glib-2.0
   mkdir -p plocal/etc/fonts
-  rsync -aS --delete /${libtag}/etc/fonts plocal/etc
+  rsync --info=copy,del -aS --delete /${libtag}/etc/fonts plocal/etc
   mkdir -p plocal/etc/gtk-3.0
   cp -pf /${libtag}/etc/gtk-3.0/im-multipress.conf plocal/etc/gtk-3.0
 
@@ -333,7 +333,7 @@ gtk-theme-name = Windows-10-Dark
 _HERE_
 
   mkdir -p plocal/etc/fonts
-  rsync -aS --delete /${libtag}/etc/fonts plocal/etc
+  rsync --info=copy,del -aS --delete /${libtag}/etc/fonts plocal/etc
 
 fi # is windows
 

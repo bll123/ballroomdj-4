@@ -55,6 +55,7 @@ void      dbStartIterator (musicdb_t *db, slistidx_t *iteridx);
 song_t    *dbIterate (musicdb_t *db, dbidx_t *dbidx, slistidx_t *iteridx);
 void      dbBackup (void);
 dbidx_t   dbAddTemporarySong (musicdb_t *db, song_t *song);
+dbidx_t   dbAddTemporarySongToDatabase (musicdb_t *musicdb, dbidx_t tempdbidx);
 /* void      dbDumpSongList (musicdb_t *db); */ // for debugging
 
 #if defined (__cplusplus) || defined (c_plusplus)

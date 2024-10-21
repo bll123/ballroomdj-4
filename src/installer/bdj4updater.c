@@ -99,6 +99,9 @@ enum {
   /* 2024-9-2 4.12.1 */
   /* fix any locale dirs that are not symlinks (usually macos) */
   UPD_FIX_LOCALE,
+  /* 2024-10-21 4.13.0 */
+  /* fix windows fonts set to 'sans regular' */
+  UPD_FIX_WIN_FONT,
   UPD_MAX,
 };
 enum {
@@ -114,6 +117,7 @@ static datafilekey_t upddfkeys[] = {
   { "FIX_DB_DATE_ADD_B", UPD_FIX_DB_DATE_ADDED_B, VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_DISCNUM",   UPD_FIX_DB_DISCNUM, VALUE_NUM, NULL, DF_NORM },
   { "FIX_LOCALE",       UPD_FIX_LOCALE,     VALUE_NUM, NULL, DF_NORM },
+  { "FIX_WIN_FONT",     UPD_FIX_WIN_FONT,   VALUE_NUM, NULL, DF_NORM },
 };
 enum {
   UPD_DF_COUNT = (sizeof (upddfkeys) / sizeof (datafilekey_t))
@@ -261,20 +265,20 @@ main (int argc, char *argv [])
 
       /* need some decent default fonts for windows and macos */
       if (isWindows () || isMacOS ()) {
-        uifont = "Arial 11";
+        uifont = "Arial Regular 12";
         if (isMacOS ()) {
           uifont = "Arial Regular 16";
         }
         bdjoptSetStr (OPT_M_UI_FONT, uifont);
 
         /* windows does not have a narrow font pre-installed */
-        uifont = "Arial 11";
+        uifont = "Arial Regular 11";
         if (isMacOS ()) {
           uifont = "Arial Narrow Regular 15";
         }
         bdjoptSetStr (OPT_M_MQ_FONT, uifont);
 
-        uifont = "Arial 10";
+        uifont = "Arial Regular 11";
         if (isMacOS ()) {
           uifont = "Arial Regular 15";
         }
@@ -415,6 +419,42 @@ main (int argc, char *argv [])
         bdjoptSetStr (OPT_M_UI_THEME, "Adwaita:dark");
         bdjoptchanged = true;
       }
+    }
+  }
+
+  if (statusflags [UPD_FIX_WIN_FONT] == UPD_NOT_DONE) {
+    /* 4.13.0 fix windows 'sans regular' fonts */
+    /* i don't know if this is necessary, I saw the installation use */
+    /* sans regular once, don't know why. could not duplicate. */
+    if (isWindows ()) {
+      const char    *font;
+      char          nfont [200];
+
+      /* 01234567890123456 */
+      /* Sans Regular 11 */
+
+      font = bdjoptGetStr (OPT_M_UI_FONT);
+      if (strstr (font, "Sans Regular") != NULL && strlen (font) >= 14) {
+        snprintf (nfont, sizeof (nfont), "Arial Regular %s", font + 13);
+        bdjoptSetStr (OPT_M_UI_FONT, nfont);
+        bdjoptchanged = true;
+      }
+
+      font = bdjoptGetStr (OPT_M_MQ_FONT);
+      if (strstr (font, "Sans Regular") != NULL && strlen (font) >= 14) {
+        snprintf (nfont, sizeof (nfont), "Arial Regular %s", font + 13);
+        bdjoptSetStr (OPT_M_MQ_FONT, nfont);
+        bdjoptchanged = true;
+      }
+
+      font = bdjoptGetStr (OPT_M_LISTING_FONT);
+      if (strstr (font, "Sans Regular") != NULL && strlen (font) >= 14) {
+        snprintf (nfont, sizeof (nfont), "Arial Regular %s", font + 13);
+        bdjoptSetStr (OPT_M_LISTING_FONT, nfont);
+        bdjoptchanged = true;
+      }
+
+      nlistSetNum (updlist, UPD_FIX_WIN_FONT, UPD_COMPLETE);
     }
   }
 

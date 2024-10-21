@@ -519,11 +519,8 @@ main (int argc, char *argv[])
     uifont = sysvarsGetStr (SV_FONT_DEFAULT);
     if (uifont == NULL || ! *uifont) {
       uifont = "Arial Regular 11";
-      if (isWindows ()) {
-        uifont = "Arial 11";
-      }
       if (isMacOS ()) {
-        uifont = "Arial Regular 16";
+        uifont = "Arial Regular 14";
       }
     }
     uiSetUICSS (uifont, uifont, INST_HL_COLOR, NULL, NULL, NULL, NULL);

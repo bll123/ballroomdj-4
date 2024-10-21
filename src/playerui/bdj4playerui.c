@@ -65,7 +65,8 @@ enum {
   PLUI_MENU_CB_PLAY_QUEUE,
   PLUI_MENU_CB_EXTRA_QUEUE,
   PLUI_MENU_CB_SWITCH_QUEUE,
-  PLUI_MENU_CB_REQ_EXT_DIALOG,
+  PLUI_MENU_CB_EXT_REQ_DIALOG,
+  PLUI_MENU_CB_ADD_TO_DB,
   PLUI_MENU_CB_MQ_HIDE_SHOW,
   PLUI_MENU_CB_MQ_FONT_SZ,
   PLUI_MENU_CB_MQ_FIND,
@@ -105,6 +106,7 @@ enum {
   PLUI_W_MENU_QE_CURR,
   PLUI_W_MENU_QE_SEL,
   PLUI_W_MENU_EXT_REQ,
+  PLUI_W_MENU_ADD_TO_DB,
   PLUI_W_MENU_RELOAD,
   PLUI_W_KEY_HNDLR,
   PLUI_W_SET_PB_BUTTON,
@@ -598,12 +600,20 @@ pluiBuildUI (playerui_t *plui)
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
-  plui->callbacks [PLUI_MENU_CB_REQ_EXT_DIALOG] = callbackInit (
+  plui->callbacks [PLUI_MENU_CB_EXT_REQ_DIALOG] = callbackInit (
       pluiRequestExternalDialog, plui, NULL);
   /* CONTEXT: playerui: menu selection: action: external request */
   menuitem = uiMenuCreateItem (menu, _("External Request"),
-      plui->callbacks [PLUI_MENU_CB_REQ_EXT_DIALOG]);
+      plui->callbacks [PLUI_MENU_CB_EXT_REQ_DIALOG]);
   plui->wcont [PLUI_W_MENU_EXT_REQ] = menuitem;
+
+// ### fix, need callback
+  plui->callbacks [PLUI_MENU_CB_ADD_TO_DB] = callbackInit (
+      NULL, plui, NULL);
+  /* CONTEXT: playerui: menu selection: action: add to database */
+  menuitem = uiMenuCreateItem (menu, _("Add to Database"),
+      plui->callbacks [PLUI_MENU_CB_ADD_TO_DB]);
+  plui->wcont [PLUI_W_MENU_ADD_TO_DB] = menuitem;
 
   plui->callbacks [PLUI_MENU_CB_QE_CURRENT] = callbackInit (
       pluiQuickEditCurrent, plui, NULL);

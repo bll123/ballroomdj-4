@@ -32,6 +32,7 @@
 
 enum {
   MUSICDB_IDENT = 0xcc0062646973756d,
+  MUSICDB_TEMP_OFFSET = 10000,
 };
 
 typedef struct musicdb {
@@ -493,12 +494,40 @@ dbAddTemporarySong (musicdb_t *musicdb, song_t *song)
   }
 
   songSetNum (song, TAG_DB_FLAGS, MUSICDB_TEMP);
-  songGetStr (song, TAG_URI);
-  dbidx = musicdb->count;
+  /* offset the temporary song dbidx so that new songs can be added */
+  /* to the database without duplicating the temporary song dbidx */
+  dbidx = musicdb->count + MUSICDB_TEMP_OFFSET;
   dbidx += nlistGetCount (musicdb->tempSongs);
   songSetNum (song, TAG_DBIDX, dbidx);
   nlistSetData (musicdb->tempSongs, dbidx, song);
   return dbidx;
+}
+
+dbidx_t
+dbAddTemporarySongToDatabase (musicdb_t *musicdb, dbidx_t tempdbidx)
+{
+  dbidx_t     ndbidx;
+  song_t      *song;
+
+  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
+    return LIST_VALUE_INVALID;
+  }
+
+  song = nlistGetData (musicdb->tempSongs, tempdbidx);
+  if (song == NULL) {
+    return LIST_VALUE_INVALID;
+  }
+  if (songGetNum (song, TAG_DB_FLAGS) != MUSICDB_TEMP) {
+    return LIST_VALUE_INVALID;
+  }
+
+  songSetNum (song, TAG_DB_FLAGS, MUSICDB_STD);
+  ndbidx = musicdb->count;
+  songSetNum (song, TAG_DBIDX, ndbidx);
+  songSetNum (song, TAG_RRN, MUSICDB_ENTRY_NEW);
+  dbWriteSong (musicdb, song);
+  nlistSetData (musicdb->tempSongs, tempdbidx, NULL);
+  return ndbidx;
 }
 
 #if 0 /* for debugging */
