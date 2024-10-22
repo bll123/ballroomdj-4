@@ -10,9 +10,7 @@
 extern "C" {
 #endif
 
-typedef struct {
-  struct mg_mgr   mgr;
-} websrv_t;
+typedef struct websrv websrv_t;
 
 websrv_t *websrvInit (uint16_t listenPort, mg_event_handler_t eventHandler,
     void *userdata);

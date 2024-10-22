@@ -27,4 +27,4 @@ __Error Color__: The color used for error messages.
 <br><span style="color:#4559bf;">__Configure / User Interface__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-10-18 07:16:32; BDJ4 version 4.12.3)_
+<br>_(Updated 2024-10-22 09:37:21; BDJ4 version 4.12.4)_

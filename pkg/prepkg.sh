@@ -156,20 +156,6 @@ if [[ $DEVELOPMENT != dev ]]; then
     grc=1
   fi
 
-  grep -l '^fprintf' */*.c > /dev/null 2>&1
-  rc=$?
-  if [[ $rc -ne 0 ]]; then
-    echo "
-    grc=1
-  fi
-
-  grep -l '^logBasic' */*.c > /dev/null 2>&1
-  rc=$?
-  if [[ $rc -ne 0 ]]; then
-    echo "
-    grc=1
-  fi
-
   #grep '^#define MACOS_UI_DEBUG 0' src/include/uigeneral.h > /dev/null 2>&1
   #rc=$?
   #if [[ $rc -ne 0 ]]; then

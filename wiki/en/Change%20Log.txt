@@ -4,11 +4,11 @@
 
 <!--
 
-**4.13.1 2024-10---**
+**4.12.5 2024-10---**
 
 -->
 
-**4.13.0 2024-10-21**
+**4.12.4 2024-10-22**
 
 * Bug Fixes:
     * Drop-Downs: Prevent from being displayed past the edge of the screen.
@@ -1092,4 +1092,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-10-16 09:35:17; BDJ4 version 4.12.3)_
+<br>_(Updated 2024-10-22 09:37:21; BDJ4 version 4.12.4)_

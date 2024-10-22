@@ -19,6 +19,11 @@
 #include "mdebug.h"
 #include "websrv.h"
 
+typedef struct websrv {
+  struct mg_mgr   mgr;
+  void            *userdata;
+} websrv_t;
+
 static void websrvLog (char c, void *userdata);
 
 websrv_t *
@@ -37,6 +42,7 @@ websrvInit (uint16_t listenPort, mg_event_handler_t eventHandler,
 
   mg_mgr_init (&websrv->mgr);
   websrv->mgr.userdata = userdata;
+  websrv->userdata = userdata;
 
   snprintf (tbuff, sizeof (tbuff), "http://0.0.0.0:%" PRIu16, listenPort);
   mg_http_listen (&websrv->mgr, tbuff, eventHandler, userdata);
@@ -63,6 +69,8 @@ websrvProcess (websrv_t *websrv)
 
   mg_mgr_poll (&websrv->mgr, 10);
 }
+
+/* internal routines */
 
 static void
 websrvLog (char c, void *userdata)
