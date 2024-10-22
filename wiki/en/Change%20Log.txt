@@ -4,20 +4,20 @@
 
 <!--
 
-**4.12.5 2024-10---**
+**4.13.1 2024-10---**
 
-**4.12.4 2024-10---**
+-->
+
+**4.13.0 2024-10-21**
 
 * Bug Fixes:
     * Drop-Downs: Prevent from being displayed past the edge of the screen.
+    * Linux: Fix installation of crontab when original is empty.
     * Player: Quick Edit: Fix for external requests.
-    * Windows: Fix default font on installation.
 * New Features:
     * Configure: Marquee: More colors can now be configured via the user interface.
     * Configure: Player: The clock display and the fade type can now be configured via the user interface.
     * Configure: User Interface: More colors can now be configured via the user interface.
-
--->
 
 **4.12.3 2024-10-16**
 

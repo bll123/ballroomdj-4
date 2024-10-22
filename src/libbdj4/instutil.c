@@ -591,7 +591,7 @@ instutilInstallCleanTmp (const char *rundir)
       targv [targc++] = "-l";
       targv [targc++] = NULL;
       snprintf (tfn, sizeof (tfn), "/tmp/bdj4-ict.txt");
-      osProcessStart (targv, OS_PROC_WAIT, NULL, tfn);
+      osProcessStart (targv, OS_PROC_WAIT | OS_PROC_NOSTDERR, NULL, tfn);
       cttext = filedataReadAll (tfn, &sz);
       if (cttext == NULL) {
         cttext = mdstrdup ("");
