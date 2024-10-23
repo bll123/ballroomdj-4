@@ -11,8 +11,6 @@
 #include <errno.h>
 #include <getopt.h>
 
-#include "mongoose.h"
-
 #include "bdj4.h"
 #include "bdj4init.h"
 #include "bdjmsg.h"

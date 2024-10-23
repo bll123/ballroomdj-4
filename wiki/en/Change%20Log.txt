@@ -6,6 +6,11 @@
 
 **4.12.5 2024-10---**
 
+* Bug Fixes:
+    * PENDING: remote control clear-and-play
+* Internal:
+    * Upgrade mongoose to 7.15.  Re-write mongoose interface layer.
+
 -->
 
 **4.12.4 2024-10-22**
