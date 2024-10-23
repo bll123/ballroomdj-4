@@ -11,8 +11,6 @@
 #include <errno.h>
 #include <getopt.h>
 
-#include "mongoose.h"
-
 #include "bdj4.h"
 #include "bdj4init.h"
 #include "bdj4intl.h"
@@ -62,8 +60,7 @@ static bool     mobmqHandshakeCallback (void *tmmdata, programstate_t programSta
 static bool     mobmqStoppingCallback (void *tmmdata, programstate_t programState);
 static bool     mobmqStopWaitCallback (void *tmmdata, programstate_t programState);
 static bool     mobmqClosingCallback (void *tmmdata, programstate_t programState);
-static void     mobmqEventHandler (struct mg_connection *c, int ev,
-                    void *ev_data, void *userdata);
+static void     mobmqEventHandler (void *userdata, const char *query, const char *querydata, const char *uri);
 static int      mobmqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static int      mobmqProcessing (void *udata);
@@ -183,51 +180,31 @@ mobmqClosingCallback (void *tmmdata, programstate_t programState)
 }
 
 static void
-mobmqEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdata)
+mobmqEventHandler (void *userdata, const char *query, const char *querydata,
+    const char *uri)
 {
   mobmqdata_t   *mobmqdata = userdata;
 
-  if (ev == MG_EV_HTTP_MSG) {
-    struct mg_http_message *hm = (struct mg_http_message *) ev_data;
+  if (strcmp (uri, "/mmupdate") == 0) {
+    const char *data = NULL;
 
-    if (mg_http_match_uri (hm, "/mmupdate")) {
-      const char *data = NULL;
+    data = mobmqBuildResponse (mobmqdata);
+    websrvReply (mobmqdata->websrv, 200,
+        "Content-Type: application/json\r\n", data);
+  } else {
+    char          path [MAXPATHLEN];
+    const char    *turi = uri;
 
-      data = mobmqBuildResponse (mobmqdata);
-      mg_http_reply (c, 200, "Content-Type: application/json\r\n",
-          "%s\r\n", data);
-    } else if (mg_http_match_uri (hm, "#.key") ||
-        mg_http_match_uri (hm, "#.crt") ||
-        mg_http_match_uri (hm, "#.pem") ||
-        mg_http_match_uri (hm, "#.csr") ||
-        mg_http_match_uri (hm, "../")) {
-      mg_http_reply (c, 403, NULL, "%s", "Forbidden");
-    } else {
-      char          tbuff [200];
-      char          tbuffb [MAXPATHLEN];
-      struct mg_str turi;
-      struct mg_str tmpuri;
-      bool          reloc = false;
-
-      struct mg_http_serve_opts opts = { .root_dir = sysvarsGetStr (SV_BDJ4_DREL_HTTP) };
-      snprintf (tbuff, sizeof (tbuff), "%.*s", (int) hm->uri.len, hm->uri.ptr);
-      pathbldMakePath (tbuffb, sizeof (tbuffb),
-          tbuff, "", PATHBLD_MP_DREL_HTTP);
-      if (! fileopFileExists (tbuffb)) {
-        turi = mg_str ("/mobilemq.html");
-        reloc = true;
-      }
-
-      if (reloc) {
-        tmpuri = hm->uri;
-        hm->uri = turi;
-      }
-      logMsg (LOG_DBG, LOG_IMPORTANT, "serve: %.*s", (int) hm->uri.len, hm->uri.ptr);
-      mg_http_serve_dir (c, hm, &opts);
-      if (reloc) {
-        hm->uri = tmpuri;
-      }
+    if (*uri == '/') {
+      ++uri;
     }
+    pathbldMakePath (path, sizeof (path), uri, "", PATHBLD_MP_DREL_HTTP);
+    if (! fileopFileExists (path)) {
+      turi = "/mobilemq.html";
+    }
+
+    logMsg (LOG_DBG, LOG_IMPORTANT, "serve: %s", turi);
+    websrvServeFile (mobmqdata->websrv, sysvarsGetStr (SV_BDJ4_DREL_HTTP), turi);
   }
 }
 
