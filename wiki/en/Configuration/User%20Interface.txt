@@ -23,8 +23,8 @@ fields, and the color of various images.
 __Error Color__: The color used for error messages.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![user-interface](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/UI-D.png)
+![user-interface](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/UI-E.png)
 <br><span style="color:#4559bf;">__Configure / User Interface__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-10-22 09:37:21; BDJ4 version 4.12.4)_
+<br>_(Updated 2024-10-23 09:08:40; BDJ4 version 4.12.4)_
