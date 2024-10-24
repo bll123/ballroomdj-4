@@ -4,10 +4,12 @@
 
 <!--
 
+**4.12.6 2024-10---**
+
 **4.12.5 2024-10---**
 
 * Bug Fixes:
-    * PENDING: remote control clear-and-play
+    * Mobile Remote Control: Fix an issue that caused the queue to de-sync.
 * Internal:
     * Upgrade mongoose to 7.15.  Re-write mongoose interface layer.
 

@@ -75,6 +75,34 @@ get player CHK_PLAYER_STATUS
 chk prepqueuecount 4
 end
 
+
+# send a play command while the player was playing would cause
+# the queue to get out of sync.  2024-10-24
+test 40-13 Play-Twice
+get main CHK_MAIN_MUSICQ
+chk mq0len 0
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 0
+msg main MUSICQ_INSERT 0~999~3
+msg main MUSICQ_INSERT 0~999~5
+msg main MUSICQ_INSERT 0~999~7
+msg main MUSICQ_INSERT 0~999~9
+get main CHK_MAIN_MUSICQ
+chk mq0len 4
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 3
+mssleep 1500
+wait playstate playing
+msg main CMD_PLAY
+# queue length should still be the same
+get main CHK_MAIN_MUSICQ
+chk mq0len 4
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 3
+end
+
 # if play-when-queued is on:
 # on an insert the player should only start playing if the queue is empty.
 test 40-14 Play-When-Queued-Insert

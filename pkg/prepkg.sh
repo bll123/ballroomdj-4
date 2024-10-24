@@ -156,6 +156,18 @@ if [[ $DEVELOPMENT != dev ]]; then
     grc=1
   fi
 
+  wc=$(grep '^fprintf' */*.c | grep -v uitest.c | wc -l)
+  if [[ $wc -ne 0 ]]; then
+    echo "fprintf debugging found"
+    grc=1
+  fi
+
+  wc=$(grep '^logBasic' */*.c | grep -v KEEP | wc -l)
+  if [[ $wc -ne 0 ]]; then
+    echo "logBasic debugging found"
+    grc=1
+  fi
+
   #grep '^#define MACOS_UI_DEBUG 0' src/include/uigeneral.h > /dev/null 2>&1
   #rc=$?
   #if [[ $rc -ne 0 ]]; then

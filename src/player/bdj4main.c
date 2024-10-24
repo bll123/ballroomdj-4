@@ -405,7 +405,10 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_CMD_PLAY: {
-          mainMusicQueuePlay (mainData);
+          if (mainData->playerState != PL_STATE_PLAYING &&
+              mainData->playerState != PL_STATE_IN_FADEOUT) {
+            mainMusicQueuePlay (mainData);
+          }
           break;
         }
         case MSG_CMD_NEXTSONG_PLAY: {

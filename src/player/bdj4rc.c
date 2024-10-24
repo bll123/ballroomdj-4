@@ -283,12 +283,12 @@ remctrlEventHandler (void *userdata, const char *query, const char *querydata,
       connSendMessage (remctrl->conn,
           ROUTE_MAIN, MSG_QUEUE_DANCE, tbuff);
       connSendMessage (remctrl->conn,
-          ROUTE_MAIN, MSG_CMD_PLAY, remctrl->msgqpba);
+          ROUTE_MAIN, MSG_CMD_PLAY, NULL);
     } else if (strcmp (query, "queue5") == 0) {
       connSendMessage (remctrl->conn,
           ROUTE_MAIN, MSG_QUEUE_DANCE_5, tbuff);
       connSendMessage (remctrl->conn,
-          ROUTE_MAIN, MSG_CMD_PLAY, remctrl->msgqpba);
+          ROUTE_MAIN, MSG_CMD_PLAY, NULL);
     } else if (strcmp (query, "repeat") == 0) {
       connSendMessage (remctrl->conn,
           ROUTE_PLAYER, MSG_PLAY_REPEAT, NULL);

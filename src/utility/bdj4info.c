@@ -37,6 +37,7 @@ static const char *envitems [] = {
   "DYLD_FALLBACK_LIBRARY_PATH",
   "GDK_SCALE",
   "G_FILENAME_ENCODING",
+  "GTK_BACKEND",
   "GTK_CSD",
   "GTK_THEME",
   "HOME",
