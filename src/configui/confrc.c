@@ -92,6 +92,8 @@ confuiBuildUIMobileRemoteControl (confuigui_t *gui)
   /* CONTEXT: configuration: remote control: the link to display the QR code for remote control */
   confuiMakeItemLink (gui, vbox, szgrp, _("QR Code"),
       CONFUI_WIDGET_RC_QR_CODE, "");
+  confuiMakeItemLink (gui, vbox, szgrp, "",
+      CONFUI_WIDGET_RC_QR_CODE_B, "");
 
   uiwcontFree (vbox);
   uiwcontFree (szgrp);

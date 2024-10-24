@@ -10,6 +10,8 @@
 
 * Bug Fixes:
     * Mobile Remote Control: Fix an issue that caused the queue to de-sync.
+* Changes:
+    * Mobile Remote Control: Also show local IP address QR code.
 * Internal:
     * Upgrade mongoose to 7.15.  Re-write mongoose interface layer.
 

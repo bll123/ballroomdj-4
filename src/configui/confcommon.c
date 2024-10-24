@@ -44,7 +44,7 @@ static nlist_t * confuiGetThemeList (void);
 #if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
 static slist_t * confuiGetThemeNames (slist_t *themelist, slist_t *filelist);
 #endif
-static char * confuiMakeQRCodeFile (char *title, char *uri);
+static void confuiMakeQRCodeFile (const char *tag, const char *title, const char *disp, char *uri, size_t sz);
 static void confuiUpdateOrgExample (org_t *org, const char *data, uiwcont_t *uiwidgetp);
 static bool confuiSearchDispSel (confuigui_t *gui, int selidx, const char *disp);
 static void confuiCreateTagListingMultDisp (confuigui_t *gui, slist_t *dlist, int sidx, int eidx);
@@ -120,7 +120,7 @@ void
 confuiUpdateMobmqQrcode (confuigui_t *gui)
 {
   char          uridisp [MAXPATHLEN];
-  char          *qruri = "";
+  char          qruri [200];
   char          tbuff [MAXPATHLEN];
   int           type;
   uiwcont_t     *uiwidgetp = NULL;
@@ -130,11 +130,10 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
   type = bdjoptGetNum (OPT_P_MOBMQ_TYPE);
 
   confuiSetStatusMsg (gui, "");
-  if (type == MOBMQ_TYPE_OFF) {
-    *tbuff = '\0';
-    *uridisp = '\0';
-    qruri = "";
-  }
+  *tbuff = '\0';
+  *uridisp = '\0';
+  *qruri = '\0';
+
   if (type == MOBMQ_TYPE_LOCAL) {
     const char  *host;
 
@@ -150,16 +149,13 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
 
   if (type != MOBMQ_TYPE_OFF) {
     /* CONTEXT: configuration: qr code: title display for mobile marquee */
-    qruri = confuiMakeQRCodeFile (_("Mobile Marquee"), uridisp);
+    confuiMakeQRCodeFile ("", _("Mobile Marquee"), uridisp, qruri, sizeof (qruri));
   }
 
   uiwidgetp = gui->uiitem [CONFUI_WIDGET_MOBMQ_QR_CODE].uiwidgetp;
   uiLinkSet (uiwidgetp, uridisp, qruri);
   dataFree (gui->uiitem [CONFUI_WIDGET_MOBMQ_QR_CODE].uri);
   gui->uiitem [CONFUI_WIDGET_MOBMQ_QR_CODE].uri = mdstrdup (qruri);
-  if (*qruri) {
-    mdfree (qruri);
-  }
   logProcEnd ("");
 }
 
@@ -167,7 +163,9 @@ void
 confuiUpdateRemctrlQrcode (confuigui_t *gui)
 {
   char          uridisp [MAXPATHLEN];
-  char          *qruri = "";
+  char          uridispb [MAXPATHLEN];
+  char          qruri [200];
+  char          qrurib [200];
   char          tbuff [MAXPATHLEN];
   bool          enabled;
   uiwcont_t    *uiwidgetp;
@@ -176,31 +174,46 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
 
   enabled = bdjoptGetNum (OPT_P_REMOTECONTROL);
 
-  if (! enabled) {
-    *tbuff = '\0';
-    *uridisp = '\0';
-    qruri = "";
-  }
+  *tbuff = '\0';
+  *uridisp = '\0';
+  *uridispb = '\0';
+  *qruri = '\0';
+  *qrurib = '\0';
+
   if (enabled) {
     const char  *host;
+    char        ip [80];
 
     host = sysvarsGetStr (SV_HOSTNAME);
     snprintf (uridisp, sizeof (uridisp), "http://%s.local:%" PRId64, host,
         bdjoptGetNum (OPT_P_REMCONTROLPORT));
+
+    webclientGetLocalIP (ip, sizeof (ip));
+    if (*ip) {
+      snprintf (uridispb, sizeof (uridisp), "http://%s:%" PRId64, ip,
+          bdjoptGetNum (OPT_P_REMCONTROLPORT));
+    }
   }
 
   if (enabled) {
     /* CONTEXT: configuration: qr code: title display for mobile remote control */
-    qruri = confuiMakeQRCodeFile (_("Mobile Remote Control"), uridisp);
+    confuiMakeQRCodeFile ("", _("Mobile Remote Control"), uridisp, qruri, sizeof (qruri));
+    if (*uridispb) {
+      confuiMakeQRCodeFile ("b", _("Mobile Remote Control"), uridispb, qrurib, sizeof (qrurib));
+    }
   }
 
   uiwidgetp = gui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uiwidgetp;
   uiLinkSet (uiwidgetp, uridisp, qruri);
+
+  uiwidgetp = gui->uiitem [CONFUI_WIDGET_RC_QR_CODE_B].uiwidgetp;
+  uiLinkSet (uiwidgetp, uridispb, qrurib);
+
   dataFree (gui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uri);
   gui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uri = mdstrdup (qruri);
-  if (*qruri) {
-    mdfree (qruri);
-  }
+  dataFree (gui->uiitem [CONFUI_WIDGET_RC_QR_CODE_B].uri);
+  gui->uiitem [CONFUI_WIDGET_RC_QR_CODE_B].uri = mdstrdup (qrurib);
+
   logProcEnd ("");
 }
 
@@ -516,20 +529,21 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
 }
 #endif  /* ui-gtk3 or ui-gtk4 */
 
-static char *
-confuiMakeQRCodeFile (char *title, char *uri)
+static void
+confuiMakeQRCodeFile (const char *tag, const char *title,
+    const char *disp, char *qruri, size_t sz)
 {
   char          *data;
   char          *ndata;
-  char          *qruri;
   char          baseuri [MAXPATHLEN];
   char          tbuff [MAXPATHLEN];
+  char          tname [80];
   FILE          *fh;
   size_t        dlen;
 
   logProcBegin ();
-  qruri = mdmalloc (MAXPATHLEN);
 
+  snprintf (tname, sizeof (tname), "qrcode%s", tag);
   pathbldMakePath (baseuri, sizeof (baseuri),
       "", "", PATHBLD_MP_DIR_TEMPLATE);
   pathbldMakePath (tbuff, sizeof (tbuff),
@@ -542,23 +556,22 @@ confuiMakeQRCodeFile (char *title, char *uri)
   ndata = regexReplaceLiteral (data, "#BASEURL#", baseuri);
   mdfree (data);
   data = ndata;
-  ndata = regexReplaceLiteral (data, "#QRCODEURL#", uri);
+  ndata = regexReplaceLiteral (data, "#QRCODEURL#", disp);
   mdfree (data);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "qrcode", BDJ4_HTML_EXT, PATHBLD_MP_DREL_TMP);
+      tname, BDJ4_HTML_EXT, PATHBLD_MP_DREL_TMP);
   fh = fileopOpen (tbuff, "w");
   dlen = strlen (ndata);
   fwrite (ndata, dlen, 1, fh);
   mdextfclose (fh);
   fclose (fh);
 
-  snprintf (qruri, MAXPATHLEN, "%s/%s/%s",
+  snprintf (qruri, sz, "%s/%s/%s",
       AS_FILE_PFX, sysvarsGetStr (SV_BDJ4_DIR_DATATOP), tbuff);
 
   mdfree (ndata);
   logProcEnd ("");
-  return qruri;
 }
 
 static void
