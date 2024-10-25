@@ -122,7 +122,6 @@ websrvEventHandler (struct mg_connection *c, int ev, void *ev_data)
 {
   struct mg_http_message  *hm;
   char                    query [800];
-  char                    *qstrptr;
   char                    *tokstr;
   const char              *querydata;
   char                    uri [400];
@@ -158,7 +157,7 @@ websrvEventHandler (struct mg_connection *c, int ev, void *ev_data)
   if (*query) {
     size_t      len;
 
-    qstrptr = strtok_r (query, " ", &tokstr);
+    strtok_r (query, " ", &tokstr);
     len = strlen (query);
     if (hm->query.len > len) {
       querydata = query + len + 1;

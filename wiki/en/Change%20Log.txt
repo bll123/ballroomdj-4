@@ -6,7 +6,9 @@
 
 **4.12.6 2024-10---**
 
-**4.12.5 2024-10---**
+-->
+
+**4.12.5 2024-10-25**
 
 * Bug Fixes:
     * Mobile Remote Control: Fix an issue that caused the queue to de-sync.
@@ -14,8 +16,6 @@
     * Mobile Remote Control: Also show local IP address QR code.
 * Internal:
     * Upgrade mongoose to 7.15.  Re-write mongoose interface layer.
-
--->
 
 **4.12.4 2024-10-22**
 
@@ -1101,4 +1101,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-10-22 09:37:21; BDJ4 version 4.12.4)_
+<br>_(Updated 2024-10-25 10:08:51; BDJ4 version 4.12.5)_
