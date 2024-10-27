@@ -6,6 +6,11 @@
 
 **4.12.6 2024-10---**
 
+**4.12.5.1 2024-10---**
+
+* Bug Fixes:
+    * Conversion: Fix conversion issues with BallroomDJ 3 to BDJ4 conversion.
+
 -->
 
 **4.12.5 2024-10-25**

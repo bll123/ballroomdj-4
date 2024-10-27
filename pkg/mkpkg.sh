@@ -267,7 +267,12 @@ fi
 
 DEVTMP=devel/tmp
 
-if [[ $insttest == F && $isprimary == T && $tag == linux ]]; then
+. ./VERSION.txt
+
+if [[ $DEVELOPMENT == "" && \
+    $insttest == F && \
+    $isprimary == T && \
+    $tag == linux ]]; then
   mksrcpkg=T
 fi
 
@@ -283,8 +288,6 @@ fi
 if [[ $clean == T ]]; then
   (cd src; make tclean > /dev/null 2>&1)
 fi
-
-. ./VERSION.txt
 
 if [[ $insttest == F && $sourceonly == F ]]; then
   # update build number
