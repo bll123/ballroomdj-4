@@ -7,6 +7,9 @@
  * References:
  *  https://github.com/AlienCowEatCake/audacious-win-smtc
  *    Uses msys2 to build, but the link is different than what i needed.
+ *  2024-10-29 found more references to general smtc code (not winrt)
+ *  https://github.com/bolucat/Firefox/blob/dc6f9cd8a7a1ce2e3abf7ba52b53b6b7fa009a9a/widget/windows/WindowsSMTCProvider.cpp
+ *  https://github.com/chromium/chromium/blob/f32b9239d52625aba333cc23a03f98d0d532e9df/components/system_media_controls/win/system_media_controls_win.cc
  */
 #include "config.h"
 

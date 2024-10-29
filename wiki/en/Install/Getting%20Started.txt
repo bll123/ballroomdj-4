@@ -61,7 +61,8 @@ the list on the left side of the window.
 
 In the _Organization_ section, the default organization is
 _Dance/Title_.  This is a common organization method that many people
-use where each dance is in a separate folder.
+use where each dance is in a separate folder.  Another common
+organization path is _Dance/Artist&nbsp;-&nbsp;Title_.
 
 If you have iTunes installed, the organization path will be set to
 _Album&nbsp;Artist/Album/Disc&nbsp;-&nbsp;Track0&nbsp;Title_.
@@ -198,4 +199,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-27 09:20:09; BDJ4 version 4.11.6)_
+<br>_(Updated 2024-10-29 10:08:33; BDJ4 version 4.12.5.1)_
