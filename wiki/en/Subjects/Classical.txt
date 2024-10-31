@@ -1,0 +1,93 @@
+[Wiki Home](Home)
+
+[TOC]
+
+### Classical Music Support
+
+Classical music is supported by BallroomDJ&nbsp;4.  Classical music
+needs to have its title set correctly, and there are more audio tags.
+There is also a unique feature in BDJ4 for classical music.
+
+##### Classical Music Title
+
+The title for classical music should be set correctly according to the
+[MusicBrainz&nbsp;Classical&nbsp;Track&nbsp;Title](https://musicbrainz.org/doc/Style/Classical/Track_Title)
+guide.
+
+Classical music should have the title set to _Work: Movement_. e.g.
+_Primo&nbsp;Vere:&nbsp;Veris&nbsp;Leta&nbsp;Facies_ from
+_Carl&nbsp;Orff's_ _Carmina&nbsp;Burana_.  Each movement in the work
+should have the work set, not just the first movement.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![cm-se](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/cm-se-B.png)
+<br><span style="color:#4559bf;">__Song Editor__</span> </div>
+
+##### Classical Music Audio Tags
+
+Classical music will use more audio tags than general music.  Some of
+the audio tags that may be desired are: _Album&nbsp;Artist_,
+_Album&nbsp;Artist&nbsp;Sort&nbsp;Order_, _Composer_,
+_Composer&nbsp;Sort&nbsp;Order_, and _Conductor_.
+
+The audio tags to be displayed in the music manager, the music queue,
+the song selection and the song editor can be set in
+[Configure&nbsp;/&nbsp;Display&nbsp;Settings](en-Configuration-Display%20Settings).
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![cm-conf-dispset](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/cm-conf-dispset-B.png)
+<br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
+
+##### Audio Tag Sort Order
+
+If the corresponding sort order is set for an audio tag, then BDJ4
+will sort according to the sort order value, not the display value.
+
+For example, if the _Composer_ is set to _Carl&nbsp;Orff_, and the
+display is sorted by composer, the composer would show up in the
+letter _C_ section.  If the _Composer&nbsp;Sort&nbsp;Order_
+is set to _Orff,&nbsp;Carl_, then the song would show up in the letter
+_O_ section, and _Carl&nbsp;Orff_ would be displayed.
+
+##### Classical Music Display
+
+Many of the audio tags for classical music tend to be rather long.  In
+the music manager, text that is too long to be displayed will be
+truncated with an ellipsis at the end.
+
+In the music manager (and music queue, etc.), mouse over the display
+to see a tooltip with the full display.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![cm-mm-disp](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/cm-mm-disp-B.png)
+<br><span style="color:#4559bf;">__Music Manager / Tooltips__</span> </div>
+
+##### Selecting an Entire Work
+
+BDJ4 has a unique feature to select an entire work.
+
+Suppose you want to listen to _Beethoven's_
+_Symphony&nbsp;No.&nbsp;5_.  In the Player, right-click on the first
+movement in the work.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![cm-play-work](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/cm-play-work-B.png)
+<br><span style="color:#4559bf;">__Player / Selecting a Work__</span> </div>
+
+The entire work will be selected.  Select the __Queue__ button to add
+the entire work to the music queue and start your playback.
+
+##### Sorting Classical Music
+
+The defaults shipped with BDJ4 may not have the sort orders that you
+want to use.  To add new sort orders, the data/sortopt.txt file must
+be edited.  [Contact](en-Getting%20Help) the development team for help.
+
+##### Organizing Classical Music
+
+The defaults shipped with BDJ4 may not have the organization that you
+want to use.  To add a new organization path, the data/orgopt.txt file must
+be edited.  [Contact](en-Getting%20Help) the development team for help.
+
+[Wiki Home](Home)
+<br>_(Updated 2024-10-31 10:21:04; BDJ4 version 4.12.5.1)_

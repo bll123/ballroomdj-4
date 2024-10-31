@@ -131,6 +131,7 @@ __Administration__
 <br>&nbsp;&nbsp;&nbsp;[Dance Selection](en-Subjects-Dance%20Selection)
 <br>&nbsp;&nbsp;&nbsp;[Song Selection](en-Subjects-Song%20Selection)
 <br>__Song Management__
+<br>&nbsp;&nbsp;&nbsp;[Classical Music](en-Subjects-Classical)
 <br>&nbsp;&nbsp;&nbsp;[Favorites](en-Subjects-Favorites)
 <br>&nbsp;&nbsp;&nbsp;[Keyword](en-Subjects-Keyword)
 <br>&nbsp;&nbsp;&nbsp;[Same Song Marks](en-Subjects-Same%20Song%20Marks)
@@ -146,4 +147,4 @@ __Administration__
 
 <small>[Developer Notes](Development-Developer%20Notes)</small>
 
-<br>_(Updated 2024-08-27 09:20:09; BDJ4 version 4.11.6)_
+<br>_(Updated 2024-10-31 10:23:42; BDJ4 version 4.12.5.1)_
