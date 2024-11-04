@@ -23,7 +23,8 @@
 
 <div markdown style="float: left; margin-right: 20px;">
 
-[Translations](en-Translations)
+[Contributing to BDJ4 Development](en-Contributing)
+<br>[Translations](en-Translations)
 <br>[About](en-About)
 <br>[About this Wiki](en-AboutWiki)
 
@@ -99,42 +100,42 @@
 <div markdown style="float: left; margin-right: 20px;">
 
 ### Subjects
-__Administration__
-<br>&nbsp;&nbsp;&nbsp;[Adding Songs to the Database](en-Subjects-Adding%20Songs)
-<br>&nbsp;&nbsp;&nbsp;[Changing the Name of a Dance](en-Subjects-Changing%20Dance%20Name)
-<br>&nbsp;&nbsp;&nbsp;[Moving BDJ4 to a new Computer](en-Subjects-Moving)
-<br>&nbsp;&nbsp;&nbsp;[Export to BDJ4 / Import from BDJ4](en-Subjects-Export%20Import%20BDJ4)
-<br>__Advanced Setup__
-<br>&nbsp;&nbsp;&nbsp;[Alternate Folders](en-Subjects-Alternate%20Folders)
-<br>&nbsp;&nbsp;&nbsp;[Profiles](en-Subjects-Profiles)
-<br>&nbsp;&nbsp;&nbsp;[Keyboard Shortcuts](en-Subjects-Keyboard%20Shortcuts)
-<br>&nbsp;&nbsp;&nbsp;[Manual Configuration Items](en-Subjects-Manual%20Configuration)
-<br>__Audio File Management__
-<br>&nbsp;&nbsp;&nbsp;[Organizing Music](en-Subjects-Organizing%20Music)
-<br>&nbsp;&nbsp;&nbsp;[Removing Songs](en-Subjects-Removing%20Songs)
-<br>__Editing__
-<br>&nbsp;&nbsp;&nbsp;[Batch Editing](en-Subjects-Batch%20Editing)
-<br>&nbsp;&nbsp;&nbsp;[BPM &amp; MPM](en-Subjects-BPM-MPM)
-<br>&nbsp;&nbsp;&nbsp;[Quick Edit](en-Subjects-Quick%20Edit)
-<br>__Filtering Songs__
-<br>&nbsp;&nbsp;&nbsp;[Filter Dialog](en-Subjects-Filter%20Dialog)
-<br>__Playback__
-<br>&nbsp;&nbsp;&nbsp;[Announcements](en-Subjects-Announcements)
-<br>__Playback Controls__
-<br>&nbsp;&nbsp;&nbsp;[Music Queues](en-Subjects-Music%20Queues)
-<br>&nbsp;&nbsp;&nbsp;[Playback Controls](en-Subjects-Playback%20Controls)
-<br>__Playlists__
-<br>&nbsp;&nbsp;&nbsp;[Song Lists](en-Subjects-Song%20Lists)
-<br>&nbsp;&nbsp;&nbsp;[Sequenced Playlists](en-Subjects-Sequenced%20Playlists)
-<br>&nbsp;&nbsp;&nbsp;[Automatic Playlists](en-Subjects-Automatic%20Playlists)
-<br>&nbsp;&nbsp;&nbsp;[Create a Song List from a Playlist](en-Subjects-Create%20Song%20List)
-<br>&nbsp;&nbsp;&nbsp;[Dance Selection](en-Subjects-Dance%20Selection)
-<br>&nbsp;&nbsp;&nbsp;[Song Selection](en-Subjects-Song%20Selection)
-<br>__Song Management__
-<br>&nbsp;&nbsp;&nbsp;[Classical Music](en-Subjects-Classical)
-<br>&nbsp;&nbsp;&nbsp;[Favorites](en-Subjects-Favorites)
-<br>&nbsp;&nbsp;&nbsp;[Keyword](en-Subjects-Keyword)
-<br>&nbsp;&nbsp;&nbsp;[Same Song Marks](en-Subjects-Same%20Song%20Marks)
+* __Administration__
+    * [Adding Songs to the Database](en-Subjects-Adding%20Songs)
+    * [Changing the Name of a Dance](en-Subjects-Changing%20Dance%20Name)
+    * [Moving BDJ4 to a new Computer](en-Subjects-Moving)
+    * [Export to BDJ4 / Import from BDJ4](en-Subjects-Export%20Import%20BDJ4)
+* __Advanced Setup__
+    * [Alternate Folders](en-Subjects-Alternate%20Folders)
+    * [Profiles](en-Subjects-Profiles)
+    * [Keyboard Shortcuts](en-Subjects-Keyboard%20Shortcuts)
+    * [Manual Configuration Items](en-Subjects-Manual%20Configuration)
+* __Audio File Management__
+    * [Organizing Music](en-Subjects-Organizing%20Music)
+    * [Removing Songs](en-Subjects-Removing%20Songs)
+* __Editing__
+    * [Batch Editing](en-Subjects-Batch%20Editing)
+    * [BPM &amp; MPM](en-Subjects-BPM-MPM)
+    * [Quick Edit](en-Subjects-Quick%20Edit)
+* __Filtering Songs__
+    * [Filter Dialog](en-Subjects-Filter%20Dialog)
+* __Playback__
+    * [Announcements](en-Subjects-Announcements)
+* __Playback Controls__
+    * [Music Queues](en-Subjects-Music%20Queues)
+    * [Playback Controls](en-Subjects-Playback%20Controls)
+* __Playlists__
+    * [Song Lists](en-Subjects-Song%20Lists)
+    * [Sequenced Playlists](en-Subjects-Sequenced%20Playlists)
+    * [Automatic Playlists](en-Subjects-Automatic%20Playlists)
+    * [Create a Song List from a Playlist](en-Subjects-Create%20Song%20List)
+    * [Dance Selection](en-Subjects-Dance%20Selection)
+    * [Song Selection](en-Subjects-Song%20Selection)
+* __Song Management__
+    * [Classical Music](en-Subjects-Classical)
+    * [Favorites](en-Subjects-Favorites)
+    * [Keyword](en-Subjects-Keyword)
+    * [Same Song Marks](en-Subjects-Same%20Song%20Marks)
 
 ### How To
 [Line Dances (Marquee Display)](en-HowTo-Linedance)
@@ -147,4 +148,4 @@ __Administration__
 
 <small>[Developer Notes](Development-Developer%20Notes)</small>
 
-<br>_(Updated 2024-10-31 10:23:42; BDJ4 version 4.12.5.1)_
+<br>_(Updated 2024-11-04 13:40:59; BDJ4 version 4.12.5.1)_

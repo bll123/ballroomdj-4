@@ -174,4 +174,4 @@ __Edit&nbsp;/&nbsp;Delete__ will delete the currently loaded playlist
 from your storage device and start a new automatic playlist.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-27 09:20:09; BDJ4 version 4.11.6)_
+<br>_(Updated 2024-11-04 13:40:59; BDJ4 version 4.12.5.1)_

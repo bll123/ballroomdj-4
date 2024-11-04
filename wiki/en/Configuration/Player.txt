@@ -51,4 +51,4 @@ ISO format is _Day-of-the-week YYYY-MM-DD HH:MM_.
 <br><span style="color:#4559bf;">__Player / Speed Reset Button__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-10-23 09:11:00; BDJ4 version 4.12.4)_
+<br>_(Updated 2024-11-04 13:40:59; BDJ4 version 4.12.5.1)_
