@@ -188,7 +188,7 @@ gstiMedia (gsti_t *gsti, const char *fulluri, int sourceType)
   if (sourceType == AUDIOSRC_TYPE_FILE) {
     snprintf (tbuff, sizeof (tbuff), "%s%s", AS_FILE_PFX, fulluri);
   } else {
-    strlcpy (tbuff, fulluri, sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), fulluri);
   }
 
   gsti->rate = 1.0;

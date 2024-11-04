@@ -39,7 +39,6 @@
 #include "uivlutil.h"
 
 enum {
-  SONGSEL_COL_DBIDX,
   SONGSEL_COL_MARK,
   SONGSEL_COL_MAX,
 };
@@ -117,6 +116,7 @@ static bool uisongselUIDanceSelectCallback (void *udata, int32_t idx, int32_t co
 static bool uisongselSongEditCallback (void *udata);
 static void uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
 static void uisongselFillMark (uisongsel_t *uisongsel, ss_internal_t *ssint, dbidx_t dbidx, int32_t rownum);
+static bool uisongselStartSFDialog (void *udata);
 
 void
 uisongselUIInit (uisongsel_t *uisongsel)
@@ -225,7 +225,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   /* as it has the left-arrow button.  Saves real estate. */
   if (uisongsel->dispselType == DISP_SEL_SONGSEL) {
     /* CONTEXT: song-selection: select a song to be added to the song list */
-    strlcpy (tbuff, _("Select"), sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), _("Select"));
     ssint->callbacks [SONGSEL_CB_SELECT] = callbackInit (
         uisongselSelectCallback, uisongsel, "songsel: select");
     uiwidgetp = uiCreateButton (
@@ -248,7 +248,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
 
   if (uisongsel->dispselType == DISP_SEL_REQUEST) {
     /* CONTEXT: (verb) song-selection: queue a song to be played */
-    strlcpy (tbuff, _("Queue"), sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), _("Queue"));
     ssint->callbacks [SONGSEL_CB_QUEUE] = callbackInit (
         uisongselQueueCallback, uisongsel, "songsel: queue");
     uiwidgetp = uiCreateButton (
@@ -266,7 +266,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
       uisongsel->dispselType == DISP_SEL_SBS_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_MM) {
     /* CONTEXT: song-selection: tooltip: play the selected songs */
-    strlcpy (tbuff, _("Play"), sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), _("Play"));
     ssint->callbacks [SONGSEL_CB_PLAY] = callbackInit (
         uisongselPlayCallback, uisongsel, "songsel: play");
     uiwidgetp = uiCreateButton (
@@ -284,7 +284,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
       ssint->callbacks [SONGSEL_CB_DANCE_SEL]);
 
   ssint->callbacks [SONGSEL_CB_FILTER] = callbackInit (
-      uisfDialog, uisongsel->uisongfilter, "songsel: filters");
+      uisongselStartSFDialog, uisongsel, "songsel: filters");
   uiwidgetp = uiCreateButton (
       ssint->callbacks [SONGSEL_CB_FILTER],
       /* CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog */
@@ -319,7 +319,6 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   ssint->colcount = slistGetCount (sellist) + SONGSEL_COL_MAX;
   uivlSetNumColumns (uivl, ssint->colcount);
 
-  uivlMakeColumn (uivl, "dbidx", SONGSEL_COL_DBIDX, VL_TYPE_INTERNAL_NUMERIC);
   uivlMakeColumn (uivl, "mark", SONGSEL_COL_MARK, VL_TYPE_LABEL);
   /* see comments in fill-mark */
   uivlSetColumnClass (uivl, SONGSEL_COL_MARK, LIST_NO_DISP);
@@ -439,16 +438,29 @@ uisongselApplySongFilter (void *udata)
   ssint = uisongsel->ssInternalData;
   ssint->inapply = true;
 
+  /* the callback must be set every time, as the song filter is re-used */
+  /* by multiple song-selection ui's */
+  uisfSetApplyCallback (uisongsel->uisongfilter, uisongsel->sfapplycb);
+
   uidanceSetKey (uisongsel->uidance,
       songfilterGetNum (uisongsel->songfilter, SONG_FILTER_DANCE_IDX));
 
   uisongsel->numrows = songfilterProcess (
       uisongsel->songfilter, uisongsel->musicdb);
-  uisongsel->idxStart = 0;
 
   uisongselPopulateData (uisongsel);
 
   ssint->inapply = false;
+
+  if (uisongsel->numrows > 0 && uisongsel->newselcb != NULL) {
+    dbidx_t   dbidx;
+
+    uivlSetSelection (ssint->uivl, 0);
+    dbidx = songfilterGetByIdx (uisongsel->songfilter, 0);
+    if (dbidx >= 0) {
+      callbackHandlerI (uisongsel->newselcb, dbidx);
+    }
+  }
 
   logProcEnd ("");
   return UICB_CONT;
@@ -533,7 +545,7 @@ uisongselGetSelectedList (uisongsel_t *uisongsel)
   nlistSetSize (tlist, uivlSelectionCount (ssint->uivl));
   uivlStartSelectionIterator (ssint->uivl, &vliteridx);
   while ((rowidx = uivlIterateSelection (ssint->uivl, &vliteridx)) >= 0) {
-    dbidx = uivlGetRowColumnNum (ssint->uivl, rowidx, SONGSEL_COL_DBIDX);
+    dbidx = songfilterGetByIdx (uisongsel->songfilter, rowidx);
     nlistSetNum (tlist, dbidx, 0);
   }
   nlistSort (tlist);
@@ -567,7 +579,7 @@ uisongselSetSelection (uisongsel_t *uisongsel, int32_t rowidx)
   uivlSetSelection (ssint->uivl, rowidx);
 
   if (uivlSelectionCount (ssint->uivl) == 1) {
-    uisongsel->lastdbidx = uivlGetRowColumnNum (ssint->uivl, rowidx, SONGSEL_COL_DBIDX);
+    uisongsel->lastdbidx = songfilterGetByIdx (uisongsel->songfilter, rowidx);
   }
 
   logProcEnd ("");
@@ -654,7 +666,9 @@ uisongselMoveSelection (void *udata, int direction)
     if (uisongsel->newselcb != NULL) {
       dbidx_t   dbidx;
 
-      dbidx = uivlGetRowColumnNum (ssint->uivl, ssint->selectListKey, SONGSEL_COL_DBIDX);
+      /* the db-idx must be retrieved from the song filter, not the */
+      /* virtual list, as the selection may not be currently displayed */
+      dbidx = songfilterGetByIdx (uisongsel->songfilter, ssint->selectListKey);
       if (dbidx >= 0) {
         callbackHandlerI (uisongsel->newselcb, dbidx);
       }
@@ -702,7 +716,7 @@ uisongselQueueHandler (uisongsel_t *uisongsel, int mqidx, int action)
 
   uivlStartSelectionIterator (ssint->uivl, &vliteridx);
   while ((rowidx = uivlIterateSelection (ssint->uivl, &vliteridx)) >= 0) {
-    dbidx = uivlGetRowColumnNum (ssint->uivl, rowidx, SONGSEL_COL_DBIDX);
+    dbidx = songfilterGetByIdx (uisongsel->songfilter, rowidx);
     if (action == UISONGSEL_QUEUE) {
       uisongselQueueProcess (uisongsel, dbidx);
     }
@@ -768,7 +782,7 @@ uisongselRowClickCallback (void *udata, uivirtlist_t *vl,
 
   ssint = uisongsel->ssInternalData;
   if (uivlSelectionCount (ssint->uivl) == 1) {
-    uisongsel->lastdbidx = uivlGetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX);
+    uisongsel->lastdbidx = songfilterGetByIdx (uisongsel->songfilter, rownum);
   }
 
   if (ssint->favcolumn < 0 || colidx != ssint->favcolumn) {
@@ -777,7 +791,7 @@ uisongselRowClickCallback (void *udata, uivirtlist_t *vl,
   }
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: songsel: change favorite");
-  dbidx = uivlGetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX);
+  dbidx = songfilterGetByIdx (uisongsel->songfilter, rownum);
   if (dbidx < 0) {
     logProcEnd ("bad-dbidx");
     return;
@@ -813,8 +827,7 @@ uisongselRightClickCallback (void *udata, uivirtlist_t *vl,
     nlistidx_t  genreidx;
     bool        clflag;
 
-    dbidx = uivlGetRowColumnNum (ssint->uivl, rowidx, SONGSEL_COL_DBIDX);
-
+    dbidx = songfilterGetByIdx (uisongsel->songfilter, rowidx);
     song = dbGetByIdx (uisongsel->musicdb, dbidx);
     genreidx = songGetNum (song, TAG_GENRE);
     clflag = genreGetClassicalFlag (ssint->genres, genreidx);
@@ -894,7 +907,7 @@ uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int co
   }
 
   if (uivlSelectionCount (ssint->uivl) == 1) {
-    uisongsel->lastdbidx = uivlGetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX);
+    uisongsel->lastdbidx = songfilterGetByIdx (uisongsel->songfilter, rownum);
   }
 
   /* the selection has changed, reset the iterator and set the select key */
@@ -905,7 +918,7 @@ uisongselProcessSelectChg (void *udata, uivirtlist_t *vl, int32_t rownum, int co
   if (uisongsel->newselcb != NULL) {
     dbidx_t   dbidx;
 
-    dbidx = uivlGetRowColumnNum (ssint->uivl, ssint->selectListKey, SONGSEL_COL_DBIDX);
+    dbidx = songfilterGetByIdx (uisongsel->songfilter, ssint->selectListKey);
     if (dbidx >= 0) {
       callbackHandlerI (uisongsel->newselcb, dbidx);
     }
@@ -922,6 +935,7 @@ uisongselSongEditCallback (void *udata)
 {
   uisongsel_t     *uisongsel = udata;
   dbidx_t         dbidx;
+  int             rc = UICB_CONT;
 
 
   logProcBegin ();
@@ -933,8 +947,11 @@ uisongselSongEditCallback (void *udata)
     }
     callbackHandlerI (uisongsel->newselcb, dbidx);
   }
+  if (uisongsel->editcb != NULL) {
+    rc = callbackHandler (uisongsel->editcb);
+  }
   logProcEnd ("");
-  return callbackHandler (uisongsel->editcb);
+  return rc;
 }
 
 static void
@@ -959,8 +976,6 @@ uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   }
 
   ssint->inchange = true;
-
-  uivlSetRowColumnNum (ssint->uivl, rownum, SONGSEL_COL_DBIDX, dbidx);
 
   tdlist = uisongGetDisplayList (ssint->sellist, NULL, song);
   slistStartIterator (ssint->sellist, &seliteridx);
@@ -1039,4 +1054,16 @@ uisongselFillMark (uisongsel_t *uisongsel, ss_internal_t *ssint,
   if (classnm != NULL) {
     uivlSetRowColumnClass (ssint->uivl, rownum, SONGSEL_COL_MARK, classnm);
   }
+}
+
+static bool
+uisongselStartSFDialog (void *udata)
+{
+  uisongsel_t     *uisongsel = udata;
+  uisongfilter_t  *uisf = uisongsel->uisongfilter;
+  bool            rc;
+
+  uisfSetApplyCallback (uisf, uisongsel->sfapplycb);
+  rc = uisfDialog (uisf);
+  return rc;
 }

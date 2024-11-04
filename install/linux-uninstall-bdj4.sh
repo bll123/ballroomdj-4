@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2024 Brad Lanam Pleasant Hill CA
 #
-ver=3
+ver=4
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -78,6 +78,11 @@ if [[ $gr == Y ]]; then
   test -d "${confdira}" && rm -rf "${confdira}"  # old
   test -d "${confdirb}" && rm -rf "${confdirb}"
   test -d "${cachedir}" && rm -rf "${cachedir}"
+
+  # crontab
+  crontab -l | sed -e '/bdj4cleantmp/ d' > $TMP
+  crontab $TMP
+  rm -f $TMP
 
   # remove any old mutagen installed for the user
   pipp=/usr/bin/pip

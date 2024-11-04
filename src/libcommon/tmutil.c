@@ -55,6 +55,7 @@
 static char radixchar [2] = { "." };
 static bool initialized = false;
 
+static struct tm * tmutilLocaltime (const time_t * const s, struct tm *t);
 static void tmutilInit (void);
 
 void
@@ -107,19 +108,12 @@ mstimestartofday (void)
   struct timeval    curr;
   time_t            s, m, h, tot;
   struct tm         *tp;
-#if _lib_localtime_r
   struct tm         t;
-#endif
 
   gettimeofday (&curr, NULL);
   s = curr.tv_sec;
 
-#if _lib_localtime_r
-  localtime_r (&s, &t);
-  tp = &t;
-#else
-  tp = localtime (&s);
-#endif
+  tp = tmutilLocaltime (&s, &t);
 
   m = tp->tm_min * 60;
   h = tp->tm_hour * 3600;
@@ -200,18 +194,11 @@ tmutilDstamp (char *buff, size_t max)
   struct timeval    curr;
   struct tm         *tp;
   time_t            s;
-#if _lib_localtime_r
   struct tm         t;
-#endif
 
   gettimeofday (&curr, NULL);
   s = curr.tv_sec;
-#if _lib_localtime_r
-  localtime_r (&s, &t);
-  tp = &t;
-#else
-  tp = localtime (&s);
-#endif
+  tp = tmutilLocaltime (&s, &t);
   strftime (buff, max, "%F", tp);
   return buff;
 }
@@ -222,18 +209,11 @@ tmutilDisp (char *buff, size_t sz, int type)
   struct timeval    curr;
   struct tm         *tp;
   time_t            s;
-#if _lib_localtime_r
   struct tm         t;
-#endif
 
   gettimeofday (&curr, NULL);
   s = curr.tv_sec;
-#if _lib_localtime_r
-  localtime_r (&s, &t);
-  tp = &t;
-#else
-  tp = localtime (&s);
-#endif
+  tp = tmutilLocaltime (&s, &t);
   if (type == TM_CLOCK_ISO) {
     ssize_t    pos;
 
@@ -248,12 +228,14 @@ tmutilDisp (char *buff, size_t sz, int type)
 #if _lib_GetDateFormatEx
     wchar_t     wtmp [200];
     char        *tmp;
+    char        *p = buff;
+    char        *end = buff + sz;
 
     GetDateFormatEx (LOCALE_NAME_USER_DEFAULT, DATE_LONGDATE, NULL,
         NULL, wtmp, 200, NULL);
     tmp = osFromWideChar (wtmp);
     if (tmp != NULL) {
-      strlcpy (buff, tmp, sz);
+      p = stpecpy (p, end, tmp);
       mdfree (tmp);
     }
 # if _lib_GetTimeFormatEx
@@ -261,8 +243,8 @@ tmutilDisp (char *buff, size_t sz, int type)
         NULL, wtmp, 200);
     tmp = osFromWideChar (wtmp);
     if (tmp != NULL) {
-      strlcat (buff, " ", sz);
-      strlcat (buff, tmp, sz);
+      p = stpecpy (p, end, " ");
+      p = stpecpy (p, end, tmp);
       mdfree (tmp);
     }
 # endif
@@ -295,24 +277,17 @@ tmutilTstamp (char *buff, size_t sz)
   struct tm         *tp;
   char              tbuff [20];
   time_t            s, u, m;
-#if _lib_localtime_r
   struct tm         t;
-#endif
 
 
   gettimeofday (&curr, NULL);
   s = curr.tv_sec;
   u = curr.tv_usec;
   m = u / 1000;
-#if _lib_localtime_r
-  localtime_r (&s, &t);
-  tp = &t;
-#else
-  tp = localtime (&s);
-#endif
+  tp = tmutilLocaltime (&s, &t);
   strftime (buff, sz, "%H:%M:%S", tp);
   snprintf (tbuff, sizeof (tbuff), ".%03zd", m);
-  strlcat (buff, tbuff, sz);
+  stpecpy (buff + strlen (buff), buff + sz, tbuff);
   return buff;
 }
 
@@ -322,18 +297,11 @@ tmutilShortTstamp (char *buff, size_t sz)
   struct timeval    curr;
   struct tm         *tp;
   time_t            s;
-#if _lib_localtime_r
   struct tm         t;
-#endif
 
   gettimeofday (&curr, NULL);
   s = curr.tv_sec;
-#if _lib_localtime_r
-  localtime_r (&s, &t);
-  tp = &t;
-#else
-  tp = localtime (&s);
-#endif
+  tp = tmutilLocaltime (&s, &t);
   strftime (buff, sz, "%H%M%S", tp);
   return buff;
 }
@@ -380,17 +348,10 @@ tmutilToDateHM (time_t ms, char *buff, size_t sz)
 {
   struct tm         *tp;
   time_t            s;
-#if _lib_localtime_r
   struct tm         t;
-#endif
 
   s = ms / 1000;
-#if _lib_localtime_r
-  localtime_r (&s, &t);
-  tp = &t;
-#else
-  tp = localtime (&s);
-#endif
+  tp = tmutilLocaltime (&s, &t);
   /* I'd like to use the locale aware %X, but it returns the 12-hour clock */
   /* for many locales */
   /* there doesn't appear to be a locale aware 24-hour clock display */
@@ -513,24 +474,21 @@ tmutilStringToUTC (const char *str, const char *fmt)
   tmval = timegm (&tm);
 #else
   {
-# if _lib_localtime_r
     struct tm   ttm;
-# endif
     struct tm   *tp;
     time_t      gtmval = 0;
     time_t      ltmval = 0;
     long        diff = 0;
 
     tmval = time (NULL);
-# if _lib_localtime_r
-    localtime_r (&tmval, &ttm);
-    tp = &ttm;
-# else
-    tp = localtime (&tmval);
-# endif
+    tp = tmutilLocaltime (&tmval, &ttm);
     tp->tm_isdst = 0;
     ltmval = mktime (tp);
+#if _lib_gmtime_s
+    gmtime_s (tp, &tmval);
+#else
     tp = gmtime (&tmval);
+#endif
     gtmval = mktime (tp);
     diff = ltmval;
     diff -= gtmval;
@@ -545,6 +503,21 @@ tmutilStringToUTC (const char *str, const char *fmt)
 
 /* internal routines */
 
+static struct tm *
+tmutilLocaltime (const time_t * const s, struct tm *t)
+{
+  struct tm   *tp = t;
+
+#if _lib_localtime_s
+  localtime_s (t, s);
+#elif _lib_localtime_r
+  localtime_r (s, t);
+#else
+  tp = localtime (s);
+#endif
+  return tp;
+}
+
 static void
 tmutilInit (void)
 {
@@ -552,7 +525,7 @@ tmutilInit (void)
     struct lconv *lconv;
 
     lconv = localeconv ();
-    strlcpy (radixchar, lconv->decimal_point, sizeof (radixchar));
+    stpecpy (radixchar, radixchar + sizeof (radixchar), lconv->decimal_point);
     initialized = true;
   }
 }

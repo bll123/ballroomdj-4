@@ -1,5 +1,5 @@
 # localization
-# generated 2024-08-19
+# generated 2024-10-21
 KEY
 ..0
 LONG
@@ -207,6 +207,18 @@ QDANCE
 KEY
 ..17
 LONG
+..ro_RO
+SHORT
+..ro
+DISPLAY
+..română
+STDROUNDS
+..runde standard
+QDANCE
+..QueueDance
+KEY
+..18
+LONG
 ..ru_RU
 SHORT
 ..ru
@@ -217,7 +229,7 @@ STDROUNDS
 QDANCE
 ..Танец в очередь
 KEY
-..18
+..19
 LONG
 ..sr_RS
 SHORT
@@ -229,7 +241,7 @@ STDROUNDS
 QDANCE
 ..КуеуеДанце
 KEY
-..19
+..20
 LONG
 ..sv_SE
 SHORT
@@ -241,7 +253,7 @@ STDROUNDS
 QDANCE
 ..QueueDance
 KEY
-..20
+..21
 LONG
 ..uk_UA
 SHORT
@@ -253,7 +265,7 @@ STDROUNDS
 QDANCE
 ..QueueDance
 KEY
-..21
+..22
 LONG
 ..vi_VN
 SHORT
@@ -265,7 +277,7 @@ STDROUNDS
 QDANCE
 ..Hàng đợi khiêu vũ
 KEY
-..22
+..23
 LONG
 ..zh_CN
 SHORT
@@ -277,7 +289,7 @@ STDROUNDS
 QDANCE
 ..队列舞蹈
 KEY
-..23
+..24
 LONG
 ..zh_TW
 SHORT

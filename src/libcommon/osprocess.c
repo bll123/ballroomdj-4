@@ -81,7 +81,9 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
         outfname = NULL;
       } else {
         dup2 (fd, STDOUT_FILENO);
-        dup2 (fd, STDERR_FILENO);
+        if ((flags & OS_PROC_NOSTDERR) != OS_PROC_NOSTDERR) {
+          dup2 (fd, STDERR_FILENO);
+        }
         mdextclose (fd);
         close (fd);
       }

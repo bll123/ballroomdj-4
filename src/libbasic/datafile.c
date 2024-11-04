@@ -58,7 +58,7 @@ static void     datafileSaveKeyVal (datafile_t *df, const char *fn, nlist_t *lis
 static void     datafileSaveIndirect (datafile_t *df, const char *fn, nlist_t *list, int distvers);
 static void     datafileSaveList (datafile_t *df, const char *fn, nlist_t *list, int distvers);
 static FILE *   datafileSavePrep (const char *fn, const char *tag, int distvers);
-static size_t   datafileSaveItem (char *buff, size_t sz, size_t currsz, const char *name, dfConvFunc_t convFunc, datafileconv_t *conv, int flags);
+static char     *datafileSaveItem (char *buff, size_t sz, char *currp, const char *name, dfConvFunc_t convFunc, datafileconv_t *conv, int flags);
 static void     datafileLoadConv (datafilekey_t *dfkey, nlist_t *list, datafileconv_t *conv, int offset);
 static void     datafileConvertValue (char *buff, size_t sz, dfConvFunc_t convFunc, datafileconv_t *conv);
 static void     datafileDumpItem (const char *tag, const char *name, dfConvFunc_t convFunc, datafileconv_t *conv);
@@ -164,17 +164,23 @@ convTextList (datafileconv_t *conv)
     slistidx_t  iteridx;
     char        tbuff [300];
     const char  *key;
+    char        *p;
+    char        *end = tbuff + sizeof (tbuff);
+    bool        first = true;
 
     conv->outvt = VALUE_STRVAL;
     list = conv->list;
 
     *tbuff = '\0';
     slistStartIterator (list, &iteridx);
+    p = tbuff;
     while ((key = slistIterateKey (list, &iteridx)) != NULL) {
-      strlcat (tbuff, key, sizeof (tbuff));
-      strlcat (tbuff, " ", sizeof (tbuff));
+      if (! first) {
+        p = stpecpy (p, end, " ");
+      }
+      p = stpecpy (p, end, key);
+      first = false;
     }
-    stringTrimChar (tbuff, ' ');
     conv->strval = mdstrdup (tbuff);
   }
 
@@ -322,19 +328,20 @@ datafileSaveKeyValBuffer (char *buff, size_t sz, const char *tag,
     datafilekey_t *dfkeys, int dfkeycount, nlist_t *list, int offset, int flags)
 {
   datafileconv_t  conv;
-  size_t          currsz = 0;
+  char            *currp;
 
   *buff = '\0';
+  currp = buff;
 
   for (ssize_t i = 0; i < dfkeycount; ++i) {
     if (dfkeys [i].writeFlag == DF_NO_WRITE) {
       continue;
     }
     datafileLoadConv (&dfkeys [i], list, &conv, offset);
-    currsz = datafileSaveItem (buff, sz, currsz, dfkeys [i].name, dfkeys [i].convFunc, &conv, flags);
+    currp = datafileSaveItem (buff, sz, currp, dfkeys [i].name, dfkeys [i].convFunc, &conv, flags);
   }
 
-  return currsz;
+  return currp - buff;
 }
 
 void
@@ -669,7 +676,9 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
     }
 
     if (inc == 2 && strcmp (tkeystr, DF_VERSION_STR) == 0) {
-      int version = atoi (tvalstr);
+      /* ignore set version and replace with correct version */
+      int     version = atoi (tvalstr);
+
       if (dftype == DFTYPE_INDIRECT) {
         ilistSetVersion (datalist, version);
       } else {
@@ -842,7 +851,7 @@ datafileSaveIndirect (datafile_t *df, const char *fn,
   ilistidx_t      iteridx;
   ilistidx_t      key;
   char            buff [DATAFILE_MAX_SIZE];
-  size_t          currsz = 0;
+  char            *currp;
 
   *buff = '\0';
   fh = datafileSavePrep (fn, df->tag, distvers);
@@ -857,11 +866,13 @@ datafileSaveIndirect (datafile_t *df, const char *fn,
   fprintf (fh, "count\n..%" PRId32 "\n", count);
 
   count = 0;
+  currp = buff;
+
   while ((key = ilistIterateKey (list, &iteridx)) >= 0) {
     conv.invt = VALUE_NUM;
     /* on save, re-order the keys */
     conv.num = count++;
-    currsz = datafileSaveItem (buff, sizeof (buff), currsz, "KEY", NULL, &conv, DF_NONE);
+    currp = datafileSaveItem (buff, sizeof (buff), currp, "KEY", NULL, &conv, DF_NONE);
 
     for (ssize_t i = 0; i < df->dfkeycount; ++i) {
       if (df->dfkeys [i].writeFlag == DF_NO_WRITE) {
@@ -886,11 +897,11 @@ datafileSaveIndirect (datafile_t *df, const char *fn,
         conv.dval = ilistGetDouble (list, key, df->dfkeys [i].itemkey);
       }
 
-      currsz = datafileSaveItem (buff, sizeof (buff), currsz,
+      currp = datafileSaveItem (buff, sizeof (buff), currp,
           df->dfkeys [i].name, df->dfkeys [i].convFunc, &conv, DF_NONE);
     }
   }
-  fwrite (buff, currsz, 1, fh);
+  fwrite (buff, currp - buff, 1, fh);
   mdextfclose (fh);
   fclose (fh);
 }
@@ -902,7 +913,8 @@ datafileSaveList (datafile_t *df, const char *fn, slist_t *list, int distvers)
   slistidx_t  iteridx;
   const char  *str;
   char        buff [DATAFILE_MAX_SIZE];
-  char        tbuff [1024];
+  char        *p;
+  char        *end = buff + sizeof (buff);
 
   logProcBegin ();
   *buff = '\0';
@@ -916,11 +928,11 @@ datafileSaveList (datafile_t *df, const char *fn, slist_t *list, int distvers)
   fprintf (fh, "\n");
 
   slistStartIterator (list, &iteridx);
-
+  p = buff;
   while ((str = slistIterateKey (list, &iteridx)) != NULL) {
     logMsg (LOG_DBG, LOG_DATAFILE, "save-list: %s", str);
-    snprintf (tbuff, sizeof (tbuff), "%s\n", str);
-    strlcat (buff, tbuff, sizeof (buff));
+    p = stpecpy (p, end, str);
+    p = stpecpy (p, end, "\n");
   }
   fprintf (fh, "%s", buff);
   mdextfclose (fh);
@@ -949,24 +961,25 @@ datafileSavePrep (const char *fn, const char *tag, int distvers)
   return fh;
 }
 
-static size_t
-datafileSaveItem (char *buff, size_t sz, size_t currsz, const char *name,
+static char *
+datafileSaveItem (char *buff, size_t sz, char *currp, const char *name,
     dfConvFunc_t convFunc, datafileconv_t *conv, int flags)
 {
-  char            valbuff [2048];
+  char    valbuff [2048];
+  char    *end = buff + sz;
 
   datafileConvertValue (valbuff, sizeof (valbuff), convFunc, conv);
   if ((flags & DF_SKIP_EMPTY) == DF_SKIP_EMPTY) {
     if (! *valbuff) {
-      return currsz;
+      return currp;
     }
   }
-  currsz = stringAppend (buff, sz, currsz, name);
-  currsz = stringAppend (buff, sz, currsz, "\n");
-  currsz = stringAppend (buff, sz, currsz, "..");
-  currsz = stringAppend (buff, sz, currsz, valbuff);
-  currsz = stringAppend (buff, sz, currsz, "\n");
-  return currsz;
+  currp = stpecpy (currp, end, name);
+  currp = stpecpy (currp, end, "\n");
+  currp = stpecpy (currp, end, "..");
+  currp = stpecpy (currp, end, valbuff);
+  currp = stpecpy (currp, end, "\n");
+  return currp;
 }
 
 static void
@@ -1042,7 +1055,7 @@ datafileDumpItem (const char *tag, const char *name, dfConvFunc_t convFunc,
   char    tbuff [1024];
 
   datafileConvertValue (tbuff, sizeof (tbuff), convFunc, conv);
-  fprintf (stdout, "%2s: %-20s ", tag, name);
+  fprintf (stdout, "%3s: %-20s ", tag, name);
   fprintf (stdout, "%s", tbuff);
   fprintf (stdout, "\n");
 }

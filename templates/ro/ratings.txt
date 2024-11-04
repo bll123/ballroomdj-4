@@ -1,0 +1,31 @@
+# ratings
+# 2022-8-4
+# version 1
+version
+..1
+count
+..4
+KEY
+..0
+RATING
+..Neevaluat
+WEIGHT
+..5
+KEY
+..1
+RATING
+..Slabă
+WEIGHT
+..0
+KEY
+..2
+RATING
+..Bun
+WEIGHT
+..15
+KEY
+..3
+RATING
+..Mare
+WEIGHT
+..80

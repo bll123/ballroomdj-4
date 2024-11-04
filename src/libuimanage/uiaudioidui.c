@@ -434,7 +434,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_LABEL], uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  snprintf (tbuff, sizeof (tbuff), "%s bold", bdjoptGetStr (OPT_MP_UIFONT));
+  snprintf (tbuff, sizeof (tbuff), "%s bold", bdjoptGetStr (OPT_M_UI_FONT));
 
   /* CONTEXT: audio identification: the data for the current song */
   uiwidgetp = uiCreateLabel (_("Current"));
@@ -1056,7 +1056,7 @@ uiaudioidFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum)
       /* which has already been converted */
       str = nlistGetStr (dlist, tagidx);
       if (rownum == 0) {
-        strlcpy (tmp, str, sizeof (tmp));
+        stpecpy (tmp, tmp + sizeof (tmp), str);
       } else {
         if (str != NULL) {
           dur = atol (str);

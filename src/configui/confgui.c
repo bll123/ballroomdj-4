@@ -35,6 +35,9 @@ enum {
   CONFUI_NO_EXPAND,
 };
 
+static const char * INDENT_STR = "      ";
+
+
 static void confuiMakeItemEntryBasic (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent, int expand);
 static bool confuiLinkCallback (void *udata);
 static int32_t confuiValHMCallback (void *udata, const char *label, const char *txt);
@@ -474,9 +477,12 @@ confuiMakeItemLabel (uiwcont_t *boxp, uiwcont_t *szgrp, const char *txt, int ind
   logProcBegin ();
   ttxt = txt;
   if (indent == CONFUI_INDENT) {
+    char    *p = ntxt;
+    char    *end = ntxt + sizeof (ntxt);
+
     *ntxt = '\0';
-    strlcat (ntxt, "   ", sizeof (ntxt));
-    strlcat (ntxt, txt, sizeof (ntxt));
+    p = stpecpy (p, end, "   ");
+    p = stpecpy (p, end, txt);
     ttxt = ntxt;
   }
 
@@ -492,7 +498,7 @@ confuiMakeItemLabel (uiwcont_t *boxp, uiwcont_t *szgrp, const char *txt, int ind
   uiwcontFree (uiwidgetp);
 
   if (indent == CONFUI_INDENT) {
-    strlcpy (ntxt, "      ", sizeof (ntxt));
+    stpecpy (ntxt, ntxt + sizeof (ntxt), INDENT_STR);
     uiwidgetp = uiCreateLabel (ttxt);
     uiBoxPackStart (boxp, uiwidgetp);
     uiwcontFree (uiwidgetp);

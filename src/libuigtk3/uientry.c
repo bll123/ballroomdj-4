@@ -265,7 +265,7 @@ uiEntryValidateDir (uiwcont_t *uiwidget, const char *label, void *udata)
   dir = gtk_entry_buffer_get_text (uientry->buffer);
   uientry->valid = false;
   if (dir != NULL) {
-    strlcpy (tbuff, dir, sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), dir);
     pathNormalizePath (tbuff, sizeof (tbuff));
     if (fileopIsDirectory (tbuff)) {
       rc = UIENTRY_OK;
@@ -302,7 +302,7 @@ uiEntryValidateFile (uiwcont_t *uiwidget, const char *label, void *udata)
       rc = UIENTRY_OK;
       uientry->valid = true;
     } else {
-      strlcpy (tbuff, fn, sizeof (tbuff));
+      stpecpy (tbuff, tbuff + sizeof (tbuff), fn);
       pathNormalizePath (tbuff, sizeof (tbuff));
       if (fileopFileExists (tbuff)) {
         rc = UIENTRY_OK;

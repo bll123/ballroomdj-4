@@ -36,6 +36,8 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
   char        tbuff [MAXPATHLEN];
   const char  *str;
   char        ffn [MAXPATHLEN];
+  char        *tp = tbuff;
+  char        *tend = tbuff + sizeof (tbuff);
 
   fh = fileopOpen (fname, "w");
   if (fh == NULL) {
@@ -62,7 +64,8 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
     if (str != NULL && *str) {
       snprintf (tbuff, sizeof (tbuff), "%s - ", str);
     }
-    strlcat (tbuff, songGetStr (song, TAG_TITLE), sizeof (tbuff));
+    tp = tbuff + strlen (tbuff);
+    tp = stpecpy (tp, tend, songGetStr (song, TAG_TITLE));
     fprintf (fh, "#EXTINF:%" PRId64 ",%s\n",
         songGetNum (song, TAG_DURATION) / 1000, tbuff);
     str = songGetStr (song, TAG_ALBUMARTIST);
@@ -103,7 +106,7 @@ m3uImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
         ++p;
       }
       if (*p) {
-        strlcpy (plname, p, plsz);
+        stpecpy (plname, plname + plsz, p);
       }
       continue;
     }

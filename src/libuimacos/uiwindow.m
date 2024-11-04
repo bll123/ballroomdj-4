@@ -348,42 +348,60 @@ uiCreateDialogWindow (uiwcont_t *parentwin,
 void
 uiWindowSetDoubleClickCallback (uiwcont_t *uiwindow, callback_t *uicb)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-set-dclick-cb")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowSetWinStateCallback (uiwcont_t *uiwindow, callback_t *uicb)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-set-state-cb")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowNoDim (uiwcont_t *uiwindow)
 {
-  return;
-}
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-no-dim")) {
+    return;
+  }
 
-void
-uiWindowSetMappedCallback (uiwcont_t *uiwidget, callback_t *uicb)
-{
   return;
 }
 
 void
 uiWindowPresent (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-present")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowRaise (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-raise")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowFind (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-find")) {
+    return;
+  }
+
   return;
 }
 
@@ -440,5 +458,21 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
 void
 uiWindowClearFocus (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "window-clear-focus")) {
+    return;
+  }
+
+  return;
+}
+
+void
+uiWindowGetMonitorSize (uiwcont_t *uiwindow, int *width, int *height)
+{
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-get-mon-sz")) {
+    return;
+  }
+
+  *width = 0;
+  *height = 0;
   return;
 }

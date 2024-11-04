@@ -19,6 +19,7 @@
 #include "configui.h"
 #include "log.h"
 #include "sysvars.h"
+#include "tmutil.h"
 #include "ui.h"
 
 void
@@ -40,24 +41,24 @@ confuiBuildUIUserInterface (confuigui_t *gui)
 
   /* CONTEXT: configuration: the theme to use for the user interface */
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Theme"),
-      CONFUI_SPINBOX_UI_THEME, OPT_MP_UI_THEME, CONFUI_OUT_STR,
+      CONFUI_SPINBOX_UI_THEME, OPT_M_UI_THEME, CONFUI_OUT_STR,
       gui->uiitem [CONFUI_SPINBOX_UI_THEME].listidx, NULL);
 
-  tstr = bdjoptGetStr (OPT_MP_UIFONT);
+  tstr = bdjoptGetStr (OPT_M_UI_FONT);
   if (tstr == NULL || ! *tstr) {
     tstr = sysvarsGetStr (SV_FONT_DEFAULT);
   }
   /* CONTEXT: configuration: the font to use for the user interface */
   confuiMakeItemFontButton (gui, vbox, szgrp, _("Font"),
-      CONFUI_WIDGET_UI_FONT, OPT_MP_UIFONT, tstr);
+      CONFUI_WIDGET_UI_FONT, OPT_M_UI_FONT, tstr);
 
-  tstr = bdjoptGetStr (OPT_MP_LISTING_FONT);
+  tstr = bdjoptGetStr (OPT_M_LISTING_FONT);
   if (tstr == NULL || ! *tstr) {
     tstr = sysvarsGetStr (SV_FONT_DEFAULT);
   }
   /* CONTEXT: configuration: the font to use for the queues and song lists */
   confuiMakeItemFontButton (gui, vbox, szgrp, _("Listing Font"),
-      CONFUI_WIDGET_UI_LISTING_FONT, OPT_MP_LISTING_FONT, tstr);
+      CONFUI_WIDGET_UI_LISTING_FONT, OPT_M_LISTING_FONT, tstr);
 
   /* CONTEXT: configuration: scaling factor for the user interface */
   confuiMakeItemSpinboxNum (gui, vbox, szgrp, NULL, _("Scale"),
@@ -68,6 +69,16 @@ confuiBuildUIUserInterface (confuigui_t *gui)
   confuiMakeItemColorButton (gui, vbox, szgrp, _("Accent Colour"),
       CONFUI_WIDGET_UI_ACCENT_COLOR, OPT_P_UI_ACCENT_COL,
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+
+  /* CONTEXT: configuration: the error color to use for the user interface */
+  confuiMakeItemColorButton (gui, vbox, szgrp, _("Error Colour"),
+      CONFUI_WIDGET_UI_ERROR_COLOR, OPT_P_UI_ERROR_COL,
+      bdjoptGetStr (OPT_P_UI_ERROR_COL));
+
+  /* CONTEXT: configuration: user interface: the song mark color for songs in the song list */
+  confuiMakeItemColorButton (gui, vbox, szgrp, _("Song Mark Colour"),
+      CONFUI_WIDGET_UI_MARK_COLOR, OPT_P_UI_MARK_COL,
+      bdjoptGetStr (OPT_P_UI_MARK_COL));
 
   uiwcontFree (vbox);
   uiwcontFree (szgrp);

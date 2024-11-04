@@ -86,7 +86,7 @@ pathRealPath (char *to, const char *from, size_t sz)
   wfrom = osToWideChar (from);
   (void) ! GetFullPathNameW (wfrom, MAXPATHLEN, wto, NULL);
   tto = osFromWideChar (wto);
-  strlcpy (to, tto, sz);
+  stpecpy (to, to + sz, tto);
   mdfree (wfrom);
 
 #endif

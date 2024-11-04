@@ -19,15 +19,15 @@ which I had a small familiarity with) had a terrible user interface.
 
 I decided that if I was ever going to do ballroom DJ work that I
 wanted something better, and I set out to write a new program, and
-BallroomDJ was started and grew for the next 10 years.
+BallroomDJ was started and grew for the next ten years.
 
 Around 2021 I determined that the programming language used for
-BallroomDJ 3, Tcl/Tk, was no longer a viable option in which to
+BallroomDJ&nbsp;3, Tcl/Tk, was no longer a viable option in which to
 continue.  And to ensure the long term existence of a ballroom music
 player, the programming language and tools used needed to change.
 
-BallroomDJ 4 (BDJ4) is a complete rewrite designed to replace
-BallroomDJ 3.  Work started on BDJ4 in December of 2021.
+BallroomDJ&nbsp;4 (BDJ4) is a complete rewrite designed to replace
+BallroomDJ&nbsp;3.  Work started on BDJ4 in December of 2021.
 
 BDJ4 is not an upgrade to BallroomDJ, but rather a separate
 installation with its own database and configuration files.  A
@@ -38,9 +38,9 @@ BDJ4.
 Development Team:
 
 * Brad Lanam
-<br>Architect, Programmer, UI/UX Designer, Tools,
-Testing, Quality Assurance, Documentation, Website Management, System
-Administration
+<br>Architect, Programmer, UI/UX&nbsp;Designer, Tools,
+Testing, Quality&nbsp;Assurance, Documentation, Website&nbsp;Management,
+System&nbsp;Administration
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-19 13:16:09; BDJ4 version 4.11.5)_
+<br>_(Updated 2024-10-25 10:08:51; BDJ4 version 4.12.5)_

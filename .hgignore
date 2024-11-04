@@ -8,6 +8,7 @@ syntax: regexp
 ^dev/
 # the primary.txt file must not be transfered to other systems
 ^devel/primary\.txt$
+^devel/tmp/
 ^DIST\.txt$
 ^http/.*\.bak.\d$
 ^http/.*\.html$
@@ -50,6 +51,8 @@ syntax: regexp
 ^locale/pl_PL/
 ^locale/pt
 ^locale/pt_PT/
+^locale/ro
+^locale/ro_RO/
 ^locale/ru
 ^locale/ru_RU/
 ^locale/sr

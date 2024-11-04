@@ -17,7 +17,7 @@ extern "C" {
 /* hold uibutton_t, etc. */
 typedef enum {
   WCONT_T_ADJUSTMENT,       // gtk widget
-  WCONT_T_BOX,
+  WCONT_T_BOX,              // base type
   WCONT_T_VBOX,
   WCONT_T_HBOX,
   /* base type for color-button, font-button */

@@ -4,6 +4,8 @@
 #ifndef INC_BDJMSG_H
 #define INC_BDJMSG_H
 
+#include <stdint.h>
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
@@ -157,8 +159,10 @@ typedef enum {
   /* to/from marquee */
   MSG_MARQUEE_TIMER,        // args: played time, duration
   MSG_MARQUEE_SET_FONT_SZ,  // args: font-size
-  MSG_MARQUEE_IS_MAX,       // args: boolean flag
   MSG_MARQUEE_FONT_SIZES,   // args: font-size, font-size-fs
+  MSG_MARQUEE_HIDE,
+  MSG_MARQUEE_SHOW,
+  MSG_MARQUEE_STATUS,       // args: bool: isicon bool: ismax
 
   /* to/from dbupdate */
   MSG_DB_STOP_REQ,
@@ -204,7 +208,10 @@ enum {
 /* 1000 (the max player queue length) long playlist message */
 enum {
   BDJMSG_MAX_ARGS = 20000,
-  BDJMSG_MAX = (8 * 2 + 3 + BDJMSG_MAX_ARGS),
+  /* the prefix consists of 3 4-char numerics with separators */
+  /* and a null byte */
+  BDJMSG_MAX_PFX = (sizeof (uint32_t) + 1) * 3 + 1,
+  BDJMSG_MAX = BDJMSG_MAX_PFX + BDJMSG_MAX_ARGS,
 };
 
 #define MSG_ARGS_RS         0x1E      // RS
@@ -216,10 +223,8 @@ enum {
 extern const char *bdjmsgroutetxt [ROUTE_MAX];
 extern const char *bdjmsgtxt [MSG_MAX];
 
-size_t    msgEncode (bdjmsgroute_t routefrom, bdjmsgroute_t route,
-              bdjmsgmsg_t msg, const char *args, char *msgbuff, size_t mlen);
-void      msgDecode (char *msgbuff, bdjmsgroute_t *routefrom,
-              bdjmsgroute_t *route, bdjmsgmsg_t *msg, char *args, size_t alen);
+size_t    msgEncode (bdjmsgroute_t routefrom, bdjmsgroute_t route, bdjmsgmsg_t msg, char *msgbuff, size_t mlen);
+void      msgDecode (char *msgbuff, bdjmsgroute_t *routefrom, bdjmsgroute_t *route, bdjmsgmsg_t *msg, char **args);
 const char *msgDebugText (bdjmsgmsg_t msg);
 const char *msgRouteDebugText (bdjmsgroute_t route);
 

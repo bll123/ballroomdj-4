@@ -152,7 +152,7 @@ xspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
   xval = xmlNodeGetContent (cur);
   mdextalloc (xval);
   if (xval != NULL) {
-    strlcpy (plname, (char *) xval, plsz);
+    stpecpy (plname, plname + plsz, (char *) xval);
     mdextfree (xval);
     xmlFree (xval);
   }
@@ -185,7 +185,7 @@ xspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
     }
     mdextalloc (xval);
 
-    strlcpy (tbuff, (char *) xval, sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), (char *) xval);
     pathNormalizePath (tbuff, strlen (tbuff));
     val = audiosrcRelativePath (tbuff, 0);
 

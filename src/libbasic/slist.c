@@ -165,12 +165,6 @@ slistGetList (slist_t *list, const char *sidx)
   return slistGetData (list, sidx);
 }
 
-slistidx_t
-slistIterateGetIdx (slist_t *list, slistidx_t *iteridx)
-{
-  return listIterateGetIdx (LIST_KEY_STR, list, iteridx);
-}
-
 void
 slistSort (slist_t *list)
 {

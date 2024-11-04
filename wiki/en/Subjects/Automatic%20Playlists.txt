@@ -97,4 +97,4 @@ In the _Dances_ tab, the _Maximum&nbsp;Play&nbsp;Time_ for a
 particular dance can be set.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-19 13:16:09; BDJ4 version 4.11.5)_
+<br>_(Updated 2024-10-07 11:49:26; BDJ4 version 4.12.2)_

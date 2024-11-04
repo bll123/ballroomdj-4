@@ -19,7 +19,6 @@
 #include "dispsel.h"
 #include "log.h"
 #include "mdebug.h"
-#include "msgparse.h"
 #include "musicdb.h"
 #include "playlist.h"
 #include "songfav.h"

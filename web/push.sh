@@ -60,7 +60,7 @@ if [[ ! -d $INSTSTAGE ]]; then
   exit 1
 fi
 
-count=$(ls -1 $INSTSTAGE/bdj4-installer-* | grep ${VERSION} | wc -l)
+count=$(ls -1 $INSTSTAGE/bdj4-installer-* | grep -- "-${VERSION}" | wc -l)
 # 2023-12-4 fedora failing due to some weird volume thing
 # 2024-1-15 fedora dropped
 # 2024-1-15 manjaro linux (arch) dropped (icu updated)
@@ -167,10 +167,14 @@ VERFILE=bdj4version.txt
 bd=$BUILDDATE
 cvers=$(pkgwebvers)
 echo "$cvers" > $VERFILE
-for f in $VERFILE; do
-  sshpass -e rsync -e "$ssh" -aS \
-      $f ${remuser}@${wserver}:${wwwpath}
-done
+sshpass -e rsync -e "$ssh" -aS \
+    $VERFILE ${remuser}@${wserver}:${wwwpath}
+# old bdj-3 file
+cvers=$VERSION
+echo "$cvers" > $VERFILE
+wwwpath=/home/project-web/ballroomdj/htdocs
+sshpass -e rsync -e "$ssh" -aS \
+    $VERFILE ${remuser}@${wserver}:${wwwpath}/versioncheck.txt
 rm -f $VERFILE
 
 exit 0

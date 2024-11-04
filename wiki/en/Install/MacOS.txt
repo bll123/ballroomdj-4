@@ -2,9 +2,9 @@
 
 [TOC]
 
-## Installing BallroomDJ 4 on Mac OS
+## Installing BallroomDJ 4 on MacOS
 
-Supported Platforms as of 2024-8-19: Monterey, Ventura, Sonoma.
+Supported Platforms as of 2024-8-19: Big Sur, Monterey, Ventura, Sonoma.
 <br>If you want an earlier version supported, please
 [let&nbsp;me&nbsp;know](en-Getting%20Help)
 
@@ -14,9 +14,20 @@ Be sure to exit BallroomDJ 4 before creating a backup or updating the
 software.
 
 If you are updating BallroomDJ 4 to a new version, be sure to create a
-backup of your BDJ4 installation.  On Mac OS make a copy of the
+backup of your BDJ4 installation.  On MacOS make a copy of the
 $HOME/Applications/BDJ4.app folder and the
-$HOME/Library/Application&nbsp;Support/BDJ4 folder.
+$HOME/Library/Application&nbsp;Support/BDJ4 folder.  If you use
+MacOS's time machine, have it do a backup before you proceed.
+
+##### Internet Connection
+
+An internet connection is required the first time BallroomDJ&nbsp;4 is
+installed.  There are requisite packages (VLC) that need to be
+installed from the internet, and the pre-install script requires and
+internet connection.
+
+If the pre-install script has already been run, and VLC is already
+installed, no internet connection is required.
 
 ##### Install the Requisite Software
 
@@ -43,17 +54,9 @@ This script performs the following actions:
 
 Note that this process can be very slow for new releases of MacOS.
 
-##### Internet Connection
-
-An internet connection is required the first time BallroomDJ&nbsp;4 is
-installed.  There are requisite packages (VLC) that
-need to be installed from the internet.
-
-If VLC is already installed, no internet connection is required.
-
 ##### Install BallroomDJ 4
 
-Download the Mac OS installer from sourceforge.
+Download the MacOS installer from sourceforge.
 Be sure to select the correct architecture (Intel or Apple Silicon).
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
@@ -83,16 +86,16 @@ After you have selected the installation folder, select the __Install__
 button and wait for the __Installation Completed__ message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![BallroomDJ 4 Installer on Mac OS](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Installer-D.png)
-<br><span style="color:#4559bf;">__BallroomDJ 4 Installer on Mac OS__</span> </div>
+![BallroomDJ 4 Installer on MacOS](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Installer-D.png)
+<br><span style="color:#4559bf;">__BallroomDJ 4 Installer on MacOS__</span> </div>
 
 If VLC is not already installed on your computer, the installation
 process will download and start the VLC installation.  Drag the VLC.app
 icon to the Applications Folder icon.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![VLC Installation on Mac OS](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Install-VLC.png)
-<br><span style="color:#4559bf;">__VLC Installation on Mac OS__</span> </div>
+![VLC Installation on MacOS](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Install-VLC.png)
+<br><span style="color:#4559bf;">__VLC Installation on MacOS__</span> </div>
 
 ##### Getting Started with BDJ4
 
@@ -101,4 +104,4 @@ Visit the
 wiki page.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-19 13:16:09; BDJ4 version 4.11.5)_
+<br>_(Updated 2024-10-16 09:35:17; BDJ4 version 4.12.3)_

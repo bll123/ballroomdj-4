@@ -19,7 +19,6 @@
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 
-static gboolean uiWidgetMappedHandler (GtkWidget *w, GdkEventAny *event, gpointer udata);
 static gboolean uiWidgetSizeChgHandler (GtkWidget *w, GtkAllocation *allocation, gpointer udata);
 static gboolean uiWidgetEnterHandler (GtkWidget *w, GdkEventCrossing *event, gpointer udata);
 
@@ -385,21 +384,6 @@ uiWidgetSetTooltip (uiwcont_t *uiwidget, const char *tooltip)
 }
 
 void
-uiWidgetSetMappedCallback (uiwcont_t *uiwidget, callback_t *uicb)
-{
-  if (uiwidget == NULL) {
-    return;
-  }
-  if (uiwidget->uidata.widget == NULL) {
-    return;
-  }
-
-  /* this only works for regular windows, apparently */
-  g_signal_connect (uiwidget->uidata.widget, "map-event",
-      G_CALLBACK (uiWidgetMappedHandler), uicb);
-}
-
-void
 uiWidgetSetSizeChgCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
   if (uiwidget == NULL) {
@@ -429,18 +413,6 @@ uiWidgetSetEnterCallback (uiwcont_t *uiwidget, callback_t *uicb)
 }
 
 /* internal routines */
-
-static gboolean
-uiWidgetMappedHandler (GtkWidget *w, GdkEventAny *event, gpointer udata)
-{
-  callback_t  *uicb = udata;
-  bool        rc = false;
-
-  if (uicb != NULL) {
-    rc = callbackHandler (uicb);
-  }
-  return rc;
-}
 
 static gboolean
 uiWidgetSizeChgHandler (GtkWidget *w, GtkAllocation *allocation, gpointer udata)

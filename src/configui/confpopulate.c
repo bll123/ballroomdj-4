@@ -266,7 +266,7 @@ confuiPopulateOptions (confuigui_t *gui)
     }
 
     if (i == CONFUI_ENTRY_CHOOSE_MUSIC_DIR) {
-      strlcpy (tbuff, bdjoptGetStr (gui->uiitem [i].bdjoptIdx), sizeof (tbuff));
+      stpecpy (tbuff, tbuff + sizeof (tbuff), bdjoptGetStr (gui->uiitem [i].bdjoptIdx));
       pathNormalizePath (tbuff, sizeof (tbuff));
       bdjoptSetStr (gui->uiitem [i].bdjoptIdx, tbuff);
     }

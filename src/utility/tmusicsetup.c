@@ -163,8 +163,8 @@ main (int argc, char *argv [])
   mdebugInit ("tset");
 #endif
 
-  strlcpy (dbfn, "data/musicdb.dat", sizeof (dbfn));
-  strlcpy (infn, "test-templates/test-music.txt", sizeof (infn));
+  stpecpy (dbfn, dbfn + sizeof (dbfn), "data/musicdb.dat");
+  stpecpy (infn, infn + sizeof (infn), "test-templates/test-music.txt");
   *seconddir = '\0';
 
   bdj4arg = bdj4argInit (argc, argv);
@@ -194,14 +194,14 @@ main (int argc, char *argv [])
       case 'O': {
         if (optarg != NULL) {
           targ = bdj4argGet (bdj4arg, optind - 1, optarg);
-          strlcpy (dbfn, targ, sizeof (dbfn));
+          stpecpy (dbfn, dbfn + sizeof (dbfn), targ);
         }
         break;
       }
       case 'I': {
         if (optarg != NULL) {
           targ = bdj4argGet (bdj4arg, optind - 1, optarg);
-          strlcpy (infn, targ, sizeof (infn));
+          stpecpy (infn, infn + sizeof (infn), targ);
         }
         break;
       }
@@ -212,7 +212,7 @@ main (int argc, char *argv [])
       case 'A': {
         if (optarg != NULL) {
           targ = bdj4argGet (bdj4arg, optind - 1, optarg);
-          strlcpy (seconddir, targ, sizeof (seconddir));
+          stpecpy (seconddir, seconddir + sizeof (seconddir), targ);
         }
         break;
       }

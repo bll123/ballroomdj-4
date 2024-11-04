@@ -4,9 +4,92 @@
 
 <!--
 
-**4.11.6 2024-8-19**
+**4.12.6 2024-10---**
 
 -->
+
+**4.12.5.1 2024-10-27**
+
+* Bug Fixes:
+    * Conversion: Fix BallroomDJ 3 to BDJ4 conversion issues.
+
+**4.12.5 2024-10-25**
+
+* Bug Fixes:
+    * Mobile Remote Control: Fix an issue that caused the queue to de-sync.
+* Changes:
+    * Mobile Remote Control: Also show local IP address QR code.
+* Internal:
+    * Upgrade mongoose to 7.15.  Re-write mongoose interface layer.
+
+**4.12.4 2024-10-22**
+
+* Bug Fixes:
+    * Drop-Downs: Prevent from being displayed past the edge of the screen.
+    * Linux: Fix installation of crontab when original is empty.
+    * Player: Quick Edit: Fix for external requests.
+* New Features:
+    * Configure: Marquee: More colors can now be configured via the user interface.
+    * Configure: Player: The clock display and the fade type can now be configured via the user interface.
+    * Configure: User Interface: More colors can now be configured via the user interface.
+
+**4.12.3 2024-10-16**
+
+* Bug Fixes:
+    * Edit Song Lists: Statistics: Use the default font, not the listing font.
+    * Installer: Set the button text to 'Upgrade' for upgrades.
+    * Internal: Move font and theme settings to per-machine from per-machine-per-profile.
+    * Internal: Random numbers: Fix Linux/MacOS, improve Windows.
+    * Linux: Run temporary file cleanup on reboot.
+* New Features:
+    * Player: Marquee menu: Hide/Show.
+
+**4.12.2 2024-10-7**
+
+* Bug Fixes:
+    * Configuration: Edit Dances: Fix announcement display on Windows.
+    * External Requests: Fix on Windows.
+    * File Selection: Remove non-functional filtering on MacOS and Windows (announcements, external requests, etc.).
+    * Fix crashes when processing a bad songlist file.
+    * Music Manager: Fix processing when multiple selections are active.
+    * Music Manager: Reset selection when the song filter is applied.
+    * Player: Fix a hang on a bad audio file path.
+    * Player: Fix processing on bad audio file paths.
+    * Song Filter Dialog: Fix internal issues.
+
+**4.12.1 2024-10-2**
+
+* Bug Fixes:
+    * Song Editor: Fix bug traversing multiple selections and off-screen selections.
+    * Updater: Fix crash when updating old versions of dances.txt.
+* Translations:
+    * Added Romanian, machine translated, very poor quality.
+* Internal:
+    * Code cleanup.
+
+**4.12.0 2024-9-9**
+
+* Bug Fixes:
+    * Auto Organize: Fix issues handling renamed audio files.
+    * Export as MP3: Fix.
+    * Management: Song Selection: Fix mark display for songs in song list.
+    * Player: Fix an issue where temporary audio files were not cleaned.
+    * Re-Organize: Fix issues renaming audio files with no tag information.
+    * Updater: Clean up all temporary files on an update.
+* Changes:
+    * Song Editor: Apply Adjustments and Restore Original will no longer be available.
+* New Features:
+    * Song Editor: Trim Silence: Detects silence and sets song start and song end.
+
+**4.11.6 2024-8-27**
+
+* Bug Fixes:
+    * Audio File Tags: Fix minor issue writing disc number and track number.
+    * Database Update: Improve processing speed for certain operations.
+    * Database Update: Reorganize: Fix a crash.
+    * Management: Fix incorrect selection for song editor after filtering songs.
+    * Management: Song Selection: Fix song filter not updating display.
+    * Starter: Fix profile color display.
 
 **4.11.5 2024-8-19**
 
@@ -1023,4 +1106,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-19 13:16:09; BDJ4 version 4.11.5)_
+<br>_(Updated 2024-10-27 07:29:21; BDJ4 version 4.12.5.1)_

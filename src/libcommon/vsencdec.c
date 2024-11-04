@@ -39,6 +39,7 @@ vsencdec (const char *str, char *buff, size_t sz)
   int         saltidx;
   const char  *p = NULL;
   char        *data = NULL;
+  char        *bp;
 
   len = strlen (str);
   if (strncmp (str, VSEC_E_PFX, strlen (VSEC_E_PFX)) == 0) {
@@ -88,8 +89,9 @@ vsencdec (const char *str, char *buff, size_t sz)
     }
     data = g_base64_encode ((const guchar *) buff, len + VSEC_SALT_SIZE);
     mdextalloc (data);
-    strlcpy (buff, VSEC_E_PFX, sz);
-    strlcat (buff, data, sz);
+    bp = buff;
+    bp = stpecpy (bp, buff + sz, VSEC_E_PFX);
+    bp = stpecpy (bp, buff + sz, data);
     mdfree (data);  // allocated by glib
   }
   if (encdecflag == VSEC_DECRYPT) {

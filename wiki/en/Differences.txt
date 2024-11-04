@@ -7,7 +7,7 @@ As of 2023-1-23:
 At this time the supported platforms for BallroomDJ 4 will be:
 
 * 64-bit Windows 10, 11
-* MacOS: Big Sur, Monterey, Ventura, Sonoma
+* MacOS: Big Sur, Monterey, Ventura, Sonoma, Sequoia
 * 64-bit Linux
 
 __Features that will NOT be implemented in BallroomDJ&nbsp;4:__
@@ -114,4 +114,4 @@ is turned on).
 (1) No one actually asked this, but I thought you might like to know.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-19 13:16:09; BDJ4 version 4.11.5)_
+<br>_(Updated 2024-10-07 11:49:26; BDJ4 version 4.12.2)_

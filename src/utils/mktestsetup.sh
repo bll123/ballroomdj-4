@@ -10,6 +10,9 @@ cwd=$(pwd)
 
 # with audiotag/dbupdate
 # DBGLEVEL=$((1+2+4+8+4194304+262144))
+# with songsel
+# DBGLEVEL=$((1+2+4+8+64))
+# standard
 DBGLEVEL=$((1+2+4+8))
 
 systype=$(uname -s)
@@ -248,27 +251,28 @@ sed -e "/^DEBUGLVL/ { n ; s/.*/..${DBGLEVEL}/ ; }" \
 mv -f ${tfn}.n ${tfn}
 
 if [[ $os == linux ]]; then
-  tfn=data/${hostname}/profile00/bdjconfig.txt
-  sed -e '/^MQFONT/ { n ; s/.*/..Yanone Kaffeesatz 12/ ; }' \
+  tfn=data/${hostname}/bdjconfig.txt
+  sed -e '/^MQ_FONT/ { n ; s/.*/..Yanone Kaffeesatz 12/ ; }' \
+      -e '/^LISTING_FONT/ { n ; s/.*/..Noto Sans Regular 15/ ; }' \
       ${tfn} > ${tfn}.n
   mv -f ${tfn}.n ${tfn}
 fi
 
 if [[ $os == macos ]]; then
-  tfn=data/${hostname}/profile00/bdjconfig.txt
+  tfn=data/${hostname}/bdjconfig.txt
   sed -e '/^UI_THEME/ { n ; s/.*/..Mojave-dark/ ; }' \
-      -e '/^MQFONT/ { n ; s/.*/..Arial Narrow Regular 17/ ; }' \
-      -e '/^UIFONT/ { n ; s/.*/..Arial Regular 17/ ; }' \
-      -e '/^LISTINGFONT/ { n ; s/.*/..Arial Regular 16/ ; }' \
+      -e '/^MQ_FONT/ { n ; s/.*/..Arial Narrow Regular 17/ ; }' \
+      -e '/^UI_FONT/ { n ; s/.*/..Arial Regular 17/ ; }' \
+      -e '/^LISTING_FONT/ { n ; s/.*/..Arial Regular 16/ ; }' \
       ${tfn} > ${tfn}.n
   mv -f ${tfn}.n ${tfn}
 fi
 
 if [[ $platform == windows ]]; then
-  tfn=data/${hostname}/profile00/bdjconfig.txt
+  tfn=data/${hostname}/bdjconfig.txt
   sed -e '/^UI_THEME/ { n ; s/.*/..Windows-10-Dark/ ; }' \
-      -e '/^UIFONT/ { n ; s/.*/..Arial Regular 14/ ; }' \
-      -e '/^LISTINGFONT/ { n ; s/.*/..Arial Regular 13/ ; }' \
+      -e '/^UI_FONT/ { n ; s/.*/..Arial Regular 14/ ; }' \
+      -e '/^LISTING_FONT/ { n ; s/.*/..Arial Regular 13/ ; }' \
       ${tfn} > ${tfn}.n
   mv -f ${tfn}.n ${tfn}
 fi

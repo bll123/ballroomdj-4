@@ -354,7 +354,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   if (odir == NULL) {
     odir = sysvarsGetStr (SV_HOME);
   }
-  strlcpy (tbuff, odir, sizeof (tbuff));
+  stpecpy (tbuff, tbuff + sizeof (tbuff), odir);
   pathDisplayPath (tbuff, sizeof (tbuff));
   uiEntrySetValue (uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_TARGET], tbuff);
   uiEntrySetValidate (uiwidgetp, "",

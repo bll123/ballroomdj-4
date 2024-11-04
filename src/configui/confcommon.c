@@ -44,7 +44,7 @@ static nlist_t * confuiGetThemeList (void);
 #if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
 static slist_t * confuiGetThemeNames (slist_t *themelist, slist_t *filelist);
 #endif
-static char * confuiMakeQRCodeFile (char *title, char *uri);
+static void confuiMakeQRCodeFile (const char *tag, const char *title, const char *disp, char *uri, size_t sz);
 static void confuiUpdateOrgExample (org_t *org, const char *data, uiwcont_t *uiwidgetp);
 static bool confuiSearchDispSel (confuigui_t *gui, int selidx, const char *disp);
 static void confuiCreateTagListingMultDisp (confuigui_t *gui, slist_t *dlist, int sidx, int eidx);
@@ -82,14 +82,14 @@ confuiLoadThemeList (confuigui_t *gui)
   const char  *mqtheme;
   const char  *uitheme;
 
-  p = bdjoptGetStr (OPT_MP_UI_THEME);
+  p = bdjoptGetStr (OPT_M_UI_THEME);
   /* use the system default if the ui theme is empty */
   if (p == NULL || ! *p) {
     usesys = true;
   }
 
-  mqtheme = bdjoptGetStr (OPT_MP_MQ_THEME);
-  uitheme = bdjoptGetStr (OPT_MP_UI_THEME);
+  mqtheme = bdjoptGetStr (OPT_M_MQ_THEME);
+  uitheme = bdjoptGetStr (OPT_M_UI_THEME);
 
   tlist = confuiGetThemeList ();
   nlistStartIterator (tlist, &iteridx);
@@ -120,7 +120,7 @@ void
 confuiUpdateMobmqQrcode (confuigui_t *gui)
 {
   char          uridisp [MAXPATHLEN];
-  char          *qruri = "";
+  char          qruri [200];
   char          tbuff [MAXPATHLEN];
   int           type;
   uiwcont_t     *uiwidgetp = NULL;
@@ -130,11 +130,10 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
   type = bdjoptGetNum (OPT_P_MOBMQ_TYPE);
 
   confuiSetStatusMsg (gui, "");
-  if (type == MOBMQ_TYPE_OFF) {
-    *tbuff = '\0';
-    *uridisp = '\0';
-    qruri = "";
-  }
+  *tbuff = '\0';
+  *uridisp = '\0';
+  *qruri = '\0';
+
   if (type == MOBMQ_TYPE_LOCAL) {
     const char  *host;
 
@@ -143,23 +142,20 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
         bdjoptGetNum (OPT_P_MOBMQ_PORT));
   }
   if (type == MOBMQ_TYPE_INTERNET) {
-    snprintf (uridisp, sizeof (uridisp), "%s/%s?mobmqtag=%s",
-        sysvarsGetStr (SV_HOST_MOBMQ), sysvarsGetStr (SV_URI_MOBMQ_HTML),
+    snprintf (uridisp, sizeof (uridisp), "%s%s?mobmqtag=%s",
+        bdjoptGetStr (OPT_HOST_MOBMQ), bdjoptGetStr (OPT_URI_MOBMQ_HTML),
         bdjoptGetStr (OPT_P_MOBMQ_TAG));
   }
 
   if (type != MOBMQ_TYPE_OFF) {
     /* CONTEXT: configuration: qr code: title display for mobile marquee */
-    qruri = confuiMakeQRCodeFile (_("Mobile Marquee"), uridisp);
+    confuiMakeQRCodeFile ("", _("Mobile Marquee"), uridisp, qruri, sizeof (qruri));
   }
 
   uiwidgetp = gui->uiitem [CONFUI_WIDGET_MOBMQ_QR_CODE].uiwidgetp;
   uiLinkSet (uiwidgetp, uridisp, qruri);
   dataFree (gui->uiitem [CONFUI_WIDGET_MOBMQ_QR_CODE].uri);
   gui->uiitem [CONFUI_WIDGET_MOBMQ_QR_CODE].uri = mdstrdup (qruri);
-  if (*qruri) {
-    mdfree (qruri);
-  }
   logProcEnd ("");
 }
 
@@ -167,7 +163,9 @@ void
 confuiUpdateRemctrlQrcode (confuigui_t *gui)
 {
   char          uridisp [MAXPATHLEN];
-  char          *qruri = "";
+  char          uridispb [MAXPATHLEN];
+  char          qruri [200];
+  char          qrurib [200];
   char          tbuff [MAXPATHLEN];
   bool          enabled;
   uiwcont_t    *uiwidgetp;
@@ -176,31 +174,46 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
 
   enabled = bdjoptGetNum (OPT_P_REMOTECONTROL);
 
-  if (! enabled) {
-    *tbuff = '\0';
-    *uridisp = '\0';
-    qruri = "";
-  }
+  *tbuff = '\0';
+  *uridisp = '\0';
+  *uridispb = '\0';
+  *qruri = '\0';
+  *qrurib = '\0';
+
   if (enabled) {
     const char  *host;
+    char        ip [80];
 
     host = sysvarsGetStr (SV_HOSTNAME);
     snprintf (uridisp, sizeof (uridisp), "http://%s.local:%" PRId64, host,
         bdjoptGetNum (OPT_P_REMCONTROLPORT));
+
+    webclientGetLocalIP (ip, sizeof (ip));
+    if (*ip) {
+      snprintf (uridispb, sizeof (uridisp), "http://%s:%" PRId64, ip,
+          bdjoptGetNum (OPT_P_REMCONTROLPORT));
+    }
   }
 
   if (enabled) {
     /* CONTEXT: configuration: qr code: title display for mobile remote control */
-    qruri = confuiMakeQRCodeFile (_("Mobile Remote Control"), uridisp);
+    confuiMakeQRCodeFile ("", _("Mobile Remote Control"), uridisp, qruri, sizeof (qruri));
+    if (*uridispb) {
+      confuiMakeQRCodeFile ("b", _("Mobile Remote Control"), uridispb, qrurib, sizeof (qrurib));
+    }
   }
 
   uiwidgetp = gui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uiwidgetp;
   uiLinkSet (uiwidgetp, uridisp, qruri);
+
+  uiwidgetp = gui->uiitem [CONFUI_WIDGET_RC_QR_CODE_B].uiwidgetp;
+  uiLinkSet (uiwidgetp, uridispb, qrurib);
+
   dataFree (gui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uri);
   gui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uri = mdstrdup (qruri);
-  if (*qruri) {
-    mdfree (qruri);
-  }
+  dataFree (gui->uiitem [CONFUI_WIDGET_RC_QR_CODE_B].uri);
+  gui->uiitem [CONFUI_WIDGET_RC_QR_CODE_B].uri = mdstrdup (qrurib);
+
   logProcEnd ("");
 }
 
@@ -453,7 +466,6 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
 {
   slistidx_t    iteridx;
   const char    *fn;
-  pathinfo_t    *pi;
 # if BDJ4_UI_GTK3
   static char   *srchdir = "gtk-3.0";
 # endif
@@ -477,14 +489,20 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
 
   while ((fn = slistIterateKey (filelist, &iteridx)) != NULL) {
     if (fileopIsDirectory (fn)) {
-      pi = pathInfo (fn);
-      if (pi->flen == strlen (srchdir) &&
-          strncmp (pi->filename, srchdir, strlen (srchdir)) == 0) {
-        char  tbuff [MAXPATHLEN];
-        char  tmp [MAXPATHLEN];
+      pathinfo_t    *dpi;
+
+      dpi = pathInfo (fn);
+
+      if (dpi->flen == strlen (srchdir) &&
+          strncmp (dpi->filename, srchdir, strlen (srchdir)) == 0) {
+        pathinfo_t  *pi;
+        char        tbuff [MAXPATHLEN];
+        char        tmp [MAXPATHLEN];
+        size_t      len;
 
         snprintf (tmp, sizeof (tmp), "%s/%s", fn, srchfn);
         if (! fileopFileExists (tmp)) {
+          pathInfoFree (dpi);
           continue;
         }
 
@@ -493,10 +511,16 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
         pathInfoFree (pi);
 
         pi = pathInfo (tbuff);
-        strlcpy (tmp, pi->filename, pi->flen + 1);
+        len = pi->flen + 1;
+        if (len > sizeof (tmp)) {
+          len = sizeof (tmp);
+        }
+        stpecpy (tmp, tmp + len, pi->filename);
         slistSetNum (themelist, tmp, 0);
+        pathInfoFree (pi);
       }
-      pathInfoFree (pi);
+
+      pathInfoFree (dpi);
     } /* is directory */
   } /* for each file */
 
@@ -505,20 +529,21 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
 }
 #endif  /* ui-gtk3 or ui-gtk4 */
 
-static char *
-confuiMakeQRCodeFile (char *title, char *uri)
+static void
+confuiMakeQRCodeFile (const char *tag, const char *title,
+    const char *disp, char *qruri, size_t sz)
 {
   char          *data;
   char          *ndata;
-  char          *qruri;
   char          baseuri [MAXPATHLEN];
   char          tbuff [MAXPATHLEN];
+  char          tname [80];
   FILE          *fh;
   size_t        dlen;
 
   logProcBegin ();
-  qruri = mdmalloc (MAXPATHLEN);
 
+  snprintf (tname, sizeof (tname), "qrcode%s", tag);
   pathbldMakePath (baseuri, sizeof (baseuri),
       "", "", PATHBLD_MP_DIR_TEMPLATE);
   pathbldMakePath (tbuff, sizeof (tbuff),
@@ -531,23 +556,22 @@ confuiMakeQRCodeFile (char *title, char *uri)
   ndata = regexReplaceLiteral (data, "#BASEURL#", baseuri);
   mdfree (data);
   data = ndata;
-  ndata = regexReplaceLiteral (data, "#QRCODEURL#", uri);
+  ndata = regexReplaceLiteral (data, "#QRCODEURL#", disp);
   mdfree (data);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "qrcode", BDJ4_HTML_EXT, PATHBLD_MP_DREL_TMP);
+      tname, BDJ4_HTML_EXT, PATHBLD_MP_DREL_TMP);
   fh = fileopOpen (tbuff, "w");
   dlen = strlen (ndata);
   fwrite (ndata, dlen, 1, fh);
   mdextfclose (fh);
   fclose (fh);
 
-  snprintf (qruri, MAXPATHLEN, "%s/%s/%s",
+  snprintf (qruri, sz, "%s/%s/%s",
       AS_FILE_PFX, sysvarsGetStr (SV_BDJ4_DIR_DATATOP), tbuff);
 
   mdfree (ndata);
   logProcEnd ("");
-  return qruri;
 }
 
 static void

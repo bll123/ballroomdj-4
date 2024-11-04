@@ -49,6 +49,11 @@
 #include "sock.h"
 #include "tmutil.h"
 
+enum {
+  SOCK_READ_TIMEOUT = 2,
+  SOCK_WRITE_TIMEOUT = 2,
+};
+
 typedef struct {
   Sock_t          sock;
   bool            havedata;
@@ -65,10 +70,9 @@ typedef struct sockinfo {
 } sockinfo_t;
 
 static ssize_t  sockReadData (Sock_t, char *, size_t);
-static int      sockWriteData (Sock_t, char *, size_t);
+static int      sockWriteData (Sock_t, const char *, size_t);
 static void     sockFlush (Sock_t);
 static int      sockSetNonblocking (Sock_t sock);
- // static int       sockSetBlocking (Sock_t sock);
 static void     sockInit (void);
 static void     sockCleanup (void);
 static Sock_t   sockSetOptions (Sock_t sock, int *err);
@@ -487,62 +491,33 @@ sockReadBuff (Sock_t sock, size_t *rlen, char *data, size_t maxlen)
   return data;
 }
 
-/* allocates the data buffer.               */
-/* the buffer must be freed by the caller.  */
-char *
-sockRead (Sock_t sock, size_t *rlen)  /* TESTING */
-{
-  uint32_t     len;
-  ssize_t     rc;
-  char        *data;
-
-  *rlen = 0;
-  rc = sockReadData (sock, (char *) &len, sizeof (len));
-  if (rc < 0) {
-    return NULL;
-  }
-  len = ntohl (len);
-  data = mdmalloc (len);
-  rc = sockReadData (sock, data, len);
-  if (rc < 0) {
-    return NULL;
-  }
-  *rlen = len;
-  return data;
-}
-
-/* sockWriteStr() writes the null byte also */
 int
-sockWriteStr (Sock_t sock, char *data, size_t len)  /* TESTING */
+sockWriteBinary (Sock_t sock, const char *data, size_t dlen,
+    const char *args, size_t alen)
 {
-  int   rc;
-
-  if (socketInvalid (sock)) {
-    return 0;
-  }
-  rc = sockWriteBinary (sock, data, len + 1);
-  return rc;
-}
-
-int
-sockWriteBinary (Sock_t sock, char *data, size_t dlen)
-{
-  uint32_t    len;
+  uint32_t    sendlen;
   ssize_t     rc;
 
   if (socketInvalid (sock)) {
     return -1;
   }
 
-  len = (uint32_t) dlen;
-  len = htonl (len);
-  rc = sockWriteData (sock, (char *) &len, sizeof (len));
+  sendlen = (uint32_t) dlen;
+  sendlen += alen;
+  sendlen = htonl (sendlen);
+  rc = sockWriteData (sock, (char *) &sendlen, sizeof (sendlen));
   if (rc < 0) {
     return -1;
   }
   rc = sockWriteData (sock, data, dlen);
   if (rc < 0) {
     return -1;
+  }
+  if (alen != 0) {
+    rc = sockWriteData (sock, args, alen);
+    if (rc < 0) {
+      return -1;
+    }
   }
   return 0;
 }
@@ -644,10 +619,9 @@ sockReadData (Sock_t sock, char *data, size_t len)
 }
 
 static int
-sockWriteData (Sock_t sock, char *data, size_t len)
+sockWriteData (Sock_t sock, const char *data, size_t len)
 {
   size_t        tot = 0;
-  // Sock_t        sval;
   ssize_t       rc;
 
   if (socketInvalid (sock)) {
@@ -656,18 +630,6 @@ sockWriteData (Sock_t sock, char *data, size_t len)
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_SOCKET, "want to send: %" PRIu64 " bytes", (uint64_t) len);
-
-#if 0
-  /* ugh.  the write() call blocks on a non-blocking socket.  sigh. */
-  /* call select() and check the condition the socket is in to see  */
-  /* if it is writable.                                             */
-  sval = sockCanWrite (sock);
-  if (sval != sock) {
-    logMsg (LOG_DBG, LOG_SOCKET, "socket not writable %" PRId64, (int64_t) sock);
-    logProcEnd ("not-writable");
-    return -1;
-  }
-#endif
 
   rc = send (sock, data, len, 0);
 #if _lib_WSAGetLastError
@@ -776,46 +738,6 @@ sockFlush (Sock_t sock)
     }
   }
 }
-
-#if 0
-static Sock_t
-sockCanWrite (Sock_t sock)
-{
-  fd_set            readfds;
-  fd_set            writefds;
-  struct timeval    tv;
-  int               rc;
-
-  if (socketInvalid (sock)) {
-    return INVALID_SOCKET;
-  }
-
-  FD_ZERO (&readfds);
-  FD_ZERO (&writefds);
-  FD_SET (sock, &readfds);
-  FD_SET (sock, &writefds);
-
-  tv.tv_sec = 0;
-  tv.tv_usec = (suseconds_t) (SOCK_WRITE_TIMEOUT * 1 * 1000);
-
-  rc = select (sock + 1, &readfds, &writefds, NULL, &tv);
-  if (rc < 0) {
-    if (errno == EINTR) {
-      return sockCanWrite (sock);
-    }
-    logError ("select");
-#if _lib_WSAGetLastError
-    logMsg (LOG_DBG, LOG_SOCKET, "select: wsa last-error:%d", WSAGetLastError());
-#endif
-    return INVALID_SOCKET;
-  }
-  if (FD_ISSET (sock, &writefds) && ! FD_ISSET(sock, &readfds)) {
-    return sock;
-  }
-  return 0;
-}
-#endif
-
 
 static int
 sockSetNonblocking (Sock_t sock)

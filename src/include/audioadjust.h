@@ -13,15 +13,6 @@ extern "C" {
 #endif
 
 enum {
-  AA_NORMVOL_MAX,
-  AA_NORMVOL_TARGET,
-  AA_TRIMSILENCE_PERIOD,
-  AA_TRIMSILENCE_START,
-  AA_TRIMSILENCE_THRESHOLD,
-  AA_KEY_MAX,
-};
-
-enum {
   AA_NO_FADEIN = -1,
   AA_NO_FADEOUT = -1,
   AA_NO_GAP = -1,
@@ -33,6 +24,7 @@ aa_t * aaAlloc (void);
 void aaFree (aa_t *aa);
 bool aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags);
 void aaAdjust (musicdb_t *musicdb, song_t *song, const char *infn, const char *outfn, long dur, int fadein, int fadeout, int gap);
+int aaSilenceDetect (const char *infn, double *sstart, double *send);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

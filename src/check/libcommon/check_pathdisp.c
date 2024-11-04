@@ -39,11 +39,11 @@ START_TEST(path_disppath)
   owin = sysvarsGetNum (SVL_IS_WINDOWS);
   sysvarsSetNum (SVL_IS_WINDOWS, 1);
 
-  strlcpy (to, "/tmp/abc.txt", sizeof (to));
+  stpecpy (to, to + sizeof (to), "/tmp/abc.txt");
   pathDisplayPath (to, sizeof (to));
   ck_assert_str_eq (to, "\\tmp\\abc.txt");
 
-  strlcpy (to, "C:/tmp/abc.txt", sizeof (to));
+  stpecpy (to, to + sizeof (to), "C:/tmp/abc.txt");
   pathDisplayPath (to, sizeof (to));
   ck_assert_str_eq (to, "C:\\tmp\\abc.txt");
 

@@ -451,6 +451,9 @@ audiosrcFullPath (const char *sfname,
 
   *fullpath = '\0';
   if (asdylib != NULL && asdylib->asiFullPath != NULL) {
+    if (pfxlen < 0) {
+      pfxlen = 0;
+    }
     asdylib->asiFullPath (asdylib->asdata, sfname, fullpath, sz, prefix, pfxlen);
   }
 }

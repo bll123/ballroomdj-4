@@ -1,0 +1,25 @@
+# itunes-stars
+# 2023-1-2
+# version 1
+version
+..1
+10
+..Slabă
+20
+..Slabă
+30
+..Slabă
+40
+..Slabă
+50
+..Slabă
+60
+..Bun
+70
+..Bun
+80
+..Mare
+90
+..Mare
+100
+..Mare

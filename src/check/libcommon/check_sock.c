@@ -172,14 +172,17 @@ connectWrite (void *id)
 {
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          datab [4096];
+  char          *datac = { "ghi" };
   Sock_t        c;
   int           rc;
 
   memset (datab, 'a', 4096);
   c = connectWait ();
-  rc = sockWriteStr (c, data, strlen (data));
+  rc = sockWriteBinary (c, data, strlen (data) + 1, NULL, 0);
   if (rc != 0) { gthreadrc = 1; }
-  rc = sockWriteBinary (c, datab, 4096);
+  rc = sockWriteBinary (c, data, strlen (data), datac, strlen (datac));
+  if (rc != 0) { gthreadrc = 1; }
+  rc = sockWriteBinary (c, datab, 4096, NULL, 0);
   if (rc != 0) { gthreadrc = 1; }
   mssleep (200);
   sockClose (c);
@@ -194,14 +197,17 @@ connectWriteClose (void *id)
 {
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          datab [4096];
+  char          *datac = { "ghi" };
   Sock_t        c;
   int           rc;
 
   memset (datab, 'a', 4096);
   c = connectWait ();
-  rc = sockWriteStr (c, data, strlen (data));
+  rc = sockWriteBinary (c, data, strlen (data) + 1, NULL, 0);
   if (rc != 0) { gthreadrc = 1; }
-  rc = sockWriteBinary (c, datab, 4096);
+  rc = sockWriteBinary (c, data, strlen (data), datac, strlen (datac));
+  if (rc != 0) { gthreadrc = 1; }
+  rc = sockWriteBinary (c, datab, 4096, NULL, 0);
   if (rc != 0) { gthreadrc = 1; }
   sockClose (c);
 #if _lib_pthread_create
@@ -215,6 +221,7 @@ connectWriteCloseFail (void *id)
 {
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          datab [4096];
+  char          *datac = { "ghi" };
   Sock_t        c;
   int           rc;
 
@@ -223,9 +230,11 @@ connectWriteCloseFail (void *id)
 #endif
   memset (datab, 'a', 4096);
   c = connectWait ();
-  rc = sockWriteStr (c, data, strlen (data));
+  rc = sockWriteBinary (c, data, strlen (data) + 1, NULL, 0);
   if (rc != 0) { gthreadrc = 1; }
-  rc = sockWriteBinary (c, datab, 4096);
+  rc = sockWriteBinary (c, data, strlen (data), datac, strlen (datac));
+  if (rc != 0) { gthreadrc = 1; }
+  rc = sockWriteBinary (c, datab, 4096, NULL, 0);
   if (rc != 0) { gthreadrc = 1; }
   mssleep (200);
   sockClose (c);
@@ -386,6 +395,8 @@ START_TEST(sock_write_read)
   Sock_t        r = -1;
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          datab [4096];
+  char          *datac = { "ghi" };
+  char          tdata [4096 + 200];
   char          *ndata;
   size_t        len;
   int           count;
@@ -420,25 +431,39 @@ START_TEST(sock_write_read)
 
   mssleep (200); /* give time for client to write */
 
-  ndata = sockRead (r, &len);
+  ndata = sockReadBuff (r, &len, tdata, sizeof (tdata));
 
   ck_assert_ptr_nonnull (ndata);
   if (ndata != NULL) {
-    ck_assert_int_eq (strlen (ndata) + 1, len);
-    ck_assert_int_eq (strlen (ndata), strlen (data));
-    ck_assert_str_eq (ndata, data);
-    mdfree (ndata);
+    ck_assert_int_eq (strlen (tdata) + 1, len);
+    ck_assert_int_eq (strlen (tdata), strlen (data));
+    ck_assert_str_eq (tdata, data);
   }
 
   mssleep (200); /* give time for client to write */
 
-  ndata = sockRead (r, &len);
+  ndata = sockReadBuff (r, &len, tdata, sizeof (tdata));
+
+  if (ndata != NULL) {
+    char    tbuff [200];
+
+    ck_assert_int_eq (strlen (data) + strlen (datac), len);
+    memcpy (tbuff, tdata, strlen (data));
+    tbuff [strlen (data)] = '\0';
+    ck_assert_str_eq (tbuff, data);
+    memcpy (tbuff, tdata + strlen (data), strlen (datac));
+    tbuff [strlen (datac)] = '\0';
+    ck_assert_str_eq (tbuff, datac);
+  }
+
+  mssleep (200); /* give time for client to write */
+
+  ndata = sockReadBuff (r, &len, tdata, sizeof (tdata));
 
   ck_assert_ptr_nonnull (ndata);
   ck_assert_int_eq (len, 4096);
   if (ndata != NULL) {
-    ck_assert_mem_eq (ndata, datab, 4096);
-    mdfree (ndata);
+    ck_assert_mem_eq (tdata, datab, 4096);
   }
   mssleep (200);
   sockClose (r);
@@ -460,7 +485,7 @@ START_TEST(sock_write_read_buff)
   Sock_t        l = -1;
   Sock_t        r = -1;
   char          *data = { "aaaabbbbccccddddeeeeffff" };
-  char          buff [80];
+  char          tdata [4096 + 200];
   char          *ndata;
   size_t        len;
   int           count;
@@ -493,13 +518,13 @@ START_TEST(sock_write_read_buff)
 
   mssleep (200); /* time for client to write */
 
-  ndata = sockReadBuff (r, &len, buff, sizeof(buff));
+  ndata = sockReadBuff (r, &len, tdata, sizeof (tdata));
 
   ck_assert_ptr_nonnull (ndata);
   if (ndata != NULL) {
-    ck_assert_int_eq (strlen (ndata) + 1, len);
-    ck_assert_int_eq (strlen (ndata), strlen (data));
-    ck_assert_str_eq (ndata, data);
+    ck_assert_int_eq (strlen (tdata) + 1, len);
+    ck_assert_int_eq (strlen (tdata), strlen (data));
+    ck_assert_str_eq (tdata, data);
   }
   mssleep (200);
   sockClose (r);
@@ -551,7 +576,7 @@ START_TEST(sock_write_read_buff_fail)
   ck_assert_int_eq  (socketInvalid (r), 0);
   ck_assert_int_ne (l, r);
 
-  ndata = sockReadBuff (r, &len, buff, sizeof(buff));
+  ndata = sockReadBuff (r, &len, buff, sizeof (buff));
 
   ck_assert_ptr_null (ndata);
   ck_assert_int_eq (len, 0);
@@ -576,6 +601,8 @@ START_TEST(sock_write_check_read)
   Sock_t        r = -1;
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          datab [4096];
+  char          *datac = { "ghi" };
+  char          tdata [4096 + 200];
   char          *ndata;
   size_t        len;
   int           count;
@@ -618,14 +645,13 @@ START_TEST(sock_write_check_read)
     ++count;
   }
   ck_assert_int_eq (rc, r);
-  ndata = sockRead (r, &len);
+  ndata = sockReadBuff (r, &len, tdata, sizeof (tdata));
 
   ck_assert_ptr_nonnull (ndata);
   if (ndata != NULL) {
-    ck_assert_int_eq (strlen (ndata) + 1, len);
-    ck_assert_int_eq (strlen (ndata), strlen (data));
-    ck_assert_str_eq (ndata, data);
-    mdfree (ndata);
+    ck_assert_int_eq (strlen (tdata) + 1, len);
+    ck_assert_int_eq (strlen (tdata), strlen (data));
+    ck_assert_str_eq (tdata, data);
   }
 
   rc = sockCheck (si);
@@ -636,13 +662,37 @@ START_TEST(sock_write_check_read)
     ++count;
   }
   ck_assert_int_eq (rc, r);
-  ndata = sockRead (r, &len);
+
+  ndata = sockReadBuff (r, &len, tdata, sizeof (tdata));
+
+  ck_assert_ptr_nonnull (ndata);
+  if (ndata != NULL) {
+    char    tbuff [200];
+
+    ck_assert_int_eq (strlen (data) + strlen (datac), len);
+    memcpy (tbuff, tdata, strlen (data));
+    tbuff [strlen (data)] = '\0';
+    ck_assert_str_eq (tbuff, data);
+    memcpy (tbuff, tdata + strlen (data), strlen (datac));
+    tbuff [strlen (datac)] = '\0';
+    ck_assert_str_eq (tbuff, datac);
+  }
+
+  rc = sockCheck (si);
+  count = 0;
+  while (rc == 0 && count < 100) {
+    mssleep (20);
+    rc = sockCheck (si);
+    ++count;
+  }
+  ck_assert_int_eq (rc, r);
+
+  ndata = sockReadBuff (r, &len, tdata, sizeof (tdata));
 
   ck_assert_ptr_nonnull (ndata);
   if (ndata != NULL) {
     ck_assert_int_eq (len, 4096);
-    ck_assert_mem_eq (ndata, datab, 4096);
-    mdfree (ndata);
+    ck_assert_mem_eq (tdata, datab, 4096);
   }
   mssleep (200);
   sockClose (r);
@@ -666,6 +716,7 @@ START_TEST(sock_close)
   int           err;
   Sock_t        l = -1;
   Sock_t        r = -1;
+  char          tdata [4096 + 200];
   char          *ndata;
   size_t        len;
   int           count;
@@ -710,12 +761,9 @@ START_TEST(sock_close)
     ++count;
   }
   if (rc > 0) {
-    ndata = sockRead (r, &len);
+    ndata = sockReadBuff (r, &len, tdata, sizeof (tdata));
 
     ck_assert_ptr_null (ndata);
-    if (ndata != NULL) {
-      mdfree (ndata);
-    }
   }
   mssleep (200);
   sockClose (r);
@@ -740,6 +788,7 @@ START_TEST(sock_write_close)
   Sock_t        l = -1;
   Sock_t        r = -1;
   char          datab [4096];
+  char          tdata [4096 + 200];
   char          *ndata;
   size_t        len;
   int           count;
@@ -785,12 +834,9 @@ START_TEST(sock_write_close)
     ++count;
   }
   ck_assert_int_eq (rc, r);
-  ndata = sockRead (r, &len);
+  ndata = sockReadBuff (r, &len, tdata, sizeof (tdata));
 
   ck_assert_ptr_nonnull (ndata);
-  if (ndata != NULL) {
-    mdfree (ndata);
-  }
 
   rc = sockCheck (si);
   count = 0;
@@ -800,12 +846,9 @@ START_TEST(sock_write_close)
     ++count;
   }
   ck_assert_int_eq (rc, r);
-  ndata = sockRead (r, &len);
+  ndata = sockReadBuff (r, &len, tdata, sizeof (tdata));
 
   ck_assert_ptr_nonnull (ndata);
-  if (ndata != NULL) {
-    mdfree (ndata);
-  }
   mssleep (200);
   sockClose (r);
   sockRemoveCheck (si, r);

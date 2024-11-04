@@ -46,16 +46,22 @@ osDirOpen (const char *dirname)
 #if _lib_FindFirstFileW
   {
     size_t        len = 0;
+    char          *p;
+    char          *end;
 
     dirh->dhandle = INVALID_HANDLE_VALUE;
     len = strlen (dirname) + 3;
     dirh->dirname = mdmalloc (len);
-    strlcpy (dirh->dirname, dirname, len);
+    p = dirh->dirname;
+    end = dirh->dirname + len;
+    p = stpecpy (p, end, dirname);
     stringTrimChar (dirh->dirname, '/');
-    strlcat (dirh->dirname, "/*", len);
+    p = stpecpy (p, end, "/*");
   }
 #else
+  dirh->dirname = mdstrdup (dirname);
   dirh->dh = opendir (dirname);
+  mdextfopen (dirh->dh);
 #endif
 
   return dirh;
@@ -64,17 +70,25 @@ osDirOpen (const char *dirname)
 char *
 osDirIterate (dirhandle_t *dirh)
 {
-  char      *fname;
-
+  char      *fname = NULL;
 #if _lib_FindFirstFileW
   WIN32_FIND_DATAW filedata;
   BOOL             rc;
+#else
+  struct dirent   *dirent = NULL;
+#endif
 
+  if (dirh == NULL) {
+    return NULL;
+  }
+
+#if _lib_FindFirstFileW
   if (dirh->dhandle == INVALID_HANDLE_VALUE) {
     wchar_t         *wdirname;
 
     wdirname = osToWideChar (dirh->dirname);
     dirh->dhandle = FindFirstFileW (wdirname, &filedata);
+    mdextfopen (dirh->dhandle);
     rc = 0;
     if (dirh->dhandle != INVALID_HANDLE_VALUE) {
       rc = 1;
@@ -89,7 +103,9 @@ osDirIterate (dirhandle_t *dirh)
     fname = osFromWideChar (filedata.cFileName);
   }
 #else
-  struct dirent   *dirent;
+  if (dirh->dh == NULL) {
+    return NULL;
+  }
 
   dirent = readdir (dirh->dh);
   fname = NULL;
@@ -105,15 +121,24 @@ osDirIterate (dirhandle_t *dirh)
 void
 osDirClose (dirhandle_t *dirh)
 {
+  if (dirh == NULL) {
+    return;
+  }
+
 #if _lib_FindFirstFileW
   if (dirh->dhandle != INVALID_HANDLE_VALUE) {
+    mdextfclose (dirh->dhandle);
     FindClose (dirh->dhandle);
   }
+  dirh->dhandle = INVALID_HANDLE_VALUE;
 #else
-  closedir (dirh->dh);
+  if (dirh->dh != NULL) {
+    mdextfclose (dirh->dh);
+    closedir (dirh->dh);
+  }
+  dirh->dh = NULL;
 #endif
   dataFree (dirh->dirname);
   dirh->dirname = NULL;
   mdfree (dirh);
 }
-

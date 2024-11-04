@@ -3,6 +3,7 @@
  */
 #include "config.h"
 
+#define __STDC_WANT_LIB_EXT1__ 1
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -36,6 +37,7 @@ static const char *envitems [] = {
   "DYLD_FALLBACK_LIBRARY_PATH",
   "GDK_SCALE",
   "G_FILENAME_ENCODING",
+  "GTK_BACKEND",
   "GTK_CSD",
   "GTK_THEME",
   "HOME",
@@ -144,6 +146,8 @@ main (int argc, char *argv [])
 
   bdjvarsUpdateData ();
 
+  /* C language: integer sizes */
+
   fprintf (stdout, " i: bool   %d\n", (int) sizeof (bool));
   fprintf (stdout, " i: short  %d %d\n", (int) sizeof (short), SHRT_MAX);
   fprintf (stdout, " i: int    %d %ld\n", (int) sizeof (int), (long) INT_MAX);
@@ -152,17 +156,30 @@ main (int argc, char *argv [])
   fprintf (stdout, " i: size_t %d\n", (int) sizeof (size_t));
   fprintf (stdout, " i: off_t  %d\n", (int) sizeof (off_t));
   fprintf (stdout, " i: time_t %d\n", (int) sizeof (time_t));
-  fprintf (stdout, " i: uint32_t %d %ld\n", (int) sizeof (uint32_t), (long) INT32_MAX);
-  fprintf (stdout, " i: uint64_t %d\n", (int) sizeof (uint64_t));
+  fprintf (stdout, " i: uint32_t %d %" PRIu32 "\n", (int) sizeof (uint32_t), UINT32_MAX);
+  fprintf (stdout, " i: uint64_t %d %" PRIu64 "\n", (int) sizeof (uint64_t), UINT64_MAX);
+
+  /* C language */
+
 #if _POSIX_C_SOURCE
   fprintf (stdout, " c: _POSIX_C_SOURCE %ld\n", _POSIX_C_SOURCE);
 #endif
-  c = 1;
-#if defined(__STDC_NO_ATOMICS__)
+
   c = 0;
+#if defined (__STDC_LIB_EXT1__)
+  c = 1;
 #endif
-  fprintf (stdout, " c: atomics %d\n", c);
+  fprintf (stdout, " c: __STDC_LIB_EXT1__ %d\n", c);
+
+  c = 0;
+#if defined(__STDC_NO_ATOMICS__)
+  c = 1;
+#endif
+  fprintf (stdout, " c: __STDC_NO_ATOMICS__ %d\n", c);
+
   fprintf (stdout, " c: __STDC_VERSION__ %ld\n", __STDC_VERSION__);
+
+  /* UI */
 #if BDJ4_UI_GTK3
   fprintf (stdout, "ui: GTK3\n");
 #endif
@@ -177,6 +194,11 @@ main (int argc, char *argv [])
 #if BDJ4_UI_NULL
   fprintf (stdout, "ui: null\n");
 #endif
+#if BDJ4_UI_MACOS
+  fprintf (stdout, "ui: macos\n");
+#endif
+
+  /* environment */
 
   for (int i = 0; i < ENV_MAX; ++i) {
     char  tmp [MAXPATHLEN];
@@ -187,12 +209,16 @@ main (int argc, char *argv [])
     }
   }
 
+  /* sysvars */
+
   for (int i = 0; i < SV_MAX; ++i) {
     if (i == SV_TEMP_A || i == SV_TEMP_B) {
       continue;
     }
     fprintf (stdout, " s: %-20s %s (%d)\n", sysvarsDesc (i), sysvarsGetStr (i), i);
   }
+
+  /* sysvars numeric */
 
   for (int i = 0; i < SVL_MAX; ++i) {
     fprintf (stdout, "sl: %-20s %" PRId64 " (%d)\n", sysvarslDesc (i), sysvarsGetNum (i), i);

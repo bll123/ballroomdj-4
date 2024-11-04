@@ -17,6 +17,8 @@
 
 #include "bdj4.h"
 #include "bdj4intl.h"
+#include "bdjopt.h"
+#include "bdjstring.h"
 #include "log.h"
 #include "mdebug.h"
 #include "filedata.h"
@@ -28,6 +30,7 @@
 enum {
   INIT_NONE,
   INIT_CLIENT,
+  INIT_BYPASS,
 };
 
 enum {
@@ -51,6 +54,7 @@ typedef struct webclient {
 static void   webclientInit (webclient_t *webclient);
 static void   webclientInitResp (webclient_t *webclient);
 static size_t webclientCallback (char *ptr, size_t size, size_t nmemb, void *userdata);
+static size_t webclientNullCallback (char *ptr, size_t size, size_t nmemb, void *userdata);
 static size_t webclientDownloadCallback (char *ptr, size_t size, size_t nmemb, void *userdata);
 static int webclientDebugCallback (CURL *curl, curl_infotype type, char *data, size_t size, void *userptr);
 static void webclientSetUserAgent (CURL *curl);
@@ -280,9 +284,9 @@ webclientClose (webclient_t *webclient)
     webclient->curl = NULL;
     if (initialized == INIT_CLIENT) {
       curl_global_cleanup ();
+      initialized = INIT_NONE;
     }
     mdfree (webclient);
-    initialized = INIT_NONE;
   }
 }
 
@@ -305,6 +309,35 @@ webclientSpoofUserAgent (webclient_t *webclient)
 
   curl_easy_setopt (webclient->curl, CURLOPT_USERAGENT,
       "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/117.0");
+}
+
+void
+webclientGetLocalIP (char *ip, size_t sz)
+{
+  webclient_t   *webclient;
+  char          *tip;
+  char          tbuff [MAXPATHLEN];
+  int           initstate;
+
+  *ip = '\0';
+
+  initstate = initialized;
+  if (initialized == INIT_CLIENT) {
+    /* so that the close does not de-init the global curl state */
+    initialized = INIT_BYPASS;
+  }
+  webclient = webclientAlloc (NULL, NULL);
+  snprintf (tbuff, sizeof (tbuff), "%s/%s",
+      bdjoptGetStr (OPT_HOST_VERSION), bdjoptGetStr (OPT_URI_VERSION));
+  curl_easy_setopt (webclient->curl, CURLOPT_URL, tbuff);
+  curl_easy_setopt (webclient->curl, CURLOPT_WRITEDATA, NULL);
+  curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientNullCallback);
+  curl_easy_perform (webclient->curl);
+  curl_easy_getinfo (webclient->curl, CURLINFO_LOCAL_IP, &tip);
+  stpecpy (ip, ip + sz, tip);
+
+  webclientClose (webclient);
+  initialized = initstate;
 }
 
 void
@@ -402,6 +435,12 @@ webclientCallback (char *ptr, size_t size, size_t nmemb, void *userdata)
 }
 
 static size_t
+webclientNullCallback (char *ptr, size_t size, size_t nmemb, void *userdata)
+{
+  return size * nmemb;
+}
+
+static size_t
 webclientDownloadCallback (char *ptr, size_t size, size_t nmemb, void *userdata)
 {
   webclient_t *webclient = userdata;
@@ -480,7 +519,7 @@ webclientSetUserAgent (CURL *curl)
 
   snprintf (tbuff, sizeof (tbuff),
       "BDJ4/%s ( %s/ )", sysvarsGetStr (SV_BDJ4_VERSION),
-      sysvarsGetStr (SV_HOST_WEB));
+      bdjoptGetStr (OPT_URI_HOMEPAGE));
   curl_easy_setopt (curl, CURLOPT_USERAGENT, tbuff);
 }
 

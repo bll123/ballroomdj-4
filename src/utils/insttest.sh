@@ -83,11 +83,12 @@ case $systype in
     ;;
 esac
 
-TARGETTOPDIR=${cwd}/tmp/BDJ4dev
-TARGETTOPALTDIR=${cwd}/tmp/BDJ4altdev
+DEVTMP=devel/tmp
+TARGETTOPDIR=${cwd}/${DEVTMP}/BDJ4dev
+TARGETTOPALTDIR=${cwd}/${DEVTMP}/BDJ4altdev
 if [[ $tag == macos ]]; then
-  TARGETTOPDIR=${cwd}/tmp/BDJ4dev.app
-  TARGETTOPALTDIR=${cwd}/tmp/BDJ4altdev.app
+  TARGETTOPDIR=${cwd}/${DEVTMP}/BDJ4dev.app
+  TARGETTOPALTDIR=${cwd}/${DEVTMP}/BDJ4altdev.app
 fi
 TARGETDIR=${TARGETTOPDIR}${macdir}
 TARGETALTDIR=${TARGETTOPALTDIR}${macdir}
@@ -102,10 +103,10 @@ fi
 IMGDIR="${DATATOPDIR}/img"
 DATADIR="${DATATOPDIR}/data"
 HTTPDIR="${DATATOPDIR}/http"
-UNPACKDIR="${cwd}/tmp/bdj4-install"
-UNPACKDIRBASE="${cwd}/tmp/bdj4-install${macdir}"
+UNPACKDIR="${cwd}/${DEVTMP}/bdj4-install"
+UNPACKDIRBASE="${cwd}/${DEVTMP}/bdj4-install${macdir}"
 UNPACKDIRSAVE="$UNPACKDIR.save"
-LOG="tmp/insttest-log.txt"
+LOG="${DEVTMP}/insttest-log.txt"
 
 fn="templates/ds-audioid-list.txt"
 AUDIOIDLISTVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
@@ -152,13 +153,13 @@ function checkUpdaterClean {
 
   # 4.2.0 2023-3-5 autoselection values changed
   fn="$DATADIR/autoselection.txt"
-  sed -e "s/version [2-9]/version $(($AUTOSELVER-1))/;s/^\.\.[2-9]$/..1/" "${fn}" > "${fn}.n"
+  sed -e "s/version [2-9]/version $(($AUTOSELVER-1))/" "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
   # audio adjust file should be installed if missing or wrong version
   fn="$DATADIR/audioadjust.txt"
   # rm -f "${fn}"
-  sed -e "s/version [2-9]/version $(($AUDIOADJVER-1))/;s/^\.\.[2-9]/..1/" "${fn}" > "${fn}.n"
+  sed -e "s/version [2-9]/version $(($AUDIOADJVER-1))/" "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
   # ds-audioid.txt file should be installed if missing
@@ -181,7 +182,7 @@ function checkUpdaterClean {
 
   # sortopt version number should be updated
   fn="$DATADIR/sortopt.txt"
-  sed -e "s/version [2-9]/version $(($SORTOPTVER-1))/;s/^\.\.[2-9]$/..1/" "${fn}" > "${fn}.n"
+  sed -e "s/version [2-9]/version $(($SORTOPTVER-1))/" "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
   # gtk-static version number should be updated to version 4.
@@ -611,15 +612,9 @@ function checkInstallation {
       grep "version ${AUDIOADJVER}" "${fn}" > /dev/null 2>&1
       rc=$?
       if [[ $rc -eq 0 ]]; then
-        grep "^\.\.${AUDIOADJVER}" "${fn}" > /dev/null 2>&1
-        rc=$?
-        if [[ $rc -eq 0 ]]; then
-          chk=$(($chk+1))
-        else
-          echo "  audioadjust.txt file has wrong version (a)"
-        fi
+        chk=$(($chk+1))
       else
-        echo "  audioadjust.txt file has wrong version (b)"
+        echo "  audioadjust.txt file has wrong version"
       fi
     else
       echo "  no audioadjust.txt file"
@@ -631,15 +626,9 @@ function checkInstallation {
       grep "version ${AUTOSELVER}" "${fn}" > /dev/null 2>&1
       rc=$?
       if [[ $rc -eq 0 ]]; then
-        grep "^\.\.${AUTOSELVER}$" "${fn}" > /dev/null 2>&1
-        rc=$?
-        if [[ $rc -eq 0 ]]; then
-          chk=$(($chk+1))
-        else
-          echo "  autoselection.txt file has wrong version (a)"
-        fi
+        chk=$(($chk+1))
       else
-        echo "  autoselection.txt file has wrong version (b)"
+        echo "  autoselection.txt file has wrong version"
       fi
     else
       echo "  no autoselection.txt file"
@@ -1031,6 +1020,14 @@ function cleanInstTest {
   test -f "$fn" && rm -f "$fn"
   fn="$HOME/Desktop/BDJ4altdev.desktop"
   test -f "$fn" && rm -f "$fn"
+  fn="$HOME/Desktop/BDJ4dev.link"
+  test -f "$fn" && rm -f "$fn"
+  fn="$HOME/Desktop/BDJ4altdev.link"
+  test -f "$fn" && rm -f "$fn"
+  fn="$HOME/Applications/BDJ4altdev.app"
+  test -d "$fn" && rm -rf "$fn"
+  fn="$HOME/Applications/BDJ4dev.app"
+  test -d "$fn" && rm -rf "$fn"
   fn="$HOME/.config/BDJ4/altinstdirdev.txt"
   test -f "$fn" && rm -f "$fn"
   fn="$HOME/.config/BDJ4/altcountdev.txt"

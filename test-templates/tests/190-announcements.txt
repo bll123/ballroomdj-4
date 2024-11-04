@@ -5,7 +5,7 @@ section 190 Announcements
 test 190-10 No-Announce
 msg main CHK_CLEAR_PREP_Q
 msg main QUEUE_PLAYLIST 0~test-seq-a
-mssleep 100
+mssleep 300
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 5
 msg main CMD_PLAY
@@ -214,7 +214,7 @@ test 190-30 With-Queue-Announce
 msg main CHK_CLEAR_PREP_Q
 msg main CHK_MAIN_SET_PLAYANNOUNCE 1
 msg main QUEUE_PLAYLIST 0~test-seq-a
-mssleep 200
+mssleep 400
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 9
 msg main CMD_PLAY
@@ -368,7 +368,7 @@ msg main MUSICQ_SET_PLAYBACK 0
 msg main CHK_MAIN_SET_PLAYANNOUNCE 1
 msg main QUEUE_PLAYLIST 0~test-seq-a
 msg main QUEUE_PLAYLIST 1~test-seq-a
-mssleep 200
+mssleep 300
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 13
 msg main CMD_PLAY

@@ -139,6 +139,7 @@
             <li><a href="index.html.nl">Nederlands</a></li>
             <li><a href="index.html.pl-PL">Polski</a></li>
             <li><a href="index.html.pt-PT">Português</a></li>
+            <li><a href="index.html.ro">română</a></li>
             <li><a href="index.html.ru">Русский</a></li>
             <li><a href="index.html.sr-Cyrl">српски</a></li>
             <li><a href="index.html.sv">Svenska</a></li>

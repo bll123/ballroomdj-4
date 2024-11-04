@@ -12,16 +12,18 @@ cwd=$(pwd)
 
 . src/utils/pkgnm.sh
 
+DEVTMP=devel/tmp
+
 sfuser=bll123
 project=ballroomdj4
 baseurl=https://sourceforge.net/rest/p/${project}/wiki
 accessurl=${baseurl}/has_access
 useragent=bdj4-wikiput.sh
-cookiejar=tmp/cookiejar.txt
+cookiejar=${DEVTMP}/cookiejar.txt
 bearer=""
-tmpfile=tmp/wiki-tmp.txt
-compfile=tmp/wiki-comp.txt
-filelist=tmp/wiki-files.txt
+tmpfile=${DEVTMP}/wiki-tmp.txt
+compfile=${DEVTMP}/wiki-comp.txt
+filelist=${DEVTMP}/wiki-files.txt
 dt=$(date '+%Y-%m-%d %H:%M:%S')
 forceflag=F
 
@@ -87,9 +89,11 @@ function updateimages {
 
 function getupdate {
   tfn=$1
-  grep 'Updated [0-9][0-9]*' $tfn |
-  sed \
-    -e 's/.*Updated \([0-9 :-]*\); BDJ4 version.*/\1/'
+  val=$(grep 'Updated [0-9][0-9]*' $tfn |
+      sed \
+      -e 's/.*Updated \([0-9 :-]*\); BDJ4 version.*/\1/')
+  # echo "getupdate $tfn $val" >&2
+  echo $val
 }
 
 function gettitle {
@@ -236,6 +240,7 @@ function put {
       return
     fi
   fi
+
   gettext $tfn
   title=$(gettitle $tfn)
   cmd="curl -L --silent -b ${cookiejar} -c ${cookiejar} -X POST \
@@ -276,6 +281,24 @@ function dispfilelist {
   cat ${filelist}
 }
 
+function resetdate {
+  tfn="$1"
+  case ${tfn} in
+    *~|*.orig)
+      return
+      ;;
+  esac
+  odt=$(getupdate $tfn)
+  touch --date "$odt" "${tfn}"
+}
+
+function resetdateall {
+  flist=$(find wiki -name '*.txt' -print)
+  for f in $flist; do
+    resetdate $f
+  done
+}
+
 getaccesstoken
 case $1 in
   put)
@@ -302,6 +325,16 @@ case $1 in
         ;;
     esac
     putall
+    ;;
+  resetdate)
+    shift
+    case $1 in
+      --force)
+        forceflag=T
+        shift
+        ;;
+    esac
+    resetdateall
     ;;
   getall)
     ;;

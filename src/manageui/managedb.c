@@ -256,7 +256,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiEntryInit (50, 200);
-  strlcpy (tbuff, bdjoptGetStr (OPT_M_DIR_MUSIC), sizeof (tbuff));
+  stpecpy (tbuff, tbuff + sizeof (tbuff), bdjoptGetStr (OPT_M_DIR_MUSIC));
   pathDisplayPath (tbuff, sizeof (tbuff));
   uiEntrySetValue (uiwidgetp, tbuff);
   uiBoxPackStartExpand (hbox, uiwidgetp);
@@ -484,8 +484,8 @@ manageDbStart (void *udata)
 
   targv [targc++] = "--progress";
   targv [targc++] = "--musicdir";
-  strlcpy (tbuff, uiEntryGetValue (managedb->wcont [MDB_W_DB_MUSIC_DIR]),
-      sizeof (tbuff));
+  stpecpy (tbuff, tbuff + sizeof (tbuff),
+      uiEntryGetValue (managedb->wcont [MDB_W_DB_MUSIC_DIR]));
   pathNormalizePath (tbuff, sizeof (tbuff));
   targv [targc++] = tbuff;
   targv [targc++] = NULL;

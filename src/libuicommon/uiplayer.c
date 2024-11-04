@@ -700,6 +700,9 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   }
 
   logProcBegin ();
+
+  /* the management ui has two uiplayer instances */
+  /* therefore the original message must be preserved */
   if (args != NULL) {
     targs = mdstrdup (args);
   }
@@ -726,7 +729,7 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_PLAYER_SUPPORT: {
-          uiplayer->pliSupported = atoi (args);
+          uiplayer->pliSupported = atoi (targs);
           if (! pliCheckSupport (uiplayer->pliSupported, PLI_SUPPORT_SPEED)) {
             uiplayerDisableSpeed (uiplayer);
           }

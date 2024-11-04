@@ -38,10 +38,14 @@ if [[ -f devel/primary.txt ]]; then
   isprimary=T
 fi
 
+. VERSION.txt   # need development flag
 . src/utils/pkgnm.sh
 pkgnmgetdata
 
+DEVTMP=devel/tmp
+
 # make sure the tmp dir exists
+test -d ${DEVTMP} || mkdir ${DEVTMP}
 test -d tmp || mkdir tmp
 
 grc=0
@@ -67,89 +71,110 @@ if [[ $rc -ne 0 ]]; then
   grc=1
 fi
 
-grep 'AUDIOID_START = AUDIOID_ID_ACOUSTID' src/libaudioid/audioid.c > /dev/null 2>&1
-rc=$?
-if [[ $rc -ne 0 ]]; then
-  echo "audioid debugging is on"
-  grc=1
-fi
+if [[ $DEVELOPMENT != dev ]]; then
+  grep 'AUDIOID_START = AUDIOID_ID_ACOUSTID' src/libaudioid/audioid.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "audioid debugging is on"
+    grc=1
+  fi
 
-grep 'PLUI_DBG_MSGS = 0,' src/playerui/bdj4playerui.c > /dev/null 2>&1
-rc=$?
-if [[ $rc -ne 0 ]]; then
-  echo "plui debugging is on"
-  grc=1
-fi
+  grep 'PLUI_DBG_MSGS = 0,' src/playerui/bdj4playerui.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "plui debugging is on"
+    grc=1
+  fi
 
-grep '^#define DBUS_DEBUG 0' src/libmpris/dbusi.c > /dev/null 2>&1
-rc=$?
-if [[ $rc -ne 0 ]]; then
-  echo "dbus debugging is on"
-  grc=1
-fi
+  grep '^#define DBUS_DEBUG 0' src/libmpris/dbusi.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "dbus debugging is on"
+    grc=1
+  fi
 
-grep '^#define BDJ4_PW_DEBUG 0' src/libvol/volpipewire.c > /dev/null 2>&1
-rc=$?
-if [[ $rc -ne 0 ]]; then
-  echo "pipewire debugging is on"
-  grc=1
-fi
+  grep '^#define BDJ4_PW_DEBUG 0' src/libvol/volpipewire.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "pipewire debugging is on"
+    grc=1
+  fi
 
-grep '^#define BDJ4_DYLIB_DEBUG 0' src/libdylib/dyintfc.c > /dev/null 2>&1
-rc=$?
-if [[ $rc -ne 0 ]]; then
-  echo "dylib debugging is on"
-  grc=1
-fi
+  grep '^#define BDJ4_DYLIB_DEBUG 0' src/libdylib/dyintfc.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "dylib debugging is on"
+    grc=1
+  fi
 
-grep '^#define VLCDEBUG 0' src/libpli/vlci.c > /dev/null 2>&1
-rc=$?
-if [[ $rc -ne 0 ]]; then
-  echo "vlci debugging is on"
-  grc=1
-fi
+  grep '^#define VLCDEBUG 0' src/libpli/vlci.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "vlci debugging is on"
+    grc=1
+  fi
 
-grep '^#define SILENCE_LOG 1' src/libpli/vlci.c > /dev/null 2>&1
-rc=$?
-if [[ $rc -ne 0 ]]; then
-  echo "vlci silence-log is off"
-  grc=1
-fi
+  grep '^#define SILENCE_LOG 1' src/libpli/vlci.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "vlci silence-log is off"
+    grc=1
+  fi
 
-grep '^#define VLCLOGGING 0' src/libpli/plivlc.c > /dev/null 2>&1
-rc=$?
-if [[ $rc -ne 0 ]]; then
-  echo "plivlc logging is on"
-  grc=1
-fi
+  grep '^#define VLCLOGGING 0' src/libpli/plivlc.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "plivlc logging is on"
+    grc=1
+  fi
 
-grep 'ACRCLOUD_REUSE 0' src/libaudioid/acrcloud.c > /dev/null 2>&1
-rc=$?
-if [[ $rc -ne 0 ]]; then
-  echo "acrcloud debugging is on"
-  grc=1
-fi
+  grep 'ACRCLOUD_REUSE 0' src/libaudioid/acrcloud.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "acrcloud debugging is on"
+    grc=1
+  fi
 
-grep 'ACOUSTID_REUSE 0' src/libaudioid/acoustid.c > /dev/null 2>&1
-rc=$?
-if [[ $rc -ne 0 ]]; then
-  echo "acoustid debugging is on"
-  grc=1
-fi
+  grep 'ACOUSTID_REUSE 0' src/libaudioid/acoustid.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "acoustid debugging is on"
+    grc=1
+  fi
 
-grep 'MUSICBRAINZ_REUSE 0' src/libaudioid/musicbrainz.c > /dev/null 2>&1
-rc=$?
-if [[ $rc -ne 0 ]]; then
-  echo "musicbrainz debugging is on"
-  grc=1
-fi
+  grep 'MUSICBRAINZ_REUSE 0' src/libaudioid/musicbrainz.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "musicbrainz debugging is on"
+    grc=1
+  fi
 
-#grep '^#define MACOS_UI_DEBUG 0' src/include/uigeneral.h > /dev/null 2>&1
-#rc=$?
-#if [[ $rc -ne 0 ]]; then
-#  echo "macos-ui debugging is on"
-#  grc=1
-#fi
+  grep '^#define BDJ4_DEBUG_CSS 0' src/libuigtk3/uiui.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "css debugging is on"
+    grc=1
+  fi
+
+  wc=$(grep '^fprintf' */*.c | grep -v uitest.c | wc -l)
+  if [[ $wc -ne 0 ]]; then
+    echo "fprintf debugging found"
+    grc=1
+  fi
+
+  wc=$(grep '^logBasic' */*.c | grep -v KEEP | wc -l)
+  if [[ $wc -ne 0 ]]; then
+    echo "logBasic debugging found"
+    grc=1
+  fi
+
+  #grep '^#define MACOS_UI_DEBUG 0' src/include/uigeneral.h > /dev/null 2>&1
+  #rc=$?
+  #if [[ $rc -ne 0 ]]; then
+  #  echo "macos-ui debugging is on"
+  #  grc=1
+  #fi
+fi
 
 for f in standardrounds.pldances QueueDance.pldances dances.txt; do
   a=$(grep '^# version' templates/$f)
@@ -268,7 +293,7 @@ if [[ $platform == windows ]]; then
     fi
   done
 
-  dlllistfn=tmp/dll-list.txt
+  dlllistfn=${DEVTMP}/dll-list.txt
   > $dlllistfn
 
   for fn in plocal/bin/*.dll bin/*.exe $chkdlllist ; do
@@ -299,14 +324,14 @@ if [[ $platform == windows ]]; then
   # stage the other required gtk files.
 
   # various gtk stuff
-  rsync -aS --delete /${libtag}/lib/gdk-pixbuf-2.0 plocal/lib
-  rsync -aS --delete /${libtag}/lib/girepository-1.0 plocal/lib
+  rsync --info=copy,del -aS --delete /${libtag}/lib/gdk-pixbuf-2.0 plocal/lib
+  rsync --info=copy,del -aS --delete /${libtag}/lib/girepository-1.0 plocal/lib
   mkdir -p plocal/share/icons
-  rsync -aS --delete /${libtag}/share/icons/* plocal/share/icons
+  rsync --info=copy,del -aS --delete /${libtag}/share/icons/* plocal/share/icons
   mkdir -p plocal/share/glib-2.0
-  rsync -aS --delete /${libtag}/share/glib-2.0/schemas plocal/share/glib-2.0
+  rsync --info=copy,del -aS --delete /${libtag}/share/glib-2.0/schemas plocal/share/glib-2.0
   mkdir -p plocal/etc/fonts
-  rsync -aS --delete /${libtag}/etc/fonts plocal/etc
+  rsync --info=copy,del -aS --delete /${libtag}/etc/fonts plocal/etc
   mkdir -p plocal/etc/gtk-3.0
   cp -pf /${libtag}/etc/gtk-3.0/im-multipress.conf plocal/etc/gtk-3.0
 
@@ -323,7 +348,7 @@ gtk-theme-name = Windows-10-Dark
 _HERE_
 
   mkdir -p plocal/etc/fonts
-  rsync -aS --delete /${libtag}/etc/fonts plocal/etc
+  rsync --info=copy,del -aS --delete /${libtag}/etc/fonts plocal/etc
 
 fi # is windows
 

@@ -39,7 +39,6 @@ listidx_t   listIterateKeyPreviousNum (keytype_t keytype, list_t *list, listidx_
 const char  *listIterateKeyStr (keytype_t keytype, list_t *list, listidx_t *iteridx);
 void        *listIterateValue (keytype_t keytype, list_t *list, listidx_t *iteridx);
 listnum_t   listIterateValueNum (keytype_t keytype, list_t *list, listidx_t *iteridx);
-listidx_t   listIterateGetIdx (keytype_t keytype, list_t *list, listidx_t *iteridx);
 
 /* get */
 listidx_t   listGetIdxNumKey (keytype_t keytype, list_t *list, listidx_t key);

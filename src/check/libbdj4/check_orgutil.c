@@ -121,6 +121,10 @@ char *testsongdata [] = {
       "ARTIST\n..Artist 8\nDANCE\n..Rumba\nTITLE\n..Ne_Русский_Шторм-ru\n"
       "GENRE\n..Rock\nCOMPOSER\n..Composer 8\n"
       "DISCTOTAL\n..3\n",
+  /* no information */
+  "FILE\n..111.mp3\n",
+  /* only dance */
+  "FILE\n..222.mp3\nDANCE\n..Rumba\n",
   NULL,
 };
 
@@ -144,6 +148,8 @@ testsong_t testsongresults [] = {
       "bypassC/AlbumArtist 6/Album 6/03-006.Ne_Русский_Шторм-ru.mp3",
       "bypassD/AlbumArtist 7/Album 7/03-007.Title 7.mp3",
       "bypassE/AlbumArtist 8./Album 8/03-008.Ne_Русский_Шторм-ru.mp3",
+      "111.mp3",
+      "222.mp3",
       NULL,
     },
     { "", },
@@ -159,6 +165,8 @@ testsong_t testsongresults [] = {
       "Rumba/Artist 6 - Ne_Русский_Шторм-ru.mp3",
       "Cha Cha/Artist 7 - Title 7.mp3",
       "Rumba/Artist 8 - Ne_Русский_Шторм-ru.mp3",
+      "111.mp3",
+      "Rumba/222.mp3",
       NULL,
     },
     { "", },
@@ -175,6 +183,8 @@ testsong_t testsongresults [] = {
       "Rock/AlbumArtist 6/Album 6/03-006.Ne_Русский_Шторм-ru.mp3",
       "Classical/Composer 7/AlbumArtist 7/Album 7/03-007.Title 7.mp3",
       "Rock/AlbumArtist 8./Album 8/03-008.Ne_Русский_Шторм-ru.mp3",
+      "111.mp3",
+      "222.mp3",
       NULL,
     },
     { "", },

@@ -1,8 +1,8 @@
-# config-global
+# bdjopt-g
 # 2022-9-12
 # version 3
 version
-..3
+..1
 ACOUSTID_KEY
 ..ENCTFdHUmEcJxkaKAAABRY=
 ACRCLOUD_API_KEY
@@ -11,6 +11,8 @@ ACRCLOUD_API_SECRET
 ..
 ACRCLOUD_API_HOST
 ..
+AUD_ADJ_DISP
+..no
 AUTOORGANIZE
 ..no
 BPM

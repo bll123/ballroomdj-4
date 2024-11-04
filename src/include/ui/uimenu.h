@@ -32,6 +32,7 @@ void uiMenuAddSeparator (uiwcont_t *uimenu);
 void uiMenuSetMainCallback (uiwcont_t *uimenuitem, callback_t *uicb);
 void uiMenuDisplay (uiwcont_t *uiwidget);
 void uiMenuClear (uiwcont_t *uiwidget);
+void uiMenuItemSetText (uiwcont_t *uiwidget, const char *txt);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

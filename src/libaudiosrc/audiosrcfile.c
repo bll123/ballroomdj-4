@@ -72,6 +72,9 @@ asiInit (const char *delpfx, const char *origext)
 void
 asiPostInit (asdata_t *asdata, const char *musicdir)
 {
+  if (musicdir == NULL) {
+    return;
+  }
   asdata->musicdir = musicdir;
   asdata->musicdirlen = strlen (asdata->musicdir);
 }
@@ -250,7 +253,7 @@ asiURI (asdata_t *asdata, const char *sfname, char *buff, size_t sz,
     return;
   }
 
-  strlcpy (buff, AS_FILE_PFX, sizeof (buff));
+  stpecpy (buff, buff + sizeof (buff), AS_FILE_PFX);
   asiFullPath (asdata, sfname, buff + AS_FILE_PFX_LEN, sz - AS_FILE_PFX_LEN,
       prefix, pfxlen);
 }
@@ -270,7 +273,7 @@ asiFullPath (asdata_t *asdata, const char *sfname, char *buff, size_t sz,
   }
 
   if (fileopIsAbsolutePath (sfname)) {
-    strlcpy (buff, sfname, sz);
+    stpecpy (buff, buff + sz, sfname);
   } else {
     /* in most cases, the sfname passed in is either relative to */
     /* the music-dir, or is a full path, and the prefix-length and old name */
@@ -410,7 +413,8 @@ audiosrcfileMakeTempName (asdata_t *asdata, const char *ffn, char *tempnm, size_
   pi = pathInfo (ffn);
 
   idx = 0;
-  for (const char *p = pi->filename; *p && idx < maxlen && idx < pi->flen; ++p) {
+  for (const char *p = pi->filename;
+      *p && idx < maxlen && idx < pi->flen; ++p) {
     if ((isascii (*p) && isalnum (*p)) ||
         *p == '.' || *p == '-' || *p == '_') {
       tnm [idx++] = *p;

@@ -48,6 +48,7 @@
 #include "sockh.h"
 #include "song.h"
 #include "songdb.h"
+#include "songfav.h"
 #include "sysvars.h"
 #include "tmutil.h"
 #include "ui.h"
@@ -65,7 +66,9 @@ enum {
   PLUI_MENU_CB_PLAY_QUEUE,
   PLUI_MENU_CB_EXTRA_QUEUE,
   PLUI_MENU_CB_SWITCH_QUEUE,
-  PLUI_MENU_CB_REQ_EXT_DIALOG,
+  PLUI_MENU_CB_EXT_REQ_DIALOG,
+  PLUI_MENU_CB_ADD_TO_DB,
+  PLUI_MENU_CB_MQ_HIDE_SHOW,
   PLUI_MENU_CB_MQ_FONT_SZ,
   PLUI_MENU_CB_MQ_FIND,
   PLUI_MENU_CB_EXP_MP3,
@@ -100,9 +103,11 @@ enum {
   PLUI_W_MQ_SZ,
   PLUI_W_STATUS_MSG,
   PLUI_W_ERROR_MSG,
+  PLUI_W_MENU_MQ_HIDE_SHOW,
   PLUI_W_MENU_QE_CURR,
   PLUI_W_MENU_QE_SEL,
   PLUI_W_MENU_EXT_REQ,
+  PLUI_W_MENU_ADD_TO_DB,
   PLUI_W_MENU_RELOAD,
   PLUI_W_KEY_HNDLR,
   PLUI_W_SET_PB_BUTTON,
@@ -129,7 +134,6 @@ typedef struct {
   int             musicqManageIdx;
   dispsel_t       *dispsel;
   uint32_t        dbgflags;
-  int             marqueeIsMaximized;
   int             marqueeFontSize;
   int             marqueeFontSizeFS;
   mstime_t        marqueeFontSizeCheck;
@@ -170,6 +174,8 @@ typedef struct {
   bool            mainalready : 1;
   bool            mainreattach : 1;
   bool            marqueeoff : 1;
+  bool            mqisiconified : 1;
+  bool            mqismaximized : 1;
   bool            mqfontsizeactive : 1;
   bool            optionsalloc : 1;
   bool            reloadinit : 1;
@@ -245,8 +251,9 @@ static void     pluiCreateMarqueeFontSizeDialog (playerui_t *plui);
 static bool     pluiMarqueeFontSizeDialogResponse (void *udata, int32_t responseid);
 static bool     pluiMarqueeFontSizeChg (void *udata);
 static bool     pluiMarqueeRecover (void *udata);
-static void     pluisetMarqueeIsMaximized (playerui_t *plui, char *args);
-static void     pluisetMarqueeFontSizes (playerui_t *plui, char *args);
+static bool     pluiMarqueeHideShow (void *udata);
+static void     pluiSetMarqueeStatus (playerui_t *plui, char *args);
+static void     pluiSetMarqueeFontSizes (playerui_t *plui, char *args);
 static bool     pluiQueueProcess (void *udata, int32_t dbidx);
 static bool     pluiSongSaveCallback (void *udata, int32_t dbidx);
 static bool     pluiClearQueueCallback (void *udata);
@@ -294,7 +301,7 @@ main (int argc, char *argv[])
   plui.musicqPlayIdx = MUSICQ_PB_A;
   plui.musicqRequestIdx = MUSICQ_PB_A;
   plui.musicqManageIdx = MUSICQ_PB_A;
-  plui.marqueeIsMaximized = false;
+  plui.mqismaximized = false;
   plui.marqueeFontSize = 36;
   plui.marqueeFontSizeFS = 60;
   mstimeset (&plui.marqueeFontSizeCheck, TM_TIMER_OFF);
@@ -594,11 +601,11 @@ pluiBuildUI (playerui_t *plui)
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
-  plui->callbacks [PLUI_MENU_CB_REQ_EXT_DIALOG] = callbackInit (
+  plui->callbacks [PLUI_MENU_CB_EXT_REQ_DIALOG] = callbackInit (
       pluiRequestExternalDialog, plui, NULL);
   /* CONTEXT: playerui: menu selection: action: external request */
   menuitem = uiMenuCreateItem (menu, _("External Request"),
-      plui->callbacks [PLUI_MENU_CB_REQ_EXT_DIALOG]);
+      plui->callbacks [PLUI_MENU_CB_EXT_REQ_DIALOG]);
   plui->wcont [PLUI_W_MENU_EXT_REQ] = menuitem;
 
   plui->callbacks [PLUI_MENU_CB_QE_CURRENT] = callbackInit (
@@ -632,6 +639,13 @@ pluiBuildUI (playerui_t *plui)
   }
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
+
+  plui->callbacks [PLUI_MENU_CB_MQ_HIDE_SHOW] = callbackInit (
+      pluiMarqueeHideShow, plui, NULL);
+  /* CONTEXT: playerui: menu selection: marquee: show the marquee */
+  menuitem = uiMenuCreateItem (menu, _("Show"),
+      plui->callbacks [PLUI_MENU_CB_MQ_HIDE_SHOW]);
+  plui->wcont [PLUI_W_MENU_MQ_HIDE_SHOW] = menuitem;
 
   plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ] = callbackInit (
       pluiMarqueeFontSizeDialog, plui, NULL);
@@ -897,7 +911,7 @@ pluiMainLoop (void *tplui)
     char        tbuff [40];
     int         sz;
 
-    if (plui->marqueeIsMaximized) {
+    if (plui->mqismaximized) {
       sz = plui->marqueeFontSizeFS;
     } else {
       sz = plui->marqueeFontSize;
@@ -1079,13 +1093,8 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
   playerui_t  *plui = udata;
-  char        *targs = NULL;
 
   logProcBegin ();
-
-  if (args != NULL) {
-    targs = mdstrdup (args);
-  }
 
   if (PLUI_DBG_MSGS == 1 ||
       (msg != MSG_MUSIC_QUEUE_DATA &&
@@ -1119,36 +1128,36 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_QUEUE_SWITCH: {
-          pluiSetPlaybackQueue (plui, atoi (targs), PLUI_UPDATE_MAIN);
-          break;
-        }
-        case MSG_MARQUEE_IS_MAX: {
-          pluisetMarqueeIsMaximized (plui, targs);
+          pluiSetPlaybackQueue (plui, atoi (args), PLUI_UPDATE_MAIN);
           break;
         }
         case MSG_MARQUEE_FONT_SIZES: {
-          pluisetMarqueeFontSizes (plui, targs);
+          pluiSetMarqueeFontSizes (plui, args);
+          break;
+        }
+        case MSG_MARQUEE_STATUS: {
+          pluiSetMarqueeStatus (plui, args);
           break;
         }
         case MSG_DB_ENTRY_UPDATE: {
-          dbLoadEntry (plui->musicdb, atol (targs));
+          dbLoadEntry (plui->musicdb, atol (args));
           uisongselPopulateData (plui->uisongsel);
           break;
         }
         case MSG_DB_ENTRY_REMOVE: {
-          dbMarkEntryRemoved (plui->musicdb, atol (targs));
+          dbMarkEntryRemoved (plui->musicdb, atol (args));
           uisongselPopulateData (plui->uisongsel);
           break;
         }
         case MSG_DB_ENTRY_UNREMOVE: {
-          dbClearEntryRemoved (plui->musicdb, atol (targs));
+          dbClearEntryRemoved (plui->musicdb, atol (args));
           uisongselPopulateData (plui->uisongsel);
           break;
         }
         case MSG_SONG_SELECT: {
           mp_songselect_t   *songselect;
 
-          songselect = msgparseSongSelect (targs);
+          songselect = msgparseSongSelect (args);
           uimusicqProcessSongSelect (plui->uimusicq, songselect);
           msgparseSongSelectFree (songselect);
           break;
@@ -1160,7 +1169,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
             break;
           }
 
-          musicqupdate = msgparseMusicQueueData (targs);
+          musicqupdate = msgparseMusicQueueData (args);
           if (musicqupdate == NULL) {
             break;
           }
@@ -1210,7 +1219,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_SONG_FINISH: {
           uiLabelSetText (plui->wcont [PLUI_W_STATUS_MSG], "");
           uiLabelSetText (plui->wcont [PLUI_W_ERROR_MSG], "");
-          pluiPushHistory (plui, targs);
+          pluiPushHistory (plui, args);
           break;
         }
         case MSG_MAIN_START_RECONN: {
@@ -1227,7 +1236,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_MAIN_CURR_PLAY: {
           int     mqidx;
 
-          mqidx = atoi (targs);
+          mqidx = atoi (args);
           pluiSetPlaybackQueue (plui, mqidx, PLUI_NO_UPDATE);
           break;
         }
@@ -1257,8 +1266,6 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       break;
     }
   }
-
-  dataFree (targs);
 
   /* due to the db update message, these must be applied afterwards */
   uiplayerProcessMsg (routefrom, route, msg, args, plui->uiplayer);
@@ -1558,7 +1565,7 @@ pluiMarqueeFontSizeDialog (void *udata)
     pluiCreateMarqueeFontSizeDialog (plui);
   }
 
-  if (plui->marqueeIsMaximized) {
+  if (plui->mqismaximized) {
     sz = plui->marqueeFontSizeFS;
   } else {
     sz = plui->marqueeFontSize;
@@ -1660,7 +1667,7 @@ pluiMarqueeFontSizeChg (void *udata)
 
   value = uiSpinboxGetValue (plui->wcont [PLUI_W_MQ_SZ]);
   fontsz = (int) round (value);
-  if (plui->marqueeIsMaximized) {
+  if (plui->mqismaximized) {
     plui->marqueeFontSizeFS = fontsz;
   } else {
     plui->marqueeFontSize = fontsz;
@@ -1684,24 +1691,72 @@ pluiMarqueeRecover (void *udata)
 }
 
 
-static void
-pluisetMarqueeIsMaximized (playerui_t *plui, char *args)
+static bool
+pluiMarqueeHideShow (void *udata)
 {
-  int   val = atoi (args);
+  playerui_t  *plui = udata;
+  int         msg;
 
-  plui->marqueeIsMaximized = val;
+  if (plui->marqueeoff) {
+    return UICB_CONT;
+  }
+
+  msg = MSG_MARQUEE_SHOW;
+  if (plui->mqisiconified == false) {
+    msg = MSG_MARQUEE_HIDE;
+  }
+
+  connSendMessage (plui->conn, ROUTE_MARQUEE, msg, NULL);
+  return UICB_CONT;
 }
 
+
 static void
-pluisetMarqueeFontSizes (playerui_t *plui, char *args)
+pluiSetMarqueeStatus (playerui_t *plui, char *args)
 {
   char      *p;
   char      *tokstr;
 
+  if (args == NULL) {
+    return;
+  }
+
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
-  plui->marqueeFontSize = atoi (p);
+  if (p != NULL) {
+    plui->mqisiconified = atoi (p);
+  }
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  plui->marqueeFontSizeFS = atoi (p);
+  if (p != NULL) {
+    plui->mqismaximized = atoi (p);
+  }
+
+  if (plui->mqisiconified) {
+    /* CONTEXT: playerui: menu selection: marquee: show the marquee */
+    uiMenuItemSetText (plui->wcont [PLUI_W_MENU_MQ_HIDE_SHOW], _("Show"));
+  } else {
+    /* CONTEXT: playerui: menu selection: marquee: hide the marquee */
+    uiMenuItemSetText (plui->wcont [PLUI_W_MENU_MQ_HIDE_SHOW], _("Hide"));
+  }
+}
+
+static void
+pluiSetMarqueeFontSizes (playerui_t *plui, char *args)
+{
+  char      *p;
+  char      *tokstr;
+
+  if (args == NULL) {
+    return;
+  }
+
+  p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL) {
+    plui->marqueeFontSize = atoi (p);
+  }
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL) {
+    plui->marqueeFontSizeFS = atoi (p);
+  }
 }
 
 static bool
@@ -1741,7 +1796,17 @@ static bool
 pluiSongSaveCallback (void *udata, int32_t dbidx)
 {
   playerui_t  *plui = udata;
+  song_t      *song;
   char        tmp [40];
+
+  song = dbGetByIdx (plui->musicdb, dbidx);
+  if (song == NULL) {
+    return UICB_CONT;
+  }
+  if (songGetNum (song, TAG_DB_FLAGS) != MUSICDB_STD) {
+    /* do not save temporary songs */
+    return UICB_CONT;
+  }
 
   songdbWriteDB (plui->songdb, dbidx);
 
@@ -1873,7 +1938,6 @@ pluiQuickEditCallback (void *udata)
   }
 
   qeresp = uiqeGetResponseData (plui->uiqe);
-
   if (qeresp == NULL) {
     return UICB_CONT;
   }
@@ -1886,7 +1950,10 @@ pluiQuickEditCallback (void *udata)
   songSetDouble (song, TAG_VOLUMEADJUSTPERC, qeresp->voladj);
   songSetNum (song, TAG_DANCERATING, qeresp->rating);
   songSetNum (song, TAG_DANCELEVEL, qeresp->level);
-  songSetNum (song, TAG_FAVORITE, qeresp->favorite);
+  /* do not change the favorite setting on external requests */
+  if (songGetNum (song, TAG_DB_FLAGS) == MUSICDB_STD) {
+    songSetNum (song, TAG_FAVORITE, qeresp->favorite);
+  }
 
   pluiSongSaveCallback (plui, qeresp->dbidx);
 
@@ -2236,3 +2303,4 @@ pluiControllerURICallback (void *udata, const char *uri, int32_t cmd)
 
   return true;
 }
+

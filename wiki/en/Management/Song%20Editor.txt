@@ -49,10 +49,6 @@ the selected songs, and not the entire listing.
 If the audio file has a MusicBrainz recording ID tag set, the
 MusicBrainz logo will be displayed.
 
-If the audio file has been modified from the original (via
-speed adjustments, song start/end adjustments or trimmed
-silence), a __*__ will be displayed.
-
 The filename is displayed.  The music folder set in
 [Configure&nbsp;/&nbsp;General](en-Configuration-General) is not
 displayed as part of the filename. The copy button
@@ -79,7 +75,7 @@ __Previous__ to switch to a different song, then switch back.
 ##### Actions Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![se-actions](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-actions-B.png)
+![se-actions](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-actions-C.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor / Actions Menu__</span> </div>
 
 __MPM__ (or __BPM__) starts the BPM/MPM Counter.
@@ -100,15 +96,9 @@ __Actions&nbsp;/&nbsp;Cancel&nbsp;Edit&nbsp;All__ cancels the
 batch edit process. The changes made to the current song will be
 reverted.
 
-__Actions&nbsp;/&nbsp;Apply&nbsp;Adjustments__ starts a dialog to
-modify the audio file.  The audio file may have its silence trimmed,
-or adjusted to apply the song start, song end and speed adjustments.
-The original audio file is saved and can be restored.
-
-__Actions&nbsp;/&nbsp;Restore&nbsp;Original__ is only active if the
-audio file has been modified with the __Apply&nbsp;Adjustments__
-action.  Selection __Restore&nbsp;Original__ will revert any changes
-made and restore the original audio file.
+__Actions&nbsp;/&nbsp;Trim&nbsp;Silense__ processes the audio file and
+if there is silence at the beginning or end of the song, sets the song
+start and song end.  The changes must be saved.
 
 ##### Using the BPM Counter
 
@@ -179,4 +169,4 @@ song editor is:
  Volume Adjustment|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-19 13:16:09; BDJ4 version 4.11.5)_
+<br>_(Updated 2024-10-18 06:59:37; BDJ4 version 4.12.3)_

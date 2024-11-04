@@ -671,7 +671,7 @@ managePlaylistNew (managepl_t *managepl, int preloadflag)
   }
 
   /* CONTEXT: playlist management: default name for a new playlist */
-  strlcpy (tbuff, _("New Playlist"), sizeof (tbuff));
+  stpecpy (tbuff, tbuff + sizeof (tbuff), _("New Playlist"));
   manageSetPlaylistName (managepl, tbuff);
   managepl->plbackupcreated = false;
 

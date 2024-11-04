@@ -18,6 +18,7 @@
 #include "callback.h"
 #include "fileop.h"
 #include "mdebug.h"
+#include "sysvars.h"
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"
@@ -273,6 +274,11 @@ uiSelectCreateFilter (GtkFileChooserNative *widget, uiselect_t  *selectdata)
   char            *tokstr;
 
   if (selectdata == NULL || selectdata->mimetype == NULL) {
+    return;
+  }
+  if (! isLinux ()) {
+    /* the native windows file chooser does not handle mime types */
+    /* the native macos file chooser does not handle mime types */
     return;
   }
 

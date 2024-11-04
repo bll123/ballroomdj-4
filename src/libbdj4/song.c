@@ -582,7 +582,7 @@ songGetClassicalWork (const song_t *song, char *work, size_t sz)
   title = nlistGetStr (song->songInfo, TAG_TITLE);
   p = strchr (title, ':');
   if (p != NULL) {
-    strlcpy (work, title, sz);
+    stpecpy (work, work + sz, title);
     p = strchr (work, ':');
     *p = '\0';
   }
@@ -657,7 +657,7 @@ songSetDefaults (song_t *song)
 
   /* always set the db flags; if it needs to be set, */
   /* the caller will set it */
-  nlistSetNum (song->songInfo, TAG_DB_FLAGS, MUSICDB_NONE);
+  nlistSetNum (song->songInfo, TAG_DB_FLAGS, MUSICDB_STD);
 
   tval = nlistGetNum (song->songInfo, TAG_ADJUSTFLAGS);
   if (tval < 0 ||

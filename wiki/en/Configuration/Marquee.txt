@@ -27,12 +27,18 @@ in
 will be displayed on the marquee.  Only three items can be displayed
 in the marquee song information display.
 
+__Background Color__: The background color of the marquee.
+
 __Accent Color__: The color to use for the current dance and countdown
 timer.
 
+__Information Color__: The color for the dance information display.
+
+__Upcoming Dance Color__: The color for the upcoming dances.
+
 <div markdown style="margin-right: 20px; text-align: center;">
-![Marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Marquee-G.png)
+![Marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Marquee-H.png)
 <br><span style="color:#4559bf;">__Configure / Marquee__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-19 13:16:09; BDJ4 version 4.11.5)_
+<br>_(Updated 2024-10-23 09:08:40; BDJ4 version 4.12.4)_

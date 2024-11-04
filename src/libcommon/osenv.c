@@ -13,7 +13,11 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <wchar.h>
+#if _hdr_tchar
+# include <tchar.h>
+#endif
 
+#include "bdj4.h"
 #include "bdjstring.h"
 #include "mdebug.h"
 #include "osenv.h"
@@ -22,25 +26,28 @@
 void
 osGetEnv (const char *name, char *buff, size_t sz)
 {
-#if _lib__wgetenv
+#if _lib__wgetenv_s
   wchar_t     *wname;
-  wchar_t     *wenv;
+  wchar_t     wenv [MAXPATHLEN];
   char        *tenv;
+  size_t      rv;
 
   *buff = '\0';
   wname = osToWideChar (name);
-  wenv = _wgetenv (wname);
+  _wgetenv_s (&rv, wenv, sizeof (wenv), wname);
   mdfree (wname);
-  tenv = osFromWideChar (wenv);
-  strlcpy (buff, tenv, sz);
-  mdfree (tenv);
+  if (rv > 0) {
+    tenv = osFromWideChar (wenv);
+    stpecpy (buff, buff + sz, tenv);
+    mdfree (tenv);
+  }
 #else
   char    *tptr;
 
   *buff = '\0';
   tptr = getenv (name);
   if (tptr != NULL) {
-    strlcpy (buff, tptr, sz);
+    stpecpy (buff, buff + sz, tptr);
   }
 #endif
 }

@@ -29,8 +29,7 @@ check_libcommon (SRunner *sr)
   Suite   *s;
 
   /* libcommon:
-   *  strlcat     --
-   *  strlcpy     --
+   *  stpecpy     --
    *  tmutil      complete
    *  fileop      complete
    *  osenv       complete 2022-12-27

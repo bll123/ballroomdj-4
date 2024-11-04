@@ -23,6 +23,7 @@ nl_BE nl nl dutch Nederlands
 nb_NO nb nb-NO norwegian norsk
 pl_PL pl pl-PL polish Polski
 pt_PT pt pt-PT portuguese Português
+ro_RO ro ro romanian română
 ru_RU ru ru russian Русский
 sr_RS sr sr-Cyrl serbian српски
 sv_SE sv sv swedish Svenska

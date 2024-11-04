@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2024-07-28\n"
-"PO-Revision-Date: 2024-08-17\n"
+"POT-Creation-Date: 2024-09-09\n"
+"PO-Revision-Date: 2024-10-21\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Vietnamese\n"
 "Language: vi\n"
@@ -70,7 +70,7 @@ msgstr "%s Trình cài đặt"
 msgid "%s Location"
 msgstr "%s Vị trí"
 
-#. CONTEXT: managementui: management user interface window title
+#. CONTEXT: manage-ui: management user interface window title
 #, c-format
 msgid "%s Management"
 msgstr "%s Quản lý"
@@ -194,9 +194,17 @@ msgstr "%s: Không được phép có khoảng trắng."
 msgid "100%"
 msgstr "100%"
 
+#. CONTEXT: configuration: player: clock: 12-hour time
+msgid "12-Hour Clock"
+msgstr ""
+
 #. CONTEXT: configuration: dance time signature
 msgid "2/4"
 msgstr "2/4"
+
+#. CONTEXT: configuration: player: clock: 24-hour time
+msgid "24-Hour Clock"
+msgstr ""
 
 #. CONTEXT: configuration: dance time signature
 msgid "3/4"
@@ -206,7 +214,7 @@ msgstr "3/4"
 msgid "4/4"
 msgstr "4/4"
 
-#. CONTEXT: configuration: marquee: the accent color used for the marquee
+#. CONTEXT: configuration: marquee: the accent color
 #. CONTEXT: configuration: the accent color to use for the user interface
 msgid "Accent Colour"
 msgstr "Màu nhấn mạnh"
@@ -219,9 +227,9 @@ msgstr "Hoạt động"
 msgid "Action failed"
 msgstr "Hành động không thành công"
 
-#. CONTEXT: managementui: menu selection: actions for song editor
-#. CONTEXT: managementui: menu selection: actions for music manager
-#. CONTEXT: managementui: menu selection: actions for song list
+#. CONTEXT: manage-ui: menu selection: actions for song editor
+#. CONTEXT: manage-ui: menu selection: actions for music manager
+#. CONTEXT: manage-ui: menu selection: actions for song list
 #. CONTEXT: playerui: menu selection: actions for the player
 #. CONTEXT: starterui: action menu for the starter user interface
 msgid "Actions"
@@ -259,8 +267,8 @@ msgstr "Album Nghệ sĩ Sắp xếp Thứ tự"
 msgid "Album Sort Order"
 msgstr "Thứ tự sắp xếp album"
 
-#. CONTEXT: song-selection: filter: all dances are selected
 #. CONTEXT: song selection filter: a filter: all dances are selected
+#. CONTEXT: song-selection: filter: all dances are selected
 msgid "All Dances"
 msgstr "Tất cả các điệu nhảy"
 
@@ -305,11 +313,11 @@ msgstr "Áp dụng"
 
 #. CONTEXT: apply adjustment dialog: title for the dialog
 #. CONTEXT: apply adjustment dialog: apply adjustments
-#. CONTEXT: managementui: song editor menu: apply adjustments
+#. CONTEXT: manage-ui: song editor menu: apply adjustments
 msgid "Apply Adjustments"
 msgstr "Áp dụng điều chỉnh"
 
-#. CONTEXT: managementui: song editor menu: apply edit all
+#. CONTEXT: manage-ui: song editor menu: apply edit all
 msgid "Apply Edit All"
 msgstr "Áp dụng Chỉnh sửa Tất cả"
 
@@ -346,7 +354,7 @@ msgid "Audio Files"
 msgstr "Tập tin âm thanh"
 
 #. CONTEXT: configuration: display settings for: Audio Identification
-#. CONTEXT: managementui: name of audio identification notebook tab
+#. CONTEXT: manage-ui: name of audio identification notebook tab
 msgid "Audio ID"
 msgstr "ID âm thanh"
 
@@ -385,6 +393,10 @@ msgstr "Nhịp tim"
 msgid "BPM Counter"
 msgstr "Bộ đếm BPM"
 
+#. CONTEXT: configuration: marquee: the background color
+msgid "Background Colour"
+msgstr ""
+
 #. CONTEXT: configuration file: genre
 msgid "Ballroom Dance"
 msgstr "Khiêu vũ khiêu vũ"
@@ -397,7 +409,7 @@ msgstr "Máy nghe nhạc khiêu vũ"
 msgid "Beats"
 msgstr "Nhịp đập"
 
-#. CONTEXT: managementui: song editor menu: cancel edit all
+#. CONTEXT: manage-ui: song editor menu: cancel edit all
 msgid "Cancel Edit All"
 msgstr "Hủy Sửa tất cả"
 
@@ -434,7 +446,7 @@ msgstr "Xóa & Chơi"
 msgid "Clear Queue"
 msgstr "Xóa hàng đợi"
 
-#. CONTEXT: managementui: menu selection: music manager: clear same-song mark
+#. CONTEXT: manage-ui: menu selection: music manager: clear same-song mark
 msgid "Clear Same Song Mark"
 msgstr "Xóa Dấu Bài Hát Giống Nhau"
 
@@ -442,10 +454,14 @@ msgstr "Xóa Dấu Bài Hát Giống Nhau"
 msgid "Click the mouse in the blue box in time with the beat."
 msgstr "Nhấp chuột vào ô màu xanh theo nhịp điệu."
 
+#. CONTEXT: configuration: the clock format
+msgid "Clock"
+msgstr ""
+
+#. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
 #. CONTEXT: select file dialog: close
 #. CONTEXT: select file: closes the dialog
-#. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: apply adjustment dialog: closes the dialog
 #. CONTEXT: copy tags dialog: closes the dialog
 #. CONTEXT: export/import bdj4 dialog: closes the dialog
@@ -511,7 +527,7 @@ msgstr "Chuyển đổi %s"
 
 #. CONTEXT: copy tags dialog: title for the dialog
 #. CONTEXT: copy tags dialog: copy audio tags button
-#. CONTEXT: managementui: song editor menu: copy audio tags
+#. CONTEXT: manage-ui: song editor menu: copy audio tags
 msgid "Copy Audio Tags"
 msgstr "Sao chép thẻ âm thanh"
 
@@ -524,7 +540,7 @@ msgstr "Bản sao đã tồn tại."
 msgid "Copy finished."
 msgstr "Đã sao chép xong."
 
-#. CONTEXT: managementui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#. CONTEXT: manage-ui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #. CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #. CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #, c-format
@@ -548,7 +564,7 @@ msgstr "Đếm"
 msgid "Create"
 msgstr "Tạo nên"
 
-#. CONTEXT: managementui: menu selection: song list: edit menu: create copy
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: create copy
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: create copy
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: create copy
 msgid "Create Copy"
@@ -562,7 +578,7 @@ msgstr "Tạo hồ sơ"
 msgid "Create Shortcut for Profile"
 msgstr "Tạo phím tắt cho hồ sơ"
 
-#. CONTEXT: managementui: menu selection: song list: actions menu: create a song list from a playlist
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: create a song list from a playlist
 #. CONTEXT: create from playlist: title for the dialog
 msgid "Create from Playlist"
 msgstr "Tạo từ danh sách phát"
@@ -628,7 +644,7 @@ msgid "Default Volume"
 msgstr "Âm lượng mặc định"
 
 #. CONTEXT: configuration: table edit: button: delete selection
-#. CONTEXT: managementui: menu selection: song list: edit menu: delete song list
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: delete song list
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: delete sequence
 msgid "Delete"
@@ -687,14 +703,14 @@ msgstr "Dễ"
 
 #. CONTEXT: music queue: edit the selected song
 #. CONTEXT: song-selection: edit the selected song
-#. CONTEXT: managementui: menu selection: song list: edit menu
+#. CONTEXT: manage-ui: menu selection: song list: edit menu
 #. CONTEXT: playlist management: menu selection: playlist: edit menu
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu
 msgid "Edit"
 msgstr "Biên tập"
 
 #. CONTEXT: song editor: display indicator that the song editor is in edit all mode
-#. CONTEXT: managementui: song editor menu: edit all
+#. CONTEXT: manage-ui: song editor menu: edit all
 msgid "Edit All"
 msgstr "Chỉnh sửa tất cả"
 
@@ -714,11 +730,11 @@ msgstr "Chỉnh sửa cấp độ"
 msgid "Edit Ratings"
 msgstr "Chỉnh sửa xếp hạng"
 
-#. CONTEXT: managementui: notebook tab title: edit sequences
+#. CONTEXT: manage-ui: notebook tab title: edit sequences
 msgid "Edit Sequences"
 msgstr "Chỉnh sửa chuỗi"
 
-#. CONTEXT: managementui: notebook tab title: edit song lists
+#. CONTEXT: manage-ui: notebook tab title: edit song lists
 msgid "Edit Song Lists"
 msgstr "Chỉnh sửa danh sách bài hát"
 
@@ -742,6 +758,10 @@ msgstr "Vào thư mục nơi %s được cài đặt."
 #. CONTEXT: alternate installation: installation instructions
 msgid "Enter the name of the new installation."
 msgstr "Nhập tên cài đặt mới."
+
+#. CONTEXT: configuration: the error color to use for the user interface
+msgid "Error Colour"
+msgstr ""
 
 #. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
@@ -769,16 +789,20 @@ msgstr "Ra"
 msgid "Exit %s and restart."
 msgstr "Thoát %s và khởi động lại."
 
+#. CONTEXT: configuration: player: fade-type: exponential sine
+msgid "Exponential Sine"
+msgstr ""
+
 #. CONTEXT: export/import bdj4 dialog: export button
 #. CONTEXT: export playlist dialog: export button
-#. CONTEXT: managementui: menu selection: export actions for song list
+#. CONTEXT: manage-ui: menu selection: export actions for song list
 #. CONTEXT: playerui: menu selection: export
 msgid "Export"
 msgstr "Xuất khẩu"
 
 #. CONTEXT: export playlist: title of dialog
 #. CONTEXT: managementui: export playlist: title of save dialog
-#. CONTEXT: managementui: menu selection: song list: export
+#. CONTEXT: manage-ui: menu selection: song list: export
 msgid "Export Playlist"
 msgstr "Xuất danh sách phát"
 
@@ -793,7 +817,7 @@ msgid "Export as %s"
 msgstr "Xuất dưới dạng %s"
 
 #. CONTEXT: export for ballroomdj: title of dialog
-#. CONTEXT: managementui: menu selection: song list: export: export for ballroomdj
+#. CONTEXT: manage-ui: menu selection: song list: export: export for ballroomdj
 #, c-format
 msgid "Export for %s"
 msgstr "Xuất cho %s"
@@ -821,6 +845,10 @@ msgstr "Mờ dần theo thời gian"
 msgid "Fade Out Time"
 msgstr "Thời gian mờ dần"
 
+#. CONTEXT: configuration: the clock format
+msgid "Fade Type"
+msgstr ""
+
 #. CONTEXT: label: favorite marker
 msgid "Favourite"
 msgstr "Yêu thích"
@@ -835,8 +863,8 @@ msgid "File"
 msgstr "Tài liệu"
 
 #. CONTEXT: configuration: filter display: song selection filters
-#. CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog
 #. CONTEXT: song selection filter: title for the filter dialog
+#. CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog
 msgid "Filter Songs"
 msgstr "Lọc bài hát"
 
@@ -891,6 +919,14 @@ msgstr "Mẫu HTML"
 msgid "HTTP Code"
 msgstr "Mã HTTP"
 
+#. CONTEXT: configuration: player: fade-type: half sine
+msgid "Half Sine"
+msgstr ""
+
+#. CONTEXT: playerui: menu selection: marquee: hide the marquee
+msgid "Hide"
+msgstr ""
+
 #. CONTEXT: playlist management: hide unselected dances
 msgid "Hide Unselected"
 msgstr "Ẩn Chưa chọn"
@@ -912,18 +948,22 @@ msgstr "Trình độ khiêu vũ cao"
 msgid "History"
 msgstr "Lịch sử"
 
+#. CONTEXT: configuration: player: clock: ISO
+msgid "ISO"
+msgstr ""
+
 #. CONTEXT: installer: instructions
 msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
 msgstr "Nếu chưa cài đặt BallroomDJ 3, hãy để mục này trống."
 
 #. CONTEXT: export/import bdj4 dialog: import button
 #. CONTEXT: import from itunes: import the selected itunes playlist
-#. CONTEXT: managementui: menu selection: import actions for song list
+#. CONTEXT: manage-ui: menu selection: import actions for song list
 msgid "Import"
 msgstr "Nhập khẩu"
 
-#. CONTEXT: managementui: menu selection: song list: import
-#. CONTEXT: managementui: song list import: title of dialog
+#. CONTEXT: manage-ui: menu selection: song list: import
+#. CONTEXT: manage-ui: song list import: title of dialog
 msgid "Import Playlist"
 msgstr "Nhập danh sách phát"
 
@@ -933,11 +973,15 @@ msgstr "Nhập khẩu từ"
 
 #. CONTEXT: import from ballroomdj: title of dialog
 #. CONTEXT: import from itunes: title for the dialog
-#. CONTEXT: managementui: menu selection: song list: import: import from ballroomdj
-#. CONTEXT: managementui: menu selection: song list: import: import from itunes
+#. CONTEXT: manage-ui: menu selection: song list: import: import from ballroomdj
+#. CONTEXT: manage-ui: menu selection: song list: import: import from itunes
 #, c-format
 msgid "Import from %s"
 msgstr "Nhập từ %s"
+
+#. CONTEXT: configuration: marquee: dance information color
+msgid "Information Colour"
+msgstr ""
 
 #. CONTEXT: alternate installation: status message
 msgid "Initial Setup."
@@ -994,6 +1038,10 @@ msgstr "Lựa chọn không hợp lệ"
 msgid "Invalid name. Using old name."
 msgstr "Tên không hợp lệ. Sử dụng tên cũ."
 
+#. CONTEXT: configuration: player: fade-type: inverted parabola
+msgid "Inverted Parabola"
+msgstr ""
+
 #. CONTEXT: configuration file: genre
 msgid "Jazz"
 msgstr "nhạc Jazz"
@@ -1022,7 +1070,7 @@ msgstr "Mức độ"
 msgid "Listing Font"
 msgstr "Phông chữ liệt kê"
 
-#. CONTEXT: managementui: menu selection: song list: edit menu: load
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: load
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: load
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: load
 msgid "Load"
@@ -1033,6 +1081,7 @@ msgid "Loaded from Database"
 msgstr "Đã tải từ Cơ sở dữ liệu"
 
 #. CONTEXT: configuration: mobile marquee type: local
+#. CONTEXT: configuration: player: clock: local
 msgid "Local"
 msgstr "Địa phương"
 
@@ -1063,7 +1112,7 @@ msgstr "MPM"
 msgid "Manage"
 msgstr "Quản lý"
 
-#. CONTEXT: managementui: menu selection: music manager: set same-song mark
+#. CONTEXT: manage-ui: menu selection: music manager: set same-song mark
 msgid "Mark as Same Song"
 msgstr "Đánh dấu là cùng một bài hát"
 
@@ -1110,7 +1159,7 @@ msgstr "Tin nhắn"
 msgid "Minimised"
 msgstr "Thu nhỏ"
 
-#. CONTEXT: managementui: menu selection: song list: actions menu: rearrange the songs and create a new mix
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: rearrange the songs and create a new mix
 msgid "Mix"
 msgstr "Trộn"
 
@@ -1146,8 +1195,8 @@ msgid "Music Folder"
 msgstr "Thư mục nhạc"
 
 #. CONTEXT: configuration: display settings for: music manager
-#. CONTEXT: managementui: name of music manager notebook tab
-#. CONTEXT: managementui: name of song selection notebook tab
+#. CONTEXT: manage-ui: name of music manager notebook tab
+#. CONTEXT: manage-ui: name of song selection notebook tab
 msgid "Music Manager"
 msgstr "Quản lý âm nhạc"
 
@@ -1216,7 +1265,7 @@ msgstr "Đánh giá mới"
 msgid "New Sequence"
 msgstr "Chuỗi mới"
 
-#. CONTEXT: managementui: song list: default name for a new song list
+#. CONTEXT: manage-ui: song list: default name for a new song list
 msgid "New Song List"
 msgstr "Danh sách bài hát mới"
 
@@ -1273,10 +1322,11 @@ msgstr "Ghi chú"
 
 #. CONTEXT: configuration: show-marquee: off
 #. CONTEXT: configuration: mobile marquee type: off
+#. CONTEXT: configuration: player: clock: off
 msgid "Off"
 msgstr "Tắt"
 
-#. CONTEXT: managementui: menu selection: song list: options menu
+#. CONTEXT: manage-ui: menu selection: song list: options menu
 #. CONTEXT: playerui: menu selection: options for the player
 msgid "Options"
 msgstr "Tùy chọn"
@@ -1354,14 +1404,14 @@ msgstr "Trạng thái có thể chơi"
 msgid "Player"
 msgstr "Người chơi"
 
-#. CONTEXT: select file: file type for the file selection dialog (playlist)
 #. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
+#. CONTEXT: select file: file type for the file selection dialog (playlist)
 #. CONTEXT: create from playlist: select the playlist to use
 #. CONTEXT: playlist management: label for playlist name
 msgid "Playlist"
 msgstr "Danh sách phát"
 
-#. CONTEXT: managementui: notebook tab title: playlist management
+#. CONTEXT: manage-ui: notebook tab title: playlist management
 msgid "Playlist Management"
 msgstr "Quản lý danh sách phát"
 
@@ -1370,7 +1420,7 @@ msgid "Playlist Type"
 msgstr "Loại danh sách phát"
 
 #. CONTEXT: managementui: export playlist: name of file export type
-#. CONTEXT: managementui: song list import: name of file import type
+#. CONTEXT: manage-ui: song list import: name of file import type
 msgid "Playlists"
 msgstr "Danh sách phát"
 
@@ -1438,6 +1488,14 @@ msgstr "Hồ sơ không thể bị xóa."
 #. CONTEXT: configuration: remote control: the link to display the QR code for remote control
 msgid "QR Code"
 msgstr "Mã QR"
+
+#. CONTEXT: configuration: player: fade-type: quadratic
+msgid "Quadratic"
+msgstr ""
+
+#. CONTEXT: configuration: player: fade-type: quarter sine
+msgid "Quarter Sine"
+msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
@@ -1554,7 +1612,7 @@ msgstr "Tải lại"
 msgid "Remove"
 msgstr "Di dời"
 
-#. CONTEXT: managementui: menu selection: music manager: remove song
+#. CONTEXT: manage-ui: menu selection: music manager: remove song
 msgid "Remove Song"
 msgstr "Xóa bài hát"
 
@@ -1591,7 +1649,7 @@ msgid "Reset"
 msgstr "Cài lại"
 
 #. CONTEXT: apply adjustment dialog: restore original file
-#. CONTEXT: managementui: song editor menu: restore original
+#. CONTEXT: manage-ui: song editor menu: restore original
 msgid "Restore Original"
 msgstr "Khôi phục bản gốc"
 
@@ -1653,7 +1711,7 @@ msgstr "Giây"
 #. CONTEXT: select file dialog: select file
 #. CONTEXT: side-by-side list: button: add the selected field
 #. CONTEXT: select file: selects the file
-#. CONTEXT: managementui: config: button: add the selected songs to the song list
+#. CONTEXT: manage-ui: config: button: add the selected songs to the song list
 msgid "Select"
 msgstr "Lựa chọn"
 
@@ -1754,6 +1812,10 @@ msgstr "Cài đặt"
 msgid "Setup complete."
 msgstr "Thiết lập hoàn tất."
 
+#. CONTEXT: playerui: menu selection: marquee: show the marquee
+msgid "Show"
+msgstr ""
+
 #. CONTEXT: configuration: queue: whether to show the extra queue buttons (queue dance, queue 5)
 msgid "Show Extra Queue Buttons"
 msgstr "Hiển thị các nút hàng đợi bổ sung"
@@ -1786,7 +1848,7 @@ msgstr "Danh sách bài hát song song"
 msgid "Side-by-Side Song Selection"
 msgstr "Lựa chọn bài hát song song"
 
-#. CONTEXT: managementui: menu checkbox: side-by-side view (suggestion: combined view)
+#. CONTEXT: manage-ui: menu checkbox: side-by-side view (suggestion: combined view)
 msgid "Side-by-Side View"
 msgstr "Xem cạnh nhau"
 
@@ -1794,7 +1856,7 @@ msgstr "Xem cạnh nhau"
 msgid "Skipping conversion."
 msgstr "Bỏ qua chuyển đổi."
 
-#. CONTEXT: managementui: name of song editor notebook tab
+#. CONTEXT: manage-ui: name of song editor notebook tab
 msgid "Song Editor"
 msgstr "Biên tập bài hát"
 
@@ -1812,14 +1874,18 @@ msgstr "Bài hát kết thúc"
 #. CONTEXT: music queue: song list name
 #. CONTEXT: select file: file type for the file selection dialog (song list)
 #. CONTEXT: export/import bdj4: playlist: select the song list
-#. CONTEXT: managementui: name of side-by-side view tab
-#. CONTEXT: managementui: name of song list notebook tab
+#. CONTEXT: manage-ui: name of side-by-side view tab
+#. CONTEXT: manage-ui: name of song list notebook tab
 #. CONTEXT: playlist management: type of playlist
 msgid "Song List"
 msgstr "Danh sách bài hát"
 
+#. CONTEXT: configuration: user interface: the song mark color for songs in the song list
+msgid "Song Mark Colour"
+msgstr ""
+
 #. CONTEXT: configuration: display settings for: song selection
-#. CONTEXT: managementui: name of song selection notebook tab
+#. CONTEXT: manage-ui: name of song selection notebook tab
 msgid "Song Selection"
 msgstr "Lựa chọn bài hát"
 
@@ -1858,7 +1924,7 @@ msgstr "Bắt đầu"
 msgid "Start New Sequence"
 msgstr "Bắt đầu chuỗi mới"
 
-#. CONTEXT: managementui: menu selection: song list: edit menu: start new song list
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: start new song list
 msgid "Start New Song List"
 msgstr "Bắt đầu danh sách bài hát mới"
 
@@ -1870,7 +1936,7 @@ msgstr "Bắt đầu quá trình chuyển đổi."
 msgid "Startup Script"
 msgstr "Kịch bản khởi động"
 
-#. CONTEXT: managementui: name of statistics tab
+#. CONTEXT: manage-ui: name of statistics tab
 msgid "Statistics"
 msgstr "Thống kê"
 
@@ -1918,7 +1984,7 @@ msgstr "Tin nhắn hỗ trợ"
 msgid "Support options"
 msgstr "Tùy chọn hỗ trợ"
 
-#. CONTEXT: managementui: menu selection: song list: actions menu: swap two songs
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: swap two songs
 msgid "Swap"
 msgstr "Tráo đổi"
 
@@ -2015,11 +2081,16 @@ msgstr "Tổng số bài hát"
 msgid "Track"
 msgstr "Theo dõi"
 
+#. CONTEXT: configuration: player: fade-type: triangle
+msgid "Triangle"
+msgstr ""
+
 #. CONTEXT: apply adjustments: trim silence checkbox
+#. CONTEXT: manage-ui: song editor menu: trim silence
 msgid "Trim Silence"
 msgstr "Cắt im lặng"
 
-#. CONTEXT: managementui: menu selection: song list: actions menu: truncate the song list
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: truncate the song list
 msgid "Truncate"
 msgstr "Cắt bớt"
 
@@ -2042,7 +2113,7 @@ msgstr "Không thể định vị được %s."
 msgid "Unable to locate BDJ3 database."
 msgstr "Không thể tìm thấy cơ sở dữ liệu BDJ3."
 
-#. CONTEXT: managementui: menu selection: music manager: undo song removal
+#. CONTEXT: manage-ui: menu selection: music manager: undo song removal
 msgid "Undo Song Removal"
 msgstr "Hoàn tác xóa bài hát"
 
@@ -2050,7 +2121,11 @@ msgstr "Hoàn tác xóa bài hát"
 msgid "Unrated"
 msgstr "Chưa được xếp hạng"
 
-#. CONTEXT: managementui: notebook tab title: update database
+#. CONTEXT: configuration: marquee: upcoming dance color
+msgid "Upcoming Dance Colour"
+msgstr ""
+
+#. CONTEXT: manage-ui: notebook tab title: update database
 msgid "Update Database"
 msgstr "Cập nhật cơ sở dữ liệu"
 
@@ -2090,6 +2165,10 @@ msgstr "Đang cập nhật %s."
 #, c-format
 msgid "Updating existing %s installation."
 msgstr "Đang cập nhật bản cài đặt %s hiện có."
+
+#. CONTEXT: installer: start the upgrade process
+msgid "Upgrade"
+msgstr ""
 
 #. CONTEXT: configuration: remote control: the user ID for sign-on to remote control
 msgid "User ID"

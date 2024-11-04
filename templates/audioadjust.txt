@@ -1,27 +1,13 @@
 # audioadjust
-# 2023-4-4
-# version 4
+# 2023-9-1
+# version 5
 version
-..4
+..2
 #
-# variables for trim silence
-# trimsilence-periods : numeric (1)
-# trimsilence-start : double (0.1)
-# trimsilence-threshold : numeric, decibels (-37)
-TRIMSILENCE_PERIOD
-..1
-TRIMSILENCE_START
-..100
-TRIMSILENCE_THRESHOLD
+# variables for trim silence detection
+# trimsilence-noise : numeric, decibels (-37)
+# trimsilence-duration : double (0.2)
+TRIMSILENCE_NOISE
 ..-37
-#
-# normalize volume
-# At this time, these values are not used.
-# Normalization did not work well, and was removed.
-#
-# normvol-target : double (-10.0)
-# normvol-max : double (-1.0)
-NORMVOL_TARGET
-..-10000
-NORMVOL_MAX
-..-1000
+TRIMSILENCE_DURATION
+..200

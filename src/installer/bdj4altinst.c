@@ -186,7 +186,7 @@ main (int argc, char *argv[])
   altinst.target = mdstrdup ("");
   altinst.launchname = "bdj4";
   altinst.macospfx = "";
-  strcpy (altinst.oldversion, "");
+  *altinst.oldversion = '\0';
   altinst.maindir = NULL;
   altinst.home = NULL;
   altinst.name = NULL;
@@ -276,7 +276,7 @@ main (int argc, char *argv[])
       pi = pathInfo (tbuff);
       dataFree (altinst.name);
       altinst.name = mdmalloc (pi->flen + 1);
-      strlcpy (altinst.name, pi->filename, pi->flen + 1);
+      stpecpy (altinst.name, altinst.name + pi->flen + 1, pi->filename);
       altinst.name [pi->flen] = '\0';
       pathInfoFree (pi);
     }
@@ -358,10 +358,10 @@ altinstBuildUI (altinst_t *altinst)
   char          imgbuff [MAXPATHLEN];
   uiutilsaccent_t accent;
 
-  strlcpy (imgbuff, "img/bdj4_icon_inst.png", sizeof (imgbuff));
+  stpecpy (imgbuff, imgbuff + sizeof (imgbuff), "img/bdj4_icon_inst.png");
   osuiSetIcon (imgbuff);
 
-  strlcpy (imgbuff, "img/bdj4_icon_inst.svg", sizeof (imgbuff));
+  stpecpy (imgbuff, imgbuff + sizeof (imgbuff), "img/bdj4_icon_inst.svg");
   /* CONTEXT: alternate installation: window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Installer"), BDJ4_NAME);
   altinst->callbacks [ALT_CB_EXIT] = callbackInit (
@@ -638,7 +638,7 @@ altinstValidateTarget (uiwcont_t *entry, const char *label, void *udata)
   }
 
   dir = uiEntryGetValue (altinst->wcont [ALT_W_TARGET]);
-  strlcpy (tbuff, dir, sizeof (tbuff));
+  stpecpy (tbuff, tbuff + sizeof (tbuff), dir);
   pathNormalizePath (tbuff, sizeof (tbuff));
   if (strcmp (tbuff, altinst->target) != 0) {
     rc = altinstValidateProcessTarget (altinst, tbuff);
@@ -661,7 +661,7 @@ altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
     exists = true;
     found = instutilCheckForExistingInstall (dir, altinst->macospfx);
     if (! found) {
-      strlcpy (tbuff, dir, sizeof (tbuff));
+      stpecpy (tbuff, tbuff + sizeof (tbuff), dir);
       if (altinst->firstinstall) {
         instutilAppendNameToTarget (tbuff, sizeof (tbuff), NULL, true);
       }
@@ -842,7 +842,7 @@ altinstTargetDirDialog (void *udata)
   if (fn != NULL) {
     char        tbuff [MAXPATHLEN];
 
-    strlcpy (tbuff, fn, sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), fn);
     instutilAppendNameToTarget (tbuff, sizeof (tbuff), NULL, false);
     /* validation gets called again upon set */
     altinstSetTargetEntry (altinst, tbuff);
@@ -876,7 +876,7 @@ altinstSetupCallback (void *udata)
 static void
 altinstSetPaths (altinst_t *altinst)
 {
-  strlcpy (altinst->datatopdir, altinst->target, sizeof (altinst->datatopdir));
+  stpecpy (altinst->datatopdir, altinst->datatopdir + sizeof (altinst->datatopdir), altinst->target);
   if (isMacOS ()) {
     snprintf (altinst->datatopdir, sizeof (altinst->datatopdir),
         "%s%s/%s", altinst->home, MACOS_DIR_LIBDATA, altinst->name);
@@ -1306,7 +1306,7 @@ altinstSetTargetDir (altinst_t *altinst, const char *fn)
   pi = pathInfo (altinst->target);
   dataFree (altinst->basedir);
   altinst->basedir = mdmalloc (pi->dlen + 1);
-  strlcpy (altinst->basedir, pi->dirname, pi->dlen + 1);
+  stpecpy (altinst->basedir, altinst->basedir + pi->dlen + 1, pi->dirname);
   altinst->basedir [pi->dlen] = '\0';
   pathInfoFree (pi);
 }
@@ -1337,7 +1337,7 @@ altinstLoadBdjOpt (altinst_t *altinst)
 static void
 altinstBuildTarget (altinst_t *altinst, char *buff, size_t sz, const char *nm)
 {
-  strlcpy (buff, altinst->basedir, sz);
+  stpecpy (buff, buff + sz, altinst->basedir);
   if (isMacOS ()) {
     snprintf (buff, sz, "%s/Applications", altinst->basedir);
   }
@@ -1355,7 +1355,7 @@ altinstSetTargetEntry (altinst_t *altinst, const char *fn)
 {
   char    tbuff [MAXPATHLEN];
 
-  strlcpy (tbuff, fn, sizeof (tbuff));
+  stpecpy (tbuff, tbuff + sizeof (tbuff), fn);
   pathDisplayPath (tbuff, sizeof (tbuff));
   uiEntrySetValue (altinst->wcont [ALT_W_TARGET], tbuff);
 }

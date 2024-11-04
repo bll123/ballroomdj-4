@@ -413,10 +413,12 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiWidgetAlignVertCenter (seint->wcont [UISE_W_AUDIOID_IMG]);
   uiWidgetSetMarginStart (seint->wcont [UISE_W_AUDIOID_IMG], 1);
 
-  uiwidgetp = uiCreateLabel (" ");
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, DARKACCENT_CLASS);
-  seint->wcont [UISE_W_MODIFIED] = uiwidgetp;
+  if (bdjoptGetNum (OPT_G_AUD_ADJ_DISP)) {
+    uiwidgetp = uiCreateLabel (" ");
+    uiBoxPackStart (hbox, uiwidgetp);
+    uiWidgetAddClass (uiwidgetp, DARKACCENT_CLASS);
+    seint->wcont [UISE_W_MODIFIED] = uiwidgetp;
+  }
 
   seint->callbacks [UISE_CB_COPY_TEXT] = callbackInit (
       uisongeditCopyPath, uisongedit, "songedit: copy-text");
@@ -537,10 +539,13 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
     uiImageSetFromPixbuf (seint->wcont [UISE_W_AUDIOID_IMG], seint->wcont [UISE_W_MUSICBRAINZ]);
   }
 
-  val = songGetNum (song, TAG_ADJUSTFLAGS);
-  uiLabelSetText (seint->wcont [UISE_W_MODIFIED], " ");
-  if (val != SONG_ADJUST_NONE) {
-    uiLabelSetText (seint->wcont [UISE_W_MODIFIED], "*");
+  if (seint->wcont [UISE_W_MODIFIED] != NULL) {
+    val = songGetNum (song, TAG_ADJUSTFLAGS);
+
+    uiLabelSetText (seint->wcont [UISE_W_MODIFIED], " ");
+    if (val != SONG_ADJUST_NONE) {
+      uiLabelSetText (seint->wcont [UISE_W_MODIFIED], "*");
+    }
   }
 
   for (int count = 0; count < seint->itemcount; ++count) {
@@ -702,6 +707,22 @@ uisongeditSetBPMValue (uisongedit_t *uisongedit, int val)
 
   uiSpinboxSetValue (seint->items [seint->bpmidx].uiwidgetp, val);
   logProcEnd ("");
+}
+
+void
+uisongeditSetSongStartEnd (uisongedit_t *uisongedit,
+    int32_t startval, int32_t endval)
+{
+  se_internal_t *seint;
+
+  seint = uisongedit->seInternalData;
+
+  if (seint->songstartidx >= 0 && startval > 0) {
+    uiSpinboxTimeSetValue (seint->items [seint->songstartidx].uiwidgetp, startval);
+  }
+  if (seint->songendidx >= 0 && endval > 0) {
+    uiSpinboxTimeSetValue (seint->items [seint->songendidx].uiwidgetp, endval);
+  }
 }
 
 void

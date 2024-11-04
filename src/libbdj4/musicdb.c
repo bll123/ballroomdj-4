@@ -29,16 +29,17 @@
 #include "song.h"
 #include "songutil.h"
 #include "tagdef.h"
-#include "tmutil.h"
 
 enum {
   MUSICDB_IDENT = 0xcc0062646973756d,
+  MUSICDB_TEMP_OFFSET = 10000,
 };
 
 typedef struct musicdb {
   uint64_t      ident;
   dbidx_t       count;
-  nlist_t       *songs;
+  slist_t       *songbyname;
+  nlist_t       *songbyidx;
   nlist_t       *danceCounts;  // used by main for automatic playlists
   dbidx_t       danceCount;
   rafile_t      *radb;
@@ -65,7 +66,8 @@ dbOpen (const char *fn)
   musicdb = mdmalloc (sizeof (musicdb_t));
 
   musicdb->ident = MUSICDB_IDENT;
-  musicdb->songs = slistAlloc ("db-songs", LIST_UNORDERED, songFree);
+  musicdb->songbyname = slistAlloc ("db-song-name", LIST_UNORDERED, NULL);
+  musicdb->songbyidx = nlistAlloc ("db-song-idx", LIST_UNORDERED, songFree);
   musicdb->danceCounts = nlistAlloc ("db-dance-counts", LIST_ORDERED, NULL);
   nlistSetSize (musicdb->danceCounts, dcount);
   musicdb->danceCount = dcount;
@@ -94,7 +96,8 @@ dbClose (musicdb_t *musicdb)
   raClose (musicdb->radb);
   musicdb->radb = NULL;
 
-  slistFree (musicdb->songs);
+  slistFree (musicdb->songbyname);
+  nlistFree (musicdb->songbyidx);
   nlistFree (musicdb->danceCounts);
   dataFree (musicdb->fn);
   nlistFree (musicdb->tempSongs);
@@ -118,9 +121,8 @@ dbCount (musicdb_t *musicdb)
 int
 dbLoad (musicdb_t *musicdb)
 {
-  const char  *fstr = NULL;
   song_t      *song;
-  nlistidx_t  dkey;
+  slist_t     *templist;
   nlistidx_t  iteridx;
   slistidx_t  dbidx;
   slistidx_t  siteridx;
@@ -132,7 +134,12 @@ dbLoad (musicdb_t *musicdb)
 
   musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   racount = raGetCount (musicdb->radb);
-  slistSetSize (musicdb->songs, racount);
+  /* the songs loaded into the templist will be re-assigned to */
+  /* the songbyidx list, and should not be freed */
+  templist = slistAlloc ("db-temp", LIST_UNORDERED, NULL);
+  slistSetSize (templist, racount);
+  slistSetSize (musicdb->songbyname, racount);
+  nlistSetSize (musicdb->songbyidx, racount);
   logMsg (LOG_DBG, LOG_DB, "db-load: %s %" PRId32 "\n", musicdb->fn, racount);
 
   raStartBatch (musicdb->radb);
@@ -142,36 +149,54 @@ dbLoad (musicdb_t *musicdb)
     song = dbReadEntry (musicdb, i);
 
     if (song != NULL) {
+      const char  *uri = NULL;
+      nlistidx_t  dkey;
+
       dkey = songGetNum (song, TAG_DANCE);
       if (dkey >= 0) {
         nlistIncrement (musicdb->danceCounts, dkey);
       }
       songSetNum (song, TAG_RRN, i);
-      fstr = songGetStr (song, TAG_URI);
-      slistSetData (musicdb->songs, fstr, song);
+      uri = songGetStr (song, TAG_URI);
+      slistSetData (templist, uri, song);
       ++musicdb->count;
     }
   }
 
-  /* sort so that lookups can be done by file name */
-  slistSort (musicdb->songs);
+  /* sort so that lookups can be done by uri */
+  slistSort (templist);
 
   /* set the database index according to the sorted values */
+  /* a dual list setup is used so that the song data is easily updated */
+  /* on a rename */
+
   dbidx = 0;
-  slistStartIterator (musicdb->songs, &siteridx);
-  while ((song = slistIterateValueData (musicdb->songs, &siteridx)) != NULL) {
+  slistStartIterator (templist, &siteridx);
+  while ((song = slistIterateValueData (templist, &siteridx)) != NULL) {
+    slistSetNum (musicdb->songbyname, songGetStr (song, TAG_URI), dbidx);
+    nlistSetData (musicdb->songbyidx, dbidx, song);
     songSetNum (song, TAG_DBIDX, dbidx);
+    songSetNum (song, TAG_DB_FLAGS, MUSICDB_STD);
     ++dbidx;
   }
 
-  /* debug information */
-  nlistStartIterator (musicdb->danceCounts, &iteridx);
-  while ((dkey = nlistIterateKey (musicdb->danceCounts, &iteridx)) >= 0) {
-    dbidx_t count = nlistGetNum (musicdb->danceCounts, dkey);
-    if (count > 0) {
-      logMsg (LOG_DBG, LOG_DB, "db-load: dance: %d count: %" PRId32, dkey, count);
+  slistSort (musicdb->songbyname);
+  nlistSort (musicdb->songbyidx);
+
+  if (logCheck (LOG_DBG, LOG_DB)) {
+    nlistidx_t  dkey;
+
+    /* debug information */
+    nlistStartIterator (musicdb->danceCounts, &iteridx);
+    while ((dkey = nlistIterateKey (musicdb->danceCounts, &iteridx)) >= 0) {
+      dbidx_t count = nlistGetNum (musicdb->danceCounts, dkey);
+      if (count > 0) {
+        logMsg (LOG_DBG, LOG_DB, "db-load: dance: %d count: %" PRId32, dkey, count);
+      }
     }
   }
+
+  slistFree (templist);
 
   raEndBatch (musicdb->radb);
   raClose (musicdb->radb);
@@ -184,7 +209,6 @@ dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx)
 {
   song_t      *song;
   rafileidx_t rrn;
-  const char  *fstr;
 
   if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
     return;
@@ -193,15 +217,30 @@ dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx)
   if (musicdb->radb == NULL) {
     musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   }
-  song = slistGetDataByIdx (musicdb->songs, dbidx);
+
+  /* old entry */
+  song = nlistGetData (musicdb->songbyidx, dbidx);
   rrn = songGetNum (song, TAG_RRN);
+
   song = dbReadEntry (musicdb, rrn);
-  fstr = songGetStr (song, TAG_URI);
-  songSetNum (song, TAG_RRN, rrn);
-  songSetNum (song, TAG_DBIDX, dbidx);
+
   if (song != NULL) {
-    slistSetData (musicdb->songs, fstr, song);
+    songSetNum (song, TAG_RRN, rrn);
+    songSetNum (song, TAG_DBIDX, dbidx);
+    nlistSetData (musicdb->songbyidx, dbidx, song);
   }
+}
+
+void
+dbMarkEntryRenamed (musicdb_t *musicdb, const char *olduri,
+    const char *newuri, dbidx_t dbidx)
+{
+  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
+    return;
+  }
+
+  slistSetNum (musicdb->songbyname, olduri, LIST_VALUE_INVALID);
+  slistSetNum (musicdb->songbyname, newuri, dbidx);
 }
 
 /* marks the entry as removed, but does not actually remove it */
@@ -217,7 +256,7 @@ dbMarkEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx)
   if (musicdb->radb == NULL) {
     musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   }
-  song = slistGetDataByIdx (musicdb->songs, dbidx);
+  song = nlistGetData (musicdb->songbyidx, dbidx);
   songSetNum (song, TAG_DB_FLAGS, MUSICDB_REMOVED);
   dbRebuildDanceCounts (musicdb);
 }
@@ -235,8 +274,8 @@ dbClearEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx)
   if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
     musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   }
-  song = slistGetDataByIdx (musicdb->songs, dbidx);
-  songSetNum (song, TAG_DB_FLAGS, MUSICDB_NONE);
+  song = nlistGetData (musicdb->songbyidx, dbidx);
+  songSetNum (song, TAG_DB_FLAGS, MUSICDB_STD);
   dbRebuildDanceCounts (musicdb);
 }
 
@@ -290,15 +329,19 @@ dbEnableLastUpdateTime (musicdb_t *musicdb)
 song_t *
 dbGetByName (musicdb_t *musicdb, const char *songname)
 {
-  song_t  *song;
+  song_t  *song = NULL;
+  dbidx_t dbidx;
 
   if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
     return NULL;
   }
 
-  song = slistGetData (musicdb->songs, songname);
-  if (songGetNum (song, TAG_DB_FLAGS) == MUSICDB_REMOVED) {
-    song = NULL;
+  dbidx = slistGetNum (musicdb->songbyname, songname);
+  if (dbidx >= 0) {
+    song = nlistGetData (musicdb->songbyidx, dbidx);
+    if (songGetNum (song, TAG_DB_FLAGS) == MUSICDB_REMOVED) {
+      song = NULL;
+    }
   }
 
   return song;
@@ -318,7 +361,7 @@ dbGetByIdx (musicdb_t *musicdb, dbidx_t idx)
   }
 
   if (idx < musicdb->count) {
-    song = slistGetDataByIdx (musicdb->songs, idx);
+    song = nlistGetData (musicdb->songbyidx, idx);
     if (songGetNum (song, TAG_DB_FLAGS) == MUSICDB_REMOVED) {
       song = NULL;
     }
@@ -332,8 +375,9 @@ dbGetByIdx (musicdb_t *musicdb, dbidx_t idx)
 size_t
 dbWriteSong (musicdb_t *musicdb, song_t *song)
 {
-  time_t    currtime;
-  size_t    len;
+  time_t      currtime;
+  size_t      len;
+  const char  *uri;
 
   if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
     return 0;
@@ -344,15 +388,17 @@ dbWriteSong (musicdb_t *musicdb, song_t *song)
   }
 
   /* do not write temporary or removed songs */
-  if (songGetNum (song, TAG_DB_FLAGS) != MUSICDB_NONE) {
+  if (songGetNum (song, TAG_DB_FLAGS) != MUSICDB_STD) {
     return 0;
   }
+
+  uri = songGetStr (song, TAG_URI);
 
   if (musicdb->updatelast) {
     currtime = time (NULL);
     songSetNum (song, TAG_LAST_UPDATED, currtime);
   }
-  len = dbWriteInternalSong (musicdb, songGetStr (song, TAG_URI),
+  len = dbWriteInternalSong (musicdb, uri,
       song, songGetNum (song, TAG_RRN));
   return len;
 }
@@ -384,7 +430,7 @@ dbCreateSongEntryFromSong (char *tbuff, size_t sz, song_t *song,
   }
 
   sbuff = songCreateSaveData (song);
-  strlcpy (tbuff, sbuff, sz);
+  stpecpy (tbuff, tbuff + sz, sbuff);
   mdfree (sbuff);
 
   return -1;
@@ -396,15 +442,18 @@ dbStartIterator (musicdb_t *musicdb, slistidx_t *iteridx)
   if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
     return;
   }
-  if (musicdb->songs == NULL) {
+  if (musicdb->songbyname == NULL) {
     return;
   }
 
-  slistStartIterator (musicdb->songs, iteridx);
+  slistStartIterator (musicdb->songbyname, iteridx);
 }
 
+/* iterates by dbidx */
+/* iterating by name isn't necessary, as all displays use */
+/* the song filter process */
 song_t *
-dbIterate (musicdb_t *musicdb, dbidx_t *idx, slistidx_t *iteridx)
+dbIterate (musicdb_t *musicdb, dbidx_t *dbidx, slistidx_t *iteridx)
 {
   song_t    *song;
 
@@ -412,12 +461,12 @@ dbIterate (musicdb_t *musicdb, dbidx_t *idx, slistidx_t *iteridx)
     return NULL;
   }
 
-  song = slistIterateValueData (musicdb->songs, iteridx);
-  while (song != NULL &&
-      songGetNum (song, TAG_DB_FLAGS) == MUSICDB_REMOVED) {
-    song = slistIterateValueData (musicdb->songs, iteridx);
+  *dbidx = nlistIterateKey (musicdb->songbyidx, iteridx);
+  song = nlistGetData (musicdb->songbyidx, *dbidx);
+  while (songGetNum (song, TAG_DB_FLAGS) == MUSICDB_REMOVED) {
+    *dbidx = nlistIterateKey (musicdb->songbyidx, iteridx);
+    song = nlistGetData (musicdb->songbyidx, *dbidx);
   }
-  *idx = slistIterateGetIdx (musicdb->songs, iteridx);
   return song;
 }
 
@@ -445,8 +494,10 @@ dbAddTemporarySong (musicdb_t *musicdb, song_t *song)
   }
 
   songSetNum (song, TAG_DB_FLAGS, MUSICDB_TEMP);
-  songGetStr (song, TAG_URI);
-  dbidx = musicdb->count;
+  /* offset the temporary song dbidx so that new songs can be added */
+  /* to the database without duplicating the temporary song dbidx */
+  /* (player: add-to-database) */
+  dbidx = musicdb->count + MUSICDB_TEMP_OFFSET;
   dbidx += nlistGetCount (musicdb->tempSongs);
   songSetNum (song, TAG_DBIDX, dbidx);
   nlistSetData (musicdb->tempSongs, dbidx, song);
@@ -461,10 +512,13 @@ dbDumpSongList (musicdb_t *musicdb)   /* KEEP */
   const char    *key;
   song_t        *song;
 
-  slistStartIterator (musicdb->songs, &siteridx);
-  while ((key = slistIterateKey (musicdb->songs, &siteridx)) != NULL) {
-    fprintf (stderr, "key: %s\n", key);
-    song = slistGetData (musicdb->songs, key);
+  slistStartIterator (musicdb->songbyname, &siteridx);
+  while ((key = slistIterateKey (musicdb->songbyname, &siteridx)) != NULL) {
+    dbidx_t   dbidx;
+
+    dbidx = slistGetNum (musicdb->songbyname, key);
+    fprintf (stderr, "key: %s % " PRId32 "\n", key, dbidx);
+    song = nlistGetData (musicdb->songbyidx, dbidx);
     fprintf (stderr, "  song: %s\n", songGetStr (song, TAG_URI));
   }
 }
@@ -512,7 +566,7 @@ dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn)
   song = songAlloc ();
   songParse (song, data, rrn);
   if (! songAudioSourceExists (song)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "song %s not found",
+    logMsg (LOG_DBG, LOG_IMPORTANT, "WARN: song %s not found",
         songGetStr (song, TAG_URI));
     songFree (song);
     song = NULL;
@@ -525,28 +579,34 @@ static void
 dbRebuildDanceCounts (musicdb_t *musicdb)
 {
   song_t        *song;
-  slistidx_t    iteridx;
-  ilistidx_t    dkey;
+  nlistidx_t    iteridx;
 
   nlistFree (musicdb->danceCounts);
   musicdb->danceCounts = nlistAlloc ("db-dance-counts", LIST_ORDERED, NULL);
-  slistStartIterator (musicdb->songs, &iteridx);
-  while ((song = slistIterateValueData (musicdb->songs, &iteridx)) != NULL) {
-    if (songGetNum (song, TAG_DB_FLAGS) != MUSICDB_NONE) {
+  nlistStartIterator (musicdb->songbyidx, &iteridx);
+  while ((song = nlistIterateValueData (musicdb->songbyidx, &iteridx)) != NULL) {
+    ilistidx_t    dkey;
+
+    if (songGetNum (song, TAG_DB_FLAGS) != MUSICDB_STD) {
       continue;
     }
+
     dkey = songGetNum (song, TAG_DANCE);
     if (dkey >= 0) {
       nlistIncrement (musicdb->danceCounts, dkey);
     }
   }
 
-  /* debug information */
-  nlistStartIterator (musicdb->danceCounts, &iteridx);
-  while ((dkey = nlistIterateKey (musicdb->danceCounts, &iteridx)) >= 0) {
-    dbidx_t count = nlistGetNum (musicdb->danceCounts, dkey);
-    if (count > 0) {
-      logMsg (LOG_DBG, LOG_DB, "db-rebuild: dance: %" PRId32 " count: %" PRId32, dkey, count);
+  if (logCheck (LOG_DBG, LOG_DB)) {
+    nlistidx_t    dkey;
+
+    /* debug information */
+    nlistStartIterator (musicdb->danceCounts, &iteridx);
+    while ((dkey = nlistIterateKey (musicdb->danceCounts, &iteridx)) >= 0) {
+      dbidx_t count = nlistGetNum (musicdb->danceCounts, dkey);
+      if (count > 0) {
+        logMsg (LOG_DBG, LOG_DB, "db-rebuild: dance: %" PRId32 " count: %" PRId32, dkey, count);
+      }
     }
   }
 }

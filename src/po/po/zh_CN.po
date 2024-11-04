@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2024-07-28\n"
-"PO-Revision-Date: 2024-08-17\n"
+"POT-Creation-Date: 2024-09-09\n"
+"PO-Revision-Date: 2024-10-21\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh\n"
@@ -70,7 +70,7 @@ msgstr "%s 安装人员"
 msgid "%s Location"
 msgstr "%s 地点"
 
-#. CONTEXT: managementui: management user interface window title
+#. CONTEXT: manage-ui: management user interface window title
 #, c-format
 msgid "%s Management"
 msgstr "%s 管理层"
@@ -194,9 +194,17 @@ msgstr "%s不允许空格。"
 msgid "100%"
 msgstr "100%"
 
+#. CONTEXT: configuration: player: clock: 12-hour time
+msgid "12-Hour Clock"
+msgstr ""
+
 #. CONTEXT: configuration: dance time signature
 msgid "2/4"
 msgstr "2/4"
+
+#. CONTEXT: configuration: player: clock: 24-hour time
+msgid "24-Hour Clock"
+msgstr ""
 
 #. CONTEXT: configuration: dance time signature
 msgid "3/4"
@@ -206,7 +214,7 @@ msgstr "3/4"
 msgid "4/4"
 msgstr "4/4"
 
-#. CONTEXT: configuration: marquee: the accent color used for the marquee
+#. CONTEXT: configuration: marquee: the accent color
 #. CONTEXT: configuration: the accent color to use for the user interface
 msgid "Accent Colour"
 msgstr "点缀色"
@@ -219,9 +227,9 @@ msgstr "行动"
 msgid "Action failed"
 msgstr "行动失败"
 
-#. CONTEXT: managementui: menu selection: actions for song editor
-#. CONTEXT: managementui: menu selection: actions for music manager
-#. CONTEXT: managementui: menu selection: actions for song list
+#. CONTEXT: manage-ui: menu selection: actions for song editor
+#. CONTEXT: manage-ui: menu selection: actions for music manager
+#. CONTEXT: manage-ui: menu selection: actions for song list
 #. CONTEXT: playerui: menu selection: actions for the player
 #. CONTEXT: starterui: action menu for the starter user interface
 msgid "Actions"
@@ -259,8 +267,8 @@ msgstr "专辑艺术家排序"
 msgid "Album Sort Order"
 msgstr "相册排序"
 
-#. CONTEXT: song-selection: filter: all dances are selected
 #. CONTEXT: song selection filter: a filter: all dances are selected
+#. CONTEXT: song-selection: filter: all dances are selected
 msgid "All Dances"
 msgstr "所有舞蹈"
 
@@ -305,11 +313,11 @@ msgstr "申请"
 
 #. CONTEXT: apply adjustment dialog: title for the dialog
 #. CONTEXT: apply adjustment dialog: apply adjustments
-#. CONTEXT: managementui: song editor menu: apply adjustments
+#. CONTEXT: manage-ui: song editor menu: apply adjustments
 msgid "Apply Adjustments"
 msgstr "应用调整"
 
-#. CONTEXT: managementui: song editor menu: apply edit all
+#. CONTEXT: manage-ui: song editor menu: apply edit all
 msgid "Apply Edit All"
 msgstr "应用 编辑全部"
 
@@ -346,7 +354,7 @@ msgid "Audio Files"
 msgstr "音频文件"
 
 #. CONTEXT: configuration: display settings for: Audio Identification
-#. CONTEXT: managementui: name of audio identification notebook tab
+#. CONTEXT: manage-ui: name of audio identification notebook tab
 msgid "Audio ID"
 msgstr "音频 ID"
 
@@ -385,6 +393,10 @@ msgstr "BPM"
 msgid "BPM Counter"
 msgstr "BPM 计数器"
 
+#. CONTEXT: configuration: marquee: the background color
+msgid "Background Colour"
+msgstr ""
+
 #. CONTEXT: configuration file: genre
 msgid "Ballroom Dance"
 msgstr "交谊舞 "
@@ -397,7 +409,7 @@ msgstr "舞厅音乐播放器 "
 msgid "Beats"
 msgstr "节拍"
 
-#. CONTEXT: managementui: song editor menu: cancel edit all
+#. CONTEXT: manage-ui: song editor menu: cancel edit all
 msgid "Cancel Edit All"
 msgstr "取消 编辑全部"
 
@@ -434,7 +446,7 @@ msgstr "清除和播放"
 msgid "Clear Queue"
 msgstr "清除队列"
 
-#. CONTEXT: managementui: menu selection: music manager: clear same-song mark
+#. CONTEXT: manage-ui: menu selection: music manager: clear same-song mark
 msgid "Clear Same Song Mark"
 msgstr "清除同一首歌标记"
 
@@ -442,10 +454,14 @@ msgstr "清除同一首歌标记"
 msgid "Click the mouse in the blue box in time with the beat."
 msgstr "随着节拍在蓝色方框内点击鼠标。"
 
+#. CONTEXT: configuration: the clock format
+msgid "Clock"
+msgstr ""
+
+#. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
 #. CONTEXT: select file dialog: close
 #. CONTEXT: select file: closes the dialog
-#. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: apply adjustment dialog: closes the dialog
 #. CONTEXT: copy tags dialog: closes the dialog
 #. CONTEXT: export/import bdj4 dialog: closes the dialog
@@ -511,7 +527,7 @@ msgstr "转换 %s"
 
 #. CONTEXT: copy tags dialog: title for the dialog
 #. CONTEXT: copy tags dialog: copy audio tags button
-#. CONTEXT: managementui: song editor menu: copy audio tags
+#. CONTEXT: manage-ui: song editor menu: copy audio tags
 msgid "Copy Audio Tags"
 msgstr "复制音频标签"
 
@@ -524,7 +540,7 @@ msgstr "副本已存在。"
 msgid "Copy finished."
 msgstr "复制完毕。"
 
-#. CONTEXT: managementui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#. CONTEXT: manage-ui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #. CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #. CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #, c-format
@@ -548,7 +564,7 @@ msgstr "计数"
 msgid "Create"
 msgstr "创建"
 
-#. CONTEXT: managementui: menu selection: song list: edit menu: create copy
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: create copy
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: create copy
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: create copy
 msgid "Create Copy"
@@ -562,7 +578,7 @@ msgstr "创建简介"
 msgid "Create Shortcut for Profile"
 msgstr "为简介创建快捷方式"
 
-#. CONTEXT: managementui: menu selection: song list: actions menu: create a song list from a playlist
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: create a song list from a playlist
 #. CONTEXT: create from playlist: title for the dialog
 msgid "Create from Playlist"
 msgstr "从播放列表创建"
@@ -628,7 +644,7 @@ msgid "Default Volume"
 msgstr "默认音量："
 
 #. CONTEXT: configuration: table edit: button: delete selection
-#. CONTEXT: managementui: menu selection: song list: edit menu: delete song list
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: delete song list
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: delete sequence
 msgid "Delete"
@@ -687,14 +703,14 @@ msgstr "简单"
 
 #. CONTEXT: music queue: edit the selected song
 #. CONTEXT: song-selection: edit the selected song
-#. CONTEXT: managementui: menu selection: song list: edit menu
+#. CONTEXT: manage-ui: menu selection: song list: edit menu
 #. CONTEXT: playlist management: menu selection: playlist: edit menu
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu
 msgid "Edit"
 msgstr "编辑"
 
 #. CONTEXT: song editor: display indicator that the song editor is in edit all mode
-#. CONTEXT: managementui: song editor menu: edit all
+#. CONTEXT: manage-ui: song editor menu: edit all
 msgid "Edit All"
 msgstr "编辑全部"
 
@@ -714,11 +730,11 @@ msgstr "编辑级别"
 msgid "Edit Ratings"
 msgstr "编辑评级"
 
-#. CONTEXT: managementui: notebook tab title: edit sequences
+#. CONTEXT: manage-ui: notebook tab title: edit sequences
 msgid "Edit Sequences"
 msgstr "编辑序列"
 
-#. CONTEXT: managementui: notebook tab title: edit song lists
+#. CONTEXT: manage-ui: notebook tab title: edit song lists
 msgid "Edit Song Lists"
 msgstr "编辑歌曲列表"
 
@@ -742,6 +758,10 @@ msgstr "输入 %s 的安装文件夹。"
 #. CONTEXT: alternate installation: installation instructions
 msgid "Enter the name of the new installation."
 msgstr "输入新安装的名称。"
+
+#. CONTEXT: configuration: the error color to use for the user interface
+msgid "Error Colour"
+msgstr ""
 
 #. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
@@ -769,16 +789,20 @@ msgstr "退出"
 msgid "Exit %s and restart."
 msgstr "退出 %s 并重新启动。"
 
+#. CONTEXT: configuration: player: fade-type: exponential sine
+msgid "Exponential Sine"
+msgstr ""
+
 #. CONTEXT: export/import bdj4 dialog: export button
 #. CONTEXT: export playlist dialog: export button
-#. CONTEXT: managementui: menu selection: export actions for song list
+#. CONTEXT: manage-ui: menu selection: export actions for song list
 #. CONTEXT: playerui: menu selection: export
 msgid "Export"
 msgstr "出口"
 
 #. CONTEXT: export playlist: title of dialog
 #. CONTEXT: managementui: export playlist: title of save dialog
-#. CONTEXT: managementui: menu selection: song list: export
+#. CONTEXT: manage-ui: menu selection: song list: export
 msgid "Export Playlist"
 msgstr "导出播放列表"
 
@@ -793,7 +817,7 @@ msgid "Export as %s"
 msgstr "导出为 %s"
 
 #. CONTEXT: export for ballroomdj: title of dialog
-#. CONTEXT: managementui: menu selection: song list: export: export for ballroomdj
+#. CONTEXT: manage-ui: menu selection: song list: export: export for ballroomdj
 #, c-format
 msgid "Export for %s"
 msgstr "导出至 %s"
@@ -821,6 +845,10 @@ msgstr "消逝的时光"
 msgid "Fade Out Time"
 msgstr "淡出时间"
 
+#. CONTEXT: configuration: the clock format
+msgid "Fade Type"
+msgstr ""
+
 #. CONTEXT: label: favorite marker
 msgid "Favourite"
 msgstr "最爱"
@@ -835,8 +863,8 @@ msgid "File"
 msgstr "文件"
 
 #. CONTEXT: configuration: filter display: song selection filters
-#. CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog
 #. CONTEXT: song selection filter: title for the filter dialog
+#. CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog
 msgid "Filter Songs"
 msgstr "筛选歌曲"
 
@@ -891,6 +919,14 @@ msgstr "HTML 模板"
 msgid "HTTP Code"
 msgstr "HTTP 代码"
 
+#. CONTEXT: configuration: player: fade-type: half sine
+msgid "Half Sine"
+msgstr ""
+
+#. CONTEXT: playerui: menu selection: marquee: hide the marquee
+msgid "Hide"
+msgstr ""
+
 #. CONTEXT: playlist management: hide unselected dances
 msgid "Hide Unselected"
 msgstr "隐藏未选择"
@@ -912,18 +948,22 @@ msgstr "高级舞蹈水平"
 msgid "History"
 msgstr "历史"
 
+#. CONTEXT: configuration: player: clock: ISO
+msgid "ISO"
+msgstr ""
+
 #. CONTEXT: installer: instructions
 msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
 msgstr "如果没有安装 BallroomDJ 3，则留空。"
 
 #. CONTEXT: export/import bdj4 dialog: import button
 #. CONTEXT: import from itunes: import the selected itunes playlist
-#. CONTEXT: managementui: menu selection: import actions for song list
+#. CONTEXT: manage-ui: menu selection: import actions for song list
 msgid "Import"
 msgstr "进口"
 
-#. CONTEXT: managementui: menu selection: song list: import
-#. CONTEXT: managementui: song list import: title of dialog
+#. CONTEXT: manage-ui: menu selection: song list: import
+#. CONTEXT: manage-ui: song list import: title of dialog
 msgid "Import Playlist"
 msgstr "导入播放列表"
 
@@ -933,11 +973,15 @@ msgstr "进口自"
 
 #. CONTEXT: import from ballroomdj: title of dialog
 #. CONTEXT: import from itunes: title for the dialog
-#. CONTEXT: managementui: menu selection: song list: import: import from ballroomdj
-#. CONTEXT: managementui: menu selection: song list: import: import from itunes
+#. CONTEXT: manage-ui: menu selection: song list: import: import from ballroomdj
+#. CONTEXT: manage-ui: menu selection: song list: import: import from itunes
 #, c-format
 msgid "Import from %s"
 msgstr "从 %s导入"
+
+#. CONTEXT: configuration: marquee: dance information color
+msgid "Information Colour"
+msgstr ""
 
 #. CONTEXT: alternate installation: status message
 msgid "Initial Setup."
@@ -994,6 +1038,10 @@ msgstr "无效选择"
 msgid "Invalid name. Using old name."
 msgstr ""
 
+#. CONTEXT: configuration: player: fade-type: inverted parabola
+msgid "Inverted Parabola"
+msgstr ""
+
 #. CONTEXT: configuration file: genre
 msgid "Jazz"
 msgstr "爵士乐"
@@ -1022,7 +1070,7 @@ msgstr "级别"
 msgid "Listing Font"
 msgstr "列表字体"
 
-#. CONTEXT: managementui: menu selection: song list: edit menu: load
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: load
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: load
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: load
 msgid "Load"
@@ -1033,6 +1081,7 @@ msgid "Loaded from Database"
 msgstr "从数据库加载"
 
 #. CONTEXT: configuration: mobile marquee type: local
+#. CONTEXT: configuration: player: clock: local
 msgid "Local"
 msgstr ""
 
@@ -1063,7 +1112,7 @@ msgstr "MPM"
 msgid "Manage"
 msgstr "管理"
 
-#. CONTEXT: managementui: menu selection: music manager: set same-song mark
+#. CONTEXT: manage-ui: menu selection: music manager: set same-song mark
 msgid "Mark as Same Song"
 msgstr "标记为同一首歌"
 
@@ -1109,7 +1158,7 @@ msgstr "留言"
 msgid "Minimised"
 msgstr "最小化"
 
-#. CONTEXT: managementui: menu selection: song list: actions menu: rearrange the songs and create a new mix
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: rearrange the songs and create a new mix
 msgid "Mix"
 msgstr "混合"
 
@@ -1145,8 +1194,8 @@ msgid "Music Folder"
 msgstr "音乐文件夹"
 
 #. CONTEXT: configuration: display settings for: music manager
-#. CONTEXT: managementui: name of music manager notebook tab
-#. CONTEXT: managementui: name of song selection notebook tab
+#. CONTEXT: manage-ui: name of music manager notebook tab
+#. CONTEXT: manage-ui: name of song selection notebook tab
 msgid "Music Manager"
 msgstr "音乐经理"
 
@@ -1215,7 +1264,7 @@ msgstr "新评级"
 msgid "New Sequence"
 msgstr "新序列"
 
-#. CONTEXT: managementui: song list: default name for a new song list
+#. CONTEXT: manage-ui: song list: default name for a new song list
 msgid "New Song List"
 msgstr "新歌列表"
 
@@ -1272,10 +1321,11 @@ msgstr "说明"
 
 #. CONTEXT: configuration: show-marquee: off
 #. CONTEXT: configuration: mobile marquee type: off
+#. CONTEXT: configuration: player: clock: off
 msgid "Off"
 msgstr "关闭"
 
-#. CONTEXT: managementui: menu selection: song list: options menu
+#. CONTEXT: manage-ui: menu selection: song list: options menu
 #. CONTEXT: playerui: menu selection: options for the player
 msgid "Options"
 msgstr "选项"
@@ -1353,14 +1403,14 @@ msgstr "可播放状态"
 msgid "Player"
 msgstr "球员"
 
-#. CONTEXT: select file: file type for the file selection dialog (playlist)
 #. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
+#. CONTEXT: select file: file type for the file selection dialog (playlist)
 #. CONTEXT: create from playlist: select the playlist to use
 #. CONTEXT: playlist management: label for playlist name
 msgid "Playlist"
 msgstr "播放列表"
 
-#. CONTEXT: managementui: notebook tab title: playlist management
+#. CONTEXT: manage-ui: notebook tab title: playlist management
 msgid "Playlist Management"
 msgstr "播放列表管理"
 
@@ -1369,7 +1419,7 @@ msgid "Playlist Type"
 msgstr "播放列表类型"
 
 #. CONTEXT: managementui: export playlist: name of file export type
-#. CONTEXT: managementui: song list import: name of file import type
+#. CONTEXT: manage-ui: song list import: name of file import type
 msgid "Playlists"
 msgstr "播放列表"
 
@@ -1437,6 +1487,14 @@ msgstr "不得删除个人资料。"
 #. CONTEXT: configuration: remote control: the link to display the QR code for remote control
 msgid "QR Code"
 msgstr "QR 码"
+
+#. CONTEXT: configuration: player: fade-type: quadratic
+msgid "Quadratic"
+msgstr ""
+
+#. CONTEXT: configuration: player: fade-type: quarter sine
+msgid "Quarter Sine"
+msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
@@ -1553,7 +1611,7 @@ msgstr "重新加载"
 msgid "Remove"
 msgstr "移除"
 
-#. CONTEXT: managementui: menu selection: music manager: remove song
+#. CONTEXT: manage-ui: menu selection: music manager: remove song
 msgid "Remove Song"
 msgstr "删除歌曲"
 
@@ -1590,7 +1648,7 @@ msgid "Reset"
 msgstr "重置"
 
 #. CONTEXT: apply adjustment dialog: restore original file
-#. CONTEXT: managementui: song editor menu: restore original
+#. CONTEXT: manage-ui: song editor menu: restore original
 msgid "Restore Original"
 msgstr "恢复原状"
 
@@ -1652,7 +1710,7 @@ msgstr "秒数"
 #. CONTEXT: select file dialog: select file
 #. CONTEXT: side-by-side list: button: add the selected field
 #. CONTEXT: select file: selects the file
-#. CONTEXT: managementui: config: button: add the selected songs to the song list
+#. CONTEXT: manage-ui: config: button: add the selected songs to the song list
 msgid "Select"
 msgstr "选择"
 
@@ -1753,6 +1811,10 @@ msgstr "设置"
 msgid "Setup complete."
 msgstr "设置完成。"
 
+#. CONTEXT: playerui: menu selection: marquee: show the marquee
+msgid "Show"
+msgstr ""
+
 #. CONTEXT: configuration: queue: whether to show the extra queue buttons (queue dance, queue 5)
 msgid "Show Extra Queue Buttons"
 msgstr "显示额外队列按钮"
@@ -1785,7 +1847,7 @@ msgstr "并排歌曲列表"
 msgid "Side-by-Side Song Selection"
 msgstr "并排选择歌曲"
 
-#. CONTEXT: managementui: menu checkbox: side-by-side view (suggestion: combined view)
+#. CONTEXT: manage-ui: menu checkbox: side-by-side view (suggestion: combined view)
 msgid "Side-by-Side View"
 msgstr "并排视图"
 
@@ -1793,7 +1855,7 @@ msgstr "并排视图"
 msgid "Skipping conversion."
 msgstr "跳过转换。"
 
-#. CONTEXT: managementui: name of song editor notebook tab
+#. CONTEXT: manage-ui: name of song editor notebook tab
 msgid "Song Editor"
 msgstr "歌曲编辑"
 
@@ -1811,14 +1873,18 @@ msgstr "歌曲结束"
 #. CONTEXT: music queue: song list name
 #. CONTEXT: select file: file type for the file selection dialog (song list)
 #. CONTEXT: export/import bdj4: playlist: select the song list
-#. CONTEXT: managementui: name of side-by-side view tab
-#. CONTEXT: managementui: name of song list notebook tab
+#. CONTEXT: manage-ui: name of side-by-side view tab
+#. CONTEXT: manage-ui: name of song list notebook tab
 #. CONTEXT: playlist management: type of playlist
 msgid "Song List"
 msgstr "歌曲列表"
 
+#. CONTEXT: configuration: user interface: the song mark color for songs in the song list
+msgid "Song Mark Colour"
+msgstr ""
+
 #. CONTEXT: configuration: display settings for: song selection
-#. CONTEXT: managementui: name of song selection notebook tab
+#. CONTEXT: manage-ui: name of song selection notebook tab
 msgid "Song Selection"
 msgstr "歌曲选择"
 
@@ -1857,7 +1923,7 @@ msgstr "开始"
 msgid "Start New Sequence"
 msgstr "开始新序列"
 
-#. CONTEXT: managementui: menu selection: song list: edit menu: start new song list
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: start new song list
 msgid "Start New Song List"
 msgstr "开始新歌单"
 
@@ -1869,7 +1935,7 @@ msgstr "开始转换过程"
 msgid "Startup Script"
 msgstr "启动脚本"
 
-#. CONTEXT: managementui: name of statistics tab
+#. CONTEXT: manage-ui: name of statistics tab
 msgid "Statistics"
 msgstr "统计资料"
 
@@ -1917,7 +1983,7 @@ msgstr "支持信息"
 msgid "Support options"
 msgstr "支持选项"
 
-#. CONTEXT: managementui: menu selection: song list: actions menu: swap two songs
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: swap two songs
 msgid "Swap"
 msgstr "交换"
 
@@ -2014,11 +2080,16 @@ msgstr "轨道总数"
 msgid "Track"
 msgstr "轨道"
 
+#. CONTEXT: configuration: player: fade-type: triangle
+msgid "Triangle"
+msgstr ""
+
 #. CONTEXT: apply adjustments: trim silence checkbox
+#. CONTEXT: manage-ui: song editor menu: trim silence
 msgid "Trim Silence"
 msgstr "修剪静音"
 
-#. CONTEXT: managementui: menu selection: song list: actions menu: truncate the song list
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: truncate the song list
 msgid "Truncate"
 msgstr "截断"
 
@@ -2041,7 +2112,7 @@ msgstr "无法找到 %s。"
 msgid "Unable to locate BDJ3 database."
 msgstr "无法找到 BDJ3 数据库。"
 
-#. CONTEXT: managementui: menu selection: music manager: undo song removal
+#. CONTEXT: manage-ui: menu selection: music manager: undo song removal
 msgid "Undo Song Removal"
 msgstr "撤销歌曲删除"
 
@@ -2049,7 +2120,11 @@ msgstr "撤销歌曲删除"
 msgid "Unrated"
 msgstr "未评级"
 
-#. CONTEXT: managementui: notebook tab title: update database
+#. CONTEXT: configuration: marquee: upcoming dance color
+msgid "Upcoming Dance Colour"
+msgstr ""
+
+#. CONTEXT: manage-ui: notebook tab title: update database
 msgid "Update Database"
 msgstr "更新数据库"
 
@@ -2089,6 +2164,10 @@ msgstr "更新 %s."
 #, c-format
 msgid "Updating existing %s installation."
 msgstr "更新现有的 %s 安装。"
+
+#. CONTEXT: installer: start the upgrade process
+msgid "Upgrade"
+msgstr ""
 
 #. CONTEXT: configuration: remote control: the user ID for sign-on to remote control
 msgid "User ID"

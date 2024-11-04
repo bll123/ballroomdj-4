@@ -32,18 +32,20 @@ case ${systype} in
     ;;
 esac
 
+DEVTMP=devel/tmp
+
 inpfx=ckin
 outpfx=ckout.
 
-rm -f tmp/${inpfx}??
-rm -f tmp/${outpfx}*
+rm -f ${DEVTMP}/${inpfx}??
+rm -f ${DEVTMP}/${outpfx}*
 
 # building the checksum file on windows is slow.
 # this isn't necessary on linux/macos.
 if [[ $win == T ]]; then
-  split -n l/$nproc ${manifest} tmp/${inpfx}
+  split -n l/$nproc ${manifest} ${DEVTMP}/${inpfx}
 else
-  cp -f ${manifest} tmp/${inpfx}aa
+  cp -f ${manifest} ${DEVTMP}/${inpfx}aa
 fi
 
 cwd=$(pwd)
@@ -53,18 +55,18 @@ if [[ $macos == T ]]; then
   cd ../..
 fi
 count=0
-for cfn in ${cwd}/tmp/${inpfx}??; do
+for cfn in ${cwd}/${DEVTMP}/${inpfx}??; do
   count=$((count+1))
   for fn in $(cat ${cfn}); do
     if [[ -f $fn ]]; then
-      ${shaprog} -b $fn >> ${cwd}/tmp/${outpfx}${count} &
+      ${shaprog} -b $fn >> ${cwd}/${DEVTMP}/${outpfx}${count} &
     fi
   done
 done
 )
 
-cat tmp/${outpfx}* > ${checksumfn}
-rm -f tmp/${inpfx}??
-rm -f tmp/${outpfx}*
+cat ${DEVTMP}/${outpfx}* > ${checksumfn}
+rm -f ${DEVTMP}/${inpfx}??
+rm -f ${DEVTMP}/${outpfx}*
 
 exit 0

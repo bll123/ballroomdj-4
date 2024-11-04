@@ -112,11 +112,11 @@ atioggParseVorbisComment (const char *kw, char *buff, size_t sz)
   if (val == NULL) {
     return NULL;
   }
-  len = val - kw;
-  if (len >= sz) {
-    len = sz - 1;
+  len = val - kw + 1;
+  if (len > sz) {
+    len = sz;
   }
-  strlcpy (buff, kw, len + 1);
+  stpecpy (buff, buff + len, kw);
   buff [len] = '\0';
   ++val;
 

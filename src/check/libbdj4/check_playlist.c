@@ -128,9 +128,9 @@ init (void)
       ext = BDJ4_PL_DANCE_EXT;
     }
     pathbldMakePath (tbuff, sizeof (tbuff), test_data [i].basefn, ext, PATHBLD_MP_DREL_DATA);
-    strlcpy (test_data [i].ffn, tbuff, MAXPATHLEN);
+    stpecpy (test_data [i].ffn, test_data [i].ffn + MAXPATHLEN, tbuff);
     pathbldMakePath (tbuff, sizeof (tbuff), test_data [i].basefn, ext, PATHBLD_MP_DREL_TEST_TMPL);
-    strlcpy (test_data [i].testfn, tbuff, MAXPATHLEN);
+    stpecpy (test_data [i].testfn, test_data [i].testfn + MAXPATHLEN, tbuff);
     ++idx;
     if (idx >= CPL_NEW_OFFSET) {
       idx = 0;

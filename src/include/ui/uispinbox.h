@@ -15,11 +15,11 @@
 extern "C" {
 #endif
 
-enum {
+typedef enum {
   SB_TEXT,
   SB_TIME_BASIC,
   SB_TIME_PRECISE,
-};
+} sbtype_t;
 
 typedef const char * (*uispinboxdisp_t)(void *, int);
 
@@ -37,7 +37,7 @@ uiwcont_t *uiSpinboxDoubleCreate (void);
 
 uiwcont_t *uiSpinboxDoubleDefaultCreate (void);
 
-uiwcont_t *uiSpinboxTimeCreate (int sbtype, void *udata, const char *label, callback_t *convcb);
+uiwcont_t *uiSpinboxTimeCreate (sbtype_t sbtype, void *udata, const char *label, callback_t *convcb);
 int32_t uiSpinboxTimeGetValue (uiwcont_t *uiwidget);
 void  uiSpinboxTimeSetValue (uiwcont_t *uiwidget, int32_t value);
 void uiSpinboxTimeSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb);

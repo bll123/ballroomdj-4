@@ -18,7 +18,7 @@ HIGHMPM
 SPEED
 ..normal
 TAGS
-..tango
+..tango club
 TIMESIG
 ..4/4
 TYPE

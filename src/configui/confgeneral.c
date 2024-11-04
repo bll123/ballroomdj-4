@@ -86,7 +86,7 @@ confuiBuildUIGeneral (confuigui_t *gui)
     bdjoptSetStr (OPT_M_DIR_MUSIC, tbuff);
   }
 
-  strlcpy (tbuff, bdjoptGetStr (OPT_M_DIR_MUSIC), sizeof (tbuff));
+  stpecpy (tbuff, tbuff + sizeof (tbuff), bdjoptGetStr (OPT_M_DIR_MUSIC));
   pathDisplayPath (tbuff, sizeof (tbuff));
 
   /* CONTEXT: configuration: the music folder where the user stores their music */
@@ -141,7 +141,7 @@ confuiBuildUIGeneral (confuigui_t *gui)
   *ebuff = '\0';
   tmp = bdjoptGetStr (OPT_G_ACRCLOUD_API_KEY);
   if (tmp != NULL) {
-    strlcpy (ebuff, tmp, sizeof (ebuff));
+    stpecpy (ebuff, ebuff + sizeof (ebuff), tmp);
   }
   if (tmp != NULL && *tmp &&
       strncmp (tmp, VSEC_E_PFX, strlen (VSEC_E_PFX)) == 0) {
@@ -156,7 +156,7 @@ confuiBuildUIGeneral (confuigui_t *gui)
   *ebuff = '\0';
   tmp = bdjoptGetStr (OPT_G_ACRCLOUD_API_SECRET);
   if (tmp != NULL) {
-    strlcpy (ebuff, tmp, sizeof (ebuff));
+    stpecpy (ebuff, ebuff + sizeof (ebuff), tmp);
   }
   if (tmp != NULL && *tmp &&
       strncmp (tmp, VSEC_E_PFX, strlen (VSEC_E_PFX)) == 0) {

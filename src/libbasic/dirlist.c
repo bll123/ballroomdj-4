@@ -35,6 +35,8 @@ dirlistBasicDirList (const char *dirname, const char *extension)
   slist_t       *fileList;
   pathinfo_t    *pi;
   char          temp [MAXPATHLEN];
+  char          *p;
+  char          *end;
   char          *cvtname;
   gsize         bread, bwrite;
 
@@ -44,9 +46,11 @@ dirlistBasicDirList (const char *dirname, const char *extension)
   }
 
   snprintf (temp, sizeof (temp), "basic-dir-%s", dirname);
+  p = temp;
+  end = temp + sizeof (temp);
   if (extension != NULL) {
-    strlcat (temp, "-", sizeof (temp));
-    strlcat (temp, extension, sizeof (temp));
+    p = stpecpy (p, end, "-");
+    p = stpecpy (p, end, extension);
   }
   fileList = slistAlloc (temp, LIST_UNORDERED, NULL);
   dh = osDirOpen (dirname);

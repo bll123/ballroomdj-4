@@ -67,6 +67,8 @@ START_TEST(pathbld_chk)
   char    tbuff [MAXPATHLEN];
   char    f [MAXPATHLEN];
   char    cwd [MAXPATHLEN];
+  char    *p = f;
+  char    *end = f + sizeof (f);
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- pathbld_chk");
   mdebugSubTag ("pathbld_chk");
@@ -78,27 +80,28 @@ START_TEST(pathbld_chk)
     pathbldMakePath (tbuff, sizeof (tbuff),
         tests [i].base, tests [i].extension, tests [i].flags);
     *f = '\0';
+    p = f;
     if (tests [i].flags & PATHBLD_IS_ABSOLUTE) {
-      strlcat (f, cwd, sizeof (f));
+      p = stpecpy (p, end, cwd);
       if (*tests [i].finalpath) {
-        strlcat (f, "/", sizeof (f));
+        p = stpecpy (p, end, "/");
       }
     }
     if (*tests [i].finalpath) {
-      strlcat (f, tests [i].finalpath, sizeof (f));
+      p = stpecpy (p, end, tests [i].finalpath);
     }
     if ((tests [i].flags & PATHBLD_MP_HOSTNAME) == PATHBLD_MP_HOSTNAME) {
-      strlcat (f, "/", sizeof (f));
-      strlcat (f, sysvarsGetStr (SV_HOSTNAME), sizeof (f));
+      p = stpecpy (p, end, "/");
+      p = stpecpy (p, end, sysvarsGetStr (SV_HOSTNAME));
     }
     if ((tests [i].flags & PATHBLD_MP_USEIDX) == PATHBLD_MP_USEIDX &&
         (tests [i].flags & PATHBLD_MP_DREL_TMP) != PATHBLD_MP_DREL_TMP) {
-      strlcat (f, "/", sizeof (f));
-      strlcat (f, "profile00", sizeof (f));
+      p = stpecpy (p, end, "/");
+      p = stpecpy (p, end, "profile00");
     }
     if (*tests [i].finalfn) {
-      strlcat (f, "/", sizeof (f));
-      strlcat (f, tests [i].finalfn, sizeof (f));
+      p = stpecpy (p, end, "/");
+      p = stpecpy (p, end, tests [i].finalfn);
     }
     ck_assert_str_eq (tbuff, f);
   }

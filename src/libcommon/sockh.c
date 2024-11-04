@@ -74,24 +74,31 @@ int
 sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
     bdjmsgroute_t route, bdjmsgmsg_t msg, const char *args)
 {
-  char        msgbuff [BDJMSG_MAX];   // keep static to reduce latency
-  size_t      len;
+  char        msgbuff [BDJMSG_MAX_PFX];
+  size_t      pfxlen;
   int         rc;
+  size_t      alen;
 
   if (sock == INVALID_SOCKET) {
     return -1;
   }
 
   /* this is only to keep the log clean */
-  if (msg != MSG_MUSICQ_STATUS_DATA && msg != MSG_PLAYER_STATUS_DATA) {
-    logMsg (LOG_DBG, LOG_SOCKET, "route:%d/%s msg:%d/%s args:%s",
-        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
+  pfxlen = msgEncode (routefrom, route, msg, msgbuff, sizeof (msgbuff));
+  if (args != NULL) {
+    /* if args is specified, do not send the null byte */
+    pfxlen -= 1;
   }
-  len = msgEncode (routefrom, route, msg, args, msgbuff, sizeof (msgbuff));
-  rc = sockWriteBinary (sock, msgbuff, len);
-  if (rc == 0) {
-    logMsg (LOG_DBG, LOG_SOCKET, "sent: msg:%d/%s to %d/%s len:%" PRIu64 " rc:%d",
-        msg, msgDebugText (msg), route, msgRouteDebugText (route), (uint64_t) len, rc);
+  alen = 0;
+  if (args != NULL) {
+    /* write out the null byte also.  the args string must be terminated */
+    alen = strlen (args) + 1;
+  }
+  rc = sockWriteBinary (sock, msgbuff, pfxlen, args, alen);
+  if (rc == 0 &&
+      msg != MSG_MUSICQ_STATUS_DATA && msg != MSG_PLAYER_STATUS_DATA) {
+    logMsg (LOG_DBG, LOG_SOCKET, "sent: msg:%d/%s to %d/%s rc:%d pfx:%s args:%s",
+        msg, msgDebugText (msg), route, msgRouteDebugText (route), rc, msgbuff, args);
   }
   return rc;
 }
@@ -137,7 +144,7 @@ sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgFunc,
   bdjmsgroute_t routefrom = ROUTE_NONE;
   bdjmsgroute_t route = ROUTE_NONE;
   bdjmsgmsg_t msg = MSG_NULL;
-  char        args [BDJMSG_MAX];
+  char        *args;
   Sock_t      clsock;
   int         rc = MAIN_NO_DATA;
   int         trc;
@@ -176,7 +183,7 @@ sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgFunc,
 
     logMsg (LOG_DBG, LOG_SOCKET, "rcvd message: %s", rval);
 
-    msgDecode (msgbuff, &routefrom, &route, &msg, args, sizeof (args));
+    msgDecode (msgbuff, &routefrom, &route, &msg, &args);
     logMsg (LOG_DBG, LOG_SOCKET,
         "sockh: from: %d/%s route:%d/%s msg:%d/%s args:%s",
         routefrom, msgRouteDebugText (routefrom),

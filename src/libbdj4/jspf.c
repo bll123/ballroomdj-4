@@ -144,7 +144,7 @@ jspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
   }
   val = json_object_get_string (jtmp);
   if (val != NULL) {
-    strlcpy (plname, val, plsz);
+    stpecpy (plname, plname + plsz, val);
   }
 
   jtrklist = json_object_object_get (jpl, "track");
@@ -175,7 +175,7 @@ jspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
       continue;
     }
 
-    strlcpy (tbuff, val, sizeof (tbuff));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), val);
     pathNormalizePath (tbuff, strlen (tbuff));
     val = audiosrcRelativePath (tbuff, 0);
     song = dbGetByName (musicdb, val);

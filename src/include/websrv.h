@@ -10,14 +10,15 @@
 extern "C" {
 #endif
 
-typedef struct {
-  struct mg_mgr   mgr;
-} websrv_t;
+typedef struct websrv websrv_t;
+typedef void (*websrv_handler_t) (void *userdata, const char *query, const char *querydata, const char *uri);
 
-websrv_t *websrvInit (uint16_t listenPort, mg_event_handler_t eventHandler,
-    void *userdata);
+websrv_t *websrvInit (uint16_t listenPort, websrv_handler_t eventHandler, void *userdata);
 void websrvFree (websrv_t *websrv);
 void websrvProcess (websrv_t *websrv);
+void websrvReply (websrv_t *websrv, int httpcode, const char *headers, const char *msg);
+void websrvServeFile (websrv_t *websrv, const char *dir, const char *path);
+void websrvGetUserPass (websrv_t *websrv, char *user, size_t usersz, char *pass, size_t passsz);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

@@ -61,7 +61,7 @@ typedef struct playlist {
 
 enum {
   PL_BPM_VERSION = 1,
-  PL_DANCE_VERSION = 2,
+  PL_CURR_VERSION = 2,
   PL_IDENT = 0x0074736c79616c70,
 };
 
@@ -453,7 +453,7 @@ playlistGetConfigListStr (playlist_t *pl, playlistkey_t key, char *buff, size_t 
   convTextList (&conv);
 
   if (conv.strval != NULL) {
-    strlcpy (buff, conv.strval, sz);
+    stpecpy (buff, buff + sz, conv.strval);
     mdfree (conv.strval);
   }
 }
@@ -685,15 +685,21 @@ playlistGetPlaylistList (int flag, const char *dir)
     ext = BDJ4_PLAYLIST_EXT;
   }
   if (flag == PL_LIST_DIR) {
-    strlcpy (tfn, dir, sizeof (tfn));
+    stpecpy (tfn, tfn + sizeof (tfn), dir);
     ext = BDJ4_PLAYLIST_EXT;
   }
   filelist = dirlistBasicDirList (tfn, ext);
 
   slistStartIterator (filelist, &iteridx);
   while ((tplfnm = slistIterateKey (filelist, &iteridx)) != NULL) {
+    size_t    len;
+
     pi = pathInfo (tplfnm);
-    strlcpy (tfn, pi->basename, pi->blen + 1);
+    len = pi->blen + 1;
+    if (len > sizeof (tfn)) {
+      len = sizeof (tfn);
+    }
+    stpecpy (tfn, tfn + len, pi->basename);
     tfn [pi->blen] = '\0';
     pathInfoFree (pi);
 
@@ -805,7 +811,7 @@ playlistSave (playlist_t *pl, const char *name)
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
       BDJ4_PL_DANCE_EXT, PATHBLD_MP_DREL_DATA);
 
-  ilistSetVersion (pl->pldances, PL_DANCE_VERSION);
+  ilistSetVersion (pl->pldances, PL_CURR_VERSION);
   datafileSave (pl->pldancesdf, tfn, pl->pldances, DF_NO_OFFSET,
       datafileDistVersion (pl->pldancesdf));
 }

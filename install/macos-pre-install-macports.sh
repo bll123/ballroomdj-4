@@ -56,7 +56,9 @@ if [[ $rc -ne 0 ]]; then
   make > /dev/null 2>&1
   echo ""
   echo "After MacOS Command Lines Tools has finished installing,"
-  echo "run this script again."
+  echo "use System Settings / General / Software Update"
+  echo "to check for updates to the Command Line Tools."
+  echo "then run this script again."
   echo ""
   exit 0
 fi

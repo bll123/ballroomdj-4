@@ -51,6 +51,8 @@ main (int argc, char *argv [])
   char        *archivenm = "bdj4-install.tar.gz";
   const char  *targv [40];
   int         targc = 0;
+  char        *tp;
+  char        *tend;
 
 
 #if _WIN32
@@ -64,9 +66,11 @@ main (int argc, char *argv [])
   buff = malloc (BUFFSZ);
 
   /* a mess to make sure the tag string doesn't appear in the bdj4se binary */
-  strlcpy (tagstr, TAGSTRPFX, sizeof (tagstr));
-  strlcat (tagstr, TAGSTR, sizeof (tagstr));
-  strlcat (tagstr, TAGSTRSFX, sizeof (tagstr));
+  tp = tagstr;
+  tend = tagstr + sizeof (tagstr);
+  tp = stpecpy (tp, tend, TAGSTRPFX);
+  tp = stpecpy (tp, tend, TAGSTR);
+  tp = stpecpy (tp, tend, TAGSTRSFX);
 
   ifh = fileopOpen (fn, "rb");
   if (ifh == NULL) {
@@ -84,13 +88,13 @@ main (int argc, char *argv [])
   if (! *tmpdir) {
     rc = stat ("/var/tmp", &statbuf);
     if (rc == 0) {
-      strlcpy (tmpdir, "/var/tmp", sizeof (tmpdir));
+      stpecpy (tmpdir, tmpdir + sizeof (tmpdir), "/var/tmp");
     }
   }
   if (! *tmpdir) {
     rc = stat ("/tmp", &statbuf);
     if (rc == 0) {
-      strlcpy (tmpdir, "/tmp", sizeof (tmpdir));
+      stpecpy (tmpdir, tmpdir + sizeof (tmpdir), "/tmp");
     }
   }
   if (! *tmpdir) {
@@ -100,7 +104,7 @@ main (int argc, char *argv [])
 #if _args_mkdir == 1
     mkdir ("tmp");
 #endif
-    strlcpy (tmpdir, "tmp", sizeof (tmpdir));
+    stpecpy (tmpdir, tmpdir + sizeof (tmpdir), "tmp");
   }
 
   snprintf (tbuff, sizeof (tbuff), "%s/%s", tmpdir, archivenm);

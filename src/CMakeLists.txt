@@ -79,8 +79,7 @@ add_library (objfileop OBJECT
 add_library (objstring OBJECT
   libcommon/mdebug.c
   libcommon/bdjstring.c
-  libcommon/strlcat.c
-  libcommon/strlcpy.c
+  libcommon/stpecpy.c
 )
 
 add_library (objtmutil OBJECT

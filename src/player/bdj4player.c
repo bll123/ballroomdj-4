@@ -72,7 +72,7 @@ enum {
 typedef struct {
   uint64_t      ident;
   char          *songname;
-  char          *tempname;
+  char          tempname [MAXPATHLEN];
   int32_t       dur;
   int32_t       plidur;
   listnum_t     songstart;
@@ -202,6 +202,7 @@ static void     playerChkPlayerSong (playerdata_t *playerData, int routefrom);
 static void     playerResetVolume (playerdata_t *playerData);
 static void     playerSetAudioSinkEnv (playerdata_t *playerData, bool isdefault);
 static const char * playerGetAudioInterface (void);
+/* static void playerDumpPrepQueue (playerdata_t *playerData, const char *tag); */
 
 static int  gKillReceived = 0;
 
@@ -367,19 +368,19 @@ playerClosingCallback (void *tpdata, programstate_t programState)
   queueFree (playerData->prepRequestQueue);
   queueFree (playerData->playRequest);
 
+  if (playerData->currentSong != NULL) {
+    if (playerData->currentSong->announce != PREP_ANNOUNCE) {
+      playerPrepQueueFree (playerData->currentSong);
+      playerData->currentSong = NULL;
+    }
+  }
+
   bdj4shutdown (ROUTE_PLAYER, NULL);
 
   if (playerData->pli != NULL) {
     pliStop (playerData->pli);
     pliClose (playerData->pli);
     pliFree (playerData->pli);
-  }
-
-  if (playerData->currentSong != NULL) {
-    if (playerData->currentSong->announce != PREP_ANNOUNCE) {
-      playerPrepQueueFree (playerData->currentSong);
-      playerData->currentSong = NULL;
-    }
   }
 
   /* do the volume reset last, give time for the player to stop */
@@ -1009,7 +1010,7 @@ playerSongPrep (playerdata_t *playerData, char *args)
 
   npq = mdmalloc (sizeof (prepqueue_t));
   npq->ident = PREP_QUEUE_IDENT;
-  npq->tempname = NULL;
+  *npq->tempname = '\0';
   npq->songname = NULL;
 
   npq->songname = mdstrdup (p);
@@ -1078,7 +1079,6 @@ void
 playerProcessPrepRequest (playerdata_t *playerData)
 {
   prepqueue_t     *npq;
-  char            tempnm [MAXPATHLEN];
   int             rc;
 
   logProcBegin ();
@@ -1089,12 +1089,11 @@ playerProcessPrepRequest (playerdata_t *playerData)
     return;
   }
 
-  rc = audiosrcPrep (npq->songname, tempnm, sizeof (tempnm));
+  rc = audiosrcPrep (npq->songname, npq->tempname, sizeof (npq->tempname));
   if (! rc) {
     logProcEnd ("unable-to-prep");
     return;
   }
-  npq->tempname = mdstrdup (tempnm);
   queuePush (playerData->prepQueue, npq);
   logMsg (LOG_DBG, LOG_INFO, "prep-do: %" PRId32 " %s r:%d p:%" PRId32, npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
   logProcEnd ("");
@@ -1130,11 +1129,15 @@ playerSongPlay (playerdata_t *playerData, char *args)
   logMsg (LOG_DBG, LOG_BASIC, "play request: %" PRId32 " %s", uniqueidx, p);
   pq = playerLocatePreppedSong (playerData, uniqueidx, p);
   if (pq == NULL) {
+    /* no history */
+    connSendMessage (playerData->conn, ROUTE_MAIN, MSG_PLAYBACK_FINISH, "0");
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: not prepped: %s", p);
     logProcEnd ("not-prepped");
     return;
   }
   if (! fileopFileExists (pq->tempname)) {
+    /* no history */
+    connSendMessage (playerData->conn, ROUTE_MAIN, MSG_PLAYBACK_FINISH, "0");
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: no file: %s", pq->tempname);
     logProcEnd ("no-file");
     return;
@@ -1193,13 +1196,24 @@ playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx, const char
     if (! found) {
       /* this usually happens when a song is prepped and then immediately */
       /* played before it has had time to be prepped (e.g. during tests) */
-      logMsg (LOG_ERR, LOG_IMPORTANT, "WARN: song %s not prepped; processing queue", sfname);
+      logMsg (LOG_ERR, LOG_IMPORTANT, "song %s not prepped; processing queue count %d", sfname,count);
       playerProcessPrepRequest (playerData);
       ++count;
     }
   }
 
   if (! found) {
+    /* push a junk entry on to the prep-queue as if the song actually */
+    /* existed.  This allows other processing to proceed normally */
+    pq = mdmalloc (sizeof (prepqueue_t));
+    pq->ident = PREP_QUEUE_IDENT;
+    pq->songname = NULL;
+    *pq->tempname = '\0';
+    pq->dur = 0;
+    pq->plidur = 0;
+    pq->songstart = 0;
+    queuePushHead (playerData->prepQueue, pq);
+
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: unable to locate song %s", sfname);
     logProcEnd ("not-found");
     return NULL;
@@ -1321,9 +1335,9 @@ playerNextSong (playerdata_t *playerData)
         playerData->currentSong = NULL;
       }
     } else {
-      /* stopped */
       prepqueue_t     *tpq;
 
+      /* stopped */
       tpq = queuePop (playerData->prepQueue);
       playerPrepQueueFree (tpq);
       playerData->gap = playerData->priorGap;
@@ -1603,7 +1617,7 @@ playerPrepQueueFree (void *data)
 
   audiosrcPrepClean (pq->songname, pq->tempname);
   dataFree (pq->songname);
-  dataFree (pq->tempname);
+  *pq->tempname = '\0';
   mdfree (pq);
 
   logProcEnd ("");
@@ -1682,7 +1696,8 @@ playerInitSinkList (playerdata_t *playerData)
     }
   }
 
-  if (*playerData->sinklist.defname) {
+  if (playerData->sinklist.defname != NULL &&
+      *playerData->sinklist.defname) {
     playerData->actualSink = playerData->sinklist.defname;
   } else {
     playerData->actualSink = VOL_DEFAULT_NAME;
@@ -2186,3 +2201,19 @@ playerGetAudioInterface (void)
 
   return bdjoptGetStr (OPT_M_PLAYER_INTFC);
 }
+
+#if 0
+static void
+playerDumpPrepQueue (playerdata_t *playerData, const char *tag)  /* TESTING */
+{
+  prepqueue_t       *pq = NULL;
+  int               count;
+
+  count = 0;
+  queueStartIterator (playerData->prepQueue, &playerData->prepiteridx);
+  while ((pq = queueIterateData (playerData->prepQueue, &playerData->prepiteridx)) != NULL) {
+    fprintf (stderr, "  pq: /%s/ %d %s\n", tag, count, pq->songname);
+    ++count;
+  }
+}
+#endif

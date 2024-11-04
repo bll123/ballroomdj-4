@@ -38,6 +38,8 @@ sortoptAlloc (void)
   char          *tokstr;
   char          dispstr [MAXPATHLEN];
   char          fname [MAXPATHLEN];
+  char          *dp;
+  char          *dend = dispstr + sizeof (dispstr);
 
   tagdefInit ();
 
@@ -59,17 +61,18 @@ sortoptAlloc (void)
     tvalue = mdstrdup (value);
 
     dispstr [0] = '\0';
+    dp = dispstr;
     p = strtok_r (tvalue, " ", &tokstr);
     while (p != NULL) {
       int tagidx;
 
       if (*dispstr) {
-        strlcat (dispstr, " / ", sizeof (dispstr));
+        dp = stpecpy (dp, dend, " / ");
       }
 
       tagidx = tagdefLookup (p);
       if (tagidx >= 0 && tagidx < TAG_KEY_MAX) {
-        strlcat (dispstr, tagdefs [tagidx].displayname, sizeof (dispstr));
+        dp = stpecpy (dp, dend, tagdefs [tagidx].displayname);
       }
 
       p = strtok_r (NULL, " ", &tokstr);

@@ -375,7 +375,8 @@ vlcInit (int vlcargc, char *vlcargv [], char *vlcopt [])
   vlcdata->argc = vlcargc;
   vlcdata->argv [vlcdata->argc] = NULL;
 
-  strncpy (vlcdata->version, libvlc_get_version (), sizeof (vlcdata->version));
+  stpecpy (vlcdata->version,
+      vlcdata->version + sizeof (vlcdata->version), libvlc_get_version ());
   tptr = strchr (vlcdata->version, ' ');
   if (tptr != NULL) {
     *tptr = '\0';

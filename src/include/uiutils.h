@@ -16,7 +16,7 @@ typedef struct {
 } uiutilsaccent_t;
 
 void uiutilsAddProfileColorDisplay (uiwcont_t *vbox, uiutilsaccent_t *accent);
-void uiutilsSetProfileColor (uiwcont_t *uiwidgetp);
+void uiutilsSetProfileColor (uiwcont_t *uiwidgetp, const char *oldcolor);
 const char * uiutilsGetCurrentFont (void);
 const char * uiutilsGetListingFont (void);
 int uiutilsValidatePlaylistName (uiwcont_t *entry, const char *label, void *udata);

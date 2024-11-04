@@ -112,6 +112,8 @@ orgAlloc (const char *orgpath)
   bool          haveorgkey;
   bool          isnumeric;
   bool          isoptional;
+  char          *rep;
+  char          *reend;
 
   if (orgpath == NULL) {
     return NULL;
@@ -124,7 +126,9 @@ orgAlloc (const char *orgpath)
   org->havetitle = false;
   org->orgparsed = slistAlloc ("orgpath", LIST_UNORDERED, orgutilInfoFree);
   /* do not anchor to the beginning -- it may be a full path */
-  strlcpy (org->regexstr, "", sizeof (org->regexstr));
+  *org->regexstr = '\0';
+  rep = org->regexstr;
+  reend = org->regexstr + sizeof (org->regexstr);
   *org->cachepath = '\0';
   org->rxdata = NULL;
   if (isWindows ()) {
@@ -206,35 +210,37 @@ orgAlloc (const char *orgpath)
 
     /* attach the regex for this group */
     if (isoptional) {
-      strlcat (org->regexstr, "(", sizeof (org->regexstr));
+      rep = stpecpy (rep, reend, "(");
     }
     if (*tfirst) {
       char *tmp;
       tmp = regexEscape (tfirst);
-      strlcat (org->regexstr, tmp, sizeof (org->regexstr));
-      mdfree (tmp);
+      rep = stpecpy (rep, reend, tmp);
+      mdextfree (tmp);
+      free (tmp);
     }
     if (isnumeric) {
-      strlcat (org->regexstr, "(\\d+)", sizeof (org->regexstr));
+      rep = stpecpy (rep, reend, "(\\d+)");
     } else {
       size_t    len;
 
       len = strlen (tlast);
       if (len > 0 && tlast [len-1] == '/') {
-        strlcat (org->regexstr, "([^/]+)", sizeof (org->regexstr));
+        rep = stpecpy (rep, reend, "([^/]+)");
       } else {
-        strlcat (org->regexstr, "([^/]+)", sizeof (org->regexstr));
+        rep = stpecpy (rep, reend, "([^/]+)");
       }
     }
     if (*tlast) {
       char  *tmp;
       tmp = regexEscape (tlast);
-      strlcat (org->regexstr, tmp, sizeof (org->regexstr));
-      mdfree (tmp);   // allocated by glib
+      rep = stpecpy (rep, reend, tmp);
+      mdextfree (tmp);   // allocated by glib
+      free (tmp);
     }
     if (isoptional) {
       /* optional group */
-      strlcat (org->regexstr, ")?", sizeof (org->regexstr));
+      rep = stpecpy (rep, reend, ")?");
     }
 
     ++grpcount;
@@ -243,7 +249,7 @@ orgAlloc (const char *orgpath)
 
   /* the extension; make it any alnum, just in case */
   /* though usually the extensions will be standard ascii */
-  strlcat (org->regexstr, "\\.[[:alnum:]]+$", sizeof (org->regexstr));
+  rep = stpecpy (rep, reend, "\\.[[:alnum:]]+$");
   logMsg (LOG_DBG, LOG_INFO, "orgpath: %s regex: %s", orgpath, org->regexstr);
   org->rx = regexInit (org->regexstr);
   mdfree (tvalue);
@@ -297,11 +303,12 @@ orgGetFromPath (org_t *org, const char *path, tagdefkey_t tagkey)
     if (org->rxdata != NULL) {
       regexGetFree (org->rxdata);
     }
-    strlcpy (org->cachepath, path, sizeof (org->cachepath));
+    logMsg (LOG_DBG, LOG_DBUPDATE, "org: path %s", path);
+    stpecpy (org->cachepath, org->cachepath + sizeof (org->cachepath), path);
     org->rxdata = regexGet (org->rx, path);
     org->rxlen = 0;
     while (org->rxdata [c] != NULL) {
-      // fprintf (stderr, "%d %s\n", c, org->rxdata [c]);
+      logMsg (LOG_DBG, LOG_DBUPDATE, "  org: idx: %d data: ~%s~", c, org->rxdata [c]);
       ++c;
     }
     org->rxlen = c;
@@ -349,24 +356,32 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
   const char      *tdata;
   const char      *datap;
   char            *retval;
-  char            tbuff [MAXPATHLEN];
+  char            newpath [MAXPATHLEN];
   char            gbuff [MAXPATHLEN];
   char            tmp [40];
   orginfo_t       *orginfo;
   int             grpnum = ORG_FIRST_GRP;
   bool            grpok = false;
   bool            doclean = false;
+  bool            havetitle = false;
   datafileconv_t  conv;
   pathinfo_t      *pi;
   const char      *fn;
   const char      *ext;
+  char            *np;
+  char            *nend = newpath + sizeof (newpath);
+  char            *gp;
+  char            *gend = gbuff + sizeof (gbuff);
 
   fn = songGetStr (song, TAG_URI);
   pi = pathInfo (fn);
   ext = pi->extension;
 
-  *tbuff = '\0';
+  *newpath = '\0';
   *gbuff = '\0';
+  gp = gbuff;
+  np = newpath;
+
   slistStartIterator (org->orgparsed, &iteridx);
   while ((p = slistIterateKey (org->orgparsed, &iteridx)) != NULL) {
     doclean = false;
@@ -375,9 +390,10 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
     orginfo = slistGetData (org->orgparsed, p);
     if (orginfo->groupnum != grpnum) {
       if (grpok) {
-        strlcat (tbuff, gbuff, sizeof (tbuff));
+        np = stpecpy (np, nend, gbuff);
       }
       *gbuff = '\0';
+      gp = gbuff;
       grpok = false;
       grpnum = orginfo->groupnum;
     }
@@ -427,6 +443,9 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
           }
         } else {
           datap = songGetStr (song, orginfo->tagkey);
+        }
+        if (orginfo->orgkey == ORG_TITLE && datap != NULL && *datap) {
+          havetitle = true;
         }
         doclean = true;
       }
@@ -497,22 +516,28 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
     if (datap != NULL && *datap) {
       char  sbuff [MAXPATHLEN];
 
-      strlcpy (sbuff, datap, sizeof (sbuff));
+      stpecpy (sbuff, sbuff + sizeof (sbuff), datap);
       if (doclean) {
         orgutilClean (datap, sbuff, sizeof (sbuff), org->chartype);
       }
-      strlcat (gbuff, sbuff, sizeof (gbuff));
+      gp = stpecpy (gp, gend, sbuff);
     }
   }
 
   if (grpok) {
-    strlcat (tbuff, gbuff, sizeof (tbuff));
+    np = stpecpy (np, nend, gbuff);
   }
 
-  strlcat (tbuff, ext, sizeof (tbuff));
+  /* if there is no title, restore the original name */
+  if (! havetitle) {
+    snprintf (gbuff, sizeof (gbuff), "%.*s", (int) pi->blen, pi->basename);
+    np = stpecpy (np, nend, gbuff);
+  }
+
+  np = stpecpy (np, nend, ext);
   pathInfoFree (pi);
 
-  retval = mdstrdup (tbuff);
+  retval = mdstrdup (newpath);
   return retval;
 }
 

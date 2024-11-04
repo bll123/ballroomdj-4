@@ -41,6 +41,7 @@
 #include "mdebug.h"
 #include "musicdb.h"
 #include "nlist.h"
+#include "osdirutil.h"
 #include "osprocess.h"
 #include "osutils.h"
 #include "pathbld.h"
@@ -95,6 +96,12 @@ enum {
   /* 2024-4-26 4.9.0 */
   /* fix any bad date-added in the new format */
   UPD_FIX_DB_DATE_ADDED_B,
+  /* 2024-9-2 4.12.1 */
+  /* fix any locale dirs that are not symlinks (usually macos) */
+  UPD_FIX_LOCALE,
+  /* 2024-10-21 4.13.0 */
+  /* fix windows fonts set to 'sans regular' */
+  UPD_FIX_WIN_FONT,
   UPD_MAX,
 };
 enum {
@@ -109,6 +116,8 @@ static datafilekey_t upddfkeys[] = {
   { "FIX_DB_DATE_ADDED", UPD_FIX_DB_DATE_ADDED, VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_DATE_ADD_B", UPD_FIX_DB_DATE_ADDED_B, VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_DISCNUM",   UPD_FIX_DB_DISCNUM, VALUE_NUM, NULL, DF_NORM },
+  { "FIX_LOCALE",       UPD_FIX_LOCALE,     VALUE_NUM, NULL, DF_NORM },
+  { "FIX_WIN_FONT",     UPD_FIX_WIN_FONT,   VALUE_NUM, NULL, DF_NORM },
 };
 enum {
   UPD_DF_COUNT = (sizeof (upddfkeys) / sizeof (datafilekey_t))
@@ -127,6 +136,7 @@ static void updaterCopyHTMLVersionCheck (const char *fn, const char *ext, int cu
 static void updaterCopyCSSVersionCheck (const char *fn, const char *ext, int currvers);
 static void updaterRenameProfileFile (const char *oldfn, const char *fn, const char *ext);
 static time_t updaterGetSongCreationTime (song_t *song);
+static void updaterFixLocales (void);
 
 int
 main (int argc, char *argv [])
@@ -148,6 +158,8 @@ main (int argc, char *argv [])
   nlist_t     *updlist = NULL;
   musicdb_t   *musicdb = NULL;
   uint32_t    flags;
+  const char  *targv [10];
+  int         targc = 0;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("updt");
@@ -202,26 +214,11 @@ main (int argc, char *argv [])
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "converted (from-file): %d", converted);
   }
 
-  /* Always remove the volreg.txt and flag files on an update.  */
-  /* This helps prevents any issues with the volume. */
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CACHE);
-  fileopDelete (tbuff);
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      VOLREG_FN, BDJ4_LOCK_EXT, PATHBLD_MP_DIR_CACHE);
-  fileopDelete (tbuff);
-  volregClearBDJ4Flag ();
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      VOLREG_BDJ3_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CONFIG);
-  fileopDelete (tbuff);
-
-  logMsg (LOG_INSTALL, LOG_INFO, "cleaned volreg/flag");
-
   /* always figure out where the home music dir is */
   /* this is used on new installs to set the music dir */
   /* also needed to check for the itunes dir every time */
   /* 4.3.3: the installer now sets the music dir, do not reset it */
-  strlcpy (homemusicdir, bdjoptGetStr (OPT_M_DIR_MUSIC), sizeof (homemusicdir));
+  stpecpy (homemusicdir, homemusicdir + sizeof (homemusicdir), bdjoptGetStr (OPT_M_DIR_MUSIC));
   logMsg (LOG_INSTALL, LOG_INFO, "homemusicdir: %s", homemusicdir);
 
   for (int i = UPD_FIRST; i < UPD_MAX; ++i) {
@@ -268,24 +265,24 @@ main (int argc, char *argv [])
 
       /* need some decent default fonts for windows and macos */
       if (isWindows () || isMacOS ()) {
-        uifont = "Arial 11";
+        uifont = "Arial Regular 12";
         if (isMacOS ()) {
           uifont = "Arial Regular 16";
         }
-        bdjoptSetStr (OPT_MP_UIFONT, uifont);
+        bdjoptSetStr (OPT_M_UI_FONT, uifont);
 
         /* windows does not have a narrow font pre-installed */
-        uifont = "Arial 11";
+        uifont = "Arial Regular 11";
         if (isMacOS ()) {
           uifont = "Arial Narrow Regular 15";
         }
-        bdjoptSetStr (OPT_MP_MQFONT, uifont);
+        bdjoptSetStr (OPT_M_MQ_FONT, uifont);
 
-        uifont = "Arial 10";
+        uifont = "Arial Regular 11";
         if (isMacOS ()) {
           uifont = "Arial Regular 15";
         }
-        bdjoptSetStr (OPT_MP_LISTING_FONT, uifont);
+        bdjoptSetStr (OPT_M_LISTING_FONT, uifont);
 
         bdjoptchanged = true;
       }
@@ -364,11 +361,11 @@ main (int argc, char *argv [])
     char        tbuff [MAXPATHLEN];
 
     /* 4.3.3 change name of macos theme  */
-    tval = bdjoptGetStr (OPT_MP_UI_THEME);
+    tval = bdjoptGetStr (OPT_M_UI_THEME);
     if (tval != NULL && strncmp (tval, pfx, len) == 0) {
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.3.3 : chg name of ui theme");
       snprintf (tbuff, sizeof (tbuff), "%s-solid", tval + len);
-      bdjoptSetStr (OPT_MP_UI_THEME, tbuff);
+      bdjoptSetStr (OPT_M_UI_THEME, tbuff);
       bdjoptchanged = true;
       snprintf (tbuff, sizeof (tbuff), "%s/.themes/macOS-Mojave-dark",
           sysvarsGetStr (SV_HOME));
@@ -415,13 +412,49 @@ main (int argc, char *argv [])
     /* 4.11.0, on macos, Default, Emacs and Mac were not really themes */
     /* translate these to Adwaita */
     if (isMacOS ()) {
-      tval = bdjoptGetStr (OPT_MP_UI_THEME);
+      tval = bdjoptGetStr (OPT_M_UI_THEME);
       if (strcmp (tval, "Default") == 0 ||
           strcmp (tval, "Emacs") == 0 ||
           strcmp (tval, "Mac") == 0) {
-        bdjoptSetStr (OPT_MP_UI_THEME, "Adwaita:dark");
+        bdjoptSetStr (OPT_M_UI_THEME, "Adwaita:dark");
         bdjoptchanged = true;
       }
+    }
+  }
+
+  if (statusflags [UPD_FIX_WIN_FONT] == UPD_NOT_DONE) {
+    /* 4.13.0 fix windows 'sans regular' fonts */
+    /* i don't know if this is necessary, I saw the installation use */
+    /* sans regular once, don't know why. could not duplicate. */
+    if (isWindows ()) {
+      const char    *font;
+      char          nfont [200];
+
+      /* 01234567890123456 */
+      /* Sans Regular 11 */
+
+      font = bdjoptGetStr (OPT_M_UI_FONT);
+      if (strstr (font, "Sans Regular") != NULL && strlen (font) >= 14) {
+        snprintf (nfont, sizeof (nfont), "Arial Regular %s", font + 13);
+        bdjoptSetStr (OPT_M_UI_FONT, nfont);
+        bdjoptchanged = true;
+      }
+
+      font = bdjoptGetStr (OPT_M_MQ_FONT);
+      if (strstr (font, "Sans Regular") != NULL && strlen (font) >= 14) {
+        snprintf (nfont, sizeof (nfont), "Arial Regular %s", font + 13);
+        bdjoptSetStr (OPT_M_MQ_FONT, nfont);
+        bdjoptchanged = true;
+      }
+
+      font = bdjoptGetStr (OPT_M_LISTING_FONT);
+      if (strstr (font, "Sans Regular") != NULL && strlen (font) >= 14) {
+        snprintf (nfont, sizeof (nfont), "Arial Regular %s", font + 13);
+        bdjoptSetStr (OPT_M_LISTING_FONT, nfont);
+        bdjoptchanged = true;
+      }
+
+      nlistSetNum (updlist, UPD_FIX_WIN_FONT, UPD_COMPLETE);
     }
   }
 
@@ -476,8 +509,8 @@ main (int argc, char *argv [])
   {
     /* 4.1.0 2023-1-5 audioadjust.txt */
     updaterCopyIfNotPresent (AUDIOADJ_FN, BDJ4_CONFIG_EXT, NULL);
-    /* 4.3.0.4 2023-4-4 (version number bump) audioadjust.txt */
-    updaterCopyVersionCheck (AUDIOADJ_FN, BDJ4_CONFIG_EXT, 4);
+    /* 4.12.1 2024-9-1 (version number bump) audioadjust.txt */
+    updaterCopyVersionCheck (AUDIOADJ_FN, BDJ4_CONFIG_EXT, 5);
   }
 
   {
@@ -525,6 +558,11 @@ main (int argc, char *argv [])
     updaterCopyVersionCheck (SORTOPT_FN, BDJ4_CONFIG_EXT, 3);
   }
 
+  {
+    /* 4.12.1 2024-9-12 new file bdjuri.txt */
+    updaterCopyIfNotPresent ("bdjuri", BDJ4_CONFIG_EXT, NULL);
+  }
+
   /* The datafiles must be loaded for the MPM update process */
 
   if (bdjvarsdfloadInit () < 0) {
@@ -553,6 +591,11 @@ main (int argc, char *argv [])
       }
       pathbldMakePath (tbuff, sizeof (tbuff), "bdjconfig", BDJ4_CONFIG_EXT,
           PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+      if (! fileopFileExists (tbuff)) {
+        bdjoptDeleteProfile ();
+      }
+      pathbldMakePath (tbuff, sizeof (tbuff), "bdjconfig", BDJ4_CONFIG_EXT,
+          PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
       if (! fileopFileExists (tbuff)) {
         bdjoptDeleteProfile ();
       }
@@ -625,6 +668,11 @@ main (int argc, char *argv [])
     /* 4.10.1 2024-5-20. Rename to ds-currsong.txt */
     updaterRenameProfileFile ("ds-player", "ds-currsong", BDJ4_CONFIG_EXT);
     updaterCopyProfileIfNotPresent ("ds-currsong", BDJ4_CONFIG_EXT, UPD_NO_FORCE);
+  }
+
+  {
+    /* 4.11.7 2023-9-5 (version number bump) audioadjust.txt */
+    updaterCopyVersionCheck (AUDIOADJ_FN, BDJ4_CONFIG_EXT, 5);
   }
 
   /* now re-load the data files */
@@ -841,11 +889,35 @@ main (int argc, char *argv [])
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-discnum: %" PRId32, counters [UPD_FIX_DB_DISCNUM]);
   }
 
+  if (statusflags [UPD_FIX_LOCALE] == UPD_NOT_DONE) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.12.1 : check and fix locale dirs");
+    updaterFixLocales ();
+    nlistSetNum (updlist, UPD_FIX_LOCALE, UPD_COMPLETE);
+  }
+
   datafileSave (df, NULL, updlist, DF_NO_OFFSET, datafileDistVersion (df));
   datafileFree (df);
   if (updlistallocated) {
     nlistFree (updlist);
   }
+
+  /* clean up all volreg and tmp */
+
+  volregClearBDJ4Flag ();
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      VOLREG_BDJ3_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CONFIG);
+  fileopDelete (tbuff);
+
+  /* bdj4cleantmp will remove the volreg file and volreg lock and completely */
+  /* clean up the tmp directory */
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      "bdj4cleantmp", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_EXEC);
+  targv [targc++] = tbuff;
+  targv [targc++] = "--bdj4";
+  targv [targc++] = NULL;
+  osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
+
+  logMsg (LOG_INSTALL, LOG_INFO, "ran clean-tmp");
 
 finish:
   bdj4shutdown (ROUTE_NONE, NULL);
@@ -933,7 +1005,7 @@ updaterCleanFiles (void)
     if (*pattern == '\0') {
       continue;
     }
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "pattern: %s", pattern); //
+    // logMsg (LOG_INSTALL, LOG_IMPORTANT, "pattern: %s", pattern); //
 
     /* on any change of directory or flag, process what has been queued */
     if (strcmp (pattern, "::macosonly") == 0 ||
@@ -989,7 +1061,7 @@ updaterCleanFiles (void)
     }
 
     snprintf (fullpattern, sizeof (fullpattern), "%s/%s", basedir, pattern);
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "clean %s", fullpattern); //
+    // logMsg (LOG_INSTALL, LOG_IMPORTANT, "clean %s", fullpattern); //
     rx = regexInit (fullpattern);
     nlistSetData (cleanlist, count, rx);
     ++count;
@@ -1275,4 +1347,60 @@ updaterGetSongCreationTime (song_t *song)
   }
 
   return ctime;
+}
+
+
+static void
+updaterFixLocales (void)
+{
+  slist_t     *filelist;
+  slistidx_t  iteridx;
+  const char  *fn;
+  const char  *prevfn = NULL;
+  char        cwd [MAXPATHLEN];
+  char        edir [MAXPATHLEN];
+  bool        isbad = false;
+
+  if (isWindows ()) {
+    return;
+  }
+
+  osGetCurrentDir (cwd, sizeof (cwd));
+  pathbldMakePath (edir, sizeof (edir), "", "", PATHBLD_MP_DIR_MAIN);
+  osChangeDir (edir);
+
+  filelist = dirlistRecursiveDirList ("locale",
+      DIRLIST_FILES | DIRLIST_DIRS | DIRLIST_LINKS);
+  slistStartIterator (filelist, &iteridx);
+  while ((fn = slistIterateKey (filelist, &iteridx)) != NULL) {
+    size_t      len = 0;
+    bool        isdir = false;
+    bool        islink = false;
+
+    if (strstr (fn, "LC_MESSAGES") != NULL) {
+      continue;
+    }
+
+    isdir = fileopIsDirectory (fn);
+    islink = osIsLink (fn);
+    len = strlen (fn);
+
+    if (isbad && isdir && len > 9) {
+      diropDeleteDir (prevfn, DIROP_ALL);
+      /* skip 'locale/' */
+      osCreateLink (fn + 7, prevfn);
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "fix %s", prevfn);
+      isbad = false;
+    }
+
+    /* locale/XX = 9 chars */
+    if (isdir && ! islink && len == 9) {
+      prevfn = fn;
+      isbad = true;
+    }
+  }
+  slistFree (filelist);
+
+  osChangeDir (cwd);
+  return;
 }

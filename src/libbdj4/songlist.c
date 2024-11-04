@@ -265,7 +265,7 @@ songlistAlloc (const char *fname)
     snprintf (tfn, sizeof (tfn), "%.*s", (int) pi->blen, pi->basename);
     sl->fname = mdstrdup (tfn);
     pathInfoFree (pi);
-    strlcpy (tfn, fname, sizeof (tfn));
+    stpecpy (tfn, tfn + sizeof (tfn), fname);
   } else {
     sl->fname = mdstrdup (fname);
     pathbldMakePath (tfn, sizeof (tfn), fname,

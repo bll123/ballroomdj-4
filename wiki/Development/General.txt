@@ -69,6 +69,7 @@ it will be easier to add in new source types.
  Directory|Notes
  ---------|-----
  libuigtk3|gtk3 gui layer
+ libuimacos|macos gui layer
  libuinull|null gui layer
 
 ##### Applications
@@ -96,4 +97,4 @@ Only the marquee has ui linked in.
  utility|various utility programs used in testing
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-19 13:16:09; BDJ4 version 4.11.5)_
+<br>_(Updated 2024-10-02 16:02:00; BDJ4 version 4.12.1)_

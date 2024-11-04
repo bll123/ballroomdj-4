@@ -291,7 +291,7 @@ main (int argc, char *argv [])
 
   /* for the results display */
   *testsuite.sectionnum = '\0';
-  strlcpy (testsuite.sectionname, "Final", sizeof (testsuite.sectionname));
+  stpecpy (testsuite.sectionname, testsuite.sectionname + sizeof (testsuite.sectionname), "Final");
   state = "FAIL";
   rc = 1;
   if (testsuite.gresults.testfail == 0) {
@@ -802,8 +802,8 @@ tsScriptSection (testsuite_t *testsuite, const char *tcmd)
   char    *tstr = NULL;
 
   if (testsuite->processsection) {
-    strlcpy (testsuite->testnum, "", sizeof (testsuite->testnum));
-    strlcpy (testsuite->testname, "", sizeof (testsuite->testname));
+    *testsuite->testnum = '\0';
+    *testsuite->testname = '\0';
     printResults (testsuite, &testsuite->sresults);
     if (testsuite->runsection) {
       testsuite->processsection = false;
@@ -818,14 +818,14 @@ tsScriptSection (testsuite_t *testsuite, const char *tcmd)
     mdfree (tstr);
     return TS_BAD_COMMAND;
   }
-  strlcpy (testsuite->sectionnum, p, sizeof (testsuite->sectionnum));
+  stpecpy (testsuite->sectionnum, testsuite->sectionnum + sizeof (testsuite->sectionnum), p);
 
   p = strtok_r (NULL, " ", &tokstr);
   if (p == NULL) {
     mdfree (tstr);
     return TS_BAD_COMMAND;
   }
-  strlcpy (testsuite->sectionname, p, sizeof (testsuite->sectionname));
+  stpecpy (testsuite->sectionname, testsuite->sectionname + sizeof (testsuite->sectionname), p);
 
   clearResults (&testsuite->results);
   clearResults (&testsuite->sresults);
@@ -865,13 +865,13 @@ tsScriptTest (testsuite_t *testsuite, const char *tcmd)
     mdfree (tstr);
     return TS_BAD_COMMAND;
   }
-  strlcpy (testsuite->testnum, p, sizeof (testsuite->testnum));
+  stpecpy (testsuite->testnum, testsuite->testnum + sizeof (testsuite->testnum), p);
   p = strtok_r (NULL, " ", &tokstr);
   if (p == NULL) {
     mdfree (tstr);
     return TS_BAD_COMMAND;
   }
-  strlcpy (testsuite->testname, p, sizeof (testsuite->testname));
+  stpecpy (testsuite->testname, testsuite->testname + sizeof (testsuite->testname), p);
 
   clearResults (&testsuite->results);
   startResultTimer (&testsuite->results);
@@ -1427,6 +1427,8 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
   d = NULL;
 
   if (type == TS_TYPE_MSG && p != NULL) {
+    char    *td;
+
     if (strcmp (p, "stoptime") == 0) {
       time_t    stoptime;
 
@@ -1444,8 +1446,9 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
       p = tmp;
     }
 
-    d = regexReplaceLiteral (p, "~", MSG_ARGS_RS_STR);
-    d = regexReplaceLiteral (d, "%HISTQ%", testsuite->histqueue);
+    td = regexReplaceLiteral (p, "~", MSG_ARGS_RS_STR);
+    d = regexReplaceLiteral (td, "%HISTQ%", testsuite->histqueue);
+    dataFree (td);
   }
   if (type == TS_TYPE_GET) {
     testsuite->waitRoute = route;

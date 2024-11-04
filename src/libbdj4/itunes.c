@@ -273,6 +273,7 @@ itunesSaveFields (itunes_t *itunes)
 
   datafileSave (itunes->fieldsdf, NULL, newlist, DF_NO_OFFSET,
       datafileDistVersion (itunes->fieldsdf));
+  slistFree (newlist);
 }
 
 void
@@ -675,7 +676,7 @@ itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
       logMsg (LOG_DBG, LOG_ITUNES, "pl: skip");
       skip = true;
     } else if (strcmp (key, "Name") == 0) {
-      strlcpy (keepname, val, sizeof (keepname));
+      stpecpy (keepname, keepname + sizeof (keepname), val);
       logMsg (LOG_DBG, LOG_ITUNES, "pl-name: %s", keepname);
     } else if (strcmp (key, "Track ID") == 0) {
       slist_t   *entry;
@@ -739,7 +740,7 @@ itunesParseXPath (xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr,
           slistSetStr (rawdata, lastkey, "0");
           // fprintf (stderr, "  0: %s 0\n", lastkey);
         }
-        strlcpy (lastkey, (const char *) val, sizeof (lastkey));
+        stpecpy (lastkey, lastkey + sizeof (lastkey), (const char *) val);
         valset = false;
       }
       if (strcmp ((const char *) cur->name, "integer") == 0 ||

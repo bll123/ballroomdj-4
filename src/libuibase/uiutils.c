@@ -43,7 +43,7 @@ uiutilsAddProfileColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
 
   cbox = uiCreateHorizBox ();
   uiWidgetSetSizeRequest (cbox, PROFILE_BOX_SZ, PROFILE_BOX_SZ);
-  uiutilsSetProfileColor (cbox);
+  uiutilsSetProfileColor (cbox, NULL);
   uiBoxPackEnd (hbox, cbox);
   uiWidgetAlignHorizCenter (cbox);
   uiWidgetAlignVertCenter (cbox);
@@ -56,7 +56,7 @@ uiutilsAddProfileColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
 }
 
 void
-uiutilsSetProfileColor (uiwcont_t *uiwidgetp)
+uiutilsSetProfileColor (uiwcont_t *uiwidgetp, const char *oldcolor)
 {
   char        classnm [100];
   char        bclassnm [100];
@@ -65,6 +65,11 @@ uiutilsSetProfileColor (uiwcont_t *uiwidgetp)
   tcolor = bdjoptGetStr (OPT_P_UI_PROFILE_COL);
   if (tcolor == NULL || ! *tcolor) {
     tcolor = "#ffa600";
+  }
+
+  if (oldcolor != NULL) {
+    snprintf (classnm, sizeof (classnm), "profcol%s", oldcolor + 1);
+    uiWidgetRemoveClass (uiwidgetp, classnm);
   }
 
   snprintf (classnm, sizeof (classnm), "profcol%s", tcolor + 1);
@@ -80,7 +85,7 @@ uiutilsGetCurrentFont (void)
 {
   const char  *tstr;
 
-  tstr = bdjoptGetStr (OPT_MP_UIFONT);
+  tstr = bdjoptGetStr (OPT_M_UI_FONT);
   if (tstr == NULL || ! *tstr) {
     tstr = sysvarsGetStr (SV_FONT_DEFAULT);
   }
@@ -92,9 +97,9 @@ uiutilsGetListingFont (void)
 {
   const char  *tstr;
 
-  tstr = bdjoptGetStr (OPT_MP_LISTING_FONT);
+  tstr = bdjoptGetStr (OPT_M_LISTING_FONT);
   if (tstr == NULL || ! *tstr) {
-    tstr = bdjoptGetStr (OPT_MP_UIFONT);
+    tstr = bdjoptGetStr (OPT_M_UI_FONT);
     if (tstr == NULL || ! *tstr) {
       tstr = sysvarsGetStr (SV_FONT_DEFAULT);
     }
@@ -154,7 +159,7 @@ uiutilsNewFontSize (char *buff, size_t sz, const char *font, const char *style, 
   char        fontname [200];
   size_t      i;
 
-  strlcpy (fontname, font, sizeof (fontname));
+  stpecpy (fontname, fontname + sizeof (fontname), font);
 
   i = strlen (fontname) - 1;
   while (i != 0 && (isdigit (fontname [i]) || isspace (fontname [i]))) {

@@ -1,0 +1,37 @@
+# config-uri
+# 2024-9-12
+# version 1
+version
+..1
+DOWNLOAD_HOST
+..https://sourceforge.net
+DOWNLOAD_URI
+../projects/ballroomdj4/files
+FORUM_HOST
+..https://ballroomdj.org
+FORUM_URI
+../forum/index.php
+HOMEPAGE_URI
+..https://ballroomdj4.sourceforge.io
+MOBMQ_HOST
+..https://ballroomdj.org
+MOBMQ_HTML_URI
+../bdj4marquee.html
+MOBMQ_PHP_URI
+../bdj4marquee.php
+SUPPORT_HOST
+..https://ballroomdj.org
+SUPPORT_URI
+../bdj4support.php
+TICKET_HOST
+..https://sourceforge.net
+TICKET_URI
+../p/ballroomdj4/tickets/
+VERSION_HOST
+..https://ballroomdj4.sourceforge.io
+VERSION_URI
+../bdj4version.txt
+WIKI_HOST
+..https://sourceforge.net
+WIKI_URI
+../p/ballroomdj4/wiki/Home

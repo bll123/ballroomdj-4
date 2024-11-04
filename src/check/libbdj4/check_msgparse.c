@@ -56,17 +56,20 @@ START_TEST(msgparse_mq_data)
   mp_musicqupdate_t   *mpmqu = NULL;
   nlist_t             *list;
   mp_musicqupditem_t  *mpmqitem = NULL;
+  char                *p = tbuff;
+  char                *end = tbuff + sizeof (tbuff);
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- msgparse_mq_data");
   mdebugSubTag ("msgparse_mq_data");
 
   snprintf (tbuff, sizeof (tbuff), "6%c2761800%c77%c",
       MSG_ARGS_RS, MSG_ARGS_RS, MSG_ARGS_RS);
+  p = tbuff + strlen (tbuff);
   for (int i = 0; i < titemsz; ++i) {
     snprintf (tmp, sizeof (tmp), "%d%c%d%c%d%c%d%c",
       mptestdata [i].didx, MSG_ARGS_RS, mptestdata [i].uidx, MSG_ARGS_RS,
       mptestdata [i].dbidx, MSG_ARGS_RS, mptestdata [i].pind, MSG_ARGS_RS);
-    strlcat (tbuff, tmp, sizeof (tbuff));
+    p = stpecpy (p, end, tmp);
   }
   mpmqu = msgparseMusicQueueData (tbuff);
   ck_assert_ptr_nonnull (mpmqu);

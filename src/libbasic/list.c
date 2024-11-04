@@ -355,16 +355,6 @@ listIterateValueNum (keytype_t keytype, list_t *list, listidx_t *iteridx)
 }
 
 listidx_t
-listIterateGetIdx (keytype_t keytype, list_t *list, listidx_t *iteridx)
-{
-  if (! listCheckIfValid (list, keytype)) {
-    return LIST_LOC_INVALID;
-  }
-
-  return *iteridx;
-}
-
-listidx_t
 listGetIdxNumKey (keytype_t keytype, list_t *list, listidx_t idx)
 {
   listkeylookup_t key;

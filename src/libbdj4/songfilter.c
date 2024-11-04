@@ -387,6 +387,7 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
   char        sortkey [1024];
   song_t      *song;
   pltype_t    pltype = PLTYPE_NONE;
+  mstime_t    sftimer;
 
   logProcBegin ();
 
@@ -399,6 +400,7 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
     return 0;
   }
 
+  mstimestart (&sftimer);
   slistFree (sf->sortList);
   sf->sortList = NULL;
   nlistFree (sf->indexList);
@@ -463,6 +465,8 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
 
   slistSort (sf->sortList);
   nlistSort (sf->indexList);
+  logMsg (LOG_DBG, LOG_IMPORTANT, "sf-process: %" PRId64 " ms %s",
+      (int64_t) mstimeend (&sftimer), sf->sortselection);
 
   logProcEnd ("");
   return nlistGetCount (sf->indexList);
@@ -867,7 +871,7 @@ songfilterCheckStr (const char *str, char *searchstr)
     return found;
   }
 
-  strlcpy (tbuff, str, sizeof (tbuff));
+  stpecpy (tbuff, tbuff + sizeof (tbuff), str);
   istringToLower (tbuff);
   if (strstr (tbuff, searchstr) != NULL) {
     found = true;
@@ -884,9 +888,12 @@ songfilterMakeSortKey (songfilter_t *sf,
   int         tagkey;
   char        tbuff [100];
   nlistidx_t  iteridx;
+  char        *skp;
+  char        *skend = sortkey + sz;
 
 
   sortkey [0] = '\0';
+  skp = sortkey;
   if (song == NULL) {
     return;
   }
@@ -908,7 +915,7 @@ songfilterMakeSortKey (songfilter_t *sf,
         danceStr = "";
       }
       snprintf (tbuff, sizeof (tbuff), "/%s", danceStr);
-      strlcat (sortkey, tbuff, sz);
+      skp = stpecpy (skp, skend, tbuff);
     } else if (tagkey == TAG_DANCELEVEL ||
         tagkey == TAG_DANCERATING ||
         tagkey == TAG_GENRE) {
@@ -919,7 +926,7 @@ songfilterMakeSortKey (songfilter_t *sf,
         idx = 0;
       }
       snprintf (tbuff, sizeof (tbuff), "/%02d", idx);
-      strlcat (sortkey, tbuff, sz);
+      skp = stpecpy (skp, skend, tbuff);
     } else if (tagkey == TAG_LAST_UPDATED || tagkey == TAG_DBADDDATE) {
       size_t    tval;
 
@@ -928,7 +935,7 @@ songfilterMakeSortKey (songfilter_t *sf,
       /* reverse sort */
       tval = ~tval;
       snprintf (tbuff, sizeof (tbuff), "/%10zx", tval);
-      strlcat (sortkey, tbuff, sz);
+      skp = stpecpy (skp, skend, tbuff);
     } else if (tagkey == TAG_TRACKNUMBER) {
       dbidx_t   tval;
 
@@ -937,14 +944,14 @@ songfilterMakeSortKey (songfilter_t *sf,
         tval = 1;
       }
       snprintf (tbuff, sizeof (tbuff), "/%03d", tval);
-      strlcat (sortkey, tbuff, sz);
+      skp = stpecpy (skp, skend, tbuff);
 
       tval = songGetNum (song, TAG_TRACKNUMBER);
       if (tval == LIST_VALUE_INVALID) {
         tval = 1;
       }
       snprintf (tbuff, sizeof (tbuff), "/%04d", tval);
-      strlcat (sortkey, tbuff, sz);
+      skp = stpecpy (skp, skend, tbuff);
     } else if (tagkey == TAG_BPM) {
       int     tval;
 
@@ -953,7 +960,7 @@ songfilterMakeSortKey (songfilter_t *sf,
         tval = 1;
       }
       snprintf (tbuff, sizeof (tbuff), "/%03d", tval);
-      strlcat (sortkey, tbuff, sz);
+      skp = stpecpy (skp, skend, tbuff);
     } else if (tagdefs [tagkey].valueType == VALUE_STR) {
       const char  *tsortstr = NULL;
       const char  *tstr;
@@ -1000,7 +1007,7 @@ songfilterMakeSortKey (songfilter_t *sf,
         tstr = "";
       }
       snprintf (tbuff, sizeof (tbuff), "/%s", tstr);
-      strlcat (sortkey, tbuff, sz);
+      skp = stpecpy (skp, skend, tbuff);
     }
   }
 }

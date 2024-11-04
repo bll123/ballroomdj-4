@@ -197,7 +197,9 @@ uiqeDialog (uiqe_t *uiqe, dbidx_t dbidx, double speed, double vol, int basevol)
 
   uiqe->dbidx = dbidx;
 
-  if (dbidx < 0 || dbidx >= dbCount (uiqe->musicdb)) {
+  /* do not check for the dbidx being greater than the max. */
+  /* the dbidx could be pointing to an external request. */
+  if (dbidx < 0) {
     logProcEnd ("bad-dbidx");
     return UICB_STOP;
   }

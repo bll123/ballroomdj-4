@@ -53,7 +53,6 @@ enum {
   MQ_CB_EXIT,
   MQ_CB_DBL_CLICK,
   MQ_CB_WINSTATE,
-  MQ_CB_WINMAP,
   MQ_CB_MAX,
 };
 
@@ -101,8 +100,8 @@ typedef struct {
   int             lastHeight;
   int             priorSize;
   int             unMaximize;
-  bool            isMaximized : 1;
-  bool            isIconified : 1;
+  bool            ismaximized : 1;
+  bool            isiconified : 1;
   bool            userDoubleClicked : 1;
   bool            mqIconifyAction : 1;
   bool            setPrior : 1;
@@ -133,9 +132,7 @@ static bool marqueeToggleFullscreen (void *udata);
 static void marqueeSetMaximized (marquee_t *marquee);
 static void marqueeSetNotMaximized (marquee_t *marquee);
 static void marqueeSetNotMaximizeFinish (marquee_t *marquee);
-static void marqueeSendMaximizeState (marquee_t *marquee);
 static bool marqueeWinState (void *udata, int isicon, int ismax);
-static bool marqueeWinMapped (void *udata);
 static void marqueeSaveWindowPosition (marquee_t *);
 static void marqueeMoveWindow (marquee_t *);
 static void marqueeSigHandler (int sig);
@@ -147,6 +144,7 @@ static void marqueeRecover (marquee_t *marquee);
 static void marqueeDisplayCompletion (marquee_t *marquee);
 static void marqueeSendFontSizes (marquee_t *marquee);
 static void marqueeClearInfoDisplay (marquee_t *marquee);
+static void marqueeSendStatus (marquee_t *marquee);
 
 static int gKillReceived = 0;
 
@@ -181,9 +179,9 @@ main (int argc, char *argv[])
   marquee.marqueeLabs = NULL;
   marquee.lastHeight = 0;
   marquee.priorSize = 0;
-  marquee.isMaximized = false;
+  marquee.ismaximized = false;
   marquee.unMaximize = 0;
-  marquee.isIconified = false;
+  marquee.isiconified = false;
   marquee.userDoubleClicked = false;
   marquee.mqIconifyAction = false;
   marquee.setPrior = false;
@@ -265,7 +263,7 @@ marqueeStoppingCallback (void *udata, programstate_t programState)
 
   logProcBegin ();
 
-  if (marquee->isMaximized) {
+  if (marquee->ismaximized) {
     marqueeSetNotMaximized (marquee);
     logProcEnd ("is-maximized-a");
     return STATE_NOT_FINISH;
@@ -279,7 +277,7 @@ marqueeStoppingCallback (void *udata, programstate_t programState)
   uiWindowGetSize (marquee->wcont [MQ_W_WINDOW], &x, &y);
   nlistSetNum (marquee->options, MQ_SIZE_X, x);
   nlistSetNum (marquee->options, MQ_SIZE_Y, y);
-  if (! marquee->isIconified) {
+  if (! marquee->isiconified) {
     marqueeSaveWindowPosition (marquee);
   }
 
@@ -365,9 +363,6 @@ marqueeBuildUI (marquee_t *marquee)
   marquee->callbacks [MQ_CB_WINSTATE] = callbackInitII (
       marqueeWinState, marquee);
   uiWindowSetWinStateCallback (marquee->wcont [MQ_W_WINDOW], marquee->callbacks [MQ_CB_WINSTATE]);
-
-  marquee->callbacks [MQ_CB_WINMAP] = callbackInit (marqueeWinMapped, marquee, NULL);
-  uiWindowSetMappedCallback (marquee->wcont [MQ_W_WINDOW], marquee->callbacks [MQ_CB_WINMAP]);
 
   uiWindowNoDim (marquee->wcont [MQ_W_WINDOW]);
 
@@ -457,7 +452,7 @@ marqueeBuildUI (marquee_t *marquee)
 
   if (marquee->hideonstart) {
     uiWindowIconify (marquee->wcont [MQ_W_WINDOW]);
-    marquee->isIconified = true;
+    marquee->isiconified = true;
   }
 
   if (! marquee->mqShowInfo) {
@@ -557,6 +552,7 @@ marqueeHandshakeCallback (void *udata, programstate_t programState)
 
   if (connHaveHandshake (marquee->conn, ROUTE_MAIN) &&
       connHaveHandshake (marquee->conn, ROUTE_PLAYERUI)) {
+    marqueeSendStatus (marquee);
     marqueeSendFontSizes (marquee);
     rc = STATE_FINISHED;
   }
@@ -570,12 +566,8 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
   marquee_t   *marquee = udata;
-  char        *targs = NULL;
 
   logProcBegin ();
-  if (args != NULL) {
-    targs = mdstrdup (args);
-  }
 
   if (msg != MSG_MARQUEE_TIMER) {
     logMsg (LOG_DBG, LOG_MSGS, "rcvd: from:%d/%s route:%d/%s msg:%d/%s args:%s",
@@ -597,19 +589,31 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_MARQUEE_DATA: {
-          marqueePopulate (marquee, targs);
+          marqueePopulate (marquee, args);
           break;
         }
         case MSG_MARQUEE_TIMER: {
-          marqueeSetTimer (marquee, targs);
+          marqueeSetTimer (marquee, args);
           break;
         }
         case MSG_MARQUEE_SET_FONT_SZ: {
-          marqueeSetFont (marquee, atoi (targs));
+          marqueeSetFont (marquee, atoi (args));
           break;
         }
         case MSG_WINDOW_FIND: {
           marqueeRecover (marquee);
+          break;
+        }
+        case MSG_MARQUEE_SHOW: {
+          if (marquee->isiconified) {
+            uiWindowDeIconify (marquee->wcont [MQ_W_WINDOW]);
+          }
+          break;
+        }
+        case MSG_MARQUEE_HIDE: {
+          if (! marquee->isiconified) {
+            uiWindowIconify (marquee->wcont [MQ_W_WINDOW]);
+          }
           break;
         }
         case MSG_FINISHED: {
@@ -626,8 +630,6 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       break;
     }
   }
-
-  dataFree (targs);
 
   logProcEnd ("");
 
@@ -647,13 +649,13 @@ marqueeCloseCallback (void *udata)
   logProcBegin ();
 
   if (progstateCurrState (marquee->progstate) <= STATE_RUNNING) {
-    if (! marquee->isMaximized && ! marquee->isIconified) {
+    if (! marquee->ismaximized && ! marquee->isiconified) {
       marqueeSaveWindowPosition (marquee);
     }
 
     marquee->mqIconifyAction = true;
     uiWindowIconify (marquee->wcont [MQ_W_WINDOW]);
-    marquee->isIconified = true;
+    marquee->isiconified = true;
     logProcEnd ("user-close-win");
     return UICB_STOP;
   }
@@ -668,19 +670,20 @@ marqueeToggleFullscreen (void *udata)
   marquee_t   *marquee = udata;
 
   marquee->userDoubleClicked = true;
-  if (marquee->isMaximized) {
+  if (marquee->ismaximized) {
     marqueeSetNotMaximized (marquee);
   } else {
     marqueeSetMaximized (marquee);
   }
 
+  marqueeSendStatus (marquee);
   return UICB_CONT;
 }
 
 static void
 marqueeSetMaximized (marquee_t *marquee)
 {
-  if (marquee->isMaximized) {
+  if (marquee->ismaximized) {
     return;
   }
 
@@ -688,14 +691,14 @@ marqueeSetMaximized (marquee_t *marquee)
     return;
   }
 
-  marquee->isMaximized = true;
+  marquee->ismaximized = true;
   if (! isWindows()) {
     /* decorations are not recovered after disabling on windows */
     uiWindowDisableDecorations (marquee->wcont [MQ_W_WINDOW]);
   }
   uiWindowMaximize (marquee->wcont [MQ_W_WINDOW]);
   marqueeSetFont (marquee, nlistGetNum (marquee->options, MQ_FONT_SZ_FS));
-  marqueeSendMaximizeState (marquee);
+  marqueeSendStatus (marquee);
 }
 
 static void
@@ -703,12 +706,12 @@ marqueeSetNotMaximized (marquee_t *marquee)
 {
   logProcBegin ();
 
-  if (! marquee->isMaximized) {
+  if (! marquee->ismaximized) {
     logProcEnd ("not-max");
     return;
   }
 
-  marquee->isMaximized = false;
+  marquee->ismaximized = false;
   marqueeSetFont (marquee, nlistGetNum (marquee->options, MQ_FONT_SZ));
   marquee->unMaximize = MARQUEE_UNMAX_WAIT_COUNT;
   logProcEnd ("");
@@ -727,45 +730,34 @@ marqueeSetNotMaximizeFinish (marquee_t *marquee)
     /* does not work on windows platforms */
     uiWindowEnableDecorations (marquee->wcont [MQ_W_WINDOW]);
   }
-  marqueeSendMaximizeState (marquee);
+  marqueeSendStatus (marquee);
   logProcEnd ("");
 }
 
-static void
-marqueeSendMaximizeState (marquee_t *marquee)
-{
-  char        tbuff [40];
-
-  snprintf (tbuff, sizeof (tbuff), "%d", marquee->isMaximized);
-  connSendMessage (marquee->conn, ROUTE_PLAYERUI, MSG_MARQUEE_IS_MAX, tbuff);
-}
-
 static bool
-marqueeWinState (void *udata, int isIconified, int isMaximized)
+marqueeWinState (void *udata, int isiconified, int ismaximized)
 {
   marquee_t         *marquee = udata;
 
   logProcBegin ();
 
-  if (isIconified >= 0) {
+  if (isiconified >= 0) {
     if (marquee->mqIconifyAction) {
       marquee->mqIconifyAction = false;
+      marqueeSendStatus (marquee);
       logProcEnd ("close-button");
       return UICB_CONT;
     }
 
-    if (isIconified) {
+    if (isiconified) {
       marqueeSaveWindowPosition (marquee);
-      marquee->isIconified = true;
+      marquee->isiconified = true;
     } else {
-      marquee->isIconified = false;
-//      marqueeMoveWindow (marquee);
+      marquee->isiconified = false;
     }
-    logProcEnd ("iconified/deiconified");
-    return UICB_CONT;
   }
 
-  if (isMaximized >= 0) {
+  if (ismaximized >= 0) {
     /* if the user double-clicked, this is a known maximize change and */
     /* no processing needs to be done here */
     if (marquee->userDoubleClicked) {
@@ -775,28 +767,12 @@ marqueeWinState (void *udata, int isIconified, int isMaximized)
     }
 
     /* user selected the maximize button */
-    if (isMaximized) {
+    if (ismaximized) {
       marqueeSetMaximized (marquee);
     }
   }
 
-  logProcEnd ("");
-  return UICB_CONT;
-}
-
-static bool
-marqueeWinMapped (void *udata)
-{
-  marquee_t         *marquee = udata;
-
-  logProcBegin ();
-
-// is this process needed?
-// need to check on windows and mac os.
-  if (! marquee->isMaximized && ! marquee->isIconified) {
-//    marqueeMoveWindow (marquee);
-  }
-
+  marqueeSendStatus (marquee);
   logProcEnd ("");
   return UICB_CONT;
 }
@@ -969,16 +945,16 @@ marqueeSetFont (marquee_t *marquee, int sz)
 
   logProcBegin ();
 
-  f = bdjoptGetStr (OPT_MP_MQFONT);
+  f = bdjoptGetStr (OPT_M_MQ_FONT);
   if (f == NULL) {
-    f = bdjoptGetStr (OPT_MP_UIFONT);
+    f = bdjoptGetStr (OPT_M_UI_FONT);
   }
   if (f == NULL) {
     f = "";
   }
   uiutilsNewFontSize (newfont, sizeof (newfont), f, "bold", sz);
 
-  if (marquee->isMaximized) {
+  if (marquee->ismaximized) {
     nlistSetNum (marquee->options, MQ_FONT_SZ_FS, sz);
   } else {
     nlistSetNum (marquee->options, MQ_FONT_SZ, sz);
@@ -1011,7 +987,7 @@ marqueeRecover (marquee_t *marquee)
   nlistSetNum (marquee->options, MQ_POSITION_X, 200);
   nlistSetNum (marquee->options, MQ_POSITION_Y, 200);
 
-  if (marquee->isIconified) {
+  if (marquee->isiconified) {
     uiWindowDeIconify (marquee->wcont [MQ_W_WINDOW]);
   }
   nlistSetNum (marquee->options, MQ_FONT_SZ, 36);
@@ -1025,6 +1001,7 @@ marqueeRecover (marquee_t *marquee)
   uiWindowPresent (marquee->wcont [MQ_W_WINDOW]);
   marqueeSaveWindowPosition (marquee);
   marqueeSendFontSizes (marquee);
+  marqueeSendStatus (marquee);
 }
 
 static void
@@ -1065,4 +1042,15 @@ marqueeClearInfoDisplay (marquee_t *marquee)
   for (int i = MQ_W_INFO_DISP_A; i <= MQ_W_INFO_DISP_E; ++i) {
     uiLabelSetText (marquee->wcont [i], "");
   }
+}
+
+static void
+marqueeSendStatus (marquee_t *marquee)
+{
+  char    tbuff [80];
+
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d",
+      marquee->isiconified, MSG_ARGS_RS, marquee->ismaximized);
+  connSendMessage (marquee->conn, ROUTE_PLAYERUI, MSG_MARQUEE_STATUS,
+      tbuff);
 }

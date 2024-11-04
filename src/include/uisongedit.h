@@ -61,6 +61,7 @@ void  uisongeditSetPlayButtonState (uisongedit_t *uisongedit, int active);
 void  uisongeditEditAllSetFields (uisongedit_t *uisongedit, int editflag);
 void  uisongeditClearChanged (uisongedit_t *uisongedit, int editallflag);
 bool  uisongeditEditAllApply (uisongedit_t *uisongedit);
+void  uisongeditSetSongStartEnd (uisongedit_t *uisongedit, int32_t sstart, int32_t send);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

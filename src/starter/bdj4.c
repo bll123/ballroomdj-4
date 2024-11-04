@@ -35,28 +35,30 @@ enum {
 int
 main (int argc, char * argv[])
 {
-  char      buff [MAXPATHLEN];
-  char      origcwd [MAXPATHLEN];
-  int       validargs = 0;
-  int       c = 0;
-  int       option_index = 0;
-  char      *prog;
-  bool      debugself = false;
-  bool      nodetach = false;
-  bool      wait = false;
-  bool      forcenodetach = false;
-  bool      forcewait = false;
-  bool      isinstaller = false;
-  int       flags;
-  const char *targv [BDJ4_LAUNCHER_MAX_ARGS];
-  int       targc;
-  bool      havetheme = false;
-  bool      havescale = false;
-  FILE      *fh = NULL;
-  int       rc;
+  char        buff [MAXPATHLEN];
+  char        origcwd [MAXPATHLEN];
+  int         validargs = 0;
+  int         c = 0;
+  int         option_index = 0;
+  char        *prog;
+  bool        debugself = false;
+  bool        nodetach = false;
+  bool        wait = false;
+  bool        forcenodetach = false;
+  bool        forcewait = false;
+  bool        isinstaller = false;
+  int         flags;
+  const char  *targv [BDJ4_LAUNCHER_MAX_ARGS];
+  int         targc;
+  bool        havetheme = false;
+  bool        havescale = false;
+  FILE        *fh = NULL;
+  int         rc;
   bdj4arg_t   *bdj4arg;
   const char  *targ;
   const char  *vlctag = "VLC";
+  char        *p;
+  char        *end;
 
   static struct option bdj_options [] = {
     { "aesed",          no_argument,        NULL,   30 },
@@ -459,15 +461,17 @@ main (int argc, char * argv[])
 
     path = getenv ("PATH");
     *npath = '\0';
+    p = npath;
+    end = npath + sz;
     if (isMacOS ()) {
-      strlcat (npath, "/opt/local/bin:", sz);
+      p = stpecpy (p, end, "/opt/local/bin:");
     }
-    strlcat (npath, path, sz);
+    p = stpecpy (p, end, path);
     snprintf (pbuff, sizeof (pbuff), "%s/../plocal/bin",
         sysvarsGetStr (SV_BDJ4_DIR_EXEC));
     pathRealPath (tbuff, pbuff, sizeof (tbuff));
-    strlcat (npath, ":", sz);
-    strlcat (npath, tbuff, sz);
+    p = stpecpy (p, end, ":");
+    p = stpecpy (p, end, tbuff);
     osSetEnv ("PATH", npath);
     mdfree (npath);
   }
@@ -502,7 +506,7 @@ main (int argc, char * argv[])
       /* vlc-4 has the library in ../Contents/Frameworks */
       /* note that 'tbuff' currently has the main path */
 
-      strlcpy (pbuff, tbuff, sizeof (pbuff));
+      stpecpy (pbuff, pbuff + sizeof (pbuff), tbuff);
 
       if (sysvarsGetNum (SVL_VLC_VERSION) == 3) {
         /* VLC 3 */
@@ -536,16 +540,18 @@ main (int argc, char * argv[])
     path = mdmalloc (sz);
 
     *path = '\0';
+    p = path;
+    end = path + sz;
 
-    strlcpy (pbuff, sysvarsGetStr (SV_BDJ4_DIR_EXEC), sz);
+    stpecpy (pbuff, pbuff + sz, sysvarsGetStr (SV_BDJ4_DIR_EXEC));
     pathDisplayPath (pbuff, sz);
-    strlcat (path, pbuff, sz);
-    strlcat (path, ";", sz);
+    p = stpecpy (p, end, pbuff);
+    p = stpecpy (p, end, ";");
 
     snprintf (pbuff, sz, "%s/../plocal/bin", sysvarsGetStr (SV_BDJ4_DIR_EXEC));
     pathRealPath (tbuff, pbuff, sz);
-    strlcat (path, tbuff, sz);
-    strlcat (path, ";", sz);
+    p = stpecpy (p, end, tbuff);
+    p = stpecpy (p, end, ";");
 
     if (debugself) {
       fprintf (stderr, "base path: %s\n", path);
@@ -553,14 +559,19 @@ main (int argc, char * argv[])
 
     /* do not use double quotes w/environment var */
     snprintf (tbuff, sz, "C:\\Program Files\\VideoLAN\\%s", vlctag);
-    strlcat (path, tbuff, sz);
-    strlcat (path, ";", sz);
-    strlcat (path, getenv ("PATH"), sz);
+    p = stpecpy (p, end, tbuff);
+    p = stpecpy (p, end, ";");
+    osGetEnv ("PATH", tbuff, sz);
+    if (debugself) {
+      fprintf (stderr, "sys path: %s\n", tbuff);
+    }
+    p = stpecpy (p, end, tbuff);
 
     osSetEnv ("PATH", path);
 
     if (debugself) {
-      fprintf (stderr, "final PATH=%s\n", getenv ("PATH"));
+      osGetEnv ("PATH", tbuff, sz);
+      fprintf (stderr, "final PATH=%s\n", tbuff);
     }
 
 #if BDJ4_UI_GTK3 || BDJ4_UI_GTK4

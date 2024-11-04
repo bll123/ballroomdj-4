@@ -44,6 +44,9 @@ main (int argc, char *argv [])
   pathbldMakePath (tbuff, sizeof (tbuff),
       VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CACHE);
   fileopDelete (tbuff);
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      VOLREG_FN, BDJ4_LOCK_EXT, PATHBLD_MP_DIR_CACHE);
+  fileopDelete (tbuff);
 
   cleantmpClean ();
 
