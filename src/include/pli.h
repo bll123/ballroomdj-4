@@ -36,6 +36,7 @@ enum {
   PLI_SUPPORT_SEEK    = (1 << 0),
   PLI_SUPPORT_SPEED   = (1 << 1),
   PLI_SUPPORT_DEVLIST = (1 << 2),
+  PLI_SUPPORT_XFADE   = (1 << 3),
 };
 
 enum {

@@ -161,6 +161,7 @@ typedef enum {
   OPT_Q_QUEUE_NAME,
   OPT_Q_SHOW_QUEUE_DANCE,
   OPT_Q_STOP_AT_TIME,
+  OPT_Q_XFADE,
 } bdjoptkey_t;
 
 enum {
