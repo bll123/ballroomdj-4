@@ -31,7 +31,7 @@
 #include "ui/uispinbox.h"
 
 typedef struct uispinbox {
-  int             sbtype;
+  sbtype_t        sbtype;
   const char      *label;
   callback_t      *convcb;
   int             curridx;
@@ -199,7 +199,7 @@ uiSpinboxTextSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb)
 }
 
 uiwcont_t *
-uiSpinboxTimeCreate (int sbtype, void *udata,
+uiSpinboxTimeCreate (sbtype_t sbtype, void *udata,
     const char *label, callback_t *convcb)
 {
   double      inca = 5000.0;

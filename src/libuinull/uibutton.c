@@ -30,53 +30,89 @@ uiCreateButton (callback_t *uicb, char *title, char *imagenm)
 void
 uiButtonFree (uiwcont_t *uiwidget)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-free")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiButtonSetImagePosRight (uiwcont_t *uiwidget)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-image-pos-r")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiButtonSetImageMarginTop (uiwcont_t *uiwidget, int margin)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-image-margin-top")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiButtonSetImageIcon (uiwcont_t *uiwidget, const char *nm)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-image-icon")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiButtonAlignLeft (uiwcont_t *uiwidget)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-align-left")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiButtonSetReliefNone (uiwcont_t *uiwidget)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-relief-none")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiButtonSetFlat (uiwcont_t *uiwidget)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-flat")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiButtonSetText (uiwcont_t *uiwidget, const char *txt)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-text")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-repeat")) {
+    return;
+  }
+
   return;
 }

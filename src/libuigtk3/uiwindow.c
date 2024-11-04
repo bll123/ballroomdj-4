@@ -301,6 +301,10 @@ uiCreateDialogWindow (uiwcont_t *parentwin,
   uiwcont_t *uiwindow;
   GtkWidget *window;
 
+  if (! uiwcontValid (parentwin, WCONT_T_WINDOW, "win-create-dialog-win")) {
+    return NULL;
+  }
+
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   if (attachment != NULL) {
     gtk_window_set_attached_to (GTK_WINDOW (window), attachment->uidata.widget);
@@ -412,7 +416,6 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-pack-in-win-win")) {
     return;
   }
-
   /* the type of the uiwidget is not known */
   if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;

@@ -33,10 +33,13 @@ uiPanedWindowCreateVert (void)
 void
 uiPanedWindowPackStart (uiwcont_t *panedwin, uiwcont_t *box)
 {
-  if (! uiwcontValid (panedwin, WCONT_T_PANED_WINDOW, "pw-pack-start")) {
+  if (! uiwcontValid (panedwin, WCONT_T_PANED_WINDOW, "pw-pack-start-pw")) {
     return;
   }
   if (box == NULL) {
+    return;
+  }
+  if (box->wbasetype != WCONT_T_BOX && box->wbasetype != WCONT_T_WINDOW) {
     return;
   }
 
@@ -52,8 +55,7 @@ uiPanedWindowPackEnd (uiwcont_t *panedwin, uiwcont_t *box)
   if (box == NULL) {
     return;
   }
-
-  if (panedwin->wtype != WCONT_T_PANED_WINDOW) {
+  if (box->wbasetype != WCONT_T_BOX && box->wbasetype != WCONT_T_WINDOW) {
     return;
   }
 

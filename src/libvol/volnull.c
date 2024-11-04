@@ -83,7 +83,7 @@ voliProcess (volaction_t action, const char *sinkname,
     int *vol, volsinklist_t *sinklist, void **udata)
 {
   volnull_t     *volnull = NULL;
-  int           usersink = -1;
+//  int           usersink = -1;
   int           defsink = -1;
 
   volnullInitSinkList ();
@@ -102,7 +102,7 @@ voliProcess (volaction_t action, const char *sinkname,
     }
     if (sinkname != NULL &&
         strcmp (gsinklist.sinklist [i].name, sinkname) == 0) {
-      usersink = i;
+//      usersink = i;
       break;
     }
   }

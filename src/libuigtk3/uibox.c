@@ -88,6 +88,7 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   if (uiwidget == NULL || uiwidget->uidata.packwidget == NULL) {
     return;
   }
+
   gtk_box_pack_end (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, TRUE, TRUE, 0);
   uiwidget->packed = true;
 }
