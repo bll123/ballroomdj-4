@@ -94,3 +94,12 @@ uiMenuClear (uiwcont_t *uiwidget)
 {
   return;
 }
+
+void
+uiMenuItemSetText (uiwcont_t *uiwidget, const char *txt)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_MENU_ITEM, "menu-item-set-text")) {
+    return;
+  }
+}
+

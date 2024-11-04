@@ -56,7 +56,7 @@ uiLabelAddClass (const char *classnm, const char *color)
 void
 uiLabelSetTooltip (uiwcont_t *uiwidget, const char *txt)
 {
-  ILabel *nstf;
+//  ILabel *nstf;
 
   if (! uiwcontValid (uiwidget, WCONT_T_LABEL, "label-set-tooltip")) {
     return;
@@ -66,7 +66,7 @@ uiLabelSetTooltip (uiwcont_t *uiwidget, const char *txt)
 // will probably be better to create a custom method and save the data
 // for that label and use the dynamic methods.
 // ### not working
-  nstf = uiwidget->uidata.widget;
+//  nstf = uiwidget->uidata.widget;
 //  [nstf addToolTip: [NSString stringWithUTF8String: txt]];
   return;
 }

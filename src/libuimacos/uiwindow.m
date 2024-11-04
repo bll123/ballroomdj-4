@@ -162,11 +162,16 @@ void
 uiWindowSetTitle (uiwcont_t *uiwindow, const char *title)
 {
   IWindow   *win = NULL;
-  NSString  *nstitle = [NSString stringWithUTF8String: title];
+  NSString  *nstitle = NULL;
 
   if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-set-title")) {
     return;
   }
+  if (title == NULL) {
+    return;
+  }
+
+  nstitle = [NSString stringWithUTF8String: title];
 
   win = uiwindow->uidata.widget;
   [win setTitle:nstitle];
@@ -176,84 +181,140 @@ uiWindowSetTitle (uiwcont_t *uiwindow, const char *title)
 void
 uiCloseWindow (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-close")) {
+    return;
+  }
+
   return;
 }
 
 bool
 uiWindowIsMaximized (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-is-max")) {
+    return false;
+  }
+
   return false;
 }
 
 void
 uiWindowIconify (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-iconify")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowDeIconify (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-deiconify")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowMaximize (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-maximize")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowUnMaximize (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-unmaximize")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowDisableDecorations (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-disable-dec")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowEnableDecorations (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-enable-dec")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowGetSize (uiwcont_t *uiwindow, int *x, int *y)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-get-sz")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowSetDefaultSize (uiwcont_t *uiwindow, int x, int y)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-set-dflt-sz")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowGetPosition (uiwcont_t *uiwindow, int *x, int *y, int *ws)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-get-pos")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowMove (uiwcont_t *uiwindow, int x, int y, int ws)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-move")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowMoveToCurrentWorkspace (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-move-curr-ws")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowNoFocusOnStartup (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-no-focus-startup")) {
+    return;
+  }
+
   return;
 }
 
@@ -266,6 +327,10 @@ uiCreateScrolledWindow (int minheight)
 void
 uiWindowSetPolicyExternal (uiwcont_t *uisw)
 {
+  if (! uiwcontValid (uisw, WCONT_T_WINDOW, "win-set-policy-ext")) {
+    return;
+  }
+
   return;
 }
 
@@ -273,11 +338,15 @@ uiwcont_t *
 uiCreateDialogWindow (uiwcont_t *parentwin,
     uiwcont_t *attachment, callback_t *uicb, const char *title)
 {
+  if (! uiwcontValid (parentwin, WCONT_T_WINDOW, "win-create-dialog-win")) {
+    return NULL;
+  }
+
   return NULL;
 }
 
 void
-uiWindowSetDoubleClickCallback (uiwcont_t *uiwidget, callback_t *uicb)
+uiWindowSetDoubleClickCallback (uiwcont_t *uiwindow, callback_t *uicb)
 {
   return;
 }
@@ -289,7 +358,7 @@ uiWindowSetWinStateCallback (uiwcont_t *uiwindow, callback_t *uicb)
 }
 
 void
-uiWindowNoDim (uiwcont_t *uiwidget)
+uiWindowNoDim (uiwcont_t *uiwindow)
 {
   return;
 }
@@ -313,7 +382,7 @@ uiWindowRaise (uiwcont_t *uiwindow)
 }
 
 void
-uiWindowFind (uiwcont_t *window)
+uiWindowFind (uiwcont_t *uiwindow)
 {
   return;
 }
@@ -343,7 +412,11 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   NSStackView *winbox;
   int         grav = NSStackViewGravityTop;
 
-  if (uiwindow == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-pack-in-win-win")) {
+    return;
+  }
+  /* the type of the uiwidget is not known */
+  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
   }
 
@@ -365,7 +438,7 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
 }
 
 void
-uiWindowClearFocus (uiwcont_t *uiwidget)
+uiWindowClearFocus (uiwcont_t *uiwindow)
 {
   return;
 }

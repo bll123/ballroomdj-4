@@ -15,8 +15,14 @@
 #include <Cocoa/Cocoa.h>
 #import <Foundation/NSObject.h>
 
+#include <Cocoa/Cocoa.h>
+#import <Foundation/NSObject.h>
+
+#include "uiwcont.h"
+
 #include "ui/uiwcont-int.h"
 
+#include "ui/uibox.h"
 #include "ui/uidialog.h"
 #include "ui/uibox.h"
 #include "ui/uiwidget.h"
@@ -112,7 +118,7 @@ uiCreateDialog (uiwcont_t *window,
   IDWindow      *win = NULL;
   uiwcont_t     *uibox;
   NSStackView   *box;
-  id            windowDelegate;
+//  id            windowDelegate;
 
   win = [[IDWindow alloc] init];
   uibox = uiCreateVertBox ();

@@ -53,7 +53,10 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
   NSView  *widget = NULL;
   int     grav = NSStackViewGravityLeading;
 
-  if (uibox == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start")) {
+    return;
+  }
+  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
   }
 
@@ -76,7 +79,10 @@ uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   NSView  *widget = NULL;
   int     grav = NSStackViewGravityLeading;
 
-  if (uibox == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start-exp")) {
+    return;
+  }
+  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
   }
 
@@ -96,7 +102,10 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
   NSView      *widget = NULL;
   int         grav = NSStackViewGravityTrailing;
 
-  if (uibox == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end")) {
+    return;
+  }
+  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
   }
 
@@ -119,7 +128,10 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   NSView      *widget = NULL;
   int         grav = NSStackViewGravityTrailing;
 
-  if (uibox == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end-exp")) {
+    return;
+  }
+  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
   }
 
@@ -135,6 +147,10 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 void
 uiBoxSetSizeChgCallback (uiwcont_t *uiwindow, callback_t *uicb)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_BOX, "box-set-size-chg-cb")) {
+    return;
+  }
+
   return;
 }
 

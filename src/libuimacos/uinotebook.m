@@ -59,8 +59,8 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
     uiwcont_t *uilabel)
 {
   NSTabView       *nb;
-  NSTabViewItem         *tabv;
-  NSTextField     *lab;
+  NSTabViewItem   *tabv;
+//  NSTextField     *lab;
 
   if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-append-page")) {
     return;
@@ -76,8 +76,8 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
 // ### will need to change to draw-label so that a custom tab w/pic can
 // be displayed.
 // macos position-left also needs to have horizontal tabs.
-  lab = uilabel->uidata.widget;
-  tabv.label = @"test-nb"; // [lab stringValue];
+//  lab = uilabel->uidata.widget;
+  tabv.label = @"t"; // [lab stringValue];
   [tabv setView: uibox->uidata.widget];
   nb = uinotebook->uidata.widget;
   [nb addTabViewItem: tabv];

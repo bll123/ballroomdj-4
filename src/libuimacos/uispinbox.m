@@ -70,7 +70,7 @@ uiSpinboxSetState (uiwcont_t *uiwidget, int state)
 }
 
 uiwcont_t *
-uiSpinboxTimeCreate (int sbtype, void *udata,
+uiSpinboxTimeCreate (sbtype_t sbtype, void *udata,
     const char *label, callback_t *convcb)
 {
   return NULL;
