@@ -1,0 +1,21 @@
+[Wiki Home](Home)
+
+### Contributing to BallroomDJ 4 Development
+
+As of 2024-11-4, development needs are:
+
+* Windows Development: Windows Native Player Interface
+* Windows Development: Windows Native UI
+* MacOS Development: MacOS Native UI
+<br>This is in progress.  Progress is very slow.
+* All Platforms: Unit Testing, Testing and QA
+
+Development Team (as of 2024-11-4):
+
+* Brad Lanam
+<br>Architect, Programmer, UI/UX&nbsp;Designer, Tools,
+Testing, Quality&nbsp;Assurance, Documentation, Website&nbsp;Management,
+System&nbsp;Administration
+
+[Wiki Home](Home)
+<br>_(Updated 2024-11-04 13:42:33; BDJ4 version 4.12.5.1)_
