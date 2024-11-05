@@ -19,8 +19,8 @@ The Nederlands (Dutch) translation is in excellent shape.  The Русский
 (Russian) translation is ok.
 
 The other translations are machine generated and are of very low
-quality. If the translation for your locale is poor, you may want to
-select _English&nbsp;(GB)_ or _English&nbsp;(US)_ in the
+quality. If the translation for your locale is not good, you may want
+to select _English&nbsp;(GB)_ or _English&nbsp;(US)_ in the
 __Configure&nbsp;/&nbsp;Locale__ selection.
 
 After selecting a locale, exit and restart BDJ4 to display the

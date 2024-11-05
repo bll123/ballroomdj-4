@@ -39,8 +39,8 @@ __Show Speed Reset__: The 'Reset Speed to 100%' button will be
 displayed in the player.
 
 __Clock__: The format of the clock display.
-Local format is the preferred format for the system locale.
-ISO format is _Day-of-the-week YYYY-MM-DD HH:MM_.
+_Local_ format is the preferred format for the system locale.
+_ISO_ format is _Day-of-the-week YYYY-MM-DD HH:MM_.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Player-I.png)

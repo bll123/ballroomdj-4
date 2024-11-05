@@ -5,6 +5,9 @@ how the user interface is displayed._</span>
 
 ### Configure : User Interface
 
+After changing the selections for the user interface, BDJ4 must be
+restarted for the changes to take effect.
+
 __Theme__: The theme to use for the user interface.  Mac OS and
 Windows only have a few themes shipped with the installation package.
 Other themes may be installed if desired.
@@ -21,6 +24,8 @@ __Accent Color__: The color used for status messages, some entry
 fields, and the color of various images.
 
 __Error Color__: The color used for error messages.
+
+__Song Mark Color__: The color used to mark songs in the song list.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![user-interface](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/UI-E.png)
