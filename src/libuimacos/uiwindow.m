@@ -408,16 +408,16 @@ uiWindowFind (uiwcont_t *uiwindow)
 void
 uiWindowSetNoMaximize (uiwcont_t *uiwindow)
 {
-  int      sm;
-  IWindow  *win;
+//  int      sm;
+//  IWindow  *win;
 
   if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-set-nomax")) {
     return;
   }
 
-  win = uiwindow->uidata.widget;
-  sm = win.styleMask;
-  sm &= ~NSWindowStyleMaskResizable;
+//  win = uiwindow->uidata.widget;
+//  sm = win.styleMask;
+//  sm &= ~NSWindowStyleMaskResizable;
 //  win.styleMask = sm;
   return;
 }

@@ -33,7 +33,7 @@
  Directory|Notes
  ---------|-----
  libcommon|common utilities that do not use lists nor libicu
- libbasic|lists, basic utilities that use lists or libicu
+ libbasic|lists, basic utilities that use lists and/or libicu
  libbdj4|bdj4 specific utilities
  libdylib|dynamic library handling
  libwebsrv|web server (uses mongoose)
@@ -43,14 +43,12 @@
 
  Directory|Notes
  ---------|-----
- libati|audio tagging interface.
+ libati|audio tagging interface (dynamic libraries)
 This was written as a dynamic library since at one
 point, both mutagen and the bdj4-ati interfaces
 were in process.
  libaudioid|audio identification
- libaudiosrc|audio source interface.  This should probably be
-re-worked so that each audio source type is a dynamic library.  Then
-it will be easier to add in new source types.
+ libaudiosrc|audio source interface
  libcont|music controller
  libpli|player interface (dynamic libraries)
  libmpris|Linux MPRIS interface
@@ -64,7 +62,7 @@ it will be easier to add in new source types.
  libuiintfc|bdj4 general ui interfaces (libbdj4uii)
  libuimanage|bdj4 major/minor ui specific to manageui (libbdj4uim)
  libuiplayer|bdj4 minor ui specific to playerui (libbdj4uip)
- libuiwcont|ui widget container
+ libuigeneral|ui widget container &etc.
 
  Directory|Notes
  ---------|-----
@@ -77,11 +75,11 @@ it will be easier to add in new source types.
  Directory|Notes
  ---------|-----
  configui|configuration ui
- installer|installer, updater
+ installer|self-extractor, installer, alt-installer, updater
  manageui|management ui
  player|the main player process, the player process,
 marquee, mobile marquee and remote control.
-Only the marquee has ui linked in.
+Only the marquee has the ui linked in.
  playerui|player ui
  starter|the launcher and starter process
 
@@ -92,6 +90,7 @@ Only the marquee has ui linked in.
  build|cmake build directory
  check|C language test programs
  include|include files
+ include/ui|ui include files
  po|localization
  utils|various utility scripts and files
  utility|various utility programs used in testing

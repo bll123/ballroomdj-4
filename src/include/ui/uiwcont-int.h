@@ -94,6 +94,7 @@ typedef struct uispinbox uispinbox_t;
 typedef struct uiswitch uiswitch_t;
 typedef struct uitextbox uitextbox_t;
 typedef struct uivirtlist uivirtlist_t;
+typedef struct uibox uibox_t;
 
 typedef union {
     void          *voidwidget;

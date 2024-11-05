@@ -239,16 +239,16 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
       );
 
   vbox = uiCreateVertBox ();
-  uiWidgetExpandHoriz (vbox);
-  uiWidgetExpandVert (vbox);
   uiDialogPackInDialog (
       uiexppl->wcont [UIEXPPL_W_DIALOG], vbox);
+  uiWidgetExpandHoriz (vbox);
+  uiWidgetExpandVert (vbox);
   uiWidgetSetAllMargins (vbox, 4);
 
   /* spinbox for export type */
   hbox = uiCreateHorizBox ();
-  uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
+  uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateColonLabel (
       /* CONTEXT: export playlist: type of export*/
@@ -267,8 +267,8 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
 
   /* target folder */
   hbox = uiCreateHorizBox ();
-  uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
+  uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateColonLabel (
       /* CONTEXT: export playlist: export folder location */

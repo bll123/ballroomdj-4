@@ -15,9 +15,6 @@
 #include <Cocoa/Cocoa.h>
 #import <Foundation/NSObject.h>
 
-#include <Cocoa/Cocoa.h>
-#import <Foundation/NSObject.h>
-
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"

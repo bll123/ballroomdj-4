@@ -494,9 +494,9 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
     /* otherwise it takes up space in the song editor display */
     if (count > 0) {
       col = uiCreateVertBox ();
+      uiBoxPackStartExpand (hbox, col);
       uiWidgetExpandHoriz (col);
       uiWidgetExpandVert (col);
-      uiBoxPackStartExpand (hbox, col);
       uiWidgetSetAllMargins (col, 4);
 
       uisongeditAddDisplay (uisongedit, col,

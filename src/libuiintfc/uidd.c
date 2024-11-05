@@ -120,11 +120,6 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
 
   uiwidget = uiCreateButton (dd->callbacks [DD_CB_BUTTON], NULL,
       "button_down_small");
-  uiButtonAlignLeft (uiwidget);
-  uiButtonSetImagePosRight (uiwidget);
-  uiWidgetAlignHorizStart (uiwidget);
-  uiWidgetSetMarginTop (uiwidget, 1);
-  uiWidgetSetMarginStart (uiwidget, 1);
   if (where == DD_PACK_START) {
     uiBoxPackStart (boxp, uiwidget);
   }
@@ -135,6 +130,11 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
     /* work around gtk not vertically centering the image */
     uiButtonSetImageMarginTop (uiwidget, 3);
   }
+  uiButtonAlignLeft (uiwidget);
+  uiButtonSetImagePosRight (uiwidget);
+  uiWidgetAlignHorizStart (uiwidget);
+  uiWidgetSetMarginTop (uiwidget, 1);
+  uiWidgetSetMarginStart (uiwidget, 1);
   dd->wcont [DD_W_BUTTON] = uiwidget;
   uiddSetButtonText (dd, dd->title);
 

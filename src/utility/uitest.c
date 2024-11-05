@@ -333,8 +333,8 @@ uitestBuildUI (uitest_t *uitest)
   uiBoxPackStartExpand (hbox, uitest->wcont [UITEST_W_MENUBAR]);
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   uitest->wcont [UITEST_W_STATUS_MSG] = uiwidgetp;
   uiwcontFree (hbox);
 
@@ -447,8 +447,8 @@ uitestUIButtons (uitest_t *uitest)
   uitest->wcont [UITEST_W_B_IMG_A] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetMarginStart (uiwidgetp, 4);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
   uitest->wcont [UITEST_W_B_IMG_A_MSG] = uiwidgetp;
 
   uiwcontFree (hbox);
@@ -466,8 +466,8 @@ uitestUIButtons (uitest_t *uitest)
   uitest->wcont [UITEST_W_B_IMG_B] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetMarginStart (uiwidgetp, 4);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
   uitest->wcont [UITEST_W_B_IMG_B_MSG] = uiwidgetp;
 
   uiwcontFree (hbox);

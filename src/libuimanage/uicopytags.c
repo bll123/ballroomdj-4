@@ -194,8 +194,8 @@ uicopytagsCreateDialog (uict_t *uict)
       );
 
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 4);
   uiDialogPackInDialog (uict->ctDialog, vbox);
+  uiWidgetSetAllMargins (vbox, 4);
 
   /* status message */
   hbox = uiCreateHorizBox ();
