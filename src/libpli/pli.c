@@ -38,6 +38,8 @@ typedef struct pli {
   void              (*pliiFree) (plidata_t *plidata);
   void              (*pliiMediaSetup) (plidata_t *plidata, const char *mediaPath, const char *fullMediaPath, int sourceType);
   void              (*pliiStartPlayback) (plidata_t *plidata, ssize_t pos, ssize_t speed);
+  void              (*pliiCrossFade) (plidata_t *plidata, const char *mediaPath, const char *fullMediaPath, int sourceType);
+  void              (*pliiProcess) (plidata_t *plidata);
   void              (*pliiClose) (plidata_t *plidata);
   void              (*pliiPause) (plidata_t *plidata);
   void              (*pliiPlay) (plidata_t *plidata);
@@ -66,6 +68,8 @@ pliInit (const char *plipkg, const char *plinm)
   pli->pliiFree = NULL;
   pli->pliiMediaSetup = NULL;
   pli->pliiStartPlayback = NULL;
+  pli->pliiCrossFade = NULL;
+  pli->pliiProcess = NULL;
   pli->pliiClose = NULL;
   pli->pliiPause = NULL;
   pli->pliiPlay = NULL;
@@ -95,6 +99,8 @@ pliInit (const char *plipkg, const char *plinm)
   pli->pliiFree = dylibLookup (pli->dlHandle, "pliiFree");
   pli->pliiMediaSetup = dylibLookup (pli->dlHandle, "pliiMediaSetup");
   pli->pliiStartPlayback = dylibLookup (pli->dlHandle, "pliiStartPlayback");
+  pli->pliiCrossFade = dylibLookup (pli->dlHandle, "pliiCrossFade");
+  pli->pliiProcess = dylibLookup (pli->dlHandle, "pliiProcess");
   pli->pliiClose = dylibLookup (pli->dlHandle, "pliiClose");
   pli->pliiPause = dylibLookup (pli->dlHandle, "pliiPause");
   pli->pliiPlay = dylibLookup (pli->dlHandle, "pliiPlay");
@@ -146,6 +152,24 @@ pliStartPlayback (pli_t *pli, ssize_t pos, ssize_t speed)
 {
   if (pli != NULL && pli->pliiStartPlayback != NULL) {
     pli->pliiStartPlayback (pli->plidata, pos, speed);
+  }
+}
+
+void
+pliCrossFade (pli_t *pli, const char *mediaPath,
+    const char *fullMediaPath, int sourceType)
+{
+  if (pli != NULL && pli->pliiCrossFade != NULL && mediaPath != NULL) {
+    pli->pliiCrossFade (pli->plidata, mediaPath, fullMediaPath, sourceType);
+  }
+}
+
+/* process is needed for cross-fade processing */
+void
+pliProcess (pli_t *pli)
+{
+  if (pli != NULL && pli->pliiProcess != NULL) {
+    pli->pliiProcess (pli->plidata);
   }
 }
 

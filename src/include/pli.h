@@ -26,6 +26,7 @@ typedef enum {
   PLI_STATE_PLAYING,
   PLI_STATE_PAUSED,
   PLI_STATE_STOPPED,
+  PLI_STATE_XFADE,
   PLI_STATE_ENDED,
   PLI_STATE_ERROR,
   PLI_STATE_MAX,
@@ -61,6 +62,10 @@ pli_t         *pliInit (const char *plipkg, const char *plinm);
 void          pliFree (pli_t *pli);
 void          pliMediaSetup (pli_t *pli, const char *mediaPath, const char *fullMediaPath, int sourceType);
 void          pliStartPlayback (pli_t *pli, ssize_t dpos, ssize_t speed);
+/* cross-fade is used instead of media-setup + start-playback */
+void          pliCrossFade (pli_t *pli, const char *mediaPath, const char *fullMediaPath, int sourceType);
+/* process is needed to process the cross-fade */
+void          pliProcess (pli_t *pli);
 void          pliPause (pli_t *pli);
 void          pliPlay (pli_t *pli);
 void          pliStop (pli_t *pli);

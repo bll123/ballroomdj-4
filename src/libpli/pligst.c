@@ -78,6 +78,19 @@ pliiMediaSetup (plidata_t *plidata, const char *mediaPath,
 }
 
 void
+pliiCrossFade (plidata_t *plidata, const char *mediaPath,
+    const char *fullMediaPath, int sourceType)
+{
+  if (plidata == NULL || mediaPath == NULL) {
+    return;
+  }
+
+//  gstiMedia (plidata->gsti, fullMediaPath, sourceType);
+//  plidata->state = PLI_STATE_STOPPED;
+  plidata->state = PLI_STATE_XFADE;
+}
+
+void
 pliiCleanup (void)
 {
   gstiCleanup ();
