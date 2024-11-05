@@ -21,9 +21,6 @@
  * audiomix example:
  * https://github.com/GStreamer/gst-plugins-base/blob/master/tests/examples/audio/audiomix.c
  *
- * crossfade code from rhythmbox, though I don't know how much help this is.
- * https://gitlab.gnome.org/GNOME/rhythmbox/-/blob/master/backends/gstreamer/rb-player-gst-xfade.c
- *
  */
 #include "config.h"
 
@@ -54,7 +51,7 @@ enum {
 };
 
 enum {
-  GSTI_MAX_PIPELINE = 2,
+  GSTI_MAX_SOURCE = 2,
 };
 
 /* gstreamer doesn't define these */
@@ -77,12 +74,14 @@ typedef enum {
 typedef struct gsti {
   uint64_t          ident;
   GMainContext      *mainctx;
-  GstElement        *pipeline [GSTI_MAX_PIPELINE];
+  GstElement        *pipeline;
+  GstElement        *source [GSTI_MAX_SOURCE];
+  GstElement        *volume [GSTI_MAX_SOURCE];
   guint             busId;
   guint             gststate;
   plistate_t        state;
-  double            rate [GSTI_MAX_PIPELINE];
-  double            vol [GSTI_MAX_PIPELINE];
+  double            rate [GSTI_MAX_SOURCE];
+  double            vol [GSTI_MAX_SOURCE];
   int               curr;
   bool              isstopping : 1;
   bool              incrossfade : 1;
@@ -92,31 +91,32 @@ static void gstiRunOnce (gsti_t *gsti);
 static gboolean gstiBusCallback (GstBus * bus, GstMessage * message, void *udata);
 static void gstiProcessState (gsti_t *gsti, GstState state);
 static void gstiWaitState (gsti_t *gsti, GstState want);
-static void gstiMakePipeline (gsti_t *gsti, int curr);
+static void gstiMakeSource (gsti_t *gsti, GstElement *mix, int curr);
+static void gstiDynamicLinkPad (GstPadTemplate * templ, GstPad * newpad, gpointer udata);
 
 gsti_t *
 gstiInit (const char *plinm)
 {
   gsti_t            *gsti;
-  GstPad            *pad;
-  GstPad            *ghost_pad;
-  GstElement        *sinkbin;
-  GstElement        *scaletempo;
-  GstElement        *convert;
-  GstElement        *resample;
-  GstElement        *sink;
+//  GstPad            *pad;
   GstElement        *audiomixer;
+  GstElement        *convert;
+  GstElement        *sink;
+//  GstElement        *sinkbin;
+  GstBus            *bus;
 
   gst_init (NULL, 0);
 
   gsti = mdmalloc (sizeof (gsti_t));
   gsti->ident = GSTI_IDENT;
-  for (int i = 0; i < GSTI_MAX_PIPELINE; ++i) {
-    gsti->pipeline [i] = NULL;
+  gsti->pipeline = NULL;
+  for (int i = 0; i < GSTI_MAX_SOURCE; ++i) {
+    gsti->source [i] = NULL;
+    gsti->volume [i] = NULL;
     gsti->rate [i] = 1.0;
     gsti->vol [i] = 1.0;
   }
-  for (int i = 1; i < GSTI_MAX_PIPELINE; ++i) {
+  for (int i = 1; i < GSTI_MAX_SOURCE; ++i) {
     gsti->vol [i] = 0.0;
   }
   gsti->curr = 0;
@@ -129,48 +129,31 @@ gstiInit (const char *plinm)
   gsti->mainctx = g_main_context_default ();
   gstiRunOnce (gsti);
 
-  scaletempo = gst_element_factory_make ("scaletempo", "scaletempo");
-  convert = gst_element_factory_make ("audioconvert", "convert");
-  resample = gst_element_factory_make ("audioresample", "resample");
-  g_object_set (G_OBJECT (resample), "quality", 8, NULL);
+  gsti->pipeline = gst_pipeline_new ("crossfade");
+  audiomixer = gst_element_factory_make ("audiomixer", NULL);
+  convert = gst_element_factory_make ("audioconvert", NULL);
+  sink = gst_element_factory_make ("autoaudiosink", NULL);
+  gst_bin_add_many (GST_BIN (gsti->pipeline), audiomixer, convert, sink, NULL);
+  gst_element_link_many (audiomixer, convert, sink, NULL);
   gstiRunOnce (gsti);
 
-  sink = gst_element_factory_make ("autoaudiosink", "audio_sink");
-  gst_bin_add_many (GST_BIN (sinkbin), scaletempo, convert, resample, sink, NULL);
-  gst_element_link_many (scaletempo, convert, resample, sink, NULL);
-  gstiRunOnce (gsti);
-
-  sinkbin = gst_bin_new ("audio_sink_bin");
-  pad = gst_element_get_static_pad (scaletempo, "sink");
-  ghost_pad = gst_ghost_pad_new ("sink", pad);
-  gst_pad_set_active (ghost_pad, TRUE);
-  gst_element_add_pad (sinkbin, ghost_pad);
-  gst_object_unref (pad);
-
-#if 0
-  audiomixer = gst_element_factory_make ("audiomixer", "mixer");
-  convert = gst_element_factory_make ("audioconvert", "convertB");
-  sink = gst_element_factory_make ("autoaudiosink", "audio_sink");
-#endif
-
-  for (int i = 0; i < GSTI_MAX_PIPELINE; ++i) {
-    GstBus    *bus;
-
-    /* gsti-make-pipeline sets gsti->curr */
-    gstiMakePipeline (gsti, i);
+  for (int i = 0; i < GSTI_MAX_SOURCE; ++i) {
+    /* gsti-make-source sets gsti->curr */
+    gstiMakeSource (gsti, audiomixer, i);
     gstiRunOnce (gsti);
-    g_object_set (G_OBJECT (gsti->pipeline [i]), "audio-sink", sinkbin, NULL);
-    gstiRunOnce (gsti);
+//    g_object_set (G_OBJECT (gsti->pipeline), "audio-sink", sinkbin, NULL);
+//    gstiRunOnce (gsti);
 
     if (i == 0) {
-      bus = gst_pipeline_get_bus (GST_PIPELINE (gsti->pipeline [i]));
-      gsti->busId = gst_bus_add_watch (bus, gstiBusCallback, gsti);
-      g_object_unref (bus);
-      gstiRunOnce (gsti);
     }
   }
-  /* gsti-make-pipeline sets gsti->curr */
+  /* gsti-make-source sets gsti->curr */
   gsti->curr = 0;
+
+  bus = gst_pipeline_get_bus (GST_PIPELINE (gsti->pipeline));
+  gsti->busId = gst_bus_add_watch (bus, gstiBusCallback, gsti);
+//  g_object_unref (bus);
+  gstiRunOnce (gsti);
 
   return gsti;
 }
@@ -187,21 +170,17 @@ gstiFree (gsti_t *gsti)
   gstiRunOnce (gsti);
 
   gsti->curr = 0;
-  if (gsti->pipeline [0] != NULL) {
+  if (gsti->pipeline != NULL) {
     gsti->isstopping = true;
-    g_object_set (G_OBJECT (gsti->pipeline [0]), "volume", 0.0, NULL);
-    gstiRunOnce (gsti);
-    gst_element_set_state (gsti->pipeline [0], GST_STATE_READY);
+    for (int i = 0; i < GSTI_MAX_SOURCE; ++i) {
+      g_object_set (G_OBJECT (gsti->volume [i]), "volume", 0.0, NULL);
+      gstiRunOnce (gsti);
+    }
+    gst_element_set_state (gsti->pipeline, GST_STATE_READY);
     gstiWaitState (gsti, GST_STATE_READY);
-    gst_element_set_state (gsti->pipeline [0], GST_STATE_NULL);
+    gst_element_set_state (gsti->pipeline, GST_STATE_NULL);
     gstiWaitState (gsti, GST_STATE_NULL);
-    gst_object_unref (gsti->pipeline [0]);
-    gstiRunOnce (gsti);
-  }
-  if (gsti->pipeline [1] != NULL) {
-    gsti->curr = 1;
-    gstiRunOnce (gsti);
-    gst_object_unref (gsti->pipeline [1]);
+    gst_object_unref (gsti->pipeline);
     gstiRunOnce (gsti);
   }
   gsti->curr = 0;
@@ -236,23 +215,24 @@ fprintf (stderr, "uri: %s\n", fulluri);
   }
 
   gsti->rate [gsti->curr] = 1.0;
-  g_object_set (G_OBJECT (gsti->pipeline [gsti->curr]), "uri", tbuff, NULL);
-  gst_element_set_state (GST_ELEMENT (gsti->pipeline [gsti->curr]), GST_STATE_PAUSED);
+  g_object_set (G_OBJECT (gsti->source [gsti->curr]), "uri", tbuff, NULL);
+//  g_object_set (G_OBJECT (gsti->pipeline), "uri", tbuff, NULL);
+  gst_element_set_state (GST_ELEMENT (gsti->pipeline), GST_STATE_PAUSED);
   gsti->state = PLI_STATE_OPENING;
   gstiRunOnce (gsti);
 
-#if 1
+#if 0
 {
 int tcurr = 1;
 gsti->curr = tcurr;
 snprintf (tbuff, sizeof (tbuff), "%s%s", AS_FILE_PFX, "/home/bll/s/bdj4/test-music/003-chacha.mp3");
 gsti->rate [tcurr] = 1.0;
 fprintf (stderr, "aaa\n");
-g_object_set (G_OBJECT (gsti->pipeline [tcurr]), "uri", tbuff, NULL);
+g_object_set (G_OBJECT (gsti->source [tcurr]), "uri", tbuff, NULL);
 fprintf (stderr, "a-b\n");
 gstiRunOnce (gsti);
 fprintf (stderr, "bbb\n");
-gst_element_set_state (GST_ELEMENT (gsti->pipeline [tcurr]), GST_STATE_PAUSED);
+gst_element_set_state (GST_ELEMENT (gsti->pipeline), GST_STATE_PAUSED);
 fprintf (stderr, "ccc\n");
 gstiRunOnce (gsti);
 fprintf (stderr, "ddd\n");
@@ -273,8 +253,7 @@ gstiGetDuration (gsti_t *gsti)
     return 0;
   }
 
-  if (! gst_element_query_duration (gsti->pipeline [gsti->curr],
-      GST_FORMAT_TIME, &ctm)) {
+  if (! gst_element_query_duration (gsti->pipeline, GST_FORMAT_TIME, &ctm)) {
     return 0;
   }
 
@@ -292,8 +271,7 @@ gstiGetPosition (gsti_t *gsti)
     return 0;
   }
 
-  if (! gst_element_query_position (gsti->pipeline [gsti->curr],
-      GST_FORMAT_TIME, &ctm)) {
+  if (! gst_element_query_position (gsti->pipeline, GST_FORMAT_TIME, &ctm)) {
     return 0;
   }
 
@@ -311,7 +289,7 @@ gstiState (gsti_t *gsti)
   }
 
   gstiRunOnce (gsti);
-  gst_element_get_state (GST_ELEMENT (gsti->pipeline [gsti->curr]), &state, &pending, 1);
+  gst_element_get_state (GST_ELEMENT (gsti->pipeline), &state, &pending, 1);
   gstiProcessState (gsti, state);
 
   return gsti->state;
@@ -325,7 +303,7 @@ gstiPause (gsti_t *gsti)
   }
 
   gstiRunOnce (gsti);
-  gst_element_set_state (GST_ELEMENT (gsti->pipeline [gsti->curr]), GST_STATE_PAUSED);
+  gst_element_set_state (GST_ELEMENT (gsti->pipeline), GST_STATE_PAUSED);
   gstiRunOnce (gsti);
   return;
 }
@@ -338,7 +316,7 @@ gstiPlay (gsti_t *gsti)
   }
 
   gstiRunOnce (gsti);
-  gst_element_set_state (GST_ELEMENT (gsti->pipeline [gsti->curr]), GST_STATE_PLAYING);
+  gst_element_set_state (GST_ELEMENT (gsti->pipeline), GST_STATE_PLAYING);
   gstiRunOnce (gsti);
   return;
 }
@@ -351,14 +329,14 @@ gstiStop (gsti_t *gsti)
   }
 
   gsti->isstopping = true;
-  g_object_set (G_OBJECT (gsti->pipeline [gsti->curr]), "volume", 0.0, NULL);
+  g_object_set (G_OBJECT (gsti->volume [gsti->curr]), "volume", 0.0, NULL);
   gstiRunOnce (gsti);
 
-  gst_element_set_state (GST_ELEMENT (gsti->pipeline [gsti->curr]), GST_STATE_READY);
+  gst_element_set_state (GST_ELEMENT (gsti->pipeline), GST_STATE_READY);
   gstiWaitState (gsti, GST_STATE_READY);
   gstiRunOnce (gsti);
 
-  g_object_set (G_OBJECT (gsti->pipeline [gsti->curr]), "volume", 1.0, NULL);
+  g_object_set (G_OBJECT (gsti->volume [gsti->curr]), "volume", 1.0, NULL);
   gstiRunOnce (gsti);
 
   gsti->isstopping = false;
@@ -384,7 +362,7 @@ gstiSetPosition (gsti_t *gsti, int64_t pos)
 
     /* all seeks are based on the song's original duration, */
     /* not the adjusted duration */
-    if (gst_element_seek (gsti->pipeline [gsti->curr], gsti->rate [gsti->curr],
+    if (gst_element_seek (gsti->pipeline, gsti->rate [gsti->curr],
         GST_FORMAT_TIME,
         GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT,
         GST_SEEK_TYPE_SET, gpos,
@@ -413,9 +391,9 @@ gstiSetRate (gsti_t *gsti, double rate)
 
     gsti->rate [gsti->curr] = rate;
 
-    gst_element_query_position (gsti->pipeline [gsti->curr], GST_FORMAT_TIME, &pos);
+    gst_element_query_position (gsti->pipeline, GST_FORMAT_TIME, &pos);
 
-    if (gst_element_seek (gsti->pipeline [gsti->curr], gsti->rate [gsti->curr],
+    if (gst_element_seek (gsti->pipeline, gsti->rate [gsti->curr],
         GST_FORMAT_TIME,
         GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE,
         GST_SEEK_TYPE_SET, pos,
@@ -434,7 +412,7 @@ gstiGetVolume (gsti_t *gsti)
   double  dval;
   int     val;
 
-  g_object_get (G_OBJECT (gsti->pipeline [gsti->curr]), "volume", &dval, NULL);
+  g_object_get (G_OBJECT (gsti->volume [gsti->curr]), "volume", &dval, NULL);
   val = round (dval * 100.0);
   return val;
 }
@@ -577,38 +555,88 @@ gstiWaitState (gsti_t *gsti, GstState want)
 {
   GstState    state;
 
-  gst_element_get_state (GST_ELEMENT (gsti->pipeline [gsti->curr]),
-      &state, NULL, 1);
+  gst_element_get_state (GST_ELEMENT (gsti->pipeline), &state, NULL, 1);
   while (state != want) {
     gstiRunOnce (gsti);
-    gst_element_get_state (GST_ELEMENT (gsti->pipeline [gsti->curr]),
-        &state, NULL, 1);
+    gst_element_get_state (GST_ELEMENT (gsti->pipeline), &state, NULL, 1);
   }
   gstiProcessState (gsti, state);
 }
 
 static void
-gstiMakePipeline (gsti_t *gsti, int curr)
+gstiMakeSource (gsti_t *gsti, GstElement *mix, int curr)
 {
-  GstPlayFlags      flags;
+//  GstPlayFlags      flags;
+  GstPad            *pad;
+  GstPad            *ghost_pad;
+  GstElement        *sinkbin;
+  GstElement        *uridecodebin;
+  GstElement        *scaletempo;
+  GstElement        *volume;
+  GstElement        *convert;
+  GstElement        *resample;
 
   gsti->curr = curr;
 
-  gsti->pipeline [curr] = gst_element_factory_make ("playbin", "play");
+  uridecodebin = gst_element_factory_make ("uridecodebin3", NULL);
+  gsti->source [curr] = uridecodebin;
+//  g_object_set (G_OBJECT (uridecodebin), "use-buffering", 1, NULL);
+  scaletempo = gst_element_factory_make ("scaletempo", NULL);
+  volume = gst_element_factory_make ("volume", NULL);
+  gsti->volume [curr] = volume;
+fprintf (stderr, "set vol %d %.2f\n", curr, gsti->vol [curr]);
+  g_object_set (G_OBJECT (volume), "volume", gsti->vol [curr], NULL);
+// volume
+  convert = gst_element_factory_make ("audioconvert", NULL);
+  resample = gst_element_factory_make ("audioresample", NULL);
+  g_object_set (G_OBJECT (resample), "quality", 8, NULL);
   gstiRunOnce (gsti);
 
-  g_object_get (G_OBJECT (gsti->pipeline [curr]), "flags", &flags, NULL);
+  gst_bin_add_many (GST_BIN (gsti->pipeline),
+      uridecodebin, scaletempo, convert, resample, mix, NULL);
+  gst_element_link_many (
+      scaletempo, convert, resample, mix, NULL);
+  gstiRunOnce (gsti);
+
+  g_signal_connect (G_OBJECT (uridecodebin), "pad-added",
+      G_CALLBACK (gstiDynamicLinkPad),
+      gst_element_get_static_pad (volume, "sink"));
+  gstiRunOnce (gsti);
+
+  sinkbin = gst_bin_new ("audio_sink_bin");
+  pad = gst_element_get_static_pad (scaletempo, "sink");
+  ghost_pad = gst_ghost_pad_new ("sink", pad);
+  gst_pad_set_active (ghost_pad, TRUE);
+  gst_element_add_pad (sinkbin, ghost_pad);
+  gst_object_unref (pad);
+
+  gstiRunOnce (gsti);
+
+#if 0
+  g_object_get (G_OBJECT (gsti->pipeline), "flags", &flags, NULL);
   flags |= GST_PLAY_FLAG_AUDIO;
   flags &= ~GST_PLAY_FLAG_VIDEO;
   flags &= ~GST_PLAY_FLAG_TEXT;
   flags &= ~GST_PLAY_FLAG_VIS;
-  g_object_set (G_OBJECT (gsti->pipeline [curr]), "flags", flags, NULL);
+  g_object_set (G_OBJECT (gsti->pipeline), "flags", flags, NULL);
   gstiRunOnce (gsti);
 
-fprintf (stderr, "set vol %d %.2f\n", curr, gsti->vol [curr]);
-  g_object_set (G_OBJECT (gsti->pipeline [curr]),
-      "volume", gsti->vol [curr], NULL);
+//  g_object_set (G_OBJECT (gsti->pipeline [curr]),
+//      "volume", gsti->vol [curr], NULL);
   gstiRunOnce (gsti);
+#endif
+}
+
+static void
+gstiDynamicLinkPad (GstPadTemplate * templ, GstPad * newpad,
+    gpointer udata)
+{
+  GstPad *target = GST_PAD (udata);
+
+fprintf (stderr, "link pad\n");
+  gst_pad_link (newpad, target);
+  gst_object_unref (target);
 }
 
 #endif /* _hdr_gst */
+
