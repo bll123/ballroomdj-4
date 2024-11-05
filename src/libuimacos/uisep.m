@@ -20,6 +20,7 @@
 uiwcont_t *
 uiCreateHorizSeparator (void)
 {
+fprintf (stderr, "c-horiz-sep\n");
   return NULL;
 }
 

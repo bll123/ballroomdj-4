@@ -38,6 +38,7 @@ uiEventFree (uiwcont_t *uiwidget)
 uiwcont_t *
 uiEventCreateEventBox (uiwcont_t *uiwidgetp)
 {
+fprintf (stderr, "c-event-box\n");
   return NULL;
 }
 

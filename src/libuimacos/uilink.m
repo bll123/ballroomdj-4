@@ -21,6 +21,7 @@
 uiwcont_t *
 uiCreateLink (const char *label, const char *uri)
 {
+fprintf (stderr, "c-link\n");
   return NULL;
 }
 

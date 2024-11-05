@@ -37,12 +37,14 @@ static uiwcont_t * uiCreateBox (int orientation);
 uiwcont_t *
 uiCreateVertBox (void)
 {
+fprintf (stderr, "c-vbox\n");
   return uiCreateBox (NSUserInterfaceLayoutOrientationVertical);
 }
 
 uiwcont_t *
 uiCreateHorizBox (void)
 {
+fprintf (stderr, "c-hbox\n");
   return uiCreateBox (NSUserInterfaceLayoutOrientationHorizontal);
 }
 

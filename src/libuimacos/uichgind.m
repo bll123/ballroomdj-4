@@ -20,6 +20,7 @@
 uiwcont_t *
 uiCreateChangeIndicator (uiwcont_t *boxp)
 {
+fprintf (stderr, "c-chgind\n");
   return NULL;
 }
 

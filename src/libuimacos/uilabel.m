@@ -35,6 +35,7 @@ uiCreateLabel (const char *label)
   uiwcont_t   *uiwidget;
   ILabel      *widget;
 
+fprintf (stderr, "c-label\n");
   widget = [[ILabel alloc] init];
   [widget setBezeled:NO];
   [widget setDrawsBackground:NO];

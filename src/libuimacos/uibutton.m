@@ -68,6 +68,7 @@ uiCreateButton (callback_t *uicb, char *title, char *imagenm)
   uibuttonbase_t  *bbase;
   IButton         *widget = nil;
 
+fprintf (stderr, "c-bt\n");
   uibutton = mdmalloc (sizeof (uibutton_t));
   uibutton->image = NULL;
 

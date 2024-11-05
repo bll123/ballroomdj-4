@@ -21,6 +21,7 @@
 uiwcont_t *
 uiCreateProgressBar (void)
 {
+fprintf (stderr, "c-pbar\n");
   return NULL;
 }
 

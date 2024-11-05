@@ -120,6 +120,7 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   NSStackView   *box;
   id            windowDelegate;
 
+fprintf (stderr, "c-main-win\n");
   win = [[IWindow alloc] init];
   uibox = uiCreateVertBox ();
   if (title != NULL) {
@@ -321,6 +322,7 @@ uiWindowNoFocusOnStartup (uiwcont_t *uiwindow)
 uiwcont_t *
 uiCreateScrolledWindow (int minheight)
 {
+fprintf (stderr, "c-scroll-win\n");
   return NULL;
 }
 
@@ -342,6 +344,7 @@ uiCreateDialogWindow (uiwcont_t *parentwin,
     return NULL;
   }
 
+fprintf (stderr, "c-dialog-win\n");
   return NULL;
 }
 
