@@ -242,4 +242,4 @@ tclean:
 	@-$(RM) -f ../vgcore.* vgcore.* ../core core gmon.out ../gmon.out
 	@-$(RM) -f launcher.rc bdj4_icon.ico
 	@-$(RM) -f selauncher.rc bdj4_icon_inst.ico
-	@-$(RM) -f dep-*.txt
+	@-$(RM) -f dep-*.txt ../tmp/*.dot $$HOME/.cache/BDJ4/volreg.*
