@@ -208,7 +208,9 @@ gstiMedia (gsti_t *gsti, const char *fulluri, int sourceType)
   }
 
   gsti->rate [gsti->curr] = 1.0;
-logStderr ("uri: %s\n", tbuff);
+# if GSTI_DEBUG
+  logStderr ("uri: %s\n", tbuff);
+# endif
   g_object_set (G_OBJECT (gsti->currsource), "uri", tbuff, NULL);
   rc = gst_element_set_state (GST_ELEMENT (gsti->pipeline), GST_STATE_PAUSED);
   if (rc == GST_STATE_CHANGE_FAILURE) {
@@ -232,7 +234,7 @@ gstiGetDuration (gsti_t *gsti)
     return 0;
   }
 
-  if (! gst_element_query_duration (gsti->currsource, GST_FORMAT_TIME, &ctm)) {
+  if (! gst_element_query_duration (gsti->pipeline, GST_FORMAT_TIME, &ctm)) {
     return 0;
   }
 
@@ -250,7 +252,7 @@ gstiGetPosition (gsti_t *gsti)
     return 0;
   }
 
-  if (! gst_element_query_position (gsti->currsource, GST_FORMAT_TIME, &ctm)) {
+  if (! gst_element_query_position (gsti->pipeline, GST_FORMAT_TIME, &ctm)) {
     return 0;
   }
 
@@ -296,7 +298,9 @@ gstiPause (gsti_t *gsti)
   }
 
   gstiRunOnce (gsti);
-logStderr ("-- pause\n");
+# if GSTI_DEBUG
+  logStderr ("-- pause\n");
+# endif
   rc = gst_element_set_state (GST_ELEMENT (gsti->pipeline), GST_STATE_PAUSED);
   if (rc == GST_STATE_CHANGE_FAILURE) {
     fprintf (stderr, "ERR: unable to change state (pause)\n");
@@ -318,7 +322,9 @@ gstiPlay (gsti_t *gsti)
   }
 
   gstiRunOnce (gsti);
-logStderr ("-- play\n");
+# if GSTI_DEBUG
+  logStderr ("-- play\n");
+# endif
   rc = gst_element_set_state (GST_ELEMENT (gsti->pipeline), GST_STATE_PLAYING);
   if (rc == GST_STATE_CHANGE_FAILURE) {
     fprintf (stderr, "ERR: unable to change state (pause)\n");
@@ -337,9 +343,10 @@ gstiStop (gsti_t *gsti)
     return;
   }
 
-logStderr ("-- stop\n");
+# if GSTI_DEBUG
+  logStderr ("-- stop\n");
+# endif
   gsti->isstopping = true;
-logStderr ("   stop: set volume 0\n");
   gsti->vol [gsti->curr] = 0.0;
   gstiChangeVolume (gsti);
 
@@ -347,7 +354,6 @@ logStderr ("   stop: set volume 0\n");
   gstiWaitState (gsti, GST_STATE_READY);
   gstiRunOnce (gsti);
 
-logStderr ("   stop: set volume 1\n");
   gsti->vol [gsti->curr] = 0.9;
   gstiChangeVolume (gsti);
 
@@ -371,11 +377,16 @@ gstiSetPosition (gsti_t *gsti, int64_t pos)
 
   if (gsti->state == PLI_STATE_PAUSED ||
       gsti->state == PLI_STATE_PLAYING) {
+    gint64    tpos;
+
     gpos = pos;
     gpos *= 1000;
     gpos *= 1000;
 
-logStderr ("-- set-pos %ld\n", (long) pos);
+# if GSTI_DEBUG
+    gst_element_query_position (gsti->pipeline, GST_FORMAT_TIME, &tpos);
+    logStderr ("-- set-pos %ld %ld\n", (long) pos, (long) (tpos / 1000 / 1000));
+# endif
     /* all seeks are based on the song's original duration, */
     /* not the adjusted duration */
     if (gst_element_seek (gsti->pipeline, gsti->rate [gsti->curr],
@@ -405,10 +416,12 @@ gstiSetRate (gsti_t *gsti, double rate)
       gsti->state == PLI_STATE_PLAYING) {
     gint64    pos;
 
-logStderr ("-- set-rate %0.2f\n", rate);
+# if GSTI_DEBUG
+    logStderr ("-- set-rate %0.2f\n", rate);
+# endif
     gsti->rate [gsti->curr] = rate;
 
-    gst_element_query_position (gsti->currsource, GST_FORMAT_TIME, &pos);
+    gst_element_query_position (gsti->pipeline, GST_FORMAT_TIME, &pos);
 
     if (gst_element_seek (gsti->pipeline, gsti->rate [gsti->curr],
         GST_FORMAT_TIME,
@@ -432,7 +445,9 @@ gstiGetVolume (gsti_t *gsti)
 
   g_object_get (G_OBJECT (gsti->volume [gsti->curr]), "volume", &dval, NULL);
   val = round (dval * 100.0);
-logStderr ("-- get volume %d\n", val);
+# if GSTI_DEBUG
+  logStderr ("-- get volume %d\n", val);
+# endif
   return val;
 }
 
@@ -574,7 +589,9 @@ gstiWaitState (gsti_t *gsti, GstState want)
   int         count = 0;
 
   gst_element_get_state (GST_ELEMENT (gsti->pipeline), &state, NULL, 1);
-logStderr ("== wait-state curr: %d want: %d\n", state, want);
+# if GSTI_DEBUG
+  logStderr ("== wait-state curr: %d want: %d\n", state, want);
+# endif
   while (state != want && count < maxcount) {
     gstiRunOnce (gsti);
     gst_element_get_state (GST_ELEMENT (gsti->pipeline), &state, NULL, 1);
@@ -664,20 +681,14 @@ gstiDynamicLinkPad (GstElement *src, GstPad *newpad, gpointer udata)
 {
   gsti_t            *gsti = udata;
   GstPad            *sinkpad = NULL;
-  GstCaps           *caps = NULL;
-  GstStructure      *capsstruct = NULL;
-  const char        *type = NULL;
   GstPadLinkReturn  rc;
 
   sinkpad = gsti->decsink [gsti->curr];
 
-logStderr ("== link-pad: begin\n");
   if (gst_pad_is_linked (sinkpad)) {
-logStderr ("   already\n");
     return;
   }
   if (newpad == NULL) {
-logStderr ("   null newpad\n");
     return;
   }
 
@@ -685,25 +696,9 @@ logStderr ("   null newpad\n");
   logStderr ("   newpad %s from %s:\n", GST_PAD_NAME (newpad), GST_ELEMENT_NAME (src));
 # endif
 
-// ### this always fails, caps is null
-  caps = gst_pad_get_current_caps (newpad);
-  if (caps != NULL) {
-    capsstruct = gst_caps_get_structure (caps, 0);
-    type = gst_structure_get_name (capsstruct);
-logStderr ("   newpad type %s\n", type);
-    if (strncmp (type, "audio/x-raw", 11) != 0) {
-logStderr ("   not audio/x-raw\n");
-      g_object_unref (caps);
-      return;
-    }
-    g_object_unref (caps);
-  }
-
   rc = gst_pad_link (newpad, sinkpad);
   if (GST_PAD_LINK_FAILED (rc)) {
-logStderr ("   link failed\n");
-  } else {
-logStderr ("   link ok\n");
+    fprintf (stderr, "ERR: pad link failed\n");
   }
   gst_object_unref (sinkpad);
   gstiRunOnce (gsti);
@@ -723,7 +718,9 @@ gstiChangeVolume (gsti_t *gsti)
   g_object_set (G_OBJECT (gsti->volume [gsti->curr]),
       "mute", false, NULL);
   g_object_get (G_OBJECT (gsti->volume [gsti->curr]), "volume", &dval, NULL);
-logStderr ("-- set volume %d %.2f %.2f\n", gsti->curr, gsti->vol [gsti->curr], dval);
+# if GSTI_DEBUG
+  logStderr ("-- set volume %d %.2f %.2f\n", gsti->curr, gsti->vol [gsti->curr], dval);
+# endif
   gstiRunOnce (gsti);
 }
 
