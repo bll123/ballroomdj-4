@@ -134,7 +134,7 @@ gstiInit (const char *plinm)
     fprintf (stderr, "ERR: link-many mix failed\n");
   }
 
-  gsti->vol [gsti->curr] = 1.0;
+  gsti->vol [gsti->curr] = 0.9;
   gstiMakeSource (gsti, mix);
   gsti->currsource = gsti->source [gsti->curr];
 
@@ -172,7 +172,7 @@ gstiFree (gsti_t *gsti)
     gstiWaitState (gsti, GST_STATE_READY);
     gst_element_set_state (gsti->pipeline, GST_STATE_NULL);
     gstiWaitState (gsti, GST_STATE_NULL);
-    gsti->vol [gsti->curr] = 1.0;
+    gsti->vol [gsti->curr] = 0.9;
     gstiChangeVolume (gsti);
     mdextfree (gsti->pipeline);
     gst_object_unref (gsti->pipeline);
@@ -348,7 +348,7 @@ logStderr ("   stop: set volume 0\n");
   gstiRunOnce (gsti);
 
 logStderr ("   stop: set volume 1\n");
-  gsti->vol [gsti->curr] = 1.0;
+  gsti->vol [gsti->curr] = 0.9;
   gstiChangeVolume (gsti);
 
   gsti->isstopping = false;
@@ -376,10 +376,9 @@ gstiSetPosition (gsti_t *gsti, int64_t pos)
     gpos *= 1000;
 
 logStderr ("-- set-pos %ld\n", (long) pos);
-return true;
     /* all seeks are based on the song's original duration, */
     /* not the adjusted duration */
-    if (gst_element_seek (gsti->currsource, gsti->rate [gsti->curr],
+    if (gst_element_seek (gsti->pipeline, gsti->rate [gsti->curr],
         GST_FORMAT_TIME,
         GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT,
         GST_SEEK_TYPE_SET, gpos,
@@ -411,7 +410,7 @@ logStderr ("-- set-rate %0.2f\n", rate);
 
     gst_element_query_position (gsti->currsource, GST_FORMAT_TIME, &pos);
 
-    if (gst_element_seek (gsti->currsource, gsti->rate [gsti->curr],
+    if (gst_element_seek (gsti->pipeline, gsti->rate [gsti->curr],
         GST_FORMAT_TIME,
         GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE,
         GST_SEEK_TYPE_SET, pos,
@@ -733,9 +732,7 @@ static void
 gstiDebugDot (gsti_t *gsti, const char *fn)
 {
   GST_DEBUG_BIN_TO_DOT_FILE_WITH_TS (GST_BIN (gsti->pipeline),
-      GST_DEBUG_GRAPH_SHOW_ALL |
-      GST_DEBUG_GRAPH_SHOW_VERBOSE |
-      GST_DEBUG_GRAPH_SHOW_FULL_PARAMS, fn);
+      GST_DEBUG_GRAPH_SHOW_ALL, fn);
   gstiRunOnce (gsti);
 }
 # endif
