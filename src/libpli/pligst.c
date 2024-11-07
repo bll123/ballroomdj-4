@@ -97,8 +97,7 @@ pliiStartPlayback (plidata_t *plidata, ssize_t dpos, ssize_t speed)
     pliiWaitUntilPlaying (plidata);
   }
   /* set the rate first */
-  /* GStreamer can change the rate, but not the pitch */
-  /* pliiRate (plidata, speed); */
+  pliiRate (plidata, speed);
   pliiSeek (plidata, dpos);
 }
 
