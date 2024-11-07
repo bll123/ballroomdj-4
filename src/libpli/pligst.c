@@ -85,9 +85,18 @@ pliiCrossFade (plidata_t *plidata, const char *mediaPath,
     return;
   }
 
-//  gstiMedia (plidata->gsti, fullMediaPath, sourceType);
-//  plidata->state = PLI_STATE_STOPPED;
+  gstiCrossFade (plidata->gsti, fullMediaPath, sourceType);
   plidata->state = PLI_STATE_XFADE;
+}
+
+void
+pliiCrossFadeVolume (plidata_t *plidata, int vol)
+{
+  if (plidata == NULL) {
+    return;
+  }
+
+  gstiCrossFadeVolume (plidata->gsti, vol);
 }
 
 void

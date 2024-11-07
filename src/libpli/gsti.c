@@ -48,6 +48,9 @@
 # include "pli.h"
 
 # define GSTI_DEBUG 1
+# define GSTI_NO_VOL 0.0
+# define GSTI_FULL_VOL 1.0
+# define GSTI_NORM_RATE 1.0
 
 enum {
   GSTI_IDENT = 0xccbbaa0069747367,
@@ -61,9 +64,11 @@ typedef struct gsti {
   uint64_t          ident;
   GMainContext      *mainctx;
   GstElement        *pipeline;
+  GstElement        *mix;
   GstElement        *currsource;
   GstElement        *source [GSTI_MAX_SOURCE];
-  GstElement        *volume [GSTI_MAX_SOURCE];
+  GstPad            *endpt [GSTI_MAX_SOURCE];
+  GstPad            *mixsink [GSTI_MAX_SOURCE];
   GstPad            *decsink [GSTI_MAX_SOURCE];
   GstState          gststate;
   guint             busId;
@@ -74,7 +79,6 @@ typedef struct gsti {
   bool              active [GSTI_MAX_SOURCE];
   bool              isstopping : 1;
   bool              incrossfade : 1;
-  bool              inseek : 1;
 } gsti_t;
 
 static void gstiRunOnce (gsti_t *gsti);
@@ -107,14 +111,15 @@ gstiInit (const char *plinm)
   gsti->state = PLI_STATE_IDLE;
   for (int i = 0; i < GSTI_MAX_SOURCE; ++i) {
     gsti->source [i] = NULL;
-    gsti->rate [i] = 1.0;
-    gsti->vol [i] = 0.0;
+    gsti->mixsink [i] = NULL;
+    gsti->decsink [i] = NULL;
+    gsti->rate [i] = GSTI_NORM_RATE;
+    gsti->vol [i] = GSTI_NO_VOL;
     gsti->active [i] = false;
   }
   gsti->curr = 0;
   gsti->isstopping = false;
   gsti->incrossfade = false;
-  gsti->inseek = false;
 
   gsti->mainctx = g_main_context_default ();
   gstiRunOnce (gsti);
@@ -126,6 +131,8 @@ gstiInit (const char *plinm)
   /* the end of the pipeline: */
   /*    audiomixer ! audioconvert ! autoaudiosink */
   mix = gst_element_factory_make ("audiomixer", "mix");
+  gsti->mix = mix;
+
   mixconvert = gst_element_factory_make ("audioconvert", "mixcvt");
   sink = gst_element_factory_make ("autoaudiosink", "autosink");
 
@@ -134,7 +141,7 @@ gstiInit (const char *plinm)
     fprintf (stderr, "ERR: link-many mix failed\n");
   }
 
-  gsti->vol [gsti->curr] = 0.9;
+  gsti->vol [gsti->curr] = GSTI_FULL_VOL;
   gstiMakeSource (gsti, mix);
   gsti->currsource = gsti->source [gsti->curr];
 
@@ -144,7 +151,6 @@ gstiInit (const char *plinm)
   gstiRunOnce (gsti);
 
   gsti->active [gsti->curr] = true;
-  gstiChangeVolume (gsti);
 
 # if GSTI_DEBUG
   gstiDebugDot (gsti, "gsti-init");
@@ -166,13 +172,13 @@ gstiFree (gsti_t *gsti)
 
   if (gsti->pipeline != NULL) {
     gsti->isstopping = true;
-    gsti->vol [gsti->curr] = 0.0;
+    gsti->vol [gsti->curr] = GSTI_NO_VOL;
     gstiChangeVolume (gsti);
     gst_element_set_state (gsti->pipeline, GST_STATE_READY);
     gstiWaitState (gsti, GST_STATE_READY);
     gst_element_set_state (gsti->pipeline, GST_STATE_NULL);
     gstiWaitState (gsti, GST_STATE_NULL);
-    gsti->vol [gsti->curr] = 0.9;
+    gsti->vol [gsti->curr] = GSTI_FULL_VOL;
     gstiChangeVolume (gsti);
     mdextfree (gsti->pipeline);
     gst_object_unref (gsti->pipeline);
@@ -207,7 +213,7 @@ gstiMedia (gsti_t *gsti, const char *fulluri, int sourceType)
     stpecpy (tbuff, tbuff + sizeof (tbuff), fulluri);
   }
 
-  gsti->rate [gsti->curr] = 1.0;
+  gsti->rate [gsti->curr] = GSTI_NORM_RATE;
 # if GSTI_DEBUG
   logStderr ("uri: %s\n", tbuff);
 # endif
@@ -221,6 +227,18 @@ gstiMedia (gsti_t *gsti, const char *fulluri, int sourceType)
 # if GSTI_DEBUG
   gstiDebugDot (gsti, "gsti-media");
 # endif
+  return;
+}
+
+void
+gstiCrossFade (gsti_t *gsti, const char *fulluri, int sourceType)
+{
+  return;
+}
+
+void
+gstiCrossFadeVolume (gsti_t *gsti, int vol)
+{
   return;
 }
 
@@ -275,9 +293,7 @@ gstiState (gsti_t *gsti)
 # if GSTI_DEBUG
   if (gsti->gststate != state) {
     char    tmp [80];
-    if (state == GST_STATE_PLAYING) {
-      gstiChangeVolume (gsti);
-    }
+
     logStderr ("gsti-state: curr: %d pending: %d\n", state, pending);
     snprintf (tmp, sizeof (tmp), "gsti-state_%d", state);
     gstiDebugDot (gsti, tmp);
@@ -347,14 +363,14 @@ gstiStop (gsti_t *gsti)
   logStderr ("-- stop\n");
 # endif
   gsti->isstopping = true;
-  gsti->vol [gsti->curr] = 0.0;
+  gsti->vol [gsti->curr] = GSTI_NO_VOL;
   gstiChangeVolume (gsti);
 
   gst_element_set_state (GST_ELEMENT (gsti->pipeline), GST_STATE_READY);
   gstiWaitState (gsti, GST_STATE_READY);
   gstiRunOnce (gsti);
 
-  gsti->vol [gsti->curr] = 0.9;
+  gsti->vol [gsti->curr] = GSTI_FULL_VOL;
   gstiChangeVolume (gsti);
 
   gsti->isstopping = false;
@@ -395,7 +411,6 @@ gstiSetPosition (gsti_t *gsti, int64_t pos)
         GST_SEEK_TYPE_SET, gpos,
         GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE)) {
       rc = true;
-      gsti->inseek = true;
     }
   }
 
@@ -429,7 +444,6 @@ gstiSetRate (gsti_t *gsti, double rate)
         GST_SEEK_TYPE_SET, pos,
         GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE)) {
       rc = true;
-      gsti->inseek = true;
     }
   }
 
@@ -440,17 +454,18 @@ gstiSetRate (gsti_t *gsti, double rate)
 int
 gstiGetVolume (gsti_t *gsti)
 {
-  double  dval;
+//  double  dval;
   int     val;
 
-  g_object_get (G_OBJECT (gsti->volume [gsti->curr]), "volume", &dval, NULL);
-  val = round (dval * 100.0);
+//  g_object_get (G_OBJECT (gsti->mixsink [gsti->curr]), "volume", &dval, NULL);
+//  val = round (dval * 100.0);
+// ###
+  val = 100;
 # if GSTI_DEBUG
   logStderr ("-- get volume %d\n", val);
 # endif
   return val;
 }
-
 
 /* internal routines */
 
@@ -518,13 +533,6 @@ gstiBusCallback (GstBus * bus, GstMessage * message, void *udata)
       break;
     }
     case GST_MESSAGE_DURATION_CHANGED: {
-      break;
-    }
-    case GST_MESSAGE_ASYNC_DONE: {
-      if (gsti->inseek) {
-        gst_element_set_state (GST_ELEMENT (gsti->pipeline), GST_STATE_PLAYING);
-        gsti->inseek = false;
-      }
       break;
     }
     case GST_MESSAGE_EOS: {
@@ -612,7 +620,6 @@ gstiMakeSource (gsti_t *gsti, GstElement *mix)
   GstElement        *scaletempo;
   GstElement        *st_convert;
   GstElement        *resample;
-  GstElement        *volume;
   char              tmpnm [40];
 
   snprintf (tmpnm, sizeof (tmpnm), "decode_%d", gsti->curr);
@@ -651,20 +658,14 @@ gstiMakeSource (gsti_t *gsti, GstElement *mix)
     fprintf (stderr, "ERR: unable to instantiate resample\n");
   }
   g_object_set (G_OBJECT (resample), "quality", 8, NULL);
-
-  snprintf (tmpnm, sizeof (tmpnm), "vol_%d", gsti->curr);
-  volume = gst_element_factory_make ("volume", tmpnm);
-  if (volume == NULL) {
-    fprintf (stderr, "ERR: unable to instantiate volume\n");
-  }
-  gsti->volume [gsti->curr] = volume;
+  gsti->endpt [gsti->curr] = gst_element_get_static_pad (resample, "src");
 
   gst_bin_add_many (GST_BIN (gsti->pipeline),
-      decode, dec_convert, scaletempo, st_convert, resample, volume, NULL);
+      decode, dec_convert, scaletempo, st_convert, resample, NULL);
   /* uridecodebin3 does not have a static pad */
   /* do not link decode, it will be linked in the pad-added handler */
   if (! gst_element_link_many (dec_convert,
-      scaletempo, st_convert, resample, volume, mix, NULL)) {
+      scaletempo, st_convert, resample, NULL)) {
     fprintf (stderr, "ERR: link-many decoder %d failed\n", gsti->curr);
   }
 
@@ -681,6 +682,7 @@ gstiDynamicLinkPad (GstElement *src, GstPad *newpad, gpointer udata)
 {
   gsti_t            *gsti = udata;
   GstPad            *sinkpad = NULL;
+  GstPad            *srcpad = NULL;
   GstPadLinkReturn  rc;
 
   sinkpad = gsti->decsink [gsti->curr];
@@ -701,7 +703,17 @@ gstiDynamicLinkPad (GstElement *src, GstPad *newpad, gpointer udata)
     fprintf (stderr, "ERR: pad link failed\n");
   }
   gst_object_unref (sinkpad);
+
+  srcpad = gsti->endpt [gsti->curr];
+  gsti->mixsink [gsti->curr] =
+      gst_element_request_pad_simple (gsti->mix, "sink_%u");
+  rc = gst_pad_link (srcpad, gsti->mixsink [gsti->curr]);
+  if (GST_PAD_LINK_FAILED (rc)) {
+    fprintf (stderr, "ERR: endpt link failed\n");
+  }
   gstiRunOnce (gsti);
+
+  gstiChangeVolume (gsti);
 
 # if GSTI_DEBUG
   gstiDebugDot (gsti, "gsti-link");
@@ -713,12 +725,15 @@ gstiChangeVolume (gsti_t *gsti)
 {
   double      dval;
 
-  g_object_set (G_OBJECT (gsti->volume [gsti->curr]),
+  if (gsti->mixsink [gsti->curr] == NULL) {
+    return;
+  }
+
+  g_object_set (G_OBJECT (gsti->mixsink [gsti->curr]),
       "volume", gsti->vol [gsti->curr], NULL);
-  g_object_set (G_OBJECT (gsti->volume [gsti->curr]),
-      "mute", false, NULL);
-  g_object_get (G_OBJECT (gsti->volume [gsti->curr]), "volume", &dval, NULL);
+  g_object_set (G_OBJECT (gsti->mixsink [gsti->curr]), "mute", false, NULL);
 # if GSTI_DEBUG
+  g_object_get (G_OBJECT (gsti->mixsink [gsti->curr]), "volume", &dval, NULL);
   logStderr ("-- set volume %d %.2f %.2f\n", gsti->curr, gsti->vol [gsti->curr], dval);
 # endif
   gstiRunOnce (gsti);
@@ -729,7 +744,9 @@ static void
 gstiDebugDot (gsti_t *gsti, const char *fn)
 {
   GST_DEBUG_BIN_TO_DOT_FILE_WITH_TS (GST_BIN (gsti->pipeline),
-      GST_DEBUG_GRAPH_SHOW_ALL, fn);
+      GST_DEBUG_GRAPH_SHOW_STATES |
+      GST_DEBUG_GRAPH_SHOW_NON_DEFAULT_PARAMS |
+      GST_DEBUG_GRAPH_SHOW_FULL_PARAMS, fn);
   gstiRunOnce (gsti);
 }
 # endif

@@ -64,8 +64,7 @@ void          pliMediaSetup (pli_t *pli, const char *mediaPath, const char *full
 void          pliStartPlayback (pli_t *pli, ssize_t dpos, ssize_t speed);
 /* cross-fade is used instead of media-setup + start-playback */
 void          pliCrossFade (pli_t *pli, const char *mediaPath, const char *fullMediaPath, int sourceType);
-/* process is needed to process the cross-fade */
-void          pliProcess (pli_t *pli);
+void          pliCrossFadeVolume (pli_t *pli, int vol);
 void          pliPause (pli_t *pli);
 void          pliPlay (pli_t *pli);
 void          pliStop (pli_t *pli);
@@ -88,6 +87,8 @@ void          pliiFree (plidata_t *pliData);
 void          pliiCleanup (void);
 void          pliiMediaSetup (plidata_t *pliData, const char *mediaPath, const char *fullMediaPath, int sourceType);
 void          pliiStartPlayback (plidata_t *pliData, ssize_t dpos, ssize_t speed);
+void          pliiCrossFade (plidata_t *plidata, const char *mediaPath, const char *fullMediaPath, int sourceType);
+void          pliiCrossFadeVolume (plidata_t *plidata, int vol);
 void          pliiClose (plidata_t *pliData);
 void          pliiPause (plidata_t *pliData);
 void          pliiPlay (plidata_t *pliData);

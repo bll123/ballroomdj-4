@@ -16,6 +16,8 @@ gsti_t *gstiInit (const char *plinm);
 void gstiFree (gsti_t *gsti);
 void gstiCleanup (void);
 void gstiMedia (gsti_t *gsti, const char *fulluri, int sourceType);
+void gstiCrossFade (gsti_t *gsti, const char *fulluri, int sourceType);
+void gstiCrossFadeVolume (gsti_t *gsti, int vol);
 int64_t gstiGetDuration (gsti_t *gsti);
 int64_t gstiGetPosition (gsti_t *gsti);
 plistate_t gstiState (gsti_t *gsti);
