@@ -5,7 +5,11 @@
 c=0
 for i in ../tmp/*-gsti-*.dot; do
   c=$(($c+1))
+  tc=$c
+  if [[ $c -lt 10 ]]; then
+    tc=0$c
+  fi
   tnm=$(echo $i | sed -e 's,.*-,,' -e 's,\.dot$,,')
-  nm=$c-$tnm
+  nm=$tc-$tnm
   dot -Tpng $i -o $nm.png
 done

@@ -243,3 +243,4 @@ tclean:
 	@-$(RM) -f launcher.rc bdj4_icon.ico
 	@-$(RM) -f selauncher.rc bdj4_icon_inst.ico
 	@-$(RM) -f dep-*.txt ../tmp/*.dot $$HOME/.cache/BDJ4/volreg.*
+	@-$(RM) -f [0-9][0-9]-[a-z]*.png

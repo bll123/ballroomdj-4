@@ -69,7 +69,8 @@ typedef struct gsti {
   GstElement        *source [GSTI_MAX_SOURCE];
   GstPad            *endpt [GSTI_MAX_SOURCE];
   GstPad            *mixsink [GSTI_MAX_SOURCE];
-  GstPad            *decsink [GSTI_MAX_SOURCE];
+  GstElement        *deccvt [GSTI_MAX_SOURCE];
+//  GstPad            *decsink [GSTI_MAX_SOURCE];
   GstState          gststate;
   guint             busId;
   plistate_t        state;
@@ -112,7 +113,8 @@ gstiInit (const char *plinm)
   for (int i = 0; i < GSTI_MAX_SOURCE; ++i) {
     gsti->source [i] = NULL;
     gsti->mixsink [i] = NULL;
-    gsti->decsink [i] = NULL;
+    gsti->deccvt [i] = NULL;
+//    gsti->decsink [i] = NULL;
     gsti->rate [i] = GSTI_NORM_RATE;
     gsti->vol [i] = GSTI_NO_VOL;
     gsti->active [i] = false;
@@ -135,6 +137,7 @@ gstiInit (const char *plinm)
 
   mixconvert = gst_element_factory_make ("audioconvert", "mixcvt");
   sink = gst_element_factory_make ("autoaudiosink", "autosink");
+  g_object_set (G_OBJECT (sink), "message-forward", true, NULL);
 
   gst_bin_add_many (GST_BIN (gsti->pipeline), mix, mixconvert, sink, NULL);
   if (! gst_element_link_many (mix, mixconvert, sink, NULL)) {
@@ -636,9 +639,10 @@ gstiMakeSource (gsti_t *gsti, GstElement *mix)
   snprintf (tmpnm, sizeof (tmpnm), "deccvt_%d", gsti->curr);
   dec_convert = gst_element_factory_make ("audioconvert", tmpnm);
   if (dec_convert == NULL) {
-    fprintf (stderr, "ERR: unable to instantiate convert-a\n");
+    fprintf (stderr, "ERR: unable to instantiate deccvt\n");
   }
-  gsti->decsink [gsti->curr] = gst_element_get_static_pad (dec_convert, "sink");
+  gsti->deccvt [gsti->curr] = dec_convert;
+//  gsti->decsink [gsti->curr] = gst_element_get_static_pad (dec_convert, "sink");
 
   snprintf (tmpnm, sizeof (tmpnm), "st_%d", gsti->curr);
   scaletempo = gst_element_factory_make ("scaletempo", tmpnm);
@@ -649,7 +653,7 @@ gstiMakeSource (gsti_t *gsti, GstElement *mix)
   snprintf (tmpnm, sizeof (tmpnm), "stcvt_%d", gsti->curr);
   st_convert = gst_element_factory_make ("audioconvert", tmpnm);
   if (st_convert == NULL) {
-    fprintf (stderr, "ERR: unable to instantiate convert-b\n");
+    fprintf (stderr, "ERR: unable to instantiate stcvt\n");
   }
 
   snprintf (tmpnm, sizeof (tmpnm), "resample_%d", gsti->curr);
@@ -685,18 +689,21 @@ gstiDynamicLinkPad (GstElement *src, GstPad *newpad, gpointer udata)
   GstPad            *srcpad = NULL;
   GstPadLinkReturn  rc;
 
-  sinkpad = gsti->decsink [gsti->curr];
+  sinkpad = gst_element_get_static_pad (gsti->deccvt [gsti->curr], "sink");
 
-  if (gst_pad_is_linked (sinkpad)) {
+# if GSTI_DEBUG
+  logStderr ("   link: newpad %s from %s %d\n", GST_PAD_NAME (newpad), GST_ELEMENT_NAME (src),
+      gst_pad_is_linked (newpad));
+  logStderr ("     sinkpad %s %d\n", GST_PAD_NAME (sinkpad),
+      gst_pad_is_linked (sinkpad));
+# endif
+
+  if (gst_pad_is_linked (newpad)) {
     return;
   }
   if (newpad == NULL) {
     return;
   }
-
-# if GSTI_DEBUG
-  logStderr ("   newpad %s from %s:\n", GST_PAD_NAME (newpad), GST_ELEMENT_NAME (src));
-# endif
 
   rc = gst_pad_link (newpad, sinkpad);
   if (GST_PAD_LINK_FAILED (rc)) {
@@ -704,19 +711,37 @@ gstiDynamicLinkPad (GstElement *src, GstPad *newpad, gpointer udata)
   }
   gst_object_unref (sinkpad);
 
+# if GSTI_DEBUG
+  gstiDebugDot (gsti, "gsti-link_a");
+# endif
+
   srcpad = gsti->endpt [gsti->curr];
-  gsti->mixsink [gsti->curr] =
-      gst_element_request_pad_simple (gsti->mix, "sink_%u");
-  rc = gst_pad_link (srcpad, gsti->mixsink [gsti->curr]);
-  if (GST_PAD_LINK_FAILED (rc)) {
-    fprintf (stderr, "ERR: endpt link failed\n");
+  if (gsti->mixsink [gsti->curr] == NULL) {
+    /* this will create a new audiomixer sink */
+    gsti->mixsink [gsti->curr] =
+        gst_element_request_pad_simple (gsti->mix, "sink_%u");
   }
+
+# if GSTI_DEBUG
+  logStderr ("   link: srcpad %s %d:\n", GST_PAD_NAME (srcpad),
+      gst_pad_is_linked (srcpad));
+  logStderr ("     mixsink %s %d:\n", GST_PAD_NAME (gsti->mixsink [gsti->curr]),
+      gst_pad_is_linked (gsti->mixsink [gsti->curr]));
+# endif
+
+  if (! gst_pad_is_linked (srcpad)) {
+    rc = gst_pad_link (srcpad, gsti->mixsink [gsti->curr]);
+    if (GST_PAD_LINK_FAILED (rc)) {
+      fprintf (stderr, "ERR: endpt link failed\n");
+    }
+  }
+
   gstiRunOnce (gsti);
 
   gstiChangeVolume (gsti);
 
 # if GSTI_DEBUG
-  gstiDebugDot (gsti, "gsti-link");
+  gstiDebugDot (gsti, "gsti-link_b");
 # endif
 }
 
