@@ -47,7 +47,7 @@ pliiInit (const char *plinm)
   plidata->state = PLI_STATE_STOPPED;
   plidata->supported = PLI_SUPPORT_NONE;
   plidata->supported |= PLI_SUPPORT_SEEK;
-  plidata->supported |= PLI_SUPPORT_SPEED;
+//  plidata->supported |= PLI_SUPPORT_SPEED;  /* not working */
 
   return plidata;
 }
@@ -120,7 +120,8 @@ pliiStartPlayback (plidata_t *plidata, ssize_t dpos, ssize_t speed)
   }
   /* set the rate first */
   /* GStreamer can change the rate, but not the pitch */
-  /* pliiRate (plidata, speed); */
+  /* cannot seem to get scaletempo to work */
+//  pliiRate (plidata, speed);
   pliiSeek (plidata, dpos);
 }
 

@@ -1,14 +1,15 @@
 /*
  * Copyright 2024 Brad Lanam Pleasant Hill CA
  *
- * gst-launch-1.0 -vv playbin \
+ * gst-launch-1.0 playbin \
  *    uri=file://$HOME/s/bdj4/test-music/001-argentinetango.mp3
  *
- * gst-launch-1.0 -vv playbin \
+ * old version:
+ * gst-launch-1.0 playbin \
  *    uri=file://$HOME/s/bdj4/test-music/001-argentinetango.mp3 \
  *    audio_sink="scaletempo ! audioconvert ! audioresample ! autoaudiosink"
  *
- * working mix:
+ * working mix (the volume elements are not necessary):
  * gst-launch-1.0 \
  *     audiomixer name=mix ! audioconvert ! autoaudiosink \
  *     uridecodebin3 uri='file:///home/bll/s/bdj4/test-music/001-chacha.mp3' \
@@ -21,7 +22,7 @@
  * modifying a playbin pipeline:
  * https://gstreamer.freedesktop.org/documentation/tutorials/playback/custom-playbin-sinks.html?gi-language=c
  *
- * export GST_DEBUG_DUMP_DOT_DIR=/home/bll/s/bdj4/tmp/
+ * export GST_DEBUG_DUMP_DOT_DIR=/home/bll/s/bdj4/tmp
  *
  */
 #include "config.h"
@@ -47,7 +48,7 @@
 # include "gsti.h"
 # include "pli.h"
 
-# define GSTI_DEBUG 1
+# define GSTI_DEBUG 0
 # define GSTI_NO_VOL 0.0
 # define GSTI_FULL_VOL 1.0
 # define GSTI_NORM_RATE 1.0
@@ -87,7 +88,7 @@ static void gstiProcessState (gsti_t *gsti, GstState state);
 static void gstiWaitState (gsti_t *gsti, GstState want);
 static void gstiMakeSource (gsti_t *gsti, GstElement *mix);
 static void gstiDynamicLinkPad (GstElement *src, GstPad *newpad, gpointer udata);
-static void gstiChangeVolume (gsti_t *gsti);
+static void gstiChangeVolume (gsti_t *gsti, int curr);
 # if GSTI_DEBUG
 static void gstiDebugDot (gsti_t *gsti, const char *fn);
 # endif
@@ -100,8 +101,15 @@ gstiInit (const char *plinm)
   GstElement        *mix;
   GstElement        *mixconvert;
   GstElement        *sink;
+  char              *tmp;
 
   gst_init (NULL, 0);
+
+  tmp = gst_version_string ();
+  mdextalloc (tmp);
+  logMsg (LOG_DBG, LOG_IMPORTANT, "gst: version %s", tmp);
+  mdextfree (tmp);
+  free (tmp);
 
   gsti = mdmalloc (sizeof (gsti_t));
   gsti->ident = GSTI_IDENT;
@@ -135,7 +143,6 @@ gstiInit (const char *plinm)
 
   mixconvert = gst_element_factory_make ("audioconvert", "mixcvt");
   sink = gst_element_factory_make ("autoaudiosink", "autosink");
-  g_object_set (G_OBJECT (sink), "message-forward", true, NULL);
 
   gst_bin_add_many (GST_BIN (gsti->pipeline), mix, mixconvert, sink, NULL);
   if (! gst_element_link_many (mix, mixconvert, sink, NULL)) {
@@ -173,19 +180,26 @@ gstiFree (gsti_t *gsti)
 
   if (gsti->pipeline != NULL) {
     gsti->isstopping = true;
-    gsti->vol [gsti->curr] = GSTI_NO_VOL;
-    gstiChangeVolume (gsti);
+
+    /* this set the audiomixer sink pad volumes to zero */
+    for (int i = 0; i < GSTI_MAX_SOURCE; ++i) {
+      gsti->vol [i] = GSTI_NO_VOL;
+      gstiChangeVolume (gsti, i);
+    }
+
     gst_element_set_state (gsti->pipeline, GST_STATE_READY);
     gstiWaitState (gsti, GST_STATE_READY);
+
     gst_element_set_state (gsti->pipeline, GST_STATE_NULL);
     gstiWaitState (gsti, GST_STATE_NULL);
-    gsti->vol [gsti->curr] = GSTI_FULL_VOL;
-    gstiChangeVolume (gsti);
+
     mdextfree (gsti->pipeline);
     gst_object_unref (gsti->pipeline);
   }
 
   gstiRunOnce (gsti);
+
+  gst_deinit ();
 
   mdfree (gsti);
 }
@@ -214,10 +228,11 @@ gstiMedia (gsti_t *gsti, const char *fulluri, int sourceType)
     stpecpy (tbuff, tbuff + sizeof (tbuff), fulluri);
   }
 
-  gsti->rate [gsti->curr] = GSTI_NORM_RATE;
 # if GSTI_DEBUG
   logStderr ("uri: %s\n", tbuff);
 # endif
+
+  gsti->rate [gsti->curr] = GSTI_NORM_RATE;
   g_object_set (G_OBJECT (gsti->currsource), "uri", tbuff, NULL);
   rc = gst_element_set_state (GST_ELEMENT (gsti->pipeline), GST_STATE_PAUSED);
   if (rc == GST_STATE_CHANGE_FAILURE) {
@@ -234,6 +249,52 @@ gstiMedia (gsti_t *gsti, const char *fulluri, int sourceType)
 void
 gstiCrossFade (gsti_t *gsti, const char *fulluri, int sourceType)
 {
+  char    tbuff [MAXPATHLEN];
+  int     idx;
+
+  if (gsti == NULL || gsti->ident != GSTI_IDENT || gsti->mainctx == NULL) {
+    return;
+  }
+
+  if (gsti->state != PLI_STATE_PLAYING) {
+    gstiMedia (gsti, fulluri, sourceType);
+    return;
+  }
+
+  gstiRunOnce (gsti);
+
+  idx = gsti->curr + 1;
+  if (idx >= GSTI_MAX_SOURCE) { idx = 0; }
+
+  if (sourceType == AUDIOSRC_TYPE_FILE) {
+    snprintf (tbuff, sizeof (tbuff), "%s%s", AS_FILE_PFX, fulluri);
+  } else {
+    stpecpy (tbuff, tbuff + sizeof (tbuff), fulluri);
+  }
+
+# if GSTI_DEBUG
+  logStderr ("uri: %s\n", tbuff);
+# endif
+
+  gsti->rate [idx] = GSTI_NORM_RATE;
+  /* start with zero volume */
+  gsti->vol [idx] = GSTI_NO_VOL;
+  gstiChangeVolume (gsti, idx);
+
+  g_object_set (G_OBJECT (gsti->source [idx]), "uri", tbuff, NULL);
+  if (gsti->state == PLI_STATE_PLAYING) {
+    gsti->state = PLI_STATE_XFADE;
+  }
+
+  gsti->currsource = gsti->source [idx];
+  gsti->incrossfade = true;
+  gsti->curr = idx;
+  gsti->active [idx] = true;
+
+  gstiRunOnce (gsti);
+# if GSTI_DEBUG
+  gstiDebugDot (gsti, "gsti-crossfade");
+# endif
   return;
 }
 
@@ -364,15 +425,21 @@ gstiStop (gsti_t *gsti)
   logStderr ("-- stop\n");
 # endif
   gsti->isstopping = true;
-  gsti->vol [gsti->curr] = GSTI_NO_VOL;
-  gstiChangeVolume (gsti);
+
+  /* a stop might be received during a cross-fade */
+  for (int i = 0; i < GSTI_MAX_SOURCE; ++i) {
+    gsti->vol [i] = GSTI_NO_VOL;
+    gstiChangeVolume (gsti, i);
+  }
 
   gst_element_set_state (GST_ELEMENT (gsti->pipeline), GST_STATE_READY);
   gstiWaitState (gsti, GST_STATE_READY);
   gstiRunOnce (gsti);
 
-  gsti->vol [gsti->curr] = GSTI_FULL_VOL;
-  gstiChangeVolume (gsti);
+  for (int i = 0; i < GSTI_MAX_SOURCE; ++i) {
+    gsti->vol [i] = GSTI_FULL_VOL;
+    gstiChangeVolume (gsti, i);
+  }
 
   gsti->isstopping = false;
 
@@ -394,18 +461,21 @@ gstiSetPosition (gsti_t *gsti, int64_t pos)
 
   if (gsti->state == PLI_STATE_PAUSED ||
       gsti->state == PLI_STATE_PLAYING) {
-    gint64    tpos;
-
     gpos = pos;
     gpos *= 1000;
     gpos *= 1000;
 
 # if GSTI_DEBUG
-    gst_element_query_position (gsti->pipeline, GST_FORMAT_TIME, &tpos);
-    logStderr ("-- set-pos %ld %ld\n", (long) pos, (long) (tpos / 1000 / 1000));
+    {
+      gint64    tpos;
+
+      gst_element_query_position (gsti->pipeline, GST_FORMAT_TIME, &tpos);
+      logStderr ("-- set-pos %ld %ld\n", (long) pos, (long) (tpos / 1000 / 1000));
+    }
 # endif
     /* all seeks are based on the song's original duration, */
     /* not the adjusted duration */
+fprintf (stderr, "-- set-pos: rate: %.4f\n", gsti->rate [gsti->curr]);
     if (gst_element_seek (gsti->pipeline, gsti->rate [gsti->curr],
         GST_FORMAT_TIME,
         GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT,
@@ -433,8 +503,9 @@ gstiSetRate (gsti_t *gsti, double rate)
     gint64    pos;
 
 # if GSTI_DEBUG
-    logStderr ("-- set-rate %0.2f\n", rate);
+    logStderr ("-- set-rate %0.4f\n", rate);
 # endif
+fprintf (stderr, "-- set-rate: rate: %.4f\n", rate);
     gsti->rate [gsti->curr] = rate;
 
     gst_element_query_position (gsti->pipeline, GST_FORMAT_TIME, &pos);
@@ -452,6 +523,8 @@ gstiSetRate (gsti_t *gsti, double rate)
   return rc;
 }
 
+/* this no longer works with the new audiomixer pipeline */
+/* I don't know how to get the final sink volume */
 int
 gstiGetVolume (gsti_t *gsti)
 {
@@ -495,6 +568,10 @@ gstiBusCallback (GstBus * bus, GstMessage * message, void *udata)
     case GST_MESSAGE_WARNING: {
       GError *err;
       gchar *debug;
+
+# if GSTI_DEBUG
+  gstiDebugDot (gsti, "gsti-error");
+# endif
 
       gst_message_parse_error (message, &err, &debug);
       logStderr ("%d: %s %s %d %s\n", gsti->curr,
@@ -628,7 +705,7 @@ gstiMakeSource (gsti_t *gsti, GstElement *mix)
   if (decode == NULL) {
     fprintf (stderr, "ERR: unable to instantiate decoder\n");
   }
-  caps = gst_caps_from_string ("audio/x-raw");
+  caps = gst_caps_from_string ("audio/x-raw,format=1");
   g_object_set (decode, "caps", caps, NULL);
   gst_caps_unref (caps);
   g_object_set (G_OBJECT (decode), "use-buffering", true, NULL);
@@ -666,8 +743,10 @@ gstiMakeSource (gsti_t *gsti, GstElement *mix)
 
   gst_bin_add_many (GST_BIN (gsti->pipeline),
       decode, dec_convert, scaletempo, st_convert, resample, NULL);
+
   /* uridecodebin3 does not have a static pad */
   /* do not link decode, it will be linked in the pad-added handler */
+  /* the link to the audiomixer is also handled in the pad-added handler */
   if (! gst_element_link_many (dec_convert,
       scaletempo, st_convert, resample, NULL)) {
     fprintf (stderr, "ERR: link-many decoder %d failed\n", gsti->curr);
@@ -738,7 +817,7 @@ gstiDynamicLinkPad (GstElement *src, GstPad *newpad, gpointer udata)
 
   gstiRunOnce (gsti);
 
-  gstiChangeVolume (gsti);
+  gstiChangeVolume (gsti, gsti->curr);
 
 # if GSTI_DEBUG
   gstiDebugDot (gsti, "gsti-link_b");
@@ -746,20 +825,25 @@ gstiDynamicLinkPad (GstElement *src, GstPad *newpad, gpointer udata)
 }
 
 static void
-gstiChangeVolume (gsti_t *gsti)
+gstiChangeVolume (gsti_t *gsti, int curr)
 {
-  double      dval;
-
-  if (gsti->mixsink [gsti->curr] == NULL) {
+  if (gsti->mixsink [curr] == NULL) {
+    return;
+  }
+  if (gsti->active [curr] == false) {
     return;
   }
 
-  g_object_set (G_OBJECT (gsti->mixsink [gsti->curr]),
+  g_object_set (G_OBJECT (gsti->mixsink [curr]),
       "volume", gsti->vol [gsti->curr], NULL);
-  g_object_set (G_OBJECT (gsti->mixsink [gsti->curr]), "mute", false, NULL);
+  g_object_set (G_OBJECT (gsti->mixsink [curr]), "mute", false, NULL);
 # if GSTI_DEBUG
-  g_object_get (G_OBJECT (gsti->mixsink [gsti->curr]), "volume", &dval, NULL);
-  logStderr ("-- set volume %d %.2f %.2f\n", gsti->curr, gsti->vol [gsti->curr], dval);
+  {
+    double      dval;
+
+    g_object_get (G_OBJECT (gsti->mixsink [curr]), "volume", &dval, NULL);
+    logStderr ("-- set volume %d %.2f %.2f\n", curr, gsti->vol [curr], dval);
+  }
 # endif
   gstiRunOnce (gsti);
 }
@@ -769,8 +853,7 @@ static void
 gstiDebugDot (gsti_t *gsti, const char *fn)
 {
   GST_DEBUG_BIN_TO_DOT_FILE_WITH_TS (GST_BIN (gsti->pipeline),
-      GST_DEBUG_GRAPH_SHOW_STATES |
-      GST_DEBUG_GRAPH_SHOW_NON_DEFAULT_PARAMS |
+      GST_DEBUG_GRAPH_SHOW_ALL |
       GST_DEBUG_GRAPH_SHOW_FULL_PARAMS, fn);
   gstiRunOnce (gsti);
 }
