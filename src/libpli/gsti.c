@@ -48,7 +48,8 @@
 # include "gsti.h"
 # include "pli.h"
 
-# define GSTI_DEBUG 0
+# define GSTI_DEBUG 1
+
 # define GSTI_NO_VOL 0.0
 # define GSTI_FULL_VOL 1.0
 # define GSTI_NORM_RATE 1.0
