@@ -70,7 +70,6 @@ typedef struct gsti {
   GstPad            *endpt [GSTI_MAX_SOURCE];
   GstPad            *mixsink [GSTI_MAX_SOURCE];
   GstElement        *deccvt [GSTI_MAX_SOURCE];
-//  GstPad            *decsink [GSTI_MAX_SOURCE];
   GstState          gststate;
   guint             busId;
   plistate_t        state;
@@ -114,7 +113,6 @@ gstiInit (const char *plinm)
     gsti->source [i] = NULL;
     gsti->mixsink [i] = NULL;
     gsti->deccvt [i] = NULL;
-//    gsti->decsink [i] = NULL;
     gsti->rate [i] = GSTI_NORM_RATE;
     gsti->vol [i] = GSTI_NO_VOL;
     gsti->active [i] = false;
@@ -641,8 +639,10 @@ gstiMakeSource (gsti_t *gsti, GstElement *mix)
   if (dec_convert == NULL) {
     fprintf (stderr, "ERR: unable to instantiate deccvt\n");
   }
+  /* the element gets saved off rather than the sink, as gstreamer */
+  /* will auto-dispose of the sink when uridecodebin3 disconnects */
+  /* from the sink */
   gsti->deccvt [gsti->curr] = dec_convert;
-//  gsti->decsink [gsti->curr] = gst_element_get_static_pad (dec_convert, "sink");
 
   snprintf (tmpnm, sizeof (tmpnm), "st_%d", gsti->curr);
   scaletempo = gst_element_factory_make ("scaletempo", tmpnm);
