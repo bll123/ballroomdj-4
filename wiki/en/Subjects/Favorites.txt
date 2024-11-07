@@ -91,4 +91,4 @@ If there is enough interest in being able to easily change the symbols
 and colors, I can add a configuration screen for that.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-11-05 08:51:06; BDJ4 version 4.12.5.1)_
+<br>_(Updated 2024-11-07 12:25:26; BDJ4 version 4.12.5.1)_

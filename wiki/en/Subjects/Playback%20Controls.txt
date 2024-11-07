@@ -50,4 +50,4 @@ playback volume is adjusted by the set percentage during playback.
 <br>[Subjects&nbsp;/&nbsp;Quick&nbsp;Edit](en-Subjects-Quick%20Edit)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-11-05 08:51:06; BDJ4 version 4.12.5.1)_
+<br>_(Updated 2024-11-07 12:25:26; BDJ4 version 4.12.5.1)_
