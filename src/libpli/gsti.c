@@ -352,16 +352,17 @@ gstiState (gsti_t *gsti)
   gstiRunOnce (gsti);
   gst_element_get_state (GST_ELEMENT (gsti->pipeline), &state, &pending, 1);
   gstiProcessState (gsti, state);
-# if GSTI_DEBUG
   if (gsti->gststate != state) {
+# if GSTI_DEBUG
     char    tmp [80];
 
     logStderr ("gsti-state: curr: %d pending: %d\n", state, pending);
     snprintf (tmp, sizeof (tmp), "gsti-state_%d", state);
     gstiDebugDot (gsti, tmp);
-  }
 # endif
-  gsti->gststate = state;
+fprintf (stderr, "== new state %d\n", state);
+    gsti->gststate = state;
+  }
 
   return gsti->state;
 }
@@ -475,6 +476,7 @@ gstiSetPosition (gsti_t *gsti, int64_t pos)
 # endif
     /* all seeks are based on the song's original duration, */
     /* not the adjusted duration */
+fprintf (stderr, "-- set-pos: state: %d\n", gsti->gststate);
 fprintf (stderr, "-- set-pos: rate: %.4f\n", gsti->rate [gsti->curr]);
     if (gst_element_seek (gsti->pipeline, gsti->rate [gsti->curr],
         GST_FORMAT_TIME,
@@ -505,6 +507,7 @@ gstiSetRate (gsti_t *gsti, double rate)
 # if GSTI_DEBUG
     logStderr ("-- set-rate %0.4f\n", rate);
 # endif
+fprintf (stderr, "-- set-rate: state: %d\n", gsti->gststate);
 fprintf (stderr, "-- set-rate: rate: %.4f\n", rate);
     gsti->rate [gsti->curr] = rate;
 
@@ -818,6 +821,7 @@ gstiDynamicLinkPad (GstElement *src, GstPad *newpad, gpointer udata)
   gstiRunOnce (gsti);
 
   gstiChangeVolume (gsti, gsti->curr);
+fprintf (stderr, "-- linked\n");
 
 # if GSTI_DEBUG
   gstiDebugDot (gsti, "gsti-link_b");
