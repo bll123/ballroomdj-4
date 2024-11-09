@@ -457,8 +457,6 @@ typedef struct confuigui {
   /* dances */
   int32_t           dancedkey;      // for dance edit
   bool              inchange : 1;
-  bool              mqupdactive : 1;
-  bool              mqupdq : 1;
 } confuigui_t;
 
 /* confcommon.c */
@@ -549,7 +547,6 @@ void confuiPlayerBuildUI (confuigui_t *gui);
 void confuiMusicQInit (confuigui_t *gui);
 void confuiMusicQBuildUI (confuigui_t *gui);
 void confuiMusicQUpdate (confuigui_t *gui);
-void confuiMusicQProcess (confuigui_t *gui);
 
 /* confpopulate.c */
 void confuiPopulateOptions (confuigui_t *gui);

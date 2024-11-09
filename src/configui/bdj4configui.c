@@ -127,8 +127,6 @@ main (int argc, char *argv[])
   confui.gui.inbuild = false;
   confui.gui.dancedkey = LIST_VALUE_INVALID;
   confui.gui.inchange = false;
-  confui.gui.mqupdactive = false;
-  confui.gui.mqupdq = false;
   confui.gui.org = NULL;
   confui.gui.itunes = NULL;
   confui.gui.filterLookup = NULL;
@@ -535,8 +533,6 @@ confuiMainLoop (void *tconfui)
   for (int i = CONFUI_ENTRY_CHOOSE_BEGIN + 1; i < CONFUI_ENTRY_CHOOSE_MAX; ++i) {
     uiEntryValidate (confui->gui.uiitem [i].uiwidgetp, false);
   }
-
-  confuiMusicQProcess (&confui->gui);
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
