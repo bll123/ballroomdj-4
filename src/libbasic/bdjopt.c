@@ -109,6 +109,7 @@ static datafilekey_t bdjoptprofiledfkeys [] = {
 
 static datafilekey_t bdjoptqueuedfkeys [] = {
   { "ACTIVE",               OPT_Q_ACTIVE,               VALUE_NUM, convBoolean, DF_NORM },
+  { "CROSSFADE",            OPT_Q_CROSSFADE,            VALUE_NUM, NULL, DF_NORM },
   { "DISPLAY",              OPT_Q_DISPLAY,              VALUE_NUM, convBoolean, DF_NORM },
   { "FADEINTIME",           OPT_Q_FADEINTIME,           VALUE_NUM, NULL, DF_NORM },
   { "FADEOUTTIME",          OPT_Q_FADEOUTTIME,          VALUE_NUM, NULL, DF_NORM },
@@ -120,7 +121,6 @@ static datafilekey_t bdjoptqueuedfkeys [] = {
   { "QUEUE_NAME",           OPT_Q_QUEUE_NAME,           VALUE_STR, NULL, DF_NORM },
   { "SHOWQUEUEDANCE",       OPT_Q_SHOW_QUEUE_DANCE,     VALUE_NUM, convBoolean, DF_NORM },
   { "STOP_AT_TIME",         OPT_Q_STOP_AT_TIME,         VALUE_NUM, NULL, DF_NORM },
-  { "XFADE",                OPT_Q_XFADE,                VALUE_NUM, NULL, DF_NORM },
 };
 
 /* must be ascii sorted, use LANG=C <editor> bdjopt.c */
@@ -435,9 +435,9 @@ bdjoptInit (void)
   for (int i = 0; i < BDJ4_QUEUE_MAX; ++i) {
     int64_t   val;
 
-    val = bdjoptGetNumPerQueue (OPT_Q_XFADE, i);
+    val = bdjoptGetNumPerQueue (OPT_Q_CROSSFADE, i);
     if (val < 0) {
-      bdjoptSetNumPerQueue (OPT_Q_XFADE, 0.0, i);
+      bdjoptSetNumPerQueue (OPT_Q_CROSSFADE, 0, i);
     }
   }
 }

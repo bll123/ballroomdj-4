@@ -32,6 +32,7 @@
 #include "osuiutils.h"
 #include "pathbld.h"
 #include "pathutil.h"
+#include "pli.h"
 #include "progstate.h"
 #include "quickedit.h"
 #include "sockh.h"
@@ -73,7 +74,7 @@ static int  confuiMainLoop  (void *tconfui);
 static int  confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route, bdjmsgmsg_t msg, char *args, void *udata);
 static bool confuiCloseWin (void *udata);
 static void confuiSigHandler (int sig);
-
+static bool confuiSwitchNBPage (void *udata, int32_t pagenum);
 
 /* misc */
 static void confuiLoadTagList (configui_t *confui);
@@ -112,6 +113,7 @@ main (int argc, char *argv[])
   confui.gui.nbtabid = uinbutilIDInit ();
   confui.gui.vbox = NULL;
   confui.gui.statusMsg = NULL;
+  confui.gui.pliSupported = PLI_SUPPORT_NONE;
   confui.gui.tablecurr = CONFUI_ID_NONE;
   confui.gui.dispsel = NULL;
   confui.gui.dispselduallist = NULL;
@@ -165,6 +167,7 @@ main (int argc, char *argv[])
     confui.gui.uiitem [i].displist = NULL;
     confui.gui.uiitem [i].sbkeylist = NULL;
     confui.gui.uiitem [i].danceitemidx = DANCE_DANCE;
+    confui.gui.uiitem [i].label = NULL;
     confui.gui.uiitem [i].uiwidgetp = NULL;
     confui.gui.uiitem [i].callback = NULL;
     confui.gui.uiitem [i].sfcb.entry = NULL;
@@ -384,6 +387,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
     uiwcontFree (confui->gui.uiitem [i].uiwidgetp);
   }
   for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
+    uiwcontFree (confui->gui.uiitem [i].label);
     callbackFree (confui->gui.uiitem [i].callback);
   }
   for (int i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {
@@ -477,7 +481,7 @@ confuiBuildUI (configui_t *confui)
   confuiBuildUIMobileMarquee (&confui->gui);
   confuiBuildUIDebug (&confui->gui);
 
-  confui->gui.nbcb = callbackInitI (confuiSwitchTable, &confui->gui);
+  confui->gui.nbcb = callbackInitI (confuiSwitchNBPage, &confui->gui);
   uiNotebookSetCallback (confui->gui.notebook, confui->gui.nbcb);
 
   x = nlistGetNum (confui->options, CONFUI_SIZE_X);
@@ -673,5 +677,49 @@ confuiLoadTagList (configui_t *confui)
   confui->gui.marqueetaglist = mlist;
   confui->gui.pluitaglist = pluilist;
   logProcEnd ("");
+}
+
+static bool
+confuiSwitchNBPage (void *udata, int32_t pagenum)
+{
+  confuigui_t       *gui = udata;
+  confuiident_t     newid;
+
+  logProcBegin ();
+  if ((newid = (confuiident_t) uinbutilIDGet (gui->nbtabid, pagenum)) < 0) {
+    logProcEnd ("bad-pagenum");
+    return UICB_STOP;
+  }
+
+  if (gui->tablecurr == newid) {
+    logProcEnd ("same-id");
+    return UICB_CONT;
+  }
+
+  confuiSetStatusMsg (gui, "");
+
+  gui->tablecurr = (confuiident_t) uinbutilIDGet (
+      gui->nbtabid, pagenum);
+
+  if (gui->tablecurr == CONFUI_ID_MOBILE_MQ) {
+    confuiUpdateMobmqQrcode (gui);
+  }
+  if (gui->tablecurr == CONFUI_ID_REM_CONTROL) {
+    confuiUpdateRemctrlQrcode (gui);
+  }
+  if (gui->tablecurr == CONFUI_ID_ORGANIZATION) {
+    confuiUpdateOrgExamples (gui, bdjoptGetStr (OPT_G_ORGPATH));
+  }
+  if (gui->tablecurr == CONFUI_ID_DISP_SEL_LIST) {
+    /* be sure to create the target first */
+    confuiCreateTagSelectedDisp (gui);
+    confuiCreateTagListingDisp (gui);
+  }
+  if (gui->tablecurr == CONFUI_ID_MUSICQ) {
+    confuiUpdateMusicQ (gui);
+  }
+
+  logProcEnd ("");
+  return UICB_CONT;
 }
 

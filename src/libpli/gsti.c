@@ -82,6 +82,8 @@ typedef struct gsti {
   bool              incrossfade : 1;
 } gsti_t;
 
+static bool initialized = false;
+
 static void gstiRunOnce (gsti_t *gsti);
 static gboolean gstiBusCallback (GstBus * bus, GstMessage * message, void *udata);
 static void gstiProcessState (gsti_t *gsti, GstState state);
@@ -102,7 +104,10 @@ gstiInit (const char *plinm)
   GstBus            *bus;
   char              *tmp;
 
-  gst_init (NULL, 0);
+  if (! initialized) {
+    gst_init (NULL, 0);
+    initialized = true;
+  }
 
   tmp = gst_version_string ();
   mdextalloc (tmp);
@@ -193,14 +198,17 @@ gstiFree (gsti_t *gsti)
 
   gstiRunOnce (gsti);
 
-  gst_deinit ();
-
   mdfree (gsti);
 }
 
 void
 gstiCleanup (void)
 {
+  if (initialized) {
+    gst_deinit ();
+    initialized = false;
+  }
+
   return;
 }
 
@@ -280,7 +288,7 @@ gstiCrossFade (gsti_t *gsti, const char *fulluri, int sourceType)
 
   g_object_set (G_OBJECT (gsti->source [idx]), "uri", tbuff, NULL);
   if (gsti->state == PLI_STATE_PLAYING) {
-    gsti->state = PLI_STATE_XFADE;
+    gsti->state = PLI_STATE_CROSSFADE;
   }
 
   gsti->curr = idx;
@@ -833,7 +841,6 @@ gstiDynamicLinkPad (GstElement *src, GstPad *newpad, gpointer udata)
   gstiDebugDot (gsti, "gsti-link_a");
 # endif
 
-  gstiChangeVolume (gsti, gsti->curr);
 # if GSTI_DEBUG
   logStderr ("-- linked\n");
 # endif

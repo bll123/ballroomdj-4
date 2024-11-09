@@ -153,52 +153,6 @@ confuiTableSave (confuigui_t *gui, confuiident_t id)
 }
 
 bool
-confuiSwitchTable (void *udata, int32_t pagenum)
-{
-  confuigui_t       *gui = udata;
-  confuiident_t     newid;
-
-  logProcBegin ();
-  if ((newid = (confuiident_t) uinbutilIDGet (gui->nbtabid, pagenum)) < 0) {
-    logProcEnd ("bad-pagenum");
-    return UICB_STOP;
-  }
-
-  if (gui->tablecurr == newid) {
-    logProcEnd ("same-id");
-    return UICB_CONT;
-  }
-
-  confuiSetStatusMsg (gui, "");
-
-  gui->tablecurr = (confuiident_t) uinbutilIDGet (
-      gui->nbtabid, pagenum);
-
-  if (gui->tablecurr == CONFUI_ID_MOBILE_MQ) {
-    confuiUpdateMobmqQrcode (gui);
-  }
-  if (gui->tablecurr == CONFUI_ID_REM_CONTROL) {
-    confuiUpdateRemctrlQrcode (gui);
-  }
-  if (gui->tablecurr == CONFUI_ID_ORGANIZATION) {
-    confuiUpdateOrgExamples (gui, bdjoptGetStr (OPT_G_ORGPATH));
-  }
-  if (gui->tablecurr == CONFUI_ID_DISP_SEL_LIST) {
-    /* be sure to create the target first */
-    confuiCreateTagSelectedDisp (gui);
-    confuiCreateTagListingDisp (gui);
-  }
-
-  if (gui->tablecurr >= CONFUI_ID_TABLE_MAX) {
-    logProcEnd ("non-table");
-    return UICB_CONT;
-  }
-
-  logProcEnd ("");
-  return UICB_CONT;
-}
-
-bool
 confuiTableAdd (void *udata)
 {
   confuigui_t     *gui = udata;

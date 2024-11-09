@@ -34,6 +34,7 @@
 static void confuiLoadVolIntfcList (confuigui_t *gui);
 static void confuiLoadPlayerIntfcList (confuigui_t *gui);
 static void confuiLoadControllerIntfcList (confuigui_t *gui);
+static void confuiPlayerInterfaceChg (void *udata);
 static void confuiPlayerAudioSinkChg (void *udata);
 static void confuiPlayerLoadSinkList (confuigui_t *gui, const char *intfc);
 
@@ -104,7 +105,8 @@ confuiBuildUIPlayer (confuigui_t *gui)
   /* CONTEXT: configuration: which player interface to use */
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Player"),
       CONFUI_SPINBOX_PLI, OPT_M_PLAYER_INTFC,
-      CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_PLI].listidx, NULL);
+      CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_PLI].listidx,
+      confuiPlayerInterfaceChg);
 
   /* CONTEXT: configuration: which audio interface to use */
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Audio"),
@@ -181,6 +183,34 @@ confuiLoadPlayerIntfcList (confuigui_t *gui)
   confuiLoadIntfcList (gui, interfaces, OPT_M_PLAYER_INTFC,
       OPT_M_PLAYER_INTFC_NM, CONFUI_SPINBOX_PLI, 0);
   ilistFree (interfaces);
+}
+
+static void
+confuiPlayerInterfaceChg (void *udata)
+{
+  confuigui_t   *gui = udata;
+  int           widx;
+  nlistidx_t    nval;
+  const char    *sval;
+  const char    *inm;
+  pli_t         *pli;
+
+  if (gui == NULL) {
+    return;
+  }
+
+  widx = CONFUI_SPINBOX_PLI;
+  if (gui->uiitem [widx].uiwidgetp == NULL) {
+    return;
+  }
+
+  nval = uiSpinboxTextGetValue (gui->uiitem [widx].uiwidgetp);
+  sval = nlistGetStr (gui->uiitem [widx].sbkeylist, nval);
+  inm = nlistGetStr (gui->uiitem [widx].displist, nval);
+
+  pli = pliInit (sval, inm);
+  gui->pliSupported = pliSupported (pli);
+  pliFree (pli);
 }
 
 static void

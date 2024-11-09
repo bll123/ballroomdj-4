@@ -5,6 +5,8 @@ version
 ..1
 ACTIVE
 ..no
+CROSSFADE
+..0
 DISPLAY
 ..no
 FADEINTIME

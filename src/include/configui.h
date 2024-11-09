@@ -219,6 +219,7 @@ enum {
   CONFUI_WIDGET_Q_FADE_IN_TIME,       // per queue
   CONFUI_WIDGET_Q_FADE_OUT_TIME,      // per queue
   CONFUI_WIDGET_Q_GAP,                // per queue
+  CONFUI_WIDGET_Q_CROSSFADE,          // per queue
   CONFUI_WIDGET_RC_PORT,
   CONFUI_WIDGET_RC_QR_CODE,
   CONFUI_WIDGET_RC_QR_CODE_B,
@@ -259,6 +260,7 @@ typedef struct {
   int               danceitemidx;   // for dance edit
   int               entrysz;
   int               entrymaxsz;
+  uiwcont_t         *label;
   uiwcont_t         *uiwidgetp;
   callback_t        *callback;
   uidd_t            *uidd;
@@ -267,6 +269,7 @@ typedef struct {
 } confuiitem_t;
 
 typedef enum {
+  /* list the tables first */
   CONFUI_ID_DANCE,
   CONFUI_ID_GENRES,
   CONFUI_ID_RATINGS,
@@ -274,11 +277,14 @@ typedef enum {
   CONFUI_ID_STATUS,
   CONFUI_ID_DISP_SEL_LIST,
   CONFUI_ID_DISP_SEL_TABLE,
+  /* list the tables above */
   CONFUI_ID_TABLE_MAX,
-  CONFUI_ID_NONE,
+  CONFUI_ID_MUSICQ,
   CONFUI_ID_MOBILE_MQ,
   CONFUI_ID_REM_CONTROL,
   CONFUI_ID_ORGANIZATION,
+  CONFUI_ID_NB_MAX,
+  CONFUI_ID_NONE,
 } confuiident_t;
 
 enum {
@@ -426,6 +432,8 @@ typedef struct confuigui {
   /* widgets */
   uiwcont_t         *vbox;
   uiwcont_t         *statusMsg;
+  /* music-q */
+  int               pliSupported;
   /* display select */
   dispsel_t         *dispsel;
   uiduallist_t      *dispselduallist;
@@ -505,7 +513,6 @@ void confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *
 void confuiMakeItemSwitch (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, int value, void *cb, int indent);
 void confuiMakeItemLabelDisp (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx);
 void confuiMakeItemCheckButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, int value);
-void confuiMakeItemLabel (uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int indent);
 void confuiSpinboxTextInitDataNum (confuigui_t *gui, char *tag, int widx, ...);
 
 /* confitunes.c */
@@ -539,6 +546,7 @@ void confuiBuildUIPlayer (confuigui_t *gui);
 /* confmusicq.c */
 void confuiInitMusicQs (confuigui_t *gui);
 void confuiBuildUIMusicQs (confuigui_t *gui);
+void confuiUpdateMusicQ (confuigui_t *gui);
 
 /* confpopulate.c */
 void confuiPopulateOptions (confuigui_t *gui);
@@ -559,7 +567,6 @@ void confuiCreateStatusTable (confuigui_t *gui);
 void confuiMakeItemTable (confuigui_t *gui, uiwcont_t *box, confuiident_t id, int flags);
 void confuiTableFree (confuigui_t *gui, confuiident_t id);
 void confuiTableSave (confuigui_t *gui, confuiident_t id);
-bool confuiSwitchTable (void *udata, int32_t pagenum);
 bool confuiTableAdd (void *udata);
 
 /* confui.c */

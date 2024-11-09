@@ -47,7 +47,8 @@ pliiInit (const char *plinm)
   plidata->state = PLI_STATE_STOPPED;
   plidata->supported = PLI_SUPPORT_NONE;
   plidata->supported |= PLI_SUPPORT_SEEK;
-  plidata->supported |= PLI_SUPPORT_SPEED;  /* not working */
+  plidata->supported |= PLI_SUPPORT_SPEED;
+  plidata->supported |= PLI_SUPPORT_CROSSFADE;
 
   return plidata;
 }
@@ -62,7 +63,13 @@ pliiFree (plidata_t *plidata)
   gstiFree (plidata->gsti);
   pliiClose (plidata);
   mdfree (plidata);
+}
+
+void
+pliiCleanup (void)
+{
   gstiCleanup ();
+  return;
 }
 
 void
@@ -86,7 +93,7 @@ pliiCrossFade (plidata_t *plidata, const char *mediaPath,
   }
 
   gstiCrossFade (plidata->gsti, fullMediaPath, sourceType);
-  plidata->state = PLI_STATE_XFADE;
+  plidata->state = PLI_STATE_CROSSFADE;
 }
 
 void
@@ -97,13 +104,6 @@ pliiCrossFadeVolume (plidata_t *plidata, int vol)
   }
 
   gstiCrossFadeVolume (plidata->gsti, vol);
-}
-
-void
-pliiCleanup (void)
-{
-  gstiCleanup ();
-  return;
 }
 
 void
