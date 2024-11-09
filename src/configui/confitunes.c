@@ -42,7 +42,7 @@ static bool confuiSelectiTunesFile (void *udata);
 static int  confuiValidateMediaDir (uiwcont_t *entry, const char *label, void *udata);
 
 void
-confuiInitiTunes (confuigui_t *gui)
+confuiITunesInit (confuigui_t *gui)
 {
   gui->itunes = mdmalloc (sizeof (confitunes_t));
 
@@ -54,7 +54,7 @@ confuiInitiTunes (confuigui_t *gui)
 }
 
 void
-confuiCleaniTunes (confuigui_t *gui)
+confuiITunesClean (confuigui_t *gui)
 {
   for (int i = 0; i < ITUNES_STARS_MAX; ++i) {
     uiratingFree (gui->itunes->uirating [i]);
@@ -66,7 +66,7 @@ confuiCleaniTunes (confuigui_t *gui)
 
 
 void
-confuiSaveiTunes (confuigui_t *gui)
+confuiITunesSave (confuigui_t *gui)
 {
   bool        changed;
   int         count;
@@ -119,7 +119,7 @@ confuiSaveiTunes (confuigui_t *gui)
 }
 
 void
-confuiBuildUIiTunes (confuigui_t *gui)
+confuiITunesBuildUI (confuigui_t *gui)
 {
   char          tmp [200];
   char          tbuff [MAXPATHLEN];

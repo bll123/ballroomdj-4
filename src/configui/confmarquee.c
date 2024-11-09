@@ -21,7 +21,7 @@
 #include "ui.h"
 
 void
-confuiInitMarquee (confuigui_t *gui)
+confuiMarqueeInit (confuigui_t *gui)
 {
   confuiSpinboxTextInitDataNum (gui, "cu-marquee-show",
       CONFUI_SPINBOX_MARQUEE_SHOW,
@@ -35,7 +35,7 @@ confuiInitMarquee (confuigui_t *gui)
 }
 
 void
-confuiBuildUIMarquee (confuigui_t *gui)
+confuiMarqueeBuildUI (confuigui_t *gui)
 {
   uiwcont_t    *vbox;
   uiwcont_t    *szgrp;

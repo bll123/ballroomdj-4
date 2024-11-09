@@ -37,7 +37,7 @@ static bool confuiSelectShutdown (void *udata);
 static void confuiLoadLocaleList (confuigui_t *gui);
 
 void
-confuiInitGeneral (confuigui_t *gui)
+confuiGeneralInit (confuigui_t *gui)
 {
   confuiLoadLocaleList (gui);
 
@@ -61,7 +61,7 @@ confuiInitGeneral (confuigui_t *gui)
 }
 
 void
-confuiBuildUIGeneral (confuigui_t *gui)
+confuiGeneralBuildUI (confuigui_t *gui)
 {
   uiwcont_t     *vbox;
   uiwcont_t     *szgrp;

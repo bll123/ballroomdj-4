@@ -40,7 +40,9 @@ target_link_libraries (bdj4configui PRIVATE
   ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
+  m
 )
+
 addIntlLibrary (bdj4configui)
 addWinSockLibrary (bdj4configui)
 

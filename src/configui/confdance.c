@@ -57,7 +57,7 @@ static void confuiDanceRemove (confuigui_t *gui, ilistidx_t idx);
 static void confuiDanceAdd (confuigui_t *gui);
 
 void
-confuiInitEditDances (confuigui_t *gui)
+confuiDanceInit (confuigui_t *gui)
 {
   confuiLoadDanceTypeList (gui);
 
@@ -86,7 +86,7 @@ confuiInitEditDances (confuigui_t *gui)
 }
 
 void
-confuiBuildUIEditDances (confuigui_t *gui)
+confuiDanceBuildUI (confuigui_t *gui)
 {
   uiwcont_t     *vbox;
   uiwcont_t     *hbox;

@@ -29,7 +29,7 @@ static int  confuiMobmqKeyChg (uiwcont_t *entry, const char *label, void *udata)
 static void confuiMobmqSetWidgetStates (confuigui_t *gui, int type);
 
 void
-confuiInitMobileMarquee (confuigui_t *gui)
+confuiMobileMarqueeInit (confuigui_t *gui)
 {
   confuiSpinboxTextInitDataNum (gui, "cu-mobmq-type",
       CONFUI_SPINBOX_MOBMQ_TYPE,
@@ -45,7 +45,7 @@ confuiInitMobileMarquee (confuigui_t *gui)
 }
 
 void
-confuiBuildUIMobileMarquee (confuigui_t *gui)
+confuiMobileMarqueeBuildUI (confuigui_t *gui)
 {
   uiwcont_t   *vbox;
   uiwcont_t   *szgrp;

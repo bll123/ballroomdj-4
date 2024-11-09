@@ -28,7 +28,7 @@ typedef struct conforg {
 } conforg_t;
 
 void
-confuiInitOrganization (confuigui_t *gui)
+confuiOrganizationInit (confuigui_t *gui)
 {
   slist_t     *tlist;
   slistidx_t  iteridx;
@@ -68,7 +68,7 @@ confuiInitOrganization (confuigui_t *gui)
 }
 
 void
-confuiCleanOrganization (confuigui_t *gui)
+confuiOrganizationClean (confuigui_t *gui)
 {
   if (gui->org->orgopt != NULL) {
     orgoptFree (gui->org->orgopt);
@@ -77,7 +77,7 @@ confuiCleanOrganization (confuigui_t *gui)
 }
 
 void
-confuiBuildUIOrganization (confuigui_t *gui)
+confuiOrganizationBuildUI (confuigui_t *gui)
 {
   uiwcont_t    *vbox;
   uiwcont_t    *szgrp;

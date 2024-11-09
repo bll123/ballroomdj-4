@@ -21,7 +21,7 @@
 #include "ui.h"
 
 void
-confuiBuildUIDebug (confuigui_t *gui)
+confuiDebugBuildUI (confuigui_t *gui)
 {
   uiwcont_t     *vbox;
   uiwcont_t     *hbox;

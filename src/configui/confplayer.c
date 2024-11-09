@@ -39,7 +39,7 @@ static void confuiPlayerAudioSinkChg (void *udata);
 static void confuiPlayerLoadSinkList (confuigui_t *gui, const char *intfc);
 
 void
-confuiInitPlayer (confuigui_t *gui)
+confuiPlayerInit (confuigui_t *gui)
 {
   char            *volintfc;
 
@@ -85,7 +85,7 @@ confuiInitPlayer (confuigui_t *gui)
 }
 
 void
-confuiBuildUIPlayer (confuigui_t *gui)
+confuiPlayerBuildUI (confuigui_t *gui)
 {
   uiwcont_t    *vbox;
   uiwcont_t    *szgrp;

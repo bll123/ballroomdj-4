@@ -41,13 +41,13 @@ static datafilekey_t htmldfkeys [HTML_KEY_MAX] = {
 };
 
 void
-confuiInitMobileRemoteControl (confuigui_t *gui)
+confuiMobileRemoteControlInit (confuigui_t *gui)
 {
   confuiLoadHTMLList (gui);
 }
 
 void
-confuiBuildUIMobileRemoteControl (confuigui_t *gui)
+confuiMobileRemoteControlBuildUI (confuigui_t *gui)
 {
   uiwcont_t   *vbox;
   uiwcont_t   *szgrp;

@@ -127,6 +127,8 @@ main (int argc, char *argv[])
   confui.gui.inbuild = false;
   confui.gui.dancedkey = LIST_VALUE_INVALID;
   confui.gui.inchange = false;
+  confui.gui.mqupdactive = false;
+  confui.gui.mqupdq = false;
   confui.gui.org = NULL;
   confui.gui.itunes = NULL;
   confui.gui.filterLookup = NULL;
@@ -206,20 +208,20 @@ main (int argc, char *argv[])
 
   confui.gui.dispsel = dispselAlloc (DISP_SEL_LOAD_ALL);
 
-  confuiInitGeneral (&confui.gui);
-  confuiInitPlayer (&confui.gui);
-  confuiInitMusicQs (&confui.gui);
-  confuiInitMarquee (&confui.gui);
-  confuiInitOrganization (&confui.gui);
-  confuiInitDispSettings (&confui.gui);
-  confuiInitEditDances (&confui.gui);
-  confuiInitiTunes (&confui.gui);
-  confuiInitMobileRemoteControl (&confui.gui);
+  confuiGeneralInit (&confui.gui);
+  confuiPlayerInit (&confui.gui);
+  confuiMusicQInit (&confui.gui);
+  confuiMarqueeInit (&confui.gui);
+  confuiOrganizationInit (&confui.gui);
+  confuiDispSettingsInit (&confui.gui);
+  confuiDanceInit (&confui.gui);
+  confuiITunesInit (&confui.gui);
+  confuiMobileRemoteControlInit (&confui.gui);
 
   confuiLoadTagList (&confui);
   confuiLoadThemeList (&confui.gui);
 
-  confuiInitMobileMarquee (&confui.gui);
+  confuiMobileMarqueeInit (&confui.gui);
 
   confui.sf = songfilterAlloc ();
   confui.gui.filterDisplaySel = songfilterGetList (confui.sf);
@@ -288,8 +290,8 @@ main (int argc, char *argv[])
   connFree (confui.conn);
   progstateFree (confui.progstate);
 
-  confuiCleanOrganization (&confui.gui);
-  confuiCleaniTunes (&confui.gui);
+  confuiOrganizationClean (&confui.gui);
+  confuiITunesClean (&confui.gui);
 
   logProcEnd ("");
   logEnd ();
@@ -320,7 +322,7 @@ confuiStoppingCallback (void *udata, programstate_t programState)
   for (confuiident_t i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {
     confuiTableSave (&confui->gui, i);
   }
-  confuiSaveiTunes (&confui->gui);
+  confuiITunesSave (&confui->gui);
 
   uiWindowGetSize (confui->gui.window, &x, &y);
   nlistSetNum (confui->options, CONFUI_SIZE_X, x);
@@ -463,23 +465,23 @@ confuiBuildUI (configui_t *confui)
   uiNotebookTabPositionLeft (confui->gui.notebook);
   uiBoxPackStartExpand (confui->gui.vbox, confui->gui.notebook);
 
-  confuiBuildUIGeneral (&confui->gui);
-  confuiBuildUIPlayer (&confui->gui);
-  confuiBuildUIMusicQs (&confui->gui);
-  confuiBuildUIMarquee (&confui->gui);
-  confuiBuildUIUserInterface (&confui->gui);
-  confuiBuildUIDispSettings (&confui->gui);
-  confuiBuildUIDialogDisplay (&confui->gui);
-  confuiBuildUIOrganization (&confui->gui);
-  confuiBuildUIEditDances (&confui->gui);
-  confuiBuildUIEditRatings (&confui->gui);
-  confuiBuildUIEditStatus (&confui->gui);
-  confuiBuildUIEditLevels (&confui->gui);
-  confuiBuildUIEditGenres (&confui->gui);
-  confuiBuildUIiTunes (&confui->gui);
-  confuiBuildUIMobileRemoteControl (&confui->gui);
-  confuiBuildUIMobileMarquee (&confui->gui);
-  confuiBuildUIDebug (&confui->gui);
+  confuiGeneralBuildUI (&confui->gui);
+  confuiPlayerBuildUI (&confui->gui);
+  confuiMusicQBuildUI (&confui->gui);
+  confuiMarqueeBuildUI (&confui->gui);
+  confuiUserInterfaceBuildUI (&confui->gui);
+  confuiDispSettingsBuildUI (&confui->gui);
+  confuiDialogDispBuildUI (&confui->gui);
+  confuiOrganizationBuildUI (&confui->gui);
+  confuiDanceBuildUI (&confui->gui);
+  confuiRatingBuildUI (&confui->gui);
+  confuiStatusBuildUI (&confui->gui);
+  confuiLevelBuildUI (&confui->gui);
+  confuiGenreBuildUI (&confui->gui);
+  confuiITunesBuildUI (&confui->gui);
+  confuiMobileRemoteControlBuildUI (&confui->gui);
+  confuiMobileMarqueeBuildUI (&confui->gui);
+  confuiDebugBuildUI (&confui->gui);
 
   confui->gui.nbcb = callbackInitI (confuiSwitchNBPage, &confui->gui);
   uiNotebookSetCallback (confui->gui.notebook, confui->gui.nbcb);
@@ -533,6 +535,8 @@ confuiMainLoop (void *tconfui)
   for (int i = CONFUI_ENTRY_CHOOSE_BEGIN + 1; i < CONFUI_ENTRY_CHOOSE_MAX; ++i) {
     uiEntryValidate (confui->gui.uiitem [i].uiwidgetp, false);
   }
+
+  confuiMusicQProcess (&confui->gui);
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
@@ -716,7 +720,7 @@ confuiSwitchNBPage (void *udata, int32_t pagenum)
     confuiCreateTagListingDisp (gui);
   }
   if (gui->tablecurr == CONFUI_ID_MUSICQ) {
-    confuiUpdateMusicQ (gui);
+    confuiMusicQUpdate (gui);
   }
 
   logProcEnd ("");

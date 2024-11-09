@@ -34,7 +34,7 @@ static void confuiRatingRemove (confuigui_t *gui, ilistidx_t idx);
 static void confuiRatingMove (confuigui_t *gui, ilistidx_t idx, int dir);
 
 void
-confuiBuildUIEditRatings (confuigui_t *gui)
+confuiRatingBuildUI (confuigui_t *gui)
 {
   uiwcont_t    *vbox;
   uiwcont_t    *hbox;
@@ -62,7 +62,7 @@ confuiBuildUIEditRatings (confuigui_t *gui)
   gui->tables [CONFUI_ID_RATINGS].addfunc = confuiRatingAdd;
   gui->tables [CONFUI_ID_RATINGS].removefunc = confuiRatingRemove;
   gui->tables [CONFUI_ID_RATINGS].movefunc = confuiRatingMove;
-  confuiCreateRatingTable (gui);
+  confuiRatingCreateTable (gui);
 
   uiwcontFree (vbox);
   uiwcontFree (hbox);
@@ -71,7 +71,7 @@ confuiBuildUIEditRatings (confuigui_t *gui)
 }
 
 void
-confuiCreateRatingTable (confuigui_t *gui)
+confuiRatingCreateTable (confuigui_t *gui)
 {
   rating_t          *ratings;
   uivirtlist_t      *uivl;

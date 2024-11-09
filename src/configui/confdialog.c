@@ -41,7 +41,7 @@ static int qetags [QUICKEDIT_DISP_MAX] = {
 };
 
 void
-confuiBuildUIDialogDisplay (confuigui_t *gui)
+confuiDialogDispBuildUI (confuigui_t *gui)
 {
   uiwcont_t     *vbox;
   uiwcont_t     *szgrp;

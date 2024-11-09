@@ -34,7 +34,7 @@ static void confuiStatusRemove (confuigui_t *gui, ilistidx_t idx);
 static void confuiStatusMove (confuigui_t *gui, ilistidx_t idx, int dir);
 
 void
-confuiBuildUIEditStatus (confuigui_t *gui)
+confuiStatusBuildUI (confuigui_t *gui)
 {
   uiwcont_t    *vbox;
   uiwcont_t    *hbox;
@@ -57,7 +57,7 @@ confuiBuildUIEditStatus (confuigui_t *gui)
   gui->tables [CONFUI_ID_STATUS].addfunc = confuiStatusAdd;
   gui->tables [CONFUI_ID_STATUS].removefunc = confuiStatusRemove;
   gui->tables [CONFUI_ID_STATUS].movefunc = confuiStatusMove;
-  confuiCreateStatusTable (gui);
+  confuiStatusCreateTable (gui);
 
   uiwcontFree (vbox);
   uiwcontFree (hbox);
@@ -66,7 +66,7 @@ confuiBuildUIEditStatus (confuigui_t *gui)
 }
 
 void
-confuiCreateStatusTable (confuigui_t *gui)
+confuiStatusCreateTable (confuigui_t *gui)
 {
   status_t          *status;
   uivirtlist_t      *uivl;

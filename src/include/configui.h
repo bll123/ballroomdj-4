@@ -457,6 +457,8 @@ typedef struct confuigui {
   /* dances */
   int32_t           dancedkey;      // for dance edit
   bool              inchange : 1;
+  bool              mqupdactive : 1;
+  bool              mqupdq : 1;
 } confuigui_t;
 
 /* confcommon.c */
@@ -473,28 +475,29 @@ int32_t confuiOrgPathSelect (void *udata, const char *sval);
 void confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces, int optidx, int opnmidx, int spinboxidx, int offset);
 
 /* confdance.c */
-void confuiInitEditDances (confuigui_t *gui);
-void confuiBuildUIEditDances (confuigui_t *gui);
+void confuiDanceInit (confuigui_t *gui);
+void confuiDanceBuildUI (confuigui_t *gui);
 void confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t key);
 void confuiDanceSearchSelect (confuigui_t *gui, ilistidx_t dkey);
 
 /* confdebug.c */
-void confuiBuildUIDebug (confuigui_t *gui);
+void confuiDebugBuildUI (confuigui_t *gui);
 
 /* confdispset.c */
-void confuiInitDispSettings (confuigui_t *gui);
-void confuiBuildUIDispSettings (confuigui_t *gui);
+void confuiDispSettingsInit (confuigui_t *gui);
+void confuiDispSettingsBuildUI (confuigui_t *gui);
+void confuiDispSettingsSaveTable (confuigui_t *gui, int selidx);
 
 /* conffilter.c */
-void confuiBuildUIDialogDisplay (confuigui_t *gui);
+void confuiDialogDispBuildUI (confuigui_t *gui);
 
 /* confgeneral.c */
-void confuiInitGeneral (confuigui_t *gui);
-void confuiBuildUIGeneral (confuigui_t *gui);
+void confuiGeneralInit (confuigui_t *gui);
+void confuiGeneralBuildUI (confuigui_t *gui);
 
 /* confgenre.c */
-void confuiBuildUIEditGenres (confuigui_t *gui);
-void confuiCreateGenreTable (confuigui_t *gui);
+void confuiGenreBuildUI (confuigui_t *gui);
+void confuiGenreCreateTable (confuigui_t *gui);
 
 /* confgui.c */
 void confuiEntrySetSize (confuigui_t *gui, int widx, int sz, int maxsz);
@@ -516,52 +519,52 @@ void confuiMakeItemCheckButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg
 void confuiSpinboxTextInitDataNum (confuigui_t *gui, char *tag, int widx, ...);
 
 /* confitunes.c */
-void confuiInitiTunes (confuigui_t *gui);
-void confuiCleaniTunes (confuigui_t *gui);
-void confuiBuildUIiTunes (confuigui_t *gui);
-void confuiSaveiTunes (confuigui_t *gui);
+void confuiITunesInit (confuigui_t *gui);
+void confuiITunesClean (confuigui_t *gui);
+void confuiITunesBuildUI (confuigui_t *gui);
+void confuiITunesSave (confuigui_t *gui);
 
 /* conflevel.c */
-void confuiBuildUIEditLevels (confuigui_t *gui);
-void confuiCreateLevelTable (confuigui_t *gui);
+void confuiLevelBuildUI (confuigui_t *gui);
+void confuiLevelCreateTable (confuigui_t *gui);
 
 /* confmarquee.c */
-void confuiInitMarquee (confuigui_t *gui);
-void confuiBuildUIMarquee (confuigui_t *gui);
+void confuiMarqueeInit (confuigui_t *gui);
+void confuiMarqueeBuildUI (confuigui_t *gui);
 
 /* confmobmq.c */
-void confuiInitMobileMarquee (confuigui_t *gui);
-void confuiBuildUIMobileMarquee (confuigui_t *gui);
+void confuiMobileMarqueeInit (confuigui_t *gui);
+void confuiMobileMarqueeBuildUI (confuigui_t *gui);
 
 /* conforg.c */
-void confuiInitOrganization (confuigui_t *gui);
-void confuiCleanOrganization (confuigui_t *gui);
-void confuiBuildUIOrganization (confuigui_t *gui);
-void confuiDispSaveTable (confuigui_t *gui, int selidx);
+void confuiOrganizationInit (confuigui_t *gui);
+void confuiOrganizationClean (confuigui_t *gui);
+void confuiOrganizationBuildUI (confuigui_t *gui);
 
 /* confplayer.c */
-void confuiInitPlayer (confuigui_t *gui);
-void confuiBuildUIPlayer (confuigui_t *gui);
+void confuiPlayerInit (confuigui_t *gui);
+void confuiPlayerBuildUI (confuigui_t *gui);
 
 /* confmusicq.c */
-void confuiInitMusicQs (confuigui_t *gui);
-void confuiBuildUIMusicQs (confuigui_t *gui);
-void confuiUpdateMusicQ (confuigui_t *gui);
+void confuiMusicQInit (confuigui_t *gui);
+void confuiMusicQBuildUI (confuigui_t *gui);
+void confuiMusicQUpdate (confuigui_t *gui);
+void confuiMusicQProcess (confuigui_t *gui);
 
 /* confpopulate.c */
 void confuiPopulateOptions (confuigui_t *gui);
 
 /* confrc.c */
-void confuiInitMobileRemoteControl (confuigui_t *gui);
-void confuiBuildUIMobileRemoteControl (confuigui_t *gui);
+void confuiMobileRemoteControlInit (confuigui_t *gui);
+void confuiMobileRemoteControlBuildUI (confuigui_t *gui);
 
 /* confrating.c */
-void confuiBuildUIEditRatings (confuigui_t *gui);
-void confuiCreateRatingTable (confuigui_t *gui);
+void confuiRatingBuildUI (confuigui_t *gui);
+void confuiRatingCreateTable (confuigui_t *gui);
 
 /* confstatus.c */
-void confuiBuildUIEditStatus (confuigui_t *gui);
-void confuiCreateStatusTable (confuigui_t *gui);
+void confuiStatusBuildUI (confuigui_t *gui);
+void confuiStatusCreateTable (confuigui_t *gui);
 
 /* conftable.c */
 void confuiMakeItemTable (confuigui_t *gui, uiwcont_t *box, confuiident_t id, int flags);
@@ -570,7 +573,7 @@ void confuiTableSave (confuigui_t *gui, confuiident_t id);
 bool confuiTableAdd (void *udata);
 
 /* confui.c */
-void confuiBuildUIUserInterface (confuigui_t *gui);
+void confuiUserInterfaceBuildUI (confuigui_t *gui);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

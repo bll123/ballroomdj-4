@@ -23,7 +23,7 @@
 #include "ui.h"
 
 void
-confuiBuildUIUserInterface (confuigui_t *gui)
+confuiUserInterfaceBuildUI (confuigui_t *gui)
 {
   uiwcont_t     *vbox;
   uiwcont_t     *szgrp;

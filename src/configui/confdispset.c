@@ -24,7 +24,7 @@
 static bool confuiDispSettingChg (void *udata);
 
 void
-confuiInitDispSettings (confuigui_t *gui)
+confuiDispSettingsInit (confuigui_t *gui)
 {
   char  tbuffse [DISP_SEL_SONGEDIT_MAX][MAXPATHLEN];
 
@@ -68,7 +68,7 @@ confuiInitDispSettings (confuigui_t *gui)
 }
 
 void
-confuiBuildUIDispSettings (confuigui_t *gui)
+confuiDispSettingsBuildUI (confuigui_t *gui)
 {
   uiwcont_t    *vbox;
 
@@ -98,7 +98,7 @@ confuiBuildUIDispSettings (confuigui_t *gui)
 }
 
 void
-confuiDispSaveTable (confuigui_t *gui, int selidx)
+confuiDispSettingsSaveTable (confuigui_t *gui, int selidx)
 {
   slist_t       *tlist;
   slist_t       *nlist;
@@ -148,7 +148,7 @@ confuiDispSettingChg (void *udata)
       gui->uiitem [CONFUI_SPINBOX_DISP_SEL].uiwidgetp);
   gui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = nselidx;
 
-  confuiDispSaveTable (gui, oselidx);
+  confuiDispSettingsSaveTable (gui, oselidx);
   /* be sure to create the selected list (target) first */
   confuiCreateTagSelectedDisp (gui);
   confuiCreateTagListingDisp (gui);

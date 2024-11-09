@@ -90,6 +90,7 @@ static void gstiProcessState (gsti_t *gsti, GstState state);
 static void gstiWaitState (gsti_t *gsti, GstState want);
 static void gstiMakeSource (gsti_t *gsti);
 static void gstiAddSourceToPipeline (gsti_t *gsti, int idx);
+static void gstiRemoveSourceFromPipeline (gsti_t *gsti, int idx);
 static void gstiDynamicLinkPad (GstElement *src, GstPad *newpad, gpointer udata);
 static void gstiChangeVolume (gsti_t *gsti, int curr);
 static void gstiEndCrossFade (gsti_t *gsti);
@@ -809,6 +810,12 @@ gstiAddSourceToPipeline (gsti_t *gsti, int idx)
 }
 
 static void
+gstiRemoveSourceFromPipeline (gsti_t *gsti, int idx)
+{
+  gst_bin_remove (GST_BIN (gsti->pipeline), gsti->srcbin [idx]);
+}
+
+static void
 gstiDynamicLinkPad (GstElement *src, GstPad *newpad, gpointer udata)
 {
   gsti_t            *gsti = udata;
@@ -874,11 +881,11 @@ gstiChangeVolume (gsti_t *gsti, int curr)
 static void
 gstiEndCrossFade (gsti_t *gsti)
 {
-  // ### remove the not current bin from the pipeline
   for (int i = 0; i < GSTI_MAX_SOURCE; ++i) {
     if (i == gsti->curr) {
       continue;
     }
+    gstiRemoveSourceFromPipeline (gsti, i);
     gsti->active [i] = false;
     gsti->vol [i] = GSTI_NO_VOL;
   }

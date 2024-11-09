@@ -34,7 +34,7 @@ static void confuiLevelRemove (confuigui_t *gui, ilistidx_t idx);
 static void confuiLevelMove (confuigui_t *gui, ilistidx_t idx, int dir);
 
 void
-confuiBuildUIEditLevels (confuigui_t *gui)
+confuiLevelBuildUI (confuigui_t *gui)
 {
   uiwcont_t    *vbox;
   uiwcont_t    *hbox;
@@ -62,7 +62,7 @@ confuiBuildUIEditLevels (confuigui_t *gui)
   gui->tables [CONFUI_ID_LEVELS].addfunc = confuiLevelAdd;
   gui->tables [CONFUI_ID_LEVELS].removefunc = confuiLevelRemove;
   gui->tables [CONFUI_ID_LEVELS].movefunc = confuiLevelMove;
-  confuiCreateLevelTable (gui);
+  confuiLevelCreateTable (gui);
 
   uiwcontFree (vbox);
   uiwcontFree (hbox);
@@ -71,7 +71,7 @@ confuiBuildUIEditLevels (confuigui_t *gui)
 }
 
 void
-confuiCreateLevelTable (confuigui_t *gui)
+confuiLevelCreateTable (confuigui_t *gui)
 {
   level_t           *levels;
   uivirtlist_t      *uivl;

@@ -34,7 +34,7 @@ static void confuiGenreRemove (confuigui_t *gui, ilistidx_t idx);
 static void confuiGenreMove (confuigui_t *gui, ilistidx_t idx, int dir);
 
 void
-confuiBuildUIEditGenres (confuigui_t *gui)
+confuiGenreBuildUI (confuigui_t *gui)
 {
   uiwcont_t    *vbox;
   uiwcont_t    *hbox;
@@ -56,7 +56,7 @@ confuiBuildUIEditGenres (confuigui_t *gui)
   gui->tables [CONFUI_ID_GENRES].addfunc = confuiGenreAdd;
   gui->tables [CONFUI_ID_GENRES].removefunc = confuiGenreRemove;
   gui->tables [CONFUI_ID_GENRES].movefunc = confuiGenreMove;
-  confuiCreateGenreTable (gui);
+  confuiGenreCreateTable (gui);
 
   uiwcontFree (vbox);
   uiwcontFree (hbox);
@@ -65,7 +65,7 @@ confuiBuildUIEditGenres (confuigui_t *gui)
 }
 
 void
-confuiCreateGenreTable (confuigui_t *gui)
+confuiGenreCreateTable (confuigui_t *gui)
 {
   genre_t           *genres;
   uivirtlist_t      *uivl;
