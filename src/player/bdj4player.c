@@ -128,7 +128,7 @@ typedef struct {
   ssize_t         playTimePlayed;
   mstime_t        playTimeCheck;
   mstime_t        playEndCheck;
-  mstime_t        fadeTimeCheck;
+  mstime_t        fadeTimeCheck;      // both standard fade and crossfade
   mstime_t        volumeTimeCheck;
   int             newSpeed;
   long            priorGap;           // used for announcements
@@ -137,22 +137,24 @@ typedef struct {
   int             fadeType;
   listnum_t       fadeinTime;
   listnum_t       fadeoutTime;
+  listnum_t       crossfadeTime;
   int             fadeCount;
   int             fadeSamples;
   time_t          fadeTimeStart;
   mstime_t        fadeTimeNext;
   int             stopNextsongFlag;
   int             stopwaitcount;
-  bool            inFade : 1;
-  bool            inFadeIn : 1;
-  bool            inFadeOut : 1;
-  bool            inGap : 1;
+  bool            infade : 1;
+  bool            infadein : 1;
+  bool            infadeout : 1;
+  bool            incrossfade : 1;
+  bool            ingap : 1;
   bool            mute : 1;
   bool            newsong : 1;      // used in the player status msg
-  bool            pauseAtEnd : 1;
+  bool            pauseatend : 1;
   bool            repeat : 1;
-  bool            speedWaitChg : 1;
-  bool            stopPlaying : 1;
+  bool            speedwaitchg : 1;
+  bool            stopplaying : 1;
 } playerdata_t;
 
 static void     playerCheckSystemVolume (playerdata_t *playerData);
@@ -190,6 +192,7 @@ static void     playerInitSinkList (playerdata_t *playerData);
 static void     playerFadeVolSet (playerdata_t *playerData);
 static double   calcFadeIndex (playerdata_t *playerData, int fadeType);
 static void     playerStartFadeOut (playerdata_t *playerData);
+static void     playerStartCrossFade (playerdata_t *playerData);
 static void     playerSetCheckTimes (playerdata_t *playerData, prepqueue_t *pq);
 static void     playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate);
 static void     playerSendStatus (playerdata_t *playerData, bool forceFlag);
@@ -202,6 +205,7 @@ static void     playerChkPlayerSong (playerdata_t *playerData, int routefrom);
 static void     playerResetVolume (playerdata_t *playerData);
 static void     playerSetAudioSinkEnv (playerdata_t *playerData, bool isdefault);
 static const char * playerGetAudioInterface (void);
+static void     playerSetQueueConfig (playerdata_t *playerData, const char *args);
 /* static void playerDumpPrepQueue (playerdata_t *playerData, const char *tag); */
 
 static int  gKillReceived = 0;
@@ -242,16 +246,17 @@ main (int argc, char *argv[])
   playerData.stopNextsongFlag = STOP_NORMAL;
   playerData.stopwaitcount = 0;
   playerData.newSpeed = 100;
-  playerData.inFade = false;
-  playerData.inFadeIn = false;
-  playerData.inFadeOut = false;
-  playerData.inGap = false;
+  playerData.infade = false;
+  playerData.infadein = false;
+  playerData.infadeout = false;
+  playerData.incrossfade = false;
+  playerData.ingap = false;
   playerData.mute = false;
   playerData.newsong = false;
-  playerData.pauseAtEnd = false;
+  playerData.pauseatend = false;
   playerData.repeat = false;
-  playerData.speedWaitChg = false;
-  playerData.stopPlaying = false;
+  playerData.speedwaitchg = false;
+  playerData.stopplaying = false;
 
   progstateSetCallback (playerData.progstate, STATE_CONNECTING,
       playerConnectingCallback, &playerData);
@@ -272,6 +277,7 @@ main (int argc, char *argv[])
   playerData.fadeType = bdjoptGetNum (OPT_P_FADETYPE);
   playerData.fadeinTime = bdjoptGetNumPerQueue (OPT_Q_FADEINTIME, 0);
   playerData.fadeoutTime = bdjoptGetNumPerQueue (OPT_Q_FADEOUTTIME, 0);
+  playerData.crossfadeTime = bdjoptGetNumPerQueue (OPT_Q_CROSSFADE, 0);
 
   playerData.currentSink = "";  // default
   playerData.currentSpeed = 100;
@@ -443,7 +449,8 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_PLAY_PLAYPAUSE: {
           logMsg (LOG_DBG, LOG_MSGS, "got: playpause");
           if (playerData->playerState == PL_STATE_PLAYING ||
-             playerData->playerState == PL_STATE_IN_FADEOUT) {
+             playerData->playerState == PL_STATE_IN_FADEOUT ||
+             playerData->playerState == PL_STATE_IN_CROSSFADE) {
             playerPause (playerData);
           } else {
             playerPlay (playerData);
@@ -494,7 +501,7 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_PLAY_STOP: {
           logMsg (LOG_DBG, LOG_MSGS, "got: stop");
           playerStop (playerData);
-          playerData->pauseAtEnd = false;
+          playerData->pauseatend = false;
           playerSendPauseAtEndState (playerData);
           playerSetPlayerState (playerData, PL_STATE_STOPPED);
           break;
@@ -530,12 +537,8 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           playerData->priorGap = playerData->gap;
           break;
         }
-        case MSG_SET_PLAYBACK_FADEIN: {
-          playerData->fadeinTime = atol (args);
-          break;
-        }
-        case MSG_SET_PLAYBACK_FADEOUT: {
-          playerData->fadeoutTime = atol (args);
+        case MSG_SET_PLAYBACK_Q_CONF: {
+          playerSetQueueConfig (playerData, args);
           break;
         }
         case MSG_PLAY_RESET_VOLUME: {
@@ -595,23 +598,25 @@ playerProcessing (void *udata)
     playerSendStatus (playerData, STATUS_NO_FORCE);
   }
 
-  if (playerData->inFade) {
+  if (playerData->infade) {
     if (mstimeCheck (&playerData->fadeTimeNext)) {
       playerFadeVolSet (playerData);
     }
   }
 
   if (playerData->playerState == PL_STATE_IN_GAP &&
-      playerData->inGap) {
+      playerData->ingap) {
+logStderr ("play: in-gap\n");
     if (mstimeCheck (&playerData->gapFinishTime)) {
-      playerData->inGap = false;
+      playerData->ingap = false;
       logMsg (LOG_DBG, LOG_BASIC, "gap finish");
       playerSetPlayerState (playerData, PL_STATE_STOPPED);
     }
   }
 
-  if (playerData->playerState == PL_STATE_STOPPED &&
-      ! playerData->inGap &&
+  if ((playerData->playerState == PL_STATE_LOAD_CROSSFADE ||
+      playerData->playerState == PL_STATE_STOPPED) &&
+      ! playerData->ingap &&
       queueGetCount (playerData->playRequest) > 0) {
     prepqueue_t   *pq = NULL;
     playrequest_t *preq = NULL;
@@ -620,7 +625,7 @@ playerProcessing (void *udata)
     int           sourceType;
     int           tspeed;
 
-
+logStderr ("play: load-xfade or stopped\n");
     temprepeat = playerData->repeat;
 
     pq = playerData->currentSong;
@@ -644,14 +649,18 @@ playerProcessing (void *udata)
     /* the pq == null condition occurs if repeat is turned on before */
     /* playing the first song */
     if (! playerData->repeat || pq == NULL) {
+logStderr ("play: !repeat or null pq\n");
       preq = queueGetFirst (playerData->playRequest);
+fprintf (stderr, "play: preq: null? %d\n", preq == NULL);
       pq = playerLocatePreppedSong (playerData, preq->uniqueidx, preq->songname);
+fprintf (stderr, "play: pq: null? %d\n", pq == NULL);
       if (pq == NULL) {
         preq = queuePop (playerData->playRequest);
         playerFreePlayRequest (preq);
         if (gKillReceived) {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
         }
+logStderr ("play: ret %d\n", gKillReceived);
         return gKillReceived;
       }
 
@@ -665,6 +674,7 @@ playerProcessing (void *udata)
     }
     playerData->repeat = temprepeat;
 
+logStderr ("play: bbb\n");
     /* save the prior current volume before playing a song */
     playerData->baseVolume = playerData->currentVolume;
     playerData->realVolume = playerData->currentVolume;
@@ -678,6 +688,9 @@ playerProcessing (void *udata)
       playerData->realVolume = (int) newvol;
     }
 
+logStderr ("play: ccc\n");
+    /* announcements get the standard volume, */
+    /* as do songs when no fade-in is set */
     if ((pq->announce == PREP_ANNOUNCE ||
         playerData->fadeinTime == 0) &&
         ! playerData->mute) {
@@ -691,16 +704,26 @@ playerProcessing (void *udata)
     pathbldMakePath (tempffn, sizeof (tempffn), pq->tempname, "",
         PATHBLD_MP_DIR_DATATOP);
     sourceType = audiosrcGetType (tempffn);
+logStderr ("play: tempname: %s\n", pq->tempname);
 
-    pliMediaSetup (playerData->pli, pq->tempname, tempffn, sourceType);
-    /* pq->songstart is normalized */
+    if (playerData->playerState == PL_STATE_LOAD_CROSSFADE) {
+logStderr ("play: pli-crossfade\n");
+      pliCrossFade (playerData->pli, pq->tempname, tempffn, sourceType);
+    } else {
+logStderr ("play: pli-media\n");
+      pliMediaSetup (playerData->pli, pq->tempname, tempffn, sourceType);
+    }
 
     tspeed = pq->speed;
     if (playerData->repeat) {
       /* if repeating, use the current speed */
       tspeed = playerData->currentSpeed;
     }
-    pliStartPlayback (playerData->pli, pq->songstart, tspeed);
+    /* pq->songstart is normalized */
+    if (playerData->playerState != PL_STATE_LOAD_CROSSFADE) {
+      logMsg (LOG_DBG, LOG_BASIC, "start playback");
+      pliStartPlayback (playerData->pli, pq->songstart, tspeed);
+    }
     playerData->currentSpeed = tspeed;
     playerSetPlayerState (playerData, PL_STATE_LOADING);
   }
@@ -709,6 +732,7 @@ playerProcessing (void *udata)
     prepqueue_t       *pq = playerData->currentSong;
     plistate_t        plistate;
 
+logStderr ("play: loading\n");
     plistate = pliState (playerData->pli);
     if (plistate == PLI_STATE_OPENING ||
         plistate == PLI_STATE_BUFFERING) {
@@ -729,9 +753,12 @@ playerProcessing (void *udata)
       playerData->playTimePlayed = 0;
       playerSetCheckTimes (playerData, pq);
 
-      if (pq->announce == PREP_SONG && playerData->fadeinTime > 0) {
-        playerData->inFade = true;
-        playerData->inFadeIn = true;
+      if (pq->announce == PREP_SONG &&
+          ! playerData->incrossfade &&
+          playerData->fadeinTime > 0) {
+        logMsg (LOG_DBG, LOG_BASIC, "start fade-in");
+        playerData->infade = true;
+        playerData->infadein = true;
         playerData->fadeCount = 1;
         playerData->fadeSamples = playerData->fadeinTime / FADEIN_TIMESLICE + 1;
         playerData->fadeTimeStart = mstime ();
@@ -756,23 +783,35 @@ playerProcessing (void *udata)
   }
 
   if (playerData->playerState == PL_STATE_PLAYING ||
-      playerData->playerState == PL_STATE_IN_FADEOUT) {
+      playerData->playerState == PL_STATE_IN_FADEOUT ||
+      playerData->playerState == PL_STATE_IN_CROSSFADE) {
     prepqueue_t       *pq = playerData->currentSong;
 
     /* announcements have no fade-out */
     if (pq->announce == PREP_SONG &&
-        playerData->fadeoutTime > 0 &&
-        ! playerData->inFade &&
+        (playerData->fadeoutTime > 0 || playerData->crossfadeTime > 0) &&
+        ! playerData->infade &&
         mstimeCheck (&playerData->fadeTimeCheck)) {
 
+logStderr ("play: playing/in fade-out/in cross-fade (fade-time-chk)\n");
       /* before going into the fade, check the system volume */
       /* and see if the user changed it */
       logMsg (LOG_DBG, LOG_VOLUME, "check sysvol: before fade");
       playerCheckSystemVolume (playerData);
-      playerStartFadeOut (playerData);
+
+      if (playerData->crossfadeTime > 0) {
+        /* this will put the player into a load-crossfade state */
+        logMsg (LOG_DBG, LOG_BASIC, "starting cross-fade");
+logStderr ("play: start crossfade\n");
+        playerStartCrossFade (playerData);
+      } else {
+        logMsg (LOG_DBG, LOG_BASIC, "starting fade-out");
+logStderr ("play: start fade-out\n");
+        playerStartFadeOut (playerData);
+      }
     }
 
-    if (playerData->stopPlaying ||
+    if (playerData->stopplaying ||
         mstimeCheck (&playerData->playTimeCheck)) {
       int32_t     plitm;
       plistate_t  plistate;
@@ -794,7 +833,7 @@ playerProcessing (void *udata)
       if (plistate == PLI_STATE_STOPPED ||
           plistate == PLI_STATE_ENDED ||
           plistate == PLI_STATE_ERROR ||
-          playerData->stopPlaying ||
+          playerData->stopplaying ||
           plitm >= pq->plidur ||
           mstimeCheck (&playerData->playEndCheck)) {
         char  nsflag [20];
@@ -804,15 +843,16 @@ playerProcessing (void *udata)
         snprintf (nsflag, sizeof (nsflag), "%d", playerData->stopNextsongFlag);
 
         /* stop any fade */
-        playerData->inFade = false;
-        playerData->inFadeOut = false;
-        playerData->inFadeIn = false;
+        playerData->infade = false;
+        playerData->infadeout = false;
+        playerData->incrossfade = false;
+        playerData->infadein = false;
 
         /* protect the stop-playing flag so that it propagates */
         /* past the announcement */
         if (pq->announce == PREP_SONG) {
           playerData->stopNextsongFlag = STOP_NORMAL;
-          playerData->stopPlaying = false;
+          playerData->stopplaying = false;
         }
 
         /* on repeat, preserve the current speed */
@@ -825,10 +865,10 @@ playerProcessing (void *udata)
         playerStop (playerData);
 
         if (pq->announce == PREP_SONG) {
-          if (playerData->pauseAtEnd) {
+          if (playerData->pauseatend) {
             playerData->priorGap = playerData->gap;
             playerData->gap = 0;
-            playerData->pauseAtEnd = false;
+            playerData->pauseatend = false;
             playerSendPauseAtEndState (playerData);
             logMsg (LOG_DBG, LOG_BASIC, "pause-at-end");
 
@@ -882,7 +922,7 @@ playerProcessing (void *udata)
           volumeSet (playerData->volume, playerData->currentSink, 0);
           playerData->actualVolume = 0;
           logMsg (LOG_DBG, LOG_VOLUME, "gap set volume: %d", 0);
-          playerData->inGap = true;
+          playerData->ingap = true;
           mstimeset (&playerData->gapFinishTime, playerData->gap);
         } else {
           logMsg (LOG_DBG, LOG_BASIC, "no-gap");
@@ -908,8 +948,8 @@ playerProcessing (void *udata)
        playerData->playerState == PL_STATE_STOPPED ||
        playerData->playerState == PL_STATE_PAUSED) &&
       queueGetCount (playerData->prepRequestQueue) > 0 &&
-      ! playerData->inGap &&
-      ! playerData->inFade) {
+      ! playerData->ingap &&
+      ! playerData->infade) {
     playerProcessPrepRequest (playerData);
   }
 
@@ -970,7 +1010,7 @@ playerCheckSystemVolume (playerdata_t *playerData)
   logProcBegin ();
   mstimeset (&playerData->volumeTimeCheck, 1000);
 
-  if (playerData->inFade || playerData->inGap || playerData->mute) {
+  if (playerData->infade || playerData->ingap || playerData->mute) {
     logProcEnd ("in-fade-gap-mute");
     return;
   }
@@ -1246,16 +1286,16 @@ playerPause (playerdata_t *playerData)
 
   plistate = pliState (playerData->pli);
 
-  if (playerData->inFadeOut) {
-    playerData->pauseAtEnd = true;
+  if (playerData->infadeout) {
+    playerData->pauseatend = true;
   } else if (plistate == PLI_STATE_PLAYING) {
     /* record the playtime played */
     playerData->playTimePlayed += mstimeend (&playerData->playTimeStart);
     pliPause (playerData->pli);
     playerSetPlayerState (playerData, PL_STATE_PAUSED);
-    if (playerData->inFadeIn) {
-      playerData->inFade = false;
-      playerData->inFadeIn = false;
+    if (playerData->infadein) {
+      playerData->infade = false;
+      playerData->infadein = false;
       if (! playerData->mute) {
         volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
         logMsg (LOG_DBG, LOG_VOLUME, "play after pause: in-fade: set volume: %d", playerData->realVolume);
@@ -1275,7 +1315,7 @@ playerPlay (playerdata_t *playerData)
 
   if (plistate != PLI_STATE_PLAYING) {
     if (playerData->playerState == PL_STATE_IN_GAP &&
-        playerData->inGap) {
+        playerData->ingap) {
       /* cancel the gap */
       mstimestart (&playerData->gapFinishTime);
     }
@@ -1310,11 +1350,12 @@ playerNextSong (playerdata_t *playerData)
   if (playerData->playerState == PL_STATE_LOADING ||
       playerData->playerState == PL_STATE_PLAYING ||
       playerData->playerState == PL_STATE_IN_GAP ||
-      playerData->playerState == PL_STATE_IN_FADEOUT) {
+      playerData->playerState == PL_STATE_IN_FADEOUT ||
+      playerData->playerState == PL_STATE_IN_CROSSFADE) {
     /* the song will stop playing, and the normal logic will move */
     /* to the next song and continue playing */
     playerData->stopNextsongFlag = STOP_NEXTSONG;
-    playerData->stopPlaying = true;
+    playerData->stopplaying = true;
     /* cancel any gap */
     mstimestart (&playerData->gapFinishTime);
   } else {
@@ -1358,7 +1399,7 @@ playerPauseAtEnd (playerdata_t *playerData)
 
   logProcBegin ();
 
-  playerData->pauseAtEnd = playerData->pauseAtEnd ? false : true;
+  playerData->pauseatend = playerData->pauseatend ? false : true;
   playerSendPauseAtEndState (playerData);
   logProcEnd ("");
 }
@@ -1370,7 +1411,7 @@ playerSendPauseAtEndState (playerdata_t *playerData)
 
   logProcBegin ();
 
-  snprintf (tbuff, sizeof (tbuff), "%d", playerData->pauseAtEnd);
+  snprintf (tbuff, sizeof (tbuff), "%d", playerData->pauseatend);
   connSendMessage (playerData->conn, ROUTE_PLAYERUI,
       MSG_PLAY_PAUSEATEND_STATE, tbuff);
   connSendMessage (playerData->conn, ROUTE_MANAGEUI,
@@ -1390,7 +1431,7 @@ playerFade (playerdata_t *playerData)
 
   logProcBegin ();
 
-  if (playerData->inFadeOut) {
+  if (playerData->infadeout || playerData->incrossfade) {
     logProcEnd ("in-fade-out");
     return;
   }
@@ -1403,7 +1444,7 @@ playerFade (playerdata_t *playerData)
 
   if (playerData->fadeoutTime == 0) {
     playerCheckSystemVolume (playerData);
-    playerData->stopPlaying = true;
+    playerData->stopplaying = true;
   }
 
   plistate = pliState (playerData->pli);
@@ -1441,7 +1482,7 @@ playerSpeed (playerdata_t *playerData, char *trate)
   }
   if (playerData->playerState == PL_STATE_PAUSED ||
       playerData->playerState == PL_STATE_STOPPED) {
-    playerData->speedWaitChg = true;
+    playerData->speedwaitchg = true;
     playerData->newSpeed = (int) atof (trate);
   }
 
@@ -1453,7 +1494,7 @@ playerChangeSpeed (playerdata_t *playerData, int speed)
 {
   pliRate (playerData->pli, (ssize_t) speed);
   playerData->currentSpeed = (ssize_t) speed;
-  playerData->speedWaitChg = false;
+  playerData->speedwaitchg = false;
 }
 
 static void
@@ -1728,7 +1769,7 @@ playerFadeVolSet (playerdata_t *playerData)
   logProcBegin ();
 
   fadeType = playerData->fadeType;
-  if (playerData->inFadeIn) {
+  if (playerData->infadein || playerData->incrossfade) {
     fadeType = FADETYPE_TRIANGLE;
   }
   findex = calcFadeIndex (playerData, fadeType);
@@ -1739,43 +1780,58 @@ playerFadeVolSet (playerdata_t *playerData)
     newvol = playerData->realVolume;
   }
   if (! playerData->mute) {
-    volumeSet (playerData->volume, playerData->currentSink, newvol);
-    playerData->actualVolume = newvol;
+    if (playerData->incrossfade) {
+      /* in a cross-fade, the player interface handles the volume */
+      /* of the individual songs */
+      /* the master volume stays at the current set volume */
+      pliCrossFadeVolume (playerData->pli, newvol);
+    } else {
+      volumeSet (playerData->volume, playerData->currentSink, newvol);
+      playerData->actualVolume = newvol;
+    }
   }
-  if (playerData->inFade) {
+  if (playerData->infade) {
     logMsg (LOG_DBG, LOG_VOLUME, "fade set volume: %d count:%d",
         newvol, playerData->fadeCount);
   }
-  if (playerData->inFadeOut) {
+  if (playerData->infadeout || playerData->incrossfade) {
     logMsg (LOG_DBG, LOG_VOLUME, "   time %" PRId64,
         (int64_t) mstimeend (&playerData->playEndCheck));
   }
-  if (playerData->inFadeIn) {
+  if (playerData->infadein) {
     ++playerData->fadeCount;
   }
-  if (playerData->inFadeOut) {
+  if (playerData->infadeout || playerData->incrossfade) {
     --playerData->fadeCount;
     if (playerData->fadeCount <= 0) {
-      /* leave inFade set to prevent race conditions in the main loop */
-      /* the player stop condition will reset the inFade flag */
-      playerData->inFadeOut = false;
-      volumeSet (playerData->volume, playerData->currentSink, 0);
-      playerData->actualVolume = 0;
-      logMsg (LOG_DBG, LOG_VOLUME, "fade-out done volume: %d time: %" PRId64,
+      if (playerData->incrossfade) {
+        pliCrossFadeVolume (playerData->pli, 0);
+      } else {
+        volumeSet (playerData->volume, playerData->currentSink, 0);
+        playerData->actualVolume = 0;
+      }
+      /* leave 'infade' set to prevent race conditions in the main loop */
+      /* the player stop condition will reset the 'infade' flag */
+      playerData->infadeout = false;
+      playerData->incrossfade = false;
+      logMsg (LOG_DBG, LOG_VOLUME, "fade-out/xfade done volume: %d time: %" PRId64,
           0, (int64_t) mstimeend (&playerData->playEndCheck));
     }
   }
 
-  ts = playerData->inFadeOut ? FADEOUT_TIMESLICE : FADEIN_TIMESLICE;
+  ts = FADEOUT_TIMESLICE;
+  if (playerData->infadein) {
+    ts = FADEIN_TIMESLICE;
+  }
   /* incrementing fade-time start by the timeslice each interval will */
   /* give us the next end-time */
   playerData->fadeTimeStart += ts;
   mstimesettm (&playerData->fadeTimeNext, playerData->fadeTimeStart);
 
-  if (playerData->inFadeIn &&
+  if (playerData->infadein &&
       newvol >= playerData->realVolume) {
-    playerData->inFade = false;
-    playerData->inFadeIn = false;
+    playerData->infade = false;
+    playerData->infadein = false;
   }
   logProcEnd ("");
 }
@@ -1827,17 +1883,46 @@ playerStartFadeOut (playerdata_t *playerData)
   prepqueue_t   *pq = playerData->currentSong;
 
   logProcBegin ();
-  playerData->inFade = true;
-  playerData->inFadeOut = true;
+  playerData->infade = true;
+  playerData->infadeout = true;
   tm = pq->dur - playerCalcPlayedTime (playerData);
   tm = tm < playerData->fadeoutTime ? tm : playerData->fadeoutTime;
   playerData->fadeSamples = tm / FADEOUT_TIMESLICE;
   playerData->fadeCount = playerData->fadeSamples;
-  logMsg (LOG_DBG, LOG_VOLUME, "fade: samples: %d", playerData->fadeCount);
+  logMsg (LOG_DBG, LOG_VOLUME, "fade: samples: %d", playerData->fadeSamples);
   logMsg (LOG_DBG, LOG_VOLUME, "fade: timeslice: %d", FADEOUT_TIMESLICE);
   playerData->fadeTimeStart = mstime ();
   playerFadeVolSet (playerData);
   playerSetPlayerState (playerData, PL_STATE_IN_FADEOUT);
+  logProcEnd ("");
+}
+
+/* there are some differences from a standard fade */
+static void
+playerStartCrossFade (playerdata_t *playerData)
+{
+  ssize_t     tm;
+  char        nsflag [20];
+
+  logProcBegin ();
+
+  /* tell main that the next song is required */
+  snprintf (nsflag, sizeof (nsflag), "%d", playerData->stopNextsongFlag);
+  connSendMessage (playerData->conn, ROUTE_MAIN, MSG_PLAYBACK_FINISH, nsflag);
+
+  playerSetPlayerState (playerData, PL_STATE_LOAD_CROSSFADE);
+
+  playerData->infade = true;
+  playerData->incrossfade = true;
+  tm = playerData->crossfadeTime;
+  playerData->fadeSamples = tm / FADEOUT_TIMESLICE;
+  playerData->fadeCount = playerData->fadeSamples;
+logStderr ("xfade: samples: %d\n", playerData->fadeSamples);
+  logMsg (LOG_DBG, LOG_VOLUME, "xfade: samples: %d", playerData->fadeSamples);
+  logMsg (LOG_DBG, LOG_VOLUME, "xfade: timeslice: %d", FADEOUT_TIMESLICE);
+  playerData->fadeTimeStart = mstime ();
+  /* do not run the first fade-vol-set */
+
   logProcEnd ("");
 }
 
@@ -1878,6 +1963,8 @@ playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate)
 
   if (playerData->playerState != pstate) {
     playerData->playerState = pstate;
+logStderr ("pl-state: %d/%s\n",
+playerData->playerState, logPlayerState (playerData->playerState));
     logMsg (LOG_DBG, LOG_BASIC, "pl-state: %d/%s",
         playerData->playerState, logPlayerState (playerData->playerState));
     msgbuildPlayerState (tbuff, sizeof (tbuff),
@@ -1886,7 +1973,7 @@ playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate)
     connSendMessage (playerData->conn, ROUTE_PLAYERUI, MSG_PLAYER_STATE, tbuff);
     connSendMessage (playerData->conn, ROUTE_MANAGEUI, MSG_PLAYER_STATE, tbuff);
 
-    if (playerData->speedWaitChg &&
+    if (playerData->speedwaitchg &&
         playerData->playerState == PL_STATE_PLAYING) {
       playerChangeSpeed (playerData, playerData->newSpeed);
     }
@@ -1913,7 +2000,8 @@ playerSendStatus (playerdata_t *playerData, bool forceFlag)
   if (forceFlag == STATUS_NO_FORCE &&
       playerData->playerState == playerData->lastPlayerState &&
       playerData->playerState != PL_STATE_PLAYING &&
-      playerData->playerState != PL_STATE_IN_FADEOUT) {
+      playerData->playerState != PL_STATE_IN_FADEOUT &&
+      playerData->playerState != PL_STATE_IN_CROSSFADE) {
     logProcEnd ("no-state-chg");
     return;
   }
@@ -1947,7 +2035,7 @@ playerSendStatus (playerdata_t *playerData, bool forceFlag)
   tm = playerCalcPlayedTime (playerData);
 
   msgbuildPlayerStatus (rbuff, BDJMSG_MAX,
-      playerData->repeat, playerData->pauseAtEnd, playerData->currentVolume,
+      playerData->repeat, playerData->pauseatend, playerData->currentVolume,
       playerData->currentSpeed, playerData->baseVolume, tm, dur);
 
   /* 4.4.4 send the playerui and manageui the messages from here, */
@@ -1991,7 +2079,8 @@ playerCalcPlayedTime (playerdata_t *playerData)
   if (playerData->playerState == PL_STATE_PAUSED) {
     tm = playerData->playTimePlayed;
   } else if (playerData->playerState == PL_STATE_PLAYING ||
-      playerData->playerState == PL_STATE_IN_FADEOUT) {
+      playerData->playerState == PL_STATE_IN_FADEOUT ||
+      playerData->playerState == PL_STATE_IN_CROSSFADE) {
     tm = playerData->playTimePlayed + mstimeend (&playerData->playTimeStart);
   } else {
     tm = 0;
@@ -2065,7 +2154,7 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       MSG_ARGS_RS, playerData->actualVolume, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->currentSpeed, MSG_ARGS_RS,
       MSG_ARGS_RS, (uint64_t) playerCalcPlayedTime (playerData), MSG_ARGS_RS,
-      MSG_ARGS_RS, playerData->pauseAtEnd, MSG_ARGS_RS,
+      MSG_ARGS_RS, playerData->pauseatend, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->repeat, MSG_ARGS_RS,
       MSG_ARGS_RS, queueGetCount (playerData->prepQueue), MSG_ARGS_RS,
       /* current sink can be empty, just put it last for now */
@@ -2086,7 +2175,8 @@ playerChkPlayerSong (playerdata_t *playerData, int routefrom)
   if (pq != NULL &&
       (playerData->playerState == PL_STATE_LOADING ||
       playerData->playerState == PL_STATE_PLAYING ||
-      playerData->playerState == PL_STATE_IN_FADEOUT)) {
+      playerData->playerState == PL_STATE_IN_FADEOUT ||
+      playerData->playerState == PL_STATE_IN_CROSSFADE)) {
     dur = pq->dur;
     sn = pq->songname;
   }
@@ -2198,6 +2288,28 @@ playerGetAudioInterface (void)
   ilistFree (interfaces);
 
   return bdjoptGetStr (OPT_M_PLAYER_INTFC);
+}
+
+static void
+playerSetQueueConfig (playerdata_t *playerData, const char *args)
+{
+  char  *targs;
+  char  *tokstr = NULL;
+  char  *p = NULL;
+
+  targs = mdstrdup (args);
+  p = strtok_r (targs, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL) {
+    playerData->fadeinTime = atol (p);
+  }
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL) {
+    playerData->fadeoutTime = atol (p);
+  }
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL) {
+    playerData->crossfadeTime = atol (p);
+  }
 }
 
 #if 0

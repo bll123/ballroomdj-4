@@ -406,7 +406,8 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_CMD_PLAY: {
           if (mainData->playerState != PL_STATE_PLAYING &&
-              mainData->playerState != PL_STATE_IN_FADEOUT) {
+              mainData->playerState != PL_STATE_IN_FADEOUT &&
+              mainData->playerState != PL_STATE_IN_CROSSFADE) {
             mainMusicQueuePlay (mainData);
           }
           break;
@@ -417,7 +418,8 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_CMD_PLAYPAUSE: {
           if (mainData->playerState == PL_STATE_PLAYING ||
-              mainData->playerState == PL_STATE_IN_FADEOUT) {
+              mainData->playerState == PL_STATE_IN_FADEOUT ||
+              mainData->playerState == PL_STATE_IN_CROSSFADE) {
             connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_PLAY_PAUSE, NULL);
           } else {
             mainMusicQueuePlay (mainData);
@@ -576,6 +578,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_CHK_MAIN_SET_GAP: {
           bdjoptSetNumPerQueue (OPT_Q_GAP, atoi (args), mainData->musicqPlayIdx);
+          mainMusicqSendQueueConfig (mainData);
+          break;
+        }
+        case MSG_CHK_MAIN_SET_CROSSFADE: {
+          bdjoptSetNumPerQueue (OPT_Q_CROSSFADE, atoi (args), mainData->musicqPlayIdx);
           mainMusicqSendQueueConfig (mainData);
           break;
         }
@@ -1071,10 +1078,12 @@ mainSendMarqueeData (maindata_t *mainData)
       }
     } else if ((marqueeidx > 0 && mainData->inannounce) ||
         (marqueeidx > 0 && mainData->playerState == PL_STATE_IN_GAP) ||
-        (marqueeidx > 1 && mainData->playerState == PL_STATE_IN_FADEOUT)) {
+        (marqueeidx > 1 && mainData->playerState == PL_STATE_IN_FADEOUT) ||
+        (marqueeidx > 1 && mainData->playerState == PL_STATE_IN_CROSSFADE)) {
       /* inannounce and marqueeidx > 0 or */
       /* in-gap and marqueeidx > 0 or */
       /* in-fadeout and marqueeidx > 1 */
+      /* in-crossfade and marqueeidx > 1 */
       dstr = MSG_ARGS_EMPTY_STR;
     } else if (qoffset >= musicqLen) {
       dstr = MSG_ARGS_EMPTY_STR;
@@ -1964,14 +1973,15 @@ mainMusicqSetPlayback (maindata_t *mainData, char *args)
 static void
 mainMusicqSendQueueConfig (maindata_t *mainData)
 {
-  char          tmp [40];
+  char          tmp [200];
 
-  snprintf (tmp, sizeof (tmp), "%" PRId64,
-      (int64_t) bdjoptGetNumPerQueue (OPT_Q_FADEINTIME, mainData->musicqPlayIdx));
-  connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_FADEIN, tmp);
-  snprintf (tmp, sizeof (tmp), "%" PRId64,
-      (int64_t) bdjoptGetNumPerQueue (OPT_Q_FADEOUTTIME, mainData->musicqPlayIdx));
-  connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_FADEOUT, tmp);
+  snprintf (tmp, sizeof (tmp), "%" PRId64 "%c%" PRId64 "%c%" PRId64,
+      (int64_t) bdjoptGetNumPerQueue (OPT_Q_FADEINTIME, mainData->musicqPlayIdx),
+      MSG_ARGS_RS,
+      (int64_t) bdjoptGetNumPerQueue (OPT_Q_FADEOUTTIME, mainData->musicqPlayIdx),
+      MSG_ARGS_RS,
+      (int64_t) bdjoptGetNumPerQueue (OPT_Q_CROSSFADE, mainData->musicqPlayIdx));
+  connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_Q_CONF, tmp);
 }
 
 static void
@@ -2393,6 +2403,7 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
     case PL_STATE_LOADING:
     case PL_STATE_PLAYING:
     case PL_STATE_IN_FADEOUT:
+    case PL_STATE_IN_CROSSFADE:
     case PL_STATE_IN_GAP: {
       p = "play";
       break;
@@ -3222,7 +3233,8 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
   dance = MSG_ARGS_EMPTY_STR;
   songfn = MSG_ARGS_EMPTY_STR;
   if (mainData->playerState == PL_STATE_PLAYING ||
-      mainData->playerState == PL_STATE_IN_FADEOUT) {
+      mainData->playerState == PL_STATE_IN_FADEOUT ||
+      mainData->playerState == PL_STATE_IN_CROSSFADE) {
     dbidx = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
     title = musicqGetData (mainData->musicQueue, mainData->musicqPlayIdx, 0, TAG_TITLE);
     dance = mainSongGetDanceDisplay (mainData, mainData->musicqPlayIdx, 0);

@@ -156,8 +156,8 @@ confuiMusicQBuildUI (confuigui_t *gui)
       bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, 0), NULL, CONFUI_INDENT);
 
   widx = CONFUI_WIDGET_Q_CROSSFADE;
-  gui->uiitem [widx].callback = callbackInit (confuiMusicqCrossFadeChg,
-      gui, NULL);
+  gui->uiitem [widx].callback = callbackInit (
+      confuiMusicqCrossFadeChg, gui, NULL);
   uiSpinboxSetValueChangedCallback (gui->uiitem [widx].uiwidgetp,
       gui->uiitem [widx].callback);
 
@@ -180,7 +180,7 @@ confuiMusicQActiveChg (void *udata)
   int         tval;
   int         state;
   int         cfstate;    // cross-fade
-  int         cflstate;    // cross-fade label
+  int         cflstate;   // cross-fade label
   int         ncfstate;   // not cross-fade
 
   gui->inchange = true;
@@ -219,8 +219,8 @@ confuiMusicQActiveChg (void *udata)
     }
   }
 
-  uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_FADE_IN_TIME].uiwidgetp, ncfstate);
-  uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_FADE_OUT_TIME].uiwidgetp, ncfstate);
+  uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_FADE_IN_TIME].uiwidgetp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_FADE_OUT_TIME].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_GAP].uiwidgetp, ncfstate);
 
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_CROSSFADE].label, cflstate);
@@ -229,7 +229,7 @@ confuiMusicQActiveChg (void *udata)
   uiSpinboxSetState (gui->uiitem [CONFUI_SPINBOX_Q_MAX_PLAY_TIME].uiwidgetp, state);
   uiSpinboxSetState (gui->uiitem [CONFUI_SPINBOX_Q_STOP_AT_TIME].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PAUSE_EACH_SONG].uiwidgetp, state);
-  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uiwidgetp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uiwidgetp, ncfstate);
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE].uiwidgetp, state);
 
@@ -255,7 +255,6 @@ confuiMusicQDisplayChg (void *udata)
   /* force a no-change for index 0 */
   selidx = uiSpinboxTextGetValue (gui->uiitem [CONFUI_SPINBOX_MUSIC_QUEUE].uiwidgetp);
   if (selidx == 0) {
-    uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiwidgetp, 1);
     uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiwidgetp, 1);
   }
 
@@ -303,17 +302,22 @@ confuiMusicQChg (void *udata)
       bdjoptGetNumPerQueue (OPT_Q_ACTIVE, nselidx));
   uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiwidgetp,
       bdjoptGetNumPerQueue (OPT_Q_DISPLAY, nselidx));
+
   uiSpinboxSetValue (gui->uiitem [CONFUI_WIDGET_Q_FADE_IN_TIME].uiwidgetp,
       (double) bdjoptGetNumPerQueue (OPT_Q_FADEINTIME, nselidx) / 1000.0);
   uiSpinboxSetValue (gui->uiitem [CONFUI_WIDGET_Q_FADE_OUT_TIME].uiwidgetp,
       (double) bdjoptGetNumPerQueue (OPT_Q_FADEOUTTIME, nselidx) / 1000.0);
   uiSpinboxSetValue (gui->uiitem [CONFUI_WIDGET_Q_GAP].uiwidgetp,
       (double) bdjoptGetNumPerQueue (OPT_Q_GAP, nselidx) / 1000.0);
+  uiSpinboxSetValue (gui->uiitem [CONFUI_WIDGET_Q_CROSSFADE].uiwidgetp,
+      (double) bdjoptGetNumPerQueue (OPT_Q_CROSSFADE, nselidx) / 1000.0);
+
   uiSpinboxTimeSetValue (gui->uiitem [CONFUI_SPINBOX_Q_MAX_PLAY_TIME].uiwidgetp,
       bdjoptGetNumPerQueue (OPT_Q_MAXPLAYTIME, nselidx));
   /* divide by to convert from hh:mm to mm:ss for the spinbox */
   uiSpinboxTimeSetValue (gui->uiitem [CONFUI_SPINBOX_Q_STOP_AT_TIME].uiwidgetp,
       bdjoptGetNumPerQueue (OPT_Q_STOP_AT_TIME, nselidx) / 60);
+
   uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_PAUSE_EACH_SONG].uiwidgetp,
       bdjoptGetNumPerQueue (OPT_Q_PAUSE_EACH_SONG, nselidx));
   uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uiwidgetp,
@@ -423,6 +427,9 @@ confuiMusicqCrossFadeChg (void *udata)
   dval = round (dval * 10.0);
   dval /= 10.0;
   uiSpinboxSetValue (gui->uiitem [widx].uiwidgetp, dval);
+
+  widx = CONFUI_SWITCH_Q_PLAY_ANNOUNCE;
+  uiSwitchSetValue (gui->uiitem [widx].uiwidgetp, 0);
 
   confuiMusicQActiveChg (gui);
 

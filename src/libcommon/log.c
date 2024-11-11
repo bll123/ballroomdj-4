@@ -40,6 +40,8 @@ static const char *playerstateTxt [PL_STATE_MAX] = {
   [PL_STATE_PAUSED] = "paused",
   [PL_STATE_IN_FADEOUT] = "in-fadeout",
   [PL_STATE_IN_GAP] = "in-gap",
+  [PL_STATE_LOAD_CROSSFADE] = "load-crossfade",
+  [PL_STATE_IN_CROSSFADE] = "in-crossfade",
 };
 
 /* for debugging */

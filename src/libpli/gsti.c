@@ -8,6 +8,8 @@
  * gst-launch-1.0 playbin \
  *    uri=file://$HOME/s/bdj4/test-music/001-argentinetango.mp3 \
  *    audio_sink="scaletempo ! audioconvert ! audioresample ! autoaudiosink"
+ * modifying a playbin pipeline:
+ * https://gstreamer.freedesktop.org/documentation/tutorials/playback/custom-playbin-sinks.html?gi-language=c
  *
  * working mix:
  * gst-launch-1.0 \
@@ -17,9 +19,6 @@
  *   uridecodebin3 uri=file://$HOME/s/bdj4/test-music/003-jive.mp3 \
  *   ! audioconvert ! scaletempo ! audioconvert ! audioresample \
  *   ! volume volume="0.3" ! autoaudiosink \
- *
- * modifying a playbin pipeline:
- * https://gstreamer.freedesktop.org/documentation/tutorials/playback/custom-playbin-sinks.html?gi-language=c
  *
  * export GST_DEBUG_DUMP_DOT_DIR=/home/bll/s/bdj4/tmp
  *
@@ -47,8 +46,8 @@
 # include "gsti.h"
 # include "pli.h"
 
-# define GSTI_DEBUG 0
-# define GSTI_DEBUG_DOT 0
+# define GSTI_DEBUG 1
+# define GSTI_DEBUG_DOT 1
 
 # define GSTI_NO_VOL 0.0
 # define GSTI_FULL_VOL 1.0
@@ -138,7 +137,7 @@ gstiInit (const char *plinm)
   gsti->mainctx = g_main_context_default ();
   gstiRunOnce (gsti);
 
-  gsti->pipeline = gst_pipeline_new ("crossfade");
+  gsti->pipeline = gst_pipeline_new ("pipeline");
   mdextalloc (gsti->pipeline);
   gstiRunOnce (gsti);
 
@@ -232,7 +231,7 @@ gstiMedia (gsti_t *gsti, const char *fulluri, int sourceType)
   }
 
 # if GSTI_DEBUG
-  logStderr ("uri: %s\n", tbuff);
+  logStderr ("norm uri: %d %s\n", gsti->curr, tbuff);
 # endif
 
   gsti->rate [gsti->curr] = GSTI_NORM_RATE;
@@ -276,7 +275,7 @@ gstiCrossFade (gsti_t *gsti, const char *fulluri, int sourceType)
   }
 
 # if GSTI_DEBUG
-  logStderr ("uri: %s\n", tbuff);
+  logStderr ("xfade uri: %d %s\n", gsti->curr, tbuff);
 # endif
 
   /* add the bin to the pipeline */
@@ -287,6 +286,7 @@ gstiCrossFade (gsti_t *gsti, const char *fulluri, int sourceType)
   gsti->vol [idx] = GSTI_NO_VOL;
   gstiChangeVolume (gsti, idx);
 
+logStderr ("gsti: start crossfade %s\n", tbuff);
   g_object_set (G_OBJECT (gsti->source [idx]), "uri", tbuff, NULL);
   if (gsti->state == PLI_STATE_PLAYING) {
     gsti->state = PLI_STATE_CROSSFADE;
@@ -311,10 +311,12 @@ gstiCrossFadeVolume (gsti_t *gsti, int vol)
 
   dvol = (double) vol / 100.0;
 
+logStderr ("gsti: xfade vol %.1f\n", dvol);
   gsti->vol [gsti->curr] = dvol;
   gstiChangeVolume (gsti, gsti->curr);
 
   dvol = 1.0 - dvol;
+logStderr ("      vol %.1f\n", dvol);
   if (dvol <= 0.0) {
     gstiEndCrossFade (gsti);
   } else {
@@ -560,7 +562,7 @@ gstiGetVolume (gsti_t *gsti)
   g_object_get (G_OBJECT (gsti->volume [gsti->curr]), "volume", &dval, NULL);
   val = round (dval * 100.0);
 # if GSTI_DEBUG
-  logStderr ("-- get volume %d\n", val);
+  logStderr ("-- get volume %d %d\n", gsti->curr, val);
 # endif
   return val;
 }
@@ -780,9 +782,10 @@ gstiMakeSource (gsti_t *gsti)
 
   snprintf (tmpnm, sizeof (tmpnm), "vol_%d", gsti->curr);
   volume = gst_element_factory_make ("volume", tmpnm);
-  if (sink == NULL) {
+  if (volume == NULL) {
     fprintf (stderr, "ERR: unable to instantiate volume\n");
   }
+  gsti->volume [gsti->curr] = volume;
 
   snprintf (tmpnm, sizeof (tmpnm), "srcbin_%d", gsti->curr);
   bin = gst_bin_new (tmpnm);
@@ -806,12 +809,14 @@ gstiMakeSource (gsti_t *gsti)
 static void
 gstiAddSourceToPipeline (gsti_t *gsti, int idx)
 {
+logStderr ("gsti: add bin %d\n", idx);
   gst_bin_add (GST_BIN (gsti->pipeline), gsti->srcbin [idx]);
 }
 
 static void
 gstiRemoveSourceFromPipeline (gsti_t *gsti, int idx)
 {
+logStderr ("gsti: remove bin %d\n", idx);
   gst_bin_remove (GST_BIN (gsti->pipeline), gsti->srcbin [idx]);
 }
 
@@ -821,6 +826,10 @@ gstiDynamicLinkPad (GstElement *src, GstPad *newpad, gpointer udata)
   gsti_t            *gsti = udata;
   GstPad            *sinkpad = NULL;
   GstPadLinkReturn  rc;
+
+  if (gsti->deccvt [gsti->curr] == NULL) {
+    return;
+  }
 
   sinkpad = gst_element_get_static_pad (gsti->deccvt [gsti->curr], "sink");
 
@@ -844,16 +853,12 @@ gstiDynamicLinkPad (GstElement *src, GstPad *newpad, gpointer udata)
   }
   gst_object_unref (sinkpad);
 
-# if GSTI_DEBUG_DOT
-  gstiDebugDot (gsti, "gsti-link_a");
-# endif
-
 # if GSTI_DEBUG
   logStderr ("-- linked\n");
 # endif
 
 # if GSTI_DEBUG_DOT
-  gstiDebugDot (gsti, "gsti-link_b");
+  gstiDebugDot (gsti, "gsti-link");
 # endif
 }
 
@@ -861,6 +866,9 @@ static void
 gstiChangeVolume (gsti_t *gsti, int curr)
 {
   if (gsti->active [curr] == false) {
+    return;
+  }
+  if (gsti->volume [curr] == NULL) {
     return;
   }
 
@@ -899,8 +907,10 @@ static void
 gstiDebugDot (gsti_t *gsti, const char *fn)
 {
   GST_DEBUG_BIN_TO_DOT_FILE_WITH_TS (GST_BIN (gsti->pipeline),
-      GST_DEBUG_GRAPH_SHOW_ALL |
+      GST_DEBUG_GRAPH_SHOW_STATES |
       GST_DEBUG_GRAPH_SHOW_FULL_PARAMS, fn);
+  //    GST_DEBUG_GRAPH_SHOW_ALL |
+  //    GST_DEBUG_GRAPH_SHOW_FULL_PARAMS, fn);
   gstiRunOnce (gsti);
 }
 # endif
