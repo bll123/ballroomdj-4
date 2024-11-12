@@ -449,8 +449,7 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_PLAY_PLAYPAUSE: {
           logMsg (LOG_DBG, LOG_MSGS, "got: playpause");
           if (playerData->playerState == PL_STATE_PLAYING ||
-             playerData->playerState == PL_STATE_IN_FADEOUT ||
-             playerData->playerState == PL_STATE_IN_CROSSFADE) {
+             playerData->playerState == PL_STATE_IN_FADEOUT) {
             playerPause (playerData);
           } else {
             playerPlay (playerData);
@@ -785,8 +784,7 @@ logStderr ("play: plistate: %d/%s\n", plistate, pliStateText (playerData->pli));
   }
 
   if (playerData->playerState == PL_STATE_PLAYING ||
-      playerData->playerState == PL_STATE_IN_FADEOUT ||
-      playerData->playerState == PL_STATE_IN_CROSSFADE) {
+      playerData->playerState == PL_STATE_IN_FADEOUT) {
     prepqueue_t       *pq = playerData->currentSong;
 
     /* announcements have no fade-out */
@@ -1353,8 +1351,7 @@ playerNextSong (playerdata_t *playerData)
   if (playerData->playerState == PL_STATE_LOADING ||
       playerData->playerState == PL_STATE_PLAYING ||
       playerData->playerState == PL_STATE_IN_GAP ||
-      playerData->playerState == PL_STATE_IN_FADEOUT ||
-      playerData->playerState == PL_STATE_IN_CROSSFADE) {
+      playerData->playerState == PL_STATE_IN_FADEOUT) {
     /* the song will stop playing, and the normal logic will move */
     /* to the next song and continue playing */
     playerData->stopNextsongFlag = STOP_NEXTSONG;
@@ -1817,6 +1814,7 @@ logStderr ("play: fade-vol-set: real-vol: %d\n", playerData->realVolume);
     if (playerData->fadeCount <= 0) {
       if (playerData->incrossfade) {
         pliCrossFadeVolume (playerData->pli, 0);
+        playerData->infade = false;
       } else {
         volumeSet (playerData->volume, playerData->currentSink, 0);
         playerData->actualVolume = 0;
@@ -2011,8 +2009,7 @@ playerSendStatus (playerdata_t *playerData, bool forceFlag)
   if (forceFlag == STATUS_NO_FORCE &&
       playerData->playerState == playerData->lastPlayerState &&
       playerData->playerState != PL_STATE_PLAYING &&
-      playerData->playerState != PL_STATE_IN_FADEOUT &&
-      playerData->playerState != PL_STATE_IN_CROSSFADE) {
+      playerData->playerState != PL_STATE_IN_FADEOUT) {
     logProcEnd ("no-state-chg");
     return;
   }
@@ -2090,8 +2087,7 @@ playerCalcPlayedTime (playerdata_t *playerData)
   if (playerData->playerState == PL_STATE_PAUSED) {
     tm = playerData->playTimePlayed;
   } else if (playerData->playerState == PL_STATE_PLAYING ||
-      playerData->playerState == PL_STATE_IN_FADEOUT ||
-      playerData->playerState == PL_STATE_IN_CROSSFADE) {
+      playerData->playerState == PL_STATE_IN_FADEOUT) {
     tm = playerData->playTimePlayed + mstimeend (&playerData->playTimeStart);
   } else {
     tm = 0;
@@ -2186,8 +2182,7 @@ playerChkPlayerSong (playerdata_t *playerData, int routefrom)
   if (pq != NULL &&
       (playerData->playerState == PL_STATE_LOADING ||
       playerData->playerState == PL_STATE_PLAYING ||
-      playerData->playerState == PL_STATE_IN_FADEOUT ||
-      playerData->playerState == PL_STATE_IN_CROSSFADE)) {
+      playerData->playerState == PL_STATE_IN_FADEOUT)) {
     dur = pq->dur;
     sn = pq->songname;
   }
