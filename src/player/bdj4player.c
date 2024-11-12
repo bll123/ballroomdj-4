@@ -651,9 +651,9 @@ logStderr ("play: load-xfade or stopped\n");
     if (! playerData->repeat || pq == NULL) {
 logStderr ("play: !repeat or null pq\n");
       preq = queueGetFirst (playerData->playRequest);
-fprintf (stderr, "play: preq: null? %d\n", preq == NULL);
+logStderr ("play: preq: null? %d\n", preq == NULL);
       pq = playerLocatePreppedSong (playerData, preq->uniqueidx, preq->songname);
-fprintf (stderr, "play: pq: null? %d\n", pq == NULL);
+logStderr ("play: pq: null? %d\n", pq == NULL);
       if (pq == NULL) {
         preq = queuePop (playerData->playRequest);
         playerFreePlayRequest (preq);
@@ -686,6 +686,7 @@ logStderr ("play: bbb\n");
       newvol = round ((double) playerData->currentVolume * val);
       newvol = playerLimitVolume (newvol);
       playerData->realVolume = (int) newvol;
+logStderr ("play: set real-vol to %d\n", (int) newvol);
     }
 
 logStderr ("play: ccc\n");
@@ -734,6 +735,7 @@ logStderr ("play: pli-media\n");
 
 logStderr ("play: loading\n");
     plistate = pliState (playerData->pli);
+logStderr ("play: plistate: %d/%s\n", plistate, pliStateText (playerData->pli));
     if (plistate == PLI_STATE_OPENING ||
         plistate == PLI_STATE_BUFFERING) {
       ;
@@ -916,6 +918,7 @@ logStderr ("play: start fade-out\n");
 
         /* there is no gap after an announcement */
         if (pq->announce == PREP_SONG &&
+            ! playerData->incrossfade &&
             playerData->gap > 0) {
           playerSetPlayerState (playerData, PL_STATE_IN_GAP);
           playerData->realVolume = 0;
@@ -1774,22 +1777,28 @@ playerFadeVolSet (playerdata_t *playerData)
   }
   findex = calcFadeIndex (playerData, fadeType);
 
-  newvol = (int) round ((double) playerData->realVolume * findex);
-
-  if (newvol > playerData->realVolume) {
-    newvol = playerData->realVolume;
+logStderr ("play: fade-vol-set: real-vol: %d\n", playerData->realVolume);
+  if (playerData->incrossfade) {
+    /* in a cross-fade, the player interface handles the volume */
+    /* of the individual songs */
+    /* the master volume stays at the current set volume */
+    newvol = (int) round (100.0 * findex);
+  } else {
+    newvol = (int) round ((double) playerData->realVolume * findex);
+    if (newvol > playerData->realVolume) {
+      newvol = playerData->realVolume;
+    }
   }
+
   if (! playerData->mute) {
     if (playerData->incrossfade) {
-      /* in a cross-fade, the player interface handles the volume */
-      /* of the individual songs */
-      /* the master volume stays at the current set volume */
       pliCrossFadeVolume (playerData->pli, newvol);
     } else {
       volumeSet (playerData->volume, playerData->currentSink, newvol);
       playerData->actualVolume = newvol;
     }
   }
+
   if (playerData->infade) {
     logMsg (LOG_DBG, LOG_VOLUME, "fade set volume: %d count:%d",
         newvol, playerData->fadeCount);
@@ -1798,9 +1807,11 @@ playerFadeVolSet (playerdata_t *playerData)
     logMsg (LOG_DBG, LOG_VOLUME, "   time %" PRId64,
         (int64_t) mstimeend (&playerData->playEndCheck));
   }
+
   if (playerData->infadein) {
     ++playerData->fadeCount;
   }
+
   if (playerData->infadeout || playerData->incrossfade) {
     --playerData->fadeCount;
     if (playerData->fadeCount <= 0) {

@@ -57,6 +57,10 @@ enum {
   GSTI_IDENT = 0xccbbaa0069747367,
 };
 
+static const char *GSTI_PIPELINE_NAME = "pipeline";
+static const char *GSTI_SRCBIN_PFX = "srcbin";
+#define GSTI_SRCBIN_PFX_LEN (strlen (GSTI_SRCBIN_PFX))
+
 enum {
   GSTI_MAX_SOURCE = 2,
 };
@@ -72,24 +76,25 @@ typedef struct gsti {
   GstElement        *volume [GSTI_MAX_SOURCE];
   GstState          gststate;
   guint             busId;
-  plistate_t        state;
+  plistate_t        plistate;
   double            vol [GSTI_MAX_SOURCE];
   double            rate [GSTI_MAX_SOURCE];
   int               curr;
-  bool              active [GSTI_MAX_SOURCE];
   bool              isstopping : 1;
   bool              incrossfade : 1;
+  bool              async : 1;
+  bool              inrunonce : 1;
 } gsti_t;
 
 static bool initialized = false;
 
 static void gstiRunOnce (gsti_t *gsti);
 static gboolean gstiBusCallback (GstBus * bus, GstMessage * message, void *udata);
-static void gstiProcessState (gsti_t *gsti, GstState state);
+static void gstiProcessState (gsti_t *gsti, GstState state, GstState pending);
 static void gstiWaitState (gsti_t *gsti, GstState want);
-static void gstiMakeSource (gsti_t *gsti);
+static void gstiMakeSource (gsti_t *gsti, int idx);
 static void gstiAddSourceToPipeline (gsti_t *gsti, int idx);
-static void gstiRemoveSourceFromPipeline (gsti_t *gsti, int idx);
+// static void gstiRemoveSourceFromPipeline (gsti_t *gsti, int idx);
 static void gstiDynamicLinkPad (GstElement *src, GstPad *newpad, gpointer udata);
 static void gstiChangeVolume (gsti_t *gsti, int curr);
 static void gstiEndCrossFade (gsti_t *gsti);
@@ -120,7 +125,7 @@ gstiInit (const char *plinm)
   gsti->pipeline = NULL;
   gsti->currsource = NULL;
   gsti->busId = 0;
-  gsti->state = PLI_STATE_IDLE;
+  gsti->plistate = PLI_STATE_IDLE;
   for (int i = 0; i < GSTI_MAX_SOURCE; ++i) {
     gsti->srcbin [i] = NULL;
     gsti->source [i] = NULL;
@@ -128,28 +133,26 @@ gstiInit (const char *plinm)
     gsti->volume [i] = NULL;
     gsti->rate [i] = GSTI_NORM_RATE;
     gsti->vol [i] = GSTI_NO_VOL;
-    gsti->active [i] = false;
   }
   gsti->curr = 0;
   gsti->isstopping = false;
   gsti->incrossfade = false;
+  gsti->async = false;
 
   gsti->mainctx = g_main_context_default ();
   gstiRunOnce (gsti);
 
-  gsti->pipeline = gst_pipeline_new ("pipeline");
+  gsti->pipeline = gst_pipeline_new (GSTI_PIPELINE_NAME);
   mdextalloc (gsti->pipeline);
   gstiRunOnce (gsti);
 
-  gsti->curr = 0;
   gsti->vol [gsti->curr] = GSTI_FULL_VOL;
-  gstiMakeSource (gsti);
+  gstiMakeSource (gsti, gsti->curr);
 
-  gsti->curr = 1;
-  gsti->vol [gsti->curr] = GSTI_NO_VOL;
-  gstiMakeSource (gsti);
+  /* make both source bins */
+  gsti->vol [1] = GSTI_NO_VOL;
+  gstiMakeSource (gsti, 1);
 
-  gsti->curr = 0;
   gstiAddSourceToPipeline (gsti, gsti->curr);
   gsti->currsource = gsti->source [gsti->curr];
 
@@ -157,8 +160,6 @@ gstiInit (const char *plinm)
   gsti->busId = gst_bus_add_watch (bus, gstiBusCallback, gsti);
   g_object_unref (bus);
   gstiRunOnce (gsti);
-
-  gsti->active [gsti->curr] = true;
 
 # if GSTI_DEBUG_DOT
   gstiDebugDot (gsti, "gsti-init");
@@ -231,16 +232,22 @@ gstiMedia (gsti_t *gsti, const char *fulluri, int sourceType)
   }
 
 # if GSTI_DEBUG
-  logStderr ("norm uri: %d %s\n", gsti->curr, tbuff);
+  logStderr ("-- set std uri: %d %s\n", gsti->curr, tbuff);
 # endif
 
   gsti->rate [gsti->curr] = GSTI_NORM_RATE;
   g_object_set (G_OBJECT (gsti->currsource), "uri", tbuff, NULL);
-  rc = gst_element_set_state (GST_ELEMENT (gsti->pipeline), GST_STATE_PAUSED);
+  rc = gst_element_set_state (gsti->srcbin [gsti->curr], GST_STATE_PAUSED);
   if (rc == GST_STATE_CHANGE_FAILURE) {
     fprintf (stderr, "ERR: unable to change state (media)\n");
   }
-  gsti->state = PLI_STATE_OPENING;
+  if (rc == GST_STATE_CHANGE_ASYNC) {
+logStderr ("    in-async\n");
+    gsti->async = true;
+  }
+  gstiRunOnce (gsti);
+  gsti->plistate = PLI_STATE_OPENING;
+logStderr ("gsti: media: == opening\n");
   gstiRunOnce (gsti);
 # if GSTI_DEBUG_DOT
   gstiDebugDot (gsti, "gsti-media");
@@ -253,20 +260,23 @@ gstiCrossFade (gsti_t *gsti, const char *fulluri, int sourceType)
 {
   char    tbuff [MAXPATHLEN];
   int     idx;
+  int     rc;
 
   if (gsti == NULL || gsti->ident != GSTI_IDENT || gsti->mainctx == NULL) {
     return;
   }
 
-  if (gsti->state != PLI_STATE_PLAYING) {
+logStderr ("-- gsti: crossfade\n");
+
+  if (gsti->plistate != PLI_STATE_PLAYING) {
+logStderr ("-- not playing: pli-state: %d\n", gsti->plistate);
     gstiMedia (gsti, fulluri, sourceType);
     return;
   }
 
   gstiRunOnce (gsti);
 
-  idx = gsti->curr + 1;
-  if (idx >= GSTI_MAX_SOURCE) { idx = 0; }
+  idx = 1 - gsti->curr;
 
   if (sourceType == AUDIOSRC_TYPE_FILE) {
     snprintf (tbuff, sizeof (tbuff), "%s%s", AS_FILE_PFX, fulluri);
@@ -275,11 +285,12 @@ gstiCrossFade (gsti_t *gsti, const char *fulluri, int sourceType)
   }
 
 # if GSTI_DEBUG
-  logStderr ("xfade uri: %d %s\n", gsti->curr, tbuff);
+  logStderr ("-- set xfade uri: %d %s\n", idx, tbuff);
 # endif
 
   /* add the bin to the pipeline */
   gstiAddSourceToPipeline (gsti, idx);
+  gstiRunOnce (gsti);
 
   gsti->rate [idx] = GSTI_NORM_RATE;
   /* start with zero volume */
@@ -288,16 +299,22 @@ gstiCrossFade (gsti_t *gsti, const char *fulluri, int sourceType)
 
 logStderr ("gsti: start crossfade %s\n", tbuff);
   g_object_set (G_OBJECT (gsti->source [idx]), "uri", tbuff, NULL);
-  if (gsti->state == PLI_STATE_PLAYING) {
-    gsti->state = PLI_STATE_CROSSFADE;
+  rc = gst_element_set_state (gsti->srcbin [idx], GST_STATE_PLAYING);
+  if (rc == GST_STATE_CHANGE_FAILURE) {
+    fprintf (stderr, "ERR: unable to change state (crossfade)\n");
   }
+  if (rc == GST_STATE_CHANGE_ASYNC) {
+logStderr ("    in-async\n");
+    gsti->async = true;
+  }
+  gstiRunOnce (gsti);
 
+logStderr ("gsti: new current %d\n", idx);
   gsti->curr = idx;
   gsti->currsource = gsti->source [gsti->curr];
   gsti->incrossfade = true;
-  gsti->active [gsti->curr] = true;
-
   gstiRunOnce (gsti);
+
 # if GSTI_DEBUG_DOT
   gstiDebugDot (gsti, "gsti-crossfade");
 # endif
@@ -308,25 +325,26 @@ void
 gstiCrossFadeVolume (gsti_t *gsti, int vol)
 {
   double      dvol;
+  int         idx;
 
+  if (gsti->incrossfade == false) {
+    return;
+  }
+
+  /* current is pointing at the new song */
+  idx = 1 - gsti->curr;
   dvol = (double) vol / 100.0;
 
-logStderr ("gsti: xfade vol %.1f\n", dvol);
-  gsti->vol [gsti->curr] = dvol;
-  gstiChangeVolume (gsti, gsti->curr);
+  gsti->vol [idx] = dvol;
+  gstiChangeVolume (gsti, idx);
 
-  dvol = 1.0 - dvol;
-logStderr ("      vol %.1f\n", dvol);
+logStderr ("-- xfade vol %d: %.2f / %d: %.2f\n", idx, dvol, gsti->curr, 1.0 - dvol);
   if (dvol <= 0.0) {
     gstiEndCrossFade (gsti);
   } else {
-    for (int i = 0; i < GSTI_MAX_SOURCE; ++i) {
-      if (i == gsti->curr) {
-        continue;
-      }
-      gsti->vol [i] = dvol;
-      gstiChangeVolume (gsti, i);
-    }
+    dvol = 1.0 - dvol;
+    gsti->vol [gsti->curr] = dvol;
+    gstiChangeVolume (gsti, gsti->curr);
   }
 
   return;
@@ -342,7 +360,8 @@ gstiGetDuration (gsti_t *gsti)
     return 0;
   }
 
-  if (! gst_element_query_duration (gsti->pipeline, GST_FORMAT_TIME, &ctm)) {
+  gstiRunOnce (gsti);
+  if (! gst_element_query_duration (gsti->srcbin [gsti->curr], GST_FORMAT_TIME, &ctm)) {
     return 0;
   }
 
@@ -360,7 +379,9 @@ gstiGetPosition (gsti_t *gsti)
     return 0;
   }
 
-  if (! gst_element_query_position (gsti->pipeline, GST_FORMAT_TIME, &ctm)) {
+  gstiRunOnce (gsti);
+  if (! gst_element_query_position (gsti->srcbin [gsti->curr],
+      GST_FORMAT_TIME, &ctm)) {
     return 0;
   }
 
@@ -378,13 +399,15 @@ gstiState (gsti_t *gsti)
   }
 
   gstiRunOnce (gsti);
-  gst_element_get_state (GST_ELEMENT (gsti->pipeline), &state, &pending, 1);
-  gstiProcessState (gsti, state);
+
+  gst_element_get_state (GST_ELEMENT (gsti->srcbin [gsti->curr]), &state, &pending, 1);
   if (gsti->gststate != state) {
 # if GSTI_DEBUG
     char    tmp [80];
 
-    logStderr ("gsti-state: curr: %d pending: %d\n", state, pending);
+logStderr ("gsti-state: curr: %d/%s pending: %d/%s\n",
+state, gst_element_state_get_name (state),
+pending, gst_element_state_get_name (pending));
     snprintf (tmp, sizeof (tmp), "gsti-state_%d", state);
 #  if GSTI_DEBUG_DOT
     gstiDebugDot (gsti, tmp);
@@ -393,7 +416,13 @@ gstiState (gsti_t *gsti)
     gsti->gststate = state;
   }
 
-  return gsti->state;
+  if (gsti->async) {
+logStderr ("gsti-state: async, no change\n");
+    return gsti->plistate;
+  }
+  gstiProcessState (gsti, state, pending);
+
+  return gsti->plistate;
 }
 
 void
@@ -409,9 +438,13 @@ gstiPause (gsti_t *gsti)
 # if GSTI_DEBUG
   logStderr ("-- pause\n");
 # endif
-  rc = gst_element_set_state (GST_ELEMENT (gsti->pipeline), GST_STATE_PAUSED);
+  rc = gst_element_set_state (gsti->srcbin [gsti->curr], GST_STATE_PAUSED);
   if (rc == GST_STATE_CHANGE_FAILURE) {
     fprintf (stderr, "ERR: unable to change state (pause)\n");
+  }
+  if (rc == GST_STATE_CHANGE_ASYNC) {
+logStderr ("    in-async\n");
+    gsti->async = true;
   }
   gstiRunOnce (gsti);
 # if GSTI_DEBUG_DOT
@@ -433,9 +466,14 @@ gstiPlay (gsti_t *gsti)
 # if GSTI_DEBUG
   logStderr ("-- play\n");
 # endif
-  rc = gst_element_set_state (GST_ELEMENT (gsti->pipeline), GST_STATE_PLAYING);
+  /* the entire pipeline must be change to state playing */
+  rc = gst_element_set_state (gsti->pipeline, GST_STATE_PLAYING);
   if (rc == GST_STATE_CHANGE_FAILURE) {
-    fprintf (stderr, "ERR: unable to change state (pause)\n");
+    fprintf (stderr, "ERR: unable to change state (play)\n");
+  }
+  if (rc == GST_STATE_CHANGE_ASYNC) {
+logStderr ("    in-async\n");
+    gsti->async = true;
   }
   gstiRunOnce (gsti);
 # if GSTI_DEBUG_DOT
@@ -462,9 +500,8 @@ gstiStop (gsti_t *gsti)
     gstiChangeVolume (gsti, i);
   }
 
-  gst_element_set_state (GST_ELEMENT (gsti->pipeline), GST_STATE_READY);
+  gst_element_set_state (gsti->pipeline, GST_STATE_READY);
   gstiWaitState (gsti, GST_STATE_READY);
-  gstiRunOnce (gsti);
 
   for (int i = 0; i < GSTI_MAX_SOURCE; ++i) {
     gsti->vol [i] = GSTI_FULL_VOL;
@@ -489,8 +526,8 @@ gstiSetPosition (gsti_t *gsti, int64_t pos)
     return false;
   }
 
-  if (gsti->state == PLI_STATE_PAUSED ||
-      gsti->state == PLI_STATE_PLAYING) {
+  if (gsti->plistate == PLI_STATE_PAUSED ||
+      gsti->plistate == PLI_STATE_PLAYING) {
     gpos = pos;
     gpos *= 1000;
     gpos *= 1000;
@@ -499,19 +536,21 @@ gstiSetPosition (gsti_t *gsti, int64_t pos)
     {
       gint64    tpos;
 
-      gst_element_query_position (gsti->pipeline, GST_FORMAT_TIME, &tpos);
+      gst_element_query_position (gsti->srcbin [gsti->curr], GST_FORMAT_TIME, &tpos);
       logStderr ("-- set-pos %ld %ld\n", (long) pos, (long) (tpos / 1000 / 1000));
       logStderr ("-- set-pos: rate: %.4f\n", gsti->rate [gsti->curr]);
     }
 # endif
     /* all seeks are based on the song's original duration, */
     /* not the adjusted duration */
-    if (gst_element_seek (gsti->pipeline, gsti->rate [gsti->curr],
+    if (gst_element_seek (gsti->srcbin [gsti->curr], gsti->rate [gsti->curr],
         GST_FORMAT_TIME,
         GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT,
         GST_SEEK_TYPE_SET, gpos,
         GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE)) {
       rc = true;
+logStderr ("    in-async\n");
+      gsti->async = true;
     }
   }
 
@@ -528,24 +567,26 @@ gstiSetRate (gsti_t *gsti, double rate)
     return false;
   }
 
-  if (gsti->state == PLI_STATE_PAUSED ||
-      gsti->state == PLI_STATE_PLAYING) {
+  if (gsti->plistate == PLI_STATE_PAUSED ||
+      gsti->plistate == PLI_STATE_PLAYING) {
     gint64    pos;
 
 # if GSTI_DEBUG
-    logStderr ("-- set-rate: gst-state: %d\n", gsti->gststate);
+    logStderr ("-- set-rate: gst-state: %d/%s\n", gsti->gststate, gst_element_state_get_name (gsti->gststate));
     logStderr ("-- set-rate %0.4f\n", rate);
 # endif
     gsti->rate [gsti->curr] = rate;
 
-    gst_element_query_position (gsti->pipeline, GST_FORMAT_TIME, &pos);
+    gst_element_query_position (gsti->srcbin [gsti->curr], GST_FORMAT_TIME, &pos);
 
-    if (gst_element_seek (gsti->pipeline, gsti->rate [gsti->curr],
+    if (gst_element_seek (gsti->srcbin [gsti->curr], gsti->rate [gsti->curr],
         GST_FORMAT_TIME,
         GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE,
         GST_SEEK_TYPE_SET, pos,
         GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE)) {
       rc = true;
+logStderr ("    in-async\n");
+      gsti->async = true;
     }
   }
 
@@ -559,6 +600,7 @@ gstiGetVolume (gsti_t *gsti)
   double  dval;
   int     val;
 
+  gstiRunOnce (gsti);
   g_object_get (G_OBJECT (gsti->volume [gsti->curr]), "volume", &dval, NULL);
   val = round (dval * 100.0);
 # if GSTI_DEBUG
@@ -572,20 +614,30 @@ gstiGetVolume (gsti_t *gsti)
 static void
 gstiRunOnce (gsti_t *gsti)
 {
+  if (gsti->inrunonce) {
+logStderr ("-- nested runonce\n");
+    return;
+  }
+
+  gsti->inrunonce = true;
   while (g_main_context_iteration (gsti->mainctx, FALSE)) {
     ;
   }
+logStderr ("-- run-once: %d\n", gsti->async);
+  gsti->inrunonce = false;
 }
 
 static gboolean
 gstiBusCallback (GstBus * bus, GstMessage * message, void *udata)
 {
-  gsti_t    *gsti = udata;
+  gsti_t      *gsti = udata;
+  const char  *msgsrc = NULL;
 
+  msgsrc = GST_MESSAGE_SRC_NAME (message);
 # if GSTI_DEBUG
-    logStderr ("message %d %s %s\n", gsti->curr,
-        GST_MESSAGE_SRC_NAME (message),
-        GST_MESSAGE_TYPE_NAME (message));
+  logStderr ("message %d %s %s\n", gsti->curr,
+      msgsrc,
+      GST_MESSAGE_TYPE_NAME (message));
 # endif
 
   switch (GST_MESSAGE_TYPE (message)) {
@@ -601,7 +653,7 @@ gstiBusCallback (GstBus * bus, GstMessage * message, void *udata)
 
       gst_message_parse_error (message, &err, &debug);
       logStderr ("%d: %s %s %d %s\n", gsti->curr,
-          GST_MESSAGE_SRC_NAME (message),
+          msgsrc,
           GST_MESSAGE_TYPE_NAME (message),
           GST_MESSAGE_TYPE (message), err->message);
       if (debug != NULL) {
@@ -615,25 +667,58 @@ gstiBusCallback (GstBus * bus, GstMessage * message, void *udata)
       gint percent = 0;
 
       gst_message_parse_buffering (message, &percent);
-      if (percent < 100 && gsti->state == PLI_STATE_PLAYING) {
+      if (percent < 100 && gsti->plistate == PLI_STATE_PLAYING) {
         gstiPause (gsti);
-        gsti->state = PLI_STATE_BUFFERING;
+        gsti->plistate = PLI_STATE_BUFFERING;
+logStderr ("gsti: == buffering\n");
       }
       if (percent == 100 &&
-          (gsti->state == PLI_STATE_BUFFERING ||
-          gsti->state == PLI_STATE_PAUSED)) {
+          (gsti->plistate == PLI_STATE_BUFFERING ||
+          gsti->plistate == PLI_STATE_PAUSED)) {
         gstiPlay (gsti);
       }
       break;
     }
     case GST_MESSAGE_STATE_CHANGED: {
-      GstState old, new, pending;
+      GstState  old, new, pending;
+      bool      skip = false;
 
       gst_message_parse_state_changed (message, &old, &new, &pending);
 # if GSTI_DEBUG
-      logStderr ("  old: %d new: %d pending: %d\n", old, new, pending);
+      logStderr ("  old: %d/%s new: %d/%s pending: %d/%s async: %d\n",
+          old, gst_element_state_get_name (old),
+          new, gst_element_state_get_name (new),
+          pending, gst_element_state_get_name (pending), gsti->async);
 # endif
-      gstiProcessState (gsti, new);
+      if (gsti->async == false) {
+        /* after a set-position, there are often spurious state changes */
+        /* received from gstreamer that don't appear to be real, */
+        /* as gstreamer continues to play */
+        if (old == GST_STATE_PAUSED &&
+            new == GST_STATE_PAUSED &&
+            pending == GST_STATE_PAUSED) {
+logStderr ("gsti: ppp state: set skip\n");
+          skip = true;
+        }
+      }
+      if (skip == false) {
+        /* ignore any messages except from the source bins */
+        if (strncmp (msgsrc,
+            GSTI_SRCBIN_PFX, GSTI_SRCBIN_PFX_LEN) == 0) {
+          int   binidx;
+
+          binidx = atoi (msgsrc + GSTI_SRCBIN_PFX_LEN + 1);
+logStderr ("gsti: proc-state chk: %s %d curr: %d\n", msgsrc + GSTI_SRCBIN_PFX_LEN + 1, binidx, gsti->curr);
+          /* and only process the current source bin messages */
+          if (gsti->curr == binidx) {
+            gstiProcessState (gsti, new, pending);
+          }
+        }
+      }
+      break;
+    }
+    case GST_MESSAGE_ASYNC_DONE: {
+      gsti->async = false;
       break;
     }
     case GST_MESSAGE_DURATION_CHANGED: {
@@ -648,7 +733,8 @@ gstiBusCallback (GstBus * bus, GstMessage * message, void *udata)
       }
 
       if (! gsti->incrossfade) {
-        gsti->state = PLI_STATE_STOPPED;
+        gsti->plistate = PLI_STATE_STOPPED;
+logStderr ("gsti: == stopped\n");
       }
       break;
     }
@@ -663,45 +749,52 @@ gstiBusCallback (GstBus * bus, GstMessage * message, void *udata)
 
 /* while stopping states get messed up */
 static void
-gstiProcessState (gsti_t *gsti, GstState state)
+gstiProcessState (gsti_t *gsti, GstState state, GstState pending)
 {
+logStderr ("gsti: process state: %d/%s %d/%s\n",
+state, gst_element_state_get_name (state),
+pending, gst_element_state_get_name (pending));
   switch (state) {
     case GST_STATE_VOID_PENDING: {
       break;
     }
     case GST_STATE_NULL: {
-      if (gsti->state != PLI_STATE_OPENING) {
-        gsti->state = PLI_STATE_IDLE;
+      if (pending == GST_STATE_VOID_PENDING) {
+        gsti->plistate = PLI_STATE_IDLE;
+logStderr ("gsti: == idle\n");
       }
       break;
     }
     case GST_STATE_READY: {
-      if (gsti->state != PLI_STATE_IDLE &&
-          gsti->state != PLI_STATE_OPENING) {
-        gsti->state = PLI_STATE_STOPPED;
+      if (pending == GST_STATE_VOID_PENDING) {
+        gsti->plistate = PLI_STATE_STOPPED;
+logStderr ("gsti: == stopped\n");
       }
       break;
     }
     case GST_STATE_PLAYING: {
-      gsti->state = PLI_STATE_PLAYING;
+      if (pending == GST_STATE_VOID_PENDING) {
+        gsti->plistate = PLI_STATE_PLAYING;
+logStderr ("gsti: == playing\n");
+      }
       break;
     }
     case GST_STATE_PAUSED: {
-      if (gsti->state == PLI_STATE_IDLE ||
-          gsti->state == PLI_STATE_STOPPED ||
-          gsti->state == PLI_STATE_OPENING) {
-        if (! gsti->isstopping) {
-          gsti->state = PLI_STATE_OPENING;
-        }
-      }
-      if (gsti->state == PLI_STATE_PLAYING) {
-        gsti->state = PLI_STATE_PAUSED;
+      if (gsti->plistate == PLI_STATE_PLAYING) {
+        gsti->plistate = PLI_STATE_PAUSED;
+logStderr ("gsti: == paused\n");
       }
       break;
     }
   }
+
+  if (state != GST_STATE_PLAYING && pending == GST_STATE_PLAYING) {
+    gsti->plistate = PLI_STATE_OPENING;
+logStderr ("gsti: == opening\n");
+  }
 }
 
+/* wait-state is only used for the pipeline */
 static void
 gstiWaitState (gsti_t *gsti, GstState want)
 {
@@ -711,7 +804,9 @@ gstiWaitState (gsti_t *gsti, GstState want)
 
   gst_element_get_state (GST_ELEMENT (gsti->pipeline), &state, NULL, 1);
 # if GSTI_DEBUG
-  logStderr ("== wait-state curr: %d want: %d\n", state, want);
+  logStderr ("== wait-state curr: %d/%s want: %d/%s\n",
+      state, gst_element_state_get_name (state),
+      want, gst_element_state_get_name (want));
 # endif
   while (state != want && count < maxcount) {
     gstiRunOnce (gsti);
@@ -719,13 +814,16 @@ gstiWaitState (gsti_t *gsti, GstState want)
     ++count;
   }
   if (count >= maxcount) {
-    fprintf (stderr, "ERR: gsti: fail wait-state: %d %d\n", state, want);
+    fprintf (stderr, "ERR: gsti: fail wait-state %d/%s want: %d/%s\n",
+        state, gst_element_state_get_name (state),
+        want, gst_element_state_get_name (want));
   }
-  gstiProcessState (gsti, state);
+  gstiProcessState (gsti, state, GST_STATE_VOID_PENDING);
+  gstiRunOnce (gsti);
 }
 
 static void
-gstiMakeSource (gsti_t *gsti)
+gstiMakeSource (gsti_t *gsti, int idx)
 {
   GstCaps           *caps;
   GstElement        *bin;
@@ -738,7 +836,7 @@ gstiMakeSource (gsti_t *gsti)
   GstElement        *sink;
   char              tmpnm [40];
 
-  snprintf (tmpnm, sizeof (tmpnm), "decode_%d", gsti->curr);
+  snprintf (tmpnm, sizeof (tmpnm), "decode_%d", idx);
   decode = gst_element_factory_make ("uridecodebin3", tmpnm);
   if (decode == NULL) {
     fprintf (stderr, "ERR: unable to instantiate decoder\n");
@@ -746,57 +844,57 @@ gstiMakeSource (gsti_t *gsti)
   caps = gst_caps_from_string ("audio/x-raw");
   g_object_set (decode, "caps", caps, NULL);
   gst_caps_unref (caps);
-  gsti->source [gsti->curr] = decode;
+  gsti->source [idx] = decode;
 
-  snprintf (tmpnm, sizeof (tmpnm), "cvt_%d", gsti->curr);
+  snprintf (tmpnm, sizeof (tmpnm), "cvt_%d", idx);
   convert = gst_element_factory_make ("audioconvert", tmpnm);
   if (convert == NULL) {
     fprintf (stderr, "ERR: unable to instantiate stcvt\n");
   }
-  gsti->deccvt [gsti->curr] = convert;
+  gsti->deccvt [idx] = convert;
 
-  snprintf (tmpnm, sizeof (tmpnm), "st_%d", gsti->curr);
+  snprintf (tmpnm, sizeof (tmpnm), "st_%d", idx);
   scaletempo = gst_element_factory_make ("scaletempo", tmpnm);
   if (scaletempo == NULL) {
     fprintf (stderr, "ERR: unable to instantiate scaletempo\n");
   }
 
-  snprintf (tmpnm, sizeof (tmpnm), "stcvt_%d", gsti->curr);
+  snprintf (tmpnm, sizeof (tmpnm), "stcvt_%d", idx);
   st_convert = gst_element_factory_make ("audioconvert", tmpnm);
   if (st_convert == NULL) {
     fprintf (stderr, "ERR: unable to instantiate stcvt\n");
   }
 
-  snprintf (tmpnm, sizeof (tmpnm), "resample_%d", gsti->curr);
+  snprintf (tmpnm, sizeof (tmpnm), "resample_%d", idx);
   resample = gst_element_factory_make ("audioresample", tmpnm);
   if (resample == NULL) {
     fprintf (stderr, "ERR: unable to instantiate resample\n");
   }
   g_object_set (G_OBJECT (resample), "quality", 8, NULL);
 
-  snprintf (tmpnm, sizeof (tmpnm), "autosink_%d", gsti->curr);
+  snprintf (tmpnm, sizeof (tmpnm), "autosink_%d", idx);
   sink = gst_element_factory_make ("autoaudiosink", tmpnm);
   if (sink == NULL) {
     fprintf (stderr, "ERR: unable to instantiate autoaudiosink\n");
   }
 
-  snprintf (tmpnm, sizeof (tmpnm), "vol_%d", gsti->curr);
+  snprintf (tmpnm, sizeof (tmpnm), "vol_%d", idx);
   volume = gst_element_factory_make ("volume", tmpnm);
   if (volume == NULL) {
     fprintf (stderr, "ERR: unable to instantiate volume\n");
   }
-  gsti->volume [gsti->curr] = volume;
+  gsti->volume [idx] = volume;
 
-  snprintf (tmpnm, sizeof (tmpnm), "srcbin_%d", gsti->curr);
+  snprintf (tmpnm, sizeof (tmpnm), "%s_%d", GSTI_SRCBIN_PFX, idx);
   bin = gst_bin_new (tmpnm);
-  gsti->srcbin [gsti->curr] = bin;
+  gsti->srcbin [idx] = bin;
   gst_bin_add_many (GST_BIN (bin),
       decode, convert, scaletempo, st_convert, resample, volume, sink, NULL);
   /* uridecodebin3 does not have a static pad */
   /* do not link decode, it will be linked in the pad-added handler */
   if (! gst_element_link_many (convert, scaletempo, st_convert,
       resample, volume, sink, NULL)) {
-    fprintf (stderr, "ERR: link-many %d failed\n", gsti->curr);
+    fprintf (stderr, "ERR: link-many %d failed\n", idx);
   }
 
   /* uridecodebin3 does not have a static pad */
@@ -811,14 +909,19 @@ gstiAddSourceToPipeline (gsti_t *gsti, int idx)
 {
 logStderr ("gsti: add bin %d\n", idx);
   gst_bin_add (GST_BIN (gsti->pipeline), gsti->srcbin [idx]);
+  gstiRunOnce (gsti);
 }
 
+#if 0
 static void
 gstiRemoveSourceFromPipeline (gsti_t *gsti, int idx)
 {
 logStderr ("gsti: remove bin %d\n", idx);
+  gst_object_ref (gsti->srcbin [idx]);
   gst_bin_remove (GST_BIN (gsti->pipeline), gsti->srcbin [idx]);
+  gstiRunOnce (gsti);
 }
+#endif
 
 static void
 gstiDynamicLinkPad (GstElement *src, GstPad *newpad, gpointer udata)
@@ -865,13 +968,11 @@ gstiDynamicLinkPad (GstElement *src, GstPad *newpad, gpointer udata)
 static void
 gstiChangeVolume (gsti_t *gsti, int curr)
 {
-  if (gsti->active [curr] == false) {
-    return;
-  }
   if (gsti->volume [curr] == NULL) {
     return;
   }
 
+  gstiRunOnce (gsti);
   g_object_set (G_OBJECT (gsti->volume [curr]),
       "volume", gsti->vol [gsti->curr], NULL);
   g_object_set (G_OBJECT (gsti->volume [curr]), "mute", false, NULL);
@@ -880,7 +981,7 @@ gstiChangeVolume (gsti_t *gsti, int curr)
     double      dval;
 
     g_object_get (G_OBJECT (gsti->volume [curr]), "volume", &dval, NULL);
-    logStderr ("-- set volume %d %.2f %.2f\n", curr, gsti->vol [curr], dval);
+    logStderr ("gsti: chg volume %d %.2f new: %.2f\n", curr, gsti->vol [curr], dval);
   }
 # endif
   gstiRunOnce (gsti);
@@ -889,16 +990,16 @@ gstiChangeVolume (gsti_t *gsti, int curr)
 static void
 gstiEndCrossFade (gsti_t *gsti)
 {
-  for (int i = 0; i < GSTI_MAX_SOURCE; ++i) {
-    if (i == gsti->curr) {
-      continue;
-    }
-    gstiRemoveSourceFromPipeline (gsti, i);
-    gsti->active [i] = false;
-    gsti->vol [i] = GSTI_NO_VOL;
-  }
+  int     idx;
+
+logStderr ("gsti: end crossfade\n");
+  gstiRunOnce (gsti);
+  /* current has been reset to point at the new song */
+  idx = 1 - gsti->curr;
+  gst_element_set_state (gsti->srcbin [idx], GST_STATE_READY);
+  gstiRunOnce (gsti);
+  gsti->vol [idx] = GSTI_NO_VOL;
   gsti->incrossfade = false;
-  gsti->state = PLI_STATE_PLAYING;
 }
 
 
@@ -908,6 +1009,7 @@ gstiDebugDot (gsti_t *gsti, const char *fn)
 {
   GST_DEBUG_BIN_TO_DOT_FILE_WITH_TS (GST_BIN (gsti->pipeline),
       GST_DEBUG_GRAPH_SHOW_STATES |
+      GST_DEBUG_GRAPH_SHOW_NON_DEFAULT_PARAMS |
       GST_DEBUG_GRAPH_SHOW_FULL_PARAMS, fn);
   //    GST_DEBUG_GRAPH_SHOW_ALL |
   //    GST_DEBUG_GRAPH_SHOW_FULL_PARAMS, fn);

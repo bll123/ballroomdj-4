@@ -20,12 +20,30 @@ player.
 __Fade In Time__: The amount of time used to fade in the
 volume when the song starts playing.  Set to 0.0 for no fade in.
 
+When the cross fade time is set, the fade in time is used after
+playback has been stopped and a new song is started.
+
 __Fade Out Time__: The amount of time used to fade out the volume when
 song ends.  Set to 0.0 for no fade out.
 
+When the cross fade time is set, the fade out time is used when
+stopping a song.
+
 __Gap__: The amount of time to wait before playing the next song.
 <br>The gap can also be set for a playlist
-([Playlist&nbsp;Management](en-Management-Playlist%20Management)).
+([Management&nbsp;/&nbsp;Playlist&nbsp;Management](en-Management-Playlist%20Management)).
+
+__Cross Fade Time__: This setting is only available for player
+interfaces that support cross fade.  The default
+_Internal&nbsp;VLC_ interface does not support cross fade
+<br>
+(See [Configuration&nbsp;/&nbsp;Player](en-Configuration-Player)).
+
+A cross fade fades out the currently playing song while simultaneously
+fading in the next song.
+
+When the cross fade time is set, the gap is disabled, and the play
+announcements switch is disabled.
 
 __Maximum Play Time__: The maximum duration a song will play.  This is
 often set anywhere from 2:00 minutes to 3:00 minutes. If your songs

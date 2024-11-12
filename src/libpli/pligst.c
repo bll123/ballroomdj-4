@@ -93,7 +93,6 @@ pliiCrossFade (plidata_t *plidata, const char *mediaPath,
   }
 
   gstiCrossFade (plidata->gsti, fullMediaPath, sourceType);
-  plidata->state = PLI_STATE_CROSSFADE;
 }
 
 void
