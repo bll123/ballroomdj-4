@@ -605,7 +605,7 @@ playerProcessing (void *udata)
 
   if (playerData->playerState == PL_STATE_IN_GAP &&
       playerData->ingap) {
-logStderr ("play: in-gap\n");
+// logStderr ("play: in-gap\n");
     if (mstimeCheck (&playerData->gapFinishTime)) {
       playerData->ingap = false;
       logMsg (LOG_DBG, LOG_BASIC, "gap finish");
@@ -624,7 +624,7 @@ logStderr ("play: in-gap\n");
     int           sourceType;
     int           tspeed;
 
-logStderr ("play: load-xfade or stopped\n");
+// logStderr ("play: load-xfade or stopped\n");
     temprepeat = playerData->repeat;
 
     pq = playerData->currentSong;
@@ -648,18 +648,18 @@ logStderr ("play: load-xfade or stopped\n");
     /* the pq == null condition occurs if repeat is turned on before */
     /* playing the first song */
     if (! playerData->repeat || pq == NULL) {
-logStderr ("play: !repeat or null pq\n");
+// logStderr ("play: !repeat or null pq\n");
       preq = queueGetFirst (playerData->playRequest);
-logStderr ("play: preq: null? %d\n", preq == NULL);
+// logStderr ("play: preq: null? %d\n", preq == NULL);
       pq = playerLocatePreppedSong (playerData, preq->uniqueidx, preq->songname);
-logStderr ("play: pq: null? %d\n", pq == NULL);
+// logStderr ("play: pq: null? %d\n", pq == NULL);
       if (pq == NULL) {
         preq = queuePop (playerData->playRequest);
         playerFreePlayRequest (preq);
         if (gKillReceived) {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
         }
-logStderr ("play: ret %d\n", gKillReceived);
+// logStderr ("play: ret %d\n", gKillReceived);
         return gKillReceived;
       }
 
@@ -673,7 +673,7 @@ logStderr ("play: ret %d\n", gKillReceived);
     }
     playerData->repeat = temprepeat;
 
-logStderr ("play: bbb\n");
+// logStderr ("play: bbb\n");
     /* save the prior current volume before playing a song */
     playerData->baseVolume = playerData->currentVolume;
     playerData->realVolume = playerData->currentVolume;
@@ -685,10 +685,10 @@ logStderr ("play: bbb\n");
       newvol = round ((double) playerData->currentVolume * val);
       newvol = playerLimitVolume (newvol);
       playerData->realVolume = (int) newvol;
-logStderr ("play: set real-vol to %d\n", (int) newvol);
+// logStderr ("play: set real-vol to %d\n", (int) newvol);
     }
 
-logStderr ("play: ccc\n");
+// logStderr ("play: ccc\n");
     /* announcements get the standard volume, */
     /* as do songs when no fade-in is set */
     if ((pq->announce == PREP_ANNOUNCE ||
@@ -704,13 +704,13 @@ logStderr ("play: ccc\n");
     pathbldMakePath (tempffn, sizeof (tempffn), pq->tempname, "",
         PATHBLD_MP_DIR_DATATOP);
     sourceType = audiosrcGetType (tempffn);
-logStderr ("play: tempname: %s\n", pq->tempname);
+// logStderr ("play: tempname: %s\n", pq->tempname);
 
     if (playerData->playerState == PL_STATE_LOAD_CROSSFADE) {
-logStderr ("play: pli-crossfade\n");
+// logStderr ("play: pli-crossfade\n");
       pliCrossFade (playerData->pli, pq->tempname, tempffn, sourceType);
     } else {
-logStderr ("play: pli-media\n");
+// logStderr ("play: pli-media\n");
       pliMediaSetup (playerData->pli, pq->tempname, tempffn, sourceType);
     }
 
@@ -732,9 +732,9 @@ logStderr ("play: pli-media\n");
     prepqueue_t       *pq = playerData->currentSong;
     plistate_t        plistate;
 
-logStderr ("play: loading\n");
+// logStderr ("play: loading\n");
     plistate = pliState (playerData->pli);
-logStderr ("play: plistate: %d/%s\n", plistate, pliStateText (playerData->pli));
+// logStderr ("play: plistate: %d/%s\n", plistate, pliStateText (playerData->pli));
     if (plistate == PLI_STATE_OPENING ||
         plistate == PLI_STATE_BUFFERING) {
       ;
@@ -793,7 +793,7 @@ logStderr ("play: plistate: %d/%s\n", plistate, pliStateText (playerData->pli));
         ! playerData->infade &&
         mstimeCheck (&playerData->fadeTimeCheck)) {
 
-logStderr ("play: playing/in fade-out/in cross-fade (fade-time-chk)\n");
+// logStderr ("play: playing/in fade-out/in cross-fade (fade-time-chk)\n");
       /* before going into the fade, check the system volume */
       /* and see if the user changed it */
       logMsg (LOG_DBG, LOG_VOLUME, "check sysvol: before fade");
@@ -802,11 +802,11 @@ logStderr ("play: playing/in fade-out/in cross-fade (fade-time-chk)\n");
       if (playerData->crossfadeTime > 0) {
         /* this will put the player into a load-crossfade state */
         logMsg (LOG_DBG, LOG_BASIC, "starting cross-fade");
-logStderr ("play: start crossfade\n");
+// logStderr ("play: start crossfade\n");
         playerStartCrossFade (playerData);
       } else {
         logMsg (LOG_DBG, LOG_BASIC, "starting fade-out");
-logStderr ("play: start fade-out\n");
+// logStderr ("play: start fade-out\n");
         playerStartFadeOut (playerData);
       }
     }
@@ -1774,7 +1774,7 @@ playerFadeVolSet (playerdata_t *playerData)
   }
   findex = calcFadeIndex (playerData, fadeType);
 
-logStderr ("play: fade-vol-set: real-vol: %d\n", playerData->realVolume);
+// logStderr ("play: fade-vol-set: real-vol: %d\n", playerData->realVolume);
   if (playerData->incrossfade) {
     /* in a cross-fade, the player interface handles the volume */
     /* of the individual songs */
@@ -1926,7 +1926,7 @@ playerStartCrossFade (playerdata_t *playerData)
   tm = playerData->crossfadeTime;
   playerData->fadeSamples = tm / FADEOUT_TIMESLICE;
   playerData->fadeCount = playerData->fadeSamples;
-logStderr ("xfade: samples: %d\n", playerData->fadeSamples);
+// logStderr ("xfade: samples: %d\n", playerData->fadeSamples);
   logMsg (LOG_DBG, LOG_VOLUME, "xfade: samples: %d", playerData->fadeSamples);
   logMsg (LOG_DBG, LOG_VOLUME, "xfade: timeslice: %d", FADEOUT_TIMESLICE);
   playerData->fadeTimeStart = mstime ();
@@ -1972,8 +1972,8 @@ playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate)
 
   if (playerData->playerState != pstate) {
     playerData->playerState = pstate;
-logStderr ("pl-state: %d/%s\n",
-playerData->playerState, logPlayerState (playerData->playerState));
+// logStderr ("pl-state: %d/%s\n",
+//playerData->playerState, logPlayerState (playerData->playerState));
     logMsg (LOG_DBG, LOG_BASIC, "pl-state: %d/%s",
         playerData->playerState, logPlayerState (playerData->playerState));
     msgbuildPlayerState (tbuff, sizeof (tbuff),

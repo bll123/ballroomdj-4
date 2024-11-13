@@ -22,8 +22,6 @@
  *
  * export GST_DEBUG_DUMP_DOT_DIR=/home/bll/s/bdj4/tmp
  *
- * https://gstreamer.freedesktop.org/documentation/application-development/advanced/pipeline-manipulation.html?gi-language=c#dynamically-changing-the-pipeline
- *
  */
 #include "config.h"
 
@@ -48,7 +46,7 @@
 # include "gsti.h"
 # include "pli.h"
 
-# define GSTI_DEBUG 1
+# define GSTI_DEBUG 0
 # define GSTI_DEBUG_DOT 0
 
 # define GSTI_NO_VOL 0.0
@@ -1008,7 +1006,8 @@ gstiChangeVolume (gsti_t *gsti, int curr)
 static void
 gstiEndCrossFade (gsti_t *gsti)
 {
-  int     idx;
+  int       idx;
+  gint64    pos;
 
 logStderr ("gsti: end crossfade\n");
   /* current has been reset to point at the new song */
@@ -1021,10 +1020,20 @@ logStderr ("gsti: end crossfade\n");
 logStderr ("gsti: ecf bbb\n");
   gst_element_set_state (gsti->srcbin [idx], GST_STATE_READY);
   gstiRunOnce (gsti);
+logStderr ("gsti: ecf bbcc\n");
+  g_object_set (G_OBJECT (gsti->currsource), "uri", NULL, NULL);
+//  gst_element_query_position (gsti->srcbin [idx], GST_FORMAT_TIME, &pos);
+//  gst_element_seek (gsti->srcbin [idx], gsti->rate [idx],
+//      GST_FORMAT_TIME,
+//      GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE,
+//      GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE,
+//      GST_SEEK_TYPE_SET, pos);
+  gstiRunOnce (gsti);
 logStderr ("gsti: ecf ccc\n");
 
-#if 0
   /* the clock is lost, and the pipeline must be restarted */
+  gstiSetRate (gsti, gsti->rate [gsti->curr]);
+#if 0
   gst_element_set_state (gsti->srcbin [gsti->curr], GST_STATE_PAUSED);
   gstiWaitState (gsti, gsti->srcbin [gsti->curr], GST_STATE_PAUSED);
 logStderr ("gsti: ecf ddd\n");
