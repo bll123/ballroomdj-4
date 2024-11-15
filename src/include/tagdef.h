@@ -76,6 +76,7 @@ typedef enum {
   TAG_AUDIOID_SCORE,          //
   TAG_BPM,                    //
   TAG_BPM_DISPLAY,            //
+  TAG_COMMENT,                //
   TAG_COMPOSER,               //
   TAG_CONDUCTOR,              //
   TAG_DANCE,                  //

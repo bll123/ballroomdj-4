@@ -250,6 +250,34 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* text search          */
     false,                        /* vorbis multi         */
   },
+  [TAG_COMMENT] =
+  { "COMMENT" ,                   /* tag */
+    NULL,                         /* display name         */
+    NULL,                         /* short display name   */
+    { [TAG_TYPE_VORBIS] = { "COMMENT", NULL, NULL },
+      [TAG_TYPE_MP4] = { "©cmt", NULL, NULL },
+      [TAG_TYPE_ID3] = { "COMM", NULL, NULL },
+      [TAG_TYPE_WMA] = { "Description", NULL, NULL },
+      [TAG_TYPE_WAV] = { "ICMT", NULL, NULL },
+    },       /* audio tags */
+    "Comment",                    /* itunes name          */
+    ET_ENTRY,                     /* edit type            */
+    VALUE_STR,                    /* value type           */
+    NULL,                         /* conv func            */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    true,                         /* ellipsize            */
+    false,                        /* align end            */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    false,                        /* edit-all             */
+    true,                         /* editable             */
+    false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
+    false,                        /* player-ui-disp       */
+    true,                         /* text search          */
+    false,                        /* vorbis multi         */
+  },
   [TAG_COMPOSER] =
   { "COMPOSER",                   /* tag */
     NULL,                         /* display name         */
@@ -1412,6 +1440,8 @@ tagdefInit (void)
     /* CONTEXT: label: measures per minute */
     tagdefs [TAG_BPM].displayname = _("MPM");
   }
+  /* CONTEXT: label: comment */
+  tagdefs [TAG_COMMENT].displayname = _("Comment");
   /* CONTEXT: label: composer */
   tagdefs [TAG_COMPOSER].displayname = _("Composer");
   /* CONTEXT: label: conductor */

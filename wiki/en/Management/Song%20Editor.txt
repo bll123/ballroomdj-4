@@ -140,6 +140,7 @@ song editor is:
  Artist|Audio||
  Artist Sort Order|Audio||
  BPM/MPM|Audio||[Subjects&nbsp;/&nbsp;BPM&nbsp;&amp;&nbsp;MPM](en-Subjects-BPM-MPM)
+ Comment|Audio||
  Composer|Audio||
  Composer Sort Order|Audio||
  Conductor|Audio||
