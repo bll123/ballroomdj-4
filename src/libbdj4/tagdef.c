@@ -649,12 +649,12 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* short display name   */
     { [TAG_TYPE_VORBIS] = { "GROUPING", NULL, NULL, NULL },
       [TAG_TYPE_MP4] = { "@grp", NULL, NULL, NULL },
-      [TAG_TYPE_ID3] = { "GRP1", NULL, NULL, "TIT1" },
+      [TAG_TYPE_ID3] = { "TIT1", NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { "WM/ContentGroupDescription", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
     },       /* audio tags */
-    NULL,                         /* itunes name          */
-    ET_NA,                        /* edit type            */
+    "Grouping",                   /* itunes name          */
+    ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
     true,                         /* listing display      */
@@ -697,6 +697,90 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     true,                         /* text search          */
+    false,                        /* vorbis multi         */
+  },
+  [TAG_MOVEMENTNAME] =
+  { "MOVEMENTNAME",
+    NULL,                         /* display name         */
+    NULL,                         /* short display name   */
+    { [TAG_TYPE_VORBIS] = { "MOVEMENTNAME", NULL, NULL, NULL },
+      [TAG_TYPE_MP4] = { "@mvn", NULL, NULL, NULL },
+      [TAG_TYPE_ID3] = { "MVNM", NULL, NULL, NULL },
+      [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+    },       /* audio tags */
+    "Movement",                   /* itunes name          */
+    ET_ENTRY,                     /* edit type            */
+    VALUE_STR,                    /* value type           */
+    NULL,                         /* conv func            */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    true,                         /* ellipsize            */
+    false,                        /* align end            */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    true,                         /* edit-all             */
+    true,                         /* editable             */
+    false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
+    false,                        /* player-ui-disp       */
+    true,                         /* text search          */
+    false,                        /* vorbis multi         */
+  },
+  [TAG_MOVEMENTNUM] =
+  { "MOVEMENTNUM",
+    NULL,                         /* display name         */
+    NULL,                         /* short display name   */
+    { [TAG_TYPE_VORBIS] = { "MOVEMENT", NULL, NULL, NULL },
+      [TAG_TYPE_MP4] = { "@mvi", NULL, NULL, NULL },
+      [TAG_TYPE_ID3] = { "MVIN", NULL, NULL, NULL },
+      [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+    },       /* audio tags */
+    "Movement Number",            /* itunes name          */
+    ET_SPINBOX,                   /* edit type            */
+    VALUE_NUM,                    /* value type           */
+    NULL,                         /* conv func            */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    true,                         /* align end            */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    false,                        /* edit-all             */
+    true,                         /* editable             */
+    false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
+    false,                        /* player-ui-disp       */
+    false,                        /* text search          */
+    false,                        /* vorbis multi         */
+  },
+  [TAG_MOVEMENTCOUNT] =
+  { "MOVEMENTCOUNT",
+    NULL,                         /* display name         */
+    NULL,                         /* short display name   */
+    { [TAG_TYPE_VORBIS] = { "MOVEMENTTOTAL", NULL, NULL, NULL },
+      [TAG_TYPE_MP4] = { "@mvc", NULL, NULL, NULL },
+      [TAG_TYPE_ID3] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+    },       /* audio tags */
+    "Movement Count",             /* itunes name          */
+    ET_SPINBOX,                   /* edit type            */
+    VALUE_NUM,                    /* value type           */
+    NULL,                         /* conv func            */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    true,                         /* align end            */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    true,                         /* edit-all             */
+    true,                         /* editable             */
+    false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
+    false,                        /* player-ui-disp       */
+    false,                        /* text search          */
     false,                        /* vorbis multi         */
   },
   [TAG_MQDISPLAY] =
@@ -765,8 +849,8 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ASF] = { "WM/Work", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
     },       /* audio tags */
-    NULL,                         /* itunes name          */
-    ET_NA,                        /* edit type            */
+    "Work",                       /* itunes name          */
+    ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
     true,                         /* listing display      */
@@ -840,7 +924,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* vorbis multi         */
   },
   [TAG_NOTES] =
-  { "NOTES",                /* tag */
+  { "NOTES",                      /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { [TAG_TYPE_VORBIS] = { "NOTES", NULL, NULL, NULL },
@@ -1551,7 +1635,7 @@ tagdefInit (void)
   tagdefs [TAG_TRACKTOTAL].displayname = _("Total Tracks");
   /* CONTEXT: label: total track count (short name for listing) */
   tagdefs [TAG_TRACKTOTAL].shortdisplayname = _("Tot. Tracks");
-  /* CONTEXT: label: work (a musical work)*/
+  /* CONTEXT: label: work (a musical work) */
   tagdefs [TAG_WORK].displayname = _("Work");
 
   /* CONTEXT: label: title sort order */
@@ -1564,6 +1648,13 @@ tagdefInit (void)
   tagdefs [TAG_SORT_ARTIST].displayname = _("Artist Sort Order");
   /* CONTEXT: label: composer sort order */
   tagdefs [TAG_SORT_COMPOSER].displayname = _("Composer Sort Order");
+
+  /* CONTEXT: label: movement (classical music movement number) */
+  tagdefs [TAG_MOVEMENTNUM].displayname = _("Movement Number");
+  /* CONTEXT: label: movement count (classical music movement count) */
+  tagdefs [TAG_MOVEMENTCOUNT].displayname = _("Movement Count");
+  /* CONTEXT: label: movement name (classical music movement name) */
+  tagdefs [TAG_MOVEMENTNAME].displayname = _("Movement");
 
   /* editable */
 

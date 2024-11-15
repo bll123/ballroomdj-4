@@ -155,6 +155,9 @@ song editor is:
  Genre|Audio||[Configuration&nbsp;/&nbsp;Edit&nbsp;Genres](en-Configuration-Edit%20Genres)
  Grouping|Audio||
  Keyword|BDJ4||[Subjects&nbsp;/&nbsp;Keyword](en-Subjects-Keyword)<br>[Subjects&nbsp;/&nbsp;Song&nbsp;Selection](en-Subjects-Song%20Selection)<br>[Management&nbsp;/&nbsp;Playlist%20Management](en-Management-Playlist%20Management)
+ Movement Number|Audio||
+ Movement Count|Audio||
+ Movement|Audio||
  Marquee Display|BDJ4||[How&nbsp;To&nbsp;/&nbsp;Line&nbsp;Dances](en-HowTo-Linedance)
  Notes|BDJ4||
  Prevent Rename|-||[Subjects&nbsp;/&nbsp;Organizing&nbsp;Music](en-Subjects-Organizing%20Music)

@@ -94,6 +94,9 @@ typedef enum {
   TAG_GENRE,                  //
   TAG_GROUPING,               //
   TAG_KEYWORD,                //
+  TAG_MOVEMENTNAME,           //
+  TAG_MOVEMENTNUM,            //
+  TAG_MOVEMENTCOUNT,          //
   TAG_MQDISPLAY,              //  bdj4
   TAG_NOTES,                  //  bdj4
   TAG_PREFIX_LEN,             // used for secondary directories
@@ -122,12 +125,6 @@ typedef enum {
   TAG_WORK_ID,                // musicbrainz_workid
   TAG_KEY_MAX,
 } tagdefkey_t;
-
-enum {
-  /* this can be approximate.  it controls how many itunes fields are */
-  /* placed in the first column in the configuration ui */
-  TAG_ITUNES_MAX = 18,
-};
 
 extern tagdef_t tagdefs [TAG_KEY_MAX];
 

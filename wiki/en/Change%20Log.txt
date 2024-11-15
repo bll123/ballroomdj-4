@@ -6,10 +6,12 @@
 
 **4.12.6 2024-10---**
 
-**4.12.5.2 2024----**
+**4.12.6 2024----**
 
+* Bug Fixes:
+    * Configuration: iTunes: Fix missing fields.
 * New Features:
-    * Audio Tags: Added access to 'comment', 'work', 'grouping'.
+    * Audio Tags: Added access to 'comment', 'work', 'grouping', 'movement', 'movement number', 'movement count'.
 
 -->
 
