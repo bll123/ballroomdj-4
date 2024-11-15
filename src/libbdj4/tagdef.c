@@ -649,7 +649,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* short display name   */
     { [TAG_TYPE_VORBIS] = { "GROUPING", NULL, NULL, NULL },
       [TAG_TYPE_MP4] = { "@grp", NULL, NULL, NULL },
-      [TAG_TYPE_ID3] = { "TIT1", NULL, NULL, NULL },
+      [TAG_TYPE_ID3] = { "GRP1", NULL, NULL, NULL },      // itunes compat
       [TAG_TYPE_ASF] = { "WM/ContentGroupDescription", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
     },       /* audio tags */
@@ -845,7 +845,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* short display name   */
     { [TAG_TYPE_VORBIS] = { "WORK", NULL, NULL, NULL },
       [TAG_TYPE_MP4] = { "@wrk", NULL, NULL, NULL },
-      [TAG_TYPE_ID3] = { "TXXX=WORK", "TXXX", "WORK", NULL },
+      [TAG_TYPE_ID3] = { "TIT1", NULL, NULL, NULL },      // itunes compat
       [TAG_TYPE_ASF] = { "WM/Work", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
     },       /* audio tags */

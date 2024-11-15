@@ -186,6 +186,11 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
               p = atiParsePair (tagdata, atidata->tagName (TAG_TRACKTOTAL),
                   p, pbuff, sizeof (pbuff));
             }
+            if (tagname != NULL &&
+                strcmp (tagname, atidata->tagName (TAG_MOVEMENTNUM)) == 0) {
+              p = atiParsePair (tagdata, atidata->tagName (TAG_MOVEMENTCOUNT),
+                  p, pbuff, sizeof (pbuff));
+            }
             if (tagname != NULL) {
               slistSetStr (tagdata, tagname, p);
             }
@@ -482,11 +487,15 @@ atibdj4AddMP3Tag (atidata_t *atidata, nlist_t *datalist,
     id3tagname = audiotag->tag;
   }
 
-  if (tagkey == TAG_TRACKTOTAL || tagkey == TAG_DISCTOTAL) {
+  if (tagkey == TAG_TRACKTOTAL ||
+      tagkey == TAG_DISCTOTAL ||
+      tagkey == TAG_MOVEMENTCOUNT) {
     return;
   }
 
-  if (tagkey == TAG_TRACKNUMBER || tagkey == TAG_DISCNUMBER) {
+  if (tagkey == TAG_TRACKNUMBER ||
+      tagkey == TAG_DISCNUMBER ||
+      tagkey == TAG_MOVEMENTNUM) {
     if (val != NULL && *val) {
       const char  *tot = NULL;
 
@@ -495,6 +504,9 @@ atibdj4AddMP3Tag (atidata_t *atidata, nlist_t *datalist,
       }
       if (tagkey == TAG_DISCNUMBER) {
         tot = nlistGetStr (datalist, TAG_DISCTOTAL);
+      }
+      if (tagkey == TAG_MOVEMENTNUM) {
+        tot = nlistGetStr (datalist, TAG_MOVEMENTCOUNT);
       }
       if (tot != NULL && *tot) {
         snprintf (tbuff, sizeof (tbuff), "%s/%s", val, tot);
