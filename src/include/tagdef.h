@@ -30,8 +30,8 @@ enum {
   TAG_TYPE_VORBIS,    // .ogg, .flac, .opus
   TAG_TYPE_MP4,       // MP4 .m4a, et.al.
   TAG_TYPE_ID3,       // .mp3
-  TAG_TYPE_WMA,       // ASF .wma
-  TAG_TYPE_WAV,       // RIFF .wav
+  TAG_TYPE_ASF,       // ASF .wma
+  TAG_TYPE_RIFF,      // RIFF .wav
   TAG_TYPE_MAX,
 };
 
@@ -39,6 +39,7 @@ typedef struct {
   const char  *tag;
   const char  *base;
   const char  *desc;
+  const char  *alternate;
 } tagaudiotag_t;
 
 typedef struct {
@@ -68,54 +69,56 @@ typedef struct {
 } tagdef_t;
 
 typedef enum {
-  TAG_ADJUSTFLAGS,            //
+  TAG_ADJUSTFLAGS,            //  bdj4
   TAG_ALBUM,                  //
   TAG_ALBUMARTIST,            //
   TAG_ARTIST,                 //
-  TAG_AUDIOID_IDENT,          //
-  TAG_AUDIOID_SCORE,          //
+  TAG_AUDIOID_IDENT,          //  audio-id
+  TAG_AUDIOID_SCORE,          //  audio-id
   TAG_BPM,                    //
   TAG_BPM_DISPLAY,            //
   TAG_COMMENT,                //
   TAG_COMPOSER,               //
   TAG_CONDUCTOR,              //
-  TAG_DANCE,                  //
-  TAG_DANCELEVEL,             //
-  TAG_DANCERATING,            //
+  TAG_DANCE,                  //  bdj4
+  TAG_DANCELEVEL,             //  bdj4
+  TAG_DANCERATING,            //  bdj4
   TAG_DATE,                   //
   TAG_DBADDDATE,              // only in the database, treated as special case
-  TAG_DBIDX,                  // not saved to db or af
+  TAG_DBIDX,                  // internal: not saved to db or af
   TAG_DB_LOC_LOCK,            // only in the database
   TAG_DISCNUMBER,             //
   TAG_DISCTOTAL,              //
   TAG_DURATION,               // not saved to af
   TAG_FAVORITE,               //
-  TAG_URI,                   //
   TAG_GENRE,                  //
+  TAG_GROUPING,               //
   TAG_KEYWORD,                //
-  TAG_MQDISPLAY,              //
-  TAG_NOTES,                  //
+  TAG_MQDISPLAY,              //  bdj4
+  TAG_NOTES,                  //  bdj4
   TAG_PREFIX_LEN,             // used for secondary directories
   TAG_RECORDING_ID,           // musicbrainz_trackid
-  TAG_RRN,                    // not saved to db or af
-  TAG_SAMESONG,               //
-  TAG_SONGEND,                //
-  TAG_SONGSTART,              //
+  TAG_RRN,                    // internal: not saved to db or af
+  TAG_SAMESONG,               //  bdj4  internal: only in the db
+  TAG_SONGEND,                //  bdj4
+  TAG_SONGSTART,              //  bdj4
   TAG_SORT_ALBUM,
   TAG_SORT_ALBUMARTIST,
   TAG_SORT_ARTIST,
   TAG_SORT_COMPOSER,
   TAG_SORT_TITLE,
-  TAG_SPEEDADJUSTMENT,        //
-  TAG_STATUS,                 //
-  TAG_TAGS,                   //
-  TAG_DB_FLAGS,               // not saved to db of af
+  TAG_SPEEDADJUSTMENT,        //  bdj4
+  TAG_STATUS,                 //  bdj4
+  TAG_TAGS,                   //  bdj4
+  TAG_DB_FLAGS,               // internal: not saved to db or af
   TAG_TITLE,                  //
   TAG_TRACK_ID,               // musicbrainz_releasetrackid
   TAG_TRACKNUMBER,            //
   TAG_TRACKTOTAL,             //
-  TAG_LAST_UPDATED,           //
-  TAG_VOLUMEADJUSTPERC,       //
+  TAG_LAST_UPDATED,           //  internal
+  TAG_URI,                    //
+  TAG_VOLUMEADJUSTPERC,       //  bdj4
+  TAG_WORK,                   //
   TAG_WORK_ID,                // musicbrainz_workid
   TAG_KEY_MAX,
 } tagdefkey_t;

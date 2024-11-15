@@ -9,7 +9,7 @@
 **4.12.5.2 2024----**
 
 * New Features:
-    * Added access to the 'comment' audio tag.
+    * Audio Tags: Added access to 'comment', 'work', 'grouping'.
 
 -->
 

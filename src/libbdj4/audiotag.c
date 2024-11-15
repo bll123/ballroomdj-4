@@ -53,8 +53,8 @@ filetypelookup_t filetypelookup [] = {
   /* .ogx files must be parsed to see what is in the container */
   { ".ogx",   TAG_TYPE_VORBIS,  AFILE_TYPE_OGG, },
   { ".opus",  TAG_TYPE_VORBIS,  AFILE_TYPE_OPUS, },
-  { ".wav",   TAG_TYPE_WAV,     AFILE_TYPE_RIFF, },
-  { ".wma",   TAG_TYPE_WMA,     AFILE_TYPE_ASF, },
+  { ".wav",   TAG_TYPE_RIFF,     AFILE_TYPE_RIFF, },
+  { ".wma",   TAG_TYPE_ASF,     AFILE_TYPE_ASF, },
 };
 enum {
   filetypelookupsz = sizeof (filetypelookup) / sizeof (filetypelookup_t),
@@ -476,6 +476,9 @@ audiotagCreateLookupTable (int tagtype)
     }
     if (tagdefs [i].audiotags [tagtype].tag != NULL) {
       slistSetStr (taglist, tagdefs [i].audiotags [tagtype].tag, tagdefs [i].tag);
+      if (tagdefs [i].audiotags [tagtype].alternate != NULL) {
+        slistSetStr (taglist, tagdefs [i].audiotags [tagtype].alternate, tagdefs [i].tag);
+      }
       if (tagdefs [i].audiotags [tagtype].desc != NULL) {
         /* for mp3: also add w/o the txxx= prefix */
         slistSetStr (taglist, tagdefs [i].audiotags [tagtype].desc, tagdefs [i].tag);

@@ -153,6 +153,7 @@ song editor is:
  Duration|-|Display Only|
  Favorite|BDJ4||[Subjects&nbsp;/&nbsp;Favorites](en-Subjects-Favorites)
  Genre|Audio||[Configuration&nbsp;/&nbsp;Edit&nbsp;Genres](en-Configuration-Edit%20Genres)
+ Grouping|Audio||
  Keyword|BDJ4||[Subjects&nbsp;/&nbsp;Keyword](en-Subjects-Keyword)<br>[Subjects&nbsp;/&nbsp;Song&nbsp;Selection](en-Subjects-Song%20Selection)<br>[Management&nbsp;/&nbsp;Playlist%20Management](en-Management-Playlist%20Management)
  Marquee Display|BDJ4||[How&nbsp;To&nbsp;/&nbsp;Line&nbsp;Dances](en-HowTo-Linedance)
  Notes|BDJ4||
@@ -168,6 +169,7 @@ song editor is:
  Total Tracks|Audio||
  Track|Audio||
  Volume Adjustment|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
+ Work|Audio||
 
 [Wiki Home](Home)
 <br>_(Updated 2024-11-07 12:25:26; BDJ4 version 4.12.5.1)_
