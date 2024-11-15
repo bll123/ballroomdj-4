@@ -2,15 +2,16 @@
 
 ### Contributing to BallroomDJ 4 Development
 
-As of 2024-11-4, development needs are:
+As of 2024-11-15, development needs are:
 
+* Windows Development: SMTC: Use image from audio file.
 * Windows Development: Windows Native Player Interface
 * Windows Development: Windows Native UI
 * MacOS Development: MacOS Native UI
 <br>This is in progress.  Progress is very slow.
 * All Platforms: Unit Testing, Testing and QA
 
-Development Team (as of 2024-11-4):
+Development Team (as of 2024-11-15):
 
 * Brad Lanam
 <br>Architect, Programmer, UI/UX&nbsp;Designer, Tools,
