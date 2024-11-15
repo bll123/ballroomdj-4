@@ -80,7 +80,7 @@ addIntlLibrary (bdj4updater)
 
 install (TARGETS
   bdj4se bdj4installer bdj4altinst bdj4updater
-  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  DESTINATION ${DEST_BIN}
 )
 
 updateRPath (bdj4installer)

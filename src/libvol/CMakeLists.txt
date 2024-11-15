@@ -73,28 +73,28 @@ target_link_libraries (voltest PRIVATE
 install (TARGETS
   libbdj4vol libvolnull
   voltest
-  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  DESTINATION ${DEST_BIN}
 )
 if (NOT WIN32 AND NOT APPLE)
   install (TARGETS
     libvolpa
-    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+    DESTINATION ${DEST_BIN}
   )
   install (TARGETS
     libvolpipewire
-    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+    DESTINATION ${DEST_BIN}
   )
 endif()
 if (APPLE)
   install (TARGETS
     libvolmac
-    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+    DESTINATION ${DEST_BIN}
   )
 endif()
 if (WIN32)
   install (TARGETS
     libvolwin
-    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+    DESTINATION ${DEST_BIN}
   )
 endif()
 

@@ -635,3 +635,4 @@ set (CMAKE_EXTRA_INCLUDE_FILES "")
 
 configure_file (config.h.in config.h)
 
+cmake_path (SET DEST_BIN NORMALIZE "${PROJECT_SOURCE_DIR}/../bin")

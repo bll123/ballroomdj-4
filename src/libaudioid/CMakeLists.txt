@@ -36,7 +36,7 @@ addWinSockLibrary (libbdj4audioid)
 
 install (TARGETS
   libbdj4audioid
-  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  DESTINATION ${DEST_BIN}
 )
 
 updateRPath (libbdj4audioid)

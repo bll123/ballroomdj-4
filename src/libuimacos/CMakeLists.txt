@@ -46,7 +46,7 @@ addWinSockLibrary (libuimacos)
 
 install (TARGETS
   libuimacos
-  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  DESTINATION ${DEST_BIN}
 )
 
 updateRPath (libuimacos)

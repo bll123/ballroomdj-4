@@ -78,7 +78,7 @@ addWinSockLibrary (libbdj4)
 
 install (TARGETS
   libbdj4
-  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  DESTINATION ${DEST_BIN}
 )
 
 updateRPath (libbdj4)

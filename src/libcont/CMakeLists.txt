@@ -44,20 +44,20 @@ endif()
 
 install (TARGETS
   libbdj4cont
-  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  DESTINATION ${DEST_BIN}
 )
 
 if (NOT WIN32 AND NOT APPLE)
   install (TARGETS
     libcontmpris
-    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+    DESTINATION ${DEST_BIN}
   )
 endif()
 
 if (WIN32)
   install (TARGETS
     libcontsmtc
-    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+    DESTINATION ${DEST_BIN}
   )
 endif()
 

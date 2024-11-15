@@ -59,7 +59,7 @@ addWinBcryptLibrary (libbdj4common)
 
 install (TARGETS
   libbdj4common
-  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  DESTINATION ${DEST_BIN}
 )
 
 updateRPath (libbdj4common)

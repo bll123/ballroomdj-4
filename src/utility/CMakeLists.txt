@@ -177,24 +177,24 @@ install (TARGETS
   aesed
   vsed
   uitest
-  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  DESTINATION ${DEST_BIN}
 )
 if (WIN32)
   install (TARGETS
     bdj4winmksc
-    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+    DESTINATION ${DEST_BIN}
   )
 endif()
 if (NOT WIN32 AND NOT APPLE)
   install (TARGETS
     dbustest
-    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+    DESTINATION ${DEST_BIN}
   )
 endif()
 if (LIBVLC_FOUND OR LIBVLC4_FOUND)
   install (TARGETS
     vlcversion
-    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+    DESTINATION ${DEST_BIN}
   )
 endif()
 

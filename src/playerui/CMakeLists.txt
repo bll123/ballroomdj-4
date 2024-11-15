@@ -25,6 +25,6 @@ updateRPath (bdj4playerui)
 
 install (TARGETS
   bdj4playerui
-  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  DESTINATION ${DEST_BIN}
 )
 

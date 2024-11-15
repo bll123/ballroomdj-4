@@ -118,6 +118,6 @@ updateRPath (bdj4cleantmp)
 install (TARGETS
   bdj4 bdj4g
   bdj4starterui bdj4helperui bdj4cleantmp
-  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  DESTINATION ${DEST_BIN}
 )
 

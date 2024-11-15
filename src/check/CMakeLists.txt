@@ -110,7 +110,7 @@ add_executable (chkprocess chkprocess.c)
 
 install (TARGETS
   check_all chkfileshared chkprocess
-  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  DESTINATION ${DEST_BIN}
 )
 
 updateRPath (check_all)

@@ -61,7 +61,7 @@ addWinSockLibrary (bdj4dbupdate)
 
 install (TARGETS
   bdj4manageui bdj4bpmcounter bdj4dbupdate
-  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  DESTINATION ${DEST_BIN}
 )
 
 updateRPath (bdj4manageui)

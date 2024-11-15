@@ -31,7 +31,7 @@ target_link_libraries (libbdj4basic PRIVATE
 
 install (TARGETS
   libbdj4basic
-  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  DESTINATION ${DEST_BIN}
 )
 
 updateRPath (libbdj4basic)
