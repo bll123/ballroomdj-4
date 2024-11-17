@@ -82,6 +82,7 @@ static datafilekey_t songdfkeys [] = {
   { "FAVORITE",             TAG_FAVORITE,             VALUE_NUM, songFavoriteConv, DF_NORM },
   { "FILE",                 TAG_URI,                  VALUE_STR, NULL, DF_NO_WRITE },
   { "GENRE",                TAG_GENRE,                VALUE_NUM, genreConv, DF_NORM },
+  { "GROUPING",             TAG_GROUPING,             VALUE_STR, NULL, DF_NORM },
   { "KEYWORD",              TAG_KEYWORD,              VALUE_STR, NULL, DF_NORM },
   { "LASTUPDATED",          TAG_LAST_UPDATED,         VALUE_NUM, NULL, DF_NORM },
   { "MOVEMENTCOUNT",        TAG_MOVEMENTCOUNT,        VALUE_NUM, NULL, DF_NORM },

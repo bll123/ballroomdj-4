@@ -764,6 +764,7 @@ uisongeditEditAllSetFields (uisongedit_t *uisongedit, int editflag)
 
   uiWidgetSetState (seint->wcont [UISE_W_BUTTON_SAVE], newstate);
 
+fprintf (stderr, "edit-all: set states\n");
   for (int count = 0; count < seint->itemcount; ++count) {
     int   tagkey;
 
@@ -1004,16 +1005,19 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
       }
 
       if (chkvalue == UISE_CHK_NUM) {
-        int   rcdisc, rctotdisc, rctrk, rctottrk;
+        int   rcdisc, rctotdisc, rctrk, rctottrk, rcmvnum, rcmvcount;
 
         rcdisc = (tagkey == TAG_DISCNUMBER && val == 0.0 && nval == 1.0);
         rctotdisc = (tagkey == TAG_DISCTOTAL && val == 0.0 && nval == 1.0);
         rctrk = (tagkey == TAG_TRACKNUMBER && val == 0.0 && nval == 1.0);
         rctottrk = (tagkey == TAG_TRACKTOTAL && val == 0.0 && nval == 1.0);
+        rcmvnum = (tagkey == TAG_MOVEMENTNUM && val == 0.0 && nval == 1.0);
+        rcmvcount = (tagkey == TAG_MOVEMENTCOUNT && val == 0.0 && nval == 1.0);
         if (tagkey == TAG_FAVORITE || tagkey == TAG_GENRE) {
           if (val < 0) { val = 0; }
         }
-        if (! rcdisc && ! rctrk && ! rctotdisc && ! rctottrk && nval != val) {
+        if (! rcdisc && ! rctrk && ! rctotdisc && ! rctottrk &&
+            ! rcmvnum && ! rcmvcount && nval != val) {
           seint->items [count].changed = true;
         } else {
           if (seint->items [count].changed) {
@@ -1291,8 +1295,9 @@ uisongeditAddSpinboxInt (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   if (tagkey == TAG_BPM) {
     uiSpinboxSet (uiwidgetp, 0.0, 400.0);
   }
-  if (tagkey == TAG_TRACKNUMBER || tagkey == TAG_DISCNUMBER ||
-      tagkey == TAG_TRACKTOTAL || tagkey == TAG_DISCTOTAL) {
+  if (tagkey == TAG_TRACKNUMBER || tagkey == TAG_TRACKTOTAL ||
+      tagkey == TAG_DISCNUMBER || tagkey == TAG_DISCTOTAL ||
+      tagkey == TAG_MOVEMENTNUM || tagkey == TAG_MOVEMENTCOUNT) {
     uiSpinboxSet (uiwidgetp, 1.0, 300.0);
   }
   uiSpinboxSetValueChangedCallback (uiwidgetp,
