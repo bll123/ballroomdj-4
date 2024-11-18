@@ -21,6 +21,7 @@
 #include "audiofile.h"
 #include "bdj4intl.h"
 #include "fileop.h"
+#include "localeutil.h"
 #include "log.h"
 #include "mdebug.h"
 #include "slist.h"
@@ -162,6 +163,7 @@ atiiWriteTags (atidata_t *atidata, const char *ffn,
     int tagtype, int filetype)
 {
   int         rc = -1;
+  const char  *iso639_2 = NULL;
 
   atibdj4LogVersion ();
 
@@ -178,7 +180,8 @@ atiiWriteTags (atidata_t *atidata, const char *ffn,
   }
   if (tagtype == TAG_TYPE_ID3) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp3");
-    rc = atibdj4WriteMP3Tags (atidata, ffn, updatelist, dellist, datalist, tagtype, filetype);
+    iso639_2 = localeGetStr (LOCALE_KEY_ISO639_2);
+    rc = atibdj4WriteMP3Tags (atidata, ffn, updatelist, dellist, datalist, tagtype, filetype, iso639_2);
   }
   if (filetype == AFILE_TYPE_MP4) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp4");

@@ -33,7 +33,7 @@ void atibdj4LogFlacVersion (void);
 
 /* atibdj4id3.c */
 void atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
-int  atibdj4WriteMP3Tags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
+int  atibdj4WriteMP3Tags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype, const char *iso639_2);
 atisaved_t * atibdj4SaveMP3Tags (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
 void atibdj4FreeSavedMP3Tags (atisaved_t *atisaved, int tagtype, int filetype);
 int atibdj4RestoreMP3Tags (atidata_t *atidata, atisaved_t *atisaved, const char *ffn, int tagtype, int filetype);

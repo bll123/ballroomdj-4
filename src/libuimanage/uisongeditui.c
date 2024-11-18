@@ -764,7 +764,6 @@ uisongeditEditAllSetFields (uisongedit_t *uisongedit, int editflag)
 
   uiWidgetSetState (seint->wcont [UISE_W_BUTTON_SAVE], newstate);
 
-fprintf (stderr, "edit-all: set states\n");
   for (int count = 0; count < seint->itemcount; ++count) {
     int   tagkey;
 

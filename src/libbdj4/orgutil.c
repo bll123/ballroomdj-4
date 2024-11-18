@@ -408,6 +408,7 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
     if (orginfo->orgkey != ORG_TEXT) {
       if (orginfo->orgkey == ORG_TRACKNUM ||
           orginfo->orgkey == ORG_TRACKNUM0 ||
+          orginfo->orgkey == ORG_MOVEMENTNUM ||
           orginfo->orgkey == ORG_DISC ||
           orginfo->convFunc != NULL) {
         int64_t     val;
@@ -429,6 +430,10 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
           }
         }
         if (orginfo->orgkey == ORG_TRACKNUM0 && val > 0) {
+          snprintf (tmp, sizeof (tmp), "%03" PRId64, val);
+          datap = tmp;
+        }
+        if (orginfo->orgkey == ORG_MOVEMENTNUM && val > 0) {
           snprintf (tmp, sizeof (tmp), "%03" PRId64, val);
           datap = tmp;
         }

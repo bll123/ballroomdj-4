@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-21 11:16-0700\n"
+"POT-Creation-Date: 2024-11-18 14:06-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -476,6 +476,10 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
+#. CONTEXT: label: comment
+msgid "Comment"
+msgstr ""
+
 #. CONTEXT: database update: check for new audio files
 msgid "Compact"
 msgstr ""
@@ -909,6 +913,10 @@ msgstr ""
 msgid "Great"
 msgstr ""
 
+#. CONTEXT: label: grouping
+msgid "Grouping"
+msgstr ""
+
 #. CONTEXT: configuration: remote control: the HTML template to use
 msgid "HTML Template"
 msgstr ""
@@ -1184,6 +1192,18 @@ msgstr ""
 
 #. CONTEXT: music queue: button: move the selected song to the top of the queue
 msgid "Move to Top"
+msgstr ""
+
+#. CONTEXT: label: movement name (classical music movement name)
+msgid "Movement"
+msgstr ""
+
+#. CONTEXT: label: movement count (classical music movement count)
+msgid "Movement Count"
+msgstr ""
+
+#. CONTEXT: label: movement (classical music movement number)
+msgid "Movement Number"
 msgstr ""
 
 #. CONTEXT: configuration: the music folder where the user stores their music
@@ -2220,6 +2240,10 @@ msgstr ""
 
 #. CONTEXT: bpm counter: instructions, line 2
 msgid "When the BPM value is stable, select the Save button."
+msgstr ""
+
+#. CONTEXT: label: work (a musical work)
+msgid "Work"
 msgstr ""
 
 #. CONTEXT: configuration: which audio tags will be written to the audio file

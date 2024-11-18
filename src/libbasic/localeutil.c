@@ -37,6 +37,7 @@
 /* must be sorted in ascii order */
 static datafilekey_t localedfkeys [LOCALE_KEY_MAX] = {
   { "DISPLAY",    LOCALE_KEY_DISPLAY,   VALUE_STR, NULL, DF_NORM },
+  { "ISO639_2",   LOCALE_KEY_ISO639_2,  VALUE_STR, NULL, DF_NORM },
   { "LONG",       LOCALE_KEY_LONG,      VALUE_STR, NULL, DF_NORM },
   { "QDANCE",     LOCALE_KEY_QDANCE,    VALUE_STR, NULL, DF_NORM },
   { "SHORT",      LOCALE_KEY_SHORT,     VALUE_STR, NULL, DF_NORM },
@@ -280,6 +281,7 @@ localeDebug (const char *tag)   /* KEEP */
   fprintf (stderr, "  locale-orig:%s\n", sysvarsGetStr (SV_LOCALE_ORIG));
   fprintf (stderr, "  locale:%s\n", sysvarsGetStr (SV_LOCALE));
   fprintf (stderr, "  locale-short:%s\n", sysvarsGetStr (SV_LOCALE_SHORT));
+  fprintf (stderr, "  locale-639-2:%s\n", sysvarsGetStr (SV_LOCALE_639_2));
   fprintf (stderr, "  locale-set:%d\n", (int) sysvarsGetNum (SVL_LOCALE_SET));
   fprintf (stderr, "  locale-sys-set:%d\n", (int) sysvarsGetNum (SVL_LOCALE_SYS_SET));
   fprintf (stderr, "  env-lang:%s\n", getenv ("LANG"));

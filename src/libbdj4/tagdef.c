@@ -256,7 +256,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* short display name   */
     { [TAG_TYPE_VORBIS] = { "COMMENT", NULL, NULL, NULL },
       [TAG_TYPE_MP4] = { "©cmt", NULL, NULL, NULL },
-      [TAG_TYPE_ID3] = { "COMM", NULL, NULL, NULL },
+      [TAG_TYPE_ID3] = { "COMM", NULL, NULL, NULL },    // handled in ati
       [TAG_TYPE_ASF] = { "Description", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { "ICMT", NULL, NULL, NULL },
     },       /* audio tags */

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2024-10-21\n"
+"PO-Revision-Date: 2024-11-18\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Polish\n"
 "Language: pl\n"
@@ -478,6 +478,10 @@ msgstr ""
 msgid "Close"
 msgstr "Zamknij"
 
+#. CONTEXT: label: comment
+msgid "Comment"
+msgstr ""
+
 #. CONTEXT: database update: check for new audio files
 msgid "Compact"
 msgstr "Kompaktowy"
@@ -911,6 +915,10 @@ msgstr "Dobry"
 msgid "Great"
 msgstr "Świetnie"
 
+#. CONTEXT: label: grouping
+msgid "Grouping"
+msgstr ""
+
 #. CONTEXT: configuration: remote control: the HTML template to use
 msgid "HTML Template"
 msgstr "Szablon HTML"
@@ -1188,6 +1196,18 @@ msgstr "Ruch w górę"
 #. CONTEXT: music queue: button: move the selected song to the top of the queue
 msgid "Move to Top"
 msgstr "Przejdź do góry"
+
+#. CONTEXT: label: movement name (classical music movement name)
+msgid "Movement"
+msgstr ""
+
+#. CONTEXT: label: movement count (classical music movement count)
+msgid "Movement Count"
+msgstr ""
+
+#. CONTEXT: label: movement (classical music movement number)
+msgid "Movement Number"
+msgstr ""
 
 #. CONTEXT: configuration: the music folder where the user stores their music
 #. CONTEXT: update database: music folder to process
@@ -2224,6 +2244,10 @@ msgstr "West Coast Swing"
 #. CONTEXT: bpm counter: instructions, line 2
 msgid "When the BPM value is stable, select the Save button."
 msgstr "Gdy wartość BPM będzie stabilna, wybierz przycisk Zapisz."
+
+#. CONTEXT: label: work (a musical work)
+msgid "Work"
+msgstr ""
 
 #. CONTEXT: configuration: which audio tags will be written to the audio file
 msgid "Write Audio File Tags"

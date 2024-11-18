@@ -1,301 +1,351 @@
 # localization
-# generated 2024-10-21
+# generated 2024-11-18
 KEY
 ..0
+ISO639_2
+..afr
 LONG
 ..af_ZA
 SHORT
 ..af
 DISPLAY
-..Afrikaans
+..afrikaans Afrikaans
 STDROUNDS
 ..standaardrondes
 QDANCE
 ..QueueDance
 KEY
 ..1
+ISO639_2
+..ces
 LONG
 ..cs_CZ
 SHORT
 ..cs
 DISPLAY
-..čeština
+..czech čeština
 STDROUNDS
 ..standardní okruhy
 QDANCE
 ..QueueDance
 KEY
 ..2
+ISO639_2
+..dan
 LONG
 ..da_DK
 SHORT
 ..da
 DISPLAY
-..Dansk
+..danish Dansk
 STDROUNDS
 ..standardrunder
 QDANCE
 ..QueueDance
 KEY
 ..3
+ISO639_2
+..ger
 LONG
 ..de_DE
 SHORT
 ..de
 DISPLAY
-..Deutsch
+..german Deutsch
 STDROUNDS
 ..Standardrunden
 QDANCE
 ..Schlangentanz
 KEY
 ..4
+ISO639_2
+..eng
 LONG
 ..en_GB
 SHORT
 ..en
 DISPLAY
-..English (GB)
+..english/gb English (GB)
 STDROUNDS
 ..standardrounds
 QDANCE
 ..QueueDance
 KEY
 ..5
+ISO639_2
+..eng
 LONG
 ..en_US
 SHORT
 ..en
 DISPLAY
-..English (US)
+..english/us English (US)
 STDROUNDS
 ..standardrounds
 QDANCE
 ..QueueDance
 KEY
 ..6
+ISO639_2
+..spa
 LONG
 ..es_ES
 SHORT
 ..es
 DISPLAY
-..Español
+..spanish Español
 STDROUNDS
 ..estándares
 QDANCE
 ..Danza en cola
 KEY
 ..7
+ISO639_2
+..fin
 LONG
 ..fi_FI
 SHORT
 ..fi
 DISPLAY
-..Suomi
+..finnish Suomi
 STDROUNDS
 ..vakiokierrokset
 QDANCE
 ..Jonotanssi
 KEY
 ..8
+ISO639_2
+..fra
 LONG
 ..fr_FR
 SHORT
 ..fr
 DISPLAY
-..Français
+..french Français
 STDROUNDS
 ..les rounds standards
 QDANCE
 ..Danse en file d'attente
 KEY
 ..9
+ISO639_2
+..hun
 LONG
 ..hu_HU
 SHORT
 ..hu
 DISPLAY
-..magyar
+..hungarian magyar
 STDROUNDS
 ..standardrounds
 QDANCE
 ..QueueDance
 KEY
 ..10
+ISO639_2
+..ita
 LONG
 ..it_IT
 SHORT
 ..it
 DISPLAY
-..Italiano
+..italian Italiano
 STDROUNDS
 ..giri standard
 QDANCE
 ..Ballo in coda
 KEY
 ..11
+ISO639_2
+..jpn
 LONG
 ..ja_JP
 SHORT
 ..ja
 DISPLAY
-..日本語
+..japanese 日本語
 STDROUNDS
 ..スタンダードラウンド
 QDANCE
 ..キューダンス
 KEY
 ..12
+ISO639_2
+..kor
 LONG
 ..ko_KR
 SHORT
 ..ko
 DISPLAY
-..한국어
+..korean 한국어
 STDROUNDS
 ..표준 라운드
 QDANCE
 ..큐댄스
 KEY
 ..13
+ISO639_2
+..nld
 LONG
 ..nl_BE
 SHORT
 ..nl
 DISPLAY
-..Nederlands
+..dutch Nederlands
 STDROUNDS
 ..Standaardrondes
 QDANCE
 ..Dans In Wachtrij
 KEY
 ..14
+ISO639_2
+..nob
 LONG
 ..nb_NO
 SHORT
 ..nb
 DISPLAY
-..norsk
+..norwegian norsk
 STDROUNDS
 ..standardrunder
 QDANCE
 ..QueueDance
 KEY
 ..15
+ISO639_2
+..pol
 LONG
 ..pl_PL
 SHORT
 ..pl
 DISPLAY
-..Polski
+..polish Polski
 STDROUNDS
 ..rundy standardowe
 QDANCE
 ..Taniec w kolejce
 KEY
 ..16
+ISO639_2
+..por
 LONG
 ..pt_PT
 SHORT
 ..pt
 DISPLAY
-..Português
+..portuguese Português
 STDROUNDS
 ..standardrounds
 QDANCE
 ..QueueDance
 KEY
 ..17
+ISO639_2
+..ron
 LONG
 ..ro_RO
 SHORT
 ..ro
 DISPLAY
-..română
+..romanian română
 STDROUNDS
 ..runde standard
 QDANCE
 ..QueueDance
 KEY
 ..18
+ISO639_2
+..rus
 LONG
 ..ru_RU
 SHORT
 ..ru
 DISPLAY
-..Русский
+..russian Русский
 STDROUNDS
 ..стандартные циклы
 QDANCE
 ..Танец в очередь
 KEY
 ..19
+ISO639_2
+..srp
 LONG
 ..sr_RS
 SHORT
 ..sr
 DISPLAY
-..српски
+..serbian српски
 STDROUNDS
 ..стандардроундс
 QDANCE
 ..КуеуеДанце
 KEY
 ..20
+ISO639_2
+..swe
 LONG
 ..sv_SE
 SHORT
 ..sv
 DISPLAY
-..Svenska
+..swedish Svenska
 STDROUNDS
 ..standardrundor
 QDANCE
 ..QueueDance
 KEY
 ..21
+ISO639_2
+..ukr
 LONG
 ..uk_UA
 SHORT
 ..uk
 DISPLAY
-..Українська
+..ukranian Українська
 STDROUNDS
 ..стандартні раунди
 QDANCE
 ..QueueDance
 KEY
 ..22
+ISO639_2
+..vie
 LONG
 ..vi_VN
 SHORT
 ..vi
 DISPLAY
-..Tiếng Việt
+..vietnamese Tiếng Việt
 STDROUNDS
 ..vòng tiêu chuẩn
 QDANCE
 ..Hàng đợi khiêu vũ
 KEY
 ..23
+ISO639_2
+..zho
 LONG
 ..zh_CN
 SHORT
 ..zh
 DISPLAY
-..简体中文
+..chinese/cn 简体中文
 STDROUNDS
 ..标准件
 QDANCE
 ..队列舞蹈
 KEY
 ..24
+ISO639_2
+..zho
 LONG
 ..zh_TW
 SHORT
 ..zh
 DISPLAY
-..繁體中文
+..chinese/tw 繁體中文
 STDROUNDS
 ..標準發彈
 QDANCE
