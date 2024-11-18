@@ -159,7 +159,7 @@ song editor is:
  Movement Count|Audio||
  Movement|Audio||
  Marquee Display|BDJ4||[How&nbsp;To&nbsp;/&nbsp;Line&nbsp;Dances](en-HowTo-Linedance)
- Notes|BDJ4||
+ Notes|BDJ4||Separate from 'comment' so that existing audio file comments would not be changed
  Prevent Rename|-||[Subjects&nbsp;/&nbsp;Organizing&nbsp;Music](en-Subjects-Organizing%20Music)
  Song End|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
  Song Start|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)

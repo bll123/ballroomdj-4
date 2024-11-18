@@ -723,7 +723,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* editable             */
     false,                        /* audio-id             */
     false,                        /* marquee-disp         */
-    false,                        /* player-ui-disp       */
+    true,                         /* player-ui-disp       */
     true,                         /* text search          */
     false,                        /* vorbis multi         */
   },
@@ -863,7 +863,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* editable             */
     false,                        /* audio-id             */
     false,                        /* marquee-disp         */
-    false,                        /* player-ui-disp       */
+    true,                         /* player-ui-disp       */
     true,                         /* text search          */
     false,                        /* vorbis multi         */
   },
