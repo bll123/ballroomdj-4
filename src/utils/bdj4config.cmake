@@ -361,7 +361,6 @@ endif()
 
 if (BDJ4_FORTIFY STREQUAL T)
   # hardening
-  add_compile_options (-fstack-clash-protection)
   add_compile_options (-fstack-protector-strong)
   add_compile_options (-fstack-protector-all)
   add_compile_options (-D_FORTIFY_SOURCE=2)

@@ -68,6 +68,7 @@ while read line; do
   shift
   shift
   shift
+  shift
   langdesc="$*"
 
   slocale=$(echo $locale | sed 's,\(..\).*,\1,')

@@ -75,6 +75,7 @@ while read line; do
   shift
   shift
   shift
+  shift
   langdesc="$*"
 
   appendlocaledata ${keycount} ${locale} ${iso639_2} "${langdesc}"

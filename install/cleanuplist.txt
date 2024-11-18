@@ -217,8 +217,12 @@ bin/bdj4winmksc
 
 # 2024-5-5
 # icu library updated (macos)
-plocal/lib/libicu[a-z0-9]*\.73\.dylib$
-plocal/lib/libicu[a-z0-9]*\.73\.[0-9]\.dylib$
+plocal/lib/libicu[a-z0-9]*\.7[34]\.dylib$
+plocal/lib/libicu[a-z0-9]*\.7[34]\.[0-9]\.dylib$
+
+# 2024-11-18
+# libid3tag updated
+plocal/lib/libid3tag\.0\.16\.3\.dylib$
 
 ####
 # linux
@@ -250,6 +254,10 @@ plocal/lib/libmp4tag\.so\.1\.2\.1[0123]$
 # 2023-11-13 bdj4winmksc is only used by windows
 bin/bdj4winmksc$
 bin/libplimpv\.so$
+
+# 2024-11-18
+# libid3tag updated
+plocal/lib/libid3tag\.so\.0\.16\.3$
 
 ####
 # windows

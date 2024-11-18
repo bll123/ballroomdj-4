@@ -9,7 +9,7 @@ LONG
 SHORT
 ..af
 DISPLAY
-..afrikaans Afrikaans
+..Afrikaans
 STDROUNDS
 ..standaardrondes
 QDANCE
@@ -23,7 +23,7 @@ LONG
 SHORT
 ..cs
 DISPLAY
-..czech čeština
+..čeština
 STDROUNDS
 ..standardní okruhy
 QDANCE
@@ -37,7 +37,7 @@ LONG
 SHORT
 ..da
 DISPLAY
-..danish Dansk
+..Dansk
 STDROUNDS
 ..standardrunder
 QDANCE
@@ -51,7 +51,7 @@ LONG
 SHORT
 ..de
 DISPLAY
-..german Deutsch
+..Deutsch
 STDROUNDS
 ..Standardrunden
 QDANCE
@@ -65,7 +65,7 @@ LONG
 SHORT
 ..en
 DISPLAY
-..english/gb English (GB)
+..English (GB)
 STDROUNDS
 ..standardrounds
 QDANCE
@@ -79,7 +79,7 @@ LONG
 SHORT
 ..en
 DISPLAY
-..english/us English (US)
+..English (US)
 STDROUNDS
 ..standardrounds
 QDANCE
@@ -93,7 +93,7 @@ LONG
 SHORT
 ..es
 DISPLAY
-..spanish Español
+..Español
 STDROUNDS
 ..estándares
 QDANCE
@@ -107,7 +107,7 @@ LONG
 SHORT
 ..fi
 DISPLAY
-..finnish Suomi
+..Suomi
 STDROUNDS
 ..vakiokierrokset
 QDANCE
@@ -121,7 +121,7 @@ LONG
 SHORT
 ..fr
 DISPLAY
-..french Français
+..Français
 STDROUNDS
 ..les rounds standards
 QDANCE
@@ -135,7 +135,7 @@ LONG
 SHORT
 ..hu
 DISPLAY
-..hungarian magyar
+..magyar
 STDROUNDS
 ..standardrounds
 QDANCE
@@ -149,7 +149,7 @@ LONG
 SHORT
 ..it
 DISPLAY
-..italian Italiano
+..Italiano
 STDROUNDS
 ..giri standard
 QDANCE
@@ -163,7 +163,7 @@ LONG
 SHORT
 ..ja
 DISPLAY
-..japanese 日本語
+..日本語
 STDROUNDS
 ..スタンダードラウンド
 QDANCE
@@ -177,7 +177,7 @@ LONG
 SHORT
 ..ko
 DISPLAY
-..korean 한국어
+..한국어
 STDROUNDS
 ..표준 라운드
 QDANCE
@@ -191,7 +191,7 @@ LONG
 SHORT
 ..nl
 DISPLAY
-..dutch Nederlands
+..Nederlands
 STDROUNDS
 ..Standaardrondes
 QDANCE
@@ -205,7 +205,7 @@ LONG
 SHORT
 ..nb
 DISPLAY
-..norwegian norsk
+..norsk
 STDROUNDS
 ..standardrunder
 QDANCE
@@ -219,7 +219,7 @@ LONG
 SHORT
 ..pl
 DISPLAY
-..polish Polski
+..Polski
 STDROUNDS
 ..rundy standardowe
 QDANCE
@@ -233,7 +233,7 @@ LONG
 SHORT
 ..pt
 DISPLAY
-..portuguese Português
+..Português
 STDROUNDS
 ..standardrounds
 QDANCE
@@ -247,7 +247,7 @@ LONG
 SHORT
 ..ro
 DISPLAY
-..romanian română
+..română
 STDROUNDS
 ..runde standard
 QDANCE
@@ -261,7 +261,7 @@ LONG
 SHORT
 ..ru
 DISPLAY
-..russian Русский
+..Русский
 STDROUNDS
 ..стандартные циклы
 QDANCE
@@ -275,7 +275,7 @@ LONG
 SHORT
 ..sr
 DISPLAY
-..serbian српски
+..српски
 STDROUNDS
 ..стандардроундс
 QDANCE
@@ -289,7 +289,7 @@ LONG
 SHORT
 ..sv
 DISPLAY
-..swedish Svenska
+..Svenska
 STDROUNDS
 ..standardrundor
 QDANCE
@@ -303,7 +303,7 @@ LONG
 SHORT
 ..uk
 DISPLAY
-..ukranian Українська
+..Українська
 STDROUNDS
 ..стандартні раунди
 QDANCE
@@ -317,7 +317,7 @@ LONG
 SHORT
 ..vi
 DISPLAY
-..vietnamese Tiếng Việt
+..Tiếng Việt
 STDROUNDS
 ..vòng tiêu chuẩn
 QDANCE
@@ -331,7 +331,7 @@ LONG
 SHORT
 ..zh
 DISPLAY
-..chinese/cn 简体中文
+..简体中文
 STDROUNDS
 ..标准件
 QDANCE
@@ -345,7 +345,7 @@ LONG
 SHORT
 ..zh
 DISPLAY
-..chinese/tw 繁體中文
+..繁體中文
 STDROUNDS
 ..標準發彈
 QDANCE
