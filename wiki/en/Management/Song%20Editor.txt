@@ -153,7 +153,7 @@ song editor is:
  Duration|-|Display Only|
  Favorite|BDJ4||[Subjects&nbsp;/&nbsp;Favorites](en-Subjects-Favorites)
  Genre|Audio||[Configuration&nbsp;/&nbsp;Edit&nbsp;Genres](en-Configuration-Edit%20Genres)
- Grouping|Audio||
+ Grouping|Audio||Grouping is not currently supported by BDJ4
  Keyword|BDJ4||[Subjects&nbsp;/&nbsp;Keyword](en-Subjects-Keyword)<br>[Subjects&nbsp;/&nbsp;Song&nbsp;Selection](en-Subjects-Song%20Selection)<br>[Management&nbsp;/&nbsp;Playlist%20Management](en-Management-Playlist%20Management)
  Marquee Display|BDJ4||[How&nbsp;To&nbsp;/&nbsp;Line&nbsp;Dances](en-HowTo-Linedance)
  Movement|Audio||Classical Music: Movement Name<br>[Subjects&nbsp;/&nbsp;Classical%20Music](en-Subjects-Classical)
