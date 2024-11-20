@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-20 09:55-0800\n"
+"POT-Creation-Date: 2024-11-20 09:57-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1843,10 +1843,6 @@ msgstr ""
 
 #. CONTEXT: configuration: show-marquee: selection
 msgid "Show Marquee"
-msgstr ""
-
-#. CONTEXT: label: use classical music work/movement
-msgid "Show Movement"
 msgstr ""
 
 #. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee

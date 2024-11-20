@@ -1677,8 +1677,6 @@ tagdefInit (void)
   /* CONTEXT: label: composer sort order */
   tagdefs [TAG_SORT_COMPOSER].displayname = _("Composer Sort Order");
 
-  /* CONTEXT: label: use classical music work/movement */
-  tagdefs [TAG_SHOWMOVEMENT].displayname = _("Show Movement");
   /* CONTEXT: label: movement (classical music movement number) */
   tagdefs [TAG_MOVEMENTNUM].displayname = _("Movement Number");
   /* CONTEXT: label: movement count (classical music movement count) */

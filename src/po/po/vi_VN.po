@@ -1848,10 +1848,6 @@ msgstr "Hiển thị hàng đợi bổ sung"
 msgid "Show Marquee"
 msgstr "Hiển thị Marquee"
 
-#. CONTEXT: label: use classical music work/movement
-msgid "Show Movement"
-msgstr ""
-
 #. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee
 msgid "Show Song Information"
 msgstr "Hiển thị thông tin bài hát"
