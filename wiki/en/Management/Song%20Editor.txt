@@ -133,10 +133,10 @@ song editor is:
 
  Field|Tag Type|Display|Notes
  -----|--------|-------|-----
- Album|Audio||
- Album Sort Order|Audio||
  Album Artist|Audio||
  Album Artist Sort Order|Audio||
+ Album|Audio||
+ Album Sort Order|Audio||
  Artist|Audio||
  Artist Sort Order|Audio||
  BPM/MPM|Audio||[Subjects&nbsp;/&nbsp;BPM&nbsp;&amp;&nbsp;MPM](en-Subjects-BPM-MPM)
@@ -155,11 +155,11 @@ song editor is:
  Genre|Audio||[Configuration&nbsp;/&nbsp;Edit&nbsp;Genres](en-Configuration-Edit%20Genres)
  Grouping|Audio||
  Keyword|BDJ4||[Subjects&nbsp;/&nbsp;Keyword](en-Subjects-Keyword)<br>[Subjects&nbsp;/&nbsp;Song&nbsp;Selection](en-Subjects-Song%20Selection)<br>[Management&nbsp;/&nbsp;Playlist%20Management](en-Management-Playlist%20Management)
- Movement Number|Audio||
- Movement Count|Audio||
- Movement|Audio||
  Marquee Display|BDJ4||[How&nbsp;To&nbsp;/&nbsp;Line&nbsp;Dances](en-HowTo-Linedance)
- Notes|BDJ4||Separate from 'comment' so that existing audio file comments would not be changed
+ Movement|Audio||Classical Music: Movement Name<br>[Subjects&nbsp;/&nbsp;Classical%20Music](en-Subjects-Classical)
+ Movement Count|Audio||
+ Movement Number|Audio||
+ Notes|BDJ4||Separate from _Comment_ so that existing audio file comments would not be changed
  Prevent Rename|-||[Subjects&nbsp;/&nbsp;Organizing&nbsp;Music](en-Subjects-Organizing%20Music)
  Song End|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
  Song Start|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
@@ -172,7 +172,14 @@ song editor is:
  Total Tracks|Audio||
  Track|Audio||
  Volume Adjustment|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
- Work|Audio||
+ Work|Audio||Classical Music: The work name<br>[Subjects&nbsp;/&nbsp;Classical%20Music](en-Subjects-Classical)
+
+Other fields that can be displayed in BDJ4:
+
+ Field|Tag Type|Display|Notes
+ -----|--------|-------|-----
+ Score|-|Display Only|Audio Identification: Score for the audio identification
+ Source|-|Display Only|Audio Identification: The source of the audio identification
 
 [Wiki Home](Home)
 <br>_(Updated 2024-11-07 12:25:26; BDJ4 version 4.12.5.1)_
