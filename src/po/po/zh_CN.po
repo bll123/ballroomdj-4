@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2024-11-18\n"
+"PO-Revision-Date: 2024-11-20\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh\n"
@@ -1847,6 +1847,10 @@ msgstr "显示额外队列"
 msgid "Show Marquee"
 msgstr "展示帐篷"
 
+#. CONTEXT: label: use classical music work/movement
+msgid "Show Movement"
+msgstr ""
+
 #. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee
 msgid "Show Song Information"
 msgstr "显示歌曲信息"
@@ -2187,6 +2191,10 @@ msgstr "更新现有的 %s 安装。"
 
 #. CONTEXT: installer: start the upgrade process
 msgid "Upgrade"
+msgstr ""
+
+#. CONTEXT: configuration: classical music: use work/movement
+msgid "Use Work and Movement"
 msgstr ""
 
 #. CONTEXT: configuration: remote control: the user ID for sign-on to remote control

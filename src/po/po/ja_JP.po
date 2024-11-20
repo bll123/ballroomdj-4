@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2024-11-18\n"
+"PO-Revision-Date: 2024-11-20\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
@@ -1847,6 +1847,10 @@ msgstr "追加のキューを表示する"
 msgid "Show Marquee"
 msgstr "ショー・マーキー"
 
+#. CONTEXT: label: use classical music work/movement
+msgid "Show Movement"
+msgstr ""
+
 #. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee
 msgid "Show Song Information"
 msgstr "ショー・ソング・インフォメーション"
@@ -2187,6 +2191,10 @@ msgstr "既存の %s インストールを更新する。"
 
 #. CONTEXT: installer: start the upgrade process
 msgid "Upgrade"
+msgstr ""
+
+#. CONTEXT: configuration: classical music: use work/movement
+msgid "Use Work and Movement"
 msgstr ""
 
 #. CONTEXT: configuration: remote control: the user ID for sign-on to remote control

@@ -1,5 +1,5 @@
 # html-list
-# generated 2024-11-18
+# generated 2024-11-20
 KEY
 ..0
 LOCALE
@@ -29,7 +29,7 @@ KEY
 LOCALE
 ..af
 TITLE
-..afrikaans Afrikaans Flex Dark
+..Afrikaans Flex Dark
 FILE
 ..af/bdj-flex-dark.html
 KEY
@@ -37,7 +37,7 @@ KEY
 LOCALE
 ..af
 TITLE
-..afrikaans Afrikaans Flex
+..Afrikaans Flex
 FILE
 ..af/bdj-flex.html
 KEY
@@ -45,7 +45,7 @@ KEY
 LOCALE
 ..af
 TITLE
-..afrikaans Afrikaans HTML 5
+..Afrikaans HTML 5
 FILE
 ..af/bdj.html
 KEY
@@ -53,7 +53,7 @@ KEY
 LOCALE
 ..cs
 TITLE
-..czech čeština Flex Dark
+..čeština Flex Dark
 FILE
 ..cs/bdj-flex-dark.html
 KEY
@@ -61,7 +61,7 @@ KEY
 LOCALE
 ..cs
 TITLE
-..czech čeština Flex
+..čeština Flex
 FILE
 ..cs/bdj-flex.html
 KEY
@@ -69,7 +69,7 @@ KEY
 LOCALE
 ..cs
 TITLE
-..czech čeština HTML 5
+..čeština HTML 5
 FILE
 ..cs/bdj.html
 KEY
@@ -77,7 +77,7 @@ KEY
 LOCALE
 ..da
 TITLE
-..danish Dansk Flex Dark
+..Dansk Flex Dark
 FILE
 ..da/bdj-flex-dark.html
 KEY
@@ -85,7 +85,7 @@ KEY
 LOCALE
 ..da
 TITLE
-..danish Dansk Flex
+..Dansk Flex
 FILE
 ..da/bdj-flex.html
 KEY
@@ -93,7 +93,7 @@ KEY
 LOCALE
 ..da
 TITLE
-..danish Dansk HTML 5
+..Dansk HTML 5
 FILE
 ..da/bdj.html
 KEY
@@ -101,7 +101,7 @@ KEY
 LOCALE
 ..de
 TITLE
-..german Deutsch Flex Dark
+..Deutsch Flex Dark
 FILE
 ..de/bdj-flex-dark.html
 KEY
@@ -109,7 +109,7 @@ KEY
 LOCALE
 ..de
 TITLE
-..german Deutsch Flex
+..Deutsch Flex
 FILE
 ..de/bdj-flex.html
 KEY
@@ -117,7 +117,7 @@ KEY
 LOCALE
 ..de
 TITLE
-..german Deutsch HTML 5
+..Deutsch HTML 5
 FILE
 ..de/bdj.html
 KEY
@@ -125,7 +125,7 @@ KEY
 LOCALE
 ..es
 TITLE
-..spanish Español Flex Dark
+..Español Flex Dark
 FILE
 ..es/bdj-flex-dark.html
 KEY
@@ -133,7 +133,7 @@ KEY
 LOCALE
 ..es
 TITLE
-..spanish Español Flex
+..Español Flex
 FILE
 ..es/bdj-flex.html
 KEY
@@ -141,7 +141,7 @@ KEY
 LOCALE
 ..es
 TITLE
-..spanish Español HTML 5
+..Español HTML 5
 FILE
 ..es/bdj.html
 KEY
@@ -149,7 +149,7 @@ KEY
 LOCALE
 ..fi
 TITLE
-..finnish Suomi Flex Dark
+..Suomi Flex Dark
 FILE
 ..fi/bdj-flex-dark.html
 KEY
@@ -157,7 +157,7 @@ KEY
 LOCALE
 ..fi
 TITLE
-..finnish Suomi Flex
+..Suomi Flex
 FILE
 ..fi/bdj-flex.html
 KEY
@@ -165,7 +165,7 @@ KEY
 LOCALE
 ..fi
 TITLE
-..finnish Suomi HTML 5
+..Suomi HTML 5
 FILE
 ..fi/bdj.html
 KEY
@@ -173,7 +173,7 @@ KEY
 LOCALE
 ..fr
 TITLE
-..french Français Flex Dark
+..Français Flex Dark
 FILE
 ..fr/bdj-flex-dark.html
 KEY
@@ -181,7 +181,7 @@ KEY
 LOCALE
 ..fr
 TITLE
-..french Français Flex
+..Français Flex
 FILE
 ..fr/bdj-flex.html
 KEY
@@ -189,7 +189,7 @@ KEY
 LOCALE
 ..fr
 TITLE
-..french Français HTML 5
+..Français HTML 5
 FILE
 ..fr/bdj.html
 KEY
@@ -197,7 +197,7 @@ KEY
 LOCALE
 ..hu
 TITLE
-..hungarian magyar Flex Dark
+..magyar Flex Dark
 FILE
 ..hu/bdj-flex-dark.html
 KEY
@@ -205,7 +205,7 @@ KEY
 LOCALE
 ..hu
 TITLE
-..hungarian magyar Flex
+..magyar Flex
 FILE
 ..hu/bdj-flex.html
 KEY
@@ -213,7 +213,7 @@ KEY
 LOCALE
 ..hu
 TITLE
-..hungarian magyar HTML 5
+..magyar HTML 5
 FILE
 ..hu/bdj.html
 KEY
@@ -221,7 +221,7 @@ KEY
 LOCALE
 ..it
 TITLE
-..italian Italiano Flex Dark
+..Italiano Flex Dark
 FILE
 ..it/bdj-flex-dark.html
 KEY
@@ -229,7 +229,7 @@ KEY
 LOCALE
 ..it
 TITLE
-..italian Italiano Flex
+..Italiano Flex
 FILE
 ..it/bdj-flex.html
 KEY
@@ -237,7 +237,7 @@ KEY
 LOCALE
 ..it
 TITLE
-..italian Italiano HTML 5
+..Italiano HTML 5
 FILE
 ..it/bdj.html
 KEY
@@ -245,7 +245,7 @@ KEY
 LOCALE
 ..ja
 TITLE
-..japanese 日本語 Flex Dark
+..日本語 Flex Dark
 FILE
 ..ja/bdj-flex-dark.html
 KEY
@@ -253,7 +253,7 @@ KEY
 LOCALE
 ..ja
 TITLE
-..japanese 日本語 Flex
+..日本語 Flex
 FILE
 ..ja/bdj-flex.html
 KEY
@@ -261,7 +261,7 @@ KEY
 LOCALE
 ..ja
 TITLE
-..japanese 日本語 HTML 5
+..日本語 HTML 5
 FILE
 ..ja/bdj.html
 KEY
@@ -269,7 +269,7 @@ KEY
 LOCALE
 ..ko
 TITLE
-..korean 한국어 Flex Dark
+..한국어 Flex Dark
 FILE
 ..ko/bdj-flex-dark.html
 KEY
@@ -277,7 +277,7 @@ KEY
 LOCALE
 ..ko
 TITLE
-..korean 한국어 Flex
+..한국어 Flex
 FILE
 ..ko/bdj-flex.html
 KEY
@@ -285,7 +285,7 @@ KEY
 LOCALE
 ..ko
 TITLE
-..korean 한국어 HTML 5
+..한국어 HTML 5
 FILE
 ..ko/bdj.html
 KEY
@@ -293,7 +293,7 @@ KEY
 LOCALE
 ..nb
 TITLE
-..norwegian norsk Flex Dark
+..norsk Flex Dark
 FILE
 ..nb/bdj-flex-dark.html
 KEY
@@ -301,7 +301,7 @@ KEY
 LOCALE
 ..nb
 TITLE
-..norwegian norsk Flex
+..norsk Flex
 FILE
 ..nb/bdj-flex.html
 KEY
@@ -309,7 +309,7 @@ KEY
 LOCALE
 ..nb
 TITLE
-..norwegian norsk HTML 5
+..norsk HTML 5
 FILE
 ..nb/bdj.html
 KEY
@@ -317,7 +317,7 @@ KEY
 LOCALE
 ..nl
 TITLE
-..dutch Nederlands Flex Dark
+..Nederlands Flex Dark
 FILE
 ..nl/bdj-flex-dark.html
 KEY
@@ -325,7 +325,7 @@ KEY
 LOCALE
 ..nl
 TITLE
-..dutch Nederlands Flex
+..Nederlands Flex
 FILE
 ..nl/bdj-flex.html
 KEY
@@ -333,7 +333,7 @@ KEY
 LOCALE
 ..nl
 TITLE
-..dutch Nederlands HTML 5
+..Nederlands HTML 5
 FILE
 ..nl/bdj.html
 KEY
@@ -341,7 +341,7 @@ KEY
 LOCALE
 ..pl
 TITLE
-..polish Polski Flex Dark
+..Polski Flex Dark
 FILE
 ..pl/bdj-flex-dark.html
 KEY
@@ -349,7 +349,7 @@ KEY
 LOCALE
 ..pl
 TITLE
-..polish Polski Flex
+..Polski Flex
 FILE
 ..pl/bdj-flex.html
 KEY
@@ -357,7 +357,7 @@ KEY
 LOCALE
 ..pl
 TITLE
-..polish Polski HTML 5
+..Polski HTML 5
 FILE
 ..pl/bdj.html
 KEY
@@ -365,7 +365,7 @@ KEY
 LOCALE
 ..pt
 TITLE
-..portuguese Português Flex Dark
+..Português Flex Dark
 FILE
 ..pt/bdj-flex-dark.html
 KEY
@@ -373,7 +373,7 @@ KEY
 LOCALE
 ..pt
 TITLE
-..portuguese Português Flex
+..Português Flex
 FILE
 ..pt/bdj-flex.html
 KEY
@@ -381,7 +381,7 @@ KEY
 LOCALE
 ..pt
 TITLE
-..portuguese Português HTML 5
+..Português HTML 5
 FILE
 ..pt/bdj.html
 KEY
@@ -389,7 +389,7 @@ KEY
 LOCALE
 ..ro
 TITLE
-..romanian română Flex Dark
+..română Flex Dark
 FILE
 ..ro/bdj-flex-dark.html
 KEY
@@ -397,7 +397,7 @@ KEY
 LOCALE
 ..ro
 TITLE
-..romanian română Flex
+..română Flex
 FILE
 ..ro/bdj-flex.html
 KEY
@@ -405,7 +405,7 @@ KEY
 LOCALE
 ..ro
 TITLE
-..romanian română HTML 5
+..română HTML 5
 FILE
 ..ro/bdj.html
 KEY
@@ -413,7 +413,7 @@ KEY
 LOCALE
 ..ru
 TITLE
-..russian Русский Flex Dark
+..Русский Flex Dark
 FILE
 ..ru/bdj-flex-dark.html
 KEY
@@ -421,7 +421,7 @@ KEY
 LOCALE
 ..ru
 TITLE
-..russian Русский Flex
+..Русский Flex
 FILE
 ..ru/bdj-flex.html
 KEY
@@ -429,7 +429,7 @@ KEY
 LOCALE
 ..ru
 TITLE
-..russian Русский HTML 5
+..Русский HTML 5
 FILE
 ..ru/bdj.html
 KEY
@@ -437,7 +437,7 @@ KEY
 LOCALE
 ..sr
 TITLE
-..serbian српски Flex Dark
+..српски Flex Dark
 FILE
 ..sr/bdj-flex-dark.html
 KEY
@@ -445,7 +445,7 @@ KEY
 LOCALE
 ..sr
 TITLE
-..serbian српски Flex
+..српски Flex
 FILE
 ..sr/bdj-flex.html
 KEY
@@ -453,7 +453,7 @@ KEY
 LOCALE
 ..sr
 TITLE
-..serbian српски HTML 5
+..српски HTML 5
 FILE
 ..sr/bdj.html
 KEY
@@ -461,7 +461,7 @@ KEY
 LOCALE
 ..sv
 TITLE
-..swedish Svenska Flex Dark
+..Svenska Flex Dark
 FILE
 ..sv/bdj-flex-dark.html
 KEY
@@ -469,7 +469,7 @@ KEY
 LOCALE
 ..sv
 TITLE
-..swedish Svenska Flex
+..Svenska Flex
 FILE
 ..sv/bdj-flex.html
 KEY
@@ -477,7 +477,7 @@ KEY
 LOCALE
 ..sv
 TITLE
-..swedish Svenska HTML 5
+..Svenska HTML 5
 FILE
 ..sv/bdj.html
 KEY
@@ -485,7 +485,7 @@ KEY
 LOCALE
 ..uk
 TITLE
-..ukranian Українська Flex Dark
+..Українська Flex Dark
 FILE
 ..uk/bdj-flex-dark.html
 KEY
@@ -493,7 +493,7 @@ KEY
 LOCALE
 ..uk
 TITLE
-..ukranian Українська Flex
+..Українська Flex
 FILE
 ..uk/bdj-flex.html
 KEY
@@ -501,7 +501,7 @@ KEY
 LOCALE
 ..uk
 TITLE
-..ukranian Українська HTML 5
+..Українська HTML 5
 FILE
 ..uk/bdj.html
 KEY
@@ -509,7 +509,7 @@ KEY
 LOCALE
 ..vi
 TITLE
-..vietnamese Tiếng Việt Flex Dark
+..Tiếng Việt Flex Dark
 FILE
 ..vi/bdj-flex-dark.html
 KEY
@@ -517,7 +517,7 @@ KEY
 LOCALE
 ..vi
 TITLE
-..vietnamese Tiếng Việt Flex
+..Tiếng Việt Flex
 FILE
 ..vi/bdj-flex.html
 KEY
@@ -525,7 +525,7 @@ KEY
 LOCALE
 ..vi
 TITLE
-..vietnamese Tiếng Việt HTML 5
+..Tiếng Việt HTML 5
 FILE
 ..vi/bdj.html
 KEY
@@ -533,7 +533,7 @@ KEY
 LOCALE
 ..zh_CN
 TITLE
-..
+..简体中文 Flex Dark
 FILE
 ..zh_CN/bdj-flex-dark.html
 KEY
@@ -541,7 +541,7 @@ KEY
 LOCALE
 ..zh_CN
 TITLE
-..
+..简体中文 Flex
 FILE
 ..zh_CN/bdj-flex.html
 KEY
@@ -549,7 +549,7 @@ KEY
 LOCALE
 ..zh_CN
 TITLE
-..
+..简体中文 HTML 5
 FILE
 ..zh_CN/bdj.html
 KEY
@@ -557,7 +557,7 @@ KEY
 LOCALE
 ..zh_TW
 TITLE
-..
+..繁體中文 Flex Dark
 FILE
 ..zh_TW/bdj-flex-dark.html
 KEY
@@ -565,7 +565,7 @@ KEY
 LOCALE
 ..zh_TW
 TITLE
-..
+..繁體中文 Flex
 FILE
 ..zh_TW/bdj-flex.html
 KEY
@@ -573,6 +573,6 @@ KEY
 LOCALE
 ..zh_TW
 TITLE
-..
+..繁體中文 HTML 5
 FILE
 ..zh_TW/bdj.html
