@@ -77,6 +77,7 @@ confuiSaveiTunes (confuigui_t *gui)
 {
   bool        changed;
   int         count;
+  int         gcount;
   const char  *itunesName;
   int         tagidx;
 
@@ -98,6 +99,7 @@ confuiSaveiTunes (confuigui_t *gui)
 
   changed = false;
   count = 0;
+  gcount = 0;
   itunesStartIterateAvailFields (gui->itunes->itunes);
   while ((itunesName = itunesIterateAvailFields (gui->itunes->itunes, &tagidx)) != NULL) {
     bool   tval;
@@ -112,12 +114,13 @@ confuiSaveiTunes (confuigui_t *gui)
       oval = true;
     }
     tval = uiToggleButtonIsActive (
-        gui->uiitem [CONFUI_WIDGET_ITUNES_FIELD_1 + count].uiwidgetp);
+        gui->uiitem [CONFUI_WIDGET_ITUNES_FIELD_1 + gcount].uiwidgetp);
     if (oval != tval) {
       changed = true;
       itunesSetField (gui->itunes->itunes, tagidx, tval);
     }
     ++count;
+    ++gcount;
   }
 
   if (changed) {
@@ -140,6 +143,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
   uiwcont_t     *szgrp;
   uiwcont_t     *szgrpr;
   int           count;
+  int           gcount;
   const char    *itunesName;
   int           tagidx;
   int           cidx;
@@ -248,6 +252,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
   }
 
   count = 0;
+  gcount = 0;
   cidx = 0;
   vboxp = vbox [cidx];
   itunesStartIterateAvailFields (gui->itunes->itunes);
@@ -263,8 +268,9 @@ confuiBuildUIiTunes (confuigui_t *gui)
       tval = true;
     }
     confuiMakeItemCheckButton (gui, vboxp, szgrp, tagdefs [tagidx].displayname,
-        CONFUI_WIDGET_ITUNES_FIELD_1 + count, -1, tval);
+        CONFUI_WIDGET_ITUNES_FIELD_1 + gcount, -1, tval);
     ++count;
+    ++gcount;
     if (count >= ITUNES_MAX_PER_COL) {
       ++cidx;
       vboxp = vbox [cidx];

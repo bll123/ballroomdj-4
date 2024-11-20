@@ -40,6 +40,9 @@ the audio file when a song is edited. When set to __All&nbsp;Tags__, all
 audio file tags including BDJ specific tags will be updated in the
 audio file when a song is edited.
 
+__Use Work and Movement__: Classical Music: If set, any work and
+movement will be used to determine the title of the music.
+
 The __ACRCloud&nbsp;API__ information is optional and is only used for the
 audio identification process within BDJ4.  If you use the audio
 identification process and have registered an ACRCloud account, copy and

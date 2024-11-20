@@ -1572,6 +1572,9 @@ uisongeditSave (void *udata, nlist_t *chglist)
 
   if (! seint->ineditallapply) {
     chglist = uisongeditGetChangedData (uisongedit);
+    /* get-changed-data will force the work, movement-num, movement-name */
+    /* and title to be populated in chglist if any of them have changed */
+    songutilTitleFromWorkMovement (chglist);
   }
 
   for (int count = 0; count < seint->itemcount; ++count) {
@@ -1730,9 +1733,28 @@ uisongeditGetChangedData (uisongedit_t *uisongedit)
 {
   se_internal_t   *seint =  NULL;
   nlist_t         *chglist = NULL;
+  bool            chgworkmovmovement = false;
 
   seint = uisongedit->seInternalData;
   chglist = nlistAlloc ("se-chg-list", LIST_ORDERED, NULL);
+
+  if (bdjoptGetNum (OPT_G_USE_WORK_MOVEMENT)) {
+    /* if any of work, movement-num or movement-name have changed, */
+    /* force a change for all of them, as the data is needed to */
+    /* re-populate the title */
+    for (int count = 0; count < seint->itemcount; ++count) {
+      int         tagkey = seint->items [count].tagkey;
+
+      if (seint->items [count].changed) {
+        if (tagkey == TAG_WORK ||
+            tagkey == TAG_MOVEMENTNAME ||
+            tagkey == TAG_MOVEMENTNUM ||
+            tagkey == TAG_TITLE) {
+          chgworkmovmovement = true;
+        }
+      }
+    }
+  }
 
   for (int count = 0; count < seint->itemcount; ++count) {
     const char  *ndata = NULL;
@@ -1740,6 +1762,14 @@ uisongeditGetChangedData (uisongedit_t *uisongedit)
     double      ndval = LIST_DOUBLE_INVALID;
     int         chkvalue;
     int         tagkey = seint->items [count].tagkey;
+
+    if (chgworkmovmovement &&
+        (tagkey == TAG_WORK ||
+        tagkey == TAG_MOVEMENTNAME ||
+        tagkey == TAG_MOVEMENTNUM ||
+        tagkey == TAG_TITLE)) {
+      seint->items [count].changed = true;
+    }
 
     if (! seint->items [count].changed) {
       continue;

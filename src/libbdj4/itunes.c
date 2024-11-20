@@ -32,6 +32,7 @@
 #include "rating.h"
 #include "slist.h"
 #include "songfav.h"
+#include "songutil.h"
 #include "tagdef.h"
 #include "tmutil.h"
 
@@ -437,7 +438,7 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
   slistidx_t  iteridx;
   const char  *key;
   const char  *val;
-  long        lastval = -1;
+  nlistidx_t  lastval = -1;
   nlist_t     *entry = NULL;
   bool        ratingset = false;
   bool        skip = false;
@@ -460,7 +461,8 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
       continue;
     }
 
-    if (strcmp (key, "Track ID") == 0) {
+    if (strcmp (key, "") == 0) {
+    } else if (strcmp (key, "Track ID") == 0) {
       if (skip) {
         nlistFree (entry);
       }
@@ -592,9 +594,11 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
       }
     }
   }
+
   if (skip) {
     nlistFree (entry);
   }
+
   if (! skip) {
     const char  *tval;
 
@@ -605,6 +609,10 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
     } else {
       nlistFree (entry);
     }
+
+    /* the itunes xml file does not appear to save the show-movement flag */
+    /* use our own setting to determine whether to use work/movement */
+    songutilTitleFromWorkMovement (entry);
   }
 
   slistFree (rawdata);

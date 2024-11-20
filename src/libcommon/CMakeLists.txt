@@ -25,6 +25,7 @@ add_library (libbdj4common SHARED
   ossignal.c
   pathinfo.c
   queue.c
+  roman.c
   sock.c
   sockh.c
   vsencdec.c

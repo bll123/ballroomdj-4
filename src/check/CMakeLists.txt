@@ -38,6 +38,7 @@ add_executable (check_all
   libcommon/check_sock.c
   libcommon/check_tmutil.c
   libcommon/check_vsencdec.c
+  libcommon/check_roman.c
   # libbasic
   libbasic/check_libbasic.c
   libbasic/check_bdjopt.c

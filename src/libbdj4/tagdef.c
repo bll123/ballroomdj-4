@@ -709,7 +709,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
     },       /* audio tags */
-    "Movement",                   /* itunes name          */
+    "Movement Name",              /* itunes name          */
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
@@ -971,6 +971,34 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align end            */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
+    false,                        /* edit-all             */
+    false,                        /* editable             */
+    false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
+    false,                        /* player-ui-disp       */
+    false,                        /* text search          */
+    false,                        /* vorbis multi         */
+  },
+  [TAG_SHOWMOVEMENT] =
+  { "SHOWMOVEMENT",
+    NULL,                         /* display name         */
+    NULL,                         /* short display name   */
+    { [TAG_TYPE_VORBIS] = { "SHOWMOVEMENT", NULL, NULL, NULL },
+      [TAG_TYPE_MP4] = { "shwm", NULL, NULL, NULL },
+      [TAG_TYPE_ID3] = { "TXXX=SHOWMOVEMENT", "TXXX", "SHOWMOVEMENT", NULL },
+      [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+    },       /* audio tags */
+    NULL,                         /* itunes name          */
+    ET_NA,                        /* edit type            */
+    VALUE_NUM,                    /* value type           */
+    NULL,                         /* conv func            */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align end            */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
     false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* audio-id             */
@@ -1649,6 +1677,8 @@ tagdefInit (void)
   /* CONTEXT: label: composer sort order */
   tagdefs [TAG_SORT_COMPOSER].displayname = _("Composer Sort Order");
 
+  /* CONTEXT: label: use classical music work/movement */
+  tagdefs [TAG_SHOWMOVEMENT].displayname = _("Show Movement");
   /* CONTEXT: label: movement (classical music movement number) */
   tagdefs [TAG_MOVEMENTNUM].displayname = _("Movement Number");
   /* CONTEXT: label: movement count (classical music movement count) */

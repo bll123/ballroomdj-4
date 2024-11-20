@@ -103,6 +103,7 @@ typedef enum {
   TAG_RECORDING_ID,           // musicbrainz_trackid
   TAG_RRN,                    // internal: not saved to db or af
   TAG_SAMESONG,               //  bdj4  internal: only in the db
+  TAG_SHOWMOVEMENT,           //
   TAG_SONGEND,                //  bdj4
   TAG_SONGSTART,              //  bdj4
   TAG_SORT_ALBUM,
