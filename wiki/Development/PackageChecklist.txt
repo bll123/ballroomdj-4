@@ -56,12 +56,12 @@ On Windows, the packages should be cleaned up first.
     * ./utils/postrel.sh
 * final
     * update sourceforge, mark the packages
-    * github: upload the releases
     * announce the release on the forum
     * announce the release on freshcode.club
     * hg: push to sourceforge (sfbdj4)
     * hg bookmark -r tip master
     * hg: push to git (gitbdj4)
+    * github: upload the releases (after the push)
     * update VERSION.txt
         * set next version
         * set DEVELOPMENT tag
