@@ -159,7 +159,7 @@ song editor is:
  Movement|Audio||Classical Music: Movement Name<br>[Subjects&nbsp;/&nbsp;Classical%20Music](en-Subjects-Classical)
  Movement Count|Audio||
  Movement Number|Audio||
- Notes|BDJ4||Separate from _Comment_ so that existing audio file comments would not be changed
+ Notes|BDJ4||Separated from _Comment_ so that existing audio file comments would not be changed
  Prevent Rename|-||[Subjects&nbsp;/&nbsp;Organizing&nbsp;Music](en-Subjects-Organizing%20Music)
  Song End|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
  Song Start|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
@@ -182,4 +182,4 @@ Other fields that can be displayed in BDJ4:
  Source|-|Display Only|Audio Identification: The source of the audio identification
 
 [Wiki Home](Home)
-<br>_(Updated 2024-11-07 12:25:26; BDJ4 version 4.12.5.1)_
+<br>_(Updated 2024-11-23 14:31:33; BDJ4 version 4.12.6)_

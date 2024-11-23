@@ -76,7 +76,6 @@ void
 confuiSaveiTunes (confuigui_t *gui)
 {
   bool        changed;
-  int         count;
   int         gcount;
   const char  *itunesName;
   int         tagidx;
@@ -98,7 +97,6 @@ confuiSaveiTunes (confuigui_t *gui)
   }
 
   changed = false;
-  count = 0;
   gcount = 0;
   itunesStartIterateAvailFields (gui->itunes->itunes);
   while ((itunesName = itunesIterateAvailFields (gui->itunes->itunes, &tagidx)) != NULL) {
@@ -119,7 +117,6 @@ confuiSaveiTunes (confuigui_t *gui)
       changed = true;
       itunesSetField (gui->itunes->itunes, tagidx, tval);
     }
-    ++count;
     ++gcount;
   }
 

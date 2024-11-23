@@ -55,7 +55,6 @@ enum {
 START_TEST(roman)
 {
   char  buff [20];
-  char  sbuff [2];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- roman");
   mdebugSubTag ("roman");
