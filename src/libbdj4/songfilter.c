@@ -95,8 +95,7 @@ static const char * const SONG_FILTER_SORT_DEFAULT = "TITLE";
 
 static void songfilterFreeData (songfilter_t *sf, int i);
 static bool songfilterCheckStr (const char *str, char *searchstr);
-static void songfilterMakeSortKey (songfilter_t *sf,
-    song_t *song, char *sortkey, ssize_t sz);
+static void songfilterMakeSortKey (songfilter_t *sf, song_t *song, char *sortkey, ssize_t sz);
 static nlist_t *songfilterParseSortKey (songfilter_t *sf);
 static void songfilterLoadFilterDisplay (songfilter_t *sf);
 
@@ -885,7 +884,7 @@ static void
 songfilterMakeSortKey (songfilter_t *sf,
     song_t *song, char *sortkey, ssize_t sz)
 {
-  int         tagkey;
+  tagdefkey_t tagkey;
   char        tbuff [100];
   nlistidx_t  iteridx;
   char        *skp;
@@ -902,6 +901,7 @@ songfilterMakeSortKey (songfilter_t *sf,
     return;
   }
 
+  /* all tag-keys in parsed are valid */
   nlistStartIterator (sf->parsed, &iteridx);
   while ((tagkey = nlistIterateKey (sf->parsed, &iteridx)) >= 0) {
     if (tagkey == TAG_DANCE) {
@@ -932,7 +932,7 @@ songfilterMakeSortKey (songfilter_t *sf,
 
       tval = songGetNum (song, tagkey);
       /* the newest will be the largest number */
-      /* reverse sort */
+      /* do a reverse sort */
       tval = ~tval;
       snprintf (tbuff, sizeof (tbuff), "/%10zx", tval);
       skp = stpecpy (skp, skend, tbuff);
@@ -946,11 +946,20 @@ songfilterMakeSortKey (songfilter_t *sf,
       snprintf (tbuff, sizeof (tbuff), "/%03d", tval);
       skp = stpecpy (skp, skend, tbuff);
 
-      tval = songGetNum (song, TAG_TRACKNUMBER);
+      tval = songGetNum (song, tagkey);
       if (tval == LIST_VALUE_INVALID) {
         tval = 1;
       }
       snprintf (tbuff, sizeof (tbuff), "/%04d", tval);
+      skp = stpecpy (skp, skend, tbuff);
+    } else if (tagkey == TAG_MOVEMENTNUM) {
+      dbidx_t   tval;
+
+      tval = songGetNum (song, tagkey);
+      if (tval == LIST_VALUE_INVALID) {
+        tval = 1;
+      }
+      snprintf (tbuff, sizeof (tbuff), "/%03d", tval);
       skp = stpecpy (skp, skend, tbuff);
     } else if (tagkey == TAG_BPM) {
       int     tval;
@@ -964,7 +973,7 @@ songfilterMakeSortKey (songfilter_t *sf,
     } else if (tagdefs [tagkey].valueType == VALUE_STR) {
       const char  *tsortstr = NULL;
       const char  *tstr;
-      int         tagsortidx = -1;
+      tagdefkey_t tagsortidx = TAG_KEY_MAX;
 
       /* use the sort-order tag in preference to the regular tag */
       switch (tagkey) {
@@ -988,12 +997,12 @@ songfilterMakeSortKey (songfilter_t *sf,
           tagsortidx = TAG_SORT_COMPOSER;
           break;
         }
-        default : {
+        default: {
           break;
         }
       }
 
-      if (tagsortidx >= 0 && tagsortidx < TAG_KEY_MAX) {
+      if (tagsortidx < TAG_KEY_MAX) {
         tsortstr = songGetStr (song, tagsortidx);
       }
 
@@ -1019,7 +1028,7 @@ songfilterParseSortKey (songfilter_t *sf)
   char        *p;
   char        *tokstr;
   nlist_t     *parsed;
-  int         tagkey;
+  tagdefkey_t tagkey;
 
   logProcBegin ();
 
@@ -1029,7 +1038,7 @@ songfilterParseSortKey (songfilter_t *sf)
   p = strtok_r (sortsel, " ", &tokstr);
   while (p != NULL) {
     tagkey = tagdefLookup (p);
-    if (tagkey >= 0) {
+    if (tagkey >= 0 && tagkey < TAG_KEY_MAX) {
       nlistSetNum (parsed, tagkey, 0);
       if (tagkey == TAG_DBADDDATE) {
         nlistSetNum (parsed, TAG_TITLE, 0);

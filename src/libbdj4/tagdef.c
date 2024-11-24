@@ -1726,7 +1726,8 @@ tagdefCleanup (void)
   tagdefinfo.initialized = false;
 }
 
-tagdefkey_t
+/* can return LIST_VALUE_INVALID if not found */
+int
 tagdefLookup (const char *str)
 {
   tagdefInit ();
