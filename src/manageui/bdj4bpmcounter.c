@@ -122,6 +122,7 @@ main (int argc, char *argv[])
   bpmcounter_t    bpmcounter;
   char            tbuff [MAXPATHLEN];
   uint32_t        flags;
+  uisetup_t       uisetup;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("bpmc");
@@ -193,13 +194,8 @@ main (int argc, char *argv[])
   }
 
   uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
-  uiSetUICSS (uiutilsGetCurrentFont (),
-      uiutilsGetListingFont (),
-      bdjoptGetStr (OPT_P_UI_ACCENT_COL),
-      bdjoptGetStr (OPT_P_UI_ERROR_COL),
-      bdjoptGetStr (OPT_P_UI_MARK_COL),
-      bdjoptGetStr (OPT_P_UI_ROWSEL_COL),
-      bdjoptGetStr (OPT_P_UI_ROW_HL_COL));
+  uiutilsInitSetup (&uisetup);
+  uiSetUICSS (&uisetup);
 
   bpmcounterBuildUI (&bpmcounter);
   osuiFinalize ();

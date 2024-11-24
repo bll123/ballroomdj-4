@@ -6,8 +6,11 @@
 
 **4.12.7 2024-11---**
 
-* Changes:
+* Bug Fixes:
+    * Marquee: Fix background color.
     * Allow sort by movement number.
+* Internal:
+    * Minor code cleanup.
 
 -->
 

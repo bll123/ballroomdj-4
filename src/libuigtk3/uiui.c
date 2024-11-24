@@ -26,6 +26,7 @@
 #include "sysvars.h"
 #include "tmutil.h"
 #include "uiclass.h"
+#include "uiutils.h"    // for uisetup_t definition
 
 #include "ui/uiwcont-int.h"
 
@@ -124,10 +125,7 @@ uiCleanup (void)
 }
 
 void
-uiSetUICSS (const char *uifont, const char *listingfont,
-    const char *accentColor, const char *errorColor,
-    const char *markColor, const char *rowselColor,
-    const char *rowhlColor)
+uiSetUICSS (uisetup_t *uisetup)
 {
   char            tbuff [8192];
   char            wbuff [400];
@@ -136,11 +134,11 @@ uiSetUICSS (const char *uifont, const char *listingfont,
   char            *tp = tbuff;
   char            *tend = tbuff + sizeof (tbuff);
 
-  if (rowselColor == NULL || ! *rowselColor) {
-    rowselColor = accentColor;
+  if (uisetup->rowselColor == NULL || ! *uisetup->rowselColor) {
+    uisetup->rowselColor = uisetup->accentColor;
   }
-  if (rowhlColor == NULL || ! *rowhlColor) {
-    rowhlColor = accentColor;
+  if (uisetup->rowhlColor == NULL || ! *uisetup->rowhlColor) {
+    uisetup->rowhlColor = uisetup->accentColor;
   }
 
   pathbldMakePath (tbuff, sizeof (tbuff),
@@ -158,10 +156,10 @@ uiSetUICSS (const char *uifont, const char *listingfont,
     mdfree (p);
   }
 
-  if (uifont != NULL && *uifont) {
+  if (uisetup->uifont != NULL && *uisetup->uifont) {
     char  tmp [100];
 
-    stpecpy (tmp, tmp + sizeof (tmp), uifont);
+    stpecpy (tmp, tmp + sizeof (tmp), uisetup->uifont);
     p = strrchr (tmp, ' ');
     if (p != NULL) {
       ++p;
@@ -181,11 +179,11 @@ uiSetUICSS (const char *uifont, const char *listingfont,
       "label.%s { font-weight: bold; }\n", HEADING_CLASS);
   tp = stpecpy (tp, tend, wbuff);
 
-  if (listingfont != NULL && *listingfont) {
+  if (uisetup->listingfont != NULL && *uisetup->listingfont) {
     char  tmp [100];
     int   listingsz = 0;
 
-    stpecpy (tmp, tmp + sizeof (tmp), listingfont);
+    stpecpy (tmp, tmp + sizeof (tmp), uisetup->listingfont);
     p = strrchr (tmp, ' ');
     if (p != NULL) {
       ++p;
@@ -230,7 +228,8 @@ uiSetUICSS (const char *uifont, const char *listingfont,
     tp = stpecpy (tp, tend, wbuff);
 
     tsz = sz - 2;
-    snprintf (wbuff, sizeof (wbuff), " menuitem label { font-size: %dpt; }\n", tsz);
+    snprintf (wbuff, sizeof (wbuff), " menuitem label { font-size: %dpt; }\n",
+        tsz);
     tp = stpecpy (tp, tend, wbuff);
 
     tsz = sz - 1;
@@ -239,61 +238,72 @@ uiSetUICSS (const char *uifont, const char *listingfont,
     tp = stpecpy (tp, tend, wbuff);
 
     tsz = sz - 3;
-    if (accentColor != NULL) {
-      snprintf (wbuff, sizeof (wbuff), " button.bdj-spd-reset label { font-size: %dpt; color: %s; }\n", tsz, accentColor);
+    if (uisetup->accentColor != NULL) {
+      snprintf (wbuff, sizeof (wbuff),
+          " button.bdj-spd-reset label { font-size: %dpt; color: %s; }\n",
+          tsz, uisetup->accentColor);
     } else {
-      snprintf (wbuff, sizeof (wbuff), " button.bdj-spd-reset label { font-size: %dpt; }\n", tsz);
+      snprintf (wbuff, sizeof (wbuff),
+          " button.bdj-spd-reset label { font-size: %dpt; }\n",
+          tsz);
     }
     tp = stpecpy (tp, tend, wbuff);
   }
 
-  if (accentColor != NULL) {
+  if (uisetup->accentColor != NULL) {
     snprintf (wbuff, sizeof (wbuff),
-        "label.%s { color: %s; }\n", ACCENT_CLASS, accentColor);
+        "label.%s { color: %s; }\n", ACCENT_CLASS, uisetup->accentColor);
     tp = stpecpy (tp, tend, wbuff);
     snprintf (wbuff, sizeof (wbuff),
-        "label.%s { color: shade(%s,0.7); }\n", DARKACCENT_CLASS, accentColor);
+        "label.%s { color: shade(%s,0.7); }\n", DARKACCENT_CLASS,
+        uisetup->accentColor);
     tp = stpecpy (tp, tend, wbuff);
 
     snprintf (wbuff, sizeof (wbuff),
-        "entry.%s { color: %s; }\n", ACCENT_CLASS, accentColor);
+        "entry.%s { color: %s; }\n", ACCENT_CLASS, uisetup->accentColor);
     tp = stpecpy (tp, tend, wbuff);
 
     snprintf (wbuff, sizeof (wbuff),
         "progressbar.%s > trough > progress { background-color: %s; }\n",
-        ACCENT_CLASS, accentColor);
+        ACCENT_CLASS, uisetup->accentColor);
     tp = stpecpy (tp, tend, wbuff);
 
     snprintf (wbuff, sizeof (wbuff),
         "menu separator { background-color: shade(%s,0.5); margin-right: 12px; margin-left: 8px; }\n",
-        accentColor);
+        uisetup->accentColor);
     tp = stpecpy (tp, tend, wbuff);
 
     snprintf (wbuff, sizeof (wbuff),
         "paned.%s > separator { background-color: %s; padding-bottom: 0px; }\n",
-        ACCENT_CLASS, accentColor);
+        ACCENT_CLASS, uisetup->accentColor);
     tp = stpecpy (tp, tend, wbuff);
   }
 
-  if (rowselColor != NULL) {
-    tp = uiSetRowHighlight (tp, tend, accentColor,
-        rowselColor, SELECTED_CLASS, 0.55, UIUI_SHADE);
+  if (uisetup->rowselColor != NULL) {
+    tp = uiSetRowHighlight (tp, tend, uisetup->accentColor,
+        uisetup->rowselColor, SELECTED_CLASS, 0.55, UIUI_SHADE);
   }
 
-  if (rowhlColor != NULL) {
-    tp = uiSetRowHighlight (tp, tend, accentColor,
-        rowhlColor, ROW_HL_CLASS, 0.2, UIUI_MIX);
+  if (uisetup->rowhlColor != NULL) {
+    tp = uiSetRowHighlight (tp, tend, uisetup->accentColor,
+        uisetup->rowhlColor, ROW_HL_CLASS, 0.2, UIUI_MIX);
   }
 
-  if (errorColor != NULL) {
+  if (uisetup->errorColor != NULL) {
     snprintf (wbuff, sizeof (wbuff),
-        "label.%s { color: %s; }\n", ERROR_CLASS, errorColor);
+        "label.%s { color: %s; }\n", ERROR_CLASS, uisetup->errorColor);
     tp = stpecpy (tp, tend, wbuff);
   }
 
-  if (markColor != NULL) {
+  if (uisetup->markColor != NULL) {
     snprintf (wbuff, sizeof (wbuff),
-        "label.%s { color: %s; }\n", MARK_CLASS, markColor);
+        "label.%s { color: %s; }\n", MARK_CLASS, uisetup->markColor);
+    tp = stpecpy (tp, tend, wbuff);
+  }
+
+  if (uisetup->mqbgColor != NULL) {
+    snprintf (wbuff, sizeof (wbuff),
+        "window.%s { background-color: %s; }\n", MQ_WIN_CLASS, uisetup->mqbgColor);
     tp = stpecpy (tp, tend, wbuff);
   }
 

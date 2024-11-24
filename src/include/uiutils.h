@@ -11,10 +11,22 @@ extern "C" {
 #endif
 
 typedef struct {
+  const char *uifont;
+  const char *listingfont;
+  const char *accentColor;
+  const char *errorColor;
+  const char *markColor;
+  const char *rowselColor;
+  const char *rowhlColor;
+  const char *mqbgColor;
+} uisetup_t;
+
+typedef struct {
   uiwcont_t   *hbox;
   uiwcont_t   *cbox;
 } uiutilsaccent_t;
 
+/* uiutils.c */
 void uiutilsAddProfileColorDisplay (uiwcont_t *vbox, uiutilsaccent_t *accent);
 void uiutilsSetProfileColor (uiwcont_t *uiwidgetp, const char *oldcolor);
 const char * uiutilsGetCurrentFont (void);
@@ -24,7 +36,7 @@ void uiutilsProgressStatus (uiwcont_t *statusMsg, int count, int tot);
 void uiutilsFontInfo (const char *font, char *buff, size_t sz, int *fontsz);
 void uiutilsNewFontSize (char *buff, size_t sz, const char *font, const char *style, int newsz);
 void uiutilsAddFavoriteClasses (void);
-uiwcont_t * uiCreateColonLabel (const char *txt);
+void uiutilsInitSetup (uisetup_t *uisetup);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

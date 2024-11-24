@@ -884,7 +884,7 @@ static void
 songfilterMakeSortKey (songfilter_t *sf,
     song_t *song, char *sortkey, ssize_t sz)
 {
-  tagdefkey_t tagkey;
+  int         tagkey;
   char        tbuff [100];
   nlistidx_t  iteridx;
   char        *skp;

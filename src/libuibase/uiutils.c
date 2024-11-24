@@ -200,3 +200,19 @@ uiutilsAddFavoriteClasses (void)
   favclassinit = true;
 }
 
+void
+uiutilsInitSetup (uisetup_t *uisetup)
+{
+  if (uisetup == NULL) {
+    return;
+  }
+
+  uisetup->uifont = uiutilsGetCurrentFont ();
+  uisetup->listingfont = uiutilsGetListingFont ();
+  uisetup->accentColor = bdjoptGetStr (OPT_P_UI_ACCENT_COL);
+  uisetup->errorColor = bdjoptGetStr (OPT_P_UI_ERROR_COL);
+  uisetup->markColor = bdjoptGetStr (OPT_P_UI_MARK_COL);
+  uisetup->rowselColor = bdjoptGetStr (OPT_P_UI_ROWSEL_COL);
+  uisetup->rowhlColor = bdjoptGetStr (OPT_P_UI_ROW_HL_COL);
+  uisetup->mqbgColor = bdjoptGetStr (OPT_P_MQ_BG_COL);
+}

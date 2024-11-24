@@ -4,6 +4,7 @@
 #ifndef INC_UIUI_H
 #define INC_UIUI_H
 
+#include "uiutils.h"
 #include "uiwcont.h"
 
 #if defined (__cplusplus) || defined (c_plusplus)
@@ -22,7 +23,7 @@ void  uiUIInitialize (int direction);
 void  uiUIProcessEvents (void);
 void  uiUIProcessWaitEvents (void);     // a small delay
 void  uiCleanup (void);
-void  uiSetUICSS (const char *uifont, const char *listingfont, const char *accentcolor, const char *errorcolor, const char *markcolor, const char *rowselcolor, const char *rowhlcolor);
+void  uiSetUICSS (uisetup_t *uisetup);
 void  uiAddColorClass (const char *classnm, const char *color);
 void  uiAddBGColorClass (const char *classnm, const char *color);
 void  uiAddProgressbarClass (const char *classnm, const char *color);
