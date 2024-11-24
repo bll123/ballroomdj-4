@@ -4,7 +4,10 @@
 
 <!--
 
-**4.12.6 2024-10---**
+**4.12.7 2024-11---**
+
+* Changes:
+    * Allow sort by movement number.
 
 -->
 

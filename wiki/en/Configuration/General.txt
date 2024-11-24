@@ -40,8 +40,9 @@ the audio file when a song is edited. When set to __All&nbsp;Tags__, all
 audio file tags including BDJ specific tags will be updated in the
 audio file when a song is edited.
 
-__Use Work and Movement__: Classical Music: If set, any work and
-movement will be used to determine the title of the music.
+__Use Work and Movement__: Classical Music: If set, and if _Work_ is
+set, the _Work_, _Movement&nbsp;Number_ and _Movement&nbsp;Name_ will
+be used to set the title of the music.
 
 The __ACRCloud&nbsp;API__ information is optional and is only used for the
 audio identification process within BDJ4.  If you use the audio
@@ -49,7 +50,7 @@ identification process and have registered an ACRCloud account, copy and
 paste the appropriate information into the configuration.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![General](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/General-J.png)
+![General](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/General-K.png)
 <br><span style="color:#4559bf;">__Configure / General__</span> </div>
 
 [Wiki Home](Home)

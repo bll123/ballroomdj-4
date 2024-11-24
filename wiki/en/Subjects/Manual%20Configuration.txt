@@ -56,5 +56,11 @@ The sortopt.txt file has the list of selections for sorting the
 display. [Contact](en-Getting%20Help) the developers for more
 information.
 
+The sortopt.txt file recognizes the following keywords:
+
+ALBUM ALBUMARTIST ARTIST BPM COMPOSER CONDUCTOR DANCE DANCELEVEL
+DANCERATING DB_ADD_DATE DISCNUMBER GENRE GROUPING LASTUPDATED TITLE
+TRACKNUMBER MOVEMENTNAME MOVEMENTNUM WORK
+
 [Wiki Home](Home)
 <br>_(Updated 2024-11-23 14:31:33; BDJ4 version 4.12.6)_
