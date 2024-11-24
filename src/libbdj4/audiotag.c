@@ -495,7 +495,7 @@ audiotagTagCheck (int writetags, int tagtype, const char *tag, int rewrite)
   int tagkey = -1;
 
   tagkey = tagdefLookup (tag);
-  if (tagkey < 0) {
+  if (tagkey < 0 || tagkey >= TAG_KEY_MAX) {
     /* unknown tag  */
     // logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "unknown-tag: %s", tag);
     return tagkey;

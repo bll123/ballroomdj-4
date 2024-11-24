@@ -1028,7 +1028,7 @@ songfilterParseSortKey (songfilter_t *sf)
   char        *p;
   char        *tokstr;
   nlist_t     *parsed;
-  tagdefkey_t tagkey;
+  int         tagkey;   /* the lookup can return a negative value */
 
   logProcBegin ();
 

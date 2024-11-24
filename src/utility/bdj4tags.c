@@ -38,7 +38,7 @@ main (int argc, char *argv [])
   int         option_index = 0;
   int         fidx = -1;
   int         fbidx = -1;
-  tagdefkey_t tagkey;
+  int         tagkey;
   slist_t     *tagdata;
   bool        writetags;
   int         rewrite;
@@ -205,7 +205,7 @@ main (int argc, char *argv [])
       if (p != NULL) {
         p = strtok_r (NULL, "=", &tokstr);
         tagkey = tagdefLookup (tval);
-        if (tagkey >= 0) {
+        if (tagkey >= 0 && tagkey < TAG_KEY_MAX) {
           slistSetStr (wlist, tval, p);
           writetags = true;
         }
