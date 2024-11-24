@@ -39,7 +39,7 @@ The title for classical music should be set correctly according to the
 guide.
 
 Classical music should have the title set to _Work: Movement_. e.g.
-_Primo&nbsp;Vere:&nbsp;Veris&nbsp;Leta&nbsp;Facies_ from
+_Primo&nbsp;Vere:&nbsp;I.&nbsp;Veris&nbsp;Leta&nbsp;Facies_ from
 _Carl&nbsp;Orff's_ _Carmina&nbsp;Burana_.  Each movement in the work
 should have the work set, not just the first movement.
 
@@ -99,4 +99,4 @@ want to use.  To add a new organization path, the data/orgopt.txt file must
 be edited.  [Contact](en-Getting%20Help) the development team for help.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-11-24 09:55:09; BDJ4 version 4.12.6)_
+<br>_(Updated 2024-11-24 10:39:37; BDJ4 version 4.12.6)_
