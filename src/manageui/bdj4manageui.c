@@ -35,6 +35,7 @@
 #include "expimpbdj4.h"
 #include "fileop.h"
 #include "filemanip.h"
+#include "grouping.h"
 #include "itunes.h"
 #include "localeutil.h"
 #include "lock.h"
@@ -213,6 +214,7 @@ typedef struct {
   callback_t        *callbacks [MANAGE_CB_MAX];
   manageinfo_t      minfo;
   musicdb_t         *musicdb;
+  grouping_t        *grouping;
   songdb_t          *songdb;
   samesong_t        *samesong;
   musicqidx_t       musicqPlayIdx;
@@ -559,6 +561,7 @@ main (int argc, char *argv[])
 
   flags = BDJ4_INIT_ALL;
   bdj4startup (argc, argv, &manage.musicdb, "mui", ROUTE_MANAGEUI, &flags);
+  manage.grouping = groupingAlloc (manage.musicdb);
   logProcBegin ();
 
   manage.songdb = songdbAlloc (manage.musicdb);
@@ -726,6 +729,7 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   datafileSave (manage->optiondf, NULL, manage->minfo.options, DF_NO_OFFSET, 1);
 
+  groupingFree (manage->grouping);
   bdj4shutdown (ROUTE_MANAGEUI, manage->musicdb);
   manageSequenceFree (manage->manageseq);
   managePlaylistFree (manage->managepl);
@@ -960,7 +964,8 @@ manageInitializeUI (manageui_t *manage)
   uimusicqSetManageIdx (manage->slmusicq, manage->musicqManageIdx);
   manage->slstats = manageStatsInit (manage->conn, manage->musicdb);
   manage->slsongsel = uisongselInit ("m-sl-songsel", manage->conn,
-      manage->musicdb, manage->minfo.dispsel, manage->samesong,
+      manage->musicdb, manage->grouping,
+      manage->minfo.dispsel, manage->samesong,
       manage->minfo.options, manage->uisongfilter, DISP_SEL_SONGSEL);
   manage->callbacks [MANAGE_CB_PLAY_SL] = callbackInitII (
       managePlayProcessSonglist, manage);
@@ -974,7 +979,8 @@ manageInitializeUI (manageui_t *manage)
   manage->slsbsmusicq = uimusicqInit ("m-sbs-sl", manage->conn,
       manage->musicdb, manage->minfo.dispsel, DISP_SEL_SBS_SONGLIST);
   manage->slsbssongsel = uisongselInit ("m-sbs-songsel", manage->conn,
-      manage->musicdb, manage->minfo.dispsel, manage->samesong,
+      manage->musicdb, manage->grouping,
+      manage->minfo.dispsel, manage->samesong,
       manage->minfo.options, manage->uisongfilter, DISP_SEL_SBS_SONGSEL);
   uimusicqSetPlayIdx (manage->slsbsmusicq, manage->musicqPlayIdx);
   uimusicqSetManageIdx (manage->slsbsmusicq, manage->musicqManageIdx);
@@ -990,7 +996,8 @@ manageInitializeUI (manageui_t *manage)
   manage->mmplayer = uiplayerInit ("mm-player", manage->progstate, manage->conn,
       manage->musicdb, manage->minfo.dispsel);
   manage->mmsongsel = uisongselInit ("m-mm-songsel", manage->conn,
-      manage->musicdb, manage->minfo.dispsel, manage->samesong,
+      manage->musicdb, manage->grouping,
+      manage->minfo.dispsel, manage->samesong,
       manage->minfo.options, manage->uisongfilter, DISP_SEL_MM);
   manage->callbacks [MANAGE_CB_PLAY_MM] = callbackInitII (
       managePlayProcessMusicManager, manage);

@@ -19,6 +19,7 @@ add_library (libbdj4 SHARED
   dnctypes.c
   expimpbdj4.c
   genre.c
+  grouping.c
   instutil.c
   itunes.c
   jspf.c

@@ -21,6 +21,7 @@
 #include "colorutils.h"
 #include "conn.h"
 #include "genre.h"
+#include "grouping.h"
 #include "log.h"
 #include "mdebug.h"
 #include "musicq.h"
@@ -828,6 +829,27 @@ uisongselRightClickCallback (void *udata, uivirtlist_t *vl,
     bool        clflag;
 
     dbidx = songfilterGetByIdx (uisongsel->songfilter, rowidx);
+fprintf (stderr, "select: %d\n", dbidx);
+
+#if 1
+    {
+      nlist_t *dbidxlist;
+nlistidx_t  titer;
+dbidx_t     tdbidx;
+      dbidxlist = groupingGet (uisongsel->grouping, dbidx);
+      if (dbidxlist != NULL) {
+nlistStartIterator (dbidxlist, &titer);
+fprintf (stderr, "grouping: ");
+while ((tdbidx = nlistIterateKey (dbidxlist, &titer)) >= 0) {
+int32_t gnum;
+gnum = nlistGetNum (dbidxlist, tdbidx);
+fprintf (stderr, "%d(%d) ", tdbidx, gnum);
+}
+fprintf (stderr, "\n");
+      }
+    }
+#endif
+
     song = dbGetByIdx (uisongsel->musicdb, dbidx);
     genreidx = songGetNum (song, TAG_GENRE);
     clflag = genreGetClassicalFlag (ssint->genres, genreidx);
@@ -835,6 +857,7 @@ uisongselRightClickCallback (void *udata, uivirtlist_t *vl,
       char        work [200];
       nlistidx_t  end;
 
+fprintf (stderr, "chk: ");
       songGetClassicalWork (song, work, sizeof (work));
       if (*work) {
         char    twork [200];
@@ -851,11 +874,13 @@ uisongselRightClickCallback (void *udata, uivirtlist_t *vl,
 
           songGetClassicalWork (song, twork, sizeof (twork));
           if (*twork && strcmp (work, twork) == 0) {
+fprintf (stderr, "%d ", dbidx);
             uivlAppendSelection (ssint->uivl, i);
           } else {
             break;
           }
         }  /* check each following song for a matching classical work */
+fprintf (stderr, "\n");
       } /* if the classical song has a 'work' */
     } /* if the song is classical */
   } /* for each selection in the virtual list */

@@ -13,6 +13,7 @@ extern "C" {
 
 #include "conn.h"
 #include "dispsel.h"
+#include "grouping.h"
 #include "msgparse.h"
 #include "musicdb.h"
 #include "musicq.h"
@@ -49,6 +50,7 @@ typedef struct uisongsel {
   dbidx_t           lastdbidx;
   nlist_t           *musicqdbidxlist [MUSICQ_MAX];
   nlist_t           *songlistdbidxlist;
+  grouping_t        *grouping;
   /* filter data */
   uisongfilter_t    *uisongfilter;
   callback_t        *sfapplycb;
@@ -63,9 +65,7 @@ typedef struct uisongsel {
 } uisongsel_t;
 
 /* uisongsel.c */
-uisongsel_t * uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
-    dispsel_t *dispsel, samesong_t *samesong, nlist_t *opts,
-    uisongfilter_t *uisf, dispselsel_t dispselType);
+uisongsel_t * uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb, grouping_t *grouping, dispsel_t *dispsel, samesong_t *samesong, nlist_t *opts, uisongfilter_t *uisf, dispselsel_t dispselType);
 void  uisongselInitializeSongFilter (uisongsel_t *uisongsel, songfilter_t *songfilter);
 void  uisongselSetDatabase (uisongsel_t *uisongsel, musicdb_t *musicdb);
 void  uisongselSetSamesong (uisongsel_t *uisongsel, samesong_t *samesong);

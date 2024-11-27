@@ -30,6 +30,7 @@
 #include "datafile.h"
 #include "dispsel.h"
 #include "fileop.h"
+#include "grouping.h"
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
@@ -128,6 +129,7 @@ typedef struct {
   char            *locknm;
   conn_t          *conn;
   musicdb_t       *musicdb;
+  grouping_t      *grouping;
   songdb_t        *songdb;
   int             musicqPlayIdx;
   int             musicqRequestIdx;
@@ -348,6 +350,7 @@ main (int argc, char *argv[])
   plui.dbgflags = BDJ4_INIT_ALL;
   bdj4startup (argc, argv, &plui.musicdb,
       "plui", ROUTE_PLAYERUI, &plui.dbgflags);
+  plui.grouping = groupingAlloc (plui.musicdb);
   logProcBegin ();
 
   plui.songdb = songdbAlloc (plui.musicdb);
@@ -489,6 +492,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
 
   datafileSave (plui->optiondf, NULL, plui->options, DF_NO_OFFSET, 1);
 
+  groupingFree (plui->grouping);
   bdj4shutdown (ROUTE_PLAYERUI, plui->musicdb);
   dispselFree (plui->dispsel);
   songdbFree (plui->songdb);
@@ -835,7 +839,8 @@ pluiInitializeUI (playerui_t *plui)
 
   plui->uisongfilter = uisfInit (plui->wcont [PLUI_W_WINDOW], plui->options,
       SONG_FILTER_FOR_PLAYBACK);
-  plui->uisongsel = uisongselInit ("plui-req", plui->conn, plui->musicdb,
+  plui->uisongsel = uisongselInit ("plui-req", plui->conn,
+      plui->musicdb, plui->grouping,
       plui->dispsel, NULL, plui->options,
       plui->uisongfilter, DISP_SEL_REQUEST);
   plui->callbacks [PLUI_CB_QUEUE_SL] = callbackInitI (
