@@ -100,24 +100,46 @@ groupingFree (grouping_t *grp)
   mdfree (grp);
 }
 
-nlist_t *
-groupingGet (grouping_t *grp, dbidx_t dbidx)
+/* returns the count for the group or zero */
+int
+groupingCheck (grouping_t *grp, dbidx_t seldbidx, dbidx_t chkdbidx)
 {
-  int32_t   groupnum;
-  nlist_t   *dbidxlist;
+  int32_t     groupnum;
+  nlist_t     *dbidxlist;
+  nlistidx_t  iteridx;
+  dbidx_t     tdbidx;
+  int         rc = 0;
 
-  if (grp == NULL || dbidx < 0) {
-    return NULL;
+  if (grp == NULL || seldbidx < 0 || chkdbidx < 0) {
+fprintf (stderr, "-- get: fail %d %d\n", seldbidx, chkdbidx);
+    return 0;
   }
 
-  groupnum = nlistGetNum (grp->groupIndex, dbidx);
+  groupnum = nlistGetNum (grp->groupIndex, seldbidx);
   if (groupnum < 0) {
-    return NULL;
+fprintf (stderr, "-- get: no group %d\n", seldbidx);
+    return 0;
   }
-fprintf (stderr, "-- get: dbidx:%d gnum:%d\n", dbidx, groupnum);
+fprintf (stderr, "-- get: seldbidx:%d gnum:%d\n", seldbidx, groupnum);
 
   dbidxlist = nlistGetList (grp->groups, groupnum);
-  return dbidxlist;
+  if (dbidxlist == NULL) {
+fprintf (stderr, "-- get: no dbidxlist gnum:%d\n", groupnum);
+    return 0;
+  }
+
+  /* dbidxlist is not sorted */
+  /* it is an unordered list ordered by the group-sort */
+  nlistStartIterator (dbidxlist, &iteridx);
+  while ((tdbidx = nlistIterateKey (dbidxlist, &iteridx)) >= 0) {
+    if (tdbidx == chkdbidx) {
+fprintf (stderr, "-- get: found chkdbidx:%d\n", chkdbidx);
+      rc = nlistGetCount (dbidxlist);
+      break;
+    }
+  }
+
+  return rc;
 }
 
 /* internal routines */
@@ -131,6 +153,7 @@ groupingAdd (grouping_t *grp, song_t *song, dbidx_t dbidx, slist_t *groupSort, n
   bool        isclassical = false;
   const char  *tval = NULL;
   const char  *title = NULL;
+  int         discnum = LIST_VALUE_INVALID;
   int         trknum = LIST_VALUE_INVALID;
   int         mvnum = LIST_VALUE_INVALID;
   int         usenum;
@@ -141,10 +164,12 @@ groupingAdd (grouping_t *grp, song_t *song, dbidx_t dbidx, slist_t *groupSort, n
   genreidx = songGetNum (song, TAG_GENRE);
   isclassical = genreGetClassicalFlag (grp->genres, genreidx);
 
+  discnum = songGetNum (song, TAG_TRACKNUMBER);
   trknum = songGetNum (song, TAG_TRACKNUMBER);
   mvnum = songGetNum (song, TAG_MOVEMENTNUM);
 
   if (isclassical) {
+    /* by preference, use any 'work' that is set */
     tval = songGetStr (song, TAG_WORK);
     if (tval != NULL && *tval) {
 fprintf (stderr, "work: %s / %s\n", tval, songGetStr (song, TAG_TITLE));
@@ -152,6 +177,7 @@ fprintf (stderr, "work: %s / %s\n", tval, songGetStr (song, TAG_TITLE));
     }
 
     if (! haswork) {
+      /* if 'work' is not set, pull the work from the song title */
       *temp = '\0';
       songGetClassicalWork (song, temp, sizeof (temp));
       if (*temp) {
@@ -163,6 +189,7 @@ fprintf (stderr, "title-work: %s / %s\n", temp, songGetStr (song, TAG_TITLE));
   }
 
   if (! haswork && ! hastitlework) {
+    /* if no 'work' was found, check the 'grouping' tag */
     tval = songGetStr (song, TAG_GROUPING);
     if (tval != NULL && *tval) {
 fprintf (stderr, "group: %s / %s\n", tval, songGetStr (song, TAG_TITLE));
@@ -175,7 +202,16 @@ fprintf (stderr, "group: %s / %s\n", tval, songGetStr (song, TAG_TITLE));
     return;
   }
 
+  /* sort by movement number */
+  /* if the movement number is set, set the disc-number to zero */
+  /* if movement number is not set, use the disc-number/track-number combo */
   usenum = mvnum;
+  if (discnum < 0) {
+    discnum = 0;
+  }
+  if (mvnum >= 0) {
+    discnum = 0;
+  }
   if (usenum < 0) {
     usenum = trknum;
   }
@@ -184,9 +220,11 @@ fprintf (stderr, "group: %s / %s\n", tval, songGetStr (song, TAG_TITLE));
   }
 
   if (title != NULL) {
-    snprintf (sortkey, sizeof (sortkey), "%s/%03d/%s", tval, usenum, title);
+    snprintf (sortkey, sizeof (sortkey), "%s/%03d%03d/%s",
+        tval, discnum, usenum, title);
   } else {
-    snprintf (sortkey, sizeof (sortkey), "%s/%03d", tval, usenum);
+    snprintf (sortkey, sizeof (sortkey), "%s/%03d%03d",
+        tval, discnum, usenum);
   }
 
   slistSetNum (groupSort, sortkey, dbidx);

@@ -814,76 +814,66 @@ uisongselRightClickCallback (void *udata, uivirtlist_t *vl,
 {
   uisongsel_t   * uisongsel = udata;
   ss_internal_t * ssint;
-  nlistidx_t    vlseliter;
   int32_t       rowidx;
-  dbidx_t       dbidx;
 
   logProcBegin ();
 
   ssint = uisongsel->ssInternalData;
 
-  uivlStartSelectionIterator (ssint->uivl, &vlseliter);
-  while ((rowidx = uivlIterateSelection (ssint->uivl, &vlseliter)) >= 0) {
-    song_t      *song;
-    nlistidx_t  genreidx;
-    bool        clflag;
+  rowidx = uivlGetCurrSelection (ssint->uivl);
+  do {
+    nlistidx_t    end;
+    int           selcount;
+    int           maxcount;
+    int32_t       tval;
+    dbidx_t       seldbidx;
+    dbidx_t       tdbidx;
 
-    dbidx = songfilterGetByIdx (uisongsel->songfilter, rowidx);
-fprintf (stderr, "select: %d\n", dbidx);
+    seldbidx = songfilterGetByIdx (uisongsel->songfilter, rowidx);
+fprintf (stderr, "select: %d rownum: %d rowidx: %d\n", seldbidx, rownum, rowidx);
 
-#if 1
-    {
-      nlist_t *dbidxlist;
-nlistidx_t  titer;
-dbidx_t     tdbidx;
-      dbidxlist = groupingGet (uisongsel->grouping, dbidx);
-      if (dbidxlist != NULL) {
-nlistStartIterator (dbidxlist, &titer);
-fprintf (stderr, "grouping: ");
-while ((tdbidx = nlistIterateKey (dbidxlist, &titer)) >= 0) {
-int32_t gnum;
-gnum = nlistGetNum (dbidxlist, tdbidx);
-fprintf (stderr, "%d(%d) ", tdbidx, gnum);
-}
-fprintf (stderr, "\n");
-      }
+    /* returns the number of selections in the group or zero */
+    maxcount = groupingCheck (uisongsel->grouping, seldbidx, seldbidx);
+    if (maxcount == 0) {
+      return;
     }
-#endif
+    /* the first is already selected */
+    selcount = 1;
+fprintf (stderr, "  max: %d\n", maxcount);
 
-    song = dbGetByIdx (uisongsel->musicdb, dbidx);
-    genreidx = songGetNum (song, TAG_GENRE);
-    clflag = genreGetClassicalFlag (ssint->genres, genreidx);
-    if (clflag) {
-      char        work [200];
-      nlistidx_t  end;
+    end = uisongsel->numrows;
 
-fprintf (stderr, "chk: ");
-      songGetClassicalWork (song, work, sizeof (work));
-      if (*work) {
-        char    twork [200];
-
-        end = uisongsel->numrows;
-        for (nlistidx_t i = rowidx + 1; i < end; ++i) {
-          dbidx = songfilterGetByIdx (uisongsel->songfilter, i);
-          song = dbGetByIdx (uisongsel->musicdb, dbidx);
-          genreidx = songGetNum (song, TAG_GENRE);
-          clflag = genreGetClassicalFlag (ssint->genres, genreidx);
-          if (! clflag) {
-            break;
-          }
-
-          songGetClassicalWork (song, twork, sizeof (twork));
-          if (*twork && strcmp (work, twork) == 0) {
-fprintf (stderr, "%d ", dbidx);
-            uivlAppendSelection (ssint->uivl, i);
-          } else {
-            break;
-          }
-        }  /* check each following song for a matching classical work */
-fprintf (stderr, "\n");
-      } /* if the classical song has a 'work' */
-    } /* if the song is classical */
-  } /* for each selection in the virtual list */
+fprintf (stderr, "== part a %d %d\n", selcount, maxcount);
+    /* often, the user selects the first item in the group */
+    /* so start at rowidx + 1 */
+    for (nlistidx_t i = rowidx + 1; i < end && selcount < maxcount; ++i) {
+      /* check if this dbidx is in the group */
+      tdbidx = songfilterGetByIdx (uisongsel->songfilter, i);
+fprintf (stderr, "chk row %d tdbidx %d\n", i, tdbidx);
+      tval = groupingCheck (uisongsel->grouping, seldbidx, tdbidx);
+      if (tval == 0) {
+fprintf (stderr, "  not found\n");
+        continue;
+      }
+      uivlAppendSelection (ssint->uivl, i);
+      ++selcount;
+fprintf (stderr, "  ok count: %d %d\n", selcount, maxcount);
+    }
+fprintf (stderr, "== part b %d %d\n", selcount, maxcount);
+    /* check the rest if all the selections have not been found */
+    /* the user may have selected a song in the middle of the group */
+    /* or the sort order may not match the grouping */
+    for (nlistidx_t i = rowidx - 1; i >= 0 && selcount < maxcount; --i) {
+      tdbidx = songfilterGetByIdx (uisongsel->songfilter, i);
+      /* check if this dbidx is in the group */
+      tval = groupingCheck (uisongsel->grouping, seldbidx, tdbidx);
+      if (tval <= 0) {
+        continue;
+      }
+      uivlAppendSelection (ssint->uivl, i);
+      ++selcount;
+    }
+  } while (0);
 
   uisongselProcessSelectChg (uisongsel, ssint->uivl, rownum, colidx);
 

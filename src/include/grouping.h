@@ -15,7 +15,7 @@ typedef struct grouping grouping_t;
 
 grouping_t *groupingAlloc (musicdb_t *musicdb);
 void groupingFree (grouping_t *grouping);
-nlist_t *groupingGet (grouping_t *grouping, dbidx_t dbidx);
+int groupingCheck (grouping_t *grouping, dbidx_t seldbidx, dbidx_t chkdbidx);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
