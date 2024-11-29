@@ -56,6 +56,7 @@ typedef struct {
   nlistidx_t  danceIdx;
   /* the song-index-list is built once only */
   /* sssongdata_t is stored here */
+  /* indexed by dbidx */
   nlist_t     *songIdxList;
   /* current-indexes is the queue of currently available songs to be chosen */
   queue_t     *currentIndexes;
@@ -322,9 +323,8 @@ songselSelectFinalize (songsel_t *songsel, ilistidx_t danceIdx)
 void
 songselFinalizeByIndex (songsel_t *songsel, ilistidx_t danceIdx, dbidx_t dbidx)
 {
-  ssdance_t  *songseldance = NULL;
-  ssidx_t    *songidx;
-  qidx_t     qiteridx;
+  ssdance_t     *songseldance = NULL;
+  sssongdata_t  *songdata = NULL;
 
   if (songsel == NULL) {
     return;
@@ -337,19 +337,13 @@ songselFinalizeByIndex (songsel_t *songsel, ilistidx_t danceIdx, dbidx_t dbidx)
     return;
   }
 
-  queueStartIterator (songseldance->currentIndexes, &qiteridx);
-  while ((songidx =
-        queueIterateData (songseldance->currentIndexes, &qiteridx)) != NULL) {
-    sssongdata_t   *songdata = NULL;
-
-    songdata = nlistGetDataByIdx (songseldance->songIdxList, songidx->idx);
-    if (songdata != NULL && songdata->dbidx == dbidx) {
-  logMsg (LOG_DBG, LOG_SONGSEL, "finalize-by-index: dance-idx: %d dbidx: %d", danceIdx, dbidx);
-      songsel->lastSelection = songdata;
-      songselSelectFinalize (songsel, danceIdx);
-      break;
-    }
+  songdata = nlistGetData (songseldance->songIdxList, dbidx);
+  if (songdata != NULL && songdata->dbidx == dbidx) {
+    logMsg (LOG_DBG, LOG_SONGSEL, "finalize-by-index: dance-idx: %d dbidx: %d", danceIdx, dbidx);
+    songsel->lastSelection = songdata;
+    songselSelectFinalize (songsel, danceIdx);
   }
+
   logProcEnd ("");
   return;
 }
