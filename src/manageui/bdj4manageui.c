@@ -561,8 +561,8 @@ main (int argc, char *argv[])
 
   flags = BDJ4_INIT_ALL;
   bdj4startup (argc, argv, &manage.musicdb, "mui", ROUTE_MANAGEUI, &flags);
-  manage.grouping = groupingAlloc (manage.musicdb);
   logProcBegin ();
+  manage.grouping = groupingAlloc (manage.musicdb);
 
   manage.songdb = songdbAlloc (manage.musicdb);
   manage.minfo.dispsel = dispselAlloc (DISP_SEL_LOAD_MANAGE);
@@ -1854,6 +1854,9 @@ manageSongEditSaveCallback (void *udata, int32_t dbidx)
 
   manageRePopulateData (manage);
 
+  /* the grouping must be re-built when a song is saved */
+  groupingRebuild (manage->grouping, manage->musicdb);
+
   /* re-load the song into the song editor */
   /* it is unknown if called from saving a favorite or from the song editor */
   /* the overhead is minor */
@@ -2885,8 +2888,8 @@ manageCFPLPostProcess (manageui_t *manage)
   manageSonglistSave (manage);
 
   /* copy the settings from the base playlist to the new song list */
-  pl = playlistLoad (tnm, NULL);
-  autopl = playlistLoad (manage->cfplfn, NULL);
+  pl = playlistLoad (tnm, NULL, NULL);
+  autopl = playlistLoad (manage->cfplfn, NULL, NULL);
 
   if (pl != NULL && autopl != NULL) {
     playlistSetConfigNum (pl, PLAYLIST_MAX_PLAY_TIME,

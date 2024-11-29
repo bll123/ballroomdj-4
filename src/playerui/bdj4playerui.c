@@ -350,8 +350,8 @@ main (int argc, char *argv[])
   plui.dbgflags = BDJ4_INIT_ALL;
   bdj4startup (argc, argv, &plui.musicdb,
       "plui", ROUTE_PLAYERUI, &plui.dbgflags);
-  plui.grouping = groupingAlloc (plui.musicdb);
   logProcBegin ();
+  plui.grouping = groupingAlloc (plui.musicdb);
 
   plui.songdb = songdbAlloc (plui.musicdb);
 
@@ -1140,6 +1140,8 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_DB_ENTRY_UPDATE: {
           dbLoadEntry (plui->musicdb, atol (args));
+          /* the grouping must be re-built when a song is saved */
+          groupingRebuild (plui->grouping, plui->musicdb);
           uisongselPopulateData (plui->uisongsel);
           break;
         }

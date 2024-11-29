@@ -169,7 +169,7 @@ mv -f data/profile00/ui-starter.txt data
 
 for ftype in sl seq auto; do
   for tag in a b c d e f g; do
-    if [[ $ftype == auto && $tag == d ]]; then
+    if [[ $ftype == auto && $tag == e ]]; then
       break
     fi
     if [[ $ftype == seq && $tag == e ]]; then

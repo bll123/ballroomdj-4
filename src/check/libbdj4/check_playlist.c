@@ -249,7 +249,7 @@ START_TEST(playlist_create_basic)
   idx = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_ADDTL_OFFSET;
   idxt = CPL_NEW_OFFSET + CPL_SEQ_OFFSET + CPL_ADDTL_OFFSET;
   filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
-  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_SEQUENCE, NULL);
+  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_SEQUENCE, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
   playlistFree (pl);
 
@@ -257,13 +257,13 @@ START_TEST(playlist_create_basic)
   idx = CPL_EXIST_OFFSET + CPL_SL_OFFSET + CPL_ADDTL_OFFSET;
   idxt = CPL_NEW_OFFSET + CPL_SL_OFFSET + CPL_ADDTL_OFFSET;
   filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
-  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_SONGLIST, NULL);
+  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_SONGLIST, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
   playlistFree (pl);
 
   /* auto */
   idxt = CPL_NEW_OFFSET + CPL_AUTO_OFFSET;
-  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_AUTO, NULL);
+  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_AUTO, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
   playlistFree (pl);
 }
@@ -280,7 +280,7 @@ START_TEST(playlist_load_basic)
 
   /* sequence */
   idxt = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
-  pl = playlistLoad (test_data [idxt].basefn, NULL);
+  pl = playlistLoad (test_data [idxt].basefn, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
   nm = playlistGetName (pl);
   ck_assert_str_eq (nm, test_data [idxt].basefn);
@@ -288,7 +288,7 @@ START_TEST(playlist_load_basic)
 
   /* song list */
   idxt = CPL_EXIST_OFFSET + CPL_SL_OFFSET + CPL_PL_OFFSET;
-  pl = playlistLoad (test_data [idxt].basefn, NULL);
+  pl = playlistLoad (test_data [idxt].basefn, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
   nm = playlistGetName (pl);
   ck_assert_str_eq (nm, test_data [idxt].basefn);
@@ -296,7 +296,7 @@ START_TEST(playlist_load_basic)
 
   /* auto */
   idxt = CPL_EXIST_OFFSET + CPL_AUTO_OFFSET + CPL_PL_OFFSET;
-  pl = playlistLoad (test_data [idxt].basefn, NULL);
+  pl = playlistLoad (test_data [idxt].basefn, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
   nm = playlistGetName (pl);
   ck_assert_str_eq (nm, test_data [idxt].basefn);
@@ -304,7 +304,7 @@ START_TEST(playlist_load_basic)
 
   /* doesn't exist */
   idxt = CPL_NEW_OFFSET + CPL_AUTO_OFFSET + CPL_PL_OFFSET;
-  pl = playlistLoad (test_data [idxt].basefn, NULL);
+  pl = playlistLoad (test_data [idxt].basefn, NULL, NULL);
   ck_assert_ptr_null (pl);
 }
 END_TEST
@@ -319,7 +319,7 @@ START_TEST(playlist_get)
 
   /* sequence */
   idxt = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
-  pl = playlistLoad (test_data [idxt].basefn, NULL);
+  pl = playlistLoad (test_data [idxt].basefn, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
   ck_assert_int_eq (playlistGetConfigNum (pl, PLAYLIST_TYPE), PLTYPE_SEQUENCE);
   ck_assert_int_eq (playlistGetEditMode (pl), EDIT_FALSE);
@@ -329,7 +329,7 @@ START_TEST(playlist_get)
 
   /* song list */
   idxt = CPL_EXIST_OFFSET + CPL_SL_OFFSET + CPL_PL_OFFSET;
-  pl = playlistLoad (test_data [idxt].basefn, NULL);
+  pl = playlistLoad (test_data [idxt].basefn, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
   ck_assert_int_eq (playlistGetConfigNum (pl, PLAYLIST_TYPE), PLTYPE_SONGLIST);
   ck_assert_int_eq (playlistGetEditMode (pl), EDIT_FALSE);
@@ -339,7 +339,7 @@ START_TEST(playlist_get)
 
   /* auto */
   idxt = CPL_EXIST_OFFSET + CPL_AUTO_OFFSET + CPL_PL_OFFSET;
-  pl = playlistLoad (test_data [idxt].basefn, NULL);
+  pl = playlistLoad (test_data [idxt].basefn, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
   ck_assert_int_eq (playlistGetConfigNum (pl, PLAYLIST_TYPE), PLTYPE_AUTO);
   ck_assert_int_eq (playlistGetEditMode (pl), EDIT_FALSE);
@@ -360,7 +360,7 @@ START_TEST(playlist_set)
 
   /* sequence */
   idxt = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
-  pl = playlistLoad (test_data [idxt].basefn, NULL);
+  pl = playlistLoad (test_data [idxt].basefn, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
 
   val = playlistGetEditMode (pl);
@@ -506,7 +506,7 @@ START_TEST(playlist_reset)
 
   /* sequence */
   idxt = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
-  pl = playlistLoad (test_data [idxt].basefn, NULL);
+  pl = playlistLoad (test_data [idxt].basefn, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
 
   playlistSetDanceNum (pl, 0, PLDANCE_SELECTED, true);
@@ -566,7 +566,7 @@ START_TEST(playlist_save)
   /* sequences and song lists have their select flags and */
   /* counts modified on load */
   idxt = CPL_EXIST_OFFSET + CPL_AUTO_OFFSET + CPL_PL_OFFSET;
-  pl = playlistLoad (test_data [idxt].basefn, NULL);
+  pl = playlistLoad (test_data [idxt].basefn, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
   playlistSetDanceNum (pl, 3, PLDANCE_SELECTED, true);
   playlistSetDanceNum (pl, 3, PLDANCE_COUNT, 5);
@@ -575,7 +575,7 @@ START_TEST(playlist_save)
   playlistSetConfigNum (pl, PLAYLIST_STOP_AFTER, 3);
   playlistSave (pl, test_data [idxt].basefn);
   playlistFree (pl);
-  pl = playlistLoad (test_data [idxt].basefn, NULL);
+  pl = playlistLoad (test_data [idxt].basefn, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
   val = playlistGetConfigNum (pl, PLAYLIST_STOP_AFTER);
   ck_assert_int_eq (val, 3);
@@ -606,7 +606,7 @@ START_TEST(playlist_save_new)
   idxt = CPL_NEW_OFFSET + CPL_SEQ_OFFSET + CPL_ADDTL_OFFSET;
   filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
   idxt = CPL_NEW_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
-  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_SEQUENCE, NULL);
+  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_SEQUENCE, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
   playlistSave (pl, test_data [idxt].basefn);
   for (int i = idxt; i < idxt + CPL_SEQ_COUNT; ++i) {
@@ -619,7 +619,7 @@ START_TEST(playlist_save_new)
   idxt = CPL_NEW_OFFSET + CPL_SL_OFFSET + CPL_ADDTL_OFFSET;
   filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
   idxt = CPL_NEW_OFFSET + CPL_SL_OFFSET + CPL_PL_OFFSET;
-  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_SONGLIST, NULL);
+  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_SONGLIST, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
   playlistSave (pl, test_data [idxt].basefn);
   for (int i = idxt; i < idxt + CPL_SL_COUNT; ++i) {
@@ -629,7 +629,7 @@ START_TEST(playlist_save_new)
 
   /* auto */
   idxt = CPL_NEW_OFFSET + CPL_AUTO_OFFSET + CPL_PL_OFFSET;
-  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_AUTO, NULL);
+  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_AUTO, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
   playlistSave (pl, test_data [idxt].basefn);
   for (int i = idxt; i < idxt + CPL_AUTO_COUNT; ++i) {
@@ -654,7 +654,7 @@ START_TEST(playlist_rename)
   idxt = CPL_NEW_OFFSET + CPL_SEQ_OFFSET + CPL_ADDTL_OFFSET;
   filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
   idxt = CPL_NEW_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
-  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_SEQUENCE, NULL);
+  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_SEQUENCE, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
   playlistSave (pl, test_data [idxt].basefn);
   /* saved file names should exist */
@@ -690,7 +690,7 @@ START_TEST(playlist_copy)
   idxt = CPL_NEW_OFFSET + CPL_SEQ_OFFSET + CPL_ADDTL_OFFSET;
   filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
   idxt = CPL_NEW_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
-  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_SEQUENCE, NULL);
+  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_SEQUENCE, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
   playlistSave (pl, test_data [idxt].basefn);
   /* saved file names should exist */
@@ -728,7 +728,7 @@ START_TEST(playlist_delete)
   idxt = CPL_NEW_OFFSET + CPL_SEQ_OFFSET + CPL_ADDTL_OFFSET;
   filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
   idxt = CPL_NEW_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
-  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_SEQUENCE, NULL);
+  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_SEQUENCE, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
   playlistSave (pl, test_data [idxt].basefn);
   /* saved file names should exist */
@@ -842,7 +842,7 @@ START_TEST(playlist_get_next_sl)
   cleanup ();
 
   idxt = CPL_EXIST_OFFSET + CPL_SL_OFFSET + CPL_PL_OFFSET;
-  pl = playlistLoad (test_data [idxt].basefn, NULL);
+  pl = playlistLoad (test_data [idxt].basefn, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
 
   /* get-next-song should fail nicely when no database has been set */
@@ -852,7 +852,7 @@ START_TEST(playlist_get_next_sl)
 
   /* song list */
   idxt = CPL_EXIST_OFFSET + CPL_SL_OFFSET + CPL_PL_OFFSET;
-  pl = playlistLoad (test_data [idxt].basefn, db);
+  pl = playlistLoad (test_data [idxt].basefn, db, NULL);
   ck_assert_ptr_nonnull (pl);
 
   count = 0;
@@ -878,7 +878,7 @@ START_TEST(playlist_get_next_sl_stop_after)
   cleanup ();
 
   idxt = CPL_EXIST_OFFSET + CPL_SL_OFFSET + CPL_PL_OFFSET;
-  pl = playlistLoad (test_data [idxt].basefn, db);
+  pl = playlistLoad (test_data [idxt].basefn, db, NULL);
   ck_assert_ptr_nonnull (pl);
 
   playlistSetConfigNum (pl, PLAYLIST_STOP_AFTER, 10);
@@ -906,7 +906,7 @@ START_TEST(playlist_get_next_seq)
   cleanup ();
 
   idxt = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
-  pl = playlistLoad (test_data [idxt].basefn, db);
+  pl = playlistLoad (test_data [idxt].basefn, db, NULL);
   ck_assert_ptr_nonnull (pl);
 
   playlistSetConfigNum (pl, PLAYLIST_STOP_AFTER, 7);
@@ -934,7 +934,7 @@ START_TEST(playlist_get_next_auto)
   cleanup ();
 
   idxt = CPL_EXIST_OFFSET + CPL_AUTO_OFFSET + CPL_PL_OFFSET;
-  pl = playlistLoad (test_data [idxt].basefn, db);
+  pl = playlistLoad (test_data [idxt].basefn, db, NULL);
   ck_assert_ptr_nonnull (pl);
 
   playlistSetConfigNum (pl, PLAYLIST_STOP_AFTER, 8);

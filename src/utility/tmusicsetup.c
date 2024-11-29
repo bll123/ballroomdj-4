@@ -99,6 +99,7 @@ static datafilekey_t tmdfkeys [] = {
   { "TRACKTOTAL",   TAG_TRACKTOTAL,           VALUE_STR, NULL, DF_NORM },
   { "TRACK_ID",     TAG_TRACK_ID,             VALUE_STR, NULL, DF_NORM },
   { "VOLUMEADJUSTPERC", TAG_VOLUMEADJUSTPERC, VALUE_STR, NULL, DF_NORM },
+  { "WORK",         TAG_WORK,                 VALUE_STR, NULL, DF_NORM },
   { "WORK_ID",      TAG_WORK_ID,              VALUE_STR, NULL, DF_NORM },
 };
 enum {

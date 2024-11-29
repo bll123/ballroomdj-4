@@ -262,6 +262,8 @@ DURATION
 ..30620
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
+GROUPING
+..aaa
 TAGS
 ..tag1 tag2 tag3
 STATUS
@@ -303,6 +305,8 @@ NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 TAGS
 ..tag4 TAG5
+GROUPING
+..bbb
 STATUS
 ..Complete
 DANCELEVEL
@@ -340,12 +344,18 @@ NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 TAGS
 ..tag6 tag7
+WORK
+..ccc
+MOVEMENTNAME
+..c1
+MOVEMENTNUM
+..1
 STATUS
 ..Edit
 DANCELEVEL
 ..Advanced
 GENRE
-..Jazz
+..Classical
 ALBUMARTIST
 ..%03d-albartist
 ARTIST
@@ -708,6 +718,8 @@ NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
 ..tag1 tag2 tag3
+GROUPING
+..aaa
 STATUS
 ..New
 DANCELEVEL
@@ -745,6 +757,8 @@ NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 TAGS
 ..tag4 TAG5
+GROUPING
+..bbb
 STATUS
 ..Complete
 DANCELEVEL
@@ -784,12 +798,18 @@ NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 TAGS
 ..tag6 tag7
+WORK
+..ccc
+MOVEMENTNAME
+..c2
+MOVEMENTNUM
+..2
 STATUS
 ..Edit
 DANCELEVEL
 ..Advanced
 GENRE
-..Jazz
+..Classical
 ALBUMARTIST
 ..%03d-albartist
 ARTIST
@@ -1376,6 +1396,8 @@ NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 TAGS
 ..tag1 tag2 tag3
+GROUPING
+..aaa
 STATUS
 ..New
 DANCELEVEL
@@ -1413,6 +1435,8 @@ DURATION
 ..31310
 TAGS
 ..tag4 TAG5
+GROUPING
+..bbb
 STATUS
 ..Complete
 DANCELEVEL
@@ -1450,12 +1474,18 @@ NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
 ..tag6 tag7
+WORK
+..ccc
+MOVEMENTNAME
+..c3
+MOVEMENTNUM
+..3
 STATUS
 ..Complete
 DANCELEVEL
 ..Advanced
 GENRE
-..Jazz
+..Classical
 ALBUMARTIST
 ..%03d-albartist
 ARTIST

@@ -129,11 +129,11 @@ void logStderr (const char *fmt, ...)
     __attribute__ ((format (printf, 1, 2)));
 
 /* needed by the #defines */
-void rlogStartProgram (const char *prog, const char *fn, int line, const char *func);
-void rlogProcBegin (const char *fn, int line, const char *func);
-void rlogProcEnd (const char *suffix, const char *fn, int line, const char *func);
-void rlogError (const char *msg, int err, const char *fn, int line, const char *func);
-void rlogVarMsg (logidx_t, loglevel_t level, const char *fn, int line, const char *func, const char *fmt, ...)
+void rlogStartProgram (const char *prog, const char *fn, int32_t line, const char *func);
+void rlogProcBegin (const char *fn, int32_t line, const char *func);
+void rlogProcEnd (const char *suffix, const char *fn, int32_t line, const char *func);
+void rlogError (const char *msg, int err, const char *fn, int32_t line, const char *func);
+void rlogVarMsg (logidx_t, loglevel_t level, const char *fn, int32_t line, const char *func, const char *fmt, ...)
     __attribute__ ((format (printf, 6, 7)));
 
 #if defined (__cplusplus) || defined (c_plusplus)

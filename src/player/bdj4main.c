@@ -35,6 +35,7 @@
 #include "dispsel.h"
 #include "filedata.h"
 #include "fileop.h"
+#include "grouping.h"
 #include "lock.h"
 #include "log.h"
 #include "mdebug.h"
@@ -97,12 +98,13 @@ typedef struct {
   queue_t           *playlistQueue [MUSICQ_MAX];
   musicq_t          *musicQueue;
   dispsel_t         *dispsel;
+  slist_t           *announceList;
+  char              *mobmqUserkey;
+  grouping_t        *grouping;
   int               musicqPlayIdx;
   int               musicqDeferredPlayIdx;
   int               musicqLookupIdx;
-  slist_t           *announceList;
   playerstate_t     playerState;
-  char              *mobmqUserkey;
   int               stopwaitcount;
   int32_t           ploverridestoptime;
   int               songplaysentcount;        // for testsuite
@@ -251,6 +253,7 @@ main (int argc, char *argv[])
   bdj4startup (argc, argv, &mainData.musicdb,
       "main", ROUTE_MAIN, &mainData.startflags);
   logProcBegin ();
+  mainData.grouping = groupingAlloc (mainData.musicdb);
 
   mainData.dispsel = dispselAlloc (DISP_SEL_LOAD_MARQUEE);
 
@@ -318,6 +321,7 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
 
   logProcBegin ();
 
+  groupingFree (mainData->grouping);
   nlistFree (mainData->playlistCache);
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
     if (mainData->playlistQueue [i] != NULL) {
@@ -535,6 +539,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_DB_ENTRY_UPDATE: {
           dbLoadEntry (mainData->musicdb, atol (args));
+          groupingRebuild (mainData->grouping, mainData->musicdb);
           mainSetMusicQueuesChanged (mainData);
           break;
         }
@@ -1261,8 +1266,8 @@ mainQueueDance (maindata_t *mainData, char *args, int count)
 
   logMsg (LOG_DBG, LOG_BASIC, "queue dance %d %d %d", mi, danceIdx, count);
   /* CONTEXT: player: the name of the special playlist for queueing a dance */
-  if ((playlist = playlistLoad (_("QueueDance"), mainData->musicdb)) == NULL) {
-    playlist = playlistCreate ("main_queue_dance", PLTYPE_AUTO, mainData->musicdb);
+  if ((playlist = playlistLoad (_("QueueDance"), mainData->musicdb, mainData->grouping)) == NULL) {
+    playlist = playlistCreate ("main_queue_dance", PLTYPE_AUTO, mainData->musicdb, mainData->grouping);
   }
   playlistSetConfigNum (playlist, PLAYLIST_STOP_AFTER, count);
   /* clear all dance selected/counts */
@@ -1306,7 +1311,7 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
 
   mi = mainParseQueuePlaylist (mainData, args, &plname, &editmode);
 
-  playlist = playlistLoad (plname, mainData->musicdb);
+  playlist = playlistLoad (plname, mainData->musicdb, mainData->grouping);
   if (playlist == NULL) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Queue Playlist failed: %s", plname);
     return;
@@ -2807,6 +2812,7 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
 
   mainData->musicqLookupIdx = mqidx;
   dancesel = danceselAlloc (danceCounts, mainMusicQueueLookup, mainData);
+  /* for a mix, grouping is not used */
   songsel = songselAlloc (mainData->musicdb, danceCounts);
   songselInitialize (songsel, songList, NULL);
 

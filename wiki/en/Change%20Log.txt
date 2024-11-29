@@ -9,8 +9,12 @@
 * Bug Fixes:
     * Marquee: Fix background color.
     * Allow sort by movement number.
+* Changes:
+    * Right-click in song selection now selects based on 'grouping' tag or 'work'.
+    * PENDING Automatic song selection now uses 'grouping' or 'work'.
 * Internal:
     * Minor code cleanup.
+    * Update mongoose to version 7.16.
 
 -->
 

@@ -621,7 +621,7 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
     managePlaylistSave (managepl);
   }
 
-  pl = playlistLoad (fn, NULL);
+  pl = playlistLoad (fn, NULL, NULL);
   if (pl == NULL) {
     managePlaylistNew (managepl, preloadflag);
     managepl->inload = false;
@@ -675,7 +675,7 @@ managePlaylistNew (managepl_t *managepl, int preloadflag)
   manageSetPlaylistName (managepl, tbuff);
   managepl->plbackupcreated = false;
 
-  pl = playlistCreate (tbuff, PLTYPE_AUTO, NULL);
+  pl = playlistCreate (tbuff, PLTYPE_AUTO, NULL, NULL);
   playlistFree (managepl->playlist);
   managepl->playlist = pl;
   manageResetChanged (managepl);
