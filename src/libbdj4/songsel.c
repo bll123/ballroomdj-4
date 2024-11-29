@@ -312,7 +312,6 @@ songselSelectFinalize (songsel_t *songsel, ilistidx_t danceIdx)
         "removing idx:%" PRId32 " dbidx:%" PRId32 " ssidx:%" PRId32 " from %d/%s",
         songdata->idx, songdata->dbidx, songdata->ssidx, songseldance->danceIdx,
         danceGetStr (songsel->dances, songseldance->danceIdx, DANCE_DANCE));
-fprintf (stderr, "remove: dnc:%d dbidx:%d\n", songseldance->danceIdx, songdata->dbidx);
     songselRemoveSong (songsel, songseldance, songdata);
     songsel->lastSelection = NULL;
   }
@@ -496,7 +495,6 @@ songselRemoveSong (songsel_t *songsel,
         count, count <= 0 ? "rebuild" : "");
 
     if (count <= 0) {
-fprintf (stderr, "remove: rebuild-a\n");
       songselRebuild (songsel, songseldance);
     } else {
       songselResetCurrentIdxList (songseldance);
@@ -555,7 +553,6 @@ fprintf (stderr, "remove: rebuild-a\n");
           count, count <= 0 ? "rebuild" : "");
 
       if (count <= 0) {
-fprintf (stderr, "remove: rebuild-b\n");
         songselRebuild (songsel, ss_songseldance);
       } else {
         songselResetCurrentIdxList (ss_songseldance);

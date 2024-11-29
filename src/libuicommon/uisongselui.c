@@ -830,7 +830,6 @@ uisongselRightClickCallback (void *udata, uivirtlist_t *vl,
     dbidx_t       tdbidx;
 
     seldbidx = songfilterGetByIdx (uisongsel->songfilter, rowidx);
-fprintf (stderr, "select: %d rownum: %d rowidx: %d\n", seldbidx, rownum, rowidx);
 
     /* returns the number of selections in the group or zero */
     maxcount = groupingCheck (uisongsel->grouping, seldbidx, seldbidx);
@@ -839,27 +838,21 @@ fprintf (stderr, "select: %d rownum: %d rowidx: %d\n", seldbidx, rownum, rowidx)
     }
     /* the first is already selected */
     selcount = 1;
-fprintf (stderr, "  max: %d\n", maxcount);
 
     end = uisongsel->numrows;
 
-fprintf (stderr, "== part a %d %d\n", selcount, maxcount);
     /* often, the user selects the first item in the group */
     /* so start at rowidx + 1 */
     for (nlistidx_t i = rowidx + 1; i < end && selcount < maxcount; ++i) {
       /* check if this dbidx is in the group */
       tdbidx = songfilterGetByIdx (uisongsel->songfilter, i);
-fprintf (stderr, "chk row %d tdbidx %d\n", i, tdbidx);
       tval = groupingCheck (uisongsel->grouping, seldbidx, tdbidx);
       if (tval == 0) {
-fprintf (stderr, "  not found\n");
         continue;
       }
       uivlAppendSelection (ssint->uivl, i);
       ++selcount;
-fprintf (stderr, "  ok count: %d %d\n", selcount, maxcount);
     }
-fprintf (stderr, "== part b %d %d\n", selcount, maxcount);
     /* check the rest if all the selections have not been found */
     /* the user may have selected a song in the middle of the group */
     /* or the sort order may not match the grouping */

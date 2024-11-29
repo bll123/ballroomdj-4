@@ -245,7 +245,7 @@ groupingAdd (grouping_t *grp, song_t *song, dbidx_t dbidx, slist_t *groupSort, n
     return;
   }
 
-  discnum = songGetNum (song, TAG_TRACKNUMBER);
+  discnum = songGetNum (song, TAG_DISCNUMBER);
   trknum = songGetNum (song, TAG_TRACKNUMBER);
   mvnum = songGetNum (song, TAG_MOVEMENTNUM);
 

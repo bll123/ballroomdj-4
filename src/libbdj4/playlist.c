@@ -619,7 +619,6 @@ playlistGetNextSong (playlist_t *pl,
     if (pl->ingroup) {
       dbidx = groupingIterate (pl->grouping, pl->grpdbidx, &pl->grpiter);
       if (dbidx >= 0) {
-fprintf (stderr, "       in group dbidx: %d\n", dbidx);
         song = dbGetByIdx (pl->musicdb, dbidx);
         danceIdx = songGetNum (song, TAG_DANCE);
         songselFinalizeByIndex (pl->songsel, danceIdx, dbidx);
@@ -649,14 +648,12 @@ fprintf (stderr, "       in group dbidx: %d\n", dbidx);
         dbidx_t   seldbidx = songGetNum (song, TAG_DBIDX);
         dbidx_t   dbidx;
 
-fprintf (stderr, "-- pl: seldbidx: %d\n", seldbidx);
         grpcount = groupingCheck (pl->grouping, seldbidx, seldbidx);
         if (grpcount > 0) {
           pl->ingroup = true;
           pl->grpdbidx = seldbidx;
           groupingStartIterator (pl->grouping, &pl->grpiter);
           dbidx = groupingIterate (pl->grouping, pl->grpdbidx, &pl->grpiter);
-fprintf (stderr, "       found group dbidx: %d\n", dbidx);
           song = NULL;
           if (dbidx >= 0) {
             song = dbGetByIdx (pl->musicdb, dbidx);
