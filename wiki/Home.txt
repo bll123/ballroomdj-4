@@ -134,6 +134,7 @@
 * __Song Management__
     * [Classical Music](en-Subjects-Classical)
     * [Favorites](en-Subjects-Favorites)
+    * [Grouping](en-Subjects-Grouping)
     * [Keyword](en-Subjects-Keyword)
     * [Same Song Marks](en-Subjects-Same%20Song%20Marks)
 

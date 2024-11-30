@@ -23,11 +23,6 @@ The defaults are standard, latin and club.
   * PLAYER_UI_SEP
     Separator character(s) for the player song display.
     The default is a colon (:).
-  * UI_MARK_COL
-    User Interface Mark Color.
-    The color for the request list in-queue mark.
-    Must be specified as #rrggbb.
-    The default is #2222ff.
   * UI_MARK_TEXT
     The character(s) to use to display the mark.
     The default is a left-five-eights box.

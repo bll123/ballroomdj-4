@@ -29,19 +29,28 @@ the song selection and the song editor can be set in
 ##### Classical Music Title
 
 In [Configuration&nbsp;/&nbsp;General](en-Configuration-General), if
-the __Use&nbsp;Work&nbsp;and&nbsp;Movement__ setting is turned on, and
+the _Use&nbsp;Work&nbsp;and&nbsp;Movement_ setting is turned on, and
 if _Work_ is set, _Work_, _Movement&nbsp;Number_ and
-_Movement&nbsp;Name_ are used to generate the title of the song when
-the song is saved in the song editor.
+_Movement&nbsp;Name_ will be used to generate the title of the song
+when the song is saved in the song editor.  The formatting of the
+title matches what iTunes would display, e.g.
+_Primo&nbsp;Vere:&nbsp;I.&nbsp;Veris&nbsp;Leta&nbsp;Facies_
+
+If the _Use&nbsp;Work&nbsp;and&nbsp;Movement_ setting is off, the
+song's title may be set to what you desire.
 
 The title for classical music should be set correctly according to the
 [MusicBrainz&nbsp;Classical&nbsp;Track&nbsp;Title](https://musicbrainz.org/doc/Style/Classical/Track_Title)
 guide.
 
 Classical music should have the title set to _Work: Movement_. e.g.
-_Primo&nbsp;Vere:&nbsp;I.&nbsp;Veris&nbsp;Leta&nbsp;Facies_ from
+_Primo&nbsp;Vere:&nbsp;Veris&nbsp;Leta&nbsp;Facies_ from
 _Carl&nbsp;Orff's_ _Carmina&nbsp;Burana_.  Each movement in the work
 should have the work set, not just the first movement.
+
+Note that the MusicBrainz classical music track title guide prefers a
+title that matches what is listed for the album, not one that follows
+an exact format.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![cm-se](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/cm-se-B.png)
@@ -85,6 +94,13 @@ movement in the work.
 
 The entire work will be selected.  Select the __Queue__ button to add
 the entire work to the music queue and start your playback.
+
+Internally, BDJ4 will prioritize the _Grouping_ tag, then the
+_Work_ tag, then using the work extracted from the song title.
+
+When using an automatic or sequenced playlist, the entire work will be
+selected.
+<br>See [Subjects&nbsp;/&nbsp;Grouping](en-Subjects-Grouping)
 
 ##### Sorting Classical Music
 
