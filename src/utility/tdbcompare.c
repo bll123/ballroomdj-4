@@ -210,7 +210,7 @@ main (int argc, char *argv [])
     }
 
     if (song [dblocidx] == NULL) {
-      fprintf (stderr, "    tdbcomp: song %s not found\n", fn);
+      fprintf (stderr, "    tdbcomp:a: song %s not found\n", fn);
       grc = 1;
       continue;
     }
@@ -219,7 +219,7 @@ main (int argc, char *argv [])
     taglist [dblocidx] = songTagList (song [dblocidx]);
 
     if (slistGetCount (taglist [DB_A]) != slistGetCount (taglist [dblocidx])) {
-      fprintf (stderr, "    tdbcomp: song tag count mismatch /%" PRId32 "/%" PRId32 "/ %s\n",
+      fprintf (stderr, "    tdbcomp:b: song tag count mismatch /%" PRId32 "/%" PRId32 "/ %s\n",
           slistGetCount (taglist [DB_A]), slistGetCount (taglist [dblocidx]), fn);
       grc = 1;
       continue;
@@ -228,24 +228,24 @@ main (int argc, char *argv [])
     /* it's ok for dbadddate to be mismatched, but it must exist in both */
     nval = songGetNum (song [DB_A], TAG_DBADDDATE);
     if (nval < 0) {
-      fprintf (stderr, "    tdbcomp: dbadddate missing in %d %s\n", DB_A, fn);
+      fprintf (stderr, "    tdbcomp:c: dbadddate missing in %d %s\n", DB_A, fn);
       grc = 1;
     }
     nval = songGetNum (song [dblocidx], TAG_DBADDDATE);
     if (nval < 0) {
-      fprintf (stderr, "    tdbcomp: dbadddate missing in %d %s\n", dblocidx, fn);
+      fprintf (stderr, "    tdbcomp:d: dbadddate missing in %d %s\n", dblocidx, fn);
       grc = 1;
     }
 
     /* it's ok for lastupdated to be mismatched, but it must exist in both */
     val = songGetStr (song [DB_A], TAG_LAST_UPDATED);
     if (val == NULL) {
-      fprintf (stderr, "    tdbcomp: last-updated missing in %d %s\n", DB_A, fn);
+      fprintf (stderr, "    tdbcomp:e: last-updated missing in %d %s\n", DB_A, fn);
       grc = 1;
     }
     val = songGetStr (song [dblocidx], TAG_LAST_UPDATED);
     if (val == NULL) {
-      fprintf (stderr, "    tdbcomp: last-updated missing in %d %s\n", dblocidx, fn);
+      fprintf (stderr, "    tdbcomp:f: last-updated missing in %d %s\n", dblocidx, fn);
       grc = 1;
     }
 
@@ -281,19 +281,19 @@ main (int argc, char *argv [])
       val [dblocidx] = slistGetStr (taglist [dblocidx], tag [DB_A]);
 
       if (val [DB_A] == NULL && val [dblocidx] != NULL) {
-        fprintf (stderr, "    tdbcomp: null tag %s mismatch /(null)/%s/ %s\n", tag [DB_A], val [dblocidx], fn);
+        fprintf (stderr, "    tdbcomp:g: null tag %s mismatch /(null)/%s/ %s\n", tag [DB_A], val [dblocidx], fn);
         grc = 1;
       }
       if (val [DB_A] != NULL && val [dblocidx] == NULL) {
-        fprintf (stderr, "    tdbcomp: null tag %s mismatch /%s/(null)/ %s\n", tag [DB_A], val [DB_A], fn);
+        fprintf (stderr, "    tdbcomp:h: null tag %s mismatch /%s/(null)/ %s\n", tag [DB_A], val [DB_A], fn);
         grc = 1;
       }
       if (val [DB_A] != NULL && strcmp (val [DB_A], "(null)") == 0) {
-        fprintf (stderr, "    tdbcomp: tag %s has '(null)' string (db-a) %s\n", tag [DB_A], fn);
+        fprintf (stderr, "    tdbcomp:i: tag %s has '(null)' string (db-a) %s\n", tag [DB_A], fn);
         grc = 1;
       }
       if (val [dblocidx] != NULL && strcmp (val [dblocidx], "(null)") == 0) {
-        fprintf (stderr, "    tdbcomp: tag %s has '(null)' string (db-b) %s\n", tag [DB_A], fn);
+        fprintf (stderr, "    tdbcomp:j: tag %s has '(null)' string (db-b) %s\n", tag [DB_A], fn);
         grc = 1;
       }
 
@@ -304,9 +304,21 @@ main (int argc, char *argv [])
           dura = atol (val [DB_A]);
           durb = atol (val [dblocidx]);
           if (abs (dura - durb) > 100) {
-            fprintf (stderr, "    tdbcomp: tag %s mismatch /%s/%s/ %s\n", tag [DB_A], val [DB_A], val [dblocidx], fn);
+            fprintf (stderr, "    tdbcomp:k: tag %s mismatch /%s/%s/ %s\n", tag [DB_A], val [DB_A], val [dblocidx], fn);
             grc = 1;
           }
+        }
+      } else if (strcmp (tag [DB_A], tagdefs [TAG_MOVEMENTNUM].tag) == 0) {
+        bool    def;
+        bool    empty;
+
+        def = strcmp (val [DB_A], "1") == 0;
+        empty = strcmp (val [dblocidx], "") == 0;
+        if (val [DB_A] != NULL && val [dblocidx] != NULL &&
+            ! (def && empty) &&
+            strcmp (val [DB_A], val [dblocidx]) != 0) {
+          fprintf (stderr, "    tdbcomp:l: tag %s mismatch /%s/%s/ %s\n", tag [DB_A], val [DB_A], val [dblocidx], fn);
+          grc = 1;
         }
       } else if (strcmp (tag [DB_A], tagdefs [TAG_DISCNUMBER].tag) == 0) {
         bool    def;
@@ -317,13 +329,13 @@ main (int argc, char *argv [])
         if (val [DB_A] != NULL && val [dblocidx] != NULL &&
             ! (def && empty) &&
             strcmp (val [DB_A], val [dblocidx]) != 0) {
-          fprintf (stderr, "    tdbcomp: tag %s mismatch /%s/%s/ %s\n", tag [DB_A], val [DB_A], val [dblocidx], fn);
+          fprintf (stderr, "    tdbcomp:m: tag %s mismatch /%s/%s/ %s\n", tag [DB_A], val [DB_A], val [dblocidx], fn);
           grc = 1;
         }
       } else {
         if (val [DB_A] != NULL && val [dblocidx] != NULL &&
             strcmp (val [DB_A], val [dblocidx]) != 0) {
-          fprintf (stderr, "    tdbcomp: tag %s mismatch /%s/%s/ %s\n", tag [DB_A], val [DB_A], val [dblocidx], fn);
+          fprintf (stderr, "    tdbcomp:n: tag %s mismatch /%s/%s/ %s\n", tag [DB_A], val [DB_A], val [dblocidx], fn);
           grc = 1;
         }
       }

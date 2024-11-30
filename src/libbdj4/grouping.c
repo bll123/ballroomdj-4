@@ -190,7 +190,7 @@ groupingRebuild (grouping_t *grp, musicdb_t *musicdb)
 
   slistFree (groupSort);
   nlistFree (groupName);
-  logMsg (LOG_DBG, LOG_INFO, "grouping: %" PRId64 "ms", mstimeend (&ttm));
+  logMsg (LOG_DBG, LOG_INFO, "grouping: %" PRId64 "ms", (int64_t) mstimeend (&ttm));
 }
 
 
