@@ -58,8 +58,8 @@ On Windows, the packages should be cleaned up first.
     * update sourceforge, mark the packages
     * announce the release on the forum
     * announce the release on freshcode.club
-    * hg: push to sourceforge (sfbdj4)
     * hg bookmark -r tip master
+    * hg: push to sourceforge (sfbdj4)
     * hg: push to git (gitbdj4)
     * github: upload the releases (after the push)
     * update VERSION.txt
