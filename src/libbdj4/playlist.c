@@ -19,6 +19,7 @@
 #include "pathbld.h"
 #include "filemanip.h"
 #include "fileop.h"
+#include "grouping.h"
 #include "ilist.h"
 #include "level.h"
 #include "log.h"
@@ -53,10 +54,14 @@ typedef struct playlist {
   nlist_t       *plinfo;
   ilist_t       *pldances;
   nlist_t       *countList;
+  grouping_t    *grouping;
   ilistidx_t    songlistiter;
   int           editmode;
   int           count;
   nlistidx_t    seqiteridx;
+  nlistidx_t    grpiter;
+  dbidx_t       grpdbidx;
+  int           ingroup;
 } playlist_t;
 
 enum {
@@ -65,7 +70,7 @@ enum {
   PL_IDENT = 0x0074736c79616c70,
 };
 
-static playlist_t *playlistAlloc (musicdb_t *musicdb);
+static playlist_t *playlistAlloc (musicdb_t *musicdb, grouping_t *grouping);
 static void plConvType (datafileconv_t *conv);
 
 /* must be sorted in ascii order */
@@ -132,7 +137,7 @@ playlistFree (void *tpl)
 }
 
 playlist_t *
-playlistLoad (const char *fname, musicdb_t *musicdb)
+playlistLoad (const char *fname, musicdb_t *musicdb, grouping_t *grouping)
 {
   playlist_t    *pl;
   char          tfn [MAXPATHLEN];
@@ -157,7 +162,7 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
     return NULL;
   }
 
-  pl = playlistAlloc (musicdb);
+  pl = playlistAlloc (musicdb, grouping);
   pl->name = mdstrdup (fname);
 
   pl->plinfodf = datafileAllocParse ("playlist-pl", DFTYPE_KEY_VAL, tfn,
@@ -327,7 +332,8 @@ playlistCheck (playlist_t *pl)
 }
 
 playlist_t *
-playlistCreate (const char *plname, pltype_t type, musicdb_t *musicdb)
+playlistCreate (const char *plname, pltype_t type,
+    musicdb_t *musicdb, grouping_t *grouping)
 {
   playlist_t    *pl;
   char          tbuff [40];
@@ -339,7 +345,7 @@ playlistCreate (const char *plname, pltype_t type, musicdb_t *musicdb)
 
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
-  pl = playlistAlloc (musicdb);
+  pl = playlistAlloc (musicdb, grouping);
 
   pl->name = mdstrdup (plname);
   snprintf (tbuff, sizeof (tbuff), "plinfo-c-%s", plname);
@@ -565,7 +571,8 @@ playlistGetNextSong (playlist_t *pl,
   }
 
   if (type == PLTYPE_AUTO || type == PLTYPE_SEQUENCE) {
-    ilistidx_t     danceIdx = LIST_VALUE_INVALID;
+    ilistidx_t    danceIdx = LIST_VALUE_INVALID;
+    dbidx_t       dbidx = -1;
 
     if (pl->songfilter == NULL) {
       pl->songfilter = songfilterAlloc ();
@@ -607,24 +614,61 @@ playlistGetNextSong (playlist_t *pl,
       songselInitialize (pl->songsel, NULL, pl->songfilter);
     }
 
-    song = songselSelect (pl->songsel, danceIdx);
-    count = 0;
-    while (song != NULL && count < PL_VALID_SONG_ATTEMPTS) {
-      if (songAudioSourceExists (song)) {
-        break;
+    song = NULL;
+
+    if (pl->ingroup) {
+      dbidx = groupingIterate (pl->grouping, pl->grpdbidx, &pl->grpiter);
+      if (dbidx >= 0) {
+        song = dbGetByIdx (pl->musicdb, dbidx);
+        danceIdx = songGetNum (song, TAG_DANCE);
+        songselFinalizeByIndex (pl->songsel, danceIdx, dbidx);
+      } else {
+        pl->ingroup = false;
       }
-      song = songselSelect (pl->songsel, danceIdx);
-      ++count;
     }
 
-    if (count >= PL_VALID_SONG_ATTEMPTS) {
-      song = NULL;
-    } else {
-      songselSelectFinalize (pl->songsel, danceIdx);
-      sfname = songGetStr (song, TAG_URI);
-      ++pl->count;
-      logMsg (LOG_DBG, LOG_BASIC, "select: %d/%s %s", danceIdx,
-          danceGetStr (pl->dances, danceIdx, DANCE_DANCE), sfname);
+    /* use song-sel */
+    if (song == NULL) {
+      song = songselSelect (pl->songsel, danceIdx);
+      count = 0;
+      while (song != NULL && count < PL_VALID_SONG_ATTEMPTS) {
+        if (songAudioSourceExists (song)) {
+          break;
+        }
+        song = songselSelect (pl->songsel, danceIdx);
+        ++count;
+      }
+
+      if (count >= PL_VALID_SONG_ATTEMPTS) {
+        song = NULL;
+      }
+
+      if (song != NULL) {
+        int       grpcount;
+        dbidx_t   seldbidx = songGetNum (song, TAG_DBIDX);
+        dbidx_t   dbidx;
+
+        grpcount = groupingCheck (pl->grouping, seldbidx, seldbidx);
+        if (grpcount > 0) {
+          pl->ingroup = true;
+          pl->grpdbidx = seldbidx;
+          groupingStartIterator (pl->grouping, &pl->grpiter);
+          dbidx = groupingIterate (pl->grouping, pl->grpdbidx, &pl->grpiter);
+          song = NULL;
+          if (dbidx >= 0) {
+            song = dbGetByIdx (pl->musicdb, dbidx);
+            danceIdx = songGetNum (song, TAG_DANCE);
+            songselFinalizeByIndex (pl->songsel, danceIdx, dbidx);
+          }
+        } else {
+          songselSelectFinalize (pl->songsel, danceIdx);
+        }
+
+        sfname = songGetStr (song, TAG_URI);
+        ++pl->count;
+        logMsg (LOG_DBG, LOG_BASIC, "select: %d/%s %s", danceIdx,
+            danceGetStr (pl->dances, danceIdx, DANCE_DANCE), sfname);
+      }
     }
   }
 
@@ -952,7 +996,7 @@ playlistCheckAndCreate (const char *name, pltype_t pltype)
   if (! fileopFileExists (onm)) {
     playlist_t    *pl;
 
-    pl = playlistCreate (name, pltype, NULL);
+    pl = playlistCreate (name, pltype, NULL, NULL);
     if (pl != NULL) {
       playlistSave (pl, NULL);
       playlistFree (pl);
@@ -1046,7 +1090,7 @@ playlistGetType (const char *name)
 /* internal routines */
 
 static playlist_t *
-playlistAlloc (musicdb_t *musicdb)
+playlistAlloc (musicdb_t *musicdb, grouping_t *grouping)
 {
   playlist_t    *pl = NULL;
 
@@ -1068,6 +1112,9 @@ playlistAlloc (musicdb_t *musicdb)
   pl->editmode = EDIT_FALSE;
   pl->musicdb = musicdb;
   pl->dances = bdjvarsdfGet (BDJVDF_DANCES);
+  pl->grouping = grouping;
+  pl->grpiter = -1;
+  pl->ingroup = false;
 
   return pl;
 }

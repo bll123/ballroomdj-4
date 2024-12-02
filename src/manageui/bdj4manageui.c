@@ -35,6 +35,7 @@
 #include "expimpbdj4.h"
 #include "fileop.h"
 #include "filemanip.h"
+#include "grouping.h"
 #include "itunes.h"
 #include "localeutil.h"
 #include "lock.h"
@@ -213,6 +214,7 @@ typedef struct {
   callback_t        *callbacks [MANAGE_CB_MAX];
   manageinfo_t      minfo;
   musicdb_t         *musicdb;
+  grouping_t        *grouping;
   songdb_t          *songdb;
   samesong_t        *samesong;
   musicqidx_t       musicqPlayIdx;
@@ -457,6 +459,7 @@ main (int argc, char *argv[])
   manageui_t      manage;
   char            tbuff [MAXPATHLEN];
   uint32_t        flags;
+  uisetup_t       uisetup;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("mui");
@@ -559,6 +562,7 @@ main (int argc, char *argv[])
   flags = BDJ4_INIT_ALL;
   bdj4startup (argc, argv, &manage.musicdb, "mui", ROUTE_MANAGEUI, &flags);
   logProcBegin ();
+  manage.grouping = groupingAlloc (manage.musicdb);
 
   manage.songdb = songdbAlloc (manage.musicdb);
   manage.minfo.dispsel = dispselAlloc (DISP_SEL_LOAD_MANAGE);
@@ -608,13 +612,8 @@ main (int argc, char *argv[])
   manage.sbssonglist = nlistGetNum (manage.minfo.options, MANAGE_SBS_SONGLIST);
 
   uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
-  uiSetUICSS (uiutilsGetCurrentFont (),
-      uiutilsGetListingFont (),
-      bdjoptGetStr (OPT_P_UI_ACCENT_COL),
-      bdjoptGetStr (OPT_P_UI_ERROR_COL),
-      bdjoptGetStr (OPT_P_UI_MARK_COL),
-      bdjoptGetStr (OPT_P_UI_ROWSEL_COL),
-      bdjoptGetStr (OPT_P_UI_ROW_HL_COL));
+  uiutilsInitSetup (&uisetup);
+  uiSetUICSS (&uisetup);
 
   manageBuildUI (&manage);
   osuiFinalize ();
@@ -730,6 +729,7 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   datafileSave (manage->optiondf, NULL, manage->minfo.options, DF_NO_OFFSET, 1);
 
+  groupingFree (manage->grouping);
   bdj4shutdown (ROUTE_MANAGEUI, manage->musicdb);
   manageSequenceFree (manage->manageseq);
   managePlaylistFree (manage->managepl);
@@ -964,7 +964,8 @@ manageInitializeUI (manageui_t *manage)
   uimusicqSetManageIdx (manage->slmusicq, manage->musicqManageIdx);
   manage->slstats = manageStatsInit (manage->conn, manage->musicdb);
   manage->slsongsel = uisongselInit ("m-sl-songsel", manage->conn,
-      manage->musicdb, manage->minfo.dispsel, manage->samesong,
+      manage->musicdb, manage->grouping,
+      manage->minfo.dispsel, manage->samesong,
       manage->minfo.options, manage->uisongfilter, DISP_SEL_SONGSEL);
   manage->callbacks [MANAGE_CB_PLAY_SL] = callbackInitII (
       managePlayProcessSonglist, manage);
@@ -978,7 +979,8 @@ manageInitializeUI (manageui_t *manage)
   manage->slsbsmusicq = uimusicqInit ("m-sbs-sl", manage->conn,
       manage->musicdb, manage->minfo.dispsel, DISP_SEL_SBS_SONGLIST);
   manage->slsbssongsel = uisongselInit ("m-sbs-songsel", manage->conn,
-      manage->musicdb, manage->minfo.dispsel, manage->samesong,
+      manage->musicdb, manage->grouping,
+      manage->minfo.dispsel, manage->samesong,
       manage->minfo.options, manage->uisongfilter, DISP_SEL_SBS_SONGSEL);
   uimusicqSetPlayIdx (manage->slsbsmusicq, manage->musicqPlayIdx);
   uimusicqSetManageIdx (manage->slsbsmusicq, manage->musicqManageIdx);
@@ -994,7 +996,8 @@ manageInitializeUI (manageui_t *manage)
   manage->mmplayer = uiplayerInit ("mm-player", manage->progstate, manage->conn,
       manage->musicdb, manage->minfo.dispsel);
   manage->mmsongsel = uisongselInit ("m-mm-songsel", manage->conn,
-      manage->musicdb, manage->minfo.dispsel, manage->samesong,
+      manage->musicdb, manage->grouping,
+      manage->minfo.dispsel, manage->samesong,
       manage->minfo.options, manage->uisongfilter, DISP_SEL_MM);
   manage->callbacks [MANAGE_CB_PLAY_MM] = callbackInitII (
       managePlayProcessMusicManager, manage);
@@ -1850,6 +1853,9 @@ manageSongEditSaveCallback (void *udata, int32_t dbidx)
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
 
   manageRePopulateData (manage);
+
+  /* the grouping must be re-built when a song is saved */
+  groupingRebuild (manage->grouping, manage->musicdb);
 
   /* re-load the song into the song editor */
   /* it is unknown if called from saving a favorite or from the song editor */
@@ -2882,8 +2888,8 @@ manageCFPLPostProcess (manageui_t *manage)
   manageSonglistSave (manage);
 
   /* copy the settings from the base playlist to the new song list */
-  pl = playlistLoad (tnm, NULL);
-  autopl = playlistLoad (manage->cfplfn, NULL);
+  pl = playlistLoad (tnm, NULL, NULL);
+  autopl = playlistLoad (manage->cfplfn, NULL, NULL);
 
   if (pl != NULL && autopl != NULL) {
     playlistSetConfigNum (pl, PLAYLIST_MAX_PLAY_TIME,

@@ -1575,7 +1575,7 @@ uisongeditSave (void *udata, nlist_t *chglist)
   if (! seint->ineditallapply) {
     chglist = uisongeditGetChangedData (uisongedit);
     /* get-changed-data will force the work, movement-num, movement-name */
-    /* and title to be populated in chglist if any of them have changed */
+    /* and title to be populated in chglist if _any_ of them have changed */
     songutilTitleFromWorkMovement (chglist);
   }
 

@@ -131,7 +131,7 @@ extern tagdef_t tagdefs [TAG_KEY_MAX];
 
 void        tagdefInit (void);
 void        tagdefCleanup (void);
-tagdefkey_t tagdefLookup (const char *str);
+int         tagdefLookup (const char *str);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

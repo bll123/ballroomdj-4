@@ -8,6 +8,7 @@
 
 #include "dancesel.h"
 #include "datafile.h"
+#include "grouping.h"
 #include "ilist.h"
 #include "musicdb.h"
 #include "nlist.h"
@@ -74,9 +75,9 @@ enum {
 
 typedef struct playlist playlist_t;
 
-playlist_t *playlistLoad (const char *name, musicdb_t *musicdb);
+playlist_t *playlistLoad (const char *name, musicdb_t *musicdb, grouping_t *grouping);
 bool      playlistCheck (playlist_t *pl);
-playlist_t *playlistCreate (const char *plname, pltype_t type, musicdb_t *musicdb);
+playlist_t *playlistCreate (const char *plname, pltype_t type, musicdb_t *musicdb, grouping_t *grouping);
 void      playlistFree (void *tpl);
 void      playlistResetAll (playlist_t *pl);
 const char *playlistGetName (playlist_t *pl);

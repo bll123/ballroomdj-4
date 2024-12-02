@@ -23,6 +23,7 @@ extern "C" {
 #define LIST_HEAD_CLASS "bdj-list-head"
 #define LIST_NO_DISP "bdj-nodisp"
 #define MARK_CLASS "bdj-mark"
+#define MQ_WIN_CLASS "bdj-marquee"
 #define MQ_ACCENT_CLASS "bdj-mqaccent"
 #define NORMBG_CLASS "bdj-norm-bg"
 #define ROW_HL_CLASS "bdj-row-hl"

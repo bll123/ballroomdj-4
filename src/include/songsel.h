@@ -23,6 +23,7 @@ void      songselSetTags (songsel_t *songsel, slist_t *taglist, int tagweight);
 void      songselInitialize (songsel_t *songsel, nlist_t *songlist, songfilter_t *songfilter);
 song_t    * songselSelect (songsel_t *songsel, ilistidx_t danceIdx);
 void      songselSelectFinalize (songsel_t *songsel, ilistidx_t danceIdx);
+void      songselFinalizeByIndex (songsel_t *songsel, ilistidx_t danceIdx, dbidx_t dbidx);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

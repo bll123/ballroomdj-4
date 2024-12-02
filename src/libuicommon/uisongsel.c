@@ -26,7 +26,8 @@
 #include "callback.h"
 
 uisongsel_t *
-uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
+uisongselInit (const char *tag, conn_t *conn,
+    musicdb_t *musicdb, grouping_t *grouping,
     dispsel_t *dispsel, samesong_t *samesong, nlist_t *options,
     uisongfilter_t *uisf, dispselsel_t dispselType)
 {
@@ -59,6 +60,7 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     uisongsel->musicqdbidxlist [i] = NULL;
   }
   uisongsel->songlistdbidxlist = NULL;
+  uisongsel->grouping = grouping;
 
   uisongsel->numrows = dbCount (musicdb);
 

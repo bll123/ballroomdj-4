@@ -40,8 +40,8 @@ main (int argc, char *argv [])
   const char  *tagname = NULL;
   const char  *valuestr = NULL;
   char        *maxcountstr = NULL;
-  long        maxcount = -1;
-  long        count = 0;
+  dbidx_t     maxcount = -1;
+  dbidx_t     count = 0;
   int         c;
   int         option_index;
   song_t      *song;

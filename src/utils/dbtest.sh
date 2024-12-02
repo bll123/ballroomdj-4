@@ -322,7 +322,7 @@ done
 # audiotag+dbupdate+info+basic+important + db
 DBG=4457483
 # norm
-NUMNORM=139
+NUMNORM=145
 # cha cha
 NUMCC=18
 # regex
@@ -335,8 +335,9 @@ NUMNOCC=$(($NUMCC-1))
 
 # second
 NUM2=13
-NUM2TOT=152
-NUM2TOT_RN=147   # five announcements
+NUM2TOT=$((${NUMNORM}+${NUM2}))
+NUM2ANN=5
+NUM2TOT_RN=$((${NUM2TOT}-${NUM2ANN}))   # five announcements
 NUM2_EXIST=2    # two existing
 NUM2TOT_RN_EXIST=$((${NUM2TOT_RN}-${NUM2_EXIST}))
 # deleted foxtrot (only the second dir)

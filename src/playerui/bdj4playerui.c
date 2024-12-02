@@ -30,6 +30,7 @@
 #include "datafile.h"
 #include "dispsel.h"
 #include "fileop.h"
+#include "grouping.h"
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
@@ -128,6 +129,7 @@ typedef struct {
   char            *locknm;
   conn_t          *conn;
   musicdb_t       *musicdb;
+  grouping_t      *grouping;
   songdb_t        *songdb;
   int             musicqPlayIdx;
   int             musicqRequestIdx;
@@ -282,6 +284,7 @@ main (int argc, char *argv[])
   uint16_t        listenPort;
   playerui_t      plui;
   char            tbuff [MAXPATHLEN];
+  uisetup_t       uisetup;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("plui");
@@ -348,6 +351,7 @@ main (int argc, char *argv[])
   bdj4startup (argc, argv, &plui.musicdb,
       "plui", ROUTE_PLAYERUI, &plui.dbgflags);
   logProcBegin ();
+  plui.grouping = groupingAlloc (plui.musicdb);
 
   plui.songdb = songdbAlloc (plui.musicdb);
 
@@ -392,13 +396,8 @@ main (int argc, char *argv[])
   }
 
   uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
-  uiSetUICSS (uiutilsGetCurrentFont (),
-      uiutilsGetListingFont (),
-      bdjoptGetStr (OPT_P_UI_ACCENT_COL),
-      bdjoptGetStr (OPT_P_UI_ERROR_COL),
-      bdjoptGetStr (OPT_P_UI_MARK_COL),
-      bdjoptGetStr (OPT_P_UI_ROWSEL_COL),
-      bdjoptGetStr (OPT_P_UI_ROW_HL_COL));
+  uiutilsInitSetup (&uisetup);
+  uiSetUICSS (&uisetup);
 
   pluiBuildUI (&plui);
   osuiFinalize ();
@@ -493,6 +492,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
 
   datafileSave (plui->optiondf, NULL, plui->options, DF_NO_OFFSET, 1);
 
+  groupingFree (plui->grouping);
   bdj4shutdown (ROUTE_PLAYERUI, plui->musicdb);
   dispselFree (plui->dispsel);
   songdbFree (plui->songdb);
@@ -841,7 +841,8 @@ pluiInitializeUI (playerui_t *plui)
 
   plui->uisongfilter = uisfInit (plui->wcont [PLUI_W_WINDOW], plui->options,
       SONG_FILTER_FOR_PLAYBACK);
-  plui->uisongsel = uisongselInit ("plui-req", plui->conn, plui->musicdb,
+  plui->uisongsel = uisongselInit ("plui-req", plui->conn,
+      plui->musicdb, plui->grouping,
       plui->dispsel, NULL, plui->options,
       plui->uisongfilter, DISP_SEL_REQUEST);
   plui->callbacks [PLUI_CB_QUEUE_SL] = callbackInitI (
@@ -1141,6 +1142,8 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_DB_ENTRY_UPDATE: {
           dbLoadEntry (plui->musicdb, atol (args));
+          /* the grouping must be re-built when a song is saved */
+          groupingRebuild (plui->grouping, plui->musicdb);
           uisongselPopulateData (plui->uisongsel);
           break;
         }

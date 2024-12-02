@@ -12,6 +12,7 @@
 #include <math.h>
 
 #include "uiclass.h"
+#include "uiutils.h"    // for uisetup_t definition
 
 #include "ui/uiwcont-int.h"
 
@@ -50,9 +51,7 @@ uiCleanup (void)
 }
 
 void
-uiSetUICSS (const char *uifont, const char *listingfont,
-    const char *accentColor, const char *errorColor, const char *markColor,
-    const char *selectColor, const char *rowhlColor)
+uiSetUICSS (uisetup_t *uisetup)
 {
   return;
 }

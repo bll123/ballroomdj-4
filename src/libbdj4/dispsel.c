@@ -134,7 +134,7 @@ dispselCreateList (dispsel_t *dispsel, slist_t *tlist, int selidx)
 {
   slist_t       *tsellist;
   slistidx_t    iteridx;
-  tagdefkey_t   tagkey;
+  int           tagkey;
   const char    *keystr;
   char          tbuff [80];
 

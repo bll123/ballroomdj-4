@@ -12,7 +12,7 @@
 version
 ..1
 count
-..139
+..145
 
 # standard dances
 
@@ -262,6 +262,8 @@ DURATION
 ..30620
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
+GROUPING
+..aaa
 TAGS
 ..tag1 tag2 tag3
 STATUS
@@ -303,6 +305,8 @@ NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 TAGS
 ..tag4 TAG5
+GROUPING
+..bbb
 STATUS
 ..Complete
 DANCELEVEL
@@ -340,12 +344,18 @@ NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 TAGS
 ..tag6 tag7
+WORK
+..ccc
+MOVEMENTNAME
+..c1
+MOVEMENTNUM
+..1
 STATUS
 ..Edit
 DANCELEVEL
 ..Advanced
 GENRE
-..Jazz
+..Classical
 ALBUMARTIST
 ..%03d-albartist
 ARTIST
@@ -708,6 +718,8 @@ NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
 ..tag1 tag2 tag3
+GROUPING
+..aaa
 STATUS
 ..New
 DANCELEVEL
@@ -745,6 +757,8 @@ NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 TAGS
 ..tag4 TAG5
+GROUPING
+..bbb
 STATUS
 ..Complete
 DANCELEVEL
@@ -784,12 +798,20 @@ NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 TAGS
 ..tag6 tag7
+WORK
+..ccc
+MOVEMENTNAME
+..c2
+MOVEMENTNUM
+..2
+MOVEMENTCOUNT
+..3
 STATUS
 ..Edit
 DANCELEVEL
 ..Advanced
 GENRE
-..Jazz
+..Classical
 ALBUMARTIST
 ..%03d-albartist
 ARTIST
@@ -1376,6 +1398,8 @@ NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 TAGS
 ..tag1 tag2 tag3
+GROUPING
+..aaa
 STATUS
 ..New
 DANCELEVEL
@@ -1413,6 +1437,8 @@ DURATION
 ..31310
 TAGS
 ..tag4 TAG5
+GROUPING
+..bbb
 STATUS
 ..Complete
 DANCELEVEL
@@ -1450,12 +1476,20 @@ NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
 ..tag6 tag7
+WORK
+..ccc
+MOVEMENTNAME
+..c3
+MOVEMENTNUM
+..3
+MOVEMENTCOUNT
+..3
 STATUS
 ..Complete
 DANCELEVEL
 ..Advanced
 GENRE
-..Jazz
+..Classical
 ALBUMARTIST
 ..%03d-albartist
 ARTIST
@@ -5493,4 +5527,265 @@ TITLE
 ..%03d-waltz-ogg-ogx
 DEST
 ..%03d-waltz-ogg-ogx
+
+# .m4a
+# test 'grouping', 'work', 'movementname', 'movementnum' tags
+
+KEY
+..139
+SOURCE
+..chacha.m4a
+DURATION
+..30620
+NOTES
+..notes1 notes2 ÄÄÄÄääää
+GROUPING
+..aaa
+TAGS
+..tag1 tag2 tag3
+STATUS
+..New
+DANCELEVEL
+..Easy
+GENRE
+..Jazz
+ALBUMARTIST
+..%03d-albartist
+ARTIST
+..%03d-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Cha Cha
+DANCERATING
+..Great
+DISC
+..1
+DISCTOTAL
+..2
+FAVORITE
+..purplestar
+TITLE
+..%03d-chacha
+DEST
+..%03d-chacha
+
+KEY
+..140
+SOURCE
+..jive.m4a
+DURATION
+..30010
+NOTES
+..notes1 notes2 ÄÄÄÄääää
+TAGS
+..tag1 tag2 tag3
+GROUPING
+..aaa
+STATUS
+..New
+DANCELEVEL
+..Easy
+GENRE
+..Jazz
+ALBUMARTIST
+..%03d-albartist
+ARTIST
+..%03d-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Jive
+DANCERATING
+..Great
+DISC
+..1
+DISCTOTAL
+..2
+TITLE
+..%03d-jive
+DEST
+..%03d-jive
+
+KEY
+..141
+SOURCE
+..salsa.m4a
+DURATION
+..31310
+NOTES
+..notes5 notes6  ÄääääÄÄÄ
+TAGS
+..tag1 tag2 tag3
+GROUPING
+..aaa
+STATUS
+..New
+DANCELEVEL
+..Easy
+GENRE
+..Jazz
+ALBUMARTIST
+..%03d-albartist
+ARTIST
+..%03d-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Salsa
+DANCERATING
+..Great
+DISC
+..2
+DISCTOTAL
+..2
+FAVORITE
+..purplestar
+TITLE
+..%03d-salsa
+DEST
+..%03d-salsa
+
+KEY
+..142
+SOURCE
+..chacha.m4a
+DURATION
+..30620
+NOTES
+..notes1 notes2 ÄÄÄÄääää
+TAGS
+..tag1 tag2 tag3
+WORK
+..ddd
+MOVEMENTNAME
+..d1
+MOVEMENTNUM
+..1
+STATUS
+..New
+DANCELEVEL
+..Easy
+GENRE
+..Classical
+ALBUMARTIST
+..%03d-albartist
+ARTIST
+..%03d-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Cha Cha
+DANCERATING
+..Great
+DISC
+..1
+DISCTOTAL
+..2
+FAVORITE
+..purplestar
+TITLE
+..%03d-chacha
+DEST
+..%03d-chacha
+
+KEY
+..143
+SOURCE
+..jive.m4a
+DURATION
+..30010
+NOTES
+..notes1 notes2 ÄÄÄÄääää
+TAGS
+..tag1 tag2 tag3
+WORK
+..ddd
+MOVEMENTNAME
+..d2
+MOVEMENTNUM
+..2
+MOVEMENTCOUNT
+..3
+STATUS
+..New
+DANCELEVEL
+..Easy
+GENRE
+..Classical
+ALBUMARTIST
+..%03d-albartist
+ARTIST
+..%03d-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Jive
+DANCERATING
+..Great
+DISC
+..1
+DISCTOTAL
+..2
+TITLE
+..%03d-jive
+DEST
+..%03d-jive
+
+KEY
+..144
+SOURCE
+..salsa.m4a
+DURATION
+..31310
+NOTES
+..notes5 notes6  ÄääääÄÄÄ
+TAGS
+..tag1 tag2 tag3
+WORK
+..ddd
+MOVEMENTNAME
+..d3
+MOVEMENTNUM
+..3
+MOVEMENTCOUNT
+..3
+STATUS
+..New
+DANCELEVEL
+..Easy
+GENRE
+..Classical
+ALBUMARTIST
+..%03d-albartist
+ARTIST
+..%03d-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Salsa
+DANCERATING
+..Great
+DISC
+..2
+DISCTOTAL
+..2
+FAVORITE
+..purplestar
+TITLE
+..%03d-salsa
+DEST
+..%03d-salsa
 

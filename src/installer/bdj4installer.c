@@ -512,7 +512,8 @@ main (int argc, char *argv[])
   pathDisplayPath (installer.target, strlen (installer.target));
 
   if (installer.guienabled) {
-    char *uifont;
+    char      *uifont;
+    uisetup_t uisetup;
 
     uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
 
@@ -523,7 +524,15 @@ main (int argc, char *argv[])
         uifont = "Arial Regular 14";
       }
     }
-    uiSetUICSS (uifont, uifont, INST_HL_COLOR, NULL, NULL, NULL, NULL);
+    uisetup.uifont = uifont;
+    uisetup.listingfont = uifont;
+    uisetup.accentColor = INST_HL_COLOR;
+    uisetup.errorColor = NULL;
+    uisetup.markColor = NULL;
+    uisetup.rowselColor = NULL;
+    uisetup.rowhlColor = NULL;
+    uisetup.mqbgColor = NULL;
+    uiSetUICSS (&uisetup);
   }
 
   if (installer.guienabled) {

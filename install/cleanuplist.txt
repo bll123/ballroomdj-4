@@ -239,6 +239,11 @@ plocal/lib/libicu[a-z0-9]*\.so$
 plocal/lib/libicu[a-z0-9]*\.so\.7[23]$
 plocal/lib/libicu[a-z0-9]*\.so\.7[23]\.[0-9]$
 plocal/lib/libFLAC*\.(so|la).*$
+plocal/lib/libvorbis[a-z]*\.(so|la).*$
+plocal/lib64/libicu[a-z0-9]*\.so$
+plocal/lib64/libicu[a-z0-9]*\.so\.7[23]$
+plocal/lib64/libicu[a-z0-9]*\.so\.7[23]\.[0-9]$
+plocal/lib64/libFLAC*\.(so|la).*$
 licenses/icu\.LICENSE$
 licenses/icu\.LICENCE$
 licenses/libvorbis\.LICENSE$
@@ -248,8 +253,11 @@ licenses/flac\.LICENSE$
 # make sure some old libraries are gone
 plocal/lib/libmp4tag\.so\.1\.2\.[3456789]$
 plocal/lib/libmp4tag\.so\.1\.2\.1[012]$
+plocal/lib64/libmp4tag\.so\.1\.2\.[3456789]$
+plocal/lib64/libmp4tag\.so\.1\.2\.1[012]$
 # 2024-6-9
 plocal/lib/libmp4tag\.so\.1\.2\.1[0123]$
+plocal/lib64/libmp4tag\.so\.1\.2\.1[0123]$
 
 # 2023-11-13 bdj4winmksc is only used by windows
 bin/bdj4winmksc$
@@ -258,6 +266,7 @@ bin/libplimpv\.so$
 # 2024-11-18
 # libid3tag updated
 plocal/lib/libid3tag\.so\.0\.16\.3$
+plocal/lib64/libid3tag\.so\.0\.16\.3$
 
 ####
 # windows

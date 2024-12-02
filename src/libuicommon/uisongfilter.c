@@ -408,7 +408,7 @@ uisfPlaylistSelect (uisongfilter_t *uisf, const char *str)
     songfilterSetNum (uisf->songfilter, SONG_FILTER_PL_TYPE, pltype);
     if (pltype == PLTYPE_AUTO || pltype == PLTYPE_SEQUENCE) {
       playlistFree (uisf->playlist);
-      uisf->playlist = playlistLoad (str, NULL);
+      uisf->playlist = playlistLoad (str, NULL, NULL);
       playlistSetSongFilter (uisf->playlist, uisf->songfilter);
     }
     uisfDisableWidgets (uisf);

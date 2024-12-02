@@ -657,15 +657,13 @@ START_TEST(nlist_s_iterate_str)
 }
 END_TEST
 
-START_TEST(nlist_set_get_num)
+START_TEST(nlist_s_set_get_num)
 {
   nlist_t *      list;
-  ssize_t          value;
-  nlistidx_t          key;
-  nlistidx_t      iteridx;
+  ssize_t        value;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_set_get_num");
-  mdebugSubTag ("nlist_set_get_num");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_s_set_get_num");
+  mdebugSubTag ("nlist_s_set_get_num");
 
   list = nlistAlloc ("chk-gg", LIST_UNORDERED, NULL);
   ck_assert_ptr_nonnull (list);
@@ -679,51 +677,76 @@ START_TEST(nlist_set_get_num)
   ck_assert_int_eq (nlistGetCount (list), 7);
   ck_assert_int_eq (nlistGetAllocCount (list), 10);
 
-  /* unordered */
-  nlistStartIterator (list, &iteridx);
-  key = nlistIterateKey (list, &iteridx);
-  ck_assert_int_eq (key, 6);
-  value = nlistGetNum (list, key);
-  ck_assert_int_eq (value, 0);
-  key = nlistIterateKey (list, &iteridx);
-  ck_assert_int_eq (key, 26);
-  value = nlistGetNum (list, key);
-  ck_assert_int_eq (value, 1);
-
   nlistSort (list);
-  ck_assert_int_eq (nlistGetOrdering (list), LIST_ORDERED);
   ck_assert_int_eq (nlistGetCount (list), 7);
 
   /* ordered */
-  nlistStartIterator (list, &iteridx);
-  key = nlistIterateKey (list, &iteridx);
-  ck_assert_int_eq (key, 1);
-  value = nlistGetNum (list, key);
+  value = nlistGetNum (list, 1);
   ck_assert_int_eq (value, 5);
-  key = nlistIterateKey (list, &iteridx);
-  ck_assert_int_eq (key, 2);
-  value = nlistGetNum (list, key);
+  value = nlistGetNum (list, 2);
   ck_assert_int_eq (value, 6);
+  value = nlistGetNum (list, 3);
+  ck_assert_int_eq (value, 4);
+  value = nlistGetNum (list, 6);
+  ck_assert_int_eq (value, 0);
+  value = nlistGetNum (list, 11);
+  ck_assert_int_eq (value, 3);
+  value = nlistGetNum (list, 18);
+  ck_assert_int_eq (value, 2);
+  value = nlistGetNum (list, 26);
+  ck_assert_int_eq (value, 1);
+
+  nlistFree (list);
+}
+END_TEST
+
+START_TEST(nlist_s_get_after_iter)
+{
+  nlist_t *     list;
+  ssize_t       value;
+  nlistidx_t    iteridx;
+  int           key;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_s_get_after_iter");
+  mdebugSubTag ("nlist_s_get_after_iter");
+
+  list = nlistAlloc ("chk-gg", LIST_UNORDERED, NULL);
+  ck_assert_ptr_nonnull (list);
+  nlistSetNum (list, 6, 0);
+  nlistSetNum (list, 26, 1);
+  nlistSetNum (list, 18, 2);
+  nlistSetNum (list, 11, 3);
+  nlistSetNum (list, 3, 4);
+  nlistSetNum (list, 1, 5);
+  nlistSetNum (list, 2, 6);
+  ck_assert_int_eq (nlistGetCount (list), 7);
+  ck_assert_int_eq (nlistGetAllocCount (list), 10);
+
+  nlistSort (list);
+  ck_assert_int_eq (nlistGetCount (list), 7);
 
   nlistStartIterator (list, &iteridx);
-  value = nlistIterateValueNum (list, &iteridx);
+  while ((key = nlistIterateKey (list, &iteridx)) >= 0) {
+    value = nlistGetNum (list, key);
+    ck_assert_int_ge (key, 1);
+    ck_assert_int_ge (value, 0);
+  }
+  ck_assert_int_eq (nlistGetCount (list), 7);
+
+  value = nlistGetNum (list, 1);
   ck_assert_int_eq (value, 5);
-  value = nlistIterateValueNum (list, &iteridx);
+  value = nlistGetNum (list, 2);
   ck_assert_int_eq (value, 6);
-  value = nlistIterateValueNum (list, &iteridx);
+  value = nlistGetNum (list, 3);
   ck_assert_int_eq (value, 4);
-  value = nlistIterateValueNum (list, &iteridx);
+  value = nlistGetNum (list, 6);
   ck_assert_int_eq (value, 0);
-  value = nlistIterateValueNum (list, &iteridx);
+  value = nlistGetNum (list, 11);
   ck_assert_int_eq (value, 3);
-  value = nlistIterateValueNum (list, &iteridx);
+  value = nlistGetNum (list, 18);
   ck_assert_int_eq (value, 2);
-  value = nlistIterateValueNum (list, &iteridx);
+  value = nlistGetNum (list, 26);
   ck_assert_int_eq (value, 1);
-  value = nlistIterateValueNum (list, &iteridx);
-  ck_assert_int_eq (value, LIST_VALUE_INVALID);
-  value = nlistIterateValueNum (list, &iteridx);
-  ck_assert_int_eq (value, 5);
 
   nlistFree (list);
 }
@@ -1347,7 +1370,8 @@ nlist_suite (void)
   tcase_add_test (tc, nlist_s_get_str_not_exist);
   tcase_add_test (tc, nlist_s_cache_bug_20221013);
   tcase_add_test (tc, nlist_s_iterate_str);
-  tcase_add_test (tc, nlist_set_get_num);
+  tcase_add_test (tc, nlist_s_set_get_num);
+  tcase_add_test (tc, nlist_s_get_after_iter);
   tcase_add_test (tc, nlist_s_iterate_num);
   tcase_add_test (tc, nlist_s_replace_str);
   tcase_add_test (tc, nlist_free_str);

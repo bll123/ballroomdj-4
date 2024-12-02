@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 #include <stdarg.h>
 #include <errno.h>
@@ -89,7 +90,7 @@ logClose (logidx_t idx)
 }
 
 void
-rlogStartProgram (const char *prog, const char *fn, int line, const char *func)
+rlogStartProgram (const char *prog, const char *fn, int32_t line, const char *func)
 {
   char      tdt [40];
 
@@ -101,7 +102,7 @@ rlogStartProgram (const char *prog, const char *fn, int line, const char *func)
 }
 
 void
-rlogProcBegin (const char *fn, int line, const char *func)
+rlogProcBegin (const char *fn, int32_t line, const char *func)
 {
   if (! logCheck (LOG_DBG, LOG_PROC)) {
     return;
@@ -112,7 +113,7 @@ rlogProcBegin (const char *fn, int line, const char *func)
 
 void
 rlogProcEnd (const char *suffix,
-    const char *fn, int line, const char *func)
+    const char *fn, int32_t line, const char *func)
 {
   if (! logCheck (LOG_DBG, LOG_PROC)) {
     return;
@@ -125,7 +126,7 @@ rlogProcEnd (const char *suffix,
 }
 
 void
-rlogError (const char *msg, int err, const char *fn, int line, const char *func)
+rlogError (const char *msg, int err, const char *fn, int32_t line, const char *func)
 {
   if (syslogs [LOG_ERR] == NULL) {
     return;
@@ -138,7 +139,7 @@ rlogError (const char *msg, int err, const char *fn, int line, const char *func)
 
 void
 rlogVarMsg (logidx_t idx, loglevel_t level,
-    const char *fn, int line, const char *func, const char *fmt, ...)
+    const char *fn, int32_t line, const char *func, const char *fmt, ...)
 {
   bdjlog_t      *l;
   char          ttm [40];

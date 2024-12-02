@@ -176,6 +176,7 @@ main (int argc, char *argv[])
   bool        isbdj4 = false;
   int         c;
   int         option_index;
+  uisetup_t   uisetup;
 
   static struct option bdj_options [] = {
     { "bdj4",         no_argument,      NULL,   'B' },
@@ -265,13 +266,8 @@ main (int argc, char *argv[])
   bdjoptInit ();
 
   uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
-  uiSetUICSS (uiutilsGetCurrentFont (),
-      uiutilsGetListingFont (),
-      bdjoptGetStr (OPT_P_UI_ACCENT_COL),
-      bdjoptGetStr (OPT_P_UI_ERROR_COL),
-      bdjoptGetStr (OPT_P_UI_MARK_COL),
-      bdjoptGetStr (OPT_P_UI_ROWSEL_COL),
-      bdjoptGetStr (OPT_P_UI_ROW_HL_COL));
+  uiutilsInitSetup (&uisetup);
+  uiSetUICSS (&uisetup);
 
   uitestBuildUI (&uitest);
   osuiFinalize ();

@@ -4,9 +4,21 @@
 
 <!--
 
-**4.12.6 2024-10---**
+**4.12.8 2024-11---**
 
 -->
+
+**4.12.7 2024-11-30**
+
+* Bug Fixes:
+    * Marquee: Fix background color.
+    * Allow sort by movement number.
+* Changes:
+    * Right-click in song selection now selects based on 'grouping' or 'work'.
+    * Automatic song selection will now group songs based on 'grouping' or 'work'.
+* Internal:
+    * Minor code cleanup.
+    * Update mongoose to version 7.16.
 
 **4.12.6 2024-11-23**
 
@@ -1113,4 +1125,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-11-23 14:31:33; BDJ4 version 4.12.6)_
+<br>_(Updated 2024-11-30 12:19:09; BDJ4 version 4.12.7)_
