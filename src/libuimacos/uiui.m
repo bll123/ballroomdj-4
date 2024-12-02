@@ -145,24 +145,27 @@ uiInitUILog (void)
 void
 uiwcontUIInit (uiwcont_t *uiwidget)
 {
-  macosmargin_t *margins;
+  macoslayout_t *layout;
 
-  if (uiwidget->uidata.margins != NULL) {
+  if (uiwidget->uidata.layout != NULL) {
     return;
   }
 
-  margins = mdmalloc (sizeof (macosmargin_t));
-  uiwidget->uidata.margins = margins;
+  layout = mdmalloc (sizeof (macoslayout_t));
+  uiwidget->uidata.layout = layout;
 
-  margins->margins = NSEdgeInsetsMake (0, 0, 0, 0);
-  margins->container = NULL;
+  layout->margins = NSEdgeInsetsMake (0, 0, 0, 0);
+  layout->marginlg = [[NSLayoutGuide alloc] init];
+  layout->centered = false;
+  layout->expand = false;
+  layout->alignright = false;
 }
 
 void
 uiwcontUIWidgetInit (uiwcont_t *uiwidget)
 {
   NSView        *view = uiwidget->uidata.widget;
-  macosmargin_t *margins = uiwidget->uidata.margins;
+  macoslayout_t *layout = uiwidget->uidata.layout;
 
   if (uiwidget->wbasetype == WCONT_T_WINDOW) {
     return;
@@ -171,21 +174,22 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
   if (uiwidget->wbasetype == WCONT_T_BOX) {
     NSStackView *stackview = uiwidget->uidata.widget;
 
-    stackview.edgeInsets = margins->margins;
+    stackview.edgeInsets = layout->margins;
     return;
   }
 
-  margins->container = [[NSStackView alloc] init];
-  margins->container.edgeInsets = margins->margins;
-  [margins->container addView: view inGravity: NSStackViewGravityLeading];
+  [view addLayoutGuide: layout->marginlg];
+//  margins->container = [[NSStackView alloc] init];
+//  margins->container.edgeInsets = margins->margins;
+//  [margins->container addView: view inGravity: NSStackViewGravityLeading];
 
-  if (uiwidget->uidata.widget == uiwidget->uidata.packwidget) {
-    uiwidget->uidata.packwidget = margins->container;
-  }
+//  if (uiwidget->uidata.widget == uiwidget->uidata.packwidget) {
+//    uiwidget->uidata.packwidget = margins->container;
+//  }
 }
 
 void
 uiwcontUIFree (uiwcont_t *uiwidget)
 {
-  dataFree (uiwidget->uidata.margins);
+  return;
 }

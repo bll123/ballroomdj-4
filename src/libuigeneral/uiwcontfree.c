@@ -15,6 +15,7 @@
 #include "ui/uiwcont-int.h"
 
 /* the includes are needed to get the declaration of ...Free() */
+#include "ui/uibox.h"
 #include "ui/uibutton.h"
 #include "ui/uientry.h"
 #include "ui/uievents.h"

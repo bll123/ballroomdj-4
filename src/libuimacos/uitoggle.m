@@ -40,6 +40,7 @@ fprintf (stderr, "c-chk-bt\n");
   if (txt != NULL) {
     [widget setTitle: [NSString stringWithUTF8String: txt]];
   }
+  [widget setAutoresizingMask: NSViewNotSizable];
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
   uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_CHECK_BOX);
@@ -66,6 +67,7 @@ fprintf (stderr, "c-radio-bt\n");
   if (txt != NULL) {
     [widget setTitle: [NSString stringWithUTF8String: txt]];
   }
+  [widget setAutoresizingMask: NSViewNotSizable];
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
   uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_RADIO_BUTTON);
@@ -93,6 +95,7 @@ fprintf (stderr, "c-toggle-bt\n");
   if (txt != NULL) {
     [widget setTitle: [NSString stringWithUTF8String: txt]];
   }
+  [widget setAutoresizingMask: NSViewNotSizable];
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
 //    gtk_widget_set_tooltip_text (widget, title);

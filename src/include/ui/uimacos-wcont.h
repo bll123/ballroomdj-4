@@ -13,7 +13,7 @@ extern "C" {
 extern uisetup_t   guisetup;
 
 /* to hold the margin information for the widget */
-typedef struct macosmargin macosmargin_t;
+typedef struct macoslayout macoslayout_t;
 
 typedef struct uispecific {
   void              *packwidget;
@@ -21,7 +21,7 @@ typedef struct uispecific {
     void            *widget;
   };
   /* to hold the margin information and margin constraints for the widget */
-  macosmargin_t     *margins;
+  macoslayout_t     *layout;
 } uispecific_t;
 
 #if defined (__cplusplus) || defined (c_plusplus)

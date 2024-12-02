@@ -35,6 +35,7 @@ fprintf (stderr, "c-chgind\n");
   [widget setDrawsBackground:NO];
   [widget setEditable:NO];
   [widget setStringValue: [NSString stringWithUTF8String: " "]];
+  [widget setAutoresizingMask: NSViewNotSizable];
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
   uiwidget = uiwcontAlloc (WCONT_T_CHGIND, WCONT_T_CHGIND);

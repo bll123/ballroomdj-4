@@ -40,7 +40,7 @@ typedef struct uibutton {
 - (IBAction) OnButton1Click: (id) sender {
   uibuttonbase_t  *bbase;
 
-  fprintf (stderr, "b: button-1 click\n");
+fprintf (stderr, "b: button-1 click\n");
   bbase = &uiwidget->uiint.uibuttonbase;
   if (bbase->cb != NULL) {
     callbackHandler (bbase->cb);
@@ -95,6 +95,7 @@ fprintf (stderr, "c-bt\n");
   [widget setTarget: widget];
   [widget setUIWidget: uiwidget];
   [widget setAction: @selector(OnButton1Click:)];
+  [widget setAutoresizingMask: NSViewNotSizable];
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
   bbase = &uiwidget->uiint.uibuttonbase;

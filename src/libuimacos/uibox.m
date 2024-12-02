@@ -14,6 +14,7 @@
 #include <Cocoa/Cocoa.h>
 #import <Foundation/NSObject.h>
 
+#include "mdebug.h"
 #include "uigeneral.h"    // debug flag
 #include "uiwcont.h"
 
@@ -30,8 +31,8 @@
 @end
 
 typedef struct uibox {
-  IBox        *prior = NULL;
-  IBox        *priorlast = NULL;
+  uiwcont_t   *priorstart;
+  uiwcont_t   *priorend;
 } uibox_t;
 
 static uiwcont_t * uiCreateBox (int orientation);
@@ -74,10 +75,12 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
 
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.packwidget;
+
   if (uibox->wtype == WCONT_T_VBOX) {
     grav = NSStackViewGravityTop;
   }
   [box addView: widget inGravity: grav];
+
   uiWidgetSetMarginTop (uiwidget, 1);
   uiWidgetSetMarginStart (uiwidget, 1);
   uiwidget->packed = true;
@@ -172,10 +175,16 @@ static uiwcont_t *
 uiCreateBox (int orientation)
 {
   uiwcont_t   *uiwidget = NULL;
+  uibox_t     *uibox = NULL;
   IBox        *box = NULL;
+
+  uibox = mdmalloc (sizeof (uibox_t));
+  uibox->priorstart = NULL;
+  uibox->priorend = NULL;
 
   box = [[IBox alloc] init];
   [box setOrientation: orientation];
+  [box setAutoresizingMask: NSViewNotSizable];
   [box setTranslatesAutoresizingMaskIntoConstraints: NO];
   [box setDistribution: NSStackViewDistributionGravityAreas];
   box.spacing = 1.0;
@@ -195,6 +204,8 @@ uiCreateBox (int orientation)
     [box setAlignment: NSLayoutAttributeLeading];
   }
   uiwcontSetWidget (uiwidget, box, NULL);
+  uiwidget->uiint.uibox = uibox;
+
   return uiwidget;
 }
 

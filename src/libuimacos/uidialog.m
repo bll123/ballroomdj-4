@@ -135,8 +135,8 @@ fprintf (stderr, "c-dialog\n");
   uiwin->packed = true;
 
   uiWidgetSetAllMargins (uibox, 2);
-  uiWidgetExpandHoriz (uibox);
-  uiWidgetExpandVert (uibox);
+//  uiWidgetExpandHoriz (uibox);
+//  uiWidgetExpandVert (uibox);
 
   return uiwin;
 }

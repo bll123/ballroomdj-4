@@ -696,8 +696,8 @@ starterBuildUI (startui_t  *starter)
      "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   uiwidgetp = uiImageScaledFromFile (tbuff, 128);
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetExpandHoriz (uiwidgetp);
   uiWidgetSetAllMargins (uiwidgetp, 10);
+  uiWidgetExpandHoriz (uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);

@@ -54,10 +54,13 @@ extern "C" {
 
 /* structures */
 
-typedef struct macosmargin {
+typedef struct macoslayout {
   NSEdgeInsets  margins;
-  NSStackView   *container;
-} macosmargin_t;
+  NSLayoutGuide *marginlg;
+  bool          centered;
+  bool          expand;
+  bool          alignright;
+} macoslayout_t;
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
