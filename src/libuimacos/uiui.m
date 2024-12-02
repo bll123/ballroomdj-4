@@ -16,13 +16,17 @@
 #import <Foundation/NSDebug.h>
 
 #include "oslocale.h"
+#include "mdebug.h"
 #include "tmutil.h"
 #include "uiclass.h"
 #include "uigeneral.h"
 
 #include "ui/uiwcont-int.h"
+#include "ui/uimacos-int.h"
 
 #include "ui/uiui.h"
+
+uisetup_t   guisetup;
 
 int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 
@@ -108,10 +112,9 @@ uiCleanup (void)
 }
 
 void
-uiSetUICSS (const char *uifont, const char *listingfont,
-    const char *accentColor, const char *errorColor, const char *markColor,
-    const char *selectColor, const char *rowhlColor)
+uiSetUICSS (uisetup_t *uisetup)
 {
+  memcpy (&guisetup, uisetup, sizeof (uisetup_t));
   return;
 }
 
@@ -137,4 +140,52 @@ void
 uiInitUILog (void)
 {
   return;
+}
+
+void
+uiwcontUIInit (uiwcont_t *uiwidget)
+{
+  macosmargin_t *margins;
+
+  if (uiwidget->uidata.margins != NULL) {
+    return;
+  }
+
+  margins = mdmalloc (sizeof (macosmargin_t));
+  uiwidget->uidata.margins = margins;
+
+  margins->margins = NSEdgeInsetsMake (0, 0, 0, 0);
+  margins->container = NULL;
+}
+
+void
+uiwcontUIWidgetInit (uiwcont_t *uiwidget)
+{
+  NSView        *view = uiwidget->uidata.widget;
+  macosmargin_t *margins = uiwidget->uidata.margins;
+
+  if (uiwidget->wbasetype == WCONT_T_WINDOW) {
+    return;
+  }
+
+  if (uiwidget->wbasetype == WCONT_T_BOX) {
+    NSStackView *stackview = uiwidget->uidata.widget;
+
+    stackview.edgeInsets = margins->margins;
+    return;
+  }
+
+  margins->container = [[NSStackView alloc] init];
+  margins->container.edgeInsets = margins->margins;
+  [margins->container addView: view inGravity: NSStackViewGravityLeading];
+
+  if (uiwidget->uidata.widget == uiwidget->uidata.packwidget) {
+    uiwidget->uidata.packwidget = margins->container;
+  }
+}
+
+void
+uiwcontUIFree (uiwcont_t *uiwidget)
+{
+  dataFree (uiwidget->uidata.margins);
 }

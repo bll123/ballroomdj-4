@@ -26,11 +26,19 @@ uiCreateChangeIndicator (uiwcont_t *boxp)
 void
 uichgindMarkNormal (uiwcont_t *uiwidget)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_CHGIND, "ci-mark-norm")) {
+    return;
+  }
+
   return;
 }
 
 void
 uichgindMarkChanged (uiwcont_t *uiwidget)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_CHGIND, "ci-mark-chg")) {
+    return;
+  }
+
   return;
 }

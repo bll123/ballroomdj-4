@@ -188,8 +188,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   szgrpText = uiCreateSizeGroupHoriz ();      // text widgets
 
   tophbox = uiCreateHorizBox ();
-  uiWidgetAlignVertStart (tophbox);
   uiBoxPackStart (vboxp, tophbox);
+  uiWidgetAlignVertStart (tophbox);
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (tophbox, hbox);

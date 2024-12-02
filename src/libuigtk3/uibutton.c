@@ -70,11 +70,10 @@ uiCreateButton (callback_t *uicb, char *title, char *imagenm)
     gtk_button_set_label (GTK_BUTTON (widget), title);
   }
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_BUTTON;
-  uiwidget->wtype = WCONT_T_BUTTON;
-  uiwidget->uidata.widget = widget;
-  uiwidget->uidata.packwidget = widget;
+  uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_BUTTON);
+  uiwcontSetWidget (uiwidget, widget, NULL);
+//  uiwidget->uidata.widget = widget;
+//  uiwidget->uidata.packwidget = widget;
   uiwidget->uiint.uibutton = uibutton;
 
   bbase = &uiwidget->uiint.uibuttonbase;

@@ -29,11 +29,10 @@ uiCreateFontButton (const char *fontname)
   } else {
     fb = gtk_font_button_new ();
   }
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_BUTTON;
-  uiwidget->wtype = WCONT_T_FONT_BUTTON;
-  uiwidget->uidata.widget = fb;
-  uiwidget->uidata.packwidget = fb;
+  uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_FONT_BUTTON);
+  uiwcontSetWidget (uiwidget, fb, NULL);
+//  uiwidget->uidata.widget = fb;
+//  uiwidget->uidata.packwidget = fb;
   return uiwidget;
 }
 
@@ -64,11 +63,10 @@ uiCreateColorButton (const char *color)
     cb = gtk_color_button_new ();
   }
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_BUTTON;
-  uiwidget->wtype = WCONT_T_COLOR_BUTTON;
-  uiwidget->uidata.widget = cb;
-  uiwidget->uidata.packwidget = cb;
+  uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_COLOR_BUTTON);
+  uiwcontSetWidget (uiwidget, cb, NULL);
+//  uiwidget->uidata.widget = cb;
+//  uiwidget->uidata.packwidget = cb;
   return uiwidget;
 }
 

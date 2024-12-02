@@ -1,8 +1,8 @@
 /*
  * Copyright 2024 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UINULL_INT_H
-#define INC_UINULL_INT_H
+#ifndef INC_UINULL_WCONT_H
+#define INC_UINULL_WCONT_H
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -21,4 +21,4 @@ typedef struct uispecific {
 } /* extern C */
 #endif
 
-#endif /* INC_UINULL_INT_H */
+#endif /* INC_UINULL_WCONT_H */

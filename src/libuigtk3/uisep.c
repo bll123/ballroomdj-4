@@ -26,11 +26,10 @@ uiCreateHorizSeparator (void)
   GtkWidget   *sep;
 
   sep = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_SEPARATOR;
-  uiwidget->wtype = WCONT_T_SEPARATOR;
-  uiwidget->uidata.widget = sep;
-  uiwidget->uidata.packwidget = sep;
+  uiwidget = uiwcontAlloc (WCONT_T_SEPARATOR, WCONT_T_SEPARATOR);
+  uiwcontSetWidget (uiwidget, sep, NULL);
+//  uiwidget->uidata.widget = sep;
+//  uiwidget->uidata.packwidget = sep;
   uiWidgetExpandHoriz (uiwidget);
   return uiwidget;
 }

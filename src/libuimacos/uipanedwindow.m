@@ -23,6 +23,7 @@ uiPanedWindowCreateVert (void)
 {
   uiwcont_t *uiwidget;
 
+fprintf (stderr, "c-pw-v\n");
   uiwidget = uiPanedWindowCreate (0);
   return uiwidget;
 }

@@ -13,6 +13,8 @@
 #include "bdjstring.h"
 #include "uigeneral.h"
 
+/* this file is currently not in use 2024-12-2 */
+
 /* if this doesn't see use, remove it later */
 void
 uiFontInfo (const char *font, char *buff, size_t sz, int *fontsz) /* UNUSED */

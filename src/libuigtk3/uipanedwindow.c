@@ -98,10 +98,9 @@ uiPanedWindowCreate (int orientation)
   gtk_widget_set_margin_end (widget, 0);
   gtk_paned_set_wide_handle (GTK_PANED (widget), true);
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_WINDOW;
-  uiwidget->wtype = WCONT_T_PANED_WINDOW;
-  uiwidget->uidata.widget = widget;
-  uiwidget->uidata.packwidget = widget;
+  uiwidget = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_PANED_WINDOW);
+  uiwcontSetWidget (uiwidget, widget, NULL);
+//  uiwidget->uidata.widget = widget;
+//  uiwidget->uidata.packwidget = widget;
   return uiwidget;
 }

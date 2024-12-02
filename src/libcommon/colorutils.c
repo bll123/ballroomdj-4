@@ -25,6 +25,36 @@ createRandomColor (char *tbuff, size_t sz)
   return tbuff;
 }
 
+/* takes a standard #rrggbb text string */
+void
+colorValues (const char *color, double *r, double *g, double *b)
+{
+  char    temp [20];
+
+  *r = 0.0;
+  *g = 0.0;
+  *b = 0.0;
+
+  if (color == NULL || *color != '#') {
+    return;
+  }
+
+  ++color;
+  strncpy (temp, color, 2);
+  temp [2] = '\0';
+  *r = atof (temp) / 255.0;
+
+  color += 2;
+  strncpy (temp, color, 2);
+  temp [2] = '\0';
+  *g = atof (temp) / 255.0;
+
+  color += 2;
+  strncpy (temp, color, 2);
+  temp [2] = '\0';
+  *b = atof (temp) / 255.0;
+}
+
 #if 0
 double
 colorLuminance (const char *color)  /* KEEP */

@@ -9,7 +9,8 @@ extern "C" {
 #endif
 
 char    *createRandomColor (char *tbuff, size_t sz);
-double  colorLuminance (const char *color);
+void    colorValues (const char *color, double *r, double *g, double *b);
+// double  colorLuminance (const char *color); // not in use
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

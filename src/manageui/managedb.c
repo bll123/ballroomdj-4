@@ -259,9 +259,9 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   stpecpy (tbuff, tbuff + sizeof (tbuff), bdjoptGetStr (OPT_M_DIR_MUSIC));
   pathDisplayPath (tbuff, sizeof (tbuff));
   uiEntrySetValue (uiwidgetp, tbuff);
-  uiWidgetAlignHorizFill (uiwidgetp);
-  uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiWidgetAlignHorizFill (uiwidgetp);
   managedb->wcont [MDB_W_DB_MUSIC_DIR] = uiwidgetp;
   /* CONTEXT: update database: music folder to process */
   uiEntrySetValidate (managedb->wcont [MDB_W_DB_MUSIC_DIR], _("Music Folder"),

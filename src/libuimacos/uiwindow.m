@@ -18,29 +18,12 @@
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"
+#include "ui/uimacos-int.h"
 
 #include "ui/uiui.h"
 #include "ui/uibox.h"
 #include "ui/uiwidget.h"
 #include "ui/uiwindow.h"
-
-@interface IWindowDelegate : NSObject
-- (void)windowDidBecomeKey:(NSNotification *)notification;
-- (void)windowDidBecomeMain:(NSNotification *)notification;
-- (void)windowDidResignKey:(NSNotification *)notification;
-- (void)windowDidResignMain:(NSNotification *)notification;
-- (void)windowWillClose:(NSNotification *)notification;
-- (BOOL)canBecomeKeyWindow;
-- (BOOL)canBecomeMainWindow;
-- (IBAction) OnButton1Click:(id)sender;
-- (IBAction) OnButton2Click:(id)sender;
-@end
-
-@interface IWindow : NSWindow { }
-@property uiwcont_t *uibox;
-- (instancetype) init;
-- (void) awakeFromNib;
-@end
 
 @implementation IWindow
 
@@ -57,27 +40,10 @@
 
 - (void)awakeFromNib {
   IWindow*  w = self;
-  NSRect    f;
   NSStackView *box;
-  NSView    *clg;
-  NSSize    nssz;
 
   box = [w contentView];
-// ### this doesn't seem to work.
-// but leave it here just in case.
-  nssz = [box fittingSize];
-  f.size.height = nssz.height;
-  f.size.width  = nssz.width;
-  [w setFrame:f display:YES];
-
-// ### this doesn't seem to be working either
-  clg = w.contentLayoutGuide;
-//  [clg.leadingAnchor constraintEqualToAnchor: box.leadingAnchor].active = YES;
-//  [clg.trailingAnchor constraintEqualToAnchor: box.trailingAnchor].active = YES;
-//  [clg.topAnchor constraintEqualToAnchor: box.topAnchor].active = YES;
-//  [clg.bottomAnchor constraintEqualToAnchor: box.bottomAnchor].active = YES;
-  [clg.heightAnchor constraintEqualToAnchor: box.heightAnchor].active = YES;
-  [clg.widthAnchor constraintEqualToAnchor: box.widthAnchor].active = YES;
+  [box setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
 }
 
 @end
@@ -137,6 +103,7 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   NSStackView   *box;
   id            windowDelegate;
 
+fprintf (stderr, "c-main-win\n");
   win = [[IWindow alloc] init];
   uibox = uiCreateVertBox ();
   if (title != NULL) {
@@ -164,11 +131,8 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   windowDelegate = [[IWindowDelegate alloc] init];
   [win setDelegate:windowDelegate];
 
-  uiwin = uiwcontAlloc ();
-  uiwin->wbasetype = WCONT_T_WINDOW;
-  uiwin->wtype = WCONT_T_WINDOW;
-  uiwin->uidata.widget = win;
-  uiwin->uidata.packwidget = win;
+  uiwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_WINDOW);
+  uiwcontSetWidget (uiwin, win, NULL);
   uiwin->packed = true;
 
   uiWidgetSetAllMargins (uibox, 2);
@@ -182,11 +146,16 @@ void
 uiWindowSetTitle (uiwcont_t *uiwindow, const char *title)
 {
   IWindow   *win = NULL;
-  NSString  *nstitle = [NSString stringWithUTF8String: title];
+  NSString  *nstitle = NULL;
 
   if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-set-title")) {
     return;
   }
+  if (title == NULL) {
+    return;
+  }
+
+  nstitle = [NSString stringWithUTF8String: title];
 
   win = uiwindow->uidata.widget;
   [win setTitle:nstitle];
@@ -196,96 +165,157 @@ uiWindowSetTitle (uiwcont_t *uiwindow, const char *title)
 void
 uiCloseWindow (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-close")) {
+    return;
+  }
+
   return;
 }
 
 bool
 uiWindowIsMaximized (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-is-max")) {
+    return false;
+  }
+
   return false;
 }
 
 void
 uiWindowIconify (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-iconify")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowDeIconify (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-deiconify")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowMaximize (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-maximize")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowUnMaximize (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-unmaximize")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowDisableDecorations (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-disable-dec")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowEnableDecorations (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-enable-dec")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowGetSize (uiwcont_t *uiwindow, int *x, int *y)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-get-sz")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowSetDefaultSize (uiwcont_t *uiwindow, int x, int y)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-set-dflt-sz")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowGetPosition (uiwcont_t *uiwindow, int *x, int *y, int *ws)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-get-pos")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowMove (uiwcont_t *uiwindow, int x, int y, int ws)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-move")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowMoveToCurrentWorkspace (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-move-curr-ws")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWindowNoFocusOnStartup (uiwcont_t *uiwindow)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-no-focus-startup")) {
+    return;
+  }
+
   return;
 }
 
 uiwcont_t *
 uiCreateScrolledWindow (int minheight)
 {
+fprintf (stderr, "c-scroll-win\n");
   return NULL;
 }
 
 void
 uiWindowSetPolicyExternal (uiwcont_t *uisw)
 {
+  if (! uiwcontValid (uisw, WCONT_T_WINDOW, "win-set-policy-ext")) {
+    return;
+  }
+
   return;
 }
 
@@ -293,11 +323,16 @@ uiwcont_t *
 uiCreateDialogWindow (uiwcont_t *parentwin,
     uiwcont_t *attachment, callback_t *uicb, const char *title)
 {
+  if (! uiwcontValid (parentwin, WCONT_T_WINDOW, "win-create-dialog-win")) {
+    return NULL;
+  }
+
+fprintf (stderr, "c-dialog-win\n");
   return NULL;
 }
 
 void
-uiWindowSetDoubleClickCallback (uiwcont_t *uiwidget, callback_t *uicb)
+uiWindowSetDoubleClickCallback (uiwcont_t *uiwindow, callback_t *uicb)
 {
   if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-set-dclick-cb")) {
     return;
@@ -317,7 +352,7 @@ uiWindowSetWinStateCallback (uiwcont_t *uiwindow, callback_t *uicb)
 }
 
 void
-uiWindowNoDim (uiwcont_t *uiwidget)
+uiWindowNoDim (uiwcont_t *uiwindow)
 {
   if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-no-dim")) {
     return;
@@ -347,7 +382,7 @@ uiWindowRaise (uiwcont_t *uiwindow)
 }
 
 void
-uiWindowFind (uiwcont_t *window)
+uiWindowFind (uiwcont_t *uiwindow)
 {
   if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-find")) {
     return;
@@ -359,17 +394,17 @@ uiWindowFind (uiwcont_t *window)
 void
 uiWindowSetNoMaximize (uiwcont_t *uiwindow)
 {
-  int      sm;
-  IWindow  *win;
+//  int      sm;
+//  IWindow  *win;
 
   if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-set-nomax")) {
     return;
   }
 
-  win = uiwindow->uidata.widget;
-  sm = win.styleMask;
-  sm &= ~NSWindowStyleMaskResizable;
-  win.styleMask = sm;
+//  win = uiwindow->uidata.widget;
+//  sm = win.styleMask;
+//  sm &= ~NSWindowStyleMaskResizable;
+//  win.styleMask = sm;
   return;
 }
 
@@ -377,24 +412,37 @@ void
 uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
 {
   NSWindow    *win;
-  NSView      *widget = NULL;
-  NSStackView *box;
+  NSStackView *widget = NULL;
+  NSStackView *winbox;
   int         grav = NSStackViewGravityTop;
 
-  if (uiwindow == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-pack-in-win-win")) {
+    return;
+  }
+  /* the type of the uiwidget is not known */
+  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
   }
 
   win = uiwindow->uidata.widget;
   widget = uiwidget->uidata.packwidget;
-  box = [win contentView];
-  [box addView: widget inGravity: grav];
+  winbox = [win contentView];
+  [winbox addView: widget inGravity: grav];
   uiwidget->packed = true;
+
+  [widget.leadingAnchor
+      constraintEqualToAnchor: winbox.leadingAnchor].active = YES;
+  [widget.trailingAnchor
+      constraintEqualToAnchor: winbox.trailingAnchor].active = YES;
+  [widget.topAnchor
+      constraintEqualToAnchor: winbox.topAnchor].active = YES;
+  [widget.bottomAnchor
+      constraintEqualToAnchor: winbox.bottomAnchor].active = YES;
   return;
 }
 
 void
-uiWindowClearFocus (uiwcont_t *uiwidget)
+uiWindowClearFocus (uiwcont_t *uiwindow)
 {
   if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "window-clear-focus")) {
     return;

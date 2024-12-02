@@ -57,11 +57,10 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
     g_signal_connect (window, "delete-event", G_CALLBACK (uiWindowCloseCallback), uicb);
   }
 
-  uiwin = uiwcontAlloc ();
-  uiwin->wbasetype = WCONT_T_WINDOW;
-  uiwin->wtype = WCONT_T_WINDOW;
-  uiwin->uidata.widget = window;
-  uiwin->uidata.packwidget = window;
+  uiwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_WINDOW);
+  uiwcontSetWidget (uiwin, window, NULL);
+//  uiwin->uidata.widget = window;
+//  uiwin->uidata.packwidget = window;
   return uiwin;
 }
 
@@ -275,11 +274,10 @@ uiCreateScrolledWindow (int minheight)
   gtk_widget_set_hexpand (widget, FALSE);
   gtk_widget_set_vexpand (widget, FALSE);
 
-  scwindow = uiwcontAlloc ();
-  scwindow->wbasetype = WCONT_T_WINDOW;
-  scwindow->wtype = WCONT_T_SCROLL_WINDOW;
-  scwindow->uidata.widget = widget;
-  scwindow->uidata.packwidget = widget;
+  scwindow = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_SCROLL_WINDOW);
+  uiwcontSetWidget (scwindow, widget, NULL);
+//  scwindow->uidata.widget = widget;
+//  scwindow->uidata.packwidget = widget;
   return scwindow;
 }
 
@@ -331,11 +329,10 @@ uiCreateDialogWindow (uiwcont_t *parentwin,
         "focus-out-event", G_CALLBACK (uiWindowFocusOutCallback), uicb);
   }
 
-  uiwindow = uiwcontAlloc ();
-  uiwindow->wbasetype = WCONT_T_WINDOW;
-  uiwindow->wtype = WCONT_T_DIALOG_WINDOW;
-  uiwindow->uidata.widget = window;
-  uiwindow->uidata.packwidget = window;
+  uiwindow = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_DIALOG_WINDOW);
+  uiwcontSetWidget (uiwindow, window, NULL);
+//  uiwindow->uidata.widget = window;
+//  uiwindow->uidata.packwidget = window;
   return uiwindow;
 }
 

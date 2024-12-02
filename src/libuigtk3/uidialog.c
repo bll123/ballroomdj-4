@@ -158,11 +158,10 @@ uiCreateDialog (uiwcont_t *window,
   gtk_window_set_destroy_with_parent (GTK_WINDOW (dialog), TRUE);
   gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (window->uidata.widget));
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_WINDOW;
-  uiwidget->wtype = WCONT_T_DIALOG_WINDOW;
-  uiwidget->uidata.widget = dialog;
-  uiwidget->uidata.packwidget = dialog;
+  uiwidget = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_DIALOG_WINDOW);
+  uiwcontSetWidget (uiwidget, dialog, NULL);
+//  uiwidget->uidata.widget = dialog;
+//  uiwidget->uidata.packwidget = dialog;
 
   va_start (valist, title);
   uiDialogAddButtonsInternal (uiwidget, valist);

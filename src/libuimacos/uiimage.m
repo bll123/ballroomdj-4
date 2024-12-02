@@ -38,11 +38,8 @@ uiImageFromFile (const char *fn)
   imgv = [[NSImageView alloc] init];
   [imgv setImage: image];
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_IMAGE;
-  uiwidget->wtype = WCONT_T_IMAGE;
-  uiwidget->uidata.widget = imgv;
-  uiwidget->uidata.packwidget = imgv;
+  uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
+  uiwcontSetWidget (uiwidget, imgv, NULL);
 
   uiWidgetAlignHorizCenter (uiwidget);
   uiWidgetAlignVertCenter (uiwidget);
@@ -66,11 +63,8 @@ uiImageScaledFromFile (const char *fn, int scale)
   [imgv.widthAnchor constraintEqualToConstant: scale + 4].active = YES;
   [imgv.heightAnchor constraintEqualToConstant: scale + 4].active = YES;
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_IMAGE;
-  uiwidget->wtype = WCONT_T_IMAGE;
-  uiwidget->uidata.widget = imgv;
-  uiwidget->uidata.packwidget = imgv;
+  uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
+  uiwcontSetWidget (uiwidget, imgv, NULL);
 
   uiWidgetAlignHorizCenter (uiwidget);
   uiWidgetAlignVertCenter (uiwidget);
@@ -91,8 +85,7 @@ uiImageClear (uiwcont_t *uiwidget)
   image = [[NSImage alloc] initWithSize: NSZeroSize];
   imgv = [[NSImageView alloc] init];
   [imgv setImage: image];
-  uiwidget->uidata.widget = imgv;
-  uiwidget->uidata.packwidget = imgv;
+  uiwcontSetWidget (uiwidget, imgv, NULL);
   return;
 }
 

@@ -19,6 +19,7 @@
 uiwcont_t *
 uiCreateFontButton (const char *fontname)
 {
+fprintf (stderr, "c-f-bt\n");
   return NULL;
 }
 
@@ -31,6 +32,7 @@ uiFontButtonGetFont (uiwcont_t *uiwidget)
 uiwcont_t *
 uiCreateColorButton (const char *color)
 {
+fprintf (stderr, "c-c-bt\n");
   return NULL;
 }
 

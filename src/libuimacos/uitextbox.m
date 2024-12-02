@@ -30,6 +30,7 @@ typedef struct uitextbox {
 uiwcont_t *
 uiTextBoxCreate (int height, const char *hlcolor)
 {
+fprintf (stderr, "c-textbox\n");
   return NULL;
 }
 

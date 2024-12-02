@@ -381,28 +381,28 @@ marqueeBuildUI (marquee_t *marquee)
   uiBoxPackStart (mainvbox, marquee->wcont [MQ_W_PBAR]);
 
   vbox = uiCreateVertBox ();
-  uiWidgetExpandHoriz (vbox);
   uiBoxPackStart (mainvbox, vbox);
+  uiWidgetExpandHoriz (vbox);
 
   hbox = uiCreateHorizBox ();
-  uiWidgetAlignHorizFill (hbox);
-  uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
+  uiWidgetExpandHoriz (hbox);
+  uiWidgetAlignHorizFill (hbox);
 
   /* CONTEXT: marquee: displayed when nothing is set to be played */
   uiwidgetp = uiCreateLabel (_("Not Playing"));
-  uiWidgetAlignHorizStart (uiwidgetp);
   uiWidgetDisableFocus (uiwidgetp);
   uiWidgetAddClass (uiwidgetp, MQ_ACCENT_CLASS);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAlignHorizStart (uiwidgetp);
   marquee->wcont [MQ_W_INFO_DANCE] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("0:00");
   uiLabelSetMaxWidth (uiwidgetp, 6);
-  uiWidgetAlignHorizEnd (uiwidgetp);
   uiWidgetDisableFocus (uiwidgetp);
   uiWidgetAddClass (uiwidgetp, MQ_ACCENT_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
+  uiWidgetAlignHorizEnd (uiwidgetp);
   marquee->wcont [MQ_W_COUNTDOWN_TIMER] = uiwidgetp;
 
   uiwcontFree (hbox);
@@ -410,20 +410,20 @@ marqueeBuildUI (marquee_t *marquee)
   /* info line */
 
   hbox = uiCreateHorizBox ();
-  uiWidgetAlignHorizFill (hbox);
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
+  uiWidgetAlignHorizFill (hbox);
   marquee->wcont [MQ_W_INFOBOX] = hbox;
 
   for (int i = MQ_W_INFO_DISP_A; i <= MQ_W_INFO_DISP_E; ++i) {
     uiwidgetp = uiCreateLabel ("");
-    uiWidgetAlignHorizStart (uiwidgetp);
-    uiWidgetAlignVertBaseline (uiwidgetp);
     uiWidgetDisableFocus (uiwidgetp);
     if ((i - MQ_W_INFO_DISP_A) % 2 == 0) {
       uiLabelEllipsizeOn (uiwidgetp);
     }
     uiBoxPackStart (hbox, uiwidgetp);
+    uiWidgetAlignHorizStart (uiwidgetp);
+    uiWidgetAlignVertBaseline (uiwidgetp);
     marquee->wcont [i] = uiwidgetp;
     uiWidgetAddClass (marquee->wcont [i], MQ_INFO_CLASS);
   }
@@ -439,10 +439,10 @@ marqueeBuildUI (marquee_t *marquee)
 
   for (int i = 0; i < marquee->mqLen; ++i) {
     marquee->marqueeLabs [i] = uiCreateLabel ("");
-    uiWidgetAlignHorizStart (marquee->marqueeLabs [i]);
-    uiWidgetExpandHoriz (marquee->marqueeLabs [i]);
     uiWidgetDisableFocus (marquee->marqueeLabs [i]);
     uiBoxPackStart (mainvbox, marquee->marqueeLabs [i]);
+    uiWidgetAlignHorizStart (marquee->marqueeLabs [i]);
+    uiWidgetExpandHoriz (marquee->marqueeLabs [i]);
     uiWidgetSetMarginTop (marquee->marqueeLabs [i], 4);
   }
 

@@ -59,16 +59,16 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
     vlflags = VL_NO_HEADING;
   }
   vbox = uiCreateVertBox ();
-  uiWidgetAlignHorizStart (vbox);
   uiBoxPackStart (boxp, vbox);
+  uiWidgetAlignHorizStart (vbox);
   uiWidgetSetAllMargins (vbox, 1);
   uivl = uivlCreate (tag, gui->window, vbox, 10, 100, vlflags);
   gui->tables [id].uivl = uivl;
   uiwcontFree (vbox);
 
   bvbox = uiCreateVertBox ();
-  uiWidgetAlignVertStart (bvbox);
   uiBoxPackStart (boxp, bvbox);
+  uiWidgetAlignVertStart (bvbox);
   uiWidgetSetAllMargins (bvbox, 4);
   uiWidgetSetMarginTop (bvbox, 32);
 

@@ -295,10 +295,10 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
       );
 
   vbox = uiCreateVertBox ();
-  uiWidgetExpandHoriz (vbox);
-  uiWidgetExpandVert (vbox);
   uiDialogPackInDialog (
       uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_DIALOG], vbox);
+  uiWidgetExpandHoriz (vbox);
+  uiWidgetExpandVert (vbox);
   uiWidgetSetAllMargins (vbox, 4);
 
   /* status msg */
@@ -340,9 +340,9 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
 
   uiwidgetp = uiEntryInit (50, MAXPATHLEN);
   uiEntrySetValue (uiwidgetp, "");
+  uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
-  uiBoxPackStartExpand (hbox, uiwidgetp);
   uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_TARGET] = uiwidgetp;
 
   if (uieibdj4->currtype == UIEIBDJ4_EXPORT) {

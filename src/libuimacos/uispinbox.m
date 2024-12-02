@@ -40,6 +40,7 @@ uiSpinboxFree (uiwcont_t *uiwidget)
 uiwcont_t *
 uiSpinboxTextCreate (void *udata)
 {
+fprintf (stderr, "c-sb-text\n");
   return NULL;
 }
 
@@ -70,9 +71,10 @@ uiSpinboxSetState (uiwcont_t *uiwidget, int state)
 }
 
 uiwcont_t *
-uiSpinboxTimeCreate (int sbtype, void *udata,
+uiSpinboxTimeCreate (sbtype_t sbtype, void *udata,
     const char *label, callback_t *convcb)
 {
+fprintf (stderr, "c-sb-time\n");
   return NULL;
 }
 
@@ -109,18 +111,21 @@ uiSpinboxSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb)
 uiwcont_t *
 uiSpinboxIntCreate (void)
 {
+fprintf (stderr, "c-sb-int\n");
   return NULL;
 }
 
 uiwcont_t *
 uiSpinboxDoubleCreate (void)
 {
+fprintf (stderr, "c-sb-dbl\n");
   return NULL;
 }
 
 uiwcont_t *
 uiSpinboxDoubleDefaultCreate (void)
 {
+fprintf (stderr, "c-sb-dbl-dflt\n");
   return NULL;
 }
 

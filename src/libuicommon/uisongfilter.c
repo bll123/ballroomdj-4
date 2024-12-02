@@ -580,8 +580,8 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uisf->labels [UISF_LABEL_SEARCH] = uiwidgetp;
 
   uiwidgetp = uiEntryInit (20, 100);
-  uiWidgetAlignHorizStart (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAlignHorizStart (uiwidgetp);
   uiSizeGroupAdd (szgrpEntry, uiwidgetp);
   uisf->wcont [UISF_W_SEARCH] = uiwidgetp;
 

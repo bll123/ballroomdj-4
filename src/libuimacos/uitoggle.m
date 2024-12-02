@@ -28,10 +28,7 @@ uiCreateCheckButton (const char *txt, int value)
   uiwcont_t   *uiwidget;
   NSButton    *widget = nil;
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_TOGGLE_BUTTON;
-  uiwidget->wtype = WCONT_T_CHECK_BOX;
-
+fprintf (stderr, "c-chk-bt\n");
 //  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
 //  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   widget = [[NSButton alloc] init];
@@ -45,8 +42,8 @@ uiCreateCheckButton (const char *txt, int value)
   }
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
-  uiwidget->uidata.widget = widget;
-  uiwidget->uidata.packwidget = widget;
+  uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_CHECK_BOX);
+  uiwcontSetWidget (uiwidget, widget, NULL);
 
   return uiwidget;
 }
@@ -57,10 +54,7 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
   uiwcont_t   *uiwidget;
   NSButton    *widget = nil;
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_TOGGLE_BUTTON;
-  uiwidget->wtype = WCONT_T_RADIO_BUTTON;
-
+fprintf (stderr, "c-radio-bt\n");
 //  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
 //  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   widget = [[NSButton alloc] init];
@@ -74,8 +68,8 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
   }
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
-  uiwidget->uidata.widget = widget;
-  uiwidget->uidata.packwidget = widget;
+  uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_RADIO_BUTTON);
+  uiwcontSetWidget (uiwidget, widget, NULL);
 
   return uiwidget;
 }
@@ -87,10 +81,7 @@ uiCreateToggleButton (const char *txt,
   uiwcont_t   *uiwidget;
   NSButton    *widget = nil;
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_TOGGLE_BUTTON;
-  uiwidget->wtype = WCONT_T_RADIO_BUTTON;
-
+fprintf (stderr, "c-toggle-bt\n");
 //  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
 //  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   widget = [[NSButton alloc] init];
@@ -122,8 +113,8 @@ uiCreateToggleButton (const char *txt,
     [widget setImage: image->uidata.widget];
   }
 
-  uiwidget->uidata.widget = widget;
-  uiwidget->uidata.packwidget = widget;
+  uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_RADIO_BUTTON);
+  uiwcontSetWidget (uiwidget, widget, NULL);
 
   return uiwidget;
 }

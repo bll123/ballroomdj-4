@@ -18,6 +18,7 @@ extern "C" {
 #include "musicq.h"
 #include "nlist.h"
 #include "uiplaylist.h"
+#include "uigeneral.h"
 #include "uiwcont.h"
 #include "ui/uientry.h"
 

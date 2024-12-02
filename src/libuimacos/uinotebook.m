@@ -33,13 +33,9 @@ uiCreateNotebook (void)
 //  gtk_notebook_set_show_border (GTK_NOTEBOOK (nb), TRUE);
 //  gtk_widget_set_hexpand (nb, TRUE);
 //  gtk_widget_set_vexpand (nb, FALSE);
-//  gtk_notebook_set_tab_pos (GTK_NOTEBOOK (nb), GTK_POS_TOP);
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_NOTEBOOK;
-  uiwidget->wtype = WCONT_T_NOTEBOOK;
-  uiwidget->uidata.widget = nb;
-  uiwidget->uidata.packwidget = nb;
+  uiwidget = uiwcontAlloc (WCONT_T_NOTEBOOK, WCONT_T_NOTEBOOK);
+  uiwcontSetWidget (uiwidget, nb, NULL);
   return uiwidget;
 }
 
@@ -62,7 +58,7 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
     uiwcont_t *uilabel)
 {
   NSTabView       *nb;
-  NSTabViewItem         *tabv;
+  NSTabViewItem   *tabv;
   NSTextField     *lab;
 
   if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-append-page")) {
@@ -75,14 +71,18 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
     return;
   }
 
+  nb = uinotebook->uidata.widget;
   tabv = [[NSTabViewItem alloc] init];
 // ### will need to change to draw-label so that a custom tab w/pic can
 // be displayed.
 // macos position-left also needs to have horizontal tabs.
   lab = uilabel->uidata.widget;
-  tabv.label = @"test-nb"; // [lab stringValue];
+  if ([nb tabPosition] == NSTabPositionLeft) {
+    tabv.label = @"A";
+  } else {
+    tabv.label = [lab stringValue];
+  }
   [tabv setView: uibox->uidata.widget];
-  nb = uinotebook->uidata.widget;
   [nb addTabViewItem: tabv];
 
   return;

@@ -189,9 +189,10 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
   /* status message */
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
+
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   uiaa->statusMsg = uiwidgetp;
 
   /* trim silence */

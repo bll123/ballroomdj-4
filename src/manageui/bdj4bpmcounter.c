@@ -404,9 +404,9 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   /* right side */
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
+  uiBoxPackStartExpand (hboxbpm, vbox);
   uiWidgetAlignHorizCenter (vbox);
   uiWidgetAlignVertCenter (vbox);
-  uiBoxPackStartExpand (hboxbpm, vbox);
 
   /* blue box */
   uiwcontFree (hbox);

@@ -15,28 +15,34 @@
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"
+#include "ui/uimacos-int.h"
 
 #include "ui/uiui.h"
 #include "ui/uilabel.h"
+
+@implementation ILabel
+- (BOOL) isFlipped {
+  return YES;
+}
+@end
 
 uiwcont_t *
 uiCreateLabel (const char *label)
 {
   uiwcont_t   *uiwidget;
-  NSTextField *widget;
+  ILabel      *widget;
 
-  widget = [[NSTextField alloc] init];
+fprintf (stderr, "c-label\n");
+  widget = [[ILabel alloc] init];
   [widget setBezeled:NO];
   [widget setDrawsBackground:NO];
   [widget setEditable:NO];
+  [widget setSelectable:NO];
   [widget setStringValue: [NSString stringWithUTF8String: label]];
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_LABEL;
-  uiwidget->wtype = WCONT_T_LABEL;
-  uiwidget->uidata.widget = widget;
-  uiwidget->uidata.packwidget = widget;
+  uiwidget = uiwcontAlloc (WCONT_T_LABEL, WCONT_T_LABEL);
+  uiwcontSetWidget (uiwidget, widget, NULL);
   return uiwidget;
 }
 
@@ -49,7 +55,7 @@ uiLabelAddClass (const char *classnm, const char *color)
 void
 uiLabelSetTooltip (uiwcont_t *uiwidget, const char *txt)
 {
-  NSTextField *nstf;
+//  ILabel *nstf;
 
   if (! uiwcontValid (uiwidget, WCONT_T_LABEL, "label-set-tooltip")) {
     return;
@@ -59,7 +65,7 @@ uiLabelSetTooltip (uiwcont_t *uiwidget, const char *txt)
 // will probably be better to create a custom method and save the data
 // for that label and use the dynamic methods.
 // ### not working
-  nstf = uiwidget->uidata.widget;
+//  nstf = uiwidget->uidata.widget;
 //  [nstf addToolTip: [NSString stringWithUTF8String: txt]];
   return;
 }
@@ -73,7 +79,7 @@ uiLabelSetFont (uiwcont_t *uiwidget, const char *font)
 void
 uiLabelSetText (uiwcont_t *uiwidget, const char *text)
 {
-  NSTextField *widget;
+  ILabel *widget;
 
   if (! uiwcontValid (uiwidget, WCONT_T_LABEL, "label-set-tooltip")) {
     return;
@@ -99,12 +105,20 @@ uiLabelEllipsizeOn (uiwcont_t *uiwidget)
 void
 uiLabelWrapOn (uiwcont_t *uiwidget)
 {
+  ILabel *widget;
+
+  widget = uiwidget->uidata.widget;
+  [widget setMaximumNumberOfLines:3];
   return;
 }
 
 void
 uiLabelSetSelectable (uiwcont_t *uiwidget)
 {
+  ILabel *widget;
+
+  widget = uiwidget->uidata.widget;
+  [widget setSelectable:YES];
   return;
 }
 

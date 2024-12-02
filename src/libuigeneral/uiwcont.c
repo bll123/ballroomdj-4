@@ -13,19 +13,21 @@
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"
+#include "ui/uiui.h"
 
 uiwcont_t *
-uiwcontAlloc (void)
+uiwcontAlloc (int basetype, int type)
 {
   uiwcont_t    *uiwidget;
 
   uiwidget = mdmalloc (sizeof (uiwcont_t));
-  uiwidget->wbasetype = WCONT_T_UNKNOWN;
-  uiwidget->wtype = WCONT_T_UNKNOWN;
+  uiwidget->wbasetype = basetype;
+  uiwidget->wtype = type;
   uiwidget->uidata.widget = NULL;
   uiwidget->uidata.packwidget = NULL;          // often the same as widget
   uiwidget->packed = false;
   memset (&uiwidget->uiint, 0, sizeof (uiwcontint_t));
+  uiwcontUIInit (uiwidget);                     // ui interface specific
   return uiwidget;
 }
 
@@ -36,9 +38,27 @@ uiwcontBaseFree (uiwcont_t *uiwidget)
     return;
   }
 
+  uiwcontUIFree (uiwidget);                     // ui interface specific
   uiwidget->wbasetype = WCONT_T_UNKNOWN;
   uiwidget->wtype = WCONT_T_UNKNOWN;
+  uiwidget->uidata.widget = NULL;
+  uiwidget->uidata.packwidget = NULL;
   mdfree (uiwidget);
+}
+
+void
+uiwcontSetWidget (uiwcont_t *uiwidget, void *widget, void *packwidget)
+{
+  if (uiwidget == NULL || widget == NULL) {
+    return;
+  }
+
+  uiwidget->uidata.widget = widget;
+  uiwidget->uidata.packwidget = packwidget;
+  if (packwidget == NULL) {
+    uiwidget->uidata.packwidget = widget;
+  }
+  uiwcontUIWidgetInit (uiwidget);
 }
 
 /* for debugging */

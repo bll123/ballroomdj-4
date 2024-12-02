@@ -14,6 +14,8 @@ if [[ $1 == --keep ]]; then
   keep=T
 fi
 
+systype=$(uname -s)
+
 INCTC=dep-inctest.c
 INCTO=dep-inctest.o
 INCTOUT=dep-inctest.log
@@ -121,9 +123,6 @@ for fn in include/*.h include/ui/*.h config.h.in; do
       # generated file
       continue
       ;;
-    *uimacos-int.h)
-      continue
-      ;;
   esac
   inc=$(grep '^#ifndef INC_' $fn | sed -e 's/.*INC_//' -e 's/_H/.h/' -e 's/-/_/g' -e 's/\.in//')
   tnm=$(echo $fn | sed -e 's,include/,,' -e 's,ui/,,' -e 's/-/_/g' -e 's/\.in//')
@@ -140,6 +139,13 @@ fi
 echo "## checking include file compilation"
 test -f $INCTOUT && rm -f $INCTOUT
 for fn in include/*.h include/ui/*.h; do
+  case $fn in
+    *uimacos-int.h)
+      if [[ $systype == Linux ]]; then
+        continue
+      fi
+      ;;
+  esac
   bfn=$(echo $fn | sed 's,include/,,')
   cat > $INCTC << _HERE_
 #include "config.h"

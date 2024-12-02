@@ -5,6 +5,7 @@
 #define INC_UIWCONT_INT_H
 
 #include "tmutil.h"
+#include "uigeneral.h"
 
 #include "ui/uidialog.h"
 
@@ -74,6 +75,7 @@ enum {
   WCONT_EMPTY_WIDGET = 0x0001,
 };
 
+/* used in all ui interfaces */
 typedef struct uibuttonbase {
   callback_t  *cb;
   callback_t  *presscb;
@@ -84,6 +86,17 @@ typedef struct uibuttonbase {
   bool        repeating : 1;
 } uibuttonbase_t;
 
+typedef struct uientrybase {
+  const char      *label;
+  void            *udata;
+  uientryval_t    validateFunc;
+  mstime_t        validateTimer;
+  int             entrySize;
+  int             maxSize;
+  bool            valdelay : 1;
+  bool            valid : 1;
+} uientrybase_t;
+
 typedef struct uibutton uibutton_t;
 typedef struct uientry uientry_t;
 typedef struct uievent uievent_t;
@@ -93,6 +106,7 @@ typedef struct uispinbox uispinbox_t;
 typedef struct uiswitch uiswitch_t;
 typedef struct uitextbox uitextbox_t;
 typedef struct uivirtlist uivirtlist_t;
+typedef struct uibox uibox_t;
 
 typedef union {
     void          *voidwidget;
@@ -100,7 +114,10 @@ typedef union {
       uibuttonbase_t  uibuttonbase;
       uibutton_t      *uibutton;
     };
-    uientry_t     *uientry;
+    struct {
+      uientrybase_t   uientrybase;
+      uientry_t       *uientry;
+    };
     uievent_t     *uievent;
     uimenu_t      *uimenu;
     uiscrollbar_t *uiscrollbar;
@@ -111,15 +128,15 @@ typedef union {
 } uiwcontint_t;
 
 # if BDJ4_UI_GTK3 /* gtk3 */
-#  include "ui/uigtk3-int.h"
+#  include "ui/uigtk3-wcont.h"
 # endif /* BDJ4_UI_GTK3 */
 
 # if BDJ4_UI_NULL
-#  include "ui/uinull-int.h"
+#  include "ui/uinull-wcont.h"
 # endif /* BDJ4_UI_NULL */
 
 # if BDJ4_UI_MACOS
-#  include "ui/uimacos-int.h"
+#  include "ui/uimacos-wcont.h"
 # endif /* BDJ4_UI_MACOS */
 
 typedef struct uiwcont {

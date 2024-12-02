@@ -218,9 +218,9 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     uiwidgetp = uiEntryInit (20, 100);
     uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
     if (uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
+      uiBoxPackStartExpand (hbox, uiwidgetp);
       uiWidgetExpandHoriz (uiwidgetp);
       uiWidgetAlignHorizFill (uiwidgetp);
-      uiBoxPackStartExpand (hbox, uiwidgetp);
     }
     if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST) {
       uiBoxPackStart (hbox, uiwidgetp);

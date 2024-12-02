@@ -48,8 +48,8 @@ confuiBuildUIEditStatus (confuigui_t *gui)
       _("Edit Status"), CONFUI_ID_STATUS);
 
   hbox = uiCreateHorizBox ();
-  uiWidgetAlignHorizStart (hbox);
   uiBoxPackStartExpand (vbox, hbox);
+  uiWidgetAlignHorizStart (hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_STATUS,
       CONFUI_TABLE_KEEP_FIRST | CONFUI_TABLE_KEEP_LAST);

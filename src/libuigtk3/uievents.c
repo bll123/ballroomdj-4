@@ -59,7 +59,7 @@ uiEventAlloc (void)
   uiwcont_t   *uiwidget;
   uievent_t   *uievent;
 
-  uiwidget = uiwcontAlloc ();
+  uiwidget = uiwcontAlloc (WCONT_T_KEY, WCONT_T_KEY);
 
   uievent = mdmalloc (sizeof (uievent_t));
   uievent->keypresscb = NULL;
@@ -80,11 +80,10 @@ uiEventAlloc (void)
   uievent->buttonpressed = false;
   uievent->buttonreleased = false;
 
-  uiwidget->wbasetype = WCONT_T_KEY;
-  uiwidget->wtype = WCONT_T_KEY;
   /* empty widget is used so that the validity check works */
-  uiwidget->uidata.widget = (GtkWidget *) WCONT_EMPTY_WIDGET;
-  uiwidget->uidata.packwidget = (GtkWidget *) WCONT_EMPTY_WIDGET;
+  uiwcontSetWidget (uiwidget, (void *) WCONT_EMPTY_WIDGET, NULL);
+//  uiwidget->uidata.widget = (GtkWidget *) WCONT_EMPTY_WIDGET;
+//  uiwidget->uidata.packwidget = (GtkWidget *) WCONT_EMPTY_WIDGET;
   uiwidget->uiint.uievent = uievent;
 
   return uiwidget;
@@ -122,11 +121,10 @@ uiEventCreateEventBox (uiwcont_t *uiwidgetp)
   gtk_widget_set_can_focus (widget, false);
   gtk_widget_set_focus_on_click (widget, false);
 
-  wcont = uiwcontAlloc ();
-  wcont->wbasetype = WCONT_T_BOX;
-  wcont->wtype = WCONT_T_EVENT_BOX;
-  wcont->uidata.widget = widget;
-  wcont->uidata.packwidget = widget;
+  wcont = uiwcontAlloc (WCONT_T_BOX, WCONT_T_EVENT_BOX);
+  uiwcontSetWidget (wcont, widget, NULL);
+//  wcont->uidata.widget = widget;
+//  wcont->uidata.packwidget = widget;
 
   return wcont;
 }

@@ -14,9 +14,14 @@
 #include <Cocoa/Cocoa.h>
 #import <Foundation/NSObject.h>
 
-@interface IBox : NSStackView {}
-- (BOOL) isFlipped;
-@end
+#include "uigeneral.h"    // debug flag
+#include "uiwcont.h"
+
+#include "ui/uiwcont-int.h"
+#include "ui/uimacos-int.h"
+
+#include "ui/uibox.h"
+#include "ui/uiwidget.h"
 
 @implementation IBox
 - (BOOL) isFlipped {
@@ -24,25 +29,19 @@
 }
 @end
 
-#include "uigeneral.h"    // debug flag
-#include "uiwcont.h"
-
-#include "ui/uiwcont-int.h"
-
-#include "ui/uibox.h"
-#include "ui/uiwidget.h"
-
 static uiwcont_t * uiCreateBox (int orientation);
 
 uiwcont_t *
 uiCreateVertBox (void)
 {
+fprintf (stderr, "c-vbox\n");
   return uiCreateBox (NSUserInterfaceLayoutOrientationVertical);
 }
 
 uiwcont_t *
 uiCreateHorizBox (void)
 {
+fprintf (stderr, "c-hbox\n");
   return uiCreateBox (NSUserInterfaceLayoutOrientationHorizontal);
 }
 
@@ -53,7 +52,10 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
   NSView  *widget = NULL;
   int     grav = NSStackViewGravityLeading;
 
-  if (uibox == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start")) {
+    return;
+  }
+  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
   }
 
@@ -76,7 +78,10 @@ uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   NSView  *widget = NULL;
   int     grav = NSStackViewGravityLeading;
 
-  if (uibox == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start-exp")) {
+    return;
+  }
+  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
   }
 
@@ -96,7 +101,10 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
   NSView      *widget = NULL;
   int         grav = NSStackViewGravityTrailing;
 
-  if (uibox == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end")) {
+    return;
+  }
+  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
   }
 
@@ -119,7 +127,10 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   NSView      *widget = NULL;
   int         grav = NSStackViewGravityTrailing;
 
-  if (uibox == NULL || uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end-exp")) {
+    return;
+  }
+  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
   }
 
@@ -135,6 +146,10 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 void
 uiBoxSetSizeChgCallback (uiwcont_t *uiwindow, callback_t *uicb)
 {
+  if (! uiwcontValid (uiwindow, WCONT_T_BOX, "box-set-size-chg-cb")) {
+    return;
+  }
+
   return;
 }
 
@@ -143,12 +158,13 @@ uiBoxSetSizeChgCallback (uiwcont_t *uiwindow, callback_t *uicb)
 static uiwcont_t *
 uiCreateBox (int orientation)
 {
-  uiwcont_t   *uiwidget;
+  uiwcont_t   *uiwidget = NULL;
   IBox        *box = NULL;
 
   box = [[IBox alloc] init];
   [box setOrientation: orientation];
   [box setTranslatesAutoresizingMaskIntoConstraints: NO];
+  [box setDistribution: NSStackViewDistributionGravityAreas];
   box.spacing = 1.0;
 
 #if MACOS_UI_DEBUG
@@ -157,19 +173,15 @@ uiCreateBox (int orientation)
   [[box layer] setBorderWidth: 2.0];
 #endif
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_BOX;
-
   if (orientation == NSUserInterfaceLayoutOrientationHorizontal) {
-    uiwidget->wtype = WCONT_T_HBOX;
+    uiwidget = uiwcontAlloc (WCONT_T_BOX, WCONT_T_HBOX);
     [box setAlignment: NSLayoutAttributeTop];
   }
   if (orientation == NSUserInterfaceLayoutOrientationVertical) {
-    uiwidget->wtype = WCONT_T_VBOX;
+    uiwidget = uiwcontAlloc (WCONT_T_BOX, WCONT_T_VBOX);
     [box setAlignment: NSLayoutAttributeLeading];
   }
-  uiwidget->uidata.widget = box;
-  uiwidget->uidata.packwidget = box;
+  uiwcontSetWidget (uiwidget, box, NULL);
   return uiwidget;
 }
 

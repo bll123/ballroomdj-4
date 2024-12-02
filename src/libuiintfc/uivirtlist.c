@@ -1772,9 +1772,6 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
   }
 
   row->hbox = uiCreateHorizBox ();
-  uiWidgetAlignHorizFill (row->hbox);
-  uiWidgetAlignVertStart (row->hbox);   // no vertical growth
-  uiWidgetExpandHoriz (row->hbox);
 
   found = false;
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
@@ -2006,6 +2003,10 @@ uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
   uiBoxPackStart (vl->wcont [VL_W_MAIN_VBOX], row->hbox);
   uiWidgetExpandHoriz (vl->wcont [VL_W_MAIN_VBOX]);
 
+  uiWidgetAlignHorizFill (row->hbox);
+  uiWidgetAlignVertStart (row->hbox);   // no vertical growth
+  uiWidgetExpandHoriz (row->hbox);
+
   if (vl->dispheading && row->dispidx == VL_ROW_HEADING_IDX) {
     isheading = true;
   }
@@ -2044,6 +2045,8 @@ uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
     }
     uiWidgetSetMarginEnd (col->uiwidget, 3);
     if (type == VL_TYPE_IMAGE) {
+      uiWidgetAlignHorizCenter (col->uiwidget);
+      uiWidgetAlignVertCenter (col->uiwidget);
       uiWidgetSetMarginStart (col->uiwidget, 1);
     }
   }

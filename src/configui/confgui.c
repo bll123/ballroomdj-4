@@ -549,9 +549,9 @@ confuiMakeItemEntryBasic (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   uiwidgetp = uiEntryInit (gui->uiitem [widx].entrysz, gui->uiitem [widx].entrymaxsz);
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   if (expand == CONFUI_EXPAND) {
+    uiBoxPackStartExpand (boxp, uiwidgetp);
     uiWidgetAlignHorizFill (uiwidgetp);
     uiWidgetExpandHoriz (uiwidgetp);
-    uiBoxPackStartExpand (boxp, uiwidgetp);
   }
   if (expand == CONFUI_NO_EXPAND) {
     uiBoxPackStart (boxp, uiwidgetp);

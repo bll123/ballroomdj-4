@@ -23,6 +23,7 @@ uiwcont_t *
 uiCreateScale (double lower, double upper,
     double stepinc, double pageinc, double initvalue, int digits)
 {
+fprintf (stderr, "c-scale\n");
   return NULL;
 }
 

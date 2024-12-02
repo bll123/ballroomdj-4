@@ -246,9 +246,9 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
 
   uiwidgetp = uiEntryInit (50, MAXPATHLEN);
   uiEntrySetValue (uiwidgetp, "");
+  uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
-  uiBoxPackStartExpand (hbox, uiwidgetp);
   uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE] = uiwidgetp;
 
   uiextreq->audiofilesfcb.title = NULL;
@@ -280,8 +280,8 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
 
   uiwidgetp = uiEntryInit (40, MAXPATHLEN);
   uiEntrySetValue (uiwidgetp, "");
-  uiWidgetAlignHorizFill (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAlignHorizFill (uiwidgetp);
   uiextreq->wcont [UIEXTREQ_W_ARTIST] = uiwidgetp;
 
   uiwcontFree (hbox);
@@ -297,8 +297,8 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
 
   uiwidgetp = uiEntryInit (40, MAXPATHLEN);
   uiEntrySetValue (uiwidgetp, "");
-  uiWidgetAlignHorizFill (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAlignHorizFill (uiwidgetp);
   uiextreq->wcont [UIEXTREQ_W_TITLE] = uiwidgetp;
 
   uiwcontFree (hbox);
@@ -332,8 +332,8 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
 
   uiwidgetp = uiEntryInit (40, MAXPATHLEN);
   uiEntrySetValue (uiwidgetp, "");
-  uiWidgetAlignHorizFill (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAlignHorizFill (uiwidgetp);
   uiextreq->wcont [UIEXTREQ_W_MQ_DISP] = uiwidgetp;
 
   uiwcontFree (hbox);

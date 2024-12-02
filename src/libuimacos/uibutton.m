@@ -21,6 +21,7 @@
 #include "uigeneral.h"
 
 #include "ui/uiwcont-int.h"
+#include "ui/uimacos-int.h"
 
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
@@ -29,13 +30,6 @@
 typedef struct uibutton {
   NSImage         *image;
 } uibutton_t;
-
-@interface IButton : NSButton {
-  uiwcont_t   *uiwidget;
-}
-- (void) setUIWidget: (uiwcont_t *) tuiwidget;
-- (IBAction) OnButton1Click: (id) sender;
-@end
 
 @implementation IButton
 
@@ -53,6 +47,10 @@ typedef struct uibutton {
   }
 }
 
+- (BOOL) isFlipped {
+  return YES;
+}
+
 @end
 
 uiwcont_t *
@@ -63,6 +61,7 @@ uiCreateButton (callback_t *uicb, char *title, char *imagenm)
   uibuttonbase_t  *bbase;
   IButton         *widget = nil;
 
+fprintf (stderr, "c-bt\n");
   uibutton = mdmalloc (sizeof (uibutton_t));
   uibutton->image = NULL;
 
@@ -88,11 +87,8 @@ uiCreateButton (callback_t *uicb, char *title, char *imagenm)
     [widget setTitle: [NSString stringWithUTF8String: title]];
   }
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_BUTTON;
-  uiwidget->wtype = WCONT_T_BUTTON;
-  uiwidget->uidata.widget = widget;
-  uiwidget->uidata.packwidget = widget;
+  uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_BUTTON);
+  uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uibutton = uibutton;
 
   [widget setBezelStyle: NSBezelStyleRounded];
@@ -117,24 +113,40 @@ uiCreateButton (callback_t *uicb, char *title, char *imagenm)
 void
 uiButtonFree (uiwcont_t *uiwidget)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-free")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiButtonSetImagePosRight (uiwcont_t *uiwidget)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-image-pos-r")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiButtonSetImageMarginTop (uiwcont_t *uiwidget, int margin)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-image-margin-top")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiButtonSetImageIcon (uiwcont_t *uiwidget, const char *nm)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-image-icon")) {
+    return;
+  }
+
   return;
 }
 
@@ -155,24 +167,40 @@ uiButtonAlignLeft (uiwcont_t *uiwidget)
 void
 uiButtonSetReliefNone (uiwcont_t *uiwidget)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-relief-none")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiButtonSetFlat (uiwcont_t *uiwidget)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-flat")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiButtonSetText (uiwcont_t *uiwidget, const char *txt)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-text")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-repeat")) {
+    return;
+  }
+
   return;
 }
 

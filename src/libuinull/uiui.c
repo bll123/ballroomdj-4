@@ -12,7 +12,6 @@
 #include <math.h>
 
 #include "uiclass.h"
-#include "uiutils.h"    // for uisetup_t definition
 
 #include "ui/uiwcont-int.h"
 
@@ -79,3 +78,16 @@ uiInitUILog (void)
 {
   return;
 }
+
+void
+uiwcontUIInit (uiwcont_t *uiwidget)
+{
+  return;
+}
+
+void
+uiwcontUIInit (uiwcont_t *uiwidget)
+{
+  return;
+}
+

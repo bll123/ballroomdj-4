@@ -336,9 +336,9 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
       seint->wcont [UISE_W_MAIN_VBOX], seint->callbacks [UISE_CB_KEYB]);
 
   hbox = uiCreateHorizBox ();
+  uiBoxPackStart (seint->wcont [UISE_W_MAIN_VBOX], hbox);
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
-  uiBoxPackStart (seint->wcont [UISE_W_MAIN_VBOX], hbox);
 
   seint->callbacks [UISE_CB_FIRST] = callbackInit (
       uisongeditFirstSelection, uisongedit, "songedit: first");
@@ -395,9 +395,9 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   /* audio-identification logo, modified indicator, */
   /* copy button, file label, filename */
   hbox = uiCreateHorizBox ();
+  uiBoxPackStart (seint->wcont [UISE_W_MAIN_VBOX], hbox);
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
-  uiBoxPackStart (seint->wcont [UISE_W_MAIN_VBOX], hbox);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "musicbrainz-logo", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
@@ -409,6 +409,8 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiImageClear (seint->wcont [UISE_W_AUDIOID_IMG]);
   uiWidgetSetSizeRequest (seint->wcont [UISE_W_AUDIOID_IMG], 24, -1);
   uiBoxPackStart (hbox, seint->wcont [UISE_W_AUDIOID_IMG]);
+  uiWidgetAlignHorizCenter (seint->wcont [UISE_W_AUDIOID_IMG]);
+  uiWidgetAlignVertCenter (seint->wcont [UISE_W_AUDIOID_IMG]);
   uiWidgetSetMarginStart (seint->wcont [UISE_W_AUDIOID_IMG], 1);
 
   if (bdjoptGetNum (OPT_G_AUD_ADJ_DISP)) {
@@ -445,9 +447,9 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   /* begin line */
   hbox = uiCreateHorizBox ();
+  uiBoxPackStartExpand (seint->wcont [UISE_W_MAIN_VBOX], hbox);
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
-  uiBoxPackStartExpand (seint->wcont [UISE_W_MAIN_VBOX], hbox);
 
   count = 0;
   for (int i = DISP_SEL_SONGEDIT_A; i <= DISP_SEL_SONGEDIT_C; ++i) {
@@ -492,9 +494,9 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
     /* otherwise it takes up space in the song editor display */
     if (count > 0) {
       col = uiCreateVertBox ();
+      uiBoxPackStartExpand (hbox, col);
       uiWidgetExpandHoriz (col);
       uiWidgetExpandVert (col);
-      uiBoxPackStartExpand (hbox, col);
       uiWidgetSetAllMargins (col, 4);
 
       uisongeditAddDisplay (uisongedit, col,
@@ -1275,8 +1277,8 @@ uisongeditAddEntry (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   uiEntrySetValidate (entryp, tagdefs [tagkey].displayname,
       uisongeditEntryChgCB, seint, UIENTRY_IMMEDIATE);
 
-  uiWidgetAlignHorizFill (entryp);
   uiBoxPackStartExpand (hbox, entryp);
+  uiWidgetAlignHorizFill (entryp);
   uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_ENTRY], entryp);
   logProcEnd ("");
 }

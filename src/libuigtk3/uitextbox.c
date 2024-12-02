@@ -35,17 +35,14 @@ uiTextBoxCreate (int height, const char *hlcolor)
 {
   uitextbox_t   *tb;
   uiwcont_t     *uiwidget;
+  void          *widget;
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_TEXT_BOX;
-  uiwidget->wtype = WCONT_T_TEXT_BOX;
+  uiwidget = uiwcontAlloc (WCONT_T_TEXT_BOX, WCONT_T_TEXT_BOX);
 
   tb = mdmalloc (sizeof (uitextbox_t));
   uiwidget->uiint.uitextbox = tb;
 
-  tb->buffer = uiwcontAlloc ();
-  tb->buffer->wbasetype = WCONT_T_TEXT_BUFFER;
-  tb->buffer->wtype = WCONT_T_TEXT_BUFFER;
+  tb->buffer = uiwcontAlloc (WCONT_T_TEXT_BUFFER, WCONT_T_TEXT_BUFFER);
   tb->buffer->uidata.buffer = gtk_text_buffer_new (NULL);
 
   tb->scw = uiCreateScrolledWindow (height);
@@ -57,8 +54,10 @@ uiTextBoxCreate (int height, const char *hlcolor)
     gtk_text_buffer_create_tag (tb->buffer->uidata.buffer, "highlight", "foreground", hlcolor, NULL);
   }
 
-  uiwidget->uidata.widget = gtk_text_view_new_with_buffer (tb->buffer->uidata.buffer);
-  uiwidget->uidata.packwidget = tb->scw->uidata.packwidget;
+  widget = gtk_text_view_new_with_buffer (tb->buffer->uidata.buffer);
+  uiwcontSetWidget (uiwidget, widget, tb->scw->uidata.packwidget);
+//  uiwidget->uidata.widget = widget;
+//  uiwidget->uidata.packwidget = tb->scw->uidata.packwidget;
   gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (uiwidget->uidata.widget), GTK_WRAP_WORD);
   uiWindowPackInWindow (tb->scw, uiwidget);
   uiWidgetSetAllMargins (uiwidget, 2);

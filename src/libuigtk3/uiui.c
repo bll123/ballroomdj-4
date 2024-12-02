@@ -26,7 +26,6 @@
 #include "sysvars.h"
 #include "tmutil.h"
 #include "uiclass.h"
-#include "uiutils.h"    // for uisetup_t definition
 
 #include "ui/uiwcont-int.h"
 
@@ -473,3 +472,22 @@ uiSetRowHighlight (char *tp, char *tend, const char *accentColor,
 
   return tp;
 }
+
+void
+uiwcontUIInit (uiwcont_t *uiwidget)
+{
+  return;
+}
+
+void
+uiwcontUIWidgetInit (uiwcont_t *uiwidget)
+{
+  return;
+}
+
+void
+uiwcontUIFree (uiwcont_t *uiwidget)
+{
+  return;
+}
+

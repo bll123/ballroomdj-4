@@ -416,9 +416,9 @@ altinstBuildUI (altinst_t *altinst)
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiEntryInit (80, MAXPATHLEN);
+  uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
-  uiBoxPackStartExpand (hbox, uiwidgetp);
   altinst->wcont [ALT_W_TARGET] = uiwidgetp;
   if (isMacOS ()) {
     uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);

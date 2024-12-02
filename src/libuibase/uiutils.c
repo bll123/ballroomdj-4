@@ -24,6 +24,8 @@
 #include "uiutils.h"
 #include "validate.h"
 
+#include "ui/uiui.h"      // for uisetup_t
+
 enum {
   PROFILE_BOX_SZ = 26,
 };
@@ -42,12 +44,13 @@ uiutilsAddProfileColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
   uiBoxPackStart (vboxp, hbox);
 
   cbox = uiCreateHorizBox ();
-  uiWidgetAlignHorizCenter (cbox);
-  uiWidgetAlignVertCenter (cbox);
   uiWidgetSetSizeRequest (cbox, PROFILE_BOX_SZ, PROFILE_BOX_SZ);
   uiutilsSetProfileColor (cbox, NULL);
   uiBoxPackEnd (hbox, cbox);
+  uiWidgetAlignHorizCenter (cbox);
+  uiWidgetAlignVertCenter (cbox);
   uiWidgetSetMarginStart (cbox, 4);
+
   uiWidgetShowAll (hbox);
 
   accent->cbox = cbox;
@@ -215,4 +218,5 @@ uiutilsInitSetup (uisetup_t *uisetup)
   uisetup->rowselColor = bdjoptGetStr (OPT_P_UI_ROWSEL_COL);
   uisetup->rowhlColor = bdjoptGetStr (OPT_P_UI_ROW_HL_COL);
   uisetup->mqbgColor = bdjoptGetStr (OPT_P_MQ_BG_COL);
+  uisetup->changedColor = "#11ff11";
 }

@@ -40,11 +40,10 @@ uiCreateLink (const char *label, const char *uri)
   gtk_label_set_xalign (GTK_LABEL (lwidget), 0.0);
   gtk_label_set_track_visited_links (GTK_LABEL (lwidget), FALSE);
 
-  uiwidget = uiwcontAlloc ();
-  uiwidget->wbasetype = WCONT_T_LINK;
-  uiwidget->wtype = WCONT_T_LINK;
-  uiwidget->uidata.widget = widget;
-  uiwidget->uidata.packwidget = widget;
+  uiwidget = uiwcontAlloc (WCONT_T_LINK, WCONT_T_LINK);
+  uiwcontSetWidget (uiwidget, widget, NULL);
+//  uiwidget->uidata.widget = widget;
+//  uiwidget->uidata.packwidget = widget;
   return uiwidget;
 }
 

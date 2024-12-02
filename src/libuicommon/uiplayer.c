@@ -308,6 +308,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_STOP]);
   uiWidgetSetSizeRequest (uiplayer->images [UIPL_IMG_STATUS], 18, -1);
   uiBoxPackStart (statusbox, uiplayer->images [UIPL_IMG_STATUS]);
+  uiWidgetAlignHorizCenter (uiplayer->images [UIPL_IMG_STATUS]);
+  uiWidgetAlignVertCenter (uiplayer->images [UIPL_IMG_STATUS]);
   uiWidgetSetMarginStart (uiplayer->images [UIPL_IMG_STATUS], 1);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_play", ".svg",
@@ -332,6 +334,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiImageClear (uiplayer->images [UIPL_IMG_REPEAT]);
   uiWidgetSetSizeRequest (uiplayer->images [UIPL_IMG_REPEAT], 18, -1);
   uiBoxPackStart (statusbox, uiplayer->images [UIPL_IMG_REPEAT]);
+  uiWidgetAlignHorizCenter (uiplayer->images [UIPL_IMG_REPEAT]);
+  uiWidgetAlignVertCenter (uiplayer->images [UIPL_IMG_REPEAT]);
   uiWidgetSetMarginStart (uiplayer->images [UIPL_IMG_REPEAT], 1);
 
   for (int i = UIPL_W_INFO_DISP_A; i <= UIPL_W_INFO_DISP_I; ++i) {
