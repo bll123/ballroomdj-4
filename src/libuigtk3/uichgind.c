@@ -36,8 +36,6 @@ uiCreateChangeIndicator (uiwcont_t *boxp)
 
   uiwidget = uiwcontAlloc (WCONT_T_CHGIND, WCONT_T_CHGIND);
   uiwcontSetWidget (uiwidget, widget, NULL);
-//  uiwidget->uidata.widget = widget;
-//  uiwidget->uidata.packwidget = widget;
   /* the change indicator is a label packed in the beginning of */
   /* the supplied box */
   uiBoxPackStart (boxp, uiwidget);
