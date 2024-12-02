@@ -35,6 +35,7 @@
 static const char *envitems [] = {
   "DESKTOP_SESSION",
   "DYLD_FALLBACK_LIBRARY_PATH",
+  "GDK_BACKEND",
   "GDK_SCALE",
   "G_FILENAME_ENCODING",
   "GTK_BACKEND",
