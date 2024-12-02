@@ -36,6 +36,10 @@ uiwcontFree (uiwcont_t *uiwidget)
       fprintf (stderr, "ERR: trying to free a uiwidget twice\n");
       break;
     }
+    case WCONT_T_BOX: {
+      uiBoxFree (uiwidget);
+      break;
+    }
     case WCONT_T_BUTTON: {
       uiButtonFree (uiwidget);
       break;

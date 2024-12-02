@@ -97,6 +97,7 @@ typedef struct uientrybase {
   bool            valid : 1;
 } uientrybase_t;
 
+typedef struct uibox uibox_t;
 typedef struct uibutton uibutton_t;
 typedef struct uientry uientry_t;
 typedef struct uievent uievent_t;
@@ -110,6 +111,7 @@ typedef struct uibox uibox_t;
 
 typedef union {
     void          *voidwidget;
+    uibox_t       *uibox;
     struct {
       uibuttonbase_t  uibuttonbase;
       uibutton_t      *uibutton;

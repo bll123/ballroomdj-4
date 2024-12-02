@@ -29,6 +29,11 @@
 }
 @end
 
+typedef struct uibox {
+  IBox        *prior = NULL;
+  IBox        *priorlast = NULL;
+} uibox_t;
+
 static uiwcont_t * uiCreateBox (int orientation);
 
 uiwcont_t *
@@ -43,6 +48,14 @@ uiCreateHorizBox (void)
 {
 fprintf (stderr, "c-hbox\n");
   return uiCreateBox (NSUserInterfaceLayoutOrientationHorizontal);
+}
+
+void
+uiBoxFree (uiwcont_t *uibox)
+{
+  if (! uiwcontValid (uibox, WCONT_T_BOX, "box-free")) {
+    return;
+  }
 }
 
 void

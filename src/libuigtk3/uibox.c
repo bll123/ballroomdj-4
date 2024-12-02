@@ -38,6 +38,14 @@ uiCreateHorizBox (void)
 }
 
 void
+uiBoxFree (uiwcont_t *uibox)
+{
+  if (! uiwcontValid (uibox, WCONT_T_BOX, "box-free")) {
+    return;
+  }
+}
+
+void
 uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start")) {

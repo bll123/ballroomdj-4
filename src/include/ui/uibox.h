@@ -13,6 +13,7 @@ extern "C" {
 
 uiwcont_t *uiCreateVertBox (void);
 uiwcont_t *uiCreateHorizBox (void);
+void uiBoxFree (uiwcont_t *uibox);
 void uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget);
 void uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget);
 void uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget);
