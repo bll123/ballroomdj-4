@@ -4,9 +4,13 @@
 #ifndef INC_UIMACOS_WCONT_H
 #define INC_UIMACOS_WCONT_H
 
+#include "ui/uiui.h"      // for uisetup_t
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
+
+extern uisetup_t   guisetup;
 
 /* to hold the margin information for the widget */
 typedef struct macosmargin macosmargin_t;

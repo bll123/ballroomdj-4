@@ -8,6 +8,7 @@
 
 #include "callback.h"
 #include "nlist.h"
+#include "uigeneral.h"
 #include "uiwcont.h"
 #include "ui/uientry.h"
 

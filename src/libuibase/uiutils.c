@@ -24,6 +24,8 @@
 #include "uiutils.h"
 #include "validate.h"
 
+#include "ui/uiui.h"      // for uisetup_t
+
 enum {
   PROFILE_BOX_SZ = 26,
 };
@@ -216,4 +218,5 @@ uiutilsInitSetup (uisetup_t *uisetup)
   uisetup->rowselColor = bdjoptGetStr (OPT_P_UI_ROWSEL_COL);
   uisetup->rowhlColor = bdjoptGetStr (OPT_P_UI_ROW_HL_COL);
   uisetup->mqbgColor = bdjoptGetStr (OPT_P_MQ_BG_COL);
+  uisetup->changedColor = "#11ff11";
 }

@@ -14,23 +14,20 @@
 #include <Cocoa/Cocoa.h>
 #import <Foundation/NSObject.h>
 
-@interface IBox : NSStackView {}
-- (BOOL) isFlipped;
-@end
+#include "uigeneral.h"    // debug flag
+#include "uiwcont.h"
+
+#include "ui/uiwcont-int.h"
+#include "ui/uimacos-int.h"
+
+#include "ui/uibox.h"
+#include "ui/uiwidget.h"
 
 @implementation IBox
 - (BOOL) isFlipped {
   return YES;
 }
 @end
-
-#include "uigeneral.h"    // debug flag
-#include "uiwcont.h"
-
-#include "ui/uiwcont-int.h"
-
-#include "ui/uibox.h"
-#include "ui/uiwidget.h"
 
 static uiwcont_t * uiCreateBox (int orientation);
 

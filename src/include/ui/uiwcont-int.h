@@ -5,6 +5,7 @@
 #define INC_UIWCONT_INT_H
 
 #include "tmutil.h"
+#include "uigeneral.h"
 
 #include "ui/uidialog.h"
 
@@ -85,6 +86,17 @@ typedef struct uibuttonbase {
   bool        repeating : 1;
 } uibuttonbase_t;
 
+typedef struct uientrybase {
+  const char      *label;
+  void            *udata;
+  uientryval_t    validateFunc;
+  mstime_t        validateTimer;
+  int             entrySize;
+  int             maxSize;
+  bool            valdelay : 1;
+  bool            valid : 1;
+} uientrybase_t;
+
 typedef struct uibutton uibutton_t;
 typedef struct uientry uientry_t;
 typedef struct uievent uievent_t;
@@ -102,7 +114,10 @@ typedef union {
       uibuttonbase_t  uibuttonbase;
       uibutton_t      *uibutton;
     };
-    uientry_t     *uientry;
+    struct {
+      uientrybase_t   uientrybase;
+      uientry_t       *uientry;
+    };
     uievent_t     *uievent;
     uimenu_t      *uimenu;
     uiscrollbar_t *uiscrollbar;

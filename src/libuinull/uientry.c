@@ -30,78 +30,80 @@ uiEntryInit (int entrySize, int maxSize)
 void
 uiEntryFree (uiwcont_t *uientry)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-free")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiEntrySetIcon (uiwcont_t *uientry, const char *name)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-icon")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiEntryClearIcon (uiwcont_t *uientry)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-clear-icon")) {
+    return;
+  }
+
   return;
 }
 
 const char *
 uiEntryGetValue (uiwcont_t *uientry)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-get-value")) {
+    return NULL;
+  }
+
   return NULL;
 }
 
 void
 uiEntrySetValue (uiwcont_t *uientry, const char *value)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-value")) {
+    return;
+  }
+
   return;
-}
-
-void
-uiEntrySetValidate (uiwcont_t *uientry, const char *label,
-    uientryval_t valfunc, void *udata, int valdelay)
-{
-  return;
-}
-
-int
-uiEntryValidate (uiwcont_t *uientry, bool forceflag)
-{
-  return 0;
-}
-
-int
-uiEntryValidateDir (uiwcont_t *uientry, const char *label, void *udata)
-{
-  return 0;
-}
-
-int
-uiEntryValidateFile (uiwcont_t *uientry, const char *label, void *udata)
-{
-  return 0;
 }
 
 void
 uiEntrySetState (uiwcont_t *uientry, int state)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-state")) {
+    return;
+  }
+
   return;
 }
 
 void
-uiEntryValidateClear (uiwcont_t *uiwidget)
+uiEntrySetInternalValidate (uiwcont_t *uiwidget)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-int-validate")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiEntrySetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-focus-cb")) {
+    return;
+  }
+
   return;
 }
 
-bool
-uiEntryIsNotValid (uiwcont_t *uiwidget)
-{
-  return false;
-}

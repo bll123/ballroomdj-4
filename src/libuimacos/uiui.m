@@ -26,6 +26,8 @@
 
 #include "ui/uiui.h"
 
+uisetup_t   guisetup;
+
 int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 
 @interface AppDelegate : NSObject
@@ -110,10 +112,9 @@ uiCleanup (void)
 }
 
 void
-uiSetUICSS (const char *uifont, const char *listingfont,
-    const char *accentColor, const char *errorColor, const char *markColor,
-    const char *selectColor, const char *rowhlColor)
+uiSetUICSS (uisetup_t *uisetup)
 {
+  memcpy (&guisetup, uisetup, sizeof (uisetup_t));
   return;
 }
 

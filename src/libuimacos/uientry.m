@@ -22,35 +22,34 @@
 #include "ui/uiwidget.h"
 #include "ui/uientry.h"
 
-typedef struct uientry {
-  int         junk;
-} uientry_t;
-
 uiwcont_t *
 uiEntryInit (int entrySize, int maxSize)
 {
-  uiwcont_t   *uiwidget;
-  uientry_t   *uientry;
-  NSTextField *widget;
+  uiwcont_t       *uiwidget;
+  NSTextField     *widget;
+  uientrybase_t   *ebase;
 
 fprintf (stderr, "c-entry\n");
-  uientry = mdmalloc (sizeof (uientry_t));
-//  uientry->entrySize = entrySize;
-//  uientry->maxSize = maxSize;
-//  uientry->buffer = NULL;
-//  uientry->validateFunc = NULL;
-//  uientry->label = "";
-//  uientry->udata = NULL;
-//  mstimeset (&uientry->validateTimer, TM_TIMER_OFF);
-//  uientry->valdelay = false;
-//  uientry->valid = true;
-//  uientry->buffer = gtk_entry_buffer_new (NULL, -1);
-
   widget = [[NSTextField alloc] init];
+  [widget setBezeled:YES];
+  [widget setDrawsBackground:YES];
+  [widget setEditable:YES];
+  [widget setSelectable:YES];
+  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
   uiwidget = uiwcontAlloc (WCONT_T_ENTRY, WCONT_T_ENTRY);
   uiwcontSetWidget (uiwidget, widget, NULL);
-  uiwidget->uiint.uientry = uientry;
+  uiwidget->uiint.uientry = NULL;
+
+  ebase = &uiwidget->uiint.uientrybase;
+  ebase->entrySize = entrySize;
+  ebase->maxSize = maxSize;
+  ebase->validateFunc = NULL;
+  ebase->label = "";
+  ebase->udata = NULL;
+  mstimeset (&ebase->validateTimer, TM_TIMER_OFF);
+  ebase->valdelay = false;
+  ebase->valid = true;
 
 //  gtk_entry_set_width_chars (GTK_ENTRY (uiwidget->uidata.widget), uientry->entrySize);
 //  gtk_entry_set_max_length (GTK_ENTRY (uiwidget->uidata.widget), uientry->maxSize);
@@ -62,80 +61,90 @@ fprintf (stderr, "c-entry\n");
 }
 
 void
-uiEntryFree (uiwcont_t *uientry)
+uiEntryFree (uiwcont_t *uiwidget)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-free")) {
+    return;
+  }
+
+  /* the container is freed by uiwcontFree() */
+}
+
+void
+uiEntrySetIcon (uiwcont_t *uiwidget, const char *name)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-icon")) {
+    return;
+  }
+
   return;
 }
 
 void
-uiEntrySetIcon (uiwcont_t *uientry, const char *name)
+uiEntryClearIcon (uiwcont_t *uiwidget)
 {
-  return;
-}
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-clear-icon")) {
+    return;
+  }
 
-void
-uiEntryClearIcon (uiwcont_t *uientry)
-{
   return;
 }
 
 const char *
-uiEntryGetValue (uiwcont_t *uientry)
+uiEntryGetValue (uiwcont_t *uiwidget)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-get-value")) {
+    return NULL;
+  }
+
   return NULL;
 }
 
 void
-uiEntrySetValue (uiwcont_t *uientry, const char *value)
+uiEntrySetValue (uiwcont_t *uiwidget, const char *value)
 {
+  NSTextField   *widget;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-value")) {
+    return;
+  }
+
+  if (value == NULL) {
+    value = "";
+  }
+
+  widget = uiwidget->uidata.widget;
+  [widget setStringValue: [NSString stringWithUTF8String: value]];
+
   return;
 }
 
 void
-uiEntrySetValidate (uiwcont_t *uientry, const char *label,
-    uientryval_t valfunc, void *udata, int valdelay)
+uiEntrySetState (uiwcont_t *uiwidget, int state)
 {
-  return;
-}
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-state")) {
+    return;
+  }
 
-int
-uiEntryValidate (uiwcont_t *uientry, bool forceflag)
-{
-  return 0;
-}
-
-int
-uiEntryValidateDir (uiwcont_t *uientry, const char *label, void *udata)
-{
-  return 0;
-}
-
-int
-uiEntryValidateFile (uiwcont_t *uientry, const char *label, void *udata)
-{
-  return 0;
-}
-
-void
-uiEntrySetState (uiwcont_t *uientry, int state)
-{
   return;
 }
 
 void
-uiEntryValidateClear (uiwcont_t *uiwidget)
+uiEntrySetInternalValidate (uiwcont_t *uiwidget)
 {
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-int-validate")) {
+    return;
+  }
+
   return;
 }
 
 void
 uiEntrySetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
-  return;
-}
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-focus-cb")) {
+    return;
+  }
 
-bool
-uiEntryIsNotValid (uiwcont_t *uiwidget)
-{
-  return false;
+  return;
 }

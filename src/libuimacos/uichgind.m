@@ -12,22 +12,16 @@
 #include <Cocoa/Cocoa.h>
 #import <Foundation/NSObject.h>
 
+#include "colorutils.h"
+#include "uigeneral.h"
+
 #include "ui/uiwcont-int.h"
+#include "ui/uimacos-int.h"
 
 #include "ui/uiui.h"
 #include "ui/uibox.h"
 #include "ui/uiwidget.h"
 #include "ui/uichgind.h"
-
-@interface ILabel : NSTextField {}
-- (BOOL) isFlipped;
-@end
-
-@implementation ILabel
-- (BOOL) isFlipped {
-  return YES;
-}
-@end
 
 uiwcont_t *
 uiCreateChangeIndicator (uiwcont_t *boxp)
@@ -43,7 +37,7 @@ fprintf (stderr, "c-chgind\n");
   [widget setStringValue: [NSString stringWithUTF8String: " "]];
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
-  uiwidget = uiwcontAlloc (WCONT_T_LABEL, WCONT_T_LABEL);
+  uiwidget = uiwcontAlloc (WCONT_T_CHGIND, WCONT_T_CHGIND);
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiBoxPackStart (boxp, uiwidget);
   return uiwidget;
@@ -71,14 +65,15 @@ uichgindMarkChanged (uiwcont_t *uiwidget)
 {
   ILabel      *widget;
   NSColor     *col;
+  double      r, g, b;
 
   if (! uiwcontValid (uiwidget, WCONT_T_CHGIND, "ci-mark-chg")) {
     return;
   }
 
   widget = uiwidget->uidata.widget;
-  // ### this needs access to the colors
-  col = [NSColor colorWithCalibratedRed:0.0 green:0.8 blue:0.0 alpha:1.0];
+  colorValues (guisetup.changedColor, &r, &g, &b);
+  col = [NSColor colorWithCalibratedRed:r green:g blue:b alpha:1.0];
   [widget setTextColor: col];
 
   return;

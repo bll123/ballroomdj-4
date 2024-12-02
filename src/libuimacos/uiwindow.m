@@ -18,29 +18,12 @@
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"
+#include "ui/uimacos-int.h"
 
 #include "ui/uiui.h"
 #include "ui/uibox.h"
 #include "ui/uiwidget.h"
 #include "ui/uiwindow.h"
-
-@interface IWindowDelegate : NSObject
-- (void)windowDidBecomeKey:(NSNotification *)notification;
-- (void)windowDidBecomeMain:(NSNotification *)notification;
-- (void)windowDidResignKey:(NSNotification *)notification;
-- (void)windowDidResignMain:(NSNotification *)notification;
-- (void)windowWillClose:(NSNotification *)notification;
-- (BOOL)canBecomeKeyWindow;
-- (BOOL)canBecomeMainWindow;
-- (IBAction) OnButton1Click:(id)sender;
-- (IBAction) OnButton2Click:(id)sender;
-@end
-
-@interface IWindow : NSWindow { }
-@property uiwcont_t *uibox;
-- (instancetype) init;
-- (void) awakeFromNib;
-@end
 
 @implementation IWindow
 

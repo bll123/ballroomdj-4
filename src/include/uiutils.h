@@ -6,20 +6,11 @@
 
 #include "uiwcont.h"
 
+#include "ui/uiui.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
-
-typedef struct {
-  const char *uifont;
-  const char *listingfont;
-  const char *accentColor;
-  const char *errorColor;
-  const char *markColor;
-  const char *rowselColor;
-  const char *rowhlColor;
-  const char *mqbgColor;
-} uisetup_t;
 
 typedef struct {
   uiwcont_t   *hbox;

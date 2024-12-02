@@ -15,13 +15,10 @@
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"
+#include "ui/uimacos-int.h"
 
 #include "ui/uiui.h"
 #include "ui/uilabel.h"
-
-@interface ILabel : NSTextField {}
-- (BOOL) isFlipped;
-@end
 
 @implementation ILabel
 - (BOOL) isFlipped {
@@ -40,6 +37,7 @@ fprintf (stderr, "c-label\n");
   [widget setBezeled:NO];
   [widget setDrawsBackground:NO];
   [widget setEditable:NO];
+  [widget setSelectable:NO];
   [widget setStringValue: [NSString stringWithUTF8String: label]];
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
@@ -107,12 +105,20 @@ uiLabelEllipsizeOn (uiwcont_t *uiwidget)
 void
 uiLabelWrapOn (uiwcont_t *uiwidget)
 {
+  ILabel *widget;
+
+  widget = uiwidget->uidata.widget;
+  [widget setMaximumNumberOfLines:3];
   return;
 }
 
 void
 uiLabelSetSelectable (uiwcont_t *uiwidget)
 {
+  ILabel *widget;
+
+  widget = uiwidget->uidata.widget;
+  [widget setSelectable:YES];
   return;
 }
 

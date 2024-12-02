@@ -18,6 +18,7 @@
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"
+#include "ui/uimacos-int.h"
 
 #include "ui/uibox.h"
 #include "ui/uidialog.h"
@@ -33,12 +34,6 @@ typedef struct uiselect {
   const char  *mimefiltername;
   const char  *mimetype;
 } uiselect_t;
-
-@interface IDWindow : NSWindow { }
-@property uiwcont_t *uibox;
-- (instancetype) init;
-- (void) awakeFromNib;
-@end
 
 @implementation IDWindow
 
@@ -115,7 +110,7 @@ uiCreateDialog (uiwcont_t *window,
   IDWindow      *win = NULL;
   uiwcont_t     *uibox;
   NSStackView   *box;
-//  id            windowDelegate;
+  id            windowDelegate;
 
 fprintf (stderr, "c-dialog\n");
   win = [[IDWindow alloc] init];
@@ -132,8 +127,8 @@ fprintf (stderr, "c-dialog\n");
 
   uibox->packed = true;
 
-//  windowDelegate = [[IDWindowDelegate alloc] init];
-//  [win setDelegate:windowDelegate];
+  windowDelegate = [[IWindowDelegate alloc] init];
+  [win setDelegate:windowDelegate];
 
   uiwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_DIALOG_WINDOW);
   uiwcontSetWidget (uiwin, win, NULL);

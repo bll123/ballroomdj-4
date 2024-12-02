@@ -21,6 +21,7 @@
 #include "uigeneral.h"
 
 #include "ui/uiwcont-int.h"
+#include "ui/uimacos-int.h"
 
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
@@ -29,14 +30,6 @@
 typedef struct uibutton {
   NSImage         *image;
 } uibutton_t;
-
-@interface IButton : NSButton {
-  uiwcont_t   *uiwidget;
-}
-- (void) setUIWidget: (uiwcont_t *) tuiwidget;
-- (IBAction) OnButton1Click: (id) sender;
-- (BOOL) isFlipped;
-@end
 
 @implementation IButton
 

@@ -4,12 +4,23 @@
 #ifndef INC_UIUI_H
 #define INC_UIUI_H
 
-#include "uiutils.h"
 #include "uiwcont.h"
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
+
+typedef struct {
+  const char *uifont;
+  const char *listingfont;
+  const char *accentColor;
+  const char *errorColor;
+  const char *markColor;
+  const char *changedColor;
+  const char *rowselColor;
+  const char *rowhlColor;
+  const char *mqbgColor;
+} uisetup_t;
 
 enum {
   UIUTILS_BASE_MARGIN_SZ = 2,

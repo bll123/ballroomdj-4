@@ -26,7 +26,6 @@
 #include "sysvars.h"
 #include "tmutil.h"
 #include "uiclass.h"
-#include "uiutils.h"    // for uisetup_t definition
 
 #include "ui/uiwcont-int.h"
 
