@@ -56,8 +56,12 @@ On Windows, the packages should be cleaned up first.
     * ./utils/postrel.sh
 * final
     * update sourceforge, mark the packages
+    * github: upload the releases
     * announce the release on the forum
     * announce the release on freshcode.club
+    * hg: push to sourceforge (sfbdj4)
+    * hg bookmark -r tip master
+    * hg: push to git (gitbdj4)
     * update VERSION.txt
         * set next version
         * set DEVELOPMENT tag
@@ -65,4 +69,4 @@ On Windows, the packages should be cleaned up first.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2024-10-16 09:35:17; BDJ4 version 4.12.3)_
+<br>_(Updated 2024-11-23 14:31:33; BDJ4 version 4.12.6)_

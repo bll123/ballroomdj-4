@@ -3,8 +3,6 @@
  *   Excepting code excerpts from microsoft.
  */
 
-#if _WIN32
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
@@ -98,13 +96,3 @@ winmkshortcut (scinfo_t *scinfo)
 
   return hres;
 }
-
-#else /* _WIN32 */
-
-int
-main (int argc, const char *argv [])
-{
-  return 0;
-}
-
-#endif /* _WIN32 */

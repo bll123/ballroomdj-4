@@ -223,12 +223,14 @@ add_compile_options (-fPIC)
 
 add_compile_options (-Wall)
 add_compile_options (-Wextra)
+# add_compile_options (-Wconversion)
 add_compile_options (-Wno-unused-parameter)
 add_compile_options (-Wno-unknown-pragmas)
 add_compile_options (-Wno-float-equal)
 add_compile_options (-Wdeclaration-after-statement)
 add_compile_options (-Wmissing-prototypes)
 add_compile_options (-Wformat)
+# add_compile_options (-Wformat=2)
 add_compile_options (-Wformat-security)
 add_compile_options (-Werror=format-security)
 add_compile_options (-Werror=return-type)
@@ -359,8 +361,6 @@ endif()
 
 if (BDJ4_FORTIFY STREQUAL T)
   # hardening
-  add_compile_options (-fstack-protector-strong)
-  add_compile_options (-fstack-protector-all)
   add_compile_options (-fstack-protector-strong)
   add_compile_options (-fstack-protector-all)
   add_compile_options (-D_FORTIFY_SOURCE=2)
@@ -635,3 +635,4 @@ set (CMAKE_EXTRA_INCLUDE_FILES "")
 
 configure_file (config.h.in config.h)
 
+cmake_path (SET DEST_BIN NORMALIZE "${PROJECT_SOURCE_DIR}/../bin")

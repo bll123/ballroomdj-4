@@ -5,10 +5,33 @@
 ### Classical Music Support
 
 Classical music is supported by BallroomDJ&nbsp;4.  Classical music
-needs to have its title set correctly, and there are more audio tags.
+needs to have its title set correctly, and there are other audio tags
+that are useful for classical music.
+
 There is also a unique feature in BDJ4 for classical music.
 
+##### Classical Music Audio Tags
+
+Classical music will use more audio tags than general music.  Some of
+the audio tags that may be desired are: _Work_,
+_Movement&nbsp;Number_, _Movement&nbsp;Name_, _Album&nbsp;Artist_,
+_Album&nbsp;Artist&nbsp;Sort&nbsp;Order_, _Composer_,
+_Composer&nbsp;Sort&nbsp;Order_, and _Conductor_.
+
+The audio tags to be displayed in the music manager, the music queue,
+the song selection and the song editor can be set in
+[Configure&nbsp;/&nbsp;Display&nbsp;Settings](en-Configuration-Display%20Settings).
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![cm-conf-dispset](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/cm-conf-dispset-B.png)
+<br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
+
 ##### Classical Music Title
+
+In [Configuration&nbsp;/&nbsp;General](en-Configuration-General), if the
+__Use Work and Movement__ setting is turned on, the _Work_,
+_Movement&nbsp;Number_ and _Movement&nbsp;Name_ are use to generate
+the title of the song.
 
 The title for classical music should be set correctly according to the
 [MusicBrainz&nbsp;Classical&nbsp;Track&nbsp;Title](https://musicbrainz.org/doc/Style/Classical/Track_Title)
@@ -22,21 +45,6 @@ should have the work set, not just the first movement.
 <div markdown style="margin-right: 20px; text-align: center;">
 ![cm-se](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/cm-se-B.png)
 <br><span style="color:#4559bf;">__Song Editor__</span> </div>
-
-##### Classical Music Audio Tags
-
-Classical music will use more audio tags than general music.  Some of
-the audio tags that may be desired are: _Album&nbsp;Artist_,
-_Album&nbsp;Artist&nbsp;Sort&nbsp;Order_, _Composer_,
-_Composer&nbsp;Sort&nbsp;Order_, and _Conductor_.
-
-The audio tags to be displayed in the music manager, the music queue,
-the song selection and the song editor can be set in
-[Configure&nbsp;/&nbsp;Display&nbsp;Settings](en-Configuration-Display%20Settings).
-
-<div markdown style="margin-right: 20px; text-align: center;">
-![cm-conf-dispset](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/cm-conf-dispset-B.png)
-<br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
 
 ##### Audio Tag Sort Order
 
@@ -90,4 +98,4 @@ want to use.  To add a new organization path, the data/orgopt.txt file must
 be edited.  [Contact](en-Getting%20Help) the development team for help.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-10-31 10:21:04; BDJ4 version 4.12.5.1)_
+<br>_(Updated 2024-11-23 14:31:33; BDJ4 version 4.12.6)_

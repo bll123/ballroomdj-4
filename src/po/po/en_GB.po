@@ -2,10 +2,10 @@
 # -- english/gb
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.13.0\n"
+"Project-Id-Version: ballroomdj-4 4.12.6\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2024-10-21\n"
-"PO-Revision-Date: 2024-10-21\n"
+"POT-Creation-Date: 2024-11-20\n"
+"PO-Revision-Date: 2024-11-20\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -472,6 +472,10 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
+#. CONTEXT: label: comment
+msgid "Comment"
+msgstr ""
+
 #. CONTEXT: database update: check for new audio files
 msgid "Compact"
 msgstr ""
@@ -905,6 +909,10 @@ msgstr ""
 msgid "Great"
 msgstr ""
 
+#. CONTEXT: label: grouping
+msgid "Grouping"
+msgstr ""
+
 #. CONTEXT: configuration: remote control: the HTML template to use
 msgid "HTML Template"
 msgstr ""
@@ -1180,6 +1188,18 @@ msgstr ""
 
 #. CONTEXT: music queue: button: move the selected song to the top of the queue
 msgid "Move to Top"
+msgstr ""
+
+#. CONTEXT: label: movement name (classical music movement name)
+msgid "Movement"
+msgstr ""
+
+#. CONTEXT: label: movement count (classical music movement count)
+msgid "Movement Count"
+msgstr ""
+
+#. CONTEXT: label: movement (classical music movement number)
+msgid "Movement Number"
 msgstr ""
 
 #. CONTEXT: configuration: the music folder where the user stores their music
@@ -2163,6 +2183,10 @@ msgstr ""
 msgid "Upgrade"
 msgstr ""
 
+#. CONTEXT: configuration: classical music: use work/movement
+msgid "Use Work and Movement"
+msgstr ""
+
 #. CONTEXT: configuration: remote control: the user ID for sign-on to remote control
 msgid "User ID"
 msgstr ""
@@ -2216,6 +2240,10 @@ msgstr ""
 
 #. CONTEXT: bpm counter: instructions, line 2
 msgid "When the BPM value is stable, select the Save button."
+msgstr ""
+
+#. CONTEXT: label: work (a musical work)
+msgid "Work"
 msgstr ""
 
 #. CONTEXT: configuration: which audio tags will be written to the audio file

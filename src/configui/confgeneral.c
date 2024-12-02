@@ -138,6 +138,11 @@ confuiBuildUIGeneral (confuigui_t *gui)
       CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS, OPT_G_WRITETAGS,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_WRITETAGS), NULL);
 
+  /* CONTEXT: configuration: classical music: use work/movement */
+  confuiMakeItemSwitch (gui, vbox, szgrp, _("Use Work and Movement"),
+      CONFUI_SWITCH_USE_WORK_MOVEMENT, OPT_G_USE_WORK_MOVEMENT,
+      bdjoptGetNum (OPT_G_USE_WORK_MOVEMENT), NULL, 0);
+
   *ebuff = '\0';
   tmp = bdjoptGetStr (OPT_G_ACRCLOUD_API_KEY);
   if (tmp != NULL) {
@@ -147,6 +152,7 @@ confuiBuildUIGeneral (confuigui_t *gui)
       strncmp (tmp, VSEC_E_PFX, strlen (VSEC_E_PFX)) == 0) {
     vsencdec (tmp, ebuff, sizeof (ebuff));
   }
+
   /* CONTEXT: configuration: the ACRCloud API Key */
   snprintf (tbuff, sizeof (tbuff), _("%s API Key"), ACRCLOUD_NAME);
   confuiMakeItemEntryEncrypt (gui, vbox, szgrp, tbuff,

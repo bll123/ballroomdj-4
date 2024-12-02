@@ -47,7 +47,7 @@ addWinSockLibrary (libuigtk3)
 
 install (TARGETS
   libuigtk3
-  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  DESTINATION ${DEST_BIN}
 )
 
 updateRPath (libuigtk3)

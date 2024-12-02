@@ -42,22 +42,25 @@ typedef struct {
 } orglookup_t;
 
 orglookup_t orglookup [ORG_MAX_KEY] = {
-  [ORG_TEXT]        = { "--",           -1,               NULL, }, // not used
-  [ORG_ALBUM]       = { "ALBUM",        TAG_ALBUM,        NULL, },
-  [ORG_ALBUMARTIST] = { "ALBUMARTIST",  TAG_ALBUMARTIST,  NULL, },
-  [ORG_ARTIST]      = { "ARTIST",       TAG_ARTIST,       NULL, },
-  [ORG_BPM]         = { "BPM",          TAG_BPM,          NULL, },
-  [ORG_BYPASS]      = { "BYPASS",       (tagdefkey_t) ORG_TAG_BYPASS,   NULL, },
-  [ORG_COMPOSER]    = { "COMPOSER",     TAG_COMPOSER,     NULL, },
-  [ORG_CONDUCTOR]   = { "CONDUCTOR",    TAG_CONDUCTOR,    NULL, },
-  [ORG_DANCE]       = { "DANCE",        TAG_DANCE,        danceConvDance },
-  [ORG_DISC]        = { "DISC",         TAG_DISCNUMBER,   NULL, },
-  [ORG_GENRE]       = { "GENRE",        TAG_GENRE,        genreConv },
-  [ORG_RATING]      = { "RATING",       TAG_DANCERATING,  ratingConv },
-  [ORG_STATUS]      = { "STATUS",       TAG_STATUS,       statusConv },
-  [ORG_TITLE]       = { "TITLE",        TAG_TITLE,        NULL, },
-  [ORG_TRACKNUM]    = { "TRACKNUMBER",  TAG_TRACKNUMBER,  NULL, },
-  [ORG_TRACKNUM0]   = { "TRACKNUMBER0", TAG_TRACKNUMBER,  NULL, },
+  [ORG_TEXT]          = { "--",             -1,               NULL }, // not used
+  [ORG_ALBUM]         = { "ALBUM",          TAG_ALBUM,        NULL },
+  [ORG_ALBUMARTIST]   = { "ALBUMARTIST",    TAG_ALBUMARTIST,  NULL },
+  [ORG_ARTIST]        = { "ARTIST",         TAG_ARTIST,       NULL },
+  [ORG_BPM]           = { "BPM",            TAG_BPM,          NULL },
+  [ORG_BYPASS]        = { "BYPASS",         (tagdefkey_t) ORG_TAG_BYPASS, NULL },
+  [ORG_COMPOSER]      = { "COMPOSER",       TAG_COMPOSER,     NULL },
+  [ORG_CONDUCTOR]     = { "CONDUCTOR",      TAG_CONDUCTOR,    NULL },
+  [ORG_DANCE]         = { "DANCE",          TAG_DANCE,        danceConvDance },
+  [ORG_DISC]          = { "DISC",           TAG_DISCNUMBER,   NULL },
+  [ORG_GENRE]         = { "GENRE",          TAG_GENRE,        genreConv },
+  [ORG_RATING]        = { "RATING",         TAG_DANCERATING,  ratingConv },
+  [ORG_STATUS]        = { "STATUS",         TAG_STATUS,       statusConv },
+  [ORG_TITLE]         = { "TITLE",          TAG_TITLE,        NULL },
+  [ORG_TRACKNUM]      = { "TRACKNUMBER",    TAG_TRACKNUMBER,  NULL },
+  [ORG_TRACKNUM0]     = { "TRACKNUMBER0",   TAG_TRACKNUMBER,  NULL },
+  [ORG_MOVEMENTNAME]  = { "MOVEMENTNAME",   TAG_MOVEMENTNAME, NULL },
+  [ORG_MOVEMENTNUM]   = { "MOVEMENTNUMBER", TAG_MOVEMENTNUM,  NULL },
+  [ORG_WORK]          = { "WORK",           TAG_WORK,         NULL },
 };
 
 typedef struct org {
@@ -405,6 +408,7 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
     if (orginfo->orgkey != ORG_TEXT) {
       if (orginfo->orgkey == ORG_TRACKNUM ||
           orginfo->orgkey == ORG_TRACKNUM0 ||
+          orginfo->orgkey == ORG_MOVEMENTNUM ||
           orginfo->orgkey == ORG_DISC ||
           orginfo->convFunc != NULL) {
         int64_t     val;
@@ -426,6 +430,10 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
           }
         }
         if (orginfo->orgkey == ORG_TRACKNUM0 && val > 0) {
+          snprintf (tmp, sizeof (tmp), "%03" PRId64, val);
+          datap = tmp;
+        }
+        if (orginfo->orgkey == ORG_MOVEMENTNUM && val > 0) {
           snprintf (tmp, sizeof (tmp), "%03" PRId64, val);
           datap = tmp;
         }

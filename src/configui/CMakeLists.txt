@@ -46,7 +46,7 @@ addWinSockLibrary (bdj4configui)
 
 install (TARGETS
   bdj4configui
-  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  DESTINATION ${DEST_BIN}
 )
 
 updateRPath (bdj4configui)

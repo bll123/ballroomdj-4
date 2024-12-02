@@ -3,8 +3,6 @@
  */
 #include "config.h"
 
-#if _hdr_MacTypes
-
 #import <AudioToolbox/AudioServices.h>
 #import <Foundation/NSObject.h>
 
@@ -313,5 +311,3 @@ voliProcess (volaction_t action, const char *sinkname,
 
   return -1;
 }
-
-#endif /* hdr_mactypes */

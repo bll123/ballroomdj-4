@@ -1006,16 +1006,19 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
       }
 
       if (chkvalue == UISE_CHK_NUM) {
-        int   rcdisc, rctotdisc, rctrk, rctottrk;
+        int   rcdisc, rctotdisc, rctrk, rctottrk, rcmvnum, rcmvcount;
 
         rcdisc = (tagkey == TAG_DISCNUMBER && val == 0.0 && nval == 1.0);
         rctotdisc = (tagkey == TAG_DISCTOTAL && val == 0.0 && nval == 1.0);
         rctrk = (tagkey == TAG_TRACKNUMBER && val == 0.0 && nval == 1.0);
         rctottrk = (tagkey == TAG_TRACKTOTAL && val == 0.0 && nval == 1.0);
+        rcmvnum = (tagkey == TAG_MOVEMENTNUM && val == 0.0 && nval == 1.0);
+        rcmvcount = (tagkey == TAG_MOVEMENTCOUNT && val == 0.0 && nval == 1.0);
         if (tagkey == TAG_FAVORITE || tagkey == TAG_GENRE) {
           if (val < 0) { val = 0; }
         }
-        if (! rcdisc && ! rctrk && ! rctotdisc && ! rctottrk && nval != val) {
+        if (! rcdisc && ! rctrk && ! rctotdisc && ! rctottrk &&
+            ! rcmvnum && ! rcmvcount && nval != val) {
           seint->items [count].changed = true;
         } else {
           if (seint->items [count].changed) {
@@ -1293,8 +1296,9 @@ uisongeditAddSpinboxInt (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   if (tagkey == TAG_BPM) {
     uiSpinboxSet (uiwidgetp, 0.0, 400.0);
   }
-  if (tagkey == TAG_TRACKNUMBER || tagkey == TAG_DISCNUMBER ||
-      tagkey == TAG_TRACKTOTAL || tagkey == TAG_DISCTOTAL) {
+  if (tagkey == TAG_TRACKNUMBER || tagkey == TAG_TRACKTOTAL ||
+      tagkey == TAG_DISCNUMBER || tagkey == TAG_DISCTOTAL ||
+      tagkey == TAG_MOVEMENTNUM || tagkey == TAG_MOVEMENTCOUNT) {
     uiSpinboxSet (uiwidgetp, 1.0, 300.0);
   }
   uiSpinboxSetValueChangedCallback (uiwidgetp,
@@ -1570,6 +1574,9 @@ uisongeditSave (void *udata, nlist_t *chglist)
 
   if (! seint->ineditallapply) {
     chglist = uisongeditGetChangedData (uisongedit);
+    /* get-changed-data will force the work, movement-num, movement-name */
+    /* and title to be populated in chglist if any of them have changed */
+    songutilTitleFromWorkMovement (chglist);
   }
 
   for (int count = 0; count < seint->itemcount; ++count) {
@@ -1728,9 +1735,28 @@ uisongeditGetChangedData (uisongedit_t *uisongedit)
 {
   se_internal_t   *seint =  NULL;
   nlist_t         *chglist = NULL;
+  bool            chgworkmovmovement = false;
 
   seint = uisongedit->seInternalData;
   chglist = nlistAlloc ("se-chg-list", LIST_ORDERED, NULL);
+
+  if (bdjoptGetNum (OPT_G_USE_WORK_MOVEMENT)) {
+    /* if any of work, movement-num or movement-name have changed, */
+    /* force a change for all of them, as the data is needed to */
+    /* re-populate the title */
+    for (int count = 0; count < seint->itemcount; ++count) {
+      int         tagkey = seint->items [count].tagkey;
+
+      if (seint->items [count].changed) {
+        if (tagkey == TAG_WORK ||
+            tagkey == TAG_MOVEMENTNAME ||
+            tagkey == TAG_MOVEMENTNUM ||
+            tagkey == TAG_TITLE) {
+          chgworkmovmovement = true;
+        }
+      }
+    }
+  }
 
   for (int count = 0; count < seint->itemcount; ++count) {
     const char  *ndata = NULL;
@@ -1738,6 +1764,14 @@ uisongeditGetChangedData (uisongedit_t *uisongedit)
     double      ndval = LIST_DOUBLE_INVALID;
     int         chkvalue;
     int         tagkey = seint->items [count].tagkey;
+
+    if (chgworkmovmovement &&
+        (tagkey == TAG_WORK ||
+        tagkey == TAG_MOVEMENTNAME ||
+        tagkey == TAG_MOVEMENTNUM ||
+        tagkey == TAG_TITLE)) {
+      seint->items [count].changed = true;
+    }
 
     if (! seint->items [count].changed) {
       continue;

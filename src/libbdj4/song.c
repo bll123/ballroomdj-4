@@ -61,6 +61,7 @@ static datafilekey_t songdfkeys [] = {
   { "ARTIST",               TAG_ARTIST,               VALUE_STR, NULL, DF_NORM },
   { "ARTISTSORT",           TAG_SORT_ARTIST,          VALUE_STR, NULL, DF_NORM },
   { "BPM",                  TAG_BPM,                  VALUE_NUM, NULL, DF_NORM },
+  { "COMMENT",              TAG_COMMENT,              VALUE_STR, NULL, DF_NORM },
   { "COMPOSER",             TAG_COMPOSER,             VALUE_STR, NULL, DF_NORM },
   { "COMPOSERSORT",         TAG_SORT_COMPOSER,        VALUE_STR, NULL, DF_NORM },
   { "CONDUCTOR",            TAG_CONDUCTOR,            VALUE_STR, NULL, DF_NORM },
@@ -81,8 +82,12 @@ static datafilekey_t songdfkeys [] = {
   { "FAVORITE",             TAG_FAVORITE,             VALUE_NUM, songFavoriteConv, DF_NORM },
   { "FILE",                 TAG_URI,                  VALUE_STR, NULL, DF_NO_WRITE },
   { "GENRE",                TAG_GENRE,                VALUE_NUM, genreConv, DF_NORM },
+  { "GROUPING",             TAG_GROUPING,             VALUE_STR, NULL, DF_NORM },
   { "KEYWORD",              TAG_KEYWORD,              VALUE_STR, NULL, DF_NORM },
   { "LASTUPDATED",          TAG_LAST_UPDATED,         VALUE_NUM, NULL, DF_NORM },
+  { "MOVEMENTCOUNT",        TAG_MOVEMENTCOUNT,        VALUE_NUM, NULL, DF_NORM },
+  { "MOVEMENTNAME",         TAG_MOVEMENTNAME,         VALUE_STR, NULL, DF_NORM },
+  { "MOVEMENTNUM",          TAG_MOVEMENTNUM,          VALUE_NUM, NULL, DF_NORM },
   { "MQDISPLAY",            TAG_MQDISPLAY,            VALUE_STR, NULL, DF_NORM },
   { "NOTES",                TAG_NOTES,                VALUE_STR, NULL, DF_NORM },
   { "PFXLEN",               TAG_PREFIX_LEN,           VALUE_NUM, NULL, DF_NORM },
@@ -100,6 +105,7 @@ static datafilekey_t songdfkeys [] = {
   { "TRACK_ID",             TAG_TRACK_ID,             VALUE_STR, NULL, DF_NORM },
   { "URI",                  TAG_URI,                  VALUE_STR, NULL, DF_NORM },
   { "VOLUMEADJUSTPERC",     TAG_VOLUMEADJUSTPERC,     VALUE_DOUBLE, NULL, DF_NORM },
+  { "WORK",                 TAG_WORK,                 VALUE_STR, NULL, DF_NORM },
   { "WORK_ID",              TAG_WORK_ID,              VALUE_STR, NULL, DF_NORM },
 };
 enum {

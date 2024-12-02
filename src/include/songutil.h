@@ -5,6 +5,7 @@
 #define INC_SONGUTIL_H
 
 #include "datafile.h"
+#include "nlist.h"
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -42,6 +43,7 @@ ssize_t songutilAdjustPosReal (ssize_t pos, int speed);
 ssize_t songutilNormalizePosition (ssize_t pos, int speed);
 int   songutilAdjustBPM (int bpm, int speed);
 int   songutilNormalizeBPM (int bpm, int speed);
+void  songutilTitleFromWorkMovement (nlist_t *taglist);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

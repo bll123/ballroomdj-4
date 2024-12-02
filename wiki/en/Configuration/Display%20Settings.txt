@@ -41,9 +41,13 @@ to remove and add columns to display.  Use the up and down arrows
 ![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-B.png))
 to change the order in which the columns are displayed.
 
+Information on each display item can be found here:
+<br>[Management&nbsp;/&nbsp;Song&nbsp;Editor](en-Management-Song%20Editor)
+
+
 <div markdown style="margin-right: 20px; text-align: center;">
 ![display-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/DisplaySettings-F.png)
 <br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-08-27 09:20:09; BDJ4 version 4.11.6)_
+<br>_(Updated 2024-11-23 14:31:33; BDJ4 version 4.12.6)_

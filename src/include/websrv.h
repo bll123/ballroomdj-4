@@ -4,7 +4,7 @@
 #ifndef INC_WEBSRV_H
 #define INC_WEBSRV_H
 
-#include "mongoose.h"
+#include <stdint.h>
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {

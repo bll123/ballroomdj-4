@@ -71,19 +71,19 @@ install (TARGETS
   libbdj4pli
   libplinull
   libpligst
-  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  DESTINATION ${DEST_BIN}
 )
 if (NOT WIN32 AND NOT APPLE)
   install (TARGETS
     libplimpris
-    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+    DESTINATION ${DEST_BIN}
   )
 endif()
 
 if (LIBVLC_FOUND)
   install (TARGETS
     libplivlc
-    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+    DESTINATION ${DEST_BIN}
   )
   updateRPath (libplivlc)
 endif()
@@ -91,7 +91,7 @@ endif()
 if (LIBVLC4_FOUND)
   install (TARGETS
     libplivlc4
-    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+    DESTINATION ${DEST_BIN}
   )
   updateRPath (libplivlc4)
 endif()

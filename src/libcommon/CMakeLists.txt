@@ -25,6 +25,7 @@ add_library (libbdj4common SHARED
   ossignal.c
   pathinfo.c
   queue.c
+  roman.c
   sock.c
   sockh.c
   vsencdec.c
@@ -59,7 +60,7 @@ addWinBcryptLibrary (libbdj4common)
 
 install (TARGETS
   libbdj4common
-  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  DESTINATION ${DEST_BIN}
 )
 
 updateRPath (libbdj4common)

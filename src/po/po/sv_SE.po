@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2024-10-21\n"
+"PO-Revision-Date: 2024-11-20\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Swedish\n"
 "Language: sv\n"
@@ -478,6 +478,10 @@ msgstr ""
 msgid "Close"
 msgstr "Nära"
 
+#. CONTEXT: label: comment
+msgid "Comment"
+msgstr ""
+
 #. CONTEXT: database update: check for new audio files
 msgid "Compact"
 msgstr "Kompakt"
@@ -911,6 +915,10 @@ msgstr "Bra"
 msgid "Great"
 msgstr "Bra"
 
+#. CONTEXT: label: grouping
+msgid "Grouping"
+msgstr ""
+
 #. CONTEXT: configuration: remote control: the HTML template to use
 msgid "HTML Template"
 msgstr "HTML-mall"
@@ -1183,6 +1191,18 @@ msgstr "Flytta upp"
 #. CONTEXT: music queue: button: move the selected song to the top of the queue
 msgid "Move to Top"
 msgstr "Flytta till toppen"
+
+#. CONTEXT: label: movement name (classical music movement name)
+msgid "Movement"
+msgstr ""
+
+#. CONTEXT: label: movement count (classical music movement count)
+msgid "Movement Count"
+msgstr ""
+
+#. CONTEXT: label: movement (classical music movement number)
+msgid "Movement Number"
+msgstr ""
 
 #. CONTEXT: configuration: the music folder where the user stores their music
 #. CONTEXT: update database: music folder to process
@@ -2165,6 +2185,10 @@ msgstr "Uppdatering av befintlig %s installation."
 msgid "Upgrade"
 msgstr ""
 
+#. CONTEXT: configuration: classical music: use work/movement
+msgid "Use Work and Movement"
+msgstr ""
+
 #. CONTEXT: configuration: remote control: the user ID for sign-on to remote control
 msgid "User ID"
 msgstr "Användar-ID"
@@ -2219,6 +2243,10 @@ msgstr "West Coast Swing"
 #. CONTEXT: bpm counter: instructions, line 2
 msgid "When the BPM value is stable, select the Save button."
 msgstr "När BPM-värdet är stabilt väljer du knappen Save (Spara)."
+
+#. CONTEXT: label: work (a musical work)
+msgid "Work"
+msgstr ""
 
 #. CONTEXT: configuration: which audio tags will be written to the audio file
 msgid "Write Audio File Tags"

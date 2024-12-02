@@ -1,5 +1,5 @@
 # org-opt
-# 2022-12-17
+# 2024-11-15
 # version 2
 #
 # There are many entries that are commented out that can be easily added
@@ -8,6 +8,7 @@
 # recognized keywords:
 #   ALBUM ALBUMARTIST ARTIST BPM COMPOSER CONDUCTOR DANCE DISC GENRE
 #   RATING STATUS TITLE TRACKNUMBER TRACKNUMBER0
+#   MOVEMENTNAME MOVEMENTNUMBER WORK
 #
 #   BYPASS
 #

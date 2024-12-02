@@ -69,6 +69,7 @@ static datafilekey_t bdjoptglobaldfkeys [] = {
   { "ORGPATH",              OPT_G_ORGPATH,            VALUE_STR, NULL, DF_NORM },
   { "PLAYERQLEN",           OPT_G_PLAYERQLEN,         VALUE_NUM, NULL, DF_NORM },
   { "REMCONTROLHTML",       OPT_G_REMCONTROLHTML,     VALUE_STR, NULL, DF_NORM },
+  { "USEWORKMOVEMENT",      OPT_G_USE_WORK_MOVEMENT,  VALUE_NUM, convBoolean, DF_NORM },
   { "WRITETAGS",            OPT_G_WRITETAGS,          VALUE_NUM, bdjoptConvWriteTags, DF_NORM },
 };
 
@@ -439,6 +440,11 @@ bdjoptInit (void)
     if (val < 0) {
       bdjoptSetNumPerQueue (OPT_Q_XFADE, 0.0, i);
     }
+  }
+
+  /* added 4.12.6, use-work-movement */
+  if (nlistGetNum (bdjopt->bdjoptList, OPT_G_USE_WORK_MOVEMENT) < 0) {
+    nlistSetNum (bdjopt->bdjoptList, OPT_G_USE_WORK_MOVEMENT, false);
   }
 }
 

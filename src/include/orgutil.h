@@ -36,6 +36,9 @@ typedef enum {
   ORG_TITLE,
   ORG_TRACKNUM,
   ORG_TRACKNUM0,
+  ORG_MOVEMENTNAME,
+  ORG_MOVEMENTNUM,
+  ORG_WORK,
   ORG_MAX_KEY,
 } orgkey_t;
 

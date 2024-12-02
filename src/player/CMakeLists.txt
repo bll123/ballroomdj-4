@@ -81,7 +81,7 @@ addWinSockLibrary (bdj4mobmq)
 
 install (TARGETS
   bdj4main bdj4player bdj4marquee bdj4rc bdj4mobmq
-  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  DESTINATION ${DEST_BIN}
 )
 
 updateRPath (bdj4main)

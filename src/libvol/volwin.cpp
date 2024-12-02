@@ -10,8 +10,6 @@
 
 #include "config.h"
 
-#if __WINNT__
-
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
@@ -284,5 +282,3 @@ Exit:
 }
 
 } /* extern C */
-
-#endif  /* is windows */

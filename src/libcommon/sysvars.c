@@ -88,6 +88,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_LOCALE_RADIX] = { "LOCALE_RADIX" },
   [SV_LOCALE_SHORT] = { "LOCALE_SHORT" },
   [SV_LOCALE_SYSTEM] = { "LOCALE_SYSTEM" },
+  [SV_LOCALE_639_2] = { "LOCALE_639_2" },
   [SV_OS_ARCH] = { "OS_ARCH" },
   [SV_OS_BUILD] = { "OS_BUILD" },
   [SV_OS_DISP] = { "OS_DISP" },
@@ -574,6 +575,7 @@ sysvarsInit (const char *argv0, int flags)
   sysvarsSetStr (SV_LOCALE, "en_GB");
   sysvarsSetStr (SV_LOCALE_SHORT, "en");
   sysvarsSetStr (SV_LOCALE_RADIX, ".");
+  sysvarsSetStr (SV_LOCALE_639_2, "eng");
 
   lsysvars [SVL_LOCALE_SET] = SYSVARS_LOCALE_NOT_SET;
   lsysvars [SVL_LOCALE_SYS_SET] = SYSVARS_LOCALE_NOT_SET;

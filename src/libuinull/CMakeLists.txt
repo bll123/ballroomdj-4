@@ -43,7 +43,7 @@ addWinSockLibrary (libuinull)
 
 install (TARGETS
   libuinull
-  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  DESTINATION ${DEST_BIN}
 )
 
 updateRPath (libuinull)

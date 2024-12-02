@@ -53,8 +53,8 @@ filetypelookup_t filetypelookup [] = {
   /* .ogx files must be parsed to see what is in the container */
   { ".ogx",   TAG_TYPE_VORBIS,  AFILE_TYPE_OGG, },
   { ".opus",  TAG_TYPE_VORBIS,  AFILE_TYPE_OPUS, },
-  { ".wav",   TAG_TYPE_WAV,     AFILE_TYPE_RIFF, },
-  { ".wma",   TAG_TYPE_WMA,     AFILE_TYPE_ASF, },
+  { ".wav",   TAG_TYPE_RIFF,     AFILE_TYPE_RIFF, },
+  { ".wma",   TAG_TYPE_ASF,     AFILE_TYPE_ASF, },
 };
 enum {
   filetypelookupsz = sizeof (filetypelookup) / sizeof (filetypelookup_t),
@@ -65,8 +65,7 @@ static audiotag_t *at = NULL;
 static void audiotagParseTags (slist_t *tagdata, const char *ffn, int filetype, int tagtype, int *rewrite);
 static void audiotagCreateLookupTable (int tagtype);
 static int  audiotagTagCheck (int writetags, int tagtype, const char *tag, int rewrite);
-static void audiotagPrepareTotals (slist_t *tagdata, slist_t *newtaglist,
-    nlist_t *datalist, int totkey, int tagkey);
+static void audiotagPrepareTotals (slist_t *tagdata, slist_t *newtaglist, nlist_t *datalist, int tagkey, int totkey);
 static const char * audiotagTagLookup (int tagtype, const char *val);
 static const char * audiotagTagName (int tagkey);
 static const tagaudiotag_t *audiotagRawLookup (int tagkey, int tagtype);
@@ -174,12 +173,15 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   datalist = nlistAlloc ("audiotag-data", LIST_ORDERED, NULL);
   nlistSetStr (datalist, TAG_TRACKTOTAL, "0");
   nlistSetStr (datalist, TAG_DISCTOTAL, "0");
+  nlistSetStr (datalist, TAG_MOVEMENTCOUNT, "0");
 
   /* mp3 and mp4 store the track/disc totals in with the track */
   audiotagPrepareTotals (tagdata, newtaglist, datalist,
-      TAG_TRACKTOTAL, TAG_TRACKNUMBER);
+      TAG_TRACKNUMBER, TAG_TRACKTOTAL);
   audiotagPrepareTotals (tagdata, newtaglist, datalist,
-      TAG_DISCTOTAL, TAG_DISCNUMBER);
+      TAG_DISCNUMBER, TAG_DISCTOTAL);
+  audiotagPrepareTotals (tagdata, newtaglist, datalist,
+      TAG_MOVEMENTNUM, TAG_MOVEMENTCOUNT);
 
   updatelist = slistAlloc ("audiotag-upd", LIST_ORDERED, NULL);
   dellist = slistAlloc ("audiotag-upd", LIST_ORDERED, NULL);
@@ -208,7 +210,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
         *newvalue && strcmp (newvalue, value) != 0) {
       upd = true;
     }
-    if (! upd && nlistGetNum (datalist, tagkey) == 1) {
+    if (! upd && nlistGetStr (datalist, tagkey) != NULL) {
       /* for track/disc total changes */
       upd = true;
     }
@@ -476,6 +478,9 @@ audiotagCreateLookupTable (int tagtype)
     }
     if (tagdefs [i].audiotags [tagtype].tag != NULL) {
       slistSetStr (taglist, tagdefs [i].audiotags [tagtype].tag, tagdefs [i].tag);
+      if (tagdefs [i].audiotags [tagtype].alternate != NULL) {
+        slistSetStr (taglist, tagdefs [i].audiotags [tagtype].alternate, tagdefs [i].tag);
+      }
       if (tagdefs [i].audiotags [tagtype].desc != NULL) {
         /* for mp3: also add w/o the txxx= prefix */
         slistSetStr (taglist, tagdefs [i].audiotags [tagtype].desc, tagdefs [i].tag);
@@ -516,7 +521,7 @@ audiotagTagCheck (int writetags, int tagtype, const char *tag, int rewrite)
 
 static void
 audiotagPrepareTotals (slist_t *tagdata, slist_t *newtaglist,
-    nlist_t *datalist, int totkey, int tagkey)
+    nlist_t *datalist, int tagkey, int totkey)
 {
   const char  *tag;
   const char  *newvalue;
@@ -527,11 +532,11 @@ audiotagPrepareTotals (slist_t *tagdata, slist_t *newtaglist,
   newvalue = slistGetStr (newtaglist, tag);
   value = slistGetStr (tagdata, tag);
   if (newvalue != NULL && *newvalue && value == NULL) {
-    nlistSetNum (datalist, tagkey, 1);
+    nlistSetStr (datalist, tagkey, "x");
   }
   if (newvalue != NULL && value != NULL &&
       strcmp (newvalue, value) != 0) {
-    nlistSetNum (datalist, tagkey, 1);
+    nlistSetStr (datalist, tagkey, "x");
   }
   nlistSetStr (datalist, totkey, newvalue);
 }

@@ -32,6 +32,13 @@
 #include "ui.h"
 #include "uirating.h"
 
+enum {
+  /* controls how many itunes fields are */
+  /* placed in the first column in the configuration ui */
+  ITUNES_FIELD_COL_MAX = 3,
+  ITUNES_MAX_PER_COL = 13,
+};
+
 typedef struct confitunes {
   itunes_t      *itunes;
   uirating_t    *uirating [ITUNES_STARS_MAX];
@@ -69,7 +76,7 @@ void
 confuiSaveiTunes (confuigui_t *gui)
 {
   bool        changed;
-  int         count;
+  int         gcount;
   const char  *itunesName;
   int         tagidx;
 
@@ -90,7 +97,7 @@ confuiSaveiTunes (confuigui_t *gui)
   }
 
   changed = false;
-  count = 0;
+  gcount = 0;
   itunesStartIterateAvailFields (gui->itunes->itunes);
   while ((itunesName = itunesIterateAvailFields (gui->itunes->itunes, &tagidx)) != NULL) {
     bool   tval;
@@ -105,12 +112,12 @@ confuiSaveiTunes (confuigui_t *gui)
       oval = true;
     }
     tval = uiToggleButtonIsActive (
-        gui->uiitem [CONFUI_WIDGET_ITUNES_FIELD_1 + count].uiwidgetp);
+        gui->uiitem [CONFUI_WIDGET_ITUNES_FIELD_1 + gcount].uiwidgetp);
     if (oval != tval) {
       changed = true;
       itunesSetField (gui->itunes->itunes, tagidx, tval);
     }
-    ++count;
+    ++gcount;
   }
 
   if (changed) {
@@ -124,18 +131,19 @@ confuiBuildUIiTunes (confuigui_t *gui)
   char          tmp [200];
   char          tbuff [MAXPATHLEN];
   const char    *tdata;
-  uiwcont_t     *mvbox;
-  uiwcont_t     *vbox;
-  uiwcont_t     *vboxb;
+  uiwcont_t     *mvbox = NULL;
+  uiwcont_t     *vbox [3] = { NULL, NULL, NULL };
   uiwcont_t     *mhbox;
   uiwcont_t     *hbox;
   uiwcont_t     *uiwidgetp;
-  uiwcont_t     *vboxp;
+  uiwcont_t     *vboxp = NULL;
   uiwcont_t     *szgrp;
   uiwcont_t     *szgrpr;
   int           count;
+  int           gcount;
   const char    *itunesName;
   int           tagidx;
+  int           cidx;
 
   logProcBegin ();
   mvbox = uiCreateVertBox ();
@@ -177,13 +185,13 @@ confuiBuildUIiTunes (confuigui_t *gui)
   mhbox = uiCreateHorizBox ();
   uiBoxPackStart (mvbox, mhbox);
 
-  vbox = uiCreateVertBox ();
-  uiBoxPackStart (mhbox, vbox);
-  uiWidgetSetAllMargins (vbox, 2);
+  vboxp = uiCreateVertBox ();
+  uiBoxPackStart (mhbox, vboxp);
+  uiWidgetSetAllMargins (vboxp, 2);
 
   /* CONTEXT: configuration: itunes: label for itunes rating conversion */
   uiwidgetp = uiCreateLabel (_("Rating"));
-  uiBoxPackStart (vbox, uiwidgetp);
+  uiBoxPackStart (vboxp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   /* itunes uses 10..100 mapping to 0.5,1,1.5,...,4.5,5 stars */
@@ -204,7 +212,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
     }
 
     hbox = uiCreateHorizBox ();
-    uiBoxPackStart (vbox, hbox);
+    uiBoxPackStart (vboxp, hbox);
 
     uiwidgetp = uiCreateLabel (tbuff);
     uiBoxPackStart (hbox, uiwidgetp);
@@ -218,30 +226,32 @@ confuiBuildUIiTunes (confuigui_t *gui)
     uiwcontFree (hbox);
   }
 
-  uiwcontFree (vbox);
-  vbox = uiCreateVertBox ();
-  uiBoxPackStart (mhbox, vbox);
-  uiWidgetSetAllMargins (vbox, 2);
+  uiwcontFree (vboxp);
+
+  vboxp = uiCreateVertBox ();
+  uiBoxPackStart (mhbox, vboxp);
+  uiWidgetSetAllMargins (vboxp, 2);
 
   /* CONTEXT: configuration: itunes: which fields should be imported from itunes */
   uiwidgetp = uiCreateLabel (_("Fields to Import"));
-  uiBoxPackStart (vbox, uiwidgetp);
+  uiBoxPackStart (vboxp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStart (vboxp, hbox);
 
-  uiwcontFree (vbox);
-  vbox = uiCreateVertBox ();
-  uiBoxPackStart (hbox, vbox);
-  uiWidgetSetAllMargins (vbox, 2);
+  uiwcontFree (vboxp);
 
-  vboxb = uiCreateVertBox ();
-  uiBoxPackStart (hbox, vboxb);
-  uiWidgetSetAllMargins (vboxb, 2);
+  for (int i = 0; i < ITUNES_FIELD_COL_MAX; ++i) {
+    vbox [i] = uiCreateVertBox ();
+    uiBoxPackStart (hbox, vbox [i]);
+    uiWidgetSetAllMargins (vbox [i], 2);
+  }
 
   count = 0;
-  vboxp = vbox;
+  gcount = 0;
+  cidx = 0;
+  vboxp = vbox [cidx];
   itunesStartIterateAvailFields (gui->itunes->itunes);
   while ((itunesName = itunesIterateAvailFields (gui->itunes->itunes, &tagidx)) != NULL) {
     bool   tval;
@@ -255,19 +265,20 @@ confuiBuildUIiTunes (confuigui_t *gui)
       tval = true;
     }
     confuiMakeItemCheckButton (gui, vboxp, szgrp, tagdefs [tagidx].displayname,
-        CONFUI_WIDGET_ITUNES_FIELD_1 + count, -1, tval);
+        CONFUI_WIDGET_ITUNES_FIELD_1 + gcount, -1, tval);
     ++count;
-    if (count > TAG_ITUNES_MAX / 2) {
-      vboxp = vboxb;
-    }
-    if (count >= TAG_ITUNES_MAX) {
-      break;
+    ++gcount;
+    if (count >= ITUNES_MAX_PER_COL) {
+      ++cidx;
+      vboxp = vbox [cidx];
+      count = 0;
     }
   }
 
   uiwcontFree (hbox);
-  uiwcontFree (vbox);
-  uiwcontFree (vboxb);
+  for (int i = 0; i < ITUNES_FIELD_COL_MAX; ++i) {
+    uiwcontFree (vbox [i]);
+  }
   uiwcontFree (mvbox);
   uiwcontFree (mhbox);
   uiwcontFree (szgrp);

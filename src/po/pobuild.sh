@@ -62,7 +62,9 @@ while read line; do
   locale=$1
   tmpllocale=$2
   weblocale=$3
-  englishnm=$4
+  iso639_2=$4
+  englishnm=$5
+  shift
   shift
   shift
   shift

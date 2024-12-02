@@ -53,17 +53,17 @@ main (int argc, char *argv [])
 
 
   static struct option bdj_options [] = {
-    { "bdj4",         no_argument,      NULL,   'B' },
-    { "bdj4tags",     no_argument,      NULL,   0 },
-    { "copy",           no_argument,        NULL,   'c' },
-    { "debugself",    no_argument,      NULL,   0 },
-    { "verbose",      no_argument,      NULL,   0, },
-    { "quiet",        no_argument,      NULL,   'Q', },
-    { "cleantags",    no_argument,      NULL,   'L', },
-    { "nodetach",     no_argument,      NULL,   0, },
+    { "bdj4",         no_argument,        NULL,   'B' },
+    { "bdj4tags",     no_argument,        NULL,   0 },
+    { "copy",         no_argument,        NULL,   'c' },
+    { "debugself",    no_argument,        NULL,   0 },
+    { "verbose",      no_argument,        NULL,   0, },
+    { "quiet",        no_argument,        NULL,   'Q', },
+    { "cleantags",    no_argument,        NULL,   'L', },
+    { "nodetach",     no_argument,        NULL,   0, },
     { "origcwd",      required_argument,  NULL,   'C' },
-    { "scale",        required_argument,NULL,   0 },
-    { "theme",        required_argument,NULL,   0 },
+    { "scale",        required_argument,  NULL,   0 },
+    { "theme",        required_argument,  NULL,   0 },
   };
 
 #if BDJ4_MEM_DEBUG

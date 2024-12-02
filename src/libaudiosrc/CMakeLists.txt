@@ -23,7 +23,7 @@ target_link_libraries (libasfile PRIVATE
 install (TARGETS
   libbdj4audiosrc
   libasfile
-  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  DESTINATION ${DEST_BIN}
 )
 
 updateRPath (libbdj4audiosrc)

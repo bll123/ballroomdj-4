@@ -78,7 +78,7 @@ confuiBuildUIDebug (confuigui_t *gui)
       CONFUI_DBG_DBUPDATE, -1, (val & LOG_DBUPDATE));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Datafile",
       CONFUI_DBG_DATAFILE, -1, (val & LOG_DATAFILE));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "iTunes Parse",
+  confuiMakeItemCheckButton (gui, vbox, szgrp, "iTunes",
       CONFUI_DBG_ITUNES, -1, (val & LOG_ITUNES));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "List",
       CONFUI_DBG_LIST, -1, (val & LOG_LIST));

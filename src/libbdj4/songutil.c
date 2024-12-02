@@ -18,7 +18,10 @@
 #include "datafile.h"
 #include "fileop.h"
 #include "mdebug.h"
+#include "nlist.h"
+#include "roman.h"
 #include "songutil.h"
+#include "tagdef.h"
 
 void
 songutilConvAdjustFlags (datafileconv_t *conv)
@@ -142,3 +145,38 @@ songutilNormalizeBPM (int bpm, int speed)
   return nbpm;
 }
 
+void
+songutilTitleFromWorkMovement (nlist_t *taglist)
+{
+  const char  *tval;
+  char        tbuff [500];
+  char        *tend = tbuff + sizeof (tbuff);
+  char        rbuff [10];
+  int         mnum;
+  char        *p;
+
+  if (bdjoptGetNum (OPT_G_USE_WORK_MOVEMENT) == false) {
+    return;
+  }
+
+  tval = nlistGetStr (taglist, TAG_WORK);
+  if (tval != NULL && *tval) {
+    *tbuff = '\0';
+    p = stpecpy (tbuff, tend, tval);
+
+    tval = nlistGetStr (taglist, TAG_MOVEMENTNAME);
+    if (tval != NULL && *tval) {
+      p = stpecpy (p, tend, ": ");
+
+      mnum = nlistGetNum (taglist, TAG_MOVEMENTNUM);
+      if (mnum > 0) {
+        convertToRoman (mnum, rbuff, sizeof (rbuff));
+        p = stpecpy (p, tend, rbuff);
+        p = stpecpy (p, tend, ". ");
+      }
+
+      p = stpecpy (p, tend, tval);
+    }
+    nlistSetStr (taglist, TAG_TITLE, tbuff);
+  }
+}

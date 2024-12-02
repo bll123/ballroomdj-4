@@ -13,6 +13,7 @@ extern "C" {
 char *_gettext (const char *str);
 
 enum {
+  LOCALE_KEY_ISO639_2,
   LOCALE_KEY_LONG,
   LOCALE_KEY_SHORT,
   LOCALE_KEY_DISPLAY,

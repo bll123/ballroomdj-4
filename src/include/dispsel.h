@@ -12,10 +12,11 @@ extern "C" {
 #endif
 
 enum {
-  DISP_SEL_LOAD_PLAYER    = 0x0001,
-  DISP_SEL_LOAD_MANAGE    = 0x0002,
-  DISP_SEL_LOAD_MARQUEE   = 0x0004,
-  DISP_SEL_LOAD_ALL       = 0x0008,
+  DISP_SEL_NONE           = 0,
+  DISP_SEL_LOAD_PLAYER    = (1 << 0),
+  DISP_SEL_LOAD_MANAGE    = (1 << 1),
+  DISP_SEL_LOAD_MARQUEE   = (1 << 2),
+  DISP_SEL_LOAD_ALL       = (1 << 3),
 };
 
 typedef enum {

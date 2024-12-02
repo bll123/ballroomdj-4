@@ -29,7 +29,7 @@ addWinSockLibrary (libbdj4uib)
 
 install (TARGETS
   libbdj4uib
-  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+  DESTINATION ${DEST_BIN}
 )
 
 updateRPath (libbdj4uib)

@@ -65,6 +65,7 @@ check_libcommon (SRunner *sr)
    *  oslocale
    *  ossignal    complete
    *  bdj4arg
+   *  roman       complete 2024-11-20
    */
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==chk== libcommon");
@@ -166,6 +167,9 @@ check_libcommon (SRunner *sr)
   srunner_add_suite (sr, s);
 
   /* bdj4arg */
+
+  s = roman_suite();
+  srunner_add_suite (sr, s);
 }
 
 #pragma clang diagnostic pop

@@ -8,6 +8,13 @@
 
 -->
 
+**4.12.6 2024-11-23**
+
+* Bug Fixes:
+    * Configuration: iTunes: Fix missing fields.
+* New Features:
+    * Audio Tags: Added access to 'comment', 'work', 'grouping', 'movement', 'movement number', 'movement count'.
+
 **4.12.5.1 2024-10-27**
 
 * Bug Fixes:
@@ -1106,4 +1113,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-10-27 07:29:21; BDJ4 version 4.12.5.1)_
+<br>_(Updated 2024-11-23 14:31:33; BDJ4 version 4.12.6)_

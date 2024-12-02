@@ -1,7 +1,9 @@
 # localization
-# generated 2024-10-21
+# generated 2024-11-20
 KEY
 ..0
+ISO639_2
+..afr
 LONG
 ..af_ZA
 SHORT
@@ -14,6 +16,8 @@ QDANCE
 ..QueueDance
 KEY
 ..1
+ISO639_2
+..ces
 LONG
 ..cs_CZ
 SHORT
@@ -26,6 +30,8 @@ QDANCE
 ..QueueDance
 KEY
 ..2
+ISO639_2
+..dan
 LONG
 ..da_DK
 SHORT
@@ -38,6 +44,8 @@ QDANCE
 ..QueueDance
 KEY
 ..3
+ISO639_2
+..ger
 LONG
 ..de_DE
 SHORT
@@ -50,6 +58,8 @@ QDANCE
 ..Schlangentanz
 KEY
 ..4
+ISO639_2
+..eng
 LONG
 ..en_GB
 SHORT
@@ -62,6 +72,8 @@ QDANCE
 ..QueueDance
 KEY
 ..5
+ISO639_2
+..eng
 LONG
 ..en_US
 SHORT
@@ -74,6 +86,8 @@ QDANCE
 ..QueueDance
 KEY
 ..6
+ISO639_2
+..spa
 LONG
 ..es_ES
 SHORT
@@ -86,6 +100,8 @@ QDANCE
 ..Danza en cola
 KEY
 ..7
+ISO639_2
+..fin
 LONG
 ..fi_FI
 SHORT
@@ -98,6 +114,8 @@ QDANCE
 ..Jonotanssi
 KEY
 ..8
+ISO639_2
+..fra
 LONG
 ..fr_FR
 SHORT
@@ -110,6 +128,8 @@ QDANCE
 ..Danse en file d'attente
 KEY
 ..9
+ISO639_2
+..hun
 LONG
 ..hu_HU
 SHORT
@@ -122,6 +142,8 @@ QDANCE
 ..QueueDance
 KEY
 ..10
+ISO639_2
+..ita
 LONG
 ..it_IT
 SHORT
@@ -134,6 +156,8 @@ QDANCE
 ..Ballo in coda
 KEY
 ..11
+ISO639_2
+..jpn
 LONG
 ..ja_JP
 SHORT
@@ -146,6 +170,8 @@ QDANCE
 ..キューダンス
 KEY
 ..12
+ISO639_2
+..kor
 LONG
 ..ko_KR
 SHORT
@@ -158,6 +184,8 @@ QDANCE
 ..큐댄스
 KEY
 ..13
+ISO639_2
+..nld
 LONG
 ..nl_BE
 SHORT
@@ -170,6 +198,8 @@ QDANCE
 ..Dans In Wachtrij
 KEY
 ..14
+ISO639_2
+..nob
 LONG
 ..nb_NO
 SHORT
@@ -182,6 +212,8 @@ QDANCE
 ..QueueDance
 KEY
 ..15
+ISO639_2
+..pol
 LONG
 ..pl_PL
 SHORT
@@ -194,6 +226,8 @@ QDANCE
 ..Taniec w kolejce
 KEY
 ..16
+ISO639_2
+..por
 LONG
 ..pt_PT
 SHORT
@@ -206,6 +240,8 @@ QDANCE
 ..QueueDance
 KEY
 ..17
+ISO639_2
+..ron
 LONG
 ..ro_RO
 SHORT
@@ -218,6 +254,8 @@ QDANCE
 ..QueueDance
 KEY
 ..18
+ISO639_2
+..rus
 LONG
 ..ru_RU
 SHORT
@@ -230,6 +268,8 @@ QDANCE
 ..Танец в очередь
 KEY
 ..19
+ISO639_2
+..srp
 LONG
 ..sr_RS
 SHORT
@@ -242,6 +282,8 @@ QDANCE
 ..КуеуеДанце
 KEY
 ..20
+ISO639_2
+..swe
 LONG
 ..sv_SE
 SHORT
@@ -254,6 +296,8 @@ QDANCE
 ..QueueDance
 KEY
 ..21
+ISO639_2
+..ukr
 LONG
 ..uk_UA
 SHORT
@@ -266,6 +310,8 @@ QDANCE
 ..QueueDance
 KEY
 ..22
+ISO639_2
+..vie
 LONG
 ..vi_VN
 SHORT
@@ -278,6 +324,8 @@ QDANCE
 ..Hàng đợi khiêu vũ
 KEY
 ..23
+ISO639_2
+..zho
 LONG
 ..zh_CN
 SHORT
@@ -290,6 +338,8 @@ QDANCE
 ..队列舞蹈
 KEY
 ..24
+ISO639_2
+..zho
 LONG
 ..zh_TW
 SHORT

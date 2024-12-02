@@ -133,13 +133,14 @@ song editor is:
 
  Field|Tag Type|Display|Notes
  -----|--------|-------|-----
- Album|Audio||
- Album Sort Order|Audio||
  Album Artist|Audio||
  Album Artist Sort Order|Audio||
+ Album|Audio||
+ Album Sort Order|Audio||
  Artist|Audio||
  Artist Sort Order|Audio||
  BPM/MPM|Audio||[Subjects&nbsp;/&nbsp;BPM&nbsp;&amp;&nbsp;MPM](en-Subjects-BPM-MPM)
+ Comment|Audio||
  Composer|Audio||
  Composer Sort Order|Audio||
  Conductor|Audio||
@@ -152,9 +153,13 @@ song editor is:
  Duration|-|Display Only|
  Favorite|BDJ4||[Subjects&nbsp;/&nbsp;Favorites](en-Subjects-Favorites)
  Genre|Audio||[Configuration&nbsp;/&nbsp;Edit&nbsp;Genres](en-Configuration-Edit%20Genres)
+ Grouping|Audio||Grouping is not currently supported by BDJ4
  Keyword|BDJ4||[Subjects&nbsp;/&nbsp;Keyword](en-Subjects-Keyword)<br>[Subjects&nbsp;/&nbsp;Song&nbsp;Selection](en-Subjects-Song%20Selection)<br>[Management&nbsp;/&nbsp;Playlist%20Management](en-Management-Playlist%20Management)
  Marquee Display|BDJ4||[How&nbsp;To&nbsp;/&nbsp;Line&nbsp;Dances](en-HowTo-Linedance)
- Notes|BDJ4||
+ Movement|Audio||Classical Music: Movement Name<br>[Subjects&nbsp;/&nbsp;Classical%20Music](en-Subjects-Classical)
+ Movement Count|Audio||
+ Movement Number|Audio||
+ Notes|BDJ4||Separated from _Comment_ so that existing audio file comments would not be changed
  Prevent Rename|-||[Subjects&nbsp;/&nbsp;Organizing&nbsp;Music](en-Subjects-Organizing%20Music)
  Song End|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
  Song Start|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
@@ -167,6 +172,14 @@ song editor is:
  Total Tracks|Audio||
  Track|Audio||
  Volume Adjustment|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
+ Work|Audio||Classical Music: The work name<br>[Subjects&nbsp;/&nbsp;Classical%20Music](en-Subjects-Classical)
+
+Other fields that can be displayed in BDJ4:
+
+ Field|Tag Type|Display|Notes
+ -----|--------|-------|-----
+ Score|-|Display Only|Audio Identification: Score for the audio identification
+ Source|-|Display Only|Audio Identification: The source of the audio identification
 
 [Wiki Home](Home)
-<br>_(Updated 2024-10-18 06:59:37; BDJ4 version 4.12.3)_
+<br>_(Updated 2024-11-23 14:31:33; BDJ4 version 4.12.6)_

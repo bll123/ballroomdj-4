@@ -19,8 +19,8 @@ The Nederlands (Dutch) translation is in excellent shape.  The Русский
 (Russian) translation is ok.
 
 The other translations are machine generated and are of very low
-quality. If the translation for your locale is poor, you may want to
-select _English&nbsp;(GB)_ or _English&nbsp;(US)_ in the
+quality. If the translation for your locale is not good, you may want
+to select _English&nbsp;(GB)_ or _English&nbsp;(US)_ in the
 __Configure&nbsp;/&nbsp;Locale__ selection.
 
 After selecting a locale, exit and restart BDJ4 to display the
@@ -199,4 +199,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2024-10-29 10:08:33; BDJ4 version 4.12.5.1)_
+<br>_(Updated 2024-11-23 14:31:33; BDJ4 version 4.12.6)_
