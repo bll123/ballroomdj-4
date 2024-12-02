@@ -28,7 +28,7 @@ uiEntryInit (int entrySize, int maxSize)
 }
 
 void
-uiEntryFree (uiwcont_t *uientry)
+uiEntryFree (uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-free")) {
     return;
@@ -38,7 +38,7 @@ uiEntryFree (uiwcont_t *uientry)
 }
 
 void
-uiEntrySetIcon (uiwcont_t *uientry, const char *name)
+uiEntrySetIcon (uiwcont_t *uiwidget, const char *name)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-icon")) {
     return;
@@ -48,7 +48,7 @@ uiEntrySetIcon (uiwcont_t *uientry, const char *name)
 }
 
 void
-uiEntryClearIcon (uiwcont_t *uientry)
+uiEntryClearIcon (uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-clear-icon")) {
     return;
@@ -58,7 +58,7 @@ uiEntryClearIcon (uiwcont_t *uientry)
 }
 
 const char *
-uiEntryGetValue (uiwcont_t *uientry)
+uiEntryGetValue (uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-get-value")) {
     return NULL;
@@ -68,7 +68,7 @@ uiEntryGetValue (uiwcont_t *uientry)
 }
 
 void
-uiEntrySetValue (uiwcont_t *uientry, const char *value)
+uiEntrySetValue (uiwcont_t *uiwidget, const char *value)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-value")) {
     return;
@@ -78,7 +78,7 @@ uiEntrySetValue (uiwcont_t *uientry, const char *value)
 }
 
 void
-uiEntrySetState (uiwcont_t *uientry, int state)
+uiEntrySetState (uiwcont_t *uiwidget, int state)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-state")) {
     return;

@@ -86,7 +86,13 @@ uiwcontUIInit (uiwcont_t *uiwidget)
 }
 
 void
-uiwcontUIInit (uiwcont_t *uiwidget)
+uiwcontUIWidgetInit (uiwcont_t *uiwidget)
+{
+  return;
+}
+
+void
+uiwcontUIFree (uiwcont_t *uiwidget)
 {
   return;
 }

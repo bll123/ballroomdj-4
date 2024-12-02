@@ -29,7 +29,7 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
 void
 uiWindowSetTitle (uiwcont_t *uiwidget, const char *title)
 {
-  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-set-title")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_WINDOW, "win-set-title")) {
     return;
   }
   if (title == NULL) {
@@ -188,7 +188,7 @@ uiCreateScrolledWindow (int minheight)
 void
 uiWindowSetPolicyExternal (uiwcont_t *uisw)
 {
-  if (! uiwcontValid (uiscw, WCONT_T_WINDOW, "win-set-policy-ext")) {
+  if (! uiwcontValid (uisw, WCONT_T_WINDOW, "win-set-policy-ext")) {
     return;
   }
 
@@ -279,7 +279,7 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
 void
 uiWindowSetNoMaximize (uiwcont_t *uiwindow)
 {
-  if (! uiwcontValid (uiwidget, WCONT_T_WINDOW, "window-set-no-maximize")) {
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "window-set-no-maximize")) {
     return;
   }
 
