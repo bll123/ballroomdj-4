@@ -39,7 +39,7 @@
 }
 
 - (void)awakeFromNib {
-  IWindow*  w = self;
+//  IWindow*  w = self;
 //  NSStackView *box;
 
 //  box = [w contentView];
@@ -411,10 +411,11 @@ uiWindowSetNoMaximize (uiwcont_t *uiwindow)
 void
 uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
 {
-  NSWindow    *win;
-  NSStackView *widget = NULL;
-  NSStackView *winbox;
-  int         grav = NSStackViewGravityTop;
+  NSWindow      *win;
+  NSStackView   *widget = NULL;
+  NSStackView   *winbox;
+  int           grav = NSStackViewGravityTop;
+  macoslayout_t *layout = NULL;
 
   if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-pack-in-win-win")) {
     return;
@@ -428,16 +429,25 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   widget = uiwidget->uidata.packwidget;
   winbox = [win contentView];
   [winbox addView: widget inGravity: grav];
-  uiwidget->packed = true;
+  layout = uiwidget->uidata.layout;
 
+fprintf (stderr, "  add pack-in-win constraint\n");
   [widget.leadingAnchor
-      constraintEqualToAnchor: winbox.leadingAnchor].active = YES;
+      constraintEqualToAnchor: winbox.leadingAnchor
+      constant: layout->margins.left].active = YES;
   [widget.trailingAnchor
-      constraintEqualToAnchor: winbox.trailingAnchor].active = YES;
+      constraintEqualToAnchor: winbox.trailingAnchor
+      constant: layout->margins.right].active = YES;
   [widget.topAnchor
-      constraintEqualToAnchor: winbox.topAnchor].active = YES;
+      constraintEqualToAnchor: winbox.topAnchor
+      constant: layout->margins.top].active = YES;
   [widget.bottomAnchor
-      constraintEqualToAnchor: winbox.bottomAnchor].active = YES;
+      constraintEqualToAnchor: winbox.bottomAnchor
+      constant: layout->margins.bottom].active = YES;
+  [widget setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
+  layout->expand = true;
+
+  uiwidget->packed = true;
   return;
 }
 

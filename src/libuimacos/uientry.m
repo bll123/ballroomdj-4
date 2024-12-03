@@ -35,7 +35,6 @@ fprintf (stderr, "c-entry\n");
   [widget setDrawsBackground:YES];
   [widget setEditable:YES];
   [widget setSelectable:YES];
-  [widget setAutoresizingMask: NSViewNotSizable];
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
   uiwidget = uiwcontAlloc (WCONT_T_ENTRY, WCONT_T_ENTRY);

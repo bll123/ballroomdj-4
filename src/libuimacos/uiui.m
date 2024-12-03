@@ -172,11 +172,6 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
   }
 
   layout->container = [[NSStackView alloc] init];
-  [layout->container setHuggingPriority: NSLayoutPriorityDefaultHigh
-      forOrientation: NSLayoutConstraintOrientationHorizontal];
-  [layout->container setHuggingPriority: NSLayoutPriorityDefaultHigh
-      forOrientation: NSLayoutConstraintOrientationVertical];
-  layout->container.edgeInsets = layout->margins;
   [layout->container addView: view inGravity: NSStackViewGravityLeading];
 
   if (uiwidget->uidata.widget == uiwidget->uidata.packwidget) {

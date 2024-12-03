@@ -96,7 +96,6 @@ fprintf (stderr, "c-bt\n");
   [widget setTarget: widget];
   [widget setUIWidget: uiwidget];
   [widget setAction: @selector(OnButton1Click:)];
-  [widget setAutoresizingMask: NSViewNotSizable];
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
 #if MACOS_UI_DEBUG

@@ -23,7 +23,7 @@
 #include "ui/uiwidget.h"
 
 static void uiWidgetUpdateLayout (uiwcont_t *uiwidget);
-static NSView * uiwidgetGetPrior (NSStackView *stview, NSView *view);
+static NSView * uiWidgetGetPrior (NSStackView *stview, NSView *view);
 
 /* widget interface */
 
@@ -53,7 +53,14 @@ uiWidgetExpandHoriz (uiwcont_t *uiwidget)
 
   layout = uiwidget->uidata.layout;
   layout->expand = true;
-  uiWidgetUpdateLayout (uiwidget);
+fprintf (stderr, "  add expand-horiz constraint\n");
+  [layout->container.leadingAnchor
+      constraintEqualToAnchor: container.leadingAnchor
+      constant: layout->margins.left].active = YES;
+  [layout->container.trailingAnchor
+      constraintEqualToAnchor: container.trailingAnchor
+      constant: layout->margins.right].active = YES;
+  [widget setAutoresizingMask : NSViewWidthSizable];
   return;
 }
 
@@ -77,7 +84,14 @@ uiWidgetExpandVert (uiwcont_t *uiwidget)
 
   layout = uiwidget->uidata.layout;
   layout->expand = true;
-  uiWidgetUpdateLayout (uiwidget);
+fprintf (stderr, "  add expand-vert constraint\n");
+  [layout->container.topAnchor
+      constraintEqualToAnchor: container.topAnchor
+      constant: layout->margins.top].active = YES;
+  [layout->container.bottomAnchor
+      constraintEqualToAnchor: container.bottomAnchor
+      constant: layout->margins.bottom].active = YES;
+  [widget setAutoresizingMask : NSViewHeightSizable];
   return;
 }
 
@@ -222,7 +236,6 @@ uiWidgetAlignHorizFill (uiwcont_t *uiwidget)
   if ([widget superview] == nil) {
     return;
   }
-  [widget setAutoresizingMask: NSViewWidthSizable];
   return;
 }
 
@@ -239,7 +252,6 @@ uiWidgetAlignHorizStart (uiwcont_t *uiwidget)
   if ([widget superview] == nil) {
     return;
   }
-  [widget setAutoresizingMask: NSViewMaxXMargin];
   return;
 }
 
@@ -256,7 +268,6 @@ uiWidgetAlignHorizEnd (uiwcont_t *uiwidget)
   if ([widget superview] == nil) {
     return;
   }
-  [widget setAutoresizingMask: NSViewMinXMargin];
   return;
 }
 
@@ -321,7 +332,6 @@ uiWidgetAlignVertStart (uiwcont_t *uiwidget)
   if ([widget superview] == nil) {
     return;
   }
-  [widget setAutoresizingMask: NSViewMaxYMargin];
   return;
 }
 
@@ -369,7 +379,6 @@ uiWidgetAlignVertEnd (uiwcont_t *uiwidget)
   if ([widget superview] == nil) {
     return;
   }
-  [widget setAutoresizingMask: NSViewMinYMargin];
   return;
 }
 
@@ -476,17 +485,36 @@ static void
 uiWidgetUpdateLayout (uiwcont_t *uiwidget)
 {
   macoslayout_t *layout = NULL;
-  NSStackView   *stvcontainer = NULL;
+//  NSStackView   *stview = NULL;
+  NSView        *view = NULL;
+  NSStackView   *container = NULL;
+//  NSView        *prior = NULL;
 
   layout = uiwidget->uidata.layout;
-  stvcontainer = layout->container;
+  view = uiwidget->uidata.widget;
+  container = layout->container;
+//  /* this may not be valid... */
+//  stview = (NSStackView *) [view superview];
 
-  stvcontainer.edgeInsets = layout->margins;
-  stvcontainer.needsDisplay = YES;
+  if (! layout->expand) {
+fprintf (stderr, "  add margin constraint\n");
+    [container.leadingAnchor
+        constraintEqualToAnchor: container.leadingAnchor
+        constant: layout->margins.left].active = YES;
+    [container.trailingAnchor
+        constraintEqualToAnchor: container.trailingAnchor
+        constant: layout->margins.right].active = YES;
+    [container.topAnchor
+        constraintEqualToAnchor: container.topAnchor
+        constant: layout->margins.top].active = YES;
+    [container.bottomAnchor
+        constraintEqualToAnchor: container.bottomAnchor
+        constant: layout->margins.bottom].active = YES;
+  }
 }
 
 static NSView *
-uiwidgetGetPrior (NSStackView *stview, NSView *view)
+uiWidgetGetPrior (NSStackView *stview, NSView *view)
 {
   NSView    *prior;
   NSArray   *subviews;

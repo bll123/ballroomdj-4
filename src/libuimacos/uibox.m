@@ -187,13 +187,8 @@ uiCreateBox (int orientation)
 
   box = [[IBox alloc] init];
   [box setOrientation: orientation];
-  [box setAutoresizingMask: NSViewNotSizable];
   [box setTranslatesAutoresizingMaskIntoConstraints: NO];
   [box setDistribution: NSStackViewDistributionGravityAreas];
-  [box setHuggingPriority: NSLayoutPriorityDefaultHigh
-      forOrientation: NSLayoutConstraintOrientationHorizontal];
-  [box setHuggingPriority: NSLayoutPriorityDefaultHigh
-      forOrientation: NSLayoutConstraintOrientationVertical];
   box.spacing = 1.0;
 
 #if MACOS_UI_DEBUG

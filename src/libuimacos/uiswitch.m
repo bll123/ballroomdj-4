@@ -41,7 +41,6 @@ fprintf (stderr, "c-switch\n");
   if (value) {
     [widget setState: NSControlStateValueOn];
   }
-  [widget setAutoresizingMask: NSViewNotSizable];
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
   uiwidget = uiwcontAlloc (WCONT_T_SWITCH, WCONT_T_SWITCH);
