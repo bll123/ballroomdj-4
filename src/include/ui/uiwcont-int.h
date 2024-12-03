@@ -77,6 +77,7 @@ enum {
 
 /* used in all ui interfaces */
 typedef struct uibuttonbase {
+  const char  *ident;
   callback_t  *cb;
   callback_t  *presscb;
   callback_t  *releasecb;

@@ -248,7 +248,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
       uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
     mqint->callbacks [MQINT_CB_MOVE_TOP] = callbackInit (
         uimusicqMoveTopCallback, uimusicq, "musicq: move-to-top");
-    uiwidgetp = uiCreateButton (
+    uiwidgetp = uiCreateButton ("musq-top",
         mqint->callbacks [MQINT_CB_MOVE_TOP],
         /* CONTEXT: music queue: button: move the selected song to the top of the queue */
         _("Move to Top"), "button_movetop");
@@ -257,7 +257,8 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
     mqint->callbacks [MQINT_CB_MOVE_UP] = callbackInit (
         uimusicqMoveUpCallback, uimusicq, "musicq: move-up");
-    uiwidgetp = uiCreateButton (mqint->callbacks [MQINT_CB_MOVE_UP],
+    uiwidgetp = uiCreateButton ("musq-up",
+        mqint->callbacks [MQINT_CB_MOVE_UP],
         /* CONTEXT: music queue: button: move the selected song up in the queue */
         _("Move Up"), "button_up");
     uiButtonSetRepeat (uiwidgetp, REPEAT_TIME);
@@ -266,7 +267,8 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
     mqint->callbacks [MQINT_CB_MOVE_DOWN] = callbackInit (
         uimusicqMoveDownCallback, uimusicq, "musicq: move-down");
-    uiwidgetp = uiCreateButton (mqint->callbacks [MQINT_CB_MOVE_DOWN],
+    uiwidgetp = uiCreateButton ("musq-down",
+        mqint->callbacks [MQINT_CB_MOVE_DOWN],
         /* CONTEXT: music queue: button: move the selected song down in the queue */
         _("Move Down"), "button_down");
     uiButtonSetRepeat (uiwidgetp, REPEAT_TIME);
@@ -277,7 +279,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
     mqint->callbacks [MQINT_CB_TOGGLE_PAUSE] = callbackInit (
         uimusicqTogglePauseCallback, uimusicq, "musicq: toggle-pause");
-    uiwidgetp = uiCreateButton (
+    uiwidgetp = uiCreateButton ("muscq-toggle-pause",
         mqint->callbacks [MQINT_CB_TOGGLE_PAUSE],
         /* CONTEXT: music queue: button: set playback to pause after the selected song is played (toggle) */
         _("Toggle Pause"), "button_pause");
@@ -290,7 +292,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
       uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
     mqint->callbacks [MQINT_CB_AUDIO_REMOVE] = callbackInit (
         uimusicqRemoveCallback, uimusicq, "musicq: remove-from-queue");
-    uiwidgetp = uiCreateButton (
+    uiwidgetp = uiCreateButton ("musq-remove",
         mqint->callbacks [MQINT_CB_AUDIO_REMOVE],
         /* CONTEXT: music queue: button: remove the song from the queue */
         _("Remove"), "button_audioremove");
@@ -303,7 +305,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
     mqint->callbacks [MQINT_CB_CLEAR_QUEUE] = callbackInit (
         uimusicqTruncateQueueCallback, uimusicq, "musicq: clear-queue");
-    uiwidgetp = uiCreateButton (
+    uiwidgetp = uiCreateButton ("musq-clrq",
         mqint->callbacks [MQINT_CB_CLEAR_QUEUE],
         /* CONTEXT: music queue: button: clear the queue */
         _("Clear Queue"), NULL);
@@ -316,7 +318,8 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
       uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
     mqint->callbacks [MQINT_CB_EDIT_LOCAL] = callbackInit (
         uimusicqSongEditCallback, uimusicq, "musicq: edit");
-    uiwidgetp = uiCreateButton (mqint->callbacks [MQINT_CB_EDIT_LOCAL],
+    uiwidgetp = uiCreateButton ("musq-edit",
+        mqint->callbacks [MQINT_CB_EDIT_LOCAL],
         /* CONTEXT: music queue: edit the selected song */
         _("Edit"), "button_edit");
     uiBoxPackStart (hbox, uiwidgetp);
@@ -324,7 +327,8 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
     mqint->callbacks [MQINT_CB_PLAY] = callbackInit (
         uimusicqPlayCallback, uimusicq, "musicq: play");
-    uiwidgetp = uiCreateButton (mqint->callbacks [MQINT_CB_PLAY],
+    uiwidgetp = uiCreateButton ("musq-play",
+        mqint->callbacks [MQINT_CB_PLAY],
         /* CONTEXT: music queue: tooltip: play the selected song */
         _("Play"), "button_play");
     uiBoxPackStart (hbox, uiwidgetp);
@@ -334,7 +338,8 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   if (uimusicq->ui [ci].dispselType == DISP_SEL_HISTORY) {
     mqint->callbacks [MQINT_CB_HIST_QUEUE] = callbackInit (
         uimusicqQueueCallback, uimusicq, "musicq: queue");
-    uiwidgetp = uiCreateButton (mqint->callbacks [MQINT_CB_HIST_QUEUE],
+    uiwidgetp = uiCreateButton ("musq-hist-queue",
+        mqint->callbacks [MQINT_CB_HIST_QUEUE],
         /* CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue' */
         _("Queue"), NULL);
     uiBoxPackStart (hbox, uiwidgetp);

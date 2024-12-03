@@ -22,7 +22,7 @@
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 
-static void uiWidgetUpdateMargins (uiwcont_t *uiwidget);
+static void uiWidgetUpdateLayout (uiwcont_t *uiwidget);
 static NSView * uiwidgetGetPrior (NSStackView *stview, NSView *view);
 
 /* widget interface */
@@ -53,6 +53,7 @@ uiWidgetExpandHoriz (uiwcont_t *uiwidget)
 
   layout = uiwidget->uidata.layout;
   layout->expand = true;
+  uiWidgetUpdateLayout (uiwidget);
   return;
 }
 
@@ -61,7 +62,6 @@ uiWidgetExpandVert (uiwcont_t *uiwidget)
 {
   NSView        *widget;
   macoslayout_t *layout;
-  NSLayoutGuide *nslg;
   NSView        *container;
 
   if (uiwidget == NULL) {
@@ -76,13 +76,8 @@ uiWidgetExpandVert (uiwcont_t *uiwidget)
   }
 
   layout = uiwidget->uidata.layout;
-  nslg = layout->marginlg;
-  [nslg.topAnchor
-      constraintEqualToAnchor: container.topAnchor
-      constant: layout->margins.top].active = YES;
-  [nslg.bottomAnchor
-      constraintEqualToAnchor: container.bottomAnchor
-      constant: layout->margins.bottom].active = YES;
+  layout->expand = true;
+  uiWidgetUpdateLayout (uiwidget);
   return;
 }
 
@@ -109,7 +104,7 @@ uiWidgetSetAllMargins (uiwcont_t *uiwidget, int mult)
   layout->margins.right = val;
   layout->margins.top = val;
   layout->margins.bottom = val;
-  uiWidgetUpdateMargins (uiwidget);
+  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -134,7 +129,7 @@ uiWidgetSetMarginTop (uiwcont_t *uiwidget, int mult)
 
   layout = uiwidget->uidata.layout;
   layout->margins.top = val;
-  uiWidgetUpdateMargins (uiwidget);
+  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -159,7 +154,7 @@ uiWidgetSetMarginBottom (uiwcont_t *uiwidget, int mult)
 
   layout = uiwidget->uidata.layout;
   layout->margins.bottom = val;
-  uiWidgetUpdateMargins (uiwidget);
+  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -184,7 +179,7 @@ uiWidgetSetMarginStart (uiwcont_t *uiwidget, int mult)
 
   layout = uiwidget->uidata.layout;
   layout->margins.left = val;
-  uiWidgetUpdateMargins (uiwidget);
+  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -209,7 +204,7 @@ uiWidgetSetMarginEnd (uiwcont_t *uiwidget, int mult)
 
   layout = uiwidget->uidata.layout;
   layout->margins.right = val;
-  uiWidgetUpdateMargins (uiwidget);
+  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -285,7 +280,7 @@ uiWidgetAlignHorizCenter (uiwcont_t *uiwidget)
 
   layout = uiwidget->uidata.layout;
   layout->centered = true;
-  uiWidgetUpdateMargins (uiwidget);
+  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -350,7 +345,7 @@ uiWidgetAlignVertCenter (uiwcont_t *uiwidget)
 
   layout = uiwidget->uidata.layout;
   layout->centered = true;
-  uiWidgetUpdateMargins (uiwidget);
+  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -478,95 +473,16 @@ uiWidgetSetEnterCallback (uiwcont_t *uiwidget, callback_t *uicb)
 /* internal routines */
 
 static void
-uiWidgetUpdateMargins (uiwcont_t *uiwidget)
+uiWidgetUpdateLayout (uiwcont_t *uiwidget)
 {
-  NSView        *view = uiwidget->uidata.widget;
-  NSView        *prior;
   macoslayout_t *layout = NULL;
-  NSLayoutGuide *nslg = NULL;
-  NSStackView   *stview;
+  NSStackView   *stvcontainer = NULL;
 
   layout = uiwidget->uidata.layout;
+  stvcontainer = layout->container;
 
-  if (uiwidget->wbasetype == WCONT_T_BOX) {
-    NSStackView *stackview = uiwidget->uidata.widget;
-
-    stackview.edgeInsets = layout->margins;
-    return;
-  }
-
-  stview = (NSStackView *) [view superview];
-  layout = uiwidget->uidata.layout;
-  nslg = layout->marginlg;
-
-  prior = uiwidgetGetPrior (stview, view);
-
-  if (prior == NULL) {
-fprintf (stderr, "no prior\n");
-    if (stview.alignment == NSLayoutAttributeLeading) {
-      if (layout->centered) {
-        [nslg.leadingAnchor
-            constraintGreaterThanOrEqualToAnchor: stview.leadingAnchor
-            constant: layout->margins.left].active = YES;
-        [nslg.trailingAnchor
-            constraintGreaterThanOrEqualToAnchor: stview.trailingAnchor
-            constant: layout->margins.left].active = YES;
-      } else if (layout->alignright) {
-        [nslg.leadingAnchor
-            constraintGreaterThanOrEqualToAnchor: stview.leadingAnchor
-            constant: layout->margins.left].active = YES;
-        [nslg.trailingAnchor
-            constraintEqualToAnchor: stview.trailingAnchor
-            constant: layout->margins.left].active = YES;
-      } else if (layout->expand) {
-        [nslg.leadingAnchor
-            constraintEqualToAnchor: stview.leadingAnchor
-            constant: layout->margins.left].active = YES;
-        [nslg.trailingAnchor
-            constraintEqualToAnchor: stview.trailingAnchor
-            constant: layout->margins.right].active = YES;
-      } else {
-        [nslg.leadingAnchor
-            constraintEqualToAnchor: stview.leadingAnchor
-            constant: layout->margins.left].active = YES;
-      }
-    } else {
-      [nslg.topAnchor
-          constraintEqualToAnchor: stview.topAnchor
-          constant: layout->margins.top].active = YES;
-    }
-  } else {
-fprintf (stderr, "found prior\n");
-    if (stview.alignment == NSLayoutAttributeLeading) {
-      if (layout->centered) {
-        [nslg.leadingAnchor
-            constraintGreaterThanOrEqualToAnchor: prior.trailingAnchor
-            constant: layout->margins.left].active = YES;
-      } else if (layout->alignright) {
-        [nslg.leadingAnchor
-            constraintGreaterThanOrEqualToAnchor: prior.trailingAnchor
-            constant: layout->margins.left].active = YES;
-// ### need a trailing anchor
-//      [nslg.trailingAnchor
-//          constraintGreaterThanOrEqualToAnchor: prior.trailingAnchor
-//          constant: layout->margins.right].active = YES;
-      }
-    } else {
-      if (layout->centered) {
-        [nslg.topAnchor
-            constraintGreaterThanOrEqualToAnchor: prior.bottomAnchor
-            constant: layout->margins.top].active = YES;
-      } else {
-        [nslg.topAnchor
-            constraintEqualToAnchor: prior.bottomAnchor
-            constant: layout->margins.top].active = YES;
-//      [nslg.bottomAnchor
-//          constraintGreaterThanOrEqualToAnchor: prior.bottomAnchor
-//          constant: layout->margins.bottom].active = YES;
-      }
-    }
-  }
-  view.needsDisplay = YES;
+  stvcontainer.edgeInsets = layout->margins;
+  stvcontainer.needsDisplay = YES;
 }
 
 static NSView *
@@ -592,5 +508,3 @@ uiwidgetGetPrior (NSStackView *stview, NSView *view)
 
   return prior;
 }
-
-

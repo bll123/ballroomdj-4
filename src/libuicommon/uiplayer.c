@@ -362,7 +362,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
     /* size group F */
     uiplayer->callbacks [UIPL_CB_SPD_RESET] = callbackInit (
         uiplayerSpdResetCallback, uiplayer, "spd-reset");
-    uiwidgetp = uiCreateButton (
+    uiwidgetp = uiCreateButton ("plui-spd-reset",
         uiplayer->callbacks [UIPL_CB_SPD_RESET],
         /* CONTEXT: playerui: button: reset speed to 100% */
         _("100%"), NULL);
@@ -488,7 +488,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiplayer->callbacks [UIPL_CB_FADE] = callbackInit (
       uiplayerFadeProcess, uiplayer, "fade");
-  uiwidgetp = uiCreateButton (
+  uiwidgetp = uiCreateButton ("plui-fade",
       uiplayer->callbacks [UIPL_CB_FADE],
       /* CONTEXT: playerui: button: fade out the song and stop playing it */
       _("Fade"), NULL);
@@ -497,7 +497,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiplayer->callbacks [UIPL_CB_PLAYPAUSE] = callbackInit (
       uiplayerPlayPauseProcess, uiplayer, "play-pause");
-  uiwidgetp = uiCreateButton (
+  uiwidgetp = uiCreateButton ("plui-plpause",
       uiplayer->callbacks [UIPL_CB_PLAYPAUSE],
       /* CONTEXT: playerui: button: tooltip: play or pause the song */
       _("Play / Pause"), "button_playpause");
@@ -517,7 +517,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiplayer->callbacks [UIPL_CB_BEGSONG] = callbackInit (
       uiplayerSongBeginProcess, uiplayer, "begin-song");
-  uiwidgetp = uiCreateButton (
+  uiwidgetp = uiCreateButton ("plui-begin",
       uiplayer->callbacks [UIPL_CB_BEGSONG],
       /* CONTEXT: playerui: button: tooltip: return to the beginning of the song */
       _("Return to beginning of song"), "button_begin");
@@ -526,7 +526,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiplayer->callbacks [UIPL_CB_NEXTSONG] = callbackInit (
       uiplayerNextSongProcess, uiplayer, "next-song");
-  uiwidgetp = uiCreateButton (
+  uiwidgetp = uiCreateButton ("plui-next",
       uiplayer->callbacks [UIPL_CB_NEXTSONG],
       /* CONTEXT: playerui: button: tooltip: start playing the next song (immediate) */
       _("Next Song"), "button_nextsong");

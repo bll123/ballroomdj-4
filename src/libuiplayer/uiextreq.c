@@ -259,7 +259,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
 
   uiextreq->callbacks [UIEXTREQ_CB_AUDIO_FILE] = callbackInit (
       selectAudioFileCallback, &uiextreq->audiofilesfcb, NULL);
-  uiwidgetp = uiCreateButton (
+  uiwidgetp = uiCreateButton ("extreq-af-folder",
       uiextreq->callbacks [UIEXTREQ_CB_AUDIO_FILE],
       "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");

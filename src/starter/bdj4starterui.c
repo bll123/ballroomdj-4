@@ -604,7 +604,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetAllMargins (vbox, 4);
   if (isMacOS ()) {
     /* macos has a bug where the starter window does not have the proper */
-    /* right margin */
+    /* right margin (gtk) */
     uiWidgetSetMarginEnd (vbox, 6);
   }
 
@@ -704,7 +704,7 @@ starterBuildUI (startui_t  *starter)
 
   starter->callbacks [START_CB_PLAYER] = callbackInit (
       starterStartPlayerui, starter, NULL);
-  uiwidgetp = uiCreateButton (
+  uiwidgetp = uiCreateButton ("strt-player",
       starter->callbacks [START_CB_PLAYER],
       /* CONTEXT: starterui: button: starts the player user interface */
       _("Player"), NULL);
@@ -717,7 +717,7 @@ starterBuildUI (startui_t  *starter)
 
   starter->callbacks [START_CB_MANAGE] = callbackInit (
       starterStartManageui, starter, NULL);
-  uiwidgetp = uiCreateButton (
+  uiwidgetp = uiCreateButton ("strt-manage",
       starter->callbacks [START_CB_MANAGE],
       /* CONTEXT: starterui: button: starts the management user interface */
       _("Manage"), NULL);
@@ -730,7 +730,7 @@ starterBuildUI (startui_t  *starter)
 
   starter->callbacks [START_CB_CONFIG] = callbackInit (
       starterStartConfig, starter, NULL);
-  uiwidgetp = uiCreateButton (
+  uiwidgetp = uiCreateButton ("strt-conf",
       starter->callbacks [START_CB_CONFIG],
       /* CONTEXT: starterui: button: starts the configuration user interface */
       _("Configure"), NULL);
@@ -743,7 +743,7 @@ starterBuildUI (startui_t  *starter)
 
   starter->callbacks [START_CB_SUPPORT] = callbackInit (
       starterProcessSupport, starter, NULL);
-  uiwidgetp = uiCreateButton (
+  uiwidgetp = uiCreateButton ("strt-support",
       starter->callbacks [START_CB_SUPPORT],
       /* CONTEXT: starterui: button: support : support information */
       _("Support"), NULL);
@@ -754,7 +754,7 @@ starterBuildUI (startui_t  *starter)
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_SUPPORT] = uiwidgetp;
 
-  uiwidgetp = uiCreateButton (
+  uiwidgetp = uiCreateButton ("strt-exit",
       starter->callbacks [START_CB_EXIT],
       /* CONTEXT: starterui: button: exits BDJ4 (exits everything) */
       _("Exit"), NULL);
@@ -1573,7 +1573,7 @@ starterProcessSupport (void *udata)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateButton (
+  uiwidgetp = uiCreateButton ("strt-ssm",
       starter->callbacks [START_CB_SEND_SUPPORT],
       /* CONTEXT: starterui: basic support dialog: button: support option */
       _("Send Support Message"), NULL);

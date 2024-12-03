@@ -1097,7 +1097,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   manage->callbacks [MANAGE_CB_SBS_SELECT] = callbackInit (
       uisongselSelectCallback, manage->slsbssongsel, NULL);
-  uiwidgetp = uiCreateButton (
+  uiwidgetp = uiCreateButton ("mng-sbs-select",
       manage->callbacks [MANAGE_CB_SBS_SELECT],
       /* CONTEXT: manage-ui: config: button: add the selected songs to the song list */
       _("Select"), "button_left");

@@ -40,10 +40,9 @@
 
 - (void)awakeFromNib {
   IWindow*  w = self;
-  NSStackView *box;
+//  NSStackView *box;
 
-  box = [w contentView];
-  [box setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+//  box = [w contentView];
 }
 
 @end

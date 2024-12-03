@@ -155,7 +155,7 @@ uiwcontUIInit (uiwcont_t *uiwidget)
   uiwidget->uidata.layout = layout;
 
   layout->margins = NSEdgeInsetsMake (0, 0, 0, 0);
-  layout->marginlg = [[NSLayoutGuide alloc] init];
+  layout->container = NULL;
   layout->centered = false;
   layout->expand = false;
   layout->alignright = false;
@@ -171,21 +171,17 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
     return;
   }
 
-  if (uiwidget->wbasetype == WCONT_T_BOX) {
-    NSStackView *stackview = uiwidget->uidata.widget;
+  layout->container = [[NSStackView alloc] init];
+  [layout->container setHuggingPriority: NSLayoutPriorityDefaultHigh
+      forOrientation: NSLayoutConstraintOrientationHorizontal];
+  [layout->container setHuggingPriority: NSLayoutPriorityDefaultHigh
+      forOrientation: NSLayoutConstraintOrientationVertical];
+  layout->container.edgeInsets = layout->margins;
+  [layout->container addView: view inGravity: NSStackViewGravityLeading];
 
-    stackview.edgeInsets = layout->margins;
-    return;
+  if (uiwidget->uidata.widget == uiwidget->uidata.packwidget) {
+    uiwidget->uidata.packwidget = layout->container;
   }
-
-  [view addLayoutGuide: layout->marginlg];
-//  margins->container = [[NSStackView alloc] init];
-//  margins->container.edgeInsets = margins->margins;
-//  [margins->container addView: view inGravity: NSStackViewGravityLeading];
-
-//  if (uiwidget->uidata.widget == uiwidget->uidata.packwidget) {
-//    uiwidget->uidata.packwidget = margins->container;
-//  }
 }
 
 void

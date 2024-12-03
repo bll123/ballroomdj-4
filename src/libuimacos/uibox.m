@@ -62,9 +62,9 @@ uiBoxFree (uiwcont_t *uibox)
 void
 uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
-  IBox    *box;
-  NSView  *widget = NULL;
-  int     grav = NSStackViewGravityLeading;
+  IBox          *box;
+  NSView        *widget = NULL;
+  int           grav = NSStackViewGravityLeading;
 
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start")) {
     return;
@@ -90,9 +90,9 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
 void
 uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
-  IBox    *box;
-  NSView  *widget = NULL;
-  int     grav = NSStackViewGravityLeading;
+  IBox          *box;
+  NSView        *widget = NULL;
+  int           grav = NSStackViewGravityLeading;
 
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start-exp")) {
     return;
@@ -104,6 +104,7 @@ uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.packwidget;
   [box addView: widget inGravity: grav];
+
   uiWidgetSetMarginTop (uiwidget, 1);
   uiWidgetSetMarginStart (uiwidget, 1);
   uiwidget->packed = true;
@@ -113,9 +114,9 @@ uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 void
 uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
-  IBox        *box;
-  NSView      *widget = NULL;
-  int         grav = NSStackViewGravityTrailing;
+  IBox          *box;
+  NSView        *widget = NULL;
+  int           grav = NSStackViewGravityTrailing;
 
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end")) {
     return;
@@ -130,6 +131,7 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
     grav = NSStackViewGravityBottom;
   }
   [box insertView: widget atIndex: 0 inGravity: grav];
+
   uiWidgetSetMarginTop (uiwidget, 1);
   uiWidgetSetMarginStart (uiwidget, 1);
   uiwidget->packed = true;
@@ -139,9 +141,9 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
 void
 uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
-  IBox        *box;
-  NSView      *widget = NULL;
-  int         grav = NSStackViewGravityTrailing;
+  IBox          *box;
+  NSView        *widget = NULL;
+  int           grav = NSStackViewGravityTrailing;
 
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end-exp")) {
     return;
@@ -153,6 +155,7 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.packwidget;
   [box insertView: widget atIndex: 0 inGravity: grav];
+
   uiWidgetSetMarginTop (uiwidget, 1);
   uiWidgetSetMarginStart (uiwidget, 1);
   uiwidget->packed = true;
@@ -187,6 +190,10 @@ uiCreateBox (int orientation)
   [box setAutoresizingMask: NSViewNotSizable];
   [box setTranslatesAutoresizingMaskIntoConstraints: NO];
   [box setDistribution: NSStackViewDistributionGravityAreas];
+  [box setHuggingPriority: NSLayoutPriorityDefaultHigh
+      forOrientation: NSLayoutConstraintOrientationHorizontal];
+  [box setHuggingPriority: NSLayoutPriorityDefaultHigh
+      forOrientation: NSLayoutConstraintOrientationVertical];
   box.spacing = 1.0;
 
 #if MACOS_UI_DEBUG

@@ -22,7 +22,7 @@ typedef struct uibutton {
 } uibutton_t;
 
 uiwcont_t *
-uiCreateButton (callback_t *uicb, char *title, char *imagenm)
+uiCreateButton (const char *ident, callback_t *uicb, char *title, char *imagenm)
 {
   return NULL;
 }

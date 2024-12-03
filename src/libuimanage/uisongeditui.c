@@ -342,7 +342,8 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   seint->callbacks [UISE_CB_FIRST] = callbackInit (
       uisongeditFirstSelection, uisongedit, "songedit: first");
-  uiwidgetp = uiCreateButton (seint->callbacks [UISE_CB_FIRST],
+  uiwidgetp = uiCreateButton ("se-first",
+      seint->callbacks [UISE_CB_FIRST],
       /* CONTEXT: song editor : first song */
       _("First"), NULL);
   uiBoxPackStart (hbox, uiwidgetp);
@@ -350,7 +351,8 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   seint->callbacks [UISE_CB_PREV] = callbackInit (
       uisongeditPreviousSelection, uisongedit, "songedit: previous");
-  uiwidgetp = uiCreateButton (seint->callbacks [UISE_CB_PREV],
+  uiwidgetp = uiCreateButton ("se-prev",
+      seint->callbacks [UISE_CB_PREV],
       /* CONTEXT: song editor : previous song */
       _("Previous"), NULL);
   uiButtonSetRepeat (uiwidgetp, REPEAT_TIME);
@@ -359,7 +361,8 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   seint->callbacks [UISE_CB_NEXT] = callbackInit (
       uisongeditNextSelection, uisongedit, "songedit: next");
-  uiwidgetp = uiCreateButton (seint->callbacks [UISE_CB_NEXT],
+  uiwidgetp = uiCreateButton ("se-next",
+      seint->callbacks [UISE_CB_NEXT],
       /* CONTEXT: song editor : next song */
       _("Next"), NULL);
   uiButtonSetRepeat (uiwidgetp, REPEAT_TIME);
@@ -368,7 +371,8 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   seint->callbacks [UISE_CB_PLAY] = callbackInit (
       uisongselPlayCallback, uisongsel, "songedit: play");
-  uiwidgetp = uiCreateButton (seint->callbacks [UISE_CB_PLAY],
+  uiwidgetp = uiCreateButton ("se-play",
+      seint->callbacks [UISE_CB_PLAY],
       /* CONTEXT: song editor : play song */
       _("Play"), NULL);
   uiBoxPackStart (hbox, uiwidgetp);
@@ -376,7 +380,8 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   seint->callbacks [UISE_CB_SAVE] = callbackInit (
       uisongeditSaveCallback, uisongedit, "songedit: save");
-  uiwidgetp = uiCreateButton (seint->callbacks [UISE_CB_SAVE],
+  uiwidgetp = uiCreateButton ("se-save",
+      seint->callbacks [UISE_CB_SAVE],
       /* CONTEXT: song editor : save data */
       _("Save"), NULL);
   uiBoxPackEnd (hbox, uiwidgetp);
@@ -422,7 +427,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   seint->callbacks [UISE_CB_COPY_TEXT] = callbackInit (
       uisongeditCopyPath, uisongedit, "songedit: copy-text");
-  uiwidgetp = uiCreateButton (
+  uiwidgetp = uiCreateButton ("se-copy",
       seint->callbacks [UISE_CB_COPY_TEXT],
       "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "edit-copy");

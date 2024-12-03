@@ -286,7 +286,8 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   audioidint->callbacks [UIAUDID_CB_FIRST] = callbackInit (
       uiaudioidFirstSelection, uiaudioid, "audioid: first");
-  uiwidgetp = uiCreateButton (audioidint->callbacks [UIAUDID_CB_FIRST],
+  uiwidgetp = uiCreateButton ("audid-first",
+      audioidint->callbacks [UIAUDID_CB_FIRST],
       /* CONTEXT: audio identification: first song */
       _("First"), NULL);
   uiBoxPackStart (hbox, uiwidgetp);
@@ -294,7 +295,8 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   audioidint->callbacks [UIAUDID_CB_PREV] = callbackInit (
       uiaudioidPreviousSelection, uiaudioid, "audioid: previous");
-  uiwidgetp = uiCreateButton (audioidint->callbacks [UIAUDID_CB_PREV],
+  uiwidgetp = uiCreateButton ("audid-prev",
+      audioidint->callbacks [UIAUDID_CB_PREV],
       /* CONTEXT: audio identification: previous song */
       _("Previous"), NULL);
   uiButtonSetRepeat (uiwidgetp, REPEAT_TIME);
@@ -303,7 +305,8 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   audioidint->callbacks [UIAUDID_CB_NEXT] = callbackInit (
       uiaudioidNextSelection, uiaudioid, "audioid: next");
-  uiwidgetp = uiCreateButton (audioidint->callbacks [UIAUDID_CB_NEXT],
+  uiwidgetp = uiCreateButton ("audid-next",
+      audioidint->callbacks [UIAUDID_CB_NEXT],
       /* CONTEXT: audio identification: next song */
       _("Next"), NULL);
   uiButtonSetRepeat (uiwidgetp, REPEAT_TIME);
@@ -312,7 +315,8 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   audioidint->callbacks [UIAUDID_CB_SAVE] = callbackInit (
       uiaudioidSaveCallback, uiaudioid, "audioid: save");
-  uiwidgetp = uiCreateButton (audioidint->callbacks [UIAUDID_CB_SAVE],
+  uiwidgetp = uiCreateButton ("audid-save",
+      audioidint->callbacks [UIAUDID_CB_SAVE],
       /* CONTEXT: audio identification: save data */
       _("Save"), NULL);
   uiBoxPackEnd (hbox, uiwidgetp);

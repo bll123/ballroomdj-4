@@ -140,14 +140,16 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiWidgetSetAllMargins (dvbox, 4);
   uiWidgetSetMarginTop (dvbox, 64);
 
-  uiwidgetp = uiCreateButton (duallist->callbacks [DL_CB_SELECT],
+  uiwidgetp = uiCreateButton ("dl-select",
+      duallist->callbacks [DL_CB_SELECT],
       /* CONTEXT: side-by-side list: button: add the selected field */
       _("Select"), "button_right");
   uiBoxPackStart (dvbox, uiwidgetp);
   duallist->buttons [DL_BUTTON_SELECT] = uiwidgetp;
 
   if ((duallist->flags & DL_FLAGS_PERSISTENT) != DL_FLAGS_PERSISTENT) {
-    uiwidgetp = uiCreateButton (duallist->callbacks [DL_CB_REMOVE],
+    uiwidgetp = uiCreateButton ("dl-remove",
+        duallist->callbacks [DL_CB_REMOVE],
         /* CONTEXT: side-by-side list: button: remove the selected field */
         _("Remove"), "button_left");
     uiBoxPackStart (dvbox, uiwidgetp);
@@ -182,20 +184,23 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiWidgetSetAllMargins (dvbox, 4);
   uiWidgetSetMarginTop (dvbox, 64);
 
-  uiwidgetp = uiCreateButton (duallist->callbacks [DL_CB_MOVEPREV],
+  uiwidgetp = uiCreateButton ("dl-up",
+      duallist->callbacks [DL_CB_MOVEPREV],
       /* CONTEXT: side-by-side list: button: move the selected field up */
       _("Move Up"), "button_up");
   uiBoxPackStart (dvbox, uiwidgetp);
   duallist->buttons [DL_BUTTON_MOVE_UP] = uiwidgetp;
 
-  uiwidgetp = uiCreateButton (duallist->callbacks [DL_CB_MOVENEXT],
+  uiwidgetp = uiCreateButton ("dl-down",
+      duallist->callbacks [DL_CB_MOVENEXT],
       /* CONTEXT: side-by-side list: button: move the selected field down */
       _("Move Down"), "button_down");
   uiBoxPackStart (dvbox, uiwidgetp);
   duallist->buttons [DL_BUTTON_MOVE_DOWN] = uiwidgetp;
 
   if ((duallist->flags & DL_FLAGS_PERSISTENT) == DL_FLAGS_PERSISTENT) {
-    uiwidgetp = uiCreateButton (duallist->callbacks [DL_CB_REMOVE],
+    uiwidgetp = uiCreateButton ("dl-remove",
+        duallist->callbacks [DL_CB_REMOVE],
         /* CONTEXT: side-by-side list: button: remove the selected field */
         _("Remove"), "button_remove");
     uiBoxPackStart (dvbox, uiwidgetp);

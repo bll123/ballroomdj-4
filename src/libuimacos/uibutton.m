@@ -54,7 +54,7 @@ fprintf (stderr, "b: button-1 click\n");
 @end
 
 uiwcont_t *
-uiCreateButton (callback_t *uicb, char *title, char *imagenm)
+uiCreateButton (const char *ident, callback_t *uicb, char *title, char *imagenm)
 {
   uiwcont_t       *uiwidget;
   uibutton_t      *uibutton;
@@ -91,6 +91,7 @@ fprintf (stderr, "c-bt\n");
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uibutton = uibutton;
 
+  [widget setIdentifier: [NSString stringWithUTF8String: ident]];
   [widget setBezelStyle: NSBezelStyleRounded];
   [widget setTarget: widget];
   [widget setUIWidget: uiwidget];
@@ -98,7 +99,14 @@ fprintf (stderr, "c-bt\n");
   [widget setAutoresizingMask: NSViewNotSizable];
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
+#if MACOS_UI_DEBUG
+  [widget setFocusRingType: NSFocusRingTypeExterior];
+  [widget setWantsLayer: YES];
+  [[widget layer] setBorderWidth: 2.0];
+#endif
+
   bbase = &uiwidget->uiint.uibuttonbase;
+  bbase->ident = ident;
   bbase->cb = uicb;
   bbase->presscb = callbackInit (uiButtonPressCallback,
       uiwidget, "button-repeat-press");

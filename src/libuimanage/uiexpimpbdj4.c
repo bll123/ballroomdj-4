@@ -360,7 +360,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   uiEntrySetValidate (uiwidgetp, "",
       uieibdj4ValidateTarget, uieibdj4, UIENTRY_DELAYED);
 
-  uiwidgetp = uiCreateButton (
+  uiwidgetp = uiCreateButton ("eibdj4-folder",
       uieibdj4->callbacks [UIEIBDJ4_CB_TARGET],
       "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");

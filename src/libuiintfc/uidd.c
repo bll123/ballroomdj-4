@@ -118,7 +118,8 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
 
   dd->callbacks [DD_CB_BUTTON] = callbackInit (uiddDisplay, dd, NULL);
 
-  uiwidget = uiCreateButton (dd->callbacks [DD_CB_BUTTON], NULL,
+  uiwidget = uiCreateButton ("dd-down",
+      dd->callbacks [DD_CB_BUTTON], NULL,
       "button_down_small");
   if (where == DD_PACK_START) {
     uiBoxPackStart (boxp, uiwidget);

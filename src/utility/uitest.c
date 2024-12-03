@@ -388,8 +388,8 @@ uitestUIButtons (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiCreateButton (uitest->callbacks [UITEST_CB_B],
-      "button", NULL);
+  uiwidgetp = uiCreateButton ("uitest-a",
+      uitest->callbacks [UITEST_CB_B], "button", NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (sg, uiwidgetp);
   uitest->wcont [UITEST_W_B] = uiwidgetp;
@@ -408,8 +408,8 @@ uitestUIButtons (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiCreateButton (uitest->callbacks [UITEST_CB_B],
-      "button-left", NULL);
+  uiwidgetp = uiCreateButton ("uitest-b",
+      uitest->callbacks [UITEST_CB_B], "button-left", NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (sg, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
@@ -423,8 +423,8 @@ uitestUIButtons (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiCreateButton (uitest->callbacks [UITEST_CB_B],
-      "button long text", NULL);
+  uiwidgetp = uiCreateButton ("uitest-long",
+      uitest->callbacks [UITEST_CB_B], "button long text", NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (sg, uiwidgetp);
 
@@ -437,8 +437,8 @@ uitestUIButtons (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiCreateButton (uitest->callbacks [UITEST_CB_B_IMG_A],
-      NULL, "button_pause");
+  uiwidgetp = uiCreateButton ("uitest-pause",
+      uitest->callbacks [UITEST_CB_B_IMG_A], NULL, "button_pause");
   uiBoxPackStart (hbox, uiwidgetp);
   uitest->wcont [UITEST_W_B_IMG_A] = uiwidgetp;
 
@@ -456,8 +456,8 @@ uitestUIButtons (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiCreateButton (uitest->callbacks [UITEST_CB_B_IMG_B],
-      "img-tooltip", "button_play");
+  uiwidgetp = uiCreateButton ("uitest-img-tt",
+      uitest->callbacks [UITEST_CB_B_IMG_B], "img-tooltip", "button_play");
   uiBoxPackStart (hbox, uiwidgetp);
   uitest->wcont [UITEST_W_B_IMG_B] = uiwidgetp;
 
@@ -634,8 +634,8 @@ uitestUIChgInd (uitest_t *uitest)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiCreateButton (uitest->callbacks [UITEST_CB_CHG_IND],
-      "switch", NULL);
+  uiwidgetp = uiCreateButton ("uitest-switch",
+      uitest->callbacks [UITEST_CB_CHG_IND], "switch", NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   uitest->wcont [UITEST_W_CI_BUTTON] = uiwidgetp;
 

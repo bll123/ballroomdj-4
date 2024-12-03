@@ -227,7 +227,7 @@ uicopytagsCreateDialog (uict_t *uict)
 
   uict->callbacks [UICT_CB_SOURCE_SEL] = callbackInit (
       selectAllFileCallback, &uict->sourcesfcb, NULL);
-  uict->sourcesel = uiCreateButton (
+  uict->sourcesel = uiCreateButton ("cptag-src-folder",
       uict->callbacks [UICT_CB_SOURCE_SEL], "", NULL);
   uiButtonSetImageIcon (uict->sourcesel, "folder");
   uiBoxPackStart (hbox, uict->sourcesel);
@@ -253,7 +253,7 @@ uicopytagsCreateDialog (uict_t *uict)
 
   uict->callbacks [UICT_CB_TARGET_SEL] = callbackInit (
       selectAudioFileCallback, &uict->targetsfcb, NULL);
-  uict->targetsel = uiCreateButton (
+  uict->targetsel = uiCreateButton ("cptag-tgt-folder",
       uict->callbacks [UICT_CB_TARGET_SEL], "", NULL);
   uiButtonSetImageIcon (uict->targetsel, "folder");
   uiBoxPackStart (hbox, uict->targetsel);
