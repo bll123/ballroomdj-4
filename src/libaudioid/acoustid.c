@@ -239,7 +239,7 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
   logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: fp: %" PRId64 "ms",
       (int64_t) mstimeend (&starttm));
 
-  stpecpy (uri, uri + sizeof (uri), sysvarsGetStr (SV_AUDIOID_ACOUSTID_URI));
+  stpecpy (uri, uri + sizeof (uri), bdjoptGetStr (OPT_URI_AUID_ACOUSTID));
   /* if meta-compress is on the track artists are not generated */
   snprintf (query, ACOUSTID_BUFF_SZ,
       "client=%s"

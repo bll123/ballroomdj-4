@@ -15,9 +15,10 @@
 #include <errno.h>
 #include <math.h>
 
-#include "pli.h"
+#include "bdj4intl.h"
 #include "mdebug.h"
 #include "tmutil.h"
+#include "pli.h"
 #include "vlci.h"
 #include "volsink.h"
 
@@ -73,10 +74,10 @@ pliiDesc (const char **ret, int max)
   if (vlcVersionLinkCheck ()) {
     if (vlcVersionCheck ()) {
 #if BDJ4_VLC_VERS == 4
-      ret [c++] = "Integrated VLC 4";
+      ret [c++] = _("Integrated VLC 4");
 #endif
 #if BDJ4_VLC_VERS == 3
-      ret [c++] = "Integrated VLC 3";
+      ret [c++] = _("Integrated VLC 3");
 #endif
     }
   }

@@ -13,6 +13,7 @@
 
 #include "audioid.h"
 #include "bdj4.h"
+#include "bdjopt.h"
 #include "bdjstring.h"
 #include "fileop.h"
 #include "log.h"
@@ -152,7 +153,7 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, audioid_resp_t *resp)
   logMsg (LOG_DBG, LOG_IMPORTANT, "mb: wait time: %" PRId64 "ms",
       (int64_t) mstimeend (&starttm));
 
-  p = stpecpy (p, end, sysvarsGetStr (SV_AUDIOID_MUSICBRAINZ_URI));
+  p = stpecpy (p, end, bdjoptGetStr (OPT_URI_AUID_MUSICBRAINZ));
   p = stpecpy (p, end, "/recording/");
   p = stpecpy (p, end, recid);
   /* artist-credits retrieves the additional artists for the song */

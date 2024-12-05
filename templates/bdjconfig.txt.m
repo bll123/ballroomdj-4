@@ -22,7 +22,7 @@ MQ_THEME
 PLAYER
 ..libplivlc
 PLAYER_I_NM
-..
+..Integrated VLC 3
 PLAYEROPTIONS
 ..
 SCALE

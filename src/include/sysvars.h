@@ -11,8 +11,6 @@ extern "C" {
 #endif
 
 typedef enum {
-  SV_AUDIOID_MUSICBRAINZ_URI,
-  SV_AUDIOID_ACOUSTID_URI,
   SV_BDJ4_BUILD,
   SV_BDJ4_BUILDDATE,
   SV_BDJ4_DIR_DATATOP,  // path to the directory above data/, tmp/, img/, http/

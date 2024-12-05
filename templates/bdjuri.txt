@@ -1,8 +1,12 @@
 # config-uri
-# 2024-9-12
-# version 1
+# 2024-12-5
+# version 2
 version
 ..1
+AUDIOID_MUSICBRAINZ_URI
+..https://musicbrainz.org/ws/2
+AUDIOID_ACOUSTID_URI
+..https://api.acoustid.org/v2/lookup
 DOWNLOAD_HOST
 ..https://sourceforge.net
 DOWNLOAD_URI

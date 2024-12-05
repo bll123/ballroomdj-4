@@ -35,7 +35,6 @@ typedef enum {
   OPTTYPE_MAX,
 } bdjopttype_t;
 
-static const char * const BDJ_URIFN = "bdjuri";
 static const char * const BDJ_CONFIG_BASEFN = "bdjconfig";
 
 typedef struct {
@@ -157,6 +156,8 @@ static datafilekey_t bdjoptmachprofdfkeys [] = {
 };
 
 static datafilekey_t bdjopturidfkeys [] = {
+  { "AUDIOID_ACOUSTID_URI", OPT_URI_AUID_ACOUSTID,        VALUE_STR, NULL, DF_NORM },
+  { "AUDIOID_MUSICBRAINZ_URI",  OPT_URI_AUID_MUSICBRAINZ, VALUE_STR, NULL, DF_NORM },
   { "DOWNLOAD_HOST",        OPT_HOST_DOWNLOAD,            VALUE_STR, NULL, DF_NORM },
   { "DOWNLOAD_URI",         OPT_URI_DOWNLOAD,             VALUE_STR, NULL, DF_NORM },
   { "FORUM_HOST",           OPT_HOST_FORUM,               VALUE_STR, NULL, DF_NORM },
@@ -377,12 +378,14 @@ bdjoptInit (void)
     if (sysvarsGetNum (SVL_VLC_VERSION) == 3 &&
         strcmp (pli, "libplivlc4") == 0) {
       nlistSetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC, "libplivlc");
-      nlistSetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC_NM, "Integrated VLC 3");
+      /* CONTEXT: config: integrated VLC 3 */
+      nlistSetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC_NM, _("Integrated VLC 3"));
     }
     if (sysvarsGetNum (SVL_VLC_VERSION) == 4 &&
         strcmp (pli, "libplivlc") == 0) {
       nlistSetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC, "libplivlc4");
-      nlistSetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC_NM, "Integrated VLC 4");
+      /* CONTEXT: config: integrated VLC 4 */
+      nlistSetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC_NM, _("Integrated VLC 4"));
     }
   }
 
