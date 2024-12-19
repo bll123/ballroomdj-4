@@ -13,7 +13,10 @@
 # must ship its own copy of libicu, otherwise the ICU versioning will
 # prevent it from running unless there is an exact match.
 #
-# For Windows, the MSys2 icu libraries are shipped.
+# It would be possible to install a particular version of ICU on MacOS,
+# but I think just shipping the minimal version is easier.
+#
+# For Windows, the MSys2 ICU libraries are shipped.
 #
 
 case ${systype} in
