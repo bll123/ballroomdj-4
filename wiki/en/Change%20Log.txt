@@ -6,6 +6,9 @@
 
 **4.12.8 2024-11---**
 
+* Internal:
+    * PENDING: Upgrade libmp4tag to version 2.0.0.
+
 -->
 
 **4.12.7 2024-11-30**

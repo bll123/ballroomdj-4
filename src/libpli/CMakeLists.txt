@@ -30,6 +30,7 @@ if (LIBVLC_FOUND)
     ${LIBVLC_LDFLAGS}
     ${LIBVLC_LIBRARY}
   )
+  addIntlLibrary (libplivlc)
 endif()
 
 if (LIBVLC4_FOUND)
@@ -42,6 +43,7 @@ if (LIBVLC4_FOUND)
     libbdj4common
     ${LIBVLC4_LIBRARY}
   )
+  addIntlLibrary (libplivlc4)
 endif()
 
 if (NOT WIN32 AND NOT APPLE)
@@ -66,6 +68,7 @@ target_link_libraries (libpligst PRIVATE
   ${GST_LDFLAGS}
   # ${GLIB_LDFLAGS}
 )
+addIntlLibrary (libpligst)
 
 install (TARGETS
   libbdj4pli
