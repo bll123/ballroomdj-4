@@ -11,8 +11,10 @@ extern "C" {
 #endif
 
 enum {
-  AT_KEEP_MOD_TIME,
-  AT_UPDATE_MOD_TIME,
+  AT_FLAGS_NONE             = 0,
+  AT_FLAGS_MOD_TIME_KEEP    = (1 << 0),
+  AT_FLAGS_MOD_TIME_UPDATE  = (1 << 1),
+  AT_FLAGS_FORCE_WRITE      = (1 << 2),
 };
 
 enum {
@@ -27,7 +29,7 @@ typedef struct audiotag audiotag_t;
 void    audiotagInit (void);
 void    audiotagCleanup (void);
 slist_t * audiotagParseData (const char *ffn, int *rewrite);
-int     audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist, int rewrite, int modTimeFlag);
+int     audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist, int rewrite, int32_t flags);
 void    *audiotagSaveTags (const char *ffn);
 void    audiotagFreeSavedTags (const char *ffn, void *sdata);
 int     audiotagRestoreTags (const char *ffn, void *sdata);

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2024-11-20\n"
+"PO-Revision-Date: 2024-12-23\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Vietnamese\n"
 "Language: vi\n"
@@ -1017,6 +1017,14 @@ msgstr "Quá trình cài đặt hoàn tất."
 #, c-format
 msgid "Installing %s."
 msgstr "Đang cài đặt %s."
+
+#. CONTEXT: config: integrated VLC 3
+msgid "Integrated VLC 3"
+msgstr ""
+
+#. CONTEXT: config: integrated VLC 4
+msgid "Integrated VLC 4"
+msgstr ""
 
 #. CONTEXT: configuration: mobile marquee type: internet
 msgid "Internet"
@@ -2256,6 +2264,10 @@ msgstr ""
 #. CONTEXT: configuration: which audio tags will be written to the audio file
 msgid "Write Audio File Tags"
 msgstr "Viết thẻ tập tin âm thanh"
+
+#. CONTEXT: manage-ui: song editor menu: write audio tags
+msgid "Write Audio Tags"
+msgstr ""
 
 #. CONTEXT: database update: writes the tags in the database to the audio files
 msgid "Write Tags to Audio Files"

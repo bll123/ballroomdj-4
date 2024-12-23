@@ -44,7 +44,7 @@ typedef struct songdb {
 } songdb_t;
 
 static bool songdbNewName (songdb_t *songdb, song_t *song, char *newuri, size_t sz);
-static void songdbWriteAudioTags (song_t *song);
+static void songdbWriteAudioTags (song_t *song, int forceflag);
 static void songdbUpdateAllSonglists (song_t *song, const char *olduri);
 
 songdb_t *
@@ -92,10 +92,10 @@ songdbSetMusicDB (songdb_t *songdb, musicdb_t *musicdb)
 }
 
 void
-songdbWriteDB (songdb_t *songdb, dbidx_t dbidx)
+songdbWriteDB (songdb_t *songdb, dbidx_t dbidx, int forceflag)
 {
   song_t    *song;
-  int       songdbflags;
+  int32_t   songdbflags;
 
   if (songdb == NULL || songdb->ident != SONGDB_IDENT ||
       songdb->musicdb == NULL) {
@@ -103,6 +103,9 @@ songdbWriteDB (songdb_t *songdb, dbidx_t dbidx)
   }
   song = dbGetByIdx (songdb->musicdb, dbidx);
   songdbflags = SONGDB_NONE;
+  if (forceflag) {
+    songdbflags |= SONGDB_FORCE_WRITE;
+  }
   songdbWriteDBSong (songdb, song, &songdbflags, songGetNum (song, TAG_RRN));
 }
 
@@ -132,7 +135,8 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
     *flags |= SONGDB_RET_NULL;
     return 0;
   }
-  if (! songIsChanged (song)) {
+  if ((*flags & SONGDB_FORCE_WRITE) != SONGDB_FORCE_WRITE &&
+      ! songIsChanged (song)) {
     *flags |= SONGDB_RET_NO_CHANGE;
     return 0;
   }
@@ -272,7 +276,7 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
   }
 
   if (bdjoptGetNum (OPT_G_WRITETAGS) != WRITE_TAGS_NONE) {
-    songdbWriteAudioTags (song);
+    songdbWriteAudioTags (song, (*flags & SONGDB_FORCE_WRITE));
   }
 
   if (renamesuccess) {
@@ -345,13 +349,14 @@ songdbNewName (songdb_t *songdb, song_t *song, char *newuri, size_t sz)
 }
 
 static void
-songdbWriteAudioTags (song_t *song)
+songdbWriteAudioTags (song_t *song, int32_t flags)
 {
   const char  *fn;
   char        ffn [MAXPATHLEN];
   slist_t     *tagdata;
   slist_t     *newtaglist;
   int         rewrite;
+  int32_t     atflags;
 
   fn = songGetStr (song, TAG_URI);
   if (audiosrcGetType (fn) != AUDIOSRC_TYPE_FILE) {
@@ -363,7 +368,11 @@ songdbWriteAudioTags (song_t *song)
       fn, songGetNum (song, TAG_PREFIX_LEN));
   tagdata = audiotagParseData (ffn, &rewrite);
   newtaglist = songTagList (song);
-  audiotagWriteTags (ffn, tagdata, newtaglist, AF_REWRITE_NONE, AT_UPDATE_MOD_TIME);
+  atflags = AT_FLAGS_MOD_TIME_UPDATE;
+  if ((flags & SONGDB_FORCE_WRITE) == SONGDB_FORCE_WRITE) {
+    atflags |= AT_FLAGS_FORCE_WRITE;
+  }
+  audiotagWriteTags (ffn, tagdata, newtaglist, AF_REWRITE_NONE, atflags);
   slistFree (tagdata);
   slistFree (newtaglist);
 }

@@ -74,7 +74,7 @@ atibdj4ParseOpusTags (atidata_t *atidata, slist_t *tagdata,
 int
 atibdj4WriteOpusTags (atidata_t *atidata, const char *ffn,
     slist_t *updatelist, slist_t *dellist, nlist_t *datalist,
-    int tagtype, int filetype)
+    int tagtype, int filetype, int32_t flags)
 {
   OggOpusFile           *of;
   int                   linknum;

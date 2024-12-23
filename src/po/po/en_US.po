@@ -2,10 +2,10 @@
 # -- english/us
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.12.6\n"
+"Project-Id-Version: ballroomdj-4 4.12.8\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2024-11-20\n"
-"PO-Revision-Date: 2024-11-20\n"
+"POT-Creation-Date: 2024-12-23\n"
+"PO-Revision-Date: 2024-12-23\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -1010,6 +1010,14 @@ msgstr ""
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Installing %s."
+msgstr ""
+
+#. CONTEXT: config: integrated VLC 3
+msgid "Integrated VLC 3"
+msgstr ""
+
+#. CONTEXT: config: integrated VLC 4
+msgid "Integrated VLC 4"
 msgstr ""
 
 #. CONTEXT: configuration: mobile marquee type: internet
@@ -2248,6 +2256,10 @@ msgstr ""
 
 #. CONTEXT: configuration: which audio tags will be written to the audio file
 msgid "Write Audio File Tags"
+msgstr ""
+
+#. CONTEXT: manage-ui: song editor menu: write audio tags
+msgid "Write Audio Tags"
 msgstr ""
 
 #. CONTEXT: database update: writes the tags in the database to the audio files

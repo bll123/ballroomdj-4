@@ -110,12 +110,13 @@ enum {
   MANAGE_MENU_CB_MM_UNDO_REMOVE,
   /* song editor */
   MANAGE_MENU_CB_SE_BPM,
-  MANAGE_MENU_CB_SE_WRITE_TAGS,
   MANAGE_MENU_CB_SE_COPY_TAGS,
   MANAGE_MENU_CB_SE_APPLY_EDIT_ALL,
   MANAGE_MENU_CB_SE_CANCEL_EDIT_ALL,
   MANAGE_MENU_CB_SE_START_EDIT_ALL,
   MANAGE_MENU_CB_SE_TRIM_SILENCE,
+  MANAGE_MENU_CB_SE_WRITE_AUDIO_TAGS,
+  /* apply adjustment and restore original will go away someday */
   MANAGE_MENU_CB_SE_APPLY_ADJ,
   MANAGE_MENU_CB_SE_RESTORE_ORIG,
   /* sl options menu */
@@ -308,6 +309,7 @@ typedef struct {
   bool              sbssonglist : 1;
   bool              selbypass : 1;
   bool              slbackupcreated : 1;
+  bool              seforcesave : 1;
 } manageui_t;
 
 /* re-use the plui enums so that the songsel filter enums can also be used */
@@ -368,6 +370,7 @@ static bool     manageSongEditSaveCallback (void *udata, int32_t dbidx);
 static void     manageRePopulateData (manageui_t *manage);
 static void     manageSetEditMenuItems (manageui_t *manage);
 static bool     manageTrimSilence (void *udata);
+static bool     manageWriteAudioTags (void *udata);
 static bool     manageApplyAdjDialog (void *udata);
 static bool     manageApplyAdjCallback (void *udata, int32_t aaflags);
 static bool     manageRestoreOrigCallback (void *udata);
@@ -508,6 +511,7 @@ main (int argc, char *argv[])
   manage.itunesdd = NULL;
   manage.itunesddlist = NULL;
   manage.slbackupcreated = false;
+  manage.seforcesave = false;
   manage.inload = false;
   manage.lastmmdisp = MANAGE_DISP_SONG_SEL;
   manage.lasttabsel = MANAGE_TAB_SL_SONGSEL;
@@ -1235,7 +1239,7 @@ manageMainLoop (void *tmanage)
         tagdata = audiotagParseData (outfn, &rewrite);
         if (slistGetCount (tagdata) > 0) {
           song_t    *song;
-          int       songdbflags;
+          int32_t   songdbflags;
 
           song = songAlloc ();
           songFromTagList (song, tagdata);
@@ -1636,6 +1640,13 @@ manageSongEditMenu (manageui_t *manage)
       manage->callbacks [MANAGE_MENU_CB_SE_COPY_TAGS]);
   uiwcontFree (menuitem);
 
+  manage->callbacks [MANAGE_MENU_CB_SE_WRITE_AUDIO_TAGS] = callbackInit (
+      manageWriteAudioTags, manage, NULL);
+  /* CONTEXT: manage-ui: song editor menu: write audio tags*/
+  menuitem = uiMenuCreateItem (menu, _("Write Audio Tags"),
+      manage->callbacks [MANAGE_MENU_CB_SE_WRITE_AUDIO_TAGS]);
+  uiwcontFree (menuitem);
+
   uiMenuAddSeparator (menu);
 
   manage->callbacks [MANAGE_MENU_CB_SE_START_EDIT_ALL] = callbackInit (
@@ -1845,7 +1856,7 @@ manageSongEditSaveCallback (void *udata, int32_t dbidx)
   }
 
   /* this fetches the song from in-memory, which has already been updated */
-  songdbWriteDB (manage->songdb, dbidx);
+  songdbWriteDB (manage->songdb, dbidx, manage->seforcesave);
 
   /* the database has been updated, tell the other processes to reload  */
   /* this particular entry */
@@ -1930,6 +1941,31 @@ manageTrimSilence (void *udata)
   }
 
   return UICB_CONT;
+}
+
+static bool
+manageWriteAudioTags (void *udata)
+{
+  manageui_t    *manage = udata;
+  song_t        *song;
+  int           rc;
+  int           origwritetags;
+
+  if (manage->songeditdbidx < 0) {
+    return UICB_STOP;
+  }
+
+  song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
+  /* force a save, there may be no actual changes to the song */
+  manage->seforcesave = true;
+  songSetChanged (song);
+  /* make sure write-tags is on */
+  origwritetags = bdjoptGetNum (OPT_G_WRITETAGS);
+  bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_ALL);
+  rc = manageSongEditSaveCallback (manage, manage->songeditdbidx);
+  /* restore write-tags to the original */
+  bdjoptSetNum (OPT_G_WRITETAGS, origwritetags);
+  return rc;
 }
 
 static bool
@@ -4021,7 +4057,7 @@ manageSameSongChangeMark (manageui_t *manage, int flag)
 
   nlistStartIterator (sellist, &iteridx);
   while ((dbidx = nlistIterateKey (sellist, &iteridx)) >= 0) {
-    songdbWriteDB (manage->songdb, dbidx);
+    songdbWriteDB (manage->songdb, dbidx, false);
   }
 
   nlistFree (sellist);

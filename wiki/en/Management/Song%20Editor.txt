@@ -83,6 +83,9 @@ __MPM__ (or __BPM__) starts the BPM/MPM Counter.
 __Actions&nbsp;/&nbsp;Copy&nbsp;Audio&nbsp;Tags__ starts a dialog to
 copy the audio tags from one audio file to another.
 
+__Actions&nbsp;/&nbsp;Write&nbsp;Audio&nbsp;Tags__ forces the audio
+tags to be written to the audio file.
+
 __Actions&nbsp;/&nbsp;Edit&nbsp;All__ starts the batch edit
 process.
 <br>

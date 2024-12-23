@@ -126,7 +126,7 @@ audiotagParseData (const char *ffn, int *rewrite)
 
 int
 audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
-    int rewrite, int modTimeFlag)
+    int rewrite, int32_t flags)
 {
   int         tagtype;
   int         filetype;
@@ -140,6 +140,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   nlist_t     *datalist;
   int         tagkey;
   int         rc = AUDIOTAG_WRITE_OK; // if no update
+  int32_t     atiflags;
 
 
   logProcBegin ();
@@ -263,17 +264,22 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   }
 
   if (slistGetCount (updatelist) > 0 ||
-      slistGetCount (dellist) > 0) {
+      slistGetCount (dellist) > 0 ||
+      (flags & AT_FLAGS_FORCE_WRITE) == AT_FLAGS_FORCE_WRITE) {
     time_t    origtm;
 
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "writing tags");
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  %s", ffn);
     origtm = fileopModTime (ffn);
 
+    atiflags = ATI_FLAGS_NONE;
+    if ((flags & AT_FLAGS_FORCE_WRITE) == AT_FLAGS_FORCE_WRITE) {
+      atiflags |= ATI_FLAGS_FORCE_WRITE;
+    }
     atiWriteTags (at->ati, ffn, updatelist, dellist, datalist,
-        tagtype, filetype);
+        tagtype, filetype, atiflags);
 
-    if (modTimeFlag == AT_KEEP_MOD_TIME) {
+    if ((flags & AT_FLAGS_MOD_TIME_KEEP) == AT_FLAGS_MOD_TIME_KEEP) {
       fileopSetModTime (ffn, origtm);
     }
   }

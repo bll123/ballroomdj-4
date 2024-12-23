@@ -104,7 +104,7 @@ atibdj4ParseFlacTags (atidata_t *atidata, slist_t *tagdata,
 int
 atibdj4WriteFlacTags (atidata_t *atidata, const char *ffn,
     slist_t *updatelist, slist_t *dellist, nlist_t *datalist,
-    int tagtype, int filetype)
+    int tagtype, int filetype, int32_t flags)
 {
   FLAC__Metadata_Chain    *chain = NULL;
   FLAC__StreamMetadata    *block = NULL;

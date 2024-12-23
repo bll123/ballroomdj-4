@@ -95,7 +95,7 @@ atibdj4ParseMP4Tags (atidata_t *atidata, slist_t *tagdata,
 int
 atibdj4WriteMP4Tags (atidata_t *atidata, const char *ffn,
     slist_t *updatelist, slist_t *dellist, nlist_t *datalist,
-    int tagtype, int filetype)
+    int tagtype, int filetype, int32_t flags)
 {
   libmp4tag_t     *libmp4tag;
   int             mp4error;
@@ -181,6 +181,10 @@ atibdj4WriteMP4Tags (atidata_t *atidata, const char *ffn,
     } else {
       write = true;
     }
+  }
+
+  if ((flags & ATI_FLAGS_FORCE_WRITE) == ATI_FLAGS_FORCE_WRITE) {
+    write = true;
   }
 
   rc = 0;

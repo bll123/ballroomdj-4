@@ -498,7 +498,7 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
       }
 
       if (doupdate) {
-        int     songdbflags;
+        int32_t   songdbflags;
 
         eibdj4->dbchanged = true;
         songSetChanged (song);

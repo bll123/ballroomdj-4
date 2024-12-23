@@ -284,7 +284,7 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
 int
 atibdj4WriteMP3Tags (atidata_t *atidata, const char *ffn,
     slist_t *updatelist, slist_t *dellist, nlist_t *datalist,
-    int tagtype, int filetype, const char *iso639_2)
+    int tagtype, int filetype, const char *iso639_2, int32_t flags)
 {
   struct id3_file     *id3file;
   struct id3_tag      *id3tags = NULL;

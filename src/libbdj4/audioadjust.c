@@ -161,7 +161,7 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
       bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_BDJ_ONLY);
     }
     taglist = songTagList (song);
-    audiotagWriteTags (fullfn, taglist, taglist, AF_FORCE_WRITE_BDJ, AT_KEEP_MOD_TIME);
+    audiotagWriteTags (fullfn, taglist, taglist, AF_FORCE_WRITE_BDJ, AT_FLAGS_MOD_TIME_KEEP);
     bdjoptSetNum (OPT_G_WRITETAGS, value);
     slistFree (taglist);
     filemanipCopy (fullfn, origfn);
@@ -223,7 +223,7 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
     savedtags = NULL;
 
     songdb = songdbAlloc (musicdb);
-    songdbWriteDB (songdb, dbidx);
+    songdbWriteDB (songdb, dbidx, false);
     songdbFree (songdb);
   }
   dataFree (savedtags);
@@ -566,7 +566,7 @@ aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx,
   slist_t     *tagdata;
   int         rewrite;
   songdb_t    *songdb;
-  int         songdbflags;
+  int32_t     songdbflags;
   int32_t     rrn;
   song_t      *tsong;
   int32_t     dur;

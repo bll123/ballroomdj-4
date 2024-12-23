@@ -160,7 +160,7 @@ mp3ExportQueue (mp3exp_t *mp3exp)
       taglist = songTagList (song);
       owrite = bdjoptGetNum (OPT_G_WRITETAGS);
       bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_ALL);
-      audiotagWriteTags (outfn, NULL, taglist, AF_REWRITE_NONE, AT_KEEP_MOD_TIME);
+      audiotagWriteTags (outfn, NULL, taglist, AF_REWRITE_NONE, AT_FLAGS_MOD_TIME_KEEP);
       bdjoptSetNum (OPT_G_WRITETAGS, owrite);
       slistFree (taglist);
 

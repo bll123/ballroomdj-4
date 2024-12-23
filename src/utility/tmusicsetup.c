@@ -282,7 +282,7 @@ main (int argc, char *argv [])
     char        *fn;
     slist_t     *tagdata = NULL;
     const char  *songfn = NULL;
-    int         songdbflags;
+    int32_t     songdbflags;
     const char  *tval;
 
     tagdata = updateData (tmusiclist, key);
@@ -301,7 +301,7 @@ main (int argc, char *argv [])
     fn = createFile (src, dest, keepmusic);
     if (! keepmusic &&
         supported [filetype] == ATI_READ_WRITE) {
-      audiotagWriteTags (fn, empty, tagdata, AF_REWRITE_NONE, AT_UPDATE_MOD_TIME);
+      audiotagWriteTags (fn, empty, tagdata, AF_REWRITE_NONE, AT_FLAGS_MOD_TIME_UPDATE);
     }
     if (emptydb) {
       char        *dur;

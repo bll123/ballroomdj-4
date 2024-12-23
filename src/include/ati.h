@@ -8,6 +8,8 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+
 #include "ilist.h"
 #include "nlist.h"
 #include "tagdef.h"
@@ -19,9 +21,14 @@ extern "C" {
 #define LIBATI_PFX  "libati"
 
 enum {
+  ATI_NONE,
   ATI_READ,
   ATI_READ_WRITE,
-  ATI_NONE,
+};
+
+enum {
+  ATI_FLAGS_NONE        = 0,
+  ATI_FLAGS_FORCE_WRITE = (1 << 0),
 };
 
 enum {
@@ -43,7 +50,7 @@ ati_t   *atiInit (const char *atipkg, int writetags, taglookup_t tagLookup, tagc
 void    atiFree (ati_t *ati);
 void    atiSupportedTypes (ati_t *ati, int supported []);
 void    atiParseTags (ati_t *ati, slist_t *tagdata, const char *ffn, int filetype, int tagtype, int *rewrite);
-int     atiWriteTags (ati_t *ati, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
+int     atiWriteTags (ati_t *ati, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype, int32_t flags);
 atisaved_t *atiSaveTags (ati_t *ati, const char *ffn, int tagtype, int filetype);
 void    atiFreeSavedTags (ati_t *ati, atisaved_t *atisaved, int tagtype, int filetype);
 int     atiRestoreTags (ati_t *ati, atisaved_t *atisaved, const char *ffn, int tagtype, int filetype);
@@ -56,7 +63,7 @@ void    atiiSupportedTypes (int supported []);
 atidata_t *atiiInit (const char *atipkg, int writetags, taglookup_t tagLookup, tagcheck_t tagCheck, tagname_t tagName, audiotaglookup_t tagRawLookup);
 void    atiiFree (atidata_t *atidata);
 void    atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int filetype, int tagtype, int *rewrite);
-int     atiiWriteTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
+int     atiiWriteTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype, int32_t flags);
 atisaved_t *atiiSaveTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
 void    atiiFreeSavedTags (atisaved_t *atisaved, int tagtype, int filetype);
 int     atiiRestoreTags (atidata_t *atidata, atisaved_t *atisaved, const char *ffn, int tagtype, int filetype);

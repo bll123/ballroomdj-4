@@ -188,7 +188,7 @@ static void     dbupdateSigHandler (int sig);
 static void     dbupdateOutputProgress (dbupdate_t *dbupdate);
 static bool     checkOldDirList (dbupdate_t *dbupdate, const char *fn);
 static void     dbupdateIncCount (dbupdate_t *dbupdate, int tag);
-static void     dbupdateWriteSong (dbupdate_t *dbupdate, song_t *song, int *songdbflags, dbidx_t rrn);
+static void     dbupdateWriteSong (dbupdate_t *dbupdate, song_t *song, int32_t *songdbflags, dbidx_t rrn);
 static musicdb_t * dbupdateSetCurrentDB (dbupdate_t *dbupdate);
 static const char * dbupdateIterate (dbupdate_t *dbupdate);
 
@@ -1007,7 +1007,7 @@ dbupdateProcessFile (dbupdate_t *dbupdate, tagdataitem_t *tdi)
   song_t      *song = NULL;
   const char  *val = NULL;
   int         rewrite;
-  int         songdbflags;
+  int32_t     songdbflags;
 
   logMsg (LOG_DBG, LOG_DBUPDATE, "__ process %s", tdi->ffn);
 
@@ -1205,7 +1205,7 @@ dbupdateWriteTags (dbupdate_t *dbupdate, tagdataitem_t *tdi, slist_t *tagdata)
   }
 
   newtaglist = songTagList (song);
-  audiotagWriteTags (tdi->ffn, tagdata, newtaglist, AF_REWRITE_NONE, AT_UPDATE_MOD_TIME);
+  audiotagWriteTags (tdi->ffn, tagdata, newtaglist, AF_REWRITE_NONE, AT_FLAGS_MOD_TIME_UPDATE);
   slistFree (newtaglist);
   dbupdateIncCount (dbupdate, C_FILE_PROC);
   dbupdateIncCount (dbupdate, C_WRITE_TAGS);
@@ -1287,7 +1287,7 @@ dbupdateReorganize (dbupdate_t *dbupdate, tagdataitem_t *tdi,
     int songdbdefault)
 {
   song_t      *song = NULL;
-  int         songdbflags = songdbdefault;
+  int32_t     songdbflags = songdbdefault;
 
   if (tdi->ffn == NULL) {
     return;
@@ -1383,7 +1383,7 @@ dbupdateIncCount (dbupdate_t *dbupdate, int tag)
 
 static void
 dbupdateWriteSong (dbupdate_t *dbupdate, song_t *song,
-    int *songdbflags, dbidx_t rrn)
+    int32_t *songdbflags, dbidx_t rrn)
 {
   size_t    len;
 

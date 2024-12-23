@@ -794,7 +794,7 @@ main (int argc, char *argv [])
       if (processflags [UPD_FIX_AF_TAGS] &&
           rewrite != AF_REWRITE_NONE) {
         logMsg (LOG_INSTALL, LOG_IMPORTANT, "write audio tags: %" PRId32 " %s", dbidx, ffn);
-        audiotagWriteTags (ffn, taglist, newtaglist, rewrite, AT_KEEP_MOD_TIME);
+        audiotagWriteTags (ffn, taglist, newtaglist, rewrite, AT_FLAGS_MOD_TIME_KEEP);
       }
 
       slistFree (taglist);

@@ -1812,7 +1812,7 @@ pluiSongSaveCallback (void *udata, int32_t dbidx)
     return UICB_CONT;
   }
 
-  songdbWriteDB (plui->songdb, dbidx);
+  songdbWriteDB (plui->songdb, dbidx, false);
 
   /* the database has been updated, tell the other processes to reload  */
   /* this particular entry */

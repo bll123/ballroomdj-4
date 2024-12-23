@@ -29,7 +29,7 @@ typedef struct ati {
   atidata_t         *(*atiiInit) (const char *, int, taglookup_t, tagcheck_t, tagname_t, audiotaglookup_t);
   void              (*atiiFree) (atidata_t *atidata);
   void              (*atiiParseTags) (atidata_t *atidata, slist_t *tagdata, const char *ffn, int filetype, int tagtype, int *rewrite);
-  int               (*atiiWriteTags) (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
+  int               (*atiiWriteTags) (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype, int32_t flags);
   atisaved_t        *(*atiiSaveTags) (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
   void              (*atiiFreeSavedTags) (atisaved_t *atisaved, int tagtype, int filetype);
   int               (*atiiRestoreTags) (atidata_t *atidata, atisaved_t *atisaved, const char *ffn, int tagtype, int filetype);
@@ -135,12 +135,12 @@ atiParseTags (ati_t *ati, slist_t *tagdata, const char *ffn,
 int
 atiWriteTags (ati_t *ati, const char *ffn,
     slist_t *updatelist, slist_t *dellist, nlist_t *datalist,
-    int tagtype, int filetype)
+    int tagtype, int filetype, int32_t flags)
 {
   if (ati != NULL && ati->atiiWriteTags != NULL) {
     return ati->atiiWriteTags (ati->atidata, ffn,
         updatelist, dellist, datalist,
-        tagtype, filetype);
+        tagtype, filetype, flags);
   }
   return 0;
 }
