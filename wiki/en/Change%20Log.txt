@@ -10,6 +10,8 @@
 
 **4.12.8 2024-12-23**
 
+* Bug Fixes:
+    * Installer: Fix bad music folder on re-install.
 * Changes:
     * Song Editor: Added 'Write Audio Tags' to the actions menu.
 * Internal:

@@ -1164,7 +1164,7 @@ altinstFinalize (altinst_t *altinst)
     fclose (fh);
   }
 
-  if (altinst->newinstall) {
+  if (altinst->newinstall || altinst->reinstall) {
     if (! altinst->bdjoptloaded) {
       altinstLoadBdjOpt (altinst);
     }

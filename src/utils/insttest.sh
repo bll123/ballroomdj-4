@@ -936,7 +936,7 @@ function checkInstallation {
 
     if [[ $datafiles == y ]]; then
       # volume lib
-      lvol=$(sed -n -e '/^VOLUME$/ { n; s/^\.\.//; p ; }' $mconf)
+      lvol=$(sed -n -e '/^VOLUME$/ { n; s/^\.\.//; p ; }' "$mconf")
       res=$(($res+1))
       if [[ $fin == T && $libvol == $lvol ]]; then
         chk=$(($chk+1))
@@ -945,7 +945,7 @@ function checkInstallation {
       fi
 
       # pli lib
-      lpli=$(sed -n -e '/^PLAYER$/ { n; s/^\.\.//; p ; }' $mconf)
+      lpli=$(sed -n -e '/^PLAYER$/ { n; s/^\.\.//; p ; }' "$mconf")
       res=$(($res+1))
       if [[ $fin == T && $libpli == $lpli ]]; then
         chk=$(($chk+1))
@@ -954,7 +954,7 @@ function checkInstallation {
       fi
 
       # music dir not empty
-      mdir=$(sed -n -e '/^DIRMUSIC$/ { n; s/^\.\.//; p ; }' $mconf)
+      mdir=$(sed -n -e '/^DIRMUSIC$/ { n; s/^\.\.//; p ; }' "$mconf")
       res=$(($res+1))
       if [[ $fin == T && $mdir != "" ]]; then
         chk=$(($chk+1))
@@ -1030,6 +1030,7 @@ function cleanInstTest {
   test -d "$TARGETTOPALTDIR" && rm -rf "$TARGETTOPALTDIR"
   test -d "$DATATOPDIR" && rm -rf "$DATATOPDIR"
   test -d "$DATATOPALTDIR" && rm -rf "$DATATOPALTDIR"
+  # linux
   fn="$HOME/.local/share/applications/BDJ4dev.desktop"
   test -f "$fn" && rm -f "$fn"
   fn="$HOME/.local/share/applications/BDJ4altdev.desktop"
@@ -1038,14 +1039,22 @@ function cleanInstTest {
   test -f "$fn" && rm -f "$fn"
   fn="$HOME/Desktop/BDJ4altdev.desktop"
   test -f "$fn" && rm -f "$fn"
-  fn="$HOME/Desktop/BDJ4dev.link"
+  # win
+  UPROF=$(echo $USERPROFILE | sed 's,\\,/,g')
+  fn="$UPROF/Desktop/BDJ4dev.link"
   test -f "$fn" && rm -f "$fn"
-  fn="$HOME/Desktop/BDJ4altdev.link"
+  fn="$UPROF/Desktop/BDJ4altdev.link"
   test -f "$fn" && rm -f "$fn"
+  # macos
+  fn="$HOME/Desktop/BDJ4dev.app"
+  test -d "$fn" && rm -rf "$fn"
+  fn="$HOME/Desktop/BDJ4altdev.app"
+  test -d "$fn" && rm -rf "$fn"
   fn="$HOME/Applications/BDJ4altdev.app"
   test -d "$fn" && rm -rf "$fn"
   fn="$HOME/Applications/BDJ4dev.app"
   test -d "$fn" && rm -rf "$fn"
+  # macos, linux
   fn="$HOME/.config/BDJ4/altinstdirdev.txt"
   test -f "$fn" && rm -f "$fn"
   fn="$HOME/.config/BDJ4/altcountdev.txt"

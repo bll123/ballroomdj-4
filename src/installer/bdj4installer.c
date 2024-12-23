@@ -2170,7 +2170,7 @@ installerFinalize (installer_t *installer)
   char        tbuff [MAXPATHLEN];
 
 
-  if (installer->newinstall) {
+  if (installer->newinstall || installer->reinstall) {
     if (! installer->bdjoptloaded) {
       installerLoadBdjOpt (installer);
     }
