@@ -1040,7 +1040,7 @@ function cleanInstTest {
   fn="$HOME/Desktop/BDJ4altdev.desktop"
   test -f "$fn" && rm -f "$fn"
   # win
-  UPROF=$(echo $USERPROFILE | sed 's,\\,/,g')
+  UPROF=$(echo $USERPROFILE | sed -e 's,\\,/,g' -e 's,C:/,/c/,')
   fn="$UPROF/Desktop/BDJ4dev.link"
   test -f "$fn" && rm -f "$fn"
   fn="$UPROF/Desktop/BDJ4altdev.link"

@@ -36,4 +36,4 @@ Current Translations and Status:
  繁體中文‬|Machine Translated<br>Very poor quality|
 
 [Wiki Home](Home)
-<br>_(Updated 2024-11-23 14:31:33; BDJ4 version 4.12.6)_
+<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
