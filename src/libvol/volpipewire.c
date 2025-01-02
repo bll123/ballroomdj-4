@@ -1,6 +1,6 @@
 /*
- * Copyright 2021 Brad Lanam Pleasant Hill CA
- * Copyright 2024 Brad Lanam Pleasant Hill CA
+ * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
+ * Copyright 2024-2025 Brad Lanam Pleasant Hill CA
  *
  * https://gitlab.freedesktop.org/pipewire/pipewire/-/wikis/Migrate-PulseAudio
  *

@@ -15,7 +15,7 @@
   <key>CFBundleExecutable</key>
   <string>#BDJPKGNAME#</string>
   <key>CFBundleGetInfoString</key>
-  <string>Copyright 2021-2024 Brad Lanam, Pleasant Hill CA US</string>
+  <string>Copyright 2021-2025 Brad Lanam, Pleasant Hill CA US</string>
   <key>CFBundleIconFile</key>
   <string>#BDJPKGNAME#.icns</string>
   <key>CFBundleIdentifier</key>

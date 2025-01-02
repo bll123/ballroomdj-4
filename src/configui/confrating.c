@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 Brad Lanam Pleasant Hill CA
+ * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
 /* the conversion routines use the internal rating-list, but it */
 /* is not necessary to update this for editing or for the save */

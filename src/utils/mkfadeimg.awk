@@ -1,6 +1,6 @@
 #!/usr/bin/gawk -f
 #
-# Copyright 2023-2024 Brad Lanam Pleasant Hill CA
+# Copyright 2023-2025 Brad Lanam Pleasant Hill CA
 #
 
 function points(type) {

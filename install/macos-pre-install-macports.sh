@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2021-2024 Brad Lanam Pleasant Hill CA
+# Copyright 2021-2025 Brad Lanam Pleasant Hill CA
 #
 ver=21
 

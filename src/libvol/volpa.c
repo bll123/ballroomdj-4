@@ -1,7 +1,7 @@
 /*
  * Copyright 2016 Brad Lanam Walnut Creek CA
  * Copyright 2020 Brad Lanam Pleasant Hill CA
- * Copyright 2021-2024 Brad Lanam Pleasant Hill CA
+ * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
 /*
  * pulse audio

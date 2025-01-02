@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2022-2024 Brad Lanam Pleasant Hill CA
+# Copyright 2022-2025 Brad Lanam Pleasant Hill CA
 #
 
 if [[ $# -ne 1 ]]; then

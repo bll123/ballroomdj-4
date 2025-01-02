@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Brad Lanam Pleasant Hill CA
+ * Copyright 2024-2025 Brad Lanam Pleasant Hill CA
  *
  * gst-launch-1.0 -vv playbin \
  *    uri=file://$HOME/s/bdj4/test-music/001-argentinetango.mp3

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2021-2024 Brad Lanam Pleasant Hill CA
+# Copyright 2021-2025 Brad Lanam Pleasant Hill CA
 #
 
 while test ! \( -d src -a -d web -a -d wiki \); do
@@ -60,7 +60,8 @@ echo "## checking for missing copyright"
 
 # this is run from the src/ directory
 for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h \
-    */*.sh ../*/*.sh CMakeLists.txt */CMakeLists.txt Makefile \
+    */*.sh ../*/*.sh ../pkg/*/*.sh \
+    CMakeLists.txt */CMakeLists.txt Makefile \
     po/Makefile* */*.awk config.h.in */*.cmake ../pkg/macos/*.plist; do
   case $fn in
     *src/tt.sh|*src/z.sh)
