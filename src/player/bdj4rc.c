@@ -280,13 +280,17 @@ remctrlEventHandler (void *userdata, const char *query, const char *querydata,
       connSendMessage (remctrl->conn,
           ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
     } else if (strcmp (query, "queue") == 0) {
+      snprintf (tbuff, sizeof (tbuff), "%d%c%s%c%d",
+          MUSICQ_PB_A, MSG_ARGS_RS, querydata, MSG_ARGS_RS, 1);
       connSendMessage (remctrl->conn,
           ROUTE_MAIN, MSG_QUEUE_DANCE, tbuff);
       connSendMessage (remctrl->conn,
           ROUTE_MAIN, MSG_CMD_PLAY, NULL);
     } else if (strcmp (query, "queue5") == 0) {
+      snprintf (tbuff, sizeof (tbuff), "%d%c%s%c%d",
+          MUSICQ_PB_A, MSG_ARGS_RS, querydata, MSG_ARGS_RS, 5);
       connSendMessage (remctrl->conn,
-          ROUTE_MAIN, MSG_QUEUE_DANCE_5, tbuff);
+          ROUTE_MAIN, MSG_QUEUE_DANCE, tbuff);
       connSendMessage (remctrl->conn,
           ROUTE_MAIN, MSG_CMD_PLAY, NULL);
     } else if (strcmp (query, "repeat") == 0) {

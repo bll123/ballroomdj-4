@@ -68,8 +68,7 @@ typedef enum {
   MSG_QUEUE_CLEAR,          // args: music-q-idx
                             //    clears both the playlist queue and
                             //    all of the music queue.
-  MSG_QUEUE_DANCE_5,        // args: music-q-idx, dance idx
-  MSG_QUEUE_DANCE,          // args: music-q-idx, dance idx
+  MSG_QUEUE_DANCE,          // args: music-q-idx, dance idx, count
   MSG_QUEUE_PLAYLIST,       // args: music-q-idx, playlist name, edit-flag
   MSG_QUEUE_SWITCH_EMPTY,   // args: true/false
   MSG_QUEUE_MIX,            // args: music-q-idx
@@ -216,10 +215,10 @@ enum {
   BDJMSG_MAX = BDJMSG_MAX_PFX + BDJMSG_MAX_ARGS,
 };
 
-#define MSG_ARGS_RS         0x1E      // RS
-#define MSG_ARGS_RS_STR     "\x1E"
-#define MSG_ARGS_EMPTY      0x03      // ETX
-#define MSG_ARGS_EMPTY_STR  "\x03"
+extern char MSG_ARGS_RS;
+extern const char *MSG_ARGS_RS_STR;
+extern char MSG_ARGS_EMPTY;
+extern const char *MSG_ARGS_EMPTY_STR;
 
 /* exposed for use in testing */
 extern const char *bdjmsgroutetxt [ROUTE_MAX];

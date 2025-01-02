@@ -135,7 +135,7 @@ static void mainSendMusicQueueData (maindata_t *mainData, int musicqidx);
 static void mainSendMarqueeData (maindata_t *mainData);
 static const char * mainSongGetDanceDisplay (maindata_t *mainData, int mqidx, int idx);
 static void mainQueueClear (maindata_t *mainData, char *args);
-static void mainQueueDance (maindata_t *mainData, char *args, int count);
+static void mainQueueDance (maindata_t *mainData, char *args);
 static void mainQueuePlaylist (maindata_t *mainData, char *plname);
 static void mainSigHandler (int sig);
 static void mainMusicQueueFill (maindata_t *mainData, int mqidx);
@@ -393,11 +393,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_QUEUE_DANCE: {
-          mainQueueDance (mainData, args, 1);
-          break;
-        }
-        case MSG_QUEUE_DANCE_5: {
-          mainQueueDance (mainData, args, 5);
+          mainQueueDance (mainData, args);
           break;
         }
         case MSG_QUEUE_SWITCH_EMPTY: {
@@ -1253,12 +1249,13 @@ mainQueueClear (maindata_t *mainData, char *args)
 }
 
 static void
-mainQueueDance (maindata_t *mainData, char *args, int count)
+mainQueueDance (maindata_t *mainData, char *args)
 {
   playlistitem_t  *plitem;
   playlist_t      *playlist;
   int             mi;
   ilistidx_t      danceIdx;
+  int             count;
   ilistidx_t      musicqLen;
   bool            playwhenqueued;
 
@@ -1267,7 +1264,7 @@ mainQueueDance (maindata_t *mainData, char *args, int count)
   /* get the musicq length before any songs are added */
   musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
 
-  mi = mainMusicqIndexNumParse (mainData, args, &danceIdx, NULL);
+  mi = mainMusicqIndexNumParse (mainData, args, &danceIdx, &count);
 
   logMsg (LOG_DBG, LOG_BASIC, "queue dance %d %d %d", mi, danceIdx, count);
   /* CONTEXT: player: the name of the special playlist for queueing a dance */

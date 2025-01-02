@@ -12,10 +12,15 @@
 #include "bdjmsg.h"
 #include "bdjstring.h"
 
+char MSG_ARGS_RS = 0x1E;     // RS
+const char *MSG_ARGS_RS_STR = "\x1E";
+char MSG_ARGS_EMPTY = 0x03;  // ETX
+const char *MSG_ARGS_EMPTY_STR = "\x03";
+
 enum {
   LSZ = sizeof (uint32_t),      /* four bytes */
 };
-#define MSG_RS      '~'
+static char MSG_RS = '~';
 
 /* for debugging */
 const char *bdjmsgroutetxt [ROUTE_MAX] = {
@@ -136,7 +141,6 @@ const char *bdjmsgtxt [MSG_MAX] = {
   [MSG_PROCESSING_FAIL] = "PROCESSING_FAIL",
   [MSG_PROCESSING_FINISH] = "PROCESSING_FINISH",
   [MSG_QUEUE_CLEAR] = "QUEUE_CLEAR",
-  [MSG_QUEUE_DANCE_5] = "QUEUE_DANCE_5",
   [MSG_QUEUE_DANCE] = "QUEUE_DANCE",
   [MSG_QUEUE_MIX] = "QUEUE_MIX",
   [MSG_QUEUE_PLAYLIST] = "QUEUE_PLAYLIST",

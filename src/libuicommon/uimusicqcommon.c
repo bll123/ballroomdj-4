@@ -24,19 +24,15 @@ uimusicqQueueDanceProcess (uimusicq_t *uimusicq, nlistidx_t idx, int count)
 {
   int           ci;
   char          tbuff [20];
-  bdjmsgmsg_t   msg = MSG_QUEUE_DANCE;
-
 
   logProcBegin ();
 
   ci = uimusicq->musicqManageIdx;
 
   if (idx >= 0) {
-    if (count > 1) {
-      msg = MSG_QUEUE_DANCE_5;
-    }
-    snprintf (tbuff, sizeof (tbuff), "%d%c%" PRId32, ci, MSG_ARGS_RS, idx);
-    connSendMessage (uimusicq->conn, ROUTE_MAIN, msg, tbuff);
+    snprintf (tbuff, sizeof (tbuff), "%d%c%" PRId32 "%c%d",
+        ci, MSG_ARGS_RS, idx, MSG_ARGS_RS, count);
+    connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_DANCE, tbuff);
   }
   logProcEnd ("");
 }
