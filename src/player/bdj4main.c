@@ -610,6 +610,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           bdjoptSetNumPerQueue (OPT_Q_PAUSE_EACH_SONG, atoi (args), mainData->musicqPlayIdx);
           break;
         }
+        case MSG_CHK_MAIN_SET_STARTWAIT: {
+          bdjoptSetNumPerQueue (OPT_Q_START_WAIT_TIME, atoi (args), mainData->musicqPlayIdx);
+          mainMusicqSendQueueConfig (mainData);
+          break;
+        }
         case MSG_CHK_MAIN_SET_FADEIN: {
           bdjoptSetNumPerQueue (OPT_Q_FADEINTIME, atoi (args), mainData->musicqPlayIdx);
           mainMusicqSendQueueConfig (mainData);
@@ -1971,6 +1976,9 @@ mainMusicqSendQueueConfig (maindata_t *mainData)
 {
   char          tmp [40];
 
+  snprintf (tmp, sizeof (tmp), "%" PRId64,
+      (int64_t) bdjoptGetNumPerQueue (OPT_Q_START_WAIT_TIME, mainData->musicqPlayIdx));
+  connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_START_WAIT, tmp);
   snprintf (tmp, sizeof (tmp), "%" PRId64,
       (int64_t) bdjoptGetNumPerQueue (OPT_Q_FADEINTIME, mainData->musicqPlayIdx));
   connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_FADEIN, tmp);

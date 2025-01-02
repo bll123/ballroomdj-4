@@ -101,6 +101,7 @@ typedef enum {
                             //    song-end, volume-adjustment-perc, ann-flag
   MSG_SONG_CLEAR_PREP,      // args: song fname
   MSG_SET_PLAYBACK_GAP,     // args: gap
+  MSG_SET_PLAYBACK_START_WAIT,  // args: start-wait
   MSG_SET_PLAYBACK_FADEIN,  // args: fade-in
   MSG_SET_PLAYBACK_FADEOUT, // args: fade-out
   MSG_MAIN_READY,           // the main process is ready to receive msgs
@@ -187,6 +188,7 @@ typedef enum {
   MSG_CHK_MAIN_SET_PLAYANNOUNCE,  // args: true/false
   MSG_CHK_MAIN_SET_QUEUE_ACTIVE,  // args: true/false
   MSG_CHK_MAIN_SET_PLAY_WHEN_QUEUED,  // args: true/false
+  MSG_CHK_MAIN_SET_STARTWAIT,     // args: start-wait
   MSG_CHK_MAIN_SET_FADEIN,        // args: fade-in
   MSG_CHK_MAIN_SET_FADEOUT,       // args: fade-out
   MSG_CHK_MAIN_SET_PAUSE_EACH_SONG, // args: true/false

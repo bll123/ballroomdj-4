@@ -17,6 +17,10 @@ __Display__: Whether this music queue will be displayed
 when the __Show&nbsp;Extra&nbsp;Queues__ option is turned on in the
 player.
 
+__Start Wait Time__: The amount of time to wait before starting
+playback.  This time is only used when the playback starts after being
+stopped.  Used during practice sessions.
+
 __Fade In Time__: The amount of time used to fade in the
 volume when the song starts playing.  Set to 0.0 for no fade in.
 

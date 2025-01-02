@@ -83,6 +83,12 @@ confuiBuildUIMusicQs (confuigui_t *gui)
       confuiMusicQDisplayChg, CONFUI_INDENT);
 
   /* CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song */
+  confuiMakeItemSpinboxDouble (gui, vbox, szgrp, szgrpB, _("Start Wait Time"),
+      CONFUI_WIDGET_Q_START_WAIT_TIME, OPT_Q_START_WAIT_TIME,
+      0.0, 20.0, (double) bdjoptGetNumPerQueue (OPT_Q_START_WAIT_TIME, 0) / 1000.0,
+      CONFUI_INDENT);
+
+  /* CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song */
   confuiMakeItemSpinboxDouble (gui, vbox, szgrp, szgrpB, _("Fade In Time"),
       CONFUI_WIDGET_Q_FADE_IN_TIME, OPT_Q_FADEINTIME,
       0.0, 2.0, (double) bdjoptGetNumPerQueue (OPT_Q_FADEINTIME, 0) / 1000.0,
@@ -169,6 +175,7 @@ confuiMusicQActiveChg (void *udata)
     state = UIWIDGET_ENABLE;
   }
 
+  uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_START_WAIT_TIME].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_FADE_IN_TIME].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_FADE_OUT_TIME].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_GAP].uiwidgetp, state);
@@ -248,6 +255,8 @@ confuiMusicQChg (void *udata)
       bdjoptGetNumPerQueue (OPT_Q_ACTIVE, nselidx));
   uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiwidgetp,
       bdjoptGetNumPerQueue (OPT_Q_DISPLAY, nselidx));
+  uiSpinboxSetValue (gui->uiitem [CONFUI_WIDGET_Q_START_WAIT_TIME].uiwidgetp,
+      (double) bdjoptGetNumPerQueue (OPT_Q_START_WAIT_TIME, nselidx) / 1000.0);
   uiSpinboxSetValue (gui->uiitem [CONFUI_WIDGET_Q_FADE_IN_TIME].uiwidgetp,
       (double) bdjoptGetNumPerQueue (OPT_Q_FADEINTIME, nselidx) / 1000.0);
   uiSpinboxSetValue (gui->uiitem [CONFUI_WIDGET_Q_FADE_OUT_TIME].uiwidgetp,

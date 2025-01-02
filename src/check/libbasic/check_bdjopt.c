@@ -187,6 +187,10 @@ START_TEST(bdjopt_get)
   ck_assert_ptr_nonnull (tstr);
   val = bdjoptGetNum (OPT_P_FADETYPE);
   ck_assert_int_ge (val, 0);
+  val = bdjoptGetNumPerQueue (OPT_Q_START_WAIT_TIME, MUSICQ_PB_A);
+  ck_assert_int_ge (val, 0);
+  val = bdjoptGetNumPerQueue (OPT_Q_START_WAIT_TIME, MUSICQ_PB_B);
+  ck_assert_int_ge (val, 0);
   val = bdjoptGetNumPerQueue (OPT_Q_GAP, MUSICQ_PB_A);
   ck_assert_int_ge (val, 0);
   val = bdjoptGetNumPerQueue (OPT_Q_GAP, MUSICQ_PB_B);
@@ -232,11 +236,14 @@ START_TEST(bdjopt_set)
   ovalb = bdjoptGetNumPerQueue (OPT_Q_GAP, MUSICQ_PB_B);
   ck_assert_int_ge (ovalb, 0);
   oact = bdjoptGetNumPerQueue (OPT_Q_ACTIVE, MUSICQ_PB_B);
-  ck_assert_int_ge (ovalb, 0);
+  ck_assert_int_ge (oact, 0);
   oqn = mdstrdup (bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, MUSICQ_PB_B));
   ck_assert_ptr_nonnull (ostr);
+
   bdjoptSetNumPerQueue (OPT_Q_GAP, 2000, MUSICQ_PB_A);
   bdjoptSetNumPerQueue (OPT_Q_GAP, 3000, MUSICQ_PB_B);
+  bdjoptSetNumPerQueue (OPT_Q_START_WAIT_TIME, 1000, MUSICQ_PB_A);
+  bdjoptSetNumPerQueue (OPT_Q_START_WAIT_TIME, 2000, MUSICQ_PB_B);
   bdjoptSetStrPerQueue (OPT_Q_QUEUE_NAME, "testb", MUSICQ_PB_B);
 
   val = bdjoptGetNumPerQueue (OPT_Q_GAP, MUSICQ_PB_A);
@@ -245,12 +252,23 @@ START_TEST(bdjopt_set)
   bdjoptSetNumPerQueue (OPT_Q_ACTIVE, false, MUSICQ_PB_B);
   val = bdjoptGetNumPerQueue (OPT_Q_GAP, MUSICQ_PB_B);
   ck_assert_int_eq (val, 2000);
+  val = bdjoptGetNumPerQueue (OPT_Q_START_WAIT_TIME, MUSICQ_PB_A);
+  ck_assert_int_eq (val, 1000);
+  /* queue-b is not active, the value will be from queue-a */
+  val = bdjoptGetNumPerQueue (OPT_Q_START_WAIT_TIME, MUSICQ_PB_B);
+  ck_assert_int_eq (val, 1000);
   tstr = bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, MUSICQ_PB_B);
   ck_assert_str_eq (tstr, "testb");
+
   /* if the queue is active, the set value is returned */
   bdjoptSetNumPerQueue (OPT_Q_ACTIVE, true, MUSICQ_PB_B);
   val = bdjoptGetNumPerQueue (OPT_Q_GAP, MUSICQ_PB_B);
   ck_assert_int_eq (val, 3000);
+  val = bdjoptGetNumPerQueue (OPT_Q_START_WAIT_TIME, MUSICQ_PB_A);
+  ck_assert_int_eq (val, 1000);
+  /* queue-b is now active, the value will be from queue-b */
+  val = bdjoptGetNumPerQueue (OPT_Q_START_WAIT_TIME, MUSICQ_PB_B);
+  ck_assert_int_eq (val, 2000);
   tstr = bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, MUSICQ_PB_B);
   ck_assert_str_eq (tstr, "testb");
 

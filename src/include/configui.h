@@ -225,6 +225,7 @@ enum {
   CONFUI_WIDGET_MQ_FONT_FS,
   CONFUI_WIDGET_MQ_QUEUE_LEN,
   CONFUI_WIDGET_PL_QUEUE_LEN,
+  CONFUI_WIDGET_Q_START_WAIT_TIME,    // per queue
   CONFUI_WIDGET_Q_FADE_IN_TIME,       // per queue
   CONFUI_WIDGET_Q_FADE_OUT_TIME,      // per queue
   CONFUI_WIDGET_Q_GAP,                // per queue
