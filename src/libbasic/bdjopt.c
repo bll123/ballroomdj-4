@@ -119,6 +119,7 @@ static datafilekey_t bdjoptqueuedfkeys [] = {
   { "PLAY_WHEN_QUEUED",     OPT_Q_PLAY_WHEN_QUEUED,     VALUE_NUM, convBoolean, DF_NORM },
   { "QUEUE_NAME",           OPT_Q_QUEUE_NAME,           VALUE_STR, NULL, DF_NORM },
   { "SHOWQUEUEDANCE",       OPT_Q_SHOW_QUEUE_DANCE,     VALUE_NUM, convBoolean, DF_NORM },
+  { "START_WAIT_TIME",      OPT_Q_START_WAIT_TIME,      VALUE_NUM, NULL, DF_NORM },
   { "STOP_AT_TIME",         OPT_Q_STOP_AT_TIME,         VALUE_NUM, NULL, DF_NORM },
   { "XFADE",                OPT_Q_XFADE,                VALUE_NUM, NULL, DF_NORM },
 };
@@ -435,13 +436,18 @@ bdjoptInit (void)
     nlistSetStr (bdjopt->bdjoptList, OPT_M_LISTING_FONT, tstr);
   }
 
-  /* 4.13.0 prep for crossfade support */
   for (int i = 0; i < BDJ4_QUEUE_MAX; ++i) {
     int64_t   val;
 
+    /* 4.13.0 prep for crossfade support */
     val = bdjoptGetNumPerQueue (OPT_Q_XFADE, i);
     if (val < 0) {
-      bdjoptSetNumPerQueue (OPT_Q_XFADE, 0.0, i);
+      bdjoptSetNumPerQueue (OPT_Q_XFADE, 0, i);
+    }
+
+    /* 4.12.9 start-wait-time */
+    if (bdjoptGetNumPerQueue (OPT_Q_START_WAIT_TIME, i) < 0) {
+      bdjoptSetNumPerQueue (OPT_Q_START_WAIT_TIME, 0, i);
     }
   }
 
