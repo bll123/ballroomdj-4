@@ -112,13 +112,16 @@ typedef struct {
   bool              changeSuspend [MUSICQ_MAX];
   time_t            stopTime [MUSICQ_MAX];
   time_t            nStopTime [MUSICQ_MAX];
+  mstime_t          startWaitCheck;
+  int32_t           startwaitTime;
   int32_t           lastGapSent;
-  bool              switchQueueWhenEmpty : 1;
-  bool              finished : 1;
-  bool              marqueestarted : 1;
-  bool              waitforpbfinish : 1;
-  bool              marqueeChanged : 1;
-  bool              inannounce : 1;
+  bool              switchQueueWhenEmpty;
+  bool              finished;
+  bool              marqueestarted;
+  bool              waitforpbfinish;
+  bool              marqueeChanged;
+  bool              inannounce;
+  bool              inStartWait;
 } maindata_t;
 
 static int  mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route, bdjmsgmsg_t msg, char *args, void *udata);
@@ -237,6 +240,7 @@ main (int argc, char *argv[])
   mainData.songplaysentcount = 0;
   mainData.marqueeChanged = false;
   mainData.inannounce = false;
+  mainData.inStartWait = false;
   mainData.lastGapSent = -1;
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
     mainData.playlistQueue [i] = NULL;
@@ -689,6 +693,13 @@ mainProcessing (void *udata)
     mainSendRemctrlData (mainData);
     if (mainData->finished && mainData->playerState == PL_STATE_STOPPED) {
       mainData->finished = false;
+    }
+  }
+
+  if (mainData->playerState == PL_STATE_STOPPED &&
+      mainData->inStartWait) {
+    if (mstimeCheck (&mainData->startWaitCheck)) {
+      mainMusicQueuePlay (mainData);
     }
   }
 
@@ -1974,9 +1985,6 @@ mainMusicqSendQueueConfig (maindata_t *mainData)
   char          tmp [40];
 
   snprintf (tmp, sizeof (tmp), "%" PRId64,
-      (int64_t) bdjoptGetNumPerQueue (OPT_Q_START_WAIT_TIME, mainData->musicqPlayIdx));
-  connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_START_WAIT, tmp);
-  snprintf (tmp, sizeof (tmp), "%" PRId64,
       (int64_t) bdjoptGetNumPerQueue (OPT_Q_FADEINTIME, mainData->musicqPlayIdx));
   connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_FADEIN, tmp);
   snprintf (tmp, sizeof (tmp), "%" PRId64,
@@ -2072,12 +2080,28 @@ mainMusicQueuePlay (maindata_t *mainData)
     /* reset the stop time so that the player can be re-started */
     mainData->stopTime [mainData->musicqPlayIdx] = 0;
     mainData->nStopTime [mainData->musicqPlayIdx] = 0;
+    return;
   }
 
   logMsg (LOG_DBG, LOG_BASIC, "pl-state: %d/%s",
       mainData->playerState, logPlayerState (mainData->playerState));
 
-  if (! mainData->finished && mainData->playerState != PL_STATE_PAUSED) {
+  mainData->startwaitTime = bdjoptGetNumPerQueue (OPT_Q_START_WAIT_TIME, mainData->musicqPlayIdx);
+
+  /* main receives the playback-finish message first, and acts on it, */
+  /* before the player-state message (stopped) is received */
+  if (! mainData->inStartWait &&
+      mainData->playerState == PL_STATE_STOPPED &&
+      mainData->startwaitTime > 0) {
+    /* if the start-wait-time time is set, */
+    /* and the player is stopped, */
+    /* don't start playing immediately */
+    mstimeset (&mainData->startWaitCheck, mainData->startwaitTime);
+    mainData->inStartWait = true;
+    return;
+  }
+
+  if (mainData->playerState != PL_STATE_PAUSED) {
     if (mainData->musicqDeferredPlayIdx != MAIN_NOT_SET) {
       mainMusicqSwitch (mainData, mainData->musicqDeferredPlayIdx);
       mainData->musicqDeferredPlayIdx = MAIN_NOT_SET;
@@ -2152,13 +2176,14 @@ mainMusicQueuePlay (maindata_t *mainData)
   } /* song is not paused */
 
   /* this handles the user-selected play button when the song is paused */
-  if (! mainData->finished &&
-      (mainData->playerState == PL_STATE_PAUSED ||
-      mainData->playerState == PL_STATE_IN_GAP)) {
+  if (mainData->playerState == PL_STATE_PAUSED ||
+      mainData->playerState == PL_STATE_IN_GAP) {
     logMsg (LOG_DBG, LOG_INFO, "player is paused/gap, send play msg");
     connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_PLAY_PLAY, NULL);
     mainSendPlaybackGap (mainData);
   }
+
+  mainData->inStartWait = false;
 
   logProcEnd ("");
 }

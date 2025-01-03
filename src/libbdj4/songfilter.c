@@ -442,7 +442,7 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
     }
 
     songlistFree (sl);
-    logMsg (LOG_DBG, LOG_SONGSEL, "selected: %" PRId32 " songs from playlist", nlistGetCount (sf->indexList));
+    logMsg (LOG_DBG, LOG_SONGSEL, "sf: selected: %" PRId32 " songs from playlist", nlistGetCount (sf->indexList));
   }
 
   if (! sf->inuse [SONG_FILTER_PLAYLIST] || pltype != PLTYPE_SONGLIST) {
@@ -454,17 +454,17 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
 
       dbidx = songGetNum (song, TAG_DBIDX);
       songfilterMakeSortKey (sf, song, sortkey, MAXPATHLEN);
-      logMsg (LOG_DBG, LOG_SONGSEL, "%" PRId32 " sortkey: %s", dbidx, sortkey);
+      logMsg (LOG_DBG, LOG_SONGSEL, "sf: %" PRId32 " sortkey: %s", dbidx, sortkey);
       slistSetNum (sf->sortList, sortkey, idx);
       nlistSetNum (sf->indexList, idx, dbidx);
       ++idx;
     }
-    logMsg (LOG_DBG, LOG_SONGSEL, "selected: %" PRId32 " songs from db", nlistGetCount (sf->indexList));
+    logMsg (LOG_DBG, LOG_SONGSEL, "sf: selected: %" PRId32 " songs from db", nlistGetCount (sf->indexList));
   }
 
   slistSort (sf->sortList);
   nlistSort (sf->indexList);
-  logMsg (LOG_DBG, LOG_IMPORTANT, "sf-process: %" PRId64 " ms %s",
+  logMsg (LOG_DBG, LOG_IMPORTANT, "sf: process: %" PRId64 " ms %s",
       (int64_t) mstimeend (&sftimer), sf->sortselection);
 
   logProcEnd ("");
@@ -486,7 +486,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
   dbidx = songGetNum (song, TAG_DBIDX);
-  logMsg (LOG_DBG, LOG_SONGSEL, "check: %" PRId32, dbidx);
+  logMsg (LOG_DBG, LOG_SONGSEL, "sf: check: %" PRId32, dbidx);
 
   if (sf->inuse [SONG_FILTER_DANCE_IDX]) {
     ilistidx_t    danceIdx;
@@ -494,10 +494,10 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     /* the dance idx filter is one dance, or all */
     danceIdx = songGetNum (song, TAG_DANCE);
     if (danceIdx != sf->numfilter [SONG_FILTER_DANCE_IDX]) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "dance-idx: reject: %" PRId32 " %d", dbidx, danceIdx);
+      logMsg (LOG_DBG, LOG_SONGSEL, "sf: dance-idx: reject: %" PRId32 " %d", dbidx, danceIdx);
       return false;
     } else {
-      logMsg (LOG_DBG, LOG_SONGSEL, "dance-idx: ok: %" PRId32 " %d", dbidx, danceIdx);
+      logMsg (LOG_DBG, LOG_SONGSEL, "sf: dance-idx: ok: %" PRId32 " %d", dbidx, danceIdx);
     }
   }
 
@@ -511,10 +511,10 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     danceIdx = songGetNum (song, TAG_DANCE);
     danceFilterList = sf->datafilter [SONG_FILTER_DANCE_LIST];
     if (danceFilterList != NULL && ! ilistExists (danceFilterList, danceIdx)) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "dance-list: reject: %d %d", dbidx, danceIdx);
+      logMsg (LOG_DBG, LOG_SONGSEL, "sf: dance-list: reject: %d %d", dbidx, danceIdx);
       return false;
     } else {
-      logMsg (LOG_DBG, LOG_SONGSEL, "dance-list: ok: %d %d", dbidx, danceIdx);
+      logMsg (LOG_DBG, LOG_SONGSEL, "sf: dance-list: ok: %d %d", dbidx, danceIdx);
     }
   }
 
@@ -523,7 +523,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
 
     genre = songGetNum (song, TAG_GENRE);
     if (genre != sf->numfilter [SONG_FILTER_GENRE]) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "genre: reject: %d %d != %d", dbidx, genre, sf->numfilter [SONG_FILTER_GENRE]);
+      logMsg (LOG_DBG, LOG_SONGSEL, "sf: genre: reject: %d %d != %d", dbidx, genre, sf->numfilter [SONG_FILTER_GENRE]);
       return false;
     }
   }
@@ -537,16 +537,16 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
 
     rating = songGetNum (song, TAG_DANCERATING);
     if (rating < 0) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "rating: reject: %d unknown %d", dbidx, rating);
+      logMsg (LOG_DBG, LOG_SONGSEL, "sf: rating: reject: %d unknown %d", dbidx, rating);
       return false;
     }
     weight = ratingGetWeight (ratings, rating);
     if (weight == 0) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "rating: reject: %d %d weight 0", dbidx, rating);
+      logMsg (LOG_DBG, LOG_SONGSEL, "sf: rating: reject: %d %d weight 0", dbidx, rating);
       return false;
     }
     if (rating < sf->numfilter [SONG_FILTER_RATING]) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "rating: reject: %d %d < %d", dbidx, rating, sf->numfilter [SONG_FILTER_RATING]);
+      logMsg (LOG_DBG, LOG_SONGSEL, "sf: rating: reject: %d %d < %d", dbidx, rating, sf->numfilter [SONG_FILTER_RATING]);
       return false;
     }
   }
@@ -557,17 +557,17 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
 
     level = songGetNum (song, TAG_DANCELEVEL);
     if (level < 0) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "level: reject: %d unknown %d", dbidx, level);
+      logMsg (LOG_DBG, LOG_SONGSEL, "sf: level: reject: %d unknown %d", dbidx, level);
       return false;
     }
     weight = levelGetWeight (levels, level);
     if (weight == 0) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "level: reject: %d %d weight 0", dbidx, level);
+      logMsg (LOG_DBG, LOG_SONGSEL, "sf: level: reject: %d %d weight 0", dbidx, level);
       return false;
     }
     if (level < sf->numfilter [SONG_FILTER_LEVEL_LOW] ||
         level > sf->numfilter [SONG_FILTER_LEVEL_HIGH]) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "level: reject: %d %d < %d / > %d", dbidx, level,
+      logMsg (LOG_DBG, LOG_SONGSEL, "sf: level: reject: %d %d < %d / > %d", dbidx, level,
           sf->numfilter [SONG_FILTER_LEVEL_LOW], sf->numfilter [SONG_FILTER_LEVEL_HIGH]);
       return false;
     }
@@ -578,7 +578,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
 
     sstatus = songGetNum (song, TAG_STATUS);
     if (sstatus != sf->numfilter [SONG_FILTER_STATUS]) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "status: reject: %d %d != %d", dbidx, sstatus, sf->numfilter [SONG_FILTER_STATUS]);
+      logMsg (LOG_DBG, LOG_SONGSEL, "sf: status: reject: %d %d != %d", dbidx, sstatus, sf->numfilter [SONG_FILTER_STATUS]);
       return false;
     }
   }
@@ -588,7 +588,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
 
     fav = songGetNum (song, TAG_FAVORITE);
     if (fav != sf->numfilter [SONG_FILTER_FAVORITE]) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "favorite: reject: %d %d != %d", dbidx, fav, sf->numfilter [SONG_FILTER_FAVORITE]);
+      logMsg (LOG_DBG, LOG_SONGSEL, "sf: favorite: reject: %d %d != %d", dbidx, fav, sf->numfilter [SONG_FILTER_FAVORITE]);
       return false;
     }
   }
@@ -603,7 +603,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
 
     if (sf->numfilter [SONG_FILTER_STATUS_PLAYABLE] == SONG_FILTER_FOR_PLAYBACK &&
         ! statusGetPlayFlag (status, sstatus)) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "reject %d status not playable", dbidx);
+      logMsg (LOG_DBG, LOG_SONGSEL, "sf: reject %d status not playable", dbidx);
       return false;
     }
   }
@@ -630,7 +630,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
 
       bpm = songGetNum (song, TAG_BPM);
       if (bpm < 0 || bpm < bpmlow || bpm > bpmhigh) {
-        logMsg (LOG_DBG, LOG_SONGSEL, "reject %d dance %d bpm %d [%d,%d]", dbidx, danceIdx, bpm, bpmlow, bpmhigh);
+        logMsg (LOG_DBG, LOG_SONGSEL, "sf: reject %d dance %d bpm %d [%d,%d]", dbidx, danceIdx, bpm, bpmlow, bpmhigh);
         return false;
       }
     }
@@ -663,7 +663,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
         /* if idx >= 0, no rejection */
       }
       if (idx < 0) {
-        logMsg (LOG_DBG, LOG_SONGSEL, "keyword: reject: %d %s not in allowed", dbidx, keyword);
+        logMsg (LOG_DBG, LOG_SONGSEL, "sf: keyword: reject: %d %s not in allowed", dbidx, keyword);
         return false;
       }
     }
@@ -720,7 +720,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     }
   }
 
-  logMsg (LOG_DBG, LOG_SONGSEL, "ok: %d %s", dbidx, songGetStr (song, TAG_TITLE));
+  logMsg (LOG_DBG, LOG_SONGSEL, "sf: ok: %d %s", dbidx, songGetStr (song, TAG_TITLE));
   return true;
 }
 

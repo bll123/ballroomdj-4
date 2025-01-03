@@ -617,6 +617,7 @@ playlistGetNextSong (playlist_t *pl,
     song = NULL;
 
     if (pl->ingroup) {
+      logMsg (LOG_DBG, LOG_SONGSEL, "pl: in-group, select next from group");
       dbidx = groupingIterate (pl->grouping, pl->grpdbidx, &pl->grpiter);
       if (dbidx >= 0) {
         song = dbGetByIdx (pl->musicdb, dbidx);
@@ -656,6 +657,7 @@ playlistGetNextSong (playlist_t *pl,
           dbidx = groupingIterate (pl->grouping, pl->grpdbidx, &pl->grpiter);
           song = NULL;
           if (dbidx >= 0) {
+            logMsg (LOG_DBG, LOG_SONGSEL, "pl: in-group, select first from group");
             song = dbGetByIdx (pl->musicdb, dbidx);
             danceIdx = songGetNum (song, TAG_DANCE);
             songselFinalizeByIndex (pl->songsel, danceIdx, dbidx);

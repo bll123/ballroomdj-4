@@ -25,14 +25,15 @@ The right side of the player display includes the speed, song position
 and volume sliders.
 
 The player status to the left of the dance / artist / title display
-indicates the current status of the loaded song: playing, paused or
-stopped.  If the repeat toggle is turned on, the repeat symbol will be
-displayed.
+indicates the current status of the loaded song: playing, paused,
+stopped or waiting. If the repeat toggle is turned on, the repeat
+symbol will be displayed.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-status-play](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-status-play-B.png)
 ![player-status-stop](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-status-stop-A.png)
-![player-status-stop](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-status-pause-A.png)
+![player-status-pause](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-status-pause-A.png)
+![player-status-wait](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-status-wait-A.png)
 <br><span style="color:#4559bf;">__Player / Player Status__</span> </div>
 
 The time remaining display shows how many seconds are left to play in

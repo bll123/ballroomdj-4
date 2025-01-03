@@ -626,11 +626,13 @@ main (int argc, char *argv [])
     for (int i = 0; i < BDJOPT_MAX_PROFILES; ++i) {
       sysvarsSetNum (SVL_PROFILE_IDX, i);
       if (bdjoptProfileExists ()) {
+        bool copyimages = false;
+
         /* 4.4.1 2023-9-30 there is a new image file, make sure it gets installed */
         pathbldMakePath (tbuff, sizeof (tbuff), "button_filter", BDJ4_IMG_SVG_EXT,
             PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
         if (! fileopFileExists (tbuff)) {
-          templateImageCopy (bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+          copyimages = true;
         }
 
         /* 4.4.2.2 2023-11-5 fix bad installations of .q files */
@@ -644,6 +646,18 @@ main (int argc, char *argv [])
             snprintf (tbuff, sizeof (tbuff), "%s.q%d", "bdjconfig", j);
             updaterCopyProfileIfNotPresent (tbuff, BDJ4_CONFIG_EXT, UPD_FORCE);
           }
+        }
+
+        /* 4.12.9 2025-1-2 there is a new image file, */
+        /* make sure it gets installed */
+        pathbldMakePath (tbuff, sizeof (tbuff), "indicator_timer", BDJ4_IMG_SVG_EXT,
+            PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
+        if (! fileopFileExists (tbuff)) {
+          copyimages = true;
+        }
+
+        if (copyimages) {
+          templateImageCopy (bdjoptGetStr (OPT_P_UI_ACCENT_COL));
         }
       }
     }

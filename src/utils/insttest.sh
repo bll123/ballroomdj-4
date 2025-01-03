@@ -168,6 +168,10 @@ function checkUpdaterClean {
   fn="$DATADIR/profile00/ds-audioid.txt"
   rm -f "${fn}"
 
+  # img/profile00/indicator_timer.svg file should be installed
+  fn="${DATATOPDIR}/img/profile00/indicator_timer.svg"
+  rm -f "${fn}"
+
   # ds-audioid-list.txt version number should be updated
   fn="$DATADIR/profile00/ds-audioid-list.txt"
   sed -e "s/version [2-9]/version $(($AUDIOIDLISTVER-1))/" "${fn}" > "${fn}.n"
@@ -429,6 +433,14 @@ function checkInstallation {
     fi
 
     fn=${DATADIR}/profile00/ds-audioid.txt
+    res=$(($res+1))
+    if [[ $fin == T && -f ${fn} ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no ${fn}"
+    fi
+
+    fn=${DATATOPDIR}/img/profile00/indicator_timer.svg
     res=$(($res+1))
     if [[ $fin == T && -f ${fn} ]]; then
       chk=$(($chk+1))

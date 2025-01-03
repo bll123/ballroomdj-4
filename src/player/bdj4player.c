@@ -128,7 +128,6 @@ typedef struct {
   ssize_t         playTimePlayed;
   mstime_t        playTimeCheck;
   mstime_t        playEndCheck;
-  mstime_t        startWaitCheck;
   mstime_t        fadeTimeCheck;
   mstime_t        volumeTimeCheck;
   int             newSpeed;
@@ -136,7 +135,6 @@ typedef struct {
   long            gap;
   mstime_t        gapFinishTime;
   int             fadeType;
-  listnum_t       startwaitTime;
   listnum_t       fadeinTime;
   listnum_t       fadeoutTime;
   int             fadeCount;
@@ -145,7 +143,6 @@ typedef struct {
   mstime_t        fadeTimeNext;
   int             stopNextsongFlag;
   int             stopwaitcount;
-  bool            inStartWait;
   bool            inFade;
   bool            inFadeIn;
   bool            inFadeOut;
@@ -245,7 +242,6 @@ main (int argc, char *argv[])
   playerData.stopNextsongFlag = STOP_NORMAL;
   playerData.stopwaitcount = 0;
   playerData.newSpeed = 100;
-  playerData.inStartWait = false;
   playerData.inFade = false;
   playerData.inFadeIn = false;
   playerData.inFadeOut = false;
@@ -534,11 +530,6 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           playerData->priorGap = playerData->gap;
           break;
         }
-        case MSG_SET_PLAYBACK_START_WAIT: {
-          playerData->startwaitTime = atol (args);
-fprintf (stderr, "set start-wait: %ld\n", playerData->startwaitTime);
-          break;
-        }
         case MSG_SET_PLAYBACK_FADEIN: {
           playerData->fadeinTime = atol (args);
           break;
@@ -620,14 +611,6 @@ playerProcessing (void *udata)
   }
 
   if (playerData->playerState == PL_STATE_STOPPED &&
-      playerData->inStartWait) {
-    if (mstimeCheck (&playerData->startWaitCheck)) {
-      playerData->inStartWait = false;
-    }
-  }
-
-  if (playerData->playerState == PL_STATE_STOPPED &&
-      ! playerData->inStartWait &&
       ! playerData->inGap &&
       queueGetCount (playerData->playRequest) > 0) {
     prepqueue_t   *pq = NULL;
@@ -1165,19 +1148,6 @@ playerSongPlay (playerdata_t *playerData, char *args)
   preq->songname = mdstrdup (p);
   queuePush (playerData->playRequest, preq);
 
-fprintf (stderr, "play: pl-state: %d/%s\n",
-playerData->playerState, logPlayerState (playerData->playerState));
-fprintf (stderr, "      start-wait: %ld\n", playerData->startwaitTime);
-  if (playerData->playerState == PL_STATE_STOPPED &&
-      playerData->startwaitTime > 0) {
-    /* if the start-wait-time time is set, */
-    /* and the player is stopped, */
-    /* don't start playing immediately */
-    mstimeset (&playerData->startWaitCheck, playerData->startwaitTime);
-fprintf (stderr, "      in start-wait\n");
-    playerData->inStartWait = true;
-  }
-
   logProcEnd ("");
 }
 
@@ -1324,6 +1294,7 @@ playerPlay (playerdata_t *playerData)
       playerSetPlayerState (playerData, PL_STATE_PLAYING);
     }
   }
+
   logProcEnd ("");
 }
 
@@ -2111,7 +2082,7 @@ playerChkPlayerSong (playerdata_t *playerData, int routefrom)
 {
   prepqueue_t *pq = playerData->currentSong;
   char        tmp [2000];
-  char        *sn = MSG_ARGS_EMPTY_STR;
+  const char  *sn = MSG_ARGS_EMPTY_STR;
   ssize_t     dur;
 
 
