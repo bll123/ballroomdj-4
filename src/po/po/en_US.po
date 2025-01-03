@@ -2,10 +2,10 @@
 # -- english/us
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.12.8\n"
+"Project-Id-Version: ballroomdj-4 4.12.9\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2024-12-23\n"
-"PO-Revision-Date: 2024-12-23\n"
+"POT-Creation-Date: 2025-01-03\n"
+"PO-Revision-Date: 2025-01-03\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -1947,6 +1947,10 @@ msgstr ""
 
 #. CONTEXT: manage-ui: menu selection: song list: edit menu: start new song list
 msgid "Start New Song List"
+msgstr ""
+
+#. CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song
+msgid "Start Wait Time"
 msgstr ""
 
 #. CONTEXT: installer: status message

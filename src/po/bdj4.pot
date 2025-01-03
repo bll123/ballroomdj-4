@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-23 07:22-0800\n"
+"POT-Creation-Date: 2025-01-03 12:51-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1951,6 +1951,10 @@ msgstr ""
 
 #. CONTEXT: manage-ui: menu selection: song list: edit menu: start new song list
 msgid "Start New Song List"
+msgstr ""
+
+#. CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song
+msgid "Start Wait Time"
 msgstr ""
 
 #. CONTEXT: installer: status message

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2024-12-23\n"
+"PO-Revision-Date: 2025-01-03\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Afrikaans\n"
 "Language: af\n"
@@ -1955,6 +1955,10 @@ msgstr "Begin nuwe reeks"
 #. CONTEXT: manage-ui: menu selection: song list: edit menu: start new song list
 msgid "Start New Song List"
 msgstr "Begin nuwe liedjielys"
+
+#. CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song
+msgid "Start Wait Time"
+msgstr ""
 
 #. CONTEXT: installer: status message
 msgid "Starting conversion process."

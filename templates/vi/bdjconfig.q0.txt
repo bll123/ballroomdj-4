@@ -25,5 +25,7 @@ QUEUE_NAME
 ..Hàng đợi âm nhạc
 SHOWQUEUEDANCE
 ..no
+START_WAIT_TIME
+..0
 STOP_AT_TIME
 ..0
