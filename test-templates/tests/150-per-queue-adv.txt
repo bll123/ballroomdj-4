@@ -376,8 +376,107 @@ msg main MUSICQ_SET_PLAYBACK 0
 end
 
 
+# the start-wait should only occur when the player is stopped.
+# the response-timeout should be set appropriately to make sure
+# a start-wait does not occur when it should not.
+test 150-25 Start-Wait
+msg main MUSICQ_SET_PLAYBACK 1
+msg main CHK_MAIN_SET_QUEUE_ACTIVE 1
+msg main CHK_MAIN_SET_STARTWAIT 5000
+msg main CHK_MAIN_SET_GAP 0
+msg main MUSICQ_SET_PLAYBACK 0
+msg main CHK_MAIN_SET_STARTWAIT 5000
+msg main QUEUE_PLAYLIST 0~test-sl-a
+msg main QUEUE_PLAYLIST 1~test-sl-a
+msg main CMD_PLAY
+#
+mssleep 4500
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+# should be a start-wait, still stopped
+chk playstate stopped
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+msg player PLAY_FADE
+resptimeout 4500
+get player CHK_PLAYER_STATUS
+# should be a gap, no start-wait
+wait playstate in-gap
+resptimeout 3000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+#
+msg main MUSICQ_SET_PLAYBACK 1
+msg player PLAY_FADE
+resptimeout 4500
+get player CHK_PLAYER_STATUS
+# should be a gap
+# the gap is set from the prior song
+wait playstate in-gap
+resptimeout 3000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+#
+msg player PLAY_FADE
+resptimeout 4500
+get main CHK_MAIN_MUSICQ
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# wait for any state other than in-fadeout
+wait-not playstate in-fadeout
+# should not be a gap, no start-wait
+chk-or playstate stopped loading playing
+wait playstate playing
+mssleep 1500
+#
+# after a pause-at-end, a start-wait should occur
+msg player PLAY_PAUSEATEND
+msg player PLAY_FADE
+resptimeout 4500
+get main CHK_MAIN_MUSICQ
+get player CHK_PLAYER_STATUS
+wait playstate stopped
+msg main CMD_PLAY
+mssleep 4500
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+# should be a start-wait, still stopped
+chk playstate stopped
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+#
+msg player PLAY_REPEAT
+msg player PLAY_FADE
+resptimeout 4500
+get main CHK_MAIN_MUSICQ
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# wait for any state other than in-fadeout
+wait-not playstate in-fadeout
+# should not be a gap, no start-wait
+chk-or playstate stopped loading playing
+wait playstate playing
+mssleep 1500
+#
+msg main MUSICQ_SET_PLAYBACK 1
+msg main CHK_MAIN_SET_STARTWAIT 0
+msg main CHK_MAIN_SET_GAP 2000
+msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
+msg main MUSICQ_SET_PLAYBACK 0
+msg main CHK_MAIN_SET_STARTWAIT 0
+end
+
+
+
+
 # check playback with no fade-in set
-test 150-30 Fade-In
+test 150-30 Fade-In-None
 msg player PLAYER_VOLUME 30
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 1
@@ -433,7 +532,7 @@ end
 
 
 # check playback with no fade-out set
-test 150-40 Fade-Out
+test 150-40 Fade-Out-None
 msg player PLAYER_VOLUME 30
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 1

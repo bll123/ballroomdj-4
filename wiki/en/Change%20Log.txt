@@ -4,9 +4,16 @@
 
 <!--
 
-**4.12.9 2025-1--**
+**4.12.10 2025-1--**
 
 -->
+
+**4.12.9 2025-1--**
+
+* Changes:
+    * Player: Status: A timer indicator is shown when the playback is in a start-wait or in-gap state.
+* New Features:
+    * Music Queue: Added "Start Wait Time" for use when practicing or teaching.
 
 **4.12.8 2024-12-23**
 

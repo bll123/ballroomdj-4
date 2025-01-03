@@ -611,7 +611,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_CHK_MAIN_SET_STARTWAIT: {
-          bdjoptSetNumPerQueue (OPT_Q_START_WAIT_TIME, atoi (args), mainData->musicqPlayIdx);
+          bdjoptSetNumPerQueue (OPT_Q_START_WAIT_TIME, atol (args), mainData->musicqPlayIdx);
           mainMusicqSendQueueConfig (mainData);
           break;
         }
@@ -2090,6 +2090,8 @@ mainMusicQueuePlay (maindata_t *mainData)
 
   /* main receives the playback-finish message first, and acts on it, */
   /* before the player-state message (stopped) is received */
+  /* otherwise some other method of determining when the player is stopped */
+  /* would be needed */
   if (! mainData->inStartWait &&
       mainData->playerState == PL_STATE_STOPPED &&
       mainData->startwaitTime > 0) {
