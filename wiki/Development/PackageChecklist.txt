@@ -69,4 +69,4 @@ On Windows, the packages should be cleaned up first.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-01-04 10:56:52; BDJ4 version 4.12.9)_

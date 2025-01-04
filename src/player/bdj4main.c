@@ -612,7 +612,6 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_CHK_MAIN_SET_STARTWAIT: {
           bdjoptSetNumPerQueue (OPT_Q_START_WAIT_TIME, atol (args), mainData->musicqPlayIdx);
-          mainMusicqSendQueueConfig (mainData);
           break;
         }
         case MSG_CHK_MAIN_SET_FADEIN: {
@@ -699,6 +698,7 @@ mainProcessing (void *udata)
   if (mainData->playerState == PL_STATE_STOPPED &&
       mainData->inStartWait) {
     if (mstimeCheck (&mainData->startWaitCheck)) {
+      /* music-queue-play turns off in-start-wait */
       mainMusicQueuePlay (mainData);
     }
   }
@@ -2103,6 +2103,8 @@ mainMusicQueuePlay (maindata_t *mainData)
     return;
   }
 
+  mainData->inStartWait = false;
+
   if (mainData->playerState != PL_STATE_PAUSED) {
     if (mainData->musicqDeferredPlayIdx != MAIN_NOT_SET) {
       mainMusicqSwitch (mainData, mainData->musicqDeferredPlayIdx);
@@ -2184,8 +2186,6 @@ mainMusicQueuePlay (maindata_t *mainData)
     connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_PLAY_PLAY, NULL);
     mainSendPlaybackGap (mainData);
   }
-
-  mainData->inStartWait = false;
 
   logProcEnd ("");
 }

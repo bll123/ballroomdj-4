@@ -1,4 +1,4 @@
-# 2023-4-9
+# 2025-1-4
 #
 # Note that the musicq chk commands currently return the internal musicq
 # index, which is offset by one.
@@ -13,7 +13,7 @@
 #
 # 'defaultvol' is replaced with the default volume
 # 'stoptime' is replaced with current time + two minutes
-# '#HISTQ#' is replaced with the history queue number
+# '%HISTQ%' is replaced with the history queue number
 #
 # commands:
 #   chk {key value} ...
@@ -21,8 +21,10 @@
 #     (chk-not, chk-or, chk-lt, chk-gt)
 #   disp, dispall
 #     display responses before using 'chk' or 'wait'
-#   end, reset
-#     ends the test
+#   reset
+#     resets the player
+#   end
+#     resets the player, ends the test, prints results
 #   file {rm|exists|not-exists|copy} <fn> [<fn2>]
 #   get <route> <msg>
 #   msg <route> <msg>

@@ -8,7 +8,7 @@
 
 -->
 
-**4.12.9 2025-1--**
+**4.12.9 2025-1-4**
 
 * Changes:
     * Player: Status: A timer indicator is shown when the playback is in a start-wait or in-gap state.
@@ -1141,4 +1141,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-01-04 10:56:52; BDJ4 version 4.12.9)_

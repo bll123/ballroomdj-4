@@ -40,6 +40,7 @@ mssleep 1500
 get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
 chk currvolume defaultvol
+reset
 msg main CHK_MAIN_SET_GAP 2000
 end
 
@@ -73,6 +74,7 @@ wait playstate playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
+reset
 msg main CHK_MAIN_SET_GAP 2000
 end
 
@@ -96,6 +98,7 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 chk actualvolume 30
 mssleep 1500
+reset
 msg main CHK_MAIN_SET_FADEIN 400
 msg player PLAYER_VOLUME defaultvol
 end
@@ -135,6 +138,7 @@ chk actualvolume 0
 chk-or playstate in-gap stopped loading playing
 wait playstate playing
 mssleep 1500
+reset
 msg main CHK_MAIN_SET_FADEOUT 4000
 end
 
@@ -167,6 +171,7 @@ chk-or playstate stopped loading playing
 wait playstate playing
 chk-or playstate stopped loading playing
 mssleep 1500
+reset
 msg main CHK_MAIN_SET_GAP 2000
 msg main CHK_MAIN_SET_FADEOUT 4000
 end
@@ -201,6 +206,7 @@ chk p-duration 10000
 resptimeout 11500
 get player CHK_PLAYER_STATUS
 wait playstate stopped
+reset
 msg main CHK_MAIN_SET_MAXPLAYTIME 360000
 end
 
@@ -256,6 +262,7 @@ resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1500
+reset
 msg main CHK_MAIN_SET_STOPATTIME 0
 end
 
@@ -266,6 +273,7 @@ msg main MUSICQ_INSERT 0~999~5
 mssleep 2000
 get player CHK_PLAYER_STATUS
 chk playstate playing
+reset
 msg main CHK_MAIN_SET_PLAY_WHEN_QUEUED 0
 end
 
@@ -293,6 +301,7 @@ mssleep 1500
 resptimeout 7500
 msg player PLAY_FADE
 wait playstate stopped
+reset
 msg main CHK_MAIN_SET_PAUSE_EACH_SONG 0
 end
 

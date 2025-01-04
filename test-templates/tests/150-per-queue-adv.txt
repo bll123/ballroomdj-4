@@ -82,6 +82,8 @@ get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
 get player CHK_PLAYER_SONG
 chk p-duration 20000
+#
+reset
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_MAXPLAYTIME 360000
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
@@ -229,6 +231,8 @@ wait playstate playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
+#
+reset
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_GAP 2000
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
@@ -367,6 +371,7 @@ chk currvolume defaultvol actualvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mqplay 0 mq0len 1 mq1len 0
 #
+reset
 msg main QUEUE_SWITCH_EMPTY 0
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
@@ -464,6 +469,7 @@ chk-or playstate stopped loading playing
 wait playstate playing
 mssleep 1500
 #
+reset
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_STARTWAIT 0
 msg main CHK_MAIN_SET_GAP 2000
@@ -524,6 +530,7 @@ mssleep 1500
 get player CHK_PLAYER_STATUS
 chk actualvolume 30
 #
+reset
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_FADEIN 400
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
@@ -583,6 +590,7 @@ wait-not playstate in-fadeout
 wait playstate playing
 mssleep 1500
 #
+reset
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_FADEOUT 4000
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
@@ -646,6 +654,7 @@ get main CHK_MAIN_MUSICQ
 # mq 1 is empty
 chk mqplay 0 mq0len 2 mq1len 0
 #
+reset
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_FADEOUT 4000
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
@@ -683,6 +692,7 @@ resptimeout 2500
 get player CHK_PLAYER_STATUS
 chk playstate playing
 #
+reset
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_PLAY_WHEN_QUEUED 0
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
@@ -758,6 +768,7 @@ resptimeout 7500
 msg player PLAY_FADE
 wait playstate stopped
 #
+reset
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_PAUSE_EACH_SONG 0
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 0

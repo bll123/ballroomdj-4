@@ -148,6 +148,7 @@ wait playstate playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
+reset
 msg main CHK_MAIN_SET_PLAY_WHEN_QUEUED 0
 end
 
@@ -209,6 +210,7 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 1
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 0 playstate playing
+reset
 msg main CHK_MAIN_SET_PLAY_WHEN_QUEUED 0
 end
 

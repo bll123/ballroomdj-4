@@ -56,6 +56,7 @@ wait playstate playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol prepqueuecount 4
+reset
 msg main CHK_CLEAR_PREP_Q
 end
 
@@ -201,6 +202,7 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Waltz
 msg player PLAY_FADE
 #
+reset
 msg main CHK_CLEAR_PREP_Q
 msg main CHK_MAIN_SET_PLAYANNOUNCE 0
 end
@@ -348,6 +350,7 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Waltz
 msg player PLAY_FADE
 #
+reset
 msg main CHK_CLEAR_PREP_Q
 msg main CHK_MAIN_SET_PLAYANNOUNCE 0
 end
@@ -592,6 +595,7 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Waltz
 msg player PLAY_FADE
 #
+reset
 msg main CHK_CLEAR_PREP_Q
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_PLAYANNOUNCE 0
