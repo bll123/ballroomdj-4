@@ -64,6 +64,10 @@ main (int argc, char *argv [])
 #endif
 
   buff = malloc (BUFFSZ);
+  if (buff == NULL) {
+    fprintf (stderr, "Out of memory\n");
+    exit (1);
+  }
 
   /* a mess to make sure the tag string doesn't appear in the bdj4se binary */
   tp = tagstr;

@@ -47,6 +47,7 @@ typedef struct {
   int           dfcount [OPTTYPE_MAX];
   int           distvers [OPTTYPE_MAX];
   nlist_t       *bdjoptList;
+  bool          listallocated;
 } bdjopt_t;
 
 static bdjopt_t   *bdjopt = NULL;
@@ -194,6 +195,7 @@ bdjoptInit (void)
   bdjopt = mdmalloc (sizeof (bdjopt_t));
   bdjopt->currprofile = 0;
   bdjopt->bdjoptList = NULL;
+  bdjopt->listallocated = false;
 
   for (int i = 0; i < OPTTYPE_MAX; ++i) {
     bdjopt->tag [i] = NULL;
@@ -302,6 +304,7 @@ bdjoptInit (void)
   bdjopt->bdjoptList = datafileGetList (bdjopt->df [OPTTYPE_URI]);
   if (bdjopt->bdjoptList == NULL) {
     bdjopt->bdjoptList = nlistAlloc ("bdjopt-list", LIST_ORDERED, NULL);
+    bdjopt->listallocated = true;
   }
 
   /* 4.0.10 OPT_M_SCALE added */
@@ -465,6 +468,10 @@ bdjoptCleanup (void)
       datafileFree (bdjopt->df [i]);
       dataFree (bdjopt->fname [i]);
       bdjopt->fname [i] = NULL;
+    }
+    if (bdjopt->listallocated) {
+      nlistFree (bdjopt->bdjoptList);
+      bdjopt->listallocated = false;
     }
     mdfree (bdjopt);
   }
