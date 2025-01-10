@@ -994,6 +994,16 @@ function checkInstallation {
     echo "core file found (data)"
     exit 1
   fi
+  c=$(ls -1 "${target}/asan*" 2>/dev/null | wc -l)
+  if [[ $c -ne 0 ]]; then
+    echo "asan files found (tgt)"
+    exit 1
+  fi
+  c=$(ls -1 "${datatop}/asan*" 2>/dev/null | wc -l)
+  if [[ $c -ne 0 ]]; then
+    echo "asan files found (data)"
+    exit 1
+  fi
 
   if [[ $TARGETTOPALTDIR != $target ]]; then
     c=$(ls -1 "${TARGETTOPALTDIR}/core" 2>/dev/null | wc -l)
@@ -1053,9 +1063,9 @@ function cleanInstTest {
   test -f "$fn" && rm -f "$fn"
   # win
   UPROF=$(echo $USERPROFILE | sed -e 's,\\,/,g' -e 's,C:/,/c/,')
-  fn="$UPROF/Desktop/BDJ4dev.link"
+  fn="$UPROF/Desktop/BDJ4dev.lnk"
   test -f "$fn" && rm -f "$fn"
-  fn="$UPROF/Desktop/BDJ4altdev.link"
+  fn="$UPROF/Desktop/BDJ4altdev.lnk"
   test -f "$fn" && rm -f "$fn"
   # macos
   fn="$HOME/Desktop/BDJ4dev.app"

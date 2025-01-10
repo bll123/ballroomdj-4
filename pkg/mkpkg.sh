@@ -248,6 +248,8 @@ case $systype in
         ;;
       MINGW64)
         ;;
+      CLANG64)
+        ;;
     esac
     ;;
   MINGW32*)

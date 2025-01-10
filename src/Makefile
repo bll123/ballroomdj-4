@@ -16,47 +16,47 @@ BDJ4_UI = GTK3
 
 .PHONY: release
 release:
-	BDJ4_BUILD=Release $(MAKE) cmake
+	$(MAKE) BDJ4_BUILD=Release cmake
 
 .PHONY: memdebug
 memdebug:
-	BDJ4_BUILD=Memdebug $(MAKE) cmake
+	$(MAKE) BDJ4_BUILD=Memdebug cmake
 
 .PHONY: memdebug-sanitize
 memdebug-sanitize:
-	BDJ4_BUILD=Memdebug-Sanitize $(MAKE) cmake
+	$(MAKE) BDJ4_BUILD=Memdebug-Sanitize cmake
 
 .PHONY: singlecpu
 singlecpu:
-	BDJ4_BUILD=Release $(MAKE) cmakesinglecpu
+	$(MAKE) BDJ4_BUILD=Release cmakesinglecpu
 
 .PHONY: debug
 debug:
-	BDJ4_BUILD=Debug $(MAKE) cmake
+	$(MAKE) BDJ4_BUILD=Debug cmake
 
 .PHONY: profile
 profile:
-	BDJ4_BUILD=Profile $(MAKE) cmake
+	$(MAKE) BDJ4_BUILD=Profile cmake
 
 .PHONY: debug-clang
 debug-clang:
-	BDJ4_BUILD=Debug $(MAKE) cmakeclang
+	$(MAKE) BDJ4_BUILD=Debug cmakeclang
 
 .PHONY: sanitizeaddress
 sanitizeaddress:
-	BDJ4_BUILD=SanitizeAddress $(MAKE) cmake
+	$(MAKE) BDJ4_BUILD=SanitizeAddress cmake
 
 .PHONY: sanitizeaddressclang
 sanitizeaddressclang:
-	BDJ4_BUILD=SanitizeAddress $(MAKE) cmakeclang
+	$(MAKE) BDJ4_BUILD=SanitizeAddress cmakeclang
 
 .PHONY: sanitizeaddressclang64
 sanitizeaddressclang64:
-	BDJ4_BUILD=SanitizeAddress $(MAKE) cmakeclang64
+	$(MAKE) BDJ4_BUILD=SanitizeAddress cmakeclang64
 
 .PHONY: sanitizeundef
 sanitizeundef:
-	BDJ4_BUILD=SanitizeUndef $(MAKE) cmake
+	$(MAKE) BDJ4_BUILD=SanitizeUndef cmake
 
 .PHONY: cmake cmakesinglecpu cmakesinglecpuverbose
 .PHONY: cmakeclang cmake-unix cmake-windows
@@ -65,59 +65,63 @@ sanitizeundef:
 .PHONY: cmake
 cmake:
 	@if test $$(uname -s) = Linux; then \
-	  CC=$(CC) CXX=$(CXX) $(MAKE) cmake-unix; \
+	  $(MAKE) CC=$(CC) CXX=$(CXX) cmake-unix; \
 	  pmode=--parallel $(MAKE) build; \
 	elif test $$(uname -s) = Darwin; then \
-	  CC=$(CLANG) CXX=$(CLANGXX) $(MAKE) cmake-unix; \
+	  $(MAKE) CC=$(CLANG) CXX=$(CLANGXX) cmake-unix; \
 	  pmode=--parallel $(MAKE) build; \
 	else \
-	  CC=$(CC) CXX=$(CXX) $(MAKE) cmake-windows; \
+	  $(MAKE) CC=$(CC) CXX=$(CXX) cmake-windows; \
 	  $(MAKE) build; \
 	fi
 
 .PHONY: cmakesinglecpu
 cmakesinglecpu:
 	@if test $$(uname -s) = Linux; then \
-	  CC=$(CC) CXX=$(CXX) $(MAKE) cmake-unix; \
+	  $(MAKE) CC=$(CC) CXX=$(CXX) cmake-unix; \
 	  $(MAKE) build; \
 	elif test $$(uname -s) = Darwin; then \
-	  CC=$(CLANG) CXX=$(CLANGXX) $(MAKE) cmake-unix; \
+	  $(MAKE) CC=$(CLANG) CXX=$(CLANGXX) cmake-unix; \
 	  $(MAKE) build; \
 	else \
-	  CC=$(CC) CXX=$(CXX) $(MAKE) cmake-windows; \
+	  $(MAKE) CC=$(CC) CXX=$(CXX) cmake-windows; \
 	  $(MAKE) build; \
 	fi
 
 .PHONY: cmakesinglecpuverbose
 cmakesinglecpuverbose:
 	@if test $$(uname -s) = Linux; then \
-	  CC=$(CC) CXX=$(CXX) $(MAKE) cmake-unix; \
-	  VERBOSE=1 $(MAKE) build; \
+	  $(MAKE) CC=$(CC) CXX=$(CXX) cmake-unix; \
+	  $(MAKE) VERBOSE=1 build; \
 	elif test $$(uname -s) = Darwin; then \
-	  CC=$(CLANG) CXX=$(CLANGXX) $(MAKE) cmake-unix; \
-	  VERBOSE=1 $(MAKE) build; \
+	  $(MAKE) CC=$(CLANG) CXX=$(CLANGXX) cmake-unix; \
+	  $(MAKE) VERBOSE=1 build; \
 	else \
-	  CC=$(CC) CXX=$(CXX) $(MAKE) cmake-windows; \
-	  VERBOSE=1 $(MAKE) build; \
+	  $(MAKE) CC=$(CC) CXX=$(CXX) cmake-windows; \
+	  $(MAKE) VERBOSE=1 build; \
 	fi
 
 # for the windows clang64 msys2 environment
+# for some reason, this doesn't work, change the CLANDIR variable
+# at the top of the makefile.
 .PHONY: cmakeclang64
 cmakeclang64:
-	CLANGDIR=clang64 $(MAKE) cmakeclang
+	$(MAKE) CLANGDIR=clang64 cmakeclang
 
 .PHONY: cmakeclang
 cmakeclang:
 	@if test $$(uname -s) = Linux; then \
-	  CC=$(CLANG) CXX=$(CLANGXX) $(MAKE) cmake-unix; \
+	  $(MAKE) CC=$(CLANG) CXX=$(CLANGXX) cmake-unix; \
 	  pmode=--parallel $(MAKE) build; \
 	elif test $$(uname -s) = Darwin; then \
-	  CC=$(CLANG) CXX=$(CLANGXX) $(MAKE) cmake-unix; \
+	  $(MAKE) CC=$(CLANG) CXX=$(CLANGXX) cmake-unix; \
 	  pmode=--parallel $(MAKE) build; \
 	else \
+	  $(MAKE) \
+	  CLANGDIR=$(CLANGDIR) \
 	  CC=/$(CLANGDIR)/bin/clang.exe \
 	  CXX=/$(CLANGDIR)/bin/clang++.exe \
-	  $(MAKE) cmake-windows; \
+	  cmake-windows; \
 	  $(MAKE) build; \
 	fi
 
@@ -137,7 +141,7 @@ cmake-windows:
 	. ../VERSION.txt; \
 	cmake \
 		-DBDJ4_BUILD_VERS:STATIC=$${VERSION} \
-		-DCMAKE_C_COMPILER=$(CC) \
+		-DCMAKE_C_COMPILER="$(CC)" \
 		-DCMAKE_CXX_COMPILER="$(CXX)" \
 		-DBDJ4_BUILD:STATIC=$(BDJ4_BUILD) \
 		-DBDJ4_UI=$(BDJ4_UI) \
@@ -182,7 +186,7 @@ testsuitemprisvlc:
 	./utils/mktestsetup.sh --force --pli MPRISVLC
 	# & is a shell command terminator, no semicolon
 	vlc --intf=dummy --no-video & \
-        pid=$$$$; \
+	pid=$$$$; \
 	(cd ..;./bin/bdj4 --testsuite); \
 	kill $${pid}; \
 	true

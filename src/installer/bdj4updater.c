@@ -182,6 +182,7 @@ main (int argc, char *argv [])
   logSetLevel (LOG_INSTALL, LOG_IMPORTANT | LOG_BASIC | LOG_INFO, "updt");
   logSetLevel (LOG_DBG, LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_REDIR_INST, "updt");
   logStartProgram ("updater");
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "BDJ4 version: %s", sysvarsGetStr (SV_BDJ4_VERSION));
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       READONLY_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_MAIN);

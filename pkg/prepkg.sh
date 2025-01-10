@@ -260,6 +260,9 @@ if [[ $platform == windows ]]; then
     UCRT64)
       libtag=ucrt64
       ;;
+    CLANG64)
+      libtag=clang64
+      ;;
   esac
 
   if [[ $libtag == "" ]]; then
@@ -297,9 +300,15 @@ if [[ $platform == windows ]]; then
   > $dlllistfn
 
   for fn in plocal/bin/*.dll bin/*.exe $chkdlllist ; do
-    ldd $fn |
-      grep ${libtag} |
-      sed -e 's,.*=> ,,' -e 's,\.dll .*,.dll,' >> $dlllistfn
+    case $fn in
+      plocal/bin/libclang_rt.asan_dynamic-x86_64.dll)
+        ;;
+      *)
+        ldd $fn |
+            grep ${libtag} |
+            sed -e 's,.*=> ,,' -e 's,\.dll .*,.dll,' >> $dlllistfn
+        ;;
+    esac
   done
   for fn in $(sort -u $dlllistfn); do
     bfn=$(basename $fn)

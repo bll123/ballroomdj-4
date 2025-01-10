@@ -900,6 +900,7 @@ installerMainLoop (void *udata)
       installerCreateDirs (installer);
 
       logStart ("bdj4installer", "inst", installer->loglevel);
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "BDJ4 version: %s", sysvarsGetStr (SV_BDJ4_VERSION));
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "target: %s", installer->target);
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "initial bdj3loc: %s", installer->bdj3loc);
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "new-install: %d", installer->newinstall);

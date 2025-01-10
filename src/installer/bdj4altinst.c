@@ -561,6 +561,7 @@ altinstMainLoop (void *udata)
       logStart ("bdj4altinst", "alt",
           LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_REDIR_INST);
       logStartProgram ("alternate-setup");
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "BDJ4 version: %s", sysvarsGetStr (SV_BDJ4_VERSION));
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "target: %s", altinst->target);
       break;
     }

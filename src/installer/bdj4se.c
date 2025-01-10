@@ -166,7 +166,9 @@ main (int argc, char *argv [])
   printf ("-- Unpacking archive.\n");
   fflush (stdout);
   if (isWindows) {
-    (void) ! system ("expand bdj4-install.cab -F:* . > bdj4-expand.log ");
+    /* 2025-1-10 specify the full path */
+    /* msys2 can handle windows style paths */
+    (void) ! system ("C:\\Windows\\System32\\expand.exe bdj4-install.cab -F:* . > bdj4-expand.log ");
   } else {
     (void) ! system ("tar -x -f bdj4-install.tar.gz");
   }

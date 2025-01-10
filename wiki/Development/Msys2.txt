@@ -41,6 +41,8 @@ Remove and remove dependencies:
 <br>pacman -S mingw-w64-ucrt-x86_64-libgcrypt
 <br>pacman -S mingw-w64-ucrt-x86_64-c-ares
 <br>pacman -S mingw-w64-ucrt-x86_64-icu
+<br># winrt
+<br>pacman -S mingw-w64-ucrt-x86_64-cppwinrt
 
 ###### clang in ucrt64 environment
 
@@ -56,8 +58,13 @@ Remove and remove dependencies:
 
 #### clang64 environment
 
-Supposedly this supports ASAN, but when trying to run the program,
-I get a 'detect_leaks' is not supported.
+The clang64 environment is the only way to get the asan address
+sanitizer to work.  But 'detect_leaks' does not work (see asan.env).
+use: make CLANGDIR=clang64 ...
+
+Note that running the installer under windows will not work, as bdj4se
+will have the sanitizer linked in, and the sanitizer library path will
+not be found.
 
 # compiler
 <br>pacman -S mingw-w64-clang-x86_64-clang
@@ -72,6 +79,8 @@ I get a 'detect_leaks' is not supported.
 <br>pacman -S mingw-w64-clang-x86_64-libgcrypt
 <br>pacman -S mingw-w64-clang-x86_64-c-ares
 <br>pacman -S mingw-w64-clang-x86_64-icu
+<br># winrt
+<br>pacman -S mingw-w64-clang-x86_64-cppwinrt
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
