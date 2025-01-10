@@ -1252,6 +1252,7 @@ altinstCleanup (altinst_t *altinst)
     }
     dataFree (altinst->target);
     dataFree (altinst->name);
+    dataFree (altinst->basedir);
   }
 }
 
