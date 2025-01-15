@@ -13,7 +13,7 @@ The configuration is static, not dynamic.  When you change the
 configuration, you will need to close and restart the player and
 management interfaces.  Configuration changes are not immediately
 applied.  Certain configuration options (profile color, accent color,
-user interface, et.al.) require restarting BDJ4 entirely.
+user interface, et.al.) require exiting BDJ4 and restarting.
 
 ##### Database Updates
 
@@ -75,6 +75,54 @@ database.
 <br>__References:__
 <br>[Configuration / Organization](en-Configuration-Organization)
 
+##### Music Queues, Profiles and Alternate Folders
+
+BDJ4 installations have the following structure:
+
+* Main Installation
+    * Profile
+        * Music Queues (up to 5)
+    * Profile
+        * Music Queues
+* Alternate Folder(s) (separate database)
+    * Profile
+        * Music Queues
+    * Profile
+        * Music Queues
+
+Note that many people have a single installation with one profile and
+a single music queue.
+
+* Main Installation
+    * Profile
+        * Music Queue
+
+The BDJ4 player can display up to five music queues, and each music
+queue can be configured in a different fashion.  As examples, a music
+queue could be configured for ballroom dances, general playback,
+requests, practice, showcase, rounds, or mixers.
+<br>__Reference:__
+<br>[Configuration / Music Queues](en-Configuration-Music%20Queues)
+<br>[Subjects / Music Queues](en-Subjects-Music%20Queues)
+<br>[Player](en-Player-Player) (Options / Show Extra Queues)
+
+Profiles are used to keep different configurations separate.  As
+examples, a profile could be set up for working on music at home, for
+use with headphones, for DJ work, for practice sessions or for general
+playback.
+<br>__Reference:__
+<br>[Subjects / Profiles](en-Subjects-Profiles)
+
+An alternate folder is used when you need a separate database. For
+example, you might have ballroom music in the main installation, and
+an alternate folder for classical music.  The databases and
+configurations are separate and don't affect each other.
+
+Alternate folder installation is optimized so that the BDJ4
+installation is not duplicated, only the data files are separate.
+<br>__Reference:__
+<br>[Alternate Folders](en-Subjects-Alternate%20Folders)
+
 ##### Getting help
 
 If you need help getting started, understanding how something in BDJ4
@@ -83,4 +131,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-01-15 15:32:33; BDJ4 version 4.12.9)_
