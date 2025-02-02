@@ -168,6 +168,13 @@ if [[ $DEVELOPMENT != dev ]]; then
     grc=1
   fi
 
+  grep '^#define DEBUG_PREP_QUEUE 0' src/player/bdj4player.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "bdj4player.c: prep-queue debugging is on"
+    grc=1
+  fi
+
   #grep '^#define MACOS_UI_DEBUG 0' src/include/uigeneral.h > /dev/null 2>&1
   #rc=$?
   #if [[ $rc -ne 0 ]]; then
