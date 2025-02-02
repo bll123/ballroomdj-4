@@ -1,0 +1,53 @@
+section 200 Queue-Handling-With-Ann
+
+# announcements on for music q
+# queue playlist
+# next-song multiple times
+# play
+#
+# indexes: 34 32 10 8 2 repeat
+test 200-20 next-song-stopped-ann-bug-20250201
+msg main CHK_CLEAR_PREP_Q
+msg main CHK_MAIN_SET_PLAYANNOUNCE 1
+msg main QUEUE_PLAYLIST 0~test-sl-h
+mssleep 1000
+msg main QUEUE_PLAYLIST 0~test-sl-h
+mssleep 1000
+msg main QUEUE_PLAYLIST 0~test-sl-h
+mssleep 1000
+msg main QUEUE_PLAYLIST 0~test-sl-h
+mssleep 1000
+#
+resptimeout 2000
+get main CHK_MAIN_MUSICQ
+chk-gt mq0len 5
+#
+get main CHK_MAIN_MUSICQ
+chk mq0idx0 34 mq0idx1 32 mq0idx2 38 mq0idx3 10 mq0idx4 8
+#
+msg player PLAY_NEXTSONG
+mssleep 300
+msg player PLAY_NEXTSONG
+mssleep 300
+msg player PLAY_NEXTSONG
+mssleep 300
+msg player PLAY_NEXTSONG
+mssleep 300
+#
+get main CHK_MAIN_MUSICQ
+chk mq0idx0 8 mq0idx1 2 mq0idx2 34 mq0idx3 32 mq0idx4 38
+#
+msg main CMD_PLAY
+#
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 4000
+#
+get main CHK_MAIN_MUSICQ
+chk mq0idx0 8 mq0idx1 2 mq0idx2 34 mq0idx3 32 mq0idx4 38 dbidx 8 dance Tango
+#
+reset
+msg main MUSICQ_SET_PLAYBACK 0
+msg main CHK_MAIN_SET_MAXPLAYTIME 360000
+msg main CHK_MAIN_SET_PLAYANNOUNCE 0
+end

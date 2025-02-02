@@ -2205,6 +2205,7 @@ mainMusicQueueFinish (maindata_t *mainData, const char *args)
   /* let the playlist know this song has been played */
   dbidx = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
   song = dbGetByIdx (mainData->musicdb, dbidx);
+  mainMusicqClearPrep (mainData, mainData->musicqPlayIdx, 0);
   if (song != NULL) {
     playlistIdx = musicqGetPlaylistIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
     if (playlistIdx != MUSICQ_PLAYLIST_EMPTY) {

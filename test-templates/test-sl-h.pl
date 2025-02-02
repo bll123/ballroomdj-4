@@ -1,0 +1,29 @@
+# playlist-pl
+# 2025-02-01 15:28:18.739
+# version 1
+version
+..1
+ALLOWEDKEYWORDS
+..
+DANCELEVELHIGH
+..Advanced
+DANCELEVELLOW
+..Easy
+DANCERATING
+..Poor
+GAP
+..-100
+MAXPLAYTIME
+..0
+PLAYANNOUNCE
+..no
+STOPAFTER
+..0
+STOPTIME
+..0
+TAGS
+..
+TAG_WEIGHT
+..90
+TYPE
+..songlist

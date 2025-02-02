@@ -16,7 +16,7 @@
 /* modified from the linux stpecpy manual page */
 
 char *
-stpecpy (char *dst, char end[0], const char *restrict src)
+stpecpy (char *dst, char *end, const char *restrict src)
 {
   char  *p;
 

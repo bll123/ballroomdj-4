@@ -5,8 +5,12 @@
 macro (addIntlLibrary name)
   if (Intl_LIBRARY)
     target_link_libraries (${name} PRIVATE
-      ${Intl_LIBRARY}
-      ${Iconv_LIBRARY}
+      -lintl
+    )
+  endif()
+  if (Iconv_LIBRARY)
+    target_link_libraries (${name} PRIVATE
+      -liconv
     )
   endif()
 endmacro()

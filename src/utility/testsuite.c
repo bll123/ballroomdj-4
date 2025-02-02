@@ -1282,7 +1282,12 @@ tsScriptChkResponse (testsuite_t *testsuite)
       if (! testsuite->lessthan &&
           ! testsuite->greaterthan &&
           valexp != NULL && valresp != NULL) {
-        retchk = strcmp (valexp, valresp) == 0;
+        char  *tval;
+
+        /* this is so that dances with spaces can be handled */
+        tval = regexReplaceLiteral (valexp, "_", " ");
+        retchk = strcmp (tval, valresp) == 0;
+        dataFree (tval);
         if (testsuite->checknot) {
           retchk = ! retchk;
         }

@@ -168,7 +168,7 @@ cp -f test-templates/ui-*.txt data/profile00
 mv -f data/profile00/ui-starter.txt data
 
 for ftype in sl seq auto; do
-  for tag in a b c d e f g; do
+  for tag in a b c d e f g h; do
     if [[ $ftype == auto && $tag == e ]]; then
       break
     fi

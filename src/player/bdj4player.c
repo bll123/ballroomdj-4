@@ -1052,7 +1052,7 @@ playerSongClearPrep (playerdata_t *playerData, char *args)
   prepqueue_t     *tpq;
   char            *tokptr = NULL;
   char            *p;
-  long            uniqueidx;
+  int32_t         uniqueidx;
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokptr);
   if (p == NULL) {
@@ -1106,7 +1106,7 @@ playerSongPlay (playerdata_t *playerData, char *args)
   playrequest_t *preq = NULL;
   char          *p;
   char          *tokstr = NULL;
-  qidx_t        uniqueidx;
+  int32_t       uniqueidx;
 
   if (! progstateIsRunning (playerData->progstate)) {
     return;
@@ -1333,16 +1333,15 @@ playerNextSong (playerdata_t *playerData)
       playerSetPlayerState (playerData, PL_STATE_STOPPED);
 
       if (playerData->currentSong != NULL) {
-        playerPrepQueueFree (playerData->currentSong);
-        playerData->currentSong = NULL;
+        /* cannot be an announcement, but be safe anyways */
+        if (playerData->currentSong->announce != PREP_ANNOUNCE) {
+          playerPrepQueueFree (playerData->currentSong);
+          playerData->currentSong = NULL;
+        }
       }
     } else {
-      prepqueue_t     *tpq;
-
       /* stopped */
-      tpq = queuePop (playerData->prepQueue);
-      playerPrepQueueFree (tpq);
-      playerData->gap = playerData->priorGap;
+      /* the main process will send a clear-prep back to the player */
     }
 
     /* tell main to go to the next song, no history */
