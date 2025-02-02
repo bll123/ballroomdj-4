@@ -76,7 +76,7 @@ typedef struct songsel {
   musicdb_t           *musicdb;
   slist_t             *tagList;
   int                 tagWeight;
-  bool                processed : 1;
+  bool                processed;
 } songsel_t;
 
 static void songselAllocAddSong (songsel_t *songsel, dbidx_t dbidx, song_t *song);

@@ -40,7 +40,7 @@ typedef struct uiselectfile {
   callback_t        *selfilecb;
   nlist_t           *options;
   slist_t           *filelist;
-  bool              inchange : 1;
+  bool              inchange;
 } uiselectfile_t;
 
 static void selectFileCreateDialog (uiselectfile_t *selectfile,

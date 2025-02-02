@@ -23,7 +23,7 @@
 typedef struct uimenu {
   int             menucount;
   uiwcont_t       *menuitem [UIUTILS_MENU_MAX];
-  bool            initialized : 1;
+  bool            initialized;
 } uimenu_t;
 
 static void uiMenuActivateHandler (GtkMenuItem *mi, gpointer udata);

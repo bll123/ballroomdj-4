@@ -113,8 +113,8 @@ typedef struct {
   ilist_t       *lista;
   ilist_t       *listb;
   long          counter;
-  bool          stop : 1;
-  bool          chgind : 1;
+  bool          stop;
+  bool          chgind;
 } uitest_t;
 
 typedef struct {

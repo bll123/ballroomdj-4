@@ -172,20 +172,20 @@ typedef struct {
   /* controller */
   controller_t    *controller;
   /* flags */
-  bool            fontszdialogcreated : 1;
-  bool            mainalready : 1;
-  bool            mainreattach : 1;
-  bool            marqueeoff : 1;
-  bool            mqisiconified : 1;
-  bool            mqismaximized : 1;
-  bool            mqfontsizeactive : 1;
-  bool            optionsalloc : 1;
-  bool            reloadinit : 1;
-  bool            inreload : 1;
-  bool            reloadchk : 1;
-  bool            startmainsent : 1;
-  bool            stopping : 1;
-  bool            uibuilt : 1;
+  bool            fontszdialogcreated;
+  bool            mainalready;
+  bool            mainreattach;
+  bool            marqueeoff;
+  bool            mqisiconified;
+  bool            mqismaximized;
+  bool            mqfontsizeactive;
+  bool            optionsalloc;
+  bool            reloadinit;
+  bool            inreload;
+  bool            reloadchk;
+  bool            startmainsent;
+  bool            stopping;
+  bool            uibuilt;
 } playerui_t;
 
 static datafilekey_t playeruidfkeys [] = {

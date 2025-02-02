@@ -49,7 +49,7 @@ typedef struct {
   char            *playerStatus;
   char            *currSong;
   websrv_t        *websrv;
-  bool            enabled : 1;
+  bool            enabled;
 } remctrl_t;
 
 static bool     remctrlConnectingCallback (void *udata, programstate_t programState);

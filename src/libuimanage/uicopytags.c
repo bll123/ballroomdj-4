@@ -46,7 +46,7 @@ typedef struct uict {
   uisfcb_t        targetsfcb;
   callback_t      *callbacks [UICT_CB_MAX];
   int             state;
-  bool            isactive : 1;
+  bool            isactive;
 } uict_t;
 
 static void   uicopytagsCreateDialog (uict_t *uict);

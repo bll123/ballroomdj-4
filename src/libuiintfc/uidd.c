@@ -67,9 +67,9 @@ typedef struct uidd {
   int           listtype;
   size_t        dispwidth;
   ilistidx_t    selectedidx;
-  bool          dialogcreated : 1;
-  bool          inchange : 1;
-  bool          open : 1;
+  bool          dialogcreated;
+  bool          inchange;
+  bool          open;
 } uidd_t;
 
 static const char * const DD_DARKBG_CLASS = "bdj-dark-bg";

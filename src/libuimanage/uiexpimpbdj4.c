@@ -61,7 +61,7 @@ typedef struct uieibdj4 {
   uieibdj4dialog_t  dialog [UIEIBDJ4_MAX];
   int               currtype;
   callback_t        *callbacks [UIEIBDJ4_CB_MAX];
-  bool              isactive : 1;
+  bool              isactive;
 } uieibdj4_t;
 
 /* export/import bdj4 */

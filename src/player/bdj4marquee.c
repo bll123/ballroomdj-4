@@ -101,15 +101,15 @@ typedef struct {
   int             lastHeight;
   int             priorSize;
   int             unMaximize;
-  bool            ismaximized : 1;
-  bool            isiconified : 1;
-  bool            userDoubleClicked : 1;
-  bool            mqIconifyAction : 1;
-  bool            setPrior : 1;
-  bool            mqShowInfo : 1;
-  bool            hideonstart : 1;
-  bool            optionsalloc : 1;
-  bool            uibuilt : 1;
+  bool            ismaximized;
+  bool            isiconified;
+  bool            userDoubleClicked;
+  bool            mqIconifyAction;
+  bool            setPrior;
+  bool            mqShowInfo;
+  bool            hideonstart;
+  bool            optionsalloc;
+  bool            uibuilt;
 } marquee_t;
 
 enum {

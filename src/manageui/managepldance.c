@@ -52,9 +52,9 @@ typedef struct mpldance {
   playlist_t        *playlist;
   nlist_t           *currlist;
   int               currcount;
-  bool              changed : 1;
-  bool              hideunselected : 1;
-  bool              inchange : 1;
+  bool              changed;
+  bool              hideunselected;
+  bool              inchange;
 } mpldance_t;
 
 static void manageplDanceSetColumnVisibility (mpldance_t *mpldnc, int pltype);

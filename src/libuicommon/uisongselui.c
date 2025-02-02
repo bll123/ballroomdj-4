@@ -97,8 +97,8 @@ typedef struct ss_internal {
   /* for shift-click */
   nlistidx_t          shiftfirstidx;
   nlistidx_t          shiftlastidx;
-  bool                inapply : 1;
-  bool                inchange : 1;
+  bool                inapply;
+  bool                inchange;
 } ss_internal_t;
 
 static bool uisongselQueueCallback (void *udata);

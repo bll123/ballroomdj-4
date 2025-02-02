@@ -54,7 +54,7 @@ typedef struct configui {
   /* options */
   datafile_t        *optiondf;
   nlist_t           *options;
-  bool              optionsalloc : 1;
+  bool              optionsalloc;
 } configui_t;
 
 static datafilekey_t configuidfkeys [CONFUI_KEY_MAX] = {

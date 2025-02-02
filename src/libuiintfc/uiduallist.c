@@ -63,7 +63,7 @@ typedef struct uiduallist {
   /* and to retain the values from the caller */
   slist_t           *displist [DL_LIST_MAX];
   int               flags;
-  bool              changed : 1;
+  bool              changed;
 } uiduallist_t;
 
 static bool uiduallistMovePrev (void *tduallist);

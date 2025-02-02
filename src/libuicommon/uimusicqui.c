@@ -87,8 +87,8 @@ typedef struct mq_internal {
   int               colcount;
   int               favcolumn;
   int               mqidx;
-  bool              inchange : 1;
-  bool              inprocess : 1;
+  bool              inchange;
+  bool              inprocess;
 } mq_internal_t;
 
 static bool   uimusicqQueueDanceCallback (void *udata, int32_t idx, int32_t count);

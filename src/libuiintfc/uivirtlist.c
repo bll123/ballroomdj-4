@@ -136,7 +136,7 @@ typedef struct uivlcoldata {
   int           hidden;
   bool          alignend: 1;
   bool          aligncenter: 1;
-  bool          ellipsize : 1;
+  bool          ellipsize;
 } uivlcoldata_t;
 
 typedef struct uivlcol {
@@ -166,12 +166,12 @@ typedef struct uivlrow {
   int32_t       lockrownum;
   /* cleared: row is on-screen, no display */
   /* all column widgets are hidden */
-  bool          cleared : 1;
-  bool          created : 1;
+  bool          cleared;
+  bool          created;
   /* offscreen: row is off-screen, entire row-box is hidden */
-  bool          offscreen : 1;
-  bool          initialized : 1;
-  bool          selected : 1;       // a temporary flag to ease processing
+  bool          offscreen;
+  bool          initialized;
+  bool          selected;       // a temporary flag to ease processing
 } uivlrow_t;
 
 /* need a container of stable allocated addresses */
@@ -218,14 +218,14 @@ typedef struct uivirtlist {
   uivlselcb_t   rightclickcb;
   void          *rightclickudata;
   /* flags */
-  bool          allowdblclick : 1;
-  bool          allowmultiple : 1;
-  bool          darkbg : 1;
-  bool          dispheading : 1;
-  bool          inscroll : 1;
-  bool          keyhandling : 1;
-  bool          uselistingfont : 1;
-  bool          numrowchg : 1;
+  bool          allowdblclick;
+  bool          allowmultiple;
+  bool          darkbg;
+  bool          dispheading;
+  bool          inscroll;
+  bool          keyhandling;
+  bool          uselistingfont;
+  bool          numrowchg;
 } uivirtlist_t;
 
 static void uivlFreeRow (uivirtlist_t *vl, uivlrow_t *row);

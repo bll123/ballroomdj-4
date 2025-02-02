@@ -56,7 +56,7 @@ typedef struct {
   uiwcont_t       *currrb;
   uiwcont_t       *selrb;
   callback_t      *callback;
-  bool            selection : 1;
+  bool            selection;
 } uiaudioiditem_t;
 
 enum {
@@ -121,9 +121,9 @@ typedef struct aid_internal {
   /* fillrow is used during the set-display-list processing */
   int                 fillrow;
   int                 paneposition;
-  bool                repeating : 1;
-  bool                insave : 1;
-  bool                inchange : 1;
+  bool                repeating;
+  bool                insave;
+  bool                inchange;
 } aid_internal_t;
 
 static void uiaudioidAddItemDisplay (uiaudioid_t *uiaudioid, uiwcont_t *col);

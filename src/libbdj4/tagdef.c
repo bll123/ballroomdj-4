@@ -1571,7 +1571,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
 
 typedef struct {
   slist_t   *taglookup;
-  bool      initialized : 1;
+  bool      initialized;
 } tagdefinfo_t;
 
 static tagdefinfo_t   tagdefinfo = {

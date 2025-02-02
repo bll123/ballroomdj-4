@@ -43,8 +43,8 @@ typedef struct uispinbox {
   nlist_t         *idxlist;
   callback_t      *presscb;
   uiwcont_t       *uievent;
-  bool            processing : 1;
-  bool            changed : 1;
+  bool            processing;
+  bool            changed;
 } uispinbox_t;
 
 static uiwcont_t * uiSpinboxInit (void);

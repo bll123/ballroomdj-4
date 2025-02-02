@@ -183,9 +183,9 @@ typedef struct {
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
-  bool            supportactive : 1;
-  bool            supportmsgactive : 1;
-  bool            optionsalloc : 1;
+  bool            supportactive;
+  bool            supportmsgactive;
+  bool            optionsalloc;
 } startui_t;
 
 enum {

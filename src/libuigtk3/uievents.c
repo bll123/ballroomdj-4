@@ -35,15 +35,15 @@ typedef struct uievent {
   guint         keyval;
   guint         button;
   void          *savewidget;
-  bool          controlpressed : 1;
-  bool          shiftpressed : 1;
-  bool          altpressed : 1;
-  bool          metapressed : 1;
-  bool          superpressed : 1;
-  bool          hyperpressed : 1;
-  bool          ismaskedkey : 1;
-  bool          buttonpressed : 1;
-  bool          buttonreleased : 1;
+  bool          controlpressed;
+  bool          shiftpressed;
+  bool          altpressed;
+  bool          metapressed;
+  bool          superpressed;
+  bool          hyperpressed;
+  bool          ismaskedkey;
+  bool          buttonpressed;
+  bool          buttonreleased;
 } uievent_t;
 
 static gboolean uiEventKeyHandler (GtkWidget *w, GdkEventKey *event, gpointer udata);

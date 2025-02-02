@@ -49,8 +49,8 @@ typedef struct mpris {
   char            trackid [DBUS_MAX_TRACKID];
   int64_t         dur;
   plistate_t      state;
-  bool            canseek : 1;
-  bool            hasspeed : 1;
+  bool            canseek;
+  bool            hasspeed;
 } mpris_t;
 
 typedef struct {

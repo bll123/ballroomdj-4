@@ -78,7 +78,7 @@ typedef struct {
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
-  bool            optionsalloc : 1;
+  bool            optionsalloc;
 } bpmcounter_t;
 
 enum {

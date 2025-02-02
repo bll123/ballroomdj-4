@@ -68,8 +68,8 @@ typedef struct uiexppl {
   nlist_t           *typelist;
   char              *slname;
   int               exptype;
-  bool              isactive : 1;
-  bool              invalidation : 1;
+  bool              isactive;
+  bool              invalidation;
 } uiexppl_t;
 
 /* export playlist */

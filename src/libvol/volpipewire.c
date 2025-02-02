@@ -107,8 +107,8 @@ typedef struct pwstate {
   int                   pwsinkcount;
   int                   coreseq;
   int                   devidcount;
-  bool                  changed : 1;
-  bool                  initialized : 1;
+  bool                  changed;
+  bool                  initialized;
 } pwstate_t;
 
 typedef struct pwsink {
@@ -125,7 +125,7 @@ typedef struct pwsink {
   int                   internalid;
   int                   routeidx;
   int                   channels;
-  int                   available : 1;
+  int                   available;
 } pwsink_t;
 
 typedef struct pwproxy {
@@ -138,7 +138,7 @@ typedef struct pwproxy {
   uint32_t              deviceid;
   int                   internalid;
   int                   type;
-  int                   available : 1;
+  int                   available;
 } pwproxy_t;
 
 static pwstate_t *pipewireInit (void);

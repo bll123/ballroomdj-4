@@ -3,14 +3,14 @@
 #
 
 macro (addIntlLibrary name)
-  if (Intl_LIBRARY)
+  if (Intl_LIBRARY AND NOT Intl_LIBRARY STREQUAL "NOTFOUND")
     target_link_libraries (${name} PRIVATE
-      -lintl
+      ${Intl_LIBRARY}
     )
   endif()
-  if (Iconv_LIBRARY)
+  if (Iconv_LIBRARY AND NOT Iconv_LIBRARY STREQUAL "NOTFOUND")
     target_link_libraries (${name} PRIVATE
-      -liconv
+      ${Iconv_LIBRARY}
     )
   endif()
 endmacro()

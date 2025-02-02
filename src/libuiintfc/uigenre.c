@@ -30,7 +30,7 @@ typedef struct uigenre {
   callback_t    *selectcb;
   ilist_t       *ddlist;
   ilistidx_t    selectedidx;
-  bool          allflag : 1;
+  bool          allflag;
 } uigenre_t;
 
 static bool uigenreSelectHandler (void *udata, int32_t idx);

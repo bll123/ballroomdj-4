@@ -32,10 +32,10 @@ typedef struct conn {
   uint16_t      port;
   bdjmsgroute_t routefrom;
   mstime_t      connchk;
-  bool          handshakesent : 1;
-  bool          handshakerecv : 1;
-  bool          handshake : 1;
-  bool          connected : 1;
+  bool          handshakesent;
+  bool          handshakerecv;
+  bool          handshake;
+  bool          connected;
 } conn_t;
 
 static bool     initialized = false;

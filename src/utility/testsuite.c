@@ -100,22 +100,22 @@ typedef struct {
   FILE        *fh;
   int         lineno;
   int         defaultVol;
-  bool        greaterthan : 1;
-  bool        lessthan : 1;
-  bool        checkor : 1;
-  bool        checknot : 1;
-  bool        expectresponse : 1;
-  bool        haveresponse : 1;
-  bool        runsection : 1;         // --runsection was specified
-  bool        runtest : 1;            // --runtest was specified
-  bool        starttest : 1;          // --starttest was specified
-  bool        processsection : 1;     // process the current section
-  bool        processtest : 1;        // process the current test
-  bool        wait : 1;
-  bool        chkwait : 1;
-  bool        skiptoend : 1;          // used for test timeout
-  bool        verbose : 1;
-  bool        skipfile : 1;
+  bool        greaterthan;
+  bool        lessthan;
+  bool        checkor;
+  bool        checknot;
+  bool        expectresponse;
+  bool        haveresponse;
+  bool        runsection;         // --runsection was specified
+  bool        runtest;            // --runtest was specified
+  bool        starttest;          // --starttest was specified
+  bool        processsection;     // process the current section
+  bool        processtest;        // process the current test
+  bool        wait;
+  bool        chkwait;
+  bool        skiptoend;          // used for test timeout
+  bool        verbose;
+  bool        skipfile;
 } testsuite_t;
 
 static int  gKillReceived = 0;
@@ -1332,12 +1332,15 @@ tsScriptChkResponse (testsuite_t *testsuite)
 
       if ((testsuite->verbose && dodisp && testsuite->wait) ||
           ((testsuite->verbose || dodisp) && ! testsuite->wait)) {
+        char  ttm [40];
+
         if (! dispflag && ! testsuite->verbose) {
           fprintf (stdout, "\n");
           dispflag = true;
         }
-        fprintf (stdout, "          %3d %s-%s: %s: resp: %s %s exp: %s (%ld/%ld)\n",
-            testsuite->lineno, typedisp, resultdisp, key, valresp,
+        tmutilTstamp (ttm, sizeof (ttm));
+        fprintf (stdout, "          %3d %s %s-%s: %s: resp: %s %s exp: %s (%ld/%ld)\n",
+            testsuite->lineno, ttm, typedisp, resultdisp, key, valresp,
             compdisp, valexp, (long) mstimeend (&testsuite->responseStart),
             testsuite->responseTimeout);
         fflush (stdout);
@@ -1541,8 +1544,8 @@ resetPlayer (testsuite_t *testsuite)
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CHK_MAIN_SET_PLAY_WHEN_QUEUED, "0");
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, "0");
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, "1");
-  mssleep (100);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "0");
+  mssleep (100);
   connSendMessage (testsuite->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
   mssleep (100);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "1");

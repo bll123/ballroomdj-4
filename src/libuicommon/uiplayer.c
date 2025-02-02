@@ -139,21 +139,21 @@ typedef struct uiplayer {
   mstime_t        seekLockTimeout;
   mstime_t        seekLockSend;
   double          seekLastValue;
-  bool            seekLock : 1;
+  bool            seekLock;
   /* speed controls / display */
-  bool            speedLock : 1;
+  bool            speedLock;
   /* main controls */
-  bool            repeatLock : 1;
-  bool            pauseatendLock : 1;
-  bool            pauseatendstate : 1;
+  bool            repeatLock;
+  bool            pauseatendLock;
+  bool            pauseatendstate;
   /* volume controls */
-  bool            volumeLock : 1;
+  bool            volumeLock;
   /* display */
-  bool            uibuilt : 1;
+  bool            uibuilt;
   /* speed/seek enabled */
-  bool            speeddisabled : 1;
-  bool            seekdisabled : 1;
-  bool            repeat : 1;
+  bool            speeddisabled;
+  bool            seekdisabled;
+  bool            repeat;
 } uiplayer_t;
 
 static bool  uiplayerInitCallback (void *udata, programstate_t programState);

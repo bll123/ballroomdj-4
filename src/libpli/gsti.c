@@ -62,7 +62,7 @@ typedef struct gsti {
   guint             busId;
   plistate_t        state;
   double            rate;
-  bool              isstopping : 1;
+  bool              isstopping;
 } gsti_t;
 
 static void gstiRunOnce (gsti_t *gsti);

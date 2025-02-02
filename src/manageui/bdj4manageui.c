@@ -291,25 +291,25 @@ typedef struct {
   /* remove song */
   nlist_t           *removelist;
   /* various flags */
-  bool              bpmcounterstarted : 1;
-  bool              cfplactive : 1;
-  bool              cfplpostprocess : 1;
-  bool              enablerestoreorig : 1;
-  bool              exportactive : 1;
-  bool              exportbdj4active : 1;
-  bool              importactive : 1;
-  bool              importbdj4active : 1;
-  bool              importitunesactive : 1;
-  bool              ineditall : 1;
-  bool              inload : 1;
-  bool              musicqueueprocessflag : 1;
-  bool              musicqupdated : 1;
-  bool              optionsalloc : 1;
-  bool              pluiActive : 1;
-  bool              sbssonglist : 1;
-  bool              selbypass : 1;
-  bool              slbackupcreated : 1;
-  bool              seforcesave : 1;
+  bool              bpmcounterstarted;
+  bool              cfplactive;
+  bool              cfplpostprocess;
+  bool              enablerestoreorig;
+  bool              exportactive;
+  bool              exportbdj4active;
+  bool              importactive;
+  bool              importbdj4active;
+  bool              importitunesactive;
+  bool              ineditall;
+  bool              inload;
+  bool              musicqueueprocessflag;
+  bool              musicqupdated;
+  bool              optionsalloc;
+  bool              pluiActive;
+  bool              sbssonglist;
+  bool              selbypass;
+  bool              slbackupcreated;
+  bool              seforcesave;
 } manageui_t;
 
 /* re-use the plui enums so that the songsel filter enums can also be used */

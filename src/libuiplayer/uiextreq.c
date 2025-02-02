@@ -65,7 +65,7 @@ typedef struct uiextreq {
   callback_t      *callbacks [UIEXTREQ_CB_MAX];
   callback_t      *responsecb;
   song_t          *song;
-  bool            isactive : 1;
+  bool            isactive;
 } uiextreq_t;
 
 /* external request */

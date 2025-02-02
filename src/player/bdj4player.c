@@ -1342,6 +1342,7 @@ playerNextSong (playerdata_t *playerData)
     } else {
       /* stopped */
       /* the main process will send a clear-prep back to the player */
+      playerData->gap = playerData->priorGap;
     }
 
     /* tell main to go to the next song, no history */

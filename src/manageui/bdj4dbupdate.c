@@ -142,26 +142,26 @@ typedef struct {
   itunes_t          *itunes;
   queue_t           *tagdataq;
   /* base database operations */
-  bool              checknew : 1;
-  bool              compact : 1;
-  bool              rebuild : 1;
-  bool              reorganize : 1;
-  bool              updfromitunes : 1;
-  bool              updfromtags : 1;
-  bool              writetags : 1;
+  bool              checknew;
+  bool              compact;
+  bool              rebuild;
+  bool              reorganize;
+  bool              updfromitunes;
+  bool              updfromtags;
+  bool              writetags;
   /* database handling */
-  bool              cleandatabase : 1;
+  bool              cleandatabase;
   /* other stuff */
-  bool              autoorg : 1;
-  bool              cli : 1;
-  bool              dancefromgenre : 1;
-  bool              haveolddirlist : 1;
-  bool              iterfromaudiosrc : 1;
-  bool              iterfromdb : 1;
-  bool              progress : 1;
-  bool              stoprequest : 1;
-  bool              usingmusicdir : 1;
-  bool              verbose : 1;
+  bool              autoorg;
+  bool              cli;
+  bool              dancefromgenre;
+  bool              haveolddirlist;
+  bool              iterfromaudiosrc;
+  bool              iterfromdb;
+  bool              progress;
+  bool              stoprequest;
+  bool              usingmusicdir;
+  bool              verbose;
 } dbupdate_t;
 
 enum {

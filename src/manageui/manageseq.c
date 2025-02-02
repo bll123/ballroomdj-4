@@ -50,9 +50,9 @@ typedef struct manageseq {
   uiwcont_t       *seqname;
   char            *seqoldname;
   const char      *newseqname;
-  bool            seqbackupcreated : 1;
-  bool            changed : 1;
-  bool            inload : 1;
+  bool            seqbackupcreated;
+  bool            changed;
+  bool            inload;
 } manageseq_t;
 
 static bool   manageSequenceLoad (void *udata);

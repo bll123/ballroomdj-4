@@ -89,8 +89,8 @@ typedef struct {
   uiwcont_t       *display;
   callback_t      *callback;
   se_internal_t   *seint;           // need for scale changed.
-  bool            lastchanged : 1;
-  bool            changed : 1;
+  bool            lastchanged;
+  bool            changed;
 } uisongedititem_t;
 
 enum {
@@ -149,8 +149,8 @@ typedef struct se_internal {
   int                 keywordidx;
   int                 lastspeed;
   int                 currdanceidx;
-  bool                checkchanged : 1;
-  bool                ineditallapply : 1;
+  bool                checkchanged;
+  bool                ineditallapply;
 } se_internal_t;
 
 static void uisongeditCheckChanged (uisongedit_t *uisongedit);

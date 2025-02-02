@@ -46,7 +46,7 @@ typedef struct uiaa {
   callback_t      *responsecb;
   song_t          *song;
   const char      *pleasewaitmsg;
-  bool            isactive : 1;
+  bool            isactive;
 } uiaa_t;
 
 static void   uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig);

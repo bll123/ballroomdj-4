@@ -84,8 +84,8 @@ typedef struct managepl {
   uinbtabid_t     *tabids;
   mpldance_t      *mpldnc;
   playlist_t      *playlist;
-  bool            changed : 1;
-  bool            inload : 1;
+  bool            changed;
+  bool            inload;
 } managepl_t;
 
 static bool managePlaylistLoad (void *udata);

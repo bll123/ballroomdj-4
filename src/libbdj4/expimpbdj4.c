@@ -57,8 +57,8 @@ typedef struct eibdj4 {
   int         counter;
   int         totcount;
   int         state;
-  bool        dbchanged : 1;
-  bool        hasbypass : 1;
+  bool        dbchanged;
+  bool        hasbypass;
 } eibdj4_t;
 
 static const char * const exporgpath = "{%DANCE%/}{%TITLE%}";

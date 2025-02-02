@@ -68,8 +68,8 @@ typedef struct managedb {
   nlist_t           *dblist;
   int               dblistWidth;
   nlist_t           *dbhelp;
-  bool              compact : 1;
-  bool              reorganize : 1;
+  bool              compact;
+  bool              reorganize;
 } managedb_t;
 
 static bool manageDbStart (void *udata);

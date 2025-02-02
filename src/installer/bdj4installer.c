@@ -159,27 +159,27 @@ typedef struct {
   /* one of newinstall or updateinstall will be true */
   /* reinstall is simply the state of the checkbox */
   /* and for a reinstall, updateinstall must be true */
-  bool            aborted : 1;
-  bool            bdjoptloaded : 1;
-  bool            clean : 1;
-  bool            convdirok : 1;
-  bool            convprocess : 1;
-  bool            convspecified : 1;
-  bool            guienabled : 1;
-  bool            invaltarget : 1;
-  bool            localespecified : 1;
-  bool            newinstall : 1;
-  bool            quiet : 1;
-  bool            readonly : 1;
-  bool            reinstall : 1;          // button state
-  bool            scrolltoend : 1;
-  bool            targetexists : 1;
-  bool            testregistration : 1;
-  bool            uiBuilt : 1;
-  bool            unattended : 1;
-  bool            updateinstall : 1;
-  bool            verbose : 1;
-  bool            vlcinstalled : 1;
+  bool            aborted;
+  bool            bdjoptloaded;
+  bool            clean;
+  bool            convdirok;
+  bool            convprocess;
+  bool            convspecified;
+  bool            guienabled;
+  bool            invaltarget;
+  bool            localespecified;
+  bool            newinstall;
+  bool            quiet;
+  bool            readonly;
+  bool            reinstall;          // button state
+  bool            scrolltoend;
+  bool            targetexists;
+  bool            testregistration;
+  bool            uiBuilt;
+  bool            unattended;
+  bool            updateinstall;
+  bool            verbose;
+  bool            vlcinstalled;
 } installer_t;
 
 static const char * const BDJ3_LOC_FILE = "install/bdj3loc.txt";

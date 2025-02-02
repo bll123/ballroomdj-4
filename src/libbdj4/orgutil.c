@@ -72,10 +72,10 @@ typedef struct org {
   char          **rxdata;
   int           rxlen;
   int           chartype;
-  bool          havealbumartist : 1;
-  bool          haveartist : 1;
-  bool          havedance : 1;
-  bool          havetitle : 1;
+  bool          havealbumartist;
+  bool          haveartist;
+  bool          havedance;
+  bool          havetitle;
 } org_t;
 
 typedef struct {

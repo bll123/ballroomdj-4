@@ -104,7 +104,7 @@ typedef struct uisongfilter {
   uiwcont_t         *labels [UISF_LABEL_MAX];
   songfilterpb_t    dfltpbflag;
   int               danceIdx;
-  bool              showplaylist : 1;
+  bool              showplaylist;
 } uisongfilter_t;
 
 /* song filter handling */

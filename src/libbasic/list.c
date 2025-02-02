@@ -58,8 +58,8 @@ typedef struct list {
   long            readCacheHits;
   long            writeCacheHits;
   listFree_t      valueFreeHook;
-  bool            replace : 1;
-  bool            setmaxkey : 1;
+  bool            replace;
+  bool            setmaxkey;
 } list_t;
 
 static void     listSet (list_t *list, listitem_t *item);

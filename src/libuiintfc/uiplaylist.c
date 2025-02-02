@@ -28,7 +28,7 @@ typedef struct uiplaylist {
   callback_t        *internalselcb;
   callback_t        *selectcb;
   ilist_t           *ddlist;
-  bool              blankflag : 1;
+  bool              blankflag;
 } uiplaylist_t;
 
 static int32_t uiplaylistSelectHandler (void *udata, const char *key);

@@ -117,20 +117,20 @@ typedef struct {
   char            ati [40];
   int             atiselect;
   /* flags */
-  bool            bdjoptloaded : 1;
-  bool            firstinstall : 1;
-  bool            guienabled : 1;
-  bool            localespecified : 1;
-  bool            newinstall : 1;
-  bool            quiet : 1;
-  bool            reinstall : 1;
-  bool            scrolltoend : 1;
-  bool            targetexists : 1;
-  bool            testregistration : 1;
-  bool            uiBuilt : 1;
-  bool            unattended : 1;
-  bool            updateinstall : 1;
-  bool            verbose : 1;
+  bool            bdjoptloaded;
+  bool            firstinstall;
+  bool            guienabled;
+  bool            localespecified;
+  bool            newinstall;
+  bool            quiet;
+  bool            reinstall;
+  bool            scrolltoend;
+  bool            targetexists;
+  bool            testregistration;
+  bool            uiBuilt;
+  bool            unattended;
+  bool            updateinstall;
+  bool            verbose;
 } altinst_t;
 
 static void altinstBuildUI (altinst_t *altinst);

@@ -29,8 +29,8 @@ typedef struct rafile {
   int           version;
   rafileidx_t   size;
   rafileidx_t   count;
-  unsigned int  inbatch : 1;
-  unsigned int  locked : 1;
+  unsigned int  inbatch;
+  unsigned int  locked;
 } rafile_t;
 
 static char ranulls [RAFILE_REC_SIZE];

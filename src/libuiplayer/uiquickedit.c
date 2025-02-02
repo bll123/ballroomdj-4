@@ -80,7 +80,7 @@ typedef struct uiqe {
   nlist_t           *qedispsel;
   dbidx_t           dbidx;
   uiqesave_t        savedata;
-  bool              isactive : 1;
+  bool              isactive;
 } uiqe_t;
 
 /* quick edit */

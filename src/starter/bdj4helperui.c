@@ -61,7 +61,7 @@ typedef struct {
   bdjregex_t      *rx_dot;
   bdjregex_t      *rx_eqgt;
   bdjregex_t      *rx_spsp;
-  bool            scrollendflag : 1;
+  bool            scrollendflag;
 } helperui_t;
 
 static bool     helperStoppingCallback (void *udata, programstate_t programState);
