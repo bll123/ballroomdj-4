@@ -132,7 +132,9 @@ dbLoad (musicdb_t *musicdb)
     return -1;
   }
 
-  musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
+  if (musicdb->radb == NULL) {
+    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
+  }
   racount = raGetCount (musicdb->radb);
   /* the songs loaded into the templist will be re-assigned to */
   /* the songbyidx list, and should not be freed */
@@ -220,9 +222,17 @@ dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx)
 
   /* old entry */
   song = nlistGetData (musicdb->songbyidx, dbidx);
+  if (song == NULL) {
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: unable to locate dbidx %" PRId32, dbidx);
+    return;
+  }
   rrn = songGetNum (song, TAG_RRN);
 
   song = dbReadEntry (musicdb, rrn);
+  if (song == NULL) {
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: unable to read rrn %" PRId32, rrn);
+    return;
+  }
 
   if (song != NULL) {
     songSetNum (song, TAG_RRN, rrn);

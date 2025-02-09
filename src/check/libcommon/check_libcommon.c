@@ -48,7 +48,7 @@ check_libcommon (SRunner *sr)
    *  dirop       complete
    *  fileop_dir  complete 2023-7-31
    *  filemanip   complete 2022-11-1
-   *  fileshared  complete 2023-1-1       // uses procutil, pathbld, ossignal
+   *  fileshared  complete 2025-2-8 // uses procutil, pathbld, ossignal
    *  pathinfo    complete
    *  log
    *  bdjmsg      complete

@@ -20,7 +20,6 @@ time_t  fileopCreateTime (const char *fname);
 bool    fileopIsDirectory (const char *fname);
 int     fileopDelete (const char *fname);
 FILE    * fileopOpen (const char *fname, const char *mode);
-void    fileopSync (FILE *fh);
 bool    fileopIsAbsolutePath (const char *fname);
 
 #if defined (__cplusplus) || defined (c_plusplus)

@@ -33,7 +33,7 @@
 
 #define FN  "tmp/fileshared.txt"
 #define DATAA "abc123\n"
-#define DATAB "def456\n"  // must be the same as in chkfileshared.c
+#define DATAB "def456xyz\n"  // must be the same as in chkfileshared.c
 
 START_TEST(fileshared_open_trunc)
 {
@@ -66,13 +66,50 @@ START_TEST(fileshared_open_append)
 }
 END_TEST
 
-START_TEST(fileshared_write)
+START_TEST(fileshared_open_read_write)
+{
+  fileshared_t  *sfh;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_open_read_write");
+  mdebugSubTag ("fileshared_open_read_write");
+
+  sfh = fileSharedOpen (FN, FILE_OPEN_READ_WRITE);
+  ck_assert_ptr_nonnull (sfh);
+  fileSharedClose (sfh);
+  sfh = fileSharedOpen (FN, FILE_OPEN_READ_WRITE);
+  ck_assert_ptr_nonnull (sfh);
+  fileSharedClose (sfh);
+  unlink (FN);
+}
+END_TEST
+
+START_TEST(fileshared_open_read)
+{
+  fileshared_t  *sfh;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_open_read");
+  mdebugSubTag ("fileshared_open_read");
+
+  sfh = fileSharedOpen (FN, FILE_OPEN_READ_WRITE);
+  ck_assert_ptr_nonnull (sfh);
+  fileSharedClose (sfh);
+  sfh = fileSharedOpen (FN, FILE_OPEN_READ);
+  ck_assert_ptr_nonnull (sfh);
+  fileSharedClose (sfh);
+  sfh = fileSharedOpen (FN, FILE_OPEN_READ);
+  ck_assert_ptr_nonnull (sfh);
+  fileSharedClose (sfh);
+  unlink (FN);
+}
+END_TEST
+
+START_TEST(fileshared_write_trunc)
 {
   fileshared_t  *sfh;
   size_t        sz;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_write");
-  mdebugSubTag ("fileshared_write");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_write_trunc");
+  mdebugSubTag ("fileshared_write_trunc");
 
   sfh = fileSharedOpen (FN, FILE_OPEN_TRUNCATE);
   fileSharedWrite (sfh, DATAA, strlen (DATAA));
@@ -99,10 +136,10 @@ START_TEST(fileshared_write_append)
   ck_assert_int_eq (sz, strlen (DATAA));
 
   sfh = fileSharedOpen (FN, FILE_OPEN_APPEND);
-  fileSharedWrite (sfh, DATAA, strlen (DATAA));
+  fileSharedWrite (sfh, DATAB, strlen (DATAB));
   fileSharedClose (sfh);
   sz = fileopSize (FN);
-  ck_assert_int_eq (sz, strlen (DATAA) * 2);
+  ck_assert_int_eq (sz, strlen (DATAA) + strlen (DATAB));
   unlink (FN);
 }
 END_TEST
@@ -123,14 +160,14 @@ START_TEST(fileshared_write_multiple)
   ck_assert_ptr_nonnull (sfhb);
   fileSharedWrite (sfhb, DATAA, strlen (DATAA));
 
-  fileSharedWrite (sfha, DATAA, strlen (DATAA));
-  fileSharedWrite (sfhb, DATAA, strlen (DATAA));
+  fileSharedWrite (sfha, DATAB, strlen (DATAB));
+  fileSharedWrite (sfhb, DATAB, strlen (DATAB));
 
   fileSharedClose (sfha);
   fileSharedClose (sfhb);
 
   sz = fileopSize (FN);
-  ck_assert_int_eq (sz, strlen (DATAA) * 4);
+  ck_assert_int_eq (sz, strlen (DATAA) * 2 + strlen (DATAB) * 2);
   unlink (FN);
 }
 END_TEST
@@ -177,6 +214,230 @@ START_TEST(fileshared_write_shared)
 }
 END_TEST
 
+START_TEST(fileshared_read)
+{
+  fileshared_t  *sfh;
+  size_t        sz;
+  char          tbuff [40];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_read");
+  mdebugSubTag ("fileshared_read");
+
+  sfh = fileSharedOpen (FN, FILE_OPEN_TRUNCATE);
+  fileSharedWrite (sfh, DATAA, strlen (DATAA));
+  fileSharedWrite (sfh, DATAB, strlen (DATAB));
+  fileSharedClose (sfh);
+  sz = fileopSize (FN);
+  ck_assert_int_eq (sz, strlen (DATAA) + strlen (DATAB));
+
+  sfh = fileSharedOpen (FN, FILE_OPEN_READ);
+  sz = fileSharedRead (sfh, tbuff, strlen (DATAA));
+  ck_assert_int_eq (sz, 1);
+  ck_assert_mem_eq (tbuff, DATAA, strlen (DATAA));
+  sz = fileSharedRead (sfh, tbuff, strlen (DATAB));
+  ck_assert_int_eq (sz, 1);
+  ck_assert_mem_eq (tbuff, DATAB, strlen (DATAB));
+  sz = fileSharedRead (sfh, tbuff, strlen (DATAA));
+  ck_assert_int_eq (sz, 0);
+  fileSharedClose (sfh);
+
+  unlink (FN);
+}
+END_TEST
+
+START_TEST(fileshared_seek)
+{
+  fileshared_t  *sfh;
+  ssize_t       sz;
+  int           rc;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_seek");
+  mdebugSubTag ("fileshared_seek");
+
+  sfh = fileSharedOpen (FN, FILE_OPEN_TRUNCATE);
+  fileSharedWrite (sfh, DATAA, strlen (DATAA));
+  fileSharedWrite (sfh, DATAB, strlen (DATAB));
+  fileSharedClose (sfh);
+  sz = fileopSize (FN);
+  ck_assert_int_eq (sz, strlen (DATAA) + strlen (DATAB));
+
+  sfh = fileSharedOpen (FN, FILE_OPEN_READ);
+  rc = fileSharedSeek (sfh, 0, SEEK_SET);
+  ck_assert_int_eq (rc, 0);
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, 0);
+  rc = fileSharedSeek (sfh, strlen (DATAA), SEEK_SET);
+  ck_assert_int_eq (rc, 0);
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, strlen (DATAA));
+  rc = fileSharedSeek (sfh, strlen (DATAA) + strlen (DATAB), SEEK_SET);
+  ck_assert_int_eq (rc, 0);
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, strlen (DATAA) + strlen (DATAB));
+
+  rc = fileSharedSeek (sfh, 0, SEEK_SET);
+  ck_assert_int_eq (rc, 0);
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, 0);
+  rc = fileSharedSeek (sfh, strlen (DATAA), SEEK_CUR);
+  ck_assert_int_eq (rc, 0);
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, strlen (DATAA));
+  rc = fileSharedSeek (sfh, strlen (DATAB), SEEK_CUR);
+  ck_assert_int_eq (rc, 0);
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, strlen (DATAA) + strlen (DATAB));
+
+  rc = fileSharedSeek (sfh, 0, SEEK_END);
+  ck_assert_int_eq (rc, 0);
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, strlen (DATAA) + strlen (DATAB));
+  rc = fileSharedSeek (sfh, - strlen (DATAB), SEEK_CUR);
+  ck_assert_int_eq (rc, 0);
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, strlen (DATAA));
+  rc = fileSharedSeek (sfh, - strlen (DATAA), SEEK_CUR);
+  ck_assert_int_eq (rc, 0);
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, 0);
+  rc = fileSharedSeek (sfh, - strlen (DATAA), SEEK_CUR);
+  ck_assert_int_lt (rc, 0);
+
+  rc = fileSharedSeek (sfh, - strlen (DATAB), SEEK_END);
+  ck_assert_int_eq (rc, 0);
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, strlen (DATAA));
+  rc = fileSharedSeek (sfh, - strlen (DATAA), SEEK_CUR);
+  ck_assert_int_eq (rc, 0);
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, 0);
+
+  fileSharedClose (sfh);
+
+  unlink (FN);
+}
+END_TEST
+
+START_TEST(fileshared_read_write)
+{
+  fileshared_t  *sfh;
+  size_t        sz;
+  char          tbuff [40];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_read_write");
+  mdebugSubTag ("fileshared_read_write");
+
+  sfh = fileSharedOpen (FN, FILE_OPEN_READ_WRITE);
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, 0);
+  fileSharedWrite (sfh, DATAA, strlen (DATAA));
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, strlen (DATAA));
+  fileSharedWrite (sfh, DATAB, strlen (DATAB));
+  fileSharedClose (sfh);
+  sz = fileopSize (FN);
+  ck_assert_int_eq (sz, strlen (DATAA) + strlen (DATAB));
+
+  sfh = fileSharedOpen (FN, FILE_OPEN_READ_WRITE);
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, 0);
+  fileSharedWrite (sfh, DATAB, strlen (DATAB));
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, strlen (DATAB));
+  fileSharedWrite (sfh, DATAA, strlen (DATAA));
+  fileSharedClose (sfh);
+  sz = fileopSize (FN);
+  ck_assert_int_eq (sz, strlen (DATAA) + strlen (DATAB));
+
+  sfh = fileSharedOpen (FN, FILE_OPEN_READ_WRITE);
+  fileSharedSeek (sfh, 0, SEEK_SET);
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, 0);
+  fileSharedFlush (sfh);
+  sz = fileSharedRead (sfh, tbuff, strlen (DATAB));
+  ck_assert_int_eq (sz, 1);
+  ck_assert_mem_eq (tbuff, DATAB, strlen (DATAB));
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, strlen (DATAB));
+  fileSharedSeek (sfh, strlen (DATAB), SEEK_SET);
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, strlen (DATAB));
+  fileSharedFlush (sfh);
+  sz = fileSharedRead (sfh, tbuff, strlen (DATAA));
+  ck_assert_int_eq (sz, 1);
+  ck_assert_mem_eq (tbuff, DATAA, strlen (DATAA));
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, strlen (DATAA) + strlen (DATAB));
+  fileSharedClose (sfh);
+
+  sfh = fileSharedOpen (FN, FILE_OPEN_READ_WRITE);
+  fileSharedSeek (sfh, 0, SEEK_SET);
+  fileSharedWrite (sfh, DATAA, strlen (DATAA));
+  fileSharedFlush (sfh);
+  fileSharedSeek (sfh, 0, SEEK_SET);
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, 0);
+  fileSharedFlush (sfh);
+  sz = fileSharedRead (sfh, tbuff, strlen (DATAA));
+  fileSharedFlush (sfh);
+  ck_assert_int_eq (sz, 1);
+  ck_assert_mem_eq (tbuff, DATAA, strlen (DATAA));
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, strlen (DATAA));
+  fileSharedSeek (sfh, strlen (DATAA), SEEK_SET);
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, strlen (DATAA));
+  fileSharedWrite (sfh, DATAB, strlen (DATAB));
+  fileSharedFlush (sfh);
+  fileSharedSeek (sfh, strlen (DATAA), SEEK_SET);
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, strlen (DATAA));
+  fileSharedFlush (sfh);
+  sz = fileSharedRead (sfh, tbuff, strlen (DATAB));
+  fileSharedFlush (sfh);
+  ck_assert_int_eq (sz, 1);
+  ck_assert_mem_eq (tbuff, DATAB, strlen (DATAB));
+  sz = fileSharedTell (sfh);
+  ck_assert_int_eq (sz, strlen (DATAA) + strlen (DATAB));
+  fileSharedClose (sfh);
+
+  unlink (FN);
+}
+END_TEST
+
+START_TEST(fileshared_get)
+{
+  fileshared_t  *sfh;
+  char          tbuff [90];
+  char          *p;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_get");
+  mdebugSubTag ("fileshared_get");
+
+  sfh = fileSharedOpen (FN, FILE_OPEN_READ_WRITE);
+  fileSharedWrite (sfh, DATAA, strlen (DATAA));
+  fileSharedWrite (sfh, DATAB, strlen (DATAB));
+  snprintf (tbuff, sizeof (tbuff), "# Do not edit this file.\n");
+  fileSharedWrite (sfh, tbuff, strlen (tbuff));
+  fileSharedClose (sfh);
+
+  sfh = fileSharedOpen (FN, FILE_OPEN_READ_WRITE);
+  p = fileSharedGet (sfh, tbuff, sizeof (tbuff));
+  ck_assert_ptr_nonnull (p);
+  ck_assert_mem_eq (tbuff, DATAA, strlen (DATAA));
+  p = fileSharedGet (sfh, tbuff, sizeof (tbuff));
+  ck_assert_ptr_nonnull (p);
+  ck_assert_mem_eq (tbuff, DATAB, strlen (DATAB));
+  p = fileSharedGet (sfh, tbuff, sizeof (tbuff));
+  ck_assert_ptr_nonnull (p);
+  ck_assert_str_ne (p, "");
+  p = fileSharedGet (sfh, tbuff, sizeof (tbuff));
+  ck_assert_str_eq (p, "");
+  fileSharedClose (sfh);
+
+  unlink (FN);
+}
+END_TEST
 
 Suite *
 fileshared_suite (void)
@@ -189,14 +450,19 @@ fileshared_suite (void)
   tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, fileshared_open_trunc);
   tcase_add_test (tc, fileshared_open_append);
-  tcase_add_test (tc, fileshared_write);
+  tcase_add_test (tc, fileshared_open_read_write);
+  tcase_add_test (tc, fileshared_open_read);
+  tcase_add_test (tc, fileshared_write_trunc);
   tcase_add_test (tc, fileshared_write_append);
   tcase_add_test (tc, fileshared_write_multiple);
   tcase_add_test (tc, fileshared_write_shared);
+  tcase_add_test (tc, fileshared_read);
+  tcase_add_test (tc, fileshared_seek);
+  tcase_add_test (tc, fileshared_read_write);
+  tcase_add_test (tc, fileshared_get);
   suite_add_tcase (s, tc);
   return s;
 }
-
 
 #pragma clang diagnostic pop
 #pragma GCC diagnostic pop

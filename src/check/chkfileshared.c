@@ -20,7 +20,7 @@
 #include "tmutil.h"
 
 static const char * const FN  = "tmp/fileshared.txt";
-static const char * const DATAB = "def456\n";
+static const char * const DATAB = "def456xyz\n";
 
 int
 main (int argc, char *argv [])

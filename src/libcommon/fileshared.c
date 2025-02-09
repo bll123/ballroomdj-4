@@ -22,6 +22,7 @@
 #endif
 
 #include "bdjstring.h"
+#include "fileop.h"
 #include "fileshared.h"
 #include "mdebug.h"
 #include "osutils.h"
@@ -40,13 +41,14 @@ typedef struct filehandle {
 } fileshared_t;
 
 fileshared_t *
-fileSharedOpen (const char *fname, int truncflag)
+fileSharedOpen (const char *fname, int openmode)
 {
   fileshared_t  *fhandle = NULL;
 
 #if _lib_CreateFileW
   wchar_t     *wfname = NULL;
   HANDLE      handle = NULL;
+  DWORD       access;
   DWORD       cd;
 #else
   FILE        *fh;
@@ -65,14 +67,24 @@ fileSharedOpen (const char *fname, int truncflag)
 #endif
 
 #if _lib_CreateFileW
+  access = FILE_APPEND_DATA;
   cd = OPEN_ALWAYS;
-  if (truncflag == FILE_OPEN_TRUNCATE) {
+  if (openmode == FILE_OPEN_TRUNCATE) {
     cd = CREATE_ALWAYS;
+  }
+  if (openmode == FILE_OPEN_READ) {
+    access = FILE_READ_DATA | FILE_READ_ATTRIBUTES | FILE_READ_EA;
+    cd = OPEN_ALWAYS;
+  }
+  if (openmode == FILE_OPEN_READ_WRITE) {
+    access = FILE_READ_DATA | FILE_READ_ATTRIBUTES | FILE_READ_EA;
+    access |= FILE_WRITE_DATA | FILE_WRITE_ATTRIBUTES | FILE_WRITE_EA;
+    cd = OPEN_ALWAYS;
   }
 
   wfname = osToWideChar (fname);
   handle = CreateFileW (wfname,
-      FILE_APPEND_DATA,
+      access,
       FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE,
       NULL,
       cd,
@@ -90,9 +102,18 @@ fileSharedOpen (const char *fname, int truncflag)
 
   /* not windows */
 
-  mode = "a";
-  if (truncflag == FILE_OPEN_TRUNCATE) {
-    mode = "w";
+  mode = "ab";
+  if (openmode == FILE_OPEN_TRUNCATE) {
+    mode = "wb";
+  }
+  if (openmode == FILE_OPEN_READ) {
+    mode = "rb";
+  }
+  if (openmode == FILE_OPEN_READ_WRITE) {
+    mode = "rb+";
+    if (! fileopFileExists (fname)) {
+      mode = "wb+";
+    }
   }
 
   fh = fopen (fname, mode);
@@ -111,17 +132,28 @@ ssize_t
 fileSharedWrite (fileshared_t *fhandle, const char *data, size_t len)
 {
   ssize_t rc;
-#if _lib_WriteFile
-  DWORD   wlen;
-#endif
 
   if (fhandle == NULL) {
     return -1;
   }
 
 #if _lib_WriteFile
-  rc = WriteFile (fhandle->handle, data, len, &wlen, NULL);
+  {
+    DWORD   wlen;
+
+    if (fhandle->handle == NULL) {
+      return -1;
+    }
+    rc = WriteFile (fhandle->handle, data, len, &wlen, NULL);
+    rc = 0;
+    if (len == wlen) {
+      rc = 1;
+    }
+  }
 #else
+  if (fhandle->fh == NULL) {
+    return -1;
+  }
   rc = fwrite (data, len, 1, fhandle->fh);
 #endif
 
@@ -141,6 +173,194 @@ fileSharedWrite (fileshared_t *fhandle, const char *data, size_t len)
   return rc;
 }
 
+ssize_t
+fileSharedRead (fileshared_t *fhandle, char *data, size_t len)
+{
+  ssize_t rc;
+
+  if (fhandle == NULL) {
+    return -1;
+  }
+  fhandle->count = 0;
+
+#if _lib_ReadFile
+  {
+    DWORD   rlen;
+
+    if (fhandle->handle == NULL) {
+      return -1;
+    }
+    rc = ReadFile (fhandle->handle, data, len, &rlen, NULL);
+    rc = 0;
+    if (rlen == len) {
+      rc = 1;
+    }
+  }
+#else
+  if (fhandle->fh == NULL) {
+    return -1;
+  }
+  rc = fread (data, len, 1, fhandle->fh);
+#endif
+
+  /* on linux, flushing each time is reasonably fast */
+  /* on MacOS, flushing each time is very slow */
+  /* windows has not been tested */
+  if (isLinux () || fhandle->count >= FLUSH_COUNT) {
+#if _lib_FlushFileBuffers
+    FlushFileBuffers (fhandle->handle);
+#else
+    fflush (fhandle->fh);
+#endif
+    fhandle->count = 0;
+  }
+  ++fhandle->count;
+
+  return rc;
+}
+
+char *
+fileSharedGet (fileshared_t *fhandle, char *data, size_t maxlen)
+{
+  char    *p;
+
+  if (fhandle == NULL) {
+    return NULL;
+  }
+
+  *data = '\0';
+
+#if _lib_ReadFile
+  {
+    size_t  loc;
+    DWORD   rlen;
+    int     rc;
+
+    if (fhandle->handle == NULL) {
+      return NULL;
+    }
+    /* get the current location */
+    loc = SetFilePointer (fhandle->handle, 0, NULL, FILE_CURRENT);
+    p = NULL;
+    rc = ReadFile (fhandle->handle, data, maxlen, &rlen, NULL);
+    if (rc == 1) {
+      p = strchr (data, '\n');
+      if (p != NULL) {
+        ++p;
+        if (p < data + maxlen) {
+          *p = '\0';
+          loc += p - data;
+          /* rewind back to the char after the cr/newline */
+          fileSharedSeek (fhandle, loc, SEEK_SET);
+          p = data;
+        } else {
+          p = NULL;
+        }
+      }
+
+      if (p == NULL) {
+        *data = '\0';
+        fileSharedSeek (fhandle, - rlen, SEEK_SET);
+        p = NULL;
+      }
+    }
+  }
+#else
+  if (fhandle->fh == NULL) {
+    return NULL;
+  }
+  p = fgets (data, maxlen, fhandle->fh);
+#endif
+
+  return data;
+}
+
+int
+fileSharedSeek (fileshared_t *fhandle, size_t offset, int mode)
+{
+  ssize_t rc;
+
+  if (fhandle == NULL) {
+    return -1;
+  }
+
+#if _lib_SetFilePointer
+  switch (mode) {
+    case SEEK_SET: {
+      mode = FILE_BEGIN;
+      break;
+    }
+    case SEEK_CUR: {
+      mode = FILE_CURRENT;
+      break;
+    }
+    case SEEK_END: {
+      mode = FILE_END;
+      break;
+    }
+  }
+  rc = SetFilePointer (fhandle->handle, offset, NULL, mode);
+  if (rc == INVALID_SET_FILE_POINTER) {
+    rc = -1;
+  } else {
+    rc = 0;
+  }
+#else
+  rc = fseek (fhandle->fh, offset, mode);
+#endif
+
+  return rc;
+}
+
+/* only used in the check suite */
+ssize_t
+fileSharedTell (fileshared_t *fhandle)  /* TESTING */
+{
+  ssize_t rc;
+
+  if (fhandle == NULL) {
+    return -1;
+  }
+
+#if _lib_SetFilePointer
+  if (fhandle->handle == NULL) {
+    return -1;
+  }
+  rc = SetFilePointer (fhandle->handle, 0, NULL, FILE_CURRENT);
+#else
+  if (fhandle->fh == NULL) {
+    return -1;
+  }
+  rc = ftell (fhandle->fh);
+#endif
+
+  return rc;
+}
+
+
+/* note that this does a flush() and sync() */
+void
+fileSharedFlush (fileshared_t *fhandle)
+{
+  if (fhandle == NULL) {
+    return;
+  }
+
+#if _lib_FlushFileBuffers
+  if (fhandle->handle == NULL) {
+    return;
+  }
+  FlushFileBuffers (fhandle->handle);
+#else
+  if (fhandle->fh == NULL) {
+    return;
+  }
+  fflush (fhandle->fh);
+  fsync (fileno (fhandle->fh));
+#endif
+  fhandle->count = 0;
+}
+
 void
 fileSharedClose (fileshared_t *fhandle)
 {
@@ -149,9 +369,15 @@ fileSharedClose (fileshared_t *fhandle)
   }
 
 #if _lib_CloseHandle
+  if (fhandle->handle == NULL) {
+    return;
+  }
   mdextfclose (fhandle->handle);
   CloseHandle (fhandle->handle);
 #else
+  if (fhandle->fh == NULL) {
+    return;
+  }
   mdextfclose (fhandle->fh);
   fclose (fhandle->fh);
 #endif
