@@ -6,10 +6,12 @@
 
 **4.12.11 2025-2---**
 
+-->
+
+**4.12.11 2025-2-10**
+
 * Bug Fixes:
     * Windows: Fixed a crash when the database was accessed by multiple processes.
-
--->
 
 **4.12.10 2025-2-2**
 
@@ -1149,4 +1151,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-02-02 11:01:00; BDJ4 version 4.12.10)_
+<br>_(Updated 2025-02-10 11:01:28; BDJ4 version 4.12.11)_
