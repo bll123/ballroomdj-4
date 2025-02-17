@@ -131,7 +131,7 @@ main (int argc, char *argv [])
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
 
-  radb = raOpen (dbfn, MUSICDB_VERSION);
+  radb = raOpen (dbfn, MUSICDB_VERSION, RAFILE_RW);
 
   raStartBatch (radb);
 

@@ -32,6 +32,7 @@ typedef struct rafile {
   rafileidx_t   count;
   unsigned int  inbatch;
   unsigned int  locked;
+  int           openmode;   // fileshared openmode, not rafile
 } rafile_t;
 
 static char ranulls [RAFILE_REC_SIZE];
@@ -43,7 +44,7 @@ static void raUnlock (rafile_t *);
 static size_t rrnToOffset (rafileidx_t rrn);
 
 rafile_t *
-raOpen (const char *fname, int version)
+raOpen (const char *fname, int version, int openmode)
 {
   rafile_t        *rafile;
   bool            fexists;
@@ -52,10 +53,14 @@ raOpen (const char *fname, int version)
   logProcBegin ();
   rafile = mdmalloc (sizeof (rafile_t));
   rafile->fsh = NULL;
+  rafile->openmode = FILESH_OPEN_READ;
+  if (openmode == RAFILE_RW) {
+    rafile->openmode = FILESH_OPEN_READ_WRITE;
+  }
 
   fexists = fileopFileExists (fname);
 
-  rafile->fsh = fileSharedOpen (fname, FILE_OPEN_READ_WRITE);
+  rafile->fsh = fileSharedOpen (fname, rafile->openmode);
   if (rafile->fsh == NULL) {
     mdfree (rafile);
     return NULL;
@@ -96,39 +101,53 @@ raOpen (const char *fname, int version)
 void
 raClose (rafile_t *rafile)
 {
-  logProcBegin ();
-  if (rafile != NULL) {
-    fileSharedClose (rafile->fsh);
-    raUnlock (rafile);
-    rafile->fsh = NULL;
-    dataFree (rafile->fname);
-    mdfree (rafile);
+  if (rafile == NULL) {
+    return;
   }
+
+  logProcBegin ();
+  fileSharedClose (rafile->fsh);
+  raUnlock (rafile);
+  rafile->fsh = NULL;
+  dataFree (rafile->fname);
+  mdfree (rafile);
   logProcEnd ("");
 }
 
 rafileidx_t
 raGetCount (rafile_t *rafile)
 {
+  if (rafile == NULL) {
+    return 0;
+  }
+
   return rafile->count;
 }
 
 void
 raStartBatch (rafile_t *rafile)
 {
+  if (rafile == NULL) {
+    return;
+  }
+
   logProcBegin ();
   raLock (rafile);
   rafile->inbatch = 1;
-  fileSharedFlush (rafile->fsh);
+  fileSharedFlush (rafile->fsh, FILESH_NO_SYNC);
   logProcEnd ("");
 }
 
 void
 raEndBatch (rafile_t *rafile)
 {
+  if (rafile == NULL) {
+    return;
+  }
+
   logProcBegin ();
   rafile->inbatch = 0;
-  fileSharedFlush (rafile->fsh);
+  fileSharedFlush (rafile->fsh, FILESH_SYNC);
   raUnlock (rafile);
   logProcEnd ("");
 }
@@ -137,6 +156,14 @@ size_t
 raWrite (rafile_t *rafile, rafileidx_t rrn, char *data, ssize_t len)
 {
   bool    isnew = false;
+
+  if (rafile == NULL) {
+    return 0;
+  }
+
+  if (rafile->openmode == FILESH_OPEN_READ) {
+    return 0;
+  }
 
   if (len == -1) {
     len = strlen (data);
@@ -173,7 +200,7 @@ raWrite (rafile_t *rafile, rafileidx_t rrn, char *data, ssize_t len)
     fileSharedWrite (rafile->fsh, ranulls, 1);
   }
   if (! rafile->inbatch) {
-    fileSharedFlush (rafile->fsh);
+    fileSharedFlush (rafile->fsh, FILESH_SYNC);
   }
   raUnlock (rafile);
   logProcEnd ("");
@@ -186,6 +213,10 @@ raRead (rafile_t *rafile, rafileidx_t rrn, char *data)
 {
   rafileidx_t   rc;
 
+  if (rafile == NULL) {
+    return 0;
+  }
+
   logProcBegin ();
   if (rrn < 1L || rrn > rafile->count) {
     logMsg (LOG_DBG, LOG_RAFILE, "bad rrn %" PRId32, rrn);
@@ -195,7 +226,7 @@ raRead (rafile_t *rafile, rafileidx_t rrn, char *data)
   /* as there are multiple processes, */
   /* the reader's buffers must also be flushed */
   if (! rafile->inbatch) {
-    fileSharedFlush (rafile->fsh);
+    fileSharedFlush (rafile->fsh, FILESH_NO_SYNC);
   }
   raLock (rafile);
   fileSharedSeek (rafile->fsh, rrnToOffset (rrn), SEEK_SET);
@@ -217,11 +248,15 @@ raReadHeader (rafile_t *rafile)
   int         rasize;
   rafileidx_t count;
 
+  if (rafile == NULL) {
+    return 0;
+  }
+
   logProcBegin ();
   /* as there are multiple processes, */
   /* the reader's buffers must also be flushed */
   if (! rafile->inbatch) {
-    fileSharedFlush (rafile->fsh);
+    fileSharedFlush (rafile->fsh, FILESH_NO_SYNC);
   }
   raLock (rafile);
   rrc = 1;
@@ -253,6 +288,14 @@ raWriteHeader (rafile_t *rafile, int version)
   char    tbuff [80];
   int     rc;
 
+  if (rafile == NULL) {
+    return;
+  }
+
+  if (rafile->openmode == FILESH_OPEN_READ) {
+    return;
+  }
+
   logProcBegin ();
   /* locks are handled by the caller */
   /* the header never gets smaller, so it's not necessary to flush its data */
@@ -266,7 +309,7 @@ raWriteHeader (rafile_t *rafile, int version)
   rc = snprintf (tbuff, sizeof (tbuff), "#RACOUNT=%" PRId32 "\n", rafile->count);
   fileSharedWrite (rafile->fsh, tbuff, rc);
   if (! rafile->inbatch) {
-    fileSharedFlush (rafile->fsh);
+    fileSharedFlush (rafile->fsh, FILESH_SYNC);
   }
   logProcEnd ("");
 }
@@ -329,9 +372,17 @@ rrnToOffset (rafileidx_t rrn) {
 /* for debugging only */
 
 /* this function is not in use, but keep the code, as it works */
-int
+bool
 raClear (rafile_t *rafile, rafileidx_t rrn)   /* TESTING */
 {
+  if (rafile == NULL) {
+    return 1;
+  }
+
+  if (rafile->openmode == FILESH_OPEN_READ) {
+    return 1;
+  }
+
   logProcBegin ();
   if (rrn < 1L || rrn > rafile->count) {
     logMsg (LOG_DBG, LOG_RAFILE, "bad rrn %" PRId32, rrn);
@@ -341,7 +392,7 @@ raClear (rafile_t *rafile, rafileidx_t rrn)   /* TESTING */
   fileSharedSeek (rafile->fsh, rrnToOffset (rrn), SEEK_SET);
   fileSharedWrite (rafile->fsh, ranulls, RAFILE_REC_SIZE);
   if (! rafile->inbatch) {
-    fileSharedFlush (rafile->fsh);
+    fileSharedFlush (rafile->fsh, FILESH_SYNC);
   }
   raUnlock (rafile);
   logProcEnd ("");
@@ -355,13 +406,13 @@ raGetSize (rafile_t *rafile) /* TESTING */
 }
 
 rafileidx_t
-raGetVersion (rafile_t *rafile) /* TESTING */
+raGetVersion (rafile_t *rafile)   /* TESTING */
 {
   return rafile->version;
 }
 
 rafileidx_t
-raGetNextRRN (rafile_t *rafile)  /* TESTING */
+raGetNextRRN (rafile_t *rafile)   /* TESTING */
 {
   raLock (rafile);
   return (rafile->count + 1L);

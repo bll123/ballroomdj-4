@@ -144,12 +144,16 @@ teardown (void)
 START_TEST(musicdb_open_new)
 {
   musicdb_t *db;
+  int       rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_open_new");
   mdebugSubTag ("musicdb_open_new");
 
   db = dbOpen (dbfn);
+  ck_assert_ptr_nonnull (db);
   dbClose (db);
+  /* on unix, the database does not get created */
+  /* on windows, the database does get created */
 }
 END_TEST
 
@@ -161,12 +165,14 @@ START_TEST(musicdb_write)
   int       count;
   char      *ndata;
   FILE      *fh;
+  int       rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_write");
   mdebugSubTag ("musicdb_write");
 
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
   db = dbOpen (dbfn);
+  ck_assert_ptr_nonnull (db);
 
   count = 0;
   for (int i = 0; i < songparsedatasz; ++i) {
@@ -190,6 +196,9 @@ START_TEST(musicdb_write)
       ++count;
     }
   }
+
+  rc = fileopFileExists (dbfn);
+  ck_assert_int_eq (rc, 1);
 
   dbClose (db);
 }
@@ -203,12 +212,14 @@ START_TEST(musicdb_overwrite)
   int       count;
   char      *ndata;
   FILE      *fh;
+  int       rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_overwrite");
   mdebugSubTag ("musicdb_overwrite");
 
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
   db = dbOpen (dbfn);
+  ck_assert_ptr_nonnull (db);
 
   count = 0;
   for (int i = 0; i < songparsedatasz; ++i) {
@@ -232,6 +243,9 @@ START_TEST(musicdb_overwrite)
       ++count;
     }
   }
+
+  rc = fileopFileExists (dbfn);
+  ck_assert_int_eq (rc, 1);
 
   dbClose (db);
 }
@@ -247,12 +261,14 @@ START_TEST(musicdb_batch_write)
   int       count;
   char      *ndata;
   FILE      *fh;
+  int       rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_batch_write");
   mdebugSubTag ("musicdb_batch_write");
 
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
   db = dbOpen (dbfn);
+  ck_assert_ptr_nonnull (db);
   dbStartBatch (db);
 
   count = 0;
@@ -278,9 +294,11 @@ START_TEST(musicdb_batch_write)
     }
   }
 
+  rc = fileopFileExists (dbfn);
+  ck_assert_int_eq (rc, 1);
+
   dbEndBatch (db);
   dbClose (db);
-
 }
 END_TEST
 
@@ -298,6 +316,7 @@ START_TEST(musicdb_batch_overwrite)
 
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
   db = dbOpen (dbfn);
+  ck_assert_ptr_nonnull (db);
   dbStartBatch (db);
 
   count = 0;
@@ -325,7 +344,6 @@ START_TEST(musicdb_batch_overwrite)
 
   dbEndBatch (db);
   dbClose (db);
-
 }
 END_TEST
 
@@ -339,15 +357,14 @@ START_TEST(musicdb_write_song)
   int       count;
   char      *ndata;
   FILE      *fh;
+  int       rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_write_song");
   mdebugSubTag ("musicdb_write_song");
 
-  /* this method of adding a song to the database is not currently in use */
-  /* 2022-8-18 */
-
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
   db = dbOpen (dbfn);
+  ck_assert_ptr_nonnull (db);
 
   count = 0;
   for (int i = 0; i < songparsedatasz; ++i) {
@@ -372,8 +389,10 @@ START_TEST(musicdb_write_song)
     }
   }
 
-  dbClose (db);
+  rc = fileopFileExists (dbfn);
+  ck_assert_int_eq (rc, 1);
 
+  dbClose (db);
 }
 END_TEST
 
@@ -391,6 +410,7 @@ START_TEST(musicdb_overwrite_song)
 
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
   db = dbOpen (dbfn);
+  ck_assert_ptr_nonnull (db);
 
   count = 0;
   for (int i = 0; i < songparsedatasz; ++i) {
@@ -433,6 +453,7 @@ START_TEST(musicdb_load_get_byidx)
   mdebugSubTag ("musicdb_load_get_byidx");
 
   db = dbOpen (dbfn);
+  ck_assert_ptr_nonnull (db);
 
   count = dbCount (db);
   ck_assert_int_eq (count, songparsedatasz * TEST_MAX);
@@ -477,6 +498,7 @@ START_TEST(musicdb_load_get_byname)
   mdebugSubTag ("musicdb_load_get_byname");
 
   db = dbOpen (dbfn);
+  ck_assert_ptr_nonnull (db);
 
   count = dbCount (db);
   ck_assert_int_eq (count, songparsedatasz * TEST_MAX);
@@ -525,6 +547,7 @@ START_TEST(musicdb_iterate)
   mdebugSubTag ("musicdb_iterate");
 
   db = dbOpen (dbfn);
+  ck_assert_ptr_nonnull (db);
 
   dbStartIterator (db, &iteridx);
   count = 0;
@@ -563,6 +586,7 @@ START_TEST(musicdb_load_entry)
   mdebugSubTag ("musicdb_load_entry");
 
   db = dbOpen (dbfn);
+  ck_assert_ptr_nonnull (db);
 
   song = dbGetByName (db, "argentinetango05.mp3");
   ck_assert_ptr_nonnull (song);
@@ -594,6 +618,7 @@ START_TEST(musicdb_temp)
   mdebugSubTag ("musicdb_temp");
 
   db = dbOpen (dbfn);
+  ck_assert_ptr_nonnull (db);
 
   song = songAlloc ();
   ck_assert_ptr_nonnull (song);
@@ -637,6 +662,7 @@ START_TEST(musicdb_remove)
   mdebugSubTag ("musicdb_remove");
 
   db = dbOpen (dbfn);
+  ck_assert_ptr_nonnull (db);
 
   song = dbGetByName (db, "argentinetango05.mp3");
   dbidx = songGetNum (song, TAG_DBIDX);
@@ -693,6 +719,7 @@ START_TEST(musicdb_rename)
   mdebugSubTag ("musicdb_rename");
 
   db = dbOpen (dbfn);
+  ck_assert_ptr_nonnull (db);
   bdjoptSetNum (OPT_G_AUTOORGANIZE, true);
 
   song = dbGetByName (db, "argentinetango05.mp3");
@@ -744,6 +771,7 @@ START_TEST(musicdb_db)
   filemanipCopy ("test-templates/musicdb.dat", "data/musicdb.dat");
 
   db = dbOpen (dbfn);
+  ck_assert_ptr_nonnull (db);
 
   fh = fileopOpen ("data/musicdb.dat", "r");
   (void) ! fgets (tbuff, sizeof (tbuff), fh); // version

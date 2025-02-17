@@ -215,14 +215,14 @@ void
 logStart (const char *prog, const char *processtag, loglevel_t level)
 {
   logInit ();
-  rlogStart (prog, processtag, FILE_OPEN_TRUNCATE, level);
+  rlogStart (prog, processtag, FILESH_OPEN_TRUNCATE, level);
 }
 
 void
 logStartAppend (const char *prog, const char *processtag, loglevel_t level)
 {
   logInit ();
-  rlogStart (prog, processtag, FILE_OPEN_APPEND, level);
+  rlogStart (prog, processtag, FILESH_OPEN_APPEND, level);
 }
 
 void
@@ -393,14 +393,14 @@ rlogOpen (logidx_t idx, const char *fn, const char *processtag, int truncflag)
   }
   pathInfoFree (pi);
 
-  if (truncflag == FILE_OPEN_TRUNCATE && idx != LOG_INSTALL) {
+  if (truncflag == FILESH_OPEN_TRUNCATE && idx != LOG_INSTALL) {
     filemanipBackup (fn, 2);
   }
 
   l->processTag = processtag;
   if (idx == LOG_INSTALL) {
     /* never truncate the installation log */
-    truncflag = FILE_OPEN_APPEND;
+    truncflag = FILESH_OPEN_APPEND;
   }
   l->fhandle = fileSharedOpen (fn, truncflag);
   if (l->fhandle == NULL) {

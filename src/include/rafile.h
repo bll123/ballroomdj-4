@@ -19,13 +19,15 @@ enum {
   RAFILE_NEW  = 0L,
   RAFILE_REC_SIZE = 2048,
   RAFILE_HDR_SIZE = 128,
+  RAFILE_RO,
+  RAFILE_RW,
 };
 #define RAFILE_LOCK_FN      "rafile"
 
-rafile_t *    raOpen (const char *fname, int version);
+rafile_t *    raOpen (const char *fname, int version, int openmode);
 void          raClose (rafile_t *rafile);
 size_t        raWrite (rafile_t *rafile, rafileidx_t rrn, char *data, ssize_t len);
-int           raClear (rafile_t *rafile, rafileidx_t rrn);
+bool          raClear (rafile_t *rafile, rafileidx_t rrn);
 rafileidx_t   raRead (rafile_t *rafile, rafileidx_t rrn, char *data);
 rafileidx_t   raGetCount (rafile_t *rafile);
 rafileidx_t   raGetNextRRN (rafile_t *rafile);

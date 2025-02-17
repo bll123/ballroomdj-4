@@ -637,8 +637,8 @@ dbupdateProcessing (void *udata)
             if (dbupdate->compact) {
               dbupdateIncCount (dbupdate, C_FILE_PROC);
               dbupdateIncCount (dbupdate, C_UPDATED);
-              /* the audio files are not being modified, using dbWriteSong() */
-              /* here is ok */
+              /* the audio files are not being modified, */
+              /* using dbWriteSong() here is ok */
               songSetNum (song, TAG_RRN, MUSICDB_ENTRY_NEW);
               dbWriteSong (dbupdate->newmusicdb, song);
             }

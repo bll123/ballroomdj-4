@@ -133,7 +133,10 @@ dbLoad (musicdb_t *musicdb)
   }
 
   if (musicdb->radb == NULL) {
-    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
+    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION, RAFILE_RO);
+    if (musicdb->radb == NULL) {
+      return -1;
+    }
   }
   racount = raGetCount (musicdb->radb);
   /* the songs loaded into the templist will be re-assigned to */
@@ -217,7 +220,10 @@ dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx)
   }
 
   if (musicdb->radb == NULL) {
-    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
+    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION, RAFILE_RW);
+    if (musicdb->radb == NULL) {
+      return;
+    }
   }
 
   /* old entry */
@@ -264,7 +270,10 @@ dbMarkEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx)
   }
 
   if (musicdb->radb == NULL) {
-    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
+    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION, RAFILE_RW);
+    if (musicdb->radb == NULL) {
+      return;
+    }
   }
   song = nlistGetData (musicdb->songbyidx, dbidx);
   songSetNum (song, TAG_DB_FLAGS, MUSICDB_REMOVED);
@@ -282,7 +291,10 @@ dbClearEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx)
   }
 
   if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
-    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
+    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION, RAFILE_RW);
+    if (musicdb->radb == NULL) {
+      return;
+    }
   }
   song = nlistGetData (musicdb->songbyidx, dbidx);
   songSetNum (song, TAG_DB_FLAGS, MUSICDB_STD);
@@ -297,7 +309,10 @@ dbStartBatch (musicdb_t *musicdb)
   }
 
   if (musicdb->radb == NULL) {
-    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
+    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION, RAFILE_RW);
+    if (musicdb->radb == NULL) {
+      return;
+    }
   }
   raStartBatch (musicdb->radb);
   musicdb->inbatch = true;
@@ -548,7 +563,10 @@ dbWriteInternalSong (musicdb_t *musicdb, const char *fn,
   }
 
   if (musicdb->radb == NULL) {
-    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
+    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION, RAFILE_RW);
+    if (musicdb->radb == NULL) {
+      return 0;
+    }
   }
 
   dbCreateSongEntryFromSong (tbuff, sizeof (tbuff), song, fn);

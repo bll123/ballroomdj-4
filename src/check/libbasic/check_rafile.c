@@ -36,7 +36,7 @@ START_TEST(rafile_create_new)
   mdebugSubTag ("rafile_create_new");
 
   unlink (RAFN);
-  rafile = raOpen (RAFN, 10);
+  rafile = raOpen (RAFN, 10, RAFILE_RW);
   ck_assert_ptr_nonnull (rafile);
   ck_assert_int_eq (raGetVersion (rafile), 10);
   ck_assert_int_eq (raGetSize (rafile), RAFILE_REC_SIZE);
@@ -49,14 +49,14 @@ START_TEST(rafile_create_new)
 }
 END_TEST
 
-START_TEST(rafile_reopen)
+START_TEST(rafile_reopen_ro)
 {
   rafile_t      *rafile;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_reopen");
-  mdebugSubTag ("rafile_reopen");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_reopen_ro");
+  mdebugSubTag ("rafile_reopen_ro");
 
-  rafile = raOpen (RAFN, 10);
+  rafile = raOpen (RAFN, 10, RAFILE_RO);
   ck_assert_ptr_nonnull (rafile);
   ck_assert_int_eq (raGetVersion (rafile), 10);
   ck_assert_int_eq (raGetSize (rafile), RAFILE_REC_SIZE);
@@ -75,7 +75,7 @@ START_TEST(rafile_write)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_write");
   mdebugSubTag ("rafile_write");
 
-  rafile = raOpen (RAFN, 10);
+  rafile = raOpen (RAFN, 10, RAFILE_RW);
   ck_assert_ptr_nonnull (rafile);
   ck_assert_int_eq (raGetVersion (rafile), 10);
   ck_assert_int_eq (raGetSize (rafile), RAFILE_REC_SIZE);
@@ -127,7 +127,7 @@ START_TEST(rafile_write_batch)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_write_batch");
   mdebugSubTag ("rafile_write_batch");
 
-  rafile = raOpen (RAFN, 10);
+  rafile = raOpen (RAFN, 10, RAFILE_RW);
   ck_assert_ptr_nonnull (rafile);
   ck_assert_int_eq (raGetCount (rafile), 3);
   rc = stat (RAFN, &statbuf);
@@ -185,7 +185,7 @@ START_TEST(rafile_read)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_read");
   mdebugSubTag ("rafile_read");
 
-  rafile = raOpen (RAFN, 10);
+  rafile = raOpen (RAFN, 10, RAFILE_RO);
   ck_assert_ptr_nonnull (rafile);
   ck_assert_int_eq (raGetCount (rafile), 6);
   rc = raRead (rafile, 1, data);
@@ -212,7 +212,7 @@ START_TEST(rafile_rewrite)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_rewrite");
   mdebugSubTag ("rafile_rewrite");
 
-  rafile = raOpen (RAFN, 10);
+  rafile = raOpen (RAFN, 10, RAFILE_RW);
   ck_assert_ptr_nonnull (rafile);
   ck_assert_int_eq (raGetVersion (rafile), 10);
   ck_assert_int_eq (raGetCount (rafile), 6);
@@ -251,7 +251,7 @@ START_TEST(rafile_reread)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_reread");
   mdebugSubTag ("rafile_reread");
 
-  rafile = raOpen (RAFN, 10);
+  rafile = raOpen (RAFN, 10, RAFILE_RO);
   ck_assert_ptr_nonnull (rafile);
   ck_assert_int_eq (raGetCount (rafile), 6);
   rc = raRead (rafile, 1, data);
@@ -279,7 +279,7 @@ START_TEST(rafile_write_read)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_rewrite");
   mdebugSubTag ("rafile_rewrite");
 
-  rafile = raOpen (RAFN, 10);
+  rafile = raOpen (RAFN, 10, RAFILE_RW);
   ck_assert_ptr_nonnull (rafile);
   ck_assert_int_eq (raGetVersion (rafile), 10);
   ck_assert_int_eq (raGetCount (rafile), 6);
@@ -345,7 +345,7 @@ START_TEST(rafile_bad_write_len)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_bad_write_len");
   mdebugSubTag ("rafile_bad_write_len");
 
-  rafile = raOpen (RAFN, 10);
+  rafile = raOpen (RAFN, 10, RAFILE_RW);
   ck_assert_ptr_nonnull (rafile);
 
   memset (data, 0, sizeof (data));
@@ -365,7 +365,7 @@ START_TEST(rafile_clear)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_clear");
   mdebugSubTag ("rafile_clear");
 
-  rafile = raOpen (RAFN, 10);
+  rafile = raOpen (RAFN, 10, RAFILE_RW);
   ck_assert_ptr_nonnull (rafile);
 
   rc = raClear (rafile, 2);
@@ -394,7 +394,7 @@ START_TEST(rafile_bad_read)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_bad_read");
   mdebugSubTag ("rafile_bad_read");
 
-  rafile = raOpen (RAFN, 10);
+  rafile = raOpen (RAFN, 10, RAFILE_RO);
   ck_assert_ptr_nonnull (rafile);
 
   rc = raRead (rafile, 0, data);
@@ -414,7 +414,7 @@ START_TEST(rafile_bad_clear)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_bad_clear");
   mdebugSubTag ("rafile_bad_clear");
 
-  rafile = raOpen (RAFN, 10);
+  rafile = raOpen (RAFN, 10, RAFILE_RW);
   ck_assert_ptr_nonnull (rafile);
 
   rc = raClear (rafile, 0);
@@ -445,7 +445,7 @@ rafile_suite (void)
   tc = tcase_create ("rafile");
   tcase_set_tags (tc, "libbasic");
   tcase_add_test (tc, rafile_create_new);
-  tcase_add_test (tc, rafile_reopen);
+  tcase_add_test (tc, rafile_reopen_ro);
   tcase_add_test (tc, rafile_write);
   tcase_add_test (tc, rafile_write_batch);
   tcase_add_test (tc, rafile_read);

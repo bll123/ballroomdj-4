@@ -38,6 +38,7 @@ typedef struct filehandle {
 #endif
   FILE    *fh;
   int     count;
+  int     openmode;
 } fileshared_t;
 
 fileshared_t *
@@ -62,6 +63,7 @@ fileSharedOpen (const char *fname, int openmode)
   fhandle = mdmalloc (sizeof (fileshared_t));
   fhandle->count = 0;
   fhandle->fh = NULL;
+  fhandle->openmode = openmode;
 #if _typ_HANDLE
   fhandle->handle = NULL;
 #endif
@@ -69,14 +71,14 @@ fileSharedOpen (const char *fname, int openmode)
 #if _lib_CreateFileW
   access = FILE_APPEND_DATA;
   cd = OPEN_ALWAYS;
-  if (openmode == FILE_OPEN_TRUNCATE) {
+  if (openmode == FILESH_OPEN_TRUNCATE) {
     cd = CREATE_ALWAYS;
   }
-  if (openmode == FILE_OPEN_READ) {
+  if (openmode == FILESH_OPEN_READ) {
     access = FILE_READ_DATA | FILE_READ_ATTRIBUTES | FILE_READ_EA;
     cd = OPEN_ALWAYS;
   }
-  if (openmode == FILE_OPEN_READ_WRITE) {
+  if (openmode == FILESH_OPEN_READ_WRITE) {
     access = FILE_READ_DATA | FILE_READ_ATTRIBUTES | FILE_READ_EA;
     access |= FILE_WRITE_DATA | FILE_WRITE_ATTRIBUTES | FILE_WRITE_EA;
     cd = OPEN_ALWAYS;
@@ -103,13 +105,13 @@ fileSharedOpen (const char *fname, int openmode)
   /* not windows */
 
   mode = "ab";
-  if (openmode == FILE_OPEN_TRUNCATE) {
+  if (openmode == FILESH_OPEN_TRUNCATE) {
     mode = "wb";
   }
-  if (openmode == FILE_OPEN_READ) {
+  if (openmode == FILESH_OPEN_READ) {
     mode = "rb";
   }
-  if (openmode == FILE_OPEN_READ_WRITE) {
+  if (openmode == FILESH_OPEN_READ_WRITE) {
     mode = "rb+";
     if (! fileopFileExists (fname)) {
       mode = "wb+";
@@ -159,7 +161,7 @@ fileSharedWrite (fileshared_t *fhandle, const char *data, size_t len)
 
   /* on linux, flushing each time is reasonably fast */
   /* on MacOS, flushing each time is very slow */
-  /* windows has not been tested */
+  /* windows flush-file-buffers does a sync */
   if (isLinux () || fhandle->count >= FLUSH_COUNT) {
 #if _lib_FlushFileBuffers
     FlushFileBuffers (fhandle->handle);
@@ -202,19 +204,6 @@ fileSharedRead (fileshared_t *fhandle, char *data, size_t len)
   }
   rc = fread (data, len, 1, fhandle->fh);
 #endif
-
-  /* on linux, flushing each time is reasonably fast */
-  /* on MacOS, flushing each time is very slow */
-  /* windows has not been tested */
-  if (isLinux () || fhandle->count >= FLUSH_COUNT) {
-#if _lib_FlushFileBuffers
-    FlushFileBuffers (fhandle->handle);
-#else
-    fflush (fhandle->fh);
-#endif
-    fhandle->count = 0;
-  }
-  ++fhandle->count;
 
   return rc;
 }
@@ -338,9 +327,8 @@ fileSharedTell (fileshared_t *fhandle)  /* TESTING */
 }
 
 
-/* note that this does a flush() and sync() */
 void
-fileSharedFlush (fileshared_t *fhandle)
+fileSharedFlush (fileshared_t *fhandle, int syncflag)
 {
   if (fhandle == NULL) {
     return;
@@ -350,13 +338,16 @@ fileSharedFlush (fileshared_t *fhandle)
   if (fhandle->handle == NULL) {
     return;
   }
+  /* windows flush-file-buffers does a sync */
   FlushFileBuffers (fhandle->handle);
 #else
   if (fhandle->fh == NULL) {
     return;
   }
   fflush (fhandle->fh);
-  fsync (fileno (fhandle->fh));
+  if (syncflag == FILESH_SYNC && fhandle->openmode != FILESH_OPEN_READ) {
+    fsync (fileno (fhandle->fh));
+  }
 #endif
   fhandle->count = 0;
 }
@@ -368,6 +359,10 @@ fileSharedClose (fileshared_t *fhandle)
     return;
   }
 
+  if (fhandle->openmode != FILESH_OPEN_READ) {
+    /* windows does not necessarily flush the buffers to disk on close */
+    fileSharedFlush (fhandle, FILESH_SYNC);
+  }
 #if _lib_CloseHandle
   if (fhandle->handle == NULL) {
     return;
