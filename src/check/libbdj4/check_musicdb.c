@@ -144,7 +144,6 @@ teardown (void)
 START_TEST(musicdb_open_new)
 {
   musicdb_t *db;
-  int       rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_open_new");
   mdebugSubTag ("musicdb_open_new");
