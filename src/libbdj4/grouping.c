@@ -220,6 +220,7 @@ groupingAdd (grouping_t *grp, song_t *song, dbidx_t dbidx, slist_t *groupSort, n
   /* a work or the title-work */
   tval = songGetStr (song, TAG_GROUPING);
   if (tval != NULL && *tval) {
+    logMsg (LOG_DBG, LOG_GROUPING, "grp: group: %s", tval);
     hasgrp = true;
   }
 
@@ -227,6 +228,7 @@ groupingAdd (grouping_t *grp, song_t *song, dbidx_t dbidx, slist_t *groupSort, n
     /* by preference, use any 'work' that is set */
     tval = songGetStr (song, TAG_WORK);
     if (tval != NULL && *tval) {
+      logMsg (LOG_DBG, LOG_GROUPING, "grp: cl-work: %s", tval);
       haswork = true;
     }
 
@@ -237,6 +239,7 @@ groupingAdd (grouping_t *grp, song_t *song, dbidx_t dbidx, slist_t *groupSort, n
       if (*temp) {
         hastitlework = true;
         tval = temp;
+        logMsg (LOG_DBG, LOG_GROUPING, "grp: cl-title-work: %s", tval);
       }
     }
   }
@@ -276,6 +279,7 @@ groupingAdd (grouping_t *grp, song_t *song, dbidx_t dbidx, slist_t *groupSort, n
         tval, discnum, usenum);
   }
 
+  logMsg (LOG_DBG, LOG_GROUPING, "grp: dbidx: %" PRId32 " sortkey: %s", dbidx, sortkey);
   slistSetNum (groupSort, sortkey, dbidx);
   nlistSetStr (groupName, dbidx, tval);
 }

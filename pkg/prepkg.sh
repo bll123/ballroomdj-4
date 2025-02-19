@@ -75,84 +75,91 @@ if [[ $DEVELOPMENT != dev ]]; then
   grep 'AUDIOID_START = AUDIOID_ID_ACOUSTID' src/libaudioid/audioid.c > /dev/null 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then
-    echo "audioid debugging is on"
+    echo "audioid debugging is on (audioid.c)"
     grc=1
   fi
 
   grep 'PLUI_DBG_MSGS = 0,' src/playerui/bdj4playerui.c > /dev/null 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then
-    echo "plui debugging is on"
+    echo "plui debugging is on (bdj4playerui.c)"
     grc=1
   fi
 
   grep '^#define DBUS_DEBUG 0' src/libmpris/dbusi.c > /dev/null 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then
-    echo "dbus debugging is on"
+    echo "dbus debugging is on (dbusi.c)"
     grc=1
   fi
 
   grep '^#define BDJ4_PW_DEBUG 0' src/libvol/volpipewire.c > /dev/null 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then
-    echo "pipewire debugging is on"
+    echo "pipewire debugging is on (volpipewire.c)"
     grc=1
   fi
 
   grep '^#define BDJ4_DYLIB_DEBUG 0' src/libdylib/dyintfc.c > /dev/null 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then
-    echo "dylib debugging is on"
+    echo "dylib debugging is on (dyintfc.c)"
     grc=1
   fi
 
   grep '^#define VLCDEBUG 0' src/libpli/vlci.c > /dev/null 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then
-    echo "vlci debugging is on"
+    echo "vlci debugging is on (vlci.c)"
     grc=1
   fi
 
   grep '^#define SILENCE_LOG 1' src/libpli/vlci.c > /dev/null 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then
-    echo "vlci silence-log is off"
+    echo "vlci silence-log is off (vlci.c)"
     grc=1
   fi
 
   grep '^#define VLCLOGGING 0' src/libpli/plivlc.c > /dev/null 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then
-    echo "plivlc logging is on"
+    echo "plivlc logging is on (plivlc.c)"
     grc=1
   fi
 
   grep 'ACRCLOUD_REUSE 0' src/libaudioid/acrcloud.c > /dev/null 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then
-    echo "acrcloud debugging is on"
+    echo "acrcloud debugging is on (acrcloud.d)"
     grc=1
   fi
 
   grep 'ACOUSTID_REUSE 0' src/libaudioid/acoustid.c > /dev/null 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then
-    echo "acoustid debugging is on"
+    echo "acoustid debugging is on (acoustid.c)"
     grc=1
   fi
 
   grep 'MUSICBRAINZ_REUSE 0' src/libaudioid/musicbrainz.c > /dev/null 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then
-    echo "musicbrainz debugging is on"
+    echo "musicbrainz debugging is on (musicbrainz.c)"
     grc=1
   fi
 
   grep '^#define BDJ4_DEBUG_CSS 0' src/libuigtk3/uiui.c > /dev/null 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then
-    echo "css debugging is on"
+    echo "css debugging is on (uiui.c)"
+    grc=1
+  fi
+
+  grep '^#define DANCESEL_DEBUG 0' src/libbdj4/dancesel.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "dancesel debugging is on (dancesel.c)"
     grc=1
   fi
 
@@ -178,7 +185,7 @@ if [[ $DEVELOPMENT != dev ]]; then
   #grep '^#define MACOS_UI_DEBUG 0' src/include/uigeneral.h > /dev/null 2>&1
   #rc=$?
   #if [[ $rc -ne 0 ]]; then
-  #  echo "macos-ui debugging is on"
+  #  echo "macos-ui debugging is on (include/uigeneral.h)"
   #  grc=1
   #fi
 fi

@@ -78,6 +78,8 @@ confuiBuildUIDebug (confuigui_t *gui)
       CONFUI_DBG_DBUPDATE, -1, (val & LOG_DBUPDATE));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Datafile",
       CONFUI_DBG_DATAFILE, -1, (val & LOG_DATAFILE));
+  confuiMakeItemCheckButton (gui, vbox, szgrp, "Grouping",
+      CONFUI_DBG_GROUPING, -1, (val & LOG_GROUPING));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "iTunes",
       CONFUI_DBG_ITUNES, -1, (val & LOG_ITUNES));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "List",
@@ -86,13 +88,13 @@ confuiBuildUIDebug (confuigui_t *gui)
       CONFUI_DBG_PLAYER, -1, (val & LOG_PLAYER));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Procedures",
       CONFUI_DBG_PROC, -1, (val & LOG_PROC));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Process",
-      CONFUI_DBG_PROCESS, -1, (val & LOG_PROCESS));
 
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
   uiBoxPackStart (hbox, vbox);
 
+  confuiMakeItemCheckButton (gui, vbox, szgrp, "Process",
+      CONFUI_DBG_PROCESS, -1, (val & LOG_PROCESS));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Program State",
       CONFUI_DBG_PROGSTATE, -1, (val & LOG_PROGSTATE));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Random Access File",
