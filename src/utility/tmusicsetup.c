@@ -251,7 +251,9 @@ main (int argc, char *argv [])
   empty = slistAlloc ("tm-empty", LIST_ORDERED, NULL);
 
   bdjoptSetStr (OPT_M_DIR_MUSIC, tmusicdir);
-  bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_ALL);
+  /* audio tags are written separately, not via the songdb interface */
+  /* the option is set around the write */
+  bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_NONE);
   bdjvarsdfloadInit ();
   audiosrcInit ();
 
@@ -299,10 +301,14 @@ main (int argc, char *argv [])
     }
 
     fn = createFile (src, dest, keepmusic);
+
     if (! keepmusic &&
         supported [filetype] == ATI_READ_WRITE) {
+      bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_ALL);
       audiotagWriteTags (fn, empty, tagdata, AF_REWRITE_NONE, AT_FLAGS_MOD_TIME_UPDATE);
+      bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_NONE);
     }
+
     if (emptydb) {
       char        *dur;
       char        *title;
@@ -343,6 +349,8 @@ main (int argc, char *argv [])
     songFromTagList (song, tagdata);
     songSetChanged (song);
     songdbflags = SONGDB_NONE;
+    /* if write-tags is on, invalid genres get deleted */
+    bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_NONE);
     songdbWriteDBSong (songdb, song, &songdbflags, MUSICDB_ENTRY_NEW);
 
     if (*seconddir) {

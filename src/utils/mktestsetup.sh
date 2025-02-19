@@ -9,11 +9,11 @@ done
 cwd=$(pwd)
 
 # with audiotag/dbupdate
-# DBGLEVEL=$((1+2+4+8+4194304+262144))
+DBGLEVEL=$((1+2+8+4194304+262144))
 # with songsel
-# DBGLEVEL=$((1+2+4+8+64))
+# DBGLEVEL=$((1+2+8+64))
 # standard
-DBGLEVEL=$((1+2+4+8))
+# DBGLEVEL=$((1+2+4+8))
 
 systype=$(uname -s)
 case $systype in

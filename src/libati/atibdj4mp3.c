@@ -314,6 +314,7 @@ atibdj4WriteMP3Tags (atidata_t *atidata, const char *ffn,
     }
 
     if (slistGetNum (dellist, tagname) == 1) {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: del: %s", tagname);
       id3_tag_detachframe (id3tags, id3frame);
       id3_frame_delete (id3frame);
       /* when the frame is detached, */
@@ -482,8 +483,8 @@ atibdj4CleanMP3Tags (atidata_t *atidata,
 
 /* internal routines */
 
-/* bdj4 only uses string tags and ufid (binary) */
-/* support for the other types is not needed here */
+/* bdj4 uses string tags, ufid (binary) */
+/* comment and recording id */
 static void
 atibdj4AddMP3Tag (atidata_t *atidata, nlist_t *datalist,
     struct id3_tag *id3tags, const char *tag, const char *val, int tagtype,
