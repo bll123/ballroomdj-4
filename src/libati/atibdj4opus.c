@@ -111,7 +111,7 @@ atibdj4WriteOpusTags (atidata_t *atidata, const char *ffn,
     val = atioggParseVorbisComment (kw, ttag, sizeof (ttag));
     tagname = atidata->tagLookup (tagtype, ttag);
 
-    if (slistGetStr (dellist, tagname) != NULL) {
+    if (slistGetNum (dellist, tagname) == 1) {
       logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: del: %s", audiotag->tag);
       continue;
     }

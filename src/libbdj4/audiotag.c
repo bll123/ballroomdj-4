@@ -237,21 +237,21 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
 
     newvalue = slistGetStr (newtaglist, tag);
     if (newvalue == NULL) {
-      slistSetNum (dellist, tag, 0);
+      slistSetNum (dellist, tag, 1);
     } else {
       value = slistGetStr (tagdata, tag);
       if (! *newvalue && *value) {
-        slistSetNum (dellist, tag, 0);
+        slistSetNum (dellist, tag, 1);
       }
     }
   }
 
   /* special cases */
   if ((rewrite & AF_REWRITE_VARIOUS) == AF_REWRITE_VARIOUS) {
-    slistSetNum (dellist, "VARIOUSARTISTS", 0);
+    slistSetNum (dellist, "VARIOUSARTISTS", 1);
   }
   if ((rewrite & AF_REWRITE_DURATION) == AF_REWRITE_DURATION) {
-    slistSetNum (dellist, "DURATION", 0);
+    slistSetNum (dellist, "DURATION", 1);
   }
 
   /* special case */
@@ -259,7 +259,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
     value = slistGetStr (tagdata, tagdefs [TAG_RECORDING_ID].tag);
     newvalue = slistGetStr (newtaglist, tagdefs [TAG_RECORDING_ID].tag);
     if ((newvalue == NULL || ! *newvalue) && value != NULL && *value) {
-      slistSetNum (dellist, tag, 0);
+      slistSetNum (dellist, tag, 1);
     }
   }
 

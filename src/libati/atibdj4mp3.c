@@ -312,7 +312,7 @@ atibdj4WriteMP3Tags (atidata_t *atidata, const char *ffn,
       continue;
     }
 
-    if (slistGetStr (dellist, tagname) != NULL) {
+    if (slistGetNum (dellist, tagname) == 1) {
       id3_tag_detachframe (id3tags, id3frame);
       id3_frame_delete (id3frame);
       /* when the frame is detached, */
