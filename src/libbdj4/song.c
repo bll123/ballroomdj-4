@@ -13,6 +13,7 @@
 #include "audiosrc.h"
 #include "bdj4.h"
 #include "bdjopt.h"
+#include "bdjregex.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "dance.h"
@@ -113,13 +114,14 @@ enum {
 };
 
 typedef struct {
-  bool      initialized;
-  long      songcount;
-  level_t   *levels;
-  songfav_t *songfav;
+  bool        initialized;
+  uint32_t    songcount;
+  level_t     *levels;
+  songfav_t   *songfav;
+  bdjregex_t  *allnumeric;
 } songinit_t;
 
-static songinit_t gsonginit = { false, 0, NULL, NULL };
+static songinit_t gsonginit = { false, 0, NULL, NULL, NULL };
 
 static void songSetDefaults (song_t *song);
 
@@ -154,7 +156,7 @@ songFree (void *tsong)
   mdfree (song);
 
   --gsonginit.songcount;
-  if (gsonginit.songcount <= 0) {
+  if (gsonginit.songcount == 0) {
     songCleanup ();
   }
 }
@@ -202,6 +204,13 @@ songFromTagList (song_t *song, slist_t *tagdata)
     } else if (songdfkeys [i].valuetype == VALUE_DOUBLE) {
       songSetDouble (song, songdfkeys [i].itemkey, atof (tstr) / DF_DOUBLE_MULT);
     } else {
+      if (songdfkeys [i].itemkey == TAG_GROUPING) {
+        /* 2025-2-19 : Some companies set the grouping tag to an all numeric */
+        /*    group.  If an all numeric group is found, clear it */
+        if (regexMatch (gsonginit.allnumeric, tstr)) {
+          tstr = NULL;
+        }
+      }
       songSetStr (song, songdfkeys [i].itemkey, tstr);
     }
   }
@@ -605,9 +614,9 @@ songInit (void)
   }
   gsonginit.initialized = true;
   gsonginit.songcount = 0;
-
   gsonginit.levels = bdjvarsdfGet (BDJVDF_LEVELS);
   gsonginit.songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
+  gsonginit.allnumeric = regexInit ("^\\d+$");
 }
 
 static void
@@ -617,6 +626,10 @@ songCleanup (void)
     return;
   }
 
+  if (gsonginit.allnumeric != NULL) {
+    regexFree (gsonginit.allnumeric);
+    gsonginit.allnumeric = NULL;
+  }
   gsonginit.songcount = 0;
   gsonginit.initialized = false;
 }
