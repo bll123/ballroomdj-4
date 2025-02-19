@@ -192,9 +192,10 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
               mdextalloc (str);
             }
 
-            /* gcc is incorrectly complaining 2024-2-16 */
-            /* if a pragma gcc is used, then clang complains */
-            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (5): %s %s=%s", tagname, id3frame->id, str);
+            if (tagname != NULL) {
+              /* the if statement prevents a warning message from the compiler */
+              logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (5): %s %s=%s", tagname, id3frame->id, str);
+            }
 
             p = (const char *) str;
             if (tagname != NULL &&

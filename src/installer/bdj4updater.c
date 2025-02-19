@@ -99,9 +99,12 @@ enum {
   /* 2024-9-2 4.12.1 */
   /* fix any locale dirs that are not symlinks (usually macos) */
   UPD_FIX_LOCALE,
-  /* 2024-10-21 4.13.0 */
+  /* 2024-10-21 4.12.4 */
   /* fix windows fonts set to 'sans regular' */
   UPD_FIX_WIN_FONT,
+  /* 2025-2-19 4.13.0 */
+  /* groupings of all digits are cleared */
+  UPD_FIX_DB_GROUPING,
   UPD_MAX,
 };
 enum {
@@ -116,6 +119,7 @@ static datafilekey_t upddfkeys[] = {
   { "FIX_DB_DATE_ADDED", UPD_FIX_DB_DATE_ADDED, VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_DATE_ADD_B", UPD_FIX_DB_DATE_ADDED_B, VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_DISCNUM",   UPD_FIX_DB_DISCNUM, VALUE_NUM, NULL, DF_NORM },
+  { "FIX_DB_GROUPING",  UPD_FIX_DB_GROUPING, VALUE_NUM, NULL, DF_NORM },
   { "FIX_LOCALE",       UPD_FIX_LOCALE,     VALUE_NUM, NULL, DF_NORM },
   { "FIX_WIN_FONT",     UPD_FIX_WIN_FONT,   VALUE_NUM, NULL, DF_NORM },
 };
@@ -746,6 +750,11 @@ main (int argc, char *argv [])
     processflags [UPD_FIX_DB_DISCNUM] = true;
     processdb = true;
   }
+  if (statusflags [UPD_FIX_DB_GROUPING] == UPD_NOT_DONE) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.13.0 : process db : fix db grouping");
+    processflags [UPD_FIX_DB_GROUPING] = true;
+    processdb = true;
+  }
 
   if (processaf || processdb) {
     mstime_t    dbmt;
@@ -821,6 +830,11 @@ main (int argc, char *argv [])
     slistidx_t  dbiteridx;
     song_t      *song;
     dbidx_t     dbidx;
+    bdjregex_t  *alldigits = NULL;
+
+    if (processflags [UPD_FIX_DB_GROUPING]) {
+      alldigits = regexInit ("^\\d+$");
+    }
 
     dbStartBatch (musicdb);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "processing database");
@@ -873,6 +887,19 @@ main (int argc, char *argv [])
         }
       }
 
+      if (processflags [UPD_FIX_DB_GROUPING]) {
+        const char  *tstr;
+
+        tstr = songGetStr (song, TAG_GROUPING);
+        if (tstr != NULL) {
+          if (regexMatch (alldigits, tstr)) {
+            songSetStr (song, TAG_GROUPING, NULL);
+            dowrite = true;
+            counters [UPD_FIX_DB_GROUPING] += 1;
+          }
+        }
+      }
+
       if (dowrite) {
         dbWriteSong (musicdb, song);
       }
@@ -893,6 +920,9 @@ main (int argc, char *argv [])
     if (processflags [UPD_FIX_DB_DISCNUM]) {
       nlistSetNum (updlist, UPD_FIX_DB_DISCNUM, UPD_COMPLETE);
     }
+    if (processflags [UPD_FIX_DB_GROUPING]) {
+      nlistSetNum (updlist, UPD_FIX_DB_GROUPING, UPD_COMPLETE);
+    }
     dbClose (musicdb);
   }
 
@@ -904,6 +934,9 @@ main (int argc, char *argv [])
   }
   if (counters [UPD_FIX_DB_DISCNUM] > 0) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-discnum: %" PRId32, counters [UPD_FIX_DB_DISCNUM]);
+  }
+  if (counters [UPD_FIX_DB_GROUPING] > 0) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-grouping: %" PRId32, counters [UPD_FIX_DB_GROUPING]);
   }
 
   if (statusflags [UPD_FIX_LOCALE] == UPD_NOT_DONE) {

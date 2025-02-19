@@ -118,7 +118,7 @@ typedef struct {
   uint32_t    songcount;
   level_t     *levels;
   songfav_t   *songfav;
-  bdjregex_t  *allnumeric;
+  bdjregex_t  *alldigits;
 } songinit_t;
 
 static songinit_t gsonginit = { false, 0, NULL, NULL, NULL };
@@ -207,7 +207,7 @@ songFromTagList (song_t *song, slist_t *tagdata)
       if (songdfkeys [i].itemkey == TAG_GROUPING) {
         /* 2025-2-19 : Some companies set the grouping tag to an all numeric */
         /*    group.  If an all numeric group is found, clear it */
-        if (regexMatch (gsonginit.allnumeric, tstr)) {
+        if (regexMatch (gsonginit.alldigits, tstr)) {
           tstr = NULL;
         }
       }
@@ -616,7 +616,7 @@ songInit (void)
   gsonginit.songcount = 0;
   gsonginit.levels = bdjvarsdfGet (BDJVDF_LEVELS);
   gsonginit.songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
-  gsonginit.allnumeric = regexInit ("^\\d+$");
+  gsonginit.alldigits = regexInit ("^\\d+$");
 }
 
 static void
@@ -626,9 +626,9 @@ songCleanup (void)
     return;
   }
 
-  if (gsonginit.allnumeric != NULL) {
-    regexFree (gsonginit.allnumeric);
-    gsonginit.allnumeric = NULL;
+  if (gsonginit.alldigits != NULL) {
+    regexFree (gsonginit.alldigits);
+    gsonginit.alldigits = NULL;
   }
   gsonginit.songcount = 0;
   gsonginit.initialized = false;

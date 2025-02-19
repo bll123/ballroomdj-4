@@ -4,7 +4,17 @@
 
 <!--
 
-**4.12.11 2025-2---**
+**4.13.0 2025-2---**
+
+* Bug Fixes:
+    * Audio Tags: Fix deletion of tags (mp3, opus, ogg).
+    * Database Update: Grouping tags that are all numeric will be
+      ignored and will not be imported into the database.
+    * Genre: Fix incorrect classical flag processing.
+* Internal:
+    * code cleanup/optimization
+* Internal:
+    * build cleanup
 
 -->
 
