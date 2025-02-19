@@ -111,11 +111,17 @@ genreGetGenre (genre_t *genres, ilistidx_t ikey)
 int
 genreGetClassicalFlag (genre_t *genres, ilistidx_t ikey)
 {
+  int     rc;
+
   if (genres == NULL) {
     return 0;
   }
 
-  return ilistGetNum (genres->genre, ikey, GENRE_CLASSICAL_FLAG);
+  rc = ilistGetNum (genres->genre, ikey, GENRE_CLASSICAL_FLAG);
+  if (rc < 0) {
+    rc = 0;
+  }
+  return rc;
 }
 
 void
