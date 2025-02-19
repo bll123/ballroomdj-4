@@ -27,7 +27,6 @@ case $systype in
   MINGW64*)
     tag=win64
     platform=windows
-    echo "sshpass is currently broken in msys2 "
     ;;
   MINGW32*)
     echo "Platform not supported."
@@ -86,18 +85,9 @@ wwwpath=/home/project-web/${project}/htdocs
 ssh="ssh -p $port"
 export ssh
 
-echo -n "sourceforge Password: "
-read -s SSHPASS
-echo ""
-if [[ $SSHPASS == "" ]]; then
-  echo "No password."
-  exit 1
-fi
-export SSHPASS
-
 fn=README.txt
 sed -e "s~#VERSION#~${cvers}~" -e "s~#BUILDDATE#~${BUILDDATE}~" $fn > ${fn}.n
-sshpass -e rsync -v -e ssh ${fn}.n \
+rsync -v -e ssh ${fn}.n \
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}
 rm -f ${fn}.n
 
@@ -105,60 +95,60 @@ rm -f ${fn}.n
 
 fn=linux-pre-install
 ver=$(install/${fn}.sh --version)
-sshpass -e rsync -v -e ssh install/${fn}.sh \
+rsync -v -e ssh install/${fn}.sh \
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.sh
 
 fn=linux-uninstall-bdj4
 ver=$(install/${fn}.sh --version)
-sshpass -e rsync -v -e ssh install/${fn}.sh \
+rsync -v -e ssh install/${fn}.sh \
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.sh
 
 # macos scripts
 
 fn=macos-pre-install-macports
 ver=$(install/${fn}.sh --version)
-sshpass -e rsync -v -e ssh install/${fn}.sh \
+rsync -v -e ssh install/${fn}.sh \
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.sh
 
 fn=macos-run-installer
 ver=$(install/${fn}.sh --version)
-sshpass -e rsync -v -e ssh install/${fn}.sh \
+rsync -v -e ssh install/${fn}.sh \
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.sh
 
 fn=macos-uninstall-bdj4
 ver=$(install/${fn}.sh --version)
-sshpass -e rsync -v -e ssh install/${fn}.sh \
+rsync -v -e ssh install/${fn}.sh \
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.sh
 
 # windows scripts
 
 fn=win-uninstall-bdj4
 ver=$(grep ver= install/${fn}.bat | sed -e 's,.*ver=,,')
-sshpass -e rsync -v -e ssh install/${fn}.bat \
+rsync -v -e ssh install/${fn}.bat \
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.bat
 
 # installers
 
 for fn in $HOME/vbox_shared/bdj4inst/bdj4-installer-*; do
-  sshpass -e rsync -v -e ssh ${fn} \
+  rsync -v -e ssh ${fn} \
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/v${VERSION}/
 done
 
 # source
 
 spnm=$(pkgsrcnm)
-sshpass -e rsync -v -e ssh ${spnm}.zip \
+rsync -v -e ssh ${spnm}.zip \
   ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/source/
-sshpass -e rsync -v -e ssh ${spnm}.tar.gz \
+rsync -v -e ssh ${spnm}.tar.gz \
   ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/source/
 spnm=bdj4-src-macos-${pn_date}.tar.gz
 if [[ -f ${spnm} ]]; then
-  sshpass -e rsync -v -e ssh ${spnm} \
+  rsync -v -e ssh ${spnm} \
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/source/
 fi
 spnm=bdj4-src-win64-${pn_date}.zip
 if [[ -f ${spnm} ]]; then
-  sshpass -e rsync -v -e ssh ${spnm} \
+  rsync -v -e ssh ${spnm} \
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/source/
 fi
 
@@ -167,13 +157,13 @@ VERFILE=bdj4version.txt
 bd=$BUILDDATE
 cvers=$(pkgwebvers)
 echo "$cvers" > $VERFILE
-sshpass -e rsync -e "$ssh" -aS \
+rsync -e "$ssh" -aS \
     $VERFILE ${remuser}@${wserver}:${wwwpath}
 # old bdj-3 file
 cvers=$VERSION
 echo "$cvers" > $VERFILE
 wwwpath=/home/project-web/ballroomdj/htdocs
-sshpass -e rsync -e "$ssh" -aS \
+rsync -e "$ssh" -aS \
     $VERFILE ${remuser}@${wserver}:${wwwpath}/versioncheck.txt
 rm -f $VERFILE
 

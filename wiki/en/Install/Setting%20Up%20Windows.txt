@@ -51,8 +51,11 @@ your preference.
 
 ##### Notification Settings
 
-This is one method to prevent notifications. There are alternative
-methods to prevent notifications that can be used.
+This is one (rather severe) method to prevent notifications. There are
+alternative methods to prevent notifications that can be used.
+
+Windows "Focus Assist" can also be used to turn off notifications
+during a particular time period.
 
 ###### Windows 10
 
@@ -106,4 +109,4 @@ Select __OK__.
 </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-12-05 06:20:21; BDJ4 version 4.4.6)_
+<br>_(Updated 2025-02-19 15:05:44; BDJ4 version 4.13.0)_

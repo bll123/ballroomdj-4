@@ -2,8 +2,6 @@
 #
 # Copyright 2021-2025 Brad Lanam Pleasant Hill CA
 #
-# requirements: sshpass
-#
 
 while test ! \( -d src -a -d web -a -d wiki \); do
   cd ..
@@ -81,11 +79,6 @@ if [[ $tvers != "" ]]; then
   vers=$tvers
 fi
 
-echo -n "Remote Password: "
-read -s SSHPASS
-echo ""
-export SSHPASS
-
 echo "## copying files"
 if [[ $server == ballroomdj.org ]]; then
   cp -pf bdj4marquee.php bdj4register.php bdj4report.php \
@@ -126,11 +119,11 @@ fi
 cd $TMP
 # never use --delete here
 # the wikiimg/ directory is also underneath htdocs
-sshpass -e rsync -v -e "$ssh" -aS \
+rsync -v -e "$ssh" -aS \
     . \
     ${remuser}@${server}:${wwwpath}
 if [[ ${wwwpathb} != "" ]]; then
-  sshpass -e rsync -v -e "$ssh" -aS \
+  rsync -v -e "$ssh" -aS \
       . \
       ${remuser}@${server}:${wwwpathb}
 fi

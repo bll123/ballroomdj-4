@@ -4,7 +4,11 @@
 
 <!--
 
-**4.13.0 2025-2---**
+**4.13.1 2025-2---**
+
+-->
+
+**4.13.0 2025-2-19**
 
 * Bug Fixes:
     * Audio Tags: Fix deletion of tags (mp3, opus, ogg).
@@ -12,11 +16,8 @@
       ignored and will not be imported into the database.
     * Genre: Fix incorrect classical flag processing.
 * Internal:
-    * code cleanup/optimization
-* Internal:
-    * build cleanup
-
--->
+    * build cleanup.
+    * code cleanup/optimization.
 
 **4.12.11 2025-2-10**
 
@@ -1161,4 +1162,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-02-10 11:01:28; BDJ4 version 4.12.11)_
+<br>_(Updated 2025-02-19 15:05:44; BDJ4 version 4.13.0)_
