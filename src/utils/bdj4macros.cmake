@@ -28,17 +28,20 @@ macro (addWinSockLibrary name)
     target_link_libraries (${name} PRIVATE ws2_32)
   endif()
 endmacro()
+
 # the ntdll library is used for RtlGetVersion()
 macro (addWinNtdllLibrary name)
   if (WIN32)
     target_link_libraries (${name} PRIVATE ntdll)
   endif()
 endmacro()
+
 macro (addWinBcryptLibrary name)
   if (WIN32)
     target_link_libraries (${name} PRIVATE Bcrypt)
   endif()
 endmacro()
+
 macro (addWinIcon name rcnm iconnm)
   if (WIN32)
     add_custom_command (
@@ -52,11 +55,17 @@ macro (addWinIcon name rcnm iconnm)
     target_sources (${name} PRIVATE ${rcnm})
   endif()
 endmacro()
+
 macro (addWinVersionInfo name)
   if (WIN32)
     set (tversfn ${name})
     # this will fail for x.x.x.x forms.
-    string (REPLACE "." "," tbdj4vers "${BDJ4_VERSION}" ",0")
+    string (REPLACE "." "," tbdj4vers "${BDJ4_VERSION}")
+    string (REGEX REPLACE "[^,]" "" tempvi ${tbdj4vers})
+    string (LENGTH ${tempvi} tempvilen)
+    if (${tempvilen} EQUAL 2)
+      string (APPEND tbdj4vers ",0")
+    endif()
     configure_file (
       ${PROJECT_SOURCE_DIR}/../pkg/windows/version.rc.in
       ${name}-version.rc
@@ -64,6 +73,7 @@ macro (addWinVersionInfo name)
     target_sources (${name} PRIVATE ${name}-version.rc)
   endif()
 endmacro()
+
 macro (addWinManifest name)
   if (WIN32)
     set (t${name}man "${name}.manifest")
