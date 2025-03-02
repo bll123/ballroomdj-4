@@ -5,27 +5,13 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
-if (WIN32)
-  # the bdj4 executable
-  # for cmake, must use the .o file extension, not .res
-  add_custom_command (
-    OUTPUT launcher.o
-    COMMAND cp -f ${PROJECT_SOURCE_DIR}/../img/${BDJ4ICON} .
-    COMMAND echo "id ICON ${BDJ4ICON}" > launcher.rc
-    COMMAND windres launcher.rc -O coff -o launcher.o
-    MAIN_DEPENDENCY ${PROJECT_SOURCE_DIR}/../img/${BDJ4ICON}
-    BYPRODUCTS launcher.rc ${BDJ4ICON}
-    VERBATIM
-  )
-endif()
-
 # want to keep the launcher at a minimum size and statically linked
 # with no shared library dependencies.
 add_executable (bdj4 bdj4.c)
 if (WIN32)
   target_compile_options (bdj4 PRIVATE -municode)
-  target_sources (bdj4 PRIVATE launcher.o)
 endif()
+addWinIcon (bdj4 launcher.rc ${BDJ4ICON})
 target_link_libraries (bdj4 PRIVATE
   objosutils
   objlauncher
@@ -42,6 +28,8 @@ addIOKitFramework (bdj4)
 addIntlLibrary (bdj4)
 addWinSockLibrary (bdj4)
 addWinNtdllLibrary (bdj4)
+addWinVersionInfo (bdj4)
+addWinManifest (bdj4)
 updateRPath (bdj4)
 
 # this is only used on macos
@@ -89,6 +77,8 @@ target_link_libraries (bdj4starterui PRIVATE
 )
 addIntlLibrary (bdj4starterui)
 addWinSockLibrary (bdj4starterui)
+addWinVersionInfo (bdj4starterui)
+addWinManifest (bdj4starterui)
 updateRPath (bdj4starterui)
 
 add_executable (bdj4helperui bdj4helperui.c)
@@ -104,6 +94,8 @@ target_link_libraries (bdj4helperui PRIVATE
 )
 addIntlLibrary (bdj4helperui)
 addWinSockLibrary (bdj4helperui)
+addWinVersionInfo (bdj4helperui)
+addWinManifest (bdj4helperui)
 updateRPath (bdj4helperui)
 
 add_executable (bdj4cleantmp bdj4cleantmp.c)
@@ -113,6 +105,8 @@ endif()
 target_link_libraries (bdj4cleantmp PRIVATE
   libbdj4basic libbdj4common
 )
+addWinVersionInfo (bdj4cleantmp)
+addWinManifest (bdj4cleantmp)
 updateRPath (bdj4cleantmp)
 
 install (TARGETS

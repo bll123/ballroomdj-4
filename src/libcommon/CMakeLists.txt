@@ -17,10 +17,7 @@ add_library (libbdj4common SHARED
   fileshared.c
   log.c
   osdir.c
-  oslinuxlocale.c
   oslocale.c
-  osmaclocale.m
-  oswinlocale.c
   osrandom.c
   ossignal.c
   pathinfo.c
@@ -30,6 +27,15 @@ add_library (libbdj4common SHARED
   sockh.c
   vsencdec.c
 )
+if (APPLE)
+  target_sources (libbdj4common PRIVATE osmaclocale.m)
+endif()
+if (WIN32)
+  target_sources (libbdj4common PRIVATE oswinlocale.c)
+endif()
+if (NOT APPLE AND NOT WIN32)
+  target_sources (libbdj4common PRIVATE oslinuxlocale.c)
+endif()
 target_include_directories (libbdj4common
   PRIVATE "${GLIB_INCLUDE_DIRS}"
 )

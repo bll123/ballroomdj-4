@@ -6,6 +6,9 @@
 
 **4.13.1 2025-2---**
 
+* Bug Fixes:
+    * Windows: add application manifest.
+
 -->
 
 **4.13.0 2025-2-19**

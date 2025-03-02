@@ -216,15 +216,19 @@ pkg_check_modules (ICUI18N icu-i18n)
 macro (checkAddCompileFlag flag)
   # cmake caches every damned variable...
   # need a different variable for every test.
-  check_c_compiler_flag (${flag} cfchk${flag})
-  if (cfchk${flag})
+  string (REPLACE "-" "_" tflag ${flag})
+  string (REPLACE "=" "_" tflag ${tflag})
+  check_c_compiler_flag (${flag} cfchk${tflag})
+  if (cfchk${tflag})
     add_compile_options (${flag})
   endif()
 endmacro()
 
 macro (checkAddLinkFlag flag)
-  check_linker_flag ("C" ${flag} lfchk${flag})
-  if (lfchk${flag})
+  string (REPLACE "-" "_" tflag ${flag})
+  string (REPLACE "=" "_" tflag ${tflag})
+  check_linker_flag ("C" ${flag} lfchk${tflag})
+  if (lfchk${tflag})
     add_link_options (${flag})
   endif()
 endmacro()
@@ -660,5 +664,11 @@ set (CMAKE_EXTRA_INCLUDE_FILES "")
 #### build the config file
 
 configure_file (config.h.in config.h)
+if (WIN32)
+  configure_file (
+      ${PROJECT_SOURCE_DIR}/../pkg/windows/manifest.manifest.in
+      manifest.manifest
+  )
+endif()
 
 cmake_path (SET DEST_BIN NORMALIZE "${PROJECT_SOURCE_DIR}/../bin")

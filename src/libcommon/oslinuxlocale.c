@@ -3,8 +3,6 @@
  */
 #include "config.h"
 
-#if __linux__
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -39,5 +37,3 @@ osLocaleDirection (const char *locale)
 
   return tdir;
 }
-
-#endif

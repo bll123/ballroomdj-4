@@ -3,8 +3,6 @@
  */
 #include "config.h"
 
-#if __linux__
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -53,5 +51,3 @@ osResumeSleep (void)
 {
   return;
 }
-
-#endif

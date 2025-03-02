@@ -3,8 +3,6 @@
  */
 #include "config.h"
 
-#if __APPLE__
-
 #import <Foundation/NSObject.h>
 #import <Foundation/NSLocale.h>
 
@@ -36,5 +34,3 @@ osLocaleDirection (const char *locale)
 
   return tdir;
 }
-
-#endif

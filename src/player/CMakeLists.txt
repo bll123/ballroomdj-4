@@ -16,6 +16,8 @@ target_link_libraries (bdj4main PRIVATE
 )
 addIntlLibrary (bdj4main)
 addWinSockLibrary (bdj4main)
+addWinVersionInfo (bdj4main)
+addWinManifest (bdj4main)
 
 add_executable (bdj4player bdj4player.c)
 if (WIN32)
@@ -30,6 +32,8 @@ target_link_libraries (bdj4player PRIVATE
 )
 addIntlLibrary (bdj4player)
 addWinSockLibrary (bdj4player)
+addWinVersionInfo (bdj4player)
+addWinManifest (bdj4player)
 
 
 add_executable (bdj4marquee bdj4marquee.c)
@@ -47,6 +51,8 @@ target_link_libraries (bdj4marquee PRIVATE
 )
 addIntlLibrary (bdj4marquee)
 addWinSockLibrary (bdj4marquee)
+addWinVersionInfo (bdj4marquee)
+addWinManifest (bdj4marquee)
 
 add_executable(bdj4rc bdj4rc.c)
 target_include_directories (bdj4rc
@@ -62,6 +68,8 @@ target_link_libraries (bdj4rc PRIVATE
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
 )
 addWinSockLibrary (bdj4rc)
+addWinVersionInfo (bdj4rc)
+addWinManifest (bdj4rc)
 
 add_executable(bdj4mobmq bdj4mobmq.c)
 target_include_directories (bdj4mobmq
@@ -78,6 +86,8 @@ target_link_libraries (bdj4mobmq PRIVATE
 )
 addIntlLibrary (bdj4mobmq)
 addWinSockLibrary (bdj4mobmq)
+addWinVersionInfo (bdj4mobmq)
+addWinManifest (bdj4mobmq)
 
 install (TARGETS
   bdj4main bdj4player bdj4marquee bdj4rc bdj4mobmq

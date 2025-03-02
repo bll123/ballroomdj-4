@@ -6,11 +6,17 @@ cmake_minimum_required (VERSION 3.18)
 include (../utils/bdj4macros.cmake)
 
 add_library (libbdj4uib SHARED
-  osuilinuxutils.c
-  osuimacutils.m
-  osuiwinutils.c
   uiutils.c
 )
+if (APPLE)
+  target_sources (libbdj4uib PRIVATE osuimacutils.m)
+endif()
+if (WIN32)
+  target_sources (libbdj4uib PRIVATE osuiwinutils.c)
+endif()
+if (NOT APPLE AND NOT WIN32)
+  target_sources (libbdj4uib PRIVATE osuilinuxutils.c)
+endif()
 target_include_directories (libbdj4uib
   PRIVATE ${GTK_INCLUDE_DIRS}
 )

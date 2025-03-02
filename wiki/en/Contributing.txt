@@ -2,14 +2,19 @@
 
 ### Contributing to BallroomDJ 4 Development
 
-As of 2024-11-15, development needs are:
+As of 2025-2-28, development needs are:
 
-* Windows Development: SMTC: Use image from audio file.
-* Windows Development: Windows Native Player Interface
-* Windows Development: Windows Native UI
-* MacOS Development: MacOS Native UI
-<br>This is in progress.  Progress is very slow.
+* Translations
 * All Platforms: Unit Testing, Testing and QA
+* Windows Development: SMTC: Use image from audio file.
+* Player Interface
+    * Windows Native
+* User Interface:
+    * Windows Native UI
+    * MacOS Native UI
+      This is in progress.  Progress is very slow/stalled.
+    * Ultimate&#43;&#43;
+    * QT
 
 Development Team (as of 2024-11-15):
 
@@ -19,4 +24,4 @@ Testing, Quality&nbsp;Assurance, Documentation, Website&nbsp;Management,
 System&nbsp;Administration
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-03-02 06:04:58; BDJ4 version 4.13.0)_

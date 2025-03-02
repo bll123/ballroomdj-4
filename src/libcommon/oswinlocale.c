@@ -3,8 +3,6 @@
  */
 #include "config.h"
 
-#if _WIN32
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -36,5 +34,3 @@ osLocaleDirection (const char *locale)
 
   return tdir;
 }
-
-#endif /* _WIN32 */

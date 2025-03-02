@@ -43,6 +43,8 @@ target_link_libraries (bdj4configui PRIVATE
 )
 addIntlLibrary (bdj4configui)
 addWinSockLibrary (bdj4configui)
+addWinVersionInfo (bdj4configui)
+addWinManifest (bdj4configui)
 
 install (TARGETS
   bdj4configui

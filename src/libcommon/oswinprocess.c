@@ -3,8 +3,6 @@
  */
 #include "config.h"
 
-#if _WIN32
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -278,4 +276,3 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
   return rc;
 }
 
-#endif /* _WIN32 */

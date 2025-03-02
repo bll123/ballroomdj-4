@@ -59,10 +59,16 @@ include (utils/bdj4macros.cmake)
 
 # the following are needed by both bdj4se and bdj4
 
+if (WIN32)
+
+endif()
+
 add_library (objosprocess OBJECT
   libcommon/osprocess.c
-  libcommon/oswinprocess.c
 )
+if (WIN32)
+  target_sources (objosprocess PRIVATE libcommon/oswinprocess.c)
+endif()
 
 add_library (objosenv OBJECT
   libcommon/osenv.c
@@ -91,10 +97,16 @@ add_library (objtmutil OBJECT
 # The bdj4 launcher must be able to link as a static executable
 add_library (objosutils OBJECT
   libcommon/osutils.c
-  libcommon/oslinuxutils.c
-  libcommon/osmacutils.m
-  libcommon/oswinutils.c
 )
+if (APPLE)
+  target_sources (objosutils PRIVATE libcommon/osmacutils.m)
+endif()
+if (WIN32)
+  target_sources (objosutils PRIVATE libcommon/oswinutils.c)
+endif()
+if (NOT APPLE AND NOT WIN32)
+  target_sources (objosutils PRIVATE libcommon/oslinuxutils.c)
+endif()
 
 add_library (objlauncher OBJECT
   libcommon/bdj4arg.c

@@ -21,6 +21,8 @@ target_link_libraries (bdj4playerui PRIVATE
 )
 addIntlLibrary (bdj4playerui)
 addWinSockLibrary (bdj4playerui)
+addWinVersionInfo (bdj4playerui)
+addWinManifest (bdj4playerui)
 updateRPath (bdj4playerui)
 
 install (TARGETS

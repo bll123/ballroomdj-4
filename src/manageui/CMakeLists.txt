@@ -29,6 +29,8 @@ target_link_libraries (bdj4manageui PRIVATE
 )
 addIntlLibrary (bdj4manageui)
 addWinSockLibrary (bdj4manageui)
+addWinVersionInfo (bdj4manageui)
+addWinManifest (bdj4manageui)
 
 add_executable (bdj4bpmcounter
   bdj4bpmcounter.c
@@ -46,6 +48,8 @@ target_link_libraries (bdj4bpmcounter PRIVATE
 )
 addIntlLibrary (bdj4bpmcounter)
 addWinSockLibrary (bdj4bpmcounter)
+addWinVersionInfo (bdj4bpmcounter)
+addWinManifest (bdj4bpmcounter)
 
 add_executable (bdj4dbupdate bdj4dbupdate.c)
 if (WIN32)
@@ -58,6 +62,8 @@ target_link_libraries (bdj4dbupdate PRIVATE
 )
 addIntlLibrary (bdj4dbupdate)
 addWinSockLibrary (bdj4dbupdate)
+addWinVersionInfo (bdj4dbupdate)
+addWinManifest (bdj4dbupdate)
 
 install (TARGETS
   bdj4manageui bdj4bpmcounter bdj4dbupdate

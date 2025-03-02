@@ -20,6 +20,8 @@ target_link_libraries (bdj4info PRIVATE
   ${ICUI18N_LDFLAGS}
 )
 addIntlLibrary (bdj4info)
+addWinVersionInfo (bdj4info)
+addWinManifest (bdj4info)
 
 add_executable (bdj4tags bdj4tags.c)
 if (WIN32)
@@ -30,9 +32,13 @@ target_link_libraries (bdj4tags PRIVATE
   ${ICUI18N_LDFLAGS}
 )
 addIntlLibrary (bdj4tags)
+addWinVersionInfo (bdj4tags)
+addWinManifest (bdj4tags)
 
 if (WIN32)
   add_executable (bdj4winmksc bdj4winmksc.cpp)
+  addWinVersionInfo (bdj4winmksc)
+  addWinManifest (bdj4winmksc)
   target_compile_options (bdj4winmksc PRIVATE -municode)
   target_link_options (libvolwin PRIVATE -static-libstdc++)
 endif()
