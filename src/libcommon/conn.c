@@ -76,6 +76,7 @@ connInit (bdjmsgroute_t routefrom)
     connports [ROUTE_HELPERUI] = bdjvarsGetNum (BDJVL_PORT_HELPERUI);
     connports [ROUTE_BPM_COUNTER] = bdjvarsGetNum (BDJVL_PORT_BPM_COUNTER);
     connports [ROUTE_TEST_SUITE] = bdjvarsGetNum (BDJVL_PORT_TEST_SUITE);
+    connports [ROUTE_SERVER] = bdjvarsGetNum (BDJVL_PORT_SERVER);
     connports [ROUTE_ALTINST] = 0;
     initialized = true;
   }

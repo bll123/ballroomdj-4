@@ -180,6 +180,32 @@ confuiBuildUIGeneral (confuigui_t *gui)
       CONFUI_ENTRY_ACRCLOUD_API_HOST, OPT_G_ACRCLOUD_API_HOST,
       bdjoptGetStr (OPT_G_ACRCLOUD_API_HOST), CONFUI_NO_INDENT);
 
+  if (bdjoptGetNum (OPT_G_BDJ4_SERVER_DISP)) {
+    /* CONTEXT: configuration: the remote BDJ4 server*/
+    snprintf (tbuff, sizeof (tbuff), _("%s Server"), BDJ4_NAME);
+    confuiMakeItemEntry (gui, vbox, szgrp, tbuff,
+        CONFUI_ENTRY_BDJ4_SERVER, OPT_P_BDJ4_SERVER,
+        bdjoptGetStr (OPT_P_BDJ4_SERVER), CONFUI_NO_INDENT);
+
+    /* CONTEXT: configuration: the port to use for the BDJ4 server */
+    snprintf (tbuff, sizeof (tbuff), _("%s Server Port"), BDJ4_NAME);
+    confuiMakeItemSpinboxNum (gui, vbox, szgrp, NULL, tbuff,
+        CONFUI_WIDGET_BDJ4_SERVER_PORT, OPT_P_BDJ4_SERVER_PORT,
+        8000, 30000, bdjoptGetNum (OPT_P_BDJ4_SERVER_PORT), NULL);
+
+    /* CONTEXT: configuration: the BDJ4 server user */
+    snprintf (tbuff, sizeof (tbuff), _("%s Server User"), BDJ4_NAME);
+    confuiMakeItemEntry (gui, vbox, szgrp, tbuff,
+        CONFUI_ENTRY_BDJ4_SERVER_USER, OPT_P_BDJ4_SERVER_USER,
+        bdjoptGetStr (OPT_P_BDJ4_SERVER_USER), CONFUI_NO_INDENT);
+
+    /* CONTEXT: configuration: the BDJ4 server password */
+    snprintf (tbuff, sizeof (tbuff), _("%s Server Password"), BDJ4_NAME);
+    confuiMakeItemEntry (gui, vbox, szgrp, tbuff,
+        CONFUI_ENTRY_BDJ4_SERVER_PASS, OPT_P_BDJ4_SERVER_PASS,
+        bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS), CONFUI_NO_INDENT);
+  }
+
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 

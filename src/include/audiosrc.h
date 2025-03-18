@@ -14,11 +14,15 @@ extern "C" {
 enum {
   AUDIOSRC_TYPE_NONE,
   AUDIOSRC_TYPE_FILE,
+  AUDIOSRC_TYPE_BDJ4,
   AUDIOSRC_TYPE_MAX,
 };
 
 #define AS_FILE_PFX "file://"
 #define AS_FILE_PFX_LEN (strlen (AS_FILE_PFX))
+
+#define AS_BDJ4_PFX "bdj4://"
+#define AS_BDJ4_PFX_LEN (strlen (AS_BDJ4_PFX))
 
 /* audiosrc.c */
 
@@ -40,11 +44,14 @@ const char *audiosrcPrefix (const char *sfname);
 void audiosrcURI (const char *sfname, char *uri, size_t sz, const char *prefix, int pfxlen);
 void audiosrcFullPath (const char *sfname, char *fullpath, size_t sz, const char *prefix, int pfxlen);
 const char * audiosrcRelativePath (const char *sfname, int pfxlen);
+
 size_t audiosrcDir (const char *sfname, char *dir, size_t sz, int pfxlen);
 asiter_t *audiosrcStartIterator (const char *uri);
 void audiosrcCleanIterator (asiter_t *asiiter);
 int32_t audiosrcIterCount (asiter_t *asiter);
 const char *audiosrcIterate (asiter_t *asiter);
+
+bool audiosrcGetPlaylistNames (int type);
 
 void asiDesc (const char **ret, int max);
 asdata_t *asiInit (const char *delpfx, const char *origext);
@@ -66,6 +73,7 @@ asiterdata_t *asiStartIterator (asdata_t *asdata, const char *dir);
 void asiCleanIterator (asdata_t *asdata, asiterdata_t *asidata);
 int32_t asiIterCount (asdata_t *asdata, asiterdata_t *asidata);
 const char *asiIterate (asdata_t *asdata, asiterdata_t *asidata);
+bool asiGetPlaylistNames (asdata_t *asdata);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

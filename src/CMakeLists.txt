@@ -155,6 +155,7 @@ add_subdirectory (manageui)
 add_subdirectory (player)
 add_subdirectory (playerui)
 add_subdirectory (starter)
+add_subdirectory (server)
 
 # testing
 add_subdirectory (check)

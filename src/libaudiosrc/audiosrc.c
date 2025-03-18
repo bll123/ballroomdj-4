@@ -47,6 +47,7 @@ typedef struct {
   void              (*asiCleanIterator) (asdata_t *, asiterdata_t *asiterdata);
   int32_t           (*asiIterCount) (asdata_t *, asiterdata_t *asiterdata);
   const char        *(*asiIterate) (asdata_t *, asiterdata_t *asiterdata);
+  bool              (*asiGetPlaylistNames) (asdata_t *);
 } asdylib_t;
 
 typedef struct audiosrc {
@@ -180,6 +181,7 @@ audiosrcInit (void)
       asdylib->type = asdylib->asiTypeIdent ();
     }
     audiosrc->typeidx [asdylib->type] = i;
+fprintf (stderr, "type: %d %s\n", asdylib->type, pkgnm);
   }
 }
 
@@ -596,6 +598,29 @@ audiosrcIterate (asiter_t *asiter)
 
   return rval;
 }
+
+bool
+audiosrcGetPlaylistNames (int type)
+{
+  asdylib_t *asdylib;
+  bool      rc = false;
+
+  if (audiosrc == NULL) {
+    return false;
+  }
+  if (type == AUDIOSRC_TYPE_NONE || type >= AUDIOSRC_TYPE_MAX) {
+    return false;
+  }
+
+  asdylib = audiosrcGetDylibByType (type);
+
+  if (asdylib != NULL && asdylib->asiGetPlaylistNames != NULL) {
+    rc = asdylib->asiGetPlaylistNames (asdylib->asdata);
+  }
+
+  return rc;
+}
+
 
 /* internal routines */
 

@@ -466,6 +466,8 @@ starterInitDataCallback (void *udata, programstate_t programState)
 {
   startui_t   *starter = udata;
   char        tbuff [MAXPATHLEN];
+  const char  *srvuri;
+  bool        enabled;
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       NEWINSTALL_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
@@ -477,6 +479,21 @@ starterInitDataCallback (void *udata, programstate_t programState)
     starter->processes [ROUTE_HELPERUI] = procutilStartProcess (
         ROUTE_HELPERUI, "bdj4helperui", PROCUTIL_DETACH, targv);
     fileopDelete (tbuff);
+  }
+
+  srvuri = bdjoptGetStr (OPT_P_BDJ4_SERVER);
+  enabled =
+      (srvuri == NULL || *srvuri == '\0') &&
+      bdjoptGetStr (OPT_P_BDJ4_SERVER_USER) != NULL &&
+      bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS) != NULL &&
+      bdjoptGetNum (OPT_P_BDJ4_SERVER_PORT) >= 8000;
+  if (enabled) {
+    const char  *targv [5];
+    int         targc = 0;
+
+    targv [targc++] = NULL;
+    starter->processes [ROUTE_SERVER] = procutilStartProcess (
+        ROUTE_SERVER, "bdj4server", PROCUTIL_DETACH, targv);
   }
 
   return STATE_FINISHED;

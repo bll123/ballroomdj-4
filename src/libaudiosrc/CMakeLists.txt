@@ -20,11 +20,20 @@ target_link_libraries (libasfile PRIVATE
   libbdj4basic libbdj4common
 )
 
+add_library (libasbdj4 SHARED
+  audiosrcbdj4.c
+)
+target_link_libraries (libasbdj4 PRIVATE
+  libbdj4 libbdj4basic libbdj4common
+)
+
 install (TARGETS
   libbdj4audiosrc
+  libasbdj4
   libasfile
   DESTINATION ${DEST_BIN}
 )
 
 updateRPath (libbdj4audiosrc)
+updateRPath (libasbdj4)
 updateRPath (libasfile)

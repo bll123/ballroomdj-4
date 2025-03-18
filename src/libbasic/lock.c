@@ -43,6 +43,7 @@ static char *locknames [ROUTE_MAX] = {
   [ROUTE_STARTERUI] = "starterui",
   [ROUTE_TEST_SUITE] = "testsuite",
   [ROUTE_ALTINST] = "altinst",
+  [ROUTE_SERVER] = "server",
 };
 
 static void   lockCheckLockDir (void);

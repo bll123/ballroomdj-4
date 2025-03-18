@@ -60,6 +60,7 @@ static datafilekey_t bdjoptglobaldfkeys [] = {
   { "ACRCLOUD_API_SECRET",  OPT_G_ACRCLOUD_API_SECRET, VALUE_STR, NULL, DF_NORM },
   { "AUD_ADJ_DISP",         OPT_G_AUD_ADJ_DISP,       VALUE_NUM, convBoolean, DF_NORM },
   { "AUTOORGANIZE",         OPT_G_AUTOORGANIZE,       VALUE_NUM, convBoolean, DF_NORM },
+  { "BDJ4_SERVER_DISP",     OPT_G_BDJ4_SERVER_DISP,   VALUE_NUM, convBoolean, DF_NORM },
   { "BPM",                  OPT_G_BPM,                VALUE_NUM, bdjoptConvBPM, DF_NORM },
   { "CLOCKDISP",            OPT_G_CLOCK_DISP,         VALUE_NUM, bdjoptConvClock, DF_NORM },
   { "DANCESELMETHOD",       OPT_G_DANCESEL_METHOD,    VALUE_NUM, bdjoptConvDanceselMethod, DF_NORM },
@@ -74,55 +75,59 @@ static datafilekey_t bdjoptglobaldfkeys [] = {
 };
 
 static datafilekey_t bdjoptprofiledfkeys [] = {
-  { "COMPLETEMSG",          OPT_P_COMPLETE_MSG,         VALUE_STR, NULL, DF_NORM },
-  { "DEFAULTVOLUME",        OPT_P_DEFAULTVOLUME,        VALUE_NUM, NULL, DF_NORM },
-  { "FADETYPE",             OPT_P_FADETYPE,             VALUE_NUM, bdjoptConvFadeType, DF_NORM },
-  { "MARQUEE_SHOW",         OPT_P_MARQUEE_SHOW,         VALUE_NUM, bdjoptConvMarqueeShow, DF_NORM },
+  { "BDJ4_SERVER",          OPT_P_BDJ4_SERVER,        VALUE_STR, NULL, DF_NORM },
+  { "BDJ4_SERVER_PASS",     OPT_P_BDJ4_SERVER_PASS,   VALUE_STR, NULL, DF_NORM },
+  { "BDJ4_SERVER_PORT",     OPT_P_BDJ4_SERVER_PORT,   VALUE_NUM, NULL, DF_NORM },
+  { "BDJ4_SERVER_USER",     OPT_P_BDJ4_SERVER_USER,   VALUE_STR, NULL, DF_NORM },
+  { "COMPLETEMSG",          OPT_P_COMPLETE_MSG,       VALUE_STR, NULL, DF_NORM },
+  { "DEFAULTVOLUME",        OPT_P_DEFAULTVOLUME,      VALUE_NUM, NULL, DF_NORM },
+  { "FADETYPE",             OPT_P_FADETYPE,           VALUE_NUM, bdjoptConvFadeType, DF_NORM },
+  { "MARQUEE_SHOW",         OPT_P_MARQUEE_SHOW,       VALUE_NUM, bdjoptConvMarqueeShow, DF_NORM },
   /* the mobile mq enable switch was changed to mobmq-type */
-  { "MOBILEMARQUEE",        OPT_P_MOBILEMARQUEE,        VALUE_NUM, convBoolean, DF_NO_WRITE },
-  { "MOBILEMQKEY",          OPT_P_MOBMQ_KEY,            VALUE_STR, NULL, DF_NORM },
-  { "MOBILEMQPORT",         OPT_P_MOBMQ_PORT,           VALUE_NUM, NULL, DF_NORM },
-  { "MOBILEMQTAG",          OPT_P_MOBMQ_TAG,            VALUE_STR, NULL, DF_NORM },
-  { "MOBILEMQTITLE",        OPT_P_MOBMQ_TITLE,          VALUE_STR, NULL, DF_NORM },
-  { "MOBILEMQTYPE",         OPT_P_MOBMQ_TYPE,           VALUE_NUM, bdjoptConvMobMQType, DF_NORM },
-  { "MQQLEN",               OPT_P_MQQLEN,               VALUE_NUM, NULL, DF_NORM },
-  { "MQSHOWINFO",           OPT_P_MQ_SHOW_INFO,         VALUE_NUM, convBoolean, DF_NORM },
-  { "MQ_ACCENT_COL",        OPT_P_MQ_ACCENT_COL,        VALUE_STR, NULL, DF_NORM },
-  { "MQ_BG_COL",            OPT_P_MQ_BG_COL,            VALUE_STR, NULL, DF_NORM },
-  { "MQ_INFO_COL",          OPT_P_MQ_INFO_COL,          VALUE_STR, NULL, DF_NORM },
-  { "MQ_INFO_SEP",          OPT_P_MQ_INFO_SEP,          VALUE_STR, NULL, DF_NORM },
-  { "MQ_TEXT_COL",          OPT_P_MQ_TEXT_COL,          VALUE_STR, NULL, DF_NORM },
-  { "PLAYER_UI_SEP",        OPT_P_PLAYER_UI_SEP,        VALUE_STR, NULL, DF_NORM },
-  { "PROFILENAME",          OPT_P_PROFILENAME,          VALUE_STR, NULL, DF_NORM },
-  { "REMCONTROLPASS",       OPT_P_REMCONTROLPASS,       VALUE_STR, NULL, DF_NORM },
-  { "REMCONTROLPORT",       OPT_P_REMCONTROLPORT,       VALUE_NUM, NULL, DF_NORM },
-  { "REMCONTROLUSER",       OPT_P_REMCONTROLUSER,       VALUE_STR, NULL, DF_NORM },
-  { "REMOTECONTROL",        OPT_P_REMOTECONTROL,        VALUE_NUM, convBoolean, DF_NORM },
-  { "SHOWSPDCONTROL",       OPT_P_SHOW_SPD_CONTROL,     VALUE_NUM, convBoolean, DF_NORM },
-  { "UI_ACCENT_COL",        OPT_P_UI_ACCENT_COL,        VALUE_STR, NULL, DF_NORM },
-  { "UI_ERROR_COL",         OPT_P_UI_ERROR_COL,         VALUE_STR, NULL, DF_NORM },
-  { "UI_MARK_COL",          OPT_P_UI_MARK_COL,          VALUE_STR, NULL, DF_NORM },
-  { "UI_MARK_TEXT",         OPT_P_UI_MARK_TEXT,         VALUE_STR, NULL, DF_NORM },
-  { "UI_PROFILE_COL",       OPT_P_UI_PROFILE_COL,       VALUE_STR, NULL, DF_NORM },
-  { "UI_ROWSEL_COL",        OPT_P_UI_ROWSEL_COL,        VALUE_STR, NULL, DF_NORM },
-  { "UI_ROW_HL_COL",        OPT_P_UI_ROW_HL_COL,        VALUE_STR, NULL, DF_NORM },
+  { "MOBILEMARQUEE",        OPT_P_MOBILEMARQUEE,      VALUE_NUM, convBoolean, DF_NO_WRITE },
+  { "MOBILEMQKEY",          OPT_P_MOBMQ_KEY,          VALUE_STR, NULL, DF_NORM },
+  { "MOBILEMQPORT",         OPT_P_MOBMQ_PORT,         VALUE_NUM, NULL, DF_NORM },
+  { "MOBILEMQTAG",          OPT_P_MOBMQ_TAG,          VALUE_STR, NULL, DF_NORM },
+  { "MOBILEMQTITLE",        OPT_P_MOBMQ_TITLE,        VALUE_STR, NULL, DF_NORM },
+  { "MOBILEMQTYPE",         OPT_P_MOBMQ_TYPE,         VALUE_NUM, bdjoptConvMobMQType, DF_NORM },
+  { "MQQLEN",               OPT_P_MQQLEN,             VALUE_NUM, NULL, DF_NORM },
+  { "MQSHOWINFO",           OPT_P_MQ_SHOW_INFO,       VALUE_NUM, convBoolean, DF_NORM },
+  { "MQ_ACCENT_COL",        OPT_P_MQ_ACCENT_COL,      VALUE_STR, NULL, DF_NORM },
+  { "MQ_BG_COL",            OPT_P_MQ_BG_COL,          VALUE_STR, NULL, DF_NORM },
+  { "MQ_INFO_COL",          OPT_P_MQ_INFO_COL,        VALUE_STR, NULL, DF_NORM },
+  { "MQ_INFO_SEP",          OPT_P_MQ_INFO_SEP,        VALUE_STR, NULL, DF_NORM },
+  { "MQ_TEXT_COL",          OPT_P_MQ_TEXT_COL,        VALUE_STR, NULL, DF_NORM },
+  { "PLAYER_UI_SEP",        OPT_P_PLAYER_UI_SEP,      VALUE_STR, NULL, DF_NORM },
+  { "PROFILENAME",          OPT_P_PROFILENAME,        VALUE_STR, NULL, DF_NORM },
+  { "REMCONTROLPASS",       OPT_P_REMCONTROLPASS,     VALUE_STR, NULL, DF_NORM },
+  { "REMCONTROLPORT",       OPT_P_REMCONTROLPORT,     VALUE_NUM, NULL, DF_NORM },
+  { "REMCONTROLUSER",       OPT_P_REMCONTROLUSER,     VALUE_STR, NULL, DF_NORM },
+  { "REMOTECONTROL",        OPT_P_REMOTECONTROL,      VALUE_NUM, convBoolean, DF_NORM },
+  { "SHOWSPDCONTROL",       OPT_P_SHOW_SPD_CONTROL,   VALUE_NUM, convBoolean, DF_NORM },
+  { "UI_ACCENT_COL",        OPT_P_UI_ACCENT_COL,      VALUE_STR, NULL, DF_NORM },
+  { "UI_ERROR_COL",         OPT_P_UI_ERROR_COL,       VALUE_STR, NULL, DF_NORM },
+  { "UI_MARK_COL",          OPT_P_UI_MARK_COL,        VALUE_STR, NULL, DF_NORM },
+  { "UI_MARK_TEXT",         OPT_P_UI_MARK_TEXT,       VALUE_STR, NULL, DF_NORM },
+  { "UI_PROFILE_COL",       OPT_P_UI_PROFILE_COL,     VALUE_STR, NULL, DF_NORM },
+  { "UI_ROWSEL_COL",        OPT_P_UI_ROWSEL_COL,      VALUE_STR, NULL, DF_NORM },
+  { "UI_ROW_HL_COL",        OPT_P_UI_ROW_HL_COL,      VALUE_STR, NULL, DF_NORM },
 };
 
 static datafilekey_t bdjoptqueuedfkeys [] = {
-  { "ACTIVE",               OPT_Q_ACTIVE,               VALUE_NUM, convBoolean, DF_NORM },
-  { "DISPLAY",              OPT_Q_DISPLAY,              VALUE_NUM, convBoolean, DF_NORM },
-  { "FADEINTIME",           OPT_Q_FADEINTIME,           VALUE_NUM, NULL, DF_NORM },
-  { "FADEOUTTIME",          OPT_Q_FADEOUTTIME,          VALUE_NUM, NULL, DF_NORM },
-  { "GAP",                  OPT_Q_GAP,                  VALUE_NUM, NULL, DF_NORM },
-  { "MAXPLAYTIME",          OPT_Q_MAXPLAYTIME,          VALUE_NUM, NULL, DF_NORM },
-  { "PAUSEEACHSONG",        OPT_Q_PAUSE_EACH_SONG,      VALUE_NUM, convBoolean, DF_NORM },
-  { "PLAYANNOUNCE",         OPT_Q_PLAY_ANNOUNCE,        VALUE_NUM, convBoolean, DF_NORM },
-  { "PLAY_WHEN_QUEUED",     OPT_Q_PLAY_WHEN_QUEUED,     VALUE_NUM, convBoolean, DF_NORM },
-  { "QUEUE_NAME",           OPT_Q_QUEUE_NAME,           VALUE_STR, NULL, DF_NORM },
-  { "SHOWQUEUEDANCE",       OPT_Q_SHOW_QUEUE_DANCE,     VALUE_NUM, convBoolean, DF_NORM },
-  { "START_WAIT_TIME",      OPT_Q_START_WAIT_TIME,      VALUE_NUM, NULL, DF_NORM },
-  { "STOP_AT_TIME",         OPT_Q_STOP_AT_TIME,         VALUE_NUM, NULL, DF_NORM },
-  { "XFADE",                OPT_Q_XFADE,                VALUE_NUM, NULL, DF_NORM },
+  { "ACTIVE",               OPT_Q_ACTIVE,             VALUE_NUM, convBoolean, DF_NORM },
+  { "DISPLAY",              OPT_Q_DISPLAY,            VALUE_NUM, convBoolean, DF_NORM },
+  { "FADEINTIME",           OPT_Q_FADEINTIME,         VALUE_NUM, NULL, DF_NORM },
+  { "FADEOUTTIME",          OPT_Q_FADEOUTTIME,        VALUE_NUM, NULL, DF_NORM },
+  { "GAP",                  OPT_Q_GAP,                VALUE_NUM, NULL, DF_NORM },
+  { "MAXPLAYTIME",          OPT_Q_MAXPLAYTIME,        VALUE_NUM, NULL, DF_NORM },
+  { "PAUSEEACHSONG",        OPT_Q_PAUSE_EACH_SONG,    VALUE_NUM, convBoolean, DF_NORM },
+  { "PLAYANNOUNCE",         OPT_Q_PLAY_ANNOUNCE,      VALUE_NUM, convBoolean, DF_NORM },
+  { "PLAY_WHEN_QUEUED",     OPT_Q_PLAY_WHEN_QUEUED,   VALUE_NUM, convBoolean, DF_NORM },
+  { "QUEUE_NAME",           OPT_Q_QUEUE_NAME,         VALUE_STR, NULL, DF_NORM },
+  { "SHOWQUEUEDANCE",       OPT_Q_SHOW_QUEUE_DANCE,   VALUE_NUM, convBoolean, DF_NORM },
+  { "START_WAIT_TIME",      OPT_Q_START_WAIT_TIME,    VALUE_NUM, NULL, DF_NORM },
+  { "STOP_AT_TIME",         OPT_Q_STOP_AT_TIME,       VALUE_NUM, NULL, DF_NORM },
+  { "XFADE",                OPT_Q_XFADE,              VALUE_NUM, NULL, DF_NORM },
 };
 
 /* must be ascii sorted, use LANG=C <editor> bdjopt.c */
@@ -437,6 +442,14 @@ bdjoptInit (void)
   if (tstr == NULL) {
     tstr = nlistGetStr (bdjopt->bdjoptList, OPT_MP_LISTING_FONT);
     nlistSetStr (bdjopt->bdjoptList, OPT_M_LISTING_FONT, tstr);
+  }
+
+  /* added 4.13.1 bdj4 server */
+  if (nlistGetNum (bdjopt->bdjoptList, OPT_P_BDJ4_SERVER_PORT) < 0) {
+    nlistSetNum (bdjopt->bdjoptList, OPT_P_BDJ4_SERVER_PORT, 9011);
+  }
+  if (nlistGetNum (bdjopt->bdjoptList, OPT_G_BDJ4_SERVER_DISP) < 0) {
+    nlistSetNum (bdjopt->bdjoptList, OPT_G_BDJ4_SERVER_DISP, false);
   }
 
   for (int i = 0; i < BDJ4_QUEUE_MAX; ++i) {

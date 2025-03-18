@@ -81,6 +81,7 @@ typedef enum {
   OPT_G_ACRCLOUD_API_HOST,
   OPT_G_AUD_ADJ_DISP,
   OPT_G_AUTOORGANIZE,
+  OPT_G_BDJ4_SERVER_DISP,
   OPT_G_BPM,
   OPT_G_CLOCK_DISP,
   OPT_G_DANCESEL_METHOD,
@@ -118,6 +119,10 @@ typedef enum {
   OPT_MP_MQ_THEME,            // deprecated, replaced with OPT_M_MQ_THEME
   OPT_MP_UIFONT,              // deprecated, replaced with OPT_M_UI_FONT
   OPT_MP_UI_THEME,            // deprecated, replaced with OPT_M_UI_THEME
+  OPT_P_BDJ4_SERVER,
+  OPT_P_BDJ4_SERVER_PASS,
+  OPT_P_BDJ4_SERVER_PORT,
+  OPT_P_BDJ4_SERVER_USER,
   OPT_P_COMPLETE_MSG,
   OPT_P_DEFAULTVOLUME,
   OPT_P_FADETYPE,

@@ -39,6 +39,7 @@ typedef enum {
   BDJVL_PORT_DBUPDATE,
   BDJVL_PORT_BPM_COUNTER,
   BDJVL_PORT_TEST_SUITE,
+  BDJVL_PORT_SERVER,
   BDJVL_NUM_PORTS,
   /* insert non-port keys here */
   BDJVL_DELETE_PFX_LEN,

@@ -33,6 +33,7 @@ extern "C" {
  *  play - player
  *  plui - player ui
  *  rc   - mobile remote control
+ *  srv  - server
  *  strt - starter
  *  tdbc - tdbcompare
  *  tdbs - tdbsetval

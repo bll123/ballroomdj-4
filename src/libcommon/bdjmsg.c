@@ -38,6 +38,7 @@ const char *bdjmsgroutetxt [ROUTE_MAX] = {
   [ROUTE_HELPERUI] = "HELPERUI",
   [ROUTE_BPM_COUNTER] = "BPM_COUNTER",
   [ROUTE_TEST_SUITE] = "TEST_SUITE",
+  [ROUTE_SERVER] = "SERVER",
   [ROUTE_ALTINST] = "ALTINST (NIU)",
 };
 

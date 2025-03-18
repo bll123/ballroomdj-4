@@ -188,6 +188,9 @@ main (int argc, char *argv[])
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_ACRCLOUD_API_KEY, 40, 40);
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_ACRCLOUD_API_SECRET, 45, 45);
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_ACRCLOUD_API_HOST, 45, 100);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_BDJ4_SERVER, 45, 100);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_BDJ4_SERVER_PASS, 10, 20);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_BDJ4_SERVER_USER, 10, 20);
 
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT, 30, 300);
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_ITUNES_DIR, 50, 300);
