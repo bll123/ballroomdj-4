@@ -32,6 +32,7 @@ void  webclientSetTimeout (webclient_t *webclient, long timeout);
 void  webclientSpoofUserAgent (webclient_t *webclient);
 void  webclientGetLocalIP (char *ip, size_t sz);
 void  webclientCompressFile (const char *infn, const char *outfn);
+void  webclientSetUserPass (webclient_t *webclient, const char *user, const char *pass);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

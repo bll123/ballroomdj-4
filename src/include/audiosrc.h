@@ -31,9 +31,11 @@ typedef struct asdata asdata_t;
 typedef struct asiter asiter_t;
 typedef struct asiterdata asiterdata_t;
 
+bool audiosrcEnabled (void);
 void audiosrcInit (void);
 void audiosrcCleanup (void);
 void audiosrcPostInit (void);
+int audiosrcGetCount (void);
 int audiosrcGetType (const char *nm);
 bool audiosrcExists (const char *nm);
 bool audiosrcOriginalExists (const char *nm);
@@ -54,6 +56,7 @@ const char *audiosrcIterate (asiter_t *asiter);
 bool audiosrcGetPlaylistNames (int type);
 
 void asiDesc (const char **ret, int max);
+bool asiEnabled (void);
 asdata_t *asiInit (const char *delpfx, const char *origext);
 void asiFree (asdata_t *asdata);
 void asiPostInit (asdata_t *asdata, const char *musicdir);

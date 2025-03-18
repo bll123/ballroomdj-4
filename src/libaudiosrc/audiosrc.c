@@ -28,6 +28,7 @@ typedef struct {
   int               type;
   asdata_t          *asdata;
   dlhandle_t        *dlHandle;
+  bool              *(*asiEnabled) (void);
   asdata_t          *(*asiInit) (const char *, const char *);
   void              (*asiFree) (asdata_t *);
   void              (*asiPostInit) (asdata_t *, const char *);
@@ -110,6 +111,7 @@ audiosrcInit (void)
     asdylib->type = AUDIOSRC_TYPE_NONE;
     asdylib->asdata = NULL;
     asdylib->dlHandle = NULL;
+    asdylib->asiEnabled = NULL;
     asdylib->asiInit = NULL;
     asdylib->asiFree = NULL;
     asdylib->asiPostInit = NULL;
@@ -129,6 +131,7 @@ audiosrcInit (void)
     asdylib->asiCleanIterator = NULL;
     asdylib->asiIterCount = NULL;
     asdylib->asiIterate = NULL;
+    asdylib->asiGetPlaylistNames = NULL;
   }
 
   for (int i = 0; i < audiosrc->ascount; ++i) {
@@ -149,6 +152,13 @@ audiosrcInit (void)
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wpedantic"
+    asdylib->asiEnabled = dylibLookup (asdylib->dlHandle, "asiEnabled");
+    if (asdylib->asiEnabled != NULL) {
+      if (! asdylib->asiEnabled()) {
+        continue;
+      }
+    }
+
     asdylib->asiInit = dylibLookup (asdylib->dlHandle, "asiInit");
     asdylib->asiFree = dylibLookup (asdylib->dlHandle, "asiFree");
     asdylib->asiPostInit = dylibLookup (asdylib->dlHandle, "asiPostInit");
@@ -168,6 +178,7 @@ audiosrcInit (void)
     asdylib->asiCleanIterator = dylibLookup (asdylib->dlHandle, "asiCleanIterator");
     asdylib->asiIterCount = dylibLookup (asdylib->dlHandle, "asiIterCount");
     asdylib->asiIterate = dylibLookup (asdylib->dlHandle, "asiIterate");
+    asdylib->asiGetPlaylistNames = dylibLookup (asdylib->dlHandle, "asiGetPlaylistNames");
 #pragma clang diagnostic pop
 
     if (asdylib->asiInit != NULL) {
@@ -230,6 +241,16 @@ audiosrcPostInit (void)
       asdylib->asiPostInit (asdylib->asdata, bdjoptGetStr (OPT_M_DIR_MUSIC));
     }
   }
+}
+
+int
+audiosrcGetCount (void)
+{
+  if (audiosrc == NULL) {
+    return 0;
+  }
+
+  return audiosrc->ascount;
 }
 
 int
@@ -611,10 +632,12 @@ audiosrcGetPlaylistNames (int type)
   if (type == AUDIOSRC_TYPE_NONE || type >= AUDIOSRC_TYPE_MAX) {
     return false;
   }
+fprintf (stderr, "as-gpln: type %d\n", type);
 
   asdylib = audiosrcGetDylibByType (type);
 
   if (asdylib != NULL && asdylib->asiGetPlaylistNames != NULL) {
+fprintf (stderr, "as-gpln: b4 call\n");
     rc = asdylib->asiGetPlaylistNames (asdylib->asdata);
   }
 

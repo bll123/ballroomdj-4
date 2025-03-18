@@ -12,6 +12,7 @@
 #include <errno.h>
 #include <sys/time.h> // for mongoose
 #include <dirent.h> // for mongoose
+#include <ctype.h>
 
 #include "mongoose.h"
 
@@ -176,6 +177,9 @@ websrvLog (char c, void *userdata)
   static size_t len = 0;
 
   if (c == '\r') {
+    return;
+  }
+  if (! isprint (c)) {
     return;
   }
   if (c == '\n' || len >= (sizeof (wlogbuff) - 1)) {

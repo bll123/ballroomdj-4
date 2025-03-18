@@ -384,6 +384,18 @@ webclientCompressFile (const char *infn, const char *outfn)
   mdfree (obuff);
 }
 
+void
+webclientSetUserPass (webclient_t *webclient, const char *user,
+    const char *pass)
+{
+  if (webclient == NULL || webclient->curl == NULL) {
+    return;
+  }
+
+  curl_easy_setopt (webclient->curl, CURLOPT_USERNAME, user);
+  curl_easy_setopt (webclient->curl, CURLOPT_PASSWORD, pass);
+}
+
 /* internal routines */
 
 static void

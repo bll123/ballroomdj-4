@@ -56,6 +56,13 @@ asiDesc (const char **ret, int max)
   ret [c++] = NULL;
 }
 
+bool
+asiEnabled (void)
+{
+  /* 'file' source is always enabled */
+  return true;
+}
+
 asdata_t *
 asiInit (const char *delpfx, const char *origext)
 {

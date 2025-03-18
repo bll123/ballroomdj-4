@@ -108,6 +108,7 @@ enum {
   MANAGE_MENU_CB_MM_SET_MARK,
   MANAGE_MENU_CB_MM_REMOVE_SONG,
   MANAGE_MENU_CB_MM_UNDO_REMOVE,
+  MANAGE_MENU_CB_MM_IMPORT,
   /* song editor */
   MANAGE_MENU_CB_SE_BPM,
   MANAGE_MENU_CB_SE_COPY_TAGS,
@@ -443,6 +444,8 @@ static uimusicq_t * manageGetCurrMusicQ (manageui_t *manage);
 static bool     manageStartBPMCounter (void *udata);
 static void     manageSetBPMCounter (manageui_t *manage, song_t *song);
 static void     manageSendBPMCounter (manageui_t *manage);
+/* import playlist */
+static bool     manageImportPlaylist (void *udata);
 /* same song */
 static bool     manageSameSongSetMark (void *udata);
 static bool     manageSameSongClearMark (void *udata);
@@ -2402,6 +2405,15 @@ manageMusicManagerMenu (manageui_t *manage)
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
+  if (audiosrcGetCount () > 1) {
+    manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_IMPORT,
+        manageImportPlaylist);
+    /* CONTEXT: manage-ui: menu selection: music manager: import playlist */
+    menuitem = uiMenuCreateItem (menu, _("Import Playlist"),
+        manage->callbacks [MANAGE_MENU_CB_MM_IMPORT]);
+    uiwcontFree (menuitem);
+  }
+
   manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_SET_MARK,
       manageSameSongSetMark);
   /* CONTEXT: manage-ui: menu selection: music manager: set same-song mark */
@@ -4010,6 +4022,23 @@ manageSendBPMCounter (manageui_t *manage)
   snprintf (tbuff, sizeof (tbuff), "%d", manage->currtimesig);
   connSendMessage (manage->conn, ROUTE_BPM_COUNTER, MSG_BPM_TIMESIG, tbuff);
   logProcEnd ("");
+}
+
+/* import playlist */
+
+static bool
+manageImportPlaylist (void *udata)
+{
+//  manageui_t  *manage = udata;
+
+  logProcBegin ();
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: import playlist");
+
+// ### start a dialog to select where to import from...
+  audiosrcGetPlaylistNames (AUDIOSRC_TYPE_BDJ4);
+
+  logProcEnd ("");
+  return UICB_CONT;
 }
 
 /* same song */

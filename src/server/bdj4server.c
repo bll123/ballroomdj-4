@@ -45,9 +45,7 @@ typedef struct {
   bool            enabled;
 } bdjsrv_t;
 
-static bool     bdjsrvConnectingCallback (void *udata, programstate_t programState);
 static bool     bdjsrvHandshakeCallback (void *udata, programstate_t programState);
-static bool     bdjsrvInitDataCallback (void *udata, programstate_t programState);
 static bool     bdjsrvStoppingCallback (void *udata, programstate_t programState);
 static bool     bdjsrvStopWaitCallback (void *udata, programstate_t programState);
 static bool     bdjsrvClosingCallback (void *udata, programstate_t programState);
@@ -83,6 +81,7 @@ main (int argc, char *argv[])
       bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS) != NULL &&
       bdjoptGetNum (OPT_P_BDJ4_SERVER_PORT) >= 8000;
   if (! bdjsrv.enabled) {
+fprintf (stderr, "server: not enabled\n");
     lockRelease (bdjsrv.locknm, PATHBLD_MP_USEIDX);
     exit (0);
   }
@@ -94,12 +93,8 @@ main (int argc, char *argv[])
   bdjsrv.websrv = NULL;
   bdjsrv.stopwaitcount = 0;
 
-  progstateSetCallback (bdjsrv.progstate, STATE_CONNECTING,
-      bdjsrvConnectingCallback, &bdjsrv);
   progstateSetCallback (bdjsrv.progstate, STATE_WAIT_HANDSHAKE,
       bdjsrvHandshakeCallback, &bdjsrv);
-  progstateSetCallback (bdjsrv.progstate, STATE_INITIALIZE_DATA,
-      bdjsrvInitDataCallback, &bdjsrv);
   progstateSetCallback (bdjsrv.progstate, STATE_STOPPING,
       bdjsrvStoppingCallback, &bdjsrv);
   progstateSetCallback (bdjsrv.progstate, STATE_STOP_WAIT,
@@ -162,32 +157,30 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *querydata,
     const char *uri)
 {
   bdjsrv_t *bdjsrv = userdata;
-//  char          user [40];
-//  char          pass [40];
+  char          user [40];
+  char          pass [40];
   char          tbuff [300];
 
-//  websrvGetUserPass (bdjsrv->websrv, user, sizeof (user), pass, sizeof (pass));
+  websrvGetUserPass (bdjsrv->websrv, user, sizeof (user), pass, sizeof (pass));
 
+fprintf (stderr, "srv: uri: %s\n", uri);
 fprintf (stderr, "srv: query: %s\n", query);
 fprintf (stderr, "srv: query-data: %s\n", querydata);
   *tbuff = '\0';
   snprintf (tbuff, sizeof (tbuff), "%d%c%s", MUSICQ_PB_A, MSG_ARGS_RS, querydata);
 
-#if 0
   if (user [0] == '\0' || pass [0] == '\0') {
     websrvReply (bdjsrv->websrv, 401,
         "Content-type: text/plain; charset=utf-8\r\n"
-        "WWW-Authenticate: Basic realm=BDJ4 Remote\r\n",
+        "WWW-Authenticate: Basic realm=BDJ4\r\n",
         "Unauthorized");
   } else if (strcmp (user, bdjsrv->user) != 0 ||
       strcmp (pass, bdjsrv->pass) != 0) {
     websrvReply (bdjsrv->websrv, 401,
         "Content-type: text/plain; charset=utf-8\r\n"
-        "WWW-Authenticate: Basic realm=BDJ4 Remote\r\n",
+        "WWW-Authenticate: Basic realm=BDJ4\r\n",
         "Unauthorized");
   } else if (strcmp (uri, "/exists") == 0) {
-#endif
-  if (strcmp (uri, "/exists") == 0) {
     char    rbuff [10];
     char    *rptr;
     char    *rend;
@@ -213,7 +206,7 @@ fprintf (stderr, "srv: query-data: %s\n", querydata);
     pathbldMakePath (path, sizeof (path), uri, "", PATHBLD_MP_DREL_HTTP);
     logMsg (LOG_DBG, LOG_IMPORTANT, "serve: %s", turi);
     websrvServeFile (bdjsrv->websrv, sysvarsGetStr (SV_BDJ4_DREL_HTTP), turi);
-  } else if (strcmp (uri, "/pl") == 0) {
+  } else if (strcmp (uri, "/plnames") == 0) {
     websrvReply (bdjsrv->websrv, 200,
         "Content-type: text/plain; charset=utf-8\r\n"
         "Cache-Control: max-age=0\r\n",
@@ -307,59 +300,15 @@ bdjsrvProcessing (void *udata)
 }
 
 static bool
-bdjsrvConnectingCallback (void *udata, programstate_t programState)
-{
-  bdjsrv_t   *bdjsrv = udata;
-  bool            rc = STATE_NOT_FINISH;
-
-  if (! connIsConnected (bdjsrv->conn, ROUTE_MAIN)) {
-    connConnect (bdjsrv->conn, ROUTE_MAIN);
-  }
-
-  if (! connIsConnected (bdjsrv->conn, ROUTE_PLAYER)) {
-    connConnect (bdjsrv->conn, ROUTE_PLAYER);
-  }
-
-  connProcessUnconnected (bdjsrv->conn);
-
-  if (connIsConnected (bdjsrv->conn, ROUTE_MAIN) &&
-      connIsConnected (bdjsrv->conn, ROUTE_PLAYER)) {
-    rc = STATE_FINISHED;
-  }
-
-  return rc;
-}
-
-static bool
 bdjsrvHandshakeCallback (void *udata, programstate_t programState)
 {
   bdjsrv_t   *bdjsrv = udata;
   bool            rc = STATE_NOT_FINISH;
 
   connProcessUnconnected (bdjsrv->conn);
-
-  if (connHaveHandshake (bdjsrv->conn, ROUTE_MAIN) &&
-      connHaveHandshake (bdjsrv->conn, ROUTE_PLAYER)) {
-    rc = STATE_FINISHED;
-  }
-
+  rc = STATE_FINISHED;
   return rc;
 }
-
-
-static bool
-bdjsrvInitDataCallback (void *udata, programstate_t programState)
-{
-  bdjsrv_t   *bdjsrv = udata;
-  bool            rc = STATE_NOT_FINISH;
-
-  if (connHaveHandshake (bdjsrv->conn, ROUTE_MAIN)) {
-    rc = STATE_FINISHED;
-  }
-
-  return rc;
-}
-
 
 static void
 bdjsrvSigHandler (int sig)

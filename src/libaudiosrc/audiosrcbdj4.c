@@ -17,7 +17,6 @@
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
-#include "dirlist.h"
 #include "fileop.h"
 #include "filemanip.h"
 #include "log.h"
@@ -34,6 +33,7 @@ enum {
   ASBDJ4_ACT_EXISTS,
   ASBDJ4_ACT_GET,
   ASBDJ4_ACT_GET_PLAYLIST,
+  ASBDJ4_ACT_GET_PL_NAMES,
   ASBDJ4_ACT_MAX,
 };
 
@@ -45,20 +45,19 @@ const char *action_str [ASBDJ4_ACT_MAX] = {
   [ASBDJ4_ACT_NONE] = "none",
   [ASBDJ4_ACT_EXISTS] = "exists",
   [ASBDJ4_ACT_GET] = "get",
-  [ASBDJ4_ACT_GET_PLAYLIST] = "pl",
+  [ASBDJ4_ACT_GET_PLAYLIST] = "getpl",
+  [ASBDJ4_ACT_GET_PL_NAMES] = "plnames",
 };
 
 typedef struct asiterdata {
   const char      *dir;
-  slist_t         *filelist;
-  slistidx_t      fliter;
+  slist_t         *playlistnames;
+  slistidx_t      plniter;
 } asiterdata_t;
 
 typedef struct asdata {
   webclient_t   *webclient;
   char          bdj4uri [MAXPATHLEN];
-  const char    *bdj4user;
-  const char    *bdj4pass;
   const char    *musicdir;
   const char    *delpfx;
   const char    *origext;
@@ -87,6 +86,21 @@ asiDesc (const char **ret, int max)
   ret [c++] = NULL;
 }
 
+bool
+asiEnabled (void)
+{
+  const char  *srvuri;
+  bool        enabled;
+
+  srvuri = bdjoptGetStr (OPT_P_BDJ4_SERVER);
+  enabled =
+      (srvuri != NULL && *srvuri != '\0') &&
+      bdjoptGetStr (OPT_P_BDJ4_SERVER_USER) != NULL &&
+      bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS) != NULL &&
+      bdjoptGetNum (OPT_P_BDJ4_SERVER_PORT) >= 8000;
+  return enabled;
+}
+
 asdata_t *
 asiInit (const char *delpfx, const char *origext)
 {
@@ -98,13 +112,15 @@ asiInit (const char *delpfx, const char *origext)
   asdata->delpfx = delpfx;
   asdata->origext = origext;
   asdata->webclient = webclientAlloc (asdata, asbdj4WebResponseCallback);
-  webclientSetTimeout (asdata->webclient, 1000);
+  webclientSetTimeout (asdata->webclient, 5);
   snprintf (asdata->bdj4uri, sizeof (asdata->bdj4uri),
       "http://%s:%" PRIu16 "/cmd",
       bdjoptGetStr (OPT_P_BDJ4_SERVER),
       (uint16_t) bdjoptGetNum (OPT_P_BDJ4_SERVER_PORT));
-  asdata->bdj4user = bdjoptGetStr (OPT_P_BDJ4_SERVER_USER);
-  asdata->bdj4pass = bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS);
+fprintf (stderr, "asibdj4: uri: %s\n", asdata->bdj4uri);
+  webclientSetUserPass (asdata->webclient,
+      bdjoptGetStr (OPT_P_BDJ4_SERVER_USER),
+      bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS));
   asdata->action = ASBDJ4_ACT_NONE;
   asdata->state = BDJ4_STATE_OFF;
   return asdata;
@@ -160,12 +176,12 @@ asiExists (asdata_t *asdata, const char *nm)
   asdata->action = ASBDJ4_ACT_EXISTS;
   asdata->state = BDJ4_STATE_WAIT;
   snprintf (query, sizeof (query),
-      "password=%s"
-      "&action=%s"
+      "%s"
+      "?action=%s"
       "&uri=%s",
-      asdata->bdj4pass, action_str [ASBDJ4_ACT_EXISTS], nm);
+      asdata->bdj4uri, action_str [asdata->action], nm);
 
-  webrc = webclientPost (asdata->webclient, asdata->bdj4uri, query);
+  webrc = webclientGet (asdata->webclient, query);
   if (webrc != WEB_OK) {
     return exists;
   }
@@ -344,8 +360,8 @@ asiStartIterator (asdata_t *asdata, const char *dir)
   asidata = mdmalloc (sizeof (asiterdata_t));
   asidata->dir = dir;
 
-  asidata->filelist = dirlistRecursiveDirList (dir, DIRLIST_FILES);
-  slistStartIterator (asidata->filelist, &asidata->fliter);
+//  asidata->playlistnames = dirlistRecursiveDirList (dir, DIRLIST_FILES);
+  slistStartIterator (asidata->playlistnames, &asidata->plniter);
 
   return asidata;
 }
@@ -357,8 +373,8 @@ asiCleanIterator (asdata_t *asdata, asiterdata_t *asidata)
     return;
   }
 
-  if (asidata->filelist != NULL) {
-    slistFree (asidata->filelist);
+  if (asidata->playlistnames != NULL) {
+    slistFree (asidata->playlistnames);
   }
   mdfree (asidata);
 }
@@ -372,7 +388,7 @@ asiIterCount (asdata_t *asdata, asiterdata_t *asidata)
     return c;
   }
 
-  c = slistGetCount (asidata->filelist);
+  c = slistGetCount (asidata->playlistnames);
   return c;
 }
 
@@ -385,14 +401,49 @@ asiIterate (asdata_t *asdata, asiterdata_t *asidata)
     return NULL;
   }
 
-  rval = slistIterateKey (asidata->filelist, &asidata->fliter);
+  rval = slistIterateKey (asidata->playlistnames, &asidata->plniter);
   return rval;
 }
 
 bool
 asiGetPlaylistNames (asdata_t *asdata)
 {
-  return true;
+  bool    rc = false;
+  int     count;
+  int     webrc;
+  char    query [1024];
+
+fprintf (stderr, "asi-gpln: begin\n");
+  asdata->action = ASBDJ4_ACT_GET_PL_NAMES;
+  asdata->state = BDJ4_STATE_WAIT;
+  snprintf (query, sizeof (query),
+      "%s"
+      "?action=%s",
+      asdata->bdj4uri, action_str [asdata->action]);
+
+fprintf (stderr, "asi-gpln: get %s\n", query);
+  webrc = webclientGet (asdata->webclient, query);
+  if (webrc != WEB_OK) {
+    return rc;
+  }
+
+fprintf (stderr, "asi-gpln: wait\n");
+  count = 0;
+  while (asdata->state == BDJ4_STATE_WAIT && count < ASBDJ4_WAIT_MAX) {
+    mssleep (10);
+    ++count;
+  }
+fprintf (stderr, "asi-gpln: count: %d\n", count);
+
+  if (asdata->state == BDJ4_STATE_PROCESS) {
+    if (asdata->webresplen > 0 &&
+        strncmp (asdata->webresponse, "T", 1) == 0) {
+      rc = true;
+    }
+    asdata->state = BDJ4_STATE_OFF;
+  }
+
+  return rc;
 }
 
 /* internal routines */
