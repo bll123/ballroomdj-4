@@ -106,7 +106,7 @@ asiIsTypeMatch (asdata_t *asdata, const char *nm)
     rc = true;
   }
   /* audiosrc.c handles relative path names by assuming that any uri */
-  /* without a protocol identifier is a file type */
+  /* without a protocol identifier is a 'file' type */
 
   return rc;
 }
@@ -253,7 +253,7 @@ asiURI (asdata_t *asdata, const char *sfname, char *buff, size_t sz,
     return;
   }
 
-  stpecpy (buff, buff + sizeof (buff), AS_FILE_PFX);
+  stpecpy (buff, buff + sz, AS_FILE_PFX);
   asiFullPath (asdata, sfname, buff + AS_FILE_PFX_LEN, sz - AS_FILE_PFX_LEN,
       prefix, pfxlen);
 }
