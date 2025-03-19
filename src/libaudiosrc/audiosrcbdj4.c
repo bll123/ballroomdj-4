@@ -114,10 +114,9 @@ asiInit (const char *delpfx, const char *origext)
   asdata->webclient = webclientAlloc (asdata, asbdj4WebResponseCallback);
   webclientSetTimeout (asdata->webclient, 5);
   snprintf (asdata->bdj4uri, sizeof (asdata->bdj4uri),
-      "http://%s:%" PRIu16 "/cmd",
+      "http://%s:%" PRIu16,
       bdjoptGetStr (OPT_P_BDJ4_SERVER),
       (uint16_t) bdjoptGetNum (OPT_P_BDJ4_SERVER_PORT));
-fprintf (stderr, "asibdj4: uri: %s\n", asdata->bdj4uri);
   webclientSetUserPass (asdata->webclient,
       bdjoptGetStr (OPT_P_BDJ4_SERVER_USER),
       bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS));
@@ -176,12 +175,11 @@ asiExists (asdata_t *asdata, const char *nm)
   asdata->action = ASBDJ4_ACT_EXISTS;
   asdata->state = BDJ4_STATE_WAIT;
   snprintf (query, sizeof (query),
-      "%s"
-      "?action=%s"
+      "action=%s"
       "&uri=%s",
-      asdata->bdj4uri, action_str [asdata->action], nm);
+      action_str [asdata->action], nm);
 
-  webrc = webclientGet (asdata->webclient, query);
+  webrc = webclientPost (asdata->webclient, asdata->bdj4uri, query);
   if (webrc != WEB_OK) {
     return exists;
   }
@@ -416,12 +414,10 @@ fprintf (stderr, "asi-gpln: begin\n");
   asdata->action = ASBDJ4_ACT_GET_PL_NAMES;
   asdata->state = BDJ4_STATE_WAIT;
   snprintf (query, sizeof (query),
-      "%s"
-      "?action=%s",
-      asdata->bdj4uri, action_str [asdata->action]);
+      "action=%s",
+      action_str [asdata->action]);
 
-fprintf (stderr, "asi-gpln: get %s\n", query);
-  webrc = webclientGet (asdata->webclient, query);
+  webrc = webclientPost (asdata->webclient, asdata->bdj4uri, query);
   if (webrc != WEB_OK) {
     return rc;
   }

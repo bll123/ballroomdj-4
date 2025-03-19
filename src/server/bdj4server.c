@@ -25,6 +25,7 @@
 #include "musicq.h"
 #include "ossignal.h"
 #include "pathbld.h"
+#include "playlist.h"
 #include "progstate.h"
 #include "sock.h"
 #include "sockh.h"
@@ -49,7 +50,7 @@ static bool     bdjsrvHandshakeCallback (void *udata, programstate_t programStat
 static bool     bdjsrvStoppingCallback (void *udata, programstate_t programState);
 static bool     bdjsrvStopWaitCallback (void *udata, programstate_t programState);
 static bool     bdjsrvClosingCallback (void *udata, programstate_t programState);
-static void     bdjsrvEventHandler (void *userdata, const char *query, const char *querydata, const char *uri);
+static void     bdjsrvEventHandler (void *userdata, const char *query, const char *uri);
 static int      bdjsrvProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static int      bdjsrvProcessing (void *udata);
@@ -153,21 +154,16 @@ bdjsrvClosingCallback (void *udata, programstate_t programState)
 }
 
 static void
-bdjsrvEventHandler (void *userdata, const char *query, const char *querydata,
-    const char *uri)
+bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
 {
   bdjsrv_t *bdjsrv = userdata;
   char          user [40];
   char          pass [40];
-  char          tbuff [300];
 
   websrvGetUserPass (bdjsrv->websrv, user, sizeof (user), pass, sizeof (pass));
 
 fprintf (stderr, "srv: uri: %s\n", uri);
 fprintf (stderr, "srv: query: %s\n", query);
-fprintf (stderr, "srv: query-data: %s\n", querydata);
-  *tbuff = '\0';
-  snprintf (tbuff, sizeof (tbuff), "%d%c%s", MUSICQ_PB_A, MSG_ARGS_RS, querydata);
 
   if (user [0] == '\0' || pass [0] == '\0') {
     websrvReply (bdjsrv->websrv, 401,

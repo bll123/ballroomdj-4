@@ -44,8 +44,8 @@ typedef struct {
   char            *pass;
   mstime_t        danceListTimer;
   char            *danceList;
-  mstime_t        playlistListTimer;
-  char            *playlistList;
+  mstime_t        playlistNamesTimer;
+  char            *playlistNames;
   char            *playerStatus;
   char            *currSong;
   websrv_t        *websrv;
@@ -63,7 +63,7 @@ static int      remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static int      remctrlProcessing (void *udata);
 static void     remctrlProcessDanceList (remctrl_t *remctrl, char *danceList);
-static void     remctrlProcessPlaylistList (remctrl_t *remctrl, char *playlistList);
+static void     remctrlProcessPlaylistNames (remctrl_t *remctrl, char *playlistNames);
 static void     remctrlSigHandler (int sig);
 
 static int  gKillReceived = 0;
@@ -96,8 +96,8 @@ main (int argc, char *argv[])
   remctrl.pass = mdstrdup (bdjoptGetStr (OPT_P_REMCONTROLPASS));
   remctrl.playerStatus = NULL;
   remctrl.currSong = NULL;
-  remctrl.playlistList = "";
-  mstimeset (&remctrl.playlistListTimer, 0);
+  remctrl.playlistNames = "";
+  mstimeset (&remctrl.playlistNamesTimer, 0);
   remctrl.port = bdjoptGetNum (OPT_P_REMCONTROLPORT);
   remctrl.progstate = progstateInit ("remctrl");
   remctrl.websrv = NULL;
@@ -170,8 +170,8 @@ remctrlClosingCallback (void *udata, programstate_t programState)
   if (*remctrl->danceList) {
     dataFree (remctrl->danceList);
   }
-  if (*remctrl->playlistList) {
-    dataFree (remctrl->playlistList);
+  if (*remctrl->playlistNames) {
+    dataFree (remctrl->playlistNames);
   }
 
   return STATE_FINISHED;
@@ -342,7 +342,7 @@ remctrlEventHandler (void *userdata, const char *query, const char *uri)
     websrvReply (remctrl->websrv, 200,
         "Content-type: text/plain; charset=utf-8\r\n"
         "Cache-Control: max-age=0\r\n",
-        remctrl->playlistList);
+        remctrl->playlistNames);
   } else {
     char          path [MAXPATHLEN];
     const char    *turi = uri;
@@ -391,7 +391,7 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_PLAYLIST_LIST_DATA: {
-          remctrlProcessPlaylistList (remctrl, args);
+          remctrlProcessPlaylistNames (remctrl, args);
           break;
         }
         case MSG_PLAYER_STATUS_DATA: {
@@ -503,14 +503,14 @@ remctrlInitDataCallback (void *udata, programstate_t programState)
           MSG_GET_DANCE_LIST, NULL);
       mstimeset (&remctrl->danceListTimer, 500);
     }
-    if (*remctrl->playlistList == '\0' &&
-        mstimeCheck (&remctrl->playlistListTimer)) {
+    if (*remctrl->playlistNames == '\0' &&
+        mstimeCheck (&remctrl->playlistNamesTimer)) {
       connSendMessage (remctrl->conn, ROUTE_MAIN,
           MSG_GET_PLAYLIST_LIST, NULL);
-      mstimeset (&remctrl->playlistListTimer, 500);
+      mstimeset (&remctrl->playlistNamesTimer, 500);
     }
   }
-  if (*remctrl->danceList && *remctrl->playlistList) {
+  if (*remctrl->danceList && *remctrl->playlistNames) {
     rc = STATE_FINISHED;
   }
 
@@ -548,7 +548,7 @@ remctrlProcessDanceList (remctrl_t *remctrl, char *danceList)
 
 
 static void
-remctrlProcessPlaylistList (remctrl_t *remctrl, char *playlistList)
+remctrlProcessPlaylistNames (remctrl_t *remctrl, char *playlistNames)
 {
   char        *fnm;
   char        *plnm;
@@ -560,7 +560,7 @@ remctrlProcessPlaylistList (remctrl_t *remctrl, char *playlistList)
 
   obuff [0] = '\0';
 
-  fnm = strtok_r (playlistList, MSG_ARGS_RS_STR, &tokstr);
+  fnm = strtok_r (playlistNames, MSG_ARGS_RS_STR, &tokstr);
   plnm = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   while (fnm != NULL) {
     snprintf (tbuff, sizeof (tbuff), "<option value=\"%s\">%s</option>\n", fnm, plnm);
@@ -569,10 +569,10 @@ remctrlProcessPlaylistList (remctrl_t *remctrl, char *playlistList)
     plnm = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   }
 
-  if (*remctrl->playlistList) {
-    mdfree (remctrl->playlistList);
+  if (*remctrl->playlistNames) {
+    mdfree (remctrl->playlistNames);
   }
-  remctrl->playlistList = mdstrdup (obuff);
+  remctrl->playlistNames = mdstrdup (obuff);
 }
 
 

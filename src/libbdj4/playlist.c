@@ -703,7 +703,7 @@ playlistGetNextSong (playlist_t *pl,
 }
 
 slist_t *
-playlistGetPlaylistList (int flag, const char *dir)
+playlistGetPlaylistNames (int flag, const char *dir)
 {
   const char  *tplfnm;
   char        tfn [MAXPATHLEN];

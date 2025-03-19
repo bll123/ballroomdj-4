@@ -192,7 +192,6 @@ audiosrcInit (void)
       asdylib->type = asdylib->asiTypeIdent ();
     }
     audiosrc->typeidx [asdylib->type] = i;
-fprintf (stderr, "type: %d %s\n", asdylib->type, pkgnm);
   }
 }
 
@@ -632,12 +631,10 @@ audiosrcGetPlaylistNames (int type)
   if (type == AUDIOSRC_TYPE_NONE || type >= AUDIOSRC_TYPE_MAX) {
     return false;
   }
-fprintf (stderr, "as-gpln: type %d\n", type);
 
   asdylib = audiosrcGetDylibByType (type);
 
   if (asdylib != NULL && asdylib->asiGetPlaylistNames != NULL) {
-fprintf (stderr, "as-gpln: b4 call\n");
     rc = asdylib->asiGetPlaylistNames (asdylib->asdata);
   }
 

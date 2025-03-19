@@ -89,7 +89,7 @@ ssize_t   playlistGetDanceNum (playlist_t *pl, ilistidx_t dancekey, pldancekey_t
 void      playlistSetDanceCount (playlist_t *pl, ilistidx_t dancekey, ssize_t value);
 void      playlistSetDanceNum (playlist_t *pl, ilistidx_t danceIdx, pldancekey_t key, ssize_t value);
 song_t    *playlistGetNextSong (playlist_t *pl, ssize_t priorCount, danceselQueueLookup_t queueLookupProc, void *userdata);
-slist_t   *playlistGetPlaylistList (int flag, const char *dir);
+slist_t   *playlistGetPlaylistNames (int flag, const char *dir);
 bool      playlistFilterSong (dbidx_t dbidx, song_t *song, void *tplaylist);
 void      playlistAddCount (playlist_t *, song_t *song);
 void      playlistAddPlayed (playlist_t *, song_t *song);

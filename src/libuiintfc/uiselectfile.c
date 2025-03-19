@@ -109,7 +109,7 @@ selectFileDialog (int type, uiwcont_t *window, nlist_t *options,
     return;
   }
 
-  filelist = playlistGetPlaylistList (playlistSel, NULL);
+  filelist = playlistGetPlaylistNames (playlistSel, NULL);
   slistFree (selectfile->filelist);
   selectfile->filelist = filelist;
 

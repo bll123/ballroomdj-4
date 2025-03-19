@@ -164,7 +164,7 @@ static void mainMusicQueueFinish (maindata_t *mainData, const char *args);
 static void mainMusicQueueNext (maindata_t *mainData, const char *args);
 static ilistidx_t mainMusicQueueLookup (void *mainData, ilistidx_t idx);
 static void mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route);
-static void mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route);
+static void mainSendPlaylistNames (maindata_t *mainData, bdjmsgroute_t route);
 static void mainSendPlayerStatus (maindata_t *mainData, char *playerResp);
 static void mainSendRemctrlData (maindata_t *mainData);
 static void mainSendMusicqStatus (maindata_t *mainData);
@@ -521,7 +521,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_GET_PLAYLIST_LIST: {
-          mainSendPlaylistList (mainData, routefrom);
+          mainSendPlaylistNames (mainData, routefrom);
           break;
         }
         case MSG_PLAYER_STATUS_DATA: {
@@ -2340,7 +2340,7 @@ mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route)
 }
 
 static void
-mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route)
+mainSendPlaylistNames (maindata_t *mainData, bdjmsgroute_t route)
 {
   slist_t       *plList = NULL;
   const char    *plfnm = NULL;
@@ -2353,7 +2353,7 @@ mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route)
 
   logProcBegin ();
 
-  plList = playlistGetPlaylistList (PL_LIST_NORMAL, NULL);
+  plList = playlistGetPlaylistNames (PL_LIST_NORMAL, NULL);
 
   rbuff = mdmalloc (BDJMSG_MAX);
   rbuff [0] = '\0';

@@ -100,7 +100,7 @@ uiplaylistSetList (uiplaylist_t *uiplaylist, int type, const char *dir)
 
   ilistFree (uiplaylist->ddlist);
 
-  pllist = playlistGetPlaylistList (type, dir);
+  pllist = playlistGetPlaylistNames (type, dir);
   count = slistGetCount (pllist);
   ddlist = ilistAlloc ("uipl", LIST_ORDERED);
   ilistSetSize (ddlist, count);

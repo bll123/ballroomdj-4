@@ -395,7 +395,7 @@ songdbUpdateAllSonglists (song_t *song, const char *olduri)
     songuri = songGetStr (song, TAG_URI);
   }
 
-  filelist = playlistGetPlaylistList (PL_LIST_SONGLIST, NULL);
+  filelist = playlistGetPlaylistNames (PL_LIST_SONGLIST, NULL);
   slistStartIterator (filelist, &fiteridx);
   while ((slfn = slistIterateKey (filelist, &fiteridx)) != NULL) {
     ilistidx_t  key;
