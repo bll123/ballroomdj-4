@@ -123,8 +123,6 @@ websrvEventHandler (struct mg_connection *c, int ev, void *ev_data)
 {
   struct mg_http_message  *hm;
   char                    query [800];
-  char                    *tokstr;
-  const char              *querydata;
   char                    uri [400];
   char                    *uriptr;
   websrv_t                *websrv;
@@ -153,20 +151,15 @@ websrvEventHandler (struct mg_connection *c, int ev, void *ev_data)
     return;
   }
 
-  mg_url_decode (hm->query.buf, hm->query.len, query, sizeof (query), 1);
-  querydata = query;
-  if (*query) {
-    size_t      len;
-
-    strtok_r (query, " ", &tokstr);
-    len = strlen (query);
-    if (hm->query.len > len) {
-      querydata = query + len + 1;
-    }
+  if (hm->method.len >= 3 && strncmp ("GET", hm->method.buf, 3) == 0) {
+    mg_url_decode (hm->query.buf, hm->query.len, query, sizeof (query), 1);
+  }
+  if (hm->method.len >= 4 && strncmp ("POST", hm->method.buf, 4) == 0) {
+    mg_url_decode (hm->body.buf, hm->body.len, query, sizeof (query), 1);
   }
 
   if (websrv->handler != NULL) {
-    websrv->handler (websrv->userdata, query, querydata, uri);
+    websrv->handler (websrv->userdata, query, uri);
   }
 }
 

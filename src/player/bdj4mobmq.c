@@ -60,7 +60,7 @@ static bool     mobmqHandshakeCallback (void *tmmdata, programstate_t programSta
 static bool     mobmqStoppingCallback (void *tmmdata, programstate_t programState);
 static bool     mobmqStopWaitCallback (void *tmmdata, programstate_t programState);
 static bool     mobmqClosingCallback (void *tmmdata, programstate_t programState);
-static void     mobmqEventHandler (void *userdata, const char *query, const char *querydata, const char *uri);
+static void     mobmqEventHandler (void *userdata, const char *query, const char *uri);
 static int      mobmqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static int      mobmqProcessing (void *udata);
@@ -180,8 +180,7 @@ mobmqClosingCallback (void *tmmdata, programstate_t programState)
 }
 
 static void
-mobmqEventHandler (void *userdata, const char *query, const char *querydata,
-    const char *uri)
+mobmqEventHandler (void *userdata, const char *query, const char *uri)
 {
   mobmqdata_t   *mobmqdata = userdata;
 

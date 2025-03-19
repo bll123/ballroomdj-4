@@ -58,7 +58,7 @@ static bool     remctrlInitDataCallback (void *udata, programstate_t programStat
 static bool     remctrlStoppingCallback (void *udata, programstate_t programState);
 static bool     remctrlStopWaitCallback (void *udata, programstate_t programState);
 static bool     remctrlClosingCallback (void *udata, programstate_t programState);
-static void     remctrlEventHandler (void *userdata, const char *query, const char *querydata, const char *uri);
+static void     remctrlEventHandler (void *userdata, const char *query, const char *uri);
 static int      remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static int      remctrlProcessing (void *udata);
@@ -178,18 +178,14 @@ remctrlClosingCallback (void *udata, programstate_t programState)
 }
 
 static void
-remctrlEventHandler (void *userdata, const char *query, const char *querydata,
-    const char *uri)
+remctrlEventHandler (void *userdata, const char *query, const char *uri)
 {
-  remctrl_t *remctrl = userdata;
+  remctrl_t     *remctrl = userdata;
   char          user [40];
   char          pass [40];
   char          tbuff [300];
 
   websrvGetUserPass (remctrl->websrv, user, sizeof (user), pass, sizeof (pass));
-
-  *tbuff = '\0';
-  snprintf (tbuff, sizeof (tbuff), "%d%c%s", MUSICQ_PB_A, MSG_ARGS_RS, querydata);
 
   if (user [0] == '\0' || pass [0] == '\0') {
     websrvReply (remctrl->websrv, 401,
@@ -239,28 +235,43 @@ remctrlEventHandler (void *userdata, const char *query, const char *querydata,
           remctrl->currSong);
     }
   } else if (strcmp (uri, "/cmd") == 0) {
-    bool ok = true;
+    bool        ok = true;
+    char        querycmd [80];
+    char        *ptr;
+    const char  *querydata = NULL;
 
-    if (strcmp (query, "clear") == 0) {
+    *tbuff = '\0';
+    ptr = strstr (query, " ");
+    if (ptr != NULL) {
+      size_t      len;
+
+      len = ptr - query + 1;
+      if (len <= sizeof (querycmd)) {
+        stpecpy (querycmd, querycmd + len, query);
+        querydata = ptr + 1;
+      }
+    }
+
+    if (strcmp (querycmd, "clear") == 0) {
       /* clears any playlists and truncates the music queue */
       connSendMessage (remctrl->conn,
           ROUTE_MAIN, MSG_QUEUE_CLEAR, remctrl->msgqpba);
       /* and clear the current playing song */
       connSendMessage (remctrl->conn,
           ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
-    } else if (strcmp (query, "fade") == 0) {
+    } else if (strcmp (querycmd, "fade") == 0) {
       connSendMessage (remctrl->conn,
           ROUTE_PLAYER, MSG_PLAY_FADE, NULL);
-    } else if (strcmp (query, "nextsong") == 0) {
+    } else if (strcmp (querycmd, "nextsong") == 0) {
       connSendMessage (remctrl->conn,
           ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
-    } else if (strcmp (query, "pauseatend") == 0) {
+    } else if (strcmp (querycmd, "pauseatend") == 0) {
       connSendMessage (remctrl->conn,
           ROUTE_PLAYER, MSG_PLAY_PAUSEATEND, NULL);
-    } else if (strcmp (query, "play") == 0) {
+    } else if (strcmp (querycmd, "play") == 0) {
       connSendMessage (remctrl->conn,
           ROUTE_MAIN, MSG_CMD_PLAYPAUSE, remctrl->msgqpba);
-    } else if (strcmp (query, "playlistclearplay") == 0) {
+    } else if (strcmp (querycmd, "playlistclearplay") == 0) {
       /* clears any playlists and truncates the music queue */
       connSendMessage (remctrl->conn,
           ROUTE_MAIN, MSG_QUEUE_CLEAR, remctrl->msgqpba);
@@ -268,41 +279,43 @@ remctrlEventHandler (void *userdata, const char *query, const char *querydata,
       connSendMessage (remctrl->conn,
           ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
       /* then queue the new playlist */
+      snprintf (tbuff, sizeof (tbuff), "%d%c%s", MUSICQ_PB_A, MSG_ARGS_RS, querydata);
       connSendMessage (remctrl->conn,
           ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
       /* and play */
       connSendMessage (remctrl->conn,
           ROUTE_MAIN, MSG_CMD_PLAY, NULL);
-    } else if (strcmp (query, "playlistqueue") == 0) {
+    } else if (strcmp (querycmd, "playlistqueue") == 0) {
       /* queue-playlist is always not in edit mode */
       /* the edit-flag will parse as a null; main handles this */
       /* this may change at a future date */
+      snprintf (tbuff, sizeof (tbuff), "%d%c%s", MUSICQ_PB_A, MSG_ARGS_RS, querydata);
       connSendMessage (remctrl->conn,
           ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
-    } else if (strcmp (query, "queue") == 0) {
+    } else if (strcmp (querycmd, "queue") == 0) {
       snprintf (tbuff, sizeof (tbuff), "%d%c%s%c%d",
           MUSICQ_PB_A, MSG_ARGS_RS, querydata, MSG_ARGS_RS, 1);
       connSendMessage (remctrl->conn,
           ROUTE_MAIN, MSG_QUEUE_DANCE, tbuff);
       connSendMessage (remctrl->conn,
           ROUTE_MAIN, MSG_CMD_PLAY, NULL);
-    } else if (strcmp (query, "queue5") == 0) {
+    } else if (strcmp (querycmd, "queue5") == 0) {
       snprintf (tbuff, sizeof (tbuff), "%d%c%s%c%d",
           MUSICQ_PB_A, MSG_ARGS_RS, querydata, MSG_ARGS_RS, 5);
       connSendMessage (remctrl->conn,
           ROUTE_MAIN, MSG_QUEUE_DANCE, tbuff);
       connSendMessage (remctrl->conn,
           ROUTE_MAIN, MSG_CMD_PLAY, NULL);
-    } else if (strcmp (query, "repeat") == 0) {
+    } else if (strcmp (querycmd, "repeat") == 0) {
       connSendMessage (remctrl->conn,
           ROUTE_PLAYER, MSG_PLAY_REPEAT, NULL);
-    } else if (strcmp (query, "speed") == 0) {
+    } else if (strcmp (querycmd, "speed") == 0) {
       connSendMessage (remctrl->conn,
           ROUTE_PLAYER, MSG_PLAY_SPEED, querydata);
-    } else if (strcmp (query, "volume") == 0) {
+    } else if (strcmp (querycmd, "volume") == 0) {
       connSendMessage (remctrl->conn,
           ROUTE_PLAYER, MSG_PLAYER_VOLUME, querydata);
-    } else if (strcmp (query, "volmute") == 0) {
+    } else if (strcmp (querycmd, "volmute") == 0) {
       connSendMessage (remctrl->conn,
           ROUTE_PLAYER, MSG_PLAYER_VOL_MUTE, NULL);
     } else {
