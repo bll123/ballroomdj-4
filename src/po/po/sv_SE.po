@@ -975,6 +975,7 @@ msgid "High Dance Level"
 msgstr "Hög dansnivå"
 
 #. CONTEXT: configuration: display settings for: history
+#. CONTEXT: the name of the history song list
 #. CONTEXT: playlist: the name of the history song list
 #. CONTEXT: playerui: name of the history tab : displayed played songs
 #. CONTEXT: playerui: name of the saved history playlist

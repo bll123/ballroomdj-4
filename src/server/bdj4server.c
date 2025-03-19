@@ -203,10 +203,33 @@ fprintf (stderr, "srv: query: %s\n", query);
     logMsg (LOG_DBG, LOG_IMPORTANT, "serve: %s", turi);
     websrvServeFile (bdjsrv->websrv, sysvarsGetStr (SV_BDJ4_DREL_HTTP), turi);
   } else if (strcmp (uri, "/plnames") == 0) {
+    slist_t     *plNames;
+    const char  *plnm = NULL;
+    char        tbuff [200];
+    char        *rbuff;
+    char        *rp;
+    char        *rend;
+    slistidx_t  iteridx;
+
+    rbuff = mdmalloc (BDJMSG_MAX);
+    rbuff [0] = '\0';
+    rp = rbuff;
+    rend = rbuff + BDJMSG_MAX;
+
+    plNames = playlistGetPlaylistNames (PL_LIST_SONGLIST, NULL);
+    slistStartIterator (plNames, &iteridx);
+    while ((plnm = slistIterateKey (plNames, &iteridx)) != NULL) {
+      snprintf (tbuff, sizeof (tbuff), "%s%c", plnm, MSG_ARGS_RS);
+      rp = stpecpy (rp, rend, tbuff);
+    }
+
     websrvReply (bdjsrv->websrv, 200,
         "Content-type: text/plain; charset=utf-8\r\n"
         "Cache-Control: max-age=0\r\n",
-        "");
+        rbuff);
+
+    slistFree (plNames);
+    dataFree (rbuff);
   } else {
     char          path [MAXPATHLEN];
     const char    *turi = uri;
@@ -216,7 +239,7 @@ fprintf (stderr, "srv: query: %s\n", query);
     }
     pathbldMakePath (path, sizeof (path), uri, "", PATHBLD_MP_DREL_HTTP);
     if (! fileopFileExists (path)) {
-      turi = "/bdj4remote.html";
+      return;
     }
 
     logMsg (LOG_DBG, LOG_IMPORTANT, "serve: %s", turi);

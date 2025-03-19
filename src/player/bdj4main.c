@@ -2342,7 +2342,7 @@ mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route)
 static void
 mainSendPlaylistNames (maindata_t *mainData, bdjmsgroute_t route)
 {
-  slist_t       *plList = NULL;
+  slist_t       *plNames = NULL;
   const char    *plfnm = NULL;
   const char    *plnm = NULL;
   char          tbuff [200];
@@ -2353,21 +2353,21 @@ mainSendPlaylistNames (maindata_t *mainData, bdjmsgroute_t route)
 
   logProcBegin ();
 
-  plList = playlistGetPlaylistNames (PL_LIST_NORMAL, NULL);
+  plNames = playlistGetPlaylistNames (PL_LIST_NORMAL, NULL);
 
   rbuff = mdmalloc (BDJMSG_MAX);
   rbuff [0] = '\0';
   rp = rbuff;
   rend = rbuff + BDJMSG_MAX;
-  slistStartIterator (plList, &iteridx);
-  while ((plnm = slistIterateKey (plList, &iteridx)) != NULL) {
-    plfnm = slistGetStr (plList, plnm);
+  slistStartIterator (plNames, &iteridx);
+  while ((plnm = slistIterateKey (plNames, &iteridx)) != NULL) {
+    plfnm = slistGetStr (plNames, plnm);
     snprintf (tbuff, sizeof (tbuff), "%s%c%s%c",
         plfnm, MSG_ARGS_RS, plnm, MSG_ARGS_RS);
     rp = stpecpy (rp, rend, tbuff);
   }
 
-  slistFree (plList);
+  slistFree (plNames);
 
   connSendMessage (mainData->conn, route, MSG_PLAYLIST_LIST_DATA, rbuff);
   dataFree (rbuff);
