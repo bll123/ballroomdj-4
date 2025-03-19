@@ -23,8 +23,8 @@ stpecpy (char *dst, char *end, const char *restrict src)
   char  *p;
 
 #if defined STEPCPY_DEBUG
-  if (end - dst == 8) {
-    fprintf (stderr, "WARN: stpecpy: length: 8\n");
+  if (end - dst == sizeof (char *)) {
+    fprintf (stderr, "WARN: stpecpy: length set to sizeof (char *)\n");
   }
 #endif
 #if defined (BDJ4_MEM_DEBUG)

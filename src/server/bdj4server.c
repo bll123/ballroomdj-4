@@ -22,6 +22,7 @@
 #include "lock.h"
 #include "log.h"
 #include "mdebug.h"
+#include "musicdb.h"
 #include "musicq.h"
 #include "ossignal.h"
 #include "pathbld.h"
@@ -35,26 +36,28 @@
 #include "websrv.h"
 
 typedef struct {
+  musicdb_t       *musicdb;
   conn_t          *conn;
   progstate_t     *progstate;
-  int             stopwaitcount;
   char            *locknm;
-  uint16_t        port;
   const char      *user;
   const char      *pass;
   websrv_t        *websrv;
+  slist_t         *plNames;
+  uint16_t        port;
+  int             stopwaitcount;
   bool            enabled;
 } bdjsrv_t;
 
-static bool     bdjsrvHandshakeCallback (void *udata, programstate_t programState);
-static bool     bdjsrvStoppingCallback (void *udata, programstate_t programState);
-static bool     bdjsrvStopWaitCallback (void *udata, programstate_t programState);
-static bool     bdjsrvClosingCallback (void *udata, programstate_t programState);
-static void     bdjsrvEventHandler (void *userdata, const char *query, const char *uri);
-static int      bdjsrvProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
-                    bdjmsgmsg_t msg, char *args, void *udata);
-static int      bdjsrvProcessing (void *udata);
-static void     bdjsrvSigHandler (int sig);
+static bool bdjsrvHandshakeCallback (void *udata, programstate_t programState);
+static bool bdjsrvStoppingCallback (void *udata, programstate_t programState);
+static bool bdjsrvStopWaitCallback (void *udata, programstate_t programState);
+static bool bdjsrvClosingCallback (void *udata, programstate_t programState);
+static void bdjsrvEventHandler (void *userdata, const char *query, const char *uri);
+static int  bdjsrvProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route, bdjmsgmsg_t msg, char *args, void *udata);
+static int  bdjsrvProcessing (void *udata);
+static void bdjsrvSigHandler (int sig);
+static void bdjsrvGetPlaylistNames (bdjsrv_t *bdjsrv);
 
 static int  gKillReceived = 0;
 
@@ -72,8 +75,8 @@ main (int argc, char *argv[])
 
   osSetStandardSignals (bdjsrvSigHandler);
 
-  flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
-  bdj4startup (argc, argv, NULL, "srv", ROUTE_SERVER, &flags);
+  flags = BDJ4_INIT_ALL;
+  bdj4startup (argc, argv, &bdjsrv.musicdb, "srv", ROUTE_SERVER, &flags);
 
   srvuri = bdjoptGetStr (OPT_P_BDJ4_SERVER);
   bdjsrv.enabled =
@@ -83,7 +86,7 @@ main (int argc, char *argv[])
       bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS) != NULL &&
       bdjoptGetNum (OPT_P_BDJ4_SERVER_PORT) >= 8000;
   if (! bdjsrv.enabled) {
-    lockRelease (bdjsrv.locknm, PATHBLD_MP_USEIDX);
+    bdj4shutdown (ROUTE_SERVER, bdjsrv.musicdb);
     exit (0);
   }
 
@@ -91,6 +94,7 @@ main (int argc, char *argv[])
   bdjsrv.pass = bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS);
   bdjsrv.port = bdjoptGetNum (OPT_P_BDJ4_SERVER_PORT);
   bdjsrv.progstate = progstateInit ("bdjsrv");
+  bdjsrv.plNames = NULL;
   bdjsrv.websrv = NULL;
   bdjsrv.stopwaitcount = 0;
 
@@ -146,8 +150,8 @@ bdjsrvClosingCallback (void *udata, programstate_t programState)
 {
   bdjsrv_t   *bdjsrv = udata;
 
-  bdj4shutdown (ROUTE_SERVER, NULL);
-
+  bdj4shutdown (ROUTE_SERVER, bdjsrv->musicdb);
+  slistFree (bdjsrv->plNames);
   websrvFree (bdjsrv->websrv);
 
   return STATE_FINISHED;
@@ -177,33 +181,39 @@ fprintf (stderr, "srv: query: %s\n", query);
         "WWW-Authenticate: Basic realm=BDJ4\r\n",
         "Unauthorized");
   } else if (strcmp (uri, "/exists") == 0) {
-    char    rbuff [10];
-    char    *rptr;
-    char    *rend;
+    char        rbuff [10];
+    bool        ok = false;
+    const char  *plfnm;
 
-    *rbuff = '\0';
-    rptr = rbuff;
-    rend = rbuff + sizeof (rbuff);
-// ### need to actually check
-    rptr = stpecpy (rptr, rend, "T");
+    bdjsrvGetPlaylistNames (bdjsrv);
+
+    plfnm = slistGetStr (bdjsrv->plNames, query);
+// ### check if playlist exists
+
+    strcpy (rbuff, "F");
+    if (ok) {
+      strcpy (rbuff, "T");
+    }
 
     websrvReply (bdjsrv->websrv, 200,
         "Content-type: text/plain; charset=utf-8\r\n"
-        "Cache-Control: max-age=0\r\n", rbuff);
+        "Cache-Control: max-age=0\r\n",
+        rbuff);
     dataFree (rbuff);
   } else if (strcmp (uri, "/get") == 0) {
     char          path [MAXPATHLEN];
     const char    *turi = uri;
 
+    bdjsrvGetPlaylistNames (bdjsrv);
+
     if (*uri == '/') {
       ++uri;
     }
 // ### fix
-    pathbldMakePath (path, sizeof (path), uri, "", PATHBLD_MP_DREL_HTTP);
+    pathbldMakePath (path, sizeof (path), uri, "", PATHBLD_MP_DREL_DATA);
     logMsg (LOG_DBG, LOG_IMPORTANT, "serve: %s", turi);
-    websrvServeFile (bdjsrv->websrv, sysvarsGetStr (SV_BDJ4_DREL_HTTP), turi);
+    websrvServeFile (bdjsrv->websrv, sysvarsGetStr (SV_BDJ4_DREL_DATA), turi);
   } else if (strcmp (uri, "/plnames") == 0) {
-    slist_t     *plNames;
     const char  *plnm = NULL;
     char        tbuff [200];
     char        *rbuff;
@@ -211,14 +221,15 @@ fprintf (stderr, "srv: query: %s\n", query);
     char        *rend;
     slistidx_t  iteridx;
 
+    bdjsrvGetPlaylistNames (bdjsrv);
+
     rbuff = mdmalloc (BDJMSG_MAX);
     rbuff [0] = '\0';
     rp = rbuff;
     rend = rbuff + BDJMSG_MAX;
 
-    plNames = playlistGetPlaylistNames (PL_LIST_SONGLIST, NULL);
-    slistStartIterator (plNames, &iteridx);
-    while ((plnm = slistIterateKey (plNames, &iteridx)) != NULL) {
+    slistStartIterator (bdjsrv->plNames, &iteridx);
+    while ((plnm = slistIterateKey (bdjsrv->plNames, &iteridx)) != NULL) {
       snprintf (tbuff, sizeof (tbuff), "%s%c", plnm, MSG_ARGS_RS);
       rp = stpecpy (rp, rend, tbuff);
     }
@@ -228,7 +239,6 @@ fprintf (stderr, "srv: query: %s\n", query);
         "Cache-Control: max-age=0\r\n",
         rbuff);
 
-    slistFree (plNames);
     dataFree (rbuff);
   } else {
     char          path [MAXPATHLEN];
@@ -335,3 +345,9 @@ bdjsrvSigHandler (int sig)
   gKillReceived = 1;
 }
 
+static void
+bdjsrvGetPlaylistNames (bdjsrv_t *bdjsrv)
+{
+  slistFree (bdjsrv->plNames);
+  bdjsrv->plNames = playlistGetPlaylistNames (PL_LIST_SONGLIST, NULL);
+}

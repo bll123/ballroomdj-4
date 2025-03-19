@@ -38,7 +38,6 @@ typedef struct {
   progstate_t     *progstate;
   char            msgqpba [40];
   int             stopwaitcount;
-  char            *locknm;
   uint16_t        port;
   char            *user;
   char            *pass;
@@ -86,7 +85,7 @@ main (int argc, char *argv[])
 
   remctrl.enabled = (bdjoptGetNum (OPT_P_REMOTECONTROL) != 0);
   if (! remctrl.enabled) {
-    lockRelease (remctrl.locknm, PATHBLD_MP_USEIDX);
+    bdj4shutdown (ROUTE_REMCTRL, NULL);
     exit (0);
   }
 

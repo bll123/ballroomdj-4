@@ -9,6 +9,8 @@
 * Bug Fixes:
     * Windows: add application manifest.
     * Internal: Fix bad string length calculation.
+* New Features:
+    * Add import from remote BDJ4 server.
 
 -->
 

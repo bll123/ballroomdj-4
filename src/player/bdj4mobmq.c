@@ -41,7 +41,6 @@ typedef struct {
   conn_t          *conn;
   progstate_t     *progstate;
   int             stopwaitcount;
-  char            *locknm;
   char            *title;
   websrv_t        *websrv;
   webclient_t     *webclient;
