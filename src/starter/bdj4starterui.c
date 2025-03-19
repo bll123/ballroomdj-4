@@ -483,6 +483,7 @@ starterInitDataCallback (void *udata, programstate_t programState)
 
   srvuri = bdjoptGetStr (OPT_P_BDJ4_SERVER);
   enabled =
+      bdjoptGetNum (OPT_G_BDJ4_SERVER_DISP) &&
       (srvuri == NULL || *srvuri == '\0') &&
       bdjoptGetStr (OPT_P_BDJ4_SERVER_USER) != NULL &&
       bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS) != NULL &&

@@ -39,8 +39,6 @@ uiCreateNotebook (void)
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (widget), GTK_POS_TOP);
   uiwidget = uiwcontAlloc (WCONT_T_NOTEBOOK, WCONT_T_NOTEBOOK);
   uiwcontSetWidget (uiwidget, widget, NULL);
-//  uiwidget->uidata.widget = widget;
-//  uiwidget->uidata.packwidget = widget;
   return uiwidget;
 }
 
@@ -61,13 +59,19 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
   if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-append-page")) {
     return;
   }
-  if (! uiwcontValid (uibox, WCONT_T_BOX, "nb-append-page-box")) {
+  /* at this time, only boxes and scrolled-windows are stored in nb pages */
+  if (uibox->wbasetype != WCONT_T_BOX && uibox->wtype != WCONT_T_BOX &&
+      uibox->wtype != WCONT_T_SCROLL_WINDOW) {
+    fprintf (stderr, "ERR: %s incorrect type exp:%d/%s actual:%d/%s %d/%s\n",
+        "nb-append-page-box",
+        WCONT_T_BOX, uiwcontDesc (WCONT_T_BOX),
+        uiwidget->wbasetype, uiwcontDesc (uiwidget->wbasetype),
+        uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
     return;
   }
   if (uiwidget == NULL) {
     return;
   }
-
 
   gtk_notebook_append_page (GTK_NOTEBOOK (uinotebook->uidata.widget),
       uibox->uidata.widget, uiwidget->uidata.widget);

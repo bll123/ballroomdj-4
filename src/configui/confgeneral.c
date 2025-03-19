@@ -63,6 +63,7 @@ confuiInitGeneral (confuigui_t *gui)
 void
 confuiBuildUIGeneral (confuigui_t *gui)
 {
+  uiwcont_t     *sw;
   uiwcont_t     *vbox;
   uiwcont_t     *szgrp;
   const char    *tmp;
@@ -70,15 +71,21 @@ confuiBuildUIGeneral (confuigui_t *gui)
   char          ebuff [50];
 
   logProcBegin ();
+  sw = uiCreateScrolledWindow (200);
+  uiWidgetExpandHoriz (sw);
+  uiWidgetExpandVert (sw);
+
   vbox = uiCreateVertBox ();
+  uiWindowPackInWindow (sw, vbox);
+  uiWidgetExpandHoriz (vbox);
+  uiWidgetAlignHorizFill (vbox);
 
   szgrp = uiCreateSizeGroupHoriz ();
 
   /* general */
-  confuiMakeNotebookTab (vbox, gui,
+  confuiMakeNotebookTab (sw, gui,
       /* CONTEXT: configuration: general options that apply to everything */
       _("General"), CONFUI_ID_NONE);
-
 
   tmp = bdjoptGetStr (OPT_M_DIR_MUSIC);
   if (tmp == NULL) {
@@ -180,8 +187,14 @@ confuiBuildUIGeneral (confuigui_t *gui)
       CONFUI_ENTRY_ACRCLOUD_API_HOST, OPT_G_ACRCLOUD_API_HOST,
       bdjoptGetStr (OPT_G_ACRCLOUD_API_HOST), CONFUI_NO_INDENT);
 
+  /* CONTEXT: configuration: enable/disable BDJ4 server */
+  snprintf (tbuff, sizeof (tbuff), _("Enable %s Server"), BDJ4_NAME);
+  confuiMakeItemSwitch (gui, vbox, szgrp, tbuff,
+      CONFUI_SWITCH_BDJ4_SERVER_DISP, OPT_G_BDJ4_SERVER_DISP,
+      bdjoptGetNum (OPT_G_BDJ4_SERVER_DISP), NULL, 0);
+
   if (bdjoptGetNum (OPT_G_BDJ4_SERVER_DISP)) {
-    /* CONTEXT: configuration: the remote BDJ4 server*/
+    /* CONTEXT: configuration: the remote BDJ4 server name */
     snprintf (tbuff, sizeof (tbuff), _("%s Server"), BDJ4_NAME);
     confuiMakeItemEntry (gui, vbox, szgrp, tbuff,
         CONFUI_ENTRY_BDJ4_SERVER, OPT_P_BDJ4_SERVER,
@@ -206,6 +219,7 @@ confuiBuildUIGeneral (confuigui_t *gui)
         bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS), CONFUI_NO_INDENT);
   }
 
+  uiwcontFree (sw);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 

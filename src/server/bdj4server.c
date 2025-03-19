@@ -76,12 +76,12 @@ main (int argc, char *argv[])
 
   srvuri = bdjoptGetStr (OPT_P_BDJ4_SERVER);
   bdjsrv.enabled =
+      bdjoptGetNum (OPT_G_BDJ4_SERVER_DISP) &&
       (srvuri == NULL || *srvuri == '\0') &&
       bdjoptGetStr (OPT_P_BDJ4_SERVER_USER) != NULL &&
       bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS) != NULL &&
       bdjoptGetNum (OPT_P_BDJ4_SERVER_PORT) >= 8000;
   if (! bdjsrv.enabled) {
-fprintf (stderr, "server: not enabled\n");
     lockRelease (bdjsrv.locknm, PATHBLD_MP_USEIDX);
     exit (0);
   }

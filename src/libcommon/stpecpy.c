@@ -12,6 +12,8 @@
 
 #if ! _lib_stpecpy
 
+# define STPECPY_DEBUG 1
+
 /* the following code is in the public domain */
 /* modified from the linux stpecpy manual page */
 
@@ -20,6 +22,11 @@ stpecpy (char *dst, char *end, const char *restrict src)
 {
   char  *p;
 
+#if defined STEPCPY_DEBUG
+  if (end - dst == 8) {
+    fprintf (stderr, "WARN: stpecpy: length: 8\n");
+  }
+#endif
 #if defined (BDJ4_MEM_DEBUG)
   if (dst == NULL) {
     fprintf (stderr, "ERR: stpecpy: null destination\n");

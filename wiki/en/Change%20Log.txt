@@ -8,6 +8,7 @@
 
 * Bug Fixes:
     * Windows: add application manifest.
+    * Internal: Fix bad string length calculation.
 
 -->
 

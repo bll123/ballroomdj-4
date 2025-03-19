@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2025-01-03\n"
+"PO-Revision-Date: 2025-03-19\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh\n"
@@ -94,6 +94,26 @@ msgstr "%s 玩家处于活动状态"
 #, c-format
 msgid "%s Playlist"
 msgstr "%s 播放列表"
+
+#. CONTEXT: configuration: the remote BDJ4 server name
+#, c-format
+msgid "%s Server"
+msgstr ""
+
+#. CONTEXT: configuration: the BDJ4 server password
+#, c-format
+msgid "%s Server Password"
+msgstr ""
+
+#. CONTEXT: configuration: the port to use for the BDJ4 server
+#, c-format
+msgid "%s Server Port"
+msgstr ""
+
+#. CONTEXT: configuration: the BDJ4 server user
+#, c-format
+msgid "%s Server User"
+msgstr ""
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets)
 #, c-format
@@ -746,6 +766,11 @@ msgstr "编辑歌曲列表"
 msgid "Edit Status"
 msgstr "编辑状态"
 
+#. CONTEXT: configuration: enable/disable BDJ4 server
+#, c-format
+msgid "Enable %s Server"
+msgstr ""
+
 #. CONTEXT: configuration: remote control: checkbox: enable/disable
 msgid "Enable Remote Control"
 msgstr "启用远程控制"
@@ -970,6 +995,7 @@ msgstr "如果没有安装 BallroomDJ 3，则留空。"
 msgid "Import"
 msgstr "进口"
 
+#. CONTEXT: manage-ui: menu selection: music manager: import playlist
 #. CONTEXT: manage-ui: menu selection: song list: import
 #. CONTEXT: manage-ui: song list import: title of dialog
 msgid "Import Playlist"

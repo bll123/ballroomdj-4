@@ -409,7 +409,6 @@ bool
 asiGetPlaylistNames (asdata_t *asdata)
 {
   bool    rc = false;
-  int     count;
   int     webrc;
   char    query [1024];
 
@@ -426,14 +425,6 @@ fprintf (stderr, "asi-gpln: get %s\n", query);
   if (webrc != WEB_OK) {
     return rc;
   }
-
-fprintf (stderr, "asi-gpln: wait\n");
-  count = 0;
-  while (asdata->state == BDJ4_STATE_WAIT && count < ASBDJ4_WAIT_MAX) {
-    mssleep (10);
-    ++count;
-  }
-fprintf (stderr, "asi-gpln: count: %d\n", count);
 
   if (asdata->state == BDJ4_STATE_PROCESS) {
     if (asdata->webresplen > 0 &&
