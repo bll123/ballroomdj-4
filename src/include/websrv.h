@@ -11,7 +11,7 @@ extern "C" {
 #endif
 
 typedef struct websrv websrv_t;
-typedef void (*websrv_handler_t) (void *userdata, const char *query, const char *querydata, const char *uri);
+typedef void (*websrv_handler_t) (void *userdata, const char *query, const char *uri);
 
 websrv_t *websrvInit (uint16_t listenPort, websrv_handler_t eventHandler, void *userdata);
 void websrvFree (websrv_t *websrv);
