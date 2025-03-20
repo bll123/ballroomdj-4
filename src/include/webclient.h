@@ -7,6 +7,8 @@
 #include <stdbool.h>
 #include <curl/curl.h>
 
+#include "webresp.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
@@ -16,8 +18,6 @@ typedef void (*webclientcb_t)(void *userdata, const char *resp, size_t len);
 typedef struct webclient webclient_t;
 
 enum {
-  WEB_OK = 200,
-  WEB_BAD_REQUEST = 400,
   WEB_RESP_SZ = 512 * 1024,
 };
 

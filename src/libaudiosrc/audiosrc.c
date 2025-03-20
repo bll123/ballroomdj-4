@@ -22,6 +22,7 @@
 #include "ilist.h"
 #include "mdebug.h"
 #include "pathbld.h"
+#include "slist.h"
 #include "sysvars.h"
 
 typedef struct {
@@ -44,7 +45,7 @@ typedef struct {
   void              (*asiFullPath) (asdata_t *, const char *sfname, char *fullpath, size_t sz, const char *prefix, int pfxlen);
   const char        *(*asiRelativePath) (asdata_t *, const char *nm, int pfxlen);
   size_t            (*asiDir) (asdata_t *, const char *sfname, char *dir, size_t sz, int pfxlen);
-  asiterdata_t      *(*asiStartIterator) (asdata_t *, const char *dir);
+  asiterdata_t      *(*asiStartIterator) (asdata_t *, int asitertype, const char *dir);
   void              (*asiCleanIterator) (asdata_t *, asiterdata_t *asiterdata);
   int32_t           (*asiIterCount) (asdata_t *, asiterdata_t *asiterdata);
   const char        *(*asiIterate) (asdata_t *, asiterdata_t *asiterdata);
@@ -61,6 +62,7 @@ typedef struct audiosrc {
 
 typedef struct asiter {
   int           type;
+  int           itertype;
   asiterdata_t  *asiterdata;
   asdylib_t     *asdylib;
   asdata_t      *asdata;
@@ -530,10 +532,9 @@ audiosrcDir (const char *sfname, char *dir, size_t sz, int pfxlen)
 }
 
 asiter_t *
-audiosrcStartIterator (const char *uri)
+audiosrcStartIterator (int type, int asitertype, const char *uri)
 {
   asiter_t  *asiter = NULL;
-  int       type;
   asdylib_t *asdylib;
 
   if (audiosrc == NULL) {
@@ -542,18 +543,22 @@ audiosrcStartIterator (const char *uri)
   if (uri == NULL) {
     return NULL;
   }
+  if (type == AUDIOSRC_TYPE_NONE || type >= AUDIOSRC_TYPE_MAX) {
+    return NULL;
+  }
 
   asiter = mdmalloc (sizeof (asiter_t));
-  type = audiosrcGetType (uri);
   asdylib = audiosrcGetDylibByType (type);
 
   asiter->type = type;
+  asiter->itertype = asitertype;
   asiter->asiterdata = NULL;
   asiter->asdylib = asdylib;
   asiter->asdata = asdylib->asdata;
 
   if (asdylib != NULL && asdylib->asiStartIterator != NULL) {
-    asiter->asiterdata = asdylib->asiStartIterator (asdylib->asdata, uri);
+    asiter->asiterdata = asdylib->asiStartIterator (
+        asdylib->asdata, asitertype, uri);
   }
 
   if (asiter->asiterdata == NULL) {
@@ -640,7 +645,6 @@ audiosrcGetPlaylistNames (int type)
 
   return rc;
 }
-
 
 /* internal routines */
 

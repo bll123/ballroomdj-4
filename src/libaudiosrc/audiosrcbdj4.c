@@ -31,10 +31,11 @@
 
 enum {
   ASBDJ4_ACT_NONE,
-  ASBDJ4_ACT_EXISTS,
-  ASBDJ4_ACT_GET,
-  ASBDJ4_ACT_GET_PLAYLIST,
   ASBDJ4_ACT_GET_PL_NAMES,
+  ASBDJ4_ACT_GET_PLAYLIST,
+  ASBDJ4_ACT_SONG_EXISTS,
+  ASBDJ4_ACT_GET_SONG,
+  ASBDJ4_ACT_SONG_TAGS,
   ASBDJ4_ACT_MAX,
 };
 
@@ -44,14 +45,17 @@ enum {
 
 const char *action_str [ASBDJ4_ACT_MAX] = {
   [ASBDJ4_ACT_NONE] = "none",
-  [ASBDJ4_ACT_EXISTS] = "exists",
-  [ASBDJ4_ACT_GET] = "get",
-  [ASBDJ4_ACT_GET_PLAYLIST] = "getpl",
+  [ASBDJ4_ACT_SONG_EXISTS] = "songexists",
+  [ASBDJ4_ACT_GET_SONG] = "songget",
+  [ASBDJ4_ACT_SONG_TAGS] = "songtags",
+  [ASBDJ4_ACT_GET_PLAYLIST] = "plget",
   [ASBDJ4_ACT_GET_PL_NAMES] = "plnames",
 };
 
 typedef struct asiterdata {
-  slistidx_t    plniter;
+  slistidx_t    iteridx;
+  slist_t       *iterlist;
+  slist_t       *songlist;
 } asiterdata_t;
 
 typedef struct asdata {
@@ -70,6 +74,7 @@ typedef struct asdata {
 
 static void asbdj4MakeTempName (asdata_t *asdata, const char *ffn, char *tempnm, size_t maxlen);
 static void asbdj4WebResponseCallback (void *userdata, const char *respstr, size_t len);
+static bool asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm);
 
 static long globalcount = 0;
 
@@ -173,7 +178,7 @@ asiExists (asdata_t *asdata, const char *nm)
   int     webrc;
   char    query [1024];
 
-  asdata->action = ASBDJ4_ACT_EXISTS;
+  asdata->action = ASBDJ4_ACT_SONG_EXISTS;
   asdata->state = BDJ4_STATE_WAIT;
   snprintf (query, sizeof (query),
       "%s/%s"
@@ -344,13 +349,22 @@ asiDir (asdata_t *asdata, const char *sfname, char *buff, size_t sz, int pfxlen)
 }
 
 asiterdata_t *
-asiStartIterator (asdata_t *asdata, const char *notused)
+asiStartIterator (asdata_t *asdata, int asitertype, const char *plnm)
 {
   asiterdata_t  *asidata;
 
   asidata = mdmalloc (sizeof (asiterdata_t));
+  asidata->songlist = NULL;
+  asidata->iterlist = NULL;
 
-  slistStartIterator (asdata->plNames, &asidata->plniter);
+  if (asitertype == AS_ITER_PL_NAMES) {
+    asidata->iterlist = asdata->plNames;
+    slistStartIterator (asidata->iterlist, &asidata->iteridx);
+  } else if (asitertype == AS_ITER_PL) {
+    asbdj4GetPlaylist (asdata, asidata, plnm);
+    asidata->iterlist = asidata->songlist;
+    slistStartIterator (asidata->iterlist, &asidata->iteridx);
+  }
 
   return asidata;
 }
@@ -362,6 +376,7 @@ asiCleanIterator (asdata_t *asdata, asiterdata_t *asidata)
     return;
   }
 
+  slistFree (asidata->songlist);
   mdfree (asidata);
 }
 
@@ -374,7 +389,7 @@ asiIterCount (asdata_t *asdata, asiterdata_t *asidata)
     return c;
   }
 
-  c = slistGetCount (asdata->plNames);
+  c = slistGetCount (asidata->iterlist);
   return c;
 }
 
@@ -387,7 +402,7 @@ asiIterate (asdata_t *asdata, asiterdata_t *asidata)
     return rval;
   }
 
-  rval = slistIterateKey (asdata->plNames, &asidata->plniter);
+  rval = slistIterateKey (asidata->iterlist, &asidata->iteridx);
   return rval;
 }
 
@@ -420,14 +435,15 @@ asiGetPlaylistNames (asdata_t *asdata)
       tdata [asdata->webresplen] = '\0';
       slistFree (asdata->plNames);
       asdata->plNames = slistAlloc ("asplnames", LIST_UNORDERED, NULL);
+
       p = strtok_r (tdata, MSG_ARGS_RS_STR, &tokstr);
       while (p != NULL) {
         /* CONTEXT: the name of the history song list */
         if (strcmp (p, _("History")) == 0) {
+          p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
           continue;
         }
         slistSetNum (asdata->plNames, p, 1);
-fprintf (stderr, "pl: %s\n", p);
         p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
       }
       slistSort (asdata->plNames);
@@ -483,8 +499,57 @@ asbdj4WebResponseCallback (void *userdata, const char *respstr, size_t len)
     return;
   }
 
+fprintf (stderr, "asbdj4: got web response len: %ld\n", (long) len);
   asdata->webresponse = respstr;
   asdata->webresplen = len;
   asdata->state = BDJ4_STATE_PROCESS;
   return;
 }
+
+
+static bool
+asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm)
+{
+  bool    rc = false;
+  int     webrc;
+  char    query [1024];
+
+  asdata->action = ASBDJ4_ACT_GET_PLAYLIST;
+  asdata->state = BDJ4_STATE_WAIT;
+  snprintf (query, sizeof (query),
+      "%s/%s"
+      "?uri=%s",
+      asdata->bdj4uri, action_str [asdata->action],
+      nm);
+
+  webrc = webclientGet (asdata->webclient, query);
+  if (webrc != WEB_OK) {
+    return rc;
+  }
+
+  if (asdata->state == BDJ4_STATE_PROCESS) {
+    if (asdata->webresplen > 0) {
+      char    *tdata;
+      char    *p;
+      char    *tokstr;
+
+      tdata = mdmalloc (asdata->webresplen + 1);
+      memcpy (tdata, asdata->webresponse, asdata->webresplen);
+      tdata [asdata->webresplen] = '\0';
+      slistFree (asidata->songlist);
+      asidata->songlist = slistAlloc ("asplsongs", LIST_UNORDERED, NULL);
+
+      p = strtok_r (tdata, MSG_ARGS_RS_STR, &tokstr);
+      while (p != NULL) {
+        slistSetNum (asidata->songlist, p, 1);
+        p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+      }
+
+      rc = true;
+    }
+    asdata->state = BDJ4_STATE_OFF;
+  }
+
+  return rc;
+}
+

@@ -13,8 +13,9 @@ if (WIN32)
   target_compile_options (bdj4server PRIVATE -municode)
 endif()
 target_link_libraries (bdj4server PRIVATE
-  objwebsrv
+  libbdj4audiosrc
   libbdj4 libbdj4basic libbdj4common
+  objwebsrv
   ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
 )

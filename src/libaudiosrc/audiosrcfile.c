@@ -37,6 +37,7 @@ typedef struct asdata {
   const char    *delpfx;
   const char    *origext;
   size_t        musicdirlen;
+  slist_t       *songlist;
 } asdata_t;
 
 static void audiosrcfileMakeTempName (asdata_t *asdata, const char *ffn, char *tempnm, size_t maxlen);
@@ -348,14 +349,16 @@ asiDir (asdata_t *asdata, const char *sfname, char *buff, size_t sz, int pfxlen)
 }
 
 asiterdata_t *
-asiStartIterator (asdata_t *asdata, const char *dir)
+asiStartIterator (asdata_t *asdata, int asitertype, const char *dir)
 {
   asiterdata_t  *asidata;
 
   if (dir == NULL) {
     return NULL;
   }
-
+  if (asitertype != AS_ITER_DIR) {
+    return NULL;
+  }
   if (! fileopIsDirectory (dir)) {
     return NULL;
   }

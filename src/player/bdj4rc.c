@@ -187,22 +187,22 @@ remctrlEventHandler (void *userdata, const char *query, const char *uri)
   websrvGetUserPass (remctrl->websrv, user, sizeof (user), pass, sizeof (pass));
 
   if (user [0] == '\0' || pass [0] == '\0') {
-    websrvReply (remctrl->websrv, 401,
+    websrvReply (remctrl->websrv, WEB_UNAUTHORIZED,
         "Content-type: text/plain; charset=utf-8\r\n"
         "WWW-Authenticate: Basic realm=BDJ4 Remote\r\n",
-        "Unauthorized");
+        WEB_RESP_UNAUTH);
   } else if (strcmp (user, remctrl->user) != 0 ||
       strcmp (pass, remctrl->pass) != 0) {
-    websrvReply (remctrl->websrv, 401,
+    websrvReply (remctrl->websrv, WEB_UNAUTHORIZED,
         "Content-type: text/plain; charset=utf-8\r\n"
         "WWW-Authenticate: Basic realm=BDJ4 Remote\r\n",
-        "Unauthorized");
+        WEB_RESP_UNAUTH);
   } else if (strcmp (uri, "/getstatus") == 0) {
     if (remctrl->playerStatus == NULL || remctrl->currSong == NULL) {
-      websrvReply (remctrl->websrv, 204,
+      websrvReply (remctrl->websrv, WEB_NO_CONTENT,
           "Content-type: text/plain; charset=utf-8\r\n"
           "Cache-Control: max-age=0\r\n",
-          "");
+          WEB_RESP_NO_CONTENT);
     } else {
       char    *jsbuff;
       char    *jp;
@@ -216,19 +216,19 @@ remctrlEventHandler (void *userdata, const char *query, const char *uri)
       jp = stpecpy (jp, jend, remctrl->playerStatus);
       jp = stpecpy (jp, jend, remctrl->currSong);
 
-      websrvReply (remctrl->websrv, 200,
+      websrvReply (remctrl->websrv, WEB_OK,
           "Content-type: text/plain; charset=utf-8\r\n"
           "Cache-Control: max-age=0\r\n", jsbuff);
       dataFree (jsbuff);
     }
   } else if (strcmp (uri, "/getcurrsong") == 0) {
     if (remctrl->currSong == NULL) {
-      websrvReply (remctrl->websrv, 204,
+      websrvReply (remctrl->websrv, WEB_NO_CONTENT,
           "Content-type: text/plain; charset=utf-8\r\n"
           "Cache-Control: max-age=0\r\n",
-          "");
+          WEB_RESP_NO_CONTENT);
     } else {
-      websrvReply (remctrl->websrv, 200,
+      websrvReply (remctrl->websrv, WEB_OK,
           "Content-type: text/plain; charset=utf-8\r\n"
           "Cache-Control: max-age=0\r\n",
           remctrl->currSong);
@@ -322,23 +322,23 @@ remctrlEventHandler (void *userdata, const char *query, const char *uri)
     }
 
     if (ok) {
-      websrvReply (remctrl->websrv, 200,
+      websrvReply (remctrl->websrv, WEB_OK,
           "Content-type: text/plain; charset=utf-8\r\n"
           "Cache-Control: max-age=0\r\n",
           "");
     } else {
-      websrvReply (remctrl->websrv, 400,
+      websrvReply (remctrl->websrv, WEB_BAD_REQUEST,
           "Content-type: text/plain; charset=utf-8\r\n"
           "Cache-Control: max-age=0\r\n",
-          "");
+          WEB_RESP_BAD_REQ);
     }
   } else if (strcmp (uri, "/getdancelist") == 0) {
-    websrvReply (remctrl->websrv, 200,
+    websrvReply (remctrl->websrv, WEB_OK,
         "Content-type: text/plain; charset=utf-8\r\n"
         "Cache-Control: max-age=0\r\n",
         remctrl->danceList);
   } else if (strcmp (uri, "/getplaylistsel") == 0) {
-    websrvReply (remctrl->websrv, 200,
+    websrvReply (remctrl->websrv, WEB_OK,
         "Content-type: text/plain; charset=utf-8\r\n"
         "Cache-Control: max-age=0\r\n",
         remctrl->playlistNames);

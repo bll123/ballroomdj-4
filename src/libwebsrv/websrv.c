@@ -147,7 +147,7 @@ websrvEventHandler (struct mg_connection *c, int ev, void *ev_data)
       strcmp (uriptr, ".pem") == 0 ||
       strcmp (uriptr, ".csr") == 0 ||
       strncmp (uri, "../", 3) == 0) {
-    mg_http_reply (c, 403, NULL, "Forbidden");
+    mg_http_reply (c, WEB_FORBIDDEN, NULL, WEB_RESP_FORBIDDEN);
     return;
   }
 

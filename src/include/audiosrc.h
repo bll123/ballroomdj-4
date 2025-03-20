@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include "slist.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
@@ -16,6 +18,12 @@ enum {
   AUDIOSRC_TYPE_FILE,
   AUDIOSRC_TYPE_BDJ4,
   AUDIOSRC_TYPE_MAX,
+};
+
+enum {
+  AS_ITER_DIR,
+  AS_ITER_PL_NAMES,
+  AS_ITER_PL,
 };
 
 #define AS_FILE_PFX "file://"
@@ -48,7 +56,7 @@ void audiosrcFullPath (const char *sfname, char *fullpath, size_t sz, const char
 const char * audiosrcRelativePath (const char *sfname, int pfxlen);
 
 size_t audiosrcDir (const char *sfname, char *dir, size_t sz, int pfxlen);
-asiter_t *audiosrcStartIterator (const char *uri);
+asiter_t *audiosrcStartIterator (int type, int asitertype, const char *uri);
 void audiosrcCleanIterator (asiter_t *asiiter);
 int32_t audiosrcIterCount (asiter_t *asiter);
 const char *audiosrcIterate (asiter_t *asiter);
@@ -72,7 +80,7 @@ void asiURI (asdata_t *asdata, const char *sfname, char *uri, size_t sz, const c
 void asiFullPath (asdata_t *asdata, const char *sfname, char *fullpath, size_t sz, const char *prefix, int pfxlen);
 const char * asiRelativePath (asdata_t *asdata, const char *nm, int pfxlen);
 size_t asiDir (asdata_t *asdata, const char *sfname, char *dir, size_t sz, int pfxlen);
-asiterdata_t *asiStartIterator (asdata_t *asdata, const char *dir);
+asiterdata_t *asiStartIterator (asdata_t *asdata, int asitertype, const char *dir);
 void asiCleanIterator (asdata_t *asdata, asiterdata_t *asidata);
 int32_t asiIterCount (asdata_t *asdata, asiterdata_t *asidata);
 const char *asiIterate (asdata_t *asdata, asiterdata_t *asidata);

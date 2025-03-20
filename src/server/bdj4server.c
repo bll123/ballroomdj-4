@@ -11,6 +11,7 @@
 #include <errno.h>
 #include <getopt.h>
 
+#include "audiosrc.h"
 #include "bdj4.h"
 #include "bdj4init.h"
 #include "bdjmsg.h"
@@ -19,6 +20,7 @@
 #include "bdjvars.h"
 #include "conn.h"
 #include "fileop.h"
+#include "ilist.h"
 #include "lock.h"
 #include "log.h"
 #include "mdebug.h"
@@ -30,10 +32,16 @@
 #include "progstate.h"
 #include "sock.h"
 #include "sockh.h"
+#include "songlist.h"
 #include "sysvars.h"
 #include "tagdef.h"
 #include "tmutil.h"
 #include "websrv.h"
+
+#define SRV_URI_TEXT  "uri="
+enum {
+  SRV_URI_LEN = strlen (SRV_URI_TEXT),
+};
 
 typedef struct {
   musicdb_t       *musicdb;
@@ -166,53 +174,22 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
 
   websrvGetUserPass (bdjsrv->websrv, user, sizeof (user), pass, sizeof (pass));
 
-fprintf (stderr, "srv: uri: %s\n", uri);
-fprintf (stderr, "srv: query: %s\n", query);
+if (*uri) {
+  fprintf (stderr, "srv: uri: %s\n", uri);
+  fprintf (stderr, "srv: query: %s\n", query);
+}
 
   if (user [0] == '\0' || pass [0] == '\0') {
-    websrvReply (bdjsrv->websrv, 401,
+    websrvReply (bdjsrv->websrv, WEB_UNAUTHORIZED,
         "Content-type: text/plain; charset=utf-8\r\n"
         "WWW-Authenticate: Basic realm=BDJ4\r\n",
-        "Unauthorized");
+        WEB_RESP_UNAUTH);
   } else if (strcmp (user, bdjsrv->user) != 0 ||
       strcmp (pass, bdjsrv->pass) != 0) {
-    websrvReply (bdjsrv->websrv, 401,
+    websrvReply (bdjsrv->websrv, WEB_UNAUTHORIZED,
         "Content-type: text/plain; charset=utf-8\r\n"
         "WWW-Authenticate: Basic realm=BDJ4\r\n",
-        "Unauthorized");
-  } else if (strcmp (uri, "/exists") == 0) {
-    char        rbuff [10];
-    bool        ok = false;
-    const char  *plfnm;
-
-    bdjsrvGetPlaylistNames (bdjsrv);
-
-    plfnm = slistGetStr (bdjsrv->plNames, query);
-// ### check if playlist exists
-
-    strcpy (rbuff, "F");
-    if (ok) {
-      strcpy (rbuff, "T");
-    }
-
-    websrvReply (bdjsrv->websrv, 200,
-        "Content-type: text/plain; charset=utf-8\r\n"
-        "Cache-Control: max-age=0\r\n",
-        rbuff);
-    dataFree (rbuff);
-  } else if (strcmp (uri, "/get") == 0) {
-    char          path [MAXPATHLEN];
-    const char    *turi = uri;
-
-    bdjsrvGetPlaylistNames (bdjsrv);
-
-    if (*uri == '/') {
-      ++uri;
-    }
-// ### fix
-    pathbldMakePath (path, sizeof (path), uri, "", PATHBLD_MP_DREL_DATA);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "serve: %s", turi);
-    websrvServeFile (bdjsrv->websrv, sysvarsGetStr (SV_BDJ4_DREL_DATA), turi);
+        WEB_RESP_UNAUTH);
   } else if (strcmp (uri, "/plnames") == 0) {
     const char  *plnm = NULL;
     char        tbuff [200];
@@ -234,12 +211,121 @@ fprintf (stderr, "srv: query: %s\n", query);
       rp = stpecpy (rp, rend, tbuff);
     }
 
-    websrvReply (bdjsrv->websrv, 200,
+    websrvReply (bdjsrv->websrv, WEB_OK,
         "Content-type: text/plain; charset=utf-8\r\n"
         "Cache-Control: max-age=0\r\n",
         rbuff);
-
     dataFree (rbuff);
+  } else if (strcmp (uri, "/plget") == 0) {
+    bool        ok = false;
+    const char  *plnm = NULL;
+    songlist_t  *sl;
+    char        tbuff [MAXPATHLEN];
+    char        *rbuff;
+    char        *rp;
+    char        *rend;
+    ilistidx_t  iteridx;
+    ilistidx_t  idx;
+
+    if (strncmp (query, SRV_URI_TEXT, SRV_URI_LEN) == 0) {
+      plnm = query + SRV_URI_LEN;
+    }
+    ok = playlistExists (plnm);
+
+fprintf (stderr, "get-pl: plnm: %s %d\n", plnm, ok);
+    if (! ok) {
+      websrvReply (bdjsrv->websrv, WEB_NOT_FOUND,
+          "Content-type: text/plain; charset=utf-8\r\n"
+          "Cache-Control: max-age=0\r\n",
+          WEB_RESP_NOT_FOUND);
+      return;
+    }
+
+    rbuff = mdmalloc (BDJMSG_MAX);
+    rbuff [0] = '\0';
+    rp = rbuff;
+    rend = rbuff + BDJMSG_MAX;
+
+    sl = songlistLoad (plnm);
+    songlistStartIterator (sl, &iteridx);
+    while ((idx = songlistIterate (sl, &iteridx)) >= 0) {
+      const char    *songuri;
+
+      songuri = songlistGetStr (sl, idx, SONGLIST_URI);
+      snprintf (tbuff, sizeof (tbuff), "%s%c", songuri, MSG_ARGS_RS);
+      rp = stpecpy (rp, rend, tbuff);
+    }
+
+    websrvReply (bdjsrv->websrv, WEB_OK,
+        "Content-type: text/plain; charset=utf-8\r\n"
+        "Cache-Control: max-age=0\r\n",
+        rbuff);
+    songlistFree (sl);
+  } else if (strcmp (uri, "/songexists") == 0) {
+    bool        ok = false;
+    const char  *resp = WEB_RESP_NOT_FOUND;
+    int         rc = WEB_NOT_FOUND;
+    const char  *songuri = NULL;
+
+    if (strncmp (query, SRV_URI_TEXT, SRV_URI_LEN) == 0) {
+      songuri = query + SRV_URI_LEN;
+    }
+    songuri = query;
+// ### strip off "bdj4://" from front...
+    ok = audiosrcExists (songuri);
+    if (ok) {
+      rc = WEB_OK;
+      resp = WEB_RESP_OK;
+    }
+
+    websrvReply (bdjsrv->websrv, rc,
+        "Content-type: text/plain; charset=utf-8\r\n"
+        "Cache-Control: max-age=0\r\n",
+        resp);
+  } else if (strcmp (uri, "/songget") == 0) {
+    bool          ok;
+    char          ffn [MAXPATHLEN];
+    const char    *songuri;
+
+// ### check if song exists
+// ### fix
+    songuri = query;
+// ### strip off "bdj4://" from front...
+    ok = audiosrcExists (songuri);
+
+// ### need path to music file
+    if (ok) {
+      audiosrcFullPath (songuri, ffn, sizeof (ffn), NULL, 0);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "get-song: serve: %s", ffn);
+      websrvServeFile (bdjsrv->websrv, "", ffn);
+    } else {
+      websrvReply (bdjsrv->websrv, WEB_NOT_FOUND,
+          "Content-type: text/plain; charset=utf-8\r\n"
+          "Cache-Control: max-age=0\r\n",
+          WEB_RESP_NOT_FOUND);
+    }
+  } else if (strcmp (uri, "/songtags") == 0) {
+    bool          ok;
+    char          ffn [MAXPATHLEN];
+    const char    *songuri;
+
+// ### check if song exists
+// ### fix
+    songuri = query;
+// ### strip off "bdj4://" from front...
+    ok = audiosrcExists (songuri);
+
+// ### need path to music file
+    if (ok) {
+      audiosrcFullPath (songuri, ffn, sizeof (ffn), NULL, 0);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "get-song: serve: %s", ffn);
+      websrvServeFile (bdjsrv->websrv, "", ffn);
+    } else {
+      websrvReply (bdjsrv->websrv, WEB_NOT_FOUND,
+          "Content-type: text/plain; charset=utf-8\r\n"
+          "Cache-Control: max-age=0\r\n",
+          WEB_RESP_NOT_FOUND);
+    }
   } else {
     char          path [MAXPATHLEN];
     const char    *turi = uri;

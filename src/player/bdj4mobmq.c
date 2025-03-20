@@ -187,7 +187,7 @@ mobmqEventHandler (void *userdata, const char *query, const char *uri)
     const char *data = NULL;
 
     data = mobmqBuildResponse (mobmqdata);
-    websrvReply (mobmqdata->websrv, 200,
+    websrvReply (mobmqdata->websrv, WEB_OK,
         "Content-Type: application/json\r\n", data);
   } else {
     char          path [MAXPATHLEN];

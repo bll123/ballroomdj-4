@@ -4029,13 +4029,20 @@ manageSendBPMCounter (manageui_t *manage)
 static bool
 manageImportPlaylist (void *udata)
 {
+  asiter_t      *asiter;
+  const char    *songnm;
 //  manageui_t  *manage = udata;
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import playlist");
 
-// ### start a dialog to select where to import from...
   audiosrcGetPlaylistNames (AUDIOSRC_TYPE_BDJ4);
+// ### start a dialog to select which playlist to import and from where...
+  asiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_PL, "test-sl-a");
+  while ((songnm = audiosrcIterate (asiter)) != NULL) {
+fprintf (stderr, "mng: songnm: %s\n", songnm);
+  }
+  audiosrcCleanIterator (asiter);
 
   logProcEnd ("");
   return UICB_CONT;
