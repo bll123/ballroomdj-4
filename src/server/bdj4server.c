@@ -232,7 +232,6 @@ if (*uri) {
     }
     ok = playlistExists (plnm);
 
-fprintf (stderr, "get-pl: plnm: %s %d\n", plnm, ok);
     if (! ok) {
       websrvReply (bdjsrv->websrv, WEB_NOT_FOUND,
           "Content-type: text/plain; charset=utf-8\r\n"
@@ -252,7 +251,8 @@ fprintf (stderr, "get-pl: plnm: %s %d\n", plnm, ok);
       const char    *songuri;
 
       songuri = songlistGetStr (sl, idx, SONGLIST_URI);
-      snprintf (tbuff, sizeof (tbuff), "%s%c", songuri, MSG_ARGS_RS);
+      snprintf (tbuff, sizeof (tbuff), "%s%s%c",
+          AS_BDJ4_PFX, songuri, MSG_ARGS_RS);
       rp = stpecpy (rp, rend, tbuff);
     }
 
@@ -267,11 +267,13 @@ fprintf (stderr, "get-pl: plnm: %s %d\n", plnm, ok);
     int         rc = WEB_NOT_FOUND;
     const char  *songuri = NULL;
 
-    if (strncmp (query, SRV_URI_TEXT, SRV_URI_LEN) == 0) {
-      songuri = query + SRV_URI_LEN;
-    }
     songuri = query;
-// ### strip off "bdj4://" from front...
+    if (strncmp (songuri, SRV_URI_TEXT, SRV_URI_LEN) == 0) {
+      songuri += SRV_URI_LEN;
+    }
+    if (strncmp (songuri, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) == 0) {
+      songuri += AS_BDJ4_PFX_LEN;
+    }
     ok = audiosrcExists (songuri);
     if (ok) {
       rc = WEB_OK;
@@ -287,45 +289,83 @@ fprintf (stderr, "get-pl: plnm: %s %d\n", plnm, ok);
     char          ffn [MAXPATHLEN];
     const char    *songuri;
 
-// ### check if song exists
-// ### fix
     songuri = query;
-// ### strip off "bdj4://" from front...
+    if (strncmp (songuri, SRV_URI_TEXT, SRV_URI_LEN) == 0) {
+      songuri += SRV_URI_LEN;
+    }
+    if (strncmp (songuri, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) == 0) {
+      songuri += AS_BDJ4_PFX_LEN;
+    }
     ok = audiosrcExists (songuri);
 
-// ### need path to music file
-    if (ok) {
-      audiosrcFullPath (songuri, ffn, sizeof (ffn), NULL, 0);
-      logMsg (LOG_DBG, LOG_IMPORTANT, "get-song: serve: %s", ffn);
-      websrvServeFile (bdjsrv->websrv, "", ffn);
-    } else {
+    if (! ok) {
       websrvReply (bdjsrv->websrv, WEB_NOT_FOUND,
           "Content-type: text/plain; charset=utf-8\r\n"
           "Cache-Control: max-age=0\r\n",
           WEB_RESP_NOT_FOUND);
+      return;
     }
+
+    audiosrcFullPath (songuri, ffn, sizeof (ffn), NULL, 0);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "get-song: serve: %s", ffn);
+    websrvServeFile (bdjsrv->websrv, "", ffn);
   } else if (strcmp (uri, "/songtags") == 0) {
-    bool          ok;
-    char          ffn [MAXPATHLEN];
-    const char    *songuri;
+    bool        ok;
+    const char  *songuri;
+    song_t      *song;
+    slist_t     *songtags;
+    slistidx_t  iteridx;
+    const char  *tag;
+    char        tbuff [MAXPATHLEN];
+    char        *rbuff;
+    char        *rp;
+    char        *rend;
 
-// ### check if song exists
-// ### fix
     songuri = query;
-// ### strip off "bdj4://" from front...
+    if (strncmp (songuri, SRV_URI_TEXT, SRV_URI_LEN) == 0) {
+      songuri += SRV_URI_LEN;
+    }
+    if (strncmp (songuri, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) == 0) {
+      songuri += AS_BDJ4_PFX_LEN;
+    }
     ok = audiosrcExists (songuri);
 
-// ### need path to music file
     if (ok) {
-      audiosrcFullPath (songuri, ffn, sizeof (ffn), NULL, 0);
-      logMsg (LOG_DBG, LOG_IMPORTANT, "get-song: serve: %s", ffn);
-      websrvServeFile (bdjsrv->websrv, "", ffn);
-    } else {
+      song = dbGetByName (bdjsrv->musicdb, songuri);
+    }
+
+    if (! ok || song == NULL) {
       websrvReply (bdjsrv->websrv, WEB_NOT_FOUND,
           "Content-type: text/plain; charset=utf-8\r\n"
           "Cache-Control: max-age=0\r\n",
           WEB_RESP_NOT_FOUND);
+      return;
     }
+
+    rbuff = mdmalloc (BDJMSG_MAX);
+    rbuff [0] = '\0';
+    rp = rbuff;
+    rend = rbuff + BDJMSG_MAX;
+
+    songtags = songTagList (song);
+    slistStartIterator (songtags, &iteridx);
+    while ((tag = slistIterateKey (songtags, &iteridx)) != NULL) {
+      const char  *value;
+
+      value = slistGetStr (songtags, tag);
+      if (value != NULL && *value) {
+        snprintf (tbuff, sizeof (tbuff), "%s%c%s%c",
+            tag, MSG_ARGS_RS, value, MSG_ARGS_RS);
+        rp = stpecpy (rp, rend, tbuff);
+      }
+    }
+
+    websrvReply (bdjsrv->websrv, WEB_OK,
+        "Content-type: text/plain; charset=utf-8\r\n"
+        "Cache-Control: max-age=0\r\n",
+        rbuff);
+    return;
+    slistFree (songtags);
   } else {
     char          path [MAXPATHLEN];
     const char    *turi = uri;

@@ -56,6 +56,7 @@ typedef struct asiterdata {
   slistidx_t    iteridx;
   slist_t       *iterlist;
   slist_t       *songlist;
+  slist_t       *songtags;
 } asiterdata_t;
 
 typedef struct asdata {
@@ -75,6 +76,7 @@ typedef struct asdata {
 static void asbdj4MakeTempName (asdata_t *asdata, const char *ffn, char *tempnm, size_t maxlen);
 static void asbdj4WebResponseCallback (void *userdata, const char *respstr, size_t len);
 static bool asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm);
+static bool asbdj4SongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri);
 
 static long globalcount = 0;
 
@@ -349,20 +351,25 @@ asiDir (asdata_t *asdata, const char *sfname, char *buff, size_t sz, int pfxlen)
 }
 
 asiterdata_t *
-asiStartIterator (asdata_t *asdata, int asitertype, const char *plnm)
+asiStartIterator (asdata_t *asdata, asitertype_t asitertype, const char *nm)
 {
   asiterdata_t  *asidata;
 
   asidata = mdmalloc (sizeof (asiterdata_t));
   asidata->songlist = NULL;
+  asidata->songtags = NULL;
   asidata->iterlist = NULL;
 
   if (asitertype == AS_ITER_PL_NAMES) {
     asidata->iterlist = asdata->plNames;
     slistStartIterator (asidata->iterlist, &asidata->iteridx);
   } else if (asitertype == AS_ITER_PL) {
-    asbdj4GetPlaylist (asdata, asidata, plnm);
+    asbdj4GetPlaylist (asdata, asidata, nm);
     asidata->iterlist = asidata->songlist;
+    slistStartIterator (asidata->iterlist, &asidata->iteridx);
+  } else if (asitertype == AS_ITER_TAGS) {
+    asbdj4SongTags (asdata, asidata, nm);
+    asidata->iterlist = asidata->songtags;
     slistStartIterator (asidata->iterlist, &asidata->iteridx);
   }
 
@@ -377,6 +384,7 @@ asiCleanIterator (asdata_t *asdata, asiterdata_t *asidata)
   }
 
   slistFree (asidata->songlist);
+  slistFree (asidata->songtags);
   mdfree (asidata);
 }
 
@@ -396,14 +404,30 @@ asiIterCount (asdata_t *asdata, asiterdata_t *asidata)
 const char *
 asiIterate (asdata_t *asdata, asiterdata_t *asidata)
 {
-  const char    *rval = NULL;
+  const char    *key = NULL;
 
   if (asidata == NULL) {
-    return rval;
+    return key;
   }
 
-  rval = slistIterateKey (asidata->iterlist, &asidata->iteridx);
-  return rval;
+  key = slistIterateKey (asidata->iterlist, &asidata->iteridx);
+  return key;
+}
+
+const char *
+asiIterateValue (asdata_t *asdata, asiterdata_t *asidata, const char *key)
+{
+  const char  *val;
+
+  if (asidata == NULL) {
+    return NULL;
+  }
+  if (key == NULL) {
+    return NULL;
+  }
+
+  val = slistGetStr (asidata->iterlist, key);
+  return val;
 }
 
 bool
@@ -553,3 +577,56 @@ asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm)
   return rc;
 }
 
+static bool
+asbdj4SongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri)
+{
+  bool    rc = false;
+  int     webrc;
+  char    query [1024];
+
+  asdata->action = ASBDJ4_ACT_SONG_TAGS;
+  asdata->state = BDJ4_STATE_WAIT;
+  snprintf (query, sizeof (query),
+      "%s/%s"
+      "?uri=%s",
+      asdata->bdj4uri, action_str [asdata->action],
+      songuri);
+
+  webrc = webclientGet (asdata->webclient, query);
+  if (webrc != WEB_OK) {
+    return rc;
+  }
+
+  if (asdata->state == BDJ4_STATE_PROCESS) {
+    if (asdata->webresplen > 0) {
+      char    *tdata;
+      char    *p;
+      char    *tokstr;
+
+      tdata = mdmalloc (asdata->webresplen + 1);
+      memcpy (tdata, asdata->webresponse, asdata->webresplen);
+      tdata [asdata->webresplen] = '\0';
+      slistFree (asidata->songtags);
+      asidata->songtags = slistAlloc ("asplsongs", LIST_UNORDERED, NULL);
+
+      p = strtok_r (tdata, MSG_ARGS_RS_STR, &tokstr);
+      while (p != NULL) {
+        const char  *tval;
+
+        tval = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+        if (tval != NULL) {
+          if (*tval == MSG_ARGS_EMPTY) {
+            tval = NULL;
+          }
+          slistSetStr (asidata->songtags, p, tval);
+        }
+        p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+      }
+
+      rc = true;
+    }
+    asdata->state = BDJ4_STATE_OFF;
+  }
+
+  return rc;
+}

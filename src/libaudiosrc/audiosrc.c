@@ -45,10 +45,11 @@ typedef struct {
   void              (*asiFullPath) (asdata_t *, const char *sfname, char *fullpath, size_t sz, const char *prefix, int pfxlen);
   const char        *(*asiRelativePath) (asdata_t *, const char *nm, int pfxlen);
   size_t            (*asiDir) (asdata_t *, const char *sfname, char *dir, size_t sz, int pfxlen);
-  asiterdata_t      *(*asiStartIterator) (asdata_t *, int asitertype, const char *dir);
+  asiterdata_t      *(*asiStartIterator) (asdata_t *, asitertype_t asitertype, const char *dir);
   void              (*asiCleanIterator) (asdata_t *, asiterdata_t *asiterdata);
   int32_t           (*asiIterCount) (asdata_t *, asiterdata_t *asiterdata);
   const char        *(*asiIterate) (asdata_t *, asiterdata_t *asiterdata);
+  const char        *(*asiIterateValue) (asdata_t *, asiterdata_t *asiterdata, const char *key);
   bool              (*asiGetPlaylistNames) (asdata_t *);
 } asdylib_t;
 
@@ -62,7 +63,7 @@ typedef struct audiosrc {
 
 typedef struct asiter {
   int           type;
-  int           itertype;
+  asitertype_t  itertype;
   asiterdata_t  *asiterdata;
   asdylib_t     *asdylib;
   asdata_t      *asdata;
@@ -133,6 +134,7 @@ audiosrcInit (void)
     asdylib->asiCleanIterator = NULL;
     asdylib->asiIterCount = NULL;
     asdylib->asiIterate = NULL;
+    asdylib->asiIterateValue = NULL;
     asdylib->asiGetPlaylistNames = NULL;
   }
 
@@ -180,6 +182,7 @@ audiosrcInit (void)
     asdylib->asiCleanIterator = dylibLookup (asdylib->dlHandle, "asiCleanIterator");
     asdylib->asiIterCount = dylibLookup (asdylib->dlHandle, "asiIterCount");
     asdylib->asiIterate = dylibLookup (asdylib->dlHandle, "asiIterate");
+    asdylib->asiIterateValue = dylibLookup (asdylib->dlHandle, "asiIterateValue");
     asdylib->asiGetPlaylistNames = dylibLookup (asdylib->dlHandle, "asiGetPlaylistNames");
 #pragma clang diagnostic pop
 
@@ -532,7 +535,7 @@ audiosrcDir (const char *sfname, char *dir, size_t sz, int pfxlen)
 }
 
 asiter_t *
-audiosrcStartIterator (int type, int asitertype, const char *uri)
+audiosrcStartIterator (int type, asitertype_t asitertype, const char *uri)
 {
   asiter_t  *asiter = NULL;
   asdylib_t *asdylib;
@@ -617,8 +620,26 @@ audiosrcIterate (asiter_t *asiter)
   }
 
   asdylib = asiter->asdylib;
-  if (asdylib != NULL && asdylib->asiIterCount != NULL) {
+  if (asdylib != NULL && asdylib->asiIterate != NULL) {
     rval = asdylib->asiIterate (asiter->asdata, asiter->asiterdata);
+  }
+
+  return rval;
+}
+
+const char *
+audiosrcIterateValue (asiter_t *asiter, const char *key)
+{
+  const char  *rval = rval;
+  asdylib_t   *asdylib;
+
+  if (asiter == NULL) {
+    return NULL;
+  }
+
+  asdylib = asiter->asdylib;
+  if (asdylib != NULL && asdylib->asiIterateValue != NULL) {
+    rval = asdylib->asiIterateValue (asiter->asdata, asiter->asiterdata, key);
   }
 
   return rval;

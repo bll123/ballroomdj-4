@@ -349,7 +349,7 @@ asiDir (asdata_t *asdata, const char *sfname, char *buff, size_t sz, int pfxlen)
 }
 
 asiterdata_t *
-asiStartIterator (asdata_t *asdata, int asitertype, const char *dir)
+asiStartIterator (asdata_t *asdata, asitertype_t asitertype, const char *dir)
 {
   asiterdata_t  *asidata;
 

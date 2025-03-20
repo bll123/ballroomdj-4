@@ -4040,7 +4040,18 @@ manageImportPlaylist (void *udata)
 // ### start a dialog to select which playlist to import and from where...
   asiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_PL, "test-sl-a");
   while ((songnm = audiosrcIterate (asiter)) != NULL) {
+    asiter_t    *tagiter;
+    const char  *tag;
+
 fprintf (stderr, "mng: songnm: %s\n", songnm);
+    tagiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_TAGS, songnm);
+    while ((tag = audiosrcIterate (tagiter)) != NULL) {
+      const char  *tval;
+
+      tval = audiosrcIterateValue (tagiter, tag);
+fprintf (stderr, "  tag: %s = %s\n", tag, tval);
+    }
+    audiosrcCleanIterator (tagiter);
   }
   audiosrcCleanIterator (asiter);
 

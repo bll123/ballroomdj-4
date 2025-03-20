@@ -20,17 +20,19 @@ enum {
   AUDIOSRC_TYPE_MAX,
 };
 
-enum {
+typedef enum {
   AS_ITER_DIR,
   AS_ITER_PL_NAMES,
   AS_ITER_PL,
-};
+  AS_ITER_TAGS,
+} asitertype_t;
 
 #define AS_FILE_PFX "file://"
-#define AS_FILE_PFX_LEN (strlen (AS_FILE_PFX))
-
 #define AS_BDJ4_PFX "bdj4://"
-#define AS_BDJ4_PFX_LEN (strlen (AS_BDJ4_PFX))
+enum {
+  AS_FILE_PFX_LEN = strlen (AS_FILE_PFX),
+  AS_BDJ4_PFX_LEN = strlen (AS_BDJ4_PFX),
+};
 
 /* audiosrc.c */
 
@@ -56,10 +58,11 @@ void audiosrcFullPath (const char *sfname, char *fullpath, size_t sz, const char
 const char * audiosrcRelativePath (const char *sfname, int pfxlen);
 
 size_t audiosrcDir (const char *sfname, char *dir, size_t sz, int pfxlen);
-asiter_t *audiosrcStartIterator (int type, int asitertype, const char *uri);
+asiter_t *audiosrcStartIterator (int type, asitertype_t asitertype, const char *uri);
 void audiosrcCleanIterator (asiter_t *asiiter);
 int32_t audiosrcIterCount (asiter_t *asiter);
 const char *audiosrcIterate (asiter_t *asiter);
+const char *audiosrcIterateValue (asiter_t *asiter, const char *key);
 
 bool audiosrcGetPlaylistNames (int type);
 
@@ -80,11 +83,13 @@ void asiURI (asdata_t *asdata, const char *sfname, char *uri, size_t sz, const c
 void asiFullPath (asdata_t *asdata, const char *sfname, char *fullpath, size_t sz, const char *prefix, int pfxlen);
 const char * asiRelativePath (asdata_t *asdata, const char *nm, int pfxlen);
 size_t asiDir (asdata_t *asdata, const char *sfname, char *dir, size_t sz, int pfxlen);
-asiterdata_t *asiStartIterator (asdata_t *asdata, int asitertype, const char *dir);
+asiterdata_t *asiStartIterator (asdata_t *asdata, asitertype_t asitertype, const char *dir);
 void asiCleanIterator (asdata_t *asdata, asiterdata_t *asidata);
 int32_t asiIterCount (asdata_t *asdata, asiterdata_t *asidata);
 const char *asiIterate (asdata_t *asdata, asiterdata_t *asidata);
+const char * asiIterateValue (asdata_t *asdata, asiterdata_t *asidata, const char *key);
 bool asiGetPlaylistNames (asdata_t *asdata);
+bool asiSongTags (asdata_t *asdata, const char *uri);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
