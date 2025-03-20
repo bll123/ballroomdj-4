@@ -21,6 +21,7 @@ enum {
 };
 
 typedef enum {
+  AS_ITER_AUDIO_SRC,
   AS_ITER_DIR,
   AS_ITER_PL_NAMES,
   AS_ITER_PL,
@@ -45,7 +46,7 @@ bool audiosrcEnabled (void);
 void audiosrcInit (void);
 void audiosrcCleanup (void);
 void audiosrcPostInit (void);
-int audiosrcGetCount (void);
+int audiosrcGetActiveCount (void);
 int audiosrcGetType (const char *nm);
 bool audiosrcExists (const char *nm);
 bool audiosrcOriginalExists (const char *nm);

@@ -409,6 +409,22 @@ bdjsrvProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           progstateShutdownProcess (bdjsrv->progstate);
           break;
         }
+        case MSG_DB_ENTRY_UPDATE: {
+          dbLoadEntry (bdjsrv->musicdb, atol (args));
+          break;
+        }
+        case MSG_DB_ENTRY_REMOVE: {
+          dbMarkEntryRemoved (bdjsrv->musicdb, atol (args));
+          break;
+        }
+        case MSG_DB_ENTRY_UNREMOVE: {
+          dbClearEntryRemoved (bdjsrv->musicdb, atol (args));
+          break;
+        }
+        case MSG_DATABASE_UPDATE: {
+          bdjsrv->musicdb = bdj4ReloadDatabase (bdjsrv->musicdb);
+          break;
+        }
         default: {
           break;
         }

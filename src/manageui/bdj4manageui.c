@@ -2405,7 +2405,7 @@ manageMusicManagerMenu (manageui_t *manage)
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
-  if (audiosrcGetCount () > 1) {
+  if (audiosrcGetActiveCount () > 1) {
     manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_IMPORT,
         manageImportPlaylist);
     /* CONTEXT: manage-ui: menu selection: music manager: import playlist */
@@ -4036,8 +4036,12 @@ manageImportPlaylist (void *udata)
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import playlist");
 
-  audiosrcGetPlaylistNames (AUDIOSRC_TYPE_BDJ4);
 // ### start a dialog to select which playlist to import and from where...
+//  asiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_PL_NAMES, NULL);
+//  while ((plnm = audiosrcIterate (asiter)) != NULL) {
+//  }
+//  audiosrcCleanIterator (asiter);
+
   asiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_PL, "test-sl-a");
   while ((songnm = audiosrcIterate (asiter)) != NULL) {
     asiter_t    *tagiter;

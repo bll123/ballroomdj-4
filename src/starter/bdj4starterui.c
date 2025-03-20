@@ -1175,12 +1175,14 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           if (routefrom != ROUTE_MANAGEUI) {
             connSendMessage (starter->conn, ROUTE_MANAGEUI, msg, args);
           }
+          connSendMessage (starter->conn, ROUTE_SERVER, msg, args);
           break;
         }
         case MSG_DATABASE_UPDATE: {
           /* only comes from manage ui */
           connSendMessage (starter->conn, ROUTE_MAIN, msg, args);
           connSendMessage (starter->conn, ROUTE_PLAYERUI, msg, args);
+          connSendMessage (starter->conn, ROUTE_SERVER, msg, args);
           break;
         }
         case MSG_DEBUG_LEVEL: {
