@@ -4029,9 +4029,9 @@ manageSendBPMCounter (manageui_t *manage)
 static bool
 manageImportPlaylist (void *udata)
 {
+  manageui_t    *manage = udata;
   asiter_t      *asiter;
   const char    *songnm;
-//  manageui_t  *manage = udata;
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import playlist");
@@ -4045,17 +4045,38 @@ manageImportPlaylist (void *udata)
   asiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_PL, "test-sl-a");
   while ((songnm = audiosrcIterate (asiter)) != NULL) {
     asiter_t    *tagiter;
-    const char  *tag;
+    const char  *tag = NULL;
+    song_t      *song = NULL;
+    slist_t     *tagdata = NULL;
 
+    song = dbGetByName (manage->musicdb, songnm);
+
+    if (song == NULL) {
 fprintf (stderr, "mng: songnm: %s\n", songnm);
-    tagiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_TAGS, songnm);
-    while ((tag = audiosrcIterate (tagiter)) != NULL) {
-      const char  *tval;
+      tagdata = slistAlloc ("asimppl", LIST_UNORDERED, NULL);
 
-      tval = audiosrcIterateValue (tagiter, tag);
+      tagiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_TAGS, songnm);
+      while ((tag = audiosrcIterate (tagiter)) != NULL) {
+        const char  *tval;
+
+        tval = audiosrcIterateValue (tagiter, tag);
+        slistSetStr (tagdata, tag, tval);
 fprintf (stderr, "  tag: %s = %s\n", tag, tval);
-    }
-    audiosrcCleanIterator (tagiter);
+      }
+
+      slistSetStr (tagdata, tagdefs [TAG_URI].tag, songnm);
+
+      slistSort (tagdata);
+      song = songAlloc ();
+      songFromTagList (song, tagdata);
+      songSetNum (song, TAG_DB_FLAGS, MUSICDB_STD);
+      songSetNum (song, TAG_RRN, RAFILE_NEW);
+      songSetNum (song, TAG_PREFIX_LEN, 0);
+      dbWriteSong (manage->musicdb, song);
+
+      slistFree (tagdata);
+      audiosrcCleanIterator (tagiter);
+    } /* song needs to be added */
   }
   audiosrcCleanIterator (asiter);
 

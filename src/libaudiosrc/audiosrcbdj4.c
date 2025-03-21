@@ -120,7 +120,7 @@ asiInit (const char *delpfx, const char *origext)
   asdata->delpfx = delpfx;
   asdata->origext = origext;
   asdata->webclient = webclientAlloc (asdata, asbdj4WebResponseCallback);
-  webclientSetTimeout (asdata->webclient, 5);
+  webclientSetTimeout (asdata->webclient, 1);
   snprintf (asdata->bdj4uri, sizeof (asdata->bdj4uri),
       "http://%s:%" PRIu16,
       bdjoptGetStr (OPT_P_BDJ4_SERVER),
@@ -176,7 +176,6 @@ bool
 asiExists (asdata_t *asdata, const char *nm)
 {
   bool    exists = false;
-  int     count;
   int     webrc;
   char    query [1024];
 
@@ -184,7 +183,7 @@ asiExists (asdata_t *asdata, const char *nm)
   asdata->state = BDJ4_STATE_WAIT;
   snprintf (query, sizeof (query),
       "%s/%s"
-      "&uri=%s",
+      "?uri=%s",
       asdata->bdj4uri, action_str [asdata->action], nm);
 
   webrc = webclientGet (asdata->webclient, query);
@@ -192,15 +191,8 @@ asiExists (asdata_t *asdata, const char *nm)
     return exists;
   }
 
-  count = 0;
-  while (asdata->state == BDJ4_STATE_WAIT && count < ASBDJ4_WAIT_MAX) {
-    mssleep (10);
-    ++count;
-  }
-
   if (asdata->state == BDJ4_STATE_PROCESS) {
-    if (asdata->webresplen > 0 &&
-        strncmp (asdata->webresponse, "T", 1) == 0) {
+    if (webrc == WEB_OK) {
       exists = true;
     }
     asdata->state = BDJ4_STATE_OFF;

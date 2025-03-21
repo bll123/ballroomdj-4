@@ -302,6 +302,16 @@ main (int argc, char *argv [])
 
     fn = createFile (src, dest, keepmusic);
 
+    tval = slistGetStr (tagdata, "DBADDDATE");
+    if (tval != NULL) {
+      time_t  tmval;
+      char    tmp [40];
+
+      tmval = tmutilStringToUTC (tval, "%F");
+      snprintf (tmp, sizeof (tmp), "%" PRIu64, (uint64_t) tmval);
+      slistSetStr (tagdata, tagdefs [TAG_DBADDDATE].tag, tmp);
+    }
+
     if (! keepmusic &&
         supported [filetype] == ATI_READ_WRITE) {
       bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_ALL);
@@ -335,16 +345,6 @@ main (int argc, char *argv [])
       slistSetStr (tagdata, tagdefs [TAG_PREFIX_LEN].tag, tmp);
     }
     slistSetStr (tagdata, tagdefs [TAG_URI].tag, songfn);
-
-    tval = slistGetStr (tagdata, "DBADDDATE");
-    if (tval != NULL) {
-      time_t  tmval;
-      char    tmp [40];
-
-      tmval = tmutilStringToUTC (tval, "%F");
-      snprintf (tmp, sizeof (tmp), "%" PRIu64, (uint64_t) tmval);
-      slistSetStr (tagdata, tagdefs [TAG_DBADDDATE].tag, tmp);
-    }
 
     songFromTagList (song, tagdata);
     songSetChanged (song);
@@ -449,7 +449,9 @@ updateData (ilist_t *tmusiclist, ilistidx_t key)
     }
 
     ilistSetStr (tmusiclist, key, dfkey->itemkey, nval);
-    if (dfkey->itemkey != TM_SOURCE && dfkey->itemkey != TM_DEST) {
+    if (dfkey->itemkey == TAG_DBADDDATE) {
+      slistSetStr (tagdata, dfkey->name, nval);
+    } else if (dfkey->itemkey != TM_SOURCE && dfkey->itemkey != TM_DEST) {
       slistSetStr (tagdata, tagdefs [dfkey->itemkey].tag, nval);
     }
   }

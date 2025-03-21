@@ -279,6 +279,7 @@ if (*uri) {
       rc = WEB_OK;
       resp = WEB_RESP_OK;
     }
+fprintf (stderr, "exists: %d %s\n", ok, songuri);
 
     websrvReply (bdjsrv->websrv, rc,
         "Content-type: text/plain; charset=utf-8\r\n"
@@ -351,6 +352,18 @@ if (*uri) {
     slistStartIterator (songtags, &iteridx);
     while ((tag = slistIterateKey (songtags, &iteridx)) != NULL) {
       const char  *value;
+
+      if (strcmp (tag, tagdefs [TAG_URI].tag) == 0) {
+        /* this will be re-set by the caller */
+        continue;
+      }
+      if (strcmp (tag, tagdefs [TAG_PREFIX_LEN].tag) == 0) {
+        continue;
+      }
+      if (strcmp (tag, tagdefs [TAG_SAMESONG].tag) == 0) {
+        /* same-song is specific to the database, do not copy over */
+        continue;
+      }
 
       value = slistGetStr (songtags, tag);
       if (value != NULL && *value) {
