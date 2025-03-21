@@ -564,7 +564,9 @@ audiosrcStartIterator (int type, asitertype_t asitertype, const char *uri)
   if (type >= AUDIOSRC_TYPE_MAX) {
     return NULL;
   }
-  if (asitertype != AS_ITER_PL_NAMES && uri == NULL) {
+  if (asitertype != AS_ITER_PL_NAMES &&
+      asitertype != AS_ITER_AUDIO_SRC &&
+      uri == NULL) {
     return NULL;
   }
 
@@ -575,18 +577,23 @@ audiosrcStartIterator (int type, asitertype_t asitertype, const char *uri)
   asiter->itertype = asitertype;
   asiter->asiterdata = NULL;
   asiter->asdylib = asdylib;
-  asiter->asdata = asdylib->asdata;
+  asiter->asdata = NULL;
+  if (asdylib != NULL) {
+    asiter->asdata = asdylib->asdata;
+  }
   asiter->iteridx = 0;
 
-  if (asitertype != AS_ITER_AUDIO_SRC) {
-    if (asdylib != NULL && asdylib->asiStartIterator != NULL) {
-      asiter->asiterdata = asdylib->asiStartIterator (
-          asdylib->asdata, asitertype, uri);
-    }
-    if (asiter->asiterdata == NULL) {
-      mdfree (asiter);
-      asiter = NULL;
-    }
+  if (asitertype == AS_ITER_AUDIO_SRC) {
+    return asiter;
+  }
+
+  if (asdylib != NULL && asdylib->asiStartIterator != NULL) {
+    asiter->asiterdata = asdylib->asiStartIterator (
+        asdylib->asdata, asitertype, uri);
+  }
+  if (asiter->asiterdata == NULL) {
+    mdfree (asiter);
+    asiter = NULL;
   }
 
   return asiter;
@@ -644,13 +651,14 @@ audiosrcIterate (asiter_t *asiter)
   }
 
   if (asiter->itertype == AS_ITER_AUDIO_SRC) {
-    asdylib = &asiter->asdylib [asiter->iteridx];
-    while (! asdylib->enabled &&
-         asiter->iteridx < audiosrc->ascount) {
+    while (asiter->iteridx < audiosrc->ascount) {
+      asdylib = &audiosrc->asdylib [asiter->iteridx];
+      if (asdylib != NULL && asdylib->enabled) {
+        break;
+      }
       ++asiter->iteridx;
-      asdylib = &asiter->asdylib [asiter->iteridx];
     }
-    rval = ilistGetStr (audiosrc->asdylist, asiter->iteridx, DYI_LIB);
+    rval = ilistGetStr (audiosrc->asdylist, asiter->iteridx, DYI_DESC);
     ++asiter->iteridx;
   } else {
     asdylib = asiter->asdylib;

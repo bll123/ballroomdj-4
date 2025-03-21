@@ -319,6 +319,41 @@ START_TEST(audiosrc_remove)
 }
 END_TEST
 
+START_TEST(audiosrc_iterate_src)
+{
+  asiter_t    *asiter;
+  int         c;
+  const char  *val;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- audiosrc_iterate_src");
+  mdebugSubTag ("audiosrc_iterate_src");
+
+  bdjoptSetStr (OPT_M_DIR_MUSIC, datatop);
+  audiosrcPostInit ();
+
+  c = audiosrcGetActiveCount ();
+  ck_assert_int_eq (c, 2);
+
+  asiter = audiosrcStartIterator (AUDIOSRC_TYPE_NONE, AS_ITER_AUDIO_SRC, NULL);
+  c = audiosrcIterCount (asiter);
+  ck_assert_int_eq (c, 2);
+
+  c = 0;
+  while ((val = audiosrcIterate (asiter)) != NULL) {
+    if (c == 0) {
+      ck_assert_str_eq (val, "BDJ4");
+    }
+    if (c == 1) {
+      ck_assert_str_eq (val, "file");
+    }
+    ++c;
+  }
+  ck_assert_int_eq (c, 2);
+
+  audiosrcCleanIterator (asiter);
+}
+END_TEST
+
 Suite *
 audiosrc_suite (void)
 {
@@ -337,6 +372,7 @@ audiosrc_suite (void)
   tcase_add_test (tc, audiosrc_prep);
   tcase_add_test (tc, audiosrc_iterate);
   tcase_add_test (tc, audiosrc_remove);
+  tcase_add_test (tc, audiosrc_iterate_src);
   suite_add_tcase (s, tc);
   return s;
 }
