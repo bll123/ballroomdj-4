@@ -4052,7 +4052,6 @@ manageImportPlaylist (void *udata)
     song = dbGetByName (manage->musicdb, songnm);
 
     if (song == NULL) {
-fprintf (stderr, "mng: songnm: %s\n", songnm);
       tagdata = slistAlloc ("asimppl", LIST_UNORDERED, NULL);
 
       tagiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_TAGS, songnm);
@@ -4061,7 +4060,6 @@ fprintf (stderr, "mng: songnm: %s\n", songnm);
 
         tval = audiosrcIterateValue (tagiter, tag);
         slistSetStr (tagdata, tag, tval);
-fprintf (stderr, "  tag: %s = %s\n", tag, tval);
       }
 
       slistSetStr (tagdata, tagdefs [TAG_URI].tag, songnm);

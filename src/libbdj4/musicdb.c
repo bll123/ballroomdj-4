@@ -10,6 +10,7 @@
 #include <inttypes.h>
 #include <time.h>
 
+#include "audiosrc.h"
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjstring.h"
@@ -33,7 +34,10 @@
 enum {
   MUSICDB_IDENT = 0xcc0062646973756d,
   MUSICDB_TEMP_OFFSET = 10000,
+  MDB_CHK_ON = true,
+  MDB_CHK_OFF = false,
 };
+
 
 typedef struct musicdb {
   uint64_t      ident;
@@ -50,7 +54,7 @@ typedef struct musicdb {
 } musicdb_t;
 
 static size_t dbWriteInternalSong (musicdb_t *musicdb, const char *fn, song_t *song, dbidx_t rrn);
-static song_t *dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn);
+static song_t *dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn, int chkflag);
 static void   dbRebuildDanceCounts (musicdb_t *musicdb);
 
 musicdb_t *
@@ -151,7 +155,7 @@ dbLoad (musicdb_t *musicdb)
 
   /* the random access file is indexed starting at 1 */
   for (rafileidx_t i = 1; i <= racount; ++i) {
-    song = dbReadEntry (musicdb, i);
+    song = dbReadEntry (musicdb, i, MDB_CHK_OFF);
 
     if (song != NULL) {
       const char  *uri = NULL;
@@ -234,7 +238,7 @@ dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx)
   }
   rrn = songGetNum (song, TAG_RRN);
 
-  song = dbReadEntry (musicdb, rrn);
+  song = dbReadEntry (musicdb, rrn, MDB_CHK_ON);
   if (song == NULL) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: unable to read rrn %" PRId32, rrn);
     return;
@@ -576,7 +580,7 @@ dbWriteInternalSong (musicdb_t *musicdb, const char *fn,
 }
 
 static song_t *
-dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn)
+dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn, int chkflag)
 {
   int     rc;
   song_t  *song;
@@ -593,11 +597,16 @@ dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn)
 
   song = songAlloc ();
   songParse (song, data, rrn);
-  if (! songAudioSourceExists (song)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "WARN: song %s not found",
-        songGetStr (song, TAG_URI));
-    songFree (song);
-    song = NULL;
+
+  /* checking for existence of every networked entry is too expensive */
+  if (chkflag == MDB_CHK_ON ||
+      audiosrcGetType (songGetStr (song, TAG_URI)) == AUDIOSRC_TYPE_FILE) {
+    if (! songAudioSourceExists (song)) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "WARN: song %s not found",
+          songGetStr (song, TAG_URI));
+      songFree (song);
+      song = NULL;
+    }
   }
 
   return song;

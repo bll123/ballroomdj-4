@@ -35,6 +35,8 @@ static bool confuiSelectMusicDir (void *udata);
 static bool confuiSelectStartup (void *udata);
 static bool confuiSelectShutdown (void *udata);
 static void confuiLoadLocaleList (confuigui_t *gui);
+static void confuiGeneralSetWidgetStates (confuigui_t *gui);
+static bool confuiGeneralEnableServerChg (void *udata, int value);
 
 void
 confuiInitGeneral (confuigui_t *gui)
@@ -191,33 +193,34 @@ confuiBuildUIGeneral (confuigui_t *gui)
   snprintf (tbuff, sizeof (tbuff), _("Enable %s Server"), BDJ4_NAME);
   confuiMakeItemSwitch (gui, vbox, szgrp, tbuff,
       CONFUI_SWITCH_BDJ4_SERVER_DISP, OPT_G_BDJ4_SERVER_DISP,
-      bdjoptGetNum (OPT_G_BDJ4_SERVER_DISP), NULL, 0);
+      bdjoptGetNum (OPT_G_BDJ4_SERVER_DISP),
+      confuiGeneralEnableServerChg, CONFUI_NO_INDENT);
 
-  if (bdjoptGetNum (OPT_G_BDJ4_SERVER_DISP)) {
-    /* CONTEXT: configuration: the remote BDJ4 server name */
-    snprintf (tbuff, sizeof (tbuff), _("%s Server"), BDJ4_NAME);
-    confuiMakeItemEntry (gui, vbox, szgrp, tbuff,
-        CONFUI_ENTRY_BDJ4_SERVER, OPT_P_BDJ4_SERVER,
-        bdjoptGetStr (OPT_P_BDJ4_SERVER), CONFUI_NO_INDENT);
+  /* CONTEXT: configuration: the remote BDJ4 server name */
+  snprintf (tbuff, sizeof (tbuff), _("%s Server"), BDJ4_NAME);
+  confuiMakeItemEntry (gui, vbox, szgrp, tbuff,
+      CONFUI_ENTRY_BDJ4_SERVER, OPT_P_BDJ4_SERVER,
+      bdjoptGetStr (OPT_P_BDJ4_SERVER), CONFUI_NO_INDENT);
 
-    /* CONTEXT: configuration: the port to use for the BDJ4 server */
-    snprintf (tbuff, sizeof (tbuff), _("%s Server Port"), BDJ4_NAME);
-    confuiMakeItemSpinboxNum (gui, vbox, szgrp, NULL, tbuff,
-        CONFUI_WIDGET_BDJ4_SERVER_PORT, OPT_P_BDJ4_SERVER_PORT,
-        8000, 30000, bdjoptGetNum (OPT_P_BDJ4_SERVER_PORT), NULL);
+  /* CONTEXT: configuration: the port to use for the BDJ4 server */
+  snprintf (tbuff, sizeof (tbuff), _("%s Server Port"), BDJ4_NAME);
+  confuiMakeItemSpinboxNum (gui, vbox, szgrp, NULL, tbuff,
+      CONFUI_WIDGET_BDJ4_SERVER_PORT, OPT_P_BDJ4_SERVER_PORT,
+      8000, 30000, bdjoptGetNum (OPT_P_BDJ4_SERVER_PORT), NULL);
 
-    /* CONTEXT: configuration: the BDJ4 server user */
-    snprintf (tbuff, sizeof (tbuff), _("%s Server User"), BDJ4_NAME);
-    confuiMakeItemEntry (gui, vbox, szgrp, tbuff,
-        CONFUI_ENTRY_BDJ4_SERVER_USER, OPT_P_BDJ4_SERVER_USER,
-        bdjoptGetStr (OPT_P_BDJ4_SERVER_USER), CONFUI_NO_INDENT);
+  /* CONTEXT: configuration: the BDJ4 server user */
+  snprintf (tbuff, sizeof (tbuff), _("%s Server User"), BDJ4_NAME);
+  confuiMakeItemEntry (gui, vbox, szgrp, tbuff,
+      CONFUI_ENTRY_BDJ4_SERVER_USER, OPT_P_BDJ4_SERVER_USER,
+      bdjoptGetStr (OPT_P_BDJ4_SERVER_USER), CONFUI_NO_INDENT);
 
-    /* CONTEXT: configuration: the BDJ4 server password */
-    snprintf (tbuff, sizeof (tbuff), _("%s Server Password"), BDJ4_NAME);
-    confuiMakeItemEntry (gui, vbox, szgrp, tbuff,
-        CONFUI_ENTRY_BDJ4_SERVER_PASS, OPT_P_BDJ4_SERVER_PASS,
-        bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS), CONFUI_NO_INDENT);
-  }
+  /* CONTEXT: configuration: the BDJ4 server password */
+  snprintf (tbuff, sizeof (tbuff), _("%s Server Password"), BDJ4_NAME);
+  confuiMakeItemEntry (gui, vbox, szgrp, tbuff,
+      CONFUI_ENTRY_BDJ4_SERVER_PASS, OPT_P_BDJ4_SERVER_PASS,
+      bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS), CONFUI_NO_INDENT);
+
+  confuiGeneralSetWidgetStates (gui);
 
   uiwcontFree (sw);
   uiwcontFree (vbox);
@@ -317,3 +320,37 @@ confuiLoadLocaleList (confuigui_t *gui)
   gui->uiitem [CONFUI_SPINBOX_LOCALE].sbkeylist = llist;
   logProcEnd ("");
 }
+
+static void
+confuiGeneralSetWidgetStates (confuigui_t *gui)
+{
+  bool  enabled;
+  int   state;
+
+  enabled = bdjoptGetNum (OPT_G_BDJ4_SERVER_DISP);
+  state = UIWIDGET_DISABLE;
+  if (enabled) {
+    state = UIWIDGET_ENABLE;
+  }
+
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_BDJ4_SERVER].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_BDJ4_SERVER_PORT].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_BDJ4_SERVER_USER].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_BDJ4_SERVER_PASS].uilabelp, state);
+
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_BDJ4_SERVER].uiwidgetp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_BDJ4_SERVER_PORT].uiwidgetp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_BDJ4_SERVER_USER].uiwidgetp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_BDJ4_SERVER_PASS].uiwidgetp, state);
+}
+
+static bool
+confuiGeneralEnableServerChg (void *udata, int value)
+{
+  confuigui_t   *gui = udata;
+
+  bdjoptSetNum (OPT_G_BDJ4_SERVER_DISP, value);
+  confuiGeneralSetWidgetStates (gui);
+  return UICB_CONT;
+}
+

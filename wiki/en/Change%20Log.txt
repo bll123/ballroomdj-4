@@ -9,6 +9,8 @@
 * Bug Fixes:
     * Windows: add application manifest.
     * Internal: Minor bug fixes.
+* Changes:
+    * Configuration: Improve item disabled display.
 * New Features:
     * Add import from remote BDJ4 server.
 

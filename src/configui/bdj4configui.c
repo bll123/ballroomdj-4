@@ -166,6 +166,7 @@ main (int argc, char *argv[])
     confui.gui.uiitem [i].displist = NULL;
     confui.gui.uiitem [i].sbkeylist = NULL;
     confui.gui.uiitem [i].danceitemidx = DANCE_DANCE;
+    confui.gui.uiitem [i].uilabelp = NULL;
     confui.gui.uiitem [i].uiwidgetp = NULL;
     confui.gui.uiitem [i].callback = NULL;
     confui.gui.uiitem [i].sfcb.entry = NULL;
@@ -383,6 +384,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
     uiwcontFree (confui->gui.uiitem [i].uiwidgetp);
   }
   for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
+    uiwcontFree (confui->gui.uiitem [i].uilabelp);
     callbackFree (confui->gui.uiitem [i].callback);
   }
   for (int i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {

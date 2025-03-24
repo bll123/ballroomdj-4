@@ -66,6 +66,8 @@ const char *audiosrcIterate (asiter_t *asiter);
 const char *audiosrcIterateValue (asiter_t *asiter, const char *key);
 
 bool audiosrcGetPlaylistNames (int type);
+void audiosrcMakeTempName (const char *ffn, char *tempnm, size_t maxlen);
+bool audiosrcPreCacheFile (const char *fn);
 
 void asiDesc (const char **ret, int max);
 bool asiEnabled (void);

@@ -9,7 +9,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <inttypes.h>
-#include <ctype.h>
 #include <errno.h>
 
 #include "audiosrc.h"
@@ -73,13 +72,11 @@ typedef struct asdata {
   int           state;
 } asdata_t;
 
-static void asbdj4MakeTempName (asdata_t *asdata, const char *ffn, char *tempnm, size_t maxlen);
 static void asbdj4WebResponseCallback (void *userdata, const char *respstr, size_t len);
 static bool asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm);
 static bool asbdj4SongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri);
 static bool asbdj4GetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata);
-
-static long globalcount = 0;
+static bool asbdj4GetAudioFile (asdata_t *asdata, const char *nm, const char *tempnm);
 
 void
 asiDesc (const char **ret, int max)
@@ -204,13 +201,9 @@ asiExists (asdata_t *asdata, const char *nm)
 bool
 asiPrep (asdata_t *asdata, const char *sfname, char *tempnm, size_t sz)
 {
-  char      ffn [MAXPATHLEN];
   mstime_t  mstm;
-  char      *buff;
-  size_t    frc;
-  ssize_t   fsz;
   time_t    tm;
-  FILE      *fh;
+  int       rc = false;
 
   if (sfname == NULL || tempnm == NULL) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "WARN: prep: null-data");
@@ -218,41 +211,22 @@ asiPrep (asdata_t *asdata, const char *sfname, char *tempnm, size_t sz)
   }
 
   mstimestart (&mstm);
-  asiFullPath (asdata, sfname, ffn, sizeof (ffn), NULL, 0);
-  asbdj4MakeTempName (asdata, ffn, tempnm, sz);
+  audiosrcMakeTempName (sfname, tempnm, sz);
 
-  /* VLC still cannot handle internationalized names. */
-  /* I wonder how they handle them internally. */
-  /* Symlinks work on Linux/Mac OS. */
   fileopDelete (tempnm);
-  filemanipLinkCopy (ffn, tempnm);
+
+  rc = asbdj4GetAudioFile (asdata, sfname, tempnm);
+  /* the file should already be in the disk cache as it was just written */
+
   if (! fileopFileExists (tempnm)) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: file copy failed: %s", tempnm);
-    return false;
-  }
-
-  /* read the entire file in order to get it into the operating system's */
-  /* filesystem cache */
-  fsz = fileopSize (ffn);
-  if (fsz <= 0) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: file size 0: %s", ffn);
-    return false;
-  }
-  buff = mdmalloc (fsz);
-  fh = fileopOpen (ffn, "rb");
-  frc = fread (buff, fsz, 1, fh);
-  mdextfclose (fh);
-  fclose (fh);
-  mdfree (buff);
-  if (frc != 1) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: file read failed: %s", tempnm);
     return false;
   }
 
   tm = mstimeend (&mstm);
   logMsg (LOG_DBG, LOG_BASIC, "prep-time (%" PRIu64 ") %s", (uint64_t) tm, sfname);
 
-  return true;
+  return rc;
 }
 
 void
@@ -283,10 +257,7 @@ asiURI (asdata_t *asdata, const char *sfname, char *buff, size_t sz,
     return;
   }
 
-//  stpecpy (buff, buff + sz, sfname);
-//  stpecpy (buff, buff + sz, AS_BDJ4_PFX);
-  asiFullPath (asdata, sfname, buff + AS_BDJ4_PFX_LEN, sz - AS_BDJ4_PFX_LEN,
-      prefix, pfxlen);
+  asiFullPath (asdata, sfname, buff, sz, NULL, 0);
 }
 
 void
@@ -294,52 +265,13 @@ asiFullPath (asdata_t *asdata, const char *sfname, char *buff, size_t sz,
     const char *prefix, int pfxlen)
 {
   *buff = '\0';
-
-  if (sfname == NULL || buff == NULL) {
-    return;
-  }
-
-  if (strncmp (sfname, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) == 0) {
-    sfname += AS_BDJ4_PFX_LEN;
-  }
+  stpecpy (buff, buff + sz, sfname);
 }
 
 const char *
 asiRelativePath (asdata_t *asdata, const char *sfname, int pfxlen)
 {
-  const char  *p = sfname;
-
-  if (sfname == NULL) {
-    return NULL;
-  }
-
-  if (strncmp (p, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) == 0) {
-    p += AS_BDJ4_PFX_LEN;
-  }
-
-  return p;
-}
-
-size_t
-asiDir (asdata_t *asdata, const char *sfname, char *buff, size_t sz, int pfxlen)
-{
-  size_t    rc = 0;
-
-  *buff = '\0';
-
-  if (sfname == NULL) {
-    return rc;
-  }
-
-  if (pfxlen > 0) {
-    snprintf (buff, sz, "%.*s", pfxlen, sfname);
-    rc = pfxlen;
-  } else {
-    snprintf (buff, sz, "%s", asdata->musicdir);
-    rc = asdata->musicdirlen;
-  }
-
-  return rc;
+  return sfname;
 }
 
 asiterdata_t *
@@ -426,33 +358,6 @@ asiIterateValue (asdata_t *asdata, asiterdata_t *asidata, const char *key)
 /* internal routines */
 
 static void
-asbdj4MakeTempName (asdata_t *asdata, const char *ffn, char *tempnm, size_t maxlen)
-{
-  char        tnm [MAXPATHLEN];
-  size_t      idx;
-  pathinfo_t  *pi;
-
-  pi = pathInfo (ffn);
-
-  idx = 0;
-  for (const char *p = pi->filename;
-      *p && idx < maxlen && idx < pi->flen; ++p) {
-    if ((isascii (*p) && isalnum (*p)) ||
-        *p == '.' || *p == '-' || *p == '_') {
-      tnm [idx++] = *p;
-    }
-  }
-  tnm [idx] = '\0';
-  pathInfoFree (pi);
-
-  /* the profile index so we don't stomp on other bdj instances   */
-  /* the global count so we don't stomp on ourselves              */
-  snprintf (tempnm, maxlen, "tmp/%02" PRId64 "-%03ld-%s",
-      sysvarsGetNum (SVL_PROFILE_IDX), globalcount, tnm);
-  ++globalcount;
-}
-
-static void
 asbdj4WebResponseCallback (void *userdata, const char *respstr, size_t len)
 {
   asdata_t    *asdata = (asdata_t *) userdata;
@@ -467,7 +372,6 @@ asbdj4WebResponseCallback (void *userdata, const char *respstr, size_t len)
     return;
   }
 
-fprintf (stderr, "asbdj4: got web response len: %ld\n", (long) len);
   asdata->webresponse = respstr;
   asdata->webresplen = len;
   asdata->state = BDJ4_STATE_PROCESS;
@@ -617,6 +521,44 @@ asbdj4GetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata)
       }
       slistSort (asidata->plNames);
       rc = true;
+    }
+    asdata->state = BDJ4_STATE_OFF;
+  }
+
+  return rc;
+}
+
+
+static bool
+asbdj4GetAudioFile (asdata_t *asdata, const char *nm, const char *tempnm)
+{
+  bool    rc = false;
+  int     webrc;
+  char    query [1024];
+
+  asdata->action = ASBDJ4_ACT_GET_SONG;
+  asdata->state = BDJ4_STATE_WAIT;
+  snprintf (query, sizeof (query),
+      "%s/%s"
+      "?uri=%s",
+      asdata->bdj4uri, action_str [asdata->action],
+      nm);
+
+  webrc = webclientGet (asdata->webclient, query);
+  if (webrc != WEB_OK) {
+    return rc;
+  }
+
+  if (asdata->state == BDJ4_STATE_PROCESS) {
+    if (asdata->webresplen > 0) {
+      FILE    *ofh;
+
+      ofh = fileopOpen (tempnm, "wb");
+      if (fwrite (asdata->webresponse, asdata->webresplen, 1, ofh) == 1) {
+        rc = true;
+      }
+      fclose (ofh);
+      mdextfclose (ofh);
     }
     asdata->state = BDJ4_STATE_OFF;
   }

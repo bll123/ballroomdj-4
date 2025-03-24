@@ -202,11 +202,19 @@ static void
 confuiMobmqSetWidgetStates (confuigui_t *gui, int type)
 {
   if (type == MOBMQ_TYPE_LOCAL || type == MOBMQ_TYPE_OFF) {
+    uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_TAG].uilabelp, UIWIDGET_DISABLE);
+    uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_KEY].uilabelp, UIWIDGET_DISABLE);
+    uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_MOBMQ_PORT].uilabelp, UIWIDGET_ENABLE);
+
     uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_TAG].uiwidgetp, UIWIDGET_DISABLE);
     uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_KEY].uiwidgetp, UIWIDGET_DISABLE);
     uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_MOBMQ_PORT].uiwidgetp, UIWIDGET_ENABLE);
   }
   if (type == MOBMQ_TYPE_INTERNET) {
+    uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_TAG].uilabelp, UIWIDGET_ENABLE);
+    uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_KEY].uilabelp, UIWIDGET_ENABLE);
+    uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_MOBMQ_PORT].uilabelp, UIWIDGET_DISABLE);
+
     uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_TAG].uiwidgetp, UIWIDGET_ENABLE);
     uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_KEY].uiwidgetp, UIWIDGET_ENABLE);
     uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_MOBMQ_PORT].uiwidgetp, UIWIDGET_DISABLE);

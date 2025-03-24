@@ -279,7 +279,6 @@ if (*uri) {
       rc = WEB_OK;
       resp = WEB_RESP_OK;
     }
-fprintf (stderr, "exists: %d %s\n", ok, songuri);
 
     websrvReply (bdjsrv->websrv, rc,
         "Content-type: text/plain; charset=utf-8\r\n"

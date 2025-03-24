@@ -275,6 +275,7 @@ typedef struct {
   int               danceitemidx;   // for dance edit
   int               entrysz;
   int               entrymaxsz;
+  uiwcont_t         *uilabelp;
   uiwcont_t         *uiwidgetp;
   callback_t        *callback;
   uidd_t            *uidd;
@@ -521,7 +522,7 @@ void confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *
 void confuiMakeItemSwitch (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, int value, void *cb, int indent);
 void confuiMakeItemLabelDisp (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx);
 void confuiMakeItemCheckButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, int value);
-void confuiMakeItemLabel (uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int indent);
+void confuiMakeItemLabel (confuigui_t *gui, int widx, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int indent);
 void confuiSpinboxTextInitDataNum (confuigui_t *gui, char *tag, int widx, ...);
 
 /* confitunes.c */

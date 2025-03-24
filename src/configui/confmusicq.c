@@ -175,6 +175,17 @@ confuiMusicQActiveChg (void *udata)
     state = UIWIDGET_ENABLE;
   }
 
+  uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_START_WAIT_TIME].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_FADE_IN_TIME].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_FADE_OUT_TIME].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_GAP].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SPINBOX_Q_MAX_PLAY_TIME].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SPINBOX_Q_STOP_AT_TIME].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PAUSE_EACH_SONG].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE].uilabelp, state);
+
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_START_WAIT_TIME].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_FADE_IN_TIME].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_FADE_OUT_TIME].uiwidgetp, state);
