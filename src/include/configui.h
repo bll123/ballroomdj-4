@@ -284,18 +284,19 @@ typedef struct {
 } confuiitem_t;
 
 typedef enum {
+  CONFUI_ID_AUDIOSRC,
   CONFUI_ID_DANCE,
-  CONFUI_ID_GENRES,
-  CONFUI_ID_RATINGS,
-  CONFUI_ID_LEVELS,
-  CONFUI_ID_STATUS,
   CONFUI_ID_DISP_SEL_LIST,
   CONFUI_ID_DISP_SEL_TABLE,
-  CONFUI_ID_TABLE_MAX,
-  CONFUI_ID_NONE,
+  CONFUI_ID_GENRES,
+  CONFUI_ID_LEVELS,
   CONFUI_ID_MOBILE_MQ,
-  CONFUI_ID_REM_CONTROL,
+  CONFUI_ID_NONE,
   CONFUI_ID_ORGANIZATION,
+  CONFUI_ID_RATINGS,
+  CONFUI_ID_REM_CONTROL,
+  CONFUI_ID_STATUS,
+  CONFUI_ID_TABLE_MAX,
 } confuiident_t;
 
 enum {
@@ -480,6 +481,10 @@ void confuiCreateTagSelectedDisp (confuigui_t *gui);
 void confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath);
 int32_t confuiOrgPathSelect (void *udata, const char *sval);
 void confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces, int optidx, int opnmidx, int spinboxidx, int offset);
+
+/* confas.c */
+void confuiInitAudioSource (confuigui_t *gui);
+void confuiBuildUIAudioSource (confuigui_t *gui);
 
 /* confdance.c */
 void confuiInitEditDances (confuigui_t *gui);

@@ -209,6 +209,7 @@ main (int argc, char *argv[])
   confui.gui.dispsel = dispselAlloc (DISP_SEL_LOAD_ALL);
 
   confuiInitGeneral (&confui.gui);
+//  confuiInitAudioSource (&confui.gui);
   confuiInitPlayer (&confui.gui);
   confuiInitMusicQs (&confui.gui);
   confuiInitMarquee (&confui.gui);
@@ -461,6 +462,7 @@ confuiBuildUI (configui_t *confui)
   uiBoxPackStartExpand (confui->gui.vbox, confui->gui.notebook);
 
   confuiBuildUIGeneral (&confui->gui);
+//  confuiBuildUIAudioSource (&confui->gui);
   confuiBuildUIPlayer (&confui->gui);
   confuiBuildUIMusicQs (&confui->gui);
   confuiBuildUIMarquee (&confui->gui);

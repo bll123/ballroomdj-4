@@ -76,6 +76,7 @@ enum {
 #define AUDIOTAG_NAME     "AudioTag"
 
 /* data files */
+#define ASCONF_FN           "audiosrc"
 #define BDJ_URIFN           "bdjuri"
 #define AUDIOADJ_FN         "audioadjust"
 #define AUDIOTAGINTFC_FN    "audiotagintfc"

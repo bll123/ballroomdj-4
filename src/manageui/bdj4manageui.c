@@ -4032,15 +4032,31 @@ manageImportPlaylist (void *udata)
   manageui_t    *manage = udata;
   asiter_t      *asiter;
   const char    *songnm;
+  const char    *nplname;
+  char          tbuff [MAXPATHLEN];
+  int           mqidx;
+  dbidx_t       dbidx;
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import playlist");
 
-// ### start a dialog to select which playlist to import and from where...
+// ### start a dialog to select
+//    which audio source to use... (bdj4, rtsp, etc.)
+//    which playlist to import..
+// ### the code below will move to the dialog response handler...
 //  asiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_PL_NAMES, NULL);
 //  while ((plnm = audiosrcIterate (asiter)) != NULL) {
 //  }
 //  audiosrcCleanIterator (asiter);
+
+  manageSonglistSave (manage);
+  manageSonglistNew (manage);
+
+  /* CONTEXT: manage-ui: song list: default name for a new song list */
+  manageSetSonglistName (manage, _("New Song List"));
+//  stpecpy (nplname, nplname + sizeof (nplname), manage->sloldname);
+nplname = "bdj4-sl-a";
+  uimusicqTruncateQueueCallback (manage->currmusicq);
 
   asiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_PL, "test-sl-a");
   while ((songnm = audiosrcIterate (asiter)) != NULL) {
@@ -4071,6 +4087,16 @@ manageImportPlaylist (void *udata)
       songSetNum (song, TAG_RRN, RAFILE_NEW);
       songSetNum (song, TAG_PREFIX_LEN, 0);
       dbWriteSong (manage->musicdb, song);
+
+      pathbldMakePath (tbuff, sizeof (tbuff),
+          nplname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
+      if (! fileopFileExists (tbuff)) {
+        manageSetSonglistName (manage, nplname);
+      }
+      mqidx = manage->musicqManageIdx;
+      dbidx = songGetNum (song, TAG_DBIDX);
+      manageQueueProcess (manage, dbidx, mqidx,
+          DISP_SEL_SONGLIST, MANAGE_QUEUE_LAST);
 
       slistFree (tagdata);
       audiosrcCleanIterator (tagiter);

@@ -54,6 +54,7 @@ add_executable (check_all
   # libbdj4
   libbdj4/check_libbdj4.c
   libbdj4/check_aesencdec.c
+  libbdj4/check_asconf.c
   libbdj4/check_autosel.c
   libbdj4/check_bdjvarsdf.c
   libbdj4/check_bdjvarsdfload.c

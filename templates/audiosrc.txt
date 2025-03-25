@@ -1,0 +1,23 @@
+# audio-sources
+# 2025-3-24
+# version 1
+version
+..1
+count
+..1
+KEY
+..0
+ENABLED
+..no
+TYPE
+..BDJ4
+NAME
+..BDJ4
+PASS
+..
+PORT
+..9011
+URI
+..
+USER
+..

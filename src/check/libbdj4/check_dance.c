@@ -120,8 +120,8 @@ START_TEST(dance_set)
   int         tts;
   int         ttype;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dance_iterate");
-  mdebugSubTag ("dance_iterate");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dance_set");
+  mdebugSubTag ("dance_set");
 
   bdjvarsdfloadInit ();
 
