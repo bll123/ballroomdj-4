@@ -50,14 +50,15 @@ typedef struct {
   conn_t          *conn;
   progstate_t     *progstate;
   char            *locknm;
-  const char      *srvuri;
+  char            srvuri [MAXPATHLEN];
   asconf_t        *asconf;
   const char      *user;
   const char      *pass;
   websrv_t        *websrv;
   slist_t         *plNames;
-  uint16_t        port;
+  size_t          srvurilen;
   int             stopwaitcount;
+  uint16_t        port;
   bool            bdj4enabled;
   bool            rtspenabled;
 } bdjsrv_t;
@@ -110,8 +111,10 @@ main (int argc, char *argv[])
     }
   }
 
-  bdjsrv.srvuri = asconfGetStr (bdjsrv.asconf, askey, ASCONF_URI);
   bdjsrv.port = asconfGetNum (bdjsrv.asconf, askey, ASCONF_PORT);
+  snprintf (bdjsrv.srvuri, sizeof (bdjsrv.srvuri), "%s:%" PRIu16,
+      asconfGetStr (bdjsrv.asconf, askey, ASCONF_URI), bdjsrv.port);
+  bdjsrv.srvurilen = strlen (bdjsrv.srvuri);
   bdjsrv.user = asconfGetStr (bdjsrv.asconf, askey, ASCONF_USER);
   bdjsrv.pass = asconfGetStr (bdjsrv.asconf, askey, ASCONF_PASS);
 
@@ -265,8 +268,8 @@ fprintf (stderr, "srv: query: %s\n", query);
       const char    *songuri;
 
       songuri = songlistGetStr (sl, idx, SONGLIST_URI);
-      snprintf (tbuff, sizeof (tbuff), "%s%s:%" PRIu16 "/%s%c",
-          AS_BDJ4_PFX, bdjsrv->srvuri, bdjsrv->port, songuri, MSG_ARGS_RS);
+      snprintf (tbuff, sizeof (tbuff), "%s%s" "/%s%c",
+          AS_BDJ4_PFX, bdjsrv->srvuri, songuri, MSG_ARGS_RS);
       rp = stpecpy (rp, rend, tbuff);
     }
 
@@ -287,6 +290,9 @@ fprintf (stderr, "srv: query: %s\n", query);
     }
     if (strncmp (songuri, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) == 0) {
       songuri += AS_BDJ4_PFX_LEN;
+    }
+    if (strncmp (songuri, bdjsrv->srvuri, bdjsrv->srvurilen) == 0) {
+      songuri += bdjsrv->srvurilen + 1;
     }
     ok = audiosrcExists (songuri);
     if (ok) {
@@ -309,6 +315,9 @@ fprintf (stderr, "srv: query: %s\n", query);
     }
     if (strncmp (songuri, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) == 0) {
       songuri += AS_BDJ4_PFX_LEN;
+    }
+    if (strncmp (songuri, bdjsrv->srvuri, bdjsrv->srvurilen) == 0) {
+      songuri += bdjsrv->srvurilen + 1;
     }
     ok = audiosrcExists (songuri);
 
@@ -341,6 +350,9 @@ fprintf (stderr, "srv: query: %s\n", query);
     }
     if (strncmp (songuri, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) == 0) {
       songuri += AS_BDJ4_PFX_LEN;
+    }
+    if (strncmp (songuri, bdjsrv->srvuri, bdjsrv->srvurilen) == 0) {
+      songuri += bdjsrv->srvurilen + 1;
     }
     ok = audiosrcExists (songuri);
 

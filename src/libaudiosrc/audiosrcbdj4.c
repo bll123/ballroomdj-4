@@ -81,11 +81,12 @@ typedef struct asdata {
 } asdata_t;
 
 static void asbdj4WebResponseCallback (void *userdata, const char *respstr, size_t len);
-static bool asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm);
+static bool asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm, int askey);
 static bool asbdj4SongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri);
 static bool asbdj4GetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata, int askey);
 static bool asbdj4GetAudioFile (asdata_t *asdata, const char *nm, const char *tempnm);
-static int asbdj4GetClientKey (asdata_t *asdata, const char *nm);
+static int asbdj4GetClientKeyByURI (asdata_t *asdata, const char *nm);
+static int asbdj4GetClientKey (asdata_t *asdata, int askey);
 
 void
 asiDesc (const char **ret, int max)
@@ -231,7 +232,7 @@ asiExists (asdata_t *asdata, const char *nm)
 
   asdata->action = ASBDJ4_ACT_SONG_EXISTS;
   asdata->state = BDJ4_STATE_WAIT;
-  clientkey = asbdj4GetClientKey (asdata, nm);
+  clientkey = asbdj4GetClientKeyByURI (asdata, nm);
   if (clientkey < 0) {
     return false;
   }
@@ -347,7 +348,7 @@ asiStartIterator (asdata_t *asdata, asitertype_t asitertype, const char *nm, int
     asidata->iterlist = asidata->plNames;
     slistStartIterator (asidata->iterlist, &asidata->iteridx);
   } else if (asitertype == AS_ITER_PL) {
-    asbdj4GetPlaylist (asdata, asidata, nm);
+    asbdj4GetPlaylist (asdata, asidata, nm, askey);
     asidata->iterlist = asidata->songlist;
     slistStartIterator (asidata->iterlist, &asidata->iteridx);
   } else if (asitertype == AS_ITER_TAGS) {
@@ -438,19 +439,20 @@ asbdj4WebResponseCallback (void *userdata, const char *respstr, size_t len)
 
 
 static bool
-asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm)
+asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm, int askey)
 {
   bool    rc = false;
   int     webrc;
   char    query [1024];
-  int     clientkey;
+  int     clientkey = -1;
 
-  asdata->action = ASBDJ4_ACT_GET_PLAYLIST;
-  asdata->state = BDJ4_STATE_WAIT;
-  clientkey = asbdj4GetClientKey (asdata, nm);
+  clientkey = asbdj4GetClientKey (asdata, askey);
   if (clientkey < 0) {
     return false;
   }
+
+  asdata->action = ASBDJ4_ACT_GET_PLAYLIST;
+  asdata->state = BDJ4_STATE_WAIT;
 
   snprintf (query, sizeof (query),
       "%s/%s"
@@ -499,7 +501,7 @@ asbdj4SongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri)
 
   asdata->action = ASBDJ4_ACT_SONG_TAGS;
   asdata->state = BDJ4_STATE_WAIT;
-  clientkey = asbdj4GetClientKey (asdata, songuri);
+  clientkey = asbdj4GetClientKeyByURI (asdata, songuri);
   if (clientkey < 0) {
     return false;
   }
@@ -555,13 +557,11 @@ asbdj4GetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata, int askey)
   bool    rc = false;
   int     webrc;
   char    query [1024];
-  int     clientkey;
+  int     clientkey = -1;
 
-  for (int i = 0; i < asdata->clientcount; ++i) {
-    if (asdata->clientaskey [i] == askey) {
-      clientkey = i;
-      break;
-    }
+  clientkey = asbdj4GetClientKey (asdata, askey);
+  if (clientkey < 0) {
+    return false;
   }
 
   asdata->action = ASBDJ4_ACT_GET_PL_NAMES;
@@ -617,7 +617,7 @@ asbdj4GetAudioFile (asdata_t *asdata, const char *nm, const char *tempnm)
 
   asdata->action = ASBDJ4_ACT_GET_SONG;
   asdata->state = BDJ4_STATE_WAIT;
-  clientkey = asbdj4GetClientKey (asdata, nm);
+  clientkey = asbdj4GetClientKeyByURI (asdata, nm);
   if (clientkey < 0) {
     return false;
   }
@@ -651,7 +651,7 @@ asbdj4GetAudioFile (asdata_t *asdata, const char *nm, const char *tempnm)
 }
 
 static int
-asbdj4GetClientKey (asdata_t *asdata, const char *nm)
+asbdj4GetClientKeyByURI (asdata_t *asdata, const char *nm)
 {
   int     clientkey = -1;
 
@@ -664,3 +664,19 @@ asbdj4GetClientKey (asdata_t *asdata, const char *nm)
 
   return clientkey;
 }
+
+int
+asbdj4GetClientKey (asdata_t *asdata, int askey)
+{
+  int   clientkey = -1;
+
+  for (int i = 0; i < asdata->clientcount; ++i) {
+    if (asdata->clientaskey [i] == askey) {
+      clientkey = i;
+      break;
+    }
+  }
+
+  return clientkey;
+}
+
