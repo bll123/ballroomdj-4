@@ -13,10 +13,13 @@ extern "C" {
 #endif
 
 /* supported types */
+/* if new audio sources are added, configui/confas.c must be manually */
+/* updated to include the new types */
 enum {
   AUDIOSRC_TYPE_NONE,
   AUDIOSRC_TYPE_FILE,
   AUDIOSRC_TYPE_BDJ4,
+  AUDIOSRC_TYPE_RTSP,
   AUDIOSRC_TYPE_MAX,
 };
 
@@ -42,7 +45,6 @@ typedef struct asdata asdata_t;
 typedef struct asiter asiter_t;
 typedef struct asiterdata asiterdata_t;
 
-bool audiosrcEnabled (void);
 void audiosrcInit (void);
 void audiosrcCleanup (void);
 void audiosrcPostInit (void);
@@ -70,10 +72,9 @@ void audiosrcMakeTempName (const char *ffn, char *tempnm, size_t maxlen);
 bool audiosrcPreCacheFile (const char *fn);
 
 void asiDesc (const char **ret, int max);
-bool asiEnabled (void);
 asdata_t *asiInit (const char *delpfx, const char *origext);
 void asiFree (asdata_t *asdata);
-void asiPostInit (asdata_t *asdata, const char *musicdir);
+void asiPostInit (asdata_t *asdata, const char *uri);
 int asiTypeIdent (void);
 bool asiIsTypeMatch (asdata_t *asdata, const char *nm);
 bool asiExists (asdata_t *asdata, const char *nm);

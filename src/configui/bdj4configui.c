@@ -14,6 +14,7 @@
 #include <math.h>
 #include <stdarg.h>
 
+#include "asconf.h"
 #include "bdj4.h"
 #include "bdj4init.h"
 #include "bdj4intl.h"
@@ -105,6 +106,7 @@ main (int argc, char *argv[])
   confui.sf = NULL;
   confui.qe = NULL;
 
+  confui.gui.asconf = NULL;
   confui.gui.localip = NULL;
   confui.gui.window = NULL;
   confui.gui.closecb = NULL;
@@ -189,9 +191,9 @@ main (int argc, char *argv[])
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_ACRCLOUD_API_KEY, 40, 40);
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_ACRCLOUD_API_SECRET, 45, 45);
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_ACRCLOUD_API_HOST, 45, 100);
-  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_BDJ4_SERVER, 45, 100);
-  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_BDJ4_SERVER_PASS, 10, 20);
-  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_BDJ4_SERVER_USER, 10, 20);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_AUDIOSRC_URI, 45, 100);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_AUDIOSRC_PASS, 10, 20);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_AUDIOSRC_USER, 10, 20);
 
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT, 30, 300);
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_ITUNES_DIR, 50, 300);
@@ -209,7 +211,6 @@ main (int argc, char *argv[])
   confui.gui.dispsel = dispselAlloc (DISP_SEL_LOAD_ALL);
 
   confuiInitGeneral (&confui.gui);
-//  confuiInitAudioSource (&confui.gui);
   confuiInitPlayer (&confui.gui);
   confuiInitMusicQs (&confui.gui);
   confuiInitMarquee (&confui.gui);
@@ -217,6 +218,7 @@ main (int argc, char *argv[])
   confuiInitDispSettings (&confui.gui);
   confuiInitEditDances (&confui.gui);
   confuiInitiTunes (&confui.gui);
+  confuiInitAudioSource (&confui.gui);
   confuiInitMobileRemoteControl (&confui.gui);
 
   confuiLoadTagList (&confui);
@@ -286,6 +288,7 @@ main (int argc, char *argv[])
   connFree (confui.conn);
   progstateFree (confui.progstate);
 
+  confuiCleanAudioSource (&confui.gui);
   confuiCleanOrganization (&confui.gui);
   confuiCleaniTunes (&confui.gui);
 
@@ -462,7 +465,6 @@ confuiBuildUI (configui_t *confui)
   uiBoxPackStartExpand (confui->gui.vbox, confui->gui.notebook);
 
   confuiBuildUIGeneral (&confui->gui);
-//  confuiBuildUIAudioSource (&confui->gui);
   confuiBuildUIPlayer (&confui->gui);
   confuiBuildUIMusicQs (&confui->gui);
   confuiBuildUIMarquee (&confui->gui);
@@ -476,6 +478,7 @@ confuiBuildUI (configui_t *confui)
   confuiBuildUIEditLevels (&confui->gui);
   confuiBuildUIEditGenres (&confui->gui);
   confuiBuildUIiTunes (&confui->gui);
+  confuiBuildUIAudioSource (&confui->gui);
   confuiBuildUIMobileRemoteControl (&confui->gui);
   confuiBuildUIMobileMarquee (&confui->gui);
   confuiBuildUIDebug (&confui->gui);

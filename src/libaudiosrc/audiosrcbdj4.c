@@ -11,6 +11,7 @@
 #include <inttypes.h>
 #include <errno.h>
 
+#include "asconf.h"
 #include "audiosrc.h"
 #include "bdj4.h"
 #include "bdj4intl.h"
@@ -40,6 +41,7 @@ enum {
 
 enum {
   ASBDJ4_WAIT_MAX = 200,
+  ASBDJ4_CLIENT_MAX = 3,
 };
 
 const char *action_str [ASBDJ4_ACT_MAX] = {
@@ -60,6 +62,7 @@ typedef struct asiterdata {
 } asiterdata_t;
 
 typedef struct asdata {
+  asconf_t      *asconf;
   webclient_t   *webclient;
   char          bdj4uri [MAXPATHLEN];
   const char    *musicdir;
@@ -91,21 +94,6 @@ asiDesc (const char **ret, int max)
   ret [c++] = NULL;
 }
 
-bool
-asiEnabled (void)
-{
-  const char  *srvuri;
-  bool        enabled;
-
-  srvuri = bdjoptGetStr (OPT_P_BDJ4_SERVER);
-  enabled =
-      (srvuri != NULL && *srvuri != '\0') &&
-      bdjoptGetStr (OPT_P_BDJ4_SERVER_USER) != NULL &&
-      bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS) != NULL &&
-      bdjoptGetNum (OPT_P_BDJ4_SERVER_PORT) >= 8000;
-  return enabled;
-}
-
 asdata_t *
 asiInit (const char *delpfx, const char *origext)
 {
@@ -116,28 +104,25 @@ asiInit (const char *delpfx, const char *origext)
   asdata->musicdirlen = 0;
   asdata->delpfx = delpfx;
   asdata->origext = origext;
-  asdata->webclient = webclientAlloc (asdata, asbdj4WebResponseCallback);
-  webclientSetTimeout (asdata->webclient, 1);
-  snprintf (asdata->bdj4uri, sizeof (asdata->bdj4uri),
-      "http://%s:%" PRIu16,
-      bdjoptGetStr (OPT_P_BDJ4_SERVER),
-      (uint16_t) bdjoptGetNum (OPT_P_BDJ4_SERVER_PORT));
-  webclientSetUserPass (asdata->webclient,
-      bdjoptGetStr (OPT_P_BDJ4_SERVER_USER),
-      bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS));
+
+  asdata->webclient = NULL;
   asdata->action = ASBDJ4_ACT_NONE;
   asdata->state = BDJ4_STATE_OFF;
   return asdata;
 }
 
 void
-asiPostInit (asdata_t *asdata, const char *musicdir)
+asiPostInit (asdata_t *asdata, const char *uri)
 {
-  if (musicdir == NULL) {
-    return;
-  }
-  asdata->musicdir = musicdir;
-  asdata->musicdirlen = strlen (asdata->musicdir);
+  return;
+
+#if 0
+  asdata->webclient = webclientAlloc (asdata, asbdj4WebResponseCallback);
+  webclientSetTimeout (asdata->webclient, 1);
+  snprintf (asdata->bdj4uri, sizeof (asdata->bdj4uri),
+      "http://%s:%" PRIu16, uri, port);
+  webclientSetUserPass (asdata->webclient, user, pass);
+#endif
 }
 
 void

@@ -86,21 +86,21 @@ main (int argc, char *argv[])
   flags = BDJ4_INIT_ALL;
   bdj4startup (argc, argv, &bdjsrv.musicdb, "srv", ROUTE_SERVER, &flags);
 
-  srvuri = bdjoptGetStr (OPT_P_BDJ4_SERVER);
-  bdjsrv.enabled =
-      bdjoptGetNum (OPT_G_BDJ4_SERVER_DISP) &&
-      (srvuri == NULL || *srvuri == '\0') &&
-      bdjoptGetStr (OPT_P_BDJ4_SERVER_USER) != NULL &&
-      bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS) != NULL &&
-      bdjoptGetNum (OPT_P_BDJ4_SERVER_PORT) >= 8000;
+//  srvuri = bdjoptGetStr (OPT_P_BDJ4_SERVER);
+//  bdjsrv.enabled =
+//      bdjoptGetNum (OPT_G_BDJ4_SERVER_DISP) &&
+//      (srvuri == NULL || *srvuri == '\0') &&
+//      bdjoptGetStr (OPT_P_BDJ4_SERVER_USER) != NULL &&
+//      bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS) != NULL &&
+//      bdjoptGetNum (OPT_P_BDJ4_SERVER_PORT) >= 8000;
   if (! bdjsrv.enabled) {
     bdj4shutdown (ROUTE_SERVER, bdjsrv.musicdb);
     exit (0);
   }
 
-  bdjsrv.user = bdjoptGetStr (OPT_P_BDJ4_SERVER_USER);
-  bdjsrv.pass = bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS);
-  bdjsrv.port = bdjoptGetNum (OPT_P_BDJ4_SERVER_PORT);
+//  bdjsrv.user = bdjoptGetStr (OPT_P_BDJ4_SERVER_USER);
+//  bdjsrv.pass = bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS);
+//  bdjsrv.port = bdjoptGetNum (OPT_P_BDJ4_SERVER_PORT);
   bdjsrv.progstate = progstateInit ("bdjsrv");
   bdjsrv.plNames = NULL;
   bdjsrv.websrv = NULL;

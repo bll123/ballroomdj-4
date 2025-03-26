@@ -7,6 +7,7 @@ include (../utils/bdj4macros.cmake)
 
 add_executable (bdj4configui
   bdj4configui.c
+  confas.c
   confcommon.c
   confdance.c
   confdebug.c

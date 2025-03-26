@@ -17,6 +17,7 @@
 #include <check.h>
 
 #include "asconf.h"
+#include "audiosrc.h"
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
 #include "mdebug.h"
@@ -68,8 +69,10 @@ START_TEST(asconf_iterate)
   asconfStartIterator (asconf, &iteridx);
   count = 0;
   while ((key = asconfIterate (asconf, &iteridx)) >= 0) {
+    val = asconfGetNum (asconf, key, ASCONF_MODE);
+    ck_assert_int_eq (val, ASCONF_MODE_OFF);
     val = asconfGetNum (asconf, key, ASCONF_TYPE);
-    ck_assert_int_eq (val, ASCONF_TYPE_BDJ4);
+    ck_assert_int_eq (val, AUDIOSRC_TYPE_BDJ4);
     sval = asconfGetStr (asconf, key, ASCONF_NAME);
     ck_assert_str_eq (sval, "BDJ4");
     val = asconfGetNum (asconf, key, ASCONF_PORT);
@@ -111,10 +114,16 @@ START_TEST(asconf_set)
     asconfSetStr (asconf, key, ASCONF_NAME, sval);
     mdfree (sval);
 
+    val = asconfGetNum (asconf, key, ASCONF_MODE);
+    asconfSetNum (asconf, key, ASCONF_MODE, ASCONF_MODE_CLIENT);
+    tval = asconfGetNum (asconf, key, ASCONF_MODE);
+    ck_assert_int_eq (tval, ASCONF_MODE_CLIENT);
+    asconfSetNum (asconf, key, ASCONF_MODE, val);
+
     val = asconfGetNum (asconf, key, ASCONF_TYPE);
-    asconfSetNum (asconf, key, ASCONF_TYPE, ASCONF_TYPE_RTSP);
+    asconfSetNum (asconf, key, ASCONF_TYPE, AUDIOSRC_TYPE_RTSP);
     tval = asconfGetNum (asconf, key, ASCONF_TYPE);
-    ck_assert_int_eq (tval, ASCONF_TYPE_RTSP);
+    ck_assert_int_eq (tval, AUDIOSRC_TYPE_RTSP);
     asconfSetNum (asconf, key, ASCONF_TYPE, val);
 
     asconfSetStr (asconf, key, ASCONF_USER, "bdj4");
@@ -125,9 +134,9 @@ START_TEST(asconf_set)
     tsval = asconfGetStr (asconf, key, ASCONF_PASS);
     ck_assert_str_eq (tsval, "bdj");
 
-    asconfSetStr (asconf, key, ASCONF_URI, "bdj4://localhost");
+    asconfSetStr (asconf, key, ASCONF_URI, "localhost");
     tsval = asconfGetStr (asconf, key, ASCONF_URI);
-    ck_assert_str_eq (tsval, "bdj4://localhost");
+    ck_assert_str_eq (tsval, "localhost");
 
     ++count;
   }
@@ -164,13 +173,13 @@ START_TEST(asconf_save)
 
     asconfSetStr (asconf, key, ASCONF_USER, "bdj4");
     asconfSetStr (asconf, key, ASCONF_PASS, "bdj");
-    asconfSetStr (asconf, key, ASCONF_URI, "bdj4://localhost");
+    asconfSetStr (asconf, key, ASCONF_URI, "localhost");
 
     ilistSetStr (tlist, key, ASCONF_NAME, sval);
     ilistSetNum (tlist, key, ASCONF_TYPE, val);
     ilistSetStr (tlist, key, ASCONF_USER, "bdj4");
     ilistSetStr (tlist, key, ASCONF_PASS, "bdj");
-    ilistSetStr (tlist, key, ASCONF_URI, "bdj4://localhost");
+    ilistSetStr (tlist, key, ASCONF_URI, "localhost");
   }
 
   asconfSave (asconf, tlist, -1);
@@ -235,7 +244,7 @@ START_TEST(asconf_add)
     if (strcmp (sval, "test") == 0) {
       rc += 1;
       val = asconfGetNum(asconf, key, ASCONF_TYPE);
-      if (val == ASCONF_TYPE_RTSP) {
+      if (val == AUDIOSRC_TYPE_RTSP) {
         rc += 1;
       }
     }

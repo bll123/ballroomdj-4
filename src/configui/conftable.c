@@ -45,6 +45,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
   logProcBegin ();
 
   switch (id) {
+    case CONFUI_ID_AUDIOSRC: { tag = "conf-as"; break; }
     case CONFUI_ID_DANCE: { tag = "conf-dance"; break; }
     case CONFUI_ID_GENRES: { tag = "conf-genre"; break; }
     case CONFUI_ID_LEVELS: { tag = "conf-level"; break; }
@@ -55,7 +56,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
 
   gui->tables [id].flags = flags;
 
-  if (id == CONFUI_ID_DANCE) {
+  if (id == CONFUI_ID_DANCE || id == CONFUI_ID_AUDIOSRC) {
     vlflags = VL_NO_HEADING;
   }
   vbox = uiCreateVertBox ();

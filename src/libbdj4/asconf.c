@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "audiosrc.h"
 #include "asconf.h"
 #include "bdj4.h"
 #include "bdjopt.h"
@@ -27,11 +28,13 @@ typedef struct asconf {
   slist_t         *audiosrclist;
 } asconf_t;
 
-static void asconfConvType (datafileconv_t *conv);
 static void asconfCreateList (asconf_t *asconf);
+static void asconfConvType (datafileconv_t *conv);
+static void asconfConvMode (datafileconv_t *conv);
 
 /* must be sorted in ascii order */
 static datafilekey_t asconfdfkeys [] = {
+  { "MODE",       ASCONF_MODE,      VALUE_NUM, asconfConvMode, DF_NORM },
   { "NAME",       ASCONF_NAME,      VALUE_STR, NULL, DF_NORM },
   { "PASS",       ASCONF_PASS,      VALUE_STR, NULL, DF_NORM },
   { "PORT",       ASCONF_PORT,      VALUE_NUM, NULL, DF_NORM },
@@ -43,9 +46,17 @@ enum {
   asconfdfcount = sizeof (asconfdfkeys) / sizeof (datafilekey_t),
 };
 
-static const char *asconftype [ASCONF_TYPE_MAX] = {
-  [ASCONF_TYPE_BDJ4] = "BDJ4",
-  [ASCONF_TYPE_RTSP] = "RTSP",
+static const char *asconftype [AUDIOSRC_TYPE_MAX] = {
+  [AUDIOSRC_TYPE_NONE] = "none",
+  [AUDIOSRC_TYPE_FILE] = "file",
+  [AUDIOSRC_TYPE_BDJ4] = "bdj4",
+  [AUDIOSRC_TYPE_RTSP] = "rtsp",
+};
+
+static const char *asconfmode [ASCONF_MODE_MAX] = {
+  [ASCONF_MODE_OFF] = "off",
+  [ASCONF_MODE_CLIENT] = "client",
+  [ASCONF_MODE_SERVER] = "server",
 };
 
 asconf_t *
@@ -194,7 +205,8 @@ asconfAdd (asconf_t *asconf, char *name)
   ilistidx_t    count;
 
   count = ilistGetCount (asconf->audiosources);
-  ilistSetNum (asconf->audiosources, count, ASCONF_TYPE, ASCONF_TYPE_RTSP);
+  ilistSetNum (asconf->audiosources, count, ASCONF_MODE, ASCONF_MODE_OFF);
+  ilistSetNum (asconf->audiosources, count, ASCONF_TYPE, AUDIOSRC_TYPE_RTSP);
   ilistSetStr (asconf->audiosources, count, ASCONF_NAME, name);
   ilistSetStr (asconf->audiosources, count, ASCONF_URI, "");
   ilistSetNum (asconf->audiosources, count, ASCONF_PORT, 9011);
@@ -202,31 +214,6 @@ asconfAdd (asconf_t *asconf, char *name)
   ilistSetStr (asconf->audiosources, count, ASCONF_PASS, "");
   slistSetNum (asconf->audiosrclist, name, count);
   return count;
-}
-
-static void
-asconfConvType (datafileconv_t *conv)
-{
-  const char  *sval;
-
-  if (conv->invt == VALUE_STR) {
-    conv->outvt = VALUE_NUM;
-    sval = conv->str;
-    conv->num = LIST_VALUE_INVALID;
-    for (int i = 0; i < ASCONF_TYPE_MAX; ++i) {
-      if (strcmp (sval, asconftype [i]) == 0) {
-        conv->num = i;
-      }
-    }
-  } else if (conv->invt == VALUE_NUM) {
-    conv->outvt = VALUE_STR;
-    if (conv->num < 0 || conv->num >= ASCONF_TYPE_MAX) {
-      sval = asconftype [ASCONF_TYPE_BDJ4]; // unknown -> BDJ4
-    } else {
-      sval = asconftype [conv->num];
-    }
-    conv->str = sval;
-  }
 }
 
 /* internal routines */
@@ -249,5 +236,55 @@ asconfCreateList (asconf_t *asconf)
     slistSetNum (asconf->audiosrclist, val, key);
   }
   slistSort (asconf->audiosrclist);
+}
+
+static void
+asconfConvType (datafileconv_t *conv)
+{
+  const char  *sval;
+
+  if (conv->invt == VALUE_STR) {
+    conv->outvt = VALUE_NUM;
+    sval = conv->str;
+    conv->num = LIST_VALUE_INVALID;
+    for (int i = 0; i < AUDIOSRC_TYPE_MAX; ++i) {
+      if (strcmp (sval, asconftype [i]) == 0) {
+        conv->num = i;
+      }
+    }
+  } else if (conv->invt == VALUE_NUM) {
+    conv->outvt = VALUE_STR;
+    if (conv->num < 0 || conv->num >= AUDIOSRC_TYPE_MAX) {
+      sval = asconftype [AUDIOSRC_TYPE_NONE]; // unknown -> none
+    } else {
+      sval = asconftype [conv->num];
+    }
+    conv->str = sval;
+  }
+}
+
+static void
+asconfConvMode (datafileconv_t *conv)
+{
+  const char  *sval;
+
+  if (conv->invt == VALUE_STR) {
+    conv->outvt = VALUE_NUM;
+    sval = conv->str;
+    conv->num = LIST_VALUE_INVALID;
+    for (int i = 0; i < ASCONF_MODE_MAX; ++i) {
+      if (strcmp (sval, asconfmode [i]) == 0) {
+        conv->num = i;
+      }
+    }
+  } else if (conv->invt == VALUE_NUM) {
+    conv->outvt = VALUE_STR;
+    if (conv->num < 0 || conv->num >= ASCONF_MODE_MAX) {
+      sval = asconfmode [ASCONF_MODE_OFF]; // unknown -> off
+    } else {
+      sval = asconfmode [conv->num];
+    }
+    conv->str = sval;
+  }
 }
 

@@ -36,24 +36,55 @@
 #include "uiselectfile.h"
 #include "uivirtlist.h"
 
-/* dance table */
-static void confuiCreateDanceTable (confuigui_t *gui);
-static int  confuiDanceEntryDanceChg (uiwcont_t *entry, const char *label, void *udata);
-static int  confuiDanceEntryChg (uiwcont_t *e, void *udata, int widx);
-static bool confuiDanceSpinboxTypeChg (void *udata);
-static void confuiDanceSpinboxChg (void *udata, int widx);
-static void confuiDanceSave (confuigui_t *gui);
-static void confuiLoadDanceTypeList (confuigui_t *gui);
-static void confuiDanceFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
-static void confuiDanceSelect (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
-static void confuiDanceRemove (confuigui_t *gui, ilistidx_t idx);
-static void confuiDanceAdd (confuigui_t *gui);
+static void confuiCreateAudioSrcTable (confuigui_t *gui);
+static int  confuiAudioSrcNameChg (uiwcont_t *entry, const char *label, void *udata);
+static int  confuiAudioSrcURIChg (uiwcont_t *entry, const char *label, void *udata);
+static int  confuiAudioSrcUserChg (uiwcont_t *entry, const char *label, void *udata);
+static int  confuiAudioSrcPassChg (uiwcont_t *entry, const char *label, void *udata);
+static int  confuiAudioSrcEntryChg (uiwcont_t *e, void *udata, int widx);
+static bool confuiAudioSrcModeChg (void *udata);
+static bool confuiAudioSrcTypeChg (void *udata);
+static bool confuiAudioSrcPortChg (void *udata);
+static void confuiAudioSrcSpinboxChg (void *udata, int widx);
+static void confuiAudioSrcSave (confuigui_t *gui);
+static void confuiAudioSrcFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
+static void confuiAudioSrcSelect (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx);
+static void confuiAudioSrcRemove (confuigui_t *gui, ilistidx_t idx);
+static void confuiAudioSrcAdd (confuigui_t *gui);
+static void confuiAudioSrcSetWidgetStates (confuigui_t *gui, int askey);
 
 void
 confuiInitAudioSource (confuigui_t *gui)
 {
-  gui->tables [CONFUI_ID_AUDIOSRC].addfunc = confuiDanceAdd;
-  gui->tables [CONFUI_ID_AUDIOSRC].removefunc = confuiDanceRemove;
+  confuiSpinboxTextInitDataNum (gui, "cu-as-type",
+      CONFUI_SPINBOX_AUDIOSRC_MODE,
+      /* CONTEXT: configuration: audio source mode */
+      ASCONF_MODE_OFF, _("Off"),
+      /* CONTEXT: configuration: audio source mode */
+      ASCONF_MODE_CLIENT, _("Client"),
+      /* CONTEXT: configuration: audio source mode */
+      ASCONF_MODE_SERVER, _("Server"),
+      -1);
+
+  confuiSpinboxTextInitDataNum (gui, "cu-as-type",
+      CONFUI_SPINBOX_AUDIOSRC_TYPE,
+      /* CONTEXT: configuration: audio source type */
+      AUDIOSRC_TYPE_BDJ4, _("bdj4"),
+      /* CONTEXT: configuration: audio source type */
+      AUDIOSRC_TYPE_RTSP, _("rtsp"),
+      -1);
+
+  gui->tables [CONFUI_ID_AUDIOSRC].addfunc = confuiAudioSrcAdd;
+  gui->tables [CONFUI_ID_AUDIOSRC].removefunc = confuiAudioSrcRemove;
+  gui->asconf = asconfAlloc ();
+}
+
+void
+confuiCleanAudioSource (confuigui_t *gui)
+{
+  if (gui->asconf != NULL) {
+    asconfFree (gui->asconf);
+  }
 }
 
 void
@@ -65,8 +96,6 @@ confuiBuildUIAudioSource (confuigui_t *gui)
   uiwcont_t     *szgrp;
   uiwcont_t     *szgrpB;
   uiwcont_t     *szgrpC;
-  const char    *bpmstr;
-  char          tbuff [MAXPATHLEN];
   uivirtlist_t  *uivl;
 
   logProcBegin ();
@@ -77,7 +106,6 @@ confuiBuildUIAudioSource (confuigui_t *gui)
   szgrpB = uiCreateSizeGroupHoriz ();
   szgrpC = uiCreateSizeGroupHoriz ();
 
-  /* edit dances */
   confuiMakeNotebookTab (vbox, gui,
       /* CONTEXT: configuration: audio sources */
       _("Audio Source"), CONFUI_ID_AUDIOSRC);
@@ -87,77 +115,67 @@ confuiBuildUIAudioSource (confuigui_t *gui)
   uiWidgetAlignHorizStart (hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_AUDIOSRC, CONFUI_TABLE_NO_UP_DOWN);
-  gui->tables [CONFUI_ID_AUDIOSRC].savefunc = confuiAudioSourceSave;
+  gui->tables [CONFUI_ID_AUDIOSRC].savefunc = confuiAudioSrcSave;
 
-//  confuiCreateDanceTable (gui);
+  confuiCreateAudioSrcTable (gui);
 
   dvbox = uiCreateVertBox ();
   uiBoxPackStart (hbox, dvbox);
   uiWidgetSetMarginStart (dvbox, 8);
 
-#if 0
-  confuiMakeItemEntry (gui, dvbox, szgrp, tagdefs [TAG_DANCE].displayname,
-      CONFUI_ENTRY_DANCE_DANCE, -1, "", CONFUI_NO_INDENT);
-  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_DANCE_DANCE].uiwidgetp,
-      "", confuiDanceEntryDanceChg, gui, UIENTRY_IMMEDIATE);
-  gui->uiitem [CONFUI_ENTRY_DANCE_DANCE].danceitemidx = DANCE_DANCE;
+  /* CONTEXT: configuration: audio source: mode (off/client/server) */
+  confuiMakeItemSpinboxText (gui, dvbox, szgrp, szgrpB, _("Mode"),
+      CONFUI_SPINBOX_AUDIOSRC_MODE, -1, CONFUI_OUT_NUM, CONFUI_NO_INDENT,
+      confuiAudioSrcModeChg);
+  gui->uiitem [CONFUI_SPINBOX_AUDIOSRC_MODE].audiosrcitemidx = ASCONF_MODE;
 
-  /* CONTEXT: configuration: dances: the type of the dance (club/latin/standard) */
+  /* CONTEXT: configuration: the remote BDJ4 server name */
+  confuiMakeItemEntry (gui, dvbox, szgrp, _("Name"),
+      CONFUI_ENTRY_AUDIOSRC_NAME, -1, "", CONFUI_NO_INDENT);
+  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_NAME].uiwidgetp,
+      "", confuiAudioSrcNameChg, gui, UIENTRY_IMMEDIATE);
+  gui->uiitem [CONFUI_ENTRY_AUDIOSRC_NAME].audiosrcitemidx = ASCONF_NAME;
+
+  /* CONTEXT: configuration: audio source: type of source */
   confuiMakeItemSpinboxText (gui, dvbox, szgrp, szgrpB, _("Type"),
-      CONFUI_SPINBOX_DANCE_TYPE, -1, CONFUI_OUT_NUM, 0,
-      confuiDanceSpinboxTypeChg);
-  gui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].danceitemidx = DANCE_TYPE;
+      CONFUI_SPINBOX_AUDIOSRC_TYPE, -1, CONFUI_OUT_NUM, CONFUI_NO_INDENT,
+      confuiAudioSrcTypeChg);
+  gui->uiitem [CONFUI_SPINBOX_AUDIOSRC_TYPE].audiosrcitemidx = ASCONF_TYPE;
 
-  /* CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow) */
-  confuiMakeItemSpinboxText (gui, dvbox, szgrp, szgrpB, _("Speed"),
-      CONFUI_SPINBOX_DANCE_SPEED, -1, CONFUI_OUT_NUM, 0,
-      confuiDanceSpinboxSpeedChg);
-  gui->uiitem [CONFUI_SPINBOX_DANCE_SPEED].danceitemidx = DANCE_SPEED;
+  /* CONTEXT: configuration: the remote BDJ4 server name */
+  confuiMakeItemEntry (gui, dvbox, szgrp, _("URI"),
+      CONFUI_ENTRY_AUDIOSRC_URI, -1, "", CONFUI_NO_INDENT);
+  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_URI].uiwidgetp,
+      "", confuiAudioSrcURIChg, gui, UIENTRY_IMMEDIATE);
+  gui->uiitem [CONFUI_ENTRY_AUDIOSRC_URI].audiosrcitemidx = ASCONF_URI;
 
-  /* CONTEXT: configuration: dances: tags associated with the dance */
-  confuiMakeItemEntry (gui, dvbox, szgrp, _("Tags"),
-      CONFUI_ENTRY_DANCE_TAGS, -1, "", CONFUI_NO_INDENT);
-  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_DANCE_TAGS].uiwidgetp,
-      "", confuiDanceEntryTagsChg, gui, UIENTRY_IMMEDIATE);
-  gui->uiitem [CONFUI_ENTRY_DANCE_TAGS].danceitemidx = DANCE_TAGS;
+  /* CONTEXT: configuration: the port to use for the BDJ4 server */
+  confuiMakeItemSpinboxNum (gui, dvbox, szgrp, NULL, _("Port"),
+      CONFUI_WIDGET_AUDIOSRC_PORT, -1,
+      8000, 30000, 0, confuiAudioSrcPortChg);
+  gui->uiitem [CONFUI_WIDGET_AUDIOSRC_PORT].audiosrcitemidx = ASCONF_PORT;
 
-  /* CONTEXT: configuration: dances: play the selected announcement before the dance is played */
-  confuiMakeItemEntryChooser (gui, dvbox, szgrp, _("Announcement"),
-      CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT, -1, "",
-      selectAudioFileCallback);
-  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT].uiwidgetp,
-      "", confuiDanceEntryAnnouncementChg, gui, UIENTRY_DELAYED);
-  gui->uiitem [CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT].danceitemidx = DANCE_ANNOUNCE;
+  /* CONTEXT: configuration: the BDJ4 server user */
+  confuiMakeItemEntry (gui, dvbox, szgrp, _("User"),
+      CONFUI_ENTRY_AUDIOSRC_USER, -1, "", CONFUI_NO_INDENT);
+  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_USER].uiwidgetp,
+      "", confuiAudioSrcUserChg, gui, UIENTRY_IMMEDIATE);
+  gui->uiitem [CONFUI_ENTRY_AUDIOSRC_USER].audiosrcitemidx = ASCONF_USER;
 
-  bpmstr = tagdefs [TAG_BPM].displayname;
-  /* CONTEXT: configuration: dances: low BPM (or MPM) setting */
-  snprintf (tbuff, sizeof (tbuff), _("Low %s"), bpmstr);
-  confuiMakeItemSpinboxNum (gui, dvbox, szgrp, szgrpC, tbuff,
-      CONFUI_WIDGET_DANCE_MPM_LOW, -1, 10, 500, 0,
-      confuiDanceSpinboxLowMPMChg);
-  gui->uiitem [CONFUI_WIDGET_DANCE_MPM_LOW].danceitemidx = DANCE_MPM_LOW;
+  /* CONTEXT: configuration: the BDJ4 server password */
+  confuiMakeItemEntry (gui, dvbox, szgrp, _("Password"),
+      CONFUI_ENTRY_AUDIOSRC_PASS, -1, "", CONFUI_NO_INDENT);
+  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_PASS].uiwidgetp,
+      "", confuiAudioSrcPassChg, gui, UIENTRY_IMMEDIATE);
+  gui->uiitem [CONFUI_ENTRY_AUDIOSRC_PASS].audiosrcitemidx = ASCONF_PASS;
 
-  /* CONTEXT: configuration: dances: high BPM (or MPM) setting */
-  snprintf (tbuff, sizeof (tbuff), _("High %s"), bpmstr);
-  confuiMakeItemSpinboxNum (gui, dvbox, szgrp, szgrpC, tbuff,
-      CONFUI_WIDGET_DANCE_MPM_HIGH, -1, 10, 500, 0,
-      confuiDanceSpinboxHighMPMChg);
-  gui->uiitem [CONFUI_WIDGET_DANCE_MPM_HIGH].danceitemidx = DANCE_MPM_HIGH;
-
-  /* CONTEXT: configuration: dances: time signature for the dance */
-  confuiMakeItemSpinboxText (gui, dvbox, szgrp, szgrpC, _("Time Signature"),
-      CONFUI_SPINBOX_DANCE_TIME_SIG, -1, CONFUI_OUT_NUM, 0,
-      confuiDanceSpinboxTimeSigChg);
-  gui->uiitem [CONFUI_SPINBOX_DANCE_TIME_SIG].danceitemidx = DANCE_TIMESIG;
-
-  uivlSetSelectChgCallback (gui->tables [CONFUI_ID_DANCE].uivl,
-      confuiDanceSelect, gui);
-#endif
+  uivlSetSelectChgCallback (gui->tables [CONFUI_ID_AUDIOSRC].uivl,
+      confuiAudioSrcSelect, gui);
 
   gui->inchange = false;
 
   uivl = gui->tables [CONFUI_ID_AUDIOSRC].uivl;
-  confuiDanceSelect (gui, uivl, 0, CONFUI_DANCE_COL_DANCE);
+  confuiAudioSrcSelect (gui, uivl, 0, CONFUI_AUDIOSRC_COL_NAME);
 
   uiwcontFree (dvbox);
   uiwcontFree (vbox);
@@ -170,94 +188,71 @@ confuiBuildUIAudioSource (confuigui_t *gui)
 }
 
 void
-confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t dkey)
+confuiAudioSrcSelectLoadValues (confuigui_t *gui, ilistidx_t askey)
 {
-  dance_t         *dances;
   const char      *sval;
-  slist_t         *slist;
-  datafileconv_t  conv;
   int             widx;
   nlistidx_t      num;
-  int             timesig;
   uivirtlist_t    *uivl;
   int32_t         rownum;
-  char            tstr [MAXPATHLEN];
 
 
   uivl = gui->tables [CONFUI_ID_AUDIOSRC].uivl;
   rownum = uivlGetCurrSelection (uivl);
 
-  /* the dance key must be saved because it gets changed before the */
+  /* the key must be saved because it gets changed before the */
   /* 'changed' callbacks get called */
-  /* this occurs when typing into a field, then selecting a new dance */
-  gui->dancedkey = uivlGetRowColumnNum (uivl, rownum, CONFUI_DANCE_COL_DANCE_KEY);
+  /* this occurs when typing into a field, then selecting a new name */
+  gui->asconfkey = uivlGetRowColumnNum (uivl, rownum, CONFUI_AUDIOSRC_COL_KEY);
 
-  dances = bdjvarsdfGet (BDJVDF_DANCES);
-
-  sval = danceGetStr (dances, dkey, DANCE_DANCE);
-  widx = CONFUI_ENTRY_DANCE_DANCE;
+  sval = asconfGetStr (gui->asconf, askey, ASCONF_NAME);
+  widx = CONFUI_ENTRY_AUDIOSRC_NAME;
   uiEntrySetValue (gui->uiitem [widx].uiwidgetp, sval);
-  /* because the same entry field is used when switching dances, */
+  /* because the same entry field is used when switching items */
   /* and there is a validation timer running, */
   /* the validation timer must be cleared */
   /* the entry field does not need to be validated when being loaded */
-  /* this applies to the dance, tags and announcement */
   uiEntryValidateClear (gui->uiitem [widx].uiwidgetp);
 
-  slist = danceGetList (dances, dkey, DANCE_TAGS);
-  conv.list = slist;
-  conv.invt = VALUE_LIST;
-  convTextList (&conv);
-  sval = conv.strval;
-  widx = CONFUI_ENTRY_DANCE_TAGS;
+  num = asconfGetNum (gui->asconf, askey, ASCONF_MODE);
+  widx = CONFUI_SPINBOX_AUDIOSRC_MODE;
+  uiSpinboxTextSetValue (gui->uiitem [widx].uiwidgetp, num);
+
+  num = asconfGetNum (gui->asconf, askey, ASCONF_TYPE);
+  widx = CONFUI_SPINBOX_AUDIOSRC_TYPE;
+  uiSpinboxTextSetValue (gui->uiitem [widx].uiwidgetp, num);
+
+  num = asconfGetNum (gui->asconf, askey, ASCONF_PORT);
+  widx = CONFUI_WIDGET_AUDIOSRC_PORT;
+  uiSpinboxSetValue (gui->uiitem [widx].uiwidgetp, num);
+
+  sval = asconfGetStr (gui->asconf, askey, ASCONF_URI);
+  widx = CONFUI_ENTRY_AUDIOSRC_URI;
   uiEntrySetValue (gui->uiitem [widx].uiwidgetp, sval);
-  dataFree (conv.strval);
   uiEntryValidateClear (gui->uiitem [widx].uiwidgetp);
 
-  timesig = danceGetTimeSignature (dkey);
-
-  sval = danceGetStr (dances, dkey, DANCE_ANNOUNCE);
-  widx = CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT;
-  stpecpy (tstr, tstr + sizeof (tstr), sval);
-  pathDisplayPath (tstr, strlen (tstr));
-  uiEntrySetValue (gui->uiitem [widx].uiwidgetp, tstr);
+  sval = asconfGetStr (gui->asconf, askey, ASCONF_USER);
+  widx = CONFUI_ENTRY_AUDIOSRC_USER;
+  uiEntrySetValue (gui->uiitem [widx].uiwidgetp, sval);
   uiEntryValidateClear (gui->uiitem [widx].uiwidgetp);
 
-  num = danceGetNum (dances, dkey, DANCE_MPM_HIGH);
-  widx = CONFUI_WIDGET_DANCE_MPM_HIGH;
-  num = danceConvertMPMtoBPM (dkey, num);
-  uiSpinboxSetValue (gui->uiitem [widx].uiwidgetp, num);
-
-  num = danceGetNum (dances, dkey, DANCE_MPM_LOW);
-  widx = CONFUI_WIDGET_DANCE_MPM_LOW;
-  num = danceConvertMPMtoBPM (dkey, num);
-  uiSpinboxSetValue (gui->uiitem [widx].uiwidgetp, num);
-
-  num = danceGetNum (dances, dkey, DANCE_SPEED);
-  widx = CONFUI_SPINBOX_DANCE_SPEED;
-  uiSpinboxTextSetValue (gui->uiitem [widx].uiwidgetp, num);
-
-  widx = CONFUI_SPINBOX_DANCE_TIME_SIG;
-  uiSpinboxTextSetValue (gui->uiitem [widx].uiwidgetp, timesig);
-
-  num = danceGetNum (dances, dkey, DANCE_TYPE);
-  widx = CONFUI_SPINBOX_DANCE_TYPE;
-  uiSpinboxTextSetValue (gui->uiitem [widx].uiwidgetp, num);
+  sval = asconfGetStr (gui->asconf, askey, ASCONF_PASS);
+  widx = CONFUI_ENTRY_AUDIOSRC_PASS;
+  uiEntrySetValue (gui->uiitem [widx].uiwidgetp, sval);
+  uiEntryValidateClear (gui->uiitem [widx].uiwidgetp);
 }
 
 void
-confuiDanceSearchSelect (confuigui_t *gui, ilistidx_t dkey)
+confuiAudioSrcSearchSelect (confuigui_t *gui, ilistidx_t askey)
 {
-  dance_t       *dances;
-  slist_t       *dancelist;
-  const char    *dancedisp;
+  slist_t       *asconflist;
+  const char    *name;
   int32_t       idx;
   uivirtlist_t  *uivl;
 
-  dances = bdjvarsdfGet (BDJVDF_DANCES);
-  dancelist = danceGetDanceList (dances);
-  dancedisp = danceGetStr (dances, dkey, DANCE_DANCE);
-  idx = slistGetIdx (dancelist, dancedisp);
+  asconflist = asconfGetAudioSourceList (gui->asconf);
+  name = asconfGetStr (gui->asconf, askey, ASCONF_NAME);
+  idx = slistGetIdx (asconflist, name);
   uivl = gui->tables [CONFUI_ID_AUDIOSRC].uivl;
   uivlSetSelection (uivl, idx);
 }
@@ -265,69 +260,71 @@ confuiDanceSearchSelect (confuigui_t *gui, ilistidx_t dkey)
 /* internal routines */
 
 static void
-confuiCreateDanceTable (confuigui_t *gui)
+confuiCreateAudioSrcTable (confuigui_t *gui)
 {
-  dance_t           *dances;
   uivirtlist_t      *uivl;
   ilistidx_t        count;
 
 
   logProcBegin ();
 
-  dances = bdjvarsdfGet (BDJVDF_DANCES);
   uivl = gui->tables [CONFUI_ID_AUDIOSRC].uivl;
   uivlSetDarkBackground (uivl);
-  uivlSetNumColumns (uivl, CONFUI_DANCE_COL_MAX);
-  uivlMakeColumn (uivl, "dance", CONFUI_DANCE_COL_DANCE, VL_TYPE_LABEL);
-  uivlSetColumnGrow (uivl, CONFUI_DANCE_COL_DANCE, VL_COL_WIDTH_GROW_ONLY);
-  uivlMakeColumn (uivl, "dkey", CONFUI_DANCE_COL_DANCE_KEY, VL_TYPE_INTERNAL_NUMERIC);
-  count = danceGetCount (dances);
+  uivlSetNumColumns (uivl, CONFUI_AUDIOSRC_COL_MAX);
+  uivlMakeColumn (uivl, "name", CONFUI_AUDIOSRC_COL_NAME, VL_TYPE_LABEL);
+  uivlSetColumnGrow (uivl, CONFUI_AUDIOSRC_COL_NAME, VL_COL_WIDTH_GROW_ONLY);
+  uivlMakeColumn (uivl, "askey", CONFUI_AUDIOSRC_COL_KEY, VL_TYPE_INTERNAL_NUMERIC);
+  count = asconfGetCount (gui->asconf);
   uivlSetNumRows (uivl, count);
   gui->tables [CONFUI_ID_AUDIOSRC].currcount = count;
-  uivlSetRowFillCallback (uivl, confuiDanceFillRow, gui);
+  uivlSetRowFillCallback (uivl, confuiAudioSrcFillRow, gui);
   uivlDisplay (uivl);
 
   logProcEnd ("");
 }
 
 static int
-confuiDanceEntryDanceChg (uiwcont_t *entry, const char *label, void *udata)
+confuiAudioSrcNameChg (uiwcont_t *entry, const char *label, void *udata)
 {
-  return confuiDanceEntryChg (entry, udata, CONFUI_ENTRY_DANCE_DANCE);
+  return confuiAudioSrcEntryChg (entry, udata, CONFUI_ENTRY_AUDIOSRC_NAME);
 }
 
 static int
-confuiDanceEntryTagsChg (uiwcont_t *entry, const char *label, void *udata)
+confuiAudioSrcURIChg (uiwcont_t *entry, const char *label, void *udata)
 {
-  return confuiDanceEntryChg (entry, udata, CONFUI_ENTRY_DANCE_TAGS);
+  return confuiAudioSrcEntryChg (entry, udata, CONFUI_ENTRY_AUDIOSRC_URI);
 }
 
 static int
-confuiDanceEntryAnnouncementChg (uiwcont_t *entry, const char *label, void *udata)
+confuiAudioSrcUserChg (uiwcont_t *entry, const char *label, void *udata)
 {
-  return confuiDanceEntryChg (entry, udata, CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT);
+  return confuiAudioSrcEntryChg (entry, udata, CONFUI_ENTRY_AUDIOSRC_USER);
 }
 
 static int
-confuiDanceEntryChg (uiwcont_t *entry, void *udata, int widx)
+confuiAudioSrcPassChg (uiwcont_t *entry, const char *label, void *udata)
+{
+  return confuiAudioSrcEntryChg (entry, udata, CONFUI_ENTRY_AUDIOSRC_PASS);
+}
+
+static int
+confuiAudioSrcEntryChg (uiwcont_t *entry, void *udata, int widx)
 {
   confuigui_t     *gui = udata;
   const char      *str = NULL;
   uivirtlist_t    *uivl = NULL;
   int             count = 0;
-  dance_t         *dances;
-  ilistidx_t      dkey;
+  ilistidx_t      askey;
   nlistidx_t      itemidx;
-  datafileconv_t  conv;
   int             entryrc = UIENTRY_ERROR;
 
   logProcBegin ();
   if (gui->inchange) {
-    logProcEnd ("in-dance-select");
+    logProcEnd ("in-asconf-select");
     return UIENTRY_OK;
   }
   if (gui->tablecurr != CONFUI_ID_AUDIOSRC) {
-    logProcEnd ("not-table-dance");
+    logProcEnd ("not-table-asconf");
     return UIENTRY_OK;
   }
 
@@ -339,7 +336,7 @@ confuiDanceEntryChg (uiwcont_t *entry, void *udata, int widx)
     return UIENTRY_OK;
   }
 
-  itemidx = gui->uiitem [widx].danceitemidx;
+  itemidx = gui->uiitem [widx].audiosrcitemidx;
 
   uivl = gui->tables [CONFUI_ID_AUDIOSRC].uivl;
   count = uivlSelectionCount (uivl);
@@ -348,35 +345,13 @@ confuiDanceEntryChg (uiwcont_t *entry, void *udata, int widx)
     return UIENTRY_OK;
   }
 
-  dances = bdjvarsdfGet (BDJVDF_DANCES);
-  dkey = gui->dancedkey;
+  askey = gui->asconfkey;
 
-  if (widx == CONFUI_ENTRY_DANCE_DANCE) {
-    danceSetStr (dances, dkey, itemidx, str);
+  asconfSetStr (gui->asconf, askey, itemidx, str);
+  if (widx == CONFUI_ENTRY_AUDIOSRC_NAME) {
     uivlPopulate (uivl);
-    entryrc = UIENTRY_OK;
   }
-  if (widx == CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT) {
-    entryrc = confuiDanceValidateAnnouncement (entry, gui);
-    if (entryrc == UIENTRY_OK) {
-      char    nstr [MAXPATHLEN];
-
-      /* save the normalized version */
-      stpecpy (nstr, nstr + sizeof (nstr), str);
-      pathNormalizePath (nstr, strlen (nstr));
-      danceSetStr (dances, dkey, itemidx, nstr);
-    }
-  }
-  if (widx == CONFUI_ENTRY_DANCE_TAGS) {
-    slist_t *slist;
-
-    conv.str = str;
-    conv.invt = VALUE_STR;
-    convTextList (&conv);
-    slist = conv.list;
-    danceSetList (dances, dkey, itemidx, slist);
-    entryrc = UIENTRY_OK;
-  }
+  entryrc = UIENTRY_OK;
   if (entryrc == UIENTRY_OK) {
     gui->tables [gui->tablecurr].changed = true;
   }
@@ -386,62 +361,47 @@ confuiDanceEntryChg (uiwcont_t *entry, void *udata, int widx)
 }
 
 static bool
-confuiDanceSpinboxTypeChg (void *udata)
+confuiAudioSrcTypeChg (void *udata)
 {
-  confuiDanceSpinboxChg (udata, CONFUI_SPINBOX_DANCE_TYPE);
+  confuiAudioSrcSpinboxChg (udata, CONFUI_SPINBOX_AUDIOSRC_TYPE);
   return UICB_CONT;
 }
 
 static bool
-confuiDanceSpinboxSpeedChg (void *udata)
+confuiAudioSrcModeChg (void *udata)
 {
-  confuiDanceSpinboxChg (udata, CONFUI_SPINBOX_DANCE_SPEED);
+  confuiAudioSrcSpinboxChg (udata, CONFUI_SPINBOX_AUDIOSRC_MODE);
   return UICB_CONT;
 }
 
 static bool
-confuiDanceSpinboxLowMPMChg (void *udata)
+confuiAudioSrcPortChg (void *udata)
 {
-  confuiDanceSpinboxChg (udata, CONFUI_WIDGET_DANCE_MPM_LOW);
-  return UICB_CONT;
-}
-
-static bool
-confuiDanceSpinboxHighMPMChg (void *udata)
-{
-  confuiDanceSpinboxChg (udata, CONFUI_WIDGET_DANCE_MPM_HIGH);
-  return UICB_CONT;
-}
-
-static bool
-confuiDanceSpinboxTimeSigChg (void *udata)
-{
-  confuiDanceSpinboxChg (udata, CONFUI_SPINBOX_DANCE_TIME_SIG);
+  confuiAudioSrcSpinboxChg (udata, CONFUI_WIDGET_AUDIOSRC_PORT);
   return UICB_CONT;
 }
 
 static void
-confuiDanceSpinboxChg (void *udata, int widx)
+confuiAudioSrcSpinboxChg (void *udata, int widx)
 {
   confuigui_t     *gui = udata;
   uivirtlist_t    *uivl = NULL;
   int             count = 0;
   int32_t         nval = 0;
-  dance_t         *dances;
-  ilistidx_t      dkey;
+  ilistidx_t      askey;
   nlistidx_t      itemidx;
 
   logProcBegin ();
   if (gui->inchange) {
-    logProcEnd ("in-dance-select");
+    logProcEnd ("in-asconf-select");
     return;
   }
   if (gui->tablecurr != CONFUI_ID_AUDIOSRC) {
-    logProcEnd ("not-table-dance");
+    logProcEnd ("not-table-asconf");
     return;
   }
 
-  itemidx = gui->uiitem [widx].danceitemidx;
+  itemidx = gui->uiitem [widx].audiosrcitemidx;
 
   if (gui->uiitem [widx].basetype == CONFUI_SPINBOX_TEXT) {
     /* text spinbox */
@@ -461,74 +421,18 @@ confuiDanceSpinboxChg (void *udata, int widx)
     return;
   }
 
-  dances = bdjvarsdfGet (BDJVDF_DANCES);
-  dkey = gui->dancedkey;
-  if (itemidx == DANCE_MPM_HIGH || itemidx == DANCE_MPM_LOW) {
-    nval = danceConvertBPMtoMPM (dkey, nval, DANCE_NO_FORCE);
-  }
-  danceSetNum (dances, dkey, itemidx, nval);
+  askey = gui->asconfkey;
+  asconfSetNum (gui->asconf, askey, itemidx, nval);
   gui->tables [gui->tablecurr].changed = true;
+  if (widx == CONFUI_SPINBOX_AUDIOSRC_MODE) {
+    confuiAudioSrcSetWidgetStates (gui, askey);
+  }
   logProcEnd ("");
-}
-
-static int
-confuiDanceValidateAnnouncement (uiwcont_t *entry, confuigui_t *gui)
-{
-  int         rc = UIENTRY_ERROR;
-  const char  *fn;
-  char        nfn [MAXPATHLEN];
-
-  logProcBegin ();
-  if (gui->inchange) {
-    logProcEnd ("in-dance-select");
-    return UIENTRY_OK;
-  }
-
-  gui->inchange = true;
-
-  fn = uiEntryGetValue (entry);
-  if (fn == NULL) {
-    logProcEnd ("bad-fn");
-    return UIENTRY_ERROR;
-  }
-
-  stpecpy (nfn, nfn + sizeof (nfn), fn);
-  pathNormalizePath (nfn, sizeof (nfn));
-
-  if (*nfn == '\0') {
-    rc = UIENTRY_OK;
-  } else {
-    const char  *rfn;
-    char        ffn [MAXPATHLEN];
-
-    rfn = audiosrcRelativePath (nfn, 0);
-    audiosrcFullPath (nfn, ffn, sizeof (ffn), NULL, 0);
-
-    if (fileopFileExists (ffn)) {
-      if (strcmp (rfn, nfn) != 0) {
-        pathDisplayPath (nfn, strlen (nfn));
-        uiEntrySetValue (entry, rfn);
-      }
-      rc = UIENTRY_OK;
-    }
-  }
-
-  /* this validation routine gets called at most any time, but */
-  /* the changed flag should only be set for the edit dance tab */
-  if (rc == UIENTRY_OK && gui->tablecurr == CONFUI_ID_AUDIOSRC) {
-    gui->tables [gui->tablecurr].changed = true;
-  }
-
-  gui->inchange = false;
-  logProcEnd ("");
-  return rc;
 }
 
 static void
-confuiDanceSave (confuigui_t *gui)
+confuiAudioSrcSave (confuigui_t *gui)
 {
-  dance_t   *dances;
-
   logProcBegin ();
 
   if (gui->tables [CONFUI_ID_AUDIOSRC].changed == false) {
@@ -536,74 +440,41 @@ confuiDanceSave (confuigui_t *gui)
     return;
   }
 
-  dances = bdjvarsdfGet (BDJVDF_DANCES);
-  /* the data is already saved in the dance list; just re-use it */
-  danceSave (dances, NULL, -1);
+  /* the data is already saved in the list; just re-use it */
+  asconfSave (gui->asconf, NULL, -1);
   logProcEnd ("");
 }
 
 static void
-confuiLoadDanceTypeList (confuigui_t *gui)
-{
-  nlist_t       *tlist = NULL;
-  nlist_t       *llist = NULL;
-  dnctype_t     *dnctypes;
-  slistidx_t    iteridx;
-  const char    *key;
-  int           count;
-
-  logProcBegin ();
-
-  tlist = nlistAlloc ("cu-dance-type", LIST_ORDERED, NULL);
-  llist = nlistAlloc ("cu-dance-type-l", LIST_ORDERED, NULL);
-
-  dnctypes = bdjvarsdfGet (BDJVDF_DANCE_TYPES);
-  dnctypesStartIterator (dnctypes, &iteridx);
-  count = 0;
-  while ((key = dnctypesIterate (dnctypes, &iteridx)) != NULL) {
-    nlistSetStr (tlist, count, key);
-    nlistSetNum (llist, count, count);
-    ++count;
-  }
-
-  gui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].displist = tlist;
-  gui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].sbkeylist = llist;
-  logProcEnd ("");
-}
-
-static void
-confuiDanceFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
+confuiAudioSrcFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
 {
   confuigui_t *gui = udata;
-  dance_t     *dances;
-  slist_t     *dancelist;
-  const char  *dancedisp;
-  slistidx_t  dkey;
+  slist_t     *asconflist;
+  const char  *name;
+  slistidx_t  askey;
 
-  dances = bdjvarsdfGet (BDJVDF_DANCES);
-  /* dancelist has the correct display order */
-  dancelist = danceGetDanceList (dances);
-  dkey = slistGetNumByIdx (dancelist, rownum);
-  if (dkey == LIST_VALUE_INVALID) {
+  asconflist = asconfGetAudioSourceList (gui->asconf);
+  askey = slistGetNumByIdx (asconflist, rownum);
+  if (askey == LIST_VALUE_INVALID) {
     return;
   }
 
-  dancedisp = danceGetStr (dances, dkey, DANCE_DANCE);
+  name = asconfGetStr (gui->asconf, askey, ASCONF_NAME);
   uivlSetRowColumnStr (gui->tables [CONFUI_ID_AUDIOSRC].uivl, rownum,
-      CONFUI_DANCE_COL_DANCE, dancedisp);
+      CONFUI_AUDIOSRC_COL_NAME, name);
   uivlSetRowColumnNum (gui->tables [CONFUI_ID_AUDIOSRC].uivl, rownum,
-      CONFUI_DANCE_COL_DANCE_KEY, dkey);
+      CONFUI_AUDIOSRC_COL_KEY, askey);
 }
 
 static void
-confuiDanceSelect (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
+confuiAudioSrcSelect (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
 {
   confuigui_t   *gui = udata;
   uivirtlist_t  *uivl;
-  ilistidx_t    dkey;
+  ilistidx_t    askey;
 
   if (gui->inchange) {
-    logProcEnd ("in-dance-select");
+    logProcEnd ("in-asconf-select");
     return;
   }
 
@@ -613,50 +484,79 @@ confuiDanceSelect (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
     return;
   }
 
-  dkey = uivlGetRowColumnNum (uivl, rownum, CONFUI_DANCE_COL_DANCE_KEY);
-  confuiDanceSelectLoadValues (gui, dkey);
+  askey = uivlGetRowColumnNum (uivl, rownum, CONFUI_AUDIOSRC_COL_KEY);
+  confuiAudioSrcSelectLoadValues (gui, askey);
+  confuiAudioSrcSetWidgetStates (gui, askey);
   gui->inchange = false;
 }
 
 static void
-confuiDanceRemove (confuigui_t *gui, ilistidx_t rowidx)
+confuiAudioSrcRemove (confuigui_t *gui, ilistidx_t rowidx)
 {
   uivirtlist_t  *uivl;
-  ilistidx_t    dkey;
-  dance_t       *dances;
+  ilistidx_t    askey;
   ilistidx_t    count;
 
-  dances = bdjvarsdfGet (BDJVDF_DANCES);
   uivl = gui->tables [CONFUI_ID_AUDIOSRC].uivl;
 
-  dkey = uivlGetRowColumnNum (uivl, rowidx, CONFUI_DANCE_COL_DANCE_KEY);
-  danceDelete (dances, dkey);
-  danceSave (dances, NULL, -1);
-  count = danceGetCount (dances);
+  askey = uivlGetRowColumnNum (uivl, rowidx, CONFUI_AUDIOSRC_COL_KEY);
+  asconfDelete (gui->asconf, askey);
+  asconfSave (gui->asconf, NULL, -1);
+  count = asconfGetCount (gui->asconf);
   uivlSetNumRows (uivl, count);
-  gui->tables [CONFUI_ID_RATINGS].currcount = count;
+  gui->tables [CONFUI_ID_AUDIOSRC].currcount = count;
   uivlPopulate (uivl);
-  dkey = uivlGetRowColumnNum (uivl, rowidx, CONFUI_DANCE_COL_DANCE_KEY);
-  confuiDanceSelectLoadValues (gui, dkey);
+  askey = uivlGetRowColumnNum (uivl, rowidx, CONFUI_AUDIOSRC_COL_KEY);
+  confuiAudioSrcSelectLoadValues (gui, askey);
 }
 
 static void
-confuiDanceAdd (confuigui_t *gui)
+confuiAudioSrcAdd (confuigui_t *gui)
 {
-  dance_t       *dances;
-  ilistidx_t    dkey;
+  ilistidx_t    askey;
   uivirtlist_t  *uivl;
   ilistidx_t    count;
 
-  dances = bdjvarsdfGet (BDJVDF_DANCES);
   uivl = gui->tables [CONFUI_ID_AUDIOSRC].uivl;
 
-  /* CONTEXT: configuration: dance name that is set when adding a new dance */
-  dkey = danceAdd (dances, _("New Dance"));
-  danceSave (dances, NULL, -1);
-  count = danceGetCount (dances);
+  /* CONTEXT: configuration: name that is set when adding a new audio source */
+  askey = asconfAdd (gui->asconf, _("New Audio Source"));
+  asconfSave (gui->asconf, NULL, -1);
+  count = asconfGetCount (gui->asconf);
   uivlSetNumRows (uivl, count);
-  gui->tables [CONFUI_ID_RATINGS].currcount = count;
+  gui->tables [CONFUI_ID_AUDIOSRC].currcount = count;
   uivlPopulate (uivl);
-  confuiDanceSearchSelect (gui, dkey);
+  confuiAudioSrcSearchSelect (gui, askey);
+}
+
+static void
+confuiAudioSrcSetWidgetStates (confuigui_t *gui, int askey)
+{
+  int   mode;
+  int   state;
+  int   ustate;
+
+  mode = asconfGetNum (gui->asconf, askey, ASCONF_MODE);
+  state = UIWIDGET_DISABLE;
+  ustate = UIWIDGET_DISABLE;
+  if (mode != ASCONF_MODE_OFF) {
+    state = UIWIDGET_ENABLE;
+  }
+  if (mode == ASCONF_MODE_CLIENT) {
+    ustate = UIWIDGET_ENABLE;
+  }
+
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_NAME].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SPINBOX_AUDIOSRC_TYPE].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_URI].uilabelp, ustate);
+  uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_AUDIOSRC_PORT].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_USER].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_PASS].uilabelp, state);
+
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_NAME].uiwidgetp, state);
+  uiSpinboxSetState (gui->uiitem [CONFUI_SPINBOX_AUDIOSRC_TYPE].uiwidgetp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_URI].uiwidgetp, ustate);
+  uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_AUDIOSRC_PORT].uiwidgetp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_USER].uiwidgetp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_PASS].uiwidgetp, state);
 }

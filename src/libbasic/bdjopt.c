@@ -60,7 +60,6 @@ static datafilekey_t bdjoptglobaldfkeys [] = {
   { "ACRCLOUD_API_SECRET",  OPT_G_ACRCLOUD_API_SECRET, VALUE_STR, NULL, DF_NORM },
   { "AUD_ADJ_DISP",         OPT_G_AUD_ADJ_DISP,       VALUE_NUM, convBoolean, DF_NORM },
   { "AUTOORGANIZE",         OPT_G_AUTOORGANIZE,       VALUE_NUM, convBoolean, DF_NORM },
-  { "BDJ4_SERVER_DISP",     OPT_G_BDJ4_SERVER_DISP,   VALUE_NUM, convBoolean, DF_NORM },
   { "BPM",                  OPT_G_BPM,                VALUE_NUM, bdjoptConvBPM, DF_NORM },
   { "CLOCKDISP",            OPT_G_CLOCK_DISP,         VALUE_NUM, bdjoptConvClock, DF_NORM },
   { "DANCESELMETHOD",       OPT_G_DANCESEL_METHOD,    VALUE_NUM, bdjoptConvDanceselMethod, DF_NORM },
@@ -75,10 +74,6 @@ static datafilekey_t bdjoptglobaldfkeys [] = {
 };
 
 static datafilekey_t bdjoptprofiledfkeys [] = {
-  { "BDJ4_SERVER",          OPT_P_BDJ4_SERVER,        VALUE_STR, NULL, DF_NORM },
-  { "BDJ4_SERVER_PASS",     OPT_P_BDJ4_SERVER_PASS,   VALUE_STR, NULL, DF_NORM },
-  { "BDJ4_SERVER_PORT",     OPT_P_BDJ4_SERVER_PORT,   VALUE_NUM, NULL, DF_NORM },
-  { "BDJ4_SERVER_USER",     OPT_P_BDJ4_SERVER_USER,   VALUE_STR, NULL, DF_NORM },
   { "COMPLETEMSG",          OPT_P_COMPLETE_MSG,       VALUE_STR, NULL, DF_NORM },
   { "DEFAULTVOLUME",        OPT_P_DEFAULTVOLUME,      VALUE_NUM, NULL, DF_NORM },
   { "FADETYPE",             OPT_P_FADETYPE,           VALUE_NUM, bdjoptConvFadeType, DF_NORM },
@@ -442,14 +437,6 @@ bdjoptInit (void)
   if (tstr == NULL) {
     tstr = nlistGetStr (bdjopt->bdjoptList, OPT_MP_LISTING_FONT);
     nlistSetStr (bdjopt->bdjoptList, OPT_M_LISTING_FONT, tstr);
-  }
-
-  /* added 4.13.1 bdj4 server */
-  if (nlistGetNum (bdjopt->bdjoptList, OPT_P_BDJ4_SERVER_PORT) < 0) {
-    nlistSetNum (bdjopt->bdjoptList, OPT_P_BDJ4_SERVER_PORT, 9011);
-  }
-  if (nlistGetNum (bdjopt->bdjoptList, OPT_G_BDJ4_SERVER_DISP) < 0) {
-    nlistSetNum (bdjopt->bdjoptList, OPT_G_BDJ4_SERVER_DISP, false);
   }
 
   for (int i = 0; i < BDJ4_QUEUE_MAX; ++i) {

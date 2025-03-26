@@ -661,7 +661,7 @@ confuiDanceRemove (confuigui_t *gui, ilistidx_t rowidx)
   danceSave (dances, NULL, -1);
   count = danceGetCount (dances);
   uivlSetNumRows (uivl, count);
-  gui->tables [CONFUI_ID_RATINGS].currcount = count;
+  gui->tables [CONFUI_ID_DANCE].currcount = count;
   uivlPopulate (uivl);
   dkey = uivlGetRowColumnNum (uivl, rowidx, CONFUI_DANCE_COL_DANCE_KEY);
   confuiDanceSelectLoadValues (gui, dkey);
@@ -683,7 +683,7 @@ confuiDanceAdd (confuigui_t *gui)
   danceSave (dances, NULL, -1);
   count = danceGetCount (dances);
   uivlSetNumRows (uivl, count);
-  gui->tables [CONFUI_ID_RATINGS].currcount = count;
+  gui->tables [CONFUI_ID_DANCE].currcount = count;
   uivlPopulate (uivl);
   confuiDanceSearchSelect (gui, dkey);
 }

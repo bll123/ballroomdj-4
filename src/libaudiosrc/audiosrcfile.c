@@ -52,13 +52,6 @@ asiDesc (const char **ret, int max)
   ret [c++] = NULL;
 }
 
-bool
-asiEnabled (void)
-{
-  /* 'file' source is always enabled */
-  return true;
-}
-
 asdata_t *
 asiInit (const char *delpfx, const char *origext)
 {
@@ -73,12 +66,12 @@ asiInit (const char *delpfx, const char *origext)
 }
 
 void
-asiPostInit (asdata_t *asdata, const char *musicdir)
+asiPostInit (asdata_t *asdata, const char *uri)
 {
-  if (musicdir == NULL) {
+  if (uri == NULL) {
     return;
   }
-  asdata->musicdir = musicdir;
+  asdata->musicdir = uri;
   asdata->musicdirlen = strlen (asdata->musicdir);
 }
 

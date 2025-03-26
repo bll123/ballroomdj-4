@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <math.h>
 
+#include "asconf.h"
 #include "bdj4.h"
 #include "bdj4init.h"
 #include "bdj4intl.h"
@@ -25,6 +26,7 @@
 #include "dirlist.h"
 #include "dirop.h"
 #include "fileop.h"
+#include "ilist.h"
 #include "instutil.h"
 #include "istring.h"
 #include "lock.h"
@@ -466,8 +468,10 @@ starterInitDataCallback (void *udata, programstate_t programState)
 {
   startui_t   *starter = udata;
   char        tbuff [MAXPATHLEN];
-  const char  *srvuri;
-  bool        enabled;
+  asconf_t    *asconf;
+  ilistidx_t  iteridx;
+  ilistidx_t  key;
+  bool        enabled = false;
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       NEWINSTALL_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
@@ -481,13 +485,14 @@ starterInitDataCallback (void *udata, programstate_t programState)
     fileopDelete (tbuff);
   }
 
-  srvuri = bdjoptGetStr (OPT_P_BDJ4_SERVER);
-  enabled =
-      bdjoptGetNum (OPT_G_BDJ4_SERVER_DISP) &&
-      (srvuri == NULL || *srvuri == '\0') &&
-      bdjoptGetStr (OPT_P_BDJ4_SERVER_USER) != NULL &&
-      bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS) != NULL &&
-      bdjoptGetNum (OPT_P_BDJ4_SERVER_PORT) >= 8000;
+  asconf = asconfAlloc ();
+  asconfStartIterator (asconf, &iteridx);
+  while ((key = asconfIterate (asconf, &iteridx)) >= 0) {
+    if (asconfGetNum (asconf, key, ASCONF_MODE) == ASCONF_MODE_SERVER) {
+      enabled = true;
+    }
+  }
+
   if (enabled) {
     const char  *targv [5];
     int         targc = 0;
@@ -496,6 +501,9 @@ starterInitDataCallback (void *udata, programstate_t programState)
     starter->processes [ROUTE_SERVER] = procutilStartProcess (
         ROUTE_SERVER, "bdj4server", PROCUTIL_DETACH, targv);
   }
+
+  asconfFree (asconf);
+
 
   return STATE_FINISHED;
 }

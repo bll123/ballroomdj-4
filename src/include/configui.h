@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "asconf.h"
 #include "callback.h"
 #include "dispsel.h"
 #include "ilist.h"
@@ -55,22 +56,23 @@ enum {
   CONFUI_DD_ORGPATH,
   CONFUI_DD_MAX,
   CONFUI_ENTRY_BEGIN,
+  CONFUI_ENTRY_ACRCLOUD_API_HOST,
+  CONFUI_ENTRY_ACRCLOUD_API_KEY,
+  CONFUI_ENTRY_ACRCLOUD_API_SECRET,
+  CONFUI_ENTRY_AUDIOSRC_NAME,
+  CONFUI_ENTRY_AUDIOSRC_PASS,
+  CONFUI_ENTRY_AUDIOSRC_URI,
+  CONFUI_ENTRY_AUDIOSRC_USER,
   CONFUI_ENTRY_COMPLETE_MSG,
-  CONFUI_ENTRY_DANCE_TAGS,
   CONFUI_ENTRY_DANCE_DANCE,
-  CONFUI_ENTRY_MOBMQ_TITLE,
-  CONFUI_ENTRY_MOBMQ_TAG,
+  CONFUI_ENTRY_DANCE_TAGS,
   CONFUI_ENTRY_MOBMQ_KEY,
+  CONFUI_ENTRY_MOBMQ_TAG,
+  CONFUI_ENTRY_MOBMQ_TITLE,
   CONFUI_ENTRY_PROFILE_NAME,
   CONFUI_ENTRY_QUEUE_NM,
   CONFUI_ENTRY_RC_PASS,
   CONFUI_ENTRY_RC_USER_ID,
-  CONFUI_ENTRY_ACRCLOUD_API_KEY,
-  CONFUI_ENTRY_ACRCLOUD_API_SECRET,
-  CONFUI_ENTRY_ACRCLOUD_API_HOST,
-  CONFUI_ENTRY_BDJ4_SERVER,
-  CONFUI_ENTRY_BDJ4_SERVER_PASS,
-  CONFUI_ENTRY_BDJ4_SERVER_USER,
   CONFUI_ENTRY_MAX,
   CONFUI_ENTRY_CHOOSE_BEGIN,
   CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT,
@@ -82,6 +84,8 @@ enum {
   CONFUI_ENTRY_CHOOSE_MAX,
   CONFUI_SPINBOX_BEGIN,
   CONFUI_SPINBOX_AUDIO_OUTPUT,
+  CONFUI_SPINBOX_AUDIOSRC_MODE,
+  CONFUI_SPINBOX_AUDIOSRC_TYPE,
   CONFUI_SPINBOX_BPM,
   CONFUI_SPINBOX_CONTROLLER,
   CONFUI_SPINBOX_DANCE_SPEED,
@@ -116,7 +120,6 @@ enum {
   CONFUI_SPINBOX_MAX,
   CONFUI_WIDGET_BEGIN,
   CONFUI_SWITCH_AUTO_ORGANIZE,
-  CONFUI_SWITCH_BDJ4_SERVER_DISP,
   CONFUI_SWITCH_DB_LOAD_FROM_GENRE,
   CONFUI_SWITCH_ENABLE_ITUNES,
   CONFUI_SWITCH_MOBILE_MQ,
@@ -220,7 +223,7 @@ enum {
   CONFUI_WIDGET_ITUNES_FIELD_32,
   CONFUI_WIDGET_ITUNES_FIELD_33,
   CONFUI_WIDGET_ITUNES_FIELD_34,
-  CONFUI_WIDGET_BDJ4_SERVER_PORT,
+  CONFUI_WIDGET_AUDIOSRC_PORT,
   CONFUI_WIDGET_MOBMQ_PORT,
   CONFUI_WIDGET_MOBMQ_QR_CODE,
   CONFUI_WIDGET_MQ_BG_COLOR,
@@ -273,6 +276,7 @@ typedef struct {
   nlist_t           *sbkeylist;     // indexed by spinbox index
                                     //    value: key
   int               danceitemidx;   // for dance edit
+  int               audiosrcitemidx;   // for audio src edit
   int               entrysz;
   int               entrymaxsz;
   uiwcont_t         *uilabelp;
@@ -384,6 +388,12 @@ enum {
 };
 
 enum {
+  CONFUI_AUDIOSRC_COL_NAME,
+  CONFUI_AUDIOSRC_COL_KEY,
+  CONFUI_AUDIOSRC_COL_MAX,
+};
+
+enum {
   CONFUI_RATING_COL_RATING,
   CONFUI_RATING_COL_WEIGHT,
   CONFUI_RATING_COL_MAX,
@@ -431,9 +441,10 @@ typedef struct conforg conforg_t;
 typedef struct confitunes confitunes_t;
 
 typedef struct confuigui {
+  asconf_t          *asconf;
   confuiitem_t      uiitem [CONFUI_ITEM_MAX];
   char              *localip;
-  bool              inbuild : 1;
+  bool              inbuild;
   /* main window */
   uiwcont_t         *window;
   callback_t        *closecb;
@@ -466,7 +477,9 @@ typedef struct confuigui {
   confitunes_t      *itunes;
   /* dances */
   int32_t           dancedkey;      // for dance edit
-  bool              inchange : 1;
+  bool              inchange;
+  /* audio-src */
+  int32_t           asconfkey;      // for audio src
 } confuigui_t;
 
 /* confcommon.c */
@@ -484,7 +497,10 @@ void confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces, int optidx, int
 
 /* confas.c */
 void confuiInitAudioSource (confuigui_t *gui);
+void confuiCleanAudioSource (confuigui_t *gui);
 void confuiBuildUIAudioSource (confuigui_t *gui);
+void confuiAudioSrcSelectLoadValues (confuigui_t *gui, ilistidx_t askey);
+void confuiAudioSrcSearchSelect (confuigui_t *gui, ilistidx_t askey);
 
 /* confdance.c */
 void confuiInitEditDances (confuigui_t *gui);
