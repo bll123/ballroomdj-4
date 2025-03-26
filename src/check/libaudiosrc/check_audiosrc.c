@@ -256,7 +256,7 @@ START_TEST(audiosrc_iterate)
   bdjoptSetStr (OPT_M_DIR_MUSIC, datatop);
   audiosrcPostInit ();
 
-  asiter = audiosrcStartIterator (AUDIOSRC_TYPE_FILE, AS_ITER_DIR, "tmp/abc");
+  asiter = audiosrcStartIterator (AUDIOSRC_TYPE_FILE, AS_ITER_DIR, "tmp/abc", -1);
   c = audiosrcIterCount (asiter);
   ck_assert_int_eq (c, fcount);
 
@@ -334,7 +334,7 @@ START_TEST(audiosrc_iterate_src)
   c = audiosrcGetActiveCount ();
   ck_assert_int_eq (c, 2);
 
-  asiter = audiosrcStartIterator (AUDIOSRC_TYPE_NONE, AS_ITER_AUDIO_SRC, NULL);
+  asiter = audiosrcStartIterator (AUDIOSRC_TYPE_NONE, AS_ITER_AUDIO_SRC, NULL, -1);
   c = audiosrcIterCount (asiter);
   ck_assert_int_eq (c, 2);
 

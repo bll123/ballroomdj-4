@@ -21,6 +21,7 @@
 #include "fileop.h"
 #include "filemanip.h"
 #include "log.h"
+#include "ilist.h"
 #include "mdebug.h"
 #include "pathinfo.h"
 #include "playlist.h"
@@ -63,14 +64,18 @@ typedef struct asiterdata {
 
 typedef struct asdata {
   asconf_t      *asconf;
-  webclient_t   *webclient;
-  char          bdj4uri [MAXPATHLEN];
+  webclient_t   **webclient;
+  char          **bdj4uri;
+  char          **clienturi;
+  int           *clienturilen;
+  int           *clientaskey;
   const char    *musicdir;
   const char    *delpfx;
   const char    *origext;
   const char    *webresponse;
   size_t        musicdirlen;
   size_t        webresplen;
+  int           clientcount;
   int           action;
   int           state;
 } asdata_t;
@@ -78,8 +83,9 @@ typedef struct asdata {
 static void asbdj4WebResponseCallback (void *userdata, const char *respstr, size_t len);
 static bool asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm);
 static bool asbdj4SongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri);
-static bool asbdj4GetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata);
+static bool asbdj4GetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata, int askey);
 static bool asbdj4GetAudioFile (asdata_t *asdata, const char *nm, const char *tempnm);
+static int asbdj4GetClientKey (asdata_t *asdata, const char *nm);
 
 void
 asiDesc (const char **ret, int max)
@@ -105,7 +111,13 @@ asiInit (const char *delpfx, const char *origext)
   asdata->delpfx = delpfx;
   asdata->origext = origext;
 
+  asdata->asconf = asconfAlloc ();
   asdata->webclient = NULL;
+  asdata->clientcount = 0;
+  asdata->clienturi = NULL;
+  asdata->clienturilen = NULL;
+  asdata->clientaskey = NULL;
+  asdata->bdj4uri = NULL;
   asdata->action = ASBDJ4_ACT_NONE;
   asdata->state = BDJ4_STATE_OFF;
   return asdata;
@@ -114,15 +126,61 @@ asiInit (const char *delpfx, const char *origext)
 void
 asiPostInit (asdata_t *asdata, const char *uri)
 {
-  return;
+  ilistidx_t    iteridx;
+  ilistidx_t    askey;
+  int           count = 0;
+  char          temp [MAXPATHLEN];
 
-#if 0
-  asdata->webclient = webclientAlloc (asdata, asbdj4WebResponseCallback);
-  webclientSetTimeout (asdata->webclient, 1);
-  snprintf (asdata->bdj4uri, sizeof (asdata->bdj4uri),
-      "http://%s:%" PRIu16, uri, port);
-  webclientSetUserPass (asdata->webclient, user, pass);
-#endif
+  asconfStartIterator (asdata->asconf, &iteridx);
+  while ((askey = asconfIterate (asdata->asconf, &iteridx)) >= 0) {
+    if (asconfGetNum (asdata->asconf, askey, ASCONF_MODE) == ASCONF_MODE_CLIENT) {
+      int   type;
+
+      type = asconfGetNum (asdata->asconf, askey, ASCONF_TYPE);
+      if (type == AUDIOSRC_TYPE_BDJ4) {
+        ++count;
+      }
+    }
+  }
+
+  asdata->clientcount = count;
+  asdata->webclient = mdmalloc (sizeof (webclient_t *) * count);
+  asdata->bdj4uri = mdmalloc (sizeof (char *) * count);
+  asdata->clienturi = mdmalloc (sizeof (char *) * count);
+  asdata->clienturilen = mdmalloc (sizeof (int) * count);
+  asdata->clientaskey = mdmalloc (sizeof (int) * count);
+
+  count = 0;
+  asconfStartIterator (asdata->asconf, &iteridx);
+  while ((askey = asconfIterate (asdata->asconf, &iteridx)) >= 0) {
+    if (asconfGetNum (asdata->asconf, askey, ASCONF_MODE) == ASCONF_MODE_CLIENT) {
+      int   type;
+
+      type = asconfGetNum (asdata->asconf, askey, ASCONF_TYPE);
+      if (type == AUDIOSRC_TYPE_BDJ4) {
+        asdata->webclient [count] = webclientAlloc (asdata, asbdj4WebResponseCallback);
+        webclientSetTimeout (asdata->webclient [count], 1);
+        snprintf (temp, sizeof (temp),
+            "http://%s:%" PRIu16,
+            asconfGetStr (asdata->asconf, askey, ASCONF_URI),
+            (uint16_t) asconfGetNum (asdata->asconf, askey, ASCONF_PORT));
+        asdata->bdj4uri [count] = mdstrdup (temp);
+        snprintf (temp, sizeof (temp),
+            "%s%s:%" PRIu16, AS_BDJ4_PFX,
+            asconfGetStr (asdata->asconf, askey, ASCONF_URI),
+            (uint16_t) asconfGetNum (asdata->asconf, askey, ASCONF_PORT));
+        asdata->clienturi [count] = mdstrdup (temp);
+        asdata->clienturilen [count] = strlen (temp);
+        asdata->clientaskey [count] = askey;
+        webclientSetUserPass (asdata->webclient [count],
+            asconfGetStr (asdata->asconf, askey, ASCONF_USER),
+            asconfGetStr (asdata->asconf, askey, ASCONF_PASS));
+        ++count;
+      }
+    }
+  }
+
+  return;
 }
 
 void
@@ -132,7 +190,16 @@ asiFree (asdata_t *asdata)
     return;
   }
 
-  webclientClose (asdata->webclient);
+  for (int i = 0; i < asdata->clientcount; ++i) {
+    webclientClose (asdata->webclient [i]);
+    mdfree (asdata->bdj4uri [i]);
+    mdfree (asdata->clienturi [i]);
+  }
+  mdfree (asdata->webclient);
+  mdfree (asdata->bdj4uri);
+  mdfree (asdata->clienturi);
+  mdfree (asdata->clienturilen);
+  mdfree (asdata->clientaskey);
   mdfree (asdata);
 }
 
@@ -160,15 +227,21 @@ asiExists (asdata_t *asdata, const char *nm)
   bool    exists = false;
   int     webrc;
   char    query [1024];
+  int     clientkey;
 
   asdata->action = ASBDJ4_ACT_SONG_EXISTS;
   asdata->state = BDJ4_STATE_WAIT;
+  clientkey = asbdj4GetClientKey (asdata, nm);
+  if (clientkey < 0) {
+    return false;
+  }
+
   snprintf (query, sizeof (query),
       "%s/%s"
       "?uri=%s",
-      asdata->bdj4uri, action_str [asdata->action], nm);
+      asdata->bdj4uri [clientkey], action_str [asdata->action], nm);
 
-  webrc = webclientGet (asdata->webclient, query);
+  webrc = webclientGet (asdata->webclient [clientkey], query);
   if (webrc != WEB_OK) {
     return exists;
   }
@@ -260,7 +333,7 @@ asiRelativePath (asdata_t *asdata, const char *sfname, int pfxlen)
 }
 
 asiterdata_t *
-asiStartIterator (asdata_t *asdata, asitertype_t asitertype, const char *nm)
+asiStartIterator (asdata_t *asdata, asitertype_t asitertype, const char *nm, int askey)
 {
   asiterdata_t  *asidata;
 
@@ -270,7 +343,7 @@ asiStartIterator (asdata_t *asdata, asitertype_t asitertype, const char *nm)
   asidata->iterlist = NULL;
 
   if (asitertype == AS_ITER_PL_NAMES) {
-    asbdj4GetPlaylistNames (asdata, asidata);
+    asbdj4GetPlaylistNames (asdata, asidata, askey);
     asidata->iterlist = asidata->plNames;
     slistStartIterator (asidata->iterlist, &asidata->iteridx);
   } else if (asitertype == AS_ITER_PL) {
@@ -370,16 +443,22 @@ asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm)
   bool    rc = false;
   int     webrc;
   char    query [1024];
+  int     clientkey;
 
   asdata->action = ASBDJ4_ACT_GET_PLAYLIST;
   asdata->state = BDJ4_STATE_WAIT;
+  clientkey = asbdj4GetClientKey (asdata, nm);
+  if (clientkey < 0) {
+    return false;
+  }
+
   snprintf (query, sizeof (query),
       "%s/%s"
       "?uri=%s",
-      asdata->bdj4uri, action_str [asdata->action],
+      asdata->bdj4uri [clientkey], action_str [asdata->action],
       nm);
 
-  webrc = webclientGet (asdata->webclient, query);
+  webrc = webclientGet (asdata->webclient [clientkey], query);
   if (webrc != WEB_OK) {
     return rc;
   }
@@ -416,16 +495,22 @@ asbdj4SongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri)
   bool    rc = false;
   int     webrc;
   char    query [1024];
+  int     clientkey;
 
   asdata->action = ASBDJ4_ACT_SONG_TAGS;
   asdata->state = BDJ4_STATE_WAIT;
+  clientkey = asbdj4GetClientKey (asdata, songuri);
+  if (clientkey < 0) {
+    return false;
+  }
+
   snprintf (query, sizeof (query),
       "%s/%s"
       "?uri=%s",
-      asdata->bdj4uri, action_str [asdata->action],
+      asdata->bdj4uri [clientkey], action_str [asdata->action],
       songuri);
 
-  webrc = webclientGet (asdata->webclient, query);
+  webrc = webclientGet (asdata->webclient [clientkey], query);
   if (webrc != WEB_OK) {
     return rc;
   }
@@ -465,19 +550,27 @@ asbdj4SongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri)
 }
 
 static bool
-asbdj4GetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata)
+asbdj4GetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata, int askey)
 {
   bool    rc = false;
   int     webrc;
   char    query [1024];
+  int     clientkey;
+
+  for (int i = 0; i < asdata->clientcount; ++i) {
+    if (asdata->clientaskey [i] == askey) {
+      clientkey = i;
+      break;
+    }
+  }
 
   asdata->action = ASBDJ4_ACT_GET_PL_NAMES;
   asdata->state = BDJ4_STATE_WAIT;
   snprintf (query, sizeof (query),
       "%s/%s",
-      asdata->bdj4uri, action_str [asdata->action]);
+      asdata->bdj4uri [clientkey], action_str [asdata->action]);
 
-  webrc = webclientGet (asdata->webclient, query);
+  webrc = webclientGet (asdata->webclient [clientkey], query);
   if (webrc != WEB_OK) {
     return rc;
   }
@@ -520,16 +613,22 @@ asbdj4GetAudioFile (asdata_t *asdata, const char *nm, const char *tempnm)
   bool    rc = false;
   int     webrc;
   char    query [1024];
+  int     clientkey;
 
   asdata->action = ASBDJ4_ACT_GET_SONG;
   asdata->state = BDJ4_STATE_WAIT;
+  clientkey = asbdj4GetClientKey (asdata, nm);
+  if (clientkey < 0) {
+    return false;
+  }
+
   snprintf (query, sizeof (query),
       "%s/%s"
       "?uri=%s",
-      asdata->bdj4uri, action_str [asdata->action],
+      asdata->bdj4uri [clientkey], action_str [asdata->action],
       nm);
 
-  webrc = webclientGet (asdata->webclient, query);
+  webrc = webclientGet (asdata->webclient [clientkey], query);
   if (webrc != WEB_OK) {
     return rc;
   }
@@ -551,3 +650,17 @@ asbdj4GetAudioFile (asdata_t *asdata, const char *nm, const char *tempnm)
   return rc;
 }
 
+static int
+asbdj4GetClientKey (asdata_t *asdata, const char *nm)
+{
+  int     clientkey = -1;
+
+  for (int i = 0; i < asdata->clientcount; ++i) {
+    if (strncmp (nm, asdata->clienturi [i], asdata->clienturilen [i]) == 0) {
+      clientkey = i;
+      break;
+    }
+  }
+
+  return clientkey;
+}

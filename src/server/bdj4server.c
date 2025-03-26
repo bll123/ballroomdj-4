@@ -7,10 +7,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <inttypes.h>
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
 
+#include "asconf.h"
 #include "audiosrc.h"
 #include "bdj4.h"
 #include "bdj4init.h"
@@ -48,13 +50,16 @@ typedef struct {
   conn_t          *conn;
   progstate_t     *progstate;
   char            *locknm;
+  const char      *srvuri;
+  asconf_t        *asconf;
   const char      *user;
   const char      *pass;
   websrv_t        *websrv;
   slist_t         *plNames;
   uint16_t        port;
   int             stopwaitcount;
-  bool            enabled;
+  bool            bdj4enabled;
+  bool            rtspenabled;
 } bdjsrv_t;
 
 static bool bdjsrvHandshakeCallback (void *udata, programstate_t programState);
@@ -75,7 +80,8 @@ main (int argc, char *argv[])
   bdjsrv_t        bdjsrv;
   uint16_t        listenPort;
   uint32_t        flags;
-  const char      *srvuri;
+  ilistidx_t      iteridx;
+  ilistidx_t      askey;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("bdjsrv");
@@ -86,21 +92,29 @@ main (int argc, char *argv[])
   flags = BDJ4_INIT_ALL;
   bdj4startup (argc, argv, &bdjsrv.musicdb, "srv", ROUTE_SERVER, &flags);
 
-//  srvuri = bdjoptGetStr (OPT_P_BDJ4_SERVER);
-//  bdjsrv.enabled =
-//      bdjoptGetNum (OPT_G_BDJ4_SERVER_DISP) &&
-//      (srvuri == NULL || *srvuri == '\0') &&
-//      bdjoptGetStr (OPT_P_BDJ4_SERVER_USER) != NULL &&
-//      bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS) != NULL &&
-//      bdjoptGetNum (OPT_P_BDJ4_SERVER_PORT) >= 8000;
-  if (! bdjsrv.enabled) {
-    bdj4shutdown (ROUTE_SERVER, bdjsrv.musicdb);
-    exit (0);
+  bdjsrv.asconf = asconfAlloc ();
+
+  asconfStartIterator (bdjsrv.asconf, &iteridx);
+  while ((askey = asconfIterate (bdjsrv.asconf, &iteridx)) >= 0) {
+    if (asconfGetNum (bdjsrv.asconf, askey, ASCONF_MODE) == ASCONF_MODE_SERVER) {
+      int   type;
+
+      type = asconfGetNum (bdjsrv.asconf, askey, ASCONF_TYPE);
+      if (type == AUDIOSRC_TYPE_BDJ4) {
+        bdjsrv.bdj4enabled = true;
+      }
+      if (type == AUDIOSRC_TYPE_RTSP) {
+        bdjsrv.rtspenabled = true;
+      }
+      break;
+    }
   }
 
-//  bdjsrv.user = bdjoptGetStr (OPT_P_BDJ4_SERVER_USER);
-//  bdjsrv.pass = bdjoptGetStr (OPT_P_BDJ4_SERVER_PASS);
-//  bdjsrv.port = bdjoptGetNum (OPT_P_BDJ4_SERVER_PORT);
+  bdjsrv.srvuri = asconfGetStr (bdjsrv.asconf, askey, ASCONF_URI);
+  bdjsrv.port = asconfGetNum (bdjsrv.asconf, askey, ASCONF_PORT);
+  bdjsrv.user = asconfGetStr (bdjsrv.asconf, askey, ASCONF_USER);
+  bdjsrv.pass = asconfGetStr (bdjsrv.asconf, askey, ASCONF_PASS);
+
   bdjsrv.progstate = progstateInit ("bdjsrv");
   bdjsrv.plNames = NULL;
   bdjsrv.websrv = NULL;
@@ -116,13 +130,13 @@ main (int argc, char *argv[])
       bdjsrvClosingCallback, &bdjsrv);
 
   bdjsrv.conn = connInit (ROUTE_SERVER);
-
   bdjsrv.websrv = websrvInit (bdjsrv.port, bdjsrvEventHandler, &bdjsrv);
 
   listenPort = bdjvarsGetNum (BDJVL_PORT_SERVER);
   sockhMainLoop (listenPort, bdjsrvProcessMsg, bdjsrvProcessing, &bdjsrv);
   connFree (bdjsrv.conn);
   progstateFree (bdjsrv.progstate);
+  asconfFree (bdjsrv.asconf);
   logEnd ();
 
 #if BDJ4_MEM_DEBUG
@@ -175,8 +189,8 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
   websrvGetUserPass (bdjsrv->websrv, user, sizeof (user), pass, sizeof (pass));
 
 if (*uri) {
-  fprintf (stderr, "srv: uri: %s\n", uri);
-  fprintf (stderr, "srv: query: %s\n", query);
+fprintf (stderr, "srv: uri: %s\n", uri);
+fprintf (stderr, "srv: query: %s\n", query);
 }
 
   if (user [0] == '\0' || pass [0] == '\0') {
@@ -251,8 +265,8 @@ if (*uri) {
       const char    *songuri;
 
       songuri = songlistGetStr (sl, idx, SONGLIST_URI);
-      snprintf (tbuff, sizeof (tbuff), "%s%s%c",
-          AS_BDJ4_PFX, songuri, MSG_ARGS_RS);
+      snprintf (tbuff, sizeof (tbuff), "%s%s:%" PRIu16 "/%s%c",
+          AS_BDJ4_PFX, bdjsrv->srvuri, bdjsrv->port, songuri, MSG_ARGS_RS);
       rp = stpecpy (rp, rend, tbuff);
     }
 

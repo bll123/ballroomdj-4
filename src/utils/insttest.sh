@@ -930,9 +930,16 @@ function checkInstallation {
       echo "  no bin directory"
     fi
 
+    res=$(($res+1))  # bdj4server
+    if [[ $fin == T && -f "${target}/bin/bdj4server${sfx}" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no bdj4server"
+    fi
+
     # make sure acrcloud gets installed
     res=$(($res+1))
-    if [[ $fin == T && -f "${target}/plocal/bin/acrcloud" ]]; then
+    if [[ $fin == T && -f "${target}/plocal/bin/acrcloud${sfx}" ]]; then
       chk=$(($chk+1))
     else
       echo "  no plocal/bin/acrcloud file"
@@ -1163,12 +1170,12 @@ if [[ $readonly == F && $crc -eq 0 ]]; then
   rc=$?
   checkInstallation $section $tname "$out" $rc u y
   waitForInstallDirRemoval
+
   # make sure acrcloud gets installed on update
   rm -f $TARGETTOPDIR/plocal/bin/acrcloud
 
   # update w/various update tasks
   # this should get installed as of version 4.1.0
-  waitForInstallDirRemoval
   resetInstallDir
   tname=update-chk-updater
   echo "== $section $tname"

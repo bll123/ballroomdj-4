@@ -182,14 +182,12 @@ if [[ $DEVELOPMENT != dev ]]; then
     grc=1
   fi
 
-set -x
   grep '^# define STPECPY_DEBUG 0' src/libcommon/stpecpy.c > /dev/null 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then
     echo "stpecpy.c: stpecpy debugging is on"
     grc=1
   fi
-set +x
 
   #grep '^#define MACOS_UI_DEBUG 0' src/include/uigeneral.h > /dev/null 2>&1
   #rc=$?

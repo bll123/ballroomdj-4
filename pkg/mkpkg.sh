@@ -125,7 +125,8 @@ function copyreleasefiles {
   # 2024-8-23 for a long time, do not ship libuimacos
   rm -f \
       ${stage}/bin/aesed* \
-      ${stage}/bin/bdj4se* \
+      ${stage}/bin/bdj4se \
+      ${stage}/bin/bdj4se.exe \
       ${stage}/bin/check_all* \
       ${stage}/bin/chkfileshared* \
       ${stage}/bin/chkprocess* \

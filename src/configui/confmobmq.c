@@ -60,8 +60,8 @@ confuiBuildUIMobileMarquee (confuigui_t *gui)
       /* CONTEXT: configuration: options associated with the mobile marquee */
       _("Mobile Marquee"), CONFUI_ID_MOBILE_MQ);
 
-  /* CONTEXT: configuration: which audio tags will be written to the audio file */
-  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Type"),
+  /* CONTEXT: configuration: mobile marquee: mode: (off/local/internet)*/
+  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Mode"),
       CONFUI_SPINBOX_MOBMQ_TYPE, OPT_P_MOBMQ_TYPE,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_P_MOBMQ_TYPE),
       confuiMobmqTypeChg);

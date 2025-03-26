@@ -4044,7 +4044,7 @@ manageImportPlaylist (void *udata)
 //    which audio source to use... (bdj4, rtsp, etc.)
 //    which playlist to import..
 // ### the code below will move to the dialog response handler...
-//  asiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_PL_NAMES, NULL);
+//  asiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_PL_NAMES, NULL, -1);
 //  while ((plnm = audiosrcIterate (asiter)) != NULL) {
 //  }
 //  audiosrcCleanIterator (asiter);
@@ -4058,7 +4058,7 @@ manageImportPlaylist (void *udata)
 nplname = "bdj4-sl-a";
   uimusicqTruncateQueueCallback (manage->currmusicq);
 
-  asiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_PL, "test-sl-a");
+  asiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_PL, "test-sl-a", 0);
   while ((songnm = audiosrcIterate (asiter)) != NULL) {
     asiter_t    *tagiter;
     const char  *tag = NULL;
@@ -4070,7 +4070,7 @@ nplname = "bdj4-sl-a";
     if (song == NULL) {
       tagdata = slistAlloc ("asimppl", LIST_UNORDERED, NULL);
 
-      tagiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_TAGS, songnm);
+      tagiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_TAGS, songnm, 0);
       while ((tag = audiosrcIterate (tagiter)) != NULL) {
         const char  *tval;
 

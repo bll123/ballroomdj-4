@@ -570,6 +570,11 @@ main (int argc, char *argv [])
     updaterCopyVersionCheck (BDJ_URIFN, BDJ4_CONFIG_EXT, 2);
   }
 
+  {
+    /* 4.14.0 2025-3-26 new file audiosrc.txt */
+    updaterCopyIfNotPresent (ASCONF_FN, BDJ4_CONFIG_EXT, NULL);
+  }
+
   /* The datafiles must be loaded for the MPM update process */
 
   if (bdjvarsdfloadInit () < 0) {

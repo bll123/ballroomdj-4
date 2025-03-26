@@ -486,7 +486,7 @@ dbupdateProcessing (void *udata)
       logMsg (LOG_DBG, LOG_BASIC, "processmusicdir %s", dbupdate->processmusicdir);
 
       dbupdate->asiter = audiosrcStartIterator (AUDIOSRC_TYPE_FILE,
-          AS_ITER_DIR, dbupdate->processmusicdir);
+          AS_ITER_DIR, dbupdate->processmusicdir, -1);
 
       if (dbupdate->asiter != NULL) {
         dbupdate->counts [C_FILE_COUNT] = audiosrcIterCount (dbupdate->asiter);

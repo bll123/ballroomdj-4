@@ -48,7 +48,7 @@ typedef struct {
   void              (*asiFullPath) (asdata_t *, const char *sfname, char *fullpath, size_t sz, const char *prefix, int pfxlen);
   const char        *(*asiRelativePath) (asdata_t *, const char *nm, int pfxlen);
   size_t            (*asiDir) (asdata_t *, const char *sfname, char *dir, size_t sz, int pfxlen);
-  asiterdata_t      *(*asiStartIterator) (asdata_t *, asitertype_t asitertype, const char *dir);
+  asiterdata_t      *(*asiStartIterator) (asdata_t *, asitertype_t asitertype, const char *dir, int askey);
   void              (*asiCleanIterator) (asdata_t *, asiterdata_t *asiterdata);
   int32_t           (*asiIterCount) (asdata_t *, asiterdata_t *asiterdata);
   const char        *(*asiIterate) (asdata_t *, asiterdata_t *asiterdata);
@@ -90,6 +90,9 @@ static audiosrc_t *audiosrc = NULL;
 void
 audiosrcInit (void)
 {
+  ilistidx_t      askey;
+  ilistidx_t      iteridx;
+
   if (audiosrc != NULL) {
     return;
   }
@@ -115,9 +118,18 @@ audiosrcInit (void)
     audiosrc->enabled [i] = false;
     audiosrc->typeidx [i] = AS_DYLIB_UNDEF;
   }
+  /* 'file' audio source is always enabled */
+  audiosrc->enabled [AUDIOSRC_TYPE_FILE] = true;
 
-//  asconfStartIterator (audiosrc->asconf, &iteridx);
-//  asconfIterate (audiosrc->asconf, &iteridx);
+  asconfStartIterator (audiosrc->asconf, &iteridx);
+  while ((askey = asconfIterate (audiosrc->asconf, &iteridx)) >= 0) {
+    if (asconfGetNum (audiosrc->asconf, askey, ASCONF_MODE) == ASCONF_MODE_CLIENT) {
+      int   type;
+
+      type = asconfGetNum (audiosrc->asconf, askey, ASCONF_TYPE);
+      audiosrc->enabled [type] = true;
+    }
+  }
 
   audiosrc->asdylib = mdmalloc (sizeof (asdylib_t) * audiosrc->ascount);
 
@@ -200,6 +212,8 @@ audiosrcInit (void)
       continue;
     }
 
+    asdylib->enabled = true;
+
     if (asdylib->asiInit != NULL) {
       asdylib->asdata = asdylib->asiInit (bdjvarsGetStr (BDJV_DELETE_PFX),
           bdjvarsGetStr (BDJV_ORIGINAL_EXT));
@@ -259,9 +273,9 @@ audiosrcPostInit (void)
     asdylib_t   *asdylib;
 
     asdylib = &audiosrc->asdylib [i];
-//    if (! asdylib->enabled) {
-//      continue;
-//    }
+    if (! asdylib->enabled) {
+      continue;
+    }
 
     if (asdylib->asiPostInit != NULL) {
       asdylib->asiPostInit (asdylib->asdata, bdjoptGetStr (OPT_M_DIR_MUSIC));
@@ -299,9 +313,9 @@ audiosrcGetType (const char *nm)
     asdylib_t   *asdylib;
 
     asdylib = &audiosrc->asdylib [i];
-//    if (! asdylib->enabled) {
-//      continue;
-//    }
+    if (! asdylib->enabled) {
+      continue;
+    }
 
     if (asdylib->type != AUDIOSRC_TYPE_NONE && asdylib->asiIsTypeMatch != NULL) {
       if (asdylib->asiIsTypeMatch (asdylib->asdata, nm)) {
@@ -564,7 +578,8 @@ audiosrcDir (const char *sfname, char *dir, size_t sz, int pfxlen)
 /* other audio sources have playlist-names (used for import-playlist), */
 /* songs in a playlist, and song-tags */
 asiter_t *
-audiosrcStartIterator (int type, asitertype_t asitertype, const char *uri)
+audiosrcStartIterator (int type, asitertype_t asitertype,
+    const char *uri, int askey)
 {
   asiter_t  *asiter = NULL;
   asdylib_t *asdylib;
@@ -600,7 +615,7 @@ audiosrcStartIterator (int type, asitertype_t asitertype, const char *uri)
 
   if (asdylib != NULL && asdylib->asiStartIterator != NULL) {
     asiter->asiterdata = asdylib->asiStartIterator (
-        asdylib->asdata, asitertype, uri);
+        asdylib->asdata, asitertype, uri, askey);
   }
   if (asiter->asiterdata == NULL) {
     mdfree (asiter);
@@ -664,9 +679,9 @@ audiosrcIterate (asiter_t *asiter)
   if (asiter->itertype == AS_ITER_AUDIO_SRC) {
     while (asiter->iteridx < audiosrc->ascount) {
       asdylib = &audiosrc->asdylib [asiter->iteridx];
-//      if (asdylib != NULL && asdylib->enabled) {
-//        break;
-//      }
+      if (asdylib != NULL && asdylib->enabled) {
+        break;
+      }
       ++asiter->iteridx;
     }
     rval = ilistGetStr (audiosrc->asdylist, asiter->iteridx, DYI_DESC);
@@ -700,27 +715,6 @@ audiosrcIterateValue (asiter_t *asiter, const char *key)
   }
 
   return rval;
-}
-
-/* internal routines */
-
-static asdylib_t *
-audiosrcGetDylibByType (int type)
-{
-  int       idx;
-  asdylib_t *asdylib;
-
-  if (type == AUDIOSRC_TYPE_NONE) {
-    return NULL;
-  }
-
-  idx = audiosrc->typeidx [type];
-  if (idx == AS_DYLIB_UNDEF) {
-    return NULL;
-  }
-
-  asdylib = &audiosrc->asdylib [idx];
-  return asdylib;
 }
 
 void
@@ -777,3 +771,25 @@ audiosrcPreCacheFile (const char *fn)
   }
   return true;
 }
+
+/* internal routines */
+
+static asdylib_t *
+audiosrcGetDylibByType (int type)
+{
+  int       idx;
+  asdylib_t *asdylib;
+
+  if (type == AUDIOSRC_TYPE_NONE) {
+    return NULL;
+  }
+
+  idx = audiosrc->typeidx [type];
+  if (idx == AS_DYLIB_UNDEF) {
+    return NULL;
+  }
+
+  asdylib = &audiosrc->asdylib [idx];
+  return asdylib;
+}
+
