@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-26 07:02-0700\n"
+"POT-Creation-Date: 2025-03-26 08:39-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -454,6 +454,10 @@ msgstr ""
 
 #. CONTEXT: bpm counter: instructions, line 1
 msgid "Click the mouse in the blue box in time with the beat."
+msgstr ""
+
+#. CONTEXT: configuration: audio source mode
+msgid "Client"
 msgstr ""
 
 #. CONTEXT: configuration: the clock format
@@ -1192,7 +1196,7 @@ msgstr ""
 msgid "Mobile Remote Control"
 msgstr ""
 
-#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+#. CONTEXT: configuration: audio source: mode (off/client/server)
 msgid "Mode"
 msgstr ""
 
@@ -1262,6 +1266,10 @@ msgstr ""
 #. CONTEXT: installer: message indicating the action that will be taken
 #, c-format
 msgid "New %s installation."
+msgstr ""
+
+#. CONTEXT: configuration: name that is set when adding a new audio source
+msgid "New Audio Source"
 msgstr ""
 
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist
@@ -1356,6 +1364,7 @@ msgstr ""
 msgid "Notes"
 msgstr ""
 
+#. CONTEXT: configuration: audio source mode
 #. CONTEXT: configuration: show-marquee: off
 #. CONTEXT: configuration: mobile marquee type: off
 #. CONTEXT: configuration: player: clock: off
@@ -1833,6 +1842,10 @@ msgstr ""
 msgid "Sequence"
 msgstr ""
 
+#. CONTEXT: configuration: audio source mode
+msgid "Server"
+msgstr ""
+
 #. CONTEXT: playerui: select the current queue for playback
 msgid "Set Queue for Playback"
 msgstr ""
@@ -2136,9 +2149,14 @@ msgstr ""
 msgid "Truncate"
 msgstr ""
 
+#. CONTEXT: configuration: audio source: type of source
 #. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
 #. CONTEXT: configuration: which audio tags will be written to the audio file
 msgid "Type"
+msgstr ""
+
+#. CONTEXT: configuration: the remote BDJ4 server name
+msgid "URI"
 msgstr ""
 
 #. CONTEXT: installer: status message
@@ -2301,6 +2319,10 @@ msgstr ""
 msgid "XML Files"
 msgstr ""
 
+#. CONTEXT: configuration: audio source type
+msgid "bdj4"
+msgstr ""
+
 #. CONTEXT: configuration file: dance type
 msgid "club"
 msgstr ""
@@ -2323,6 +2345,10 @@ msgstr ""
 
 #. CONTEXT: The suffix for an original audio file (may be abbreviated)
 msgid "original"
+msgstr ""
+
+#. CONTEXT: configuration: audio source type
+msgid "rtsp"
 msgstr ""
 
 #. CONTEXT: configuration: dance speed

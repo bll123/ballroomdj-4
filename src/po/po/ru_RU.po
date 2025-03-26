@@ -458,6 +458,10 @@ msgstr "Убрать метку Та же песня"
 msgid "Click the mouse in the blue box in time with the beat."
 msgstr "Нажать мышкой в синем поле в такт ритму."
 
+#. CONTEXT: configuration: audio source mode
+msgid "Client"
+msgstr ""
+
 #. CONTEXT: configuration: the clock format
 msgid "Clock"
 msgstr ""
@@ -1196,7 +1200,7 @@ msgstr "Мобильный экран с дисплеем песен"
 msgid "Mobile Remote Control"
 msgstr "Мобильное удаленное управление"
 
-#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+#. CONTEXT: configuration: audio source: mode (off/client/server)
 msgid "Mode"
 msgstr ""
 
@@ -1267,6 +1271,10 @@ msgstr "Новый"
 #, c-format
 msgid "New %s installation."
 msgstr "Установка новой %s."
+
+#. CONTEXT: configuration: name that is set when adding a new audio source
+msgid "New Audio Source"
+msgstr ""
 
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist
 msgid "New Automatic Playlist"
@@ -1360,6 +1368,7 @@ msgstr "Недействительная папка %s."
 msgid "Notes"
 msgstr "Заметки"
 
+#. CONTEXT: configuration: audio source mode
 #. CONTEXT: configuration: show-marquee: off
 #. CONTEXT: configuration: mobile marquee type: off
 #. CONTEXT: configuration: player: clock: off
@@ -1837,6 +1846,10 @@ msgstr "Отправка сообщения поддержке"
 msgid "Sequence"
 msgstr "Последовательность"
 
+#. CONTEXT: configuration: audio source mode
+msgid "Server"
+msgstr ""
+
 #. CONTEXT: playerui: select the current queue for playback
 msgid "Set Queue for Playback"
 msgstr "Установить очередь для воспроизвдеения"
@@ -2140,10 +2153,15 @@ msgstr "Срезать затишье"
 msgid "Truncate"
 msgstr "Усечение"
 
+#. CONTEXT: configuration: audio source: type of source
 #. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
 #. CONTEXT: configuration: which audio tags will be written to the audio file
 msgid "Type"
 msgstr "Тип"
+
+#. CONTEXT: configuration: the remote BDJ4 server name
+msgid "URI"
+msgstr ""
 
 #. CONTEXT: installer: status message
 #, c-format
@@ -2305,6 +2323,10 @@ msgstr "Запись тегов аудио файла, используя инф
 msgid "XML Files"
 msgstr "XML файлы"
 
+#. CONTEXT: configuration: audio source type
+msgid "bdj4"
+msgstr ""
+
 #. CONTEXT: configuration file: dance type
 msgid "club"
 msgstr "клуб"
@@ -2328,6 +2350,10 @@ msgstr "нормальная"
 #. CONTEXT: The suffix for an original audio file (may be abbreviated)
 msgid "original"
 msgstr "оригинал"
+
+#. CONTEXT: configuration: audio source type
+msgid "rtsp"
+msgstr ""
 
 #. CONTEXT: configuration: dance speed
 msgid "slow"

@@ -458,6 +458,10 @@ msgstr "Vymazat značku stejné písně"
 msgid "Click the mouse in the blue box in time with the beat."
 msgstr "Klikněte myší do modrého pole v rytmu rytmu."
 
+#. CONTEXT: configuration: audio source mode
+msgid "Client"
+msgstr ""
+
 #. CONTEXT: configuration: the clock format
 msgid "Clock"
 msgstr ""
@@ -1190,7 +1194,7 @@ msgstr "Mobilní markýza"
 msgid "Mobile Remote Control"
 msgstr "Mobilní dálkové ovládání"
 
-#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+#. CONTEXT: configuration: audio source: mode (off/client/server)
 msgid "Mode"
 msgstr ""
 
@@ -1261,6 +1265,10 @@ msgstr "Nový"
 #, c-format
 msgid "New %s installation."
 msgstr "Instalace nové stránky %s ."
+
+#. CONTEXT: configuration: name that is set when adding a new audio source
+msgid "New Audio Source"
+msgstr ""
 
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist
 msgid "New Automatic Playlist"
@@ -1354,6 +1362,7 @@ msgstr "Není platná složka %s ."
 msgid "Notes"
 msgstr "Poznámky"
 
+#. CONTEXT: configuration: audio source mode
 #. CONTEXT: configuration: show-marquee: off
 #. CONTEXT: configuration: mobile marquee type: off
 #. CONTEXT: configuration: player: clock: off
@@ -1831,6 +1840,10 @@ msgstr "Odeslání zprávy podpory"
 msgid "Sequence"
 msgstr "Sekvence"
 
+#. CONTEXT: configuration: audio source mode
+msgid "Server"
+msgstr ""
+
 #. CONTEXT: playerui: select the current queue for playback
 msgid "Set Queue for Playback"
 msgstr "Nastavení fronty pro přehrávání"
@@ -2134,10 +2147,15 @@ msgstr "Trim Silence"
 msgid "Truncate"
 msgstr "Zkrácení"
 
+#. CONTEXT: configuration: audio source: type of source
 #. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
 #. CONTEXT: configuration: which audio tags will be written to the audio file
 msgid "Type"
 msgstr "Typ"
+
+#. CONTEXT: configuration: the remote BDJ4 server name
+msgid "URI"
+msgstr ""
 
 #. CONTEXT: installer: status message
 #, c-format
@@ -2299,6 +2317,10 @@ msgstr "Zapíše značky zvukových souborů pomocí informací z databáze Ball
 msgid "XML Files"
 msgstr "Soubory XML"
 
+#. CONTEXT: configuration: audio source type
+msgid "bdj4"
+msgstr ""
+
 #. CONTEXT: configuration file: dance type
 msgid "club"
 msgstr "klub"
@@ -2322,6 +2344,10 @@ msgstr "normální"
 #. CONTEXT: The suffix for an original audio file (may be abbreviated)
 msgid "original"
 msgstr "originál"
+
+#. CONTEXT: configuration: audio source type
+msgid "rtsp"
+msgstr ""
 
 #. CONTEXT: configuration: dance speed
 msgid "slow"

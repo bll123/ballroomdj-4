@@ -458,6 +458,10 @@ msgstr "Clear Same Song Mark"
 msgid "Click the mouse in the blue box in time with the beat."
 msgstr "Kattintson az egérrel a kék mezőbe az ütemmel egy időben."
 
+#. CONTEXT: configuration: audio source mode
+msgid "Client"
+msgstr ""
+
 #. CONTEXT: configuration: the clock format
 msgid "Clock"
 msgstr ""
@@ -1195,7 +1199,7 @@ msgstr "Mobil sátor"
 msgid "Mobile Remote Control"
 msgstr "Mobil távirányító"
 
-#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+#. CONTEXT: configuration: audio source: mode (off/client/server)
 msgid "Mode"
 msgstr ""
 
@@ -1266,6 +1270,10 @@ msgstr "Új"
 #, c-format
 msgid "New %s installation."
 msgstr "Új %s telepítés."
+
+#. CONTEXT: configuration: name that is set when adding a new audio source
+msgid "New Audio Source"
+msgstr ""
 
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist
 msgid "New Automatic Playlist"
@@ -1359,6 +1367,7 @@ msgstr "Nem érvényes %s mappa."
 msgid "Notes"
 msgstr "Megjegyzések"
 
+#. CONTEXT: configuration: audio source mode
 #. CONTEXT: configuration: show-marquee: off
 #. CONTEXT: configuration: mobile marquee type: off
 #. CONTEXT: configuration: player: clock: off
@@ -1836,6 +1845,10 @@ msgstr "Támogatási üzenet küldése"
 msgid "Sequence"
 msgstr "Sorozat"
 
+#. CONTEXT: configuration: audio source mode
+msgid "Server"
+msgstr ""
+
 #. CONTEXT: playerui: select the current queue for playback
 msgid "Set Queue for Playback"
 msgstr "Lejátszási várólista beállítása"
@@ -2139,10 +2152,15 @@ msgstr "Trim Silence"
 msgid "Truncate"
 msgstr "Truncate"
 
+#. CONTEXT: configuration: audio source: type of source
 #. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
 #. CONTEXT: configuration: which audio tags will be written to the audio file
 msgid "Type"
 msgstr "Típus"
+
+#. CONTEXT: configuration: the remote BDJ4 server name
+msgid "URI"
+msgstr ""
 
 #. CONTEXT: installer: status message
 #, c-format
@@ -2304,6 +2322,10 @@ msgstr "Kiírja az audiofájlok címkéit a BallroomDJ adatbázisból származó
 msgid "XML Files"
 msgstr "XML fájlok"
 
+#. CONTEXT: configuration: audio source type
+msgid "bdj4"
+msgstr ""
+
 #. CONTEXT: configuration file: dance type
 msgid "club"
 msgstr "klub"
@@ -2327,6 +2349,10 @@ msgstr "normál"
 #. CONTEXT: The suffix for an original audio file (may be abbreviated)
 msgid "original"
 msgstr "eredeti"
+
+#. CONTEXT: configuration: audio source type
+msgid "rtsp"
+msgstr ""
 
 #. CONTEXT: configuration: dance speed
 msgid "slow"

@@ -458,6 +458,10 @@ msgstr "Limpar a marca da mesma canção"
 msgid "Click the mouse in the blue box in time with the beat."
 msgstr "Clique com o rato na caixa azul ao mesmo tempo que a batida."
 
+#. CONTEXT: configuration: audio source mode
+msgid "Client"
+msgstr ""
+
 #. CONTEXT: configuration: the clock format
 msgid "Clock"
 msgstr ""
@@ -1190,7 +1194,7 @@ msgstr "Tenda móvel"
 msgid "Mobile Remote Control"
 msgstr "Controlo remoto móvel"
 
-#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+#. CONTEXT: configuration: audio source: mode (off/client/server)
 msgid "Mode"
 msgstr ""
 
@@ -1261,6 +1265,10 @@ msgstr "Novo"
 #, c-format
 msgid "New %s installation."
 msgstr "Novo %s instalação."
+
+#. CONTEXT: configuration: name that is set when adding a new audio source
+msgid "New Audio Source"
+msgstr ""
 
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist
 msgid "New Automatic Playlist"
@@ -1354,6 +1362,7 @@ msgstr "Não é uma pasta %s válida."
 msgid "Notes"
 msgstr "Notas"
 
+#. CONTEXT: configuration: audio source mode
 #. CONTEXT: configuration: show-marquee: off
 #. CONTEXT: configuration: mobile marquee type: off
 #. CONTEXT: configuration: player: clock: off
@@ -1831,6 +1840,10 @@ msgstr "Envio de mensagem de suporte"
 msgid "Sequence"
 msgstr "Sequência"
 
+#. CONTEXT: configuration: audio source mode
+msgid "Server"
+msgstr ""
+
 #. CONTEXT: playerui: select the current queue for playback
 msgid "Set Queue for Playback"
 msgstr "Definir fila de espera para reprodução"
@@ -2134,10 +2147,15 @@ msgstr "Silêncio de corte"
 msgid "Truncate"
 msgstr "Truncar"
 
+#. CONTEXT: configuration: audio source: type of source
 #. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
 #. CONTEXT: configuration: which audio tags will be written to the audio file
 msgid "Type"
 msgstr "Tipo"
+
+#. CONTEXT: configuration: the remote BDJ4 server name
+msgid "URI"
+msgstr ""
 
 #. CONTEXT: installer: status message
 #, c-format
@@ -2299,6 +2317,10 @@ msgstr "Escreve as etiquetas do ficheiro áudio utilizando a informação da bas
 msgid "XML Files"
 msgstr "Ficheiros XML"
 
+#. CONTEXT: configuration: audio source type
+msgid "bdj4"
+msgstr ""
+
 #. CONTEXT: configuration file: dance type
 msgid "club"
 msgstr "clube"
@@ -2322,6 +2344,10 @@ msgstr "normal"
 #. CONTEXT: The suffix for an original audio file (may be abbreviated)
 msgid "original"
 msgstr "original"
+
+#. CONTEXT: configuration: audio source type
+msgid "rtsp"
+msgstr ""
 
 #. CONTEXT: configuration: dance speed
 msgid "slow"

@@ -458,6 +458,10 @@ msgstr "동일한 노래 마크 지우기"
 msgid "Click the mouse in the blue box in time with the beat."
 msgstr "박자에 맞춰 파란색 상자에서 마우스를 클릭합니다."
 
+#. CONTEXT: configuration: audio source mode
+msgid "Client"
+msgstr ""
+
 #. CONTEXT: configuration: the clock format
 msgid "Clock"
 msgstr ""
@@ -1195,7 +1199,7 @@ msgstr "모바일 천막"
 msgid "Mobile Remote Control"
 msgstr "모바일 원격 제어"
 
-#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+#. CONTEXT: configuration: audio source: mode (off/client/server)
 msgid "Mode"
 msgstr ""
 
@@ -1266,6 +1270,10 @@ msgstr "신규"
 #, c-format
 msgid "New %s installation."
 msgstr "새로운 %s 설치."
+
+#. CONTEXT: configuration: name that is set when adding a new audio source
+msgid "New Audio Source"
+msgstr ""
 
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist
 msgid "New Automatic Playlist"
@@ -1359,6 +1367,7 @@ msgstr "올바른 %s 폴더가 아닙니다."
 msgid "Notes"
 msgstr "참고"
 
+#. CONTEXT: configuration: audio source mode
 #. CONTEXT: configuration: show-marquee: off
 #. CONTEXT: configuration: mobile marquee type: off
 #. CONTEXT: configuration: player: clock: off
@@ -1836,6 +1845,10 @@ msgstr "지원 메시지 보내기"
 msgid "Sequence"
 msgstr "시퀀스"
 
+#. CONTEXT: configuration: audio source mode
+msgid "Server"
+msgstr ""
+
 #. CONTEXT: playerui: select the current queue for playback
 msgid "Set Queue for Playback"
 msgstr "재생 대기열 설정"
@@ -2139,10 +2152,15 @@ msgstr "트림 침묵"
 msgid "Truncate"
 msgstr "잘라내기"
 
+#. CONTEXT: configuration: audio source: type of source
 #. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
 #. CONTEXT: configuration: which audio tags will be written to the audio file
 msgid "Type"
 msgstr "유형"
+
+#. CONTEXT: configuration: the remote BDJ4 server name
+msgid "URI"
+msgstr ""
 
 #. CONTEXT: installer: status message
 #, c-format
@@ -2304,6 +2322,10 @@ msgstr "BallroomDJ 데이터베이스의 정보를 사용하여 오디오 파일
 msgid "XML Files"
 msgstr "XML 파일"
 
+#. CONTEXT: configuration: audio source type
+msgid "bdj4"
+msgstr ""
+
 #. CONTEXT: configuration file: dance type
 msgid "club"
 msgstr "클럽"
@@ -2327,6 +2349,10 @@ msgstr "정상"
 #. CONTEXT: The suffix for an original audio file (may be abbreviated)
 msgid "original"
 msgstr "원본"
+
+#. CONTEXT: configuration: audio source type
+msgid "rtsp"
+msgstr ""
 
 #. CONTEXT: configuration: dance speed
 msgid "slow"
