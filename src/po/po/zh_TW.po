@@ -1199,6 +1199,7 @@ msgid "Mobile Remote Control"
 msgstr "手機遠端控制"
 
 #. CONTEXT: configuration: audio source: mode (off/client/server)
+#. CONTEXT: configuration: mobile marquee: mode: (off/local/internet)
 msgid "Mode"
 msgstr ""
 
@@ -2153,7 +2154,6 @@ msgstr "截短"
 
 #. CONTEXT: configuration: audio source: type of source
 #. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
-#. CONTEXT: configuration: which audio tags will be written to the audio file
 msgid "Type"
 msgstr "類型"
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-26 08:39-0700\n"
+"POT-Creation-Date: 2025-03-26 09:53-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1197,6 +1197,7 @@ msgid "Mobile Remote Control"
 msgstr ""
 
 #. CONTEXT: configuration: audio source: mode (off/client/server)
+#. CONTEXT: configuration: mobile marquee: mode: (off/local/internet)
 msgid "Mode"
 msgstr ""
 
@@ -2151,7 +2152,6 @@ msgstr ""
 
 #. CONTEXT: configuration: audio source: type of source
 #. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
-#. CONTEXT: configuration: which audio tags will be written to the audio file
 msgid "Type"
 msgstr ""
 
