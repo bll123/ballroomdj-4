@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2025-03-19\n"
+"PO-Revision-Date: 2025-03-26\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Italian\n"
 "Language: it\n"
@@ -94,26 +94,6 @@ msgstr "%s Il giocatore è attivo"
 #, c-format
 msgid "%s Playlist"
 msgstr "%s Playlist"
-
-#. CONTEXT: configuration: the remote BDJ4 server name
-#, c-format
-msgid "%s Server"
-msgstr ""
-
-#. CONTEXT: configuration: the BDJ4 server password
-#, c-format
-msgid "%s Server Password"
-msgstr ""
-
-#. CONTEXT: configuration: the port to use for the BDJ4 server
-#, c-format
-msgid "%s Server Port"
-msgstr ""
-
-#. CONTEXT: configuration: the BDJ4 server user
-#, c-format
-msgid "%s Server User"
-msgstr ""
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets)
 #, c-format
@@ -385,6 +365,10 @@ msgstr "Elenco delle corrispondenze dell'ID audio"
 #. CONTEXT: configuration: which audio sink (output) to use
 msgid "Audio Output"
 msgstr "Uscita audio"
+
+#. CONTEXT: configuration: audio sources
+msgid "Audio Source"
+msgstr ""
 
 #. CONTEXT: configuration: checkbox: is automatic organization enabled
 msgid "Auto Organise"
@@ -765,11 +749,6 @@ msgstr "Modifica degli elenchi di brani"
 #. CONTEXT: configuration: edit status table
 msgid "Edit Status"
 msgstr "Modifica stato"
-
-#. CONTEXT: configuration: enable/disable BDJ4 server
-#, c-format
-msgid "Enable %s Server"
-msgstr ""
 
 #. CONTEXT: configuration: remote control: checkbox: enable/disable
 msgid "Enable Remote Control"
@@ -1216,6 +1195,10 @@ msgstr "Tendone mobile"
 msgid "Mobile Remote Control"
 msgstr "Telecomando mobile"
 
+#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+msgid "Mode"
+msgstr ""
+
 #. CONTEXT: configuration: table edit: button: move selection down
 #. CONTEXT: music queue: button: move the selected song down in the queue
 #. CONTEXT: side-by-side list: button: move the selected field down
@@ -1268,6 +1251,7 @@ msgstr "Code musicali"
 msgid "Mute"
 msgstr "Muto"
 
+#. CONTEXT: configuration: the remote BDJ4 server name
 #. CONTEXT: alternate installation: name (for shortcut)
 msgid "Name"
 msgstr "Nome"
@@ -1410,6 +1394,7 @@ msgstr "Altri file"
 msgid "Paso Doble"
 msgstr "Paso Doble"
 
+#. CONTEXT: configuration: the BDJ4 server password
 #. CONTEXT: configuration: mobile marquee: internet: password
 #. CONTEXT: configuration: remote control: the password for sign-on to remote control
 msgid "Password"
@@ -1497,6 +1482,7 @@ msgstr "Attendere… (%1$d/%2$d)"
 msgid "Poor"
 msgstr "Povero"
 
+#. CONTEXT: configuration: the port to use for the BDJ4 server
 #. CONTEXT: configuration: the port to use for the mobile marquee
 #. CONTEXT: configuration: remote control: the port to use for remote control
 msgid "Port"
@@ -2231,6 +2217,10 @@ msgstr ""
 
 #. CONTEXT: configuration: classical music: use work/movement
 msgid "Use Work and Movement"
+msgstr ""
+
+#. CONTEXT: configuration: the BDJ4 server user
+msgid "User"
 msgstr ""
 
 #. CONTEXT: configuration: remote control: the user ID for sign-on to remote control
