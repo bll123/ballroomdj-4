@@ -12,10 +12,15 @@
 extern "C" {
 #endif
 
+enum {
+  WEBSRV_TLS_OFF,
+  WEBSRV_TLS_ON,
+};
+
 typedef struct websrv websrv_t;
 typedef void (*websrv_handler_t) (void *userdata, const char *query, const char *uri);
 
-websrv_t *websrvInit (uint16_t listenPort, websrv_handler_t eventHandler, void *userdata);
+websrv_t *websrvInit (uint16_t listenPort, websrv_handler_t eventHandler, void *userdata, bool tlsflag);
 void websrvFree (websrv_t *websrv);
 void websrvProcess (websrv_t *websrv);
 void websrvReply (websrv_t *websrv, int httpcode, const char *headers, const char *msg);

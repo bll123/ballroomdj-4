@@ -29,6 +29,7 @@ typedef enum {
   SV_BDJ4_RELEASELEVEL,
   SV_BDJ4_VERSION,
   SV_CA_FILE,
+  SV_CA_FILE_LOCAL,
   SV_DIR_CACHE,         // {DIR_CACHE_BASE}/BDJ4
   SV_DIR_CACHE_BASE,    // from XDG_CACHE_HOME or $HOME/.cache
                         // windows: %TEMP% or %USERPROFILE%/AppData/Local/Temp

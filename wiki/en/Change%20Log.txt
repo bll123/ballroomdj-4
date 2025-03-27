@@ -9,10 +9,12 @@
 * Bug Fixes:
     * Windows: add application manifest.
     * Internal: Minor bug fixes.
+    * Internal: Update mongoose to version 7.17
 * Changes:
-    * Configuration: Improve item disabled display.
+    * Configuration: Improve disabled item display.
 * New Features:
-    * Add import from remote BDJ4 server.
+    * Remote BDJ4 server.
+    * Manage: Import from remote BDJ4 server.
 
 -->
 

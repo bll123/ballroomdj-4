@@ -118,7 +118,8 @@ main (int argc, char *argv[])
 
   remctrl.conn = connInit (ROUTE_REMCTRL);
 
-  remctrl.websrv = websrvInit (remctrl.port, remctrlEventHandler, &remctrl);
+  remctrl.websrv = websrvInit (remctrl.port, remctrlEventHandler,
+      &remctrl, WEBSRV_TLS_OFF);
 
   listenPort = bdjvarsGetNum (BDJVL_PORT_REMCTRL);
   sockhMainLoop (listenPort, remctrlProcessMsg, remctrlProcessing, &remctrl);

@@ -134,7 +134,8 @@ main (int argc, char *argv[])
       bdjsrvClosingCallback, &bdjsrv);
 
   bdjsrv.conn = connInit (ROUTE_SERVER);
-  bdjsrv.websrv = websrvInit (bdjsrv.port, bdjsrvEventHandler, &bdjsrv);
+  bdjsrv.websrv = websrvInit (bdjsrv.port, bdjsrvEventHandler,
+      &bdjsrv, WEBSRV_TLS_ON);
 
   listenPort = bdjvarsGetNum (BDJVL_PORT_SERVER);
   sockhMainLoop (listenPort, bdjsrvProcessMsg, bdjsrvProcessing, &bdjsrv);

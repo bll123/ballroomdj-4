@@ -14,11 +14,15 @@
 #include <dirent.h> // for mongoose
 #include <ctype.h>
 
+#include <unistd.h>
+
 #include "mongoose.h"
 
 #include "log.h"
 #include "mdebug.h"
 #include "websrv.h"
+
+typedef struct websrvint websrvint_t;
 
 typedef struct websrv {
   void                    *userdata;
@@ -26,6 +30,9 @@ typedef struct websrv {
   struct mg_mgr           mgr;
   struct mg_connection    *conn;      // temporary
   struct mg_http_message  *httpmsg;   // temporary
+  struct mg_str           cdata;
+  struct mg_str           kdata;
+  bool                    tlsflag;
 } websrv_t;
 
 static void websrvEventHandler (struct mg_connection *c, int ev, void *ev_data);
@@ -33,7 +40,7 @@ static void websrvLog (char c, void *userdata);
 
 websrv_t *
 websrvInit (uint16_t listenPort, websrv_handler_t eventHandler,
-    void *userdata)
+    void *userdata, bool tlsflag)
 {
   websrv_t        *websrv;
   char            tbuff [100];
@@ -50,9 +57,23 @@ websrvInit (uint16_t listenPort, websrv_handler_t eventHandler,
   websrv->handler = eventHandler;
   websrv->conn = NULL;
   websrv->httpmsg = NULL;
+  websrv->tlsflag = tlsflag;
+  websrv->cdata.buf = NULL;
+  websrv->cdata.len = 0;
+  websrv->kdata.buf = NULL;
+  websrv->kdata.len = 0;
 
-  snprintf (tbuff, sizeof (tbuff), "http://0.0.0.0:%" PRIu16, listenPort);
-  mg_http_listen (&websrv->mgr, tbuff, websrvEventHandler, websrv);
+  if (tlsflag == WEBSRV_TLS_OFF) {
+    snprintf (tbuff, sizeof (tbuff), "http://0.0.0.0:%" PRIu16, listenPort);
+    mg_http_listen (&websrv->mgr, tbuff, websrvEventHandler, websrv);
+  }
+  if (tlsflag == WEBSRV_TLS_ON) {
+// ### need full path
+    websrv->cdata = mg_file_read (&mg_fs_posix, "http/server.crt");
+    websrv->kdata = mg_file_read (&mg_fs_posix, "http/server.key");
+    snprintf (tbuff, sizeof (tbuff), "https://0.0.0.0:%" PRIu16, listenPort);
+    mg_http_listen (&websrv->mgr, tbuff, websrvEventHandler, websrv);
+  }
   return websrv;
 }
 
@@ -64,6 +85,12 @@ websrvFree (websrv_t *websrv)
   }
 
   mg_mgr_free (&websrv->mgr);
+  if (websrv->cdata.buf != NULL) {
+    free (websrv->cdata.buf);
+  }
+  if (websrv->kdata.buf != NULL) {
+    free (websrv->kdata.buf);
+  }
   mdfree (websrv);
 }
 
@@ -130,18 +157,31 @@ websrvEventHandler (struct mg_connection *c, int ev, void *ev_data)
   if (c == NULL) {
     return;
   }
-  if (ev != MG_EV_HTTP_MSG) {
-    return;
-  }
 
   websrv = c->fn_data;
   websrv->conn = c;
+
+  if (websrv->tlsflag == WEBSRV_TLS_ON && ev == MG_EV_ACCEPT) {
+    struct mg_tls_opts opts;
+
+    memset (&opts, 0, sizeof (struct mg_tls_opts));
+
+// ### will need to set full path...
+    opts.cert = websrv->cdata;
+    opts.key = websrv->kdata;
+    mg_tls_init (c, &opts);
+    return;
+  }
+
+  if (ev != MG_EV_HTTP_MSG) {
+    return;
+  }
 
   hm = (struct mg_http_message *) ev_data;
   websrv->httpmsg = hm;
 
   mg_url_decode (hm->uri.buf, hm->uri.len, uri, sizeof (uri), 1);
-  uriptr = uri + strlen (uri) - 4;
+  uriptr = uri + hm->uri.len - 4;
   if (strcmp (uriptr, ".key") == 0 ||
       strcmp (uriptr, ".crt") == 0 ||
       strcmp (uriptr, ".pem") == 0 ||

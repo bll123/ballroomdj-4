@@ -312,6 +312,19 @@ webclientSpoofUserAgent (webclient_t *webclient)
 }
 
 void
+webclientIgnoreCertErr (webclient_t *webclient)
+{
+  if (webclient == NULL || webclient->curl == NULL) {
+    return;
+  }
+
+  curl_easy_setopt (webclient->curl, CURLOPT_CAINFO, sysvarsGetStr (SV_CA_FILE_LOCAL));
+//  curl_easy_setopt (webclient->curl, CURLOPT_SSL_VERIFYPEER, 0);
+  curl_easy_setopt (webclient->curl, CURLOPT_SSL_VERIFYHOST, 0);
+}
+
+
+void
 webclientGetLocalIP (char *ip, size_t sz)
 {
   webclient_t   *webclient;

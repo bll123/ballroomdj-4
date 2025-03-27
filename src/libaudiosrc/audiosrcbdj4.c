@@ -161,9 +161,10 @@ asiPostInit (asdata_t *asdata, const char *uri)
       type = asconfGetNum (asdata->asconf, askey, ASCONF_TYPE);
       if (type == AUDIOSRC_TYPE_BDJ4) {
         asdata->webclient [count] = webclientAlloc (asdata, asbdj4WebResponseCallback);
+        webclientIgnoreCertErr (asdata->webclient [count]);
         webclientSetTimeout (asdata->webclient [count], 1);
         snprintf (temp, sizeof (temp),
-            "http://%s:%" PRIu16,
+            "https://%s:%" PRIu16,
             asconfGetStr (asdata->asconf, askey, ASCONF_URI),
             (uint16_t) asconfGetNum (asdata->asconf, askey, ASCONF_PORT));
         asdata->bdj4uri [count] = mdstrdup (temp);

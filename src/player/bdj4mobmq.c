@@ -124,7 +124,8 @@ main (int argc, char *argv[])
   mobmqdata.finished = false;
 
   if (mobmqdata.type == MOBMQ_TYPE_LOCAL) {
-    mobmqdata.websrv = websrvInit (mobmqdata.port, mobmqEventHandler, &mobmqdata);
+    mobmqdata.websrv = websrvInit (mobmqdata.port, mobmqEventHandler,
+        &mobmqdata, WEBSRV_TLS_OFF);
   }
   if (mobmqdata.type == MOBMQ_TYPE_INTERNET) {
     mobmqdata.webclient = webclientAlloc (&mobmqdata.mobmqwebresp, mobmqWebResponseCallback);

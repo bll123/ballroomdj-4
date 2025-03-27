@@ -30,6 +30,7 @@ int   webclientUploadFile (webclient_t *webclient, const char *uri, const char *
 void  webclientClose (webclient_t *webclient);
 void  webclientSetTimeout (webclient_t *webclient, long timeout);
 void  webclientSpoofUserAgent (webclient_t *webclient);
+void  webclientIgnoreCertErr (webclient_t *webclient);
 void  webclientGetLocalIP (char *ip, size_t sz);
 void  webclientCompressFile (const char *infn, const char *outfn);
 void  webclientSetUserPass (webclient_t *webclient, const char *user, const char *pass);

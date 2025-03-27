@@ -12,7 +12,7 @@ syntax: regexp
 ^DIST\.txt$
 ^http/.*\.bak.\d$
 ^http/.*\.html$
-^http/.*\.crt$
+^http/curl-ca-bundle\.crt$
 ^http/led_o.*\.svg$
 ^img/profile0[0-9]
 ^licenses/

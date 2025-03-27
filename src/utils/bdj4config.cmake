@@ -76,6 +76,7 @@ pkg_check_modules (GCRYPT libgcrypt)
 pkg_check_modules (GIO gio-2.0)
 pkg_check_modules (GLIB glib-2.0)
 pkg_check_modules (JSONC json-c)
+pkg_check_modules (LIBSSL libssl)
 
 find_program (GDBUSCODEGEN NAMES gdbus-codegen)
 
@@ -407,6 +408,9 @@ if (WIN32)
   add_compile_options (-DMG_ARCH=MG_ARCH_WIN32)
   checkAddLinkFlag ("-static-libgcc")
 endif()
+
+# add_compile_options (-DMG_TLS=MG_TLS_BUILTIN)
+add_compile_options (-DMG_TLS=MG_TLS_OPENSSL)
 
 #### checks for include files
 

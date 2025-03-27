@@ -70,6 +70,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_BDJ4_RELEASELEVEL] = { "BDJ4_RELEASELEVEL" },
   [SV_BDJ4_VERSION] = { "BDJ4_VERSION" },
   [SV_CA_FILE] = { "CA_FILE" },
+  [SV_CA_FILE_LOCAL] = { "CA_FILE_LOCAL" },
   [SV_DIR_CACHE] = { "DIR_CACHE" },
   [SV_DIR_CACHE_BASE] = { "DIR_CACHE_BASE" },
   [SV_DIR_CONFIG] = { "DIR_CONFIG" },
@@ -548,6 +549,7 @@ sysvarsInit (const char *argv0, int flags)
   sysvarsSetStr (SV_HOST_REGISTER, "https://ballroomdj.org");
   sysvarsSetStr (SV_URI_REGISTER, "/bdj4register.php");
 
+  sysvarsSetStr (SV_CA_FILE_LOCAL, "http/ca.crt");
   for (size_t i = 0; i < CACERT_FILE_COUNT; ++i) {
     if (fileopFileExists (cacertFiles [i])) {
       sysvarsSetStr (SV_CA_FILE, cacertFiles [i]);
