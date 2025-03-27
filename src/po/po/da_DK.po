@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2025-03-26\n"
+"PO-Revision-Date: 2025-03-27\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Danish\n"
 "Language: da\n"
@@ -367,7 +367,7 @@ msgid "Audio Output"
 msgstr "Lydudgang"
 
 #. CONTEXT: configuration: audio sources
-msgid "Audio Source"
+msgid "Audio Sources"
 msgstr ""
 
 #. CONTEXT: configuration: checkbox: is automatic organization enabled

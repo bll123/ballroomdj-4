@@ -108,7 +108,7 @@ confuiBuildUIAudioSource (confuigui_t *gui)
 
   confuiMakeNotebookTab (vbox, gui,
       /* CONTEXT: configuration: audio sources */
-      _("Audio Source"), CONFUI_ID_AUDIOSRC);
+      _("Audio Sources"), CONFUI_ID_AUDIOSRC);
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStartExpand (vbox, hbox);
