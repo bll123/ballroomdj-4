@@ -318,8 +318,10 @@ webclientIgnoreCertErr (webclient_t *webclient)
     return;
   }
 
+  /* the peer can be verified as the ca-file is available */
   curl_easy_setopt (webclient->curl, CURLOPT_CAINFO, sysvarsGetStr (SV_CA_FILE_LOCAL));
-//  curl_easy_setopt (webclient->curl, CURLOPT_SSL_VERIFYPEER, 0);
+  //curl_easy_setopt (webclient->curl, CURLOPT_SSL_VERIFYPEER, 0);
+  /* the host cannot be verified */
   curl_easy_setopt (webclient->curl, CURLOPT_SSL_VERIFYHOST, 0);
 }
 

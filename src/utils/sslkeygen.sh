@@ -7,25 +7,29 @@
 # See https://security.stackexchange.com/questions/190905/subject-alternative-name-in-certificate-signing-request-apparently-does-not-surv
 cat > cnf <<EOF
 [SAN]
-subjectAltName=DNS:localhost,DNS:*.
+subjectAltName=DNS:localhost
 EOF
+
+#DAYS=3650
+DAYS=18250
 
 # Generate CA
 # Important: CN names must be different for CA and client/server certs
 openssl ecparam -noout -name prime256v1 -genkey -out ca.key
-openssl req -x509 -new -key ca.key -subj /CN=BDJ4 -out ca.crt
+openssl req -x509 -new -key ca.key -days ${DAYS} -subj /CN=BDJ4 -out ca.crt
 
 # Generate server cert
 openssl ecparam -noout -name prime256v1 -genkey -out server.key
-openssl req -new -sha256 -key server.key -subj /CN=server -out server.csr
+openssl req -new -sha256 -key server.key \
+  -subj /CN=server -out server.csr
 openssl x509 -req -sha256 -in server.csr -extensions SAN -extfile cnf \
-  -CAkey ca.key -CA ca.crt -CAcreateserial -out server.crt
+  -CAkey ca.key -CA ca.crt -CAcreateserial -days ${DAYS} -out server.crt
 
 # Generate client cert
 #openssl ecparam -noout -name prime256v1 -genkey -out client.key
-#openssl req -new -sha256 -key client.key -subj /CN=client -out client.csr
+#openssl req -new -sha256 -key client.key -days ${DAYS} -subj /CN=client -out client.csr
 #openssl x509 -req -sha256 -in client.csr -extensions SAN -extfile cnf \
-#  -CAkey ca.key -CA ca.crt -CAcreateserial -out client.crt
+#  -CAkey ca.key -CA ca.crt -CAcreateserial -days ${DAYS} -out client.crt
 
 # Verify
 openssl verify -verbose -CAfile ca.crt server.crt
