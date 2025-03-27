@@ -19,6 +19,7 @@ target_link_libraries (bdj4server PRIVATE
   ${ICUI18N_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
 )
+addIntlLibrary (bdj4server)
 addWinSockLibrary (bdj4server)
 addWinVersionInfo (bdj4server)
 addWinManifest (bdj4server)

@@ -5,6 +5,11 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
+# this object gets duplicated, it's quite small though.
+add_library (objaudiosrcutil OBJECT
+  audiosrcutil.c
+)
+
 add_library (libbdj4audiosrc SHARED
   audiosrc.c
 )
@@ -17,6 +22,7 @@ add_library (libasfile SHARED
   audiosrcfile.c
 )
 target_link_libraries (libasfile PRIVATE
+  objaudiosrcutil
   libbdj4basic libbdj4common
 )
 
@@ -24,6 +30,7 @@ add_library (libasbdj4 SHARED
   audiosrcbdj4.c
 )
 target_link_libraries (libasbdj4 PRIVATE
+  objaudiosrcutil
   libbdj4 libbdj4basic libbdj4common
 )
 

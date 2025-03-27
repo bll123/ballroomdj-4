@@ -27,6 +27,8 @@
 #pragma clang diagnostic push
 #pragma GCC diagnostic ignored "-Wdeclaration-after-statement"
 #pragma clang diagnostic ignored "-Wdeclaration-after-statement"
+#pragma GCC diagnostic ignored "-Wunreachable-code"
+#pragma clang diagnostic ignored "-Wunreachable-code"
 
 static int mg_base64_encode_single(int c) {
   if (c < 26) {

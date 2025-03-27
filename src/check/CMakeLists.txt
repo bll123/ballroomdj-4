@@ -41,6 +41,7 @@ add_executable (check_all
   libcommon/check_roman.c
   # libbasic
   libbasic/check_libbasic.c
+  libbasic/check_asconf.c
   libbasic/check_bdjopt.c
   libbasic/check_datafile.c
   libbasic/check_dirlist.c
@@ -54,7 +55,6 @@ add_executable (check_all
   # libbdj4
   libbdj4/check_libbdj4.c
   libbdj4/check_aesencdec.c
-  libbdj4/check_asconf.c
   libbdj4/check_autosel.c
   libbdj4/check_bdjvarsdf.c
   libbdj4/check_bdjvarsdfload.c

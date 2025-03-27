@@ -182,7 +182,7 @@ asiPrep (asdata_t *asdata, const char *sfname, char *tempnm, size_t sz)
 
   mstimestart (&mstm);
   asiFullPath (asdata, sfname, ffn, sizeof (ffn), NULL, 0);
-  audiosrcMakeTempName (ffn, tempnm, sz);
+  audiosrcutilMakeTempName (ffn, tempnm, sz);
 
   /* VLC still cannot handle internationalized names. */
   /* I wonder how they handle them internally. */
@@ -194,7 +194,7 @@ asiPrep (asdata_t *asdata, const char *sfname, char *tempnm, size_t sz)
     return false;
   }
 
-  rc = audiosrcPreCacheFile (tempnm);
+  rc = audiosrcutilPreCacheFile (tempnm);
 
   tm = mstimeend (&mstm);
   logMsg (LOG_DBG, LOG_BASIC, "asfile: prep-time (%" PRIu64 ") %s", (uint64_t) tm, sfname);

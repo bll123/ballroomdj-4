@@ -16,6 +16,7 @@
 #include "audiosrc.h"
 #include "bdj4.h"
 #include "bdj4init.h"
+#include "bdj4intl.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
@@ -226,6 +227,10 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
 
     slistStartIterator (bdjsrv->plNames, &iteridx);
     while ((plnm = slistIterateKey (bdjsrv->plNames, &iteridx)) != NULL) {
+      /* CONTEXT: the name of the history song list */
+      if (strcmp (plnm, _("History")) == 0) {
+        continue;
+      }
       snprintf (tbuff, sizeof (tbuff), "%s%c", plnm, MSG_ARGS_RS);
       rp = stpecpy (rp, rend, tbuff);
     }
@@ -377,8 +382,8 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
         "Content-type: text/plain; charset=utf-8\r\n"
         "Cache-Control: max-age=0\r\n",
         rbuff);
-    return;
     slistFree (songtags);
+    return;
   } else {
     char          path [MAXPATHLEN];
     const char    *turi = uri;

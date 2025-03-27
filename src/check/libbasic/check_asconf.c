@@ -295,7 +295,7 @@ asconf_suite (void)
 
   s = suite_create ("asconf");
   tc = tcase_create ("asconf");
-  tcase_set_tags (tc, "libbdj4");
+  tcase_set_tags (tc, "libbasic");
   tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, asconf_alloc);
   tcase_add_test (tc, asconf_iterate);

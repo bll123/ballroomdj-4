@@ -7,7 +7,6 @@ include (../utils/bdj4macros.cmake)
 
 add_library (libbdj4 SHARED
   aesencdec.c
-  asconf.c
   audioadjust.c
   audiotag.c
   autosel.c

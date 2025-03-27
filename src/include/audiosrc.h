@@ -67,9 +67,6 @@ int32_t audiosrcIterCount (asiter_t *asiter);
 const char *audiosrcIterate (asiter_t *asiter);
 const char *audiosrcIterateValue (asiter_t *asiter, const char *key);
 
-void audiosrcMakeTempName (const char *ffn, char *tempnm, size_t maxlen);
-bool audiosrcPreCacheFile (const char *fn);
-
 void asiDesc (const char **ret, int max);
 asdata_t *asiInit (const char *delpfx, const char *origext);
 void asiFree (asdata_t *asdata);
@@ -93,6 +90,10 @@ const char *asiIterate (asdata_t *asdata, asiterdata_t *asidata);
 const char * asiIterateValue (asdata_t *asdata, asiterdata_t *asidata, const char *key);
 bool asiGetPlaylistNames (asdata_t *asdata, int askey);
 bool asiSongTags (asdata_t *asdata, const char *uri);
+
+/* audiosrcutil.c */
+void audiosrcutilMakeTempName (const char *ffn, char *tempnm, size_t maxlen);
+bool audiosrcutilPreCacheFile (const char *fn);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

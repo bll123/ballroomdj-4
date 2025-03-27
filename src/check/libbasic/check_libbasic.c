@@ -82,6 +82,9 @@ check_libbasic (SRunner *sr)
 
   s = progstate_suite();
   srunner_add_suite (sr, s);
+
+  s = asconf_suite();
+  srunner_add_suite (sr, s);
 }
 
 #pragma clang diagnostic pop

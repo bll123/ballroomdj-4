@@ -272,7 +272,7 @@ asiPrep (asdata_t *asdata, const char *sfname, char *tempnm, size_t sz)
   }
 
   mstimestart (&mstm);
-  audiosrcMakeTempName (sfname, tempnm, sz);
+  audiosrcutilMakeTempName (sfname, tempnm, sz);
 
   fileopDelete (tempnm);
 
@@ -591,11 +591,6 @@ asbdj4GetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata, int askey)
 
       p = strtok_r (tdata, MSG_ARGS_RS_STR, &tokstr);
       while (p != NULL) {
-        /* CONTEXT: the name of the history song list */
-        if (strcmp (p, _("History")) == 0) {
-          p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-          continue;
-        }
         slistSetNum (asidata->plNames, p, 1);
         p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
       }
