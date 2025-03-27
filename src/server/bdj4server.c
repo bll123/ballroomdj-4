@@ -72,6 +72,7 @@ static int  bdjsrvProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route, bdjm
 static int  bdjsrvProcessing (void *udata);
 static void bdjsrvSigHandler (int sig);
 static void bdjsrvGetPlaylistNames (bdjsrv_t *bdjsrv);
+static const char * bdjsrvStripPrefix (bdjsrv_t *bdjsrv, const char *query);
 
 static int  gKillReceived = 0;
 
@@ -112,7 +113,7 @@ main (int argc, char *argv[])
   }
 
   bdjsrv.port = asconfGetNum (bdjsrv.asconf, askey, ASCONF_PORT);
-  snprintf (bdjsrv.srvuri, sizeof (bdjsrv.srvuri), "%s:%" PRIu16,
+  snprintf (bdjsrv.srvuri, sizeof (bdjsrv.srvuri), "%s:%" PRIu16 "/",
       asconfGetStr (bdjsrv.asconf, askey, ASCONF_URI), bdjsrv.port);
   bdjsrv.srvurilen = strlen (bdjsrv.srvuri);
   bdjsrv.user = asconfGetStr (bdjsrv.asconf, askey, ASCONF_USER);
@@ -191,10 +192,10 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
 
   websrvGetUserPass (bdjsrv->websrv, user, sizeof (user), pass, sizeof (pass));
 
-if (*uri) {
-fprintf (stderr, "srv: uri: %s\n", uri);
-fprintf (stderr, "srv: query: %s\n", query);
-}
+  if (*uri) {
+    logMsg (LOG_DBG, LOG_INFO, "srv: uri: %s", uri);
+    logMsg (LOG_DBG, LOG_INFO, "srv: query: %s", query);
+  }
 
   if (user [0] == '\0' || pass [0] == '\0') {
     websrvReply (bdjsrv->websrv, WEB_UNAUTHORIZED,
@@ -268,7 +269,7 @@ fprintf (stderr, "srv: query: %s\n", query);
       const char    *songuri;
 
       songuri = songlistGetStr (sl, idx, SONGLIST_URI);
-      snprintf (tbuff, sizeof (tbuff), "%s%s" "/%s%c",
+      snprintf (tbuff, sizeof (tbuff), "%s%s%s%c",
           AS_BDJ4_PFX, bdjsrv->srvuri, songuri, MSG_ARGS_RS);
       rp = stpecpy (rp, rend, tbuff);
     }
@@ -284,16 +285,7 @@ fprintf (stderr, "srv: query: %s\n", query);
     int         rc = WEB_NOT_FOUND;
     const char  *songuri = NULL;
 
-    songuri = query;
-    if (strncmp (songuri, SRV_URI_TEXT, SRV_URI_LEN) == 0) {
-      songuri += SRV_URI_LEN;
-    }
-    if (strncmp (songuri, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) == 0) {
-      songuri += AS_BDJ4_PFX_LEN;
-    }
-    if (strncmp (songuri, bdjsrv->srvuri, bdjsrv->srvurilen) == 0) {
-      songuri += bdjsrv->srvurilen + 1;
-    }
+    songuri = bdjsrvStripPrefix (bdjsrv, query);
     ok = audiosrcExists (songuri);
     if (ok) {
       rc = WEB_OK;
@@ -309,16 +301,7 @@ fprintf (stderr, "srv: query: %s\n", query);
     char          ffn [MAXPATHLEN];
     const char    *songuri;
 
-    songuri = query;
-    if (strncmp (songuri, SRV_URI_TEXT, SRV_URI_LEN) == 0) {
-      songuri += SRV_URI_LEN;
-    }
-    if (strncmp (songuri, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) == 0) {
-      songuri += AS_BDJ4_PFX_LEN;
-    }
-    if (strncmp (songuri, bdjsrv->srvuri, bdjsrv->srvurilen) == 0) {
-      songuri += bdjsrv->srvurilen + 1;
-    }
+    songuri = bdjsrvStripPrefix (bdjsrv, query);
     ok = audiosrcExists (songuri);
 
     if (! ok) {
@@ -344,16 +327,7 @@ fprintf (stderr, "srv: query: %s\n", query);
     char        *rp;
     char        *rend;
 
-    songuri = query;
-    if (strncmp (songuri, SRV_URI_TEXT, SRV_URI_LEN) == 0) {
-      songuri += SRV_URI_LEN;
-    }
-    if (strncmp (songuri, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) == 0) {
-      songuri += AS_BDJ4_PFX_LEN;
-    }
-    if (strncmp (songuri, bdjsrv->srvuri, bdjsrv->srvurilen) == 0) {
-      songuri += bdjsrv->srvurilen + 1;
-    }
+    songuri = bdjsrvStripPrefix (bdjsrv, query);
     ok = audiosrcExists (songuri);
 
     if (ok) {
@@ -530,4 +504,22 @@ bdjsrvGetPlaylistNames (bdjsrv_t *bdjsrv)
 {
   slistFree (bdjsrv->plNames);
   bdjsrv->plNames = playlistGetPlaylistNames (PL_LIST_SONGLIST, NULL);
+}
+
+static const char *
+bdjsrvStripPrefix (bdjsrv_t *bdjsrv, const char *query)
+{
+  const char  *songuri;
+
+  songuri = query;
+  if (strncmp (songuri, SRV_URI_TEXT, SRV_URI_LEN) == 0) {
+    songuri += SRV_URI_LEN;
+  }
+  if (strncmp (songuri, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) == 0) {
+    songuri += AS_BDJ4_PFX_LEN;
+  }
+  if (strncmp (songuri, bdjsrv->srvuri, bdjsrv->srvurilen) == 0) {
+    songuri += bdjsrv->srvurilen;
+  }
+  return songuri;
 }

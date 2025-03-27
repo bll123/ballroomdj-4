@@ -512,15 +512,17 @@ webclientDebugCallback (CURL *curl, curl_infotype type, char *data,
     }
   }
 
-  tdata = mdmalloc (size + 1);
-  memcpy (tdata, data, size);
-  tdata [size] = '\0';
-  p = strtok_r (tdata, "\r\n", &tokstr);
-  while (p != NULL && p < tdata + size) {
-    logMsg (LOG_DBG, LOG_WEBCLIENT, "curl: %s: %s", tag, p);
-    p = strtok_r (NULL, "\r\n", &tokstr);
+  if (logCheck (LOG_DBG, LOG_WEBCLIENT)) {
+    tdata = mdmalloc (size + 1);
+    memcpy (tdata, data, size);
+    tdata [size] = '\0';
+    p = strtok_r (tdata, "\r\n", &tokstr);
+    while (p != NULL && p < tdata + size) {
+      logMsg (LOG_DBG, LOG_WEBCLIENT, "curl: %s: %s", tag, p);
+      p = strtok_r (NULL, "\r\n", &tokstr);
+    }
+    mdfree (tdata);
   }
-  mdfree (tdata);
   return 0;
 }
 

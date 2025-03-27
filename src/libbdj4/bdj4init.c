@@ -344,9 +344,6 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   }
 
   bdjoptInit ();
-  tagdefInit ();
-  audiotagInit ();
-  audiosrcInit ();
 
   if (! loglevelset) {
     loglevel = bdjoptGetNum (OPT_G_DEBUGLVL);
@@ -360,6 +357,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
       logStartAppend (lockName (route), tag, loglevel);
     }
   }
+
   logProcBegin ();
   logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %" PRId64, sysvarsGetNum (SVL_PROFILE_IDX));
   if (route == ROUTE_STARTERUI) {
@@ -380,6 +378,10 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   }
 
   bdjoptSetNum (OPT_G_DEBUGLVL, loglevel);
+
+  tagdefInit ();
+  audiotagInit ();
+  audiosrcInit ();
 
   if ((*flags & BDJ4_INIT_NO_DB_LOAD) != BDJ4_INIT_NO_DB_LOAD &&
       musicdb != NULL) {

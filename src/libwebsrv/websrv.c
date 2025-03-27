@@ -172,13 +172,13 @@ websrvLog (char c, void *userdata)
   if (c == '\r') {
     return;
   }
-  if (! isprint (c)) {
-    return;
-  }
   if (c == '\n' || len >= (sizeof (wlogbuff) - 1)) {
     wlogbuff [len] = '\0';
     logMsg (LOG_DBG, LOG_WEBSRV, "%s", wlogbuff);
     len = 0;
+    return;
+  }
+  if (! isprint (c)) {
     return;
   }
 

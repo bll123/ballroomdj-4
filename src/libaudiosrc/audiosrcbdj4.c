@@ -145,6 +145,7 @@ asiPostInit (asdata_t *asdata, const char *uri)
   }
 
   asdata->clientcount = count;
+
   asdata->webclient = mdmalloc (sizeof (webclient_t *) * count);
   asdata->bdj4uri = mdmalloc (sizeof (char *) * count);
   asdata->clienturi = mdmalloc (sizeof (char *) * count);
@@ -283,7 +284,7 @@ asiPrep (asdata_t *asdata, const char *sfname, char *tempnm, size_t sz)
   }
 
   tm = mstimeend (&mstm);
-  logMsg (LOG_DBG, LOG_BASIC, "prep-time (%" PRIu64 ") %s", (uint64_t) tm, sfname);
+  logMsg (LOG_DBG, LOG_BASIC, "asbdj4: prep-time (%" PRIu64 ") %s", (uint64_t) tm, sfname);
 
   return rc;
 }
