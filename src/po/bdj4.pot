@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-27 07:20-0700\n"
+"POT-Creation-Date: 2025-03-28 07:57-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -956,10 +956,10 @@ msgid "High Dance Level"
 msgstr ""
 
 #. CONTEXT: configuration: display settings for: history
-#. CONTEXT: the name of the history song list
 #. CONTEXT: playlist: the name of the history song list
 #. CONTEXT: playerui: name of the history tab : displayed played songs
 #. CONTEXT: playerui: name of the saved history playlist
+#. CONTEXT: the name of the history song list
 msgid "History"
 msgstr ""
 

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2025-03-27\n"
+"PO-Revision-Date: 2025-03-28\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Czech\n"
 "Language: cs\n"
@@ -958,10 +958,10 @@ msgid "High Dance Level"
 msgstr "Vysoká úroveň tance"
 
 #. CONTEXT: configuration: display settings for: history
-#. CONTEXT: the name of the history song list
 #. CONTEXT: playlist: the name of the history song list
 #. CONTEXT: playerui: name of the history tab : displayed played songs
 #. CONTEXT: playerui: name of the saved history playlist
+#. CONTEXT: the name of the history song list
 msgid "History"
 msgstr "Historie"
 
