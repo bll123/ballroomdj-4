@@ -307,6 +307,24 @@ instutilCopyHttpFiles (void)
       "ballroomdj4", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DREL_HTTP);
   filemanipCopy (from, to);
 
+  pathbldMakePath (from, sizeof (from),
+      "http/ca.crt", "", PATHBLD_MP_DIR_MAIN);
+  pathbldMakePath (to, sizeof (to),
+      "ca.crt", "", PATHBLD_MP_DREL_HTTP);
+  filemanipCopy (from, to);
+
+  pathbldMakePath (from, sizeof (from),
+      "http/server.crt", "", PATHBLD_MP_DIR_MAIN);
+  pathbldMakePath (to, sizeof (to),
+      "server.crt", "", PATHBLD_MP_DREL_HTTP);
+  filemanipCopy (from, to);
+
+  pathbldMakePath (from, sizeof (from),
+      "http/server.key", "", PATHBLD_MP_DIR_MAIN);
+  pathbldMakePath (to, sizeof (to),
+      "server.key", "", PATHBLD_MP_DREL_HTTP);
+  filemanipCopy (from, to);
+
   pathbldMakePath (tmp, sizeof (tmp), "", "", PATHBLD_MP_DIR_MAIN);
   snprintf (from, sizeof (from), "%s/http/mrc", tmp);
   pathbldMakePath (to, sizeof (to),

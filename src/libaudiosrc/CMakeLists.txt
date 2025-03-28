@@ -5,7 +5,7 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
-# this object gets duplicated, it's quite small though.
+# this object gets duplicated, it's small though.
 add_library (objaudiosrcutil OBJECT
   audiosrcutil.c
 )

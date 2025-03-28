@@ -331,24 +331,25 @@ START_TEST(audiosrc_iterate_src)
   bdjoptSetStr (OPT_M_DIR_MUSIC, datatop);
   audiosrcPostInit ();
 
+  /* BDJ4 is not enabled */
   c = audiosrcGetActiveCount ();
-  ck_assert_int_eq (c, 2);
+  ck_assert_int_eq (c, 1);
 
   asiter = audiosrcStartIterator (AUDIOSRC_TYPE_NONE, AS_ITER_AUDIO_SRC, NULL, -1);
   c = audiosrcIterCount (asiter);
-  ck_assert_int_eq (c, 2);
+  ck_assert_int_eq (c, 1);
 
   c = 0;
   while ((val = audiosrcIterate (asiter)) != NULL) {
     if (c == 0) {
-      ck_assert_str_eq (val, "BDJ4");
+      ck_assert_str_eq (val, "file");
     }
     if (c == 1) {
-      ck_assert_str_eq (val, "file");
+      ck_assert_str_eq (val, "BDJ4");
     }
     ++c;
   }
-  ck_assert_int_eq (c, 2);
+  ck_assert_int_eq (c, 1);
 
   audiosrcCleanIterator (asiter);
 }
