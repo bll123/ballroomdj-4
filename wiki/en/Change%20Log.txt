@@ -7,14 +7,14 @@
 **4.14.0 2025-3---**
 
 * Bug Fixes:
-    * Windows: add application manifest.
+    * Windows: Add missing translations (error messages and dialogs).
+    * Windows: Add application manifest.
     * Internal: Minor bug fixes.
-    * Internal: Update mongoose to version 7.17
-* Changes:
+    * Internal: Update mongoose to version 7.17.
     * Configuration: Improve disabled item display.
 * New Features:
     * Remote BDJ4 server.
-    * Manage: Import from remote BDJ4 server.
+    * Mucic Manager: Import from remote BDJ4 server.
 
 -->
 
