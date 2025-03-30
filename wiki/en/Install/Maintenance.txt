@@ -1,0 +1,101 @@
+[Wiki Home](Home)
+
+[TOC]
+
+### Maintenance
+
+There are three main pieces of BDJ4 that may need updates.  BDJ4
+itself, the player (VLC), and support libraries.
+
+To get the latest BDJ4 fixes, simply download the latest version of
+BDJ4 and run the installer.  Select the __Upgrade__ button.
+<br>__References:__
+<br>[Installing on Windows](en-Install-Windows)
+<br>[Installing on MacOS](en-Install-MacOS)
+<br>[Installing on Linux](en-Install-Linux)
+
+VLC is not updated when BDJ4 is upgraded. At the time BDJ4 was written
+VLC has been has been fairly stable (3.0.18 and later), and updating
+VLC is probably not necessary.  Instructions are included below for
+updating VLC in case it becomes necessary to update VLC.
+
+##### Windows
+
+__VLC__
+
+VLC is in the process of creating VLC version 4 (someday).  Do not
+upgrade to VLC version 4 on Windows.  At the time this wiki page was
+written (2025-3-20), VLC version 4 is broken on Windows.
+
+Go to:
+[VideoLAN / VLC / Windows](https://www.videolan.org/vlc/download-windows.html),
+and check to make sure that the VLC version (in small print underneath
+the download button) is version 3 and not version 4.
+
+On your Windows computer, start VLC.  Select the __Help__ menu, and
+select __Check for Updates__.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![maint-win-vlc-chk](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/maint-win-vlc-chk-b.png)
+<br><span style="color:#4559bf;">__VLC / Check for Updates__</span> </div>
+
+If a new version of VLC is available, a dialog similar to the
+following picture will be displayed.  Check to make sure the update is
+not to version 4 and select __Yes__, and then follow the VLC installer
+instructions.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![maint-win-vlc-upg](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/maint-win-vlc-upg-b.png)
+<br><span style="color:#4559bf;">__VLC / Update__</span> </div>
+
+__Windows Support Libraries__
+
+These are included with the BDJ4 installation.  Upgrading BDJ4 will
+upgrade all of the required software libraries.
+
+##### MacOS
+
+__VLC__
+
+Download the VLC installer from
+[VideoLAN / VLC / MacOS X](https://www.videolan.org/vlc/download-macosx.html),
+and run the VLC installer.
+
+__MacOS Support Libraries__
+
+An internet connection is required.
+
+There was an important bug fix and the GTK library should be version
+3.24.37 or later (this was in 2023).
+
+To check the GTK library version,
+open a terminal (Finder / Go / Utilities / Terminal) and run:
+
+    sudo port list installed | grep gtk3
+
+If the GTK library version is before version 3.24.37, the support
+libraries should be updated via the following instructions.
+
+To get the latest software updates, simply re-run the
+macos-pre-install-macports script again.
+
+Download the latest macos-pre-install-macports-v21.sh script from
+sourceforge (version 21 as of 2025-3-30).
+
+[BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
+
+Open a terminal (Finder / Go / Utilities / Terminal) and run this
+script using the following command. This may take a very long time to
+finish. You may be required to enter your administrative password more
+than once during the installation process.
+
+    cd Downloads
+    bash macos-pre-install-macports-v21.sh
+
+##### Linux
+
+On Linux, simply let your software updater run to get the latest
+software libraries and the latest VLC.
+
+[Wiki Home](Home)
+<br>_(Updated 2025-03-30 07:36:19; BDJ4 version 4.13.0)_

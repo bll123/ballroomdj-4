@@ -29,7 +29,6 @@ the player after starting BDJ4 may be problematic.
 <br>Incompetent programmers.  This required saving the current
 LC_NUMERIC setting and restoring it afterwards within the MPV interface.
 * The MPV library is linked with graphics libraries.
-<br>More incompetent programmers.
 * MPV will NOT use the volume sink set by the application.  The volume
 sink must be set via the MPV API, and the MPV internal name must be used.
 * Status: an interface has been written, but it is not working
@@ -39,4 +38,4 @@ right.  MPV is low priority.
 operations.  Due to this bug, development on MPV is stopped.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-03-30 07:20:15; BDJ4 version 4.13.0)_
