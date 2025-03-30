@@ -3,11 +3,15 @@
 ###### Installing VLC for development
 
 Install VLC 4 using a VLC4 installpath.
-Rename the VideoLAN/VLC4 dir to VLC4temp.
-Install VLC 3 using a VLC3 installpath.
-Rename the VideoLAN/VLC4temp dir to VLC4.
-Copy VideoLan/VLC3 to VideoLan/VLC
-Fix the shortcuts on the desktop if wanted.
+<br>Rename the VideoLAN/VLC4 dir to VLC4temp.
+<br>Install VLC 3 using a VLC3 installpath.
+<br>Rename the VideoLAN/VLC4temp dir to VLC4.
+<br>Copy VideoLan/VLC3 to VideoLan/VLC
+<br>Fix the shortcuts on the desktop if wanted.
+
+To Switch to VLC4:
+<br>Remove or rename VLC.
+<br>Copy VideoLan/VLC4 to VideoLan/VLC
 
 ###### Turning off 8.3 name generation.
 
@@ -15,7 +19,7 @@ Many applications break.
 
 fsutil.exe 8dot3name query C:
 <br>fsutil.exe 8dot3name set C: 1
-<br>fsutil.exe 8dot3name strip /s /v C:
+<br>fsutil.exe 8dot3name strip /f /s /v C:
 
 fsutil.exe behavior set disable8dot3 1
 
