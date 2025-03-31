@@ -31,8 +31,8 @@
 #include "slist.h"
 #include "sysvars.h"
 #include "ui.h"
+#include "uidd.h"
 #include "uiimppl.h"
-#include "uiplaylist.h"
 #include "uiutils.h"
 #include "validate.h"
 
@@ -59,14 +59,14 @@ enum {
 typedef struct uiimppl {
   uiwcont_t         *parentwin;
   uiwcont_t         *wcont [UIIMPPL_W_MAX];
-  uiplaylist_t      *uiplaylist;
   asconf_t          *asconf;
-  asiter_t          *asiter;
   uiwcont_t         *targetButton;
   callback_t        *responsecb;
+  uidd_t            *plselect;
   nlist_t           *options;
   nlist_t           *aslist;
   slist_t           *astypes;
+  ilist_t           *plnames;
   callback_t        *callbacks [UIIMPPL_CB_MAX];
   size_t            asmaxwidth;
   int               asidx;
@@ -100,7 +100,6 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
     uiimppl->wcont [j] = NULL;
   }
   uiimppl->targetButton = NULL;
-  uiimppl->uiplaylist = NULL;
   uiimppl->responsecb = NULL;
   uiimppl->parentwin = windowp;
   uiimppl->options = opts;
@@ -110,6 +109,7 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
   uiimppl->isactive = false;
   uiimppl->aslist = NULL;
   uiimppl->asidx = 0;
+  uiimppl->plnames = NULL;
 
   uiimppl->callbacks [UIIMPPL_CB_DIALOG] = callbackInitI (
       uiimpplResponseHandler, uiimppl);
@@ -172,8 +172,6 @@ uiimpplFree (uiimppl_t *uiimppl)
   }
   uiwcontFree (uiimppl->targetButton);
   uiimppl->targetButton = NULL;
-  uiplaylistFree (uiimppl->uiplaylist);
-  uiimppl->uiplaylist = NULL;
   for (int i = 0; i < UIIMPPL_CB_MAX; ++i) {
     callbackFree (uiimppl->callbacks [i]);
   }
@@ -257,13 +255,13 @@ uiimpplGetDir (uiimppl_t *uiimppl)
 const char *
 uiimpplGetPlaylist (uiimppl_t *uiimppl)
 {
-  const char  *plname;
+  const char  *plname = NULL;
 
   if (uiimppl == NULL) {
     return NULL;
   }
 
-  plname = uiplaylistGetKey (uiimppl->uiplaylist);
+//  plname = uiplaylistGetKey (uiimppl->uiplaylist);
   return plname;
 }
 
@@ -419,16 +417,14 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  /* CONTEXT: import playlist: select the playlist */
   uiwidgetp = uiCreateColonLabel (_("Playlist"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiimppl->uiplaylist = uiplaylistCreate (
-      uiimppl->wcont [UIIMPPL_W_DIALOG],
-      hbox, PL_LIST_NORMAL, NULL, UIPL_PACK_START, UIPL_FLAG_NONE);
-  uiplaylistSetSelectCallback (uiimppl->uiplaylist,
+  uiimppl->plselect = uiddCreate ("imppl-plsel", uiimppl->parentwin, hbox,
+      /* CONTEXT: import playlist: select the playlist */
+      DD_PACK_START, NULL, DD_LIST_TYPE_NUM, "", DD_REPLACE_TITLE,
       uiimppl->callbacks [UIIMPPL_CB_SEL]);
 
   uiwcontFree (hbox);
@@ -574,8 +570,7 @@ uiimpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
     return UIENTRY_ERROR;
   }
 
-  uiplaylistSetList (uiimppl->uiplaylist,
-      PL_LIST_DIR, tbuff);
+//  uiddSetList (uiimppl->uiplaylist, PL_LIST_DIR, tbuff);
   return UIENTRY_OK;
 }
 
@@ -638,6 +633,26 @@ uiimpplImportTypeCallback (void *udata)
     snprintf (tbuff, sizeof (tbuff), "%s:", _("URI"));
   }
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_URI_LABEL], tbuff);
+
+  if (uiimppl->imptype != AUDIOSRC_TYPE_FILE) {
+    asiter_t    *asiter;
+    const char  *plnm;
+    int         idx;
+
+    idx = 0;
+    ilistFree (uiimppl->plnames);
+    asiter = audiosrcStartIterator (uiimppl->imptype, AS_ITER_PL_NAMES, NULL, -1);
+    uiimppl->plnames = ilistAlloc ("plnames", LIST_ORDERED);
+    ilistSetSize (uiimppl->plnames, audiosrcIterCount (asiter));
+    while ((plnm = audiosrcIterate (asiter)) != NULL) {
+fprintf (stderr, "plnm: %s\n", plnm);
+      ilistSetNum (uiimppl->plnames, idx, DD_LIST_KEY_NUM, idx);
+      ilistSetStr (uiimppl->plnames, idx, DD_LIST_DISP, plnm);
+      ++idx;
+    }
+    audiosrcCleanIterator (asiter);
+    uiddSetList (uiimppl->plselect, uiimppl->plnames);
+  }
 
   return UICB_CONT;
 }
