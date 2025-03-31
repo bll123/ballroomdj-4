@@ -38,7 +38,7 @@ typedef struct uispinbox {
   uispinboxdisp_t textGetProc;
   void            *udata;
   int             maxWidth;
-  slist_t         *list;
+  nlist_t         *list;
   nlist_t         *keylist;
   nlist_t         *idxlist;
   callback_t      *presscb;
@@ -54,7 +54,7 @@ static gint uiSpinboxDoubleInput (GtkSpinButton *sb, gdouble *newval, gpointer u
 static gint uiSpinboxTimeInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
 static gboolean uiSpinboxTextDisplay (GtkSpinButton *sb, gpointer udata);
 static gboolean uiSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata);
-static char * uiSpinboxTextGetDisp (slist_t *list, int idx);
+static char * uiSpinboxTextGetDisp (nlist_t *list, int idx);
 
 static bool uiSpinboxTextKeyCallback (void *udata);
 static void uiSpinboxValueChangedHandler (GtkSpinButton *sb, gpointer udata);
@@ -118,7 +118,7 @@ uiSpinboxTextCreate (void *udata)
 
 void
 uiSpinboxTextSet (uiwcont_t *uiwidget, int min, int count,
-    int maxWidth, slist_t *list, nlist_t *keylist,
+    int maxWidth, nlist_t *list, nlist_t *keylist,
     uispinboxdisp_t textGetProc)
 {
   uispinbox_t   *uispinbox;
@@ -711,7 +711,7 @@ uiSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata)
 }
 
 static char *
-uiSpinboxTextGetDisp (slist_t *list, int idx)
+uiSpinboxTextGetDisp (nlist_t *list, int idx)
 {
   return nlistGetDataByIdx (list, idx);
 }

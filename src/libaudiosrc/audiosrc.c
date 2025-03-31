@@ -635,6 +635,9 @@ audiosrcCleanIterator (asiter_t *asiter)
   if (asiter == NULL) {
     return;
   }
+  if (asiter->asiterdata == NULL) {
+    return;
+  }
 
   asdylib = asiter->asdylib;
   if (asdylib != NULL && asdylib->asiCleanIterator != NULL) {

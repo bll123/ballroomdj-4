@@ -68,6 +68,7 @@
 #include "uidd.h"
 #include "uiexppl.h"
 #include "uiexpimpbdj4.h"
+#include "uiimppl.h"
 #include "uimusicq.h"
 #include "uinbutil.h"
 #include "uiplayer.h"
@@ -165,6 +166,7 @@ enum {
   MANAGE_CB_SL_SEL_FILE,
   MANAGE_CB_BDJ4_EXP,
   MANAGE_CB_BDJ4_IMP,
+  MANAGE_CB_IMP_PL,
   MANAGE_CB_EXP_PL,
   MANAGE_CB_MAX,
 };
@@ -282,6 +284,7 @@ typedef struct {
   int               impitunesstate;
   /* export playlist */
   uiexppl_t         *uiexppl;
+  uiimppl_t         *uiimppl;
   /* export/import bdj4 */
   uieibdj4_t        *uieibdj4;
   eibdj4_t          *eibdj4;
@@ -425,6 +428,7 @@ static nlistidx_t manageLoadMusicQueue (manageui_t *manage, int mqidx);
 static bool     managePlaylistExport (void *udata);
 static bool     managePlaylistImport (void *udata);
 static bool     managePlaylistExportRespHandler (void *udata, const char *fname, int type);
+static bool     managePlaylistImportRespHandler (void *udata);
 /* export/import bdj4 */
 static bool     managePlaylistExportBDJ4 (void *udata);
 static bool     managePlaylistImportBDJ4 (void *udata);
@@ -444,8 +448,6 @@ static uimusicq_t * manageGetCurrMusicQ (manageui_t *manage);
 static bool     manageStartBPMCounter (void *udata);
 static void     manageSetBPMCounter (manageui_t *manage, song_t *song);
 static void     manageSendBPMCounter (manageui_t *manage);
-/* import playlist */
-static bool     manageImportPlaylist (void *udata);
 /* same song */
 static bool     manageSameSongSetMark (void *udata);
 static bool     manageSameSongClearMark (void *udata);
@@ -493,6 +495,7 @@ main (int argc, char *argv[])
   manage.uieibdj4 = NULL;
   manage.eibdj4 = NULL;
   manage.expimpbdj4state = BDJ4_STATE_OFF;
+  manage.uiimppl = NULL;
   manage.uiexppl = NULL;
   manage.musicqPlayIdx = MUSICQ_MNG_PB;
   manage.musicqManageIdx = MUSICQ_SL;
@@ -728,6 +731,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   uiaaFree (manage->uiaa);
   uieibdj4Free (manage->uieibdj4);
   eibdj4Free (manage->eibdj4);
+  uiimpplFree (manage->uiimppl);
   uiexpplFree (manage->uiexppl);
   nlistFree (manage->removelist);
 
@@ -1042,6 +1046,12 @@ manageInitializeUI (manageui_t *manage)
       manageImportBDJ4ResponseHandler, manage, NULL);
   uieibdj4SetResponseCallback (manage->uieibdj4,
       manage->callbacks [MANAGE_CB_BDJ4_IMP], UIEIBDJ4_IMPORT);
+
+  manage->uiimppl = uiimpplInit (manage->minfo.window, manage->minfo.options);
+  manage->callbacks [MANAGE_CB_IMP_PL] = callbackInit (
+      managePlaylistImportRespHandler, manage, NULL);
+  uiimpplSetResponseCallback (manage->uiimppl,
+      manage->callbacks [MANAGE_CB_IMP_PL]);
 
   manage->uiexppl = uiexpplInit (manage->minfo.window, manage->minfo.options);
   manage->callbacks [MANAGE_CB_EXP_PL] = callbackInitSI (
@@ -2405,15 +2415,6 @@ manageMusicManagerMenu (manageui_t *manage)
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
-  if (audiosrcGetActiveCount () > 1) {
-    manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_IMPORT,
-        manageImportPlaylist);
-    /* CONTEXT: manage-ui: menu selection: music manager: import playlist */
-    menuitem = uiMenuCreateItem (menu, _("Import Playlist"),
-        manage->callbacks [MANAGE_MENU_CB_MM_IMPORT]);
-    uiwcontFree (menuitem);
-  }
-
   manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_SET_MARK,
       manageSameSongSetMark);
   /* CONTEXT: manage-ui: menu selection: music manager: set same-song mark */
@@ -3380,9 +3381,9 @@ managePlaylistImport (void *udata)
 {
   manageui_t  *manage = udata;
   char        nplname [200];
-  char        tbuff [MAXPATHLEN];
-  uiselect_t  *selectdata;
-  char        *fn;
+//  char        tbuff [MAXPATHLEN];
+//  uiselect_t  *selectdata;
+//  char        *fn;
 
   if (manage->importactive) {
     return UICB_STOP;
@@ -3399,6 +3400,11 @@ managePlaylistImport (void *udata)
   manageSetSonglistName (manage, _("New Song List"));
   stpecpy (nplname, nplname + sizeof (nplname), manage->sloldname);
 
+// ###
+
+  uiimpplDialog (manage->uiimppl);
+
+#if 0
   selectdata = uiSelectInit (manage->minfo.window,
       /* CONTEXT: manage-ui: song list import: title of dialog */
       _("Import Playlist"), sysvarsGetStr (SV_BDJ4_DIR_DATATOP), NULL,
@@ -3464,10 +3470,38 @@ managePlaylistImport (void *udata)
     mdfree (fn);
   }
   mdfree (selectdata);
+#endif
 
   manageLoadPlaylistCB (manage, nplname);
   manage->importactive = false;
   logProcEnd ("");
+  return UICB_CONT;
+}
+
+static bool
+managePlaylistExportRespHandler (void *udata, const char *fname, int type)
+{
+  manageui_t  *manage = udata;
+  char        *slname;
+
+  slname = uimusicqGetSonglistName (manage->currmusicq);
+  uimusicqExport (manage->currmusicq, manage->musicqupdate [MUSICQ_SL],
+      fname, slname, type);
+  mdfree (slname);
+
+  return UICB_CONT;
+}
+
+static bool
+managePlaylistImportRespHandler (void *udata)
+{
+  manageui_t  *manage = udata;
+  char        *slname;
+
+  slname = uimusicqGetSonglistName (manage->currmusicq);
+// ###
+  mdfree (slname);
+
   return UICB_CONT;
 }
 
@@ -3515,20 +3549,6 @@ managePlaylistImportBDJ4 (void *udata)
 
   manage->importbdj4active = false;
   logProcEnd ("");
-  return UICB_CONT;
-}
-
-static bool
-managePlaylistExportRespHandler (void *udata, const char *fname, int type)
-{
-  manageui_t  *manage = udata;
-  char        *slname;
-
-  slname = uimusicqGetSonglistName (manage->currmusicq);
-  uimusicqExport (manage->currmusicq, manage->musicqupdate [MUSICQ_SL],
-      fname, slname, type);
-  mdfree (slname);
-
   return UICB_CONT;
 }
 
@@ -4024,6 +4044,7 @@ manageSendBPMCounter (manageui_t *manage)
   logProcEnd ("");
 }
 
+#if 0
 /* import playlist */
 
 static bool
@@ -4107,6 +4128,9 @@ nplname = "bdj4-sl-a";
   logProcEnd ("");
   return UICB_CONT;
 }
+
+#endif
+
 
 /* same song */
 

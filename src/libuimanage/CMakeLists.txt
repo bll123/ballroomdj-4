@@ -12,6 +12,7 @@ add_library (libbdj4uim SHARED
   uicopytags.c
   uiexpimpbdj4.c
   uiexppl.c
+  uiimppl.c
   uisongedit.c
   uisongeditui.c
 )
