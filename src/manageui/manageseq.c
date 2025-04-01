@@ -426,7 +426,7 @@ manageSequenceCopy (void *udata)
 {
   manageseq_t *manageseq = udata;
   char        *oname;
-  char        newname [200];
+  char        newname [MAX_PL_NM_LEN];
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy sequence");
@@ -453,7 +453,7 @@ static bool
 manageSequenceNew (void *udata)
 {
   manageseq_t *manageseq = udata;
-  char        tbuff [200];
+  char        tbuff [MAX_PL_NM_LEN];
   slist_t     *tlist;
 
   logProcBegin ();

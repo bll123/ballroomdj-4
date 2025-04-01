@@ -20,10 +20,9 @@ void    uiimpplSetResponseCallback (uiimppl_t *uiimppl, callback_t *uicb);
 bool    uiimpplDialog (uiimppl_t *uiimppl);
 void    uiimpplDialogClear (uiimppl_t *uiimppl);
 void    uiimpplProcess (uiimppl_t *uiimppl);
-char    *uiimpplGetDir (uiimppl_t *uiimppl);
-const char  *uiimpplGetPlaylist (uiimppl_t *uiimppl);
-const char  *uiimpplGetNewName (uiimppl_t *uiimppl);
-void uiimpplUpdateStatus (uiimppl_t *uiimppl, int count, int tot);
+int     uiimpplGetType (uiimppl_t *uiimppl);
+void    uiimpplGetURI (uiimppl_t *uiimppl, char *uri, size_t sz);
+const char *uiimpplGetNewName (uiimppl_t *uiimppl);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

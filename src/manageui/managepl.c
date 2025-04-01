@@ -660,7 +660,7 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
 bool
 managePlaylistNew (managepl_t *managepl, int preloadflag)
 {
-  char        tbuff [200];
+  char        tbuff [MAX_PL_NM_LEN];
   playlist_t  *pl = NULL;
 
   logProcBegin ();
@@ -729,7 +729,7 @@ managePlaylistUpdateData (managepl_t *managepl)
 {
   pltype_t    pltype;
   playlist_t  *pl;
-  char        tbuff [200];
+  char        tbuff [MAX_PL_NM_LEN];
 
   logProcBegin ();
   pl = managepl->playlist;
@@ -794,7 +794,7 @@ managePlaylistCopy (void *udata)
 {
   managepl_t  *managepl = udata;
   char        *oname;
-  char        newname [200];
+  char        newname [MAX_PL_NM_LEN];
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy playlist");
@@ -849,7 +849,7 @@ static int32_t
 managePlaylistValHMSCallback (void *udata, const char *label, const char *txt)
 {
   managepl_t  *managepl = udata;
-  char        tbuff [200];
+  char        tbuff [MAX_PL_NM_LEN];
   int32_t     value;
   bool        val;
 
@@ -874,7 +874,7 @@ static int32_t
 managePlaylistValHMCallback (void *udata, const char *label, const char *txt)
 {
   managepl_t  *managepl = udata;
-  char        tbuff [200];
+  char        tbuff [MAX_PL_NM_LEN];
   int32_t     value;
   bool        val;
 

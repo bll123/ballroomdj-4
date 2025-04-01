@@ -49,10 +49,12 @@ enum {
   UIIMPPL_W_STATUS_MSG,
   UIIMPPL_W_ERROR_MSG,
   UIIMPPL_W_DIALOG,
-  UIIMPPL_W_TARGET,
   UIIMPPL_W_URI_LABEL,
+  UIIMPPL_W_URI,
+  UIIMPPL_W_URI_BUTTON,
   UIIMPPL_W_NEWNAME,
   UIIMPPL_W_IMP_TYPE,
+  UIIMPPL_W_PL_SEL_LABEL,
   UIIMPPL_W_MAX,
 };
 
@@ -60,7 +62,6 @@ typedef struct uiimppl {
   uiwcont_t         *parentwin;
   uiwcont_t         *wcont [UIIMPPL_W_MAX];
   asconf_t          *asconf;
-  uiwcont_t         *targetButton;
   callback_t        *responsecb;
   uidd_t            *plselect;
   nlist_t           *options;
@@ -69,7 +70,6 @@ typedef struct uiimppl {
   ilist_t           *plnames;
   callback_t        *callbacks [UIIMPPL_CB_MAX];
   size_t            asmaxwidth;
-  int               asidx;
   int               imptype;
   bool              isactive;
 } uiimppl_t;
@@ -94,12 +94,12 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
   ilistidx_t  key;
   slistidx_t  titeridx;
   int         count;
+  char        tbuff [40];
 
   uiimppl = mdmalloc (sizeof (uiimppl_t));
   for (int j = 0; j < UIIMPPL_W_MAX; ++j) {
     uiimppl->wcont [j] = NULL;
   }
-  uiimppl->targetButton = NULL;
   uiimppl->responsecb = NULL;
   uiimppl->parentwin = windowp;
   uiimppl->options = opts;
@@ -108,7 +108,6 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
   }
   uiimppl->isactive = false;
   uiimppl->aslist = NULL;
-  uiimppl->asidx = 0;
   uiimppl->plnames = NULL;
 
   uiimppl->callbacks [UIIMPPL_CB_DIALOG] = callbackInitI (
@@ -124,7 +123,8 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
 
   count = 0;
   uiimppl->astypes = slistAlloc ("aslist", LIST_UNORDERED, NULL);
-  slistSetNum (uiimppl->astypes, "M3U/XSPF/JSPF", AUDIOSRC_TYPE_FILE);
+  snprintf (tbuff, sizeof (tbuff), _("File (%s)"), "M3U/XSPF/JSPF");
+  slistSetNum (uiimppl->astypes, tbuff, AUDIOSRC_TYPE_FILE);
 
   asconfStartIterator (uiimppl->asconf, &asiteridx);
   while ((key = asconfIterate (uiimppl->asconf, &asiteridx)) >= 0) {
@@ -147,13 +147,15 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
   count = 0;
   slistStartIterator (uiimppl->astypes, &titeridx);
   while ((asnm = slistIterateKey (uiimppl->astypes, &titeridx)) != NULL) {
-    if (strncmp (asnm, "M3U", 3) == 0) {
-      uiimppl->asidx = count;
-    }
     len = strlen (asnm);
     uiimppl->asmaxwidth = len;
     nlistSetStr (uiimppl->aslist, count, asnm);
     ++count;
+  }
+
+  uiimppl->imptype = nlistGetNum (uiimppl->options, MANAGE_IMP_PL_TYPE);
+  if (uiimppl->imptype < 0) {
+    uiimppl->imptype = AUDIOSRC_TYPE_FILE;
   }
 
   return uiimppl;
@@ -170,8 +172,6 @@ uiimpplFree (uiimppl_t *uiimppl)
     uiwcontFree (uiimppl->wcont [j]);
     uiimppl->wcont [j] = NULL;
   }
-  uiwcontFree (uiimppl->targetButton);
-  uiimppl->targetButton = NULL;
   for (int i = 0; i < UIIMPPL_CB_MAX; ++i) {
     callbackFree (uiimppl->callbacks [i]);
   }
@@ -199,12 +199,12 @@ uiimpplDialog (uiimppl_t *uiimppl)
 
   logProcBegin ();
   uiimpplCreateDialog (uiimppl);
-  uiimpplInitDisplay (uiimppl);
   uiDialogShow (uiimppl->wcont [UIIMPPL_W_DIALOG]);
+  uiimpplInitDisplay (uiimppl);
   uiimppl->isactive = true;
 
-  x = nlistGetNum (uiimppl->options, EXP_IMP_BDJ4_POSITION_X);
-  y = nlistGetNum (uiimppl->options, EXP_IMP_BDJ4_POSITION_Y);
+  x = nlistGetNum (uiimppl->options, IMP_PL_POSITION_X);
+  y = nlistGetNum (uiimppl->options, IMP_PL_POSITION_Y);
   uiWindowMove (uiimppl->wcont [UIIMPPL_W_DIALOG], x, y, -1);
   logProcEnd ("");
   return UICB_CONT;
@@ -231,38 +231,28 @@ uiimpplProcess (uiimppl_t *uiimppl)
     return;
   }
 
-  uiEntryValidate (
-    uiimppl->wcont [UIIMPPL_W_TARGET], false);
-  uiEntryValidate (
-    uiimppl->wcont [UIIMPPL_W_NEWNAME], false);
+  if (uiimppl->imptype == AUDIOSRC_TYPE_FILE) {
+    uiEntryValidate (uiimppl->wcont [UIIMPPL_W_URI], false);
+  }
+  uiEntryValidate (uiimppl->wcont [UIIMPPL_W_NEWNAME], false);
 }
 
-char *
-uiimpplGetDir (uiimppl_t *uiimppl)
+int
+uiimpplGetType (uiimppl_t *uiimppl)
 {
-  const char  *tdir;
-  char        *dir;
-
   if (uiimppl == NULL) {
-    return NULL;
+    return AUDIOSRC_TYPE_NONE;
   }
-
-  tdir = uiEntryGetValue (uiimppl->wcont [UIIMPPL_W_TARGET]);
-  dir = mdstrdup (tdir);
-  return dir;
+  return uiimppl->imptype;
 }
 
-const char *
-uiimpplGetPlaylist (uiimppl_t *uiimppl)
+void
+uiimpplGetURI (uiimppl_t *uiimppl, char *uri, size_t sz)
 {
-  const char  *plname = NULL;
-
   if (uiimppl == NULL) {
-    return NULL;
+    return;
   }
-
-//  plname = uiplaylistGetKey (uiimppl->uiplaylist);
-  return plname;
+  return;
 }
 
 const char *
@@ -276,18 +266,6 @@ uiimpplGetNewName (uiimppl_t *uiimppl)
 
   newname = uiEntryGetValue (uiimppl->wcont [UIIMPPL_W_NEWNAME]);
   return newname;
-}
-
-void
-uiimpplUpdateStatus (uiimppl_t *uiimppl, int count, int tot)
-{
-  if (uiimppl == NULL) {
-    return;
-  }
-
-  uiutilsProgressStatus (
-      uiimppl->wcont [UIIMPPL_W_STATUS_MSG],
-      count, tot);
 }
 
 /* internal routines */
@@ -366,11 +344,27 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiwidgetp = uiSpinboxTextCreate (uiimppl);
   uiSpinboxTextSet (uiwidgetp, 0, nlistGetCount (uiimppl->aslist),
       uiimppl->asmaxwidth, uiimppl->aslist, NULL, NULL);
-  uiSpinboxTextSetValue (uiwidgetp, uiimppl->asidx);
+  uiSpinboxTextSetValue (uiwidgetp, uiimppl->imptype);
   uiSpinboxTextSetValueChangedCallback (uiwidgetp,
       uiimppl->callbacks [UIIMPPL_CB_TYPE_SEL]);
   uiimppl->wcont [UIIMPPL_W_IMP_TYPE] = uiwidgetp;
   uiBoxPackStart (hbox, uiwidgetp);
+
+  uiwcontFree (hbox);
+
+  /* playlist selector */
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
+
+  uiwidgetp = uiCreateColonLabel (_("Playlist"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiimppl->wcont [UIIMPPL_W_PL_SEL_LABEL] = uiwidgetp;
+
+  uiimppl->plselect = uiddCreate ("imppl-plsel", uiimppl->parentwin, hbox,
+      /* CONTEXT: import playlist: select the playlist */
+      DD_PACK_START, NULL, DD_LIST_TYPE_NUM, "", DD_REPLACE_TITLE,
+      uiimppl->callbacks [UIIMPPL_CB_SEL]);
 
   uiwcontFree (hbox);
 
@@ -391,15 +385,15 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
-  uiimppl->wcont [UIIMPPL_W_TARGET] = uiwidgetp;
+  uiimppl->wcont [UIIMPPL_W_URI] = uiwidgetp;
 
-  odir = nlistGetStr (uiimppl->options, MANAGE_IMP_BDJ4_DIR);
+  odir = nlistGetStr (uiimppl->options, MANAGE_IMP_PL_DIR);
   if (odir == NULL) {
     odir = sysvarsGetStr (SV_HOME);
   }
   stpecpy (tbuff, tbuff + sizeof (tbuff), odir);
   pathDisplayPath (tbuff, sizeof (tbuff));
-  uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_TARGET], tbuff);
+  uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_URI], tbuff);
   uiEntrySetValidate (uiwidgetp, "",
       uiimpplValidateTarget, uiimppl, UIENTRY_DELAYED);
 
@@ -409,23 +403,7 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiButtonSetImageIcon (uiwidgetp, "folder");
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 0);
-  uiimppl->targetButton = uiwidgetp;
-
-  uiwcontFree (hbox);
-
-  /* playlist selector */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
-
-  uiwidgetp = uiCreateColonLabel (_("Playlist"));
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
-  uiimppl->plselect = uiddCreate ("imppl-plsel", uiimppl->parentwin, hbox,
-      /* CONTEXT: import playlist: select the playlist */
-      DD_PACK_START, NULL, DD_LIST_TYPE_NUM, "", DD_REPLACE_TITLE,
-      uiimppl->callbacks [UIIMPPL_CB_SEL]);
+  uiimppl->wcont [UIIMPPL_W_URI_BUTTON] = uiwidgetp;
 
   uiwcontFree (hbox);
 
@@ -471,15 +449,17 @@ uiimpplTargetDialog (void *udata)
     return UICB_STOP;
   }
 
-  odir = uiEntryGetValue (uiimppl->wcont [UIIMPPL_W_TARGET]);
+  odir = uiEntryGetValue (uiimppl->wcont [UIIMPPL_W_URI]);
   selectdata = uiSelectInit (uiimppl->parentwin,
-      /* CONTEXT: import playlist file selection dialog: window title */
-      _("Select Folder"), odir, NULL, NULL, NULL);
+      /* CONTEXT: import playlist: title of dialog */
+      _("Import Playlist"), sysvarsGetStr (SV_BDJ4_DIR_DATATOP), NULL,
+      /* CONTEXT: import playlist: name of file import type */
+      _("Playlists"), "audio/x-mpegurl|application/xspf+xml|*.jspf");
 
   dir = uiSelectDirDialog (selectdata);
   if (dir != NULL) {
     /* the validation process will be called */
-    uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_TARGET], dir);
+    uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_URI], dir);
     logMsg (LOG_DBG, LOG_IMPORTANT, "selected dir: %s", dir);
     mdfree (dir);   // allocated by gtk
   }
@@ -495,6 +475,8 @@ uiimpplInitDisplay (uiimppl_t *uiimppl)
   if (uiimppl == NULL) {
     return;
   }
+
+  uiimpplImportTypeCallback (uiimppl);
 }
 
 static bool
@@ -505,17 +487,19 @@ uiimpplResponseHandler (void *udata, int32_t responseid)
 
   uiWindowGetPosition (
       uiimppl->wcont [UIIMPPL_W_DIALOG], &x, &y, &ws);
-  nlistSetNum (uiimppl->options, EXP_IMP_BDJ4_POSITION_X, x);
-  nlistSetNum (uiimppl->options, EXP_IMP_BDJ4_POSITION_Y, y);
+  nlistSetNum (uiimppl->options, IMP_PL_POSITION_X, x);
+  nlistSetNum (uiimppl->options, IMP_PL_POSITION_Y, y);
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: expimpbdj4: del window");
+      uiimppl->imptype = AUDIOSRC_TYPE_NONE;
       break;
     }
     case RESPONSE_CLOSE: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: expimpbdj4: close window");
       uiWidgetHide (uiimppl->wcont [UIIMPPL_W_DIALOG]);
+      uiimppl->imptype = AUDIOSRC_TYPE_NONE;
       break;
     }
     case RESPONSE_APPLY: {
@@ -602,7 +586,9 @@ uiimpplValidateNewName (uiwcont_t *entry, const char *label, void *udata)
 
   if (rc == UIENTRY_OK) {
     str = uiEntryGetValue (entry);
-    if (*str) {
+    if (uiimppl->imptype == AUDIOSRC_TYPE_FILE && *str) {
+// ### fix
+// needs to figure out the import filename...
       pathbldMakePath (fn, sizeof (fn),
           str, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
       if (fileopFileExists (fn)) {
@@ -625,15 +611,6 @@ uiimpplImportTypeCallback (void *udata)
   uiimppl->imptype = uiSpinboxTextGetValue (
       uiimppl->wcont [UIIMPPL_W_IMP_TYPE]);
 
-  if (uiimppl->imptype == AUDIOSRC_TYPE_FILE) {
-    /* CONTEXT: import playlist: import location */
-    snprintf (tbuff, sizeof (tbuff), "%s:", _("File"));
-  } else {
-    /* CONTEXT: import playlist: import location */
-    snprintf (tbuff, sizeof (tbuff), "%s:", _("URI"));
-  }
-  uiLabelSetText (uiimppl->wcont [UIIMPPL_W_URI_LABEL], tbuff);
-
   if (uiimppl->imptype != AUDIOSRC_TYPE_FILE) {
     asiter_t    *asiter;
     const char  *plnm;
@@ -653,6 +630,21 @@ fprintf (stderr, "plnm: %s\n", plnm);
     audiosrcCleanIterator (asiter);
     uiddSetList (uiimppl->plselect, uiimppl->plnames);
   }
+
+  if (uiimppl->imptype == AUDIOSRC_TYPE_FILE) {
+    uiWidgetSetState (uiimppl->wcont [UIIMPPL_W_PL_SEL_LABEL], UIWIDGET_DISABLE);
+    uiddSetState (uiimppl->plselect, UIWIDGET_DISABLE);
+    uiWidgetShow (uiimppl->wcont [UIIMPPL_W_URI_BUTTON]);
+    /* CONTEXT: import playlist: import location */
+    snprintf (tbuff, sizeof (tbuff), "%s:", _("File"));
+  } else {
+    uiWidgetSetState (uiimppl->wcont [UIIMPPL_W_PL_SEL_LABEL], UIWIDGET_ENABLE);
+    uiddSetState (uiimppl->plselect, UIWIDGET_ENABLE);
+    uiWidgetHide (uiimppl->wcont [UIIMPPL_W_URI_BUTTON]);
+    /* CONTEXT: import playlist: import location */
+    snprintf (tbuff, sizeof (tbuff), "%s:", _("URI"));
+  }
+  uiLabelSetText (uiimppl->wcont [UIIMPPL_W_URI_LABEL], tbuff);
 
   return UICB_CONT;
 }

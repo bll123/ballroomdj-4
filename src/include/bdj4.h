@@ -41,6 +41,7 @@ enum {
   REPEAT_TIME = 175,
   BDJ4_DFLT_TAG_WEIGHT = 90,
   BDJ4_MAX_ALT = 10,
+  MAX_PL_NM_LEN = 200,
 };
 
 enum {

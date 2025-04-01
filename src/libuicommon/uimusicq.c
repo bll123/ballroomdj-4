@@ -180,22 +180,19 @@ uimusicqSetSonglistName (uimusicq_t *uimusicq, const char *nm)
   uiEntrySetValue (uimusicq->ui [ci].slname, nm);
 }
 
-/* the caller takes ownership of the returned value */
-char *
-uimusicqGetSonglistName (uimusicq_t *uimusicq)
+void
+uimusicqGetSonglistName (uimusicq_t *uimusicq, char *nm, size_t sz)
 {
   int         ci;
   const char  *val;
-  char        *tval;
 
   ci = uimusicq->musicqManageIdx;
   val = uiEntryGetValue (uimusicq->ui [ci].slname);
   while (*val == ' ') {
     ++val;
   }
-  tval = mdstrdup (val);
-  stringTrimChar (tval, ' ');
-  return tval;
+  stpecpy (nm, nm + sz, val);
+  stringTrimChar (nm, ' ');
 }
 
 bool

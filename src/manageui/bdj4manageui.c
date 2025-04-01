@@ -242,14 +242,14 @@ typedef struct {
   uisongsel_t       *slsongsel;
   uimusicq_t        *slsbsmusicq;
   uisongsel_t       *slsbssongsel;
-  char              *sloldname;
+  char              sloldname [MAX_PL_NM_LEN];
   itunes_t          *itunes;
   uidd_t            *itunesdd;
   ilist_t           *itunesddlist;
   /* prior name is used by create-from-playlist */
   uisongfilter_t    *uisongfilter;
   uiplaylist_t      *cfpl;
-  char              *slpriorname;
+  char              slpriorname [MAX_PL_NM_LEN];
   char              *cfplfn;
   /* music manager ui */
   uiplayer_t        *mmplayer;
@@ -282,7 +282,7 @@ typedef struct {
   int               aaflags;
   int               applyadjstate;
   int               impitunesstate;
-  /* export playlist */
+  /* import/export playlist */
   uiexppl_t         *uiexppl;
   uiimppl_t         *uiimppl;
   /* export/import bdj4 */
@@ -336,6 +336,10 @@ static datafilekey_t manageuidfkeys [] = {
   { "MNG_EXP_PL_POS_Y", EXP_PL_POSITION_Y,          VALUE_NUM, NULL, DF_NORM },
   { "MNG_EXP_PL_TYPE",  MANAGE_EXP_PL_TYPE,         VALUE_NUM, NULL, DF_NORM },
   { "MNG_IMP_BDJ4_DIR", MANAGE_IMP_BDJ4_DIR,        VALUE_STR, NULL, DF_NORM },
+  { "MNG_IMP_PL_DIR",   MANAGE_IMP_PL_DIR,          VALUE_STR, NULL, DF_NORM },
+  { "MNG_IMP_PL_POS_X", IMP_PL_POSITION_X,          VALUE_NUM, NULL, DF_NORM },
+  { "MNG_IMP_PL_POS_Y", IMP_PL_POSITION_Y,          VALUE_NUM, NULL, DF_NORM },
+  { "MNG_IMP_PL_TYPE",  MANAGE_IMP_PL_TYPE,         VALUE_NUM, NULL, DF_NORM },
   { "MNG_POS_X",        MANAGE_POSITION_X,          VALUE_NUM, NULL, DF_NORM },
   { "MNG_POS_Y",        MANAGE_POSITION_Y,          VALUE_NUM, NULL, DF_NORM },
   { "MNG_SELFILE_POS_X",MANAGE_SELFILE_POSITION_X,  VALUE_NUM, NULL, DF_NORM },
@@ -424,10 +428,10 @@ static bool     manageQueueProcessSonglist (void *udata, int32_t dbidx);
 static bool     manageQueueProcessSBSSongList (void *udata, int32_t dbidx);
 static void     manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int dispsel, int action);
 static nlistidx_t manageLoadMusicQueue (manageui_t *manage, int mqidx);
-/* playlist */
+/* playlist import/export */
 static bool     managePlaylistExport (void *udata);
-static bool     managePlaylistImport (void *udata);
 static bool     managePlaylistExportRespHandler (void *udata, const char *fname, int type);
+static bool     managePlaylistImport (void *udata);
 static bool     managePlaylistImportRespHandler (void *udata);
 /* export/import bdj4 */
 static bool     managePlaylistExportBDJ4 (void *udata);
@@ -510,8 +514,8 @@ main (int argc, char *argv[])
   for (int i = 0; i < MANAGE_NB_MAX; ++i) {
     manage.nbtabid [i] = uinbutilIDInit ();
   }
-  manage.sloldname = NULL;
-  manage.slpriorname = NULL;
+  *manage.sloldname = '\0';
+  *manage.slpriorname = '\0';
   manage.cfplfn = NULL;
   manage.itunes = NULL;
   manage.itunesdd = NULL;
@@ -618,6 +622,10 @@ main (int argc, char *argv[])
     nlistSetNum (manage.minfo.options, MANAGE_AUDIOID_PANE_POSITION, -1);
     nlistSetNum (manage.minfo.options, QE_POSITION_X, -1);
     nlistSetNum (manage.minfo.options, QE_POSITION_Y, -1);
+    nlistSetStr (manage.minfo.options, MANAGE_IMP_PL_DIR, "");
+    nlistSetNum (manage.minfo.options, IMP_PL_POSITION_X, -1);
+    nlistSetNum (manage.minfo.options, IMP_PL_POSITION_Y, -1);
+    nlistSetNum (manage.minfo.options, MANAGE_IMP_PL_TYPE, AUDIOSRC_TYPE_FILE);
   }
   manage.sbssonglist = nlistGetNum (manage.minfo.options, MANAGE_SBS_SONGLIST);
 
@@ -749,8 +757,6 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   songdbFree (manage->songdb);
   uisfFree (manage->uisongfilter);
-  dataFree (manage->sloldname);
-  dataFree (manage->slpriorname);
   dataFree (manage->cfplfn);
   for (int i = 0; i < MANAGE_NB_MAX; ++i) {
     uinbutilIDFree (manage->nbtabid [i]);
@@ -1219,6 +1225,7 @@ manageMainLoop (void *tmanage)
 
   uieibdj4Process (manage->uieibdj4);
   uiexpplProcess (manage->uiexppl);
+  uiimpplProcess (manage->uiimppl);
   manageDbProcess (manage->managedb);
   uicopytagsProcess (manage->uict);
 
@@ -2290,7 +2297,7 @@ manageiTunesDialogResponseHandler (void *udata, int32_t responseid)
       const char  *songfn;
       song_t      *song;
       dbidx_t     dbidx;
-      char        tbuff [200];
+      char        tbuff [MAX_PL_NM_LEN];
 
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: itunes: import");
       plname = uiddGetSelectionStr (manage->itunesdd);
@@ -2460,7 +2467,7 @@ manageMusicManagerMenu (manageui_t *manage)
 static void
 manageSonglistMenu (manageui_t *manage)
 {
-  char        tbuff [200];
+  char        tbuff [MAX_PL_NM_LEN];
   uiwcont_t   *menu;
   uiwcont_t   *menuitem;
 
@@ -2644,15 +2651,15 @@ static bool
 manageSonglistCopy (void *udata)
 {
   manageui_t  *manage = udata;
-  char        *oname;
-  char        newname [200];
+  char        oname [MAX_PL_NM_LEN];
+  char        newname [MAX_PL_NM_LEN];
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy songlist");
   uiLabelSetText (manage->minfo.statusMsg, "");
   manageSonglistSave (manage);
 
-  oname = uimusicqGetSonglistName (manage->currmusicq);
+  uimusicqGetSonglistName (manage->currmusicq, oname, sizeof (oname));
 
   /* CONTEXT: manage-ui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
@@ -2661,7 +2668,6 @@ manageSonglistCopy (void *udata)
     manageLoadPlaylistCB (manage, newname);
     manage->slbackupcreated = false;
   }
-  mdfree (oname);
   logProcEnd ("");
   return UICB_CONT;
 }
@@ -2693,19 +2699,17 @@ static bool
 manageSonglistDelete (void *udata)
 {
   manageui_t  *manage = udata;
-  char        *oname;
+  char        oname [MAX_PL_NM_LEN];
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new songlist");
-  oname = uimusicqGetSonglistName (manage->currmusicq);
+  uimusicqGetSonglistName (manage->currmusicq, oname, sizeof (oname));
 
   manageDeletePlaylist (oname);
   /* no save */
-  dataFree (manage->sloldname);
-  manage->sloldname = NULL;
+  *manage->sloldname = '\0';
   manageSonglistNew (manage);
   manageDeleteStatus (manage->minfo.statusMsg, oname);
-  mdfree (oname);
   logProcEnd ("");
   return UICB_CONT;
 }
@@ -2739,10 +2743,9 @@ manageSonglistCreateFromPlaylist (void *udata)
 
   /* if there are no songs, preserve the song list name, as */
   /* the user may have typed in a new name before running create-from-pl */
-  dataFree (manage->slpriorname);
-  manage->slpriorname = NULL;
+  *manage->slpriorname = '\0';
   if (uimusicqGetCount (manage->currmusicq) <= 0) {
-    manage->slpriorname = uimusicqGetSonglistName (manage->currmusicq);
+    uimusicqGetSonglistName (manage->currmusicq, manage->slpriorname, sizeof (manage->slpriorname));
   }
   manageSongListCFPLCreateDialog (manage);
 
@@ -2901,10 +2904,9 @@ manageCFPLCreate (manageui_t *manage)
   manageSonglistLoadFile (manage, fn, MANAGE_CREATE);
 
   /* make sure no save happens with the playlist being used */
-  dataFree (manage->sloldname);
-  manage->sloldname = NULL;
+  *manage->sloldname = '\0';
   manage->editmode = EDIT_TRUE;
-  if (manage->slpriorname != NULL) {
+  if (*manage->slpriorname) {
     manageSetSonglistName (manage, manage->slpriorname);
   } else {
     /* CONTEXT: manage-ui: song list: default name for a new song list */
@@ -2931,9 +2933,9 @@ manageCFPLPostProcess (manageui_t *manage)
   dance_t     *dances;
   ilistidx_t  diteridx;
   ilistidx_t  dkey;
-  char        *tnm;
+  char        tnm [MAX_PL_NM_LEN];
 
-  tnm = uimusicqGetSonglistName (manage->currmusicq);
+  uimusicqGetSonglistName (manage->currmusicq, tnm, sizeof (tnm));
   manageSonglistSave (manage);
 
   /* copy the settings from the base playlist to the new song list */
@@ -2964,7 +2966,6 @@ manageCFPLPostProcess (manageui_t *manage)
 
   /* update the playlist tab */
   managePlaylistLoadFile (manage->managepl, tnm, MANAGE_PRELOAD_FORCE);
-  mdfree (tnm);
 
   manage->cfplpostprocess = false;
 }
@@ -3000,7 +3001,7 @@ static void
 manageSonglistLoadFile (void *udata, const char *fn, int preloadflag)
 {
   manageui_t  *manage = udata;
-  char        tbuff [200];
+  char        tbuff [MAX_PL_NM_LEN];
 
   logProcBegin ();
   if (manage->inload) {
@@ -3122,12 +3123,11 @@ manageToggleSBSSonglist (void *udata)
   uimusicq = manageGetCurrMusicQ (manage);
 
   if (manage->musicqManageIdx == MUSICQ_SL) {
-    char    *name;
+    char    name [MAX_PL_NM_LEN];
 
     uimusicqCopySelectList (ouimusicq, uimusicq);
-    name = uimusicqGetSonglistName (ouimusicq);
+    uimusicqGetSonglistName (ouimusicq, name, sizeof (name));
     manageSetSonglistName (manage, name);
-    mdfree (name);
   }
 
   manageSetSBSSonglist (manage);
@@ -3161,8 +3161,7 @@ manageSetSBSSonglist (manageui_t *manage)
 static void
 manageSetSonglistName (manageui_t *manage, const char *nm)
 {
-  dataFree (manage->sloldname);
-  manage->sloldname = mdstrdup (nm);
+  stpecpy (manage->sloldname, manage->sloldname + sizeof (manage->sloldname), nm);
   uimusicqSetSonglistName (manage->currmusicq, nm);
   logMsg (LOG_DBG, LOG_INFO, "song list name set: %s", nm);
 }
@@ -3170,7 +3169,7 @@ manageSetSonglistName (manageui_t *manage, const char *nm)
 static void
 manageSonglistSave (manageui_t *manage)
 {
-  char        *name;
+  char        name [MAX_PL_NM_LEN];
   char        nnm [MAXPATHLEN];
   bool        notvalid;
 
@@ -3179,7 +3178,7 @@ manageSonglistSave (manageui_t *manage)
     logProcEnd ("null-manage");
     return;
   }
-  if (manage->sloldname == NULL) {
+  if (! *manage->sloldname) {
     logProcEnd ("no-sl-old-name");
     return;
   }
@@ -3194,11 +3193,10 @@ manageSonglistSave (manageui_t *manage)
     return;
   }
 
-  name = uimusicqGetSonglistName (manage->currmusicq);
+  uimusicqGetSonglistName (manage->currmusicq, name, sizeof (name));
   notvalid = false;
   if (uimusicqSonglistNameIsNotValid (manage->currmusicq)) {
-    mdfree (name);
-    name = mdstrdup (manage->sloldname);
+    stpecpy (name, name + sizeof (name), manage->sloldname);
     uimusicqSetSonglistName (manage->currmusicq, manage->sloldname);
     notvalid = true;
   }
@@ -3221,7 +3219,6 @@ manageSonglistSave (manageui_t *manage)
   uimusicqSave (manage->musicdb, manage->musicqupdate [MUSICQ_SL], name);
   playlistCheckAndCreate (name, PLTYPE_SONGLIST);
   manageLoadPlaylistCB (manage, name);
-  mdfree (name);
 
   if (notvalid) {
     /* set the message after the entry field has been reset */
@@ -3355,7 +3352,7 @@ static bool
 managePlaylistExport (void *udata)
 {
   manageui_t  *manage = udata;
-  char        *slname;
+  char        slname [MAX_PL_NM_LEN];
 
   if (manage->exportactive) {
     return UICB_STOP;
@@ -3367,9 +3364,8 @@ managePlaylistExport (void *udata)
 
   manageSonglistSave (manage);
 
-  slname = uimusicqGetSonglistName (manage->currmusicq);
+  uimusicqGetSonglistName (manage->currmusicq, slname, sizeof (slname));
   uiexpplDialog (manage->uiexppl, slname);
-  mdfree (slname);
 
   manage->exportactive = false;
   logProcEnd ("");
@@ -3377,13 +3373,22 @@ managePlaylistExport (void *udata)
 }
 
 static bool
+managePlaylistExportRespHandler (void *udata, const char *fname, int type)
+{
+  manageui_t  *manage = udata;
+  char        slname [MAX_PL_NM_LEN];
+
+  uimusicqGetSonglistName (manage->currmusicq, slname, sizeof (slname));
+  uimusicqExport (manage->currmusicq, manage->musicqupdate [MUSICQ_SL],
+      fname, slname, type);
+
+  return UICB_CONT;
+}
+
+static bool
 managePlaylistImport (void *udata)
 {
   manageui_t  *manage = udata;
-  char        nplname [200];
-//  char        tbuff [MAXPATHLEN];
-//  uiselect_t  *selectdata;
-//  char        *fn;
 
   if (manage->importactive) {
     return UICB_STOP;
@@ -3398,36 +3403,53 @@ managePlaylistImport (void *udata)
 
   /* CONTEXT: manage-ui: song list: default name for a new song list */
   manageSetSonglistName (manage, _("New Song List"));
-  stpecpy (nplname, nplname + sizeof (nplname), manage->sloldname);
-
-// ###
 
   uiimpplDialog (manage->uiimppl);
 
-#if 0
-  selectdata = uiSelectInit (manage->minfo.window,
-      /* CONTEXT: manage-ui: song list import: title of dialog */
-      _("Import Playlist"), sysvarsGetStr (SV_BDJ4_DIR_DATATOP), NULL,
-      /* CONTEXT: manage-ui: song list import: name of file import type */
-      _("Playlists"), "audio/x-mpegurl|application/xspf+xml|*.jspf");
+  logProcEnd ("");
+  return UICB_CONT;
+}
 
-  fn = uiSelectFileDialog (selectdata);
+static bool
+managePlaylistImportRespHandler (void *udata)
+{
+  manageui_t  *manage = udata;
+  char        slname [MAX_PL_NM_LEN];
+  char        nplname [MAX_PL_NM_LEN];
+  char        uri [MAXPATHLEN];
+  int         imptype;
+  int         mqidx;
 
-  if (fn == NULL) {
-    mdfree (selectdata);
+  uimusicqGetSonglistName (manage->currmusicq, slname, sizeof (slname));
+  stpecpy (nplname, nplname + sizeof (nplname), slname);
+
+  imptype = uiimpplGetType (manage->uiimppl);
+  if (imptype == AUDIOSRC_TYPE_NONE) {
     manage->importactive = false;
     return UICB_CONT;
   }
 
-  {
+  uiimpplGetURI (manage->uiimppl, uri, sizeof (uri));
+// ### need to process new name...
+
+  mqidx = manage->musicqManageIdx;
+  /* clear the entire queue */
+  uimusicqTruncateQueueCallback (manage->currmusicq);
+
+  if (imptype == AUDIOSRC_TYPE_FILE) {
     nlist_t     *list = NULL;
-    int         mqidx;
     dbidx_t     dbidx;
     nlistidx_t  iteridx;
     size_t      len;
     pathinfo_t  *pi;
+    char        tbuff [MAXPATHLEN];
 
-    pi = pathInfo (fn);
+    if (! *uri) {
+      manage->importactive = false;
+      return UICB_CONT;
+    }
+
+    pi = pathInfo (uri);
 
     len = pi->blen + 1;
     if (len > sizeof (nplname)) {
@@ -3436,13 +3458,13 @@ managePlaylistImport (void *udata)
     stpecpy (nplname, nplname + len, pi->basename);
 
     if (pathInfoExtCheck (pi, ".m3u") || pathInfoExtCheck (pi, ".m3u8")) {
-      list = m3uImport (manage->musicdb, fn, nplname, sizeof (nplname));
+      list = m3uImport (manage->musicdb, uri, nplname, sizeof (nplname));
     }
     if (pathInfoExtCheck (pi, ".xspf")) {
-      list = xspfImport (manage->musicdb, fn, nplname, sizeof (nplname));
+      list = xspfImport (manage->musicdb, uri, nplname, sizeof (nplname));
     }
     if (pathInfoExtCheck (pi, ".jspf")) {
-      list = jspfImport (manage->musicdb, fn, nplname, sizeof (nplname));
+      list = jspfImport (manage->musicdb, uri, nplname, sizeof (nplname));
     }
 
     pathInfoFree (pi);
@@ -3453,11 +3475,6 @@ managePlaylistImport (void *udata)
       manageSetSonglistName (manage, nplname);
     }
 
-    mqidx = manage->musicqManageIdx;
-
-    /* clear the entire queue */
-    uimusicqTruncateQueueCallback (manage->currmusicq);
-
     if (list != NULL && nlistGetCount (list) > 0) {
       nlistStartIterator (list, &iteridx);
       while ((dbidx = nlistIterateKey (list, &iteridx)) >= 0) {
@@ -3467,44 +3484,15 @@ managePlaylistImport (void *udata)
     }
 
     nlistFree (list);
-    mdfree (fn);
+    manageLoadPlaylistCB (manage, nplname);
+  } /* audiosrc-type: file */
+
+  if (imptype != AUDIOSRC_TYPE_FILE) {
   }
-  mdfree (selectdata);
-#endif
 
-  manageLoadPlaylistCB (manage, nplname);
   manage->importactive = false;
-  logProcEnd ("");
   return UICB_CONT;
 }
-
-static bool
-managePlaylistExportRespHandler (void *udata, const char *fname, int type)
-{
-  manageui_t  *manage = udata;
-  char        *slname;
-
-  slname = uimusicqGetSonglistName (manage->currmusicq);
-  uimusicqExport (manage->currmusicq, manage->musicqupdate [MUSICQ_SL],
-      fname, slname, type);
-  mdfree (slname);
-
-  return UICB_CONT;
-}
-
-static bool
-managePlaylistImportRespHandler (void *udata)
-{
-  manageui_t  *manage = udata;
-  char        *slname;
-
-  slname = uimusicqGetSonglistName (manage->currmusicq);
-// ###
-  mdfree (slname);
-
-  return UICB_CONT;
-}
-
 
 /* export/import bdj4 */
 
@@ -3556,11 +3544,11 @@ static bool
 manageExportBDJ4ResponseHandler (void *udata)
 {
   manageui_t  *manage = udata;
-  char        *slname;
+  char        slname [MAX_PL_NM_LEN];
   char        *dir = NULL;
   nlist_t     *dbidxlist;
 
-  slname = uimusicqGetSonglistName (manage->currmusicq);
+  uimusicqGetSonglistName (manage->currmusicq, slname, sizeof (slname));
   dbidxlist = uimusicqGetDBIdxList (manage->musicqupdate [MUSICQ_SL]);
 
   dir = uieibdj4GetDir (manage->uieibdj4);
@@ -3577,7 +3565,6 @@ manageExportBDJ4ResponseHandler (void *udata)
   manage->expimpbdj4state = BDJ4_STATE_PROCESS;
   mstimeset (&manage->eibdj4ChkTime, 200);
 
-  mdfree (slname);
   return UICB_CONT;
 }
 
@@ -3845,7 +3832,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int mainlasttab)
 
   /* switching to the music-manager */
   if (manage->maincurrtab == MANAGE_TAB_MAIN_MM) {
-    char    *slname;
+    char    slname [MAX_PL_NM_LEN];
     int     lasttab;
 
     /* use a copy, as it will change */
@@ -3864,9 +3851,8 @@ manageSetDisplayPerSelection (manageui_t *manage, int mainlasttab)
         /* the song list must be saved, otherwise the song filter */
         /* can't load it */
         manageSonglistSave (manage);
-        slname = uimusicqGetSonglistName (manage->currmusicq);
+        uimusicqGetSonglistName (manage->currmusicq, slname, sizeof (slname));
         uisfSetPlaylist (manage->uisongfilter, slname);
-        mdfree (slname);
         manage->selbypass = true;
         /* the apply-song-filter call will reset the apply-callback correctly */
         uisongselApplySongFilter (manage->mmsongsel);
@@ -3916,26 +3902,24 @@ manageSetMenuCallback (manageui_t *manage, int midx, callbackFunc cb)
 static void
 manageSonglistLoadCheck (manageui_t *manage)
 {
-  char  *name;
+  char  name [MAX_PL_NM_LEN];
 
   logProcBegin ();
-  if (manage->sloldname == NULL) {
+  if (! *manage->sloldname) {
     logProcEnd ("no-old-name");
     return;
   }
 
-  name = uimusicqGetSonglistName (manage->currmusicq);
+  uimusicqGetSonglistName (manage->currmusicq, name, sizeof (name));
 
   if (! songlistExists (name)) {
     logMsg (LOG_DBG, LOG_INFO, "no songlist %s", name);
     /* make sure no save happens */
-    dataFree (manage->sloldname);
-    manage->sloldname = NULL;
+    *manage->sloldname = '\0';
     manageSonglistNew (manage);
   } else {
     manageLoadPlaylistCB (manage, name);
   }
-  mdfree (name);
   logProcEnd ("");
 }
 
