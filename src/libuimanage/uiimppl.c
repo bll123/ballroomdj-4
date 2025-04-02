@@ -26,6 +26,7 @@
 #include "nlist.h"
 #include "pathbld.h"
 #include "pathdisp.h"
+#include "pathinfo.h"
 #include "pathutil.h"
 #include "playlist.h"
 #include "slist.h"
@@ -66,6 +67,7 @@ typedef struct uiimppl {
   uidd_t            *plselect;
   nlist_t           *options;
   nlist_t           *aslist;
+  nlist_t           *askeys;
   slist_t           *astypes;
   ilist_t           *plnames;
   callback_t        *callbacks [UIIMPPL_CB_MAX];
@@ -107,7 +109,9 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
     uiimppl->callbacks [i] = NULL;
   }
   uiimppl->isactive = false;
+  uiimppl->astypes = NULL;
   uiimppl->aslist = NULL;
+  uiimppl->askeys = NULL;
   uiimppl->plnames = NULL;
 
   uiimppl->callbacks [UIIMPPL_CB_DIALOG] = callbackInitI (
@@ -143,15 +147,21 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
   }
   slistSort (uiimppl->astypes);
 
-  uiimppl->aslist = nlistAlloc ("aslist", LIST_ORDERED, NULL);
+  uiimppl->aslist = nlistAlloc ("aslist", LIST_UNORDERED, NULL);
+  nlistSetSize (uiimppl->aslist, slistGetCount (uiimppl->astypes));
+  uiimppl->askeys = nlistAlloc ("askeys", LIST_UNORDERED, NULL);
+  nlistSetSize (uiimppl->askeys, slistGetCount (uiimppl->astypes));
   count = 0;
   slistStartIterator (uiimppl->astypes, &titeridx);
   while ((asnm = slistIterateKey (uiimppl->astypes, &titeridx)) != NULL) {
     len = strlen (asnm);
     uiimppl->asmaxwidth = len;
     nlistSetStr (uiimppl->aslist, count, asnm);
+    nlistSetNum (uiimppl->askeys, count, slistGetNum (uiimppl->astypes, asnm));
     ++count;
   }
+  nlistSort (uiimppl->aslist);
+  nlistSort (uiimppl->askeys);
 
   uiimppl->imptype = nlistGetNum (uiimppl->options, MANAGE_IMP_PL_TYPE);
   if (uiimppl->imptype < 0) {
@@ -168,6 +178,9 @@ uiimpplFree (uiimppl_t *uiimppl)
     return;
   }
 
+  slistFree (uiimppl->astypes);
+  nlistFree (uiimppl->aslist);
+  nlistFree (uiimppl->askeys);
   for (int j = 0; j < UIIMPPL_W_MAX; ++j) {
     uiwcontFree (uiimppl->wcont [j]);
     uiimppl->wcont [j] = NULL;
@@ -231,9 +244,7 @@ uiimpplProcess (uiimppl_t *uiimppl)
     return;
   }
 
-  if (uiimppl->imptype == AUDIOSRC_TYPE_FILE) {
-    uiEntryValidate (uiimppl->wcont [UIIMPPL_W_URI], false);
-  }
+  uiEntryValidate (uiimppl->wcont [UIIMPPL_W_URI], false);
   uiEntryValidate (uiimppl->wcont [UIIMPPL_W_NEWNAME], false);
 }
 
@@ -343,7 +354,7 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
 
   uiwidgetp = uiSpinboxTextCreate (uiimppl);
   uiSpinboxTextSet (uiwidgetp, 0, nlistGetCount (uiimppl->aslist),
-      uiimppl->asmaxwidth, uiimppl->aslist, NULL, NULL);
+      uiimppl->asmaxwidth, uiimppl->aslist, uiimppl->askeys, NULL);
   uiSpinboxTextSetValue (uiwidgetp, uiimppl->imptype);
   uiSpinboxTextSetValueChangedCallback (uiwidgetp,
       uiimppl->callbacks [UIIMPPL_CB_TYPE_SEL]);
@@ -442,26 +453,26 @@ uiimpplTargetDialog (void *udata)
 {
   uiimppl_t  *uiimppl = udata;
   uiselect_t  *selectdata;
-  const char  *odir = NULL;
-  char        *dir = NULL;
+  const char  *ofn = NULL;
+  char        *fn = NULL;
 
   if (uiimppl == NULL) {
     return UICB_STOP;
   }
 
-  odir = uiEntryGetValue (uiimppl->wcont [UIIMPPL_W_URI]);
+  ofn = uiEntryGetValue (uiimppl->wcont [UIIMPPL_W_URI]);
   selectdata = uiSelectInit (uiimppl->parentwin,
       /* CONTEXT: import playlist: title of dialog */
       _("Import Playlist"), sysvarsGetStr (SV_BDJ4_DIR_DATATOP), NULL,
-      /* CONTEXT: import playlist: name of file import type */
+      /* CONTEXT: import playlist: name of fn import type */
       _("Playlists"), "audio/x-mpegurl|application/xspf+xml|*.jspf");
 
-  dir = uiSelectDirDialog (selectdata);
-  if (dir != NULL) {
+  fn = uiSelectFileDialog (selectdata);
+  if (fn != NULL) {
     /* the validation process will be called */
-    uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_URI], dir);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "selected dir: %s", dir);
-    mdfree (dir);   // allocated by gtk
+    uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_URI], fn);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "selected file: %s", fn);
+    mdfree (fn);   // allocated by gtk
   }
   uiSelectFree (selectdata);
 
@@ -528,33 +539,47 @@ uiimpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
   uiimppl_t  *uiimppl = udata;
   const char  *str;
   char        tbuff [MAXPATHLEN];
+  pathinfo_t  *pi;
 
-  uiLabelSetText (
-      uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
+  uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
 
   str = uiEntryGetValue (entry);
-  *tbuff = '\0';
-  if (str != NULL) {
-    snprintf (tbuff, sizeof (tbuff), "%s/data", str);
-  }
-  pathNormalizePath (tbuff, sizeof (tbuff));
 
-  /* validation failures:
-   *   target is not set (no message displayed)
-   *   target is not a directory
-   *   if importing, target/data is not a directory
-   */
-  if (! *str || ! fileopIsDirectory (str) ||
-      ! fileopIsDirectory (tbuff)) {
-    if (*str) {
-      uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG],
-          /* CONTEXT: export/import bdj4: invalid target folder */
-          _("Invalid Folder"));
+  if (uiimppl->imptype == AUDIOSRC_TYPE_FILE) {
+    bool    extok = false;
+    *tbuff = '\0';
+    stpecpy (tbuff, tbuff + sizeof (tbuff), str);
+    pathNormalizePath (tbuff, sizeof (tbuff));
+    pi = pathInfo (tbuff);
+    if (pathInfoExtCheck (pi, ".m3u") ||
+        pathInfoExtCheck (pi, ".m3u8") ||
+        pathInfoExtCheck (pi, ".xspf") ||
+        pathInfoExtCheck (pi, ".jspf")) {
+      extok = true;
     }
-    return UIENTRY_ERROR;
+
+    if (*tbuff && (! extok || ! fileopFileExists (tbuff))) {
+      uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG],
+          /* CONTEXT: import playlist: invalid target file */
+          _("Invalid File"));
+      pathInfoFree (pi);
+      return UIENTRY_ERROR;
+    }
+
+    snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
+    uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_NEWNAME], tbuff);
+    pathInfoFree (pi);
   }
 
-//  uiddSetList (uiimppl->uiplaylist, PL_LIST_DIR, tbuff);
+  if (uiimppl->imptype == AUDIOSRC_TYPE_BDJ4) {
+    if (strncmp (str, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) != 0) {
+      uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG],
+          /* CONTEXT: import playlist: invalid URI */
+          _("Invalid URI"));
+      return UIENTRY_ERROR;
+    }
+  }
+
   return UIENTRY_OK;
 }
 
@@ -586,13 +611,11 @@ uiimpplValidateNewName (uiwcont_t *entry, const char *label, void *udata)
 
   if (rc == UIENTRY_OK) {
     str = uiEntryGetValue (entry);
-    if (uiimppl->imptype == AUDIOSRC_TYPE_FILE && *str) {
-// ### fix
-// needs to figure out the import filename...
+    if (*str && uiimppl->imptype == AUDIOSRC_TYPE_FILE) {
       pathbldMakePath (fn, sizeof (fn),
           str, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
       if (fileopFileExists (fn)) {
-        /* CONTEXT: import from bdj4: error message if the target song list already exists */
+        /* CONTEXT: import playlist: message if the target song list already exists */
         snprintf (tbuff, sizeof (tbuff), "%s: %s", str, _("Already Exists"));
         uiLabelSetText (statusMsg, tbuff);
       }
@@ -622,7 +645,6 @@ uiimpplImportTypeCallback (void *udata)
     uiimppl->plnames = ilistAlloc ("plnames", LIST_ORDERED);
     ilistSetSize (uiimppl->plnames, audiosrcIterCount (asiter));
     while ((plnm = audiosrcIterate (asiter)) != NULL) {
-fprintf (stderr, "plnm: %s\n", plnm);
       ilistSetNum (uiimppl->plnames, idx, DD_LIST_KEY_NUM, idx);
       ilistSetStr (uiimppl->plnames, idx, DD_LIST_DISP, plnm);
       ++idx;

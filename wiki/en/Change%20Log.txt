@@ -11,6 +11,7 @@
     * Internal: Code cleanup.
     * Internal: Minor bug fixes.
     * Internal: Update mongoose to version 7.17.
+    * Music Manager: Export Playlist: Fix and improve validation.
     * Windows: Add application manifest.
     * Windows: Add missing translations (dialogs).
 * New Features:

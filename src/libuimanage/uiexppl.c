@@ -40,6 +40,8 @@ enum {
 
 enum {
   UIEXPPL_W_DIALOG,
+  UIEXPPL_W_STATUS_MSG,
+  UIEXPPL_W_ERROR_MSG,
   UIEXPPL_W_EXP_TYPE,
   UIEXPPL_W_TARGET,
   UIEXPPL_W_TGT_BUTTON,
@@ -53,7 +55,7 @@ typedef struct {
   const char  *extb;
 } uiexppltype_t;
 
-uiexppltype_t exptypes [EI_TYPE_MAX] = {
+static uiexppltype_t exptypes [EI_TYPE_MAX] = {
   [EI_TYPE_JSPF] = { EI_TYPE_JSPF,  "JSPF", ".jspf", NULL },
   [EI_TYPE_M3U] = { EI_TYPE_M3U,   "M3U",  ".m3u", ".m3u8" },
   [EI_TYPE_XSPF] = { EI_TYPE_XSPF,  "XSPF",  ".xspf", NULL },
@@ -69,7 +71,7 @@ typedef struct uiexppl {
   char              *slname;
   int               exptype;
   bool              isactive;
-  bool              invalidation;
+  bool              in_validate;
 } uiexppl_t;
 
 /* export playlist */
@@ -98,7 +100,7 @@ uiexpplInit (uiwcont_t *windowp, nlist_t *opts)
   }
   uiexppl->slname = NULL;
   uiexppl->isactive = false;
-  uiexppl->invalidation = false;
+  uiexppl->in_validate = false;
 
   uiexppl->exptype = nlistGetNum (uiexppl->options, MANAGE_EXP_PL_TYPE);
   if (uiexppl->exptype < 0) {
@@ -244,6 +246,24 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiWidgetExpandHoriz (vbox);
   uiWidgetExpandVert (vbox);
   uiWidgetSetAllMargins (vbox, 4);
+
+  /* status msg */
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
+
+  uiwidgetp = uiCreateLabel ("");
+  uiBoxPackEnd (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
+  uiexppl->wcont [UIEXPPL_W_STATUS_MSG] = uiwidgetp;
+
+  /* error msg */
+  uiwidgetp = uiCreateLabel ("");
+  uiBoxPackEnd (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
+  uiexppl->wcont [UIEXPPL_W_ERROR_MSG] = uiwidgetp;
+
+  uiwcontFree (hbox);
 
   /* spinbox for export type */
   hbox = uiCreateHorizBox ();
@@ -405,57 +425,63 @@ uiexpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
   pathinfo_t  *pi;
   bool        found = false;
 
-  if (uiexppl->invalidation) {
+  if (uiexppl->in_validate) {
     return UIENTRY_OK;
   }
 
-  uiexppl->invalidation = true;
+  uiLabelSetText (uiexppl->wcont [UIEXPPL_W_ERROR_MSG], "");
+
+  uiexppl->in_validate = true;
 
   str = uiEntryGetValue (entry);
-
-  /* validation failures: */
-  /*   target is not set (no message displayed) */
-  /*   target is a directory */
-  /* file may or may not exist */
-  if (! *str || fileopIsDirectory (str)) {
-    uiexppl->invalidation = false;
-    return UIENTRY_ERROR;
-  }
 
   stpecpy (tbuff, tbuff + sizeof (tbuff), str);
   pathNormalizePath (tbuff, sizeof (tbuff));
 
-  pi = pathInfo (tbuff);
-  snprintf (tdir, sizeof (tdir), "%.*s", (int) pi->dlen, pi->dirname);
-  if (! fileopIsDirectory (tdir)) {
-    uiexppl->invalidation = false;
+  if (! *tbuff || fileopIsDirectory (tbuff)) {
+    if (*tbuff) {
+      uiLabelSetText (uiexppl->wcont [UIEXPPL_W_ERROR_MSG],
+          /* CONTEXT: export playlist: invalid target file */
+          _("Invalid File"));
+    }
+    uiexppl->in_validate = false;
     return UIENTRY_ERROR;
   }
 
-  if (pi->dlen > 0 &&
-      ! pathInfoExtCheck (pi, exptypes [uiexppl->exptype].ext)) {
-    for (int i = 0; i < EI_TYPE_MAX; ++i) {
-      if (pathInfoExtCheck (pi, exptypes [i].ext) ||
-          (exptypes [i].extb != NULL &&
-          pathInfoExtCheck (pi, exptypes [i].extb))) {
-        uiSpinboxTextSetValue (uiexppl->wcont [UIEXPPL_W_EXP_TYPE], i);
-        uiexppl->exptype = i;
-        found = true;
-        break;
-      }
+  pi = pathInfo (tbuff);
+  snprintf (tdir, sizeof (tdir), "%.*s", (int) pi->dlen, pi->dirname);
+  if (! fileopIsDirectory (tdir)) {
+    uiLabelSetText (uiexppl->wcont [UIEXPPL_W_ERROR_MSG],
+        /* CONTEXT: export playlist: invalid target file */
+        _("Invalid File"));
+    uiexppl->in_validate = false;
+    return UIENTRY_ERROR;
+  }
+
+  for (int i = 0; i < EI_TYPE_MAX; ++i) {
+    if (pathInfoExtCheck (pi, exptypes [i].ext) ||
+        (exptypes [i].extb != NULL &&
+        pathInfoExtCheck (pi, exptypes [i].extb))) {
+      uiSpinboxTextSetValue (uiexppl->wcont [UIEXPPL_W_EXP_TYPE], i);
+      uiexppl->exptype = i;
+      found = true;
+      break;
     }
   }
   pathInfoFree (pi);
 
   if (! found) {
-    uiexppl->invalidation = false;
+    uiLabelSetText (uiexppl->wcont [UIEXPPL_W_ERROR_MSG],
+        /* CONTEXT: export playlist: invalid target file extension */
+        _("Invalid Extension"));
+    uiexppl->in_validate = false;
     return UIENTRY_ERROR;
   }
 
   nlistSetStr (uiexppl->options, MANAGE_EXP_PL_DIR, tdir);
   nlistSetNum (uiexppl->options, MANAGE_EXP_PL_TYPE, uiexppl->exptype);
 
-  uiexppl->invalidation = false;
+  uiexppl->in_validate = false;
   return UIENTRY_OK;
 }
 
@@ -467,11 +493,11 @@ uiexpplExportTypeCallback (void *udata)
   const char  *str;
   pathinfo_t  *pi;
 
-  if (uiexppl->invalidation) {
+  if (uiexppl->in_validate) {
     return UICB_CONT;
   }
 
-  uiexppl->invalidation = true;
+  uiexppl->in_validate = true;
 
   uiexppl->exptype = uiSpinboxTextGetValue (
       uiexppl->wcont [UIEXPPL_W_EXP_TYPE]);
@@ -490,7 +516,7 @@ uiexpplExportTypeCallback (void *udata)
   }
   pathInfoFree (pi);
 
-  uiexppl->invalidation = false;
+  uiexppl->in_validate = false;
   return UICB_CONT;
 }
 
