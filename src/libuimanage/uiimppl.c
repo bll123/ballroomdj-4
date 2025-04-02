@@ -29,7 +29,6 @@
 #include "pathinfo.h"
 #include "pathutil.h"
 #include "playlist.h"
-#include "slist.h"
 #include "sysvars.h"
 #include "ui.h"
 #include "uidd.h"
@@ -68,12 +67,14 @@ typedef struct uiimppl {
   nlist_t           *options;
   nlist_t           *aslist;
   nlist_t           *askeys;
-  slist_t           *astypes;
   ilist_t           *plnames;
   callback_t        *callbacks [UIIMPPL_CB_MAX];
   size_t            asmaxwidth;
+  int               askey;
   int               imptype;
+  int               asconfcount;
   bool              isactive;
+  bool              in_cb;
 } uiimppl_t;
 
 /* import playlist */
@@ -94,7 +95,6 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
   size_t      len;
   ilistidx_t  asiteridx;
   ilistidx_t  key;
-  slistidx_t  titeridx;
   int         count;
   char        tbuff [40];
 
@@ -109,55 +109,50 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
     uiimppl->callbacks [i] = NULL;
   }
   uiimppl->isactive = false;
-  uiimppl->astypes = NULL;
+  uiimppl->in_cb = false;
   uiimppl->aslist = NULL;
   uiimppl->askeys = NULL;
   uiimppl->plnames = NULL;
-
-  uiimppl->callbacks [UIIMPPL_CB_DIALOG] = callbackInitI (
-      uiimpplResponseHandler, uiimppl);
-  uiimppl->callbacks [UIIMPPL_CB_TARGET] = callbackInit (
-      uiimpplTargetDialog, uiimppl, NULL);
-  uiimppl->callbacks [UIIMPPL_CB_SEL] = callbackInitS (
-      uiimpplSelectHandler, uiimppl);
-  uiimppl->callbacks [UIIMPPL_CB_TYPE_SEL] = callbackInit (
-      uiimpplImportTypeCallback, uiimppl, NULL);
+  uiimppl->asmaxwidth = 0;
+  uiimppl->askey = -1;
+  uiimppl->imptype = AUDIOSRC_TYPE_NONE;
+  uiimppl->asconf = NULL;
+  uiimppl->asconfcount = 0;
 
   uiimppl->asconf = asconfAlloc ();
+  uiimppl->asconfcount = asconfGetCount (uiimppl->asconf);
 
   count = 0;
-  uiimppl->astypes = slistAlloc ("aslist", LIST_UNORDERED, NULL);
+  uiimppl->aslist = nlistAlloc ("aslist", LIST_UNORDERED, NULL);
+  uiimppl->askeys = nlistAlloc ("aslist", LIST_UNORDERED, NULL);
+
   snprintf (tbuff, sizeof (tbuff), _("File (%s)"), "M3U/XSPF/JSPF");
-  slistSetNum (uiimppl->astypes, tbuff, AUDIOSRC_TYPE_FILE);
+  len = strlen (tbuff);
+  if (len > uiimppl->asmaxwidth) {
+    uiimppl->asmaxwidth = len;
+  }
+  nlistSetStr (uiimppl->aslist, count, tbuff);
+  nlistSetNum (uiimppl->askeys, count, uiimppl->asconfcount);
+logStderr ("askeys: %s %d %d\n", tbuff, count, uiimppl->asconfcount);
+  ++count;
 
   asconfStartIterator (uiimppl->asconf, &asiteridx);
   while ((key = asconfIterate (uiimppl->asconf, &asiteridx)) >= 0) {
     int   type;
 
     type = asconfGetNum (uiimppl->asconf, key, ASCONF_TYPE);
-    if (type == AUDIOSRC_TYPE_NONE || type == AUDIOSRC_TYPE_FILE) {
-      continue;
-    }
     asnm = asconfGetStr (uiimppl->asconf, key, ASCONF_NAME);
     len = strlen (asnm);
     if (len > uiimppl->asmaxwidth) {
       uiimppl->asmaxwidth = len;
     }
-    slistSetNum (uiimppl->astypes, asnm, type);
-  }
-  slistSort (uiimppl->astypes);
-
-  uiimppl->aslist = nlistAlloc ("aslist", LIST_UNORDERED, NULL);
-  nlistSetSize (uiimppl->aslist, slistGetCount (uiimppl->astypes));
-  uiimppl->askeys = nlistAlloc ("askeys", LIST_UNORDERED, NULL);
-  nlistSetSize (uiimppl->askeys, slistGetCount (uiimppl->astypes));
-  count = 0;
-  slistStartIterator (uiimppl->astypes, &titeridx);
-  while ((asnm = slistIterateKey (uiimppl->astypes, &titeridx)) != NULL) {
+logStderr ("askeys: %s %d %d\n", asnm, count, key);
     len = strlen (asnm);
-    uiimppl->asmaxwidth = len;
+    if (len > uiimppl->asmaxwidth) {
+      uiimppl->asmaxwidth = len;
+    }
     nlistSetStr (uiimppl->aslist, count, asnm);
-    nlistSetNum (uiimppl->askeys, count, slistGetNum (uiimppl->astypes, asnm));
+    nlistSetNum (uiimppl->askeys, count, key);
     ++count;
   }
   nlistSort (uiimppl->aslist);
@@ -167,6 +162,15 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
   if (uiimppl->imptype < 0) {
     uiimppl->imptype = AUDIOSRC_TYPE_FILE;
   }
+
+  uiimppl->callbacks [UIIMPPL_CB_DIALOG] = callbackInitI (
+      uiimpplResponseHandler, uiimppl);
+  uiimppl->callbacks [UIIMPPL_CB_TARGET] = callbackInit (
+      uiimpplTargetDialog, uiimppl, NULL);
+  uiimppl->callbacks [UIIMPPL_CB_SEL] = callbackInitS (
+      uiimpplSelectHandler, uiimppl);
+  uiimppl->callbacks [UIIMPPL_CB_TYPE_SEL] = callbackInit (
+      uiimpplImportTypeCallback, uiimppl, NULL);
 
   return uiimppl;
 }
@@ -178,9 +182,10 @@ uiimpplFree (uiimppl_t *uiimppl)
     return;
   }
 
-  slistFree (uiimppl->astypes);
+  ilistFree (uiimppl->plnames);
   nlistFree (uiimppl->aslist);
   nlistFree (uiimppl->askeys);
+  uiddFree (uiimppl->plselect);
   for (int j = 0; j < UIIMPPL_W_MAX; ++j) {
     uiwcontFree (uiimppl->wcont [j]);
     uiimppl->wcont [j] = NULL;
@@ -372,7 +377,8 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiimppl->wcont [UIIMPPL_W_PL_SEL_LABEL] = uiwidgetp;
 
-  uiimppl->plselect = uiddCreate ("imppl-plsel", uiimppl->parentwin, hbox,
+  uiimppl->plselect = uiddCreate ("imppl-plsel",
+      uiimppl->wcont [UIIMPPL_W_DIALOG], hbox,
       /* CONTEXT: import playlist: select the playlist */
       DD_PACK_START, NULL, DD_LIST_TYPE_NUM, "", DD_REPLACE_TITLE,
       uiimppl->callbacks [UIIMPPL_CB_SEL]);
@@ -487,6 +493,7 @@ uiimpplInitDisplay (uiimppl_t *uiimppl)
     return;
   }
 
+logStderr ("init-disp\n");
   uiimpplImportTypeCallback (uiimppl);
 }
 
@@ -630,9 +637,24 @@ uiimpplImportTypeCallback (void *udata)
 {
   uiimppl_t   *uiimppl = udata;
   char        tbuff [40];
+  int         askey;
 
-  uiimppl->imptype = uiSpinboxTextGetValue (
-      uiimppl->wcont [UIIMPPL_W_IMP_TYPE]);
+logStderr ("imp-type-cb\n");
+  if (uiimppl->in_cb) {
+logStderr ("  in-cb\n");
+    return UICB_CONT;
+  }
+  uiimppl->in_cb = true;
+
+  askey = uiSpinboxTextGetValue (uiimppl->wcont [UIIMPPL_W_IMP_TYPE]);
+  uiimppl->askey = askey;
+  if (askey == uiimppl->asconfcount) {
+    uiimppl->imptype = AUDIOSRC_TYPE_FILE;
+  } else {
+    uiimppl->imptype = asconfGetNum (uiimppl->asconf, askey, ASCONF_TYPE);
+  }
+logStderr ("  askey: %d\n", askey);
+logStderr ("  imptype: %d\n", uiimppl->imptype);
 
   if (uiimppl->imptype != AUDIOSRC_TYPE_FILE) {
     asiter_t    *asiter;
@@ -641,7 +663,7 @@ uiimpplImportTypeCallback (void *udata)
 
     idx = 0;
     ilistFree (uiimppl->plnames);
-    asiter = audiosrcStartIterator (uiimppl->imptype, AS_ITER_PL_NAMES, NULL, -1);
+    asiter = audiosrcStartIterator (uiimppl->imptype, AS_ITER_PL_NAMES, NULL, askey);
     uiimppl->plnames = ilistAlloc ("plnames", LIST_ORDERED);
     ilistSetSize (uiimppl->plnames, audiosrcIterCount (asiter));
     while ((plnm = audiosrcIterate (asiter)) != NULL) {
@@ -651,6 +673,7 @@ uiimpplImportTypeCallback (void *udata)
     }
     audiosrcCleanIterator (asiter);
     uiddSetList (uiimppl->plselect, uiimppl->plnames);
+    uiddSetSelection (uiimppl->plselect, 0);
   }
 
   if (uiimppl->imptype == AUDIOSRC_TYPE_FILE) {
@@ -668,6 +691,7 @@ uiimpplImportTypeCallback (void *udata)
   }
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_URI_LABEL], tbuff);
 
+  uiimppl->in_cb = false;
   return UICB_CONT;
 }
 
