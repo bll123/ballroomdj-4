@@ -3416,12 +3416,13 @@ managePlaylistImportRespHandler (void *udata)
   manageui_t  *manage = udata;
   const char  *plname;
   const char  *uri;
-  char        nplname [MAX_PL_NM_LEN];
+  const char  *oplname;
+  char        tplname [MAX_PL_NM_LEN];
   int         imptype;
   int         mqidx;
   int         askey;
-
-  uimusicqGetSonglistName (manage->currmusicq, nplname, sizeof (nplname));
+  dbidx_t     dbidx;
+  char        tbuff [MAXPATHLEN];
 
   imptype = uiimpplGetType (manage->uiimppl);
   if (imptype == AUDIOSRC_TYPE_NONE) {
@@ -3431,6 +3432,7 @@ managePlaylistImportRespHandler (void *udata)
 
   uri = uiimpplGetURI (manage->uiimppl);
   askey = uiimpplGetASKey (manage->uiimppl);
+  oplname = uiimpplGetOrigName (manage->uiimppl);
   plname = uiimpplGetNewName (manage->uiimppl);
 fprintf (stderr, "imp-resp: type:%d askey:%d plname:%s uri:%s\n", imptype, askey, plname, uri);
 
@@ -3440,10 +3442,8 @@ fprintf (stderr, "imp-resp: type:%d askey:%d plname:%s uri:%s\n", imptype, askey
 
   if (imptype == AUDIOSRC_TYPE_FILE) {
     nlist_t     *list = NULL;
-    dbidx_t     dbidx;
     nlistidx_t  iteridx;
     pathinfo_t  *pi;
-    char        tbuff [MAXPATHLEN];
 
     if (! *uri) {
       manage->importactive = false;
@@ -3453,22 +3453,17 @@ fprintf (stderr, "imp-resp: type:%d askey:%d plname:%s uri:%s\n", imptype, askey
     pi = pathInfo (uri);
 
     if (pathInfoExtCheck (pi, ".m3u") || pathInfoExtCheck (pi, ".m3u8")) {
-      list = m3uImport (manage->musicdb, uri, nplname, sizeof (nplname));
+      list = m3uImport (manage->musicdb, uri, tplname, sizeof (tplname));
     }
     if (pathInfoExtCheck (pi, ".xspf")) {
-      list = xspfImport (manage->musicdb, uri, nplname, sizeof (nplname));
+      list = xspfImport (manage->musicdb, uri, tplname, sizeof (tplname));
     }
     if (pathInfoExtCheck (pi, ".jspf")) {
-      list = jspfImport (manage->musicdb, uri, nplname, sizeof (nplname));
+      list = jspfImport (manage->musicdb, uri, tplname, sizeof (tplname));
     }
+fprintf (stderr, "tplname: %s\n", tplname);
 
     pathInfoFree (pi);
-
-    pathbldMakePath (tbuff, sizeof (tbuff),
-        nplname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
-    if (! fileopFileExists (tbuff)) {
-      manageSetSonglistName (manage, plname);
-    }
 
     if (list != NULL && nlistGetCount (list) > 0) {
       nlistStartIterator (list, &iteridx);
@@ -3483,6 +3478,56 @@ fprintf (stderr, "imp-resp: type:%d askey:%d plname:%s uri:%s\n", imptype, askey
   } /* audiosrc-type: file */
 
   if (imptype != AUDIOSRC_TYPE_FILE) {
+    asiter_t    *asiter;
+    const char  *songnm;
+
+    asiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_PL, oplname, askey);
+    while ((songnm = audiosrcIterate (asiter)) != NULL) {
+      asiter_t    *tagiter;
+      const char  *tag = NULL;
+      song_t      *song = NULL;
+      slist_t     *tagdata = NULL;
+
+fprintf (stderr, "songnm: %s\n", songnm);
+      song = dbGetByName (manage->musicdb, songnm);
+
+      if (song == NULL) {
+        tagdata = slistAlloc ("asimppl", LIST_UNORDERED, NULL);
+
+        tagiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_TAGS, songnm, askey);
+        while ((tag = audiosrcIterate (tagiter)) != NULL) {
+          const char  *tval;
+
+          tval = audiosrcIterateValue (tagiter, tag);
+          slistSetStr (tagdata, tag, tval);
+fprintf (stderr, "  %s=%s\n", tag, tval);
+        }
+
+        slistSetStr (tagdata, tagdefs [TAG_URI].tag, songnm);
+
+        slistSort (tagdata);
+        song = songAlloc ();
+        songFromTagList (song, tagdata);
+        songSetNum (song, TAG_DB_FLAGS, MUSICDB_STD);
+        songSetNum (song, TAG_RRN, RAFILE_NEW);
+        songSetNum (song, TAG_PREFIX_LEN, 0);
+        dbWriteSong (manage->musicdb, song);
+
+        slistFree (tagdata);
+        audiosrcCleanIterator (tagiter);
+      } /* song needs to be added */
+
+      dbidx = songGetNum (song, TAG_DBIDX);
+      manageQueueProcess (manage, dbidx, mqidx,
+            DISP_SEL_SONGLIST, MANAGE_QUEUE_LAST);
+    }
+    audiosrcCleanIterator (asiter);
+  }
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      plname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
+  if (! fileopFileExists (tbuff)) {
+    manageSetSonglistName (manage, plname);
   }
 
   manage->importactive = false;

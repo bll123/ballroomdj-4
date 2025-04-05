@@ -22,6 +22,7 @@ void    uiimpplProcess (uiimppl_t *uiimppl);
 int     uiimpplGetType (uiimppl_t *uiimppl);
 int     uiimpplGetASKey (uiimppl_t *uiimppl);
 const char *uiimpplGetURI (uiimppl_t *uiimppl);
+const char *uiimpplGetOrigName (uiimppl_t *uiimppl);
 const char *uiimpplGetNewName (uiimppl_t *uiimppl);
 
 #if defined (__cplusplus) || defined (c_plusplus)

@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
@@ -69,6 +70,7 @@ typedef struct uiimppl {
   nlist_t           *askeys;
   ilist_t           *plnames;
   callback_t        *callbacks [UIIMPPL_CB_MAX];
+  char              origplname [MAXPATHLEN];
   size_t            asmaxwidth;
   int               askey;
   int               imptype;
@@ -83,7 +85,7 @@ static bool   uiimpplTargetDialog (void *udata);
 static void   uiimpplInitDisplay (uiimppl_t *uiimppl);
 static bool   uiimpplResponseHandler (void *udata, int32_t responseid);
 static int    uiimpplValidateTarget (uiwcont_t *entry, const char *label, void *udata);
-static int32_t uiimpplSelectHandler (void *udata, const char *str);
+static bool   uiimpplSelectHandler (void *udata, int32_t idx);
 static int    uiimpplValidateNewName (uiwcont_t *entry, const char *label, void *udata);
 static bool uiimpplImportTypeCallback (void *udata);
 
@@ -117,6 +119,7 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
   uiimppl->asmaxwidth = 0;
   uiimppl->askey = -1;
   uiimppl->imptype = AUDIOSRC_TYPE_NONE;
+  *uiimppl->origplname = '\0';
   uiimppl->asconf = NULL;
   uiimppl->asconfcount = 0;
 
@@ -162,7 +165,7 @@ logStderr ("askeys: %s %d %d\n", asnm, count, key);
       uiimpplResponseHandler, uiimppl);
   uiimppl->callbacks [UIIMPPL_CB_TARGET] = callbackInit (
       uiimpplTargetDialog, uiimppl, NULL);
-  uiimppl->callbacks [UIIMPPL_CB_SEL] = callbackInitS (
+  uiimppl->callbacks [UIIMPPL_CB_SEL] = callbackInitI (
       uiimpplSelectHandler, uiimppl);
   uiimppl->callbacks [UIIMPPL_CB_TYPE_SEL] = callbackInit (
       uiimpplImportTypeCallback, uiimppl, NULL);
@@ -285,6 +288,16 @@ uiimpplGetNewName (uiimppl_t *uiimppl)
 
   newname = uiEntryGetValue (uiimppl->wcont [UIIMPPL_W_NEWNAME]);
   return newname;
+}
+
+const char *
+uiimpplGetOrigName (uiimppl_t *uiimppl)
+{
+  if (uiimppl == NULL) {
+    return NULL;
+  }
+
+  return uiimppl->origplname;
 }
 
 /* internal routines */
@@ -557,6 +570,7 @@ uiimpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
 
   str = uiEntryGetValue (entry);
+fprintf (stderr, "val-target: %s\n", str);
 
   if (uiimppl->imptype == AUDIOSRC_TYPE_FILE) {
     bool    extok = false;
@@ -585,22 +599,35 @@ uiimpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
   }
 
   if (uiimppl->imptype == AUDIOSRC_TYPE_BDJ4) {
+fprintf (stderr, "val-target: bdj4:// \n");
     if (strncmp (str, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) != 0) {
       uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG],
           /* CONTEXT: import playlist: invalid URI */
           _("Invalid URI"));
       return UIENTRY_ERROR;
     }
+// ### need to get origplname from target
   }
 
   return UIENTRY_OK;
 }
 
-static int32_t
-uiimpplSelectHandler (void *udata, const char *str)
+static bool
+uiimpplSelectHandler (void *udata, int idx)
 {
-  uiimppl_t  *uiimppl = udata;
+  uiimppl_t   *uiimppl = udata;
+  const char  *str;
+  char        tbuff [MAXPATHLEN];
 
+  str = ilistGetStr (uiimppl->plnames, idx, DD_LIST_DISP);
+  snprintf (tbuff, sizeof (tbuff), "%s%s:%" PRIu16 "/%s",
+      AS_BDJ4_PFX,
+      asconfGetStr (uiimppl->asconf, uiimppl->askey, ASCONF_URI),
+      (uint16_t) asconfGetNum (uiimppl->asconf, uiimppl->askey, ASCONF_PORT),
+      str);
+  stpecpy (uiimppl->origplname,
+      uiimppl->origplname + sizeof (uiimppl->origplname), str);
+  uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_URI], tbuff);
   uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_NEWNAME], str);
   return UICB_CONT;
 }
@@ -624,7 +651,8 @@ uiimpplValidateNewName (uiwcont_t *entry, const char *label, void *udata)
 
   if (rc == UIENTRY_OK) {
     str = uiEntryGetValue (entry);
-    if (*str && uiimppl->imptype == AUDIOSRC_TYPE_FILE) {
+fprintf (stderr, "val-newname: %s\n", str);
+    if (*str) {
       pathbldMakePath (fn, sizeof (fn),
           str, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
       if (fileopFileExists (fn)) {

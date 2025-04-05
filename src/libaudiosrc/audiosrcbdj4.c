@@ -165,13 +165,14 @@ asiPostInit (asdata_t *asdata, const char *uri)
         webclientIgnoreCertErr (asdata->webclient [count]);
         webclientSetTimeout (asdata->webclient [count], 1);
         snprintf (temp, sizeof (temp),
-            "https://%s:%" PRIu16,
+            "https://%s:%" PRIu16 "/",
             asconfGetStr (asdata->asconf, askey, ASCONF_URI),
             (uint16_t) asconfGetNum (asdata->asconf, askey, ASCONF_PORT));
 logStderr ("client: %d key:%d %s\n", count, askey, temp);
         ilistSetStr (asdata->client, count, AS_CLIENT_BDJ4_URI, temp);
         snprintf (temp, sizeof (temp),
-            "%s%s:%" PRIu16, AS_BDJ4_PFX,
+            "%s%s:%" PRIu16 "/",
+            AS_BDJ4_PFX,
             asconfGetStr (asdata->asconf, askey, ASCONF_URI),
             (uint16_t) asconfGetNum (asdata->asconf, askey, ASCONF_PORT));
 logStderr ("client: %d key:%d %s\n", count, askey, temp);
@@ -240,7 +241,7 @@ asiExists (asdata_t *asdata, const char *nm)
   }
 
   snprintf (query, sizeof (query),
-      "%s/%s"
+      "%s%s"
       "?uri=%s",
       ilistGetStr (asdata->client, clientkey, AS_CLIENT_BDJ4_URI),
       action_str [asdata->action],
@@ -354,12 +355,12 @@ logStderr ("as-start-iter: get-pl-names\n");
     asidata->iterlist = asidata->plNames;
     slistStartIterator (asidata->iterlist, &asidata->iteridx);
   } else if (asitertype == AS_ITER_PL) {
-logStderr ("as-start-iter: get-pl\n");
+logStderr ("as-start-iter: get-pl %s\n", nm);
     asbdj4GetPlaylist (asdata, asidata, nm, askey);
     asidata->iterlist = asidata->songlist;
     slistStartIterator (asidata->iterlist, &asidata->iteridx);
   } else if (asitertype == AS_ITER_TAGS) {
-logStderr ("as-start-iter: get-tags\n");
+logStderr ("as-start-iter: get-tags %s\n", nm);
     asbdj4SongTags (asdata, asidata, nm);
     asidata->iterlist = asidata->songtags;
     slistStartIterator (asidata->iterlist, &asidata->iteridx);
@@ -464,7 +465,7 @@ asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm, int 
   asdata->state = BDJ4_STATE_WAIT;
 
   snprintf (query, sizeof (query),
-      "%s/%s"
+      "%s%s"
       "?uri=%s",
       ilistGetStr (asdata->client, clientkey, AS_CLIENT_BDJ4_URI),
       action_str [asdata->action],
@@ -489,7 +490,12 @@ asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm, int 
 
       p = strtok_r (tdata, MSG_ARGS_RS_STR, &tokstr);
       while (p != NULL) {
-        slistSetNum (asidata->songlist, p, 1);
+        char    tbuff [MAXPATHLEN];
+
+        snprintf (tbuff, sizeof (tbuff), "%s%s",
+            ilistGetStr (asdata->client, askey, AS_CLIENT_URI),
+            p);
+        slistSetNum (asidata->songlist, tbuff, 1);
         p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
       }
 
@@ -517,7 +523,7 @@ asbdj4SongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri)
   }
 
   snprintf (query, sizeof (query),
-      "%s/%s"
+      "%s%s"
       "?uri=%s",
       ilistGetStr (asdata->client, clientkey, AS_CLIENT_BDJ4_URI),
       action_str [asdata->action],
@@ -579,7 +585,7 @@ logStderr ("as-get-pl-names: no-client-key\n");
   asdata->action = ASBDJ4_ACT_GET_PL_NAMES;
   asdata->state = BDJ4_STATE_WAIT;
   snprintf (query, sizeof (query),
-      "%s/%s",
+      "%s%s",
       ilistGetStr (asdata->client, clientkey, AS_CLIENT_BDJ4_URI),
       action_str [asdata->action]);
 logStderr ("as-get-pl-names: %s\n", query);
@@ -636,7 +642,7 @@ asbdj4GetAudioFile (asdata_t *asdata, const char *nm, const char *tempnm)
   }
 
   snprintf (query, sizeof (query),
-      "%s/%s"
+      "%s%s"
       "?uri=%s",
       ilistGetStr (asdata->client, clientkey, AS_CLIENT_BDJ4_URI),
       action_str [asdata->action],
@@ -676,7 +682,7 @@ logStderr ("gck-by-uri: %s\n", nm);
 
     tstr = ilistGetStr (asdata->client, i, AS_CLIENT_URI);
     tlen = ilistGetNum (asdata->client, i, AS_CLIENT_URI_LEN);
-logStderr ("  chk: %s\n", tstr);
+logStderr ("  chk: nm:%s uri:%s\n", nm, tstr);
     if (strncmp (nm, tstr, tlen) == 0) {
       clientkey = i;
       break;

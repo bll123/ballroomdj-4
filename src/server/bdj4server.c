@@ -73,7 +73,7 @@ static int  bdjsrvProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route, bdjm
 static int  bdjsrvProcessing (void *udata);
 static void bdjsrvSigHandler (int sig);
 static void bdjsrvGetPlaylistNames (bdjsrv_t *bdjsrv);
-static const char * bdjsrvStripPrefix (bdjsrv_t *bdjsrv, const char *query);
+static const char * bdjsrvStrip (bdjsrv_t *bdjsrv, const char *query);
 
 static int  gKillReceived = 0;
 
@@ -251,9 +251,8 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
     ilistidx_t  iteridx;
     ilistidx_t  idx;
 
-    if (strncmp (query, SRV_URI_TEXT, SRV_URI_LEN) == 0) {
-      plnm = query + SRV_URI_LEN;
-    }
+    plnm = bdjsrvStrip (bdjsrv, query);
+fprintf (stderr, "pl-get: %s\n", plnm);
     ok = playlistExists (plnm);
 
     if (! ok) {
@@ -275,8 +274,7 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
       const char    *songuri;
 
       songuri = songlistGetStr (sl, idx, SONGLIST_URI);
-      snprintf (tbuff, sizeof (tbuff), "%s%s%s%c",
-          AS_BDJ4_PFX, bdjsrv->srvuri, songuri, MSG_ARGS_RS);
+      snprintf (tbuff, sizeof (tbuff), "%s%c", songuri, MSG_ARGS_RS);
       rp = stpecpy (rp, rend, tbuff);
     }
 
@@ -291,7 +289,8 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
     int         rc = WEB_NOT_FOUND;
     const char  *songuri = NULL;
 
-    songuri = bdjsrvStripPrefix (bdjsrv, query);
+    songuri = bdjsrvStrip (bdjsrv, query);
+fprintf (stderr, "song-exists: %s\n", songuri);
     ok = audiosrcExists (songuri);
     if (ok) {
       rc = WEB_OK;
@@ -307,7 +306,8 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
     char          ffn [MAXPATHLEN];
     const char    *songuri;
 
-    songuri = bdjsrvStripPrefix (bdjsrv, query);
+    songuri = bdjsrvStrip (bdjsrv, query);
+fprintf (stderr, "song-get: %s\n", songuri);
     ok = audiosrcExists (songuri);
 
     if (! ok) {
@@ -333,7 +333,8 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
     char        *rp;
     char        *rend;
 
-    songuri = bdjsrvStripPrefix (bdjsrv, query);
+    songuri = bdjsrvStrip (bdjsrv, query);
+fprintf (stderr, "song-tags: %s\n", songuri);
     ok = audiosrcExists (songuri);
 
     if (ok) {
@@ -513,7 +514,7 @@ bdjsrvGetPlaylistNames (bdjsrv_t *bdjsrv)
 }
 
 static const char *
-bdjsrvStripPrefix (bdjsrv_t *bdjsrv, const char *query)
+bdjsrvStrip (bdjsrv_t *bdjsrv, const char *query)
 {
   const char  *songuri;
 
