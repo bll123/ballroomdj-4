@@ -113,6 +113,7 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
   uiimppl->aslist = NULL;
   uiimppl->askeys = NULL;
   uiimppl->plnames = NULL;
+  uiimppl->plselect = NULL;
   uiimppl->asmaxwidth = 0;
   uiimppl->askey = -1;
   uiimppl->imptype = AUDIOSRC_TYPE_NONE;
@@ -128,9 +129,7 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
 
   snprintf (tbuff, sizeof (tbuff), _("File (%s)"), "M3U/XSPF/JSPF");
   len = strlen (tbuff);
-  if (len > uiimppl->asmaxwidth) {
-    uiimppl->asmaxwidth = len;
-  }
+  uiimppl->asmaxwidth = len;
   nlistSetStr (uiimppl->aslist, count, tbuff);
   nlistSetNum (uiimppl->askeys, count, uiimppl->asconfcount);
 logStderr ("askeys: %s %d %d\n", tbuff, count, uiimppl->asconfcount);
@@ -147,10 +146,6 @@ logStderr ("askeys: %s %d %d\n", tbuff, count, uiimppl->asconfcount);
       uiimppl->asmaxwidth = len;
     }
 logStderr ("askeys: %s %d %d\n", asnm, count, key);
-    len = strlen (asnm);
-    if (len > uiimppl->asmaxwidth) {
-      uiimppl->asmaxwidth = len;
-    }
     nlistSetStr (uiimppl->aslist, count, asnm);
     nlistSetNum (uiimppl->askeys, count, key);
     ++count;
@@ -183,15 +178,20 @@ uiimpplFree (uiimppl_t *uiimppl)
   }
 
   ilistFree (uiimppl->plnames);
+  uiimppl->plnames = NULL;
   nlistFree (uiimppl->aslist);
+  uiimppl->aslist = NULL;
   nlistFree (uiimppl->askeys);
+  uiimppl->askeys = NULL;
   uiddFree (uiimppl->plselect);
+  uiimppl->plselect = NULL;
   for (int j = 0; j < UIIMPPL_W_MAX; ++j) {
     uiwcontFree (uiimppl->wcont [j]);
     uiimppl->wcont [j] = NULL;
   }
   for (int i = 0; i < UIIMPPL_CB_MAX; ++i) {
     callbackFree (uiimppl->callbacks [i]);
+    uiimppl->callbacks [i] = NULL;
   }
   asconfFree (uiimppl->asconf);
   mdfree (uiimppl);
@@ -228,16 +228,6 @@ uiimpplDialog (uiimppl_t *uiimppl)
   return UICB_CONT;
 }
 
-void
-uiimpplDialogClear (uiimppl_t *uiimppl)
-{
-  if (uiimppl == NULL) {
-    return;
-  }
-
-  uiWidgetHide (uiimppl->wcont [UIIMPPL_W_DIALOG]);
-}
-
 /* delayed entry validation for the audio file needs to be run */
 void
 uiimpplProcess (uiimppl_t *uiimppl)
@@ -262,19 +252,32 @@ uiimpplGetType (uiimppl_t *uiimppl)
   return uiimppl->imptype;
 }
 
-void
-uiimpplGetURI (uiimppl_t *uiimppl, char *uri, size_t sz)
+int
+uiimpplGetASKey (uiimppl_t *uiimppl)
 {
   if (uiimppl == NULL) {
-    return;
+    return -1;
   }
-  return;
+  return uiimppl->askey;
+}
+
+const char *
+uiimpplGetURI (uiimppl_t *uiimppl)
+{
+  const char    *uri;
+
+  if (uiimppl == NULL) {
+    return NULL;
+  }
+
+  uri = uiEntryGetValue (uiimppl->wcont [UIIMPPL_W_URI]);
+  return uri;
 }
 
 const char *
 uiimpplGetNewName (uiimppl_t *uiimppl)
 {
-  const char  *newname;
+  const char    *newname;
 
   if (uiimppl == NULL) {
     return NULL;
@@ -510,18 +513,18 @@ uiimpplResponseHandler (void *udata, int32_t responseid)
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
-      logMsg (LOG_DBG, LOG_ACTIONS, "= action: expimpbdj4: del window");
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: import playlist: del window");
       uiimppl->imptype = AUDIOSRC_TYPE_NONE;
       break;
     }
     case RESPONSE_CLOSE: {
-      logMsg (LOG_DBG, LOG_ACTIONS, "= action: expimpbdj4: close window");
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: import playlist: close window");
       uiWidgetHide (uiimppl->wcont [UIIMPPL_W_DIALOG]);
       uiimppl->imptype = AUDIOSRC_TYPE_NONE;
       break;
     }
     case RESPONSE_APPLY: {
-      logMsg (LOG_DBG, LOG_ACTIONS, "= action: expimpbdj4: apply");
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: import playlist: apply");
       uiLabelSetText (
           uiimppl->wcont [UIIMPPL_W_STATUS_MSG],
           /* CONTEXT: please wait... status message */
@@ -531,6 +534,9 @@ uiimpplResponseHandler (void *udata, int32_t responseid)
       if (uiimppl->responsecb != NULL) {
         callbackHandler (uiimppl->responsecb);
       }
+      uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
+      uiWidgetHide (uiimppl->wcont [UIIMPPL_W_DIALOG]);
+      uiimppl->imptype = AUDIOSRC_TYPE_NONE;
       break;
     }
   }

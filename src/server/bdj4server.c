@@ -51,12 +51,12 @@ typedef struct {
   conn_t          *conn;
   progstate_t     *progstate;
   char            *locknm;
-  char            srvuri [MAXPATHLEN];
   asconf_t        *asconf;
   const char      *user;
   const char      *pass;
   websrv_t        *websrv;
   slist_t         *plNames;
+  char            srvuri [MAXPATHLEN];
   size_t          srvurilen;
   int             stopwaitcount;
   uint16_t        port;
@@ -520,12 +520,6 @@ bdjsrvStripPrefix (bdjsrv_t *bdjsrv, const char *query)
   songuri = query;
   if (strncmp (songuri, SRV_URI_TEXT, SRV_URI_LEN) == 0) {
     songuri += SRV_URI_LEN;
-  }
-  if (strncmp (songuri, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) == 0) {
-    songuri += AS_BDJ4_PFX_LEN;
-  }
-  if (strncmp (songuri, bdjsrv->srvuri, bdjsrv->srvurilen) == 0) {
-    songuri += bdjsrv->srvurilen;
   }
   return songuri;
 }

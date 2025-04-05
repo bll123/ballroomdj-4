@@ -25,4 +25,4 @@ fsutil.exe behavior set disable8dot3 1
 
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-04-04 13:00:17; BDJ4 version 4.13.0)_

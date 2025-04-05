@@ -93,6 +93,7 @@ static bool asbdj4GetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata, int
 static bool asbdj4GetAudioFile (asdata_t *asdata, const char *nm, const char *tempnm);
 static int asbdj4GetClientKeyByURI (asdata_t *asdata, const char *nm);
 static int asbdj4GetClientKey (asdata_t *asdata, int askey);
+static const char * asbdj4StripPrefix (asdata_t *asdata, const char *songuri, int clientidx);
 
 void
 asiDesc (const char **ret, int max)
@@ -242,7 +243,8 @@ asiExists (asdata_t *asdata, const char *nm)
       "%s/%s"
       "?uri=%s",
       ilistGetStr (asdata->client, clientkey, AS_CLIENT_BDJ4_URI),
-      action_str [asdata->action], nm);
+      action_str [asdata->action],
+      asbdj4StripPrefix (asdata, nm, clientkey));
 
   webrc = webclientGet (asdata->webclient [clientkey], query);
   if (webrc != WEB_OK) {
@@ -466,7 +468,7 @@ asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm, int 
       "?uri=%s",
       ilistGetStr (asdata->client, clientkey, AS_CLIENT_BDJ4_URI),
       action_str [asdata->action],
-      nm);
+      asbdj4StripPrefix (asdata, nm, clientkey));
 
   webrc = webclientGet (asdata->webclient [clientkey], query);
   if (webrc != WEB_OK) {
@@ -519,7 +521,7 @@ asbdj4SongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri)
       "?uri=%s",
       ilistGetStr (asdata->client, clientkey, AS_CLIENT_BDJ4_URI),
       action_str [asdata->action],
-      songuri);
+      asbdj4StripPrefix (asdata, songuri, clientkey));
 
   webrc = webclientGet (asdata->webclient [clientkey], query);
   if (webrc != WEB_OK) {
@@ -638,7 +640,7 @@ asbdj4GetAudioFile (asdata_t *asdata, const char *nm, const char *tempnm)
       "?uri=%s",
       ilistGetStr (asdata->client, clientkey, AS_CLIENT_BDJ4_URI),
       action_str [asdata->action],
-      nm);
+      asbdj4StripPrefix (asdata, nm, clientkey));
 
   webrc = webclientGet (asdata->webclient [clientkey], query);
   if (webrc != WEB_OK) {
@@ -704,3 +706,16 @@ logStderr ("  chk: %d\n", tkey);
   return clientkey;
 }
 
+static const char *
+asbdj4StripPrefix (asdata_t *asdata, const char *songuri, int clientkey)
+{
+  const char  *turi;
+  size_t      tlen;
+
+  turi = ilistGetStr (asdata->client, clientkey, AS_CLIENT_URI);
+  tlen = ilistGetNum (asdata->client, clientkey, AS_CLIENT_URI_LEN);
+  if (strncmp (songuri, turi, tlen) == 0) {
+    songuri += tlen;
+  }
+  return songuri;
+}

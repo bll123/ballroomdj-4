@@ -50,7 +50,7 @@
 [Installing BDJ4 in Other Locales](en-Install-Locales)
 <br>[Converting BallroomDJ 3](en-Install-Converting%20BDJ3)
 
-[Maintenance](en-Install-Maintenance)
+[BDJ4 Maintenance](en-Install-Maintenance)
 
 [Uninstalling BDJ4](en-Install-Uninstall)
 
@@ -152,4 +152,4 @@
 
 <small>[Developer Notes](Development-Developer%20Notes)</small>
 
-<br>_(Updated 2025-03-30 07:34:42; BDJ4 version 4.13.0)_
+<br>_(Updated 2025-04-04 13:00:17; BDJ4 version 4.13.0)_

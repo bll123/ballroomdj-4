@@ -3414,14 +3414,14 @@ static bool
 managePlaylistImportRespHandler (void *udata)
 {
   manageui_t  *manage = udata;
-  char        slname [MAX_PL_NM_LEN];
+  const char  *plname;
+  const char  *uri;
   char        nplname [MAX_PL_NM_LEN];
-  char        uri [MAXPATHLEN];
   int         imptype;
   int         mqidx;
+  int         askey;
 
-  uimusicqGetSonglistName (manage->currmusicq, slname, sizeof (slname));
-  stpecpy (nplname, nplname + sizeof (nplname), slname);
+  uimusicqGetSonglistName (manage->currmusicq, nplname, sizeof (nplname));
 
   imptype = uiimpplGetType (manage->uiimppl);
   if (imptype == AUDIOSRC_TYPE_NONE) {
@@ -3429,8 +3429,10 @@ managePlaylistImportRespHandler (void *udata)
     return UICB_CONT;
   }
 
-  uiimpplGetURI (manage->uiimppl, uri, sizeof (uri));
-// ### need to process new name...
+  uri = uiimpplGetURI (manage->uiimppl);
+  askey = uiimpplGetASKey (manage->uiimppl);
+  plname = uiimpplGetNewName (manage->uiimppl);
+fprintf (stderr, "imp-resp: type:%d askey:%d plname:%s uri:%s\n", imptype, askey, plname, uri);
 
   mqidx = manage->musicqManageIdx;
   /* clear the entire queue */
@@ -3440,7 +3442,6 @@ managePlaylistImportRespHandler (void *udata)
     nlist_t     *list = NULL;
     dbidx_t     dbidx;
     nlistidx_t  iteridx;
-    size_t      len;
     pathinfo_t  *pi;
     char        tbuff [MAXPATHLEN];
 
@@ -3450,12 +3451,6 @@ managePlaylistImportRespHandler (void *udata)
     }
 
     pi = pathInfo (uri);
-
-    len = pi->blen + 1;
-    if (len > sizeof (nplname)) {
-      len = sizeof (nplname);
-    }
-    stpecpy (nplname, nplname + len, pi->basename);
 
     if (pathInfoExtCheck (pi, ".m3u") || pathInfoExtCheck (pi, ".m3u8")) {
       list = m3uImport (manage->musicdb, uri, nplname, sizeof (nplname));
@@ -3472,7 +3467,7 @@ managePlaylistImportRespHandler (void *udata)
     pathbldMakePath (tbuff, sizeof (tbuff),
         nplname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
     if (! fileopFileExists (tbuff)) {
-      manageSetSonglistName (manage, nplname);
+      manageSetSonglistName (manage, plname);
     }
 
     if (list != NULL && nlistGetCount (list) > 0) {
@@ -3484,7 +3479,7 @@ managePlaylistImportRespHandler (void *udata)
     }
 
     nlistFree (list);
-    manageLoadPlaylistCB (manage, nplname);
+    manageLoadPlaylistCB (manage, plname);
   } /* audiosrc-type: file */
 
   if (imptype != AUDIOSRC_TYPE_FILE) {

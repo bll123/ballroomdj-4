@@ -534,23 +534,28 @@ confuiAudioSrcSetWidgetStates (confuigui_t *gui, int askey)
 {
   int   mode;
   int   state;
+  int   ustate;
 
   mode = asconfGetNum (gui->asconf, askey, ASCONF_MODE);
   state = UIWIDGET_DISABLE;
+  ustate = UIWIDGET_DISABLE;
   if (mode != ASCONF_MODE_OFF) {
     state = UIWIDGET_ENABLE;
+  }
+  if (mode == ASCONF_MODE_CLIENT) {
+    ustate = UIWIDGET_ENABLE;
   }
 
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_NAME].uilabelp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_SPINBOX_AUDIOSRC_TYPE].uilabelp, state);
-  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_URI].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_URI].uilabelp, ustate);
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_AUDIOSRC_PORT].uilabelp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_USER].uilabelp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_PASS].uilabelp, state);
 
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_NAME].uiwidgetp, state);
   uiSpinboxSetState (gui->uiitem [CONFUI_SPINBOX_AUDIOSRC_TYPE].uiwidgetp, state);
-  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_URI].uiwidgetp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_URI].uiwidgetp, ustate);
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_AUDIOSRC_PORT].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_USER].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_PASS].uiwidgetp, state);

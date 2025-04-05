@@ -18,10 +18,10 @@ uiimppl_t  *uiimpplInit (uiwcont_t *windowp, nlist_t *opts);
 void    uiimpplFree (uiimppl_t *uiimppl);
 void    uiimpplSetResponseCallback (uiimppl_t *uiimppl, callback_t *uicb);
 bool    uiimpplDialog (uiimppl_t *uiimppl);
-void    uiimpplDialogClear (uiimppl_t *uiimppl);
 void    uiimpplProcess (uiimppl_t *uiimppl);
 int     uiimpplGetType (uiimppl_t *uiimppl);
-void    uiimpplGetURI (uiimppl_t *uiimppl, char *uri, size_t sz);
+int     uiimpplGetASKey (uiimppl_t *uiimppl);
+const char *uiimpplGetURI (uiimppl_t *uiimppl);
 const char *uiimpplGetNewName (uiimppl_t *uiimppl);
 
 #if defined (__cplusplus) || defined (c_plusplus)
