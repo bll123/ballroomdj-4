@@ -4293,7 +4293,12 @@ manageRemoveSongs (manageui_t *manage)
     const char  *songfn;
 
     songfn = nlistGetStr (manage->removelist, dbidx);
-    audiosrcRemove (songfn);
+    if (! audiosrcRemove (songfn)) {
+      if (audiosrcGetType (songfn) != AUDIOSRC_TYPE_FILE) {
+        /* completely clears the entry from the database */
+        dbRemoveSong (manage->musicdb, dbidx);
+      }
+    }
   }
 }
 

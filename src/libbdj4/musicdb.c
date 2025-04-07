@@ -432,6 +432,35 @@ dbWriteSong (musicdb_t *musicdb, song_t *song)
   return len;
 }
 
+/* this should only be used on remote entries */
+bool
+dbRemoveSong (musicdb_t *musicdb, dbidx_t dbidx)
+{
+  song_t      *song;
+  rafileidx_t rrn;
+
+  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
+    return false;
+  }
+
+  if (dbidx < 0) {
+    return false;
+  }
+
+  song = nlistGetData (musicdb->songbyidx, dbidx);
+  rrn = songGetNum (song, TAG_RRN);
+
+  if (musicdb->radb == NULL) {
+    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION, RAFILE_RO);
+    if (musicdb->radb == NULL) {
+      return -1;
+    }
+  }
+
+  raClear (musicdb->radb, rrn);
+  return true;
+}
+
 size_t
 dbCreateSongEntryFromSong (char *tbuff, size_t sz, song_t *song,
     const char *fn)

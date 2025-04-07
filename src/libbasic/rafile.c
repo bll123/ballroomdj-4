@@ -369,24 +369,22 @@ rrnToOffset (rafileidx_t rrn) {
  return ((rrn - 1) * RAFILE_REC_SIZE + RAFILE_HDR_SIZE);
 }
 
-/* for debugging only */
-
-/* this function is not in use, but keep the code, as it works */
+/* in use as of 4.14.0 */
 bool
-raClear (rafile_t *rafile, rafileidx_t rrn)   /* TESTING */
+raClear (rafile_t *rafile, rafileidx_t rrn)
 {
   if (rafile == NULL) {
-    return 1;
+    return false;
   }
 
   if (rafile->openmode == FILESH_OPEN_READ) {
-    return 1;
+    return false;
   }
 
   logProcBegin ();
   if (rrn < 1L || rrn > rafile->count) {
     logMsg (LOG_DBG, LOG_RAFILE, "bad rrn %" PRId32, rrn);
-    return 1;
+    return false;
   }
   raLock (rafile);
   fileSharedSeek (rafile->fsh, rrnToOffset (rrn), SEEK_SET);
@@ -396,8 +394,10 @@ raClear (rafile_t *rafile, rafileidx_t rrn)   /* TESTING */
   }
   raUnlock (rafile);
   logProcEnd ("");
-  return 0;
+  return true;
 }
+
+/* for debugging only */
 
 rafileidx_t
 raGetSize (rafile_t *rafile) /* TESTING */

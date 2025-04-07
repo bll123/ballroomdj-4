@@ -369,7 +369,7 @@ START_TEST(rafile_clear)
   ck_assert_ptr_nonnull (rafile);
 
   rc = raClear (rafile, 2);
-  ck_assert_int_eq (rc, 0);
+  ck_assert_int_eq (rc, true);
 
   rc = raRead (rafile, 1, data);
   ck_assert_int_eq (rc, 1);
@@ -418,9 +418,9 @@ START_TEST(rafile_bad_clear)
   ck_assert_ptr_nonnull (rafile);
 
   rc = raClear (rafile, 0);
-  ck_assert_int_ne (rc, 0);
+  ck_assert_int_ne (rc, true);
   rc = raClear (rafile, 9);
-  ck_assert_int_ne (rc, 0);
+  ck_assert_int_ne (rc, true);
 
   raClose (rafile);
 }

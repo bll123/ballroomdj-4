@@ -527,13 +527,6 @@ dbupdateProcessing (void *udata)
       const char  *tsongfn;     // the db entry filename
       const char  *relfn;       // the relative path name
 
-      if (audiosrcGetType (fn) != AUDIOSRC_TYPE_FILE) {
-        dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
-        dbupdateIncCount (dbupdate, C_SKIP_NON_AUDIO);
-        logMsg (LOG_DBG, LOG_DBUPDATE, "  audsrc-skip-not-file");
-        continue;
-      }
-
       /* if the filename is from the audio-source iterator, */
       /*    it is a full path */
       /* if the filename is from the db iterator, */
@@ -555,6 +548,7 @@ dbupdateProcessing (void *udata)
       // fprintf (stderr, "     ffn: %s\n", ffn);       //
       // fprintf (stderr, " tsongfn: %s\n", tsongfn);   //
       // fprintf (stderr, " relfn-a: %s\n", relfn);     //
+      // fprintf (stderr, "    type: %d\n", audiosrcGetType (fn));
 
       if (dbupdate->iterfromaudiosrc) {
         pi = pathInfo (fn);
@@ -660,7 +654,6 @@ dbupdateProcessing (void *udata)
         dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
         dbupdateIncCount (dbupdate, C_SKIP_BAD);
         logMsg (LOG_DBG, LOG_DBUPDATE, "  bad fn-regex (%" PRId32 ") ", dbupdate->counts [C_SKIP_BAD]);
-
         continue;
       }
 
