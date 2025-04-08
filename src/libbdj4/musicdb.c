@@ -53,7 +53,7 @@ typedef struct musicdb {
   bool          updatelast;
 } musicdb_t;
 
-static size_t dbWriteInternalSong (musicdb_t *musicdb, const char *fn, song_t *song, rafileidx_t rrn);
+static rafileidx_t dbWriteInternalSong (musicdb_t *musicdb, const char *fn, song_t *song, rafileidx_t rrn);
 static song_t *dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn, int chkflag);
 static void   dbRebuildDanceCounts (musicdb_t *musicdb);
 static int dbOpenDB (musicdb_t *musicdb, int mode);
@@ -388,24 +388,24 @@ dbGetByIdx (musicdb_t *musicdb, dbidx_t idx)
   return song;
 }
 
-size_t
+rafileidx_t
 dbWriteSong (musicdb_t *musicdb, song_t *song)
 {
   time_t      currtime;
-  size_t      len;
+  rafileidx_t rrn;
   const char  *uri;
 
   if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
-    return 0;
+    return MUSICDB_ENTRY_UNK;
   }
 
   if (song == NULL) {
-    return 0;
+    return MUSICDB_ENTRY_UNK;
   }
 
   /* do not write temporary or removed songs */
   if (songGetNum (song, TAG_DB_FLAGS) != MUSICDB_STD) {
-    return 0;
+    return MUSICDB_ENTRY_UNK;
   }
 
   uri = songGetStr (song, TAG_URI);
@@ -414,9 +414,9 @@ dbWriteSong (musicdb_t *musicdb, song_t *song)
     currtime = time (NULL);
     songSetNum (song, TAG_LAST_UPDATED, currtime);
   }
-  len = dbWriteInternalSong (musicdb, uri,
+  rrn = dbWriteInternalSong (musicdb, uri,
       song, songGetNum (song, TAG_RRN));
-  return len;
+  return rrn;
 }
 
 /* this should only be used on remote entries */
@@ -571,12 +571,11 @@ dbDumpSongList (musicdb_t *musicdb)   /* KEEP */
 
 /* internal routines */
 
-static size_t
+static rafileidx_t
 dbWriteInternalSong (musicdb_t *musicdb, const char *fn,
     song_t *song, rafileidx_t orrn)
 {
   char          tbuff [RAFILE_REC_SIZE];
-  size_t        len;
   rafileidx_t   rrn;
 
   if (musicdb == NULL) {
@@ -589,7 +588,7 @@ dbWriteInternalSong (musicdb_t *musicdb, const char *fn,
 
   dbCreateSongEntryFromSong (tbuff, sizeof (tbuff), song, fn);
   rrn = raWrite (musicdb->radb, orrn, tbuff, -1);
-  return len;
+  return rrn;
 }
 
 static song_t *

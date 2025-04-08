@@ -49,7 +49,7 @@ void      dbEndBatch (musicdb_t *db);
 void      dbDisableLastUpdateTime (musicdb_t *db);
 void      dbEnableLastUpdateTime (musicdb_t *db);
 bool      dbRemoveSong (musicdb_t *musicdb, dbidx_t dbidx);
-size_t    dbWriteSong (musicdb_t *musicdb, song_t *song);
+rafileidx_t dbWriteSong (musicdb_t *musicdb, song_t *song);
 size_t    dbCreateSongEntryFromSong (char *tbuff, size_t sz, song_t *song, const char *fn);
 song_t    *dbGetByName (musicdb_t *db, const char *);
 song_t    *dbGetByIdx (musicdb_t *db, dbidx_t idx);

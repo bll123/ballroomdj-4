@@ -35,7 +35,7 @@ enum {
 typedef struct songdb songdb_t;
 
 void  songdbWriteDB (songdb_t *songdb, dbidx_t dbidx, int forceflag);
-size_t songdbWriteDBSong (songdb_t *songdb, song_t *song, int32_t *flags, dbidx_t rrn);
+int32_t songdbWriteDBSong (songdb_t *songdb, song_t *song, int32_t *flags, dbidx_t rrn);
 songdb_t *songdbAlloc (musicdb_t *musicdb);
 void  songdbFree (songdb_t *songdb);
 void  songdbSetMusicDB (songdb_t *songdb, musicdb_t *musicdb);

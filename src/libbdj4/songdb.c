@@ -110,7 +110,7 @@ songdbWriteDB (songdb_t *songdb, dbidx_t dbidx, int forceflag)
 }
 
 /* flags is both input and output */
-size_t
+int32_t
 songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
 {
   char        newuri [MAXPATHLEN];
@@ -124,7 +124,6 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
   bool        renamesuccess = false;
   pathinfo_t  *pi;
   int         rc;
-  size_t      len;
 
   if (songdb == NULL || songdb->ident != SONGDB_IDENT ||
       songdb->musicdb == NULL) {
@@ -268,11 +267,11 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
   }
 
   songSetNum (song, TAG_RRN, rrn);
-  len = dbWriteSong (songdb->musicdb, song);
-  if (len > 0) {
-    *flags |= SONGDB_RET_SUCCESS;
-  } else {
+  rrn = dbWriteSong (songdb->musicdb, song);
+  if (rrn == MUSICDB_ENTRY_UNK) {
     *flags |= SONGDB_RET_WRITE_FAIL;
+  } else {
+    *flags |= SONGDB_RET_SUCCESS;
   }
 
   if (bdjoptGetNum (OPT_G_WRITETAGS) != WRITE_TAGS_NONE) {
@@ -290,7 +289,7 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
   }
   songClearChanged (song);
 
-  return len;
+  return rrn;
 }
 
 /* internal routines */

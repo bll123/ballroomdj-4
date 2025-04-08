@@ -135,7 +135,6 @@ typedef struct {
   slistidx_t        dbiter;
   bdjregex_t        *badfnregex;
   dbidx_t           counts [C_MAX];
-  size_t            maxWriteLen;
   mstime_t          starttm;
   int               stopwaitcount;
   const char        *olddirlist;
@@ -214,7 +213,6 @@ main (int argc, char *argv[])
   for (int i = 0; i < C_MAX; ++i) {
     dbupdate.counts [i] = 0;
   }
-  dbupdate.maxWriteLen = 0;
   dbupdate.stopwaitcount = 0;
   dbupdate.itunes = NULL;
   dbupdate.tagdataq = queueAlloc ("tagdata-q", dbupdateTagDataFree);
@@ -819,7 +817,6 @@ dbupdateProcessing (void *udata)
     logMsg (LOG_DBG, LOG_IMPORTANT, "orig-skip: %" PRId32 "", dbupdate->counts [C_SKIP_ORIG]);
     logMsg (LOG_DBG, LOG_IMPORTANT, " del-skip: %" PRId32 "", dbupdate->counts [C_SKIP_DEL]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "  old-dir: %" PRId32 "", dbupdate->counts [C_SKIP_BDJ_OLD_DIR]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "max-write: %" PRIu64, (uint64_t) dbupdate->maxWriteLen);
 
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_PROGRESS, "END");
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_FINISH, NULL);
@@ -1379,13 +1376,8 @@ static void
 dbupdateWriteSong (dbupdate_t *dbupdate, song_t *song,
     int32_t *songdbflags, dbidx_t rrn)
 {
-  size_t    len;
-
   songSetChanged (song);
-  len = songdbWriteDBSong (dbupdate->songdb, song, songdbflags, rrn);
-  if (len > dbupdate->maxWriteLen) {
-    dbupdate->maxWriteLen = len;
-  }
+  songdbWriteDBSong (dbupdate->songdb, song, songdbflags, rrn);
 
   if ((*songdbflags & SONGDB_RET_NULL) == SONGDB_RET_NULL) {
     dbupdateIncCount (dbupdate, C_SKIP_BAD);
