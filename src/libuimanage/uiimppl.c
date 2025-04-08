@@ -327,9 +327,13 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
       uiimppl->callbacks [UIIMPPL_CB_DIALOG],
       /* CONTEXT: import playlist: title of dialog */
       _("Import Playlist"),
+      /* CONTEXT: import playlist dialog: check the connection */
+      _("Check Connection"),
+      RESPONSE_A,
       /* CONTEXT: import playlist dialog: closes the dialog */
       _("Close"),
       RESPONSE_CLOSE,
+      /* CONTEXT: import playlist dialog: start import process button */
       _("Import"),
       RESPONSE_APPLY,
       NULL
@@ -347,16 +351,17 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateLabel ("");
-  uiBoxPackEnd (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
-  uiimppl->wcont [UIIMPPL_W_STATUS_MSG] = uiwidgetp;
-
   /* error msg */
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackEnd (hbox, uiwidgetp);
   uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
   uiimppl->wcont [UIIMPPL_W_ERROR_MSG] = uiwidgetp;
+
+  /* status msg */
+  uiwidgetp = uiCreateLabel ("");
+  uiBoxPackEnd (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
+  uiimppl->wcont [UIIMPPL_W_STATUS_MSG] = uiwidgetp;
 
   uiwcontFree (hbox);
 
@@ -516,6 +521,8 @@ uiimpplResponseHandler (void *udata, int32_t responseid)
   uiimppl_t  *uiimppl = udata;
   int             x, y, ws;
 
+  uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
+
   uiWindowGetPosition (
       uiimppl->wcont [UIIMPPL_W_DIALOG], &x, &y, &ws);
   nlistSetNum (uiimppl->options, IMP_PL_POSITION_X, x);
@@ -531,6 +538,23 @@ uiimpplResponseHandler (void *udata, int32_t responseid)
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: import playlist: close window");
       uiWidgetHide (uiimppl->wcont [UIIMPPL_W_DIALOG]);
       uiimppl->imptype = AUDIOSRC_TYPE_NONE;
+      break;
+    }
+    case RESPONSE_A: {
+      bool    rc;
+
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: import playlist: check connection");
+
+      rc = audiosrcCheckConnection (uiimppl->askey);
+      if (rc == false) {
+        uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG],
+            /* CONTEXT: configuration: audio source: check connection status */
+            _("Connection Failed"));
+      } else {
+        uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG],
+            /* CONTEXT: configuration: audio source: check connection status */
+            _("Connection OK"));
+      }
       break;
     }
     case RESPONSE_APPLY: {

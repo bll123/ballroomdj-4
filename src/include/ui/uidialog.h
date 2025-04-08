@@ -18,6 +18,8 @@ enum {
   RESPONSE_CLOSE,
   RESPONSE_APPLY,
   RESPONSE_RESET,
+  RESPONSE_A,
+  RESPONSE_B,
 };
 
 #include "callback.h"

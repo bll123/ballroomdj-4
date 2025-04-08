@@ -1,5 +1,5 @@
 # localization
-# generated 2025-03-28
+# generated 2025-04-08
 KEY
 ..0
 ISO639_2

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2025-03-28\n"
+"PO-Revision-Date: 2025-04-08\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -295,6 +295,7 @@ msgid "Allowed Keywords"
 msgstr "Mots-clés admis"
 
 #. CONTEXT: import from bdj4: error message if the target song list already exists
+#. CONTEXT: import playlist: message if the target song list already exists
 msgid "Already Exists"
 msgstr "Existe déjà"
 
@@ -425,6 +426,11 @@ msgstr "Impossible de renommer"
 msgid "Cha Cha"
 msgstr "Cha-Cha"
 
+#. CONTEXT: configuration: check connection for audio source
+#. CONTEXT: import playlist dialog: check the connection
+msgid "Check Connection"
+msgstr ""
+
 #. CONTEXT: database update: check for new audio files
 msgid "Check For New"
 msgstr "Vérifier la présence de nouveaux"
@@ -474,6 +480,7 @@ msgstr ""
 #. CONTEXT: copy tags dialog: closes the dialog
 #. CONTEXT: export/import bdj4 dialog: closes the dialog
 #. CONTEXT: export playlist: closes the dialog
+#. CONTEXT: import playlist dialog: closes the dialog
 #. CONTEXT: external request dialog: closes the dialog
 #. CONTEXT: quick edit dialog: closes the dialog
 #. CONTEXT: bpm counter: close button
@@ -523,6 +530,14 @@ msgstr "Chef d'orchestre"
 #. CONTEXT: starterui: button: starts the configuration user interface
 msgid "Configure"
 msgstr "Configurer"
+
+#. CONTEXT: configuration: audio source: check connection status
+msgid "Connection Failed"
+msgstr ""
+
+#. CONTEXT: configuration: audio source: check connection status
+msgid "Connection OK"
+msgstr ""
 
 #. CONTEXT: configuration: which controller to use
 msgid "Controller"
@@ -870,9 +885,14 @@ msgid "Fields to Import"
 msgstr "Champs à importer"
 
 #. CONTEXT: audio identification: label for displaying the audio file path
+#. CONTEXT: import playlist: import location
 #. CONTEXT: song editor: label for displaying the audio file path
 msgid "File"
 msgstr "Fichier"
+
+#, c-format
+msgid "File (%s)"
+msgstr ""
 
 #. CONTEXT: configuration: filter display: song selection filters
 #. CONTEXT: song selection filter: title for the filter dialog
@@ -974,14 +994,18 @@ msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
 msgstr "S'il n'y a pas d'installation de BallroomDJ 3, laissez l'entrée vide."
 
 #. CONTEXT: export/import bdj4 dialog: import button
+#. CONTEXT: import playlist dialog: start import process button
 #. CONTEXT: import from itunes: import the selected itunes playlist
 #. CONTEXT: manage-ui: menu selection: import actions for song list
 msgid "Import"
 msgstr "Importation"
 
-#. CONTEXT: manage-ui: menu selection: music manager: import playlist
+#. CONTEXT: import playlist: import-from selection
+msgid "Import From"
+msgstr ""
+
+#. CONTEXT: import playlist: title of dialog
 #. CONTEXT: manage-ui: menu selection: song list: import
-#. CONTEXT: manage-ui: song list import: title of dialog
 msgid "Import Playlist"
 msgstr "Importer la liste"
 
@@ -1044,6 +1068,15 @@ msgstr ""
 msgid "Invalid E-Mail Address."
 msgstr ""
 
+#. CONTEXT: export playlist: invalid target file extension
+msgid "Invalid Extension"
+msgstr ""
+
+#. CONTEXT: export playlist: invalid target file
+#. CONTEXT: import playlist: invalid target file
+msgid "Invalid File"
+msgstr ""
+
 #. CONTEXT: alternate installation: the selected folder is not valid
 #. CONTEXT: installer: the selected folder is not valid
 #. CONTEXT: export/import bdj4: invalid target folder
@@ -1057,6 +1090,10 @@ msgstr "Nom invalide"
 #. CONTEXT: copy audio tags: one of the files does not exist
 msgid "Invalid Selections"
 msgstr "Sélections non valides"
+
+#. CONTEXT: import playlist: invalid URI
+msgid "Invalid URI"
+msgstr ""
 
 #. CONTEXT: Saving Song List: Error message for invalid song list name.
 #. CONTEXT: Saving Playlist: Error message for invalid playlist name.
@@ -1318,6 +1355,7 @@ msgid "New Song List"
 msgstr "Nouvelle liste de chansons"
 
 #. CONTEXT: export/import bdj4: new song list name
+#. CONTEXT: import playlist: new song list name
 msgid "New Song List Name"
 msgstr "Nom de la nouvelle liste de chansons"
 
@@ -1456,6 +1494,7 @@ msgstr "Joueur"
 
 #. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
 #. CONTEXT: select file: file type for the file selection dialog (playlist)
+#. CONTEXT: import playlist: select the song list
 #. CONTEXT: create from playlist: select the playlist to use
 #. CONTEXT: playlist management: label for playlist name
 msgid "Playlist"
@@ -1470,7 +1509,7 @@ msgid "Playlist Type"
 msgstr "Type de liste de lecture"
 
 #. CONTEXT: managementui: export playlist: name of file export type
-#. CONTEXT: manage-ui: song list import: name of file import type
+#. CONTEXT: import playlist: name of fn import type
 msgid "Playlists"
 msgstr "Listes"
 
@@ -2159,6 +2198,7 @@ msgid "Type"
 msgstr "Type"
 
 #. CONTEXT: configuration: the remote BDJ4 server name
+#. CONTEXT: import playlist: import location
 msgid "URI"
 msgstr ""
 
