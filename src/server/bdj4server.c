@@ -211,6 +211,11 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
         "Content-type: text/plain; charset=utf-8\r\n"
         "WWW-Authenticate: Basic realm=BDJ4\r\n",
         WEB_RESP_UNAUTH);
+  } else if (strcmp (uri, "/echo") == 0) {
+    websrvReply (bdjsrv->websrv, WEB_OK,
+        "Content-type: text/plain; charset=utf-8\r\n"
+        "Cache-Control: max-age=0\r\n",
+        "");
   } else if (strcmp (uri, "/plnames") == 0) {
     const char  *plnm = NULL;
     char        tbuff [200];

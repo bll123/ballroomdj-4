@@ -32,10 +32,11 @@
 
 enum {
   ASBDJ4_ACT_NONE,
-  ASBDJ4_ACT_GET_PL_NAMES,
+  ASBDJ4_ACT_ECHO,
   ASBDJ4_ACT_GET_PLAYLIST,
-  ASBDJ4_ACT_SONG_EXISTS,
+  ASBDJ4_ACT_GET_PL_NAMES,
   ASBDJ4_ACT_GET_SONG,
+  ASBDJ4_ACT_SONG_EXISTS,
   ASBDJ4_ACT_SONG_TAGS,
   ASBDJ4_ACT_MAX,
 };
@@ -47,11 +48,12 @@ enum {
 
 const char *action_str [ASBDJ4_ACT_MAX] = {
   [ASBDJ4_ACT_NONE] = "none",
-  [ASBDJ4_ACT_SONG_EXISTS] = "songexists",
-  [ASBDJ4_ACT_GET_SONG] = "songget",
-  [ASBDJ4_ACT_SONG_TAGS] = "songtags",
+  [ASBDJ4_ACT_ECHO] = "echo",
   [ASBDJ4_ACT_GET_PLAYLIST] = "plget",
   [ASBDJ4_ACT_GET_PL_NAMES] = "plnames",
+  [ASBDJ4_ACT_GET_SONG] = "songget",
+  [ASBDJ4_ACT_SONG_EXISTS] = "songexists",
+  [ASBDJ4_ACT_SONG_TAGS] = "songtags",
 };
 
 enum {
@@ -94,6 +96,7 @@ static bool asbdj4GetAudioFile (asdata_t *asdata, const char *nm, const char *te
 static int asbdj4GetClientKeyByURI (asdata_t *asdata, const char *nm);
 static int asbdj4GetClientKey (asdata_t *asdata, int askey);
 static const char * asbdj4StripPrefix (asdata_t *asdata, const char *songuri, int clientidx);
+static void audiosrcClientFree (asdata_t *asdata);
 
 void
 asiDesc (const char **ret, int max)
@@ -148,8 +151,9 @@ asiPostInit (asdata_t *asdata, const char *uri)
     }
   }
 
-  asdata->clientcount = count;
+  audiosrcClientFree (asdata);
 
+  asdata->clientcount = count;
   asdata->webclient = mdmalloc (sizeof (webclient_t *) * count);
   asdata->client = ilistAlloc ("client", LIST_ORDERED);
 
@@ -196,11 +200,7 @@ asiFree (asdata_t *asdata)
     return;
   }
 
-  for (int i = 0; i < asdata->clientcount; ++i) {
-    webclientClose (asdata->webclient [i]);
-  }
-  mdfree (asdata->webclient);
-  ilistFree (asdata->client);
+  audiosrcClientFree (asdata);
   asconfFree (asdata->asconf);
   mdfree (asdata);
 }
@@ -221,6 +221,38 @@ asiIsTypeMatch (asdata_t *asdata, const char *nm)
   }
 
   return rc;
+}
+
+bool
+asiCheckConnection (asdata_t *asdata, int askey)
+{
+  int     webrc;
+  char    query [1024];
+  int     clientkey;
+
+  /* reload the audiosrc.txt datafile */
+  asconfFree (asdata->asconf);
+  asdata->asconf = asconfAlloc ();
+  asiPostInit (asdata, NULL);
+
+  asdata->action = ASBDJ4_ACT_ECHO;
+  asdata->state = BDJ4_STATE_WAIT;
+  clientkey = asbdj4GetClientKey (asdata, askey);
+  if (clientkey < 0) {
+    return false;
+  }
+
+  snprintf (query, sizeof (query),
+      "%s%s",
+      ilistGetStr (asdata->client, clientkey, AS_CLIENT_BDJ4_URI),
+      action_str [asdata->action]);
+
+  webrc = webclientGet (asdata->webclient [clientkey], query);
+  if (webrc != WEB_OK) {
+    return false;
+  }
+
+  return true;
 }
 
 bool
@@ -710,4 +742,18 @@ asbdj4StripPrefix (asdata_t *asdata, const char *songuri, int clientkey)
     songuri += tlen;
   }
   return songuri;
+}
+
+static void
+audiosrcClientFree (asdata_t *asdata)
+{
+  for (int i = 0; i < asdata->clientcount; ++i) {
+    webclientClose (asdata->webclient [i]);
+    asdata->webclient [i] = NULL;
+  }
+  mdfree (asdata->webclient);
+  asdata->webclient = NULL;
+  ilistFree (asdata->client);
+  asdata->client = NULL;
+  asdata->clientcount = 0;
 }

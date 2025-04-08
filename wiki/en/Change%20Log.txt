@@ -7,6 +7,7 @@
 **4.14.0 2025-3---**
 
 * Bug Fixes:
+    * Configuration: Edit Dances: Fix a crash.
     * Configuration: Improve disabled item display.
     * Internal: Code cleanup.
     * Internal: Minor bug fixes.
@@ -16,7 +17,7 @@
     * Windows: Add missing translations (dialogs).
 * New Features:
     * Configuration: Audio sources.
-    * Music Manager: Import from remote BDJ4 server.
+    * Music Manager: Import playlist from remote BDJ4 server.
     * Remote BDJ4 server.
 
 -->

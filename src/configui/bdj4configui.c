@@ -115,6 +115,7 @@ main (int argc, char *argv[])
   confui.gui.nbtabid = uinbutilIDInit ();
   confui.gui.vbox = NULL;
   confui.gui.statusMsg = NULL;
+  confui.gui.errorMsg = NULL;
   confui.gui.tablecurr = CONFUI_ID_NONE;
   confui.gui.dispsel = NULL;
   confui.gui.dispselduallist = NULL;
@@ -397,6 +398,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   uiwcontFree (confui->gui.vbox);
   uiwcontFree (confui->gui.statusMsg);
+  uiwcontFree (confui->gui.errorMsg);
   uiduallistFree (confui->gui.dispselduallist);
   songfilterFree (confui->sf);
   quickeditFree (confui->qe);
@@ -455,9 +457,14 @@ confuiBuildUI (configui_t *confui)
   uiwcontFree (accent.cbox);
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   confui->gui.statusMsg = uiwidgetp;
+
+  uiwidgetp = uiCreateLabel ("");
+  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
+  uiBoxPackEnd (hbox, uiwidgetp);
+  confui->gui.errorMsg = uiwidgetp;
 
   confui->gui.notebook = uiCreateNotebook ();
   uiWidgetAddClass (confui->gui.notebook, LEFT_NB_CLASS);

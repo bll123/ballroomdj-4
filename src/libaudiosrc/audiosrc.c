@@ -38,6 +38,7 @@ typedef struct {
   void              (*asiPostInit) (asdata_t *, const char *);
   int               (*asiTypeIdent) (void);
   bool              (*asiIsTypeMatch) (asdata_t *, const char *nm);
+  bool              (*asiCheckConnection) (asdata_t *, int askey);
   bool              (*asiExists) (asdata_t *, const char *nm);
   bool              (*asiOriginalExists) (asdata_t *, const char *nm);
   bool              (*asiRemove) (asdata_t *, const char *nm);
@@ -146,6 +147,7 @@ audiosrcInit (void)
     asdylib->asiPostInit = NULL;
     asdylib->asiTypeIdent = NULL;
     asdylib->asiIsTypeMatch = NULL;
+    asdylib->asiCheckConnection = NULL;
     asdylib->asiExists = NULL;
     asdylib->asiOriginalExists = NULL;
     asdylib->asiRemove = NULL;
@@ -186,6 +188,7 @@ audiosrcInit (void)
     asdylib->asiPostInit = dylibLookup (asdylib->dlHandle, "asiPostInit");
     asdylib->asiTypeIdent = dylibLookup (asdylib->dlHandle, "asiTypeIdent");
     asdylib->asiIsTypeMatch = dylibLookup (asdylib->dlHandle, "asiIsTypeMatch");
+    asdylib->asiCheckConnection = dylibLookup (asdylib->dlHandle, "asiCheckConnection");
     asdylib->asiExists = dylibLookup (asdylib->dlHandle, "asiExists");
     asdylib->asiOriginalExists = dylibLookup (asdylib->dlHandle, "asiOriginalExists");
     asdylib->asiRemove = dylibLookup (asdylib->dlHandle, "asiRemove");
@@ -331,6 +334,30 @@ audiosrcGetType (const char *nm)
   }
 
   return type;
+}
+
+bool
+audiosrcCheckConnection (int askey)
+{
+  int       type = AUDIOSRC_TYPE_NONE;
+  bool      rc = false;
+  asdylib_t *asdylib;
+
+  if (audiosrc == NULL) {
+    return false;
+  }
+  if (askey < 0 || askey >= audiosrc->ascount) {
+    return false;
+  }
+
+  type = asconfGetNum (audiosrc->asconf, askey, ASCONF_TYPE);
+  asdylib = audiosrcGetDylibByType (type);
+
+  if (asdylib != NULL && asdylib->asiCheckConnection != NULL) {
+    rc = asdylib->asiCheckConnection (asdylib->asdata, askey);
+  }
+
+  return rc;
 }
 
 bool
@@ -592,6 +619,9 @@ audiosrcStartIterator (int type, asitertype_t asitertype,
   if (asitertype != AS_ITER_PL_NAMES &&
       asitertype != AS_ITER_AUDIO_SRC &&
       uri == NULL) {
+    return NULL;
+  }
+  if (askey < 0 || askey >= audiosrc->ascount) {
     return NULL;
   }
 

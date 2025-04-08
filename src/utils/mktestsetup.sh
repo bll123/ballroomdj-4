@@ -166,6 +166,7 @@ cp -f test-templates/status.txt data
 cp -f test-templates/ds-songfilter.txt data/profile00
 cp -f test-templates/ui-*.txt data/profile00
 mv -f data/profile00/ui-starter.txt data
+cp -f test-templates/audiosrc.txt data
 
 for ftype in sl seq auto; do
   for tag in a b c d e f g h; do

@@ -30,18 +30,18 @@ stpecpy (char *dst, char *end, const char *restrict src)
 #if defined (BDJ4_MEM_DEBUG)
   if (dst == NULL) {
     fprintf (stderr, "ERR: stpecpy: null destination\n");
-    return end;
   }
   if (end == NULL) {
     fprintf (stderr, "ERR: stpecpy: null end pointer\n");
-    return end;
   }
   if (src == NULL) {
     fprintf (stderr, "ERR: stpecpy: null source\n");
-    return end;
   }
 #endif
 
+  if (src == NULL || dst == NULL || end == NULL) {
+    return end;
+  }
   if (dst == end) {
     return end;
   }

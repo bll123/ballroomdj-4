@@ -45,6 +45,7 @@ static int  confuiAudioSrcEntryChg (uiwcont_t *e, void *udata, int widx);
 static bool confuiAudioSrcModeChg (void *udata);
 static bool confuiAudioSrcTypeChg (void *udata);
 static bool confuiAudioSrcPortChg (void *udata);
+static bool confuiAudioSrcChkConn (void *udata);
 static void confuiAudioSrcSpinboxChg (void *udata, int widx);
 static void confuiAudioSrcSave (confuigui_t *gui);
 static void confuiAudioSrcFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
@@ -169,6 +170,10 @@ confuiBuildUIAudioSource (confuigui_t *gui)
       "", confuiAudioSrcPassChg, gui, UIENTRY_IMMEDIATE);
   gui->uiitem [CONFUI_ENTRY_AUDIOSRC_PASS].audiosrcitemidx = ASCONF_PASS;
 
+  /* CONTEXT: configuration: check connection for audio source */
+  confuiMakeItemButton (gui, dvbox, szgrp, _("Check Connection"),
+      CONFUI_WIDGET_AUDIOSRC_CHK_CONN, -1, confuiAudioSrcChkConn);
+
   uivlSetSelectChgCallback (gui->tables [CONFUI_ID_AUDIOSRC].uivl,
       confuiAudioSrcSelect, gui);
 
@@ -196,6 +201,9 @@ confuiAudioSrcSelectLoadValues (confuigui_t *gui, ilistidx_t askey)
   uivirtlist_t    *uivl;
   int32_t         rownum;
 
+  if (askey < 0) {
+    return;
+  }
 
   uivl = gui->tables [CONFUI_ID_AUDIOSRC].uivl;
   rownum = uivlGetCurrSelection (uivl);
@@ -425,7 +433,16 @@ confuiAudioSrcSpinboxChg (void *udata, int widx)
   asconfSetNum (gui->asconf, askey, itemidx, nval);
   gui->tables [gui->tablecurr].changed = true;
   if (widx == CONFUI_SPINBOX_AUDIOSRC_MODE) {
+    int   mode;
+
     confuiAudioSrcSetWidgetStates (gui, askey);
+    mode = asconfGetNum (gui->asconf, askey, ASCONF_MODE);
+    if (mode == ASCONF_MODE_SERVER) {
+      int   widx;
+
+      widx = CONFUI_SPINBOX_AUDIOSRC_TYPE;
+      uiSpinboxTextSetValue (gui->uiitem [widx].uiwidgetp, AUDIOSRC_TYPE_BDJ4);
+    }
   }
   logProcEnd ("");
 }
@@ -506,6 +523,9 @@ confuiAudioSrcRemove (confuigui_t *gui, ilistidx_t rowidx)
   uivlSetNumRows (uivl, count);
   gui->tables [CONFUI_ID_AUDIOSRC].currcount = count;
   uivlPopulate (uivl);
+  if (rowidx >= count) {
+    --rowidx;
+  }
   askey = uivlGetRowColumnNum (uivl, rowidx, CONFUI_AUDIOSRC_COL_KEY);
   confuiAudioSrcSelectLoadValues (gui, askey);
 }
@@ -559,4 +579,25 @@ confuiAudioSrcSetWidgetStates (confuigui_t *gui, int askey)
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_AUDIOSRC_PORT].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_USER].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_PASS].uiwidgetp, state);
+}
+
+static bool
+confuiAudioSrcChkConn (void *udata)
+{
+  confuigui_t   *gui = udata;
+  bool          rc = false;
+
+
+  confuiAudioSrcSave (gui);
+  rc = audiosrcCheckConnection (gui->asconfkey);
+  uiLabelSetText (gui->statusMsg, "");
+  if (rc == false) {
+    /* CONTEXT: configuration: audio source: check connection status */
+    uiLabelSetText (gui->statusMsg, _("Connection Failed"));
+  } else {
+    /* CONTEXT: configuration: audio source: check connection status */
+    uiLabelSetText (gui->statusMsg, _("Connection OK"));
+  }
+
+  return UICB_CONT;
 }

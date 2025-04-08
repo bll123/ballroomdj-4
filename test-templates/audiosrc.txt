@@ -1,0 +1,39 @@
+# asconf
+# 2025-04-08 05:55:14.403
+# version 1
+version
+..1
+count
+..2
+KEY
+..0
+MODE
+..client
+NAME
+..AAA
+PASS
+..bdj
+PORT
+..8000
+TYPE
+..bdj4
+URI
+..bll-mac.local
+USER
+..bdj
+KEY
+..1
+MODE
+..client
+NAME
+..BBB
+PASS
+..bdj
+PORT
+..8000
+TYPE
+..bdj4
+URI
+..bll-mac-m1.local
+USER
+..bdj

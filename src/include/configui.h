@@ -138,6 +138,7 @@ enum {
   CONFUI_WIDGET_AO_EXAMPLE_3,
   CONFUI_WIDGET_AO_EXAMPLE_4,
   CONFUI_WIDGET_AO_EXAMPLE_MAX,
+  CONFUI_WIDGET_AUDIOSRC_CHK_CONN,
   CONFUI_WIDGET_DANCE_MPM_HIGH,
   CONFUI_WIDGET_DANCE_MPM_LOW,
   /* the debug enums must be in the same order as log.h */
@@ -455,6 +456,7 @@ typedef struct confuigui {
   /* widgets */
   uiwcont_t         *vbox;
   uiwcont_t         *statusMsg;
+  uiwcont_t         *errorMsg;
   /* display select */
   dispsel_t         *dispsel;
   uiduallist_t      *dispselduallist;
@@ -536,6 +538,7 @@ void confuiMakeItemDropdown (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, c
 void confuiMakeItemLink (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, const char *disp);
 void confuiMakeItemFontButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *fontname);
 void confuiMakeItemColorButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *color);
+void confuiMakeItemButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp, const char *txt, int widx, int bdjoptIdx, callbackFunc cb);
 void confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, uiwcont_t *sgB, const char *txt, int widx, int bdjoptIdx, confuiouttype_t outtype, ssize_t value, void *cb);
 void confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, uiwcont_t *sgB, const char *txt, int widx, int bdjoptIdx, ssize_t value, int indent);
 void confuiMakeItemSpinboxNum (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, uiwcont_t *sgB, const char *txt, int widx, int bdjoptIdx, int min, int max, int value, void *cb);

@@ -211,6 +211,10 @@ confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t dkey)
   char            tstr [MAXPATHLEN];
 
 
+  if (dkey < 0) {
+    return;
+  }
+
   uivl = gui->tables [CONFUI_ID_DANCE].uivl;
   rownum = uivlGetCurrSelection (uivl);
 
@@ -663,6 +667,9 @@ confuiDanceRemove (confuigui_t *gui, ilistidx_t rowidx)
   uivlSetNumRows (uivl, count);
   gui->tables [CONFUI_ID_DANCE].currcount = count;
   uivlPopulate (uivl);
+  if (rowidx >= count) {
+    --rowidx;
+  }
   dkey = uivlGetRowColumnNum (uivl, rowidx, CONFUI_DANCE_COL_DANCE_KEY);
   confuiDanceSelectLoadValues (gui, dkey);
 }

@@ -230,6 +230,37 @@ confuiMakeItemColorButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 }
 
 void
+confuiMakeItemButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
+    const char *txt, int widx, int bdjoptIdx, callbackFunc cb)
+{
+  uiwcont_t  *hbox;
+  uiwcont_t  *uiwidgetp;
+
+  logProcBegin ();
+
+  gui->uiitem [widx].basetype = CONFUI_NONE;
+  gui->uiitem [widx].outtype = CONFUI_OUT_NONE;
+  if (cb != NULL) {
+    gui->uiitem [widx].callback = callbackInit (cb, gui, NULL);
+  }
+
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (boxp, hbox);
+
+  confuiMakeItemLabel (gui, widx, hbox, szgrp, "", CONFUI_NO_INDENT);
+
+  uiwidgetp = uiCreateButton ("as-chk-conn",
+      gui->uiitem [widx].callback, txt, NULL);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
+
+  gui->uiitem [widx].uiwidgetp = uiwidgetp;
+  gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  uiwcontFree (hbox);
+  logProcEnd ("");
+}
+
+void
 confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     uiwcont_t *szgrpB, const char *txt, int widx, int bdjoptIdx,
     confuiouttype_t outtype, ssize_t value, void *cb)
@@ -606,13 +637,13 @@ confuiValHMCallback (void *udata, const char *label, const char *txt)
 
   logProcBegin ();
 
-  uiLabelSetText (gui->statusMsg, "");
+  uiLabelSetText (gui->errorMsg, "");
   val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HOUR_MIN);
   if (val == false) {
     int32_t oval;
 
     oval = uiSpinboxTimeGetValue (uiitem->uiwidgetp);
-    uiLabelSetText (gui->statusMsg, tbuff);
+    uiLabelSetText (gui->errorMsg, tbuff);
     return oval;
   }
 
@@ -632,13 +663,13 @@ confuiValHMSCallback (void *udata, const char *label, const char *txt)
 
   logProcBegin ();
 
-  uiLabelSetText (gui->statusMsg, "");
+  uiLabelSetText (gui->errorMsg, "");
   val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HMS);
   if (val == false) {
     int32_t oval;
 
     oval = uiSpinboxTimeGetValue (uiitem->uiwidgetp);
-    uiLabelSetText (gui->statusMsg, tbuff);
+    uiLabelSetText (gui->errorMsg, tbuff);
     return oval;
   }
 
