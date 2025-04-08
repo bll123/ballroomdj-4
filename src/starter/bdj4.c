@@ -61,24 +61,25 @@ main (int argc, char * argv[])
   char        *end;
 
   static struct option bdj_options [] = {
-    { "aesed",          no_argument,        NULL,   30 },
-    { "bdj4altinst",    no_argument,        NULL,   20 },
-    { "bdj4cleantmp",   no_argument,        NULL,   29 },
-    { "bdj4dbupdate",   no_argument,        NULL,   15 },
-    { "bdj4info",       no_argument,        NULL,   13 },
-    { "bdj4installer",  no_argument,        NULL,   12 },
-    { "bdj4tags",       no_argument,        NULL,   17 },
-    { "bdj4updater",    no_argument,        NULL,   16 },
-    { "check_all",      no_argument,        NULL,   1 },
-    { "dmkmfromdb",     no_argument,        NULL,   28 },
-    { "tdbcompare",     no_argument,        NULL,   23 },
-    { "tdbsetval",      no_argument,        NULL,   26 },
-    { "testsuite",      no_argument,        NULL,   22 },
-    { "tmusicsetup",    no_argument,        NULL,   21 },
-    { "ttagdbchk",      no_argument,        NULL,   27 },
-    { "uitest",         no_argument,        NULL,   31 },
-    { "vlcsinklist",    no_argument,        NULL,   25 },
-    { "vlcversion",     no_argument,        NULL,   32 },
+    { "aesed",          no_argument,        NULL,   1 },
+    { "bdj4altinst",    no_argument,        NULL,   2 },
+    { "bdj4cleantmp",   no_argument,        NULL,   3 },
+    { "bdj4dbupdate",   no_argument,        NULL,   4 },
+    { "bdj4info",       no_argument,        NULL,   5 },
+    { "bdj4installer",  no_argument,        NULL,   6 },
+    { "bdj4server",     no_argument,        NULL,   7 },
+    { "bdj4tags",       no_argument,        NULL,   8 },
+    { "bdj4updater",    no_argument,        NULL,   9 },
+    { "check_all",      no_argument,        NULL,   10 },
+    { "dmkmfromdb",     no_argument,        NULL,   11 },
+    { "tdbcompare",     no_argument,        NULL,   12 },
+    { "tdbsetval",      no_argument,        NULL,   13 },
+    { "testsuite",      no_argument,        NULL,   14 },
+    { "tmusicsetup",    no_argument,        NULL,   15 },
+    { "ttagdbchk",      no_argument,        NULL,   16 },
+    { "uitest",         no_argument,        NULL,   17 },
+    { "vlcsinklist",    no_argument,        NULL,   18 },
+    { "vlcversion",     no_argument,        NULL,   19 },
     /* used by installer */
     { "bdj3dir",        required_argument,  NULL,   0 },
     { "noclean",        no_argument,        NULL,   0 },
@@ -168,47 +169,13 @@ main (int argc, char * argv[])
       "p:d:t:", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 1: {
-        prog = "check_all";
-        ++validargs;
-        nodetach = true;
-        wait = true;
-        break;
-      }
-      case 12: {
-        prog = "bdj4installer";
-        nodetach = true;
-        wait = true;
-        isinstaller = true;
-        ++validargs;
-        break;
-      }
-      case 13: {
-        prog = "bdj4info";
+        prog = "aesed";
         nodetach = true;
         wait = true;
         ++validargs;
         break;
       }
-      case 15: {
-        prog = "bdj4dbupdate";
-        ++validargs;
-        break;
-      }
-      case 16: {
-        prog = "bdj4updater";
-        nodetach = true;
-        wait = true;
-        ++validargs;
-        break;
-      }
-      case 17: {
-        prog = "bdj4tags";
-        nodetach = true;
-        wait = true;
-        ++validargs;
-        break;
-      }
-      case 20: {
+      case 2: {
         prog = "bdj4altinst";
         nodetach = true;
         wait = true;
@@ -216,84 +183,116 @@ main (int argc, char * argv[])
         ++validargs;
         break;
       }
-      case 21: {
-        prog = "tmusicsetup";
-        nodetach = true;
-        wait = true;
-        ++validargs;
-        break;
-      }
-      case 22: {
-        prog = "testsuite";
-        nodetach = true;
-        wait = true;
-        ++validargs;
-        break;
-      }
-      case 23: {
-        prog = "tdbcompare";
-        nodetach = true;
-        wait = true;
-        ++validargs;
-        break;
-      }
-      case 24: {
-        prog = "tdbdump";
-        nodetach = true;
-        wait = true;
-        ++validargs;
-        break;
-      }
-      case 25: {
-        prog = "vlcsinklist";
-        nodetach = true;
-        wait = true;
-        ++validargs;
-        break;
-      }
-      case 26: {
-        prog = "tdbsetval";
-        nodetach = true;
-        wait = true;
-        ++validargs;
-        break;
-      }
-      case 27: {
-        prog = "ttagdbchk";
-        nodetach = true;
-        wait = true;
-        ++validargs;
-        break;
-      }
-      case 28: {
-        prog = "dmkmfromdb";
-        nodetach = true;
-        wait = true;
-        ++validargs;
-        break;
-      }
-      case 29: {
+      case 3: {
         prog = "bdj4cleantmp";
         nodetach = true;
         wait = true;
         ++validargs;
         break;
       }
-      case 30: {
-        prog = "aesed";
+      case 4: {
+        prog = "bdj4dbupdate";
+        ++validargs;
+        break;
+      }
+      case 5: {
+        prog = "bdj4info";
         nodetach = true;
         wait = true;
         ++validargs;
         break;
       }
-      case 31: {
+      case 6: {
+        prog = "bdj4installer";
+        nodetach = true;
+        wait = true;
+        isinstaller = true;
+        ++validargs;
+        break;
+      }
+      case 7: {
+        prog = "bdj4server";
+        ++validargs;
+        break;
+      }
+      case 8: {
+        prog = "bdj4tags";
+        nodetach = true;
+        wait = true;
+        ++validargs;
+        break;
+      }
+      case 9: {
+        prog = "bdj4updater";
+        nodetach = true;
+        wait = true;
+        ++validargs;
+        break;
+      }
+      case 10: {
+        prog = "check_all";
+        ++validargs;
+        nodetach = true;
+        wait = true;
+        break;
+      }
+      case 11: {
+        prog = "dmkmfromdb";
+        nodetach = true;
+        wait = true;
+        ++validargs;
+        break;
+      }
+      case 12: {
+        prog = "tdbcompare";
+        nodetach = true;
+        wait = true;
+        ++validargs;
+        break;
+      }
+      case 13: {
+        prog = "tdbsetval";
+        nodetach = true;
+        wait = true;
+        ++validargs;
+        break;
+      }
+      case 14: {
+        prog = "testsuite";
+        nodetach = true;
+        wait = true;
+        ++validargs;
+        break;
+      }
+      case 15: {
+        prog = "tmusicsetup";
+        nodetach = true;
+        wait = true;
+        ++validargs;
+        break;
+      }
+      case 16: {
+        prog = "ttagdbchk";
+        nodetach = true;
+        wait = true;
+        ++validargs;
+        break;
+      }
+      case 17: {
         prog = "uitest";
         nodetach = true;
         wait = true;
         ++validargs;
         break;
       }
-      case 32: {
+      case 18: {
+        prog = "vlcsinklist";
+        nodetach = true;
+        wait = true;
+        ++validargs;
+        break;
+      }
+      case 19: {
         prog = "vlcversion";
         nodetach = false;
         wait = true;

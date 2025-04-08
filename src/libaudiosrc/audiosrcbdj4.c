@@ -168,14 +168,12 @@ asiPostInit (asdata_t *asdata, const char *uri)
             "https://%s:%" PRIu16 "/",
             asconfGetStr (asdata->asconf, askey, ASCONF_URI),
             (uint16_t) asconfGetNum (asdata->asconf, askey, ASCONF_PORT));
-logStderr ("client: %d key:%d %s\n", count, askey, temp);
         ilistSetStr (asdata->client, count, AS_CLIENT_BDJ4_URI, temp);
         snprintf (temp, sizeof (temp),
             "%s%s:%" PRIu16 "/",
             AS_BDJ4_PFX,
             asconfGetStr (asdata->asconf, askey, ASCONF_URI),
             (uint16_t) asconfGetNum (asdata->asconf, askey, ASCONF_PORT));
-logStderr ("client: %d key:%d %s\n", count, askey, temp);
         ilistSetStr (asdata->client, count, AS_CLIENT_URI, temp);
         ilistSetNum (asdata->client, count, AS_CLIENT_URI_LEN, strlen (temp));
         ilistSetNum (asdata->client, count, AS_CLIENT_ASKEY, askey);
@@ -350,17 +348,14 @@ asiStartIterator (asdata_t *asdata, asitertype_t asitertype, const char *nm, int
   asidata->plNames = NULL;
 
   if (asitertype == AS_ITER_PL_NAMES) {
-logStderr ("as-start-iter: get-pl-names\n");
     asbdj4GetPlaylistNames (asdata, asidata, askey);
     asidata->iterlist = asidata->plNames;
     slistStartIterator (asidata->iterlist, &asidata->iteridx);
   } else if (asitertype == AS_ITER_PL) {
-logStderr ("as-start-iter: get-pl %s\n", nm);
     asbdj4GetPlaylist (asdata, asidata, nm, askey);
     asidata->iterlist = asidata->songlist;
     slistStartIterator (asidata->iterlist, &asidata->iteridx);
   } else if (asitertype == AS_ITER_TAGS) {
-logStderr ("as-start-iter: get-tags %s\n", nm);
     asbdj4SongTags (asdata, asidata, nm);
     asidata->iterlist = asidata->songtags;
     slistStartIterator (asidata->iterlist, &asidata->iteridx);
@@ -578,7 +573,6 @@ asbdj4GetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata, int askey)
 
   clientkey = asbdj4GetClientKey (asdata, askey);
   if (clientkey < 0) {
-logStderr ("as-get-pl-names: no-client-key\n");
     return false;
   }
 
@@ -588,10 +582,8 @@ logStderr ("as-get-pl-names: no-client-key\n");
       "%s%s",
       ilistGetStr (asdata->client, clientkey, AS_CLIENT_BDJ4_URI),
       action_str [asdata->action]);
-logStderr ("as-get-pl-names: %s\n", query);
 
   webrc = webclientGet (asdata->webclient [clientkey], query);
-logStderr ("  webrc: %d\n", webrc);
   if (webrc != WEB_OK) {
     return rc;
   }
@@ -602,7 +594,6 @@ logStderr ("  webrc: %d\n", webrc);
       char    *p;
       char    *tokstr = NULL;
 
-logStderr ("  have data\n");
       tdata = mdmalloc (asdata->webresplen + 1);
       memcpy (tdata, asdata->webresponse, asdata->webresplen);
       tdata [asdata->webresplen] = '\0';
@@ -612,7 +603,6 @@ logStderr ("  have data\n");
       p = strtok_r (tdata, MSG_ARGS_RS_STR, &tokstr);
       while (p != NULL) {
         slistSetNum (asidata->plNames, p, 1);
-logStderr ("as-bdj4: pl: %s\n", p);
         p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
       }
       slistSort (asidata->plNames);
@@ -675,14 +665,12 @@ asbdj4GetClientKeyByURI (asdata_t *asdata, const char *nm)
 {
   int     clientkey = -1;
 
-logStderr ("gck-by-uri: %s\n", nm);
   for (int i = 0; i < asdata->clientcount; ++i) {
     const char  *tstr;
     size_t      tlen;
 
     tstr = ilistGetStr (asdata->client, i, AS_CLIENT_URI);
     tlen = ilistGetNum (asdata->client, i, AS_CLIENT_URI_LEN);
-logStderr ("  chk: nm:%s uri:%s\n", nm, tstr);
     if (strncmp (nm, tstr, tlen) == 0) {
       clientkey = i;
       break;
@@ -697,12 +685,10 @@ asbdj4GetClientKey (asdata_t *asdata, int askey)
 {
   int   clientkey = -1;
 
-logStderr ("gck: %d\n", askey);
   for (int i = 0; i < asdata->clientcount; ++i) {
     int   tkey;
 
     tkey = ilistGetNum (asdata->client, i, AS_CLIENT_ASKEY);
-logStderr ("  chk: %d\n", tkey);
     if (tkey == askey) {
       clientkey = i;
       break;

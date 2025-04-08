@@ -53,9 +53,10 @@ typedef struct musicdb {
   bool          updatelast;
 } musicdb_t;
 
-static size_t dbWriteInternalSong (musicdb_t *musicdb, const char *fn, song_t *song, dbidx_t rrn);
+static size_t dbWriteInternalSong (musicdb_t *musicdb, const char *fn, song_t *song, rafileidx_t rrn);
 static song_t *dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn, int chkflag);
 static void   dbRebuildDanceCounts (musicdb_t *musicdb);
+static int dbOpenDB (musicdb_t *musicdb, int mode);
 
 musicdb_t *
 dbOpen (const char *fn)
@@ -136,12 +137,10 @@ dbLoad (musicdb_t *musicdb)
     return -1;
   }
 
-  if (musicdb->radb == NULL) {
-    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION, RAFILE_RO);
-    if (musicdb->radb == NULL) {
-      return -1;
-    }
+  if (dbOpenDB (musicdb, RAFILE_RO) < 0) {
+    return -1;
   }
+
   racount = raGetCount (musicdb->radb);
   /* the songs loaded into the templist will be re-assigned to */
   /* the songbyidx list, and should not be freed */
@@ -223,11 +222,8 @@ dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx)
     return;
   }
 
-  if (musicdb->radb == NULL) {
-    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION, RAFILE_RW);
-    if (musicdb->radb == NULL) {
-      return;
-    }
+  if (dbOpenDB (musicdb, RAFILE_RW) < 0) {
+    return;
   }
 
   /* old entry */
@@ -273,11 +269,8 @@ dbMarkEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx)
     return;
   }
 
-  if (musicdb->radb == NULL) {
-    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION, RAFILE_RW);
-    if (musicdb->radb == NULL) {
-      return;
-    }
+  if (dbOpenDB (musicdb, RAFILE_RW) < 0) {
+    return;
   }
   song = nlistGetData (musicdb->songbyidx, dbidx);
   songSetNum (song, TAG_DB_FLAGS, MUSICDB_REMOVED);
@@ -294,11 +287,8 @@ dbClearEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx)
     return;
   }
 
-  if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
-    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION, RAFILE_RW);
-    if (musicdb->radb == NULL) {
-      return;
-    }
+  if (dbOpenDB (musicdb, RAFILE_RW) < 0) {
+    return;
   }
   song = nlistGetData (musicdb->songbyidx, dbidx);
   songSetNum (song, TAG_DB_FLAGS, MUSICDB_STD);
@@ -312,11 +302,8 @@ dbStartBatch (musicdb_t *musicdb)
     return;
   }
 
-  if (musicdb->radb == NULL) {
-    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION, RAFILE_RW);
-    if (musicdb->radb == NULL) {
-      return;
-    }
+  if (dbOpenDB (musicdb, RAFILE_RW) < 0) {
+    return;
   }
   raStartBatch (musicdb->radb);
   musicdb->inbatch = true;
@@ -448,13 +435,13 @@ dbRemoveSong (musicdb_t *musicdb, dbidx_t dbidx)
   }
 
   song = nlistGetData (musicdb->songbyidx, dbidx);
+  if (song == NULL) {
+    return false;
+  }
   rrn = songGetNum (song, TAG_RRN);
 
-  if (musicdb->radb == NULL) {
-    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION, RAFILE_RO);
-    if (musicdb->radb == NULL) {
-      return -1;
-    }
+  if (dbOpenDB (musicdb, RAFILE_RW) < 0) {
+    return false;
   }
 
   raClear (musicdb->radb, rrn);
@@ -586,25 +573,22 @@ dbDumpSongList (musicdb_t *musicdb)   /* KEEP */
 
 static size_t
 dbWriteInternalSong (musicdb_t *musicdb, const char *fn,
-    song_t *song, dbidx_t rrn)
+    song_t *song, rafileidx_t orrn)
 {
   char          tbuff [RAFILE_REC_SIZE];
   size_t        len;
+  rafileidx_t   rrn;
 
   if (musicdb == NULL) {
     return 0;
   }
 
-  if (musicdb->radb == NULL) {
-    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION, RAFILE_RW);
-    if (musicdb->radb == NULL) {
-      return 0;
-    }
+  if (dbOpenDB (musicdb, RAFILE_RW) < 0) {
+    return 0;
   }
 
   dbCreateSongEntryFromSong (tbuff, sizeof (tbuff), song, fn);
-  len = raWrite (musicdb->radb, rrn, tbuff, -1);
-
+  rrn = raWrite (musicdb->radb, orrn, tbuff, -1);
   return len;
 }
 
@@ -675,4 +659,17 @@ dbRebuildDanceCounts (musicdb_t *musicdb)
       }
     }
   }
+}
+
+static int
+dbOpenDB (musicdb_t *musicdb, int mode)
+{
+  if (musicdb->radb == NULL) {
+    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION, mode);
+    if (musicdb->radb == NULL) {
+      return -1;
+    }
+  }
+
+  return 0;
 }

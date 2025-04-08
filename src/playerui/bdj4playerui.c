@@ -1142,7 +1142,10 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_DB_ENTRY_UPDATE: {
-          dbLoadEntry (plui->musicdb, atol (args));
+          dbidx_t   dbidx;
+
+          msgparseDBEntryUpdate (args, &dbidx);
+          dbLoadEntry (plui->musicdb, dbidx);
           /* the grouping must be re-built when a song is saved */
           groupingRebuild (plui->grouping, plui->musicdb);
           uisongselPopulateData (plui->uisongsel);
@@ -1816,7 +1819,8 @@ pluiSongSaveCallback (void *udata, int32_t dbidx)
 
   /* the database has been updated, tell the other processes to reload  */
   /* this particular entry */
-  snprintf (tmp, sizeof (tmp), "%" PRId32, dbidx);
+  snprintf (tmp, sizeof (tmp), "%" PRId32 "%c%d", dbidx,
+      MSG_ARGS_RS, MUSICDB_ENTRY_UNK);
   connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
 
   uisongselPopulateData (plui->uisongsel);

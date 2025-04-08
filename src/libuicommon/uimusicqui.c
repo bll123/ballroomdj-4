@@ -1201,6 +1201,10 @@ uimusicqFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   }
 
   song = dbGetByIdx (uimusicq->musicdb, musicqupditem->dbidx);
+  if (song == NULL) {
+    mqint->inchange = false;
+    return;
+  }
 
   uivlSetRowColumnNum (mqint->uivl, rownum, UIMUSICQ_COL_DBIDX,
       musicqupditem->dbidx);

@@ -447,6 +447,7 @@ static void     manageSetDisplayPerSelection (manageui_t *manage, int lastmainta
 static void     manageSetMenuCallback (manageui_t *manage, int midx, callbackFunc cb);
 static void     manageSonglistLoadCheck (manageui_t *manage);
 static void     manageProcessDatabaseUpdate (manageui_t *manage);
+static void     manageUpdateDBPointers (manageui_t *manage);
 static uimusicq_t * manageGetCurrMusicQ (manageui_t *manage);
 /* bpm counter */
 static bool     manageStartBPMCounter (void *udata);
@@ -1271,7 +1272,8 @@ manageMainLoop (void *tmanage)
 
           dbLoadEntry (manage->musicdb, dbidx);
           manageRePopulateData (manage);
-          snprintf (tmp, sizeof (tmp), "%" PRId32, dbidx);
+          snprintf (tmp, sizeof (tmp), "%" PRId32 "%c%" PRId32, dbidx,
+              MSG_ARGS_RS, rrn);
           connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
         }
       }
@@ -1299,7 +1301,8 @@ manageMainLoop (void *tmanage)
       manageRePopulateData (manage);
       manageReloadSongData (manage);
 
-      snprintf (tmp, sizeof (tmp), "%" PRId32, manage->songeditdbidx);
+      snprintf (tmp, sizeof (tmp), "%" PRId32 "%c%d",
+          manage->songeditdbidx, MSG_ARGS_RS, MUSICDB_ENTRY_UNK);
       connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
     }
     uiLabelSetText (manage->minfo.statusMsg, "");
@@ -1560,7 +1563,10 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_DB_ENTRY_UPDATE: {
-          dbLoadEntry (manage->musicdb, atol (args));
+          dbidx_t   dbidx;
+
+          msgparseDBEntryUpdate (args, &dbidx);
+          dbLoadEntry (manage->musicdb, dbidx);
           manageRePopulateData (manage);
           if (manage->maincurrtab == MANAGE_TAB_MAIN_MM &&
               manage->mmcurrtab == MANAGE_TAB_SONGEDIT) {
@@ -1880,7 +1886,8 @@ manageSongEditSaveCallback (void *udata, int32_t dbidx)
 
   /* the database has been updated, tell the other processes to reload  */
   /* this particular entry */
-  snprintf (tmp, sizeof (tmp), "%" PRId32, dbidx);
+  snprintf (tmp, sizeof (tmp), "%" PRId32 "%c%d", dbidx,
+      MSG_ARGS_RS, MUSICDB_ENTRY_UNK);
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
 
   manageRePopulateData (manage);
@@ -3421,8 +3428,9 @@ managePlaylistImportRespHandler (void *udata)
   int         imptype;
   int         mqidx;
   int         askey;
-  dbidx_t     dbidx;
   char        tbuff [MAXPATHLEN];
+  dbidx_t     dbidx;
+  bool        newsongs = false;
 
   imptype = uiimpplGetType (manage->uiimppl);
   if (imptype == AUDIOSRC_TYPE_NONE) {
@@ -3434,7 +3442,6 @@ managePlaylistImportRespHandler (void *udata)
   askey = uiimpplGetASKey (manage->uiimppl);
   oplname = uiimpplGetOrigName (manage->uiimppl);
   plname = uiimpplGetNewName (manage->uiimppl);
-fprintf (stderr, "imp-resp: type:%d askey:%d plname:%s uri:%s\n", imptype, askey, plname, uri);
 
   mqidx = manage->musicqManageIdx;
   /* clear the entire queue */
@@ -3461,7 +3468,6 @@ fprintf (stderr, "imp-resp: type:%d askey:%d plname:%s uri:%s\n", imptype, askey
     if (pathInfoExtCheck (pi, ".jspf")) {
       list = jspfImport (manage->musicdb, uri, tplname, sizeof (tplname));
     }
-fprintf (stderr, "tplname: %s\n", tplname);
 
     pathInfoFree (pi);
 
@@ -3480,6 +3486,10 @@ fprintf (stderr, "tplname: %s\n", tplname);
   if (imptype != AUDIOSRC_TYPE_FILE) {
     asiter_t    *asiter;
     const char  *songnm;
+    slist_t     *tlist;
+    nlistidx_t  iteridx;
+
+    tlist = slistAlloc ("tmp-imp-pl", LIST_UNORDERED, NULL);
 
     asiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_PL, oplname, askey);
     while ((songnm = audiosrcIterate (asiter)) != NULL) {
@@ -3488,7 +3498,6 @@ fprintf (stderr, "tplname: %s\n", tplname);
       song_t      *song = NULL;
       slist_t     *tagdata = NULL;
 
-fprintf (stderr, "songnm: %s\n", songnm);
       song = dbGetByName (manage->musicdb, songnm);
 
       if (song == NULL) {
@@ -3500,7 +3509,6 @@ fprintf (stderr, "songnm: %s\n", songnm);
 
           tval = audiosrcIterateValue (tagiter, tag);
           slistSetStr (tagdata, tag, tval);
-fprintf (stderr, "  %s=%s\n", tag, tval);
         }
 
         slistSetStr (tagdata, tagdefs [TAG_URI].tag, songnm);
@@ -3509,19 +3517,41 @@ fprintf (stderr, "  %s=%s\n", tag, tval);
         song = songAlloc ();
         songFromTagList (song, tagdata);
         songSetNum (song, TAG_DB_FLAGS, MUSICDB_STD);
-        songSetNum (song, TAG_RRN, RAFILE_NEW);
+        songSetNum (song, TAG_RRN, MUSICDB_ENTRY_NEW);
         songSetNum (song, TAG_PREFIX_LEN, 0);
         dbWriteSong (manage->musicdb, song);
+        newsongs = true;
 
         slistFree (tagdata);
         audiosrcCleanIterator (tagiter);
       } /* song needs to be added */
 
+      slistSetNum (tlist, songnm, 0);
+    }
+    audiosrcCleanIterator (asiter);
+
+    if (newsongs) {
+      manageProcessDatabaseUpdate (manage);
+    }
+
+    /* do all this afterwards, as the db-update message takes */
+    /* time to get to bdj4main */
+    slistStartIterator (tlist, &iteridx);
+    while ((songnm = slistIterateKey (tlist, &iteridx)) != NULL) {
+      song_t      *song;
+
+      song = dbGetByName (manage->musicdb, songnm);
       dbidx = songGetNum (song, TAG_DBIDX);
+
       manageQueueProcess (manage, dbidx, mqidx,
             DISP_SEL_SONGLIST, MANAGE_QUEUE_LAST);
     }
-    audiosrcCleanIterator (asiter);
+
+    nlistFree (tlist);
+  } /* audio-src: type: not-file */
+
+  if (newsongs) {
+    manageRePopulateData (manage);
   }
 
   pathbldMakePath (tbuff, sizeof (tbuff),
@@ -3966,10 +3996,20 @@ manageSonglistLoadCheck (manageui_t *manage)
 static void
 manageProcessDatabaseUpdate (manageui_t *manage)
 {
+  connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DATABASE_UPDATE, NULL);
+
   samesongFree (manage->samesong);
   manage->musicdb = bdj4ReloadDatabase (manage->musicdb);
   manage->samesong = samesongAlloc (manage->musicdb);
 
+  manageUpdateDBPointers (manage);
+
+  uisongselApplySongFilter (manage->slsongsel);
+}
+
+static void
+manageUpdateDBPointers (manageui_t *manage)
+{
   manageStatsSetDatabase (manage->slstats, manage->musicdb);
   uiplayerSetDatabase (manage->slplayer, manage->musicdb);
   uiplayerSetDatabase (manage->mmplayer, manage->musicdb);
@@ -3983,11 +4023,8 @@ manageProcessDatabaseUpdate (manageui_t *manage)
   uimusicqSetDatabase (manage->slsbsmusicq, manage->musicdb);
   uisongeditSetDatabase (manage->mmsongedit, manage->musicdb);
   songdbSetMusicDB (manage->songdb, manage->musicdb);
-
-  connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DATABASE_UPDATE, NULL);
-
-  uisongselApplySongFilter (manage->slsongsel);
 }
+
 
 static uimusicq_t *
 manageGetCurrMusicQ (manageui_t *manage)
@@ -4067,94 +4104,6 @@ manageSendBPMCounter (manageui_t *manage)
   connSendMessage (manage->conn, ROUTE_BPM_COUNTER, MSG_BPM_TIMESIG, tbuff);
   logProcEnd ("");
 }
-
-#if 0
-/* import playlist */
-
-static bool
-manageImportPlaylist (void *udata)
-{
-  manageui_t    *manage = udata;
-  asiter_t      *asiter;
-  const char    *songnm;
-  const char    *nplname;
-  char          tbuff [MAXPATHLEN];
-  int           mqidx;
-  dbidx_t       dbidx;
-
-  logProcBegin ();
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: import playlist");
-
-// ### start a dialog to select
-//    which audio source to use... (bdj4, rtsp, etc.)
-//    which playlist to import..
-// ### the code below will move to the dialog response handler...
-//  asiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_PL_NAMES, NULL, -1);
-//  while ((plnm = audiosrcIterate (asiter)) != NULL) {
-//  }
-//  audiosrcCleanIterator (asiter);
-
-  manageSonglistSave (manage);
-  manageSonglistNew (manage);
-
-  /* CONTEXT: manage-ui: song list: default name for a new song list */
-  manageSetSonglistName (manage, _("New Song List"));
-//  stpecpy (nplname, nplname + sizeof (nplname), manage->sloldname);
-nplname = "bdj4-sl-a";
-  uimusicqTruncateQueueCallback (manage->currmusicq);
-
-  asiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_PL, "test-sl-a", 0);
-  while ((songnm = audiosrcIterate (asiter)) != NULL) {
-    asiter_t    *tagiter;
-    const char  *tag = NULL;
-    song_t      *song = NULL;
-    slist_t     *tagdata = NULL;
-
-    song = dbGetByName (manage->musicdb, songnm);
-
-    if (song == NULL) {
-      tagdata = slistAlloc ("asimppl", LIST_UNORDERED, NULL);
-
-      tagiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_TAGS, songnm, 0);
-      while ((tag = audiosrcIterate (tagiter)) != NULL) {
-        const char  *tval;
-
-        tval = audiosrcIterateValue (tagiter, tag);
-        slistSetStr (tagdata, tag, tval);
-      }
-
-      slistSetStr (tagdata, tagdefs [TAG_URI].tag, songnm);
-
-      slistSort (tagdata);
-      song = songAlloc ();
-      songFromTagList (song, tagdata);
-      songSetNum (song, TAG_DB_FLAGS, MUSICDB_STD);
-      songSetNum (song, TAG_RRN, RAFILE_NEW);
-      songSetNum (song, TAG_PREFIX_LEN, 0);
-      dbWriteSong (manage->musicdb, song);
-
-      pathbldMakePath (tbuff, sizeof (tbuff),
-          nplname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
-      if (! fileopFileExists (tbuff)) {
-        manageSetSonglistName (manage, nplname);
-      }
-      mqidx = manage->musicqManageIdx;
-      dbidx = songGetNum (song, TAG_DBIDX);
-      manageQueueProcess (manage, dbidx, mqidx,
-          DISP_SEL_SONGLIST, MANAGE_QUEUE_LAST);
-
-      slistFree (tagdata);
-      audiosrcCleanIterator (tagiter);
-    } /* song needs to be added */
-  }
-  audiosrcCleanIterator (asiter);
-
-  logProcEnd ("");
-  return UICB_CONT;
-}
-
-#endif
-
 
 /* same song */
 

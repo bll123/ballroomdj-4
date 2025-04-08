@@ -4,6 +4,8 @@
 #ifndef INC_MSGPARSE_H
 #define INC_MSGPARSE_H
 
+#include <stdint.h>
+
 #include "nlist.h"
 #include "musicdb.h"
 #include "musicq.h"
@@ -70,6 +72,8 @@ void msgbuildQueuePlaylist (char *buff, size_t sz, int mqidx, const char *fn, in
 
 void msgbuildMusicQStatus (char *buff, size_t sz, dbidx_t dbidx, int32_t uniqueidx);
 void msgparseMusicQStatus (mp_musicqstatus_t *mqstatus, char *data);
+
+void msgparseDBEntryUpdate (char *data, dbidx_t *dbidx);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

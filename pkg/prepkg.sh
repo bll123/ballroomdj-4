@@ -175,6 +175,12 @@ if [[ $DEVELOPMENT != dev ]]; then
     grc=1
   fi
 
+  wc=$(grep '^logStderr' */*.c | grep -v KEEP | wc -l)
+  if [[ $wc -ne 0 ]]; then
+    echo "logStderr debugging found"
+    grc=1
+  fi
+
   grep '^#define DEBUG_PREP_QUEUE 0' src/player/bdj4player.c > /dev/null 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then

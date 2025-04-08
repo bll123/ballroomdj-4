@@ -538,7 +538,10 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_DB_ENTRY_UPDATE: {
-          dbLoadEntry (mainData->musicdb, atol (args));
+          dbidx_t   dbidx;
+
+          msgparseDBEntryUpdate (args, &dbidx);
+          dbLoadEntry (mainData->musicdb, dbidx);
           groupingRebuild (mainData->grouping, mainData->musicdb);
           mainSetMusicQueuesChanged (mainData);
           break;
@@ -1949,6 +1952,7 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
       connSendMessage (mainData->conn, routefrom, MSG_SONG_SELECT, tbuff);
     }
   }
+
   logProcEnd ("");
 }
 

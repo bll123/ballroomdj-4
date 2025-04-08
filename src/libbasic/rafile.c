@@ -152,17 +152,17 @@ raEndBatch (rafile_t *rafile)
   logProcEnd ("");
 }
 
-size_t
+rafileidx_t
 raWrite (rafile_t *rafile, rafileidx_t rrn, char *data, ssize_t len)
 {
   bool    isnew = false;
 
   if (rafile == NULL) {
-    return 0;
+    return RAFILE_UNKNOWN;
   }
 
   if (rafile->openmode == FILESH_OPEN_READ) {
-    return 0;
+    return RAFILE_UNKNOWN;
   }
 
   if (len == -1) {
@@ -172,7 +172,7 @@ raWrite (rafile_t *rafile, rafileidx_t rrn, char *data, ssize_t len)
   /* leave one byte for the terminating null */
   if (len > (RAFILE_REC_SIZE - 1)) {
     logMsg (LOG_DBG, LOG_RAFILE, "bad data len %" PRId64, (int64_t) len);
-    return 0;
+    return RAFILE_UNKNOWN;
   }
 
   raLock (rafile);
@@ -205,10 +205,10 @@ raWrite (rafile_t *rafile, rafileidx_t rrn, char *data, ssize_t len)
   raUnlock (rafile);
   logProcEnd ("");
 
-  return len;
+  return rrn;
 }
 
-rafileidx_t
+int
 raRead (rafile_t *rafile, rafileidx_t rrn, char *data)
 {
   rafileidx_t   rc;
@@ -219,7 +219,7 @@ raRead (rafile_t *rafile, rafileidx_t rrn, char *data)
 
   logProcBegin ();
   if (rrn < 1L || rrn > rafile->count) {
-    logMsg (LOG_DBG, LOG_RAFILE, "bad rrn %" PRId32, rrn);
+    logMsg (LOG_DBG, LOG_RAFILE, "bad rrn %" PRId32 " racount %" PRId32, rrn, rafile->count);
     return 0;
   }
 

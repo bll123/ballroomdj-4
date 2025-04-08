@@ -16,7 +16,8 @@ typedef int32_t rafileidx_t;
 typedef struct rafile rafile_t;
 
 enum {
-  RAFILE_NEW  = 0L,
+  RAFILE_UNKNOWN  = -1,
+  RAFILE_NEW      = 0,
   RAFILE_REC_SIZE = 2048,
   RAFILE_HDR_SIZE = 128,
   RAFILE_RO,
@@ -26,9 +27,9 @@ enum {
 
 rafile_t *    raOpen (const char *fname, int version, int openmode);
 void          raClose (rafile_t *rafile);
-size_t        raWrite (rafile_t *rafile, rafileidx_t rrn, char *data, ssize_t len);
+rafileidx_t   raWrite (rafile_t *rafile, rafileidx_t rrn, char *data, ssize_t len);
 bool          raClear (rafile_t *rafile, rafileidx_t rrn);
-rafileidx_t   raRead (rafile_t *rafile, rafileidx_t rrn, char *data);
+int           raRead (rafile_t *rafile, rafileidx_t rrn, char *data);
 rafileidx_t   raGetCount (rafile_t *rafile);
 rafileidx_t   raGetNextRRN (rafile_t *rafile);
 void          raStartBatch (rafile_t *rafile);

@@ -28,12 +28,13 @@ enum {
 enum {
   MUSICDB_VERSION = 10,
   MUSICDB_MAX_SAVE = RAFILE_REC_SIZE,
+  MUSICDB_ENTRY_NEW = RAFILE_NEW,
+  MUSICDB_ENTRY_UNK = RAFILE_UNKNOWN,
 };
 
 #define MUSICDB_FNAME     "musicdb"
 #define MUSICDB_TMP_FNAME "musicdb-tmp"
 #define MUSICDB_EXT       ".dat"
-#define MUSICDB_ENTRY_NEW RAFILE_NEW
 
 musicdb_t *dbOpen (const char *);
 void      dbClose (musicdb_t *db);

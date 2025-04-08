@@ -377,7 +377,7 @@ ARTISTSORT
 COMPOSERSORT
 ..000-%03d-composer
 TITLESORT
-..000-%03d-argentinetango
+..000-%03d-chacha
 TITLE
 ..%03d-chacha
 DEST
@@ -632,7 +632,7 @@ ARTISTSORT
 COMPOSERSORT
 ..000-%03d-composer
 TITLESORT
-..000-%03d-argentinetango
+..000-%03d-foxtrot
 FAVORITE
 ..bluestar
 TITLE
@@ -833,7 +833,7 @@ ARTISTSORT
 COMPOSERSORT
 ..000-%03d-composer
 TITLESORT
-..000-%03d-argentinetango
+..000-%03d-jive
 FAVORITE
 ..bluestar
 TITLE
@@ -1055,7 +1055,7 @@ ARTISTSORT
 COMPOSERSORT
 ..000-%03d-composer
 TITLESORT
-..000-%03d-argentinetango
+..000-%03d-quickstep
 FAVORITE
 ..purplestar
 TITLE
@@ -1279,7 +1279,7 @@ ARTISTSORT
 COMPOSERSORT
 ..000-%03d-composer
 TITLESORT
-..000-%03d-argentinetango
+..000-%03d-rumba
 TITLE
 ..%03d-rumba
 DEST
@@ -1511,7 +1511,7 @@ ARTISTSORT
 COMPOSERSORT
 ..000-%03d-composer
 TITLESORT
-..000-%03d-argentinetango
+..000-%03d-salsa
 TITLE
 ..%03d-salsa
 DEST
@@ -1733,7 +1733,7 @@ ARTISTSORT
 COMPOSERSORT
 ..000-%03d-composer
 TITLESORT
-..000-%03d-argentinetango
+..000-%03d-samba
 FAVORITE
 ..redstar
 TITLE
@@ -1955,7 +1955,7 @@ ARTISTSORT
 COMPOSERSORT
 ..000-%03d-composer
 TITLESORT
-..000-%03d-argentinetango
+..000-%03d-tango
 FAVORITE
 ..bluestar
 TITLE
@@ -2490,7 +2490,7 @@ ARTISTSORT
 COMPOSERSORT
 ..000-%03d-composer
 TITLESORT
-..000-%03d-argentinetango
+..000-%03d-viennesewaltz
 FAVORITE
 ..bluestar
 TITLE
@@ -2728,7 +2728,7 @@ ARTISTSORT
 COMPOSERSORT
 ..000-%03d-composer
 TITLESORT
-..000-%03d-argentinetango
+..000-%03d-waltz
 FAVORITE
 ..purplestar
 TITLE
@@ -3297,7 +3297,7 @@ ARTISTSORT
 COMPOSERSORT
 ..000-%03d-composer
 TITLESORT
-..000-%03d-argentinetango
+..000-%03d-westcoastswing
 FAVORITE
 ..purplestar
 TITLE

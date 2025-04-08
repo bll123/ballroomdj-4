@@ -293,6 +293,12 @@ msgparseMusicQStatus (mp_musicqstatus_t *mqstatus, char *data)
   }
 }
 
+void
+msgparseDBEntryUpdate (char *data, dbidx_t *dbidx)
+{
+  *dbidx = atol (data);
+}
+
 /* internal routines */
 
 static void

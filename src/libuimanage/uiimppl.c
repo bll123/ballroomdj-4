@@ -135,7 +135,6 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
   uiimppl->asmaxwidth = len;
   nlistSetStr (uiimppl->aslist, count, tbuff);
   nlistSetNum (uiimppl->askeys, count, uiimppl->asconfcount);
-logStderr ("askeys: %s %d %d\n", tbuff, count, uiimppl->asconfcount);
   ++count;
 
   asconfStartIterator (uiimppl->asconf, &asiteridx);
@@ -148,7 +147,6 @@ logStderr ("askeys: %s %d %d\n", tbuff, count, uiimppl->asconfcount);
     if (len > uiimppl->asmaxwidth) {
       uiimppl->asmaxwidth = len;
     }
-logStderr ("askeys: %s %d %d\n", asnm, count, key);
     nlistSetStr (uiimppl->aslist, count, asnm);
     nlistSetNum (uiimppl->askeys, count, key);
     ++count;
@@ -509,7 +507,6 @@ uiimpplInitDisplay (uiimppl_t *uiimppl)
     return;
   }
 
-logStderr ("init-disp\n");
   uiimpplImportTypeCallback (uiimppl);
 }
 
@@ -570,7 +567,6 @@ uiimpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
 
   str = uiEntryGetValue (entry);
-fprintf (stderr, "val-target: %s\n", str);
 
   if (uiimppl->imptype == AUDIOSRC_TYPE_FILE) {
     bool    extok = false;
@@ -599,7 +595,6 @@ fprintf (stderr, "val-target: %s\n", str);
   }
 
   if (uiimppl->imptype == AUDIOSRC_TYPE_BDJ4) {
-fprintf (stderr, "val-target: bdj4:// \n");
     if (strncmp (str, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) != 0) {
       uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG],
           /* CONTEXT: import playlist: invalid URI */
@@ -651,7 +646,6 @@ uiimpplValidateNewName (uiwcont_t *entry, const char *label, void *udata)
 
   if (rc == UIENTRY_OK) {
     str = uiEntryGetValue (entry);
-fprintf (stderr, "val-newname: %s\n", str);
     if (*str) {
       pathbldMakePath (fn, sizeof (fn),
           str, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
@@ -673,9 +667,7 @@ uiimpplImportTypeCallback (void *udata)
   char        tbuff [40];
   int         askey;
 
-logStderr ("imp-type-cb\n");
   if (uiimppl->in_cb) {
-logStderr ("  in-cb\n");
     return UICB_CONT;
   }
   uiimppl->in_cb = true;
@@ -687,8 +679,6 @@ logStderr ("  in-cb\n");
   } else {
     uiimppl->imptype = asconfGetNum (uiimppl->asconf, askey, ASCONF_TYPE);
   }
-logStderr ("  askey: %d\n", askey);
-logStderr ("  imptype: %d\n", uiimppl->imptype);
 
   if (uiimppl->imptype != AUDIOSRC_TYPE_FILE) {
     asiter_t    *asiter;

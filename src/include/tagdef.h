@@ -114,7 +114,7 @@ typedef enum {
   TAG_SPEEDADJUSTMENT,        //  bdj4
   TAG_STATUS,                 //  bdj4
   TAG_TAGS,                   //  bdj4
-  TAG_DB_FLAGS,               // saved to db if removed
+  TAG_DB_FLAGS,               // internal: not saved to db or af
   TAG_TITLE,                  //
   TAG_TRACK_ID,               // musicbrainz_releasetrackid
   TAG_TRACKNUMBER,            //

@@ -27,6 +27,7 @@
 #include "lock.h"
 #include "log.h"
 #include "mdebug.h"
+#include "msgparse.h"
 #include "musicdb.h"
 #include "musicq.h"
 #include "ossignal.h"
@@ -252,7 +253,6 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
     ilistidx_t  idx;
 
     plnm = bdjsrvStrip (bdjsrv, query);
-fprintf (stderr, "pl-get: %s\n", plnm);
     ok = playlistExists (plnm);
 
     if (! ok) {
@@ -290,7 +290,6 @@ fprintf (stderr, "pl-get: %s\n", plnm);
     const char  *songuri = NULL;
 
     songuri = bdjsrvStrip (bdjsrv, query);
-fprintf (stderr, "song-exists: %s\n", songuri);
     ok = audiosrcExists (songuri);
     if (ok) {
       rc = WEB_OK;
@@ -307,7 +306,6 @@ fprintf (stderr, "song-exists: %s\n", songuri);
     const char    *songuri;
 
     songuri = bdjsrvStrip (bdjsrv, query);
-fprintf (stderr, "song-get: %s\n", songuri);
     ok = audiosrcExists (songuri);
 
     if (! ok) {
@@ -334,7 +332,6 @@ fprintf (stderr, "song-get: %s\n", songuri);
     char        *rend;
 
     songuri = bdjsrvStrip (bdjsrv, query);
-fprintf (stderr, "song-tags: %s\n", songuri);
     ok = audiosrcExists (songuri);
 
     if (ok) {
@@ -429,7 +426,10 @@ bdjsrvProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_DB_ENTRY_UPDATE: {
-          dbLoadEntry (bdjsrv->musicdb, atol (args));
+          dbidx_t   dbidx;
+
+          msgparseDBEntryUpdate (args, &dbidx);
+          dbLoadEntry (bdjsrv->musicdb, dbidx);
           break;
         }
         case MSG_DB_ENTRY_REMOVE: {
