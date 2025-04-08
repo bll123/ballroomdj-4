@@ -221,6 +221,7 @@ uiimpplDialog (uiimppl_t *uiimppl)
   uiDialogShow (uiimppl->wcont [UIIMPPL_W_DIALOG]);
   uiimpplInitDisplay (uiimppl);
   uiimppl->isactive = true;
+  uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
 
   x = nlistGetNum (uiimppl->options, IMP_PL_POSITION_X);
   y = nlistGetNum (uiimppl->options, IMP_PL_POSITION_Y);
@@ -588,6 +589,7 @@ uiimpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
   char        tbuff [MAXPATHLEN];
   pathinfo_t  *pi;
 
+  uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
 
   str = uiEntryGetValue (entry);
@@ -637,6 +639,8 @@ uiimpplSelectHandler (void *udata, int idx)
   uiimppl_t   *uiimppl = udata;
   const char  *str;
   char        tbuff [MAXPATHLEN];
+
+  uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
 
   str = ilistGetStr (uiimppl->plnames, idx, DD_LIST_DISP);
   snprintf (tbuff, sizeof (tbuff), "%s%s:%" PRIu16 "/%s",
@@ -695,6 +699,8 @@ uiimpplImportTypeCallback (void *udata)
     return UICB_CONT;
   }
   uiimppl->in_cb = true;
+
+  uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
 
   askey = uiSpinboxTextGetValue (uiimppl->wcont [UIIMPPL_W_IMP_TYPE]);
   uiimppl->askey = askey;

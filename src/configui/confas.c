@@ -205,6 +205,8 @@ confuiAudioSrcSelectLoadValues (confuigui_t *gui, ilistidx_t askey)
     return;
   }
 
+  uiLabelSetText (gui->statusMsg, "");
+
   uivl = gui->tables [CONFUI_ID_AUDIOSRC].uivl;
   rownum = uivlGetCurrSelection (uivl);
 
@@ -336,6 +338,8 @@ confuiAudioSrcEntryChg (uiwcont_t *entry, void *udata, int widx)
     return UIENTRY_OK;
   }
 
+  uiLabelSetText (gui->statusMsg, "");
+
   /* note that in gtk this is a constant pointer to the current value */
   /* and the value changes due to the validation */
   str = uiEntryGetValue (entry);
@@ -408,6 +412,8 @@ confuiAudioSrcSpinboxChg (void *udata, int widx)
     logProcEnd ("not-table-asconf");
     return;
   }
+
+  uiLabelSetText (gui->statusMsg, "");
 
   itemidx = gui->uiitem [widx].audiosrcitemidx;
 
@@ -590,7 +596,6 @@ confuiAudioSrcChkConn (void *udata)
 
   confuiAudioSrcSave (gui);
   rc = audiosrcCheckConnection (gui->asconfkey);
-  uiLabelSetText (gui->statusMsg, "");
   if (rc == false) {
     /* CONTEXT: configuration: audio source: check connection status */
     uiLabelSetText (gui->statusMsg, _("Connection Failed"));
