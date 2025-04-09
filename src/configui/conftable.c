@@ -170,7 +170,9 @@ confuiSwitchTable (void *udata, int32_t pagenum)
     return UICB_CONT;
   }
 
+  gui->valid = 0;
   confuiSetStatusMsg (gui, "");
+  confuiSetErrorMsg (gui, "");
 
   gui->tablecurr = (confuiident_t) uinbutilIDGet (
       gui->nbtabid, pagenum);

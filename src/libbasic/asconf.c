@@ -206,7 +206,7 @@ asconfAdd (asconf_t *asconf, char *name)
 
   count = ilistGetCount (asconf->audiosources);
   ilistSetNum (asconf->audiosources, count, ASCONF_MODE, ASCONF_MODE_OFF);
-  ilistSetNum (asconf->audiosources, count, ASCONF_TYPE, AUDIOSRC_TYPE_RTSP);
+  ilistSetNum (asconf->audiosources, count, ASCONF_TYPE, AUDIOSRC_TYPE_BDJ4);
   ilistSetStr (asconf->audiosources, count, ASCONF_NAME, name);
   ilistSetStr (asconf->audiosources, count, ASCONF_URI, "");
   ilistSetNum (asconf->audiosources, count, ASCONF_PORT, 9011);

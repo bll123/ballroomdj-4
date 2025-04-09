@@ -91,7 +91,7 @@ confuiBuildUIMobileMarquee (confuigui_t *gui)
       CONFUI_ENTRY_MOBMQ_TITLE, OPT_P_MOBMQ_TITLE,
       bdjoptGetStr (OPT_P_MOBMQ_TITLE), CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_MOBMQ_TITLE].uiwidgetp,
-      "", confuiMobmqTitleChg, gui, UIENTRY_IMMEDIATE);
+      _("Title"), confuiMobmqTitleChg, gui, UIENTRY_IMMEDIATE);
 
   /* CONTEXT: configuration: mobile marquee: the link to display the QR code for the mobile marquee */
   confuiMakeItemLink (gui, vbox, szgrp, _("QR Code"),
@@ -114,8 +114,17 @@ confuiMobmqTypeChg (void *udata)
   int           type;
 
   logProcBegin ();
+  if (gui->tablecurr != CONFUI_ID_MOBILE_MQ) {
+    logProcEnd ("not-table-mobmq");
+    return UIENTRY_OK;
+  }
   type = uiSpinboxTextGetValue (gui->uiitem [CONFUI_SPINBOX_MOBMQ_TYPE].uiwidgetp);
   bdjoptSetNum (OPT_P_MOBMQ_TYPE, type);
+
+  /* on a type change, clear any existing validation errors */
+  confuiMarkValid (gui, CONFUI_ENTRY_MOBMQ_TAG);
+  confuiMarkValid (gui, CONFUI_ENTRY_MOBMQ_KEY);
+
   confuiMobmqSetWidgetStates (gui, type);
   confuiUpdateMobmqQrcode (gui);
   logProcEnd ("");
@@ -130,6 +139,10 @@ confuiMobmqPortChg (void *udata)
   long          nval;
 
   logProcBegin ();
+  if (gui->tablecurr != CONFUI_ID_MOBILE_MQ) {
+    logProcEnd ("not-table-mobmq");
+    return UIENTRY_OK;
+  }
   value = uiSpinboxGetValue (gui->uiitem [CONFUI_WIDGET_MOBMQ_PORT].uiwidgetp);
   nval = (long) value;
   bdjoptSetNum (OPT_P_MOBMQ_PORT, nval);
@@ -145,6 +158,10 @@ confuiMobmqTitleChg (uiwcont_t *entry, const char *label, void *udata)
   const char      *sval;
 
   logProcBegin ();
+  if (gui->tablecurr != CONFUI_ID_MOBILE_MQ) {
+    logProcEnd ("not-table-mobmq");
+    return UIENTRY_OK;
+  }
   sval = uiEntryGetValue (entry);
   bdjoptSetStr (OPT_P_MOBMQ_TITLE, sval);
   confuiUpdateMobmqQrcode (gui);
@@ -159,16 +176,29 @@ confuiMobmqTagChg (uiwcont_t *entry, const char *label, void *udata)
   const char      *sval;
   bool            vrc;
   char            tmsg [200];
+  int             type;
+  int             widx;
 
   logProcBegin ();
+  if (gui->tablecurr != CONFUI_ID_MOBILE_MQ) {
+    logProcEnd ("not-table-mobmq");
+    return UIENTRY_OK;
+  }
+  type = bdjoptGetNum (OPT_P_MOBMQ_TYPE);
+  if (type != MOBMQ_TYPE_INTERNET) {
+    return UIENTRY_OK;
+  }
+  widx = CONFUI_ENTRY_MOBMQ_TAG;
+
   sval = uiEntryGetValue (entry);
   vrc = validate (tmsg, sizeof (tmsg), label, sval,
       VAL_NOT_EMPTY | VAL_NO_SPACES);
-  uiLabelSetText (gui->statusMsg, "");
   if (vrc == false) {
-    uiLabelSetText (gui->statusMsg, tmsg);
+    confuiSetErrorMsg (gui, tmsg);
+    confuiMarkNotValid (gui, widx);
     return UIENTRY_ERROR;
   }
+  confuiMarkValid (gui, widx);
   bdjoptSetStr (OPT_P_MOBMQ_TAG, sval);
   confuiUpdateMobmqQrcode (gui);
   logProcEnd ("");
@@ -182,21 +212,33 @@ confuiMobmqKeyChg (uiwcont_t *entry, const char *label, void *udata)
   const char      *sval;
   bool            vrc;
   char            tmsg [200];
+  int             type;
+  int             widx;
 
   logProcBegin ();
+  if (gui->tablecurr != CONFUI_ID_MOBILE_MQ) {
+    logProcEnd ("not-table-mobmq");
+    return UIENTRY_OK;
+  }
+  type = bdjoptGetNum (OPT_P_MOBMQ_TYPE);
+  if (type != MOBMQ_TYPE_INTERNET) {
+    return UIENTRY_OK;
+  }
+  widx = CONFUI_ENTRY_MOBMQ_KEY;
+
   sval = uiEntryGetValue (entry);
   vrc = validate (tmsg, sizeof (tmsg), label, sval,
       VAL_NOT_EMPTY | VAL_NO_SPACES);
-  uiLabelSetText (gui->statusMsg, "");
   if (vrc == false) {
-    uiLabelSetText (gui->statusMsg, tmsg);
+    confuiSetErrorMsg (gui, tmsg);
+    confuiMarkNotValid (gui, widx);
     return UIENTRY_ERROR;
   }
+  confuiMarkValid (gui, widx);
   bdjoptSetStr (OPT_P_MOBMQ_KEY, sval);
   logProcEnd ("");
   return UIENTRY_OK;
 }
-
 
 static void
 confuiMobmqSetWidgetStates (confuigui_t *gui, int type)

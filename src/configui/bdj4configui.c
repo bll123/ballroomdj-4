@@ -127,6 +127,7 @@ main (int argc, char *argv[])
   confui.gui.marqueetaglist = NULL;
   confui.gui.pluitaglist = NULL;
   confui.gui.inbuild = false;
+  confui.gui.valid = 0;
   confui.gui.dancedkey = LIST_VALUE_INVALID;
   confui.gui.inchange = false;
   confui.gui.org = NULL;
@@ -177,8 +178,10 @@ main (int argc, char *argv[])
     confui.gui.uiitem [i].uidd = NULL;
     confui.gui.uiitem [i].uri = NULL;
     confui.gui.uiitem [i].changed = false;
+    confui.gui.uiitem [i].valid = true;
     confui.gui.uiitem [i].entrysz = 20;
     confui.gui.uiitem [i].entrymaxsz = 100;
+    confui.gui.uiitem [i].widx = i;
   }
 
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_DANCE_TAGS, 30, 100);

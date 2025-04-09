@@ -41,7 +41,7 @@ static void confuiCreateDanceTable (confuigui_t *gui);
 static int  confuiDanceEntryDanceChg (uiwcont_t *entry, const char *label, void *udata);
 static int  confuiDanceEntryTagsChg (uiwcont_t *entry, const char *label, void *udata);
 static int  confuiDanceEntryAnnouncementChg (uiwcont_t *entry, const char *label, void *udata);
-static int  confuiDanceEntryChg (uiwcont_t *e, void *udata, int widx);
+static int  confuiDanceEntryChg (uiwcont_t *e, const char *label, void *udata, int widx);
 static bool confuiDanceSpinboxTypeChg (void *udata);
 static bool confuiDanceSpinboxSpeedChg (void *udata);
 static bool confuiDanceSpinboxLowMPMChg (void *udata);
@@ -94,6 +94,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
   uiwcont_t     *szgrp;
   uiwcont_t     *szgrpB;
   uiwcont_t     *szgrpC;
+  uiwcont_t     *szgrpD;
   const char    *bpmstr;
   char          tbuff [MAXPATHLEN];
   uivirtlist_t  *uivl;
@@ -105,6 +106,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
   szgrp = uiCreateSizeGroupHoriz ();
   szgrpB = uiCreateSizeGroupHoriz ();
   szgrpC = uiCreateSizeGroupHoriz ();
+  szgrpD = uiCreateSizeGroupHoriz ();
 
   /* edit dances */
   confuiMakeNotebookTab (vbox, gui,
@@ -127,7 +129,8 @@ confuiBuildUIEditDances (confuigui_t *gui)
   confuiMakeItemEntry (gui, dvbox, szgrp, tagdefs [TAG_DANCE].displayname,
       CONFUI_ENTRY_DANCE_DANCE, -1, "", CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_DANCE_DANCE].uiwidgetp,
-      "", confuiDanceEntryDanceChg, gui, UIENTRY_IMMEDIATE);
+      tagdefs [TAG_DANCE].displayname,
+      confuiDanceEntryDanceChg, gui, UIENTRY_IMMEDIATE);
   gui->uiitem [CONFUI_ENTRY_DANCE_DANCE].danceitemidx = DANCE_DANCE;
 
   /* CONTEXT: configuration: dances: the type of the dance (club/latin/standard) */
@@ -142,11 +145,11 @@ confuiBuildUIEditDances (confuigui_t *gui)
       confuiDanceSpinboxSpeedChg);
   gui->uiitem [CONFUI_SPINBOX_DANCE_SPEED].danceitemidx = DANCE_SPEED;
 
-  /* CONTEXT: configuration: dances: tags associated with the dance */
-  confuiMakeItemEntry (gui, dvbox, szgrp, _("Tags"),
+  confuiMakeItemEntry (gui, dvbox, szgrp, tagdefs [TAG_TAGS].displayname,
       CONFUI_ENTRY_DANCE_TAGS, -1, "", CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_DANCE_TAGS].uiwidgetp,
-      "", confuiDanceEntryTagsChg, gui, UIENTRY_IMMEDIATE);
+      tagdefs [TAG_TAGS].displayname,
+      confuiDanceEntryTagsChg, gui, UIENTRY_IMMEDIATE);
   gui->uiitem [CONFUI_ENTRY_DANCE_TAGS].danceitemidx = DANCE_TAGS;
 
   /* CONTEXT: configuration: dances: play the selected announcement before the dance is played */
@@ -154,20 +157,21 @@ confuiBuildUIEditDances (confuigui_t *gui)
       CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT, -1, "",
       selectAudioFileCallback);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT].uiwidgetp,
-      "", confuiDanceEntryAnnouncementChg, gui, UIENTRY_DELAYED);
+      _("Announcement"),
+      confuiDanceEntryAnnouncementChg, gui, UIENTRY_DELAYED);
   gui->uiitem [CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT].danceitemidx = DANCE_ANNOUNCE;
 
   bpmstr = tagdefs [TAG_BPM].displayname;
   /* CONTEXT: configuration: dances: low BPM (or MPM) setting */
   snprintf (tbuff, sizeof (tbuff), _("Low %s"), bpmstr);
-  confuiMakeItemSpinboxNum (gui, dvbox, szgrp, szgrpC, tbuff,
+  confuiMakeItemSpinboxNum (gui, dvbox, szgrp, szgrpD, tbuff,
       CONFUI_WIDGET_DANCE_MPM_LOW, -1, 10, 500, 0,
       confuiDanceSpinboxLowMPMChg);
   gui->uiitem [CONFUI_WIDGET_DANCE_MPM_LOW].danceitemidx = DANCE_MPM_LOW;
 
   /* CONTEXT: configuration: dances: high BPM (or MPM) setting */
   snprintf (tbuff, sizeof (tbuff), _("High %s"), bpmstr);
-  confuiMakeItemSpinboxNum (gui, dvbox, szgrp, szgrpC, tbuff,
+  confuiMakeItemSpinboxNum (gui, dvbox, szgrp, szgrpD, tbuff,
       CONFUI_WIDGET_DANCE_MPM_HIGH, -1, 10, 500, 0,
       confuiDanceSpinboxHighMPMChg);
   gui->uiitem [CONFUI_WIDGET_DANCE_MPM_HIGH].danceitemidx = DANCE_MPM_HIGH;
@@ -192,6 +196,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
   uiwcontFree (szgrp);
   uiwcontFree (szgrpB);
   uiwcontFree (szgrpC);
+  uiwcontFree (szgrpD);
 
   logProcEnd ("");
 }
@@ -324,23 +329,23 @@ confuiCreateDanceTable (confuigui_t *gui)
 static int
 confuiDanceEntryDanceChg (uiwcont_t *entry, const char *label, void *udata)
 {
-  return confuiDanceEntryChg (entry, udata, CONFUI_ENTRY_DANCE_DANCE);
+  return confuiDanceEntryChg (entry, label, udata, CONFUI_ENTRY_DANCE_DANCE);
 }
 
 static int
 confuiDanceEntryTagsChg (uiwcont_t *entry, const char *label, void *udata)
 {
-  return confuiDanceEntryChg (entry, udata, CONFUI_ENTRY_DANCE_TAGS);
+  return confuiDanceEntryChg (entry, label, udata, CONFUI_ENTRY_DANCE_TAGS);
 }
 
 static int
 confuiDanceEntryAnnouncementChg (uiwcont_t *entry, const char *label, void *udata)
 {
-  return confuiDanceEntryChg (entry, udata, CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT);
+  return confuiDanceEntryChg (entry, label, udata, CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT);
 }
 
 static int
-confuiDanceEntryChg (uiwcont_t *entry, void *udata, int widx)
+confuiDanceEntryChg (uiwcont_t *entry, const char *label, void *udata, int widx)
 {
   confuigui_t     *gui = udata;
   const char      *str = NULL;
@@ -392,10 +397,13 @@ confuiDanceEntryChg (uiwcont_t *entry, void *udata, int widx)
     if (entryrc == UIENTRY_OK) {
       char    nstr [MAXPATHLEN];
 
+      confuiMarkValid (gui, widx);
       /* save the normalized version */
       stpecpy (nstr, nstr + sizeof (nstr), str);
       pathNormalizePath (nstr, strlen (nstr));
       danceSetStr (dances, dkey, itemidx, nstr);
+    } else {
+      confuiMarkNotValid (gui, widx);
     }
   }
   if (widx == CONFUI_ENTRY_DANCE_TAGS) {
@@ -520,6 +528,7 @@ confuiDanceValidateAnnouncement (uiwcont_t *entry, confuigui_t *gui)
   fn = uiEntryGetValue (entry);
   if (fn == NULL) {
     logProcEnd ("bad-fn");
+    gui->inchange = false;
     return UIENTRY_ERROR;
   }
 

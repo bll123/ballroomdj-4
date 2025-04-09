@@ -637,15 +637,16 @@ confuiValHMCallback (void *udata, const char *label, const char *txt)
 
   logProcBegin ();
 
-  uiLabelSetText (gui->errorMsg, "");
   val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HOUR_MIN);
   if (val == false) {
     int32_t oval;
 
     oval = uiSpinboxTimeGetValue (uiitem->uiwidgetp);
-    uiLabelSetText (gui->errorMsg, tbuff);
+    confuiSetErrorMsg (gui, tbuff);
+    confuiMarkNotValid (gui, uiitem->widx);
     return oval;
   }
+  confuiMarkValid (gui, uiitem->widx);
 
   value = tmutilStrToHM (txt);
   logProcEnd ("");
@@ -663,15 +664,17 @@ confuiValHMSCallback (void *udata, const char *label, const char *txt)
 
   logProcBegin ();
 
-  uiLabelSetText (gui->errorMsg, "");
   val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HMS);
   if (val == false) {
     int32_t oval;
 
     oval = uiSpinboxTimeGetValue (uiitem->uiwidgetp);
-    uiLabelSetText (gui->errorMsg, tbuff);
+    confuiSetErrorMsg (gui, tbuff);
+    confuiMarkNotValid (gui, uiitem->widx);
     return oval;
   }
+  confuiSetErrorMsg (gui, "");
+  confuiMarkValid (gui, uiitem->widx);
 
   value = tmutilStrToMS (txt);
   logProcEnd ("");

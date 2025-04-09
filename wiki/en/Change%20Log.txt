@@ -8,6 +8,7 @@
 
 * Bug Fixes:
     * Configuration: Edit Dances: Fix a crash.
+    * Configuration: Fixed validation processing and validation issues.
     * Configuration: Improve disabled item display.
     * Internal: Code cleanup.
     * Internal: Minor bug fixes.

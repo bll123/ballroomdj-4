@@ -129,7 +129,6 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
 
   type = bdjoptGetNum (OPT_P_MOBMQ_TYPE);
 
-  confuiSetStatusMsg (gui, "");
   *tbuff = '\0';
   *uridisp = '\0';
   *qruri = '\0';
@@ -246,9 +245,36 @@ confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath)
 }
 
 void
+confuiMarkNotValid (confuigui_t *gui, int widx)
+{
+  if (gui->uiitem [widx].valid) {
+    ++gui->valid;
+  }
+  gui->uiitem [widx].valid = false;
+}
+
+void
+confuiMarkValid (confuigui_t *gui, int widx)
+{
+  if (gui->valid > 0 && gui->uiitem [widx].valid == false) {
+    --gui->valid;
+  }
+  gui->uiitem [widx].valid = true;
+  if (gui->valid == 0) {
+    confuiSetErrorMsg (gui, "");
+  }
+}
+
+void
 confuiSetStatusMsg (confuigui_t *gui, const char *msg)
 {
   uiLabelSetText (gui->statusMsg, msg);
+}
+
+void
+confuiSetErrorMsg (confuigui_t *gui, const char *msg)
+{
+  uiLabelSetText (gui->errorMsg, msg);
 }
 
 void

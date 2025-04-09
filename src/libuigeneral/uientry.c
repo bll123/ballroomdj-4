@@ -64,6 +64,7 @@ uiEntryValidate (uiwcont_t *uiwidget, bool forceflag)
     return UIENTRY_OK;
   }
   if (forceflag == false &&
+      ebase->valdelay &&
       ! mstimeCheck (&ebase->validateTimer)) {
     return UIENTRY_OK;
   }
@@ -80,6 +81,9 @@ uiEntryValidate (uiwcont_t *uiwidget, bool forceflag)
   if (rc == UIENTRY_OK) {
     uiEntryClearIcon (uiwidget);
     ebase->valid = true;
+  }
+  if (ebase->valdelay) {
+    mstimeset (&ebase->validateTimer, UIENTRY_VAL_TIMER);
   }
   return rc;
 }

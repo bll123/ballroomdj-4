@@ -285,7 +285,9 @@ typedef struct {
   callback_t        *callback;
   uidd_t            *uidd;
   char              *uri;
-  bool              changed : 1;
+  int               widx;
+  bool              valid;
+  bool              changed;
 } confuiitem_t;
 
 typedef enum {
@@ -446,6 +448,7 @@ typedef struct confuigui {
   confuiitem_t      uiitem [CONFUI_ITEM_MAX];
   char              *localip;
   bool              inbuild;
+  int               valid;
   /* main window */
   uiwcont_t         *window;
   callback_t        *closecb;
@@ -488,7 +491,10 @@ typedef struct confuigui {
 void confuiLoadThemeList (confuigui_t *gui);
 void confuiUpdateMobmqQrcode (confuigui_t *gui);
 void confuiUpdateRemctrlQrcode (confuigui_t *gui);
+void confuiMarkNotValid (confuigui_t *gui, int widx);
+void confuiMarkValid (confuigui_t *gui, int widx);
 void confuiSetStatusMsg (confuigui_t *gui, const char *msg);
+void confuiSetErrorMsg (confuigui_t *gui, const char *msg);
 void confuiSelectDirDialog (uisfcb_t *sfcb, const char *startpath, const char *title);
 void confuiSelectFileDialog (uisfcb_t *sfcb, const char *startpath, const char *mimefiltername, const char *mimetype);
 void confuiCreateTagListingDisp (confuigui_t *gui);
