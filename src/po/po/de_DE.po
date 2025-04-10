@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2025-04-08\n"
+"PO-Revision-Date: 2025-04-10\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -2094,7 +2094,6 @@ msgstr "Warteschlange wechseln, wenn sie leer ist"
 msgid "Tag"
 msgstr ""
 
-#. CONTEXT: configuration: dances: tags associated with the dance
 #. CONTEXT: label: tags (for use by the user)
 #. CONTEXT: playlist management: tags
 msgid "Tags"
