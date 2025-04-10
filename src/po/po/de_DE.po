@@ -890,6 +890,7 @@ msgstr "Zu importierende Felder"
 msgid "File"
 msgstr "Datei"
 
+#. CONTEXT: import playlist: playlist file types (mu3/xspf/jspf)
 #, c-format
 msgid "File (%s)"
 msgstr ""
@@ -2361,10 +2362,6 @@ msgstr "Schreibt die Tags der Audiodatei anhand der Informationen aus der Ballro
 msgid "XML Files"
 msgstr "XML-Dateien"
 
-#. CONTEXT: configuration: audio source type
-msgid "bdj4"
-msgstr ""
-
 #. CONTEXT: configuration file: dance type
 msgid "club"
 msgstr "Verein"
@@ -2388,10 +2385,6 @@ msgstr "normal"
 #. CONTEXT: The suffix for an original audio file (may be abbreviated)
 msgid "original"
 msgstr "Original"
-
-#. CONTEXT: configuration: audio source type
-msgid "rtsp"
-msgstr ""
 
 #. CONTEXT: configuration: dance speed
 msgid "slow"

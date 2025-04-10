@@ -890,6 +890,7 @@ msgstr "Поля для импорта"
 msgid "File"
 msgstr "Файл"
 
+#. CONTEXT: import playlist: playlist file types (mu3/xspf/jspf)
 #, c-format
 msgid "File (%s)"
 msgstr ""
@@ -2362,10 +2363,6 @@ msgstr "Запись тегов аудио файла, используя инф
 msgid "XML Files"
 msgstr "XML файлы"
 
-#. CONTEXT: configuration: audio source type
-msgid "bdj4"
-msgstr ""
-
 #. CONTEXT: configuration file: dance type
 msgid "club"
 msgstr "клуб"
@@ -2389,10 +2386,6 @@ msgstr "нормальная"
 #. CONTEXT: The suffix for an original audio file (may be abbreviated)
 msgid "original"
 msgstr "оригинал"
-
-#. CONTEXT: configuration: audio source type
-msgid "rtsp"
-msgstr ""
 
 #. CONTEXT: configuration: dance speed
 msgid "slow"

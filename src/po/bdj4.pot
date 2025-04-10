@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-10 09:11-0700\n"
+"POT-Creation-Date: 2025-04-10 09:18-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -888,6 +888,7 @@ msgstr ""
 msgid "File"
 msgstr ""
 
+#. CONTEXT: import playlist: playlist file types (mu3/xspf/jspf)
 #, c-format
 msgid "File (%s)"
 msgstr ""
@@ -2358,10 +2359,6 @@ msgstr ""
 msgid "XML Files"
 msgstr ""
 
-#. CONTEXT: configuration: audio source type
-msgid "bdj4"
-msgstr ""
-
 #. CONTEXT: configuration file: dance type
 msgid "club"
 msgstr ""
@@ -2384,10 +2381,6 @@ msgstr ""
 
 #. CONTEXT: The suffix for an original audio file (may be abbreviated)
 msgid "original"
-msgstr ""
-
-#. CONTEXT: configuration: audio source type
-msgid "rtsp"
 msgstr ""
 
 #. CONTEXT: configuration: dance speed

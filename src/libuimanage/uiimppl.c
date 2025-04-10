@@ -130,6 +130,7 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
   uiimppl->aslist = nlistAlloc ("aslist", LIST_UNORDERED, NULL);
   uiimppl->askeys = nlistAlloc ("aslist", LIST_UNORDERED, NULL);
 
+  /* CONTEXT: import playlist: playlist file types (mu3/xspf/jspf) */
   snprintf (tbuff, sizeof (tbuff), _("File (%s)"), "M3U/XSPF/JSPF");
   len = strlen (tbuff);
   uiimppl->asmaxwidth = len;
