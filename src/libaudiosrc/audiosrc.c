@@ -323,6 +323,7 @@ audiosrcGetType (const char *nm)
       if (asdylib->asiIsTypeMatch (asdylib->asdata, nm)) {
         type = asdylib->type;
         break;
+      } else {
       }
     }
   }
@@ -621,7 +622,9 @@ audiosrcStartIterator (int type, asitertype_t asitertype,
       uri == NULL) {
     return NULL;
   }
-  if (askey < 0 || askey >= audiosrc->ascount) {
+  if (type != AUDIOSRC_TYPE_NONE &&
+      type != AUDIOSRC_TYPE_FILE &&
+      (askey < 0 || askey >= audiosrc->ascount)) {
     return NULL;
   }
 

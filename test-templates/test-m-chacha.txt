@@ -454,7 +454,7 @@ ARTISTSORT
 COMPOSERSORT
 ..000-%03d-composer
 TITLESORT
-..000-%03d-argentinetango
+..000-%03d-waltz
 TITLE
 ..%03d-waltz
 DEST

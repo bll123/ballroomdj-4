@@ -42,6 +42,7 @@ static chk_audsrc_t tvalues [] = {
   { "d:/here", "d:/here", "d:/here", AUDIOSRC_TYPE_FILE },
   { "d:/here", "d:/here", "d:/here", AUDIOSRC_TYPE_FILE },
   { "unknown://stuff", "", "", AUDIOSRC_TYPE_NONE },
+  { "bdj4://stuff", "bdj4://stuff", "bdj4://stuff", AUDIOSRC_TYPE_BDJ4 },
   { "file:///testpath/def456", "def456", "/testpath/def456", AUDIOSRC_TYPE_FILE },
 };
 enum {
@@ -331,25 +332,26 @@ START_TEST(audiosrc_iterate_src)
   bdjoptSetStr (OPT_M_DIR_MUSIC, datatop);
   audiosrcPostInit ();
 
-  /* BDJ4 is not enabled */
+  /* the test audiosrc file has two clients set up */
   c = audiosrcGetActiveCount ();
-  ck_assert_int_eq (c, 1);
+  ck_assert_int_eq (c, 2);
 
   asiter = audiosrcStartIterator (AUDIOSRC_TYPE_NONE, AS_ITER_AUDIO_SRC, NULL, -1);
   c = audiosrcIterCount (asiter);
-  ck_assert_int_eq (c, 1);
+  ck_assert_int_eq (c, 2);
 
   c = 0;
   while ((val = audiosrcIterate (asiter)) != NULL) {
     if (c == 0) {
-      ck_assert_str_eq (val, "file");
+      ck_assert_str_eq (val, "BDJ4");
     }
     if (c == 1) {
-      ck_assert_str_eq (val, "BDJ4");
+      /* file is always enabled */
+      ck_assert_str_eq (val, "file");
     }
     ++c;
   }
-  ck_assert_int_eq (c, 1);
+  ck_assert_int_eq (c, 2);
 
   audiosrcCleanIterator (asiter);
 }

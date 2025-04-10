@@ -31,7 +31,7 @@
 static void
 setup (void)
 {
-  templateFileCopy ("audiosrc.txt", "audiosrc.txt");
+  return;
 }
 
 static void
@@ -70,11 +70,13 @@ START_TEST(asconf_iterate)
   count = 0;
   while ((key = asconfIterate (asconf, &iteridx)) >= 0) {
     val = asconfGetNum (asconf, key, ASCONF_MODE);
-    ck_assert_int_eq (val, ASCONF_MODE_OFF);
+    ck_assert_int_eq (val, ASCONF_MODE_CLIENT);
     val = asconfGetNum (asconf, key, ASCONF_TYPE);
     ck_assert_int_eq (val, AUDIOSRC_TYPE_BDJ4);
-    sval = asconfGetStr (asconf, key, ASCONF_NAME);
-    ck_assert_str_eq (sval, "BDJ4");
+    if (count == 0) {
+      sval = asconfGetStr (asconf, key, ASCONF_NAME);
+      ck_assert_str_eq (sval, "AAA");
+    }
     val = asconfGetNum (asconf, key, ASCONF_PORT);
     ck_assert_int_eq (val, 9011);
     ++count;
@@ -115,9 +117,9 @@ START_TEST(asconf_set)
     mdfree (sval);
 
     val = asconfGetNum (asconf, key, ASCONF_MODE);
-    asconfSetNum (asconf, key, ASCONF_MODE, ASCONF_MODE_CLIENT);
+    asconfSetNum (asconf, key, ASCONF_MODE, ASCONF_MODE_SERVER);
     tval = asconfGetNum (asconf, key, ASCONF_MODE);
-    ck_assert_int_eq (tval, ASCONF_MODE_CLIENT);
+    ck_assert_int_eq (tval, ASCONF_MODE_SERVER);
     asconfSetNum (asconf, key, ASCONF_MODE, val);
 
     val = asconfGetNum (asconf, key, ASCONF_TYPE);
@@ -126,17 +128,26 @@ START_TEST(asconf_set)
     ck_assert_int_eq (tval, AUDIOSRC_TYPE_RTSP);
     asconfSetNum (asconf, key, ASCONF_TYPE, val);
 
+    sval = mdstrdup (asconfGetStr (asconf, key, ASCONF_USER));
     asconfSetStr (asconf, key, ASCONF_USER, "bdj4");
     tsval = asconfGetStr (asconf, key, ASCONF_USER);
     ck_assert_str_eq (tsval, "bdj4");
+    asconfSetStr (asconf, key, ASCONF_USER, sval);
+    mdfree (sval);
 
-    asconfSetStr (asconf, key, ASCONF_PASS, "bdj");
+    sval = mdstrdup (asconfGetStr (asconf, key, ASCONF_PASS));
+    asconfSetStr (asconf, key, ASCONF_PASS, "bdj4");
     tsval = asconfGetStr (asconf, key, ASCONF_PASS);
-    ck_assert_str_eq (tsval, "bdj");
+    ck_assert_str_eq (tsval, "bdj4");
+    asconfSetStr (asconf, key, ASCONF_PASS, sval);
+    mdfree (sval);
 
+    sval = mdstrdup (asconfGetStr (asconf, key, ASCONF_URI));
     asconfSetStr (asconf, key, ASCONF_URI, "localhost");
     tsval = asconfGetStr (asconf, key, ASCONF_URI);
     ck_assert_str_eq (tsval, "localhost");
+    asconfSetStr (asconf, key, ASCONF_URI, sval);
+    mdfree (sval);
 
     ++count;
   }
@@ -168,18 +179,20 @@ START_TEST(asconf_save)
   asconfStartIterator (asconf, &iteridx);
   tlist = ilistAlloc ("chk-asconf-a", LIST_ORDERED);
   while ((key = asconfIterate (asconf, &iteridx)) >= 0) {
-    sval = asconfGetStr (asconf, key, ASCONF_NAME);
-    val = asconfGetNum (asconf, key, ASCONF_TYPE);
-
-    asconfSetStr (asconf, key, ASCONF_USER, "bdj4");
-    asconfSetStr (asconf, key, ASCONF_PASS, "bdj");
-    asconfSetStr (asconf, key, ASCONF_URI, "localhost");
-
-    ilistSetStr (tlist, key, ASCONF_NAME, sval);
-    ilistSetNum (tlist, key, ASCONF_TYPE, val);
-    ilistSetStr (tlist, key, ASCONF_USER, "bdj4");
-    ilistSetStr (tlist, key, ASCONF_PASS, "bdj");
-    ilistSetStr (tlist, key, ASCONF_URI, "localhost");
+    ilistSetNum (tlist, key, ASCONF_MODE,
+        asconfGetNum (asconf, key, ASCONF_MODE));
+    ilistSetNum (tlist, key, ASCONF_TYPE,
+        asconfGetNum (asconf, key, ASCONF_TYPE));
+    ilistSetStr (tlist, key, ASCONF_NAME,
+        asconfGetStr (asconf, key, ASCONF_NAME));
+    ilistSetStr (tlist, key, ASCONF_URI,
+        asconfGetStr (asconf, key, ASCONF_URI));
+    ilistSetNum (tlist, key, ASCONF_PORT,
+        asconfGetNum (asconf, key, ASCONF_PORT));
+    ilistSetStr (tlist, key, ASCONF_USER,
+        asconfGetStr (asconf, key, ASCONF_USER));
+    ilistSetStr (tlist, key, ASCONF_PASS,
+        asconfGetStr (asconf, key, ASCONF_PASS));
   }
 
   asconfSave (asconf, tlist, -1);
@@ -195,12 +208,24 @@ START_TEST(asconf_save)
     tkey = ilistIterateKey (tlist, &titeridx);
     ck_assert_int_eq (key, tkey);
 
+    val = asconfGetNum (asconf, key, ASCONF_MODE);
+    tval = ilistGetNum (tlist, key, ASCONF_MODE);
+    ck_assert_int_eq (val, tval);
+
+    val = asconfGetNum (asconf, key, ASCONF_TYPE);
+    tval = ilistGetNum (tlist, key, ASCONF_TYPE);
+    ck_assert_int_eq (val, tval);
+
     sval = asconfGetStr (asconf, key, ASCONF_NAME);
     tsval = ilistGetStr (tlist, key, ASCONF_NAME);
     ck_assert_str_eq (sval, tsval);
 
-    val = asconfGetNum (asconf, key, ASCONF_TYPE);
-    tval = ilistGetNum (tlist, key, ASCONF_TYPE);
+    sval = asconfGetStr (asconf, key, ASCONF_URI);
+    tsval = ilistGetStr (tlist, key, ASCONF_URI);
+    ck_assert_str_eq (sval, tsval);
+
+    val = asconfGetNum (asconf, key, ASCONF_PORT);
+    tval = ilistGetNum (tlist, key, ASCONF_PORT);
     ck_assert_int_eq (val, tval);
 
     sval = asconfGetStr (asconf, key, ASCONF_USER);
@@ -209,10 +234,6 @@ START_TEST(asconf_save)
 
     sval = asconfGetStr (asconf, key, ASCONF_PASS);
     tsval = ilistGetStr (tlist, key, ASCONF_PASS);
-    ck_assert_str_eq (sval, tsval);
-
-    sval = asconfGetStr (asconf, key, ASCONF_URI);
-    tsval = ilistGetStr (tlist, key, ASCONF_URI);
     ck_assert_str_eq (sval, tsval);
   }
 
@@ -244,7 +265,7 @@ START_TEST(asconf_add)
     if (strcmp (sval, "test") == 0) {
       rc += 1;
       val = asconfGetNum(asconf, key, ASCONF_TYPE);
-      if (val == AUDIOSRC_TYPE_RTSP) {
+      if (val == AUDIOSRC_TYPE_BDJ4) {
         rc += 1;
       }
     }
@@ -264,20 +285,24 @@ START_TEST(asconf_delete)
   int         count;
   int         val;
   int         nval;
+  const char  *sval;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- asconf_delete");
   mdebugSubTag ("asconf_delete");
 
   asconf = asconfAlloc ();
+  asconfAdd (asconf, "test");
 
   val = asconfGetCount (asconf);
 
   count = 0;
   asconfStartIterator (asconf, &iteridx);
   while ((key = asconfIterate (asconf, &iteridx)) >= 0) {
-    asconfDelete (asconf, key);
+    sval = asconfGetStr (asconf, key, ASCONF_NAME);
+    if (strcmp (sval, "test") == 0) {
+      asconfDelete (asconf, key);
+    }
     ++count;
-    break;
   }
   ck_assert_int_eq (count, val);
   nval = asconfGetCount (asconf);

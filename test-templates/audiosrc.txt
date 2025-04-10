@@ -14,7 +14,7 @@ NAME
 PASS
 ..bdj
 PORT
-..8000
+..9011
 TYPE
 ..bdj4
 URI
@@ -30,7 +30,7 @@ NAME
 PASS
 ..bdj
 PORT
-..8000
+..9011
 TYPE
 ..bdj4
 URI
