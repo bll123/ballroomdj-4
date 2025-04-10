@@ -152,7 +152,7 @@ confuiBuildUIAudioSource (confuigui_t *gui)
   /* CONTEXT: configuration: audio source: the port to use for the client or server */
   confuiMakeItemSpinboxNum (gui, dvbox, szgrp, NULL, _("Port"),
       CONFUI_WIDGET_AUDIOSRC_PORT, -1,
-      8000, 30000, 0, confuiAudioSrcPortChg);
+      443, 30000, 0, confuiAudioSrcPortChg);
   gui->uiitem [CONFUI_WIDGET_AUDIOSRC_PORT].audiosrcitemidx = ASCONF_PORT;
   uiSpinboxSetValue (gui->uiitem [CONFUI_WIDGET_AUDIOSRC_PORT].uiwidgetp, 9011);
 
