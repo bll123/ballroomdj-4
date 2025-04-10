@@ -378,7 +378,7 @@ if [[ $platform == windows ]]; then
       --delete --delete-excluded \
       --include '*/' \
       --include glib20.mo \
-      --include glib20.mo \
+      --include gtk30.mo \
       --exclude '*' \
       /${libtag}/share/locale/ plocal/share/locale
 

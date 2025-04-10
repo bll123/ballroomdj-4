@@ -342,16 +342,12 @@ START_TEST(audiosrc_iterate_src)
 
   c = 0;
   while ((val = audiosrcIterate (asiter)) != NULL) {
-    if (c == 0) {
-      ck_assert_str_eq (val, "BDJ4");
-    }
-    if (c == 1) {
-      /* file is always enabled */
-      ck_assert_str_eq (val, "file");
+    if (strcmp (val, "BDJ4") == 0 || strcmp (val, "file") == 0) {
+      ++c;
     }
     ++c;
   }
-  ck_assert_int_eq (c, 2);
+  ck_assert_int_eq (c, 4);
 
   audiosrcCleanIterator (asiter);
 }

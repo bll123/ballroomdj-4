@@ -12,7 +12,7 @@
 
 #if ! _lib_stpecpy
 
-# define STPECPY_DEBUG 1
+# define STPECPY_DEBUG 0
 
 /* the following code is in the public domain */
 /* modified from the linux stpecpy manual page */

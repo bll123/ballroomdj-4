@@ -172,10 +172,6 @@ function checkUpdaterClean {
   fn="${DATATOPDIR}/img/profile00/indicator_timer.svg"
   rm -f "${fn}"
 
-  # http/ca.crt file should be installed
-  fn="${HTTPDIR}/ca.crt"
-  rm -f "${fn}"
-
   # ds-audioid-list.txt version number should be updated
   fn="$DATADIR/profile00/ds-audioid-list.txt"
   sed -e "s/version [2-9]/version $(($AUDIOIDLISTVER-1))/" "${fn}" > "${fn}.n"

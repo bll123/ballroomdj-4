@@ -6,6 +6,10 @@
 
 **4.14.0 2025-3---**
 
+-->
+
+**4.14.0 2025-4-10**
+
 * Bug Fixes:
     * Configuration: Edit Dances: Fix a crash.
     * Configuration: Fixed validation processing and validation issues.
@@ -20,8 +24,6 @@
     * Configuration: Audio sources.
     * Music Manager: Import playlist from remote BDJ4 server.
     * Remote BDJ4 server.
-
--->
 
 **4.13.0 2025-2-19**
 
@@ -1177,4 +1179,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-04-04 13:00:17; BDJ4 version 4.13.0)_
+<br>_(Updated 2025-04-10 15:40:14; BDJ4 version 4.14.0)_
