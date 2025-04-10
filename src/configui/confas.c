@@ -129,7 +129,7 @@ confuiBuildUIAudioSource (confuigui_t *gui)
       confuiAudioSrcModeChg);
   gui->uiitem [CONFUI_SPINBOX_AUDIOSRC_MODE].audiosrcitemidx = ASCONF_MODE;
 
-  /* CONTEXT: configuration: the remote BDJ4 server name */
+  /* CONTEXT: configuration: audio source: the client or server name */
   confuiMakeItemEntry (gui, dvbox, szgrp, _("Name"),
       CONFUI_ENTRY_AUDIOSRC_NAME, -1, "", CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_NAME].uiwidgetp,
@@ -142,28 +142,28 @@ confuiBuildUIAudioSource (confuigui_t *gui)
       confuiAudioSrcTypeChg);
   gui->uiitem [CONFUI_SPINBOX_AUDIOSRC_TYPE].audiosrcitemidx = ASCONF_TYPE;
 
-  /* CONTEXT: configuration: the remote BDJ4 server name */
+  /* CONTEXT: configuration: audio source: the remote client URI */
   confuiMakeItemEntry (gui, dvbox, szgrp, _("URI"),
       CONFUI_ENTRY_AUDIOSRC_URI, -1, "", CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_URI].uiwidgetp,
       _("URI"), confuiAudioSrcURIChg, gui, UIENTRY_IMMEDIATE);
   gui->uiitem [CONFUI_ENTRY_AUDIOSRC_URI].audiosrcitemidx = ASCONF_URI;
 
-  /* CONTEXT: configuration: the port to use for the BDJ4 server */
+  /* CONTEXT: configuration: audio source: the port to use for the client or server */
   confuiMakeItemSpinboxNum (gui, dvbox, szgrp, NULL, _("Port"),
       CONFUI_WIDGET_AUDIOSRC_PORT, -1,
       8000, 30000, 0, confuiAudioSrcPortChg);
   gui->uiitem [CONFUI_WIDGET_AUDIOSRC_PORT].audiosrcitemidx = ASCONF_PORT;
   uiSpinboxSetValue (gui->uiitem [CONFUI_WIDGET_AUDIOSRC_PORT].uiwidgetp, 9011);
 
-  /* CONTEXT: configuration: the BDJ4 server user */
+  /* CONTEXT: configuration: audio source: the client or server user */
   confuiMakeItemEntry (gui, dvbox, szgrp, _("User"),
       CONFUI_ENTRY_AUDIOSRC_USER, -1, "", CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_USER].uiwidgetp,
       _("User"), confuiAudioSrcUserChg, gui, UIENTRY_IMMEDIATE);
   gui->uiitem [CONFUI_ENTRY_AUDIOSRC_USER].audiosrcitemidx = ASCONF_USER;
 
-  /* CONTEXT: configuration: the BDJ4 server password */
+  /* CONTEXT: configuration: audio source: the client or server password */
   confuiMakeItemEntry (gui, dvbox, szgrp, _("Password"),
       CONFUI_ENTRY_AUDIOSRC_PASS, -1, "", CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_PASS].uiwidgetp,

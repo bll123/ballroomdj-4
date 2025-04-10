@@ -1289,7 +1289,7 @@ msgstr "Hudební fronty"
 msgid "Mute"
 msgstr "Ztlumit"
 
-#. CONTEXT: configuration: the remote BDJ4 server name
+#. CONTEXT: configuration: audio source: the client or server name
 #. CONTEXT: alternate installation: name (for shortcut)
 msgid "Name"
 msgstr "Název"
@@ -1438,7 +1438,7 @@ msgstr "Ostatní soubory"
 msgid "Paso Doble"
 msgstr "Paso Doble"
 
-#. CONTEXT: configuration: the BDJ4 server password
+#. CONTEXT: configuration: audio source: the client or server password
 #. CONTEXT: configuration: mobile marquee: internet: password
 #. CONTEXT: configuration: remote control: the password for sign-on to remote control
 msgid "Password"
@@ -1527,7 +1527,7 @@ msgstr "Počkejte prosím… (%1$d/%2$d)"
 msgid "Poor"
 msgstr "Špatný"
 
-#. CONTEXT: configuration: the port to use for the BDJ4 server
+#. CONTEXT: configuration: audio source: the port to use for the client or server
 #. CONTEXT: configuration: the port to use for the mobile marquee
 #. CONTEXT: configuration: remote control: the port to use for remote control
 msgid "Port"
@@ -2192,7 +2192,7 @@ msgstr "Zkrácení"
 msgid "Type"
 msgstr "Typ"
 
-#. CONTEXT: configuration: the remote BDJ4 server name
+#. CONTEXT: configuration: audio source: the remote client URI
 #. CONTEXT: import playlist: import location
 msgid "URI"
 msgstr ""
@@ -2272,7 +2272,7 @@ msgstr ""
 msgid "Use Work and Movement"
 msgstr ""
 
-#. CONTEXT: configuration: the BDJ4 server user
+#. CONTEXT: configuration: audio source: the client or server user
 msgid "User"
 msgstr ""
 

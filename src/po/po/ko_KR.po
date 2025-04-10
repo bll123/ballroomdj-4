@@ -1294,7 +1294,7 @@ msgstr "음악 대기열"
 msgid "Mute"
 msgstr "음소거"
 
-#. CONTEXT: configuration: the remote BDJ4 server name
+#. CONTEXT: configuration: audio source: the client or server name
 #. CONTEXT: alternate installation: name (for shortcut)
 msgid "Name"
 msgstr "이름"
@@ -1443,7 +1443,7 @@ msgstr "기타 파일"
 msgid "Paso Doble"
 msgstr "파소 도블레"
 
-#. CONTEXT: configuration: the BDJ4 server password
+#. CONTEXT: configuration: audio source: the client or server password
 #. CONTEXT: configuration: mobile marquee: internet: password
 #. CONTEXT: configuration: remote control: the password for sign-on to remote control
 msgid "Password"
@@ -1532,7 +1532,7 @@ msgstr "잠시만 기다려주세요… (%1$d/%2$d)"
 msgid "Poor"
 msgstr "Poor"
 
-#. CONTEXT: configuration: the port to use for the BDJ4 server
+#. CONTEXT: configuration: audio source: the port to use for the client or server
 #. CONTEXT: configuration: the port to use for the mobile marquee
 #. CONTEXT: configuration: remote control: the port to use for remote control
 msgid "Port"
@@ -2197,7 +2197,7 @@ msgstr "잘라내기"
 msgid "Type"
 msgstr "유형"
 
-#. CONTEXT: configuration: the remote BDJ4 server name
+#. CONTEXT: configuration: audio source: the remote client URI
 #. CONTEXT: import playlist: import location
 msgid "URI"
 msgstr ""
@@ -2277,7 +2277,7 @@ msgstr ""
 msgid "Use Work and Movement"
 msgstr ""
 
-#. CONTEXT: configuration: the BDJ4 server user
+#. CONTEXT: configuration: audio source: the client or server user
 msgid "User"
 msgstr ""
 
