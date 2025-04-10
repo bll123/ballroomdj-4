@@ -16,7 +16,7 @@ PASS
 PORT
 ..8000
 TYPE
-..BDJ4
+..bdj4
 URI
 ..bll-mac.local
 USER
@@ -32,7 +32,7 @@ PASS
 PORT
 ..8000
 TYPE
-..BDJ4
+..bdj4
 URI
 ..bll-mac-m1.local
 USER
