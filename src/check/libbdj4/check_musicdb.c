@@ -39,7 +39,7 @@
 static char *dbfn = "tmp/musicdb.dat";
 
 static char *songparsedata [] = {
-    "FILE\n..argentinetango%d.mp3\n"
+    "URI\n..argentinetango%d.mp3\n"
       "ADJUSTFLAGS\n..\n"
       "ALBUM\n..album%d\n"
       "ALBUMARTIST\n..albumartist%d\n"
@@ -75,7 +75,7 @@ static char *songparsedata [] = {
       "WORK_ID\n..workid%d\n"
       "LASTUPDATED\n..1660237307\n",
     /* unicode filename */
-    "FILE\n..IAmtheBest_내가제일잘나가%d.mp3\n"
+    "URI\n..IAmtheBest_내가제일잘나가%d.mp3\n"
       "ADJUSTFLAGS\n..\n"
       "ALBUM\n..album%d\n"
       "ALBUMARTIST\n..albumartist%d\n"
@@ -646,7 +646,7 @@ START_TEST(musicdb_temp)
 }
 END_TEST
 
-START_TEST(musicdb_remove)
+START_TEST(musicdb_markremove)
 {
   musicdb_t *db;
   song_t    *song;
@@ -657,8 +657,8 @@ START_TEST(musicdb_remove)
   dbidx_t   curridx;
   dbidx_t   iteridx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_remove");
-  mdebugSubTag ("musicdb_remove");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_markremove");
+  mdebugSubTag ("musicdb_markremove");
 
   db = dbOpen (dbfn);
   ck_assert_ptr_nonnull (db);
@@ -750,6 +750,44 @@ START_TEST(musicdb_rename)
       ck_assert_str_eq ("at-rename.mp3", songGetStr (tsong, TAG_URI));
       break;
     }
+  }
+
+  dbClose (db);
+}
+END_TEST
+
+/* removesong is normally only used with remote songs */
+START_TEST(musicdb_removesong)
+{
+  musicdb_t *db;
+  song_t    *song;
+  song_t    *dbsong;
+  dbidx_t   dbidx;
+  dbidx_t   curridx;
+  dbidx_t   iteridx;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_removesong");
+  mdebugSubTag ("musicdb_removesong");
+
+  db = dbOpen (dbfn);
+  ck_assert_ptr_nonnull (db);
+
+  dbsong = dbGetByName (db, "argentinetango11.mp3");
+  ck_assert_ptr_nonnull (dbsong);
+  dbidx = songGetNum (dbsong, TAG_DBIDX);
+
+  dbRemoveSong (db, dbidx);
+
+  dbClose (db);
+  db = dbOpen (dbfn);
+
+  ck_assert_ptr_nonnull (db);
+  dbsong = dbGetByName (db, "argentinetango11.mp3");
+  ck_assert_ptr_null (dbsong);
+
+  dbStartIterator (db, &iteridx);
+  while ((song = dbIterate (db, &curridx, &iteridx)) != NULL) {
+    ck_assert_str_ne ("argentinetango11.mp3", songGetStr (song, TAG_URI));
   }
 
   dbClose (db);
@@ -857,8 +895,9 @@ musicdb_suite (void)
   tcase_add_test (tc, musicdb_iterate);
   tcase_add_test (tc, musicdb_load_entry);
   tcase_add_test (tc, musicdb_temp);
-  tcase_add_test (tc, musicdb_remove);
+  tcase_add_test (tc, musicdb_markremove);
   tcase_add_test (tc, musicdb_rename);
+  tcase_add_test (tc, musicdb_removesong);
   tcase_add_test (tc, musicdb_cleanup);
   tcase_add_test (tc, musicdb_db);
   suite_add_tcase (s, tc);
