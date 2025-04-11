@@ -79,7 +79,6 @@ function updateimages {
     esac
     touch -r $ifile $ifn
   done
-  echo "Enter SourceForge password"
   rsync -v -e ssh -aS --delete \
       wikiimg \
       ${sfuser}@web.sourceforge.net:/home/project-web/${project}/htdocs

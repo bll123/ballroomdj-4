@@ -202,21 +202,21 @@ played.
 
 ##### Export Menu
 
-__Export&nbsp;/&nbsp;Export&nbsp;as&nbsp;M3U&nbsp;Playlist__
-creates an M3U8 playlist file that can be used in other players.
+__Export&nbsp;/&nbsp;Export&nbsp;Playlist__
+creates an M3U, JSPF or XSPF playlist file that can be used in other players.
 
 __Export&nbsp;/&nbsp;Export&nbsp;for&nbsp;BDJ4__ creates a
 folder with songs and database that can be imported into another
 instance of BDJ4.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![sl-export-menu-c](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-export-menu-C.png)
+![sl-export-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-export-menu-D.png)
 <br><span style="color:#4559bf;">__Manage / Edit Song Lists / Export Menu__</span> </div>
 
 ##### Import Menu
 
-__Import&nbsp;/&nbsp;Import&nbsp;Playlist__ imports local or remote
-playlists.
+__Import&nbsp;/&nbsp;Import&nbsp;Playlist__ imports local (M3U, JSPF,
+XSFP) or remote playlists.
 
 __Import&nbsp;/&nbsp;Import&nbsp;from&nbsp;BDJ4__ imports a
 song list and songs from a folder created with
@@ -226,8 +226,8 @@ __Import&nbsp;/&nbsp;Import&nbsp;from&nbsp;iTunes__ imports a
 playlist from iTunes.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![sl-import-menu-d](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-import-menu-D.png)
+![sl-import-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-import-menu-E.png)
 <br><span style="color:#4559bf;">__Manage / Edit Song Lists / Import Menu__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-04-11 08:03:01; BDJ4 version 4.14.0)_

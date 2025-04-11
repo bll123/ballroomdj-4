@@ -39,4 +39,4 @@ will show your computer's name, not what is shown in the example).
 <br><span style="color:#4559bf;">__Mobile Device / Mobile Remote Control__</span></div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_
+<br>_(Updated 2025-04-11 07:56:21; BDJ4 version 4.14.0)_
