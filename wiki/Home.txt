@@ -76,6 +76,7 @@
 <br>[Edit Levels](en-Configuration-Edit%20Levels)
 <br>[Edit Genres](en-Configuration-Edit%20Genres)
 <br>[iTunes](en-Configuration-iTunes)
+<br>[AudioSources](en-Configuration-Audio%20Sources)
 <br>[Mobile Remote Control](en-Configuration-Mobile%20Remote%20Control)
 <br>[Mobile Marquee](en-Configuration-Mobile%20Marquee)
 

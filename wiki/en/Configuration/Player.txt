@@ -47,7 +47,7 @@ _ISO_ format is _Day-of-the-week YYYY-MM-DD HH:MM_.
 <br><span style="color:#4559bf;">__Configure / Player__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![player-speed-reset](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Player-Speed-Reset-A.png)
+![player-speed-reset](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Player-Speed-Reset-B.png)
 <br><span style="color:#4559bf;">__Player / Speed Reset Button__</span> </div>
 
 [Wiki Home](Home)

@@ -36,7 +36,7 @@ __Fields to Import__: Select which fields to import when the
 function is used.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![iTunes](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/iTunes-D.png)
+![iTunes](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/iTunes-E.png)
 <br><span style="color:#4559bf;">__Configure / iTunes__</span> </div>
 
 [Wiki Home](Home)

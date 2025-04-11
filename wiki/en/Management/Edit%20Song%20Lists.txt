@@ -215,8 +215,8 @@ instance of BDJ4.
 
 ##### Import Menu
 
-__Import&nbsp;/&nbsp;Import&nbsp;M3U__ imports an M3U playlist
-file and creates a song list.
+__Import&nbsp;/&nbsp;Import&nbsp;Playlist__ imports local or remote
+playlists.
 
 __Import&nbsp;/&nbsp;Import&nbsp;from&nbsp;BDJ4__ imports a
 song list and songs from a folder created with

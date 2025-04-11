@@ -46,7 +46,7 @@ Information on each display item can be found here:
 
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![display-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/DisplaySettings-F.png)
+![display-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/DisplaySettings-G.png)
 <br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
 
 [Wiki Home](Home)
