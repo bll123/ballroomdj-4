@@ -53,6 +53,7 @@ typedef struct dbus {
   _Atomic(int)    state;
   _Atomic(int)    busstate;
   void            *userdata;
+  bool            dataalloc;
 } dbus_t;
 
 static void dbusFreeData (dbus_t *dbus);
@@ -70,6 +71,7 @@ dbusConnInit (void)
   dbus = mdmalloc (sizeof (dbus_t));
   dbus->dconn = NULL;
   dbus->data = NULL;
+  dbus->dataalloc = false;
   dbus->result = NULL;
   dbus->busid = DBUS_INVALID_BUS;
   dbus->state = DBUS_STATE_WAIT;
@@ -115,10 +117,7 @@ dbusConnClose (dbus_t *dbus)
     return;
   }
 
-  if (dbus->data != NULL) {
-    // mdextfree (dbus->data);
-    /* fails if unref-d */
-  }
+  dbusFreeData (dbus);
 
   if (dbus->result != NULL) {
     mdextfree (dbus->result);
@@ -134,10 +133,9 @@ dbusConnClose (dbus_t *dbus)
     g_object_unref (dbus->dconn);
   }
 
-  /* apparently, the data variant does not need to be unref'd */
-
   dbus->dconn = NULL;
   dbus->data = NULL;
+  dbus->dataalloc = false;
   dbus->result = NULL;
   dbus->state = DBUS_STATE_CLOSED;
   dbus->busid = DBUS_INVALID_BUS;
@@ -152,6 +150,7 @@ dbusMessageInit (dbus_t *dbus)
   }
 
   dbus->data = g_variant_new_parsed ("()");
+  dbus->dataalloc = false;
 }
 
 void *
@@ -187,6 +186,10 @@ dbusMessageSetData (dbus_t *dbus, const char *sdata, ...)
   dbusFreeData (dbus);
 
   dbus->data = g_variant_new_va (sdata, NULL, &args);
+  if (strcmp (sdata, "()") != 0) {
+    mdextalloc (dbus->data);
+    dbus->dataalloc = true;
+  }
 # if DBUS_DEBUG
   dumpResult ("data-va", dbus->data);
 # endif
@@ -226,6 +229,8 @@ dbusMessageSetDataTuple (dbus_t *dbus, const char *sdata, ...)  /* KEEP */
   va_end (args);
 
   dbus->data = g_variant_new_tuple (children, count);
+  mdextalloc (dbus->data);
+  dbus->dataalloc = true;
   mdfree (children);
 # if DBUS_DEBUG
   dumpResult ("data-va", dbus->data);
@@ -297,6 +302,8 @@ dbusMessageSetDataString (dbus_t *dbus, const char *sdata, ...)
   dbusFreeData (dbus);
 
   dbus->data = g_variant_new_parsed_va (sdata, &args);
+  mdextalloc (dbus->data);
+  dbus->dataalloc = true;
 # if DBUS_DEBUG
   dumpResult ("data-parsed", dbus->data);
 # endif
@@ -426,6 +433,7 @@ dbusResultGet (dbus_t *dbus, ...)
 
   g_variant_get_va (val, type, NULL, &args);
   va_end (args);
+  dbusFreeData (dbus);
 
   return true;
 }
@@ -451,9 +459,12 @@ dbusFreeData (dbus_t *dbus)
     return;
   }
 
-  mdextfree (dbus->data);
-  g_variant_unref (dbus->data);
+  if (dbus->dataalloc) {
+    mdextfree (dbus->data);
+    g_variant_unref (dbus->data);
+  }
   dbus->data = NULL;
+  dbus->dataalloc = false;
 }
 
 static void

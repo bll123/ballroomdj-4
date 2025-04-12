@@ -123,9 +123,9 @@ START_TEST(asconf_set)
     asconfSetNum (asconf, key, ASCONF_MODE, val);
 
     val = asconfGetNum (asconf, key, ASCONF_TYPE);
-    asconfSetNum (asconf, key, ASCONF_TYPE, AUDIOSRC_TYPE_RTSP);
+    asconfSetNum (asconf, key, ASCONF_TYPE, AUDIOSRC_TYPE_NONE);
     tval = asconfGetNum (asconf, key, ASCONF_TYPE);
-    ck_assert_int_eq (tval, AUDIOSRC_TYPE_RTSP);
+    ck_assert_int_eq (tval, AUDIOSRC_TYPE_NONE);
     asconfSetNum (asconf, key, ASCONF_TYPE, val);
 
     sval = mdstrdup (asconfGetStr (asconf, key, ASCONF_USER));

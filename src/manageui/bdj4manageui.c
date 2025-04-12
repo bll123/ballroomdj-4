@@ -301,7 +301,7 @@ typedef struct {
   bool              enablerestoreorig;
   bool              exportactive;
   bool              exportbdj4active;
-  bool              importactive;
+  bool              importplactive;
   bool              importbdj4active;
   bool              importitunesactive;
   bool              ineditall;
@@ -336,7 +336,6 @@ static datafilekey_t manageuidfkeys [] = {
   { "MNG_EXP_PL_POS_Y", EXP_PL_POSITION_Y,          VALUE_NUM, NULL, DF_NORM },
   { "MNG_EXP_PL_TYPE",  MANAGE_EXP_PL_TYPE,         VALUE_NUM, NULL, DF_NORM },
   { "MNG_IMP_BDJ4_DIR", MANAGE_IMP_BDJ4_DIR,        VALUE_STR, NULL, DF_NORM },
-  { "MNG_IMP_PL_DIR",   MANAGE_IMP_PL_DIR,          VALUE_STR, NULL, DF_NORM },
   { "MNG_IMP_PL_POS_X", IMP_PL_POSITION_X,          VALUE_NUM, NULL, DF_NORM },
   { "MNG_IMP_PL_POS_Y", IMP_PL_POSITION_Y,          VALUE_NUM, NULL, DF_NORM },
   { "MNG_IMP_PL_TYPE",  MANAGE_IMP_PL_TYPE,         VALUE_NUM, NULL, DF_NORM },
@@ -546,7 +545,7 @@ main (int argc, char *argv[])
   manage.enablerestoreorig = false;
   manage.exportactive = false;
   manage.exportbdj4active = false;
-  manage.importactive = false;
+  manage.importplactive = false;
   manage.importbdj4active = false;
   manage.importitunesactive = false;
   manage.ineditall = false;
@@ -623,7 +622,6 @@ main (int argc, char *argv[])
     nlistSetNum (manage.minfo.options, MANAGE_AUDIOID_PANE_POSITION, -1);
     nlistSetNum (manage.minfo.options, QE_POSITION_X, -1);
     nlistSetNum (manage.minfo.options, QE_POSITION_Y, -1);
-    nlistSetStr (manage.minfo.options, MANAGE_IMP_PL_DIR, "");
     nlistSetNum (manage.minfo.options, IMP_PL_POSITION_X, -1);
     nlistSetNum (manage.minfo.options, IMP_PL_POSITION_Y, -1);
     nlistSetNum (manage.minfo.options, MANAGE_IMP_PL_TYPE, AUDIOSRC_TYPE_FILE);
@@ -3397,11 +3395,11 @@ managePlaylistImport (void *udata)
 {
   manageui_t  *manage = udata;
 
-  if (manage->importactive) {
+  if (manage->importplactive) {
     return UICB_STOP;
   }
 
-  manage->importactive = true;
+  manage->importplactive = true;
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import");
 
@@ -3413,6 +3411,7 @@ managePlaylistImport (void *udata)
 
   uiimpplDialog (manage->uiimppl);
 
+  manage->importplactive = false;
   logProcEnd ("");
   return UICB_CONT;
 }
@@ -3434,7 +3433,6 @@ managePlaylistImportRespHandler (void *udata)
 
   imptype = uiimpplGetType (manage->uiimppl);
   if (imptype == AUDIOSRC_TYPE_NONE) {
-    manage->importactive = false;
     return UICB_CONT;
   }
 
@@ -3453,7 +3451,6 @@ managePlaylistImportRespHandler (void *udata)
     pathinfo_t  *pi;
 
     if (! *uri) {
-      manage->importactive = false;
       return UICB_CONT;
     }
 
@@ -3560,7 +3557,6 @@ managePlaylistImportRespHandler (void *udata)
     manageSetSonglistName (manage, plname);
   }
 
-  manage->importactive = false;
   return UICB_CONT;
 }
 

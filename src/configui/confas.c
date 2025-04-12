@@ -71,7 +71,6 @@ confuiInitAudioSource (confuigui_t *gui)
   confuiSpinboxTextInitDataNum (gui, "cu-as-type",
       CONFUI_SPINBOX_AUDIOSRC_TYPE,
       AUDIOSRC_TYPE_BDJ4, "BDJ4",
-      AUDIOSRC_TYPE_RTSP, "RTSP",
       -1);
 
   gui->tables [CONFUI_ID_AUDIOSRC].addfunc = confuiAudioSrcAdd;

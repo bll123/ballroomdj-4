@@ -62,7 +62,6 @@ typedef struct {
   int             stopwaitcount;
   uint16_t        port;
   bool            bdj4enabled;
-  bool            rtspenabled;
 } bdjsrv_t;
 
 static bool bdjsrvHandshakeCallback (void *udata, programstate_t programState);
@@ -106,9 +105,6 @@ main (int argc, char *argv[])
       type = asconfGetNum (bdjsrv.asconf, askey, ASCONF_TYPE);
       if (type == AUDIOSRC_TYPE_BDJ4) {
         bdjsrv.bdj4enabled = true;
-      }
-      if (type == AUDIOSRC_TYPE_RTSP) {
-        bdjsrv.rtspenabled = true;
       }
       break;
     }

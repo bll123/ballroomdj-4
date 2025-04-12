@@ -80,14 +80,15 @@ typedef struct uiimppl {
 } uiimppl_t;
 
 /* import playlist */
-static void   uiimpplCreateDialog (uiimppl_t *uiimppl);
-static bool   uiimpplTargetDialog (void *udata);
-static void   uiimpplInitDisplay (uiimppl_t *uiimppl);
-static bool   uiimpplResponseHandler (void *udata, int32_t responseid);
-static int    uiimpplValidateTarget (uiwcont_t *entry, const char *label, void *udata);
-static bool   uiimpplSelectHandler (void *udata, int32_t idx);
-static int    uiimpplValidateNewName (uiwcont_t *entry, const char *label, void *udata);
+static void uiimpplCreateDialog (uiimppl_t *uiimppl);
+static bool uiimpplTargetDialog (void *udata);
+static void uiimpplInitDisplay (uiimppl_t *uiimppl);
+static bool uiimpplResponseHandler (void *udata, int32_t responseid);
+static int  uiimpplValidateTarget (uiwcont_t *entry, const char *label, void *udata);
+static bool uiimpplSelectHandler (void *udata, int32_t idx);
+static int  uiimpplValidateNewName (uiwcont_t *entry, const char *label, void *udata);
 static bool uiimpplImportTypeCallback (void *udata);
+static void uiimpplFreeDialog (uiimppl_t *uiimppl);
 
 uiimppl_t *
 uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
@@ -179,18 +180,13 @@ uiimpplFree (uiimppl_t *uiimppl)
     return;
   }
 
+  uiimpplFreeDialog (uiimppl);
   ilistFree (uiimppl->plnames);
   uiimppl->plnames = NULL;
   nlistFree (uiimppl->aslist);
   uiimppl->aslist = NULL;
   nlistFree (uiimppl->askeys);
   uiimppl->askeys = NULL;
-  uiddFree (uiimppl->plselect);
-  uiimppl->plselect = NULL;
-  for (int j = 0; j < UIIMPPL_W_MAX; ++j) {
-    uiwcontFree (uiimppl->wcont [j]);
-    uiimppl->wcont [j] = NULL;
-  }
   for (int i = 0; i < UIIMPPL_CB_MAX; ++i) {
     callbackFree (uiimppl->callbacks [i]);
     uiimppl->callbacks [i] = NULL;
@@ -239,6 +235,10 @@ uiimpplProcess (uiimppl_t *uiimppl)
     return;
   }
   if (! uiimppl->isactive) {
+    return;
+  }
+
+  if (uiimppl->wcont [UIIMPPL_W_DIALOG] == NULL) {
     return;
   }
 
@@ -309,8 +309,6 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiwcont_t     *hbox;
   uiwcont_t     *uiwidgetp = NULL;
   uiwcont_t     *szgrp;  // labels
-  const char    *odir = NULL;
-  char          tbuff [MAXPATHLEN];
 
   logProcBegin ();
 
@@ -393,6 +391,7 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
+  /* CONTEXT: import playlist: select the song list */
   uiwidgetp = uiCreateColonLabel (_("Playlist"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
@@ -423,17 +422,8 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
+  uiEntrySetValue (uiwidgetp, "");
   uiimppl->wcont [UIIMPPL_W_URI] = uiwidgetp;
-
-  odir = nlistGetStr (uiimppl->options, MANAGE_IMP_PL_DIR);
-  if (odir == NULL) {
-    odir = sysvarsGetStr (SV_HOME);
-  }
-  stpecpy (tbuff, tbuff + sizeof (tbuff), odir);
-  pathDisplayPath (tbuff, sizeof (tbuff));
-  uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_URI], tbuff);
-  uiEntrySetValidate (uiwidgetp, "",
-      uiimpplValidateTarget, uiimppl, UIENTRY_DELAYED);
 
   uiwidgetp = uiCreateButton ("imppl-folder",
       uiimppl->callbacks [UIIMPPL_CB_TARGET],
@@ -461,14 +451,15 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiBoxPackStart (hbox, uiwidgetp);
   uiimppl->wcont [UIIMPPL_W_NEWNAME] = uiwidgetp;
 
-  /* CONTEXT: import playlist: select the song list */
-  uiEntrySetValidate (uiwidgetp, _("Playlist"),
-      uiimpplValidateNewName, uiimppl, UIENTRY_IMMEDIATE);
 
   uiwcontFree (hbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
+  uiEntrySetValidate (uiimppl->wcont [UIIMPPL_W_URI], _("URI"),
+      uiimpplValidateTarget, uiimppl, UIENTRY_DELAYED);
+  uiEntrySetValidate (uiimppl->wcont [UIIMPPL_W_NEWNAME], _("New Song List Name"),
+      uiimpplValidateNewName, uiimppl, UIENTRY_IMMEDIATE);
   uiSpinboxTextSetValueChangedCallback (uiimppl->wcont [UIIMPPL_W_IMP_TYPE],
       uiimppl->callbacks [UIIMPPL_CB_TYPE_SEL]);
 
@@ -532,21 +523,28 @@ uiimpplResponseHandler (void *udata, int32_t responseid)
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
+      uiimppl->isactive = false;
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: import playlist: del window");
       uiimppl->imptype = AUDIOSRC_TYPE_NONE;
+      uiimpplFreeDialog (uiimppl);
       break;
     }
     case RESPONSE_CLOSE: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: import playlist: close window");
       uiWidgetHide (uiimppl->wcont [UIIMPPL_W_DIALOG]);
       uiimppl->imptype = AUDIOSRC_TYPE_NONE;
+      uiimppl->isactive = false;
       break;
     }
     case RESPONSE_A: {
       bool    rc;
 
-      logMsg (LOG_DBG, LOG_ACTIONS, "= action: import playlist: check connection");
+      if (uiimppl->imptype == AUDIOSRC_TYPE_NONE ||
+          uiimppl->imptype == AUDIOSRC_TYPE_FILE) {
+        break;
+      }
 
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: import playlist: check connection");
       rc = audiosrcCheckConnection (uiimppl->askey);
       if (rc == false) {
         uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG],
@@ -557,6 +555,7 @@ uiimpplResponseHandler (void *udata, int32_t responseid)
             /* CONTEXT: configuration: audio source: check connection status */
             _("Connection OK"));
       }
+      /* dialog is still active */
       break;
     }
     case RESPONSE_APPLY: {
@@ -573,11 +572,11 @@ uiimpplResponseHandler (void *udata, int32_t responseid)
       uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
       uiWidgetHide (uiimppl->wcont [UIIMPPL_W_DIALOG]);
       uiimppl->imptype = AUDIOSRC_TYPE_NONE;
+      uiimppl->isactive = false;
       break;
     }
   }
 
-  uiimppl->isactive = false;
   return UICB_CONT;
 }
 
@@ -589,6 +588,13 @@ uiimpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
   const char  *str;
   char        tbuff [MAXPATHLEN];
   pathinfo_t  *pi;
+
+  if (uiimppl == NULL) {
+    return UIENTRY_OK;
+  }
+  if (uiimppl->isactive == false) {
+    return UIENTRY_OK;
+  }
 
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
@@ -641,6 +647,13 @@ uiimpplSelectHandler (void *udata, int idx)
   const char  *str;
   char        tbuff [MAXPATHLEN];
 
+  if (uiimppl == NULL) {
+    return UICB_STOP;
+  }
+  if (uiimppl->isactive == false) {
+    return UICB_STOP;
+  }
+
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
 
   str = ilistGetStr (uiimppl->plnames, idx, DD_LIST_DISP);
@@ -666,6 +679,13 @@ uiimpplValidateNewName (uiwcont_t *entry, const char *label, void *udata)
   const char  *str;
   char        fn [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
+
+  if (uiimppl == NULL) {
+    return UIENTRY_OK;
+  }
+  if (uiimppl->isactive == false) {
+    return UIENTRY_OK;
+  }
 
   statusMsg = uiimppl->wcont [UIIMPPL_W_STATUS_MSG];
   errorMsg = uiimppl->wcont [UIIMPPL_W_ERROR_MSG];
@@ -695,6 +715,13 @@ uiimpplImportTypeCallback (void *udata)
   uiimppl_t   *uiimppl = udata;
   char        tbuff [40];
   int         askey;
+
+  if (uiimppl == NULL) {
+    return UICB_STOP;
+  }
+  if (uiimppl->isactive == false) {
+    return UICB_STOP;
+  }
 
   if (uiimppl->in_cb) {
     return UICB_CONT;
@@ -748,5 +775,16 @@ uiimpplImportTypeCallback (void *udata)
 
   uiimppl->in_cb = false;
   return UICB_CONT;
+}
+
+static void
+uiimpplFreeDialog (uiimppl_t *uiimppl)
+{
+  for (int j = 0; j < UIIMPPL_W_MAX; ++j) {
+    uiwcontFree (uiimppl->wcont [j]);
+    uiimppl->wcont [j] = NULL;
+  }
+  uiddFree (uiimppl->plselect);
+  uiimppl->plselect = NULL;
 }
 

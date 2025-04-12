@@ -4,7 +4,13 @@
 
 <!--
 
-**4.14.0 2025-3---**
+**4.14.1 2025-4---**
+
+**4.14.1 2025-4---**
+
+* Bug Fixes:
+    * Import Playlist: Fix unable to re-open dialog.
+    * Import Playlist: Fix incorrect error messages.
 
 -->
 

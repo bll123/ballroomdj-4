@@ -747,11 +747,13 @@ asbdj4StripPrefix (asdata_t *asdata, const char *songuri, int clientkey)
 static void
 audiosrcClientFree (asdata_t *asdata)
 {
-  for (int i = 0; i < asdata->clientcount; ++i) {
-    webclientClose (asdata->webclient [i]);
-    asdata->webclient [i] = NULL;
+  if (asdata->webclient != NULL) {
+    for (int i = 0; i < asdata->clientcount; ++i) {
+      webclientClose (asdata->webclient [i]);
+      asdata->webclient [i] = NULL;
+    }
+    mdfree (asdata->webclient);
   }
-  mdfree (asdata->webclient);
   asdata->webclient = NULL;
   ilistFree (asdata->client);
   asdata->client = NULL;
