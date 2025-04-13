@@ -125,7 +125,8 @@ uiNotebookSetCallback (uiwcont_t *uinotebook, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uinotebook->uidata.widget, "switch-page",
+  uinotebook->uidata.hid [HID_RESPONSE] =
+      g_signal_connect (uinotebook->uidata.widget, "switch-page",
       G_CALLBACK (uiNotebookSwitchPageHandler), uicb);
 }
 

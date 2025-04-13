@@ -72,7 +72,7 @@ uiSpinboxFree (uiwcont_t *uiwidget)
   }
 
   uispinbox = uiwidget->uiint.uispinbox;
-  uispinbox->processing = true;
+  uiClearSignalHandlers (uiwidget);
 
   callbackFree (uispinbox->presscb);
   uispinbox->presscb = NULL;
@@ -96,6 +96,10 @@ uiSpinboxTextCreate (void *udata)
   uiwidget = uiSpinboxInit ();
   uispinbox = uiwidget->uiint.uispinbox;
 
+  for (int i = 0; i < HID_MAX; ++i) {
+    uiwidget->uidata.hid [i] = 0;
+  }
+
   widget = gtk_spin_button_new (NULL, 0.0, 0);
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (widget), 1.0, 1.0);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (widget), TRUE);
@@ -109,9 +113,11 @@ uiSpinboxTextCreate (void *udata)
 
   uiWidgetAddClass (uiwidget, SPINBOX_READONLY_CLASS);
 
-  g_signal_connect (widget, "output",
+  uiwidget->uidata.hid [HID_OUTPUT] =
+      g_signal_connect (widget, "output",
       G_CALLBACK (uiSpinboxTextDisplay), uiwidget);
-  g_signal_connect (widget, "input",
+  uiwidget->uidata.hid [HID_INPUT] =
+      g_signal_connect (widget, "input",
       G_CALLBACK (uiSpinboxTextInput), uiwidget);
 
   return uiwidget;
@@ -238,9 +244,11 @@ uiSpinboxTimeCreate (sbtype_t sbtype, void *udata,
   uiwidget->wtype = WCONT_T_SPINBOX_TIME;
   uiwcontSetWidget (uiwidget, widget, NULL);
 
-  g_signal_connect (widget, "output",
+  uiwidget->uidata.hid [HID_OUTPUT] =
+      g_signal_connect (widget, "output",
       G_CALLBACK (uiSpinboxTimeDisplay), uiwidget);
-  g_signal_connect (widget, "input",
+  uiwidget->uidata.hid [HID_INPUT] =
+      g_signal_connect (widget, "input",
       G_CALLBACK (uiSpinboxTimeInput), uiwidget);
 
   return uiwidget;
@@ -297,7 +305,8 @@ uiSpinboxIntCreate (void)
 
   uiwcontSetWidget (uiwidget, spinbox, NULL);
 
-  g_signal_connect (spinbox, "input",
+  uiwidget->uidata.hid [HID_INPUT] =
+      g_signal_connect (spinbox, "input",
       G_CALLBACK (uiSpinboxNumInput), NULL);
 
   return uiwidget;
@@ -321,7 +330,8 @@ uiSpinboxDoubleCreate (void)
 
   uiwcontSetWidget (uiwidget, spinbox, NULL);
 
-  g_signal_connect (spinbox, "input",
+  uiwidget->uidata.hid [HID_INPUT] =
+      g_signal_connect (spinbox, "input",
       G_CALLBACK (uiSpinboxDoubleInput), NULL);
 
   return uiwidget;
@@ -346,9 +356,11 @@ uiSpinboxDoubleDefaultCreate (void)
   uiwidget->wtype = WCONT_T_SPINBOX_DOUBLE_DFLT;
   uiwcontSetWidget (uiwidget, widget, NULL);
 
-  g_signal_connect (widget, "output",
+  uiwidget->uidata.hid [HID_OUTPUT] =
+      g_signal_connect (widget, "output",
       G_CALLBACK (uiSpinboxDoubleDefaultDisplay), uiwidget);
-  g_signal_connect (widget, "input",
+  uiwidget->uidata.hid [HID_INPUT] =
+      g_signal_connect (widget, "input",
       G_CALLBACK (uiSpinboxDoubleInput), NULL);
 
   return uiwidget;
@@ -371,7 +383,8 @@ uiSpinboxSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uiwidget->uidata.widget, "value-changed",
+  uiwidget->uidata.hid [HID_VAL_CHG] =
+      g_signal_connect (uiwidget->uidata.widget, "value-changed",
       G_CALLBACK (uiSpinboxValueChangedHandler), uicb);
 }
 
@@ -382,7 +395,8 @@ uiSpinboxSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uiwidget->uidata.widget, "focus-in-event",
+  uiwidget->uidata.hid [HID_FOCUS] =
+      g_signal_connect (uiwidget->uidata.widget, "focus-in-event",
       G_CALLBACK (uiSpinboxFocusHandler), uicb);
 }
 

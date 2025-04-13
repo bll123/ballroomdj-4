@@ -69,8 +69,6 @@ uiCreateSwitch (int value)
 
   widget = gtk_toggle_button_new ();
   uiwcontSetWidget (uiwidget, widget, NULL);
-//  uiwidget->uidata.widget = widget;
-//  uiwidget->uidata.packwidget = widget;
   uiwidget->uiint.uiswitch = uiswitch;
 
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
@@ -81,7 +79,8 @@ uiCreateSwitch (int value)
   gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
   uiSwitchSetImage (widget, uiwidget);
 
-  g_signal_connect (widget, "toggled",
+  uiwidget->uidata.hid [HID_FOCUS] =
+      g_signal_connect (widget, "toggled",
       G_CALLBACK (uiSwitchImageHandler), uiwidget);
 
   return uiwidget;
@@ -134,7 +133,8 @@ uiSwitchSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uiwidget->uidata.widget, "toggled",
+  uiwidget->uidata.hid [HID_RESPONSE] =
+      g_signal_connect (uiwidget->uidata.widget, "toggled",
       G_CALLBACK (uiSwitchToggleHandler), uicb);
 }
 

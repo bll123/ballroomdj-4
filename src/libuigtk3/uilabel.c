@@ -34,8 +34,6 @@ uiCreateLabel (const char *label)
 
   uiwidget = uiwcontAlloc (WCONT_T_LABEL, WCONT_T_LABEL);
   uiwcontSetWidget (uiwidget, widget, NULL);
-//  uiwidget->uidata.widget = widget;
-//  uiwidget->uidata.packwidget = widget;
   return uiwidget;
 }
 

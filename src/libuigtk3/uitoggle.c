@@ -36,8 +36,6 @@ uiCreateCheckButton (const char *txt, int value)
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
   uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_CHECK_BOX);
   uiwcontSetWidget (uiwidget, widget, NULL);
-//  uiwidget->uidata.widget = widget;
-//  uiwidget->uidata.packwidget = widget;
   return uiwidget;
 }
 
@@ -58,8 +56,6 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
   uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_RADIO_BUTTON);
   uiwcontSetWidget (uiwidget, widget, NULL);
-//  uiwidget->uidata.widget = widget;
-//  uiwidget->uidata.packwidget = widget;
   return uiwidget;
 }
 
@@ -100,8 +96,6 @@ uiCreateToggleButton (const char *txt,
 
   uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_TOGGLE_BUTTON);
   uiwcontSetWidget (uiwidget, widget, NULL);
-//  uiwidget->uidata.widget = widget;
-//  uiwidget->uidata.packwidget = widget;
   return uiwidget;
 }
 
@@ -112,7 +106,8 @@ uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uiwidget->uidata.widget, "toggled",
+  uiwidget->uidata.hid [HID_RESPONSE] =
+      g_signal_connect (uiwidget->uidata.widget, "toggled",
       G_CALLBACK (uiToggleButtonToggleHandler), uicb);
 }
 
@@ -123,7 +118,8 @@ uiToggleButtonSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-  g_signal_connect_after (uiwidget->uidata.widget, "focus-in-event",
+  uiwidget->uidata.hid [HID_FOCUS] =
+      g_signal_connect_after (uiwidget->uidata.widget, "focus-in-event",
       G_CALLBACK (uiToggleButtonFocusHandler), uicb);
 }
 

@@ -33,8 +33,6 @@ uiCreateProgressBar (void)
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   uiwidget = uiwcontAlloc (WCONT_T_PROGRESS_BAR, WCONT_T_PROGRESS_BAR);
   uiwcontSetWidget (uiwidget, widget, NULL);
-//  uiwidget->uidata.widget = widget;
-//  uiwidget->uidata.packwidget = widget;
   return uiwidget;
 }
 

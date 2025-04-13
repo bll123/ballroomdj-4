@@ -72,8 +72,6 @@ uiCreateButton (const char *ident, callback_t *uicb, const char *title, char *im
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_BUTTON);
   uiwcontSetWidget (uiwidget, widget, NULL);
-//  uiwidget->uidata.widget = widget;
-//  uiwidget->uidata.packwidget = widget;
   uiwidget->uiint.uibutton = uibutton;
 
   bbase = &uiwidget->uiint.uibuttonbase;
@@ -88,7 +86,8 @@ uiCreateButton (const char *ident, callback_t *uicb, const char *title, char *im
   bbase->repeatMS = 250;
 
   if (uicb != NULL) {
-    g_signal_connect (widget, "clicked",
+    uiwidget->uidata.hid [HID_RESPONSE] =
+        g_signal_connect (widget, "clicked",
         G_CALLBACK (uiButtonSignalHandler), uiwidget);
   }
 
@@ -223,9 +222,11 @@ uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms)
 
   bbase->repeatMS = repeatms;
   bbase->repeatOn = true;
-  g_signal_connect (uiwidget->uidata.widget, "pressed",
+  uiwidget->uidata.hid [HID_BPRESS] =
+      g_signal_connect (uiwidget->uidata.widget, "pressed",
       G_CALLBACK (uiButtonRepeatSignalHandler), bbase->presscb);
-  g_signal_connect (uiwidget->uidata.widget, "released",
+  uiwidget->uidata.hid [HID_BRELEASE] =
+      g_signal_connect (uiwidget->uidata.widget, "released",
       G_CALLBACK (uiButtonRepeatSignalHandler), bbase->releasecb);
 }
 

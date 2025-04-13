@@ -42,8 +42,6 @@ uiCreateLink (const char *label, const char *uri)
 
   uiwidget = uiwcontAlloc (WCONT_T_LINK, WCONT_T_LINK);
   uiwcontSetWidget (uiwidget, widget, NULL);
-//  uiwidget->uidata.widget = widget;
-//  uiwidget->uidata.packwidget = widget;
   return uiwidget;
 }
 
@@ -69,7 +67,8 @@ uiLinkSetActivateCallback (uiwcont_t *uilink, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uilink->uidata.widget, "activate-link",
+  uilink->uidata.hid [HID_RESPONSE] =
+      g_signal_connect (uilink->uidata.widget, "activate-link",
       G_CALLBACK (uiLinkCallback), uicb);
 }
 

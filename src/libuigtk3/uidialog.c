@@ -160,15 +160,14 @@ uiCreateDialog (uiwcont_t *window,
 
   uiwidget = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_DIALOG_WINDOW);
   uiwcontSetWidget (uiwidget, dialog, NULL);
-//  uiwidget->uidata.widget = dialog;
-//  uiwidget->uidata.packwidget = dialog;
 
   va_start (valist, title);
   uiDialogAddButtonsInternal (uiwidget, valist);
   va_end (valist);
 
   if (uicb != NULL) {
-    g_signal_connect (dialog, "response",
+    uiwidget->uidata.hid [HID_RESPONSE] =
+        g_signal_connect (dialog, "response",
         G_CALLBACK (uiDialogResponseHandler), uicb);
   }
 

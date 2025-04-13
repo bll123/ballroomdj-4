@@ -27,8 +27,6 @@ uiImageNew (void)
   image = gtk_image_new ();
   uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
   uiwcontSetWidget (uiwidget, image, NULL);
-//  uiwidget->uidata.widget = image;
-//  uiwidget->uidata.packwidget = image;
 
   return uiwidget;
 }

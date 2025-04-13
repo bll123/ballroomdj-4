@@ -44,8 +44,6 @@ uiCreateVerticalScrollbar (double upper)
 
   uiwidget = uiwcontAlloc (WCONT_T_SCROLLBAR, WCONT_T_SCROLLBAR);
   uiwcontSetWidget (uiwidget, widget, NULL);
-//  uiwidget->uidata.widget = widget;
-//  uiwidget->uidata.packwidget = widget;
   uiwidget->uiint.uiscrollbar = sb;
 
   uiWidgetExpandVert (uiwidget);
@@ -76,7 +74,8 @@ uiScrollbarSetChangeCallback (uiwcont_t *uiwidget, callback_t *cb)
 
   sb = uiwidget->uiint.uiscrollbar;
   sb->changecb = cb;
-  g_signal_connect (uiwidget->uidata.widget, "change-value",
+  uiwidget->uidata.hid [HID_VAL_CHG] =
+      g_signal_connect (uiwidget->uidata.widget, "change-value",
       G_CALLBACK (uiScrollbarChangeHandler), cb);
 }
 

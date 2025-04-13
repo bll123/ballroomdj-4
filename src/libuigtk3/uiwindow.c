@@ -53,14 +53,16 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   if (title != NULL) {
     gtk_window_set_title (GTK_WINDOW (window), title);
   }
-  if (uicb != NULL) {
-    g_signal_connect (window, "delete-event", G_CALLBACK (uiWindowCloseCallback), uicb);
-  }
 
   uiwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_WINDOW);
   uiwcontSetWidget (uiwin, window, NULL);
-//  uiwin->uidata.widget = window;
-//  uiwin->uidata.packwidget = window;
+
+  if (uicb != NULL) {
+    uiwin->uidata.hid [HID_DEL_WIN] =
+        g_signal_connect (window, "delete-event",
+        G_CALLBACK (uiWindowCloseCallback), uicb);
+  }
+
   return uiwin;
 }
 
@@ -276,8 +278,6 @@ uiCreateScrolledWindow (int minheight)
 
   scwindow = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_SCROLL_WINDOW);
   uiwcontSetWidget (scwindow, widget, NULL);
-//  scwindow->uidata.widget = widget;
-//  scwindow->uidata.packwidget = widget;
   return scwindow;
 }
 
@@ -331,8 +331,6 @@ uiCreateDialogWindow (uiwcont_t *parentwin,
 
   uiwindow = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_DIALOG_WINDOW);
   uiwcontSetWidget (uiwindow, window, NULL);
-//  uiwindow->uidata.widget = window;
-//  uiwindow->uidata.packwidget = window;
   return uiwindow;
 }
 

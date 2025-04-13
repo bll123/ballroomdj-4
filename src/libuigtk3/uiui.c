@@ -414,6 +414,25 @@ uiAddScreenCSS (const char *css)
 #endif
 }
 
+void
+uiClearSignalHandlers (uiwcont_t *uiwidget)
+{
+  if (uiwidget == NULL) {
+    return;
+  }
+
+  for (int i = 0; i < HID_MAX; ++i) {
+    if (uiwidget->uidata.widget == NULL) {
+      continue;
+    }
+    if (i == HID_DEL_WIN) {
+      continue;
+    }
+    g_signal_handler_disconnect (uiwidget->uidata.widget,
+        uiwidget->uidata.hid [i]);
+  }
+}
+
 /* internal routines */
 
 static void

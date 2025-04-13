@@ -29,19 +29,20 @@ static void uiDragDropDestHandler (GtkWidget *w, GdkDragContext *context,
     gpointer udata);
 
 void
-uiDragDropSetDestURICallback (uiwcont_t *uiwcont, callback_t *cb)
+uiDragDropSetDestURICallback (uiwcont_t *uiwidget, callback_t *cb)
 {
-  if (uiwcont == NULL) {
+  if (uiwidget == NULL) {
     return;
   }
-  if (uiwcont->uidata.widget == NULL) {
+  if (uiwidget->uidata.widget == NULL) {
     return;
   }
 
-  gtk_drag_dest_set (uiwcont->uidata.widget, GTK_DEST_DEFAULT_ALL,
+  gtk_drag_dest_set (uiwidget->uidata.widget, GTK_DEST_DEFAULT_ALL,
       NULL, 0, GDK_ACTION_COPY);
-  gtk_drag_dest_add_uri_targets (uiwcont->uidata.widget);
-  g_signal_connect (GTK_WIDGET (uiwcont->uidata.widget), "drag-data-received",
+  gtk_drag_dest_add_uri_targets (uiwidget->uidata.widget);
+  uiwidget->uidata.hid [HID_RESPONSE] =
+      g_signal_connect (GTK_WIDGET (uiwidget->uidata.widget), "drag-data-received",
       G_CALLBACK (uiDragDropDestHandler), cb);
 }
 

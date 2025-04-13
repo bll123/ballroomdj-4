@@ -82,8 +82,6 @@ uiEventAlloc (void)
 
   /* empty widget is used so that the validity check works */
   uiwcontSetWidget (uiwidget, (void *) WCONT_EMPTY_WIDGET, NULL);
-//  uiwidget->uidata.widget = (GtkWidget *) WCONT_EMPTY_WIDGET;
-//  uiwidget->uidata.packwidget = (GtkWidget *) WCONT_EMPTY_WIDGET;
   uiwidget->uiint.uievent = uievent;
 
   return uiwidget;
@@ -123,8 +121,6 @@ uiEventCreateEventBox (uiwcont_t *uiwidgetp)
 
   wcont = uiwcontAlloc (WCONT_T_BOX, WCONT_T_EVENT_BOX);
   uiwcontSetWidget (wcont, widget, NULL);
-//  wcont->uidata.widget = widget;
-//  wcont->uidata.packwidget = widget;
 
   return wcont;
 }
@@ -146,9 +142,11 @@ uiEventSetKeyCallback (uiwcont_t *uieventwidget,
   /* usually, the key masks are already present */
   gtk_widget_add_events (uiwidgetp->uidata.widget,
       GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK);
-  g_signal_connect (uiwidgetp->uidata.widget, "key-press-event",
+  uiwidgetp->uidata.hid [HID_PRESS] =
+      g_signal_connect (uiwidgetp->uidata.widget, "key-press-event",
       G_CALLBACK (uiEventKeyHandler), uieventwidget);
-  g_signal_connect (uiwidgetp->uidata.widget, "key-release-event",
+  uiwidgetp->uidata.hid [HID_RELEASE] =
+      g_signal_connect (uiwidgetp->uidata.widget, "key-release-event",
       G_CALLBACK (uiEventKeyHandler), uieventwidget);
 }
 
@@ -168,9 +166,11 @@ uiEventSetButtonCallback (uiwcont_t *uieventwidget,
   uievent->mbuttonreleasecb = uicb;
   gtk_widget_add_events (uiwidgetp->uidata.widget,
       GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
-  g_signal_connect (uiwidgetp->uidata.widget, "button-press-event",
+  uiwidgetp->uidata.hid [HID_BPRESS] =
+      g_signal_connect (uiwidgetp->uidata.widget, "button-press-event",
       G_CALLBACK (uiEventButtonHandler), uieventwidget);
-  g_signal_connect (uiwidgetp->uidata.widget, "button-release-event",
+  uiwidgetp->uidata.hid [HID_BRELEASE] =
+      g_signal_connect (uiwidgetp->uidata.widget, "button-release-event",
       G_CALLBACK (uiEventButtonHandler), uieventwidget);
 }
 
@@ -188,7 +188,8 @@ uiEventSetScrollCallback (uiwcont_t *uieventwidget,
 
   uievent->scrollcb = uicb;
   gtk_widget_add_events (uiwidgetp->uidata.widget, GDK_SCROLL_MASK);
-  g_signal_connect (uiwidgetp->uidata.widget, "scroll-event",
+  uiwidgetp->uidata.hid [HID_RESPONSE] =
+      g_signal_connect (uiwidgetp->uidata.widget, "scroll-event",
       G_CALLBACK (uiEventScrollHandler), uieventwidget);
 }
 
@@ -207,9 +208,11 @@ uiEventSetMotionCallback (uiwcont_t *uieventwidget,
   uievent->motioncb = uicb;
   gtk_widget_add_events (uiwidgetp->uidata.widget,
       GDK_POINTER_MOTION_MASK | GDK_LEAVE_NOTIFY_MASK);
-  g_signal_connect (uiwidgetp->uidata.widget, "motion-notify-event",
+  uiwidgetp->uidata.hid [HID_ENTER_NOTIFY] =
+      g_signal_connect (uiwidgetp->uidata.widget, "motion-notify-event",
       G_CALLBACK (uiEventMotionHandler), uieventwidget);
-  g_signal_connect (uiwidgetp->uidata.widget, "leave-notify-event",
+  uiwidgetp->uidata.hid [HID_LEAVE_NOTIFY] =
+      g_signal_connect (uiwidgetp->uidata.widget, "leave-notify-event",
       G_CALLBACK (uiEventLeaveHandler), uieventwidget);
 }
 

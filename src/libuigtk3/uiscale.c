@@ -48,8 +48,6 @@ uiCreateScale (double lower, double upper,
 
   uiwidget = uiwcontAlloc (WCONT_T_SCALE, WCONT_T_SCALE);
   uiwcontSetWidget (uiwidget, scale, NULL);
-//  uiwidget->uidata.widget = scale;
-//  uiwidget->uidata.packwidget = scale;
 
   return uiwidget;
 }
@@ -61,7 +59,8 @@ uiScaleSetCallback (uiwcont_t *uiscale, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uiscale->uidata.widget, "change-value",
+  uiscale->uidata.hid [HID_VAL_CHG] =
+      g_signal_connect (uiscale->uidata.widget, "change-value",
       G_CALLBACK (uiScaleChangeValueHandler), uicb);
 }
 

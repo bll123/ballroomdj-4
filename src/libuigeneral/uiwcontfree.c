@@ -24,6 +24,7 @@
 #include "ui/uispinbox.h"
 #include "ui/uiswitch.h"
 #include "ui/uitextbox.h"
+#include "ui/uiui.h"
 
 void
 uiwcontFree (uiwcont_t *uiwidget)
@@ -31,6 +32,8 @@ uiwcontFree (uiwcont_t *uiwidget)
   if (uiwidget == NULL) {
     return;
   }
+
+  uiClearSignalHandlers (uiwidget);
 
   switch (uiwidget->wtype) {
     case WCONT_T_UNKNOWN: {

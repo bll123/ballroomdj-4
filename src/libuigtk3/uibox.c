@@ -127,8 +127,6 @@ uiCreateBox (int orientation)
     uiwidget = uiwcontAlloc (WCONT_T_BOX, WCONT_T_VBOX);
   }
   uiwcontSetWidget (uiwidget, box, NULL);
-//  uiwidget->uidata.widget = box;
-//  uiwidget->uidata.packwidget = box;
   return uiwidget;
 }
 

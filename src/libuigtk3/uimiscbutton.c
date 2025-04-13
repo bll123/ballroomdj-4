@@ -31,8 +31,6 @@ uiCreateFontButton (const char *fontname)
   }
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_FONT_BUTTON);
   uiwcontSetWidget (uiwidget, fb, NULL);
-//  uiwidget->uidata.widget = fb;
-//  uiwidget->uidata.packwidget = fb;
   return uiwidget;
 }
 
@@ -65,8 +63,6 @@ uiCreateColorButton (const char *color)
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_COLOR_BUTTON);
   uiwcontSetWidget (uiwidget, cb, NULL);
-//  uiwidget->uidata.widget = cb;
-//  uiwidget->uidata.packwidget = cb;
   return uiwidget;
 }
 

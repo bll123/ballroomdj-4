@@ -100,7 +100,5 @@ uiPanedWindowCreate (int orientation)
 
   uiwidget = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_PANED_WINDOW);
   uiwcontSetWidget (uiwidget, widget, NULL);
-//  uiwidget->uidata.widget = widget;
-//  uiwidget->uidata.packwidget = widget;
   return uiwidget;
 }
