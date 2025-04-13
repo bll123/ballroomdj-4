@@ -189,8 +189,8 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
       uiimpplTargetDialog, uiimppl, NULL);
   uiimppl->callbacks [UIIMPPL_CB_PL_SEL] = callbackInitI (
       uiimpplSelectHandler, uiimppl);
-//  uiimppl->callbacks [UIIMPPL_CB_TYPE_SEL] = callbackInit (
-//      uiimpplImportTypeCallback, uiimppl, NULL);
+  uiimppl->callbacks [UIIMPPL_CB_TYPE_SEL] = callbackInit (
+      uiimpplImportTypeCallback, uiimppl, NULL);
 
   return uiimppl;
 }
@@ -249,7 +249,7 @@ uiimpplDialog (uiimppl_t *uiimppl)
     uiimppl->askey = uiimppl->asconfcount;
   }
   uiimppl->imptype = asconfGetNum (uiimppl->asconf, uiimppl->askey, ASCONF_TYPE);
-//  uiSpinboxTextSetValue (uiimppl->wcont [UIIMPPL_W_IMP_TYPE], uiimppl->askey);
+  uiSpinboxTextSetValue (uiimppl->wcont [UIIMPPL_W_IMP_TYPE], uiimppl->askey);
 
   x = nlistGetNum (uiimppl->options, IMP_PL_POSITION_X);
   y = nlistGetNum (uiimppl->options, IMP_PL_POSITION_Y);
@@ -410,11 +410,10 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
 
   uiwidgetp = uiSpinboxTextCreate (uiimppl);
   uiSpinboxTextSet (uiwidgetp, 0, nlistGetCount (uiimppl->aslist),
-      uiimppl->asmaxwidth, uiimppl->aslist, NULL, NULL);
-// uiimppl->askeys,
-//  uiSpinboxTextSetValue (uiwidgetp, uiimppl->askey);
-//  uiSpinboxTextSetValueChangedCallback (uiwidgetp,
-//      uiimppl->callbacks [UIIMPPL_CB_TYPE_SEL]);
+      uiimppl->asmaxwidth, uiimppl->aslist, uiimppl->askeys, NULL);
+  uiSpinboxTextSetValue (uiwidgetp, uiimppl->askey);
+  uiSpinboxTextSetValueChangedCallback (uiwidgetp,
+      uiimppl->callbacks [UIIMPPL_CB_TYPE_SEL]);
   uiimppl->wcont [UIIMPPL_W_IMP_TYPE] = uiwidgetp;
   uiBoxPackStart (hbox, uiwidgetp);
 
@@ -493,8 +492,8 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
       uiimpplValidateTarget, uiimppl, UIENTRY_DELAYED);
   uiEntrySetValidate (uiimppl->wcont [UIIMPPL_W_NEWNAME], _("New Song List Name"),
       uiimpplValidateNewName, uiimppl, UIENTRY_IMMEDIATE);
-//    uiSpinboxTextSetValueChangedCallback (uiimppl->wcont [UIIMPPL_W_IMP_TYPE],
-//      uiimppl->callbacks [UIIMPPL_CB_TYPE_SEL]);
+  uiSpinboxTextSetValueChangedCallback (uiimppl->wcont [UIIMPPL_W_IMP_TYPE],
+    uiimppl->callbacks [UIIMPPL_CB_TYPE_SEL]);
 
   logProcEnd ("");
 }
