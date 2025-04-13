@@ -111,6 +111,10 @@ asconfIterate (asconf_t *asconf, slistidx_t *iteridx)
   }
 
   ikey = slistIterateValueNum (asconf->audiosrclist, iteridx);
+  while (ikey >= 0 &&
+      ilistGetNum (asconf->audiosources, ikey, ASCONF_MODE) == ASCONF_MODE_OFF) {
+    ikey = slistIterateValueNum (asconf->audiosrclist, iteridx);
+  }
   return ikey;
 }
 

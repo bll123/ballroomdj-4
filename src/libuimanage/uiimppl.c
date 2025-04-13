@@ -74,6 +74,7 @@ typedef struct uiimppl {
   nlist_t           *options;
   nlist_t           *aslist;
   nlist_t           *askeys;
+  nlist_t           *astypes;
   ilist_t           *plnames;
   callback_t        *callbacks [UIIMPPL_CB_MAX];
   char              origplname [MAXPATHLEN];
@@ -82,7 +83,6 @@ typedef struct uiimppl {
   int               imptype;
   int               asconfcount;
   unsigned int      haveerrors;
-  bool              typechg;
   bool              isactive;
   bool              in_cb;
 } uiimppl_t;
@@ -123,11 +123,11 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
     uiimppl->callbacks [i] = NULL;
   }
   uiimppl->haveerrors = UIIMPPL_ERR_NONE;
-  uiimppl->typechg = false;
   uiimppl->isactive = false;
   uiimppl->in_cb = false;
   uiimppl->aslist = NULL;
   uiimppl->askeys = NULL;
+  uiimppl->astypes = NULL;
   uiimppl->plnames = NULL;
   uiimppl->plselect = NULL;
   uiimppl->asmaxwidth = 0;
@@ -159,10 +159,14 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
   nlistSetSize (uiimppl->aslist, count);
   uiimppl->askeys = nlistAlloc ("askeys", LIST_UNORDERED, NULL);
   nlistSetSize (uiimppl->askeys, count);
+  uiimppl->astypes = nlistAlloc ("astypes", LIST_UNORDERED, NULL);
+  nlistSetSize (uiimppl->astypes, count);
 
   count = 0;
   slistStartIterator (tlist, &titeridx);
   while ((asnm = slistIterateKey (tlist, &titeridx)) != NULL) {
+    int     type;
+
     askey = slistGetNum (tlist, asnm);
     len = strlen (asnm);
     if (len > uiimppl->asmaxwidth) {
@@ -170,10 +174,17 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
     }
     nlistSetStr (uiimppl->aslist, count, asnm);
     nlistSetNum (uiimppl->askeys, count, askey);
+    type = asconfGetNum (uiimppl->asconf, askey, ASCONF_TYPE);
+    if (type < 0) {
+      type = AUDIOSRC_TYPE_FILE;
+    }
+    /* have to save the types, as audio-src-file is internal */
+    nlistSetNum (uiimppl->astypes, askey, type);
     ++count;
   }
   nlistSort (uiimppl->aslist);
   nlistSort (uiimppl->askeys);
+  nlistSort (uiimppl->astypes);
   slistFree (tlist);
 
   uiimppl->askey = nlistGetNum (uiimppl->options, MANAGE_IMP_PL_ASKEY);
@@ -181,7 +192,7 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
     /* the asconfcount entry is set to the 'file' type */
     uiimppl->askey = uiimppl->asconfcount;
   }
-  uiimppl->imptype = asconfGetNum (uiimppl->asconf, uiimppl->askey, ASCONF_TYPE);
+  uiimppl->imptype = nlistGetNum (uiimppl->astypes, uiimppl->askey);
 
   uiimppl->callbacks [UIIMPPL_CB_DIALOG] = callbackInitI (
       uiimpplResponseHandler, uiimppl);
@@ -209,6 +220,8 @@ uiimpplFree (uiimppl_t *uiimppl)
   uiimppl->aslist = NULL;
   nlistFree (uiimppl->askeys);
   uiimppl->askeys = NULL;
+  nlistFree (uiimppl->astypes);
+  uiimppl->astypes = NULL;
   asconfFree (uiimppl->asconf);
   for (int i = 0; i < UIIMPPL_CB_MAX; ++i) {
     callbackFree (uiimppl->callbacks [i]);
@@ -248,7 +261,7 @@ uiimpplDialog (uiimppl_t *uiimppl)
     /* the asconfcount entry is set to the 'file' type */
     uiimppl->askey = uiimppl->asconfcount;
   }
-  uiimppl->imptype = asconfGetNum (uiimppl->asconf, uiimppl->askey, ASCONF_TYPE);
+  uiimppl->imptype = nlistGetNum (uiimppl->astypes, uiimppl->askey);
   uiSpinboxTextSetValue (uiimppl->wcont [UIIMPPL_W_IMP_TYPE], uiimppl->askey);
 
   x = nlistGetNum (uiimppl->options, IMP_PL_POSITION_X);
@@ -537,7 +550,7 @@ uiimpplInitDisplay (uiimppl_t *uiimppl)
     return;
   }
 
-//  uiimpplImportTypeCallback (uiimppl);
+  uiimpplImportTypeCallback (uiimppl);
 }
 
 static bool
@@ -768,9 +781,13 @@ uiimpplImportTypeCallback (void *udata)
   }
   uiimppl->in_cb = true;
 
+  uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
+  uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
+  uiimppl->haveerrors = UIIMPPL_ERR_NONE;
+
   askey = uiSpinboxTextGetValue (uiimppl->wcont [UIIMPPL_W_IMP_TYPE]);
   uiimppl->askey = askey;
-  uiimppl->imptype = asconfGetNum (uiimppl->asconf, uiimppl->askey, ASCONF_TYPE);
+  uiimppl->imptype = nlistGetNum (uiimppl->astypes, uiimppl->askey);
 
   if (uiimppl->imptype != AUDIOSRC_TYPE_FILE) {
     asiter_t    *asiter;

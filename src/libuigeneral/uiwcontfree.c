@@ -33,8 +33,6 @@ uiwcontFree (uiwcont_t *uiwidget)
     return;
   }
 
-  uiClearSignalHandlers (uiwidget);
-
   switch (uiwidget->wtype) {
     case WCONT_T_UNKNOWN: {
       fprintf (stderr, "ERR: trying to free a uiwidget twice\n");
@@ -67,6 +65,7 @@ uiwcontFree (uiwcont_t *uiwidget)
     case WCONT_T_SPINBOX_DOUBLE_DFLT:
     case WCONT_T_SPINBOX_TIME:
     case WCONT_T_SPINBOX_TEXT: {
+      uiClearSignalHandlers (uiwidget);
       uiSpinboxFree (uiwidget);
       break;
     }
