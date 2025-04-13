@@ -12,14 +12,14 @@ extern "C" {
 
 typedef struct uiselect uiselect_t;
 
+/* gtk dialog response ids are all negative */
 enum {
   RESPONSE_NONE,
   RESPONSE_DELETE_WIN,
   RESPONSE_CLOSE,
   RESPONSE_APPLY,
   RESPONSE_RESET,
-  RESPONSE_A,
-  RESPONSE_B,
+  RESPONSE_CHECK,
 };
 
 #include "callback.h"

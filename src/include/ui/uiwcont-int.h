@@ -147,7 +147,7 @@ typedef struct uiwcont {
   uiwconttype_t   wtype;
   uiwcontint_t    uiint;
   uispecific_t    uidata;
-  bool            packed : 1;
+  bool            packed;
 } uiwcont_t;
 
 static inline bool

@@ -336,9 +336,9 @@ static datafilekey_t manageuidfkeys [] = {
   { "MNG_EXP_PL_POS_Y", EXP_PL_POSITION_Y,          VALUE_NUM, NULL, DF_NORM },
   { "MNG_EXP_PL_TYPE",  MANAGE_EXP_PL_TYPE,         VALUE_NUM, NULL, DF_NORM },
   { "MNG_IMP_BDJ4_DIR", MANAGE_IMP_BDJ4_DIR,        VALUE_STR, NULL, DF_NORM },
+  { "MNG_IMP_PL_ASKEY", MANAGE_IMP_PL_ASKEY,        VALUE_NUM, NULL, DF_NORM },
   { "MNG_IMP_PL_POS_X", IMP_PL_POSITION_X,          VALUE_NUM, NULL, DF_NORM },
   { "MNG_IMP_PL_POS_Y", IMP_PL_POSITION_Y,          VALUE_NUM, NULL, DF_NORM },
-  { "MNG_IMP_PL_TYPE",  MANAGE_IMP_PL_TYPE,         VALUE_NUM, NULL, DF_NORM },
   { "MNG_POS_X",        MANAGE_POSITION_X,          VALUE_NUM, NULL, DF_NORM },
   { "MNG_POS_Y",        MANAGE_POSITION_Y,          VALUE_NUM, NULL, DF_NORM },
   { "MNG_SELFILE_POS_X",MANAGE_SELFILE_POSITION_X,  VALUE_NUM, NULL, DF_NORM },
@@ -624,7 +624,7 @@ main (int argc, char *argv[])
     nlistSetNum (manage.minfo.options, QE_POSITION_Y, -1);
     nlistSetNum (manage.minfo.options, IMP_PL_POSITION_X, -1);
     nlistSetNum (manage.minfo.options, IMP_PL_POSITION_Y, -1);
-    nlistSetNum (manage.minfo.options, MANAGE_IMP_PL_TYPE, AUDIOSRC_TYPE_FILE);
+    nlistSetNum (manage.minfo.options, MANAGE_IMP_PL_ASKEY, -1);
   }
   manage.sbssonglist = nlistGetNum (manage.minfo.options, MANAGE_SBS_SONGLIST);
 

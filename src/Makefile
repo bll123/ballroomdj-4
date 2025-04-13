@@ -54,10 +54,6 @@ sanitizeaddressclang:
 sanitizeaddressclang64:
 	$(MAKE) BDJ4_BUILD=SanitizeAddress cmakeclang64
 
-.PHONY: sanitizeundef
-sanitizeundef:
-	$(MAKE) BDJ4_BUILD=SanitizeUndef cmake
-
 .PHONY: cmake cmakesinglecpu cmakesinglecpuverbose
 .PHONY: cmakeclang cmake-unix cmake-windows
 
