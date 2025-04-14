@@ -23,6 +23,9 @@ uiwcontAlloc (int basetype, int type)
   uiwidget = mdmalloc (sizeof (uiwcont_t));
   uiwidget->wbasetype = basetype;
   uiwidget->wtype = type;
+  for (int i = 0; i < SIGID_MAX; ++i) {
+    uiwidget->sigid [i] = 0;
+  }
   uiwidget->uidata.widget = NULL;
   uiwidget->uidata.packwidget = NULL;          // often the same as widget
   uiwidget->packed = false;

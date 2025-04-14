@@ -393,7 +393,7 @@ uiWidgetSetSizeChgCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-  uiwidget->uidata.hid [HID_SIZE_ALLOC] =
+  uiwidget->sigid [SIGID_SIZE_ALLOC] =
       g_signal_connect (uiwidget->uidata.widget, "size-allocate",
       G_CALLBACK (uiWidgetSizeChgHandler), uicb);
 }
@@ -409,7 +409,7 @@ uiWidgetSetEnterCallback (uiwcont_t *uiwidget, callback_t *uicb)
   }
 
   gtk_widget_add_events (uiwidget->uidata.widget, GDK_ENTER_NOTIFY_MASK);
-  uiwidget->uidata.hid [HID_ENTER_NOTIFY] =
+  uiwidget->sigid [SIGID_ENTER_NOTIFY] =
       g_signal_connect (uiwidget->uidata.widget, "enter-notify-event",
       G_CALLBACK (uiWidgetEnterHandler), uicb);
 }

@@ -10,30 +10,7 @@
 extern "C" {
 #endif
 
-enum {
-  HID_OUTPUT,
-  HID_INPUT,
-  /* also abused for image-toggle (switch) */
-  HID_FOCUS,
-  /* click, toggle, response, scroll, activate-link, */
-  /* switch-page, drag-data-rcv, menu-toggle, menu-activate */
-  HID_RESPONSE,
-  HID_VAL_CHG,
-  HID_DEL_WIN,
-  HID_SIZE_ALLOC,
-  HID_ENTER_NOTIFY,
-  HID_LEAVE_NOTIFY,
-  HID_PRESS,
-  HID_RELEASE,
-  HID_BPRESS,
-  HID_BRELEASE,
-  HID_MAX,
-};
-
 typedef struct uispecific {
-  /* storing the signal id doesn't work out for many widgets, as the */
-  /* widget container is not preserved */
-  unsigned long hid [HID_MAX];
   GtkWidget     *packwidget;
   union {
     GtkWidget     *widget;

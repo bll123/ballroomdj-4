@@ -423,19 +423,19 @@ uiClearSignalHandlers (uiwcont_t *uiwidget)
     return;
   }
 
-  for (int i = 0; i < HID_MAX; ++i) {
+  for (int i = 0; i < SIGID_MAX; ++i) {
     if (uiwidget->uidata.widget == NULL) {
       continue;
     }
-    if (i == HID_DEL_WIN) {
+    if (i == SIGID_DEL_WIN) {
       continue;
     }
-    if (uiwidget->uidata.hid [i] == 0) {
+    if (uiwidget->sigid [i] == 0) {
       continue;
     }
     g_signal_handler_disconnect (uiwidget->uidata.widget,
-        uiwidget->uidata.hid [i]);
-    uiwidget->uidata.hid [i] = 0;
+        uiwidget->sigid [i]);
+    uiwidget->sigid [i] = 0;
   }
 }
 

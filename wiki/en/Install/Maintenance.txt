@@ -25,7 +25,7 @@ __VLC__
 
 VLC is in the process of creating VLC version 4 (someday).  Do not
 upgrade to VLC version 4 on Windows.  At the time this wiki page was
-written (2025-3-20), VLC version 4 is broken on Windows.
+written (2025-4-14), VLC version 4 is broken on Windows.
 
 Go to:
 [VideoLAN / VLC / Windows](https://www.videolan.org/vlc/download-windows.html),

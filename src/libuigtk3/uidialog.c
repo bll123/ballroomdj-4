@@ -166,7 +166,7 @@ uiCreateDialog (uiwcont_t *window,
   va_end (valist);
 
   if (uicb != NULL) {
-    uiwidget->uidata.hid [HID_RESPONSE] =
+    uiwidget->sigid [SIGID_RESPONSE] =
         g_signal_connect (dialog, "response",
         G_CALLBACK (uiDialogResponseHandler), uicb);
   }

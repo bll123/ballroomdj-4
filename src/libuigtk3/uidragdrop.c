@@ -41,7 +41,7 @@ uiDragDropSetDestURICallback (uiwcont_t *uiwidget, callback_t *cb)
   gtk_drag_dest_set (uiwidget->uidata.widget, GTK_DEST_DEFAULT_ALL,
       NULL, 0, GDK_ACTION_COPY);
   gtk_drag_dest_add_uri_targets (uiwidget->uidata.widget);
-  uiwidget->uidata.hid [HID_RESPONSE] =
+  uiwidget->sigid [SIGID_RESPONSE] =
       g_signal_connect (GTK_WIDGET (uiwidget->uidata.widget), "drag-data-received",
       G_CALLBACK (uiDragDropDestHandler), cb);
 }

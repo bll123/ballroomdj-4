@@ -59,7 +59,7 @@ uiScaleSetCallback (uiwcont_t *uiscale, callback_t *uicb)
     return;
   }
 
-  uiscale->uidata.hid [HID_VAL_CHG] =
+  uiscale->sigid [SIGID_VAL_CHG] =
       g_signal_connect (uiscale->uidata.widget, "change-value",
       G_CALLBACK (uiScaleChangeValueHandler), uicb);
 }

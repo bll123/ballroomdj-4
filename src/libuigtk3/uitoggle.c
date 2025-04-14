@@ -106,7 +106,7 @@ uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-  uiwidget->uidata.hid [HID_RESPONSE] =
+  uiwidget->sigid [SIGID_RESPONSE] =
       g_signal_connect (uiwidget->uidata.widget, "toggled",
       G_CALLBACK (uiToggleButtonToggleHandler), uicb);
 }
@@ -118,7 +118,7 @@ uiToggleButtonSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-  uiwidget->uidata.hid [HID_FOCUS] =
+  uiwidget->sigid [SIGID_FOCUS] =
       g_signal_connect_after (uiwidget->uidata.widget, "focus-in-event",
       G_CALLBACK (uiToggleButtonFocusHandler), uicb);
 }

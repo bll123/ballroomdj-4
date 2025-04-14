@@ -154,7 +154,7 @@ uiEntrySetInternalValidate (uiwcont_t *uiwidget)
     return;
   }
 
-  uiwidget->uidata.hid [HID_VAL_CHG] =
+  uiwidget->sigid [SIGID_VAL_CHG] =
       g_signal_connect (uiwidget->uidata.widget, "changed",
       G_CALLBACK (uigtkEntryValidateHandler), uiwidget);
 }
@@ -166,7 +166,7 @@ uiEntrySetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-  uiwidget->uidata.hid [HID_FOCUS] =
+  uiwidget->sigid [SIGID_FOCUS] =
       g_signal_connect (uiwidget->uidata.widget, "focus-in-event",
       G_CALLBACK (uiEntryFocusHandler), uicb);
 }
