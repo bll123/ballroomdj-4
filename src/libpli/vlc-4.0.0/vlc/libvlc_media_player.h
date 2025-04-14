@@ -1,11 +1,13 @@
 /*****************************************************************************
  * libvlc_media_player.h:  libvlc_media_player external API
  *****************************************************************************
- * Copyright (C) 1998-2015 VLC authors and VideoLAN
+ * Copyright (C) 1998-2024 VLC authors and VideoLAN
  *
  * Authors: Clément Stenac <zorglub@videolan.org>
  *          Jean-Paul Saman <jpsaman@videolan.org>
  *          Pierre d'Herbemont <pdherbemont@videolan.org>
+ *          Maxime Chapelet <umxprime at videolabs dot io>
+ *          Alexandre Janniaux <ajanni@videolabs.io>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
@@ -169,6 +171,15 @@ typedef enum libvlc_teletext_key_t {
     libvlc_teletext_key_blue = 'b' << 16,
     libvlc_teletext_key_index = 'i' << 16,
 } libvlc_teletext_key_t;
+
+/**
+ * A to B loop state
+ */
+typedef enum libvlc_abloop_t {
+    libvlc_abloop_none,
+    libvlc_abloop_a,
+    libvlc_abloop_b,
+} libvlc_abloop_t;
 
 /**
  * Opaque equalizer handle.
@@ -615,6 +626,14 @@ typedef struct libvlc_video_output_cfg_t
         int opengl_format;
         /** currently unused */
         void *p_surface;
+        struct {
+            /** Pointer to an ANativeWindow, used for video rendering */
+            void *video;
+            /** Pointer to an ANativeWindow, used for subtitles rendering, if
+             * blending subtitles into the video surface is not possible (when
+             * using MediaCodec with direct hw rendering) */
+            void *subtitle;
+        } anw;
     };
     /** Video is full range or studio/limited range. */
     bool full_range;
@@ -641,9 +660,9 @@ typedef struct libvlc_video_output_cfg_t
  *       uses to render. The host must set a Render target and call Present()
  *       when it needs the drawing from VLC to be done. This object is not valid
  *       anymore after Cleanup is called.
- *
- * Tone mapping, range and color conversion will be done depending on the values
- * set in the output structure.
+ * Tone mapping, range and color conversion will be done depending on the
+ * values set in the output structure. It can be ignored in the \ref
+ * libvlc_video_engine_anw case.
  */
 typedef bool (*libvlc_video_update_output_cb)(void* opaque, const libvlc_video_render_cfg_t *cfg,
                                               libvlc_video_output_cfg_t *output );
@@ -736,6 +755,23 @@ typedef enum libvlc_video_engine_t {
     libvlc_video_engine_d3d11,
     /** Direct3D9 rendering engine */
     libvlc_video_engine_d3d9,
+
+    /**
+     * Android ANativeWindow. It can be set in \ref libvlc_video_output_cfg_t
+     * from the \ref libvlc_video_update_output_cb callback. The ANativeWindow
+     * can be created via:
+     *  - 'ANativeWindow_fromSurface': from a JAVA SurfaceView
+     *  - 'AImageReader_getWindow()': from an 'AImageReader' created with the
+     *  following arguments: \verbatim
+     AImageReader_newWithUsage(1, 1 AIMAGE_FORMAT_PRIVATE,
+                               AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE,
+                               maxImages, &reader);
+     \endverbatim
+     * The width and height from \ref libvlc_video_render_cfg_t should be
+     * ignored as the video size is overridden by the producer (MediaCodec or
+     * EGL vout).
+     */
+    libvlc_video_engine_anw,
 } libvlc_video_engine_t;
 
 
@@ -865,9 +901,12 @@ typedef bool( *libvlc_video_output_select_plane_cb )( void *opaque, size_t plane
  * \param cleanup_cb callback called to clean up user data
  * \param window_cb callback called to setup the window
  * \param update_output_cb callback to get the rendering format of the host (cannot be NULL)
- * \param swap_cb callback called after rendering a video frame (cannot be NULL)
- * \param makeCurrent_cb callback called to enter/leave the rendering context (cannot be NULL)
- * \param getProcAddress_cb opengl function loading callback (cannot be NULL for \ref libvlc_video_engine_opengl and for \ref libvlc_video_engine_gles2)
+ * \param swap_cb callback called after rendering a video frame (can only be
+ * NULL when using \ref libvlc_video_engine_anw)
+ * \param makeCurrent_cb callback called to enter/leave the rendering context
+ * (can only be NULL when using \ref libvlc_video_engine_anw)
+ * \param getProcAddress_cb opengl function loading callback (cannot be NULL 
+ * for \ref libvlc_video_engine_opengl and for \ref libvlc_video_engine_gles2)
  * \param metadata_cb callback to provide frame metadata (D3D11 only)
  * \param select_plane_cb callback to select different D3D11 rendering targets
  * \param opaque private pointer passed to callbacks
@@ -894,22 +933,69 @@ bool libvlc_video_set_output_callbacks( libvlc_media_player_t *mp,
                                         void* opaque );
 
 /**
- * Set the NSView handler where the media player should render its video output.
+ * Helper to setup output_callbacks for \ref libvlc_video_engine_anw
+ */
+static inline bool
+libvlc_video_set_anw_callbacks( libvlc_media_player_t *mp,
+                                libvlc_video_output_setup_cb setup_cb,
+                                libvlc_video_output_cleanup_cb cleanup_cb,
+                                libvlc_video_update_output_cb update_output_cb,
+                                void *opaque )
+{
+    return libvlc_video_set_output_callbacks( mp, libvlc_video_engine_anw,
+                                              setup_cb, cleanup_cb, NULL,
+                                              update_output_cb, NULL, NULL,
+                                              NULL, NULL, NULL, opaque );
+}
+
+/**
+ * Set the handler where the media player should display its video output.
  *
- * Use the vout called "macosx".
- *
- * The drawable is an NSObject that follow the VLCVideoViewEmbedding
- * protocol:
+ * The drawable is an `NSObject` that require responding to two selectors
+ * like in this protocol:
  *
  * @code{.m}
- * @protocol VLCVideoViewEmbedding <NSObject>
- * - (void)addVoutSubview:(NSView *)view;
- * - (void)removeVoutSubview:(NSView *)view;
+ * @protocol VLCDrawable <NSObject>
+ * - (void)addSubview:(VLCView *)view;
+ * - (CGRect)bounds;
  * @end
  * @endcode
  *
- * Or it can be an NSView object.
- *
+ * In this protocol `VLCView` type can either be a `UIView` or a `NSView` type
+ * class.
+ * VLCDrawable protocol conformance isn't mandatory but a drawable must respond
+ * to both `addSubview:` and `bounds` selectors.
+ * 
+ * Additionally, a drawable can also conform to the `VLCPictureInPictureDrawable`
+ * protocol to allow picture in picture support :
+ * 
+ * @code{.m}
+ * @protocol VLCPictureInPictureMediaControlling <NSObject>
+ * - (void)play;
+ * - (void)pause;
+ * - (void)seekBy:(int64_t)offset completion:(dispatch_block_t)completion;;
+ * - (int64_t)mediaLength;
+ * - (int64_t)mediaTime;
+ * - (BOOL)isMediaSeekable;
+ * - (BOOL)isMediaPlaying;
+ * @end
+ * 
+ * @protocol VLCPictureInPictureWindowControlling <NSObject>
+ * - (void)startPictureInPicture;
+ * - (void)stopPictureInPicture;
+ * - (void)invalidatePlaybackState;
+ * @end
+ * 
+ * @protocol VLCPictureInPictureDrawable <NSObject>
+ * - (id<VLCPictureInPictureMediaControlling>) mediaController;
+ * - (void (^)(id<VLCPictureInPictureWindowControlling>)) pictureInPictureReady;
+ * @end
+ * @endcode
+ * 
+ * Be aware that full `VLCPictureInPictureDrawable` conformance is mandatory to
+ * enable picture in picture support and that time values in
+ * `VLCPictureInPictureMediaControlling` methods are expressed in milliseconds.
+ * 
  * If you want to use it along with Qt see the QMacCocoaViewContainer. Then
  * the following code should work:
  * @code{.mm}
@@ -924,8 +1010,8 @@ bool libvlc_video_set_output_callbacks( libvlc_media_player_t *mp,
  * You can find a live example in VLCVideoView in VLCKit.framework.
  *
  * \param p_mi the Media Player
- * \param drawable the drawable that is either an NSView or an object following
- * the VLCVideoViewEmbedding protocol.
+ * \param drawable the drawable that is either an NSView, a UIView or any 
+ * NSObject responding to `addSubview:` and `bounds` selectors
  */
 LIBVLC_API void libvlc_media_player_set_nsobject ( libvlc_media_player_t *p_mi, void * drawable );
 
@@ -1276,6 +1362,70 @@ LIBVLC_API double libvlc_media_player_get_position( libvlc_media_player_t *p_mi 
 LIBVLC_API int libvlc_media_player_set_position( libvlc_media_player_t *p_mi,
                                                  double f_pos, bool b_fast );
 
+/**
+ * Enable A to B loop for the current media by setting the start time and end
+ * time
+ *
+ * The B time must be higher than the A time.
+ *
+ * \param p_mi the Media Player
+ * \param a_time start time for the loop (in ms)
+ * \param b_time end time for the loop (in ms)
+ * \return 0 on success, -1 on error
+ * \version LibVLC 4.0.0 and later.
+ */
+LIBVLC_API int
+libvlc_media_player_set_abloop_time( libvlc_media_player_t *p_mi,
+                                     libvlc_time_t a_time, libvlc_time_t b_time );
+
+/**
+ * Enable A to B loop for the current media by setting the start position and
+ * end position
+ *
+ * The B position must be higher than the A position.
+ *
+ * \param p_mi the Media Player
+ * \param a_pos start position for the loop
+ * \param b_pos end position for the loop
+ * \return 0 on success, -1 on error
+ * \version LibVLC 4.0.0 and later.
+ */
+LIBVLC_API int
+libvlc_media_player_set_abloop_position( libvlc_media_player_t *p_mi,
+                                         double a_pos, double b_pos );
+
+/**
+ * Reset/remove the A to B loop for the current media
+ *
+ * \param p_mi the Media Player
+ * \return 0 on success, -1 on error
+ * \version LibVLC 4.0.0 and later.
+ */
+LIBVLC_API int
+libvlc_media_player_reset_abloop( libvlc_media_player_t *p_mi );
+
+/**
+ * Get the A to B loop status
+ *
+ * @note If the returned status is VLC_PLAYER_ABLOOP_A, then a_time and a_pos
+ * will be valid. If the returned status is VLC_PLAYER_ABLOOP_B, then all
+ * output parameters are valid. If the returned status is
+ * VLC_PLAYER_ABLOOP_NONE, then all output parameters are invalid.
+ *
+ * @see vlc_player_cbs.on_atobloop_changed
+ *
+ * \param p_mi the Media Player
+ * \param a_time A time (in ms) or -1 (if the media doesn't have valid times)
+ * \param a_pos A position
+ * \param b_time B time (in ms) or -1 (if the media doesn't have valid times)
+ * \param b_pos B position
+ * \return A to B loop status
+ * \version LibVLC 4.0.0 and later.
+ */
+LIBVLC_API libvlc_abloop_t
+libvlc_media_player_get_abloop( libvlc_media_player_t *p_mi,
+                                libvlc_time_t *a_time, double *a_pos,
+                                libvlc_time_t *b_time, double *b_pos );
 /**
  * Set movie chapter (if applicable).
  *
@@ -1904,7 +2054,7 @@ LIBVLC_API char *libvlc_video_get_aspect_ratio( libvlc_media_player_t *p_mi );
  * Set new video aspect ratio.
  *
  * \param p_mi the media player
- * \param psz_aspect new video aspect-ratio or NULL to reset to default
+ * \param psz_aspect new video aspect-ratio or NULL to reset to source aspect ratio
  * \note Invalid aspect ratios are ignored.
  */
 LIBVLC_API void libvlc_video_set_aspect_ratio( libvlc_media_player_t *p_mi, const char *psz_aspect );
@@ -1958,6 +2108,35 @@ LIBVLC_API libvlc_video_viewpoint_t *libvlc_video_new_viewpoint(void);
 LIBVLC_API int libvlc_video_update_viewpoint( libvlc_media_player_t *p_mi,
                                               const libvlc_video_viewpoint_t *p_viewpoint,
                                               bool b_absolute);
+
+/**
+ * Video stereo modes
+ */
+typedef enum libvlc_video_stereo_mode_t {
+    libvlc_VideoStereoAuto = 0,
+    libvlc_VideoStereoStereo,
+    libvlc_VideoStereoLeftEye,
+    libvlc_VideoStereoRightEye,
+    libvlc_VideoStereoSideBySide,
+} libvlc_video_stereo_mode_t;
+
+/**
+ * Get current video stereo mode.
+ *
+ * \param p_mi the media player
+ * \return the video stereo mode.
+ */
+LIBVLC_API libvlc_video_stereo_mode_t libvlc_video_get_video_stereo_mode(
+                                              libvlc_media_player_t *p_mi );
+
+/**
+ * Set new video stereo mode.
+ *
+ * \param p_mi the media player
+ * \param i_mode new video stereo mode
+ */
+LIBVLC_API void libvlc_video_set_video_stereo_mode( libvlc_media_player_t *p_mi,
+                                      const libvlc_video_stereo_mode_t i_mode );
 
 /**
  * Get the current subtitle delay. Positive values means subtitles are being
@@ -2352,6 +2531,29 @@ LIBVLC_API float libvlc_video_get_adjust_float( libvlc_media_player_t *p_mi,
  */
 LIBVLC_API void libvlc_video_set_adjust_float( libvlc_media_player_t *p_mi,
                                                    unsigned option, float value );
+/**
+ * Change the projection mode used for rendering the source.
+ *
+ * This changes how the source is mapped to the output w.r.t. 360 playback.
+ *
+ * \param p_mi libvlc media player instance
+ * \param projection_mode the considered projection mode for the source
+ * \version LibVLC 4.0.0 and later.
+ */
+LIBVLC_API void
+libvlc_video_set_projection_mode(libvlc_media_player_t *player,
+                                 libvlc_video_projection_t projection_mode);
+
+/**
+ * Remove previously set projection mode.
+ *
+ * Remove the effects from previous call to libvlc_video_set_projection_mode.
+ *
+ * \param p_mi libvlc media player instance
+ * \version LibVLC 4.0.0 and later.
+ */
+LIBVLC_API void
+libvlc_video_unset_projection_mode(libvlc_media_player_t *player);
 
 /** @} video */
 
@@ -2916,11 +3118,16 @@ typedef void (*libvlc_media_player_watch_time_on_update)(
         const libvlc_media_player_time_point_t *value, void *data);
 
 /**
- * Callback prototype that notify when the player is paused or a discontinuity
- * occurred.
+ * Callback prototype that notify when the timer is paused.
  *
- * Likely caused by seek from the user or because the playback is stopped. The
- * player user should stop its "interpolate" timer.
+ * This event is sent when the player is paused or stopping. The player
+ * user should stop its "interpolate" timer.
+ *
+ * \note libvlc_media_player_watch_time_on_update() can be called when paused
+ * for those 2 reasons:
+ * - playback is resumed (libvlc_media_player_time_point_t.system_date is valid)
+ * - a track, likely video (next-frame) is outputted when paused
+ *   (libvlc_media_player_time_point_t.system_date = INT64_MAX)
  *
  * \warning It is forbidden to call any Media Player functions from here.
  *
@@ -2929,8 +3136,22 @@ typedef void (*libvlc_media_player_watch_time_on_update)(
  * date in order to get the last paused ts/position.
  * \param data opaque pointer set by libvlc_media_player_watch_time()
  */
-typedef void (*libvlc_media_player_watch_time_on_discontinuity)(
+typedef void (*libvlc_media_player_watch_time_on_paused)(
         int64_t system_date_us, void *data);
+
+/**
+ * Callback prototype that notify when the player is seeking or finished
+ * seeking
+ *
+ * \warning It is forbidden to call any Media Player functions from here.
+ *
+ * \note It is not possible to receive points via on_update() while seeking.
+ *
+ * \param value point of the seek request or NULL when seeking is finished
+ * \param data opaque pointer set by libvlc_media_player_watch_time()
+ */
+typedef void (*libvlc_media_player_watch_time_on_seek)(
+        const libvlc_media_player_time_point_t *value, void *data);
 
 /**
  * Watch for times updates
@@ -2944,8 +3165,8 @@ typedef void (*libvlc_media_player_watch_time_on_discontinuity)(
  * updates, use it to avoid flood from too many source updates, set it to 0 to
  * receive all updates.
  * \param on_update callback to listen to update events (must not be NULL)
- * \param on_discontinuity callback to listen to discontinuity events (can be
- * be NULL)
+ * \param on_paused callback to listen to paused events (can be NULL)
+ * \param on_seek callback to listen to seek events (can be NULL)
  * \param cbs_data opaque pointer used by the callbacks
  * \return 0 on success, -1 on error (allocation error, or if already watching)
  * \version LibVLC 4.0.0 or later
@@ -2954,7 +3175,8 @@ LIBVLC_API int
 libvlc_media_player_watch_time(libvlc_media_player_t *p_mi,
                                int64_t min_period_us,
                                libvlc_media_player_watch_time_on_update on_update,
-                               libvlc_media_player_watch_time_on_discontinuity on_discontinuity,
+                               libvlc_media_player_watch_time_on_paused on_paused,
+                               libvlc_media_player_watch_time_on_seek on_seek,
                                void *cbs_data);
 
 /**

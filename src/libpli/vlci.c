@@ -52,12 +52,14 @@ typedef struct {
 static const stateMap_t stateMap[] = {
   { libvlc_NothingSpecial,  "idle" },
   { libvlc_Opening,         "opening" },
-  { libvlc_Buffering,       "buffering" },
   { libvlc_Playing,         "playing" },
   { libvlc_Paused,          "paused" },
   { libvlc_Stopped,         "stopped" },
 #if LIBVLC_VERSION_INT < LIBVLC_VERSION(4,0,0,0)
   { libvlc_Ended,           "ended" },
+#endif
+#if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
+  { libvlc_Stopping,        "stopping" },
 #endif
   { libvlc_Error,           "error" }
 };
@@ -134,7 +136,15 @@ vlcStop (vlcdata_t *vlcdata)
   libvlc_media_player_stop (vlcdata->mp);
 #endif
 #if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
-  libvlc_media_player_pause (vlcdata->mp);
+  {
+    int   rc;
+
+    rc = libvlc_media_player_stop_async (vlcdata->mp);
+    if (rc == -1) {
+      vlcdata->state = libvlc_media_player_get_state (vlcdata->mp);
+      return 0;
+    }
+  }
 #endif
 
   vlcdata->state = libvlc_media_player_get_state (vlcdata->mp);
@@ -268,12 +278,14 @@ vlcState (vlcdata_t *vlcdata)
   switch ((int) vlcdata->state) {
     case libvlc_NothingSpecial: { state = PLI_STATE_IDLE; break; }
     case libvlc_Opening: { state = PLI_STATE_OPENING; break; }
-    case libvlc_Buffering: { state = PLI_STATE_BUFFERING; break; }
     case libvlc_Playing: { state = PLI_STATE_PLAYING; break; }
     case libvlc_Paused: { state = PLI_STATE_PAUSED; break; }
     case libvlc_Stopped: { state = PLI_STATE_STOPPED; break; }
 #if LIBVLC_VERSION_INT < LIBVLC_VERSION(4,0,0,0)
-    case libvlc_Ended: { state = PLI_STATE_ENDED; break; }
+    case libvlc_Ended: { state = PLI_STATE_STOPPED; break; }
+#endif
+#if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
+    case libvlc_Stopping: { state = PLI_STATE_STOPPING; break; }
 #endif
     case libvlc_Error: { state = PLI_STATE_ERROR; break; }
   }

@@ -28,7 +28,7 @@ static char *plistateTxt [PLI_STATE_MAX] = {
   [PLI_STATE_PLAYING] = "playing",
   [PLI_STATE_PAUSED] = "paused",
   [PLI_STATE_STOPPED] = "stopped",
-  [PLI_STATE_ENDED] = "ended",
+  [PLI_STATE_STOPPING] = "stopping",
   [PLI_STATE_ERROR] = "error",
 };
 

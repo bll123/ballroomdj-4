@@ -16,6 +16,7 @@
 #include <math.h>
 
 #include "bdj4intl.h"
+#include "log.h"
 #include "mdebug.h"
 #include "tmutil.h"
 #include "pli.h"
@@ -60,7 +61,8 @@ enum {
   VLC_DFLT_OPT_SZ = (sizeof (vlcDefaultOptions) / sizeof (char *))
 };
 
-static void pliiWaitUntilPlaying (plidata_t *pliData);
+static void plivlcWaitUntilPlaying (plidata_t *pliData);
+static void plivlcWaitUntilStopped (plidata_t *pliData);
 
 void
 pliiDesc (const char **ret, int max)
@@ -141,13 +143,13 @@ pliiStartPlayback (plidata_t *pliData, ssize_t dpos, ssize_t speed)
   /* vlc starts playing.  This should help avoid startup glitches */
   vlcPlay (pliData->vlcdata);
   if (dpos > 0) {
-    pliiWaitUntilPlaying (pliData);
+    plivlcWaitUntilPlaying (pliData);
     vlcSeek (pliData->vlcdata, dpos);
   }
   if (speed != 100) {
     double    drate;
 
-    pliiWaitUntilPlaying (pliData);
+    plivlcWaitUntilPlaying (pliData);
     drate = (double) speed / 100.0;
     vlcRate (pliData->vlcdata, drate);
   }
@@ -181,6 +183,8 @@ pliiStop (plidata_t *pliData)
   }
 
   vlcStop (pliData->vlcdata);
+  /* this is required for VLC 4 as the stop is asynchronous */
+  plivlcWaitUntilStopped (pliData);
 }
 
 ssize_t
@@ -306,7 +310,7 @@ pliiGetVolume (plidata_t *pliData)
 /* internal routines */
 
 static void
-pliiWaitUntilPlaying (plidata_t *pliData)
+plivlcWaitUntilPlaying (plidata_t *pliData)
 {
   plistate_t  state;
   long        count;
@@ -314,9 +318,8 @@ pliiWaitUntilPlaying (plidata_t *pliData)
   state = vlcState (pliData->vlcdata);
   count = 0;
   while (state == PLI_STATE_IDLE ||
-         state == PLI_STATE_OPENING ||
-         state == PLI_STATE_BUFFERING ||
-         state == PLI_STATE_STOPPED) {
+      state == PLI_STATE_OPENING ||
+      state == PLI_STATE_STOPPED) {
     mssleep (1);
     state = vlcState (pliData->vlcdata);
     ++count;
@@ -324,6 +327,47 @@ pliiWaitUntilPlaying (plidata_t *pliData)
       break;
     }
   }
+}
+
+const char * plivlcStateText (plistate_t state);
+
+static void
+plivlcWaitUntilStopped (plidata_t *pliData)
+{
+  plistate_t  state;
+  long        count;
+
+  /* it appears that the stop action usually happens within < a few ms */
+  state = vlcState (pliData->vlcdata);
+  count = 0;
+  while (state == PLI_STATE_PLAYING ||
+      state == PLI_STATE_PAUSED ||
+      state == PLI_STATE_STOPPING) {
+    mssleep (1);
+    state = vlcState (pliData->vlcdata);
+    ++count;
+    if (count > 10000) {
+      break;
+    }
+  }
+}
+
+const char *
+plivlcStateText (plistate_t state)
+{
+static char *stateTxt [PLI_STATE_MAX] = {
+  [PLI_STATE_NONE] = "none",
+  [PLI_STATE_IDLE] = "idle",
+  [PLI_STATE_OPENING] = "opening",
+  [PLI_STATE_BUFFERING] = "buffering",
+  [PLI_STATE_PLAYING] = "playing",
+  [PLI_STATE_PAUSED] = "paused",
+  [PLI_STATE_STOPPED] = "stopped",
+  [PLI_STATE_STOPPING] = "stopping",
+  [PLI_STATE_ERROR] = "error",
+};
+
+  return stateTxt [state];
 }
 
 #endif /* have libvlc_new */

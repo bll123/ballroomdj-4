@@ -797,7 +797,6 @@ playerProcessing (void *udata)
       /* pq->dur is adjusted for the speed. */
       /* pli-time cannot be used in conjunction with pq->dur */
       if (plistate == PLI_STATE_STOPPED ||
-          plistate == PLI_STATE_ENDED ||
           plistate == PLI_STATE_ERROR ||
           playerData->stopPlaying ||
           plitm >= pq->plidur ||

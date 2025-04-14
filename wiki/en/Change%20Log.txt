@@ -9,10 +9,11 @@
 **4.14.1 2025-4---**
 
 * Bug Fixes:
-    * Internal: Fix obscure crash with spinboxes.
-    * Import Playlist: Fix unable to re-open dialog.
-    * Import Playlist: Fix incorrect error messages.
     * Import Playlist: Fix error processing.
+    * Import Playlist: Fix incorrect error messages.
+    * Import Playlist: Fix unable to re-open dialog.
+    * Internal: Fix obscure crash with spinboxes.
+    * Player: Prep for VLC 4.
 
 -->
 

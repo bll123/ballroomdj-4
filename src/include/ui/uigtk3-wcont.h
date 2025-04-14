@@ -31,6 +31,8 @@ enum {
 };
 
 typedef struct uispecific {
+  /* storing the signal id doesn't work out for many widgets, as the */
+  /* widget container is not preserved */
   unsigned long hid [HID_MAX];
   GtkWidget     *packwidget;
   union {
