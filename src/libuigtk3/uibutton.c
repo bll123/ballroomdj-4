@@ -86,7 +86,7 @@ uiCreateButton (const char *ident, callback_t *uicb, const char *title, char *im
   bbase->repeatMS = 250;
 
   if (uicb != NULL) {
-    uiwidget->sigid [SIGID_RESPONSE] =
+    uiwidget->uidata.sigid [SIGID_RESPONSE] =
         g_signal_connect (widget, "clicked",
         G_CALLBACK (uiButtonSignalHandler), uiwidget);
   }
@@ -222,10 +222,10 @@ uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms)
 
   bbase->repeatMS = repeatms;
   bbase->repeatOn = true;
-  uiwidget->sigid [SIGID_BPRESS] =
+  uiwidget->uidata.sigid [SIGID_BPRESS] =
       g_signal_connect (uiwidget->uidata.widget, "pressed",
       G_CALLBACK (uiButtonRepeatSignalHandler), bbase->presscb);
-  uiwidget->sigid [SIGID_BRELEASE] =
+  uiwidget->uidata.sigid [SIGID_BRELEASE] =
       g_signal_connect (uiwidget->uidata.widget, "released",
       G_CALLBACK (uiButtonRepeatSignalHandler), bbase->releasecb);
 }

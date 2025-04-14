@@ -79,7 +79,7 @@ uiCreateSwitch (int value)
   gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
   uiSwitchSetImage (widget, uiwidget);
 
-  uiwidget->sigid [SIGID_FOCUS] =
+  uiwidget->uidata.sigid [SIGID_FOCUS] =
       g_signal_connect (widget, "toggled",
       G_CALLBACK (uiSwitchImageHandler), uiwidget);
 
@@ -133,7 +133,7 @@ uiSwitchSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-  uiwidget->sigid [SIGID_RESPONSE] =
+  uiwidget->uidata.sigid [SIGID_RESPONSE] =
       g_signal_connect (uiwidget->uidata.widget, "toggled",
       G_CALLBACK (uiSwitchToggleHandler), uicb);
 }

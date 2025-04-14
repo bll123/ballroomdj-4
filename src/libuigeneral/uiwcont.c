@@ -23,9 +23,11 @@ uiwcontAlloc (int basetype, int type)
   uiwidget = mdmalloc (sizeof (uiwcont_t));
   uiwidget->wbasetype = basetype;
   uiwidget->wtype = type;
+# if BDJ4_UI_GTK3 /* gtk3 */
   for (int i = 0; i < SIGID_MAX; ++i) {
-    uiwidget->sigid [i] = 0;
+    uiwidget->uidata.sigid [i] = 0;
   }
+#endif
   uiwidget->uidata.widget = NULL;
   uiwidget->uidata.packwidget = NULL;          // often the same as widget
   uiwidget->packed = false;

@@ -67,7 +67,7 @@ uiLinkSetActivateCallback (uiwcont_t *uilink, callback_t *uicb)
     return;
   }
 
-  uilink->sigid [SIGID_RESPONSE] =
+  uilink->uidata.sigid [SIGID_RESPONSE] =
       g_signal_connect (uilink->uidata.widget, "activate-link",
       G_CALLBACK (uiLinkCallback), uicb);
 }

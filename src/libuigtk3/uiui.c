@@ -430,12 +430,12 @@ uiClearSignalHandlers (uiwcont_t *uiwidget)
     if (i == SIGID_DEL_WIN) {
       continue;
     }
-    if (uiwidget->sigid [i] == 0) {
+    if (uiwidget->uidata.sigid [i] == 0) {
       continue;
     }
     g_signal_handler_disconnect (uiwidget->uidata.widget,
-        uiwidget->sigid [i]);
-    uiwidget->sigid [i] = 0;
+        uiwidget->uidata.sigid [i]);
+    uiwidget->uidata.sigid [i] = 0;
   }
 }
 

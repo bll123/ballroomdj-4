@@ -109,10 +109,10 @@ uiSpinboxTextCreate (void *udata)
 
   uiWidgetAddClass (uiwidget, SPINBOX_READONLY_CLASS);
 
-  uiwidget->sigid [SIGID_OUTPUT] =
+  uiwidget->uidata.sigid [SIGID_OUTPUT] =
       g_signal_connect (widget, "output",
       G_CALLBACK (uiSpinboxTextDisplay), uiwidget);
-  uiwidget->sigid [SIGID_INPUT] =
+  uiwidget->uidata.sigid [SIGID_INPUT] =
       g_signal_connect (widget, "input",
       G_CALLBACK (uiSpinboxTextInput), uiwidget);
 
@@ -240,10 +240,10 @@ uiSpinboxTimeCreate (sbtype_t sbtype, void *udata,
   uiwidget->wtype = WCONT_T_SPINBOX_TIME;
   uiwcontSetWidget (uiwidget, widget, NULL);
 
-  uiwidget->sigid [SIGID_OUTPUT] =
+  uiwidget->uidata.sigid [SIGID_OUTPUT] =
       g_signal_connect (widget, "output",
       G_CALLBACK (uiSpinboxTimeDisplay), uiwidget);
-  uiwidget->sigid [SIGID_INPUT] =
+  uiwidget->uidata.sigid [SIGID_INPUT] =
       g_signal_connect (widget, "input",
       G_CALLBACK (uiSpinboxTimeInput), uiwidget);
 
@@ -301,7 +301,7 @@ uiSpinboxIntCreate (void)
 
   uiwcontSetWidget (uiwidget, spinbox, NULL);
 
-  uiwidget->sigid [SIGID_INPUT] =
+  uiwidget->uidata.sigid [SIGID_INPUT] =
       g_signal_connect (spinbox, "input",
       G_CALLBACK (uiSpinboxNumInput), NULL);
 
@@ -326,7 +326,7 @@ uiSpinboxDoubleCreate (void)
 
   uiwcontSetWidget (uiwidget, spinbox, NULL);
 
-  uiwidget->sigid [SIGID_INPUT] =
+  uiwidget->uidata.sigid [SIGID_INPUT] =
       g_signal_connect (spinbox, "input",
       G_CALLBACK (uiSpinboxDoubleInput), NULL);
 
@@ -352,10 +352,10 @@ uiSpinboxDoubleDefaultCreate (void)
   uiwidget->wtype = WCONT_T_SPINBOX_DOUBLE_DFLT;
   uiwcontSetWidget (uiwidget, widget, NULL);
 
-  uiwidget->sigid [SIGID_OUTPUT] =
+  uiwidget->uidata.sigid [SIGID_OUTPUT] =
       g_signal_connect (widget, "output",
       G_CALLBACK (uiSpinboxDoubleDefaultDisplay), uiwidget);
-  uiwidget->sigid [SIGID_INPUT] =
+  uiwidget->uidata.sigid [SIGID_INPUT] =
       g_signal_connect (widget, "input",
       G_CALLBACK (uiSpinboxDoubleInput), NULL);
 
@@ -379,7 +379,7 @@ uiSpinboxSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-  uiwidget->sigid [SIGID_VAL_CHG] =
+  uiwidget->uidata.sigid [SIGID_VAL_CHG] =
       g_signal_connect (uiwidget->uidata.widget, "value-changed",
       G_CALLBACK (uiSpinboxValueChangedHandler), uicb);
 }
@@ -391,7 +391,7 @@ uiSpinboxSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-  uiwidget->sigid [SIGID_FOCUS] =
+  uiwidget->uidata.sigid [SIGID_FOCUS] =
       g_signal_connect (uiwidget->uidata.widget, "focus-in-event",
       G_CALLBACK (uiSpinboxFocusHandler), uicb);
 }

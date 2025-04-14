@@ -75,7 +75,7 @@ uiMenuCreateItem (uiwcont_t *uimenu, const char *txt, callback_t *uicb)
   uiwcontSetWidget (uimenuitem, menuitem, NULL);
 
   if (uicb != NULL) {
-    uimenuitem->sigid [SIGID_RESPONSE] =
+    uimenuitem->uidata.sigid [SIGID_RESPONSE] =
         g_signal_connect (menuitem, "activate",
         G_CALLBACK (uiMenuActivateHandler), uicb);
   }
@@ -115,7 +115,7 @@ uiMenuCreateCheckbox (uiwcont_t *uimenu,
   uiwcontSetWidget (uimenuitem, menuitem, NULL);
 
   if (uicb != NULL) {
-    uimenuitem->sigid [SIGID_RESPONSE] =
+    uimenuitem->uidata.sigid [SIGID_RESPONSE] =
         g_signal_connect (menuitem, "toggled",
         G_CALLBACK (uiMenuToggleHandler), uicb);
   }
