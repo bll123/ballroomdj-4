@@ -68,7 +68,12 @@ uiEntryValidate (uiwcont_t *uiwidget, bool forceflag)
       ! mstimeCheck (&ebase->validateTimer)) {
     return UIENTRY_OK;
   }
+  if (forceflag == false &&
+      uiEntryChanged (uiwidget) == false) {
+    return UIENTRY_OK;
+  }
 
+  uiEntryClearChanged (uiwidget);
   mstimeset (&ebase->validateTimer, TM_TIMER_OFF);
   rc = ebase->validateFunc (uiwidget, ebase->label, ebase->udata);
   if (rc == UIENTRY_RESET) {
@@ -101,7 +106,7 @@ uiEntryValidateClear (uiwcont_t *uiwidget)
 
   if (ebase->validateFunc != NULL) {
     mstimeset (&ebase->validateTimer, TM_TIMER_OFF);
-    /* validate-clear is called when the entry is switch to a new value */
+    /* validate-clear is called when the entry is switched to a new value */
     /* assume validity */
     ebase->valid = true;
   }

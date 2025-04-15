@@ -61,6 +61,8 @@ static ftest_t tests [] = {
 //   1234567890123456789012345678901234567890
   { "/home/bll/s/bdj4/tmp/E", 20, 1, 1, 0 },  /* bug 2024-3-16 */
   { "/home/bll/s/bdj4/tmp/EE", 20, 2, 2, 0 },
+// see what happens with a uri
+  { "bdj4://bll-mac.local:9011/stuff", 25, 5, 5, 0 },
 };
 enum {
   TCOUNT = (sizeof(tests)/sizeof (ftest_t))

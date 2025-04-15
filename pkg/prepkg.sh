@@ -163,6 +163,13 @@ if [[ $DEVELOPMENT != dev ]]; then
     grc=1
   fi
 
+  grep '^#define PATHINFO_DEBUG 0' src/libbasic/pathinfo.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "pathinfo debugging is on (pathinfo.c)"
+    grc=1
+  fi
+
   wc=$(grep '^fprintf' */*.c | grep -v uitest.c | wc -l)
   if [[ $wc -ne 0 ]]; then
     echo "fprintf debugging found"

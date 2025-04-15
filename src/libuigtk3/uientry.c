@@ -25,6 +25,7 @@
 
 typedef struct uientry {
   GtkEntryBuffer  *buffer;
+  bool            changed;
 } uientry_t;
 
 static void uigtkEntryValidateHandler (GtkEditable *e, gpointer udata);
@@ -46,6 +47,7 @@ uiEntryInit (int entrySize, int maxSize)
   uiwidget = uiwcontAlloc (WCONT_T_ENTRY, WCONT_T_ENTRY);
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uientry = uientry;
+  uientry->changed = false;
 
   ebase = &uiwidget->uiint.uientrybase;
   ebase->entrySize = entrySize;
@@ -181,13 +183,42 @@ uiEntrySetState (uiwcont_t *uiwidget, int state)
   uiWidgetSetState (uiwidget, state);
 }
 
+bool
+uiEntryChanged (uiwcont_t *uiwidget)
+{
+  uientry_t   *uientry;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-changed")) {
+    return false;
+  }
+
+  uientry = uiwidget->uiint.uientry;
+  return uientry->changed;
+}
+
+void
+uiEntryClearChanged (uiwcont_t *uiwidget)
+{
+  uientry_t   *uientry;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-changed")) {
+    return;
+  }
+
+  uientry = uiwidget->uiint.uientry;
+  uientry->changed = false;
+}
+
 /* internal routines */
 
 static void
 uigtkEntryValidateHandler (GtkEditable *e, gpointer udata)
 {
   uiwcont_t     *uiwidget = udata;
+  uientry_t   *uientry;
 
+  uientry = uiwidget->uiint.uientry;
+  uientry->changed = true;
   uiEntryClearIcon (uiwidget);
   uiEntryValidateHandler (uiwidget);
 }

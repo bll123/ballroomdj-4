@@ -249,10 +249,9 @@ uiimpplDialog (uiimppl_t *uiimppl)
   }
 
   logProcBegin ();
+  uiimppl->isactive = true;
   uiimpplCreateDialog (uiimppl);
   uiDialogShow (uiimppl->wcont [UIIMPPL_W_DIALOG]);
-  uiimpplInitDisplay (uiimppl);
-  uiimppl->isactive = true;
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
 
@@ -267,6 +266,9 @@ uiimpplDialog (uiimppl_t *uiimppl)
   x = nlistGetNum (uiimppl->options, IMP_PL_POSITION_X);
   y = nlistGetNum (uiimppl->options, IMP_PL_POSITION_Y);
   uiWindowMove (uiimppl->wcont [UIIMPPL_W_DIALOG], x, y, -1);
+
+  uiimpplInitDisplay (uiimppl);
+
   logProcEnd ("");
   return UICB_CONT;
 }
@@ -284,7 +286,7 @@ uiimpplProcess (uiimppl_t *uiimppl)
   if (uiimppl->wcont [UIIMPPL_W_DIALOG] == NULL) {
     return;
   }
-  if (! uiimppl->in_cb) {
+  if (uiimppl->in_cb) {
     return;
   }
 
@@ -641,6 +643,7 @@ uiimpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
   if (uiimppl->isactive == false) {
     return UIENTRY_OK;
   }
+  uiimppl->in_cb = true;
 
   /* any change clears the status message */
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
@@ -648,12 +651,16 @@ uiimpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
   str = uiEntryGetValue (entry);
   uiimppl->haveerrors &= ~ UIIMPPL_ERR_URI;
 
+  *tbuff = '\0';
+  stpecpy (tbuff, tbuff + sizeof (tbuff), str);
+  if (uiimppl->imptype == AUDIOSRC_TYPE_FILE) {
+    pathNormalizePath (tbuff, sizeof (tbuff));
+  }
+  pi = pathInfo (tbuff);
+
   if (uiimppl->imptype == AUDIOSRC_TYPE_FILE) {
     bool    extok = false;
-    *tbuff = '\0';
-    stpecpy (tbuff, tbuff + sizeof (tbuff), str);
-    pathNormalizePath (tbuff, sizeof (tbuff));
-    pi = pathInfo (tbuff);
+
     if (pathInfoExtCheck (pi, ".m3u") ||
         pathInfoExtCheck (pi, ".m3u8") ||
         pathInfoExtCheck (pi, ".xspf") ||
@@ -667,12 +674,9 @@ uiimpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
           _("Invalid File"));
       pathInfoFree (pi);
       uiimppl->haveerrors |= UIIMPPL_ERR_URI;
+      uiimppl->in_cb = false;
       return UIENTRY_ERROR;
     }
-
-    snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
-    uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_NEWNAME], tbuff);
-    pathInfoFree (pi);
   }
 
   if (uiimppl->imptype == AUDIOSRC_TYPE_BDJ4) {
@@ -681,11 +685,16 @@ uiimpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
           /* CONTEXT: import playlist: invalid URI */
           _("Invalid URI"));
       uiimppl->haveerrors |= UIIMPPL_ERR_URI;
+      uiimppl->in_cb = false;
       return UIENTRY_ERROR;
     }
-// ### need to get origplname from target
   }
 
+  snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
+  uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_NEWNAME], tbuff);
+  pathInfoFree (pi);
+
+  uiimppl->in_cb = false;
   return UIENTRY_OK;
 }
 
@@ -702,9 +711,12 @@ uiimpplSelectHandler (void *udata, int idx)
   if (uiimppl->isactive == false) {
     return UICB_STOP;
   }
+  uiimppl->in_cb = true;
 
-  /* any change clears the status message */
+  /* any change to the selected playlist clears the status/error message */
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
+  uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
+  uiimppl->haveerrors = UIIMPPL_ERR_NONE;
 
   str = ilistGetStr (uiimppl->plnames, idx, DD_LIST_DISP);
   snprintf (tbuff, sizeof (tbuff), "%s%s:%" PRIu16 "/%s",
@@ -714,6 +726,10 @@ uiimpplSelectHandler (void *udata, int idx)
       str);
   stpecpy (uiimppl->origplname,
       uiimppl->origplname + sizeof (uiimppl->origplname), str);
+
+  /* allow entry validators to run */
+  uiimppl->in_cb = false;
+
   uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_URI], tbuff);
   uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_NEWNAME], str);
   return UICB_CONT;
@@ -734,6 +750,7 @@ uiimpplValidateNewName (uiwcont_t *entry, const char *label, void *udata)
   if (uiimppl->isactive == false) {
     return UIENTRY_OK;
   }
+  uiimppl->in_cb = true;
 
   /* any change clears the status message */
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
@@ -760,6 +777,7 @@ uiimpplValidateNewName (uiwcont_t *entry, const char *label, void *udata)
     }
   }
 
+  uiimppl->in_cb = false;
   return rc;
 }
 
@@ -825,6 +843,7 @@ uiimpplImportTypeCallback (void *udata)
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_URI_LABEL], tbuff);
 
   uiimppl->in_cb = false;
+
   return UICB_CONT;
 }
 
