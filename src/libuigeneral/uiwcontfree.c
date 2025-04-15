@@ -65,7 +65,6 @@ uiwcontFree (uiwcont_t *uiwidget)
     case WCONT_T_SPINBOX_DOUBLE_DFLT:
     case WCONT_T_SPINBOX_TIME:
     case WCONT_T_SPINBOX_TEXT: {
-      uiClearSignalHandlers (uiwidget);
       uiSpinboxFree (uiwidget);
       break;
     }

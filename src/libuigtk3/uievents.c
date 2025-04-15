@@ -142,11 +142,9 @@ uiEventSetKeyCallback (uiwcont_t *uieventwidget,
   /* usually, the key masks are already present */
   gtk_widget_add_events (uiwidgetp->uidata.widget,
       GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK);
-  uiwidgetp->uidata.sigid [SIGID_PRESS] =
-      g_signal_connect (uiwidgetp->uidata.widget, "key-press-event",
+  g_signal_connect (uiwidgetp->uidata.widget, "key-press-event",
       G_CALLBACK (uiEventKeyHandler), uieventwidget);
-  uiwidgetp->uidata.sigid [SIGID_RELEASE] =
-      g_signal_connect (uiwidgetp->uidata.widget, "key-release-event",
+  g_signal_connect (uiwidgetp->uidata.widget, "key-release-event",
       G_CALLBACK (uiEventKeyHandler), uieventwidget);
 }
 
@@ -166,11 +164,9 @@ uiEventSetButtonCallback (uiwcont_t *uieventwidget,
   uievent->mbuttonreleasecb = uicb;
   gtk_widget_add_events (uiwidgetp->uidata.widget,
       GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
-  uiwidgetp->uidata.sigid [SIGID_BPRESS] =
-      g_signal_connect (uiwidgetp->uidata.widget, "button-press-event",
+  g_signal_connect (uiwidgetp->uidata.widget, "button-press-event",
       G_CALLBACK (uiEventButtonHandler), uieventwidget);
-  uiwidgetp->uidata.sigid [SIGID_BRELEASE] =
-      g_signal_connect (uiwidgetp->uidata.widget, "button-release-event",
+  g_signal_connect (uiwidgetp->uidata.widget, "button-release-event",
       G_CALLBACK (uiEventButtonHandler), uieventwidget);
 }
 
@@ -188,8 +184,7 @@ uiEventSetScrollCallback (uiwcont_t *uieventwidget,
 
   uievent->scrollcb = uicb;
   gtk_widget_add_events (uiwidgetp->uidata.widget, GDK_SCROLL_MASK);
-  uiwidgetp->uidata.sigid [SIGID_RESPONSE] =
-      g_signal_connect (uiwidgetp->uidata.widget, "scroll-event",
+  g_signal_connect (uiwidgetp->uidata.widget, "scroll-event",
       G_CALLBACK (uiEventScrollHandler), uieventwidget);
 }
 
@@ -208,11 +203,9 @@ uiEventSetMotionCallback (uiwcont_t *uieventwidget,
   uievent->motioncb = uicb;
   gtk_widget_add_events (uiwidgetp->uidata.widget,
       GDK_POINTER_MOTION_MASK | GDK_LEAVE_NOTIFY_MASK);
-  uiwidgetp->uidata.sigid [SIGID_ENTER_NOTIFY] =
-      g_signal_connect (uiwidgetp->uidata.widget, "motion-notify-event",
+  g_signal_connect (uiwidgetp->uidata.widget, "motion-notify-event",
       G_CALLBACK (uiEventMotionHandler), uieventwidget);
-  uiwidgetp->uidata.sigid [SIGID_LEAVE_NOTIFY] =
-      g_signal_connect (uiwidgetp->uidata.widget, "leave-notify-event",
+  g_signal_connect (uiwidgetp->uidata.widget, "leave-notify-event",
       G_CALLBACK (uiEventLeaveHandler), uieventwidget);
 }
 

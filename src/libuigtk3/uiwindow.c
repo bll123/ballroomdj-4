@@ -58,8 +58,7 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   uiwcontSetWidget (uiwin, window, NULL);
 
   if (uicb != NULL) {
-    uiwin->uidata.sigid [SIGID_DEL_WIN] =
-        g_signal_connect (window, "delete-event",
+    g_signal_connect (window, "delete-event",
         G_CALLBACK (uiWindowCloseCallback), uicb);
   }
 

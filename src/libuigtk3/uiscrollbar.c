@@ -74,8 +74,7 @@ uiScrollbarSetChangeCallback (uiwcont_t *uiwidget, callback_t *cb)
 
   sb = uiwidget->uiint.uiscrollbar;
   sb->changecb = cb;
-  uiwidget->uidata.sigid [SIGID_VAL_CHG] =
-      g_signal_connect (uiwidget->uidata.widget, "change-value",
+  g_signal_connect (uiwidget->uidata.widget, "change-value",
       G_CALLBACK (uiScrollbarChangeHandler), cb);
 }
 

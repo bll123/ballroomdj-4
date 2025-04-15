@@ -414,31 +414,6 @@ uiAddScreenCSS (const char *css)
 #endif
 }
 
-/* an attempt to make this generic, but it doesn't work well */
-/* as the uiwcont_t is very often freed when not needed */
-void
-uiClearSignalHandlers (uiwcont_t *uiwidget)
-{
-  if (uiwidget == NULL) {
-    return;
-  }
-
-  for (int i = 0; i < SIGID_MAX; ++i) {
-    if (uiwidget->uidata.widget == NULL) {
-      continue;
-    }
-    if (i == SIGID_DEL_WIN) {
-      continue;
-    }
-    if (uiwidget->uidata.sigid [i] == 0) {
-      continue;
-    }
-    g_signal_handler_disconnect (uiwidget->uidata.widget,
-        uiwidget->uidata.sigid [i]);
-    uiwidget->uidata.sigid [i] = 0;
-  }
-}
-
 /* internal routines */
 
 static void

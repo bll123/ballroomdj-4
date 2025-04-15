@@ -44,7 +44,6 @@ void  uiInitUILog (void);
 void  uiwcontUIInit (uiwcont_t *uiwidget);
 void  uiwcontUIWidgetInit (uiwcont_t *uiwidget);
 void  uiwcontUIFree (uiwcont_t *uiwidget);
-void  uiClearSignalHandlers (uiwcont_t *uiwidget);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
