@@ -361,6 +361,66 @@ START_TEST(validate_hms_precise)
 }
 END_TEST
 
+START_TEST(validate_base_uri)
+{
+  bool    val;
+  char    tbuff [200];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- validate_base_uri");
+  mdebugSubTag ("validate_base_uri");
+
+  val = validate (tbuff, sizeof (tbuff), "baseuri", "stuff", VAL_BASE_URI);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "baseuri", "stuff.", VAL_BASE_URI);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "baseuri", "a.com", VAL_BASE_URI);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "baseuri", "bll-mac.local", VAL_BASE_URI);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "baseuri", "www.a.com", VAL_BASE_URI);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "baseuri", "www..a.com", VAL_BASE_URI);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "baseuri", "www a.com", VAL_BASE_URI);
+  ck_assert_int_eq (val, false);
+}
+END_TEST
+
+START_TEST(validate_full_uri)
+{
+  bool    val;
+  char    tbuff [200];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- validate_full_uri");
+  mdebugSubTag ("validate_full_uri");
+
+  val = validate (tbuff, sizeof (tbuff), "fulluri", "stuff", VAL_FULL_URI);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "fulluri", "stuff.", VAL_FULL_URI);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "fulluri", "http://a.com", VAL_FULL_URI);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "fulluri", "https://bll-mac.local", VAL_FULL_URI);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "fulluri", "https://www.a.com", VAL_FULL_URI);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "fulluri", "https://www..a.com", VAL_FULL_URI);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "fulluri", "https://www a.com", VAL_FULL_URI);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "fulluri", "http://a.com/stuff", VAL_FULL_URI);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "fulluri", "http://a.com/", VAL_FULL_URI);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "fulluri", " http://a.com/", VAL_FULL_URI);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "fulluri", "http://a.com/a z", VAL_FULL_URI);
+  ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "fulluri", "http://a.com:9011/stuff", VAL_FULL_URI);
+  ck_assert_int_eq (val, true);
+}
+END_TEST
+
 Suite *
 validate_suite (void)
 {
@@ -380,6 +440,8 @@ validate_suite (void)
   tcase_add_test (tc, validate_min_sec);
   tcase_add_test (tc, validate_hms);
   tcase_add_test (tc, validate_hms_precise);
+  tcase_add_test (tc, validate_base_uri);
+  tcase_add_test (tc, validate_full_uri);
   suite_add_tcase (s, tc);
   return s;
 }

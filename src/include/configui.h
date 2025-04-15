@@ -281,6 +281,7 @@ typedef struct {
   int               entrysz;
   int               entrymaxsz;
   uiwcont_t         *uilabelp;
+  const char        *labeltxt;
   uiwcont_t         *uiwidgetp;
   callback_t        *callback;
   uidd_t            *uidd;
@@ -449,6 +450,7 @@ typedef struct confuigui {
   char              *localip;
   bool              inbuild;
   int               valid;
+  int               haveerrors;
   /* main window */
   uiwcont_t         *window;
   callback_t        *closecb;

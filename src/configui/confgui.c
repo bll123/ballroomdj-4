@@ -529,6 +529,7 @@ confuiMakeItemLabel (confuigui_t *gui, int widx,
     uiSizeGroupAdd (szgrp, uiwidgetp);
   }
   gui->uiitem [widx].uilabelp = uiwidgetp;
+  gui->uiitem [widx].labeltxt = txt;
 
   if (indent == CONFUI_INDENT) {
     stpecpy (ntxt, ntxt + sizeof (ntxt), INDENT_STR);

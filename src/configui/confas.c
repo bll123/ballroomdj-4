@@ -42,7 +42,7 @@ static int  confuiAudioSrcNameChg (uiwcont_t *entry, const char *label, void *ud
 static int  confuiAudioSrcURIChg (uiwcont_t *entry, const char *label, void *udata);
 static int  confuiAudioSrcUserChg (uiwcont_t *entry, const char *label, void *udata);
 static int  confuiAudioSrcPassChg (uiwcont_t *entry, const char *label, void *udata);
-static int  confuiAudioSrcEntryChg (uiwcont_t *e, const char *label, void *udata, int widx);
+static int  confuiAudioSrcEntryChg (void *udata, const char *label, int widx);
 static bool confuiAudioSrcModeChg (void *udata);
 static bool confuiAudioSrcTypeChg (void *udata);
 static bool confuiAudioSrcPortChg (void *udata);
@@ -54,6 +54,7 @@ static void confuiAudioSrcSelect (void *udata, uivirtlist_t *vl, int32_t rownum,
 static void confuiAudioSrcRemove (confuigui_t *gui, ilistidx_t idx);
 static void confuiAudioSrcAdd (confuigui_t *gui);
 static void confuiAudioSrcSetWidgetStates (confuigui_t *gui, int askey);
+static int confuiAudioSrcValidateAll (confuigui_t *gui, int widx);
 
 void
 confuiInitAudioSource (confuigui_t *gui)
@@ -76,6 +77,7 @@ confuiInitAudioSource (confuigui_t *gui)
   gui->tables [CONFUI_ID_AUDIOSRC].addfunc = confuiAudioSrcAdd;
   gui->tables [CONFUI_ID_AUDIOSRC].removefunc = confuiAudioSrcRemove;
   gui->asconf = asconfAlloc ();
+  gui->haveerrors = 0;
 }
 
 void
@@ -132,7 +134,7 @@ confuiBuildUIAudioSource (confuigui_t *gui)
   confuiMakeItemEntry (gui, dvbox, szgrp, _("Name"),
       CONFUI_ENTRY_AUDIOSRC_NAME, -1, "", CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_NAME].uiwidgetp,
-      _("Name"), confuiAudioSrcNameChg, gui, UIENTRY_IMMEDIATE);
+      "", confuiAudioSrcNameChg, gui, UIENTRY_IMMEDIATE);
   gui->uiitem [CONFUI_ENTRY_AUDIOSRC_NAME].audiosrcitemidx = ASCONF_NAME;
 
   /* CONTEXT: configuration: audio source: type of source */
@@ -141,11 +143,11 @@ confuiBuildUIAudioSource (confuigui_t *gui)
       confuiAudioSrcTypeChg);
   gui->uiitem [CONFUI_SPINBOX_AUDIOSRC_TYPE].audiosrcitemidx = ASCONF_TYPE;
 
-  /* CONTEXT: configuration: audio source: the remote client URI */
-  confuiMakeItemEntry (gui, dvbox, szgrp, _("URI"),
+  /* CONTEXT: configuration: audio source: the remote client URL */
+  confuiMakeItemEntry (gui, dvbox, szgrp, _("URL"),
       CONFUI_ENTRY_AUDIOSRC_URI, -1, "", CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_URI].uiwidgetp,
-      _("URI"), confuiAudioSrcURIChg, gui, UIENTRY_IMMEDIATE);
+      "", confuiAudioSrcURIChg, gui, UIENTRY_IMMEDIATE);
   gui->uiitem [CONFUI_ENTRY_AUDIOSRC_URI].audiosrcitemidx = ASCONF_URI;
 
   /* CONTEXT: configuration: audio source: the port to use for the client or server */
@@ -159,14 +161,14 @@ confuiBuildUIAudioSource (confuigui_t *gui)
   confuiMakeItemEntry (gui, dvbox, szgrp, _("User"),
       CONFUI_ENTRY_AUDIOSRC_USER, -1, "", CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_USER].uiwidgetp,
-      _("User"), confuiAudioSrcUserChg, gui, UIENTRY_IMMEDIATE);
+      "", confuiAudioSrcUserChg, gui, UIENTRY_IMMEDIATE);
   gui->uiitem [CONFUI_ENTRY_AUDIOSRC_USER].audiosrcitemidx = ASCONF_USER;
 
   /* CONTEXT: configuration: audio source: the client or server password */
   confuiMakeItemEntry (gui, dvbox, szgrp, _("Password"),
       CONFUI_ENTRY_AUDIOSRC_PASS, -1, "", CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_PASS].uiwidgetp,
-      _("Password"), confuiAudioSrcPassChg, gui, UIENTRY_IMMEDIATE);
+      "", confuiAudioSrcPassChg, gui, UIENTRY_IMMEDIATE);
   gui->uiitem [CONFUI_ENTRY_AUDIOSRC_PASS].audiosrcitemidx = ASCONF_PASS;
 
   /* CONTEXT: configuration: check connection for audio source */
@@ -293,31 +295,31 @@ confuiCreateAudioSrcTable (confuigui_t *gui)
 static int
 confuiAudioSrcNameChg (uiwcont_t *entry, const char *label, void *udata)
 {
-  return confuiAudioSrcEntryChg (entry, label, udata, CONFUI_ENTRY_AUDIOSRC_NAME);
+  return confuiAudioSrcValidateAll (udata, CONFUI_ENTRY_AUDIOSRC_NAME);
 }
 
 static int
 confuiAudioSrcURIChg (uiwcont_t *entry, const char *label, void *udata)
 {
-  return confuiAudioSrcEntryChg (entry, label, udata, CONFUI_ENTRY_AUDIOSRC_URI);
+  return confuiAudioSrcValidateAll (udata, CONFUI_ENTRY_AUDIOSRC_URI);
 }
 
 static int
 confuiAudioSrcUserChg (uiwcont_t *entry, const char *label, void *udata)
 {
-  return confuiAudioSrcEntryChg (entry, label, udata, CONFUI_ENTRY_AUDIOSRC_USER);
+  return confuiAudioSrcValidateAll (udata, CONFUI_ENTRY_AUDIOSRC_USER);
 }
 
 static int
 confuiAudioSrcPassChg (uiwcont_t *entry, const char *label, void *udata)
 {
-  return confuiAudioSrcEntryChg (entry, label, udata, CONFUI_ENTRY_AUDIOSRC_PASS);
+  return confuiAudioSrcValidateAll (udata, CONFUI_ENTRY_AUDIOSRC_PASS);
 }
 
 static int
-confuiAudioSrcEntryChg (uiwcont_t *entry, const char *label,
-    void *udata, int widx)
+confuiAudioSrcEntryChg (void *udata, const char *label, int widx)
 {
+  uiwcont_t       *entry;
   confuigui_t     *gui = udata;
   const char      *str = NULL;
   uivirtlist_t    *uivl = NULL;
@@ -340,21 +342,29 @@ confuiAudioSrcEntryChg (uiwcont_t *entry, const char *label,
     return UIENTRY_OK;
   }
 
+  entry = gui->uiitem [widx].uiwidgetp,
+
+  confuiSetStatusMsg (gui, "");
+
   /* note that in gtk this is a constant pointer to the current value */
   /* and the value changes due to the validation */
   str = uiEntryGetValue (entry);
+
   mode = asconfGetNum (gui->asconf, gui->asconfkey, ASCONF_MODE);
   if (mode == ASCONF_MODE_OFF) {
     return UIENTRY_OK;
   }
-
   if (mode == ASCONF_MODE_SERVER &&
       widx == CONFUI_ENTRY_AUDIOSRC_URI) {
     return UIENTRY_OK;
   }
+
   flags = VAL_NOT_EMPTY;
   if (widx != CONFUI_ENTRY_AUDIOSRC_NAME) {
     flags |= VAL_NO_SPACES;
+  }
+  if (widx == CONFUI_ENTRY_AUDIOSRC_URI) {
+    flags |= VAL_BASE_URI;
   }
   vrc = validate (tmsg, sizeof (tmsg), label, str, flags);
   if (vrc == false) {
@@ -454,6 +464,10 @@ confuiAudioSrcSpinboxChg (void *udata, int widx)
   if (widx == CONFUI_SPINBOX_AUDIOSRC_MODE) {
     int   mode;
 
+    /* clear all status/error messages */
+    confuiSetErrorMsg (gui, "");
+    confuiSetStatusMsg (gui, "");
+
     confuiAudioSrcSetWidgetStates (gui, askey);
     mode = asconfGetNum (gui->asconf, askey, ASCONF_MODE);
     if (mode == ASCONF_MODE_SERVER) {
@@ -462,7 +476,9 @@ confuiAudioSrcSpinboxChg (void *udata, int widx)
       twidx = CONFUI_SPINBOX_AUDIOSRC_TYPE;
       uiSpinboxTextSetValue (gui->uiitem [twidx].uiwidgetp, AUDIOSRC_TYPE_BDJ4);
     }
+    confuiAudioSrcValidateAll (gui, -1);
   }
+
   logProcEnd ("");
 }
 
@@ -630,4 +646,41 @@ confuiAudioSrcChkConn (void *udata)
   }
 
   return UICB_CONT;
+}
+
+static int
+confuiAudioSrcValidateAll (confuigui_t *gui, int currwidx)
+{
+  int         widx;
+  int         rc;
+  int         rrc = UIENTRY_OK;
+  const char  *label;
+
+
+  widx = CONFUI_ENTRY_AUDIOSRC_NAME;
+  label = gui->uiitem [widx].labeltxt;
+  rc = confuiAudioSrcEntryChg (gui, label, widx);
+  if (widx == currwidx) {
+    rrc = rc;
+  }
+  widx = CONFUI_ENTRY_AUDIOSRC_URI;
+  label = gui->uiitem [widx].labeltxt;
+  rc = confuiAudioSrcEntryChg (gui, label, widx);
+  if (widx == currwidx) {
+    rrc = rc;
+  }
+  widx = CONFUI_ENTRY_AUDIOSRC_USER;
+  label = gui->uiitem [widx].labeltxt;
+  rc = confuiAudioSrcEntryChg (gui, label, widx);
+  if (widx == currwidx) {
+    rrc = rc;
+  }
+  widx = CONFUI_ENTRY_AUDIOSRC_PASS;
+  label = gui->uiitem [widx].labeltxt;
+  rc = confuiAudioSrcEntryChg (gui, label, widx);
+  if (widx == currwidx) {
+    rrc = rc;
+  }
+
+  return rrc;
 }

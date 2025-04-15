@@ -21,6 +21,8 @@ enum {
   VAL_REGEX_HM,
   VAL_REGEX_HMS_PRECISE,
   VAL_REGEX_WINCHARS,
+  VAL_REGEX_BASE_URI,
+  VAL_REGEX_FULL_URI,
   VAL_REGEX_MAX,
 };
 
@@ -43,6 +45,8 @@ static valregex_t valregex [VAL_REGEX_MAX] = {
   [VAL_REGEX_HM]   = { "^ *(0?[0-9]|[1][0-9]|[2][0-4])([:.][0-5][0-9])?( *([Aa]|[Pp])(\\.?[Mm]\\.?)?)? *$" },
   [VAL_REGEX_HMS_PRECISE] = { "^ *(([0-9]+:)?[0-5])?[0-9][:.][0-5][0-9]([.,][0-9]*)? *$" },
   [VAL_REGEX_WINCHARS]   = { "[*'\":|<>^]" },
+  [VAL_REGEX_BASE_URI]   = { "^([\\w-]+\\.)+[\\w-]+$" },
+  [VAL_REGEX_FULL_URI]   = { "^[a-zA-Z][a-zA-Z0-9]*://([\\w-]+\\.)+[\\w-]+(:[0-9]+)?[\\w ;,./?%&=-]*$" },
 };
 
 /**
@@ -63,21 +67,21 @@ validate (char *buff, size_t sz, const char *label, const char *str, int valflag
 
   *buff = '\0';
 
-  if ((valflags & VAL_NOT_EMPTY) == VAL_NOT_EMPTY) {
+  if (rc && (valflags & VAL_NOT_EMPTY) == VAL_NOT_EMPTY) {
     if (str == NULL || ! *str) {
       /* CONTEXT: validation: a value must be set */
       snprintf (buff, sz, _("%s: Must be set."), label);
       rc = false;
     }
   }
-  if ((valflags & VAL_NO_SPACES) == VAL_NO_SPACES) {
+  if (rc && (valflags & VAL_NO_SPACES) == VAL_NO_SPACES) {
     if (str != NULL && strstr (str, " ") != NULL) {
       /* CONTEXT: validation: spaces are not allowed  */
       snprintf (buff, sz, _("%s: Spaces are not allowed."), label);
       rc = false;
     }
   }
-  if ((valflags & VAL_NO_SLASHES) == VAL_NO_SLASHES) {
+  if (rc && (valflags & VAL_NO_SLASHES) == VAL_NO_SLASHES) {
     if (str != NULL &&
       (strstr (str, "/") != NULL ||
       strstr (str, "\\") != NULL)) {
@@ -86,7 +90,7 @@ validate (char *buff, size_t sz, const char *label, const char *str, int valflag
       rc = false;
     }
   }
-  if ((valflags & VAL_NO_WINCHARS) == VAL_NO_WINCHARS) {
+  if (rc && (valflags & VAL_NO_WINCHARS) == VAL_NO_WINCHARS) {
     rx = regexInit (valregex [VAL_REGEX_WINCHARS].regex);
     if (str != NULL && regexMatch (rx, str)) {
       /* CONTEXT: validation: characters not allowed*/
@@ -95,7 +99,7 @@ validate (char *buff, size_t sz, const char *label, const char *str, int valflag
     }
     regexFree (rx);
   }
-  if ((valflags & VAL_NUMERIC) == VAL_NUMERIC) {
+  if (rc && (valflags & VAL_NUMERIC) == VAL_NUMERIC) {
     rx = regexInit (valregex [VAL_REGEX_NUMERIC].regex);
     if (str != NULL && ! regexMatch (rx, str)) {
       /* CONTEXT: validation: must be numeric */
@@ -104,7 +108,7 @@ validate (char *buff, size_t sz, const char *label, const char *str, int valflag
     }
     regexFree (rx);
   }
-  if ((valflags & VAL_FLOAT) == VAL_FLOAT) {
+  if (rc && (valflags & VAL_FLOAT) == VAL_FLOAT) {
     rx = regexInit (valregex [VAL_REGEX_FLOAT].regex);
     if (str != NULL && ! regexMatch (rx, str)) {
       /* CONTEXT: validation: must be a numeric value */
@@ -113,7 +117,7 @@ validate (char *buff, size_t sz, const char *label, const char *str, int valflag
     }
     regexFree (rx);
   }
-  if ((valflags & VAL_HOUR_MIN) == VAL_HOUR_MIN) {
+  if (rc && (valflags & VAL_HOUR_MIN) == VAL_HOUR_MIN) {
     rx = regexInit (valregex [VAL_REGEX_HM].regex);
     if (str != NULL && ! regexMatch (rx, str)) {
       /* CONTEXT: validation: invalid time (hours/minutes) */
@@ -122,7 +126,7 @@ validate (char *buff, size_t sz, const char *label, const char *str, int valflag
     }
     regexFree (rx);
   }
-  if ((valflags & VAL_MIN_SEC) == VAL_MIN_SEC) {
+  if (rc && (valflags & VAL_MIN_SEC) == VAL_MIN_SEC) {
     rx = regexInit (valregex [VAL_REGEX_MS].regex);
     if (str != NULL && ! regexMatch (rx, str)) {
       /* CONTEXT: validation: invalid time (minutes/seconds) */
@@ -131,7 +135,7 @@ validate (char *buff, size_t sz, const char *label, const char *str, int valflag
     }
     regexFree (rx);
   }
-  if ((valflags & VAL_HMS) == VAL_HMS) {
+  if (rc && (valflags & VAL_HMS) == VAL_HMS) {
     rx = regexInit (valregex [VAL_REGEX_HMS].regex);
     if (str != NULL && ! regexMatch (rx, str)) {
       /* CONTEXT: validation: invalid time (hours/minutes/seconds) */
@@ -140,11 +144,29 @@ validate (char *buff, size_t sz, const char *label, const char *str, int valflag
     }
     regexFree (rx);
   }
-  if ((valflags & VAL_HMS_PRECISE) == VAL_HMS_PRECISE) {
+  if (rc && (valflags & VAL_HMS_PRECISE) == VAL_HMS_PRECISE) {
     rx = regexInit (valregex [VAL_REGEX_HMS_PRECISE].regex);
     if (str != NULL && ! regexMatch (rx, str)) {
       /* CONTEXT: validation: invalid time (hour/min/sec.sec) */
       snprintf (buff, sz, _("%s: Invalid time (%s)."), label, str);
+      rc = false;
+    }
+    regexFree (rx);
+  }
+  if (rc && (valflags & VAL_BASE_URI) == VAL_BASE_URI) {
+    rx = regexInit (valregex [VAL_REGEX_BASE_URI].regex);
+    if (str != NULL && ! regexMatch (rx, str)) {
+      /* CONTEXT: validation: invalid URL */
+      snprintf (buff, sz, _("%s: Invalid URL (%s)."), label, str);
+      rc = false;
+    }
+    regexFree (rx);
+  }
+  if (rc && (valflags & VAL_FULL_URI) == VAL_FULL_URI) {
+    rx = regexInit (valregex [VAL_REGEX_FULL_URI].regex);
+    if (str != NULL && ! regexMatch (rx, str)) {
+      /* CONTEXT: validation: invalid URL */
+      snprintf (buff, sz, _("%s: Invalid URL (%s)."), label, str);
       rc = false;
     }
     regexFree (rx);

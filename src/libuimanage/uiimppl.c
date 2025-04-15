@@ -83,6 +83,7 @@ typedef struct uiimppl {
   int               imptype;
   int               asconfcount;
   unsigned int      haveerrors;
+  bool              newnameuserchg;
   bool              isactive;
   bool              in_cb;
 } uiimppl_t;
@@ -123,6 +124,7 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
     uiimppl->callbacks [i] = NULL;
   }
   uiimppl->haveerrors = UIIMPPL_ERR_NONE;
+  uiimppl->newnameuserchg = false;
   uiimppl->isactive = false;
   uiimppl->in_cb = false;
   uiimppl->aslist = NULL;
@@ -503,7 +505,7 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
-  uiEntrySetValidate (uiimppl->wcont [UIIMPPL_W_URI], _("URI"),
+  uiEntrySetValidate (uiimppl->wcont [UIIMPPL_W_URI], _("URL"),
       uiimpplValidateTarget, uiimppl, UIENTRY_DELAYED);
   uiEntrySetValidate (uiimppl->wcont [UIIMPPL_W_NEWNAME], _("New Song List Name"),
       uiimpplValidateNewName, uiimppl, UIENTRY_IMMEDIATE);
@@ -679,6 +681,20 @@ uiimpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
     }
   }
 
+  if (uiimppl->imptype != AUDIOSRC_TYPE_FILE) {
+    int     vrc;
+    char    tmsg [300];
+
+    /* CONTEXT: import playlist: import location */
+    vrc = validate (tmsg, sizeof (tmsg), _("URL"), str, VAL_FULL_URI);
+    if (vrc == false) {
+      uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], tmsg);
+      uiimppl->haveerrors |= UIIMPPL_ERR_URI;
+      uiimppl->in_cb = false;
+      return UIENTRY_ERROR;
+    }
+  }
+
   if (uiimppl->imptype == AUDIOSRC_TYPE_BDJ4) {
     if (strncmp (str, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) != 0) {
       uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG],
@@ -690,8 +706,11 @@ uiimpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
     }
   }
 
-  snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
-  uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_NEWNAME], tbuff);
+  /* do not update the new-name if the user has modified it */
+  if (uiimppl->newnameuserchg == false) {
+    snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
+    uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_NEWNAME], tbuff);
+  }
   pathInfoFree (pi);
 
   uiimppl->in_cb = false;
@@ -717,6 +736,7 @@ uiimpplSelectHandler (void *udata, int idx)
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
   uiimppl->haveerrors = UIIMPPL_ERR_NONE;
+  uiimppl->newnameuserchg = false;
 
   str = ilistGetStr (uiimppl->plnames, idx, DD_LIST_DISP);
   snprintf (tbuff, sizeof (tbuff), "%s%s:%" PRIu16 "/%s",
@@ -765,6 +785,7 @@ uiimpplValidateNewName (uiwcont_t *entry, const char *label, void *udata)
   }
 
   if (rc == UIENTRY_OK) {
+    uiimppl->newnameuserchg = true;
     str = uiEntryGetValue (entry);
     if (*str) {
       pathbldMakePath (fn, sizeof (fn),
@@ -838,7 +859,7 @@ uiimpplImportTypeCallback (void *udata)
     uiddSetState (uiimppl->plselect, UIWIDGET_ENABLE);
     uiWidgetHide (uiimppl->wcont [UIIMPPL_W_URI_BUTTON]);
     /* CONTEXT: import playlist: import location */
-    snprintf (tbuff, sizeof (tbuff), "%s:", _("URI"));
+    snprintf (tbuff, sizeof (tbuff), "%s:", _("URL"));
   }
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_URI_LABEL], tbuff);
 
