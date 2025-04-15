@@ -76,6 +76,8 @@ typedef struct uiimppl {
   nlist_t           *askeys;
   nlist_t           *astypes;
   ilist_t           *plnames;
+  const char        *urilabel;
+  const char        *newnamelabel;
   callback_t        *callbacks [UIIMPPL_CB_MAX];
   char              origplname [MAXPATHLEN];
   size_t            asmaxwidth;
@@ -93,12 +95,13 @@ static void uiimpplCreateDialog (uiimppl_t *uiimppl);
 static bool uiimpplTargetDialog (void *udata);
 static void uiimpplInitDisplay (uiimppl_t *uiimppl);
 static bool uiimpplResponseHandler (void *udata, int32_t responseid);
-static int  uiimpplValidateTarget (uiwcont_t *entry, const char *label, void *udata);
+static int  uiimpplValidateText (uiwcont_t *entry, const char *label, void *udata);
+static int  uiimpplValidateURI (uiimppl_t *uiimppl);
 static bool uiimpplSelectHandler (void *udata, int32_t idx);
-static int  uiimpplValidateNewName (uiwcont_t *entry, const char *label, void *udata);
+static int  uiimpplValidateNewName (uiimppl_t *uiimppl);
 static bool uiimpplImportTypeCallback (void *udata);
 static void uiimpplFreeDialog (uiimppl_t *uiimppl);
-static void uiimpplProcessValidations (uiimppl_t *uiimppl);
+static int  uiimpplProcessValidations (uiimppl_t *uiimppl);
 
 uiimppl_t *
 uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
@@ -131,6 +134,7 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
   uiimppl->askeys = NULL;
   uiimppl->astypes = NULL;
   uiimppl->plnames = NULL;
+  uiimppl->urilabel = NULL;
   uiimppl->plselect = NULL;
   uiimppl->asmaxwidth = 0;
   uiimppl->askey = -1;
@@ -488,9 +492,9 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateColonLabel (
-      /* CONTEXT: import playlist: new song list name */
-      _("New Song List Name"));
+  /* CONTEXT: import playlist: new song list name */
+  uiimppl->newnamelabel = _("New Song List Name");
+  uiwidgetp = uiCreateColonLabel (uiimppl->newnamelabel);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
@@ -505,12 +509,12 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
-  uiEntrySetValidate (uiimppl->wcont [UIIMPPL_W_URI], _("URL"),
-      uiimpplValidateTarget, uiimppl, UIENTRY_DELAYED);
-  uiEntrySetValidate (uiimppl->wcont [UIIMPPL_W_NEWNAME], _("New Song List Name"),
-      uiimpplValidateNewName, uiimppl, UIENTRY_IMMEDIATE);
+  uiEntrySetValidate (uiimppl->wcont [UIIMPPL_W_URI], "",
+      uiimpplValidateText, uiimppl, UIENTRY_DELAYED);
+  uiEntrySetValidate (uiimppl->wcont [UIIMPPL_W_NEWNAME], "",
+      uiimpplValidateText, uiimppl, UIENTRY_IMMEDIATE);
   uiSpinboxTextSetValueChangedCallback (uiimppl->wcont [UIIMPPL_W_IMP_TYPE],
-    uiimppl->callbacks [UIIMPPL_CB_TYPE_SEL]);
+      uiimppl->callbacks [UIIMPPL_CB_TYPE_SEL]);
 
   logProcEnd ("");
 }
@@ -555,6 +559,7 @@ uiimpplInitDisplay (uiimppl_t *uiimppl)
   }
 
   uiimpplImportTypeCallback (uiimppl);
+  uiimpplProcessValidations (uiimppl);
 }
 
 static bool
@@ -630,11 +635,18 @@ uiimpplResponseHandler (void *udata, int32_t responseid)
   return UICB_CONT;
 }
 
+static int
+uiimpplValidateText (uiwcont_t *entry, const char *label, void *udata)
+{
+  uiimppl_t *uiimppl = udata;
+
+  return uiimpplProcessValidations (uiimppl);
+}
 
 static int
-uiimpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
+uiimpplValidateURI (uiimppl_t *uiimppl)
 {
-  uiimppl_t  *uiimppl = udata;
+  uiwcont_t   *entry;
   const char  *str;
   char        tbuff [MAXPATHLEN];
   pathinfo_t  *pi;
@@ -646,6 +658,8 @@ uiimpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
     return UIENTRY_OK;
   }
   uiimppl->in_cb = true;
+
+  entry = uiimppl->wcont [UIIMPPL_W_URI];
 
   /* any change clears the status message */
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
@@ -685,8 +699,8 @@ uiimpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
     int     vrc;
     char    tmsg [300];
 
-    /* CONTEXT: import playlist: import location */
-    vrc = validate (tmsg, sizeof (tmsg), _("URL"), str, VAL_FULL_URI);
+    vrc = validate (tmsg, sizeof (tmsg), uiimppl->urilabel, str,
+        VAL_NOT_EMPTY | VAL_FULL_URI);
     if (vrc == false) {
       uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], tmsg);
       uiimppl->haveerrors |= UIIMPPL_ERR_URI;
@@ -699,7 +713,7 @@ uiimpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
     if (strncmp (str, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) != 0) {
       uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG],
           /* CONTEXT: import playlist: invalid URI */
-          _("Invalid URI"));
+          _("Invalid URL"));
       uiimppl->haveerrors |= UIIMPPL_ERR_URI;
       uiimppl->in_cb = false;
       return UIENTRY_ERROR;
@@ -756,9 +770,9 @@ uiimpplSelectHandler (void *udata, int idx)
 }
 
 static int
-uiimpplValidateNewName (uiwcont_t *entry, const char *label, void *udata)
+uiimpplValidateNewName (uiimppl_t *uiimppl)
 {
-  uiimppl_t  *uiimppl = udata;
+  uiwcont_t   *entry;
   int         rc = UIENTRY_ERROR;
   const char  *str;
   char        fn [MAXPATHLEN];
@@ -772,12 +786,14 @@ uiimpplValidateNewName (uiwcont_t *entry, const char *label, void *udata)
   }
   uiimppl->in_cb = true;
 
+  entry = uiimppl->wcont [UIIMPPL_W_NEWNAME];
+
   /* any change clears the status message */
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
 
   uiimppl->haveerrors &= ~ UIIMPPL_ERR_NEWNAME;
 
-  rc = uiutilsValidatePlaylistName (entry, label,
+  rc = uiutilsValidatePlaylistName (entry, uiimppl->newnamelabel,
       uiimppl->wcont [UIIMPPL_W_ERROR_MSG]);
 
   if (rc == UIENTRY_ERROR) {
@@ -853,14 +869,15 @@ uiimpplImportTypeCallback (void *udata)
     uiddSetState (uiimppl->plselect, UIWIDGET_DISABLE);
     uiWidgetShow (uiimppl->wcont [UIIMPPL_W_URI_BUTTON]);
     /* CONTEXT: import playlist: import location */
-    snprintf (tbuff, sizeof (tbuff), "%s:", _("File"));
+    uiimppl->urilabel = _("File");
   } else {
     uiWidgetSetState (uiimppl->wcont [UIIMPPL_W_PL_SEL_LABEL], UIWIDGET_ENABLE);
     uiddSetState (uiimppl->plselect, UIWIDGET_ENABLE);
     uiWidgetHide (uiimppl->wcont [UIIMPPL_W_URI_BUTTON]);
     /* CONTEXT: import playlist: import location */
-    snprintf (tbuff, sizeof (tbuff), "%s:", _("URL"));
+    uiimppl->urilabel = _("URL");
   }
+  snprintf (tbuff, sizeof (tbuff), "%s:", uiimppl->urilabel);
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_URI_LABEL], tbuff);
 
   uiimppl->in_cb = false;
@@ -879,14 +896,27 @@ uiimpplFreeDialog (uiimppl_t *uiimppl)
   }
 }
 
-static void
+static int
 uiimpplProcessValidations (uiimppl_t *uiimppl)
 {
-  uiEntryValidate (uiimppl->wcont [UIIMPPL_W_URI], false);
-  uiEntryValidate (uiimppl->wcont [UIIMPPL_W_NEWNAME], false);
+  int     rc;
+  int     rrc = UIENTRY_OK;
+
+  /* validate the new-name first, as validate-playlist-name clears */
+  /* the error message */
+  rc = uiimpplValidateNewName (uiimppl);
+  if (rc != UIENTRY_OK) {
+    rrc = rc;
+  }
+  rc = uiimpplValidateURI (uiimppl);
+  if (rc != UIENTRY_OK) {
+    rrc = rc;
+  }
 
   if (uiimppl->haveerrors == UIIMPPL_ERR_NONE) {
     uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
   }
+
+  return rrc;
 }
 
