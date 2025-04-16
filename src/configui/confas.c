@@ -259,17 +259,6 @@ confuiAudioSrcSelectLoadValues (confuigui_t *gui, ilistidx_t askey)
 }
 
 void
-confuiAudioSrcSearchSelect (confuigui_t *gui, ilistidx_t askey)
-{
-  int32_t       idx;
-  uivirtlist_t  *uivl;
-
-  idx = asconfGetListIndex (gui->asconf, askey);
-  uivl = gui->tables [CONFUI_ID_AUDIOSRC].uivl;
-  uivlSetSelection (uivl, idx);
-}
-
-void
 confuiAudioSrcProcess (confuigui_t *gui)
 {
   /* this is by no means perfect, as the entry validation gets run twice */
@@ -363,10 +352,18 @@ confuiAudioSrcEntryChg (void *udata, const char *label, int widx)
 
   mode = asconfGetNum (gui->asconf, gui->asconfkey, ASCONF_MODE);
   if (mode == ASCONF_MODE_OFF) {
+    confuiMarkValid (gui, widx);
+    if (gui->valid == 0) {
+      confuiSetErrorMsg (gui, "");
+    }
     return UIENTRY_OK;
   }
   if (mode == ASCONF_MODE_SERVER &&
       widx == CONFUI_ENTRY_AUDIOSRC_URI) {
+    confuiMarkValid (gui, widx);
+    if (gui->valid == 0) {
+      confuiSetErrorMsg (gui, "");
+    }
     return UIENTRY_OK;
   }
 
@@ -551,6 +548,7 @@ confuiAudioSrcSelect (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
   }
 
   gui->inchange = true;
+
   uivl = gui->tables [CONFUI_ID_AUDIOSRC].uivl;
   if (uivl == NULL) {
     gui->inchange = false;
@@ -589,20 +587,22 @@ confuiAudioSrcRemove (confuigui_t *gui, ilistidx_t rowidx)
 static void
 confuiAudioSrcAdd (confuigui_t *gui)
 {
+  slistidx_t    idx;
   ilistidx_t    askey;
   uivirtlist_t  *uivl;
   ilistidx_t    count;
 
   uivl = gui->tables [CONFUI_ID_AUDIOSRC].uivl;
 
+  idx = asconfGetCount (gui->asconf);
   /* CONTEXT: configuration: name that is set when adding a new audio source */
   askey = asconfAdd (gui->asconf, _("New Audio Source"));
-  asconfSave (gui->asconf, NULL, -1);
   count = asconfGetCount (gui->asconf);
   uivlSetNumRows (uivl, count);
   gui->tables [CONFUI_ID_AUDIOSRC].currcount = count;
   uivlPopulate (uivl);
-  confuiAudioSrcSearchSelect (gui, askey);
+  uivl = gui->tables [CONFUI_ID_AUDIOSRC].uivl;
+  uivlSetSelection (uivl, idx);
 }
 
 static void
@@ -666,12 +666,17 @@ confuiAudioSrcValidateAll (confuigui_t *gui, bool forceflag)
 {
   int         widx;
 
+  gui->valid = 0;
   widx = CONFUI_ENTRY_AUDIOSRC_NAME;
+  confuiMarkValid (gui, widx);
   uiEntryValidate (gui->uiitem [widx].uiwidgetp, forceflag);
   widx = CONFUI_ENTRY_AUDIOSRC_URI;
+  confuiMarkValid (gui, widx);
   uiEntryValidate (gui->uiitem [widx].uiwidgetp, forceflag);
   widx = CONFUI_ENTRY_AUDIOSRC_USER;
+  confuiMarkValid (gui, widx);
   uiEntryValidate (gui->uiitem [widx].uiwidgetp, forceflag);
   widx = CONFUI_ENTRY_AUDIOSRC_PASS;
+  confuiMarkValid (gui, widx);
   uiEntryValidate (gui->uiitem [widx].uiwidgetp, forceflag);
 }

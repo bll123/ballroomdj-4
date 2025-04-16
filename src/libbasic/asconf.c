@@ -124,6 +124,9 @@ asconfSetStr (asconf_t *asconf, ilistidx_t key, ilistidx_t idx, const char *str)
     return;
   }
   ilistSetStr (asconf->audiosources, key, idx, str);
+  if (idx == ASCONF_NAME) {
+    asconfCreateList (asconf);
+  }
 }
 
 void
@@ -169,23 +172,35 @@ asconfDelete (asconf_t *asconf, ilistidx_t key)
 }
 
 ilistidx_t
-asconfAdd (asconf_t *asconf, char *name)
+asconfAdd (asconf_t *asconf, const char *name)
 {
   ilistidx_t    count;
+  slistidx_t    lidx;
+  char          tbuff [100];
+  const char    *tnm;
 
   if (asconf == NULL || asconf->audiosources == NULL) {
     return 0;
   }
 
   count = ilistGetCount (asconf->audiosources);
+
+  /* do not allow duplicate names on add */
+  tnm = name;
+  lidx = slistGetIdx (asconf->audiosrclist, name);
+  if (lidx >= 0) {
+    snprintf (tbuff, sizeof (tbuff), "%s %d", name, count);
+    tnm = tbuff;
+  }
+
   ilistSetNum (asconf->audiosources, count, ASCONF_MODE, ASCONF_MODE_OFF);
   ilistSetNum (asconf->audiosources, count, ASCONF_TYPE, AUDIOSRC_TYPE_BDJ4);
-  ilistSetStr (asconf->audiosources, count, ASCONF_NAME, name);
+  ilistSetStr (asconf->audiosources, count, ASCONF_NAME, tnm);
   ilistSetStr (asconf->audiosources, count, ASCONF_URI, "");
   ilistSetNum (asconf->audiosources, count, ASCONF_PORT, 9011);
   ilistSetStr (asconf->audiosources, count, ASCONF_USER, "");
   ilistSetStr (asconf->audiosources, count, ASCONF_PASS, "");
-  slistSetNum (asconf->audiosrclist, name, count);
+  slistSetNum (asconf->audiosrclist, tnm, count);
   return count;
 }
 
@@ -214,22 +229,6 @@ asconfIterate (asconf_t *asconf, slistidx_t *iteridx)
 
   ikey = slistIterateValueNum (asconf->audiosrclist, iteridx);
   return ikey;
-}
-
-/* asconf-get-list-index retrieves the index in the sorted audio-src-list */
-slistidx_t
-asconfGetListIndex (asconf_t *asconf, ilistidx_t askey)
-{
-  const char  *nm;
-  int         idx;
-
-  if (asconf == NULL) {
-    return -1;
-  }
-
-  nm = asconfGetStr (asconf, askey, ASCONF_NAME);
-  idx = slistGetIdx (asconf->audiosrclist, nm);
-  return idx;
 }
 
 /* asconf-get-list-as-key retrieves the askey in the sorted audio-src-list */

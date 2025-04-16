@@ -44,12 +44,11 @@ void asconfSetStr (asconf_t *, ilistidx_t key, ilistidx_t idx, const char *str);
 void asconfSetNum (asconf_t *, ilistidx_t key, ilistidx_t idx, ssize_t value);
 void asconfSave (asconf_t *asconf, ilist_t *list, int newdistvers);
 void asconfDelete (asconf_t *asconf, ilistidx_t key);
-ilistidx_t asconfAdd (asconf_t *asconf, char *name);
+ilistidx_t asconfAdd (asconf_t *asconf, const char *name);
 
 /* operate on the sorted list */
 void asconfStartIterator (asconf_t *, slistidx_t *idx);
 ilistidx_t asconfIterate (asconf_t *, slistidx_t *idx);
-slistidx_t asconfGetListIndex (asconf_t *, ilistidx_t askey);
 ilistidx_t asconfGetListASKey (asconf_t *, slistidx_t idx);
 
 #if defined (__cplusplus) || defined (c_plusplus)

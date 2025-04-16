@@ -511,7 +511,6 @@ void confuiAudioSourceInit (confuigui_t *gui);
 void confuiAudioSourceClean (confuigui_t *gui);
 void confuiAudioSourceBuildUI (confuigui_t *gui);
 void confuiAudioSrcSelectLoadValues (confuigui_t *gui, ilistidx_t askey);
-void confuiAudioSrcSearchSelect (confuigui_t *gui, ilistidx_t askey);
 void confuiAudioSrcProcess (confuigui_t *gui);
 
 /* confdance.c */

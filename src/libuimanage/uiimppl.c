@@ -159,7 +159,7 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
     int     mode;
 
     mode = asconfGetNum (uiimppl->asconf, askey, ASCONF_MODE);
-    if (mode == ASCONF_MODE_OFF) {
+    if (mode != ASCONF_MODE_CLIENT) {
       continue;
     }
     asnm = asconfGetStr (uiimppl->asconf, askey, ASCONF_NAME);

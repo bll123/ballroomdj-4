@@ -69,6 +69,10 @@ START_TEST(asconf_iterate)
   asconfStartIterator (asconf, &iteridx);
   count = 0;
   while ((key = asconfIterate (asconf, &iteridx)) >= 0) {
+    /* check get-list functions */
+    val = asconfGetListASKey (asconf, count);
+    ck_assert_int_eq (val, key);
+
     val = asconfGetNum (asconf, key, ASCONF_MODE);
     ck_assert_int_eq (val, ASCONF_MODE_CLIENT);
     val = asconfGetNum (asconf, key, ASCONF_TYPE);
@@ -262,11 +266,17 @@ START_TEST(asconf_add)
   rc = asconfGetCount (asconf);
   ck_assert_int_eq (rc, 3);
 
+  rc = asconfGetCount (asconf);
+  val = asconfAdd (asconf, "testb");
+  ck_assert_int_eq (rc, val);
+  rc = asconfGetCount (asconf);
+  ck_assert_int_eq (rc, 4);
+
   asconfStartIterator (asconf, &iteridx);
   rc = 0;
   while ((key = asconfIterate (asconf, &iteridx)) >= 0) {
     sval = asconfGetStr (asconf, key, ASCONF_NAME);
-    if (strcmp (sval, "test") == 0) {
+    if (strncmp (sval, "test", 4) == 0) {
       rc += 1;
       val = asconfGetNum(asconf, key, ASCONF_TYPE);
       if (val == AUDIOSRC_TYPE_BDJ4) {
@@ -274,12 +284,11 @@ START_TEST(asconf_add)
       }
     }
   }
-  ck_assert_int_eq (rc, 2);
+  ck_assert_int_eq (rc, 4);
 
   asconfFree (asconf);
 }
 END_TEST
-
 
 START_TEST(asconf_delete)
 {
