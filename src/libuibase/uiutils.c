@@ -110,6 +110,15 @@ uiutilsGetListingFont (void)
 }
 
 int
+uiutilsValidatePlaylistNameClr (uiwcont_t *entry, const char *label, void *udata)
+{
+  uiwcont_t   *msgwidget = udata;
+
+  uiLabelSetText (msgwidget, "");
+  return uiutilsValidatePlaylistName (entry, label, udata);
+}
+
+int
 uiutilsValidatePlaylistName (uiwcont_t *entry, const char *label, void *udata)
 {
   uiwcont_t   *msgwidget = udata;
@@ -119,7 +128,6 @@ uiutilsValidatePlaylistName (uiwcont_t *entry, const char *label, void *udata)
   int         flags = VAL_NOT_EMPTY | VAL_NO_SLASHES;
   bool        val;
 
-  uiLabelSetText (msgwidget, "");
   rc = UIENTRY_OK;
   str = uiEntryGetValue (entry);
   if (isWindows ()) {

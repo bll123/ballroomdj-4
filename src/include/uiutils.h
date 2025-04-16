@@ -22,6 +22,7 @@ void uiutilsAddProfileColorDisplay (uiwcont_t *vbox, uiutilsaccent_t *accent);
 void uiutilsSetProfileColor (uiwcont_t *uiwidgetp, const char *oldcolor);
 const char * uiutilsGetCurrentFont (void);
 const char * uiutilsGetListingFont (void);
+int uiutilsValidatePlaylistNameClr (uiwcont_t *entry, const char *label, void *udata);
 int uiutilsValidatePlaylistName (uiwcont_t *entry, const char *label, void *udata);
 void uiutilsProgressStatus (uiwcont_t *statusMsg, int count, int tot);
 void uiutilsFontInfo (const char *font, char *buff, size_t sz, int *fontsz);

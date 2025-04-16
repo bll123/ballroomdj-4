@@ -88,6 +88,7 @@ typedef struct uiimppl {
   bool              newnameuserchg;
   bool              isactive;
   bool              in_cb;
+  bool              changed;
 } uiimppl_t;
 
 /* import playlist */
@@ -95,13 +96,14 @@ static void uiimpplCreateDialog (uiimppl_t *uiimppl);
 static bool uiimpplTargetDialog (void *udata);
 static void uiimpplInitDisplay (uiimppl_t *uiimppl);
 static bool uiimpplResponseHandler (void *udata, int32_t responseid);
-static int  uiimpplValidateText (uiwcont_t *entry, const char *label, void *udata);
+static int  uiimpplValidateURIEntry (uiwcont_t *entry, const char *label, void *udata);
+static int  uiimpplValidateNNEntry (uiwcont_t *entry, const char *label, void *udata);
 static int  uiimpplValidateURI (uiimppl_t *uiimppl);
 static bool uiimpplSelectHandler (void *udata, int32_t idx);
 static int  uiimpplValidateNewName (uiimppl_t *uiimppl);
 static bool uiimpplImportTypeCallback (void *udata);
 static void uiimpplFreeDialog (uiimppl_t *uiimppl);
-static int  uiimpplProcessValidations (uiimppl_t *uiimppl);
+static void uiimpplProcessValidations (uiimppl_t *uiimppl, bool forceflag);
 
 uiimppl_t *
 uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
@@ -130,6 +132,7 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
   uiimppl->newnameuserchg = false;
   uiimppl->isactive = false;
   uiimppl->in_cb = false;
+  uiimppl->changed = false;
   uiimppl->aslist = NULL;
   uiimppl->askeys = NULL;
   uiimppl->astypes = NULL;
@@ -296,7 +299,8 @@ uiimpplProcess (uiimppl_t *uiimppl)
     return;
   }
 
-  uiimpplProcessValidations (uiimppl);
+  uiimpplProcessValidations (uiimppl, uiimppl->changed);
+  uiimppl->changed = false;
 }
 
 int
@@ -510,9 +514,9 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiwcontFree (szgrp);
 
   uiEntrySetValidate (uiimppl->wcont [UIIMPPL_W_URI], "",
-      uiimpplValidateText, uiimppl, UIENTRY_DELAYED);
+      uiimpplValidateURIEntry, uiimppl, UIENTRY_DELAYED);
   uiEntrySetValidate (uiimppl->wcont [UIIMPPL_W_NEWNAME], "",
-      uiimpplValidateText, uiimppl, UIENTRY_IMMEDIATE);
+      uiimpplValidateNNEntry, uiimppl, UIENTRY_IMMEDIATE);
   uiSpinboxTextSetValueChangedCallback (uiimppl->wcont [UIIMPPL_W_IMP_TYPE],
       uiimppl->callbacks [UIIMPPL_CB_TYPE_SEL]);
 
@@ -559,7 +563,7 @@ uiimpplInitDisplay (uiimppl_t *uiimppl)
   }
 
   uiimpplImportTypeCallback (uiimppl);
-  uiimpplProcessValidations (uiimppl);
+  uiimpplProcessValidations (uiimppl, true);
 }
 
 static bool
@@ -636,11 +640,25 @@ uiimpplResponseHandler (void *udata, int32_t responseid)
 }
 
 static int
-uiimpplValidateText (uiwcont_t *entry, const char *label, void *udata)
+uiimpplValidateURIEntry (uiwcont_t *entry, const char *label, void *udata)
 {
+  int       rc;
   uiimppl_t *uiimppl = udata;
 
-  return uiimpplProcessValidations (uiimppl);
+  rc = uiimpplValidateURI (uiimppl);
+  uiimppl->changed = true;
+  return rc;
+}
+
+static int
+uiimpplValidateNNEntry (uiwcont_t *entry, const char *label, void *udata)
+{
+  int       rc;
+  uiimppl_t *uiimppl = udata;
+
+  rc = uiimpplValidateNewName (uiimppl);
+  uiimppl->changed = true;
+  return rc;
 }
 
 static int
@@ -726,6 +744,10 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
     uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_NEWNAME], tbuff);
   }
   pathInfoFree (pi);
+
+  if (uiimppl->haveerrors == UIIMPPL_ERR_NONE) {
+    uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
+  }
 
   uiimppl->in_cb = false;
   return UIENTRY_OK;
@@ -814,6 +836,10 @@ uiimpplValidateNewName (uiimppl_t *uiimppl)
     }
   }
 
+  if (uiimppl->haveerrors == UIIMPPL_ERR_NONE) {
+    uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
+  }
+
   uiimppl->in_cb = false;
   return rc;
 }
@@ -896,27 +922,14 @@ uiimpplFreeDialog (uiimppl_t *uiimppl)
   }
 }
 
-static int
-uiimpplProcessValidations (uiimppl_t *uiimppl)
+static void
+uiimpplProcessValidations (uiimppl_t *uiimppl, bool forceflag)
 {
-  int     rc;
-  int     rrc = UIENTRY_OK;
-
-  /* validate the new-name first, as validate-playlist-name clears */
-  /* the error message */
-  rc = uiimpplValidateNewName (uiimppl);
-  if (rc != UIENTRY_OK) {
-    rrc = rc;
-  }
-  rc = uiimpplValidateURI (uiimppl);
-  if (rc != UIENTRY_OK) {
-    rrc = rc;
-  }
+  uiEntryValidate (uiimppl->wcont [UIIMPPL_W_URI], forceflag);
+  uiEntryValidate (uiimppl->wcont [UIIMPPL_W_NEWNAME], forceflag);
 
   if (uiimppl->haveerrors == UIIMPPL_ERR_NONE) {
     uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
   }
-
-  return rrc;
 }
 

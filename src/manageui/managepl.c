@@ -205,7 +205,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   managepl->wcont [MPL_W_PL_NAME] = uiwidgetp;
   /* CONTEXT: playlist management: label for playlist name */
   uiEntrySetValidate (uiwidgetp, _("Playlist"),
-      uiutilsValidatePlaylistName,
+      uiutilsValidatePlaylistNameClr,
       managepl->minfo->errorMsg, UIENTRY_IMMEDIATE);
 
   uiwcontFree (hbox);

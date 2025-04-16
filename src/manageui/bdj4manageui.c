@@ -1105,8 +1105,9 @@ manageBuildUISongListEditor (manageui_t *manage)
   hbox = uiCreateHorizBox ();
   uiBoxPackStartExpand (mainhbox, hbox);
 
-  uiwidgetp = uimusicqBuildUI (manage->slsbsmusicq, manage->minfo.window, MUSICQ_SL,
-      manage->minfo.errorMsg, manage->minfo.statusMsg, uiutilsValidatePlaylistName);
+  uiwidgetp = uimusicqBuildUI (manage->slsbsmusicq, manage->minfo.window,
+      MUSICQ_SL, manage->minfo.errorMsg,
+      manage->minfo.statusMsg, uiutilsValidatePlaylistNameClr);
   uiBoxPackStartExpand (hbox, uiwidgetp);
 
   uiwcontFree (vbox);
@@ -1130,8 +1131,9 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiBoxPackStartExpand (hbox, uiwidgetp);
 
   /* song list: music queue tab */
-  uip = uimusicqBuildUI (manage->slmusicq, manage->minfo.window, MUSICQ_SL,
-      manage->minfo.errorMsg, manage->minfo.statusMsg, uiutilsValidatePlaylistName);
+  uip = uimusicqBuildUI (manage->slmusicq, manage->minfo.window,
+      MUSICQ_SL, manage->minfo.errorMsg,
+      manage->minfo.statusMsg, uiutilsValidatePlaylistNameClr);
   /* CONTEXT: manage-ui: name of song list notebook tab */
   uiwidgetp = uiCreateLabel (_("Song List"));
   uiNotebookAppendPage (manage->wcont [MANAGE_W_SONGLIST_NB], uip, uiwidgetp);

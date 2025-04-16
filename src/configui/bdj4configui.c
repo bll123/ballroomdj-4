@@ -128,6 +128,7 @@ main (int argc, char *argv[])
   confui.gui.pluitaglist = NULL;
   confui.gui.inbuild = false;
   confui.gui.valid = 0;
+  confui.gui.changed = false;
   confui.gui.dancedkey = LIST_VALUE_INVALID;
   confui.gui.inchange = false;
   confui.gui.org = NULL;
@@ -222,7 +223,7 @@ main (int argc, char *argv[])
   confuiInitDispSettings (&confui.gui);
   confuiInitEditDances (&confui.gui);
   confuiInitiTunes (&confui.gui);
-  confuiInitAudioSource (&confui.gui);
+  confuiAudioSourceInit (&confui.gui);
   confuiInitMobileRemoteControl (&confui.gui);
 
   confuiLoadTagList (&confui);
@@ -292,7 +293,7 @@ main (int argc, char *argv[])
   connFree (confui.conn);
   progstateFree (confui.progstate);
 
-  confuiCleanAudioSource (&confui.gui);
+  confuiAudioSourceClean (&confui.gui);
   confuiCleanOrganization (&confui.gui);
   confuiCleaniTunes (&confui.gui);
 
@@ -488,7 +489,7 @@ confuiBuildUI (configui_t *confui)
   confuiBuildUIEditLevels (&confui->gui);
   confuiBuildUIEditGenres (&confui->gui);
   confuiBuildUIiTunes (&confui->gui);
-  confuiBuildUIAudioSource (&confui->gui);
+  confuiAudioSourceBuildUI (&confui->gui);
   confuiBuildUIMobileRemoteControl (&confui->gui);
   confuiBuildUIMobileMarquee (&confui->gui);
   confuiBuildUIDebug (&confui->gui);
@@ -545,6 +546,8 @@ confuiMainLoop (void *tconfui)
   for (int i = CONFUI_ENTRY_CHOOSE_BEGIN + 1; i < CONFUI_ENTRY_CHOOSE_MAX; ++i) {
     uiEntryValidate (confui->gui.uiitem [i].uiwidgetp, false);
   }
+
+  confuiAudioSrcProcess (&confui->gui);
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");

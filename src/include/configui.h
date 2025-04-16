@@ -448,9 +448,10 @@ typedef struct confuigui {
   asconf_t          *asconf;
   confuiitem_t      uiitem [CONFUI_ITEM_MAX];
   char              *localip;
-  bool              inbuild;
   int               valid;
   int               haveerrors;
+  bool              inbuild;
+  bool              changed;      // currently only confas uses this
   /* main window */
   uiwcont_t         *window;
   callback_t        *closecb;
@@ -506,11 +507,12 @@ int32_t confuiOrgPathSelect (void *udata, const char *sval);
 void confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces, int optidx, int opnmidx, int spinboxidx, int offset);
 
 /* confas.c */
-void confuiInitAudioSource (confuigui_t *gui);
-void confuiCleanAudioSource (confuigui_t *gui);
-void confuiBuildUIAudioSource (confuigui_t *gui);
+void confuiAudioSourceInit (confuigui_t *gui);
+void confuiAudioSourceClean (confuigui_t *gui);
+void confuiAudioSourceBuildUI (confuigui_t *gui);
 void confuiAudioSrcSelectLoadValues (confuigui_t *gui, ilistidx_t askey);
 void confuiAudioSrcSearchSelect (confuigui_t *gui, ilistidx_t askey);
+void confuiAudioSrcProcess (confuigui_t *gui);
 
 /* confdance.c */
 void confuiInitEditDances (confuigui_t *gui);
