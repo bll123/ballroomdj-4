@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2025-04-10\n"
+"PO-Revision-Date: 2025-04-15\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Chinese Traditional\n"
 "Language: zh\n"
@@ -160,6 +160,11 @@ msgstr "%s 不得超過歌曲時長"
 #, c-format
 msgid "%s: *'\":|<>^ characters are not allowed."
 msgstr "%s: 不允許使用 *'\":|<>^ 字元。"
+
+#. CONTEXT: validation: invalid URL
+#, c-format
+msgid "%s: Invalid URL (%s)."
+msgstr ""
 
 #. CONTEXT: validation: invalid time (hours/minutes)
 #. CONTEXT: validation: invalid time (minutes/seconds)
@@ -890,7 +895,7 @@ msgstr "要導入的字段"
 msgid "File"
 msgstr "文件"
 
-#. CONTEXT: import playlist: playlist file types (mu3/xspf/jspf)
+#. CONTEXT: import playlist: playlist file types (m3u/xspf/jspf)
 #, c-format
 msgid "File (%s)"
 msgstr ""
@@ -1093,7 +1098,7 @@ msgid "Invalid Selections"
 msgstr "無效選擇"
 
 #. CONTEXT: import playlist: invalid URI
-msgid "Invalid URI"
+msgid "Invalid URL"
 msgstr ""
 
 #. CONTEXT: Saving Song List: Error message for invalid song list name.
@@ -2196,9 +2201,9 @@ msgstr "截短"
 msgid "Type"
 msgstr "類型"
 
-#. CONTEXT: configuration: audio source: the remote client URI
+#. CONTEXT: configuration: audio source: the remote client URL
 #. CONTEXT: import playlist: import location
-msgid "URI"
+msgid "URL"
 msgstr ""
 
 #. CONTEXT: installer: status message
