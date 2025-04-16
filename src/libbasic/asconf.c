@@ -90,34 +90,6 @@ asconfFree (asconf_t *asconf)
   mdfree (asconf);
 }
 
-void
-asconfStartIterator (asconf_t *asconf, slistidx_t *iteridx)
-{
-  if (asconf == NULL || asconf->audiosources == NULL) {
-    return;
-  }
-
-  /* use the audiosrclist so that the return is always sorted */
-  slistStartIterator (asconf->audiosrclist, iteridx);
-}
-
-ilistidx_t
-asconfIterate (asconf_t *asconf, slistidx_t *iteridx)
-{
-  ilistidx_t     ikey;
-
-  if (asconf == NULL || asconf->audiosources == NULL) {
-    return LIST_LOC_INVALID;
-  }
-
-  ikey = slistIterateValueNum (asconf->audiosrclist, iteridx);
-  while (ikey >= 0 &&
-      ilistGetNum (asconf->audiosources, ikey, ASCONF_MODE) == ASCONF_MODE_OFF) {
-    ikey = slistIterateValueNum (asconf->audiosrclist, iteridx);
-  }
-  return ikey;
-}
-
 ssize_t
 asconfGetCount (asconf_t *asconf)
 {
@@ -163,15 +135,6 @@ asconfSetNum (asconf_t *asconf, ilistidx_t key, ilistidx_t idx, ssize_t value)
   ilistSetNum (asconf->audiosources, key, idx, value);
 }
 
-slist_t *
-asconfGetAudioSourceList (asconf_t *asconf)
-{
-  if (asconf == NULL || asconf->audiosources == NULL) {
-    return NULL;
-  }
-  return asconf->audiosrclist;
-}
-
 void
 asconfSave (asconf_t *asconf, ilist_t *list, int newdistvers)
 {
@@ -189,7 +152,6 @@ asconfSave (asconf_t *asconf, ilist_t *list, int newdistvers)
   }
   ilistSetVersion (list, ASCONF_CURR_VERSION);
   datafileSave (asconf->df, NULL, list, DF_NO_OFFSET, distvers);
-  asconfCreateList (asconf);
 }
 
 void
@@ -197,15 +159,23 @@ asconfDelete (asconf_t *asconf, ilistidx_t key)
 {
   const char  *val;
 
+  if (asconf == NULL || asconf->audiosources == NULL) {
+    return;
+  }
+
   val = ilistGetStr (asconf->audiosources, key, ASCONF_NAME);
-  slistDelete (asconf->audiosrclist, val);
   ilistDelete (asconf->audiosources, key);
+  asconfCreateList (asconf);
 }
 
 ilistidx_t
 asconfAdd (asconf_t *asconf, char *name)
 {
   ilistidx_t    count;
+
+  if (asconf == NULL || asconf->audiosources == NULL) {
+    return 0;
+  }
 
   count = ilistGetCount (asconf->audiosources);
   ilistSetNum (asconf->audiosources, count, ASCONF_MODE, ASCONF_MODE_OFF);
@@ -218,6 +188,65 @@ asconfAdd (asconf_t *asconf, char *name)
   slistSetNum (asconf->audiosrclist, name, count);
   return count;
 }
+
+/* the following routines operate on the sorted list */
+
+void
+asconfStartIterator (asconf_t *asconf, slistidx_t *iteridx)
+{
+  if (asconf == NULL || asconf->audiosources == NULL) {
+    return;
+  }
+
+  /* use the audiosrclist so that the return is always sorted */
+  slistStartIterator (asconf->audiosrclist, iteridx);
+}
+
+/* returns the as-key, not the sorted list index */
+ilistidx_t
+asconfIterate (asconf_t *asconf, slistidx_t *iteridx)
+{
+  ilistidx_t     ikey;
+
+  if (asconf == NULL || asconf->audiosources == NULL) {
+    return LIST_LOC_INVALID;
+  }
+
+  ikey = slistIterateValueNum (asconf->audiosrclist, iteridx);
+  return ikey;
+}
+
+/* asconf-get-list-index retrieves the index in the sorted audio-src-list */
+slistidx_t
+asconfGetListIndex (asconf_t *asconf, ilistidx_t askey)
+{
+  const char  *nm;
+  int         idx;
+
+  if (asconf == NULL) {
+    return -1;
+  }
+
+  nm = asconfGetStr (asconf, askey, ASCONF_NAME);
+  idx = slistGetIdx (asconf->audiosrclist, nm);
+  return idx;
+}
+
+/* asconf-get-list-as-key retrieves the askey in the sorted audio-src-list */
+/* based on the index */
+ilistidx_t
+asconfGetListASKey (asconf_t *asconf, slistidx_t idx)
+{
+  ilistidx_t    askey;
+
+  if (asconf == NULL) {
+    return -1;
+  }
+
+  askey = slistGetNumByIdx (asconf->audiosrclist, idx);
+  return askey;
+}
+
 
 /* internal routines */
 

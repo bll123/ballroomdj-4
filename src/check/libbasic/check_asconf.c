@@ -256,7 +256,11 @@ START_TEST(asconf_add)
 
   asconf = asconfAlloc ();
 
-  asconfAdd (asconf, "test");
+  rc = asconfGetCount (asconf);
+  val = asconfAdd (asconf, "test");
+  ck_assert_int_eq (rc, val);
+  rc = asconfGetCount (asconf);
+  ck_assert_int_eq (rc, 3);
 
   asconfStartIterator (asconf, &iteridx);
   rc = 0;
@@ -282,7 +286,6 @@ START_TEST(asconf_delete)
   asconf_t     *asconf = NULL;
   ilistidx_t  key;
   ilistidx_t  iteridx;
-  int         count;
   int         val;
   int         nval;
   const char  *sval;
@@ -294,17 +297,17 @@ START_TEST(asconf_delete)
   asconfAdd (asconf, "test");
 
   val = asconfGetCount (asconf);
+  ck_assert_int_eq (val, 3);
 
-  count = 0;
   asconfStartIterator (asconf, &iteridx);
   while ((key = asconfIterate (asconf, &iteridx)) >= 0) {
     sval = asconfGetStr (asconf, key, ASCONF_NAME);
     if (strcmp (sval, "test") == 0) {
       asconfDelete (asconf, key);
+      break;
     }
-    ++count;
   }
-  ck_assert_int_eq (count, val);
+
   nval = asconfGetCount (asconf);
   ck_assert_int_eq (val - 1, nval);
 

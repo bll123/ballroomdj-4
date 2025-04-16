@@ -490,6 +490,7 @@ starterInitDataCallback (void *udata, programstate_t programState)
   while ((key = asconfIterate (asconf, &iteridx)) >= 0) {
     if (asconfGetNum (asconf, key, ASCONF_MODE) == ASCONF_MODE_SERVER) {
       enabled = true;
+      break;
     }
   }
 

@@ -261,14 +261,10 @@ confuiAudioSrcSelectLoadValues (confuigui_t *gui, ilistidx_t askey)
 void
 confuiAudioSrcSearchSelect (confuigui_t *gui, ilistidx_t askey)
 {
-  slist_t       *asconflist;
-  const char    *name;
   int32_t       idx;
   uivirtlist_t  *uivl;
 
-  asconflist = asconfGetAudioSourceList (gui->asconf);
-  name = asconfGetStr (gui->asconf, askey, ASCONF_NAME);
-  idx = slistGetIdx (asconflist, name);
+  idx = asconfGetListIndex (gui->asconf, askey);
   uivl = gui->tables [CONFUI_ID_AUDIOSRC].uivl;
   uivlSetSelection (uivl, idx);
 }
@@ -527,12 +523,10 @@ static void
 confuiAudioSrcFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
 {
   confuigui_t *gui = udata;
-  slist_t     *asconflist;
   const char  *name;
-  slistidx_t  askey;
+  ilistidx_t  askey;
 
-  asconflist = asconfGetAudioSourceList (gui->asconf);
-  askey = slistGetNumByIdx (asconflist, rownum);
+  askey = asconfGetListASKey (gui->asconf, rownum);
   if (askey == LIST_VALUE_INVALID) {
     return;
   }

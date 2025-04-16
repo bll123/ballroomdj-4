@@ -156,6 +156,12 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
   tlist = slistAlloc ("assortlist", LIST_UNORDERED, NULL);
   asconfStartIterator (uiimppl->asconf, &asiteridx);
   while ((askey = asconfIterate (uiimppl->asconf, &asiteridx)) >= 0) {
+    int     mode;
+
+    mode = asconfGetNum (uiimppl->asconf, askey, ASCONF_MODE);
+    if (mode == ASCONF_MODE_OFF) {
+      continue;
+    }
     asnm = asconfGetStr (uiimppl->asconf, askey, ASCONF_NAME);
     slistSetNum (tlist, asnm, askey);
   }
