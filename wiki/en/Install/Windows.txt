@@ -9,7 +9,7 @@ Windows&nbsp;11&nbsp;(64-bit).
 
 ##### Windows and Anti-Virus Programs
 
-BallroomDJ 4 does not have any viruses in it.
+__BallroomDJ 4 does not have any viruses in it.__
 
 MicroSoft's Windows Defender's online anti-virus check will mark
 novel, small programs as a virus.  In BDJ4, this includes the
@@ -27,6 +27,17 @@ positive cleared.
 
 For other anti-virus products you will need to submit the
 false positive yourself, or mark BDJ4 as safe on your computer.
+
+To update the anti-virus definitions for Windows Defender, do:
+
+1. Open command prompt (cmd.exe) as administrator and change directory to
+c:\Program&nbsp;Files\Windows&nbsp;Defender
+* Type: MpCmdRun.exe&nbsp;-removedefinitions&nbsp;-dynamicsignatures
+<br>
+and press the enter key.
+* Type: MpCmdRun.exe&nbsp;-SignatureUpdate
+<br>
+and press the enter key.
 
 ##### Updating BallroomDJ 4 : Make a Backup
 
@@ -110,4 +121,4 @@ Visit the
 wiki page.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-04-17 07:52:43; BDJ4 version 4.14.0)_

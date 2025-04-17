@@ -13,6 +13,7 @@
     * Import Playlist: Fix and improve validation processing.
     * Import Playlist: Fix incorrect error messages.
     * Import Playlist: Fix unable to re-open dialog.
+    * Installer: Windows: hard-code VLC installation to version 3.0.21 (as VLC 4 is broken).
     * Internal: Fix obscure crash with spinboxes.
     * Player: Prep for VLC 4.
 
@@ -1189,4 +1190,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-04-10 15:40:14; BDJ4 version 4.14.0)_
+<br>_(Updated 2025-04-17 07:51:05; BDJ4 version 4.14.0)_

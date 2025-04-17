@@ -6,6 +6,9 @@
 
 Supported Platforms as of 2023-3-15: Linux 64-bit.
 
+Only the Debian based and OpenSUSE distributions have Linux installers
+built for them.  Other distributions will need to build from source.
+
 * Distributions that have been tested (as of 2024-5).
     * Debian based (MX Linux, Ubuntu, etc.)
     * Arch based (Arch, Manjaro, etc.)
@@ -117,4 +120,4 @@ Visit the
 wiki page.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-04-17 07:56:01; BDJ4 version 4.14.0)_
