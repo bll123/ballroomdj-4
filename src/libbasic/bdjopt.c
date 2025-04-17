@@ -360,7 +360,12 @@ bdjoptInit (void)
   /* check for either libplivlc or libplivlc4 */
   pli = nlistGetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC);
   if (pli != NULL && strncmp (pli, "libplivlc", 9) == 0) {
-    if (! vlccheckdone && (isLinux () || isWindows ())) {
+    const char  *vlcpath;
+
+    vlcpath = sysvarsGetStr (SV_PATH_VLC);
+    if (! vlccheckdone &&
+        (isLinux () || isWindows ()) &&
+        (fileopFileExists (vlcpath) || fileopIsDirectory (vlcpath))) {
       char    tbuff [MAXPATHLEN];
       char    *data;
 

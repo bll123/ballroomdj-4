@@ -136,7 +136,7 @@ typedef struct {
   char            datatopdir [MAXPATHLEN];
   char            currdir [MAXPATHLEN];
   char            unpackdir [MAXPATHLEN];   // where the installer is unpacked
-  char            vlcversion [40];
+  char            vlcversion [80];
   char            dlfname [MAXPATHLEN];
   char            oldversion [MAXPATHLEN];
   char            bdj3version [MAXPATHLEN];
@@ -2072,6 +2072,8 @@ installerVLCCheck (installer_t *installer)
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Downloading %s."), "VLC");
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
+    installerDisplayText (installer, INST_DISP_STATUS, installer->pleasewaitmsg, false);
+    uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], installer->pleasewaitmsg);
     installer->instState = INST_VLC_DOWNLOAD;
   } else {
     snprintf (tbuff, sizeof (tbuff),
@@ -2170,6 +2172,7 @@ installerFinalize (installer_t *installer)
 {
   char        tbuff [MAXPATHLEN];
 
+  uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], "");
 
   if (installer->newinstall || installer->reinstall) {
     if (! installer->bdjoptloaded) {
@@ -2588,6 +2591,11 @@ installerVLCGetVersion (installer_t *installer)
   platform = "macosx";
   if (isWindows ()) {
     platform = "win64";
+    /* for the time being, until VLC version 4 is fixed on windows, */
+    /* hard-code the downloaded version to 3.0.21 */
+    stpecpy (installer->vlcversion,
+        installer->vlcversion + sizeof (installer->vlcversion), "3.0.21");
+    return;
   }
 
   snprintf (tbuff, sizeof (tbuff), "https://get.videolan.org/vlc/last/%s/", platform);
@@ -2595,8 +2603,9 @@ installerVLCGetVersion (installer_t *installer)
   webclientGet (installer->webclient, tbuff);
 
   if (installer->webresponse != NULL) {
-    char *srchvlc = "vlc-";
-    /* note that all files excepting ".." start with vlc-<version> */
+    const char  *srchvlc = "vlc-";
+
+    /* note that all files excepting ".." start with vlc-<version>- */
     /* vlc-<version>.<arch>.dmg{|.asc|.md5|.sha1|.sha256} */
     /* vlc-<version>.<arch>.{7z|exe|msi|zip|debugsys}{|.asc|.md5|.sha1|.sha256} */
     /* vlc-3.0.16-intel64.dmg */
@@ -2605,8 +2614,12 @@ installerVLCGetVersion (installer_t *installer)
     p = strstr (installer->webresponse, srchvlc);
     if (p != NULL) {
       p += strlen (srchvlc);
-      e = strstr (p, "-");
-      stpecpy (installer->vlcversion, installer->vlcversion + (e - p + 1), p);
+      stpecpy (installer->vlcversion,
+          installer->vlcversion + sizeof (installer->vlcversion), p);
+      e = strstr (installer->vlcversion, "-");
+      if (e != NULL) {
+        *e = '\0';
+      }
     }
   }
 }
