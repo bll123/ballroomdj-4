@@ -104,6 +104,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_PATH_GSETTINGS] = { "PATH_GSETTINGS" },
   [SV_PATH_URI_OPEN] = { "PATH_URI_OPEN" },
   [SV_PATH_VLC] = { "PATH_VLC" },
+  [SV_PATH_VLC_LIB] = { "PATH_VLC_LIB" },
   [SV_PATH_XDGUSERDIR] = { "PATH_XDGUSERDIR" },
   [SV_SHLIB_EXT] = { "SHLIB_EXT" },
   [SV_THEME_DEFAULT] = { "THEME_DEFAULT" },
@@ -163,6 +164,7 @@ static void svGetLinuxDefaultTheme (void);
 static void svGetSystemFont (void);
 static sysdistinfo_t *sysvarsParseDistFile (const char *path);
 static void sysvarsParseDistFileFree (sysdistinfo_t *distinfo);
+static void sysvarsSetVLCLibPath (char *tbuff, char *lbuff, size_t sz, const char *libnm);
 
 void
 sysvarsInit (const char *argv0, int flags)
@@ -902,36 +904,65 @@ sysvarsCheckPaths (const char *otherpaths)
 
   lsysvars [SVL_VLC_VERSION] = 3;     // unknown at this point
   sysvarsSetStr (SV_PATH_VLC, "");
+  sysvarsSetStr (SV_PATH_VLC_LIB, "");
+  sysvarsCheckVLCPath ();
+}
+
+void
+sysvarsCheckVLCPath (void)
+{
+  char        tbuff [MAXPATHLEN];
+  char        lbuff [MAXPATHLEN];
+  const char  *libnm = NULL;
+
+  *tbuff = '\0';
+  *lbuff = '\0';
   if (isWindows ()) {
     stpecpy (tbuff, tbuff + sizeof (tbuff),
         "C:/Program Files/VideoLAN/VLC");
+    libnm = "libvlc.dll";
+    sysvarsSetVLCLibPath (tbuff, lbuff, sizeof (lbuff), libnm);
   }
   if (isMacOS ()) {
-    if (fileopFileExists ("/Applications/VLC.app/Contents/MacOS/lib/libvlc.dylib")) {
-      stpecpy (tbuff, tbuff + sizeof (tbuff),
-          "/Applications/VLC.app/Contents/MacOS/lib/");
-    }
-    if (fileopFileExists ("/Applications/VLC.app/Contents/Frameworks/libvlc.dylib")) {
+    /* determine if this is vlc-3 or vlc-4 */
+    /* vlc-3 has the library in ../Contents/MacOS/lib */
+    /* vlc-4 has the library in ../Contents/Frameworks */
+
+    stpecpy (tbuff, tbuff + sizeof (tbuff),
+        "/Applications/VLC.app/Contents/MacOS/lib");
+    libnm = "libvlc.dylib";
+    sysvarsSetVLCLibPath (tbuff, lbuff, sizeof (lbuff), libnm);
+    if (! fileopFileExists (lbuff)) {
       stpecpy (tbuff, tbuff + sizeof (tbuff),
           "/Applications/VLC.app/Contents/Frameworks");
-      lsysvars [SVL_VLC_VERSION] = 4;
+      sysvarsSetVLCLibPath (tbuff, lbuff, sizeof (lbuff), libnm);
+      if (fileopFileExists (lbuff)) {
+        lsysvars [SVL_VLC_VERSION] = 4;
+        /* only on macos is the vlc version known */
+      }
     }
   }
   if (isLinux ()) {
-    stpecpy (tbuff, tbuff + sizeof (tbuff),
-        "/usr/lib/x86_64-linux-gnu/libvlc.so.5");
+    libnm = "libvlc.so.5";
+    /* the usual bunch */
+    snprintf (tbuff, sizeof (tbuff), "/usr/lib/%s-linux-gnu",
+        sysvarsGetStr (SV_OS_ARCH));
+    sysvarsSetVLCLibPath (tbuff, lbuff, sizeof (lbuff), libnm);
+    if (! fileopFileExists (lbuff)) {
+      /* opensuse et.al. */
+      stpecpy (tbuff, tbuff + sizeof (tbuff), "/usr/lib64");
+      sysvarsSetVLCLibPath (tbuff, lbuff, sizeof (lbuff), libnm);
+      if (! fileopFileExists (lbuff)) {
+        /* alpine linux */
+        stpecpy (tbuff, tbuff + sizeof (tbuff), "/usr/lib");
+        sysvarsSetVLCLibPath (tbuff, lbuff, sizeof (lbuff), libnm);
+      }
+    }
   }
-  if (fileopIsDirectory (tbuff) || fileopFileExists (tbuff)) {
+
+  if (fileopFileExists (lbuff)) {
     sysvarsSetStr (SV_PATH_VLC, tbuff);
-  } else {
-    /* one more try for linux (opensuse) */
-    if (isLinux ()) {
-      stpecpy (tbuff, tbuff + sizeof (tbuff),
-          "/usr/lib64/libvlc.so.5");
-    }
-    if (fileopFileExists (tbuff)) {
-      sysvarsSetStr (SV_PATH_VLC, tbuff);
-    }
+    sysvarsSetStr (SV_PATH_VLC_LIB, lbuff);
   }
 }
 
@@ -1240,3 +1271,12 @@ sysvarsParseDistFileFree (sysdistinfo_t *distinfo)
   mdfree (distinfo);
 }
 
+static void
+sysvarsSetVLCLibPath (char *tbuff, char *lbuff, size_t sz, const char *libnm)
+{
+  char    *p;
+
+  p = stpecpy (lbuff, lbuff + sz, tbuff);
+  p = stpecpy (p, lbuff + sz, "/");
+  p = stpecpy (p, lbuff + sz, libnm);
+}

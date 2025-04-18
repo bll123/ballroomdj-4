@@ -65,6 +65,7 @@ typedef enum {
   SV_PATH_GSETTINGS,
   SV_PATH_URI_OPEN,
   SV_PATH_VLC,
+  SV_PATH_VLC_LIB,
   SV_PATH_XDGUSERDIR,
   SV_SHLIB_EXT,
   SV_TEMP_A,
@@ -126,6 +127,7 @@ enum {
 
 void    sysvarsInit (const char *argv0, int basicflag);
 void    sysvarsCheckPaths (const char *otherpaths);
+void    sysvarsCheckVLCPath (void);
 char    * sysvarsGetStr (sysvarkey_t idx);
 int64_t sysvarsGetNum (sysvarlkey_t idx);
 void    sysvarsSetStr (sysvarkey_t, const char *value);

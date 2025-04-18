@@ -13,9 +13,12 @@
     * Import Playlist: Fix and improve validation processing.
     * Import Playlist: Fix incorrect error messages.
     * Import Playlist: Fix unable to re-open dialog.
-    * Installer: Windows: hard-code VLC installation to version 3.0.21 (as VLC 4 is broken).
-    * Installer: Windows: fix an error message when VLC is not installed.
+    * Installer: MacOS: Fix VLC installation process.
+    * Installer: Windows: Fix an error message when VLC is not installed.
+    * Installer: Windows: Hard-code VLC installation to version 3.0.21 (as VLC 4 is broken).
     * Internal: Fix obscure crash with spinboxes.
+    * Linux: Fix VLC check for architectures other than x86_64.
+    * Linux: Fix VLC check for Alpine Linux.
     * Player: Prep for VLC 4.
 
 -->

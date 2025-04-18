@@ -88,6 +88,14 @@ if [[ -f /usr/bin/zypper ]]; then
   pkgconfirm=-y
   pkgchk=
 fi
+if [[ -f /sbin/apk ]]; then
+  pkgprog=/sbin/apk
+  pkgrm=remove
+  pkginst=add
+  pkginstflags=
+  pkgconfirm=
+  pkgchk=
+fi
 
 if [[ $pkgprog == "" ]]; then
   echo ""
@@ -176,6 +184,17 @@ if [[ -f /usr/bin/zypper ]]; then
       opusfile-devel libvorbis-devel flac-devel check-devel
       libxml2-devel libjson-c-devel libvlc5 gstreamer-devel
       chromaprint-fpcalc"
+fi
+if [[ -f /sbin/apk ]]; then
+  # alpine linux
+  # updated 2025-4-18
+  # tested never
+  pkglist="cmake make gcc g++ gcc-objc curl-dev
+      ffmpeg4-dev pulseaudio-dev gtk+3.0-dev vlc-dev
+      pipewire-dev curl-dev libgcrypt-dev libogg-dev opus-dev
+      opusfile-dev libvorbis-dev flac-dev check-dev
+      libxml2-dev libjson-c-dev gstreamer-dev
+      chromaprint"
 fi
 
 sudo -v

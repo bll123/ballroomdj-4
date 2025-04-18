@@ -424,14 +424,7 @@ main (int argc, char * argv[])
       }
     }
 
-    if (! foundvlc) {
-      fprintf (stderr, "ERR: Unable to locate VLC\n");
-    }
-
     if (foundvlc) {
-      /* determine if this is vlc-3 or vlc-4 */
-      /* vlc-3 has the library in ../Contents/MacOS/lib */
-      /* vlc-4 has the library in ../Contents/Frameworks */
       /* note that 'tbuff' currently has the main path */
 
       stpecpy (pbuff, pbuff + sizeof (pbuff), tbuff);

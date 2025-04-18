@@ -2068,6 +2068,7 @@ installerVLCCheck (installer_t *installer)
   }
 
   installerVLCGetVersion (installer);
+
   if (*installer->vlcversion) {
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Downloading %s."), "VLC");
@@ -2090,6 +2091,7 @@ installerVLCDownload (installer_t *installer)
 {
   char  url [MAXPATHLEN];
   char  tbuff [MAXPATHLEN];
+  int   wrc;
 
   *url = '\0';
   *installer->dlfname = '\0';
@@ -2116,11 +2118,12 @@ installerVLCDownload (installer_t *installer)
         "https://get.videolan.org/vlc/last/macosx/%s",
         installer->dlfname);
   }
+  wrc = WEB_NO_CONTENT;
   if (*url && *installer->vlcversion) {
-    webclientDownload (installer->webclient, url, installer->dlfname);
+    wrc = webclientDownload (installer->webclient, url, installer->dlfname);
   }
 
-  if (fileopFileExists (installer->dlfname)) {
+  if (wrc == WEB_OK && fileopFileExists (installer->dlfname)) {
     chmod (installer->dlfname, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 #if _lib_removexattr
     removexattr (installer->dlfname, "com.apple.quarantine", XATTR_NOFOLLOW);
@@ -2143,7 +2146,9 @@ installerVLCDownload (installer_t *installer)
 static void
 installerVLCInstall (installer_t *installer)
 {
-  char    tbuff [MAXPATHLEN];
+  char        tbuff [MAXPATHLEN];
+  int64_t     count;
+  const char  *tmp;
 
   if (fileopFileExists (installer->dlfname)) {
     if (isWindows ()) {
@@ -2160,8 +2165,26 @@ installerVLCInstall (installer_t *installer)
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
     installer->vlcinstalled = true;
   }
-  fileopDelete (installer->dlfname);
   uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], "");
+
+  /* wait for the VLC installation to finalize */
+  /* on macos the "open" command is asynchronous */
+  /* note that sysvars PATH_VLC is not valid, and must be re-set */
+
+  count = 0;
+  sysvarsCheckVLCPath ();
+  tmp = sysvarsGetStr (SV_PATH_VLC_LIB);
+  while (! *tmp && count < 30000000L) {
+    mssleep (10);
+    sysvarsCheckVLCPath ();
+    tmp = sysvarsGetStr (SV_PATH_VLC_LIB);
+    ++count;
+  }
+
+  /* macos: at this point, VLC is partially installed */
+  /* as VLC is not used by the updater, it is ok to proceed */
+
+  fileopDelete (installer->dlfname);
   installerCheckPackages (installer);
 
   installer->instState = INST_FINALIZE;
@@ -2578,6 +2601,7 @@ installerVLCGetVersion (installer_t *installer)
   char      *e;
   char      *platform;
   char      tbuff [MAXPATHLEN];
+  int       wrc;
 
   *installer->vlcversion = '\0';
   installer->webresponse = NULL;
@@ -2600,9 +2624,9 @@ installerVLCGetVersion (installer_t *installer)
 
   snprintf (tbuff, sizeof (tbuff), "https://get.videolan.org/vlc/last/%s/", platform);
 
-  webclientGet (installer->webclient, tbuff);
+  wrc = webclientGet (installer->webclient, tbuff);
 
-  if (installer->webresponse != NULL) {
+  if (wrc == WEB_OK && installer->webresponse != NULL) {
     const char  *srchvlc = "vlc-";
 
     /* note that all files excepting ".." start with vlc-<version>- */
@@ -2614,12 +2638,13 @@ installerVLCGetVersion (installer_t *installer)
     p = strstr (installer->webresponse, srchvlc);
     if (p != NULL) {
       p += strlen (srchvlc);
-      stpecpy (installer->vlcversion,
-          installer->vlcversion + sizeof (installer->vlcversion), p);
-      e = strstr (installer->vlcversion, "-");
+      /* at this point, p includes the entire response... */
+      e = strstr (p, "-");
       if (e != NULL) {
         *e = '\0';
       }
+      stpecpy (installer->vlcversion,
+          installer->vlcversion + sizeof (installer->vlcversion), p);
     }
   }
 }
@@ -2631,7 +2656,7 @@ installerCheckPackages (installer_t *installer)
   char  *tmp;
 
 
-  tmp = sysvarsGetStr (SV_PATH_VLC);
+  tmp = sysvarsGetStr (SV_PATH_VLC_LIB);
 
   if (*tmp) {
     if (installer->guienabled && installer->uiBuilt) {

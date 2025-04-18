@@ -63,6 +63,14 @@ Manjaro packages for development
     pacman -S --needed libogg opus opusfile libvorbis flac
     pacman -S --needed ffmpeg4.4 check pkgconfig
 
+Alpine Linux packages for development
+
+    apk add cmake make gcc g++ gcc-objc
+    apk add curl-dev gtk+3.0-dev vlc-dev
+    apk add pipewire-dev pulseaudio-dev libgcrypt-dev
+    apk add libogg-dev livorbis-dev flac-dev opus-dev opusfile-dev
+    apk add ffmpeg4-dev check-dev json-c-dev
+
 Other notes
 
     usermod -a -G vboxsf <user>

@@ -88,6 +88,14 @@ if [[ -f /usr/bin/zypper ]]; then
   pkgconfirm=-y
   pkgchk=
 fi
+if [[ -f /sbin/apk ]]; then
+  pkgprog=/sbin/apk
+  pkgrm=remove
+  pkginst=add
+  pkginstflags=
+  pkgconfirm=
+  pkgchk=
+fi
 
 if [[ $pkgprog == "" ]]; then
   echo ""
@@ -171,6 +179,13 @@ if [[ -f /usr/bin/zypper ]]; then
   sudo systemctl stop packagekit
   pkglist="ffmpeg-4 libcurl4 libogg0 libopus0
       libopusfile0 libvorbis0 flac chromaprint-fpcalc libjson-c3"
+fi
+if [[ -f /sbin/apk ]]; then
+  # alpine linux
+  # updated 2025-4-18
+  # tested never
+  pkglist="ffmpeg4 libcurl4 libogg0 opus opusfile
+      libvorbis flacc chromaprint libjson-c"
 fi
 
 sudo -v
