@@ -6,7 +6,9 @@
 
 **4.14.1 2025-4---**
 
-**4.14.1 2025-4---**
+-->
+
+**4.14.1 2025-4-19**
 
 * Bug Fixes:
     * Configure: Audio Sources: Improve validation.
@@ -20,8 +22,6 @@
     * Linux: Fix VLC check for architectures other than x86_64.
     * Linux: Fix VLC check for Alpine Linux.
     * Player: Prep for VLC 4.
-
--->
 
 **4.14.0 2025-4-10**
 
@@ -1194,4 +1194,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-04-17 07:51:05; BDJ4 version 4.14.0)_
+<br>_(Updated 2025-04-19 09:13:59; BDJ4 version 4.14.1)_
