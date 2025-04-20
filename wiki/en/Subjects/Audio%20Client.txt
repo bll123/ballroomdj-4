@@ -68,11 +68,12 @@ Select __Import__ to import the playlist from the selected audio source.
 
 Once the playlist is imported, the playlist will be available to use
 in BDJ4.  The imported songs will be available in the music manager,
-song selection and requests.
+song selection and requests.  The connection to the remote server must
+be available to be able to play the imported songs.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![aud-client-imp-pl](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/aud-client-imp-pl-A.png)
 <br><span style="color:#4559bf;">__Edit Song Lists / Import / Import Playlist__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-04-20 10:23:44; BDJ4 version 4.14.1)_
+<br>_(Updated 2025-04-20 11:16:23; BDJ4 version 4.14.1)_
