@@ -31,10 +31,10 @@ supported, please [let me know](Getting%20Help).
 
 ##### Updating BallroomDJ 4 : Make a Backup
 
-Be sure to exit BallroomDJ 4 before creating a backup or updating the
+Be sure to exit BallroomDJ&nbsp;4 before creating a backup or updating the
 software.
 
-If you are updating BallroomDJ 4 to a new version, be sure to create a
+If you are updating BallroomDJ&nbsp;4 to a new version, be sure to create a
 backup of your BDJ4 installation.  On Linux, make a copy of the
 $HOME/BDJ4 folder
 
@@ -96,18 +96,20 @@ Open a terminal and run the installer:
     chmod a+rx bdj4-installer-linux-debian12-4.11.0
     ./bdj4-installer-linux-debian12-4.11.0
 
-Choose the folder in which to install BallroomDJ 4.  The $HOME/BDJ4
+Choose the folder in which to install BallroomDJ&nbsp;4.  The $HOME/BDJ4
 folder will be pre-selected for you.
 
 The __Re-Install__ checkbox is only used if you want to completely
 reset all of the BDJ4 data files.  Any changes you have made within
 BDJ4 will be lost if a re-install is done.
 
-If you want to convert a BallroomDJ 3 installation, select the
-BallroomDJ 3 folder and select the __Convert BallroomDJ 3__ checkbox.
+If you want to convert a BallroomDJ&nbsp;3 installation, select the
+BallroomDJ&nbsp;3 folder and select the __Convert&nbsp;BallroomDJ&nbsp;3__
+checkbox.
 
-After you have selected the installation folder, select the __Install__
-button and wait for the __Installation Completed__ message.
+After you have selected the installation folder, select the
+__Install__ or __Upgrade__ button and wait for the
+__Installation&nbsp;Completed__ message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![BallroomDJ 4 Installer on Linux](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Linux-Installer-D.png)
@@ -120,4 +122,4 @@ Visit the
 wiki page.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-04-17 07:56:01; BDJ4 version 4.14.0)_
+<br>_(Updated 2025-04-20 08:38:31; BDJ4 version 4.14.1)_

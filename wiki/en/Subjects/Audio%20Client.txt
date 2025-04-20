@@ -1,0 +1,78 @@
+[Wiki Home](Home)
+
+<span style="color:#4559bf;">_An client audio source is used to
+play songs from a remote location._</span>
+
+[TOC]
+
+### BDJ4 Client Audio Source
+
+A BDJ4 client audio source can be used to play songs from a remote
+server.  At this time (2025-4-20), only a BDJ4 to BDJ4 connection can
+be used.
+
+##### Configuring a new Client Audio Source
+
+Select __Configure&nbsp;/&nbsp;Audio&nbsp;Sources__.  BDJ4 ships with a
+single audio source named _BDJ4_ that is set to _Off_.  For this
+example, this audio source will be re-configured.
+
+Change __Mode__ to _Client_.
+
+Change the __Name__ to your preference.
+For this example, the name will be set to _bll-mac-m1_.
+
+__Type__ is set to _BDJ4_.  At this time (2025-4-20), this is only
+type that is supported.
+
+The __URL__ must be set to the address of the remote computer.  This
+can be _computername.local_ if the remote computer is on the local
+network, it can be an IP address, or a fully qualified name.
+
+The __Port__ must match what the server has configured.
+
+The __User__ and __Password__ must match what the server has configured.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![aud-client-conf](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/aud-client-conf-A.png)
+<br><span style="color:#4559bf;">__Configure / Audio Sources__</span> </div>
+
+References:
+<br>[Configuration / Audio Sources](en-Configuration-Audio%20Sources)
+
+##### Checking the Connection
+
+Select the __Check&nbsp;Connection__ button to check the configured
+connection.  The server must be accessible.  A status message will be
+displayed in the top right of the window indicating success or failure.
+
+##### Using the Client Connection
+
+First, a playlist must be imported from the remote server.  Select
+__Manage__, then select __Import&nbsp;Playlist__ from the __Import__
+menu.
+
+For __Import&nbsp;From__, use the spinbox to select the audio source.
+In this example, _bll-mac-m1_, the configured audio source.
+
+A list of available playlists will be populated, and a playlist may be
+selected in the __Playlist__ drop-down.  After selecting a playlist,
+the __URL__ and __New&nbsp;Song&nbsp;List&nbsp;Name__ will be populated.
+
+If the song list already exists in BDJ4, a warning message will be displayed.
+
+The __Check&nbsp;Connection__ button may be used to check the
+client to server connection.
+
+Select __Import__ to import the playlist from the selected audio source.
+
+Once the playlist is imported, the playlist will be available to use
+in BDJ4.  The imported songs will be available in the music manager,
+song selection and requests.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![aud-client-imp-pl](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/aud-client-imp-pl-A.png)
+<br><span style="color:#4559bf;">__Edit Song Lists / Import / Import Playlist__</span> </div>
+
+[Wiki Home](Home)
+<br>_(Updated 2025-04-20 10:23:44; BDJ4 version 4.14.1)_

@@ -76,7 +76,7 @@
 <br>[Edit Levels](en-Configuration-Edit%20Levels)
 <br>[Edit Genres](en-Configuration-Edit%20Genres)
 <br>[iTunes](en-Configuration-iTunes)
-<br>[AudioSources](en-Configuration-Audio%20Sources)
+<br>[Audio Sources](en-Configuration-Audio%20Sources)
 <br>[Mobile Remote Control](en-Configuration-Mobile%20Remote%20Control)
 <br>[Mobile Marquee](en-Configuration-Mobile%20Marquee)
 
@@ -111,6 +111,8 @@
     * [Export to BDJ4 / Import from BDJ4](en-Subjects-Export%20Import%20BDJ4)
 * __Advanced Setup__
     * [Alternate Folders](en-Subjects-Alternate%20Folders)
+    * [Audio Client](en-Subjects-Audio%20Client)
+    * [Audio Server](en-Subjects-Audio%20Server)
     * [Profiles](en-Subjects-Profiles)
     * [Keyboard Shortcuts](en-Subjects-Keyboard%20Shortcuts)
     * [Manual Configuration Items](en-Subjects-Manual%20Configuration)
@@ -153,4 +155,4 @@
 
 <small>[Developer Notes](Development-Developer%20Notes)</small>
 
-<br>_(Updated 2025-04-11 07:56:21; BDJ4 version 4.14.0)_
+<br>_(Updated 2025-04-20 10:22:22; BDJ4 version 4.14.1)_

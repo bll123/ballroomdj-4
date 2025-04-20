@@ -9,7 +9,7 @@ Windows&nbsp;11&nbsp;(64-bit).
 
 ##### Windows and Anti-Virus Programs
 
-__BallroomDJ 4 does not have any viruses in it.__
+__*\* BallroomDJ 4 does not have any viruses in it. \*\*__
 
 MicroSoft's Windows Defender's online anti-virus check will mark
 novel, small programs as a virus.  In BDJ4, this includes the
@@ -41,10 +41,10 @@ and press the enter key.
 
 ##### Updating BallroomDJ 4 : Make a Backup
 
-Be sure to exit BallroomDJ 4 before creating a backup or updating the
+Be sure to exit BallroomDJ&nbsp;4 before creating a backup or updating the
 software.
 
-If you are updating BallroomDJ 4 to a new version, be sure to create a
+If you are updating BallroomDJ&nbsp;4 to a new version, be sure to create a
 backup of your BDJ4 installation.  On Windows, simply make a copy of
 the entire BDJ4 folder.
 
@@ -72,22 +72,23 @@ Downloads folder. (This image shows an out of date installer).
 <br><span style="color:#4559bf;">__BallroomDJ 4 Installer Selection __</span> </div>
 
 If windows displays the __Windows Protected your PC__ message, select
-__More Info__, then __Run Anyway__.  BallroomDJ 4 has no malware
+__More Info__, then __Run Anyway__.  BallroomDJ&nbsp;4 has no malware
 present in it.
 
-Choose the folder in which to install BallroomDJ 4.  The
+Choose the folder in which to install BallroomDJ&nbsp;4.  The
 %USERPROFILE%\BDJ4 folder will be pre-selected for you.
 
 The __Re-Install__ checkbox is only used if you want to completely
 reset all of the BDJ4 data files.  Any changes you have made within
 BDJ4 will be lost if a re-install is done.
 
-If you want to convert a BallroomDJ 3 installation, select the
-BallroomDJ 3 folder and select the __Convert BallroomDJ 3__ checkbox.
+If you want to convert a BallroomDJ&nbsp;3 installation, select the
+BallroomDJ&nbsp;3 folder and select the __Convert&nbsp;BallroomDJ&nbsp;3__
+checkbox.
 
 After you have selected the installation folder, select the
-__Install__ button and wait for the __Installation Completed__
-message.
+__Install__ or __Upgrade__ button and wait for the
+__Installation&nbsp;Completed__ message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![BallroomDJ 4 Installer on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Installer-D.png)
@@ -121,4 +122,4 @@ Visit the
 wiki page.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-04-19 09:13:59; BDJ4 version 4.14.1)_
+<br>_(Updated 2025-04-20 08:38:31; BDJ4 version 4.14.1)_

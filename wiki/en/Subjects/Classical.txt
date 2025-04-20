@@ -85,7 +85,7 @@ to see a tooltip with the full display.
 BDJ4 has a unique feature to select an entire work.
 
 Suppose you want to listen to _Beethoven's_
-_Symphony&nbsp;No.&nbsp;5_.  In the Player, right-click on the first
+_Symphony&nbsp;No.&nbsp;5_.  In the Player, right-click on any
 movement in the work.
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -115,4 +115,4 @@ want to use.  To add a new organization path, the data/orgopt.txt file must
 be edited.  [Contact](en-Getting%20Help) the development team for help.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-04-20 08:47:12; BDJ4 version 4.14.1)_

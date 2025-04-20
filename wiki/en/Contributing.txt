@@ -6,13 +6,16 @@ As of 2025-2-28, development needs are:
 
 * Translations
 * All Platforms: Unit Testing, Testing and QA
+* Audio Sources:
+    * Spotify
 * Windows Development: SMTC: Use image from audio file.
 * Player Interface
     * Windows Native
+    * Spotify
 * User Interface:
     * Windows Native UI
     * MacOS Native UI
-      This is in progress.  Progress is very slow/stalled.
+      This is in progress.  Progress is very slow/stalled/stopped.
     * Ultimate&#43;&#43;
     * QT
     * imgui/cimgui
@@ -25,4 +28,4 @@ Testing, Quality&nbsp;Assurance, Documentation, Website&nbsp;Management,
 System&nbsp;Administration
 
 [Wiki Home](Home)
-<br>_(Updated 2025-03-30 07:20:15; BDJ4 version 4.13.0)_
+<br>_(Updated 2025-04-20 09:33:32; BDJ4 version 4.14.1)_

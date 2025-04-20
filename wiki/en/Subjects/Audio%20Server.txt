@@ -1,0 +1,53 @@
+[Wiki Home](Home)
+
+<span style="color:#4559bf;">_An audio server is used to
+enable playing songs from a remote location._</span>
+
+[TOC]
+
+### BDJ4 Audio Server
+
+A BDJ4 audio server can be used to allow remote playback of songs.  At
+this time (2025-4-20), only a BDJ4 to BDJ4 connection can be used.
+
+BDJ4 to BDJ4 connections have the advantage that speed adjustments,
+song start and song end all work.
+
+##### Configuring BDJ4 as a Server
+
+Select __Configure&nbsp;/&nbsp;Audio&nbsp;Sources__.  BDJ4 ships with a
+single audio source named _BDJ4_ that is set to _Off_.  For this
+example, this audio source will be re-configured.
+
+Change __Mode__ to _Server_.
+
+Change the __Name__ to your preference. For this example, the name
+will be set to _BDJ4-Server_.
+
+__Type__ is set to _BDJ4_.  At this time (2025-4-20), this is only
+type that is supported.
+
+The __Port__ can be left on 9011 or changed to your preference.
+
+Be sure to set the __User__ and __Password__ to your desired user and
+password combinations.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![aud-src-conf](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/aud-src-conf-A.png)
+<br><span style="color:#4559bf;">__Configure / Audio Sources__</span> </div>
+
+References:
+<br>[Configuration / Audio Sources](en-Configuration-Audio%20Sources)
+
+##### Starting the Server
+
+Once the server is configured, it will be automatically started when
+BDJ4 is started.  Exit BDJ4 completely, then restart BDJ4, and the
+server will be active.
+
+See [Subjects / Audio Client](en-Subjects-Audio%20Client) on how to set up a
+client connection to a server.  Note that the client and server cannot
+be configured on the same machine.
+
+[Wiki Home](Home)
+<br>_(Updated 2025-04-20 10:23:44; BDJ4 version 4.14.1)_
