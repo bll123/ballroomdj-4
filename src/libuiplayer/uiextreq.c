@@ -42,6 +42,7 @@ enum {
   UIEXTREQ_CB_DIALOG,
   UIEXTREQ_CB_DANCE,
   UIEXTREQ_CB_AUDIO_FILE,
+  UIEXTREQ_CB_DRAG_DROP,
   UIEXTREQ_CB_MAX,
 };
 
@@ -79,6 +80,7 @@ static int    uiextreqValidateAudioFile (uiwcont_t *entry, const char *label, vo
 static int    uiextreqValidateArtist (uiwcont_t *entry, const char *label, void *udata);
 static int    uiextreqValidateTitle (uiwcont_t *entry, const char *label, void *udata);
 static int    uiextreqValidateMQDisplay (uiwcont_t *entry, const char *label, void *udata);
+static int32_t uiextreqDragDropCallback (void *udata, const char *uri);
 
 uiextreq_t *
 uiextreqInit (uiwcont_t *windowp, musicdb_t *musicdb, nlist_t *opts)
@@ -226,6 +228,11 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
       RESPONSE_APPLY,
       NULL
       );
+
+  uiextreq->callbacks [UIEXTREQ_CB_DRAG_DROP] = callbackInitS (
+      uiextreqDragDropCallback, uiextreq);
+  uiDragDropSetDestURICallback (uiextreq->wcont [UIEXTREQ_W_DIALOG],
+      uiextreq->callbacks [UIEXTREQ_CB_DRAG_DROP]);
 
   vbox = uiCreateVertBox ();
   uiWidgetExpandHoriz (vbox);
@@ -562,3 +569,20 @@ uiextreqValidateMQDisplay (uiwcont_t *entry, const char *label, void *udata)
   return UIENTRY_OK;
 }
 
+static int32_t
+uiextreqDragDropCallback (void *udata, const char *uri)
+{
+  uiextreq_t  *uiextreq = udata;
+
+  if (uiextreq == NULL || uri == NULL || ! *uri) {
+    return UICB_STOP;
+  }
+
+  if (strncmp (uri, AS_FILE_PFX, AS_FILE_PFX_LEN) == 0) {
+    uri += AS_FILE_PFX_LEN;
+  }
+
+  uiEntrySetValue (uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE], uri);
+
+  return UICB_CONT;
+}

@@ -15,10 +15,12 @@ extern "C" {
 /* supported types */
 /* if new audio sources are added, configui/confas.c must be manually */
 /* updated to include the new types */
+/* libbasic/asconf.c must also be updated to include the new types */
 enum {
   AUDIOSRC_TYPE_NONE,
   AUDIOSRC_TYPE_FILE,
   AUDIOSRC_TYPE_BDJ4,
+  AUDIOSRC_TYPE_PODCAST,    // https
   AUDIOSRC_TYPE_MAX,
 };
 
@@ -32,9 +34,15 @@ typedef enum {
 
 #define AS_FILE_PFX "file://"
 #define AS_BDJ4_PFX "bdj4://"
+#define AS_HTTP_PFX "http://"
+#define AS_HTTPS_PFX "https://"
+#define AS_XML_SFX ".xml"
 enum {
   AS_FILE_PFX_LEN = strlen (AS_FILE_PFX),
   AS_BDJ4_PFX_LEN = strlen (AS_BDJ4_PFX),
+  AS_HTTP_PFX_LEN = strlen (AS_HTTP_PFX),
+  AS_HTTPS_PFX_LEN = strlen (AS_HTTPS_PFX),
+  AS_XML_SFX_LEN = strlen (AS_XML_SFX),
 };
 
 /* audiosrc.c */

@@ -41,6 +41,7 @@ uiDragDropSetDestURICallback (uiwcont_t *uiwidget, callback_t *cb)
   gtk_drag_dest_set (uiwidget->uidata.widget, GTK_DEST_DEFAULT_ALL,
       NULL, 0, GDK_ACTION_COPY);
   gtk_drag_dest_add_uri_targets (uiwidget->uidata.widget);
+  gtk_drag_dest_add_text_targets (uiwidget->uidata.widget);
   g_signal_connect (GTK_WIDGET (uiwidget->uidata.widget), "drag-data-received",
       G_CALLBACK (uiDragDropDestHandler), cb);
 }
@@ -59,18 +60,15 @@ uiDragDropDestHandler (GtkWidget *w, GdkDragContext *context,
   if (info == 0 &&
       gtk_selection_data_get_length (seldata) >= 0 &&
       gtk_selection_data_get_format (seldata) == 8) {
-    char    **urilist = NULL;
-    int     rc;
-    char    *nstr;
+    int           rc;
+    char          *nstr;
+    const char    *data;
 
-    urilist = gtk_selection_data_get_uris (seldata);
-    mdextalloc (urilist);
+    data = (const char *) gtk_selection_data_get_data (seldata);
 
-    nstr = g_uri_unescape_string (urilist [0], NULL);
+    nstr = g_uri_unescape_string (data, NULL);
     mdextalloc (nstr);
     rc = callbackHandlerS (cb, nstr);
-    mdextfree (urilist);
-    g_strfreev (urilist);
     mdextfree (nstr);
     dataFree (nstr);
     gtk_drag_finish (context, rc, FALSE, tm);

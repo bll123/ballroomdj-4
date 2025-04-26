@@ -1,8 +1,8 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
- */
-/*
+ *
  * https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
+ * 10054 - WSAECONNRESET
  */
 
 #include "config.h"
@@ -480,6 +480,7 @@ sockReadBuff (Sock_t sock, size_t *rlen, char *data, size_t maxlen)
   len = ntohl (len);
   if (len > maxlen) {
     sockFlush (sock);
+    logMsg (LOG_DBG, LOG_SOCKET, "sockReadBuff-b: len %d > maxlen %ld", len, (long) maxlen);
     return NULL;
   }
   rc = sockReadData (sock, data, len);
@@ -559,6 +560,7 @@ sockReadData (Sock_t sock, char *data, size_t len)
   ssize_t       timeout;
 
   if (socketInvalid (sock)) {
+    logMsg (LOG_DBG, LOG_SOCKET, "sockReadData-a invalid socket %ld", (long) sock);
     return -1;
   }
 

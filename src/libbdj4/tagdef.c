@@ -923,6 +923,34 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* text search          */
     false,                        /* vorbis multi         */
   },
+  [TAG_NO_MAX_PLAY_TM] =
+  { "NOMAXPLAYTM",                /* tag */
+    NULL,                         /* display name         */
+    NULL,                         /* short display name   */
+    { [TAG_TYPE_VORBIS] = { "NOMAXPLAYTM", NULL, NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:BDJ4:NOMAXPLAYTM", "BDJ4", "NOMAXPLAYTM", NULL },
+      [TAG_TYPE_ID3] = { "TXXX=NOMAXPLAYTM", "TXXX", "NOMAXPLAYTM", NULL },
+      [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+    },       /* audio tags */
+    NULL,                         /* itunes name          */
+    ET_SWITCH,                    /* edit type            */
+    VALUE_NUM,                    /* value type           */
+    convBoolean,                  /* conv func            */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align end            */
+    true,                         /* is bdj tag           */
+    false,                        /* is norm tag          */
+    true,                         /* edit-all             */
+    true,                         /* editable             */
+    false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
+    false,                        /* player-ui-disp       */
+    false,                        /* text search          */
+    false,                        /* vorbis multi         */
+  },
   [TAG_NOTES] =
   { "NOTES",                      /* tag */
     NULL,                         /* display name         */
@@ -1649,6 +1677,8 @@ tagdefInit (void)
   tagdefs [TAG_GROUPING].displayname = _("Grouping");
   /* CONTEXT: label: keyword (used to filter out songs) */
   tagdefs [TAG_KEYWORD].displayname = _("Keyword");
+  /* CONTEXT: label: no maximum play time */
+  tagdefs [TAG_NO_MAX_PLAY_TM].displayname = _("No Maximum Play Time");
   /* CONTEXT: label: notes */
   tagdefs [TAG_NOTES].displayname = _("Notes");
   /* CONTEXT: label: status */

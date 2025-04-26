@@ -306,6 +306,13 @@ vlcMedia (vlcdata_t *vlcdata, const char *fn)
   }
 
   vlclog (vlcdata, "media: %s\n", fn);
+{
+  struct stat statbuf;
+  int         rc;
+
+  rc = stat (fn, &statbuf);
+  vlclog (vlcdata, "stat: %d %ld\n", rc, statbuf.st_size);
+}
   vlcReleaseMedia (vlcdata);
 
 #if LIBVLC_VERSION_INT < LIBVLC_VERSION(4,0,0,0)
@@ -460,11 +467,13 @@ vlcReleaseMedia (vlcdata_t *vlcdata)
     return;
   }
 
-  if (vlcdata->media != NULL) {
-    mdextfree (vlcdata->media);
-    libvlc_media_release (vlcdata->media);
-    vlcdata->media = NULL;
+  if (vlcdata->media == NULL) {
+    return;
   }
+
+  mdextfree (vlcdata->media);
+  libvlc_media_release (vlcdata->media);
+  vlcdata->media = NULL;
 }
 
 static void

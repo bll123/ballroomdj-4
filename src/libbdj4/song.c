@@ -90,6 +90,7 @@ static datafilekey_t songdfkeys [] = {
   { "MOVEMENTNAME",         TAG_MOVEMENTNAME,         VALUE_STR, NULL, DF_NORM },
   { "MOVEMENTNUM",          TAG_MOVEMENTNUM,          VALUE_NUM, NULL, DF_NORM },
   { "MQDISPLAY",            TAG_MQDISPLAY,            VALUE_STR, NULL, DF_NORM },
+  { "NOMAXPLAYTM",          TAG_NO_MAX_PLAY_TM,       VALUE_NUM, convBoolean, DF_NORM },
   { "NOTES",                TAG_NOTES,                VALUE_STR, NULL, DF_NORM },
   { "PFXLEN",               TAG_PREFIX_LEN,           VALUE_NUM, NULL, DF_NORM },
   { "RECORDING_ID",         TAG_RECORDING_ID,         VALUE_STR, NULL, DF_NORM },
@@ -722,5 +723,12 @@ songSetDefaults (song_t *song)
       tmval = tmutilStringToUTC (tstr, "%F");
       nlistSetNum (song->songInfo, TAG_DBADDDATE, tmval);
     }
+  }
+
+  /* 2025-4-26: 4.15.0 no-max-play-time */
+  lkey = nlistGetNum (song->songInfo, TAG_NO_MAX_PLAY_TM);
+  if (lkey < 0) {
+    /* false */
+    nlistSetNum (song->songInfo, TAG_NO_MAX_PLAY_TM, 0);
   }
 }

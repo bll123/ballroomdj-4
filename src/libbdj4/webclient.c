@@ -89,6 +89,30 @@ webclientAlloc (void *userdata, webclientcb_t callback)
 }
 
 int
+webclientHead (webclient_t *webclient, const char *uri)
+{
+  long    respcode;
+
+  webclientInitResp (webclient);
+  curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
+  curl_easy_setopt (webclient->curl, CURLOPT_NOBODY, 1L);
+  curl_easy_perform (webclient->curl);
+  curl_easy_getinfo (webclient->curl, CURLINFO_RESPONSE_CODE, &respcode);
+  if (respcode != 200) {
+    if (webclient->resp != NULL) {
+      snprintf (webclient->resp, webclient->respAllocated, "%s: %ld",
+          /* CONTEXT: HTTP response code (error) */
+          _("HTTP Code"), respcode);
+    }
+  }
+  if (webclient->callback != NULL) {
+    webclient->callback (webclient->userdata, webclient->resp, webclient->respSize);
+  }
+
+  return (int) respcode;
+}
+
+int
 webclientGet (webclient_t *webclient, const char *uri)
 {
   long    respcode;

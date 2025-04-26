@@ -22,6 +22,7 @@ enum {
 };
 
 webclient_t * webclientAlloc (void *userdata, webclientcb_t cb);
+int   webclientHead (webclient_t *webclient, const char *uri);
 int   webclientGet (webclient_t *webclient, const char *uri);
 int   webclientPost (webclient_t *webclient, const char *uri, const char *query);
 int   webclientPostCompressed (webclient_t *webclient, const char *uri, const char *query);

@@ -43,6 +43,7 @@ enum {
   UIIMPPL_CB_PL_SEL,
   UIIMPPL_CB_TARGET,
   UIIMPPL_CB_TYPE_SEL,
+  UIIMPPL_CB_DRAG_DROP,
   UIIMPPL_CB_MAX,
 };
 
@@ -75,6 +76,7 @@ typedef struct uiimppl {
   nlist_t           *aslist;
   nlist_t           *askeys;
   nlist_t           *astypes;
+  nlist_t           *astypelookup;
   ilist_t           *plnames;
   const char        *urilabel;
   const char        *newnamelabel;
@@ -104,6 +106,8 @@ static int  uiimpplValidateNewName (uiimppl_t *uiimppl);
 static bool uiimpplImportTypeCallback (void *udata);
 static void uiimpplFreeDialog (uiimppl_t *uiimppl);
 static void uiimpplProcessValidations (uiimppl_t *uiimppl, bool forceflag);
+static int32_t uiimpplDragDropCallback (void *udata, const char *uri);
+static bool uiimpplIsPlaylistFile (pathinfo_t *pi);
 
 uiimppl_t *
 uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
@@ -176,6 +180,8 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
   nlistSetSize (uiimppl->askeys, count);
   uiimppl->astypes = nlistAlloc ("astypes", LIST_UNORDERED, NULL);
   nlistSetSize (uiimppl->astypes, count);
+  uiimppl->astypelookup = nlistAlloc ("astypelookup", LIST_UNORDERED, NULL);
+  nlistSetSize (uiimppl->astypelookup, count);
 
   count = 0;
   slistStartIterator (tlist, &titeridx);
@@ -195,11 +201,13 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
     }
     /* have to save the types, as audio-src-file is internal */
     nlistSetNum (uiimppl->astypes, askey, type);
+    nlistSetNum (uiimppl->astypelookup, type, askey);
     ++count;
   }
   nlistSort (uiimppl->aslist);
   nlistSort (uiimppl->askeys);
   nlistSort (uiimppl->astypes);
+  nlistSort (uiimppl->astypelookup);
   slistFree (tlist);
 
   uiimppl->askey = nlistGetNum (uiimppl->options, MANAGE_IMP_PL_ASKEY);
@@ -217,6 +225,8 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
       uiimpplSelectHandler, uiimppl);
   uiimppl->callbacks [UIIMPPL_CB_TYPE_SEL] = callbackInit (
       uiimpplImportTypeCallback, uiimppl, NULL);
+  uiimppl->callbacks [UIIMPPL_CB_DRAG_DROP] = callbackInitS (
+      uiimpplDragDropCallback, uiimppl);
 
   return uiimppl;
 }
@@ -237,6 +247,8 @@ uiimpplFree (uiimppl_t *uiimppl)
   uiimppl->askeys = NULL;
   nlistFree (uiimppl->astypes);
   uiimppl->astypes = NULL;
+  nlistFree (uiimppl->astypelookup);
+  uiimppl->astypelookup = NULL;
   asconfFree (uiimppl->asconf);
   for (int i = 0; i < UIIMPPL_CB_MAX; ++i) {
     callbackFree (uiimppl->callbacks [i]);
@@ -409,6 +421,9 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiWidgetExpandVert (vbox);
   uiWidgetSetAllMargins (vbox, 4);
 
+  uiDragDropSetDestURICallback (uiimppl->wcont [UIIMPPL_W_DIALOG],
+      uiimppl->callbacks [UIIMPPL_CB_DRAG_DROP]);
+
   /* status/error msg */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
@@ -481,7 +496,6 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiimppl->wcont [UIIMPPL_W_URI_LABEL] = uiwidgetp;
 
   uiwidgetp = uiEntryInit (50, MAXPATHLEN);
-  uiEntrySetValue (uiwidgetp, "");
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
@@ -701,10 +715,7 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
   if (uiimppl->imptype == AUDIOSRC_TYPE_FILE) {
     bool    extok = false;
 
-    if (pathInfoExtCheck (pi, ".m3u") ||
-        pathInfoExtCheck (pi, ".m3u8") ||
-        pathInfoExtCheck (pi, ".xspf") ||
-        pathInfoExtCheck (pi, ".jspf")) {
+    if (uiimpplIsPlaylistFile (pi)) {
       extok = true;
     }
 
@@ -736,7 +747,20 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
   if (uiimppl->imptype == AUDIOSRC_TYPE_BDJ4) {
     if (strncmp (str, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) != 0) {
       uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG],
-          /* CONTEXT: import playlist: invalid URI */
+          /* CONTEXT: import playlist: invalid URL */
+          _("Invalid URL"));
+      uiimppl->haveerrors |= UIIMPPL_ERR_URI;
+      uiimppl->in_cb = false;
+      return UIENTRY_ERROR;
+    }
+  }
+
+  if (uiimppl->imptype == AUDIOSRC_TYPE_PODCAST) {
+    if (strncmp (str, AS_HTTPS_PFX, AS_HTTPS_PFX_LEN) != 0 ||
+        strncmp (str + strlen (str) - AS_XML_SFX_LEN,
+            AS_XML_SFX, AS_XML_SFX_LEN) != 0) {
+      uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG],
+          /* CONTEXT: import playlist: invalid URL */
           _("Invalid URL"));
       uiimppl->haveerrors |= UIIMPPL_ERR_URI;
       uiimppl->in_cb = false;
@@ -939,3 +963,60 @@ uiimpplProcessValidations (uiimppl_t *uiimppl, bool forceflag)
   }
 }
 
+static int32_t
+uiimpplDragDropCallback (void *udata, const char *uri)
+{
+  uiimppl_t   *uiimppl = udata;
+  int         type;
+  size_t      urilen;
+  pathinfo_t  *pi;
+
+  if (uiimppl == NULL || uri == NULL || ! *uri) {
+    return UICB_STOP;
+  }
+
+  urilen = strlen (uri);
+  pi = pathInfo (uri);
+
+  type = AUDIOSRC_TYPE_NONE;
+  if (strncmp (uri, AS_FILE_PFX, AS_FILE_PFX_LEN) == 0 &&
+      uiimpplIsPlaylistFile (pi)) {
+    type = AUDIOSRC_TYPE_FILE;
+    uri += AS_FILE_PFX_LEN;
+  }
+  if (strncmp (uri, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) == 0) {
+    type = AUDIOSRC_TYPE_BDJ4;
+  }
+  if (strncmp (uri, AS_HTTPS_PFX, AS_HTTPS_PFX_LEN) == 0 &&
+      pathInfoExtCheck (pi, AS_XML_SFX)) {
+    type = AUDIOSRC_TYPE_PODCAST;
+  }
+
+  if (type == AUDIOSRC_TYPE_NONE) {
+    pathInfoFree (pi);
+    return UICB_STOP;
+  }
+
+  uiimppl->askey = nlistGetNum (uiimppl->astypelookup, type);
+  uiSpinboxTextSetValue (uiimppl->wcont [UIIMPPL_W_IMP_TYPE], uiimppl->askey);
+  uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_URI], uri);
+  uiimppl->changed = true;
+
+  pathInfoFree (pi);
+  return UICB_CONT;
+}
+
+static bool
+uiimpplIsPlaylistFile (pathinfo_t *pi)
+{
+  bool    rc = false;
+
+  if (pathInfoExtCheck (pi, ".m3u") ||
+      pathInfoExtCheck (pi, ".m3u8") ||
+      pathInfoExtCheck (pi, ".xspf") ||
+      pathInfoExtCheck (pi, ".jspf")) {
+    rc = true;
+  }
+
+  return rc;
+}

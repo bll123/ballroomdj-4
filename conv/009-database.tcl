@@ -129,7 +129,6 @@ dict for {fn data} $musicdbList {
     if { $tag eq "DISPLAYIMG" } { continue }
     if { $tag eq "DURATION_HMS" } { continue }
     if { $tag eq "DURATION_STR" } { continue }
-    if { $tag eq "NOMAXPLAYTIME" } { continue }
     if { $tag eq "UPDATEFLAG" } { continue }
     if { $tag eq "VARIOUSARTISTS" } { continue }
     if { $tag eq "WRITETIME" } { continue }
@@ -141,6 +140,14 @@ dict for {fn data} $musicdbList {
     if { $tag eq "rrn" } { continue }
 
     set value [dict get $data $tag]
+
+    if { $tag eq "NOMAXPLAYTIME" } {
+      if { $value eq {} || $value == 0 } {
+        # do not write the default
+        continue;
+      }
+      set tag "NOMAXPLAYTM"
+    }
 
     if { $tag eq "TRACKTOTAL" || $tag eq "DISCTOTAL" } {
       if { $value == 0 } {

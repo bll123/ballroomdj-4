@@ -42,7 +42,7 @@ if (isset($_POST['mobmqkey'])) {
     }
     $secured = 'T';
   } else {
-    /* if the .key file is not present, write the key out to the file */
+    # if the .key file is not present, write the key out to the file
     if (file_put_contents ($kfn, $_POST['mobmqkey']) === false) {
       echo 'NG5';
       exit (0);
@@ -73,7 +73,7 @@ if (isset($_POST['mobmqkey'])) {
   }
   echo $rc;
 } else {
-  /* normal user fetch of marquee */
+  # normal user fetch of marquee
   if ( file_exists($nfn) ) {
     $res = file_get_contents ($nfn);
   } else {

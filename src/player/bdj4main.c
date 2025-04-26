@@ -2671,8 +2671,8 @@ static int32_t
 mainCalculateSongDuration (maindata_t *mainData, song_t *song,
     int playlistIdx, int mqidx, int speedCalcFlag)
 {
-  int32_t     maxdur;
-  int32_t     dur;
+  int32_t     maxdur = 0;
+  int32_t     dur = 0;
   playlist_t  *playlist = NULL;
   int32_t     pldncmaxdur;
   int32_t     plmaxdur;
@@ -2680,6 +2680,7 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song,
   int32_t     songend;
   int         speed;
   ilistidx_t  danceidx;
+  bool        nmpt;
 
 
   if (song == NULL) {
@@ -2725,6 +2726,13 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song,
   if (speedCalcFlag == MAIN_CALC_WITH_SPEED && speed != 100) {
     dur = songutilAdjustPosReal (dur, speed);
     logMsg (LOG_DBG, LOG_INFO, "dur-speed: %" PRId32, dur);
+  }
+
+  nmpt = songGetNum (song, TAG_NO_MAX_PLAY_TM);
+  if (nmpt) {
+    /* if the no-max-play-time flag is set, no need to check */
+    /* maximum duration values */
+    return dur;
   }
 
   maxdur = bdjoptGetNumPerQueue (OPT_Q_MAXPLAYTIME, mqidx);

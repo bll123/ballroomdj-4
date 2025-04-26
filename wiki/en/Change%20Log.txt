@@ -4,7 +4,15 @@
 
 <!--
 
-**4.14.1 2025-4---**
+**4.15.0 2025-4---**
+
+* Changes:
+    * Player: External Request: Drag and drop implemented.
+    * Manage: Import Playlist: Drag and drop implemented.
+    * PENDING Configure: Audio Sources: Drag and drop implemented.
+* New Features:
+    * PENDING Configure: Audio Sources: Add podcast.
+    * PENDING Manage: Import Playlist: Add podcast.
 
 -->
 

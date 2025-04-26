@@ -50,6 +50,7 @@ static const char *asconftype [AUDIOSRC_TYPE_MAX] = {
   [AUDIOSRC_TYPE_NONE] = "none",
   [AUDIOSRC_TYPE_FILE] = "file",
   [AUDIOSRC_TYPE_BDJ4] = "bdj4",
+  [AUDIOSRC_TYPE_PODCAST] = "podcast",
 };
 
 static const char *asconfmode [ASCONF_MODE_MAX] = {
@@ -279,6 +280,9 @@ asconfConvType (datafileconv_t *conv)
     sval = conv->str;
     conv->num = LIST_VALUE_INVALID;
     for (int i = 0; i < AUDIOSRC_TYPE_MAX; ++i) {
+      if (sval == NULL) {
+        continue;
+      }
       if (strcmp (sval, asconftype [i]) == 0) {
         conv->num = i;
       }
