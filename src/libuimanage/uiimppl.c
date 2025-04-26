@@ -755,7 +755,7 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
     }
   }
 
-  if (uiimppl->imptype == AUDIOSRC_TYPE_PODCAST) {
+  if (uiimppl->imptype == AUDIOSRC_TYPE_HTTPS) {
     if (strncmp (str, AS_HTTPS_PFX, AS_HTTPS_PFX_LEN) != 0 ||
         strncmp (str + strlen (str) - AS_XML_SFX_LEN,
             AS_XML_SFX, AS_XML_SFX_LEN) != 0) {
@@ -989,7 +989,7 @@ uiimpplDragDropCallback (void *udata, const char *uri)
   }
   if (strncmp (uri, AS_HTTPS_PFX, AS_HTTPS_PFX_LEN) == 0 &&
       pathInfoExtCheck (pi, AS_XML_SFX)) {
-    type = AUDIOSRC_TYPE_PODCAST;
+    type = AUDIOSRC_TYPE_HTTPS;
   }
 
   if (type == AUDIOSRC_TYPE_NONE) {

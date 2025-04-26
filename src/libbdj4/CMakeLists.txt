@@ -32,6 +32,7 @@ add_library (libbdj4 SHARED
   orgopt.c
   orgutil.c
   playlist.c
+  podcast.c
   quickedit.c
   rating.c
   samesong.c

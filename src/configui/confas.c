@@ -72,7 +72,7 @@ confuiAudioSourceInit (confuigui_t *gui)
   confuiSpinboxTextInitDataNum (gui, "cu-as-type",
       CONFUI_SPINBOX_AUDIOSRC_TYPE,
       AUDIOSRC_TYPE_BDJ4, "BDJ4",
-      AUDIOSRC_TYPE_PODCAST, _("Podcast"),
+      AUDIOSRC_TYPE_HTTPS, _("Podcast"),
       -1);
 
   gui->tables [CONFUI_ID_AUDIOSRC].addfunc = confuiAudioSrcAdd;
@@ -382,13 +382,8 @@ confuiAudioSrcEntryChg (void *udata, const char *label, int widx)
   if (widx != CONFUI_ENTRY_AUDIOSRC_NAME) {
     flags |= VAL_NO_SPACES;
   }
-  if (type != AUDIOSRC_TYPE_PODCAST &&
-      widx == CONFUI_ENTRY_AUDIOSRC_URI) {
+  if (type != AUDIOSRC_TYPE_HTTPS) {
     flags |= VAL_BASE_URI;
-  }
-  if (type == AUDIOSRC_TYPE_PODCAST &&
-      widx == CONFUI_ENTRY_AUDIOSRC_URI) {
-    flags |= VAL_FULL_URI;
   }
   vrc = validate (tmsg, sizeof (tmsg), label, str, flags);
   if (vrc == false) {

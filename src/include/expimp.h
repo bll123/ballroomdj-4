@@ -23,6 +23,9 @@ nlist_t * jspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_
 void xspfExport (musicdb_t *musicdb, nlist_t *list, const char *fname, const char *slname);
 nlist_t * xspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz);
 
+/* rss.c */
+void rssImport (const char *fname, char *plname, size_t plsz);
+
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
 #endif

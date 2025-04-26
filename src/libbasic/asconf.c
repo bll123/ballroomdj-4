@@ -50,7 +50,7 @@ static const char *asconftype [AUDIOSRC_TYPE_MAX] = {
   [AUDIOSRC_TYPE_NONE] = "none",
   [AUDIOSRC_TYPE_FILE] = "file",
   [AUDIOSRC_TYPE_BDJ4] = "bdj4",
-  [AUDIOSRC_TYPE_PODCAST] = "podcast",
+  [AUDIOSRC_TYPE_HTTPS] = "https",
 };
 
 static const char *asconfmode [ASCONF_MODE_MAX] = {

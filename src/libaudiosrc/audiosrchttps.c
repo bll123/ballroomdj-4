@@ -61,13 +61,13 @@ typedef struct asdata {
   int           state;
 } asdata_t;
 
-static void aspodcastWebResponseCallback (void *userdata, const char *respstr, size_t len);
-static bool aspodcastGetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm, int askey);
-static bool aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri);
-static bool aspodcastGetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata, int askey);
-static int aspodcastGetClientKeyByURI (asdata_t *asdata, const char *nm);
-static int aspodcastGetClientKey (asdata_t *asdata, int askey);
-static const char * aspodcastStripPrefix (asdata_t *asdata, const char *songuri, int clientidx);
+static void ashttpsWebResponseCallback (void *userdata, const char *respstr, size_t len);
+static bool ashttpsGetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm, int askey);
+static bool ashttpsSongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri);
+static bool ashttpsGetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata, int askey);
+static int ashttpsGetClientKeyByURI (asdata_t *asdata, const char *nm);
+static int ashttpsGetClientKey (asdata_t *asdata, int askey);
+static const char * ashttpsStripPrefix (asdata_t *asdata, const char *songuri, int clientidx);
 static void audiosrcClientFree (asdata_t *asdata);
 
 void
@@ -112,7 +112,7 @@ asiPostInit (asdata_t *asdata, const char *uri)
       int   type;
 
       type = asconfGetNum (asdata->asconf, askey, ASCONF_TYPE);
-      if (type == AUDIOSRC_TYPE_PODCAST) {
+      if (type == AUDIOSRC_TYPE_HTTPS) {
         ++count;
       }
     }
@@ -131,19 +131,17 @@ asiPostInit (asdata_t *asdata, const char *uri)
       int   type;
 
       type = asconfGetNum (asdata->asconf, askey, ASCONF_TYPE);
-      if (type == AUDIOSRC_TYPE_PODCAST) {
+      if (type == AUDIOSRC_TYPE_HTTPS) {
         const char    *user;
         const char    *pass;
 
-        asdata->webclient [count] = webclientAlloc (asdata, aspodcastWebResponseCallback);
+        asdata->webclient [count] = webclientAlloc (asdata, ashttpsWebResponseCallback);
         webclientIgnoreCertErr (asdata->webclient [count]);
         webclientSetTimeout (asdata->webclient [count], 1);
         snprintf (temp, sizeof (temp),
             "%s%s/",
             AS_HTTPS_PFX,
             asconfGetStr (asdata->asconf, askey, ASCONF_URI));
-        ilistSetStr (asdata->client, count, AS_CLIENT_URI, temp);
-        ilistSetNum (asdata->client, count, AS_CLIENT_URI_LEN, strlen (temp));
         ilistSetNum (asdata->client, count, AS_CLIENT_ASKEY, askey);
         ilistSetNum (asdata->client, count, AS_CLIENT_TYPE, type);
         user = asconfGetStr (asdata->asconf, askey, ASCONF_USER);
@@ -174,7 +172,7 @@ asiFree (asdata_t *asdata)
 int
 asiTypeIdent (void)
 {
-  return AUDIOSRC_TYPE_PODCAST;
+  return AUDIOSRC_TYPE_HTTPS;
 }
 
 bool
@@ -226,7 +224,7 @@ asiExists (asdata_t *asdata, const char *nm)
   int     clientkey;
 
   asdata->state = BDJ4_STATE_WAIT;
-  clientkey = aspodcastGetClientKeyByURI (asdata, nm);
+  clientkey = ashttpsGetClientKeyByURI (asdata, nm);
   if (clientkey < 0) {
     return false;
   }
@@ -305,15 +303,15 @@ asiStartIterator (asdata_t *asdata, asitertype_t asitertype, const char *nm, int
   asidata->plNames = NULL;
 
   if (asitertype == AS_ITER_PL_NAMES) {
-    aspodcastGetPlaylistNames (asdata, asidata, askey);
+    ashttpsGetPlaylistNames (asdata, asidata, askey);
     asidata->iterlist = asidata->plNames;
     slistStartIterator (asidata->iterlist, &asidata->iteridx);
   } else if (asitertype == AS_ITER_PL) {
-    aspodcastGetPlaylist (asdata, asidata, nm, askey);
+    ashttpsGetPlaylist (asdata, asidata, nm, askey);
     asidata->iterlist = asidata->songlist;
     slistStartIterator (asidata->iterlist, &asidata->iteridx);
   } else if (asitertype == AS_ITER_TAGS) {
-    aspodcastSongTags (asdata, asidata, nm);
+    ashttpsSongTags (asdata, asidata, nm);
     asidata->iterlist = asidata->songtags;
     slistStartIterator (asidata->iterlist, &asidata->iteridx);
   }
@@ -379,7 +377,7 @@ asiIterateValue (asdata_t *asdata, asiterdata_t *asidata, const char *key)
 /* internal routines */
 
 static void
-aspodcastWebResponseCallback (void *userdata, const char *respstr, size_t len)
+ashttpsWebResponseCallback (void *userdata, const char *respstr, size_t len)
 {
   asdata_t    *asdata = (asdata_t *) userdata;
 
@@ -396,14 +394,14 @@ aspodcastWebResponseCallback (void *userdata, const char *respstr, size_t len)
 
 
 static bool
-aspodcastGetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm, int askey)
+ashttpsGetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm, int askey)
 {
   bool    rc = false;
   int     webrc;
   char    query [1024];
   int     clientkey = -1;
 
-  clientkey = aspodcastGetClientKey (asdata, askey);
+  clientkey = ashttpsGetClientKey (asdata, askey);
   if (clientkey < 0) {
     return false;
   }
@@ -440,7 +438,7 @@ aspodcastGetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm, i
 }
 
 static bool
-aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri)
+ashttpsSongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri)
 {
   bool    rc = false;
   int     webrc;
@@ -448,7 +446,7 @@ aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri)
   int     clientkey;
 
   asdata->state = BDJ4_STATE_WAIT;
-  clientkey = aspodcastGetClientKeyByURI (asdata, songuri);
+  clientkey = ashttpsGetClientKeyByURI (asdata, songuri);
   if (clientkey < 0) {
     return false;
   }
@@ -459,7 +457,7 @@ aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri)
       "?uri=%s",
       ilistGetStr (asdata->client, clientkey, AS_CLIENT_URI),
       action_str [asdata->action],
-      aspodcastStripPrefix (asdata, songuri, clientkey));
+      ashttpsStripPrefix (asdata, songuri, clientkey));
 
   webrc = webclientGet (asdata->webclient [clientkey], query);
   if (webrc != WEB_OK) {
@@ -502,14 +500,14 @@ aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri)
 }
 
 static bool
-aspodcastGetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata, int askey)
+ashttpsGetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata, int askey)
 {
   bool    rc = false;
   int     webrc;
   char    query [1024];
   int     clientkey = -1;
 
-  clientkey = aspodcastGetClientKey (asdata, askey);
+  clientkey = ashttpsGetClientKey (asdata, askey);
   if (clientkey < 0) {
     return false;
   }
@@ -557,7 +555,7 @@ aspodcastGetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata, int askey)
 /* internal routines */
 
 static int
-aspodcastGetClientKeyByURI (asdata_t *asdata, const char *nm)
+ashttpsGetClientKeyByURI (asdata_t *asdata, const char *nm)
 {
   int     clientkey = -1;
 
@@ -577,7 +575,7 @@ aspodcastGetClientKeyByURI (asdata_t *asdata, const char *nm)
 }
 
 int
-aspodcastGetClientKey (asdata_t *asdata, int askey)
+ashttpsGetClientKey (asdata_t *asdata, int askey)
 {
   int   clientkey = -1;
 
@@ -595,7 +593,7 @@ aspodcastGetClientKey (asdata_t *asdata, int askey)
 }
 
 static const char *
-aspodcastStripPrefix (asdata_t *asdata, const char *songuri, int clientkey)
+ashttpsStripPrefix (asdata_t *asdata, const char *songuri, int clientkey)
 {
   const char  *turi;
   size_t      tlen;

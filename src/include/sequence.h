@@ -4,7 +4,7 @@
 #ifndef INC_SEQUENCE_H
 #define INC_SEQUENCE_H
 
-#include "datafile.h"
+// #include "datafile.h"
 #include "nlist.h"
 #include "slist.h"
 

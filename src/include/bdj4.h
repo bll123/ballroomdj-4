@@ -59,6 +59,7 @@ enum {
 #define BDJ4_PLAYLIST_EXT ".pl"
 #define BDJ4_PL_DANCE_EXT ".pldances"
 #define BDJ4_SEQUENCE_EXT ".sequence"
+#define BDJ4_PODCAST_EXT  ".podcast"
 #define BDJ4_SONGLIST_EXT ".songlist"
 #define BDJ4_IMG_SVG_EXT  ".svg"
 #define BDJ4_IMG_PNG_EXT  ".png"

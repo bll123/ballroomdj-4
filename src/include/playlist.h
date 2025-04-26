@@ -24,27 +24,31 @@ extern "C" {
 #endif
 
 typedef enum {
-  PLAYLIST_ALLOWED_KEYWORDS,      //
-  PLAYLIST_ANNOUNCE,              //
-  PLAYLIST_GAP,                   //
-  PLAYLIST_LEVEL_HIGH,            //
-  PLAYLIST_LEVEL_LOW,             //
-  PLAYLIST_MAX_PLAY_TIME,         //
-  PLAYLIST_RATING,                //
-  PLAYLIST_STOP_AFTER,            //
-  PLAYLIST_STOP_TIME,             //
+  PLAYLIST_ALLOWED_KEYWORDS,
+  PLAYLIST_ANNOUNCE,
+  PLAYLIST_GAP,
+  PLAYLIST_LEVEL_HIGH,
+  PLAYLIST_LEVEL_LOW,
+  PLAYLIST_MAX_PLAY_TIME,
+  PLAYLIST_RATING,
+  PLAYLIST_STOP_AFTER,
+  PLAYLIST_STOP_TIME,
   PLAYLIST_TAGS,
   PLAYLIST_TAG_WEIGHT,
-  PLAYLIST_TYPE,                  //
+  PLAYLIST_TYPE,
+  PLAYLIST_URI,
+  PLAYLIST_USER,
+  PLAYLIST_PASSWORD,
+  PLAYLIST_RETAIN,
   PLAYLIST_KEY_MAX,
 } playlistkey_t;
 
 typedef enum {
   PLDANCE_DANCE,
-  PLDANCE_MPM_LOW,                //
-  PLDANCE_MPM_HIGH,               //
+  PLDANCE_MPM_LOW,
+  PLDANCE_MPM_HIGH,
   PLDANCE_COUNT,
-  PLDANCE_MAXPLAYTIME,            //
+  PLDANCE_MAXPLAYTIME,
   PLDANCE_SELECTED,
   PLDANCE_KEY_MAX,
 } pldancekey_t;
@@ -54,16 +58,18 @@ typedef enum {
   PLTYPE_AUTO,
   PLTYPE_SONGLIST,
   PLTYPE_SEQUENCE,
+  PLTYPE_PODCAST,
   PLTYPE_ALL,
 } pltype_t;
 
 enum {
   PL_LIST_ALL,          // include QueueDance, exclude History
-  PL_LIST_AUTO_SEQ,     // exclude QueueDance
+  PL_LIST_AUTO_SEQ,     // exclude QueueDance, include automatic and sequence
   PL_LIST_NORMAL,       // exclude QueueDance, History
   PL_LIST_SEQUENCE,
   PL_LIST_SONGLIST,     // will include History
   PL_LIST_DIR,          // specified directory
+  PL_LIST_PODCAST,
   PL_LIST_MAX,
 };
 

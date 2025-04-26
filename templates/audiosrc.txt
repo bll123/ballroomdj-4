@@ -1,10 +1,10 @@
 # audio-sources
-# 2025-3-24
+# 2025-4-26
 # version 1
 version
 ..1
 count
-..1
+..2
 KEY
 ..0
 MODE
@@ -17,6 +17,22 @@ PORT
 ..9011
 TYPE
 ..bdj4
+URI
+..
+USER
+..
+KEY
+..1
+MODE
+..client
+NAME
+..Podcast
+PASS
+..
+PORT
+..443
+TYPE
+..https
 URI
 ..
 USER

@@ -29,6 +29,7 @@
 #include "pathbld.h"
 #include "pathinfo.h"
 #include "playlist.h"
+#include "podcast.h"
 #include "rating.h"
 #include "sequence.h"
 #include "slist.h"
@@ -47,6 +48,7 @@ typedef struct playlist {
   datafile_t    *plinfodf;
   datafile_t    *pldancesdf;
   songlist_t    *songlist;
+  podcast_t     *podcast;
   songfilter_t  *songfilter;
   sequence_t    *sequence;
   songsel_t     *songsel;
@@ -125,6 +127,7 @@ playlistFree (void *tpl)
   datafileFree (pl->pldancesdf);
   ilistFree (pl->pldances);
   songlistFree (pl->songlist);
+  podcastFree (pl->podcast);
   songfilterFree (pl->songfilter);
   sequenceFree (pl->sequence);
   songselFree (pl->songsel);
@@ -176,60 +179,66 @@ playlistLoad (const char *fname, musicdb_t *musicdb, grouping_t *grouping)
 
   nlistDumpInfo (pl->plinfo);
 
-  pathbldMakePath (tfn, sizeof (tfn), fname,
-      BDJ4_PL_DANCE_EXT, PATHBLD_MP_DREL_DATA);
-  if (! fileopFileExists (tfn)) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Missing playlist-dance %s", tfn);
-    playlistFree (pl);
-    return NULL;
-  }
-
-  pl->pldancesdf = datafileAllocParse ("playlist-dances", DFTYPE_INDIRECT, tfn,
-      playlistdancedfkeys, pldancedfcount, DF_NO_OFFSET, NULL);
-  if (pl->pldancesdf == NULL) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Bad playlist-dance %s", tfn);
-    playlistFree (pl);
-    return NULL;
-  }
-  tpldances = datafileGetList (pl->pldancesdf);
-  fixbpm = false;
-  if (ilistGetVersion (tpldances) == PL_BPM_VERSION) {
-    fixbpm = true;
-  }
-
-  /* pldances must be rebuilt to use the dance key as the index   */
-  /* the playlist datafiles have a generic key value */
+  type = (pltype_t) nlistGetNum (pl->plinfo, PLAYLIST_TYPE);
   pl->pldances = ilistAlloc ("playlist-dances-n", LIST_ORDERED);
-  ilistSetSize (pl->pldances, ilistGetCount (tpldances));
-  ilistStartIterator (tpldances, &iteridx);
-  while ((tidx = ilistIterateKey (tpldances, &iteridx)) >= 0) {
-    /* have to make a clone of the data */
-    /* tidx is a generic key and may have no relation to what was loaded */
-    /* into dances.txt. Want to have pl->pldances use the danceidx as */
-    /* the key. */
-    didx = ilistGetNum (tpldances, tidx, PLDANCE_DANCE);
-    /* skip any unknown dances */
-    if (didx != LIST_VALUE_INVALID) {
-      for (size_t i = 0; i < pldancedfcount; ++i) {
-        if (playlistdancedfkeys [i].writeFlag == DF_NO_WRITE) {
-          continue;
-        }
-        ilistSetNum (pl->pldances, didx, playlistdancedfkeys [i].itemkey,
-            ilistGetNum (tpldances, tidx, playlistdancedfkeys [i].itemkey));
-      }
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
+  ilistSetSize (pl->pldances, danceGetCount (dances));
 
-      if (fixbpm) {
-        int   tval;
+  if (type != PLTYPE_PODCAST) {
+    pathbldMakePath (tfn, sizeof (tfn), fname,
+        BDJ4_PL_DANCE_EXT, PATHBLD_MP_DREL_DATA);
+    if (! fileopFileExists (tfn)) {
+      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Missing playlist-dance %s", tfn);
+      playlistFree (pl);
+      return NULL;
+    }
 
-        tval = ilistGetNum (pl->pldances, didx, PLDANCE_MPM_HIGH);
-        if (tval > 0) {
-          tval = danceConvertBPMtoMPM (didx, tval, DANCE_FORCE_CONV);
-          ilistSetNum (pl->pldances, didx, PLDANCE_MPM_HIGH, tval);
+    pl->pldancesdf = datafileAllocParse ("playlist-dances", DFTYPE_INDIRECT, tfn,
+        playlistdancedfkeys, pldancedfcount, DF_NO_OFFSET, NULL);
+    if (pl->pldancesdf == NULL) {
+      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Bad playlist-dance %s", tfn);
+      playlistFree (pl);
+      return NULL;
+    }
+    tpldances = datafileGetList (pl->pldancesdf);
+    fixbpm = false;
+    if (ilistGetVersion (tpldances) == PL_BPM_VERSION) {
+      fixbpm = true;
+    }
+
+    /* pldances must be rebuilt to use the dance key as the index   */
+    /* the playlist datafiles have a generic key value */
+    ilistSetSize (pl->pldances, ilistGetCount (tpldances));
+    ilistStartIterator (tpldances, &iteridx);
+    while ((tidx = ilistIterateKey (tpldances, &iteridx)) >= 0) {
+      /* have to make a clone of the data */
+      /* tidx is a generic key and may have no relation to what was loaded */
+      /* into dances.txt. Want to have pl->pldances use the danceidx as */
+      /* the key. */
+      didx = ilistGetNum (tpldances, tidx, PLDANCE_DANCE);
+      /* skip any unknown dances */
+      if (didx != LIST_VALUE_INVALID) {
+        for (size_t i = 0; i < pldancedfcount; ++i) {
+          if (playlistdancedfkeys [i].writeFlag == DF_NO_WRITE) {
+            continue;
+          }
+          ilistSetNum (pl->pldances, didx, playlistdancedfkeys [i].itemkey,
+              ilistGetNum (tpldances, tidx, playlistdancedfkeys [i].itemkey));
         }
-        tval = ilistGetNum (pl->pldances, didx, PLDANCE_MPM_LOW);
-        if (tval > 0) {
-          tval = danceConvertBPMtoMPM (didx, tval, DANCE_FORCE_CONV);
-          ilistSetNum (pl->pldances, didx, PLDANCE_MPM_LOW, tval);
+
+        if (fixbpm) {
+          int   tval;
+
+          tval = ilistGetNum (pl->pldances, didx, PLDANCE_MPM_HIGH);
+          if (tval > 0) {
+            tval = danceConvertBPMtoMPM (didx, tval, DANCE_FORCE_CONV);
+            ilistSetNum (pl->pldances, didx, PLDANCE_MPM_HIGH, tval);
+          }
+          tval = ilistGetNum (pl->pldances, didx, PLDANCE_MPM_LOW);
+          if (tval > 0) {
+            tval = danceConvertBPMtoMPM (didx, tval, DANCE_FORCE_CONV);
+            ilistSetNum (pl->pldances, didx, PLDANCE_MPM_LOW, tval);
+          }
         }
       }
     }
@@ -237,7 +246,6 @@ playlistLoad (const char *fname, musicdb_t *musicdb, grouping_t *grouping)
 
   /* 4.7.0 any dances that are not set (due to dances being added) */
   /* must be initialized */
-  dances = bdjvarsdfGet (BDJVDF_DANCES);
   danceStartIterator (dances, &iteridx);
   while ((didx = danceIterate (dances, &iteridx)) >= 0) {
     int   tval;
@@ -255,9 +263,7 @@ playlistLoad (const char *fname, musicdb_t *musicdb, grouping_t *grouping)
 
   ilistDumpInfo (pl->pldances);
 
-  type = (pltype_t) nlistGetNum (pl->plinfo, PLAYLIST_TYPE);
-
-  if (type == PLTYPE_SONGLIST) {
+  if (type == PLTYPE_SONGLIST || type == PLTYPE_PODCAST) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "songlist: load songlist %s", fname);
     pl->songlist = songlistLoad (fname);
     if (pl->songlist == NULL) {
@@ -292,6 +298,16 @@ playlistLoad (const char *fname, musicdb_t *musicdb, grouping_t *grouping)
     sequenceStartIterator (pl->sequence, &pl->seqiteridx);
   }
 
+  if (type == PLTYPE_PODCAST) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "songlist: load podcast %s", fname);
+    pl->podcast = podcastLoad (fname);
+    if (pl->songlist == NULL) {
+      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: missing podcast %s", tfn);
+      playlistFree (pl);
+      return NULL;
+    }
+  }
+
   return pl;
 }
 
@@ -324,6 +340,11 @@ playlistCheck (playlist_t *pl)
   if (type == PLTYPE_SEQUENCE) {
     if (pl->sequence != NULL &&
         sequenceGetCount (pl->sequence) > 0) {
+      rc = true;
+    }
+  }
+  if (type == PLTYPE_PODCAST) {
+    if (pl->podcast != NULL && pl->songlist != NULL) {
       rc = true;
     }
   }
@@ -370,6 +391,10 @@ playlistCreate (const char *plname, pltype_t type,
   }
   if (type == PLTYPE_SEQUENCE) {
     pl->sequence = sequenceLoad (plname);
+  }
+  if (type == PLTYPE_PODCAST) {
+    pl->podcast = podcastLoad (plname);
+    pl->songlist = songlistLoad (plname);
   }
 
   snprintf (tbuff, sizeof (tbuff), "pldance-c-%s", plname);
@@ -731,6 +756,9 @@ playlistGetPlaylistNames (int flag, const char *dir)
   if (flag == PL_LIST_ALL) {
     ext = BDJ4_PLAYLIST_EXT;
   }
+  if (flag == PL_LIST_PODCAST) {
+    ext = BDJ4_PODCAST_EXT;
+  }
   if (flag == PL_LIST_DIR) {
     stpecpy (tfn, tfn + sizeof (tfn), dir);
     ext = BDJ4_PLAYLIST_EXT;
@@ -775,6 +803,7 @@ playlistGetPlaylistNames (int flag, const char *dir)
         continue;
       }
     }
+
     /* the data duplicates the key for use in uidropdrown */
     slistSetStr (pnlist, tfn, tfn);
   }
@@ -1135,6 +1164,9 @@ plConvType (datafileconv_t *conv)
     if (strcmp (conv->str, "sequence") == 0) {
       num = PLTYPE_SEQUENCE;
     }
+    if (strcmp (conv->str, "podcast") == 0) {
+      num = PLTYPE_PODCAST;
+    }
     conv->outvt = VALUE_NUM;
     conv->num = num;
   } else if (conv->invt == VALUE_NUM) {
@@ -1145,6 +1177,7 @@ plConvType (datafileconv_t *conv)
       case PLTYPE_SONGLIST: { sval = "songlist"; break; }
       case PLTYPE_AUTO: { sval = "automatic"; break; }
       case PLTYPE_SEQUENCE: { sval = "sequence"; break; }
+      case PLTYPE_PODCAST: { sval = "podcast"; break; }
     }
     conv->outvt = VALUE_STR;
     conv->str = sval;
