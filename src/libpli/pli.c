@@ -11,6 +11,7 @@
 #include <errno.h>
 
 #include "bdj4.h"
+#include "bdjopt.h"
 #include "pathbld.h"
 #include "dyintfc.h"
 #include "dylib.h"
@@ -34,7 +35,7 @@ static char *plistateTxt [PLI_STATE_MAX] = {
 
 typedef struct pli {
   dlhandle_t        *dlHandle;
-  plidata_t         *(*pliiInit) (const char *plinm);
+  plidata_t         *(*pliiInit) (const char *plinm, const char *playerargs);
   void              (*pliiFree) (plidata_t *plidata);
   void              (*pliiMediaSetup) (plidata_t *plidata, const char *mediaPath, const char *fullMediaPath, int sourceType);
   void              (*pliiStartPlayback) (plidata_t *plidata, ssize_t pos, ssize_t speed);
@@ -111,7 +112,7 @@ pliInit (const char *plipkg, const char *plinm)
 #pragma clang diagnostic pop
 
   if (pli->pliiInit != NULL) {
-    pli->plidata = pli->pliiInit (plinm);
+    pli->plidata = pli->pliiInit (plinm, bdjoptGetStr (OPT_M_PLAYER_ARGS));
   }
   return pli;
 }

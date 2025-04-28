@@ -34,7 +34,7 @@ pliiDesc (const char **ret, int max)
 }
 
 plidata_t *
-pliiInit (const char *plinm)
+pliiInit (const char *plinm, const char *playerargs)
 {
   plidata_t *pliData;
 

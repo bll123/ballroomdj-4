@@ -78,7 +78,7 @@ int           pliGetVolume (pli_t *pli);      // for debugging
 const char    *pliStateText (pli_t *pli);
 ilist_t       *pliInterfaceList (void);
 
-plidata_t     *pliiInit (const char *plinm);
+plidata_t     *pliiInit (const char *plinm, const char *playerargs);
 void          pliiFree (plidata_t *pliData);
 void          pliiCleanup (void);
 void          pliiMediaSetup (plidata_t *pliData, const char *mediaPath, const char *fullMediaPath, int sourceType);

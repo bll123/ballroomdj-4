@@ -137,7 +137,7 @@ static datafilekey_t bdjoptmachinedfkeys [] = {
   { "MQ_FONT",            OPT_M_MQ_FONT,            VALUE_STR, NULL, DF_NORM },
   { "MQ_THEME",           OPT_M_MQ_THEME,           VALUE_STR, NULL, DF_NORM },
   { "PLAYER",             OPT_M_PLAYER_INTFC,       VALUE_STR, NULL, DF_NORM },
-  { "PLAYEROPTIONS",      OPT_M_PLAYEROPTIONS,      VALUE_STR, NULL, DF_NORM },
+  { "PLAYER_ARGS",        OPT_M_PLAYER_ARGS,      VALUE_STR, NULL, DF_NORM },
   { "PLAYER_I_NM",        OPT_M_PLAYER_INTFC_NM,    VALUE_STR, NULL, DF_NORM },
   { "SCALE",              OPT_M_SCALE,              VALUE_NUM, NULL, DF_NORM },
   { "SHUTDOWNSCRIPT",     OPT_M_SHUTDOWN_SCRIPT,    VALUE_STR, NULL, DF_NORM },

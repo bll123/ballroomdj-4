@@ -87,19 +87,44 @@ pliiDesc (const char **ret, int max)
 }
 
 plidata_t *
-pliiInit (const char *plinm)
+pliiInit (const char *plinm, const char *playerargs)
 {
   plidata_t *pliData;
-  char      * vlcOptions [5];
+  int       optcount = 0;
+  char      **vlcOptions = NULL;
 
   pliData = mdmalloc (sizeof (plidata_t));
 
-  vlcOptions [0] = NULL;
+  if (playerargs != NULL) {
+    char      *topt;
+    char      *p;
+    char      *tokstr;
+
+    topt = mdstrdup (playerargs);
+    p = strtok_r (topt, " ", &tokstr);
+    while (p != NULL) {
+      vlcOptions = mdrealloc (vlcOptions, sizeof (char *) * (optcount + 1));
+      vlcOptions [optcount] = mdstrdup (p);
+      ++optcount;
+      p = strtok_r (NULL, " ", &tokstr);
+    }
+  }
+  vlcOptions = mdrealloc (vlcOptions, sizeof (char *) * (optcount + 1));
+  vlcOptions [optcount] = NULL;
+  ++optcount;
+
   pliData->vlcdata = vlcInit (VLC_DFLT_OPT_SZ, vlcDefaultOptions, vlcOptions);
   pliData->name = "Integrated VLC";
   pliData->supported = PLI_SUPPORT_SEEK | PLI_SUPPORT_SPEED;
   /* VLC uses the default sink set by the application */
   /* there is no need to process the audio device list */
+
+  for (int i = 0; i < optcount; ++i) {
+    if (vlcOptions [i] != NULL) {
+      mdfree (vlcOptions [i]);
+    }
+  }
+  mdfree (vlcOptions);
 
   return pliData;
 }

@@ -106,6 +106,11 @@ confuiBuildUIPlayer (confuigui_t *gui)
       CONFUI_SPINBOX_PLI, OPT_M_PLAYER_INTFC,
       CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_PLI].listidx, NULL);
 
+  /* CONTEXT: configuration: additional arguments for player */
+  confuiMakeItemEntry (gui, vbox, szgrp, _("Player Arguments"),
+      CONFUI_ENTRY_PLAYER_ARGS, OPT_M_PLAYER_ARGS,
+      bdjoptGetStr (OPT_M_PLAYER_ARGS), CONFUI_NO_INDENT);
+
   /* CONTEXT: configuration: which audio interface to use */
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Audio"),
       CONFUI_SPINBOX_VOL_INTFC, OPT_M_VOLUME_INTFC,
