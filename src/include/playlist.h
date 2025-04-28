@@ -82,6 +82,7 @@ bool      playlistCheck (playlist_t *pl);
 playlist_t *playlistCreate (const char *plname, pltype_t type, musicdb_t *musicdb, grouping_t *grouping);
 void      playlistFree (void *tpl);
 void      playlistResetAll (playlist_t *pl);
+void      playlistSetName (playlist_t *pl, const char *newname);
 const char *playlistGetName (playlist_t *pl);
 ssize_t   playlistGetConfigNum (playlist_t *pl, playlistkey_t key);
 void      playlistGetConfigListStr (playlist_t *pl, playlistkey_t key, char *buff, size_t sz);

@@ -53,9 +53,10 @@ podcastLoad (const char *fname)
   }
 
   podcast = mdmalloc (sizeof (podcast_t));
-  podcast->name = mdstrdup (fname);
-  podcast->path = mdstrdup (fn);
+  podcast->name = NULL;
+  podcast->path = NULL;
   podcast->podcast = NULL;
+  podcastSetName (podcast, fname);
 
   podcast->df = datafileAllocParse ("podcast", DFTYPE_KEY_VAL, fn,
       podcastdfkeys, PODCAST_KEY_MAX, DF_NO_OFFSET, NULL);
@@ -118,18 +119,35 @@ podcastExists (const char *name)
 }
 
 void
-podcastSave (podcast_t *podcast, nlist_t *tlist)
+podcastSetName (podcast_t *podcast, const char *newname)
 {
-  if (tlist == NULL) {
-    tlist = podcast->podcast;
-  }
+  char    fn [MAXPATHLEN];
 
-  if (nlistGetCount (tlist) <= 0) {
+  if (podcast == NULL || newname == NULL) {
     return;
   }
 
-  nlistSetVersion (tlist, PODCAST_VERSION);
-  datafileSave (podcast->df, NULL, tlist, DF_NO_OFFSET,
+  dataFree (podcast->name);
+  dataFree (podcast->path);
+  podcast->name = mdstrdup (newname);
+  pathbldMakePath (fn, sizeof (fn), newname,
+      BDJ4_PODCAST_EXT, PATHBLD_MP_DREL_DATA);
+  podcast->path = mdstrdup (fn);
+}
+
+void
+podcastSave (podcast_t *podcast)
+{
+  if (podcast == NULL || podcast->podcast == NULL) {
+    return;
+  }
+
+  if (nlistGetCount (podcast->podcast) <= 0) {
+    return;
+  }
+
+  nlistSetVersion (podcast->podcast, PODCAST_VERSION);
+  datafileSave (podcast->df, NULL, podcast->podcast, DF_NO_OFFSET,
       podcast->distvers);
 }
 

@@ -110,7 +110,7 @@ START_TEST(podcast_save)
   podcastSetStr (podcast, PODCAST_PASSWORD, "pass");
   podcastSetNum (podcast, PODCAST_RETAIN, 10);
 
-  podcastSave (podcast, NULL);
+  podcastSave (podcast);
   podcastFree (podcast);
 }
 END_TEST

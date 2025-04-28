@@ -22,6 +22,7 @@
 #include "mdebug.h"
 #include "pathbld.h"
 #include "playlist.h"
+#include "podcast.h"
 #include "tmutil.h"
 #include "tagdef.h"
 #include "ui.h"
@@ -489,8 +490,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwidgetp = uiEntryInit (40, 300);
   uiBoxPackStart (hbox, uiwidgetp);
-//  uiEntrySetValidate (uiwidgetp, "",
-//      managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
+  uiEntrySetValidate (uiwidgetp, "",
+      managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
   managepl->wcont [MPL_W_URI] = uiwidgetp;
 
   uiwcontFree (hbox);
@@ -508,8 +509,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwidgetp = uiEntryInit (10, 40);
   uiBoxPackStart (hbox, uiwidgetp);
-//  uiEntrySetValidate (uiwidgetp, "",
-//      managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
+  uiEntrySetValidate (uiwidgetp, "",
+      managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
   managepl->wcont [MPL_W_USER] = uiwidgetp;
 
   uiwcontFree (hbox);
@@ -527,8 +528,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwidgetp = uiEntryInit (10, 40);
   uiBoxPackStart (hbox, uiwidgetp);
-//  uiEntrySetValidate (uiwidgetp, "",
-//      managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
+  uiEntrySetValidate (uiwidgetp, "",
+      managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
   managepl->wcont [MPL_W_PASSWORD] = uiwidgetp;
 
   uiwcontFree (hbox);
@@ -670,6 +671,7 @@ managePlaylistSave (managepl_t *managepl)
   /* the playlist has been renamed */
   if (strcmp (managepl->ploldname, name) != 0) {
     playlistRename (managepl->ploldname, name);
+    playlistSetName (managepl->playlist, name);
     managepl->changed = true;
   }
 
@@ -687,8 +689,7 @@ managePlaylistSave (managepl_t *managepl)
     pltype = playlistGetConfigNum (managepl->playlist, PLAYLIST_TYPE);
     if (managepl->plloadcb != NULL &&
         (pltype == PLTYPE_SONGLIST ||
-        pltype == PLTYPE_SEQUENCE ||
-        pltype == PLTYPE_PODCAST)) {
+        pltype == PLTYPE_SEQUENCE)) {
       callbackHandlerS (managepl->plloadcb, name);
     }
   }
@@ -771,8 +772,7 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
     pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
     if (managepl->plloadcb != NULL &&
         (pltype == PLTYPE_SONGLIST ||
-        pltype == PLTYPE_SEQUENCE ||
-        pltype == PLTYPE_PODCAST)) {
+        pltype == PLTYPE_SEQUENCE)) {
       callbackHandlerS (managepl->plloadcb, fn);
     }
   }
@@ -926,6 +926,17 @@ managePlaylistUpdateData (managepl_t *managepl)
   uiSpinboxSetValue (managepl->wcont [MPL_W_TAG_WEIGHT],
       playlistGetConfigNum (pl, PLAYLIST_TAG_WEIGHT));
 
+  if (pltype == PLTYPE_PODCAST) {
+    uiEntrySetValue (managepl->wcont [MPL_W_URI],
+        playlistGetPodcastStr (pl, PODCAST_URI));
+    uiEntrySetValue (managepl->wcont [MPL_W_USER],
+        playlistGetPodcastStr (pl, PODCAST_USER));
+    uiEntrySetValue (managepl->wcont [MPL_W_PASSWORD],
+        playlistGetPodcastStr (pl, PODCAST_PASSWORD));
+    uiSpinboxSetValue (managepl->wcont [MPL_W_RETAIN],
+        playlistGetPodcastNum (pl, PODCAST_RETAIN));
+  }
+
   managepl->plbackupcreated = false;
   logProcEnd ("");
 }
@@ -1043,9 +1054,11 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
   long          tval;
   double        dval;
   const char    *tstr;
+  pltype_t      pltype;
 
   logProcBegin ();
   pl = managepl->playlist;
+  pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
 
   manageplDanceSetPlaylist (managepl->mpldnc, pl);
 
@@ -1083,6 +1096,17 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
 
   tval = uiSpinboxGetValue (managepl->wcont [MPL_W_TAG_WEIGHT]);
   playlistSetConfigNum (pl, PLAYLIST_TAG_WEIGHT, tval);
+
+  if (pltype == PLTYPE_PODCAST) {
+    tstr = uiEntryGetValue (managepl->wcont [MPL_W_URI]);
+    playlistSetPodcastStr (pl, PODCAST_URI, tstr);
+    tstr = uiEntryGetValue (managepl->wcont [MPL_W_USER]);
+    playlistSetPodcastStr (pl, PODCAST_USER, tstr);
+    tstr = uiEntryGetValue (managepl->wcont [MPL_W_PASSWORD]);
+    playlistSetPodcastStr (pl, PODCAST_PASSWORD, tstr);
+    tval = uiSpinboxGetValue (managepl->wcont [MPL_W_RETAIN]);
+    playlistSetPodcastNum (pl, PODCAST_RETAIN, tval);
+  }
 
   logProcEnd ("");
 }

@@ -301,7 +301,7 @@ playlistLoad (const char *fname, musicdb_t *musicdb, grouping_t *grouping)
   if (type == PLTYPE_PODCAST) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "songlist: load podcast %s", fname);
     pl->podcast = podcastLoad (fname);
-    if (pl->songlist == NULL) {
+    if (pl->podcast == NULL) {
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: missing podcast %s", tfn);
       playlistFree (pl);
       return NULL;
@@ -439,6 +439,16 @@ playlistResetAll (playlist_t *pl)
   while ((didx = danceIterate (dances, &iteridx)) >= 0) {
     ilistSetNum (pl->pldances, didx, PLDANCE_SELECTED, 0);
     ilistSetNum (pl->pldances, didx, PLDANCE_COUNT, 0);
+  }
+}
+
+void
+playlistSetName (playlist_t *pl, const char *newname)
+{
+  dataFree (pl->name);
+  pl->name = mdstrdup (newname);
+  if (pl->podcast != NULL) {
+    podcastSetName (pl->podcast, newname);
   }
 }
 
@@ -592,13 +602,21 @@ playlistSetPodcastStr (playlist_t *pl, ilistidx_t key, const char *str)
 ssize_t
 playlistGetPodcastNum (playlist_t *pl, ilistidx_t key)
 {
-  return 0;
+  if (pl == NULL || pl->ident != PL_IDENT || pl->podcast == NULL) {
+    return 0;
+  }
+
+  return podcastGetNum (pl->podcast, key);
 }
 
 const char *
 playlistGetPodcastStr (playlist_t *pl, ilistidx_t key)
 {
-  return NULL;
+  if (pl == NULL || pl->ident != PL_IDENT || pl->podcast == NULL) {
+    return NULL;
+  }
+
+  return podcastGetStr (pl->podcast, key);
 }
 
 song_t *
@@ -929,6 +947,10 @@ playlistSave (playlist_t *pl, const char *name)
   ilistSetVersion (pl->pldances, PL_CURR_VERSION);
   datafileSave (pl->pldancesdf, tfn, pl->pldances, DF_NO_OFFSET,
       datafileDistVersion (pl->pldancesdf));
+
+  if (pl->podcast != NULL) {
+    podcastSave (pl->podcast);
+  }
 }
 
 void
