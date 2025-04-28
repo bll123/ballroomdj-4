@@ -3086,7 +3086,7 @@ manageNewPlaylistCB (void *udata)
   manageui_t    *manage = udata;
 
   logMsg (LOG_DBG, LOG_INFO, "new playlist cb");
-  managePlaylistNew (manage->managepl, MANAGE_PRELOAD);
+  managePlaylistNew (manage->managepl, MANAGE_PRELOAD, PLTYPE_AUTO);
   return UICB_CONT;
 }
 

@@ -51,7 +51,7 @@ uiwcont_t *managePlaylistMenu (managepl_t *managepl, uiwcont_t *menubar);
 void managePlaylistSave (managepl_t *managepl);
 void managePlaylistLoadCheck (managepl_t *managepl);
 void managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag);
-bool managePlaylistNew (managepl_t *managepl, int preloadflag);
+bool managePlaylistNew (managepl_t *managepl, int preloadflag, int type);
 
 /* managepldance.c */
 typedef struct mpldance mpldance_t;

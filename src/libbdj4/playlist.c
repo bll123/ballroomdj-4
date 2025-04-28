@@ -567,6 +567,40 @@ playlistSetDanceNum (playlist_t *pl, ilistidx_t danceIdx, pldancekey_t key, ssiz
   return;
 }
 
+void
+playlistSetPodcastNum (playlist_t *pl, ilistidx_t key, ssize_t value)
+{
+  if (pl == NULL || pl->ident != PL_IDENT || pl->podcast == NULL) {
+    return;
+  }
+
+  podcastSetNum (pl->podcast, key, value);
+  return;
+}
+
+void
+playlistSetPodcastStr (playlist_t *pl, ilistidx_t key, const char *str)
+{
+  if (pl == NULL || pl->ident != PL_IDENT || pl->podcast == NULL) {
+    return;
+  }
+
+  podcastSetStr (pl->podcast, key, str);
+  return;
+}
+
+ssize_t
+playlistGetPodcastNum (playlist_t *pl, ilistidx_t key)
+{
+  return 0;
+}
+
+const char *
+playlistGetPodcastStr (playlist_t *pl, ilistidx_t key)
+{
+  return NULL;
+}
+
 song_t *
 playlistGetNextSong (playlist_t *pl,
     ssize_t priorCount, danceselQueueLookup_t queueLookupProc, void *userdata)
@@ -803,7 +837,12 @@ playlistGetPlaylistNames (int flag, const char *dir)
         continue;
       }
     }
-
+    if (flag == PL_LIST_SONGLIST) {
+      pathbldMakePath (tbuff, sizeof (tbuff), tfn, BDJ4_PODCAST_EXT, PATHBLD_MP_DREL_DATA);
+      if (fileopFileExists (tbuff)) {
+        continue;
+      }
+    }
     /* the data duplicates the key for use in uidropdrown */
     slistSetStr (pnlist, tfn, tfn);
   }
@@ -1006,6 +1045,12 @@ playlistRename (const char *oldname, const char *newname)
   filemanipRenameAll (onm, nnm);
 
   pathbldMakePath (onm, sizeof (onm),
+      oldname, BDJ4_PODCAST_EXT, PATHBLD_MP_DREL_DATA);
+  pathbldMakePath (nnm, sizeof (nnm),
+      newname, BDJ4_PODCAST_EXT, PATHBLD_MP_DREL_DATA);
+  filemanipRenameAll (onm, nnm);
+
+  pathbldMakePath (onm, sizeof (onm),
       oldname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
   pathbldMakePath (nnm, sizeof (nnm),
       newname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
@@ -1053,6 +1098,9 @@ playlistDelete (const char *name)
   pathbldMakePath (tnm, sizeof (tnm),
       name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DREL_DATA);
   filemanipDeleteAll (tnm);
+  pathbldMakePath (tnm, sizeof (tnm),
+      name, BDJ4_PODCAST_EXT, PATHBLD_MP_DREL_DATA);
+  filemanipDeleteAll (tnm);
 }
 
 void
@@ -1084,6 +1132,12 @@ playlistCopy (const char *oldname, const char *newname)
   pathbldMakePath (nnm, sizeof (nnm),
       newname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
   filemanipCopy (onm, nnm);
+
+  pathbldMakePath (onm, sizeof (onm),
+      oldname, BDJ4_PODCAST_EXT, PATHBLD_MP_DREL_DATA);
+  pathbldMakePath (nnm, sizeof (nnm),
+      newname, BDJ4_PODCAST_EXT, PATHBLD_MP_DREL_DATA);
+  filemanipCopy (onm, nnm);
 }
 
 pltype_t
@@ -1095,6 +1149,13 @@ playlistGetType (const char *name)
   pltype = PLTYPE_NONE;
 
   if (name == NULL || ! *name) {
+    return pltype;
+  }
+
+  pathbldMakePath (tfn, sizeof (tfn),
+      name, BDJ4_PODCAST_EXT, PATHBLD_MP_DREL_DATA);
+  if (fileopFileExists (tfn)) {
+    pltype = PLTYPE_PODCAST;
     return pltype;
   }
 
@@ -1135,6 +1196,7 @@ playlistAlloc (musicdb_t *musicdb, grouping_t *grouping)
   pl->songlist = NULL;
   pl->songfilter = NULL;
   pl->sequence = NULL;
+  pl->podcast = NULL;
   pl->songsel = NULL;
   pl->dancesel = NULL;
   pl->plinfo = NULL;

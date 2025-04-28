@@ -127,6 +127,9 @@ audiosrcInit (void)
       int   type;
 
       type = asconfGetNum (audiosrc->asconf, askey, ASCONF_TYPE);
+      if (type < 0) {
+        continue;
+      }
       audiosrc->enabled [type] = true;
     }
   }

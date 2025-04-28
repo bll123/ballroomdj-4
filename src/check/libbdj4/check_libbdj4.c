@@ -74,6 +74,7 @@ check_libbdj4 (SRunner *sr)
    *  bdj4init
    *  mp3exp
    *  expimpbdj4
+   *  podcast                 // 2025-4-28
    */
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==chk== libbdj4");
@@ -198,6 +199,9 @@ check_libbdj4 (SRunner *sr)
   /* mp3exp */
 
   /* expimpbdj4 */
+
+  s = podcast_suite();
+  srunner_add_suite (sr, s);
 }
 
 #pragma clang diagnostic pop

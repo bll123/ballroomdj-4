@@ -355,6 +355,7 @@ datafileSave (datafile_t *df, const char *fname, nlist_t *list,
   if (fname == NULL) {
     fname = df->fname;
   }
+  logMsg (LOG_DBG, LOG_DATAFILE, "save type %d to %s", df->dftype, fname);
 
   if (df->dftype == DFTYPE_LIST) {
     datafileSaveList (df, fname, list, distvers);

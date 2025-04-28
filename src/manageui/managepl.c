@@ -40,28 +40,31 @@ enum {
   MPL_CB_MAXPLAYTIME,
   MPL_CB_STOPAT,
   MPL_CB_SEL_FILE,
+  MPL_CB_RETAIN,
   MPL_CB_MAX,
 };
 
 enum {
-  MPL_W_KW_BOX,
-  MPL_W_TAG_BOX,
-  MPL_W_HIGH_LEVEL_ITEM,
-  MPL_W_LOW_LEVEL_ITEM,
   MPL_W_MENUITEM_DELETE,
   MPL_W_MENU_PL,
-  MPL_W_NB,
-  MPL_W_PLAY_ANN,
   MPL_W_PL_TYPE,
-  MPL_W_RATING_ITEM,
   MPL_W_PL_NAME,
-  MPL_W_ALLOWED_KEYWORDS,
+  MPL_W_NB,
+  MPL_W_STD_VBOX,
   MPL_W_MAX_PLAY_TIME,
   MPL_W_STOP_AT,
   MPL_W_STOP_AFTER,
   MPL_W_GAP,
+  MPL_W_PLAY_ANN,
+  MPL_W_AUTO_SEQ_VBOX,
+  MPL_W_ALLOWED_KEYWORDS,
   MPL_W_TAGS,
   MPL_W_TAG_WEIGHT,
+  MPL_W_PODCAST_VBOX,
+  MPL_W_URI,
+  MPL_W_USER,
+  MPL_W_PASSWORD,
+  MPL_W_RETAIN,
   MPL_W_MAX,
 };
 
@@ -90,7 +93,8 @@ typedef struct managepl {
 
 static bool managePlaylistLoad (void *udata);
 static int32_t managePlaylistLoadCB (void *udata, const char *fn);
-static bool managePlaylistNewCB (void *udata);
+static bool managePlaylistNewAutoCB (void *udata);
+static bool managePlaylistNewPodcastCB (void *udata);
 static bool managePlaylistCopy (void *udata);
 static void managePlaylistUpdateData (managepl_t *managepl);
 static bool managePlaylistDelete (void *udata);
@@ -171,6 +175,7 @@ managePlaylistSetLoadCallback (managepl_t *managepl, callback_t *uicb)
 void
 manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 {
+  uiwcont_t          *mvbox;
   uiwcont_t          *vbox;
   uiwcont_t          *tophbox;
   uiwcont_t          *hbox;
@@ -209,6 +214,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
       managepl->minfo->errorMsg, UIENTRY_IMMEDIATE);
 
   uiwcontFree (hbox);
+
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (tophbox, hbox);
   uiWidgetSetMarginStart (hbox, 20);
@@ -221,6 +227,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   /* CONTEXT: playlist management: default playlist type */
   uiwidgetp = uiCreateLabel (_("Automatic"));
   uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 3);
   managepl->wcont [MPL_W_PL_TYPE] = uiwidgetp;
 
   uiwcontFree (hbox);
@@ -230,13 +237,19 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* settings */
 
-  vbox = uiCreateVertBox ();
+  mvbox = uiCreateVertBox ();
   /* CONTEXT: playlist management: notebook tab title: settings */
   uiwidgetp = uiCreateLabel (_("Settings"));
-  uiNotebookAppendPage (managepl->wcont [MPL_W_NB], vbox, uiwidgetp);
-  uiWidgetSetAllMargins (vbox, 4);
+  uiNotebookAppendPage (managepl->wcont [MPL_W_NB], mvbox, uiwidgetp);
+  uiWidgetSetAllMargins (mvbox, 4);
   uinbutilIDAdd (managepl->tabids, MPL_TAB_SETTINGS);
   uiwcontFree (uiwidgetp);
+
+  /* standard settings for most playlists, but not podcasts */
+
+  vbox = uiCreateVertBox ();
+  uiBoxPackStart (mvbox, vbox);
+  managepl->wcont [MPL_W_STD_VBOX] = vbox;
 
   /* new line : max-play-time */
 
@@ -258,9 +271,10 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrpSpinText, uiwidgetp);
   managepl->wcont [MPL_W_MAX_PLAY_TIME] = uiwidgetp;
 
+  uiwcontFree (hbox);
+
   /* new line : stop-at */
 
-  uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
@@ -281,9 +295,10 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrpSpinText, uiwidgetp);
   managepl->wcont [MPL_W_STOP_AT] = uiwidgetp;
 
+  uiwcontFree (hbox);
+
   /* new line : stop-after */
 
-  uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
@@ -300,6 +315,9 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   managepl->wcont [MPL_W_STOP_AFTER] = uiwidgetp;
 
   uiwcontFree (hbox);
+
+  /* new line: gap */
+
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
@@ -315,9 +333,10 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrpText, uiwidgetp);
   managepl->wcont [MPL_W_GAP] = uiwidgetp;
 
+  uiwcontFree (hbox);
+
   /* new line : play-announcements */
 
-  uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
@@ -348,11 +367,16 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwcontFree (hbox);
 
+  /* settings for automatic and sequenced playlists */
+
+  vbox = uiCreateVertBox ();
+  uiBoxPackStart (mvbox, vbox);
+  managepl->wcont [MPL_W_AUTO_SEQ_VBOX] = vbox;
+
   /* new line : dance-rating */
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
-  managepl->wcont [MPL_W_RATING_ITEM] = hbox;
 
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
   uiBoxPackStart (hbox, uiwidgetp);
@@ -362,11 +386,12 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   managepl->uirating = uiratingSpinboxCreate (hbox, UIRATING_NORM);
   uiratingSizeGroupAdd (managepl->uirating, szgrpText);
 
+  uiwcontFree (hbox);
+
   /* new line : low dance-level */
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
-  managepl->wcont [MPL_W_LOW_LEVEL_ITEM] = hbox;
 
   /* CONTEXT: playlist management: Low Dance Level */
   uiwidgetp = uiCreateColonLabel (_("Low Dance Level"));
@@ -377,11 +402,12 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   managepl->uilowlevel = uilevelSpinboxCreate (hbox, false);
   uilevelSizeGroupAdd (managepl->uilowlevel, szgrpText);
 
+  uiwcontFree (hbox);
+
   /* new line : high dance-level */
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
-  managepl->wcont [MPL_W_HIGH_LEVEL_ITEM] = hbox;
 
   /* CONTEXT: playlist management: High Dance Level */
   uiwidgetp = uiCreateColonLabel (_("High Dance Level"));
@@ -392,11 +418,12 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   managepl->uihighlevel = uilevelSpinboxCreate (hbox, false);
   uilevelSizeGroupAdd (managepl->uilowlevel, szgrpText);
 
+  uiwcontFree (hbox);
+
   /* new line : allowed-keywords */
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
-  managepl->wcont [MPL_W_KW_BOX] = hbox;
 
   /* CONTEXT: playlist management: allowed keywords */
   uiwidgetp = uiCreateColonLabel (_("Allowed Keywords"));
@@ -406,15 +433,16 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwidgetp = uiEntryInit (15, 50);
   uiBoxPackStart (hbox, uiwidgetp);
-  managepl->wcont [MPL_W_ALLOWED_KEYWORDS] = uiwidgetp;
   uiEntrySetValidate (uiwidgetp, "",
       managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
+  managepl->wcont [MPL_W_ALLOWED_KEYWORDS] = uiwidgetp;
+
+  uiwcontFree (hbox);
 
   /* new line : tags, tag weight */
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
-  managepl->wcont [MPL_W_TAG_BOX] = hbox;
 
   /* CONTEXT: playlist management: tags */
   uiwidgetp = uiCreateColonLabel (_("Tags"));
@@ -424,9 +452,9 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwidgetp = uiEntryInit (15, 50);
   uiBoxPackStart (hbox, uiwidgetp);
-  managepl->wcont [MPL_W_TAGS] = uiwidgetp;
   uiEntrySetValidate (uiwidgetp, "",
       managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
+  managepl->wcont [MPL_W_TAGS] = uiwidgetp;
 
   /* CONTEXT: playlist management: tag weight */
   uiwidgetp = uiCreateColonLabel (_("Weight"));
@@ -440,7 +468,90 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (hbox, uiwidgetp);
   managepl->wcont [MPL_W_TAG_WEIGHT] = uiwidgetp;
 
-  uiwcontFree (vbox);
+  uiwcontFree (hbox);
+
+  /* settings for automatic and sequenced playlists */
+
+  vbox = uiCreateVertBox ();
+  uiBoxPackStart (mvbox, vbox);
+  managepl->wcont [MPL_W_PODCAST_VBOX] = vbox;
+
+  /* new line : uri */
+
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
+
+  /* CONTEXT: playlist management: podcast URL */
+  uiwidgetp = uiCreateColonLabel (_("URL"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiEntryInit (40, 300);
+  uiBoxPackStart (hbox, uiwidgetp);
+//  uiEntrySetValidate (uiwidgetp, "",
+//      managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
+  managepl->wcont [MPL_W_URI] = uiwidgetp;
+
+  uiwcontFree (hbox);
+
+  /* new line : user */
+
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
+
+  /* CONTEXT: playlist management: podcast user */
+  uiwidgetp = uiCreateColonLabel (_("User"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiEntryInit (10, 40);
+  uiBoxPackStart (hbox, uiwidgetp);
+//  uiEntrySetValidate (uiwidgetp, "",
+//      managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
+  managepl->wcont [MPL_W_USER] = uiwidgetp;
+
+  uiwcontFree (hbox);
+
+  /* new line : password */
+
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
+
+  /* CONTEXT: playlist management: podcast password */
+  uiwidgetp = uiCreateColonLabel (_("Password"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiEntryInit (10, 40);
+  uiBoxPackStart (hbox, uiwidgetp);
+//  uiEntrySetValidate (uiwidgetp, "",
+//      managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
+  managepl->wcont [MPL_W_PASSWORD] = uiwidgetp;
+
+  uiwcontFree (hbox);
+
+  /* new line : retain */
+
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
+
+  /* CONTEXT: playlist management: how many days to keep the podcast */
+  uiwidgetp = uiCreateColonLabel (_("Days to Keep"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiSpinboxIntCreate ();
+  uiSpinboxSet (uiwidgetp, 0.0, 720.0);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrpNum, uiwidgetp);
+  managepl->wcont [MPL_W_RETAIN] = uiwidgetp;
+
+  uiwcontFree (hbox);
+  uiwcontFree (mvbox);
 
   /* dance settings : holds the list of dances with settings */
 
@@ -454,15 +565,17 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   managepl->mpldnc = manageplDanceAlloc (managepl->minfo);
   manageplDanceBuildUI (managepl->mpldnc, vbox);
-  managePlaylistNew (managepl, MANAGE_STD);
-  manageResetChanged (managepl);
 
   uiwcontFree (vbox);
+
   uiwcontFree (tophbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpSpinText);
   uiwcontFree (szgrpNum);
   uiwcontFree (szgrpText);
+
+  managePlaylistNew (managepl, MANAGE_STD, PLTYPE_AUTO);
+  manageResetChanged (managepl);
 
   logProcEnd ("");
 }
@@ -494,9 +607,16 @@ managePlaylistMenu (managepl_t *managepl, uiwcont_t *uimenubar)
   uiwcontFree (menuitem);
 
   managepl->callbacks [MPL_CB_MENU_PL_NEW] = callbackInit (
-      managePlaylistNewCB, managepl, NULL);
+      managePlaylistNewAutoCB, managepl, NULL);
   /* CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist */
   menuitem = uiMenuCreateItem (menu, _("New Automatic Playlist"),
+      managepl->callbacks [MPL_CB_MENU_PL_NEW]);
+  uiwcontFree (menuitem);
+
+  managepl->callbacks [MPL_CB_MENU_PL_NEW] = callbackInit (
+      managePlaylistNewPodcastCB, managepl, NULL);
+  /* CONTEXT: playlist management: menu selection: playlist: edit menu: new podcast */
+  menuitem = uiMenuCreateItem (menu, _("New Podcast"),
       managepl->callbacks [MPL_CB_MENU_PL_NEW]);
   uiwcontFree (menuitem);
 
@@ -566,7 +686,9 @@ managePlaylistSave (managepl_t *managepl)
     playlistSave (managepl->playlist, name);
     pltype = playlistGetConfigNum (managepl->playlist, PLAYLIST_TYPE);
     if (managepl->plloadcb != NULL &&
-        (pltype == PLTYPE_SONGLIST || pltype == PLTYPE_SEQUENCE)) {
+        (pltype == PLTYPE_SONGLIST ||
+        pltype == PLTYPE_SEQUENCE ||
+        pltype == PLTYPE_PODCAST)) {
       callbackHandlerS (managepl->plloadcb, name);
     }
   }
@@ -598,7 +720,7 @@ managePlaylistLoadCheck (managepl_t *managepl)
   name = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME]);
 
   if (! playlistExists (name)) {
-    managePlaylistNew (managepl, MANAGE_STD);
+    managePlaylistNew (managepl, MANAGE_STD, PLTYPE_AUTO);
   }
   mdfree (name);
   logProcEnd ("");
@@ -623,7 +745,7 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
 
   pl = playlistLoad (fn, NULL, NULL);
   if (pl == NULL) {
-    managePlaylistNew (managepl, preloadflag);
+    managePlaylistNew (managepl, preloadflag, PLTYPE_AUTO);
     managepl->inload = false;
     logProcEnd ("null");
     return;
@@ -647,7 +769,10 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
     pltype_t    pltype;
 
     pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
-    if (pltype == PLTYPE_SONGLIST || pltype == PLTYPE_SEQUENCE) {
+    if (managepl->plloadcb != NULL &&
+        (pltype == PLTYPE_SONGLIST ||
+        pltype == PLTYPE_SEQUENCE ||
+        pltype == PLTYPE_PODCAST)) {
       callbackHandlerS (managepl->plloadcb, fn);
     }
   }
@@ -658,7 +783,7 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
 }
 
 bool
-managePlaylistNew (managepl_t *managepl, int preloadflag)
+managePlaylistNew (managepl_t *managepl, int preloadflag, int type)
 {
   char        tbuff [MAX_PL_NM_LEN];
   playlist_t  *pl = NULL;
@@ -675,7 +800,7 @@ managePlaylistNew (managepl_t *managepl, int preloadflag)
   manageSetPlaylistName (managepl, tbuff);
   managepl->plbackupcreated = false;
 
-  pl = playlistCreate (tbuff, PLTYPE_AUTO, NULL, NULL);
+  pl = playlistCreate (tbuff, type, NULL, NULL);
   playlistFree (managepl->playlist);
   managepl->playlist = pl;
   manageResetChanged (managepl);
@@ -714,12 +839,23 @@ managePlaylistLoadCB (void *udata, const char *fn)
 }
 
 static bool
-managePlaylistNewCB (void *udata)
+managePlaylistNewAutoCB (void *udata)
 {
   managepl_t  *managepl = udata;
 
   logProcBegin ();
-  managePlaylistNew (managepl, MANAGE_STD);
+  managePlaylistNew (managepl, MANAGE_STD, PLTYPE_AUTO);
+  logProcEnd ("");
+  return UICB_CONT;
+}
+
+static bool
+managePlaylistNewPodcastCB (void *udata)
+{
+  managepl_t  *managepl = udata;
+
+  logProcBegin ();
+  managePlaylistNew (managepl, MANAGE_STD, PLTYPE_PODCAST);
   logProcEnd ("");
   return UICB_CONT;
 }
@@ -737,28 +873,33 @@ managePlaylistUpdateData (managepl_t *managepl)
 
   manageplDanceSetPlaylist (managepl->mpldnc, pl);
 
+  if (pltype == PLTYPE_PODCAST) {
+    uiWidgetHide (managepl->wcont [MPL_W_STD_VBOX]);
+    uiWidgetShow (managepl->wcont [MPL_W_PODCAST_VBOX]);
+  } else {
+    uiWidgetShow (managepl->wcont [MPL_W_STD_VBOX]);
+    uiWidgetHide (managepl->wcont [MPL_W_PODCAST_VBOX]);
+  }
+
+  if (pltype == PLTYPE_SONGLIST || pltype == PLTYPE_PODCAST) {
+    uiWidgetHide (managepl->wcont [MPL_W_AUTO_SEQ_VBOX]);
+  }
+  if (pltype == PLTYPE_SEQUENCE || pltype == PLTYPE_AUTO) {
+    uiWidgetShow (managepl->wcont [MPL_W_AUTO_SEQ_VBOX]);
+  }
+
   if (pltype == PLTYPE_SONGLIST) {
-    uiWidgetHide (managepl->wcont [MPL_W_RATING_ITEM]);
-    uiWidgetHide (managepl->wcont [MPL_W_LOW_LEVEL_ITEM]);
-    uiWidgetHide (managepl->wcont [MPL_W_HIGH_LEVEL_ITEM]);
-    uiWidgetHide (managepl->wcont [MPL_W_KW_BOX]);
-    uiWidgetHide (managepl->wcont [MPL_W_TAG_BOX]);
     /* CONTEXT: playlist management: type of playlist */
     uiLabelSetText (managepl->wcont [MPL_W_PL_TYPE], _("Song List"));
-  } else {
-    uiWidgetShow (managepl->wcont [MPL_W_RATING_ITEM]);
-    uiWidgetShow (managepl->wcont [MPL_W_LOW_LEVEL_ITEM]);
-    uiWidgetShow (managepl->wcont [MPL_W_HIGH_LEVEL_ITEM]);
-    uiWidgetShow (managepl->wcont [MPL_W_KW_BOX]);
-    uiWidgetShow (managepl->wcont [MPL_W_TAG_BOX]);
-    if (pltype == PLTYPE_SEQUENCE) {
-      /* CONTEXT: playlist management: type of playlist */
-      uiLabelSetText (managepl->wcont [MPL_W_PL_TYPE], _("Sequence"));
-    }
-    if (pltype == PLTYPE_AUTO) {
-      /* CONTEXT: playlist management: type of playlist */
-      uiLabelSetText (managepl->wcont [MPL_W_PL_TYPE], _("Automatic"));
-    }
+  } else if (pltype == PLTYPE_SEQUENCE) {
+    /* CONTEXT: playlist management: type of playlist */
+    uiLabelSetText (managepl->wcont [MPL_W_PL_TYPE], _("Sequence"));
+  } else if (pltype == PLTYPE_AUTO) {
+    /* CONTEXT: playlist management: type of playlist */
+    uiLabelSetText (managepl->wcont [MPL_W_PL_TYPE], _("Automatic"));
+  } else if (pltype == PLTYPE_PODCAST) {
+    /* CONTEXT: playlist management: type of playlist */
+    uiLabelSetText (managepl->wcont [MPL_W_PL_TYPE], _("Podcast"));
   }
 
   uiSpinboxTimeSetValue (managepl->wcont [MPL_W_MAX_PLAY_TIME],
@@ -828,7 +969,7 @@ managePlaylistDelete (void *udata)
   oname = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME]);
   manageDeletePlaylist (oname);
   manageResetChanged (managepl);
-  managePlaylistNew (managepl, MANAGE_STD);
+  managePlaylistNew (managepl, MANAGE_STD, PLTYPE_AUTO);
   manageDeleteStatus (managepl->minfo->statusMsg, oname);
   mdfree (oname);
   logProcEnd ("");

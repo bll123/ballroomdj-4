@@ -12,11 +12,23 @@ extern "C" {
 
 typedef struct podcast podcast_t;
 
-podcast_t    *podcastLoad (const char *fname);
-podcast_t    *podcastCreate (const char *fname);
-void          podcastFree (podcast_t *podcast);
-bool          podcastExists (const char *name);
-void          podcastSave (podcast_t *podcast, slist_t *slist);
+enum {
+  PODCAST_PASSWORD,
+  PODCAST_RETAIN,
+  PODCAST_URI,
+  PODCAST_USER,
+  PODCAST_KEY_MAX,
+};
+
+podcast_t *podcastLoad (const char *fname);
+podcast_t *podcastCreate (const char *fname);
+void      podcastFree (podcast_t *podcast);
+bool      podcastExists (const char *name);
+void      podcastSave (podcast_t *podcast, slist_t *slist);
+void      podcastSetNum (podcast_t *podcast, int key, ssize_t value);
+void      podcastSetStr (podcast_t *podcast, int key, const char *str);
+ssize_t   podcastGetNum (podcast_t *podcast, int key);
+const char *podcastGetStr (podcast_t *podcast, int key);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

@@ -36,10 +36,6 @@ typedef enum {
   PLAYLIST_TAGS,
   PLAYLIST_TAG_WEIGHT,
   PLAYLIST_TYPE,
-  PLAYLIST_URI,
-  PLAYLIST_USER,
-  PLAYLIST_PASSWORD,
-  PLAYLIST_RETAIN,
   PLAYLIST_KEY_MAX,
 } playlistkey_t;
 
@@ -94,6 +90,10 @@ void      playlistSetConfigList (playlist_t *pl, playlistkey_t key, const char *
 ssize_t   playlistGetDanceNum (playlist_t *pl, ilistidx_t dancekey, pldancekey_t key);
 void      playlistSetDanceCount (playlist_t *pl, ilistidx_t dancekey, ssize_t value);
 void      playlistSetDanceNum (playlist_t *pl, ilistidx_t danceIdx, pldancekey_t key, ssize_t value);
+void      playlistSetPodcastNum (playlist_t *pl, ilistidx_t key, ssize_t value);
+void      playlistSetPodcastStr (playlist_t *pl, ilistidx_t key, const char *str);
+ssize_t   playlistGetPodcastNum (playlist_t *pl, ilistidx_t key);
+const char *playlistGetPodcastStr (playlist_t *pl, ilistidx_t key);
 song_t    *playlistGetNextSong (playlist_t *pl, ssize_t priorCount, danceselQueueLookup_t queueLookupProc, void *userdata);
 slist_t   *playlistGetPlaylistNames (int flag, const char *dir);
 bool      playlistFilterSong (dbidx_t dbidx, song_t *song, void *tplaylist);

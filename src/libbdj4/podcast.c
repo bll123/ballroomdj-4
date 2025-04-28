@@ -16,8 +16,8 @@
 #include "fileop.h"
 #include "log.h"
 #include "mdebug.h"
+#include "nlist.h"
 #include "podcast.h"
-#include "slist.h"
 
 enum {
   PODCAST_VERSION = 1,
@@ -27,18 +27,22 @@ typedef struct podcast {
   datafile_t  *df;
   char        *name;
   char        *path;
-  char        *uri;
-  char        *user;
-  char        *password;
-  int32_t     retain;
   int         distvers;
+  nlist_t     *podcast;
 } podcast_t;
+
+/* must be sorted in ascii order */
+static datafilekey_t podcastdfkeys [PODCAST_KEY_MAX] = {
+  { "PASSWORD",       PODCAST_PASSWORD,   VALUE_STR, NULL, DF_NORM },
+  { "RETAIN",         PODCAST_RETAIN,     VALUE_NUM, NULL, DF_NORM },
+  { "URI",            PODCAST_URI,        VALUE_STR, NULL, DF_NORM },
+  { "USER",           PODCAST_USER,       VALUE_STR, NULL, DF_NORM },
+};
 
 podcast_t *
 podcastLoad (const char *fname)
 {
   podcast_t     *podcast;
-  slist_t       *tlist;
   char          fn [MAXPATHLEN];
 
 
@@ -51,9 +55,11 @@ podcastLoad (const char *fname)
   podcast = mdmalloc (sizeof (podcast_t));
   podcast->name = mdstrdup (fname);
   podcast->path = mdstrdup (fn);
+  podcast->podcast = NULL;
 
-  podcast->df = datafileAllocParse ("podcast", DFTYPE_LIST, fn, NULL, 0, DF_NO_OFFSET, NULL);
-  tlist = datafileGetList (podcast->df);
+  podcast->df = datafileAllocParse ("podcast", DFTYPE_KEY_VAL, fn,
+      podcastdfkeys, PODCAST_KEY_MAX, DF_NO_OFFSET, NULL);
+  podcast->podcast = datafileGetList (podcast->df);
   podcast->distvers = datafileDistVersion (podcast->df);
 
   return podcast;
@@ -71,12 +77,16 @@ podcastCreate (const char *fname)
   podcast = mdmalloc (sizeof (podcast_t));
   podcast->name = mdstrdup (fname);
   podcast->path = mdstrdup (fn);
-  podcast->uri = NULL;
-  podcast->user = NULL;
-  podcast->password = NULL;
   podcast->distvers = 1;
-  podcast->df = datafileAlloc ("podcast", DFTYPE_LIST,
-      podcast->path, NULL, 0);
+  podcast->df = datafileAlloc ("podcast", DFTYPE_KEY_VAL,
+      podcast->path, podcastdfkeys, PODCAST_KEY_MAX);
+  podcast->podcast = nlistAlloc ("podcast", LIST_UNORDERED, NULL);
+  nlistSetSize (podcast->podcast, PODCAST_KEY_MAX);
+  nlistSetNum (podcast->podcast, PODCAST_RETAIN, 0);
+  nlistSetStr (podcast->podcast, PODCAST_URI, "");
+  nlistSetStr (podcast->podcast, PODCAST_USER, "");
+  nlistSetStr (podcast->podcast, PODCAST_PASSWORD, "");
+  nlistSort (podcast->podcast);
 
   return podcast;
 }
@@ -85,15 +95,17 @@ podcastCreate (const char *fname)
 void
 podcastFree (podcast_t *podcast)
 {
-  if (podcast != NULL) {
-    dataFree (podcast->path);
-    dataFree (podcast->name);
-    dataFree (podcast->uri);
-    dataFree (podcast->user);
-    dataFree (podcast->password);
-    datafileFree (podcast->df);
-    mdfree (podcast);
+  if (podcast == NULL) {
+    return;
   }
+
+  dataFree (podcast->path);
+  dataFree (podcast->name);
+  if (podcast->podcast != datafileGetList (podcast->df)) {
+    nlistFree (podcast->podcast);
+  }
+  datafileFree (podcast->df);
+  mdfree (podcast);
 }
 
 bool
@@ -106,12 +118,70 @@ podcastExists (const char *name)
 }
 
 void
-podcastSave (podcast_t *podcast, slist_t *slist)
+podcastSave (podcast_t *podcast, nlist_t *tlist)
 {
-  if (slistGetCount (slist) <= 0) {
+  if (tlist == NULL) {
+    tlist = podcast->podcast;
+  }
+
+  if (nlistGetCount (tlist) <= 0) {
     return;
   }
 
-  slistSetVersion (slist, PODCAST_VERSION);
-  datafileSave (podcast->df, NULL, slist, DF_NO_OFFSET, podcast->distvers);
+  nlistSetVersion (tlist, PODCAST_VERSION);
+  datafileSave (podcast->df, NULL, tlist, DF_NO_OFFSET,
+      podcast->distvers);
 }
+
+void
+podcastSetNum (podcast_t *podcast, int key, ssize_t value)
+{
+  if (podcast == NULL || podcast->podcast == NULL) {
+    return;
+  }
+  if (key < 0 || key >= PODCAST_KEY_MAX) {
+    return;
+  }
+
+  nlistSetNum (podcast->podcast, key, value);
+}
+
+void
+podcastSetStr (podcast_t *podcast, int key, const char *str)
+{
+  if (podcast == NULL || podcast->podcast == NULL) {
+    return;
+  }
+  if (key < 0 || key >= PODCAST_KEY_MAX) {
+    return;
+  }
+
+  nlistSetStr (podcast->podcast, key, str);
+}
+
+ssize_t
+podcastGetNum (podcast_t *podcast, int key)
+{
+  if (podcast == NULL || podcast->podcast == NULL) {
+    return 0;
+  }
+  if (key < 0 || key >= PODCAST_KEY_MAX) {
+    return 0;
+  }
+
+  return nlistGetNum (podcast->podcast, key);
+}
+
+const char *
+podcastGetStr (podcast_t *podcast, int key)
+{
+  if (podcast == NULL || podcast->podcast == NULL) {
+    return NULL;
+  }
+  if (key < 0 || key >= PODCAST_KEY_MAX) {
+    return NULL;
+  }
+
+  return nlistGetStr (podcast->podcast, key);
+}
+

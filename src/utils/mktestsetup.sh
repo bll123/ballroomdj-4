@@ -168,7 +168,7 @@ cp -f test-templates/ui-*.txt data/profile00
 mv -f data/profile00/ui-starter.txt data
 cp -f test-templates/audiosrc.txt data
 
-for ftype in sl seq auto; do
+for ftype in sl seq auto podcast; do
   for tag in a b c d e f g h; do
     if [[ $ftype == auto && $tag == e ]]; then
       break
@@ -176,10 +176,14 @@ for ftype in sl seq auto; do
     if [[ $ftype == seq && $tag == e ]]; then
       break
     fi
+    if [[ $ftype == podcast && $tag == b ]]; then
+      break
+    fi
     copytestf ${ftype} ${tag} pl 1
     copytestf ${ftype} ${tag} pldances 0
     copytestf ${ftype} ${tag} songlist 0
     copytestf ${ftype} ${tag} sequence 0
+    copytestf ${ftype} ${tag} podcast 0
   done
 done
 
