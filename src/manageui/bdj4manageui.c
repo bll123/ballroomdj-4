@@ -3482,7 +3482,7 @@ managePlaylistImportRespHandler (void *udata)
     manageLoadPlaylistCB (manage, plname);
   } /* audiosrc-type: file */
 
-  if (imptype != AUDIOSRC_TYPE_FILE) {
+  if (imptype == AUDIOSRC_TYPE_BDJ4) {
     asiter_t    *asiter;
     const char  *songnm;
     slist_t     *tlist;
@@ -3548,6 +3548,13 @@ managePlaylistImportRespHandler (void *udata)
 
     nlistFree (tlist);
   } /* audio-src: type: not-file */
+
+  if (imptype == AUDIOSRC_TYPE_HTTPS) {
+    nlist_t     *tlist;
+
+fprintf (stderr, "import type: https\n");
+    tlist = rssImport (uri);
+  }
 
   if (newsongs) {
     manageRePopulateData (manage);

@@ -12,6 +12,7 @@
 
 #include <libxml/tree.h>
 #include <libxml/parser.h>
+#include <libxml/xmlerror.h>
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
@@ -29,12 +30,32 @@ typedef struct xmlparse {
   char                *tdata;
 } xmlparse_t;
 
+static void xmlParseXMLErrorHandler (void *udata, xmlErrorPtr xmlerr);
+
 xmlparse_t *
-xmlParseInit (const char *fname)
+xmlParseInitFile (const char *fname, int nsflag)
 {
-  xmlparse_t    *xmlparse;
+  xmlparse_t    *xmlparse = NULL;
   char          *data;
   size_t        datalen;
+
+  logMsg (LOG_DBG, LOG_INFO, "init-file: %s", fname);
+  data = filedataReadAll (fname, &datalen);
+  if (data == NULL) {
+    logMsg (LOG_DBG, LOG_INFO, "unable to read data file");
+    return xmlparse;
+  }
+
+  xmlparse = xmlParseInitData (data, datalen, nsflag);
+  dataFree (data);
+
+  return xmlparse;
+}
+
+xmlparse_t *
+xmlParseInitData (const char *data, size_t datalen, int nsflag)
+{
+  xmlparse_t    *xmlparse;
   char          *p;
 
   xmlparse = mdmalloc (sizeof (xmlparse_t));
@@ -43,28 +64,29 @@ xmlParseInit (const char *fname)
   xmlparse->tdata = NULL;
 
   xmlInitParser ();
+  xmlSetStructuredErrorFunc (NULL, xmlParseXMLErrorHandler);
 
-  data = filedataReadAll (fname, &datalen);
-  if (data == NULL) {
-    logMsg (LOG_DBG, LOG_INFO, "unable to read data file");
-    return xmlparse;
-  }
-
-  /* libxml2 doesn't have any way to set the default namespace for xpath */
-  /* which makes it a pain to use when a namespace is set */
-  /* clear out the namespace */
   xmlparse->tdata = mdmalloc (datalen + 1);
   memcpy (xmlparse->tdata, data, datalen);
   xmlparse->tdata [datalen] = '\0';
 
-  p = strstr (xmlparse->tdata, "xmlns");
-  if (p != NULL) {
-    char    *pe;
-    size_t  len;
+  if (nsflag == XMLPARSE_NONS) {
+    logMsg (LOG_DBG, LOG_INFO, "no-namespace");
+    /* libxml2 doesn't have any way to set the default namespace for xpath */
+    /* which makes it a pain to use when a namespace is set */
+    /* clear out the namespace */
 
-    pe = strstr (p, ">");
-    len = pe - p;
-    memset (p, ' ', len);
+    p = strstr (xmlparse->tdata, "xmlns");
+    if (p != NULL) {
+      char    *pe;
+      size_t  len;
+
+      pe = strstr (p, ">");
+      len = pe - p;
+      memset (p, ' ', len);
+    }
+  } else {
+    logMsg (LOG_DBG, LOG_INFO, "use-namespace");
   }
 
   xmlparse->doc = xmlParseMemory (xmlparse->tdata, datalen);
@@ -114,7 +136,10 @@ xmlParseGetItem (xmlparse_t *xmlparse, const char *xpath,
   xmlNodePtr          cur = NULL;
   xmlChar             *xval = NULL;
 
-  if (xmlparse == NULL || xpath == NULL) {
+  if (xmlparse == NULL ||
+      xpath == NULL ||
+      xmlparse->doc == NULL ||
+      xmlparse->xpathCtx == NULL) {
     return;
   }
 
@@ -137,14 +162,18 @@ xmlParseGetItem (xmlparse_t *xmlparse, const char *xpath,
 }
 
 ilist_t *
-xmlParseGetList (xmlparse_t *xmlparse, const char *xpath)
+xmlParseGetList (xmlparse_t *xmlparse, const char *xpath, const char *attr [])
 {
   xmlXPathObjectPtr   xpathObj = NULL;
   xmlNodeSetPtr       nodes = NULL;
   ilist_t             *list = NULL;
-  int32_t             count;
+  int32_t             ncount;
+  int32_t             rcount = 0;
 
-  if (xmlparse == NULL || xpath == NULL) {
+  if (xmlparse == NULL ||
+      xpath == NULL ||
+      xmlparse->doc == NULL ||
+      xmlparse->xpathCtx == NULL) {
     return NULL;
   }
 
@@ -159,10 +188,10 @@ xmlParseGetList (xmlparse_t *xmlparse, const char *xpath)
     return list;
   }
 
-  count = nodes->nodeNr;
-  ilistSetSize (list, count);
+  ncount = nodes->nodeNr;
+  ilistSetSize (list, ncount);
 
-  for (int32_t i = 0; i < count; ++i)  {
+  for (int32_t i = 0; i < ncount; ++i)  {
     xmlNodePtr    cur = NULL;
     xmlChar       *xval = NULL;
 
@@ -177,8 +206,29 @@ xmlParseGetList (xmlparse_t *xmlparse, const char *xpath)
     }
     mdextalloc (xval);
 
-    ilistSetStr (list, i, XMLPARSE_VAL, (const char *) xval);
-    ilistSetStr (list, i, XMLPARSE_NM, (const char *) cur->name);
+    if (xval != NULL && *xval) {
+      ilistSetStr (list, rcount, XMLPARSE_VAL, (const char *) xval);
+      ilistSetStr (list, rcount, XMLPARSE_NM, (const char *) cur->name);
+      ++rcount;
+    }
+    if ((xval == NULL || ! *xval) && attr != NULL) {
+      const char  **tattr = attr;
+
+      while (*tattr != NULL) {
+        xmlChar   *axval = NULL;
+
+        axval = xmlGetProp (cur, (xmlChar *) *tattr);
+        if (axval != NULL) {
+          mdextalloc (axval);
+          ilistSetStr (list, rcount, XMLPARSE_VAL, (const char *) axval);
+          ilistSetStr (list, rcount, XMLPARSE_NM, *tattr);
+          ++rcount;
+          mdextfree (axval);
+          xmlFree (axval);
+        }
+        ++tattr;
+      }
+    }
     mdextfree (xval);
     xmlFree (xval);
   }
@@ -188,4 +238,12 @@ xmlParseGetList (xmlparse_t *xmlparse, const char *xpath)
   // xmlMemoryDump ();
 
   return list;
+}
+
+static void
+xmlParseXMLErrorHandler (void *udata, xmlErrorPtr xmlerr)
+{
+  logMsg (LOG_DBG, LOG_INFO, "line:%d col:%d err:%d %s",
+      xmlerr->line, xmlerr->int2, xmlerr->code, xmlerr->message);
+  return;
 }

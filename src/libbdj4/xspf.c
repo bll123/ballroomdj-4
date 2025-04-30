@@ -105,9 +105,9 @@ xspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
   dbidx_t             dbidx;
   char                tbuff [MAXPATHLEN];
 
-  xmlparse = xmlParseInit (fname);
+  xmlparse = xmlParseInitFile (fname, XMLPARSE_NONS);
   xmlParseGetItem (xmlparse, "/playlist/title", plname, plsz);
-  tlist = xmlParseGetList (xmlparse, "/playlist/trackList/track/location");
+  tlist = xmlParseGetList (xmlparse, "/playlist/trackList/track/location", NULL);
   trkcount = ilistGetCount (tlist);
 
   implist = nlistAlloc ("xspfimport", LIST_UNORDERED, NULL);

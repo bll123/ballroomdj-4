@@ -35,6 +35,7 @@ add_library (libbdj4 SHARED
   podcast.c
   quickedit.c
   rating.c
+  rss.c
   samesong.c
   sequence.c
   song.c
@@ -57,7 +58,6 @@ add_library (libbdj4 SHARED
 target_include_directories (libbdj4
   PRIVATE "${CURL_INCLUDE_DIRS}"
   PRIVATE "${GLIB_INCLUDE_DIRS}"
-  PRIVATE "${XML2_INCLUDE_DIRS}"
 )
 target_link_libraries (libbdj4 PRIVATE
   libbdj4ati
@@ -66,7 +66,6 @@ target_link_libraries (libbdj4 PRIVATE
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GCRYPT_LDFLAGS}
   ${GLIB_LDFLAGS}
-  ${XML2_LDFLAGS}
   ${JSONC_LDFLAGS}
   z
 )

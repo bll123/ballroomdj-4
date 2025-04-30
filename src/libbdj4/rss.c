@@ -19,104 +19,89 @@
 #include "fileop.h"
 #include "expimp.h"
 #include "filedata.h"
+#include "ilist.h"
 #include "mdebug.h"
 #include "pathdisp.h"
 #include "pathutil.h"
 #include "playlist.h"
 #include "tagdef.h"
+#include "webclient.h"
 #include "xmlparse.h"
 
-void
-rssImport (const char *fname, char *plname, size_t plsz)
-{
-  xmlparse_t          *xmlparse;
-  char                *data = NULL;
-  size_t              datalen = 0;
-  nlist_t             *tlist = NULL;
-  int                 itemcount;
-  const char          *val;
-  song_t              *song;
-  dbidx_t             dbidx;
-  char                tbuff [MAXPATHLEN];
+static const char *titlexpath =
+    "/rss/channel/title";
+static const char *linkxpath =
+    "/rss/channel/link";
+static const char *itemxpath =
+    "/rss/channel/item/title|"
+    "/rss/channel/item/enclosure";
+static const char *itemattr [] =
+    { "url", "length", NULL };
 
-  data = filedataReadAll (fname, &datalen);
-  if (data == NULL) {
+typedef struct
+{
+  const char    *webresponse;
+  size_t        webresplen;
+} rssdata_t;
+
+static void rssWebResponseCallback (void *userdata, const char *respstr, size_t len);
+
+nlist_t *
+rssImport (const char *uri)
+{
+  xmlparse_t    *xmlparse;
+  ilist_t       *tlist = NULL;
+  nlist_t       *implist;
+  ilistidx_t    iteridx;
+  ilistidx_t    key;
+//  song_t        *song;
+//  dbidx_t       dbidx;
+  webclient_t   *webclient;
+  rssdata_t     rssdata;
+  int           webrc;
+  char          tbuff [MAXPATHLEN];
+
+
+  webclient = webclientAlloc (&rssdata, rssWebResponseCallback);
+  webrc = webclientGet (webclient, uri);
+  if (webrc != WEB_OK) {
     return NULL;
   }
 
-  xmlparse = xmlParseInit (data, datalen);
-  xmlGetItem (xmlparse, "/rss/channel/title", plname, plsz);
+  /* the RSS data has xmlns prefixes defined */
+  /* using the xmlns is required */
+  xmlparse = xmlParseInitData (rssdata.webresponse, rssdata.webresplen,
+      XMLPARSE_USENS);
+  xmlParseGetItem (xmlparse, titlexpath, tbuff, sizeof (tbuff));
+  xmlParseGetItem (xmlparse, linkxpath, tbuff, sizeof (tbuff));
+  tlist = xmlParseGetList (xmlparse, itemxpath, itemattr);
+
+  implist = nlistAlloc ("rssimport", LIST_UNORDERED, NULL);
+
+  ilistStartIterator (tlist, &iteridx);
+  while ((key = ilistIterateKey (tlist, &iteridx)) >= 0) {
+    const char  *val;
+    const char  *nm;
+
+    val = ilistGetStr (tlist, key, XMLPARSE_VAL);
+    nm = ilistGetStr (tlist, key, XMLPARSE_NM);
+fprintf (stderr, "nm: %s val: %s\n", nm, val);
+  }
+
   xmlParseFree (xmlparse);
+  webclientClose (webclient);
 
-#if 0
-  xpathObj = xmlXPathEvalExpression ((xmlChar *) "/rss/channel/link", xpathCtx);
-  mdextalloc (xpathObj);
-  nodes = xpathObj->nodesetval;
-  if (nodes->nodeNr == 0) {
-    goto rssImportExit;
-  }
+  return implist;
+}
 
-  cur = nodes->nodeTab [0];
-  xval = xmlNodeGetContent (cur);
-  mdextalloc (xval);
-  if (xval != NULL) {
-    // stpecpy (plname, plname + plsz, (char *) xval);
-    mdextfree (xval);
-    xmlFree (xval);
-  }
-  mdextfree (xpathObj);
-  xmlXPathFreeObject (xpathObj);
+/* internal routines */
 
-  /* /rss/channel/item/title */
-  /* /rss/channel/item/link */
-  xpathObj = xmlXPathEvalExpression ((xmlChar *) "/rss/channel/item", xpathCtx);
-  mdextalloc (xpathObj);
-  if (xpathObj == NULL)  {
-    goto rssImportExit;
-  }
+static void
+rssWebResponseCallback (void *userdata, const char *respstr, size_t len)
+{
+  rssdata_t    *rssdata = (rssdata_t *) userdata;
 
-  nodes = xpathObj->nodesetval;
-  if (xmlXPathNodeSetIsEmpty (nodes)) {
-    goto rssImportExit;
-  }
-  itemcount = nodes->nodeNr;
-
-  list = nlistAlloc ("rssimport", LIST_UNORDERED, NULL);
-
-  for (int i = 0; i < itemcount; ++i)  {
-    if (nodes->nodeTab [i]->type != XML_ELEMENT_NODE) {
-      continue;
-    }
-
-    cur = nodes->nodeTab [i];
-    xval = xmlNodeGetContent (cur);
-    if (xval == NULL) {
-      continue;
-    }
-    mdextalloc (xval);
-
-    stpecpy (tbuff, tbuff + sizeof (tbuff), (char *) xval);
-
-    mdextfree (xval);
-    xmlFree (xval);
-  }
-
-rssImportExit:
-  if (xpathObj != NULL) {
-    mdextfree (xpathObj);
-    xmlXPathFreeObject (xpathObj);
-  }
-  if (xpathCtx != NULL) {
-    mdextfree (xpathCtx);
-    xmlXPathFreeContext (xpathCtx);
-  }
-  if (doc != NULL) {
-    mdextfree (doc);
-    xmlFreeDoc (doc);
-  }
-  dataFree (tdata);
-#endif
-  dataFree (data);
-
-  return list;
+  rssdata->webresponse = respstr;
+  rssdata->webresplen = len;
+  return;
 }

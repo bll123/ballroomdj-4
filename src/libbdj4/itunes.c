@@ -314,7 +314,7 @@ itunesParse (itunes_t *itunes)
     return true;
   }
 
-  xmlparse = xmlParseInit (fn);
+  xmlparse = xmlParseInitFile (fn, XMLPARSE_NONS);
 
   if (! itunesParseData (itunes, xmlparse, dataxpath)) {
     return false;
@@ -683,7 +683,7 @@ itunesParseXPath (xmlparse_t *xmlparse, const char *xpathExpr,
   ilistidx_t    iteridx;
   ilistidx_t    key;
 
-  tlist = xmlParseGetList (xmlparse, xpathExpr);
+  tlist = xmlParseGetList (xmlparse, xpathExpr, NULL);
 
   /* itunes just dumps everything into a dict structure. */
   /* poor use of xml */
