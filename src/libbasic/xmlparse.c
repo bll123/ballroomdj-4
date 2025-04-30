@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
+ * Copyright 2025 Brad Lanam Pleasant Hill CA
  */
 #include "config.h"
 
@@ -162,13 +162,15 @@ xmlParseGetItem (xmlparse_t *xmlparse, const char *xpath,
 }
 
 ilist_t *
-xmlParseGetList (xmlparse_t *xmlparse, const char *xpath, const char *attr [])
+xmlParseGetList (xmlparse_t *xmlparse, const char *xpath,
+    const xmlparseattr_t attr [])
 {
   xmlXPathObjectPtr   xpathObj = NULL;
   xmlNodeSetPtr       nodes = NULL;
   ilist_t             *list = NULL;
   int32_t             ncount;
   int32_t             rcount = 0;
+  char                first [80];
 
   if (xmlparse == NULL ||
       xpath == NULL ||
@@ -177,6 +179,7 @@ xmlParseGetList (xmlparse_t *xmlparse, const char *xpath, const char *attr [])
     return NULL;
   }
 
+  *first = '\0';
   list = ilistAlloc ("xmlparse", LIST_ORDERED);
 
   xpathObj = xmlXPathEvalExpression ((xmlChar *) xpath, xmlparse->xpathCtx);
@@ -189,7 +192,6 @@ xmlParseGetList (xmlparse_t *xmlparse, const char *xpath, const char *attr [])
   }
 
   ncount = nodes->nodeNr;
-  ilistSetSize (list, ncount);
 
   for (int32_t i = 0; i < ncount; ++i)  {
     xmlNodePtr    cur = NULL;
@@ -206,28 +208,48 @@ xmlParseGetList (xmlparse_t *xmlparse, const char *xpath, const char *attr [])
     }
     mdextalloc (xval);
 
-    if (xval != NULL && *xval) {
-      ilistSetStr (list, rcount, XMLPARSE_VAL, (const char *) xval);
-      ilistSetStr (list, rcount, XMLPARSE_NM, (const char *) cur->name);
+    if (strcmp (first, (const char *) cur->name) == 0) {
       ++rcount;
     }
-    if ((xval == NULL || ! *xval) && attr != NULL) {
-      const char  **tattr = attr;
 
-      while (*tattr != NULL) {
-        xmlChar   *axval = NULL;
+    /* messy stuff, as there is more than one attribute */
+    /* for some xpath items */
+    if (attr != NULL) {
+      const xmlparseattr_t    *attrp = attr;
 
-        axval = xmlGetProp (cur, (xmlChar *) *tattr);
-        if (axval != NULL) {
-          mdextalloc (axval);
-          ilistSetStr (list, rcount, XMLPARSE_VAL, (const char *) axval);
-          ilistSetStr (list, rcount, XMLPARSE_NM, *tattr);
-          ++rcount;
-          mdextfree (axval);
-          xmlFree (axval);
+      while (attrp->name != NULL) {
+        if (! *xval) {
+          xmlChar   *axval = NULL;
+
+          if (attrp->attr == NULL) {
+            ++attrp;
+            continue;
+          }
+
+          axval = xmlGetProp (cur, (xmlChar *) attrp->attr);
+          if (axval != NULL) {
+            mdextalloc (axval);
+            ilistSetStr (list, rcount, attrp->idx, (const char *) axval);
+            // fprintf (stderr, "%d %d %s\n", rcount, attrp->idx, (const char *) axval);
+            mdextfree (axval);
+            xmlFree (axval);
+          }
+        } else if (strcmp (attrp->name, (const char *) cur->name) == 0) {
+          ilistSetStr (list, rcount, attrp->idx, (const char *) xval);
+          // fprintf (stderr, "%d %d %s\n", rcount, attrp->idx, (const char *) xval);
+          break;
         }
-        ++tattr;
+        ++attrp;
       }
+
+      if (! *first) {
+        stpecpy (first, first + sizeof (first), (const char *) cur->name);
+      }
+    } else {
+      ilistSetStr (list, rcount, XMLPARSE_VAL, (const char *) xval);
+      ilistSetStr (list, rcount, XMLPARSE_NM, (const char *) cur->name);
+      // fprintf (stderr, "%d %s %s\n", rcount, (const char *) cur->name, (const char *) xval);
+      ++rcount;
     }
     mdextfree (xval);
     xmlFree (xval);

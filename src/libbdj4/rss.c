@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
+ * Copyright 2025 Brad Lanam Pleasant Hill CA
  *
  * Example podcast RSS files:
  *    https://www.npr.org/podcasts/2037/music
@@ -21,6 +21,7 @@
 #include "filedata.h"
 #include "ilist.h"
 #include "mdebug.h"
+#include "nlist.h"
 #include "pathdisp.h"
 #include "pathutil.h"
 #include "playlist.h"
@@ -35,8 +36,12 @@ static const char *linkxpath =
 static const char *itemxpath =
     "/rss/channel/item/title|"
     "/rss/channel/item/enclosure";
-static const char *itemattr [] =
-    { "url", "length", NULL };
+static const xmlparseattr_t itemattr [] = {
+    { "title", RSS_ITEM_TITLE, NULL },
+    { "enclosure", RSS_ITEM_URI, "url" },
+    { "enclosure", RSS_ITEM_DURATION, "length" },
+    { NULL, -1, NULL },
+};
 
 typedef struct
 {
@@ -52,10 +57,6 @@ rssImport (const char *uri)
   xmlparse_t    *xmlparse;
   ilist_t       *tlist = NULL;
   nlist_t       *implist;
-  ilistidx_t    iteridx;
-  ilistidx_t    key;
-//  song_t        *song;
-//  dbidx_t       dbidx;
   webclient_t   *webclient;
   rssdata_t     rssdata;
   int           webrc;
@@ -68,25 +69,19 @@ rssImport (const char *uri)
     return NULL;
   }
 
+  implist = nlistAlloc ("rssimport", LIST_ORDERED, NULL);
+  nlistSetSize (implist, RSS_MAX);
+
   /* the RSS data has xmlns prefixes defined */
   /* using the xmlns is required */
   xmlparse = xmlParseInitData (rssdata.webresponse, rssdata.webresplen,
       XMLPARSE_USENS);
   xmlParseGetItem (xmlparse, titlexpath, tbuff, sizeof (tbuff));
+  nlistSetStr (implist, RSS_TITLE, tbuff);
   xmlParseGetItem (xmlparse, linkxpath, tbuff, sizeof (tbuff));
+  nlistSetStr (implist, RSS_URI, tbuff);
   tlist = xmlParseGetList (xmlparse, itemxpath, itemattr);
-
-  implist = nlistAlloc ("rssimport", LIST_UNORDERED, NULL);
-
-  ilistStartIterator (tlist, &iteridx);
-  while ((key = ilistIterateKey (tlist, &iteridx)) >= 0) {
-    const char  *val;
-    const char  *nm;
-
-    val = ilistGetStr (tlist, key, XMLPARSE_VAL);
-    nm = ilistGetStr (tlist, key, XMLPARSE_NM);
-fprintf (stderr, "nm: %s val: %s\n", nm, val);
-  }
+  nlistSetList (implist, RSS_ITEM_LIST, tlist);
 
   xmlParseFree (xmlparse);
   webclientClose (webclient);

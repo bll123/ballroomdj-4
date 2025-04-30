@@ -11,6 +11,19 @@
 extern "C" {
 #endif
 
+enum {
+  RSS_TITLE,
+  RSS_URI,
+  RSS_ITEM_LIST,
+  RSS_MAX,
+};
+
+enum {
+  RSS_ITEM_TITLE,
+  RSS_ITEM_URI,
+  RSS_ITEM_DURATION,
+};
+
 /* m3u.c */
 void m3uExport (musicdb_t *musicdb, nlist_t *list, const char *fname, const char *slname);
 nlist_t * m3uImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz);
