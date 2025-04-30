@@ -52,7 +52,7 @@ target_link_libraries (libbdj4common PRIVATE
   objdirutil    # dirutil.c
   objfileop     # fileop.c
   objosprocess  # osprocess.c os*process.c
-  objstring     # bdjstring.c stpecpy.c strlcat.c strlcpy.c mdebug.c
+  objstring     # bdjstring.c stpecpy.c mdebug.c
   objtmutil     # tmutil.c
   ${GLIB_LDFLAGS}
   m             # needed for Fedora gcc 13

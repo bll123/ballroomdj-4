@@ -13,11 +13,6 @@
 
 #include <glib.h>
 
-#include <libxml/tree.h>
-#include <libxml/parser.h>
-#include <libxml/xpath.h>
-#include <libxml/xpathInternals.h>
-
 #include "audiosrc.h"
 #include "bdj4.h"
 #include "bdjopt.h"
@@ -35,19 +30,20 @@
 #include "songutil.h"
 #include "tagdef.h"
 #include "tmutil.h"
+#include "xmlparse.h"
 
-static const xmlChar * datamainxpath = (const xmlChar *)
+static const char * datamainxpath =
       "/plist/dict/dict/key";
-static const xmlChar * dataxpath = (const xmlChar *)
+static const char * dataxpath =
       "/plist/dict/dict/dict/key|"
       "/plist/dict/dict/dict/integer|"
       "/plist/dict/dict/dict/string|"
       "/plist/dict/dict/dict/date|"
       "/plist/dict/dict/dict/true|"
       "/plist/dict/dict/dict/false";
-static const xmlChar * plmainxpath = (const xmlChar *)
+static const char * plmainxpath =
       "/plist/dict/array/dict/key";
-static const xmlChar * plxpath = (const xmlChar *)
+static const char * plxpath =
       "/plist/dict/array/dict/key|"
       "/plist/dict/array/dict/integer|"
       "/plist/dict/array/dict/string|"
@@ -85,9 +81,9 @@ static datafilekey_t starsdfkeys [ITUNES_STARS_MAX] = {
   { "90",   ITUNES_STARS_90,      VALUE_NUM,  ratingConv, DF_NORM },
 };
 
-static bool itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr);
-static bool itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr);
-static bool itunesParseXPath (xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr, slist_t *rawdata, const xmlChar *mainxpath);
+static bool itunesParseData (itunes_t *itunes, xmlparse_t *xmlparse, const char *xpathExpr);
+static bool itunesParsePlaylists (itunes_t *itunes, xmlparse_t *xmlparse, const char *xpathExpr);
+static bool itunesParseXPath (xmlparse_t *xmlparse, const char *xpathExpr, slist_t *rawdata, const char *mainxpath);
 
 bool
 itunesConfigured (void)
@@ -303,8 +299,7 @@ itunesIterateAvailFields (itunes_t *itunes, int *val)
 bool
 itunesParse (itunes_t *itunes)
 {
-  xmlDocPtr           doc;
-  xmlXPathContextPtr  xpathCtx;
+  xmlparse_t          *xmlparse;
   const char          *fn;
   time_t              xmlts;
 
@@ -319,50 +314,17 @@ itunesParse (itunes_t *itunes)
     return true;
   }
 
-  xmlInitParser ();
+  xmlparse = xmlParseInit (fn);
 
-  doc = xmlParseFile (fn);
-  mdextalloc (doc);
-  if (doc == NULL)  {
-    logMsg (LOG_DBG, LOG_INFO, "itunesParse: unable to parse %s", fn);
-    xmlCleanupParser ();
+  if (! itunesParseData (itunes, xmlparse, dataxpath)) {
+    return false;
+  }
+  if (! itunesParsePlaylists (itunes, xmlparse, plxpath)) {
     return false;
   }
 
-  xpathCtx = xmlXPathNewContext (doc);
-  mdextalloc (xpathCtx);
-  if (xpathCtx == NULL)  {
-    logMsg (LOG_DBG, LOG_INFO, "itunesParse: unable to create xpath context");
-    mdextfree (doc);
-    xmlFreeDoc (doc);
-    xmlCleanupParser ();
-    return false;
-  }
-
-  if (! itunesParseData (itunes, xpathCtx, dataxpath)) {
-    mdextfree (xpathCtx);
-    xmlXPathFreeContext (xpathCtx);
-    mdextfree (doc);
-    xmlFreeDoc (doc);
-    xmlCleanupParser ();
-    return false;
-  }
-  if (! itunesParsePlaylists (itunes, xpathCtx, plxpath)) {
-    mdextfree (xpathCtx);
-    xmlXPathFreeContext (xpathCtx);
-    mdextfree (doc);
-    xmlFreeDoc (doc);
-    xmlCleanupParser ();
-    return false;
-  }
-
-  mdextfree (xpathCtx);
-  xmlXPathFreeContext (xpathCtx);
-  mdextfree (doc);
-  xmlFreeDoc (doc);
-  xmlCleanupParser ();
+  xmlParseFree (xmlparse);
   itunes->lastparse = xmlts;
-  // xmlMemoryDump ();
   return true;
 }
 
@@ -431,8 +393,8 @@ itunesIteratePlaylists (itunes_t *itunes)
 /* internal routines */
 
 static bool
-itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
-    const xmlChar *xpathExpr)
+itunesParseData (itunes_t *itunes, xmlparse_t *xmlparse,
+    const char *xpathExpr)
 {
   slist_t     *rawdata;
   slistidx_t  iteridx;
@@ -444,7 +406,7 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
   bool        skip = false;
 
   rawdata = slistAlloc ("itunes-data-raw", LIST_UNORDERED, NULL);
-  if (! itunesParseXPath (xpathCtx, xpathExpr, rawdata, datamainxpath)) {
+  if (! itunesParseXPath (xmlparse, xpathExpr, rawdata, datamainxpath)) {
     slistFree (rawdata);
     return false;
   }
@@ -620,8 +582,8 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
 }
 
 static bool
-itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
-    const xmlChar *xpathExpr)
+itunesParsePlaylists (itunes_t *itunes, xmlparse_t *xmlparse,
+    const char *xpathExpr)
 {
   slist_t     *rawdata = NULL;
   slistidx_t  iteridx;
@@ -633,7 +595,7 @@ itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
   bool        ismaster = false;
 
   rawdata = slistAlloc ("itunes-pl-raw", LIST_UNORDERED, NULL);
-  if (! itunesParseXPath (xpathCtx, xpathExpr, rawdata, plmainxpath)) {
+  if (! itunesParseXPath (xmlparse, xpathExpr, rawdata, plmainxpath)) {
     slistFree (rawdata);
     return false;
   }
@@ -712,63 +674,50 @@ itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
 }
 
 static bool
-itunesParseXPath (xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr,
-    slist_t *rawdata, const xmlChar *mainxpath)
+itunesParseXPath (xmlparse_t *xmlparse, const char *xpathExpr,
+    slist_t *rawdata, const char *mainxpath)
 {
-  xmlXPathObjectPtr   xpathObj;
-  xmlNodeSetPtr       nodes;
-  xmlNodePtr          cur;
-  int                 size;
-  xmlChar             *val = NULL;
-  char                lastkey [50];
-  bool                valset = true;
+  char          lastkey [50];
+  bool          valset = true;
+  ilist_t       *tlist;
+  ilistidx_t    iteridx;
+  ilistidx_t    key;
 
-  xpathObj = xmlXPathEvalExpression (xpathExpr, xpathCtx);
-  mdextalloc (xpathObj);
-  if (xpathObj == NULL)  {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "itunesParse: bad xpath expression");
-    return false;
-  }
-
-  nodes = xpathObj->nodesetval;
-  size = (nodes) ? nodes->nodeNr : 0;
+  tlist = xmlParseGetList (xmlparse, xpathExpr);
 
   /* itunes just dumps everything into a dict structure. */
   /* poor use of xml */
-  for (int i = 0; i < size; ++i)  {
-    if (nodes->nodeTab [i]->type == XML_ELEMENT_NODE)  {
-      cur = nodes->nodeTab [i];
-      val = xmlNodeGetContent (cur);
-      mdextalloc (val);
+  ilistStartIterator (tlist, &iteridx);
+  while ((key = ilistIterateKey (tlist, &iteridx)) >= 0) {
+    const char *val;
+    const char *nm;
 
-      logMsg (LOG_DBG, LOG_ITUNES, "xml: raw: %s %s", cur->name, val);
-      // fprintf (stderr, "i: %s %s\n", cur->name, val);
-      if (strcmp ((const char *) cur->name, "key") == 0) {
-        if (! valset) {
-          slistSetStr (rawdata, lastkey, "0");
-          // fprintf (stderr, "  0: %s 0\n", lastkey);
-        }
-        stpecpy (lastkey, lastkey + sizeof (lastkey), (const char *) val);
-        valset = false;
+    val = ilistGetStr (tlist, key, XMLPARSE_VAL);
+    nm = ilistGetStr (tlist, key, XMLPARSE_NM);
+    logMsg (LOG_DBG, LOG_ITUNES, "xml: raw: %s %s", nm, val);
+    // fprintf (stderr, "i: %s %s\n", nm, val);
+    if (strcmp (nm, "key") == 0) {
+      if (! valset) {
+        slistSetStr (rawdata, lastkey, "0");
+        // fprintf (stderr, "  0: %s 0\n", lastkey);
       }
-      if (strcmp ((const char *) cur->name, "integer") == 0 ||
-          strcmp ((const char *) cur->name, "string") == 0 ||
-          strcmp ((const char *) cur->name, "date") == 0) {
-        slistSetStr (rawdata, lastkey, (const char *) val);
-        // fprintf (stderr, "  s: %s\n", val);
-        valset = true;
-      }
-      if (strcmp ((const char *) cur->name, "true") == 0) {
-        slistSetStr (rawdata, lastkey, (const char *) "1");
-        // fprintf (stderr, "  b: %s\n", "1");
-        valset = true;
-      }
-      mdextfree (val);
-      xmlFree (val);
+      stpecpy (lastkey, lastkey + sizeof (lastkey), val);
+      valset = false;
+    }
+    if (strcmp (nm, "integer") == 0 ||
+        strcmp (nm, "string") == 0 ||
+        strcmp (nm, "date") == 0) {
+      slistSetStr (rawdata, lastkey, (const char *) val);
+      // fprintf (stderr, "  s: %s\n", val);
+      valset = true;
+    }
+    if (strcmp (nm, "true") == 0) {
+      slistSetStr (rawdata, lastkey, (const char *) "1");
+      // fprintf (stderr, "  b: %s\n", "1");
+      valset = true;
     }
   }
 
-  mdextfree (xpathObj);
-  xmlXPathFreeObject (xpathObj);
+  ilistFree (tlist);
   return true;
 }

@@ -14,39 +14,26 @@
 #include <string.h>
 #include <inttypes.h>
 
-#include <libxml/tree.h>
-#include <libxml/parser.h>
-#include <libxml/xpath.h>
-#include <libxml/xpathInternals.h>
-
-// #include "audiosrc.h"
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "fileop.h"
 #include "expimp.h"
 #include "filedata.h"
 #include "mdebug.h"
-// #include "nlist.h"
 #include "pathdisp.h"
 #include "pathutil.h"
 #include "playlist.h"
 #include "tagdef.h"
+#include "xmlparse.h"
 
 void
 rssImport (const char *fname, char *plname, size_t plsz)
 {
-  xmlDocPtr           doc = NULL;
-  xmlXPathContextPtr  xpathCtx = NULL;
-  xmlXPathObjectPtr   xpathObj = NULL;
-  xmlNodeSetPtr       nodes = NULL;
-  xmlNodePtr          cur = NULL;
+  xmlparse_t          *xmlparse;
   char                *data = NULL;
-  char                *tdata = NULL;
   size_t              datalen = 0;
-  char                *p;
-  nlist_t             *list = NULL;
+  nlist_t             *tlist = NULL;
   int                 itemcount;
-  xmlChar             *xval;
   const char          *val;
   song_t              *song;
   dbidx_t             dbidx;
@@ -57,47 +44,11 @@ rssImport (const char *fname, char *plname, size_t plsz)
     return NULL;
   }
 
-  /* clear out the namespace */
-  tdata = mdmalloc (datalen + 1);
-  memcpy (tdata, data, datalen);
-  tdata [datalen] = '\0';
-  p = strstr (tdata, "xmlns");
-  if (p != NULL) {
-    char    *pe;
-    size_t  len;
+  xmlparse = xmlParseInit (data, datalen);
+  xmlGetItem (xmlparse, "/rss/channel/title", plname, plsz);
+  xmlParseFree (xmlparse);
 
-    pe = strstr (p, ">");
-    len = pe - p;
-    memset (p, ' ', len);
-  }
-
-  doc = xmlParseMemory (tdata, datalen);
-  mdextalloc (doc);
-
-  xpathCtx = xmlXPathNewContext (doc);
-  mdextalloc (xpathCtx);
-  if (xpathCtx == NULL) {
-    goto rssImportExit;
-  }
-
-  xpathObj = xmlXPathEvalExpression ((xmlChar *) "/rss/channel/title", xpathCtx);
-  mdextalloc (xpathObj);
-  nodes = xpathObj->nodesetval;
-  if (nodes->nodeNr == 0) {
-    goto rssImportExit;
-  }
-
-  cur = nodes->nodeTab [0];
-  xval = xmlNodeGetContent (cur);
-  mdextalloc (xval);
-  if (xval != NULL) {
-    stpecpy (plname, plname + plsz, (char *) xval);
-    mdextfree (xval);
-    xmlFree (xval);
-  }
-  mdextfree (xpathObj);
-  xmlXPathFreeObject (xpathObj);
-
+#if 0
   xpathObj = xmlXPathEvalExpression ((xmlChar *) "/rss/channel/link", xpathCtx);
   mdextalloc (xpathObj);
   nodes = xpathObj->nodesetval;
@@ -164,6 +115,7 @@ rssImportExit:
     xmlFreeDoc (doc);
   }
   dataFree (tdata);
+#endif
   dataFree (data);
 
   return list;

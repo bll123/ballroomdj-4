@@ -10,17 +10,13 @@
 #include <string.h>
 #include <inttypes.h>
 
-#include <libxml/tree.h>
-#include <libxml/parser.h>
-#include <libxml/xpath.h>
-#include <libxml/xpathInternals.h>
-
 #include "audiosrc.h"
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "fileop.h"
 #include "expimp.h"
 #include "filedata.h"
+#include "ilist.h"
 #include "mdebug.h"
 #include "musicdb.h"
 #include "nlist.h"
@@ -28,6 +24,7 @@
 #include "pathutil.h"
 #include "song.h"
 #include "tagdef.h"
+#include "xmlparse.h"
 
 void
 xspfExport (musicdb_t *musicdb, nlist_t *list,
@@ -96,96 +93,29 @@ xspfExport (musicdb_t *musicdb, nlist_t *list,
 nlist_t *
 xspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
 {
-  xmlDocPtr           doc = NULL;
-  xmlXPathContextPtr  xpathCtx = NULL;
-  xmlXPathObjectPtr   xpathObj = NULL;
-  xmlNodeSetPtr       nodes = NULL;
-  xmlNodePtr          cur = NULL;
-  char                *data = NULL;
-  char                *tdata = NULL;
-  size_t              datalen = 0;
-  char                *p;
-  nlist_t             *list = NULL;
+  xmlparse_t          *xmlparse;
+  ilist_t             *tlist = NULL;
+  nlist_t             *implist = NULL;
+  ilistidx_t          iteridx;
+  ilistidx_t          key;
   int                 trkcount;
-  xmlChar             *xval;
+  const char          *str;
   const char          *val;
   song_t              *song;
   dbidx_t             dbidx;
   char                tbuff [MAXPATHLEN];
 
-  data = filedataReadAll (fname, &datalen);
-  if (data == NULL) {
-    return NULL;
-  }
+  xmlparse = xmlParseInit (fname);
+  xmlParseGetItem (xmlparse, "/playlist/title", plname, plsz);
+  tlist = xmlParseGetList (xmlparse, "/playlist/trackList/track/location");
+  trkcount = ilistGetCount (tlist);
 
-  /* clear out the namespace */
-  tdata = mdmalloc (datalen + 1);
-  memcpy (tdata, data, datalen);
-  tdata [datalen] = '\0';
-  p = strstr (tdata, "xmlns");
-  if (p != NULL) {
-    char    *pe;
-    size_t  len;
+  implist = nlistAlloc ("xspfimport", LIST_UNORDERED, NULL);
 
-    pe = strstr (p, ">");
-    len = pe - p;
-    memset (p, ' ', len);
-  }
-
-  doc = xmlParseMemory (tdata, datalen);
-  mdextalloc (doc);
-
-  xpathCtx = xmlXPathNewContext (doc);
-  mdextalloc (xpathCtx);
-  if (xpathCtx == NULL) {
-    goto xspfImportExit;
-  }
-
-  xpathObj = xmlXPathEvalExpression ((xmlChar *) "/playlist/title", xpathCtx);
-  mdextalloc (xpathObj);
-  nodes = xpathObj->nodesetval;
-  if (nodes->nodeNr == 0) {
-    goto xspfImportExit;
-  }
-
-  cur = nodes->nodeTab [0];
-  xval = xmlNodeGetContent (cur);
-  mdextalloc (xval);
-  if (xval != NULL) {
-    stpecpy (plname, plname + plsz, (char *) xval);
-    mdextfree (xval);
-    xmlFree (xval);
-  }
-  mdextfree (xpathObj);
-  xmlXPathFreeObject (xpathObj);
-
-  xpathObj = xmlXPathEvalExpression ((xmlChar *) "/playlist/trackList/track/location", xpathCtx);
-  mdextalloc (xpathObj);
-  if (xpathObj == NULL)  {
-    goto xspfImportExit;
-  }
-
-  nodes = xpathObj->nodesetval;
-  if (xmlXPathNodeSetIsEmpty (nodes)) {
-    goto xspfImportExit;
-  }
-  trkcount = nodes->nodeNr;
-
-  list = nlistAlloc ("xspfimport", LIST_UNORDERED, NULL);
-
-  for (int i = 0; i < trkcount; ++i)  {
-    if (nodes->nodeTab [i]->type != XML_ELEMENT_NODE) {
-      continue;
-    }
-
-    cur = nodes->nodeTab [i];
-    xval = xmlNodeGetContent (cur);
-    if (xval == NULL) {
-      continue;
-    }
-    mdextalloc (xval);
-
-    stpecpy (tbuff, tbuff + sizeof (tbuff), (char *) xval);
+  ilistStartIterator (tlist, &iteridx);
+  while ((key = ilistIterateKey (tlist, &iteridx)) >= 0) {
+    str = ilistGetStr (tlist, key, XMLPARSE_VAL);
+    stpecpy (tbuff, tbuff + sizeof (tbuff), str);
     pathNormalizePath (tbuff, strlen (tbuff));
     val = audiosrcRelativePath (tbuff, 0);
 
@@ -193,29 +123,12 @@ xspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
     if (song != NULL) {
       dbidx = songGetNum (song, TAG_DBIDX);
       if (dbidx >= 0) {
-        nlistSetNum (list, dbidx, 0);
+        nlistSetNum (implist, dbidx, 0);
       }
     }
+  }
+  xmlParseFree (xmlparse);
+  ilistFree (tlist);
 
-    mdextfree (xval);
-    xmlFree (xval);
-  }
-
-xspfImportExit:
-  if (xpathObj != NULL) {
-    mdextfree (xpathObj);
-    xmlXPathFreeObject (xpathObj);
-  }
-  if (xpathCtx != NULL) {
-    mdextfree (xpathCtx);
-    xmlXPathFreeContext (xpathCtx);
-  }
-  if (doc != NULL) {
-    mdextfree (doc);
-    xmlFreeDoc (doc);
-  }
-  dataFree (tdata);
-  dataFree (data);
-
-  return list;
+  return implist;
 }

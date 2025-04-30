@@ -20,14 +20,17 @@ add_library (libbdj4basic SHARED
   progstate.c
   rafile.c
   slist.c
+  xmlparse.c
 )
 target_include_directories (libbdj4basic
   PRIVATE "${GLIB_INCLUDE_DIRS}"
+  PRIVATE "${XML2_INCLUDE_DIRS}"
 )
 target_link_libraries (libbdj4basic PRIVATE
   libbdj4common
   ${ICUI18N_LDFLAGS}
   ${GLIB_LDFLAGS}
+  ${XML2_LDFLAGS}
 )
 
 install (TARGETS

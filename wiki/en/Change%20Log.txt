@@ -9,10 +9,11 @@
 * Changes:
     * Player: External Request: Drag and drop implemented.
     * Manage: Import Playlist: Drag and drop implemented.
-    * PENDING Configure: Audio Sources: Drag and drop implemented.
+    * PENDING Internal: Code cleanup.
 * New Features:
     * PENDING Configure: Audio Sources: Add podcast.
     * PENDING Manage: Import Playlist: Add podcast.
+    * PENDING Manage: Playlist Management: Add podcast.
 
 -->
 
