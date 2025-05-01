@@ -26,7 +26,7 @@ typedef struct support {
   const char    *webresponse;
 } support_t;
 
-static void supportWebResponseCallback (void *userdata, const char *resp, size_t len);
+static void supportWebResponseCallback (void *userdata, const char *resp, size_t len, time_t tm);
 
 support_t *
 supportAlloc (void)
@@ -123,7 +123,7 @@ supportSendFile (support_t *support, const char *ident,
 /* internal routines */
 
 static void
-supportWebResponseCallback (void *userdata, const char *resp, size_t len)
+supportWebResponseCallback (void *userdata, const char *resp, size_t len, time_t tm)
 {
   support_t *support = userdata;
 

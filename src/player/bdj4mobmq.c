@@ -66,7 +66,7 @@ static int      mobmqProcessing (void *udata);
 static void     mobmqSigHandler (int sig);
 static void mobmqInternetProcess (mobmqdata_t *mobmqdata);
 static const char *mobmqBuildResponse (mobmqdata_t *mobmqdata);
-static void mobmqWebResponseCallback (void *userdata, const char *resp, size_t len);
+static void mobmqWebResponseCallback (void *userdata, const char *resp, size_t len, time_t tm);
 
 static int  gKillReceived = 0;
 
@@ -382,7 +382,7 @@ mobmqBuildResponse (mobmqdata_t *mobmqdata)
 }
 
 static void
-mobmqWebResponseCallback (void *userdata, const char *resp, size_t len)
+mobmqWebResponseCallback (void *userdata, const char *resp, size_t len, time_t tm)
 {
   mobmqwebresp_t *mobmqwebresp = userdata;
 

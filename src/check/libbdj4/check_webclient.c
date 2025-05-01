@@ -26,7 +26,7 @@
 #include "webclient.h"
 #include "log.h"
 
-static void checkWebclientCB (void *udata, const char *resp, size_t len);
+static void checkWebclientCB (void *udata, const char *resp, size_t len, time_t tm);
 
 typedef struct {
   const char  *resp;
@@ -273,7 +273,7 @@ webclient_suite (void)
 }
 
 static void
-checkWebclientCB (void *udata, const char *resp, size_t len)
+checkWebclientCB (void *udata, const char *resp, size_t len, time_t tm)
 {
   checkwc_t *r = udata;
   r->resp = resp;

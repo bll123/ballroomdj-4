@@ -46,7 +46,7 @@ typedef struct {
 } instweb_t;
 
 static void instutilCopyHttpSVGFile (const char *fn);
-static void instutilWebResponseCallback (void *userdata, const char *resp, size_t len);
+static void instutilWebResponseCallback (void *userdata, const char *resp, size_t len, time_t tm);
 
 void
 instutilCreateLauncher (const char *name, const char *maindir,
@@ -652,7 +652,7 @@ instutilCopyHttpSVGFile (const char *fn)
 }
 
 static void
-instutilWebResponseCallback (void *userdata, const char *resp, size_t len)
+instutilWebResponseCallback (void *userdata, const char *resp, size_t len, time_t tm)
 {
   instweb_t *instweb = userdata;
 

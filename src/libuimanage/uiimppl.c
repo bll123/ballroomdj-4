@@ -583,6 +583,7 @@ uiimpplInitDisplay (uiimppl_t *uiimppl)
     return;
   }
 
+fprintf (stderr, "imppl: init-display\n");
   uiimpplImportTypeCallback (uiimppl);
   uiimpplProcessValidations (uiimppl, true);
 }
@@ -904,12 +905,14 @@ uiimpplImportTypeCallback (void *udata)
   }
   uiimppl->in_cb = true;
 
+fprintf (stderr, "imppl: import-type-cb\n");
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
   uiimppl->haveerrors = UIIMPPL_ERR_NONE;
 
   askey = uiSpinboxTextGetValue (uiimppl->wcont [UIIMPPL_W_IMP_TYPE]);
   uiimppl->askey = askey;
+fprintf (stderr, "  askey: %d\n", askey);
   uiimppl->imptype = nlistGetNum (uiimppl->astypes, uiimppl->askey);
 
   if (uiimppl->imptype != AUDIOSRC_TYPE_FILE) {
@@ -919,7 +922,9 @@ uiimpplImportTypeCallback (void *udata)
 
     idx = 0;
     ilistFree (uiimppl->plnames);
-    asiter = audiosrcStartIterator (uiimppl->imptype, AS_ITER_PL_NAMES, NULL, askey);
+fprintf (stderr, "imp-type: uri: %s\n", uiEntryGetValue (uiimppl->wcont [UIIMPPL_W_URI]));
+    asiter = audiosrcStartIterator (uiimppl->imptype, AS_ITER_PL_NAMES,
+        uiEntryGetValue (uiimppl->wcont [UIIMPPL_W_URI]), askey);
     uiimppl->plnames = ilistAlloc ("plnames", LIST_ORDERED);
     ilistSetSize (uiimppl->plnames, audiosrcIterCount (asiter));
     while ((plnm = audiosrcIterate (asiter)) != NULL) {

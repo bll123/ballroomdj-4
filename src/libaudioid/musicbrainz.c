@@ -104,7 +104,7 @@ static audioidparse_t mbmainxp [] = {
   { AUDIOID_PARSE_END,   AUDIOID_TYPE_TREE, "end-metadata", NULL, NULL, NULL },
 };
 
-static void mbWebResponseCallback (void *userdata, const char *respstr, size_t len);
+static void mbWebResponseCallback (void *userdata, const char *respstr, size_t len, time_t tm);
 static void dumpData (audioidmb_t *mb);
 
 audioidmb_t *
@@ -218,7 +218,7 @@ mbRecordingIdLookup (audioidmb_t *mb, const char *recid, audioid_resp_t *resp)
 /* internal routines */
 
 static void
-mbWebResponseCallback (void *userdata, const char *respstr, size_t len)
+mbWebResponseCallback (void *userdata, const char *respstr, size_t len, time_t tm)
 {
   audioidmb_t   *mb = userdata;
 

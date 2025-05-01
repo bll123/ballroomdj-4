@@ -48,15 +48,35 @@ typedef struct
 {
   const char    *webresponse;
   size_t        webresplen;
+  time_t        webresptime;
 } rssdata_t;
 
-static void rssWebResponseCallback (void *userdata, const char *respstr, size_t len);
+static void rssWebResponseCallback (void *userdata, const char *respstr, size_t len, time_t tm);
+
+
+time_t
+rssGetUpdateTime (const char *uri)
+{
+  webclient_t   *webclient;
+  rssdata_t     rssdata;
+  int           webrc;
+
+  webclient = webclientAlloc (&rssdata, rssWebResponseCallback);
+  webrc = webclientHead (webclient, uri);
+  if (webrc != WEB_OK) {
+    return 0;
+  }
+fprintf (stderr, "rss-upd: %ld\n", (long) rssdata.webresptime);
+  webclientClose (webclient);
+
+  return rssdata.webresptime;
+}
 
 nlist_t *
 rssImport (const char *uri)
 {
   xmlparse_t    *xmlparse;
-  ilist_t       *tlist = NULL;
+  ilist_t       *itemlist = NULL;
   nlist_t       *implist;
   webclient_t   *webclient;
   rssdata_t     rssdata;
@@ -81,9 +101,10 @@ rssImport (const char *uri)
   nlistSetStr (implist, RSS_TITLE, tbuff);
   xmlParseGetItem (xmlparse, linkxpath, tbuff, sizeof (tbuff));
   nlistSetStr (implist, RSS_URI, tbuff);
-  tlist = xmlParseGetList (xmlparse, itemxpath, itemattr);
-  nlistSetList (implist, RSS_ITEMS, tlist);
-
+  itemlist = xmlParseGetList (xmlparse, itemxpath, itemattr);
+  nlistSetList (implist, RSS_ITEMS, itemlist);
+  nlistSetNum (implist, RSS_COUNT, ilistGetCount (itemlist));
+  nlistSetNum (implist, RSS_UPDATE_TIME, rssdata.webresptime);
   xmlParseFree (xmlparse);
   webclientClose (webclient);
 
@@ -93,11 +114,12 @@ rssImport (const char *uri)
 /* internal routines */
 
 static void
-rssWebResponseCallback (void *userdata, const char *respstr, size_t len)
+rssWebResponseCallback (void *userdata, const char *respstr, size_t len, time_t tm)
 {
   rssdata_t    *rssdata = (rssdata_t *) userdata;
 
   rssdata->webresponse = respstr;
   rssdata->webresplen = len;
+  rssdata->webresptime = tm;
   return;
 }

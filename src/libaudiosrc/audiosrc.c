@@ -123,15 +123,19 @@ audiosrcInit (void)
 
   asconfStartIterator (audiosrc->asconf, &iteridx);
   while ((askey = asconfIterate (audiosrc->asconf, &iteridx)) >= 0) {
-    if (asconfGetNum (audiosrc->asconf, askey, ASCONF_MODE) == ASCONF_MODE_CLIENT) {
-      int   type;
+    int   mode;
+    int   type;
 
-      type = asconfGetNum (audiosrc->asconf, askey, ASCONF_TYPE);
-      if (type < 0) {
-        continue;
-      }
-      audiosrc->enabled [type] = true;
+    mode = asconfGetNum (audiosrc->asconf, askey, ASCONF_MODE);
+    if (mode != ASCONF_MODE_CLIENT) {
+      continue;
     }
+
+    type = asconfGetNum (audiosrc->asconf, askey, ASCONF_TYPE);
+    if (type < 0) {
+      continue;
+    }
+    audiosrc->enabled [type] = true;
   }
 
   audiosrc->asdylib = mdmalloc (sizeof (asdylib_t) * audiosrc->ascount);

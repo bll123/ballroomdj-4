@@ -5,6 +5,8 @@
 #define INC_WEBCLIENT_H
 
 #include <stdbool.h>
+#include <time.h>
+
 #include <curl/curl.h>
 
 #include "webresp.h"
@@ -13,7 +15,7 @@
 extern "C" {
 #endif
 
-typedef void (*webclientcb_t)(void *userdata, const char *resp, size_t len);
+typedef void (*webclientcb_t)(void *userdata, const char *resp, size_t len, time_t tm);
 
 typedef struct webclient webclient_t;
 

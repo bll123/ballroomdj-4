@@ -3483,7 +3483,7 @@ managePlaylistImportRespHandler (void *udata)
     manageLoadPlaylistCB (manage, plname);
   } /* audiosrc-type: file */
 
-  if (imptype == AUDIOSRC_TYPE_BDJ4) {
+  if (imptype == AUDIOSRC_TYPE_BDJ4 || imptype == AUDIOSRC_TYPE_PODCAST) {
     asiter_t    *asiter;
     const char  *songnm;
 
@@ -3514,45 +3514,7 @@ managePlaylistImportRespHandler (void *udata)
       slistFree (tagdata);
     }
     audiosrcCleanIterator (asiter);
-  } /* audio-src: type: not-file */
 
-  if (imptype == AUDIOSRC_TYPE_PODCAST) {
-    nlist_t     *tlist;
-    ilist_t     *itemlist;
-    nlistidx_t  iteridx;
-    nlistidx_t  key;
-
-    tlist = rssImport (uri);
-    if (tlist == NULL) {
-      return UICB_CONT;
-    }
-    itemlist = nlistGetList (tlist, RSS_ITEMS);
-
-    songlist = slistAlloc ("tmp-imp-pl-podcast", LIST_UNORDERED, NULL);
-
-    ilistStartIterator (itemlist, &iteridx);
-    while ((key = ilistIterateKey (itemlist, &iteridx)) >= 0) {
-      slist_t     *tagdata;
-      const char  *songnm;
-
-      songnm = ilistGetStr (itemlist, key, RSS_ITEM_URI);
-
-      tagdata = slistAlloc ("asimppl-podcast", LIST_UNORDERED, NULL);
-      slistSetStr (tagdata, tagdefs [TAG_URI].tag, songnm);
-      slistSetStr (tagdata, tagdefs [TAG_TITLE].tag,
-          ilistGetStr (itemlist, key, RSS_ITEM_TITLE));
-      slistSetStr (tagdata, tagdefs [TAG_DURATION].tag,
-          ilistGetStr (itemlist, key, RSS_ITEM_DURATION));
-      slistSort (tagdata);
-
-      newsongs |= managePlaylistImportCreateSongs (
-          manage, songnm, imptype, songlist, tagdata);
-      slistFree (tagdata);
-      /* push the song on to the playlist */
-    }
-  }
-
-  if (imptype == AUDIOSRC_TYPE_BDJ4 || imptype == AUDIOSRC_TYPE_PODCAST) {
     if (newsongs) {
       manageProcessDatabaseUpdate (manage);
     }

@@ -129,7 +129,7 @@ static audioidparse_t acoustidmainxp [] = {
   { AUDIOID_PARSE_END,  AUDIOID_TYPE_TREE, "end-response", NULL, NULL, NULL },
 };
 
-static void acoustidWebResponseCallback (void *userdata, const char *respstr, size_t len);
+static void acoustidWebResponseCallback (void *userdata, const char *respstr, size_t len, time_t tm);
 static void dumpData (audioidacoustid_t *acoustid);
 
 audioidacoustid_t *
@@ -302,7 +302,7 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
 }
 
 static void
-acoustidWebResponseCallback (void *userdata, const char *respstr, size_t len)
+acoustidWebResponseCallback (void *userdata, const char *respstr, size_t len, time_t tm)
 {
   audioidacoustid_t   *acoustid = userdata;
 

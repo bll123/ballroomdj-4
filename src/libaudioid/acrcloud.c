@@ -129,7 +129,7 @@ static audioidparse_t acrmainstatusjp [] = {
   { AUDIOID_PARSE_END,    AUDIOID_TYPE_TREE, "end-response", NULL, NULL, NULL },
 };
 
-static void acrWebResponseCallback (void *userdata, const char *respstr, size_t len);
+static void acrWebResponseCallback (void *userdata, const char *respstr, size_t len, time_t tm);
 static void dumpData (audioidacr_t *acr);
 
 audioidacr_t *
@@ -381,7 +381,7 @@ acrLookup (audioidacr_t *acr, const song_t *song, audioid_resp_t *resp)
 }
 
 static void
-acrWebResponseCallback (void *userdata, const char *respstr, size_t len)
+acrWebResponseCallback (void *userdata, const char *respstr, size_t len, time_t tm)
 {
   audioidacr_t *acr = userdata;
 

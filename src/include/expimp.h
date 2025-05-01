@@ -14,7 +14,9 @@ extern "C" {
 enum {
   RSS_TITLE,
   RSS_URI,
+  RSS_COUNT,
   RSS_ITEMS,
+  RSS_UPDATE_TIME,
   RSS_MAX,
 };
 
@@ -39,6 +41,7 @@ void xspfExport (musicdb_t *musicdb, nlist_t *list, const char *fname, const cha
 nlist_t * xspfImport (musicdb_t *musicdb, const char *fname);
 
 /* rss.c */
+time_t rssGetUpdateTime (const char *uri);
 nlist_t * rssImport (const char *uri);
 
 #if defined (__cplusplus) || defined (c_plusplus)

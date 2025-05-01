@@ -61,7 +61,6 @@ enum {
   AS_CLIENT_URI,
   AS_CLIENT_URI_LEN,
   AS_CLIENT_ASKEY,
-  AS_CLIENT_TYPE,
   AS_CLIENT_MAX,
 };
 
@@ -88,7 +87,7 @@ typedef struct asdata {
   int           state;
 } asdata_t;
 
-static void asbdj4WebResponseCallback (void *userdata, const char *respstr, size_t len);
+static void asbdj4WebResponseCallback (void *userdata, const char *respstr, size_t len, time_t tm);
 static bool asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm, int askey);
 static bool asbdj4SongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri);
 static bool asbdj4GetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata, int askey);
@@ -131,6 +130,7 @@ asiInit (const char *delpfx, const char *origext)
   return asdata;
 }
 
+/* the webclient connections are set per audiosrc configuration */
 void
 asiPostInit (asdata_t *asdata, const char *uri)
 {
@@ -181,7 +181,6 @@ asiPostInit (asdata_t *asdata, const char *uri)
         ilistSetStr (asdata->client, count, AS_CLIENT_URI, temp);
         ilistSetNum (asdata->client, count, AS_CLIENT_URI_LEN, strlen (temp));
         ilistSetNum (asdata->client, count, AS_CLIENT_ASKEY, askey);
-        ilistSetNum (asdata->client, count, AS_CLIENT_TYPE, type);
         webclientSetUserPass (asdata->webclient [count],
             asconfGetStr (asdata->asconf, askey, ASCONF_USER),
             asconfGetStr (asdata->asconf, askey, ASCONF_PASS));
@@ -454,7 +453,7 @@ asiIterateValue (asdata_t *asdata, asiterdata_t *asidata, const char *key)
 /* internal routines */
 
 static void
-asbdj4WebResponseCallback (void *userdata, const char *respstr, size_t len)
+asbdj4WebResponseCallback (void *userdata, const char *respstr, size_t len, time_t tm)
 {
   asdata_t    *asdata = (asdata_t *) userdata;
 
