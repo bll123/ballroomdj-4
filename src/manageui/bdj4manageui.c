@@ -3489,7 +3489,7 @@ managePlaylistImportRespHandler (void *udata)
 
     songlist = slistAlloc ("tmp-imp-pl-bdj4", LIST_UNORDERED, NULL);
 
-    asiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_PL, oplname, askey);
+    asiter = audiosrcStartIterator (imptype, AS_ITER_PL, uri, oplname, askey);
     while ((songnm = audiosrcIterate (asiter)) != NULL) {
       slist_t     *tagdata;
       asiter_t    *tagiter;
@@ -3497,7 +3497,7 @@ managePlaylistImportRespHandler (void *udata)
 
       tagdata = slistAlloc ("asimppl-bdj4", LIST_UNORDERED, NULL);
 
-      tagiter = audiosrcStartIterator (imptype, AS_ITER_TAGS, songnm, askey);
+      tagiter = audiosrcStartIterator (imptype, AS_ITER_TAGS, uri, songnm, askey);
       while ((tag = audiosrcIterate (tagiter)) != NULL) {
         const char  *tval;
 

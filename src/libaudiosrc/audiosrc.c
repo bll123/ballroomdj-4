@@ -49,7 +49,7 @@ typedef struct {
   void              (*asiFullPath) (asdata_t *, const char *sfname, char *fullpath, size_t sz, const char *prefix, int pfxlen);
   const char        *(*asiRelativePath) (asdata_t *, const char *nm, int pfxlen);
   size_t            (*asiDir) (asdata_t *, const char *sfname, char *dir, size_t sz, int pfxlen);
-  asiterdata_t      *(*asiStartIterator) (asdata_t *, asitertype_t asitertype, const char *dir, int askey);
+  asiterdata_t      *(*asiStartIterator) (asdata_t *, asitertype_t asitertype, const char *uri, const char *nm, int askey);
   void              (*asiCleanIterator) (asdata_t *, asiterdata_t *asiterdata);
   int32_t           (*asiIterCount) (asdata_t *, asiterdata_t *asiterdata);
   const char        *(*asiIterate) (asdata_t *, asiterdata_t *asiterdata);
@@ -613,7 +613,7 @@ audiosrcDir (const char *sfname, char *dir, size_t sz, int pfxlen)
 /* songs in a playlist, and song-tags */
 asiter_t *
 audiosrcStartIterator (int type, asitertype_t asitertype,
-    const char *uri, int askey)
+    const char *uri, const char *nm, int askey)
 {
   asiter_t  *asiter = NULL;
   asdylib_t *asdylib;
@@ -624,13 +624,11 @@ audiosrcStartIterator (int type, asitertype_t asitertype,
   if (type >= AUDIOSRC_TYPE_MAX) {
     return NULL;
   }
-  if (asitertype != AS_ITER_PL_NAMES &&
-      asitertype != AS_ITER_AUDIO_SRC &&
-      uri == NULL) {
+  if ((asitertype == AS_ITER_PL || asitertype == AS_ITER_TAGS) &&
+      nm == NULL) {
     return NULL;
   }
-  if (type != AUDIOSRC_TYPE_NONE &&
-      type != AUDIOSRC_TYPE_FILE &&
+  if (type == AUDIOSRC_TYPE_BDJ4 &&
       (askey < 0 || askey >= audiosrc->ascount)) {
     return NULL;
   }
@@ -654,8 +652,9 @@ audiosrcStartIterator (int type, asitertype_t asitertype,
 
   if (asdylib != NULL && asdylib->asiStartIterator != NULL) {
     asiter->asiterdata = asdylib->asiStartIterator (
-        asdylib->asdata, asitertype, uri, askey);
+        asdylib->asdata, asitertype, uri, nm, askey);
   }
+
   if (asiter->asiterdata == NULL) {
     mdfree (asiter);
     asiter = NULL;

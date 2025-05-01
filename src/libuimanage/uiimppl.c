@@ -109,7 +109,7 @@ static void uiimpplFreeDialog (uiimppl_t *uiimppl);
 static void uiimpplProcessValidations (uiimppl_t *uiimppl, bool forceflag);
 static int32_t uiimpplDragDropCallback (void *udata, const char *uri);
 static int uiimpplProcessURI (uiimppl_t *uiimppl, const char *uri);
-static bool uiimpplIsPlaylistFile (pathinfo_t *pi);
+static bool uiimpplIsPlaylistFileType (pathinfo_t *pi);
 
 uiimppl_t *
 uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
@@ -149,6 +149,7 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
   uiimppl->askey = -1;
   uiimppl->imptype = AUDIOSRC_TYPE_NONE;
   *uiimppl->origplname = '\0';
+  *uiimppl->olduri = '\0';
   uiimppl->asconf = NULL;
   uiimppl->asconfcount = 0;
 
@@ -732,7 +733,7 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
   if (uiimppl->imptype == AUDIOSRC_TYPE_FILE) {
     bool    extok = false;
 
-    if (uiimpplIsPlaylistFile (pi)) {
+    if (uiimpplIsPlaylistFileType (pi)) {
       extok = true;
     }
 
@@ -940,7 +941,7 @@ uiimpplImportTypeChg (void *udata)
     idx = 0;
     ilistFree (uiimppl->plnames);
     asiter = audiosrcStartIterator (uiimppl->imptype, AS_ITER_PL_NAMES,
-        uiEntryGetValue (uiimppl->wcont [UIIMPPL_W_URI]), askey);
+        uiEntryGetValue (uiimppl->wcont [UIIMPPL_W_URI]), NULL, askey);
     uiimppl->plnames = ilistAlloc ("plnames", LIST_ORDERED);
     ilistSetSize (uiimppl->plnames, audiosrcIterCount (asiter));
     while ((plnm = audiosrcIterate (asiter)) != NULL) {
@@ -1023,7 +1024,7 @@ uiimpplProcessURI (uiimppl_t *uiimppl, const char *uri)
 
   type = AUDIOSRC_TYPE_NONE;
   if (strncmp (uri, AS_FILE_PFX, AS_FILE_PFX_LEN) == 0 &&
-      uiimpplIsPlaylistFile (pi)) {
+      uiimpplIsPlaylistFileType (pi)) {
     type = AUDIOSRC_TYPE_FILE;
     uri += AS_FILE_PFX_LEN;
   }
@@ -1050,7 +1051,7 @@ uiimpplProcessURI (uiimppl_t *uiimppl, const char *uri)
 }
 
 static bool
-uiimpplIsPlaylistFile (pathinfo_t *pi)
+uiimpplIsPlaylistFileType (pathinfo_t *pi)
 {
   bool    rc = false;
 

@@ -69,7 +69,7 @@ void audiosrcFullPath (const char *sfname, char *fullpath, size_t sz, const char
 const char * audiosrcRelativePath (const char *sfname, int pfxlen);
 
 size_t audiosrcDir (const char *sfname, char *dir, size_t sz, int pfxlen);
-asiter_t *audiosrcStartIterator (int type, asitertype_t asitertype, const char *uri, int askey);
+asiter_t *audiosrcStartIterator (int type, asitertype_t asitertype, const char *uri, const char *nm, int askey);
 void audiosrcCleanIterator (asiter_t *asiiter);
 int32_t audiosrcIterCount (asiter_t *asiter);
 const char *audiosrcIterate (asiter_t *asiter);
@@ -92,7 +92,7 @@ void asiURI (asdata_t *asdata, const char *sfname, char *uri, size_t sz, const c
 void asiFullPath (asdata_t *asdata, const char *sfname, char *fullpath, size_t sz, const char *prefix, int pfxlen);
 const char * asiRelativePath (asdata_t *asdata, const char *nm, int pfxlen);
 size_t asiDir (asdata_t *asdata, const char *sfname, char *dir, size_t sz, int pfxlen);
-asiterdata_t *asiStartIterator (asdata_t *asdata, asitertype_t asitertype, const char *dir, int askey);
+asiterdata_t *asiStartIterator (asdata_t *asdata, asitertype_t asitertype, const char *uri, const char *nm, int askey);
 void asiCleanIterator (asdata_t *asdata, asiterdata_t *asidata);
 int32_t asiIterCount (asdata_t *asdata, asiterdata_t *asidata);
 const char *asiIterate (asdata_t *asdata, asiterdata_t *asidata);

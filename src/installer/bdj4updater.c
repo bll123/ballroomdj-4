@@ -573,6 +573,8 @@ main (int argc, char *argv [])
   {
     /* 4.14.0 2025-3-26 new file audiosrc.txt */
     updaterCopyIfNotPresent (ASCONF_FN, BDJ4_CONFIG_EXT, NULL);
+    /* 4.15.0 2025-5-1 update audiosrc.txt */
+    updaterCopyVersionCheck (ASCONF_FN, BDJ4_CONFIG_EXT, 2);
   }
 
   /* The datafiles must be loaded for the MPM update process */

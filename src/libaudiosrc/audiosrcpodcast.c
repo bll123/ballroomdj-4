@@ -64,7 +64,7 @@ typedef struct asdata {
 static void aspodcastWebResponseCallback (void *userdata, const char *respstr, size_t len, time_t tm);
 static bool aspodcastGetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata, const char *uri);
 static bool aspodcastGetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *uri);
-static bool aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata, const char *uri);
+static bool aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata, const char *uri, const char *nm);
 static void aspodcastRSS (asdata_t *asdata, asiterdata_t *asidata, const char *uri);
 static int aspodcastGetClientKeyByURI (asdata_t *asdata, const char *nm);
 static const char * aspodcastStripPrefix (asdata_t *asdata, const char *songuri, int clientidx);
@@ -225,7 +225,8 @@ asiRelativePath (asdata_t *asdata, const char *sfname, int pfxlen)
 }
 
 asiterdata_t *
-asiStartIterator (asdata_t *asdata, asitertype_t asitertype, const char *uri, int askey)
+asiStartIterator (asdata_t *asdata, asitertype_t asitertype,
+    const char *uri, const char *nm, int askey)
 {
   asiterdata_t  *asidata;
 
@@ -245,7 +246,7 @@ asiStartIterator (asdata_t *asdata, asitertype_t asitertype, const char *uri, in
     asidata->iterlist = asidata->songlist;
     slistStartIterator (asidata->iterlist, &asidata->iteridx);
   } else if (asitertype == AS_ITER_TAGS) {
-    aspodcastSongTags (asdata, asidata, uri);
+    aspodcastSongTags (asdata, asidata, uri, nm);
     asidata->iterlist = asidata->songtags;
     slistStartIterator (asidata->iterlist, &asidata->iteridx);
   }
@@ -372,7 +373,8 @@ aspodcastGetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *uri)
 }
 
 static bool
-aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata, const char *uri)
+aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata,
+    const char *uri, const char *nm)
 {
   aspodcastRSS (asdata, asidata, uri);
   if (asdata->rssdata == NULL) {

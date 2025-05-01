@@ -368,7 +368,8 @@ asiRelativePath (asdata_t *asdata, const char *sfname, int pfxlen)
 }
 
 asiterdata_t *
-asiStartIterator (asdata_t *asdata, asitertype_t asitertype, const char *nm, int askey)
+asiStartIterator (asdata_t *asdata, asitertype_t asitertype,
+    const char *uri, const char *nm, int askey)
 {
   asiterdata_t  *asidata;
 
