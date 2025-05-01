@@ -72,7 +72,8 @@ confuiAudioSourceInit (confuigui_t *gui)
   confuiSpinboxTextInitDataNum (gui, "cu-as-type",
       CONFUI_SPINBOX_AUDIOSRC_TYPE,
       AUDIOSRC_TYPE_BDJ4, "BDJ4",
-      AUDIOSRC_TYPE_HTTPS, "HTTPS",
+      /* CONTEXT: audio source: podcast */
+      AUDIOSRC_TYPE_PODCAST, _("Podcast"),
       -1);
 
   gui->tables [CONFUI_ID_AUDIOSRC].addfunc = confuiAudioSrcAdd;
@@ -382,19 +383,16 @@ confuiAudioSrcEntryChg (void *udata, const char *label, int widx)
   if (widx != CONFUI_ENTRY_AUDIOSRC_NAME) {
     flags |= VAL_NO_SPACES;
   }
-//  if (type != AUDIOSRC_TYPE_HTTPS) {
-//    flags |= VAL_BASE_URI;
-//  }
+  if (type == AUDIOSRC_TYPE_BDJ4 &&
+     widx == CONFUI_ENTRY_AUDIOSRC_URI) {
+    /* no 'bdj4://' specified */
+    flags |= VAL_BASE_URI;
+  }
   vrc = validate (tmsg, sizeof (tmsg), label, str, flags);
   if (vrc == false) {
     confuiSetErrorMsg (gui, tmsg);
     confuiMarkNotValid (gui, widx);
     return UIENTRY_ERROR;
-  }
-
-  if (strncmp (str, AS_HTTPS_PFX, AS_HTTPS_PFX_LEN) == 0) {
-    /* this sets the port to 443 every time, need to fix it somehow */
-    uiSpinboxSetValue (gui->uiitem [CONFUI_WIDGET_AUDIOSRC_PORT].uiwidgetp, 443);
   }
 
   confuiMarkValid (gui, widx);
@@ -484,6 +482,12 @@ confuiAudioSrcSpinboxChg (void *udata, int widx)
   if (count != 1) {
     logProcEnd ("no-selection");
     return;
+  }
+
+  if (widx == CONFUI_SPINBOX_AUDIOSRC_TYPE) {
+    if (nval == AUDIOSRC_TYPE_PODCAST) {
+      uiSpinboxSetValue (gui->uiitem [CONFUI_WIDGET_AUDIOSRC_PORT].uiwidgetp, 443);
+    }
   }
 
   askey = gui->asconfkey;
@@ -625,32 +629,40 @@ static void
 confuiAudioSrcSetWidgetStates (confuigui_t *gui, int askey)
 {
   int   mode;
+  int   type;
   int   state;
   int   ustate;
+  int   upstate;
 
   mode = asconfGetNum (gui->asconf, askey, ASCONF_MODE);
+  type = asconfGetNum (gui->asconf, askey, ASCONF_TYPE);
+
   state = UIWIDGET_DISABLE;
   ustate = UIWIDGET_DISABLE;
+  upstate = UIWIDGET_DISABLE;
   if (mode != ASCONF_MODE_OFF) {
     state = UIWIDGET_ENABLE;
   }
-  if (mode == ASCONF_MODE_CLIENT) {
+  if (mode == ASCONF_MODE_CLIENT && type != AUDIOSRC_TYPE_PODCAST) {
     ustate = UIWIDGET_ENABLE;
+  }
+  if (mode != ASCONF_MODE_OFF && type != AUDIOSRC_TYPE_PODCAST) {
+    upstate = UIWIDGET_ENABLE;
   }
 
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_NAME].uilabelp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_SPINBOX_AUDIOSRC_TYPE].uilabelp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_URI].uilabelp, ustate);
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_AUDIOSRC_PORT].uilabelp, state);
-  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_USER].uilabelp, state);
-  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_PASS].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_USER].uilabelp, upstate);
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_PASS].uilabelp, upstate);
 
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_NAME].uiwidgetp, state);
   uiSpinboxSetState (gui->uiitem [CONFUI_SPINBOX_AUDIOSRC_TYPE].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_URI].uiwidgetp, ustate);
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_AUDIOSRC_PORT].uiwidgetp, state);
-  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_USER].uiwidgetp, state);
-  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_PASS].uiwidgetp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_USER].uiwidgetp, upstate);
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_PASS].uiwidgetp, upstate);
 }
 
 static bool
@@ -658,14 +670,17 @@ confuiAudioSrcChkConn (void *udata)
 {
   confuigui_t   *gui = udata;
   bool          rc = false;
-
+  int           widx;
 
   if (gui->valid != 0) {
     return UICB_CONT;
   }
 
   confuiAudioSrcSave (gui);
-  rc = audiosrcCheckConnection (gui->asconfkey);
+  widx = CONFUI_ENTRY_AUDIOSRC_URI;
+  rc = audiosrcCheckConnection (gui->asconfkey,
+      uiEntryGetValue (gui->uiitem [widx].uiwidgetp));
+
   if (rc == false) {
     /* CONTEXT: configuration: audio source: check connection status */
     confuiSetStatusMsg (gui, _("Connection Failed"));

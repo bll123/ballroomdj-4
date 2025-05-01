@@ -14,7 +14,7 @@ extern "C" {
 enum {
   RSS_TITLE,
   RSS_URI,
-  RSS_ITEM_LIST,
+  RSS_ITEMS,
   RSS_MAX,
 };
 
@@ -22,19 +22,21 @@ enum {
   RSS_ITEM_TITLE,
   RSS_ITEM_URI,
   RSS_ITEM_DURATION,
+  RSS_ITEM_TYPE,
+  RSS_ITEM_MAX,
 };
 
 /* m3u.c */
 void m3uExport (musicdb_t *musicdb, nlist_t *list, const char *fname, const char *slname);
-nlist_t * m3uImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz);
+nlist_t * m3uImport (musicdb_t *musicdb, const char *fname);
 
 /* jspf.c */
 void jspfExport (musicdb_t *musicdb, nlist_t *list, const char *fname, const char *slname);
-nlist_t * jspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz);
+nlist_t * jspfImport (musicdb_t *musicdb, const char *fname);
 
 /* xspf.c */
 void xspfExport (musicdb_t *musicdb, nlist_t *list, const char *fname, const char *slname);
-nlist_t * xspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz);
+nlist_t * xspfImport (musicdb_t *musicdb, const char *fname);
 
 /* rss.c */
 nlist_t * rssImport (const char *uri);

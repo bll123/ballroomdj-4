@@ -32,7 +32,7 @@ PASS
 PORT
 ..443
 TYPE
-..https
+..podcast
 URI
 ..
 USER

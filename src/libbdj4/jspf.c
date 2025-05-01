@@ -103,7 +103,7 @@ jspfExport (musicdb_t *musicdb, nlist_t *list,
 }
 
 nlist_t *
-jspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
+jspfImport (musicdb_t *musicdb, const char *fname)
 {
   json_object   *jroot;
   json_tokener  *jtok;
@@ -142,10 +142,13 @@ jspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
   if (jtmp == NULL) {
     return NULL;
   }
+  /* the playlist name is not used */
+#if 0
   val = json_object_get_string (jtmp);
   if (val != NULL) {
     stpecpy (plname, plname + plsz, val);
   }
+#endif
 
   jtrklist = json_object_object_get (jpl, "track");
   if (jtrklist == NULL) {

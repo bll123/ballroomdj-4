@@ -82,7 +82,7 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
 }
 
 nlist_t *
-m3uImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
+m3uImport (musicdb_t *musicdb, const char *fname)
 {
   FILE        *fh;
   nlist_t     *list;
@@ -100,6 +100,8 @@ m3uImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
 
   while (fgets (tbuff, sizeof (tbuff), fh) != NULL) {
     if (strncmp (tbuff, "#PLAYLIST:", 10) == 0) {
+      /* the playlist name is not used */
+#if 0
       stringTrim (tbuff);
       p = tbuff + 10;
       while (*p == ' ' && *p != '\0') {
@@ -108,6 +110,7 @@ m3uImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
       if (*p) {
         stpecpy (plname, plname + plsz, p);
       }
+#endif
       continue;
     }
 

@@ -91,7 +91,7 @@ xspfExport (musicdb_t *musicdb, nlist_t *list,
 }
 
 nlist_t *
-xspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
+xspfImport (musicdb_t *musicdb, const char *fname)
 {
   xmlparse_t          *xmlparse;
   ilist_t             *tlist = NULL;
@@ -106,7 +106,8 @@ xspfImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
   char                tbuff [MAXPATHLEN];
 
   xmlparse = xmlParseInitFile (fname, XMLPARSE_NONS);
-  xmlParseGetItem (xmlparse, "/playlist/title", plname, plsz);
+  /* the playlist name is not used */
+  // xmlParseGetItem (xmlparse, "/playlist/title", plname, plsz);
   tlist = xmlParseGetList (xmlparse, "/playlist/trackList/track/location", NULL);
   trkcount = ilistGetCount (tlist);
 

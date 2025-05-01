@@ -34,10 +34,10 @@ target_link_libraries (libasbdj4 PRIVATE
   libbdj4 libbdj4basic libbdj4common
 )
 
-add_library (libashttps SHARED
-  audiosrchttps.c
+add_library (libaspodcast SHARED
+  audiosrcpodcast.c
 )
-target_link_libraries (libashttps PRIVATE
+target_link_libraries (libaspodcast PRIVATE
   objaudiosrcutil
   libbdj4 libbdj4basic libbdj4common
 )
@@ -46,11 +46,11 @@ install (TARGETS
   libbdj4audiosrc
   libasbdj4
   libasfile
-  libashttps
+  libaspodcast
   DESTINATION ${DEST_BIN}
 )
 
 updateRPath (libbdj4audiosrc)
 updateRPath (libasbdj4)
 updateRPath (libasfile)
-updateRPath (libashttps)
+updateRPath (libaspodcast)

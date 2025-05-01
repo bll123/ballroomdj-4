@@ -40,6 +40,7 @@ static const xmlparseattr_t itemattr [] = {
     { "title", RSS_ITEM_TITLE, NULL },
     { "enclosure", RSS_ITEM_URI, "url" },
     { "enclosure", RSS_ITEM_DURATION, "length" },
+    { "enclosure", RSS_ITEM_TYPE, "type" },
     { NULL, -1, NULL },
 };
 
@@ -81,7 +82,7 @@ rssImport (const char *uri)
   xmlParseGetItem (xmlparse, linkxpath, tbuff, sizeof (tbuff));
   nlistSetStr (implist, RSS_URI, tbuff);
   tlist = xmlParseGetList (xmlparse, itemxpath, itemattr);
-  nlistSetList (implist, RSS_ITEM_LIST, tlist);
+  nlistSetList (implist, RSS_ITEMS, tlist);
 
   xmlParseFree (xmlparse);
   webclientClose (webclient);

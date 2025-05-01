@@ -20,7 +20,7 @@ enum {
   AUDIOSRC_TYPE_NONE,
   AUDIOSRC_TYPE_FILE,
   AUDIOSRC_TYPE_BDJ4,
-  AUDIOSRC_TYPE_HTTPS,
+  AUDIOSRC_TYPE_PODCAST,
   AUDIOSRC_TYPE_MAX,
 };
 
@@ -57,7 +57,7 @@ void audiosrcCleanup (void);
 void audiosrcPostInit (void);
 int audiosrcGetActiveCount (void);
 int audiosrcGetType (const char *nm);
-bool audiosrcCheckConnection (int askey);
+bool audiosrcCheckConnection (int askey, const char *uri);
 bool audiosrcExists (const char *nm);
 bool audiosrcOriginalExists (const char *nm);
 bool audiosrcRemove (const char *nm);
@@ -81,7 +81,7 @@ void asiFree (asdata_t *asdata);
 void asiPostInit (asdata_t *asdata, const char *uri);
 int asiTypeIdent (void);
 bool asiIsTypeMatch (asdata_t *asdata, const char *nm);
-bool asiCheckConnection (asdata_t *asdata, int askey);
+bool asiCheckConnection (asdata_t *asdata, int askey, const char *uri);
 bool asiExists (asdata_t *asdata, const char *nm);
 bool asiOriginalExists (asdata_t *asdata, const char *nm);
 bool asiRemove (asdata_t *asdata, const char *nm);

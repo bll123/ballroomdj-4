@@ -38,7 +38,7 @@ typedef struct {
   void              (*asiPostInit) (asdata_t *, const char *);
   int               (*asiTypeIdent) (void);
   bool              (*asiIsTypeMatch) (asdata_t *, const char *nm);
-  bool              (*asiCheckConnection) (asdata_t *, int askey);
+  bool              (*asiCheckConnection) (asdata_t *, int askey, const char *uri);
   bool              (*asiExists) (asdata_t *, const char *nm);
   bool              (*asiOriginalExists) (asdata_t *, const char *nm);
   bool              (*asiRemove) (asdata_t *, const char *nm);
@@ -341,7 +341,7 @@ audiosrcGetType (const char *nm)
 }
 
 bool
-audiosrcCheckConnection (int askey)
+audiosrcCheckConnection (int askey, const char *uri)
 {
   int       type = AUDIOSRC_TYPE_NONE;
   bool      rc = false;
@@ -358,7 +358,7 @@ audiosrcCheckConnection (int askey)
   asdylib = audiosrcGetDylibByType (type);
 
   if (asdylib != NULL && asdylib->asiCheckConnection != NULL) {
-    rc = asdylib->asiCheckConnection (asdylib->asdata, askey);
+    rc = asdylib->asiCheckConnection (asdylib->asdata, askey, uri);
   }
 
   return rc;

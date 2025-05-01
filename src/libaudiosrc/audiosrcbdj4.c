@@ -224,7 +224,7 @@ asiIsTypeMatch (asdata_t *asdata, const char *nm)
 }
 
 bool
-asiCheckConnection (asdata_t *asdata, int askey)
+asiCheckConnection (asdata_t *asdata, int askey, const char *uri)
 {
   int     webrc;
   char    query [1024];

@@ -107,6 +107,7 @@ static bool uiimpplImportTypeCallback (void *udata);
 static void uiimpplFreeDialog (uiimppl_t *uiimppl);
 static void uiimpplProcessValidations (uiimppl_t *uiimppl, bool forceflag);
 static int32_t uiimpplDragDropCallback (void *udata, const char *uri);
+static int uiimpplProcessURI (uiimppl_t *uiimppl, const char *uri);
 static bool uiimpplIsPlaylistFile (pathinfo_t *pi);
 
 uiimppl_t *
@@ -624,7 +625,8 @@ uiimpplResponseHandler (void *udata, int32_t responseid)
       }
 
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: import playlist: check connection");
-      rc = audiosrcCheckConnection (uiimppl->askey);
+      rc = audiosrcCheckConnection (uiimppl->askey,
+          uiEntryGetValue (uiimppl->wcont [UIIMPPL_W_URI]));
       if (rc == false) {
         uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG],
             /* CONTEXT: configuration: audio source: check connection status */
@@ -707,9 +709,17 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
 
   *tbuff = '\0';
   stpecpy (tbuff, tbuff + sizeof (tbuff), str);
+  /* re-sets the type to match the URI, sets the URI */
+  if (uiimpplProcessURI (uiimppl, tbuff) == UICB_STOP) {
+    uiimppl->haveerrors |= UIIMPPL_ERR_URI;
+    uiimppl->in_cb = false;
+    return UIENTRY_ERROR;
+  }
+
   if (uiimppl->imptype == AUDIOSRC_TYPE_FILE) {
     pathNormalizePath (tbuff, sizeof (tbuff));
   }
+
   pi = pathInfo (tbuff);
 
   if (uiimppl->imptype == AUDIOSRC_TYPE_FILE) {
@@ -730,6 +740,7 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
     }
   }
 
+  /* both bdj4:// and podcasts will have a full-url */
   if (uiimppl->imptype != AUDIOSRC_TYPE_FILE) {
     int     vrc;
     char    tmsg [300];
@@ -755,7 +766,8 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
     }
   }
 
-  if (uiimppl->imptype == AUDIOSRC_TYPE_HTTPS) {
+  /* podcast rss feeds will have a .xml extension */
+  if (uiimppl->imptype == AUDIOSRC_TYPE_PODCAST) {
     if (strncmp (str, AS_HTTPS_PFX, AS_HTTPS_PFX_LEN) != 0 ||
         strncmp (str + strlen (str) - AS_XML_SFX_LEN,
             AS_XML_SFX, AS_XML_SFX_LEN) != 0) {
@@ -967,13 +979,20 @@ static int32_t
 uiimpplDragDropCallback (void *udata, const char *uri)
 {
   uiimppl_t   *uiimppl = udata;
-  int         type;
-  size_t      urilen;
-  pathinfo_t  *pi;
 
   if (uiimppl == NULL || uri == NULL || ! *uri) {
     return UICB_STOP;
   }
+
+  return uiimpplProcessURI (uiimppl, uri);
+}
+
+static int
+uiimpplProcessURI (uiimppl_t *uiimppl, const char *uri)
+{
+  int         type;
+  size_t      urilen;
+  pathinfo_t  *pi;
 
   urilen = strlen (uri);
   pi = pathInfo (uri);
@@ -989,7 +1008,7 @@ uiimpplDragDropCallback (void *udata, const char *uri)
   }
   if (strncmp (uri, AS_HTTPS_PFX, AS_HTTPS_PFX_LEN) == 0 &&
       pathInfoExtCheck (pi, AS_XML_SFX)) {
-    type = AUDIOSRC_TYPE_HTTPS;
+    type = AUDIOSRC_TYPE_PODCAST;
   }
 
   if (type == AUDIOSRC_TYPE_NONE) {

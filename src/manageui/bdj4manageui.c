@@ -428,10 +428,12 @@ static bool     manageQueueProcessSBSSongList (void *udata, int32_t dbidx);
 static void     manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int dispsel, int action);
 static nlistidx_t manageLoadMusicQueue (manageui_t *manage, int mqidx);
 /* playlist import/export */
-static bool     managePlaylistExport (void *udata);
-static bool     managePlaylistExportRespHandler (void *udata, const char *fname, int type);
-static bool     managePlaylistImport (void *udata);
-static bool     managePlaylistImportRespHandler (void *udata);
+static bool managePlaylistExport (void *udata);
+static bool managePlaylistExportRespHandler (void *udata, const char *fname, int type);
+static bool managePlaylistImport (void *udata);
+static bool managePlaylistImportRespHandler (void *udata);
+static void managePlaylistImportCreateSonglist (manageui_t *manage, slist_t *songlist);
+static bool managePlaylistImportCreateSongs (manageui_t *manage, const char *songnm, int imptype, slist_t *songlist, slist_t *tagdata);
 /* export/import bdj4 */
 static bool     managePlaylistExportBDJ4 (void *udata);
 static bool     managePlaylistImportBDJ4 (void *udata);
@@ -3425,13 +3427,13 @@ managePlaylistImportRespHandler (void *udata)
   const char  *plname;
   const char  *uri;
   const char  *oplname;
-  char        tplname [MAX_PL_NM_LEN];
   int         imptype;
   int         mqidx;
   int         askey;
   char        tbuff [MAXPATHLEN];
   dbidx_t     dbidx;
   bool        newsongs = false;
+  slist_t     *songlist;
 
   imptype = uiimpplGetType (manage->uiimppl);
   if (imptype == AUDIOSRC_TYPE_NONE) {
@@ -3459,13 +3461,13 @@ managePlaylistImportRespHandler (void *udata)
     pi = pathInfo (uri);
 
     if (pathInfoExtCheck (pi, ".m3u") || pathInfoExtCheck (pi, ".m3u8")) {
-      list = m3uImport (manage->musicdb, uri, tplname, sizeof (tplname));
+      list = m3uImport (manage->musicdb, uri);
     }
     if (pathInfoExtCheck (pi, ".xspf")) {
-      list = xspfImport (manage->musicdb, uri, tplname, sizeof (tplname));
+      list = xspfImport (manage->musicdb, uri);
     }
     if (pathInfoExtCheck (pi, ".jspf")) {
-      list = jspfImport (manage->musicdb, uri, tplname, sizeof (tplname));
+      list = jspfImport (manage->musicdb, uri);
     }
 
     pathInfoFree (pi);
@@ -3477,7 +3479,6 @@ managePlaylistImportRespHandler (void *udata)
             DISP_SEL_SONGLIST, MANAGE_QUEUE_LAST);
       }
     }
-
     nlistFree (list);
     manageLoadPlaylistCB (manage, plname);
   } /* audiosrc-type: file */
@@ -3485,75 +3486,79 @@ managePlaylistImportRespHandler (void *udata)
   if (imptype == AUDIOSRC_TYPE_BDJ4) {
     asiter_t    *asiter;
     const char  *songnm;
-    slist_t     *tlist;
-    nlistidx_t  iteridx;
 
-    tlist = slistAlloc ("tmp-imp-pl", LIST_UNORDERED, NULL);
+    songlist = slistAlloc ("tmp-imp-pl-bdj4", LIST_UNORDERED, NULL);
 
     asiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_PL, oplname, askey);
     while ((songnm = audiosrcIterate (asiter)) != NULL) {
+      slist_t     *tagdata;
       asiter_t    *tagiter;
-      const char  *tag = NULL;
-      song_t      *song = NULL;
-      slist_t     *tagdata = NULL;
+      const char  *tag;
 
-      song = dbGetByName (manage->musicdb, songnm);
+      tagdata = slistAlloc ("asimppl-bdj4", LIST_UNORDERED, NULL);
 
-      if (song == NULL) {
-        tagdata = slistAlloc ("asimppl", LIST_UNORDERED, NULL);
+      tagiter = audiosrcStartIterator (imptype, AS_ITER_TAGS, songnm, askey);
+      while ((tag = audiosrcIterate (tagiter)) != NULL) {
+        const char  *tval;
 
-        tagiter = audiosrcStartIterator (AUDIOSRC_TYPE_BDJ4, AS_ITER_TAGS, songnm, askey);
-        while ((tag = audiosrcIterate (tagiter)) != NULL) {
-          const char  *tval;
+        tval = audiosrcIterateValue (tagiter, tag);
+        slistSetStr (tagdata, tag, tval);
+      }
+      audiosrcCleanIterator (tagiter);
 
-          tval = audiosrcIterateValue (tagiter, tag);
-          slistSetStr (tagdata, tag, tval);
-        }
+      slistSetStr (tagdata, tagdefs [TAG_URI].tag, songnm);
+      slistSort (tagdata);
 
-        slistSetStr (tagdata, tagdefs [TAG_URI].tag, songnm);
-
-        slistSort (tagdata);
-        song = songAlloc ();
-        songFromTagList (song, tagdata);
-        songSetNum (song, TAG_DB_FLAGS, MUSICDB_STD);
-        songSetNum (song, TAG_RRN, MUSICDB_ENTRY_NEW);
-        songSetNum (song, TAG_PREFIX_LEN, 0);
-        dbWriteSong (manage->musicdb, song);
-        newsongs = true;
-
-        slistFree (tagdata);
-        audiosrcCleanIterator (tagiter);
-      } /* song needs to be added */
-
-      slistSetNum (tlist, songnm, 0);
+      newsongs |= managePlaylistImportCreateSongs (
+          manage, songnm, imptype, songlist, tagdata);
+      slistFree (tagdata);
     }
     audiosrcCleanIterator (asiter);
+  } /* audio-src: type: not-file */
 
+  if (imptype == AUDIOSRC_TYPE_PODCAST) {
+    nlist_t     *tlist;
+    ilist_t     *itemlist;
+    nlistidx_t  iteridx;
+    nlistidx_t  key;
+
+    tlist = rssImport (uri);
+    if (tlist == NULL) {
+      return UICB_CONT;
+    }
+    itemlist = nlistGetList (tlist, RSS_ITEMS);
+
+    songlist = slistAlloc ("tmp-imp-pl-podcast", LIST_UNORDERED, NULL);
+
+    ilistStartIterator (itemlist, &iteridx);
+    while ((key = ilistIterateKey (itemlist, &iteridx)) >= 0) {
+      slist_t     *tagdata;
+      const char  *songnm;
+
+      songnm = ilistGetStr (itemlist, key, RSS_ITEM_URI);
+
+      tagdata = slistAlloc ("asimppl-podcast", LIST_UNORDERED, NULL);
+      slistSetStr (tagdata, tagdefs [TAG_URI].tag, songnm);
+      slistSetStr (tagdata, tagdefs [TAG_TITLE].tag,
+          ilistGetStr (itemlist, key, RSS_ITEM_TITLE));
+      slistSetStr (tagdata, tagdefs [TAG_DURATION].tag,
+          ilistGetStr (itemlist, key, RSS_ITEM_DURATION));
+      slistSort (tagdata);
+
+      newsongs |= managePlaylistImportCreateSongs (
+          manage, songnm, imptype, songlist, tagdata);
+      slistFree (tagdata);
+      /* push the song on to the playlist */
+    }
+  }
+
+  if (imptype == AUDIOSRC_TYPE_BDJ4 || imptype == AUDIOSRC_TYPE_PODCAST) {
     if (newsongs) {
       manageProcessDatabaseUpdate (manage);
     }
 
-    /* do all this afterwards, as the db-update message takes */
-    /* time to get to bdj4main */
-    slistStartIterator (tlist, &iteridx);
-    while ((songnm = slistIterateKey (tlist, &iteridx)) != NULL) {
-      song_t      *song;
-
-      song = dbGetByName (manage->musicdb, songnm);
-      dbidx = songGetNum (song, TAG_DBIDX);
-
-      manageQueueProcess (manage, dbidx, mqidx,
-            DISP_SEL_SONGLIST, MANAGE_QUEUE_LAST);
-    }
-
-    nlistFree (tlist);
-  } /* audio-src: type: not-file */
-
-  if (imptype == AUDIOSRC_TYPE_HTTPS) {
-    nlist_t     *tlist;
-
-fprintf (stderr, "import type: https\n");
-    tlist = rssImport (uri);
+    managePlaylistImportCreateSonglist (manage, songlist);
+    nlistFree (songlist);
   }
 
   if (newsongs) {
@@ -3568,6 +3573,51 @@ fprintf (stderr, "import type: https\n");
 
   return UICB_CONT;
 }
+
+static void
+managePlaylistImportCreateSonglist (manageui_t *manage, slist_t *songlist)
+{
+  const char    *songnm;
+  slistidx_t    iteridx;
+  dbidx_t       dbidx;
+
+  /* do all this afterwards, as the db-update message takes */
+  /* time to get to bdj4main */
+  slistStartIterator (songlist, &iteridx);
+  while ((songnm = slistIterateKey (songlist, &iteridx)) != NULL) {
+    song_t      *song;
+
+    song = dbGetByName (manage->musicdb, songnm);
+    dbidx = songGetNum (song, TAG_DBIDX);
+
+    manageQueueProcess (manage, dbidx, manage->musicqManageIdx,
+          DISP_SEL_SONGLIST, MANAGE_QUEUE_LAST);
+  }
+}
+
+static bool
+managePlaylistImportCreateSongs (manageui_t *manage, const char *songnm,
+    int imptype, slist_t *songlist, slist_t *tagdata)
+{
+  song_t      *song = NULL;
+  bool        rc = false;
+
+  song = dbGetByName (manage->musicdb, songnm);
+
+  if (song == NULL) {
+    song = songAlloc ();
+    songFromTagList (song, tagdata);
+    songSetNum (song, TAG_DB_FLAGS, MUSICDB_STD);
+    songSetNum (song, TAG_RRN, MUSICDB_ENTRY_NEW);
+    songSetNum (song, TAG_PREFIX_LEN, 0);
+    dbWriteSong (manage->musicdb, song);
+    rc = true;
+  } /* song needs to be added */
+
+  slistSetNum (songlist, songnm, 0);
+  return rc;
+}
+
 
 /* export/import bdj4 */
 
