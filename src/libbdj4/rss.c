@@ -66,7 +66,6 @@ rssGetUpdateTime (const char *uri)
   if (webrc != WEB_OK) {
     return 0;
   }
-fprintf (stderr, "rss-upd: %ld\n", (long) rssdata.webresptime);
   webclientClose (webclient);
 
   return rssdata.webresptime;

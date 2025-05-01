@@ -82,6 +82,7 @@ typedef struct uiimppl {
   const char        *newnamelabel;
   callback_t        *callbacks [UIIMPPL_CB_MAX];
   char              origplname [MAXPATHLEN];
+  char              olduri [MAXPATHLEN];
   size_t            asmaxwidth;
   int               askey;
   int               imptype;
@@ -103,7 +104,7 @@ static int  uiimpplValidateNNEntry (uiwcont_t *entry, const char *label, void *u
 static int  uiimpplValidateURI (uiimppl_t *uiimppl);
 static bool uiimpplSelectHandler (void *udata, int32_t idx);
 static int  uiimpplValidateNewName (uiimppl_t *uiimppl);
-static bool uiimpplImportTypeCallback (void *udata);
+static bool uiimpplImportTypeChg (void *udata);
 static void uiimpplFreeDialog (uiimppl_t *uiimppl);
 static void uiimpplProcessValidations (uiimppl_t *uiimppl, bool forceflag);
 static int32_t uiimpplDragDropCallback (void *udata, const char *uri);
@@ -225,7 +226,7 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
   uiimppl->callbacks [UIIMPPL_CB_PL_SEL] = callbackInitI (
       uiimpplSelectHandler, uiimppl);
   uiimppl->callbacks [UIIMPPL_CB_TYPE_SEL] = callbackInit (
-      uiimpplImportTypeCallback, uiimppl, NULL);
+      uiimpplImportTypeChg, uiimppl, NULL);
   uiimppl->callbacks [UIIMPPL_CB_DRAG_DROP] = callbackInitS (
       uiimpplDragDropCallback, uiimppl);
 
@@ -583,8 +584,7 @@ uiimpplInitDisplay (uiimppl_t *uiimppl)
     return;
   }
 
-fprintf (stderr, "imppl: init-display\n");
-  uiimpplImportTypeCallback (uiimppl);
+  uiimpplImportTypeChg (uiimppl);
   uiimpplProcessValidations (uiimppl, true);
 }
 
@@ -665,22 +665,20 @@ uiimpplResponseHandler (void *udata, int32_t responseid)
 static int
 uiimpplValidateURIEntry (uiwcont_t *entry, const char *label, void *udata)
 {
-  int       rc;
+  int       rc = UICB_CONT;
   uiimppl_t *uiimppl = udata;
 
   rc = uiimpplValidateURI (uiimppl);
-  uiimppl->changed = true;
   return rc;
 }
 
 static int
 uiimpplValidateNNEntry (uiwcont_t *entry, const char *label, void *udata)
 {
-  int       rc;
+  int       rc = UICB_CONT;
   uiimppl_t *uiimppl = udata;
 
   rc = uiimpplValidateNewName (uiimppl);
-  uiimppl->changed = true;
   return rc;
 }
 
@@ -691,6 +689,7 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
   const char  *str;
   char        tbuff [MAXPATHLEN];
   pathinfo_t  *pi;
+  bool        haderrors = false;
 
   if (uiimppl == NULL) {
     return UIENTRY_OK;
@@ -702,19 +701,26 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
 
   entry = uiimppl->wcont [UIIMPPL_W_URI];
 
-  /* any change clears the status message */
-  uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
+//  /* any change clears the status message */
+//  uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
 
-  str = uiEntryGetValue (entry);
+  if (uiimppl->haveerrors != UIIMPPL_ERR_NONE) {
+    haderrors = true;
+  }
+
   uiimppl->haveerrors &= ~ UIIMPPL_ERR_URI;
+  str = uiEntryGetValue (entry);
 
   *tbuff = '\0';
   stpecpy (tbuff, tbuff + sizeof (tbuff), str);
-  /* re-sets the type to match the URI, sets the URI */
-  if (uiimpplProcessURI (uiimppl, tbuff) == UICB_STOP) {
-    uiimppl->haveerrors |= UIIMPPL_ERR_URI;
-    uiimppl->in_cb = false;
-    return UIENTRY_ERROR;
+
+  if (strcmp (uiimppl->olduri, str) != 0) {
+    /* re-sets the type to match the URI, sets the URI */
+    if (uiimpplProcessURI (uiimppl, tbuff) == UICB_STOP) {
+      uiimppl->haveerrors |= UIIMPPL_ERR_URI;
+      uiimppl->in_cb = false;
+      return UIENTRY_ERROR;
+    }
   }
 
   if (uiimppl->imptype == AUDIOSRC_TYPE_FILE) {
@@ -788,7 +794,9 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
   }
   pathInfoFree (pi);
 
-  if (uiimppl->haveerrors == UIIMPPL_ERR_NONE) {
+  stpecpy (uiimppl->olduri, uiimppl->olduri + sizeof (uiimppl->olduri), str);
+
+  if (haderrors && uiimppl->haveerrors == UIIMPPL_ERR_NONE) {
     uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
   }
 
@@ -814,22 +822,28 @@ uiimpplSelectHandler (void *udata, int idx)
   /* any change to the selected playlist clears the status/error message */
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
+
   uiimppl->haveerrors = UIIMPPL_ERR_NONE;
   uiimppl->newnameuserchg = false;
 
   str = ilistGetStr (uiimppl->plnames, idx, DD_LIST_DISP);
-  snprintf (tbuff, sizeof (tbuff), "%s%s:%" PRIu16 "/%s",
-      AS_BDJ4_PFX,
-      asconfGetStr (uiimppl->asconf, uiimppl->askey, ASCONF_URI),
-      (uint16_t) asconfGetNum (uiimppl->asconf, uiimppl->askey, ASCONF_PORT),
-      str);
+  if (uiimppl->imptype == AUDIOSRC_TYPE_BDJ4) {
+    snprintf (tbuff, sizeof (tbuff), "%s%s:%" PRIu16 "/%s",
+        AS_BDJ4_PFX,
+        asconfGetStr (uiimppl->asconf, uiimppl->askey, ASCONF_URI),
+        (uint16_t) asconfGetNum (uiimppl->asconf, uiimppl->askey, ASCONF_PORT),
+        str);
+    uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_URI], tbuff);
+  }
+  if (uiimppl->imptype == AUDIOSRC_TYPE_PODCAST) {
+    ;
+  }
   stpecpy (uiimppl->origplname,
       uiimppl->origplname + sizeof (uiimppl->origplname), str);
 
   /* allow entry validators to run */
   uiimppl->in_cb = false;
 
-  uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_URI], tbuff);
   uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_NEWNAME], str);
   return UICB_CONT;
 }
@@ -842,6 +856,7 @@ uiimpplValidateNewName (uiimppl_t *uiimppl)
   const char  *str;
   char        fn [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
+  bool        haderrors = false;
 
   if (uiimppl == NULL) {
     return UIENTRY_OK;
@@ -854,8 +869,12 @@ uiimpplValidateNewName (uiimppl_t *uiimppl)
   entry = uiimppl->wcont [UIIMPPL_W_NEWNAME];
 
   /* any change clears the status message */
-  uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
+//fprintf (stderr, "val-nn: clr\n");
+//  uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
 
+  if (uiimppl->haveerrors != UIIMPPL_ERR_NONE) {
+    haderrors = true;
+  }
   uiimppl->haveerrors &= ~ UIIMPPL_ERR_NEWNAME;
 
   rc = uiutilsValidatePlaylistName (entry, uiimppl->newnamelabel,
@@ -879,7 +898,7 @@ uiimpplValidateNewName (uiimppl_t *uiimppl)
     }
   }
 
-  if (uiimppl->haveerrors == UIIMPPL_ERR_NONE) {
+  if (haderrors && uiimppl->haveerrors == UIIMPPL_ERR_NONE) {
     uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
   }
 
@@ -888,7 +907,7 @@ uiimpplValidateNewName (uiimppl_t *uiimppl)
 }
 
 static bool
-uiimpplImportTypeCallback (void *udata)
+uiimpplImportTypeChg (void *udata)
 {
   uiimppl_t   *uiimppl = udata;
   char        tbuff [40];
@@ -905,14 +924,12 @@ uiimpplImportTypeCallback (void *udata)
   }
   uiimppl->in_cb = true;
 
-fprintf (stderr, "imppl: import-type-cb\n");
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
   uiimppl->haveerrors = UIIMPPL_ERR_NONE;
 
   askey = uiSpinboxTextGetValue (uiimppl->wcont [UIIMPPL_W_IMP_TYPE]);
   uiimppl->askey = askey;
-fprintf (stderr, "  askey: %d\n", askey);
   uiimppl->imptype = nlistGetNum (uiimppl->astypes, uiimppl->askey);
 
   if (uiimppl->imptype != AUDIOSRC_TYPE_FILE) {
@@ -922,7 +939,6 @@ fprintf (stderr, "  askey: %d\n", askey);
 
     idx = 0;
     ilistFree (uiimppl->plnames);
-fprintf (stderr, "imp-type: uri: %s\n", uiEntryGetValue (uiimppl->wcont [UIIMPPL_W_URI]));
     asiter = audiosrcStartIterator (uiimppl->imptype, AS_ITER_PL_NAMES,
         uiEntryGetValue (uiimppl->wcont [UIIMPPL_W_URI]), askey);
     uiimppl->plnames = ilistAlloc ("plnames", LIST_ORDERED);
@@ -954,6 +970,8 @@ fprintf (stderr, "imp-type: uri: %s\n", uiEntryGetValue (uiimppl->wcont [UIIMPPL
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_URI_LABEL], tbuff);
 
   uiimppl->in_cb = false;
+  /* process all validations again */
+  uiimppl->changed = true;
 
   return UICB_CONT;
 }
@@ -975,9 +993,10 @@ uiimpplProcessValidations (uiimppl_t *uiimppl, bool forceflag)
   uiEntryValidate (uiimppl->wcont [UIIMPPL_W_URI], forceflag);
   uiEntryValidate (uiimppl->wcont [UIIMPPL_W_NEWNAME], forceflag);
 
-  if (uiimppl->haveerrors == UIIMPPL_ERR_NONE) {
-    uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
-  }
+//  if (uiimppl->haveerrors == UIIMPPL_ERR_NONE) {
+//fprintf (stderr, "proc-val: no-errors\n");
+//    uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
+//  }
 }
 
 static int32_t

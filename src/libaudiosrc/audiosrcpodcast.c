@@ -385,14 +385,14 @@ aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata, const char *uri)
 static void
 aspodcastRSS (asdata_t *asdata, asiterdata_t *asidata, const char *uri)
 {
-  time_t    tm;
+  time_t    tm = 0;
 
   if (asdata->rssdata != NULL) {
     tm = rssGetUpdateTime (uri);
-    if (tm > asdata->rssupdatetm) {
-      asdata->rssdata = rssImport (uri);
-      asdata->rssupdatetm = nlistGetNum (asdata->rssdata, RSS_UPDATE_TIME);
-    }
+  }
+  if (asdata->rssdata == NULL || tm > asdata->rssupdatetm) {
+    asdata->rssdata = rssImport (uri);
+    asdata->rssupdatetm = nlistGetNum (asdata->rssdata, RSS_UPDATE_TIME);
   }
 }
 
