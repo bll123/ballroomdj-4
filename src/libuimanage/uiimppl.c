@@ -647,6 +647,8 @@ uiimpplResponseHandler (void *udata, int32_t responseid)
           uiimppl->wcont [UIIMPPL_W_STATUS_MSG],
           /* CONTEXT: please wait... status message */
           _("Please wait\xe2\x80\xa6"));
+      /* this message is not displaying */
+      uiUIProcessWaitEvents ();
       /* do not close or hide the dialog; it will stay active and */
       /* the status message will be updated */
       if (uiimppl->responsecb != NULL) {
@@ -717,6 +719,7 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
 
   if (strcmp (uiimppl->olduri, str) != 0) {
     /* re-sets the type to match the URI, sets the URI */
+    /* may also reset the import type */
     if (uiimpplProcessURI (uiimppl, tbuff) == UICB_STOP) {
       uiimppl->haveerrors |= UIIMPPL_ERR_URI;
       uiimppl->in_cb = false;
@@ -941,6 +944,11 @@ uiimpplImportTypeChg (void *udata)
 
     idx = 0;
     ilistFree (uiimppl->plnames);
+    uiLabelSetText (
+        uiimppl->wcont [UIIMPPL_W_STATUS_MSG],
+        /* CONTEXT: please wait... status message */
+        _("Please wait\xe2\x80\xa6"));
+    uiUIProcessWaitEvents ();
     asiter = audiosrcStartIterator (uiimppl->imptype, AS_ITER_PL_NAMES,
         uiEntryGetValue (uiimppl->wcont [UIIMPPL_W_URI]), NULL, askey);
     uiimppl->plnames = ilistAlloc ("plnames", LIST_ORDERED);
@@ -951,6 +959,7 @@ uiimpplImportTypeChg (void *udata)
       ++idx;
     }
     audiosrcCleanIterator (asiter);
+    uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
     uiddSetList (uiimppl->plselect, uiimppl->plnames);
     uiddSetSelection (uiimppl->plselect, 0);
   }
@@ -1043,6 +1052,7 @@ uiimpplProcessURI (uiimppl_t *uiimppl, const char *uri)
   }
 
   uiimppl->askey = nlistGetNum (uiimppl->astypelookup, type);
+  uiimppl->imptype = type;
   uiSpinboxTextSetValue (uiimppl->wcont [UIIMPPL_W_IMP_TYPE], uiimppl->askey);
   uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_URI], uri);
   uiimppl->changed = true;

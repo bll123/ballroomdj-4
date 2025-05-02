@@ -39,10 +39,11 @@ typedef struct filehandle {
   FILE    *fh;
   int     count;
   int     openmode;
+  int     flushflag;
 } fileshared_t;
 
 fileshared_t *
-fileSharedOpen (const char *fname, int openmode)
+fileSharedOpen (const char *fname, int openmode, int flushflag)
 {
   fileshared_t  *fhandle = NULL;
 
@@ -64,6 +65,7 @@ fileSharedOpen (const char *fname, int openmode)
   fhandle->count = 0;
   fhandle->fh = NULL;
   fhandle->openmode = openmode;
+  fhandle->flushflag = flushflag;
 #if _typ_HANDLE
   fhandle->handle = NULL;
 #endif
@@ -162,12 +164,8 @@ fileSharedWrite (fileshared_t *fhandle, const char *data, size_t len)
   /* on linux, flushing each time is reasonably fast */
   /* on MacOS, flushing each time is very slow */
   /* windows flush-file-buffers does a sync */
-  if (isLinux () || fhandle->count >= FLUSH_COUNT) {
-#if _lib_FlushFileBuffers
-    FlushFileBuffers (fhandle->handle);
-#else
-    fflush (fhandle->fh);
-#endif
+  if (fhandle->flushflag == FILESH_FLUSH && fhandle->count >= FLUSH_COUNT) {
+    fileSharedFlush (fhandle, FILESH_NO_SYNC);
     fhandle->count = 0;
   }
   ++fhandle->count;

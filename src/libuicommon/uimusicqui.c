@@ -215,7 +215,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     uiWidgetSetMarginEnd (uiwidgetp, 2);
     uiwcontFree (uiwidgetp);
 
-    uiwidgetp = uiEntryInit (20, 100);
+    uiwidgetp = uiEntryInit (30, 100);
     uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
     if (uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
       uiBoxPackStartExpand (hbox, uiwidgetp);

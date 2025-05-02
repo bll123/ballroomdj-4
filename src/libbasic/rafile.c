@@ -60,7 +60,7 @@ raOpen (const char *fname, int version, int openmode)
 
   fexists = fileopFileExists (fname);
 
-  rafile->fsh = fileSharedOpen (fname, rafile->openmode);
+  rafile->fsh = fileSharedOpen (fname, rafile->openmode, FILESH_NO_FLUSH);
   if (rafile->fsh == NULL) {
     mdfree (rafile);
     return NULL;
@@ -298,7 +298,6 @@ raWriteHeader (rafile_t *rafile, int version)
 
   logProcBegin ();
   /* locks are handled by the caller */
-  /* the header never gets smaller, so it's not necessary to flush its data */
   fileSharedSeek (rafile->fsh, 0L, SEEK_SET);
   rc = snprintf (tbuff, sizeof (tbuff), "#VERSION=%d\n", version);
   fileSharedWrite (rafile->fsh, tbuff, rc);

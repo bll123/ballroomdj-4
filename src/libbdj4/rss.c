@@ -35,6 +35,8 @@ static const char *titlexpath =
     "/rss/channel/title";
 static const char *linkxpath =
     "/rss/channel/link";
+static const char *blddatexpath =
+    "/rss/channel/lastBuildDate";
 static const char *itemxpath =
     "/rss/channel/item/title|"
     "/rss/channel/item/pubDate|"
@@ -88,6 +90,7 @@ rssImport (const char *uri)
   char          tbuff [MAXPATHLEN];
   ilistidx_t    iteridx;
   ilistidx_t    key;
+  time_t        tmval;
 
   webclient = webclientAlloc (&rssdata, rssWebResponseCallback);
   webrc = webclientGet (webclient, uri);
@@ -102,14 +105,21 @@ rssImport (const char *uri)
   /* using the xmlns is required */
   xmlparse = xmlParseInitData (rssdata.webresponse, rssdata.webresplen,
       XMLPARSE_USENS);
+
   xmlParseGetItem (xmlparse, titlexpath, tbuff, sizeof (tbuff));
   nlistSetStr (implist, RSS_TITLE, tbuff);
+
   xmlParseGetItem (xmlparse, linkxpath, tbuff, sizeof (tbuff));
   nlistSetStr (implist, RSS_URI, tbuff);
+
+  xmlParseGetItem (xmlparse, blddatexpath, tbuff, sizeof (tbuff));
+  tmval = tmutilStringToUTC (tbuff, "%a, %d %h %Y %T %z");
+  nlistSetNum (implist, RSS_BUILD_DATE, tmval);
+
   itemlist = xmlParseGetList (xmlparse, itemxpath, itemattr);
   nlistSetList (implist, RSS_ITEMS, itemlist);
   nlistSetNum (implist, RSS_COUNT, ilistGetCount (itemlist));
-  nlistSetNum (implist, RSS_UPDATE_TIME, rssdata.webresptime);
+
   xmlParseFree (xmlparse);
   webclientClose (webclient);
 
@@ -119,13 +129,11 @@ rssImport (const char *uri)
   ilistStartIterator (itemlist, &iteridx);
   while ((key = ilistIterateKey (itemlist, &iteridx)) >= 0) {
     const char  *val;
-    time_t      tmval;
 
     val = ilistGetStr (itemlist, key, RSS_ITEM_URI);
     slistSetNum (itemidx, val, key);
     val = ilistGetStr (itemlist, key, RSS_ITEM_DATE);
     /* <pubDate>Wed, 23 Apr 2025 17:00:00 +0000</pubDate> */
-fprintf (stderr, "cvt-date: %s\n", val);
     tmval = tmutilStringToUTC (val, "%a, %d %h %Y %T %z");
     snprintf (tbuff, sizeof (tbuff), "%zd", (size_t) tmval);
     ilistSetStr (itemlist, key, RSS_ITEM_DATE, tbuff);

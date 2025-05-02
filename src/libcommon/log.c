@@ -402,7 +402,7 @@ rlogOpen (logidx_t idx, const char *fn, const char *processtag, int truncflag)
     /* never truncate the installation log */
     truncflag = FILESH_OPEN_APPEND;
   }
-  l->fhandle = fileSharedOpen (fn, truncflag);
+  l->fhandle = fileSharedOpen (fn, truncflag, FILESH_FLUSH);
   if (l->fhandle == NULL) {
     fprintf (stderr, "%s: Unable to open %s %d %s\n",
         processtag, fn, errno, strerror (errno));

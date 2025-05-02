@@ -17,7 +17,7 @@ enum {
   RSS_COUNT,
   RSS_ITEMS,
   RSS_IDX,
-  RSS_UPDATE_TIME,
+  RSS_BUILD_DATE,
   RSS_MAX,
 };
 

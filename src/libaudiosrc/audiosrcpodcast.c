@@ -59,7 +59,7 @@ typedef struct asdata {
   int           clientcount;
   int           state;
   nlist_t       *rssdata;
-  time_t        rssupdatetm;
+  time_t        rsslastbldtm;
 } asdata_t;
 
 static void aspodcastWebResponseCallback (void *userdata, const char *respstr, size_t len, time_t tm);
@@ -97,7 +97,7 @@ asiInit (const char *delpfx, const char *origext)
   asdata->clientcount = 0;
   asdata->state = BDJ4_STATE_OFF;
   asdata->rssdata = NULL;
-  asdata->rssupdatetm = 0;
+  asdata->rsslastbldtm = 0;
   return asdata;
 }
 
@@ -387,8 +387,6 @@ aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata,
     return false;
   }
 
-fprintf (stderr, "uri: %s\n", uri);
-fprintf (stderr, "nm: %s\n", nm);
   rssitems = nlistGetList (asdata->rssdata, RSS_ITEMS);
   itemidx = nlistGetList (asdata->rssdata, RSS_IDX);
   idx = slistGetNum (itemidx, nm);
@@ -410,7 +408,7 @@ fprintf (stderr, "nm: %s\n", nm);
       tagdefs [TAG_DBADDDATE].tag,
       ilistGetStr (rssitems, idx, RSS_ITEM_DATE));
   slistSetStr (asidata->songtags,
-      tagdefs [TAG_NO_MAX_PLAY_TM].tag, "on");
+      tagdefs [TAG_NO_MAX_PLAY_TM].tag, "yes");
 
   return true;
 }
@@ -423,9 +421,9 @@ aspodcastRSS (asdata_t *asdata, asiterdata_t *asidata, const char *uri)
   if (asdata->rssdata != NULL) {
     tm = rssGetUpdateTime (uri);
   }
-  if (asdata->rssdata == NULL || tm > asdata->rssupdatetm) {
+  if (asdata->rssdata == NULL || tm > asdata->rsslastbldtm) {
     asdata->rssdata = rssImport (uri);
-    asdata->rssupdatetm = nlistGetNum (asdata->rssdata, RSS_UPDATE_TIME);
+    asdata->rsslastbldtm = nlistGetNum (asdata->rssdata, RSS_BUILD_DATE);
   }
 }
 

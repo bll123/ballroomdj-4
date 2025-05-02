@@ -3490,6 +3490,7 @@ managePlaylistImportRespHandler (void *udata)
     songlist = slistAlloc ("tmp-imp-pl-bdj4", LIST_UNORDERED, NULL);
 
     asiter = audiosrcStartIterator (imptype, AS_ITER_PL, uri, oplname, askey);
+    dbStartBatch (manage->musicdb);
     while ((songnm = audiosrcIterate (asiter)) != NULL) {
       slist_t     *tagdata;
       asiter_t    *tagiter;
@@ -3513,6 +3514,7 @@ managePlaylistImportRespHandler (void *udata)
           manage, songnm, imptype, songlist, tagdata);
       slistFree (tagdata);
     }
+    dbEndBatch (manage->musicdb);
     audiosrcCleanIterator (asiter);
 
     if (newsongs) {

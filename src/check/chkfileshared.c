@@ -27,7 +27,7 @@ main (int argc, char *argv [])
 {
   fileshared_t  *sfh;
 
-  sfh = fileSharedOpen (FN, FILESH_OPEN_APPEND);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_APPEND, FILESH_FLUSH);
   mssleep (500);
   fileSharedWrite (sfh, DATAB, strlen (DATAB));
   mssleep (500);

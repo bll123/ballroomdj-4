@@ -43,7 +43,7 @@ START_TEST(fileshared_open_trunc)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_open_trunc");
   mdebugSubTag ("fileshared_open_trunc");
 
-  sfh = fileSharedOpen (FN, FILESH_OPEN_TRUNCATE);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_TRUNCATE, FILESH_FLUSH);
   ck_assert_ptr_nonnull (sfh);
   fileSharedClose (sfh);
   unlink (FN);
@@ -57,10 +57,10 @@ START_TEST(fileshared_open_append)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_open_append");
   mdebugSubTag ("fileshared_open_append");
 
-  sfh = fileSharedOpen (FN, FILESH_OPEN_APPEND);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_APPEND, FILESH_FLUSH);
   ck_assert_ptr_nonnull (sfh);
   fileSharedClose (sfh);
-  sfh = fileSharedOpen (FN, FILESH_OPEN_APPEND);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_APPEND, FILESH_FLUSH);
   ck_assert_ptr_nonnull (sfh);
   fileSharedClose (sfh);
   unlink (FN);
@@ -74,13 +74,13 @@ START_TEST(fileshared_open_read_write)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_open_read_write");
   mdebugSubTag ("fileshared_open_read_write");
 
-  sfh = fileSharedOpen (FN, FILESH_OPEN_READ_WRITE);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_READ_WRITE, FILESH_FLUSH);
   ck_assert_ptr_nonnull (sfh);
   fileSharedClose (sfh);
-  sfh = fileSharedOpen (FN, FILESH_OPEN_READ_WRITE);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_READ_WRITE, FILESH_FLUSH);
   ck_assert_ptr_nonnull (sfh);
   fileSharedClose (sfh);
-  sfh = fileSharedOpen (FN, FILESH_OPEN_READ);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_READ, FILESH_FLUSH);
   ck_assert_ptr_nonnull (sfh);
   fileSharedClose (sfh);
   unlink (FN);
@@ -94,13 +94,13 @@ START_TEST(fileshared_open_read)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_open_read");
   mdebugSubTag ("fileshared_open_read");
 
-  sfh = fileSharedOpen (FN, FILESH_OPEN_READ_WRITE);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_READ_WRITE, FILESH_FLUSH);
   ck_assert_ptr_nonnull (sfh);
   fileSharedClose (sfh);
-  sfh = fileSharedOpen (FN, FILESH_OPEN_READ);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_READ, FILESH_FLUSH);
   ck_assert_ptr_nonnull (sfh);
   fileSharedClose (sfh);
-  sfh = fileSharedOpen (FN, FILESH_OPEN_READ);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_READ, FILESH_FLUSH);
   ck_assert_ptr_nonnull (sfh);
   fileSharedClose (sfh);
   unlink (FN);
@@ -115,7 +115,7 @@ START_TEST(fileshared_write_trunc)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_write_trunc");
   mdebugSubTag ("fileshared_write_trunc");
 
-  sfh = fileSharedOpen (FN, FILESH_OPEN_TRUNCATE);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_TRUNCATE, FILESH_FLUSH);
   fileSharedWrite (sfh, DATAA, strlen (DATAA));
   fileSharedClose (sfh);
   sz = fileopSize (FN);
@@ -133,13 +133,13 @@ START_TEST(fileshared_write_append)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_write_append");
   mdebugSubTag ("fileshared_write_append");
 
-  sfh = fileSharedOpen (FN, FILESH_OPEN_TRUNCATE);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_TRUNCATE, FILESH_FLUSH);
   fileSharedWrite (sfh, DATAA, strlen (DATAA));
   fileSharedClose (sfh);
   sz = fileopSize (FN);
   ck_assert_int_eq (sz, strlen (DATAA));
 
-  sfh = fileSharedOpen (FN, FILESH_OPEN_APPEND);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_APPEND, FILESH_FLUSH);
   fileSharedWrite (sfh, DATAB, strlen (DATAB));
   fileSharedClose (sfh);
   sz = fileopSize (FN);
@@ -157,10 +157,10 @@ START_TEST(fileshared_write_multiple)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_write_multiple");
   mdebugSubTag ("fileshared_write_multiple");
 
-  sfha = fileSharedOpen (FN, FILESH_OPEN_APPEND);
+  sfha = fileSharedOpen (FN, FILESH_OPEN_APPEND, FILESH_FLUSH);
   fileSharedWrite (sfha, DATAA, strlen (DATAA));
 
-  sfhb = fileSharedOpen (FN, FILESH_OPEN_APPEND);
+  sfhb = fileSharedOpen (FN, FILESH_OPEN_APPEND, FILESH_FLUSH);
   ck_assert_ptr_nonnull (sfhb);
   fileSharedWrite (sfhb, DATAA, strlen (DATAA));
 
@@ -186,7 +186,7 @@ START_TEST(fileshared_write_shared)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_write_shared");
   mdebugSubTag ("fileshared_write_shared");
 
-  sfh = fileSharedOpen (FN, FILESH_OPEN_APPEND);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_APPEND, FILESH_FLUSH);
   fileSharedWrite (sfh, DATAA, strlen (DATAA));
 
   extension = "";
@@ -227,14 +227,14 @@ START_TEST(fileshared_read)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_read");
   mdebugSubTag ("fileshared_read");
 
-  sfh = fileSharedOpen (FN, FILESH_OPEN_TRUNCATE);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_TRUNCATE, FILESH_FLUSH);
   fileSharedWrite (sfh, DATAA, strlen (DATAA));
   fileSharedWrite (sfh, DATAB, strlen (DATAB));
   fileSharedClose (sfh);
   sz = fileopSize (FN);
   ck_assert_int_eq (sz, strlen (DATAA) + strlen (DATAB));
 
-  sfh = fileSharedOpen (FN, FILESH_OPEN_READ);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_READ, FILESH_FLUSH);
   sz = fileSharedRead (sfh, tbuff, strlen (DATAA));
   ck_assert_int_eq (sz, 1);
   ck_assert_mem_eq (tbuff, DATAA, strlen (DATAA));
@@ -258,14 +258,14 @@ START_TEST(fileshared_seek)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_seek");
   mdebugSubTag ("fileshared_seek");
 
-  sfh = fileSharedOpen (FN, FILESH_OPEN_TRUNCATE);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_TRUNCATE, FILESH_FLUSH);
   fileSharedWrite (sfh, DATAA, strlen (DATAA));
   fileSharedWrite (sfh, DATAB, strlen (DATAB));
   fileSharedClose (sfh);
   sz = fileopSize (FN);
   ck_assert_int_eq (sz, strlen (DATAA) + strlen (DATAB));
 
-  sfh = fileSharedOpen (FN, FILESH_OPEN_READ);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_READ, FILESH_FLUSH);
   rc = fileSharedSeek (sfh, 0, SEEK_SET);
   ck_assert_int_eq (rc, 0);
   sz = fileSharedTell (sfh);
@@ -331,7 +331,7 @@ START_TEST(fileshared_read_write)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_read_write");
   mdebugSubTag ("fileshared_read_write");
 
-  sfh = fileSharedOpen (FN, FILESH_OPEN_READ_WRITE);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_READ_WRITE, FILESH_FLUSH);
   sz = fileSharedTell (sfh);
   ck_assert_int_eq (sz, 0);
   fileSharedWrite (sfh, DATAA, strlen (DATAA));
@@ -342,7 +342,7 @@ START_TEST(fileshared_read_write)
   sz = fileopSize (FN);
   ck_assert_int_eq (sz, strlen (DATAA) + strlen (DATAB));
 
-  sfh = fileSharedOpen (FN, FILESH_OPEN_READ_WRITE);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_READ_WRITE, FILESH_FLUSH);
   sz = fileSharedTell (sfh);
   ck_assert_int_eq (sz, 0);
   fileSharedWrite (sfh, DATAB, strlen (DATAB));
@@ -353,7 +353,7 @@ START_TEST(fileshared_read_write)
   sz = fileopSize (FN);
   ck_assert_int_eq (sz, strlen (DATAA) + strlen (DATAB));
 
-  sfh = fileSharedOpen (FN, FILESH_OPEN_READ_WRITE);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_READ_WRITE, FILESH_FLUSH);
   fileSharedSeek (sfh, 0, SEEK_SET);
   sz = fileSharedTell (sfh);
   ck_assert_int_eq (sz, 0);
@@ -374,7 +374,7 @@ START_TEST(fileshared_read_write)
   ck_assert_int_eq (sz, strlen (DATAA) + strlen (DATAB));
   fileSharedClose (sfh);
 
-  sfh = fileSharedOpen (FN, FILESH_OPEN_READ_WRITE);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_READ_WRITE, FILESH_FLUSH);
   fileSharedSeek (sfh, 0, SEEK_SET);
   fileSharedWrite (sfh, DATAA, strlen (DATAA));
   fileSharedFlush (sfh, FILESH_SYNC);
@@ -418,13 +418,13 @@ START_TEST(fileshared_get)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_get");
   mdebugSubTag ("fileshared_get");
 
-  sfh = fileSharedOpen (FN, FILESH_OPEN_READ_WRITE);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_READ_WRITE, FILESH_FLUSH);
   fileSharedWrite (sfh, DATAA, strlen (DATAA));
   fileSharedWrite (sfh, DATAB, strlen (DATAB));
   fileSharedWrite (sfh, DATAC, strlen (DATAC));
   fileSharedClose (sfh);
 
-  sfh = fileSharedOpen (FN, FILESH_OPEN_READ_WRITE);
+  sfh = fileSharedOpen (FN, FILESH_OPEN_READ_WRITE, FILESH_FLUSH);
   p = fileSharedGet (sfh, tbuff, sizeof (tbuff));
   ck_assert_ptr_nonnull (p);
   ck_assert_mem_eq (tbuff, DATAA, strlen (DATAA));
