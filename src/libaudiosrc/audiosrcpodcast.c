@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
+ * Copyright 2025 Brad Lanam Pleasant Hill CA
  */
 #include "config.h"
 
@@ -28,6 +28,7 @@
 #include "playlist.h"
 #include "slist.h"
 #include "sysvars.h"
+#include "tagdef.h"
 #include "tmutil.h"
 #include "webclient.h"
 
@@ -376,10 +377,40 @@ static bool
 aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata,
     const char *uri, const char *nm)
 {
+  ilist_t     *rssitems;
+  slist_t     *itemidx;
+  ilistidx_t  idx = -1;
+
+
   aspodcastRSS (asdata, asidata, uri);
   if (asdata->rssdata == NULL) {
     return false;
   }
+
+fprintf (stderr, "uri: %s\n", uri);
+fprintf (stderr, "nm: %s\n", nm);
+  rssitems = nlistGetList (asdata->rssdata, RSS_ITEMS);
+  itemidx = nlistGetList (asdata->rssdata, RSS_IDX);
+  idx = slistGetNum (itemidx, nm);
+
+  if (idx < 0) {
+    return false;
+  }
+
+  slistFree (asidata->songtags);
+  asidata->songtags = slistAlloc ("assongtags", LIST_ORDERED, NULL);
+  slistSetSize (asidata->songtags, 4);
+  slistSetStr (asidata->songtags,
+      tagdefs [TAG_DURATION].tag,
+      ilistGetStr (rssitems, idx, RSS_ITEM_DURATION));
+  slistSetStr (asidata->songtags,
+      tagdefs [TAG_TITLE].tag,
+      ilistGetStr (rssitems, idx, RSS_ITEM_TITLE));
+  slistSetStr (asidata->songtags,
+      tagdefs [TAG_DBADDDATE].tag,
+      ilistGetStr (rssitems, idx, RSS_ITEM_DATE));
+  slistSetStr (asidata->songtags,
+      tagdefs [TAG_NO_MAX_PLAY_TM].tag, "on");
 
   return true;
 }

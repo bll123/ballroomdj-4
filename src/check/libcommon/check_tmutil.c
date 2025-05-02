@@ -438,6 +438,22 @@ START_TEST(tmutil_strtoutc)
     val -= 3600;
   }
   ck_assert_int_eq (val, a);
+
+  str = "2025-04-23 17:00:00";
+  val = tmutilStringToUTC (str, "%F %T");
+  a = 1745427600;
+  if (val - a == 3600) {
+    val -= 3600;
+  }
+  ck_assert_int_eq (val, a);
+
+  str = "Wed, 23 Apr 2025 17:00:00 +0000";
+  val = tmutilStringToUTC (str, "%a, %d %h %Y %T %z");
+  a = 1745427600;
+  if (val - a == 3600) {
+    val -= 3600;
+  }
+  ck_assert_int_eq (val, a);
 }
 
 Suite *

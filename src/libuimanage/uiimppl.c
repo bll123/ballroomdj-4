@@ -796,6 +796,7 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
   pathInfoFree (pi);
 
   stpecpy (uiimppl->olduri, uiimppl->olduri + sizeof (uiimppl->olduri), str);
+  uiimpplImportTypeChg (uiimppl);
 
   if (haderrors && uiimppl->haveerrors == UIIMPPL_ERR_NONE) {
     uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");

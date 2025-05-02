@@ -25,7 +25,9 @@
 #include "pathdisp.h"
 #include "pathutil.h"
 #include "playlist.h"
+#include "slist.h"
 #include "tagdef.h"
+#include "tmutil.h"
 #include "webclient.h"
 #include "xmlparse.h"
 
@@ -35,9 +37,11 @@ static const char *linkxpath =
     "/rss/channel/link";
 static const char *itemxpath =
     "/rss/channel/item/title|"
+    "/rss/channel/item/pubDate|"
     "/rss/channel/item/enclosure";
 static const xmlparseattr_t itemattr [] = {
     { "title", RSS_ITEM_TITLE, NULL },
+    { "pubDate", RSS_ITEM_DATE, NULL },
     { "enclosure", RSS_ITEM_URI, "url" },
     { "enclosure", RSS_ITEM_DURATION, "length" },
     { "enclosure", RSS_ITEM_TYPE, "type" },
@@ -76,12 +80,14 @@ rssImport (const char *uri)
 {
   xmlparse_t    *xmlparse;
   ilist_t       *itemlist = NULL;
+  slist_t       *itemidx = NULL;
   nlist_t       *implist;
   webclient_t   *webclient;
   rssdata_t     rssdata;
   int           webrc;
   char          tbuff [MAXPATHLEN];
-
+  ilistidx_t    iteridx;
+  ilistidx_t    key;
 
   webclient = webclientAlloc (&rssdata, rssWebResponseCallback);
   webrc = webclientGet (webclient, uri);
@@ -106,6 +112,26 @@ rssImport (const char *uri)
   nlistSetNum (implist, RSS_UPDATE_TIME, rssdata.webresptime);
   xmlParseFree (xmlparse);
   webclientClose (webclient);
+
+  itemidx = slistAlloc ("rssitemidx", LIST_UNORDERED, NULL);
+  slistSetSize (itemidx, ilistGetCount (itemlist));
+
+  ilistStartIterator (itemlist, &iteridx);
+  while ((key = ilistIterateKey (itemlist, &iteridx)) >= 0) {
+    const char  *val;
+    time_t      tmval;
+
+    val = ilistGetStr (itemlist, key, RSS_ITEM_URI);
+    slistSetNum (itemidx, val, key);
+    val = ilistGetStr (itemlist, key, RSS_ITEM_DATE);
+    /* <pubDate>Wed, 23 Apr 2025 17:00:00 +0000</pubDate> */
+fprintf (stderr, "cvt-date: %s\n", val);
+    tmval = tmutilStringToUTC (val, "%a, %d %h %Y %T %z");
+    snprintf (tbuff, sizeof (tbuff), "%zd", (size_t) tmval);
+    ilistSetStr (itemlist, key, RSS_ITEM_DATE, tbuff);
+  }
+  slistSort (itemidx);
+  nlistSetList (implist, RSS_IDX, itemidx);
 
   return implist;
 }
