@@ -82,6 +82,7 @@ typedef struct {
   int32_t       uniqueidx;
   int           speed;
   int           announce;     // one of PREP_SONG or PREP_ANNOUNCE
+  int           audiosrc;
 } prepqueue_t;
 
 typedef struct {
@@ -692,10 +693,13 @@ playerProcessing (void *udata)
       logMsg (LOG_DBG, LOG_VOLUME, "no fade-in set volume: %d", playerData->realVolume);
     }
 
-    /* some pli need the full path */
-    pathbldMakePath (tempffn, sizeof (tempffn), pq->tempname, "",
-        PATHBLD_MP_DIR_DATATOP);
-    sourceType = audiosrcGetType (tempffn);
+    *tempffn = '\0';
+    sourceType = audiosrcGetType (pq->tempname);
+    if (sourceType == AUDIOSRC_TYPE_FILE) {
+      /* some pli need the full path */
+      pathbldMakePath (tempffn, sizeof (tempffn), pq->tempname, "",
+          PATHBLD_MP_DIR_DATATOP);
+    }
 
     pliMediaSetup (playerData->pli, pq->tempname, tempffn, sourceType);
     /* pq->songstart is normalized */
@@ -715,6 +719,7 @@ playerProcessing (void *udata)
     plistate_t        plistate;
 
     plistate = pliState (playerData->pli);
+    logMsg (LOG_DBG, LOG_BASIC, "loading: pli-state: %d", plistate);
     if (plistate == PLI_STATE_OPENING ||
         plistate == PLI_STATE_BUFFERING) {
       ;
@@ -1016,6 +1021,7 @@ playerSongPrep (playerdata_t *playerData, char *args)
   npq->ident = PREP_QUEUE_IDENT;
   *npq->tempname = '\0';
   npq->songname = NULL;
+  npq->audiosrc = AUDIOSRC_TYPE_FILE;
 
   npq->songname = mdstrdup (p);
   logMsg (LOG_DBG, LOG_BASIC, "prep request: %s", npq->songname);
@@ -1095,10 +1101,10 @@ playerProcessPrepRequest (playerdata_t *playerData)
     return;
   }
 
+  npq->audiosrc = audiosrcGetType (npq->songname);
   rc = audiosrcPrep (npq->songname, npq->tempname, sizeof (npq->tempname));
   if (! rc) {
     logProcEnd ("unable-to-prep");
-    return;
   }
   queuePush (playerData->prepQueue, npq);
   logMsg (LOG_DBG, LOG_INFO, "prep-do: %" PRId32 " %s r:%d p:%" PRId32, npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
@@ -1141,7 +1147,8 @@ playerSongPlay (playerdata_t *playerData, char *args)
     logProcEnd ("not-prepped");
     return;
   }
-  if (! fileopFileExists (pq->tempname)) {
+  if (pq->audiosrc == AUDIOSRC_TYPE_FILE &&
+      ! fileopFileExists (pq->tempname)) {
     /* no history */
     connSendMessage (playerData->conn, ROUTE_MAIN, MSG_PLAYBACK_FINISH, "0");
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: no file: %s", pq->tempname);
@@ -1176,8 +1183,7 @@ playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx,
     pq = playerData->currentSong;
     if (pq != NULL && pq->announce == PREP_SONG &&
         uniqueidx != PL_UNIQUE_ANN && uniqueidx == pq->uniqueidx) {
-      logMsg (LOG_DBG, LOG_BASIC, "locate %s found %" PRId32 " as repeat", sfname, uniqueidx);
-      logMsg (LOG_DBG, LOG_BASIC, "  %" PRId32 " %s", pq->uniqueidx, pq->songname);
+      logMsg (LOG_DBG, LOG_BASIC, "locate found %" PRId32 " as repeat %s", uniqueidx, sfname);
       found = true;
     }
   }
@@ -1190,15 +1196,13 @@ playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx,
     pq = queueIterateData (playerData->prepQueue, &playerData->prepiteridx);
     while (pq != NULL) {
       if (uniqueidx != PL_UNIQUE_ANN && uniqueidx == pq->uniqueidx) {
-        logMsg (LOG_DBG, LOG_BASIC, "locate %s found %" PRId32, sfname, uniqueidx);
-        logMsg (LOG_DBG, LOG_BASIC, "  %" PRId32 " %s", pq->uniqueidx, pq->songname);
+        logMsg (LOG_DBG, LOG_BASIC, "locate found %" PRId32 " %s", uniqueidx, sfname);
         found = true;
         break;
       }
       if (uniqueidx == PL_UNIQUE_ANN && uniqueidx == pq->uniqueidx &&
           strcmp (sfname, pq->songname) == 0) {
-        logMsg (LOG_DBG, LOG_BASIC, "locate %s found %" PRId32, sfname, uniqueidx);
-        logMsg (LOG_DBG, LOG_BASIC, "  %" PRId32 " %s", pq->uniqueidx, pq->songname);
+        logMsg (LOG_DBG, LOG_BASIC, "locate found %" PRId32 " ann %s", uniqueidx, sfname);
         found = true;
         break;
       }

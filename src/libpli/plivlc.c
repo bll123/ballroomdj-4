@@ -154,7 +154,7 @@ pliiMediaSetup (plidata_t *pliData, const char *mediaPath,
     return;
   }
 
-  vlcMedia (pliData->vlcdata, mediaPath);
+  vlcMedia (pliData->vlcdata, mediaPath, sourceType);
 }
 
 void

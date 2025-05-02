@@ -40,12 +40,13 @@ static const char *blddatexpath =
 static const char *itemxpath =
     "/rss/channel/item/title|"
     "/rss/channel/item/pubDate|"
+    "/rss/channel/item/itunes:duration|"
     "/rss/channel/item/enclosure";
 static const xmlparseattr_t itemattr [] = {
     { "title", RSS_ITEM_TITLE, NULL },
     { "pubDate", RSS_ITEM_DATE, NULL },
+    { "duration", RSS_ITEM_DURATION, NULL },
     { "enclosure", RSS_ITEM_URI, "url" },
-    { "enclosure", RSS_ITEM_DURATION, "length" },
     { "enclosure", RSS_ITEM_TYPE, "type" },
     { NULL, -1, NULL },
 };

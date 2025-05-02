@@ -28,7 +28,7 @@ ssize_t           vlcSeek (vlcdata_t *vlcdata, ssize_t dpos);
 double            vlcRate (vlcdata_t *vlcdata, double drate);
 const char *      vlcVersion (vlcdata_t *vlcdata);
 plistate_t        vlcState (vlcdata_t *vlcdata);
-int               vlcMedia (vlcdata_t *vlcdata, const char *fn);
+int               vlcMedia (vlcdata_t *vlcdata, const char *fn, int sourceType);
 vlcdata_t *       vlcInit (int vlcargc, char *vlcargv [], char *vlcopt []);
 void              vlcClose (vlcdata_t *vlcdata);
 void              vlcRelease (vlcdata_t *vlcdata);

@@ -124,15 +124,10 @@ asiIsTypeMatch (asdata_t *asdata, const char *nm)
 {
   bool    rc = false;
 
-  /* not perfect, there can be other https/xml combinations */
+  /* not perfect, there can be other https sources. */
   /* as the URI is stored elsewhere, the feed cannot be fetched */
   if (strncmp (nm, AS_HTTPS_PFX, AS_HTTPS_PFX_LEN) == 0) {
-    size_t  len;
-
-    len = strlen (nm);
-    if (strncmp (nm + len - AS_XML_SFX_LEN, AS_XML_SFX, AS_XML_SFX_LEN) == 0) {
-      rc = true;
-    }
+    rc = true;
   }
 
   return rc;
@@ -190,6 +185,13 @@ asiExists (asdata_t *asdata, const char *nm)
   }
 
   return exists;
+}
+
+bool
+asiPrep (asdata_t *asdata, const char *sfname, char *tempnm, size_t sz)
+{
+  stpecpy (tempnm, tempnm + sz, sfname);
+  return true;
 }
 
 const char *
@@ -380,6 +382,8 @@ aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata,
   ilist_t     *rssitems;
   slist_t     *itemidx;
   ilistidx_t  idx = -1;
+  const char  *val;
+  char        tbuff [40];
 
 
   aspodcastRSS (asdata, asidata, uri);
@@ -396,11 +400,14 @@ aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata,
   }
 
   slistFree (asidata->songtags);
-  asidata->songtags = slistAlloc ("assongtags", LIST_ORDERED, NULL);
+  asidata->songtags = slistAlloc ("assongtags", LIST_UNORDERED, NULL);
   slistSetSize (asidata->songtags, 4);
-  slistSetStr (asidata->songtags,
-      tagdefs [TAG_DURATION].tag,
-      ilistGetStr (rssitems, idx, RSS_ITEM_DURATION));
+
+  val = ilistGetStr (rssitems, idx, RSS_ITEM_DURATION);
+  if (val != NULL) {
+    snprintf (tbuff, sizeof (tbuff), "%s000", val);
+    slistSetStr (asidata->songtags, tagdefs [TAG_DURATION].tag, tbuff);
+  }
   slistSetStr (asidata->songtags,
       tagdefs [TAG_TITLE].tag,
       ilistGetStr (rssitems, idx, RSS_ITEM_TITLE));
@@ -409,6 +416,7 @@ aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata,
       ilistGetStr (rssitems, idx, RSS_ITEM_DATE));
   slistSetStr (asidata->songtags,
       tagdefs [TAG_NO_MAX_PLAY_TM].tag, "yes");
+  slistSort (asidata->songtags);
 
   return true;
 }

@@ -47,7 +47,7 @@
 #include "tmutil.h"
 
 enum {
-  TM_SOURCE = TAG_KEY_MAX + 1,
+  TM_FSOURCE = TAG_KEY_MAX + 1,
   TM_DEST = TAG_KEY_MAX + 2,
   TM_MAX_DANCE = 30,        // normally 14 or so in the standard template.
 };
@@ -77,6 +77,7 @@ static datafilekey_t tmdfkeys [] = {
   { "DISCTOTAL",    TAG_DISCTOTAL,            VALUE_STR, NULL, DF_NORM },
   { "DURATION",     TAG_DURATION,             VALUE_STR, NULL, DF_NORM },
   { "FAVORITE",     TAG_FAVORITE,             VALUE_STR, NULL, DF_NORM },
+  { "FSOURCE",      TM_FSOURCE,               VALUE_STR, NULL, DF_NORM },
   { "GENRE",        TAG_GENRE,                VALUE_STR, NULL, DF_NORM },
   { "GROUPING",     TAG_GROUPING,             VALUE_STR, NULL, DF_NORM },
   { "KEYWORD",      TAG_KEYWORD,              VALUE_STR, NULL, DF_NORM },
@@ -89,7 +90,6 @@ static datafilekey_t tmdfkeys [] = {
   { "SAMESONG",     TAG_SAMESONG,             VALUE_STR, NULL, DF_NORM },
   { "SONGEND",      TAG_SONGEND,              VALUE_STR, NULL, DF_NORM },
   { "SONGSTART",    TAG_SONGSTART,            VALUE_STR, NULL, DF_NORM },
-  { "SOURCE",       TM_SOURCE,                VALUE_STR, NULL, DF_NORM },
   { "SPEEDADJUSTMENT", TAG_SPEEDADJUSTMENT,   VALUE_STR, NULL, DF_NORM },
   { "STATUS",       TAG_STATUS,               VALUE_STR, NULL, DF_NORM },
   { "TAGS",         TAG_TAGS,                 VALUE_STR, NULL, DF_NORM },
@@ -289,7 +289,7 @@ main (int argc, char *argv [])
 
     tagdata = updateData (tmusiclist, key);
 
-    src = ilistGetStr (tmusiclist, key, TM_SOURCE);
+    src = ilistGetStr (tmusiclist, key, TM_FSOURCE);
     dest = ilistGetStr (tmusiclist, key, TM_DEST);
 
     /* need full path to determine tag type */
@@ -451,7 +451,7 @@ updateData (ilist_t *tmusiclist, ilistidx_t key)
     ilistSetStr (tmusiclist, key, dfkey->itemkey, nval);
     if (dfkey->itemkey == TAG_DBADDDATE) {
       slistSetStr (tagdata, dfkey->name, nval);
-    } else if (dfkey->itemkey != TM_SOURCE && dfkey->itemkey != TM_DEST) {
+    } else if (dfkey->itemkey != TM_FSOURCE && dfkey->itemkey != TM_DEST) {
       slistSetStr (tagdata, tagdefs [dfkey->itemkey].tag, nval);
     }
   }

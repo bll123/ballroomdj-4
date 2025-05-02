@@ -86,6 +86,7 @@ typedef enum {
   TAG_DATE,                   //
   TAG_DBADDDATE,              // only in the database, treated as special case
   TAG_DBIDX,                  // internal: not saved to db or af
+  TAG_DB_FLAGS,               // internal: not saved to db or af
   TAG_DB_LOC_LOCK,            // only in the database
   TAG_DISCNUMBER,             //
   TAG_DISCTOTAL,              //
@@ -94,12 +95,13 @@ typedef enum {
   TAG_GENRE,                  //
   TAG_GROUPING,               //
   TAG_KEYWORD,                //
+  TAG_LAST_UPDATED,           //  internal
+  TAG_MOVEMENTCOUNT,          //
   TAG_MOVEMENTNAME,           //
   TAG_MOVEMENTNUM,            //
-  TAG_MOVEMENTCOUNT,          //
   TAG_MQDISPLAY,              //  bdj4
-  TAG_NO_MAX_PLAY_TM,         //  bdj4
   TAG_NOTES,                  //  bdj4
+  TAG_NO_MAX_PLAY_TM,         //  bdj4
   TAG_PREFIX_LEN,             // used for secondary directories
   TAG_RECORDING_ID,           // musicbrainz_trackid
   TAG_RRN,                    // internal: not saved to db or af
@@ -115,12 +117,10 @@ typedef enum {
   TAG_SPEEDADJUSTMENT,        //  bdj4
   TAG_STATUS,                 //  bdj4
   TAG_TAGS,                   //  bdj4
-  TAG_DB_FLAGS,               // internal: not saved to db or af
   TAG_TITLE,                  //
-  TAG_TRACK_ID,               // musicbrainz_releasetrackid
   TAG_TRACKNUMBER,            //
   TAG_TRACKTOTAL,             //
-  TAG_LAST_UPDATED,           //  internal
+  TAG_TRACK_ID,               // musicbrainz_releasetrackid
   TAG_URI,                    //
   TAG_VOLUMEADJUSTPERC,       //  bdj4
   TAG_WORK,                   //

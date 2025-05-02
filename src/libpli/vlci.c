@@ -12,16 +12,14 @@
 #include <inttypes.h>
 #include <memory.h>
 #include <stdarg.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <string.h>
 #include <math.h>
 
 #include <vlc/vlc.h>
 #include <vlc/libvlc_version.h>
 
+#include "audiosrc.h"
 #include "bdjstring.h"
-#include "fileop.h"
 #include "mdebug.h"
 #include "pli.h"
 #include "vlci.h"
@@ -142,6 +140,7 @@ vlcStop (vlcdata_t *vlcdata)
     rc = libvlc_media_player_stop_async (vlcdata->mp);
     if (rc == -1) {
       vlcdata->state = libvlc_media_player_get_state (vlcdata->mp);
+      // vlclog (vlcdata, "stop-async: state %d/%s\n", vlcdata->state, stateToStr (vlcdata->state));
       return 0;
     }
   }
@@ -201,7 +200,7 @@ vlcSeek (vlcdata_t *vlcdata, ssize_t pos)
 
   vlcdata->state = libvlc_media_player_get_state (vlcdata->mp);
 
-  vlclog (vlcdata, "seek\n");
+  vlclog (vlcdata, "seek: state %d/%s\n", vlcdata->state, stateToStr (vlcdata->state));
   if ((vlcdata->state == libvlc_Playing ||
       vlcdata->state == libvlc_Paused) &&
       pos >= 0) {
@@ -228,8 +227,8 @@ vlcRate (vlcdata_t *vlcdata, double drate)
   }
 
   vlcdata->state = libvlc_media_player_get_state (vlcdata->mp);
+  vlclog (vlcdata, "rate: state %d/%s\n", vlcdata->state, stateToStr (vlcdata->state));
 
-  vlclog (vlcdata, "rate\n");
   if (vlcdata->state == libvlc_Playing) {
     rate = (float) drate;
     libvlc_media_player_set_rate (vlcdata->mp, rate);
@@ -274,6 +273,7 @@ vlcState (vlcdata_t *vlcdata)
   }
 
   vlcdata->state = libvlc_media_player_get_state (vlcdata->mp);
+  vlclog (vlcdata, "get-state: state %d/%s\n", vlcdata->state, stateToStr (vlcdata->state));
 
   switch ((int) vlcdata->state) {
     case libvlc_NothingSpecial: { state = PLI_STATE_IDLE; break; }
@@ -295,32 +295,30 @@ vlcState (vlcdata_t *vlcdata)
 /* media commands */
 
 int
-vlcMedia (vlcdata_t *vlcdata, const char *fn)
+vlcMedia (vlcdata_t *vlcdata, const char *fn, int sourceType)
 {
   if (vlcdata == NULL || vlcdata->inst == NULL) {
     return -1;
   }
 
-  if (! fileopFileExists (fn)) {
-    return -1;
-  }
-
   vlclog (vlcdata, "media: %s\n", fn);
-{
-  struct stat statbuf;
-  int         rc;
-
-  rc = stat (fn, &statbuf);
-  vlclog (vlcdata, "stat: %d %ld\n", rc, statbuf.st_size);
-}
   vlcReleaseMedia (vlcdata);
 
+  if (sourceType == AUDIOSRC_TYPE_FILE) {
 #if LIBVLC_VERSION_INT < LIBVLC_VERSION(4,0,0,0)
-  vlcdata->media = libvlc_media_new_path (vlcdata->inst, fn);
+    vlcdata->media = libvlc_media_new_path (vlcdata->inst, fn);
 #endif
 #if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
-  vlcdata->media = libvlc_media_new_path (fn);
+    vlcdata->media = libvlc_media_new_path (fn);
 #endif
+  } else {
+#if LIBVLC_VERSION_INT < LIBVLC_VERSION(4,0,0,0)
+    vlcdata->media = libvlc_media_new_location (vlcdata->inst, fn);
+#endif
+#if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
+    vlcdata->media = libvlc_media_new_location (fn);
+#endif
+  }
   mdextalloc (vlcdata->media);
 
 #if _WIN32
@@ -344,6 +342,7 @@ vlcMedia (vlcdata_t *vlcdata, const char *fn)
   vlcSetAudioOutput (vlcdata);
 
   vlcdata->state = libvlc_media_player_get_state (vlcdata->mp);
+  vlclog (vlcdata, "media: state %d/%s\n", vlcdata->state, stateToStr (vlcdata->state));
 
   return 0;
 }
@@ -424,6 +423,7 @@ vlcClose (vlcdata_t *vlcdata)
   if (vlcdata != NULL) {
     if (vlcdata->logfh != NULL) {
       fclose (vlcdata->logfh);
+      vlcdata->logfh = NULL;
     }
     vlcReleaseMedia (vlcdata);
     if (vlcdata->mp != NULL) {

@@ -330,7 +330,6 @@ audiosrcGetType (const char *nm)
       if (asdylib->asiIsTypeMatch (asdylib->asdata, nm)) {
         type = asdylib->type;
         break;
-      } else {
       }
     }
   }

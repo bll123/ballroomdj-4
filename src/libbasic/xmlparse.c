@@ -31,6 +31,7 @@ typedef struct xmlparse {
 } xmlparse_t;
 
 static void xmlParseXMLErrorHandler (void *udata, xmlErrorPtr xmlerr);
+static void xmlParseRegisterNamespaces (xmlparse_t *xmlparse);
 
 xmlparse_t *
 xmlParseInitFile (const char *fname, int nsflag)
@@ -85,8 +86,6 @@ xmlParseInitData (const char *data, size_t datalen, int nsflag)
       len = pe - p;
       memset (p, ' ', len);
     }
-  } else {
-    logMsg (LOG_DBG, LOG_INFO, "use-namespace");
   }
 
   xmlparse->doc = xmlParseMemory (xmlparse->tdata, datalen);
@@ -102,6 +101,12 @@ xmlParseInitData (const char *data, size_t datalen, int nsflag)
     return xmlparse;
   }
   mdextalloc (xmlparse->xpathCtx);
+
+  if (nsflag == XMLPARSE_USENS) {
+    logMsg (LOG_DBG, LOG_INFO, "use-namespace");
+
+    xmlParseRegisterNamespaces (xmlparse);
+  }
 
   return xmlparse;
 }
@@ -260,6 +265,40 @@ xmlParseGetList (xmlparse_t *xmlparse, const char *xpath,
   // xmlMemoryDump ();
 
   return list;
+}
+
+/* internal routines */
+
+static void
+xmlParseRegisterNamespaces (xmlparse_t *xmlparse)
+{
+  char    *p;
+  char    *tp;
+  char    ns [40];
+  char    uri [1024];
+
+  /* xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" */
+  p = xmlparse->tdata;
+  p = strstr (p, "xmlns:");
+  while (p != NULL) {
+    p += 6;   // xmlns:
+    tp = strstr (p, "=");
+    if (tp != NULL) {
+      *tp = '\0';
+      stpecpy (ns, ns + sizeof (ns), p);
+      *tp = '=';
+      p = tp + 2;
+      tp = strstr (p, "\"");
+      if (tp != NULL) {
+        *tp = '\0';
+        stpecpy (uri, uri + sizeof (uri), p);
+        *tp = '"';
+        xmlXPathRegisterNs (xmlparse->xpathCtx, (xmlChar *) ns, (xmlChar *) uri);
+        p = tp + 1;
+      }
+    }
+    p = strstr (p, "xmlns:");
+  }
 }
 
 static void

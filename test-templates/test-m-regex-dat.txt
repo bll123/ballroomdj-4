@@ -14,7 +14,7 @@ count
 
 KEY
 ..0
-SOURCE
+FSOURCE
 ..chacha.mp3
 DURATION
 ..30620
@@ -31,7 +31,7 @@ DEST
 
 KEY
 ..1
-SOURCE
+FSOURCE
 ..foxtrot.mp3
 DURATION
 ..30460
@@ -48,7 +48,7 @@ DEST
 
 KEY
 ..2
-SOURCE
+FSOURCE
 ..jive.mp3
 DURATION
 ..30010
@@ -65,7 +65,7 @@ DEST
 
 KEY
 ..3
-SOURCE
+FSOURCE
 ..quickstep.mp3
 DURATION
 ..29860
@@ -82,7 +82,7 @@ DEST
 
 KEY
 ..4
-SOURCE
+FSOURCE
 ..rumba.mp3
 DURATION
 ..30950
@@ -99,7 +99,7 @@ DEST
 
 KEY
 ..5
-SOURCE
+FSOURCE
 ..salsa.mp3
 DURATION
 ..31310
@@ -116,7 +116,7 @@ DEST
 
 KEY
 ..6
-SOURCE
+FSOURCE
 ..samba.mp3
 DURATION
 ..30460
@@ -133,7 +133,7 @@ DEST
 
 KEY
 ..7
-SOURCE
+FSOURCE
 ..tango.mp3
 DURATION
 ..30420
@@ -150,7 +150,7 @@ DEST
 
 KEY
 ..8
-SOURCE
+FSOURCE
 ..waltz.mp3
 DURATION
 ..30630
@@ -165,7 +165,7 @@ DEST
 
 KEY
 ..9
-SOURCE
+FSOURCE
 ..waltz.flac
 DURATION
 ..30630
@@ -180,7 +180,7 @@ DEST
 
 KEY
 ..10
-SOURCE
+FSOURCE
 ..waltz.m4a
 DURATION
 ..30660
@@ -195,7 +195,7 @@ DEST
 
 KEY
 ..11
-SOURCE
+FSOURCE
 ..waltz.opus
 DURATION
 ..30630
@@ -210,7 +210,7 @@ DEST
 
 KEY
 ..12
-SOURCE
+FSOURCE
 ..waltz.ogg
 DURATION
 ..30630
@@ -227,7 +227,7 @@ DEST
 
 KEY
 ..13
-SOURCE
+FSOURCE
 ..samba.mp3
 DURATION
 ..30460
@@ -244,7 +244,7 @@ DEST
 
 KEY
 ..14
-SOURCE
+FSOURCE
 ..waltz.mp3
 DURATION
 ..30630
@@ -261,7 +261,7 @@ DEST
 
 KEY
 ..15
-SOURCE
+FSOURCE
 ..waltz.mp3
 DURATION
 ..30630

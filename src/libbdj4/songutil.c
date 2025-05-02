@@ -20,6 +20,7 @@
 #include "mdebug.h"
 #include "nlist.h"
 #include "roman.h"
+#include "song.h"
 #include "songutil.h"
 #include "tagdef.h"
 
