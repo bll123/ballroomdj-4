@@ -108,6 +108,7 @@ pliiInit (const char *plinm, const char *playerargs)
       ++optcount;
       p = strtok_r (NULL, " ", &tokstr);
     }
+    mdfree (topt);
   }
   vlcOptions = mdrealloc (vlcOptions, sizeof (char *) * (optcount + 1));
   vlcOptions [optcount] = NULL;

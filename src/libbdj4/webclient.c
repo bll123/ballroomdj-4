@@ -29,12 +29,6 @@
 #include "webclient.h"
 
 enum {
-  INIT_NONE,
-  INIT_CLIENT,
-  INIT_BYPASS,
-};
-
-enum {
   SUPPORT_BUFF_SZ = (10*1024*1024),
   SMALL_BUFF_SZ = (1*1024*1024),
 };
@@ -64,7 +58,7 @@ static z_stream * webclientGzipInit (char *out, int outsz);
 static void     webclientGzip (z_stream *zs, const char* in, int insz);
 static size_t   webclientGzipEnd (z_stream *zs);
 
-static int initialized = INIT_NONE;
+static int initialized = 0;
 
 webclient_t *
 webclientAlloc (void *userdata, webclientcb_t callback)
@@ -83,10 +77,10 @@ webclientAlloc (void *userdata, webclientcb_t callback)
   webclient->respSize = 0;
   webclient->respTime = 0;
 
-  if (! initialized) {
+  if (initialized == 0) {
     curl_global_init (CURL_GLOBAL_ALL);
-    initialized = INIT_CLIENT;
   }
+  ++initialized;
   webclientInit (webclient);
   return webclient;
 }
@@ -318,19 +312,23 @@ webclientUploadFile (webclient_t *webclient, const char *uri,
 void
 webclientClose (webclient_t *webclient)
 {
-  if (webclient != NULL) {
-    dataFree (webclient->resp);
-    webclient->resp = NULL;
-    if (webclient->curl != NULL) {
-      curl_easy_cleanup (webclient->curl);
-    }
-    webclient->curl = NULL;
-    if (initialized == INIT_CLIENT) {
-      curl_global_cleanup ();
-      initialized = INIT_NONE;
-    }
-    mdfree (webclient);
+  if (webclient == NULL) {
+    return;
   }
+
+  dataFree (webclient->resp);
+  webclient->resp = NULL;
+  if (webclient->curl != NULL) {
+    mdextfree (webclient->curl);
+    curl_easy_cleanup (webclient->curl);
+  }
+  webclient->curl = NULL;
+  --initialized;
+  if (initialized <= 0) {
+    curl_global_cleanup ();
+    initialized = 0;
+  }
+  mdfree (webclient);
 }
 
 void
@@ -375,15 +373,9 @@ webclientGetLocalIP (char *ip, size_t sz)
   webclient_t   *webclient;
   char          *tip;
   char          tbuff [MAXPATHLEN];
-  int           initstate;
 
   *ip = '\0';
 
-  initstate = initialized;
-  if (initialized == INIT_CLIENT) {
-    /* so that the close does not de-init the global curl state */
-    initialized = INIT_BYPASS;
-  }
   webclient = webclientAlloc (NULL, NULL);
   snprintf (tbuff, sizeof (tbuff), "%s/%s",
       bdjoptGetStr (OPT_HOST_VERSION), bdjoptGetStr (OPT_URI_VERSION));
@@ -395,7 +387,6 @@ webclientGetLocalIP (char *ip, size_t sz)
   stpecpy (ip, ip + sz, tip);
 
   webclientClose (webclient);
-  initialized = initstate;
 }
 
 void
@@ -460,6 +451,7 @@ static void
 webclientInit (webclient_t *webclient)
 {
   webclient->curl = curl_easy_init ();
+  mdextalloc (webclient->curl);
   if (logCheck (LOG_DBG, LOG_WEBCLIENT)) {
     curl_easy_setopt (webclient->curl, CURLOPT_DEBUGFUNCTION, webclientDebugCallback);
     curl_easy_setopt (webclient->curl, CURLOPT_VERBOSE, 1);

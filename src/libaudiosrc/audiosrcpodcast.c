@@ -51,15 +51,19 @@ typedef struct asiterdata {
   slist_t       *plNames;
 } asiterdata_t;
 
-typedef struct asdata {
-  webclient_t   **webclient;
-  ilist_t       *client;
-  const char    *webresponse;
-  size_t        webresplen;
-  int           clientcount;
-  int           state;
+typedef struct {
+  webclient_t   *webclient;
   nlist_t       *rssdata;
   time_t        rsslastbldtm;
+} asclientdata_t;
+
+typedef struct asdata {
+  asclientdata_t  *clientdata;
+  ilist_t         *client;
+  const char      *webresponse;
+  size_t          webresplen;
+  int             clientcount;
+  int             state;
 } asdata_t;
 
 static void aspodcastWebResponseCallback (void *userdata, const char *respstr, size_t len, time_t tm);
@@ -67,7 +71,7 @@ static bool aspodcastGetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata, 
 static bool aspodcastGetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *uri);
 static bool aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata, const char *uri, const char *nm);
 static void aspodcastRSS (asdata_t *asdata, asiterdata_t *asidata, const char *uri);
-static int aspodcastGetClientKeyByURI (asdata_t *asdata, const char *nm);
+static int aspodcastGetClientKeyByURI (asdata_t *asdata, const char *uri);
 static const char * aspodcastStripPrefix (asdata_t *asdata, const char *songuri, int clientidx);
 static void audiosrcClientFree (asdata_t *asdata);
 
@@ -92,12 +96,10 @@ asiInit (const char *delpfx, const char *origext)
 
   asdata = mdmalloc (sizeof (asdata_t));
 
-  asdata->webclient = NULL;
+  asdata->clientdata = NULL;
   asdata->client = ilistAlloc ("client", LIST_ORDERED);
   asdata->clientcount = 0;
   asdata->state = BDJ4_STATE_OFF;
-  asdata->rssdata = NULL;
-  asdata->rsslastbldtm = 0;
   return asdata;
 }
 
@@ -109,7 +111,6 @@ asiFree (asdata_t *asdata)
   }
 
   audiosrcClientFree (asdata);
-  nlistFree (asdata->rssdata);
   mdfree (asdata);
 }
 
@@ -139,7 +140,7 @@ asiCheckConnection (asdata_t *asdata, int askey, const char *uri)
   int     webrc;
   int     clientkey = -1;
 
-  if (uri == NULL) {
+  if (uri == NULL || ! *uri) {
     return false;
   }
 
@@ -148,7 +149,7 @@ asiCheckConnection (asdata_t *asdata, int askey, const char *uri)
     return false;
   }
 
-  webrc = webclientHead (asdata->webclient [clientkey], uri);
+  webrc = webclientHead (asdata->clientdata [clientkey].webclient, uri);
   if (webrc != WEB_OK) {
     return false;
   }
@@ -172,7 +173,7 @@ asiExists (asdata_t *asdata, const char *nm)
 
   stpecpy (query, query + sizeof (query), nm);
 
-  webrc = webclientHead (asdata->webclient [clientkey], query);
+  webrc = webclientHead (asdata->clientdata [clientkey].webclient, query);
   if (webrc != WEB_OK) {
     return exists;
   }
@@ -334,17 +335,27 @@ aspodcastWebResponseCallback (void *userdata, const char *respstr, size_t len, t
 /* internal routines */
 
 static bool
-aspodcastGetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata, const char *uri)
+aspodcastGetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata,
+    const char *uri)
 {
+  int     clientkey;
+
+  clientkey = aspodcastGetClientKeyByURI (asdata, uri);
+  if (clientkey < 0) {
+    return false;
+  }
+
   aspodcastRSS (asdata, asidata, uri);
-  if (asdata->rssdata == NULL) {
+
+  if (asdata->clientdata [clientkey].rssdata == NULL) {
     return false;
   }
 
   slistFree (asidata->plNames);
   asidata->plNames = slistAlloc ("asplnames", LIST_ORDERED, NULL);
   slistSetSize (asidata->plNames, 1);
-  slistSetNum (asidata->plNames, nlistGetStr (asdata->rssdata, RSS_TITLE), 1);
+  slistSetNum (asidata->plNames,
+      nlistGetStr (asdata->clientdata [clientkey].rssdata, RSS_TITLE), 1);
 
   return true;
 }
@@ -355,17 +366,24 @@ aspodcastGetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *uri)
   ilist_t         *rssitems;
   ilistidx_t      iteridx;
   ilistidx_t      key;
+  int             clientkey;
+
+  clientkey = aspodcastGetClientKeyByURI (asdata, uri);
+  if (clientkey < 0) {
+    return false;
+  }
 
   aspodcastRSS (asdata, asidata, uri);
-  if (asdata->rssdata == NULL) {
+  if (asdata->clientdata [clientkey].rssdata == NULL) {
     return false;
   }
 
   slistFree (asidata->songlist);
   asidata->songlist = slistAlloc ("asplsongs", LIST_UNORDERED, NULL);
-  slistSetSize (asidata->songlist, nlistGetNum (asdata->rssdata, RSS_COUNT));
+  slistSetSize (asidata->songlist,
+      nlistGetNum (asdata->clientdata [clientkey].rssdata, RSS_COUNT));
 
-  rssitems = nlistGetList (asdata->rssdata, RSS_ITEMS);
+  rssitems = nlistGetList (asdata->clientdata [clientkey].rssdata, RSS_ITEMS);
   ilistStartIterator (rssitems, &iteridx);
   while ((key = ilistIterateKey (rssitems, &iteridx)) >= 0) {
     slistSetNum (asidata->songlist, ilistGetStr (rssitems, key, RSS_ITEM_URI), 1);
@@ -384,15 +402,20 @@ aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata,
   ilistidx_t  idx = -1;
   const char  *val;
   char        tbuff [40];
+  int             clientkey;
 
-
-  aspodcastRSS (asdata, asidata, uri);
-  if (asdata->rssdata == NULL) {
+  clientkey = aspodcastGetClientKeyByURI (asdata, uri);
+  if (clientkey < 0) {
     return false;
   }
 
-  rssitems = nlistGetList (asdata->rssdata, RSS_ITEMS);
-  itemidx = nlistGetList (asdata->rssdata, RSS_IDX);
+  aspodcastRSS (asdata, asidata, uri);
+  if (asdata->clientdata [clientkey].rssdata == NULL) {
+    return false;
+  }
+
+  rssitems = nlistGetList (asdata->clientdata [clientkey].rssdata, RSS_ITEMS);
+  itemidx = nlistGetList (asdata->clientdata [clientkey].rssdata, RSS_IDX);
   idx = slistGetNum (itemidx, nm);
 
   if (idx < 0) {
@@ -425,21 +448,32 @@ static void
 aspodcastRSS (asdata_t *asdata, asiterdata_t *asidata, const char *uri)
 {
   time_t    tm = 0;
+  int             clientkey;
 
-  if (asdata->rssdata != NULL) {
+  clientkey = aspodcastGetClientKeyByURI (asdata, uri);
+  if (clientkey < 0) {
+    return;
+  }
+
+  if (asdata->clientdata [clientkey].rssdata != NULL) {
     tm = rssGetUpdateTime (uri);
   }
-  if (asdata->rssdata == NULL || tm > asdata->rsslastbldtm) {
-    asdata->rssdata = rssImport (uri);
-    asdata->rsslastbldtm = nlistGetNum (asdata->rssdata, RSS_BUILD_DATE);
+  if (asdata->clientdata [clientkey].rssdata == NULL ||
+      tm > asdata->clientdata [clientkey].rsslastbldtm) {
+    asdata->clientdata [clientkey].rssdata = rssImport (uri);
+    asdata->clientdata [clientkey].rsslastbldtm =
+        nlistGetNum (asdata->clientdata [clientkey].rssdata, RSS_BUILD_DATE);
   }
 }
 
 static int
-aspodcastGetClientKeyByURI (asdata_t *asdata, const char *nm)
+aspodcastGetClientKeyByURI (asdata_t *asdata, const char *uri)
 {
   int     clientkey = -1;
-  char    temp [MAXPATHLEN];
+
+  if (uri == NULL || ! *uri) {
+    return clientkey;
+  }
 
   for (int i = 0; i < asdata->clientcount; ++i) {
     const char  *tstr;
@@ -447,29 +481,37 @@ aspodcastGetClientKeyByURI (asdata_t *asdata, const char *nm)
 
     tstr = ilistGetStr (asdata->client, i, AS_CLIENT_URI);
     tlen = ilistGetNum (asdata->client, i, AS_CLIENT_URI_LEN);
-    if (strncmp (nm, tstr, tlen) == 0) {
+    if (strncmp (uri, tstr, tlen) == 0) {
       clientkey = i;
       break;
     }
   }
 
   if (clientkey < 0) {
+    char    temp [MAXPATHLEN];
     char    *p;
 
     /* create a new client connection */
     clientkey = asdata->clientcount;
     asdata->clientcount += 1;
-    asdata->webclient = mdmalloc (sizeof (webclient_t *) * asdata->clientcount);
-    asdata->webclient [clientkey] = webclientAlloc (asdata, aspodcastWebResponseCallback);
-    webclientSetTimeout (asdata->webclient [clientkey], 2);
-    stpecpy (temp, temp + sizeof (temp), nm);
-    p = strstr (temp + AS_HTTPS_PFX_LEN, "/");
+    asdata->clientdata = mdrealloc (asdata->clientdata,
+        sizeof (asclientdata_t *) * asdata->clientcount);
+fprintf (stderr, "as:pod: alloc\n");
+    asdata->clientdata [clientkey].webclient =
+        webclientAlloc (asdata, aspodcastWebResponseCallback);
+    asdata->clientdata [clientkey].rssdata = NULL;
+    asdata->clientdata [clientkey].rsslastbldtm = 0;
+    webclientSetTimeout (asdata->clientdata [clientkey].webclient, 2);
+    stpecpy (temp, temp + sizeof (temp), uri);
+    p = temp;
+    p += AS_HTTPS_PFX_LEN;
+    p = strstr (temp, "/");
     if (p != NULL) {
       *p = '\0';
     }
     ilistSetStr (asdata->client, clientkey, AS_CLIENT_URI, temp);
     ilistSetNum (asdata->client, clientkey, AS_CLIENT_URI_LEN, strlen (temp));
-//    webclientSetUserPass (asdata->webclient [count],
+//    webclientSetUserPass (asdata->clientdata [count].webclient,
 //        asconfGetStr (asdata->asconf, askey, ASCONF_USER),
 //        asconfGetStr (asdata->asconf, askey, ASCONF_PASS));
   }
@@ -494,14 +536,15 @@ aspodcastStripPrefix (asdata_t *asdata, const char *songuri, int clientkey)
 static void
 audiosrcClientFree (asdata_t *asdata)
 {
-  if (asdata->webclient != NULL) {
+  if (asdata->clientdata != NULL) {
     for (int i = 0; i < asdata->clientcount; ++i) {
-      webclientClose (asdata->webclient [i]);
-      asdata->webclient [i] = NULL;
+fprintf (stderr, "as:pod: close\n");
+      webclientClose (asdata->clientdata [i].webclient);
+      nlistFree (asdata->clientdata [i].rssdata);
     }
-    mdfree (asdata->webclient);
+    mdfree (asdata->clientdata);
   }
-  asdata->webclient = NULL;
+  asdata->clientdata = NULL;
   ilistFree (asdata->client);
   asdata->client = NULL;
   asdata->clientcount = 0;

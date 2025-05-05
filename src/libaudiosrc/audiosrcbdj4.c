@@ -96,6 +96,7 @@ static int asbdj4GetClientKeyByURI (asdata_t *asdata, const char *nm);
 static int asbdj4GetClientKey (asdata_t *asdata, int askey);
 static const char * asbdj4StripPrefix (asdata_t *asdata, const char *songuri, int clientidx);
 static void audiosrcClientFree (asdata_t *asdata);
+static void asbdj4ClientCheck (asdata_t *asdata, int clkey);
 
 void
 asiDesc (const char **ret, int max)
@@ -151,10 +152,11 @@ asiPostInit (asdata_t *asdata, const char *uri)
     }
   }
 
+  asdata->clientcount = count;
   audiosrcClientFree (asdata);
 
-  asdata->clientcount = count;
-  asdata->webclient = mdmalloc (sizeof (webclient_t *) * count);
+  asdata->webclient = mdrealloc (asdata->webclient,
+      sizeof (webclient_t *) * asdata->clientcount);
   asdata->client = ilistAlloc ("client", LIST_ORDERED);
 
   count = 0;
@@ -165,9 +167,6 @@ asiPostInit (asdata_t *asdata, const char *uri)
 
       type = asconfGetNum (asdata->asconf, askey, ASCONF_TYPE);
       if (type == AUDIOSRC_TYPE_BDJ4) {
-        asdata->webclient [count] = webclientAlloc (asdata, asbdj4WebResponseCallback);
-        webclientIgnoreCertErr (asdata->webclient [count]);
-        webclientSetTimeout (asdata->webclient [count], 1);
         snprintf (temp, sizeof (temp),
             "https://%s:%" PRIu16 "/",
             asconfGetStr (asdata->asconf, askey, ASCONF_URI),
@@ -181,10 +180,6 @@ asiPostInit (asdata_t *asdata, const char *uri)
         ilistSetStr (asdata->client, count, AS_CLIENT_URI, temp);
         ilistSetNum (asdata->client, count, AS_CLIENT_URI_LEN, strlen (temp));
         ilistSetNum (asdata->client, count, AS_CLIENT_ASKEY, askey);
-        webclientSetUserPass (asdata->webclient [count],
-            asconfGetStr (asdata->asconf, askey, ASCONF_USER),
-            asconfGetStr (asdata->asconf, askey, ASCONF_PASS));
-        ++count;
       }
     }
   }
@@ -232,7 +227,6 @@ asiCheckConnection (asdata_t *asdata, int askey, const char *uri)
   /* reload the audiosrc.txt datafile */
   asconfFree (asdata->asconf);
   asdata->asconf = asconfAlloc ();
-  asiPostInit (asdata, NULL);
 
   asdata->action = ASBDJ4_ACT_ECHO;
   asdata->state = BDJ4_STATE_WAIT;
@@ -709,6 +703,7 @@ asbdj4GetClientKeyByURI (asdata_t *asdata, const char *nm)
     }
   }
 
+  asbdj4ClientCheck (asdata, clientkey);
   return clientkey;
 }
 
@@ -727,6 +722,7 @@ asbdj4GetClientKey (asdata_t *asdata, int askey)
     }
   }
 
+  asbdj4ClientCheck (asdata, clientkey);
   return clientkey;
 }
 
@@ -749,6 +745,7 @@ audiosrcClientFree (asdata_t *asdata)
 {
   if (asdata->webclient != NULL) {
     for (int i = 0; i < asdata->clientcount; ++i) {
+fprintf (stderr, "as:bdj4: close\n");
       webclientClose (asdata->webclient [i]);
       asdata->webclient [i] = NULL;
     }
@@ -758,4 +755,23 @@ audiosrcClientFree (asdata_t *asdata)
   ilistFree (asdata->client);
   asdata->client = NULL;
   asdata->clientcount = 0;
+}
+
+static void
+asbdj4ClientCheck (asdata_t *asdata, int clkey)
+{
+  int     askey;
+
+  if (asdata->webclient [clkey] != NULL) {
+    return;
+  }
+
+  askey = ilistGetNum (asdata->client, clkey, AS_CLIENT_ASKEY);
+fprintf (stderr, "as:bdj4: alloc\n");
+  asdata->webclient [clkey] = webclientAlloc (asdata, asbdj4WebResponseCallback);
+  webclientIgnoreCertErr (asdata->webclient [clkey]);
+  webclientSetTimeout (asdata->webclient [clkey], 1);
+  webclientSetUserPass (asdata->webclient [clkey],
+      asconfGetStr (asdata->asconf, askey, ASCONF_USER),
+      asconfGetStr (asdata->asconf, askey, ASCONF_PASS));
 }

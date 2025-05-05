@@ -92,6 +92,7 @@ typedef struct uiimppl {
   bool              isactive;
   bool              in_cb;
   bool              changed;
+  bool              plselectbuilt;
 } uiimppl_t;
 
 /* import playlist */
@@ -110,6 +111,7 @@ static void uiimpplProcessValidations (uiimppl_t *uiimppl, bool forceflag);
 static int32_t uiimpplDragDropCallback (void *udata, const char *uri);
 static int uiimpplProcessURI (uiimppl_t *uiimppl, const char *uri);
 static bool uiimpplIsPlaylistFileType (pathinfo_t *pi);
+static void uiimpplBuildPlaylistSelect (uiimppl_t *uiimppl, int askey);
 
 uiimppl_t *
 uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
@@ -139,6 +141,7 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
   uiimppl->isactive = false;
   uiimppl->in_cb = false;
   uiimppl->changed = false;
+  uiimppl->plselectbuilt = false;
   uiimppl->aslist = NULL;
   uiimppl->askeys = NULL;
   uiimppl->astypes = NULL;
@@ -647,8 +650,6 @@ uiimpplResponseHandler (void *udata, int32_t responseid)
           uiimppl->wcont [UIIMPPL_W_STATUS_MSG],
           /* CONTEXT: please wait... status message */
           _("Please wait\xe2\x80\xa6"));
-      /* this message is not displaying */
-      uiUIProcessWaitEvents ();
       /* do not close or hide the dialog; it will stay active and */
       /* the status message will be updated */
       if (uiimppl->responsecb != NULL) {
@@ -704,9 +705,6 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
 
   entry = uiimppl->wcont [UIIMPPL_W_URI];
 
-//  /* any change clears the status message */
-//  uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
-
   if (uiimppl->haveerrors != UIIMPPL_ERR_NONE) {
     haderrors = true;
   }
@@ -718,12 +716,17 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
   stpecpy (tbuff, tbuff + sizeof (tbuff), str);
 
   if (strcmp (uiimppl->olduri, str) != 0) {
+    uiimppl->plselectbuilt = false;
+
     /* re-sets the type to match the URI, sets the URI */
     /* may also reset the import type */
     if (uiimpplProcessURI (uiimppl, tbuff) == UICB_STOP) {
       uiimppl->haveerrors |= UIIMPPL_ERR_URI;
       uiimppl->in_cb = false;
       return UIENTRY_ERROR;
+    }
+    if (uiimppl->plselectbuilt == false) {
+      uiimpplBuildPlaylistSelect (uiimppl, uiimppl->askey);
     }
   }
 
@@ -747,6 +750,7 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
       pathInfoFree (pi);
       uiimppl->haveerrors |= UIIMPPL_ERR_URI;
       uiimppl->in_cb = false;
+      pathInfoFree (pi);
       return UIENTRY_ERROR;
     }
   }
@@ -762,6 +766,7 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
       uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], tmsg);
       uiimppl->haveerrors |= UIIMPPL_ERR_URI;
       uiimppl->in_cb = false;
+      pathInfoFree (pi);
       return UIENTRY_ERROR;
     }
   }
@@ -773,6 +778,7 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
           _("Invalid URL"));
       uiimppl->haveerrors |= UIIMPPL_ERR_URI;
       uiimppl->in_cb = false;
+      pathInfoFree (pi);
       return UIENTRY_ERROR;
     }
   }
@@ -787,6 +793,7 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
           _("Invalid URL"));
       uiimppl->haveerrors |= UIIMPPL_ERR_URI;
       uiimppl->in_cb = false;
+      pathInfoFree (pi);
       return UIENTRY_ERROR;
     }
   }
@@ -796,6 +803,7 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
     snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
     uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_NEWNAME], tbuff);
   }
+
   pathInfoFree (pi);
 
   stpecpy (uiimppl->olduri, uiimppl->olduri + sizeof (uiimppl->olduri), str);
@@ -938,38 +946,7 @@ uiimpplImportTypeChg (void *udata)
   uiimppl->imptype = nlistGetNum (uiimppl->astypes, uiimppl->askey);
 
   if (uiimppl->imptype != AUDIOSRC_TYPE_FILE) {
-    asiter_t    *asiter;
-    const char  *plnm;
-    int         idx;
-
-    idx = 0;
-    ilistFree (uiimppl->plnames);
-    uiLabelSetText (
-        uiimppl->wcont [UIIMPPL_W_STATUS_MSG],
-        /* CONTEXT: please wait... status message */
-        _("Please wait\xe2\x80\xa6"));
-    uiUIProcessWaitEvents ();
-
-    asiter = audiosrcStartIterator (uiimppl->imptype, AS_ITER_PL_NAMES,
-        uiEntryGetValue (uiimppl->wcont [UIIMPPL_W_URI]), NULL, askey);
-    uiimppl->plnames = ilistAlloc ("plnames", LIST_ORDERED);
-    ilistSetSize (uiimppl->plnames, audiosrcIterCount (asiter));
-    while ((plnm = audiosrcIterate (asiter)) != NULL) {
-      ilistSetNum (uiimppl->plnames, idx, DD_LIST_KEY_NUM, idx);
-      ilistSetStr (uiimppl->plnames, idx, DD_LIST_DISP, plnm);
-      ++idx;
-    }
-    audiosrcCleanIterator (asiter);
-    uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
-    uiddSetList (uiimppl->plselect, uiimppl->plnames);
-    uiddSetSelection (uiimppl->plselect, 0);
-
-    /* podcasts only have a single playlist, set the new-name now */
-    if (uiimppl->imptype == AUDIOSRC_TYPE_PODCAST &&
-        ilistGetCount (uiimppl->plnames) == 1) {
-      uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_NEWNAME],
-          ilistGetStr (uiimppl->plnames, 0, DD_LIST_DISP));
-    }
+    uiimpplBuildPlaylistSelect (uiimppl, uiimppl->askey);
   }
 
   if (uiimppl->imptype == AUDIOSRC_TYPE_FILE) {
@@ -1041,10 +1018,11 @@ uiimpplProcessURI (uiimppl_t *uiimppl, const char *uri)
   pi = pathInfo (uri);
 
   type = AUDIOSRC_TYPE_NONE;
-  if (strncmp (uri, AS_FILE_PFX, AS_FILE_PFX_LEN) == 0 &&
-      uiimpplIsPlaylistFileType (pi)) {
+  if (uiimpplIsPlaylistFileType (pi)) {
     type = AUDIOSRC_TYPE_FILE;
-    uri += AS_FILE_PFX_LEN;
+    if (strncmp (uri, AS_FILE_PFX, AS_FILE_PFX_LEN) == 0) {
+      uri += AS_FILE_PFX_LEN;
+    }
   }
   if (strncmp (uri, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) == 0) {
     type = AUDIOSRC_TYPE_BDJ4;
@@ -1082,4 +1060,42 @@ uiimpplIsPlaylistFileType (pathinfo_t *pi)
   }
 
   return rc;
+}
+
+static void
+uiimpplBuildPlaylistSelect (uiimppl_t *uiimppl, int askey)
+{
+  asiter_t    *asiter;
+  const char  *plnm;
+  int         idx;
+
+  idx = 0;
+  ilistFree (uiimppl->plnames);
+  uiLabelSetText (
+      uiimppl->wcont [UIIMPPL_W_STATUS_MSG],
+      /* CONTEXT: please wait... status message */
+      _("Please wait\xe2\x80\xa6"));
+  uiUIProcessWaitEvents ();
+
+  asiter = audiosrcStartIterator (uiimppl->imptype, AS_ITER_PL_NAMES,
+      uiEntryGetValue (uiimppl->wcont [UIIMPPL_W_URI]), NULL, askey);
+  uiimppl->plnames = ilistAlloc ("plnames", LIST_ORDERED);
+  ilistSetSize (uiimppl->plnames, audiosrcIterCount (asiter));
+  while ((plnm = audiosrcIterate (asiter)) != NULL) {
+    ilistSetNum (uiimppl->plnames, idx, DD_LIST_KEY_NUM, idx);
+    ilistSetStr (uiimppl->plnames, idx, DD_LIST_DISP, plnm);
+    ++idx;
+  }
+  audiosrcCleanIterator (asiter);
+  uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
+  uiddSetList (uiimppl->plselect, uiimppl->plnames);
+  uiddSetSelection (uiimppl->plselect, 0);
+
+  /* podcasts only have a single playlist, set the new-name now */
+  if (uiimppl->imptype == AUDIOSRC_TYPE_PODCAST &&
+      ilistGetCount (uiimppl->plnames) == 1) {
+    uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_NEWNAME],
+        ilistGetStr (uiimppl->plnames, 0, DD_LIST_DISP));
+  }
+  uiimppl->plselectbuilt = true;
 }

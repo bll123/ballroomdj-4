@@ -68,11 +68,13 @@ rssGetUpdateTime (const char *uri)
   rssdata_t     rssdata;
   int           webrc;
 
+fprintf (stderr, "rss: alloc\n");
   webclient = webclientAlloc (&rssdata, rssWebResponseCallback);
   webrc = webclientHead (webclient, uri);
   if (webrc != WEB_OK) {
     return 0;
   }
+fprintf (stderr, "rss: close\n");
   webclientClose (webclient);
 
   return rssdata.webresptime;

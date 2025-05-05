@@ -130,16 +130,19 @@ jspfImport (musicdb_t *musicdb, const char *fname)
   if (jerr != json_tokener_success) {
     logMsg (LOG_DBG, LOG_AUDIO_ID, "parse: failed: %d / %s\n", jerr,
         json_tokener_error_desc (jerr));
+    dataFree (data);
     return NULL;
   }
 
   jpl = json_object_object_get (jroot, "playlist");
   if (jpl == NULL) {
+    dataFree (data);
     return NULL;
   }
 
   jtmp = json_object_object_get (jpl, "title");
   if (jtmp == NULL) {
+    dataFree (data);
     return NULL;
   }
   /* the playlist name is not used */
@@ -152,6 +155,7 @@ jspfImport (musicdb_t *musicdb, const char *fname)
 
   jtrklist = json_object_object_get (jpl, "track");
   if (jtrklist == NULL) {
+    dataFree (data);
     return NULL;
   }
 
@@ -192,6 +196,7 @@ jspfImport (musicdb_t *musicdb, const char *fname)
 
   json_tokener_free (jtok);
   json_object_put (jroot);
+  dataFree (data);
 
   return list;
 }

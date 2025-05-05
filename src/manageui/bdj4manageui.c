@@ -3497,6 +3497,7 @@ managePlaylistImportRespHandler (void *udata)
       asiter_t    *tagiter;
       const char  *tag;
 
+      uiUIProcessWaitEvents ();
       tagdata = slistAlloc ("asimppl-bdj4", LIST_UNORDERED, NULL);
 
       tagiter = audiosrcStartIterator (imptype, AS_ITER_TAGS, uri, songnm, askey);
@@ -3522,6 +3523,7 @@ managePlaylistImportRespHandler (void *udata)
       manageProcessDatabaseUpdate (manage);
     }
 
+    uiUIProcessWaitEvents ();
     managePlaylistImportCreateSonglist (manage, songlist);
     nlistFree (songlist);
   }
