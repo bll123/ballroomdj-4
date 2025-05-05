@@ -754,9 +754,8 @@ playerProcessing (void *udata)
         connSendMessage (playerData->conn, ROUTE_MAIN,
             MSG_PLAYBACK_BEGIN, NULL);
       }
-    } else {
-      /* ### FIX: need to process this; stopped/ended/error */
-      ;
+    } else if (plistate == PLI_STATE_STOPPED) {
+      playerSetPlayerState (playerData, PL_STATE_STOPPED);
     }
   }
 

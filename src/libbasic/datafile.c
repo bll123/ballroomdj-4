@@ -590,6 +590,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
   valuetype_t   vt = 0;
   size_t        inc = 2;
   nlistidx_t    nikey = 0;
+  nlistidx_t    isz = 0;
   nlistidx_t    ikey = 0;
   listnum_t     lval = 0;
   double        dval = 0.0;
@@ -689,7 +690,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
     }
     if (strcmp (tkeystr, "count") == 0) {
       if (dftype == DFTYPE_INDIRECT) {
-        ilistSetSize (datalist, atol (tvalstr));
+        ilistSetSize (datalist, atol (tvalstr) + 2);
       }
       continue;
     }
@@ -701,13 +702,22 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
       /* rather than using the indirect key in the file, renumber the data */
       /* the key value acts as a marker rather than an actual value */
       if (key >= 0) {
+        nlistidx_t    tsz;
+
         ilistSetDatalist (datalist, nikey, itemList);
+        tsz = nlistGetCount (itemList);
+        if (tsz > isz) {
+          isz = tsz;
+        }
         key = -1L;
         nikey++;
       }
       key = atol (tvalstr);
       snprintf (temp, sizeof (temp), "%s-item-%" PRId32, name, nikey);
       itemList = nlistAlloc (temp, LIST_ORDERED, NULL);
+      if (isz > 0) {
+        nlistSetSize (itemList, isz);
+      }
       continue;
     }
 
@@ -794,8 +804,8 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
     }
   }
 
-  if (dftype == DFTYPE_INDIRECT && key >= 0) {
-    ilistSetDatalist (datalist, key, itemList);
+  if (dftype == DFTYPE_INDIRECT && nikey >= 0) {
+    ilistSetDatalist (datalist, nikey, itemList);
   }
 
   parseFree (pi);

@@ -36,6 +36,7 @@ static datafilekey_t podcastdfkeys [PODCAST_KEY_MAX] = {
   { "LASTBLDDATE",    PODCAST_LAST_BLD_DATE,  VALUE_STR, NULL, DF_NORM },
   { "PASSWORD",       PODCAST_PASSWORD,       VALUE_STR, NULL, DF_NORM },
   { "RETAIN",         PODCAST_RETAIN,         VALUE_NUM, NULL, DF_NORM },
+  { "TITLE",          PODCAST_TITLE,          VALUE_STR, NULL, DF_NORM },
   { "URI",            PODCAST_URI,            VALUE_STR, NULL, DF_NORM },
   { "USER",           PODCAST_USER,           VALUE_STR, NULL, DF_NORM },
 };

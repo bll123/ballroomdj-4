@@ -131,12 +131,12 @@ START_TEST(parse_with_comments)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- parse_with_comments");
   mdebugSubTag ("parse_with_comments");
-  tstr = mdstrdup ("# comment\n# version 4\nversion\n..5\nA\n..a\n# comment\nB\n..b\nC\n..c\nD\n# comment\n..d\nE\n..e\nF\n..f\nG\n..1200\n");
+  tstr = mdstrdup ("# comment\n# version 5\nversion\n..5\nA\n..a\n# comment\nB\n..b\nC\n..c\nD\n# comment\n..d\nE\n..e\nF\n..f\nG\n..1200\n");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
   count = parseKeyValue (pi, tstr, &distvers);
   ck_assert_int_eq (count, 16);
-  ck_assert_int_eq (distvers, 4);
+  ck_assert_int_eq (distvers, 5);
   ck_assert_int_ge (parseGetAllocCount (pi), 16);
   strdata = parseGetData (pi);
   ck_assert_ptr_eq (parseGetData (pi), strdata);
@@ -726,7 +726,8 @@ START_TEST(datafile_indirect)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_indirect");
   mdebugSubTag ("datafile_indirect");
   fn = "tmp/dftestd.txt";
-  tstr = "# version 8\nversion\n..9\nKEY\n..0\nA\n..a\nB\n..0\n"
+  tstr = "# version 8\nversion\n..9\n"
+      "KEY\n..0\nA\n..a\nB\n..0\n"
       "KEY\n..1\nA\n..a\nB\n..1\n"
       "KEY\n..2\nA\n..a\nB\n..2\n"
       "KEY\n..3\nA\n..a\nB\n..3\n";
@@ -802,6 +803,132 @@ START_TEST(datafile_indirect)
 }
 END_TEST
 
+/* when reading an indirect datafile, the keys should get renumbered */
+/* existing keys should have no effect */
+/* an incorrect count should also have no effect */
+/* catches bug with incorrect index for last item: 2025-4-5 */
+START_TEST(datafile_indirect_keys)
+{
+  datafile_t      *df;
+  listidx_t       key;
+  const char      *value;
+  ssize_t         lval;
+  char            *tstr = NULL;
+  char            *fn = NULL;
+  FILE            *fh;
+  ilist_t         *list;
+  ilistidx_t      iteridx;
+  int             vers;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_indirect_keys");
+  mdebugSubTag ("datafile_indirect_keys");
+  fn = "tmp/dftestd.txt";
+  tstr = "# version 8\nversion\n..9\ncount\n..2\n"
+      "KEY\n..0\nA\n..a\nB\n..0\n"
+      "KEY\n..2\nA\n..b\nB\n..1\n"
+      "KEY\n..3\nA\n..c\nB\n..2\n"
+      "KEY\n..3\nA\n..d\nB\n..3\n"
+      "KEY\n..1\nA\n..e\nB\n..4\n";
+  fh = fileopOpen (fn, "w");
+  fprintf (fh, "%s", tstr);
+  mdextfclose (fh);
+  fclose (fh);
+
+  df = datafileAllocParse ("chk-df-keys", DFTYPE_INDIRECT, fn, dfkeyskl, DFKEY_COUNT,
+      DF_NO_OFFSET, NULL);
+  ck_assert_ptr_nonnull (df);
+  ck_assert_int_eq (datafileDistVersion (df), 8);
+  ck_assert_int_eq (datafileGetType (df), DFTYPE_INDIRECT);
+  ck_assert_str_eq (datafileGetFname (df), fn);
+  ck_assert_ptr_nonnull (datafileGetData (df));
+
+  list = datafileGetList (df);
+
+  lval = ilistGetCount (list);
+  ck_assert_int_eq (lval, 5);
+
+  vers = ilistGetVersion (list);
+  ck_assert_int_eq (vers, 9);
+
+  ilistStartIterator (list, &iteridx);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 0);
+  value = ilistGetStr (list, key, 14);
+  ck_assert_str_eq (value, "a");
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, 0);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 1);
+  value = ilistGetStr (list, key, 14);
+  ck_assert_str_eq (value, "b");
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, 1);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 2);
+  value = ilistGetStr (list, key, 14);
+  ck_assert_str_eq (value, "c");
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, 2);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 3);
+  value = ilistGetStr (list, key, 14);
+  ck_assert_str_eq (value, "d");
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, 3);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 4);
+  value = ilistGetStr (list, key, 14);
+  ck_assert_str_eq (value, "e");
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, 4);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, LIST_LOC_INVALID);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 0);
+  value = ilistGetStr (list, key, 14);
+  ck_assert_str_eq (value, "a");
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 1);
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, 1);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 2);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 3);
+  value = ilistGetStr (list, key, 14);
+  ck_assert_str_eq (value, "d");
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 4);
+  value = ilistGetStr (list, key, 14);
+  ck_assert_str_eq (value, "e");
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, LIST_LOC_INVALID);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 0);
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, 0);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 1);
+
+  datafileFree (df);
+  unlink (fn);
+}
+END_TEST
+
 START_TEST(datafile_indirect_missing)
 {
   datafile_t      *df;
@@ -818,7 +945,8 @@ START_TEST(datafile_indirect_missing)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_indirect_missing");
   mdebugSubTag ("datafile_indirect_missing");
   fn = "tmp/dfteste.txt";
-  tstr = "# version 9\nversion\n..10\nKEY\n..0\nA\n..a\nB\n..0\n"
+  tstr = "# version 9\nversion\n..10\n"
+      "KEY\n..0\nA\n..a\nB\n..0\n"
       "KEY\n..1\nA\n..a\n"
       "KEY\n..2\nA\n..a\nB\n..2\n"
       "KEY\n..3\nB\n..3\n";
@@ -1390,6 +1518,7 @@ datafile_suite (void)
   tcase_add_test (tc, datafile_keyval_dfkey_missing);
   tcase_add_test (tc, datafile_keyval_df_extra);
   tcase_add_test (tc, datafile_indirect);
+  tcase_add_test (tc, datafile_indirect_keys);
   tcase_add_test (tc, datafile_indirect_missing);
   tcase_add_test (tc, datafile_keyval_savelist);
   tcase_add_test (tc, datafile_keyval_savebuffer);

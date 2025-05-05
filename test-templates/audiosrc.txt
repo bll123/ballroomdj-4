@@ -38,7 +38,7 @@ URI
 USER
 ..bdj
 KEY
-..1
+..2
 MODE
 ..client
 NAME

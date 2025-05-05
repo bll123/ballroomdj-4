@@ -63,6 +63,7 @@ enum {
   MPL_W_TAG_WEIGHT,
   MPL_W_PODCAST_VBOX,
   MPL_W_URI,
+  MPL_W_TITLE,
   MPL_W_USER,
   MPL_W_PASSWORD,
   MPL_W_RETAIN,
@@ -493,6 +494,25 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiEntrySetValidate (uiwidgetp, "",
       managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
   managepl->wcont [MPL_W_URI] = uiwidgetp;
+
+  uiwcontFree (hbox);
+
+  /* new line : title */
+
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
+
+  /* CONTEXT: playlist management: podcast title */
+  uiwidgetp = uiCreateColonLabel (_("Title"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiEntryInit (50, 300);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiEntrySetValidate (uiwidgetp, "",
+      managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
+  managepl->wcont [MPL_W_TITLE] = uiwidgetp;
 
   uiwcontFree (hbox);
 
@@ -929,6 +949,8 @@ managePlaylistUpdateData (managepl_t *managepl)
   if (pltype == PLTYPE_PODCAST) {
     uiEntrySetValue (managepl->wcont [MPL_W_URI],
         playlistGetPodcastStr (pl, PODCAST_URI));
+    uiEntrySetValue (managepl->wcont [MPL_W_TITLE],
+        playlistGetPodcastStr (pl, PODCAST_TITLE));
     uiEntrySetValue (managepl->wcont [MPL_W_USER],
         playlistGetPodcastStr (pl, PODCAST_USER));
     uiEntrySetValue (managepl->wcont [MPL_W_PASSWORD],
@@ -1100,6 +1122,8 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
   if (pltype == PLTYPE_PODCAST) {
     tstr = uiEntryGetValue (managepl->wcont [MPL_W_URI]);
     playlistSetPodcastStr (pl, PODCAST_URI, tstr);
+    tstr = uiEntryGetValue (managepl->wcont [MPL_W_TITLE]);
+    playlistSetPodcastStr (pl, PODCAST_TITLE, tstr);
     tstr = uiEntryGetValue (managepl->wcont [MPL_W_USER]);
     playlistSetPodcastStr (pl, PODCAST_USER, tstr);
     tstr = uiEntryGetValue (managepl->wcont [MPL_W_PASSWORD]);

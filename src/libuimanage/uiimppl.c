@@ -949,6 +949,7 @@ uiimpplImportTypeChg (void *udata)
         /* CONTEXT: please wait... status message */
         _("Please wait\xe2\x80\xa6"));
     uiUIProcessWaitEvents ();
+
     asiter = audiosrcStartIterator (uiimppl->imptype, AS_ITER_PL_NAMES,
         uiEntryGetValue (uiimppl->wcont [UIIMPPL_W_URI]), NULL, askey);
     uiimppl->plnames = ilistAlloc ("plnames", LIST_ORDERED);
@@ -962,6 +963,13 @@ uiimpplImportTypeChg (void *udata)
     uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
     uiddSetList (uiimppl->plselect, uiimppl->plnames);
     uiddSetSelection (uiimppl->plselect, 0);
+
+    /* podcasts only have a single playlist, set the new-name now */
+    if (uiimppl->imptype == AUDIOSRC_TYPE_PODCAST &&
+        ilistGetCount (uiimppl->plnames) == 1) {
+      uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_NEWNAME],
+          ilistGetStr (uiimppl->plnames, 0, DD_LIST_DISP));
+    }
   }
 
   if (uiimppl->imptype == AUDIOSRC_TYPE_FILE) {

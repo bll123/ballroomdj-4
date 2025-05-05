@@ -50,6 +50,7 @@
 #include "pathinfo.h"
 #include "pathutil.h"
 #include "playlist.h"
+#include "podcast.h"
 #include "procutil.h"
 #include "progstate.h"
 #include "sequence.h"
@@ -285,6 +286,7 @@ typedef struct {
   /* import/export playlist */
   uiexppl_t         *uiexppl;
   uiimppl_t         *uiimppl;
+  int               pltype;
   /* export/import bdj4 */
   uieibdj4_t        *uieibdj4;
   eibdj4_t          *eibdj4;
@@ -503,6 +505,7 @@ main (int argc, char *argv[])
   manage.expimpbdj4state = BDJ4_STATE_OFF;
   manage.uiimppl = NULL;
   manage.uiexppl = NULL;
+  manage.pltype = PLTYPE_SONGLIST;
   manage.musicqPlayIdx = MUSICQ_MNG_PB;
   manage.musicqManageIdx = MUSICQ_SL;
   manage.stopwaitcount = 0;
@@ -1433,6 +1436,7 @@ manageHandshakeCallback (void *udata, programstate_t programState)
     manageSetSBSSonglist (manage);
     /* CONTEXT: manage-ui: song list: default name for a new song list */
     manageSetSonglistName (manage, _("New Song List"));
+    manage->pltype = PLTYPE_SONGLIST;
     connSendMessage (manage->conn, ROUTE_PLAYER, MSG_PLAYER_SUPPORT, NULL);
     rc = STATE_FINISHED;
   }
@@ -2693,6 +2697,7 @@ manageSonglistNew (void *udata)
 
   /* CONTEXT: manage-ui: song list: default name for a new song list */
   manageSetSonglistName (manage, _("New Song List"));
+  manage->pltype = PLTYPE_SONGLIST;
   manage->slbackupcreated = false;
   uimusicqSetSelectionFirst (manage->currmusicq, manage->musicqManageIdx);
   uimusicqTruncateQueueCallback (manage->currmusicq);
@@ -3226,7 +3231,7 @@ manageSonglistSave (manageui_t *manage)
 
   manageSetSonglistName (manage, name);
   uimusicqSave (manage->musicdb, manage->musicqupdate [MUSICQ_SL], name);
-  playlistCheckAndCreate (name, PLTYPE_SONGLIST);
+  playlistCheckAndCreate (name, manage->pltype);
   manageLoadPlaylistCB (manage, name);
 
   if (notvalid) {
@@ -3410,9 +3415,6 @@ managePlaylistImport (void *udata)
   manageSonglistSave (manage);
   manageSonglistNew (manage);
 
-  /* CONTEXT: manage-ui: song list: default name for a new song list */
-  manageSetSonglistName (manage, _("New Song List"));
-
   uiimpplDialog (manage->uiimppl);
 
   manage->importplactive = false;
@@ -3480,7 +3482,6 @@ managePlaylistImportRespHandler (void *udata)
       }
     }
     nlistFree (list);
-    manageLoadPlaylistCB (manage, plname);
   } /* audiosrc-type: file */
 
   if (imptype == AUDIOSRC_TYPE_BDJ4 || imptype == AUDIOSRC_TYPE_PODCAST) {
@@ -3531,9 +3532,25 @@ managePlaylistImportRespHandler (void *udata)
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       plname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
-  if (! fileopFileExists (tbuff)) {
+  /* podcasts over-write the old playlist */
+  if (! fileopFileExists (tbuff) || imptype == AUDIOSRC_TYPE_PODCAST) {
     manageSetSonglistName (manage, plname);
   }
+
+  if (imptype == AUDIOSRC_TYPE_PODCAST) {
+    playlist_t    *pl;
+
+    manage->pltype = PLTYPE_PODCAST;
+    /* save the song list now so that the playlist gets created and loaded */
+    manageSonglistSave (manage);
+    pl = playlistLoad (plname, NULL, NULL);
+    playlistSetPodcastStr (pl, PODCAST_URI, uri);
+    playlistSetPodcastStr (pl, PODCAST_TITLE, plname);
+    /* ### need to get last-build-date from audio-src */
+    playlistSetPodcastNum (pl, PODCAST_RETAIN, 0);
+  }
+
+  manageLoadPlaylistCB (manage, plname);
 
   return UICB_CONT;
 }
