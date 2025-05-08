@@ -47,7 +47,7 @@ sequenceLoad (const char *fname)
   pathbldMakePath (fn, sizeof (fn), fname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DREL_DATA);
   if (! fileopFileExists (fn)) {
     // logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: sequence: missing %s", fname);
-    return false;
+    return NULL;
   }
 
   sequence = mdmalloc (sizeof (sequence_t));

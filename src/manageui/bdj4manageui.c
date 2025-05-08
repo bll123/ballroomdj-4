@@ -688,7 +688,7 @@ manageStoppingCallback (void *udata, programstate_t programState)
 
   manageSonglistSave (manage);
   manageSequenceSave (manage->manageseq);
-  managePlaylistSave (manage->managepl);
+  managePlaylistSave (manage->managepl, manage->pltype);
 
   manageAudioIdSavePosition (manage->manageaudioid);
 
@@ -3525,7 +3525,7 @@ managePlaylistImportRespHandler (void *udata)
 
     uiUIProcessWaitEvents ();
     managePlaylistImportCreateSonglist (manage, songlist);
-    nlistFree (songlist);
+    slistFree (songlist);
   }
 
   if (newsongs) {
@@ -3540,16 +3540,21 @@ managePlaylistImportRespHandler (void *udata)
   }
 
   if (imptype == AUDIOSRC_TYPE_PODCAST) {
-    playlist_t    *pl;
+    podcast_t   *podcast;
+
+    podcast = podcastLoad (plname);
+    if (podcast == NULL) {
+      podcast = podcastCreate (plname);
+    }
+
+    podcastSetStr (podcast, PODCAST_URI, uri);
+    podcastSetStr (podcast, PODCAST_TITLE, plname);
+// ### need to get last-build-date from audio-src ?
+    podcastSetNum (podcast, PODCAST_RETAIN, 0);
+    podcastSave (podcast);
+    podcastFree (podcast);
 
     manage->pltype = PLTYPE_PODCAST;
-    /* save the song list now so that the playlist gets created and loaded */
-    manageSonglistSave (manage);
-    pl = playlistLoad (plname, NULL, NULL);
-    playlistSetPodcastStr (pl, PODCAST_URI, uri);
-    playlistSetPodcastStr (pl, PODCAST_TITLE, plname);
-    /* ### need to get last-build-date from audio-src */
-    playlistSetPodcastNum (pl, PODCAST_RETAIN, 0);
   }
 
   manageLoadPlaylistCB (manage, plname);
@@ -3775,7 +3780,7 @@ manageSwitchPage (manageui_t *manage, int pagenum, int which)
     }
     if (manage->maincurrtab == MANAGE_TAB_MAIN_PLMGMT) {
       logMsg (LOG_DBG, LOG_INFO, "last tab: playlist");
-      managePlaylistSave (manage->managepl);
+      managePlaylistSave (manage->managepl, manage->pltype);
     }
   }
 

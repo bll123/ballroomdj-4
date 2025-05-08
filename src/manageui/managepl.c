@@ -666,10 +666,11 @@ managePlaylistMenu (managepl_t *managepl, uiwcont_t *uimenubar)
 }
 
 void
-managePlaylistSave (managepl_t *managepl)
+managePlaylistSave (managepl_t *managepl, pltype_t type)
 {
   char      *name;
   bool      notvalid = false;
+  pltype_t  pltype;
 
   logProcBegin ();
   if (managepl->ploldname == NULL) {
@@ -695,9 +696,13 @@ managePlaylistSave (managepl_t *managepl)
     managepl->changed = true;
   }
 
-  if (managepl->changed) {
-    pltype_t  pltype;
+  pltype = playlistGetConfigNum (managepl->playlist, PLAYLIST_TYPE);
+  if (type >= PLTYPE_AUTO && type < PLTYPE_ALL && pltype != type) {
+    managepl->changed = true;
+    pltype = type;
+  }
 
+  if (managepl->changed) {
     manageSetPlaylistName (managepl, name);
     managePlaylistUpdatePlaylist (managepl);
 
@@ -706,7 +711,6 @@ managePlaylistSave (managepl_t *managepl)
     }
 
     playlistSave (managepl->playlist, name);
-    pltype = playlistGetConfigNum (managepl->playlist, PLAYLIST_TYPE);
     if (managepl->plloadcb != NULL &&
         (pltype == PLTYPE_SONGLIST ||
         pltype == PLTYPE_SEQUENCE)) {
@@ -761,7 +765,7 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
   managepl->inload = true;
 
   if (preloadflag == MANAGE_STD) {
-    managePlaylistSave (managepl);
+    managePlaylistSave (managepl, PLTYPE_NONE);
   }
 
   pl = playlistLoad (fn, NULL, NULL);
@@ -812,7 +816,7 @@ managePlaylistNew (managepl_t *managepl, int preloadflag, int type)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new playlist");
   uiLabelSetText (managepl->minfo->statusMsg, "");
   if (preloadflag == MANAGE_STD) {
-    managePlaylistSave (managepl);
+    managePlaylistSave (managepl, PLTYPE_NONE);
   }
 
   /* CONTEXT: playlist management: default name for a new playlist */
@@ -840,7 +844,7 @@ managePlaylistLoad (void *udata)
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: load playlist");
   uiLabelSetText (managepl->minfo->statusMsg, "");
-  managePlaylistSave (managepl);
+  managePlaylistSave (managepl, PLTYPE_NONE);
   selectFileDialog (SELFILE_PLAYLIST, managepl->minfo->window,
       managepl->minfo->options, managepl->callbacks [MPL_CB_SEL_FILE]);
   logProcEnd ("");
@@ -972,7 +976,7 @@ managePlaylistCopy (void *udata)
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy playlist");
-  managePlaylistSave (managepl);
+  managePlaylistSave (managepl, PLTYPE_NONE);
 
   oname = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME]);
   /* CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
@@ -1141,8 +1145,13 @@ managePlaylistCheckChanged (managepl_t *managepl)
   playlist_t    *pl;
   long          tval;
   double        dval;
+  const char    *svala;
+  const char    *svalb;
 
   logProcBegin ();
+
+  /* check the fields in the user interface */
+
   if (manageplDanceIsChanged (managepl->mpldnc)) {
     managepl->changed = true;
   }
@@ -1158,6 +1167,35 @@ managePlaylistCheckChanged (managepl_t *managepl)
   if (uiSpinboxIsChanged (managepl->wcont [MPL_W_GAP])) {
     managepl->changed = true;
   }
+
+  /* podcast */
+
+  if (uiEntryChanged (managepl->wcont [MPL_W_URI])) {
+    managepl->changed = true;
+  }
+
+  if (uiEntryChanged (managepl->wcont [MPL_W_TITLE])) {
+    managepl->changed = true;
+  }
+
+  if (uiEntryChanged (managepl->wcont [MPL_W_USER])) {
+    managepl->changed = true;
+  }
+
+  if (uiEntryChanged (managepl->wcont [MPL_W_PASSWORD])) {
+    managepl->changed = true;
+  }
+
+  if (uiSpinboxIsChanged (managepl->wcont [MPL_W_RETAIN])) {
+    managepl->changed = true;
+  }
+
+  if (managepl->changed) {
+    return managepl->changed;
+  }
+
+  /* compare the playlist's old values against the */
+  /* values set in the ui */
 
   pl = managepl->playlist;
 
@@ -1193,6 +1231,41 @@ managePlaylistCheckChanged (managepl_t *managepl)
 
   tval = uiSpinboxGetValue (managepl->wcont [MPL_W_TAG_WEIGHT]);
   if (tval != playlistGetConfigNum (pl, PLAYLIST_TAG_WEIGHT)) {
+    managepl->changed = true;
+  }
+
+  /* podcast */
+
+  svala = uiEntryGetValue (managepl->wcont [MPL_W_URI]);
+  svalb = playlistGetPodcastStr (pl, PODCAST_URI);
+  if ((svalb == NULL && svala != NULL) ||
+      (svala != NULL && svalb != NULL && strcmp (svala, svalb) != 0)) {
+    managepl->changed = true;
+  }
+
+  svala = uiEntryGetValue (managepl->wcont [MPL_W_TITLE]);
+  svalb = playlistGetPodcastStr (pl, PODCAST_TITLE);
+  if ((svalb == NULL && svala != NULL) ||
+      (svala != NULL && svalb != NULL && strcmp (svala, svalb) != 0)) {
+    managepl->changed = true;
+  }
+
+  svala = uiEntryGetValue (managepl->wcont [MPL_W_USER]);
+  svalb = playlistGetPodcastStr (pl, PODCAST_USER);
+  if ((svalb == NULL && svala != NULL) ||
+      (svala != NULL && svalb != NULL && strcmp (svala, svalb) != 0)) {
+    managepl->changed = true;
+  }
+
+  svala = uiEntryGetValue (managepl->wcont [MPL_W_PASSWORD]);
+  svalb = playlistGetPodcastStr (pl, PODCAST_PASSWORD);
+  if ((svalb == NULL && svala != NULL) ||
+      (svala != NULL && svalb != NULL && strcmp (svala, svalb) != 0)) {
+    managepl->changed = true;
+  }
+
+  dval = uiSpinboxGetValue (managepl->wcont [MPL_W_RETAIN]);
+  if (dval != (double) playlistGetPodcastNum (pl, PODCAST_RETAIN)) {
     managepl->changed = true;
   }
 

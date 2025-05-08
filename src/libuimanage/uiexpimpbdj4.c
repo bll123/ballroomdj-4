@@ -400,7 +400,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
     uiSizeGroupAdd (szgrp, uiwidgetp);
     uiwcontFree (uiwidgetp);
 
-    uiwidgetp = uiEntryInit (30, MAXPATHLEN);
+    uiwidgetp = uiEntryInit (30, MAX_PL_NM_LEN);
     uiEntrySetValue (uiwidgetp, "");
     uiBoxPackStart (hbox, uiwidgetp);
     uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_NEWNAME] = uiwidgetp;

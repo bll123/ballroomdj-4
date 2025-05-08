@@ -50,7 +50,7 @@ podcastLoad (const char *fname)
   pathbldMakePath (fn, sizeof (fn), fname, BDJ4_PODCAST_EXT, PATHBLD_MP_DREL_DATA);
   if (! fileopFileExists (fn)) {
     // logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: podcast: missing %s", fname);
-    return false;
+    return NULL;
   }
 
   podcast = mdmalloc (sizeof (podcast_t));
@@ -85,7 +85,9 @@ podcastCreate (const char *fname)
   podcast->podcast = nlistAlloc ("podcast", LIST_UNORDERED, NULL);
   nlistSetSize (podcast->podcast, PODCAST_KEY_MAX);
   nlistSetNum (podcast->podcast, PODCAST_RETAIN, 0);
+  nlistSetNum (podcast->podcast, PODCAST_LAST_BLD_DATE, 0);
   nlistSetStr (podcast->podcast, PODCAST_URI, "");
+  nlistSetStr (podcast->podcast, PODCAST_TITLE, "");
   nlistSetStr (podcast->podcast, PODCAST_USER, "");
   nlistSetStr (podcast->podcast, PODCAST_PASSWORD, "");
   nlistSort (podcast->podcast);

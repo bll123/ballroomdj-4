@@ -745,7 +745,6 @@ audiosrcClientFree (asdata_t *asdata)
 {
   if (asdata->webclient != NULL) {
     for (int i = 0; i < asdata->clientcount; ++i) {
-fprintf (stderr, "as:bdj4: close\n");
       webclientClose (asdata->webclient [i]);
       asdata->webclient [i] = NULL;
     }
@@ -767,7 +766,6 @@ asbdj4ClientCheck (asdata_t *asdata, int clkey)
   }
 
   askey = ilistGetNum (asdata->client, clkey, AS_CLIENT_ASKEY);
-fprintf (stderr, "as:bdj4: alloc\n");
   asdata->webclient [clkey] = webclientAlloc (asdata, asbdj4WebResponseCallback);
   webclientIgnoreCertErr (asdata->webclient [clkey]);
   webclientSetTimeout (asdata->webclient [clkey], 1);

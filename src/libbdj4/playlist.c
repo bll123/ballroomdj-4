@@ -393,8 +393,8 @@ playlistCreate (const char *plname, pltype_t type,
     pl->sequence = sequenceLoad (plname);
   }
   if (type == PLTYPE_PODCAST) {
-    pl->podcast = podcastLoad (plname);
     pl->songlist = songlistLoad (plname);
+    pl->podcast = podcastLoad (plname);
   }
 
   snprintf (tbuff, sizeof (tbuff), "pldance-c-%s", plname);
@@ -445,6 +445,10 @@ playlistResetAll (playlist_t *pl)
 void
 playlistSetName (playlist_t *pl, const char *newname)
 {
+  if (pl == NULL || pl->ident != PL_IDENT || newname == NULL) {
+    return;
+  }
+
   dataFree (pl->name);
   pl->name = mdstrdup (newname);
   if (pl->podcast != NULL) {
@@ -584,6 +588,10 @@ playlistSetPodcastNum (playlist_t *pl, ilistidx_t key, ssize_t value)
     return;
   }
 
+  if (pl->podcast == NULL) {
+    pl->podcast = podcastCreate (pl->name);
+  }
+
   podcastSetNum (pl->podcast, key, value);
   return;
 }
@@ -593,6 +601,10 @@ playlistSetPodcastStr (playlist_t *pl, ilistidx_t key, const char *str)
 {
   if (pl == NULL || pl->ident != PL_IDENT || pl->podcast == NULL) {
     return;
+  }
+
+  if (pl->podcast == NULL) {
+    pl->podcast = podcastCreate (pl->name);
   }
 
   podcastSetStr (pl->podcast, key, str);
@@ -921,6 +933,9 @@ playlistAddPlayed (playlist_t *pl, song_t *song)
   logProcEnd ("");
 }
 
+/* playlist-save saves the .pl and .pldances datafiles */
+/* the assumption is that any associated files (.songlist, .podcast) */
+/* have already been created */
 void
 playlistSave (playlist_t *pl, const char *name)
 {

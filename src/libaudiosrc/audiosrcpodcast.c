@@ -35,6 +35,7 @@
 enum {
   ASPODCAST_WAIT_MAX = 200,
   ASPODCAST_CLIENT_MAX = 5,
+  ASPODCAST_RECHK_TM = 120,
 };
 
 enum {
@@ -55,6 +56,7 @@ typedef struct {
   webclient_t   *webclient;
   nlist_t       *rssdata;
   time_t        rsslastbldtm;
+  time_t        rsslastchktm;
 } asclientdata_t;
 
 typedef struct asdata {
@@ -100,6 +102,8 @@ asiInit (const char *delpfx, const char *origext)
   asdata->client = ilistAlloc ("client", LIST_ORDERED);
   asdata->clientcount = 0;
   asdata->state = BDJ4_STATE_OFF;
+  asdata->webresponse = NULL;
+  asdata->webresplen = 0;
   return asdata;
 }
 
@@ -448,7 +452,7 @@ static void
 aspodcastRSS (asdata_t *asdata, asiterdata_t *asidata, const char *uri)
 {
   time_t    tm = 0;
-  int             clientkey;
+  int       clientkey;
 
   clientkey = aspodcastGetClientKeyByURI (asdata, uri);
   if (clientkey < 0) {
@@ -456,13 +460,22 @@ aspodcastRSS (asdata_t *asdata, asiterdata_t *asidata, const char *uri)
   }
 
   if (asdata->clientdata [clientkey].rssdata != NULL) {
-    tm = rssGetUpdateTime (uri);
+    time_t    currtm;
+    time_t    lastchk;
+
+    currtm = time (NULL);
+    lastchk = asdata->clientdata [clientkey].rsslastchktm;
+    tm = asdata->clientdata [clientkey].rsslastbldtm;
+    if (currtm > lastchk + ASPODCAST_RECHK_TM) {
+      tm = rssGetUpdateTime (uri);
+    }
   }
   if (asdata->clientdata [clientkey].rssdata == NULL ||
       tm > asdata->clientdata [clientkey].rsslastbldtm) {
     asdata->clientdata [clientkey].rssdata = rssImport (uri);
     asdata->clientdata [clientkey].rsslastbldtm =
         nlistGetNum (asdata->clientdata [clientkey].rssdata, RSS_BUILD_DATE);
+    asdata->clientdata [clientkey].rsslastchktm = time (NULL);
   }
 }
 
@@ -495,8 +508,7 @@ aspodcastGetClientKeyByURI (asdata_t *asdata, const char *uri)
     clientkey = asdata->clientcount;
     asdata->clientcount += 1;
     asdata->clientdata = mdrealloc (asdata->clientdata,
-        sizeof (asclientdata_t *) * asdata->clientcount);
-fprintf (stderr, "as:pod: alloc\n");
+        sizeof (asclientdata_t) * asdata->clientcount);
     asdata->clientdata [clientkey].webclient =
         webclientAlloc (asdata, aspodcastWebResponseCallback);
     asdata->clientdata [clientkey].rssdata = NULL;
@@ -505,7 +517,7 @@ fprintf (stderr, "as:pod: alloc\n");
     stpecpy (temp, temp + sizeof (temp), uri);
     p = temp;
     p += AS_HTTPS_PFX_LEN;
-    p = strstr (temp, "/");
+    p = strstr (p, "/");
     if (p != NULL) {
       *p = '\0';
     }
@@ -525,6 +537,7 @@ aspodcastStripPrefix (asdata_t *asdata, const char *songuri, int clientkey)
   const char  *turi;
   size_t      tlen;
 
+// ### i think this is incorrect...
   turi = ilistGetStr (asdata->client, clientkey, AS_CLIENT_URI);
   tlen = ilistGetNum (asdata->client, clientkey, AS_CLIENT_URI_LEN);
   if (strncmp (songuri, turi, tlen) == 0) {
@@ -538,7 +551,6 @@ audiosrcClientFree (asdata_t *asdata)
 {
   if (asdata->clientdata != NULL) {
     for (int i = 0; i < asdata->clientcount; ++i) {
-fprintf (stderr, "as:pod: close\n");
       webclientClose (asdata->clientdata [i].webclient);
       nlistFree (asdata->clientdata [i].rssdata);
     }

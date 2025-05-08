@@ -244,6 +244,7 @@ uiimpplFree (uiimppl_t *uiimppl)
     return;
   }
 
+  uiimppl->isactive = false;
   uiimpplFreeDialog (uiimppl);
   ilistFree (uiimppl->plnames);
   uiimppl->plnames = NULL;
@@ -396,7 +397,6 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   if (uiimppl == NULL) {
     return;
   }
-
   if (uiimppl->wcont [UIIMPPL_W_DIALOG] != NULL) {
     return;
   }
@@ -529,7 +529,7 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiEntryInit (30, MAXPATHLEN);
+  uiwidgetp = uiEntryInit (30, MAX_PL_NM_LEN);
   uiEntrySetValue (uiwidgetp, "");
   uiBoxPackStart (hbox, uiwidgetp);
   uiimppl->wcont [UIIMPPL_W_NEWNAME] = uiwidgetp;
@@ -609,16 +609,16 @@ uiimpplResponseHandler (void *udata, int32_t responseid)
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: import playlist: del window");
+      uiimppl->isactive = false;
       uiimppl->imptype = AUDIOSRC_TYPE_NONE;
       uiimpplFreeDialog (uiimppl);
-      uiimppl->isactive = false;
       break;
     }
     case RESPONSE_CLOSE: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: import playlist: close window");
+      uiimppl->isactive = false;
       uiWidgetHide (uiimppl->wcont [UIIMPPL_W_DIALOG]);
       uiimppl->imptype = AUDIOSRC_TYPE_NONE;
-      uiimppl->isactive = false;
       break;
     }
     case RESPONSE_CHECK: {
@@ -799,7 +799,7 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
   }
 
   /* do not update the new-name if the user has modified it */
-  if (uiimppl->newnameuserchg == false) {
+  if (uiimppl->newnameuserchg == false && *tbuff) {
     snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
     uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_NEWNAME], tbuff);
   }
@@ -880,10 +880,6 @@ uiimpplValidateNewName (uiimppl_t *uiimppl)
   uiimppl->in_cb = true;
 
   entry = uiimppl->wcont [UIIMPPL_W_NEWNAME];
-
-  /* any change clears the status message */
-//fprintf (stderr, "val-nn: clr\n");
-//  uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
 
   if (uiimppl->haveerrors != UIIMPPL_ERR_NONE) {
     haderrors = true;
@@ -975,12 +971,21 @@ uiimpplImportTypeChg (void *udata)
 static void
 uiimpplFreeDialog (uiimppl_t *uiimppl)
 {
-  uiddFree (uiimppl->plselect);
-  uiimppl->plselect = NULL;
+  int   widx;
+
   for (int j = 0; j < UIIMPPL_W_MAX; ++j) {
+    if (j == UIIMPPL_W_DIALOG) {
+      continue;
+    }
     uiwcontFree (uiimppl->wcont [j]);
     uiimppl->wcont [j] = NULL;
   }
+  uiddFree (uiimppl->plselect);
+  uiimppl->plselect = NULL;
+
+  widx = UIIMPPL_W_DIALOG;
+  uiwcontFree (uiimppl->wcont [widx]);
+  uiimppl->wcont [widx] = NULL;
 }
 
 static void
@@ -988,11 +993,6 @@ uiimpplProcessValidations (uiimppl_t *uiimppl, bool forceflag)
 {
   uiEntryValidate (uiimppl->wcont [UIIMPPL_W_URI], forceflag);
   uiEntryValidate (uiimppl->wcont [UIIMPPL_W_NEWNAME], forceflag);
-
-//  if (uiimppl->haveerrors == UIIMPPL_ERR_NONE) {
-//fprintf (stderr, "proc-val: no-errors\n");
-//    uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
-//  }
 }
 
 static int32_t
@@ -1013,6 +1013,7 @@ uiimpplProcessURI (uiimppl_t *uiimppl, const char *uri)
   int         type;
   size_t      urilen;
   pathinfo_t  *pi;
+
 
   urilen = strlen (uri);
   pi = pathInfo (uri);

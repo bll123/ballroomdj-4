@@ -57,6 +57,7 @@ static void webclientSetUserAgent (CURL *curl);
 static z_stream * webclientGzipInit (char *out, int outsz);
 static void     webclientGzip (z_stream *zs, const char* in, int insz);
 static size_t   webclientGzipEnd (z_stream *zs);
+static void     webclientCleanup (void);
 
 static int initialized = 0;
 
@@ -79,6 +80,7 @@ webclientAlloc (void *userdata, webclientcb_t callback)
 
   if (initialized == 0) {
     curl_global_init (CURL_GLOBAL_ALL);
+    atexit (webclientCleanup);
   }
   ++initialized;
   webclientInit (webclient);
@@ -324,10 +326,6 @@ webclientClose (webclient_t *webclient)
   }
   webclient->curl = NULL;
   --initialized;
-  if (initialized <= 0) {
-    curl_global_cleanup ();
-    initialized = 0;
-  }
   mdfree (webclient);
 }
 
@@ -631,3 +629,11 @@ webclientGzipEnd (z_stream *zs)
   return olen;
 }
 
+static void
+webclientCleanup (void)
+{
+  if (initialized <= 0) {
+    curl_global_cleanup ();
+    initialized = 0;
+  }
+}
