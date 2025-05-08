@@ -264,10 +264,12 @@ playlistLoad (const char *fname, musicdb_t *musicdb, grouping_t *grouping)
   ilistDumpInfo (pl->pldances);
 
   if (type == PLTYPE_SONGLIST || type == PLTYPE_PODCAST) {
+fprintf (stderr, "pl: sl or pod: load\n");
     logMsg (LOG_DBG, LOG_IMPORTANT, "songlist: load songlist %s", fname);
     pl->songlist = songlistLoad (fname);
     if (pl->songlist == NULL) {
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: missing songlist %s", tfn);
+fprintf (stderr, "pl: sl or pod: fail\n");
       playlistFree (pl);
       return NULL;
     }
@@ -277,9 +279,11 @@ playlistLoad (const char *fname, musicdb_t *musicdb, grouping_t *grouping)
 
   if (type == PLTYPE_SEQUENCE) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "sequence: load sequence %s", fname);
+fprintf (stderr, "pl: seq: load\n");
     pl->sequence = sequenceLoad (fname);
     if (pl->sequence == NULL) {
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: missing sequence %s", fname);
+fprintf (stderr, "pl: seq: fail\n");
       playlistFree (pl);
       return NULL;
     }
@@ -300,10 +304,12 @@ playlistLoad (const char *fname, musicdb_t *musicdb, grouping_t *grouping)
 
   if (type == PLTYPE_PODCAST) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "songlist: load podcast %s", fname);
+fprintf (stderr, "pl: pod: load\n");
     pl->podcast = podcastLoad (fname);
     if (pl->podcast == NULL) {
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: missing podcast %s", tfn);
       playlistFree (pl);
+fprintf (stderr, "pl: pod: fail\n");
       return NULL;
     }
   }
@@ -318,6 +324,7 @@ playlistCheck (playlist_t *pl)
   bool        rc = false;
 
   if (pl == NULL || pl->ident != PL_IDENT) {
+fprintf (stderr, "pl-chk: null\n");
     return rc;
   }
 
@@ -326,7 +333,10 @@ playlistCheck (playlist_t *pl)
   if (type == PLTYPE_SONGLIST) {
     if (pl->songlist != NULL &&
         songlistGetCount (pl->songlist) > 0) {
+fprintf (stderr, "pl-chk: sl ok\n");
       rc = true;
+    } else {
+fprintf (stderr, "pl-chk: sl ng\n");
     }
   }
   if (type == PLTYPE_AUTO) {
@@ -334,18 +344,29 @@ playlistCheck (playlist_t *pl)
       playlistCountList (pl);
     }
     if (nlistGetCount (pl->countList) > 0) {
+fprintf (stderr, "pl-chk: auto ok\n");
       rc = true;
+    } else {
+fprintf (stderr, "pl-chk: auto ng\n");
     }
   }
   if (type == PLTYPE_SEQUENCE) {
     if (pl->sequence != NULL &&
         sequenceGetCount (pl->sequence) > 0) {
+fprintf (stderr, "pl-chk: seq ok\n");
       rc = true;
+    } else {
+fprintf (stderr, "pl-chk: seq ng\n");
     }
   }
   if (type == PLTYPE_PODCAST) {
-    if (pl->podcast != NULL && pl->songlist != NULL) {
+    if (pl->podcast != NULL &&
+        pl->songlist != NULL &&
+        songlistGetCount (pl->songlist) > 0) {
+fprintf (stderr, "pl-chk: podcast ok\n");
       rc = true;
+    } else {
+fprintf (stderr, "pl-chk: pod ng\n");
     }
   }
 
@@ -507,11 +528,6 @@ void
 playlistSetConfigNum (playlist_t *pl, playlistkey_t key, ssize_t value)
 {
   if (pl == NULL || pl->ident != PL_IDENT || pl->plinfo == NULL) {
-    return;
-  }
-
-  /* type is used internally, may not be changed */
-  if (key == PLAYLIST_TYPE) {
     return;
   }
 
@@ -934,8 +950,8 @@ playlistAddPlayed (playlist_t *pl, song_t *song)
 }
 
 /* playlist-save saves the .pl and .pldances datafiles */
-/* the assumption is that any associated files (.songlist, .podcast) */
-/* have already been created */
+/* any associated files (.songlist, .podcast) */
+/* should already be created by the owner */
 void
 playlistSave (playlist_t *pl, const char *name)
 {
@@ -949,6 +965,12 @@ playlistSave (playlist_t *pl, const char *name)
     dataFree (pl->name);
     pl->name = mdstrdup (name);
   }
+
+{
+int type;
+type = (pltype_t) nlistGetNum (pl->plinfo, PLAYLIST_TYPE);
+fprintf (stderr, "pl-save: type: %d\n", type);
+}
 
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
       BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);

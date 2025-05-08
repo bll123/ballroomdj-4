@@ -697,11 +697,15 @@ managePlaylistSave (managepl_t *managepl, pltype_t type)
   }
 
   pltype = playlistGetConfigNum (managepl->playlist, PLAYLIST_TYPE);
-  if (type >= PLTYPE_AUTO && type < PLTYPE_ALL && pltype != type) {
+fprintf (stderr, "mpl:save: pltype: %d type: %d\n", pltype, type);
+  if (type >= PLTYPE_AUTO && type < PLTYPE_MAX && pltype != type) {
     managepl->changed = true;
     pltype = type;
+fprintf (stderr, "mpl:set-type: type: %d\n", pltype);
+    playlistSetConfigNum (managepl->playlist, PLAYLIST_TYPE, pltype);
   }
 
+fprintf (stderr, "mpl:chg: %d\n", managepl->changed);
   if (managepl->changed) {
     manageSetPlaylistName (managepl, name);
     managePlaylistUpdatePlaylist (managepl);
@@ -710,6 +714,7 @@ managePlaylistSave (managepl_t *managepl, pltype_t type)
       return;
     }
 
+fprintf (stderr, "mpl:call-pl-save: type: %d\n", (int) playlistGetConfigNum (managepl->playlist, PLAYLIST_TYPE));
     playlistSave (managepl->playlist, name);
     if (managepl->plloadcb != NULL &&
         (pltype == PLTYPE_SONGLIST ||
@@ -752,7 +757,8 @@ managePlaylistLoadCheck (managepl_t *managepl)
 }
 
 void
-managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
+managePlaylistLoadFile (managepl_t *managepl, const char *plname,
+    int preloadflag)
 {
   playlist_t  *pl;
 
@@ -765,10 +771,12 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
   managepl->inload = true;
 
   if (preloadflag == MANAGE_STD) {
+fprintf (stderr, "mpl:pl-load: call save\n");
     managePlaylistSave (managepl, PLTYPE_NONE);
   }
 
-  pl = playlistLoad (fn, NULL, NULL);
+fprintf (stderr, "mpl:pl-load: %s\n", plname);
+  pl = playlistLoad (plname, NULL, NULL);
   if (pl == NULL) {
     managePlaylistNew (managepl, preloadflag, PLTYPE_AUTO);
     managepl->inload = false;
@@ -787,7 +795,7 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
 
   playlistFree (managepl->playlist);
   managepl->playlist = pl;
-  manageSetPlaylistName (managepl, fn);
+  manageSetPlaylistName (managepl, plname);
   managePlaylistUpdateData (managepl);
 
   if (preloadflag == MANAGE_STD && managepl->plloadcb != NULL) {
@@ -797,7 +805,7 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
     if (managepl->plloadcb != NULL &&
         (pltype == PLTYPE_SONGLIST ||
         pltype == PLTYPE_SEQUENCE)) {
-      callbackHandlerS (managepl->plloadcb, fn);
+      callbackHandlerS (managepl->plloadcb, plname);
     }
   }
 
@@ -842,6 +850,7 @@ managePlaylistLoad (void *udata)
   managepl_t  *managepl = udata;
 
   logProcBegin ();
+fprintf (stderr, "mpl:pl-load\n");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: load playlist");
   uiLabelSetText (managepl->minfo->statusMsg, "");
   managePlaylistSave (managepl, PLTYPE_NONE);
@@ -852,12 +861,13 @@ managePlaylistLoad (void *udata)
 }
 
 static int32_t
-managePlaylistLoadCB (void *udata, const char *fn)
+managePlaylistLoadCB (void *udata, const char *plname)
 {
   managepl_t  *managepl = udata;
 
   logProcBegin ();
-  managePlaylistLoadFile (managepl, fn, MANAGE_STD);
+fprintf (stderr, "mpl: pl load cb\n");
+  managePlaylistLoadFile (managepl, plname, MANAGE_STD);
   logProcEnd ("");
   return 0;
 }
@@ -1085,6 +1095,7 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
   logProcBegin ();
   pl = managepl->playlist;
   pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
+fprintf (stderr, "mpl:upd-pl: type: %d\n", pltype);
 
   manageplDanceSetPlaylist (managepl->mpldnc, pl);
 

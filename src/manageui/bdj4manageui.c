@@ -405,6 +405,7 @@ static bool     manageSonglistLoad (void *udata);
 static int32_t  manageSonglistLoadCB (void *udata, const char *fn);
 static bool     manageSonglistCopy (void *udata);
 static bool     manageSonglistNew (void *udata);
+static void     manageResetCreateNew (manageui_t *manage, pltype_t pltype);
 static bool     manageSonglistDelete (void *udata);
 static bool     manageSonglistTruncate (void *udata);
 static bool     manageSonglistCreateFromPlaylist (void *udata);
@@ -2678,7 +2679,7 @@ manageSonglistCopy (void *udata)
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
   if (manageCreatePlaylistCopy (manage->minfo.errorMsg, oname, newname)) {
     manageSetSonglistName (manage, newname);
-    manageLoadPlaylistCB (manage, newname);
+    managePlaylistLoadFile (manage->managepl, newname, MANAGE_PRELOAD);
     manage->slbackupcreated = false;
   }
   logProcEnd ("");
@@ -2690,23 +2691,29 @@ manageSonglistNew (void *udata)
 {
   manageui_t  *manage = udata;
 
-  logProcBegin ();
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: new songlist");
   uiLabelSetText (manage->minfo.statusMsg, "");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: new songlist");
+
+  manageResetCreateNew (manage, PLTYPE_SONGLIST);
+  return UICB_CONT;
+}
+
+static void
+manageResetCreateNew (manageui_t *manage, pltype_t pltype)
+{
   manageSonglistSave (manage);
 
   /* CONTEXT: manage-ui: song list: default name for a new song list */
   manageSetSonglistName (manage, _("New Song List"));
-  manage->pltype = PLTYPE_SONGLIST;
+fprintf (stderr, "mui:new: type: %d\n", pltype);
+  manage->pltype = pltype;
   manage->slbackupcreated = false;
   uimusicqSetSelectionFirst (manage->currmusicq, manage->musicqManageIdx);
   uimusicqTruncateQueueCallback (manage->currmusicq);
-  manageNewPlaylistCB (manage);
+  managePlaylistNew (manage->managepl, MANAGE_PRELOAD, pltype);
   /* the music manager must be reset to use the song selection as */
   /* there are no songs selected */
   manageNewSelectionSongSel (manage, manage->seldbidx);
-  logProcEnd ("");
-  return UICB_CONT;
 }
 
 static bool
@@ -2722,7 +2729,7 @@ manageSonglistDelete (void *udata)
   manageDeletePlaylist (oname);
   /* no save */
   *manage->sloldname = '\0';
-  manageSonglistNew (manage);
+  manageResetCreateNew (manage, PLTYPE_SONGLIST);
   manageDeleteStatus (manage->minfo.statusMsg, oname);
   logProcEnd ("");
   return UICB_CONT;
@@ -2972,6 +2979,7 @@ manageCFPLPostProcess (manageui_t *manage)
       playlistSetDanceNum (pl, dkey, PLDANCE_MAXPLAYTIME,
           playlistGetDanceNum (autopl, dkey, PLDANCE_MAXPLAYTIME));
     }
+fprintf (stderr, "mui:cfpl-post: save-pl\n");
     playlistSave (pl, tnm);
   }
 
@@ -2979,6 +2987,7 @@ manageCFPLPostProcess (manageui_t *manage)
   playlistFree (pl);
 
   /* update the playlist tab */
+fprintf (stderr, "mui:cfpl-post: pl load file\n");
   managePlaylistLoadFile (manage->managepl, tnm, MANAGE_PRELOAD_FORCE);
 
   manage->cfplpostprocess = false;
@@ -3068,7 +3077,7 @@ manageSonglistLoadFile (void *udata, const char *fn, int preloadflag)
 
   manageSetSonglistName (manage, tbuff);
   if (preloadflag != MANAGE_PRELOAD) {
-    manageLoadPlaylistCB (manage, fn);
+    managePlaylistLoadFile (manage->managepl, fn, MANAGE_PRELOAD);
   }
   manage->slbackupcreated = false;
   manage->inload = false;
@@ -3082,6 +3091,7 @@ manageLoadPlaylistCB (void *udata, const char *fn)
   manageui_t    *manage = udata;
 
   logMsg (LOG_DBG, LOG_INFO, "load playlist cb: %s", fn);
+fprintf (stderr, "mui:load pl cb\n");
   managePlaylistLoadFile (manage->managepl, fn, MANAGE_PRELOAD);
   return UICB_CONT;
 }
@@ -3232,7 +3242,7 @@ manageSonglistSave (manageui_t *manage)
   manageSetSonglistName (manage, name);
   uimusicqSave (manage->musicdb, manage->musicqupdate [MUSICQ_SL], name);
   playlistCheckAndCreate (name, manage->pltype);
-  manageLoadPlaylistCB (manage, name);
+  managePlaylistLoadFile (manage->managepl, name, MANAGE_PRELOAD);
 
   if (notvalid) {
     /* set the message after the entry field has been reset */
@@ -3412,9 +3422,6 @@ managePlaylistImport (void *udata)
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import");
 
-  manageSonglistSave (manage);
-  manageSonglistNew (manage);
-
   uiimpplDialog (manage->uiimppl);
 
   manage->importplactive = false;
@@ -3440,6 +3447,14 @@ managePlaylistImportRespHandler (void *udata)
   imptype = uiimpplGetType (manage->uiimppl);
   if (imptype == AUDIOSRC_TYPE_NONE) {
     return UICB_CONT;
+  }
+
+  if (imptype == AUDIOSRC_TYPE_PODCAST) {
+fprintf (stderr, "mui:imppl: c-new: pod\n");
+    manageResetCreateNew (manage, PLTYPE_PODCAST);
+  } else {
+fprintf (stderr, "mui:imppl: c-new: sl\n");
+    manageResetCreateNew (manage, PLTYPE_SONGLIST);
   }
 
   uri = uiimpplGetURI (manage->uiimppl);
@@ -3554,10 +3569,12 @@ managePlaylistImportRespHandler (void *udata)
     podcastSave (podcast);
     podcastFree (podcast);
 
+fprintf (stderr, "mui:imppl: type: pod: %d\n", PLTYPE_PODCAST);
     manage->pltype = PLTYPE_PODCAST;
   }
 
-  manageLoadPlaylistCB (manage, plname);
+fprintf (stderr, "mui:imppl: call pl-load-file\n");
+  managePlaylistLoadFile (manage->managepl, plname, MANAGE_PRELOAD);
 
   return UICB_CONT;
 }
@@ -4029,7 +4046,7 @@ manageSonglistLoadCheck (manageui_t *manage)
     logMsg (LOG_DBG, LOG_INFO, "no songlist %s", name);
     /* make sure no save happens */
     *manage->sloldname = '\0';
-    manageSonglistNew (manage);
+    manageResetCreateNew (manage, PLTYPE_SONGLIST);
   } else {
     manageLoadPlaylistCB (manage, name);
   }

@@ -55,7 +55,7 @@ typedef enum {
   PLTYPE_SONGLIST,
   PLTYPE_SEQUENCE,
   PLTYPE_PODCAST,
-  PLTYPE_ALL,
+  PLTYPE_MAX,
 } pltype_t;
 
 enum {
