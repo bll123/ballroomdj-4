@@ -1091,6 +1091,34 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* text search          */
     false,                        /* vorbis multi         */
   },
+  [TAG_SONG_TYPE] =
+  { "SONGTYPE",                /* tag */
+    NULL,                         /* display name         */
+    NULL,                         /* short display name   */
+    { [TAG_TYPE_VORBIS] = { "SONGTYPE", NULL, NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:BDJ4:SONGTYPE", "BDJ4", "SONGTYPE", NULL },
+      [TAG_TYPE_ID3] = { "TXXX=SONGTYPE", "TXXX", "SONGTYPE", NULL },
+      [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+    },       /* audio tags */
+    NULL,                         /* itunes name          */
+    ET_NA,                        /* edit type            */
+    VALUE_NUM,                    /* value type           */
+    songutilConvSongType,         /* conv func            */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align end            */
+    true,                         /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* edit-all             */
+    false,                        /* editable             */
+    false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
+    false,                        /* player-ui-disp       */
+    false,                        /* text search          */
+    false,                        /* vorbis multi         */
+  },
   [TAG_SORT_ALBUM] =
   { "ALBUMSORT",                  /* tag */
     NULL,                         /* display name         */

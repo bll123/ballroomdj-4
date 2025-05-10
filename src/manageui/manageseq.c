@@ -484,7 +484,7 @@ manageSequenceDelete (void *udata)
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete sequence");
   oname = manageGetEntryValue (manageseq->seqname);
-  manageDeletePlaylist (oname);
+  manageDeletePlaylist (manageseq->minfo->musicdb, oname);
   uiduallistClearChanged (manageseq->seqduallist);
   manageSequenceNew (manageseq);
   manageDeleteStatus (manageseq->minfo->statusMsg, oname);

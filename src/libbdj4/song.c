@@ -97,6 +97,7 @@ static datafilekey_t songdfkeys [] = {
   { "SAMESONG",             TAG_SAMESONG,             VALUE_NUM, NULL, DF_NORM },
   { "SONGEND",              TAG_SONGEND,              VALUE_NUM, NULL, DF_NORM },
   { "SONGSTART",            TAG_SONGSTART,            VALUE_NUM, NULL, DF_NORM },
+  { "SONGTYPE",             TAG_SONG_TYPE,            VALUE_NUM, songutilConvSongType, DF_NORM },
   { "SPEEDADJUSTMENT",      TAG_SPEEDADJUSTMENT,      VALUE_NUM, NULL, DF_NORM },
   { "STATUS",               TAG_STATUS,               VALUE_NUM, statusConv, DF_NORM },
   { "TAGS",                 TAG_TAGS,                 VALUE_LIST, convTextList, DF_NORM },

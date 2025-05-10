@@ -1014,7 +1014,7 @@ managePlaylistDelete (void *udata)
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete playlist");
   oname = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME]);
-  manageDeletePlaylist (oname);
+  manageDeletePlaylist (managepl->minfo->musicdb, oname);
   manageResetChanged (managepl);
   managePlaylistNew (managepl, MANAGE_STD, PLTYPE_AUTO);
   manageDeleteStatus (managepl->minfo->statusMsg, oname);

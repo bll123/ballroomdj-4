@@ -419,7 +419,7 @@ dbWriteSong (musicdb_t *musicdb, song_t *song)
   return rrn;
 }
 
-/* this should only be used on remote entries */
+/* this should only be used on non-file entries (remote, podcast) */
 bool
 dbRemoveSong (musicdb_t *musicdb, dbidx_t dbidx)
 {

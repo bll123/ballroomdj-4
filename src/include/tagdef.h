@@ -109,6 +109,7 @@ typedef enum {
   TAG_SHOWMOVEMENT,           //
   TAG_SONGEND,                //  bdj4
   TAG_SONGSTART,              //  bdj4
+  TAG_SONG_TYPE,              //  bdj4 : norm, podcast, remote
   TAG_SORT_ALBUM,
   TAG_SORT_ALBUMARTIST,
   TAG_SORT_ARTIST,

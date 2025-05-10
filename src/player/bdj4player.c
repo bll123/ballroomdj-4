@@ -81,7 +81,10 @@ typedef struct {
   double        voladjperc;
   int32_t       uniqueidx;
   int           speed;
-  int           announce;     // one of PREP_SONG or PREP_ANNOUNCE
+  /* one of PREP_SONG or PREP_ANNOUNCE */
+  int           announce;
+  /* audio-src is not robust, it is only used to determine */
+  /* if the song is a file-type */
   int           audiosrc;
 } prepqueue_t;
 
@@ -694,8 +697,8 @@ playerProcessing (void *udata)
     }
 
     *tempffn = '\0';
-    sourceType = audiosrcGetType (pq->tempname);
-    if (sourceType == AUDIOSRC_TYPE_FILE) {
+    /* only need to know if this is a file-type */
+    if (pq->audiosrc == AUDIOSRC_TYPE_FILE) {
       /* some pli need the full path */
       pathbldMakePath (tempffn, sizeof (tempffn), pq->tempname, "",
           PATHBLD_MP_DIR_DATATOP);

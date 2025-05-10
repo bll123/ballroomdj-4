@@ -20,6 +20,7 @@
 #include "mdebug.h"
 #include "pathbld.h"
 #include "playlist.h"
+#include "podcastutil.h"
 #include "slist.h"
 #include "song.h"
 #include "songutil.h"
@@ -46,8 +47,16 @@ manageCreatePlaylistCopy (uiwcont_t *errorMsg,
 }
 
 void
-manageDeletePlaylist (const char *name)
+manageDeletePlaylist (musicdb_t *musicdb, const char *name)
 {
+  pltype_t    pltype;
+
+  pltype = playlistGetType (name);
+  if (pltype == PLTYPE_PODCAST) {
+    /* remove all song in the podcast from the database */
+    podcastutilDelete (musicdb, name);
+  }
+
   playlistDelete (name);
 }
 

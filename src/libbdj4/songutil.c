@@ -82,6 +82,53 @@ songutilConvAdjustFlags (datafileconv_t *conv)
   }
 }
 
+void
+songutilConvSongType (datafileconv_t *conv)
+{
+  if (conv->invt == VALUE_STR) {
+    int         num;
+    const char  *str;
+
+    str = conv->str;
+
+    num = SONG_TYPE_NORM;
+    if (str != NULL) {
+      if (strcmp (str, "remote") == 0) {
+        num = SONG_TYPE_REMOTE;
+      } else if (strcmp (str, "podcast") == 0) {
+        num = SONG_TYPE_PODCAST;
+      }
+    }
+    conv->outvt = VALUE_NUM;
+    conv->num = num;
+  } else if (conv->invt == VALUE_NUM) {
+    int     num;
+    char    *str;
+
+    num = conv->num;
+    switch (num) {
+      case SONG_TYPE_NORM: {
+        str = "normal";
+        break;
+      }
+      case SONG_TYPE_REMOTE: {
+        str = "remote";
+        break;
+      }
+      case SONG_TYPE_PODCAST: {
+        str = "podcast";
+        break;
+      }
+      default: {
+        str = "normal";
+        break;
+      }
+    }
+    conv->outvt = VALUE_STRVAL;
+    conv->strval = mdstrdup (str);
+  }
+}
+
 ssize_t
 songutilAdjustPosReal (ssize_t pos, int speed)
 {

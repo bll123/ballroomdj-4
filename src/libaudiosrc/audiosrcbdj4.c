@@ -586,6 +586,8 @@ asbdj4SongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri)
     asdata->state = BDJ4_STATE_OFF;
   }
 
+  slistSetStr (asidata->songtags, "SONGTYPE", "remote");
+
   return rc;
 }
 

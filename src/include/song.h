@@ -19,6 +19,13 @@ enum {
   SONG_LONG_DURATION,
 };
 
+enum {
+  SONG_TYPE_NORM,
+  SONG_TYPE_REMOTE,
+  SONG_TYPE_PODCAST,
+  SONG_TYPE_MAX,
+};
+
 typedef struct song song_t;
 
 song_t *  songAlloc (void);

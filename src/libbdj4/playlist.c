@@ -1143,7 +1143,7 @@ playlistCheckAndCreate (const char *name, pltype_t pltype)
 void
 playlistDelete (const char *name)
 {
-  char  tnm [MAXPATHLEN];
+  char      tnm [MAXPATHLEN];
 
   pathbldMakePath (tnm, sizeof (tnm),
       name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);

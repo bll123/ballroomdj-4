@@ -428,7 +428,7 @@ aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata,
 
   slistFree (asidata->songtags);
   asidata->songtags = slistAlloc ("assongtags", LIST_UNORDERED, NULL);
-  slistSetSize (asidata->songtags, 4);
+  slistSetSize (asidata->songtags, 5);
 
   val = ilistGetStr (rssitems, idx, RSS_ITEM_DURATION);
   if (val != NULL) {
@@ -443,6 +443,9 @@ aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata,
       ilistGetStr (rssitems, idx, RSS_ITEM_DATE));
   slistSetStr (asidata->songtags,
       tagdefs [TAG_NO_MAX_PLAY_TM].tag, "yes");
+  slistSetStr (asidata->songtags,
+      tagdefs [TAG_SONG_TYPE].tag, "podcast");
+
   slistSort (asidata->songtags);
 
   return true;

@@ -38,6 +38,7 @@ typedef struct {
   uiwcont_t         *errorMsg;
   nlist_t           *options;
   const char        *pleasewaitmsg;
+  musicdb_t         *musicdb;
 } manageinfo_t;
 
 /* managepl.c */
@@ -92,7 +93,7 @@ void  manageDbResetButtons (managedb_t *managedb);
 /* managemisc.c */
 bool manageCreatePlaylistCopy (uiwcont_t *errorMsg,
     const char *oname, const char *newname);
-void manageDeletePlaylist (const char *name);
+void manageDeletePlaylist (musicdb_t *musicdb, const char *name);
 void manageDeleteStatus (uiwcont_t *statusMsg, const char *name);
 char * manageGetEntryValue (uiwcont_t *uientry);
 

@@ -33,6 +33,7 @@ add_library (libbdj4 SHARED
   orgutil.c
   playlist.c
   podcast.c
+  podcastutil.c
   quickedit.c
   rating.c
   rss.c

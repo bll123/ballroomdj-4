@@ -586,6 +586,7 @@ main (int argc, char *argv[])
 
   manage.songdb = songdbAlloc (manage.musicdb);
   manage.minfo.dispsel = dispselAlloc (DISP_SEL_LOAD_MANAGE);
+  manage.minfo.musicdb = manage.musicdb;
 
   listenPort = bdjvarsGetNum (BDJVL_PORT_MANAGEUI);
   manage.conn = connInit (ROUTE_MANAGEUI);
@@ -2726,7 +2727,7 @@ manageSonglistDelete (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new songlist");
   uimusicqGetSonglistName (manage->currmusicq, oname, sizeof (oname));
 
-  manageDeletePlaylist (oname);
+  manageDeletePlaylist (manage->musicdb, oname);
   /* no save */
   *manage->sloldname = '\0';
   manageResetCreateNew (manage, PLTYPE_SONGLIST);
@@ -4060,6 +4061,7 @@ manageProcessDatabaseUpdate (manageui_t *manage)
 
   samesongFree (manage->samesong);
   manage->musicdb = bdj4ReloadDatabase (manage->musicdb);
+  manage->minfo.musicdb = manage->musicdb;
   manage->samesong = samesongAlloc (manage->musicdb);
 
   manageUpdateDBPointers (manage);
@@ -4303,6 +4305,7 @@ manageRemoveSongs (manageui_t *manage)
 
     songfn = nlistGetStr (manage->removelist, dbidx);
     if (! audiosrcRemove (songfn)) {
+      /* only need to know if file-type */
       if (audiosrcGetType (songfn) != AUDIOSRC_TYPE_FILE) {
         /* completely clears the entry from the database */
         dbRemoveSong (manage->musicdb, dbidx);
