@@ -1463,7 +1463,7 @@ mainMusicQueueFill (maindata_t *mainData, int mqidx)
     }
 
     if (song == NULL || stopatflag) {
-      logMsg (LOG_DBG, LOG_INFO, "song is null or stop-at");
+      logMsg (LOG_DBG, LOG_INFO, "song is null %d or stop-at %d", song == NULL, stopatflag);
       playlist = mainNextPlaylist (mainData, mqidx);
       stopatflag = false;
       stopTime = playlistGetConfigNum (playlist, PLAYLIST_STOP_TIME);

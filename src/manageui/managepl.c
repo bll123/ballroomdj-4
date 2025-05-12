@@ -666,7 +666,7 @@ managePlaylistMenu (managepl_t *managepl, uiwcont_t *uimenubar)
 }
 
 void
-managePlaylistSave (managepl_t *managepl, pltype_t type)
+managePlaylistSave (managepl_t *managepl)
 {
   char      *name;
   bool      notvalid = false;
@@ -697,11 +697,6 @@ managePlaylistSave (managepl_t *managepl, pltype_t type)
   }
 
   pltype = playlistGetConfigNum (managepl->playlist, PLAYLIST_TYPE);
-  if (type > PLTYPE_NONE && type < PLTYPE_MAX && pltype != type) {
-    managepl->changed = true;
-    pltype = type;
-    playlistSetConfigNum (managepl->playlist, PLAYLIST_TYPE, pltype);
-  }
 
   if (managepl->changed) {
     manageSetPlaylistName (managepl, name);
@@ -712,6 +707,7 @@ managePlaylistSave (managepl_t *managepl, pltype_t type)
     }
 
     playlistSave (managepl->playlist, name);
+    /* callback to load the songlist/sequence into the music manager */
     if (managepl->plloadcb != NULL &&
         (pltype == PLTYPE_SONGLIST ||
         pltype == PLTYPE_SEQUENCE)) {
@@ -767,7 +763,7 @@ managePlaylistLoadFile (managepl_t *managepl, const char *plname,
   managepl->inload = true;
 
   if (preloadflag == MANAGE_STD) {
-    managePlaylistSave (managepl, PLTYPE_NONE);
+    managePlaylistSave (managepl);
   }
 
   pl = playlistLoad (plname, NULL, NULL);
@@ -797,8 +793,7 @@ managePlaylistLoadFile (managepl_t *managepl, const char *plname,
     pltype_t    pltype;
 
     pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
-    /* songlists and sequences need to load the file into */
-    /* the music manager */
+    /* callback to load the songlist/sequence into the music manager */
     if (managepl->plloadcb != NULL &&
         (pltype == PLTYPE_SONGLIST ||
         pltype == PLTYPE_SEQUENCE)) {
@@ -821,7 +816,7 @@ managePlaylistNew (managepl_t *managepl, int preloadflag, int type)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new playlist");
   uiLabelSetText (managepl->minfo->statusMsg, "");
   if (preloadflag == MANAGE_STD) {
-    managePlaylistSave (managepl, PLTYPE_NONE);
+    managePlaylistSave (managepl);
   }
 
   /* CONTEXT: playlist management: default name for a new playlist */
@@ -849,7 +844,7 @@ managePlaylistLoad (void *udata)
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: load playlist");
   uiLabelSetText (managepl->minfo->statusMsg, "");
-  managePlaylistSave (managepl, PLTYPE_NONE);
+  managePlaylistSave (managepl);
   selectFileDialog (SELFILE_PLAYLIST, managepl->minfo->window,
       managepl->minfo->options, managepl->callbacks [MPL_CB_SEL_FILE]);
   logProcEnd ("");
@@ -981,7 +976,7 @@ managePlaylistCopy (void *udata)
 
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy playlist");
-  managePlaylistSave (managepl, PLTYPE_NONE);
+  managePlaylistSave (managepl);
 
   oname = manageGetEntryValue (managepl->wcont [MPL_W_PL_NAME]);
   /* CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */

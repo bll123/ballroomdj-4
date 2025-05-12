@@ -436,7 +436,7 @@ static bool managePlaylistExportRespHandler (void *udata, const char *fname, int
 static bool managePlaylistImport (void *udata);
 static bool managePlaylistImportRespHandler (void *udata);
 static void managePlaylistImportCreateSonglist (manageui_t *manage, slist_t *songlist);
-static bool managePlaylistImportCreateSongs (manageui_t *manage, const char *songnm, int imptype, slist_t *songlist, slist_t *tagdata);
+static bool managePlaylistImportCreateSongs (manageui_t *manage, const char *songnm, int imptype, slist_t *songlist, slist_t *tagdata, int retain);
 /* export/import bdj4 */
 static bool     managePlaylistExportBDJ4 (void *udata);
 static bool     managePlaylistImportBDJ4 (void *udata);
@@ -690,7 +690,7 @@ manageStoppingCallback (void *udata, programstate_t programState)
 
   manageSonglistSave (manage);
   manageSequenceSave (manage->manageseq);
-  managePlaylistSave (manage->managepl, manage->pltype);
+  managePlaylistSave (manage->managepl);
 
   manageAudioIdSavePosition (manage->manageaudioid);
 
@@ -2647,8 +2647,8 @@ manageSonglistLoad (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: load songlist");
   uiLabelSetText (manage->minfo.statusMsg, "");
   manageSonglistSave (manage);
-  selectFileDialog (SELFILE_SONGLIST, manage->minfo.window, manage->minfo.options,
-      manage->callbacks [MANAGE_CB_SL_SEL_FILE]);
+  selectFileDialog (SELFILE_SONGLIST, manage->minfo.window,
+      manage->minfo.options, manage->callbacks [MANAGE_CB_SL_SEL_FILE]);
   logProcEnd ("");
   return UICB_CONT;
 }
@@ -3070,6 +3070,7 @@ manageSonglistLoadFile (void *udata, const char *fn, int preloadflag)
   /* CONTEXT: playlist: the name of the history song list */
   if (strcmp (fn, _("History")) == 0 ||
       strcmp (fn, "History") == 0) {
+    /* CONTEXT: playlist: copy of the history song list */
     snprintf (tbuff, sizeof (tbuff), _("Copy of %s"), fn);
   }
 
@@ -3459,7 +3460,7 @@ managePlaylistImportRespHandler (void *udata)
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       plname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
-  /* podcasts over-write the old playlist */
+  /* podcasts overwrite the old playlist */
   if (! fileopFileExists (tbuff) || imptype == AUDIOSRC_TYPE_PODCAST) {
     manageSetSonglistName (manage, plname);
   }
@@ -3504,8 +3505,18 @@ managePlaylistImportRespHandler (void *udata)
   if (imptype == AUDIOSRC_TYPE_BDJ4 || imptype == AUDIOSRC_TYPE_PODCAST) {
     asiter_t    *asiter;
     const char  *songnm;
+    int         retain = 0;
 
     songlist = slistAlloc ("tmp-imp-pl-bdj4", LIST_UNORDERED, NULL);
+    if (imptype == AUDIOSRC_TYPE_PODCAST) {
+      playlist_t    *pl;
+
+      pl = playlistLoad (plname, NULL, NULL);
+      if (pl != NULL) {
+        retain = playlistGetPodcastNum (pl, PODCAST_RETAIN);
+      }
+      playlistFree (pl);
+    }
 
     asiter = audiosrcStartIterator (imptype, AS_ITER_PL, uri, oplname, askey);
     dbStartBatch (manage->musicdb);
@@ -3530,7 +3541,7 @@ managePlaylistImportRespHandler (void *udata)
       slistSort (tagdata);
 
       newsongs |= managePlaylistImportCreateSongs (
-          manage, songnm, imptype, songlist, tagdata);
+          manage, songnm, imptype, songlist, tagdata, retain);
       slistFree (tagdata);
     }
     dbEndBatch (manage->musicdb);
@@ -3551,16 +3562,20 @@ managePlaylistImportRespHandler (void *udata)
 
   if (imptype == AUDIOSRC_TYPE_PODCAST) {
     podcast_t   *podcast;
+    bool        podcastexists = true;
 
     podcast = podcastLoad (plname);
     if (podcast == NULL) {
       podcast = podcastCreate (plname);
+      podcastexists = false;
     }
 
     podcastSetStr (podcast, PODCAST_URI, uri);
     podcastSetStr (podcast, PODCAST_TITLE, plname);
 // ### need to get last-build-date from audio-src ?
-    podcastSetNum (podcast, PODCAST_RETAIN, 0);
+    if (podcastexists == false) {
+      podcastSetNum (podcast, PODCAST_RETAIN, 0);
+    }
     podcastSave (podcast);
     podcastFree (podcast);
 
@@ -3595,22 +3610,46 @@ managePlaylistImportCreateSonglist (manageui_t *manage, slist_t *songlist)
 
 static bool
 managePlaylistImportCreateSongs (manageui_t *manage, const char *songnm,
-    int imptype, slist_t *songlist, slist_t *tagdata)
+    int imptype, slist_t *songlist, slist_t *tagdata, int retain)
 {
   song_t      *song = NULL;
   bool        rc = false;
 
-  song = dbGetByName (manage->musicdb, songnm);
 
+  song = dbGetByName (manage->musicdb, songnm);
   if (song == NULL) {
+    /* song needs to be added */
     song = songAlloc ();
     songFromTagList (song, tagdata);
     songSetNum (song, TAG_DB_FLAGS, MUSICDB_STD);
     songSetNum (song, TAG_RRN, MUSICDB_ENTRY_NEW);
     songSetNum (song, TAG_PREFIX_LEN, 0);
-    dbWriteSong (manage->musicdb, song);
     rc = true;
-  } /* song needs to be added */
+  }
+
+  if (retain > 0) {
+    time_t      currtm;
+    time_t      podtm;
+    time_t      days = 0;
+
+    currtm = time (NULL);
+    podtm = songGetNum (song, TAG_DBADDDATE);
+    days = currtm - podtm;
+    days /= 24 * 3600;
+    if (days > retain) {
+      if (! rc) {
+        dbidx_t   dbidx;
+
+        dbidx = songGetNum (song, TAG_DBIDX);
+        dbRemoveSong (manage->musicdb, dbidx);
+      }
+      return false;
+    }
+  }
+
+  if (rc) {
+    dbWriteSong (manage->musicdb, song);
+  }
 
   slistSetNum (songlist, songnm, 0);
   return rc;
@@ -3790,7 +3829,7 @@ manageSwitchPage (manageui_t *manage, int pagenum, int which)
     }
     if (manage->maincurrtab == MANAGE_TAB_MAIN_PLMGMT) {
       logMsg (LOG_DBG, LOG_INFO, "last tab: playlist");
-      managePlaylistSave (manage->managepl, manage->pltype);
+      managePlaylistSave (manage->managepl);
     }
   }
 

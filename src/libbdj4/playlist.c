@@ -762,16 +762,25 @@ playlistGetNextSong (playlist_t *pl,
     }
   }
 
-  if (type == PLTYPE_SONGLIST) {
+  if (type == PLTYPE_SONGLIST || type == PLTYPE_PODCAST) {
     ilistidx_t    slkey;
 
     slkey = songlistIterate (pl->songlist, &pl->songlistiter);
     sfname = songlistGetStr (pl->songlist, slkey, SONGLIST_URI);
     while (sfname != NULL) {
+      int     songtype;
+
       song = dbGetByName (pl->musicdb, sfname);
-      if (song != NULL && songAudioSourceExists (song)) {
-        /* is ok */
-        break;
+
+      /* podcasts are assumed to exist */
+      if (song != NULL) {
+        songtype = songGetNum (song, TAG_SONG_TYPE);
+        /* podcasts are assumed to exist */
+        if (songtype == SONG_TYPE_PODCAST ||
+            songAudioSourceExists (song)) {
+          /* is ok */
+          break;
+        }
       }
       song = NULL;
       logMsg (LOG_DBG, LOG_IMPORTANT, "WARN: songlist: missing: %s", sfname);
@@ -861,12 +870,6 @@ playlistGetPlaylistNames (int flag, const char *dir)
     }
     if (flag == PL_LIST_AUTO_SEQ) {
       pathbldMakePath (tbuff, sizeof (tbuff), tfn, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
-      if (fileopFileExists (tbuff)) {
-        continue;
-      }
-    }
-    if (flag == PL_LIST_SONGLIST) {
-      pathbldMakePath (tbuff, sizeof (tbuff), tfn, BDJ4_PODCAST_EXT, PATHBLD_MP_DREL_DATA);
       if (fileopFileExists (tbuff)) {
         continue;
       }
