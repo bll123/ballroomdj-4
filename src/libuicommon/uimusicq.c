@@ -23,7 +23,6 @@
 #include "nlist.h"
 #include "pathbld.h"
 #include "pathutil.h"
-#include "playlist.h"
 #include "song.h"
 #include "songlist.h"
 #include "songlistutil.h"
@@ -279,8 +278,6 @@ uimusicqSave (musicdb_t *musicdb, mp_musicqupdate_t *musicqupdate, const char *n
   dbidxlist = uimusicqGetDBIdxList (musicqupdate);
   songlistutilCreateFromList (musicdb, name, dbidxlist);
   nlistFree (dbidxlist);
-  playlistCheckAndCreate (name, PLTYPE_SONGLIST);
-
   logProcEnd ("");
 }
 

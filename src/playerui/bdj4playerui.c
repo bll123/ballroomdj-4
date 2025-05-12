@@ -1209,6 +1209,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
             uimusicqSave (plui->musicdb,
                 plui->musicqupdate [MUSICQ_HISTORY], name);
+            playlistCheckAndCreate (name, PLTYPE_SONGLIST);
           }
 
           plui->lastLoc [musicqupdate->mqidx] = -1;

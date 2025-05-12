@@ -2706,7 +2706,6 @@ manageResetCreateNew (manageui_t *manage, pltype_t pltype)
 
   /* CONTEXT: manage-ui: song list: default name for a new song list */
   manageSetSonglistName (manage, _("New Song List"));
-fprintf (stderr, "mui:new: type: %d\n", pltype);
   manage->pltype = pltype;
   manage->slbackupcreated = false;
   uimusicqSetSelectionFirst (manage->currmusicq, manage->musicqManageIdx);
@@ -2980,7 +2979,6 @@ manageCFPLPostProcess (manageui_t *manage)
       playlistSetDanceNum (pl, dkey, PLDANCE_MAXPLAYTIME,
           playlistGetDanceNum (autopl, dkey, PLDANCE_MAXPLAYTIME));
     }
-fprintf (stderr, "mui:cfpl-post: save-pl\n");
     playlistSave (pl, tnm);
   }
 
@@ -2988,7 +2986,6 @@ fprintf (stderr, "mui:cfpl-post: save-pl\n");
   playlistFree (pl);
 
   /* update the playlist tab */
-fprintf (stderr, "mui:cfpl-post: pl load file\n");
   managePlaylistLoadFile (manage->managepl, tnm, MANAGE_PRELOAD_FORCE);
 
   manage->cfplpostprocess = false;
@@ -3092,7 +3089,6 @@ manageLoadPlaylistCB (void *udata, const char *fn)
   manageui_t    *manage = udata;
 
   logMsg (LOG_DBG, LOG_INFO, "load playlist cb: %s", fn);
-fprintf (stderr, "mui:load pl cb\n");
   managePlaylistLoadFile (manage->managepl, fn, MANAGE_PRELOAD);
   return UICB_CONT;
 }
@@ -3450,18 +3446,23 @@ managePlaylistImportRespHandler (void *udata)
     return UICB_CONT;
   }
 
-  if (imptype == AUDIOSRC_TYPE_PODCAST) {
-fprintf (stderr, "mui:imppl: c-new: pod\n");
-    manageResetCreateNew (manage, PLTYPE_PODCAST);
-  } else {
-fprintf (stderr, "mui:imppl: c-new: sl\n");
-    manageResetCreateNew (manage, PLTYPE_SONGLIST);
-  }
-
   uri = uiimpplGetURI (manage->uiimppl);
   askey = uiimpplGetASKey (manage->uiimppl);
   oplname = uiimpplGetOrigName (manage->uiimppl);
   plname = uiimpplGetNewName (manage->uiimppl);
+
+  if (imptype == AUDIOSRC_TYPE_PODCAST) {
+    manageResetCreateNew (manage, PLTYPE_PODCAST);
+  } else {
+    manageResetCreateNew (manage, PLTYPE_SONGLIST);
+  }
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      plname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
+  /* podcasts over-write the old playlist */
+  if (! fileopFileExists (tbuff) || imptype == AUDIOSRC_TYPE_PODCAST) {
+    manageSetSonglistName (manage, plname);
+  }
 
   mqidx = manage->musicqManageIdx;
   /* clear the entire queue */
@@ -3548,13 +3549,6 @@ fprintf (stderr, "mui:imppl: c-new: sl\n");
     manageRePopulateData (manage);
   }
 
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      plname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
-  /* podcasts over-write the old playlist */
-  if (! fileopFileExists (tbuff) || imptype == AUDIOSRC_TYPE_PODCAST) {
-    manageSetSonglistName (manage, plname);
-  }
-
   if (imptype == AUDIOSRC_TYPE_PODCAST) {
     podcast_t   *podcast;
 
@@ -3570,11 +3564,9 @@ fprintf (stderr, "mui:imppl: c-new: sl\n");
     podcastSave (podcast);
     podcastFree (podcast);
 
-fprintf (stderr, "mui:imppl: type: pod: %d\n", PLTYPE_PODCAST);
     manage->pltype = PLTYPE_PODCAST;
   }
 
-fprintf (stderr, "mui:imppl: call pl-load-file\n");
   managePlaylistLoadFile (manage->managepl, plname, MANAGE_PRELOAD);
 
   return UICB_CONT;
