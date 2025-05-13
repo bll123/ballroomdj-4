@@ -177,7 +177,6 @@ asiExists (asdata_t *asdata, const char *nm)
 
   stpecpy (query, query + sizeof (query), nm);
 
-fprintf (stderr, "aspod: exists: %s\n", nm);
   webrc = webclientHead (asdata->clientdata [clientkey].webclient, query);
   if (webrc != WEB_OK) {
     return exists;
@@ -350,7 +349,6 @@ aspodcastGetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata,
     return false;
   }
 
-fprintf (stderr, "aspod: get-pl-names\n");
   aspodcastRSS (asdata, asidata, uri);
 
   if (asdata->clientdata [clientkey].rssdata == NULL) {
@@ -379,7 +377,6 @@ aspodcastGetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *uri)
     return false;
   }
 
-fprintf (stderr, "aspod: get-pl\n");
   aspodcastRSS (asdata, asidata, uri);
   if (asdata->clientdata [clientkey].rssdata == NULL) {
     return false;
@@ -416,7 +413,6 @@ aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata,
     return false;
   }
 
-fprintf (stderr, "aspod: song-tags\n");
   aspodcastRSS (asdata, asidata, uri);
   if (asdata->clientdata [clientkey].rssdata == NULL) {
     return false;

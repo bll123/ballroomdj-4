@@ -311,7 +311,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiWidgetSetMarginEnd (uiwidgetp, 2);
   managedb->wcont [MDB_W_DB_PROGRESS] = uiwidgetp;
 
-  uiwidgetp = uiTextBoxCreate (200, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiwidgetp = uiTextBoxCreate (150, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiTextBoxSetReadonly (uiwidgetp);
   uiTextBoxSetDarkBG (uiwidgetp);
   uiTextBoxSetHeight (uiwidgetp, 300);

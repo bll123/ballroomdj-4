@@ -126,7 +126,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
     uiwcontFree (uiwidgetp);
   }
 
-  uivl = uivlCreate ("dl-source", NULL, vbox, 10, DL_MIN_WIDTH,
+  uivl = uivlCreate ("dl-source", NULL, vbox, 7, DL_MIN_WIDTH,
       VL_NO_HEADING | VL_ENABLE_KEYS);
   duallist->uivl [DL_LIST_SOURCE] = uivl;
   uivlSetDarkBackground (uivl);
@@ -137,6 +137,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
 
   dvbox = uiCreateVertBox ();
   uiBoxPackStart (hbox, dvbox);
+  uiWidgetAlignVertStart (dvbox);
   uiWidgetSetAllMargins (dvbox, 4);
   uiWidgetSetMarginTop (dvbox, 64);
 
@@ -168,7 +169,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
     uiwcontFree (uiwidgetp);
   }
 
-  uivl = uivlCreate ("dl-target", NULL, vbox, 10, DL_MIN_WIDTH,
+  uivl = uivlCreate ("dl-target", NULL, vbox, 7, DL_MIN_WIDTH,
       VL_NO_HEADING | VL_ENABLE_KEYS);
   duallist->uivl [DL_LIST_TARGET] = uivl;
   uivlSetDarkBackground (uivl);
@@ -178,6 +179,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uivlSetRowFillCallback (uivl, uiduallistVLFillTargetCB, duallist);
 
   uiwcontFree (dvbox);
+
   dvbox = uiCreateVertBox ();
   uiBoxPackStart (hbox, dvbox);
   uiWidgetAlignVertStart (dvbox);

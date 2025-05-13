@@ -141,6 +141,8 @@ podcastSetName (podcast_t *podcast, const char *newname)
 void
 podcastSave (podcast_t *podcast)
 {
+  char  tfn [MAXPATHLEN];
+
   if (podcast == NULL || podcast->podcast == NULL) {
     return;
   }
@@ -150,7 +152,9 @@ podcastSave (podcast_t *podcast)
   }
 
   nlistSetVersion (podcast->podcast, PODCAST_VERSION);
-  datafileSave (podcast->df, NULL, podcast->podcast, DF_NO_OFFSET,
+  pathbldMakePath (tfn, sizeof (tfn), podcast->name,
+      BDJ4_PODCAST_EXT, PATHBLD_MP_DREL_DATA);
+  datafileSave (podcast->df, tfn, podcast->podcast, DF_NO_OFFSET,
       podcast->distvers);
 }
 

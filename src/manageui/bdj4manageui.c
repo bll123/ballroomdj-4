@@ -418,7 +418,7 @@ static bool     manageSonglistSwap (void *udata);
 static void     manageSonglistLoadFile (void *udata, const char *fn, int preloadflag);
 static int32_t  manageLoadPlaylistCB (void *udata, const char *fn);
 static bool     manageNewPlaylistCB (void *udata);
-static int32_t  manageLoadSonglistSeqCB (void *udata, const char *fn);
+static int32_t  manageLoadSonglistCB (void *udata, const char *fn);
 static bool     manageToggleSBSSonglist (void *udata);
 static void     manageSetSBSSonglist (manageui_t *manage);
 static void     manageSonglistSave (manageui_t *manage);
@@ -945,7 +945,7 @@ manageBuildUI (manageui_t *manage)
       manage->callbacks [MANAGE_CB_SEQ_NEW]);
 
   manage->callbacks [MANAGE_CB_PL_LOAD] = callbackInitS (
-      manageLoadSonglistSeqCB, manage);
+      manageLoadSonglistCB, manage);
   managePlaylistSetLoadCallback (manage->managepl,
       manage->callbacks [MANAGE_CB_PL_LOAD]);
 
@@ -3107,7 +3107,7 @@ manageNewPlaylistCB (void *udata)
 
 /* callback to load upon playlist load */
 static int32_t
-manageLoadSonglistSeqCB (void *udata, const char *fn)
+manageLoadSonglistCB (void *udata, const char *fn)
 {
   manageui_t    *manage = udata;
 

@@ -243,7 +243,9 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   /* CONTEXT: playlist management: notebook tab title: settings */
   uiwidgetp = uiCreateLabel (_("Settings"));
   uiNotebookAppendPage (managepl->wcont [MPL_W_NB], mvbox, uiwidgetp);
-  uiWidgetSetAllMargins (mvbox, 4);
+  uiWidgetSetMarginTop (mvbox, 4);
+  uiWidgetSetMarginStart (mvbox, 4);
+  uiWidgetSetMarginEnd (mvbox, 4);
   uinbutilIDAdd (managepl->tabids, MPL_TAB_SETTINGS);
   uiwcontFree (uiwidgetp);
 
@@ -580,7 +582,9 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   /* CONTEXT: playlist management: notebook tab title: dances */
   uiwidgetp = uiCreateLabel (_("Dances"));
   uiNotebookAppendPage (managepl->wcont [MPL_W_NB], vbox, uiwidgetp);
-  uiWidgetSetAllMargins (vbox, 4);
+  uiWidgetSetMarginTop (vbox, 4);
+  uiWidgetSetMarginStart (vbox, 4);
+  uiWidgetSetMarginEnd (vbox, 4);
   uinbutilIDAdd (managepl->tabids, MPL_TAB_DANCES);
   uiwcontFree (uiwidgetp);
 
@@ -710,7 +714,8 @@ managePlaylistSave (managepl_t *managepl)
     /* callback to load the songlist/sequence into the music manager */
     if (managepl->plloadcb != NULL &&
         (pltype == PLTYPE_SONGLIST ||
-        pltype == PLTYPE_SEQUENCE)) {
+        pltype == PLTYPE_SEQUENCE ||
+        pltype == PLTYPE_PODCAST)) {
       callbackHandlerS (managepl->plloadcb, name);
     }
   }
@@ -796,7 +801,8 @@ managePlaylistLoadFile (managepl_t *managepl, const char *plname,
     /* callback to load the songlist/sequence into the music manager */
     if (managepl->plloadcb != NULL &&
         (pltype == PLTYPE_SONGLIST ||
-        pltype == PLTYPE_SEQUENCE)) {
+        pltype == PLTYPE_SEQUENCE ||
+        pltype == PLTYPE_PODCAST)) {
       callbackHandlerS (managepl->plloadcb, plname);
     }
   }
