@@ -98,7 +98,7 @@ typedef struct uiimppl {
 /* import playlist */
 static void uiimpplCreateDialog (uiimppl_t *uiimppl);
 static bool uiimpplTargetDialog (void *udata);
-static void uiimpplInitDisplay (uiimppl_t *uiimppl);
+static void uiimpplInitDisplay (uiimppl_t *uiimppl, const char *uri);
 static bool uiimpplResponseHandler (void *udata, int32_t responseid);
 static int  uiimpplValidateURIEntry (uiwcont_t *entry, const char *label, void *udata);
 static int  uiimpplValidateNNEntry (uiwcont_t *entry, const char *label, void *udata);
@@ -274,7 +274,7 @@ uiimpplSetResponseCallback (uiimppl_t *uiimppl, callback_t *uicb)
 }
 
 bool
-uiimpplDialog (uiimppl_t *uiimppl)
+uiimpplDialog (uiimppl_t *uiimppl, const char *uri)
 {
   int         x, y;
 
@@ -301,7 +301,7 @@ uiimpplDialog (uiimppl_t *uiimppl)
   y = nlistGetNum (uiimppl->options, IMP_PL_POSITION_Y);
   uiWindowMove (uiimppl->wcont [UIIMPPL_W_DIALOG], x, y, -1);
 
-  uiimpplInitDisplay (uiimppl);
+  uiimpplInitDisplay (uiimppl, uri);
 
   logProcEnd ("");
   return UICB_CONT;
@@ -582,7 +582,7 @@ uiimpplTargetDialog (void *udata)
 
 
 static void
-uiimpplInitDisplay (uiimppl_t *uiimppl)
+uiimpplInitDisplay (uiimppl_t *uiimppl, const char *uri)
 {
   if (uiimppl == NULL) {
     return;
@@ -590,6 +590,9 @@ uiimpplInitDisplay (uiimppl_t *uiimppl)
 
   uiimpplImportTypeChg (uiimppl);
   uiimpplProcessValidations (uiimppl, true);
+  if (uri != NULL) {
+    uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_URI], uri);
+  }
 }
 
 static bool

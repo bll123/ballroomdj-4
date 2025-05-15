@@ -60,6 +60,7 @@ static bool uiSpinboxTextKeyCallback (void *udata);
 static void uiSpinboxValueChangedHandler (GtkSpinButton *sb, gpointer udata);
 static gboolean uiSpinboxDoubleDefaultDisplay (GtkSpinButton *sb, gpointer udata);
 static gboolean uiSpinboxFocusHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata);
+static void uiSpinboxTextPasteNull (GtkEntry *w, void *udata);
 
 /* only frees the internals */
 void
@@ -114,6 +115,8 @@ uiSpinboxTextCreate (void *udata)
       G_CALLBACK (uiSpinboxTextDisplay), uiwidget);
   g_signal_connect (widget, "input",
       G_CALLBACK (uiSpinboxTextInput), uiwidget);
+  g_signal_connect (widget, "paste-clipboard",
+      G_CALLBACK (uiSpinboxTextPasteNull), uiwidget);
 
   return uiwidget;
 }
@@ -802,4 +805,11 @@ uiSpinboxFocusHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata)
   }
 
   return false;
+}
+
+static void
+uiSpinboxTextPasteNull (GtkEntry *w, void *udata)
+{
+  g_signal_stop_emission_by_name (G_OBJECT (w), "paste-clipboard");
+  return;
 }

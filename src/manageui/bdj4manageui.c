@@ -169,6 +169,7 @@ enum {
   MANAGE_CB_BDJ4_IMP,
   MANAGE_CB_IMP_PL,
   MANAGE_CB_EXP_PL,
+  MANAGE_CB_DRAG_DROP,
   MANAGE_CB_MAX,
 };
 
@@ -430,13 +431,16 @@ static bool     manageQueueProcessSonglist (void *udata, int32_t dbidx);
 static bool     manageQueueProcessSBSSongList (void *udata, int32_t dbidx);
 static void     manageQueueProcess (void *udata, dbidx_t dbidx, int mqidx, int dispsel, int action);
 static nlistidx_t manageLoadMusicQueue (manageui_t *manage, int mqidx);
-/* playlist import/export */
+/* export playlist */
 static bool managePlaylistExport (void *udata);
 static bool managePlaylistExportRespHandler (void *udata, const char *fname, int type);
+/* import playlist */
 static bool managePlaylistImport (void *udata);
 static bool managePlaylistImportRespHandler (void *udata);
 static void managePlaylistImportCreateSonglist (manageui_t *manage, slist_t *songlist);
 static bool managePlaylistImportCreateSongs (manageui_t *manage, const char *songnm, int imptype, slist_t *songlist, slist_t *tagdata, int retain);
+static int32_t manageDragDropCallback (void *udata, const char *uri);
+
 /* export/import bdj4 */
 static bool     managePlaylistExportBDJ4 (void *udata);
 static bool     managePlaylistImportBDJ4 (void *udata);
@@ -961,6 +965,13 @@ manageBuildUI (manageui_t *manage)
 
   /* set a default selection.  this will also set the song editor dbidx */
   uisongselSetSelection (manage->mmsongsel, 0);
+
+  manage->callbacks [MANAGE_CB_DRAG_DROP] = callbackInitS (
+      manageDragDropCallback, manage);
+  uimusicqDragDropSetURICallback (manage->slmusicq, 0,
+      manage->callbacks [MANAGE_CB_DRAG_DROP]);
+  uimusicqDragDropSetURICallback (manage->slsbsmusicq, 0,
+      manage->callbacks [MANAGE_CB_DRAG_DROP]);
 
   logProcEnd ("");
 }
@@ -3407,6 +3418,8 @@ managePlaylistExportRespHandler (void *udata, const char *fname, int type)
   return UICB_CONT;
 }
 
+/* import playlist */
+
 static bool
 managePlaylistImport (void *udata)
 {
@@ -3420,7 +3433,7 @@ managePlaylistImport (void *udata)
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import");
 
-  uiimpplDialog (manage->uiimppl);
+  uiimpplDialog (manage->uiimppl, NULL);
 
   manage->importplactive = false;
   logProcEnd ("");
@@ -3655,6 +3668,20 @@ managePlaylistImportCreateSongs (manageui_t *manage, const char *songnm,
   return rc;
 }
 
+static int32_t
+manageDragDropCallback (void *udata, const char *uri)
+{
+  manageui_t    *manage = udata;
+
+  if (strncmp (uri, AS_HTTPS_PFX, AS_HTTPS_PFX_LEN) != 0 ||
+      strncmp (uri + strlen (uri) - AS_XML_SFX_LEN,
+      AS_XML_SFX, AS_XML_SFX_LEN) != 0) {
+    return UICB_STOP;
+  }
+
+  uiimpplDialog (manage->uiimppl, uri);
+  return UICB_CONT;
+}
 
 /* export/import bdj4 */
 
