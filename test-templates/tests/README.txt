@@ -4,6 +4,8 @@
 # index, which is offset by one.
 #
 # test songs are all between 29 and 32 seconds long
+#   excepting four jive songs for testing song-start, song-end and
+#   no-max-play-time
 # fade-out default: 4000
 # gap default: 2000
 #

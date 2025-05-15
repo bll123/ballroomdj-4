@@ -626,7 +626,6 @@ playerProcessing (void *udata)
     playrequest_t *preq = NULL;
     bool          temprepeat = false;
     char          tempffn [MAXPATHLEN];
-    int           sourceType;
     int           tspeed;
 
 
@@ -704,7 +703,7 @@ playerProcessing (void *udata)
           PATHBLD_MP_DIR_DATATOP);
     }
 
-    pliMediaSetup (playerData->pli, pq->tempname, tempffn, sourceType);
+    pliMediaSetup (playerData->pli, pq->tempname, tempffn, pq->audiosrc);
     /* pq->songstart is normalized */
 
     tspeed = pq->speed;
@@ -1030,6 +1029,7 @@ playerSongPrep (playerdata_t *playerData, char *args)
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->dur = atol (p);
+fprintf (stderr, "prep: dur %ld %s\n", (long) npq->dur, npq->songname);
   npq->plidur = 0;
   logMsg (LOG_DBG, LOG_INFO, "     duration: %" PRId32, npq->dur);
 
@@ -2090,7 +2090,7 @@ playerChkPlayerSong (playerdata_t *playerData, int routefrom)
   prepqueue_t *pq = playerData->currentSong;
   char        tmp [2000];
   const char  *sn = MSG_ARGS_EMPTY_STR;
-  ssize_t     dur;
+  int64_t     dur;
 
 
   dur = 0;
@@ -2105,7 +2105,7 @@ playerChkPlayerSong (playerdata_t *playerData, int routefrom)
   snprintf (tmp, sizeof (tmp),
       "p-duration%c%" PRId64 "%c"
       "p-songfn%c%s",
-      MSG_ARGS_RS, (int64_t) dur, MSG_ARGS_RS,
+      MSG_ARGS_RS, dur, MSG_ARGS_RS,
       MSG_ARGS_RS, sn);
   connSendMessage (playerData->conn, routefrom, MSG_CHK_PLAYER_SONG, tmp);
 }

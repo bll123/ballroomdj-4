@@ -164,6 +164,7 @@ cp -f test-templates/dances.txt data
 # the test status data file has an additional 'edit' status.
 cp -f test-templates/status.txt data
 cp -f test-templates/ds-songfilter.txt data/profile00
+cp -f test-templates/ds-songedit-b.txt data/profile00
 cp -f test-templates/ui-*.txt data/profile00
 mv -f data/profile00/ui-starter.txt data
 cp -f test-templates/audiosrc.txt data
@@ -322,14 +323,6 @@ rm -f data/updater.txt
 ./bin/bdj4 --bdj4updater --newinstall
 # run again w/o newinstall to perform the updates
 ./bin/bdj4 --bdj4updater
-
-if [[ $os == macos ]]; then
-  # reset the debug level on macos back to 31
-  tfn=data/bdjconfig.txt
-  sed -e '/^DEBUGLVL/ { n ; s/.*/..31/ ; }' \
-      ${tfn} > ${tfn}.n
-  mv -f ${tfn}.n ${tfn}
-fi
 
 # bdj4updater will change the itunes media dir
 tfn=data/${hostname}/bdjconfig.txt

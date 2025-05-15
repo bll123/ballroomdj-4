@@ -1,0 +1,46 @@
+section 145 Song-Controls
+
+test 145-10 Song-Start-End
+# ick
+msg main MUSICQ_INSERT 0~999~39
+msg main MUSICQ_INSERT 0~999~51
+msg main MUSICQ_INSERT 0~999~63
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+get player CHK_PLAYER_SONG
+chk p-duration 29010
+msg player PLAY_FADE
+resptimeout 7500
+get player CHK_PLAYER_STATUS
+wait playstate playing
+get player CHK_PLAYER_SONG
+chk p-duration 10000
+msg player PLAY_FADE
+resptimeout 7500
+get player CHK_PLAYER_STATUS
+wait playstate playing
+get player CHK_PLAYER_SONG
+chk p-duration 9000
+msg player PLAY_FADE
+resptimeout 7500
+get player CHK_PLAYER_STATUS
+wait playstate stopped
+end
+
+test 145-20 No-Max-Play-Time
+msg main CHK_MAIN_SET_MAXPLAYTIME 10000
+# more ick
+msg main MUSICQ_INSERT 0~999~15
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+get player CHK_PLAYER_SONG
+chk p-duration 30010
+reset
+msg main CHK_MAIN_SET_MAXPLAYTIME 360000
+end

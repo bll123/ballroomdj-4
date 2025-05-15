@@ -1,6 +1,6 @@
 # test-music.txt
-# 2023-8-14
-# version 3
+# 2025-5-15
+# version 4
 #
 # for creating test music files and a test database.
 #
@@ -8,6 +8,10 @@
 # all variations are included
 #
 # The BPM is set to the old method so that the updater can be tested.
+#
+# Four jives are used for the no-max-play-time, song-start and song-end
+# tests (145).  This is a pain, because the db-idx must be determined for
+# them.
 #
 version
 ..1
@@ -771,6 +775,8 @@ ARTIST
 ..%03d-artist
 ALBUM
 ..%03d-album
+NOMAXPLAYTM
+..on
 TRACKNUMBER
 ..%d
 DANCE
@@ -861,6 +867,8 @@ ARTIST
 ..%03d-artist
 ALBUM
 ..%03d-album
+SONGSTART
+..1000
 TRACKNUMBER
 ..%d
 DANCE
@@ -896,6 +904,8 @@ ARTIST
 ..%03d-artist
 ALBUM
 ..%03d-album
+SONGEND
+..10000
 TRACKNUMBER
 ..%d
 DANCE
@@ -929,6 +939,10 @@ ARTIST
 ..%03d-artist
 ALBUM
 ..%03d-album
+SONGSTART
+..1000
+SONGEND
+..10000
 TRACKNUMBER
 ..%d
 DANCE

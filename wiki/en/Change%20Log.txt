@@ -17,6 +17,7 @@
     * Configure: Player: Add optional player arguments.
     * PENDING Manage: Import Playlist: Add podcast.
     * PENDING Manage: Playlist Management: Add podcast.
+    * Song Editor: No maximum play time setting.
 
 -->
 
