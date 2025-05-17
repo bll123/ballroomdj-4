@@ -694,6 +694,8 @@ mainProcessing (void *udata)
     mainSendMarqueeData (mainData);
     mainSendRemctrlData (mainData);
     if (mainData->finished && mainData->playerState == PL_STATE_STOPPED) {
+      connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_FINISHED, NULL);
+      connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_FINISHED, NULL);
       mainData->finished = false;
     }
   }
@@ -1047,9 +1049,7 @@ mainSendMarqueeData (maindata_t *mainData)
   if (mainData->playerState == PL_STATE_STOPPED &&
       mainData->finished) {
     logMsg (LOG_DBG, LOG_INFO, "sending finished");
-    if (marqueeactive) {
-      mainSendFinished (mainData);
-    }
+    mainSendFinished (mainData);
     if (mobmarqueeactive) {
       /* special case to finalize the mobile marquee display */
       snprintf (tbuff, sizeof (tbuff), "\"current\" : \"%s\"",
@@ -2075,6 +2075,9 @@ mainMusicQueuePlay (maindata_t *mainData)
 
   logProcBegin ();
 
+  logMsg (LOG_DBG, LOG_BASIC, "pl-state: %d/%s",
+      mainData->playerState, logPlayerState (mainData->playerState));
+
   currTime = mstime ();
   if (mainData->stopTime [mainData->musicqPlayIdx] > 0 &&
       currTime > mainData->nStopTime [mainData->musicqPlayIdx]) {
@@ -2086,9 +2089,6 @@ mainMusicQueuePlay (maindata_t *mainData)
     mainData->nStopTime [mainData->musicqPlayIdx] = 0;
     return;
   }
-
-  logMsg (LOG_DBG, LOG_BASIC, "pl-state: %d/%s",
-      mainData->playerState, logPlayerState (mainData->playerState));
 
   mainData->startwaitTime = bdjoptGetNumPerQueue (OPT_Q_START_WAIT_TIME, mainData->musicqPlayIdx);
 
@@ -2657,8 +2657,6 @@ mainMusicqIndexParse (maindata_t *mainData, const char *p)
 static void
 mainSendFinished (maindata_t *mainData)
 {
-  connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_FINISHED, NULL);
-  connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_FINISHED, NULL);
   if (mainData->marqueestarted) {
     connSendMessage (mainData->conn, ROUTE_MARQUEE, MSG_FINISHED, NULL);
   }

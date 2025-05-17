@@ -8,6 +8,7 @@
 
 * Bug Fixes:
     * User Interface: Prevent paste into read-only spinboxes.
+    * Player: Fix incorrect status display when playing and no songs.
 * Changes:
     * Player: External Request: Drag and drop implemented.
     * Manage: Import Playlist: Drag and drop implemented.
@@ -15,8 +16,8 @@
 * New Features:
     * Configure: Audio Sources: Add podcast.
     * Configure: Player: Add optional player arguments.
-    * PENDING Manage: Import Playlist: Add podcast.
-    * PENDING Manage: Playlist Management: Add podcast.
+    * Manage: Import Playlist: Add podcast.
+    * Manage: Playlist Management: Add podcast.
     * Song Editor: No maximum play time setting.
 
 -->

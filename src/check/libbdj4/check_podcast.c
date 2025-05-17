@@ -31,6 +31,7 @@ setup (void)
 {
   bdjvarsdfloadInit ();
   fileopDelete ("data/tpodcast.podcast");
+  fileopDelete ("data/tpodb.podcast");
 }
 
 static void
@@ -38,6 +39,7 @@ teardown (void)
 {
   bdjvarsdfloadCleanup ();
   fileopDelete ("data/tpodcast.podcast");
+  fileopDelete ("data/tpodb.podcast");
 }
 
 START_TEST(podcast_create)
@@ -65,12 +67,15 @@ START_TEST(podcast_setget)
   podcast = podcastCreate ("tpodcast");
 
   podcastSetStr (podcast, PODCAST_URI, "test");
+  podcastSetStr (podcast, PODCAST_TITLE, "title-a");
   podcastSetStr (podcast, PODCAST_USER, "user");
   podcastSetStr (podcast, PODCAST_PASSWORD, "pass");
   podcastSetNum (podcast, PODCAST_RETAIN, 10);
 
   sval = podcastGetStr (podcast, PODCAST_URI);
   ck_assert_str_eq (sval, "test");
+  sval = podcastGetStr (podcast, PODCAST_TITLE);
+  ck_assert_str_eq (sval, "title-a");
   sval = podcastGetStr (podcast, PODCAST_USER);
   ck_assert_str_eq (sval, "user");
   sval = podcastGetStr (podcast, PODCAST_PASSWORD);
@@ -79,12 +84,15 @@ START_TEST(podcast_setget)
   ck_assert_int_eq (nval, 10);
 
   podcastSetStr (podcast, PODCAST_URI, "testb");
+  podcastSetStr (podcast, PODCAST_TITLE, "title-b");
   podcastSetStr (podcast, PODCAST_USER, "userb");
   podcastSetStr (podcast, PODCAST_PASSWORD, "passb");
   podcastSetNum (podcast, PODCAST_RETAIN, 11);
 
   sval = podcastGetStr (podcast, PODCAST_URI);
   ck_assert_str_eq (sval, "testb");
+  sval = podcastGetStr (podcast, PODCAST_TITLE);
+  ck_assert_str_eq (sval, "title-b");
   sval = podcastGetStr (podcast, PODCAST_USER);
   ck_assert_str_eq (sval, "userb");
   sval = podcastGetStr (podcast, PODCAST_PASSWORD);
@@ -106,6 +114,7 @@ START_TEST(podcast_save)
   podcast = podcastCreate ("tpodcast");
 
   podcastSetStr (podcast, PODCAST_URI, "test");
+  podcastSetStr (podcast, PODCAST_TITLE, "title");
   podcastSetStr (podcast, PODCAST_USER, "user");
   podcastSetStr (podcast, PODCAST_PASSWORD, "pass");
   podcastSetNum (podcast, PODCAST_RETAIN, 10);
@@ -140,6 +149,45 @@ START_TEST(podcast_load)
 
   sval = podcastGetStr (podcast, PODCAST_URI);
   ck_assert_str_eq (sval, "test");
+  sval = podcastGetStr (podcast, PODCAST_TITLE);
+  ck_assert_str_eq (sval, "title");
+  sval = podcastGetStr (podcast, PODCAST_USER);
+  ck_assert_str_eq (sval, "user");
+  sval = podcastGetStr (podcast, PODCAST_PASSWORD);
+  ck_assert_str_eq (sval, "pass");
+  nval = podcastGetNum (podcast, PODCAST_RETAIN);
+  ck_assert_int_eq (nval, 10);
+
+  podcastFree (podcast);
+}
+END_TEST
+
+START_TEST(podcast_setname)
+{
+  podcast_t   *podcast = NULL;
+  const char  *sval = NULL;
+  int         nval;
+  int         rc;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- podcast_load");
+  mdebugSubTag ("podcast_load");
+
+  podcast = podcastLoad ("tpodcast");
+  podcastSetName (podcast, "tpodb");
+  podcastSave (podcast);
+  podcastFree (podcast);
+
+  rc = podcastExists ("tpodcast");
+  ck_assert_int_eq (rc, 1);
+  rc = podcastExists ("tpodb");
+  ck_assert_int_eq (rc, 1);
+
+  podcast = podcastLoad ("tpodb");
+
+  sval = podcastGetStr (podcast, PODCAST_URI);
+  ck_assert_str_eq (sval, "test");
+  sval = podcastGetStr (podcast, PODCAST_TITLE);
+  ck_assert_str_eq (sval, "title");
   sval = podcastGetStr (podcast, PODCAST_USER);
   ck_assert_str_eq (sval, "user");
   sval = podcastGetStr (podcast, PODCAST_PASSWORD);
@@ -166,6 +214,7 @@ podcast_suite (void)
   tcase_add_test (tc, podcast_save);
   tcase_add_test (tc, podcast_exists);
   tcase_add_test (tc, podcast_load);
+  tcase_add_test (tc, podcast_setname);
   suite_add_tcase (s, tc);
   return s;
 }

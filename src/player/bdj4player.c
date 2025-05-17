@@ -1029,7 +1029,6 @@ playerSongPrep (playerdata_t *playerData, char *args)
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->dur = atol (p);
-fprintf (stderr, "prep: dur %ld %s\n", (long) npq->dur, npq->songname);
   npq->plidur = 0;
   logMsg (LOG_DBG, LOG_INFO, "     duration: %" PRId32, npq->dur);
 

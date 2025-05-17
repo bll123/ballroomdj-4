@@ -4347,6 +4347,10 @@ manageUndoRemove (void *udata)
   return UICB_CONT;
 }
 
+/* renames the audio file, or if not a file-type, */
+/* usually clears the entry from the database. */
+/* this routine is called upon music manager exit, so the database */
+/* will be re-loaded on startup */
 static void
 manageRemoveSongs (manageui_t *manage)
 {

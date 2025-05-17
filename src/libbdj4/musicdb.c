@@ -439,6 +439,7 @@ dbRemoveSong (musicdb_t *musicdb, dbidx_t dbidx)
     return false;
   }
   rrn = songGetNum (song, TAG_RRN);
+  songSetNum (song, TAG_DB_FLAGS, MUSICDB_REMOVED);
 
   if (dbOpenDB (musicdb, RAFILE_RW) < 0) {
     return false;

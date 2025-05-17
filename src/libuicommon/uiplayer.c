@@ -160,7 +160,8 @@ static bool  uiplayerInitCallback (void *udata, programstate_t programState);
 static bool  uiplayerClosingCallback (void *udata, programstate_t programState);
 
 static void     uiplayerProcessPauseatend (uiplayer_t *uiplayer, int on);
-static void     uiplayerProcessPlayerState (uiplayer_t *uiplayer, char *data);
+static void     uiplayerProcessPlayerStateMsg (uiplayer_t *uiplayer, char *data);
+static void     uiplayerProcessPlayerState (uiplayer_t *uiplayer);
 static void     uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args);
 static void     uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args);
 static bool     uiplayerFadeProcess (void *udata);
@@ -720,7 +721,7 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     case ROUTE_PLAYERUI: {
       switch (msg) {
         case MSG_PLAYER_STATE: {
-          uiplayerProcessPlayerState (uiplayer, targs);
+          uiplayerProcessPlayerStateMsg (uiplayer, targs);
           break;
         }
         case MSG_PLAY_PAUSEATEND_STATE: {
@@ -746,6 +747,8 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_FINISHED: {
+          uiplayer->playerState = PL_STATE_STOPPED;
+          uiplayerProcessPlayerState (uiplayer);
           break;
         }
         default: {
@@ -903,9 +906,8 @@ uiplayerProcessPauseatend (uiplayer_t *uiplayer, int onoff)
 }
 
 static void
-uiplayerProcessPlayerState (uiplayer_t *uiplayer, char *data)
+uiplayerProcessPlayerStateMsg (uiplayer_t *uiplayer, char *data)
 {
-  int               state;
   mp_playerstate_t  *ps;
 
   logProcBegin ();
@@ -920,6 +922,18 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, char *data)
     mstimeset (&uiplayer->speedLockTimeout, TM_TIMER_OFF);
     mstimeset (&uiplayer->speedLockSend, TM_TIMER_OFF);
   }
+
+  uiplayerProcessPlayerState (uiplayer);
+  msgparsePlayerStateFree (ps);
+}
+
+static void
+uiplayerProcessPlayerState (uiplayer_t *uiplayer)
+{
+  int               state;
+
+  logMsg (LOG_DBG, LOG_INFO, "pl-state: %d/%s\n",
+      uiplayer->playerState, logPlayerState (uiplayer->playerState));
 
   state = UIWIDGET_ENABLE;
   if (uiplayer->playerState == PL_STATE_IN_FADEOUT) {
@@ -966,7 +980,6 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, char *data)
       break;
     }
   }
-  msgparsePlayerStateFree (ps);
   logProcEnd ("");
 }
 

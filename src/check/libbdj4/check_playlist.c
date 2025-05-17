@@ -46,6 +46,9 @@
 #define AUTONEWFN "test-auto-new"
 #define PODCASTNEWFN "test-podcast-new"
 #define SEQRENFN "test-seq-ren"
+#define SLRENFN "test-sl-ren"
+#define AUTORENFN "test-auto-ren"
+#define PODCASTRENFN "test-podcast-ren"
 
 static char *dbfn = "data/musicdb.dat";
 static musicdb_t *db = NULL;
@@ -85,6 +88,15 @@ static test_fn_t test_data [] = {
   { true, SEQRENFN, "", "" },
   { true, SEQRENFN, "", "" },
   { true, SEQRENFN, "", "" },
+  { true, SLRENFN, "", "" },
+  { true, SLRENFN, "", "" },
+  { true, SLRENFN, "", "" },
+  { true, AUTORENFN, "", "" },
+  { true, AUTORENFN, "", "" },
+  { true, PODCASTRENFN, "", "" },
+  { true, PODCASTRENFN, "", "" },
+  { true, PODCASTRENFN, "", "" },
+  { true, PODCASTRENFN, "", "" },
 };
 enum {
   CPL_TEST_MAX = sizeof (test_data) / sizeof (test_fn_t),
@@ -174,10 +186,8 @@ cleanup (void)
 }
 
 static void
-setup (void)
+copyfiles (void)
 {
-  init ();
-
   templateFileCopy ("dancetypes.txt", "dancetypes.txt");
   templateFileCopy ("dances.txt", "dances.txt");
   templateFileCopy ("genres.txt", "genres.txt");
@@ -185,6 +195,14 @@ setup (void)
   templateFileCopy ("ratings.txt", "ratings.txt");
   filemanipCopy ("test-templates/status.txt", "data/status.txt");
   filemanipCopy ("test-templates/musicdb.dat", "data/musicdb.dat");
+}
+
+static void
+setup (void)
+{
+  init ();
+
+  copyfiles ();
 
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
@@ -207,6 +225,8 @@ teardown (void)
   bdjvarsdfloadCleanup ();
   bdjvarsCleanup ();
   bdjoptCleanup ();
+
+  copyfiles ();
 }
 
 /* playlistExists() checks for the existence of the .pl file */
@@ -489,12 +509,12 @@ START_TEST(playlist_set)
   val = playlistGetConfigNum (pl, PLAYLIST_ANNOUNCE);
   ck_assert_int_eq (val, false);
 
-  /* playlist_type may not be changed */
+  /* playlist_type may be changed (4.15.0) */
   val = playlistGetConfigNum (pl, PLAYLIST_TYPE);
   ck_assert_int_eq (val, PLTYPE_SEQUENCE);
   playlistSetConfigNum (pl, PLAYLIST_TYPE, PLTYPE_SONGLIST);
   val = playlistGetConfigNum (pl, PLAYLIST_TYPE);
-  ck_assert_int_eq (val, PLTYPE_SEQUENCE);
+  ck_assert_int_eq (val, PLTYPE_SONGLIST);
 
   playlistSetDanceNum (pl, 3, PLDANCE_MPM_HIGH, 220);
   val = playlistGetDanceNum (pl, 3, PLDANCE_MPM_HIGH);
@@ -742,7 +762,7 @@ START_TEST(playlist_rename)
   idx = CPL_NEW_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
   idxt = CPL_REN_OFFSET + CPL_SEQ_OFFSET + CPL_PL_OFFSET;
   playlistRename (test_data [idx].basefn, test_data [idxt].basefn);
-  /* new file names should exist */
+  /* renamed file names should exist */
   for (int i = idxt; i < idxt + CPL_SEQ_COUNT; ++i) {
     ck_assert_int_ne (fileopFileExists (test_data [i].ffn), 0);
   }
@@ -750,6 +770,37 @@ START_TEST(playlist_rename)
   for (int i = idx; i < idx + CPL_SEQ_COUNT; ++i) {
     ck_assert_int_eq (fileopFileExists (test_data [i].ffn), 0);
   }
+
+  /* podcast */
+  idx = CPL_EXIST_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_B_OFFSET;
+  idxt = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_B_OFFSET;
+  filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
+  idx = CPL_EXIST_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_A_OFFSET;
+  idxt = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_A_OFFSET;
+  filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
+  idxt = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_PL_OFFSET;
+  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_PODCAST, NULL, NULL);
+  ck_assert_ptr_nonnull (pl);
+  playlistSave (pl, test_data [idxt].basefn);
+  /* podcast: saved file names should exist */
+  for (int i = idxt; i < idxt + CPL_PODCAST_COUNT; ++i) {
+    ck_assert_int_ne (fileopFileExists (test_data [i].ffn), 0);
+  }
+  playlistFree (pl);
+
+  idx = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_PL_OFFSET;
+  idxt = CPL_REN_OFFSET + CPL_PODCAST_OFFSET + CPL_PL_OFFSET;
+  playlistRename (test_data [idx].basefn, test_data [idxt].basefn);
+  /* podcast: renamed file names should exist */
+  for (int i = idxt; i < idxt + CPL_PODCAST_COUNT; ++i) {
+    ck_assert_int_ne (fileopFileExists (test_data [i].ffn), 0);
+  }
+  /* podcast: old file names should not exist */
+  for (int i = idx; i < idx + CPL_PODCAST_COUNT; ++i) {
+    ck_assert_int_eq (fileopFileExists (test_data [i].ffn), 0);
+  }
+
+  cleanup ();
 }
 END_TEST
 
@@ -760,6 +811,8 @@ START_TEST(playlist_copy)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_copy");
   mdebugSubTag ("playlist_copy");
+
+  cleanup ();
 
   /* sequence */
   idx = CPL_EXIST_OFFSET + CPL_SEQ_OFFSET + CPL_FILE_A_OFFSET;
@@ -825,6 +878,40 @@ START_TEST(playlist_delete)
   for (int i = idx; i < idx + CPL_SEQ_COUNT; ++i) {
     ck_assert_int_eq (fileopFileExists (test_data [i].ffn), 0);
   }
+
+  cleanup ();
+
+  /* podcast */
+  idx = CPL_EXIST_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_B_OFFSET;
+  idxt = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_B_OFFSET;
+  filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
+  idx = CPL_EXIST_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_A_OFFSET;
+  idxt = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_A_OFFSET;
+  filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
+  idxt = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_PL_OFFSET;
+  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_PODCAST, NULL, NULL);
+  ck_assert_ptr_nonnull (pl);
+  playlistSave (pl, test_data [idxt].basefn);
+  /* saved file names should exist */
+  for (int i = idxt; i < idxt + CPL_PODCAST_COUNT; ++i) {
+    ck_assert_int_ne (fileopFileExists (test_data [i].ffn), 0);
+  }
+  playlistFree (pl);
+
+  idx = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_PL_OFFSET;
+  idxt = CPL_REN_OFFSET + CPL_PODCAST_OFFSET + CPL_PL_OFFSET;
+  playlistCopy (test_data [idx].basefn, test_data [idxt].basefn);
+  playlistDelete (test_data [idx].basefn);
+  /* new file names should exist */
+  for (int i = idxt; i < idxt + CPL_PODCAST_COUNT; ++i) {
+    ck_assert_int_ne (fileopFileExists (test_data [i].ffn), 0);
+  }
+  /* old file names should not exist due to delete */
+  for (int i = idx; i < idx + CPL_PODCAST_COUNT; ++i) {
+    ck_assert_int_eq (fileopFileExists (test_data [i].ffn), 0);
+  }
+
+  cleanup ();
 }
 END_TEST
 
@@ -891,9 +978,10 @@ START_TEST(playlist_get_pl_list)
   ck_assert_ptr_null (sval);
   slistFree (pllist);
 
+  /* includes the podcast songlist */
   pllist = playlistGetPlaylistNames (PL_LIST_SONGLIST, NULL);
   val = slistGetCount (pllist);
-  ck_assert_int_eq (val, 8);
+  ck_assert_int_eq (val, 9);
   slistFree (pllist);
 
   pllist = playlistGetPlaylistNames (PL_LIST_PODCAST, NULL);

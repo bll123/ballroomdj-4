@@ -117,13 +117,12 @@ enum {
 
 typedef struct {
   bool        initialized;
-  uint32_t    songcount;
   level_t     *levels;
   songfav_t   *songfav;
   bdjregex_t  *alldigits;
 } songinit_t;
 
-static songinit_t gsonginit = { false, 0, NULL, NULL, NULL };
+static songinit_t gsonginit = { false, NULL, NULL, NULL };
 
 static void songSetDefaults (song_t *song);
 
@@ -140,7 +139,6 @@ songAlloc (void)
   song->songlistchange = false;
   song->songInfo = nlistAlloc ("song", LIST_ORDERED, NULL);
 
-  ++gsonginit.songcount;
   return song;
 }
 
@@ -156,11 +154,6 @@ songFree (void *tsong)
   nlistFree (song->songInfo);
   song->ident = BDJ4_IDENT_FREE;
   mdfree (song);
-
-  --gsonginit.songcount;
-  if (gsonginit.songcount == 0) {
-    songCleanup ();
-  }
 }
 
 void
@@ -615,10 +608,10 @@ songInit (void)
     return;
   }
   gsonginit.initialized = true;
-  gsonginit.songcount = 0;
   gsonginit.levels = bdjvarsdfGet (BDJVDF_LEVELS);
   gsonginit.songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
   gsonginit.alldigits = regexInit ("^\\d+$");
+  atexit (songCleanup);
 }
 
 static void
@@ -632,7 +625,6 @@ songCleanup (void)
     regexFree (gsonginit.alldigits);
     gsonginit.alldigits = NULL;
   }
-  gsonginit.songcount = 0;
   gsonginit.initialized = false;
 }
 
