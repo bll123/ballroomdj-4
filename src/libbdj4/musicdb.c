@@ -273,7 +273,7 @@ dbMarkEntryRemoved (musicdb_t *musicdb, dbidx_t dbidx)
     return;
   }
   song = nlistGetData (musicdb->songbyidx, dbidx);
-  songSetNum (song, TAG_DB_FLAGS, MUSICDB_REMOVED);
+  songSetNum (song, TAG_DB_FLAGS, MUSICDB_REMOVE_MARK);
   dbRebuildDanceCounts (musicdb);
 }
 
@@ -354,8 +354,11 @@ dbGetByName (musicdb_t *musicdb, const char *songname)
 
   dbidx = slistGetNum (musicdb->songbyname, songname);
   if (dbidx >= 0) {
+    int     dbflags;
+
     song = nlistGetData (musicdb->songbyidx, dbidx);
-    if (songGetNum (song, TAG_DB_FLAGS) == MUSICDB_REMOVED) {
+    dbflags = songGetNum (song, TAG_DB_FLAGS);
+    if (dbflags == MUSICDB_REMOVE_MARK || dbflags == MUSICDB_REMOVED) {
       song = NULL;
     }
   }
@@ -377,8 +380,11 @@ dbGetByIdx (musicdb_t *musicdb, dbidx_t idx)
   }
 
   if (idx < musicdb->count) {
+    int   dbflags;
+
     song = nlistGetData (musicdb->songbyidx, idx);
-    if (songGetNum (song, TAG_DB_FLAGS) == MUSICDB_REMOVED) {
+    dbflags = songGetNum (song, TAG_DB_FLAGS);
+    if (dbflags == MUSICDB_REMOVE_MARK || dbflags == MUSICDB_REMOVED) {
       song = NULL;
     }
   } else {
@@ -502,6 +508,7 @@ song_t *
 dbIterate (musicdb_t *musicdb, dbidx_t *dbidx, slistidx_t *iteridx)
 {
   song_t    *song;
+  int       dbflags;
 
   if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
     return NULL;
@@ -509,9 +516,11 @@ dbIterate (musicdb_t *musicdb, dbidx_t *dbidx, slistidx_t *iteridx)
 
   *dbidx = nlistIterateKey (musicdb->songbyidx, iteridx);
   song = nlistGetData (musicdb->songbyidx, *dbidx);
-  while (songGetNum (song, TAG_DB_FLAGS) == MUSICDB_REMOVED) {
+  dbflags = songGetNum (song, TAG_DB_FLAGS);
+  while (dbflags == MUSICDB_REMOVE_MARK || dbflags == MUSICDB_REMOVED) {
     *dbidx = nlistIterateKey (musicdb->songbyidx, iteridx);
     song = nlistGetData (musicdb->songbyidx, *dbidx);
+    dbflags = songGetNum (song, TAG_DB_FLAGS);
   }
   return song;
 }

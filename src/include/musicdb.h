@@ -21,8 +21,12 @@ typedef struct musicdb musicdb_t;
 /* music db flags */
 enum {
   MUSICDB_STD,
+  /* temporarily added to the database, used for external requests */
   MUSICDB_TEMP,
+  /* permanently removed */
   MUSICDB_REMOVED,
+  /* marked for removal, can be reverted */
+  MUSICDB_REMOVE_MARK,
 };
 
 enum {
