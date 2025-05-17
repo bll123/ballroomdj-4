@@ -82,6 +82,7 @@ Suite *     orgutil_suite (void);
 Suite *     rating_suite (void);
 Suite *     playlist_suite (void);
 Suite *     podcast_suite (void);
+Suite *     podcastutil_suite (void);
 Suite *     samesong_suite (void);
 Suite *     sequence_suite (void);
 Suite *     song_suite (void);

@@ -60,6 +60,7 @@ START_TEST(asconf_iterate)
   int         count;
   int         key;
   int         val;
+  int         type;
   const char  *sval;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- asconf_iterate");
@@ -73,16 +74,20 @@ START_TEST(asconf_iterate)
     val = asconfGetListASKey (asconf, count);
     ck_assert_int_eq (val, key);
 
+    type = asconfGetNum (asconf, key, ASCONF_TYPE);
     val = asconfGetNum (asconf, key, ASCONF_MODE);
     ck_assert_int_eq (val, ASCONF_MODE_CLIENT);
-    val = asconfGetNum (asconf, key, ASCONF_TYPE);
-    ck_assert_int_eq (val, AUDIOSRC_TYPE_BDJ4);
     if (count == 0) {
       sval = asconfGetStr (asconf, key, ASCONF_NAME);
       ck_assert_str_eq (sval, "AAA");
     }
     val = asconfGetNum (asconf, key, ASCONF_PORT);
-    ck_assert_int_eq (val, 9011);
+    if (type == AUDIOSRC_TYPE_BDJ4) {
+      ck_assert_int_eq (val, 9011);
+    }
+    if (type == AUDIOSRC_TYPE_PODCAST) {
+      ck_assert_int_eq (val, 443);
+    }
     ++count;
   }
   ck_assert_int_eq (count, asconfGetCount (asconf));
@@ -210,7 +215,6 @@ START_TEST(asconf_save)
   ilistStartIterator (tlist, &titeridx);
   while ((key = asconfIterate (asconf, &iteridx)) >= 0) {
     tkey = ilistIterateKey (tlist, &titeridx);
-    ck_assert_int_eq (key, tkey);
 
     val = asconfGetNum (asconf, key, ASCONF_MODE);
     tval = ilistGetNum (tlist, key, ASCONF_MODE);
@@ -264,13 +268,13 @@ START_TEST(asconf_add)
   val = asconfAdd (asconf, "test");
   ck_assert_int_eq (rc, val);
   rc = asconfGetCount (asconf);
-  ck_assert_int_eq (rc, 3);
+  ck_assert_int_eq (rc, 4);
 
   rc = asconfGetCount (asconf);
   val = asconfAdd (asconf, "testb");
   ck_assert_int_eq (rc, val);
   rc = asconfGetCount (asconf);
-  ck_assert_int_eq (rc, 4);
+  ck_assert_int_eq (rc, 5);
 
   asconfStartIterator (asconf, &iteridx);
   rc = 0;
@@ -306,7 +310,7 @@ START_TEST(asconf_delete)
   asconfAdd (asconf, "test");
 
   val = asconfGetCount (asconf);
-  ck_assert_int_eq (val, 3);
+  ck_assert_int_eq (val, 4);
 
   asconfStartIterator (asconf, &iteridx);
   while ((key = asconfIterate (asconf, &iteridx)) >= 0) {

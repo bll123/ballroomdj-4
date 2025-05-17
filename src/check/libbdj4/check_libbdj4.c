@@ -75,6 +75,7 @@ check_libbdj4 (SRunner *sr)
    *  mp3exp
    *  expimpbdj4
    *  podcast                 // 2025-4-28
+   *  podcastutil             // 2025-5-17
    */
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==chk== libbdj4");
@@ -201,6 +202,9 @@ check_libbdj4 (SRunner *sr)
   /* expimpbdj4 */
 
   s = podcast_suite();
+  srunner_add_suite (sr, s);
+
+  s = podcastutil_suite();
   srunner_add_suite (sr, s);
 }
 

@@ -666,7 +666,7 @@ START_TEST(musicdb_markremove)
   song = dbGetByName (db, "argentinetango05.mp3");
   dbidx = songGetNum (song, TAG_DBIDX);
   dbMarkEntryRemoved (db, dbidx);
-  ck_assert_int_eq (MUSICDB_REMOVED, songGetNum (song, TAG_DB_FLAGS));
+  ck_assert_int_eq (MUSICDB_REMOVE_MARK, songGetNum (song, TAG_DB_FLAGS));
   dbClearEntryRemoved (db, dbidx);
   ck_assert_int_eq (MUSICDB_STD, songGetNum (song, TAG_DB_FLAGS));
   dbMarkEntryRemoved (db, dbidx);

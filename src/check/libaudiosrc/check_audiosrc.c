@@ -332,13 +332,13 @@ START_TEST(audiosrc_iterate_src)
   bdjoptSetStr (OPT_M_DIR_MUSIC, datatop);
   audiosrcPostInit ();
 
-  /* the test audiosrc file has two clients set up */
+  /* the test audiosrc file has three clients set up, two bdj4, one podcast */
   c = audiosrcGetActiveCount ();
-  ck_assert_int_eq (c, 2);
+  ck_assert_int_eq (c, 3);
 
   asiter = audiosrcStartIterator (AUDIOSRC_TYPE_NONE, AS_ITER_AUDIO_SRC, NULL, NULL, -1);
   c = audiosrcIterCount (asiter);
-  ck_assert_int_eq (c, 2);
+  ck_assert_int_eq (c, 3);
 
   c = 0;
   while ((val = audiosrcIterate (asiter)) != NULL) {
@@ -347,7 +347,7 @@ START_TEST(audiosrc_iterate_src)
     }
     ++c;
   }
-  ck_assert_int_eq (c, 4);
+  ck_assert_int_eq (c, 5);
 
   audiosrcCleanIterator (asiter);
 }
