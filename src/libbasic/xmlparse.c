@@ -65,7 +65,8 @@ xmlParseInitData (const char *data, size_t datalen, int nsflag)
   xmlparse->tdata = NULL;
 
   xmlInitParser ();
-  xmlSetStructuredErrorFunc (NULL, xmlParseXMLErrorHandler);
+  xmlSetStructuredErrorFunc (NULL,
+      (xmlStructuredErrorFunc) xmlParseXMLErrorHandler);
 
   xmlparse->tdata = mdmalloc (datalen + 1);
   memcpy (xmlparse->tdata, data, datalen);

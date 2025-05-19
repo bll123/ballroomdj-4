@@ -63,6 +63,7 @@ main (int argc, char *argv [])
   sr = srunner_create (NULL);
   check_libcommon (sr);
   check_libbasic (sr);
+  check_libwebclient (sr);
   check_libaudiosrc (sr);
   check_libbdj4 (sr);
   /* if the durations are needed */

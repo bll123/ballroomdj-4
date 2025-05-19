@@ -76,7 +76,6 @@ pkg_check_modules (GCRYPT libgcrypt)
 pkg_check_modules (GIO gio-2.0)
 pkg_check_modules (GLIB glib-2.0)
 pkg_check_modules (JSONC json-c)
-pkg_check_modules (LIBSSL libssl)
 
 find_program (GDBUSCODEGEN NAMES gdbus-codegen)
 

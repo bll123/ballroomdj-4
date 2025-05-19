@@ -35,9 +35,8 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4installer PRIVATE
   libbdj4uib ${BDJ4_UI_LIB}
-  libbdj4 libbdj4basic libbdj4common
+  libwebclient libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
 )
 addIntlLibrary (bdj4installer)
@@ -51,9 +50,8 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4altinst PRIVATE
   libbdj4uib ${BDJ4_UI_LIB}
-  libbdj4 libbdj4basic libbdj4common
+  libwebclient libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
 )
 addIntlLibrary (bdj4altinst)

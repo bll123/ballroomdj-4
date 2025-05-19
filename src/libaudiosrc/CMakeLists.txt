@@ -31,16 +31,18 @@ add_library (libasbdj4 SHARED
 )
 target_link_libraries (libasbdj4 PRIVATE
   objaudiosrcutil
-  libbdj4 libbdj4basic libbdj4common
+  libwebclient libbdj4basic libbdj4common
 )
 
 add_library (libaspodcast SHARED
-  audiosrcpodcast.c
+  audiosrcpodcast.c rss.c
 )
 target_link_libraries (libaspodcast PRIVATE
   objaudiosrcutil
-  libbdj4 libbdj4basic libbdj4common
+  # libbdj4 is needed for tagdef.c
+  libwebclient libbdj4 libbdj4basic libbdj4common
 )
+addIntlLibrary (libaspodcast)
 
 install (TARGETS
   libbdj4audiosrc

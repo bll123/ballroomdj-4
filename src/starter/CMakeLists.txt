@@ -70,9 +70,8 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4starterui PRIVATE
   libbdj4uib ${BDJ4_UI_LIB}
-  libbdj4 libbdj4basic libbdj4common
+  libwebclient libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
 )
 addIntlLibrary (bdj4starterui)

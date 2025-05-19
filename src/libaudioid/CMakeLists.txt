@@ -19,8 +19,7 @@ target_include_directories (libbdj4audioid
   PRIVATE "${XML2_INCLUDE_DIRS}"
 )
 target_link_libraries (libbdj4audioid PRIVATE
-  libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
-  ${CURL_LDFLAGS}
+  libwebclient libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
   ${GLIB_LDFLAGS}
   ${GCRYPT_LDFLAGS}
   ${XML2_LDFLAGS}

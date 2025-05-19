@@ -86,15 +86,16 @@ add_executable (check_all
   libbdj4/check_templateutil.c
   libbdj4/check_validate.c
   libbdj4/check_volreg.c
-  libbdj4/check_webclient.c
   # libaudiosrc
   libaudiosrc/check_libaudiosrc.c
   libaudiosrc/check_audiosrc.c
+  # libwebclient
+  libwebclient/check_libwebclient.c
+  libwebclient/check_webclient.c
 )
 target_link_libraries (check_all PRIVATE
-  libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
+  libwebclient libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GCRYPT_LDFLAGS}
   ${GLIB_LDFLAGS}
   ${CHECK_LDFLAGS}

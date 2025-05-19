@@ -16,7 +16,7 @@
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjmsg.h"
-#include "bdjopt.h"
+// #include "bdjopt.h"
 #include "bdjstring.h"
 #include "fileop.h"
 #include "filemanip.h"

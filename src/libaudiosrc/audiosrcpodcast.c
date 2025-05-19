@@ -74,7 +74,6 @@ static bool aspodcastGetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const
 static bool aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata, const char *uri, const char *nm);
 static void aspodcastRSS (asdata_t *asdata, asiterdata_t *asidata, const char *uri);
 static int aspodcastGetClientKeyByURI (asdata_t *asdata, const char *uri);
-static const char * aspodcastStripPrefix (asdata_t *asdata, const char *songuri, int clientidx);
 static void audiosrcClientFree (asdata_t *asdata);
 
 void
@@ -475,9 +474,10 @@ aspodcastRSS (asdata_t *asdata, asiterdata_t *asidata, const char *uri)
   }
   if (asdata->clientdata [clientkey].rssdata == NULL ||
       tm > asdata->clientdata [clientkey].rsslastbldtm) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "rss data is null %d or %ld > %ld",
+    logMsg (LOG_ERR, LOG_IMPORTANT,
+        "rss data is null %d or %" PRId64 " > %" PRId64,
         asdata->clientdata [clientkey].rssdata == NULL,
-        tm, asdata->clientdata [clientkey].rsslastbldtm);
+        (int64_t) tm, (int64_t) asdata->clientdata [clientkey].rsslastbldtm);
     asdata->clientdata [clientkey].rssdata = rssImport (uri);
     asdata->clientdata [clientkey].rsslastbldtm =
         nlistGetNum (asdata->clientdata [clientkey].rssdata, RSS_BUILD_DATE);
@@ -535,21 +535,6 @@ aspodcastGetClientKeyByURI (asdata_t *asdata, const char *uri)
   }
 
   return clientkey;
-}
-
-static const char *
-aspodcastStripPrefix (asdata_t *asdata, const char *songuri, int clientkey)
-{
-  const char  *turi;
-  size_t      tlen;
-
-// ### i think this is incorrect...
-  turi = ilistGetStr (asdata->client, clientkey, AS_CLIENT_URI);
-  tlen = ilistGetNum (asdata->client, clientkey, AS_CLIENT_URI_LEN);
-  if (strncmp (songuri, turi, tlen) == 0) {
-    songuri += tlen;
-  }
-  return songuri;
 }
 
 static void

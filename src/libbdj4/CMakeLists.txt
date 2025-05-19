@@ -36,7 +36,6 @@ add_library (libbdj4 SHARED
   podcastutil.c
   quickedit.c
   rating.c
-  rss.c
   samesong.c
   sequence.c
   song.c
@@ -53,22 +52,18 @@ add_library (libbdj4 SHARED
   templateutil.c
   validate.c
   volreg.c
-  webclient.c
   xspf.c
 )
 target_include_directories (libbdj4
-  PRIVATE "${CURL_INCLUDE_DIRS}"
   PRIVATE "${GLIB_INCLUDE_DIRS}"
 )
 target_link_libraries (libbdj4 PRIVATE
   libbdj4ati
   libbdj4audiosrc libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GCRYPT_LDFLAGS}
   ${GLIB_LDFLAGS}
   ${JSONC_LDFLAGS}
-  z
 )
 if (APPLE)
   target_link_options (libbdj4 PRIVATE

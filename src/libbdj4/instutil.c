@@ -34,19 +34,12 @@
 #include "pathutil.h"
 #include "sysvars.h"
 #include "templateutil.h"
-#include "webclient.h"
 
 instati_t instati [INST_ATI_MAX] = {
   [INST_ATI_BDJ4] = { "libatibdj4" },
 };
 
-typedef struct {
-  const char      *webresponse;
-  size_t          webresplen;
-} instweb_t;
-
 static void instutilCopyHttpSVGFile (const char *fn);
-static void instutilWebResponseCallback (void *userdata, const char *resp, size_t len, time_t tm);
 
 void
 instutilCreateLauncher (const char *name, const char *maindir,
@@ -480,46 +473,6 @@ instutilIsStandardInstall (const char *dir, const char *macospfx)
 }
 
 void
-instutilRegister (const char *data)
-{
-  instweb_t     instweb;
-  webclient_t   *webclient;
-  char          uri [200];
-  char          tbuff [4096];
-
-  instweb.webresponse = NULL;
-  instweb.webresplen = 0;
-  webclient = webclientAlloc (&instweb, instutilWebResponseCallback);
-  snprintf (uri, sizeof (uri), "%s%s",
-      sysvarsGetStr (SV_HOST_REGISTER), sysvarsGetStr (SV_URI_REGISTER));
-
-  snprintf (tbuff, sizeof (tbuff),
-      "key=%s"
-      "&version=%s&build=%s&builddate=%s&releaselevel=%s"
-      "&osname=%s&osdisp=%s&osvers=%s&osbuild=%s"
-      "&user=%s&host=%s"
-      "&systemlocale=%s&locale=%s"
-      "%s",
-      "9873453",  // key
-      sysvarsGetStr (SV_BDJ4_VERSION),
-      sysvarsGetStr (SV_BDJ4_BUILD),
-      sysvarsGetStr (SV_BDJ4_BUILDDATE),
-      sysvarsGetStr (SV_BDJ4_RELEASELEVEL),
-      sysvarsGetStr (SV_OS_NAME),
-      sysvarsGetStr (SV_OS_DISP),
-      sysvarsGetStr (SV_OS_VERS),
-      sysvarsGetStr (SV_OS_BUILD),
-      sysvarsGetStr (SV_USER),
-      sysvarsGetStr (SV_HOSTNAME),
-      sysvarsGetStr (SV_LOCALE_SYSTEM),
-      sysvarsGetStr (SV_LOCALE),
-      data
-      );
-  webclientPost (webclient, uri, tbuff);
-  webclientClose (webclient);
-}
-
-void
 instutilOldVersionString (sysversinfo_t *versinfo, char *buff, size_t sz)
 {
   char    *rlvl;
@@ -649,16 +602,6 @@ instutilCopyHttpSVGFile (const char *fn)
   pathbldMakePath (to, sizeof (to),
       fn, BDJ4_IMG_SVG_EXT, PATHBLD_MP_DREL_HTTP);
   filemanipCopy (from, to);
-}
-
-static void
-instutilWebResponseCallback (void *userdata, const char *resp, size_t len, time_t tm)
-{
-  instweb_t *instweb = userdata;
-
-  instweb->webresponse = resp;
-  instweb->webresplen = len;
-  return;
 }
 
 void

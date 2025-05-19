@@ -14,10 +14,9 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4server PRIVATE
   libbdj4audiosrc
-  libbdj4 libbdj4basic libbdj4common
+  libwebclient libbdj4 libbdj4basic libbdj4common
   objwebsrv
   ${ICUI18N_LDFLAGS}
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
 )
 addIntlLibrary (bdj4server)
 addWinSockLibrary (bdj4server)

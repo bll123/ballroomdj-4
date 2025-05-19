@@ -293,7 +293,7 @@ audiosrcPostInit (void)
 }
 
 int
-audiosrcGetActiveCount (void)
+audiosrcGetActiveCount (void)   /* TESTING */
 {
   if (audiosrc == NULL) {
     return 0;

@@ -24,7 +24,6 @@ target_link_libraries (bdj4manageui PRIVATE
   libbdj4cont libbdj4audioid
   libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
 )
 addIntlLibrary (bdj4manageui)
@@ -42,7 +41,6 @@ endif()
 target_link_libraries (bdj4bpmcounter PRIVATE
   libbdj4uib ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
 )

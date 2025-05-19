@@ -259,7 +259,7 @@ webclient_suite (void)
 
   s = suite_create ("webclient");
   tc = tcase_create ("webclient");
-  tcase_set_tags (tc, "libbdj4");
+  tcase_set_tags (tc, "libwebclient");
   tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, webclient_alloc);
   tcase_add_test (tc, webclient_get);

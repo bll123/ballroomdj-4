@@ -4,6 +4,8 @@
 #ifndef INC_EXPIMP_H
 #define INC_EXPIMP_H
 
+#include <time.h>
+
 #include "musicdb.h"
 #include "nlist.h"
 

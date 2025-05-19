@@ -15,7 +15,6 @@ target_link_libraries (bdj4playerui PRIVATE
   libbdj4audiosrc
   libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
 )

@@ -10,9 +10,9 @@ add_library (objwebsrv OBJECT
 )
 target_include_directories (objwebsrv
   PRIVATE "${MONGOOSE_INC_DIR}"
-  PRIVATE "${LIBSSL_INCLUDE_DIRS}"
+  PRIVATE "${OPENSSL_INCLUDE_DIRS}"
 )
 target_link_libraries (objwebsrv PRIVATE
-  ${LIBSSL_LDFLAGS}
+  ${OPENSSL_LDFLAGS}
 )
 

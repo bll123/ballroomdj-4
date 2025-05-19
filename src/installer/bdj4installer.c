@@ -243,6 +243,7 @@ static void installerFailWorkingDir (installer_t *installer, const char *dir, co
 static void installerSetTargetDir (installer_t *installer, const char *fn);
 static void installerSetBDJ3LocDir (installer_t *installer, const char *fn);
 static void installerLoadBdjOpt (installer_t *installer);
+static void installerDoRegister (installer_t *installer, const char *data);
 
 int
 main (int argc, char *argv[])
@@ -2442,7 +2443,7 @@ installerRegister (installer_t *installer)
       installer->convprocess,
       installer->readonly
       );
-  instutilRegister (tbuff);
+  installerDoRegister (installer, tbuff);
   installer->instState = INST_FINISH;
 }
 
@@ -2750,5 +2751,44 @@ installerLoadBdjOpt (installer_t *installer)
   if (osChangeDir (cwd) < 0) {
     installerFailWorkingDir (installer, installer->datatopdir, "getexistdata");
   }
+}
+
+static void
+installerDoRegister (installer_t *installer, const char *data)
+{
+  webclient_t   *webclient;
+  char          uri [200];
+  char          tbuff [4096];
+
+  installer->webresponse = NULL;
+  installer->webresplen = 0;
+  webclient = webclientAlloc (&installer, installerWebResponseCallback);
+  snprintf (uri, sizeof (uri), "%s%s",
+      sysvarsGetStr (SV_HOST_REGISTER), sysvarsGetStr (SV_URI_REGISTER));
+
+  snprintf (tbuff, sizeof (tbuff),
+      "key=%s"
+      "&version=%s&build=%s&builddate=%s&releaselevel=%s"
+      "&osname=%s&osdisp=%s&osvers=%s&osbuild=%s"
+      "&user=%s&host=%s"
+      "&systemlocale=%s&locale=%s"
+      "%s",
+      "9873453",  // key
+      sysvarsGetStr (SV_BDJ4_VERSION),
+      sysvarsGetStr (SV_BDJ4_BUILD),
+      sysvarsGetStr (SV_BDJ4_BUILDDATE),
+      sysvarsGetStr (SV_BDJ4_RELEASELEVEL),
+      sysvarsGetStr (SV_OS_NAME),
+      sysvarsGetStr (SV_OS_DISP),
+      sysvarsGetStr (SV_OS_VERS),
+      sysvarsGetStr (SV_OS_BUILD),
+      sysvarsGetStr (SV_USER),
+      sysvarsGetStr (SV_HOSTNAME),
+      sysvarsGetStr (SV_LOCALE_SYSTEM),
+      sysvarsGetStr (SV_LOCALE),
+      data
+      );
+  webclientPost (webclient, uri, tbuff);
+  webclientClose (webclient);
 }
 

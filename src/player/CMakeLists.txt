@@ -12,7 +12,6 @@ endif()
 target_link_libraries (bdj4main PRIVATE
   libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
 )
 addIntlLibrary (bdj4main)
 addWinSockLibrary (bdj4main)
@@ -27,7 +26,6 @@ target_link_libraries (bdj4player PRIVATE
   libbdj4pli libbdj4vol
   libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4player)
@@ -45,7 +43,6 @@ target_link_libraries (bdj4marquee PRIVATE
   libbdj4uib ${BDJ4_UI_LIB}
   libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
 )
@@ -65,7 +62,6 @@ target_link_libraries (bdj4rc PRIVATE
   objwebsrv
   libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
 )
 addWinSockLibrary (bdj4rc)
 addWinVersionInfo (bdj4rc)
@@ -80,9 +76,8 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4mobmq PRIVATE
   objwebsrv
-  libbdj4 libbdj4basic libbdj4common
+  libwebclient libbdj4 libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS}
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
 )
 addIntlLibrary (bdj4mobmq)
 addWinSockLibrary (bdj4mobmq)

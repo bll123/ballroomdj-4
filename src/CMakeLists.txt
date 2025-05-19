@@ -127,6 +127,7 @@ add_subdirectory (libcommon)
 add_subdirectory (libbasic)
 add_subdirectory (libaudiosrc)
 add_subdirectory (libbdj4)
+add_subdirectory (libwebclient)
 
 # dynamic shared libraries
 add_subdirectory (libaudioid)

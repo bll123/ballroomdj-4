@@ -1190,9 +1190,7 @@ playlistGetType (const char *name)
     return pltype;
   }
 
-  pathbldMakePath (tfn, sizeof (tfn),
-      name, BDJ4_PODCAST_EXT, PATHBLD_MP_DREL_DATA);
-  if (fileopFileExists (tfn)) {
+  if (podcastExists (name)) {
     pltype = PLTYPE_PODCAST;
     return pltype;
   }
