@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2025-04-15\n"
+"PO-Revision-Date: 2025-05-22\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
@@ -27,139 +27,139 @@ msgstr "%1$s は %2$sより大きくなければならない。"
 #. CONTEXT: configuration: the ACRCloud API Host
 #, c-format
 msgid "%s API Host"
-msgstr "%s APIホスト"
+msgstr "%sAPIホスト"
 
 #. CONTEXT: configuration: the ACRCloud API Key
 #, c-format
 msgid "%s API Key"
-msgstr "%s APIキー"
+msgstr "%sAPIキー"
 
 #. CONTEXT: configuration: the ACRCloud API Secret Key
 #, c-format
 msgid "%s API Secret Key"
-msgstr "%s APIシークレットキー"
+msgstr "%sAPIシークレットキー"
 
 #. CONTEXT: configuration: configuration user interface window title
 #, c-format
 msgid "%s Configuration"
-msgstr "%s 構成"
+msgstr "%s構成"
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 download)
 #, c-format
 msgid "%s Download"
-msgstr "%s ダウンロード"
+msgstr "%sダウンロード"
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 forums)
 #, c-format
 msgid "%s Forums"
-msgstr "%s フォーラム"
+msgstr "%sフォーラム"
 
 #. CONTEXT: helperui: the window title for the BDJ4 helper
 #, c-format
 msgid "%s Helper"
-msgstr "%s ヘルパー"
+msgstr "%sヘルパー"
 
 #. CONTEXT: alternate installation: window title
 #. CONTEXT: installer: window title
 #, c-format
 msgid "%s Installer"
-msgstr "%s インストーラー"
+msgstr "%sインストーラー"
 
 #. CONTEXT: installer: label for entry field asking for BDJ3 location
 #, c-format
 msgid "%s Location"
-msgstr "%s 所在地"
+msgstr "%s所在地"
 
 #. CONTEXT: manage-ui: management user interface window title
 #, c-format
 msgid "%s Management"
-msgstr "%s マネジメント"
+msgstr "%sマネジメント"
 
 #. CONTEXT: configuration: itunes: the itunes media folder
 #, c-format
 msgid "%s Media Folder"
-msgstr "%s メディアフォルダー"
+msgstr "%sメディアフォルダー"
 
 #. CONTEXT: playerui: main window title
 #, c-format
 msgid "%s Player"
-msgstr "%s 選手"
+msgstr "%s再生"
 
 #. CONTEXT: MacOS: reason for disabling sleep: BDJ4 Player is Active
 #, c-format
 msgid "%s Player is Active"
-msgstr "%s 選手はアクティブ"
+msgstr "%s再生がアクティブです"
 
 #. CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist)
 #, c-format
 msgid "%s Playlist"
-msgstr "%s プレイリスト"
+msgstr "%sプレイリスト"
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets)
 #, c-format
 msgid "%s Support Tickets"
-msgstr "%s サポートチケット"
+msgstr "%sサポートチケット"
 
 #. CONTEXT: starterui: basic support dialog, version display
 #, c-format
 msgid "%s Version"
-msgstr "%s バージョン"
+msgstr "%sバージョン"
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 wiki)
 #, c-format
 msgid "%s Wiki"
-msgstr "%s ウィキ"
+msgstr "%sウィキ"
 
 #. CONTEXT: configuration: itunes: the itunes xml file
 #, c-format
 msgid "%s XML File"
-msgstr "%s XMLファイル"
+msgstr "%sXMLファイル"
 
 #. CONTEXT: installer: message indicating the conversion action that will be taken
 #, c-format
 msgid "%s data will be converted."
-msgstr "%s のデータが変換される。"
+msgstr "%sのデータが変換される。"
 
 #. CONTEXT: manageui: status message when deleting a song list/playlist/sequence
 #, c-format
 msgid "%s deleted."
 msgstr ""
 
-#. CONTEXT: database update: status message
+#. CONTEXT: database update: status message (count)
 #, c-format
 msgid "%s files found"
-msgstr "%s ファイルが見つかりました"
+msgstr "%s個のファイルが見つかりました"
 
 #. CONTEXT: installer: status message
 #, c-format
 msgid "%s installed."
-msgstr "%s を設置した。"
+msgstr "%sを設置した。"
 
 #. CONTEXT: installer: display of package status
 #, c-format
 msgid "%s is installed"
-msgstr "%s 設置されている"
+msgstr "%s設置されている"
 
 #. CONTEXT: manage ui: status message: itunes is not configured
 #, c-format
 msgid "%s is not configured."
-msgstr "%s が設定されていない。"
+msgstr "%sが設定されていない。"
 
 #. CONTEXT: installer: display of package status
 #, c-format
 msgid "%s is not installed"
-msgstr "%s がインストールされていない"
+msgstr "%sがインストールされていない"
 
 #. CONTEXT: song editor: status msg: (song start may not exceed the song duration)
 #. CONTEXT: song editor: status msg: (song end may not exceed the song duration)
 #, c-format
 msgid "%s may not exceed the song duration"
-msgstr "%s 曲の長さを超えてはならない"
+msgstr "%s曲の長さを超えてはならない"
 
 #. CONTEXT: validation: characters not allowed
 #, c-format
 msgid "%s: *'\":|<>^ characters are not allowed."
-msgstr "%s:*'\":|<>^文字は使用できません。"
+msgstr "%s：*'\":|<>^文字は使用できません。"
 
 #. CONTEXT: validation: invalid URL
 #, c-format
@@ -172,28 +172,28 @@ msgstr ""
 #. CONTEXT: validation: invalid time (hour/min/sec.sec)
 #, c-format
 msgid "%s: Invalid time (%s)."
-msgstr "%s: 無効な時間です (%s)。"
+msgstr "%s：無効な時間です (%s)。"
 
 #. CONTEXT: validation: must be numeric
 #. CONTEXT: validation: must be a numeric value
 #, c-format
 msgid "%s: Must be numeric."
-msgstr "%s: は数値でなければならない。"
+msgstr "%s：は数値でなければならない。"
 
 #. CONTEXT: validation: a value must be set
 #, c-format
 msgid "%s: Must be set."
-msgstr "%s: を設定しなければならない。"
+msgstr "%s：を設定しなければならない。"
 
 #. CONTEXT: validation: slashes ( / and \\ ) are not allowed
 #, c-format
 msgid "%s: Slashes are not allowed."
-msgstr "%s: スラッシュは使用不可。"
+msgstr "%s：スラッシュは使用不可。"
 
 #. CONTEXT: validation: spaces are not allowed
 #, c-format
 msgid "%s: Spaces are not allowed."
-msgstr "%s: スペースは使用できません。"
+msgstr "%s：スペースは使用できません。"
 
 #. CONTEXT: playerui: button: reset speed to 100%
 msgid "100%"
@@ -218,6 +218,14 @@ msgstr "3/4"
 #. CONTEXT: configuration: dance time signature
 msgid "4/4"
 msgstr "4/4"
+
+#. CONTEXT: colon character
+msgid ":"
+msgstr "："
+
+#. CONTEXT: colon character with trailing space
+msgid ": "
+msgstr "："
 
 #. CONTEXT: configuration: marquee: the accent color
 #. CONTEXT: configuration: the accent color to use for the user interface
@@ -413,7 +421,7 @@ msgstr "社交ダンス"
 
 #. CONTEXT: tooltip for desktop icon
 msgid "Ballroom Music Player"
-msgstr "ボールルーム・ミュージック・プレーヤー"
+msgstr "社交音楽の再生"
 
 #. CONTEXT: bpm counter: number of beats
 msgid "Beats"
@@ -424,8 +432,8 @@ msgid "Cancel Edit All"
 msgstr "すべての編集をキャンセルする"
 
 #. CONTEXT: database update: status message: number of files that cannot be renamed
-msgid "Cannot Rename"
-msgstr "リネーム不可"
+msgid "Cannot Renamed"
+msgstr ""
 
 #. CONTEXT: configuration file: dance
 msgid "Cha Cha"
@@ -573,6 +581,7 @@ msgid "Copy finished."
 msgstr "コピー完了。"
 
 #. CONTEXT: manage-ui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#. CONTEXT: playlist: copy of the history song list
 #. CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #. CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #, c-format
@@ -660,6 +669,10 @@ msgstr "日付"
 #. CONTEXT: label: date added to the database
 msgid "Date Added"
 msgstr "追加日"
+
+#. CONTEXT: playlist management: how many days to keep the podcast
+msgid "Days to Keep"
+msgstr ""
 
 #. CONTEXT: configuration: debug options that can be turned on and off
 msgid "Debug"
@@ -1097,7 +1110,7 @@ msgstr "無効な名前"
 msgid "Invalid Selections"
 msgstr "無効な選択"
 
-#. CONTEXT: import playlist: invalid URI
+#. CONTEXT: import playlist: invalid URL
 msgid "Invalid URL"
 msgstr ""
 
@@ -1342,6 +1355,10 @@ msgstr "新しいレベル"
 msgid "New Playlist"
 msgstr "新しいプレイリスト"
 
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: new podcast
+msgid "New Podcast"
+msgstr ""
+
 #. CONTEXT: starterui: name of the new profile (New profile 9)
 #, c-format
 msgid "New Profile %d"
@@ -1379,6 +1396,10 @@ msgstr "次のページ"
 #. CONTEXT: playerui: button: tooltip: start playing the next song (immediate)
 msgid "Next Song"
 msgstr "次の曲"
+
+#. CONTEXT: label: no maximum play time
+msgid "No Maximum Play Time"
+msgstr ""
 
 #. CONTEXT: installer: message indicating the conversion action that will be taken
 msgid "No folder specified."
@@ -1450,6 +1471,7 @@ msgstr "パソドブレ"
 #. CONTEXT: configuration: audio source: the client or server password
 #. CONTEXT: configuration: mobile marquee: internet: password
 #. CONTEXT: configuration: remote control: the password for sign-on to remote control
+#. CONTEXT: playlist management: podcast password
 msgid "Password"
 msgstr "パスワード"
 
@@ -1495,7 +1517,11 @@ msgstr "プレー可能な状態"
 #. CONTEXT: configuration: which player interface to use
 #. CONTEXT: starterui: button: starts the player user interface
 msgid "Player"
-msgstr "選手"
+msgstr "再生"
+
+#. CONTEXT: configuration: additional arguments for player
+msgid "Player Arguments"
+msgstr "再生引数"
 
 #. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
 #. CONTEXT: select file: file type for the file selection dialog (playlist)
@@ -1531,6 +1557,12 @@ msgstr "お待ちください…"
 #, c-format
 msgid "Please wait… (%1$d/%2$d)"
 msgstr "お待ちください… (%1$d/%2$d)"
+
+#. CONTEXT: configuration file: podcast name
+#. CONTEXT: audio source: podcast
+#. CONTEXT: playlist management: type of playlist
+msgid "Podcast"
+msgstr ""
 
 #. CONTEXT: configuration file: rating
 msgid "Poor"
@@ -2140,6 +2172,7 @@ msgstr "タイムシグネチャー"
 
 #. CONTEXT: configuration: the title to display on the mobile marquee
 #. CONTEXT: label: title
+#. CONTEXT: playlist management: podcast title
 msgid "Title"
 msgstr "タイトル"
 
@@ -2167,7 +2200,7 @@ msgstr "全トラック"
 msgid "Total Discs"
 msgstr "ディスク"
 
-#. CONTEXT: database update: status message: total number of files found
+#. CONTEXT: database update: status message: total number of files found (count)
 msgid "Total Files"
 msgstr "ファイル数"
 
@@ -2203,6 +2236,7 @@ msgstr "タイプ"
 
 #. CONTEXT: configuration: audio source: the remote client URL
 #. CONTEXT: import playlist: import location
+#. CONTEXT: playlist management: podcast URL
 msgid "URL"
 msgstr ""
 
@@ -2282,6 +2316,7 @@ msgid "Use Work and Movement"
 msgstr ""
 
 #. CONTEXT: configuration: audio source: the client or server user
+#. CONTEXT: playlist management: podcast user
 msgid "User"
 msgstr ""
 

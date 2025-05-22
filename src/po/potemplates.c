@@ -1,9 +1,5 @@
- // CONTEXT: configuration file: dance type
-_("standard")
- // CONTEXT: configuration file: dance type
-_("latin")
- // CONTEXT: configuration file: dance type
-_("club")
+ // CONTEXT: configuration file: podcast name
+_("Podcast")
  // CONTEXT: configuration file: dance
 _("Argentine Tango")
  // CONTEXT: configuration file: dance
@@ -30,6 +26,12 @@ _("Viennese Waltz")
 _("Waltz")
  // CONTEXT: configuration file: dance
 _("West Coast Swing")
+ // CONTEXT: configuration file: dance type
+_("standard")
+ // CONTEXT: configuration file: dance type
+_("latin")
+ // CONTEXT: configuration file: dance type
+_("club")
  // CONTEXT: configuration file: rating
 _("Unrated")
  // CONTEXT: configuration file: rating

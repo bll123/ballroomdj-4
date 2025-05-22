@@ -9,6 +9,7 @@ PODIR = po
 TMPLOUT=potemplates.c
 
 TMPLFILES = \
+	$(TMPLDIR)/audiosrc.txt \
 	$(TMPLDIR)/dancetypes.txt \
 	$(TMPLDIR)/dances.txt \
 	$(TMPLDIR)/ratings.txt \

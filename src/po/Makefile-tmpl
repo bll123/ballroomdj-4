@@ -19,6 +19,7 @@ PLAYLISTSRC = \
 	$(TMPLDIR)/standardrounds.sequence
 
 DATAFILESRC = \
+	$(TMPLDIR)/audiosrc.txt \
 	$(TMPLDIR)/bdjconfig.q0.txt \
 	$(TMPLDIR)/bdjconfig.q1.txt \
 	$(TMPLDIR)/bdjconfig.q2.txt \
@@ -46,6 +47,7 @@ PLAYLISTS = \
 	$(TMPLDIR)/$(TMPLLOCALE)/standardrounds.sequence
 
 DATAFILES = \
+	$(TMPLDIR)/$(TMPLLOCALE)/audiosrc.txt \
 	$(TMPLDIR)/$(TMPLLOCALE)/bdjconfig.q0.txt \
 	$(TMPLDIR)/$(TMPLLOCALE)/bdjconfig.q1.txt \
 	$(TMPLDIR)/$(TMPLLOCALE)/bdjconfig.q2.txt \

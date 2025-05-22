@@ -21,13 +21,17 @@ echo "-- $(date +%T) extracting additional strings"
 TMPLOUT=po/potemplates.c
 > $TMPLOUT
 
-ctxt=" // CONTEXT: configuration file: dance type"
-fn=../templates/dancetypes.txt
-sed -e '/^#/d' -e 's,^,..,' -e "s,^,${ctxt}\n," $fn >> $TMPLOUT
+fn=../templates/audiosrc.txt
+echo " // CONTEXT: configuration file: podcast name" >> $TMPLOUT
+echo "..Podcast" >> $TMPLOUT
 
 ctxt=" // CONTEXT: configuration file: dance"
 fn=../templates/dances.txt
 sed -n -e "/^DANCE/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMPLOUT
+
+ctxt=" // CONTEXT: configuration file: dance type"
+fn=../templates/dancetypes.txt
+sed -e '/^#/d' -e 's,^,..,' -e "s,^,${ctxt}\n," $fn >> $TMPLOUT
 
 ctxt=" // CONTEXT: configuration file: rating"
 fn=../templates/ratings.txt

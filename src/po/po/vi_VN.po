@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2025-04-15\n"
+"PO-Revision-Date: 2025-05-22\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Vietnamese\n"
 "Language: vi\n"
@@ -125,7 +125,7 @@ msgstr "%s dữ liệu sẽ được chuyển đổi."
 msgid "%s deleted."
 msgstr ""
 
-#. CONTEXT: database update: status message
+#. CONTEXT: database update: status message (count)
 #, c-format
 msgid "%s files found"
 msgstr "%s tập tin được tìm thấy"
@@ -218,6 +218,14 @@ msgstr "3/4"
 #. CONTEXT: configuration: dance time signature
 msgid "4/4"
 msgstr "4/4"
+
+#. CONTEXT: colon character
+msgid ":"
+msgstr ""
+
+#. CONTEXT: colon character with trailing space
+msgid ": "
+msgstr ""
 
 #. CONTEXT: configuration: marquee: the accent color
 #. CONTEXT: configuration: the accent color to use for the user interface
@@ -424,8 +432,8 @@ msgid "Cancel Edit All"
 msgstr "Hủy Sửa tất cả"
 
 #. CONTEXT: database update: status message: number of files that cannot be renamed
-msgid "Cannot Rename"
-msgstr "Không thể đổi tên"
+msgid "Cannot Renamed"
+msgstr ""
 
 #. CONTEXT: configuration file: dance
 msgid "Cha Cha"
@@ -573,6 +581,7 @@ msgid "Copy finished."
 msgstr "Đã sao chép xong."
 
 #. CONTEXT: manage-ui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#. CONTEXT: playlist: copy of the history song list
 #. CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #. CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #, c-format
@@ -660,6 +669,10 @@ msgstr "Ngày"
 #. CONTEXT: label: date added to the database
 msgid "Date Added"
 msgstr "Ngày thêm"
+
+#. CONTEXT: playlist management: how many days to keep the podcast
+msgid "Days to Keep"
+msgstr ""
 
 #. CONTEXT: configuration: debug options that can be turned on and off
 msgid "Debug"
@@ -1097,7 +1110,7 @@ msgstr "Tên không hợp lệ"
 msgid "Invalid Selections"
 msgstr "Lựa chọn không hợp lệ"
 
-#. CONTEXT: import playlist: invalid URI
+#. CONTEXT: import playlist: invalid URL
 msgid "Invalid URL"
 msgstr ""
 
@@ -1343,6 +1356,10 @@ msgstr "Cấp độ mới"
 msgid "New Playlist"
 msgstr "Danh sách phát mới"
 
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: new podcast
+msgid "New Podcast"
+msgstr ""
+
 #. CONTEXT: starterui: name of the new profile (New profile 9)
 #, c-format
 msgid "New Profile %d"
@@ -1380,6 +1397,10 @@ msgstr "Kế tiếp"
 #. CONTEXT: playerui: button: tooltip: start playing the next song (immediate)
 msgid "Next Song"
 msgstr "Bài hát tiếp theo"
+
+#. CONTEXT: label: no maximum play time
+msgid "No Maximum Play Time"
+msgstr ""
 
 #. CONTEXT: installer: message indicating the conversion action that will be taken
 msgid "No folder specified."
@@ -1451,6 +1472,7 @@ msgstr "Bước đôi"
 #. CONTEXT: configuration: audio source: the client or server password
 #. CONTEXT: configuration: mobile marquee: internet: password
 #. CONTEXT: configuration: remote control: the password for sign-on to remote control
+#. CONTEXT: playlist management: podcast password
 msgid "Password"
 msgstr "Mật khẩu"
 
@@ -1498,6 +1520,10 @@ msgstr "Trạng thái có thể chơi"
 msgid "Player"
 msgstr "Người chơi"
 
+#. CONTEXT: configuration: additional arguments for player
+msgid "Player Arguments"
+msgstr ""
+
 #. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
 #. CONTEXT: select file: file type for the file selection dialog (playlist)
 #. CONTEXT: import playlist: select the song list
@@ -1532,6 +1558,12 @@ msgstr "Vui lòng đợi…"
 #, c-format
 msgid "Please wait… (%1$d/%2$d)"
 msgstr "Vui lòng đợi… (%1$d/%2$d)"
+
+#. CONTEXT: configuration file: podcast name
+#. CONTEXT: audio source: podcast
+#. CONTEXT: playlist management: type of playlist
+msgid "Podcast"
+msgstr ""
 
 #. CONTEXT: configuration file: rating
 msgid "Poor"
@@ -2141,6 +2173,7 @@ msgstr "Chữ ký thời gian"
 
 #. CONTEXT: configuration: the title to display on the mobile marquee
 #. CONTEXT: label: title
+#. CONTEXT: playlist management: podcast title
 msgid "Title"
 msgstr "Tiêu đề"
 
@@ -2168,7 +2201,7 @@ msgstr "Tổng số bài hát"
 msgid "Total Discs"
 msgstr "Tổng số đĩa"
 
-#. CONTEXT: database update: status message: total number of files found
+#. CONTEXT: database update: status message: total number of files found (count)
 msgid "Total Files"
 msgstr "Tổng số tập tin"
 
@@ -2204,6 +2237,7 @@ msgstr "Kiểu"
 
 #. CONTEXT: configuration: audio source: the remote client URL
 #. CONTEXT: import playlist: import location
+#. CONTEXT: playlist management: podcast URL
 msgid "URL"
 msgstr ""
 
@@ -2283,6 +2317,7 @@ msgid "Use Work and Movement"
 msgstr ""
 
 #. CONTEXT: configuration: audio source: the client or server user
+#. CONTEXT: playlist management: podcast user
 msgid "User"
 msgstr ""
 

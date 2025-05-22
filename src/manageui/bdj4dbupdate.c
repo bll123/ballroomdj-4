@@ -190,6 +190,7 @@ static void     dbupdateIncCount (dbupdate_t *dbupdate, int tag);
 static void     dbupdateWriteSong (dbupdate_t *dbupdate, song_t *song, int32_t *songdbflags, dbidx_t rrn);
 static musicdb_t * dbupdateSetCurrentDB (dbupdate_t *dbupdate);
 static const char * dbupdateIterate (dbupdate_t *dbupdate);
+static void dbupdateSendStatusCount (dbupdate_t *dbupdate, int cidx, const char *label);
 
 static int  gKillReceived = 0;
 
@@ -504,7 +505,7 @@ dbupdateProcessing (void *udata)
 
     /* message to manageui */
     snprintf (tmp, sizeof (tmp), "%" PRId32, dbupdate->counts [C_FILE_COUNT]);
-    /* CONTEXT: database update: status message */
+    /* CONTEXT: database update: status message (count) */
     snprintf (tbuff, sizeof (tbuff), _("%s files found"), tmp);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 
@@ -739,48 +740,41 @@ dbupdateProcessing (void *udata)
 
     dbupdateOutputProgress (dbupdate);
 
-    /* CONTEXT: database update: status message: total number of files found */
-    snprintf (tbuff, sizeof (tbuff), "%s : %" PRId32 "", _("Total Files"), dbupdate->counts [C_FILE_COUNT]);
-    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+    /* CONTEXT: database update: status message: total number of files found (count) */
+    dbupdateSendStatusCount (dbupdate, C_FILE_COUNT, _("Total Files"));
 
     if (! dbupdate->rebuild) {
       /* CONTEXT: database update: status message: files found in the database */
-      snprintf (tbuff, sizeof (tbuff), "%s : %" PRId32 "", _("Loaded from Database"), dbupdate->counts [C_IN_DB]);
-      connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+      dbupdateSendStatusCount (dbupdate, C_IN_DB, _("Loaded from Database"));
     }
 
     /* CONTEXT: database update: status message: new files saved to the database */
-    snprintf (tbuff, sizeof (tbuff), "%s : %" PRId32 "", _("New Files"), dbupdate->counts [C_NEW]);
-    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+    dbupdateSendStatusCount (dbupdate, C_NEW, _("New Files"));
 
     if (! dbupdate->rebuild && ! dbupdate->writetags) {
       /* CONTEXT: database update: status message: number of files updated in the database */
-      snprintf (tbuff, sizeof (tbuff), "%s : %" PRId32 "", _("Updated"), dbupdate->counts [C_UPDATED]);
-      connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+      dbupdateSendStatusCount (dbupdate, C_UPDATED, _("Updated"));
     }
 
     if (dbupdate->reorganize || dbupdate->checknew || dbupdate->rebuild) {
       if (dbupdate->counts [C_RENAMED] > 0) {
         /* CONTEXT: database update: status message: number of files renamed */
-        snprintf (tbuff, sizeof (tbuff), "%s : %" PRId32 "", _("Renamed"), dbupdate->counts [C_RENAMED]);
-        connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+        dbupdateSendStatusCount (dbupdate, C_RENAMED, _("Renamed"));
       }
       if (dbupdate->counts [C_RENAME_FAIL] > 0) {
         /* CONTEXT: database update: status message: number of files that cannot be renamed */
-        snprintf (tbuff, sizeof (tbuff), "%s : %" PRId32 "", _("Cannot Rename"), dbupdate->counts [C_RENAME_FAIL]);
-        connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+        dbupdateSendStatusCount (dbupdate, C_RENAME_FAIL, _("Cannot Renamed"));
       }
     }
 
     if (dbupdate->writetags) {
       /* re-use the 'Updated' label for write-tags */
       /* CONTEXT: database update: status message: number of files updated */
-      snprintf (tbuff, sizeof (tbuff), "%s : %" PRId32 "", _("Updated"), dbupdate->counts [C_WRITE_TAGS]);
-      connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+      dbupdateSendStatusCount (dbupdate, C_WRITE_TAGS, _("Updated"));
     }
 
     /* CONTEXT: database update: status message: other files that cannot be processed */
-    snprintf (tbuff, sizeof (tbuff), "%s : %" PRId32 "", _("Other Files"),
+    snprintf (tbuff, sizeof (tbuff), "%s%s%" PRId32 "", _("Other Files"), _(": "),
         dbupdate->counts [C_SKIP_BAD] +
         dbupdate->counts [C_SKIP_NO_TAGS] + dbupdate->counts [C_SKIP_NON_AUDIO] +
         dbupdate->counts [C_SKIP_ORIG] +
@@ -1421,4 +1415,16 @@ dbupdateIterate (dbupdate_t *dbupdate)
   }
 
   return fn;
+}
+
+static void
+dbupdateSendStatusCount (dbupdate_t *dbupdate, int cidx, const char *label)
+{
+  char      tmp [40];
+  char      tbuff [400];
+
+  snprintf (tmp, sizeof (tmp), "%" PRId32, dbupdate->counts [cidx]);
+  /* CONTEXT: colon character with trailing space */
+  snprintf (tbuff, sizeof (tbuff), "%s%s%s", label, _(": "), tmp);
+  connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 }

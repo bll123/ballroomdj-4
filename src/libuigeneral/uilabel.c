@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "bdj4intl.h"
 #include "uigeneral.h"
 #include "uiwcont.h"
 
@@ -17,13 +18,16 @@
 uiwcont_t *
 uiCreateColonLabel (const char *txt)
 {
-  char      tbuff [400];
+  char        tbuff [600];
+  const char  *colonstr;
 
   if (txt == NULL) {
     return NULL;
   }
 
-  snprintf (tbuff, sizeof (tbuff), "%s:", txt);
+  /* CONTEXT: colon character */
+  colonstr = _(":");
+  snprintf (tbuff, sizeof (tbuff), "%s%s", txt, colonstr);
   return uiCreateLabel (tbuff);
 }
 

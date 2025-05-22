@@ -2,10 +2,10 @@
 # -- english/us
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.14.0\n"
+"Project-Id-Version: ballroomdj-4 4.15.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2025-04-15\n"
-"PO-Revision-Date: 2025-04-15\n"
+"POT-Creation-Date: 2025-05-22\n"
+"PO-Revision-Date: 2025-05-22\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -119,7 +119,7 @@ msgstr ""
 msgid "%s deleted."
 msgstr ""
 
-#. CONTEXT: database update: status message
+#. CONTEXT: database update: status message (count)
 #, c-format
 msgid "%s files found"
 msgstr ""
@@ -211,6 +211,14 @@ msgstr ""
 
 #. CONTEXT: configuration: dance time signature
 msgid "4/4"
+msgstr ""
+
+#. CONTEXT: colon character
+msgid ":"
+msgstr ""
+
+#. CONTEXT: colon character with trailing space
+msgid ": "
 msgstr ""
 
 #. CONTEXT: configuration: marquee: the accent color
@@ -418,7 +426,7 @@ msgid "Cancel Edit All"
 msgstr ""
 
 #. CONTEXT: database update: status message: number of files that cannot be renamed
-msgid "Cannot Rename"
+msgid "Cannot Renamed"
 msgstr ""
 
 #. CONTEXT: configuration file: dance
@@ -567,6 +575,7 @@ msgid "Copy finished."
 msgstr ""
 
 #. CONTEXT: manage-ui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#. CONTEXT: playlist: copy of the history song list
 #. CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #. CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #, c-format
@@ -653,6 +662,10 @@ msgstr ""
 
 #. CONTEXT: label: date added to the database
 msgid "Date Added"
+msgstr ""
+
+#. CONTEXT: playlist management: how many days to keep the podcast
+msgid "Days to Keep"
 msgstr ""
 
 #. CONTEXT: configuration: debug options that can be turned on and off
@@ -1091,7 +1104,7 @@ msgstr ""
 msgid "Invalid Selections"
 msgstr ""
 
-#. CONTEXT: import playlist: invalid URI
+#. CONTEXT: import playlist: invalid URL
 msgid "Invalid URL"
 msgstr ""
 
@@ -1336,6 +1349,10 @@ msgstr ""
 msgid "New Playlist"
 msgstr ""
 
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: new podcast
+msgid "New Podcast"
+msgstr ""
+
 #. CONTEXT: starterui: name of the new profile (New profile 9)
 #, c-format
 msgid "New Profile %d"
@@ -1372,6 +1389,10 @@ msgstr ""
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: button: tooltip: start playing the next song (immediate)
 msgid "Next Song"
+msgstr ""
+
+#. CONTEXT: label: no maximum play time
+msgid "No Maximum Play Time"
 msgstr ""
 
 #. CONTEXT: installer: message indicating the conversion action that will be taken
@@ -1444,6 +1465,7 @@ msgstr ""
 #. CONTEXT: configuration: audio source: the client or server password
 #. CONTEXT: configuration: mobile marquee: internet: password
 #. CONTEXT: configuration: remote control: the password for sign-on to remote control
+#. CONTEXT: playlist management: podcast password
 msgid "Password"
 msgstr ""
 
@@ -1491,6 +1513,10 @@ msgstr ""
 msgid "Player"
 msgstr ""
 
+#. CONTEXT: configuration: additional arguments for player
+msgid "Player Arguments"
+msgstr ""
+
 #. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
 #. CONTEXT: select file: file type for the file selection dialog (playlist)
 #. CONTEXT: import playlist: select the song list
@@ -1524,6 +1550,12 @@ msgstr ""
 #. CONTEXT: please wait... (count/total) status message
 #, c-format
 msgid "Please wait… (%1$d/%2$d)"
+msgstr ""
+
+#. CONTEXT: configuration file: podcast name
+#. CONTEXT: audio source: podcast
+#. CONTEXT: playlist management: type of playlist
+msgid "Podcast"
 msgstr ""
 
 #. CONTEXT: configuration file: rating
@@ -2134,6 +2166,7 @@ msgstr ""
 
 #. CONTEXT: configuration: the title to display on the mobile marquee
 #. CONTEXT: label: title
+#. CONTEXT: playlist management: podcast title
 msgid "Title"
 msgstr ""
 
@@ -2161,7 +2194,7 @@ msgstr ""
 msgid "Total Discs"
 msgstr ""
 
-#. CONTEXT: database update: status message: total number of files found
+#. CONTEXT: database update: status message: total number of files found (count)
 msgid "Total Files"
 msgstr ""
 
@@ -2197,6 +2230,7 @@ msgstr ""
 
 #. CONTEXT: configuration: audio source: the remote client URL
 #. CONTEXT: import playlist: import location
+#. CONTEXT: playlist management: podcast URL
 msgid "URL"
 msgstr ""
 
@@ -2276,6 +2310,7 @@ msgid "Use Work and Movement"
 msgstr ""
 
 #. CONTEXT: configuration: audio source: the client or server user
+#. CONTEXT: playlist management: podcast user
 msgid "User"
 msgstr ""
 

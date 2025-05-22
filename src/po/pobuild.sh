@@ -5,15 +5,16 @@
 # This is the main po creation script.
 #
 # a) Run the main makefile to update bdj4.pot, en_GB.po, en_US.po
-#     poexttmpl.sh (potemplates.c)
-#     poextract.sh (bdj4.pot)
-#       extract-helptext.awk
-#     po-en-gb.sh (po/en_GB.po)
-#       po-mk.sh
-#         lang-lookup.sh
-#           lang-lookup.awk
-#     po-en-us.sh (po/en_US.po)
-#       mken_us.awk
+#     Makefile
+#       poexttmpl.sh (potemplates.c)
+#       poextract.sh (bdj4.pot)
+#         extract-helptext.awk
+#       po-en-gb.sh (po/en_GB.po)
+#         po-mk.sh
+#           lang-lookup.sh
+#             lang-lookup.awk
+#       po-en-us.sh (po/en_US.po)
+#         mken_us.awk
 # b) Create the other language .po files
 #     Makefile-po
 #       po-mk.sh
@@ -22,6 +23,8 @@
 # c) Update the .mo files
 #     Makefile-inst
 # d) Create the localization.txt file while processing the locales.
+#     Makefile
+#       po-ltxt.sh (templates/localization.txt)
 # e) Update all of the templates/<locale> directories.
 #     Makefile-tmpl
 #       po-tmpl.sh

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2025-04-15\n"
+"PO-Revision-Date: 2025-05-22\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Korean\n"
 "Language: ko\n"
@@ -125,7 +125,7 @@ msgstr "%s 데이터가 변환됩니다."
 msgid "%s deleted."
 msgstr ""
 
-#. CONTEXT: database update: status message
+#. CONTEXT: database update: status message (count)
 #, c-format
 msgid "%s files found"
 msgstr "%s 파일 발견"
@@ -218,6 +218,14 @@ msgstr "3/4"
 #. CONTEXT: configuration: dance time signature
 msgid "4/4"
 msgstr "4/4"
+
+#. CONTEXT: colon character
+msgid ":"
+msgstr ""
+
+#. CONTEXT: colon character with trailing space
+msgid ": "
+msgstr ""
 
 #. CONTEXT: configuration: marquee: the accent color
 #. CONTEXT: configuration: the accent color to use for the user interface
@@ -424,8 +432,8 @@ msgid "Cancel Edit All"
 msgstr "모두 편집 취소"
 
 #. CONTEXT: database update: status message: number of files that cannot be renamed
-msgid "Cannot Rename"
-msgstr "이름을 바꿀 수 없습니다."
+msgid "Cannot Renamed"
+msgstr ""
 
 #. CONTEXT: configuration file: dance
 msgid "Cha Cha"
@@ -573,6 +581,7 @@ msgid "Copy finished."
 msgstr "복사가 완료되었습니다."
 
 #. CONTEXT: manage-ui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#. CONTEXT: playlist: copy of the history song list
 #. CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #. CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #, c-format
@@ -660,6 +669,10 @@ msgstr "날짜"
 #. CONTEXT: label: date added to the database
 msgid "Date Added"
 msgstr "추가된 날짜"
+
+#. CONTEXT: playlist management: how many days to keep the podcast
+msgid "Days to Keep"
+msgstr ""
 
 #. CONTEXT: configuration: debug options that can be turned on and off
 msgid "Debug"
@@ -1097,7 +1110,7 @@ msgstr "잘못된 이름"
 msgid "Invalid Selections"
 msgstr "잘못된 선택"
 
-#. CONTEXT: import playlist: invalid URI
+#. CONTEXT: import playlist: invalid URL
 msgid "Invalid URL"
 msgstr ""
 
@@ -1343,6 +1356,10 @@ msgstr "새로운 레벨"
 msgid "New Playlist"
 msgstr "새 재생 목록"
 
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: new podcast
+msgid "New Podcast"
+msgstr ""
+
 #. CONTEXT: starterui: name of the new profile (New profile 9)
 #, c-format
 msgid "New Profile %d"
@@ -1380,6 +1397,10 @@ msgstr "다음"
 #. CONTEXT: playerui: button: tooltip: start playing the next song (immediate)
 msgid "Next Song"
 msgstr "다음 곡"
+
+#. CONTEXT: label: no maximum play time
+msgid "No Maximum Play Time"
+msgstr ""
 
 #. CONTEXT: installer: message indicating the conversion action that will be taken
 msgid "No folder specified."
@@ -1451,6 +1472,7 @@ msgstr "파소 도블레"
 #. CONTEXT: configuration: audio source: the client or server password
 #. CONTEXT: configuration: mobile marquee: internet: password
 #. CONTEXT: configuration: remote control: the password for sign-on to remote control
+#. CONTEXT: playlist management: podcast password
 msgid "Password"
 msgstr "비밀번호"
 
@@ -1498,6 +1520,10 @@ msgstr "플레이 가능 상태"
 msgid "Player"
 msgstr "플레이어"
 
+#. CONTEXT: configuration: additional arguments for player
+msgid "Player Arguments"
+msgstr ""
+
 #. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
 #. CONTEXT: select file: file type for the file selection dialog (playlist)
 #. CONTEXT: import playlist: select the song list
@@ -1532,6 +1558,12 @@ msgstr "잠시만 기다려 주세요…"
 #, c-format
 msgid "Please wait… (%1$d/%2$d)"
 msgstr "잠시만 기다려주세요… (%1$d/%2$d)"
+
+#. CONTEXT: configuration file: podcast name
+#. CONTEXT: audio source: podcast
+#. CONTEXT: playlist management: type of playlist
+msgid "Podcast"
+msgstr ""
 
 #. CONTEXT: configuration file: rating
 msgid "Poor"
@@ -2141,6 +2173,7 @@ msgstr "시간 서명"
 
 #. CONTEXT: configuration: the title to display on the mobile marquee
 #. CONTEXT: label: title
+#. CONTEXT: playlist management: podcast title
 msgid "Title"
 msgstr "제목"
 
@@ -2168,7 +2201,7 @@ msgstr "총 트랙 수"
 msgid "Total Discs"
 msgstr "총 디스크 수"
 
-#. CONTEXT: database update: status message: total number of files found
+#. CONTEXT: database update: status message: total number of files found (count)
 msgid "Total Files"
 msgstr "총 파일 수"
 
@@ -2204,6 +2237,7 @@ msgstr "유형"
 
 #. CONTEXT: configuration: audio source: the remote client URL
 #. CONTEXT: import playlist: import location
+#. CONTEXT: playlist management: podcast URL
 msgid "URL"
 msgstr ""
 
@@ -2283,6 +2317,7 @@ msgid "Use Work and Movement"
 msgstr ""
 
 #. CONTEXT: configuration: audio source: the client or server user
+#. CONTEXT: playlist management: podcast user
 msgid "User"
 msgstr ""
 

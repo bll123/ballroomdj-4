@@ -15,6 +15,7 @@ function mksub {
   locale=$3
   pofile=$4
 
+  # echo "-- $(date +%T) creating ${locale} ${tmpl}"
   set -o noglob
   sedcmd=""
   ok=F
@@ -67,8 +68,10 @@ if [[ -d "${TMPLDIR}/${locale}" ]]; then
 fi
 test -d "${TMPLDIR}/${uselocale}" || mkdir "${TMPLDIR}/${uselocale}"
 
-fn=${TMPLDIR}/dancetypes.txt
-sed -e '/^#/d' $fn > $TMP
+# note that the extraction is also done in poexttmpl.sh
+
+fn=${TMPLDIR}/audiosrc.txt
+echo "..Podcast" > $TMP
 mksub $fn $TMP $uselocale $pofile
 
 fn=${TMPLDIR}/bdjconfig.txt.p
@@ -86,25 +89,31 @@ sort -u $TMP > $TMP.n
 mv -f $TMP.n $TMP
 mksub $fn $TMP $uselocale $pofile
 
-fn=${TMPLDIR}/ratings.txt
-sed -n -e '/^RATING/ {n;p;}' $fn > $TMP
+fn=${TMPLDIR}/dancetypes.txt
+sed -e '/^#/d' $fn > $TMP
 mksub $fn $TMP $uselocale $pofile
 
 fn=${TMPLDIR}/genres.txt
 sed -n -e '/^GENRE/ {n;p;}' $fn > $TMP
 mksub $fn $TMP $uselocale $pofile
 
+fn=${TMPLDIR}/itunes-stars.txt
+sed -n -e '/^[0-9]/ {n;p;}' $fn > $TMP
+mksub $fn $TMP $uselocale $pofile
+
 fn=${TMPLDIR}/levels.txt
 sed -n -e '/^LEVEL/ {n;p;}' $fn > $TMP
+mksub $fn $TMP $uselocale $pofile
+
+fn=${TMPLDIR}/ratings.txt
+sed -n -e '/^RATING/ {n;p;}' $fn > $TMP
 mksub $fn $TMP $uselocale $pofile
 
 fn=${TMPLDIR}/status.txt
 sed -n -e '/^STATUS/ {n;p;}' $fn > $TMP
 mksub $fn $TMP $uselocale $pofile
 
-fn=${TMPLDIR}/itunes-stars.txt
-sed -n -e '/^[0-9]/ {n;p;}' $fn > $TMP
-mksub $fn $TMP $uselocale $pofile
+# playlists
 
 for fn in ${TMPLDIR}/*.pldances; do
   sed -n -e '/^DANCE/ {n;p;}' $fn > $TMP
