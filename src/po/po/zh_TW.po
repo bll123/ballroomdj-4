@@ -1471,7 +1471,6 @@ msgstr "帕索多布爾"
 #. CONTEXT: configuration: audio source: the client or server password
 #. CONTEXT: configuration: mobile marquee: internet: password
 #. CONTEXT: configuration: remote control: the password for sign-on to remote control
-#. CONTEXT: playlist management: podcast password
 msgid "Password"
 msgstr "密碼"
 
@@ -2316,7 +2315,6 @@ msgid "Use Work and Movement"
 msgstr ""
 
 #. CONTEXT: configuration: audio source: the client or server user
-#. CONTEXT: playlist management: podcast user
 msgid "User"
 msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-22 07:26-0700\n"
+"POT-Creation-Date: 2025-05-22 17:25-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1469,7 +1469,6 @@ msgstr ""
 #. CONTEXT: configuration: audio source: the client or server password
 #. CONTEXT: configuration: mobile marquee: internet: password
 #. CONTEXT: configuration: remote control: the password for sign-on to remote control
-#. CONTEXT: playlist management: podcast password
 msgid "Password"
 msgstr ""
 
@@ -2314,7 +2313,6 @@ msgid "Use Work and Movement"
 msgstr ""
 
 #. CONTEXT: configuration: audio source: the client or server user
-#. CONTEXT: playlist management: podcast user
 msgid "User"
 msgstr ""
 

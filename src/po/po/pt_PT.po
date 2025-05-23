@@ -1467,7 +1467,6 @@ msgstr "Paso Doble"
 #. CONTEXT: configuration: audio source: the client or server password
 #. CONTEXT: configuration: mobile marquee: internet: password
 #. CONTEXT: configuration: remote control: the password for sign-on to remote control
-#. CONTEXT: playlist management: podcast password
 msgid "Password"
 msgstr "Palavra-passe"
 
@@ -2312,7 +2311,6 @@ msgid "Use Work and Movement"
 msgstr ""
 
 #. CONTEXT: configuration: audio source: the client or server user
-#. CONTEXT: playlist management: podcast user
 msgid "User"
 msgstr ""
 
