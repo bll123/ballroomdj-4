@@ -64,8 +64,6 @@ enum {
   MPL_W_PODCAST_VBOX,
   MPL_W_URI,
   MPL_W_TITLE,
-  MPL_W_USER,
-  MPL_W_PASSWORD,
   MPL_W_RETAIN,
   MPL_W_MAX,
 };
@@ -518,44 +516,6 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwcontFree (hbox);
 
-  /* new line : user */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
-
-  /* CONTEXT: playlist management: podcast user */
-  uiwidgetp = uiCreateColonLabel (_("User"));
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
-  uiwidgetp = uiEntryInit (10, 40);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiEntrySetValidate (uiwidgetp, "",
-      managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
-  managepl->wcont [MPL_W_USER] = uiwidgetp;
-
-  uiwcontFree (hbox);
-
-  /* new line : password */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
-
-  /* CONTEXT: playlist management: podcast password */
-  uiwidgetp = uiCreateColonLabel (_("Password"));
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
-  uiwidgetp = uiEntryInit (10, 40);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiEntrySetValidate (uiwidgetp, "",
-      managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
-  managepl->wcont [MPL_W_PASSWORD] = uiwidgetp;
-
-  uiwcontFree (hbox);
-
   /* new line : retain */
 
   hbox = uiCreateHorizBox ();
@@ -961,10 +921,6 @@ managePlaylistUpdateData (managepl_t *managepl)
         playlistGetPodcastStr (pl, PODCAST_URI));
     uiEntrySetValue (managepl->wcont [MPL_W_TITLE],
         playlistGetPodcastStr (pl, PODCAST_TITLE));
-    uiEntrySetValue (managepl->wcont [MPL_W_USER],
-        playlistGetPodcastStr (pl, PODCAST_USER));
-    uiEntrySetValue (managepl->wcont [MPL_W_PASSWORD],
-        playlistGetPodcastStr (pl, PODCAST_PASSWORD));
     uiSpinboxSetValue (managepl->wcont [MPL_W_RETAIN],
         playlistGetPodcastNum (pl, PODCAST_RETAIN));
   }
@@ -1134,10 +1090,6 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
     playlistSetPodcastStr (pl, PODCAST_URI, tstr);
     tstr = uiEntryGetValue (managepl->wcont [MPL_W_TITLE]);
     playlistSetPodcastStr (pl, PODCAST_TITLE, tstr);
-    tstr = uiEntryGetValue (managepl->wcont [MPL_W_USER]);
-    playlistSetPodcastStr (pl, PODCAST_USER, tstr);
-    tstr = uiEntryGetValue (managepl->wcont [MPL_W_PASSWORD]);
-    playlistSetPodcastStr (pl, PODCAST_PASSWORD, tstr);
     tval = uiSpinboxGetValue (managepl->wcont [MPL_W_RETAIN]);
     playlistSetPodcastNum (pl, PODCAST_RETAIN, tval);
   }
@@ -1181,14 +1133,6 @@ managePlaylistCheckChanged (managepl_t *managepl)
   }
 
   if (uiEntryChanged (managepl->wcont [MPL_W_TITLE])) {
-    managepl->changed = true;
-  }
-
-  if (uiEntryChanged (managepl->wcont [MPL_W_USER])) {
-    managepl->changed = true;
-  }
-
-  if (uiEntryChanged (managepl->wcont [MPL_W_PASSWORD])) {
     managepl->changed = true;
   }
 
@@ -1251,20 +1195,6 @@ managePlaylistCheckChanged (managepl_t *managepl)
 
   svala = uiEntryGetValue (managepl->wcont [MPL_W_TITLE]);
   svalb = playlistGetPodcastStr (pl, PODCAST_TITLE);
-  if ((svalb == NULL && svala != NULL) ||
-      (svala != NULL && svalb != NULL && strcmp (svala, svalb) != 0)) {
-    managepl->changed = true;
-  }
-
-  svala = uiEntryGetValue (managepl->wcont [MPL_W_USER]);
-  svalb = playlistGetPodcastStr (pl, PODCAST_USER);
-  if ((svalb == NULL && svala != NULL) ||
-      (svala != NULL && svalb != NULL && strcmp (svala, svalb) != 0)) {
-    managepl->changed = true;
-  }
-
-  svala = uiEntryGetValue (managepl->wcont [MPL_W_PASSWORD]);
-  svalb = playlistGetPodcastStr (pl, PODCAST_PASSWORD);
   if ((svalb == NULL && svala != NULL) ||
       (svala != NULL && svalb != NULL && strcmp (svala, svalb) != 0)) {
     managepl->changed = true;
