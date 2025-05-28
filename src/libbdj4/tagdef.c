@@ -923,13 +923,13 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* text search          */
     false,                        /* vorbis multi         */
   },
-  [TAG_NO_MAX_PLAY_TM] =
-  { "NOMAXPLAYTM",                /* tag */
+  [TAG_NO_PLAY_TM_LIMIT] =
+  { "NOPLAYTMLIMIT",              /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { [TAG_TYPE_VORBIS] = { "NOMAXPLAYTM", NULL, NULL, NULL },
-      [TAG_TYPE_MP4] = { "----:BDJ4:NOMAXPLAYTM", "BDJ4", "NOMAXPLAYTM", NULL },
-      [TAG_TYPE_ID3] = { "TXXX=NOMAXPLAYTM", "TXXX", "NOMAXPLAYTM", NULL },
+    { [TAG_TYPE_VORBIS] = { "NOPLAYTMLIMIT", NULL, NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:BDJ4:NOPLAYTMLIMIT", "BDJ4", "NOPLAYTMLIMIT", NULL },
+      [TAG_TYPE_ID3] = { "TXXX=NOPLAYTMLIMIT", "TXXX", "NOPLAYTMLIMIT", NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
     },       /* audio tags */
@@ -1705,8 +1705,8 @@ tagdefInit (void)
   tagdefs [TAG_GROUPING].displayname = _("Grouping");
   /* CONTEXT: label: keyword (used to filter out songs) */
   tagdefs [TAG_KEYWORD].displayname = _("Keyword");
-  /* CONTEXT: label: no maximum play time */
-  tagdefs [TAG_NO_MAX_PLAY_TM].displayname = _("No Maximum Play Time");
+  /* CONTEXT: label: no play time limit */
+  tagdefs [TAG_NO_PLAY_TM_LIMIT].displayname = _("No Play Time Limit");
   /* CONTEXT: label: notes */
   tagdefs [TAG_NOTES].displayname = _("Notes");
   /* CONTEXT: label: status */

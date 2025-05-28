@@ -441,7 +441,7 @@ bdjsrvProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbClearEntryRemoved (bdjsrv->musicdb, atol (args));
           break;
         }
-        case MSG_DATABASE_UPDATE: {
+        case MSG_DB_RELOAD: {
           bdjsrv->musicdb = bdj4ReloadDatabase (bdjsrv->musicdb);
           break;
         }

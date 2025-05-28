@@ -1187,7 +1187,7 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           connSendMessage (starter->conn, ROUTE_SERVER, msg, args);
           break;
         }
-        case MSG_DATABASE_UPDATE: {
+        case MSG_DB_RELOAD: {
           /* only comes from manage ui */
           connSendMessage (starter->conn, ROUTE_MAIN, msg, args);
           connSendMessage (starter->conn, ROUTE_PLAYERUI, msg, args);

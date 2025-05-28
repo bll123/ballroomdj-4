@@ -35,7 +35,7 @@ msgparseMusicQueueData (char *data)
   musicqupdate = mdmalloc (sizeof (mp_musicqupdate_t));
   musicqupdate->mqidx = 0;
   musicqupdate->tottime = 0;
-  musicqupdate->currdbidx = -1;
+  musicqupdate->currdbidx = DBIDX_NONE;
 
   /* first, build ourselves a list to work with */
   musicqupdate->dispList = nlistAlloc ("temp-musicq-disp", LIST_UNORDERED,

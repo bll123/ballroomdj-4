@@ -20,6 +20,7 @@ add_library (libbdj4 SHARED
   expimpbdj4.c
   genre.c
   grouping.c
+  imppl.c
   instutil.c
   itunes.c
   jspf.c

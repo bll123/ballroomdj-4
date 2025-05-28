@@ -775,7 +775,7 @@ ARTIST
 ..%03d-artist
 ALBUM
 ..%03d-album
-NOMAXPLAYTM
+NOPLAYTMLIMIT
 ..on
 TRACKNUMBER
 ..%d

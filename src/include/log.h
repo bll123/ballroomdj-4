@@ -32,6 +32,7 @@ extern "C" {
  *  mui  - management ui
  *  play - player
  *  plui - player ui
+ *  podu - podcast updater
  *  rc   - mobile remote control
  *  srv  - server
  *  strt - starter

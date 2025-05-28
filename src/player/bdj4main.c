@@ -556,10 +556,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mainSetMusicQueuesChanged (mainData);
           break;
         }
-        case MSG_DATABASE_UPDATE: {
+        case MSG_DB_RELOAD: {
           mainData->musicdb = bdj4ReloadDatabase (mainData->musicdb);
           musicqSetDatabase (mainData->musicQueue, mainData->musicdb);
           mainSetMusicQueuesChanged (mainData);
+          connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_DB_LOADED, NULL);
           break;
         }
         case MSG_MAIN_REQ_STATUS: {
@@ -2726,7 +2727,7 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song,
     logMsg (LOG_DBG, LOG_INFO, "dur-speed: %" PRId32, dur);
   }
 
-  nmpt = songGetNum (song, TAG_NO_MAX_PLAY_TM);
+  nmpt = songGetNum (song, TAG_NO_PLAY_TM_LIMIT);
   if (nmpt) {
     /* if the no-max-play-time flag is set, no need to check */
     /* maximum duration values */

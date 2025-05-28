@@ -62,7 +62,6 @@ enum {
 
 typedef struct {
   progstate_t     *progstate;
-  char            *locknm;
   const char      *disptxt [BPMCOUNT_DISP_MAX];
   procutil_t      *processes [ROUTE_MAX];
   conn_t          *conn;

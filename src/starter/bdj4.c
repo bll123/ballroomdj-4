@@ -67,6 +67,7 @@ main (int argc, char * argv[])
     { "bdj4dbupdate",   no_argument,        NULL,   4 },
     { "bdj4info",       no_argument,        NULL,   5 },
     { "bdj4installer",  no_argument,        NULL,   6 },
+    { "bdj4podcastupd", no_argument,        NULL,   20 },
     { "bdj4server",     no_argument,        NULL,   7 },
     { "bdj4tags",       no_argument,        NULL,   8 },
     { "bdj4updater",    no_argument,        NULL,   9 },
@@ -296,6 +297,11 @@ main (int argc, char * argv[])
         prog = "vlcversion";
         nodetach = false;
         wait = true;
+        ++validargs;
+        break;
+      }
+      case 20: {
+        prog = "bdj4podcastupd";
         ++validargs;
         break;
       }

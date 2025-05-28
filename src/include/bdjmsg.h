@@ -40,8 +40,11 @@ typedef enum {
   MSG_EXIT_REQUEST,         // standard shutdown
   MSG_HANDSHAKE,
   MSG_SOCKET_CLOSE,
-  MSG_DATABASE_UPDATE,      // send by manageui to starterui,
-                            // then sent by starterui to playerui, main.
+  MSG_DB_RELOAD,            // sent by manageui to starterui,
+                            // then sent by starterui to
+                            // playerui, main, bdj4server.
+  MSG_DB_LOADED,            // sent by main to manageui
+                            // after the db update is complete
   MSG_DB_ENTRY_UPDATE,      // args: dbidx
   MSG_DB_ENTRY_REMOVE,      // args: dbidx
   MSG_DB_ENTRY_UNREMOVE,    // args: dbidx

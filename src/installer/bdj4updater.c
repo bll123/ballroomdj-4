@@ -105,6 +105,9 @@ enum {
   /* 2025-2-19 4.13.0 */
   /* groupings of all digits are cleared */
   UPD_FIX_DB_GROUPING,
+  /* 2025-5-23 4.15.0 */
+  /* some companies are using the title-sort field as the genre field */
+  UPD_FIX_DB_TITLE_SORT,
   UPD_MAX,
 };
 enum {
@@ -113,15 +116,16 @@ enum {
 
 
 static datafilekey_t upddfkeys[] = {
-  { "CONVERTED",        UPD_CONVERTED,      VALUE_NUM, NULL, DF_NORM },
-  { "FIRSTVERSION",     UPD_FIRST_VERS,     VALUE_STR, NULL, DF_NORM },
-  { "FIX_AF_TAGS",      UPD_FIX_AF_TAGS,    VALUE_NUM, NULL, DF_NORM },
-  { "FIX_DB_DATE_ADDED", UPD_FIX_DB_DATE_ADDED, VALUE_NUM, NULL, DF_NORM },
-  { "FIX_DB_DATE_ADD_B", UPD_FIX_DB_DATE_ADDED_B, VALUE_NUM, NULL, DF_NORM },
-  { "FIX_DB_DISCNUM",   UPD_FIX_DB_DISCNUM, VALUE_NUM, NULL, DF_NORM },
-  { "FIX_DB_GROUPING",  UPD_FIX_DB_GROUPING, VALUE_NUM, NULL, DF_NORM },
-  { "FIX_LOCALE",       UPD_FIX_LOCALE,     VALUE_NUM, NULL, DF_NORM },
-  { "FIX_WIN_FONT",     UPD_FIX_WIN_FONT,   VALUE_NUM, NULL, DF_NORM },
+  { "CONVERTED",          UPD_CONVERTED,            VALUE_NUM, NULL, DF_NORM },
+  { "FIRSTVERSION",       UPD_FIRST_VERS,           VALUE_STR, NULL, DF_NORM },
+  { "FIX_AF_TAGS",        UPD_FIX_AF_TAGS,          VALUE_NUM, NULL, DF_NORM },
+  { "FIX_DB_DATE_ADDED",  UPD_FIX_DB_DATE_ADDED,    VALUE_NUM, NULL, DF_NORM },
+  { "FIX_DB_DATE_ADD_B",  UPD_FIX_DB_DATE_ADDED_B,  VALUE_NUM, NULL, DF_NORM },
+  { "FIX_DB_DISCNUM",     UPD_FIX_DB_DISCNUM,       VALUE_NUM, NULL, DF_NORM },
+  { "FIX_DB_GROUPING",    UPD_FIX_DB_GROUPING,      VALUE_NUM, NULL, DF_NORM },
+  { "FIX_DB_TITLE_SORT",  UPD_FIX_DB_TITLE_SORT,    VALUE_NUM, NULL, DF_NORM },
+  { "FIX_LOCALE",         UPD_FIX_LOCALE,           VALUE_NUM, NULL, DF_NORM },
+  { "FIX_WIN_FONT",       UPD_FIX_WIN_FONT,         VALUE_NUM, NULL, DF_NORM },
 };
 enum {
   UPD_DF_COUNT = (sizeof (upddfkeys) / sizeof (datafilekey_t))
@@ -762,6 +766,11 @@ main (int argc, char *argv [])
     processflags [UPD_FIX_DB_GROUPING] = true;
     processdb = true;
   }
+  if (statusflags [UPD_FIX_DB_TITLE_SORT] == UPD_NOT_DONE) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.15.0 : process db : fix title sort");
+    processflags [UPD_FIX_DB_TITLE_SORT] = true;
+    processdb = true;
+  }
 
   if (processaf || processdb) {
     mstime_t    dbmt;
@@ -838,9 +847,21 @@ main (int argc, char *argv [])
     song_t      *song;
     dbidx_t     dbidx;
     bdjregex_t  *alldigits = NULL;
+    bdjregex_t  *titlesort = NULL;
 
     if (processflags [UPD_FIX_DB_GROUPING]) {
       alldigits = regexInit ("^\\d+$");
+    }
+    if (processflags [UPD_FIX_DB_TITLE_SORT]) {
+      /* casa-musica and other are abusing the title-sort field */
+      /* and using to place the genre */
+      /* unfortunately, this is probably not all of the different genres */
+      /* that are being put into the title-sort tag */
+      titlesort = regexInit ("^(Orchestra|Pop|Soundtrack|"
+          "World Music|Classic Music|Easy Listening|"
+          "Latin Pop|Musette & Chanson/Folk/Gipsy|"
+          "Nu Jazz/Electro Swing|Rhythm & Blues/Rockabilly|"
+          "Soul/Gospel|Swing)$");
     }
 
     dbStartBatch (musicdb);
@@ -907,11 +928,27 @@ main (int argc, char *argv [])
         }
       }
 
+      if (processflags [UPD_FIX_DB_TITLE_SORT]) {
+        const char  *tstr;
+
+        tstr = songGetStr (song, TAG_SORT_TITLE);
+        if (tstr != NULL) {
+          if (regexMatch (titlesort, tstr)) {
+            songSetStr (song, TAG_SORT_TITLE, NULL);
+            dowrite = true;
+            counters [UPD_FIX_DB_TITLE_SORT] += 1;
+          }
+        }
+      }
+
       if (dowrite) {
         dbWriteSong (musicdb, song);
       }
     }
     dbEndBatch (musicdb);
+
+    regexFree (alldigits);
+    regexFree (titlesort);
   }
 
   if (processaf || processdb) {
@@ -930,6 +967,9 @@ main (int argc, char *argv [])
     if (processflags [UPD_FIX_DB_GROUPING]) {
       nlistSetNum (updlist, UPD_FIX_DB_GROUPING, UPD_COMPLETE);
     }
+    if (processflags [UPD_FIX_DB_TITLE_SORT]) {
+      nlistSetNum (updlist, UPD_FIX_DB_TITLE_SORT, UPD_COMPLETE);
+    }
     dbClose (musicdb);
   }
 
@@ -944,6 +984,9 @@ main (int argc, char *argv [])
   }
   if (counters [UPD_FIX_DB_GROUPING] > 0) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-grouping: %" PRId32, counters [UPD_FIX_DB_GROUPING]);
+  }
+  if (counters [UPD_FIX_DB_TITLE_SORT] > 0) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-title-sort: %" PRId32, counters [UPD_FIX_DB_TITLE_SORT]);
   }
 
   if (statusflags [UPD_FIX_LOCALE] == UPD_NOT_DONE) {

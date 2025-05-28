@@ -63,11 +63,22 @@ addWinSockLibrary (bdj4dbupdate)
 addWinVersionInfo (bdj4dbupdate)
 addWinManifest (bdj4dbupdate)
 
+add_executable (bdj4podcastupd bdj4podcastupd.c)
+if (WIN32)
+  target_compile_options (bdj4podcastupd PRIVATE -municode)
+endif()
+target_link_libraries (bdj4podcastupd PRIVATE
+  libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
+)
+addWinVersionInfo (bdj4podcastupd)
+addWinManifest (bdj4podcastupd)
+
 install (TARGETS
-  bdj4manageui bdj4bpmcounter bdj4dbupdate
+  bdj4manageui bdj4bpmcounter bdj4dbupdate bdj4podcastupd
   DESTINATION ${DEST_BIN}
 )
 
 updateRPath (bdj4manageui)
 updateRPath (bdj4bpmcounter)
 updateRPath (bdj4dbupdate)
+updateRPath (bdj4podcastupd)

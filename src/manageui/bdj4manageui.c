@@ -36,6 +36,7 @@
 #include "fileop.h"
 #include "filemanip.h"
 #include "grouping.h"
+#include "imppl.h"
 #include "itunes.h"
 #include "localeutil.h"
 #include "lock.h"
@@ -288,6 +289,10 @@ typedef struct {
   uiexppl_t         *uiexppl;
   uiimppl_t         *uiimppl;
   int               pltype;
+  slist_t           *songidxlist;
+  const char        *impplname;
+  int               impstate;
+  bool              imphasnewsongs;
   /* export/import bdj4 */
   uieibdj4_t        *uieibdj4;
   eibdj4_t          *eibdj4;
@@ -301,6 +306,7 @@ typedef struct {
   bool              bpmcounterstarted;
   bool              cfplactive;
   bool              cfplpostprocess;
+  bool              dbloaded;
   bool              enablerestoreorig;
   bool              exportactive;
   bool              exportbdj4active;
@@ -437,8 +443,10 @@ static bool managePlaylistExportRespHandler (void *udata, const char *fname, int
 /* import playlist */
 static bool managePlaylistImport (void *udata);
 static bool managePlaylistImportRespHandler (void *udata);
-static void managePlaylistImportCreateSonglist (manageui_t *manage, slist_t *songlist);
-static bool managePlaylistImportCreateSongs (manageui_t *manage, const char *songnm, int imptype, slist_t *songlist, slist_t *tagdata, int retain);
+static void managePlaylistImportFinalize (manageui_t *manage);
+
+//static void managePlaylistImportCreateSonglist (manageui_t *manage, slist_t *songlist);
+//static bool managePlaylistImportCreateSongs (manageui_t *manage, const char *songnm, int imptype, slist_t *songlist, slist_t *tagdata, int retain);
 static int32_t manageDragDropCallback (void *udata, const char *uri);
 
 /* export/import bdj4 */
@@ -511,6 +519,10 @@ main (int argc, char *argv[])
   manage.uiimppl = NULL;
   manage.uiexppl = NULL;
   manage.pltype = PLTYPE_SONGLIST;
+  manage.songidxlist = NULL;
+  manage.impplname = NULL;
+  manage.impstate = BDJ4_STATE_OFF;
+  manage.imphasnewsongs = false;
   manage.musicqPlayIdx = MUSICQ_MNG_PB;
   manage.musicqManageIdx = MUSICQ_SL;
   manage.stopwaitcount = 0;
@@ -552,6 +564,7 @@ main (int argc, char *argv[])
   manage.bpmcounterstarted = false;
   manage.cfplactive = false;
   manage.cfplpostprocess = false;
+  manage.dbloaded = false;
   manage.enablerestoreorig = false;
   manage.exportactive = false;
   manage.exportbdj4active = false;
@@ -752,6 +765,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   uiimpplFree (manage->uiimppl);
   uiexpplFree (manage->uiexppl);
   nlistFree (manage->removelist);
+  slistFree (manage->songidxlist);
 
   procutilStopAllProcess (manage->processes, manage->conn, PROCUTIL_FORCE_TERM);
   procutilFreeAll (manage->processes);
@@ -1214,6 +1228,27 @@ manageMainLoop (void *tmanage)
     }
   }
 
+  if (manage->impstate == BDJ4_STATE_WAIT) {
+    if (manage->dbloaded) {
+      manage->dbloaded = false;
+      manage->impstate = BDJ4_STATE_FINISH;
+    }
+  }
+
+  if (manage->impstate == BDJ4_STATE_FINISH) {
+    managePlaylistImportFinalize (manage);
+    manage->impstate = BDJ4_STATE_OFF;
+  }
+
+  if (manage->expimpbdj4state == BDJ4_STATE_WAIT) {
+    if (manage->dbloaded) {
+      manage->dbloaded = false;
+      /* expimpbdj4.c will have set its db-loaded flag to false */
+      /* wait for the db-reload response, and start the processing up again */
+      manage->expimpbdj4state = BDJ4_STATE_PROCESS;
+    }
+  }
+
   if (manage->expimpbdj4state == BDJ4_STATE_PROCESS) {
     if (mstimeCheck (&manage->eibdj4ChkTime)) {
       int   count, tot;
@@ -1227,6 +1262,8 @@ manageMainLoop (void *tmanage)
     if (eibdj4Process (manage->eibdj4)) {
       if (eibdj4DatabaseChanged (manage->eibdj4)) {
         manageProcessDatabaseUpdate (manage);
+        manage->expimpbdj4state = BDJ4_STATE_WAIT;
+        return stop;
       }
       uiutilsProgressStatus (manage->minfo.statusMsg, -1, -1);
       uieibdj4UpdateStatus (manage->uieibdj4, -1, -1);
@@ -1522,6 +1559,10 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           /* reload it, and reload it ourselves */
           manageProcessDatabaseUpdate (manage);
           manageDbResetButtons (manage->managedb);
+          break;
+        }
+        case MSG_DB_LOADED: {
+          manage->dbloaded = true;
           break;
         }
         case MSG_MUSIC_QUEUE_DATA: {
@@ -3444,16 +3485,11 @@ static bool
 managePlaylistImportRespHandler (void *udata)
 {
   manageui_t  *manage = udata;
-  const char  *plname;
   const char  *uri;
   const char  *oplname;
   int         imptype;
-  int         mqidx;
   int         askey;
   char        tbuff [MAXPATHLEN];
-  dbidx_t     dbidx;
-  bool        newsongs = false;
-  slist_t     *songlist;
 
   imptype = uiimpplGetType (manage->uiimppl);
   if (imptype == AUDIOSRC_TYPE_NONE) {
@@ -3463,7 +3499,7 @@ managePlaylistImportRespHandler (void *udata)
   uri = uiimpplGetURI (manage->uiimppl);
   askey = uiimpplGetASKey (manage->uiimppl);
   oplname = uiimpplGetOrigName (manage->uiimppl);
-  plname = uiimpplGetNewName (manage->uiimppl);
+  manage->impplname = uiimpplGetNewName (manage->uiimppl);
 
   if (imptype == AUDIOSRC_TYPE_PODCAST) {
     manageResetCreateNew (manage, PLTYPE_PODCAST);
@@ -3472,200 +3508,64 @@ managePlaylistImportRespHandler (void *udata)
   }
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      plname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
+      manage->impplname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
   /* podcasts overwrite the old playlist */
   if (! fileopFileExists (tbuff) || imptype == AUDIOSRC_TYPE_PODCAST) {
-    manageSetSonglistName (manage, plname);
+    manageSetSonglistName (manage, manage->impplname);
   }
 
-  mqidx = manage->musicqManageIdx;
   /* clear the entire queue */
   uimusicqTruncateQueueCallback (manage->currmusicq);
 
-  if (imptype == AUDIOSRC_TYPE_FILE) {
-    nlist_t     *list = NULL;
-    nlistidx_t  iteridx;
-    pathinfo_t  *pi;
+  uiUIProcessWaitEvents ();
 
-    if (! *uri) {
-      return UICB_CONT;
-    }
+  slistFree (manage->songidxlist);
+  manage->songidxlist = slistAlloc ("mui-plimp-song-idx", LIST_UNORDERED, NULL);
+  manage->imphasnewsongs = impplPlaylistImport (manage->songidxlist,
+      manage->musicdb, imptype, uri, oplname, manage->impplname, askey);
 
-    pi = pathInfo (uri);
+  uiUIProcessWaitEvents ();
 
-    if (pathInfoExtCheck (pi, ".m3u") || pathInfoExtCheck (pi, ".m3u8")) {
-      list = m3uImport (manage->musicdb, uri);
-    }
-    if (pathInfoExtCheck (pi, ".xspf")) {
-      list = xspfImport (manage->musicdb, uri);
-    }
-    if (pathInfoExtCheck (pi, ".jspf")) {
-      list = jspfImport (manage->musicdb, uri);
-    }
-
-    pathInfoFree (pi);
-
-    if (list != NULL && nlistGetCount (list) > 0) {
-      nlistStartIterator (list, &iteridx);
-      while ((dbidx = nlistIterateKey (list, &iteridx)) >= 0) {
-        manageQueueProcess (manage, dbidx, mqidx,
-            DISP_SEL_SONGLIST, MANAGE_QUEUE_LAST);
-      }
-    }
-    nlistFree (list);
-  } /* audiosrc-type: file */
-
-  if (imptype == AUDIOSRC_TYPE_BDJ4 || imptype == AUDIOSRC_TYPE_PODCAST) {
-    asiter_t    *asiter;
-    const char  *songnm;
-    int         retain = 0;
-
-    songlist = slistAlloc ("tmp-imp-pl-bdj4", LIST_UNORDERED, NULL);
-    if (imptype == AUDIOSRC_TYPE_PODCAST) {
-      playlist_t    *pl;
-
-      pl = playlistLoad (plname, NULL, NULL);
-      if (pl != NULL) {
-        retain = playlistGetPodcastNum (pl, PODCAST_RETAIN);
-      }
-      playlistFree (pl);
-    }
-
-    asiter = audiosrcStartIterator (imptype, AS_ITER_PL, uri, oplname, askey);
-    dbStartBatch (manage->musicdb);
-    while ((songnm = audiosrcIterate (asiter)) != NULL) {
-      slist_t     *tagdata;
-      asiter_t    *tagiter;
-      const char  *tag;
-
-      uiUIProcessWaitEvents ();
-      tagdata = slistAlloc ("asimppl-bdj4", LIST_UNORDERED, NULL);
-
-      tagiter = audiosrcStartIterator (imptype, AS_ITER_TAGS, uri, songnm, askey);
-      while ((tag = audiosrcIterate (tagiter)) != NULL) {
-        const char  *tval;
-
-        tval = audiosrcIterateValue (tagiter, tag);
-        slistSetStr (tagdata, tag, tval);
-      }
-      audiosrcCleanIterator (tagiter);
-
-      slistSetStr (tagdata, tagdefs [TAG_URI].tag, songnm);
-      slistSort (tagdata);
-
-      newsongs |= managePlaylistImportCreateSongs (
-          manage, songnm, imptype, songlist, tagdata, retain);
-      slistFree (tagdata);
-    }
-    dbEndBatch (manage->musicdb);
-    audiosrcCleanIterator (asiter);
-
-    if (newsongs) {
-      manageProcessDatabaseUpdate (manage);
-    }
-
-    uiUIProcessWaitEvents ();
-    managePlaylistImportCreateSonglist (manage, songlist);
-    slistFree (songlist);
-  }
-
-  if (newsongs) {
-    manageRePopulateData (manage);
+  manage->impstate = BDJ4_STATE_FINISH;
+  if (manage->imphasnewsongs) {
+    manageProcessDatabaseUpdate (manage);
+    manage->impstate = BDJ4_STATE_WAIT;
   }
 
   if (imptype == AUDIOSRC_TYPE_PODCAST) {
-    podcast_t   *podcast;
-    bool        podcastexists = true;
-
-    podcast = podcastLoad (plname);
-    if (podcast == NULL) {
-      podcast = podcastCreate (plname);
-      podcastexists = false;
-    }
-
-    podcastSetStr (podcast, PODCAST_URI, uri);
-    podcastSetStr (podcast, PODCAST_TITLE, plname);
-// ### need to get last-build-date from audio-src ?
-    if (podcastexists == false) {
-      podcastSetNum (podcast, PODCAST_RETAIN, 0);
-    }
-    podcastSave (podcast);
-    podcastFree (podcast);
-
     manage->pltype = PLTYPE_PODCAST;
   }
 
-  managePlaylistLoadFile (manage->managepl, plname, MANAGE_PRELOAD);
+  /* as the database may need to be re-loaded, wait for the */
+  /* re-load to finish.  the pl-imp-finalize process will run from */
+  /* the main loop */
 
   return UICB_CONT;
 }
 
 static void
-managePlaylistImportCreateSonglist (manageui_t *manage, slist_t *songlist)
+managePlaylistImportFinalize (manageui_t *manage)
 {
-  const char    *songnm;
-  slistidx_t    iteridx;
-  dbidx_t       dbidx;
+  slistidx_t  iteridx;
+  const char  *nm;
 
-  /* do all this afterwards, as the db-update message takes */
-  /* time to get to bdj4main */
-  slistStartIterator (songlist, &iteridx);
-  while ((songnm = slistIterateKey (songlist, &iteridx)) != NULL) {
-    song_t      *song;
+  slistStartIterator (manage->songidxlist, &iteridx);
+  while ((nm = slistIterateKey (manage->songidxlist, &iteridx)) != NULL) {
+    dbidx_t     dbidx;
 
-    song = dbGetByName (manage->musicdb, songnm);
-    dbidx = songGetNum (song, TAG_DBIDX);
-
-    manageQueueProcess (manage, dbidx, manage->musicqManageIdx,
-          DISP_SEL_SONGLIST, MANAGE_QUEUE_LAST);
-  }
-}
-
-static bool
-managePlaylistImportCreateSongs (manageui_t *manage, const char *songnm,
-    int imptype, slist_t *songlist, slist_t *tagdata, int retain)
-{
-  song_t      *song = NULL;
-  bool        rc = false;
-
-
-  song = dbGetByName (manage->musicdb, songnm);
-  if (song == NULL) {
-    /* song needs to be added */
-    song = songAlloc ();
-    songFromTagList (song, tagdata);
-    songSetNum (song, TAG_DB_FLAGS, MUSICDB_STD);
-    songSetNum (song, TAG_RRN, MUSICDB_ENTRY_NEW);
-    songSetNum (song, TAG_PREFIX_LEN, 0);
-    rc = true;
-  }
-
-  if (retain > 0) {
-    time_t      currtm;
-    time_t      podtm;
-    time_t      days = 0;
-
-    currtm = time (NULL);
-    podtm = songGetNum (song, TAG_DBADDDATE);
-    days = currtm - podtm;
-    days /= 24 * 3600;
-    if (days > retain) {
-      if (! rc) {
-        dbidx_t   dbidx;
-
-        dbidx = songGetNum (song, TAG_DBIDX);
-        dbRemoveSong (manage->musicdb, dbidx);
-      }
-      return false;
+    dbidx = slistGetNum (manage->songidxlist, nm);
+    if (dbidx < 0) {
+      song_t    *song;
+      song = dbGetByName (manage->musicdb, nm);
+      dbidx = songGetNum (song, TAG_DBIDX);
     }
+    manageQueueProcess (manage, dbidx, manage->musicqManageIdx,
+        DISP_SEL_SONGLIST, MANAGE_QUEUE_LAST);
   }
 
-  if (rc) {
-    dbWriteSong (manage->musicdb, song);
+  if (manage->imphasnewsongs) {
+    manageRePopulateData (manage);
   }
-
-  slistSetNum (songlist, songnm, 0);
-  return rc;
 }
 
 static int32_t
@@ -4115,7 +4015,7 @@ manageSonglistLoadCheck (manageui_t *manage)
 static void
 manageProcessDatabaseUpdate (manageui_t *manage)
 {
-  connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DATABASE_UPDATE, NULL);
+  connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_RELOAD, NULL);
 
   samesongFree (manage->samesong);
   manage->musicdb = bdj4ReloadDatabase (manage->musicdb);

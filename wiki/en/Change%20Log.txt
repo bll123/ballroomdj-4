@@ -9,6 +9,9 @@
 * Bug Fixes:
     * User Interface: Prevent paste into read-only spinboxes.
     * Player: Fix incorrect status display when playing and no songs.
+    * Database Update: Some companies are putting the genre into the
+      title-sort tag.  Some known genres will be cleared from the
+      title-sort tag.
 * Changes:
     * Player: External Request: Drag and drop implemented.
     * Manage: Import Playlist: Drag and drop implemented.

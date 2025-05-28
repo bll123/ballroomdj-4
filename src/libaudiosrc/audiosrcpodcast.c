@@ -441,7 +441,7 @@ aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata,
       tagdefs [TAG_DBADDDATE].tag,
       ilistGetStr (rssitems, idx, RSS_ITEM_DATE));
   slistSetStr (asidata->songtags,
-      tagdefs [TAG_NO_MAX_PLAY_TM].tag, "yes");
+      tagdefs [TAG_NO_PLAY_TM_LIMIT].tag, "yes");
   slistSetStr (asidata->songtags,
       tagdefs [TAG_SONG_TYPE].tag, "podcast");
 

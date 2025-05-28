@@ -101,7 +101,7 @@ typedef enum {
   TAG_MOVEMENTNUM,            //
   TAG_MQDISPLAY,              //  bdj4
   TAG_NOTES,                  //  bdj4
-  TAG_NO_MAX_PLAY_TM,         //  bdj4
+  TAG_NO_PLAY_TM_LIMIT,         //  bdj4
   TAG_PREFIX_LEN,             // used for secondary directories
   TAG_RECORDING_ID,           // musicbrainz_trackid
   TAG_RRN,                    // internal: not saved to db or af

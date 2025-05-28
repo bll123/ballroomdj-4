@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
+ * Copyright 2025 Brad Lanam Pleasant Hill CA
  */
 #include "config.h"
 

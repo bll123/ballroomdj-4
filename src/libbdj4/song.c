@@ -90,7 +90,7 @@ static datafilekey_t songdfkeys [] = {
   { "MOVEMENTNAME",         TAG_MOVEMENTNAME,         VALUE_STR, NULL, DF_NORM },
   { "MOVEMENTNUM",          TAG_MOVEMENTNUM,          VALUE_NUM, NULL, DF_NORM },
   { "MQDISPLAY",            TAG_MQDISPLAY,            VALUE_STR, NULL, DF_NORM },
-  { "NOMAXPLAYTM",          TAG_NO_MAX_PLAY_TM,       VALUE_NUM, convBoolean, DF_NORM },
+  { "NOMAXPLAYTM",          TAG_NO_PLAY_TM_LIMIT,       VALUE_NUM, convBoolean, DF_NORM },
   { "NOTES",                TAG_NOTES,                VALUE_STR, NULL, DF_NORM },
   { "PFXLEN",               TAG_PREFIX_LEN,           VALUE_NUM, NULL, DF_NORM },
   { "RECORDING_ID",         TAG_RECORDING_ID,         VALUE_STR, NULL, DF_NORM },
@@ -120,9 +120,10 @@ typedef struct {
   level_t     *levels;
   songfav_t   *songfav;
   bdjregex_t  *alldigits;
+  bdjregex_t  *titlesort;
 } songinit_t;
 
-static songinit_t gsonginit = { false, NULL, NULL, NULL };
+static songinit_t gsonginit = { false, NULL, NULL, NULL, NULL };
 
 static void songSetDefaults (song_t *song);
 
@@ -203,6 +204,12 @@ songFromTagList (song_t *song, slist_t *tagdata)
         /* 2025-2-19 : Some companies set the grouping tag to an all numeric */
         /*    group.  If an all numeric group is found, clear it */
         if (regexMatch (gsonginit.alldigits, tstr)) {
+          tstr = NULL;
+        }
+      }
+      if (songdfkeys [i].itemkey == TAG_SORT_TITLE) {
+        /* 2025-5-23 : Some companies set the title-sort tag to the genre */
+        if (regexMatch (gsonginit.titlesort, tstr)) {
           tstr = NULL;
         }
       }
@@ -611,6 +618,13 @@ songInit (void)
   gsonginit.levels = bdjvarsdfGet (BDJVDF_LEVELS);
   gsonginit.songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
   gsonginit.alldigits = regexInit ("^\\d+$");
+  /* unfortunately, this is probably not all of the different genres */
+  /* that are being put into the title-sort tag */
+  gsonginit.titlesort = regexInit ("^(Orchestra|Pop|Soundtrack|"
+      "World Music|Classic Music|Easy Listening|"
+      "Latin Pop|Musette & Chanson/Folk/Gipsy|"
+      "Nu Jazz/Electro Swing|Rhythm & Blues/Rockabilly|"
+      "Soul/Gospel|Swing)$");
   atexit (songCleanup);
 }
 
@@ -624,6 +638,10 @@ songCleanup (void)
   if (gsonginit.alldigits != NULL) {
     regexFree (gsonginit.alldigits);
     gsonginit.alldigits = NULL;
+  }
+  if (gsonginit.titlesort != NULL) {
+    regexFree (gsonginit.titlesort);
+    gsonginit.titlesort = NULL;
   }
   gsonginit.initialized = false;
 }
@@ -719,9 +737,9 @@ songSetDefaults (song_t *song)
   }
 
   /* 2025-4-26: 4.15.0 no-max-play-time */
-  lkey = nlistGetNum (song->songInfo, TAG_NO_MAX_PLAY_TM);
+  lkey = nlistGetNum (song->songInfo, TAG_NO_PLAY_TM_LIMIT);
   if (lkey < 0) {
     /* false */
-    nlistSetNum (song->songInfo, TAG_NO_MAX_PLAY_TM, 0);
+    nlistSetNum (song->songInfo, TAG_NO_PLAY_TM_LIMIT, 0);
   }
 }

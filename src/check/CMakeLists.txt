@@ -71,7 +71,6 @@ add_executable (check_all
   libbdj4/check_orgutil.c
   libbdj4/check_playlist.c
   libbdj4/check_podcast.c
-  libbdj4/check_podcastutil.c
   libbdj4/check_rating.c
   libbdj4/check_samesong.c
   libbdj4/check_sequence.c

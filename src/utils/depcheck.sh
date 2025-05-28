@@ -61,7 +61,7 @@ echo "## checking for missing copyright"
 # this is run from the src/ directory
 for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h \
     */*.sh ../*/*.sh ../pkg/*/*.sh ../pkg/windows/version.rc.in \
-    CMakeLists.txt */CMakeLists.txt Makefile \
+    CMakeLists.txt */CMakeLists.txt Makefile ../README.md \
     po/Makefile* */*.awk config.h.in */*.cmake ../pkg/macos/*.plist; do
   case $fn in
     *src/tt.sh|*src/z.sh)

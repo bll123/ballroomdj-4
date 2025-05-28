@@ -213,11 +213,16 @@ eibdj4Process (eibdj4_t *eibdj4)
 bool
 eibdj4DatabaseChanged (eibdj4_t *eibdj4)
 {
+  bool    chg;
+
   if (eibdj4 == NULL) {
     return false;
   }
 
-  return eibdj4->dbchanged;
+  chg = eibdj4->dbchanged;
+  /* reset the flag so that a db-change does not get re-processed */
+  eibdj4->dbchanged = false;
+  return chg;
 }
 
 /* internal routines */

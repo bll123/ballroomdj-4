@@ -135,7 +135,7 @@ musicqPushHeadEmpty (musicq_t *musicq, musicqidx_t musicqidx)
   }
 
   musicqitem = mdmalloc (sizeof (musicqitem_t));
-  musicqitem->dbidx = -1;
+  musicqitem->dbidx = DBIDX_NONE;
   musicqitem->playlistIdx = MUSICQ_PLAYLIST_EMPTY;
   musicqitem->announce = NULL;
   musicqitem->flags = MUSICQ_FLAG_EMPTY;
@@ -216,17 +216,17 @@ musicqGetCurrent (musicq_t *musicq, musicqidx_t musicqidx)
   logProcBegin ();
   if (musicq == NULL || musicq->q [musicqidx] == NULL) {
     logProcEnd ("bad-ptr");
-    return -1;
+    return DBIDX_NONE;
   }
 
   musicqitem = queueGetFirst (musicq->q [musicqidx]);
   if (musicqitem == NULL) {
     logProcEnd ("no-item");
-    return -1;
+    return DBIDX_NONE;
   }
   if ((musicqitem->flags & MUSICQ_FLAG_EMPTY) == MUSICQ_FLAG_EMPTY) {
     logProcEnd ("empty-item");
-    return -1;
+    return DBIDX_NONE;
   }
   logProcEnd ("");
   return musicqitem->dbidx;
@@ -241,7 +241,7 @@ musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey)
   logProcBegin ();
   if (musicq == NULL || musicq->q [musicqidx] == NULL) {
     logProcEnd ("bad-ptr");
-    return -1;
+    return DBIDX_NONE;
   }
 
   musicqitem = queueGetByIdx (musicq->q [musicqidx], qkey);
@@ -250,7 +250,7 @@ musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey)
     return musicqitem->dbidx;
   }
   logProcEnd ("no-item");
-  return -1;
+  return DBIDX_NONE;
 }
 
 musicqflag_t

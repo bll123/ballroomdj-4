@@ -1215,7 +1215,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           plui->lastLoc [musicqupdate->mqidx] = -1;
           break;
         }
-        case MSG_DATABASE_UPDATE: {
+        case MSG_DB_RELOAD: {
           plui->musicdb = bdj4ReloadDatabase (plui->musicdb);
           uiplayerSetDatabase (plui->uiplayer, plui->musicdb);
           uisongselSetDatabase (plui->uisongsel, plui->musicdb);

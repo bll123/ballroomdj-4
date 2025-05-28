@@ -4,6 +4,6 @@
 version
 ..1
 RETAIN
-..0
+..1
 URI
 ..https://feeds.npr.org/500005/podcast.xml
