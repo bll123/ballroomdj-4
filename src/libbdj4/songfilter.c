@@ -419,7 +419,8 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
   /* filtered is a song list. */
   /* Sequences and automatic playlists are not supported at this time */
   /* (and would not be handled in this fashion). */
-  if (sf->inuse [SONG_FILTER_PLAYLIST] && pltype == PLTYPE_SONGLIST) {
+  if (sf->inuse [SONG_FILTER_PLAYLIST] &&
+      (pltype == PLTYPE_SONGLIST || pltype == PLTYPE_PODCAST)) {
     songlist_t  *sl;
     ilistidx_t  sliter;
     ilistidx_t  slkey;
@@ -445,7 +446,8 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
     logMsg (LOG_DBG, LOG_SONGSEL, "sf: selected: %" PRId32 " songs from playlist", nlistGetCount (sf->indexList));
   }
 
-  if (! sf->inuse [SONG_FILTER_PLAYLIST] || pltype != PLTYPE_SONGLIST) {
+  if (! sf->inuse [SONG_FILTER_PLAYLIST] ||
+      (pltype != PLTYPE_SONGLIST && pltype != PLTYPE_PODCAST)) {
     dbStartIterator (musicdb, &dbiteridx);
     while ((song = dbIterate (musicdb, &dbidx, &dbiteridx)) != NULL) {
       if (! songfilterFilterSong (sf, song)) {

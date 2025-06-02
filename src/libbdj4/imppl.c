@@ -74,12 +74,30 @@ impplInit (slist_t *songidxlist, musicdb_t *musicdb, int imptype,
       imptype == AUDIOSRC_TYPE_PODCAST) {
     if (imppl->imptype == AUDIOSRC_TYPE_PODCAST) {
       playlist_t    *pl;
+      songlist_t    *sl;
+      ilistidx_t    sliteridx;
+      ilistidx_t    slkey;
 
       pl = playlistLoad (imppl->plname, NULL, NULL);
       if (pl != NULL) {
         imppl->retain = playlistGetPodcastNum (pl, PODCAST_RETAIN);
       }
       playlistFree (pl);
+
+      sl = songlistLoad (imppl->plname);
+      songlistStartIterator (sl, &sliteridx);
+      while ((slkey = songlistIterate (sl, &sliteridx)) >= 0) {
+        const char  *songnm;
+        song_t      *song;
+        dbidx_t     dbidx;
+
+        songnm = songlistGetStr (sl, slkey, SONGLIST_URI);
+        song = dbGetByName (imppl->musicdb, songnm);
+        if (song != NULL) {
+          dbidx = songGetNum (song, TAG_DBIDX);
+          slistSetNum (imppl->songidxlist, songnm, dbidx);
+        }
+      }
     }
 
     imppl->asiter = audiosrcStartIterator (imppl->imptype,
@@ -240,12 +258,13 @@ impplFinalize (imppl_t *imppl)
 
     podcastSetStr (podcast, PODCAST_URI, imppl->uri);
     podcastSetStr (podcast, PODCAST_TITLE, imppl->plname);
-// ### need to get last-build-date from audio-src ?
     if (podcastexists == false) {
       podcastSetNum (podcast, PODCAST_RETAIN, 0);
     }
     podcastSave (podcast);
     podcastFree (podcast);
+
+// ### podcast: need to re-sort songidxlist by reverse db-add-date
   }
 }
 
