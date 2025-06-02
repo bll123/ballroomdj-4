@@ -685,11 +685,11 @@ sysvarsInit (const char *argv0, int flags)
     char  *data;
     char  *tdata;
 
-    sysvarsSetStr (SV_OS_DISP, "macOS");
+    sysvarsSetStr (SV_OS_DISP, "MacOS");
     data = osRunProgram (sysvars [SV_TEMP_A], "-ProductVersion", NULL);
     stringTrim (data);
     p = sysvars [SV_OS_VERS];
-    end = sysvars [SV_OS_VERS] + SV_MAX_SZ;
+    end = p + SV_MAX_SZ;
     p = stpecpy (p, end, data);
     dataFree (data);
 
@@ -713,8 +713,8 @@ sysvarsInit (const char *argv0, int flags)
 
     data = sysvars [SV_OS_VERS];
     if (data != NULL) {
-      p = sysvars [SV_OS_DISP];
-      end = sysvars [SV_OS_DISP] + SV_MAX_SZ;
+      p = sysvars [SV_OS_DISP] + strlen (sysvars [SV_OS_DISP]);
+      end = p + SV_MAX_SZ;
       p = stpecpy (p, end, " ");
       p = stpecpy (p, end, data);
     }

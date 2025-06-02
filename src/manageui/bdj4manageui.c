@@ -4015,6 +4015,7 @@ manageSonglistLoadCheck (manageui_t *manage)
 static void
 manageProcessDatabaseUpdate (manageui_t *manage)
 {
+  manage->dbloaded = false;
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_RELOAD, NULL);
 
   samesongFree (manage->samesong);
