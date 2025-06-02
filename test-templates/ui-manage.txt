@@ -4,7 +4,7 @@
 version
 ..1
 EASY_SONGLIST
-..yes
+..no
 FILTER_POS_X
 ..-1
 FILTER_POS_Y

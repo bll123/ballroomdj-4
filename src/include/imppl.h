@@ -11,7 +11,14 @@
 extern "C" {
 #endif
 
-bool impplPlaylistImport (slist_t *songidxlist, musicdb_t *musicdb, int imptype, const char *uri, const char *oplname, const char *plname, int askey);
+typedef struct imppl imppl_t;
+
+imppl_t * impplInit (slist_t *songidxlist, musicdb_t *musicdb, int imptype, const char *uri, const char *oplname, const char *plname, int askey);
+void impplFree (imppl_t *imppl);
+bool impplProcess (imppl_t *imppl);
+void impplGetCount (imppl_t *imppl, int *count, int *tot);
+bool impplHaveNewSongs (imppl_t *imppl);
+void impplFinalize (imppl_t *imppl);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

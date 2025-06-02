@@ -153,12 +153,15 @@ uiutilsProgressStatus (uiwcont_t *statusMsg, int count, int tot)
   }
 
   if (count < 0 && tot < 0) {
-    uiLabelSetText (statusMsg, "");
+    *tbuff = '\0';
+  } else if (count == 0 && tot == 0) {
+    /* CONTEXT: please wait... status message */
+    snprintf (tbuff, sizeof (tbuff), _("Please wait\xe2\x80\xa6"));
   } else {
     /* CONTEXT: please wait... (count/total) status message */
     snprintf (tbuff, sizeof (tbuff), _("Please wait\xe2\x80\xa6 (%1$d/%2$d)"), count, tot);
-    uiLabelSetText (statusMsg, tbuff);
   }
+  uiLabelSetText (statusMsg, tbuff);
 
   return;
 }

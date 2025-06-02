@@ -291,8 +291,9 @@ typedef struct {
   int               pltype;
   slist_t           *songidxlist;
   const char        *impplname;
-  int               impstate;
-  bool              imphasnewsongs;
+  imppl_t           *imppl;
+  mstime_t          impplChkTime;
+  int               impplstate;
   /* export/import bdj4 */
   uieibdj4_t        *uieibdj4;
   eibdj4_t          *eibdj4;
@@ -520,9 +521,9 @@ main (int argc, char *argv[])
   manage.uiexppl = NULL;
   manage.pltype = PLTYPE_SONGLIST;
   manage.songidxlist = NULL;
+  manage.imppl = NULL;
   manage.impplname = NULL;
-  manage.impstate = BDJ4_STATE_OFF;
-  manage.imphasnewsongs = false;
+  manage.impplstate = BDJ4_STATE_OFF;
   manage.musicqPlayIdx = MUSICQ_MNG_PB;
   manage.musicqManageIdx = MUSICQ_SL;
   manage.stopwaitcount = 0;
@@ -1228,16 +1229,44 @@ manageMainLoop (void *tmanage)
     }
   }
 
-  if (manage->impstate == BDJ4_STATE_WAIT) {
-    if (manage->dbloaded) {
-      manage->dbloaded = false;
-      manage->impstate = BDJ4_STATE_FINISH;
+  if (manage->impplstate == BDJ4_STATE_PROCESS) {
+    if (mstimeCheck (&manage->impplChkTime)) {
+      int   count, tot;
+
+      impplGetCount (manage->imppl, &count, &tot);
+      uiutilsProgressStatus (manage->minfo.statusMsg, count, tot);
+      uiimpplUpdateStatus (manage->uiimppl, count, tot);
+      mstimeset (&manage->impplChkTime, 200);
+    }
+
+    if (impplProcess (manage->imppl)) {
+      uiutilsProgressStatus (manage->minfo.statusMsg, 0, 0);
+      uiimpplUpdateStatus (manage->uiimppl, 0, 0);
+      manage->impplstate = BDJ4_STATE_FINISH;
+      if (impplHaveNewSongs (manage->imppl)) {
+        manageProcessDatabaseUpdate (manage);
+        manage->impplstate = BDJ4_STATE_WAIT;
+      }
     }
   }
 
-  if (manage->impstate == BDJ4_STATE_FINISH) {
+  if (manage->impplstate == BDJ4_STATE_WAIT) {
+    if (manage->dbloaded) {
+      manage->dbloaded = false;
+      manage->impplstate = BDJ4_STATE_FINISH;
+    }
+  }
+
+  if (manage->impplstate == BDJ4_STATE_FINISH) {
     managePlaylistImportFinalize (manage);
-    manage->impstate = BDJ4_STATE_OFF;
+    uiutilsProgressStatus (manage->minfo.statusMsg, -1, -1);
+    uiimpplUpdateStatus (manage->uiimppl, -1, -1);
+    manage->impplstate = BDJ4_STATE_OFF;
+    uiimpplDialogClear (manage->uiimppl);
+  }
+
+  if (manage->impplstate == BDJ4_STATE_START) {
+    manage->impplstate = BDJ4_STATE_PROCESS;
   }
 
   if (manage->expimpbdj4state == BDJ4_STATE_WAIT) {
@@ -1275,7 +1304,8 @@ manageMainLoop (void *tmanage)
   }
 
   if (manage->expimpbdj4state == BDJ4_STATE_START) {
-    uiLabelSetText (manage->minfo.statusMsg, manage->minfo.pleasewaitmsg);
+    uiutilsProgressStatus (manage->minfo.statusMsg, 0, 0);
+    uieibdj4UpdateStatus (manage->uieibdj4, 0, 0);
     manage->expimpbdj4state = BDJ4_STATE_PROCESS;
   }
 
@@ -3517,25 +3547,21 @@ managePlaylistImportRespHandler (void *udata)
   /* clear the entire queue */
   uimusicqTruncateQueueCallback (manage->currmusicq);
 
+  uiutilsProgressStatus (manage->minfo.statusMsg, 0, 0);
+  uiimpplUpdateStatus (manage->uiimppl, 0, 0);
   uiUIProcessWaitEvents ();
 
   slistFree (manage->songidxlist);
   manage->songidxlist = slistAlloc ("mui-plimp-song-idx", LIST_UNORDERED, NULL);
-  manage->imphasnewsongs = impplPlaylistImport (manage->songidxlist,
+  manage->imppl = impplInit (manage->songidxlist,
       manage->musicdb, imptype, uri, oplname, manage->impplname, askey);
 
-  uiUIProcessWaitEvents ();
-
-  manage->impstate = BDJ4_STATE_FINISH;
-  if (manage->imphasnewsongs) {
-    manageProcessDatabaseUpdate (manage);
-    manage->impstate = BDJ4_STATE_WAIT;
-  }
+  manage->impplstate = BDJ4_STATE_START;
+  mstimeset (&manage->impplChkTime, 200);
 
   if (imptype == AUDIOSRC_TYPE_PODCAST) {
     manage->pltype = PLTYPE_PODCAST;
   }
-
   /* as the database may need to be re-loaded, wait for the */
   /* re-load to finish.  the pl-imp-finalize process will run from */
   /* the main loop */
@@ -3563,9 +3589,12 @@ managePlaylistImportFinalize (manageui_t *manage)
         DISP_SEL_SONGLIST, MANAGE_QUEUE_LAST);
   }
 
-  if (manage->imphasnewsongs) {
+  if (impplHaveNewSongs (manage->imppl)) {
     manageRePopulateData (manage);
   }
+
+  impplFree (manage->imppl);
+  manage->imppl = NULL;
 }
 
 static int32_t
@@ -3679,7 +3708,7 @@ manageImportBDJ4ResponseHandler (void *udata)
   eibdj4SetNewName (manage->eibdj4, newname);
 
   manage->expimpbdj4state = BDJ4_STATE_PROCESS;
-  mstimeset (&manage->eibdj4ChkTime, 500);
+  mstimeset (&manage->eibdj4ChkTime, 400);
 
   return UICB_CONT;
 }

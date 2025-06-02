@@ -328,6 +328,16 @@ uiimpplProcess (uiimppl_t *uiimppl)
   uiimppl->changed = false;
 }
 
+void
+uiimpplDialogClear (uiimppl_t *uiimppl)
+{
+  if (uiimppl == NULL) {
+    return;
+  }
+
+  uiWidgetHide (uiimppl->wcont [UIIMPPL_W_DIALOG]);
+}
+
 int
 uiimpplGetType (uiimppl_t *uiimppl)
 {
@@ -380,6 +390,16 @@ uiimpplGetOrigName (uiimppl_t *uiimppl)
   }
 
   return uiimppl->origplname;
+}
+
+void
+uiimpplUpdateStatus (uiimppl_t *uiimppl, int count, int tot)
+{
+  if (uiimppl == NULL) {
+    return;
+  }
+
+  uiutilsProgressStatus (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], count, tot);
 }
 
 /* internal routines */
@@ -658,10 +678,7 @@ uiimpplResponseHandler (void *udata, int32_t responseid)
       if (uiimppl->responsecb != NULL) {
         callbackHandler (uiimppl->responsecb);
       }
-      uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
-      uiWidgetHide (uiimppl->wcont [UIIMPPL_W_DIALOG]);
       uiimppl->imptype = AUDIOSRC_TYPE_NONE;
-      uiimppl->isactive = false;
       break;
     }
   }
