@@ -22,8 +22,9 @@ TMPLOUT=po/potemplates.c
 > $TMPLOUT
 
 fn=../templates/audiosrc.txt
-echo " // CONTEXT: configuration file: podcast name" >> $TMPLOUT
-echo "..Podcast" >> $TMPLOUT
+ctxt=" // CONTEXT: configuration file: audio source name"
+sed -n -e "/^NAME/ {n;s,^,${ctxt}\n,;p}" $fn |
+  grep -v BDJ4 >> $TMPLOUT
 
 ctxt=" // CONTEXT: configuration file: dance"
 fn=../templates/dances.txt

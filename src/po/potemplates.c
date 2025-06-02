@@ -1,4 +1,5 @@
- // CONTEXT: configuration file: podcast name
+ // CONTEXT: configuration file: audio source name
+ // CONTEXT: configuration file: audio source name
 _("Podcast")
  // CONTEXT: configuration file: dance
 _("Argentine Tango")

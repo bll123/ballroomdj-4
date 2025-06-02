@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2025-05-22\n"
+"PO-Revision-Date: 2025-06-02\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -1398,8 +1398,8 @@ msgstr "Siguiente"
 msgid "Next Song"
 msgstr "Próxima canción"
 
-#. CONTEXT: label: no maximum play time
-msgid "No Maximum Play Time"
+#. CONTEXT: label: no play time limit
+msgid "No Play Time Limit"
 msgstr ""
 
 #. CONTEXT: installer: message indicating the conversion action that will be taken
@@ -1558,7 +1558,8 @@ msgstr "Por favor, espere…"
 msgid "Please wait… (%1$d/%2$d)"
 msgstr "Por favor, espere… (%1$d/%2$d)"
 
-#. CONTEXT: configuration file: podcast name
+#. CONTEXT: configuration file: audio source name
+#. CONTEXT: configuration file: audio source name
 #. CONTEXT: audio source: podcast
 #. CONTEXT: playlist management: type of playlist
 msgid "Podcast"
