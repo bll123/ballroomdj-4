@@ -17,6 +17,7 @@ imppl_t * impplInit (slist_t *songidxlist, musicdb_t *musicdb, int imptype, cons
 void impplFree (imppl_t *imppl);
 bool impplProcess (imppl_t *imppl);
 void impplGetCount (imppl_t *imppl, int *count, int *tot);
+int  impplGetType (imppl_t *imppl);
 bool impplHaveNewSongs (imppl_t *imppl);
 void impplFinalize (imppl_t *imppl);
 

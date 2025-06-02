@@ -211,6 +211,16 @@ impplGetCount (imppl_t *imppl, int *count, int *tot)
   *tot = imppl->tot;
 }
 
+int
+impplGetType (imppl_t *imppl)
+{
+  if (imppl == NULL) {
+    return AUDIOSRC_TYPE_NONE;
+  }
+
+  return imppl->imptype;
+}
+
 void
 impplFinalize (imppl_t *imppl)
 {

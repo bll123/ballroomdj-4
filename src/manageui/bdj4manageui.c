@@ -3559,9 +3559,6 @@ managePlaylistImportRespHandler (void *udata)
   manage->impplstate = BDJ4_STATE_START;
   mstimeset (&manage->impplChkTime, 200);
 
-  if (imptype == AUDIOSRC_TYPE_PODCAST) {
-    manage->pltype = PLTYPE_PODCAST;
-  }
   /* as the database may need to be re-loaded, wait for the */
   /* re-load to finish.  the pl-imp-finalize process will run from */
   /* the main loop */
@@ -3574,6 +3571,12 @@ managePlaylistImportFinalize (manageui_t *manage)
 {
   slistidx_t  iteridx;
   const char  *nm;
+
+  impplFinalize (manage->imppl);
+
+  if (impplGetType (manage->imppl) == AUDIOSRC_TYPE_PODCAST) {
+    manage->pltype = PLTYPE_PODCAST;
+  }
 
   slistStartIterator (manage->songidxlist, &iteridx);
   while ((nm = slistIterateKey (manage->songidxlist, &iteridx)) != NULL) {

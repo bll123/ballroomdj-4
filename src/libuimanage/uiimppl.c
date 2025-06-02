@@ -769,8 +769,8 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
           _("Invalid File"));
       pathInfoFree (pi);
       uiimppl->haveerrors |= UIIMPPL_ERR_URI;
-      uiimppl->in_cb = false;
       pathInfoFree (pi);
+      uiimppl->in_cb = false;
       return UIENTRY_ERROR;
     }
   }
@@ -785,8 +785,8 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
     if (vrc == false) {
       uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], tmsg);
       uiimppl->haveerrors |= UIIMPPL_ERR_URI;
-      uiimppl->in_cb = false;
       pathInfoFree (pi);
+      uiimppl->in_cb = false;
       return UIENTRY_ERROR;
     }
   }
@@ -797,8 +797,8 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
           /* CONTEXT: import playlist: invalid URL */
           _("Invalid URL"));
       uiimppl->haveerrors |= UIIMPPL_ERR_URI;
-      uiimppl->in_cb = false;
       pathInfoFree (pi);
+      uiimppl->in_cb = false;
       return UIENTRY_ERROR;
     }
   }
@@ -812,8 +812,8 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
           /* CONTEXT: import playlist: invalid URL */
           _("Invalid URL"));
       uiimppl->haveerrors |= UIIMPPL_ERR_URI;
-      uiimppl->in_cb = false;
       pathInfoFree (pi);
+      uiimppl->in_cb = false;
       return UIENTRY_ERROR;
     }
   }
@@ -914,6 +914,7 @@ uiimpplValidateNewName (uiimppl_t *uiimppl)
   }
 
   if (rc == UIENTRY_OK) {
+    uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
     uiimppl->newnameuserchg = true;
     str = uiEntryGetValue (entry);
     if (*str) {
