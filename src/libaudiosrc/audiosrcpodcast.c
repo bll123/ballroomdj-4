@@ -370,6 +370,9 @@ aspodcastGetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *uri)
   ilistidx_t      iteridx;
   ilistidx_t      key;
   int             clientkey;
+  nlist_t         *tlist;
+  nlistidx_t      titeridx;
+  const char      *tstr;
 
   clientkey = aspodcastGetClientKeyByURI (asdata, uri);
   if (clientkey < 0) {
@@ -385,13 +388,27 @@ aspodcastGetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *uri)
   asidata->songlist = slistAlloc ("asplsongs", LIST_UNORDERED, NULL);
   slistSetSize (asidata->songlist,
       nlistGetNum (asdata->clientdata [clientkey].rssdata, RSS_COUNT));
+  tlist = nlistAlloc ("tmp-asplsongs", LIST_UNORDERED, NULL);
+  nlistSetSize (tlist,
+      nlistGetNum (asdata->clientdata [clientkey].rssdata, RSS_COUNT));
 
   rssitems = nlistGetList (asdata->clientdata [clientkey].rssdata, RSS_ITEMS);
   ilistStartIterator (rssitems, &iteridx);
   while ((key = ilistIterateKey (rssitems, &iteridx)) >= 0) {
-    slistSetNum (asidata->songlist, ilistGetStr (rssitems, key, RSS_ITEM_URI), 1);
+    int64_t   val;
+
+    val = atoll (ilistGetStr (rssitems, key, RSS_ITEM_DATE));
+    /* reverse sort */
+    val = ~val;
+    nlistSetStr (tlist, val, ilistGetStr (rssitems, key, RSS_ITEM_URI));
   }
-  slistSort (asidata->songlist);
+
+  nlistSort (tlist);
+  nlistStartIterator (tlist, &titeridx);
+  while ((tstr = nlistIterateValueData (tlist, &titeridx)) != NULL) {
+    slistSetNum (asidata->songlist, tstr, 1);
+  }
+  nlistFree (tlist);
 
   return true;
 }
