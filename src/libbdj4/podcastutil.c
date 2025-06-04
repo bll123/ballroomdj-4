@@ -22,6 +22,31 @@
 
 static void podcastutilApplyDelete (musicdb_t *musicdb, const char *plname, int retain);
 
+pcretain_t
+podcastutilCheckRetain (song_t *song, int retain)
+{
+  time_t      currtm;
+  time_t      podtm;
+  time_t      days = 0;
+  pcretain_t  rc;
+
+  if (retain <= 0) {
+    /* retain is not set or is set to keep all */
+    return PODCAST_KEEP;
+  }
+
+  currtm = time (NULL);
+  podtm = songGetNum (song, TAG_DBADDDATE);
+  days = currtm - podtm;
+  days /= 24 * 3600;
+  rc = PODCAST_KEEP;
+  if (days > retain) {
+    rc = PODCAST_DELETE;
+  }
+
+  return rc;
+}
+
 void
 podcastutilApplyRetain (musicdb_t *musicdb, const char *plname)
 {

@@ -471,15 +471,18 @@ starterInitDataCallback (void *udata, programstate_t programState)
   asconf_t    *asconf;
   ilistidx_t  iteridx;
   ilistidx_t  key;
-  bool        enabled = false;
+  bool        srvenabled = false;
+  const char  *targv [5];
+  int         targc = 0;
+
+  targv [targc++] = NULL;
+
+  starter->processes [ROUTE_PODCAST_UPD] = procutilStartProcess (
+      ROUTE_PODCAST_UPD, "bdj4podcastupd", PROCUTIL_DETACH, targv);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       NEWINSTALL_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   if (fileopFileExists (tbuff)) {
-    const char  *targv [5];
-    int         targc = 0;
-
-    targv [targc++] = NULL;
     starter->processes [ROUTE_HELPERUI] = procutilStartProcess (
         ROUTE_HELPERUI, "bdj4helperui", PROCUTIL_DETACH, targv);
     fileopDelete (tbuff);
@@ -489,22 +492,16 @@ starterInitDataCallback (void *udata, programstate_t programState)
   asconfStartIterator (asconf, &iteridx);
   while ((key = asconfIterate (asconf, &iteridx)) >= 0) {
     if (asconfGetNum (asconf, key, ASCONF_MODE) == ASCONF_MODE_SERVER) {
-      enabled = true;
+      srvenabled = true;
       break;
     }
   }
+  asconfFree (asconf);
 
-  if (enabled) {
-    const char  *targv [5];
-    int         targc = 0;
-
-    targv [targc++] = NULL;
+  if (srvenabled) {
     starter->processes [ROUTE_SERVER] = procutilStartProcess (
         ROUTE_SERVER, "bdj4server", PROCUTIL_DETACH, targv);
   }
-
-  asconfFree (asconf);
-
 
   return STATE_FINISHED;
 }

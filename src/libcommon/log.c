@@ -90,15 +90,15 @@ logClose (logidx_t idx)
 }
 
 void
-rlogStartProgram (const char *prog, const char *fn, int32_t line, const char *func)
+rlogStartProgram (logidx_t idx, const char *prog, const char *fn, int32_t line, const char *func)
 {
   char      tdt [40];
 
-  if (! logCheck (LOG_DBG, LOG_IMPORTANT)) {
+  if (! logCheck (idx, LOG_IMPORTANT)) {
     return;
   }
   tmutilDstamp (tdt, sizeof (tdt));
-  rlogVarMsg (LOG_DBG, LOG_IMPORTANT, fn, line, func, "=== %s started %s pid %ld", prog, tdt, (long) getpid ());
+  rlogVarMsg (idx, LOG_IMPORTANT, fn, line, func, "=== %s started %s pid %ld", prog, tdt, (long) getpid ());
 }
 
 void
@@ -367,7 +367,7 @@ rlogStart (const char *prog, const char *processtag,
         PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
     rlogOpen (idx, tnm, processtag, truncflag);
     syslogs [idx]->level = level;
-    rlogStartProgram (prog, "", 0, "");
+    rlogStartProgram (idx, prog, "", 0, "");
   }
 }
 

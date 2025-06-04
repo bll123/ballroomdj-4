@@ -21,6 +21,7 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvars.h"
+#include "bdjvarsdf.h"
 #include "conn.h"
 #include "fileop.h"
 #include "ilist.h"
@@ -95,7 +96,7 @@ main (int argc, char *argv[])
   flags = BDJ4_INIT_ALL;
   bdj4startup (argc, argv, &bdjsrv.musicdb, "srv", ROUTE_SERVER, &flags);
 
-  bdjsrv.asconf = asconfAlloc ();
+  bdjsrv.asconf = bdjvarsdfGet (BDJVDF_AUDIOSRC_CONF);
 
   asconfStartIterator (bdjsrv.asconf, &iteridx);
   while ((askey = asconfIterate (bdjsrv.asconf, &iteridx)) >= 0) {
@@ -139,7 +140,6 @@ main (int argc, char *argv[])
   sockhMainLoop (listenPort, bdjsrvProcessMsg, bdjsrvProcessing, &bdjsrv);
   connFree (bdjsrv.conn);
   progstateFree (bdjsrv.progstate);
-  asconfFree (bdjsrv.asconf);
   logEnd ();
 
 #if BDJ4_MEM_DEBUG

@@ -3552,7 +3552,7 @@ managePlaylistImportRespHandler (void *udata)
   uiUIProcessWaitEvents ();
 
   slistFree (manage->songidxlist);
-  manage->songidxlist = slistAlloc ("mui-plimp-song-idx", LIST_UNORDERED, NULL);
+  manage->songidxlist = slistAlloc ("mui-imppl-song-idx", LIST_UNORDERED, NULL);
   manage->imppl = impplInit (manage->songidxlist,
       manage->musicdb, imptype, uri, oplname, manage->impplname, askey);
 

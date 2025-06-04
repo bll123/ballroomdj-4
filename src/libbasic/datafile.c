@@ -259,7 +259,7 @@ datafileFree (void *tdf)
 
   logProcBegin ();
   if (df != NULL) {
-    logMsg (LOG_DBG, LOG_INFO | LOG_DATAFILE, "datafile free %s", df->fname);
+    logMsg (LOG_DBG, LOG_DATAFILE, "datafile free %s", df->fname);
     datafileFreeData (df);
     dataFree (df->tag);
     dataFree (df->fname);
@@ -276,7 +276,7 @@ datafileLoad (datafile_t *df, datafiletype_t dftype, const char *fname)
   char    *data;
 
   logProcBegin ();
-  logMsg (LOG_DBG, LOG_INFO | LOG_DATAFILE, "datafile load %s", fname);
+  logMsg (LOG_DBG, LOG_DATAFILE, "datafile load %s", fname);
   df->dftype = dftype;
   if (df->fname == NULL) {
     df->fname = mdstrdup (fname);

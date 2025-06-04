@@ -19,6 +19,7 @@
 #include "bdj4intl.h"
 #include "bdj4ui.h"
 #include "bdjstring.h"
+#include "bdjvarsdf.h"
 #include "callback.h"
 #include "fileop.h"
 #include "ilist.h"
@@ -153,10 +154,7 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
   uiimppl->imptype = AUDIOSRC_TYPE_NONE;
   *uiimppl->origplname = '\0';
   *uiimppl->olduri = '\0';
-  uiimppl->asconf = NULL;
-  uiimppl->asconfcount = 0;
-
-  uiimppl->asconf = asconfAlloc ();
+  uiimppl->asconf = bdjvarsdfGet (BDJVDF_AUDIOSRC_CONF);
   uiimppl->asconfcount = asconfGetCount (uiimppl->asconf);
 
   /* CONTEXT: import playlist: playlist file types (m3u/xspf/jspf) */
@@ -256,7 +254,6 @@ uiimpplFree (uiimppl_t *uiimppl)
   uiimppl->astypes = NULL;
   nlistFree (uiimppl->astypelookup);
   uiimppl->astypelookup = NULL;
-  asconfFree (uiimppl->asconf);
   for (int i = 0; i < UIIMPPL_CB_MAX; ++i) {
     callbackFree (uiimppl->callbacks [i]);
     uiimppl->callbacks [i] = NULL;

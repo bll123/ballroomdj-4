@@ -294,7 +294,6 @@ main (int argc, char *argv[])
   connFree (confui.conn);
   progstateFree (confui.progstate);
 
-  confuiAudioSourceClean (&confui.gui);
   confuiCleanOrganization (&confui.gui);
   confuiCleaniTunes (&confui.gui);
 

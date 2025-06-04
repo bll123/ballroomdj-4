@@ -28,6 +28,7 @@
 #include "tmutil.h"
 
 static char *locknames [ROUTE_MAX] = {
+  [ROUTE_ALTINST] = "altinst",
   [ROUTE_BPM_COUNTER] = "bpmcounter",
   [ROUTE_CONFIGUI] = "configui",
   [ROUTE_DBUPDATE] = "dbupdate",
@@ -39,11 +40,11 @@ static char *locknames [ROUTE_MAX] = {
   [ROUTE_NONE] = "none",
   [ROUTE_PLAYER] = "player",
   [ROUTE_PLAYERUI] = "playerui",
+  [ROUTE_PODCAST_UPD] = "podcastupd",
   [ROUTE_REMCTRL] = "remctrl",
+  [ROUTE_SERVER] = "server",
   [ROUTE_STARTERUI] = "starterui",
   [ROUTE_TEST_SUITE] = "testsuite",
-  [ROUTE_ALTINST] = "altinst",
-  [ROUTE_SERVER] = "server",
 };
 
 static void   lockCheckLockDir (void);

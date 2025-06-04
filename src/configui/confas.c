@@ -78,16 +78,8 @@ confuiAudioSourceInit (confuigui_t *gui)
 
   gui->tables [CONFUI_ID_AUDIOSRC].addfunc = confuiAudioSrcAdd;
   gui->tables [CONFUI_ID_AUDIOSRC].removefunc = confuiAudioSrcRemove;
-  gui->asconf = asconfAlloc ();
+  gui->asconf = bdjvarsdfGet (BDJVDF_AUDIOSRC_CONF);
   gui->haveerrors = 0;
-}
-
-void
-confuiAudioSourceClean (confuigui_t *gui)
-{
-  if (gui->asconf != NULL) {
-    asconfFree (gui->asconf);
-  }
 }
 
 void

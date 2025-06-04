@@ -20,6 +20,7 @@ typedef enum {
   BDJVDF_STATUS,
   BDJVDF_FAVORITES,
   BDJVDF_AUDIO_ADJUST,
+  BDJVDF_AUDIOSRC_CONF,
   BDJVDF_MAX,
 } bdjvarkeydf_t;
 

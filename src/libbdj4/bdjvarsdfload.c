@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "asconf.h"
 #include "audioadjust.h"
 #include "autosel.h"
 #include "bdj4.h"
@@ -67,6 +68,10 @@ bdjvarsdfloadInit (void)
   /* audio adjust is used by audioadjust.c */
   bdjvarsdfSet (BDJVDF_AUDIO_ADJUST, aaAlloc ());
 
+  /* audio-src-conf is used by configui, */
+  /*   audiosrc, uiimppl, bdj4server, bdj4starter */
+  bdjvarsdfSet (BDJVDF_AUDIOSRC_CONF, asconfAlloc ());
+
   rc = 0;
   for (int i = BDJVDF_AUTO_SEL; i < BDJVDF_MAX; ++i) {
     if (bdjvarsdfGet (i) == NULL) {
@@ -86,6 +91,7 @@ bdjvarsdfloadInit (void)
 void
 bdjvarsdfloadCleanup (void)
 {
+  asconfFree (bdjvarsdfGet (BDJVDF_AUDIOSRC_CONF));
   aaFree (bdjvarsdfGet (BDJVDF_AUDIO_ADJUST));
   autoselFree (bdjvarsdfGet (BDJVDF_AUTO_SEL));
   songFavoriteFree (bdjvarsdfGet (BDJVDF_FAVORITES));

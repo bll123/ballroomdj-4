@@ -649,7 +649,7 @@ listDumpInfo (keytype_t keytype, list_t *list)
     }
     return;
   }
-  logMsg (LOG_DBG, LOG_IMPORTANT, "list: %s count: %" PRId32 " key:%d ordered:%d",
+  logMsg (LOG_DBG, LOG_DATAFILE, "list: %s count: %" PRId32 " key:%d ordered:%d",
       list->name, list->count, list->keytype, list->ordered);
 }
 
