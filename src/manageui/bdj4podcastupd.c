@@ -27,23 +27,45 @@
 #include "podcastutil.h"
 #include "slist.h"
 #include "songlist.h"
+#include "songlistutil.h"
+#include "tagdef.h"
+
+typedef struct {
+  char      *plname;
+  slist_t   *songidxlist;
+} pcupditem_t;
+
+typedef struct {
+  pcupditem_t *itemlist;
+  musicdb_t   *musicdb;
+  int         idx;
+  int         count;
+  int         askey;
+  bool        newsongs;
+} pcupd_t;
 
 static int podcastupdGetASKey (void);
-static void podcastupdProcess (musicdb_t *musicdb, int askey);
-static bool podcastupdProcessPodcast (musicdb_t *musicdb, const char *plname, int askey);
+static void podcastupdProcess (pcupd_t *pcupd);
+static bool podcastupdProcessPodcast (pcupd_t *pcupd, const char *plname);
+static void podcastupdCreateSonglists (pcupd_t *pcupd);
 
 int
 main (int argc, char *argv[])
 {
   uint32_t    flags;
-  musicdb_t   *musicdb = NULL;
   slist_t     *filelist;
-  int         count;
-  int         askey;
+  pcupd_t     pcupd;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("podu");
 #endif
+
+  pcupd.itemlist = NULL;
+  pcupd.musicdb = NULL;
+  pcupd.count = 0;
+  pcupd.idx = 0;
+  pcupd.askey = -1;
+  pcupd.newsongs = false;
 
   /* do the startup w/o the DB first */
   flags = BDJ4_INIT_NO_DB_LOAD;
@@ -51,20 +73,22 @@ main (int argc, char *argv[])
   logProcBegin ();
 
   filelist = playlistGetPlaylistNames (PL_LIST_PODCAST, NULL);
-  count = slistGetCount (filelist);
-  askey = podcastupdGetASKey ();
-fprintf (stderr, "count: %d askey: %d\n", count, askey);
+  pcupd.count = slistGetCount (filelist);
+  pcupd.askey = podcastupdGetASKey ();
   bdj4shutdown (ROUTE_NONE, NULL);
   slistFree (filelist);
 
-  if (count > 0 && askey >= 0) {
+  if (pcupd.count > 0 && pcupd.askey >= 0) {
+    pcupd.itemlist = mdmalloc (sizeof (pcupditem_t) * pcupd.count);
+
     /* the database now needs to be loaded */
     flags = BDJ4_INIT_ALL;
-    bdj4startup (argc, argv, &musicdb, "podu", ROUTE_PODCAST_UPD, &flags);
+    bdj4startup (argc, argv, &pcupd.musicdb, "podu", ROUTE_PODCAST_UPD, &flags);
 
-    podcastupdProcess (musicdb, askey);
+    podcastupdProcess (&pcupd);
 
-    bdj4shutdown (ROUTE_PODCAST_UPD, musicdb);
+    bdj4shutdown (ROUTE_PODCAST_UPD, pcupd.musicdb);
+    mdfree (pcupd.itemlist);
   }
 
   logProcEnd ("");
@@ -102,29 +126,32 @@ podcastupdGetASKey (void)
 }
 
 static void
-podcastupdProcess (musicdb_t *musicdb, int askey)
+podcastupdProcess (pcupd_t *pcupd)
 {
   slist_t     *filelist;
   slistidx_t  iteridx;
   const char  *nm;
-  bool        newsongs = false;
 
   filelist = playlistGetPlaylistNames (PL_LIST_PODCAST, NULL);
   slistStartIterator (filelist, &iteridx);
   while ((nm = slistIterateKey (filelist, &iteridx)) != NULL) {
-    newsongs |= podcastupdProcessPodcast (musicdb, nm, askey);
+    pcupd->newsongs |= podcastupdProcessPodcast (pcupd, nm);
+    pcupd->idx += 1;
   }
   slistFree (filelist);
+
+  if (pcupd->newsongs) {
+    ;
+  }
 }
 
 static bool
-podcastupdProcessPodcast (musicdb_t *musicdb, const char *plname, int askey)
+podcastupdProcessPodcast (pcupd_t *pcupd, const char *plname)
 {
   podcast_t   *podcast;
   int         retain;
   imppl_t     *imppl;
   bool        newsongs;
-  slist_t     *songidxlist;
 
   logMsg (LOG_DBG, LOG_INFO, "process %s", plname);
 
@@ -135,9 +162,12 @@ podcastupdProcessPodcast (musicdb_t *musicdb, const char *plname, int askey)
 
   retain = podcastGetNum (podcast, PODCAST_RETAIN);
 
-  songidxlist = slistAlloc ("podu-imppl-song-idx", LIST_UNORDERED, NULL);
-  imppl = impplInit (songidxlist, musicdb, AUDIOSRC_TYPE_PODCAST,
-      podcastGetStr (podcast, PODCAST_URI), plname, plname, askey);
+  pcupd->itemlist [pcupd->idx].plname = mdstrdup (plname);
+  pcupd->itemlist [pcupd->idx].songidxlist =
+      slistAlloc ("podu-imppl-song-idx", LIST_UNORDERED, NULL);
+  imppl = impplInit (pcupd->itemlist [pcupd->idx].songidxlist,
+      pcupd->musicdb, AUDIOSRC_TYPE_PODCAST,
+      podcastGetStr (podcast, PODCAST_URI), plname, plname, pcupd->askey);
   while (impplProcess (imppl) == false) {
     ;
   }
@@ -146,7 +176,46 @@ podcastupdProcessPodcast (musicdb_t *musicdb, const char *plname, int askey)
 
   podcastFree (podcast);
   impplFree (imppl);
-  slistFree (songidxlist);
 
   return newsongs;
+}
+
+static void
+podcastupdCreateSonglists (pcupd_t *pcupd)
+{
+  for (int idx = 0; idx < pcupd->count; ++idx) {
+    nlist_t     *dbidxlist;
+    const char  *songuri;
+    slistidx_t  iteridx;
+
+    dbidxlist = nlistAlloc ("tmp-pcupd-dbidx", LIST_UNORDERED, NULL);
+    nlistSetSize (dbidxlist, slistGetCount (pcupd->itemlist [idx].songidxlist));
+
+    slistStartIterator (pcupd->itemlist [idx].songidxlist, &iteridx);
+    while ((songuri =
+        slistIterateKey (pcupd->itemlist [idx].songidxlist, &iteridx)) != NULL) {
+      dbidx_t     dbidx;
+
+      dbidx = slistGetNum (pcupd->itemlist [idx].songidxlist, songuri);
+      if (dbidx < 0) {
+        song_t    *song;
+
+        song = dbGetByName (pcupd->musicdb, songuri);
+        if (song == NULL) {
+          continue;
+        }
+
+        dbidx = songGetNum (song, TAG_DBIDX);
+      }
+
+      nlistSetNum (dbidxlist, dbidx, 0);
+    }
+
+    songlistutilCreateFromList (pcupd->musicdb,
+        pcupd->itemlist [idx].plname, dbidxlist);
+    nlistFree (dbidxlist);
+
+    slistFree (pcupd->itemlist [idx].songidxlist);
+    mdfree (pcupd->itemlist [idx].plname);
+  }
 }
