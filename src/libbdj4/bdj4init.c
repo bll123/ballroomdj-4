@@ -87,6 +87,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { "wait",           no_argument,        NULL,   'w' },
     /* starter */
     { "datatopdir",     required_argument,  NULL,   't' },
+    { "nopodcastupd",   no_argument,        NULL,   8 },
     /* installers */
     { "unattended",     no_argument,        NULL,   1 },
     { "reinstall",      no_argument,        NULL,   2 },
@@ -133,16 +134,16 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   while ((c = getopt_long_only (argc, bdj4argGetArgv (bdj4arg),
       "BChPOUWcld:p:mnNRst:T", bdj_options, &option_index)) != -1) {
     switch (c) {
+      case 'B': {
+        isbdj4 = true;
+        break;
+      }
       case 't': {
         targ = bdj4argGet (bdj4arg, optind - 1, optarg);
         if (fileopIsDirectory (targ)) {
           sysvarsSetStr (SV_BDJ4_DIR_DATATOP, targ);
           sysvarsSetNum (SVL_DATAPATH, SYSVARS_DATAPATH_ALT);
         }
-        break;
-      }
-      case 'B': {
-        isbdj4 = true;
         break;
       }
       case 'C': {
@@ -187,6 +188,10 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
       }
       case 7: {
         *flags |= BDJ4_ARG_UPD_CONVERT;
+        break;
+      }
+      case 8: {
+        *flags |= BDJ4_ARG_NO_PODCAST_UPD;
         break;
       }
       case 127: {

@@ -20,27 +20,28 @@
 #include "songlist.h"
 #include "tagdef.h"
 
-static void podcastutilApplyDelete (musicdb_t *musicdb, const char *plname, int retain);
+static void podcastutilApplyDelete (musicdb_t *musicdb, const char *plname, int retain, bool force);
 
 pcretain_t
 podcastutilCheckRetain (song_t *song, int retain)
 {
   time_t      currtm;
   time_t      podtm;
-  time_t      days = 0;
+  time_t      diff = 0;
+  time_t      retdays = 0;
   pcretain_t  rc;
 
-  if (retain <= 0) {
+  if (retain <= 0 || song == NULL) {
     /* retain is not set or is set to keep all */
     return PODCAST_KEEP;
   }
 
   currtm = time (NULL);
   podtm = songGetNum (song, TAG_DBADDDATE);
-  days = currtm - podtm;
-  days /= 24 * 3600;
+  diff = currtm - podtm;
+  retdays = (time_t) retain * 24 * 3600;
   rc = PODCAST_KEEP;
-  if (days > retain) {
+  if (diff > retdays) {
     rc = PODCAST_DELETE;
   }
 
@@ -64,19 +65,20 @@ podcastutilApplyRetain (musicdb_t *musicdb, const char *plname)
     return;
   }
 
-  podcastutilApplyDelete (musicdb, plname, retain);
+  podcastutilApplyDelete (musicdb, plname, retain, false);
 }
 
 void
 podcastutilDelete (musicdb_t *musicdb, const char *plname)
 {
-  /* in this case pass the retain as 0, and the retain */
+  /* set the force-flag to true */
   /* test will remove everything */
-  podcastutilApplyDelete (musicdb, plname, 0);
+  podcastutilApplyDelete (musicdb, plname, 0, true);
 }
 
 static void
-podcastutilApplyDelete (musicdb_t *musicdb, const char *plname, int retain)
+podcastutilApplyDelete (musicdb_t *musicdb, const char *plname,
+    int retain, bool force)
 {
   songlist_t  *sl;
   ilistidx_t  iteridx;
@@ -96,8 +98,7 @@ podcastutilApplyDelete (musicdb_t *musicdb, const char *plname, int retain)
     song_t      *song;
     dbidx_t     dbidx;
     int         type;
-    time_t      dbadddate;
-    time_t      daysold;
+    pcretain_t  pcrc = PODCAST_KEEP;
 
     sfname = songlistGetStr (sl, slkey, SONGLIST_URI);
     if (sfname == NULL) {
@@ -116,10 +117,10 @@ podcastutilApplyDelete (musicdb_t *musicdb, const char *plname, int retain)
     if (type != SONG_TYPE_PODCAST) {
       continue;
     }
-    dbadddate = songGetNum (song, TAG_DBADDDATE);
-    daysold = currtime - dbadddate;
-    daysold /= 24 * 3600;
-    if (daysold >= retain) {
+    if (! force) {
+      pcrc = podcastutilCheckRetain (song, retain);
+    }
+    if (force || pcrc == PODCAST_DELETE) {
       dbRemoveSong (musicdb, dbidx);
     }
   }

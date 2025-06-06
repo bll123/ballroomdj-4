@@ -94,6 +94,8 @@ main (int argc, char * argv[])
     { "unattended",     no_argument,        NULL,   0 },
     /* altinst */
     { "name",           required_argument,  NULL,   0 },
+    /* starter */
+    { "nopodcastupd",   no_argument,        NULL,   0 },
     /* updater */
     { "convert",        no_argument,        NULL,   0 },
     { "newinstall",     no_argument,        NULL,   0 },

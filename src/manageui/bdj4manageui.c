@@ -1243,7 +1243,7 @@ manageMainLoop (void *tmanage)
       uiutilsProgressStatus (manage->minfo.statusMsg, 0, 0);
       uiimpplUpdateStatus (manage->uiimppl, 0, 0);
       manage->impplstate = BDJ4_STATE_FINISH;
-      if (impplHaveNewSongs (manage->imppl)) {
+      if (impplIsDBChanged (manage->imppl)) {
         manageProcessDatabaseUpdate (manage);
         manage->impplstate = BDJ4_STATE_WAIT;
       }
@@ -3554,7 +3554,8 @@ managePlaylistImportRespHandler (void *udata)
   slistFree (manage->songidxlist);
   manage->songidxlist = slistAlloc ("mui-imppl-song-idx", LIST_UNORDERED, NULL);
   manage->imppl = impplInit (manage->songidxlist,
-      manage->musicdb, imptype, uri, oplname, manage->impplname, askey);
+      imptype, uri, oplname, manage->impplname, askey);
+  impplSetDB (manage->imppl, manage->musicdb);
 
   manage->impplstate = BDJ4_STATE_START;
   mstimeset (&manage->impplChkTime, 200);
@@ -3572,6 +3573,7 @@ managePlaylistImportFinalize (manageui_t *manage)
   slistidx_t  iteridx;
   const char  *nm;
 
+  impplSetDB (manage->imppl, manage->musicdb);
   impplFinalize (manage->imppl);
 
   if (impplGetType (manage->imppl) == AUDIOSRC_TYPE_PODCAST) {
@@ -3581,18 +3583,15 @@ managePlaylistImportFinalize (manageui_t *manage)
   slistStartIterator (manage->songidxlist, &iteridx);
   while ((nm = slistIterateKey (manage->songidxlist, &iteridx)) != NULL) {
     dbidx_t     dbidx;
+    song_t    *song;
 
-    dbidx = slistGetNum (manage->songidxlist, nm);
-    if (dbidx < 0) {
-      song_t    *song;
-      song = dbGetByName (manage->musicdb, nm);
-      dbidx = songGetNum (song, TAG_DBIDX);
-    }
+    song = dbGetByName (manage->musicdb, nm);
+    dbidx = songGetNum (song, TAG_DBIDX);
     manageQueueProcess (manage, dbidx, manage->musicqManageIdx,
         DISP_SEL_SONGLIST, MANAGE_QUEUE_LAST);
   }
 
-  if (impplHaveNewSongs (manage->imppl)) {
+  if (impplIsDBChanged (manage->imppl)) {
     manageRePopulateData (manage);
   }
 

@@ -41,7 +41,7 @@ typedef struct {
   int         idx;
   int         count;
   int         askey;
-  bool        newsongs;
+  bool        dbchanged;
 } pcupd_t;
 
 static int podcastupdGetASKey (void);
@@ -65,7 +65,7 @@ main (int argc, char *argv[])
   pcupd.count = 0;
   pcupd.idx = 0;
   pcupd.askey = -1;
-  pcupd.newsongs = false;
+  pcupd.dbchanged = false;
 
   /* do the startup w/o the DB first */
   flags = BDJ4_INIT_NO_DB_LOAD;
@@ -144,14 +144,10 @@ podcastupdProcess (pcupd_t *pcupd)
   filelist = playlistGetPlaylistNames (PL_LIST_PODCAST, NULL);
   slistStartIterator (filelist, &iteridx);
   while ((nm = slistIterateKey (filelist, &iteridx)) != NULL) {
-    pcupd->newsongs |= podcastupdProcessPodcast (pcupd, nm);
+    pcupd->dbchanged |= podcastupdProcessPodcast (pcupd, nm);
     pcupd->idx += 1;
   }
   slistFree (filelist);
-
-  if (pcupd->newsongs) {
-    pcupd->musicdb = bdj4ReloadDatabase (pcupd->musicdb);
-  }
 
   podcastupdCreateSonglists (pcupd);
 }
@@ -162,7 +158,7 @@ podcastupdProcessPodcast (pcupd_t *pcupd, const char *plname)
   podcast_t   *podcast;
   int         retain;
   imppl_t     *imppl;
-  bool        newsongs;
+  bool        dbchanged;
 
   logMsg (LOG_DBG, LOG_INFO, "process %s", plname);
 
@@ -177,18 +173,25 @@ podcastupdProcessPodcast (pcupd_t *pcupd, const char *plname)
   pcupd->itemlist [pcupd->idx].songidxlist =
       slistAlloc ("podu-imppl-song-idx", LIST_UNORDERED, NULL);
   imppl = impplInit (pcupd->itemlist [pcupd->idx].songidxlist,
-      pcupd->musicdb, AUDIOSRC_TYPE_PODCAST,
+      AUDIOSRC_TYPE_PODCAST,
       podcastGetStr (podcast, PODCAST_URI), plname, plname, pcupd->askey);
+  impplSetDB (imppl, pcupd->musicdb);
   while (impplProcess (imppl) == false) {
     ;
   }
+
+  pcupd->dbchanged = impplIsDBChanged (imppl);
+  if (pcupd->dbchanged) {
+    pcupd->musicdb = bdj4ReloadDatabase (pcupd->musicdb);
+    impplSetDB (imppl, pcupd->musicdb);
+  }
+
   impplFinalize (imppl);
-  newsongs = impplHaveNewSongs (imppl);
 
   podcastFree (podcast);
   impplFree (imppl);
 
-  return newsongs;
+  return dbchanged;
 }
 
 static void

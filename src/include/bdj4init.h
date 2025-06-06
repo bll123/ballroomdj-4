@@ -40,7 +40,8 @@ enum {
   BDJ4_ARG_INST_REINSTALL       = (1 << 23),
   BDJ4_ARG_UPD_NEW              = (1 << 24),
   BDJ4_ARG_UPD_CONVERT          = (1 << 25),
-  BDJ4_INIT_NO_LOG              = (1 << 26),
+  BDJ4_ARG_NO_PODCAST_UPD       = (1 << 26),
+  BDJ4_INIT_NO_LOG              = (1 << 27),
 };
 
 void bdj4initArgInit (void);

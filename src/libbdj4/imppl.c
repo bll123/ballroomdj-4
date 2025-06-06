@@ -18,39 +18,51 @@
 #include "mdebug.h"
 #include "musicdb.h"
 #include "pathinfo.h"
-#include "playlist.h"
 #include "podcast.h"
 #include "podcastutil.h"
 #include "slist.h"
 #include "song.h"
+#include "songlist.h"
 #include "tagdef.h"
+
+typedef enum {
+    IMPPL_INIT_PODCAST,
+    IMPPL_PROCESS,
+    IMPPL_INIT_EXISTING,
+    IMPPL_PROCESS_EXISTING,
+    IMPPL_PROCESS_FINALIZE,
+} impplstate_t;
 
 typedef struct imppl {
   slist_t     *songidxlist;
   slist_t     *tsongidxlist;
+  slist_t     *sortlist;
   musicdb_t   *musicdb;
   char        *uri;
   char        *oplname;
   char        *plname;
   asiter_t    *asiter;
+  slistidx_t  tsiter;
   int         imptype;
   int         askey;
   int         retain;
   int         count;
   int         tot;
-  bool        newsongs;
-  bool        batched;
+  /* processing state */
+  int         state;
+  bool        dbchanged;
+  bool        dbbatched;
 } imppl_t;
 
-static bool impplCreateSong (imppl_t *imppl, const char *songnm, slist_t *tagdata);
+static bool impplCreateSong (imppl_t *imppl, const char *songuri, slist_t *tagdata);
 
 imppl_t *
-impplInit (slist_t *songidxlist, musicdb_t *musicdb, int imptype,
+impplInit (slist_t *songidxlist, int imptype,
     const char *uri, const char *oplname, const char *plname, int askey)
 {
   imppl_t   *imppl;
 
-  if (uri == NULL || ! *uri || musicdb == NULL) {
+  if (uri == NULL || ! *uri) {
     return NULL;
   }
   if (oplname == NULL || plname == NULL) {
@@ -60,7 +72,8 @@ impplInit (slist_t *songidxlist, musicdb_t *musicdb, int imptype,
   imppl = mdmalloc (sizeof (imppl_t));
   imppl->songidxlist = songidxlist;
   imppl->tsongidxlist = slistAlloc ("imppl-tsongidxlist", LIST_UNORDERED, NULL);
-  imppl->musicdb = musicdb;
+  imppl->sortlist = NULL;
+  imppl->musicdb = NULL;
   imppl->uri = mdstrdup (uri);
   imppl->oplname = mdstrdup (oplname);
   imppl->plname = mdstrdup (plname);
@@ -68,46 +81,25 @@ impplInit (slist_t *songidxlist, musicdb_t *musicdb, int imptype,
   imppl->imptype = imptype;
   imppl->askey = askey;
   imppl->retain = 0;
-  imppl->newsongs = false;
-  imppl->batched = false;
+  imppl->dbchanged = false;
+  imppl->dbbatched = false;
   imppl->count = 0;
   imppl->tot = 0;
+  imppl->state = IMPPL_PROCESS;
 
   if (imptype == AUDIOSRC_TYPE_BDJ4 ||
       imptype == AUDIOSRC_TYPE_PODCAST) {
-    if (imppl->imptype == AUDIOSRC_TYPE_PODCAST) {
-      playlist_t    *pl;
-      songlist_t    *sl;
-      ilistidx_t    sliteridx;
-      ilistidx_t    slkey;
-
-      pl = playlistLoad (imppl->plname, NULL, NULL);
-      if (pl != NULL) {
-        imppl->retain = playlistGetPodcastNum (pl, PODCAST_RETAIN);
-      }
-      playlistFree (pl);
-
-      sl = songlistLoad (imppl->plname);
-      songlistStartIterator (sl, &sliteridx);
-      while ((slkey = songlistIterate (sl, &sliteridx)) >= 0) {
-        const char  *songnm;
-        song_t      *song;
-        dbidx_t     dbidx;
-
-        songnm = songlistGetStr (sl, slkey, SONGLIST_URI);
-        song = dbGetByName (imppl->musicdb, songnm);
-        if (song != NULL) {
-          dbidx = songGetNum (song, TAG_DBIDX);
-          slistSetNum (imppl->tsongidxlist, songnm, dbidx);
-        }
-      }
+    if (imptype == AUDIOSRC_TYPE_PODCAST) {
+      imppl->state = IMPPL_INIT_PODCAST;
     }
-
     imppl->asiter = audiosrcStartIterator (imppl->imptype,
         AS_ITER_PL, imppl->uri, imppl->oplname, imppl->askey);
     imppl->tot = audiosrcIterCount (imppl->asiter);
+fprintf (stderr, "tot: %d\n", imppl->tot);
+    imppl->tot += slistGetCount (imppl->tsongidxlist);
+fprintf (stderr, "tot: %d\n", imppl->tot);
     dbStartBatch (imppl->musicdb);
-    imppl->batched = true;
+    imppl->dbbatched = true;
   }
 
   return imppl;
@@ -120,20 +112,126 @@ impplFree (imppl_t *imppl)
     return;
   }
 
-  if (imppl->batched) {
+  if (imppl->dbbatched) {
     dbEndBatch (imppl->musicdb);
   }
   audiosrcCleanIterator (imppl->asiter);
   dataFree (imppl->uri);
   dataFree (imppl->oplname);
   dataFree (imppl->plname);
+  slistFree (imppl->tsongidxlist);
+  slistFree (imppl->sortlist);
   mdfree (imppl);
 }
 
 bool
 impplProcess (imppl_t *imppl)
 {
-  if (imppl == NULL) {
+  if (imppl == NULL || imppl->musicdb == NULL) {
+    return true;
+  }
+
+  if (imppl->state == IMPPL_INIT_PODCAST) {
+    podcast_t     *podcast;
+    songlist_t    *sl;
+    ilistidx_t    sliteridx;
+    ilistidx_t    slkey;
+
+fprintf (stderr, "is podcast\n");
+    podcast = podcastLoad (imppl->plname);
+    if (podcast != NULL) {
+      imppl->retain = podcastGetNum (podcast, PODCAST_RETAIN);
+    }
+    podcastFree (podcast);
+
+    sl = songlistLoad (imppl->plname);
+fprintf (stderr, "sl-load: %s\n", imppl->plname);
+    songlistStartIterator (sl, &sliteridx);
+    while ((slkey = songlistIterate (sl, &sliteridx)) >= 0) {
+      const char  *songuri;
+      song_t      *song;
+
+      songuri = songlistGetStr (sl, slkey, SONGLIST_URI);
+      song = dbGetByName (imppl->musicdb, songuri);
+      if (song != NULL) {
+        /* the dbidx may get changed due to database additions */
+        /* or removals, don't bother saving it */
+        slistSetNum (imppl->tsongidxlist, songuri, -1);
+      }
+    }
+    songlistFree (sl);
+    imppl->state = IMPPL_PROCESS;
+    return false;
+  }
+
+  if (imppl->state == IMPPL_INIT_EXISTING) {
+    const char    *songuri;
+    slistidx_t    iteridx;
+
+    /* need a sorted list to do lookups */
+    imppl->sortlist = slistAlloc ("imppl-tlist", LIST_UNORDERED, NULL);
+    slistSetSize (imppl->sortlist, slistGetCount (imppl->songidxlist));
+    slistStartIterator (imppl->songidxlist, &iteridx);
+    while ((songuri = slistIterateKey (imppl->songidxlist, &iteridx)) != NULL) {
+      slistSetNum (imppl->sortlist, songuri, -1);
+    }
+    slistSort (imppl->sortlist);
+
+    slistStartIterator (imppl->tsongidxlist, &imppl->tsiter);
+
+fprintf (stderr, "created sort-list\n");
+    imppl->state = IMPPL_PROCESS_EXISTING;
+    return false;
+  }
+
+  if (imppl->state == IMPPL_PROCESS_EXISTING) {
+    dbidx_t     dbidx;
+    slistidx_t  tidx;
+    pcretain_t  pcrc;
+    song_t      *song;
+    const char  *songuri;
+
+    /* not perfect */
+    /* an older item in the podcast that is still loaded in the new list */
+    /* does not get sorted by date. */
+
+    songuri = slistIterateKey (imppl->tsongidxlist, &imppl->tsiter);
+    if (songuri == NULL) {
+      imppl->state = IMPPL_PROCESS_FINALIZE;
+      /* finished */
+      return true;
+    }
+
+    imppl->count += 1;
+
+    tidx = slistGetIdx (imppl->sortlist, songuri);
+    if (tidx >= 0) {
+      /* song already exists in the newly built songidxlist */
+      /* any song in the new songidxlist has already been checked for */
+      /* the retain date */
+fprintf (stderr, "proc-old: already\n");
+      return false;
+    }
+
+    song = dbGetByName (imppl->musicdb, songuri);
+    dbidx = songGetNum (song, TAG_DBIDX);
+    pcrc = podcastutilCheckRetain (song, imppl->retain);
+    if (pcrc == PODCAST_DELETE) {
+      /* remove any songs past the retain date */
+      dbRemoveSong (imppl->musicdb, dbidx);
+fprintf (stderr, "proc-old: remove: %d\n", dbidx);
+      imppl->dbchanged = true;
+      return false;
+    }
+
+fprintf (stderr, "proc-old: add: %d\n", dbidx);
+    slistSetNum (imppl->songidxlist, songuri, -1);
+    return false;
+  }
+
+  if (imppl->state != IMPPL_PROCESS) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: imppl: invalid state");
+fprintf (stderr, "proc invalid state\n");
     return true;
   }
 
@@ -183,7 +281,8 @@ impplProcess (imppl_t *imppl)
 
     songuri = audiosrcIterate (imppl->asiter);
     if (songuri == NULL) {
-      return true;
+      imppl->state = IMPPL_INIT_EXISTING;
+      return false;
     }
 
     imppl->count += 1;
@@ -203,7 +302,7 @@ impplProcess (imppl_t *imppl)
     slistSetStr (tagdata, tagdefs [TAG_URI].tag, songuri);
     slistSort (tagdata);
 
-    imppl->newsongs |= impplCreateSong (imppl, songuri, tagdata);
+    imppl->dbchanged |= impplCreateSong (imppl, songuri, tagdata);
     slistFree (tagdata);
   }
 
@@ -212,19 +311,19 @@ impplProcess (imppl_t *imppl)
 }
 
 bool
-impplHaveNewSongs (imppl_t *imppl)
+impplIsDBChanged (imppl_t *imppl)
 {
-  if (imppl == NULL) {
+  if (imppl == NULL || imppl->musicdb == NULL) {
     return false;
   }
 
-  return imppl->newsongs;
+  return imppl->dbchanged;
 }
 
 void
 impplGetCount (imppl_t *imppl, int *count, int *tot)
 {
-  if (imppl == NULL) {
+  if (imppl == NULL || imppl->musicdb == NULL) {
     return;
   }
 
@@ -235,7 +334,7 @@ impplGetCount (imppl_t *imppl, int *count, int *tot)
 int
 impplGetType (imppl_t *imppl)
 {
-  if (imppl == NULL) {
+  if (imppl == NULL || imppl->musicdb == NULL) {
     return AUDIOSRC_TYPE_NONE;
   }
 
@@ -243,18 +342,25 @@ impplGetType (imppl_t *imppl)
 }
 
 void
-impplFinalize (imppl_t *imppl)
+impplSetDB (imppl_t *imppl, musicdb_t *musicdb)
 {
   if (imppl == NULL) {
+    return;
+  }
+
+  imppl->musicdb = musicdb;
+}
+
+void
+impplFinalize (imppl_t *imppl)
+{
+  if (imppl == NULL || imppl->musicdb == NULL) {
     return;
   }
 
   if (imppl->imptype == AUDIOSRC_TYPE_PODCAST) {
     podcast_t   *podcast;
     bool        podcastexists = true;
-    slistidx_t  iteridx;
-    const char  *songuri;
-    slist_t     *tlist;
 
     podcast = podcastLoad (imppl->plname);
     if (podcast == NULL) {
@@ -269,48 +375,6 @@ impplFinalize (imppl_t *imppl)
     }
     podcastSave (podcast);
     podcastFree (podcast);
-
-// ### this is not quite right.
-// an older item in the podcast that is still loaded in the new list
-// does not get sorted by date.
-// is this a problem?
-
-    /* need a sorted list to do lookups */
-    tlist = slistAlloc ("imppl-tlist", LIST_UNORDERED, NULL);
-    slistSetSize (tlist, slistGetCount (imppl->songidxlist));
-    slistStartIterator (imppl->songidxlist, &iteridx);
-    while ((songuri = slistIterateKey (imppl->songidxlist, &iteridx)) != NULL) {
-      dbidx_t   dbidx;
-
-      dbidx = slistGetNum (imppl->songidxlist, songuri);
-      slistSetNum (tlist, songuri, dbidx);
-    }
-    slistSort (tlist);
-
-    slistStartIterator (imppl->tsongidxlist, &iteridx);
-    while ((songuri = slistIterateKey (imppl->tsongidxlist, &iteridx)) != NULL) {
-      dbidx_t     dbidx;
-      slistidx_t  tidx;
-      pcretain_t  pcrc;
-      song_t      *song;
-
-      tidx = slistGetIdx (tlist, songuri);
-      if (tidx >= 0) {
-        /* song already exists in the newly built songidxlist */
-        continue;
-      }
-
-      song = dbGetByName (imppl->musicdb, songuri);
-      pcrc = podcastutilCheckRetain (song, imppl->retain);
-      if (pcrc == PODCAST_DELETE) {
-        continue;
-      }
-
-      dbidx = slistGetNum (imppl->tsongidxlist, songuri);
-      slistSetNum (imppl->songidxlist, songuri, dbidx);
-    }
-
-    slistFree (tlist);
   }
 }
 
@@ -322,6 +386,7 @@ impplCreateSong (imppl_t *imppl, const char *songuri, slist_t *tagdata)
   bool        rc = false;
   dbidx_t     dbidx;
   pcretain_t  pcrc;
+  bool        dbchg = false;
 
 
   song = dbGetByName (imppl->musicdb, songuri);
@@ -332,27 +397,37 @@ impplCreateSong (imppl_t *imppl, const char *songuri, slist_t *tagdata)
     songSetNum (song, TAG_DB_FLAGS, MUSICDB_STD);
     songSetNum (song, TAG_RRN, MUSICDB_ENTRY_NEW);
     songSetNum (song, TAG_PREFIX_LEN, 0);
+fprintf (stderr, "proc: new\n");
     rc = true;
+  } else {
+fprintf (stderr, "proc: existing\n");
   }
 
   pcrc = podcastutilCheckRetain (song, imppl->retain);
   if (pcrc == PODCAST_DELETE) {
+    if (rc) {
+      /* song is new, but is not retained */
+      /* database change flag is false */
+      songFree (song);
+fprintf (stderr, "proc: new, but not retained\n");
+    }
     if (rc == false) {
       /* only if the song is not new */
       dbidx = songGetNum (song, TAG_DBIDX);
       dbRemoveSong (imppl->musicdb, dbidx);
+      /* database is changed */
+fprintf (stderr, "proc: existing, removed %d\n", dbidx);
+      dbchg = true;
     }
-    if (rc) {
-      /* song is new, but is not retained */
-      songFree (song);
-    }
-    return false;
+    return dbchg;
   }
 
   if (rc) {
     dbWriteSong (imppl->musicdb, song);
+    /* new song, database is changed */
+    dbchg = true;
   }
 
   slistSetNum (imppl->songidxlist, songuri, -1);
-  return rc;
+  return dbchg;
 }

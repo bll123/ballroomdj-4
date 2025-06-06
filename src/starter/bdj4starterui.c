@@ -188,6 +188,7 @@ typedef struct {
   bool            supportactive;
   bool            supportmsgactive;
   bool            optionsalloc;
+  bool            podcastupd;
 } startui_t;
 
 enum {
@@ -369,6 +370,7 @@ main (int argc, char *argv[])
   starter.optionsalloc = false;
   starter.supportactive = false;
   starter.supportmsgactive = false;
+  starter.podcastupd = true;
 
   starter.callbacks [START_CB_SEND_SUPPORT] = callbackInit (
       starterCreateSupportMsgDialog, &starter, NULL);
@@ -388,6 +390,10 @@ main (int argc, char *argv[])
   starter.loglevel = bdj4startup (argc, argv, NULL, "strt",
       ROUTE_STARTERUI, &flags);
   logProcBegin ();
+
+  if ((flags & BDJ4_ARG_NO_PODCAST_UPD) == BDJ4_ARG_NO_PODCAST_UPD) {
+    starter.podcastupd = false;
+  }
 
   starterLoadOptions (&starter);
 
@@ -477,7 +483,9 @@ starterInitDataCallback (void *udata, programstate_t programState)
 
   targv [targc++] = NULL;
 
-  procutilStartProcess (ROUTE_NONE, "bdj4podcastupd", PROCUTIL_DETACH, targv);
+  if (starter->podcastupd) {
+    procutilStartProcess (ROUTE_NONE, "bdj4podcastupd", PROCUTIL_DETACH, targv);
+  }
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       NEWINSTALL_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
