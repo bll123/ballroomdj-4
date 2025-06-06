@@ -80,14 +80,23 @@ main (int argc, char *argv[])
 
   if (pcupd.count > 0 && pcupd.askey >= 0) {
     pcupd.itemlist = mdmalloc (sizeof (pcupditem_t) * pcupd.count);
+    for (int idx = 0; idx < pcupd.count; ++idx) {
+      pcupd.itemlist [idx].plname = NULL;
+      pcupd.itemlist [idx].songidxlist = NULL;
+    }
 
     /* the database now needs to be loaded */
     flags = BDJ4_INIT_ALL;
-    bdj4startup (argc, argv, &pcupd.musicdb, "podu", ROUTE_PODCAST_UPD, &flags);
+    bdj4startup (argc, argv, &pcupd.musicdb, "podu", ROUTE_NONE, &flags);
 
     podcastupdProcess (&pcupd);
 
-    bdj4shutdown (ROUTE_PODCAST_UPD, pcupd.musicdb);
+    bdj4shutdown (ROUTE_NONE, pcupd.musicdb);
+
+    for (int idx = 0; idx < pcupd.count; ++idx) {
+      slistFree (pcupd.itemlist [idx].songidxlist);
+      mdfree (pcupd.itemlist [idx].plname);
+    }
     mdfree (pcupd.itemlist);
   }
 
@@ -141,8 +150,10 @@ podcastupdProcess (pcupd_t *pcupd)
   slistFree (filelist);
 
   if (pcupd->newsongs) {
-    ;
+    pcupd->musicdb = bdj4ReloadDatabase (pcupd->musicdb);
   }
+
+  podcastupdCreateSonglists (pcupd);
 }
 
 static bool
@@ -214,8 +225,5 @@ podcastupdCreateSonglists (pcupd_t *pcupd)
     songlistutilCreateFromList (pcupd->musicdb,
         pcupd->itemlist [idx].plname, dbidxlist);
     nlistFree (dbidxlist);
-
-    slistFree (pcupd->itemlist [idx].songidxlist);
-    mdfree (pcupd->itemlist [idx].plname);
   }
 }

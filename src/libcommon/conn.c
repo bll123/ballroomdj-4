@@ -74,7 +74,6 @@ connInit (bdjmsgroute_t routefrom)
     connports [ROUTE_MOBILEMQ] = bdjvarsGetNum (BDJVL_PORT_MOBILEMQ);
     connports [ROUTE_PLAYER] = bdjvarsGetNum (BDJVL_PORT_PLAYER);
     connports [ROUTE_PLAYERUI] = bdjvarsGetNum (BDJVL_PORT_PLAYERUI);
-    connports [ROUTE_PODCAST_UPD] = bdjvarsGetNum (BDJVL_PORT_PODCAST_UPD);
     connports [ROUTE_REMCTRL] = bdjvarsGetNum (BDJVL_PORT_REMCTRL);
     connports [ROUTE_SERVER] = bdjvarsGetNum (BDJVL_PORT_SERVER);
     connports [ROUTE_STARTERUI] = bdjvarsGetNum (BDJVL_PORT_STARTERUI);

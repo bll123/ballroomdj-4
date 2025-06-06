@@ -477,8 +477,7 @@ starterInitDataCallback (void *udata, programstate_t programState)
 
   targv [targc++] = NULL;
 
-  starter->processes [ROUTE_PODCAST_UPD] = procutilStartProcess (
-      ROUTE_PODCAST_UPD, "bdj4podcastupd", PROCUTIL_DETACH, targv);
+  procutilStartProcess (ROUTE_NONE, "bdj4podcastupd", PROCUTIL_DETACH, targv);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       NEWINSTALL_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
