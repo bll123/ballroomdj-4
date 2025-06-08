@@ -367,6 +367,9 @@ rlogStart (const char *prog, const char *processtag,
         PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
     rlogOpen (idx, tnm, processtag, truncflag);
     syslogs [idx]->level = level;
+    if (idx == LOG_INSTALL) {
+      continue;
+    }
     rlogStartProgram (idx, prog, "", 0, "");
   }
 }

@@ -180,8 +180,8 @@ podcastupdProcessPodcast (pcupd_t *pcupd, const char *plname)
     ;
   }
 
-  pcupd->dbchanged = impplIsDBChanged (imppl);
-  if (pcupd->dbchanged) {
+  dbchanged = impplIsDBChanged (imppl);
+  if (dbchanged) {
     pcupd->musicdb = bdj4ReloadDatabase (pcupd->musicdb);
     impplSetDB (imppl, pcupd->musicdb);
   }

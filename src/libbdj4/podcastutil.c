@@ -41,6 +41,7 @@ podcastutilCheckRetain (song_t *song, int retain)
   diff = currtm - podtm;
   retdays = (time_t) retain * 24 * 3600;
   rc = PODCAST_KEEP;
+fprintf (stderr, "  %ld > %ld\n", diff, retdays);
   if (diff > retdays) {
     rc = PODCAST_DELETE;
   }
@@ -49,30 +50,10 @@ podcastutilCheckRetain (song_t *song, int retain)
 }
 
 void
-podcastutilApplyRetain (musicdb_t *musicdb, const char *plname)
-{
-  int         retain;
-  podcast_t   *podcast;
-
-  podcast = podcastLoad (plname);
-  if (podcast == NULL) {
-    return;
-  }
-
-  retain = podcastGetNum (podcast, PODCAST_RETAIN);
-  if (retain <= 0) {
-    /* retain is not set or is set to keep all */
-    return;
-  }
-
-  podcastutilApplyDelete (musicdb, plname, retain, false);
-}
-
-void
 podcastutilDelete (musicdb_t *musicdb, const char *plname)
 {
   /* set the force-flag to true */
-  /* test will remove everything */
+  /* will remove everything */
   podcastutilApplyDelete (musicdb, plname, 0, true);
 }
 

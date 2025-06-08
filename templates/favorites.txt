@@ -1,6 +1,6 @@
 # favorites
-# 2023-3-5
-# version 1
+# 2025-6-8
+# version 2
 #
 #   There is no configuration tool to change the favorites, but they
 #     may be changed manually.
@@ -14,6 +14,8 @@
 #   five-point star ★
 #   heart ♥
 #   broken-heart 💔
+#   imported ⭹       (special case)
+#   removed ✘        (special case)
 # Other possibilities if people want more variety:
 #   arrowhead ⮞
 #   checkmark ✔
@@ -30,7 +32,7 @@
 version
 ..1
 count
-..9
+..10
 # key 0 values may not be changed, except for the display symbol.
 # key 0 is used as the indicator that there is no favorite setting.
 KEY
@@ -43,6 +45,8 @@ COLOR
 ..
 USERSEL
 ..yes
+# the ...star values may be changed
+# the name, display symbol and color may be changed
 KEY
 ..1
 NAME
@@ -94,7 +98,7 @@ COLOR
 USERSEL
 ..yes
 # pinkheart is used in itunes conversion
-# the name should not be changed.
+# the name may not be changed.
 # the display symbol and color may be changed
 KEY
 ..6
@@ -107,7 +111,7 @@ COLOR
 USERSEL
 ..yes
 # brokenheart is used in itunes conversion
-# the name should not be changed.
+# the name may not be changed.
 # the display symbol and color may be changed
 KEY
 ..7
@@ -131,5 +135,19 @@ DISPLAY
 ..⭹
 COLOR
 ..
+USERSEL
+..no
+# 'removed' is used to display a symbol for song removal.
+# it is not user-selectable.
+# the name should not be changed.
+# the display symbol and color may be changed
+KEY
+..9
+NAME
+..removed
+DISPLAY
+..✘
+COLOR
+..#ff2222
 USERSEL
 ..no

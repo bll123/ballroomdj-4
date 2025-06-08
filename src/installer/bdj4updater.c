@@ -579,6 +579,8 @@ main (int argc, char *argv [])
     updaterCopyIfNotPresent (ASCONF_FN, BDJ4_CONFIG_EXT, NULL);
     /* 4.15.0 2025-5-1 update audiosrc.txt */
     updaterCopyVersionCheck (ASCONF_FN, BDJ4_CONFIG_EXT, 2);
+    /* 4.15.0 2025-6-8 update favorites.txt */
+    updaterCopyVersionCheck ("favorites", BDJ4_CONFIG_EXT, 2);
   }
 
   /* The datafiles must be loaded for the MPM update process */
