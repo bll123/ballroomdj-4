@@ -12,10 +12,12 @@
     * Database Update: Some companies are putting the genre into the
       title-sort tag.  Some known genres will be cleared from the
       title-sort tag.
-* Changes:
-    * Player: External Request: Drag and drop implemented.
-    * Manage: Import Playlist: Drag and drop implemented.
     * Internal: Code cleanup (xml parse).
+* Changes:
+    * Manage: Import Playlist: Drag and drop implemented.
+    * Manage: Remove Song: Changed how a remove song is displayed.
+    * Manage: Remove Song: Change menu items: Undo Remove Song, Undo All Song Removals
+    * Player: External Request: Drag and drop implemented.
 * New Features:
     * Configure: Audio Sources: Add podcast.
     * Configure: Player: Add optional player arguments.

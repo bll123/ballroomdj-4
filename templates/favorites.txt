@@ -12,10 +12,10 @@
 #
 # Current:
 #   five-point star ★
-#   heart ♥
-#   broken-heart 💔
-#   imported ⭹       (special case)
-#   removed ✘        (special case)
+#   heart ♥           (itunes)
+#   broken-heart 💔   (itunes)
+#   imported ⭹        (special case)
+#   removed ✖         (special case)
 # Other possibilities if people want more variety:
 #   arrowhead ⮞
 #   checkmark ✔
@@ -125,7 +125,7 @@ USERSEL
 ..yes
 # 'imported' is used to display a symbol for external requests.
 # it is not user-selectable.
-# the name should not be changed.
+# the name may not be changed.
 # the display symbol and color may be changed
 KEY
 ..8
@@ -139,14 +139,14 @@ USERSEL
 ..no
 # 'removed' is used to display a symbol for song removal.
 # it is not user-selectable.
-# the name should not be changed.
+# the name may not be changed.
 # the display symbol and color may be changed
 KEY
 ..9
 NAME
 ..removed
 DISPLAY
-..✘
+..✖
 COLOR
 ..#ff2222
 USERSEL

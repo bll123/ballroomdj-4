@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-02 05:00-0700\n"
+"POT-Creation-Date: 2025-06-09 08:01-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1542,11 +1542,13 @@ msgid "Playlists"
 msgstr ""
 
 #. CONTEXT: installer: status message
+#. CONTEXT: please wait... status message
 #. CONTEXT: apply adjustments: please wait... status message
 #. CONTEXT: please wait... status message
 #. CONTEXT: management ui: please wait... status message
 #. CONTEXT: export as mp3: please wait... status message
 #. CONTEXT: starter ui: please wait... status message
+#, c-format
 msgid "Please wait…"
 msgstr ""
 
@@ -2250,6 +2252,10 @@ msgstr ""
 
 #. CONTEXT: installer: status message
 msgid "Unable to locate BDJ3 database."
+msgstr ""
+
+#. CONTEXT: manage-ui: menu selection: music manager: undo all song removals
+msgid "Undo All Song Removals"
 msgstr ""
 
 #. CONTEXT: manage-ui: menu selection: music manager: undo song removal

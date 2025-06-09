@@ -294,12 +294,6 @@ _HERE_
   fi
 done
 
-cat >> data/profile00/ds-songedit-b.txt << _HERE_
-FAVORITE
-DBADDDATE
-DB_LOC_LOCK
-_HERE_
-
 args=""
 
 outfile=$(./src/utils/mktestdb.sh "$@")

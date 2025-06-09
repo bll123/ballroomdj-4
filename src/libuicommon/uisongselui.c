@@ -971,6 +971,7 @@ uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   nlist_t             *tdlist;
   slistidx_t          seliteridx;
   dbidx_t             dbidx;
+  int                 dbflags;
 
   logProcBegin ();
 
@@ -982,6 +983,7 @@ uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   if (song == NULL) {
     return;
   }
+  dbflags = songGetNum (song, TAG_DB_FLAGS);
 
   ssint->inchange = true;
 
@@ -1007,6 +1009,10 @@ uisongselFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
       favidx = songGetNum (song, TAG_FAVORITE);
       name = songFavoriteGetStr (songfav, favidx, SONGFAV_NAME);
       uivlSetRowColumnClass (ssint->uivl, rownum, colidx, name);
+    }
+
+    if (tagidx != TAG_FAVORITE && dbflags == MUSICDB_REMOVE_MARK) {
+      uivlSetRowColumnClass (ssint->uivl, rownum, colidx, ERROR_CLASS);
     }
   }
   nlistFree (tdlist);
@@ -1038,7 +1044,7 @@ uisongselFillMark (uisongsel_t *uisongsel, ss_internal_t *ssint,
 
   if (uisongsel->dispselType != DISP_SEL_MM &&
       uisongsel->songlistdbidxlist != NULL) {
-    /* check and see if the song is in the song list */
+    /* check and see if the song is in the song list or history, etc. */
     if (nlistGetNum (uisongsel->songlistdbidxlist, dbidx) >= 0) {
       markstr = ssint->marktext;
       classnm = MARK_CLASS;

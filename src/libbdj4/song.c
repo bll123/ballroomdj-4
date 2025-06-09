@@ -267,6 +267,18 @@ songGetNum (const song_t *song, nlistidx_t idx)
   }
 
   value = nlistGetNum (song->songInfo, idx);
+  if (idx == TAG_FAVORITE &&
+      songGetNum (song, TAG_DB_FLAGS) == MUSICDB_REMOVE_MARK) {
+    datafileconv_t  conv;
+
+    /* if the song is marked as removed, force the favorite display */
+    /* to be 'removed' */
+    conv.invt = VALUE_STR;
+    conv.str = "removed";
+    songFavoriteConv (&conv);
+    value = conv.num;
+  }
+
   return value;
 }
 

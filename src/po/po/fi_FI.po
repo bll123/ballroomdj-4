@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2025-06-02\n"
+"PO-Revision-Date: 2025-06-09\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Finnish\n"
 "Language: fi\n"
@@ -1545,11 +1545,13 @@ msgid "Playlists"
 msgstr "Soittolistat"
 
 #. CONTEXT: installer: status message
+#. CONTEXT: please wait... status message
 #. CONTEXT: apply adjustments: please wait... status message
 #. CONTEXT: please wait... status message
 #. CONTEXT: management ui: please wait... status message
 #. CONTEXT: export as mp3: please wait... status message
 #. CONTEXT: starter ui: please wait... status message
+#, c-format
 msgid "Please wait…"
 msgstr "Odota…"
 
@@ -2254,6 +2256,10 @@ msgstr "Ei löydy osoitteesta %s."
 #. CONTEXT: installer: status message
 msgid "Unable to locate BDJ3 database."
 msgstr "BDJ3-tietokantaa ei löydy."
+
+#. CONTEXT: manage-ui: menu selection: music manager: undo all song removals
+msgid "Undo All Song Removals"
+msgstr ""
 
 #. CONTEXT: manage-ui: menu selection: music manager: undo song removal
 msgid "Undo Song Removal"

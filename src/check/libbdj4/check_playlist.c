@@ -40,15 +40,12 @@
 #define SEQFN "test-seq-a"
 #define SLFN "test-sl-a"
 #define AUTOFN "test-auto-a"
-#define PODCASTFN "test-podcast-a"
 #define SEQNEWFN "test-seq-new"
 #define SLNEWFN "test-sl-new"
 #define AUTONEWFN "test-auto-new"
-#define PODCASTNEWFN "test-podcast-new"
 #define SEQRENFN "test-seq-ren"
 #define SLRENFN "test-sl-ren"
 #define AUTORENFN "test-auto-ren"
-#define PODCASTRENFN "test-podcast-ren"
 
 static char *dbfn = "data/musicdb.dat";
 static musicdb_t *db = NULL;
@@ -69,10 +66,6 @@ static test_fn_t test_data [] = {
   { false, SLFN, "", "" },
   { false, AUTOFN, "", "" },
   { false, AUTOFN, "", "" },
-  { false, PODCASTFN, "", "" },
-  { false, PODCASTFN, "", "" },
-  { false, PODCASTFN, "", "" },
-  { false, PODCASTFN, "", "" },
   { true, SEQNEWFN, "", "" },
   { true, SEQNEWFN, "", "" },
   { true, SEQNEWFN, "", "" },
@@ -81,10 +74,6 @@ static test_fn_t test_data [] = {
   { true, SLNEWFN, "", "" },
   { true, AUTONEWFN, "", "" },
   { true, AUTONEWFN, "", "" },
-  { true, PODCASTNEWFN, "", "" },
-  { true, PODCASTNEWFN, "", "" },
-  { true, PODCASTNEWFN, "", "" },
-  { true, PODCASTNEWFN, "", "" },
   { true, SEQRENFN, "", "" },
   { true, SEQRENFN, "", "" },
   { true, SEQRENFN, "", "" },
@@ -93,10 +82,6 @@ static test_fn_t test_data [] = {
   { true, SLRENFN, "", "" },
   { true, AUTORENFN, "", "" },
   { true, AUTORENFN, "", "" },
-  { true, PODCASTRENFN, "", "" },
-  { true, PODCASTRENFN, "", "" },
-  { true, PODCASTRENFN, "", "" },
-  { true, PODCASTRENFN, "", "" },
 };
 enum {
   CPL_TEST_MAX = sizeof (test_data) / sizeof (test_fn_t),
@@ -106,7 +91,6 @@ enum {
   CPL_SEQ_OFFSET = 0,
   CPL_SL_OFFSET = 3,
   CPL_AUTO_OFFSET = 6,
-  CPL_PODCAST_OFFSET = 8,
   /* files for each type */
   CPL_PL_OFFSET = 0,
   CPL_PLD_OFFSET = 1,
@@ -116,11 +100,10 @@ enum {
   CPL_SEQ_COUNT = 3,
   CPL_SL_COUNT = 3,
   CPL_AUTO_COUNT = 2,
-  CPL_PODCAST_COUNT = 4,
   /* test types */
   CPL_EXIST_OFFSET = 0,
-  CPL_NEW_OFFSET = CPL_SEQ_COUNT + CPL_SL_COUNT + CPL_AUTO_COUNT + CPL_PODCAST_COUNT,
-  CPL_REN_OFFSET = 2 * (CPL_SEQ_COUNT + CPL_SL_COUNT + CPL_AUTO_COUNT + CPL_PODCAST_COUNT),
+  CPL_NEW_OFFSET = CPL_SEQ_COUNT + CPL_SL_COUNT + CPL_AUTO_COUNT,
+  CPL_REN_OFFSET = 2 * (CPL_SEQ_COUNT + CPL_SL_COUNT + CPL_AUTO_COUNT),
 };
 static bool initialized = false;
 
@@ -142,22 +125,14 @@ init (void)
     if (idx == CPL_SL_OFFSET + CPL_FILE_A_OFFSET) {
       ext = BDJ4_SONGLIST_EXT;
     }
-    if (idx == CPL_PODCAST_OFFSET + CPL_FILE_A_OFFSET) {
-      ext = BDJ4_SONGLIST_EXT;
-    }
-    if (idx == CPL_PODCAST_OFFSET + CPL_FILE_B_OFFSET) {
-      ext = BDJ4_PODCAST_EXT;
-    }
     if (idx == (CPL_SEQ_OFFSET + CPL_PL_OFFSET) ||
         idx == (CPL_SL_OFFSET + CPL_PL_OFFSET) ||
-        idx == (CPL_AUTO_OFFSET + CPL_PL_OFFSET) ||
-        idx == (CPL_PODCAST_OFFSET + CPL_PL_OFFSET)) {
+        idx == (CPL_AUTO_OFFSET + CPL_PL_OFFSET)) {
       ext = BDJ4_PLAYLIST_EXT;
     }
     if (idx == (CPL_SEQ_OFFSET + CPL_PLD_OFFSET) ||
         idx == (CPL_SL_OFFSET + CPL_PLD_OFFSET) ||
-        idx == (CPL_AUTO_OFFSET + CPL_PLD_OFFSET) ||
-        idx == (CPL_PODCAST_OFFSET + CPL_PLD_OFFSET)) {
+        idx == (CPL_AUTO_OFFSET + CPL_PLD_OFFSET)) {
       ext = BDJ4_PL_DANCE_EXT;
     }
     pathbldMakePath (tbuff, sizeof (tbuff), test_data [i].basefn, ext, PATHBLD_MP_DREL_DATA);
@@ -255,11 +230,6 @@ START_TEST(playlist_exists)
   idxt = CPL_NEW_OFFSET + CPL_AUTO_OFFSET + CPL_PL_OFFSET;
   ck_assert_int_eq (playlistExists (test_data [idxt].basefn), 0);
 
-  /* podcast */
-  idxt = CPL_EXIST_OFFSET + CPL_PODCAST_OFFSET + CPL_PL_OFFSET;
-  ck_assert_int_ne (playlistExists (test_data [idxt].basefn), 0);
-  idxt = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_PL_OFFSET;
-  ck_assert_int_eq (playlistExists (test_data [idxt].basefn), 0);
 }
 END_TEST
 
@@ -282,9 +252,6 @@ START_TEST(playlist_get_type)
   idxt = CPL_EXIST_OFFSET + CPL_AUTO_OFFSET + CPL_PL_OFFSET;
   ck_assert_int_eq (playlistGetType (test_data [idxt].basefn), PLTYPE_AUTO);
 
-  /* podcast */
-  idxt = CPL_EXIST_OFFSET + CPL_PODCAST_OFFSET + CPL_PL_OFFSET;
-  ck_assert_int_eq (playlistGetType (test_data [idxt].basefn), PLTYPE_PODCAST);
 }
 END_TEST
 
@@ -317,17 +284,6 @@ START_TEST(playlist_create_basic)
   pl = playlistCreate (test_data [idxt].basefn, PLTYPE_AUTO, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
   playlistFree (pl);
-
-  /* podcast */
-  idx = CPL_EXIST_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_A_OFFSET;
-  idxt = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_A_OFFSET;
-  filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
-  idx = CPL_EXIST_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_B_OFFSET;
-  idxt = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_B_OFFSET;
-  filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
-  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_PODCAST, NULL, NULL);
-  ck_assert_ptr_nonnull (pl);
-  playlistFree (pl);
 }
 END_TEST
 
@@ -358,14 +314,6 @@ START_TEST(playlist_load_basic)
 
   /* auto */
   idxt = CPL_EXIST_OFFSET + CPL_AUTO_OFFSET + CPL_PL_OFFSET;
-  pl = playlistLoad (test_data [idxt].basefn, NULL, NULL);
-  ck_assert_ptr_nonnull (pl);
-  nm = playlistGetName (pl);
-  ck_assert_str_eq (nm, test_data [idxt].basefn);
-  playlistFree (pl);
-
-  /* podcast */
-  idxt = CPL_EXIST_OFFSET + CPL_PODCAST_OFFSET + CPL_PL_OFFSET;
   pl = playlistLoad (test_data [idxt].basefn, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
   nm = playlistGetName (pl);
@@ -412,16 +360,6 @@ START_TEST(playlist_get)
   pl = playlistLoad (test_data [idxt].basefn, NULL, NULL);
   ck_assert_ptr_nonnull (pl);
   ck_assert_int_eq (playlistGetConfigNum (pl, PLAYLIST_TYPE), PLTYPE_AUTO);
-  ck_assert_int_eq (playlistGetEditMode (pl), EDIT_FALSE);
-  ck_assert_int_eq (playlistGetDanceNum (pl, 0, PLDANCE_DANCE), 0);
-  ck_assert_int_eq (playlistGetDanceNum (pl, 3, PLDANCE_DANCE), 3);
-  playlistFree (pl);
-
-  /* podcast */
-  idxt = CPL_EXIST_OFFSET + CPL_PODCAST_OFFSET + CPL_PL_OFFSET;
-  pl = playlistLoad (test_data [idxt].basefn, NULL, NULL);
-  ck_assert_ptr_nonnull (pl);
-  ck_assert_int_eq (playlistGetConfigNum (pl, PLAYLIST_TYPE), PLTYPE_PODCAST);
   ck_assert_int_eq (playlistGetEditMode (pl), EDIT_FALSE);
   ck_assert_int_eq (playlistGetDanceNum (pl, 0, PLDANCE_DANCE), 0);
   ck_assert_int_eq (playlistGetDanceNum (pl, 3, PLDANCE_DANCE), 3);
@@ -717,21 +655,6 @@ START_TEST(playlist_save_new)
   }
   playlistFree (pl);
 
-  /* podcast */
-  idx = CPL_EXIST_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_A_OFFSET;
-  idxt = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_A_OFFSET;
-  filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
-  idx = CPL_EXIST_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_B_OFFSET;
-  idxt = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_B_OFFSET;
-  filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
-  idxt = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_PL_OFFSET;
-  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_PODCAST, NULL, NULL);
-  ck_assert_ptr_nonnull (pl);
-  playlistSave (pl, test_data [idxt].basefn);
-  for (int i = idxt; i < idxt + CPL_PODCAST_COUNT; ++i) {
-    ck_assert_int_ne (fileopFileExists (test_data [i].ffn), 0);
-  }
-  playlistFree (pl);
 }
 END_TEST
 
@@ -768,35 +691,6 @@ START_TEST(playlist_rename)
   }
   /* old file names should not exist */
   for (int i = idx; i < idx + CPL_SEQ_COUNT; ++i) {
-    ck_assert_int_eq (fileopFileExists (test_data [i].ffn), 0);
-  }
-
-  /* podcast */
-  idx = CPL_EXIST_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_B_OFFSET;
-  idxt = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_B_OFFSET;
-  filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
-  idx = CPL_EXIST_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_A_OFFSET;
-  idxt = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_A_OFFSET;
-  filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
-  idxt = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_PL_OFFSET;
-  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_PODCAST, NULL, NULL);
-  ck_assert_ptr_nonnull (pl);
-  playlistSave (pl, test_data [idxt].basefn);
-  /* podcast: saved file names should exist */
-  for (int i = idxt; i < idxt + CPL_PODCAST_COUNT; ++i) {
-    ck_assert_int_ne (fileopFileExists (test_data [i].ffn), 0);
-  }
-  playlistFree (pl);
-
-  idx = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_PL_OFFSET;
-  idxt = CPL_REN_OFFSET + CPL_PODCAST_OFFSET + CPL_PL_OFFSET;
-  playlistRename (test_data [idx].basefn, test_data [idxt].basefn);
-  /* podcast: renamed file names should exist */
-  for (int i = idxt; i < idxt + CPL_PODCAST_COUNT; ++i) {
-    ck_assert_int_ne (fileopFileExists (test_data [i].ffn), 0);
-  }
-  /* podcast: old file names should not exist */
-  for (int i = idx; i < idx + CPL_PODCAST_COUNT; ++i) {
     ck_assert_int_eq (fileopFileExists (test_data [i].ffn), 0);
   }
 
@@ -881,37 +775,6 @@ START_TEST(playlist_delete)
 
   cleanup ();
 
-  /* podcast */
-  idx = CPL_EXIST_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_B_OFFSET;
-  idxt = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_B_OFFSET;
-  filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
-  idx = CPL_EXIST_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_A_OFFSET;
-  idxt = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_FILE_A_OFFSET;
-  filemanipCopy (test_data [idx].testfn, test_data [idxt].ffn);
-  idxt = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_PL_OFFSET;
-  pl = playlistCreate (test_data [idxt].basefn, PLTYPE_PODCAST, NULL, NULL);
-  ck_assert_ptr_nonnull (pl);
-  playlistSave (pl, test_data [idxt].basefn);
-  /* saved file names should exist */
-  for (int i = idxt; i < idxt + CPL_PODCAST_COUNT; ++i) {
-    ck_assert_int_ne (fileopFileExists (test_data [i].ffn), 0);
-  }
-  playlistFree (pl);
-
-  idx = CPL_NEW_OFFSET + CPL_PODCAST_OFFSET + CPL_PL_OFFSET;
-  idxt = CPL_REN_OFFSET + CPL_PODCAST_OFFSET + CPL_PL_OFFSET;
-  playlistCopy (test_data [idx].basefn, test_data [idxt].basefn);
-  playlistDelete (test_data [idx].basefn);
-  /* new file names should exist */
-  for (int i = idxt; i < idxt + CPL_PODCAST_COUNT; ++i) {
-    ck_assert_int_ne (fileopFileExists (test_data [i].ffn), 0);
-  }
-  /* old file names should not exist due to delete */
-  for (int i = idx; i < idx + CPL_PODCAST_COUNT; ++i) {
-    ck_assert_int_eq (fileopFileExists (test_data [i].ffn), 0);
-  }
-
-  cleanup ();
 }
 END_TEST
 
@@ -950,7 +813,7 @@ START_TEST(playlist_get_pl_list)
   /* includes the special queuedance playlist */
   pllist = playlistGetPlaylistNames (PL_LIST_ALL, NULL);
   val = slistGetCount (pllist);
-  ck_assert_int_eq (val, 19);
+  ck_assert_int_eq (val, 18);
   sval = slistGetStr (pllist, _("QueueDance"));
   ck_assert_str_eq (sval, _("QueueDance"));
   slistFree (pllist);
@@ -966,7 +829,7 @@ START_TEST(playlist_get_pl_list)
   /* does not include the special queuedance playlist */
   pllist = playlistGetPlaylistNames (PL_LIST_NORMAL, NULL);
   val = slistGetCount (pllist);
-  ck_assert_int_eq (val, 18);
+  ck_assert_int_eq (val, 17);
   sval = slistGetStr (pllist, _("QueueDance"));
   ck_assert_ptr_null (sval);
   slistFree (pllist);
@@ -981,17 +844,12 @@ START_TEST(playlist_get_pl_list)
   /* includes the podcast songlist */
   pllist = playlistGetPlaylistNames (PL_LIST_SONGLIST, NULL);
   val = slistGetCount (pllist);
-  ck_assert_int_eq (val, 9);
-  slistFree (pllist);
-
-  pllist = playlistGetPlaylistNames (PL_LIST_PODCAST, NULL);
-  val = slistGetCount (pllist);
-  ck_assert_int_eq (val, 1);
+  ck_assert_int_eq (val, 8);
   slistFree (pllist);
 
   pllist = playlistGetPlaylistNames (PL_LIST_DIR, "data");
   val = slistGetCount (pllist);
-  ck_assert_int_eq (val, 19);
+  ck_assert_int_eq (val, 18);
   sval = slistGetStr (pllist, _("QueueDance"));
   ck_assert_ptr_nonnull (sval);
   slistFree (pllist);

@@ -111,6 +111,7 @@ enum {
   MANAGE_MENU_CB_MM_SET_MARK,
   MANAGE_MENU_CB_MM_REMOVE_SONG,
   MANAGE_MENU_CB_MM_UNDO_REMOVE,
+  MANAGE_MENU_CB_MM_UNDO_ALL_REMOVE,
   MANAGE_MENU_CB_MM_IMPORT,
   /* song editor */
   MANAGE_MENU_CB_SE_BPM,
@@ -198,6 +199,7 @@ enum {
   MANAGE_W_MENUBAR,
   MANAGE_W_MENUITEM_RESTORE_ORIG,
   MANAGE_W_MENUITEM_UNDO_REMOVE,
+  MANAGE_W_MENUITEM_UNDO_ALL_REMOVE,
   MANAGE_W_MENU_MM,
   MANAGE_W_MENU_SL,
   MANAGE_W_MENU_SONGEDIT,
@@ -477,6 +479,7 @@ static void     manageSameSongChangeMark (manageui_t *manage, int flag);
 /* remove song */
 static bool     manageMarkSongRemoved (void *udata);
 static bool     manageUndoRemove (void *udata);
+static bool     manageUndoRemoveAll (void *udata);
 static void     manageRemoveSongs (manageui_t *manage);
 
 static int gKillReceived = false;
@@ -1856,6 +1859,8 @@ manageNewSelectionSongSel (void *udata, int32_t dbidx)
   }
 
   if (manage->maincurrtab == MANAGE_TAB_MAIN_MM) {
+    int       state = UIWIDGET_DISABLE;
+
     if (uisfPlaylistInUse (manage->uisongfilter)) {
       logMsg (LOG_DBG, LOG_INFO, "new-selection: mm/pl-in-use set sl-dbidx");
       manage->songlistdbidx = dbidx;
@@ -1863,6 +1868,11 @@ manageNewSelectionSongSel (void *udata, int32_t dbidx)
       logMsg (LOG_DBG, LOG_INFO, "new-selection: mm set sel-dbidx");
       manage->seldbidx = dbidx;
     }
+
+    if (nlistGetStr (manage->removelist, dbidx) != NULL) {
+      state = UIWIDGET_ENABLE;
+    }
+    uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_UNDO_REMOVE], state);
   } else {
     logMsg (LOG_DBG, LOG_INFO, "new-selection: other set sel-dbidx");
     manage->seldbidx = dbidx;
@@ -2549,6 +2559,14 @@ manageMusicManagerMenu (manageui_t *manage)
       manage->callbacks [MANAGE_MENU_CB_MM_UNDO_REMOVE]);
   uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
   manage->wcont [MANAGE_W_MENUITEM_UNDO_REMOVE] = menuitem;
+
+  manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_UNDO_ALL_REMOVE,
+      manageUndoRemoveAll);
+  /* CONTEXT: manage-ui: menu selection: music manager: undo all song removals */
+  menuitem = uiMenuCreateItem (menu, _("Undo All Song Removals"),
+      manage->callbacks [MANAGE_MENU_CB_MM_UNDO_ALL_REMOVE]);
+  uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
+  manage->wcont [MANAGE_W_MENUITEM_UNDO_ALL_REMOVE] = menuitem;
 
   uiMenuSetInitialized (manage->wcont [MANAGE_W_MENU_MM]);
   uiwcontFree (menu);
@@ -4227,7 +4245,6 @@ manageMarkSongRemoved (void *udata)
 
   nlistStartIterator (sellist, &iteridx);
   while ((dbidx = nlistIterateKey (sellist, &iteridx)) >= 0) {
-    char    tmp [40];
     song_t  *song;
 
     song = dbGetByIdx (manage->musicdb, dbidx);
@@ -4236,16 +4253,12 @@ manageMarkSongRemoved (void *udata)
     }
     nlistSetStr (manage->removelist, dbidx, songGetStr (song, TAG_URI));
     dbMarkEntryRemoved (manage->musicdb, dbidx);
-    snprintf (tmp, sizeof (tmp), "%" PRId32, dbidx);
-    connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_REMOVE, tmp);
-    manage->songeditdbidx = -1;
   }
 
-  /* need to re-filter the songs */
-  uisongselApplySongFilter (manage->mmsongsel);
   manageRePopulateData (manage);
 
   uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_UNDO_REMOVE], UIWIDGET_ENABLE);
+  uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_UNDO_ALL_REMOVE], UIWIDGET_ENABLE);
 
   nlistFree (sellist);
   logProcEnd ("");
@@ -4256,24 +4269,76 @@ static bool
 manageUndoRemove (void *udata)
 {
   manageui_t  *manage = udata;
+  nlist_t     *sellist;
+  nlist_t     *trmlist;
+  nlistidx_t  iteridx;
+  dbidx_t     dbidx;
+  dbidx_t     tdbidx;
+
+  sellist = uisongselGetSelectedList (manage->mmsongsel);
+
+  nlistStartIterator (sellist, &iteridx);
+  while ((dbidx = nlistIterateKey (sellist, &iteridx)) >= 0) {
+    song_t  *song;
+
+    song = dbGetByIdx (manage->musicdb, dbidx);
+    if (song == NULL) {
+      continue;
+    }
+    dbClearEntryRemoved (manage->musicdb, dbidx);
+  }
+
+  trmlist = nlistAlloc ("remove-list", LIST_ORDERED, NULL);
+
+  nlistStartIterator (sellist, &iteridx);
+  while ((tdbidx = nlistIterateKey (sellist, &iteridx)) >= 0) {
+    if (nlistGetStr (manage->removelist, dbidx) != NULL) {
+      /* set entry in removelist to null */
+      nlistSetStr (manage->removelist, dbidx, NULL);
+    }
+  }
+
+  /* rebuild the removelist, skipping those entries that were set to null */
+  nlistStartIterator (manage->removelist, &iteridx);
+  while ((dbidx = nlistIterateKey (manage->removelist, &iteridx)) >= 0) {
+    if (nlistGetStr (manage->removelist, dbidx) == NULL) {
+      continue;
+    }
+    nlistSetStr (trmlist, dbidx, nlistGetStr (manage->removelist, dbidx));
+  }
+
+  nlistFree (manage->removelist);
+  manage->removelist = trmlist;
+
+  manageRePopulateData (manage);
+
+  uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_UNDO_REMOVE], UIWIDGET_ENABLE);
+  if (nlistGetCount (manage->removelist) == 0) {
+    uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_UNDO_ALL_REMOVE], UIWIDGET_ENABLE);
+  }
+
+  nlistFree (sellist);
+  logProcEnd ("");
+  return UICB_CONT;
+}
+
+static bool
+manageUndoRemoveAll (void *udata)
+{
+  manageui_t  *manage = udata;
   nlistidx_t  iteridx;
   dbidx_t     dbidx;
 
   nlistStartIterator (manage->removelist, &iteridx);
   while ((dbidx = nlistIterateKey (manage->removelist, &iteridx)) >= 0) {
-    char    tmp [40];
-
     dbClearEntryRemoved (manage->musicdb, dbidx);
-    snprintf (tmp, sizeof (tmp), "%" PRId32, dbidx);
-    connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UNREMOVE, tmp);
   }
 
   nlistFree (manage->removelist);
   manage->removelist = nlistAlloc ("remove-list", LIST_ORDERED, NULL);
   uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_UNDO_REMOVE], UIWIDGET_DISABLE);
+  uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_UNDO_ALL_REMOVE], UIWIDGET_DISABLE);
 
-  /* need to re-filter the songs */
-  uisongselApplySongFilter (manage->mmsongsel);
   manageRePopulateData (manage);
 
   return UICB_CONT;

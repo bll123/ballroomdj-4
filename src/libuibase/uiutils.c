@@ -190,10 +190,11 @@ uiutilsNewFontSize (char *buff, size_t sz, const char *font, const char *style, 
 void
 uiutilsAddFavoriteClasses (void)
 {
-  int         count;
-  const char  *name;
-  const char  *color;
-  songfav_t   *songfav;
+  int             count;
+  const char      *name;
+  const char      *color;
+  songfav_t       *songfav;
+  datafileconv_t  conv;
 
   if (favclassinit) {
     return;
@@ -204,10 +205,28 @@ uiutilsAddFavoriteClasses (void)
   for (int idx = 0; idx < count; ++idx) {
     name = songFavoriteGetStr (songfav, idx, SONGFAV_NAME);
     color = songFavoriteGetStr (songfav, idx, SONGFAV_COLOR);
-    if (name == NULL || ! *name) {
+    if (name == NULL || ! *name || color == NULL || ! *color) {
       continue;
     }
     uiSpinboxAddClass (name, color);
+    uiLabelAddClass (name, color);
+  }
+
+  conv.invt = VALUE_STR;
+  conv.str = "imported";
+  songFavoriteConv (&conv);
+  name = songFavoriteGetStr (songfav, conv.num, SONGFAV_NAME);
+  color = songFavoriteGetStr (songfav, conv.num, SONGFAV_COLOR);
+  if (name != NULL && *name && color != NULL && *color) {
+    uiLabelAddClass (name, color);
+  }
+
+  conv.invt = VALUE_STR;
+  conv.str = "removed";
+  songFavoriteConv (&conv);
+  name = songFavoriteGetStr (songfav, conv.num, SONGFAV_NAME);
+  color = songFavoriteGetStr (songfav, conv.num, SONGFAV_COLOR);
+  if (name != NULL && *name && color != NULL && *color) {
     uiLabelAddClass (name, color);
   }
 
