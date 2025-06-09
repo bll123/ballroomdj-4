@@ -202,6 +202,12 @@ if [[ $DEVELOPMENT != dev ]]; then
     grc=1
   fi
 
+  grep '^#define SMTC_ENABLED 0' src/libcont/smtc.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -eq 0 ]]; then
+    echo "== WIN: SMTC: current disabled"
+  fi
+
   #grep '^#define MACOS_UI_DEBUG 0' src/include/uigeneral.h > /dev/null 2>&1
   #rc=$?
   #if [[ $rc -ne 0 ]]; then

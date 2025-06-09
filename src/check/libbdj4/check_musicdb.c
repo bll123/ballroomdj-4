@@ -650,12 +650,7 @@ START_TEST(musicdb_markremove)
 {
   musicdb_t *db;
   song_t    *song;
-  song_t    *dbsong;
   dbidx_t   dbidx;
-  dbidx_t   tdbidx;
-  dbidx_t   ldbidx;
-  dbidx_t   curridx;
-  dbidx_t   iteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_markremove");
   mdebugSubTag ("musicdb_markremove");
@@ -671,33 +666,7 @@ START_TEST(musicdb_markremove)
   ck_assert_int_eq (MUSICDB_STD, songGetNum (song, TAG_DB_FLAGS));
   dbMarkEntryRemoved (db, dbidx);
 
-  dbsong = dbGetByIdx (db, dbidx);
-  ck_assert_ptr_null (dbsong);
-
-  dbsong = dbGetByName (db, "argentinetango05.mp3");
-  ck_assert_ptr_null (dbsong);
-
-  ldbidx = -1;
-  dbStartIterator (db, &iteridx);
-  while ((song = dbIterate (db, &curridx, &iteridx)) != NULL) {
-    tdbidx = songGetNum (song, TAG_DBIDX);
-    ck_assert_int_ne (tdbidx, dbidx);
-    ldbidx = tdbidx;
-  }
-
-  /* remove the last entry in the database */
-  dbMarkEntryRemoved (db, ldbidx);
-
-  /* make sure the iterator works when the last entry was removed */
-  dbStartIterator (db, &iteridx);
-  while ((song = dbIterate (db, &curridx, &iteridx)) != NULL) {
-    tdbidx = songGetNum (song, TAG_DBIDX);
-    ck_assert_int_ne (tdbidx, dbidx);
-    ck_assert_int_ne (tdbidx, ldbidx);
-  }
-
   dbClose (db);
-
 }
 END_TEST
 

@@ -19,11 +19,16 @@
 #include <inttypes.h>
 #include <string.h>
 
-#include <winrt/Windows.Foundation.h>
-#include <winrt/Windows.Media.h>
-#include <winrt/Windows.Media.Playback.h>
-#include <winrt/Windows.Storage.h>
-#include <winrt/Windows.Storage.Streams.h>
+/* 4.15.0 the gcc compiler in msys2 is currently broken for cppwinrt */
+#define SMTC_ENABLED    0
+
+#if SMTC_ENABLED
+# include <winrt/Windows.Foundation.h>
+# include <winrt/Windows.Media.h>
+# include <winrt/Windows.Media.Playback.h>
+# include <winrt/Windows.Storage.h>
+# include <winrt/Windows.Storage.Streams.h>
+#endif
 
 #include "bdj4.h"
 #include "bdj4ui.h"     // for speed constants
@@ -38,8 +43,10 @@
 
 #define DEFAULT_THUMBNAIL_URI L"https://ballroomdj4.sourceforge.io/img/bdj4_icon.png"
 
+#if SMTC_ENABLED
 using namespace winrt::Windows::Media;
 using namespace winrt::Windows;
+#endif
 
 typedef struct mpintfc mpintfc_t;
 
@@ -49,7 +56,9 @@ typedef struct contdata {
   callback_t          *cburi;
   nlist_t             *metadata;
   int                 playstate;      // BDJ4 play state
+#if SMTC_ENABLED
   MediaPlaybackStatus playstatus;     // Windows playback status
+#endif
   int32_t             pos;
   int                 rate;
   int                 volume;
@@ -74,6 +83,7 @@ contiDesc (const char **ret, int max)
   ret [c++] = NULL;
 }
 
+#if SMTC_ENABLED
 struct mpintfc
 {
   mpintfc (const mpintfc&) = delete;
@@ -223,6 +233,7 @@ struct mpintfc
   Storage::Streams::RandomAccessStreamReference defaultArt;
   contdata_t *contdata;
 };
+#endif
 
 contdata_t *
 contiInit (const char *instname)
@@ -234,12 +245,16 @@ contiInit (const char *instname)
   contdata->cb = NULL;
   contdata->metadata = NULL;
   contdata->playstate = PL_STATE_STOPPED;
+#if SMTC_ENABLED
   contdata->playstatus = MediaPlaybackStatus::Closed;
+#endif
   contdata->pos = 0;
   contdata->rate = 100;
   contdata->volume = 0;
 
+#if SMTC_ENABLED
   contdata->sys = new mpintfc (contdata);
+#endif
 
   return contdata;
 }
@@ -251,9 +266,11 @@ contiFree (contdata_t *contdata)
     return;
   }
 
+#if SMTC_ENABLED
   contdata->sys->smtcSendPlaybackStatus (MediaPlaybackStatus::Closed);
   contdata->sys->smtcMediaPlayerStop ();
   delete contdata->sys;
+#endif
 
   nlistFree (contdata->metadata);
   dataFree (contdata->instname);
@@ -263,7 +280,9 @@ contiFree (contdata_t *contdata)
 void
 contiSetup (contdata_t *contdata)
 {
+#if SMTC_ENABLED
   contdata->sys->smtcMediaPlayerInit ();
+#endif
   return;
 }
 
@@ -290,6 +309,7 @@ contiSetCallbacks (contdata_t *contdata, callback_t *cb, callback_t *cburi)
 void
 contiSetPlayState (contdata_t *contdata, int state)
 {
+#if SMTC_ENABLED
   MediaPlaybackStatus nstate = contdata->playstatus;
   bool                canplay = false;
   bool                canpause = false;
@@ -348,6 +368,7 @@ contiSetPlayState (contdata_t *contdata, int state)
     contdata->sys->smtcSendPlaybackStatus (nstate);
     contdata->playstatus = nstate;
   }
+#endif
 }
 
 void
@@ -467,8 +488,10 @@ contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
     nlistSetStr (contdata->metadata, CONT_METADATA_ART_URI, cmetadata->arturi);
   }
 
+#if SMTC_ENABLED
   contdata->sys->smtcSendMetadata ();
   contdata->sys->smtcSetNextEnabled ();
+#endif
 }
 
 void

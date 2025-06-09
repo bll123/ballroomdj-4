@@ -4,7 +4,7 @@
 
 <!--
 
-**4.15.0 2025-5---**
+**4.15.0 2025-6---**
 
 * Bug Fixes:
     * User Interface: Prevent paste into read-only spinboxes.
@@ -14,6 +14,7 @@
       title-sort tag.
     * Internal: Code cleanup (xml parse).
 * Changes:
+    * Controller: Windows SMTC controller temporarily turned off (compiler bug).
     * Manage: Import Playlist: Drag and drop implemented.
     * Manage: Remove Song: Changed how a remove song is displayed.
     * Manage: Remove Song: Change menu items: Undo Remove Song, Undo All Song Removals

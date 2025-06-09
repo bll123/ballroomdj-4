@@ -71,16 +71,6 @@ cmake:
 	  $(MAKE) build; \
 	fi
 
-# sometimes the compiler in msys2 breaks
-# use an earlier compiler from
-#   https://github.com/brechtsanders/winlibs_mingw/releases
-# this doesn't work right due to link errors
-.PHONY: cmake-winlibs
-cmake-winlibs:
-	$(MAKE) CC=/winlibs/mingw64/bin/gcc.exe \
-	  CXX=/winlibs/mingw64/bin/g++.exe cmake-windows; \
-	$(MAKE) build
-
 .PHONY: cmakesinglecpu
 cmakesinglecpu:
 	@if test $$(uname -s) = Linux; then \
