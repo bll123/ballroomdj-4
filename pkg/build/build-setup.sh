@@ -67,7 +67,7 @@ case $systype in
     LDFLAGS=-m64
     PKG_CFLAGS=-m64
     export CFLAGS PKG_CFLAGS LDFLAGS
-    export LIBS="-static-libgcc -static-libstdc++"
+    export LIBS="-static-libgcc"
     ;;
   MINGW32*)
     echo "Platform not supported"

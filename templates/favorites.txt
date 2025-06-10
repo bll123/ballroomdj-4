@@ -14,8 +14,8 @@
 #   five-point star ★
 #   heart ♥           (itunes)
 #   broken-heart 💔   (itunes)
-#   imported ⭹        (special case)
-#   removed ✖         (special case)
+#   imported ⭹        (internal use)
+#   removed ✖         (internal use)
 # Other possibilities if people want more variety:
 #   arrowhead ⮞
 #   checkmark ✔

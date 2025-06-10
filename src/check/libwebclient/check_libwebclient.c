@@ -21,6 +21,7 @@
 #include "check_bdj.h"
 #include "mdebug.h"
 #include "log.h"
+#include "sysvars.h"
 
 void
 check_libwebclient (SRunner *sr)

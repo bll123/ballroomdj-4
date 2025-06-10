@@ -95,7 +95,6 @@ impplInit (slist_t *songidxlist, int imptype,
     imppl->asiter = audiosrcStartIterator (imppl->imptype,
         AS_ITER_PL, imppl->uri, imppl->oplname, imppl->askey);
     imppl->tot = audiosrcIterCount (imppl->asiter);
-fprintf (stderr, "tot: %d\n", imppl->tot);
     dbStartBatch (imppl->musicdb);
     imppl->dbbatched = true;
   }
@@ -135,7 +134,6 @@ impplProcess (imppl_t *imppl)
     ilistidx_t    sliteridx;
     ilistidx_t    slkey;
 
-fprintf (stderr, "is podcast\n");
     podcast = podcastLoad (imppl->plname);
     if (podcast != NULL) {
       imppl->retain = podcastGetNum (podcast, PODCAST_RETAIN);
@@ -143,7 +141,6 @@ fprintf (stderr, "is podcast\n");
     podcastFree (podcast);
 
     sl = songlistLoad (imppl->plname);
-fprintf (stderr, "sl-load: %s\n", imppl->plname);
     slistSetSize (imppl->tsongidxlist, songlistGetCount (sl));
     songlistStartIterator (sl, &sliteridx);
     while ((slkey = songlistIterate (sl, &sliteridx)) >= 0) {
@@ -160,7 +157,6 @@ fprintf (stderr, "sl-load: %s\n", imppl->plname);
     }
     songlistFree (sl);
     imppl->tot += slistGetCount (imppl->tsongidxlist);
-fprintf (stderr, "tot-b: %d\n", imppl->tot);
     slistSetSize (imppl->songidxlist, imppl->tot);
     imppl->state = IMPPL_PROCESS;
     return false;
@@ -181,7 +177,6 @@ fprintf (stderr, "tot-b: %d\n", imppl->tot);
 
     slistStartIterator (imppl->tsongidxlist, &imppl->tsiter);
 
-fprintf (stderr, "created sort-list\n");
     imppl->state = IMPPL_PROCESS_EXISTING;
     return false;
   }
@@ -211,7 +206,6 @@ fprintf (stderr, "created sort-list\n");
       /* song already exists in the newly built songidxlist */
       /* any song in the new songidxlist has already been checked for */
       /* the retain date */
-fprintf (stderr, "proc-old: already\n");
       return false;
     }
 
@@ -221,19 +215,16 @@ fprintf (stderr, "proc-old: already\n");
     if (pcrc == PODCAST_DELETE) {
       /* remove any songs past the retain date */
       dbRemoveSong (imppl->musicdb, dbidx);
-fprintf (stderr, "proc-old: remove: %d\n", dbidx);
       imppl->dbchanged = true;
       return false;
     }
 
-fprintf (stderr, "proc-old: add: %d\n", dbidx);
     slistSetNum (imppl->songidxlist, songuri, -1);
     return false;
   }
 
   if (imppl->state != IMPPL_PROCESS) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: imppl: invalid state");
-fprintf (stderr, "proc invalid state\n");
     return true;
   }
 
@@ -404,27 +395,21 @@ impplCreateSong (imppl_t *imppl, const char *songuri, slist_t *tagdata)
     songSetNum (song, TAG_DB_FLAGS, MUSICDB_STD);
     songSetNum (song, TAG_RRN, MUSICDB_ENTRY_NEW);
     songSetNum (song, TAG_PREFIX_LEN, 0);
-fprintf (stderr, "proc: new\n");
     exists = false;
-  } else {
-fprintf (stderr, "proc: existing\n");
   }
 
   pcrc = podcastutilCheckRetain (song, imppl->retain);
-fprintf (stderr, "proc: chk: %d\n", pcrc);
   if (pcrc == PODCAST_DELETE) {
     if (! exists) {
       /* song is new, but is not retained */
       /* database change flag is false */
       songFree (song);
-fprintf (stderr, "proc: new, but not retained\n");
     }
     if (exists) {
       /* only if the song is not new */
       dbidx = songGetNum (song, TAG_DBIDX);
       dbRemoveSong (imppl->musicdb, dbidx);
       /* database is changed */
-fprintf (stderr, "proc: existing, removed %d\n", dbidx);
       dbchg = true;
     }
     return dbchg;

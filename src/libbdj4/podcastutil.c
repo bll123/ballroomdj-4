@@ -41,7 +41,6 @@ podcastutilCheckRetain (song_t *song, int retain)
   diff = currtm - podtm;
   retdays = (time_t) retain * 24 * 3600;
   rc = PODCAST_KEEP;
-fprintf (stderr, "  %ld > %ld\n", diff, retdays);
   if (diff > retdays) {
     rc = PODCAST_DELETE;
   }

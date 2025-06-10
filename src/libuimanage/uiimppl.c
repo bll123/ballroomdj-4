@@ -569,20 +569,32 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
 static bool
 uiimpplTargetDialog (void *udata)
 {
-  uiimppl_t  *uiimppl = udata;
+  uiimppl_t   *uiimppl = udata;
   uiselect_t  *selectdata;
   const char  *ofn = NULL;
   char        *fn = NULL;
+  char        tbuff [MAXPATHLEN];
+  pathinfo_t  *pi;
 
   if (uiimppl == NULL) {
     return UICB_STOP;
   }
 
   ofn = uiEntryGetValue (uiimppl->wcont [UIIMPPL_W_URI]);
+  if (*ofn) {
+    pi = pathInfo (ofn);
+    snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->dlen, pi->dirname);
+    pathInfoFree (pi);
+  } else {
+    stpecpy (tbuff, tbuff + sizeof (tbuff), sysvarsGetStr (SV_BDJ4_DIR_DATATOP));
+  }
+
   selectdata = uiSelectInit (uiimppl->parentwin,
       /* CONTEXT: import playlist: title of dialog */
-      _("Import Playlist"), sysvarsGetStr (SV_BDJ4_DIR_DATATOP), NULL,
-      /* CONTEXT: import playlist: name of fn import type */
+      _("Import Playlist"),
+      tbuff,
+      NULL,
+      /* CONTEXT: import playlist: name of import type */
       _("Playlists"), "audio/x-mpegurl|application/xspf+xml|*.jspf");
 
   fn = uiSelectFileDialog (selectdata);
@@ -742,7 +754,8 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
       uiimppl->in_cb = false;
       return UIENTRY_ERROR;
     }
-    if (uiimppl->plselectbuilt == false) {
+    if (uiimppl->plselectbuilt == false &&
+        uiimppl->imptype != AUDIOSRC_TYPE_FILE) {
       uiimpplBuildPlaylistSelect (uiimppl, uiimppl->askey);
     }
   }

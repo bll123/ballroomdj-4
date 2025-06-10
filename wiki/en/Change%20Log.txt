@@ -12,7 +12,6 @@
     * Database Update: Some companies are putting the genre into the
       title-sort tag.  Some known genres will be cleared from the
       title-sort tag.
-    * Internal: Code cleanup (xml parse).
 * Changes:
     * Controller: Windows SMTC controller temporarily turned off (compiler bug).
     * Manage: Import Playlist: Drag and drop implemented.
@@ -25,6 +24,9 @@
     * Manage: Import Playlist: Add podcast.
     * Manage: Playlist Management: Add podcast.
     * Song Editor: No maximum play time setting.
+* Internal:
+    * Code cleanup (xml parse).
+    * Update third-party software packages.
 
 -->
 

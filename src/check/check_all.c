@@ -61,6 +61,10 @@ main (int argc, char *argv [])
   logStart ("check_all", "chk", LOG_ALL & ~LOG_PROC);
 
   sr = srunner_create (NULL);
+  if (isMacOS ()) {
+    /* the webclient test fails on macos otherwise (as of 16.4 compiler) */
+    srunner_set_fork_status (sr, CK_NOFORK);
+  }
   check_libcommon (sr);
   check_libbasic (sr);
   check_libwebclient (sr);

@@ -40,7 +40,6 @@ if (WIN32)
   addWinVersionInfo (bdj4winmksc)
   addWinManifest (bdj4winmksc)
   target_compile_options (bdj4winmksc PRIVATE -municode)
-  target_link_options (libvolwin PRIVATE -static-libstdc++)
 endif()
 
 add_executable (dmkmfromdb dmkmfromdb.c)
