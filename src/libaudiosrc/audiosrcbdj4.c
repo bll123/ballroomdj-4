@@ -16,7 +16,6 @@
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjmsg.h"
-// #include "bdjopt.h"
 #include "bdjstring.h"
 #include "fileop.h"
 #include "filemanip.h"
@@ -182,6 +181,7 @@ asiInit (const char *delpfx, const char *origext)
         ilistSetStr (asdata->client, count, AS_CLIENT_URI, temp);
         ilistSetNum (asdata->client, count, AS_CLIENT_URI_LEN, strlen (temp));
         ilistSetNum (asdata->client, count, AS_CLIENT_ASKEY, askey);
+        ++count;
       }
     }
   }

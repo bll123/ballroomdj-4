@@ -54,12 +54,12 @@ START_TEST(mssleep_sec)
   mssleep (2000);
   tm_e = mstime ();
   val = 30;
-  if (sysvarsGetNum (SVL_IS_VM)) {
-    val += 55;
-  }
   /* no idea why windows is slow for this particular test */
   if (isWindows ()) {
-    val += 600;
+    val += 60;
+  }
+  if (sysvarsGetNum (SVL_IS_VM)) {
+    val += 1000;
   }
   ck_assert_int_lt (abs ((int) (tm_e - tm_s - 2000)), val);
 }
@@ -82,7 +82,7 @@ START_TEST(mssleep_ms)
   /* windows is quite bad on a VM */
   /* the opensuse VM is quite bad */
   if (sysvarsGetNum (SVL_IS_VM)) {
-    val = 200;
+    val += 200;
   }
   ck_assert_int_lt (abs ((int) (tm_e - tm_s - 200)), val);
 }
@@ -98,15 +98,15 @@ START_TEST(mssleep_ms_b)
   mdebugSubTag ("mssleep_ms");
 
   tm_s = mstime ();
-  for (int i = 0; i < 40; ++i) {
-    mssleep (5);
+  for (int i = 0; i < 10; ++i) {
+    mssleep (40);
   }
   tm_e = mstime ();
   /* this works fine on linux */
   val = 20;
-  /* macos is off a bit */
+  /* macos is off quite a bit */
   if (isMacOS ()) {
-    val = 60;
+    val = 85;
   }
   /* windows is currently unknown, this should be fixed someday */
   if (isWindows ()) {
@@ -114,11 +114,11 @@ START_TEST(mssleep_ms_b)
   }
 
   /* When running on a VM, this timer loop is way off */
-  /* 700ms on a Linux VM, 800ms on a Windows VM */
+  /* 500ms on a Linux VM, 650ms on a Windows VM */
   if (sysvarsGetNum (SVL_IS_VM)) {
-    val = 900;
+    val += 700;
   }
-  ck_assert_int_lt (abs ((int) (tm_e - tm_s - 200)), val);
+  ck_assert_int_lt (abs ((int) (tm_e - tm_s - 400)), val);
 }
 END_TEST
 
@@ -447,7 +447,7 @@ START_TEST(tmutil_strtoutc)
   }
   ck_assert_int_eq (val, a);
 
-  str = "Wed, 23 Apr 2025 17:00:00 +0000";
+  str = "Wed, 23 Apr 2025 17:00:00 -0700";
   val = tmutilStringToUTC (str, "%a, %d %h %Y %T %z");
   a = 1745427600;
   if (val - a == 3600) {

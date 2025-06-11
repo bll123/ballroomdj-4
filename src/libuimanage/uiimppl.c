@@ -723,6 +723,7 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
   char        tbuff [MAXPATHLEN];
   pathinfo_t  *pi;
   bool        haderrors = false;
+  bool        urichg = false;
 
   if (uiimppl == NULL) {
     return UIENTRY_OK;
@@ -745,6 +746,10 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
   stpecpy (tbuff, tbuff + sizeof (tbuff), str);
 
   if (strcmp (uiimppl->olduri, str) != 0) {
+    urichg = true;
+  }
+
+  if (urichg) {
     uiimppl->plselectbuilt = false;
 
     /* re-sets the type to match the URI, sets the URI */
@@ -754,8 +759,7 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
       uiimppl->in_cb = false;
       return UIENTRY_ERROR;
     }
-    if (uiimppl->plselectbuilt == false &&
-        uiimppl->imptype != AUDIOSRC_TYPE_FILE) {
+    if (uiimppl->imptype != AUDIOSRC_TYPE_FILE) {
       uiimpplBuildPlaylistSelect (uiimppl, uiimppl->askey);
     }
   }
@@ -836,8 +840,10 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
 
   pathInfoFree (pi);
 
-  stpecpy (uiimppl->olduri, uiimppl->olduri + sizeof (uiimppl->olduri), str);
-  uiimpplImportTypeChg (uiimppl);
+  if (urichg) {
+    stpecpy (uiimppl->olduri, uiimppl->olduri + sizeof (uiimppl->olduri), str);
+    uiimpplImportTypeChg (uiimppl);
+  }
 
   if (haderrors && uiimppl->haveerrors == UIIMPPL_ERR_NONE) {
     uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG], "");
@@ -852,7 +858,6 @@ uiimpplSelectHandler (void *udata, int idx)
 {
   uiimppl_t   *uiimppl = udata;
   const char  *str;
-  char        tbuff [MAXPATHLEN];
 
   if (uiimppl == NULL) {
     return UICB_STOP;
@@ -871,16 +876,20 @@ uiimpplSelectHandler (void *udata, int idx)
 
   str = ilistGetStr (uiimppl->plnames, idx, DD_LIST_DISP);
   if (uiimppl->imptype == AUDIOSRC_TYPE_BDJ4) {
+    char    tbuff [MAXPATHLEN];
+
     snprintf (tbuff, sizeof (tbuff), "%s%s:%" PRIu16 "/%s",
         AS_BDJ4_PFX,
         asconfGetStr (uiimppl->asconf, uiimppl->askey, ASCONF_URI),
         (uint16_t) asconfGetNum (uiimppl->asconf, uiimppl->askey, ASCONF_PORT),
         str);
+    stpecpy (uiimppl->olduri, uiimppl->olduri + sizeof (uiimppl->olduri), tbuff);
     uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_URI], tbuff);
   }
   if (uiimppl->imptype == AUDIOSRC_TYPE_PODCAST) {
     ;
   }
+
   stpecpy (uiimppl->origplname,
       uiimppl->origplname + sizeof (uiimppl->origplname), str);
 
