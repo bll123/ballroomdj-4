@@ -85,7 +85,7 @@ wwwpath=/home/project-web/${project}/htdocs
 ssh="ssh -p $port"
 export ssh
 
-fn=README.txt
+fn=README.md
 sed -e "s~#VERSION#~${cvers}~" -e "s~#BUILDDATE#~${BUILDDATE}~" $fn > ${fn}.n
 rsync -v -e ssh ${fn}.n \
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}

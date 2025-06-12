@@ -1115,7 +1115,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_SOCKET_CLOSE: {
-              connDisconnect (plui->conn, routefrom);
+          connDisconnect (plui->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {

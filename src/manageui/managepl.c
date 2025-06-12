@@ -667,6 +667,7 @@ managePlaylistSave (managepl_t *managepl)
     managePlaylistUpdatePlaylist (managepl);
 
     if (! playlistCheck (managepl->playlist)) {
+      mdfree (name);
       return;
     }
 
@@ -679,6 +680,7 @@ managePlaylistSave (managepl_t *managepl)
       callbackHandlerS (managepl->plloadcb, name);
     }
   }
+
   mdfree (name);
 
   if (notvalid) {

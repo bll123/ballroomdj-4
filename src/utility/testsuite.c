@@ -1582,7 +1582,7 @@ tsNextFile (testsuite_t *testsuite)
 
   while (1) {
     fn = slistIterateKey (testsuite->testlist, &testsuite->tliteridx);
-    if (fn != NULL && strcmp (fn, "README.txt") == 0) {
+    if (fn != NULL && strcmp (fn, "README.md") == 0) {
       continue;
     }
     break;

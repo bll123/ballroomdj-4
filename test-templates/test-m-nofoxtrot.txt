@@ -543,6 +543,8 @@ ARTIST
 ..%03d-artist
 ALBUM
 ..%03d-album
+NOPLAYTMLIMIT
+..on
 TRACKNUMBER
 ..%d
 DANCE
@@ -633,6 +635,8 @@ ARTIST
 ..%03d-artist
 ALBUM
 ..%03d-album
+SONGSTART
+..1000
 TRACKNUMBER
 ..%d
 DANCE
@@ -668,6 +672,8 @@ ARTIST
 ..%03d-artist
 ALBUM
 ..%03d-album
+SONGEND
+..10000
 TRACKNUMBER
 ..%d
 DANCE
@@ -701,6 +707,10 @@ ARTIST
 ..%03d-artist
 ALBUM
 ..%03d-album
+SONGSTART
+..1000
+SONGEND
+..10000
 TRACKNUMBER
 ..%d
 DANCE

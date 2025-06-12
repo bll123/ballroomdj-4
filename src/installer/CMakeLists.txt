@@ -36,7 +36,7 @@ endif()
 target_link_libraries (bdj4installer PRIVATE
   libbdj4uib ${BDJ4_UI_LIB}
   libwebclient libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${GTK_LDFLAGS}
 )
 addIntlLibrary (bdj4installer)
@@ -51,7 +51,7 @@ endif()
 target_link_libraries (bdj4altinst PRIVATE
   libbdj4uib ${BDJ4_UI_LIB}
   libwebclient libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${GTK_LDFLAGS}
 )
 addIntlLibrary (bdj4altinst)
@@ -65,7 +65,7 @@ endif()
 target_link_libraries (bdj4updater PRIVATE
   libbdj4ati
   libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
 )
 addIntlLibrary (bdj4updater)
 addWinVersionInfo (bdj4updater)

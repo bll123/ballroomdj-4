@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2025-06-09\n"
+"PO-Revision-Date: 2025-06-11\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Romanian\n"
 "Language: ro\n"
@@ -1540,7 +1540,7 @@ msgid "Playlist Type"
 msgstr "Tip listă de redare"
 
 #. CONTEXT: managementui: export playlist: name of file export type
-#. CONTEXT: import playlist: name of fn import type
+#. CONTEXT: import playlist: name of import type
 msgid "Playlists"
 msgstr "Liste de redare"
 

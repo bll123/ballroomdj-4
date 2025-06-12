@@ -90,7 +90,7 @@ static datafilekey_t songdfkeys [] = {
   { "MOVEMENTNAME",         TAG_MOVEMENTNAME,         VALUE_STR, NULL, DF_NORM },
   { "MOVEMENTNUM",          TAG_MOVEMENTNUM,          VALUE_NUM, NULL, DF_NORM },
   { "MQDISPLAY",            TAG_MQDISPLAY,            VALUE_STR, NULL, DF_NORM },
-  { "NOMAXPLAYTM",          TAG_NO_PLAY_TM_LIMIT,       VALUE_NUM, convBoolean, DF_NORM },
+  { "NOPLAYTMLIMIT",        TAG_NO_PLAY_TM_LIMIT,       VALUE_NUM, convBoolean, DF_NORM },
   { "NOTES",                TAG_NOTES,                VALUE_STR, NULL, DF_NORM },
   { "PFXLEN",               TAG_PREFIX_LEN,           VALUE_NUM, NULL, DF_NORM },
   { "RECORDING_ID",         TAG_RECORDING_ID,         VALUE_STR, NULL, DF_NORM },

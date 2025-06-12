@@ -7,23 +7,23 @@
 **4.15.0 2025-6---**
 
 * Bug Fixes:
-    * User Interface: Prevent paste into read-only spinboxes.
-    * Player: Fix incorrect status display when playing and no songs.
-    * Database Update: Some companies are putting the genre into the
+    * Database: Some companies are putting the genre into the
       title-sort tag.  Some known genres will be cleared from the
       title-sort tag.
+    * Player: Fix incorrect status display when playing and no songs.
+    * User Interface: Prevent paste into read-only spinboxes.
 * Changes:
-    * Controller: Windows SMTC controller temporarily turned off (compiler bug).
     * Manage: Import Playlist: Drag and drop implemented.
     * Manage: Remove Song: Changed how a remove song is displayed.
     * Manage: Remove Song: Change menu items: Undo Remove Song, Undo All Song Removals
     * Player: External Request: Drag and drop implemented.
+    * Windows: SMTC controller temporarily turned off (compiler bug).
 * New Features:
     * Configure: Audio Sources: Add podcast.
     * Configure: Player: Add optional player arguments.
     * Manage: Import Playlist: Add podcast.
     * Manage: Playlist Management: Add podcast.
-    * Song Editor: No maximum play time setting.
+    * Song Editor: No play time limit setting.
 * Internal:
     * Code cleanup (xml parse).
     * Update third-party software packages.

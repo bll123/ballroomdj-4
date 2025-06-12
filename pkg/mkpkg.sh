@@ -15,7 +15,7 @@ function updatereadme {
   stage=$1
 
   echo "   updating readme"
-  fn="${stage}/README.txt"
+  fn="${stage}/README.md"
   cvers=$(pkgcurrvers)
   if [[ -f ${fn} ]]; then
     sed -e "s~#VERSION#~${cvers}~" -e "s~#BUILDDATE#~${BUILDDATE}~" "${fn}" > "${fn}.n"
@@ -27,7 +27,7 @@ function copysrcfiles {
   tag=$1
   stage=$2
 
-  filelist="LICENSE.txt README.txt VERSION.txt BUILD.txt "
+  filelist="LICENSE.txt README.md VERSION.txt BUILD.txt "
   filelist+="packages/mongoose*/LICENSE "
   dirlist="src conv img http install licenses scripts locale pkg
       templates test-templates web wiki wiki-i"
@@ -65,7 +65,7 @@ function copyreleasefiles {
   tag=$1
   stage=$2
 
-  filelist="LICENSE.txt README.txt VERSION.txt DIST.txt "
+  filelist="LICENSE.txt README.md VERSION.txt DIST.txt "
   dirlist="bin conv http img install licenses scripts locale templates"
 
   if [[ ! -d plocal/bin ]];then

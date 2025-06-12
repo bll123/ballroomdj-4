@@ -177,7 +177,7 @@ bdjvarsAdjustPorts (void)
 
   port = sysvarsGetNum (SVL_BASEPORT) +
       bdjvarsGetNum (BDJVL_NUM_PORTS) * idx;
-  for (int i = BDJVL_PORT_MAIN; i < BDJVL_NUM_PORTS; ++i) {
+  for (int i = 0; i < BDJVL_NUM_PORTS; ++i) {
     bdjvarsl [i] = port++;
   }
 }

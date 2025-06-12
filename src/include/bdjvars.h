@@ -26,6 +26,7 @@ typedef enum {
 
 typedef enum {
   /* the ports must precede any other bdjvars keys */
+  /* and must start at 0 */
   BDJVL_PORT_BPM_COUNTER,
   BDJVL_PORT_CONFIGUI,
   BDJVL_PORT_DBUPDATE,

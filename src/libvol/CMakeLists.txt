@@ -66,7 +66,7 @@ endif()
 add_executable (voltest voltest.c)
 target_link_libraries (voltest PRIVATE
   libbdj4vol libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS}
+  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
 )
 
 install (TARGETS
