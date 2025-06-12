@@ -68,7 +68,7 @@ confuiBuildUIGeneral (confuigui_t *gui)
   uiwcont_t     *szgrp;
   const char    *tmp;
   char          tbuff [MAXPATHLEN];
-  char          ebuff [50];
+  char          ebuff [MAXPATHLEN];
 
   logProcBegin ();
   sw = uiCreateScrolledWindow (200);

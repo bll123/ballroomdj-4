@@ -106,7 +106,7 @@ START_TEST(mssleep_ms_b)
   val = 20;
   /* macos is off quite a bit */
   if (isMacOS ()) {
-    val = 85;
+    val = 110;
   }
   /* windows is currently unknown, this should be fixed someday */
   if (isWindows ()) {

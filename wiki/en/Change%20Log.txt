@@ -4,17 +4,21 @@
 
 <!--
 
-**4.15.0 2025-6---**
+**4.15.0 2025-6-12**
+
+-->
+
+**4.15.0 2025-6-12**
 
 * Bug Fixes:
-    * Database: Some companies are putting the genre into the
+    * Database: Some companies are putting a genre into the
       title-sort tag.  Some known genres will be cleared from the
       title-sort tag.
     * Player: Fix incorrect status display when playing and no songs.
     * User Interface: Prevent paste into read-only spinboxes.
 * Changes:
     * Manage: Import Playlist: Drag and drop implemented.
-    * Manage: Remove Song: Changed how a remove song is displayed.
+    * Manage: Remove Song: Improve user interface.
     * Manage: Remove Song: Change menu items: Undo Remove Song, Undo All Song Removals
     * Player: External Request: Drag and drop implemented.
     * Windows: SMTC controller temporarily turned off (compiler bug).
@@ -26,9 +30,7 @@
     * Song Editor: No play time limit setting.
 * Internal:
     * Code cleanup (xml parse).
-    * Update third-party software packages.
-
--->
+    * Update support libraries.
 
 **4.14.1 2025-4-19**
 

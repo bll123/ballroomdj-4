@@ -10,7 +10,7 @@
 int
 main (int argc, char *argv [])
 {
-  char    buff [100];
+  char    buff [4096];
 
   if (argc != 2) {
     fprintf (stderr, "usage %s <str>\n", argv [0]);

@@ -16,7 +16,7 @@ main (int argc, char *argv [])
 {
   int     c = 0;
   int     option_index = 0;
-  char    buff [2048];
+  char    buff [4096];
 
   static struct option bdj_options [] = {
     { "aesed",        no_argument,        NULL,   0 },
