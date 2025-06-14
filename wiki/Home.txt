@@ -111,8 +111,8 @@
     * [Export to BDJ4 / Import from BDJ4](en-Subjects-Export%20Import%20BDJ4)
 * __Advanced Setup__
     * [Alternate Folders](en-Subjects-Alternate%20Folders)
-    * [Audio Client](en-Subjects-Audio%20Client)
-    * [Audio Server](en-Subjects-Audio%20Server)
+    * [BDJ4 Audio Client](en-Subjects-Audio%20Client)
+    * [BDJ4 Audio Server](en-Subjects-Audio%20Server)
     * [Profiles](en-Subjects-Profiles)
     * [Keyboard Shortcuts](en-Subjects-Keyboard%20Shortcuts)
     * [Manual Configuration Items](en-Subjects-Manual%20Configuration)
@@ -137,6 +137,8 @@
     * [Create a Song List from a Playlist](en-Subjects-Create%20Song%20List)
     * [Dance Selection](en-Subjects-Dance%20Selection)
     * [Song Selection](en-Subjects-Song%20Selection)
+* __Podcasts__
+    * [Podcasts](en-Subjects-Podcasts)
 * __Song Management__
     * [Classical Music](en-Subjects-Classical)
     * [Favorites](en-Subjects-Favorites)
@@ -155,4 +157,4 @@
 
 <small>[Developer Notes](Development-Developer%20Notes)</small>
 
-<br>_(Updated 2025-04-20 10:22:22; BDJ4 version 4.14.1)_
+<br>_(Updated 2025-06-13 05:07:47; BDJ4 version 4.15.0)_

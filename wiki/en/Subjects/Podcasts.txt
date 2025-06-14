@@ -1,0 +1,76 @@
+[Wiki Home](Home)
+
+<!-- <span style="color:#4559bf;">_Podcasts can be
+imported and episodes from a podcast._</span> -->
+
+[TOC]
+
+### Podcasts
+
+Podcasts can be imported into BDJ4.  A song list with the podcast
+episodes will be created.
+
+When BDJ4 starts, any podcasts that have been imported will be updated
+with the latest episodes.
+
+##### Importing a Podcast
+
+Select __Manage&nbsp;/&nbsp;Edit&nbsp;Song&nbsp;Lists__.  In the
+_Import_ menu, select __Import&nbsp;Playlist__.
+
+In the _Import&nbsp;From_ selection, select __Podcast__.
+
+On the podcast web page, there will be a button to link to the
+podcast.  "Walled Garden" podcasts such as Apple, Spotify, Amazon, etc.
+are not supported.   Only a standard RSS podcast link is supported.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![podcast-links](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/podcast-links-A.png)
+<br><span style="color:#4559bf;">__Podcast Links__</span> </div>
+
+The button can be dragged and dropped into the _Import&nbsp;Playlist_
+dialog window.  Or right-click on the button in your web browser,
+select "Copy Link", then right-click on the URL field in the
+_Import&nbsp;Playlist_ dialog and select "Paste".
+
+The _New&nbsp;Song&nbsp;List&nbsp;Name_ will be filled in using the
+podcast name.  Change this name if desired.
+
+For this example, the podcast
+[But Why: A Podcast for Curious Kids](https://www.npr.org/podcasts/474377890/but-why-a-podcast-for-curious-kids)
+will be used.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![podcast-import](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/podcast-import-A.png)
+<br><span style="color:#4559bf;">__Manage / Edit Song Lists / Import Playlist__</span> </div>
+
+##### Checking the Connection
+
+Select the __Check&nbsp;Connection__ button to check the configured
+connection.  A status message will be displayed in the top right of
+the window indicating success or failure.
+
+##### Finishing the Import of the Podcast
+
+Now select the __Import__ button in the __Import&nbsp;Playlist__ dialog.
+
+Depending on how many episodes are in the podcast, the import may take
+a while to finish, and for the new song list to display.  Be patient.
+
+After the import is finished, a new song list with that podcast's
+episodes will be displayed in _Edit&nsbp;Song&nbsp;Lists_.
+
+##### Managing the Podcast
+
+Older podcast episodes can be automatically removed.
+
+Select __Manage&nbsp;/&nbsp;Playlist&nbsp;Management__.  Select
+__Load__ from the _Edit_ menu.  Select the podcast name, and then the
+__Select__ button.
+
+The __Days&nbsp;to&nbsp;Keep__ field can be configured to specify how
+many days to keep a podcast episode.  A podcast episode older than the
+number of days configured will be removed when the podcast is updated.
+
+[Wiki Home](Home)
+<br>_(Updated 2025-06-13 05:33:54; BDJ4 version 4.15.0)_

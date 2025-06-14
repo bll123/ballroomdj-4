@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_An client audio source is used to
+<span style="color:#4559bf;">_A BDJ4 client audio source is used to
 play songs from a remote location._</span>
 
 [TOC]
@@ -8,22 +8,22 @@ play songs from a remote location._</span>
 ### BDJ4 Client Audio Source
 
 A BDJ4 client audio source can be used to play songs from a remote
-server.  At this time (2025-4-20), only a BDJ4 to BDJ4 connection can
-be used.
+BDJ4 server. The [BDJ4 Audio Server](en-Subjects-Audio%20Server)
+should be set up first.
 
-##### Configuring a new Client Audio Source
+##### Configuring a BDJ4 Client
 
-Select __Configure&nbsp;/&nbsp;Audio&nbsp;Sources__.  BDJ4 ships with a
-single audio source named _BDJ4_ that is set to _Off_.  For this
-example, this audio source will be re-configured.
+Select __Configure&nbsp;/&nbsp;Audio&nbsp;Sources__.  BDJ4 ships with
+a audio source named _BDJ4_ that is set to _Off_.  For this example,
+this audio source will be re-configured.  Select the _BDJ4_ audio
+source in the list on the left.
 
 Change __Mode__ to _Client_.
 
 Change the __Name__ to your preference.
 For this example, the name will be set to _bll-mac-m1_.
 
-__Type__ is set to _BDJ4_.  At this time (2025-4-20), this is only
-type that is supported.
+__Type__ is set to _BDJ4_.
 
 The __URL__ must be set to the address of the remote computer.  This
 can be _computername.local_ if the remote computer is on the local
@@ -39,6 +39,7 @@ The __User__ and __Password__ must match what the server has configured.
 
 References:
 <br>[Configuration / Audio Sources](en-Configuration-Audio%20Sources)
+<br>[Subjects / BDJ4 Audio Server](en-Subjects-Audio%20Server)
 
 ##### Checking the Connection
 
@@ -76,4 +77,4 @@ be available to be able to play the imported songs.
 <br><span style="color:#4559bf;">__Edit Song Lists / Import / Import Playlist__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-04-20 11:16:23; BDJ4 version 4.14.1)_
+<br>_(Updated 2025-06-13 05:09:27; BDJ4 version 4.15.0)_

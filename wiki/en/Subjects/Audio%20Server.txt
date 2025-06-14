@@ -1,22 +1,21 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_An audio server is used to
+<span style="color:#4559bf;">_A BDJ4 audio server is used to
 enable playing songs from a remote location._</span>
 
 [TOC]
 
 ### BDJ4 Audio Server
 
-A BDJ4 audio server can be used to allow remote playback of songs.  At
-this time (2025-4-20), only a BDJ4 to BDJ4 connection can be used.
+A BDJ4 audio server can be used to allow remote playback of songs.
 
 BDJ4 to BDJ4 connections have the advantage that speed adjustments,
 song start and song end all work.
 
-##### Configuring BDJ4 as a Server
+##### Configuring a BDJ4 Server
 
 Select __Configure&nbsp;/&nbsp;Audio&nbsp;Sources__.  BDJ4 ships with a
-single audio source named _BDJ4_ that is set to _Off_.  For this
+audio source named _BDJ4_ that is set to _Off_.  For this
 example, this audio source will be re-configured.
 
 Change __Mode__ to _Server_.
@@ -24,8 +23,7 @@ Change __Mode__ to _Server_.
 Change the __Name__ to your preference. For this example, the name
 will be set to _BDJ4-Server_.
 
-__Type__ is set to _BDJ4_.  At this time (2025-4-20), this is only
-type that is supported.
+__Type__ is set to _BDJ4_.
 
 The __Port__ can be left on 9011 or changed to your preference.
 
@@ -38,6 +36,7 @@ password combinations.
 
 References:
 <br>[Configuration / Audio Sources](en-Configuration-Audio%20Sources)
+<br>[Subjects / BDJ4 Audio Client](en-Subjects-Audio%20Client)
 
 ##### Starting the Server
 
@@ -45,9 +44,9 @@ Once the server is configured, it will be automatically started when
 BDJ4 is started.  Exit BDJ4 completely, then restart BDJ4, and the
 server will be active.
 
-See [Subjects / Audio Client](en-Subjects-Audio%20Client) on how to set up a
-client connection to a server.  Note that the client and server cannot
-be configured on the same machine.
+See [Subjects / BDJ4 Audio Client](en-Subjects-Audio%20Client) on how
+to set up a client connection to a server.  Note that the client and
+server cannot be configured on the same machine.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-04-20 10:23:44; BDJ4 version 4.14.1)_
+<br>_(Updated 2025-06-13 05:07:47; BDJ4 version 4.15.0)_

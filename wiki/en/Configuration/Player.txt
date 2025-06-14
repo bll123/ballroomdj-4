@@ -10,6 +10,9 @@ __Player__: Selects the player interface.  At this time,
 _Integrated&nbsp;VLC&nbsp;3_ and _GStreamer_ are supported.  The _GStreamer_
 interface is currently only enabled for Linux platforms.
 
+__Player Arguments__: Specifies any additional arguments to pass to the
+player interface.
+
 __Audio__: Selects the audio interface.
 
 __Audio Output__: Selects which audio output device will be used to
@@ -43,7 +46,7 @@ _Local_ format is the preferred format for the system locale.
 _ISO_ format is _Day-of-the-week YYYY-MM-DD HH:MM_.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![player](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Player-I.png)
+![player](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Player-J.png)
 <br><span style="color:#4559bf;">__Configure / Player__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -51,4 +54,4 @@ _ISO_ format is _Day-of-the-week YYYY-MM-DD HH:MM_.
 <br><span style="color:#4559bf;">__Player / Speed Reset Button__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-04-11 07:56:21; BDJ4 version 4.14.0)_
+<br>_(Updated 2025-06-13 05:07:47; BDJ4 version 4.15.0)_

@@ -6,8 +6,8 @@ and BDJ4 servers._</span>
 ### Configure : Audio Sources
 
 Audio sources configures access to remote audio servers and to set up
-a BDJ4 audio server.  At this time (2025-4-11), only BDJ4 servers and
-BDJ4 clients are supported.
+a BDJ4 audio server.  At this time (2025-6-13), BDJ4 servers,
+BDJ4 clients and Podcast clients are supported.
 
 Adding a new audio source: Select the __Add&nbsp;New__ (![Add
 New](https://ballroomdj4.sourceforge.io/wikiimg/AddNewButton-E.png))
@@ -24,10 +24,10 @@ __Mode__: Set to _Off_, _Client_ or _Server_.
 
 __Name__: Enter a name to identify the audio source.
 
-__Type__: The type of audio source.  At this time (2025-4-11), only
-_BDJ4_ is supported.
+__Type__: The type of audio source.  At this time (2025-6-13),
+_BDJ4_ and _Podcast_ are supported.
 
-__URI__: When configuring a client, enter the URI of the remote
+__URL__: When configuring a client, enter the URL of the remote
 server.  Do not include the port number.
 
 __Port__: When configuring a client or a server, enter the port number
@@ -42,8 +42,8 @@ __Check&nbsp;Connection__ button to verify that the client is
 configured correctly.  The server must be accessible.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![audiosources](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/AudioSources-A.png)
+![audiosources](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/AudioSources-B.png)
 <br><span style="color:#4559bf;">__Configure / Player__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-04-11 07:56:21; BDJ4 version 4.14.0)_
+<br>_(Updated 2025-06-13 05:07:47; BDJ4 version 4.15.0)_
