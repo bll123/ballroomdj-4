@@ -25,7 +25,13 @@ will be set to _BDJ4-Server_.
 
 __Type__ is set to _BDJ4_.
 
-The __Port__ can be left on 9011 or changed to your preference.
+The __Port__ can be left on 9011 or changed to your preference.  Port
+numbers below 1024 are reserved and cannot be used by BDJ4.
+
+Configuring a BDJ4 server so that it can be reached from the outside
+can be difficult, and is outside the scope of this wiki.  Solutions
+can use SSH tunnels to an outside server, or running the bdj4server on
+an outside server.
 
 Be sure to set the __User__ and __Password__ to your desired user and
 password combinations.
@@ -49,4 +55,4 @@ to set up a client connection to a server.  Note that the client and
 server cannot be configured on the same machine.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-06-13 05:07:47; BDJ4 version 4.15.0)_
+<br>_(Updated 2025-06-15 06:33:14; BDJ4 version 4.15.0)_

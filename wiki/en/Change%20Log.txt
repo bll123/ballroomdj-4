@@ -4,7 +4,13 @@
 
 <!--
 
-**4.15.0 2025-6-12**
+**4.15.0 2025-6---**
+
+* Bug Fixes:
+    * Fix to use and check all valid network interfaces.
+    * PENDING: Manage: Import Playlist: Fix validation of podcast URL.
+* Changes:
+    * PENDING: Add "No Play Time Limit" to external request.
 
 -->
 
@@ -1218,4 +1224,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-06-12 17:22:51; BDJ4 version 4.15.0)_
+<br>_(Updated 2025-06-15 09:36:42; BDJ4 version 4.15.0)_

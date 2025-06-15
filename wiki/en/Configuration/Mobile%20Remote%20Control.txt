@@ -23,7 +23,8 @@ __Password__: The password to use when signing on to the remote
 control web page.
 
 __Port__: The port to connect to.  This usually does not need to be
-changed unless there is another device using this port.
+changed unless there is another device using this port.  Ports below
+1024 are reserved and cannot be used by BDJ4.
 
 __QR Code__: Select the link to display a QR code in your browser. The
 QR code can be scanned with your mobile phone or tablet. (The link
@@ -39,4 +40,4 @@ will show your computer's name, not what is shown in the example).
 <br><span style="color:#4559bf;">__Mobile Device / Mobile Remote Control__</span></div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-04-11 07:56:21; BDJ4 version 4.14.0)_
+<br>_(Updated 2025-06-15 06:33:14; BDJ4 version 4.15.0)_

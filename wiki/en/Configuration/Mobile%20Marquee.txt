@@ -36,7 +36,7 @@ player.
 
 __Port__: _Local_ mode only.  The port to connect to.  This usually
 does not need to be changed unless there is another device using this
-port.
+port.  Ports below 1024 are reserved and cannot be used by BDJ4.
 
 __Title__: An optional title to display on the mobile marquee.
 
@@ -54,4 +54,4 @@ will show your computer's name, not what is shown in the example).
 <br><span style="color:#4559bf;">__Mobile Device / Mobile Marquee__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-04-11 07:56:21; BDJ4 version 4.14.0)_
+<br>_(Updated 2025-06-15 06:33:14; BDJ4 version 4.15.0)_

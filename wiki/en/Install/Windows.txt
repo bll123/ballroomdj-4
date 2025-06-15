@@ -132,5 +132,9 @@ Visit the
 [Getting&nbsp;Started&nbsp;with&nbsp;BDJ4](en-Install-Getting%20Started)
 wiki page.
 
+##### Additional Windows Setup
+
+[Setting up Windows for DJ Work](en-Install-Setting%20Up%20Windows)
+
 [Wiki Home](Home)
-<br>_(Updated 2025-05-09 09:33:09; BDJ4 version 4.14.1)_
+<br>_(Updated 2025-06-15 06:21:47; BDJ4 version 4.15.0)_
