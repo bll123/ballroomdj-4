@@ -69,6 +69,9 @@ typedef struct sockinfo {
   socklist_t      *socklist;
 } sockinfo_t;
 
+static int      sockInitialized = 0;
+static int      sockCount = 0;
+
 static ssize_t  sockReadData (Sock_t, char *, size_t);
 static int      sockWriteData (Sock_t, const char *, size_t);
 static void     sockFlush (Sock_t);
@@ -77,76 +80,74 @@ static void     sockInit (void);
 static void     sockCleanup (void);
 static Sock_t   sockSetOptions (Sock_t sock, int *err);
 static void     sockUpdateReadCheck (sockinfo_t *sockinfo);
-
-static int      sockInitialized = 0;
-static int      sockCount = 0;
+static void     sockGetAddrInfo (struct addrinfo **result, uint16_t port);
 
 Sock_t
 sockServer (uint16_t listenPort, int *err)
 {
-  struct sockaddr_in  saddr;
   int                 rc;
-  int                 count;
-  int                 typ;
-  Sock_t              lsock;
-
+  int                 retrycount;
+  Sock_t              lsock = INVALID_SOCKET;
+  struct addrinfo     *result = NULL;
+  struct addrinfo     *rp;
 
   if (! sockInitialized) {
     sockInit ();
   }
 
-  typ = SOCK_STREAM;
-#if _define_SOCK_CLOEXEC
-  typ |= SOCK_CLOEXEC;
-#endif
-  lsock = socket (AF_INET, typ, 0);
-  if (socketInvalid (lsock)) {
-    *err = errno;
-    logError ("socket:");
+  sockGetAddrInfo (&result, listenPort);
+  rc = INVALID_SOCKET;
+
+  for (rp = result; rp != NULL; rp = rp->ai_next) {
+    retrycount = 0;
+    lsock = socket (rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+    if (socketInvalid (lsock)) {
+      logMsg (LOG_DBG, LOG_SOCKET, "socket: errno: %d", errno);
 #if _lib_WSAGetLastError
-    logMsg (LOG_ERR, LOG_SOCKET, "socket: wsa last-error: %d", WSAGetLastError() );
+      logMsg (LOG_DBG, LOG_SOCKET, "socket: wsa last-error: %d", WSAGetLastError() );
 #endif
-    return INVALID_SOCKET;
+      continue;
+    }
+    mdextsock (lsock);
+    lsock = sockSetOptions (lsock, err);
+
+    rc = bind (lsock, rp->ai_addr, rp->ai_addrlen);
+    if (rc != 0 && retrycount < 1000 && (errno == EADDRINUSE)) {
+      mssleep (100);
+      ++retrycount;
+      rc = bind (lsock, rp->ai_addr, rp->ai_addrlen);
+    }
+
+    if (rc != 0) {
+      *err = errno;
+      logError ("bind:");
+#if _lib_WSAGetLastError
+      logMsg (LOG_ERR, LOG_SOCKET, "bind: wsa last-error: %d", WSAGetLastError() );
+#endif
+
+      mdextclose (lsock);
+      close (lsock);
+      continue;
+    }
+
+    rc = listen (lsock, 10);
+    if (rc != 0) {
+      *err = errno;
+      logError ("listen:");
+#if _lib_WSAGetLastError
+      logMsg (LOG_ERR, LOG_SOCKET, "select: wsa last-error: %d", WSAGetLastError() );
+#endif
+      mdextclose (lsock);
+      close (lsock);
+    }
+
+    /* valid socket, use the first found */
+    break;
   }
 
-  mdextsock (lsock);
-  lsock = sockSetOptions (lsock, err);
-  memset (&saddr, 0, sizeof (struct sockaddr_in));
-  saddr.sin_family = AF_INET;
-  saddr.sin_addr.s_addr = inet_addr ("127.0.0.1");
-  saddr.sin_port = htons (listenPort);
+  freeaddrinfo (result);
 
-  count = 0;
-  rc = bind (lsock, (struct sockaddr *) &saddr, sizeof (struct sockaddr_in));
-  while (rc != 0 && count < 1000 && (errno == EADDRINUSE)) {
-    mssleep (100);
-    ++count;
-    rc = bind (lsock, (struct sockaddr *) &saddr, sizeof (struct sockaddr_in));
-  }
-  if (rc != 0) {
-    *err = errno;
-    logError ("bind:");
-#if _lib_WSAGetLastError
-    logMsg (LOG_ERR, LOG_SOCKET, "bind: wsa last-error: %d", WSAGetLastError() );
-    logMsg (LOG_DBG, LOG_SOCKET, "bind: wsa last-error: %d", WSAGetLastError() );
-#endif
-    mdextclose (lsock);
-    close (lsock);
-    return INVALID_SOCKET;
-  }
-  rc = listen (lsock, 10);
-  if (rc != 0) {
-    *err = errno;
-    logError ("listen:");
-#if _lib_WSAGetLastError
-    logMsg (LOG_DBG, LOG_SOCKET, "select: wsa last-error: %d", WSAGetLastError() );
-#endif
-    mdextclose (lsock);
-    close (lsock);
-    return INVALID_SOCKET;
-  }
-
-  ++sockCount;
+  sockCount += 1;
   *err = 0;
   return lsock;
 }
@@ -348,115 +349,112 @@ sockAccept (Sock_t lsock, int *err)
 Sock_t
 sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
 {
-  struct sockaddr_in  raddr;
   int                 rc;
-  int                 typ;
   int                 err = 0;
+  struct addrinfo     *result = NULL;
+  struct addrinfo     *rp;
+  int                 retrycount;
 
 
   if (! sockInitialized) {
     sockInit ();
   }
 
-  if (clsock == INVALID_SOCKET) {
-    typ = SOCK_STREAM;
-#if _define_SOCK_CLOEXEC
-    typ |= SOCK_CLOEXEC;
-#endif
-    clsock = socket (AF_INET, typ, 0);
+  sockGetAddrInfo (&result, connPort);
+  rc = INVALID_SOCKET;
 
-    if (socketInvalid (clsock)) {
-      *connerr = SOCK_CONN_FAIL;
-      logError ("connect");
-#if _lib_WSAGetLastError
-      logMsg (LOG_DBG, LOG_SOCKET, "socket: wsa last-error:%d", WSAGetLastError());
-#endif
-      return INVALID_SOCKET;
-    }
-
-    mdextsock (clsock);
-    if (sockSetNonblocking (clsock) < 0) {
-      *connerr = SOCK_CONN_FAIL;
-      mdextclose (clsock);
-      close (clsock);
-      return INVALID_SOCKET;
-    }
-
-    clsock = sockSetOptions (clsock, &err);
-    if (err != 0) {
-      *connerr = SOCK_CONN_FAIL;
-      mdextclose (clsock);
-      close (clsock);
-      return INVALID_SOCKET;
-    }
-  }
-
-  memset (&raddr, 0, sizeof (struct sockaddr_in));
-  raddr.sin_family = AF_INET;
-  raddr.sin_addr.s_addr = inet_addr ("127.0.0.1");
-  raddr.sin_port = htons (connPort);
-
-  rc = connect (clsock, (struct sockaddr *) &raddr, sizeof (struct sockaddr_in));
-
-  if (rc == 0) {
-    *connerr = SOCK_CONN_OK;
-  } else {
-    err = errno;
-  }
-
-  /* the system may finish the connection on its own, in which case   */
-  /* the next call to connect returns EISCONN */
-  if (rc < 0 && (errno == EISCONN || errno == EALREADY)) {
-    err = 0;
-    *connerr = SOCK_CONN_OK;
-    rc = 0;
-  }
-#if _lib_WSAGetLastError
-  if (WSAGetLastError() == WSAEISCONN) {
-    err = 0;
-    *connerr = SOCK_CONN_OK;
-    rc = 0;
-  }
-#endif
-
-  if (rc < 0) {
-    *connerr = SOCK_CONN_ERROR;
-
-#if _lib_WSAGetLastError
-    /* 10037 */
-    if (WSAGetLastError() == WSAEALREADY) {
-      *connerr = SOCK_CONN_IN_PROGRESS;
-      errno = EINPROGRESS;
-      err = EINPROGRESS;
-    }
-    /* 10035 */
-    if (WSAGetLastError() == WSAEWOULDBLOCK) {
-      *connerr = SOCK_CONN_IN_PROGRESS;
-      errno = EWOULDBLOCK;
-      err = EWOULDBLOCK;
-    }
-#endif
-    /* EINPROGRESS == 115 */
-    /* EAGAIN == 11 */
-    /* EWOULDBLOCK == 11 (linux) */
-    /* ECONNREFUSED == 111 */
-    /* ECONNABORTED == 103 */
-    if (err == EINPROGRESS || err == EAGAIN || err == EINTR || err == EWOULDBLOCK) {
-      *connerr = SOCK_CONN_IN_PROGRESS;
-      /* leave the socket open */
-    } else {
-      /* conn refused is a normal response */
-      if (err != ECONNREFUSED) {
+  for (rp = result; rp != NULL; rp = rp->ai_next) {
+    retrycount = 0;
+    if (clsock == INVALID_SOCKET) {
+      clsock = socket (rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+      if (socketInvalid (clsock)) {
         logError ("connect");
 #if _lib_WSAGetLastError
-        logMsg (LOG_DBG, LOG_SOCKET, "connect: wsa last-error:%d", WSAGetLastError());
+        logMsg (LOG_DBG, LOG_SOCKET, "socket: wsa last-error:%d", WSAGetLastError());
 #endif
+        *connerr = SOCK_CONN_FAIL;
+        continue;
       }
-      mdextclose (clsock);
-      close (clsock);
-      clsock = INVALID_SOCKET;
+
+      mdextsock (clsock);
+      if (sockSetNonblocking (clsock) < 0) {
+        *connerr = SOCK_CONN_FAIL;
+        mdextclose (clsock);
+        close (clsock);
+        return INVALID_SOCKET;
+      }
+
+      clsock = sockSetOptions (clsock, &err);
+      if (err != 0) {
+        *connerr = SOCK_CONN_FAIL;
+        mdextclose (clsock);
+        close (clsock);
+        return INVALID_SOCKET;
+      }
     }
-    return clsock;
+
+    rc = connect (clsock, rp->ai_addr, rp->ai_addrlen);
+
+    if (rc == 0) {
+      *connerr = SOCK_CONN_OK;
+    } else {
+      err = errno;
+    }
+
+    /* the system may finish the connection on its own, in which case   */
+    /* the next call to connect returns EISCONN */
+    if (rc < 0 && (errno == EISCONN || errno == EALREADY)) {
+      err = 0;
+      *connerr = SOCK_CONN_OK;
+      rc = 0;
+    }
+#if _lib_WSAGetLastError
+    if (WSAGetLastError() == WSAEISCONN) {
+      err = 0;
+      *connerr = SOCK_CONN_OK;
+      rc = 0;
+    }
+#endif
+
+    if (rc < 0) {
+      *connerr = SOCK_CONN_ERROR;
+
+#if _lib_WSAGetLastError
+      /* 10037 */
+      if (WSAGetLastError() == WSAEALREADY) {
+        *connerr = SOCK_CONN_IN_PROGRESS;
+        errno = EINPROGRESS;
+        err = EINPROGRESS;
+      }
+      /* 10035 */
+      if (WSAGetLastError() == WSAEWOULDBLOCK) {
+        *connerr = SOCK_CONN_IN_PROGRESS;
+        errno = EWOULDBLOCK;
+        err = EWOULDBLOCK;
+      }
+#endif
+      /* EINPROGRESS == 115 */
+      /* EAGAIN == 11 */
+      /* EWOULDBLOCK == 11 (linux) */
+      /* ECONNREFUSED == 111 */
+      /* ECONNABORTED == 103 */
+      if (err == EINPROGRESS || err == EAGAIN || err == EINTR || err == EWOULDBLOCK) {
+        *connerr = SOCK_CONN_IN_PROGRESS;
+        /* leave the socket open */
+      } else {
+        /* conn refused is a normal response */
+        if (err != ECONNREFUSED) {
+          logError ("connect");
+#if _lib_WSAGetLastError
+          logMsg (LOG_DBG, LOG_SOCKET, "connect: wsa last-error:%d", WSAGetLastError());
+#endif
+        }
+        mdextclose (clsock);
+        close (clsock);
+        clsock = INVALID_SOCKET;
+      }
+      return clsock;
+    }
   }
 
   logMsg (LOG_DBG, LOG_SOCKET, "Connected to port:%d sock:%ld", connPort, (long) clsock);
@@ -849,6 +847,31 @@ sockUpdateReadCheck (sockinfo_t *sockinfo)
     if (tsock > sockinfo->max) {
       sockinfo->max = tsock;
     }
+  }
+}
+
+static void
+sockGetAddrInfo (struct addrinfo **result, uint16_t port)
+{
+  struct addrinfo   hints;
+  char              portstr [20];
+  int               rc;
+
+  memset (&hints, 0, sizeof(hints));
+  hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
+  hints.ai_socktype = SOCK_STREAM;
+  hints.ai_flags = AI_CANONNAME | AI_ADDRCONFIG | AI_NUMERICSERV;
+  hints.ai_protocol = IPPROTO_TCP;
+  hints.ai_canonname = NULL;
+  hints.ai_addr = NULL;
+  hints.ai_next = NULL;
+
+  snprintf (portstr, sizeof (portstr), "%" PRIu16, port);
+  rc = getaddrinfo ("localhost", portstr, &hints, result);
+  if (rc != 0) {
+    logError ("getaddrinfo:");
+    logMsg (LOG_ERR, LOG_SOCKET, "getaddrinfo: %s", gai_strerror (rc));
+    return;
   }
 }
 

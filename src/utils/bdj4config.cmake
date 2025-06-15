@@ -644,7 +644,6 @@ check_symbol_exists (O_CLOEXEC fcntl.h _define_O_CLOEXEC)
 check_symbol_exists (SIGCHLD signal.h _define_SIGCHLD)
 check_symbol_exists (SIGHUP signal.h _define_SIGHUP)
 check_symbol_exists (S_IRWXU sys/stat.h _define_S_IRWXU)
-check_symbol_exists (SOCK_CLOEXEC sys/socket.h _define_SOCK_CLOEXEC)
 check_symbol_exists (SO_REUSEPORT sys/socket.h _define_SO_REUSEPORT)
 check_symbol_exists (WIFEXITED sys/wait.h _define_WIFEXITED)
 

@@ -130,13 +130,16 @@ connectWait (void)
 {
   int       connerr;
   Sock_t    c = INVALID_SOCKET;
+  int       count;
 
+  count = 0;
   c = sockConnect (gport, &connerr, c);
-  while (connerr == SOCK_CONN_IN_PROGRESS) {
+  while (count < 1000 && connerr == SOCK_CONN_IN_PROGRESS) {
     mssleep (20);
     c = sockConnect (gport, &connerr, c);
+    ++count;
   }
-  gclsock = -1;
+  gclsock = INVALID_SOCKET;
   if (socketInvalid (c)) { gthreadrc = 1; }
   gclsock = c;
   return c;
@@ -265,8 +268,8 @@ END_TEST
 START_TEST(sock_connect_accept)
 {
   int           err;
-  Sock_t        r = -1;
-  Sock_t        l = -1;
+  Sock_t        r = INVALID_SOCKET;
+  Sock_t        l = INVALID_SOCKET;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sock_connect_accept");
   mdebugSubTag ("sock_connect_accept");
@@ -298,8 +301,8 @@ START_TEST(sock_check_connect_accept)
   sockinfo_t    *si;
   Sock_t        rc;
   int           err;
-  Sock_t        l = -1;
-  Sock_t        r = -1;
+  Sock_t        l = INVALID_SOCKET;
+  Sock_t        r = INVALID_SOCKET;
   int           count;
 
 
@@ -345,8 +348,8 @@ START_TEST(sock_write)
   sockinfo_t    *si;
   Sock_t        rc;
   int           err;
-  Sock_t        l = -1;
-  Sock_t        r = -1;
+  Sock_t        l = INVALID_SOCKET;
+  Sock_t        r = INVALID_SOCKET;
   int           count;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sock_write");
@@ -391,8 +394,8 @@ START_TEST(sock_write_read)
   sockinfo_t    *si;
   Sock_t        rc;
   int           err;
-  Sock_t        l = -1;
-  Sock_t        r = -1;
+  Sock_t        l = INVALID_SOCKET;
+  Sock_t        r = INVALID_SOCKET;
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          datab [4096];
   char          *datac = { "ghi" };
@@ -482,8 +485,8 @@ START_TEST(sock_write_read_buff)
   sockinfo_t    *si;
   Sock_t        rc;
   int           err;
-  Sock_t        l = -1;
-  Sock_t        r = -1;
+  Sock_t        l = INVALID_SOCKET;
+  Sock_t        r = INVALID_SOCKET;
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          tdata [4096 + 200];
   char          *ndata;
@@ -543,8 +546,8 @@ START_TEST(sock_write_read_buff_fail)
   sockinfo_t    *si;
   Sock_t        rc;
   int           err;
-  Sock_t        l = -1;
-  Sock_t        r = -1;
+  Sock_t        l = INVALID_SOCKET;
+  Sock_t        r = INVALID_SOCKET;
   char          buff [10];
   char          *ndata;
   size_t        len;
@@ -597,8 +600,8 @@ START_TEST(sock_write_check_read)
   sockinfo_t    *si;
   Sock_t        rc;
   int           err;
-  Sock_t        l = -1;
-  Sock_t        r = -1;
+  Sock_t        l = INVALID_SOCKET;
+  Sock_t        r = INVALID_SOCKET;
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          datab [4096];
   char          *datac = { "ghi" };
@@ -714,8 +717,8 @@ START_TEST(sock_close)
   sockinfo_t    *si;
   Sock_t        rc;
   int           err;
-  Sock_t        l = -1;
-  Sock_t        r = -1;
+  Sock_t        l = INVALID_SOCKET;
+  Sock_t        r = INVALID_SOCKET;
   char          tdata [4096 + 200];
   char          *ndata;
   size_t        len;
@@ -785,8 +788,8 @@ START_TEST(sock_write_close)
   sockinfo_t    *si;
   Sock_t        rc;
   int           err;
-  Sock_t        l = -1;
-  Sock_t        r = -1;
+  Sock_t        l = INVALID_SOCKET;
+  Sock_t        r = INVALID_SOCKET;
   char          datab [4096];
   char          tdata [4096 + 200];
   char          *ndata;
@@ -869,8 +872,8 @@ START_TEST(sock_server_close)
   sockinfo_t    *si;
   Sock_t        rc;
   int           err;
-  Sock_t        l = -1;
-  Sock_t        r = -1;
+  Sock_t        l = INVALID_SOCKET;
+  Sock_t        r = INVALID_SOCKET;
   char          datab [4096];
   int           count;
 

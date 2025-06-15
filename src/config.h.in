@@ -150,7 +150,6 @@ extern "C" {
 #cmakedefine01 _define_SIGCHLD
 #cmakedefine01 _define_SIGHUP
 #cmakedefine01 _define_S_IRWXU
-#cmakedefine01 _define_SOCK_CLOEXEC
 #cmakedefine01 _define_SO_REUSEPORT
 #cmakedefine01 _define_WIFEXITED
 
