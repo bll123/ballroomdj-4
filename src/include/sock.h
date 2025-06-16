@@ -49,13 +49,15 @@ enum {
   SOCK_CONN_IN_PROGRESS,
   SOCK_CONN_FAIL,
   SOCK_CONN_ERROR,
+  SOCK_LOCAL,
+  SOCK_ANY,
 };
 
 #if ! _define_INVALID_SOCKET
 # define INVALID_SOCKET -1
 #endif
 
-Sock_t        sockServer (uint16_t port, int *err);
+Sock_t        sockServer (uint16_t port, int *err, int which);
 void          sockClose (Sock_t);
 sockinfo_t *  sockAddCheck (sockinfo_t *, Sock_t);
 void          sockIncrActive (sockinfo_t *);

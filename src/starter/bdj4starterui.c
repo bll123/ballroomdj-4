@@ -443,7 +443,7 @@ main (int argc, char *argv[])
     listenPort = bdjvarsGetNum (BDJVL_PORT_STARTERUI);
     starter.conn = connInit (ROUTE_STARTERUI);
 
-    sockhMainLoop (listenPort, starterProcessMsg, starterMainLoop, &starter);
+    sockhMainLoop (listenPort, starterProcessMsg, starterMainLoop, &starter, SOCK_LOCAL);
 
     if (gNewProfile) {
       connDisconnectAll (starter.conn);

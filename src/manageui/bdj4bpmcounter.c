@@ -199,7 +199,7 @@ main (int argc, char *argv[])
   bpmcounterBuildUI (&bpmcounter);
   osuiFinalize ();
 
-  sockhMainLoop (listenPort, bpmcounterProcessMsg, bpmcounterMainLoop, &bpmcounter);
+  sockhMainLoop (listenPort, bpmcounterProcessMsg, bpmcounterMainLoop, &bpmcounter, SOCK_LOCAL);
   connFree (bpmcounter.conn);
   progstateFree (bpmcounter.progstate);
   logProcEnd ("");

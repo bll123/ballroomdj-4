@@ -80,10 +80,10 @@ static void     sockInit (void);
 static void     sockCleanup (void);
 static Sock_t   sockSetOptions (Sock_t sock, int *err);
 static void     sockUpdateReadCheck (sockinfo_t *sockinfo);
-static void     sockGetAddrInfo (struct addrinfo **result, uint16_t port);
+static void     sockGetAddrInfo (struct addrinfo **result, uint16_t port, int which);
 
 Sock_t
-sockServer (uint16_t listenPort, int *err)
+sockServer (uint16_t listenPort, int *err, int which)
 {
   int                 rc;
   int                 retrycount;
@@ -95,7 +95,7 @@ sockServer (uint16_t listenPort, int *err)
     sockInit ();
   }
 
-  sockGetAddrInfo (&result, listenPort);
+  sockGetAddrInfo (&result, listenPort, which);
   rc = -1;
 
   for (rp = result; rp != NULL; rp = rp->ai_next) {
@@ -368,7 +368,7 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
     sockInit ();
   }
 
-  sockGetAddrInfo (&result, connPort);
+  sockGetAddrInfo (&result, connPort, SOCK_LOCAL);
   rc = -1;
 
   for (rp = result; rp != NULL; rp = rp->ai_next) {
@@ -861,7 +861,7 @@ sockUpdateReadCheck (sockinfo_t *sockinfo)
 }
 
 static void
-sockGetAddrInfo (struct addrinfo **result, uint16_t port)
+sockGetAddrInfo (struct addrinfo **result, uint16_t port, int which)
 {
   struct addrinfo   hints;
   char              portstr [20];
@@ -889,6 +889,9 @@ sockGetAddrInfo (struct addrinfo **result, uint16_t port)
   /* that points to the loopback interface */
   bindnm = "127.0.0.1";
 #endif
+  if (which == SOCK_ANY) {
+    bindnm = NULL;
+  }
   rc = getaddrinfo (bindnm, portstr, &hints, result);
   if (rc != 0) {
     logError ("getaddrinfo:");

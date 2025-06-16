@@ -8,6 +8,8 @@
 
 * Bug Fixes:
     * PENDING: Manage: Import Playlist: Fix validation of podcast URL.
+    * Mobile Remote Control, Mobile Marquee: Fix to accept connections
+      from any network.
 * Changes:
     * PENDING: Add "No Play Time Limit" to external request.
 * Internal:

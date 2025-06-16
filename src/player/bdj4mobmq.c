@@ -132,7 +132,7 @@ main (int argc, char *argv[])
   }
 
   listenPort = bdjvarsGetNum (BDJVL_PORT_MOBILEMQ);
-  sockhMainLoop (listenPort, mobmqProcessMsg, mobmqProcessing, &mobmqdata);
+  sockhMainLoop (listenPort, mobmqProcessMsg, mobmqProcessing, &mobmqdata, SOCK_ANY);
   connFree (mobmqdata.conn);
   progstateFree (mobmqdata.progstate);
   logEnd ();

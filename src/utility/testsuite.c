@@ -279,7 +279,7 @@ main (int argc, char *argv [])
       tsClosingCallback, &testsuite);
 
   listenPort = bdjvarsGetNum (BDJVL_PORT_TEST_SUITE);
-  sockhMainLoop (listenPort, tsProcessMsg, tsProcessing, &testsuite);
+  sockhMainLoop (listenPort, tsProcessMsg, tsProcessing, &testsuite, SOCK_LOCAL);
 
   /* for the results display */
   *testsuite.testnum = '\0';
