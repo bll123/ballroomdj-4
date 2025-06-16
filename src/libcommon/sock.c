@@ -75,7 +75,7 @@ static int      sockCount = 0;
 static ssize_t  sockReadData (Sock_t, char *, size_t);
 static int      sockWriteData (Sock_t, const char *, size_t);
 static void     sockFlush (Sock_t);
-static int      sockSetNonblocking (Sock_t sock);
+static int      sockSetNonBlocking (Sock_t sock);
 static void     sockInit (void);
 static void     sockCleanup (void);
 static Sock_t   sockSetOptions (Sock_t sock, int *err);
@@ -130,7 +130,6 @@ sockServer (uint16_t listenPort, int *err, int which)
 #if _lib_WSAGetLastError
       logMsg (LOG_ERR, LOG_SOCKET, "bind: wsa last-error: %d", WSAGetLastError() );
 #endif
-
       mdextclose (lsock);
       close (lsock);
       continue;
@@ -324,12 +323,9 @@ sockCheck (sockinfo_t *sockinfo)
 Sock_t
 sockAccept (Sock_t lsock, int *err)
 {
-  struct sockaddr_in  saddr;
-  Socklen_t           alen;
   Sock_t              nsock;
 
-  alen = sizeof (struct sockaddr_in);
-  nsock = accept (lsock, (struct sockaddr *) &saddr, &alen);
+  nsock = accept (lsock, NULL, NULL);
 
   if (socketInvalid (nsock)) {
     *err = errno;
@@ -341,7 +337,7 @@ sockAccept (Sock_t lsock, int *err)
   }
 
   mdextsock (nsock);
-  if (sockSetNonblocking (nsock) < 0) {
+  if (sockSetNonBlocking (nsock) < 0) {
     mdextclose (nsock);
     close (nsock);
     return INVALID_SOCKET;
@@ -385,7 +381,7 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
       }
 
       mdextsock (clsock);
-      if (sockSetNonblocking (clsock) < 0) {
+      if (sockSetNonBlocking (clsock) < 0) {
         *connerr = SOCK_CONN_FAIL;
         mdextclose (clsock);
         close (clsock);
@@ -439,6 +435,12 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
         *connerr = SOCK_CONN_IN_PROGRESS;
         errno = EWOULDBLOCK;
         err = EWOULDBLOCK;
+      }
+      /* 10036 */
+      if (WSAGetLastError() == WSAEINPROGRESS) {
+        *connerr = SOCK_CONN_IN_PROGRESS;
+        errno = EINPROGRESS;
+        err = EINPROGRESS;
       }
 #endif
       /* EINPROGRESS == 115 */
@@ -750,7 +752,7 @@ sockFlush (Sock_t sock)
 }
 
 static int
-sockSetNonblocking (Sock_t sock)
+sockSetNonBlocking (Sock_t sock)
 {
 #if _lib_fcntl
   int         flags;
@@ -866,12 +868,14 @@ sockGetAddrInfo (struct addrinfo **result, uint16_t port, int which)
   struct addrinfo   hints;
   char              portstr [20];
   int               rc;
-  const char        *bindnm = "localhost";
 
   memset (&hints, 0, sizeof(hints));
   hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_flags = AI_NUMERICSERV; // AI_CANONNAME
+  if (which == SOCK_ANY) {
+    hints.ai_flags |= AI_PASSIVE;
+  }
 #if ! defined (_WIN32)
   /* do not use AI_ADDRCONFIG on windows */
   hints.ai_flags |= AI_ADDRCONFIG;
@@ -882,17 +886,9 @@ sockGetAddrInfo (struct addrinfo **result, uint16_t port, int which)
   hints.ai_next = NULL;
 
   snprintf (portstr, sizeof (portstr), "%" PRIu16, port);
-#if defined (_WIN32)
-  /* windows has to be difficult... */
-  /* localhost does not work properly on windows */
-  /* would prefer a generic name that works for both ipv4 and ipv6 */
-  /* that points to the loopback interface */
-  bindnm = "127.0.0.1";
-#endif
-  if (which == SOCK_ANY) {
-    bindnm = NULL;
-  }
-  rc = getaddrinfo (bindnm, portstr, &hints, result);
+  /* NULL + AI_PASSIVE : allow connection from any */
+  /* NULL + ! AI_PASSIVE : on loopback */
+  rc = getaddrinfo (NULL, portstr, &hints, result);
   if (rc != 0) {
     logError ("getaddrinfo:");
     logMsg (LOG_ERR, LOG_SOCKET, "getaddrinfo: %s", gai_strerror (rc));

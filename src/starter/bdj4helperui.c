@@ -149,7 +149,7 @@ main (int argc, char *argv[])
   osuiFinalize ();
 
   helpDisplay (&helper);
-  sockhMainLoop (listenPort, helperProcessMsg, helperMainLoop, &helper, SOCK_LOCAL);
+  sockhMainLoop (listenPort, helperProcessMsg, helperMainLoop, &helper, SOCKH_LOCAL);
   callbackFree (helper.closeCallback);
   callbackFree (helper.nextCallback);
   connFree (helper.conn);

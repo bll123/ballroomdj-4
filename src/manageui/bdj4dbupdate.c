@@ -337,7 +337,7 @@ main (int argc, char *argv[])
   dbupdate.conn = connInit (ROUTE_DBUPDATE);
 
   listenPort = bdjvarsGetNum (BDJVL_PORT_DBUPDATE);
-  sockhMainLoop (listenPort, dbupdateProcessMsg, dbupdateProcessing, &dbupdate, SOCK_LOCAL);
+  sockhMainLoop (listenPort, dbupdateProcessMsg, dbupdateProcessing, &dbupdate, SOCKH_LOCAL);
   connFree (dbupdate.conn);
   progstateFree (dbupdate.progstate);
 

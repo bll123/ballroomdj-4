@@ -26,6 +26,8 @@ enum {
   SOCKH_CONTINUE = false,
   SOCKH_STOP = true,
   SOCKH_MAINLOOP_TIMEOUT = 5,
+  SOCKH_LOCAL = SOCK_LOCAL,
+  SOCKH_ANY = SOCK_ANY,
 };
 
 void  sockhMainLoop (uint16_t listenPort, sockhProcessMsg_t msgFunc, sockhProcessFunc_t processFunc, void *userData, int which);

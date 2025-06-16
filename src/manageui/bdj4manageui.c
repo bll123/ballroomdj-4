@@ -672,7 +672,7 @@ main (int argc, char *argv[])
   progstateSetCallback (manage.progstate, STATE_CLOSING,
       manageClosingCallback, &manage);
 
-  sockhMainLoop (listenPort, manageProcessMsg, manageMainLoop, &manage, SOCK_LOCAL);
+  sockhMainLoop (listenPort, manageProcessMsg, manageMainLoop, &manage, SOCKH_LOCAL);
   connFree (manage.conn);
   progstateFree (manage.progstate);
   logProcEnd ("");
