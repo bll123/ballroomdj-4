@@ -11,9 +11,9 @@
     * Mobile Remote Control, Mobile Marquee: Fix to accept connections
       from any network.
 * Changes:
-    * PENDING: Add "No Play Time Limit" to external request.
+    * External Request: Add "No Play Time Limit" switch.
 * Internal:
-    * Code cleanup: (socket).
+    * Code cleanup (sockets).
 
 -->
 

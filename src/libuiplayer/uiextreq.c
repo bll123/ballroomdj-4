@@ -54,6 +54,7 @@ enum {
   UIEXTREQ_W_ARTIST,
   UIEXTREQ_W_TITLE,
   UIEXTREQ_W_MQ_DISP,
+  UIEXTREQ_W_NO_PLAY_TM_LIMIT,
   UIEXTREQ_W_MAX,
 };
 
@@ -187,6 +188,10 @@ uiextreqProcess (uiextreq_t *uiextreq)
   uiEntryValidate (uiextreq->wcont [UIEXTREQ_W_ARTIST], false);
   uiEntryValidate (uiextreq->wcont [UIEXTREQ_W_TITLE], false);
   uiEntryValidate (uiextreq->wcont [UIEXTREQ_W_MQ_DISP], false);
+  if (uiextreq->song != NULL) {
+    songSetNum (uiextreq->song, TAG_NO_PLAY_TM_LIMIT,
+        uiSwitchGetValue (uiextreq->wcont [UIEXTREQ_W_NO_PLAY_TM_LIMIT]));
+  }
 }
 
 /* internal routines */
@@ -345,6 +350,21 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
 
   uiwcontFree (hbox);
 
+  /* no play tm limit */
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
+
+  uiwidgetp = uiCreateColonLabel (tagdefs [TAG_NO_PLAY_TM_LIMIT].displayname);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiCreateSwitch (0);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiextreq->wcont [UIEXTREQ_W_NO_PLAY_TM_LIMIT] = uiwidgetp;
+
+  uiwcontFree (hbox);
+
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpEntry);
@@ -390,6 +410,7 @@ uiextreqInitDisplay (uiextreq_t *uiextreq, const char *fn)
   uiEntrySetValue (uiextreq->wcont [UIEXTREQ_W_ARTIST], "");
   uiEntrySetValue (uiextreq->wcont [UIEXTREQ_W_TITLE], "");
   uiEntrySetValue (uiextreq->wcont [UIEXTREQ_W_MQ_DISP], "");
+  uiSwitchSetValue (uiextreq->wcont [UIEXTREQ_W_NO_PLAY_TM_LIMIT], 0);
   uidanceSetKey (uiextreq->uidance, -1);
 }
 
@@ -498,6 +519,8 @@ uiextreqProcessAudioFile (uiextreq_t *uiextreq)
           songGetStr (uiextreq->song, TAG_TITLE));
       uiEntrySetValue (uiextreq->wcont [UIEXTREQ_W_MQ_DISP],
           songGetStr (uiextreq->song, TAG_MQDISPLAY));
+      uiSwitchSetValue (uiextreq->wcont [UIEXTREQ_W_NO_PLAY_TM_LIMIT],
+          songGetNum (uiextreq->song, TAG_NO_PLAY_TM_LIMIT));
       uidanceSetKey (uiextreq->uidance,
           songGetNum (uiextreq->song, TAG_DANCE));
     }
