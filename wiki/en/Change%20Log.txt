@@ -4,13 +4,14 @@
 
 <!--
 
-**4.15.0 2025-6---**
+**4.15.1 2025-6---**
 
 * Bug Fixes:
-    * Fix to use and check all valid network interfaces.
     * PENDING: Manage: Import Playlist: Fix validation of podcast URL.
 * Changes:
     * PENDING: Add "No Play Time Limit" to external request.
+* Internal:
+    * Code cleanup: (socket).
 
 -->
 

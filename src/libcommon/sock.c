@@ -96,20 +96,26 @@ sockServer (uint16_t listenPort, int *err)
   }
 
   sockGetAddrInfo (&result, listenPort);
-  rc = INVALID_SOCKET;
+  rc = -1;
 
   for (rp = result; rp != NULL; rp = rp->ai_next) {
     retrycount = 0;
     lsock = socket (rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+
     if (socketInvalid (lsock)) {
-      logMsg (LOG_DBG, LOG_SOCKET, "socket: errno: %d", errno);
+      logMsg (LOG_DBG, LOG_SOCKET, "bind-socket: errno: %d", errno);
 #if _lib_WSAGetLastError
-      logMsg (LOG_DBG, LOG_SOCKET, "socket: wsa last-error: %d", WSAGetLastError() );
+      logMsg (LOG_DBG, LOG_SOCKET, "bind-socket: wsa last-error: %d", WSAGetLastError() );
 #endif
       continue;
     }
     mdextsock (lsock);
     lsock = sockSetOptions (lsock, err);
+    if (socketInvalid (lsock)) {
+      mdextclose (lsock);
+      close (lsock);
+      continue;
+    }
 
     rc = bind (lsock, rp->ai_addr, rp->ai_addrlen);
     if (rc != 0 && retrycount < 1000 && (errno == EADDRINUSE)) {
@@ -135,13 +141,14 @@ sockServer (uint16_t listenPort, int *err)
       *err = errno;
       logError ("listen:");
 #if _lib_WSAGetLastError
-      logMsg (LOG_ERR, LOG_SOCKET, "select: wsa last-error: %d", WSAGetLastError() );
+      logMsg (LOG_ERR, LOG_SOCKET, "listen: wsa last-error: %d", WSAGetLastError() );
 #endif
       mdextclose (lsock);
       close (lsock);
+      continue;
     }
 
-    /* valid socket, use the first found */
+    /* valid socket, use the first found where the bind works */
     break;
   }
 
@@ -323,6 +330,7 @@ sockAccept (Sock_t lsock, int *err)
 
   alen = sizeof (struct sockaddr_in);
   nsock = accept (lsock, (struct sockaddr *) &saddr, &alen);
+
   if (socketInvalid (nsock)) {
     *err = errno;
     logError ("accept");
@@ -361,7 +369,7 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
   }
 
   sockGetAddrInfo (&result, connPort);
-  rc = INVALID_SOCKET;
+  rc = -1;
 
   for (rp = result; rp != NULL; rp = rp->ai_next) {
     retrycount = 0;
@@ -370,7 +378,7 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
       if (socketInvalid (clsock)) {
         logError ("connect");
 #if _lib_WSAGetLastError
-        logMsg (LOG_DBG, LOG_SOCKET, "socket: wsa last-error:%d", WSAGetLastError());
+        logMsg (LOG_DBG, LOG_SOCKET, "conn-socket: wsa last-error:%d", WSAGetLastError());
 #endif
         *connerr = SOCK_CONN_FAIL;
         continue;
@@ -385,7 +393,7 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
       }
 
       clsock = sockSetOptions (clsock, &err);
-      if (err != 0) {
+      if (socketInvalid (clsock)) {
         *connerr = SOCK_CONN_FAIL;
         mdextclose (clsock);
         close (clsock);
@@ -457,6 +465,8 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
     }
   }
 
+  freeaddrinfo (result);
+
   logMsg (LOG_DBG, LOG_SOCKET, "Connected to port:%d sock:%ld", connPort, (long) clsock);
   ++sockCount;
   return clsock;
@@ -527,7 +537,7 @@ socketInvalid (Sock_t sock)
 #if _define_INVALID_SOCKET
   return (sock == INVALID_SOCKET);
 #else
-  return (sock < 0);
+  return ((long) sock < 0);
 #endif
 }
 
@@ -766,9 +776,9 @@ sockSetNonblocking (Sock_t sock)
   unsigned long flag = 1;
   if (ioctlsocket (sock, FIONBIO, &flag) < 0) {
     logError ("ioctlsocket");
-#if _lib_WSAGetLastError
+# if _lib_WSAGetLastError
     logMsg (LOG_DBG, LOG_SOCKET, "ioctlsocket: wsa last-error:%d", WSAGetLastError());
-#endif
+# endif
   }
 #endif
   return 0;
@@ -782,9 +792,9 @@ sockInit (void)
   int rc = WSAStartup (MAKEWORD (2, 2), &wsa);
   if (rc < 0) {
     logError ("WSAStartup:");
-#if _lib_WSAGetLastError
+# if _lib_WSAGetLastError
     logMsg (LOG_DBG, LOG_SOCKET, "wsastartup: wsa last-error:%d", WSAGetLastError());
-#endif
+# endif
   }
 #endif
   sockInitialized = 1;
@@ -856,18 +866,30 @@ sockGetAddrInfo (struct addrinfo **result, uint16_t port)
   struct addrinfo   hints;
   char              portstr [20];
   int               rc;
+  const char        *bindnm = "localhost";
 
   memset (&hints, 0, sizeof(hints));
   hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
   hints.ai_socktype = SOCK_STREAM;
-  hints.ai_flags = AI_CANONNAME | AI_ADDRCONFIG | AI_NUMERICSERV;
+  hints.ai_flags = AI_NUMERICSERV; // AI_CANONNAME
+#if ! defined (_WIN32)
+  /* do not use AI_ADDRCONFIG on windows */
+  hints.ai_flags |= AI_ADDRCONFIG;
+#endif
   hints.ai_protocol = IPPROTO_TCP;
   hints.ai_canonname = NULL;
   hints.ai_addr = NULL;
   hints.ai_next = NULL;
 
   snprintf (portstr, sizeof (portstr), "%" PRIu16, port);
-  rc = getaddrinfo ("localhost", portstr, &hints, result);
+#if defined (_WIN32)
+  /* windows has to be difficult... */
+  /* localhost does not work properly on windows */
+  /* would prefer a generic name that works for both ipv4 and ipv6 */
+  /* that points to the loopback interface */
+  bindnm = "127.0.0.1";
+#endif
+  rc = getaddrinfo (bindnm, portstr, &hints, result);
   if (rc != 0) {
     logError ("getaddrinfo:");
     logMsg (LOG_ERR, LOG_SOCKET, "getaddrinfo: %s", gai_strerror (rc));

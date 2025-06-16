@@ -280,8 +280,8 @@ START_TEST(sock_connect_accept)
 #endif
 
   l = sockServer (32703, &err);
-  ck_assert_int_gt (l, 2);
   ck_assert_int_eq (socketInvalid (l), 0);
+  ck_assert_int_gt (l, 2);
   r = sockAccept (l, &err);
   ck_assert_int_eq (socketInvalid (r), 0);
   ck_assert_int_ne (l, r);
@@ -317,8 +317,8 @@ START_TEST(sock_check_connect_accept)
 #endif
 
   l = sockServer (32704, &err);
-  ck_assert_int_gt (l, 2);
   ck_assert_int_eq (socketInvalid (l), 0);
+  ck_assert_int_gt (l, 2);
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
   count = 0;
@@ -363,8 +363,8 @@ START_TEST(sock_write)
 #endif
 
   l = sockServer (32705, &err);
-  ck_assert_int_gt (l, 2);
   ck_assert_int_eq (socketInvalid (l), 0);
+  ck_assert_int_gt (l, 2);
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
   count = 0;
@@ -417,8 +417,8 @@ START_TEST(sock_write_read)
 #endif
 
   l = sockServer (32706, &err);
-  ck_assert_int_gt (l, 2);
   ck_assert_int_eq (socketInvalid (l), 0);
+  ck_assert_int_gt (l, 2);
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
   count = 0;
@@ -504,8 +504,8 @@ START_TEST(sock_write_read_buff)
 #endif
 
   l = sockServer (32707, &err);
-  ck_assert_int_gt (l, 2);
   ck_assert_int_eq (socketInvalid (l), 0);
+  ck_assert_int_gt (l, 2);
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
   count = 0;
@@ -564,8 +564,8 @@ START_TEST(sock_write_read_buff_fail)
 #endif
 
   l = sockServer (32708, &err);
-  ck_assert_int_gt (l, 2);
   ck_assert_int_eq (socketInvalid (l), 0);
+  ck_assert_int_gt (l, 2);
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
   count = 0;
@@ -622,8 +622,8 @@ START_TEST(sock_write_check_read)
   memset (datab, 'a', 4096);
 
   l = sockServer (32709, &err);
-  ck_assert_int_gt (l, 2);
   ck_assert_int_eq (socketInvalid (l), 0);
+  ck_assert_int_gt (l, 2);
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
   count = 0;
@@ -735,8 +735,8 @@ START_TEST(sock_close)
 #endif
 
   l = sockServer (32710, &err);
-  ck_assert_int_gt (l, 2);
   ck_assert_int_eq (socketInvalid (l), 0);
+  ck_assert_int_gt (l, 2);
 
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
@@ -808,8 +808,8 @@ START_TEST(sock_write_close)
   memset (datab, 'a', 4096);
 
   l = sockServer (32711, &err);
-  ck_assert_int_gt (l, 2);
   ck_assert_int_eq (socketInvalid (l), 0);
+  ck_assert_int_gt (l, 2);
 
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
@@ -888,8 +888,8 @@ START_TEST(sock_server_close)
   memset (datab, 'a', 4096);
 
   l = sockServer (32712, &err);
-  ck_assert_int_gt (l, 2);
   ck_assert_int_eq (socketInvalid (l), 0);
+  ck_assert_int_gt (l, 2);
 
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
