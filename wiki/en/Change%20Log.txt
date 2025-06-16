@@ -7,11 +7,13 @@
 **4.15.1 2025-6---**
 
 * Bug Fixes:
-    * PENDING: Manage: Import Playlist: Fix validation of podcast URL.
     * Mobile Remote Control, Mobile Marquee: Fix to accept connections
       from any network.
+    * Manage: Import Playlist: Fix validation of podcast URL.
+    * Podcast: Fix failures for long playlists.
+    * Podcast: Fix processing of other duration field formats.
 * Changes:
-    * External Request: Add "No Play Time Limit" switch.
+    * Player: External Request: Add "No Play Time Limit" switch.
 * Internal:
     * Code cleanup (sockets).
 

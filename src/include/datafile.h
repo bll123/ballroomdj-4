@@ -72,9 +72,8 @@ enum {
   DF_NORM = -1,
   DF_NO_WRITE = -2,
   DF_NO_OFFSET = 0,
-  /* the largest standard datafile is 3.6k in size */
-  /* a database entry is 2k */
-  DATAFILE_MAX_SIZE = 16384,
+  /* 2025-6-16 update size to 4 megs */
+  DATAFILE_MAX_SIZE = 4 * 1024 * 1024,
 };
 #define DF_DOUBLE_MULT 1000.0
 

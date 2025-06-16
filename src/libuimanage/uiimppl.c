@@ -817,21 +817,6 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
     }
   }
 
-  /* podcast rss feeds will have a .xml extension */
-  if (uiimppl->imptype == AUDIOSRC_TYPE_PODCAST) {
-    if (strncmp (str, AS_HTTPS_PFX, AS_HTTPS_PFX_LEN) != 0 ||
-        strncmp (str + strlen (str) - AS_XML_SFX_LEN,
-            AS_XML_SFX, AS_XML_SFX_LEN) != 0) {
-      uiLabelSetText (uiimppl->wcont [UIIMPPL_W_ERROR_MSG],
-          /* CONTEXT: import playlist: invalid URL */
-          _("Invalid URL"));
-      uiimppl->haveerrors |= UIIMPPL_ERR_URI;
-      pathInfoFree (pi);
-      uiimppl->in_cb = false;
-      return UIENTRY_ERROR;
-    }
-  }
-
   /* do not update the new-name if the user has modified it */
   if (uiimppl->newnameuserchg == false && *tbuff) {
     snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
@@ -1068,8 +1053,9 @@ uiimpplProcessURI (uiimppl_t *uiimppl, const char *uri)
   if (strncmp (uri, AS_BDJ4_PFX, AS_BDJ4_PFX_LEN) == 0) {
     type = AUDIOSRC_TYPE_BDJ4;
   }
-  if (strncmp (uri, AS_HTTPS_PFX, AS_HTTPS_PFX_LEN) == 0 &&
-      pathInfoExtCheck (pi, AS_XML_SFX)) {
+  if (strncmp (uri, AS_HTTPS_PFX, AS_HTTPS_PFX_LEN) == 0) {
+    /* not all podcasts have a .xml extension */
+    /* at this time, no other https:// prefixes are used */
     type = AUDIOSRC_TYPE_PODCAST;
   }
 

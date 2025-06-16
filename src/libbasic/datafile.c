@@ -835,8 +835,9 @@ datafileSaveKeyVal (datafile_t *df, const char *fn,
     nlist_t *list, int offset, int distvers)
 {
   FILE    *fh;
-  char    buff [DATAFILE_MAX_SIZE];
+  char    *buff;
 
+  buff = mdmalloc (DATAFILE_MAX_SIZE);
   *buff = '\0';
   fh = datafileSavePrep (fn, df->tag, distvers);
   if (fh == NULL) {
@@ -844,11 +845,12 @@ datafileSaveKeyVal (datafile_t *df, const char *fn,
   }
 
   fprintf (fh, "%s\n..%d\n", DF_VERSION_STR, nlistGetVersion (list));
-  datafileSaveKeyValBuffer (buff, sizeof (buff), df->tag,
+  datafileSaveKeyValBuffer (buff, DATAFILE_MAX_SIZE, df->tag,
       df->dfkeys, df->dfkeycount, list, offset, DF_NONE);
   fprintf (fh, "%s", buff);
   mdextfclose (fh);
   fclose (fh);
+  mdfree (buff);
 }
 
 static void
@@ -861,9 +863,10 @@ datafileSaveIndirect (datafile_t *df, const char *fn,
   ilistidx_t      count;
   ilistidx_t      iteridx;
   ilistidx_t      key;
-  char            buff [DATAFILE_MAX_SIZE];
+  char            *buff;
   char            *currp;
 
+  buff = mdmalloc (DATAFILE_MAX_SIZE);
   *buff = '\0';
   fh = datafileSavePrep (fn, df->tag, distvers);
   if (fh == NULL) {
@@ -883,7 +886,8 @@ datafileSaveIndirect (datafile_t *df, const char *fn,
     conv.invt = VALUE_NUM;
     /* on save, re-order the keys */
     conv.num = count++;
-    currp = datafileSaveItem (buff, sizeof (buff), currp, "KEY", NULL, &conv, DF_NONE);
+    currp = datafileSaveItem (buff, DATAFILE_MAX_SIZE, currp,
+        "KEY", NULL, &conv, DF_NONE);
 
     for (ssize_t i = 0; i < df->dfkeycount; ++i) {
       if (df->dfkeys [i].writeFlag == DF_NO_WRITE) {
@@ -908,13 +912,14 @@ datafileSaveIndirect (datafile_t *df, const char *fn,
         conv.dval = ilistGetDouble (list, key, df->dfkeys [i].itemkey);
       }
 
-      currp = datafileSaveItem (buff, sizeof (buff), currp,
+      currp = datafileSaveItem (buff, DATAFILE_MAX_SIZE, currp,
           df->dfkeys [i].name, df->dfkeys [i].convFunc, &conv, DF_NONE);
     }
   }
   fwrite (buff, currp - buff, 1, fh);
   mdextfclose (fh);
   fclose (fh);
+  mdfree (buff);
 }
 
 static void
@@ -923,11 +928,13 @@ datafileSaveList (datafile_t *df, const char *fn, slist_t *list, int distvers)
   FILE        *fh;
   slistidx_t  iteridx;
   const char  *str;
-  char        buff [DATAFILE_MAX_SIZE];
+  char        *buff;
   char        *p;
-  char        *end = buff + sizeof (buff);
+  char        *end;
 
   logProcBegin ();
+  buff = mdmalloc (DATAFILE_MAX_SIZE);
+  end = buff + DATAFILE_MAX_SIZE;
   *buff = '\0';
   fh = datafileSavePrep (fn, df->tag, distvers);
   if (fh == NULL) {
@@ -948,6 +955,7 @@ datafileSaveList (datafile_t *df, const char *fn, slist_t *list, int distvers)
   fprintf (fh, "%s", buff);
   mdextfclose (fh);
   fclose (fh);
+  mdfree (buff);
   logProcEnd ("");
 }
 

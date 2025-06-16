@@ -3622,9 +3622,7 @@ manageDragDropCallback (void *udata, const char *uri)
 {
   manageui_t    *manage = udata;
 
-  if (strncmp (uri, AS_HTTPS_PFX, AS_HTTPS_PFX_LEN) != 0 ||
-      strncmp (uri + strlen (uri) - AS_XML_SFX_LEN,
-      AS_XML_SFX, AS_XML_SFX_LEN) != 0) {
+  if (strncmp (uri, AS_HTTPS_PFX, AS_HTTPS_PFX_LEN) != 0) {
     return UICB_STOP;
   }
 

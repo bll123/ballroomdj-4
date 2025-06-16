@@ -422,7 +422,7 @@ aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata,
   ilistidx_t  idx = -1;
   const char  *val;
   char        tbuff [40];
-  int             clientkey;
+  int         clientkey;
 
   clientkey = aspodcastGetClientKeyByURI (asdata, uri);
   if (clientkey < 0) {
@@ -446,9 +446,22 @@ aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata,
   asidata->songtags = slistAlloc ("assongtags", LIST_UNORDERED, NULL);
   slistSetSize (asidata->songtags, 5);
 
+  *tbuff = '\0';
   val = ilistGetStr (rssitems, idx, RSS_ITEM_DURATION);
   if (val != NULL) {
-    snprintf (tbuff, sizeof (tbuff), "%s000", val);
+    if (strchr (val, ':') != NULL) {
+      long  a, b, c;
+      int   rc;
+
+      rc = sscanf (val, "%ld:%ld:%ld", &a, &b, &c);
+      if (rc == 3) {
+        snprintf (tbuff, sizeof (tbuff), "%ld000", a * 60 * 60 + b * 60 + c);
+      } else if (rc == 2) {
+        snprintf (tbuff, sizeof (tbuff), "%ld000", a * 60 + b);
+      }
+    } else {
+      snprintf (tbuff, sizeof (tbuff), "%s000", val);
+    }
     slistSetStr (asidata->songtags, tagdefs [TAG_DURATION].tag, tbuff);
   }
   slistSetStr (asidata->songtags,
