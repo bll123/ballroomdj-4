@@ -56,21 +56,17 @@ function pkgnmgetdata {
           pn_dist=-fedora
           ;;
         *opensuse*)
-          pn_dist=-opensuse
+          tver=$(grep '^VERSION_ID=' /etc/os-release | sed 's,VERSION_ID=,,')
+          tver=$(echo ${tver} | sed 's,\..*,,')
+          pn_dist=-opensuse${tver}
           ;;
         manjaro*)
           pn_dist=-arch
           ;;
         debian)
           dver=$(cat /etc/debian_version)
-          case ${dver} in
-            11*)
-              pn_dist=-debian11
-              ;;
-            12*)
-              pn_dist=-debian12
-              ;;
-          esac
+          dver=$(echo ${dver} | sed 's,\..*,,')
+          pn_dist=-debian${dver}
       esac
       ;;
     Darwin)
@@ -93,6 +89,10 @@ function pkgnmgetdata {
         MINGW64)
           ;;
         UCRT64)
+          ;;
+        *)
+          echo "Environment not supported"
+          exit 1
           ;;
       esac
       ;;
