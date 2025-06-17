@@ -89,14 +89,14 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_LOCALE_SYSTEM] = { "LOCALE_SYSTEM" },
   [SV_LOCALE_639_2] = { "LOCALE_639_2" },
   [SV_OS_ARCH] = { "OS_ARCH" },
+  [SV_OS_ARCH_TAG] = { "OS_ARCH_TAG" },
   [SV_OS_BUILD] = { "OS_BUILD" },
   [SV_OS_DISP] = { "OS_DISP" },
+  [SV_OS_DIST_TAG] = { "OS_DIST_TAG" },
   [SV_OS_EXEC_EXT] = { "OS_EXEC_EXT" },
   [SV_OS_NAME] = { "OS_NAME" },
-  [SV_OS_VERS] = { "OS_VERS" },
   [SV_OS_PLATFORM] = { "OS_PLATFORM" },
-  [SV_OS_ARCH_TAG] = { "OS_ARCH_TAG" },
-  [SV_OS_DIST_TAG] = { "OS_DIST_TAG" },
+  [SV_OS_VERS] = { "OS_VERS" },
   [SV_PATH_ACRCLOUD] = { "PATH_ACRCLOUD" },
   [SV_PATH_CRONTAB] = { "PATH_CRONTAB" },
   [SV_PATH_FFMPEG] = { "PATH_FFMPEG" },
@@ -109,8 +109,8 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_SHLIB_EXT] = { "SHLIB_EXT" },
   [SV_THEME_DEFAULT] = { "THEME_DEFAULT" },
   [SV_URI_REGISTER] = { "URI_REGISTER" },
-  [SV_USER_MUNGE] = { "USER_MUNGE" },
   [SV_USER] = { "USER" },
+  [SV_USER_MUNGE] = { "USER_MUNGE" },
 };
 
 static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {

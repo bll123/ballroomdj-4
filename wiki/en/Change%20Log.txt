@@ -4,7 +4,11 @@
 
 <!--
 
-**4.15.1 2025-6---**
+**4.15.1 2025-6-17**
+
+-->
+
+**4.15.1 2025-6-17**
 
 * Bug Fixes:
     * Mobile Remote Control, Mobile Marquee: Fix to accept connections
@@ -16,8 +20,6 @@
     * Player: External Request: Add "No Play Time Limit" switch.
 * Internal:
     * Code cleanup (sockets).
-
--->
 
 **4.15.0 2025-6-12**
 
@@ -1229,4 +1231,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-06-15 09:36:42; BDJ4 version 4.15.0)_
+<br>_(Updated 2025-06-17 10:07:33; BDJ4 version 4.15.1)_
