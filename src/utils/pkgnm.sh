@@ -115,7 +115,7 @@ function pkgsrcadditionalnm {
   if [[ ${pn_tag} == win64 ]]; then
     ext=.zip
   fi
-  nm=${pn_spkgnm}-src-${pn_tag}${pn_rlstag}${pn_devtag}${pn_date}${ext}
+  nm=${pn_spkgnm}-src-${pn_tag}${pn_rlstag}${pn_devtag}${pn_datetag}${ext}
   echo $nm
 }
 
