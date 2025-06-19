@@ -11,8 +11,7 @@
 **4.15.1 2025-6-17**
 
 * Bug Fixes:
-    * Mobile Remote Control, Mobile Marquee: Fix to accept connections
-      from any network.
+    * Mobile Remote Control, Mobile Marquee: Fix to accept connections from any network.
     * Manage: Import Playlist: Fix validation of podcast URL.
     * Podcast: Fix failures for long playlists.
     * Podcast: Fix processing of other duration field formats.
@@ -24,9 +23,7 @@
 **4.15.0 2025-6-12**
 
 * Bug Fixes:
-    * Database: Some companies are putting a genre into the
-      title-sort tag.  Some known genres will be cleared from the
-      title-sort tag.
+    * Database: Some companies are putting a genre into the title-sort tag.  Some known genres will be cleared from the title-sort tag.
     * Player: Fix incorrect status display when playing and no songs.
     * User Interface: Prevent paste into read-only spinboxes.
 * Changes:
@@ -1231,4 +1228,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-06-17 10:07:33; BDJ4 version 4.15.1)_
+<br>_(Updated 2025-06-19 10:39:48; BDJ4 version 4.15.1)_

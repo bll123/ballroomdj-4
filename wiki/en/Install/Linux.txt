@@ -115,6 +115,13 @@ __Installation&nbsp;Completed__ message.
 ![BallroomDJ 4 Installer on Linux](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Linux-Installer-D.png)
 <br><span style="color:#4559bf;">__BallroomDJ 4 Installer on Linux__</span> </div>
 
+##### Getting Help
+
+If you need help getting started, understanding how something in BDJ4
+functions, or want to learn how to accomplish a particular goal in
+BDJ4, use one of the methods in
+[Getting&nbsp;Help](en-Getting%20Help).
+
 ##### Getting Started with BDJ4
 
 Visit the
@@ -122,4 +129,4 @@ Visit the
 wiki page.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-04-20 08:38:31; BDJ4 version 4.14.1)_
+<br>_(Updated 2025-06-19 09:15:57; BDJ4 version 4.15.1)_

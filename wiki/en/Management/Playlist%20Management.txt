@@ -2,8 +2,8 @@
 
 <span style="color:#4559bf;">_Playlist management configures playlist
 controls and per dance controls for song lists, sequences and
-automatic playlists, and song selection filters for automatic and
-sequenced playlists._</span>
+automatic playlists, song selection filters for automatic and
+sequenced playlists, and podcast controls for podcasts._</span>
 
 [TOC]
 
@@ -15,7 +15,8 @@ Automatic playlists are created using playlist management.
 
 ##### Playlist Controls
 
-Playlist controls are in the __Settings__ tab.
+Playlist controls are in the __Settings__ tab and are applicable to
+song lists, sequences and automatic playlists.
 
 The __Maximum&nbsp;Play&nbsp;Time__, __Stop&nbsp;At__ time,
 __Stop&nbsp;After__ count, __Gap__ and __Play&nbsp;Announcements__
@@ -30,13 +31,13 @@ __Maximum&nbsp;Play&nbsp;Time__ sets the maximum duration of a song for
 this playlist.  The maximum play time set here will override the
 music queue __Maximum&nbsp;Play&nbsp;Time__ setting.
 <br>__References:__
-<br>[Music&nbsp;Queues](en-Configuration-Music%20Queues)
+<br>[Configuration / Music Queues](en-Configuration-Music%20Queues)
 
 __Stop&nbsp;At__ sets the time when the playlist will stop. The stop at
 time set here will override the player per-queue __Stop&nbsp;At__
 setting.
 <br>__References:__
-<br>[Music&nbsp;Queues](en-Configuration-Music%20Queues)
+<br>[Configuration / Music Queues](en-Configuration-Music%20Queues)
 
 __Stop&nbsp;After__ configures how many songs will play from this
 playlist.
@@ -44,12 +45,13 @@ playlist.
 If __Play&nbsp;Announcements__ is enabled, announcements will be played
 for each song for this playlist.
 <br>__References:__
-<br>[Music&nbsp;Queues](en-Configuration-Music%20Queues)
-<br>[Edit&nbsp;Dances](en-Configuration-Edit%20Dances)
+<br>[Configuration / Music Queues](en-Configuration-Music%20Queues)
+<br>[Configuration / Edit Dances](en-Configuration-Edit%20Dances)
 
 ##### Song Selection Filters
 
-Song selection filters are in the __Settings__ tab.
+Song selection filters are in the __Settings__ tab and are applicable
+to sequences and automatic playlists.
 
 The song selection filters are only displayed for automatic and sequenced
 playlists.  The filters limit which songs can be played.
@@ -62,23 +64,17 @@ __Dance&nbsp;Rating__ sets the minimum rating for a song to be chosen.
 Any song with a rating equal to __or better__ than the dance rating set
 here may be played.
 <br>__References:__
-<br>[Edit&nbsp;Ratings](en-Configuration-Edit%20Ratings)
+<br>[Configuration / Edit Ratings](en-Configuration-Edit%20Ratings)
 
 __Low&nbsp;Dance&nbsp;Level__ and __High&nbsp;Dance&nbsp;Level__ are
 optional.  Leave these set to _Easy_ and _Advanced_ if levels are not
 in use.
 
-__Low&nbsp;Dance&nbsp;Level__ sets the lowest dance level.  Any song
-with a dance level equal to or higher than the dance level set here
-may be played.
+__Low&nbsp;Dance&nbsp;Level__ and __High&nbsp;Dance&nbsp;Level__
+sets the lowest and highest dance level.  Any song
+with a dance level within the range set here may be played.
 <br>__References:__
-<br>[Edit&nbsp;Levels](en-Configuration-Edit%20Levels)
-
-__High&nbsp;Dance&nbsp;Level__ sets the highest dance level.  Any song
-with a dance level equal to or lower than the dance level set here may
-be played.
-<br>__References:__
-<br>[Edit&nbsp;Levels](en-Configuration-Edit%20Levels)
+<br>[Configuration / Edit Levels](en-Configuration-Edit%20Levels)
 
 If a song has a keyword set, and the keyword is in the
 __Allowed&nbsp;Keywords__ list, then the song may be played.  If a song
@@ -95,11 +91,13 @@ In addition, the playable status is always used for song selection. If
 the song's status does not have the __Play?__ flag set, the song will
 not be played.
 <br>__References:__
-<br>[Edit&nbsp;Status](en-Configuration-Edit%20Status)
+<br>[Configuration / Edit Status](en-Configuration-Edit%20Status)
 
 ##### Per Dance Playlist Controls
 
-The per dance playlist controls are in the __Dances__ tab.
+The per dance playlist controls are in the __Dances__ tab.  These
+controls are applicable to song lists, sequences and automatic
+playlists.
 
 Be careful when using the scroll wheel in this window, as the spinbox
 widgets will change value when the scroll wheel is used.
@@ -129,6 +127,22 @@ changed.
 ![plmgmt-dance-controls](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-dance-controls-D.png)
 <br><span style="color:#4559bf;">__Manage / Playlist Management / Dance Controls (automatic)__</span> </div>
 
+##### Podcast Controls
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![plmgmt-podcast-controls](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-podcast-controls-B.png)
+<br><span style="color:#4559bf;">__Manage / Playlist Management / Dance Controls (automatic)__</span> </div>
+
+__URL__ is the URL of the podcast.
+
+__Title__ is the title of the podcast.
+
+__Days to Keep__ sets the retention period for the podcast episodes.
+When BDJ4 starts and updates the podcast, or when the podcast is
+imported, the retention period will be applied.  Any episodes older
+than __Days&nbsp;to&nbsp;Keep__ will be removed from the database and
+from the podcast song list.
+
 ##### Naming the Playlist
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -140,8 +154,8 @@ name.  This defaults to _New&nbsp;Playlist_.  Click in the entry
 box and change the name of the playlist.  If there is a song list or
 sequence associated with the playlist, it will also be renamed.
 
-On all platforms, the slash and backslash characters are not allowed
-in playlist names.
+On all platforms, the slash&nbsp;**/** and backslash&nbsp;**\\** characters
+are not allowed in playlist names.
 
 On Windows, the following characters are not allowed in playlist names:
 __&nbsp;*&nbsp;'&nbsp;"&nbsp;:&nbsp;|&nbsp;&lt;&nbsp;&gt;&nbsp;^&nbsp;__
@@ -165,6 +179,10 @@ __Edit&nbsp;/&nbsp;New&nbsp;Automatic&nbsp;Playlist__ will clean out
 any loaded playlist and reset the name to _New&nbsp;Playlist_.  The
 playlist type will be set to _Automatic_.
 
+__Edit&nbsp;/&nbsp;New&nbsp;Podcast__ will clean out
+any loaded playlist and reset the name to _New&nbsp;Playlist_.  The
+playlist type will be set to _Podcast_.
+
 __Edit&nbsp;/&nbsp;Create&nbsp;Copy__ will create a copy of the
 currently loaded playlist and create a new name with _Copy&nbsp;of_
 prefixed to the old name. If there is a song list or sequence
@@ -174,4 +192,4 @@ __Edit&nbsp;/&nbsp;Delete__ will delete the currently loaded playlist
 from your storage device and start a new automatic playlist.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-06-19 09:51:43; BDJ4 version 4.15.1)_

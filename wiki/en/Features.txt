@@ -93,6 +93,9 @@
       [Configuration / Display Settings](en-Configuration-Display%20Settings)
     * Automatic Organization.
       [Subjects / Organizing Music](en-Subjects-Organizing%20Music)
+    * Remove Songs.
+      BDJ4 never deletes audio files.  Removed songs are renamed.
+      [Subjects / Removing Songs](en-Subjects-Removing%20Songs)
 * Song Editor
   [Management / Song Editor](en-Management-Song%20Editor)
     * Field display is fully configurable.
@@ -105,11 +108,10 @@
         * Adjust the song start and song end.
         * Adjust the song speed.
         * Adjust the song volume.
-    * Apply adjustments
-        * Trim Silence.
-        * Adjust: apply speed, song start, song end to a song.
     * Batch Edit songs.
       [Subjects / Batch Editing](en-Subjects-Batch%20Editing)
+    * Trim Silence.
+      The __Song&nbsp;Start__ and __Song&nbsp;End__ are set.
 * Audio Identification
   [Management / Audio Identification](en-Management-Audio%20Identification)
     * Identify songs and retrieve tags for the song.
@@ -129,4 +131,4 @@
   [Subjects / Profiles](en-Subjects-Profiles)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-06-19 10:38:45; BDJ4 version 4.15.1)_

@@ -7,7 +7,7 @@ affect the entire BDJ4 application._</span>
 
 __Music Folder__: The main music folder where the music is found.
 <br>__References:__
-<br>[Update&nbsp;Database](en-Management-Update%20Database)
+<br>[Management / Update&nbsp;Database](en-Management-Update%20Database)
 
 __Profile Name__: The name of this profile.  This name will appear in
 the title of all windows.
@@ -54,4 +54,4 @@ paste the appropriate information into the configuration.
 <br><span style="color:#4559bf;">__Configure / General__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-04-11 07:56:21; BDJ4 version 4.14.0)_
+<br>_(Updated 2025-06-19 09:08:27; BDJ4 version 4.15.1)_

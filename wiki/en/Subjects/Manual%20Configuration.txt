@@ -19,20 +19,20 @@ The defaults are standard, latin and club.
 
   * MQ_INFO_SEP
     Separator character(s) for the marquee information display.
-    The default is a slash (/).
+    The default is a slash&nbsp;(**/**).
   * PLAYER_UI_SEP
     Separator character(s) for the player song display.
-    The default is a colon (:).
+    The default is a colon&nbsp;(**:**).
   * UI_MARK_TEXT
     The character(s) to use to display the mark.
     The default is a left-five-eights box.
   * UI_ROWSEL_COL
     Row selection color.  The default is a darker accent color.
-    Must be specified as #rrggbb.
+    Must be specified as _#rrggbb_.
     To use the default, leave the setting empty.
   * UI_ROW_HL_COL
     Row highlight color.  The default is a dark accent color.
-    Must be specified as #rrggbb.
+    Must be specified as _#rrggbb_.
     To use the default, leave the setting empty.
 
 ###### data/favorites.txt
@@ -58,4 +58,4 @@ DANCERATING DB_ADD_DATE DISCNUMBER GENRE GROUPING LASTUPDATED TITLE
 TRACKNUMBER MOVEMENTNAME MOVEMENTNUM WORK
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-06-19 09:59:38; BDJ4 version 4.15.1)_

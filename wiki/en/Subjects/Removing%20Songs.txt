@@ -23,20 +23,29 @@ __Remove&nbsp;Song__ in the __Actions__ menu.
 <!-- image also in manage/music-manager -->
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![mm-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/mm-actions-menu-D.png)
+![mm-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/mm-actions-menu-E.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager / Actions__</span> </div>
 
-The song is marked to be removed.  Other than being marked for
-removal, and no longer being listed in the display, no action is taken
-yet. The __Undo&nbsp;Song&nbsp;Removal__ selection in the __Actions__
-menu will be active and can be used to reset the songs.
+The song is marked to be removed.  __No action is taken yet__. The
+music manager listing will display the song using the error color. The
+__Undo&nbsp;Song&nbsp;Removal__ selection and the
+__Undo&nbsp;All&nbsp;Song&nbsp;Removals__ in the __Actions__ menu will
+be active and can be used to reset the song.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![remove-mm](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/remove-mm-A.png)
+<br><span style="color:#4559bf;">__Manage / Music Manager___</span> </div>
 
 ##### Undoing Song Removal
 
-The __Undo&nbsp;Song&nbsp;Removal__ selection in the __Actions__ menu
-will revert __all__ songs that have been marked for removal.  The undo
-action will only be active if a song has been removed and the music
-manager has not yet been closed.
+Select a song that has been marked for removal, then select the
+__Undo&nbsp;Song&nbsp;Removal__ selection in the __Actions__ menu.
+
+The __Undo&nbsp;All&nbsp;Song&nbsp;Removals__ selection in the
+__Actions__ menu can be used to undo all songs marked for removal.
+
+The undo action will only be active if a song has been removed and the
+music manager has not yet been closed.
 
 ##### When the Music Manager is Closed
 
@@ -68,4 +77,4 @@ the __Start__ button.  This will remove any unused entries from the
 database.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-01-18 08:05:43; BDJ4 version 4.4.8)_
+<br>_(Updated 2025-06-19 10:21:39; BDJ4 version 4.15.1)_

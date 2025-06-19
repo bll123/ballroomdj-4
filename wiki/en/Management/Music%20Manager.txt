@@ -66,13 +66,13 @@ will also act upon the Music&nbsp;Manager's current selection.
 <!-- this image also used in removing-songs -->
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![mm-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/mm-actions-menu-D.png)
+![mm-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/mm-actions-menu-E.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager / Actions Menu__</span> </div>
 
 __Actions&nbsp;/&nbsp;Mark as Same Song__ will mark the
 selected songs as the same song.
 <br>__References:__
-<br>[Subjects / Same&nbsp;Song&nbsp;Marks](en-Subjects-Same%20Song%20Marks)
+<br>[Subjects / Same Song Marks](en-Subjects-Same%20Song%20Marks)
 
 __Actions&nbsp;/&nbsp;Clear Same Song Mark__ will clear the
 same song markers from the selected songs.
@@ -84,8 +84,13 @@ database.
 <br>__References:__
 <br>[Subjects / Removing&nbsp;Songs](en-Subjects-Removing%20Songs)
 
-__Actions&nbsp;/&nbsp;Undo&nbsp;Song&nbsp;Removal__ will undo any
-pending song removals.
+__Actions&nbsp;/&nbsp;Undo&nbsp;Song&nbsp;Removal__ will undo
+the selected song removal.
+<br>__References:__
+<br>[Subjects / Removing&nbsp;Songs](en-Subjects-Removing%20Songs)
+
+__Actions&nbsp;/&nbsp;Undo&nbsp;All&nbsp;Song&nbsp;Removals__ will
+undo all pending song removals.
 <br>__References:__
 <br>[Subjects / Removing&nbsp;Songs](en-Subjects-Removing%20Songs)
 
@@ -106,4 +111,4 @@ marked as the same song.
 <br><span style="color:#4559bf;">__Manage / Music Manager / Same Song Marks__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-06-19 10:17:14; BDJ4 version 4.15.1)_

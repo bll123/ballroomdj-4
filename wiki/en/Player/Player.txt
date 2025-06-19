@@ -91,7 +91,7 @@ can be adjusted to change the current position of the song.
 
 __Volume__: Sets the playback volume.
 <br>__References:__
-<br>__Default&nbsp;Volume__ in [Configure&nbsp;/&nbsp;Player](en-Configuration-Player)
+<br>__Default&nbsp;Volume__ in [Configuration&nbsp;/&nbsp;Player](en-Configuration-Player)
 
 ##### Music Queue Controls
 
@@ -175,7 +175,7 @@ dance and marquee display may be changed. After setting the song
 information, select the __Queue__ button to add the song to the music
 queue.
 <br>__References:__
-<br>[Player / External Request](en-Player-External%20Request)
+<br>[Player / Playing a Song not in the Database](en-Player-External%20Request)
 
 When an audio file is dragged from the file manager and dropped in
 a music queue, the external request dialog is started.
@@ -247,9 +247,9 @@ queue have been played, the player will check for another queue that
 has songs queued and start playing songs from it.
 
 <br>__References:__
-<br>[Configure / Player](en-Configuration-Player)
-<br>[Configure / Music Queues](en-Configuration-Music%20Queues)
-<br>[Configure / Marquee](en-Configuration-Marquee)
+<br>[Configuration / Player](en-Configuration-Player)
+<br>[Configuration / Music Queues](en-Configuration-Music%20Queues)
+<br>[Configuration / Marquee](en-Configuration-Marquee)
 
 [Wiki Home](Home)
-<br>_(Updated 2025-01-04 10:56:52; BDJ4 version 4.12.9)_
+<br>_(Updated 2025-06-19 09:08:27; BDJ4 version 4.15.1)_

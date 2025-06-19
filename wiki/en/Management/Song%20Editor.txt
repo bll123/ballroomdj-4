@@ -24,7 +24,7 @@ The song editor works in conjunction with the music manager The
 __First__, __Next__ and __Previous__ buttons traverse the songs
 selected in the music manager.
 <br>__References:__
-<br>[Music&nbsp;Manager](en-Management-Music%20Manager)
+<br>[Management / Music Manager](en-Management-Music%20Manager)
 
 When a song is selected in
 [Edit&nbsp;Song&nbsp;Lists](en-Management-Edit%20Song%20Lists), or the
@@ -99,7 +99,7 @@ __Actions&nbsp;/&nbsp;Cancel&nbsp;Edit&nbsp;All__ cancels the
 batch edit process. The changes made to the current song will be
 reverted.
 
-__Actions&nbsp;/&nbsp;Trim&nbsp;Silense__ processes the audio file and
+__Actions&nbsp;/&nbsp;Trim&nbsp;Silence__ processes the audio file and
 if there is silence at the beginning or end of the song, sets the song
 start and song end.  The changes must be saved.
 
@@ -109,11 +109,9 @@ Before using the BPM Counter, the BPM setting should be added to the
 song editor using
 [Display&nbsp;Settings](en-Configuration-Display%20Settings).
 
-After selecting the song to edit in the song editor, use the play
-button
-(![play](https://ballroomdj4.sourceforge.io/wikiimg/PlayButton-A.png))
-to play the song.  Then select the __MPM__ (or __BPM__) menu selection
-in the __Actions__ menu.  The BPM Counter will start.
+After selecting the song to edit in the song editor, use the __Play__
+button to play the song.  Then select the __MPM__ (or __BPM__) menu
+selection in the __Actions__ menu.  The BPM Counter will start.
 
 <!-- this image is re-used: see subjects/bpm-mpm -->
 
@@ -128,6 +126,9 @@ the __Reset__ button.
 <div markdown style="margin-right: 20px; text-align: center;">
 ![se-bpm-saved](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-bpm-saved-A.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor / BPM__</span> </div>
+
+Be sure to save the changes to the song.  The BPM is not automatically
+saved.
 
 ##### Song Editor Fields
 
@@ -156,19 +157,21 @@ song editor is:
  Duration|-|Display Only|
  Favorite|BDJ4||[Subjects&nbsp;/&nbsp;Favorites](en-Subjects-Favorites)
  Genre|Audio||[Configuration&nbsp;/&nbsp;Edit&nbsp;Genres](en-Configuration-Edit%20Genres)
- Grouping|Audio||Grouping is not currently supported by BDJ4
+ Grouping|Audio||
  Keyword|BDJ4||[Subjects&nbsp;/&nbsp;Keyword](en-Subjects-Keyword)<br>[Subjects&nbsp;/&nbsp;Song&nbsp;Selection](en-Subjects-Song%20Selection)<br>[Management&nbsp;/&nbsp;Playlist%20Management](en-Management-Playlist%20Management)
  Marquee Display|BDJ4||[How&nbsp;To&nbsp;/&nbsp;Line&nbsp;Dances](en-HowTo-Linedance)
  Movement|Audio||Classical Music: Movement Name<br>[Subjects&nbsp;/&nbsp;Classical%20Music](en-Subjects-Classical)
  Movement Count|Audio||
  Movement Number|Audio||
+ No Play Time Limit|BDJ4||Overrides the music queue, playlist, and
+per-dance maximum play time.
  Notes|BDJ4||Separated from _Comment_ so that existing audio file comments would not be changed
  Prevent Rename|-||[Subjects&nbsp;/&nbsp;Organizing&nbsp;Music](en-Subjects-Organizing%20Music)
  Song End|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
  Song Start|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
  Speed Adjustment|BDJ4||[Subjects&nbsp;/&nbsp;Playback&nbsp;Controls](en-Subjects-Playback%20Controls)
  Status|BDJ4||[Configuration&nbsp;/&nbsp;Edit&nbsp;Status](en-Configuration-Edit%20Status)
- Tags|BDJ4||
+ Tags|Audio||[Management&nbsp;/&nbsp;/Playlist&nbsp;Management](en-Management-Playlist%20Management)
  Title|Audio||
  Title Sort Order|Audio||
  Total Discs|Audio||
@@ -185,4 +188,4 @@ Other fields that can be displayed in BDJ4:
  Source|-|Display Only|Audio Identification: The source of the audio identification
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-06-19 10:34:29; BDJ4 version 4.15.1)_

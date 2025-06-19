@@ -18,8 +18,8 @@ on the buttons and menus.
 The song list's name is at the top of the _Song&nbsp;List_ tab. Enter
 the new name of the song list at any time.
 
-On all platforms, the slash and backslash characters are not allowed
-in song list names.
+On all platforms, the slash&nbsp;**/** and backslash&nbsp;**\\** characters
+are not allowed in song list names.
 
 On Windows, the following characters are not allowed in song list names:
 **&nbsp;*&nbsp;'&nbsp;"&nbsp;:&nbsp;|&nbsp;&lt;&nbsp;&gt;&nbsp;^&nbsp;**
@@ -40,7 +40,7 @@ Edit&nbsp;Song&nbsp;Lists tab will be displayed.
 
 In the song selection (the right side of the screen in the
 side-by-side view), select the songs to be played and select the left
-arrow button (![Left
+arrow button&nbsp;(![Left
 Arrow](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-B.png))
 to add them to the song list.  The _Statistics_ tab can be used to
 view how many songs, the total play time and how many songs for each
@@ -89,9 +89,9 @@ Change the name of the song list.
 
 Select a song in the song list that you want to replace.  From the
 song selection, select a new song of the same dance and add it to the
-song list.  Re-select the song being replaced and select the remove
-button
-(![remove](https://ballroomdj4.sourceforge.io/wikiimg/RemoveSongButton-B.png)).
+song list.  Re-select the song being replaced and select the
+remove
+button&nbsp;(![remove](https://ballroomdj4.sourceforge.io/wikiimg/RemoveSongButton-B.png)).
 
 Continue to replace songs until you are satisfied with the new song
 list.
@@ -140,7 +140,7 @@ The [playlist&nbsp;settings](en-Management-Playlist%20Management)
 will be propagated from the automatic or sequenced playlist to the
 new song list.
 <br>__References:__
-<br>[Create&nbsp;a&nbsp;Song&nbsp;List&nbsp;from&nbsp;a&nbsp;Playlist](en-Subjects-Create%20Song%20List))
+<br>[Subjects / Create a Song List from a Playlist](en-Subjects-Create%20Song%20List))
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-06-19 10:06:58; BDJ4 version 4.15.1)_

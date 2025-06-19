@@ -30,10 +30,10 @@ __Completion Message__: A message displayed on the marquee when the dance
 is finished (no more songs left to play).
 
 __Fade Type__: The type of fade-out to use.
-The default is _Triangle_.
-(Triangle (blue), Quarter&nbsp;Sine (red), Half&nbsp;Sine (green),
-Exponential&nbsp;Sine (cyan), Inverted&nbsp;Parabola (black),
-Quadratic (magenta) ).
+The default is _Triangle_. (Triangle&nbsp;(blue),
+Quarter&nbsp;Sine&nbsp;(red), Half&nbsp;Sine&nbsp;(green),
+Exponential&nbsp;Sine&nbsp;(cyan),
+Inverted&nbsp;Parabola&nbsp;(black), Quadratic&nbsp;(magenta) ).
 <div markdown style="margin-right: 20px; text-align: center;">
 ![fadeimg-D](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/fadeimg-D.png)
 <br><span style="color:#4559bf;">__Fade Types__</span> </div>
@@ -54,4 +54,4 @@ _ISO_ format is _Day-of-the-week YYYY-MM-DD HH:MM_.
 <br><span style="color:#4559bf;">__Player / Speed Reset Button__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-06-13 05:07:47; BDJ4 version 4.15.0)_
+<br>_(Updated 2025-06-19 09:59:38; BDJ4 version 4.15.1)_

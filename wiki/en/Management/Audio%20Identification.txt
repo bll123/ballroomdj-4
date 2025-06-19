@@ -26,7 +26,7 @@ Audio identification works in conjunction with the music manager. The
 __First__, __Next__ and __Previous__ buttons traverse the songs
 selected in the music manager.
 <br>__References:__
-<br>[Music&nbsp;Manager](en-Management-Music%20Manager)
+<br>[Management / Music&nbsp;Manager](en-Management-Music%20Manager)
 
 ##### Match List
 
@@ -56,4 +56,4 @@ Then select the __Save__ button in the upper right to save the changes
 to the database.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-06-19 09:08:27; BDJ4 version 4.15.1)_

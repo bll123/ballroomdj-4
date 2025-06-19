@@ -18,13 +18,12 @@ Use the right arrow
 (![right](https://ballroomdj4.sourceforge.io/wikiimg/RightButton-B.png)),
 to add dances to the sequence.
 
-Use the up and down arrows
-(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-B.png),
-![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-B.png))
+Use the up and down
+arrows&nbsp;(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-B.png),&nbsp;![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-B.png))
 to change the order of the sequence.
 
-Use the remove button
-(![remove](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-E.png))
+Use the remove
+button&nbsp;(![remove](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-E.png))
 to remove a dance from the sequence.
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -41,8 +40,8 @@ At the top of the sequence there is an entry box with the sequence
 name.  This defaults to _New&nbsp;Sequence_.  Click in the entry
 box and change the name of the song list.
 
-On all platforms, the slash and backslash characters are not allowed
-in sequence names.
+On all platforms, the slash&nbsp;**/** and backslash&nbsp;**\\**
+characters are not allowed in sequence names.
 
 On Windows, the following characters are not allowed in sequence names:
 __&nbsp;*&nbsp;'&nbsp;"&nbsp;:&nbsp;|&nbsp;&lt;&nbsp;&gt;&nbsp;^&nbsp;__
@@ -79,4 +78,4 @@ played, change the playlist settings in
 [Playlist%20Management](en-Management-Playlist%20Management).
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-06-19 10:05:19; BDJ4 version 4.15.1)_

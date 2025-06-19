@@ -10,24 +10,6 @@ the dances and the songs to be played._</span>
 When an automatic playlist is used, BDJ4 will choose both the dances
 to be played, and choose the songs to be played.
 
-A sample automatic playlist is installed with BDJ4.
-
-##### Changing the Name of the Automatic Playlist
-
-The automatic playlist's name is at the top of the
-_Playlist&nbsp;Management_ tab. Enter the new name of the automatic
-playlist at any time.
-
-On all platforms, the slash and backslash characters are not allowed
-in playlist names.
-
-On Windows, the following characters are not allowed in playlist names:
-**&nbsp;*&nbsp;'&nbsp;"&nbsp;:&nbsp;|&nbsp;&lt;&nbsp;&gt;&nbsp;^&nbsp;**
-
-If you forget to change the name, the automatic playlist will be named
-_New&nbsp;Playlist_.  Select __Load__ from the __Edit__ menu.  Select
-_New&nbsp;Playlist_.  Change the name of the automatic playlist.
-
 ##### Creating an Automatic Playlist
 
 Select __Manage__ in the start window.  Select
@@ -56,6 +38,22 @@ To change a count, select the dance row, then click on the count.
 Select the __+__ and __-__ buttons to adjust the count.  Click on a
 different dance to finalize the change.
 
+##### Changing the Name of the Automatic Playlist
+
+The automatic playlist's name is at the top of the
+_Playlist&nbsp;Management_ tab. Enter the new name of the automatic
+playlist at any time.
+
+On all platforms, the slash&nbsp;**/** and backslash&nbsp;**\\**
+characters are not allowed in playlist names.
+
+On Windows, the following characters are not allowed in playlist names:
+**&nbsp;*&nbsp;'&nbsp;"&nbsp;:&nbsp;|&nbsp;&lt;&nbsp;&gt;&nbsp;^&nbsp;**
+
+If you forget to change the name, the automatic playlist will be named
+_New&nbsp;Playlist_.  Select __Load__ from the __Edit__ menu.  Select
+_New&nbsp;Playlist_.  Change the name of the automatic playlist.
+
 ##### Dance and Song Selection
 
 BDJ4 chooses the next dance to be played using an algorithm based on
@@ -67,34 +65,50 @@ for the dance.
 BDJ4 chooses the song from the songs filtered by any playlist song
 selection filters.
 <br>__References:__
-<br>[Playlist&nbsp;Management](en-Management-Playlist%20Management)
+<br>[Managements / Playlist Management](en-Management-Playlist%20Management)
 
 The song to be played is chosen based on the
-[Dance&nbsp;Rating](en-Configuration-Edit%20Ratings) and
-[Dance&nbsp;Level](en-Configuration-Edit%20Levels) (optional).
+[Dance&nbsp;Rating](en-Configuration-Edit%20Ratings),
+[Dance&nbsp;Level](en-Configuration-Edit%20Levels) (optional) and
+[Status](en-Configuration-Edit%20Status) (optional).
 
 The dance rating and dance level have weights assigned to them that
 adjust which song will be played.  A dance rating with a higher weight
 will be played more often.  The dance rating is the primary selection
 criteria.
 
+If a status is used, only those songs with a status that are marked as
+playable are played.
+<br>__References:__
+<br>[Configuration / Edit Dances](en-Configuration-Edit%20Dances)
+<br>[Configuration / Edit Levels](en-Configuration-Edit%20Levels)
+<br>[Configuration / Edit Status](en-Configuration-Edit%20Status)
+
 In addition, same-song marks are checked to make sure that only one song
 from those songs marked as the same song is used.
+<br>__References:__
+<br>[Subjects / Same Song Marks](en-Subjects-Same%20Song%20Marks)
 
 ##### Playlist Controls
 
 The _Settings_ tab in _Playlist&nbsp;Management_ has the controls for
 _Maximum&nbsp;Play&nbsp;Time, _Stop&nbsp;At_, _Stop&nbsp;After_,
-_Gap_ and _Play&nbsp;Announcements_.
+_Gap_, _Play&nbsp;Announcements_ and _Tags_.
 
-The song filter associated with the playlist can also be changed in
-the _Settings_ tab in _Playlist&nbsp;Management_.  The songs can
-filtered by _Dance&nbsp;Rating_, _Dance&nbsp;Level_, and
-_Allowed&nbsp;Keywords_.  In addition, in the _Dances_ tab, the songs
+When an automatic playlist is played, BDJ4 chooses the song from the
+songs filtered by any playlist song selection filters.
+
+See
+[Management&nbsp;/&nbsp;Playlist&nbsp;Management](en-Management-Playlist%20Management)
+for a description on how to use the playlist settings to filter which
+songs are selected.
+
+In addition, in the _Dances_ tab, the songs
 can be filtered by _Low&nbsp;MPM_ and _High&nbsp;MPM_ per dance.
 
 In the _Dances_ tab, the _Maximum&nbsp;Play&nbsp;Time_ for a
-particular dance can be set.
+particular dance can be set.  This will override any setting in the
+music queue or in the playlist settings.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-06-19 09:51:43; BDJ4 version 4.15.1)_

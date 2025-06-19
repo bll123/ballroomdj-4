@@ -41,7 +41,7 @@ entirely.
 __Stop At__: The time when playback stops when using this queue.
 <br>__References:__
 <br>__Stop&nbsp;At__ capabilities in
-[Playlist&nbsp;Management](en-Management-Playlist%20Management)
+[Management&nbsp;/&nbsp;Playlist&nbsp;Management](en-Management-Playlist%20Management)
 
 __Pause Each Song__: Playback will pause after each song
 is played.  This setting is used for showcases and events.
@@ -49,7 +49,7 @@ is played.  This setting is used for showcases and events.
 __Play Announcements__: The dance announcement will be played before
 each song.
 <br>__References:__
-<br>[Edit&nbsp;Dances](en-Configuration-Edit%20Dances)
+<br>[Configuration / Edit&nbsp;Dances](en-Configuration-Edit%20Dances)
 
 __Play When Queued__: Songs and playlists will start playing
 immediately when queued.
@@ -63,4 +63,4 @@ practice and teaching.
 <br><span style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-01-04 10:56:52; BDJ4 version 4.12.9)_
+<br>_(Updated 2025-06-19 09:08:27; BDJ4 version 4.15.1)_

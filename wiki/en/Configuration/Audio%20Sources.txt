@@ -9,15 +9,15 @@ Audio sources configures access to remote audio servers and to set up
 a BDJ4 audio server.  At this time (2025-6-13), BDJ4 servers,
 BDJ4 clients and Podcast clients are supported.
 
-Adding a new audio source: Select the __Add&nbsp;New__ (![Add
+Adding a new audio source: Select the __Add&nbsp;New__&nbsp;(![Add
 New](https://ballroomdj4.sourceforge.io/wikiimg/AddNewButton-E.png))
 button to add a new audio source. The audio source is added with a
 default name of _New&nbsp;Audio Source_.  Change the name of the audio
 source to what you want.
 
 Removing an audio source: Select the audio source to remove in the
-list.  Select the __Delete__
-(![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-E.png))
+list.  Select the
+__Delete__&nbsp;(![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-E.png))
 button to remove the audio source.
 
 __Mode__: Set to _Off_, _Client_ or _Server_.
@@ -46,4 +46,4 @@ configured correctly.  The server must be accessible.
 <br><span style="color:#4559bf;">__Configure / Player__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-06-13 05:07:47; BDJ4 version 4.15.0)_
+<br>_(Updated 2025-06-19 09:59:38; BDJ4 version 4.15.1)_

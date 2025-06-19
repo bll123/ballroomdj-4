@@ -18,7 +18,7 @@ with the latest episodes.
 Select __Manage&nbsp;/&nbsp;Edit&nbsp;Song&nbsp;Lists__.  In the
 _Import_ menu, select __Import&nbsp;Playlist__.
 
-In the _Import&nbsp;From_ selection, select __Podcast__.
+In the __Import&nbsp;From__ selection, select __Podcast__.
 
 On the podcast web page, there will be a button to link to the
 podcast.  "Walled Garden" podcasts such as Apple, Spotify, Amazon, etc.
@@ -41,7 +41,7 @@ For this example, the podcast
 will be used.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![podcast-import](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/podcast-import-A.png)
+![podcast-import](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/podcast-import-B.png)
 <br><span style="color:#4559bf;">__Manage / Edit Song Lists / Import Playlist__</span> </div>
 
 ##### Checking the Connection
@@ -58,7 +58,7 @@ Depending on how many episodes are in the podcast, the import may take
 a while to finish, and for the new song list to display.  Be patient.
 
 After the import is finished, a new song list with that podcast's
-episodes will be displayed in _Edit&nsbp;Song&nbsp;Lists_.
+episodes will be displayed in _Edit&nbsp;Song&nbsp;Lists_.
 
 ##### Managing the Podcast
 
@@ -73,4 +73,4 @@ many days to keep a podcast episode.  A podcast episode older than the
 number of days configured will be removed when the podcast is updated.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-06-13 05:33:54; BDJ4 version 4.15.0)_
+<br>_(Updated 2025-06-19 10:35:43; BDJ4 version 4.15.1)_

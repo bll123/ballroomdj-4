@@ -18,7 +18,7 @@ manage this task.
 The first step is to add the new dance name.  For the purposes of this
 example, _Waltz_ will be changed to _Slow&nbsp;Waltz_.  Select
 __Configure__ and __Edit&nbsp;Dances__.  Select the __Add&nbsp;New__
-button (![Add
+button&nbsp;(![Add
 New](https://ballroomdj4.sourceforge.io/wikiimg/AddNewButton-E.png))
 to add a new dance entry.
 
@@ -93,6 +93,5 @@ button to remove the old dance name.
 <br>[Management / Song Editor](en-Management-Song%20Editor)
 <br>[Subjects / Batch Editing](en-Subjects-Batch%20Editing)
 
-
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-06-19 10:05:19; BDJ4 version 4.15.1)_

@@ -33,12 +33,10 @@ The player will only display at most five items in the current song
 information display.
 
 Use the spinbox at the top of the screen to select which display to
-configure.  Select a column and use the left and right arrows
-(![left](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-B.png),
-![right](https://ballroomdj4.sourceforge.io/wikiimg/RightButton-B.png))
-to remove and add columns to display.  Use the up and down arrows
-(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-B.png),
-![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-B.png))
+configure.  Select a column and use the left and right
+arrows&nbsp;(![left](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-B.png),&nbsp;![right](https://ballroomdj4.sourceforge.io/wikiimg/RightButton-B.png))
+to remove and add columns to display.  Use the up and down
+arrows&nbsp;(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-B.png),&nbsp;![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-B.png))
 to change the order in which the columns are displayed.
 
 Information on each display item can be found here:
@@ -50,4 +48,4 @@ Information on each display item can be found here:
 <br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-04-11 07:56:21; BDJ4 version 4.14.0)_
+<br>_(Updated 2025-06-19 10:05:19; BDJ4 version 4.15.1)_

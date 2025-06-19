@@ -74,11 +74,11 @@ tags will not affect song selection as much as the dance rating.
 <br>__References:__
 <br>[Configure / Edit Ratings](en-Configuration-Edit%20Ratings)
 <br>[Configure / Edit Levels](en-Configuration-Edit%20Levels)
-<br>[Manage / Playlist Management](en-Management-Playlist%20Management)
+<br>[Management / Playlist Management](en-Management-Playlist%20Management)
 
 The parameters that control song selection are documented in the
 _data/autoselection.txt_ file.  If changes to these parameters are
 desired, they must be changed manually.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-06-19 09:08:27; BDJ4 version 4.15.1)_

@@ -19,8 +19,8 @@ columns displayed can be changed in
 _Side&#8209;by&#8209;Side&nbsp;Song&nbsp;List_ and
 _Side&#8209;by&#8209;Side&nbsp;Song&nbsp;Selection_ selections.
 
-The left arrow button (![Left
-Arrow](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-B.png))
+The left arrow
+button&nbsp;(![Left&nbsp;Arrow](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-B.png))
 in-between the two listings will add the current song selection to the
 song list.  Multiple songs may be selected in the song selection list
 by holding down the _Control_ key when clicking on each song.
@@ -62,8 +62,8 @@ At the top of the song list, there is an entry box with the song list
 name.  This defaults to _New&nbsp;Song&nbsp;List_.  Click in the entry
 box and change the name of the song list.
 
-On all platforms, the slash and backslash characters are not allowed
-in song list names.
+On all platforms, the slash&nbsp;**/** and backslash&nbsp;**\\** characters
+are not allowed in song list names.
 
 On Windows, the following characters are not allowed in song list names:
 __&nbsp;*&nbsp;'&nbsp;"&nbsp;:&nbsp;|&nbsp;&lt;&nbsp;&gt;&nbsp;^&nbsp;__
@@ -88,7 +88,7 @@ and type of song easily.
 ![sl-filter-button](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-filter-button-B.png)
 <br><span style="color:#4559bf;">__Manage / Edit Song Lists / Filter Button__</span> </div>
 
-Use the filter button (![Filter
+Use the filter button&nbsp;(![Filter
 Songs](https://ballroomdj4.sourceforge.io/wikiimg/FilterSongsButton-A.png))
 to display the filter dialog.  In this dialog, select the filters you
 want activated and select __Apply__.  The song selection listing will
@@ -155,16 +155,17 @@ __Edit&nbsp;/&nbsp;Load__ will open a dialog to select an existing
 song list.  Select a song list and then the __Select__ button to load
 it. Any current song list will be saved first.
 
-__Edit&nbsp;/&nbsp;Start&nbsp;New&nbsp;Song&nbsp;List__ will
-clean out any loaded song list and reset the name to
-_New&nbsp;Song&nbsp;List_.
+__Edit&nbsp;/&nbsp;Start&nbsp;New&nbsp;Song&nbsp;List__ will clean out
+any loaded song list and reset the name to _New&nbsp;Song&nbsp;List_.
 
-__Edit&nbsp;/&nbsp;Create&nbsp;Copy__ will create a copy of
-the currently loaded song list and create a new name with
-_Copy&nbsp;of_ prefixed to the old name.
+__Edit&nbsp;/&nbsp;Create&nbsp;Copy__ will create a copy of the
+currently loaded song list and create a new name with _Copy&nbsp;of_
+prefixed to the old name.
 
-__Edit&nbsp;/&nbsp;Delete__ will delete the currently loaded
-song list from your storage device and start a new song list.
+__Edit&nbsp;/&nbsp;Delete__ will delete the currently loaded song list
+from your storage device and start a new song list.  If the song list
+being deleted is a podcast, all podcast episodes will be removed from
+the database.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![sl-edit-menu-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-edit-menu-B.png)
@@ -230,4 +231,4 @@ playlist from iTunes.
 <br><span style="color:#4559bf;">__Manage / Edit Song Lists / Import Menu__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-04-11 08:03:01; BDJ4 version 4.14.0)_
+<br>_(Updated 2025-06-19 10:23:49; BDJ4 version 4.15.1)_

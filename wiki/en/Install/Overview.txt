@@ -12,8 +12,8 @@ with BDJ4.
 The configuration is static, not dynamic.  When you change the
 configuration, you will need to close and restart the player and
 management interfaces.  Configuration changes are not immediately
-applied.  Certain configuration options (profile color, accent color,
-user interface, et.al.) require exiting BDJ4 and restarting.
+applied.  Certain configuration options (locale, profile color, accent
+color, user interface, et.al.) require exiting BDJ4 and restarting.
 
 ##### Database Updates
 
@@ -61,16 +61,16 @@ the original song list, sequence or automatic playlist.
 
 Some people use the genre tag to set the dance (Waltz, Rumba, etc.).
 
-In writing BDJ4, I have been careful not to overwrite tags that people
-may be using. BDJ4 leaves the genre tag alone so that it can be used
-by the user for the purpose they choose (it may be set to New Age,
-Jazz, Rock, etc.).  BDJ4 saves the dance in its own tag, and leaves
-the genre tag as is.
+In writing BDJ4, I have been careful not to overwrite audio file tags
+that people may be using. BDJ4 leaves the genre tag alone so that it
+can be used by the user for the purpose they choose (it may be set to
+New&nbsp;Age, Jazz, Rock, etc.).  BDJ4 saves the dance in its own tag,
+and leaves the genre tag as is.
 
-When updating the BDJ4 database, there is a _Database Loads Dance from
-Genre_ option that can be set to check the genre tag for the dance
-when the audio file information is first read and saved into the
-database.
+When updating the BDJ4 database, there is a
+_Database&nbsp;Loads&nbsp;Dance&nbsp;from&nbsp;Genre_ option that can
+be set to check the genre tag for the dance when the audio file
+information is first read and saved into the database.
 
 <br>__References:__
 <br>[Configuration / Organization](en-Configuration-Organization)
@@ -78,6 +78,17 @@ database.
 ##### Music Queues, Profiles and Alternate Folders
 
 BDJ4 installations have the following structure:
+
+This is the usual configuration that many people have.  A single
+installation with one profile and a single music queue.
+
+* Main Installation
+    * Profile
+        * Music Queue
+
+BDJ4 can be configured with multiple profiles and multiple music queues.
+In addition alternate folders can be set up with their own databases
+and profiles.
 
 * Main Installation
     * Profile
@@ -89,13 +100,6 @@ BDJ4 installations have the following structure:
         * Music Queues
     * Profile
         * Music Queues
-
-Note that many people have a single installation with one profile and
-a single music queue.
-
-* Main Installation
-    * Profile
-        * Music Queue
 
 The BDJ4 player can display up to five music queues, and each music
 queue can be configured in a different fashion.  As examples, a music
@@ -121,7 +125,7 @@ configurations are separate and don't affect each other.
 Alternate folder installation is optimized so that the BDJ4
 installation is not duplicated, only the data files are separate.
 <br>__Reference:__
-<br>[Alternate Folders](en-Subjects-Alternate%20Folders)
+<br>[Subjects / Alternate Folders](en-Subjects-Alternate%20Folders)
 
 ##### Getting help
 
@@ -131,4 +135,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2025-01-15 15:32:33; BDJ4 version 4.12.9)_
+<br>_(Updated 2025-06-19 09:26:12; BDJ4 version 4.15.1)_

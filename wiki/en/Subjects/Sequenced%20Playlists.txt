@@ -22,8 +22,8 @@ A sample _Standard&nbsp;Rounds_ sequence is installed with BDJ4.
 The sequence's name is at the top of the _Edit&nbsp;Sequence_ tab.
 Enter the new name of the sequence playlist at any time.
 
-On all platforms, the slash and backslash characters are not allowed
-in sequence names.
+On all platforms, the slash&nbsp;**/** and backslash&nbsp;**\\** characters
+are not allowed in sequence names.
 
 On Windows, the following characters are not allowed in sequence names:
 **&nbsp;*&nbsp;'&nbsp;"&nbsp;:&nbsp;|&nbsp;&lt;&nbsp;&gt;&nbsp;^&nbsp;**
@@ -39,30 +39,29 @@ Select __Start&nbsp;New&nbsp;Sequence__ from the __Edit__ menu.
 
 Change the name of the sequence at the top of the window.
 
-Select each dance to be played and use the right arrow button
-(![right](https://ballroomdj4.sourceforge.io/wikiimg/RightButton-B.png))
+Select each dance to be played and use the right arrow
+button&nbsp;(![right](https://ballroomdj4.sourceforge.io/wikiimg/RightButton-B.png))
 to add the dance to the sequence.
 
-Use the up and down arrows to adjust the order of the dances in the
-sequence.
+Use the up and down
+arrows&nbsp;(![left](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-B.png),&nbsp;![right](https://ballroomdj4.sourceforge.io/wikiimg/RightButton-B.png))
+to adjust the order of the dances in the sequence.
 
 The sequence will be saved automatically.
 
 ##### Song Selection
 
+The _Settings_ tab in _Playlist&nbsp;Management_ has the controls for
+_Maximum&nbsp;Play&nbsp;Time, _Stop&nbsp;At_, _Stop&nbsp;After_,
+_Gap_, _Play&nbsp;Announcements_ and _Tags_.
+
 When a sequence is played, BDJ4 chooses the song from the songs filtered
 by any playlist song selection filters.
-<br>__References:__
-<br>[Playlist&nbsp;Management](en-Management-Playlist%20Management)
 
-The song to be played is chosen based on the
-[Dance&nbsp;Rating](en-Configuration-Edit%20Ratings) and
-[Dance&nbsp;Level](en-Configuration-Edit%20Levels) (optional).
-
-The dance rating and dance level have weights assigned to them that
-adjust which song will be played.  A dance rating with a higher weight
-will be played more often.  The dance rating is the primary selection
-criteria.
+See
+[Management&nbsp;/&nbsp;Playlist&nbsp;Management](en-Management-Playlist%20Management)
+for a description on how to use the playlist settings to filter which
+songs are selected.
 
 In addition, same-song marks are checked to make sure that only one song
 from those songs marked as the same song is used.
@@ -88,4 +87,4 @@ In the _Dances_ tab in _Playlist&nbsp;Management_, the
 _Maximum&nbsp;Play&nbsp;Time_ for a particular dance can be set.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-06-19 10:05:19; BDJ4 version 4.15.1)_
