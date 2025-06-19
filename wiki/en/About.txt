@@ -35,6 +35,9 @@ conversion process can be used during installation to convert the
 BallroomDJ&nbsp;3 data files and database to files that can be used by
 BDJ4.
 
+BDJ4 is one of a very few free and open source music players designed
+primarily for ballroom music and dancing.
+
 Development Team:
 
 * Brad Lanam
@@ -43,4 +46,4 @@ Testing, Quality&nbsp;Assurance, Documentation, Website&nbsp;Management,
 System&nbsp;Administration
 
 [Wiki Home](Home)
-<br>_(Updated 2025-06-19 10:58:05; BDJ4 version 4.15.1)_
+<br>_(Updated 2025-06-19 11:00:50; BDJ4 version 4.15.1)_

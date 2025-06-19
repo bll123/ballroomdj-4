@@ -2,20 +2,20 @@
 
 ### Contributing to BallroomDJ 4 Development
 
-As of 2025-2-28, development needs are:
+As of 2025-6-19, development needs are:
 
 * Translations
 * All Platforms: Unit Testing, Testing and QA
 * Audio Sources:
     * Spotify
-* Windows Development: SMTC: Use image from audio file.
+* Windows: SMTC: Use image from audio file.
 * Player Interface
     * Windows Native
     * Spotify
 * User Interface:
     * Windows Native UI
     * MacOS Native UI
-      This is in progress.  Progress is very slow/stalled/stopped.
+      Some attempt has been made for this. Progress is very stopped at this time.
     * Ultimate&#43;&#43;
     * QT
     * imgui/cimgui
@@ -28,4 +28,4 @@ Testing, Quality&nbsp;Assurance, Documentation, Website&nbsp;Management,
 System&nbsp;Administration
 
 [Wiki Home](Home)
-<br>_(Updated 2025-04-20 09:33:32; BDJ4 version 4.14.1)_
+<br>_(Updated 2025-06-19 11:00:50; BDJ4 version 4.15.1)_
