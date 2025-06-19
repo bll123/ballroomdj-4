@@ -11,11 +11,14 @@
       [Install / Installing on Linux](en-Install-Linux)
 * Free and open source software.
 * Full unicode support, supports all languages.
+    * Many translations are included, but most are machine translated and are of very poor quality.  Nederlands (Dutch) is in good shape, and Русский (Russian) is ok.
 * No limitation on the number of audio files.
 * Any audio file that can be played by VLC is supported (MP3, FLAC, Opus, OGG, etc.)
     * Linux also supports GStreamer.
 * Fully configurable.
     * Player, Marquee, User Interface, Dances, Dance Ratings, etc.
+    * All listings and the song editor can be configured to display the fields you want.
+      [Configuration / Display Settings](en-Configuration-Display%20Settings)
 * Player.
   [Player / Player](en-Player-Player)
     * Reload the player upon accidental exit.
@@ -131,4 +134,4 @@
   [Subjects / Profiles](en-Subjects-Profiles)
 
 [Wiki Home](Home)
-<br>_(Updated 2025-06-19 10:38:45; BDJ4 version 4.15.1)_
+<br>_(Updated 2025-06-19 10:58:05; BDJ4 version 4.15.1)_
