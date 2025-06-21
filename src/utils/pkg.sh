@@ -33,7 +33,7 @@ echo "-- $(date +%T) building"
 (
   cd src
   case ${pn_dist} in
-    -opensuse)
+    -opensuse*)
       # change this in utils/testall.sh also
       make CC=gcc-13 CXX=g++-13
       ;;

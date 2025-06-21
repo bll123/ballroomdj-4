@@ -136,11 +136,11 @@ done
 
 # source
 
-#spnm=$(pkgsrcnm)
-#rsync -v -e ssh ${spnm}.zip \
-#  ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/source/
-#rsync -v -e ssh ${spnm}.tar.gz \
-#  ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/source/
+spnm=$(pkgsrcnm)
+rsync -v -e ssh ${spnm}.zip \
+  ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/source/
+rsync -v -e ssh ${spnm}.tar.gz \
+  ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/source/
 spnm=bdj4-src-macos${pn_datetag}.tar.gz
 if [[ -f ${spnm} ]]; then
   rsync -v -e ssh ${spnm} \

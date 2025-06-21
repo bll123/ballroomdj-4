@@ -57,7 +57,7 @@ function pkgnmgetdata {
           ;;
         *opensuse*)
           tver=$(grep '^VERSION_ID=' /etc/os-release | sed 's,VERSION_ID=,,')
-          tver=$(echo ${tver} | sed 's,\..*,,')
+          tver=$(echo ${tver} | sed 's,\..*,,;s,",,g')
           pn_dist=-opensuse${tver}
           ;;
         manjaro*)

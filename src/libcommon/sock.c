@@ -873,6 +873,8 @@ sockGetAddrInfo (struct addrinfo **result, uint16_t port)
   hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_flags = AI_NUMERICSERV; // AI_CANONNAME
+  /* NULL + AI_PASSIVE = listen on any network */
+  /* NULL + ! AI_PASSIVE = listen on local network, connect on any */
   // hints.ai_flags &= ~ AI_PASSIVE;
 #if ! defined (_WIN32)
   /* do not use AI_ADDRCONFIG on windows */

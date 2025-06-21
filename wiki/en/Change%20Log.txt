@@ -4,18 +4,18 @@
 
 <!--
 
+-->
+
 **4.15.2 2025-6-21**
 
+* Bug Fixes:
+    * Mobile Marquee: Fix startup when mobile marquee is active (revert bad socket changes).
 * Internal:
-    * Revert incorrect socket changes.
-    * Moble Marquee: fix incorrect routing.
-
--->
+    * Mobile Marquee: fix incorrect routing.
 
 **4.15.1 2025-6-17**
 
 * Bug Fixes:
-    * Mobile Remote Control, Mobile Marquee: Fix to accept connections from any network.
     * Manage: Import Playlist: Fix validation of podcast URL.
     * Podcast: Fix failures for long playlists.
     * Podcast: Fix processing of other duration field formats.
@@ -1232,4 +1232,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-06-19 10:39:48; BDJ4 version 4.15.1)_
+<br>_(Updated 2025-06-21 14:17:05; BDJ4 version 4.15.2)_
