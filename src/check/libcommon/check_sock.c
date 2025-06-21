@@ -77,7 +77,7 @@ START_TEST(sock_server_create)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sock_server_create");
   mdebugSubTag ("sock_server_create");
-  s = sockServer (32700, &err, SOCK_LOCAL);
+  s = sockServer (32700, &err);
   ck_assert_int_gt (s, 2);
   ck_assert_int_eq (socketInvalid (s), 0);
   sockClose (s);
@@ -93,7 +93,7 @@ START_TEST(sock_server_create_check)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sock_server_create_check");
   mdebugSubTag ("sock_server_create_check");
   si = NULL;
-  s = sockServer (32701, &err, SOCK_LOCAL);
+  s = sockServer (32701, &err);
   ck_assert_int_gt (s, 2);
   ck_assert_int_eq (socketInvalid (s), 0);
   si = sockAddCheck (si, s);
@@ -113,7 +113,7 @@ START_TEST(sock_server_check)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sock_server_check");
   mdebugSubTag ("sock_server_check");
   si = NULL;
-  s = sockServer (32702, &err, SOCK_LOCAL);
+  s = sockServer (32702, &err);
   ck_assert_int_gt (s, 2);
   ck_assert_int_eq (socketInvalid (s), 0);
   si = sockAddCheck (si, s);
@@ -279,7 +279,7 @@ START_TEST(sock_connect_accept)
   pthread_create (&thread, NULL, connectClose, NULL);
 #endif
 
-  l = sockServer (32703, &err, SOCK_LOCAL);
+  l = sockServer (32703, &err);
   ck_assert_int_eq (socketInvalid (l), 0);
   ck_assert_int_gt (l, 2);
   r = sockAccept (l, &err);
@@ -316,7 +316,7 @@ START_TEST(sock_check_connect_accept)
   pthread_create (&thread, NULL, connectClose, NULL);
 #endif
 
-  l = sockServer (32704, &err, SOCK_LOCAL);
+  l = sockServer (32704, &err);
   ck_assert_int_eq (socketInvalid (l), 0);
   ck_assert_int_gt (l, 2);
   si = sockAddCheck (si, l);
@@ -362,7 +362,7 @@ START_TEST(sock_write)
   pthread_create (&thread, NULL, connectWrite, NULL);
 #endif
 
-  l = sockServer (32705, &err, SOCK_LOCAL);
+  l = sockServer (32705, &err);
   ck_assert_int_eq (socketInvalid (l), 0);
   ck_assert_int_gt (l, 2);
   si = sockAddCheck (si, l);
@@ -416,7 +416,7 @@ START_TEST(sock_write_read)
   pthread_create (&thread, NULL, connectWrite, NULL);
 #endif
 
-  l = sockServer (32706, &err, SOCK_LOCAL);
+  l = sockServer (32706, &err);
   ck_assert_int_eq (socketInvalid (l), 0);
   ck_assert_int_gt (l, 2);
   si = sockAddCheck (si, l);
@@ -503,7 +503,7 @@ START_TEST(sock_write_read_buff)
   pthread_create (&thread, NULL, connectWrite, NULL);
 #endif
 
-  l = sockServer (32707, &err, SOCK_LOCAL);
+  l = sockServer (32707, &err);
   ck_assert_int_eq (socketInvalid (l), 0);
   ck_assert_int_gt (l, 2);
   si = sockAddCheck (si, l);
@@ -563,7 +563,7 @@ START_TEST(sock_write_read_buff_fail)
   pthread_create (&thread, NULL, connectWrite, NULL);
 #endif
 
-  l = sockServer (32708, &err, SOCK_LOCAL);
+  l = sockServer (32708, &err);
   ck_assert_int_eq (socketInvalid (l), 0);
   ck_assert_int_gt (l, 2);
   si = sockAddCheck (si, l);
@@ -621,7 +621,7 @@ START_TEST(sock_write_check_read)
 #endif
   memset (datab, 'a', 4096);
 
-  l = sockServer (32709, &err, SOCK_LOCAL);
+  l = sockServer (32709, &err);
   ck_assert_int_eq (socketInvalid (l), 0);
   ck_assert_int_gt (l, 2);
   si = sockAddCheck (si, l);
@@ -734,7 +734,7 @@ START_TEST(sock_close)
   pthread_create (&thread, NULL, connectCloseEarly, NULL);
 #endif
 
-  l = sockServer (32710, &err, SOCK_LOCAL);
+  l = sockServer (32710, &err);
   ck_assert_int_eq (socketInvalid (l), 0);
   ck_assert_int_gt (l, 2);
 
@@ -807,7 +807,7 @@ START_TEST(sock_write_close)
 #endif
   memset (datab, 'a', 4096);
 
-  l = sockServer (32711, &err, SOCK_LOCAL);
+  l = sockServer (32711, &err);
   ck_assert_int_eq (socketInvalid (l), 0);
   ck_assert_int_gt (l, 2);
 
@@ -887,7 +887,7 @@ START_TEST(sock_server_close)
 #endif
   memset (datab, 'a', 4096);
 
-  l = sockServer (32712, &err, SOCK_LOCAL);
+  l = sockServer (32712, &err);
   ck_assert_int_eq (socketInvalid (l), 0);
   ck_assert_int_gt (l, 2);
 

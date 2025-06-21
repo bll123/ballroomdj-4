@@ -137,7 +137,7 @@ main (int argc, char *argv[])
       &bdjsrv, WEBSRV_TLS_ON);
 
   listenPort = bdjvarsGetNum (BDJVL_PORT_SERVER);
-  sockhMainLoop (listenPort, bdjsrvProcessMsg, bdjsrvProcessing, &bdjsrv, SOCKH_LOCAL);
+  sockhMainLoop (listenPort, bdjsrvProcessMsg, bdjsrvProcessing, &bdjsrv);
   connFree (bdjsrv.conn);
   progstateFree (bdjsrv.progstate);
   logEnd ();

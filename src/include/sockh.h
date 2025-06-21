@@ -26,11 +26,9 @@ enum {
   SOCKH_CONTINUE = false,
   SOCKH_STOP = true,
   SOCKH_MAINLOOP_TIMEOUT = 5,
-  SOCKH_LOCAL = SOCK_LOCAL,
-  SOCKH_ANY = SOCK_ANY,
 };
 
-void  sockhMainLoop (uint16_t listenPort, sockhProcessMsg_t msgFunc, sockhProcessFunc_t processFunc, void *userData, int which);
+void  sockhMainLoop (uint16_t listenPort, sockhProcessMsg_t msgFunc, sockhProcessFunc_t processFunc, void *userData);
 int   sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom, bdjmsgroute_t route, bdjmsgmsg_t msg, const char *args);
 
 #if defined (__cplusplus) || defined (c_plusplus)

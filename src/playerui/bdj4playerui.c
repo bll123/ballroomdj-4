@@ -411,7 +411,7 @@ main (int argc, char *argv[])
   progstateSetCallback (plui.progstate, STATE_CLOSING,
       pluiClosingCallback, &plui);
 
-  sockhMainLoop (listenPort, pluiProcessMsg, pluiMainLoop, &plui, SOCKH_LOCAL);
+  sockhMainLoop (listenPort, pluiProcessMsg, pluiMainLoop, &plui);
   connFree (plui.conn);
   progstateFree (plui.progstate);
   logProcEnd ("");

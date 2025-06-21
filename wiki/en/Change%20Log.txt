@@ -4,7 +4,11 @@
 
 <!--
 
-**4.15.1 2025-6-17**
+**4.15.2 2025-6-21**
+
+* Internal:
+    * Revert incorrect socket changes.
+    * Moble Marquee: fix incorrect routing.
 
 -->
 

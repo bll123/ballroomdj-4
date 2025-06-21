@@ -329,7 +329,7 @@ main (int argc, char *argv[])
   playerSetDefaultVolume (&playerData);
 
   listenPort = bdjvarsGetNum (BDJVL_PORT_PLAYER);
-  sockhMainLoop (listenPort, playerProcessMsg, playerProcessing, &playerData, SOCKH_LOCAL);
+  sockhMainLoop (listenPort, playerProcessMsg, playerProcessing, &playerData);
   connFree (playerData.conn);
   progstateFree (playerData.progstate);
   logEnd ();

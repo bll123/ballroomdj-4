@@ -28,18 +28,18 @@ enum {
   MAIN_FINISH,
 };
 
-static sockserver_t * sockhStartServer (uint16_t listenPort, int which);
+static sockserver_t * sockhStartServer (uint16_t listenPort);
 static void  sockhCloseServer (sockserver_t *sockserver);
 static int   sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgProc, void *userData);
 
 void
 sockhMainLoop (uint16_t listenPort, sockhProcessMsg_t msgFunc,
-    sockhProcessFunc_t processFunc, void *userData, int which)
+    sockhProcessFunc_t processFunc, void *userData)
 {
   int           done = 0;
   sockserver_t  *sockserver;
 
-  sockserver = sockhStartServer (listenPort, which);
+  sockserver = sockhStartServer (listenPort);
 
   while (done != MAIN_FINISH) {
     int     rc;
@@ -106,7 +106,7 @@ sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
 /* internal routines */
 
 static sockserver_t *
-sockhStartServer (uint16_t listenPort, int which)
+sockhStartServer (uint16_t listenPort)
 {
   int           err = 0;
   sockserver_t  *sockserver;
@@ -116,7 +116,7 @@ sockhStartServer (uint16_t listenPort, int which)
   sockserver->si = NULL;
 
   logProcBegin ();
-  sockserver->listenSock = sockServer (listenPort, &err, which);
+  sockserver->listenSock = sockServer (listenPort, &err);
   sockserver->si = sockAddCheck (sockserver->si, sockserver->listenSock);
   logMsg (LOG_DBG, LOG_SOCKET, "add listen sock %" PRId64,
       (int64_t) sockserver->listenSock);

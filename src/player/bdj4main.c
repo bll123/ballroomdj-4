@@ -281,7 +281,7 @@ main (int argc, char *argv[])
   mainData.announceList = slistAlloc ("announcements", LIST_ORDERED, NULL);
 
   listenPort = bdjvarsGetNum (BDJVL_PORT_MAIN);
-  sockhMainLoop (listenPort, mainProcessMsg, mainProcessing, &mainData, SOCKH_LOCAL);
+  sockhMainLoop (listenPort, mainProcessMsg, mainProcessing, &mainData);
   connFree (mainData.conn);
   progstateFree (mainData.progstate);
   logProcEnd ("");

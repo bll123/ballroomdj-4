@@ -86,7 +86,7 @@ main (int argc, char *argv[])
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
   bdj4startup (argc, argv, NULL, "mm", ROUTE_MOBILEMQ, &flags);
-  mobmqdata.conn = connInit (ROUTE_MARQUEE);
+  mobmqdata.conn = connInit (ROUTE_MOBILEMQ);
 
   mobmqdata.type = bdjoptGetNum (OPT_P_MOBMQ_TYPE);
   if (mobmqdata.type == MOBMQ_TYPE_OFF) {
@@ -132,7 +132,7 @@ main (int argc, char *argv[])
   }
 
   listenPort = bdjvarsGetNum (BDJVL_PORT_MOBILEMQ);
-  sockhMainLoop (listenPort, mobmqProcessMsg, mobmqProcessing, &mobmqdata, SOCKH_ANY);
+  sockhMainLoop (listenPort, mobmqProcessMsg, mobmqProcessing, &mobmqdata);
   connFree (mobmqdata.conn);
   progstateFree (mobmqdata.progstate);
   logEnd ();

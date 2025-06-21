@@ -80,10 +80,10 @@ static void     sockInit (void);
 static void     sockCleanup (void);
 static Sock_t   sockSetOptions (Sock_t sock, int *err);
 static void     sockUpdateReadCheck (sockinfo_t *sockinfo);
-static void     sockGetAddrInfo (struct addrinfo **result, uint16_t port, int which);
+static void     sockGetAddrInfo (struct addrinfo **result, uint16_t port);
 
 Sock_t
-sockServer (uint16_t listenPort, int *err, int which)
+sockServer (uint16_t listenPort, int *err)
 {
   int                 rc;
   int                 retrycount;
@@ -95,7 +95,7 @@ sockServer (uint16_t listenPort, int *err, int which)
     sockInit ();
   }
 
-  sockGetAddrInfo (&result, listenPort, which);
+  sockGetAddrInfo (&result, listenPort);
   rc = -1;
 
   for (rp = result; rp != NULL; rp = rp->ai_next) {
@@ -364,7 +364,7 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
     sockInit ();
   }
 
-  sockGetAddrInfo (&result, connPort, SOCK_LOCAL);
+  sockGetAddrInfo (&result, connPort);
   rc = -1;
 
   for (rp = result; rp != NULL; rp = rp->ai_next) {
@@ -372,7 +372,7 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
     if (clsock == INVALID_SOCKET) {
       clsock = socket (rp->ai_family, rp->ai_socktype, rp->ai_protocol);
       if (socketInvalid (clsock)) {
-        logError ("connect");
+        logError ("connect:socket");
 #if _lib_WSAGetLastError
         logMsg (LOG_DBG, LOG_SOCKET, "conn-socket: wsa last-error:%d", WSAGetLastError());
 #endif
@@ -863,7 +863,7 @@ sockUpdateReadCheck (sockinfo_t *sockinfo)
 }
 
 static void
-sockGetAddrInfo (struct addrinfo **result, uint16_t port, int which)
+sockGetAddrInfo (struct addrinfo **result, uint16_t port)
 {
   struct addrinfo   hints;
   char              portstr [20];
@@ -873,9 +873,7 @@ sockGetAddrInfo (struct addrinfo **result, uint16_t port, int which)
   hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_flags = AI_NUMERICSERV; // AI_CANONNAME
-  if (which == SOCK_ANY) {
-    hints.ai_flags |= AI_PASSIVE;
-  }
+  // hints.ai_flags &= ~ AI_PASSIVE;
 #if ! defined (_WIN32)
   /* do not use AI_ADDRCONFIG on windows */
   hints.ai_flags |= AI_ADDRCONFIG;
@@ -886,8 +884,6 @@ sockGetAddrInfo (struct addrinfo **result, uint16_t port, int which)
   hints.ai_next = NULL;
 
   snprintf (portstr, sizeof (portstr), "%" PRIu16, port);
-  /* NULL + AI_PASSIVE : allow connection from any */
-  /* NULL + ! AI_PASSIVE : on loopback */
   rc = getaddrinfo (NULL, portstr, &hints, result);
   if (rc != 0) {
     logError ("getaddrinfo:");

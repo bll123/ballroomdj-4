@@ -290,7 +290,7 @@ main (int argc, char *argv[])
   confuiBuildUI (&confui);
   osuiFinalize ();
 
-  sockhMainLoop (listenPort, confuiProcessMsg, confuiMainLoop, &confui, SOCKH_LOCAL);
+  sockhMainLoop (listenPort, confuiProcessMsg, confuiMainLoop, &confui);
   connFree (confui.conn);
   progstateFree (confui.progstate);
 

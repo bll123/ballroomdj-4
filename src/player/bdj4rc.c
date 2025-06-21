@@ -122,7 +122,7 @@ main (int argc, char *argv[])
       &remctrl, WEBSRV_TLS_OFF);
 
   listenPort = bdjvarsGetNum (BDJVL_PORT_REMCTRL);
-  sockhMainLoop (listenPort, remctrlProcessMsg, remctrlProcessing, &remctrl, SOCKH_ANY);
+  sockhMainLoop (listenPort, remctrlProcessMsg, remctrlProcessing, &remctrl);
   connFree (remctrl.conn);
   progstateFree (remctrl.progstate);
   logEnd ();

@@ -236,7 +236,7 @@ main (int argc, char *argv[])
   marqueeBuildUI (&marquee);
   osuiFinalize ();
 
-  sockhMainLoop (listenPort, marqueeProcessMsg, marqueeMainLoop, &marquee, SOCKH_LOCAL);
+  sockhMainLoop (listenPort, marqueeProcessMsg, marqueeMainLoop, &marquee);
   connFree (marquee.conn);
   progstateFree (marquee.progstate);
   for (int i = 0; i < MQ_CB_MAX; ++i) {
