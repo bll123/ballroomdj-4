@@ -426,7 +426,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_MP4] = { "©day", NULL, NULL, NULL },
       [TAG_TYPE_ID3] = { "TDRC", NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { "WM/Year", NULL, NULL, NULL },
-      [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_RIFF] = { "ICRD", NULL, NULL, NULL },
     },       /* audio tags */
     "Year",                       /* itunes name          */
     ET_ENTRY,                     /* edit type            */

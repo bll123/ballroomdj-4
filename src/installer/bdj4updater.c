@@ -108,6 +108,9 @@ enum {
   /* 2025-5-23 4.15.0 */
   /* some companies are using the title-sort field as the genre field */
   UPD_FIX_DB_TITLE_SORT,
+  /* 2025-6-23 4.15.3 */
+  /* .wav files did not have a duration calculation */
+  UPD_FIX_DB_WAV_DURATION,
   UPD_MAX,
 };
 enum {
@@ -124,6 +127,7 @@ static datafilekey_t upddfkeys[] = {
   { "FIX_DB_DISCNUM",     UPD_FIX_DB_DISCNUM,       VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_GROUPING",    UPD_FIX_DB_GROUPING,      VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_TITLE_SORT",  UPD_FIX_DB_TITLE_SORT,    VALUE_NUM, NULL, DF_NORM },
+  { "FIX_DB_WAV_DURATION",UPD_FIX_DB_WAV_DURATION,  VALUE_NUM, NULL, DF_NORM },
   { "FIX_LOCALE",         UPD_FIX_LOCALE,           VALUE_NUM, NULL, DF_NORM },
   { "FIX_WIN_FONT",       UPD_FIX_WIN_FONT,         VALUE_NUM, NULL, DF_NORM },
 };
@@ -773,6 +777,11 @@ main (int argc, char *argv [])
     processflags [UPD_FIX_DB_TITLE_SORT] = true;
     processdb = true;
   }
+  if (statusflags [UPD_FIX_DB_WAV_DURATION] == UPD_NOT_DONE) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.15.3 : process db : fix .wav duration");
+    processflags [UPD_FIX_DB_WAV_DURATION] = true;
+    processdb = true;
+  }
 
   if (processaf || processdb) {
     mstime_t    dbmt;
@@ -943,6 +952,29 @@ main (int argc, char *argv [])
         }
       }
 
+      if (processflags [UPD_FIX_DB_WAV_DURATION]) {
+        const char  *turi;
+        size_t      tlen;
+
+        turi = songGetStr (song, TAG_URI);
+        tlen = strlen (turi);
+        if (tlen > 4 && strcmp (turi + tlen - 4, ".wav") == 0) {
+          char        ffn [MAXPATHLEN];
+          slist_t     *taglist;
+          const char  *tdur;
+          int         rewrite;
+
+          audiosrcFullPath (songGetStr (song, TAG_URI), ffn, sizeof (ffn), NULL, 0);
+          taglist = audiotagParseData (ffn, &rewrite);
+          tdur = slistGetStr (taglist, tagdefs [TAG_DURATION].tag);
+          if (tdur != NULL) {
+            songSetNum (song, TAG_DURATION, atoll (tdur));
+            dowrite = true;
+            counters [UPD_FIX_DB_WAV_DURATION] += 1;
+          }
+        }
+      }
+
       if (dowrite) {
         dbWriteSong (musicdb, song);
       }
@@ -972,6 +1004,9 @@ main (int argc, char *argv [])
     if (processflags [UPD_FIX_DB_TITLE_SORT]) {
       nlistSetNum (updlist, UPD_FIX_DB_TITLE_SORT, UPD_COMPLETE);
     }
+    if (processflags [UPD_FIX_DB_WAV_DURATION]) {
+      nlistSetNum (updlist, UPD_FIX_DB_WAV_DURATION, UPD_COMPLETE);
+    }
     dbClose (musicdb);
   }
 
@@ -989,6 +1024,9 @@ main (int argc, char *argv [])
   }
   if (counters [UPD_FIX_DB_TITLE_SORT] > 0) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-title-sort: %" PRId32, counters [UPD_FIX_DB_TITLE_SORT]);
+  }
+  if (counters [UPD_FIX_DB_WAV_DURATION] > 0) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-wav-duration: %" PRId32, counters [UPD_FIX_DB_WAV_DURATION]);
   }
 
   if (statusflags [UPD_FIX_LOCALE] == UPD_NOT_DONE) {

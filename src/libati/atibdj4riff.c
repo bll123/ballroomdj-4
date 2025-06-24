@@ -1,5 +1,8 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
+ *
+ * To convert a .mp3 file to .wav, use mpg123, do not use ffmpeg (broken).
+ *
  */
 #include "config.h"
 
@@ -36,6 +39,7 @@ enum {
 static const char * const RIFF_ID_RIFF = "RIFF";
 static const char * const RIFF_ID_WAVE = "WAVE";
 static const char * const RIFF_ID_FMT  = "fmt ";
+static const char * const RIFF_ID_DATA = "data";
 static const char * const RIFF_ID_LIST = "LIST";
 static const char * const RIFF_ID_INFO = "INFO";
 
@@ -71,6 +75,8 @@ atibdj4ParseRIFFTags (atidata_t *atidata, slist_t *tagdata,
   char          riffid [RIFF_ID_LEN + 1];
   uint32_t      len;
   int           rc;
+  wavefmt_t     fmt;    /* need this for duration calculation */
+
 
   fh = fileopOpen (ffn, "rb");
   if (fh == NULL) {
@@ -98,8 +104,6 @@ atibdj4ParseRIFFTags (atidata_t *atidata, slist_t *tagdata,
     bool    doseek = true;
 
     if (strcmp (riffid, RIFF_ID_FMT) == 0) {
-      wavefmt_t     fmt;
-
       if (fread (&fmt, sizeof (wavefmt_t), 1, fh) != 1) {
         mdextfclose (fh);
         fclose (fh);
@@ -120,6 +124,19 @@ atibdj4ParseRIFFTags (atidata_t *atidata, slist_t *tagdata,
         }
         len = t16;
         /* and leave the doseek flag on */
+      }
+    }
+    if (strcmp (riffid, RIFF_ID_DATA) == 0) {
+      slistSetStr (tagdata, atidata->tagName (TAG_DURATION), "0");
+      if (fmt.blockalign > 0 && fmt.samplerate > 0) {
+        uint64_t  numsamples;
+        uint64_t  dur;
+        char      tmp [40];
+
+        numsamples = len / (uint32_t) fmt.blockalign;
+        dur = numsamples * 1000 / fmt.samplerate;
+        snprintf (tmp, sizeof (tmp), "%" PRIu64, dur);
+        slistSetStr (tagdata, atidata->tagName (TAG_DURATION), tmp);
       }
     }
 
