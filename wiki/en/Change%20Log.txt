@@ -4,12 +4,12 @@
 
 <!--
 
-**4.15.3 2025-6---**
+-->
+
+**4.15.3 2025-6-25**
 
 * Bug Fixes:
     * .wav files: Fix duration calculation (broken since 4.4.3).
-
--->
 
 **4.15.2 2025-6-21**
 
@@ -1237,4 +1237,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-06-21 14:17:05; BDJ4 version 4.15.2)_
+<br>_(Updated 2025-06-25 09:48:28; BDJ4 version 4.15.3)_
