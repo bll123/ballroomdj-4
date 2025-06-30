@@ -20,7 +20,8 @@
 #include <string.h>
 
 /* 4.15.0 the gcc compiler in msys2 is currently broken for cppwinrt */
-#define SMTC_ENABLED    0
+/* 4.15.3.1 gcc compiler 15.1.0 has the fix */
+#define SMTC_ENABLED    1
 
 #if SMTC_ENABLED
 # include <winrt/Windows.Foundation.h>
