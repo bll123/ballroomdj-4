@@ -50,25 +50,21 @@ test -d tmp || mkdir tmp
 
 grc=0
 
-maj=$(grep '^#define LIBMP4TAG_VERS_MAJOR' packages/libmp4tag*/libmp4tag.h |
-  sed -e 's,.* ,,')
-min=$(grep '^#define LIBMP4TAG_VERS_MINOR' packages/libmp4tag*/libmp4tag.h |
-  sed -e 's,.* ,,')
-rev=$(grep '^#define LIBMP4TAG_VERS_REVISION' packages/libmp4tag*/libmp4tag.h |
-  sed -e 's,.* ,,')
-LIBMP4TAGVER=${maj}.${min}.${rev}
-if [[ ! -f plocal/lib/libmp4tag.so.${LIBMP4TAGVER} &&
-    ! -f plocal/lib64/libmp4tag.so.${LIBMP4TAGVER}  &&
-    ! -f plocal/bin/libmp4tag.dll &&
-    ! -f plocal/lib/libmp4tag.${LIBMP4TAGVER}.dylib ]]; then
+mp4dir=$(echo packages/libmp4tag*)
+if [[ ! -d ${mp4dir} ]]; then
   echo "libmp4tag is not up to date"
   grc=1
 fi
-grep "LIBMP4TAG_VERS_REVISION ${rev}" plocal/include/libmp4tag.h > /dev/null 2>&1
-rc=$?
-if [[ $rc -ne 0 ]]; then
-  echo "libmp4tag is not up to date"
-  grc=1
+if [[ $grc -eq 0 ]]; then
+  mp4fn=${mp4dir}/VERSION.txt
+  . ${mp4fn}
+  if [[ ! -f plocal/lib/libmp4tag.so.${LIBMP4TAG_VERSION} &&
+      ! -f plocal/lib64/libmp4tag.so.${LIBMP4TAG_VERSION}  &&
+      ! -f plocal/bin/libmp4tag.dll &&
+      ! -f plocal/lib/libmp4tag.${LIBMP4TAG_VERSION}.dylib ]]; then
+    echo "libmp4tag is not up to date"
+    grc=1
+  fi
 fi
 
 if [[ $DEVELOPMENT != dev ]]; then
