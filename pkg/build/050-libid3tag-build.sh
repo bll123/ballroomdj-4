@@ -15,6 +15,8 @@ if [[ $pkgname == "" || $pkgname = "libid3tag" ]]; then
     sdir=$(pwd)
     bdir=build
 
+    export MACOSX_DEPLOYMENT_TARGET=11
+
     if [[ $clean == T ]]; then
       test -d "${bdir}" && rm -rf "${bdir}"
     fi
@@ -24,6 +26,7 @@ if [[ $pkgname == "" || $pkgname = "libid3tag" ]]; then
           -DCMAKE_INSTALL_PREFIX="$INSTLOC" \
           -DCMAKE_C_COMPILER="${CC}"
     fi
+
     cmake --build "${bdir}" ${cmpbld}
     cmake --install "${bdir}"
     rm -rf "${INSTLOC}/lib/cmake" "${INSTLOC}/lib64/cmake"

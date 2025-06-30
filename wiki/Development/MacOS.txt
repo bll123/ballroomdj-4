@@ -1,6 +1,14 @@
 [Wiki Home](Home)
 <br>[Developer Notes](Development-Developer%20Notes)
 
+######
+
+otool -L <lib>
+
+vtool -show-build <lib or exec>   # to see the min macos version
+
+export MACOSX_DEPLOYMENT_TARGET=11
+
 ###### VLC Installation for development:
 
 Start the VLC installer, drag the VLC installation to /Applications as
@@ -102,7 +110,7 @@ To check the command line tools version:
 
 ###### MacOS GUI (Cocoa AppKit)
 
-In progress.
+Stopped.
 
 Constraints (alignment, fill):
 

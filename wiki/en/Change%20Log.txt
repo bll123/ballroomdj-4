@@ -4,6 +4,12 @@
 
 <!--
 
+**4.15.3.1 2025-6---**
+
+* Bug Fixes:
+    * MacOS: Fix support for pre-sequoia versions (support libraries build).
+    * PENDING Windows: Turn SMTC back on (compiler has been fixed).
+
 -->
 
 **4.15.3 2025-6-25**

@@ -57,6 +57,8 @@ if [[ $pkgname == "" || $pkgname = "icu" ]]; then
         $tfn > $tfn.n
     mv -f $tfn.n $tfn
 
+    export MACOSX_DEPLOYMENT_TARGET=11
+
     if [[ $conf == T ]]; then
       # tools must be enabled to build the data library.
       CFLAGS="-g -O2"

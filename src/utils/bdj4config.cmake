@@ -388,8 +388,11 @@ if (NOT WIN32)
   if (APPLE)
     # 10.14 = Mojave, 10.15 = Catalina
     # 11 = Big Sur, 12 = Monterey, 13 = Ventura, 14 = Sonoma
-    # 15 = Sequoia
-    # IMPORTANT: update this in pkg/macos/Info.plist also
+    # 15 = Sequoia, 26 = Tahoe
+    # IMPORTANT: update this in:
+    #     pkg/macos/Info.plist
+    #     pkg/build/050-id3tag-build.sh
+    #     pkg/build/080-icu-build.sh
     set (CMAKE_OSX_DEPLOYMENT_TARGET 11)
   endif()
 

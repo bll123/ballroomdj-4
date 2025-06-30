@@ -15,7 +15,7 @@ As of 2025-6-19, development needs are:
 * User Interface:
     * Windows Native UI
     * MacOS Native UI
-      Some attempt has been made for this. Progress is very stopped at this time.
+      Some attempt has been made for this. Progress is stopped at this time.
     * Ultimate&#43;&#43;
     * QT
     * imgui/cimgui
@@ -28,4 +28,4 @@ Testing, Quality&nbsp;Assurance, Documentation, Website&nbsp;Management,
 System&nbsp;Administration
 
 [Wiki Home](Home)
-<br>_(Updated 2025-06-19 11:00:50; BDJ4 version 4.15.1)_
+<br>_(Updated 2025-06-29 05:26:41; BDJ4 version 4.15.3)_
