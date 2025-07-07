@@ -148,11 +148,14 @@ webclientPost (webclient_t *webclient, const char *uri, const char *query)
 {
   long        respcode;
   curl_off_t  tm;
+  char        *tquery;
 
   webclientInitResp (webclient);
   curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
   curl_easy_setopt (webclient->curl, CURLOPT_POST, 1L);
-  curl_easy_setopt (webclient->curl, CURLOPT_POSTFIELDS, query);
+  tquery = curl_easy_escape (webclient->curl, query, 0);
+  mdextalloc (tquery);
+  curl_easy_setopt (webclient->curl, CURLOPT_POSTFIELDS, tquery);
   curl_easy_setopt (webclient->curl, CURLOPT_FILETIME, 1L);
   curl_easy_perform (webclient->curl);
   curl_easy_getinfo (webclient->curl, CURLINFO_RESPONSE_CODE, &respcode);
@@ -161,6 +164,8 @@ webclientPost (webclient_t *webclient, const char *uri, const char *query)
   if (webclient->callback != NULL) {
     webclient->callback (webclient->userdata, webclient->resp, webclient->respSize, webclient->respTime);
   }
+  mdextfree (tquery);
+  curl_free (tquery);
 
   return (int) respcode;
 }
@@ -177,7 +182,7 @@ webclientPostCompressed (webclient_t *webclient, const char *uri, const char *qu
   curl_off_t        tm;
 
   len = strlen (query);
-  obuff = mdmalloc (len * 2);
+  obuff = mdmalloc (SMALL_BUFF_SZ);
 
   zs = webclientGzipInit (obuff, SMALL_BUFF_SZ);
   webclientGzip (zs, query, len);

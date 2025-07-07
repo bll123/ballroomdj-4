@@ -531,20 +531,20 @@ confuiAudioSrcSave (confuigui_t *gui)
 static void
 confuiAudioSrcFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
 {
-  confuigui_t *gui = udata;
-  const char  *name;
-  ilistidx_t  askey;
+  confuigui_t   *gui = udata;
+  const char    *name;
+  ilistidx_t    askey;
+  uivirtlist_t  *uivl;
 
+  uivl = gui->tables [CONFUI_ID_AUDIOSRC].uivl;
   askey = asconfGetListASKey (gui->asconf, rownum);
   if (askey == LIST_VALUE_INVALID) {
     return;
   }
 
   name = asconfGetStr (gui->asconf, askey, ASCONF_NAME);
-  uivlSetRowColumnStr (gui->tables [CONFUI_ID_AUDIOSRC].uivl, rownum,
-      CONFUI_AUDIOSRC_COL_NAME, name);
-  uivlSetRowColumnNum (gui->tables [CONFUI_ID_AUDIOSRC].uivl, rownum,
-      CONFUI_AUDIOSRC_COL_KEY, askey);
+  uivlSetRowColumnStr (uivl, rownum, CONFUI_AUDIOSRC_COL_NAME, name);
+  uivlSetRowColumnNum (uivl, rownum, CONFUI_AUDIOSRC_COL_KEY, askey);
 }
 
 static void
@@ -601,8 +601,10 @@ confuiAudioSrcAdd (confuigui_t *gui)
 {
   slistidx_t    idx;
   ilistidx_t    askey;
+  ilistidx_t    taskey;
   uivirtlist_t  *uivl;
   ilistidx_t    count;
+  ilistidx_t    iteridx;
 
   uivl = gui->tables [CONFUI_ID_AUDIOSRC].uivl;
 
@@ -613,7 +615,13 @@ confuiAudioSrcAdd (confuigui_t *gui)
   uivlSetNumRows (uivl, count);
   gui->tables [CONFUI_ID_AUDIOSRC].currcount = count;
   uivlPopulate (uivl);
-  uivl = gui->tables [CONFUI_ID_AUDIOSRC].uivl;
+  asconfStartIterator (gui->asconf, &iteridx);
+  while ((taskey = asconfIterate (gui->asconf, &iteridx)) >= 0) {
+    if (taskey == askey) {
+      idx = iteridx;
+      break;
+    }
+  }
   uivlSetSelection (uivl, idx);
 }
 
@@ -703,3 +711,4 @@ confuiAudioSrcValidateAll (confuigui_t *gui, bool forceflag)
   confuiMarkValid (gui, widx);
   uiEntryValidate (gui->uiitem [widx].uiwidgetp, forceflag);
 }
+

@@ -375,6 +375,8 @@ asiStartIterator (asdata_t *asdata, asitertype_t asitertype,
   asidata->iterlist = NULL;
   asidata->plNames = NULL;
 
+  logMsg (LOG_DBG, LOG_AUDIOSRC, "start-iter: type: %d askey: %d %s %s",
+      asitertype, askey, uri, nm);
   if (asitertype == AS_ITER_PL_NAMES) {
     asbdj4GetPlaylistNames (asdata, asidata, askey);
     asidata->iterlist = asidata->plNames;
@@ -479,10 +481,12 @@ asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm, int 
   char    query [1024];
   int     clientkey = -1;
 
+  logMsg (LOG_DBG, LOG_AUDIOSRC, "pl-get: askey: %d", askey);
   clientkey = asbdj4GetClientKey (asdata, askey);
   if (clientkey < 0) {
     return false;
   }
+  logMsg (LOG_DBG, LOG_AUDIOSRC, "pl-get: clientkey: %d", clientkey);
 
   asdata->action = ASBDJ4_ACT_GET_PLAYLIST;
   asdata->state = BDJ4_STATE_WAIT;
@@ -515,8 +519,9 @@ asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm, int 
       while (p != NULL) {
         char    tbuff [MAXPATHLEN];
 
+        logMsg (LOG_DBG, LOG_AUDIOSRC, "pl-get: %s", p);
         snprintf (tbuff, sizeof (tbuff), "%s%s",
-            ilistGetStr (asdata->client, askey, AS_CLIENT_URI),
+            ilistGetStr (asdata->client, clientkey, AS_CLIENT_URI),
             p);
         slistSetNum (asidata->songlist, tbuff, 1);
         p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
@@ -535,7 +540,8 @@ asbdj4SongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri)
 {
   bool    rc = false;
   int     webrc;
-  char    query [1024];
+  char    uri [1024];
+  char    query [MAXPATHLEN];
   int     clientkey;
 
   asdata->action = ASBDJ4_ACT_SONG_TAGS;
@@ -544,15 +550,18 @@ asbdj4SongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri)
   if (clientkey < 0) {
     return false;
   }
+  logMsg (LOG_DBG, LOG_AUDIOSRC, "song-tags: clientkey: %d", clientkey);
 
-  snprintf (query, sizeof (query),
-      "%s%s"
-      "?uri=%s",
+  /* the query field may contain weird characters, use a post */
+  snprintf (uri, sizeof (uri),
+      "%s%s",
       ilistGetStr (asdata->client, clientkey, AS_CLIENT_BDJ4_URI),
-      action_str [asdata->action],
+      action_str [asdata->action]);
+  snprintf (query, sizeof (query),
+      "uri=%s",
       asbdj4StripPrefix (asdata, songuri, clientkey));
 
-  webrc = webclientGet (asdata->clientdata [clientkey].webclient, query);
+  webrc = webclientPost (asdata->clientdata [clientkey].webclient, uri, query);
   if (webrc != WEB_OK) {
     return rc;
   }

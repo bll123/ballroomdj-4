@@ -63,6 +63,8 @@ confuiBuildUIDebug (confuigui_t *gui)
       CONFUI_DBG_AUDIO_ID, -1, (val & LOG_AUDIO_ID));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Audio ID Dump",
       CONFUI_DBG_AUDIOID_DUMP, -1, (val & LOG_AUDIOID_DUMP));
+  confuiMakeItemCheckButton (gui, vbox, szgrp, "Audio Source",
+      CONFUI_DBG_AUDIOSRC, -1, (val & LOG_AUDIOSRC));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Audio Tags",
       CONFUI_DBG_AUDIO_TAG, -1, (val & LOG_AUDIO_TAG));
 

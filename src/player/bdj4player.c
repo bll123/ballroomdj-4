@@ -627,6 +627,7 @@ playerProcessing (void *udata)
     bool          temprepeat = false;
     char          tempffn [MAXPATHLEN];
     int           tspeed;
+    int           taudiosrc;
 
 
     temprepeat = playerData->repeat;
@@ -703,7 +704,12 @@ playerProcessing (void *udata)
           PATHBLD_MP_DIR_DATATOP);
     }
 
-    pliMediaSetup (playerData->pli, pq->tempname, tempffn, pq->audiosrc);
+
+    taudiosrc = pq->audiosrc;
+    if (taudiosrc == AUDIOSRC_TYPE_BDJ4) {
+      taudiosrc = AUDIOSRC_TYPE_FILE;
+    }
+    pliMediaSetup (playerData->pli, pq->tempname, tempffn, taudiosrc);
     /* pq->songstart is normalized */
 
     tspeed = pq->speed;
@@ -1109,6 +1115,7 @@ playerProcessPrepRequest (playerdata_t *playerData)
   }
   queuePush (playerData->prepQueue, npq);
   logMsg (LOG_DBG, LOG_INFO, "prep-do: %" PRId32 " %s r:%d p:%" PRId32, npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
+  logMsg (LOG_DBG, LOG_INFO, "prep-tempname: %s", npq->tempname);
   logProcEnd ("");
 }
 
@@ -1176,6 +1183,7 @@ playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx,
   logProcBegin ();
 
 #if DEBUG_PREP_QUEUE
+  fprintf (stderr, "pq: looking for: %d %s\n", uniqueidx, sfname);
   playerDumpPrepQueue (playerData, "locate");
 #endif
   found = false;
@@ -1197,7 +1205,7 @@ playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx,
     pq = queueIterateData (playerData->prepQueue, &playerData->prepiteridx);
     while (pq != NULL) {
       if (uniqueidx != PL_UNIQUE_ANN && uniqueidx == pq->uniqueidx) {
-        logMsg (LOG_DBG, LOG_BASIC, "locate found %" PRId32 " %s", uniqueidx, sfname);
+        logMsg (LOG_DBG, LOG_BASIC, "locate found %" PRId32 " %s (%s)", uniqueidx, sfname, pq->tempname);
         found = true;
         break;
       }
@@ -2220,7 +2228,7 @@ playerDumpPrepQueue (playerdata_t *playerData, const char *tag)  /* TESTING */
   count = 0;
   queueStartIterator (playerData->prepQueue, &playerData->prepiteridx);
   while ((pq = queueIterateData (playerData->prepQueue, &playerData->prepiteridx)) != NULL) {
-    fprintf (stderr, "  pq: /%s/ %d %s\n", tag, count, pq->songname);
+    fprintf (stderr, "  pq: /%s/ %d %d %s\n", tag, count, pq->uniqueidx, pq->songname);
     ++count;
   }
 }

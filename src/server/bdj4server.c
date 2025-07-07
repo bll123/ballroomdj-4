@@ -261,6 +261,7 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
           "Content-type: text/plain; charset=utf-8\r\n"
           "Cache-Control: max-age=0\r\n",
           WEB_RESP_NOT_FOUND);
+      logMsg (LOG_DBG, LOG_INFO, "srv: plget: not found %s", plnm);
       return;
     }
 
@@ -276,6 +277,7 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
 
       songuri = songlistGetStr (sl, idx, SONGLIST_URI);
       snprintf (tbuff, sizeof (tbuff), "%s%c", songuri, MSG_ARGS_RS);
+      // logMsg (LOG_DBG, LOG_INFO, "srv: plget: add %s", songuri);
       rp = stpecpy (rp, rend, tbuff);
     }
 
@@ -297,6 +299,7 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
       resp = WEB_RESP_OK;
     }
 
+    logMsg (LOG_DBG, LOG_INFO, "srv: song-exists: %d %s", rc, songuri);
     websrvReply (bdjsrv->websrv, rc,
         "Content-type: text/plain; charset=utf-8\r\n"
         "Cache-Control: max-age=0\r\n",
@@ -314,16 +317,17 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
           "Content-type: text/plain; charset=utf-8\r\n"
           "Cache-Control: max-age=0\r\n",
           WEB_RESP_NOT_FOUND);
+      logMsg (LOG_DBG, LOG_INFO, "srv: song-get: not found %s", songuri);
       return;
     }
 
     audiosrcFullPath (songuri, ffn, sizeof (ffn), NULL, 0);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "get-song: serve: %s", ffn);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "song-get: serve: %s", ffn);
     websrvServeFile (bdjsrv->websrv, "", ffn);
   } else if (strcmp (uri, "/songtags") == 0) {
     bool        ok;
     const char  *songuri;
-    song_t      *song;
+    song_t      *song = NULL;
     slist_t     *songtags;
     slistidx_t  iteridx;
     const char  *tag;
@@ -344,6 +348,7 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
           "Content-type: text/plain; charset=utf-8\r\n"
           "Cache-Control: max-age=0\r\n",
           WEB_RESP_NOT_FOUND);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "song-tags: not found %s", songuri);
       return;
     }
 
@@ -370,6 +375,7 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
       }
 
       value = slistGetStr (songtags, tag);
+      // logMsg (LOG_DBG, LOG_INFO, "song-tags: add %s %s", tag, value);
       if (value != NULL && *value) {
         snprintf (tbuff, sizeof (tbuff), "%s%c%s%c",
             tag, MSG_ARGS_RS, value, MSG_ARGS_RS);

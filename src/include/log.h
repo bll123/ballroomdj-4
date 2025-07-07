@@ -80,6 +80,7 @@ enum {
   LOG_AUDIOID_DUMP    = (1 << 24), // 16777216
   LOG_VIRTLIST        = (1 << 25), // 33554432
   LOG_GROUPING        = (1 << 26), // 67108864
+  LOG_AUDIOSRC        = (1 << 27), // 134217728
   /* insert new values here, push redir_inst down */
   LOG_REDIR_INST      = 0x80000000,
   LOG_ALL             = ~LOG_REDIR_INST,

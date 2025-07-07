@@ -125,9 +125,6 @@ asconfSetStr (asconf_t *asconf, ilistidx_t key, ilistidx_t idx, const char *str)
     return;
   }
   ilistSetStr (asconf->audiosources, key, idx, str);
-  if (idx == ASCONF_NAME) {
-    asconfCreateList (asconf);
-  }
 }
 
 void
@@ -156,6 +153,7 @@ asconfSave (asconf_t *asconf, ilist_t *list, int newdistvers)
   }
   ilistSetVersion (list, ASCONF_CURR_VERSION);
   datafileSave (asconf->df, NULL, list, DF_NO_OFFSET, distvers);
+  asconfCreateList (asconf);
 }
 
 void
@@ -169,7 +167,7 @@ asconfDelete (asconf_t *asconf, ilistidx_t key)
 
   val = ilistGetStr (asconf->audiosources, key, ASCONF_NAME);
   ilistDelete (asconf->audiosources, key);
-  asconfCreateList (asconf);
+  slistDelete (asconf->audiosrclist, val);
 }
 
 ilistidx_t
@@ -232,8 +230,6 @@ asconfIterate (asconf_t *asconf, slistidx_t *iteridx)
   return ikey;
 }
 
-/* asconf-get-list-as-key retrieves the askey in the sorted audio-src-list */
-/* based on the index */
 ilistidx_t
 asconfGetListASKey (asconf_t *asconf, slistidx_t idx)
 {

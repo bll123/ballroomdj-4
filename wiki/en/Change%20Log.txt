@@ -6,6 +6,11 @@
 
 -->
 
+**4.15.4 2025-7---**
+
+* Bug Fixes:
+    * Fix BDJ4/BDJ4 client/server.
+
 **4.15.3.1 2025-6-30**
 
 * Bug Fixes:

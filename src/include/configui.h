@@ -170,6 +170,7 @@ enum {
   CONFUI_DBG_AUDIOID_DUMP,
   CONFUI_DBG_VIRTLIST,
   CONFUI_DBG_GROUPING,
+  CONFUI_DBG_AUDIOSRC,
   CONFUI_DBG_MAX,
   CONFUI_WIDGET_DEFAULT_VOL,
   /* should be in the same order as in songfilter.h */

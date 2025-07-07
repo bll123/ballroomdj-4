@@ -10,9 +10,6 @@
 ###### MPRIS
 
 * Linux only
-* This interface has been started, but is unfinished.
-* This interface required that the dynamic library description
-be changed to return multiple items (done).
 * The chosen player interface will not always be available.  Starting
 the player after starting BDJ4 may be problematic.
 * Also should fallback to VLC if the chosen player is not available.
@@ -38,4 +35,4 @@ right.  MPV is low priority.
 operations.  Due to this bug, development on MPV is stopped.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-03-30 07:20:15; BDJ4 version 4.13.0)_
+<br>_(Updated 2025-07-01 06:18:09; BDJ4 version 4.15.3.1)_
