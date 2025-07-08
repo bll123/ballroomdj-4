@@ -19,6 +19,7 @@ addWinVersionInfo (bdj4main)
 addWinManifest (bdj4main)
 
 add_executable (bdj4player bdj4player.c)
+target_compile_options (bdj4player PRIVATE -pthread)
 if (WIN32)
   target_compile_options (bdj4player PRIVATE -municode)
 endif()
@@ -26,6 +27,7 @@ target_link_libraries (bdj4player PRIVATE
   libbdj4pli libbdj4vol
   libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
   ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
+  pthread
   m
 )
 addIntlLibrary (bdj4player)

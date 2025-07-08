@@ -178,10 +178,11 @@ main (int argc, char *argv [])
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
   bdj4startup (argc, argv, NULL, "ts", ROUTE_TEST_SUITE, &flags);
-  logEnd ();
 
-  logStart ("testsuite", "ts",
-      LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_MSGS | LOG_ACTIONS);
+  logStartAppend ("testsuite", "ts",
+      LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_MSGS | LOG_ACTIONS
+      | LOG_SOCKET | LOG_PROCESS | LOG_PROGSTATE
+      );
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CACHE);

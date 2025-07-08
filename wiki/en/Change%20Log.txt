@@ -9,7 +9,11 @@
 **4.15.4 2025-7---**
 
 * Bug Fixes:
-    * Fix BDJ4/BDJ4 client/server.
+    * Configuration: Audio Source: Fix incorrect behaviour.
+    * PENDING: Audio Sources: Fix BDJ4/BDJ4 client/server.
+    * Fix memory leak.
+* Internal:
+    * Code cleanup.
 
 **4.15.3.1 2025-6-30**
 

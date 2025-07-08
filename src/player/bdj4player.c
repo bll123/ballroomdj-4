@@ -22,6 +22,10 @@
 #include <time.h>
 #include <math.h>
 
+#if _hdr_pthread
+# include <pthread.h>
+#endif
+
 #include "audiosrc.h"
 #include "bdj4.h"
 #include "bdj4init.h"
@@ -57,6 +61,7 @@
 #include "volume.h"
 
 #define DEBUG_PREP_QUEUE 0
+#define PLAYER_USE_THREADS 1
 
 enum {
   STOP_NEXTSONG = 0,
@@ -65,6 +70,7 @@ enum {
   STATUS_FORCE = 1,
   FADEIN_TIMESLICE = 50,
   FADEOUT_TIMESLICE = 100,
+  PLAYER_MAX_PREP = 10,
 };
 
 enum {
@@ -94,6 +100,16 @@ typedef struct {
 } playrequest_t;
 
 typedef struct {
+#if _lib_pthread_create
+  pthread_t     thread;
+#endif
+  prepqueue_t   *npq;
+  int           idx;
+  int           rc;
+  _Atomic(bool) finished;
+} prepthread_t;
+
+typedef struct {
   conn_t          *conn;
   progstate_t     *progstate;
   char            *locknm;
@@ -105,6 +121,7 @@ typedef struct {
   qidx_t          prepiteridx;
   prepqueue_t     *currentSong;
   queue_t         *playRequest;
+  prepthread_t    *prepthread [PLAYER_MAX_PREP];
   int             pliSupported;
   int             originalSystemVolume;
   /* the real volume including adjustments. */
@@ -149,6 +166,7 @@ typedef struct {
   mstime_t        fadeTimeNext;
   int             stopNextsongFlag;
   int             stopwaitcount;
+  int             threadcount;
   bool            inFade;
   bool            inFadeIn;
   bool            inFadeOut;
@@ -172,6 +190,7 @@ static bool     playerStopWaitCallback (void *udata, programstate_t programState
 static bool     playerClosingCallback (void *tpdata, programstate_t programState);
 static void     playerSongPrep (playerdata_t *playerData, char *sfname);
 static void     playerSongClearPrep (playerdata_t *playerData, char *sfname);
+static void   * playerThreadPrepRequest (void *arg);
 void            playerProcessPrepRequest (playerdata_t *playerData);
 static void     playerSongPlay (playerdata_t *playerData, char *args);
 static prepqueue_t * playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx, const char *sfname, int externalreq);
@@ -208,12 +227,13 @@ static void     playerChkPlayerSong (playerdata_t *playerData, int routefrom);
 static void     playerResetVolume (playerdata_t *playerData);
 static void     playerSetAudioSinkEnv (playerdata_t *playerData, bool isdefault);
 static const char * playerGetAudioInterface (void);
+static void playerCheckPrepThreads (playerdata_t *playerData);
 #if DEBUG_PREP_QUEUE
 /* note that this will reset the queue iterator */
 static void playerDumpPrepQueue (playerdata_t *playerData, const char *tag);
 #endif
 
-static int  gKillReceived = 0;
+static int      gKillReceived = 0;
 
 int
 main (int argc, char *argv[])
@@ -250,6 +270,10 @@ main (int argc, char *argv[])
   playerData.progstate = progstateInit ("player");
   playerData.stopNextsongFlag = STOP_NORMAL;
   playerData.stopwaitcount = 0;
+  playerData.threadcount = 0;
+  for (int i = 0; i < PLAYER_MAX_PREP; ++i) {
+    playerData.prepthread [i] = NULL;
+  }
   playerData.newSpeed = 100;
   playerData.inFade = false;
   playerData.inFadeIn = false;
@@ -598,6 +622,8 @@ playerProcessing (void *udata)
   }
 
   connProcessUnconnected (playerData->conn);
+
+  playerCheckPrepThreads (playerData);
 
   if (mstimeCheck (&playerData->statusCheck)) {
     /* the playerSendStatus() routine will set the statusCheck var */
@@ -1094,13 +1120,39 @@ playerSongClearPrep (playerdata_t *playerData, char *args)
   }
 }
 
+static void *
+playerThreadPrepRequest (void *arg)
+{
+#if _lib_pthread_create && PLAYER_USE_THREADS
+  prepthread_t    *prepthread = (prepthread_t *) arg;
+  prepqueue_t     *npq;
+
+  npq = prepthread->npq;
+  prepthread->rc = audiosrcPrep (npq->songname, npq->tempname,
+      sizeof (npq->tempname));
+
+  prepthread->finished = true;
+  pthread_exit (NULL);
+#endif
+  return NULL;
+}
+
 void
 playerProcessPrepRequest (playerdata_t *playerData)
 {
+  prepthread_t    *prepthread;
   prepqueue_t     *npq;
+#if ! _lib_pthread_create || ! PLAYER_USE_THREADS
   int             rc;
+#endif
 
   logProcBegin ();
+
+  if (playerData->threadcount >= PLAYER_MAX_PREP) {
+    logMsg (LOG_ERR, LOG_IMPORTANT, "out of prep space");
+    logProcEnd ("no-space");
+    return;
+  }
 
   npq = queuePop (playerData->prepRequestQueue);
   if (npq == NULL) {
@@ -1109,13 +1161,31 @@ playerProcessPrepRequest (playerdata_t *playerData)
   }
 
   npq->audiosrc = audiosrcGetType (npq->songname);
+
+#if _lib_pthread_create && PLAYER_USE_THREADS
+  prepthread = mdmalloc (sizeof (prepthread_t));
+  prepthread->npq = npq;
+  prepthread->finished = false;
+  prepthread->idx = playerData->threadcount;
+  prepthread->rc = false;
+
+  playerData->prepthread [playerData->threadcount] = prepthread;
+  ++playerData->threadcount;
+
+  pthread_create (&prepthread->thread, NULL, playerThreadPrepRequest, prepthread);
+#else
   rc = audiosrcPrep (npq->songname, npq->tempname, sizeof (npq->tempname));
+#endif
+
+#if ! _lib_pthread_create || ! PLAYER_USE_THREADS
   if (! rc) {
     logProcEnd ("unable-to-prep");
   }
+
   queuePush (playerData->prepQueue, npq);
   logMsg (LOG_DBG, LOG_INFO, "prep-do: %" PRId32 " %s r:%d p:%" PRId32, npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
   logMsg (LOG_DBG, LOG_INFO, "prep-tempname: %s", npq->tempname);
+#endif
   logProcEnd ("");
 }
 
@@ -1127,6 +1197,7 @@ playerSongPlay (playerdata_t *playerData, char *args)
   char          *p;
   char          *tokstr = NULL;
   int32_t       uniqueidx;
+  int           count;
 
   if (! progstateIsRunning (playerData->progstate)) {
     return;
@@ -1148,13 +1219,20 @@ playerSongPlay (playerdata_t *playerData, char *args)
 
   logMsg (LOG_DBG, LOG_BASIC, "play request: %" PRId32 " %s", uniqueidx, p);
   pq = playerLocatePreppedSong (playerData, uniqueidx, p, false);
+  count = 0;
+  while (pq == NULL && count < 5) {
+    mssleep (10);
+    playerCheckPrepThreads (playerData);
+    pq = playerLocatePreppedSong (playerData, uniqueidx, p, false);
+    ++count;
+  }
   if (pq == NULL) {
-    /* no history */
     connSendMessage (playerData->conn, ROUTE_MAIN, MSG_PLAYBACK_FINISH, "0");
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: not prepped: %s", p);
     logProcEnd ("not-prepped");
     return;
   }
+
   if (pq->audiosrc == AUDIOSRC_TYPE_FILE &&
       ! fileopFileExists (pq->tempname)) {
     /* no history */
@@ -1182,6 +1260,9 @@ playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx,
 
   logProcBegin ();
 
+  /* do a pre-check to finish off any threads */
+  playerCheckPrepThreads (playerData);
+
 #if DEBUG_PREP_QUEUE
   fprintf (stderr, "pq: looking for: %d %s\n", uniqueidx, sfname);
   playerDumpPrepQueue (playerData, "locate");
@@ -1200,7 +1281,7 @@ playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx,
   /* the prep queue is generally quite short, a brute force search is fine */
   /* the maximum could be potentially ~twenty announcements + five songs */
   /* with no announcements, five songs only */
-  while (! found && count < 2) {
+  while (! found && count < 4) {
     queueStartIterator (playerData->prepQueue, &playerData->prepiteridx);
     pq = queueIterateData (playerData->prepQueue, &playerData->prepiteridx);
     while (pq != NULL) {
@@ -1220,9 +1301,11 @@ playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx,
     if (! found) {
       /* this usually happens when a song is prepped and then immediately */
       /* played before it has had time to be prepped (e.g. during tests) */
-      logMsg (LOG_ERR, LOG_IMPORTANT, "song %s not prepped; processing queue count %d", sfname,count);
       playerProcessPrepRequest (playerData);
+      playerCheckPrepThreads (playerData);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "song %s not prepped; retry count %d", sfname, count);
       ++count;
+      mssleep (10);
     }
   }
 
@@ -2218,6 +2301,53 @@ playerGetAudioInterface (void)
   return bdjoptGetStr (OPT_M_PLAYER_INTFC);
 }
 
+static void
+playerCheckPrepThreads (playerdata_t *playerData)
+{
+#if _lib_pthread_create && PLAYER_USE_THREADS
+  if (playerData->threadcount > 0) {
+    bool  procflag = false;
+
+    for (int i = 0; i < playerData->threadcount; ++i) {
+      prepthread_t  *prepthread;
+      prepqueue_t   *npq;
+
+      prepthread = playerData->prepthread [i];
+      if (prepthread == NULL) {
+        continue;
+      }
+
+      if (prepthread->finished == false) {
+        continue;
+      }
+
+      npq = prepthread->npq;
+
+      if (prepthread->rc) {
+        queuePush (playerData->prepQueue, npq);
+        logMsg (LOG_DBG, LOG_INFO, "prep-do: %" PRId32 " %s r:%d p:%" PRId32, npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
+        logMsg (LOG_DBG, LOG_INFO, "prep-tempname: %s", npq->tempname);
+      } else {
+        logMsg (LOG_DBG, LOG_IMPORTANT, "unable-to-prep %s", npq->songname);
+      }
+
+      mdfree (prepthread);
+      playerData->prepthread [i] = NULL;
+      procflag = true;
+    }
+    if (procflag) {
+      playerData->threadcount = 0;
+      for (int i = PLAYER_MAX_PREP - 1; i >= 0; --i) {
+        if (playerData->prepthread [i] != NULL) {
+          playerData->threadcount = i + 1;
+          break;
+        }
+      }
+    }
+  }
+#endif
+}
+
 #if DEBUG_PREP_QUEUE
 static void
 playerDumpPrepQueue (playerdata_t *playerData, const char *tag)  /* TESTING */
@@ -2233,3 +2363,4 @@ playerDumpPrepQueue (playerdata_t *playerData, const char *tag)  /* TESTING */
   }
 }
 #endif
+

@@ -106,10 +106,14 @@ progstateProcess (progstate_t *progstate)
   if (state == STATE_RUNNING) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "%s running: time-to-start: %" PRId64 " ms",
         progstate->progtag, (int64_t) mstimeend (&progstate->tm));
+    logMsg (LOG_DBG, LOG_PROGSTATE, "program state: %d %s",
+        progstate->programState, progstatetext [progstate->programState]);
   }
   if (state == STATE_CLOSED && ! progstate->closed) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "%s closed: time-to-end: %" PRId64 " ms",
         progstate->progtag, (int64_t) mstimeend (&progstate->tm));
+    logMsg (LOG_DBG, LOG_PROGSTATE, "program state: %d %s",
+        progstate->programState, progstatetext [progstate->programState]);
     progstate->closed = true;
   }
   return state;

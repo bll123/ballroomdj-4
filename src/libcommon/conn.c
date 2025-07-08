@@ -162,6 +162,9 @@ connConnect (conn_t *conn, bdjmsgroute_t route)
           route, msgRouteDebugText (route));
       conn [route].handshakesent = true;
       if (conn [route].handshakerecv) {
+        logMsg (LOG_DBG, LOG_SOCKET, "conn/handshake ok: from:%d/%s route:%d/%s",
+            conn [route].routefrom, msgRouteDebugText (conn [route].routefrom),
+            route, msgRouteDebugText (route));
         conn [route].handshake = true;
       }
       conn [route].connected = true;
@@ -218,6 +221,9 @@ connProcessHandshake (conn_t *conn, bdjmsgroute_t route)
     /* send a null message and see if the connection is valid */
     if (sockhSendMessage (conn [route].sock, conn [route].routefrom, route,
         MSG_NULL, NULL) < 0) {
+      logMsg (LOG_DBG, LOG_SOCKET, "handshake fail: from:%d/%s route:%d/%s",
+          route, msgRouteDebugText (route),
+          conn [route].routefrom, msgRouteDebugText (conn [route].routefrom));
       sockClose (conn [route].sock);
       conn [route].sock = INVALID_SOCKET;
       conn [route].handshakesent = false;
@@ -227,6 +233,9 @@ connProcessHandshake (conn_t *conn, bdjmsgroute_t route)
   }
 
   if (conn [route].handshakesent) {
+    logMsg (LOG_DBG, LOG_SOCKET, "handshake ok: from:%d/%s route:%d/%s",
+        route, msgRouteDebugText (route),
+        conn [route].routefrom, msgRouteDebugText (conn [route].routefrom));
     conn [route].handshake = true;
   }
 }

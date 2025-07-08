@@ -484,7 +484,8 @@ starterInitDataCallback (void *udata, programstate_t programState)
   targv [targc++] = NULL;
 
   if (starter->podcastupd) {
-    procutilStartProcess (ROUTE_NONE, "bdj4podcastupd", PROCUTIL_DETACH, targv);
+    starter->processes [ROUTE_NONE] =
+        procutilStartProcess (ROUTE_NONE, "bdj4podcastupd", PROCUTIL_DETACH, targv);
   }
 
   pathbldMakePath (tbuff, sizeof (tbuff),

@@ -45,6 +45,7 @@ typedef struct webclient {
   size_t          respAllocated;
   size_t          respSize;
   time_t          respTime;
+  char            errstr [CURL_ERROR_SIZE];
 } webclient_t;
 
 static void   webclientInit (webclient_t *webclient);
@@ -92,12 +93,19 @@ webclientHead (webclient_t *webclient, const char *uri)
 {
   long        respcode;
   curl_off_t  tm;
+  CURLcode    res;
 
   webclientInitResp (webclient);
   curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
   curl_easy_setopt (webclient->curl, CURLOPT_NOBODY, 1L);
   curl_easy_setopt (webclient->curl, CURLOPT_FILETIME, 1L);
-  curl_easy_perform (webclient->curl);
+  curl_easy_setopt (webclient->curl, CURLOPT_ERRORBUFFER, webclient->errstr);
+  res = curl_easy_perform (webclient->curl);
+  if (res != CURLE_OK) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "head: err: %s", webclient->errstr);
+    snprintf (webclient->resp, webclient->respAllocated, "%s", webclient->errstr);
+  }
+
   curl_easy_getinfo (webclient->curl, CURLINFO_RESPONSE_CODE, &respcode);
   curl_easy_getinfo (webclient->curl, CURLINFO_FILETIME_T, &tm);
   webclient->respTime = tm;
@@ -120,12 +128,19 @@ webclientGet (webclient_t *webclient, const char *uri)
 {
   long        respcode;
   curl_off_t  tm;
+  CURLcode    res;
 
   webclientInitResp (webclient);
   curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
   curl_easy_setopt (webclient->curl, CURLOPT_HTTPGET, 1L);
   curl_easy_setopt (webclient->curl, CURLOPT_FILETIME, 1L);
-  curl_easy_perform (webclient->curl);
+  curl_easy_setopt (webclient->curl, CURLOPT_ERRORBUFFER, webclient->errstr);
+  res = curl_easy_perform (webclient->curl);
+  if (res != CURLE_OK) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "get: err: %s", webclient->errstr);
+    snprintf (webclient->resp, webclient->respAllocated, "%s", webclient->errstr);
+  }
+
   curl_easy_getinfo (webclient->curl, CURLINFO_RESPONSE_CODE, &respcode);
   curl_easy_getinfo (webclient->curl, CURLINFO_FILETIME_T, &tm);
   webclient->respTime = tm;
@@ -148,24 +163,26 @@ webclientPost (webclient_t *webclient, const char *uri, const char *query)
 {
   long        respcode;
   curl_off_t  tm;
-  char        *tquery;
+  CURLcode    res;
 
   webclientInitResp (webclient);
   curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
   curl_easy_setopt (webclient->curl, CURLOPT_POST, 1L);
-  tquery = curl_easy_escape (webclient->curl, query, 0);
-  mdextalloc (tquery);
-  curl_easy_setopt (webclient->curl, CURLOPT_POSTFIELDS, tquery);
+  curl_easy_setopt (webclient->curl, CURLOPT_POSTFIELDS, query);
   curl_easy_setopt (webclient->curl, CURLOPT_FILETIME, 1L);
-  curl_easy_perform (webclient->curl);
+  curl_easy_setopt (webclient->curl, CURLOPT_ERRORBUFFER, webclient->errstr);
+  res = curl_easy_perform (webclient->curl);
+  if (res != CURLE_OK) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "post: err: %s", webclient->errstr);
+    snprintf (webclient->resp, webclient->respAllocated, "%s", webclient->errstr);
+  }
+
   curl_easy_getinfo (webclient->curl, CURLINFO_RESPONSE_CODE, &respcode);
   curl_easy_getinfo (webclient->curl, CURLINFO_FILETIME_T, &tm);
   webclient->respTime = tm;
   if (webclient->callback != NULL) {
     webclient->callback (webclient->userdata, webclient->resp, webclient->respSize, webclient->respTime);
   }
-  mdextfree (tquery);
-  curl_free (tquery);
 
   return (int) respcode;
 }
@@ -180,6 +197,7 @@ webclientPostCompressed (webclient_t *webclient, const char *uri, const char *qu
   z_stream          *zs;
   long              respcode;
   curl_off_t        tm;
+  CURLcode          res;
 
   len = strlen (query);
   obuff = mdmalloc (SMALL_BUFF_SZ);
@@ -196,7 +214,13 @@ webclientPostCompressed (webclient_t *webclient, const char *uri, const char *qu
   curl_easy_setopt (webclient->curl, CURLOPT_POSTFIELDSIZE, olen);
   curl_easy_setopt (webclient->curl, CURLOPT_POSTFIELDS, obuff);
   curl_easy_setopt (webclient->curl, CURLOPT_FILETIME, 1L);
-  curl_easy_perform (webclient->curl);
+  curl_easy_setopt (webclient->curl, CURLOPT_ERRORBUFFER, webclient->errstr);
+  res = curl_easy_perform (webclient->curl);
+  if (res != CURLE_OK) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "post-comp: err: %s", webclient->errstr);
+    snprintf (webclient->resp, webclient->respAllocated, "%s", webclient->errstr);
+  }
+
   curl_easy_getinfo (webclient->curl, CURLINFO_RESPONSE_CODE, &respcode);
   curl_easy_getinfo (webclient->curl, CURLINFO_FILETIME_T, &tm);
   webclient->respTime = tm;
@@ -212,9 +236,10 @@ webclientPostCompressed (webclient_t *webclient, const char *uri, const char *qu
 int
 webclientDownload (webclient_t *webclient, const char *uri, const char *outfile)
 {
-  FILE    *fh;
-  time_t  tm;
-  long    respcode;
+  FILE      *fh;
+  time_t    tm;
+  long      respcode;
+  CURLcode  res;
 
   webclient->dlSize = 0;
   webclient->dlChunks = 0;
@@ -229,7 +254,13 @@ webclientDownload (webclient_t *webclient, const char *uri, const char *outfile)
   curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
   curl_easy_setopt (webclient->curl, CURLOPT_HTTPGET, 1L);
   curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientDownloadCallback);
-  curl_easy_perform (webclient->curl);
+  curl_easy_setopt (webclient->curl, CURLOPT_ERRORBUFFER, webclient->errstr);
+  res = curl_easy_perform (webclient->curl);
+  if (res != CURLE_OK) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "download: err: %s", webclient->errstr);
+    snprintf (webclient->resp, webclient->respAllocated, "%s", webclient->errstr);
+  }
+
   curl_easy_getinfo (webclient->curl, CURLINFO_RESPONSE_CODE, &respcode);
   mdextfclose (fh);
   fclose (fh);
@@ -259,6 +290,7 @@ webclientUploadFile (webclient_t *webclient, const char *uri,
   int         count;
   bool        havefile = false;
   long        respcode;
+  CURLcode    res;
 
   if (fileopFileExists (fn)) {
     havefile = true;
@@ -292,7 +324,13 @@ webclientUploadFile (webclient_t *webclient, const char *uri,
 
   curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
   curl_easy_setopt (webclient->curl, CURLOPT_MIMEPOST, mime);
-  curl_easy_perform (webclient->curl);
+  curl_easy_setopt (webclient->curl, CURLOPT_ERRORBUFFER, webclient->errstr);
+  res = curl_easy_perform (webclient->curl);
+  if (res != CURLE_OK) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "upload: err: %s", webclient->errstr);
+    snprintf (webclient->resp, webclient->respAllocated, "%s", webclient->errstr);
+  }
+
   curl_easy_getinfo (webclient->curl, CURLINFO_RESPONSE_CODE, &respcode);
   if (webclient->callback != NULL) {
     webclient->callback (webclient->userdata, webclient->resp, webclient->respSize, 0);
@@ -376,6 +414,7 @@ webclientGetLocalIP (char *ip, size_t sz)
   webclient_t   *webclient;
   char          *tip;
   char          tbuff [MAXPATHLEN];
+  CURLcode      res;
 
   *ip = '\0';
 
@@ -385,7 +424,13 @@ webclientGetLocalIP (char *ip, size_t sz)
   curl_easy_setopt (webclient->curl, CURLOPT_URL, tbuff);
   curl_easy_setopt (webclient->curl, CURLOPT_WRITEDATA, NULL);
   curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientNullCallback);
-  curl_easy_perform (webclient->curl);
+  curl_easy_setopt (webclient->curl, CURLOPT_ERRORBUFFER, webclient->errstr);
+  res = curl_easy_perform (webclient->curl);
+  if (res != CURLE_OK) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "get-local-ip: err: %s", webclient->errstr);
+    snprintf (webclient->resp, webclient->respAllocated, "%s", webclient->errstr);
+  }
+
   curl_easy_getinfo (webclient->curl, CURLINFO_LOCAL_IP, &tip);
   stpecpy (ip, ip + sz, tip);
 
@@ -582,7 +627,7 @@ webclientDebugCallback (CURL *curl, curl_infotype type, char *data,
 static void
 webclientSetUserAgent (CURL *curl)
 {
-  char  tbuff [100];
+  char  tbuff [200];
 
   snprintf (tbuff, sizeof (tbuff),
       "BDJ4/%s ( %s/ )", sysvarsGetStr (SV_BDJ4_VERSION),

@@ -41,6 +41,9 @@ This installation will not affect any BallroomDJ 3 installation.
 
 ### Known Issues:
 
+  - MacOS
+    - The scrollbar stops working correctly when the cursor is moved
+      past the bottom of the scrollbar.
   - Windows
     - The marquee position is not saved when it is iconified (close the
       window instead).

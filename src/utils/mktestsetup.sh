@@ -12,6 +12,8 @@ cwd=$(pwd)
 # DBGLEVEL=$((1+2+8+4194304+262144))
 # with songsel
 # DBGLEVEL=$((1+2+8+64))
+# with socket, process, progstate
+# DBGLEVEL=$((1+2+4+8+512+32768+524288))
 # standard
 DBGLEVEL=$((1+2+4+8))
 
