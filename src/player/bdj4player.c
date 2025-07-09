@@ -61,7 +61,8 @@
 #include "volume.h"
 
 #define DEBUG_PREP_QUEUE 0
-#define PLAYER_USE_THREADS 1
+/* threads are not working properly */
+#define PLAYER_USE_THREADS 0
 
 enum {
   STOP_NEXTSONG = 0,
@@ -195,7 +196,9 @@ static bool     playerStopWaitCallback (void *udata, programstate_t programState
 static bool     playerClosingCallback (void *tpdata, programstate_t programState);
 static void     playerSongPrep (playerdata_t *playerData, char *sfname);
 static void     playerSongClearPrep (playerdata_t *playerData, char *sfname);
-static void   * playerThreadPrepRequest (void *arg);
+#if _lib_pthread_create && PLAYER_USE_THREADS
+static void * playerThreadPrepRequest (void *arg);
+#endif
 void            playerProcessPrepRequest (playerdata_t *playerData);
 static void     playerSongPlay (playerdata_t *playerData, char *args);
 static prepqueue_t * playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx, const char *sfname, int externalreq);
@@ -1126,10 +1129,10 @@ playerSongClearPrep (playerdata_t *playerData, char *args)
   }
 }
 
+#if _lib_pthread_create && PLAYER_USE_THREADS
 static void *
 playerThreadPrepRequest (void *arg)
 {
-#if _lib_pthread_create && PLAYER_USE_THREADS
   prepthread_t    *prepthread = (prepthread_t *) arg;
   prepqueue_t     *npq;
 
@@ -1139,16 +1142,17 @@ playerThreadPrepRequest (void *arg)
 
   prepthread->finished = true;
   pthread_exit (NULL);
-#endif
   return NULL;
 }
+#endif
 
 void
 playerProcessPrepRequest (playerdata_t *playerData)
 {
-  prepthread_t    *prepthread;
   prepqueue_t     *npq;
-#if ! _lib_pthread_create || ! PLAYER_USE_THREADS
+#if _lib_pthread_create && PLAYER_USE_THREADS
+  prepthread_t    *prepthread;
+#else
   int             rc;
 #endif
 

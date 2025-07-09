@@ -1,0 +1,6 @@
+# not working
+called_from_lib:libglib-2.0.so
+called_from_lib:libgio-2.0.so
+called_from_lib:libfontconfig.so
+#called_from_lib:libpangoft2-1.0.so
+
