@@ -549,7 +549,6 @@ aspodcastGetClientKeyByURI (asdata_t *asdata, const char *uri)
         webclientAlloc (asdata, aspodcastWebResponseCallback);
     asdata->clientdata [clientkey].rssdata = NULL;
     asdata->clientdata [clientkey].rsslastbldtm = 0;
-    webclientSetTimeout (asdata->clientdata [clientkey].webclient, 2);
     stpecpy (temp, temp + sizeof (temp), uri);
     p = temp;
     p += AS_HTTPS_PFX_LEN;

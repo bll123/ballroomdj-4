@@ -69,6 +69,7 @@ rssGetUpdateTime (const char *uri)
   int           webrc;
 
   webclient = webclientAlloc (&rssdata, rssWebResponseCallback);
+  webclientSetTimeout (webclient, 2000);
   webrc = webclientHead (webclient, uri);
   if (webrc != WEB_OK) {
     return 0;
@@ -94,6 +95,7 @@ rssImport (const char *uri)
   time_t        tmval;
 
   webclient = webclientAlloc (&rssdata, rssWebResponseCallback);
+  webclientSetTimeout (webclient, 5000);
   webrc = webclientGet (webclient, uri);
   if (webrc != WEB_OK) {
     return NULL;

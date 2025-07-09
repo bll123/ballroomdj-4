@@ -129,6 +129,7 @@ main (int argc, char *argv[])
   }
   if (mobmqdata.type == MOBMQ_TYPE_INTERNET) {
     mobmqdata.webclient = webclientAlloc (&mobmqdata.mobmqwebresp, mobmqWebResponseCallback);
+    webclientSetTimeout (mobmqdata.webclient, 1000);
   }
 
   listenPort = bdjvarsGetNum (BDJVL_PORT_MOBILEMQ);

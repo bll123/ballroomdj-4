@@ -140,7 +140,7 @@ acoustidInit (void)
 
   acoustid = mdmalloc (sizeof (audioidacoustid_t));
   acoustid->webclient = webclientAlloc (acoustid, acoustidWebResponseCallback);
-  webclientSetTimeout (acoustid->webclient, 5);
+  webclientSetTimeout (acoustid->webclient, 20000);
   /* if the bdj4 user-agent is used, cloudflare/acoustid will */
   /* return an http 503 error on certain queries (oddly specific). */
   /* so spoof a known user-agent instead */

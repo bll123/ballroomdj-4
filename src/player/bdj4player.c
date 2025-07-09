@@ -71,6 +71,11 @@ enum {
   FADEIN_TIMESLICE = 50,
   FADEOUT_TIMESLICE = 100,
   PLAYER_MAX_PREP = 10,
+  /* a large number is needed for downloading via the bdj4/bdj4 connection */
+  /* for local playback, the retry generally doesn't take more than a */
+  /* couple tries */
+  /* 200 (* 10ms) handles a normal length song */
+  PLAYER_RETRY_COUNT = 800,
 };
 
 enum {
@@ -946,6 +951,7 @@ playerProcessing (void *udata)
 
   /* only process the prep requests when the player isn't doing much  */
   /* windows must do a physical copy, and this may take a bit of time */
+  /* as of 4.15.4, the prep is done in a thread */
   if ((playerData->playerState == PL_STATE_PLAYING ||
        playerData->playerState == PL_STATE_STOPPED ||
        playerData->playerState == PL_STATE_PAUSED) &&
@@ -1148,11 +1154,13 @@ playerProcessPrepRequest (playerdata_t *playerData)
 
   logProcBegin ();
 
+#if _lib_pthread_create && PLAYER_USE_THREADS
   if (playerData->threadcount >= PLAYER_MAX_PREP) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "out of prep space");
     logProcEnd ("no-space");
     return;
   }
+#endif
 
   npq = queuePop (playerData->prepRequestQueue);
   if (npq == NULL) {
@@ -1281,18 +1289,24 @@ playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx,
   /* the prep queue is generally quite short, a brute force search is fine */
   /* the maximum could be potentially ~twenty announcements + five songs */
   /* with no announcements, five songs only */
-  while (! found && count < 4) {
+  while (! found && count < PLAYER_RETRY_COUNT) {
     queueStartIterator (playerData->prepQueue, &playerData->prepiteridx);
     pq = queueIterateData (playerData->prepQueue, &playerData->prepiteridx);
     while (pq != NULL) {
       if (uniqueidx != PL_UNIQUE_ANN && uniqueidx == pq->uniqueidx) {
         logMsg (LOG_DBG, LOG_BASIC, "locate found %" PRId32 " %s (%s)", uniqueidx, sfname, pq->tempname);
+        if (count > 0) {
+          logMsg (LOG_DBG, LOG_IMPORTANT, "song was not prepped; retry count %d", count);
+        }
         found = true;
         break;
       }
       if (uniqueidx == PL_UNIQUE_ANN && uniqueidx == pq->uniqueidx &&
           strcmp (sfname, pq->songname) == 0) {
         logMsg (LOG_DBG, LOG_BASIC, "locate found %" PRId32 " ann %s", uniqueidx, sfname);
+        if (count > 0) {
+          logMsg (LOG_DBG, LOG_IMPORTANT, "song was not prepped; retry count %d", count);
+        }
         found = true;
         break;
       }
@@ -1300,10 +1314,13 @@ playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx,
     }
     if (! found) {
       /* this usually happens when a song is prepped and then immediately */
-      /* played before it has had time to be prepped (e.g. during tests) */
+      /* played before it has had time to be prepped */
+      /* the test suite does this, */
+      /* also playing a song directly in the music manager */
+      /* when using a bdj4/bdj4 connection with the download, this can */
+      /* take a long time, thus the retry count is set to 200 */
       playerProcessPrepRequest (playerData);
       playerCheckPrepThreads (playerData);
-      logMsg (LOG_DBG, LOG_IMPORTANT, "song %s not prepped; retry count %d", sfname, count);
       ++count;
       mssleep (10);
     }

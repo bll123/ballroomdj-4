@@ -2763,6 +2763,7 @@ installerDoRegister (installer_t *installer, const char *data)
   installer->webresponse = NULL;
   installer->webresplen = 0;
   webclient = webclientAlloc (&installer, installerWebResponseCallback);
+  webclientSetTimeout (webclient, 3000);
   snprintf (uri, sizeof (uri), "%s%s",
       sysvarsGetStr (SV_HOST_REGISTER), sysvarsGetStr (SV_URI_REGISTER));
 

@@ -258,6 +258,7 @@ asiExists (asdata_t *asdata, const char *nm)
 {
   bool            exists = false;
   int             webrc;
+  char            uri [1024];
   char            query [MAXPATHLEN];
   int             clientkey;
   asclientdata_t  *clientdata;
@@ -270,14 +271,15 @@ asiExists (asdata_t *asdata, const char *nm)
   clientdata->action = ASBDJ4_ACT_SONG_EXISTS;
   clientdata->state = BDJ4_STATE_WAIT;
 
+  snprintf (uri, sizeof (uri),
+      "%s%s",
+      clientdata->remoteuri, action_str [clientdata->action]);
   snprintf (query, sizeof (query),
-      "%s%s"
-      "?uri=%s",
-      clientdata->remoteuri, action_str [clientdata->action],
+      "uri=%s",
       asbdj4StripPrefix (asdata, nm, clientkey));
 
   clientdata->inuse = true;
-  webrc = webclientGet (clientdata->webclient, query);
+  webrc = webclientPost (clientdata->webclient, uri, query);
   if (webrc != WEB_OK) {
     clientdata->inuse = false;
     return exists;
@@ -485,6 +487,7 @@ asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm, int 
 {
   bool            rc = false;
   int             webrc;
+  char            uri [1024];
   char            query [MAXPATHLEN];
   int             clientkey = -1;
   asclientdata_t  *clientdata;
@@ -500,14 +503,15 @@ asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm, int 
   clientdata->action = ASBDJ4_ACT_GET_PLAYLIST;
   clientdata->state = BDJ4_STATE_WAIT;
 
+  snprintf (uri, sizeof (uri),
+      "%s%s",
+      clientdata->remoteuri, action_str [clientdata->action]);
   snprintf (query, sizeof (query),
-      "%s%s"
-      "?uri=%s",
-      clientdata->remoteuri, action_str [clientdata->action],
+      "uri=%s",
       asbdj4StripPrefix (asdata, nm, clientkey));
 
   clientdata->inuse = true;
-  webrc = webclientGet (clientdata->webclient, query);
+  webrc = webclientPost (clientdata->webclient, uri, query);
   if (webrc != WEB_OK) {
     clientdata->inuse = false;
     return rc;
@@ -621,7 +625,7 @@ asbdj4GetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata, int askey)
 {
   bool            rc = false;
   int             webrc;
-  char            query [1024];
+  char            uri [1024];
   int             clientkey = -1;
   asclientdata_t  *clientdata;
 
@@ -633,12 +637,12 @@ asbdj4GetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata, int askey)
   clientdata->action = ASBDJ4_ACT_GET_PL_NAMES;
   clientdata->state = BDJ4_STATE_WAIT;
 
-  snprintf (query, sizeof (query),
+  snprintf (uri, sizeof (uri),
       "%s%s",
       clientdata->remoteuri, action_str [clientdata->action]);
 
   clientdata->inuse = true;
-  webrc = webclientGet (clientdata->webclient, query);
+  webrc = webclientGet (clientdata->webclient, uri);
   if (webrc != WEB_OK) {
     clientdata->inuse = false;
     return rc;
@@ -678,7 +682,8 @@ asbdj4GetAudioFile (asdata_t *asdata, const char *nm, const char *tempnm)
 {
   bool              rc = false;
   int               webrc;
-  char              query [1024];
+  char              uri [1024];
+  char              query [MAXPATHLEN];
   int               clientkey;
   asclientdata_t    *clientdata;
 
@@ -690,14 +695,15 @@ asbdj4GetAudioFile (asdata_t *asdata, const char *nm, const char *tempnm)
   clientdata->action = ASBDJ4_ACT_GET_SONG;
   clientdata->state = BDJ4_STATE_WAIT;
 
+  snprintf (uri, sizeof (uri),
+      "%s%s",
+      clientdata->remoteuri, action_str [clientdata->action]);
   snprintf (query, sizeof (query),
-      "%s%s"
-      "?uri=%s",
-      clientdata->remoteuri, action_str [clientdata->action],
+      "uri=%s",
       asbdj4StripPrefix (asdata, nm, clientkey));
 
   clientdata->inuse = true;
-  webrc = webclientGet (clientdata->webclient, query);
+  webrc = webclientPost (clientdata->webclient, uri, query);
   if (webrc != WEB_OK) {
     clientdata->inuse = false;
     return rc;
@@ -830,7 +836,6 @@ asbdj4ClientInit (asdata_t *asdata, int askey)
   clientdata->webclient =
       webclientAlloc (clientdata, asbdj4WebResponseCallback);
   webclientIgnoreCertErr (clientdata->webclient);
-  webclientSetTimeout (clientdata->webclient, 1);
   webclientSetUserPass (clientdata->webclient,
       asconfGetStr (asdata->asconf, askey, ASCONF_USER),
       asconfGetStr (asdata->asconf, askey, ASCONF_PASS));

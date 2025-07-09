@@ -141,6 +141,7 @@ acrInit (void)
 
   acr = mdmalloc (sizeof (audioidacr_t));
   acr->webclient = webclientAlloc (acr, acrWebResponseCallback);
+  webclientSetTimeout (acr->webclient, 20000);
   acr->webresponse = NULL;
   acr->webresplen = 0;
   mstimeset (&acr->globalreqtimer, 0);

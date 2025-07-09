@@ -412,6 +412,9 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
       close (clsock);
       clsock = INVALID_SOCKET;
     }
+    if (rc == 0) {
+      break;
+    }
   }
 
   if (rc == 0 && *connerr == SOCK_CONN_OK) {

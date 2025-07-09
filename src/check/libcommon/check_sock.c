@@ -258,9 +258,7 @@ START_TEST(sock_connect_nolistener)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sock_connect_nolistener");
   mdebugSubTag ("sock_connect_nolistener");
-logStderr ("chk-conn-nolistener\n");
   s = sockConnect (32011, &err, s);
-logStderr ("chk-conn-nolistener fin\n");
   ck_assert_int_eq (err, SOCK_CONN_IN_PROGRESS);
   if (s != INVALID_SOCKET) {
     sockClose (s);
@@ -282,14 +280,10 @@ START_TEST(sock_connect_accept)
   pthread_create (&thread, NULL, connectClose, NULL);
 #endif
 
-logStderr ("chk-conn-accept srv\n");
   l = sockServer (32703, &err);
-logStderr ("chk-conn-accept srv fin\n");
   ck_assert_int_eq (socketInvalid (l), 0);
   ck_assert_int_gt (l, 2);
-logStderr ("chk-conn-accept acc\n");
   r = sockAccept (l, &err);
-logStderr ("chk-conn-accept acc fin\n");
   ck_assert_int_eq (socketInvalid (r), 0);
   ck_assert_int_ne (l, r);
 
