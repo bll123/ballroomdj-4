@@ -70,8 +70,7 @@ START_TEST(webclient_get)
   mdebugSubTag ("webclient_get");
 
   wc = webclientAlloc (&r, checkWebclientCB);
-  webclientSetTimeout (wc, 10);
-  snprintf (tbuff, sizeof (tbuff), "%s/%s",
+  snprintf (tbuff, sizeof (tbuff), "%s%s",
       bdjoptGetStr (OPT_HOST_VERSION), bdjoptGetStr (OPT_URI_VERSION));
   webclientGet (wc, tbuff);
   ck_assert_ptr_nonnull (r.resp);

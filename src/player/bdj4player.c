@@ -61,7 +61,7 @@
 #include "volume.h"
 
 #define DEBUG_PREP_QUEUE 0
-/* threads are not working properly */
+/* threads are not working properly 2025-7-9 */
 #define PLAYER_USE_THREADS 0
 
 enum {
@@ -72,11 +72,15 @@ enum {
   FADEIN_TIMESLICE = 50,
   FADEOUT_TIMESLICE = 100,
   PLAYER_MAX_PREP = 10,
+#if PLAYER_USER_THREADS
   /* a large number is needed for downloading via the bdj4/bdj4 connection */
   /* for local playback, the retry generally doesn't take more than a */
   /* couple tries */
   /* 200 (* 10ms) handles a normal length song */
   PLAYER_RETRY_COUNT = 800,
+#else
+  PLAYER_RETRY_COUNT = 4,
+#endif
 };
 
 enum {

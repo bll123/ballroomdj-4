@@ -19,7 +19,8 @@ addWinVersionInfo (bdj4main)
 addWinManifest (bdj4main)
 
 add_executable (bdj4player bdj4player.c)
-target_compile_options (bdj4player PRIVATE -pthread)
+# threads are not working in the player 2025-7-9
+# target_compile_options (bdj4player PRIVATE -pthread)
 if (WIN32)
   target_compile_options (bdj4player PRIVATE -municode)
 endif()

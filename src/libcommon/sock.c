@@ -70,9 +70,6 @@ typedef struct sockinfo {
 } sockinfo_t;
 
 static bool     sockInitialized = false;
-static int      sockCount = 0;
-static struct addrinfo  *result = NULL;
-static uint16_t         rport = -1;
 
 static ssize_t  sockReadData (Sock_t, char *, size_t);
 static int      sockWriteData (Sock_t, const char *, size_t);
@@ -82,7 +79,7 @@ static void     sockInit (void);
 static void     sockCleanup (void);
 static Sock_t   sockSetOptions (Sock_t sock, int *err);
 static void     sockUpdateReadCheck (sockinfo_t *sockinfo);
-static void     sockGetAddrInfo (uint16_t port);
+static int      sockGetAddrInfo (uint16_t port, struct addrinfo **result);
 static Sock_t sockOpenClientSocket (struct addrinfo *rp, int *connerr);
 static int      sockCheckAlready (int rc, int *connerr);
 static int      sockCheckInProgress (int rc, int *connerr);
@@ -93,13 +90,17 @@ sockServer (uint16_t listenPort, int *err)
   int                 rc;
   int                 retrycount;
   Sock_t              lsock = INVALID_SOCKET;
+  struct addrinfo     *result = NULL;
   struct addrinfo     *rp;
 
   if (! sockInitialized) {
     sockInit ();
   }
 
-  sockGetAddrInfo (listenPort);
+  if (sockGetAddrInfo (listenPort, &result) != 0) {
+    return INVALID_SOCKET;
+  }
+
   rc = -1;
   *err = SOCK_CONN_ERROR;
 
@@ -123,7 +124,7 @@ sockServer (uint16_t listenPort, int *err)
 
     retrycount = 0;
     rc = bind (lsock, rp->ai_addr, rp->ai_addrlen);
-    if (rc != 0 && retrycount < 1000 && (errno == EADDRINUSE)) {
+    if (rc < 0 && retrycount < 1000 && (errno == EADDRINUSE)) {
       mssleep (100);
       ++retrycount;
       rc = bind (lsock, rp->ai_addr, rp->ai_addrlen);
@@ -156,7 +157,9 @@ sockServer (uint16_t listenPort, int *err)
     break;
   }
 
-  sockCount += 1;
+  mdextfree (result);
+  freeaddrinfo (result);
+
   *err = SOCK_CONN_OK;
   return lsock;
 }
@@ -167,10 +170,6 @@ sockClose (Sock_t sock)
   if (! socketInvalid (sock) && sock > 2) {
     mdextclose (sock);
     close (sock);
-    --sockCount;
-  }
-  if (sockCount <= 0) {
-    sockCount = 0;
   }
 }
 
@@ -346,7 +345,6 @@ sockAccept (Sock_t lsock, int *err)
     return INVALID_SOCKET;
   }
 
-  ++sockCount;
   *err = SOCK_CONN_OK;
   return nsock;
 }
@@ -358,24 +356,25 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
 {
   int                 rc;
   int                 err = 0;
+  struct addrinfo     *result;
   struct addrinfo     *rp;
-  int                 rpcount;
 
   if (! sockInitialized) {
     sockInit ();
   }
 
   *connerr = SOCK_CONN_ERROR;
-  sockGetAddrInfo (connPort);
+  if (sockGetAddrInfo (connPort, &result) != 0) {
+    return INVALID_SOCKET;
+  }
+
   rc = -1;
 
-  rpcount = 0;
   for (rp = result; rp != NULL; rp = rp->ai_next) {
     if (clsock == INVALID_SOCKET) {
       clsock = sockOpenClientSocket (rp, connerr);
-      if (clsock == INVALID_SOCKET) {
+      if (socketInvalid (clsock)) {
         /* try the next addr-info entry */
-        ++rpcount;
         continue;
       }
     }
@@ -401,7 +400,10 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
     if (rc < 0) {
       *connerr = SOCK_CONN_ERROR;
 
-      /* conn refused is a normal response */
+      /* ECONNREFUSED == 111 */
+      /* ECONNABORTED == 103 */
+
+      /* conn refused is a normal response, do not log */
       if (err != ECONNREFUSED) {
         logError ("connect");
 #if _lib_WSAGetLastError
@@ -416,9 +418,11 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
     break;
   }
 
+  mdextfree (result);
+  freeaddrinfo (result);
+
   if (rc == 0 && *connerr == SOCK_CONN_OK) {
     logMsg (LOG_DBG, LOG_SOCKET, "Connected to port:%d sock:%ld", connPort, (long) clsock);
-    ++sockCount;
   }
   return clsock;
 }
@@ -759,11 +763,6 @@ sockCleanup (void)
   WSACleanup ();
 #endif
   sockInitialized = 0;
-  if (result != NULL) {
-    mdextfree (result);
-    freeaddrinfo (result);
-    result = NULL;
-  }
 }
 
 static Sock_t
@@ -817,21 +816,12 @@ sockUpdateReadCheck (sockinfo_t *sockinfo)
   }
 }
 
-static void
-sockGetAddrInfo (uint16_t port)
+static int
+sockGetAddrInfo (uint16_t port, struct addrinfo **result)
 {
   struct addrinfo   hints;
   char              portstr [20];
   int               rc;
-
-  if (rport == port) {
-    return;
-  }
-  if (result != NULL) {
-    mdextfree (result);
-    freeaddrinfo (result);
-    result = NULL;
-  }
 
   memset (&hints, 0, sizeof(hints));
   hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
@@ -850,15 +840,15 @@ sockGetAddrInfo (uint16_t port)
   hints.ai_next = NULL;
 
   snprintf (portstr, sizeof (portstr), "%" PRIu16, port);
-  rc = getaddrinfo (NULL, portstr, &hints, &result);
+  rc = getaddrinfo (NULL, portstr, &hints, result);
   if (rc != 0) {
     logError ("getaddrinfo:");
     logMsg (LOG_ERR, LOG_SOCKET, "getaddrinfo: %s", gai_strerror (rc));
-    return;
   } else {
-    mdextalloc (result);
-    rport = port;
+    mdextalloc (*result);
   }
+
+  return rc;
 }
 
 static Sock_t
@@ -878,6 +868,7 @@ sockOpenClientSocket (struct addrinfo *rp, int *connerr)
   }
 
   mdextsock (clsock);
+
   if (sockSetNonBlocking (clsock) < 0) {
     *connerr = SOCK_CONN_FAIL;
     mdextclose (clsock);
@@ -925,31 +916,24 @@ sockCheckInProgress (int rc, int *connerr)
 #if _lib_WSAGetLastError
   /* 10037 */
   if (WSAGetLastError() == WSAEALREADY) {
-    *connerr = SOCK_CONN_IN_PROGRESS;
-    errno = EINPROGRESS;
     err = EINPROGRESS;
   }
   /* 10035 */
   if (WSAGetLastError() == WSAEWOULDBLOCK) {
-    *connerr = SOCK_CONN_IN_PROGRESS;
-    errno = EWOULDBLOCK;
     err = EWOULDBLOCK;
   }
   /* 10036 */
   if (WSAGetLastError() == WSAEINPROGRESS) {
-    *connerr = SOCK_CONN_IN_PROGRESS;
-    errno = EINPROGRESS;
     err = EINPROGRESS;
   }
 #endif
   /* EINPROGRESS == 115 */
   /* EAGAIN == 11 */
   /* EWOULDBLOCK == 11 (linux) */
-  /* ECONNREFUSED == 111 */
-  /* ECONNABORTED == 103 */
   if (err == EINPROGRESS || err == EAGAIN || err == EINTR || err == EWOULDBLOCK) {
     *connerr = SOCK_CONN_IN_PROGRESS;
   }
 
   return err;
 }
+

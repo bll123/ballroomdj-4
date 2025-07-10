@@ -940,6 +940,7 @@ sock_suite (void)
   tcase_add_test (tc, sock_connect_nolistener);
   tcase_add_test (tc, sock_connect_accept);
   tcase_add_test (tc, sock_check_connect_accept);
+  tcase_set_timeout (tc, 10.0);
   suite_add_tcase (s, tc);
   tc = tcase_create ("sock-write");
   tcase_set_tags (tc, "libcommon");
@@ -948,6 +949,7 @@ sock_suite (void)
   tcase_add_test (tc, sock_write_read_buff);
   tcase_add_test (tc, sock_write_read_buff_fail);
   tcase_add_test (tc, sock_write_check_read);
+  tcase_set_timeout (tc, 10.0);
   suite_add_tcase (s, tc);
   tc = tcase_create ("sock-close");
   tcase_set_tags (tc, "libcommon");

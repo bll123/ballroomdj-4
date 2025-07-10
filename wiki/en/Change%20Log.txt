@@ -6,12 +6,13 @@
 
 -->
 
-**4.15.4 2025-7---**
+**4.15.4 2025-7-9**
 
 * Bug Fixes:
+    * Audio Sources: Fix BDJ4/BDJ4 client/server.
     * Configuration: Audio Source: Fix incorrect behaviour.
-    * PENDING: Audio Sources: Fix BDJ4/BDJ4 client/server.
     * Fix memory leak.
+    * Linux: Fix xfce startup settings.
 * Internal:
     * Code cleanup.
 
@@ -1252,4 +1253,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-06-30 12:20:27; BDJ4 version 4.15.3.1)_
+<br>_(Updated 2025-07-09 18:17:37; BDJ4 version 4.15.4)_

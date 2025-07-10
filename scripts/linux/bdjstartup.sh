@@ -54,16 +54,16 @@ function do_xfcesettings () {
         ;;
       *)
         val=$(xfconf-query -c $schema -p /$schema/$skey 2>/dev/null)
-        tskey=/$schema/$skey
         trc=$?
+        tskey=/$schema/$skey
         ;;
     esac
     if [[ $trc -eq 0 ]]; then
       rc=0
       if [[ $restoreflag == F ]]; then
-        echo "xfconf-query -c $schema -p $tskey -s $val" >> $RESTFILE
+        echo "xfconf-query --create -c $schema -p $tskey -s $val" >> $RESTFILE
       fi
-      xfconf-query -c $schema -p $tskey -s $setting
+      xfconf-query --create -c $schema -p $tskey -s $setting
     fi
   done
   return $rc
@@ -105,10 +105,6 @@ do_gsettings $schema false \
     show-notifications
 
 # xfce power settings
-# presentation-mode may not exist in settings the first time, force it.
-if [ -f /usr/bin/xfconf-query ]; then
-  xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/presentation-mode -s false
-fi
 do_xfcesettings xfce4-power-manager true \
     presentation-mode
 rc=$?

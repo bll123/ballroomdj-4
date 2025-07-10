@@ -47,6 +47,7 @@ static uint16_t connports [ROUTE_MAX];
  * @return true if all connections are disconnected.  false otherwise.
  */
 static bool connCheckAll (conn_t *conn);
+static Sock_t connTryConnect (uint16_t port, int *connerr, Sock_t sock);
 
 /* note that connInit() must be called after bdjvarsInit() */
 conn_t *
@@ -134,10 +135,10 @@ connConnect (conn_t *conn, bdjmsgroute_t route)
 
   mstimeset (&conn [route].connchk, 40);
   if (connports [route] != 0 && ! conn [route].connected) {
-    conn [route].sock = sockConnect (connports [route], &connerr, conn [route].sock);
-    if (connerr != SOCK_CONN_OK && connerr != SOCK_CONN_IN_PROGRESS) {
-      sockClose (conn [route].sock);
-      conn [route].sock = INVALID_SOCKET;
+    conn [route].sock = connTryConnect (connports [route], &connerr, conn [route].sock);
+    if (connerr == SOCK_CONN_IN_PROGRESS) {
+      mssleep (10);
+      conn [route].sock = connTryConnect (connports [route], &connerr, conn [route].sock);
     }
   }
 
@@ -358,3 +359,13 @@ connCheckAll (conn_t *conn)
   return rc;
 }
 
+static Sock_t
+connTryConnect (uint16_t port, int *connerr, Sock_t sock)
+{
+  sock = sockConnect (port, connerr, sock);
+  if (*connerr != SOCK_CONN_OK && *connerr != SOCK_CONN_IN_PROGRESS) {
+    sockClose (sock);
+    sock = INVALID_SOCKET;
+  }
+  return sock;
+}
