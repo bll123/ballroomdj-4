@@ -26,11 +26,13 @@ typedef struct {
   char      d [8];
 } guid_t;
 
+#pragma pack(push, 1)
 typedef struct {
   uint32_t  numobj;
   uint8_t   reservea;
   uint8_t   reserveb;
-} __attribute__((packed)) asfheader_t;
+} asfheader_t;
+#pragma pack(pop)
 
 typedef struct {
   guid_t    fileid;
@@ -46,11 +48,13 @@ typedef struct {
   uint32_t  maxbitrate;
 } asffileprop_t;
 
+#pragma pack(push, 1)
 typedef struct {
   guid_t    reservea;
   uint16_t  reserveb;
   uint32_t  datasz;
-} __attribute__((packed)) asfheaderext_t;
+} asfheaderext_t;
+#pragma pack(pop)
 
 typedef struct {
   uint16_t  count;

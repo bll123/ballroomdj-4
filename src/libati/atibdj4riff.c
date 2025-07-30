@@ -43,6 +43,7 @@ static const char * const RIFF_ID_DATA = "data";
 static const char * const RIFF_ID_LIST = "LIST";
 static const char * const RIFF_ID_INFO = "INFO";
 
+#pragma pack(push, 1)
 typedef struct {
   uint16_t      audioformat;
   uint16_t      numchannels;
@@ -50,7 +51,8 @@ typedef struct {
   uint32_t      byterate;
   uint16_t      blockalign;
   uint16_t      bitspersample;
-} __attribute__((packed)) wavefmt_t;
+} wavefmt_t;
+#pragma pack(pop)
 
 typedef struct atisaved {
   bool                  hasdata;
