@@ -19,8 +19,8 @@ enum {
 };
 
 /* dirlist.c */
-slist_t * dirlistBasicDirList (const char *dir, const char *extension);
-slist_t * dirlistRecursiveDirList (const char *dir, int flags);
+[[nodiscard]] slist_t * dirlistBasicDirList (const char *dir, const char *extension);
+[[nodiscard]] slist_t * dirlistRecursiveDirList (const char *dir, int flags);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

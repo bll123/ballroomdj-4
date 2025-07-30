@@ -38,6 +38,7 @@ static datafilekey_t leveldfkeys [LEVEL_KEY_MAX] = {
   { "WEIGHT",   LEVEL_WEIGHT,       VALUE_NUM, NULL, DF_NORM },
 };
 
+[[nodiscard]]
 level_t *
 levelAlloc ()
 {

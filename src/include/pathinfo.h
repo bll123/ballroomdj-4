@@ -19,7 +19,7 @@ typedef struct {
   size_t      elen;
 } pathinfo_t;
 
-pathinfo_t *  pathInfo (const char *path);
+[[nodiscard]] pathinfo_t *  pathInfo (const char *path);
 void          pathInfoFree (pathinfo_t *);
 bool          pathInfoExtCheck (pathinfo_t *, const char *extension);
 void          pathInfoGetDir (pathinfo_t *pi, char *buff, size_t sz);

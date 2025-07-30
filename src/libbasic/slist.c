@@ -19,6 +19,7 @@
 
 /* keyed by a string */
 
+[[nodiscard]]
 slist_t *
 slistAlloc (const char *name, listorder_t ordered, slistFree_t valueFreeHook)
 {

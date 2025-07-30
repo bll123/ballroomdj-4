@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdatomic.h>
 #include <errno.h>
 #include <inttypes.h>
 #include <signal.h>
@@ -69,7 +70,7 @@ typedef struct sockinfo {
   socklist_t      *socklist;
 } sockinfo_t;
 
-static bool     sockInitialized = false;
+static volatile atomic_flag sockInitialized = ATOMIC_FLAG_INIT;
 
 static ssize_t  sockReadData (Sock_t, char *, size_t);
 static int      sockWriteData (Sock_t, const char *, size_t);
@@ -84,6 +85,7 @@ static Sock_t sockOpenClientSocket (struct addrinfo *rp, int *connerr);
 static int      sockCheckAlready (int rc, int *connerr);
 static int      sockCheckInProgress (int rc, int *connerr);
 
+[[nodiscard]]
 Sock_t
 sockServer (uint16_t listenPort, int *err)
 {
@@ -93,9 +95,7 @@ sockServer (uint16_t listenPort, int *err)
   struct addrinfo     *result = NULL;
   struct addrinfo     *rp;
 
-  if (! sockInitialized) {
-    sockInit ();
-  }
+  sockInit ();
 
   if (sockGetAddrInfo (listenPort, &result) != 0) {
     return INVALID_SOCKET;
@@ -173,6 +173,7 @@ sockClose (Sock_t sock)
   }
 }
 
+[[nodiscard]]
 sockinfo_t *
 sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
 {
@@ -321,6 +322,7 @@ sockCheck (sockinfo_t *sockinfo)
   return 0;
 }
 
+[[nodiscard]]
 Sock_t
 sockAccept (Sock_t lsock, int *err)
 {
@@ -351,6 +353,7 @@ sockAccept (Sock_t lsock, int *err)
 
 /* note that in many cases, especially on windows, multiple calls to */
 /* connect are necessary to make the connection */
+[[nodiscard]]
 Sock_t
 sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
 {
@@ -359,9 +362,7 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
   struct addrinfo     *result;
   struct addrinfo     *rp;
 
-  if (! sockInitialized) {
-    sockInit ();
-  }
+  sockInit ();
 
   *connerr = SOCK_CONN_ERROR;
   if (sockGetAddrInfo (connPort, &result) != 0) {
@@ -486,6 +487,7 @@ sockWriteBinary (Sock_t sock, const char *data, size_t dlen,
   return 0;
 }
 
+[[nodiscard]]
 bool
 socketInvalid (Sock_t sock)
 {
@@ -742,6 +744,10 @@ sockSetNonBlocking (Sock_t sock)
 static void
 sockInit (void)
 {
+  if (atomic_flag_test_and_set (&sockInitialized)) {
+    return;
+  }
+
 #if _lib_WSAStartup
   WSADATA wsa;
   int rc = WSAStartup (MAKEWORD (2, 2), &wsa);
@@ -753,7 +759,6 @@ sockInit (void)
   }
 #endif
   atexit (sockCleanup);
-  sockInitialized = true;
 }
 
 static void
@@ -762,7 +767,7 @@ sockCleanup (void)
 #if _lib_WSACleanup
   WSACleanup ();
 #endif
-  sockInitialized = 0;
+  atomic_flag_clear (&sockInitialized);
 }
 
 static Sock_t
@@ -936,4 +941,3 @@ sockCheckInProgress (int rc, int *connerr)
 
   return err;
 }
-

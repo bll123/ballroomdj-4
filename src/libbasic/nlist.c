@@ -18,6 +18,7 @@
 
 /* key/value list, keyed by a nlistidx_t */
 
+[[nodiscard]]
 nlist_t *
 nlistAlloc (const char *name, nlistorder_t ordered, nlistFree_t valueFreeHook)
 {

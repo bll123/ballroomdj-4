@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdatomic.h>
 #include <string.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -36,12 +37,13 @@ typedef struct filehandle {
 #if _typ_HANDLE
   HANDLE  handle;
 #endif
-  FILE    *fh;
-  int     count;
-  int     openmode;
-  int     flushflag;
+  FILE          *fh;
+  _Atomic(int)  count;
+  int           openmode;
+  int           flushflag;
 } fileshared_t;
 
+[[nodiscard]]
 fileshared_t *
 fileSharedOpen (const char *fname, int openmode, int flushflag)
 {

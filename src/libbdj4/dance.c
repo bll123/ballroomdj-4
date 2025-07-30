@@ -74,6 +74,7 @@ static datafilekey_t dancetimesigdfkeys [DANCE_TIMESIG_MAX] = {
   { "4/4",       DANCE_TIMESIG_44,   VALUE_NUM, NULL, DF_NORM },
 };
 
+[[nodiscard]]
 dance_t *
 danceAlloc (const char *altfname)
 {

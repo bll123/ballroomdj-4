@@ -23,7 +23,7 @@ enum {
   RATING_UNRATED_IDX = 0,
 };
 
-rating_t    *ratingAlloc (void);
+[[nodiscard]] rating_t    *ratingAlloc (void);
 void        ratingFree (rating_t *ratings);
 ilistidx_t  ratingGetCount (rating_t *ratings);
 int         ratingGetMaxWidth (rating_t *ratings);

@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdatomic.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
@@ -51,7 +52,7 @@ static int    lockAcquirePid (char *fn, pid_t pid, int flags);
 static int    lockReleasePid (char *fn, pid_t pid, int flags);
 static pid_t  getPidFromFile (char *fn);
 
-static bool   lockdirchecked = false;
+static _Atomic(bool) lockdirchecked = false;
 
 char *
 lockName (bdjmsgroute_t route)

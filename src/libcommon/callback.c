@@ -53,6 +53,7 @@ callbackFree (callback_t *cb)
   mdfree (cb);
 }
 
+[[nodiscard]]
 callback_t *
 callbackInit (callbackFunc cbfunc, void *udata, const char *actiontext)
 {
@@ -67,6 +68,7 @@ callbackInit (callbackFunc cbfunc, void *udata, const char *actiontext)
   return cb;
 }
 
+[[nodiscard]]
 callback_t *
 callbackInitD (callbackFuncD cbfunc, void *udata)
 {
@@ -80,6 +82,7 @@ callbackInitD (callbackFuncD cbfunc, void *udata)
   return cb;
 }
 
+[[nodiscard]]
 callback_t *
 callbackInitI (callbackFuncI cbfunc, void *udata)
 {
@@ -93,6 +96,7 @@ callbackInitI (callbackFuncI cbfunc, void *udata)
   return cb;
 }
 
+[[nodiscard]]
 callback_t *
 callbackInitII (callbackFuncII cbfunc, void *udata)
 {
@@ -106,6 +110,7 @@ callbackInitII (callbackFuncII cbfunc, void *udata)
   return cb;
 }
 
+[[nodiscard]]
 callback_t *
 callbackInitS (callbackFuncS cbfunc, void *udata)
 {
@@ -119,6 +124,7 @@ callbackInitS (callbackFuncS cbfunc, void *udata)
   return cb;
 }
 
+[[nodiscard]]
 callback_t *
 callbackInitSS (callbackFuncSS cbfunc, void *udata)
 {
@@ -132,6 +138,7 @@ callbackInitSS (callbackFuncSS cbfunc, void *udata)
   return cb;
 }
 
+[[nodiscard]]
 callback_t *
 callbackInitSI (callbackFuncSI cbfunc, void *udata)
 {

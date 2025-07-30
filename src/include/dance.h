@@ -50,7 +50,7 @@ extern int danceTimesigValues [DANCE_TIMESIG_MAX];
 
 typedef struct dance dance_t;
 
-dance_t       *danceAlloc (const char *altfname);
+[[nodiscard]] dance_t       *danceAlloc (const char *altfname);
 void          danceFree (dance_t *);
 void          danceStartIterator (dance_t *, slistidx_t *idx);
 ilistidx_t    danceIterate (dance_t *, slistidx_t *idx);

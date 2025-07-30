@@ -10,7 +10,7 @@ Only the Debian based and OpenSUSE distributions have Linux installers
 built for them.  Other distributions will need to build from source.
 
 * Distributions that have been tested (as of 2024-5).
-    * Debian based (MX Linux, Ubuntu, etc.)
+    * Debian based (MX Linux, Ubuntu, Linux Mint, etc.)
     * Arch based (Arch, Manjaro, etc.)
     * Red Hat based (Fedora)
     * OpenSUSE
@@ -74,7 +74,9 @@ Download the Linux installer from sourceforge.
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
 Choose the appropriate installer.
-<br>The Debian 12 installer is built on MX Linux 23.
+<br>The Debian 12 installer is built on MX Linux 23, and is suitable
+for any Debian based distribution (Ubuntu, Linux Mint, Debian, MX
+Linux, etc.).
 <br>The OpenSUSE installer is built on OpenSUSE 15.6.
 
 For RedHat and Arch-based distributions, BDJ4 will need to be built
@@ -129,4 +131,4 @@ Visit the
 wiki page.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-06-19 09:15:57; BDJ4 version 4.15.1)_
+<br>_(Updated 2025-07-23 04:38:10; BDJ4 version 4.15.4)_

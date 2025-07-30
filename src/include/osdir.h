@@ -12,7 +12,7 @@ extern "C" {
 
 typedef struct dirhandle dirhandle_t;
 
-dirhandle_t   * osDirOpen (const char *dir);
+[[nodiscard]] dirhandle_t   * osDirOpen (const char *dir);
 char          * osDirIterate (dirhandle_t *dirh);
 void          osDirClose (dirhandle_t *dirh);
 

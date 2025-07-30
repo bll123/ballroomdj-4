@@ -20,8 +20,8 @@ enum {
   PODCAST_KEY_MAX,
 };
 
-podcast_t *podcastLoad (const char *fname);
-podcast_t *podcastCreate (const char *fname);
+[[nodiscard]] podcast_t *podcastLoad (const char *fname);
+[[nodiscard]] podcast_t *podcastCreate (const char *fname);
 void      podcastFree (podcast_t *podcast);
 bool      podcastExists (const char *name);
 void      podcastSetName (podcast_t *podcast, const char *newname);

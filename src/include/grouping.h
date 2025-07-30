@@ -13,7 +13,7 @@ extern "C" {
 
 typedef struct grouping grouping_t;
 
-grouping_t *groupingAlloc (musicdb_t *musicdb);
+[[nodiscard]] grouping_t *groupingAlloc (musicdb_t *musicdb);
 void groupingFree (grouping_t *grouping);
 void groupingStartIterator (grouping_t *grouping, nlistidx_t *iteridx);
 dbidx_t groupingIterate (grouping_t *grouping, dbidx_t seldbidx, nlistidx_t *iteridx);

@@ -13,7 +13,7 @@ extern "C" {
 
 typedef struct sortopt sortopt_t;
 
-sortopt_t     *sortoptAlloc (void);
+[[nodiscard]] sortopt_t     *sortoptAlloc (void);
 void          sortoptFree (sortopt_t *);
 slist_t       *sortoptGetList (sortopt_t *);
 

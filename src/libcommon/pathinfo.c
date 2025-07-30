@@ -21,6 +21,7 @@
 
 #define PATHINFO_DEBUG 0
 
+[[nodiscard]]
 pathinfo_t *
 pathInfo (const char *path)
 {

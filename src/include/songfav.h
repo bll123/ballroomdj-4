@@ -25,7 +25,7 @@ enum {
 
 typedef struct songfav songfav_t;
 
-songfav_t *songFavoriteAlloc (void);
+[[nodiscard]] songfav_t *songFavoriteAlloc (void);
 void  songFavoriteFree (songfav_t *songfav);
 int   songFavoriteGetCount (songfav_t *songfav);
 int   songFavoriteGetNextValue (songfav_t *songfav, int value);

@@ -90,6 +90,7 @@ xspfExport (musicdb_t *musicdb, nlist_t *list,
   fclose (fh);
 }
 
+[[nodiscard]]
 nlist_t *
 xspfImport (musicdb_t *musicdb, const char *fname)
 {

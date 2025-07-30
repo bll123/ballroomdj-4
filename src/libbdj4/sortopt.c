@@ -25,6 +25,7 @@ typedef struct sortopt {
   slist_t         *sortoptList;
 } sortopt_t;
 
+[[nodiscard]]
 sortopt_t *
 sortoptAlloc (void)
 {

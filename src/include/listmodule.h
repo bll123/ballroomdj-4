@@ -16,7 +16,7 @@ typedef enum {
   LIST_KEY_IND,
 } keytype_t;
 
-list_t      *listAlloc (const char *name, keytype_t keytype, listorder_t ordered, listFree_t valueFreeHook);
+[[nodiscard]] list_t *listAlloc (const char *name, keytype_t keytype, listorder_t ordered, listFree_t valueFreeHook);
 void        listFree (keytype_t keytype, void *list);
 /* list management */
 void        listSetSize (keytype_t keytype, list_t *list, listidx_t size);

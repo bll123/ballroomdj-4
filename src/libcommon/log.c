@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdatomic.h>
 #include <string.h>
 #include <stdarg.h>
 #include <errno.h>
@@ -68,8 +69,8 @@ static const char * logTail (const char *fn);
 
 static bdjlog_t *syslogs [LOG_MAX];
 static char * logbasenm [LOG_MAX];
-static int  initialized = 0;
-static int  logsalloced = 0;
+static volatile atomic_flag initialized = ATOMIC_FLAG_INIT;
+static volatile _Atomic(int) logsallocated = 0;
 
 void
 logClose (logidx_t idx)
@@ -230,7 +231,7 @@ logEnd (void)
 {
   logInit ();
 
-  if (logsalloced) {
+  if (logsallocated) {
     for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
       if (syslogs [idx] != NULL) {
         logClose (idx);
@@ -238,7 +239,7 @@ logEnd (void)
         syslogs [idx] = NULL;
       }
     }
-    logsalloced = false;
+    logsallocated = false;
   }
 }
 
@@ -416,16 +417,17 @@ rlogOpen (logidx_t idx, const char *fn, const char *processtag, int truncflag)
 static void
 logInit (void)
 {
-  if (! initialized) {
-    logbasenm [LOG_ERR] = LOG_ERROR_NAME;
-    logbasenm [LOG_SESS] = LOG_SESSION_NAME;
-    logbasenm [LOG_DBG] = LOG_DEBUG_NAME;
-    logbasenm [LOG_INSTALL] = LOG_INSTALL_NAME;
-    logbasenm [LOG_GTK] = LOG_GTK_NAME;
-    for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
-      syslogs [idx] = NULL;
-    }
-    initialized = 1;
+  if (atomic_flag_test_and_set (&initialized)) {
+    return;
+  }
+
+  logbasenm [LOG_ERR] = LOG_ERROR_NAME;
+  logbasenm [LOG_SESS] = LOG_SESSION_NAME;
+  logbasenm [LOG_DBG] = LOG_DEBUG_NAME;
+  logbasenm [LOG_INSTALL] = LOG_INSTALL_NAME;
+  logbasenm [LOG_GTK] = LOG_GTK_NAME;
+  for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
+    syslogs [idx] = NULL;
   }
 }
 
@@ -434,7 +436,7 @@ logAlloc (void)
 {
   bdjlog_t      *l = NULL;
 
-  if (! logsalloced) {
+  if (! logsallocated) {
     for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
       if (syslogs [idx] != NULL) {
         continue;
@@ -447,7 +449,7 @@ logAlloc (void)
       l->processTag = "unkn";
       syslogs [idx] = l;
     }
-    logsalloced = true;
+    logsallocated = true;
   }
 }
 

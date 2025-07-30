@@ -12,7 +12,7 @@
 
 #include "bdjstring.h"
 
-  // static const char *versionNext (const char *tv1);
+  // static const char *versionNext (const char *tv1);  /* UNUSED */
 
 /* not for use on localized strings */
 char *

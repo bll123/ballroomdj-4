@@ -118,6 +118,7 @@ static void songselResetCurrentIdxList (ssdance_t *songseldance);
  *
  */
 
+[[nodiscard]]
 songsel_t *
 songselAlloc (musicdb_t *musicdb, nlist_t *dancelist)
 {

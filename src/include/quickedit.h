@@ -22,7 +22,7 @@ enum {
 
 typedef struct quickedit quickedit_t;
 
-quickedit_t * quickeditAlloc (void);
+[[nodiscard]] quickedit_t * quickeditAlloc (void);
 void        quickeditFree (quickedit_t *qe);
 nlist_t     * quickeditGetList (quickedit_t *qe);
 void        quickeditSave (quickedit_t *qe, nlist_t *dispsel);

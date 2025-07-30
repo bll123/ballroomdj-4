@@ -20,8 +20,7 @@ typedef ilistidx_t (*danceselQueueLookup_t)(void *userdata, ilistidx_t idx);
 
 typedef struct dancesel dancesel_t;
 
-dancesel_t      *danceselAlloc (nlist_t *countList,
-                    danceselQueueLookup_t queueLookupProc, void *userdata);
+[[nodiscard]] dancesel_t *danceselAlloc (nlist_t *countList, danceselQueueLookup_t queueLookupProc, void *userdata);
 void            danceselFree (dancesel_t *dancesel);
 void            danceselDecrementBase (dancesel_t *dancesel, ilistidx_t danceIdx);
 void            danceselAddCount (dancesel_t *dancesel, ilistidx_t danceIdx);

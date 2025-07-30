@@ -48,6 +48,7 @@ enum {
 
 static songlist_t * songlistAlloc (const char *fname);
 
+[[nodiscard]]
 songlist_t *
 songlistCreate (const char *fname)
 {
@@ -61,6 +62,7 @@ songlistCreate (const char *fname)
   return sl;
 }
 
+[[nodiscard]]
 songlist_t *
 songlistLoad (const char *fname)
 {

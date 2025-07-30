@@ -20,7 +20,7 @@ enum {
 
 typedef struct aa aa_t;
 
-aa_t * aaAlloc (void);
+[[nodiscard]] aa_t * aaAlloc (void);
 void aaFree (aa_t *aa);
 bool aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags);
 void aaAdjust (musicdb_t *musicdb, song_t *song, const char *infn, const char *outfn, long dur, int fadein, int fadeout, int gap);

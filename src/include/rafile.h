@@ -25,7 +25,7 @@ enum {
 };
 #define RAFILE_LOCK_FN      "rafile"
 
-rafile_t *    raOpen (const char *fname, int version, int openmode);
+[[nodiscard]] rafile_t *    raOpen (const char *fname, int version, int openmode);
 void          raClose (rafile_t *rafile);
 rafileidx_t   raWrite (rafile_t *rafile, rafileidx_t rrn, char *data, ssize_t len);
 bool          raClear (rafile_t *rafile, rafileidx_t rrn);

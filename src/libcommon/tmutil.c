@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdatomic.h>
 #include <string.h>
 #include <inttypes.h>
 #include <errno.h>
@@ -53,7 +54,7 @@
 #endif
 
 static char radixchar [2] = { "." };
-static bool initialized = false;
+static volatile atomic_flag initialized = ATOMIC_FLAG_INIT;
 
 static struct tm * tmutilLocaltime (const time_t * const s, struct tm *t);
 static void tmutilInit (void);
@@ -521,11 +522,12 @@ tmutilLocaltime (const time_t * const s, struct tm *t)
 static void
 tmutilInit (void)
 {
-  if (! initialized) {
-    struct lconv *lconv;
+  struct lconv *lconv;
 
-    lconv = localeconv ();
-    stpecpy (radixchar, radixchar + sizeof (radixchar), lconv->decimal_point);
-    initialized = true;
+  if (atomic_flag_test_and_set (&initialized)) {
+    return;
   }
+
+  lconv = localeconv ();
+  stpecpy (radixchar, radixchar + sizeof (radixchar), lconv->decimal_point);
 }

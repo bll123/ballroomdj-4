@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2025 Brad Lanam Pleasant Hill CA
 #
-ver=21
+ver=22
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -239,7 +239,7 @@ sudo port -N uninstall \
 sudo -v
 
 if [[ -z "$(port -q list inactive)" ]]; then
-  sudo port reclaim --disable-reminders
+  sudo port reclaim --disable-reminders --keep-build-deps
   sudo port -N reclaim
 fi
 

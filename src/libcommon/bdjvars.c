@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdatomic.h>
 #include <string.h>
 #include <errno.h>
 
@@ -50,7 +51,7 @@ static const char *bdjvarsldesc [BDJVL_MAX] = {
 
 static char *   bdjvars [BDJV_MAX];
 static int64_t  bdjvarsl [BDJVL_MAX];
-static bool     initialized = false;
+static volatile atomic_flag initialized = ATOMIC_FLAG_INIT;
 
 static void    bdjvarsAdjustPorts (void);
 static void    bdjvarsSetInstanceName (void);
@@ -61,40 +62,41 @@ bdjvarsInit (void)
 {
   char    tbuff [MAXPATHLEN];
 
-  if (! initialized) {
-    for (int i = 0; i < BDJV_MAX; ++i) {
-      bdjvars [i] = NULL;
-    }
-
-    /* when an audio file is modified, the original is saved with the */
-    /* .original (localized) extension in the same directory */
-    /* CONTEXT: The suffix for an original audio file (may be abbreviated) */
-    snprintf (tbuff, sizeof (tbuff), ".%s", _("original"));
-    bdjvars [BDJV_ORIGINAL_EXT] = mdstrdup (tbuff);
-
-    /* when an audio file is marked for deletion, it is renamed with the */
-    /* the 'delete-' prefix in the same directory */
-    /* CONTEXT: The prefix name for an audio file marked for deletion (may be abbreviated) */
-    snprintf (tbuff, sizeof (tbuff), "%s-", _("delete"));
-    bdjvars [BDJV_DELETE_PFX] = mdstrdup (tbuff);
-    bdjvarsl [BDJVL_DELETE_PFX_LEN] = strlen (bdjvars [BDJV_DELETE_PFX]);
-
-    bdjvarsl [BDJVL_NUM_PORTS] = BDJVL_NUM_PORTS;
-    bdjvarsAdjustPorts ();
-    bdjvarsSetInstanceName ();
-    initialized = true;
+  if (atomic_flag_test_and_set (&initialized)) {
+    return;
   }
+
+  for (int i = 0; i < BDJV_MAX; ++i) {
+    bdjvars [i] = NULL;
+  }
+
+  /* when an audio file is modified, the original is saved with the */
+  /* .original (localized) extension in the same directory */
+  /* CONTEXT: The suffix for an original audio file (may be abbreviated) */
+  snprintf (tbuff, sizeof (tbuff), ".%s", _("original"));
+  bdjvars [BDJV_ORIGINAL_EXT] = mdstrdup (tbuff);
+
+  /* when an audio file is marked for deletion, it is renamed with the */
+  /* the 'delete-' prefix in the same directory */
+  /* CONTEXT: The prefix name for an audio file marked for deletion (may be abbreviated) */
+  snprintf (tbuff, sizeof (tbuff), "%s-", _("delete"));
+  bdjvars [BDJV_DELETE_PFX] = mdstrdup (tbuff);
+  bdjvarsl [BDJVL_DELETE_PFX_LEN] = strlen (bdjvars [BDJV_DELETE_PFX]);
+
+  bdjvarsl [BDJVL_NUM_PORTS] = BDJVL_NUM_PORTS;
+  bdjvarsAdjustPorts ();
+  bdjvarsSetInstanceName ();
 }
 
 void
 bdjvarsCleanup (void)
 {
-  if (initialized) {
+  if (atomic_flag_test_and_set (&initialized)) {
     for (int i = 0; i < BDJV_MAX; ++i) {
       dataFree (bdjvars [i]);
       bdjvars [i] = NULL;
     }
-    initialized = false;
+    atomic_flag_clear (&initialized);
   }
   return;
 }
@@ -152,7 +154,13 @@ bdjvarsSetStr (bdjvarkey_t idx, const char *str)
 bool
 bdjvarsIsInitialized (void)
 {
-  return initialized;
+  bool    val;
+
+  val = atomic_flag_test_and_set (&initialized);
+  if (! val) {
+    atomic_flag_clear (&initialized);
+  }
+  return val;
 }
 
 const char *

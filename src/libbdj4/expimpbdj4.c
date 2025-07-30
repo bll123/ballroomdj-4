@@ -65,6 +65,7 @@ static const char * const exporgpath = "{%DANCE%/}{%TITLE%}";
 static bool eibdj4ProcessExport (eibdj4_t *eibdj4);
 static bool eibdj4ProcessImport (eibdj4_t *eibdj4);
 
+[[nodiscard]]
 eibdj4_t *
 eibdj4Init (musicdb_t *musicdb, const char *dirname, int eiflag)
 {

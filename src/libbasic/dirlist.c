@@ -27,6 +27,7 @@
 #include "pathinfo.h"
 #include "queue.h"
 
+[[nodiscard]]
 slist_t *
 dirlistBasicDirList (const char *dirname, const char *extension)
 {
@@ -90,6 +91,7 @@ dirlistBasicDirList (const char *dirname, const char *extension)
   return fileList;
 }
 
+[[nodiscard]]
 slist_t *
 dirlistRecursiveDirList (const char *dirname, int flags)
 {

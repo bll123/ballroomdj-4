@@ -50,7 +50,7 @@ enum {
 
 typedef struct musicq musicq_t;
 
-musicq_t *  musicqAlloc (musicdb_t *db);
+[[nodiscard]] musicq_t *  musicqAlloc (musicdb_t *db);
 void        musicqFree (musicq_t *musicq);
 void        musicqSetDatabase (musicq_t *musicq, musicdb_t *db);
 void        musicqPush (musicq_t *musicq, musicqidx_t idx, dbidx_t dbidx,

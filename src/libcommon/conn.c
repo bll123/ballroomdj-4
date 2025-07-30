@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdatomic.h>
 #include <string.h>
 #include <inttypes.h>
 #include <sys/time.h>
@@ -38,7 +39,7 @@ typedef struct conn {
   bool          connected;
 } conn_t;
 
-static bool     initialized = false;
+static volatile atomic_flag initialized = ATOMIC_FLAG_INIT;
 static uint16_t connports [ROUTE_MAX];
 
 /**
@@ -48,8 +49,10 @@ static uint16_t connports [ROUTE_MAX];
  */
 static bool connCheckAll (conn_t *conn);
 static Sock_t connTryConnect (uint16_t port, int *connerr, Sock_t sock);
+static void connBaseInit (void);
 
 /* note that connInit() must be called after bdjvarsInit() */
+[[nodiscard]]
 conn_t *
 connInit (bdjmsgroute_t routefrom)
 {
@@ -62,25 +65,7 @@ connInit (bdjmsgroute_t routefrom)
     return NULL;
   }
 
-  if (! initialized) {
-    connports [ROUTE_NONE] = 0;
-    connports [ROUTE_ALTINST] = 0;
-    connports [ROUTE_BPM_COUNTER] = bdjvarsGetNum (BDJVL_PORT_BPM_COUNTER);
-    connports [ROUTE_CONFIGUI] = bdjvarsGetNum (BDJVL_PORT_CONFIGUI);
-    connports [ROUTE_DBUPDATE] = bdjvarsGetNum (BDJVL_PORT_DBUPDATE);
-    connports [ROUTE_HELPERUI] = bdjvarsGetNum (BDJVL_PORT_HELPERUI);
-    connports [ROUTE_MAIN] = bdjvarsGetNum (BDJVL_PORT_MAIN);
-    connports [ROUTE_MANAGEUI] = bdjvarsGetNum (BDJVL_PORT_MANAGEUI);
-    connports [ROUTE_MARQUEE] = bdjvarsGetNum (BDJVL_PORT_MARQUEE);
-    connports [ROUTE_MOBILEMQ] = bdjvarsGetNum (BDJVL_PORT_MOBILEMQ);
-    connports [ROUTE_PLAYER] = bdjvarsGetNum (BDJVL_PORT_PLAYER);
-    connports [ROUTE_PLAYERUI] = bdjvarsGetNum (BDJVL_PORT_PLAYERUI);
-    connports [ROUTE_REMCTRL] = bdjvarsGetNum (BDJVL_PORT_REMCTRL);
-    connports [ROUTE_SERVER] = bdjvarsGetNum (BDJVL_PORT_SERVER);
-    connports [ROUTE_STARTERUI] = bdjvarsGetNum (BDJVL_PORT_STARTERUI);
-    connports [ROUTE_TEST_SUITE] = bdjvarsGetNum (BDJVL_PORT_TEST_SUITE);
-    initialized = true;
-  }
+  connBaseInit ();
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     conn [i].sock = INVALID_SOCKET;
@@ -109,7 +94,7 @@ connFree (conn_t *conn)
       conn [i].handshake = false;
     }
     mdfree (conn);
-    initialized = false;
+    atomic_flag_clear (&initialized);
   }
 }
 
@@ -368,4 +353,29 @@ connTryConnect (uint16_t port, int *connerr, Sock_t sock)
     sock = INVALID_SOCKET;
   }
   return sock;
+}
+
+static void
+connBaseInit (void)
+{
+  if (atomic_flag_test_and_set (&initialized)) {
+    return;
+  }
+
+  connports [ROUTE_NONE] = 0;
+  connports [ROUTE_ALTINST] = 0;
+  connports [ROUTE_BPM_COUNTER] = bdjvarsGetNum (BDJVL_PORT_BPM_COUNTER);
+  connports [ROUTE_CONFIGUI] = bdjvarsGetNum (BDJVL_PORT_CONFIGUI);
+  connports [ROUTE_DBUPDATE] = bdjvarsGetNum (BDJVL_PORT_DBUPDATE);
+  connports [ROUTE_HELPERUI] = bdjvarsGetNum (BDJVL_PORT_HELPERUI);
+  connports [ROUTE_MAIN] = bdjvarsGetNum (BDJVL_PORT_MAIN);
+  connports [ROUTE_MANAGEUI] = bdjvarsGetNum (BDJVL_PORT_MANAGEUI);
+  connports [ROUTE_MARQUEE] = bdjvarsGetNum (BDJVL_PORT_MARQUEE);
+  connports [ROUTE_MOBILEMQ] = bdjvarsGetNum (BDJVL_PORT_MOBILEMQ);
+  connports [ROUTE_PLAYER] = bdjvarsGetNum (BDJVL_PORT_PLAYER);
+  connports [ROUTE_PLAYERUI] = bdjvarsGetNum (BDJVL_PORT_PLAYERUI);
+  connports [ROUTE_REMCTRL] = bdjvarsGetNum (BDJVL_PORT_REMCTRL);
+  connports [ROUTE_SERVER] = bdjvarsGetNum (BDJVL_PORT_SERVER);
+  connports [ROUTE_STARTERUI] = bdjvarsGetNum (BDJVL_PORT_STARTERUI);
+  connports [ROUTE_TEST_SUITE] = bdjvarsGetNum (BDJVL_PORT_TEST_SUITE);
 }

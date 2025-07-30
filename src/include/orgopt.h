@@ -16,7 +16,7 @@ typedef struct {
   slist_t       *orgList;
 } orgopt_t;
 
-orgopt_t  * orgoptAlloc (void);
+[[nodiscard]] orgopt_t  * orgoptAlloc (void);
 void      orgoptFree (orgopt_t *org);
 slist_t   * orgoptGetList (orgopt_t *org);
 

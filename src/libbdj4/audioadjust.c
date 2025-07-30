@@ -74,6 +74,7 @@ static void aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx, cons
 static void aaSetDuration (musicdb_t *musicdb, song_t *song, const char *ffn);
 static int  aaProcess (const char *tag, const char *targv [], int targc, char *resp);
 
+[[nodiscard]]
 aa_t *
 aaAlloc (void)
 {

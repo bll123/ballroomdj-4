@@ -43,6 +43,7 @@ static void musicqRenumber (musicq_t *musicq, musicqidx_t musicqidx, int olddisp
 
 static long   guniqueidx = 0;
 
+[[nodiscard]]
 musicq_t *
 musicqAlloc (musicdb_t *db)
 {

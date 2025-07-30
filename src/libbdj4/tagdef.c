@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdatomic.h>
 
 #include "bdj4intl.h"
 #include "bdjopt.h"
@@ -1626,22 +1627,21 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
 };
 
 typedef struct {
-  slist_t   *taglookup;
-  bool      initialized;
+  slist_t               *taglookup;
+  volatile atomic_flag  initialized;
 } tagdefinfo_t;
 
 static tagdefinfo_t   tagdefinfo = {
   NULL,
-  false,
+  ATOMIC_FLAG_INIT,
 };
 
 void
 tagdefInit (void)
 {
-  if (tagdefinfo.initialized) {
+  if (atomic_flag_test_and_set (&tagdefinfo.initialized)) {
     return;
   }
-  tagdefinfo.initialized = true;
 
   /* listing display is true */
 
@@ -1775,13 +1775,14 @@ tagdefInit (void)
 void
 tagdefCleanup (void)
 {
-  if (! tagdefinfo.initialized) {
+  if (! atomic_flag_test_and_set (&tagdefinfo.initialized)) {
+    atomic_flag_clear (&tagdefinfo.initialized);
     return;
   }
 
   slistFree (tagdefinfo.taglookup);
   tagdefinfo.taglookup = NULL;
-  tagdefinfo.initialized = false;
+  atomic_flag_clear (&tagdefinfo.initialized);
 }
 
 /* can return LIST_VALUE_INVALID if not found */

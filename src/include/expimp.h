@@ -38,11 +38,11 @@ nlist_t * m3uImport (musicdb_t *musicdb, const char *fname);
 
 /* jspf.c */
 void jspfExport (musicdb_t *musicdb, nlist_t *list, const char *fname, const char *slname);
-nlist_t * jspfImport (musicdb_t *musicdb, const char *fname);
+[[nodiscard]] nlist_t * jspfImport (musicdb_t *musicdb, const char *fname);
 
 /* xspf.c */
 void xspfExport (musicdb_t *musicdb, nlist_t *list, const char *fname, const char *slname);
-nlist_t * xspfImport (musicdb_t *musicdb, const char *fname);
+[[nodiscard]] nlist_t * xspfImport (musicdb_t *musicdb, const char *fname);
 
 /* rss.c */
 time_t rssGetUpdateTime (const char *uri);

@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdatomic.h>
 #include <string.h>
 
 #include "bdj4.h"
@@ -50,8 +51,8 @@ typedef struct {
   bool          listallocated;
 } bdjopt_t;
 
-static bdjopt_t   *bdjopt = NULL;
-static bool       vlccheckdone = false;
+static bdjopt_t       *bdjopt = NULL;
+static _Atomic(bool)  vlccheckdone = false;
 
 static datafilekey_t bdjoptglobaldfkeys [] = {
   { "ACOUSTID_KEY",         OPT_G_ACOUSTID_KEY,       VALUE_STR, NULL, DF_NORM },

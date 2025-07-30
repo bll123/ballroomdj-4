@@ -27,7 +27,7 @@ enum {
 typedef struct itunes itunes_t;
 
 bool  itunesConfigured (void);
-itunes_t  *itunesAlloc (void);
+[[nodiscard]] itunes_t  *itunesAlloc (void);
 void  itunesFree (itunes_t *itunes);
 int   itunesGetStars (itunes_t *itunes, int idx);
 void  itunesSetStars (itunes_t *itunes, int idx, int value);

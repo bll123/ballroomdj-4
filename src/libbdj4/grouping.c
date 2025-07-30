@@ -30,6 +30,7 @@ typedef struct grouping {
 
 static void groupingAdd (grouping_t *grp, song_t *song, dbidx_t dbidx, slist_t *groupSort, nlist_t *groupName);
 
+[[nodiscard]]
 grouping_t *
 groupingAlloc (musicdb_t *musicdb)
 {

@@ -29,6 +29,7 @@ typedef struct quickedit {
   nlist_t       *dispsel;
 } quickedit_t;
 
+[[nodiscard]]
 quickedit_t *
 quickeditAlloc (void)
 {

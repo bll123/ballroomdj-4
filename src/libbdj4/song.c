@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdatomic.h>
 #include <string.h>
 #include <inttypes.h>
 
@@ -116,14 +117,14 @@ enum {
 };
 
 typedef struct {
-  bool        initialized;
-  level_t     *levels;
-  songfav_t   *songfav;
-  bdjregex_t  *alldigits;
-  bdjregex_t  *titlesort;
+  volatile atomic_flag  initialized;
+  level_t               *levels;
+  songfav_t             *songfav;
+  bdjregex_t            *alldigits;
+  bdjregex_t            *titlesort;
 } songinit_t;
 
-static songinit_t gsonginit = { false, NULL, NULL, NULL, NULL };
+static songinit_t gsonginit = { ATOMIC_FLAG_INIT, NULL, NULL, NULL, NULL };
 
 static void songSetDefaults (song_t *song);
 
@@ -623,10 +624,10 @@ songGetClassicalWork (const song_t *song, char *work, size_t sz)
 static void
 songInit (void)
 {
-  if (gsonginit.initialized) {
+  if (atomic_flag_test_and_set (&gsonginit.initialized)) {
     return;
   }
-  gsonginit.initialized = true;
+
   gsonginit.levels = bdjvarsdfGet (BDJVDF_LEVELS);
   gsonginit.songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
   gsonginit.alldigits = regexInit ("^\\d+$");
@@ -643,7 +644,8 @@ songInit (void)
 static void
 songCleanup (void)
 {
-  if (! gsonginit.initialized) {
+  if (! atomic_flag_test_and_set (&gsonginit.initialized)) {
+    atomic_flag_clear (&gsonginit.initialized);
     return;
   }
 
@@ -655,7 +657,7 @@ songCleanup (void)
     regexFree (gsonginit.titlesort);
     gsonginit.titlesort = NULL;
   }
-  gsonginit.initialized = false;
+  atomic_flag_clear (&gsonginit.initialized);
 }
 
 #if 0 /* for debugging */

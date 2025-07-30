@@ -21,6 +21,7 @@
 
 static void msgparseMusicQueueDispFree (void *data);
 
+[[nodiscard]]
 mp_musicqupdate_t *
 msgparseMusicQueueData (char *data)
 {
@@ -101,6 +102,7 @@ msgparseMusicQueueDataFree (mp_musicqupdate_t *musicqupdate)
   mdfree (musicqupdate);
 }
 
+[[nodiscard]]
 mp_songselect_t *
 msgparseSongSelect (char *data)
 {
@@ -153,6 +155,7 @@ msgbuildPlayerStatus (char *buff, size_t sz,
 }
 
 
+[[nodiscard]]
 mp_playerstatus_t *
 msgparsePlayerStatusData (char * data)
 {
@@ -223,6 +226,7 @@ msgbuildPlayerState (char *buff, size_t sz, int playerState, bool newsong)
   snprintf (buff, sz, "%d%c%d", playerState, MSG_ARGS_RS, newsong);
 }
 
+[[nodiscard]]
 mp_playerstate_t *
 msgparsePlayerStateData (char * data)
 {

@@ -19,7 +19,7 @@ typedef enum {
 
 typedef struct status status_t;
 
-status_t    * statusAlloc (void);
+[[nodiscard]] status_t    * statusAlloc (void);
 void        statusFree (status_t *);
 ilistidx_t  statusGetCount (status_t *);
 int         statusGetMaxWidth (status_t *);

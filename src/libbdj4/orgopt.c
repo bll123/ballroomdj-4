@@ -29,6 +29,7 @@
 #include "sysvars.h"
 #include "tagdef.h"
 
+[[nodiscard]]
 orgopt_t *
 orgoptAlloc (void)
 {

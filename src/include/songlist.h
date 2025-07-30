@@ -28,8 +28,8 @@ enum {
 
 typedef struct songlist songlist_t;
 
-songlist_t * songlistCreate (const char *fname);
-songlist_t * songlistLoad (const char *fname);
+[[nodiscard]] songlist_t * songlistCreate (const char *fname);
+[[nodiscard]] songlist_t * songlistLoad (const char *fname);
 void songlistFree (songlist_t *);
 bool songlistExists (const char *name);
 int  songlistGetCount (songlist_t *);

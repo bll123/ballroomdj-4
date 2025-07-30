@@ -102,6 +102,7 @@ itunesConfigured (void)
   return have == 2;
 }
 
+[[nodiscard]]
 itunes_t *
 itunesAlloc (void)
 {

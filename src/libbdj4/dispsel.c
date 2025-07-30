@@ -48,6 +48,7 @@ static dispselinfo_t dispselmap [DISP_SEL_MAX] = {
 
 static void dispselCreateList (dispsel_t *dispsel, slist_t *tlist, int selidx);
 
+[[nodiscard]]
 dispsel_t *
 dispselAlloc (int loadtype)
 {

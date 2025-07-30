@@ -17,8 +17,7 @@ typedef listFree_t  slistFree_t;
 
 /* keyed by a string */
 
-slist_t   *slistAlloc (const char *name, slistorder_t ordered,
-              slistFree_t valueFreeHook);
+[[nodiscard]] slist_t   *slistAlloc (const char *name, slistorder_t ordered, slistFree_t valueFreeHook);
 void      slistFree (void * list);
 void      slistSetVersion (slist_t *list, int version);
 int       slistGetVersion (slist_t *list);

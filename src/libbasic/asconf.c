@@ -59,6 +59,7 @@ static const char *asconfmode [ASCONF_MODE_MAX] = {
   [ASCONF_MODE_SERVER] = "server",
 };
 
+[[nodiscard]]
 asconf_t *
 asconfAlloc (void)
 {

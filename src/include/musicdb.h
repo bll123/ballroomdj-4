@@ -41,7 +41,7 @@ enum {
 #define MUSICDB_TMP_FNAME "musicdb-tmp"
 #define MUSICDB_EXT       ".dat"
 
-musicdb_t *dbOpen (const char *);
+[[nodiscard]] musicdb_t *dbOpen (const char *);
 void      dbClose (musicdb_t *db);
 dbidx_t   dbCount (musicdb_t *db);
 int       dbLoad (musicdb_t *);

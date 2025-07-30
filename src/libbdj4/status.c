@@ -36,6 +36,7 @@ static datafilekey_t statusdfkeys [STATUS_KEY_MAX] = {
   { "STATUS",     STATUS_STATUS,      VALUE_STR, NULL, DF_NORM },
 };
 
+[[nodiscard]]
 status_t *
 statusAlloc (void)
 {

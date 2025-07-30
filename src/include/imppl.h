@@ -13,7 +13,7 @@ extern "C" {
 
 typedef struct imppl imppl_t;
 
-imppl_t * impplInit (slist_t *songidxlist, int imptype, const char *uri, const char *oplname, const char *plname, int askey);
+[[nodiscard]] imppl_t * impplInit (slist_t *songidxlist, int imptype, const char *uri, const char *oplname, const char *plname, int askey);
 void impplFree (imppl_t *imppl);
 bool impplProcess (imppl_t *imppl);
 void impplGetCount (imppl_t *imppl, int *count, int *tot);
