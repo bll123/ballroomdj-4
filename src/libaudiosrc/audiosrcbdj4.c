@@ -819,6 +819,8 @@ asbdj4ClientInit (asdata_t *asdata, int askey)
   idx = asdata->clientcount;
   newclientcount = asdata->clientcount + 1;
 
+  /* each clientdata pointer is allocated and must remain the same */
+  /* so that the callback works when the array is extended */
   asdata->clientdata = mdrealloc (asdata->clientdata,
       sizeof (asclientdata_t *) * newclientcount);
   asdata->clientdata [idx] = mdmalloc (sizeof (asclientdata_t));
