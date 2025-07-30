@@ -191,6 +191,7 @@ asiExists (asdata_t *asdata, const char *nm)
   return exists;
 }
 
+/* asiPrep is called in a multi-threaded context */
 bool
 asiPrep (asdata_t *asdata, const char *sfname, char *tempnm, size_t sz)
 {

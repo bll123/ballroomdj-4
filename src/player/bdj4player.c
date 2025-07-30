@@ -61,8 +61,8 @@
 #include "volume.h"
 
 #define DEBUG_PREP_QUEUE 0
-/* threads are not working properly 2025-7-9 */
-#define PLAYER_USE_THREADS 0
+/* threads working 2025-7-30 */
+#define PLAYER_USE_THREADS 1
 
 enum {
   STOP_NEXTSONG = 0,

@@ -166,7 +166,6 @@ websrvEventHandler (struct mg_connection *c, int ev, void *ev_data)
 
     memset (&opts, 0, sizeof (struct mg_tls_opts));
 
-// ### will need to set full path...
     opts.cert = websrv->cdata;
     opts.key = websrv->kdata;
     mg_tls_init (c, &opts);

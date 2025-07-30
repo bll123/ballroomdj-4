@@ -167,7 +167,7 @@ asiRemove (asdata_t *asdata, const char *nm)
   return rc == 0 ? true : false;
 }
 
-/* prep is called in a multi-threaded context */
+/* asiPrep is called in a multi-threaded context */
 bool
 asiPrep (asdata_t *asdata, const char *sfname, char *tempnm, size_t sz)
 {

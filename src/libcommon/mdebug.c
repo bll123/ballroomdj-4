@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdatomic.h>
 #include <string.h>
 #include <inttypes.h>
 #include <stdarg.h>
@@ -78,10 +79,10 @@ typedef struct {
 static char     mdebugtag [20] = { "none" };
 static char     mdebugsubtag [MAXSUBTAG] = { "" };
 static mdebug_t *mdebug = NULL;
-static int32_t  mdebugcounts [MDEBUG_MAX];
-static bool     initialized = false;
-static bool     mdebugverbose = false;
-static bool     mdebugnooutput = false;
+static _Atomic(int32_t)  mdebugcounts [MDEBUG_MAX];
+static _Atomic(bool)     initialized = false;
+static _Atomic(bool)     mdebugverbose = false;
+static _Atomic(bool)     mdebugnooutput = false;
 
 static void * mdextalloc_a (void *data, const char *fn, int lineno, const char *tag, int type, int ctype);
 static void mdfree_a (void *data, const char *fn, int lineno, const char *tag, int ctype);
