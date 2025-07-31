@@ -21,26 +21,26 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#if _hdr_arpa_inet
+#if __has_include (<arpa/inet.h>)
 # include <arpa/inet.h>
 #endif
-#if _hdr_netdb
+#if __has_include (<netdb.h>)
 # include <netdb.h>
 #endif
-#if _hdr_netinet_in
+#if __has_include (<netinet/in.h>)
 # include <netinet/in.h>
 #endif
-#if _sys_select
+#if __has_include (<sys/select.h>)
 # include <sys/select.h>
 #endif
-#if _sys_socket
+#if __has_include (<sys/socket.h>)
 # include <sys/socket.h>
 #endif
 
-#if _hdr_winsock2
+#if __has_include (<winsock2.h>)
 # include <winsock2.h>
 #endif
-#if _hdr_ws2tcpip
+#if __has_include (<ws2tcpip.h>)
 # include <ws2tcpip.h>
 #endif
 

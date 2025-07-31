@@ -14,10 +14,10 @@
 #include <unistd.h>
 #include <locale.h>
 #include <stdarg.h>
-#if _hdr_fcntl
+#if __has_include (<fcntl.h>)
 # include <fcntl.h>
 #endif
-#if _sys_wait
+#if __has_include (<sys/wait.h>)
 # include <sys/wait.h>
 #endif
 

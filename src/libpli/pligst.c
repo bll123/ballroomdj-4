@@ -1,6 +1,8 @@
 /*
  * Copyright 2024-2025 Brad Lanam Pleasant Hill CA
  */
+#if __has_include (<gst/gst.h>)
+
 #include "config.h"
 
 #include <stdio.h>
@@ -9,8 +11,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-
-#if _hdr_gst_gst
 
 #include "bdj4.h"
 #include "dyintfc.h"
@@ -261,4 +261,4 @@ pliiWaitUntilPlaying (plidata_t *plidata)
   }
 }
 
-#endif /* _hdr_gst */
+#endif /* gst/gst.h */

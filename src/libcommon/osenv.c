@@ -13,7 +13,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <wchar.h>
-#if _hdr_tchar
+#if __has_include (<tchar.h>)
 # include <tchar.h>
 #endif
 

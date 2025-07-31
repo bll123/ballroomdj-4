@@ -6,7 +6,7 @@
 
 #include "config.h"
 
-#if _hdr_vlc_vlc
+#if __has_include (<vlc/vlc.h>)
 
 # include <vlc/vlc.h>
 # include <vlc/libvlc_version.h>
@@ -41,6 +41,6 @@ int               vlcGetVolume (vlcdata_t *vlcdata);
 } /* extern C */
 #endif
 
-#endif /* _hdr_vlc_vlc */
+#endif /* vlc/vlc.h */
 
 #endif /* INC_VLCI_H */

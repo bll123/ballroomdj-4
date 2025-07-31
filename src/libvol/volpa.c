@@ -11,9 +11,9 @@
  *   https://freedesktop.org/software/pulseaudio/doxygen/
  */
 
-#include "config.h"
+#if __has_include (<pulse/pulseaudio.h>)
 
-#if _hdr_pulse_pulseaudio
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,12 +21,7 @@
 #include <string.h>
 #include <math.h>
 #include <pulse/pulseaudio.h>
-#if _hdr_stdatomic
-# include <stdatomic.h>
-#endif
-#if defined(__STDC_NO_ATOMICS__)
-# define _Atomic(type) type
-#endif
+#include <stdatomic.h>
 
 #include "bdjstring.h"
 #include "tmutil.h"

@@ -12,7 +12,7 @@
 #include <math.h>
 
 #include <gtk/gtk.h>
-#if _hdr_gdk_gdkx
+#if __has_include (<gdk/gdkx.h>)
 # include <gdk/gdkx.h>
 #endif
 
@@ -198,7 +198,7 @@ uiWindowGetPosition (uiwcont_t *uiwindow, int *x, int *y, int *ws)
   *ws = -1;
   if (gdkwin != NULL) {
 /* being lazy here, just check for the header to see if it is x11 */
-#if _hdr_gdk_gdkx
+#if __has_include (<gdk/gdkx.h>)
     *ws = gdk_x11_window_get_desktop (gdkwin);
 #endif
   }
@@ -219,7 +219,7 @@ uiWindowMove (uiwcont_t *uiwindow, int x, int y, int ws)
   if (ws >= 0) {
     gdkwin = gtk_widget_get_window (uiwindow->uidata.widget);
     if (gdkwin != NULL) {
-#if _hdr_gdk_gdkx
+#if __has_include (<gdk/gdkx.h>)
       gdk_x11_window_move_to_desktop (gdkwin, ws);
 #endif
     }
@@ -239,7 +239,7 @@ uiWindowMoveToCurrentWorkspace (uiwcont_t *uiwindow)
 
   if (gdkwin != NULL) {
 /* being lazy here, just check for the header to see if it is x11 */
-#if _hdr_gdk_gdkx
+#if __has_include (<gdk/gdkx.h>)
     gdk_x11_window_move_to_current_desktop (gdkwin);
 #endif
   }

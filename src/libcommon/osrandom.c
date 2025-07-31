@@ -12,12 +12,12 @@
 #include <limits.h>
 #include <assert.h>
 
-#if _hdr_windows
+#if __has_include (<windows.h>)
 /* required for bcrypt.h */
 # define WIN32_LEAN_AND_MEAN 1
 # include <windows.h>
 #endif
-#if _hdr_bcrypt
+#if __has_include (<bcrypt.h>)
 # include <bcrypt.h>
 #endif
 

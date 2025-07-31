@@ -15,7 +15,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <getopt.h>
-#if _sys_xattr
+#if __has_include (<sys/xattr.h>)
 # include <sys/xattr.h>
 #endif
 

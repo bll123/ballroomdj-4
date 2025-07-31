@@ -11,7 +11,7 @@
 #include <inttypes.h>
 #include <errno.h>
 
-#if _hdr_winsock2
+#if __has_include (<winsock2.h>)
 # include <winsock2.h>
 #endif
 

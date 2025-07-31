@@ -11,7 +11,7 @@
 #include <inttypes.h>
 #include <errno.h>
 
-#if _hdr_windows
+#if __has_include (<windows.h>)
 # define WIN32_LEAN_AND_MEAN 1
 # include <windows.h>
 #endif

@@ -6,7 +6,7 @@
 
 #include "config.h"
 
-#if _hdr_mpv_client
+#if __has_include (<mpv/client.h>)
 
 #include <mpv/client.h>
 
@@ -42,6 +42,6 @@ void              mpvRelease (mpvData_t *mpvData);
 } /* extern C */
 #endif
 
-#endif /* _hdr_mpv_client */
+#endif /* mpv/client.h */
 
 #endif /* INC_MPVI_H */

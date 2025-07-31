@@ -15,7 +15,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-#if _hdr_windows
+#if __has_include (<windows.h>)
 # define NOCRYPT 1
 # define NOGDI 1
 # include <windows.h>

@@ -16,7 +16,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
-#if _hdr_execinfo
+#if __has_include (<execinfo.h>)
 # include <execinfo.h>
 #endif
 

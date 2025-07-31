@@ -22,7 +22,7 @@
 #include <time.h>
 #include <math.h>
 
-#if _hdr_pthread
+#if __has_include (<pthread.h>)
 # include <pthread.h>
 #endif
 

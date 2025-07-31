@@ -13,18 +13,18 @@
 #include <unistd.h>
 #include <stdarg.h>
 
-#if _sys_resource
+#if __has_include (<sys/resource.h>)
 # include <sys/resource.h>
 #endif
-#if _sys_utsname
+#if __has_include (<sys/utsname.h>)
 # include <sys/utsname.h>
 #endif
 
-#if _hdr_windows
+#if __has_include (<windows.h>)
 # define NOGDI 1
 # include <windows.h>
 #endif
-#if _hdr_intrin
+#if __has_include (<intrin.h>)
 # include <intrin.h>
 #endif
 

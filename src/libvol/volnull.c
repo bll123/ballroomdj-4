@@ -13,7 +13,7 @@
 #include <strings.h>
 #include <memory.h>
 
-#if _hdr_MacTypes
+#if __has_include (<MacTypes.h>)
 # if defined (BDJ4_MEM_DEBUG)
 #  undef BDJ4_MEM_DEBUG
 # endif

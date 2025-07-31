@@ -32,9 +32,9 @@
  *
  */
 
-#include "config.h"
+#if __has_include (<pipewire/pipewire.h>)
 
-#if _hdr_pipewire_pipewire && _hdr_spa_utils_jsonpod
+#include "config.h"
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -57,7 +57,9 @@
 #include <spa/pod/filter.h>
 #include <spa/utils/json.h>
 #include <spa/utils/result.h>
-#if BDJ4_PW_DEBUG
+#if BDJ4_PW_DEBUG && \
+    __has_include (<spa/utils/json-pod.h>)
+ // spa-0.2 package
  // #include <spa/utils/type.h>
 # include <pipewire/log.h>
 # include <spa/utils/json-pod.h>
@@ -1210,4 +1212,4 @@ pipewireDumpSink (void *item, void *udata)
 
 #endif /* BDJ4_PW_DEBUG */
 
-#endif /* _hdr_pipewire_pipewire - have pipewire header */
+#endif /* pipewire/pipewire.h - have pipewire header */

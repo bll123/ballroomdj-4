@@ -5,8 +5,6 @@
 include (CheckCCompilerFlag)
 include (CheckLinkerFlag)
 include (CheckFunctionExists)
-include (CheckIncludeFile)
-include (CheckIncludeFileCXX)
 include (CheckLibraryExists)
 include (CheckLinkerFlag)
 include (CheckSymbolExists)
@@ -233,6 +231,18 @@ macro (checkAddCompileFlag flag)
   endif()
 endmacro()
 
+macro (checkAddCompileNegFlag flag)
+  # cmake caches every damned variable...
+  # need a different variable for every test.
+  string (REPLACE "-" "_" tflag ${flag})
+  string (REPLACE "=" "_" tflag ${tflag})
+  string (REPLACE "no-" "" chkflag ${flag})
+  check_c_compiler_flag (${chkflag} cfchk${tflag})
+  if (cfchk${tflag})
+    add_compile_options (${flag})
+  endif()
+endmacro()
+
 macro (checkAddLinkFlag flag)
   string (REPLACE "-" "_" tflag ${flag})
   string (REPLACE "=" "_" tflag ${tflag})
@@ -256,9 +266,9 @@ checkAddLinkFlag ("-fPIC")
 checkAddCompileFlag ("-Wall")
 checkAddCompileFlag ("-Wextra")
 # add_compile_options (-Wconversion)
-checkAddCompileFlag ("-Wno-unused-parameter")
-checkAddCompileFlag ("-Wno-unknown-pragmas")
-checkAddCompileFlag ("-Wno-float-equal")
+checkAddCompileNegFlag ("-Wno-unused-parameter")
+checkAddCompileNegFlag ("-Wno-unknown-pragmas")
+checkAddCompileNegFlag ("-Wno-float-equal")
 checkAddCompileFlag ("-Wdeclaration-after-statement")
 checkAddCompileFlag ("-Wmissing-prototypes")
 checkAddCompileFlag ("-Wformat")
@@ -272,22 +282,22 @@ checkAddCompileFlag ("-Wunreachable-code")
 #### compiler-specific compile options
 
 checkAddCompileFlag ("-Wmaybe-uninitialized")
-checkAddCompileFlag ("-Wno-unused-but-set-variable")
-checkAddCompileFlag ("-Wno-stringop-overflow")
-checkAddCompileFlag ("-Wno-stringop-truncation")
-checkAddCompileFlag ("-Wno-format-truncation")
-checkAddCompileFlag ("-Wno-poison-system-directories")
-checkAddCompileFlag ("-Wno-shift-sign-overflow")
-checkAddCompileFlag ("-Wno-pragma-pack")
-checkAddCompileFlag ("-Wno-ignored-attributes")
-checkAddCompileFlag ("-Wno-reserved-macro-identifier")
-checkAddCompileFlag ("-Wno-reserved-id-macro")
-checkAddCompileFlag ("-Wno-implicit-int-conversion")
-checkAddCompileFlag ("-Wno-switch-enum")
-checkAddCompileFlag ("-Wno-gnu-zero-variadic-macro-arguments")
-checkAddCompileFlag ("-Wno-documentation-deprecated-sync")
-checkAddCompileFlag ("-Wno-documentation-unknown-command")
-checkAddCompileFlag ("-Wno-documentation")
+checkAddCompileNegFlag ("-Wno-unused-but-set-variable")
+checkAddCompileNegFlag ("-Wno-stringop-overflow")
+checkAddCompileNegFlag ("-Wno-stringop-truncation")
+checkAddCompileNegFlag ("-Wno-format-truncation")
+checkAddCompileNegFlag ("-Wno-poison-system-directories")
+checkAddCompileNegFlag ("-Wno-shift-sign-overflow")
+checkAddCompileNegFlag ("-Wno-pragma-pack")
+checkAddCompileNegFlag ("-Wno-ignored-attributes")
+checkAddCompileNegFlag ("-Wno-reserved-macro-identifier")
+checkAddCompileNegFlag ("-Wno-reserved-id-macro")
+checkAddCompileNegFlag ("-Wno-implicit-int-conversion")
+checkAddCompileNegFlag ("-Wno-switch-enum")
+checkAddCompileNegFlag ("-Wno-gnu-zero-variadic-macro-arguments")
+checkAddCompileNegFlag ("-Wno-documentation-deprecated-sync")
+checkAddCompileNegFlag ("-Wno-documentation-unknown-command")
+checkAddCompileNegFlag ("-Wno-documentation")
 
 #### build compile options
 
@@ -418,85 +428,7 @@ endif()
 add_compile_options (-DMG_TLS=MG_TLS_OPENSSL)
 
 #### checks for include files
-
-set (CMAKE_REQUIRED_INCLUDES
-  ${PROJECT_SOURCE_DIR}/../plocal/include
-  /opt/local/include
-)
-
-check_include_file (alsa/asoundlib.h _hdr_alsa_asoundlib)
-check_include_file (arpa/inet.h _hdr_arpa_inet)
-check_include_file (dlfcn.h _hdr_dlfcn)
-check_include_file (endpointvolume.h _hdr_endpointvolume)
-check_include_file (execinfo.h _hdr_execinfo)
-check_include_file (fcntl.h _hdr_fcntl)
-check_include_file (intrin.h _hdr_intrin)
-check_include_file (io.h _hdr_io)
-check_include_file (libintl.h _hdr_libintl)
-check_include_file (MacTypes.h _hdr_MacTypes)
-check_include_file (math.h _hdr_math)
-check_include_file (netdb.h _hdr_netdb)
-check_include_file (netinet/in.h _hdr_netinet_in)
-check_include_file (poll.h _hdr_poll)
-check_include_file (pthread.h _hdr_pthread)
-check_include_file (pulse/pulseaudio.h _hdr_pulse_pulseaudio)
-check_include_file (signal.h _hdr_signal)
-check_include_file (stdatomic.h _hdr_stdatomic)
-check_include_file (stdint.h _hdr_stdint)
-check_include_file (string.h _hdr_string)
-check_include_file (tchar.h _hdr_tchar)
-check_include_file (unistd.h _hdr_unistd)
-check_include_file (windows.h _hdr_windows)
-check_include_file (winsock2.h _hdr_winsock2)
-check_include_file (ws2tcpip.h _hdr_ws2tcpip)
-
-# bcrypt requires windows.h
-check_include_file (bcrypt.h _hdr_bcrypt "-include windows.h")
-
-set (CMAKE_REQUIRED_INCLUDES ${PIPEWIRE_INCLUDE_DIRS})
-check_include_file (pipewire/pipewire.h _hdr_pipewire_pipewire)
-# the older version of pipewire does not have spa/utils/json-pod.h
-check_include_file (spa/utils/json-pod.h _hdr_spa_utils_jsonpod)
-unset (CMAKE_REQUIRED_INCLUDES)
-
-set (CMAKE_REQUIRED_INCLUDES ${GST_INCLUDE_DIRS})
-check_include_file (gst/gst.h _hdr_gst_gst)
-unset (CMAKE_REQUIRED_INCLUDES)
-
-set (CMAKE_REQUIRED_INCLUDES ${GIO_INCLUDE_DIRS})
-check_include_file (gio/gio.h _hdr_gio_gio)
-unset (CMAKE_REQUIRED_INCLUDES)
-
-set (CMAKE_REQUIRED_INCLUDES ${LIBVLC_INCLUDE_DIR})
-check_include_file (vlc/vlc.h _hdr_vlc_vlc)
-unset (CMAKE_REQUIRED_INCLUDES)
-set (CMAKE_REQUIRED_INCLUDES ${LIBVLC4_INCLUDE_DIR})
-check_include_file (vlc/vlc.h _hdr_vlc_vlc)
-unset (CMAKE_REQUIRED_INCLUDES)
-
-set (CMAKE_REQUIRED_INCLUDES ${LIBMPV_INCLUDE_DIRS})
-check_include_file (mpv/client.h _hdr_mpv_client)
-unset (CMAKE_REQUIRED_INCLUDES)
-
-if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3" OR
-    BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
-  set (CMAKE_REQUIRED_INCLUDES ${GTK_INCLUDE_DIRS})
-  check_include_file (gdk/gdkx.h _hdr_gdk_gdkx)
-  check_include_file (gtk/gtk.h _hdr_gtk_gtk)
-  unset (CMAKE_REQUIRED_INCLUDES)
-endif()
-
-check_include_file (sys/resource.h _sys_resource)
-check_include_file (sys/select.h _sys_select)
-check_include_file (sys/signal.h _sys_signal)
-check_include_file (sys/socket.h _sys_socket)
-check_include_file (sys/stat.h _sys_stat)
-check_include_file (sys/time.h _sys_time)
-check_include_file (sys/utsname.h _sys_utsname)
-check_include_file (sys/wait.h _sys_wait)
-check_include_file (sys/xattr.h _sys_xattr)
-
-unset (CMAKE_REQUIRED_INCLUDES)
+# 2025-7-31 replaced with __has_include
 
 #### checks for functions
 

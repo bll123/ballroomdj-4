@@ -12,6 +12,8 @@
  * https://gstreamer.freedesktop.org/documentation/tutorials/playback/custom-playbin-sinks.html?gi-language=c
  *
  */
+#if __has_include (<gst/gst.h>)
+
 #include "config.h"
 
 #include <stdio.h>
@@ -22,17 +24,15 @@
 #include <stdarg.h>
 #include <math.h>
 
-#if _hdr_gst_gst
-
-# include <gst/gst.h>
-# include <glib.h>
+#include <gst/gst.h>
+#include <glib.h>
 
 #include "audiosrc.h"     // for audio-source type
-# include "bdj4.h"
-# include "bdjstring.h"
-# include "mdebug.h"
-# include "gsti.h"
-# include "pli.h"
+#include "bdj4.h"
+#include "bdjstring.h"
+#include "mdebug.h"
+#include "gsti.h"
+#include "pli.h"
 
 enum {
   GSTI_IDENT = 0xccbbaa0069747367,
@@ -498,4 +498,4 @@ gstiWaitState (gsti_t *gsti, GstState want)
   gstiProcessState (gsti, state);
 }
 
-#endif /* _hdr_gst */
+#endif /* gst/gst.h */

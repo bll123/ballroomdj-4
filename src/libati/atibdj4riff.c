@@ -15,10 +15,10 @@
 #include <errno.h>
 #include <assert.h>
 
-#if _hdr_netinet_in
+#if __has_include (<netinet/in.h>)
 # include <netinet/in.h>
 #endif
-#if _hdr_winsock2
+#if __has_include (<winsock2.h>)
 # include <winsock2.h>
 #endif
 

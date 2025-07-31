@@ -7,9 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#ifdef _hdr_stdatomic
-# include <stdatomic.h>
-#endif
+#include <stdatomic.h>
 #include <stdint.h>
 #include <string.h>
 #include <inttypes.h>

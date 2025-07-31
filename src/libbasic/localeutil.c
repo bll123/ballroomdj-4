@@ -13,7 +13,7 @@
 #include <math.h>
 
 #include <locale.h>
-#if _hdr_libintl
+#if __has_include (<libintl.h>)
 # include <libintl.h>
 #endif
 
@@ -337,4 +337,5 @@ localePostSetup (void)
     tlocale = gbidx;
   }
   localedata->currlocale = tlocale;
+  sysvarsSetStr (SV_LOCALE_639_2, localeGetStr (LOCALE_KEY_ISO639_2));
 }

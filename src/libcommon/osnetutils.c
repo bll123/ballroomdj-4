@@ -12,7 +12,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#if _hdr_winsock2
+#if __has_include (<winsock2.h>)
 # include <winsock2.h>
 #endif
 

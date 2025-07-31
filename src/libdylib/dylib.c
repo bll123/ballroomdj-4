@@ -8,11 +8,11 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-#if _hdr_dlfcn
+#if __has_include (<dlfcn.h>)
 # include <dlfcn.h>
 #endif
 
-#if _hdr_windows
+#if __has_include (<windows.h>)
 # define WIN32_LEAN_AND_MEAN 1
 # include <windows.h>
 #endif

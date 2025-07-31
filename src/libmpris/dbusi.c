@@ -5,21 +5,16 @@
  * The glib variants are a pain to use.
  * Is libdbus any easier?
  */
+#if __linux__ && __has_include (<gio/gio.h>)
+
 #include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#if _hdr_stdatomic
-# include <stdatomic.h>
-#endif
-#if defined(__STDC_NO_ATOMICS__)
-# define _Atomic(type) type
-#endif
+#include <stdatomic.h>
 #include <string.h>
 #include <stdarg.h>
-
-#if __linux__ && _hdr_gio_gio
 
 #include <gio/gio.h>
 
@@ -554,4 +549,4 @@ dumpResult (const char *tag, GVariant *data)
 
 # endif
 
-#endif  /* __linux__ and _hdr_gio_gio */
+#endif  /* __linux__ and gio/gio.h */

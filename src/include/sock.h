@@ -10,11 +10,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#if _sys_socket
+#if __has_include (<sys/socket.h>)
 # include <sys/socket.h>
 #endif
 
-#if _hdr_winsock2
+#if __has_include (<winsock2.h>)
 # pragma clang diagnostic push
 # pragma clang diagnostic ignored "-Wmissing-declarations"
 # include <winsock2.h>

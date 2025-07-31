@@ -5,7 +5,7 @@
 #define INC_BDJ4INTL_H
 
 #include <locale.h>
-#if _hdr_libintl
+#if __has_include (<libintl.h>)
 # include <libintl.h>
 #endif
 
