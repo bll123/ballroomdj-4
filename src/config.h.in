@@ -64,11 +64,13 @@ extern "C" {
 #cmakedefine01 _lib_backtrace
 #cmakedefine01 _lib_bind_textdomain_codeset
 #cmakedefine01 _lib_dlopen
+#cmakedefine01 _lib_epoll_create1
 #cmakedefine01 _lib_fcntl
 #cmakedefine01 _lib_fsync
 #cmakedefine01 _lib_fork
 #cmakedefine01 _lib_getuid
 #cmakedefine01 _lib_kill
+#cmakedefine01 _lib_kqueue
 #cmakedefine01 _lib_localtime_s
 #cmakedefine01 _lib_localtime_r
 #cmakedefine01 _lib_mkdir

@@ -75,6 +75,15 @@ information is first read and saved into the database.
 <br>__References:__
 <br>[Configuration / Organization](en-Configuration-Organization)
 
+##### Menus
+
+Menus in BDJ4 are context sensitive, and will change depending on the
+selected tab.  Switching to a new tab will update the menu. e.g. in
+the Management window, _Edit&nbsp;Song&nbsp;Lists_ has its own menu.
+In the _Music&nbsp;Manager_, the _Music&nbsp;Manager_ sub-tab and the
+_Song&nbsp;Editor_ sub-tab have an _Actions_ menu, but the menu
+contents are different.
+
 ##### Music Queues, Profiles and Alternate Folders
 
 BDJ4 installations have the following structure:

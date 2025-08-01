@@ -44,7 +44,7 @@ audioidParseJSONAll (const char *data, size_t datalen,
   jroot = json_tokener_parse_ex (jtok, data, datalen);
   jerr = json_tokener_get_error (jtok);
   if (jerr != json_tokener_success) {
-    logMsg (LOG_DBG, LOG_AUDIO_ID, "parse: failed: %d / %s\n", jerr,
+    logMsg (LOG_DBG, LOG_AUDIO_ID, "parse: failed: %d / %s", jerr,
         json_tokener_error_desc (jerr));
     return 0;
   }

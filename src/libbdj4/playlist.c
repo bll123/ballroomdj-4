@@ -711,7 +711,7 @@ playlistGetNextSong (playlist_t *pl,
       if (dbidx >= 0) {
         song = dbGetByIdx (pl->musicdb, dbidx);
         danceIdx = songGetNum (song, TAG_DANCE);
-        logMsg (LOG_DBG, LOG_SONGSEL, "pl: in-group: dance: %d/%s\n", danceIdx, danceGetStr (pl->dances, danceIdx, DANCE_DANCE));
+        logMsg (LOG_DBG, LOG_SONGSEL, "pl: in-group: dance: %d/%s", danceIdx, danceGetStr (pl->dances, danceIdx, DANCE_DANCE));
         songselFinalizeByIndex (pl->songsel, danceIdx, dbidx);
       } else {
         pl->ingroup = false;

@@ -932,7 +932,7 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer)
 {
   int               state;
 
-  logMsg (LOG_DBG, LOG_INFO, "pl-state: %d/%s\n",
+  logMsg (LOG_DBG, LOG_INFO, "pl-state: %d/%s",
       uiplayer->playerState, logPlayerState (uiplayer->playerState));
 
   state = UIWIDGET_ENABLE;

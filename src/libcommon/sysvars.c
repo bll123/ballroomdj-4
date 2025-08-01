@@ -24,7 +24,8 @@
 # define NOGDI 1
 # include <windows.h>
 #endif
-#if __has_include (<intrin.h>)
+#if __has_include (<windows.h>) && __has_include (<intrin.h>)
+/* has a failure on macos if not checked on windows */
 # include <intrin.h>
 #endif
 

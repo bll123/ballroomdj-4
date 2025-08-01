@@ -3,6 +3,12 @@
  *
  * https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
  * 10054 - WSAECONNRESET
+ *
+ * select() is the default and USE_SELECT can be set to force it.
+ * epoll() implemented 2025-8-1
+ * Windows IOCP has a different model, research needs to be done
+ * to see if can be used.
+ *
  */
 
 #include "config.h"
@@ -21,6 +27,9 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+/* override to use select() */
+#define USE_SELECT 0
+
 #if __has_include (<arpa/inet.h>)
 # include <arpa/inet.h>
 #endif
@@ -30,7 +39,14 @@
 #if __has_include (<netinet/in.h>)
 # include <netinet/in.h>
 #endif
-#if __has_include (<sys/select.h>)
+#if __has_include (<sys/epoll.h>)
+# include <sys/epoll.h>
+#endif
+#if __has_include (<sys/event.h>)
+# include <sys/event.h>
+#endif
+#if __has_include (<sys/select.h>) && \
+   (USE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue))
 # include <sys/select.h>
 #endif
 #if __has_include (<sys/socket.h>)
@@ -53,21 +69,34 @@
 enum {
   SOCK_READ_TIMEOUT = 2,
   SOCK_WRITE_TIMEOUT = 2,
+  SOCK_MAX_EVENTS = 10,
 };
 
 typedef struct {
   Sock_t          sock;
   bool            havedata;
+  int             idx;
 } socklist_t;
 
 typedef struct sockinfo {
-  int             count;
-  int             active;
-  int             havecount;
-  Sock_t          max;
-  fd_set          readfdsbase;
-  fd_set          readfds;
-  socklist_t      *socklist;
+  int                 count;
+  int                 active;
+  int                 havecount;
+  Sock_t              max;
+#if (_lib_epoll_create1 || _lib_kqueue) && ! USE_SELECT
+  Sock_t              eventfd;
+#endif
+#if _lib_epoll_create1 && ! USE_SELECT
+  struct epoll_event  events [SOCK_MAX_EVENTS];
+#endif
+#if _lib_kqueue && ! USE_SELECT
+  struct kevent       events [SOCK_MAX_EVENTS];
+#endif
+#if USE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue)
+  fd_set              readfdsbase;
+  fd_set              readfds;
+#endif
+  socklist_t          *socklist;
 } sockinfo_t;
 
 static volatile atomic_flag sockInitialized = ATOMIC_FLAG_INIT;
@@ -186,6 +215,24 @@ sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
     sockinfo->havecount = 0;
     sockinfo->max = 0;
     sockinfo->socklist = NULL;
+#if _lib_epoll_create1 && ! USE_SELECT
+    sockinfo->eventfd = epoll_create1 (0);
+    mdextsock (sockinfo->eventfd);
+    if (socketInvalid (sockinfo->eventfd)) {
+      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: sockAddCheck: epoll_create1 fail %d", errno);
+    }
+    logMsg (LOG_DBG, LOG_SOCKET, "using epoll");
+#endif
+#if _lib_kqueue && ! USE_SELECT
+    sockinfo->eventfd = kqueue ();
+    if (socketInvalid (sockinfo->eventfd)) {
+      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: sockAddCheck: kqueue fail %d", errno);
+    }
+    logMsg (LOG_DBG, LOG_SOCKET, "using kqueue");
+#endif
+#if USE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue)
+    logMsg (LOG_DBG, LOG_SOCKET, "using select");
+#endif
   }
 
   if (socketInvalid (sock) || sockinfo->count >= FD_SETSIZE) {
@@ -197,8 +244,34 @@ sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
   ++sockinfo->count;
   sockinfo->socklist = mdrealloc (sockinfo->socklist,
       (size_t) sockinfo->count * sizeof (socklist_t));
+  sockinfo->socklist [idx].idx = idx;
   sockinfo->socklist [idx].sock = sock;
   sockinfo->socklist [idx].havedata = false;
+
+#if _lib_epoll_create1 && ! USE_SELECT
+  {
+    struct epoll_event  ev;
+
+    ev.events = EPOLLIN;
+    ev.data.fd = sock;
+    if (epoll_ctl (sockinfo->eventfd, EPOLL_CTL_ADD, sock, &ev) < 0) {
+      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: sockAddCheck: epoll_ctl add fail %d", errno);
+      return sockinfo;
+    }
+  }
+#endif
+
+#if _lib_kqueue && ! USE_SELECT
+  {
+    struct kevent   ev;
+
+    EV_SET (&ev, sock, EVFILT_READ, EV_ADD | EV_ENABLE,
+        0, 0, &sockinfo->socklist [idx]);
+    if (kevent (sockinfo->eventfd, &ev, 1, NULL, 0, NULL) < 0) {
+      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: sockAddCheck: kevent add fail %d", errno);
+    }
+  }
+#endif
 
   sockUpdateReadCheck (sockinfo);
 
@@ -219,6 +292,8 @@ sockIncrActive (sockinfo_t *sockinfo)
 void
 sockRemoveCheck (sockinfo_t *sockinfo, Sock_t sock)
 {
+  int     idx;
+
   if (sockinfo == NULL) {
     return;
   }
@@ -228,14 +303,41 @@ sockRemoveCheck (sockinfo_t *sockinfo, Sock_t sock)
     return;
   }
 
-
   for (int i = 0; i < sockinfo->count; ++i) {
     if (sockinfo->socklist [i].sock == sock) {
       sockinfo->socklist [i].sock = INVALID_SOCKET;
       sockinfo->socklist [i].havedata = false;
+      idx = i;
       break;
     }
   }
+
+#if _lib_epoll_create1 && ! USE_SELECT
+  {
+    struct epoll_event  ev;
+
+    ev.events = EPOLLIN;
+    ev.data.fd = sock;
+    if (epoll_ctl (sockinfo->eventfd, EPOLL_CTL_DEL, sock, &ev) < 0) {
+      if (errno != EBADF) {
+        logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: sockAddCheck: epoll_ctl del fail %d", errno);
+      }
+    }
+  }
+#endif
+
+#if _lib_kqueue && ! USE_SELECT
+  {
+    struct kevent    ev;
+
+    EV_SET (&ev, sock, EVFILT_READ, EV_DELETE, 0, 0, 0);
+    if (kevent (sockinfo->eventfd, &ev, 1, NULL, 0, NULL) < 0) {
+      if (errno != 2) {
+        logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: sockAddCheck: kevent del fail %d", errno);
+      }
+    }
+  }
+#endif
 
   sockUpdateReadCheck (sockinfo);
 }
@@ -251,6 +353,11 @@ void
 sockFreeCheck (sockinfo_t *sockinfo)
 {
   if (sockinfo != NULL) {
+#if (_lib_epoll_create1 || _lib_kqueue) && ! USE_SELECT
+    mdextclose (sockinfo->eventfd);
+    close (sockinfo->eventfd);
+#endif
+    logMsg (LOG_DBG, LOG_SOCKET, "max socket count: %d", sockinfo->count);
     sockinfo->count = 0;
     dataFree (sockinfo->socklist);
     mdfree (sockinfo);
@@ -261,15 +368,12 @@ Sock_t
 sockCheck (sockinfo_t *sockinfo)
 {
   int               rc;
-  struct timeval    tv;
-  int               ridx = -1;
 
   if (sockinfo == NULL) {
     return INVALID_SOCKET;
   }
 
-  /* prevent any particular socket from being starved out */
-  /* from processing */
+  /* process all sockets that had data */
   for (int i = 0; sockinfo->havecount && i < sockinfo->count; ++i) {
     if (sockinfo->socklist [i].havedata) {
       sockinfo->socklist [i].havedata = false;
@@ -277,18 +381,40 @@ sockCheck (sockinfo_t *sockinfo)
     }
   }
 
-  memcpy (&(sockinfo->readfds), &sockinfo->readfdsbase, sizeof (fd_set));
+#if _lib_epoll_create1 && ! USE_SELECT
+  rc = epoll_wait (sockinfo->eventfd, sockinfo->events,
+      SOCK_MAX_EVENTS, SOCK_READ_TIMEOUT * sockinfo->count);
+#endif
+#if _lib_kqueue && ! USE_SELECT
+  {
+    struct timespec  ts;
 
-  tv.tv_sec = 0;
-  tv.tv_usec = (suseconds_t)
-      (SOCK_READ_TIMEOUT * sockinfo->count * 1000);
+    ts.tv_sec = 0;
+    ts.tv_nsec = (long) SOCK_READ_TIMEOUT *
+        (long) sockinfo->count * 1000;
 
-  rc = select (sockinfo->max + 1, &(sockinfo->readfds), NULL, NULL, &tv);
+    rc = kevent (sockinfo->eventfd, NULL, 0, sockinfo->events,
+        SOCK_MAX_EVENTS, &ts);
+  }
+#endif
+#if USE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue)
+  {
+    struct timeval    tv;
+
+    memcpy (&(sockinfo->readfds), &sockinfo->readfdsbase, sizeof (fd_set));
+
+    tv.tv_sec = 0;
+    tv.tv_usec = (suseconds_t) SOCK_READ_TIMEOUT *
+        (suseconds_t) sockinfo->count * 1000;
+
+    rc = select (sockinfo->max + 1, &(sockinfo->readfds), NULL, NULL, &tv);
+  }
+#endif
   if (rc < 0) {
     if (errno == EINTR || errno == EAGAIN) {
       return 0;
     }
-    logError ("select");
+    logError ("select/epoll/kevent");
 #if _lib_WSAGetLastError
     logMsg (LOG_DBG, LOG_SOCKET, "select: wsa last-error:%d", WSAGetLastError());
 #endif
@@ -298,25 +424,45 @@ sockCheck (sockinfo_t *sockinfo)
   if (rc > 0) {
     sockinfo->havecount = 0;
     for (int i = 0; i < sockinfo->count; ++i) {
+      sockinfo->socklist [i].havedata = false;
+    }
+
+#if _lib_kqueue && ! USE_SELECT
+    for (int j = 0; j < rc; ++j) {
+      socklist_t  *tsl;
+      int         idx;
+
+      tsl = sockinfo->events [j].udata;
+      idx = tsl->idx;
+      sockinfo->socklist [idx].havedata = true;
+      ++sockinfo->havecount;
+    }
+#endif
+
+#if ! _lib_kqueue
+    for (int i = 0; i < sockinfo->count; ++i) {
       Sock_t  tsock;
 
-      sockinfo->socklist [i].havedata = false;
       tsock = sockinfo->socklist [i].sock;
       if (socketInvalid (tsock)) {
         continue;
       }
+# if _lib_epoll_create1 && ! USE_SELECT
+    for (int j = 0; j < rc; ++j) {
+      if (tsock == sockinfo->events [j].data.fd) {
+        sockinfo->socklist [i].havedata = true;
+        ++sockinfo->havecount;
+      }
+    }
+# endif
+# if USE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue)
       if (FD_ISSET (tsock, &(sockinfo->readfds))) {
         sockinfo->socklist [i].havedata = true;
         ++sockinfo->havecount;
-        /* want to process any listener socket items first */
-        if (ridx == -1) { ridx = i; }
       }
+# endif
     }
-  }
-
-  if (ridx >= 0) {
-    sockinfo->socklist [ridx].havedata = false;
-    return sockinfo->socklist [ridx].sock;
+#endif
   }
 
   return 0;
@@ -744,12 +890,15 @@ sockSetNonBlocking (Sock_t sock)
 static void
 sockInit (void)
 {
+#if _lib_WSAStartup
+  WSADATA wsa;
+#endif
+
   if (atomic_flag_test_and_set (&sockInitialized)) {
     return;
   }
 
 #if _lib_WSAStartup
-  WSADATA wsa;
   int rc = WSAStartup (MAKEWORD (2, 2), &wsa);
   if (rc < 0) {
     logError ("WSAStartup:");
@@ -807,6 +956,7 @@ sockSetOptions (Sock_t sock, int *err)
 static void
 sockUpdateReadCheck (sockinfo_t *sockinfo)
 {
+#if USE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue)
   FD_ZERO (&(sockinfo->readfdsbase));
   sockinfo->max = 0;
   for (int i = 0; i < sockinfo->count; ++i) {
@@ -819,6 +969,7 @@ sockUpdateReadCheck (sockinfo_t *sockinfo)
       sockinfo->max = tsock;
     }
   }
+#endif
 }
 
 static int

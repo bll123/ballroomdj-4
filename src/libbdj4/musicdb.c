@@ -149,7 +149,7 @@ dbLoad (musicdb_t *musicdb)
   slistSetSize (templist, racount);
   slistSetSize (musicdb->songbyname, racount);
   nlistSetSize (musicdb->songbyidx, racount);
-  logMsg (LOG_DBG, LOG_DB, "db-load: %s %" PRId32 "\n", musicdb->fn, racount);
+  logMsg (LOG_DBG, LOG_DB, "db-load: %s %" PRId32, musicdb->fn, racount);
 
   raStartBatch (musicdb->radb);
 
