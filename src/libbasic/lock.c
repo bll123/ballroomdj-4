@@ -41,6 +41,7 @@ static char *locknames [ROUTE_MAX] = {
   [ROUTE_NONE] = "none",
   [ROUTE_PLAYER] = "player",
   [ROUTE_PLAYERUI] = "playerui",
+  [ROUTE_PODCASTUPD] = "podcastupd",
   [ROUTE_REMCTRL] = "remctrl",
   [ROUTE_SERVER] = "server",
   [ROUTE_STARTERUI] = "starterui",

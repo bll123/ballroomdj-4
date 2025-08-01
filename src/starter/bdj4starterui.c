@@ -483,11 +483,6 @@ starterInitDataCallback (void *udata, programstate_t programState)
 
   targv [targc++] = NULL;
 
-  if (starter->podcastupd) {
-    starter->processes [ROUTE_NONE] =
-        procutilStartProcess (ROUTE_NONE, "bdj4podcastupd", PROCUTIL_DETACH, targv);
-  }
-
   pathbldMakePath (tbuff, sizeof (tbuff),
       NEWINSTALL_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   if (fileopFileExists (tbuff)) {
@@ -505,6 +500,11 @@ starterInitDataCallback (void *udata, programstate_t programState)
     }
   }
   asconfFree (asconf);
+
+  if (starter->podcastupd) {
+    starter->processes [ROUTE_PODCASTUPD] =
+        procutilStartProcess (ROUTE_PODCASTUPD, "bdj4podcastupd", PROCUTIL_DETACH, targv);
+  }
 
   if (srvenabled) {
     starter->processes [ROUTE_SERVER] = procutilStartProcess (

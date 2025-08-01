@@ -32,6 +32,7 @@ typedef enum {
   ROUTE_SERVER,
   ROUTE_STARTERUI,
   ROUTE_TEST_SUITE,
+  ROUTE_PODCASTUPD,
   ROUTE_MAX,
 } bdjmsgroute_t;
 

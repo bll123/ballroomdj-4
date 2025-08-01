@@ -357,7 +357,7 @@ sockFreeCheck (sockinfo_t *sockinfo)
     mdextclose (sockinfo->eventfd);
     close (sockinfo->eventfd);
 #endif
-    logMsg (LOG_DBG, LOG_SOCKET, "max socket count: %d", sockinfo->count);
+    logMsg (LOG_DBG, LOG_INFO, "max socket count: %d", sockinfo->count);
     sockinfo->count = 0;
     dataFree (sockinfo->socklist);
     mdfree (sockinfo);

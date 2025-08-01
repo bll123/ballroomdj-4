@@ -362,6 +362,7 @@ connBaseInit (void)
     return;
   }
 
+  /* if the port is not used, set to 0 */
   connports [ROUTE_NONE] = 0;
   connports [ROUTE_ALTINST] = 0;
   connports [ROUTE_BPM_COUNTER] = bdjvarsGetNum (BDJVL_PORT_BPM_COUNTER);
@@ -374,6 +375,7 @@ connBaseInit (void)
   connports [ROUTE_MOBILEMQ] = bdjvarsGetNum (BDJVL_PORT_MOBILEMQ);
   connports [ROUTE_PLAYER] = bdjvarsGetNum (BDJVL_PORT_PLAYER);
   connports [ROUTE_PLAYERUI] = bdjvarsGetNum (BDJVL_PORT_PLAYERUI);
+  connports [ROUTE_PODCASTUPD] = 0;
   connports [ROUTE_REMCTRL] = bdjvarsGetNum (BDJVL_PORT_REMCTRL);
   connports [ROUTE_SERVER] = bdjvarsGetNum (BDJVL_PORT_SERVER);
   connports [ROUTE_STARTERUI] = bdjvarsGetNum (BDJVL_PORT_STARTERUI);

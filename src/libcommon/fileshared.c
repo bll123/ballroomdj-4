@@ -131,6 +131,7 @@ fileSharedOpen (const char *fname, int openmode, int flushflag)
   }
 #endif
 
+  fileSharedSeek (fhandle, 0, SEEK_END);
   return fhandle;
 }
 
@@ -164,6 +165,9 @@ fileSharedWrite (fileshared_t *fhandle, const char *data, size_t len)
 #endif
 
   /* on linux, flushing each time is reasonably fast */
+  if (isLinux ()) {
+    fhandle->count = FLUSH_COUNT;
+  }
   /* on MacOS, flushing each time is very slow */
   /* windows flush-file-buffers does a sync */
   if (fhandle->flushflag == FILESH_FLUSH && fhandle->count >= FLUSH_COUNT) {

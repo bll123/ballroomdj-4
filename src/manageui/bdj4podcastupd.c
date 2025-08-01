@@ -69,13 +69,13 @@ main (int argc, char *argv[])
 
   /* do the startup w/o the DB first */
   flags = BDJ4_INIT_NO_DB_LOAD;
-  bdj4startup (argc, argv, NULL, "podu", ROUTE_NONE, &flags);
+  bdj4startup (argc, argv, NULL, "podu", ROUTE_PODCASTUPD, &flags);
   logProcBegin ();
 
   filelist = playlistGetPlaylistNames (PL_LIST_PODCAST, NULL);
   pcupd.count = slistGetCount (filelist);
   pcupd.askey = podcastupdGetASKey ();
-  bdj4shutdown (ROUTE_NONE, NULL);
+  bdj4shutdown (ROUTE_PODCASTUPD, NULL);
   slistFree (filelist);
 
   if (pcupd.count > 0 && pcupd.askey >= 0) {
@@ -87,11 +87,11 @@ main (int argc, char *argv[])
 
     /* the database now needs to be loaded */
     flags = BDJ4_INIT_ALL;
-    bdj4startup (argc, argv, &pcupd.musicdb, "podu", ROUTE_NONE, &flags);
+    bdj4startup (argc, argv, &pcupd.musicdb, "podu", ROUTE_PODCASTUPD, &flags);
 
     podcastupdProcess (&pcupd);
 
-    bdj4shutdown (ROUTE_NONE, pcupd.musicdb);
+    bdj4shutdown (ROUTE_PODCASTUPD, pcupd.musicdb);
 
     for (int idx = 0; idx < pcupd.count; ++idx) {
       slistFree (pcupd.itemlist [idx].songidxlist);
