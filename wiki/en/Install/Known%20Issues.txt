@@ -1,0 +1,20 @@
+[Wiki Home](Home)
+
+[TOC]
+
+### Known Issues
+
+* MacOS
+    * The scrollbar stops working correctly when the cursor is moved
+      past the bottom of the scrollbar.
+* Windows
+    * The marquee position is not saved when it is iconified (close
+      the window instead).
+* Linux
+    * If a non-default audio sink is configured, and the system default
+      audio sink is changed, the audio will switch to the new
+      default.  The audio will revert back to the configured audio
+      sink when a new song starts playing.
+
+[Wiki Home](Home)
+<br>_(Updated 2025-08-05 09:53:56; BDJ4 version 4.15.4)_
