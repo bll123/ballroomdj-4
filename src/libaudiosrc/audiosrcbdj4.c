@@ -793,6 +793,7 @@ audiosrcClientFree (asdata_t *asdata)
   if (asdata->clientdata != NULL) {
     for (int i = 0; i < asdata->clientcount; ++i) {
       webclientClose (asdata->clientdata [i]->webclient);
+      mdfree (asdata->clientdata [i]);
     }
     mdfree (asdata->clientdata);
   }

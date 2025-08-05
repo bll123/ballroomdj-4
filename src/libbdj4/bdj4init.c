@@ -365,7 +365,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   }
 
   logProcBegin ();
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %" PRId64, sysvarsGetNum (SVL_PROFILE_IDX));
+  logMsg (LOG_SESS, LOG_IMPORTANT, "using profile %" PRId64, sysvarsGetNum (SVL_PROFILE_IDX));
   if (route == ROUTE_STARTERUI) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "locale: %s", sysvarsGetStr (SV_LOCALE));
     logMsg (LOG_SESS, LOG_IMPORTANT, "locale-short: %s", sysvarsGetStr (SV_LOCALE_SHORT));
@@ -376,8 +376,8 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     if ((*flags & BDJ4_INIT_NO_DATAFILE_LOAD) != BDJ4_INIT_NO_DATAFILE_LOAD) {
       rc = bdjvarsdfloadInit ();
       if (rc < 0) {
-        logMsg (LOG_SESS, LOG_IMPORTANT, "Unable to load all data files");
-        fprintf (stderr, "Unable to load all data files\n");
+        logMsg (LOG_SESS, LOG_IMPORTANT, "unable to load all data files");
+        fprintf (stderr, "unable to load all data files\n");
         exit (1);
       }
     }
@@ -392,13 +392,13 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   if ((*flags & BDJ4_INIT_NO_DB_LOAD) != BDJ4_INIT_NO_DB_LOAD &&
       musicdb != NULL) {
     mstimestart (&dbmt);
-    logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: started");
+    logMsg (LOG_SESS, LOG_IMPORTANT, "database read: started");
     pathbldMakePath (tbuff, sizeof (tbuff),
         MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DREL_DATA);
     *musicdb = dbOpen (tbuff);
-    logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: %" PRId32 " items in %" PRId64 " ms", dbCount(*musicdb), (int64_t) mstimeend (&dbmt));
+    logMsg (LOG_SESS, LOG_IMPORTANT, "database read: %" PRId32 " items in %" PRId64 " ms", dbCount(*musicdb), (int64_t) mstimeend (&dbmt));
   }
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Total init time: %" PRId64 " ms", (int64_t) mstimeend (&mt));
+  logMsg (LOG_SESS, LOG_IMPORTANT, "total init time: %" PRId64 " ms", (int64_t) mstimeend (&mt));
 
   bdj4argCleanup (bdj4arg);
   logProcEnd ("");
@@ -413,11 +413,11 @@ bdj4ReloadDatabase (musicdb_t *musicdb)
 
   mstimestart (&dbmt);
   dbClose (musicdb);
-  logMsg (LOG_DBG, LOG_IMPORTANT, "Database read: started");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "database read: started");
   pathbldMakePath (tbuff, sizeof (tbuff),
       MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DREL_DATA);
   musicdb = dbOpen (tbuff);
-  logMsg (LOG_DBG, LOG_IMPORTANT, "Database read: %" PRId32 " items in %" PRId64 " ms", dbCount(musicdb), (int64_t) mstimeend (&dbmt));
+  logMsg (LOG_DBG, LOG_IMPORTANT, "database read: %" PRId32 " items in %" PRId64 " ms", dbCount(musicdb), (int64_t) mstimeend (&dbmt));
   return musicdb;
 }
 

@@ -2136,7 +2136,7 @@ playerSetDefaultVolume (playerdata_t *playerData)
   playerData->originalSystemVolume =
       volumeGet (playerData->volume, playerData->currentSink);
   playerData->originalSystemVolume = playerLimitVolume (playerData->originalSystemVolume);
-  logMsg (LOG_DBG, LOG_INFO, "Original system volume: %d", playerData->originalSystemVolume);
+  logMsg (LOG_DBG, LOG_INFO, "original system volume: %d", playerData->originalSystemVolume);
 
   count = volregSave (playerData->actualSink, playerData->originalSystemVolume);
   if (count > 1 || bdj3flag) {

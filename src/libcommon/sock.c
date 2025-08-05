@@ -43,7 +43,7 @@
 # include <sys/epoll.h>
 #endif
 #if __has_include (<sys/event.h>)
-# include <sys/event.h>
+# include <sys/event.h>               /* kqueue */
 #endif
 #if __has_include (<sys/select.h>) && \
    (USE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue))
@@ -96,7 +96,7 @@ typedef struct sockinfo {
   fd_set              readfdsbase;
   fd_set              readfds;
 #endif
-  socklist_t          *socklist;
+  socklist_t          **socklist;
 } sockinfo_t;
 
 static volatile atomic_flag sockInitialized = ATOMIC_FLAG_INIT;
@@ -235,18 +235,21 @@ sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
 #endif
   }
 
-  if (socketInvalid (sock) || sockinfo->count >= FD_SETSIZE) {
+  if (socketInvalid (sock)) {
     logMsg (LOG_DBG, LOG_SOCKET, "sockAddCheck: invalid socket");
     return sockinfo;
   }
 
   idx = sockinfo->count;
   ++sockinfo->count;
+  /* kqueue uses the allocated pointer in a callback, so the */
+  /* socklist pointer must stay at the same location */
   sockinfo->socklist = mdrealloc (sockinfo->socklist,
-      (size_t) sockinfo->count * sizeof (socklist_t));
-  sockinfo->socklist [idx].idx = idx;
-  sockinfo->socklist [idx].sock = sock;
-  sockinfo->socklist [idx].havedata = false;
+      (size_t) sockinfo->count * sizeof (socklist_t *));
+  sockinfo->socklist [idx] = mdmalloc (sizeof (socklist_t));
+  sockinfo->socklist [idx]->idx = idx;
+  sockinfo->socklist [idx]->sock = sock;
+  sockinfo->socklist [idx]->havedata = false;
 
 #if _lib_epoll_create1 && ! USE_SELECT
   {
@@ -266,7 +269,7 @@ sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
     struct kevent   ev;
 
     EV_SET (&ev, sock, EVFILT_READ, EV_ADD | EV_ENABLE,
-        0, 0, &sockinfo->socklist [idx]);
+        0, 0, sockinfo->socklist [idx]);
     if (kevent (sockinfo->eventfd, &ev, 1, NULL, 0, NULL) < 0) {
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: sockAddCheck: kevent add fail %d", errno);
     }
@@ -304,9 +307,9 @@ sockRemoveCheck (sockinfo_t *sockinfo, Sock_t sock)
   }
 
   for (int i = 0; i < sockinfo->count; ++i) {
-    if (sockinfo->socklist [i].sock == sock) {
-      sockinfo->socklist [i].sock = INVALID_SOCKET;
-      sockinfo->socklist [i].havedata = false;
+    if (sockinfo->socklist [i]->sock == sock) {
+      sockinfo->socklist [i]->sock = INVALID_SOCKET;
+      sockinfo->socklist [i]->havedata = false;
       idx = i;
       break;
     }
@@ -358,8 +361,12 @@ sockFreeCheck (sockinfo_t *sockinfo)
     close (sockinfo->eventfd);
 #endif
     logMsg (LOG_DBG, LOG_INFO, "max socket count: %d", sockinfo->count);
-    sockinfo->count = 0;
-    dataFree (sockinfo->socklist);
+    if (sockinfo->socklist != NULL) {
+      for (int i = 0; i < sockinfo->count; ++i) {
+        mdfree (sockinfo->socklist [i]);
+      }
+      mdfree (sockinfo->socklist);
+    }
     mdfree (sockinfo);
   }
 }
@@ -375,9 +382,9 @@ sockCheck (sockinfo_t *sockinfo)
 
   /* process all sockets that had data */
   for (int i = 0; sockinfo->havecount && i < sockinfo->count; ++i) {
-    if (sockinfo->socklist [i].havedata) {
-      sockinfo->socklist [i].havedata = false;
-      return sockinfo->socklist [i].sock;
+    if (sockinfo->socklist [i]->havedata) {
+      sockinfo->socklist [i]->havedata = false;
+      return sockinfo->socklist [i]->sock;
     }
   }
 
@@ -424,40 +431,40 @@ sockCheck (sockinfo_t *sockinfo)
   if (rc > 0) {
     sockinfo->havecount = 0;
     for (int i = 0; i < sockinfo->count; ++i) {
-      sockinfo->socklist [i].havedata = false;
+      sockinfo->socklist [i]->havedata = false;
     }
 
 #if _lib_kqueue && ! USE_SELECT
     for (int j = 0; j < rc; ++j) {
       socklist_t  *tsl;
-      int         idx;
 
       tsl = sockinfo->events [j].udata;
-      idx = tsl->idx;
-      sockinfo->socklist [idx].havedata = true;
+      if (socketInvalid (tsl->sock)) {
+        continue;
+      }
+      tsl->havedata = true;
       ++sockinfo->havecount;
     }
 #endif
-
 #if ! _lib_kqueue
     for (int i = 0; i < sockinfo->count; ++i) {
       Sock_t  tsock;
 
-      tsock = sockinfo->socklist [i].sock;
+      tsock = sockinfo->socklist [i]->sock;
       if (socketInvalid (tsock)) {
         continue;
       }
 # if _lib_epoll_create1 && ! USE_SELECT
-    for (int j = 0; j < rc; ++j) {
-      if (tsock == sockinfo->events [j].data.fd) {
-        sockinfo->socklist [i].havedata = true;
-        ++sockinfo->havecount;
+      for (int j = 0; j < rc; ++j) {
+        if (tsock == sockinfo->events [j].data.fd) {
+          sockinfo->socklist [i]->havedata = true;
+          ++sockinfo->havecount;
+        }
       }
-    }
 # endif
 # if USE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue)
       if (FD_ISSET (tsock, &(sockinfo->readfds))) {
-        sockinfo->socklist [i].havedata = true;
+        sockinfo->socklist [i]->havedata = true;
         ++sockinfo->havecount;
       }
 # endif
@@ -569,7 +576,7 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
   freeaddrinfo (result);
 
   if (rc == 0 && *connerr == SOCK_CONN_OK) {
-    logMsg (LOG_DBG, LOG_SOCKET, "Connected to port:%d sock:%ld", connPort, (long) clsock);
+    logMsg (LOG_DBG, LOG_SOCKET, "connected to port:%d sock:%ld", connPort, (long) clsock);
   }
   return clsock;
 }
@@ -960,7 +967,7 @@ sockUpdateReadCheck (sockinfo_t *sockinfo)
   FD_ZERO (&(sockinfo->readfdsbase));
   sockinfo->max = 0;
   for (int i = 0; i < sockinfo->count; ++i) {
-    Sock_t tsock = sockinfo->socklist [i].sock;
+    Sock_t tsock = sockinfo->socklist [i]->sock;
     if (socketInvalid (tsock)) {
       continue;
     }

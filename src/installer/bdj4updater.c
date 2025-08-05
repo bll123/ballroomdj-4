@@ -590,8 +590,8 @@ main (int argc, char *argv [])
   /* The datafiles must be loaded for the MPM update process */
 
   if (bdjvarsdfloadInit () < 0) {
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "Unable to load all data files");
-    fprintf (stderr, "Unable to load all data files\n");
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "unable to load all data files");
+    fprintf (stderr, "unable to load all data files\n");
     exit (1);
   }
 
@@ -718,8 +718,8 @@ main (int argc, char *argv [])
   bdjvarsdfloadCleanup ();
 
   if (bdjvarsdfloadInit () < 0) {
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "Unable to load all data files");
-    fprintf (stderr, "Unable to load all data files\n");
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "unable to load all data files");
+    fprintf (stderr, "unable to load all data files\n");
     exit (1);
   }
 
@@ -789,9 +789,9 @@ main (int argc, char *argv [])
     pathbldMakePath (tbuff, sizeof (tbuff),
         MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DREL_DATA);
     mstimestart (&dbmt);
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "Database read: started");
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "database read: started");
     musicdb = dbOpen (tbuff);
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "Database read: %" PRId32 " items in %" PRId64 " ms", dbCount(musicdb), (int64_t) mstimeend (&dbmt));
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "database read: %" PRId32 " items in %" PRId64 " ms", dbCount(musicdb), (int64_t) mstimeend (&dbmt));
   }
 
   if (processaf) {

@@ -1291,7 +1291,7 @@ mainQueueDance (maindata_t *mainData, char *args)
   playlistResetAll (playlist);
   /* this will also set 'selected' */
   playlistSetDanceCount (playlist, danceIdx, 1);
-  logMsg (LOG_DBG, LOG_BASIC, "Queue Playlist: %s", "queue-dance");
+  logMsg (LOG_DBG, LOG_BASIC, "queue Playlist: %s", "queue-dance");
   plitem = mainPlaylistItemCache (mainData, playlist, globalCounter++);
   queuePush (mainData->playlistQueue [mi], plitem);
   logMsg (LOG_DBG, LOG_INFO, "push pl %s", "queue-dance");
@@ -1335,7 +1335,7 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
   }
 
   if (! playlistCheck (playlist)) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "Bad Playlist: %s", plname);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "bad playlist: %s", plname);
     playlistFree (playlist);
     return;
   }
@@ -1348,7 +1348,7 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
   }
   mainData->ploverridestoptime = 0;
 
-  logMsg (LOG_DBG, LOG_BASIC, "Queue Playlist: %d %s edit-mode:%d", mi, plname, editmode);
+  logMsg (LOG_DBG, LOG_BASIC, "queue Playlist: %d %s edit-mode:%d", mi, plname, editmode);
   playlistSetEditMode (playlist, editmode);
 
   plitem = mainPlaylistItemCache (mainData, playlist, globalCounter++);
