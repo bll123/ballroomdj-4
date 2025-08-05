@@ -47,9 +47,11 @@ if (NOT WIN32 AND NOT APPLE)
     add_library (libvolpipewire SHARED volpipewire.c)
     target_include_directories (libvolpipewire
       PRIVATE "${PIPEWIRE_INCLUDE_DIRS}"
+      PRIVATE "${SPA_INCLUDE_DIRS}"
     )
     target_link_libraries (libvolpipewire PRIVATE
       ${PIPEWIRE_LDFLAGS}
+      ${SPA_LDFLAGS}
     )
   endif()
 endif()

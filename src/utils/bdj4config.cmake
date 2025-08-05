@@ -87,6 +87,7 @@ pkg_check_modules (OPENSSL openssl)
 if (NOT WIN32 AND NOT APPLE)
   pkg_check_modules (PA libpulse)
   pkg_check_modules (PIPEWIRE libpipewire-0.3)
+  pkg_check_modules (SPA libspa-0.2)
 endif()
 pkg_check_modules (XML2 libxml-2.0)
 

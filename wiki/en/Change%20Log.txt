@@ -6,6 +6,8 @@
 
 **4.15.5 2025---**
 
+* Bug Fixes:
+    * Linux: Fix pipewire volume module build.
 * Internal:
     * Code cleanup (modernization).
 
