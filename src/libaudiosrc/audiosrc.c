@@ -181,7 +181,7 @@ audiosrcInit (void)
 
     pathbldMakePath (dlpath, sizeof (dlpath),
         pkgnm, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_DIR_EXEC);
-    asdylib->dlHandle = dylibLoad (dlpath);
+    asdylib->dlHandle = dylibLoad (dlpath, DYLIB_OPT_NONE);
     if (asdylib->dlHandle == NULL) {
       fprintf (stderr, "Unable to open library %s\n", dlpath);
       continue;

@@ -335,14 +335,12 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   szgrp = uiCreateSizeGroupHoriz ();      // labels
   szgrpDisp = uiCreateSizeGroupHoriz ();     // display
 
-  pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   bpmcounter->callbacks [BPMCOUNT_CB_EXIT] = callbackInit (
       bpmcounterCloseCallback, bpmcounter, NULL);
   bpmcounter->wcont [BPM_W_WINDOW] = uiCreateMainWindow (
       bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
       /* CONTEXT: bpm counter: title of window*/
-      _("BPM Counter"), imgbuff);
+      _("BPM Counter"), "bdj4_icon");
 
   vboxmain = uiCreateVertBox ();
   uiWindowPackInWindow (bpmcounter->wcont [BPM_W_WINDOW], vboxmain);

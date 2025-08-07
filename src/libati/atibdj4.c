@@ -39,6 +39,8 @@ atiiInit (const char *atipkg, int writetags,
   atidata_t *atidata;
 
   atidata = mdmalloc (sizeof (atidata_t));
+  atidata->avfmtdlh = NULL;
+  atidata->avutildlh = NULL;
   atidata->writetags = writetags;
   atidata->tagLookup = tagLookup;
   atidata->tagCheck = tagCheck;
@@ -46,8 +48,26 @@ atiiInit (const char *atipkg, int writetags,
   atidata->audioTagLookup = audioTagLookup;
   atidata->data = NULL;
 
+  atidata->avfmtdlh = dylibLoad ("libavformat",
+      DYLIB_OPT_MAC_PREFIX | DYLIB_OPT_VERSION | DYLIB_OPT_AV);
+if (atidata->avfmtdlh == NULL) { fprintf (stderr, "avfmt fail\n"); }
+  atidata->avutildlh = dylibLoad ("libavutil",
+      DYLIB_OPT_MAC_PREFIX | DYLIB_OPT_VERSION | DYLIB_OPT_AV);
+if (atidata->avutildlh == NULL) { fprintf (stderr, "avutil fail\n"); }
+
+  atidata->av_log_set_callback = dylibLookup (atidata->avutildlh, "av_log_set_callback");
+if (atidata->av_log_set_callback == NULL) { fprintf (stderr, "av_log_set_callback fail\n"); }
+  atidata->av_strerror = dylibLookup (atidata->avutildlh, "av_strerror");
+if (atidata->av_strerror == NULL) { fprintf (stderr, "av_strerror fail\n"); }
+  atidata->avformat_open_input = dylibLookup (atidata->avfmtdlh, "avformat_open_input");
+if (atidata->avformat_open_input == NULL) { fprintf (stderr, "avfmt-open fail\n"); }
+  atidata->avformat_find_stream_info = dylibLookup (atidata->avfmtdlh, "avformat_find_stream_info");
+if (atidata->avformat_find_stream_info == NULL) { fprintf (stderr, "avfmt-find fail\n"); }
+  atidata->avformat_close_input = dylibLookup (atidata->avfmtdlh, "avformat_close_input");
+if (atidata->avformat_close_input == NULL) { fprintf (stderr, "avfmt-close fail\n"); }
+
   /* turn off logging for ffmpeg */
-  av_log_set_callback (atibdj4LogCallback);
+  atidata->av_log_set_callback (atibdj4LogCallback);
 
   return atidata;
 }
@@ -56,6 +76,8 @@ void
 atiiFree (atidata_t *atidata)
 {
   if (atidata != NULL) {
+    dylibClose (atidata->avfmtdlh);
+    dylibClose (atidata->avutildlh);
     mdfree (atidata);
   }
 }
@@ -126,17 +148,17 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
   if (needduration) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "duration: use avformat");
 
-    if ((rc = avformat_open_input (&ictx, ffn, NULL, NULL))) {
+    if ((rc = atidata->avformat_open_input (&ictx, ffn, NULL, NULL))) {
       char tbuff [200];
 
-      av_strerror (rc, tbuff, sizeof (tbuff));
+      atidata->av_strerror (rc, tbuff, sizeof (tbuff));
       logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "unable to open %d %s %s", rc, tbuff, ffn);
       return;
     }
 
-    if ((rc = avformat_find_stream_info (ictx, NULL)) < 0) {
+    if ((rc = atidata->avformat_find_stream_info (ictx, NULL)) < 0) {
       logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "unable to load stream info %d %s", rc, ffn);
-      avformat_close_input (&ictx);
+      atidata->avformat_close_input (&ictx);
       return;
     }
 
@@ -146,7 +168,7 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "duration: %s", pbuff);
     slistSetStr (tagdata, atidata->tagName (TAG_DURATION), pbuff);
 
-    avformat_close_input (&ictx);
+    atidata->avformat_close_input (&ictx);
   }
 
   return;

@@ -54,7 +54,9 @@ confdira="${HOME}/.config/BDJ4"         # old
 confdirb="${cdir}/BDJ4"
 instloc="${confdirb}/installdir.txt"
 altinstloc="${confdirb}/altinstdir.txt"
-appdir=$HOME/.local/share/applications
+cdir="$HOME/.local/share"
+appdir="${cdir}/applications"
+icondir="${cdir}/icons/hicolor/scalable/apps"
 desktop=$(xdg-user-dir DESKTOP)
 
 echo "Uninstall the BallroomDJ 4 Application? "
@@ -74,6 +76,7 @@ if [[ $gr == Y ]]; then
   rm -f "${desktop}/BDJ4*.desktop"
   rm -f "${desktop}/bdj4.desktop"  # old
   rm -f "${appdir}/BDJ4*.desktop"
+  rm -f "${icondir}/bdj4_icon*.svg
 
   test -d "${confdira}" && rm -rf "${confdira}"  # old
   test -d "${confdirb}" && rm -rf "${confdirb}"

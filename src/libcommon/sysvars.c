@@ -103,6 +103,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_PATH_FFMPEG] = { "PATH_FFMPEG" },
   [SV_PATH_FPCALC] = { "PATH_FPCALC" },
   [SV_PATH_GSETTINGS] = { "PATH_GSETTINGS" },
+  [SV_PATH_ICONDIR] = { "PATH_ICONDIR" },
   [SV_PATH_URI_OPEN] = { "PATH_URI_OPEN" },
   [SV_PATH_VLC] = { "PATH_VLC" },
   [SV_PATH_VLC_LIB] = { "PATH_VLC_LIB" },
@@ -847,6 +848,7 @@ sysvarsCheckPaths (const char *otherpaths)
   /* gsettings is used on linux to get the current theme */
   sysvarsSetStr (SV_PATH_GSETTINGS, "");
   sysvarsSetStr (SV_PATH_XDGUSERDIR, "");
+  sysvarsSetStr (SV_PATH_ICONDIR, "");
   sysvarsSetStr (SV_TEMP_A, "");
 
   tsep = ":";
@@ -902,6 +904,9 @@ sysvarsCheckPaths (const char *otherpaths)
 
     p = strtok_r (NULL, tsep, &tokstr);
   }
+
+  snprintf (sysvars [SV_PATH_ICONDIR], SV_MAX_SZ,
+      "%s/.local/share/icons/hicolor/scalable/apps", sysvars [SV_HOME]);
 
   lsysvars [SVL_VLC_VERSION] = 3;     // unknown at this point
   sysvarsSetStr (SV_PATH_VLC, "");

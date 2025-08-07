@@ -5,7 +5,11 @@
 #define INC_ATIBDJ4_H
 
 #include "ati.h"
+#include "dylib.h"
 #include "slist.h"
+
+#include <libavformat/avformat.h>
+#include <libavutil/error.h>
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -14,12 +18,19 @@ extern "C" {
 typedef struct atidatatag atidatatag_t;
 
 typedef struct atidata {
+  dlhandle_t        *avfmtdlh;
+  dlhandle_t        *avutildlh;
   int               writetags;
   taglookup_t       tagLookup;
   tagcheck_t        tagCheck;
   tagname_t         tagName;
   audiotaglookup_t  audioTagLookup;
   atidatatag_t      *data;
+  void              (*av_log_set_callback)(void (*callback)(void*, int, const char*, va_list));
+  void              (*av_strerror)(int, char *, size_t);
+  int               (*avformat_open_input)(AVFormatContext **ictx, const char *, void *, void *);
+  int               (*avformat_find_stream_info)(AVFormatContext *ictx, void *);
+  int               (*avformat_close_input)(AVFormatContext **ictx);
 } atidata_t;
 
 /* atibdj4flac.c */

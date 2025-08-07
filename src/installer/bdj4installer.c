@@ -597,14 +597,13 @@ installerBuildUI (installer_t *installer)
   stpecpy (imgbuff, imgbuff + sizeof (imgbuff), "img/bdj4_icon_inst.png");
   osuiSetIcon (imgbuff);
 
-  stpecpy (imgbuff, imgbuff + sizeof (imgbuff), "img/bdj4_icon_inst.svg");
   /* CONTEXT: installer: window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Installer"), BDJ4_NAME);
   installer->callbacks [INST_CB_EXIT] = callbackInit (
       installerExitCallback, installer, NULL);
   installer->wcont [INST_W_WINDOW] = uiCreateMainWindow (
       installer->callbacks [INST_CB_EXIT],
-      tbuff, imgbuff);
+      tbuff, "bdj4_icon_inst");
   uiWindowSetDefaultSize (installer->wcont [INST_W_WINDOW], 1000, 600);
 
   vbox = uiCreateVertBox ();
@@ -1620,6 +1619,7 @@ installerCopyFiles (installer_t *installer)
   char      tbuff [MAXPATHLEN];
   char      tmp [MAXPATHLEN];
 
+fprintf (stderr, "copy-files\n");
   /* due to various reasons, symlinks were not being preserved on macos */
   /* during the installation process. */
   /* in order to properly install the locale/en and locale/nl symlinks, */
@@ -1658,6 +1658,9 @@ installerCopyFiles (installer_t *installer)
   uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], "");
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_STATUS, _("Copy finished."), false);
+
+fprintf (stderr, "call copy-icons\n");
+  instutilCopyIcons ();
 
   if (installer->readonly) {
     installer->instState = INST_VLC_CHECK;

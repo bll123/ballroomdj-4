@@ -215,12 +215,17 @@ bin/bdj4winmksc
 
 # 2024-5-5, 2025-6-10
 # icu library updated (macos)
-plocal/lib/libicu[a-z0-9]*\.7[23456]\.dylib$
-plocal/lib/libicu[a-z0-9]*\.7[23456]\.[0-9]\.dylib$
+# 2025-8-7 icu library no longer shipped, remove version 77 also
+plocal/lib/libicu[a-z0-9]*\.7[234567]\.dylib$
+plocal/lib/libicu[a-z0-9]*\.7[234567]\.[0-9]\.dylib$
+# 2025-8-7 icu library no longer shipped
+plocal/lib/libicu[a-z0-9]\.dylib$
 
 # 2024-11-18
 # libid3tag updated
 plocal/lib/libid3tag\.0\.16\.3\.dylib$
+
+
 
 ####
 # linux
@@ -324,7 +329,7 @@ plocal/bin/swscale-7\.dll$
 # 2025-6-10 windows updates
 plocal/bin/libFLAC-12\.dll$
 
-# 2025-7-7 windows updates
+# 2025-8-7 windows updates
 plocal/bin/libxml2-2\.dll$
 
 ####

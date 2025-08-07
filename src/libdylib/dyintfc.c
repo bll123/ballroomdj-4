@@ -66,7 +66,7 @@ dyInterfaceList (const char *pfx, const char *funcnm)
 #if BDJ4_DYLIB_DEBUG
     fprintf (logfh, "dylib: %s\n", fn);
 #endif
-    dlHandle = dylibLoad (dlpath);
+    dlHandle = dylibLoad (dlpath, DYLIB_OPT_NONE);
     if (dlHandle == NULL) {
 #if BDJ4_DYLIB_DEBUG
       fprintf (logfh, "  cannot dlopen\n");

@@ -442,13 +442,12 @@ confuiBuildUI (configui_t *confui)
 
   logProcBegin ();
 
-  pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon_config", ".svg", PATHBLD_MP_DIR_IMG);
   /* CONTEXT: configuration: configuration user interface window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Configuration"),
       bdjoptGetStr (OPT_P_PROFILENAME));
   confui->gui.closecb = callbackInit (confuiCloseWin, confui, NULL);
-  confui->gui.window = uiCreateMainWindow (confui->gui.closecb, tbuff, imgbuff);
+  confui->gui.window = uiCreateMainWindow (
+      confui->gui.closecb, tbuff, "bdj4_icon_config");
 
   confui->gui.vbox = uiCreateVertBox ();
   uiWindowPackInWindow (confui->gui.window, confui->gui.vbox);

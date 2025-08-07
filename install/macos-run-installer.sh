@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2025 Brad Lanam Pleasant Hill CA
 #
-ver=3
+ver=4
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -31,29 +31,31 @@ fi
 arch=$(uname -m)
 case $arch in
   x86_64)
-    archtaglist=intel
+    archtag=intel
     ;;
   arm64)
     # m1 is an old name and can be removed soon
-    archtaglist="applesilicon m1"
+    archtag="applesilicon"
     ;;
 esac
 
-latest=""
-for archtag in $archtaglist; do
-  patternold="bdj4-4.[0-9]*.[0-9]*-installer-macos-${archtag}*"
-  pattern="bdj4-installer-macos-${archtag}-4.[0-9]*.[0-9]*"
+if [[ ! -f /opt/local/lib/libicui18n.dylib ]]; then
+  echo "The latest macos-pre-install.sh script must be run."
+  exit 1
+fi
 
-  for f in $patternold $pattern; do
-    if [[ -f $f ]]; then
-      if [[ $latest == "" ]];then
-        latest=$f
-      fi
-      if [[ $f -nt $latest ]]; then
-        latest=$f
-      fi
+latest=""
+pattern="bdj4-installer-macos-${archtag}-4.[0-9]*.[0-9]*"
+
+for f in $pattern; do
+  if [[ -f $f ]]; then
+    if [[ $latest == "" ]];then
+      latest=$f
     fi
-  done
+    if [[ $f -nt $latest ]]; then
+      latest=$f
+    fi
+  fi
 done
 
 if [[ $latest != "" ]]; then

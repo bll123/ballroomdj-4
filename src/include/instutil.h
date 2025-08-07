@@ -55,6 +55,7 @@ bool  instutilIsStandardInstall (const char *dir, const char *macospfx);
 void  instutilOldVersionString (sysversinfo_t *versinfo, char *buff, size_t sz);
 void  instutilInstallCleanTmp (const char *rundir);
 void  instutilCreateDataDirectories (void);
+void  instutilCopyIcons (void);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

@@ -8,6 +8,7 @@
 
 * Bug Fixes:
     * Linux: Fix pipewire volume module build.
+    * Linux/MacOS: Fix versioning nightmares (ICU, avformat, avutil).
 * Internal:
     * Code cleanup (modernization).
 

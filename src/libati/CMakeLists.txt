@@ -63,10 +63,7 @@ target_link_libraries (libatibdj4 PRIVATE
   ${LIBID3TAG_LDFLAGS}
   # libmp4tag
   ${LIBMP4TAG_LDFLAGS}
-  # ffmpeg
-  ${LIBAVFORMAT_LDFLAGS}
-  ${LIBAVUTIL_LDFLAGS}
-  # ogg
+  # vorbis
   ${LIBVORBISFILE_LDFLAGS}
   ${LIBVORBIS_LDFLAGS}
   ${LIBOGG_LDFLAGS}
@@ -78,8 +75,6 @@ target_link_libraries (libatibdj4 PRIVATE
   libbdj4atiutil
   libbdj4basic
   libbdj4common
-  # icu for asf
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
 )
 addIntlLibrary (libatibdj4)
 addWinSockLibrary (libatibdj4)

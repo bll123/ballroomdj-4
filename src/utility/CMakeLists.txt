@@ -17,7 +17,6 @@ target_include_directories (bdj4info
 )
 target_link_libraries (bdj4info PRIVATE
   libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
 )
 addIntlLibrary (bdj4info)
 addWinVersionInfo (bdj4info)
@@ -29,7 +28,6 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4tags PRIVATE
   libbdj4ati libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
 )
 addIntlLibrary (bdj4tags)
 addWinVersionInfo (bdj4tags)
@@ -48,7 +46,6 @@ if (WIN32)
 endif()
 target_link_libraries (dmkmfromdb PRIVATE
   libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
 )
 addIntlLibrary (dmkmfromdb)
 
@@ -58,7 +55,6 @@ if (WIN32)
 endif()
 target_link_libraries (tdbcompare PRIVATE
   libbdj4ati libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
 )
 
 add_executable (tdbsetval tdbsetval.c)
@@ -67,7 +63,6 @@ if (WIN32)
 endif()
 target_link_libraries (tdbsetval PRIVATE
   libbdj4ati libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
 )
 
 add_executable (testsuite
@@ -75,7 +70,6 @@ add_executable (testsuite
 )
 target_link_libraries (testsuite PRIVATE
   libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
 )
 
 add_executable (tmusicsetup tmusicsetup.c)
@@ -84,7 +78,6 @@ if (WIN32)
 endif()
 target_link_libraries (tmusicsetup PRIVATE
   libbdj4ati libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
 )
 addIntlLibrary (tmusicsetup)
 
@@ -94,13 +87,11 @@ if (WIN32)
 endif()
 target_link_libraries (ttagdbchk PRIVATE
   libbdj4ati libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
 )
 
 add_executable (plisinklist plisinklist.c)
 target_link_libraries (plisinklist PRIVATE
   libbdj4pli libbdj4vol libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
 )
 
 if (NOT WIN32 AND NOT APPLE)
@@ -136,7 +127,6 @@ endif()
 target_link_libraries (uitest PRIVATE
   libbdj4uii libbdj4uib ${BDJ4_UI_LIB}
   libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${GTK_LDFLAGS}
 )
 addIntlLibrary (uitest)

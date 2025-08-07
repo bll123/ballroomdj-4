@@ -61,7 +61,6 @@ target_include_directories (libbdj4
 target_link_libraries (libbdj4 PRIVATE
   libbdj4ati
   libbdj4audiosrc libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${GCRYPT_LDFLAGS}
   ${GLIB_LDFLAGS}
   ${JSONC_LDFLAGS}

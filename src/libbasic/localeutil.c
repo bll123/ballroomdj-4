@@ -253,16 +253,19 @@ void
 localeCleanup (void)
 {
   istringCleanup ();
-  if (localedata != NULL) {
-    datafileFree (localedata->df);
-    slistFree (localedata->displayList);
-    localedata->df = NULL;
-    localedata->locales = NULL;
-    localedata->displayList = NULL;
-    localedata->direction = TEXT_DIR_DEFAULT;
-    mdfree (localedata);
-    localedata = NULL;
+
+  if (localedata == NULL) {
+    return;
   }
+
+  datafileFree (localedata->df);
+  slistFree (localedata->displayList);
+  localedata->df = NULL;
+  localedata->locales = NULL;
+  localedata->displayList = NULL;
+  localedata->direction = TEXT_DIR_DEFAULT;
+  mdfree (localedata);
+  localedata = NULL;
 }
 
 #if 0   /* for debugging */

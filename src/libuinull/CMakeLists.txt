@@ -36,7 +36,6 @@ add_library (libuinull SHARED
 )
 target_link_libraries (libuinull PRIVATE
   objuigeneral libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
 )
 addIntlLibrary (libuinull)
 addWinSockLibrary (libuinull)

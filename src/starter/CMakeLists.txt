@@ -71,7 +71,6 @@ endif()
 target_link_libraries (bdj4starterui PRIVATE
   libbdj4uib ${BDJ4_UI_LIB}
   libwebclient libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${GTK_LDFLAGS}
 )
 addIntlLibrary (bdj4starterui)
@@ -88,7 +87,6 @@ endif()
 target_link_libraries (bdj4helperui PRIVATE
   libbdj4uib ${BDJ4_UI_LIB}
   libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${GTK_LDFLAGS}
 )
 addIntlLibrary (bdj4helperui)

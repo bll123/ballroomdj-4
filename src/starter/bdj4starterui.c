@@ -622,13 +622,11 @@ starterBuildUI (startui_t  *starter)
 
   szgrp = uiCreateSizeGroupHoriz ();
 
-  pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   starter->callbacks [START_CB_EXIT] = callbackInit (
       starterCloseCallback, starter, NULL);
   starter->wcont [START_W_WINDOW] = uiCreateMainWindow (
       starter->callbacks [START_CB_EXIT],
-      bdjoptGetStr (OPT_P_PROFILENAME), imgbuff);
+      bdjoptGetStr (OPT_P_PROFILENAME), "bdj4_icon");
   uiWindowSetNoMaximize (starter->wcont [START_W_WINDOW]);
 
   vbox = uiCreateVertBox ();

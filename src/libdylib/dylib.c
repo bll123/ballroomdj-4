@@ -23,15 +23,19 @@
 #include "mdebug.h"
 #include "osutils.h"
 #include "pathdisp.h"
+#include "sysvars.h"
 
 dlhandle_t *
-dylibLoad (const char *path)
+dylibLoad (const char *path, dlopt_t opt)
 {
-  void      *handle = NULL;
+  void        *handle = NULL;
+  const char  *pfx = "";
+  char        tbuff [MAXPATHLEN];
+  const char  *shlibext;
 #if _lib_LoadLibraryW
-  HMODULE   libhandle;
-  char      npath [MAXPATHLEN];
-  wchar_t   *wpath;
+  HMODULE     libhandle;
+  char        npath [MAXPATHLEN];
+  wchar_t     *wpath;
 #endif
 
   if (path == NULL || ! *path) {
@@ -39,7 +43,43 @@ dylibLoad (const char *path)
   }
 
 #if _lib_dlopen
-  handle = dlopen (path, RTLD_LAZY);
+  shlibext = sysvarsGetStr (SV_SHLIB_EXT);
+  if ((opt & DYLIB_OPT_MAC_PREFIX) == DYLIB_OPT_MAC_PREFIX && isMacOS ()) {
+    /* must have trailing slash */
+    pfx = "/opt/local/lib/";
+  }
+
+  if (*path == '/') {
+    stpecpy (tbuff, tbuff + sizeof (tbuff), path);
+  } else {
+    snprintf (tbuff, sizeof (tbuff), "%s%s%s", pfx, path, shlibext);
+  }
+fprintf (stderr, "dl-open: /%s/\n", tbuff);
+  handle = dlopen (tbuff, RTLD_LAZY);
+  if (handle == NULL) {
+fprintf (stderr, "  dl-open: %s fail-a\n", tbuff);
+    if ((opt & DYLIB_OPT_VERSION) == DYLIB_OPT_VERSION) {
+      int   beg = DYLIB_ICU_BEG_VERS;
+      int   end = DYLIB_ICU_END_VERS;
+
+      if ((opt & DYLIB_OPT_AV) == DYLIB_OPT_AV) {
+        beg = DYLIB_AV_BEG_VERS;
+        end = DYLIB_AV_END_VERS;
+      }
+
+      /* ubuntu does not use plain .so links */
+      for (int i = beg; i < end; ++i) {
+        snprintf (tbuff, sizeof (tbuff), "%s%s%s.%d", pfx, path, shlibext, i);
+fprintf (stderr, "  try: %s\n", tbuff);
+        handle = dlopen (tbuff, RTLD_LAZY);
+        if (handle != NULL) {
+fprintf (stderr, "dl-open: found %s at %d\n", tbuff, i);
+          break;
+        }
+      }
+    }
+  }
+
 #endif
 #if _lib_LoadLibraryW
   stpecpy (npath, npath + sizeof (npath), path);
@@ -113,4 +153,30 @@ dylibLookup (dlhandle_t *handle, const char *funcname)
 #endif /* debug */
 
   return addr;
+}
+
+int
+dylibCheckVersion (dlhandle_t *handle, const char *funcname, dlopt_t opt)
+{
+  void      *addr = NULL;
+  int       version = -1;
+  char      tbuff [MAXPATHLEN];
+
+  if ((opt & DYLIB_OPT_VERSION) == DYLIB_OPT_VERSION) {
+    int   beg = DYLIB_ICU_BEG_VERS;
+    int   end = DYLIB_ICU_END_VERS;
+
+    /* the ICU library versions the linkage... */
+    for (int i = beg; i < end; ++i) {
+      snprintf (tbuff, sizeof (tbuff), "%s_%d", funcname, i);
+      addr = dylibLookup (handle, tbuff);
+      if (addr != NULL) {
+fprintf (stderr, "found %s at %d\n", funcname, i);
+        version = i;
+        break;
+      }
+    }
+  }
+
+  return version;
 }

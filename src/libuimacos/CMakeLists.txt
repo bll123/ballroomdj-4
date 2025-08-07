@@ -36,7 +36,6 @@ add_library (libuimacos SHARED
 )
 target_link_libraries (libuimacos PRIVATE
   objuigeneral libbdj4 libbdj4basic libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
 )
 target_link_options (libuimacos PRIVATE
   -framework Cocoa

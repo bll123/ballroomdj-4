@@ -47,7 +47,7 @@ atiCheck (const char *atipkg)
   pathbldMakePath (dlpath, sizeof (dlpath),
       atipkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_DIR_EXEC);
   if (fileopFileExists (dlpath)) {
-    dlHandle = dylibLoad (dlpath);
+    dlHandle = dylibLoad (dlpath, DYLIB_OPT_NONE);
     if (dlHandle != NULL) {
       dylibClose (dlHandle);
       rc = true;
@@ -81,7 +81,7 @@ atiInit (const char *atipkg, int writetags,
     return NULL;
   }
 
-  ati->dlHandle = dylibLoad (dlpath);
+  ati->dlHandle = dylibLoad (dlpath, DYLIB_OPT_NONE);
   if (ati->dlHandle == NULL) {
     fprintf (stderr, "Unable to open library %s\n", dlpath);
     mdfree (ati);
@@ -207,7 +207,7 @@ atiGetSupportedTypes (const char *atipkg, int supported [])
 
   pathbldMakePath (dlpath, sizeof (dlpath),
       atipkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_DIR_EXEC);
-  dlHandle = dylibLoad (dlpath);
+  dlHandle = dylibLoad (dlpath, DYLIB_OPT_NONE);
   if (dlHandle != NULL) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wpedantic"

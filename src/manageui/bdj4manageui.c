@@ -832,8 +832,6 @@ manageBuildUI (manageui_t *manage)
   logProcBegin ();
   *imgbuff = '\0';
 
-  pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon_manage", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   /* CONTEXT: manage-ui: management user interface window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Management"),
       bdjoptGetStr (OPT_P_PROFILENAME));
@@ -841,7 +839,7 @@ manageBuildUI (manageui_t *manage)
   manage->callbacks [MANAGE_CB_CLOSE] = callbackInit (
       manageCloseWin, manage, NULL);
   manage->minfo.window = uiCreateMainWindow (
-      manage->callbacks [MANAGE_CB_CLOSE], tbuff, imgbuff);
+      manage->callbacks [MANAGE_CB_CLOSE], tbuff, "bdj4_icon_manage");
   manage->wcont [MANAGE_W_WINDOW] = manage->minfo.window;
 
   manageInitializeUI (manage);

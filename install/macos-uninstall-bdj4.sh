@@ -74,6 +74,8 @@ cdir=${XDG_CONFIG_HOME:-$HOME/.config}
 confdir="${cdir}/BDJ4"
 cdir=${XDG_CACHE_HOME:-$HOME/.cache}
 cachedir="${cdir}/BDJ4"
+cdir="$HOME/.local/share"
+icondir="${cdir}/icons/hicolor/scalable/apps"
 
 echo "Uninstall the BallroomDJ 4 Application and Data? "
 gr=$(getresponse)
@@ -114,6 +116,7 @@ if [[ $gr == Y ]]; then
   # cache dir
   test -d "$cachedir" && rm -rf "$cachedir"
   test -d "$confdir" && rm -rf "$confdir"
+  rm -f ${icondir}/bdj4_icon*.svg
 
   echo "-- BDJ4 application removed."
 fi

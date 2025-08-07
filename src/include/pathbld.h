@@ -33,6 +33,7 @@ typedef enum {
   PATHBLD_MP_DIR_CACHE    = ((1 << 0) | PATHBLD_IS_OTHER),
   PATHBLD_MP_DIR_CONFIG   = ((1 << 1) | PATHBLD_IS_OTHER),
   PATHBLD_MP_DIR_LOCK     = ((1 << 2) | PATHBLD_IS_OTHER),
+  PATHBLD_MP_DIR_ICON     = ((1 << 4) | PATHBLD_IS_OTHER),
   /* flags */
   PATHBLD_MP_DSTAMP       = (1 << 16),
   PATHBLD_MP_HOSTNAME     = (1 << 17),   // adds hostname to path

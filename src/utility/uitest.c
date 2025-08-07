@@ -298,7 +298,6 @@ uitestBuildUI (uitest_t *uitest)
   uiwcont_t   *vbox;
   uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
-  char        imgbuff [MAXPATHLEN];
   uiutilsaccent_t accent;
 
   uitest->callbacks [UITEST_CB_CLOSE] = callbackInit (
@@ -311,10 +310,8 @@ uitestBuildUI (uitest_t *uitest)
   uitest->callbacks [UITEST_CB_B_IMG_B] = callbackInit (
       uitestCBButtonImgB, uitest, NULL);
 
-  pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   uitest->wcont [UITEST_W_WINDOW] = uiCreateMainWindow (
-      uitest->callbacks [UITEST_CB_CLOSE], "uitest", imgbuff);
+      uitest->callbacks [UITEST_CB_CLOSE], "uitest", "bdj4_icon");
   uiWindowSetDefaultSize (uitest->wcont [UITEST_W_WINDOW], -1, 400);
 
   vbox = uiCreateVertBox ();

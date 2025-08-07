@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2025 Brad Lanam Pleasant Hill CA
 #
-ver=22
+ver=23
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -207,24 +207,25 @@ echo "-- Installing packages needed by BDJ4"
 # 2024-6-7 mesa is now needed to be able to build gtk3
 #   a bug was opened on macports.
 sudo port -N install \
-    mpstats \
-    libxml2 \
-    glib2 +quartz \
-    json-c \
+    adwaita-icon-theme \
+    chromaprint \
     curl \
     curl-ca-bundle \
+    ffmpeg +nonfree -x11 -rav1e \
+    flac \
+    glib2 +quartz \
+    gtk3 +quartz \
+    icu \
+    json-c \
+    libgcrypt \
     libogg \
     libopus \
-    libvorbis \
-    mesa \
-    opusfile \
-    flac \
-    libgcrypt \
     librsvg \
-    gtk3 +quartz \
-    adwaita-icon-theme \
-    ffmpeg +nonfree -x11 -rav1e \
-    chromaprint
+    libvorbis \
+    libxml2 \
+    mesa \
+    mpstats \
+    opusfile
 
 sudo -v
 

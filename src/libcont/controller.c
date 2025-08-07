@@ -52,7 +52,7 @@ controllerInit (const char *contpkg)
 
   pathbldMakePath (dlpath, sizeof (dlpath),
       contpkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_DIR_EXEC);
-  cont->dlHandle = dylibLoad (dlpath);
+  cont->dlHandle = dylibLoad (dlpath, DYLIB_OPT_NONE);
   if (cont->dlHandle == NULL) {
     fprintf (stderr, "Unable to open library %s\n", dlpath);
     mdfree (cont);

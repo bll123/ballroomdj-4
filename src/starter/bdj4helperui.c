@@ -210,12 +210,11 @@ helperBuildUI (helperui_t  *helper)
   char                tbuff [MAXPATHLEN];
   char                imgbuff [MAXPATHLEN];
 
-  pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   helper->closeCallback = callbackInit (helperCloseCallback, helper, NULL);
   /* CONTEXT: helperui: the window title for the BDJ4 helper */
   snprintf (tbuff, sizeof (tbuff), _("%s Helper"), BDJ4_LONG_NAME);
-  helper->wcont [HELPER_W_WINDOW] = uiCreateMainWindow (helper->closeCallback, tbuff, imgbuff);
+  helper->wcont [HELPER_W_WINDOW] = uiCreateMainWindow (
+      helper->closeCallback, tbuff, "bdj4_icon");
 
   vbox = uiCreateVertBox ();
   uiWindowPackInWindow (helper->wcont [HELPER_W_WINDOW], vbox);

@@ -96,14 +96,6 @@ macro (updateRPath name)
         "@loader_path"
         "@loader_path/../plocal/lib"
     )
-    # libicu does not have the proper path when linked
-    add_custom_command(TARGET ${name}
-        POST_BUILD
-        COMMAND
-          ${PROJECT_SOURCE_DIR}/utils/macfixrpath.sh
-              $<TARGET_FILE:${name}>
-        VERBATIM
-    )
   endif()
   if (NOT APPLE AND NOT WIN32)
     set_property (TARGET ${name}

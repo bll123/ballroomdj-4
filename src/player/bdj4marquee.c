@@ -343,14 +343,12 @@ marqueeBuildUI (marquee_t *marquee)
   uiLabelAddClass (MQ_INFO_CLASS, bdjoptGetStr (OPT_P_MQ_INFO_COL));
   uiSeparatorAddClass (MQ_ACCENT_CLASS, bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
 
-  pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon_marquee", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
-
   marquee->callbacks [MQ_CB_EXIT] = callbackInit (
       marqueeCloseCallback, marquee, NULL);
-  marquee->wcont [MQ_W_WINDOW] = uiCreateMainWindow (marquee->callbacks [MQ_CB_EXIT],
+  marquee->wcont [MQ_W_WINDOW] = uiCreateMainWindow (
+      marquee->callbacks [MQ_CB_EXIT],
       /* CONTEXT: marquee: marquee window title (suggested: song display) */
-      _("Marquee"), imgbuff);
+      _("Marquee"), "bdj4_icon_marquee");
   uiWidgetAddClass (marquee->wcont [MQ_W_WINDOW], MQ_WIN_CLASS);
   uiWindowNoFocusOnStartup (marquee->wcont [MQ_W_WINDOW]);
 

@@ -357,13 +357,12 @@ altinstBuildUI (altinst_t *altinst)
   stpecpy (imgbuff, imgbuff + sizeof (imgbuff), "img/bdj4_icon_inst.png");
   osuiSetIcon (imgbuff);
 
-  stpecpy (imgbuff, imgbuff + sizeof (imgbuff), "img/bdj4_icon_inst.svg");
   /* CONTEXT: alternate installation: window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Installer"), BDJ4_NAME);
   altinst->callbacks [ALT_CB_EXIT] = callbackInit (
       altinstExitCallback, altinst, NULL);
   altinst->wcont [ALT_W_WINDOW] = uiCreateMainWindow (
-      altinst->callbacks [ALT_CB_EXIT], tbuff, imgbuff);
+      altinst->callbacks [ALT_CB_EXIT], tbuff, "bdj4_icon_inst");
   uiWindowSetDefaultSize (altinst->wcont [ALT_W_WINDOW], 1000, 600);
 
   vbox = uiCreateVertBox ();

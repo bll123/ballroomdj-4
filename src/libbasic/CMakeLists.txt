@@ -27,10 +27,11 @@ target_include_directories (libbdj4basic
   PRIVATE "${XML2_INCLUDE_DIRS}"
 )
 target_link_libraries (libbdj4basic PRIVATE
+  objdylib    # used in istring.c to handle the ICU mess
   libbdj4common
-  ${ICUI18N_LDFLAGS} ${ICUUC_LDFLAGS}
   ${GLIB_LDFLAGS}
   ${XML2_LDFLAGS}
+  ${CMAKE_DL_LIBS}
 )
 
 install (TARGETS

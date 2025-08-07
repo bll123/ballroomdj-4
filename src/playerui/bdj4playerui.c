@@ -549,15 +549,13 @@ pluiBuildUI (playerui_t *plui)
   uiImageConvertToPixbuf (plui->wcont [PLUI_W_LED_ON]);
   uiWidgetMakePersistent (plui->wcont [PLUI_W_LED_ON]);
 
-  pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon_player", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   plui->callbacks [PLUI_CB_CLOSE] = callbackInit (
       pluiCloseWin, plui, NULL);
   /* CONTEXT: playerui: main window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Player"),
       bdjoptGetStr (OPT_P_PROFILENAME));
-  plui->wcont [PLUI_W_WINDOW] = uiCreateMainWindow (plui->callbacks [PLUI_CB_CLOSE],
-      tbuff, imgbuff);
+  plui->wcont [PLUI_W_WINDOW] = uiCreateMainWindow (
+      plui->callbacks [PLUI_CB_CLOSE], tbuff, "bdj4_icon_player");
 
   pluiInitializeUI (plui);
 
