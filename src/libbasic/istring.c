@@ -31,11 +31,6 @@
 #include "mdebug.h"
 #include "sysvars.h"
 
-enum {
-  LIBICU_BEG_VERS = 65,
-  LIBICU_END_VERS = 120,
-};
-
 typedef struct {
   dlhandle_t      *i18ndlh;
   dlhandle_t      *ucdlh;
@@ -70,11 +65,15 @@ istringInit (const char *locale)
   {
     int         version = -1;
     char        tbuff [MAXPATHLEN];
+    const char  *i18nnm = "libicui18n";
 
-    istringdata.i18ndlh = dylibLoad ("libicui18n",
+    if (isWindows ()) {
+      i18nnm = "libicuin";
+    }
+
+    istringdata.i18ndlh = dylibLoad (i18nnm,
         DYLIB_OPT_MAC_PREFIX | DYLIB_OPT_VERSION | DYLIB_OPT_ICU);
     if (istringdata.i18ndlh == NULL) {
-fprintf (stderr, "load icu-i18n fail\n");
       fprintf (stderr, "ERR: unable to open ICU library i18n\n");
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: unable to open ICU library i18n");
       return;
@@ -83,7 +82,6 @@ fprintf (stderr, "load icu-i18n fail\n");
     istringdata.ucdlh = dylibLoad ("libicuuc",
         DYLIB_OPT_MAC_PREFIX | DYLIB_OPT_VERSION | DYLIB_OPT_ICU);
     if (istringdata.ucdlh == NULL) {
-fprintf (stderr, "load icu-uc fail\n");
       fprintf (stderr, "ERR: unable to open ICU library uc\n");
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: unable to open ICU library uc");
       return;

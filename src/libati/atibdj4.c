@@ -25,6 +25,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "slist.h"
+#include "sysvars.h"
 #include "tagdef.h"
 
 static void atibdj4LogCallback (void *avcl, int level, const char *fmt, va_list vl);
@@ -36,7 +37,14 @@ atiiInit (const char *atipkg, int writetags,
     taglookup_t tagLookup, tagcheck_t tagCheck,
     tagname_t tagName, audiotaglookup_t audioTagLookup)
 {
-  atidata_t *atidata;
+  atidata_t     *atidata;
+  const char    *avfmtnm = "libavformat";
+  const char    *avutilnm = "libavutil";
+
+  if (isWindows ()) {
+    avfmtnm = "avformat-";
+    avutilnm = "avutil-";
+  }
 
   atidata = mdmalloc (sizeof (atidata_t));
   atidata->avfmtdlh = NULL;
@@ -48,23 +56,16 @@ atiiInit (const char *atipkg, int writetags,
   atidata->audioTagLookup = audioTagLookup;
   atidata->data = NULL;
 
-  atidata->avfmtdlh = dylibLoad ("libavformat",
+  atidata->avfmtdlh = dylibLoad (avfmtnm,
       DYLIB_OPT_MAC_PREFIX | DYLIB_OPT_VERSION | DYLIB_OPT_AV);
-if (atidata->avfmtdlh == NULL) { fprintf (stderr, "avfmt fail\n"); }
-  atidata->avutildlh = dylibLoad ("libavutil",
+  atidata->avutildlh = dylibLoad (avutilnm,
       DYLIB_OPT_MAC_PREFIX | DYLIB_OPT_VERSION | DYLIB_OPT_AV);
-if (atidata->avutildlh == NULL) { fprintf (stderr, "avutil fail\n"); }
 
   atidata->av_log_set_callback = dylibLookup (atidata->avutildlh, "av_log_set_callback");
-if (atidata->av_log_set_callback == NULL) { fprintf (stderr, "av_log_set_callback fail\n"); }
   atidata->av_strerror = dylibLookup (atidata->avutildlh, "av_strerror");
-if (atidata->av_strerror == NULL) { fprintf (stderr, "av_strerror fail\n"); }
   atidata->avformat_open_input = dylibLookup (atidata->avfmtdlh, "avformat_open_input");
-if (atidata->avformat_open_input == NULL) { fprintf (stderr, "avfmt-open fail\n"); }
   atidata->avformat_find_stream_info = dylibLookup (atidata->avfmtdlh, "avformat_find_stream_info");
-if (atidata->avformat_find_stream_info == NULL) { fprintf (stderr, "avfmt-find fail\n"); }
   atidata->avformat_close_input = dylibLookup (atidata->avfmtdlh, "avformat_close_input");
-if (atidata->avformat_close_input == NULL) { fprintf (stderr, "avfmt-close fail\n"); }
 
   /* turn off logging for ffmpeg */
   atidata->av_log_set_callback (atibdj4LogCallback);

@@ -1619,7 +1619,6 @@ installerCopyFiles (installer_t *installer)
   char      tbuff [MAXPATHLEN];
   char      tmp [MAXPATHLEN];
 
-fprintf (stderr, "copy-files\n");
   /* due to various reasons, symlinks were not being preserved on macos */
   /* during the installation process. */
   /* in order to properly install the locale/en and locale/nl symlinks, */
@@ -1659,7 +1658,6 @@ fprintf (stderr, "copy-files\n");
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_STATUS, _("Copy finished."), false);
 
-fprintf (stderr, "call copy-icons\n");
   instutilCopyIcons ();
 
   if (installer->readonly) {

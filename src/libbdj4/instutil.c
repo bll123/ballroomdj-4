@@ -598,23 +598,22 @@ instutilCopyIcons (void)
   slistidx_t  iteridx;
   const char  *fname;
 
+  if (isWindows ()) {
+    return;
+  }
+
   pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_DIR_IMG);
-fprintf (stderr, "img-path: %s\n", tbuff);
 
   dirlist = dirlistBasicDirList (tbuff, BDJ4_IMG_SVG_EXT);
   slistStartIterator (dirlist, &iteridx);
   while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
-fprintf (stderr, "chk %s\n", fname);
     if (strncmp (fname, "bdj4_icon", 9) != 0) {
       continue;
     }
-fprintf (stderr, "icon: %s\n", fname);
     pathbldMakePath (tbuff, sizeof (tbuff), fname, "", PATHBLD_MP_DREL_IMG);
-fprintf (stderr, "from: %s\n", tbuff);
     pathbldMakePath (to, sizeof (to), "", "", PATHBLD_MP_DIR_ICON);
     diropMakeDir (to);
     pathbldMakePath (to, sizeof (to), fname, "", PATHBLD_MP_DIR_ICON);
-fprintf (stderr, "to: %s\n", to);
     filemanipCopy (tbuff, to);
   }
   slistFree (dirlist);

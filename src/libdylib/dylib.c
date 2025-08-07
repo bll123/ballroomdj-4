@@ -19,45 +19,43 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
+#include "fileop.h"
 #include "dylib.h"
 #include "mdebug.h"
 #include "osutils.h"
 #include "pathdisp.h"
 #include "sysvars.h"
 
+static dlhandle_t * dylibBasicOpen (char *path, size_t sz);
+
 dlhandle_t *
 dylibLoad (const char *path, dlopt_t opt)
 {
   void        *handle = NULL;
-  const char  *pfx = "";
-  char        tbuff [MAXPATHLEN];
-  const char  *shlibext;
-#if _lib_LoadLibraryW
-  HMODULE     libhandle;
   char        npath [MAXPATHLEN];
-  wchar_t     *wpath;
-#endif
+  const char  *shlibext;
+  const char  *pfx = "";
 
   if (path == NULL || ! *path) {
     return NULL;
   }
 
-#if _lib_dlopen
   shlibext = sysvarsGetStr (SV_SHLIB_EXT);
+
   if ((opt & DYLIB_OPT_MAC_PREFIX) == DYLIB_OPT_MAC_PREFIX && isMacOS ()) {
     /* must have trailing slash */
     pfx = "/opt/local/lib/";
   }
 
-  if (*path == '/') {
-    stpecpy (tbuff, tbuff + sizeof (tbuff), path);
+  if (fileopIsAbsolutePath (path)) {
+    stpecpy (npath, npath + sizeof (npath), path);
   } else {
-    snprintf (tbuff, sizeof (tbuff), "%s%s%s", pfx, path, shlibext);
+    snprintf (npath, sizeof (npath), "%s%s%s", pfx, path, shlibext);
   }
-fprintf (stderr, "dl-open: /%s/\n", tbuff);
-  handle = dlopen (tbuff, RTLD_LAZY);
+
+  handle = dylibBasicOpen (npath, sizeof (npath));
+
   if (handle == NULL) {
-fprintf (stderr, "  dl-open: %s fail-a\n", tbuff);
     if ((opt & DYLIB_OPT_VERSION) == DYLIB_OPT_VERSION) {
       int   beg = DYLIB_ICU_BEG_VERS;
       int   end = DYLIB_ICU_END_VERS;
@@ -69,28 +67,23 @@ fprintf (stderr, "  dl-open: %s fail-a\n", tbuff);
 
       /* ubuntu does not use plain .so links */
       for (int i = beg; i < end; ++i) {
-        snprintf (tbuff, sizeof (tbuff), "%s%s%s.%d", pfx, path, shlibext, i);
-fprintf (stderr, "  try: %s\n", tbuff);
-        handle = dlopen (tbuff, RTLD_LAZY);
+        if (isWindows ()) {
+          snprintf (npath, sizeof (npath), "%s%s%d%s", pfx, path, i, shlibext);
+        } else {
+          snprintf (npath, sizeof (npath), "%s%s%s.%d", pfx, path, shlibext, i);
+        }
+        handle = dylibBasicOpen (npath, sizeof (npath));
         if (handle != NULL) {
-fprintf (stderr, "dl-open: found %s at %d\n", tbuff, i);
           break;
         }
       }
     }
   }
 
-#endif
-#if _lib_LoadLibraryW
-  stpecpy (npath, npath + sizeof (npath), path);
-  pathDisplayPath (npath, sizeof (npath));
-  wpath = osToWideChar (npath);
-  libhandle = LoadLibraryW (wpath);
-  handle = libhandle;
-#endif
-  mdextalloc (handle);
   if (handle == NULL) {
     fprintf (stderr, "ERR: dylib open %s failed: %d %s\n", path, errno, strerror (errno));
+  } else {
+    mdextalloc (handle);
   }
 
   return handle;
@@ -171,7 +164,6 @@ dylibCheckVersion (dlhandle_t *handle, const char *funcname, dlopt_t opt)
       snprintf (tbuff, sizeof (tbuff), "%s_%d", funcname, i);
       addr = dylibLookup (handle, tbuff);
       if (addr != NULL) {
-fprintf (stderr, "found %s at %d\n", funcname, i);
         version = i;
         break;
       }
@@ -179,4 +171,28 @@ fprintf (stderr, "found %s at %d\n", funcname, i);
   }
 
   return version;
+}
+
+/* internal routines */
+
+static dlhandle_t *
+dylibBasicOpen (char *path, size_t sz)
+{
+  dlhandle_t    *handle;
+#if _lib_LoadLibraryW
+  HMODULE     libhandle;
+  wchar_t     *wpath;
+#endif
+
+#if _lib_dlopen
+  handle = dlopen (path, RTLD_LAZY);
+#endif
+#if _lib_LoadLibraryW
+  pathDisplayPath (path, sz);
+  wpath = osToWideChar (path);
+  libhandle = LoadLibraryW (wpath);
+  handle = libhandle;
+#endif
+
+  return handle;
 }

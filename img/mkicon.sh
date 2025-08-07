@@ -16,11 +16,11 @@ BASEPL=bdj4_icon_player
 BASEM=bdj4_icon_manage
 
 for b in ${BASE} ${BASEI}; do
-  for sz in 256 64 48 32 16; do
+  for sz in 256 48 32 16; do
     inkscape $b.svg -w $sz -h $sz -o $b-$sz.png > /dev/null 2>&1
   done
   icotool -c -o $b.ico $b-256.png $b-48.png $b-32.png $b-16.png
-  for sz in 64 48 32 16; do
+  for sz in 48 32 16; do
     rm -f $b-$sz.png
   done
   mv $b-256.png $b.png
