@@ -42,9 +42,9 @@ extern "C" {
 
 void mdfree_r (void *data, const char *fn, int lineno);
 void mdextfree_r (void *data, const char *fn, int lineno);
-void * mdmalloc_r (size_t sz, const char *fn, int lineno);
-void * mdrealloc_r (void *data, size_t sz, const char *fn, int lineno);
-char * mdstrdup_r (const char *s, const char *fn, int lineno);
+[[nodiscard]] void * mdmalloc_r (size_t sz, const char *fn, int lineno);
+[[nodiscard]] void * mdrealloc_r (void *data, size_t sz, const char *fn, int lineno);
+[[nodiscard]] char * mdstrdup_r (const char *s, const char *fn, int lineno);
 void * mdextalloc_r (void *data, const char *fn, int lineno);
 void mdextopen_r (long fd, const char *fn, int lineno);
 void mdextsock_r (long fd, const char *fn, int lineno);

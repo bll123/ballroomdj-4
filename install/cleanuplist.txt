@@ -324,6 +324,9 @@ plocal/bin/swscale-7\.dll$
 # 2025-6-10 windows updates
 plocal/bin/libFLAC-12\.dll$
 
+# 2025-7-7 windows updates
+plocal/bin/libxml2-2\.dll$
+
 ####
 # data-dir
 

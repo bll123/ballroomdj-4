@@ -897,21 +897,22 @@ sockSetNonBlocking (Sock_t sock)
 static void
 sockInit (void)
 {
-#if _lib_WSAStartup
-  WSADATA wsa;
-#endif
-
   if (atomic_flag_test_and_set (&sockInitialized)) {
     return;
   }
 
 #if _lib_WSAStartup
-  int rc = WSAStartup (MAKEWORD (2, 2), &wsa);
-  if (rc < 0) {
-    logError ("WSAStartup:");
+  {
+    WSADATA wsa;
+    int rc;
+
+    rc = WSAStartup (MAKEWORD (2, 2), &wsa);
+    if (rc < 0) {
+      logError ("WSAStartup:");
 # if _lib_WSAGetLastError
-    logMsg (LOG_DBG, LOG_SOCKET, "wsastartup: wsa last-error:%d", WSAGetLastError());
+      logMsg (LOG_DBG, LOG_SOCKET, "wsastartup: wsa last-error:%d", WSAGetLastError());
 # endif
+    }
   }
 #endif
   atexit (sockCleanup);
