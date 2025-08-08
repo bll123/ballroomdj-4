@@ -5,8 +5,9 @@
 ### Known Issues
 
 * MacOS
-    * The scrollbar stops working correctly when the cursor is moved
-      past the bottom of the scrollbar.
+    * In certain situations, the scrollbar stops working correctly
+      when the cursor is moved past the bottom of the scrollbar.
+      Try resizing the window.
 * Windows
     * The marquee position is not saved when it is iconified (close
       the window instead).

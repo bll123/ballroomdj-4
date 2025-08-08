@@ -331,6 +331,13 @@ plocal/bin/libFLAC-12\.dll$
 
 # 2025-8-7 windows updates
 plocal/bin/libxml2-2\.dll$
+plocal/bin/avcodex-60\.dll$
+plocal/bin/avdevice-60\.dll$
+plocal/bin/avfilter-9\.dll$
+plocal/bin/avformat-60\.dll$
+plocal/bin/avutil-58\.dll$
+# 2025-8-8 curl no longer shipped
+licenses/curl.LICENSE
 
 ####
 # data-dir

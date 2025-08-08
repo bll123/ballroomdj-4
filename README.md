@@ -7,7 +7,6 @@ BDJ4 #VERSION# #BUILDDATE#
 -  Change Log
 -  Converting BallroomDJ 3
 -  Release Notes
--  Known Issues
 -  Feedback
 -  Copyright
 -  Licenses
@@ -39,20 +38,6 @@ BDJ4 #VERSION# #BUILDDATE#
 This installation will not affect any BallroomDJ 3 installation.
 (Writing audio file tags is turned off upon conversion).
 
-### Known Issues:
-
-  - MacOS
-    - The scrollbar stops working correctly when the cursor is moved
-      past the bottom of the scrollbar.
-  - Windows
-    - The marquee position is not saved when it is iconified (close the
-      window instead).
-  - Linux
-    - If an non-default audio sink is configured, and the default audio
-      sink is changed, the audio will switch to the new default.  The
-      audio will revert back to the configured audio sink when a new song
-      starts playing.
-
 ### Feedback:
 
 Use one of the methods listed in the
@@ -75,17 +60,14 @@ Copyright 2021-2025 Brad Lanam Pleasant Hill, CA
 - qrcode      : MIT License (templates/qrcode/LICENSE)
 - img/musicbrainz-logo.svg : GPLv2
 - Mac OS:
-    - ICU       : ICU
     - themes    : GPLv3 License
 - Windows:
-    - curl      : MIT License
     - ffmpeg    : GPLv3 License
     - flac      : GPLv2, GPLv2.1, Xiph/BSD License
     - libogg    : Xiph/BSD License
     - libvorbis : Xiph/BSD License
       <br/>Changes made to the library available upon request.
     - msys2     : [BSD 3-Clause](https://github.com/msys2/MSYS2-packages/blob/master/LICENSE)
-    - nghttp2   : MIT License
     - opusfile  : Xiph/BSD License
     - opus      : Xiph/BSD License
     - themes    : GPLv3 License

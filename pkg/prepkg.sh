@@ -236,7 +236,6 @@ fi
 cp -pf packages/libid3tag*/COPYING ${licdir}/libid3tag.LICENSE
 cp -pf packages/libmp4tag*/LICENSE.txt ${licdir}/libmp4tag.LICENSE
 if [[ $platform == windows ]]; then
-  cp -pf packages/curl*/COPYING ${licdir}/curl.LICENSE
   cp -pf packages/libogg*/COPYING ${licdir}/libogg.LICENSE
   cp -pf packages/opus-1*/COPYING ${licdir}/opus.LICENSE
   cp -pf packages/opusfile*/COPYING ${licdir}/opusfile.LICENSE
@@ -311,7 +310,6 @@ if [[ $platform == windows ]]; then
 
   # gspawn helpers are required for the link button to work.
   # librsvg is the SVG library; it is not a direct dependent.
-  # libcares is required by the libcurl build.
   # gdbus
   chkdlllist="
       /${libtag}/bin/gdbus.exe
@@ -348,15 +346,6 @@ if [[ $platform == windows ]]; then
   done
   for fn in $(sort -u $dlllistfn); do
     bfn=$(basename $fn)
-    # libcurl and libnghttp2 are built, do not overwrite
-    case ${bfn} in
-      libcurl*)
-        continue
-        ;;
-      libnghttp2*)
-        continue
-        ;;
-    esac
     if [[ $fn -nt $PBIN/$bfn ]]; then
       count=$((count+1))
       echo "copying $bfn"
@@ -376,7 +365,8 @@ if [[ $platform == windows ]]; then
   mkdir -p plocal/etc/gtk-3.0
   cp -pf /${libtag}/etc/gtk-3.0/im-multipress.conf plocal/etc/gtk-3.0
   mkdir -p plocal/share/icons
-  rsync --info=copy,del -aS --delete /${libtag}/share/icons/* plocal/share/icons
+  rsync --info=copy,del -aS --delete --exclude='bdj4_icon*' \
+      /${libtag}/share/icons/* plocal/share/icons
   mkdir -p plocal/share/glib-2.0
   rsync --info=copy,del -aS --delete /${libtag}/share/glib-2.0/schemas plocal/share/glib-2.0
   mkdir -p plocal/etc/fonts
