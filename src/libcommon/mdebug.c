@@ -20,6 +20,7 @@
 
 #include "bdjstring.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 
 typedef enum {
   MDEBUG_TYPE_ALLOC = 'a',

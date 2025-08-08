@@ -64,6 +64,8 @@ function pkgnmgetdata {
           pn_dist=-arch
           ;;
         debian)
+          # debian version is numeric on MX Linux
+          # other linuxes may use names.
           dver=$(cat /etc/debian_version)
           dver=$(echo ${dver} | sed 's,\..*,,')
           pn_dist=-debian${dver}

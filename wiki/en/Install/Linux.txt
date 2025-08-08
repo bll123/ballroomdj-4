@@ -19,7 +19,7 @@ for the ICU, avformat and avutil libraries.
     * Red Hat based (Fedora)
     * OpenSUSE (2025-8)
 * Desktop Environments that have been tested (as of 2023-8-8).
-    * Budgie
+    * Budgie (2025-8-8)
     * Cinnamon (2025-8-8)
     * GNOME
       The dock does not display the BDJ4 icon (Ubuntu 22.04, recent Fedora)

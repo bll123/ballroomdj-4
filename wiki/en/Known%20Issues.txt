@@ -16,6 +16,8 @@
       audio sink is changed, the audio will switch to the new
       default.  The audio will revert back to the configured audio
       sink when a new song starts playing.
+    * The dock icon does not display on the GNOME desktop
+      (e.g. Ubuntu 2204 and later).
 
 [Wiki Home](Home)
 <br>_(Updated 2025-08-05 09:53:56; BDJ4 version 4.15.4)_

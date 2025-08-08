@@ -5,7 +5,7 @@
 #define INC_NODISCARD_H
 
 #if __has_cpp_attribute( nodiscard )
-# define NODISCARD NODISCARD
+# define NODISCARD [[nodiscard]]
 #else
 # define NODISCARD
 #endif

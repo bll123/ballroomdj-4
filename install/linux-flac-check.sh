@@ -15,11 +15,12 @@ if [[ $(uname -s) != Linux ]]; then
 fi
 
 flac12=plocal/lib/libFLAC.so.12
-lf=$(find /usr/lib -name 'libFLAC.so.12' -print)
+lf=$(find /usr/lib /usr/lib64 /lib64 -name 'libFLAC.so.12' -print 2>/dev/null)
 if [[ $lf == "" ]]; then
   lf=$(find /usr/lib -name 'libFLAC.so.8' -print)
   if [[ $lf != "" ]]; then
     # create a symlink for libFLAC
+    rm -f ${flac12}
     ln -s ${lf} ${flac12}
   fi
 else

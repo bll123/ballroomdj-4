@@ -4,8 +4,9 @@
 #ifndef INC_MDEBUG_H
 #define INC_MDEBUG_H
 
-#include "nodiscard.h"
 #include <stdint.h>
+
+#include "nodiscard.h"
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
