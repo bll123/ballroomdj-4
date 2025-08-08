@@ -13,6 +13,7 @@ add_library (libbdj4common SHARED
   colorutils.c
   conn.c
   dirop.c
+  dylib.c
   filemanip.c
   fileshared.c
   log.c
@@ -55,6 +56,7 @@ target_link_libraries (libbdj4common PRIVATE
   objstring     # bdjstring.c stpecpy.c mdebug.c
   objtmutil     # tmutil.c
   ${GLIB_LDFLAGS}
+  ${CMAKE_DL_LIBS}
   m             # needed for Fedora gcc 13
 )
 addIOKitFramework (libbdj4common)

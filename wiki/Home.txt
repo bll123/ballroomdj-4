@@ -36,6 +36,7 @@
 
 ### Change Log
 [Change Log](en-Change%20Log)
+<br>[Known Issues](en-Known%20Issues)
 
 ### Installation
 [Installing on Linux](en-Install-Linux)
@@ -50,8 +51,7 @@
 [Installing BDJ4 in Other Locales](en-Install-Locales)
 <br>[Converting BallroomDJ 3](en-Install-Converting%20BDJ3)
 
-[Known Issues](en-Install-Known%20Issues)
-<br>[BDJ4 Maintenance](en-Install-Maintenance)
+[BDJ4 Maintenance](en-Install-Maintenance)
 
 [Uninstalling BDJ4](en-Install-Uninstall)
 

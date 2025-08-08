@@ -9,9 +9,7 @@ add_library (libbdj4cont SHARED
   controller.c
 )
 target_link_libraries (libbdj4cont PRIVATE
-  objdylib
   libbdj4basic libbdj4common
-  ${CMAKE_DL_LIBS}
 )
 
 if (NOT WIN32 AND NOT APPLE)

@@ -14,7 +14,6 @@ add_library (libbdj4audiosrc SHARED
   audiosrc.c
 )
 target_link_libraries (libbdj4audiosrc PRIVATE
-  objdylib
   libbdj4basic libbdj4common
 )
 

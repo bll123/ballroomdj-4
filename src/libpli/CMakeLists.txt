@@ -9,9 +9,7 @@ add_library (libbdj4pli SHARED
   pli.c
 )
 target_link_libraries (libbdj4pli PRIVATE
-  objdylib
   libbdj4basic libbdj4common
-  ${CMAKE_DL_LIBS}
 )
 
 add_library (libplinull SHARED plinull.c)
