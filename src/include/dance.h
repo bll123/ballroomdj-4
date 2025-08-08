@@ -4,6 +4,7 @@
 #ifndef INC_DANCE_H
 #define INC_DANCE_H
 
+#include "nodiscard.h"
 #include "datafile.h"
 #include "ilist.h"
 #include "slist.h"
@@ -50,7 +51,7 @@ extern int danceTimesigValues [DANCE_TIMESIG_MAX];
 
 typedef struct dance dance_t;
 
-[[nodiscard]] dance_t       *danceAlloc (const char *altfname);
+NODISCARD dance_t       *danceAlloc (const char *altfname);
 void          danceFree (dance_t *);
 void          danceStartIterator (dance_t *, slistidx_t *idx);
 ilistidx_t    danceIterate (dance_t *, slistidx_t *idx);

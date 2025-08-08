@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "nodiscard.h"
 #include "rafile.h"
 #include "song.h"
 #include "slist.h"
@@ -41,7 +42,7 @@ enum {
 #define MUSICDB_TMP_FNAME "musicdb-tmp"
 #define MUSICDB_EXT       ".dat"
 
-[[nodiscard]] musicdb_t *dbOpen (const char *);
+NODISCARD musicdb_t *dbOpen (const char *);
 void      dbClose (musicdb_t *db);
 dbidx_t   dbCount (musicdb_t *db);
 int       dbLoad (musicdb_t *);

@@ -4,6 +4,7 @@
 #ifndef INC_SONGFAV_H
 #define INC_SONGFAV_H
 
+#include "nodiscard.h"
 #include "datafile.h"
 
 #if defined (__cplusplus) || defined (c_plusplus)
@@ -25,7 +26,7 @@ enum {
 
 typedef struct songfav songfav_t;
 
-[[nodiscard]] songfav_t *songFavoriteAlloc (void);
+NODISCARD songfav_t *songFavoriteAlloc (void);
 void  songFavoriteFree (songfav_t *songfav);
 int   songFavoriteGetCount (songfav_t *songfav);
 int   songFavoriteGetNextValue (songfav_t *songfav, int value);

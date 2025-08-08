@@ -4,6 +4,7 @@
 #ifndef INC_RAFILE_H
 #define INC_RAFILE_H
 
+#include "nodiscard.h"
 #include <stdio.h>
 #include <stdint.h>
 
@@ -25,7 +26,7 @@ enum {
 };
 #define RAFILE_LOCK_FN      "rafile"
 
-[[nodiscard]] rafile_t *    raOpen (const char *fname, int version, int openmode);
+NODISCARD rafile_t *    raOpen (const char *fname, int version, int openmode);
 void          raClose (rafile_t *rafile);
 rafileidx_t   raWrite (rafile_t *rafile, rafileidx_t rrn, char *data, ssize_t len);
 bool          raClear (rafile_t *rafile, rafileidx_t rrn);

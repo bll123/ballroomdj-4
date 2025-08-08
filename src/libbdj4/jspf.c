@@ -102,7 +102,7 @@ jspfExport (musicdb_t *musicdb, nlist_t *list,
   fclose (fh);
 }
 
-[[nodiscard]]
+NODISCARD
 nlist_t *
 jspfImport (musicdb_t *musicdb, const char *fname)
 {

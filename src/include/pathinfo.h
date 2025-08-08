@@ -4,6 +4,8 @@
 #ifndef INC_PATHINFO_H
 #define INC_PATHINFO_H
 
+#include "nodiscard.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
@@ -19,7 +21,7 @@ typedef struct {
   size_t      elen;
 } pathinfo_t;
 
-[[nodiscard]] pathinfo_t *  pathInfo (const char *path);
+NODISCARD pathinfo_t *  pathInfo (const char *path);
 void          pathInfoFree (pathinfo_t *);
 bool          pathInfoExtCheck (pathinfo_t *, const char *extension);
 void          pathInfoGetDir (pathinfo_t *pi, char *buff, size_t sz);

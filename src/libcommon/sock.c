@@ -114,7 +114,7 @@ static Sock_t sockOpenClientSocket (struct addrinfo *rp, int *connerr);
 static int      sockCheckAlready (int rc, int *connerr);
 static int      sockCheckInProgress (int rc, int *connerr);
 
-[[nodiscard]]
+NODISCARD
 Sock_t
 sockServer (uint16_t listenPort, int *err)
 {
@@ -202,7 +202,7 @@ sockClose (Sock_t sock)
   }
 }
 
-[[nodiscard]]
+NODISCARD
 sockinfo_t *
 sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
 {
@@ -475,7 +475,7 @@ sockCheck (sockinfo_t *sockinfo)
   return 0;
 }
 
-[[nodiscard]]
+NODISCARD
 Sock_t
 sockAccept (Sock_t lsock, int *err)
 {
@@ -506,7 +506,7 @@ sockAccept (Sock_t lsock, int *err)
 
 /* note that in many cases, especially on windows, multiple calls to */
 /* connect are necessary to make the connection */
-[[nodiscard]]
+NODISCARD
 Sock_t
 sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
 {
@@ -640,7 +640,7 @@ sockWriteBinary (Sock_t sock, const char *data, size_t dlen,
   return 0;
 }
 
-[[nodiscard]]
+NODISCARD
 bool
 socketInvalid (Sock_t sock)
 {

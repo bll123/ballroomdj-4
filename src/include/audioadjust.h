@@ -4,6 +4,7 @@
 #ifndef INC_AUDIOADJUST_H
 #define INC_AUDIOADJUST_H
 
+#include "nodiscard.h"
 #include "musicdb.h"
 #include "nlist.h"
 #include "song.h"
@@ -20,7 +21,7 @@ enum {
 
 typedef struct aa aa_t;
 
-[[nodiscard]] aa_t * aaAlloc (void);
+NODISCARD aa_t * aaAlloc (void);
 void aaFree (aa_t *aa);
 bool aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags);
 void aaAdjust (musicdb_t *musicdb, song_t *song, const char *infn, const char *outfn, long dur, int fadein, int fadeout, int gap);

@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "nodiscard.h"
 #include "sock.h"
 #include "bdjmsg.h"
 
@@ -24,7 +25,7 @@ typedef struct conn conn_t;
  * @param[in] routefrom The route that is sending messages.
  * @return conn_t array.
  */
-[[nodiscard]] conn_t    * connInit (bdjmsgroute_t routefrom);
+NODISCARD conn_t    * connInit (bdjmsgroute_t routefrom);
 
 /**
  * Free a connection.

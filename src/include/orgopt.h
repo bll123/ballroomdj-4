@@ -4,6 +4,7 @@
 #ifndef INC_ORGOPT_H
 #define INC_ORGOPT_H
 
+#include "nodiscard.h"
 #include "datafile.h"
 #include "slist.h"
 
@@ -16,7 +17,7 @@ typedef struct {
   slist_t       *orgList;
 } orgopt_t;
 
-[[nodiscard]] orgopt_t  * orgoptAlloc (void);
+NODISCARD orgopt_t  * orgoptAlloc (void);
 void      orgoptFree (orgopt_t *org);
 slist_t   * orgoptGetList (orgopt_t *org);
 

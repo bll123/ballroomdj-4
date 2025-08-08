@@ -4,6 +4,7 @@
 #ifndef INC_SLIST_H
 #define INC_SLIST_H
 
+#include "nodiscard.h"
 #include "list.h"
 
 #if defined (__cplusplus) || defined (c_plusplus)
@@ -17,7 +18,7 @@ typedef listFree_t  slistFree_t;
 
 /* keyed by a string */
 
-[[nodiscard]] slist_t   *slistAlloc (const char *name, slistorder_t ordered, slistFree_t valueFreeHook);
+NODISCARD slist_t   *slistAlloc (const char *name, slistorder_t ordered, slistFree_t valueFreeHook);
 void      slistFree (void * list);
 void      slistSetVersion (slist_t *list, int version);
 int       slistGetVersion (slist_t *list);

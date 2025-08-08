@@ -4,6 +4,7 @@
 #ifndef INC_DISPSEL_H
 #define INC_DISPSEL_H
 
+#include "nodiscard.h"
 #include "datafile.h"
 #include "slist.h"
 
@@ -49,7 +50,7 @@ enum {
 
 typedef struct dispsel dispsel_t;
 
-[[nodiscard]] dispsel_t * dispselAlloc (int loadtype);
+NODISCARD dispsel_t * dispselAlloc (int loadtype);
 void      dispselFree (dispsel_t *dispsel);
 slist_t   * dispselGetList (dispsel_t *dispsel, dispselsel_t idx);
 void      dispselSave (dispsel_t *dispsel, dispselsel_t idx, slist_t *list);

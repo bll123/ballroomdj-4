@@ -4,6 +4,7 @@
 #ifndef INC_NLIST_H
 #define INC_NLIST_H
 
+#include "nodiscard.h"
 #include "list.h"
 
 #if defined (__cplusplus) || defined (c_plusplus)
@@ -17,7 +18,7 @@ typedef listorder_t nlistorder_t;
 typedef listFree_t  nlistFree_t;
 
 /* keyed by a nlistidx_t */
-[[nodiscard]] nlist_t     *nlistAlloc (const char *name, nlistorder_t, nlistFree_t valueFreeHook);
+NODISCARD nlist_t     *nlistAlloc (const char *name, nlistorder_t, nlistFree_t valueFreeHook);
 void        nlistFree (void * list);
 nlistidx_t  nlistGetCount (nlist_t *list);
 void        nlistSetSize (nlist_t *, nlistidx_t);

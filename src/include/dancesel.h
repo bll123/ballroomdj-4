@@ -4,6 +4,7 @@
 #ifndef INC_DANCESEL_H
 #define INC_DANCESEL_H
 
+#include "nodiscard.h"
 #include "autosel.h"
 #include "dance.h"
 #include "ilist.h"
@@ -20,7 +21,7 @@ typedef ilistidx_t (*danceselQueueLookup_t)(void *userdata, ilistidx_t idx);
 
 typedef struct dancesel dancesel_t;
 
-[[nodiscard]] dancesel_t *danceselAlloc (nlist_t *countList, danceselQueueLookup_t queueLookupProc, void *userdata);
+NODISCARD dancesel_t *danceselAlloc (nlist_t *countList, danceselQueueLookup_t queueLookupProc, void *userdata);
 void            danceselFree (dancesel_t *dancesel);
 void            danceselDecrementBase (dancesel_t *dancesel, ilistidx_t danceIdx);
 void            danceselAddCount (dancesel_t *dancesel, ilistidx_t danceIdx);

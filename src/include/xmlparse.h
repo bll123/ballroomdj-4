@@ -4,6 +4,7 @@
 #ifndef INC_XMLPARSE_H
 #define INC_XMLPARSE_H
 
+#include "nodiscard.h"
 #include "ilist.h"
 
 #if defined (__cplusplus) || defined (c_plusplus)
@@ -28,11 +29,11 @@ typedef struct {
 
 typedef struct xmlparse xmlparse_t;
 
-[[nodiscard]] xmlparse_t * xmlParseInitFile (const char *fname, int nsflag);
-[[nodiscard]] xmlparse_t * xmlParseInitData (const char *data, size_t datalen, int nsflag);
+NODISCARD xmlparse_t * xmlParseInitFile (const char *fname, int nsflag);
+NODISCARD xmlparse_t * xmlParseInitData (const char *data, size_t datalen, int nsflag);
 void xmlParseFree (xmlparse_t * xmlparse);
 void xmlParseGetItem (xmlparse_t * xmlparse, const char *xpath, char *buff, size_t sz);
-[[nodiscard]] ilist_t * xmlParseGetList (xmlparse_t * xmlparse, const char *xpath, const xmlparseattr_t attr []);
+NODISCARD ilist_t * xmlParseGetList (xmlparse_t * xmlparse, const char *xpath, const xmlparseattr_t attr []);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

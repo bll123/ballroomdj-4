@@ -4,6 +4,7 @@
 #ifndef INC_QUEUE_H
 #define INC_QUEUE_H
 
+#include "nodiscard.h"
 #include <stdint.h>
 
 #if defined (__cplusplus) || defined (c_plusplus)
@@ -17,7 +18,7 @@ typedef void (*queueFree_t)(void *);
 typedef struct queuenode queuenode_t;
 typedef struct queue queue_t;
 
-[[nodiscard]] queue_t *queueAlloc (const char *name, queueFree_t freeHook);
+NODISCARD queue_t *queueAlloc (const char *name, queueFree_t freeHook);
 void    queueFree (queue_t *q);
 void    queuePush (queue_t *q, void *data);
 void    queuePushHead (queue_t *q, void *data);

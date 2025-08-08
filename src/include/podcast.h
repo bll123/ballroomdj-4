@@ -4,6 +4,7 @@
 #ifndef INC_PODCAST_H
 #define INC_PODCAST_H
 
+#include "nodiscard.h"
 #include "slist.h"
 
 #if defined (__cplusplus) || defined (c_plusplus)
@@ -20,8 +21,8 @@ enum {
   PODCAST_KEY_MAX,
 };
 
-[[nodiscard]] podcast_t *podcastLoad (const char *fname);
-[[nodiscard]] podcast_t *podcastCreate (const char *fname);
+NODISCARD podcast_t *podcastLoad (const char *fname);
+NODISCARD podcast_t *podcastCreate (const char *fname);
 void      podcastFree (podcast_t *podcast);
 bool      podcastExists (const char *name);
 void      podcastSetName (podcast_t *podcast, const char *newname);

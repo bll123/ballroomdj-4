@@ -139,7 +139,7 @@ playlistFree (void *tpl)
   mdfree (pl);
 }
 
-[[nodiscard]]
+NODISCARD
 playlist_t *
 playlistLoad (const char *fname, musicdb_t *musicdb, grouping_t *grouping)
 {
@@ -356,7 +356,7 @@ playlistCheck (playlist_t *pl)
   return rc;
 }
 
-[[nodiscard]]
+NODISCARD
 playlist_t *
 playlistCreate (const char *plname, pltype_t type,
     musicdb_t *musicdb, grouping_t *grouping)

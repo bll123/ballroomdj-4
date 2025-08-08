@@ -4,6 +4,7 @@
 #ifndef INC_AUTOSEL_H
 #define INC_AUTOSEL_H
 
+#include "nodiscard.h"
 #include "datafile.h"
 #include "nlist.h"
 
@@ -35,7 +36,7 @@ typedef enum {
 
 typedef struct autosel autosel_t;
 
-[[nodiscard]] autosel_t     *autoselAlloc (void);
+NODISCARD autosel_t     *autoselAlloc (void);
 void          autoselFree (autosel_t *);
 double        autoselGetDouble (autosel_t *autosel, autoselkey_t idx);
 ssize_t       autoselGetNum (autosel_t *autosel, autoselkey_t idx);

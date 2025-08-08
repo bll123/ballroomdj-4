@@ -47,7 +47,7 @@ enum {
   autoseldfcount = sizeof (autoseldfkeys) / sizeof (datafilekey_t),
 };
 
-[[nodiscard]]
+NODISCARD
 autosel_t *
 autoselAlloc (void)
 {

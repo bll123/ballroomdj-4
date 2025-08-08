@@ -74,7 +74,7 @@ static void   danceselInitWindowSizes (dancesel_t *dancesel);
 static void   danceselInitDecrement (dancesel_t *dancesel);
 
 /* the countlist should contain a danceIdx/count pair */
-[[nodiscard]]
+NODISCARD
 dancesel_t *
 danceselAlloc (nlist_t *countList,
     danceselQueueLookup_t queueLookupProc, void *userdata)

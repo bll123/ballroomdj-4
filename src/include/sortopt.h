@@ -4,6 +4,7 @@
 #ifndef INC_SORTOPT_H
 #define INC_SORTOPT_H
 
+#include "nodiscard.h"
 #include "datafile.h"
 #include "slist.h"
 
@@ -13,7 +14,7 @@ extern "C" {
 
 typedef struct sortopt sortopt_t;
 
-[[nodiscard]] sortopt_t     *sortoptAlloc (void);
+NODISCARD sortopt_t     *sortoptAlloc (void);
 void          sortoptFree (sortopt_t *);
 slist_t       *sortoptGetList (sortopt_t *);
 

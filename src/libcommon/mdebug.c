@@ -113,7 +113,7 @@ mdextfree_r (void *data, const char *fn, int lineno)
   mdfree_a (data, fn, lineno, "ext-free", MDEBUG_EXTFREE);
 }
 
-[[nodiscard]]
+NODISCARD
 void *
 mdmalloc_r (size_t sz, const char *fn, int lineno)
 {
@@ -133,7 +133,7 @@ mdmalloc_r (size_t sz, const char *fn, int lineno)
   return data;
 }
 
-[[nodiscard]]
+NODISCARD
 void *
 mdrealloc_r (void *data, size_t sz, const char *fn, int lineno)
 {
@@ -176,7 +176,7 @@ mdrealloc_r (void *data, size_t sz, const char *fn, int lineno)
   return ndata;
 }
 
-[[nodiscard]]
+NODISCARD
 char *
 mdstrdup_r (const char *s, const char *fn, int lineno)
 {

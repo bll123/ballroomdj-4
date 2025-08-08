@@ -43,7 +43,7 @@ typedef struct mp3exp {
   int       fadeout;
 } mp3exp_t;
 
-[[nodiscard]]
+NODISCARD
 mp3exp_t *
 mp3ExportInit (char *msgdata, musicdb_t *musicdb,
     const char *dirname, int mqidx)

@@ -4,6 +4,7 @@
 #ifndef INC_QUICKEDIT_H
 #define INC_QUICKEDIT_H
 
+#include "nodiscard.h"
 #include "datafile.h"
 #include "nlist.h"
 
@@ -22,7 +23,7 @@ enum {
 
 typedef struct quickedit quickedit_t;
 
-[[nodiscard]] quickedit_t * quickeditAlloc (void);
+NODISCARD quickedit_t * quickeditAlloc (void);
 void        quickeditFree (quickedit_t *qe);
 nlist_t     * quickeditGetList (quickedit_t *qe);
 void        quickeditSave (quickedit_t *qe, nlist_t *dispsel);

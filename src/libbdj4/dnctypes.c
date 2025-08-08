@@ -23,7 +23,7 @@ typedef struct dnctype {
   slist_t     *dnctypes;
 } dnctype_t;
 
-[[nodiscard]]
+NODISCARD
 dnctype_t *
 dnctypesAlloc (void)
 {

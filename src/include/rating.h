@@ -4,6 +4,7 @@
 #ifndef INC_RATING_H
 #define INC_RATING_H
 
+#include "nodiscard.h"
 #include "datafile.h"
 #include "ilist.h"
 
@@ -23,7 +24,7 @@ enum {
   RATING_UNRATED_IDX = 0,
 };
 
-[[nodiscard]] rating_t    *ratingAlloc (void);
+NODISCARD rating_t    *ratingAlloc (void);
 void        ratingFree (rating_t *ratings);
 ilistidx_t  ratingGetCount (rating_t *ratings);
 int         ratingGetMaxWidth (rating_t *ratings);

@@ -5,6 +5,7 @@
 #define INC_SOCK_H
 
 #include "config.h"
+#include "nodiscard.h"
 
 #include <stdint.h>
 #include <sys/types.h>
@@ -55,16 +56,16 @@ enum {
 # define INVALID_SOCKET -1
 #endif
 
-[[nodiscard]] Sock_t        sockServer (uint16_t port, int *err);
+NODISCARD Sock_t        sockServer (uint16_t port, int *err);
 void          sockClose (Sock_t);
-[[nodiscard]] sockinfo_t *  sockAddCheck (sockinfo_t *, Sock_t);
+NODISCARD sockinfo_t *  sockAddCheck (sockinfo_t *, Sock_t);
 void          sockIncrActive (sockinfo_t *);
 void          sockRemoveCheck (sockinfo_t *, Sock_t);
 void          sockDecrActive (sockinfo_t *);
 void          sockFreeCheck (sockinfo_t *);
 Sock_t        sockCheck (sockinfo_t *);
-[[nodiscard]] Sock_t        sockAccept (Sock_t, int *);
-[[nodiscard]] Sock_t        sockConnect (uint16_t port, int *connerr, Sock_t clsock);
+NODISCARD Sock_t        sockAccept (Sock_t, int *);
+NODISCARD Sock_t        sockConnect (uint16_t port, int *connerr, Sock_t clsock);
 char *        sockReadBuff (Sock_t, size_t *, char *data, size_t dlen);
 int           sockWriteBinary (Sock_t, const char *data, size_t dlen, const char *args, size_t alen);
 bool          socketInvalid (Sock_t sock);

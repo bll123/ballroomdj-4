@@ -4,6 +4,7 @@
 #ifndef INC_STATUS_H
 #define INC_STATUS_H
 
+#include "nodiscard.h"
 #include "datafile.h"
 #include "ilist.h"
 
@@ -19,7 +20,7 @@ typedef enum {
 
 typedef struct status status_t;
 
-[[nodiscard]] status_t    * statusAlloc (void);
+NODISCARD status_t    * statusAlloc (void);
 void        statusFree (status_t *);
 ilistidx_t  statusGetCount (status_t *);
 int         statusGetMaxWidth (status_t *);

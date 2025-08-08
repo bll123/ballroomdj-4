@@ -4,6 +4,7 @@
 #ifndef INC_LISTMODULE_H
 #define INC_LISTMODULE_H
 
+#include "nodiscard.h"
 #include "list.h"
 
 #if defined (__cplusplus) || defined (c_plusplus)
@@ -16,7 +17,7 @@ typedef enum {
   LIST_KEY_IND,
 } keytype_t;
 
-[[nodiscard]] list_t *listAlloc (const char *name, keytype_t keytype, listorder_t ordered, listFree_t valueFreeHook);
+NODISCARD list_t *listAlloc (const char *name, keytype_t keytype, listorder_t ordered, listFree_t valueFreeHook);
 void        listFree (keytype_t keytype, void *list);
 /* list management */
 void        listSetSize (keytype_t keytype, list_t *list, listidx_t size);

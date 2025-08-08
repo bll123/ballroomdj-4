@@ -65,7 +65,7 @@ static queuenode_t * queueGetNodeByIdx (queue_t *q, qidx_t idx);
 static void * queueRemove (queue_t *q, queuenode_t *node);
 static void queueFreeNodeData (queue_t *q, queuenode_t *node);
 
-[[nodiscard]]
+NODISCARD
 queue_t *
 queueAlloc (const char *name, queueFree_t freeHook)
 {
@@ -409,7 +409,7 @@ queueInsert (queue_t *q, qidx_t idx, void *data)
   return;
 }
 
-[[nodiscard]]
+NODISCARD
 void *
 queueRemoveByIdx (queue_t *q, qidx_t idx)
 {
@@ -494,7 +494,7 @@ queueIterateData (queue_t *q, qidx_t *iteridx)
   return data;
 }
 
-[[nodiscard]]
+NODISCARD
 void *
 queueIterateRemoveNode (queue_t *q, qidx_t *iteridx)
 {

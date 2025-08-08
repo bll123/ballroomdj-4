@@ -43,7 +43,7 @@ typedef struct filehandle {
   int           flushflag;
 } fileshared_t;
 
-[[nodiscard]]
+NODISCARD
 fileshared_t *
 fileSharedOpen (const char *fname, int openmode, int flushflag)
 {

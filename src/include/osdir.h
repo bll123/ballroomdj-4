@@ -5,6 +5,7 @@
 #define INC_OSDIR_H
 
 #include "config.h"
+#include "nodiscard.h"
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -12,7 +13,7 @@ extern "C" {
 
 typedef struct dirhandle dirhandle_t;
 
-[[nodiscard]] dirhandle_t   * osDirOpen (const char *dir);
+NODISCARD dirhandle_t   * osDirOpen (const char *dir);
 char          * osDirIterate (dirhandle_t *dirh);
 void          osDirClose (dirhandle_t *dirh);
 

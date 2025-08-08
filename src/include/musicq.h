@@ -6,6 +6,7 @@
 
 #include <time.h>
 
+#include "nodiscard.h"
 #include "bdj4.h"
 #include "musicdb.h"
 #include "queue.h"
@@ -50,7 +51,7 @@ enum {
 
 typedef struct musicq musicq_t;
 
-[[nodiscard]] musicq_t *  musicqAlloc (musicdb_t *db);
+NODISCARD musicq_t *  musicqAlloc (musicdb_t *db);
 void        musicqFree (musicq_t *musicq);
 void        musicqSetDatabase (musicq_t *musicq, musicdb_t *db);
 void        musicqPush (musicq_t *musicq, musicqidx_t idx, dbidx_t dbidx,

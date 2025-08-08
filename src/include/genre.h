@@ -4,6 +4,7 @@
 #ifndef INC_GENRE_H
 #define INC_GENRE_H
 
+#include "nodiscard.h"
 #include "datafile.h"
 #include "ilist.h"
 #include "slist.h"
@@ -20,7 +21,7 @@ typedef enum {
 
 typedef struct genre genre_t;
 
-[[nodiscard]] genre_t   *genreAlloc (void);
+NODISCARD genre_t   *genreAlloc (void);
 void      genreFree (genre_t *);
 ilistidx_t genreGetCount (genre_t *genres);
 

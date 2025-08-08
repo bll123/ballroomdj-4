@@ -6,6 +6,7 @@
 
 #include <time.h>
 
+#include "nodiscard.h"
 #include "musicdb.h"
 #include "nlist.h"
 
@@ -38,11 +39,11 @@ nlist_t * m3uImport (musicdb_t *musicdb, const char *fname);
 
 /* jspf.c */
 void jspfExport (musicdb_t *musicdb, nlist_t *list, const char *fname, const char *slname);
-[[nodiscard]] nlist_t * jspfImport (musicdb_t *musicdb, const char *fname);
+NODISCARD nlist_t * jspfImport (musicdb_t *musicdb, const char *fname);
 
 /* xspf.c */
 void xspfExport (musicdb_t *musicdb, nlist_t *list, const char *fname, const char *slname);
-[[nodiscard]] nlist_t * xspfImport (musicdb_t *musicdb, const char *fname);
+NODISCARD nlist_t * xspfImport (musicdb_t *musicdb, const char *fname);
 
 /* rss.c */
 time_t rssGetUpdateTime (const char *uri);

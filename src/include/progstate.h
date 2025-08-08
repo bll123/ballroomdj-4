@@ -4,6 +4,7 @@
 #ifndef INC_PROGSTATE_H
 #define INC_PROGSTATE_H
 
+#include "nodiscard.h"
 #include "ilist.h"
 #include "tmutil.h"
 
@@ -35,7 +36,7 @@ enum {
   STATE_FINISHED = 1,
 };
 
-[[nodiscard]] progstate_t     * progstateInit (char *progtag);
+NODISCARD progstate_t     * progstateInit (char *progtag);
 void            progstateFree (progstate_t *progstate);
 void            progstateSetCallback (progstate_t *progstate,
                     programstate_t cbtype, progstateCallback_t callback,

@@ -145,13 +145,14 @@ if [[ -f /usr/bin/pacman ]]; then
 fi
 if [[ -f /usr/bin/apt ]]; then
   # debian based linux
-  # updated 2023-10-29
-  # tested 2024-5-22
+  # updated 2025-8-8
+  # tested 2025-8-8
   pkglist="cmake make gcc g++ gobjc check ffmpeg librsvg2-bin
       libgtk-3-dev libvlc-dev libvlccore-dev libpulse-dev libpipewire-0.3-dev
       libgcrypt-dev libogg-dev libopus-dev libopusfile-dev libvorbis-dev
       libflac-dev libavformat-dev libavutil-dev libxml2-dev libjson-c-dev
-      libcurl4-openssl-dev libchromaprint-tools libgstreamer1.0-dev"
+      libcurl4-openssl-dev libchromaprint-tools libgstreamer1.0-dev
+      libglib2.0-dev libssl-dev"
 fi
 if [[ -f /usr/bin/dnf ]]; then
   # redhat/fedora

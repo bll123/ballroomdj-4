@@ -43,7 +43,7 @@ static void raLock (rafile_t *);
 static void raUnlock (rafile_t *);
 static size_t rrnToOffset (rafileidx_t rrn);
 
-[[nodiscard]]
+NODISCARD
 rafile_t *
 raOpen (const char *fname, int version, int openmode)
 {

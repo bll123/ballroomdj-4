@@ -4,6 +4,8 @@
 #ifndef INC_FILESHARED_H
 #define INC_FILESHARED_H
 
+#include "nodiscard.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
@@ -21,7 +23,7 @@ enum {
   FILESH_FLUSH,
 };
 
-[[nodiscard]] fileshared_t  *fileSharedOpen (const char *fname, int openmode, int flushflag);
+NODISCARD fileshared_t  *fileSharedOpen (const char *fname, int openmode, int flushflag);
 ssize_t       fileSharedWrite (fileshared_t *fileHandle, const char *data, size_t len);
 ssize_t       fileSharedRead (fileshared_t *fileHandle, char *data, size_t len);
 char          *fileSharedGet (fileshared_t *fileHandle, char *data, size_t maxlen);

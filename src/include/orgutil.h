@@ -4,6 +4,7 @@
 #ifndef INC_ORGUTIL_H
 #define INC_ORGUTIL_H
 
+#include "nodiscard.h"
 #include "slist.h"
 #include "song.h"
 #include "tagdef.h"
@@ -44,7 +45,7 @@ typedef enum {
 
 typedef struct org org_t;
 
-[[nodiscard]] org_t   * orgAlloc (const char *orgpath);
+NODISCARD org_t   * orgAlloc (const char *orgpath);
 void    orgFree (org_t *org);
 void    orgSetCleanType (org_t *org, int type);
 const char * orgGetFromPath (org_t *org, const char *path, tagdefkey_t tagkey);

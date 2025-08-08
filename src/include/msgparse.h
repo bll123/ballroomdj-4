@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "nodiscard.h"
 #include "nlist.h"
 #include "musicdb.h"
 #include "musicq.h"
@@ -54,18 +55,18 @@ typedef struct {
   int32_t   uniqueidx;
 } mp_musicqstatus_t;
 
-[[nodiscard]] mp_musicqupdate_t *msgparseMusicQueueData (char * data);
+NODISCARD mp_musicqupdate_t *msgparseMusicQueueData (char * data);
 void  msgparseMusicQueueDataFree (mp_musicqupdate_t *musicqupdate);
 
-[[nodiscard]] mp_songselect_t *msgparseSongSelect (char * data);
+NODISCARD mp_songselect_t *msgparseSongSelect (char * data);
 void msgparseSongSelectFree (mp_songselect_t *songselect);
 
 void msgbuildPlayerStatus (char *buff, size_t sz, bool repeat, bool pauseatend, int currvol, int currspeed, int basevol, uint32_t tm, int32_t dur);
-[[nodiscard]] mp_playerstatus_t *msgparsePlayerStatusData (char * data);
+NODISCARD mp_playerstatus_t *msgparsePlayerStatusData (char * data);
 void msgparsePlayerStatusFree (mp_playerstatus_t *playerstatus);
 
 void msgbuildPlayerState (char *buff, size_t sz, int playerState, bool newsong);
-[[nodiscard]] mp_playerstate_t *msgparsePlayerStateData (char * data);
+NODISCARD mp_playerstate_t *msgparsePlayerStateData (char * data);
 void msgparsePlayerStateFree (mp_playerstate_t *playerstate);
 
 void msgbuildQueuePlaylist (char *buff, size_t sz, int mqidx, const char *fn, int editflag);

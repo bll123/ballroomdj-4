@@ -4,6 +4,7 @@
 #ifndef INC_ITUNES_H
 #define INC_ITUNES_H
 
+#include "nodiscard.h"
 #include "nlist.h"
 
 #if defined (__cplusplus) || defined (c_plusplus)
@@ -27,7 +28,7 @@ enum {
 typedef struct itunes itunes_t;
 
 bool  itunesConfigured (void);
-[[nodiscard]] itunes_t  *itunesAlloc (void);
+NODISCARD itunes_t  *itunesAlloc (void);
 void  itunesFree (itunes_t *itunes);
 int   itunesGetStars (itunes_t *itunes, int idx);
 void  itunesSetStars (itunes_t *itunes, int idx, int value);

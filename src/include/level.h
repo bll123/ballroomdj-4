@@ -4,6 +4,7 @@
 #ifndef INC_LEVEL_H
 #define INC_LEVEL_H
 
+#include "nodiscard.h"
 #include "datafile.h"
 #include "ilist.h"
 
@@ -20,7 +21,7 @@ typedef enum {
 
 typedef struct level level_t;
 
-[[nodiscard]] level_t     *levelAlloc (void);
+NODISCARD level_t     *levelAlloc (void);
 void        levelFree (level_t *);
 ilistidx_t  levelGetCount (level_t *levels);
 int         levelGetMaxWidth (level_t *levels);

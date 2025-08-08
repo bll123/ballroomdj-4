@@ -1059,6 +1059,12 @@ main (int argc, char *argv [])
 
   logMsg (LOG_INSTALL, LOG_INFO, "ran clean-tmp");
 
+  if (isLinux ()) {
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        "linux-flac-check.sh", "", PATHBLD_MP_DIR_INST);
+    (void) ! system (tbuff);
+  }
+
 finish:
   bdj4shutdown (ROUTE_NONE, NULL);
   logEnd ();

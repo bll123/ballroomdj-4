@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <sys/types.h>
 
+#include "nodiscard.h"
 #include "datafile.h"
 #include "musicdb.h"
 #include "nlist.h"
@@ -52,7 +53,7 @@ typedef enum {
 
 typedef struct songfilter songfilter_t;
 
-[[nodiscard]] songfilter_t  * songfilterAlloc (void);
+NODISCARD songfilter_t  * songfilterAlloc (void);
 void          songfilterFree (songfilter_t *sf);
 void          songfilterReset (songfilter_t *sf);
 nlist_t       * songfilterGetList (songfilter_t *sf);

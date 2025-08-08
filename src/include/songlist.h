@@ -4,6 +4,7 @@
 #ifndef INC_SONGLIST_H
 #define INC_SONGLIST_H
 
+#include "nodiscard.h"
 #include "datafile.h"
 #include "ilist.h"
 
@@ -28,8 +29,8 @@ enum {
 
 typedef struct songlist songlist_t;
 
-[[nodiscard]] songlist_t * songlistCreate (const char *fname);
-[[nodiscard]] songlist_t * songlistLoad (const char *fname);
+NODISCARD songlist_t * songlistCreate (const char *fname);
+NODISCARD songlist_t * songlistLoad (const char *fname);
 void songlistFree (songlist_t *);
 bool songlistExists (const char *name);
 int  songlistGetCount (songlist_t *);

@@ -4,24 +4,28 @@
 
 ## Installing BallroomDJ 4 on Linux
 
-Supported Platforms as of 2023-3-15: Linux 64-bit.
+Supported Platforms as of 2025-8-8: Linux 64-bit.
 
 Only the Debian based and OpenSUSE distributions have Linux installers
 built for them.  Other distributions will need to build from source.
 
+As of the 4.15.5 release, BDJ4 is more robust across different Linux
+distributions.  The code has been fixed to handle versioning issues
+for the ICU, avformat and avutil libraries.
+
 * Distributions that have been tested (as of 2024-5).
-    * Debian based (MX Linux, Ubuntu, Linux Mint, etc.)
+    * Debian based (MX Linux, Ubuntu, Linux Mint, etc.) (2025-8)
     * Arch based (Arch, Manjaro, etc.)
     * Red Hat based (Fedora)
-    * OpenSUSE
-* Desktop Environments that have been tested (as of 2023-5-3).
+    * OpenSUSE (2025-8)
+* Desktop Environments that have been tested (as of 2023-8-8).
     * Budgie
-    * Cinnamon
+    * Cinnamon (2025-8-8)
     * GNOME
       The dock does not display the BDJ4 icon (Ubuntu 22.04, recent Fedora)
       But it does work in Ubuntu 20.04.
-    * Mate
-    * XFCE
+    * Mate (2025-8-8)
+    * XFCE (2025-8-8)
 * Desktop Environments that have not been tested.
     * KDE/Plasma
     The linux player start and stop scripts do not support KDE (turns off screensaver, notifications).

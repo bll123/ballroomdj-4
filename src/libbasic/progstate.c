@@ -50,7 +50,7 @@ static char *progstatetext [] = {
 
 static programstate_t progstateProcessLoop (progstate_t *progstate);
 
-[[nodiscard]]
+NODISCARD
 progstate_t *
 progstateInit (char *progtag)
 {

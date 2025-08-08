@@ -4,13 +4,15 @@
 #ifndef INC_BDJREGEX_H
 #define INC_BDJREGEX_H
 
+#include "nodiscard.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
 
 typedef struct bdjregex bdjregex_t;
 
-[[nodiscard]] bdjregex_t * regexInit (const char *pattern);
+NODISCARD bdjregex_t * regexInit (const char *pattern);
 void regexFree (bdjregex_t *rx);
 char * regexEscape (const char *str);
 bool regexMatch (bdjregex_t *rx, const char *str);
