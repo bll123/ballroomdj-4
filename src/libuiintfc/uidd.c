@@ -192,6 +192,7 @@ uiddSetSelection (uidd_t *dd, ilistidx_t idx)
   }
 
   if (idx < 0 || idx >= ilistGetCount (dd->ddlist)) {
+    uiddSetButtonText (dd, "");
     return;
   }
 

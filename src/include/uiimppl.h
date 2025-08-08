@@ -14,7 +14,7 @@ extern "C" {
 
 typedef struct uiimppl uiimppl_t;
 
-uiimppl_t  *uiimpplInit (uiwcont_t *windowp, nlist_t *opts);
+uiimppl_t  *uiimpplInit (uiwcont_t *windowp, nlist_t *opts, const char *waitmsg);
 void    uiimpplFree (uiimppl_t *uiimppl);
 void    uiimpplSetResponseCallback (uiimppl_t *uiimppl, callback_t *uicb);
 bool    uiimpplDialog (uiimppl_t *uiimppl, const char *uri);

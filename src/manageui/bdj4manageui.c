@@ -1086,7 +1086,8 @@ manageInitializeUI (manageui_t *manage)
   uieibdj4SetResponseCallback (manage->uieibdj4,
       manage->callbacks [MANAGE_CB_BDJ4_IMP], UIEIBDJ4_IMPORT);
 
-  manage->uiimppl = uiimpplInit (manage->minfo.window, manage->minfo.options);
+  manage->uiimppl = uiimpplInit (manage->minfo.window, manage->minfo.options,
+      manage->minfo.pleasewaitmsg);
   manage->callbacks [MANAGE_CB_IMP_PL] = callbackInit (
       managePlaylistImportRespHandler, manage, NULL);
   uiimpplSetResponseCallback (manage->uiimppl,

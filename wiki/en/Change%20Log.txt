@@ -8,7 +8,8 @@
 
 * Bug Fixes:
     * Linux: Fix pipewire volume module build.
-    * Linux/MacOS: Fix versioning nightmares (ICU, avformat, avutil).
+    * Linux / MacOS: Fix library versioning nightmares (ICU, avformat, avutil).
+    * Manage: Import Playlist: Fix a crash.
 * Internal:
     * Code cleanup (modernization).
 

@@ -16,6 +16,7 @@
 # include <gdk/gdkx.h>
 #endif
 
+#include "bdj4.h"
 #include "callback.h"
 #include "sysvars.h"
 #include "uiwcont.h"
@@ -39,18 +40,27 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
 {
   uiwcont_t     *uiwin;
   GtkWidget     *window;
-  GtkIconTheme  *icontheme;
-
-  icontheme = gtk_icon_theme_get_default ();
-  gtk_icon_theme_append_search_path (icontheme,
-      sysvarsGetStr (SV_BDJ4_DIR_IMG));
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_NORMAL);
   gtk_widget_set_events (window, GDK_STRUCTURE_MASK);
   gtk_window_set_default_icon_name ("bdj4_icon");
   if (imagenm != NULL) {
-    gtk_window_set_icon_name (GTK_WINDOW (window), imagenm);
+    if (isWindows ()) {
+      char      tbuff [MAXPATHLEN];
+      GdkPixbuf *pixbuf;
+
+      /* use a pixbuf here, otherwise, the title bar and task bar icons */
+      /* do not show */
+      snprintf (tbuff, sizeof (tbuff), "%s/%s%s",
+          sysvarsGetStr (SV_BDJ4_DIR_IMG), imagenm, BDJ4_IMG_SVG_EXT);
+      /* still have a memory leak here */
+      pixbuf = gdk_pixbuf_new_from_file (tbuff, NULL);
+      gtk_window_set_icon (GTK_WINDOW (window), pixbuf);
+      g_object_unref (pixbuf);
+    } else {
+      gtk_window_set_icon_name (GTK_WINDOW (window), imagenm);
+    }
   }
   if (title != NULL) {
     gtk_window_set_title (GTK_WINDOW (window), title);

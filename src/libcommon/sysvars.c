@@ -905,8 +905,13 @@ sysvarsCheckPaths (const char *otherpaths)
     p = strtok_r (NULL, tsep, &tokstr);
   }
 
-  snprintf (sysvars [SV_PATH_ICONDIR], SV_MAX_SZ,
-      "%s/.local/share/icons/hicolor/scalable/apps", sysvars [SV_HOME]);
+  if (isWindows ()) {
+    snprintf (sysvars [SV_PATH_ICONDIR], SV_MAX_SZ,
+        "%s/plocal/share/icons/hicolor/scalable/apps", sysvars [SV_BDJ4_DIR_MAIN]);
+  } else {
+    snprintf (sysvars [SV_PATH_ICONDIR], SV_MAX_SZ,
+        "%s/.local/share/icons/hicolor/scalable/apps", sysvars [SV_HOME]);
+  }
 
   lsysvars [SVL_VLC_VERSION] = 3;     // unknown at this point
   sysvarsSetStr (SV_PATH_VLC, "");

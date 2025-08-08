@@ -305,7 +305,7 @@ if [[ $platform == windows ]]; then
     exit 1
   fi
 
-  echo "-- $(date +%T) copying windows files"
+  echo "-- $(date +%T) copying windows libraries"
   PBIN=plocal/bin
 
   # gspawn helpers are required for the link button to work.
@@ -365,7 +365,7 @@ if [[ $platform == windows ]]; then
   mkdir -p plocal/etc/gtk-3.0
   cp -pf /${libtag}/etc/gtk-3.0/im-multipress.conf plocal/etc/gtk-3.0
   mkdir -p plocal/share/icons
-  rsync --info=copy,del -aS --delete --exclude='bdj4_icon*' \
+  rsync --info=copy,del -aS --delete \
       /${libtag}/share/icons/* plocal/share/icons
   mkdir -p plocal/share/glib-2.0
   rsync --info=copy,del -aS --delete /${libtag}/share/glib-2.0/schemas plocal/share/glib-2.0

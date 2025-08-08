@@ -245,7 +245,9 @@ asiCheckConnection (asdata_t *asdata, int askey, const char *uri)
       clientdata->remoteuri, action_str [clientdata->action]);
 
   clientdata->inuse = true;
+  webclientSetTimeout (clientdata->webclient, 1000);
   webrc = webclientGet (clientdata->webclient, query);
+  webclientSetTimeout (clientdata->webclient, 0);
   clientdata->inuse = false;
   if (webrc != WEB_OK) {
     return false;

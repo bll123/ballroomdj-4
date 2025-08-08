@@ -70,6 +70,7 @@ enum {
 typedef struct uiimppl {
   uiwcont_t         *parentwin;
   uiwcont_t         *wcont [UIIMPPL_W_MAX];
+  const char        *pleasewaitmsg;
   asconf_t          *asconf;
   callback_t        *responsecb;
   uidd_t            *plselect;
@@ -115,7 +116,7 @@ static bool uiimpplIsPlaylistFileType (pathinfo_t *pi);
 static void uiimpplBuildPlaylistSelect (uiimppl_t *uiimppl, int askey);
 
 uiimppl_t *
-uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
+uiimpplInit (uiwcont_t *windowp, nlist_t *opts, const char *waitmsg)
 {
   uiimppl_t   *uiimppl;
   const char  *asnm;
@@ -128,6 +129,7 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts)
   slistidx_t  titeridx;
 
   uiimppl = mdmalloc (sizeof (uiimppl_t));
+  uiimppl->pleasewaitmsg = waitmsg;
   for (int j = 0; j < UIIMPPL_W_MAX; ++j) {
     uiimppl->wcont [j] = NULL;
   }
@@ -452,17 +454,17 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  /* error msg */
-  uiwidgetp = uiCreateLabel ("");
-  uiBoxPackEnd (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
-  uiimppl->wcont [UIIMPPL_W_ERROR_MSG] = uiwidgetp;
-
   /* status msg */
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackEnd (hbox, uiwidgetp);
   uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   uiimppl->wcont [UIIMPPL_W_STATUS_MSG] = uiwidgetp;
+
+  /* error msg */
+  uiwidgetp = uiCreateLabel ("");
+  uiBoxPackEnd (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
+  uiimppl->wcont [UIIMPPL_W_ERROR_MSG] = uiwidgetp;
 
   uiwcontFree (hbox);
 
@@ -678,10 +680,7 @@ uiimpplResponseHandler (void *udata, int32_t responseid)
     }
     case RESPONSE_APPLY: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: import playlist: apply");
-      uiLabelSetText (
-          uiimppl->wcont [UIIMPPL_W_STATUS_MSG],
-          /* CONTEXT: please wait... status message */
-          _("Please wait\xe2\x80\xa6"));
+      uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], uiimppl->pleasewaitmsg);
       /* do not close or hide the dialog; it will stay active and */
       /* the status message will be updated */
       if (uiimppl->responsecb != NULL) {
@@ -783,7 +782,6 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
           _("Invalid File"));
       pathInfoFree (pi);
       uiimppl->haveerrors |= UIIMPPL_ERR_URI;
-      pathInfoFree (pi);
       uiimppl->in_cb = false;
       return UIENTRY_ERROR;
     }
@@ -1098,10 +1096,7 @@ uiimpplBuildPlaylistSelect (uiimppl_t *uiimppl, int askey)
 
   idx = 0;
   ilistFree (uiimppl->plnames);
-  uiLabelSetText (
-      uiimppl->wcont [UIIMPPL_W_STATUS_MSG],
-      /* CONTEXT: please wait... status message */
-      _("Please wait\xe2\x80\xa6"));
+  uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], uiimppl->pleasewaitmsg);
   uiUIProcessWaitEvents ();
 
   asiter = audiosrcStartIterator (uiimppl->imptype, AS_ITER_PL_NAMES,
