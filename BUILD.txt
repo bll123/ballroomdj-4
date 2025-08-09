@@ -3,14 +3,9 @@ BDJ4
 Build Instructions
 
 Contents
-  Notes
   Linux
   MacOS
   Windows
-
-Notes
-
-  4.10.1 Packages updated (affects MacOS, Windows).
 
 Linux
 

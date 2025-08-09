@@ -56,7 +56,6 @@ check_libbdj4 (SRunner *sr)
    *  samesong              complete
    *  songdb
    *  msgparse              complete 2022-12-27
-   *  webclient             complete 2022-12-27
    *  audioadjust
    *  templateutil          complete // needed by tests; needs localized tests
    *  aesencdec             --
@@ -155,9 +154,6 @@ check_libbdj4 (SRunner *sr)
   /* songdb */
 
   s = msgparse_suite();
-  srunner_add_suite (sr, s);
-
-  s = webclient_suite();
   srunner_add_suite (sr, s);
 
   /* audioadjust */

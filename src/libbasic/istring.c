@@ -128,15 +128,24 @@ istringCleanup (void)
     return;
   }
 
-  mdextfree (istringdata.ucoll);
-  istringdata.ucol_close (istringdata.ucoll);
-  istringdata.ucoll = NULL;
-  mdextfree (istringdata.ucsm);
-  istringdata.ucasemap_close (istringdata.ucsm);
-  istringdata.ucsm = NULL;
+  if (istringdata.ucoll != NULL) {
+    mdextfree (istringdata.ucoll);
+    istringdata.ucol_close (istringdata.ucoll);
+    istringdata.ucoll = NULL;
+  }
+  if (istringdata.ucsm != NULL) {
+    mdextfree (istringdata.ucsm);
+    istringdata.ucasemap_close (istringdata.ucsm);
+    istringdata.ucsm = NULL;
+  }
 
-  dylibClose (istringdata.i18ndlh);
-  dylibClose (istringdata.ucdlh);
+  if (istringdata.i18ndlh != NULL) {
+    dylibClose (istringdata.i18ndlh);
+  }
+  if (istringdata.ucdlh != NULL) {
+    dylibClose (istringdata.ucdlh);
+  }
+  istringdata.initialized = false;
 }
 
 /* collated comparison */

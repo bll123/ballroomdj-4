@@ -6,20 +6,23 @@ section 70 Music-Queue-Dual
 # dual music queues
 # check to make sure insertion to a specific queue works
 test 70-20 Insert-Specific
-get main CHK_MAIN_MUSICQ
 msg main MUSICQ_INSERT 0~999~0
+mssleep 100
 get main CHK_MAIN_MUSICQ
 # mq 1 len could be 1 or 0
 chk mq0len 1 mq0idx0 0 mq1idx1 -1
 msg main MUSICQ_INSERT 1~999~1
+mssleep 100
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
 # the non-playback queue
 chk mq0len 1 mq1len 2 mq0idx0 0 mq1idx1 1
 msg main MUSICQ_INSERT 0~999~2
+mssleep 100
 get main CHK_MAIN_MUSICQ
 chk mq0len 2 mq1len 2 mq0idx0 0 mq0idx1 2 mq1idx1 1
 msg main MUSICQ_INSERT 1~999~3
+mssleep 100
 get main CHK_MAIN_MUSICQ
 chk mq0len 2 mq1len 3 mq0idx0 0 mq0idx1 2 mq1idx1 1 mq1idx2 3
 end
@@ -281,6 +284,7 @@ get main CHK_MAIN_MUSICQ
 # playback is paused...
 chk mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5
 msg main CMD_PLAY
+mssleep 100
 get player CHK_PLAYER_STATUS
 chk playstate playing
 get main CHK_MAIN_MUSICQ

@@ -52,6 +52,7 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
 
       /* use a pixbuf here, otherwise, the title bar and task bar icons */
       /* do not show */
+      /* only the launcher has the image added as a resource on windows */
       snprintf (tbuff, sizeof (tbuff), "%s/%s%s",
           sysvarsGetStr (SV_BDJ4_DIR_IMG), imagenm, BDJ4_IMG_SVG_EXT);
       /* still have a memory leak here */

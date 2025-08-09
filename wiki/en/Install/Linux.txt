@@ -13,6 +13,13 @@ As of the 4.15.5 release, BDJ4 is more robust across different Linux
 distributions.  The code has been fixed to handle versioning issues
 for the ICU, avformat and avutil libraries.
 
+However, there are still other libraries that have different versions
+across different distributions, and will require building BDJ4 from
+source.
+
+If you need help building from source,
+[contact](en-Install-Getting%20Started) the development team.
+
 * Distributions that have been tested (as of 2024-5).
     * Debian based (MX Linux, Ubuntu, Linux Mint, etc.) (2025-8)
     * Arch based (Arch, Manjaro, etc.)
@@ -135,4 +142,4 @@ Visit the
 wiki page.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-07-23 04:38:10; BDJ4 version 4.15.4)_
+<br>_(Updated 2025-08-09 15:44:34; BDJ4 version 4.15.5)_

@@ -38,7 +38,7 @@ and packaging must be run again on the other platforms.
     * pull source if necessary
     * ./utils/pkg.sh
 * on macos, windows
-    * if there were any library changes (libmp4tag, libicu) build the
+    * if there were any library changes (libmp4tag, etc.) build the
 source package and copy it to the primary development machine.
 (../pkg/mkpkg.sh&nbsp;--source&nbsp;--sourceonly)
 * on windows
@@ -69,4 +69,4 @@ On Windows, the packages should be cleaned up first.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2025-02-10 11:01:28; BDJ4 version 4.12.11)_
+<br>_(Updated 2025-08-09 15:44:34; BDJ4 version 4.15.5)_

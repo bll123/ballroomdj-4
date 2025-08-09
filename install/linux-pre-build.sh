@@ -140,21 +140,21 @@ if [[ -f /usr/bin/pacman ]]; then
   # tested 2024-5-22
   # pre-installed: libogg, chromaprint, libopus, libopusfile, curl, ffmpeg
   # pre-installed: flac, libvorbis, json-c
-  pkglist="cmake make gcc gcc-objc pipewire curl gtk3 vlc pulseaudio
+  pkglist="rsync cmake make gcc gcc-objc pipewire curl gtk3 vlc pulseaudio
       libgcrypt libogg opus opusfile libvorbis flac ffmpeg4.4 check pkgconfig"
 fi
 if [[ -f /usr/bin/apt ]]; then
   # debian based linux
   # updated 2025-8-8
   # tested 2025-8-8
-  pkglist="cmake make gcc g++ gobjc check ffmpeg librsvg2-bin
+  pkglist="rsync cmake make gcc g++ gobjc check ffmpeg librsvg2-bin
       libgtk-3-dev libvlc-dev libvlccore-dev libpulse-dev
       libgcrypt-dev libogg-dev libopus-dev libopusfile-dev libvorbis-dev
       libflac-dev libavformat-dev libavutil-dev libxml2-dev libjson-c-dev
       libcurl4-openssl-dev libchromaprint-tools libgstreamer1.0-dev
       libglib2.0-dev libssl-dev"
   # on older linux, libpipewire-0.3 does not exist
-  pklist+=" libpipewire-0.3-dev"
+  pkglist+=" libpipewire-0.3-dev"
 fi
 if [[ -f /usr/bin/dnf ]]; then
   # redhat/fedora
@@ -166,7 +166,7 @@ if [[ -f /usr/bin/dnf ]]; then
   # use ffmpeg-free, as the development libraries are only available from
   # the rpmfusion repository.
   # 38: pre-installed: libogg opus
-  pkglist="cmake make gcc gcc-c++ gcc-objc
+  pkglist="rsync cmake make gcc gcc-c++ gcc-objc
       ffmpeg-free-devel libavformat-free-devel
       pipewire-devel libcurl-devel gtk3-devel vlc-devel pulseaudio-libs-devel
       openssl-devel libgcrypt-devel libogg-devel opus-devel opusfile-devel
@@ -180,7 +180,7 @@ if [[ -f /usr/bin/zypper ]]; then
   # tested 2024-5-22
   sudo systemctl stop pkgkit
   sudo systemctl stop packagekit
-  pkglist="cmake make gcc13 gcc13-c++ gcc13-objc ffmpeg-4
+  pkglist="rsync cmake make gcc13 gcc13-c++ gcc13-objc ffmpeg-4
       ffmpeg-4-libavformat-devel
       libpulse-devel gtk3-devel vlc-devel
       pipewire-devel libcurl-devel libgcrypt-devel libogg-devel libopus-devel
@@ -192,7 +192,7 @@ if [[ -f /sbin/apk ]]; then
   # alpine linux
   # updated 2025-4-18
   # tested never
-  pkglist="cmake make gcc g++ gcc-objc curl-dev
+  pkglist="rsync cmake make gcc g++ gcc-objc curl-dev
       ffmpeg4-dev pulseaudio-dev gtk+3.0-dev vlc-dev
       pipewire-dev curl-dev libgcrypt-dev libogg-dev opus-dev
       opusfile-dev libvorbis-dev flac-dev check-dev

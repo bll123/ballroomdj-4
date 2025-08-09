@@ -131,7 +131,6 @@ fileSharedOpen (const char *fname, int openmode, int flushflag)
   }
 #endif
 
-  fileSharedSeek (fhandle, 0, SEEK_END);
   return fhandle;
 }
 

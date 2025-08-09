@@ -379,7 +379,7 @@ if [[ $mksrcpkg == T && $insttest == F ]]; then
         rsync -aS ${f} ${stagedir}/${dir}/acrcloud
       fi
 
-      dirlist="packages/icu* packages/bundles/Mojave* "
+      dirlist="packages/bundles/Mojave* "
       for d in $dirlist; do
         dir=$(dirname ${d})
         test -d ${stagedir}/${dir} || mkdir -p ${stagedir}/${dir}
@@ -412,9 +412,9 @@ if [[ $mksrcpkg == T && $insttest == F ]]; then
         rsync -aS ${f} ${stagedir}/${dir}/fpcalc.exe
       fi
 
-      dirlist="packages/check* packages/curl* packages/ffmpeg* "
+      dirlist="packages/check* packages/ffmpeg* "
       dirlist+="packages/flac* "
-      dirlist+="packages/libogg* packages/libvorbis* packages/nghttp2* "
+      dirlist+="packages/libogg* packages/libvorbis* "
       dirlist+="packages/opus* packages/opusfile* "
       dirlist+="packages/bundles/Windows* "
       for d in $dirlist; do

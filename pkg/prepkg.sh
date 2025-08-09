@@ -96,7 +96,7 @@ if [[ $DEVELOPMENT != dev ]]; then
     grc=1
   fi
 
-  grep '^#define BDJ4_DYLIB_DEBUG 0' src/libdylib/dyintfc.c > /dev/null 2>&1
+  grep '^#define BDJ4_DYLIB_DEBUG 0' src/libbasic/dyintfc.c > /dev/null 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then
     echo "dylib debugging is on (dyintfc.c)"
@@ -230,9 +230,6 @@ licdir=licenses
 test -d ${licdir} && rm -rf ${licdir}
 mkdir -p ${licdir}
 cp -pf packages/mongoose*/LICENSE ${licdir}/mongoose.LICENSE
-if [[ $tag == macos ]]; then
-  cp -pf packages/icu-release*/icu4c/LICENSE ${licdir}/icu.LICENSE
-fi
 cp -pf packages/libid3tag*/COPYING ${licdir}/libid3tag.LICENSE
 cp -pf packages/libmp4tag*/LICENSE.txt ${licdir}/libmp4tag.LICENSE
 if [[ $platform == windows ]]; then

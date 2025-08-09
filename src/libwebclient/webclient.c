@@ -502,9 +502,9 @@ webclientInit (webclient_t *webclient)
   mdextalloc (webclient->curl);
   if (logCheck (LOG_DBG, LOG_WEBCLIENT)) {
     curl_easy_setopt (webclient->curl, CURLOPT_DEBUGFUNCTION, webclientDebugCallback);
-    curl_easy_setopt (webclient->curl, CURLOPT_VERBOSE, 1);
+    curl_easy_setopt (webclient->curl, CURLOPT_VERBOSE, 1L);
   }
-  curl_easy_setopt (webclient->curl, CURLOPT_FOLLOWLOCATION, 1);
+  curl_easy_setopt (webclient->curl, CURLOPT_FOLLOWLOCATION, 1L);
   curl_easy_setopt (webclient->curl, CURLOPT_WRITEDATA, webclient);
   curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientCallback);
   curl_easy_setopt (webclient->curl, CURLOPT_BUFFERSIZE, 512L * 1024L);

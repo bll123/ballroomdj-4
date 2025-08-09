@@ -225,7 +225,9 @@ plocal/lib/libicu[a-z0-9]\.dylib$
 # libid3tag updated
 plocal/lib/libid3tag\.0\.16\.3\.dylib$
 
-
+# 2025-8-9
+# icu no longer shipped
+licenses/icu\.LICENSE$
 
 ####
 # linux

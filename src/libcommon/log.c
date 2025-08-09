@@ -55,10 +55,10 @@ static const char *stateTxt [BDJ4_STATE_MAX] = {
 
 typedef struct bdjlog {
   fileshared_t  *fhandle;
-  int           opened;
-  int           indent;
-  ssize_t       level;
   const char    *processTag;
+  ssize_t       level;
+  int           indent;
+  bool          opened;
 } bdjlog_t;
 
 static void rlogStart (const char *processnm, const char *processtag, int truncflag, loglevel_t level);
@@ -87,7 +87,7 @@ logClose (logidx_t idx)
   }
 
   fileSharedClose (l->fhandle);
-  l->opened = 0;
+  l->opened = false;
 }
 
 void
@@ -411,7 +411,8 @@ rlogOpen (logidx_t idx, const char *fn, const char *processtag, int truncflag)
     fprintf (stderr, "%s: Unable to open %s %d %s\n",
         processtag, fn, errno, strerror (errno));
   }
-  l->opened = 1;
+  fileSharedSeek (l->fhandle, 0, SEEK_END);
+  l->opened = true;
 }
 
 static void
@@ -443,7 +444,7 @@ logAlloc (void)
       }
 
       l = mdmalloc (sizeof (bdjlog_t));
-      l->opened = 0;
+      l->opened = false;
       l->indent = 0;
       l->level = 0;
       l->processTag = "unkn";

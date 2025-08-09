@@ -38,7 +38,7 @@ this script.
 This step only needs to be run once, not for every installation or
 update.  An internet connection is required to run this script.
 
-Download the macos-pre-install-macports-v21.sh script from sourceforge.
+Download the macos-pre-install-macports-v22.sh script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
@@ -48,7 +48,7 @@ finish. You may be required to enter your administrative password more
 than once during the installation process.
 
     cd Downloads
-    bash macos-pre-install-macports-v21.sh
+    bash macos-pre-install-macports-v22.sh
 
 This script performs the following actions:
 
@@ -63,7 +63,7 @@ Be sure to select the correct architecture (Intel or Apple Silicon).
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
-Also download the macos-run-install-v3.sh script from sourceforge.
+Also download the macos-run-install-v4.sh script from sourceforge.
 This script will set up and open the downloaded install package.
 
 Make sure to exit BDJ4 if it is already started.
@@ -72,7 +72,7 @@ Open a terminal (Finder / Go / Utilities / Terminal) and run
 this script using the following command:
 
     cd Downloads
-    bash macos-run-install-v3.sh
+    bash macos-run-install-v4.sh
 
 Choose the folder in which to install BallroomDJ&nbsp;4.  The
 $HOME/Applications/BDJ4.app folder will be pre-selected for you.
@@ -115,4 +115,4 @@ Visit the
 wiki page.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-07-23 04:38:49; BDJ4 version 4.15.4)_
+<br>_(Updated 2025-08-09 15:44:34; BDJ4 version 4.15.5)_

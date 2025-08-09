@@ -35,7 +35,6 @@
  libcommon|common utilities that do not use lists nor libicu
  libbasic|lists, basic utilities that use lists and/or libicu
  libbdj4|bdj4 specific utilities
- libdylib|dynamic library handling
  libwebsrv|web server (uses mongoose)
  mongoose|third-party web server
 
@@ -50,19 +49,20 @@ were in process.
  libaudioid|audio identification
  libaudiosrc|audio source interface
  libcont|music controller
- libpli|player interface (dynamic libraries)
  libmpris|Linux MPRIS interface
+ libpli|player interface (dynamic libraries)
  libvol|volume interface (dynamic libraries)
 
 ##### User Interface
 
  Directory|Notes
  ---------|-----
+ libuibase|generic ui stuff (libbdj4uib)
  libuicommon|bdj4 major ui for both player and manager (libbdj4uic)
+ libuigeneral|ui widget container &etc.
  libuiintfc|bdj4 general ui interfaces (libbdj4uii)
  libuimanage|bdj4 major/minor ui specific to manageui (libbdj4uim)
  libuiplayer|bdj4 minor ui specific to playerui (libbdj4uip)
- libuigeneral|ui widget container &etc.
 
  Directory|Notes
  ---------|-----
@@ -76,11 +76,12 @@ were in process.
  ---------|-----
  configui|configuration ui
  installer|self-extractor, installer, alt-installer, updater
- manageui|management ui
+ manageui|management ui, database updater, bpm counter, podcast updater
  player|the main player process, the player process,
 marquee, mobile marquee and remote control.
 Only the marquee has the ui linked in.
  playerui|player ui
+ server|BDJ4 Audio Server
  starter|the launcher and starter process
 
 ##### Other
@@ -96,4 +97,4 @@ Only the marquee has the ui linked in.
  utility|various utility programs used in testing
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-08-09 15:44:34; BDJ4 version 4.15.5)_
