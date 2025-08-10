@@ -64,8 +64,8 @@ function pkgnmgetdata {
           pn_dist=-arch
           ;;
         debian)
-          # debian version is numeric on MX Linux
-          # other linuxes may use names.
+          # debian version is numeric on MX Linux and Debian
+          # other debian based linuxes may use names.
           dver=$(cat /etc/debian_version)
           dver=$(echo ${dver} | sed 's,\..*,,')
           pn_dist=-debian${dver}
@@ -107,7 +107,7 @@ function pkgnmgetdata {
 
 function pkgsrcnm {
   pkgnmgetdata
-  nm=${pn_spkgnm}-src-${VERSION}${pn_rlstag}${pn_devtag}
+  nm=${pn_spkgnm}-src-${VERSION}${pn_rlstag}-${pn_date}${pn_devtag}
   echo $nm
 }
 
