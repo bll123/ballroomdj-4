@@ -79,11 +79,10 @@ esac
 
 case $mp_os_vers in
   [2345][0-9])
-    # future use
+    # 26: tahoe
     ;;
   1[1-9])
-    # 11: big sur, 12: monterey, 13: ventura, 14: sonoma
-    # and future use
+    # 11: big sur, 12: monterey, 13: ventura, 14: sonoma, 15: sequoia
     ;;
   10.15)
     # catalina
@@ -142,7 +141,7 @@ if [[ $skipmpinst == F ]]; then
     url=${baseurl}/v${mp_vers}/MacPorts-${mp_vers}.chk.txt
     curl -L --silent --output ${MPCHKTXT} ${url}
     if [[ ! -f ${MPCHKTXT} ]]; then
-      echo "Unable to connect to macports.org"
+      echo "Unable to connect to github.com/macports"
       exit 1
     fi
 

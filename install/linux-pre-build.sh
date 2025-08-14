@@ -154,7 +154,9 @@ if [[ -f /usr/bin/apt ]]; then
       libcurl4-openssl-dev libchromaprint-tools libgstreamer1.0-dev
       libglib2.0-dev libssl-dev"
   # on older linux, libpipewire-0.3 does not exist
-  pkglist+=" libpipewire-0.3-dev"
+  if [[ -f /usr/lib/x86_64-linux-gnu/libpipewire-0.3.so ]]; then
+    pkglist+=" libpipewire-0.3-dev"
+  fi
 fi
 if [[ -f /usr/bin/dnf ]]; then
   # redhat/fedora

@@ -414,7 +414,6 @@ if (NOT WIN32)
     # IMPORTANT: update this in:
     #     pkg/macos/Info.plist
     #     pkg/build/050-id3tag-build.sh
-    #     pkg/build/080-icu-build.sh
     set (CMAKE_OSX_DEPLOYMENT_TARGET 11)
   endif()
 
