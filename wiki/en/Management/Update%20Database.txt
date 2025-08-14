@@ -3,6 +3,8 @@
 <span style="color:#4559bf;">_Update database is used to manage the
 database of songs._</span>
 
+[TOC]
+
 ### Manage : Update Database
 
 Update Database has several possible actions. Select the __Action__ you
@@ -46,6 +48,20 @@ that is not within the configured music folder, use the directory
 chooser button with the folder icon to select the additional music
 folder.  Set the __Action__ to _Check&nbsp;for&nbsp;New_.  Do not use
 _Rebuild&nbsp;Database_ to add an additional music folder.
+
+##### Notes on Audio File Tags
+
+Updating the database will import the audio file tags if possible.
+Some commercial entities add incorrect audio file tags in some cases.
+
+Grouping: If the grouping tag is all digits, it will not be added to
+the BDJ4 database.
+
+Title Sort: If the title sort tag is one of: Orchestra, Pop,
+Soundtrack, World Music, Classic Music, Easy Listening, Latin Pop,
+Musette & Chanson/Folk/Gipsy, Nu Jazz, Electro Swing, Rhythm &
+Blues/Rockabilly, Soul/Gospel, or Swing, the title sort tag will be
+ignored.  More genres may be added to this list at a future date.
 
 [Wiki Home](Home)
 <br>_(Updated 2024-01-17 10:08:17; BDJ4 version 4.4.8)_

@@ -209,17 +209,17 @@ main (int argc, char *argv[])
 #endif
 
   mainData.progstate = progstateInit ("main");
-  progstateSetCallback (mainData.progstate, STATE_LISTENING,
+  progstateSetCallback (mainData.progstate, PROGSTATE_LISTENING,
       mainListeningCallback, &mainData);
-  progstateSetCallback (mainData.progstate, STATE_CONNECTING,
+  progstateSetCallback (mainData.progstate, PROGSTATE_CONNECTING,
       mainConnectingCallback, &mainData);
-  progstateSetCallback (mainData.progstate, STATE_WAIT_HANDSHAKE,
+  progstateSetCallback (mainData.progstate, PROGSTATE_WAIT_HANDSHAKE,
       mainHandshakeCallback, &mainData);
-  progstateSetCallback (mainData.progstate, STATE_STOPPING,
+  progstateSetCallback (mainData.progstate, PROGSTATE_STOPPING,
       mainStoppingCallback, &mainData);
-  progstateSetCallback (mainData.progstate, STATE_STOP_WAIT,
+  progstateSetCallback (mainData.progstate, PROGSTATE_STOP_WAIT,
       mainStopWaitCallback, &mainData);
-  progstateSetCallback (mainData.progstate, STATE_CLOSING,
+  progstateSetCallback (mainData.progstate, PROGSTATE_CLOSING,
       mainClosingCallback, &mainData);
 
   mainData.playlistCache = NULL;
@@ -668,7 +668,7 @@ mainProcessing (void *udata)
 
   if (! progstateIsRunning (mainData->progstate)) {
     progstateProcess (mainData->progstate);
-    if (progstateCurrState (mainData->progstate) == STATE_CLOSED) {
+    if (progstateCurrState (mainData->progstate) == PROGSTATE_CLOSED) {
       stop = SOCKH_STOP;
     }
     if (gKillReceived) {

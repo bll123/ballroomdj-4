@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <assert.h>
 
 #include "asconf.h"
 #include "audioadjust.h"
@@ -37,7 +38,11 @@ static const char *dfloaddbg [] = {
   [BDJVDF_STATUS] = "status",
   [BDJVDF_FAVORITES] = "favorites",
   [BDJVDF_AUDIO_ADJUST] = "audioadjust",
+  [BDJVDF_AUDIOSRC_CONF] = "audiosrc",
 };
+
+static_assert (sizeof (dfloaddbg) / sizeof (const char *) == BDJVDF_MAX,
+    "missing bdjvdf entry");
 
 int
 bdjvarsdfloadInit (void)

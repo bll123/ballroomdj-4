@@ -97,15 +97,15 @@ main (int argc, char *argv[])
 
   mobmqdata.progstate = progstateInit ("mobilemq");
 
-  progstateSetCallback (mobmqdata.progstate, STATE_CONNECTING,
+  progstateSetCallback (mobmqdata.progstate, PROGSTATE_CONNECTING,
       mobmqConnectingCallback, &mobmqdata);
-  progstateSetCallback (mobmqdata.progstate, STATE_WAIT_HANDSHAKE,
+  progstateSetCallback (mobmqdata.progstate, PROGSTATE_WAIT_HANDSHAKE,
       mobmqHandshakeCallback, &mobmqdata);
-  progstateSetCallback (mobmqdata.progstate, STATE_STOPPING,
+  progstateSetCallback (mobmqdata.progstate, PROGSTATE_STOPPING,
       mobmqStoppingCallback, &mobmqdata);
-  progstateSetCallback (mobmqdata.progstate, STATE_STOP_WAIT,
+  progstateSetCallback (mobmqdata.progstate, PROGSTATE_STOP_WAIT,
       mobmqStopWaitCallback, &mobmqdata);
-  progstateSetCallback (mobmqdata.progstate, STATE_CLOSING,
+  progstateSetCallback (mobmqdata.progstate, PROGSTATE_CLOSING,
       mobmqClosingCallback, &mobmqdata);
 
   tval = bdjoptGetStr (OPT_P_MOBMQ_TITLE);
@@ -268,7 +268,7 @@ mobmqProcessing (void *udata)
 
   if (! progstateIsRunning (mobmqdata->progstate)) {
     progstateProcess (mobmqdata->progstate);
-    if (progstateCurrState (mobmqdata->progstate) == STATE_CLOSED) {
+    if (progstateCurrState (mobmqdata->progstate) == PROGSTATE_CLOSED) {
       stop = SOCKH_STOP;
     }
     if (gKillReceived) {

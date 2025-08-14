@@ -12,6 +12,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+#include <assert.h>
 
 #include "ilist.h"
 #include "log.h"
@@ -27,26 +28,29 @@ enum {
 
 typedef struct progstate {
   programstate_t      programState;
-  ilist_t             *callbacks [STATE_MAX];
+  ilist_t             *callbacks [PROGSTATE_MAX];
   mstime_t            tm;
   char                *progtag;
   bool                closed;
 } progstate_t;
 
 /* for debugging */
-static char *progstatetext [] = {
-  [STATE_NOT_RUNNING] = "not_running",
-  [STATE_INITIALIZING] = "initializing",
-  [STATE_LISTENING] = "listening",
-  [STATE_CONNECTING] = "connecting",
-  [STATE_WAIT_HANDSHAKE] = "wait_handshake",
-  [STATE_INITIALIZE_DATA] = "initialize_data",
-  [STATE_RUNNING] = "running",
-  [STATE_STOPPING] = "stopping",
-  [STATE_STOP_WAIT] = "stop_wait",
-  [STATE_CLOSING] = "closing",
-  [STATE_CLOSED] = "closed",
+static const char *progstatetext [] = {
+  [PROGSTATE_NOT_RUNNING] = "not_running",
+  [PROGSTATE_INITIALIZING] = "initializing",
+  [PROGSTATE_LISTENING] = "listening",
+  [PROGSTATE_CONNECTING] = "connecting",
+  [PROGSTATE_WAIT_HANDSHAKE] = "wait_handshake",
+  [PROGSTATE_INITIALIZE_DATA] = "initialize_data",
+  [PROGSTATE_RUNNING] = "running",
+  [PROGSTATE_STOPPING] = "stopping",
+  [PROGSTATE_STOP_WAIT] = "stop_wait",
+  [PROGSTATE_CLOSING] = "closing",
+  [PROGSTATE_CLOSED] = "closed",
 };
+
+static_assert (sizeof (progstatetext) / sizeof (const char *) == PROGSTATE_MAX,
+    "missing prog-state entry");
 
 static programstate_t progstateProcessLoop (progstate_t *progstate);
 
@@ -58,8 +62,8 @@ progstateInit (char *progtag)
   char            tbuff [40];
 
   progstate = mdmalloc (sizeof (progstate_t));
-  progstate->programState = STATE_NOT_RUNNING;
-  for (programstate_t i = STATE_NOT_RUNNING; i < STATE_MAX; ++i) {
+  progstate->programState = PROGSTATE_NOT_RUNNING;
+  for (programstate_t i = PROGSTATE_NOT_RUNNING; i < PROGSTATE_MAX; ++i) {
     snprintf (tbuff, sizeof (tbuff), "progstate-cb-%d", i);
     progstate->callbacks [i] = ilistAlloc (tbuff, LIST_ORDERED);
   }
@@ -74,7 +78,7 @@ void
 progstateFree (progstate_t *progstate)
 {
   if (progstate != NULL) {
-    for (programstate_t i = STATE_NOT_RUNNING; i < STATE_MAX; ++i) {
+    for (programstate_t i = PROGSTATE_NOT_RUNNING; i < PROGSTATE_MAX; ++i) {
       ilistFree (progstate->callbacks [i]);
     }
     mdfree (progstate);
@@ -87,7 +91,7 @@ progstateSetCallback (progstate_t *progstate,
 {
   ilistidx_t        count;
 
-  if (cbtype >= STATE_MAX) {
+  if (cbtype >= PROGSTATE_MAX) {
     return;
   }
 
@@ -104,13 +108,13 @@ progstateProcess (progstate_t *progstate)
 
 
   state = progstateProcessLoop (progstate);
-  if (state == STATE_RUNNING) {
+  if (state == PROGSTATE_RUNNING) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "%s running: time-to-start: %" PRId64 " ms",
         progstate->progtag, (int64_t) mstimeend (&progstate->tm));
     logMsg (LOG_DBG, LOG_PROGSTATE, "program state: %d %s",
         progstate->programState, progstatetext [progstate->programState]);
   }
-  if (state == STATE_CLOSED && ! progstate->closed) {
+  if (state == PROGSTATE_CLOSED && ! progstate->closed) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "%s closed: time-to-end: %" PRId64 " ms",
         progstate->progtag, (int64_t) mstimeend (&progstate->tm));
     logMsg (LOG_DBG, LOG_PROGSTATE, "program state: %d %s",
@@ -123,8 +127,8 @@ progstateProcess (progstate_t *progstate)
 programstate_t
 progstateShutdownProcess (progstate_t *progstate)
 {
-  if (progstate->programState < STATE_STOPPING) {
-    progstate->programState = STATE_STOPPING;
+  if (progstate->programState < PROGSTATE_STOPPING) {
+    progstate->programState = PROGSTATE_STOPPING;
     mstimestart (&progstate->tm);
   }
 
@@ -137,14 +141,14 @@ progstateIsRunning (progstate_t *progstate)
   if (progstate == NULL) {
     return false;
   }
-  return (progstate->programState == STATE_RUNNING);
+  return (progstate->programState == PROGSTATE_RUNNING);
 }
 
 programstate_t
 progstateCurrState (progstate_t *progstate)
 {
   if (progstate == NULL) {
-    return STATE_NOT_RUNNING;
+    return PROGSTATE_NOT_RUNNING;
   }
   return progstate->programState;
 }
@@ -169,13 +173,13 @@ progstateProcessLoop (progstate_t *progstate)
 
   /* skip over empty states */
   while (ilistGetCount (progstate->callbacks [progstate->programState]) == 0 &&
-      progstate->programState != STATE_RUNNING &&
-      progstate->programState != STATE_CLOSED) {
+      progstate->programState != PROGSTATE_RUNNING &&
+      progstate->programState != PROGSTATE_CLOSED) {
     ++progstate->programState;
   }
 
-  if (progstate->programState == STATE_RUNNING ||
-      progstate->programState == STATE_CLOSED) {
+  if (progstate->programState == PROGSTATE_RUNNING ||
+      progstate->programState == PROGSTATE_CLOSED) {
     /* running and closed do not have callbacks */
     return progstate->programState;
   }
@@ -206,8 +210,8 @@ progstateProcessLoop (progstate_t *progstate)
     }
   }
   if (success) {
-    if (progstate->programState != STATE_RUNNING &&
-        progstate->programState != STATE_CLOSED) {
+    if (progstate->programState != PROGSTATE_RUNNING &&
+        progstate->programState != PROGSTATE_CLOSED) {
       ++progstate->programState;
     }
     logMsg (LOG_DBG, LOG_PROGSTATE, "program state: %d %s",
@@ -221,7 +225,7 @@ const char *
 progstateDebug (progstate_t *progstate)     /* KEEP */
 {
   if (progstate == NULL) {
-    return progstatetext [STATE_NOT_RUNNING];
+    return progstatetext [PROGSTATE_NOT_RUNNING];
   }
   return progstatetext [progstate->programState];
 }

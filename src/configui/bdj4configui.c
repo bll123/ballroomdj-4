@@ -97,7 +97,7 @@ main (int argc, char *argv[])
 #endif
 
   confui.progstate = progstateInit ("configui");
-  progstateSetCallback (confui.progstate, STATE_WAIT_HANDSHAKE,
+  progstateSetCallback (confui.progstate, PROGSTATE_WAIT_HANDSHAKE,
       confuiHandshakeCallback, &confui);
   confui.locknm = NULL;
   confui.conn = NULL;
@@ -276,11 +276,11 @@ main (int argc, char *argv[])
 
   /* register these after calling the sub-window initialization */
   /* then these will be run last, after the other closing callbacks */
-  progstateSetCallback (confui.progstate, STATE_STOPPING,
+  progstateSetCallback (confui.progstate, PROGSTATE_STOPPING,
       confuiStoppingCallback, &confui);
-  progstateSetCallback (confui.progstate, STATE_STOP_WAIT,
+  progstateSetCallback (confui.progstate, PROGSTATE_STOP_WAIT,
       confuiStopWaitCallback, &confui);
-  progstateSetCallback (confui.progstate, STATE_CLOSING,
+  progstateSetCallback (confui.progstate, PROGSTATE_CLOSING,
       confuiClosingCallback, &confui);
 
   uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
@@ -526,7 +526,7 @@ confuiMainLoop (void *tconfui)
 
   if (! progstateIsRunning (confui->progstate)) {
     progstateProcess (confui->progstate);
-    if (progstateCurrState (confui->progstate) == STATE_CLOSED) {
+    if (progstateCurrState (confui->progstate) == PROGSTATE_CLOSED) {
       stop = SOCKH_STOP;
     }
     if (gKillReceived) {
@@ -596,7 +596,7 @@ confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = false;
-          if (progstateCurrState (confui->progstate) <= STATE_RUNNING) {
+          if (progstateCurrState (confui->progstate) <= PROGSTATE_RUNNING) {
             progstateShutdownProcess (confui->progstate);
           }
           break;
@@ -630,7 +630,7 @@ confuiCloseWin (void *udata)
   configui_t   *confui = udata;
 
   logProcBegin ();
-  if (progstateCurrState (confui->progstate) <= STATE_RUNNING) {
+  if (progstateCurrState (confui->progstate) <= PROGSTATE_RUNNING) {
     progstateShutdownProcess (confui->progstate);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
     logProcEnd ("not-done");

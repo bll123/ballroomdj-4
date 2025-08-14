@@ -154,15 +154,15 @@ main (int argc, char *argv[])
   bpmcounter.stopwaitcount = 0;
   bpmcounter.progstate = progstateInit ("bpmcounter");
 
-  progstateSetCallback (bpmcounter.progstate, STATE_CONNECTING,
+  progstateSetCallback (bpmcounter.progstate, PROGSTATE_CONNECTING,
       bpmcounterConnectingCallback, &bpmcounter);
-  progstateSetCallback (bpmcounter.progstate, STATE_WAIT_HANDSHAKE,
+  progstateSetCallback (bpmcounter.progstate, PROGSTATE_WAIT_HANDSHAKE,
       bpmcounterHandshakeCallback, &bpmcounter);
-  progstateSetCallback (bpmcounter.progstate, STATE_STOPPING,
+  progstateSetCallback (bpmcounter.progstate, PROGSTATE_STOPPING,
       bpmcounterStoppingCallback, &bpmcounter);
-  progstateSetCallback (bpmcounter.progstate, STATE_STOP_WAIT,
+  progstateSetCallback (bpmcounter.progstate, PROGSTATE_STOP_WAIT,
       bpmcounterStopWaitCallback, &bpmcounter);
-  progstateSetCallback (bpmcounter.progstate, STATE_CLOSING,
+  progstateSetCallback (bpmcounter.progstate, PROGSTATE_CLOSING,
       bpmcounterClosingCallback, &bpmcounter);
 
   procutilInitProcesses (bpmcounter.processes);
@@ -485,7 +485,7 @@ bpmcounterMainLoop (void *tbpmcounter)
 
   if (! progstateIsRunning (bpmcounter->progstate)) {
     progstateProcess (bpmcounter->progstate);
-    if (progstateCurrState (bpmcounter->progstate) == STATE_CLOSED) {
+    if (progstateCurrState (bpmcounter->progstate) == PROGSTATE_CLOSED) {
       stop = SOCKH_STOP;
     }
     if (gKillReceived) {
@@ -572,7 +572,7 @@ bpmcounterCloseCallback (void *udata)
 {
   bpmcounter_t   *bpmcounter = udata;
 
-  if (progstateCurrState (bpmcounter->progstate) <= STATE_RUNNING) {
+  if (progstateCurrState (bpmcounter->progstate) <= PROGSTATE_RUNNING) {
     progstateShutdownProcess (bpmcounter->progstate);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
   }

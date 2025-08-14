@@ -499,9 +499,9 @@ main (int argc, char *argv[])
 #endif
 
   manage.progstate = progstateInit ("manageui");
-  progstateSetCallback (manage.progstate, STATE_CONNECTING,
+  progstateSetCallback (manage.progstate, PROGSTATE_CONNECTING,
       manageConnectingCallback, &manage);
-  progstateSetCallback (manage.progstate, STATE_WAIT_HANDSHAKE,
+  progstateSetCallback (manage.progstate, PROGSTATE_WAIT_HANDSHAKE,
       manageHandshakeCallback, &manage);
 
   for (int i = 0; i < MANAGE_W_MAX; ++i) {
@@ -665,11 +665,11 @@ main (int argc, char *argv[])
 
   /* register these after calling the sub-window initialization */
   /* then these will be run last, after the other closing callbacks */
-  progstateSetCallback (manage.progstate, STATE_STOPPING,
+  progstateSetCallback (manage.progstate, PROGSTATE_STOPPING,
       manageStoppingCallback, &manage);
-  progstateSetCallback (manage.progstate, STATE_STOP_WAIT,
+  progstateSetCallback (manage.progstate, PROGSTATE_STOP_WAIT,
       manageStopWaitCallback, &manage);
-  progstateSetCallback (manage.progstate, STATE_CLOSING,
+  progstateSetCallback (manage.progstate, PROGSTATE_CLOSING,
       manageClosingCallback, &manage);
 
   sockhMainLoop (listenPort, manageProcessMsg, manageMainLoop, &manage);
@@ -1211,7 +1211,7 @@ manageMainLoop (void *tmanage)
 
   if (! progstateIsRunning (manage->progstate)) {
     progstateProcess (manage->progstate);
-    if (progstateCurrState (manage->progstate) == STATE_CLOSED) {
+    if (progstateCurrState (manage->progstate) == PROGSTATE_CLOSED) {
       stop = SOCKH_STOP;
     }
     if (gKillReceived) {
@@ -1704,7 +1704,7 @@ manageCloseWin (void *udata)
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: close window");
   logProcBegin ();
-  if (progstateCurrState (manage->progstate) <= STATE_RUNNING) {
+  if (progstateCurrState (manage->progstate) <= PROGSTATE_RUNNING) {
     progstateShutdownProcess (manage->progstate);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
     logProcEnd ("not-done");

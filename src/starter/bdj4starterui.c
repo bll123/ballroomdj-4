@@ -315,13 +315,13 @@ main (int argc, char *argv[])
 #endif
 
   starter.progstate = progstateInit ("starterui");
-  progstateSetCallback (starter.progstate, STATE_INITIALIZE_DATA,
+  progstateSetCallback (starter.progstate, PROGSTATE_INITIALIZE_DATA,
       starterInitDataCallback, &starter);
-  progstateSetCallback (starter.progstate, STATE_STOPPING,
+  progstateSetCallback (starter.progstate, PROGSTATE_STOPPING,
       starterStoppingCallback, &starter);
-  progstateSetCallback (starter.progstate, STATE_STOP_WAIT,
+  progstateSetCallback (starter.progstate, PROGSTATE_STOP_WAIT,
       starterStopWaitCallback, &starter);
-  progstateSetCallback (starter.progstate, STATE_CLOSING,
+  progstateSetCallback (starter.progstate, PROGSTATE_CLOSING,
       starterClosingCallback, &starter);
   starter.conn = NULL;
   starter.emailrx = NULL;
@@ -828,7 +828,7 @@ starterMainLoop (void *tstarter)
 
   if (! progstateIsRunning (starter->progstate)) {
     progstateProcess (starter->progstate);
-    if (progstateCurrState (starter->progstate) == STATE_CLOSED) {
+    if (progstateCurrState (starter->progstate) == PROGSTATE_CLOSED) {
       gStopProgram = true;
       stop = SOCKH_STOP;
     }
@@ -1320,7 +1320,7 @@ starterCloseCallback (void *udata)
 {
   startui_t   *starter = udata;
 
-  if (progstateCurrState (starter->progstate) <= STATE_RUNNING) {
+  if (progstateCurrState (starter->progstate) <= PROGSTATE_RUNNING) {
     progstateShutdownProcess (starter->progstate);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
   }

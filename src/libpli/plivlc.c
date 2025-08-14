@@ -14,6 +14,7 @@
 #include <string.h>
 #include <errno.h>
 #include <math.h>
+#include <assert.h>
 
 #include "bdj4intl.h"
 #include "log.h"
@@ -368,7 +369,7 @@ plivlcWaitUntilStopped (plidata_t *pliData)
   count = 0;
   while (state == PLI_STATE_PLAYING ||
       state == PLI_STATE_PAUSED ||
-      state == PLI_STATE_STOPPING) {
+      state == PLI_PROGSTATE_STOPPING) {
     mssleep (1);
     state = vlcState (pliData->vlcdata);
     ++count;
@@ -381,7 +382,7 @@ plivlcWaitUntilStopped (plidata_t *pliData)
 const char *
 plivlcStateText (plistate_t state)
 {
-static char *stateTxt [PLI_STATE_MAX] = {
+static const char *stateTxt [PLI_PROGSTATE_MAX] = {
   [PLI_STATE_NONE] = "none",
   [PLI_STATE_IDLE] = "idle",
   [PLI_STATE_OPENING] = "opening",
@@ -389,9 +390,12 @@ static char *stateTxt [PLI_STATE_MAX] = {
   [PLI_STATE_PLAYING] = "playing",
   [PLI_STATE_PAUSED] = "paused",
   [PLI_STATE_STOPPED] = "stopped",
-  [PLI_STATE_STOPPING] = "stopping",
+  [PLI_PROGSTATE_STOPPING] = "stopping",
   [PLI_STATE_ERROR] = "error",
 };
+
+static_assert (sizeof (stateTxt) / sizeof (const char *) == PLI_PROGSTATE_MAX,
+    "missing pli state");
 
   return stateTxt [state];
 }

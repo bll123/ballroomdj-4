@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <assert.h>
 
 #include "audiosrc.h"
 #include "asconf.h"
@@ -53,11 +54,17 @@ static const char *asconftype [AUDIOSRC_TYPE_MAX] = {
   [AUDIOSRC_TYPE_PODCAST] = "podcast",
 };
 
+static_assert (sizeof (asconftype) / sizeof (const char *) == AUDIOSRC_TYPE_MAX,
+    "missing audiosrc entry");
+
 static const char *asconfmode [ASCONF_MODE_MAX] = {
   [ASCONF_MODE_OFF] = "off",
   [ASCONF_MODE_CLIENT] = "client",
   [ASCONF_MODE_SERVER] = "server",
 };
+
+static_assert (sizeof (asconfmode) / sizeof (const char *) == ASCONF_MODE_MAX,
+    "missing asconf entry");
 
 NODISCARD
 asconf_t *

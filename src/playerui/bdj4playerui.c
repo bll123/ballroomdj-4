@@ -291,11 +291,11 @@ main (int argc, char *argv[])
 #endif
 
   plui.progstate = progstateInit ("playerui");
-  progstateSetCallback (plui.progstate, STATE_CONNECTING,
+  progstateSetCallback (plui.progstate, PROGSTATE_CONNECTING,
       pluiConnectingCallback, &plui);
-  progstateSetCallback (plui.progstate, STATE_WAIT_HANDSHAKE,
+  progstateSetCallback (plui.progstate, PROGSTATE_WAIT_HANDSHAKE,
       pluiHandshakeCallback, &plui);
-  progstateSetCallback (plui.progstate, STATE_INITIALIZE_DATA,
+  progstateSetCallback (plui.progstate, PROGSTATE_INITIALIZE_DATA,
       pluiInitDataCallback, &plui);
 
   plui.uiplayer = NULL;
@@ -404,11 +404,11 @@ main (int argc, char *argv[])
 
   /* register these after calling the sub-window initialization */
   /* then these will be run last, after the other closing callbacks */
-  progstateSetCallback (plui.progstate, STATE_STOPPING,
+  progstateSetCallback (plui.progstate, PROGSTATE_STOPPING,
       pluiStoppingCallback, &plui);
-  progstateSetCallback (plui.progstate, STATE_STOP_WAIT,
+  progstateSetCallback (plui.progstate, PROGSTATE_STOP_WAIT,
       pluiStopWaitCallback, &plui);
-  progstateSetCallback (plui.progstate, STATE_CLOSING,
+  progstateSetCallback (plui.progstate, PROGSTATE_CLOSING,
       pluiClosingCallback, &plui);
 
   sockhMainLoop (listenPort, pluiProcessMsg, pluiMainLoop, &plui);
@@ -863,7 +863,7 @@ pluiMainLoop (void *tplui)
 
   if (! progstateIsRunning (plui->progstate)) {
     progstateProcess (plui->progstate);
-    if (progstateCurrState (plui->progstate) == STATE_CLOSED) {
+    if (progstateCurrState (plui->progstate) == PROGSTATE_CLOSED) {
       stop = SOCKH_STOP;
     }
     if (gKillReceived) {
@@ -1296,7 +1296,7 @@ pluiCloseWin (void *udata)
   playerui_t   *plui = udata;
 
   logProcBegin ();
-  if (progstateCurrState (plui->progstate) <= STATE_RUNNING) {
+  if (progstateCurrState (plui->progstate) <= PROGSTATE_RUNNING) {
     plui->stopping = true;
     progstateShutdownProcess (plui->progstate);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");

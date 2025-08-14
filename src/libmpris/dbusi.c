@@ -26,7 +26,7 @@
 #define DBUS_DEBUG 0
 
 enum {
-  DBUS_STATE_CLOSED,
+  DBUS_PROGSTATE_CLOSED,
   DBUS_STATE_WAIT,
   DBUS_STATE_OPEN,
 };
@@ -132,7 +132,7 @@ dbusConnClose (dbus_t *dbus)
   dbus->data = NULL;
   dbus->dataalloc = false;
   dbus->result = NULL;
-  dbus->state = DBUS_STATE_CLOSED;
+  dbus->state = DBUS_PROGSTATE_CLOSED;
   dbus->busid = DBUS_INVALID_BUS;
   mdfree (dbus);
 }

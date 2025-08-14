@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include <assert.h>
 
 #include "bdjmsg.h"
 #include "bdjstring.h"
@@ -22,7 +23,7 @@ enum {
 };
 static char MSG_RS = '~';
 
-/* for debugging */
+/* for debugging, used by testsuite.c */
 const char *bdjmsgroutetxt [ROUTE_MAX] = {
   [ROUTE_ALTINST] = "ALTINST-NIU",
   [ROUTE_BPM_COUNTER] = "BPM_COUNTER",
@@ -42,6 +43,9 @@ const char *bdjmsgroutetxt [ROUTE_MAX] = {
   [ROUTE_STARTERUI] = "STARTERUI",
   [ROUTE_TEST_SUITE] = "TEST_SUITE",
 };
+
+static_assert (sizeof (bdjmsgroutetxt) / sizeof (char *) == ROUTE_MAX,
+    "missing route ident");
 
 /* for debugging */
 const char *bdjmsgtxt [MSG_MAX] = {
@@ -166,6 +170,9 @@ const char *bdjmsgtxt [MSG_MAX] = {
   [MSG_STOP_MAIN] = "STOP_MAIN",
   [MSG_WINDOW_FIND] = "WINDOW_FIND",
 };
+
+static_assert (sizeof (bdjmsgtxt) / sizeof (char *) == MSG_MAX,
+    "missing msg ident");
 
 size_t
 msgEncode (bdjmsgroute_t routefrom, bdjmsgroute_t route,

@@ -285,7 +285,7 @@ vlcState (vlcdata_t *vlcdata)
     case libvlc_Ended: { state = PLI_STATE_STOPPED; break; }
 #endif
 #if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
-    case libvlc_Stopping: { state = PLI_STATE_STOPPING; break; }
+    case libvlc_Stopping: { state = PLI_PROGSTATE_STOPPING; break; }
 #endif
     case libvlc_Error: { state = PLI_STATE_ERROR; break; }
   }

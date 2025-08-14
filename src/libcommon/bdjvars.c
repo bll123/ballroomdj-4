@@ -10,6 +10,7 @@
 #include <stdatomic.h>
 #include <string.h>
 #include <errno.h>
+#include <assert.h>
 
 #include "bdj4.h"
 #include "bdj4intl.h"
@@ -31,6 +32,9 @@ static const char *bdjvarsdesc [BDJV_MAX] = {
   [BDJV_TS_TEST] = "TS_TEST",
 };
 
+static_assert (sizeof (bdjvarsdesc) / sizeof (const char *) == BDJV_MAX,
+    "missing bdjvars entry");
+
 static const char *bdjvarsldesc [BDJVL_MAX] = {
   [BDJVL_DELETE_PFX_LEN] = "DELETE_PFX_LEN",
   [BDJVL_NUM_PORTS] = "NUM_PORTS",
@@ -49,6 +53,9 @@ static const char *bdjvarsldesc [BDJVL_MAX] = {
   [BDJVL_PORT_STARTERUI] = "PORT_STARTERUI",
   [BDJVL_PORT_TEST_SUITE] = "PORT_TEST_SUITE",
 };
+
+static_assert (sizeof (bdjvarsldesc) / sizeof (const char *) == BDJVL_MAX,
+    "missing bdjvars-l entry");
 
 static char *   bdjvars [BDJV_MAX];
 static int64_t  bdjvarsl [BDJVL_MAX];

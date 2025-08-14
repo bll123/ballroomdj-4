@@ -10,6 +10,7 @@
 #include <inttypes.h>
 #include <string.h>
 #include <sys/types.h>
+#include <assert.h>
 
 #include "bdj4.h"
 #include "bdjstring.h"
@@ -90,6 +91,9 @@ static int valueTypeLookup [SONG_FILTER_MAX] = {
   [SONG_FILTER_MPM_HIGH] =          SONG_FILTER_NUM,
   [SONG_FILTER_MPM_LOW] =           SONG_FILTER_NUM,
 };
+
+static_assert (sizeof (valueTypeLookup) / sizeof (int) == SONG_FILTER_MAX,
+    "missing song filter entry");
 
 static const char * const SONG_FILTER_SORT_DEFAULT = "TITLE";
 

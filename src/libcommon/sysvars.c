@@ -12,6 +12,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdarg.h>
+#include <assert.h>
 
 #if __has_include (<sys/resource.h>)
 # include <sys/resource.h>
@@ -47,95 +48,97 @@ typedef struct {
   char    *dist;
 } sysdistinfo_t;
 
-typedef struct {
-  const char  *desc;
-} sysvarsdesc_t;
-
 /* for debugging */
-static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
-  [SV_BDJ4_BUILD] = { "BDJ4_BUILD" },
-  [SV_BDJ4_BUILDDATE] = { "BDJ4_BUILDDATE" },
-  [SV_BDJ4_DEVELOPMENT] = { "BDJ4_DEVELOPMENT" },
-  [SV_BDJ4_DIR_DATATOP] = { "BDJ4_DIR_DATATOP" },
-  [SV_BDJ4_DIR_EXEC] = { "BDJ4_DIR_EXEC" },
-  [SV_BDJ4_DIR_IMG] = { "BDJ4_DIR_IMG" },
-  [SV_BDJ4_DIR_INST] = { "BDJ4_DIR_INST" },
-  [SV_BDJ4_DIR_LOCALE] = { "BDJ4_DIR_LOCALE" },
-  [SV_BDJ4_DIR_MAIN] = { "BDJ4_DIR_MAIN" },
-  [SV_BDJ4_DIR_SCRIPT] = { "BDJ4_DIR_SCRIPT" },
-  [SV_BDJ4_DIR_TEMPLATE] = { "BDJ4_DIR_TEMPLATE" },
-  [SV_BDJ4_DREL_DATA] = { "BDJ4_DREL_DATA" },
-  [SV_BDJ4_DREL_HTTP] = { "BDJ4_DREL_HTTP" },
-  [SV_BDJ4_DREL_IMG] = { "BDJ4_DREL_IMG" },
-  [SV_BDJ4_DREL_TMP] = { "BDJ4_DREL_TMP" },
-  [SV_BDJ4_RELEASELEVEL] = { "BDJ4_RELEASELEVEL" },
-  [SV_BDJ4_VERSION] = { "BDJ4_VERSION" },
-  [SV_CA_FILE] = { "CA_FILE" },
-  [SV_CA_FILE_LOCAL] = { "CA_FILE_LOCAL" },
-  [SV_DIR_CACHE] = { "DIR_CACHE" },
-  [SV_DIR_CACHE_BASE] = { "DIR_CACHE_BASE" },
-  [SV_DIR_CONFIG] = { "DIR_CONFIG" },
-  [SV_DIR_CONFIG_BASE] = { "DIR_CONFIG_BASE" },
-  [SV_FILE_ALTCOUNT] = { "FILE_ALTCOUNT" },
-  [SV_FILE_INST_PATH] = { "FILE_INST_PATH" },
-  [SV_FONT_DEFAULT] = { "FONT_DEFAULT" },
-  [SV_HOME] = { "HOME" },
-  [SV_HOSTNAME] = { "HOSTNAME" },
-  [SV_HOST_REGISTER] = { "HOST_REGISTER" },
-  [SV_LOCALE] = { "LOCALE" },
-  [SV_LOCALE_ORIG] = { "LOCALE_ORIG" },
-  [SV_LOCALE_ORIG_SHORT] = { "LOCALE_ORIG_SHORT" },
-  [SV_LOCALE_RADIX] = { "LOCALE_RADIX" },
-  [SV_LOCALE_SHORT] = { "LOCALE_SHORT" },
-  [SV_LOCALE_SYSTEM] = { "LOCALE_SYSTEM" },
-  [SV_LOCALE_639_2] = { "LOCALE_639_2" },
-  [SV_OS_ARCH] = { "OS_ARCH" },
-  [SV_OS_ARCH_TAG] = { "OS_ARCH_TAG" },
-  [SV_OS_BUILD] = { "OS_BUILD" },
-  [SV_OS_DISP] = { "OS_DISP" },
-  [SV_OS_DIST_TAG] = { "OS_DIST_TAG" },
-  [SV_OS_EXEC_EXT] = { "OS_EXEC_EXT" },
-  [SV_OS_NAME] = { "OS_NAME" },
-  [SV_OS_PLATFORM] = { "OS_PLATFORM" },
-  [SV_OS_VERS] = { "OS_VERS" },
-  [SV_PATH_ACRCLOUD] = { "PATH_ACRCLOUD" },
-  [SV_PATH_CRONTAB] = { "PATH_CRONTAB" },
-  [SV_PATH_FFMPEG] = { "PATH_FFMPEG" },
-  [SV_PATH_FPCALC] = { "PATH_FPCALC" },
-  [SV_PATH_GSETTINGS] = { "PATH_GSETTINGS" },
-  [SV_PATH_ICONDIR] = { "PATH_ICONDIR" },
-  [SV_PATH_URI_OPEN] = { "PATH_URI_OPEN" },
-  [SV_PATH_VLC] = { "PATH_VLC" },
-  [SV_PATH_VLC_LIB] = { "PATH_VLC_LIB" },
-  [SV_PATH_XDGUSERDIR] = { "PATH_XDGUSERDIR" },
-  [SV_SHLIB_EXT] = { "SHLIB_EXT" },
-  [SV_THEME_DEFAULT] = { "THEME_DEFAULT" },
-  [SV_URI_REGISTER] = { "URI_REGISTER" },
-  [SV_USER] = { "USER" },
-  [SV_USER_MUNGE] = { "USER_MUNGE" },
+static const char *sysvarsdesc [SV_MAX] = {
+  [SV_BDJ4_BUILD] = "BDJ4_BUILD",
+  [SV_BDJ4_BUILDDATE] = "BDJ4_BUILDDATE",
+  [SV_BDJ4_DEVELOPMENT] = "BDJ4_DEVELOPMENT",
+  [SV_BDJ4_DIR_DATATOP] = "BDJ4_DIR_DATATOP",
+  [SV_BDJ4_DIR_EXEC] = "BDJ4_DIR_EXEC",
+  [SV_BDJ4_DIR_IMG] = "BDJ4_DIR_IMG",
+  [SV_BDJ4_DIR_INST] = "BDJ4_DIR_INST",
+  [SV_BDJ4_DIR_LOCALE] = "BDJ4_DIR_LOCALE",
+  [SV_BDJ4_DIR_MAIN] = "BDJ4_DIR_MAIN",
+  [SV_BDJ4_DIR_SCRIPT] = "BDJ4_DIR_SCRIPT",
+  [SV_BDJ4_DIR_TEMPLATE] = "BDJ4_DIR_TEMPLATE",
+  [SV_BDJ4_DREL_DATA] = "BDJ4_DREL_DATA",
+  [SV_BDJ4_DREL_HTTP] = "BDJ4_DREL_HTTP",
+  [SV_BDJ4_DREL_IMG] = "BDJ4_DREL_IMG",
+  [SV_BDJ4_DREL_TMP] = "BDJ4_DREL_TMP",
+  [SV_BDJ4_RELEASELEVEL] = "BDJ4_RELEASELEVEL",
+  [SV_BDJ4_VERSION] = "BDJ4_VERSION",
+  [SV_CA_FILE] = "CA_FILE",
+  [SV_CA_FILE_LOCAL] = "CA_FILE_LOCAL",
+  [SV_DIR_CACHE] = "DIR_CACHE",
+  [SV_DIR_CACHE_BASE] = "DIR_CACHE_BASE",
+  [SV_DIR_CONFIG] = "DIR_CONFIG",
+  [SV_DIR_CONFIG_BASE] = "DIR_CONFIG_BASE",
+  [SV_FILE_ALTCOUNT] = "FILE_ALTCOUNT",
+  [SV_FILE_INST_PATH] = "FILE_INST_PATH",
+  [SV_FONT_DEFAULT] = "FONT_DEFAULT",
+  [SV_HOME] = "HOME",
+  [SV_HOSTNAME] = "HOSTNAME",
+  [SV_HOST_REGISTER] = "HOST_REGISTER",
+  [SV_LOCALE] = "LOCALE",
+  [SV_LOCALE_ORIG] = "LOCALE_ORIG",
+  [SV_LOCALE_ORIG_SHORT] = "LOCALE_ORIG_SHORT",
+  [SV_LOCALE_RADIX] = "LOCALE_RADIX",
+  [SV_LOCALE_SHORT] = "LOCALE_SHORT",
+  [SV_LOCALE_SYSTEM] = "LOCALE_SYSTEM",
+  [SV_LOCALE_639_2] = "LOCALE_639_2",
+  [SV_OS_ARCH] = "OS_ARCH",
+  [SV_OS_ARCH_TAG] = "OS_ARCH_TAG",
+  [SV_OS_BUILD] = "OS_BUILD",
+  [SV_OS_DISP] = "OS_DISP",
+  [SV_OS_DIST_TAG] = "OS_DIST_TAG",
+  [SV_OS_EXEC_EXT] = "OS_EXEC_EXT",
+  [SV_OS_NAME] = "OS_NAME",
+  [SV_OS_PLATFORM] = "OS_PLATFORM",
+  [SV_OS_VERS] = "OS_VERS",
+  [SV_PATH_ACRCLOUD] = "PATH_ACRCLOUD",
+  [SV_PATH_CRONTAB] = "PATH_CRONTAB",
+  [SV_PATH_FFMPEG] = "PATH_FFMPEG",
+  [SV_PATH_FPCALC] = "PATH_FPCALC",
+  [SV_PATH_GSETTINGS] = "PATH_GSETTINGS",
+  [SV_PATH_ICONDIR] = "PATH_ICONDIR",
+  [SV_PATH_URI_OPEN] = "PATH_URI_OPEN",
+  [SV_PATH_VLC] = "PATH_VLC",
+  [SV_PATH_VLC_LIB] = "PATH_VLC_LIB",
+  [SV_PATH_XDGUSERDIR] = "PATH_XDGUSERDIR",
+  [SV_SHLIB_EXT] = "SHLIB_EXT",
+  [SV_THEME_DEFAULT] = "THEME_DEFAULT",
+  [SV_URI_REGISTER] = "URI_REGISTER",
+  [SV_USER] = "USER",
+  [SV_USER_MUNGE] = "USER_MUNGE",
 };
 
-static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
-  [SVL_ALTIDX] = { "ALTIDX" },
-  [SVL_BASEPORT] = { "BASEPORT" },
-  [SVL_DATAPATH] = { "DATAPATH" },
-  [SVL_HOME_SZ] = { "HOME_SZ" },
-  [SVL_INITIAL_PORT] = { "INITIAL_PORT" },
-  [SVL_IS_LINUX] = { "IS_LINUX" },
-  [SVL_IS_MACOS] = { "IS_MACOS" },
-  [SVL_IS_MSYS] = { "IS_MSYS" },
-  [SVL_IS_READONLY] = { "IS_READONLY" },
-  [SVL_IS_VM] = { "IS_VM" },
-  [SVL_IS_WINDOWS] = { "IS_WINDOWS" },
-  [SVL_LOCALE_DIR] = { "LOCALE_DIR" },
-  [SVL_LOCALE_SET] = { "LOCALE_SET" },
-  [SVL_LOCALE_SYS_SET] = { "LOCALE_SYS_SET" },
-  [SVL_NUM_PROC] = { "NUM_PROC" },
-  [SVL_OS_BITS] = { "OS_BITS" },
-  [SVL_PROFILE_IDX] = { "PROFILE_IDX" },
-  [SVL_USER_ID] = { "USER_ID" },
-  [SVL_VLC_VERSION] = { "VLC_VERSION" },
+static_assert (sizeof (sysvarsdesc) / sizeof (const char *) == SV_MAX,
+    "missing sysvars sv_ entry");
+
+static const char *sysvarsldesc [SVL_MAX] = {
+  [SVL_ALTIDX] = "ALTIDX",
+  [SVL_BASEPORT] = "BASEPORT",
+  [SVL_DATAPATH] = "DATAPATH",
+  [SVL_HOME_SZ] = "HOME_SZ",
+  [SVL_INITIAL_PORT] = "INITIAL_PORT",
+  [SVL_IS_LINUX] = "IS_LINUX",
+  [SVL_IS_MACOS] = "IS_MACOS",
+  [SVL_IS_MSYS] = "IS_MSYS",
+  [SVL_IS_READONLY] = "IS_READONLY",
+  [SVL_IS_VM] = "IS_VM",
+  [SVL_IS_WINDOWS] = "IS_WINDOWS",
+  [SVL_LOCALE_DIR] = "LOCALE_DIR",
+  [SVL_LOCALE_SET] = "LOCALE_SET",
+  [SVL_LOCALE_SYS_SET] = "LOCALE_SYS_SET",
+  [SVL_NUM_PROC] = "NUM_PROC",
+  [SVL_OS_BITS] = "OS_BITS",
+  [SVL_PROFILE_IDX] = "PROFILE_IDX",
+  [SVL_USER_ID] = "USER_ID",
+  [SVL_VLC_VERSION] = "VLC_VERSION",
 };
+
+static_assert (sizeof (sysvarsldesc) / sizeof (const char *) == SVL_MAX,
+    "missing sysvars svl_ entry");
 
 enum {
   SV_MAX_SZ = 512,
@@ -1043,7 +1046,7 @@ sysvarsDesc (sysvarkey_t idx)
   if (idx >= SV_MAX) {
     return "";
   }
-  return sysvarsdesc [idx].desc;
+  return sysvarsdesc [idx];
 }
 
 const char *
@@ -1052,7 +1055,7 @@ sysvarslDesc (sysvarlkey_t idx)
   if (idx >= SVL_MAX) {
     return "";
   }
-  return sysvarsldesc [idx].desc;
+  return sysvarsldesc [idx];
 }
 
 sysversinfo_t *

@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <assert.h>
 
 #include "bdj4intl.h"
 #include "bdjregex.h"
@@ -48,6 +49,9 @@ static valregex_t valregex [VAL_REGEX_MAX] = {
   [VAL_REGEX_BASE_URI]   = { "^([\\w-]+\\.)+[\\w-]+$" },
   [VAL_REGEX_FULL_URI]   = { "^[a-zA-Z][a-zA-Z0-9]*://([\\w-]+\\.)+[\\w-]+(:[0-9]+)?[\\w ;,./?%&=-]*$" },
 };
+
+static_assert (sizeof (valregex) / sizeof (valregex_t) == VAL_REGEX_MAX,
+    "missing val-regex entry");
 
 /**
  * Validate a string.

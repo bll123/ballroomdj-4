@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdatomic.h>
+#include <assert.h>
 
 #include "bdj4intl.h"
 #include "bdjopt.h"
@@ -1625,6 +1626,9 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* vorbis multi         */
   },
 };
+
+static_assert (sizeof (tagdefs) / sizeof (tagdef_t) == TAG_KEY_MAX,
+    "missing tag entry");
 
 typedef struct {
   slist_t               *taglookup;

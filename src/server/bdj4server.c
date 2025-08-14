@@ -123,13 +123,13 @@ main (int argc, char *argv[])
   bdjsrv.websrv = NULL;
   bdjsrv.stopwaitcount = 0;
 
-  progstateSetCallback (bdjsrv.progstate, STATE_WAIT_HANDSHAKE,
+  progstateSetCallback (bdjsrv.progstate, PROGSTATE_WAIT_HANDSHAKE,
       bdjsrvHandshakeCallback, &bdjsrv);
-  progstateSetCallback (bdjsrv.progstate, STATE_STOPPING,
+  progstateSetCallback (bdjsrv.progstate, PROGSTATE_STOPPING,
       bdjsrvStoppingCallback, &bdjsrv);
-  progstateSetCallback (bdjsrv.progstate, STATE_STOP_WAIT,
+  progstateSetCallback (bdjsrv.progstate, PROGSTATE_STOP_WAIT,
       bdjsrvStopWaitCallback, &bdjsrv);
-  progstateSetCallback (bdjsrv.progstate, STATE_CLOSING,
+  progstateSetCallback (bdjsrv.progstate, PROGSTATE_CLOSING,
       bdjsrvClosingCallback, &bdjsrv);
 
   bdjsrv.conn = connInit (ROUTE_SERVER);
@@ -475,7 +475,7 @@ bdjsrvProcessing (void *udata)
 
   if (! progstateIsRunning (bdjsrv->progstate)) {
     progstateProcess (bdjsrv->progstate);
-    if (progstateCurrState (bdjsrv->progstate) == STATE_CLOSED) {
+    if (progstateCurrState (bdjsrv->progstate) == PROGSTATE_CLOSED) {
       stop = SOCKH_STOP;
     }
     if (gKillReceived) {

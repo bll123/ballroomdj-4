@@ -241,15 +241,15 @@ main (int argc, char *argv[])
   dbupdate.dancefromgenre = false;
 
   dbupdate.progstate = progstateInit ("dbupdate");
-  progstateSetCallback (dbupdate.progstate, STATE_CONNECTING,
+  progstateSetCallback (dbupdate.progstate, PROGSTATE_CONNECTING,
       dbupdateConnectingCallback, &dbupdate);
-  progstateSetCallback (dbupdate.progstate, STATE_WAIT_HANDSHAKE,
+  progstateSetCallback (dbupdate.progstate, PROGSTATE_WAIT_HANDSHAKE,
       dbupdateHandshakeCallback, &dbupdate);
-  progstateSetCallback (dbupdate.progstate, STATE_STOPPING,
+  progstateSetCallback (dbupdate.progstate, PROGSTATE_STOPPING,
       dbupdateStoppingCallback, &dbupdate);
-  progstateSetCallback (dbupdate.progstate, STATE_STOP_WAIT,
+  progstateSetCallback (dbupdate.progstate, PROGSTATE_STOP_WAIT,
       dbupdateStopWaitCallback, &dbupdate);
-  progstateSetCallback (dbupdate.progstate, STATE_CLOSING,
+  progstateSetCallback (dbupdate.progstate, PROGSTATE_CLOSING,
       dbupdateClosingCallback, &dbupdate);
 
   procutilInitProcesses (dbupdate.processes);
@@ -416,7 +416,7 @@ dbupdateProcessing (void *udata)
 
   if (! progstateIsRunning (dbupdate->progstate)) {
     progstateProcess (dbupdate->progstate);
-    if (progstateCurrState (dbupdate->progstate) == STATE_CLOSED) {
+    if (progstateCurrState (dbupdate->progstate) == PROGSTATE_CLOSED) {
       stop = SOCKH_STOP;
     }
     if (gKillReceived) {

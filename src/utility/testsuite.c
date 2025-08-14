@@ -266,17 +266,17 @@ main (int argc, char *argv [])
   tsNextFile (&testsuite);
   testsuite.lineno = 0;
 
-  progstateSetCallback (testsuite.progstate, STATE_LISTENING,
+  progstateSetCallback (testsuite.progstate, PROGSTATE_LISTENING,
       tsListeningCallback, &testsuite);
-  progstateSetCallback (testsuite.progstate, STATE_CONNECTING,
+  progstateSetCallback (testsuite.progstate, PROGSTATE_CONNECTING,
       tsConnectingCallback, &testsuite);
-  progstateSetCallback (testsuite.progstate, STATE_WAIT_HANDSHAKE,
+  progstateSetCallback (testsuite.progstate, PROGSTATE_WAIT_HANDSHAKE,
       tsHandshakeCallback, &testsuite);
-  progstateSetCallback (testsuite.progstate, STATE_STOPPING,
+  progstateSetCallback (testsuite.progstate, PROGSTATE_STOPPING,
       tsStoppingCallback, &testsuite);
-  progstateSetCallback (testsuite.progstate, STATE_STOP_WAIT,
+  progstateSetCallback (testsuite.progstate, PROGSTATE_STOP_WAIT,
       tsStopWaitCallback, &testsuite);
-  progstateSetCallback (testsuite.progstate, STATE_CLOSING,
+  progstateSetCallback (testsuite.progstate, PROGSTATE_CLOSING,
       tsClosingCallback, &testsuite);
 
   listenPort = bdjvarsGetNum (BDJVL_PORT_TEST_SUITE);
@@ -389,7 +389,7 @@ tsProcessing (void *udata)
 
   if (! progstateIsRunning (testsuite->progstate)) {
     progstateProcess (testsuite->progstate);
-    if (progstateCurrState (testsuite->progstate) == STATE_CLOSED) {
+    if (progstateCurrState (testsuite->progstate) == PROGSTATE_CLOSED) {
       stop = SOCKH_STOP;
     }
     if (gKillReceived) {

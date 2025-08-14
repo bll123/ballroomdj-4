@@ -11,6 +11,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <math.h>
+#include <assert.h>
 
 #include "bdj4.h"
 #include "bdj4intl.h"
@@ -60,6 +61,9 @@ static uiexppltype_t exptypes [EI_TYPE_MAX] = {
   [EI_TYPE_M3U] = { EI_TYPE_M3U,   "M3U",  ".m3u", ".m3u8" },
   [EI_TYPE_XSPF] = { EI_TYPE_XSPF,  "XSPF",  ".xspf", NULL },
 };
+
+static_assert (sizeof (exptypes) / sizeof (uiexppltype_t) == EI_TYPE_MAX,
+    "missing exp/imp type");
 
 typedef struct uiexppl {
   uiwcont_t         *wcont [UIEXPPL_W_MAX];

@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <math.h>
 #include <stdarg.h>
+#include <assert.h>
 
 #include "bdj4.h"
 #include "bdj4intl.h"
@@ -32,6 +33,9 @@ static int sftags [FILTER_DISP_MAX] = {
   /* status-playable is handled as a special case */
 };
 
+static_assert (sizeof (sftags) / sizeof (int) == FILTER_DISP_MAX,
+    "missing filter-disp entry");
+
 static int qetags [QUICKEDIT_DISP_MAX] = {
   [QUICKEDIT_DISP_SPEED] = TAG_SPEEDADJUSTMENT,
   [QUICKEDIT_DISP_VOLUME] = TAG_VOLUMEADJUSTPERC,
@@ -39,6 +43,9 @@ static int qetags [QUICKEDIT_DISP_MAX] = {
   [QUICKEDIT_DISP_DANCERATING] = TAG_DANCERATING,
   [QUICKEDIT_DISP_FAVORITE] = TAG_FAVORITE,
 };
+
+static_assert (sizeof (qetags) / sizeof (int) == QUICKEDIT_DISP_MAX,
+    "missing quickedit-disp entry");
 
 void
 confuiBuildUIDialogDisplay (confuigui_t *gui)

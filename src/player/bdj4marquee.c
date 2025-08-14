@@ -164,15 +164,15 @@ main (int argc, char *argv[])
 #endif
 
   marquee.progstate = progstateInit ("marquee");
-  progstateSetCallback (marquee.progstate, STATE_CONNECTING,
+  progstateSetCallback (marquee.progstate, PROGSTATE_CONNECTING,
       marqueeConnectingCallback, &marquee);
-  progstateSetCallback (marquee.progstate, STATE_WAIT_HANDSHAKE,
+  progstateSetCallback (marquee.progstate, PROGSTATE_WAIT_HANDSHAKE,
       marqueeHandshakeCallback, &marquee);
-  progstateSetCallback (marquee.progstate, STATE_STOPPING,
+  progstateSetCallback (marquee.progstate, PROGSTATE_STOPPING,
       marqueeStoppingCallback, &marquee);
-  progstateSetCallback (marquee.progstate, STATE_STOP_WAIT,
+  progstateSetCallback (marquee.progstate, PROGSTATE_STOP_WAIT,
       marqueeStopWaitCallback, &marquee);
-  progstateSetCallback (marquee.progstate, STATE_CLOSING,
+  progstateSetCallback (marquee.progstate, PROGSTATE_CLOSING,
       marqueeClosingCallback, &marquee);
 
   for (int i = 0; i < MQ_W_MAX; ++i) {
@@ -483,7 +483,7 @@ marqueeMainLoop (void *tmarquee)
 
   if (! progstateIsRunning (marquee->progstate)) {
     progstateProcess (marquee->progstate);
-    if (progstateCurrState (marquee->progstate) == STATE_CLOSED) {
+    if (progstateCurrState (marquee->progstate) == PROGSTATE_CLOSED) {
       stop = SOCKH_STOP;
     }
     if (gKillReceived) {
@@ -644,7 +644,7 @@ marqueeCloseCallback (void *udata)
 
   logProcBegin ();
 
-  if (progstateCurrState (marquee->progstate) <= STATE_RUNNING) {
+  if (progstateCurrState (marquee->progstate) <= PROGSTATE_RUNNING) {
     if (! marquee->ismaximized && ! marquee->isiconified) {
       marqueeSaveWindowPosition (marquee);
     }

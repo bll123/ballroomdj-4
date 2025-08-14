@@ -103,17 +103,17 @@ main (int argc, char *argv[])
   remctrl.stopwaitcount = 0;
   snprintf (remctrl.msgqpba, sizeof (remctrl.msgqpba), "%d", MUSICQ_PB_A);
 
-  progstateSetCallback (remctrl.progstate, STATE_CONNECTING,
+  progstateSetCallback (remctrl.progstate, PROGSTATE_CONNECTING,
       remctrlConnectingCallback, &remctrl);
-  progstateSetCallback (remctrl.progstate, STATE_WAIT_HANDSHAKE,
+  progstateSetCallback (remctrl.progstate, PROGSTATE_WAIT_HANDSHAKE,
       remctrlHandshakeCallback, &remctrl);
-  progstateSetCallback (remctrl.progstate, STATE_INITIALIZE_DATA,
+  progstateSetCallback (remctrl.progstate, PROGSTATE_INITIALIZE_DATA,
       remctrlInitDataCallback, &remctrl);
-  progstateSetCallback (remctrl.progstate, STATE_STOPPING,
+  progstateSetCallback (remctrl.progstate, PROGSTATE_STOPPING,
       remctrlStoppingCallback, &remctrl);
-  progstateSetCallback (remctrl.progstate, STATE_STOP_WAIT,
+  progstateSetCallback (remctrl.progstate, PROGSTATE_STOP_WAIT,
       remctrlStopWaitCallback, &remctrl);
-  progstateSetCallback (remctrl.progstate, STATE_CLOSING,
+  progstateSetCallback (remctrl.progstate, PROGSTATE_CLOSING,
       remctrlClosingCallback, &remctrl);
 
   remctrl.conn = connInit (ROUTE_REMCTRL);
@@ -428,7 +428,7 @@ remctrlProcessing (void *udata)
 
   if (! progstateIsRunning (remctrl->progstate)) {
     progstateProcess (remctrl->progstate);
-    if (progstateCurrState (remctrl->progstate) == STATE_CLOSED) {
+    if (progstateCurrState (remctrl->progstate) == PROGSTATE_CLOSED) {
       stop = SOCKH_STOP;
     }
     if (gKillReceived) {

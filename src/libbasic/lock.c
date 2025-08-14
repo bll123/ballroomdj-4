@@ -15,6 +15,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
+#include <assert.h>
 
 #include "bdj4.h"
 #include "bdjmsg.h"
@@ -47,6 +48,9 @@ static char *locknames [ROUTE_MAX] = {
   [ROUTE_STARTERUI] = "starterui",
   [ROUTE_TEST_SUITE] = "testsuite",
 };
+
+static_assert (sizeof (locknames) / sizeof (char *) == ROUTE_MAX,
+    "missing route entry");
 
 static void   lockCheckLockDir (void);
 static int    lockAcquirePid (char *fn, pid_t pid, int flags);

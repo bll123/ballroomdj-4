@@ -119,9 +119,9 @@ main (int argc, char *argv[])
   helper.rx_spsp = regexInit ("  *");
 
   helper.progstate = progstateInit ("helperui");
-  progstateSetCallback (helper.progstate, STATE_STOPPING,
+  progstateSetCallback (helper.progstate, PROGSTATE_STOPPING,
       helperStoppingCallback, &helper);
-  progstateSetCallback (helper.progstate, STATE_CLOSING,
+  progstateSetCallback (helper.progstate, PROGSTATE_CLOSING,
       helperClosingCallback, &helper);
 
   osSetStandardSignals (helperSigHandler);
@@ -276,7 +276,7 @@ helperMainLoop (void *thelper)
 
   if (! progstateIsRunning (helper->progstate)) {
     progstateProcess (helper->progstate);
-    if (progstateCurrState (helper->progstate) == STATE_CLOSED) {
+    if (progstateCurrState (helper->progstate) == PROGSTATE_CLOSED) {
       stop = SOCKH_STOP;
     }
     if (gKillReceived) {
@@ -359,7 +359,7 @@ helperCloseCallback (void *udata)
 {
   helperui_t   *helper = udata;
 
-  if (progstateCurrState (helper->progstate) <= STATE_RUNNING) {
+  if (progstateCurrState (helper->progstate) <= PROGSTATE_RUNNING) {
     progstateShutdownProcess (helper->progstate);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
   }

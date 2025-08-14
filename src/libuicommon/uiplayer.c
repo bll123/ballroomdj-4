@@ -204,8 +204,8 @@ uiplayerInit (const char *tag, progstate_t *progstate,
   uiplayer->uibuilt = false;
   uiplayer->repeat = false;
 
-  progstateSetCallback (uiplayer->progstate, STATE_CONNECTING, uiplayerInitCallback, uiplayer);
-  progstateSetCallback (uiplayer->progstate, STATE_CLOSING, uiplayerClosingCallback, uiplayer);
+  progstateSetCallback (uiplayer->progstate, PROGSTATE_CONNECTING, uiplayerInitCallback, uiplayer);
+  progstateSetCallback (uiplayer->progstate, PROGSTATE_CLOSING, uiplayerClosingCallback, uiplayer);
 
   logProcEnd ("");
   return uiplayer;

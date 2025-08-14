@@ -298,15 +298,15 @@ main (int argc, char *argv[])
   playerData.speedWaitChg = false;
   playerData.stopPlaying = false;
 
-  progstateSetCallback (playerData.progstate, STATE_CONNECTING,
+  progstateSetCallback (playerData.progstate, PROGSTATE_CONNECTING,
       playerConnectingCallback, &playerData);
-  progstateSetCallback (playerData.progstate, STATE_WAIT_HANDSHAKE,
+  progstateSetCallback (playerData.progstate, PROGSTATE_WAIT_HANDSHAKE,
       playerHandshakeCallback, &playerData);
-  progstateSetCallback (playerData.progstate, STATE_STOPPING,
+  progstateSetCallback (playerData.progstate, PROGSTATE_STOPPING,
       playerStoppingCallback, &playerData);
-  progstateSetCallback (playerData.progstate, STATE_STOP_WAIT,
+  progstateSetCallback (playerData.progstate, PROGSTATE_STOP_WAIT,
       playerStopWaitCallback, &playerData);
-  progstateSetCallback (playerData.progstate, STATE_CLOSING,
+  progstateSetCallback (playerData.progstate, PROGSTATE_CLOSING,
       playerClosingCallback, &playerData);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
@@ -623,7 +623,7 @@ playerProcessing (void *udata)
 
   if (! progstateIsRunning (playerData->progstate)) {
     progstateProcess (playerData->progstate);
-    if (progstateCurrState (playerData->progstate) == STATE_CLOSED) {
+    if (progstateCurrState (playerData->progstate) == PROGSTATE_CLOSED) {
       stop = SOCKH_STOP;
     }
     if (gKillReceived) {
