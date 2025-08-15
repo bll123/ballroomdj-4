@@ -35,7 +35,7 @@
 #include "tmutil.h"
 
 /* for debugging and for test suite */
-static const char *playerstateTxt [PL_PROGSTATE_MAX] = {
+static const char *playerstateTxt [PL_STATE_MAX] = {
   [PL_STATE_UNKNOWN] = "unknown",
   [PL_STATE_STOPPED] = "stopped",
   [PL_STATE_LOADING] = "loading",
@@ -45,11 +45,11 @@ static const char *playerstateTxt [PL_PROGSTATE_MAX] = {
   [PL_STATE_IN_GAP] = "in-gap",
 };
 
-static_assert (sizeof (playerstateTxt) / sizeof (const char *) == PL_PROGSTATE_MAX,
+static_assert (sizeof (playerstateTxt) / sizeof (const char *) == PL_STATE_MAX,
     "missing pl state");
 
 /* for debugging */
-static const char *stateTxt [BDJ4_PROGSTATE_MAX] = {
+static const char *stateTxt [BDJ4_STATE_MAX] = {
   [BDJ4_STATE_OFF] = "off",
   [BDJ4_STATE_START] = "start",
   [BDJ4_STATE_WAIT] = "wait",
@@ -57,7 +57,7 @@ static const char *stateTxt [BDJ4_PROGSTATE_MAX] = {
   [BDJ4_STATE_FINISH] = "finish",
 };
 
-static_assert (sizeof (stateTxt) / sizeof (const char *) == BDJ4_PROGSTATE_MAX,
+static_assert (sizeof (stateTxt) / sizeof (const char *) == BDJ4_STATE_MAX,
     "missing bdj4 process state");
 
 typedef struct bdjlog {
@@ -274,7 +274,7 @@ logCheck (logidx_t idx, loglevel_t level)
 const char *
 logPlayerState (playerstate_t plstate)
 {
-  if (plstate < 0 || plstate >= PL_PROGSTATE_MAX) {
+  if (plstate < 0 || plstate >= PL_STATE_MAX) {
     return "invalid";
   }
 
@@ -284,7 +284,7 @@ logPlayerState (playerstate_t plstate)
 const char *
 logStateDebugText (int state)
 {
-  if (state < 0 || state >= BDJ4_PROGSTATE_MAX) {
+  if (state < 0 || state >= BDJ4_STATE_MAX) {
     return "invalid";
   }
 

@@ -22,7 +22,7 @@
 #include "sysvars.h"
 #include "volsink.h"
 
-static const char *plistateTxt [PLI_PROGSTATE_MAX] = {
+static const char *plistateTxt [PLI_STATE_MAX] = {
   [PLI_STATE_NONE] = "none",
   [PLI_STATE_IDLE] = "idle",
   [PLI_STATE_OPENING] = "opening",
@@ -30,11 +30,11 @@ static const char *plistateTxt [PLI_PROGSTATE_MAX] = {
   [PLI_STATE_PLAYING] = "playing",
   [PLI_STATE_PAUSED] = "paused",
   [PLI_STATE_STOPPED] = "stopped",
-  [PLI_PROGSTATE_STOPPING] = "stopping",
+  [PLI_STATE_STOPPING] = "stopping",
   [PLI_STATE_ERROR] = "error",
 };
 
-static_assert (sizeof (plistateTxt) / sizeof (const char *) == PLI_PROGSTATE_MAX,
+static_assert (sizeof (plistateTxt) / sizeof (const char *) == PLI_STATE_MAX,
     "missing pli state");
 
 typedef struct pli {

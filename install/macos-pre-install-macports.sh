@@ -202,7 +202,7 @@ fi
 ${pipp} uninstall -y mutagen > /dev/null 2>&1
 
 echo "-- Installing packages needed by BDJ4"
-# using our own icu and libid3tag
+# using our own libid3tag
 # 2024-6-7 mesa is now needed to be able to build gtk3
 #   a bug was opened on macports.
 sudo port -N install \
