@@ -381,6 +381,8 @@ sockCheck (sockinfo_t *sockinfo)
   }
 
   /* process all sockets that had data */
+  /* this prevents any particular socket from being starved out */
+  /* when earlier sockets are busy */
   for (int i = 0; sockinfo->havecount && i < sockinfo->count; ++i) {
     if (sockinfo->socklist [i]->havedata) {
       sockinfo->socklist [i]->havedata = false;
