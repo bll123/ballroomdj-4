@@ -5,7 +5,10 @@
 ### Known Issues
 
 * MacOS
-    * In certain situations, the scrollbar stops working correctly
+    * 2025-8-16 Configuration: The font selection button crashes the
+      application. This is not a problem on my end, I will post a
+      message on the forum when this is fixed.
+    * 2025-8 In certain situations, the scrollbar stops working correctly
       when the cursor is moved past the bottom of the scrollbar.
       Try resizing the window.
 * Windows
@@ -20,4 +23,4 @@
       (e.g. Ubuntu 2204 and later).
 
 [Wiki Home](Home)
-<br>_(Updated 2025-08-09 15:44:34; BDJ4 version 4.15.5)_
+<br>_(Updated 2025-08-16 06:59:49; BDJ4 version 4.15.5)_
