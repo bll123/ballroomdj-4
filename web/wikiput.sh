@@ -13,6 +13,7 @@ cwd=$(pwd)
 . src/utils/pkgnm.sh
 
 DEVTMP=devel/tmp
+GITWIKIDIR=../bdj4.wiki
 
 sfuser=bll123
 project=ballroomdj4
@@ -79,10 +80,19 @@ function updateimages {
     esac
     touch -r $ifile $ifn
   done
+
+  # sourceforge
   rsync -v -e ssh -aS --delete \
       wikiimg \
       ${sfuser}@web.sourceforge.net:/home/project-web/${project}/htdocs
   rc=$?
+
+  # git wiki mercurial repository
+  rsync -v -e ssh -aS --delete \
+      wikiimg/ \
+      ${GITWIKIDIR}/images
+  rc=$?
+
   test -d wikiimg && rm -rf wikiimg
 }
 
@@ -105,6 +115,7 @@ function gettitle {
 }
 
 # this is a complete mess, but mostly works.
+# this is required for sourceforge only
 function gettext {
   tfn=$1
 
@@ -167,6 +178,23 @@ END {
   echo "<br>_(Updated ${dt}; BDJ4 version ${versstr})_" >> ${tfn}.n
   mv -f ${tfn}.n ${tfn}
   touch --date "${dt}" ${tfn}
+}
+
+function gitchanges {
+  tfn=$1
+
+  # image urls
+  # remove toc (sourceforge)
+  # remove all div's, they don't work
+  # remove lang- prefixes (github does not support dirs)
+  #   at this time, there are no sub-sub-dirs.
+  sed -e 's,!\[\([^]]*\)\](.*/wikiimg/\([^)]*\)),[[images/\2|\1]],g' \
+      -e 's,\[TOC\],,' \
+      -e '/<div / d' \
+      -e '/<\/div>/ d' \
+      -e 's,(\([a-z][a-z]\)-,(,g' \
+      $tfn \
+      > ${tmpfile}
 }
 
 function getaccesstoken {
@@ -240,16 +268,26 @@ function put {
     fi
   fi
 
-  gettext $tfn
+#  gettext $tfn
   title=$(gettitle $tfn)
-  cmd="curl -L --silent -b ${cookiejar} -c ${cookiejar} -X POST \
-      -H 'Authorization: Bearer $bearer' \
-      -H 'User-Agent: $useragent' \
-      --data-urlencode 'pagetitle=$title' \
-      --data-binary @${tmpfile} \
-      '${baseurl}/${title}'"
-  eval $cmd > /dev/null
-  echo "$tfn: updated"
+#  cmd="curl -L --silent -b ${cookiejar} -c ${cookiejar} -X POST \
+#      -H 'Authorization: Bearer $bearer' \
+#      -H 'User-Agent: $useragent' \
+#      --data-urlencode 'pagetitle=$title' \
+#      --data-binary @${tmpfile} \
+#      '${baseurl}/${title}'"
+#  eval $cmd > /dev/null
+#  echo "$tfn: sourceforge updated"
+
+    gitchanges $tfn
+  d=$(dirname $tfn | sed -e 's,^wiki,,' -e 's,^/,,')
+  # github wiki will preserve the directory layout, though it
+  # will not use it.
+  ttfn=$(echo $title | sed -e 's,%20, ,g' -e 's,^en-,,').md
+  mkdir -p ${GITWIKIDIR}/${d}
+  cp -pf ${tmpfile} "${GITWIKIDIR}/${d}/$ttfn"
+
+  echo "$tfn: git wiki updated"
 }
 
 function delete {
