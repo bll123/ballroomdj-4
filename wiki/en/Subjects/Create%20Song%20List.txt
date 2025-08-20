@@ -100,4 +100,4 @@ another may show up a little more or a little less often.
 [Management&nbsp;/&nbsp;Playlist&nbsp;Management](en-Management-Playlist%20Management)
 
 [Wiki Home](Home)
-<br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
+<br>_(Updated 2025-08-20 05:45:34; BDJ4 version 4.15.5)_

@@ -38,4 +38,4 @@ When __Actions&nbsp;/&nbsp;Reload__ is used, any playlist controls
 from the original playlist will no longer be active.
 
 [Wiki Home](Home)
-<br>_(Updated 2024-01-28 17:29:10; BDJ4 version 4.4.9.1)_
+<br>_(Updated 2025-08-20 05:45:34; BDJ4 version 4.15.5)_
