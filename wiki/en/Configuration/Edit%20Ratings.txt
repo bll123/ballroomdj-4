@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_Dance ratings are used in automatic and
+<span id="blurb" style="color:#4559bf;">_Dance ratings are used in automatic and
 sequenced song selection._</span>
 
 ### Configure : Edit Ratings
@@ -37,7 +37,7 @@ changed.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![edit-ratings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditRatings-F.png)
-<br><span style="color:#4559bf;">__Configure / Edit Ratings__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Configure / Edit Ratings__</span> </div>
 
 [Wiki Home](Home)
 <br>_(Updated 2025-06-19 10:05:19; BDJ4 version 4.15.1)_

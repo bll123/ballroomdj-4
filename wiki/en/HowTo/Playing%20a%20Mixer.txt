@@ -25,7 +25,7 @@ Close the configuration window to save the configuration changes.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![mixer-conf-musicq](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-conf-musicq-E.png)
-<br><span style="color:#4559bf;">__Configure / Music Queues__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 #### Turn on the Extra Queues
 
@@ -35,7 +35,7 @@ __Switch&nbsp;Queue&nbsp;When&nbsp;Empty__.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![mixer-player-options](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-player-options-D.png)
-<br><span style="color:#4559bf;">__Player / Options__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Player / Options__</span> </div>
 
 #### Start the Dance
 
@@ -55,7 +55,7 @@ which the songs will be added.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![mixer-req](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-req-A.png)
-<br><span style="color:#4559bf;">__Player / Request__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Player / Request__</span> </div>
 
 Use the filter button
 (![b-filter](https://ballroomdj4.sourceforge.io/wikiimg/FilterSongsButton-A.png))
@@ -64,7 +64,7 @@ __Apply__ button.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![mixer-req-filter](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-req-filter-A.png)
-<br><span style="color:#4559bf;">__Player / Request / Filter__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Player / Request / Filter__</span> </div>
 
 For each song you want to play for the mixer, select the song, then select the
 __Queue__ button.
@@ -80,7 +80,7 @@ selection light for the ___Mixer___ queue will be lit.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![mixer-set-music-q](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-set-music-q-A.png)
-<br><span style="color:#4559bf;">__Player__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Player__</span> </div>
 
 When the
 music stops playing, make the mixer announcement, then select the

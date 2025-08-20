@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_Removing a song renames the audio file
+<span id="blurb" style="color:#4559bf;">_Removing a song renames the audio file
 so that it will no longer be listed in the database._</span>
 
 [TOC]
@@ -24,7 +24,7 @@ __Remove&nbsp;Song__ in the __Actions__ menu.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![mm-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/mm-actions-menu-E.png)
-<br><span style="color:#4559bf;">__Manage / Music Manager / Actions__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Music Manager / Actions__</span> </div>
 
 The song is marked to be removed.  __No action is taken yet__. The
 music manager listing will display the song using the error color. The
@@ -34,7 +34,7 @@ be active and can be used to reset the song.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![remove-mm](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/remove-mm-A.png)
-<br><span style="color:#4559bf;">__Manage / Music Manager___</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Music Manager___</span> </div>
 
 #### Undoing Song Removal
 

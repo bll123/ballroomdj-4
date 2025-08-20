@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_Reload reloads the music queues, history
+<span id="blurb" style="color:#4559bf;">_Reload reloads the music queues, history
 and current song to the last known state._</span>
 
 ### Reload

@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_A BDJ4 audio server is used to
+<span id="blurb" style="color:#4559bf;">_A BDJ4 audio server is used to
 enable playing songs from a remote location._</span>
 
 [TOC]
@@ -38,7 +38,7 @@ password combinations.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![aud-src-conf](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/aud-src-conf-A.png)
-<br><span style="color:#4559bf;">__Configure / Audio Sources__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Configure / Audio Sources__</span> </div>
 
 References:
 <br>[Configuration / Audio Sources](en-Configuration-Audio%20Sources)

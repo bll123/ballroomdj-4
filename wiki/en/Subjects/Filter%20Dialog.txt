@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_The song selection, request and music
+<span id="blurb" style="color:#4559bf;">_The song selection, request and music
 manager song listings can be filtered to display selected songs._</span>
 
 ### Filter Dialog
@@ -75,11 +75,11 @@ turned on (not displayed in default configuration).
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![filter-norm](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/filter-norm-B.png)
-<br><span style="color:#4559bf;">__Filter Dialog__</span></div>
+<br><span id="caption" style="color:#4559bf;">__Filter Dialog__</span></div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![filter-pl](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/filter-pl-B.png)
-<br><span style="color:#4559bf;">__Filter Dialog - Playlist Selected__</span></div>
+<br><span id="caption" style="color:#4559bf;">__Filter Dialog - Playlist Selected__</span></div>
 
 [Wiki Home](Home)
 

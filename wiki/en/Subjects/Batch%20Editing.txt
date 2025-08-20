@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_Batch editing uses the song editor to
+<span id="blurb" style="color:#4559bf;">_Batch editing uses the song editor to
 make changes to multiple songs._</span>
 
 [TOC]
@@ -53,7 +53,7 @@ _Title_) that may not be edited in a batch edit will be disabled.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![be-se-disabled](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/be-se-disabled-A.png)
-<br><span style="color:#4559bf;">__Music Manager / Song Editor /
+<br><span id="caption" style="color:#4559bf;">__Music Manager / Song Editor /
 Disabled Fields__</span> </div>
 
 The _Save_ button will be disabled, and an _Edit&nbsp;All_ label will
@@ -62,7 +62,7 @@ editor is in edit all mode.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![be-se-editall-mode](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/be-se-editall-mode-A.png)
-<br><span style="color:#4559bf;">__Music Manager / Song Editor / Edit
+<br><span id="caption" style="color:#4559bf;">__Music Manager / Song Editor / Edit
 All Mode__</span> </div>
 
 #### Setting the Song Information
@@ -83,7 +83,7 @@ leave edit all mode.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![be-se-cancel-editall](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/be-se-cancel-editall-A.png)
-<br><span style="color:#4559bf;">__Music Manager / Song Editor /
+<br><span id="caption" style="color:#4559bf;">__Music Manager / Song Editor /
 Actions Menu__</span> </div>
 
 #### Applying a Batch Edit
@@ -95,7 +95,7 @@ of songs, and the song editor will leave edit all mode.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![be-se-apply-editall](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/be-se-apply-editall-A.png)
-<br><span style="color:#4559bf;">__Music Manager / Song Editor /
+<br><span id="caption" style="color:#4559bf;">__Music Manager / Song Editor /
 Actions Menu__</span> </div>
 
 #### Example 1: Setting the Rating for All Songs (Entire Database)

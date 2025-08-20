@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_A sequence is a playlist with an exact
+<span id="blurb" style="color:#4559bf;">_A sequence is a playlist with an exact
 sequence of dances and the songs are selected by BDJ4._</span>
 
 [TOC]
@@ -28,13 +28,13 @@ to remove a dance from the sequence.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![seq](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/seq-D.png)
-<br><span style="color:#4559bf;">__Manage / Edit Sequences__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Edit Sequences__</span> </div>
 
 #### Naming the Sequence
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![seq-name-entry-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/seq-name-entry-A.png)
-<br><span style="color:#4559bf;">__Manage / Edit Sequences / Sequence Name__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Edit Sequences / Sequence Name__</span> </div>
 
 At the top of the sequence there is an entry box with the sequence
 name.  This defaults to _New&nbsp;Sequence_.  Click in the entry
@@ -55,7 +55,7 @@ _New&nbsp;Sequence_, then enter the new name of the sequence.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![seq-edit-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/seq-edit-menu-B.png)
-<br><span style="color:#4559bf;">__Manage / Edit Sequences / Edit Menu__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Edit Sequences / Edit Menu__</span> </div>
 
 __Edit&nbsp;/&nbsp;Load__ will open a dialog to select and existing
 sequence.  Select a sequence and then the __Select__ button to load

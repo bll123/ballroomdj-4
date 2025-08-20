@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_The general tab provide settings that
+<span id="blurb" style="color:#4559bf;">_The general tab provide settings that
 affect the entire BDJ4 application._</span>
 
 ### Configure : General
@@ -51,7 +51,7 @@ paste the appropriate information into the configuration.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![General](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/General-L.png)
-<br><span style="color:#4559bf;">__Configure / General__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Configure / General__</span> </div>
 
 [Wiki Home](Home)
 <br>_(Updated 2025-06-19 09:08:27; BDJ4 version 4.15.1)_

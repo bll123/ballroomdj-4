@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_iTunes configures where the iTunes data
+<span id="blurb" style="color:#4559bf;">_iTunes configures where the iTunes data
 is found and what fields to import._</span>
 
 ### Configure : iTunes
@@ -17,7 +17,7 @@ XML with other applications__ checkbox.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![iTunes Advanced Preferences](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/itunes-pref-A.png)
-<br><span style="color:#4559bf;">__iTunes Advanced Preferences__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__iTunes Advanced Preferences__</span> </div>
 
 #### Configuring BallroomDJ 4 for iTunes
 
@@ -37,7 +37,7 @@ function is used.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![iTunes](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/iTunes-E.png)
-<br><span style="color:#4559bf;">__Configure / iTunes__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Configure / iTunes__</span> </div>
 
 [Wiki Home](Home)
 <br>_(Updated 2025-04-11 07:56:21; BDJ4 version 4.14.0)_

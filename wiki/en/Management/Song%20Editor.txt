@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_The song editor is used to update
+<span id="blurb" style="color:#4559bf;">_The song editor is used to update
 song information and to adjust playback settings for the song._</span>
 
 [TOC]
@@ -16,7 +16,7 @@ the bottom of this wiki page.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![se](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-C.png)
-<br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Music Manager / Song Editor__</span> </div>
 
 #### Traversing the Song Listing
 
@@ -44,7 +44,7 @@ the selected songs, and not the entire listing.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![se-file-disp](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-file-disp-A.png)
-<br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor / File Display__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Music Manager / Song Editor / File Display__</span> </div>
 
 If the audio file has a MusicBrainz recording ID tag set, the
 MusicBrainz logo will be displayed.
@@ -62,7 +62,7 @@ before the field's label.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![se-change-bar](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-change-bar-A.png)
-<br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor / Change Bars__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Music Manager / Song Editor / Change Bars__</span> </div>
 
 #### Saving the Changes
 
@@ -76,7 +76,7 @@ __Previous__ to switch to a different song, then switch back.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![se-actions](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-actions-C.png)
-<br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor / Actions Menu__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Music Manager / Song Editor / Actions Menu__</span> </div>
 
 __MPM__ (or __BPM__) starts the BPM/MPM Counter.
 
@@ -117,7 +117,7 @@ selection in the __Actions__ menu.  The BPM Counter will start.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![se-bpm-counter](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-bpm-counter-C.png)
-<br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor / BPM Counter__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Music Manager / Song Editor / BPM Counter__</span> </div>
 
 Click in the blue box in time with the beat.  Once the BPM has
 stabilized, select the __Save__ button.  To reset the count, select
@@ -125,7 +125,7 @@ the __Reset__ button.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![se-bpm-saved](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-bpm-saved-A.png)
-<br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor / BPM__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Music Manager / Song Editor / BPM__</span> </div>
 
 Be sure to save the changes to the song.  The BPM is not automatically
 saved.

@@ -36,7 +36,7 @@ _LD_ to keep it short.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![ld-edit-dance](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-edit-dance-C.png)
-<br><span style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
 
 #### Setting up the Line Dances (Marquee Display)
 
@@ -49,7 +49,7 @@ the name of the line dance.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![ld-dance-one](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-dance-one-A.png)
-<br><span style="color:#4559bf;">__Manage / Song Editor__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Song Editor__</span> </div>
 
 #### Listing the Line Dances
 
@@ -60,7 +60,7 @@ to the dance (available starting with version 4.7.0).
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![ld-dance-list](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-dance-list-C.png)
-<br><span style="color:#4559bf;">__Manage / Music Manager__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Music Manager__</span> </div>
 
 #### Adding Line Dances to an Automatic Playlist
 
@@ -74,7 +74,7 @@ in this example) and set the count to the number of dances you want.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![ld-auto-pl](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-auto-pl-B.png)
-<br><span style="color:#4559bf;">__Manage / Music Manager__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Music Manager__</span> </div>
 
 #### Marquee
 
@@ -83,7 +83,7 @@ on the marquee instead of the dance.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![ld-marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-marquee-A.png)
-<br><span style="color:#4559bf;">__Marquee__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Marquee__</span> </div>
 
 [Wiki Home](Home)
 <br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_

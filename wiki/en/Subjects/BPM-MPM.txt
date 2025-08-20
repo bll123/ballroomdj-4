@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_BPM/MPM can be set for each song and is
+<span id="blurb" style="color:#4559bf;">_BPM/MPM can be set for each song and is
 used by the DJ to help select appropriate songs for a dance._</span>
 
 [TOC]
@@ -32,7 +32,7 @@ of the BPM/MPM of the song and which label (BPM/MPM) is displayed.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![bpm-conf-general](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/bpm-conf-general-A.png)
-<br><span style="color:#4559bf;">__Configure / General__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Configure / General__</span> </div>
 
 For the examples below, MPM will be used.
 
@@ -55,7 +55,7 @@ range for a dance (see [Song&nbsp;Editor](#song-editor) below).
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![bpm-edit-dance](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-edit-dance-D.png)
-<br><span style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
 
 #### Display Configuration
 
@@ -68,7 +68,7 @@ Also add BPM/MPM to the various song listings and music queues as you prefer.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![bpm-disp-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/bpm-disp-settings-C.png)
-<br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Configure / Display Settings__</span> </div>
 
 #### Song Editor
 
@@ -86,11 +86,11 @@ The BPM/MPM range display is determined as explained in
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![bpm-se-mpm](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/bpm-se-mpm-B.png)
-<br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Music Manager / Song Editor__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![bpm-se-bpm](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/bpm-se-bpm-A.png)
-<br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Music Manager / Song Editor__</span> </div>
 
 #### Using the BPM Counter
 
@@ -117,7 +117,7 @@ song editor to save the changes.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![se-bpm-counter](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-bpm-counter-C.png)
-<br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor / BPM Counter__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Music Manager / Song Editor / BPM Counter__</span> </div>
 
 <br>__References:__
 <br>[Management / Song Editor](en-Management-Song%20Editor)

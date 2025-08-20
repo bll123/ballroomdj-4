@@ -18,7 +18,7 @@ how many new audio files were added to the database.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![adding-songs-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/adding-songs-A.png)
-<br><span style="color:#4559bf;">__Manage / Update Database__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Update Database__</span> </div>
 
 #### Adding Songs in a Separate Folder
 

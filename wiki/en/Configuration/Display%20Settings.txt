@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_Display settings changes the columns
+<span id="blurb" style="color:#4559bf;">_Display settings changes the columns
 displayed in music queues, song listings and in the Song&nbsp;Editor._</span>
 
 ### Configure : Display Settings
@@ -44,8 +44,8 @@ Information on each display item can be found here:
 
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![display-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/DisplaySettings-G.png)
-<br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
+![display-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/DisplaySettings-H.png)
+<br><span id="caption" style="color:#4559bf;">__Configure / Display Settings__</span> </div>
 
 [Wiki Home](Home)
 <br>_(Updated 2025-06-19 10:05:19; BDJ4 version 4.15.1)_

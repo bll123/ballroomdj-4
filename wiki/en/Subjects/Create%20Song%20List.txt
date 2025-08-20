@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_An automatic or sequenced playlist may
+<span id="blurb" style="color:#4559bf;">_An automatic or sequenced playlist may
 be used to create a song list._</span>
 
 [TOC]
@@ -33,11 +33,11 @@ time for _Viennese&nbsp;Waltz_ will be set to 2:00.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![create-sl-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/create-song-list-settings-B.png)
-<br><span style="color:#4559bf;">__Management / Playlist Management / Settings__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Management / Playlist Management / Settings__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![create-sl-dances](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/create-song-list-dances-B.png)
-<br><span style="color:#4559bf;">__Management / Playlist Management / Dances__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Management / Playlist Management / Dances__</span> </div>
 
 #### Create a Song List Using the Automatic Playlist
 
@@ -50,7 +50,7 @@ example, a time limit of thirty minutes is used.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![create-sl-cfpl-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/create-song-list-cfpl-A.png)
-<br><span style="color:#4559bf;">__Edit Song Lists / Actions / Create from Playlist__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Edit Song Lists / Actions / Create from Playlist__</span> </div>
 
 Rename the example song list to __example-create__.
 
@@ -67,11 +67,11 @@ also copied to the created song list.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![create-sl-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/create-song-list-sl-settings-A.png)
-<br><span style="color:#4559bf;">__Management / Playlist Management / Settings__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Management / Playlist Management / Settings__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![create-sl-sl](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/create-song-list-sl-B.png)
-<br><span style="color:#4559bf;">__Management / Playlist Management / Dances__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Management / Playlist Management / Dances__</span> </div>
 
 #### Statistics
 
@@ -84,7 +84,7 @@ another may show up a little more or a little less often.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![create-sl-stats-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/create-song-list-stats-A.png)
-<br><span style="color:#4559bf;">__Edit Song Lists / Statistics__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Edit Song Lists / Statistics__</span> </div>
 
  Dance|Automatic Playlist|Song List
  -----|---------|---------

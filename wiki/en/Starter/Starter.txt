@@ -10,7 +10,7 @@ messages and can set up alternate folders.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![starter](https://ballroomdj4.sourceforge.io/wikiimg/en/Starter/starter-A.png)
-<br><span style="color:#4559bf;">__Starter__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Starter__</span> </div>
 
 __Profile__: Select the profile to use.  Once a button is selected,
 the profile can no longer be changed.  Select _Create&nbsp;Profile_ then
@@ -33,7 +33,7 @@ __Exit__: Closes all BDJ4 windows and exits the application.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![starter-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Starter/starter-menu-A.png)
-<br><span style="color:#4559bf;">__Starter / Actions Menu__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Starter / Actions Menu__</span> </div>
 
 The _Actions_ menu has the following selections:
 
@@ -60,7 +60,7 @@ database.  (Linux and Windows only).
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![starter-support](https://ballroomdj4.sourceforge.io/wikiimg/en/Starter/starter-support-E.png)
-<br><span style="color:#4559bf;">__Starter / Support__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Starter / Support__</span> </div>
 
 The support window lists the current installed version of BDJ4 and the
 latest version that is available.
@@ -79,7 +79,7 @@ where a support message can be sent (see below).
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![starter-support-msg](https://ballroomdj4.sourceforge.io/wikiimg/en/Starter/starter-support-msg-A.png)
-<br><span style="color:#4559bf;">__Starter / Support / Support Message__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Starter / Support / Support Message__</span> </div>
 
 __E-Mail Address__: Enter your e-mail address so that you can receive
 a reply to your support message.

@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_Favorites can be used to mark songs to
+<span id="blurb" style="color:#4559bf;">_Favorites can be used to mark songs to
 indicate favorite songs or any other category of your choice._</span>
 
 [TOC]
@@ -25,14 +25,14 @@ take up much space.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![favorite-disp-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/favorite-disp-settings-C.png)
-<br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Configure / Display Settings__</span> </div>
 
 In [Configure&nbsp;/&nbsp;Dialogs](en-Configuration-Dialogs), select
 the _Favorite_ checkbox in the _Song&nbsp;Filter_ column.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![favorite-dialogs](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/favorite-dialogs-A.png)
-<br><span style="color:#4559bf;">__Configure / Dialogs__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Configure / Dialogs__</span> </div>
 
 #### Favorite Display
 
@@ -41,7 +41,7 @@ editor side-by-side view example below.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![favorite-filter-disp](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/favorite-sample-view-C.png)
-<br><span style="color:#4559bf;">__Song List Editor__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Song List Editor__</span> </div>
 
 When no favorite is selected, a hollow star is displayed
 ( __☆__ ).
@@ -79,7 +79,7 @@ to view and select _Apply_.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![favorite-filter-dialog](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/favorite-filter-dialog-A.png)
-<br><span style="color:#4559bf;">__Song Selection / Filter__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Song Selection / Filter__</span> </div>
 
 #### Configuring the Favorite Display
 

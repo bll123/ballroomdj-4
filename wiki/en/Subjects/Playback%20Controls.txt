@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_The playback of a song can be
+<span id="blurb" style="color:#4559bf;">_The playback of a song can be
 adjusted with the Song Start, Song End, Speed Adjustment
 and Volume Adjustment._</span>
 
@@ -18,7 +18,7 @@ _Note that the fields displayed in the
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![pb-song-editor](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/pb-song-editor-B.png)
-<br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Music Manager / Song Editor__</span> </div>
 
 __Song&nbsp;Start__ is used to skip non-danceable or long introductory
 music. _Song&nbsp;Start_ specifies the position to seek to before the

@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_Some configuration options may need to
+<span id="blurb" style="color:#4559bf;">_Some configuration options may need to
 be copied when moving to a new computer.  This procedure also applies
 if the computer name is changed._</span>
 

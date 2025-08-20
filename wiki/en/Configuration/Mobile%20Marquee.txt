@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_The mobile marquee will display the
+<span id="blurb" style="color:#4559bf;">_The mobile marquee will display the
 upcoming songs on a mobile device._</span>
 
 ### Configure : Mobile Marquee
@@ -47,11 +47,11 @@ will show your computer's name, not what is shown in the example).
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![mobile-marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileMarquee-I.png)
-<br><span style="color:#4559bf;">__Configure / Mobile Marquee__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Configure / Mobile Marquee__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![mm-screen-1](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileMarquee-Screen1-B.jpg)
-<br><span style="color:#4559bf;">__Mobile Device / Mobile Marquee__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Mobile Device / Mobile Marquee__</span> </div>
 
 [Wiki Home](Home)
 <br>_(Updated 2025-06-15 06:33:14; BDJ4 version 4.15.0)_

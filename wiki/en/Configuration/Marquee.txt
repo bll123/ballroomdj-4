@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_The marquee can be displayed on a
+<span id="blurb" style="color:#4559bf;">_The marquee can be displayed on a
 monitor or projected on to a screen or wall so that the dancers can
 see the upcoming dances._</span>
 
@@ -38,7 +38,7 @@ __Upcoming Dance Color__: The color for the upcoming dances.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Marquee-H.png)
-<br><span style="color:#4559bf;">__Configure / Marquee__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Configure / Marquee__</span> </div>
 
 [Wiki Home](Home)
 <br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_

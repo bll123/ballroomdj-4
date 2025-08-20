@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_The player is the main interface used
+<span id="blurb" style="color:#4559bf;">_The player is the main interface used
 for playback of songs._</span>
 
 [TOC]
@@ -9,13 +9,13 @@ for playback of songs._</span>
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-A.png)
-<br><span style="color:#4559bf;">__Player__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Player__</span> </div>
 
 #### Player Display
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-display](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-display-A.png)
-<br><span style="color:#4559bf;">__Player / Player Display__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Player / Player Display__</span> </div>
 
 The left side of the player display includes the player status, repeat
 status, dance, artist and title display, time remaining to play, total
@@ -34,7 +34,7 @@ symbol will be displayed.
 ![player-status-stop](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-status-stop-A.png)
 ![player-status-pause](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-status-pause-A.png)
 ![player-status-wait](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-status-wait-A.png)
-<br><span style="color:#4559bf;">__Player / Player Status__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Player / Player Status__</span> </div>
 
 The time remaining display shows how many seconds are left to play in
 the song.  The time played is displayed to the right of the position
@@ -84,7 +84,7 @@ button will reset the speed to 100%.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-spd-reset](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-spd-reset-A.png)
-<br><span style="color:#4559bf;">__Player / Speed Reset__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Player / Speed Reset__</span> </div>
 
 __Position__: Displays the current position of the song.  The slider
 can be adjusted to change the current position of the song.
@@ -98,7 +98,7 @@ __Volume__: Sets the playback volume.
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-music-q-controls](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-music-q-controls-A.png)
 ![player-music-q-q-playlist](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-music-q-q-playlist-A.png)
-<br><span style="color:#4559bf;">__Player / Music Queue Controls__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Player / Music Queue Controls__</span> </div>
 
 __Move to Top__:
 (![move-to-top](https://ballroomdj4.sourceforge.io/wikiimg/MoveToTopButton-B.png))
@@ -123,7 +123,7 @@ the player will stop when it finishes.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-toggle-pause](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-toggle-pause-A.png)
-<br><span style="color:#4559bf;">__Player / Toggle Pause__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Player / Toggle Pause__</span> </div>
 
 __Remove__:
 (![move-up](https://ballroomdj4.sourceforge.io/wikiimg/RemoveSongButton-B.png))
@@ -166,7 +166,7 @@ song in the music queue.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-actions-menu-F.png)
-<br><span style="color:#4559bf;">__Player / Actions Menu__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Player / Actions Menu__</span> </div>
 
 __Actions / External Request__: Starts a dialog to select an audio
 file. After selecting the audio file, the artist, title and dance are
@@ -201,7 +201,7 @@ marquee menu will be disabled.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-marquee-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-marquee-menu-D.png)
-<br><span style="color:#4559bf;">__Player / Marquee Menu__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Player / Marquee Menu__</span> </div>
 
 __Marquee / Hide/Show__: Hide or show the marquee.  Only one of _Hide_
 or _Show_ will be active.
@@ -211,7 +211,7 @@ changed.  The font size will be changed immediately.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-mq-font-sz](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-mq-font-sz-A.png)
-<br><span style="color:#4559bf;">__Player / Marquee Font Size__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Player / Marquee Font Size__</span> </div>
 
 __Marquee / Recover Marquee__: If the marquee is displayed somewhere where it
 cannot be located, this selection will bring the marquee window back
@@ -221,7 +221,7 @@ to the current screen.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-export-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-export-menu-A.png)
-<br><span style="color:#4559bf;">__Player / Export Menu__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Player / Export Menu__</span> </div>
 
 __Export / Export as MP3__: Exports the current music queue to a
 folder.  Each song in the queue has the fade-in, fade-out, maximum
@@ -237,7 +237,7 @@ exported files.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-options-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-options-menu-C.png)
-<br><span style="color:#4559bf;">__Player / Options Menu__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Player / Options Menu__</span> </div>
 
 __Options / Show Extra Queues__: Displays all music queues that are configured
 ([Configure&nbsp;/&nbsp;Music%20Queues](en-Configuration-Music%20Queues)) to be displayed.

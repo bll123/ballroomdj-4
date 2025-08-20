@@ -37,7 +37,7 @@ select __Check for Updates__.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![maint-win-vlc-chk](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/maint-win-vlc-chk-b.png)
-<br><span style="color:#4559bf;">__VLC / Check for Updates__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__VLC / Check for Updates__</span> </div>
 
 If a new version of VLC is available, a dialog similar to the
 following picture will be displayed.  Check to make sure the update is
@@ -46,7 +46,7 @@ instructions.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![maint-win-vlc-upg](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/maint-win-vlc-upg-b.png)
-<br><span style="color:#4559bf;">__VLC / Update__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__VLC / Update__</span> </div>
 
 __Windows Support Libraries__
 

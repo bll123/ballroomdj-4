@@ -77,7 +77,7 @@ Downloads folder. (This image shows an out of date installer).
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![BallroomDJ 4 File Selection on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Install-File-Select.png)
-<br><span style="color:#4559bf;">__BallroomDJ 4 Installer Selection __</span> </div>
+<br><span id="caption" style="color:#4559bf;">__BallroomDJ 4 Installer Selection __</span> </div>
 
 If windows displays the __Windows Protected your PC__ message, select
 __More Info__, then __Run Anyway__.  BallroomDJ&nbsp;4 has no malware
@@ -100,7 +100,7 @@ __Installation&nbsp;Completed__ message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![BallroomDJ 4 Installer on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Installer-D.png)
-<br><span style="color:#4559bf;">__BallroomDJ 4 Installer on Windows__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__BallroomDJ 4 Installer on Windows__</span> </div>
 
 If the VLC application is not installed, the VLC installer will be
 downloaded and started for you.  In the Windows __User Account
@@ -112,7 +112,7 @@ Scroll down until you see __File Type Associations__.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![VLC Installer on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Install-VLC-Comp.png)
-<br><span style="color:#4559bf;">__VLC Installer on Windows__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__VLC Installer on Windows__</span> </div>
 
 If you do not use VLC as your current media player, select the __File
 Type Associations__ checkbox twice.  The first click will turn on all

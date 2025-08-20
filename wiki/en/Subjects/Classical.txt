@@ -24,7 +24,7 @@ the song selection and the song editor can be set in
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![cm-conf-dispset](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/cm-conf-dispset-B.png)
-<br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Configure / Display Settings__</span> </div>
 
 #### Classical Music Title
 
@@ -54,7 +54,7 @@ an exact format.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![cm-se](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/cm-se-B.png)
-<br><span style="color:#4559bf;">__Song Editor__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Song Editor__</span> </div>
 
 #### Audio Tag Sort Order
 
@@ -78,7 +78,7 @@ to see a tooltip with the full display.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![cm-mm-disp](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/cm-mm-disp-B.png)
-<br><span style="color:#4559bf;">__Music Manager / Tooltips__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Music Manager / Tooltips__</span> </div>
 
 #### Selecting an Entire Work
 
@@ -90,7 +90,7 @@ movement in the work.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![cm-play-work](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/cm-play-work-B.png)
-<br><span style="color:#4559bf;">__Player / Selecting a Work__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Player / Selecting a Work__</span> </div>
 
 The entire work will be selected.  Select the __Queue__ button to add
 the entire work to the music queue and start your playback.

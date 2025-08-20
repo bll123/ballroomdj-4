@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_A keyword is used to indicate a special
+<span id="blurb" style="color:#4559bf;">_A keyword is used to indicate a special
 category and prevent the song from being selected for automatic and
 sequenced playlists._</span>
 
@@ -21,7 +21,7 @@ Example of setting the keyword for a song:
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![keyword-song-editor](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/keyword-song-editor-A.png)
-<br><span style="color:#4559bf;">__Music Manager / Song Editor__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Music Manager / Song Editor__</span> </div>
 
 Example playlist settings for an automatic playlist that includes
 holiday songs.  The _holiday_ keyword is added to
@@ -32,7 +32,7 @@ songs will have a greater chance of being selected.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![keyword-playlist](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/keyword-playlist-B.png)
-<br><span style="color:#4559bf;">__Playlist Management__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Playlist Management__</span> </div>
 
 [Wiki Home](Home)
 <br>_(Updated 2024-02-27 07:13:31; BDJ4 version 4.6.1)_

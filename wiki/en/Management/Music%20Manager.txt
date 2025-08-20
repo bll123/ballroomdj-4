@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_The music manager works in conjunction
+<span id="blurb" style="color:#4559bf;">_The music manager works in conjunction
 with the song editor to manage songs._</span>
 
 [TOC]
@@ -27,7 +27,7 @@ playlist.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![mm-filters](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/mm-filters-A.png)
-<br><span style="color:#4559bf;">__Manage / Music Manager / Filters__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Music Manager / Filters__</span> </div>
 
 Note that the _Dance&nbsp;Rating_ filter will select any songs that
 have the selected rating or better.
@@ -67,7 +67,7 @@ will also act upon the Music&nbsp;Manager's current selection.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![mm-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/mm-actions-menu-E.png)
-<br><span style="color:#4559bf;">__Manage / Music Manager / Actions Menu__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Music Manager / Actions Menu__</span> </div>
 
 __Actions&nbsp;/&nbsp;Mark as Same Song__ will mark the
 selected songs as the same song.
@@ -108,7 +108,7 @@ marked as the same song.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![mm-same-song](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/mm-same-song-B.png)
-<br><span style="color:#4559bf;">__Manage / Music Manager / Same Song Marks__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Music Manager / Same Song Marks__</span> </div>
 
 [Wiki Home](Home)
 <br>_(Updated 2025-06-19 10:17:14; BDJ4 version 4.15.1)_

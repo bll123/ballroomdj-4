@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_A sequenced playlist uses a list
+<span id="blurb" style="color:#4559bf;">_A sequenced playlist uses a list
 of dances and BDJ4 chooses the songs to be played._</span>
 
 [TOC]

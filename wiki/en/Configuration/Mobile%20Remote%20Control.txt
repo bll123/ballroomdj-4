@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_Mobile Remote Control can be used to
+<span id="blurb" style="color:#4559bf;">_Mobile Remote Control can be used to
 control BDJ4 from your mobile device._</span>
 
 ### Configure : Mobile Remote Control
@@ -32,12 +32,12 @@ will show your computer's name, not what is shown in the example).
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![mobile-remote-control](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileRemoteControl-H.png)
-<br><span style="color:#4559bf;">__Configure / Mobile Remote Control__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Configure / Mobile Remote Control__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![mrc-screen-1](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileRemoteControl-Screen1-B.jpg)
 ![mrc-screen-2](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileRemoteControl-Screen2-B.jpg)
-<br><span style="color:#4559bf;">__Mobile Device / Mobile Remote Control__</span></div>
+<br><span id="caption" style="color:#4559bf;">__Mobile Device / Mobile Remote Control__</span></div>
 
 [Wiki Home](Home)
 <br>_(Updated 2025-06-15 06:33:14; BDJ4 version 4.15.0)_

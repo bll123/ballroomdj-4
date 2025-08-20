@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_Update database is used to manage the
+<span id="blurb" style="color:#4559bf;">_Update database is used to manage the
 database of songs._</span>
 
 [TOC]
@@ -40,7 +40,7 @@ file tags will be lost.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![UpdateDB](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/UpdateDB-B.png)
-<br><span style="color:#4559bf;">__Manage / Update Database__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Update Database__</span> </div>
 
 The __Music Folder__ will normally be set to the configured music
 folder.  If you want to add an additional music folder to the database

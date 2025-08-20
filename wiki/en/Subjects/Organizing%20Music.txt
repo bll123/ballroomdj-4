@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_The audio files on your computer may be
+<span id="blurb" style="color:#4559bf;">_The audio files on your computer may be
 renamed either manually or automatically to suit your needs._</span>
 
 [TOC]
@@ -49,7 +49,7 @@ ensure the database is reloaded.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![org-music-reorg](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/org-music-reorg-A.png)
-<br><span style="color:#4559bf;">__Manage / Update Database / Reorganize__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Update Database / Reorganize__</span> </div>
 
 ###### Automatic Organization
 
@@ -66,7 +66,7 @@ run once, as auto-organization will not rename existing audio files.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![org-music-conf](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/org-music-conf-B.png)
-<br><span style="color:#4559bf;">__Configure / Organization__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Configure / Organization__</span> </div>
 
 [Wiki Home](Home)
 <br>_(Updated 2024-03-31 09:17:12; BDJ4 version 4.8.1)_

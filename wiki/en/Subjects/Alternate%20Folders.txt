@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_Alternate folders are used to create an
+<span id="blurb" style="color:#4559bf;">_Alternate folders are used to create an
 additional BDJ4 instance with a separate database._</span>
 
 [TOC]
@@ -33,7 +33,7 @@ from the _Actions_ menu.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![alt-starter](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/alt-starter-A.png)
-<br><span style="color:#4559bf;">__Starter__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Starter__</span> </div>
 
 The alternate folder installer will start.  Enter the name of the
 alternate folder.  This name will also be used for the desktop shortcut.
@@ -48,7 +48,7 @@ be installed, and the desktop shortcut created.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![alt-installer](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/alt-installer-A.png)
-<br><span style="color:#4559bf;">__Alternate Folder Installer__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Alternate Folder Installer__</span> </div>
 
 #### Updating up an Alternate Folder
 

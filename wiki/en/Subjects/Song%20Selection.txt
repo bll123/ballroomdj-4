@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_Song selection is performed by
+<span id="blurb" style="color:#4559bf;">_Song selection is performed by
 automatic and sequenced playlists._</span>
 
 [TOC]

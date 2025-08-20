@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_An automatic playlist selects both
+<span id="blurb" style="color:#4559bf;">_An automatic playlist selects both
 the dances and the songs to be played._</span>
 
 [TOC]

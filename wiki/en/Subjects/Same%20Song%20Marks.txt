@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_Same song marks are used by automatic
+<span id="blurb" style="color:#4559bf;">_Same song marks are used by automatic
 and sequenced playlist song selection to prevent similar songs from
 playing._</span>
 
@@ -31,7 +31,7 @@ Select __Mark&nbsp;as&nbsp;Same&nbsp;Song__ in the __Actions__ menu.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![samesong-mm](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/samesong-mm-B.png)
-<br><span style="color:#4559bf;">__Manage / Music Manager__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Music Manager__</span> </div>
 
 #### Adding Additional Songs to an Existing Set
 

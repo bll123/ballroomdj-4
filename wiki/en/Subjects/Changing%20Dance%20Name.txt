@@ -29,7 +29,7 @@ and time signature settings from _Waltz_.  Do not delete _Waltz_.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![chg-dnc-edit-dnc](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/chg-dnc-edit-dnc-A.png)
-<br><span style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
 
 Once finished, the _Configuration_ window can be closed.
 
@@ -41,7 +41,7 @@ button. In the __Dance__ drop-down, select _Waltz_, then select __Apply__.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![chg-dnc-filter](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/chg-dnc-filter-A.png)
-<br><span style="color:#4559bf;">__Filter Dialog__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Filter Dialog__</span> </div>
 
 In the management window, scroll through the list and verify that you
 have selected the correct songs.  Before doing a batch edit, always
@@ -53,7 +53,7 @@ modified.  In the __Actions__ menu, select __Edit&nbsp;All__.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![chg-dnc-menu-edit-all](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/chg-dnc-menu-edit-all-A.png)
-<br><span style="color:#4559bf;">__Song Editor / Actions / Edit All__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Song Editor / Actions / Edit All__</span> </div>
 
 Note that the _Song&nbsp;Editor's_ _Save_ button is now disabled, and
 _Edit&nbsp;All_ is now displayed next to the save button to indicate
@@ -66,13 +66,13 @@ dance should be changed.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![chg-dnc-se](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/chg-dnc-se-A.png)
-<br><span style="color:#4559bf;">__Song Editor__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Song Editor__</span> </div>
 
 In the __Actions__ menu, select __Apply&nbsp;Edit&nbsp;All__.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![chg-dnc-menu-apply](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/chg-dnc-menu-apply-A.png)
-<br><span style="color:#4559bf;">__Song Editor / Actions / Apply Edit All__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Song Editor / Actions / Apply Edit All__</span> </div>
 
 All of the selected songs will now have their _Dance_ set to
 _Slow&nbsp;Waltz_.

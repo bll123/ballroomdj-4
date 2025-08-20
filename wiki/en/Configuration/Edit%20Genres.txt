@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_Genres are optional._</span>
+<span id="blurb" style="color:#4559bf;">_Genres are optional._</span>
 
 ### Configure : Edit Genres
 
@@ -25,7 +25,7 @@ to change the order of the genres to match your preference.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![edit-genres](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditGenres-F.png)
-<br><span style="color:#4559bf;">__Configure / Edit Genres__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Configure / Edit Genres__</span> </div>
 
 [Wiki Home](Home)
 <br>_(Updated 2025-06-19 10:05:19; BDJ4 version 4.15.1)_

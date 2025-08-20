@@ -126,7 +126,7 @@ __Installation&nbsp;Completed__ message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![BallroomDJ 4 Installer on Linux](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Linux-Installer-D.png)
-<br><span style="color:#4559bf;">__BallroomDJ 4 Installer on Linux__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__BallroomDJ 4 Installer on Linux__</span> </div>
 
 #### Getting Help
 

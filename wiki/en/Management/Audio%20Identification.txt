@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_Audio identification uses third party
+<span id="blurb" style="color:#4559bf;">_Audio identification uses third party
 services to identify the song and retrieve the song information._</span>
 
 [TOC]
@@ -18,7 +18,7 @@ _Audio&nbsp;ID&nbsp;Match&nbsp;List_ and _Audio&nbsp;ID_ selections.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![audioid](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/audioid-B.png)
-<br><span style="color:#4559bf;">__Manage / Audio Identification__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Manage / Audio Identification__</span> </div>
 
 #### Traversing the Song Listing
 

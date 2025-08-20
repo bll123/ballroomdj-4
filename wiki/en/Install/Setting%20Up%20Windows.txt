@@ -25,7 +25,7 @@ hours you prefer).
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![set-win10-upd](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/set-win10-upd-A.png)
-<br><span style="color:#4559bf;">__Settings / Windows Update / Active hours__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Settings / Windows Update / Active hours__</span> </div>
 </div>
 
 ###### Windows 11
@@ -40,7 +40,7 @@ hours you prefer).
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![set-win11-upd](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/set-win11-upd-A.png)
-<br><span style="color:#4559bf;">__Settings / Windows Update / Active hours__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Settings / Windows Update / Active hours__</span> </div>
 </div>
 
 #### Power Settings
@@ -66,7 +66,7 @@ Turn the __Get&nbsp;notifications&nbsp;from&nbsp;apps__ toggle switch off.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![set-win10-notify](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/set-win10-notify-A.png)
-<br><span style="color:#4559bf;">__Settings / Notifications__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Settings / Notifications__</span> </div>
 </div>
 
 ###### Windows 11
@@ -78,7 +78,7 @@ Turn the __Notifications__ toggle switch off.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![set-win11-notify](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/set-win11-notify-A.png)
-<br><span style="color:#4559bf;">__Settings / Notifications__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Settings / Notifications__</span> </div>
 </div>
 
 #### System Sounds
@@ -105,7 +105,7 @@ Select __OK__.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![set-win-sound](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/set-win-sound-C.png)
-<br><span style="color:#4559bf;">__Settings / Sound__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Settings / Sound__</span> </div>
 </div>
 
 [Wiki Home](Home)

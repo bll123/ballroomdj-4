@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_The song selection filter and quick edit
+<span id="blurb" style="color:#4559bf;">_The song selection filter and quick edit
 dialogs field selection may be configured here._</span>
 
 ### Configure : Dialogs
@@ -24,15 +24,15 @@ _Dance&nbsp;Level_, _Status_, _Favorite_, and _Playable&nbsp;Status_.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![dialogs](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Dialogs-A.png)
-<br><span style="color:#4559bf;">__Configure / Dialogs__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Configure / Dialogs__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![filter-dialog-default](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/FilterDisplay-Dialog-A.png)
-<br><span style="color:#4559bf;">__Filter Dialog - Default filters__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Filter Dialog - Default filters__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![filter-dialog-all](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/FilterDisplay-Dialog-All-A.png)
-<br><span style="color:#4559bf;">__Filter Dialog - All filters enabled__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Filter Dialog - All filters enabled__</span> </div>
 
 #### Quick Edit
 

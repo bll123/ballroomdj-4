@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_Organization configures how the audio
+<span id="blurb" style="color:#4559bf;">_Organization configures how the audio
 files are stored on your computer._</span>
 
 ### Configure : Organization
@@ -29,7 +29,7 @@ the organization path.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Organization](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Organization-F.png)
-<br><span style="color:#4559bf;">__Configure / Organization__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Configure / Organization__</span> </div>
 
 [Wiki Home](Home)
 <br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_

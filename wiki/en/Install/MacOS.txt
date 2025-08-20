@@ -91,7 +91,7 @@ __Installation&nbsp;Completed__ message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![BallroomDJ 4 Installer on MacOS](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Installer-D.png)
-<br><span style="color:#4559bf;">__BallroomDJ 4 Installer on MacOS__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__BallroomDJ 4 Installer on MacOS__</span> </div>
 
 If VLC is not already installed on your computer, the installation
 process will download and start the VLC installation.  Drag the VLC.app
@@ -99,7 +99,7 @@ icon to the Applications Folder icon.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![VLC Installation on MacOS](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Install-VLC.png)
-<br><span style="color:#4559bf;">__VLC Installation on MacOS__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__VLC Installation on MacOS__</span> </div>
 
 #### Getting Help
 

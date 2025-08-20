@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-<span style="color:#4559bf;">_The user interface tab has settings for
+<span id="blurb" style="color:#4559bf;">_The user interface tab has settings for
 how the user interface is displayed._</span>
 
 ### Configure : User Interface
@@ -29,7 +29,7 @@ __Song Mark Color__: The color used to mark songs in the song list.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![user-interface](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/UI-E.png)
-<br><span style="color:#4559bf;">__Configure / User Interface__</span> </div>
+<br><span id="caption" style="color:#4559bf;">__Configure / User Interface__</span> </div>
 
 [Wiki Home](Home)
 <br>_(Updated 2024-12-23 09:52:50; BDJ4 version 4.12.8)_
