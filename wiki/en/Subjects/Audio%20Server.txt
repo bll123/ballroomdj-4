@@ -12,7 +12,7 @@ A BDJ4 audio server can be used to allow remote playback of songs.
 BDJ4 to BDJ4 connections have the advantage that speed adjustments,
 song start and song end all work.
 
-##### Configuring a BDJ4 Server
+#### Configuring a BDJ4 Server
 
 Select __Configure&nbsp;/&nbsp;Audio&nbsp;Sources__.  BDJ4 ships with a
 audio source named _BDJ4_ that is set to _Off_.  For this
@@ -44,7 +44,7 @@ References:
 <br>[Configuration / Audio Sources](en-Configuration-Audio%20Sources)
 <br>[Subjects / BDJ4 Audio Client](en-Subjects-Audio%20Client)
 
-##### Starting the Server
+#### Starting the Server
 
 Once the server is configured, it will be automatically started when
 BDJ4 is started.  Exit BDJ4 completely, then restart BDJ4, and the

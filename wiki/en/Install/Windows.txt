@@ -7,7 +7,7 @@
 Supported Platforms as of 2023-3-15: Windows&nbsp;10&nbsp;(64-bit),
 Windows&nbsp;11&nbsp;(64-bit).
 
-##### Windows and Anti-Virus Programs
+#### Windows and Anti-Virus Programs
 
 __*\* BallroomDJ 4 does not have any viruses in it. \*\*__
 
@@ -31,15 +31,12 @@ false positive yourself, or mark BDJ4 as safe on your computer.
 To update the anti-virus definitions for Windows Defender, do:
 
 1. Open command prompt (cmd.exe) as administrator and change directory to
-c:\Program&nbsp;Files\Windows&nbsp;Defender
-* Type: MpCmdRun.exe&nbsp;-removedefinitions&nbsp;-dynamicsignatures
-<br>
-and press the enter key.
-* Type: MpCmdRun.exe&nbsp;-SignatureUpdate
-<br>
-and press the enter key.
+c:\Program&nbsp;Files\Windows&nbsp;Defender and enter the following
+commands.
+* MpCmdRun.exe&nbsp;-removedefinitions&nbsp;-dynamicsignatures
+* MpCmdRun.exe&nbsp;-SignatureUpdate
 
-##### Updating BallroomDJ 4 : Make a Backup
+#### Updating BallroomDJ 4 : Make a Backup
 
 Be sure to exit BallroomDJ&nbsp;4 before creating a backup or updating the
 software.
@@ -48,7 +45,7 @@ If you are updating BallroomDJ&nbsp;4 to a new version, be sure to create a
 backup of your BDJ4 installation.  On Windows, simply make a copy of
 the entire BDJ4 folder.
 
-##### Internet Connection
+#### Internet Connection
 
 An internet connection is required the first time BallroomDJ&nbsp;4 is
 installed.  There are requisite packages (VLC) that
@@ -56,7 +53,7 @@ need to be installed from the internet.
 
 If VLC is already installed, no internet connection is required.
 
-##### VLC Version
+#### VLC Version
 
 At this time, VLC version 4 (which has not been released as of
 2025-4-9), is broken. BDJ4 will not work correctly with VLC
@@ -67,7 +64,7 @@ be overwritten.  [Contact](en-Getting%20Help) the BDJ4 developers if
 you have this situation.  You will either need to install both VLC
 version&nbsp;4 and version&nbsp;3 or only use VLC version&nbsp;3.
 
-##### Install BallroomDJ 4
+#### Install BallroomDJ 4
 
 Download the Windows installer from sourceforge.
 
@@ -126,20 +123,20 @@ Now select __Next__, then select __Install__. After the VLC
 installation is complete, turn off the __Run VLC media player__
 checkbox, and select __Finish__.
 
-##### Getting Started with BDJ4
+#### Getting Started with BDJ4
 
 Visit the
 [Getting&nbsp;Started&nbsp;with&nbsp;BDJ4](en-Install-Getting%20Started)
 wiki page.
 
-##### Getting Help
+#### Getting Help
 
 If you need help getting started, understanding how something in BDJ4
 functions, or want to learn how to accomplish a particular goal in
 BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
-##### Additional Windows Setup
+#### Additional Windows Setup
 
 [Setting up Windows for DJ Work](en-Install-Setting%20Up%20Windows)
 

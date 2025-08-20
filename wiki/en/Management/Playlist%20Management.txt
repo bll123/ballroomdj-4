@@ -13,7 +13,7 @@ In all cases, the playlist is automatically saved.
 
 Automatic playlists are created using playlist management.
 
-##### Playlist Controls
+#### Playlist Controls
 
 Playlist controls are in the __Settings__ tab and are applicable to
 song lists, sequences and automatic playlists.
@@ -48,7 +48,7 @@ for each song for this playlist.
 <br>[Configuration / Music Queues](en-Configuration-Music%20Queues)
 <br>[Configuration / Edit Dances](en-Configuration-Edit%20Dances)
 
-##### Song Selection Filters
+#### Song Selection Filters
 
 Song selection filters are in the __Settings__ tab and are applicable
 to sequences and automatic playlists.
@@ -93,7 +93,7 @@ not be played.
 <br>__References:__
 <br>[Configuration / Edit Status](en-Configuration-Edit%20Status)
 
-##### Per Dance Playlist Controls
+#### Per Dance Playlist Controls
 
 The per dance playlist controls are in the __Dances__ tab.  These
 controls are applicable to song lists, sequences and automatic
@@ -127,7 +127,7 @@ changed.
 ![plmgmt-dance-controls](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-dance-controls-D.png)
 <br><span style="color:#4559bf;">__Manage / Playlist Management / Dance Controls (automatic)__</span> </div>
 
-##### Podcast Controls
+#### Podcast Controls
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![plmgmt-podcast-controls](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-podcast-controls-B.png)
@@ -143,7 +143,7 @@ imported, the retention period will be applied.  Any episodes older
 than __Days&nbsp;to&nbsp;Keep__ will be removed from the database and
 from the podcast song list.
 
-##### Naming the Playlist
+#### Naming the Playlist
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![plmgmt-name-entry](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-name-entry-B.png)
@@ -165,7 +165,7 @@ as _New&nbsp;Playlist_. To rename it afterwards, simply select
 __Edit&nbsp;/&nbsp;Load__ from the menu.  Select _New&nbsp;Playlist_,
 then enter the new name of the automatic playlist.
 
-##### Edit Menu
+#### Edit Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![plmgmt-edit-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-edit-menu-B.png)

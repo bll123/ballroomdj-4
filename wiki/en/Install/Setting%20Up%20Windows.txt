@@ -7,7 +7,7 @@
 The settings outlined here prevent Windows from interrupting a DJ
 session.
 
-##### Scheduling Windows Updates
+#### Scheduling Windows Updates
 
 ###### Windows 10
 
@@ -43,13 +43,13 @@ hours you prefer).
 <br><span style="color:#4559bf;">__Settings / Windows Update / Active hours__</span> </div>
 </div>
 
-##### Power Settings
+#### Power Settings
 
 Starting with version 4.3.2.1, the BDJ4 player will prevent the
 Windows system from going to sleep.  The power settings can be set to
 your preference.
 
-##### Notification Settings
+#### Notification Settings
 
 This is one (rather severe) method to prevent notifications. There are
 alternative methods to prevent notifications that can be used.
@@ -81,7 +81,7 @@ Turn the __Notifications__ toggle switch off.
 <br><span style="color:#4559bf;">__Settings / Notifications__</span> </div>
 </div>
 
-##### System Sounds
+#### System Sounds
 
 System sounds made by various programs and widgets may interrupt the
 dancer's experience.

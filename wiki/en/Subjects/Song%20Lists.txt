@@ -13,7 +13,7 @@ list of songs played in the selected order.
 See: [Edit Song Lists](en-Management-Edit%20Song%20Lists) for details
 on the buttons and menus.
 
-##### Changing the Name of the Song List
+#### Changing the Name of the Song List
 
 The song list's name is at the top of the _Song&nbsp;List_ tab. Enter
 the new name of the song list at any time.
@@ -33,7 +33,7 @@ Change the name of the song list.  The song list will be renamed.
 ![sl-name-entry](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-name-entry-B.png)
 <br><span style="color:#4559bf;">__Manage / Edit Song Lists / Song List Name__</span> </div>
 
-##### Creating a Song List Manually
+#### Creating a Song List Manually
 
 Select __Manage__ from the starter window.  The
 Edit&nbsp;Song&nbsp;Lists tab will be displayed.
@@ -52,7 +52,7 @@ swap two songs.
 
 The song list will be saved automatically.
 
-##### Using the Mix Action
+#### Using the Mix Action
 
 Re-arranging all of the songs in a song list can be a large amount of
 work.  To make the process easier, the _Mix_ action can be used.
@@ -75,7 +75,7 @@ tune the order.
 
 The song list will be saved automatically.
 
-##### Re-Using Song Lists
+#### Re-Using Song Lists
 
 Once you have a song list with a good mix, you can create copies and
 modify the copy to create a new song list.
@@ -96,7 +96,7 @@ button&nbsp;(![remove](https://ballroomdj4.sourceforge.io/wikiimg/RemoveSongButt
 Continue to replace songs until you are satisfied with the new song
 list.
 
-##### Playlist Controls
+#### Playlist Controls
 
 Every song list has an associated playlist.  If a song list is loaded
 in the song list editor, switching to the
@@ -110,7 +110,7 @@ _Gap_ and _Play&nbsp;Announcements_.
 In the _Dances_ tab in _Playlist&nbsp;Management_, the
 _Maximum&nbsp;Play&nbsp;Time_ for a particular dance can be set.
 
-##### Creating a Song List from an Automatic or Sequenced Playlist
+#### Creating a Song List from an Automatic or Sequenced Playlist
 
 A song list can also be created from an
 [Automatic&nbsp;Playlist](en-Subjects-Automatic&nbsp;Playlists) or

@@ -8,7 +8,7 @@ another._</span>
 
 ### Export to BDJ4 / Import from BDJ4
 
-##### Exporting song lists and audio files
+#### Exporting song lists and audio files
 
 In __Manage&nbsp;/&nbsp;Edit&nbsp;Song&nbsp;Lists__, load the song list
 to be exported.
@@ -32,7 +32,7 @@ current database entry.
 
 More than one song list may be exported to the same export folder.
 
-##### Importing song lists and audio files
+#### Importing song lists and audio files
 
 In __Manage&nbsp;/&nbsp;Edit&nbsp;Song&nbsp;Lists__, select the
 __Import&nbsp;/&nbsp;Import&nbsp;from&nbsp;BDJ4__ menu item. The dialog

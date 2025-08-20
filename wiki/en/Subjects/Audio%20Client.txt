@@ -11,7 +11,7 @@ A BDJ4 client audio source can be used to play songs from a remote
 BDJ4 server. The [BDJ4 Audio Server](en-Subjects-Audio%20Server)
 should be set up first.
 
-##### Configuring a BDJ4 Client
+#### Configuring a BDJ4 Client
 
 Select __Configure&nbsp;/&nbsp;Audio&nbsp;Sources__.  BDJ4 ships with
 a audio source named _BDJ4_ that is set to _Off_.  For this example,
@@ -41,13 +41,13 @@ References:
 <br>[Configuration / Audio Sources](en-Configuration-Audio%20Sources)
 <br>[Subjects / BDJ4 Audio Server](en-Subjects-Audio%20Server)
 
-##### Checking the Connection
+#### Checking the Connection
 
 Select the __Check&nbsp;Connection__ button to check the configured
 connection.  The server must be accessible.  A status message will be
 displayed in the top right of the window indicating success or failure.
 
-##### Using the Client Connection
+#### Using the Client Connection
 
 First, a playlist must be imported from the remote server.  Select
 __Manage__, then select __Import&nbsp;Playlist__ from the __Import__

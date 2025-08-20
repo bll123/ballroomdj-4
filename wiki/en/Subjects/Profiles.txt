@@ -17,7 +17,7 @@ ballroom dance parties, for different locations, or other uses.
 To set up an alternate folder with a separate database, use an
 [Altnernate Folder](en-Subjects-Alternate%20Folders).
 
-##### Creating a New Profile
+#### Creating a New Profile
 
 Start BDJ4, then select __Create&nbsp;Profile__ in the __Profile__
 selection.
@@ -61,7 +61,7 @@ The profile order cannot be changed.  BDJ4 chooses the first empty
 profile slot to create a new profile.  A maximum of 10 profiles may be
 created.
 
-##### Selecting Profiles
+#### Selecting Profiles
 
 When BDJ4 is started, the first profile will automatically be selected.
 
@@ -72,7 +72,7 @@ If a second instance of BDJ4 is started, the profiles that are in use
 may not be selected.  A different profile may be selected and the
 second instance of BDJ4 will use that profile.
 
-##### Deleting Profiles
+#### Deleting Profiles
 
 Start BDJ4, select the profile to be deleted, then in the starter
 window, select __Delete&nbsp;Profile__ from the __Actions__ menu.
@@ -81,7 +81,7 @@ window, select __Delete&nbsp;Profile__ from the __Actions__ menu.
 ![profile-delete](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/profile-delete-A.png)
 <br><span style="color:#4559bf;">__Starter__</span> </div>
 
-##### Using Multiple Profiles
+#### Using Multiple Profiles
 
 Multiple profiles may be in use at the same time.
 

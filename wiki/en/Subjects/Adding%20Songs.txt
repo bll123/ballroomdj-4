@@ -20,7 +20,7 @@ how many new audio files were added to the database.
 ![adding-songs-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/adding-songs-A.png)
 <br><span style="color:#4559bf;">__Manage / Update Database__</span> </div>
 
-##### Adding Songs in a Separate Folder
+#### Adding Songs in a Separate Folder
 
 If you have audio files that are in a folder separate from your main
 music folder (configured in BDJ4), use the directory chooser button

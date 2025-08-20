@@ -10,7 +10,7 @@ the dances and the songs to be played._</span>
 When an automatic playlist is used, BDJ4 will choose both the dances
 to be played, and choose the songs to be played.
 
-##### Creating an Automatic Playlist
+#### Creating an Automatic Playlist
 
 Select __Manage__ in the start window.  Select
 __Playlist&nbsp;Management__.  In the __Edit__ menu, select
@@ -38,7 +38,7 @@ To change a count, select the dance row, then click on the count.
 Select the __+__ and __-__ buttons to adjust the count.  Click on a
 different dance to finalize the change.
 
-##### Changing the Name of the Automatic Playlist
+#### Changing the Name of the Automatic Playlist
 
 The automatic playlist's name is at the top of the
 _Playlist&nbsp;Management_ tab. Enter the new name of the automatic
@@ -54,7 +54,7 @@ If you forget to change the name, the automatic playlist will be named
 _New&nbsp;Playlist_.  Select __Load__ from the __Edit__ menu.  Select
 _New&nbsp;Playlist_.  Change the name of the automatic playlist.
 
-##### Dance and Song Selection
+#### Dance and Song Selection
 
 BDJ4 chooses the next dance to be played using an algorithm based on
 the dance, the type of dance, the speed of the dance and the tags set
@@ -89,7 +89,7 @@ from those songs marked as the same song is used.
 <br>__References:__
 <br>[Subjects / Same Song Marks](en-Subjects-Same%20Song%20Marks)
 
-##### Playlist Controls
+#### Playlist Controls
 
 The _Settings_ tab in _Playlist&nbsp;Management_ has the controls for
 _Maximum&nbsp;Play&nbsp;Time, _Stop&nbsp;At_, _Stop&nbsp;After_,

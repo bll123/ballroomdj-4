@@ -5,7 +5,7 @@ is found and what fields to import._</span>
 
 ### Configure : iTunes
 
-##### Configuring iTunes
+#### Configuring iTunes
 
 To allow BallroomDJ&nbsp;4 to access the iTunes information, iTunes
 must be configured to share the iTunes library information.  In iTunes,
@@ -19,7 +19,7 @@ XML with other applications__ checkbox.
 ![iTunes Advanced Preferences](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/itunes-pref-A.png)
 <br><span style="color:#4559bf;">__iTunes Advanced Preferences__</span> </div>
 
-##### Configuring BallroomDJ 4 for iTunes
+#### Configuring BallroomDJ 4 for iTunes
 
 __iTunes Media Folder__: When the iTunes media folder is selected,
 BallroomDJ&nbsp;4 will try to locate the associated iTunes XML file.

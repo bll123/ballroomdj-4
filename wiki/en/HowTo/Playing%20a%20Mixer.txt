@@ -11,7 +11,7 @@ current music queue's configuration may not be appropriate for a mixer
 
 The example below outlines one method for playing a mixer.
 
-##### Configuring a Music Queue for a Mixer
+#### Configuring a Music Queue for a Mixer
 
 For the mixer music queue, in
 __Configure&nbsp;/&nbsp;Music&nbsp;Queues__, use the selector to
@@ -27,7 +27,7 @@ Close the configuration window to save the configuration changes.
 ![mixer-conf-musicq](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-conf-musicq-E.png)
 <br><span style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
-##### Turn on the Extra Queues
+#### Turn on the Extra Queues
 
 In the __Player__, open the __Options__ menu, and turn on
 __Show&nbsp;Extra&nbsp;Queues__ and
@@ -37,7 +37,7 @@ __Switch&nbsp;Queue&nbsp;When&nbsp;Empty__.
 ![mixer-player-options](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-player-options-D.png)
 <br><span style="color:#4559bf;">__Player / Options__</span> </div>
 
-##### Start the Dance
+#### Start the Dance
 
 In the __Player__, select the main music queue and use the
 __Queue&nbsp;Playlist__ button to queue the regular playlist for the
@@ -45,7 +45,7 @@ dance. Use the __Play&nbsp;/&nbsp;Pause__
 (![b-pp](https://ballroomdj4.sourceforge.io/wikiimg/player-b-playpause-A.png))
 button to start the dance.
 
-##### Adding Songs for the Mixer
+#### Adding Songs for the Mixer
 
 In the __Player__, first select the ___Mixer___ music queue.
 
@@ -69,7 +69,7 @@ __Apply__ button.
 For each song you want to play for the mixer, select the song, then select the
 __Queue__ button.
 
-##### Playing the Mixer
+#### Playing the Mixer
 
 When you are ready to play the mixer, select the
 __Pause&nbsp;at&nbsp;End__ button.

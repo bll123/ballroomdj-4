@@ -28,7 +28,7 @@
 
 ### src/ Directory Layout
 
-##### General
+#### General
 
  Directory|Notes
  ---------|-----
@@ -38,7 +38,7 @@
  libwebsrv|web server (uses mongoose)
  mongoose|third-party web server
 
-##### Audio Interaces
+#### Audio Interaces
 
  Directory|Notes
  ---------|-----
@@ -53,7 +53,7 @@ were in process.
  libpli|player interface (dynamic libraries)
  libvol|volume interface (dynamic libraries)
 
-##### User Interface
+#### User Interface
 
  Directory|Notes
  ---------|-----
@@ -70,7 +70,7 @@ were in process.
  libuimacos|macos gui layer
  libuinull|null gui layer
 
-##### Applications
+#### Applications
 
  Directory|Notes
  ---------|-----
@@ -84,7 +84,7 @@ Only the marquee has the ui linked in.
  server|BDJ4 Audio Server
  starter|the launcher and starter process
 
-##### Other
+#### Other
 
  Directory|Notes
  ---------|-----

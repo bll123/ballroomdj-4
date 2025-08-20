@@ -14,7 +14,7 @@ save the changes while the song is still playing or is still selected.
 If the player finishes a song and moves to the next song, the changes
 will not be saved.
 
-##### Accessing Quick Edit
+#### Accessing Quick Edit
 
 Quick Edit is accessed from the [Player's](en-Player-Player) _Actions_ menu.
 
@@ -27,7 +27,7 @@ song in the music queue or the history.
 ![quick-edit](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/quick-edit-B.png)
 <br><span style="color:#4559bf;">__Player / Quick Edit__</span> </div>
 
-##### Quick Edit: Current
+#### Quick Edit: Current
 
 When editing the current song, the _Speed&nbsp;Adjustment_ will be set
 to the same speed as is set in the player. The _Volume&nbsp;Adjustment_
@@ -42,13 +42,13 @@ volume&nbsp;adjustment will be set correctly for the new volume.
 Select the __Save__ button to save the changes. The player's volume will
 be reset back to its current setting when the changes are saved.
 
-##### Quick Edit: Selected
+#### Quick Edit: Selected
 
 __Quick&nbsp;Edit:&nbsp;Selected__ will edit the song selected in the
 music queue or in the history.  The song's current settings will be
 loaded and displayed.  Make any changes and then select __Save__.
 
-##### Configuring Which Fields are Displayed
+#### Configuring Which Fields are Displayed
 
 The fields displayed in _Quick&nbsp;Edit_ can be configured in
 [Configuration&nbsp;/&nbsp;Dialogs](en-Configuration-Dialogs).

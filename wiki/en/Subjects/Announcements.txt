@@ -16,7 +16,7 @@ Announcements are useful when a marquee cannot be displayed in the
 venue, and are also helpful if the marquee is not visible by all of
 the dancers.
 
-##### Adding the Announcements to the Database
+#### Adding the Announcements to the Database
 
 First, the announcements must be added to the BallroomDJ&nbsp;4
 database.  You can record your own announcements or find pre-recorded
@@ -33,7 +33,7 @@ __Manage&nbsp;/&nbsp;Update&nbsp;Database&nbsp;/&nbsp;Check&nbsp;for&nbsp;New__.
 <br>(See
 [Adding&nbsp;Songs&nbsp;to&nbsp;the&nbsp;Database](en-Subjects-Adding%20Songs)).
 
-##### Associate the Announcement with a Dance
+#### Associate the Announcement with a Dance
 
 Now, using __Configure&nbsp;/&nbsp;Edit&nbsp;Dances__, select the
 dance to edit, select the __Announcement__ file chooser button with
@@ -49,7 +49,7 @@ will be played.
 ![ann-edit-dance](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-edit-dance-D.png)
 <br><span style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
 
-##### Playing Announcements
+#### Playing Announcements
 
 The announcement audio file(s) are now configured, but will not play
 unless turned on for the music queue or the playlist.
@@ -66,7 +66,7 @@ disadvantage of this method is that any requested songs added to the
 queue will not have an announcement played (as there is no playlist
 associated with the song added to the queue).
 
-##### Configuring a Music Queue to Play Announcements
+#### Configuring a Music Queue to Play Announcements
 
 In __Configure&nbsp;/&nbsp;Music&nbsp;Queues__, turn on the
 __Play&nbsp;Announcements__ switch.
@@ -75,7 +75,7 @@ __Play&nbsp;Announcements__ switch.
 ![ann-mq](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-mq-C.png)
 <br><span style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
-##### Configuring a Playlist to Play Announcements
+#### Configuring a Playlist to Play Announcements
 
 In __Manage&nbsp;/&nbsp;Playlist&nbsp;Management__, load the playlist to be
 configured, and turn on the __Play&nbsp;Announcements__ switch.

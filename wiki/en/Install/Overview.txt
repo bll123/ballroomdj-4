@@ -7,7 +7,7 @@
 A short list of some things that are useful to know when starting out
 with BDJ4.
 
-##### Configuration
+#### Configuration
 
 The configuration is static, not dynamic.  When you change the
 configuration, you will need to close and restart the player and
@@ -15,7 +15,7 @@ management interfaces.  Configuration changes are not immediately
 applied.  Certain configuration options (locale, profile color, accent
 color, user interface, et.al.) require exiting BDJ4 and restarting.
 
-##### Database Updates
+#### Database Updates
 
 When a database update is done (rebuild, check for new, re-organize,
 etc.), it is safest to exit the player and management interfaces, and
@@ -23,7 +23,7 @@ re-open them.  While BDJ4 tries to keep the database changes updated
 and consistent, it is still safest to exit and restart to make sure the
 management and player interfaces have a consistent view.
 
-##### Definition of a Playlist
+#### Definition of a Playlist
 
 A playlist in many music players is a static list of songs, which
 can't be changed during playback.
@@ -57,7 +57,7 @@ In all of these cases, once queued for playback, the BDJ4 player
 allows songs to be moved, added, and removed.  This does not modify
 the original song list, sequence or automatic playlist.
 
-##### Using Genre
+#### Using Genre
 
 Some people use the genre tag to set the dance (Waltz, Rumba, etc.).
 
@@ -75,7 +75,7 @@ information is first read and saved into the database.
 <br>__References:__
 <br>[Configuration / Organization](en-Configuration-Organization)
 
-##### Menus
+#### Menus
 
 Menus in BDJ4 are context sensitive, and will change depending on the
 selected tab.  Switching to a new tab will update the menu. e.g. in
@@ -84,7 +84,7 @@ In the _Music&nbsp;Manager_, the _Music&nbsp;Manager_ sub-tab and the
 _Song&nbsp;Editor_ sub-tab have an _Actions_ menu, but the menu
 contents are different.
 
-##### Music Queues, Profiles and Alternate Folders
+#### Music Queues, Profiles and Alternate Folders
 
 BDJ4 installations have the following structure:
 
@@ -136,7 +136,7 @@ installation is not duplicated, only the data files are separate.
 <br>__Reference:__
 <br>[Subjects / Alternate Folders](en-Subjects-Alternate%20Folders)
 
-##### Getting help
+#### Getting help
 
 If you need help getting started, understanding how something in BDJ4
 functions, or want to learn how to accomplish a particular goal in

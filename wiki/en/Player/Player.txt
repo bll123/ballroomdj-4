@@ -11,7 +11,7 @@ for playback of songs._</span>
 ![player](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-A.png)
 <br><span style="color:#4559bf;">__Player__</span> </div>
 
-##### Player Display
+#### Player Display
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-display](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-display-A.png)
@@ -40,7 +40,7 @@ The time remaining display shows how many seconds are left to play in
 the song.  The time played is displayed to the right of the position
 slider.
 
-##### Player Controls
+#### Player Controls
 
 __Fade__: The fade button will fade out the song using the queue's
 configured fade out time and stop playing the song.  Any gap
@@ -93,7 +93,7 @@ __Volume__: Sets the playback volume.
 <br>__References:__
 <br>__Default&nbsp;Volume__ in [Configuration&nbsp;/&nbsp;Player](en-Configuration-Player)
 
-##### Music Queue Controls
+#### Music Queue Controls
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-music-q-controls](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-music-q-controls-A.png)
@@ -146,7 +146,7 @@ __Queue 5__: Select a dance from the drop-down to add five instances
 of that dance to the queue.  The special playlist __QueueDance__ is
 used to select the songs.
 
-##### Requests
+#### Requests
 
 Select the _Request_ tab to view the song selection listing.  The
 dance drop-down may be used to quickly change which dance is
@@ -162,7 +162,7 @@ Select a song and select the __Queue__ button to add a song to the music
 queue.  The selected song will be added after the currently selected
 song in the music queue.
 
-##### Actions Menu
+#### Actions Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-actions-menu-F.png)
@@ -194,7 +194,7 @@ history queue and the current song from the last saved state.
 <br>
 See: [Player&nbsp;/&nbsp;Reload](en-Player-Reload)
 
-##### Marquee Menu
+#### Marquee Menu
 
 If the marquee is set to _Off_ in _Configure&nbsp;/&nbsp;Marquee_, the
 marquee menu will be disabled.
@@ -217,7 +217,7 @@ __Marquee / Recover Marquee__: If the marquee is displayed somewhere where it
 cannot be located, this selection will bring the marquee window back
 to the current screen.
 
-##### Export Menu
+#### Export Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-export-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-export-menu-A.png)
@@ -233,7 +233,7 @@ When selected, a dialog to select a folder is displayed.  It is highly
 recommended that a new empty folder be created and used to hold the
 exported files.
 
-##### Options Menu
+#### Options Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![player-options-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-options-menu-C.png)

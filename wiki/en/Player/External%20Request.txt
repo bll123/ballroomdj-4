@@ -10,7 +10,7 @@ playback of a song that is not in the database._</span>
 An external request adds a song that is not in the database to the
 music queue.
 
-##### Playing a song that is not in the database.
+#### Playing a song that is not in the database.
 
 In the [Player](en-Player-Player), first select the music queue that
 the song will be added to.  The external request will be added to the

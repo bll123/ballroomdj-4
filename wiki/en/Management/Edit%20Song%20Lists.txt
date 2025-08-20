@@ -9,7 +9,7 @@ songs selected and ordered by the DJ._</span>
 
 In all cases, the song list is automatically saved.
 
-##### Side-by-Side View
+#### Side-by-Side View
 
 This is the default layout.  The left side of the window has the song
 list, and the right side has the song selection.  Due to the side by
@@ -29,7 +29,7 @@ by holding down the _Control_ key when clicking on each song.
 ![sl-side-by-side](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-side-by-side-C.png)
 <br><span style="color:#4559bf;">__Manage / Edit Song Lists (Side#8209;by#8209;Side View)__</span> </div>
 
-##### Song List Editor
+#### Song List Editor
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![sl-options-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-options-menu-C.png)
@@ -52,7 +52,7 @@ button at the top of the listing to add the songs to the song list.
 ![sl-standard](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-standard-D.png)
 <br><span style="color:#4559bf;">__Manage / Edit Song Lists (Standard)__</span> </div>
 
-##### Naming the Song List
+#### Naming the Song List
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![sl-name-entry](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-name-entry-B.png)
@@ -73,13 +73,13 @@ _New&nbsp;Song&nbsp;List_.  To rename it afterwards, simply select
 __Edit&nbsp;/&nbsp;Load__ from the menu.  Select
 _New&nbsp;Song&nbsp;List_, then enter the new name of the song list.
 
-##### Song Selection Indicators
+#### Song Selection Indicators
 
 The song selection listing will display a mark before each song that
 is already in the song list.  (See the
 _Side&#8209;by&#8209;Side&nbsp;View_ image above).
 
-##### Filtering the Song Selection
+#### Filtering the Song Selection
 
 The song selection list can be filtered so that you can find the dance
 and type of song easily.
@@ -109,7 +109,7 @@ Any other filters that have been selected in the filter dialog remain
 active.  Use the __Reset__ button in the filter dialog to clear all song
 selection filters.
 
-##### Modifying the Song List
+#### Modifying the Song List
 
 At the top of the song list, the move-to-top button
 (![move-to-top](https://ballroomdj4.sourceforge.io/wikiimg/MoveToTopButton-B.png))
@@ -121,7 +121,7 @@ will move the song up and down.  The remove button
 (![remove](https://ballroomdj4.sourceforge.io/wikiimg/RemoveSongButton-B.png))
 will remove the selection from the song list.
 
-##### Reviewing a Song
+#### Reviewing a Song
 
 While in the song list or the song selection, select the play button
 (![Play](https://ballroomdj4.sourceforge.io/wikiimg/PlayButton-A.png))
@@ -130,7 +130,7 @@ above the listing to play the currently selected song.
 Note that the play/pause button in the player section will not play
 the selected song, it is only used for song currently in the player.
 
-##### Editing a Song
+#### Editing a Song
 
 While in the song list or the song selection, select the edit button
 (![edit](https://ballroomdj4.sourceforge.io/wikiimg/EditButton-B.png))
@@ -139,7 +139,7 @@ to edit a song.  This will open the
 selected song.  Be sure to use the __Save__ button while in the song
 editor.
 
-##### Statistics
+#### Statistics
 
 The _Statistics_ tab displays information about the song list.  The
 number of songs, the total time, and a breakdown of how many songs for
@@ -149,7 +149,7 @@ each dance is displayed.
 ![sl-statistics-B](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-statistics-B.png)
 <br><span style="color:#4559bf;">__Manage / Edit Song Lists / Statistics__</span> </div>
 
-##### Edit Menu
+#### Edit Menu
 
 __Edit&nbsp;/&nbsp;Load__ will open a dialog to select an existing
 song list.  Select a song list and then the __Select__ button to load
@@ -171,7 +171,7 @@ the database.
 ![sl-edit-menu-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-edit-menu-B.png)
 <br><span style="color:#4559bf;">__Manage / Edit Song Lists / Edit Menu__</span> </div>
 
-##### Actions Menu
+#### Actions Menu
 
 __Actions&nbsp;/&nbsp;Mix__ will use BDJ4's automatic dance
 and song selection process to mix the songs in the song list into a
@@ -201,7 +201,7 @@ played.
 ![sl-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-actions-menu-C.png)
 <br><span style="color:#4559bf;">__Manage / Edit Song Lists / Actions Menu__</span> </div>
 
-##### Export Menu
+#### Export Menu
 
 __Export&nbsp;/&nbsp;Export&nbsp;Playlist__
 creates an M3U, JSPF or XSPF playlist file that can be used in other players.
@@ -214,7 +214,7 @@ instance of BDJ4.
 ![sl-export-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-export-menu-D.png)
 <br><span style="color:#4559bf;">__Manage / Edit Song Lists / Export Menu__</span> </div>
 
-##### Import Menu
+#### Import Menu
 
 __Import&nbsp;/&nbsp;Import&nbsp;Playlist__ imports local (M3U, JSPF,
 XSFP) or remote playlists.

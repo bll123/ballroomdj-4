@@ -11,7 +11,7 @@ A song list may be created from an automatic or sequenced playlist.
 The song list can then be adjusted afterwards.  In the following
 example, an automatic playlist is used to create a song list.
 
-##### Create an Automatic Playlist
+#### Create an Automatic Playlist
 
 For this example, the automatic playlist will be set to have the
 following dances with a count of 5: _Waltz_, _Foxtrot_, _Tango_.
@@ -39,7 +39,7 @@ time for _Viennese&nbsp;Waltz_ will be set to 2:00.
 ![create-sl-dances](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/create-song-list-dances-B.png)
 <br><span style="color:#4559bf;">__Management / Playlist Management / Dances__</span> </div>
 
-##### Create a Song List Using the Automatic Playlist
+#### Create a Song List Using the Automatic Playlist
 
 Now switch to [Edit&nbsp;Song&nbsp;Lists](en-Management-Edit%20Song%20Lists).
 Select the __Actions&nbsp;/&nbsp;Create from Playlist__ menu item.
@@ -54,7 +54,7 @@ example, a time limit of thirty minutes is used.
 
 Rename the example song list to __example-create__.
 
-##### Playlist Settings are Copied
+#### Playlist Settings are Copied
 
 The playlist settings from the automatic or sequenced playlist are
 copied to the new song list.  The _Maximum&nbsp;Play&nbsp;Time_,
@@ -73,7 +73,7 @@ also copied to the created song list.
 ![create-sl-sl](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/create-song-list-sl-B.png)
 <br><span style="color:#4559bf;">__Management / Playlist Management / Dances__</span> </div>
 
-##### Statistics
+#### Statistics
 
 Looking at the statistics of the created song list, 60 songs were
 added to the song list (the test songs used for this example are

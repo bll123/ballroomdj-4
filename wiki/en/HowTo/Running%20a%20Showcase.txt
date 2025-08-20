@@ -10,7 +10,7 @@ the artist, or may be a song chosen from the database.  The music may
 be pre-cut to a particular length, or may need to be stopped after
 some amount of time.
 
-##### Configuring a Music Queue for a Showcase
+#### Configuring a Music Queue for a Showcase
 
 For the purposes of this configuration example, it is assumed that the
 some of the showcase music has already been cut to the appropriate
@@ -32,7 +32,7 @@ Close the configuration window to save the configuration changes.
 ![showcase-conf-musicq](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/showcase-conf-musicq-B.png)
 <br><span style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
-##### Running the Showcase
+#### Running the Showcase
 
 Start the __Player__, and in the __Options__ menu, set
 __Show&nbsp;Extra&nbsp;Queues__ to on.

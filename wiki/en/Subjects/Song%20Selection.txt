@@ -13,7 +13,7 @@ from the available list of songs.
 In order for song selection to work properly, the song must be
 assigned a dance rating.
 
-##### Song Filters
+#### Song Filters
 
 Song selection first filters out any songs based on the filters set in
 the playlist.
@@ -52,7 +52,7 @@ the songs with the same mark can be chosen.
 <br>__References:__
 <br>[Subjects / Same Song Marks](en-Subjects-Same%20Song%20Marks)
 
-##### Song Weights
+#### Song Weights
 
 Once the list of songs is filtered, a weight is assigned to each song
 based on the dance rating's weight, the dance level's weight, and any

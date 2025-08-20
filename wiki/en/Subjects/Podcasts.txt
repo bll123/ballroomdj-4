@@ -13,7 +13,7 @@ episodes will be created.
 When BDJ4 starts, any podcasts that have been imported will be updated
 with the latest episodes.
 
-##### Importing a Podcast
+#### Importing a Podcast
 
 Select __Manage&nbsp;/&nbsp;Edit&nbsp;Song&nbsp;Lists__.  In the
 _Import_ menu, select __Import&nbsp;Playlist__.
@@ -44,13 +44,13 @@ will be used.
 ![podcast-import](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/podcast-import-B.png)
 <br><span style="color:#4559bf;">__Manage / Edit Song Lists / Import Playlist__</span> </div>
 
-##### Checking the Connection
+#### Checking the Connection
 
 Select the __Check&nbsp;Connection__ button to check the configured
 connection.  A status message will be displayed in the top right of
 the window indicating success or failure.
 
-##### Finishing the Import of the Podcast
+#### Finishing the Import of the Podcast
 
 Now select the __Import__ button in the __Import&nbsp;Playlist__ dialog.
 
@@ -60,7 +60,7 @@ a while to finish, and for the new song list to display.  Be patient.
 After the import is finished, a new song list with that podcast's
 episodes will be displayed in _Edit&nbsp;Song&nbsp;Lists_.
 
-##### Managing the Podcast
+#### Managing the Podcast
 
 Older podcast episodes can be automatically removed.
 

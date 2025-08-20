@@ -14,7 +14,7 @@ _mysong.mp3_ will be renamed to _delete-mysong.mp3_.
 As the song can no longer be located on the storage device, it will
 not be listed in the database.
 
-##### Removing a Song
+#### Removing a Song
 
 The [music manager](Management-Music%20Manager) is used to remove
 songs from the database.  Select the song to be removed, then select
@@ -36,7 +36,7 @@ be active and can be used to reset the song.
 ![remove-mm](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/remove-mm-A.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager___</span> </div>
 
-##### Undoing Song Removal
+#### Undoing Song Removal
 
 Select a song that has been marked for removal, then select the
 __Undo&nbsp;Song&nbsp;Removal__ selection in the __Actions__ menu.
@@ -47,14 +47,14 @@ __Actions__ menu can be used to undo all songs marked for removal.
 The undo action will only be active if a song has been removed and the
 music manager has not yet been closed.
 
-##### When the Music Manager is Closed
+#### When the Music Manager is Closed
 
 When the music manager is closed, the final song removal processing
 takes place.  Each audio file that was marked for removal is renamed
 to have a 'delete-' prefix.  For example, _Sway.mp3_ will be renamed
 to _delete-Sway.png_.
 
-##### Fixing an Accidental Removal
+#### Fixing an Accidental Removal
 
 If a song was removed, and you want to restore it after having closed
 the music manager, use your file explorer to locate the audio file in
@@ -65,7 +65,7 @@ to keep the original name intact.  Exit and restart BDJ4.
 As the song removal process does not clear the database entry, the
 song will be located and will again show up in the list of songs.
 
-##### Cleaning up Removed Songs
+#### Cleaning up Removed Songs
 
 Once you are certain the removed songs are correct and you do not need
 them any more, use your file explorer to locate any audio files with

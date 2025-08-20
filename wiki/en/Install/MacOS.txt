@@ -9,7 +9,7 @@ Sonoma, Sequoia.
 <br>If you want an earlier version supported, please
 [let&nbsp;me&nbsp;know](en-Getting%20Help)
 
-##### Updating BallroomDJ 4 : Make a Backup
+#### Updating BallroomDJ 4 : Make a Backup
 
 Be sure to exit BallroomDJ&nbsp;4 before creating a backup or updating the
 software.
@@ -20,7 +20,7 @@ $HOME/Applications/BDJ4.app folder and the
 $HOME/Library/Application&nbsp;Support/BDJ4 folder.  If you use
 MacOS's time machine, have it do a backup before you proceed.
 
-##### Internet Connection
+#### Internet Connection
 
 An internet connection is required the first time BallroomDJ&nbsp;4 is
 installed.  There are requisite packages (VLC) that need to be
@@ -30,7 +30,7 @@ internet connection.
 If the pre-install script has already been run, and VLC is already
 installed, no internet connection is required.
 
-##### Install the Requisite Software
+#### Install the Requisite Software
 
 If a pre-install script before version 18 was run, you must re-run
 this script.
@@ -56,7 +56,7 @@ This script performs the following actions:
 
 Note that this process can be very slow for new releases of MacOS.
 
-##### Install BallroomDJ 4
+#### Install BallroomDJ 4
 
 Download the MacOS installer from sourceforge.
 Be sure to select the correct architecture (Intel or Apple Silicon).
@@ -101,14 +101,14 @@ icon to the Applications Folder icon.
 ![VLC Installation on MacOS](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Install-VLC.png)
 <br><span style="color:#4559bf;">__VLC Installation on MacOS__</span> </div>
 
-##### Getting Help
+#### Getting Help
 
 If you need help getting started, understanding how something in BDJ4
 functions, or want to learn how to accomplish a particular goal in
 BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
-##### Getting Started with BDJ4
+#### Getting Started with BDJ4
 
 Visit the
 [Getting&nbsp;Started&nbsp;with&nbsp;BDJ4](en-Install-Getting%20Started)

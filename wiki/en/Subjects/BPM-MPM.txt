@@ -24,7 +24,7 @@ minute.  This can also be confusing, as dances can be in 2/4&nbsp;time
 Some people prefer to use beats per minute, and others measures per
 minute.
 
-##### BPM/MPM Configuration
+#### BPM/MPM Configuration
 
 In [Configure&nbsp;/&nbsp;General](en-Configuration-General), the
 __BPM__ setting can be set to _BPM_ or _MPM_. This affects the display
@@ -36,7 +36,7 @@ of the BPM/MPM of the song and which label (BPM/MPM) is displayed.
 
 For the examples below, MPM will be used.
 
-##### Dance Configuration
+#### Dance Configuration
 
 In
 [Configure&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances),
@@ -57,7 +57,7 @@ range for a dance (see [Song&nbsp;Editor](#song-editor) below).
 ![bpm-edit-dance](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-edit-dance-D.png)
 <br><span style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
 
-##### Display Configuration
+#### Display Configuration
 
 In
 [Configure&nbsp;/&nbsp;Display&nbsp;Settings](en-Configuration-Display%20Settings),
@@ -70,7 +70,7 @@ Also add BPM/MPM to the various song listings and music queues as you prefer.
 ![bpm-disp-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/bpm-disp-settings-C.png)
 <br><span style="color:#4559bf;">__Configure / Display Settings__</span> </div>
 
-##### Song Editor
+#### Song Editor
 
 In the [Song&nbsp;Editor](en-Management-Song%20Editor), the BPM/MPM
 can be set for the song.  Select or type in the BPM/MPM and then
@@ -92,7 +92,7 @@ The BPM/MPM range display is determined as explained in
 ![bpm-se-bpm](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/bpm-se-bpm-A.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor__</span> </div>
 
-##### Using the BPM Counter
+#### Using the BPM Counter
 
 The BPM Counter can be accessed from BPM/MPM menu selection in the
 __Actions__ menu of the [Song&nbsp;Editor](en-Management-Song%20Editor).

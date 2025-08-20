@@ -7,7 +7,7 @@ song information and to adjust playback settings for the song._</span>
 
 ### Manage : Song Editor
 
-##### Display Columns
+#### Display Columns
 
 The fields displayed in the song editor can be set in
 [Display&nbsp;Settings](en-Configuration-Display%20Settings). Up to
@@ -18,7 +18,7 @@ the bottom of this wiki page.
 ![se](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-C.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor__</span> </div>
 
-##### Traversing the Song Listing
+#### Traversing the Song Listing
 
 The song editor works in conjunction with the music manager The
 __First__, __Next__ and __Previous__ buttons traverse the songs
@@ -40,7 +40,7 @@ be selected (using control-click or shift-click).  When multiple songs
 are selected in the music manager, the song editor will traverse only
 the selected songs, and not the entire listing.
 
-##### File Display
+#### File Display
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![se-file-disp](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-file-disp-A.png)
@@ -55,7 +55,7 @@ displayed as part of the filename. The copy button
 (![copy](https://ballroomdj4.sourceforge.io/wikiimg/CopyButton-C.png))
 may be used to copy the full filename to the clipboard.
 
-##### Change Bars
+#### Change Bars
 
 When a field in the song editor is modified, a green bar is displayed
 before the field's label.
@@ -64,7 +64,7 @@ before the field's label.
 ![se-change-bar](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-change-bar-A.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager / Song Editor / Change Bars__</span> </div>
 
-##### Saving the Changes
+#### Saving the Changes
 
 The changes made in the song editor are not automatically saved.  Use
 the __Save__ button in the upper right to save the changes.
@@ -72,7 +72,7 @@ the __Save__ button in the upper right to save the changes.
 If you want to reset the changes you have made, simply use __Next__ or
 __Previous__ to switch to a different song, then switch back.
 
-##### Actions Menu
+#### Actions Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![se-actions](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-actions-C.png)
@@ -103,7 +103,7 @@ __Actions&nbsp;/&nbsp;Trim&nbsp;Silence__ processes the audio file and
 if there is silence at the beginning or end of the song, sets the song
 start and song end.  The changes must be saved.
 
-##### Using the BPM Counter
+#### Using the BPM Counter
 
 Before using the BPM Counter, the BPM setting should be added to the
 song editor using
@@ -130,7 +130,7 @@ the __Reset__ button.
 Be sure to save the changes to the song.  The BPM is not automatically
 saved.
 
-##### Song Editor Fields
+#### Song Editor Fields
 
 The complete list of fields that can be edited or displayed in the
 song editor is:

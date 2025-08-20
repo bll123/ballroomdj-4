@@ -29,7 +29,7 @@ __Support__: Opens the support display window (see below).
 
 __Exit__: Closes all BDJ4 windows and exits the application.
 
-##### Starter Actions Menu
+#### Starter Actions Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![starter-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Starter/starter-menu-A.png)
@@ -56,7 +56,7 @@ folders are used to create another BDJ4 installation with a separate
 database.  (Linux and Windows only).
 <br>See: [Subjects&nbsp;/&nbsp;Alternate&nbsp;Folders](en-Subjects-Alternate%20Folders)
 
-##### Support
+#### Support
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![starter-support](https://ballroomdj4.sourceforge.io/wikiimg/en/Starter/starter-support-E.png)
@@ -75,7 +75,7 @@ corresponding page in your browser.
 The __Send&nbsp;Support&nbsp;Message__ button will open a new window
 where a support message can be sent (see below).
 
-##### Support Messages
+#### Support Messages
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![starter-support-msg](https://ballroomdj4.sourceforge.io/wikiimg/en/Starter/starter-support-msg-A.png)

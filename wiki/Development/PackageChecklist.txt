@@ -50,7 +50,7 @@ On Windows, the packages should be cleaned up first.
     * ../web/push.sh
     * update the wiki images: ../web/wikiput.sh putimages # if necessary
     * update the wiki: ../web/wikiput.sh putall
-    * update the website (version info): ../web/install.sh
+    * update the website (and version info): ../web/pubweb.sh
     * hg: check in
     * hg: create a tag for the release
     * hg bookmark -r tip master

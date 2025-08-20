@@ -19,7 +19,7 @@ both songs to play during the same dance.
 The same song mark color is chosen at random and will be different
 every time BDJ4 is started.  The color cannot be set or changed.
 
-##### Marking Songs as the Same
+#### Marking Songs as the Same
 
 The [music manager](Management-Music%20Manager) is used to set the
 same song marks on songs.  In the music manager, select the first
@@ -33,7 +33,7 @@ Select __Mark&nbsp;as&nbsp;Same&nbsp;Song__ in the __Actions__ menu.
 ![samesong-mm](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/samesong-mm-B.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager__</span> </div>
 
-##### Adding Additional Songs to an Existing Set
+#### Adding Additional Songs to an Existing Set
 
 If you already have a set of songs marked as the same song and you
 want to add another song to the list, select one of the songs that is
@@ -44,7 +44,7 @@ When an song with an existing mark is in the list of selected songs,
 any other songs that are not marked will be added to the same set of
 songs with the existing mark and marked with the same color.
 
-##### Clearing the Same Song Mark
+#### Clearing the Same Song Mark
 
 To clear a same song mark from a song, select the songs to have their
 mark cleared, then select __Clear&nbsp;Same&nbsp;Song&nbsp;Mark__ in

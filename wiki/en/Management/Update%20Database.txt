@@ -49,7 +49,7 @@ chooser button with the folder icon to select the additional music
 folder.  Set the __Action__ to _Check&nbsp;for&nbsp;New_.  Do not use
 _Rebuild&nbsp;Database_ to add an additional music folder.
 
-##### Notes on Audio File Tags
+#### Notes on Audio File Tags
 
 Updating the database will import the audio file tags if possible.
 Some commercial entities add incorrect audio file tags in some cases.

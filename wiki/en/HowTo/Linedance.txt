@@ -25,7 +25,7 @@ try to choose one of each line dance, not just a few.
 A sequenced playlist could select particular line dances, but again,
 it is hard to change out which line dances are played.
 
-##### Add Line Dance to the Available Dances
+#### Add Line Dance to the Available Dances
 
 Instead of adding each line dance as a separate dance, a single line
 dance entry is added to the list of dances in
@@ -38,7 +38,7 @@ _LD_ to keep it short.
 ![ld-edit-dance](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-edit-dance-C.png)
 <br><span style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
 
-##### Setting up the Line Dances (Marquee Display)
+#### Setting up the Line Dances (Marquee Display)
 
 For each line dance, select the dance in the
 [Music&nbsp;Manager](en-Manage-Music%20Manager), and select the
@@ -51,7 +51,7 @@ the name of the line dance.
 ![ld-dance-one](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-dance-one-A.png)
 <br><span style="color:#4559bf;">__Manage / Song Editor__</span> </div>
 
-##### Listing the Line Dances
+#### Listing the Line Dances
 
 In the [Music&nbsp;Manager](en-Manage-Music%20Manager), select line
 dances in the dance drop-down (_LD_ in this example).  All of the line
@@ -62,7 +62,7 @@ to the dance (available starting with version 4.7.0).
 ![ld-dance-list](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-dance-list-C.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager__</span> </div>
 
-##### Adding Line Dances to an Automatic Playlist
+#### Adding Line Dances to an Automatic Playlist
 
 Now the line dances can be added to the automatic or sequenced
 playlist easily, and each time the playlist is used, there will be
@@ -76,7 +76,7 @@ in this example) and set the count to the number of dances you want.
 ![ld-auto-pl](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-auto-pl-B.png)
 <br><span style="color:#4559bf;">__Manage / Music Manager__</span> </div>
 
-##### Marquee
+#### Marquee
 
 The _Marquee&nbsp;Display_ set for each line dance will be displayed
 on the marquee instead of the dance.

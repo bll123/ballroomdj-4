@@ -19,7 +19,7 @@ Up to four music queues may be configured.
 The music queue configuration options allow outstanding flexibility in
 BallroomDJ&nbsp;4.
 
-##### Displaying Music Queues in the Player
+#### Displaying Music Queues in the Player
 
 Start the player, and in the __Options__ menu, select the
 __Show&nbsp;Extra&nbsp;Queues__ checkbox.
@@ -44,7 +44,7 @@ center;"></div>
 <div markdown style="clear: both; margin-right: 20px; text-align:
 center;"></div>
 
-##### Configuring Music Queues
+#### Configuring Music Queues
 
 The music queues are configured in
 __Configure&nbsp;/&nbsp;Music&nbsp;Queues__.
@@ -97,7 +97,7 @@ teaching.  See the example below for a music queue set up for teaching.
 <br>[Configure / Music Queues](en-Configuration-Music%20Queues)
 <br>[Management / Playlist Management](en-Management-Playlist%20Management)
 
-##### Example: Setting up a Music Queue for Teaching
+#### Example: Setting up a Music Queue for Teaching
 
 One possible setup for a music queue used for teaching could have the
 fade-out time set to one second, the gap set to 0.5 seconds and the
@@ -129,7 +129,7 @@ to the music queue).
 ![musicq-tabs-teach-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-tabs-teach-A.png)
 <br><span style="color:#4559bf;">__Player : Music Queues__</span> </div>
 
-##### Using Music Queues in the Player
+#### Using Music Queues in the Player
 
 In the player, each music queue is displayed as a notebook tab.
 Selecting a music queue allows you to manage that music queue.

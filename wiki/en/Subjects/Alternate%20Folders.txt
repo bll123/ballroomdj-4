@@ -26,7 +26,7 @@ installation does not duplicate the executable programs, and both the
 main installation and the alternate installation can be run at the
 same time if desired.
 
-##### Setting up an Alternate Folder
+#### Setting up an Alternate Folder
 
 In the BDJ4 starter, select __Set&nbsp;Up&nbsp;Alternate&nbsp;Folder__
 from the _Actions_ menu.
@@ -50,7 +50,7 @@ be installed, and the desktop shortcut created.
 ![alt-installer](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/alt-installer-A.png)
 <br><span style="color:#4559bf;">__Alternate Folder Installer__</span> </div>
 
-##### Updating up an Alternate Folder
+#### Updating up an Alternate Folder
 
 Any time BDJ4 is updated, all alternate folders will also be updated
 (version 4.8.1).

@@ -16,7 +16,7 @@ When copying BDJ4 to a new computer, the configuration options from
 the old computer will not be located, as they are stored in a folder
 named after the old computer.
 
-##### Determine the Computer Names
+#### Determine the Computer Names
 
 On your old computer, check the name of your computer.
 <br>Windows: Select __Settings__ / __System__ / __About__ (Device&nbsp;Name).
@@ -27,11 +27,11 @@ On your old computer, check the name of your computer.
 
 Likewise, on your new computer, check the name of your computer.
 
-##### Copy BDJ4 to the New Computer
+#### Copy BDJ4 to the New Computer
 
 Copy the entire BDJ4 folder to the new computer.
 
-##### Copy the Configuration Folder
+#### Copy the Configuration Folder
 
 In the _BDJ4/data_ folder, there is a folder named after the old
 computer. e.g. If your old computer was named _desktop-n02iqro_, there

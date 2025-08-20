@@ -17,7 +17,7 @@ The locale may be over-ridden in the BDJ4 configuration.
 If the system locale is not supported, BDJ4 will use the English/GB
 locale.
 
-##### Differences when installing locales
+#### Differences when installing locales
 
 The default locale is English/GB.
 
@@ -29,7 +29,7 @@ names, ratings, genres, dance levels, pre-installed playlist names,
 and queue names are all translated. The HTML files used for remote
 control and the mobile marquee are also translated.
 
-##### Installing in one locale and displaying another
+#### Installing in one locale and displaying another
 
 If the locale is set in the BDJ4 configuration,
 ([Configure&nbsp;/&nbsp;General](en-Configuration-General)),

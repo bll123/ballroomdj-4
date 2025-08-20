@@ -13,7 +13,7 @@ the __Configure__ button.
 ![Starter](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-starter-C.png)
 <br><span style="color:#4559bf;">__Starter__</span> </div>
 
-##### Locale
+#### Locale
 
 The Nederlands (Dutch) translation is in excellent shape.  The Русский
 (Russian) translation is ok.
@@ -29,7 +29,7 @@ selected language.
 If you can help improve a translation, contact support using on of the
 methods listed in [Getting&nbsp;Help](en-Getting%20Help).
 
-##### Set the location of the music folder
+#### Set the location of the music folder
 
 The first step is to configure the location of your music folder.
 
@@ -45,7 +45,7 @@ to choose the location of your music folder.
 
 Leave the configuration window open.
 
-##### Choose how your music is organized
+#### Choose how your music is organized
 
 The organization is important so that BDJ4 can determine information
 about your songs when the database is built.  Most importantly, the
@@ -80,7 +80,7 @@ listed in the drop-down.
 
 Leave the configuration window open.
 
-##### Check the configured dances
+#### Check the configured dances
 
 It is best to make sure all the dances that you use are set up
 correctly before adding songs to the database.
@@ -194,7 +194,7 @@ different subjects.
 [Overview of BDJ4](en-Install-Overview) covers some terminology and
 information that are useful to know when starting with BDJ4.
 
-##### Getting Help
+#### Getting Help
 
 If you need help getting started, understanding how something in BDJ4
 functions, or want to learn how to accomplish a particular goal in

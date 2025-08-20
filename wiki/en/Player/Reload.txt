@@ -22,7 +22,7 @@ _Reload_ menu selection is disabled and can no longer be used.
 Selecting __Actions&nbsp;/&nbsp;Reload__ will load the music queues,
 the history queue and the current playing song from the last save.
 
-##### Reload and Automatic or Sequenced Playlists
+#### Reload and Automatic or Sequenced Playlists
 
 When an automatic or sequenced playlist is queued, the reload process
 will only reload the songs that were in the music queue.  The
@@ -32,7 +32,7 @@ Wait until after several songs in the music queue have been played, then
 queue the automatic or sequenced playlist again.  Scroll to the end of
 the music queue and adjust the songs in the queue if needed.
 
-##### Reload and Playlist Controls
+#### Reload and Playlist Controls
 
 When __Actions&nbsp;/&nbsp;Reload__ is used, any playlist controls
 from the original playlist will no longer be active.

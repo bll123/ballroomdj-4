@@ -16,7 +16,7 @@ traverse through the songs listed in the music manager.
 
 There are some important differences from song selection.
 
-##### Filter Dialog
+#### Filter Dialog
 
 The filter dialog has an additional drop-down where a playlist may be
 selected.  When a playlist is selected, the other filters are
@@ -32,7 +32,7 @@ playlist.
 Note that the _Dance&nbsp;Rating_ filter will select any songs that
 have the selected rating or better.
 
-##### Song Selection with the Song Editor or Audio Identification
+#### Song Selection with the Song Editor or Audio Identification
 
 When switching to the Music Manager from
 [Edit&nbsp;Song&nbsp;Lists](en-Management-Edit%20Song%20Lists), or the
@@ -61,7 +61,7 @@ The __First__, __Next__, and __Previous__ previous buttons in
 [Audio&nbsp;Identification](en-Management-Audio%20Identification)
 will also act upon the Music&nbsp;Manager's current selection.
 
-##### Actions Menu
+#### Actions Menu
 
 <!-- this image also used in removing-songs -->
 
@@ -94,7 +94,7 @@ undo all pending song removals.
 <br>__References:__
 <br>[Subjects / Removing&nbsp;Songs](en-Subjects-Removing%20Songs)
 
-##### Same Song Marks
+#### Same Song Marks
 
 Same song marks can be used to prevent the automatic or sequence song
 selection from choosing songs that are the same but played by

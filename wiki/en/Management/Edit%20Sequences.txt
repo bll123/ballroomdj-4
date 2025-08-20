@@ -9,7 +9,7 @@ sequence of dances and the songs are selected by BDJ4._</span>
 
 In all cases, the sequence is automatically saved.
 
-##### The Sequence Editor
+#### The Sequence Editor
 
 The left side of the window has the list of dances to choose from, and
 the right side of the window contains the sequence.
@@ -30,7 +30,7 @@ to remove a dance from the sequence.
 ![seq](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/seq-D.png)
 <br><span style="color:#4559bf;">__Manage / Edit Sequences__</span> </div>
 
-##### Naming the Sequence
+#### Naming the Sequence
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![seq-name-entry-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/seq-name-entry-A.png)
@@ -51,7 +51,7 @@ _New&nbsp;Sequence_. To rename it afterwards, simply select
 __Edit&nbsp;/&nbsp;Load__ from the menu.  Select
 _New&nbsp;Sequence_, then enter the new name of the sequence.
 
-##### Edit Menu
+#### Edit Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![seq-edit-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/seq-edit-menu-B.png)
@@ -71,7 +71,7 @@ _Copy&nbsp;of_ prefixed to the old name.
 __Edit&nbsp;/&nbsp;Delete__ will delete the currently loaded
 sequence from your storage device and start a new sequence.
 
-##### Song Selection
+#### Song Selection
 
 To filter which songs are selected by BDJ4 when the sequence is
 played, change the playlist settings in

@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-##### Debian based
+#### Debian based
 
 
     apt update
@@ -26,7 +26,7 @@ Debian packages for development
     apt install libgstreamer1.0-dev
     usermod -a -G vboxsf <user>
 
-##### Red Hat based
+#### Red Hat based
 
     dnf upgrade           # update everything
     dnf install name
@@ -51,7 +51,7 @@ Other notes
 
     usermod -a -G vboxsf <user>
 
-##### Arch based
+#### Arch based
 
     pacman -Syu       # update everything
     pacman -S name    # install a package
@@ -84,7 +84,7 @@ Other notes
     #     pt_PT, ro_RO, ru_RU, sr_RS, sv_SE, uk_UA, vi_VN, zh_CN, zh_TW
     locale-gen
 
-##### OpenSUSE
+#### OpenSUSE
 
     systemctl stop pkgkit
     zypper refresh

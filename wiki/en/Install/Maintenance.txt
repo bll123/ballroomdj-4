@@ -19,7 +19,7 @@ VLC has been has been fairly stable (3.0.18 and later), and updating
 VLC is probably not necessary.  Instructions are included below for
 updating VLC in case it becomes necessary to update VLC.
 
-##### Windows
+#### Windows
 
 __VLC__
 
@@ -53,7 +53,7 @@ __Windows Support Libraries__
 These are included with the BDJ4 installation.  Upgrading BDJ4 will
 upgrade all of the required software libraries.
 
-##### MacOS
+#### MacOS
 
 __VLC__
 
@@ -92,7 +92,7 @@ than once during the installation process.
     cd Downloads
     bash macos-pre-install-macports-v21.sh
 
-##### Linux
+#### Linux
 
 On Linux, simply let your software updater run to get the latest
 software libraries and the latest VLC.

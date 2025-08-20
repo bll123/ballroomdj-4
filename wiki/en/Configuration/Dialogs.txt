@@ -8,7 +8,7 @@ dialogs field selection may be configured here._</span>
 The fields displayed in the song selection filter dialog and the quick
 edit dialog may be configured here.
 
-##### Filter Songs
+#### Filter Songs
 
 The song selection filter has several filters that are not normally
 displayed.  These filters can be turned on here.
@@ -34,7 +34,7 @@ _Dance&nbsp;Level_, _Status_, _Favorite_, and _Playable&nbsp;Status_.
 ![filter-dialog-all](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/FilterDisplay-Dialog-All-A.png)
 <br><span style="color:#4559bf;">__Filter Dialog - All filters enabled__</span> </div>
 
-##### Quick Edit
+#### Quick Edit
 
 The quick edit dialog allows the following fields:
 _Speed&nbsp;Adjustment_, _Volume&nbsp;Adjustment_, _Dance&nbsp;Level_,

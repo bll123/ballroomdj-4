@@ -5,11 +5,11 @@
 The Multi-Media keys may be captured by other programs on your
 computer, and may not work within BDJ4.
 
-##### Music Manager
+#### Music Manager
 
 __Multi-media Play__: Plays the selected song.
 
-##### Player
+#### Player
 
 __Multi-media Play__: Plays the current song.
 
@@ -19,11 +19,11 @@ __Multi-media Next Song__: Skip to the next song.
 
 __Multi-media Previous__: Return to the beginning of the song.
 
-##### Song Selection
+#### Song Selection
 
 __Multi-media Play__: Plays the selected song.
 
-##### Song Editor
+#### Song Editor
 
 __Control-P__: Moves to the previous song.
 
@@ -35,7 +35,7 @@ be saved.
 
 __Multi-media Play__: Plays the selected song.
 
-##### Song List Editor
+#### Song List Editor
 
 __Multi-media Play__: Plays the selected song.
 

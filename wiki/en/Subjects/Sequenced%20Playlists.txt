@@ -17,7 +17,7 @@ a [rating](en-Configuration-Edit&nbsp;Ratings) assigned to them.
 
 A sample _Standard&nbsp;Rounds_ sequence is installed with BDJ4.
 
-##### Changing the Name of the Sequence
+#### Changing the Name of the Sequence
 
 The sequence's name is at the top of the _Edit&nbsp;Sequence_ tab.
 Enter the new name of the sequence playlist at any time.
@@ -32,7 +32,7 @@ If you forget to change the name, the sequence will be named
 _New&nbsp;Sequence_.  Select __Load__ from the __Edit__ menu.  Select
 _New&nbsp;Sequence_.  Change the name of the sequence.
 
-##### Creating a Sequence
+#### Creating a Sequence
 
 Select __Manage__ in the start window.  Select __Edit&nbsp;Sequences__.
 Select __Start&nbsp;New&nbsp;Sequence__ from the __Edit__ menu.
@@ -49,7 +49,7 @@ to adjust the order of the dances in the sequence.
 
 The sequence will be saved automatically.
 
-##### Song Selection
+#### Song Selection
 
 The _Settings_ tab in _Playlist&nbsp;Management_ has the controls for
 _Maximum&nbsp;Play&nbsp;Time, _Stop&nbsp;At_, _Stop&nbsp;After_,
@@ -66,7 +66,7 @@ songs are selected.
 In addition, same-song marks are checked to make sure that only one song
 from those songs marked as the same song is used.
 
-##### Playlist Controls
+#### Playlist Controls
 
 The sequence has an associated playlist.  If a sequence is loaded
 in the song list editor, switching to the

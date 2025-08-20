@@ -1,7 +1,7 @@
 [Wiki Home](Home)
 <br>[Developer Notes](Development-Developer%20Notes)
 
-##### GTK-3
+#### GTK-3
 
 GTK-3 is ok.  There are some issues.
 
@@ -23,7 +23,7 @@ removed.
 the locale has not been set.  Setting a new locale and calling
 gtk_get_locale_direction() again does not work.
 
-##### GTK-4
+#### GTK-4
 
 No work has been done on porting to GTK-4.
 

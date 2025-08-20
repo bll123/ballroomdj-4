@@ -7,7 +7,7 @@ indicate favorite songs or any other category of your choice._</span>
 
 ### Favorites
 
-##### Settings up Favorites for Use
+#### Settings up Favorites for Use
 
 In
 [Configure&nbsp;/&nbsp;Display&nbsp;Settings](en-Configuration-Display%20Settings),
@@ -34,7 +34,7 @@ the _Favorite_ checkbox in the _Song&nbsp;Filter_ column.
 ![favorite-dialogs](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/favorite-dialogs-A.png)
 <br><span style="color:#4559bf;">__Configure / Dialogs__</span> </div>
 
-##### Favorite Display
+#### Favorite Display
 
 Now the _Favorite_ column will be displayed as seen in the song list
 editor side-by-side view example below.
@@ -60,7 +60,7 @@ these two favorites can be used for any purpose.
 <br>__<span style="color:#ee00e1;">♥</span>__
 <span style="color:#6d2828;">💔</span>
 
-##### Using Favorites
+#### Using Favorites
 
 To change the favorite selection, it is not necessary to use the
 [Song&nbsp;Editor](en-Management-Song%20Editor).  The favorite
@@ -71,7 +71,7 @@ Continue clicking on the favorite symbol until it is set to your
 choice.  The change to the favorite selection will automatically be
 saved to the database.
 
-##### Filtering the Song Selection
+#### Filtering the Song Selection
 
 The song selection can be filtered by favorites.  Using the song
 selection filter, select the favorite selection you want
@@ -81,7 +81,7 @@ to view and select _Apply_.
 ![favorite-filter-dialog](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/favorite-filter-dialog-A.png)
 <br><span style="color:#4559bf;">__Song Selection / Filter__</span> </div>
 
-##### Configuring the Favorite Display
+#### Configuring the Favorite Display
 
 At this time, there is no easy method to configure the symbols and colors.
 To add or change the symbols and colors, the favorite configuration file must
