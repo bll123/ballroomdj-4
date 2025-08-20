@@ -184,11 +184,13 @@ function gitchanges {
   tfn=$1
 
   # image urls
-  # remove toc (sourceforge)
+  #   image markup must be preceded and follow by a space
+  #   the image url must be absolute since we're using dirs.
+  # remove toc (sourceforge only)
   # remove all div's, they don't work
-  # remove lang- prefixes (github does not support dirs)
+  # remove lang- prefixes (github doesn't really support dirs)
   #   at this time, there are no sub-sub-dirs.
-  sed -e 's,!\[\([^]]*\)\](.*/wikiimg/\([^)]*\)),[[images/\2|\1]],g' \
+  sed -e 's,!\[\([^]]*\)\](.*/wikiimg/\([^)]*\)), [[/images/\2|\1]] ,g' \
       -e 's,\[TOC\],,' \
       -e '/<div / d' \
       -e '/<\/div>/ d' \
@@ -268,18 +270,18 @@ function put {
     fi
   fi
 
-#  gettext $tfn
+  gettext $tfn
   title=$(gettitle $tfn)
-#  cmd="curl -L --silent -b ${cookiejar} -c ${cookiejar} -X POST \
-#      -H 'Authorization: Bearer $bearer' \
-#      -H 'User-Agent: $useragent' \
-#      --data-urlencode 'pagetitle=$title' \
-#      --data-binary @${tmpfile} \
-#      '${baseurl}/${title}'"
-#  eval $cmd > /dev/null
-#  echo "$tfn: sourceforge updated"
+  cmd="curl -L --silent -b ${cookiejar} -c ${cookiejar} -X POST \
+      -H 'Authorization: Bearer $bearer' \
+      -H 'User-Agent: $useragent' \
+      --data-urlencode 'pagetitle=$title' \
+      --data-binary @${tmpfile} \
+      '${baseurl}/${title}'"
+  eval $cmd > /dev/null
+  echo "$tfn: sourceforge updated"
 
-    gitchanges $tfn
+  gitchanges $tfn
   d=$(dirname $tfn | sed -e 's,^wiki,,' -e 's,^/,,')
   # github wiki will preserve the directory layout, though it
   # will not use it.
