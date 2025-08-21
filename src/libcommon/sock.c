@@ -4,7 +4,7 @@
  * https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
  * 10054 - WSAECONNRESET
  *
- * select() is the default and USE_SELECT can be set to force it.
+ * select() is the default and FORCE_SELECT can be set to force it.
  * epoll() implemented 2025-8-1
  * Windows IOCP has a different model, research needs to be done
  * to see if can be used.
@@ -28,7 +28,7 @@
 #include <unistd.h>
 
 /* override to use select() */
-#define USE_SELECT 0
+#define FORCE_SELECT 0
 
 #if __has_include (<arpa/inet.h>)
 # include <arpa/inet.h>
@@ -46,7 +46,7 @@
 # include <sys/event.h>               /* kqueue */
 #endif
 #if __has_include (<sys/select.h>) && \
-   (USE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue))
+   (FORCE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue))
 # include <sys/select.h>
 #endif
 #if __has_include (<sys/socket.h>)
@@ -83,16 +83,16 @@ typedef struct sockinfo {
   int                 active;
   int                 havecount;
   Sock_t              max;
-#if (_lib_epoll_create1 || _lib_kqueue) && ! USE_SELECT
+#if (_lib_epoll_create1 || _lib_kqueue) && ! FORCE_SELECT
   Sock_t              eventfd;
 #endif
-#if _lib_epoll_create1 && ! USE_SELECT
+#if _lib_epoll_create1 && ! FORCE_SELECT
   struct epoll_event  events [SOCK_MAX_EVENTS];
 #endif
-#if _lib_kqueue && ! USE_SELECT
+#if _lib_kqueue && ! FORCE_SELECT
   struct kevent       events [SOCK_MAX_EVENTS];
 #endif
-#if USE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue)
+#if FORCE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue)
   fd_set              readfdsbase;
   fd_set              readfds;
 #endif
@@ -215,7 +215,7 @@ sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
     sockinfo->havecount = 0;
     sockinfo->max = 0;
     sockinfo->socklist = NULL;
-#if _lib_epoll_create1 && ! USE_SELECT
+#if _lib_epoll_create1 && ! FORCE_SELECT
     sockinfo->eventfd = epoll_create1 (0);
     mdextsock (sockinfo->eventfd);
     if (socketInvalid (sockinfo->eventfd)) {
@@ -223,14 +223,14 @@ sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
     }
     logMsg (LOG_DBG, LOG_SOCKET, "using epoll");
 #endif
-#if _lib_kqueue && ! USE_SELECT
+#if _lib_kqueue && ! FORCE_SELECT
     sockinfo->eventfd = kqueue ();
     if (socketInvalid (sockinfo->eventfd)) {
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: sockAddCheck: kqueue fail %d", errno);
     }
     logMsg (LOG_DBG, LOG_SOCKET, "using kqueue");
 #endif
-#if USE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue)
+#if FORCE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue)
     logMsg (LOG_DBG, LOG_SOCKET, "using select");
 #endif
   }
@@ -251,7 +251,7 @@ sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
   sockinfo->socklist [idx]->sock = sock;
   sockinfo->socklist [idx]->havedata = false;
 
-#if _lib_epoll_create1 && ! USE_SELECT
+#if _lib_epoll_create1 && ! FORCE_SELECT
   {
     struct epoll_event  ev;
 
@@ -264,7 +264,7 @@ sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
   }
 #endif
 
-#if _lib_kqueue && ! USE_SELECT
+#if _lib_kqueue && ! FORCE_SELECT
   {
     struct kevent   ev;
 
@@ -315,7 +315,7 @@ sockRemoveCheck (sockinfo_t *sockinfo, Sock_t sock)
     }
   }
 
-#if _lib_epoll_create1 && ! USE_SELECT
+#if _lib_epoll_create1 && ! FORCE_SELECT
   {
     struct epoll_event  ev;
 
@@ -329,7 +329,7 @@ sockRemoveCheck (sockinfo_t *sockinfo, Sock_t sock)
   }
 #endif
 
-#if _lib_kqueue && ! USE_SELECT
+#if _lib_kqueue && ! FORCE_SELECT
   {
     struct kevent    ev;
 
@@ -356,7 +356,7 @@ void
 sockFreeCheck (sockinfo_t *sockinfo)
 {
   if (sockinfo != NULL) {
-#if (_lib_epoll_create1 || _lib_kqueue) && ! USE_SELECT
+#if (_lib_epoll_create1 || _lib_kqueue) && ! FORCE_SELECT
     mdextclose (sockinfo->eventfd);
     close (sockinfo->eventfd);
 #endif
@@ -390,11 +390,11 @@ sockCheck (sockinfo_t *sockinfo)
     }
   }
 
-#if _lib_epoll_create1 && ! USE_SELECT
+#if _lib_epoll_create1 && ! FORCE_SELECT
   rc = epoll_wait (sockinfo->eventfd, sockinfo->events,
       SOCK_MAX_EVENTS, SOCK_READ_TIMEOUT * sockinfo->count);
 #endif
-#if _lib_kqueue && ! USE_SELECT
+#if _lib_kqueue && ! FORCE_SELECT
   {
     struct timespec  ts;
 
@@ -406,7 +406,7 @@ sockCheck (sockinfo_t *sockinfo)
         SOCK_MAX_EVENTS, &ts);
   }
 #endif
-#if USE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue)
+#if FORCE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue)
   {
     struct timeval    tv;
 
@@ -436,7 +436,7 @@ sockCheck (sockinfo_t *sockinfo)
       sockinfo->socklist [i]->havedata = false;
     }
 
-#if _lib_kqueue && ! USE_SELECT
+#if _lib_kqueue && ! FORCE_SELECT
     for (int j = 0; j < rc; ++j) {
       socklist_t  *tsl;
 
@@ -456,7 +456,7 @@ sockCheck (sockinfo_t *sockinfo)
       if (socketInvalid (tsock)) {
         continue;
       }
-# if _lib_epoll_create1 && ! USE_SELECT
+# if _lib_epoll_create1 && ! FORCE_SELECT
       for (int j = 0; j < rc; ++j) {
         if (tsock == sockinfo->events [j].data.fd) {
           sockinfo->socklist [i]->havedata = true;
@@ -464,7 +464,7 @@ sockCheck (sockinfo_t *sockinfo)
         }
       }
 # endif
-# if USE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue)
+# if FORCE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue)
       if (FD_ISSET (tsock, &(sockinfo->readfds))) {
         sockinfo->socklist [i]->havedata = true;
         ++sockinfo->havecount;
@@ -966,7 +966,7 @@ sockSetOptions (Sock_t sock, int *err)
 static void
 sockUpdateReadCheck (sockinfo_t *sockinfo)
 {
-#if USE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue)
+#if FORCE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue)
   FD_ZERO (&(sockinfo->readfdsbase));
   sockinfo->max = 0;
   for (int i = 0; i < sockinfo->count; ++i) {

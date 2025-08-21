@@ -1530,6 +1530,8 @@ starterProcessSupport (void *udata)
       for (int i = 0; i < START_LINK_CB_MAX; ++i) {
         uiWidgetSetState (starter->linkinfo [i].uiwidgetp, UIWIDGET_ENABLE);
       }
+
+      regexFree (vrx);
     }
   }
   uiLabelSetText (uiwidgetp, starter->latestversiondisp);
