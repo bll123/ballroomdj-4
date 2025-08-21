@@ -1498,8 +1498,10 @@ starterProcessSupport (void *udata)
         uiWidgetSetState (starter->linkinfo [i].uiwidgetp, UIWIDGET_DISABLE);
       }
     } else {
-      char  *p;
-      char  uri [MAXPATHLEN];
+      char        *p;
+      char        uri [MAXPATHLEN];
+      char        *nuri;
+      bdjregex_t  *vrx;
 
       stpecpy (starter->latestversion, starter->latestversion + sizeof (starter->latestversion), starter->latestversiondisp);
       p = strchr (starter->latestversion, ' ');
@@ -1507,11 +1509,18 @@ starterProcessSupport (void *udata)
         *p = '\0';
       }
 
-      snprintf (uri, sizeof (uri), "%s%s/v%s/bdj4-installer-%s%s%s-%s%s",
+      vrx = regexInit ("{VERSION}");
+
+      /* sourceforge: .../v%s/... */
+      /* github .../download/%s/... */
+      snprintf (uri, sizeof (uri), "%s%s/%s/bdj4-installer-%s%s%s-%s%s",
           bdjoptGetStr (OPT_HOST_DOWNLOAD), bdjoptGetStr (OPT_URI_DOWNLOAD),
-          starter->latestversion, sysvarsGetStr (SV_OS_PLATFORM),
+          bdjoptGetStr (OPT_DOWNLOAD_SUFFIX), sysvarsGetStr (SV_OS_PLATFORM),
           sysvarsGetStr (SV_OS_DIST_TAG), sysvarsGetStr (SV_OS_ARCH_TAG),
           starter->latestversion, sysvarsGetStr (SV_OS_EXEC_EXT));
+      nuri = regexReplace (vrx, uri, starter->latestversion);
+      stpecpy (uri, uri + sizeof (uri), nuri);
+      mdfree (nuri);
       starter->linkinfo [START_LINK_CB_DL_LATEST].uri = mdstrdup (uri);
       if (isMacOS ()) {
         starter->linkinfo [START_LINK_CB_DL_LATEST].macoscb = callbackInit (

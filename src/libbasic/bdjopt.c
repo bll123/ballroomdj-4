@@ -162,6 +162,7 @@ static datafilekey_t bdjopturidfkeys [] = {
   { "AUDIOID_ACOUSTID_URI", OPT_URI_AUID_ACOUSTID,        VALUE_STR, NULL, DF_NORM },
   { "AUDIOID_MUSICBRAINZ_URI",  OPT_URI_AUID_MUSICBRAINZ, VALUE_STR, NULL, DF_NORM },
   { "DOWNLOAD_HOST",        OPT_HOST_DOWNLOAD,            VALUE_STR, NULL, DF_NORM },
+  { "DOWNLOAD_SUFFIX",      OPT_DOWNLOAD_SUFFIX,          VALUE_STR, NULL, DF_NORM },
   { "DOWNLOAD_URI",         OPT_URI_DOWNLOAD,             VALUE_STR, NULL, DF_NORM },
   { "FORUM_HOST",           OPT_HOST_FORUM,               VALUE_STR, NULL, DF_NORM },
   { "FORUM_URI",            OPT_URI_FORUM,                VALUE_STR, NULL, DF_NORM },
@@ -464,6 +465,14 @@ bdjoptInit (void)
   if (nlistGetNum (bdjopt->bdjoptList, OPT_G_USE_WORK_MOVEMENT) < 0) {
     nlistSetNum (bdjopt->bdjoptList, OPT_G_USE_WORK_MOVEMENT, false);
   }
+
+  /* added 4.15.5.1, default to sourceforge */
+  tstr = nlistGetStr (bdjopt->bdjoptList, OPT_DOWNLOAD_SUFFIX);
+  if (tstr == NULL) {
+    tstr = "v{VERSION}";
+    nlistSetStr (bdjopt->bdjoptList, OPT_DOWNLOAD_SUFFIX, tstr);
+  }
+
 }
 
 void

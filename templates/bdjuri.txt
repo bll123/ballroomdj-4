@@ -1,6 +1,6 @@
 # config-uri
 # 2024-12-5
-# version 2
+# version 3
 version
 ..1
 AUDIOID_MUSICBRAINZ_URI
@@ -11,6 +11,10 @@ DOWNLOAD_HOST
 ..https://sourceforge.net
 DOWNLOAD_URI
 ../projects/ballroomdj4/files
+# sourceforge: v{VERSION}
+# github: download/{VERSION}
+DOWNLOAD_SUFFIX
+..v{VERSION}
 FORUM_HOST
 ..https://ballroomdj.org
 FORUM_URI

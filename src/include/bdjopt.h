@@ -57,6 +57,7 @@ enum {
 };
 
 typedef enum {
+  OPT_DOWNLOAD_SUFFIX,
   OPT_HOST_DOWNLOAD,
   OPT_HOST_FORUM,
   OPT_HOST_MOBMQ,

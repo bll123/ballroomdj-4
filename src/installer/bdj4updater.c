@@ -575,7 +575,7 @@ main (int argc, char *argv [])
     /* 4.12.1 2024-9-12 new file bdjuri.txt */
     /* 4.12.8 2024-12-5 updated bdjuri.txt */
     updaterCopyIfNotPresent (BDJ_URIFN, BDJ4_CONFIG_EXT, NULL);
-    updaterCopyVersionCheck (BDJ_URIFN, BDJ4_CONFIG_EXT, 2);
+    updaterCopyVersionCheck (BDJ_URIFN, BDJ4_CONFIG_EXT, 3);
   }
 
   {
