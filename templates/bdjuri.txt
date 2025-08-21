@@ -9,8 +9,12 @@ AUDIOID_ACOUSTID_URI
 ..https://api.acoustid.org/v2/lookup
 DOWNLOAD_HOST
 ..https://sourceforge.net
+# dl-uri:
+# sourceforge: /projects/ballroomdj4/files
+# github: /bll123/ballroomdj-4/releases
 DOWNLOAD_URI
 ../projects/ballroomdj4/files
+# dl-suffix:
 # sourceforge: v{VERSION}
 # github: download/{VERSION}
 DOWNLOAD_SUFFIX
