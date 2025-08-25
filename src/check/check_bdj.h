@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_CHECK_BDJ
-#define INC_CHECK_BDJ
+#pragma once
 
 #include <check.h>
 
@@ -102,5 +101,3 @@ Suite *     audiosrc_suite (void);
 
 /* libwebclient */
 Suite *     webclient_suite (void);
-
-#endif /* INC_CHECK_BDJ */

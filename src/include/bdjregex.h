@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_BDJREGEX_H
-#define INC_BDJREGEX_H
+#pragma once
 
 #include "nodiscard.h"
 
@@ -25,4 +24,3 @@ char *regexReplaceLiteral (const char *str, const char *tgt, const char *repl);
 } /* extern C */
 #endif
 
-#endif /* INC_BDJREGEX_H */

@@ -1,8 +1,7 @@
 /*
  * Copyright 2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_XMLPARSE_H
-#define INC_XMLPARSE_H
+#pragma once
 
 #include "nodiscard.h"
 #include "ilist.h"
@@ -39,4 +38,3 @@ NODISCARD ilist_t * xmlParseGetList (xmlparse_t * xmlparse, const char *xpath, c
 } /* extern C */
 #endif
 
-#endif /* INC_XMLPARSE_H */

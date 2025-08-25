@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIEXPIMPBDJ4_H
-#define INC_UIEXPIMPBDJ4_H
+#pragma once
 
 #include "callback.h"
 #include "nlist.h"
@@ -35,4 +34,3 @@ void uieibdj4UpdateStatus (uieibdj4_t *uieibdj4, int count, int tot);
 } /* extern C */
 #endif
 
-#endif /* INC_UIEXPIMPBDJ4_H */

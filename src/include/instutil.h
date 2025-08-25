@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_INSTUTIL_H
-#define INC_INSTUTIL_H
+#pragma once
 
 #include "sysvars.h"
 
@@ -61,4 +60,3 @@ void  instutilCopyIcons (void);
 } /* extern C */
 #endif
 
-#endif /* INC_INSTUTIL_H */

@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_BDJ4INTL_H
-#define INC_BDJ4INTL_H
+#pragma once
 
 #include <locale.h>
 #if __has_include (<libintl.h>)
@@ -20,4 +19,3 @@ extern "C" {
 } /* extern C */
 #endif
 
-#endif /* INC_BDJ4INTL_H */

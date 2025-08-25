@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_ORGOPT_H
-#define INC_ORGOPT_H
+#pragma once
 
 #include "nodiscard.h"
 #include "datafile.h"
@@ -25,4 +24,3 @@ slist_t   * orgoptGetList (orgopt_t *org);
 } /* extern C */
 #endif
 
-#endif /* INC_ORGOPT_H */

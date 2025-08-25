@@ -1,8 +1,7 @@
 /*
  * Copyright 2024-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_GSTI_H
-#define INC_GSTI_H
+#pragma once
 
 #include "pli.h"
 
@@ -30,4 +29,3 @@ int gstiGetVolume (gsti_t *gsti);
 } /* extern C */
 #endif
 
-#endif /* INC_GSTI_H */

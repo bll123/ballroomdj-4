@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UISWITCH_H
-#define INC_UISWITCH_H
+#pragma once
 
 #include "callback.h"
 #include "uiwcont.h"
@@ -21,4 +20,3 @@ void uiSwitchSetCallback (uiwcont_t *uiwidget, callback_t *uicb);
 } /* extern C */
 #endif
 
-#endif /* INC_UISWITCH_H */

@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_MSGPARSE_H
-#define INC_MSGPARSE_H
+#pragma once
 
 #include <stdint.h>
 
@@ -80,4 +79,3 @@ void msgparseDBEntryUpdate (char *data, dbidx_t *dbidx);
 } /* extern C */
 #endif
 
-#endif /* INC_MSGPARSE_H */

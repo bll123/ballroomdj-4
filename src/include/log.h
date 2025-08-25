@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_LOG_H
-#define INC_LOG_H
+#pragma once
 
 #include <stdio.h>
 #include <stdint.h>
@@ -144,4 +143,3 @@ void rlogVarMsg (logidx_t, loglevel_t level, const char *fn, int32_t line, const
 } /* extern C */
 #endif
 
-#endif /* INC_LOG_H */

@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_AUDIOSRC_H
-#define INC_AUDIOSRC_H
+#pragma once
 
 #include <stdint.h>
 
@@ -108,4 +107,3 @@ bool audiosrcutilPreCacheFile (const char *fn);
 } /* extern C */
 #endif
 
-#endif /* INC_AUDIOSRC_H */

@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_AUDIOADJUST_H
-#define INC_AUDIOADJUST_H
+#pragma once
 
 #include "nodiscard.h"
 #include "musicdb.h"
@@ -31,4 +30,3 @@ int aaSilenceDetect (const char *infn, double *sstart, double *send);
 } /* extern C */
 #endif
 
-#endif /* INC_AUDIOADJUST_H */

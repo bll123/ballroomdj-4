@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_TMUTIL_H
-#define INC_TMUTIL_H
+#pragma once
 
 #include <stdbool.h>
 #include <time.h>
@@ -63,4 +62,3 @@ char * strptime (const char *buf, const char *fmt, struct tm *tm);
 } /* extern C */
 #endif
 
-#endif /* INC_TMUTIL_H */

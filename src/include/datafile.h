@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_DATAFILE_H
-#define INC_DATAFILE_H
+#pragma once
 
 #include "nodiscard.h"
 #include "list.h"
@@ -111,4 +110,3 @@ listidx_t parseGetAllocCount (parseinfo_t *pi);
 } /* extern C */
 #endif
 
-#endif /* INC_DATAFILE_H */

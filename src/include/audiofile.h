@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_AUDIOFILE_H
-#define INC_AUDIOFILE_H
+#pragma once
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -36,4 +35,3 @@ enum {
 } /* extern C */
 #endif
 
-#endif /* INC_AUDIOFILE_H */

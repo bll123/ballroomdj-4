@@ -1,8 +1,7 @@
 /*
  * Copyright 2024-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIVLUTIL_H
-#define INC_UIVLUTIL_H
+#pragma once
 
 #include "slist.h"
 #include "uivirtlist.h"
@@ -17,4 +16,3 @@ void uivlAddDisplayColumns (uivirtlist_t *uivl, slist_t *sellist, int startcol);
 } /* extern C */
 #endif
 
-#endif /* INC_UIVLUTIL_H */

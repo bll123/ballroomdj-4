@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_ATI_H
-#define INC_ATI_H
+#pragma once
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -78,4 +77,3 @@ int atiReplaceFile (const char *ffn, const char *outfn);
 } /* extern C */
 #endif
 
-#endif /* INC_ATI_H */

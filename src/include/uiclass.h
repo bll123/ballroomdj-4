@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UICLASS_H
-#define INC_UICLASS_H
+#pragma once
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -35,4 +34,3 @@ extern "C" {
 } /* extern C */
 #endif
 
-#endif /* INC_UICLASS_H */

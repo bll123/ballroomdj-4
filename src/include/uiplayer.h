@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIPLAYER_H
-#define INC_UIPLAYER_H
+#pragma once
 
 #include <stdbool.h>
 
@@ -37,4 +36,3 @@ bool  uiplayerGetRepeat (uiplayer_t *uiplayer);
 } /* extern C */
 #endif
 
-#endif /* INC_UIPLAYER_H */

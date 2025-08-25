@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIDIALOG_H
-#define INC_UIDIALOG_H
+#pragma once
 
 #include "uiwcont.h"
 
@@ -39,4 +38,3 @@ void  uiDialogDestroy (uiwcont_t *uidialog);
 } /* extern C */
 #endif
 
-#endif /* INC_UIDIALOG_H */

@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UITEXTBOX_H
-#define INC_UITEXTBOX_H
+#pragma once
 
 #include "uiwcont.h"
 
@@ -28,4 +27,3 @@ void  uiTextBoxSetParagraph (uiwcont_t *uiwidget, int indent, int interpara);
 } /* extern C */
 #endif
 
-#endif /* INC_UITEXTBOX_H */

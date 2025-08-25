@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_AUTOSEL_H
-#define INC_AUTOSEL_H
+#pragma once
 
 #include "nodiscard.h"
 #include "datafile.h"
@@ -45,4 +44,3 @@ ssize_t       autoselGetNum (autosel_t *autosel, autoselkey_t idx);
 } /* extern C */
 #endif
 
-#endif /* INC_AUTOSEL_H */

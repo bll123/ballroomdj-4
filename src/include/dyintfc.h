@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_DYINTFC_H
-#define INC_DYINTFC_H
+#pragma once
 
 #include "ilist.h"
 
@@ -21,4 +20,3 @@ ilist_t * dyInterfaceList (const char *pfx, const char *funcnm);
 } /* extern C */
 #endif
 
-#endif /* INC_DYINTFC_H */

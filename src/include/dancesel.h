@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_DANCESEL_H
-#define INC_DANCESEL_H
+#pragma once
 
 #include "nodiscard.h"
 #include "autosel.h"
@@ -32,4 +31,3 @@ ilistidx_t      danceselSelect (dancesel_t *dancesel, ilistidx_t priorHistCount)
 } /* extern C */
 #endif
 
-#endif /* INC_DANCESEL_H */

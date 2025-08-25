@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_EXPIMPBDJ4_H
-#define INC_EXPIMPBDJ4_H
+#pragma once
 
 #include "nodiscard.h"
 #include "musicdb.h"
@@ -32,4 +31,3 @@ bool eibdj4DatabaseChanged (eibdj4_t *eibdj4);
 } /* extern C */
 #endif
 
-#endif /* INC_EXPIMPBDJ4_H */

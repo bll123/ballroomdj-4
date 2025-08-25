@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_DNCTYPES_H
-#define INC_DNCTYPES_H
+#pragma once
 
 #include "nodiscard.h"
 #include "datafile.h"
@@ -24,4 +23,3 @@ void        dnctypesConv (datafileconv_t *conv);
 } /* extern C */
 #endif
 
-#endif /* INC_DNCTYPES_H */

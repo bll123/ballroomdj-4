@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_SONGDB_H
-#define INC_SONGDB_H
+#pragma once
 
 #include <stdint.h>
 
@@ -45,4 +44,3 @@ void  songdbSetMusicDB (songdb_t *songdb, musicdb_t *musicdb);
 } /* extern C */
 #endif
 
-#endif /* INC_SONGDB_H */

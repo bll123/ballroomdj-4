@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_MP3EXP_H
-#define INC_MP3EXP_H
+#pragma once
 
 #include "nodiscard.h"
 #include "musicdb.h"
@@ -22,4 +21,3 @@ bool mp3ExportQueue (mp3exp_t *mp3exp);
 } /* extern C */
 #endif
 
-#endif /* INC_MP3EXP_H */

@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UISPINBOX_H
-#define INC_UISPINBOX_H
+#pragma once
 
 #include <stdint.h>
 
@@ -58,4 +57,3 @@ void uiSpinboxAddClass (const char *classnm, const char *color);
 } /* extern C */
 #endif
 
-#endif /* INC_UISPINBOX_H */

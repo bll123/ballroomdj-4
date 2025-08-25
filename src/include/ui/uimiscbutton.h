@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIMISCBUTTON_H
-#define INC_UIMISCBUTTON_H
+#pragma once
 
 #include "uiwcont.h"
 
@@ -19,4 +18,3 @@ void uiColorButtonGetColor (uiwcont_t *uiwidget, char *tbuff, size_t sz);
 } /* extern C */
 #endif
 
-#endif /* INC_UIMISCBUTTON_H */

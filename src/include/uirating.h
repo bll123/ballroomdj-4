@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIRATING_H
-#define INC_UIRATING_H
+#pragma once
 
 #include "callback.h"
 #include "uiwcont.h"
@@ -30,4 +29,3 @@ void uiratingSetChangedCallback (uirating_t *uirating, callback_t *cb);
 } /* extern C */
 #endif
 
-#endif /* INC_UIRATING_H */

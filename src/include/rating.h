@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_RATING_H
-#define INC_RATING_H
+#pragma once
 
 #include "nodiscard.h"
 #include "datafile.h"
@@ -42,4 +41,3 @@ void        ratingSave (rating_t *ratings, ilist_t *list);
 } /* extern C */
 #endif
 
-#endif /* INC_RATING_H */

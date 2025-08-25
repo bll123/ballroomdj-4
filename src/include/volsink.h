@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_VOLSINK_H
-#define INC_VOLSINK_H
+#pragma once
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -26,4 +25,3 @@ typedef struct volsinklist {
 } /* extern C */
 #endif
 
-#endif /* INC_VOLSINK_H */

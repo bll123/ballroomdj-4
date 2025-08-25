@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_VALIDATE_H
-#define INC_VALIDATE_H
+#pragma once
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -30,4 +29,3 @@ bool validate (char *buff, size_t sz, const char *label, const char *str, int fl
 } /* extern C */
 #endif
 
-#endif /* INC_VALIDATE_H */

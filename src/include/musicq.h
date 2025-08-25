@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_MUSICQ_H
-#define INC_MUSICQ_H
+#pragma once
 
 #include <time.h>
 
@@ -85,4 +84,3 @@ musicqidx_t musicqNextQueue (musicqidx_t musicqidx);
 } /* extern C */
 #endif
 
-#endif /* INC_MUSICQ_H */

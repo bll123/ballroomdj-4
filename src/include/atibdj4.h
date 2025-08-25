@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_ATIBDJ4_H
-#define INC_ATIBDJ4_H
+#pragma once
 
 #include "ati.h"
 #include "dylib.h"
@@ -107,4 +106,3 @@ void atibdj4LogRIFFVersion (void);
 } /* extern C */
 #endif
 
-#endif /* INC_ATIBDJ4_H */

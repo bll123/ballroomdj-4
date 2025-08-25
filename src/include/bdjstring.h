@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_BDJSTRING_H
-#define INC_BDJSTRING_H
+#pragma once
 
 #include "config.h"
 
@@ -31,4 +30,3 @@ char * stpecpy (char *dst, char *end, const char *restrict src);
 } /* extern C */
 #endif
 
-#endif /* INC_BDJSTRING_H */

@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_OSDIR_H
-#define INC_OSDIR_H
+#pragma once
 
 #include "config.h"
 #include "nodiscard.h"
@@ -21,4 +20,3 @@ void          osDirClose (dirhandle_t *dirh);
 } /* extern C */
 #endif
 
-#endif /* INC_OSDIR_H */

@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_MPRISI_H
-#define INC_MPRISI_H
+#pragma once
 
 #include <stdint.h>
 
@@ -35,4 +34,3 @@ bool mprisSetRate (mpris_t *mpris, double rate);
 } /* extern C */
 #endif
 
-#endif /* INC_MPRISI_H */

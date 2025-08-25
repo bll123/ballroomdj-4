@@ -1,8 +1,7 @@
 /*
  * Copyright 2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIIMPPL_H
-#define INC_UIIMPPL_H
+#pragma once
 
 #include "callback.h"
 #include "nlist.h"
@@ -31,4 +30,3 @@ void uiimpplUpdateStatus (uiimppl_t *uiimppl, int count, int tot);
 } /* extern C */
 #endif
 
-#endif /* INC_UIIMPPL_H */

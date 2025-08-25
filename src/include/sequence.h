@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_SEQUENCE_H
-#define INC_SEQUENCE_H
+#pragma once
 
 #include "nodiscard.h"
 #include "nlist.h"
@@ -28,4 +27,3 @@ void          sequenceSave (sequence_t *sequence, slist_t *slist);
 } /* extern C */
 #endif
 
-#endif /* INC_SEQUENCE_H */

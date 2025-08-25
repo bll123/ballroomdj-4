@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_PROCUTIL_H
-#define INC_PROCUTIL_H
+#pragma once
 
 #include "config.h"
 
@@ -58,4 +57,3 @@ void        procutilForceStop (procutil_t *process, int flags,
 } /* extern C */
 #endif
 
-#endif /* INC_PROCUTIL_H */

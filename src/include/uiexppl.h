@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIEXPPL_H
-#define INC_UIEXPPL_H
+#pragma once
 
 #include "callback.h"
 #include "nlist.h"
@@ -32,4 +31,3 @@ void    uiexpplProcess (uiexppl_t *uiexppl);
 } /* extern C */
 #endif
 
-#endif /* INC_UIEXPPL_H */

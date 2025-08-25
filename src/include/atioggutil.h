@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_ATIOGGUTIL_H
-#define INC_ATIOGGUTIL_H
+#pragma once
 
 #include "ati.h"
 #include "slist.h"
@@ -22,4 +21,3 @@ int   atioggWriteOggFile (const char *ffn, void *newvc, int filetype);
 } /* extern C */
 #endif
 
-#endif /* INC_ATIOGGUTIL_H */

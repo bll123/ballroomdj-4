@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_TAGDEF_H
-#define INC_TAGDEF_H
+#pragma once
 
 #include <stdbool.h>
 
@@ -139,4 +138,3 @@ int         tagdefLookup (const char *str);
 } /* extern C */
 #endif
 
-#endif /* INC_TAGDEF_H */

@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_SAMESONG_H
-#define INC_SAMESONG_H
+#pragma once
 
 #include "nodiscard.h"
 #include "musicdb.h"
@@ -26,4 +25,3 @@ void        samesongClear (samesong_t *ss, nlist_t *dbidxlist);
 } /* extern C */
 #endif
 
-#endif /* INC_SAMESONG_H */

@@ -1,8 +1,7 @@
 /*
  * Copyright 2024-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_ATIBDJ4ASF_H
-#define INC_ATIBDJ4ASF_H
+#pragma once
 
 #include <stdint.h>
 
@@ -166,4 +165,3 @@ static guidlist_t asf_guids [ASF_GUID_MAX] = {
 } /* extern C */
 #endif
 
-#endif /* INC_ATIBDJ4ASF_H */

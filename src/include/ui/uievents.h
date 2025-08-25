@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIEVENTS_H
-#define INC_UIEVENTS_H
+#pragma once
 
 #include "callback.h"
 #include "uiwcont.h"
@@ -69,4 +68,3 @@ int     uiEventGetButton (uiwcont_t *uiwidget);
 } /* extern C */
 #endif
 
-#endif /* INC_UIEVENTS_H */

@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_MANAGEUI_H
-#define INC_MANAGEUI_H
+#pragma once
 
 #include "callback.h"
 #include "conn.h"
@@ -122,4 +121,3 @@ void manageAudioIdSavePosition (manageaudioid_t *maudioid);
 } /* extern C */
 #endif
 
-#endif /* INC_MANAGEUI_H */

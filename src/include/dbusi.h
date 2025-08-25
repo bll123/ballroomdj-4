@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_DBUSI_H
-#define INC_DBUSI_H
+#pragma once
 
 #include <stdbool.h>
 
@@ -46,4 +45,3 @@ void dbusSetInterfaceSkeleton (dbus_t *dbus, void *skel, const char *objpath);
 } /* extern C */
 #endif
 
-#endif /* INC_DBUSI_H */

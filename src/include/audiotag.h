@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_AUDIOTAG_H
-#define INC_AUDIOTAG_H
+#pragma once
 
 #include "slist.h"
 
@@ -40,4 +39,3 @@ void    audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype);
 } /* extern C */
 #endif
 
-#endif /* INC_AUDIOTAG_H */

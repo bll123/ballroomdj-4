@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_BDJ4INIT_H
-#define INC_BDJ4INIT_H
+#pragma once
 
 #include "bdjmsg.h"
 #include "log.h"
@@ -58,4 +57,3 @@ void bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb);
 } /* extern C */
 #endif
 
-#endif /* INC_BDJ4INIT_H */

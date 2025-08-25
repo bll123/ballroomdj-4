@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIAPPLYADJ_H
-#define INC_UIAPPLYADJ_H
+#pragma once
 
 #include "callback.h"
 #include "nlist.h"
@@ -25,4 +24,3 @@ void    uiaaDialogClear (uiaa_t *uiaa);
 } /* extern C */
 #endif
 
-#endif /* INC_UIAPPLYADJ_H */

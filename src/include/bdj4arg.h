@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_BDJ4ARG_H
-#define INC_BDJ4ARG_H
+#pragma once
 
 #include "nodiscard.h"
 
@@ -21,4 +20,3 @@ const char * bdj4argGet (bdj4arg_t *bdj4arg, int idx, const char *arg);
 } /* extern C */
 #endif
 
-#endif /* INC_BDJ4ARG_H */

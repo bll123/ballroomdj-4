@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_DISPSEL_H
-#define INC_DISPSEL_H
+#pragma once
 
 #include "nodiscard.h"
 #include "datafile.h"
@@ -59,4 +58,3 @@ void      dispselSave (dispsel_t *dispsel, dispselsel_t idx, slist_t *list);
 } /* extern C */
 #endif
 
-#endif /* INC_DISPSEL_H */

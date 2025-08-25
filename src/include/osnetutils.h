@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_OSNETUTILS_H
-#define INC_OSNETUTILS_H
+#pragma once
 
 #include <sys/types.h>
 
@@ -16,4 +15,3 @@ char          *getHostname (char *buff, size_t sz);
 } /* extern C */
 #endif
 
-#endif /* INC_OSNETUTILS_H */

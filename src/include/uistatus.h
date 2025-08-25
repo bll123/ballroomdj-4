@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UISTATUS_H
-#define INC_UISTATUS_H
+#pragma once
 
 #include "callback.h"
 #include "uiwcont.h"
@@ -25,4 +24,3 @@ void uistatusSetChangedCallback (uistatus_t *uistatus, callback_t *cb);
 } /* extern C */
 #endif
 
-#endif /* INC_UISTATUS_H */

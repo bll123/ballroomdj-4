@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_OSPROCESS_H
-#define INC_OSPROCESS_H
+#pragma once
 
 #include "config.h"
 
@@ -28,4 +27,3 @@ char *osRunProgram (const char *prog, ...);
 } /* extern C */
 #endif
 
-#endif /* INC_OSPROCESS_H */

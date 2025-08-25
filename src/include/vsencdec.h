@@ -1,8 +1,7 @@
 /*
  * Copyright 2022-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_VSENCDEC_H
-#define INC_VSENCDEC_H
+#pragma once
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -16,4 +15,3 @@ void vsencdec (const char *str, char *buff, size_t sz);
 } /* extern C */
 #endif
 
-#endif /* INC_VSENCDEC_H */

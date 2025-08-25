@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_WEBRESP_H
-#define INC_WEBRESP_H
+#pragma once
 
 #define WEB_RESP_OK         "OK"
 #define WEB_RESP_NO_CONTENT "No Content"
@@ -20,4 +19,3 @@ enum {
   WEB_NOT_FOUND = 404,
 };
 
-#endif /* INC_WEBRESP_H */

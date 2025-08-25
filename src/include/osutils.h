@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_OSUTILS_H
-#define INC_OSUTILS_H
+#pragma once
 
 #include "config.h"
 
@@ -34,4 +33,3 @@ char    *osGetSystemFont (const char *gsettingspath);
 } /* extern C */
 #endif
 
-#endif /* INC_OSUTILS_H */

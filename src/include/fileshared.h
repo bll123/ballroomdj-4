@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_FILESHARED_H
-#define INC_FILESHARED_H
+#pragma once
 
 #include "nodiscard.h"
 
@@ -36,4 +35,3 @@ void          fileSharedClose (fileshared_t *fileHandle);
 } /* extern C */
 #endif
 
-#endif /* INC_FILESHARED_H */

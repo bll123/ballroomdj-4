@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_BDJVARSDF_H
-#define INC_BDJVARSDF_H
+#pragma once
 
 #include "datafile.h"
 
@@ -31,4 +30,3 @@ void  bdjvarsdfSet (bdjvarkeydf_t idx, void *data);
 } /* extern C */
 #endif
 
-#endif /* INC_BDJVARSDF_H */

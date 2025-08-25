@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UINBUTIL_H
-#define INC_UINBUTIL_H
+#pragma once
 
 #include <stdbool.h>
 
@@ -36,4 +35,3 @@ int  uinbutilIDIterate (uinbtabid_t *nbtabid, int *iteridx);
 } /* extern C */
 #endif
 
-#endif /* INC_UINBUTIL_H */

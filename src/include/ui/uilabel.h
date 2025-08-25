@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UILABEL_H
-#define INC_UILABEL_H
+#pragma once
 
 #include "uiwcont.h"
 
@@ -27,4 +26,3 @@ void  uiLabelAlignEnd (uiwcont_t *uiwidget);
 } /* extern C */
 #endif
 
-#endif /* INC_UILABEL_H */

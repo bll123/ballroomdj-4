@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_QUEUE_H
-#define INC_QUEUE_H
+#pragma once
 
 #include "nodiscard.h"
 #include <stdint.h>
@@ -39,4 +38,3 @@ int     queueDebugSearchDist (queue_t *q);
 } /* extern C */
 #endif
 
-#endif /* INC_QUEUE_H */

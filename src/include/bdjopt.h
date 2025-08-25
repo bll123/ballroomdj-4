@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_BDJOPT_H
-#define INC_BDJOPT_H
+#pragma once
 
 #include <stdint.h>
 
@@ -203,4 +202,3 @@ void    bdjoptConvMobMQType (datafileconv_t *conv);
 } /* extern C */
 #endif
 
-#endif /* INC_BDJOPT_H */

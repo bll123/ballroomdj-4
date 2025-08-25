@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_RAFILE_H
-#define INC_RAFILE_H
+#pragma once
 
 #include "nodiscard.h"
 #include <stdio.h>
@@ -46,4 +45,3 @@ rafileidx_t   raGetVersion (rafile_t *rafile);
 } /* extern C */
 #endif
 
-#endif /* INC_RAFILE_H */

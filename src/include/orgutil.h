@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_ORGUTIL_H
-#define INC_ORGUTIL_H
+#pragma once
 
 #include "nodiscard.h"
 #include "slist.h"
@@ -60,4 +59,3 @@ const char *orgGetText (org_t *org, slistidx_t idx);
 } /* extern C */
 #endif
 
-#endif /* INC_ORGUTIL_H */

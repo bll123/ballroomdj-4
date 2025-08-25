@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UISIZEGRP_H
-#define INC_UISIZEGRP_H
+#pragma once
 
 #include "uiwcont.h"
 
@@ -17,4 +16,3 @@ void uiSizeGroupAdd (uiwcont_t *uisg, uiwcont_t *uiwidget);
 } /* extern C */
 #endif
 
-#endif /* INC_UISIZEGRP_H */

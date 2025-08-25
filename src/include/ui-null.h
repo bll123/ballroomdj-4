@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UI_NULL_H
-#define INC_UI_NULL_H
+#pragma once
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -29,4 +28,3 @@ enum {
 } /* extern C */
 #endif
 
-#endif /* INC_UI_NULL_H */

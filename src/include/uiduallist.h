@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIDUALLIST_H
-#define INC_UIDUALLIST_H
+#pragma once
 
 #include "slist.h"
 #include "uiwcont.h"
@@ -38,4 +37,3 @@ slist_t * uiduallistGetList (uiduallist_t *duallist);
 } /* extern C */
 #endif
 
-#endif /* INC_UIDUALLIST_H */

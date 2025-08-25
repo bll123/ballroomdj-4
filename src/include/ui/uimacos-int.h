@@ -1,8 +1,7 @@
 /*
  * Copyright 2024-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIMACOS_INT_H
-#define INC_UIMACOS_INT_H
+#pragma once
 
 #include <Cocoa/Cocoa.h>
 
@@ -66,4 +65,3 @@ typedef struct macoslayout {
 } /* extern C */
 #endif
 
-#endif /* INC_UIMACOS_INT_H */

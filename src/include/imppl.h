@@ -1,8 +1,7 @@
 /*
  * Copyright 2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_IMPPL_H
-#define INC_IMPPL_H
+#pragma once
 
 #include "nodiscard.h"
 #include "musicdb.h"
@@ -27,4 +26,3 @@ void impplFinalize (imppl_t *imppl);
 } /* extern C */
 #endif
 
-#endif /* INC_IMPPL_H */

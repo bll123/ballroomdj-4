@@ -1,8 +1,7 @@
 /*
  * Copyright 2024-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_ROMAN_H
-#define INC_ROMAN_H
+#pragma once
 
 #include "config.h"
 
@@ -16,4 +15,3 @@ int convertToRoman (int value, char * buff, size_t sz);
 } /* extern C */
 #endif
 
-#endif /* INC_ROMAN_H */

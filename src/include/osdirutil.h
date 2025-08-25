@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_OSDIRUTIL_H
-#define INC_OSDIRUTIL_H
+#pragma once
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -15,4 +14,3 @@ void    osGetCurrentDir (char *buff, size_t sz);
 } /* extern C */
 #endif
 
-#endif /* INC_OSDIRUTIL_H */

@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_EXPIMP_H
-#define INC_EXPIMP_H
+#pragma once
 
 #include <time.h>
 
@@ -53,4 +52,3 @@ nlist_t * rssImport (const char *uri);
 } /* extern C */
 #endif
 
-#endif /* INC_EXPIMP_H */

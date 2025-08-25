@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_PLAYLIST_H
-#define INC_PLAYLIST_H
+#pragma once
 
 #include "nodiscard.h"
 #include <stdbool.h>
@@ -117,4 +116,3 @@ pltype_t  playlistGetType (const char *name);
 } /* extern C */
 #endif
 
-#endif /* INC_PLAYLIST_H */

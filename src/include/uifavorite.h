@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIFAVORITE_H
-#define INC_UIFAVORITE_H
+#pragma once
 
 #include "callback.h"
 #include "musicdb.h"
@@ -25,4 +24,3 @@ void uifavoriteSetChangedCallback (uifavorite_t *uifavorite, callback_t *cb);
 } /* extern C */
 #endif
 
-#endif /* INC_UIFAVORITE_H */

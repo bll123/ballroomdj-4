@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIWCONT_H
-#define INC_UIWCONT_H
+#pragma once
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -29,4 +28,3 @@ void  uiwcontFree (uiwcont_t *uiwidget);
 } /* extern C */
 #endif
 
-#endif /* INC_UIWCONT_H */

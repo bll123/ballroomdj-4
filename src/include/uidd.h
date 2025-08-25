@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIDD_H
-#define INC_UIDD_H
+#pragma once
 
 #include "callback.h"
 #include "ilist.h"
@@ -47,4 +46,3 @@ const char *uiddGetSelectionStr (uidd_t *dd);
 } /* extern C */
 #endif
 
-#endif /* INC_UIDD_H */

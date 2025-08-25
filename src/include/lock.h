@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_LOCK_H
-#define INC_LOCK_H
+#pragma once
 
 #include <sys/types.h>
 
@@ -21,4 +20,3 @@ int   lockRelease (char *, int);
 } /* extern C */
 #endif
 
-#endif /* INC_LOCK_H */

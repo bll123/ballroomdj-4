@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_PROGSTATE_H
-#define INC_PROGSTATE_H
+#pragma once
 
 #include "nodiscard.h"
 #include "ilist.h"
@@ -52,4 +51,3 @@ const char      *progstateDebug (progstate_t *progstate);
 } /* extern C */
 #endif
 
-#endif /* INC_PROGSTATE_H */

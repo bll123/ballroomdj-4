@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_STATUS_H
-#define INC_STATUS_H
+#pragma once
 
 #include "nodiscard.h"
 #include "datafile.h"
@@ -38,4 +37,3 @@ void        statusSave (status_t *status, ilist_t *list);
 } /* extern C */
 #endif
 
-#endif /* INC_STATUS_H */

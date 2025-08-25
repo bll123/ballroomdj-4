@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UISONG_H
-#define INC_UISONG_H
+#pragma once
 
 #include <stdint.h>
 
@@ -24,4 +23,3 @@ char *uisongGetValue (song_t *song, int tagidx, int32_t *num, double *dval);
 } /* extern C */
 #endif
 
-#endif /* INC_UISONG_H */

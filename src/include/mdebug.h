@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_MDEBUG_H
-#define INC_MDEBUG_H
+#pragma once
 
 #include <stdint.h>
 
@@ -71,4 +70,3 @@ char *mdebugBacktrace (void);
 } /* extern C */
 #endif
 
-#endif /* INC_MDEBUG_H */

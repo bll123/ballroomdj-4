@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UISELECTFILE_H
-#define INC_UISELECTFILE_H
+#pragma once
 
 #include "callback.h"
 #include "nlist.h"
@@ -37,4 +36,3 @@ bool selectAllFileCallback (void *udata);
 } /* extern C */
 #endif
 
-#endif /* INC_UISELECTFILE_H */

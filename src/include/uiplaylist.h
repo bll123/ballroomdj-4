@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIPLAYLIST_H
-#define INC_UIPLAYLIST_H
+#pragma once
 
 #include "callback.h"
 #include "uiwcont.h"
@@ -32,4 +31,3 @@ void uiplaylistSetSelectCallback (uiplaylist_t *uiplaylist, callback_t *cb);
 } /* extern C */
 #endif
 
-#endif /* INC_UIPLAYLIST_H */

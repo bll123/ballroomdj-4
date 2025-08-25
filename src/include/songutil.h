@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_SONGUTIL_H
-#define INC_SONGUTIL_H
+#pragma once
 
 #include "datafile.h"
 #include "nlist.h"
@@ -52,4 +51,3 @@ void  songutilTitleFromWorkMovement (nlist_t *taglist);
 } /* extern C */
 #endif
 
-#endif /* INC_SONGUTIL_H */

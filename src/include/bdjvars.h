@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_BDJVARS_H
-#define INC_BDJVARS_H
+#pragma once
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -62,4 +61,3 @@ const char  *bdjvarslDesc (bdjvarkeyl_t idx);
 } /* extern C */
 #endif
 
-#endif /* INC_BDJVARS_H */

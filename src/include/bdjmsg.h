@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_BDJMSG_H
-#define INC_BDJMSG_H
+#pragma once
 
 #include <stdint.h>
 
@@ -237,4 +236,3 @@ const char *msgRouteDebugText (bdjmsgroute_t route);
 } /* extern C */
 #endif
 
-#endif /* INC_BDJMSG_H */

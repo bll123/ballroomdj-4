@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_SONGLIST_H
-#define INC_SONGLIST_H
+#pragma once
 
 #include "nodiscard.h"
 #include "datafile.h"
@@ -48,4 +47,3 @@ int songlistDistVersion (songlist_t *sl);
 } /* extern C */
 #endif
 
-#endif /* INC_SONGLIST_H */

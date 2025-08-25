@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIWIDGET_H
-#define INC_UIWIDGET_H
+#pragma once
 
 #include "callback.h"
 #include "uiwcont.h"
@@ -52,4 +51,3 @@ void uiWidgetSetEnterCallback (uiwcont_t *uiwidget, callback_t *uicb);
 } /* extern C */
 #endif
 
-#endif /* INC_UIWIDGET_H */

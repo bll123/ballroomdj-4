@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIPBAR_H
-#define INC_UIPBAR_H
+#pragma once
 
 #include "uiwcont.h"
 
@@ -17,4 +16,3 @@ void uiProgressBarSet (uiwcont_t *uipb, double val);
 } /* extern C */
 #endif
 
-#endif /* INC_UIPBAR_H */

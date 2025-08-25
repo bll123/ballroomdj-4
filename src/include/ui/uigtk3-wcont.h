@@ -1,8 +1,7 @@
 /*
  * Copyright 2024-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIGTK3_WCONT_H
-#define INC_UIGTK3_WCONT_H
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -25,4 +24,3 @@ typedef struct uispecific {
 } /* extern C */
 #endif
 
-#endif /* INC_UIGTK3_WCONT_H */

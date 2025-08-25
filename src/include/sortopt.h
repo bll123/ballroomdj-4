@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_SORTOPT_H
-#define INC_SORTOPT_H
+#pragma once
 
 #include "nodiscard.h"
 #include "datafile.h"
@@ -22,4 +21,3 @@ slist_t       *sortoptGetList (sortopt_t *);
 } /* extern C */
 #endif
 
-#endif /* INC_SORTOPT_H */

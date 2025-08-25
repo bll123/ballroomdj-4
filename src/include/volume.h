@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_VOLUME_H
-#define INC_VOLUME_H
+#pragma once
 
 #include "ilist.h"
 
@@ -45,4 +44,3 @@ void  voliCleanup (void **udata);
 } /* extern C */
 #endif
 
-#endif /* INC_VOLUME_H */

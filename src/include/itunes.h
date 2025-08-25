@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_ITUNES_H
-#define INC_ITUNES_H
+#pragma once
 
 #include "nodiscard.h"
 #include "nlist.h"
@@ -50,4 +49,3 @@ const char *itunesIteratePlaylists (itunes_t *itunes);
 } /* extern C */
 #endif
 
-#endif /* INC_ITUNES_H */

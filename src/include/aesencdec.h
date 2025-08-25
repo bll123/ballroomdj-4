@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_AESENCDEC_H
-#define INC_AESENCDEC_H
+#pragma once
 
 #include <stdbool.h>
 
@@ -17,4 +16,3 @@ bool aesdecrypt (const char *str, char *buff, size_t sz);
 } /* extern C */
 #endif
 
-#endif /* INC_AESENCDEC_H */

@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIDRAGDROP_H
-#define INC_UIDRAGDROP_H
+#pragma once
 
 #include "callback.h"
 #include "uiwcont.h"
@@ -17,4 +16,3 @@ void uiDragDropSetDestURICallback (uiwcont_t *uiwcont, callback_t *cb);
 } /* extern C */
 #endif
 
-#endif /* INC_UIDRAGDROP_H */

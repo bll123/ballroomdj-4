@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_LIST_H
-#define INC_LIST_H
+#pragma once
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -45,4 +44,3 @@ typedef void (*listFree_t)(void *);
 } /* extern C */
 #endif
 
-#endif /* INC_LIST_H */

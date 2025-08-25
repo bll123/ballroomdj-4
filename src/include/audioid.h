@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_AUDIOID_H
-#define INC_AUDIOID_H
+#pragma once
 
 #include "nlist.h"
 #include "song.h"
@@ -121,4 +120,3 @@ int acrLookup (audioidacr_t *acr, const song_t *song, audioid_resp_t *resp);
 } /* extern C */
 #endif
 
-#endif /* INC_AUDIOID_H */

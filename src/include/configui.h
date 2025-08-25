@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_CONFIGUI_H
-#define INC_CONFIGUI_H
+#pragma once
 
 #include <stdint.h>
 
@@ -621,4 +620,3 @@ void confuiBuildUIUserInterface (confuigui_t *gui);
 } /* extern C */
 #endif
 
-#endif /* INC_CONFIGUI_H */

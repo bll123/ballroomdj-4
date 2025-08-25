@@ -1,8 +1,7 @@
 /*
  * Copyright 2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_PODCAST_H
-#define INC_PODCAST_H
+#pragma once
 
 #include "nodiscard.h"
 #include "slist.h"
@@ -36,4 +35,3 @@ const char *podcastGetStr (podcast_t *podcast, int key);
 } /* extern C */
 #endif
 
-#endif /* INC_PODCAST_H */

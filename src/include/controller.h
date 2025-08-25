@@ -2,8 +2,7 @@
  * Copyright 2024-2025 Brad Lanam Pleasant Hill CA
  */
 
-#ifndef INC_CONTROLLER_H
-#define INC_CONTROLLER_H
+#pragma once
 
 #include <stdint.h>
 
@@ -92,4 +91,3 @@ void contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata);
 } /* extern C */
 #endif
 
-#endif /* INC_CONTROLLER_H */

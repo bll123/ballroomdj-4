@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_SYSVARS_H
-#define INC_SYSVARS_H
+#pragma once
 
 #include <stdint.h>
 
@@ -144,4 +143,3 @@ void    sysvarsParseVersionFileFree (sysversinfo_t *versinfo);
 } /* extern C */
 #endif
 
-#endif /* INC_SYSVARS_H */

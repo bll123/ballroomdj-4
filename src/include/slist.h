@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_SLIST_H
-#define INC_SLIST_H
+#pragma once
 
 #include "nodiscard.h"
 #include "list.h"
@@ -54,4 +53,3 @@ int       slistGetOrdering (slist_t *list);
 } /* extern C */
 #endif
 
-#endif /* INC_SLIST_H */

@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UILINK_H
-#define INC_UILINK_H
+#pragma once
 
 #include "callback.h"
 #include "uiwcont.h"
@@ -19,4 +18,3 @@ void uiLinkSetActivateCallback (uiwcont_t *uilink, callback_t *uicb);
 } /* extern C */
 #endif
 
-#endif /* INC_UILINK_H */

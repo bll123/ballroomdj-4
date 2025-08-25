@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UICOPYTAGS_H
-#define INC_UICOPYTAGS_H
+#pragma once
 
 #include "nlist.h"
 #include "uiwcont.h"
@@ -25,4 +24,3 @@ const char * uicopytagsGetFilename (uict_t *uict);
 } /* extern C */
 #endif
 
-#endif /* INC_UICOPYTAGS_H */

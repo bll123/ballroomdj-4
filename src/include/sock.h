@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_SOCK_H
-#define INC_SOCK_H
+#pragma once
 
 #include "config.h"
 #include "nodiscard.h"
@@ -75,4 +74,3 @@ bool          sockWaitClosed (sockinfo_t *sockinfo);
 } /* extern C */
 #endif
 
-#endif /* INC_SOCK_H */

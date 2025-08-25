@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIGENERAL_H
-#define INC_UIGENERAL_H
+#pragma once
 
 #define MACOS_UI_DEBUG 1
 
@@ -58,4 +57,3 @@ void uiConvertColor (const char *color, double *r, double *g, double *b);
 } /* extern C */
 #endif
 
-#endif /* INC_UIGENERAL_H */

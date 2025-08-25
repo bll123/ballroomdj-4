@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_SOCKH_H
-#define INC_SOCKH_H
+#pragma once
 
 #include <stdint.h>
 
@@ -35,4 +34,3 @@ int   sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom, bdjmsgroute_t rout
 } /* extern C */
 #endif
 
-#endif /* INC_SOCKH_H */

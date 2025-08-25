@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UINOTEBOOK_H
-#define INC_UINOTEBOOK_H
+#pragma once
 
 #include "callback.h"
 #include "uiwcont.h"
@@ -23,4 +22,3 @@ void  uiNotebookHideShowPage (uiwcont_t *uinotebook, int pagenum, bool show);
 } /* extern C */
 #endif
 
-#endif /* INC_UINOTEBOOK_H */

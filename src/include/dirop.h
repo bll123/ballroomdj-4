@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_DIROP_H
-#define INC_DIROP_H
+#pragma once
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -20,4 +19,3 @@ bool  diropDeleteDir (const char *dir, int flags);
 } /* extern C */
 #endif
 
-#endif /* INC_DIROP_H */

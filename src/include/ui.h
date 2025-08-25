@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UI_H
-#define INC_UI_H
+#pragma once
 
 #include "uiclass.h"
 #include "uiwcont.h"
@@ -50,4 +49,3 @@
 } /* extern C */
 #endif
 
-#endif /* INC_UI_H */

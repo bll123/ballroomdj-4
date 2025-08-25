@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_MUSICDB_H
-#define INC_MUSICDB_H
+#pragma once
 
 #include <stdint.h>
 
@@ -69,4 +68,3 @@ dbidx_t   dbAddTemporarySong (musicdb_t *db, song_t *song);
 } /* extern C */
 #endif
 
-#endif /* INC_MUSICDB_H */

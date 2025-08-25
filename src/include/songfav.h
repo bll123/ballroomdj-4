@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_SONGFAV_H
-#define INC_SONGFAV_H
+#pragma once
 
 #include "nodiscard.h"
 #include "datafile.h"
@@ -37,4 +36,3 @@ void  songFavoriteConv (datafileconv_t *conv);
 } /* extern C */
 #endif
 
-#endif /* INC_SONGFAV_H */

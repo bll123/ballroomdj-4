@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_FILEOP_H
-#define INC_FILEOP_H
+#pragma once
 
 #include "config.h"
 #include <stdio.h>
@@ -26,4 +25,3 @@ bool    fileopIsAbsolutePath (const char *fname);
 } /* extern C */
 #endif
 
-#endif /* INC_FILEOP_H */

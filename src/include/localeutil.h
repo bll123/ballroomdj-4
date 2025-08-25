@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_LOCALEUTIL_H
-#define INC_LOCALEUTIL_H
+#pragma once
 
 #include "slist.h"
 
@@ -32,6 +31,3 @@ void  localeDebug (const char *tag);
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
 #endif
-
-#endif /* INC_LOCALEUTIL_H */
-

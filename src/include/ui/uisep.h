@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UISEP_H
-#define INC_UISEP_H
+#pragma once
 
 #include "uiwcont.h"
 
@@ -17,4 +16,3 @@ void uiSeparatorAddClass (const char *classnm, const char *color);
 } /* extern C */
 #endif
 
-#endif /* INC_UISEP_H */

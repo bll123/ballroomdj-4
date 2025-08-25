@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIDANCE_H
-#define INC_UIDANCE_H
+#pragma once
 
 #include "callback.h"
 #include "ilist.h"
@@ -34,4 +33,3 @@ void uidanceSetCallback (uidance_t *uidance, callback_t *cb);
 } /* extern C */
 #endif
 
-#endif /* INC_UIDANCE_H */

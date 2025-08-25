@@ -1,8 +1,7 @@
 /*
  * Copyright 2024-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIVIRTLIST_H
-#define INC_UIVIRTLIST_H
+#pragma once
 
 #include <stdint.h>
 
@@ -135,4 +134,3 @@ uiwcont_t *uivlGetEventHandler (uivirtlist_t *vl);
 } /* extern C */
 #endif
 
-#endif /* INC_UIVIRTLIST_H */

@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_ASCONF_H
-#define INC_ASCONF_H
+#pragma once
 
 #include "nodiscard.h"
 #include "ilist.h"
@@ -56,4 +55,3 @@ ilistidx_t asconfGetListASKey (asconf_t *, slistidx_t idx);
 } /* extern C */
 #endif
 
-#endif /* INC_ASCONF_H */

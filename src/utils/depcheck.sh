@@ -103,39 +103,6 @@ if [[ $grc != 0 ]]; then
   exit $grc
 fi
 
-# check to make sure the include files do not have any duplicate exclusions
-echo "## checking include file protections"
-
-lc=$(grep '^#ifndef INC_' include/*.h include/ui/*.h config.h.in |
-  sort |
-  uniq -d |
-  wc -l)
-rc=0
-if [[ $lc -gt 0 ]]; then
-  rc=1
-fi
-if [[ $rc -ne 0 ]]; then
-  grc=$rc
-  exit $grc
-fi
-for fn in include/*.h include/ui/*.h config.h.in; do
-  case $fn in
-    *mpris-root.h|*mpris-player.h)
-      # generated file
-      continue
-      ;;
-  esac
-  inc=$(grep '^#ifndef INC_' $fn | sed -e 's/.*INC_//' -e 's/_H/.h/' -e 's/-/_/g' -e 's/\.in//')
-  tnm=$(echo $fn | sed -e 's,include/,,' -e 's,ui/,,' -e 's/-/_/g' -e 's/\.in//')
-  if [[ $tnm != ${inc@L} ]]; then
-    echo "$fn : mismatched protection name $tnm ${inc@L}"
-    grc=1
-  fi
-done
-if [[ $grc -ne 0 ]]; then
-  exit $grc
-fi
-
 # check to make sure the include files can be compiled w/o dependencies
 echo "## checking include file compilation"
 test -f $INCTOUT && rm -f $INCTOUT

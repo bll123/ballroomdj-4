@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UISONGFILTER_H
-#define INC_UISONGFILTER_H
+#pragma once
 
 #include "callback.h"
 #include "nlist.h"
@@ -33,4 +32,3 @@ songfilter_t *uisfGetSongFilter (uisongfilter_t *uisf);
 } /* extern C */
 #endif
 
-#endif /* INC_UISONGFILTER_H */

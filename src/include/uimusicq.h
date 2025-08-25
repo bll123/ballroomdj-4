@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIMUSICQ_H
-#define INC_UIMUSICQ_H
+#pragma once
 
 #include <stdbool.h>
 
@@ -147,6 +146,3 @@ void  uimusicqPlay (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx);
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
 #endif
-
-#endif /* INC_UIMUSICQ_H */
-

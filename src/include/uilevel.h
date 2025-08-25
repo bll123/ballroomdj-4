@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UILEVEL_H
-#define INC_UILEVEL_H
+#pragma once
 
 #include "callback.h"
 #include "uiwcont.h"
@@ -25,4 +24,3 @@ void uilevelSetChangedCallback (uilevel_t *uilevel, callback_t *cb);
 } /* extern C */
 #endif
 
-#endif /* INC_UILEVEL_H */

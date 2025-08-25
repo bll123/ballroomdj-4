@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UISCROLLBAR_H
-#define INC_UISCROLLBAR_H
+#pragma once
 
 #include "callback.h"
 #include "uiwcont.h"
@@ -24,4 +23,3 @@ void uiScrollbarSetPageSize (uiwcont_t *sb, double sz);
 } /* extern C */
 #endif
 
-#endif /* INC_UISCROLLBAR_H */

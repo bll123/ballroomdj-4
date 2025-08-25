@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_PLI_H
-#define INC_PLI_H
+#pragma once
 
 #include "dylib.h"
 #include "ilist.h"
@@ -102,4 +101,3 @@ int           pliiGetVolume (plidata_t *pliData);
 } /* extern C */
 #endif
 
-#endif

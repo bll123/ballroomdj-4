@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIQUICKEDIT_H
-#define INC_UIQUICKEDIT_H
+#pragma once
 
 #include "callback.h"
 #include "musicdb.h"
@@ -34,4 +33,3 @@ const uiqesave_t  *uiqeGetResponseData (uiqe_t *uiqe);
 } /* extern C */
 #endif
 
-#endif /* INC_UIQUICKEDIT_H */

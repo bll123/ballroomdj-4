@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_LISTMODULE_H
-#define INC_LISTMODULE_H
+#pragma once
 
 #include "nodiscard.h"
 #include "list.h"
@@ -75,4 +74,3 @@ int         listGetOrdering (keytype_t keytype, list_t *list);
 } /* extern C */
 #endif
 
-#endif /* INC_LISTMODULE_H */

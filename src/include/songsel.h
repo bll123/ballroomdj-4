@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_SONGSEL_H
-#define INC_SONGSEL_H
+#pragma once
 
 #include "nodiscard.h"
 #include "ilist.h"
@@ -30,4 +29,3 @@ void      songselFinalizeByIndex (songsel_t *songsel, ilistidx_t danceIdx, dbidx
 } /* extern C */
 #endif
 
-#endif /* INC_SONGSEL_H */

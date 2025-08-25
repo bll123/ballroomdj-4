@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UISONGEDIT_H
-#define INC_UISONGEDIT_H
+#pragma once
 
 #include <stdbool.h>
 
@@ -66,6 +65,3 @@ void  uisongeditSetSongStartEnd (uisongedit_t *uisongedit, int32_t sstart, int32
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
 #endif
-
-#endif /* INC_UISONGEDIT_H */
-

@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_LOCATEBDJ3_H
-#define INC_LOCATEBDJ3_H
+#pragma once
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -16,4 +15,3 @@ bool locatedb (const char *dir);
 } /* extern C */
 #endif
 
-#endif /* INC_LOCATEBDJ3_H */

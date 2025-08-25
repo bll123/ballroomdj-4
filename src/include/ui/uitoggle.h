@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UITOGGLE_H
-#define INC_UITOGGLE_H
+#pragma once
 
 #include "callback.h"
 #include "uiwcont.h"
@@ -27,4 +26,3 @@ void uiToggleButtonEllipsize (uiwcont_t *uiwidget);
 } /* extern C */
 #endif
 
-#endif /* INC_UITOGGLE_H */

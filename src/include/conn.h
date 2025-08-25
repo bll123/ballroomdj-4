@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_CONN_H
-#define INC_CONN_H
+#pragma once
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -118,6 +117,3 @@ bool      connWaitClosed (conn_t *conn, int *stopwaitcount);
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
 #endif
-
-#endif /* INC_CONN_H */
-

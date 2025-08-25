@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIMENU_H
-#define INC_UIMENU_H
+#pragma once
 
 #include "callback.h"
 #include "uiwcont.h"
@@ -38,4 +37,3 @@ void uiMenuItemSetText (uiwcont_t *uiwidget, const char *txt);
 } /* extern C */
 #endif
 
-#endif /* INC_UIMENU_H */

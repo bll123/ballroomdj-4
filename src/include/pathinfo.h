@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_PATHINFO_H
-#define INC_PATHINFO_H
+#pragma once
 
 #include "nodiscard.h"
 
@@ -31,4 +30,3 @@ void          pathInfoGetExt (pathinfo_t *pi, char *buff, size_t sz);
 } /* extern C */
 #endif
 
-#endif /* INC_PATHINFO_H */

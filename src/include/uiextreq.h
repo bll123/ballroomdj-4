@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIEXTREQ_H
-#define INC_UIEXTREQ_H
+#pragma once
 
 #include "callback.h"
 #include "musicdb.h"
@@ -27,4 +26,3 @@ void    uiextreqProcess (uiextreq_t *uiextreq);
 } /* extern C */
 #endif
 
-#endif /* INC_UIEXTREQ_H */

@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_LEVEL_H
-#define INC_LEVEL_H
+#pragma once
 
 #include "nodiscard.h"
 #include "datafile.h"
@@ -47,4 +46,3 @@ void        levelSave (level_t *levels, ilist_t *list);
 } /* extern C */
 #endif
 
-#endif /* INC_LEVEL_H */

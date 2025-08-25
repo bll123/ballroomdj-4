@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIPANEDWINDOW_H
-#define INC_UIPANEDWINDOW_H
+#pragma once
 
 #include "uiwcont.h"
 
@@ -20,4 +19,3 @@ void uiPanedWindowSetPosition (uiwcont_t *panedwin, int position);
 } /* extern C */
 #endif
 
-#endif /* INC_UIPANEDWINDOW_H */

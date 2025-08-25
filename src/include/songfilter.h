@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_SONGFILTER_H
-#define INC_SONGFILTER_H
+#pragma once
 
 #include <stdbool.h>
 #include <sys/types.h>
@@ -80,4 +79,3 @@ dbidx_t       songfilterGetCount (songfilter_t *sf);
 } /* extern C */
 #endif
 
-#endif /* INC_SONGFILTER_H */

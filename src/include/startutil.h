@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_STARTUTIL_H
-#define INC_STARTUTIL_H
+#pragma once
 
 #include "conn.h"
 
@@ -20,4 +19,3 @@ void starterPlayerShutdown (void);
 } /* extern C */
 #endif
 
-#endif /* INC_STARTUTIL_H */

@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_WEBSRV_H
-#define INC_WEBSRV_H
+#pragma once
 
 #include <stdint.h>
 
@@ -31,4 +30,3 @@ void websrvGetUserPass (websrv_t *websrv, char *user, size_t usersz, char *pass,
 } /* extern C */
 #endif
 
-#endif /* INC_WEBSRV_H */

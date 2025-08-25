@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIGENRE_H
-#define INC_UIGENRE_H
+#pragma once
 
 #include "callback.h"
 #include "ilist.h"
@@ -26,4 +25,3 @@ void uigenreSetCallback (uigenre_t *uigenre, callback_t *cb);
 } /* extern C */
 #endif
 
-#endif /* INC_UIGENRE_H */

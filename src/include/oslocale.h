@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_OSLOCALE_H
-#define INC_OSLOCALE_H
+#pragma once
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -22,4 +21,3 @@ int   osLocaleDirection (const char *);
 } /* extern C */
 #endif
 
-#endif /* INC_OSLOCALE_H */

@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIWCONT_INT_H
-#define INC_UIWCONT_INT_H
+#pragma once
 
 #include "tmutil.h"
 #include "uigeneral.h"
@@ -176,4 +175,3 @@ uiwcontValid (uiwcont_t *uiwidget, int exptype, const char *tag)
 } /* extern C */
 #endif
 
-#endif /* INC_UIWCONT_INT_H */

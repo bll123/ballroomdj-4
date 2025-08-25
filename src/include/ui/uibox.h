@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIBOX_H
-#define INC_UIBOX_H
+#pragma once
 
 #include "callback.h"
 #include "uiwcont.h"
@@ -24,4 +23,3 @@ void uiBoxSetSizeChgCallback (uiwcont_t *uiwidget, callback_t *uicb);
 } /* extern C */
 #endif
 
-#endif /* INC_UIBOX_H */

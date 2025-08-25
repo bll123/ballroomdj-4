@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIUTILS_H
-#define INC_UIUTILS_H
+#pragma once
 
 #include "uiwcont.h"
 
@@ -34,4 +33,3 @@ void uiutilsInitSetup (uisetup_t *uisetup);
 } /* extern C */
 #endif
 
-#endif /* INC_UIUTILS_H */

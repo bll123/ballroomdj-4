@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UISONGSEL_H
-#define INC_UISONGSEL_H
+#pragma once
 
 #include <stdbool.h>
 #include <sys/types.h>
@@ -105,6 +104,3 @@ void  uisongselPlayProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t m
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
 #endif
-
-#endif /* INC_UISONGSEL_H */
-

@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_GENRE_H
-#define INC_GENRE_H
+#pragma once
 
 #include "nodiscard.h"
 #include "datafile.h"
@@ -43,4 +42,3 @@ void      genreSave (genre_t *genres, ilist_t *list);
 } /* extern C */
 #endif
 
-#endif /* INC_GENRE_H */

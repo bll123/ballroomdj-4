@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_FILEMANIP_H
-#define INC_FILEMANIP_H
+#pragma once
 
 #include "slist.h"
 
@@ -21,4 +20,3 @@ void    filemanipDeleteAll (const char *name);
 } /* extern C */
 #endif
 
-#endif /* INC_FILEMANIP_H */

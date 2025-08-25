@@ -1,8 +1,7 @@
 /*
  * Copyright 2024-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_GROUPING_H
-#define INC_GROUPING_H
+#pragma once
 
 #include "nodiscard.h"
 #include "musicdb.h"
@@ -25,4 +24,3 @@ void groupingRebuild (grouping_t *grouping, musicdb_t *musicdb);
 } /* extern C */
 #endif
 
-#endif /* INC_GROUPING_H */

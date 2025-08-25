@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIWINDOW_H
-#define INC_UIWINDOW_H
+#pragma once
 
 #include "callback.h"
 #include "uiwcont.h"
@@ -45,4 +44,3 @@ void uiWindowGetMonitorSize (uiwcont_t *uiwindow, int *width, int *height);
 } /* extern C */
 #endif
 
-#endif /* INC_UIWINDOW_H */

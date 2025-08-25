@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_DANCE_H
-#define INC_DANCE_H
+#pragma once
 
 #include "nodiscard.h"
 #include "datafile.h"
@@ -75,4 +74,3 @@ int           danceConvertMPMtoBPM (int danceidx, int bpm);
 } /* extern C */
 #endif
 
-#endif /* INC_DANCE_H */

@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_VLCI_H
-#define INC_VLCI_H
+#pragma once
 
 #include "config.h"
 
@@ -43,4 +42,3 @@ int               vlcGetVolume (vlcdata_t *vlcdata);
 
 #endif /* vlc/vlc.h */
 
-#endif /* INC_VLCI_H */

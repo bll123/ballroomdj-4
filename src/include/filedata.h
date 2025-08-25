@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_FILEDATA_H
-#define INC_FILEDATA_H
+#pragma once
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -14,4 +13,3 @@ char * filedataReadAll (const char *fname, size_t *len);
 } /* extern C */
 #endif
 
-#endif /* INC_FILEDATA_H */

@@ -23,8 +23,11 @@ As of 2025-8-9, development needs are:
       Some attempt has been made for this. Progress is stopped at this time.
       This could be written using SwiftUI.
     * Ultimate&#43;&#43;
-    * QT
-    * imgui/cimgui
+    * Qt Widgets (dotherside?)
+    * Flutter
+    * Nuklear (no macos?, could still be useful)
+    * N-Curses ?  But internationalization will not work on windows.
+      https://yjlv.blogspot.com/2015/10/displaying-unicode-with-ncurses-in-c.html
 
 Development Team (as of 2024-11-15):
 

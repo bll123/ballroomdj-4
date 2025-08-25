@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_PODCASTUTIL_H
-#define INC_PODCASTUTIL_H
+#pragma once
 
 #include "musicdb.h"
 #include "song.h"
@@ -24,4 +23,3 @@ void podcastutilDelete (musicdb_t *musicdb, const char *plname);
 } /* extern C */
 #endif
 
-#endif /* INC_PODCASTUTIL_H */

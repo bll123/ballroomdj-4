@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_QUICKEDIT_H
-#define INC_QUICKEDIT_H
+#pragma once
 
 #include "nodiscard.h"
 #include "datafile.h"
@@ -32,4 +31,3 @@ void        quickeditSave (quickedit_t *qe, nlist_t *dispsel);
 } /* extern C */
 #endif
 
-#endif /* INC_QUICKEDIT_H */

@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UICHGIND_H
-#define INC_UICHGIND_H
+#pragma once
 
 #include "uiwcont.h"
 
@@ -18,4 +17,3 @@ void  uichgindMarkChanged (uiwcont_t *uiwidget);
 } /* extern C */
 #endif
 
-#endif /* INC_UIWIDGET_H */

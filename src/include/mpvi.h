@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_MPVI_H
-#define INC_MPVI_H
+#pragma once
 
 #include "config.h"
 
@@ -44,4 +43,3 @@ void              mpvRelease (mpvData_t *mpvData);
 
 #endif /* mpv/client.h */
 
-#endif /* INC_MPVI_H */

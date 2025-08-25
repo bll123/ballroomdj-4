@@ -2,8 +2,7 @@
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
 
-#ifndef INC_CALLBACK_H
-#define INC_CALLBACK_H
+#pragma once
 
 #include <stdint.h>
 
@@ -47,4 +46,3 @@ NODISCARD callback_t *callbackInitSI (callbackFuncSI cb, void *udata);
 } /* extern C */
 #endif
 
-#endif /* INC_CALLBACK_H */

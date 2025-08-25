@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_OSSIGNAL_H
-#define INC_OSSIGNAL_H
+#pragma once
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -17,4 +16,3 @@ void  osDefaultSignal (int signal);
 } /* extern C */
 #endif
 
-#endif /* INC_OSSIGNAL_H */

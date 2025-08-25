@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIIMAGE_H
-#define INC_UIIMAGE_H
+#pragma once
 
 #include "uiwcont.h"
 
@@ -21,4 +20,3 @@ void  uiImageSetFromPixbuf (uiwcont_t *uiwidget, uiwcont_t *uipixbuf);
 } /* extern C */
 #endif
 
-#endif /* INC_UIIMAGE_H */

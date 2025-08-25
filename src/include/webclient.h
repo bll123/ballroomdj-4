@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_WEBCLIENT_H
-#define INC_WEBCLIENT_H
+#pragma once
 
 #include <stdbool.h>
 #include <time.h>
@@ -42,4 +41,3 @@ void  webclientSetUserPass (webclient_t *webclient, const char *user, const char
 } /* extern C */
 #endif
 
-#endif /* INC_WEBCLIENT_H */

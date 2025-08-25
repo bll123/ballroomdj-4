@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIAUDIOID_H
-#define INC_UIAUDIOID_H
+#pragma once
 
 #include <stdbool.h>
 
@@ -53,6 +52,3 @@ void  uiaudioidUIMainLoop (uiaudioid_t *uiaudioid);
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
 #endif
-
-#endif /* INC_UIAUDIOID_H */
-

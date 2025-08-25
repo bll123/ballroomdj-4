@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_DIRLIST_H
-#define INC_DIRLIST_H
+#pragma once
 
 #include "nodiscard.h"
 #include "slist.h"
@@ -27,4 +26,3 @@ NODISCARD slist_t * dirlistRecursiveDirList (const char *dir, int flags);
 } /* extern C */
 #endif
 
-#endif /* INC_DIRLIST_H */

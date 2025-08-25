@@ -1,8 +1,7 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_OSENV_H
-#define INC_OSENV_H
+#pragma once
 
 #include "config.h"
 
@@ -17,4 +16,3 @@ int     osSetEnv (const char *name, const char *value);
 } /* extern C */
 #endif
 
-#endif /* INC_OSENV_H */

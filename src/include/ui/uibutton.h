@@ -1,8 +1,7 @@
 /*
  * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_UIBUTTON_H
-#define INC_UIBUTTON_H
+#pragma once
 
 #include "callback.h"
 #include "uiwcont.h"
@@ -26,4 +25,3 @@ void uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms);
 } /* extern C */
 #endif
 
-#endif /* INC_UIBUTTON_H */
