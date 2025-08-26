@@ -404,6 +404,8 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
 
     if (orginfo->orgkey == ORG_TEXT) {
       datap = p;
+      /* a text value may include a slash character */
+      /* and should not be cleaned */
     }
 
     if (orginfo->orgkey != ORG_TEXT) {
@@ -443,6 +445,8 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
           conv.num = val;
           orginfo->convFunc (&conv);
           datap = conv.str;
+          /* the converted value may contain a slash, and must be cleaned */
+          doclean = true;
         }
       } else {
         if (orginfo->orgkey == ORG_BYPASS) {
