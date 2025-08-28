@@ -42,6 +42,7 @@
 #include "nlist.h"
 #include "tmutil.h"
 
+/* using a file:// URI did not work */
 #define DEFAULT_THUMBNAIL_URI L"https://ballroomdj4.sourceforge.io/img/bdj4_icon.png"
 
 #if SMTC_ENABLED
@@ -375,17 +376,11 @@ contiSetPlayState (contdata_t *contdata, int state)
 void
 contiSetRepeatState (contdata_t *contdata, bool state)
 {
-//  int   nstate = 0;
-
   if (contdata == NULL) {
     return;
   }
 
-//  if (contdata->repeatstatus != nstate) {
-//    mpris_media_player2_player_set_loop_status (contdata->mprisplayer,
-//        repeatstr [nstate]);
-//    contdata->repeatstatus = nstate;
-//  }
+  /* not implemented */
 }
 
 void
@@ -395,17 +390,17 @@ contiSetPosition (contdata_t *contdata, int32_t pos)
     return;
   }
 
+  /* not implemented */
+
   if (contdata->pos != pos) {
     int64_t   tpos;
     int32_t   pdiff;
 
     tpos = pos * 1000;    // microseconds
     pdiff = pos - contdata->pos;
-//    mpris_media_player2_player_set_position (contdata->mprisplayer, tpos);
     if (pdiff < 0 || pdiff > 300) {
       /* the seek signal is only supposed to be sent when there is */
       /* a large change */
-//      mpris_media_player2_player_emit_seeked (contdata->mprisplayer, tpos);
     }
     contdata->pos = pos;
   }
@@ -418,11 +413,12 @@ contiSetRate (contdata_t *contdata, int rate)
     return;
   }
 
+  /* not implemented */
+
   if (contdata->rate != rate) {
     double    dval;
 
     dval = (double) rate / 100.0;
-//    mpris_media_player2_player_set_rate (contdata->mprisplayer, dval);
   }
   contdata->rate = rate;
 }
@@ -433,6 +429,8 @@ contiSetVolume (contdata_t *contdata, int volume)
   if (contdata == NULL) {
     return;
   }
+
+  /* not implemented */
 
   if (contdata->volume != volume) {
     double    dval;
