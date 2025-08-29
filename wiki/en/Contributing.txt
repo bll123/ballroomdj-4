@@ -13,12 +13,12 @@ As of 2025-8-9, development needs are:
 * Windows: SMTC: Use image from audio file.
   For whatever reason, a call to initialize the apartment crashes.
 * Player Interface
-    * Windows Native
+    * Windows Native (winrt preferred)
     * Spotify
       I will not be working on this, other than providing guidance to
       whoever takes this on.
 * User Interface:
-    * Windows Native UI
+    * Windows Native UI (winrt preferred)
     * MacOS Native UI
       Some attempt has been made for this. Progress is stopped at this time.
       This could be written using SwiftUI.

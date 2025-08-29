@@ -68,6 +68,17 @@ target_link_libraries (libpligst PRIVATE
 )
 addIntlLibrary (libpligst)
 
+if (WIN32)
+  add_library (libpliwin SHARED pliwin.c wini.cpp)
+  # c++ 20 is required for co_await
+  target_compile_features(libpliwin PRIVATE cxx_std_20)
+  target_compile_options (libpliwin PRIVATE)
+  target_link_libraries (libpliwin PRIVATE
+    libbdj4common
+  )
+  addIntlLibrary (libplivlc)
+endif()
+
 install (TARGETS
   libbdj4pli
   libplinull

@@ -15,7 +15,11 @@ void      stringTrim (char *s);
 void      stringTrimChar (char *s, unsigned char c);
 int       versionCompare (const char *v1, const char *v2);
 
+#if defined (__cplusplus) || defined (c_plusplus)
+char * stpecpy (char *dst, char *end, const char *src);
+#else
 char * stpecpy (char *dst, char *end, const char *restrict src);
+#endif
 
 /* windows snprintf does not support positional parameters. */
 /* use _sprintf_p instead */

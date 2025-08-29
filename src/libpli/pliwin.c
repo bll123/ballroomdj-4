@@ -1,0 +1,304 @@
+/*
+ * Copyright 2016-2017 Brad Lanam Walnut Creek CA
+ * Copyright 2020 Brad Lanam Pleasant Hill CA
+ * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
+ */
+#include "config.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+#include <errno.h>
+#include <math.h>
+#include <assert.h>
+
+#include "bdj4intl.h"
+#include "log.h"
+#include "mdebug.h"
+#include "tmutil.h"
+#include "pli.h"
+#include "wini.h"
+#include "volsink.h"
+
+typedef struct plidata {
+  char              *name;
+  windata_t         *windata;
+  ssize_t           duration;
+  ssize_t           playTime;
+  plistate_t        state;
+  int               supported;
+} plidata_t;
+
+static void pliwinWaitUntilPlaying (plidata_t *pliData);
+static void pliwinWaitUntilStopped (plidata_t *pliData);
+
+void
+pliiDesc (const char **ret, int max)
+{
+  int   c = 0;
+
+  if (max < 2) {
+    return;
+  }
+
+  ret [c++] = _("Windows Native");
+  ret [c++] = NULL;
+}
+
+plidata_t *
+pliiInit (const char *plinm, const char *playerargs)
+{
+  plidata_t *pliData;
+
+  pliData = mdmalloc (sizeof (plidata_t));
+
+  pliData->windata = winInit ();
+  pliData->name = "Windows Native";
+  pliData->supported = PLI_SUPPORT_SEEK | PLI_SUPPORT_SPEED;
+
+  return pliData;
+}
+
+void
+pliiFree (plidata_t *pliData)
+{
+  if (pliData == NULL) {
+    return;
+  }
+
+  pliiClose (pliData);
+  mdfree (pliData);
+}
+
+void
+pliiCleanup (void)
+{
+  return;
+}
+
+void
+pliiMediaSetup (plidata_t *pliData, const char *mediaPath,
+    const char *fullMediaPath, int sourceType)
+{
+  if (pliData == NULL || pliData->windata == NULL || mediaPath == NULL) {
+    return;
+  }
+
+  winMedia (pliData->windata, mediaPath, sourceType);
+}
+
+void
+pliiStartPlayback (plidata_t *pliData, ssize_t dpos, ssize_t speed)
+{
+  if (pliData == NULL || pliData->windata == NULL) {
+    return;
+  }
+
+// ### need to check and see if the seek/rate can be done ahead of time
+  winPlay (pliData->windata);
+  if (dpos > 0) {
+    pliwinWaitUntilPlaying (pliData);
+    winSeek (pliData->windata, dpos);
+  }
+  if (speed != 100) {
+    double    drate;
+
+    pliwinWaitUntilPlaying (pliData);
+    drate = (double) speed / 100.0;
+    winRate (pliData->windata, drate);
+  }
+}
+
+void
+pliiPause (plidata_t *pliData)
+{
+  if (pliData == NULL || pliData->windata == NULL) {
+    return;
+  }
+
+  winPause (pliData->windata);
+}
+
+void
+pliiPlay (plidata_t *pliData)
+{
+  if (pliData == NULL || pliData->windata == NULL) {
+    return;
+  }
+
+  winPlay (pliData->windata);
+}
+
+void
+pliiStop (plidata_t *pliData)
+{
+  if (pliData == NULL || pliData->windata == NULL) {
+    return;
+  }
+
+  winStop (pliData->windata);
+  pliwinWaitUntilStopped (pliData);
+}
+
+ssize_t
+pliiSeek (plidata_t *pliData, ssize_t dpos)
+{
+  ssize_t     dret = -1;
+
+  if (pliData == NULL || pliData->windata == NULL) {
+    return dret;
+  }
+
+  dret = winSeek (pliData->windata, dpos);
+  return dret;
+}
+
+ssize_t
+pliiRate (plidata_t *pliData, ssize_t rate)
+{
+  ssize_t     ret = 100;
+  double      dret = -1.0;
+  double      drate;
+
+  if (pliData == NULL || pliData->windata == NULL) {
+    return ret;
+  }
+
+  drate = (double) rate / 100.0;
+  dret = winRate (pliData->windata, drate);
+  ret = (ssize_t) round (dret * 100.0);
+  return ret;
+}
+
+void
+pliiClose (plidata_t *pliData)
+{
+  if (pliData == NULL || pliData->windata == NULL) {
+    return;
+  }
+
+  winClose (pliData->windata);
+  pliData->windata = NULL;
+}
+
+ssize_t
+pliiGetDuration (plidata_t *pliData)
+{
+  ssize_t     duration = 0;
+
+  if (pliData == NULL || pliData->windata == NULL) {
+    return duration;
+  }
+
+  duration = winGetDuration (pliData->windata);
+  return duration;
+}
+
+ssize_t
+pliiGetTime (plidata_t *pliData)
+{
+  ssize_t     playTime = 0;
+
+  if (pliData == NULL || pliData->windata == NULL) {
+    return playTime;
+  }
+
+  playTime = winGetTime (pliData->windata);
+  return playTime;
+}
+
+plistate_t
+pliiState (plidata_t *pliData)
+{
+  plistate_t    plistate = PLI_STATE_NONE; /* unknown */
+
+  if (pliData == NULL || pliData->windata == NULL) {
+    return plistate;
+  }
+
+  plistate = winState (pliData->windata);
+  return plistate;
+}
+
+int
+pliiSetAudioDevice (plidata_t *pliData, const char *dev, int plidevtype)
+{
+  int   rc = -1;
+
+  if (pliData == NULL || pliData->windata == NULL) {
+    return -1;
+  }
+
+  /* this is required for windows, not for linux or macos */
+//  rc = winSetAudioDev (pliData->windata, dev, plidevtype);
+  return rc;
+}
+
+int
+pliiAudioDeviceList (plidata_t *pliData, volsinklist_t *sinklist)
+{
+  int   rc = 0;
+
+  return rc;
+}
+
+int
+pliiSupported (plidata_t *pliData)
+{
+  return pliData->supported;
+}
+
+int
+pliiGetVolume (plidata_t *pliData)
+{
+  int   val = 100;
+
+//  val = winGetVolume (pliData->windata);
+  return val;
+}
+
+/* internal routines */
+
+static void
+pliwinWaitUntilPlaying (plidata_t *pliData)
+{
+  plistate_t  state;
+  long        count;
+
+  state = winState (pliData->windata);
+  count = 0;
+  while (state == PLI_STATE_IDLE ||
+      state == PLI_STATE_OPENING ||
+      state == PLI_STATE_STOPPED) {
+    mssleep (1);
+    state = winState (pliData->windata);
+    ++count;
+    if (count > 10000) {
+      break;
+    }
+  }
+}
+
+static void
+pliwinWaitUntilStopped (plidata_t *pliData)
+{
+  plistate_t  state;
+  long        count;
+
+  /* it appears that the stop action usually happens within < a few ms */
+  state = winState (pliData->windata);
+  count = 0;
+  while (state == PLI_STATE_PLAYING ||
+      state == PLI_STATE_PAUSED ||
+      state == PLI_STATE_STOPPING) {
+    mssleep (1);
+    state = winState (pliData->windata);
+    ++count;
+    if (count > 10000) {
+      break;
+    }
+  }
+}
+
