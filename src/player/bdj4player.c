@@ -73,17 +73,17 @@ enum {
   FADEOUT_TIMESLICE = 100,
   PLAYER_MAX_PREP = 10,
 #if PLAYER_USE_THREADS
-  /* a large number is needed for downloading via the bdj4/bdj4 connection */
   /* for local playback, the retry generally doesn't take more than a */
   /* couple tries */
-  /* 200 (* 10ms) handles a normal length song */
-  /* in the music manager, windows can take a long time */
-  /* as it is copying the audio file */
-  PLAYER_RETRY_COUNT = 600,
+  /* on windows, as a copy is necessary, */
+  /* the number of retries is around 2-30 */
+  /* a larger number is needed for downloading via the bdj4/bdj4 connection */
+  /* 300 (* 10ms) handles a normal length song, usually */
+  PREP_RETRY_COUNT = 800,
 #else
-  PLAYER_RETRY_COUNT = 2,
+  PREP_RETRY_COUNT = 2,
 #endif
-  PLAYER_RETRY_COUNT_STD = 2,
+  PREP_RETRY_COUNT_BASE = 2,
 };
 
 enum {
@@ -1286,8 +1286,8 @@ playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx,
   prepqueue_t       *pq = NULL;
   bool              found = false;
   int               count = 0;
-  int               maxcount;
   int               activecount;
+  int               maxcount = 0;
 
   logProcBegin ();
 
@@ -1312,11 +1312,7 @@ playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx,
   /* the prep queue is generally quite short, a brute force search is fine */
   /* the maximum could be potentially ~twenty announcements + five songs */
   /* with no announcements, five songs only */
-  maxcount = PLAYER_RETRY_COUNT_STD;
-  if (! clearreq && activecount > 0) {
-    maxcount = PLAYER_RETRY_COUNT;
-  }
-  while (! found && count < maxcount) {
+  while (! found && count < PREP_RETRY_COUNT) {
     queueStartIterator (playerData->prepQueue, &playerData->prepiteridx);
     pq = queueIterateData (playerData->prepQueue, &playerData->prepiteridx);
     while (pq != NULL) {
@@ -1332,7 +1328,7 @@ playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx,
           strcmp (sfname, pq->songname) == 0) {
         logMsg (LOG_DBG, LOG_BASIC, "locate found %" PRId32 " ann %s", uniqueidx, sfname);
         if (count > 0) {
-          logMsg (LOG_DBG, LOG_IMPORTANT, "song was not prepped; retry count %d", count);
+          logMsg (LOG_DBG, LOG_IMPORTANT, "song-ann was not prepped; retry count %d", count);
         }
         found = true;
         break;
@@ -1348,6 +1344,19 @@ playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx,
       /* take a long time, thus the retry count is set to 200 */
       playerProcessPrepRequest (playerData);
       activecount = playerCheckPrepThreads (playerData);
+      if (activecount > 0) {
+        maxcount = 0;
+      }
+      if (activecount <= 0 && maxcount == 0) {
+        /* maxcount has not yet been set */
+        /* maxcount is set such that the loop will check again after */
+        /* activecount goes to zero */
+        maxcount = count + PREP_RETRY_COUNT_BASE;
+      }
+      if ((activecount <= 0 || clearreq) && count >= maxcount) {
+        /* if there's no prep outstanding, there's no need to continue */
+        break;
+      }
       ++count;
       mssleep (10);
     }
@@ -2253,7 +2262,7 @@ playerChkPrep (playerdata_t *playerData, int routefrom)
 
   count = 0;
   activecount = queueGetCount (playerData->prepRequestQueue);
-  while (activecount > 0 && count < PLAYER_RETRY_COUNT) {
+  while (activecount > 0 && count < PREP_RETRY_COUNT) {
     playerProcessPrepRequest (playerData);
     activecount = queueGetCount (playerData->prepRequestQueue);
     ++count;
@@ -2261,7 +2270,7 @@ playerChkPrep (playerdata_t *playerData, int routefrom)
 
   count = 0;
   activecount = playerCheckPrepThreads (playerData);
-  while (activecount > 0 && count < PLAYER_RETRY_COUNT) {
+  while (activecount > 0 && count < PREP_RETRY_COUNT) {
     mssleep (10);
     activecount = playerCheckPrepThreads (playerData);
     ++count;
@@ -2280,10 +2289,10 @@ playerChkClearPrepQ (playerdata_t *playerData)
   queueClear (playerData->prepQueue, 0);
   count = 0;
   activecount = playerCheckPrepThreads (playerData);
-  while (activecount > 0 && count < PLAYER_RETRY_COUNT) {
-            mssleep (10);
-            activecount = playerCheckPrepThreads (playerData);
-            ++count;
+  while (activecount > 0 && count < PREP_RETRY_COUNT) {
+    mssleep (10);
+    activecount = playerCheckPrepThreads (playerData);
+    ++count;
   }
   queueClear (playerData->prepQueue, 0);
   queueRemoveByIdx (playerData->prepQueue, 0);

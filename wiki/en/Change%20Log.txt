@@ -8,7 +8,7 @@
 
 -->
 
-**4.15.7 2025-9-1**
+**4.15.7 2025-9-2**
 
 * Bug Fixes:
     * Player: Fixed issues playing songs from the music manager (introduced in 4.15.4).
@@ -1277,4 +1277,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-08-26 14:23:06; BDJ4 version 4.15.6)_
+<br>_(Updated 2025-09-02 12:25:42; BDJ4 version 4.15.7)_
