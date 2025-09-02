@@ -5,6 +5,9 @@ msg main CHK_MAIN_RESET_SENT
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
 msg main MUSICQ_INSERT 0~999~0
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 songplaysentcount 0
 msg main CMD_PLAY
@@ -42,6 +45,9 @@ msg main CHK_MAIN_RESET_SENT
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
 msg main MUSICQ_INSERT 0~999~1
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 songplaysentcount 0
 msg main CMD_PLAY
@@ -56,6 +62,9 @@ get player CHK_PLAYER_STATUS
 chk playstate playing
 mssleep 2000
 msg main MUSICQ_INSERT 0~999~2
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 chk mq0len 2 dbidx 1 songplaysentcount 1
 get player CHK_PLAYER_STATUS
@@ -86,6 +95,9 @@ test 20-30 Fade-In-Out-Gap
 msg player PLAYER_VOLUME 20
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
+mssleep 100
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 1000
 # wait until the player hits playing status.

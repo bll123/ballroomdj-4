@@ -4,10 +4,12 @@ test 50-20 Repeat-Next-Song
 msg main MUSICQ_INSERT 0~999~15
 msg main MUSICQ_INSERT 0~999~17
 msg main MUSICQ_INSERT 0~999~19
+mssleep 150
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
-mssleep 1500
+resptimeout 2000
 get player CHK_PLAYER_STATUS
-resptimeout 1000
 wait playstate playing
 chk pauseatend 0 playstate playing repeat 0 prepqueuecount 2
 get main CHK_MAIN_MUSICQ
@@ -16,13 +18,14 @@ msg player PLAY_REPEAT
 get player CHK_PLAYER_STATUS
 chk pauseatend 0 playstate playing repeat 1 prepqueuecount 2
 msg player PLAY_NEXTSONG
-get player CHK_PLAYER_STATUS
-mssleep 1500
-get player CHK_PLAYER_STATUS
+mssleep 1000
 resptimeout 1000
+get player CHK_PLAYER_STATUS
 wait playstate playing
 get main CHK_MAIN_MUSICQ
 chk dbidx 17
+get player CHK_WAIT_PREP
+wait done 1
 get player CHK_PLAYER_STATUS
 chk pauseatend 0 playstate playing repeat 0 prepqueuecount 1
 end
@@ -31,6 +34,9 @@ end
 test 50-30 Repeat-Pause-At-End
 msg main MUSICQ_INSERT 0~999~15
 msg main MUSICQ_INSERT 0~999~17
+mssleep 100
+get player CHK_WAIT_PREP
+wait done 1
 # make sure the pause-at-end works w/repeat.
 msg main CMD_PLAY
 mssleep 1500
@@ -73,6 +79,10 @@ end
 test 50-40 Speed-Chg-Pause-Stop
 msg main MUSICQ_INSERT 0~999~19
 msg main MUSICQ_INSERT 0~999~20
+mssleep 100
+get player CHK_WAIT_PREP
+wait done 1
+mssleep 1500
 resptimeout 2000
 msg main CMD_PLAY
 get player CHK_PLAYER_STATUS
@@ -125,6 +135,9 @@ test 50-50 Position-Paused
 # test while playing
 msg main MUSICQ_INSERT 0~999~4
 msg main MUSICQ_INSERT 0~999~5
+mssleep 100
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 get player CHK_PLAYER_STATUS
 resptimeout 2000

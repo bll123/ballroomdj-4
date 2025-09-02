@@ -5,6 +5,9 @@ test 145-10 Song-Start-End
 msg main MUSICQ_INSERT 0~999~39
 msg main MUSICQ_INSERT 0~999~51
 msg main MUSICQ_INSERT 0~999~63
+mssleep 150
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -34,6 +37,9 @@ test 145-20 No-Max-Play-Time
 msg main CHK_MAIN_SET_MAXPLAYTIME 10000
 # more ick
 msg main MUSICQ_INSERT 0~999~15
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS

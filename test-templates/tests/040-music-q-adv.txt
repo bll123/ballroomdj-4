@@ -19,8 +19,12 @@ msg main MUSICQ_INSERT 0~999~8
 msg main MUSICQ_INSERT 0~999~10
 msg main MUSICQ_INSERT 0~999~12
 msg main MUSICQ_INSERT 0~999~14
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 chk mq0len 7
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 5
 # queue_clear clears the playlist and the music q
@@ -29,6 +33,7 @@ msg main QUEUE_CLEAR 0
 mssleep 200
 get main CHK_MAIN_MUSICQ
 chk mq0len 1
+mssleep 400
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 1
 end
@@ -46,8 +51,12 @@ msg main MUSICQ_INSERT 0~999~8
 msg main MUSICQ_INSERT 0~999~10
 msg main MUSICQ_INSERT 0~999~12
 msg main MUSICQ_INSERT 0~999~14
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 chk mq0len 7
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 5
 # musicq_truncate clears the playlist queue and the music q
@@ -56,6 +65,7 @@ msg main MUSICQ_TRUNCATE 0~0
 get main CHK_MAIN_MUSICQ
 mssleep 100
 chk mq0len 1
+mssleep 400
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 1
 msg main MUSICQ_INSERT 0~999~2
@@ -65,13 +75,18 @@ msg main MUSICQ_INSERT 0~999~8
 msg main MUSICQ_INSERT 0~999~10
 msg main MUSICQ_INSERT 0~999~12
 msg main MUSICQ_INSERT 0~999~14
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 chk mq0len 8
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 5
 msg main MUSICQ_TRUNCATE 0~3
 get main CHK_MAIN_MUSICQ
 chk mq0len 4
+mssleep 400
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 4
 end
@@ -88,11 +103,14 @@ msg main MUSICQ_INSERT 0~999~3
 msg main MUSICQ_INSERT 0~999~5
 msg main MUSICQ_INSERT 0~999~7
 msg main MUSICQ_INSERT 0~999~9
+mssleep 200
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 chk mq0len 4
 msg main CMD_PLAY
 resptimeout 2000
-mssleep 100
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 3
 mssleep 1500
@@ -101,6 +119,7 @@ msg main CMD_PLAY
 # queue length should still be the same
 get main CHK_MAIN_MUSICQ
 chk mq0len 4
+mssleep 400
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 3
 end
@@ -111,6 +130,9 @@ test 40-14 Play-When-Queued-Insert
 get player CHK_PLAYER_STATUS
 msg main CHK_MAIN_SET_PLAY_WHEN_QUEUED 1
 msg main MUSICQ_INSERT 0~999~1
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 # should auto-start playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
@@ -125,6 +147,9 @@ mssleep 100
 get player CHK_PLAYER_STATUS
 chk playstate paused
 msg main MUSICQ_INSERT 0~999~3
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 get player CHK_PLAYER_STATUS
 chk playstate paused
 msg main CMD_PLAYPAUSE
@@ -144,10 +169,13 @@ resptimeout 7500
 wait playstate stopped
 # the queue is now empty; an insert should start playing
 msg main MUSICQ_INSERT 0~999~5
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
+resptimeout 2500
 get player CHK_PLAYER_STATUS
-resptimeout 1500
 wait playstate playing
-mssleep 1500
+mssleep 500
 get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
 reset
@@ -172,12 +200,13 @@ chk prepqueuecount 0
 # empty queue
 msg main QUEUE_CLEAR 0
 msg main MUSICQ_INSERT 0~999~16
-mssleep 200
-msg main CMD_NEXTSONG_PLAY 0
-mssleep 1500
-get player CHK_PLAYER_STATUS
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 resptimeout 2000
+get player CHK_PLAYER_STATUS
 wait playstate playing
+mssleep 400
 get main CHK_MAIN_MUSICQ
 chk mq0len 1
 get player CHK_PLAYER_STATUS
@@ -185,11 +214,13 @@ chk prepqueuecount 0 playstate playing
 # playing song
 msg main QUEUE_CLEAR 0
 msg main MUSICQ_INSERT 0~999~18
-mssleep 200
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_NEXTSONG_PLAY 0
-mssleep 1500
 get player CHK_PLAYER_STATUS
 wait playstate playing
+mssleep 400
 get main CHK_MAIN_MUSICQ
 chk mq0len 1
 get player CHK_PLAYER_STATUS
@@ -202,7 +233,9 @@ wait playstate paused
 mssleep 1000
 msg main QUEUE_CLEAR 0
 msg main MUSICQ_INSERT 0~999~20
-mssleep 200
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_NEXTSONG_PLAY 0
 mssleep 1500
 resptimeout 2000
@@ -210,6 +243,7 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 get main CHK_MAIN_MUSICQ
 chk mq0len 1
+mssleep 400
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 0 playstate playing
 reset
@@ -229,45 +263,54 @@ msg main MUSICQ_INSERT 0~999~9
 msg main MUSICQ_INSERT 0~999~11
 msg main MUSICQ_INSERT 0~999~13
 msg main MUSICQ_INSERT 0~999~15
-mssleep 300
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 chk mq0len 7
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 5
 msg main MUSICQ_REMOVE 0~2
 mssleep 100
 get main CHK_MAIN_MUSICQ
 chk mq0len 6
+mssleep 400
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 5
 msg main MUSICQ_REMOVE 0~1
 mssleep 100
 get main CHK_MAIN_MUSICQ
 chk mq0len 5
+mssleep 400
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 5
 msg main MUSICQ_REMOVE 0~0
 mssleep 100
 get main CHK_MAIN_MUSICQ
 chk mq0len 4
+mssleep 400
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 4
 msg main MUSICQ_REMOVE 0~0
 mssleep 100
 get main CHK_MAIN_MUSICQ
 chk mq0len 3
+mssleep 400
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 3
 msg main MUSICQ_REMOVE 0~0
 mssleep 100
 get main CHK_MAIN_MUSICQ
 chk mq0len 2
+mssleep 400
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 2
 msg main MUSICQ_REMOVE 0~0
 mssleep 100
 get main CHK_MAIN_MUSICQ
 chk mq0len 1
+mssleep 400
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 1
 end
@@ -281,6 +324,9 @@ msg main MUSICQ_INSERT 0~999~9
 msg main MUSICQ_INSERT 0~999~11
 msg main MUSICQ_INSERT 0~999~13
 msg main MUSICQ_INSERT 0~999~15
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 mssleep 1500
 get player CHK_PLAYER_STATUS

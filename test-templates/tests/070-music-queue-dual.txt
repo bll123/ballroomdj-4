@@ -7,21 +7,33 @@ section 70 Music-Queue-Dual
 # check to make sure insertion to a specific queue works
 test 70-20 Insert-Specific
 msg main MUSICQ_INSERT 0~999~0
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 mssleep 100
 get main CHK_MAIN_MUSICQ
 # mq 1 len could be 1 or 0
 chk mq0len 1 mq0idx0 0 mq1idx1 -1
 msg main MUSICQ_INSERT 1~999~1
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 mssleep 100
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
 # the non-playback queue
 chk mq0len 1 mq1len 2 mq0idx0 0 mq1idx1 1
 msg main MUSICQ_INSERT 0~999~2
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 mssleep 100
 get main CHK_MAIN_MUSICQ
 chk mq0len 2 mq1len 2 mq0idx0 0 mq0idx1 2 mq1idx1 1
 msg main MUSICQ_INSERT 1~999~3
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 mssleep 100
 get main CHK_MAIN_MUSICQ
 chk mq0len 2 mq1len 3 mq0idx0 0 mq0idx1 2 mq1idx1 1 mq1idx2 3
@@ -31,6 +43,9 @@ end
 # check to make sure playback while dual queues are active works.
 test 70-30 Playback
 msg main MUSICQ_INSERT 0~999~2
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -44,16 +59,25 @@ chk mqplay 0 mq0len 1 mq0idx0 2 mq1idx1 -1 dbidx 2
 get player CHK_PLAYER_STATUS
 chk playstate playing
 msg main MUSICQ_INSERT 1~999~3
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
 # the non-playback queue
 chk mqplay 0 mq0len 1 mq1len 2 mq0idx0 2 mq1idx1 3
 msg main MUSICQ_INSERT 0~999~4
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 chk mqplay 0 mq0len 2 mq1len 2 mq0idx0 2 mq0idx1 4 mq1idx1 3 dbidx 2
 get player CHK_PLAYER_STATUS
 chk playstate playing
 msg main MUSICQ_INSERT 1~999~5
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 chk mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5 dbidx 2
 get player CHK_PLAYER_STATUS
@@ -71,10 +95,16 @@ end
 # check to make sure queue playback selection works after a song is queued
 test 70-40 Select-Playback-Queue-After
 msg main MUSICQ_INSERT 0~999~7
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 # mq 1 len could be 1 or 0
 chk mqplay 0 mq0len 1 mq0idx0 7 mq1idx1 -1
 msg main MUSICQ_INSERT 1~999~8
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
 # the non-playback queue
@@ -95,11 +125,17 @@ end
 # check to make sure queue selection works before a song is queued
 test 70-50 Select-Playback-Queue-Before
 msg main MUSICQ_INSERT 0~999~9
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 # mq 1 len could be 1 or 0
 chk mqplay 0 mq0len 1 mq0idx0 9 mq1idx1 -1
 msg main MUSICQ_SET_PLAYBACK 1
 msg main MUSICQ_INSERT 1~999~10
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
 # the non-playback queue
@@ -115,6 +151,9 @@ end
 # check to make sure queue selection works for playback
 test 70-70 Select-Playback-Queue
 msg main MUSICQ_INSERT 0~999~2
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -128,16 +167,25 @@ chk mqplay 0 mq0len 1 mq0idx0 2 mq1idx1 -1 dbidx 2
 get player CHK_PLAYER_STATUS
 chk playstate playing
 msg main MUSICQ_INSERT 1~999~3
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
 # the non-playback queue
 chk mqplay 0 mq0len 1 mq1len 2 mq0idx0 2 mq1idx1 3
 msg main MUSICQ_INSERT 0~999~4
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 chk mqplay 0 mq0len 2 mq1len 2 mq0idx0 2 mq0idx1 4 mq1idx1 3 dbidx 2
 get player CHK_PLAYER_STATUS
 chk playstate playing
 msg main MUSICQ_INSERT 1~999~5
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 chk mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5 dbidx 2
 get player CHK_PLAYER_STATUS
@@ -171,6 +219,9 @@ end
 test 70-80 Select-Playback-Queue-Not-Deferred
 msg main MUSICQ_INSERT 0~999~2
 msg main MUSICQ_INSERT 0~999~4
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -186,6 +237,9 @@ get player CHK_PLAYER_STATUS
 chk playstate playing
 msg main MUSICQ_INSERT 1~999~3
 msg main MUSICQ_INSERT 1~999~5
+mssleep 100
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
 # the non-playback queue
@@ -217,6 +271,9 @@ end
 test 70-90 Select-Playback-Queue-Play-Deferred
 msg main MUSICQ_INSERT 0~999~2
 msg main MUSICQ_INSERT 0~999~4
+mssleep 100
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -231,6 +288,9 @@ get player CHK_PLAYER_STATUS
 chk playstate playing
 msg main MUSICQ_INSERT 1~999~3
 msg main MUSICQ_INSERT 1~999~5
+mssleep 100
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
 # the non-playback queue
@@ -257,6 +317,9 @@ end
 test 70-100 Select-Playback-Queue-Paused-Deferred
 msg main MUSICQ_INSERT 0~999~2
 msg main MUSICQ_INSERT 0~999~4
+mssleep 100
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -269,6 +332,9 @@ get main CHK_MAIN_MUSICQ
 chk mqplay 0 mq0len 2 mq0idx0 2 mq0idx1 4 mq1idx1 -1 dbidx 2
 msg main MUSICQ_INSERT 1~999~3
 msg main MUSICQ_INSERT 1~999~5
+mssleep 100
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
 # the non-playback queue

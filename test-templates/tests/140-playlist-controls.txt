@@ -2,6 +2,9 @@ section 140 Playlist-Controls
 
 test 140-10 Maximum-Play-Time-Basic
 msg main QUEUE_PLAYLIST 0~test-sl-c
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -33,6 +36,9 @@ end
 
 test 140-20 Gap-Basic
 msg main QUEUE_PLAYLIST 0~test-sl-d
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -67,6 +73,9 @@ end
 
 test 140-30 Stop-After-Basic
 msg main QUEUE_PLAYLIST 0~test-sl-e
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -97,6 +106,9 @@ end
 test 140-40 Stop-At-Basic
 msg main PL_OVERRIDE_STOP_TIME stoptime
 msg main QUEUE_PLAYLIST 0~test-sl-a
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 chk mq0len 4
 msg main CMD_PLAY
@@ -140,8 +152,14 @@ end
 
 test 140-50 Stop-After-Multiple-Playlists
 msg main QUEUE_PLAYLIST 0~test-sl-e
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 msg main QUEUE_PLAYLIST 0~test-sl-e
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
@@ -184,6 +202,9 @@ test 140-60 Gap-Multiple-Playlists
 msg main QUEUE_PLAYLIST 0~test-sl-e
 msg main QUEUE_PLAYLIST 0~test-sl-g
 msg main QUEUE_PLAYLIST 0~test-sl-e
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 # ( 1 gap 2 ) ( no-gap 3 no-gap 4 ) ( gap 5 gap 6 )
 msg main CMD_PLAY
 resptimeout 2000
@@ -267,6 +288,9 @@ test 140-70 Stop-At-Multiple-Playlists
 msg main PL_OVERRIDE_STOP_TIME stoptime
 msg main QUEUE_PLAYLIST 0~test-sl-a
 msg main QUEUE_PLAYLIST 0~test-sl-e
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 chk mq0len 6
 msg main CMD_PLAY
@@ -332,6 +356,9 @@ test 140-80 Stop-At-Multiple-Second
 msg main QUEUE_PLAYLIST 0~test-sl-e
 msg main PL_OVERRIDE_STOP_TIME stoptime
 msg main QUEUE_PLAYLIST 0~test-sl-a
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 chk mq0len 4
 msg main CMD_PLAY
@@ -371,4 +398,3 @@ wait playstate in-fadeout
 get player CHK_PLAYER_STATUS
 wait playstate stopped
 end
-

@@ -4,9 +4,14 @@
 
 <!--
 
-**4.15.6.1 2025-8---**
+**4.15.7 2025-9---**
 
 -->
+
+**4.15.7 2025-9-1**
+
+* Bug Fixes:
+    * Player: Fixed issues playing songs from the music manager (introduced in 4.15.4).
 
 **4.15.6 2025-8-26**
 

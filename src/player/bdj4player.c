@@ -72,15 +72,18 @@ enum {
   FADEIN_TIMESLICE = 50,
   FADEOUT_TIMESLICE = 100,
   PLAYER_MAX_PREP = 10,
-#if PLAYER_USER_THREADS
+#if PLAYER_USE_THREADS
   /* a large number is needed for downloading via the bdj4/bdj4 connection */
   /* for local playback, the retry generally doesn't take more than a */
   /* couple tries */
   /* 200 (* 10ms) handles a normal length song */
-  PLAYER_RETRY_COUNT = 800,
+  /* in the music manager, windows can take a long time */
+  /* as it is copying the audio file */
+  PLAYER_RETRY_COUNT = 600,
 #else
-  PLAYER_RETRY_COUNT = 4,
+  PLAYER_RETRY_COUNT = 2,
 #endif
+  PLAYER_RETRY_COUNT_STD = 2,
 };
 
 enum {
@@ -116,6 +119,7 @@ typedef struct {
   prepqueue_t   *npq;
   int           idx;
   int           rc;
+  int           artificialdelay;
   _Atomic(bool) finished;
 } prepthread_t;
 
@@ -176,7 +180,8 @@ typedef struct {
   mstime_t        fadeTimeNext;
   int             stopNextsongFlag;
   int             stopwaitcount;
-  int             threadcount;
+  int             maxthreadidx;
+  int             artificialdelay;
   bool            inFade;
   bool            inFadeIn;
   bool            inFadeOut;
@@ -205,7 +210,7 @@ static void * playerThreadPrepRequest (void *arg);
 #endif
 void            playerProcessPrepRequest (playerdata_t *playerData);
 static void     playerSongPlay (playerdata_t *playerData, char *args);
-static prepqueue_t * playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx, const char *sfname, int externalreq);
+static prepqueue_t * playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx, const char *sfname, int clearreq);
 static void     playerPause (playerdata_t *playerData);
 static void     playerPlay (playerdata_t *playerData);
 static void     playerNextSong (playerdata_t *playerData);
@@ -236,10 +241,12 @@ static void     playerSetDefaultVolume (playerdata_t *playerData);
 static void     playerFreePlayRequest (void *tpreq);
 static void     playerChkPlayerStatus (playerdata_t *playerData, int routefrom);
 static void     playerChkPlayerSong (playerdata_t *playerData, int routefrom);
+static void     playerChkPrep (playerdata_t *playerData, int routefrom);
+static void     playerChkClearPrepQ (playerdata_t *playerData);
 static void     playerResetVolume (playerdata_t *playerData);
 static void     playerSetAudioSinkEnv (playerdata_t *playerData, bool isdefault);
 static const char * playerGetAudioInterface (void);
-static void playerCheckPrepThreads (playerdata_t *playerData);
+static int      playerCheckPrepThreads (playerdata_t *playerData);
 #if DEBUG_PREP_QUEUE
 /* note that this will reset the queue iterator */
 static void playerDumpPrepQueue (playerdata_t *playerData, const char *tag);
@@ -282,7 +289,8 @@ main (int argc, char *argv[])
   playerData.progstate = progstateInit ("player");
   playerData.stopNextsongFlag = STOP_NORMAL;
   playerData.stopwaitcount = 0;
-  playerData.threadcount = 0;
+  playerData.artificialdelay = 0;
+  playerData.maxthreadidx = 0;
   for (int i = 0; i < PLAYER_MAX_PREP; ++i) {
     playerData.prepthread [i] = NULL;
   }
@@ -596,8 +604,15 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_CHK_CLEAR_PREP_Q: {
-          queueClear (playerData->prepQueue, 0);
-          queueRemoveByIdx (playerData->prepQueue, 0);
+          playerChkClearPrepQ (playerData);
+          break;
+        }
+        case MSG_CHK_WAIT_PREP: {
+          playerChkPrep (playerData, routefrom);
+          break;
+        }
+        case MSG_CHK_SET_DELAY: {
+          playerData->artificialdelay = atoi (args);
           break;
         }
         default: {
@@ -1143,6 +1158,10 @@ playerThreadPrepRequest (void *arg)
   npq = prepthread->npq;
   prepthread->rc = audiosrcPrep (npq->songname, npq->tempname,
       sizeof (npq->tempname));
+  if (prepthread->artificialdelay > 0) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "prep-time-delay: %d", prepthread->artificialdelay);
+    mssleep (prepthread->artificialdelay);
+  }
 
   prepthread->finished = true;
   pthread_exit (NULL);
@@ -1163,8 +1182,8 @@ playerProcessPrepRequest (playerdata_t *playerData)
   logProcBegin ();
 
 #if _lib_pthread_create && PLAYER_USE_THREADS
-  if (playerData->threadcount >= PLAYER_MAX_PREP) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "out of prep space");
+  if (playerData->maxthreadidx >= PLAYER_MAX_PREP) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "out of prep space");
     logProcEnd ("no-space");
     return;
   }
@@ -1182,11 +1201,12 @@ playerProcessPrepRequest (playerdata_t *playerData)
   prepthread = mdmalloc (sizeof (prepthread_t));
   prepthread->npq = npq;
   prepthread->finished = false;
-  prepthread->idx = playerData->threadcount;
+  prepthread->artificialdelay = playerData->artificialdelay;
+  prepthread->idx = playerData->maxthreadidx;
   prepthread->rc = false;
 
-  playerData->prepthread [playerData->threadcount] = prepthread;
-  ++playerData->threadcount;
+  playerData->prepthread [playerData->maxthreadidx] = prepthread;
+  ++playerData->maxthreadidx;
 
   pthread_create (&prepthread->thread, NULL, playerThreadPrepRequest, prepthread);
 #else
@@ -1213,7 +1233,7 @@ playerSongPlay (playerdata_t *playerData, char *args)
   char          *p;
   char          *tokstr = NULL;
   int32_t       uniqueidx;
-  int           count;
+  int           count = 0;
 
   if (! progstateIsRunning (playerData->progstate)) {
     return;
@@ -1235,16 +1255,9 @@ playerSongPlay (playerdata_t *playerData, char *args)
 
   logMsg (LOG_DBG, LOG_BASIC, "play request: %" PRId32 " %s", uniqueidx, p);
   pq = playerLocatePreppedSong (playerData, uniqueidx, p, false);
-  count = 0;
-  while (pq == NULL && count < 5) {
-    mssleep (10);
-    playerCheckPrepThreads (playerData);
-    pq = playerLocatePreppedSong (playerData, uniqueidx, p, false);
-    ++count;
-  }
   if (pq == NULL) {
     connSendMessage (playerData->conn, ROUTE_MAIN, MSG_PLAYBACK_FINISH, "0");
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: not prepped: %s", p);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: not prepped: %s count:%d", p, count);
     logProcEnd ("not-prepped");
     return;
   }
@@ -1268,16 +1281,18 @@ playerSongPlay (playerdata_t *playerData, char *args)
 
 static prepqueue_t *
 playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx,
-    const char *sfname, int externalreq)
+    const char *sfname, int clearreq)
 {
   prepqueue_t       *pq = NULL;
   bool              found = false;
   int               count = 0;
+  int               maxcount;
+  int               activecount;
 
   logProcBegin ();
 
   /* do a pre-check to finish off any threads */
-  playerCheckPrepThreads (playerData);
+  activecount = playerCheckPrepThreads (playerData);
 
 #if DEBUG_PREP_QUEUE
   fprintf (stderr, "pq: looking for: %d %s\n", uniqueidx, sfname);
@@ -1297,7 +1312,11 @@ playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx,
   /* the prep queue is generally quite short, a brute force search is fine */
   /* the maximum could be potentially ~twenty announcements + five songs */
   /* with no announcements, five songs only */
-  while (! found && count < PLAYER_RETRY_COUNT) {
+  maxcount = PLAYER_RETRY_COUNT_STD;
+  if (! clearreq && activecount > 0) {
+    maxcount = PLAYER_RETRY_COUNT;
+  }
+  while (! found && count < maxcount) {
     queueStartIterator (playerData->prepQueue, &playerData->prepiteridx);
     pq = queueIterateData (playerData->prepQueue, &playerData->prepiteridx);
     while (pq != NULL) {
@@ -1328,14 +1347,14 @@ playerLocatePreppedSong (playerdata_t *playerData, int32_t uniqueidx,
       /* when using a bdj4/bdj4 connection with the download, this can */
       /* take a long time, thus the retry count is set to 200 */
       playerProcessPrepRequest (playerData);
-      playerCheckPrepThreads (playerData);
+      activecount = playerCheckPrepThreads (playerData);
       ++count;
       mssleep (10);
     }
   }
 
-  if (! found && ! externalreq) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: unable to locate song %s", sfname);
+  if (! found && ! clearreq) {
+    // logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: unable to locate song %s", sfname);
     logProcEnd ("not-found");
     return NULL;
   }
@@ -2226,6 +2245,51 @@ playerChkPlayerSong (playerdata_t *playerData, int routefrom)
 }
 
 static void
+playerChkPrep (playerdata_t *playerData, int routefrom)
+{
+  char        tmp [200];
+  int         activecount;
+  int         count;
+
+  count = 0;
+  activecount = queueGetCount (playerData->prepRequestQueue);
+  while (activecount > 0 && count < PLAYER_RETRY_COUNT) {
+    playerProcessPrepRequest (playerData);
+    activecount = queueGetCount (playerData->prepRequestQueue);
+    ++count;
+  }
+
+  count = 0;
+  activecount = playerCheckPrepThreads (playerData);
+  while (activecount > 0 && count < PLAYER_RETRY_COUNT) {
+    mssleep (10);
+    activecount = playerCheckPrepThreads (playerData);
+    ++count;
+  }
+
+  snprintf (tmp, sizeof (tmp), "done%c%d", MSG_ARGS_RS, 1);
+  connSendMessage (playerData->conn, routefrom, MSG_CHK_WAIT_PREP, tmp);
+}
+
+static void
+playerChkClearPrepQ (playerdata_t *playerData)
+{
+  int         activecount;
+  int         count;
+
+  queueClear (playerData->prepQueue, 0);
+  count = 0;
+  activecount = playerCheckPrepThreads (playerData);
+  while (activecount > 0 && count < PLAYER_RETRY_COUNT) {
+            mssleep (10);
+            activecount = playerCheckPrepThreads (playerData);
+            ++count;
+  }
+  queueClear (playerData->prepQueue, 0);
+  queueRemoveByIdx (playerData->prepQueue, 0);
+}
+
+static void
 playerResetVolume (playerdata_t *playerData)
 {
   int   origvol;
@@ -2326,14 +2390,16 @@ playerGetAudioInterface (void)
   return bdjoptGetStr (OPT_M_PLAYER_INTFC);
 }
 
-static void
+static int
 playerCheckPrepThreads (playerdata_t *playerData)
 {
+  int     activecount = 0;
+
 #if _lib_pthread_create && PLAYER_USE_THREADS
-  if (playerData->threadcount > 0) {
+  if (playerData->maxthreadidx > 0) {
     bool  procflag = false;
 
-    for (int i = 0; i < playerData->threadcount; ++i) {
+    for (int i = 0; i < playerData->maxthreadidx; ++i) {
       prepthread_t  *prepthread;
       prepqueue_t   *npq;
 
@@ -2343,6 +2409,7 @@ playerCheckPrepThreads (playerdata_t *playerData)
       }
 
       if (prepthread->finished == false) {
+        ++activecount;
         continue;
       }
 
@@ -2361,16 +2428,18 @@ playerCheckPrepThreads (playerdata_t *playerData)
       procflag = true;
     }
     if (procflag) {
-      playerData->threadcount = 0;
+      playerData->maxthreadidx = 0;
       for (int i = PLAYER_MAX_PREP - 1; i >= 0; --i) {
         if (playerData->prepthread [i] != NULL) {
-          playerData->threadcount = i + 1;
+          playerData->maxthreadidx = i + 1;
           break;
         }
       }
     }
   }
 #endif
+
+  return activecount;
 }
 
 #if DEBUG_PREP_QUEUE

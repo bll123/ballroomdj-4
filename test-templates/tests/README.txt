@@ -1,4 +1,6 @@
-# 2025-1-4
+# 2025-9-1
+#
+# The testsuite program uses set-delay of 450 to delay the prep-time.
 #
 # Note that the musicq chk commands currently return the internal musicq
 # index, which is offset by one.
@@ -69,6 +71,12 @@
 #     pauseatend repeat
 #     currentsink
 #     prepqueuecount
+#       check the prepqueuecount can be problematical as it can take
+#       differing amounts of time to do the prep.
+#       using a artificial delay in the prep code is useful to verify
+#       the test
 #   song: CHK_PLAYER_SONG
 #     p-duration p-songfn
+#   CHK_WAIT_PREP
+#     done
 #

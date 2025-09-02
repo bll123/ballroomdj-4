@@ -4,6 +4,9 @@ section 110 Songlist
 # basic songlist test
 test 110-10 Basic
 msg main QUEUE_PLAYLIST 0~test-sl-a
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -51,6 +54,9 @@ end
 # songlist test with max play time set for 001-foxtrot
 test 110-20 Dance-MaxPlayTime
 msg main QUEUE_PLAYLIST 0~test-sl-b
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 3000
 get player CHK_PLAYER_STATUS

@@ -5,6 +5,9 @@ section 120 Sequence
 # test-seq-a has: waltz, tango, foxtrot, quickstep
 test 120-10 Basic
 msg main QUEUE_PLAYLIST 0~test-seq-a
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -75,6 +78,9 @@ end
 
 test 120-20 Dance-BPM
 msg main QUEUE_PLAYLIST 0~test-seq-b
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 3000
 get player CHK_PLAYER_STATUS
@@ -144,6 +150,9 @@ end
 
 test 120-30 Dance-MaxPlaytime
 msg main QUEUE_PLAYLIST 0~test-seq-c
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 3000
 get player CHK_PLAYER_STATUS

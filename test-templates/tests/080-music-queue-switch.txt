@@ -5,6 +5,9 @@ test 80-10 Playback-Switch-Empty
 msg main CHK_MAIN_RESET_SENT
 msg main QUEUE_SWITCH_EMPTY 1
 msg main MUSICQ_INSERT 0~999~2
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 2000
 get main CHK_MAIN_MUSICQ
@@ -20,11 +23,17 @@ chk mqplay 0 mq0len 1 mq0idx0 2 mq1idx1 -1 dbidx 2 songplaysentcount 1
 get player CHK_PLAYER_STATUS
 chk playstate playing
 msg main MUSICQ_INSERT 1~999~3
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
 # the non-playback queue
 chk mqplay 0 mq0len 1 mq1len 2 mq0idx0 2 mq1idx1 3 songplaysentcount 1
 msg main MUSICQ_INSERT 1~999~5
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 chk mqplay 0 mq0len 1 mq1len 3 mq0idx0 2 mq1idx1 3 mq1idx2 5 dbidx 2 songplaysentcount 1
 get player CHK_PLAYER_STATUS
@@ -65,6 +74,9 @@ test 80-20 Playback-Switch-Switch
 msg main CHK_MAIN_RESET_SENT
 msg main QUEUE_SWITCH_EMPTY 1
 msg main MUSICQ_INSERT 0~999~2
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -81,6 +93,9 @@ mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 msg main MUSICQ_INSERT 1~999~3
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
 # the non-playback queue
@@ -103,6 +118,9 @@ get main CHK_MAIN_MUSICQ
 chk mqplay 1 mq0len 0 mq1len 1 mq0idx1 -1 mq1idx0 3 dbidx 3 songplaysentcount 2
 # set up another song in q 0
 msg main MUSICQ_INSERT 0~999~4
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 get main CHK_MAIN_MUSICQ
 # q 0 has an empty head pushed
 chk mqplay 1 mq0len 2 mq1len 1 mq0idx1 4 mq1idx0 3 dbidx 3 songplaysentcount 2

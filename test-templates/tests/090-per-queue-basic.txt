@@ -7,6 +7,9 @@ msg main CHK_MAIN_SET_GAP 1000
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
 msg main MUSICQ_INSERT 0~999~2
+mssleep 150
+get player CHK_WAIT_PREP
+wait done 1
 get player CHK_PLAYER_STATUS
 msg main CMD_PLAY
 resptimeout 3000
@@ -50,6 +53,9 @@ msg main CHK_MAIN_SET_GAP 0
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
 msg main MUSICQ_INSERT 0~999~2
+mssleep 150
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -85,6 +91,9 @@ msg main CHK_MAIN_SET_FADEIN 0
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
 msg main MUSICQ_INSERT 0~999~2
+mssleep 150
+get player CHK_WAIT_PREP
+wait done 1
 msg main CHK_MAIN_SET_GAP 2000
 msg main CMD_PLAY
 resptimeout 3000
@@ -109,6 +118,9 @@ msg main CHK_MAIN_SET_FADEOUT 0
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
 msg main MUSICQ_INSERT 0~999~2
+mssleep 150
+get player CHK_WAIT_PREP
+wait done 1
 msg main CHK_MAIN_SET_GAP 2000
 msg main CMD_PLAY
 resptimeout 2000
@@ -149,6 +161,9 @@ msg main CHK_MAIN_SET_FADEOUT 0
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
 msg main MUSICQ_INSERT 0~999~2
+mssleep 150
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -181,6 +196,9 @@ test 90-40 Maximum-Play-Time-Basic
 msg main CHK_MAIN_SET_MAXPLAYTIME 10000
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
+mssleep 100
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -219,6 +237,9 @@ msg main MUSICQ_INSERT 0~999~7
 msg main MUSICQ_INSERT 0~999~8
 msg main MUSICQ_INSERT 0~999~9
 msg main MUSICQ_INSERT 0~999~10
+mssleep 300
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -270,6 +291,9 @@ end
 test 90-60 Play-When-Queued-Basic
 msg main CHK_MAIN_SET_PLAY_WHEN_QUEUED 1
 msg main MUSICQ_INSERT 0~999~5
+mssleep 50
+get player CHK_WAIT_PREP
+wait done 1
 mssleep 2000
 get player CHK_PLAYER_STATUS
 chk playstate playing
@@ -283,6 +307,9 @@ msg main CHK_MAIN_SET_PAUSE_EACH_SONG 1
 msg main MUSICQ_INSERT 0~999~10
 msg main MUSICQ_INSERT 0~999~11
 msg main MUSICQ_INSERT 0~999~12
+mssleep 150
+get player CHK_WAIT_PREP
+wait done 1
 #
 resptimeout 2500
 msg main CMD_PLAY

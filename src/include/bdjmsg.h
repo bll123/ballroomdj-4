@@ -183,6 +183,8 @@ typedef enum {
   MSG_CHK_PLAYER_STATUS,
   MSG_CHK_PLAYER_SONG,
   MSG_CHK_MAIN_RESET_SENT,
+  MSG_CHK_WAIT_PREP,
+  MSG_CHK_SET_DELAY,
   /* these commands act upon the queue currently set for playback */
   MSG_CHK_MAIN_SET_GAP,           // args: gap
   MSG_CHK_MAIN_SET_MAXPLAYTIME,   // args: max-play-time
