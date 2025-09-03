@@ -4,7 +4,11 @@
 
 <!--
 
-**4.15.7 2025-9---**
+**4.15.7.1 2025-9---**
+
+* Translations:
+    * Chinese Simplified: Updated (still machine translated - very poor quality).
+    * Chinese Traditional: Updated (still machine translated - very poor quality).
 
 -->
 

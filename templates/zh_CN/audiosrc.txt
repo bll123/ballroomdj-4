@@ -26,7 +26,7 @@ KEY
 MODE
 ..client
 NAME
-..Podcast
+..播客
 PASS
 ..
 PORT
