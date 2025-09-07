@@ -11,23 +11,27 @@
 #include <string.h>
 
 #include <winrt/Windows.Media.h>
+#include <winrt/Windows.Media.Core.h>
 #include <winrt/Windows.Media.Playback.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.System.h>
 #include <winrt/Windows.Foundation.h>
 
+#include "bdj4.h"
 #include "audiosrc.h"
 #include "bdjstring.h"
 #include "mdebug.h"
 #include "osutils.h"
+#include "pathdisp.h"
 #include "pli.h"
 #include "wini.h"
 
+using namespace winrt::Windows::Media;
+using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::Storage;
+using namespace winrt::Windows;
 using namespace winrt;
-using namespace Windows;    // winrt::Windows
-using namespace Media;      // winrt::Windows::Media
-using namespace Foundation; // winrt::Windows::Foundation
 
 typedef struct windata {
   Playback::MediaPlayer           mediaPlayer;
@@ -37,6 +41,7 @@ typedef struct windata {
 ssize_t
 winGetDuration (windata_t *windata)
 {
+logBasic ("winGetDuration\n");
   if (windata == NULL) {
     return 0;
   }
@@ -48,7 +53,7 @@ ssize_t
 winGetTime (windata_t *windata)
 {
   ssize_t   pos;
-
+logBasic ("winGetTime\n");
   if (windata == NULL) {
     return 0;
   }
@@ -66,7 +71,7 @@ winStop (windata_t *windata)
   if (windata == NULL) {
     return 0;
   }
-
+logBasic ("\n");
   return 0;
 }
 
@@ -76,7 +81,7 @@ winPause (windata_t *windata)
   if (windata == NULL) {
     return 0;
   }
-
+logBasic ("winPause\n");
   auto pbSession = windata->mediaPlayer.PlaybackSession ();
   if (pbSession.CanPause ()) {
     windata->mediaPlayer.Pause ();
@@ -87,6 +92,7 @@ winPause (windata_t *windata)
 int
 winPlay (windata_t *windata)
 {
+logBasic ("winPlay\n");
   windata->mediaPlayer.Play ();
   return 0;
 }
@@ -94,6 +100,7 @@ winPlay (windata_t *windata)
 ssize_t
 winSeek (windata_t *windata, ssize_t pos)
 {
+logBasic ("winSeek\n");
   if (windata == NULL) {
     return 0;
   }
@@ -104,6 +111,7 @@ winSeek (windata_t *windata, ssize_t pos)
 double
 winRate (windata_t *windata, double drate)
 {
+logBasic ("winRate\n");
   if (windata == NULL) {
     return 0;
   }
@@ -114,16 +122,20 @@ winRate (windata_t *windata, double drate)
 int
 winMedia (windata_t *windata, const char *fn, int sourceType)
 {
+  char    tbuff [MAXPATHLEN];
+
   if (windata == NULL) {
     return 0;
   }
 
-  auto wfn = osToWideChar (fn);
+logBasic ("winMedia\n");
+  stpecpy (tbuff, tbuff + sizeof (tbuff), fn);
+  pathDisplayPath (tbuff, sizeof (tbuff));
+  auto wfn = osToWideChar (tbuff);
   auto hs = hstring (wfn);
-// ### convert to display path...
-  auto sfile = co_await Storage::StorageFile::GetFileFromPathAsync (wfn);
+  auto sfile = StorageFile::GetFileFromPathAsync (hs).get ();
   auto source = Core::MediaSource::CreateFromStorageFile (sfile);
-  windata->mediaPlayer.Source = Core::MediaSource::CreateFromUri (source);
+//  windata->mediaPlayer.Source = Core::MediaSource::CreateFromUri (source);
   auto ac = windata->mediaPlayer.AudioCategory ();
   ac = Playback::MediaPlayerAudioCategory::Media;
   mdfree (wfn);
@@ -135,6 +147,7 @@ winInit (void)
 {
   windata_t   *windata;
 
+logBasic ("winInit\n");
   windata = (windata_t *) mdmalloc (sizeof (windata_t));
 
   windata->mediaPlayer = Playback::MediaPlayer ();
@@ -147,6 +160,7 @@ winInit (void)
 void
 winClose (windata_t *windata)
 {
+logBasic ("winClose\n");
   if (windata == NULL) {
     return;
   }
@@ -193,7 +207,6 @@ winState (windata_t *windata)
 }
 
 /* internal routines */
-
 
 #if 0
 
@@ -268,7 +281,7 @@ struct mpintfc
     /* why is it so difficult to open a file? */
     /* create-from-uri also cannot handle the file:// protocol */
     Uri uri{ DEFAULT_THUMBNAIL_URI };
-    defaultArt = Storage::Streams::RandomAccessStreamReference::CreateFromUri (uri);
+    defaultArt = Streams::RandomAccessStreamReference::CreateFromUri (uri);
 
     smtcUpdater ().Thumbnail (defaultArt);
     smtcUpdater ().Type (MediaPlaybackType::Music);
@@ -344,7 +357,7 @@ struct mpintfc
   }
 
   Playback::MediaPlayer mediaPlayer;
-  Storage::Streams::RandomAccessStreamReference defaultArt;
+  Streams::RandomAccessStreamReference defaultArt;
   contdata_t *contdata;
 };
 #endif

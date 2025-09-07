@@ -86,7 +86,7 @@ pliiMediaSetup (plidata_t *pliData, const char *mediaPath,
     return;
   }
 
-  winMedia (pliData->windata, mediaPath, sourceType);
+  winMedia (pliData->windata, fullMediaPath, sourceType);
 }
 
 void

@@ -70,13 +70,11 @@ addIntlLibrary (libpligst)
 
 if (WIN32)
   add_library (libpliwin SHARED pliwin.c wini.cpp)
-  # c++ 20 is required for co_await
-  target_compile_features(libpliwin PRIVATE cxx_std_20)
-  target_compile_options (libpliwin PRIVATE)
   target_link_libraries (libpliwin PRIVATE
     libbdj4common
+    -lruntimeobject
   )
-  addIntlLibrary (libplivlc)
+  addIntlLibrary (libpliwin)
 endif()
 
 install (TARGETS
@@ -90,6 +88,7 @@ if (NOT WIN32 AND NOT APPLE)
     libplimpris
     DESTINATION ${DEST_BIN}
   )
+  updateRPath (libplimpris)
 endif()
 
 if (LIBVLC_FOUND)
@@ -108,10 +107,15 @@ if (LIBVLC4_FOUND)
   updateRPath (libplivlc4)
 endif()
 
+if (WIN32)
+  install (TARGETS
+    libpliwin
+    DESTINATION ${DEST_BIN}
+  )
+  updateRPath (libpliwin)
+endif()
+
 updateRPath (libbdj4pli)
 updateRPath (libplinull)
-if (NOT WIN32 AND NOT APPLE)
-  updateRPath (libplimpris)
-endif()
 updateRPath (libpligst)
 
