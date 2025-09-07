@@ -21,6 +21,7 @@
 #include "bdj4.h"
 #include "audiosrc.h"
 #include "bdjstring.h"
+#include "log.h"
 #include "mdebug.h"
 #include "osutils.h"
 #include "pathdisp.h"
@@ -128,9 +129,9 @@ winMedia (windata_t *windata, const char *fn, int sourceType)
     return 0;
   }
 
-logBasic ("winMedia\n");
   stpecpy (tbuff, tbuff + sizeof (tbuff), fn);
   pathDisplayPath (tbuff, sizeof (tbuff));
+logBasic ("winMedia %s\n", tbuff);
   auto wfn = osToWideChar (tbuff);
   auto hs = hstring (wfn);
   auto sfile = StorageFile::GetFileFromPathAsync (hs).get ();
@@ -149,9 +150,19 @@ winInit (void)
 
 logBasic ("winInit\n");
   windata = (windata_t *) mdmalloc (sizeof (windata_t));
+  try {
+    windata->mediaPlayer = Playback::MediaPlayer ();
+logBasic ("  aa\n");
+  } catch (const std::exception &exc) {
+logBasic ("  ng-a %ld\n", (long) getLastError());
+logBasic ("  ng-a %s\n", exc.what ());
+  } catch (...) {
+logBasic ("  ng-b %ld\n", (long) getLastError());
+  }
+logBasic ("  bb\n");
 
-  windata->mediaPlayer = Playback::MediaPlayer ();
   windata->mediaPlayer.CommandManager ().IsEnabled (false);
+logBasic ("  cc\n");
   windata->state = PLI_STATE_IDLE;
 
   return windata;
