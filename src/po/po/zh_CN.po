@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2025-08-07\n"
+"POT-Creation-Date: 2025-09-03\n"
+"PO-Revision-Date: 2025-09-03 19:15\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh\n"
@@ -27,144 +27,144 @@ msgstr "%1$s 必须大于 %2$s"
 #. CONTEXT: configuration: the ACRCloud API Host
 #, c-format
 msgid "%s API Host"
-msgstr "%s 应用程序接口主机"
+msgstr "%s应用程序接口主机"
 
 #. CONTEXT: configuration: the ACRCloud API Key
 #, c-format
 msgid "%s API Key"
-msgstr "%s API 密钥"
+msgstr "%sAPI密钥"
 
 #. CONTEXT: configuration: the ACRCloud API Secret Key
 #, c-format
 msgid "%s API Secret Key"
-msgstr "%s API 密钥"
+msgstr "%sAPI密钥"
 
 #. CONTEXT: configuration: configuration user interface window title
 #, c-format
 msgid "%s Configuration"
-msgstr "%s 配置"
+msgstr "%s配置"
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 download)
 #, c-format
 msgid "%s Download"
-msgstr "%s 下载"
+msgstr "%s下载"
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 forums)
 #, c-format
 msgid "%s Forums"
-msgstr "%s 论坛"
+msgstr "%s论坛"
 
 #. CONTEXT: helperui: the window title for the BDJ4 helper
 #, c-format
 msgid "%s Helper"
-msgstr "%s 助手"
+msgstr "%s助手"
 
 #. CONTEXT: alternate installation: window title
 #. CONTEXT: installer: window title
 #, c-format
 msgid "%s Installer"
-msgstr "%s 安装人员"
+msgstr "%s安装人员"
 
 #. CONTEXT: installer: label for entry field asking for BDJ3 location
 #, c-format
 msgid "%s Location"
-msgstr "%s 地点"
+msgstr "%s地点"
 
 #. CONTEXT: manage-ui: management user interface window title
 #, c-format
 msgid "%s Management"
-msgstr "%s 管理层"
+msgstr "%s管理层"
 
 #. CONTEXT: configuration: itunes: the itunes media folder
 #, c-format
 msgid "%s Media Folder"
-msgstr "%s 媒体文件夹"
+msgstr "%s媒体文件夹"
 
 #. CONTEXT: playerui: main window title
 #, c-format
 msgid "%s Player"
-msgstr "%s 球员"
+msgstr "%s球员"
 
 #. CONTEXT: MacOS: reason for disabling sleep: BDJ4 Player is Active
 #, c-format
 msgid "%s Player is Active"
-msgstr "%s 玩家处于活动状态"
+msgstr "%s玩家处于活动状态"
 
 #. CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist)
 #, c-format
 msgid "%s Playlist"
-msgstr "%s 播放列表"
+msgstr "%s播放列表"
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets)
 #, c-format
 msgid "%s Support Tickets"
-msgstr "%s 支持票务"
+msgstr "%s支持票务"
 
 #. CONTEXT: starterui: basic support dialog, version display
 #, c-format
 msgid "%s Version"
-msgstr "%s 版本"
+msgstr "%s版本"
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 wiki)
 #, c-format
 msgid "%s Wiki"
-msgstr "%s 维基"
+msgstr "%s维基"
 
 #. CONTEXT: configuration: itunes: the itunes xml file
 #, c-format
 msgid "%s XML File"
-msgstr "%s XML 文件"
+msgstr "%sXML文件"
 
 #. CONTEXT: installer: message indicating the conversion action that will be taken
 #, c-format
 msgid "%s data will be converted."
-msgstr "%s 数据将被转换。"
+msgstr "%s数据将被转换。"
 
 #. CONTEXT: manageui: status message when deleting a song list/playlist/sequence
 #, c-format
 msgid "%s deleted."
-msgstr ""
+msgstr "%s已删除。"
 
 #. CONTEXT: database update: status message (count)
 #, c-format
 msgid "%s files found"
-msgstr "%s 找到的文件"
+msgstr "%s找到的文件"
 
 #. CONTEXT: installer: status message
 #, c-format
 msgid "%s installed."
-msgstr "%s 已安装。"
+msgstr "%s已安装。"
 
 #. CONTEXT: installer: display of package status
 #, c-format
 msgid "%s is installed"
-msgstr "%s 已安装"
+msgstr "%s已安装"
 
 #. CONTEXT: manage ui: status message: itunes is not configured
 #, c-format
 msgid "%s is not configured."
-msgstr "%s 未配置。"
+msgstr "%s未配置。"
 
 #. CONTEXT: installer: display of package status
 #, c-format
 msgid "%s is not installed"
-msgstr "%s 尚未被安装"
+msgstr "%s尚未被安装"
 
 #. CONTEXT: song editor: status msg: (song start may not exceed the song duration)
 #. CONTEXT: song editor: status msg: (song end may not exceed the song duration)
 #, c-format
 msgid "%s may not exceed the song duration"
-msgstr "%s 不得超过歌曲长度"
+msgstr "%s不得超过歌曲长度"
 
 #. CONTEXT: validation: characters not allowed
 #, c-format
 msgid "%s: *'\":|<>^ characters are not allowed."
-msgstr "%s:不允许使用 *'\":|<>^ 字符。"
+msgstr "%s：不允许使用 *'\":|<>^ 字符。"
 
 #. CONTEXT: validation: invalid URL
 #, c-format
 msgid "%s: Invalid URL (%s)."
-msgstr ""
+msgstr "%s：无效的 URL (%s)。"
 
 #. CONTEXT: validation: invalid time (hours/minutes)
 #. CONTEXT: validation: invalid time (minutes/seconds)
@@ -172,28 +172,28 @@ msgstr ""
 #. CONTEXT: validation: invalid time (hour/min/sec.sec)
 #, c-format
 msgid "%s: Invalid time (%s)."
-msgstr "%s时间无效 (%s)。"
+msgstr "%s：时间无效 (%s)。"
 
 #. CONTEXT: validation: must be numeric
 #. CONTEXT: validation: must be a numeric value
 #, c-format
 msgid "%s: Must be numeric."
-msgstr "%s必须是数字。"
+msgstr "%s：必须是数字。"
 
 #. CONTEXT: validation: a value must be set
 #, c-format
 msgid "%s: Must be set."
-msgstr "%s必须设置。"
+msgstr "%s：必须设置。"
 
 #. CONTEXT: validation: slashes ( / and \\ ) are not allowed
 #, c-format
 msgid "%s: Slashes are not allowed."
-msgstr "%s不允许使用斜线。"
+msgstr "%s：不允许使用斜线。"
 
 #. CONTEXT: validation: spaces are not allowed
 #, c-format
 msgid "%s: Spaces are not allowed."
-msgstr "%s不允许空格。"
+msgstr "%s：不允许空格。"
 
 #. CONTEXT: playerui: button: reset speed to 100%
 msgid "100%"
@@ -201,7 +201,7 @@ msgstr "100%"
 
 #. CONTEXT: configuration: player: clock: 12-hour time
 msgid "12-Hour Clock"
-msgstr ""
+msgstr "12小时时钟"
 
 #. CONTEXT: configuration: dance time signature
 msgid "2/4"
@@ -209,7 +209,7 @@ msgstr "2/4"
 
 #. CONTEXT: configuration: player: clock: 24-hour time
 msgid "24-Hour Clock"
-msgstr ""
+msgstr "24小时时钟"
 
 #. CONTEXT: configuration: dance time signature
 msgid "3/4"
@@ -382,7 +382,7 @@ msgstr "音频输出："
 
 #. CONTEXT: configuration: audio sources
 msgid "Audio Sources"
-msgstr ""
+msgstr "音频来源"
 
 #. CONTEXT: configuration: checkbox: is automatic organization enabled
 msgid "Auto Organise"
@@ -413,7 +413,7 @@ msgstr "BPM 计数器"
 
 #. CONTEXT: configuration: marquee: the background color
 msgid "Background Colour"
-msgstr ""
+msgstr "背景颜色"
 
 #. CONTEXT: configuration file: genre
 msgid "Ballroom Dance"
@@ -432,8 +432,8 @@ msgid "Cancel Edit All"
 msgstr "取消 编辑全部"
 
 #. CONTEXT: database update: status message: number of files that cannot be renamed
-msgid "Cannot Renamed"
-msgstr ""
+msgid "Cannot Rename"
+msgstr "无法重命名"
 
 #. CONTEXT: configuration file: dance
 msgid "Cha Cha"
@@ -442,7 +442,7 @@ msgstr "Cha Cha"
 #. CONTEXT: configuration: check connection for audio source
 #. CONTEXT: import playlist dialog: check the connection
 msgid "Check Connection"
-msgstr ""
+msgstr "检查连接"
 
 #. CONTEXT: database update: check for new audio files
 msgid "Check For New"
@@ -479,11 +479,11 @@ msgstr "随着节拍在蓝色方框内点击鼠标。"
 
 #. CONTEXT: configuration: audio source mode
 msgid "Client"
-msgstr ""
+msgstr "客户"
 
 #. CONTEXT: configuration: the clock format
 msgid "Clock"
-msgstr ""
+msgstr "钟"
 
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
@@ -508,7 +508,7 @@ msgstr "关闭"
 
 #. CONTEXT: label: comment
 msgid "Comment"
-msgstr ""
+msgstr "评论"
 
 #. CONTEXT: database update: check for new audio files
 msgid "Compact"
@@ -546,15 +546,15 @@ msgstr "配置"
 
 #. CONTEXT: configuration: audio source: check connection status
 msgid "Connection Failed"
-msgstr ""
+msgstr "连接失败"
 
 #. CONTEXT: configuration: audio source: check connection status
 msgid "Connection OK"
-msgstr ""
+msgstr "连接确定"
 
 #. CONTEXT: configuration: which controller to use
 msgid "Controller"
-msgstr ""
+msgstr "控制器"
 
 #. CONTEXT: installer: status message
 msgid "Conversion complete."
@@ -563,7 +563,7 @@ msgstr "转换完成。"
 #. CONTEXT: installer: checkbox: convert the BallroomDJ 3 installation
 #, c-format
 msgid "Convert %s"
-msgstr "转换 %s"
+msgstr "转换%s"
 
 #. CONTEXT: copy tags dialog: title for the dialog
 #. CONTEXT: copy tags dialog: copy audio tags button
@@ -586,7 +586,7 @@ msgstr "复制完毕。"
 #. CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #, c-format
 msgid "Copy of %s"
-msgstr "%s"
+msgstr "%s的副本"
 
 #. CONTEXT: installer: status message
 msgid "Copying files."
@@ -672,7 +672,7 @@ msgstr "日期已添加"
 
 #. CONTEXT: playlist management: how many days to keep the podcast
 msgid "Days to Keep"
-msgstr ""
+msgstr "保留的日子"
 
 #. CONTEXT: configuration: debug options that can be turned on and off
 msgid "Debug"
@@ -727,12 +727,12 @@ msgstr "下载最新版本"
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Download of %s failed."
-msgstr "%s 下载失败。"
+msgstr "%s下载失败。"
 
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Downloading %s."
-msgstr "下载 %s。"
+msgstr "下载%s。"
 
 #. CONTEXT: label: duration of the song
 msgid "Duration"
@@ -798,7 +798,7 @@ msgstr "输入安装 BDJ4 的目标文件夹。"
 #. CONTEXT: installer: asking where BallroomDJ 3 is installed
 #, c-format
 msgid "Enter the folder where %s is installed."
-msgstr "输入 %s 的安装文件夹。"
+msgstr "输入%s的安装文件夹。"
 
 #. CONTEXT: alternate installation: installation instructions
 msgid "Enter the name of the new installation."
@@ -806,7 +806,7 @@ msgstr "输入新安装的名称。"
 
 #. CONTEXT: configuration: the error color to use for the user interface
 msgid "Error Colour"
-msgstr ""
+msgstr "错误颜色"
 
 #. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
@@ -832,11 +832,11 @@ msgstr "退出"
 #. CONTEXT: update database: exit BDJ4 and restart
 #, c-format
 msgid "Exit %s and restart."
-msgstr "退出 %s 并重新启动。"
+msgstr "退出%s并重新启动。"
 
 #. CONTEXT: configuration: player: fade-type: exponential sine
 msgid "Exponential Sine"
-msgstr ""
+msgstr "正弦指数"
 
 #. CONTEXT: export/import bdj4 dialog: export button
 #. CONTEXT: export playlist dialog: export button
@@ -859,13 +859,13 @@ msgstr "出口类型"
 #. CONTEXT: export as mp3: title of save dialog
 #, c-format
 msgid "Export as %s"
-msgstr "导出为 %s"
+msgstr "导出为%s"
 
 #. CONTEXT: export for ballroomdj: title of dialog
 #. CONTEXT: manage-ui: menu selection: song list: export: export for ballroomdj
 #, c-format
 msgid "Export for %s"
-msgstr "导出至 %s"
+msgstr "导出至%s"
 
 #. CONTEXT: export/import bdj4: export folder location
 #. CONTEXT: export playlist: export folder location
@@ -892,7 +892,7 @@ msgstr "淡出时间"
 
 #. CONTEXT: configuration: the clock format
 msgid "Fade Type"
-msgstr ""
+msgstr "褪色类型"
 
 #. CONTEXT: label: favorite marker
 msgid "Favourite"
@@ -911,7 +911,7 @@ msgstr "文件"
 #. CONTEXT: import playlist: playlist file types (m3u/xspf/jspf)
 #, c-format
 msgid "File (%s)"
-msgstr ""
+msgstr "文件 (%s)"
 
 #. CONTEXT: configuration: filter display: song selection filters
 #. CONTEXT: song selection filter: title for the filter dialog
@@ -964,7 +964,7 @@ msgstr "伟大"
 
 #. CONTEXT: label: grouping
 msgid "Grouping"
-msgstr ""
+msgstr "分组"
 
 #. CONTEXT: configuration: remote control: the HTML template to use
 msgid "HTML Template"
@@ -976,11 +976,11 @@ msgstr "HTTP 代码"
 
 #. CONTEXT: configuration: player: fade-type: half sine
 msgid "Half Sine"
-msgstr ""
+msgstr "半正弦波"
 
 #. CONTEXT: playerui: menu selection: marquee: hide the marquee
 msgid "Hide"
-msgstr ""
+msgstr "隐藏"
 
 #. CONTEXT: playlist management: hide unselected dances
 msgid "Hide Unselected"
@@ -990,7 +990,7 @@ msgstr "隐藏未选择"
 #. CONTEXT: playlist management: high bpm/mpm column header
 #, c-format
 msgid "High %s"
-msgstr "高 %s"
+msgstr "高%s"
 
 #. CONTEXT: playlist management: High Dance Level
 msgid "High Dance Level"
@@ -1006,7 +1006,7 @@ msgstr "历史"
 
 #. CONTEXT: configuration: player: clock: ISO
 msgid "ISO"
-msgstr ""
+msgstr "ISO"
 
 #. CONTEXT: installer: instructions
 msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
@@ -1021,7 +1021,7 @@ msgstr "进口"
 
 #. CONTEXT: import playlist: import-from selection
 msgid "Import From"
-msgstr ""
+msgstr "进口自"
 
 #. CONTEXT: import playlist: title of dialog
 #. CONTEXT: manage-ui: menu selection: song list: import
@@ -1038,11 +1038,11 @@ msgstr "进口自"
 #. CONTEXT: manage-ui: menu selection: song list: import: import from itunes
 #, c-format
 msgid "Import from %s"
-msgstr "从 %s导入"
+msgstr "从%s导入"
 
 #. CONTEXT: configuration: marquee: dance information color
 msgid "Information Colour"
-msgstr ""
+msgstr "信息颜色"
 
 #. CONTEXT: alternate installation: status message
 msgid "Initial Setup."
@@ -1069,32 +1069,32 @@ msgstr "安装完毕。"
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Installing %s."
-msgstr "安装 %s."
+msgstr "安装%s."
 
 #. CONTEXT: config: integrated VLC 3
 msgid "Integrated VLC 3"
-msgstr ""
+msgstr "集成VLC 3"
 
 #. CONTEXT: config: integrated VLC 4
 msgid "Integrated VLC 4"
-msgstr ""
+msgstr "集成VLC 4"
 
 #. CONTEXT: configuration: mobile marquee type: internet
 msgid "Internet"
-msgstr ""
+msgstr "互联网"
 
 #. CONTEXT: Send support message: Error message for invalid e-mail.
 msgid "Invalid E-Mail Address."
-msgstr ""
+msgstr "电子邮件地址无效。"
 
 #. CONTEXT: export playlist: invalid target file extension
 msgid "Invalid Extension"
-msgstr ""
+msgstr "无效扩展名"
 
 #. CONTEXT: export playlist: invalid target file
 #. CONTEXT: import playlist: invalid target file
 msgid "Invalid File"
-msgstr ""
+msgstr "无效文件"
 
 #. CONTEXT: alternate installation: the selected folder is not valid
 #. CONTEXT: installer: the selected folder is not valid
@@ -1112,17 +1112,17 @@ msgstr "无效选择"
 
 #. CONTEXT: import playlist: invalid URL
 msgid "Invalid URL"
-msgstr ""
+msgstr "无效URL"
 
 #. CONTEXT: Saving Song List: Error message for invalid song list name.
 #. CONTEXT: Saving Playlist: Error message for invalid playlist name.
 #. CONTEXT: Saving Sequence: Error message for invalid sequence name.
 msgid "Invalid name. Using old name."
-msgstr ""
+msgstr "名称无效。使用旧名称。"
 
 #. CONTEXT: configuration: player: fade-type: inverted parabola
 msgid "Inverted Parabola"
-msgstr ""
+msgstr "倒抛物线"
 
 #. CONTEXT: configuration file: genre
 msgid "Jazz"
@@ -1165,7 +1165,7 @@ msgstr "从数据库加载"
 #. CONTEXT: configuration: mobile marquee type: local
 #. CONTEXT: configuration: player: clock: local
 msgid "Local"
-msgstr ""
+msgstr "当地"
 
 #. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
 msgid "Locale"
@@ -1179,7 +1179,7 @@ msgstr "位于 \"tclsh\"。"
 #. CONTEXT: playlist management: low bpm/mpm column header
 #, c-format
 msgid "Low %s"
-msgstr "低 %s"
+msgstr "低%s"
 
 #. CONTEXT: playlist management: Low Dance Level
 msgid "Low Dance Level"
@@ -1222,8 +1222,7 @@ msgid "Marquee Theme"
 msgstr "帐篷主题"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid ""
-"Maximum\n"
+msgid "Maximum\n"
 "Play Time"
 msgstr "最长播放时间"
 
@@ -1257,7 +1256,7 @@ msgstr "移动遥控器"
 #. CONTEXT: configuration: audio source: mode (off/client/server)
 #. CONTEXT: configuration: mobile marquee: mode: (off/local/internet)
 msgid "Mode"
-msgstr ""
+msgstr "模式"
 
 #. CONTEXT: configuration: table edit: button: move selection down
 #. CONTEXT: music queue: button: move the selected song down in the queue
@@ -1277,15 +1276,15 @@ msgstr "移至顶部"
 
 #. CONTEXT: label: movement name (classical music movement name)
 msgid "Movement"
-msgstr ""
+msgstr "乐章"
 
 #. CONTEXT: label: movement count (classical music movement count)
 msgid "Movement Count"
-msgstr ""
+msgstr "乐章计数"
 
 #. CONTEXT: label: movement (classical music movement number)
 msgid "Movement Number"
-msgstr ""
+msgstr "乐章数量"
 
 #. CONTEXT: configuration: the music folder where the user stores their music
 #. CONTEXT: update database: music folder to process
@@ -1325,11 +1324,11 @@ msgstr "新"
 #. CONTEXT: installer: message indicating the action that will be taken
 #, c-format
 msgid "New %s installation."
-msgstr "新安装 %s。"
+msgstr "新安装%s。"
 
 #. CONTEXT: configuration: name that is set when adding a new audio source
 msgid "New Audio Source"
-msgstr ""
+msgstr "新音源"
 
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist
 msgid "New Automatic Playlist"
@@ -1357,7 +1356,7 @@ msgstr "新播放列表"
 
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: new podcast
 msgid "New Podcast"
-msgstr ""
+msgstr "新播客"
 
 #. CONTEXT: starterui: name of the new profile (New profile 9)
 #, c-format
@@ -1399,7 +1398,7 @@ msgstr "下一首歌"
 
 #. CONTEXT: label: no play time limit
 msgid "No Play Time Limit"
-msgstr ""
+msgstr "无游戏时间限制"
 
 #. CONTEXT: installer: message indicating the conversion action that will be taken
 msgid "No folder specified."
@@ -1426,7 +1425,7 @@ msgstr "未播放"
 #. CONTEXT: installer: the location entered is not a valid BDJ3 location.
 #, c-format
 msgid "Not a valid %s folder."
-msgstr "不是有效的 %s 文件夹。"
+msgstr "不是有效的%s文件夹。"
 
 #. CONTEXT: label: notes
 msgid "Notes"
@@ -1520,7 +1519,7 @@ msgstr "球员"
 
 #. CONTEXT: configuration: additional arguments for player
 msgid "Player Arguments"
-msgstr ""
+msgstr "玩家论据"
 
 #. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
 #. CONTEXT: select file: file type for the file selection dialog (playlist)
@@ -1564,7 +1563,7 @@ msgstr "请等待… (%1$d/%2$d)"
 #. CONTEXT: audio source: podcast
 #. CONTEXT: playlist management: type of playlist
 msgid "Podcast"
-msgstr ""
+msgstr "播客"
 
 #. CONTEXT: configuration file: rating
 msgid "Poor"
@@ -1620,11 +1619,11 @@ msgstr "QR 码"
 
 #. CONTEXT: configuration: player: fade-type: quadratic
 msgid "Quadratic"
-msgstr ""
+msgstr "二次方"
 
 #. CONTEXT: configuration: player: fade-type: quarter sine
 msgid "Quarter Sine"
-msgstr ""
+msgstr "四分之一正弦波"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
@@ -1713,7 +1712,7 @@ msgstr "重新安装"
 #. CONTEXT: installer: message indicating the action that will be taken
 #, c-format
 msgid "Re-install %s.  Overwrites existing configuration."
-msgstr "重新安装 %s。  覆盖现有配置。"
+msgstr "重新安装%s。 覆盖现有配置。"
 
 #. CONTEXT: database update: rebuilds the database
 msgid "Rebuild Database"
@@ -1730,7 +1729,7 @@ msgstr "从坠机事故中恢复。"
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Registering %s."
-msgstr "注册 %s."
+msgstr "注册%s."
 
 #. CONTEXT: playerui: menu selection: action: reload
 msgid "Reload"
@@ -1762,9 +1761,7 @@ msgid "Repeat"
 msgstr "重复"
 
 #. CONTEXT: database update: rebuild: help text
-msgid ""
-"Replaces the BallroomDJ database in its entirety. All changes to the "
-"database will be lost."
+msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
 msgstr "替换整个 BallroomDJ 数据库。对数据库的所有更改都将丢失。"
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1797,7 +1794,7 @@ msgstr "伦巴"
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Running conversion script: %s."
-msgstr "运行转换脚本： %s."
+msgstr "运行转换脚本：%s."
 
 #. CONTEXT: configuration file: dance
 msgid "Salsa"
@@ -1847,22 +1844,22 @@ msgstr "选择"
 #. CONTEXT: select file: title of window: select <file-type>
 #, c-format
 msgid "Select %s"
-msgstr "选择 %s"
+msgstr "选择%s"
 
 #. CONTEXT: installer: dialog title for selecting BDJ3 location
 #, c-format
 msgid "Select %s Location"
-msgstr "选择 %s 位置"
+msgstr "选择%s位置"
 
 #. CONTEXT: configuration: itunes media folder selection dialog: window title
 #, c-format
 msgid "Select %s Media Location"
-msgstr "选择 %s 媒体位置"
+msgstr "选择%s媒体位置"
 
 #. CONTEXT: configuration: itunes xml file selection dialog: window title
 #, c-format
 msgid "Select %s XML File"
-msgstr "选择 %s XML 文件"
+msgstr "选择%sXML文件"
 
 #. CONTEXT: select audio file: dialog title for selecting audio files
 #, c-format
@@ -1899,12 +1896,12 @@ msgstr "发送支持信息"
 #. CONTEXT: starterui: support: status message
 #, c-format
 msgid "Sending %s"
-msgstr "发送 %s"
+msgstr "发送%s"
 
 #. CONTEXT: starterui: support: status message
 #, c-format
 msgid "Sending %s Information"
-msgstr "发送 %s 信息"
+msgstr "发送%s信息"
 
 #. CONTEXT: starterui: support: status message
 #, c-format
@@ -1926,7 +1923,7 @@ msgstr "序列"
 
 #. CONTEXT: configuration: audio source mode
 msgid "Server"
-msgstr ""
+msgstr "服务器"
 
 #. CONTEXT: playerui: select the current queue for playback
 msgid "Set Queue for Playback"
@@ -1947,7 +1944,7 @@ msgstr "设置完成。"
 
 #. CONTEXT: playerui: menu selection: marquee: show the marquee
 msgid "Show"
-msgstr ""
+msgstr "显示"
 
 #. CONTEXT: configuration: queue: whether to show the extra queue buttons (queue dance, queue 5)
 msgid "Show Extra Queue Buttons"
@@ -2015,7 +2012,7 @@ msgstr "歌曲列表"
 
 #. CONTEXT: configuration: user interface: the song mark color for songs in the song list
 msgid "Song Mark Colour"
-msgstr ""
+msgstr "歌曲标记颜色"
 
 #. CONTEXT: configuration: display settings for: song selection
 #. CONTEXT: manage-ui: name of song selection notebook tab
@@ -2063,7 +2060,7 @@ msgstr "开始新歌单"
 
 #. CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song
 msgid "Start Wait Time"
-msgstr ""
+msgstr "开始等待时间"
 
 #. CONTEXT: installer: status message
 msgid "Starting conversion process."
@@ -2093,7 +2090,7 @@ msgstr "停止后"
 #. CONTEXT: starterui: menu item: stop all BDJ4 processes
 #, c-format
 msgid "Stop All %s Processes"
-msgstr "停止所有 %s 进程"
+msgstr "停止所有%s进程"
 
 #. CONTEXT: configuration: queue: the time when playback will stop
 #. CONTEXT: playlist management: stop at
@@ -2131,7 +2128,7 @@ msgstr "空时切换队列"
 
 #. CONTEXT: configuration: mobile marquee: internet: tag
 msgid "Tag"
-msgstr ""
+msgstr "标签"
 
 #. CONTEXT: label: tags (for use by the user)
 #. CONTEXT: playlist management: tags
@@ -2155,9 +2152,7 @@ msgid "The conversion process will not be run."
 msgstr "转换过程将不会运行。"
 
 #. CONTEXT: installer: instructions
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installations."
+msgid "The conversion process will only run for new installations and for re-installations."
 msgstr "转换过程只会在新安装和重新安装时运行。"
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -2220,7 +2215,7 @@ msgstr "轨道"
 
 #. CONTEXT: configuration: player: fade-type: triangle
 msgid "Triangle"
-msgstr ""
+msgstr "三角形"
 
 #. CONTEXT: apply adjustments: trim silence checkbox
 #. CONTEXT: manage-ui: song editor menu: trim silence
@@ -2240,17 +2235,17 @@ msgstr "类型"
 #. CONTEXT: import playlist: import location
 #. CONTEXT: playlist management: podcast URL
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Unable to determine %s version."
-msgstr "无法确定 %s 版本。"
+msgstr "无法确定%s版本。"
 
 #. CONTEXT: installer: failure message
 #, c-format
 msgid "Unable to locate %s."
-msgstr "无法找到 %s。"
+msgstr "无法找到%s。"
 
 #. CONTEXT: installer: status message
 msgid "Unable to locate BDJ3 database."
@@ -2258,7 +2253,7 @@ msgstr "无法找到 BDJ3 数据库。"
 
 #. CONTEXT: manage-ui: menu selection: music manager: undo all song removals
 msgid "Undo All Song Removals"
-msgstr ""
+msgstr "撤销所有歌曲删除"
 
 #. CONTEXT: manage-ui: menu selection: music manager: undo song removal
 msgid "Undo Song Removal"
@@ -2270,7 +2265,7 @@ msgstr "未评级"
 
 #. CONTEXT: configuration: marquee: upcoming dance color
 msgid "Upcoming Dance Colour"
-msgstr ""
+msgstr "即将推出的舞蹈色彩"
 
 #. CONTEXT: manage-ui: notebook tab title: update database
 msgid "Update Database"
@@ -2279,7 +2274,7 @@ msgstr "更新数据库"
 #. CONTEXT: database update: update from itunes
 #, c-format
 msgid "Update from %s"
-msgstr "来自 %s的最新消息"
+msgstr "来自%s的最新消息"
 
 #. CONTEXT: database update: updates the database using the tags from the audio files
 msgid "Update from Audio File Tags"
@@ -2292,38 +2287,36 @@ msgstr "已更新"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid ""
-"Updates the information in the BallroomDJ database from the %s database."
-msgstr "从 %s 数据库更新 BallroomDJ 数据库中的信息。"
+msgid "Updates the information in the BallroomDJ database from the %s database."
+msgstr "从%s数据库更新BallroomDJ数据库中的信息。"
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid ""
-"Updates the information in the BallroomDJ database from the audio file tags."
+msgid "Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "根据音频文件标签更新 BallroomDJ 数据库中的信息。"
 
 #. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Updating %s."
-msgstr "更新 %s."
+msgstr "更新%s."
 
 #. CONTEXT: alternate installation: message indicating the action that will be taken
 #. CONTEXT: installer: message indicating the action that will be taken
 #, c-format
 msgid "Updating existing %s installation."
-msgstr "更新现有的 %s 安装。"
+msgstr "更新现有的%s安装。"
 
 #. CONTEXT: installer: start the upgrade process
 msgid "Upgrade"
-msgstr ""
+msgstr "升级"
 
 #. CONTEXT: configuration: classical music: use work/movement
 msgid "Use Work and Movement"
-msgstr ""
+msgstr "作品和动作"
 
 #. CONTEXT: configuration: audio source: the client or server user
 msgid "User"
-msgstr ""
+msgstr "用户"
 
 #. CONTEXT: configuration: remote control: the user ID for sign-on to remote control
 msgid "User ID"
@@ -2382,7 +2375,7 @@ msgstr "当 BPM 值稳定后，选择保存按钮。"
 
 #. CONTEXT: label: work (a musical work)
 msgid "Work"
-msgstr ""
+msgstr "件"
 
 #. CONTEXT: configuration: which audio tags will be written to the audio file
 msgid "Write Audio File Tags"
@@ -2390,16 +2383,14 @@ msgstr "写入音频文件标签"
 
 #. CONTEXT: manage-ui: song editor menu: write audio tags
 msgid "Write Audio Tags"
-msgstr ""
+msgstr "编写音频标签"
 
 #. CONTEXT: database update: writes the tags in the database to the audio files
 msgid "Write Tags to Audio Files"
 msgstr "将标签写入音频文件"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid ""
-"Writes the audio file tags using the information from the BallroomDJ "
-"database."
+msgid "Writes the audio file tags using the information from the BallroomDJ database."
 msgstr "使用 BallroomDJ 数据库中的信息写入音频文件标签。"
 
 #. CONTEXT: configuration: dialog: XML file types

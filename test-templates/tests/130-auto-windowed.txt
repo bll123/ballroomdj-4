@@ -4,6 +4,9 @@ section 130 Automatic-Windowed
 # test-auto-a only has waltz, tango, foxtrot
 test 130-10 Basic
 msg main QUEUE_PLAYLIST 0~test-auto-a
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -84,6 +87,9 @@ end
 # test-auto-b only has waltz, tango, foxtrot
 test 130-20 Auto-MaxPlayTime
 msg main QUEUE_PLAYLIST 0~test-auto-b
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -180,6 +186,9 @@ end
 # test-auto-c only has waltz, tango, foxtrot
 test 130-30 Auto-BPM
 msg main QUEUE_PLAYLIST 0~test-auto-c
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS

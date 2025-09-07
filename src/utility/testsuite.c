@@ -68,6 +68,7 @@ enum {
 
 enum {
   TS_CHK_TIMEOUT = 400,
+  TS_WAIT_SEND = 100,
 };
 
 typedef struct {
@@ -80,12 +81,11 @@ typedef struct {
   long        responseTimeout;
   mstime_t    responseStart;
   mstime_t    responseTimeoutCheck;
+  bdjmsgroute_t waitRoute;
+  bdjmsgmsg_t waitMessage;
   slist_t     *chkresponse;
   slist_t     *chkexpect;
   char        *lastResponse;
-  bdjmsgroute_t waitRoute;
-  bdjmsgmsg_t waitMessage;
-  mstime_t    waitCheck;
   results_t   results;
   results_t   sresults;
   results_t   gresults;
@@ -181,7 +181,7 @@ main (int argc, char *argv [])
 
   logStartAppend ("testsuite", "ts",
       LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_MSGS | LOG_ACTIONS
-//      | LOG_SOCKET | LOG_PROCESS | LOG_PROGSTATE
+//      | LOG_SOCKET | LOG_PROCESS | LOG_PROGSTATE /* ### */
       );
 
   pathbldMakePath (tbuff, sizeof (tbuff),
@@ -202,7 +202,6 @@ main (int argc, char *argv [])
   testsuite.stopwaitcount = 0;
   testsuite.skiptoend = false;
   testsuite.chkexpect = NULL;
-  mstimeset (&testsuite.waitCheck, 100);
   mstimeset (&testsuite.responseStart, 0);
   testsuite.responseTimeout = 8000;
   mstimeset (&testsuite.responseTimeoutCheck, TS_CHK_TIMEOUT);
@@ -362,6 +361,7 @@ tsProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           progstateShutdownProcess (testsuite->progstate);
           break;
         }
+        case MSG_CHK_WAIT_PREP:
         case MSG_CHK_MAIN_MUSICQ:
         case MSG_CHK_PLAYER_STATUS:
         case MSG_CHK_PLAYER_SONG: {
@@ -428,14 +428,21 @@ tsProcessing (void *udata)
     } else {
       testsuite->expectresponse = true;
       testsuite->haveresponse = false;
+
+      /* re-send the message */
+      connSendMessage (testsuite->conn, testsuite->waitRoute,
+          testsuite->waitMessage, NULL);
     }
   }
 
   if ((testsuite->chkwait || testsuite->wait) &&
       mstimeCheck (&testsuite->responseTimeoutCheck)) {
+    char  ttm [40];
+
     logMsg (LOG_DBG, LOG_BASIC, "[%d] timed out", testsuite->lineno);
     fprintf (stdout, "\n");
-    fprintf (stdout, "       %d %d/%d (%ld)\n", testsuite->lineno,
+    tmutilTstamp (ttm, sizeof (ttm));
+    fprintf (stdout, "       %d %s %d/%d (%ld)\n", testsuite->lineno, ttm,
         testsuite->chkwait, testsuite->wait, testsuite->responseTimeout);
     fflush (stdout);
     ++testsuite->results.chkfail;
@@ -444,14 +451,6 @@ tsProcessing (void *udata)
     resetChkResponse (testsuite);
     testsuite->wait = false;
     testsuite->expectresponse = false;
-  }
-
-  if ((testsuite->wait) &&
-      mstimeCheck (&testsuite->waitCheck)) {
-    testsuite->haveresponse = false;
-    connSendMessage (testsuite->conn, testsuite->waitRoute,
-        testsuite->waitMessage, NULL);
-    mstimeset (&testsuite->waitCheck, 100);
   }
 
   if (testsuite->wait == false && testsuite->chkwait == false) {
@@ -775,7 +774,10 @@ printResults (testsuite_t *testsuite, results_t *results)
   }
   if (*testsuite->testname) {
     if (testsuite->verbose) {
-      fprintf (stdout, "   -- %s %s %s ", testsuite->testnum,
+      char  ttm [40];
+
+      tmutilTstamp (ttm, sizeof (ttm));
+      fprintf (stdout, "   -- %s %s %s %s ", testsuite->testnum, ttm,
           testsuite->sectionname, testsuite->testname);
     } else {
       fprintf (stdout, "   ");
@@ -892,8 +894,11 @@ tsScriptTest (testsuite_t *testsuite, const char *tcmd)
   }
 
   if (testsuite->processtest) {
+    char  ttm [40];
+
     logMsg (LOG_DBG, LOG_BASIC, "-- test: %3d %s", testsuite->lineno, tcmd);
-    fprintf (stdout, "   -- %s %s %s", testsuite->testnum,
+    tmutilTstamp (ttm, sizeof (ttm));
+    fprintf (stdout, "   -- %s %s %s %s", testsuite->testnum, ttm,
         testsuite->sectionname, testsuite->testname);
     if (testsuite->verbose) {
       fprintf (stdout, "\n");
@@ -937,7 +942,7 @@ tsScriptChk (testsuite_t *testsuite, const char *tcmd)
   }
   testsuite->chkwait = true;
   ++testsuite->results.chkcount;
-  logMsg (LOG_DBG, LOG_BASIC, "[%d] start response timer 200", testsuite->lineno);
+  logMsg (LOG_DBG, LOG_BASIC, "[%d] start response timer %d", testsuite->lineno, TS_CHK_TIMEOUT);
   mstimeset (&testsuite->responseTimeoutCheck, TS_CHK_TIMEOUT);
   mstimeset (&testsuite->responseStart, 0);
   return TS_OK;
@@ -962,7 +967,6 @@ tsScriptWait (testsuite_t *testsuite, const char *tcmd)
   }
   testsuite->wait = true;
   ++testsuite->results.chkcount;
-  mstimeset (&testsuite->waitCheck, 100);
   logMsg (LOG_DBG, LOG_BASIC, "[%d] start response timer %ld", testsuite->lineno, testsuite->responseTimeout);
   mstimeset (&testsuite->responseTimeoutCheck, testsuite->responseTimeout);
   mstimeset (&testsuite->responseStart, 0);
@@ -1513,8 +1517,11 @@ tsDisplayCommandResult (testsuite_t *testsuite, ts_return_t ok)
     }
   }
   if (ok != TS_OK && ok != TS_FINISHED) {
+    char  ttm [40];
+
+    tmutilTstamp (ttm, sizeof (ttm));
     fprintf (stdout, "\n");
-    fprintf (stdout, "          %3d %s\n", testsuite->lineno, tmsg);
+    fprintf (stdout, "          %3d %s %s\n", testsuite->lineno, ttm, tmsg);
     fflush (stdout);
   }
 }
@@ -1559,6 +1566,7 @@ resetPlayer (testsuite_t *testsuite)
   connSendMessage (testsuite->conn, ROUTE_PLAYER, MSG_CHK_CLEAR_PREP_Q, NULL);
   mssleep (100);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "0");
+  connSendMessage (testsuite->conn, ROUTE_PLAYER, MSG_CHK_SET_DELAY, "450");
   /* wait a bit for all the messages to clear */
   mssleep (200);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, "0");

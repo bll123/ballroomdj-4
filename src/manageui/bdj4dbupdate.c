@@ -763,7 +763,7 @@ dbupdateProcessing (void *udata)
       }
       if (dbupdate->counts [C_RENAME_FAIL] > 0) {
         /* CONTEXT: database update: status message: number of files that cannot be renamed */
-        dbupdateSendStatusCount (dbupdate, C_RENAME_FAIL, _("Cannot Renamed"));
+        dbupdateSendStatusCount (dbupdate, C_RENAME_FAIL, _("Cannot Rename"));
       }
     }
 

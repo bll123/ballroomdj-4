@@ -339,6 +339,7 @@ acrLookup (audioidacr_t *acr, const song_t *song, audioid_resp_t *resp)
     int             webrc;
 
     mstimestart (&starttm);
+    webclientSetTimeout (acr->webclient, 20000);
     webrc = webclientUploadFile (acr->webclient, uri, query, fpfn, "sample");
     logMsg (LOG_DBG, LOG_IMPORTANT, "acrcloud: web-query: %d %" PRId64 "ms",
         webrc, (int64_t) mstimeend (&starttm));

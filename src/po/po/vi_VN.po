@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2024-09-09\n"
-"PO-Revision-Date: 2025-08-07\n"
+"POT-Creation-Date: 2025-09-03\n"
+"PO-Revision-Date: 2025-09-03 19:15\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Vietnamese\n"
 "Language: vi\n"
@@ -432,7 +432,7 @@ msgid "Cancel Edit All"
 msgstr "Hủy Sửa tất cả"
 
 #. CONTEXT: database update: status message: number of files that cannot be renamed
-msgid "Cannot Renamed"
+msgid "Cannot Rename"
 msgstr ""
 
 #. CONTEXT: configuration file: dance
@@ -1222,8 +1222,7 @@ msgid "Marquee Theme"
 msgstr "Chủ đề Marquee"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid ""
-"Maximum\n"
+msgid "Maximum\n"
 "Play Time"
 msgstr "Tối đa\n"
 "Thời gian chơi"
@@ -1763,9 +1762,7 @@ msgid "Repeat"
 msgstr "Lặp lại"
 
 #. CONTEXT: database update: rebuild: help text
-msgid ""
-"Replaces the BallroomDJ database in its entirety. All changes to the "
-"database will be lost."
+msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
 msgstr "Thay thế toàn bộ cơ sở dữ liệu BallroomDJ. Mọi thay đổi đối với cơ sở dữ liệu sẽ bị mất."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -2156,9 +2153,7 @@ msgid "The conversion process will not be run."
 msgstr "Quá trình chuyển đổi sẽ không được thực hiện."
 
 #. CONTEXT: installer: instructions
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installations."
+msgid "The conversion process will only run for new installations and for re-installations."
 msgstr "Quá trình chuyển đổi chỉ chạy đối với các cài đặt mới và cài đặt lại."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -2293,13 +2288,11 @@ msgstr "Đã cập nhật"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid ""
-"Updates the information in the BallroomDJ database from the %s database."
+msgid "Updates the information in the BallroomDJ database from the %s database."
 msgstr "Cập nhật thông tin trong cơ sở dữ liệu BallroomDJ từ cơ sở dữ liệu %s ."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid ""
-"Updates the information in the BallroomDJ database from the audio file tags."
+msgid "Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Cập nhật thông tin trong cơ sở dữ liệu BallroomDJ từ các thẻ tệp âm thanh."
 
 #. CONTEXT: alternate installation: status message
@@ -2398,9 +2391,7 @@ msgid "Write Tags to Audio Files"
 msgstr "Viết thẻ vào tệp âm thanh"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid ""
-"Writes the audio file tags using the information from the BallroomDJ "
-"database."
+msgid "Writes the audio file tags using the information from the BallroomDJ database."
 msgstr "Ghi thẻ tệp âm thanh bằng cách sử dụng thông tin từ cơ sở dữ liệu BallroomDJ."
 
 #. CONTEXT: configuration: dialog: XML file types

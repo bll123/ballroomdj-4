@@ -245,9 +245,8 @@ asiCheckConnection (asdata_t *asdata, int askey, const char *uri)
       clientdata->remoteuri, action_str [clientdata->action]);
 
   clientdata->inuse = true;
-  webclientSetTimeout (clientdata->webclient, 1000);
+  webclientSetTimeout (clientdata->webclient, 2000);
   webrc = webclientGet (clientdata->webclient, query);
-  webclientSetTimeout (clientdata->webclient, 0);
   clientdata->inuse = false;
   if (webrc != WEB_OK) {
     return false;
@@ -282,6 +281,7 @@ asiExists (asdata_t *asdata, const char *nm)
       asbdj4StripPrefix (asdata, nm, clientkey));
 
   clientdata->inuse = true;
+  webclientSetTimeout (clientdata->webclient, 2000);
   webrc = webclientPost (clientdata->webclient, uri, query);
   if (webrc != WEB_OK) {
     clientdata->inuse = false;
@@ -514,6 +514,7 @@ asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm, int 
       asbdj4StripPrefix (asdata, nm, clientkey));
 
   clientdata->inuse = true;
+  webclientSetTimeout (clientdata->webclient, 3000);
   webrc = webclientPost (clientdata->webclient, uri, query);
   if (webrc != WEB_OK) {
     clientdata->inuse = false;
@@ -578,10 +579,14 @@ asbdj4SongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri)
   snprintf (query, sizeof (query),
       "uri=%s",
       asbdj4StripPrefix (asdata, songuri, clientkey));
+  logMsg (LOG_DBG, LOG_AUDIOSRC, "song-tags: uri: %s", uri);
+  logMsg (LOG_DBG, LOG_AUDIOSRC, "song-tags: query: %s", query);
 
   clientdata->inuse = true;
+  webclientSetTimeout (clientdata->webclient, 4000);
   webrc = webclientPost (clientdata->webclient, uri, query);
   if (webrc != WEB_OK) {
+    logMsg (LOG_DBG, LOG_AUDIOSRC, "song-tags: webrc: %d", webrc);
     clientdata->inuse = false;
     return rc;
   }
@@ -607,6 +612,7 @@ asbdj4SongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri)
           if (*tval == MSG_ARGS_EMPTY) {
             tval = NULL;
           }
+          logMsg (LOG_DBG, LOG_AUDIOSRC, "  song-tags: %s %s", p, tval);
           slistSetStr (asidata->songtags, p, tval);
         }
         p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
@@ -645,6 +651,7 @@ asbdj4GetPlaylistNames (asdata_t *asdata, asiterdata_t *asidata, int askey)
       clientdata->remoteuri, action_str [clientdata->action]);
 
   clientdata->inuse = true;
+  webclientSetTimeout (clientdata->webclient, 2000);
   webrc = webclientGet (clientdata->webclient, uri);
   if (webrc != WEB_OK) {
     clientdata->inuse = false;
@@ -706,6 +713,7 @@ asbdj4GetAudioFile (asdata_t *asdata, const char *nm, const char *tempnm)
       asbdj4StripPrefix (asdata, nm, clientkey));
 
   clientdata->inuse = true;
+  webclientSetTimeout (clientdata->webclient, 30000);
   webrc = webclientPost (clientdata->webclient, uri, query);
   if (webrc != WEB_OK) {
     clientdata->inuse = false;

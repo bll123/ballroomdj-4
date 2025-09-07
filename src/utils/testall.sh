@@ -88,6 +88,11 @@ function runTestSuite {
   ./src/utils/mktestsetup.sh --force $pliargs $volargs >> $LOG 2>&1
   echo "-- $(date +%T) testsuite $pli $vol" >> $LOG
   echo "-- $(date +%T) testsuite $pli $vol"
+  if [[ $os == macos ]]; then
+    # macos has been having issues with the volume getting set to 0.
+    /usr/bin/osascript -e "set volume without output muted"
+    /usr/bin/osascript -e "set volume output volume 70"
+  fi
   # the pliargs need to be passed to the bdj4 launcher
   # as macos and windows will modify their paths for vlc3/4.
   ./bin/bdj4 --testsuite $pliargs >> $LOG 2>&1

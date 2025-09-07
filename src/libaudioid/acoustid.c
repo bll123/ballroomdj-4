@@ -275,6 +275,7 @@ acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
     int           webrc;
 
     mstimestart (&starttm);
+    webclientSetTimeout (acoustid->webclient, 20000);
     webrc = webclientPostCompressed (acoustid->webclient, uri, query);
     logMsg (LOG_DBG, LOG_IMPORTANT, "acoustid: web-query: %d %" PRId64 "ms",
         webrc, (int64_t) mstimeend (&starttm));

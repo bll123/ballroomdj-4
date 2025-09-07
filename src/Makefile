@@ -199,6 +199,11 @@ testsection:
 .PHONY: testtest
 testtest:
 	./utils/mktestsetup.sh $(testoption)
+	(cd ..;./bin/bdj4 --testsuite --runtest $(start))
+
+.PHONY: testtestv
+testtestv:
+	./utils/mktestsetup.sh $(testoption)
 	(cd ..;./bin/bdj4 --testsuite --verbose --runtest $(start))
 
 .PHONY: teststart

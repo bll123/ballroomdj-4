@@ -556,11 +556,13 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
     if (rc < 0) {
       *connerr = SOCK_CONN_ERROR;
 
+      /* EBADF == 9 */
       /* ECONNREFUSED == 111 */
       /* ECONNABORTED == 103 */
 
       /* conn refused is a normal response, do not log */
-      if (err != ECONNREFUSED) {
+      /* windows returns many EBADF */
+      if (err != ECONNREFUSED && err != EBADF) {
         logError ("connect");
 #if _lib_WSAGetLastError
         logMsg (LOG_DBG, LOG_SOCKET, "connect: wsa last-error:%d", WSAGetLastError());
