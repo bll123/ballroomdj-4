@@ -13,7 +13,6 @@ At this time the supported platforms for BallroomDJ 4 will be:
 __Features that will NOT be implemented in BallroomDJ&nbsp;4:__
 
 * Synchronization between computers.
-* Client/Server mode.
 * Image display.
 * Playlist: Marquee message.
 * Player: Marquee message.
