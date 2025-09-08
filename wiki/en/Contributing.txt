@@ -14,6 +14,9 @@ As of 2025-8-9, development needs are:
   For whatever reason, a call to initialize the apartment crashes.
 * Player Interface
     * Windows Native
+      I have attempted to write this, but it crashes.
+      c++/winrt/windows-api seems to be fragile and hard to work with.
+      I'm wondering if using the directsound(name?) interface would be better.
     * Spotify
       I will not be working on this, other than providing guidance to
       whoever takes this on.
