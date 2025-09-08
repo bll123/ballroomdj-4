@@ -78,26 +78,90 @@ logBasic ("wini-pause\n");
     if (pbSession.CanPause ()) {
       mediaPlayer.Pause ();
     }
+logBasic ("wini-pause fin\n");
   }
 
   void
   winiPlayerPlay (void)
   {
 logBasic ("wini-play\n");
-    mediaPlayer.Play ();
+    try {
+      mediaPlayer.Play ();
+    } catch (std::exception &exc) {
+logBasic ("wini-play fail-a %s\n", exc.what ());
+    } catch (...) {
+logBasic ("wini-play fail-b\n");
+    }
+logBasic ("wini-play fin\n");
   }
 
   void
   winiPlayerMedia (const hstring &hsfn)
   {
+    StorageFile   sfile = nullptr;
+
 logBasic ("wini-media-a\n");
-    auto sfile = StorageFile::GetFileFromPathAsync (hsfn).get ();
+    try {
+      sfile = StorageFile::GetFileFromPathAsync (hsfn).get ();
+    } catch (std::exception &exc) {
+logBasic ("win-media fail-a %s\n", exc.what ());
+      return;
+    } catch (...) {
+logBasic ("win-media fail-b\n");
+      return;
+    }
+    if (sfile == NULL) {
+logBasic ("win-media fail-c\n");
+      return;
+    }
     auto source = Core::MediaSource::CreateFromStorageFile (sfile);
-//    mediaPlayer.Source = Core::MediaSource::CreateFromUri (source);
+    if (source == NULL) {
+logBasic ("win-media fail-d\n");
+      return;
+    }
 logBasic ("wini-media-b\n");
-    auto ac = mediaPlayer.AudioCategory ();
-    ac = Playback::MediaPlayerAudioCategory::Media;
+    try {
+// ### crashes
+// ### it's supposed to be a property, mediaPlayer.Source = source
+// ### but that doesn't compile.
+      mediaPlayer.Source (source);
+    } catch (std::exception &exc) {
+logBasic ("win-media fail-src-a %s\n", exc.what ());
+      return;
+    } catch (...) {
+logBasic ("win-media fail-src-b\n");
+      return;
+    }
 logBasic ("wini-media-c\n");
+// ## crashing here
+//    auto ac = mediaPlayer.AudioCategory ();
+//logBasic ("wini-media-d\n");
+//    ac = Playback::MediaPlayerAudioCategory::Media;
+logBasic ("wini-media fin\n");
+  }
+
+  void
+  winiPlayerURI (const hstring &hsfn)
+  {
+logBasic ("wini-uri-a\n");
+    auto uri = Uri (hsfn);
+    if (uri == NULL) {
+logBasic ("win-uri fail-c\n");
+      return;
+    }
+    auto source = Core::MediaSource::CreateFromUri (uri);
+    if (source == NULL) {
+logBasic ("win-uri fail-d\n");
+      return;
+    }
+logBasic ("wini-uri-b\n");
+    mediaPlayer.Source (source);
+logBasic ("wini-uri-c\n");
+// ## crashing here
+//    auto ac = mediaPlayer.AudioCategory ();
+//logBasic ("wini-uri-d\n");
+//    ac = Playback::MediaPlayerAudioCategory::Media;
+logBasic ("wini-uri fin\n");
   }
 
   void
@@ -105,6 +169,7 @@ logBasic ("wini-media-c\n");
   {
 logBasic ("wini-close\n");
     mediaPlayer = Playback::MediaPlayer (nullptr);
+logBasic ("wini-close fin\n");
   }
 
   Playback::MediaPlaybackState
@@ -113,6 +178,7 @@ logBasic ("wini-close\n");
 logBasic ("wini-state\n");
     auto  pbSession = mediaPlayer.PlaybackSession ();
     auto  wstate = pbSession.PlaybackState ();
+logBasic ("wini-state fin\n");
     return wstate;
   }
 
@@ -123,23 +189,24 @@ logBasic ("wini-state\n");
 ssize_t
 winGetDuration (windata_t *windata)
 {
-logBasic ("winGetDuration\n");
   if (windata == NULL) {
     return 0;
   }
 
-  return 0;
+logBasic ("winGetDuration\n");
+  return 30000;
 }
 
 ssize_t
 winGetTime (windata_t *windata)
 {
   ssize_t   pos;
-logBasic ("winGetTime\n");
+
   if (windata == NULL) {
     return 0;
   }
 
+logBasic ("winGetTime\n");
 //  auto pbSession = windata->mediaPlayer.PlaybackSession ();
 // ### conversion issue
 //  pos = pbSession.Position ();
@@ -154,7 +221,7 @@ winStop (windata_t *windata)
     return 0;
   }
 
-logBasic ("\n");
+logBasic ("winStop\n");
   return 0;
 }
 
@@ -164,6 +231,10 @@ winPause (windata_t *windata)
   if (windata == NULL) {
     return 0;
   }
+  if (windata->wini == NULL) {
+    return 0;
+  }
+
 logBasic ("winPause\n");
   windata->wini->winiPlayerPause ();
   return 0;
@@ -172,6 +243,13 @@ logBasic ("winPause\n");
 int
 winPlay (windata_t *windata)
 {
+  if (windata == NULL) {
+    return 0;
+  }
+  if (windata->wini == NULL) {
+    return 0;
+  }
+
 logBasic ("winPlay\n");
   windata->wini->winiPlayerPlay ();
   return 0;
@@ -180,22 +258,28 @@ logBasic ("winPlay\n");
 ssize_t
 winSeek (windata_t *windata, ssize_t pos)
 {
-logBasic ("winSeek\n");
   if (windata == NULL) {
     return 0;
   }
+  if (windata->wini == NULL) {
+    return 0;
+  }
 
+logBasic ("winSeek\n");
   return pos;
 }
 
 double
 winRate (windata_t *windata, double drate)
 {
-logBasic ("winRate\n");
   if (windata == NULL) {
-    return 0;
+    return 100.0;
+  }
+  if (windata->wini == NULL) {
+    return 100.0;
   }
 
+logBasic ("winRate\n");
   return 100.0;
 }
 
@@ -205,16 +289,26 @@ winMedia (windata_t *windata, const char *fn, int sourceType)
   char    tbuff [MAXPATHLEN];
 
   if (windata == NULL) {
-    return 0;
+    return 1;
+  }
+  if (windata->wini == NULL) {
+    return 2;
   }
 
-  stpecpy (tbuff, tbuff + sizeof (tbuff), fn);
-  pathDisplayPath (tbuff, sizeof (tbuff));
+  auto wfn = osToWideChar (fn);
+  if (sourceType == AUDIOSRC_TYPE_FILE) {
+    stpecpy (tbuff, tbuff + sizeof (tbuff), fn);
+    pathDisplayPath (tbuff, sizeof (tbuff));
 logBasic ("winMedia %s\n", tbuff);
-  auto wfn = osToWideChar (tbuff);
-  auto hsfn = hstring (wfn);
-  windata->wini->winiPlayerMedia (hsfn);
+    auto wfn = osToWideChar (tbuff);
+    auto hsfn = hstring (wfn);
+    windata->wini->winiPlayerMedia (hsfn);
+  } else {
+    auto hsfn = hstring (wfn);
+    windata->wini->winiPlayerURI (hsfn);
+  }
   mdfree (wfn);
+
   return 0;
 }
 
@@ -227,6 +321,7 @@ logBasic ("winInit\n");
   windata = (windata_t *) mdmalloc (sizeof (windata_t));
   windata->state = PLI_STATE_IDLE;
   windata->wini = new winiintfc (windata);
+logBasic ("winInit done\n");
 
   return windata;
 }
@@ -234,7 +329,6 @@ logBasic ("winInit\n");
 void
 winClose (windata_t *windata)
 {
-logBasic ("winClose\n");
   if (windata == NULL) {
     return;
   }
@@ -243,6 +337,7 @@ logBasic ("winClose\n");
     windata->wini->winiPlayerClose ();
   }
 
+logBasic ("winClose\n");
   mdfree (windata);
   return;
 }
@@ -251,6 +346,9 @@ plistate_t
 winState (windata_t *windata)
 {
   if (windata == NULL) {
+    return PLI_STATE_IDLE;
+  }
+  if (windata->wini == NULL) {
     return PLI_STATE_IDLE;
   }
 
