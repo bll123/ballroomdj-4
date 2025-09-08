@@ -101,8 +101,8 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
       &si,            // STARTUPINFO structure
       &pi )           // PROCESS_INFORMATION structure
   ) {
-    int err = GetLastError ();
-    fprintf (stderr, "osprocessstart: getlasterr: %d %s\n", err, buff);
+    long err = GetLastError ();
+    fprintf (stderr, "osprocessstart: getlasterr-a: %ld %s\n", err, buff);
     return -1;
   }
 
@@ -174,13 +174,13 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
   sao.bInheritHandle = TRUE;
 
   if ( ! CreatePipe (&handleStdoutRead, &handleStdoutWrite, &sao, 0) ) {
-    int err = GetLastError ();
-    fprintf (stderr, "createpipe: getlasterr-a: %d\n", err);
+    long err = GetLastError ();
+    fprintf (stderr, "createpipe: getlasterr-b: %ld\n", err);
     return -1;
   }
   if ( ! CreatePipe (&handleStdinRead, &handleStdinWrite, &sao, 0) ) {
-    int err = GetLastError ();
-    fprintf (stderr, "createpipe: getlasterr-b: %d\n", err);
+    long err = GetLastError ();
+    fprintf (stderr, "createpipe: getlasterr-c: %ld\n", err);
     return -1;
   }
   CloseHandle (handleStdinWrite);
@@ -227,8 +227,8 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
       &si,            // STARTUPINFO structure
       &pi )           // PROCESS_INFORMATION structure
   ) {
-    int err = GetLastError ();
-    fprintf (stderr, "osprocesspipe: getlasterr: %d %s\n", err, buff);
+    long err = GetLastError ();
+    fprintf (stderr, "osprocesspipe: getlasterr-d: %ld %s\n", err, buff);
     return -1;
   }
 

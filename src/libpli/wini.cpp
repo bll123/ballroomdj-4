@@ -10,6 +10,9 @@
 #include <inttypes.h>
 #include <string.h>
 
+#define WIN32_LEAN_AND_MEAN 1
+#include <windows.h>
+
 #include <winrt/Windows.Media.h>
 #include <winrt/Windows.Media.Core.h>
 #include <winrt/Windows.Media.Playback.h>
@@ -154,10 +157,10 @@ logBasic ("winInit\n");
     windata->mediaPlayer = Playback::MediaPlayer ();
 logBasic ("  aa\n");
   } catch (const std::exception &exc) {
-logBasic ("  ng-a %ld\n", (long) getLastError());
+logBasic ("  ng-a %ld\n", (long) GetLastError());
 logBasic ("  ng-a %s\n", exc.what ());
   } catch (...) {
-logBasic ("  ng-b %ld\n", (long) getLastError());
+logBasic ("  ng-b %ld\n", (long) GetLastError());
   }
 logBasic ("  bb\n");
 
