@@ -32,4 +32,3 @@ void              winClose (windata_t *windata);
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
 #endif
-

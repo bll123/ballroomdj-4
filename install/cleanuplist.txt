@@ -341,6 +341,10 @@ plocal/bin/avutil-58\.dll$
 # 2025-8-8 curl no longer shipped
 licenses/curl.LICENSE
 
+# 2026-9-8
+# windows updates
+plocal/bin/libngtcp2_crypto_ossl\.dll$
+
 ####
 # data-dir
 
