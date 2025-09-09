@@ -15,7 +15,7 @@ As of 2025-8-9, development needs are:
 * Player Interface
     * Windows Native
       I have attempted to write this, but it crashes.
-      c++/winrt/windows-api seems to be fragile and hard to work with.
+      c-plus-plus/winrt/windows-api seems to be fragile and hard to work with.
       try: https://learn.microsoft.com/en-us/windows/uwp/audio-video-camera/audio-graphs
     * Spotify
       I will not be working on this, other than providing guidance to
@@ -40,4 +40,4 @@ Testing, Quality&nbsp;Assurance, Documentation, Website&nbsp;Management,
 System&nbsp;Administration
 
 [Wiki Home](Home)
-<br>_(Updated 2025-09-02 12:25:42; BDJ4 version 4.15.7)_
+<br>_(Updated 2025-09-09 10:00:50; BDJ4 version 4.15.7)_
