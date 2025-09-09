@@ -12,9 +12,6 @@
 extern "C" {
 #endif
 
-/* partially in use. */
-/* The widget container will be more generic and */
-/* hold uibutton_t, etc. */
 typedef enum {
   WCONT_T_ADJUSTMENT,       // gtk widget
   WCONT_T_BOX,              // base type
