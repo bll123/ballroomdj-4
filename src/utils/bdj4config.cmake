@@ -219,6 +219,11 @@ pkg_check_modules (LIBMP4TAG libmp4tag)
 pkg_check_modules (ICUUC icu-uc)
 pkg_check_modules (ICUI18N icu-i18n)
 
+#### mongoose web server
+
+set (MONGOOSE_INC_DIR ${PROJECT_SOURCE_DIR}/mongoose)
+set (MONGOOSE_SRC ${PROJECT_SOURCE_DIR}/mongoose/mongoose.c)
+
 #### generic compile options
 
 macro (checkAddCompileFlag flag)

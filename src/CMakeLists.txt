@@ -46,8 +46,6 @@ SET (CMAKE_SKIP_BUILD_RPATH FALSE)
 SET (CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 
 set (SHLIB_EXT ${CMAKE_SHARED_LIBRARY_SUFFIX})
-set (MONGOOSE_INC_DIR ${PROJECT_SOURCE_DIR}/mongoose)
-set (MONGOOSE_SRC ${PROJECT_SOURCE_DIR}/mongoose/mongoose.c)
 
 # does all the configuration
 include (utils/bdj4config.cmake)
@@ -58,10 +56,7 @@ include (utils/bdj4macros.cmake)
 # bdj4se and bdj4 need to be linked as static objects
 
 # the following are needed by both bdj4se and bdj4
-
-if (WIN32)
-
-endif()
+# these are also linked into libcommon
 
 add_library (objosprocess OBJECT
   libcommon/osprocess.c
