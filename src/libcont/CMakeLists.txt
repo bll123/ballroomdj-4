@@ -26,16 +26,9 @@ endif()
 
 if (WIN32)
   add_library (libcontsmtc SHARED smtc.cpp)
-  if (CMAKE_COMPILER_IS_GNUCXX AND
-      CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 10 AND
-      CMAKE_CXX_COMPILER_VERSION VERSION_LESS 11)
-    target_compile_options (libcontsmtc PRIVATE
-      -fcoroutines
-    )
-  endif()
   target_link_libraries (libcontsmtc PRIVATE
     libbdj4basic libbdj4common
-    # the windowapp library is an umbrella library for winrt.
+    # the windowsapp library is an umbrella library for winrt.
     windowsapp
   )
 endif()

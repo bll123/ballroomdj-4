@@ -69,12 +69,13 @@ target_link_libraries (libpligst PRIVATE
 addIntlLibrary (libpligst)
 
 if (WIN32)
-  add_library (libpliwin SHARED pliwin.c wini.cpp)
-  target_link_libraries (libpliwin PRIVATE
+  add_library (libpliwinmp SHARED pliwinmp.c winmpi.cpp)
+  target_link_libraries (libpliwinmp PRIVATE
     libbdj4common
-    -lruntimeobject
+    # the windowsapp library is an umbrella library for winrt.
+    windowsapp
   )
-  addIntlLibrary (libpliwin)
+  addIntlLibrary (libpliwinmp)
 endif()
 
 install (TARGETS
@@ -109,10 +110,10 @@ endif()
 
 if (WIN32)
   install (TARGETS
-    libpliwin
+    libpliwinmp
     DESTINATION ${DEST_BIN}
   )
-  updateRPath (libpliwin)
+  updateRPath (libpliwinmp)
 endif()
 
 updateRPath (libbdj4pli)

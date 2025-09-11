@@ -19,7 +19,7 @@
 #include "mdebug.h"
 #include "tmutil.h"
 #include "pli.h"
-#include "wini.h"
+#include "winmpi.h"
 #include "volsink.h"
 
 typedef struct plidata {
@@ -43,7 +43,7 @@ pliiDesc (const char **ret, int max)
     return;
   }
 
-  ret [c++] = _("Windows Native");
+  ret [c++] = _("Windows Media Player");
   ret [c++] = NULL;
 }
 
@@ -54,7 +54,7 @@ pliiInit (const char *plinm, const char *playerargs)
 
   pliData = mdmalloc (sizeof (plidata_t));
 
-  pliData->windata = winInit ();
+  pliData->windata = winmpInit ();
   pliData->name = "Windows Native";
   pliData->supported = PLI_SUPPORT_SEEK | PLI_SUPPORT_SPEED;
 
@@ -86,7 +86,7 @@ pliiMediaSetup (plidata_t *pliData, const char *mediaPath,
     return;
   }
 
-  winMedia (pliData->windata, fullMediaPath, sourceType);
+  winmpMedia (pliData->windata, fullMediaPath, sourceType);
 }
 
 void
@@ -97,17 +97,17 @@ pliiStartPlayback (plidata_t *pliData, ssize_t dpos, ssize_t speed)
   }
 
 // ### need to check and see if the seek/rate can be done ahead of time
-  winPlay (pliData->windata);
+  winmpPlay (pliData->windata);
   if (dpos > 0) {
     pliwinWaitUntilPlaying (pliData);
-    winSeek (pliData->windata, dpos);
+    winmpSeek (pliData->windata, dpos);
   }
   if (speed != 100) {
     double    drate;
 
     pliwinWaitUntilPlaying (pliData);
     drate = (double) speed / 100.0;
-    winRate (pliData->windata, drate);
+    winmpRate (pliData->windata, drate);
   }
 }
 
@@ -118,7 +118,7 @@ pliiPause (plidata_t *pliData)
     return;
   }
 
-  winPause (pliData->windata);
+  winmpPause (pliData->windata);
 }
 
 void
@@ -128,7 +128,7 @@ pliiPlay (plidata_t *pliData)
     return;
   }
 
-  winPlay (pliData->windata);
+  winmpPlay (pliData->windata);
 }
 
 void
@@ -138,7 +138,7 @@ pliiStop (plidata_t *pliData)
     return;
   }
 
-  winStop (pliData->windata);
+  winmpStop (pliData->windata);
   pliwinWaitUntilStopped (pliData);
 }
 
@@ -151,7 +151,7 @@ pliiSeek (plidata_t *pliData, ssize_t dpos)
     return dret;
   }
 
-  dret = winSeek (pliData->windata, dpos);
+  dret = winmpSeek (pliData->windata, dpos);
   return dret;
 }
 
@@ -167,7 +167,7 @@ pliiRate (plidata_t *pliData, ssize_t rate)
   }
 
   drate = (double) rate / 100.0;
-  dret = winRate (pliData->windata, drate);
+  dret = winmpRate (pliData->windata, drate);
   ret = (ssize_t) round (dret * 100.0);
   return ret;
 }
@@ -179,7 +179,7 @@ pliiClose (plidata_t *pliData)
     return;
   }
 
-  winClose (pliData->windata);
+  winmpClose (pliData->windata);
   pliData->windata = NULL;
 }
 
@@ -192,7 +192,7 @@ pliiGetDuration (plidata_t *pliData)
     return duration;
   }
 
-  duration = winGetDuration (pliData->windata);
+  duration = winmpGetDuration (pliData->windata);
   return duration;
 }
 
@@ -205,7 +205,7 @@ pliiGetTime (plidata_t *pliData)
     return playTime;
   }
 
-  playTime = winGetTime (pliData->windata);
+  playTime = winmpGetTime (pliData->windata);
   return playTime;
 }
 
@@ -218,7 +218,7 @@ pliiState (plidata_t *pliData)
     return plistate;
   }
 
-  plistate = winState (pliData->windata);
+  plistate = winmpState (pliData->windata);
   return plistate;
 }
 
@@ -267,13 +267,13 @@ pliwinWaitUntilPlaying (plidata_t *pliData)
   plistate_t  state;
   long        count;
 
-  state = winState (pliData->windata);
+  state = winmpState (pliData->windata);
   count = 0;
   while (state == PLI_STATE_IDLE ||
       state == PLI_STATE_OPENING ||
       state == PLI_STATE_STOPPED) {
     mssleep (1);
-    state = winState (pliData->windata);
+    state = winmpState (pliData->windata);
     ++count;
     if (count > 10000) {
       break;
@@ -288,13 +288,13 @@ pliwinWaitUntilStopped (plidata_t *pliData)
   long        count;
 
   /* it appears that the stop action usually happens within < a few ms */
-  state = winState (pliData->windata);
+  state = winmpState (pliData->windata);
   count = 0;
   while (state == PLI_STATE_PLAYING ||
       state == PLI_STATE_PAUSED ||
       state == PLI_STATE_STOPPING) {
     mssleep (1);
-    state = winState (pliData->windata);
+    state = winmpState (pliData->windata);
     ++count;
     if (count > 10000) {
       break;
