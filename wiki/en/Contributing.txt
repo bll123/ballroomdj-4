@@ -13,7 +13,9 @@ As of 2025-8-9, development needs are:
 * Windows: SMTC: Use image from audio file.
   For whatever reason, a call to initialize the apartment crashes.
 * Player Interface
-    * Windows Native (winrt preferred)
+    * Windows Native
+      in progress
+      also: https://learn.microsoft.com/en-us/windows/uwp/audio-video-camera/audio-graphs
     * Spotify
       I will not be working on this, other than providing guidance to
       whoever takes this on.
@@ -23,7 +25,7 @@ As of 2025-8-9, development needs are:
       Some attempt has been made for this. Progress is stopped at this time.
       This could be written using SwiftUI.
     * Ultimate&#43;&#43;
-    * Qt Widgets (dotherside?)
+    * Qt Widgets
     * Flutter
     * Nuklear (no macos?, could still be useful)
     * N-Curses ?  But internationalization will not work on windows.
@@ -37,4 +39,4 @@ Testing, Quality&nbsp;Assurance, Documentation, Website&nbsp;Management,
 System&nbsp;Administration
 
 [Wiki Home](Home)
-<br>_(Updated 2025-09-02 12:25:42; BDJ4 version 4.15.7)_
+<br>_(Updated 2025-09-09 10:00:50; BDJ4 version 4.15.7)_
