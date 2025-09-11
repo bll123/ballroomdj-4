@@ -1,6 +1,5 @@
 /*
  * Copyright 2025 Brad Lanam Pleasant Hill CA
- *
  */
 #include "config.h"
 
@@ -130,6 +129,7 @@ struct winmpintfc
     StorageFile   sfile = nullptr;
 
     /* create a new media player for each playback item */
+    /* in order to allow cross-fading */
     mediaPlayer = Playback::MediaPlayer ();
     mediaPlayer.CommandManager ().IsEnabled (false);
 
@@ -236,6 +236,32 @@ logBasic ("winmp-uri fin\n");
     pbSession.PlaybackRate (rate);
     rate = pbSession.PlaybackRate ();
     return rate;
+  }
+
+  double
+  mpVolume (double dvol)
+  {
+    if (mediaPlayer == nullptr) {
+      return dvol;
+    }
+
+    mediaPlayer.Volume (dvol);
+    return dvol;
+  }
+
+  int
+  mpGetVolume (void)
+  {
+    double    dvol;
+    int       vol;
+
+    if (mediaPlayer == nullptr) {
+      return 0;
+    }
+
+    dvol = mediaPlayer.Volume ();
+    vol = dvol * 100.0;
+    return vol;
   }
 
   Playback::MediaPlaybackState
@@ -360,19 +386,21 @@ int
 winmpMedia (windata_t *windata, const char *fn, int sourceType)
 {
   char    tbuff [MAXPATHLEN];
+  wchar_t *wfn = NULL;
 
   if (windata == NULL) {
     return 1;
   }
 
-  auto wfn = osToWideChar (fn);
+logBasic ("media: %s\n", fn);
   if (sourceType == AUDIOSRC_TYPE_FILE) {
     stpecpy (tbuff, tbuff + sizeof (tbuff), fn);
     pathDisplayPath (tbuff, sizeof (tbuff));
-    auto wfn = osToWideChar (tbuff);
+    wfn = osToWideChar (tbuff);
     auto hsfn = hstring (wfn);
     windata->winmp [windata->curr]->mpMedia (hsfn);
   } else {
+    wfn = osToWideChar (fn);
     auto hsfn = hstring (wfn);
     windata->winmp [windata->curr]->mpURI (hsfn);
   }
@@ -388,7 +416,9 @@ winmpCrossFade (windata_t *windata, const char *fn, int sourceType)
     return 1;
   }
 
+logBasic ("start cross-fade: curr-was %d\n", windata->curr);
   windata->curr = (MP_MAX_SOURCE - 1) - windata->curr;
+logBasic ("start cross-fade: curr-now %d\n", windata->curr);
   windata->inCrossFade = true;
   winmpMedia (windata, fn, sourceType);
 
@@ -417,6 +447,12 @@ winmpClose (windata_t *windata)
 {
   if (windata == NULL) {
     return;
+  }
+
+  for (int i = 0; i < MP_MAX_SOURCE; ++i) {
+    if (windata->winmp [i] != NULL) {
+      windata->winmp [i]->mpClose ();
+    }
   }
 
   mdfree (windata);
@@ -461,10 +497,20 @@ winmpState (windata_t *windata)
   return windata->state;
 }
 
+int
+winmpGetVolume (windata_t *windata)
+{
+  int   vol;
+
+  vol = windata->winmp [windata->curr]->mpGetVolume ();
+  return vol;
+}
+
 void
 winmpCrossFadeVolume (windata_t *windata, int vol)
 {
   int     previdx;
+  double  dvol;
 
   if (windata == NULL) {
     return;
@@ -476,7 +522,20 @@ winmpCrossFadeVolume (windata_t *windata, int vol)
     return;
   }
 
+logBasic ("curr %d\n", windata->curr);
   previdx = (MP_MAX_SOURCE - 1) - windata->curr;
+logBasic ("previdx %d\n", previdx);
+  dvol = (double) vol / 100.0;
+  windata->winmp [previdx]->mpVolume (dvol);
+logBasic ("set prev %d\n", vol);
+  if (dvol <= 0.0) {
+    windata->winmp [previdx]->mpStop ();
+    windata->inCrossFade = false;
+  }
+
+  dvol = 1.0 - dvol;
+  windata->winmp [windata->curr]->mpVolume (dvol);
+logBasic ("set curr %d\n", 100 - vol);
 
   return;
 }

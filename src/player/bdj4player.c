@@ -596,6 +596,10 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           playerData->fadeoutTime = atol (args);
           break;
         }
+        case MSG_SET_PLAYBACK_CROSSFADE: {
+          playerData->crossFadeTime = atol (args);
+          break;
+        }
         case MSG_PLAY_RESET_VOLUME: {
           playerData->currentVolume = playerData->baseVolume;
           break;
@@ -677,7 +681,7 @@ playerProcessing (void *udata)
     }
   }
 
-  if ((playerData->playerState == PL_STATE_LOAD_CROSSFADE ||
+  if ((playerData->playerState == PL_STATE_IN_CROSSFADE ||
       playerData->playerState == PL_STATE_STOPPED) &&
       ! playerData->inGap &&
       queueGetCount (playerData->playRequest) > 0) {
@@ -768,7 +772,7 @@ playerProcessing (void *udata)
     if (taudiosrc == AUDIOSRC_TYPE_BDJ4) {
       taudiosrc = AUDIOSRC_TYPE_FILE;
     }
-    if (playerData->playerState == PL_STATE_LOAD_CROSSFADE) {
+    if (playerData->playerState == PL_STATE_IN_CROSSFADE) {
       pliCrossFade (playerData->pli, pq->tempname, tempffn, taudiosrc);
     } else {
       pliMediaSetup (playerData->pli, pq->tempname, tempffn, taudiosrc);
@@ -780,7 +784,7 @@ playerProcessing (void *udata)
       /* if repeating, use the current speed */
       tspeed = playerData->currentSpeed;
     }
-    if (playerData->playerState != PL_STATE_LOAD_CROSSFADE) {
+    if (playerData->playerState != PL_STATE_IN_CROSSFADE) {
       logMsg (LOG_DBG, LOG_BASIC, "start playback");
       pliStartPlayback (playerData->pli, pq->songstart, tspeed);
     }
@@ -2057,7 +2061,7 @@ playerStartCrossFade (playerdata_t *playerData)
   snprintf (nsflag, sizeof (nsflag), "%d", playerData->stopNextsongFlag);
   connSendMessage (playerData->conn, ROUTE_MAIN, MSG_PLAYBACK_FINISH, nsflag);
 
-  playerSetPlayerState (playerData, PL_STATE_LOAD_CROSSFADE);
+  playerSetPlayerState (playerData, PL_STATE_IN_CROSSFADE);
 
   playerData->inFade = true;
   playerData->inCrossFade = true;

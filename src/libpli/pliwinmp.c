@@ -267,7 +267,7 @@ pliiGetVolume (plidata_t *pliData)
 {
   int   val = 100;
 
-//  val = winGetVolume (pliData->windata);
+  val = winmpGetVolume (pliData->windata);
   return val;
 }
 

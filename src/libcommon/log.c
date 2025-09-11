@@ -43,6 +43,7 @@ static const char *playerstateTxt [PL_STATE_MAX] = {
   [PL_STATE_PAUSED] = "paused",
   [PL_STATE_IN_FADEOUT] = "in-fadeout",
   [PL_STATE_IN_GAP] = "in-gap",
+  [PL_STATE_IN_CROSSFADE] = "in-crossfade",
 };
 
 static_assert (sizeof (playerstateTxt) / sizeof (const char *) == PL_STATE_MAX,

@@ -4,8 +4,11 @@
 
 <!--
 
-**4.15.7.1 2025-9---**
+**4.16.0 2025-9---**
 
+* New Features:
+    * Windows: Player Interface: Windows Media Player.
+    * Player: Cross Fade support (Windows Only).
 * Translations:
     * Chinese Simplified: Updated (still machine translated - very poor quality).
     * Chinese Traditional: Updated (still machine translated - very poor quality).
