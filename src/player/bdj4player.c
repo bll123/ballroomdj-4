@@ -815,7 +815,8 @@ playerProcessing (void *udata)
         connSendMessage (playerData->conn, ROUTE_MAIN,
             MSG_PLAYBACK_BEGIN, NULL);
       }
-    } else if (plistate == PLI_STATE_STOPPED) {
+    } else if (plistate == PLI_STATE_STOPPED ||
+        plistate == PLI_STATE_IDLE) {
       playerSetPlayerState (playerData, PL_STATE_STOPPED);
     }
   }

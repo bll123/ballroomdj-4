@@ -56,7 +56,7 @@ main (int argc, char * argv[])
   int         rc;
   bdj4arg_t   *bdj4arg;
   const char  *targ;
-  const char  *vlctag = "VLC";
+  const char  *plitag = "VLC";
   char        *p;
   char        *end;
 
@@ -347,7 +347,7 @@ main (int argc, char * argv[])
         break;
       }
       case 'P': {
-        vlctag = bdj4argGet (bdj4arg, optind - 1, optarg);
+        plitag = bdj4argGet (bdj4arg, optind - 1, optarg);
         break;
       }
       default: {
@@ -419,16 +419,17 @@ main (int argc, char * argv[])
 
     /* players other than vlc may need a different setup */
 
-    /* determine the location of VLC, /Applications or $HOME/Applications */
-    snprintf (tbuff, sizeof (tbuff),
-          "/Applications/%s.app", vlctag);
-    if (fileopIsDirectory (tbuff)) {
-      foundvlc = true;
-    } else {
-      snprintf (tbuff, sizeof (tbuff),
-          "%s/Applications/%s.app", sysvarsGetStr (SV_HOME), vlctag);
+    if (strncmp (plitag, "VLC", 3) == 0) {
+      /* determine the location of VLC, /Applications or $HOME/Applications */
+      snprintf (tbuff, sizeof (tbuff), "/Applications/%s.app", plitag);
       if (fileopIsDirectory (tbuff)) {
         foundvlc = true;
+      } else {
+        snprintf (tbuff, sizeof (tbuff),
+            "%s/Applications/%s.app", sysvarsGetStr (SV_HOME), plitag);
+        if (fileopIsDirectory (tbuff)) {
+          foundvlc = true;
+        }
       }
     }
 
@@ -486,16 +487,18 @@ main (int argc, char * argv[])
       fprintf (stderr, "base path: %s\n", path);
     }
 
-    /* do not use double quotes w/environment var */
-    snprintf (tbuff, sz, "C:\\Program Files\\VideoLAN\\%s", vlctag);
-    p = stpecpy (p, end, tbuff);
-    p = stpecpy (p, end, ";");
+    if (strncmp (plitag, "VLC", 3) == 0) {
+      /* do not use double quotes w/environment var */
+      snprintf (tbuff, sz, "C:\\Program Files\\VideoLAN\\%s", plitag);
+      p = stpecpy (p, end, tbuff);
+      p = stpecpy (p, end, ";");
+    }
+
     osGetEnv ("PATH", tbuff, sz);
     if (debugself) {
       fprintf (stderr, "sys path: %s\n", tbuff);
     }
     p = stpecpy (p, end, tbuff);
-
     osSetEnv ("PATH", path);
 
     if (debugself) {

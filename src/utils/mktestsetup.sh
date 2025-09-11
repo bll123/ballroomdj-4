@@ -70,7 +70,7 @@ for arg in "$@"; do
       setati=T
       ;;
     --pli)
-      # pli argument may be one of: VLC3, VLC4, GST, MPRISVLC
+      # pli argument may be one of: VLC3, VLC4, GST, MPRISVLC, WINMP
       setpli=T
       ;;
     --vol)
@@ -209,6 +209,10 @@ ATII=libatibdj4
 
 PLII=libplivlc
 PLIINM="Integrated VLC 3"
+if [[ $PLI == VLC4 ]]; then
+  PLII=libplivlc4
+  PLIINM="Integrated VLC 4"
+fi
 if [[ $PLI == MPRISVLC ]]; then
   PLII=libplimpris
   PLIINM="MPRIS VLC Media Player"
@@ -217,9 +221,9 @@ if [[ $PLI == GST ]]; then
   PLII=libpligst
   PLIINM="GStreamer"
 fi
-if [[ $PLI == VLC4 ]]; then
-  PLII=libplivlc4
-  PLIINM="Integrated VLC 4"
+if [[ $PLI == WINMP ]]; then
+  PLII=libpliwinmp
+  PLIINM="Windows Media Player"
 fi
 
 # if VOLI is empty, no change is made, and the default is used

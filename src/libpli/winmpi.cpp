@@ -59,14 +59,14 @@ struct winmpintfc
   mpInit (void)
   {
     /* initializing the 'apartment' causes a crash */
-
-    mediaPlayer = Playback::MediaPlayer ();
-    mediaPlayer.CommandManager ().IsEnabled (false);
   }
 
   void
   mpPause (void)
   {
+    if (mediaPlayer == nullptr) {
+      return;
+    }
     auto pbSession = mediaPlayer.PlaybackSession ();
     if (pbSession.CanPause ()) {
       mediaPlayer.Pause ();
@@ -76,6 +76,9 @@ struct winmpintfc
   void
   mpPlay (void)
   {
+    if (mediaPlayer == nullptr) {
+      return;
+    }
     try {
       mediaPlayer.Play ();
     } catch (std::exception &exc) {
@@ -86,14 +89,22 @@ struct winmpintfc
   void
   mpStop (void)
   {
+    if (mediaPlayer == nullptr) {
+      return;
+    }
     mpPause ();
     mediaPlayer.Source (nullptr);
+    mediaPlayer = Playback::MediaPlayer (nullptr);
   }
 
   ssize_t
   mpSeek (ssize_t pos)
   {
     TimeSpan    ts;
+
+    if (mediaPlayer == nullptr) {
+      return 0;
+    }
 
     auto pbSession = mediaPlayer.PlaybackSession ();
 
@@ -111,6 +122,10 @@ struct winmpintfc
   mpMedia (const hstring &hsfn)
   {
     StorageFile   sfile = nullptr;
+
+    /* create a new media player for each playback item */
+    mediaPlayer = Playback::MediaPlayer ();
+    mediaPlayer.CommandManager ().IsEnabled (false);
 
     try {
       sfile = StorageFile::GetFileFromPathAsync (hsfn).get ();
@@ -140,15 +155,14 @@ struct winmpintfc
   void
   mpURI (const hstring &hsfn)
   {
-logBasic ("winmp-uri-a\n");
     auto uri = Uri (hsfn);
     if (uri == NULL) {
-logBasic ("win-uri fail-c\n");
+logBasic ("win-uri null-fn\n");
       return;
     }
     auto source = Core::MediaSource::CreateFromUri (uri);
     if (source == NULL) {
-logBasic ("win-uri fail-d\n");
+logBasic ("win-uri fail-a\n");
       return;
     }
 logBasic ("winmp-uri-b\n");
@@ -163,13 +177,17 @@ logBasic ("winmp-uri fin\n");
   void
   mpClose (void)
   {
-    mediaPlayer = Playback::MediaPlayer (nullptr);
+//    mediaPlayer = Playback::MediaPlayer (nullptr);
   }
 
   ssize_t
   mpDuration (void)
   {
     ssize_t   dur;
+
+    if (mediaPlayer == nullptr) {
+      return 0;
+    }
 
     auto pbSession = mediaPlayer.PlaybackSession ();
     auto sessdur = pbSession.NaturalDuration ();
@@ -186,6 +204,10 @@ logBasic ("winmp-uri fin\n");
   {
     ssize_t   pos;
 
+    if (mediaPlayer == nullptr) {
+      return 0;
+    }
+
     auto pbSession = mediaPlayer.PlaybackSession ();
     auto sesspos = pbSession.Position ();
     auto ms =
@@ -197,6 +219,10 @@ logBasic ("winmp-uri fin\n");
   double
   mpRate (double rate)
   {
+    if (mediaPlayer == nullptr) {
+      return 1.0;
+    }
+
     auto pbSession = mediaPlayer.PlaybackSession ();
     pbSession.PlaybackRate (rate);
     rate = pbSession.PlaybackRate ();
@@ -206,6 +232,10 @@ logBasic ("winmp-uri fin\n");
   Playback::MediaPlaybackState
   mpState (void)
   {
+    if (mediaPlayer == nullptr) {
+      return Playback::MediaPlaybackState::None;
+    }
+
     auto  pbSession = mediaPlayer.PlaybackSession ();
     auto  wstate = pbSession.PlaybackState ();
     return wstate;
@@ -223,6 +253,9 @@ winmpGetDuration (windata_t *windata)
   if (windata == NULL) {
     return 0;
   }
+  if (windata->winmp == NULL) {
+    return 0;
+  }
 
   dur = windata->winmp->mpDuration ();
   return dur;
@@ -236,6 +269,9 @@ winmpGetTime (windata_t *windata)
   if (windata == NULL) {
     return 0;
   }
+  if (windata->winmp == NULL) {
+    return 0;
+  }
 
   pos = windata->winmp->mpTime ();
   return pos;
@@ -245,6 +281,9 @@ int
 winmpStop (windata_t *windata)
 {
   if (windata == NULL) {
+    return 0;
+  }
+  if (windata->winmp == NULL) {
     return 0;
   }
 
@@ -316,9 +355,6 @@ winmpMedia (windata_t *windata, const char *fn, int sourceType)
   if (windata == NULL) {
     return 1;
   }
-  if (windata->winmp == NULL) {
-    return 2;
-  }
 
   auto wfn = osToWideChar (fn);
   if (sourceType == AUDIOSRC_TYPE_FILE) {
@@ -356,10 +392,6 @@ winmpClose (windata_t *windata)
     return;
   }
 
-  if (windata->winmp != NULL) {
-    windata->winmp->mpClose ();
-  }
-
   mdfree (windata);
   return;
 }
@@ -371,14 +403,14 @@ winmpState (windata_t *windata)
     return PLI_STATE_IDLE;
   }
   if (windata->winmp == NULL) {
-    return PLI_STATE_IDLE;
+    return PLI_STATE_STOPPED;
   }
 
   auto  wstate = windata->winmp->mpState ();
 
   switch (wstate) {
     case Playback::MediaPlaybackState::None: {
-      windata->state = PLI_STATE_IDLE;
+      windata->state = PLI_STATE_STOPPED;
       break;
     }
     case Playback::MediaPlaybackState::Opening: {

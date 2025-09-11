@@ -237,6 +237,16 @@ if [[ $TESTSUITE == T ]]; then
     fi
   fi
 
+  # windows media player
+  TESTWINMPON=T
+  if [[ $grc -eq 0 && $TESTWINMPON == T && $os == window ]]; then
+    runTestSuite WINMP
+    rc=$?
+    if [[ $rc -ne 0 ]]; then
+      grc=1
+    fi
+  fi
+
   # for the time being, do not run the VLC 4 tests. (2024-6)
   # VLC 4 has no release date scheduled.
   TESTVLC4ON=F

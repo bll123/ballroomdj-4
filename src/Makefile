@@ -174,7 +174,7 @@ checksuite:
 # test suite
 
 # testoption could have:
-#   --pli VLC3/VLC4/GST/MPRISVLC
+#   --pli VLC3/VLC4/GST/MPRISVLC/WINMP
 #   --vol pipewire
 .PHONY: testsuite
 testsuite:
