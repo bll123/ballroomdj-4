@@ -163,13 +163,17 @@ pliStartPlayback (pli_t *pli, ssize_t pos, ssize_t speed)
 void
 pliCrossFade (pli_t *pli, const char *mediaPath, const char *fullMediaPath, int sourceType)
 {
-  return;
+  if (pli != NULL && pli->pliiCrossFade != NULL) {
+    pli->pliiCrossFade (pli->plidata, mediaPath, fullMediaPath, sourceType);
+  }
 }
 
 void
 pliCrossFadeVolume (pli_t *pli, int vol)
 {
-  return;
+  if (pli != NULL && pli->pliiCrossFadeVolume != NULL) {
+    pli->pliiCrossFadeVolume (pli->plidata, vol);
+  }
 }
 
 void

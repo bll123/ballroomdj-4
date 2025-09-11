@@ -44,6 +44,7 @@ typedef struct winmpintfc winmpintfc_t;
 
 typedef struct windata {
   winmpintfc_t  *winmp [MP_MAX_SOURCE];
+  double        vol [MP_MAX_SOURCE];
   int           curr;
   plistate_t    state;
   bool          inCrossFade;
@@ -163,21 +164,21 @@ struct winmpintfc
   {
     auto uri = Uri (hsfn);
     if (uri == NULL) {
-logBasic ("win-uri null-fn\n");
+logBasic ("winmp: win-uri null-fn\n");
       return;
     }
     auto source = Core::MediaSource::CreateFromUri (uri);
     if (source == NULL) {
-logBasic ("win-uri fail-a\n");
+logBasic ("winmp: win-uri fail-a\n");
       return;
     }
-logBasic ("winmp-uri-b\n");
+logBasic ("winmp: winmp-uri-b\n");
     mediaPlayer.Source (source);
-logBasic ("winmp-uri-c\n");
+logBasic ("winmp: winmp-uri-c\n");
     auto ac = mediaPlayer.AudioCategory ();
-logBasic ("winmp-uri-d\n");
+logBasic ("winmp: winmp-uri-d\n");
     ac = Playback::MediaPlayerAudioCategory::Media;
-logBasic ("winmp-uri fin\n");
+logBasic ("winmp: winmp-uri fin\n");
   }
 
   void
@@ -392,7 +393,6 @@ winmpMedia (windata_t *windata, const char *fn, int sourceType)
     return 1;
   }
 
-logBasic ("media: %s\n", fn);
   if (sourceType == AUDIOSRC_TYPE_FILE) {
     stpecpy (tbuff, tbuff + sizeof (tbuff), fn);
     pathDisplayPath (tbuff, sizeof (tbuff));
@@ -416,9 +416,7 @@ winmpCrossFade (windata_t *windata, const char *fn, int sourceType)
     return 1;
   }
 
-logBasic ("start cross-fade: curr-was %d\n", windata->curr);
   windata->curr = (MP_MAX_SOURCE - 1) - windata->curr;
-logBasic ("start cross-fade: curr-now %d\n", windata->curr);
   windata->inCrossFade = true;
   winmpMedia (windata, fn, sourceType);
 
@@ -522,12 +520,9 @@ winmpCrossFadeVolume (windata_t *windata, int vol)
     return;
   }
 
-logBasic ("curr %d\n", windata->curr);
   previdx = (MP_MAX_SOURCE - 1) - windata->curr;
-logBasic ("previdx %d\n", previdx);
   dvol = (double) vol / 100.0;
   windata->winmp [previdx]->mpVolume (dvol);
-logBasic ("set prev %d\n", vol);
   if (dvol <= 0.0) {
     windata->winmp [previdx]->mpStop ();
     windata->inCrossFade = false;
@@ -535,7 +530,6 @@ logBasic ("set prev %d\n", vol);
 
   dvol = 1.0 - dvol;
   windata->winmp [windata->curr]->mpVolume (dvol);
-logBasic ("set curr %d\n", 100 - vol);
 
   return;
 }

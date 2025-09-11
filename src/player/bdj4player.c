@@ -784,10 +784,10 @@ playerProcessing (void *udata)
       /* if repeating, use the current speed */
       tspeed = playerData->currentSpeed;
     }
-    if (playerData->playerState != PL_STATE_IN_CROSSFADE) {
+//    if (playerData->playerState != PL_STATE_IN_CROSSFADE) {
       logMsg (LOG_DBG, LOG_BASIC, "start playback");
       pliStartPlayback (playerData->pli, pq->songstart, tspeed);
-    }
+//    }
     playerData->currentSpeed = tspeed;
     playerSetPlayerState (playerData, PL_STATE_LOADING);
   }
@@ -860,7 +860,7 @@ playerProcessing (void *udata)
       logMsg (LOG_DBG, LOG_VOLUME, "check sysvol: before fade");
       playerCheckSystemVolume (playerData);
       if (playerData->crossFadeTime > 0) {
-        /* this will put the player into a load-crossfade state */
+        /* this will put the player into a in_crossfade state */
         logMsg (LOG_DBG, LOG_BASIC, "starting cross-fade");
         playerStartCrossFade (playerData);
       } else {
@@ -1572,7 +1572,7 @@ playerFade (playerdata_t *playerData)
   logProcBegin ();
 
   if (playerData->inFadeOut || playerData->inCrossFade) {
-    logProcEnd ("in-fade-out");
+    logProcEnd ("in fade-out/cross-fade");
     return;
   }
 
@@ -1914,10 +1914,10 @@ playerFadeVolSet (playerdata_t *playerData)
   }
   findex = calcFadeIndex (playerData, fadeType);
 
+  /* in a cross-fade, the player interface handles the volume */
+  /* of the individual songs */
+  /* the master volume stays at the current set volume */
   if (playerData->inCrossFade) {
-    /* in a cross-fade, the player interface handles the volume */
-    /* of the individual songs */
-    /* the master volume stays at the current set volume */
     newvol = (int) round (100.0 * findex);
   } else {
     newvol = (int) round ((double) playerData->realVolume * findex);
@@ -1926,11 +1926,6 @@ playerFadeVolSet (playerdata_t *playerData)
     }
   }
 
-//  newvol = (int) round ((double) playerData->realVolume * findex);
-
-  if (newvol > playerData->realVolume) {
-    newvol = playerData->realVolume;
-  }
   if (! playerData->mute) {
     if (playerData->inCrossFade) {
       pliCrossFadeVolume (playerData->pli, newvol);
@@ -2052,8 +2047,9 @@ playerStartFadeOut (playerdata_t *playerData)
 static void
 playerStartCrossFade (playerdata_t *playerData)
 {
-  ssize_t     tm;
-  char        nsflag [20];
+  ssize_t       tm;
+  prepqueue_t   *pq = playerData->currentSong;
+  char          nsflag [20];
 
   logProcBegin ();
 
@@ -2065,7 +2061,8 @@ playerStartCrossFade (playerdata_t *playerData)
 
   playerData->inFade = true;
   playerData->inCrossFade = true;
-  tm = playerData->crossFadeTime;
+  tm = pq->dur - playerCalcPlayedTime (playerData);
+  tm = tm < playerData->crossFadeTime ? tm : playerData->crossFadeTime;
   playerData->fadeSamples = tm / FADEOUT_TIMESLICE;
   playerData->fadeCount = playerData->fadeSamples;
   logMsg (LOG_DBG, LOG_VOLUME, "xfade: samples: %d", playerData->fadeSamples);
