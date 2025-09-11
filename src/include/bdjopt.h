@@ -153,6 +153,7 @@ typedef enum {
   /* duplicated for each playback queue */
   /* opt_q_active must be the first opt_q_ item */
   OPT_Q_ACTIVE,
+  OPT_Q_CROSSFADE,
   OPT_Q_DISPLAY,
   OPT_Q_FADEINTIME,
   OPT_Q_FADEOUTTIME,
@@ -165,7 +166,6 @@ typedef enum {
   OPT_Q_SHOW_QUEUE_DANCE,
   OPT_Q_START_WAIT_TIME,
   OPT_Q_STOP_AT_TIME,
-  OPT_Q_XFADE,
 } bdjoptkey_t;
 
 enum {

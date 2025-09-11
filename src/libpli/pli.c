@@ -42,7 +42,9 @@ typedef struct pli {
   plidata_t         *(*pliiInit) (const char *plinm, const char *playerargs);
   void              (*pliiFree) (plidata_t *plidata);
   void              (*pliiMediaSetup) (plidata_t *plidata, const char *mediaPath, const char *fullMediaPath, int sourceType);
+  void              (*pliiCrossFade) (plidata_t *plidata, const char *mediaPath, const char *fullMediaPath, int sourceType);
   void              (*pliiStartPlayback) (plidata_t *plidata, ssize_t pos, ssize_t speed);
+  void              (*pliiCrossFadeVolume) (plidata_t *plidata, int vol);
   void              (*pliiClose) (plidata_t *plidata);
   void              (*pliiPause) (plidata_t *plidata);
   void              (*pliiPlay) (plidata_t *plidata);
@@ -70,7 +72,9 @@ pliInit (const char *plipkg, const char *plinm)
   pli->pliiInit = NULL;
   pli->pliiFree = NULL;
   pli->pliiMediaSetup = NULL;
+  pli->pliiCrossFade = NULL;
   pli->pliiStartPlayback = NULL;
+  pli->pliiCrossFadeVolume = NULL;
   pli->pliiClose = NULL;
   pli->pliiPause = NULL;
   pli->pliiPlay = NULL;
@@ -99,7 +103,9 @@ pliInit (const char *plipkg, const char *plinm)
   pli->pliiInit = dylibLookup (pli->dlHandle, "pliiInit");
   pli->pliiFree = dylibLookup (pli->dlHandle, "pliiFree");
   pli->pliiMediaSetup = dylibLookup (pli->dlHandle, "pliiMediaSetup");
+  pli->pliiCrossFade = dylibLookup (pli->dlHandle, "pliiCrossFade");
   pli->pliiStartPlayback = dylibLookup (pli->dlHandle, "pliiStartPlayback");
+  pli->pliiCrossFadeVolume = dylibLookup (pli->dlHandle, "pliiCrossFadeVolume");
   pli->pliiClose = dylibLookup (pli->dlHandle, "pliiClose");
   pli->pliiPause = dylibLookup (pli->dlHandle, "pliiPause");
   pli->pliiPlay = dylibLookup (pli->dlHandle, "pliiPlay");
@@ -152,6 +158,18 @@ pliStartPlayback (pli_t *pli, ssize_t pos, ssize_t speed)
   if (pli != NULL && pli->pliiStartPlayback != NULL) {
     pli->pliiStartPlayback (pli->plidata, pos, speed);
   }
+}
+
+void
+pliCrossFade (pli_t *pli, const char *mediaPath, const char *fullMediaPath, int sourceType)
+{
+  return;
+}
+
+void
+pliCrossFadeVolume (pli_t *pli, int vol)
+{
+  return;
 }
 
 void

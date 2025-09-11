@@ -22,6 +22,7 @@
 #include "musicq.h"
 #include "nlist.h"
 #include "pathbld.h"
+#include "pli.h"
 #include "sysvars.h"
 #include "ui.h"
 
@@ -31,11 +32,19 @@ static bool confuiMusicQChg (void *udata);
 static void confuiMusicQUpdateState (confuigui_t *gui, int idx);
 static void confuiSetMusicQList (confuigui_t *gui);
 static void confuiUpdateMusicQList (confuigui_t *gui);
+static bool confuiMusicqCrossFadeChg (void *udata);
 
 void
 confuiInitMusicQs (confuigui_t *gui)
 {
+  pli_t     *pli;
+
   gui->uiitem [CONFUI_SPINBOX_MUSIC_QUEUE].displist = NULL;
+
+  pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC),
+      bdjoptGetStr (OPT_M_PLAYER_INTFC_NM));
+  gui->pliSupported = pliSupported (pli);
+  pliFree (pli);
 
   confuiSetMusicQList (gui);
 }
@@ -43,9 +52,10 @@ confuiInitMusicQs (confuigui_t *gui)
 void
 confuiBuildUIMusicQs (confuigui_t *gui)
 {
-  uiwcont_t    *vbox;
-  uiwcont_t    *szgrp;
-  uiwcont_t    *szgrpB;
+  uiwcont_t     *vbox;
+  uiwcont_t     *szgrp;
+  uiwcont_t     *szgrpB;
+  int           widx;
 
   logProcBegin ();
 
@@ -106,6 +116,12 @@ confuiBuildUIMusicQs (confuigui_t *gui)
       0.0, 60.0, (double) bdjoptGetNumPerQueue (OPT_Q_GAP, 0) / 1000.0,
       CONFUI_INDENT);
 
+  /* CONTEXT: configuration: queue: the amount of time to cross-fade the songs */
+  confuiMakeItemSpinboxDouble (gui, vbox, szgrp, szgrpB, _("Cross Fade Time"),
+      CONFUI_WIDGET_Q_CROSSFADE, OPT_Q_CROSSFADE,
+      0.0, 60.0, (double) bdjoptGetNumPerQueue (OPT_Q_CROSSFADE, 0) / 1000.0,
+      CONFUI_INDENT);
+
   /* CONTEXT: configuration: queue: the maximum amount of time to play a song */
   confuiMakeItemSpinboxTime (gui, vbox, szgrp, szgrpB, _("Maximum Play Time"),
       CONFUI_SPINBOX_Q_MAX_PLAY_TIME, OPT_Q_MAXPLAYTIME,
@@ -136,6 +152,12 @@ confuiBuildUIMusicQs (confuigui_t *gui)
       CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE, OPT_Q_SHOW_QUEUE_DANCE,
       bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, 0), NULL, CONFUI_INDENT);
 
+  widx = CONFUI_WIDGET_Q_CROSSFADE;
+  gui->uiitem [widx].callback = callbackInit (
+      confuiMusicqCrossFadeChg, gui, NULL);
+  uiSpinboxSetValueChangedCallback (gui->uiitem [widx].uiwidgetp,
+      gui->uiitem [widx].callback);
+
   gui->inbuild = false;
   confuiMusicQChg (gui);   // calls active-chg
 
@@ -153,6 +175,8 @@ confuiMusicQActiveChg (void *udata)
   int         tval = 0;
   int         state;
   int         selidx;
+  int         cfstate;    // cross-fade
+  int         ncfstate;   // not cross-fade
 
   if (gui->inbuild) {
     return UICB_CONT;
@@ -171,29 +195,49 @@ confuiMusicQActiveChg (void *udata)
   }
 
   state = UIWIDGET_DISABLE;
+  cfstate = UIWIDGET_DISABLE;
+  ncfstate = UIWIDGET_DISABLE;
   if (tval) {
     state = UIWIDGET_ENABLE;
+    cfstate = UIWIDGET_ENABLE;
+    ncfstate = UIWIDGET_ENABLE;
+  }
+  if (! pliCheckSupport (gui->pliSupported, PLI_SUPPORT_CROSSFADE)) {
+    cfstate = UIWIDGET_DISABLE;
+  }
+
+  if (cfstate == UIWIDGET_ENABLE) {
+    double    dval;
+    int       widx;
+
+    widx = CONFUI_WIDGET_Q_CROSSFADE;
+    dval = uiSpinboxGetValue (gui->uiitem [widx].uiwidgetp);
+    if (dval > 0.0) {
+      ncfstate = UIWIDGET_DISABLE;
+    }
   }
 
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_START_WAIT_TIME].uilabelp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_FADE_IN_TIME].uilabelp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_FADE_OUT_TIME].uilabelp, state);
-  uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_GAP].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_GAP].uilabelp, ncfstate);
+  uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_CROSSFADE].uilabelp, cfstate);
   uiWidgetSetState (gui->uiitem [CONFUI_SPINBOX_Q_MAX_PLAY_TIME].uilabelp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_SPINBOX_Q_STOP_AT_TIME].uilabelp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PAUSE_EACH_SONG].uilabelp, state);
-  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uilabelp, ncfstate);
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED].uilabelp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE].uilabelp, state);
 
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_START_WAIT_TIME].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_FADE_IN_TIME].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_FADE_OUT_TIME].uiwidgetp, state);
-  uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_GAP].uiwidgetp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_Q_GAP].uiwidgetp, ncfstate);
+  uiSpinboxSetState (gui->uiitem [CONFUI_WIDGET_Q_CROSSFADE].uiwidgetp, cfstate);
   uiSpinboxSetState (gui->uiitem [CONFUI_SPINBOX_Q_MAX_PLAY_TIME].uiwidgetp, state);
   uiSpinboxSetState (gui->uiitem [CONFUI_SPINBOX_Q_STOP_AT_TIME].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PAUSE_EACH_SONG].uiwidgetp, state);
-  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uiwidgetp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uiwidgetp, ncfstate);
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE].uiwidgetp, state);
 
@@ -274,6 +318,8 @@ confuiMusicQChg (void *udata)
       (double) bdjoptGetNumPerQueue (OPT_Q_FADEOUTTIME, nselidx) / 1000.0);
   uiSpinboxSetValue (gui->uiitem [CONFUI_WIDGET_Q_GAP].uiwidgetp,
       (double) bdjoptGetNumPerQueue (OPT_Q_GAP, nselidx) / 1000.0);
+  uiSpinboxSetValue (gui->uiitem [CONFUI_WIDGET_Q_CROSSFADE].uiwidgetp,
+      (double) bdjoptGetNumPerQueue (OPT_Q_CROSSFADE, nselidx) / 1000.0);
   uiSpinboxTimeSetValue (gui->uiitem [CONFUI_SPINBOX_Q_MAX_PLAY_TIME].uiwidgetp,
       bdjoptGetNumPerQueue (OPT_Q_MAXPLAYTIME, nselidx));
   /* divide by to convert from hh:mm to mm:ss for the spinbox */
@@ -355,3 +401,28 @@ confuiUpdateMusicQList (confuigui_t *gui)
       nlistGetCount (tlist), maxWidth, tlist, NULL, NULL);
 }
 
+static bool
+confuiMusicqCrossFadeChg (void *udata)
+{
+  confuigui_t   *gui = udata;
+  int           widx;
+  double        dval;
+
+  if (gui == NULL) {
+    return UICB_CONT;
+  }
+
+  widx = CONFUI_WIDGET_Q_CROSSFADE;
+  dval = uiSpinboxGetValue (gui->uiitem [widx].uiwidgetp);
+  /* just to make sure 0.0 is 0.0 */
+  dval = round (dval * 10.0);
+  dval /= 10.0;
+  uiSpinboxSetValue (gui->uiitem [widx].uiwidgetp, dval);
+
+  widx = CONFUI_SWITCH_Q_PLAY_ANNOUNCE;
+  uiSwitchSetValue (gui->uiitem [widx].uiwidgetp, 0);
+
+  confuiMusicQActiveChg (gui);
+
+  return UICB_CONT;
+}

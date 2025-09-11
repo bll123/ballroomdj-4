@@ -15,6 +15,7 @@ typedef enum {
   PL_STATE_PAUSED,
   PL_STATE_IN_FADEOUT,
   PL_STATE_IN_GAP,
+  PL_STATE_LOAD_CROSSFADE,
   PL_STATE_MAX,
 } playerstate_t;
 

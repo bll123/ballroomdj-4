@@ -33,6 +33,7 @@
 #include "osuiutils.h"
 #include "pathbld.h"
 #include "pathutil.h"
+#include "pli.h"
 #include "progstate.h"
 #include "quickedit.h"
 #include "sockh.h"
@@ -116,6 +117,7 @@ main (int argc, char *argv[])
   confui.gui.vbox = NULL;
   confui.gui.statusMsg = NULL;
   confui.gui.errorMsg = NULL;
+  confui.gui.pliSupported = PLI_SUPPORT_NONE;
   confui.gui.tablecurr = CONFUI_ID_NONE;
   confui.gui.dispsel = NULL;
   confui.gui.dispselduallist = NULL;

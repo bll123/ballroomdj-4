@@ -56,7 +56,8 @@ pliiInit (const char *plinm, const char *playerargs)
 
   pliData->windata = winmpInit ();
   pliData->name = "Windows Native";
-  pliData->supported = PLI_SUPPORT_SEEK | PLI_SUPPORT_SPEED;
+  pliData->supported = PLI_SUPPORT_SEEK | PLI_SUPPORT_SPEED |
+      PLI_SUPPORT_CROSSFADE;
 
   return pliData;
 }
@@ -87,6 +88,17 @@ pliiMediaSetup (plidata_t *pliData, const char *mediaPath,
   }
 
   winmpMedia (pliData->windata, fullMediaPath, sourceType);
+}
+
+void
+pliiCrossFade (plidata_t *pliData, const char *mediaPath,
+    const char *fullMediaPath, int sourceType)
+{
+  if (pliData == NULL || pliData->windata == NULL || mediaPath == NULL) {
+    return;
+  }
+
+  winmpCrossFade (pliData->windata, fullMediaPath, sourceType);
 }
 
 void
@@ -257,6 +269,12 @@ pliiGetVolume (plidata_t *pliData)
 
 //  val = winGetVolume (pliData->windata);
   return val;
+}
+
+void
+pliiCrossFadeVolume (plidata_t *pliData, int vol)
+{
+  winmpCrossFadeVolume (pliData->windata, vol);
 }
 
 /* internal routines */

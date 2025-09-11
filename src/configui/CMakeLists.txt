@@ -39,6 +39,7 @@ target_link_libraries (bdj4configui PRIVATE
   libbdj4ati libbdj4pli libbdj4vol libbdj4cont
   libwebclient libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
   ${GTK_LDFLAGS}
+  m
 )
 addIntlLibrary (bdj4configui)
 addWinSockLibrary (bdj4configui)

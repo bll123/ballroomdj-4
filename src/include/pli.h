@@ -31,11 +31,11 @@ typedef enum {
 } plistate_t;
 
 enum {
-  PLI_SUPPORT_NONE    = 0,
-  PLI_SUPPORT_SEEK    = (1 << 0),
-  PLI_SUPPORT_SPEED   = (1 << 1),
-  PLI_SUPPORT_DEVLIST = (1 << 2),
-  PLI_SUPPORT_XFADE   = (1 << 3),
+  PLI_SUPPORT_NONE      = 0,
+  PLI_SUPPORT_SEEK      = (1 << 0),
+  PLI_SUPPORT_SPEED     = (1 << 1),
+  PLI_SUPPORT_DEVLIST   = (1 << 2),
+  PLI_SUPPORT_CROSSFADE = (1 << 3),
 };
 
 enum {
@@ -60,6 +60,8 @@ pli_t         *pliInit (const char *plipkg, const char *plinm);
 void          pliFree (pli_t *pli);
 void          pliMediaSetup (pli_t *pli, const char *mediaPath, const char *fullMediaPath, int sourceType);
 void          pliStartPlayback (pli_t *pli, ssize_t dpos, ssize_t speed);
+void          pliCrossFade (pli_t *pli, const char *mediaPath, const char *fullMediaPath, int sourceType);
+void          pliCrossFadeVolume (pli_t *pli, int vol);
 void          pliPause (pli_t *pli);
 void          pliPlay (pli_t *pli);
 void          pliStop (pli_t *pli);
@@ -82,6 +84,8 @@ void          pliiFree (plidata_t *pliData);
 void          pliiCleanup (void);
 void          pliiMediaSetup (plidata_t *pliData, const char *mediaPath, const char *fullMediaPath, int sourceType);
 void          pliiStartPlayback (plidata_t *pliData, ssize_t dpos, ssize_t speed);
+void          pliiCrossFade (plidata_t *plidata, const char *mediaPath, const char *fullMediaPath, int sourceType);
+void          pliiCrossFadeVolume (plidata_t *plidata, int vol);
 void          pliiClose (plidata_t *pliData);
 void          pliiPause (plidata_t *pliData);
 void          pliiPlay (plidata_t *pliData);

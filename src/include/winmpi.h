@@ -22,8 +22,10 @@ ssize_t           winmpSeek (windata_t *windata, ssize_t dpos);
 double            winmpRate (windata_t *windata, double drate);
 plistate_t        winmpState (windata_t *windata);
 int               winmpMedia (windata_t *windata, const char *fn, int sourceType);
+int               winmpCrossFade (windata_t *windata, const char *fn, int sourceType);
 windata_t *       winmpInit (void);
 void              winmpClose (windata_t *windata);
+void              winmpCrossFadeVolume (windata_t *windata, int vol);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

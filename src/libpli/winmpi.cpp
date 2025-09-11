@@ -37,11 +37,17 @@ using namespace winrt::Windows::Storage;
 using namespace winrt::Windows;
 using namespace winrt;
 
+enum {
+  MP_MAX_SOURCE = 2,
+};
+
 typedef struct winmpintfc winmpintfc_t;
 
 typedef struct windata {
-  winmpintfc_t  *winmp;
+  winmpintfc_t  *winmp [MP_MAX_SOURCE];
+  int           curr;
   plistate_t    state;
+  bool          inCrossFade;
 } windata_t;
 
 struct winmpintfc
@@ -177,7 +183,10 @@ logBasic ("winmp-uri fin\n");
   void
   mpClose (void)
   {
-//    mediaPlayer = Playback::MediaPlayer (nullptr);
+    if (mediaPlayer != nullptr) {
+      mpStop ();
+    }
+    return;
   }
 
   ssize_t
@@ -253,11 +262,11 @@ winmpGetDuration (windata_t *windata)
   if (windata == NULL) {
     return 0;
   }
-  if (windata->winmp == NULL) {
+  if (windata->winmp [windata->curr] == NULL) {
     return 0;
   }
 
-  dur = windata->winmp->mpDuration ();
+  dur = windata->winmp [windata->curr]->mpDuration ();
   return dur;
 }
 
@@ -269,11 +278,11 @@ winmpGetTime (windata_t *windata)
   if (windata == NULL) {
     return 0;
   }
-  if (windata->winmp == NULL) {
+  if (windata->winmp [windata->curr] == NULL) {
     return 0;
   }
 
-  pos = windata->winmp->mpTime ();
+  pos = windata->winmp [windata->curr]->mpTime ();
   return pos;
 }
 
@@ -283,11 +292,11 @@ winmpStop (windata_t *windata)
   if (windata == NULL) {
     return 0;
   }
-  if (windata->winmp == NULL) {
+  if (windata->winmp [windata->curr] == NULL) {
     return 0;
   }
 
-  windata->winmp->mpStop ();
+  windata->winmp [windata->curr]->mpStop ();
   return 0;
 }
 
@@ -297,11 +306,11 @@ winmpPause (windata_t *windata)
   if (windata == NULL) {
     return 0;
   }
-  if (windata->winmp == NULL) {
+  if (windata->winmp [windata->curr] == NULL) {
     return 0;
   }
 
-  windata->winmp->mpPause ();
+  windata->winmp [windata->curr]->mpPause ();
   return 0;
 }
 
@@ -311,11 +320,11 @@ winmpPlay (windata_t *windata)
   if (windata == NULL) {
     return 0;
   }
-  if (windata->winmp == NULL) {
+  if (windata->winmp [windata->curr] == NULL) {
     return 0;
   }
 
-  windata->winmp->mpPlay ();
+  windata->winmp [windata->curr]->mpPlay ();
   return 0;
 }
 
@@ -325,11 +334,11 @@ winmpSeek (windata_t *windata, ssize_t pos)
   if (windata == NULL) {
     return 0;
   }
-  if (windata->winmp == NULL) {
+  if (windata->winmp [windata->curr] == NULL) {
     return 0;
   }
 
-  pos = windata->winmp->mpSeek (pos);
+  pos = windata->winmp [windata->curr]->mpSeek (pos);
   return pos;
 }
 
@@ -339,11 +348,11 @@ winmpRate (windata_t *windata, double drate)
   if (windata == NULL) {
     return 100.0;
   }
-  if (windata->winmp == NULL) {
+  if (windata->winmp [windata->curr] == NULL) {
     return 100.0;
   }
 
-  drate = windata->winmp->mpRate (drate);
+  drate = windata->winmp [windata->curr]->mpRate (drate);
   return drate;
 }
 
@@ -362,12 +371,26 @@ winmpMedia (windata_t *windata, const char *fn, int sourceType)
     pathDisplayPath (tbuff, sizeof (tbuff));
     auto wfn = osToWideChar (tbuff);
     auto hsfn = hstring (wfn);
-    windata->winmp->mpMedia (hsfn);
+    windata->winmp [windata->curr]->mpMedia (hsfn);
   } else {
     auto hsfn = hstring (wfn);
-    windata->winmp->mpURI (hsfn);
+    windata->winmp [windata->curr]->mpURI (hsfn);
   }
   mdfree (wfn);
+
+  return 0;
+}
+
+int
+winmpCrossFade (windata_t *windata, const char *fn, int sourceType)
+{
+  if (windata == NULL) {
+    return 1;
+  }
+
+  windata->curr = (MP_MAX_SOURCE - 1) - windata->curr;
+  windata->inCrossFade = true;
+  winmpMedia (windata, fn, sourceType);
 
   return 0;
 }
@@ -379,8 +402,12 @@ winmpInit (void)
 
   windata = (windata_t *) mdmalloc (sizeof (windata_t));
   windata->state = PLI_STATE_IDLE;
-  windata->winmp = new winmpintfc (windata);
-  windata->winmp->mpInit ();
+  windata->inCrossFade = false;
+  windata->curr = 0;
+  for (int i = 0; i < MP_MAX_SOURCE; ++i) {
+    windata->winmp [i] = new winmpintfc (windata);
+    windata->winmp [i]->mpInit ();
+  }
 
   return windata;
 }
@@ -402,11 +429,11 @@ winmpState (windata_t *windata)
   if (windata == NULL) {
     return PLI_STATE_IDLE;
   }
-  if (windata->winmp == NULL) {
+  if (windata->winmp [windata->curr] == NULL) {
     return PLI_STATE_STOPPED;
   }
 
-  auto  wstate = windata->winmp->mpState ();
+  auto  wstate = windata->winmp [windata->curr]->mpState ();
 
   switch (wstate) {
     case Playback::MediaPlaybackState::None: {
@@ -432,4 +459,24 @@ winmpState (windata_t *windata)
   }
 
   return windata->state;
+}
+
+void
+winmpCrossFadeVolume (windata_t *windata, int vol)
+{
+  int     previdx;
+
+  if (windata == NULL) {
+    return;
+  }
+  if (windata->winmp [windata->curr] == NULL) {
+    return;
+  }
+  if (windata->inCrossFade == false) {
+    return;
+  }
+
+  previdx = (MP_MAX_SOURCE - 1) - windata->curr;
+
+  return;
 }

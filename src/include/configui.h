@@ -240,6 +240,7 @@ enum {
   CONFUI_WIDGET_Q_FADE_IN_TIME,       // per queue
   CONFUI_WIDGET_Q_FADE_OUT_TIME,      // per queue
   CONFUI_WIDGET_Q_GAP,                // per queue
+  CONFUI_WIDGET_Q_CROSSFADE,          // per queue
   CONFUI_WIDGET_RC_PORT,
   CONFUI_WIDGET_RC_QR_CODE,
   CONFUI_WIDGET_RC_QR_CODE_B,
@@ -464,6 +465,8 @@ typedef struct confuigui {
   uiwcont_t         *vbox;
   uiwcont_t         *statusMsg;
   uiwcont_t         *errorMsg;
+  /* music-q */
+  int               pliSupported;
   /* display select */
   dispsel_t         *dispsel;
   uiduallist_t      *dispselduallist;
