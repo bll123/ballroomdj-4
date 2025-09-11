@@ -784,10 +784,8 @@ playerProcessing (void *udata)
       /* if repeating, use the current speed */
       tspeed = playerData->currentSpeed;
     }
-//    if (playerData->playerState != PL_STATE_IN_CROSSFADE) {
-      logMsg (LOG_DBG, LOG_BASIC, "start playback");
-      pliStartPlayback (playerData->pli, pq->songstart, tspeed);
-//    }
+    logMsg (LOG_DBG, LOG_BASIC, "start playback");
+    pliStartPlayback (playerData->pli, pq->songstart, tspeed);
     playerData->currentSpeed = tspeed;
     playerSetPlayerState (playerData, PL_STATE_LOADING);
   }
