@@ -450,6 +450,7 @@ bdjoptInit (void)
     int64_t   val;
 
     /* 4.13.0 prep for crossfade support */
+    /* 4.16.0 implemented (windows media player) */
     val = bdjoptGetNumPerQueue (OPT_Q_CROSSFADE, i);
     if (val < 0) {
       bdjoptSetNumPerQueue (OPT_Q_CROSSFADE, 0, i);
