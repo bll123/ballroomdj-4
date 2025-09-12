@@ -154,30 +154,29 @@ struct winmpintfc
   }
 
   void
-  mpURI (const hstring &hsfn)
+  mpURI (const string &hsfn)
   {
     auto uri = Uri (hsfn);
     if (uri == NULL) {
-logBasic ("winmp: win-uri null-url\n");
       return;
     }
     auto source = Core::MediaSource::CreateFromUri (uri);
     if (source == NULL) {
-logBasic ("winmp: win-uri fail-a, bad source\n");
       return;
     }
-logBasic ("winmp: winmp-uri-b\n");
+    /* the item wrapper did not help with the crash */
+    auto pbitem = Playback::MediaPlaybackItem (source);
+logBasic ("winmp: winmp-uri-a\n");
+    /* this is crashing when a uri is used */
     try {
-      mediaPlayer.Source (source);
+      mediaPlayer.Source (pbitem);
     } catch (std::exception &exc) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "win-uri source-fail %s", exc.what ());
       return;
     }
-logBasic ("winmp: winmp-uri-c\n");
+logBasic ("winmp: winmp-uri-b\n");
     auto ac = mediaPlayer.AudioCategory ();
-logBasic ("winmp: winmp-uri-d\n");
     ac = Playback::MediaPlayerAudioCategory::Media;
-logBasic ("winmp: winmp-uri fin\n");
   }
 
   void
