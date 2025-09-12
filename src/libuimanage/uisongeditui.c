@@ -1910,7 +1910,9 @@ uisongeditCopyPath (void *udata)
 
   txt = uiLabelGetText (seint->wcont [UISE_W_FILE_DISP]);
   audiosrcFullPath (txt, ffn, sizeof (ffn), NULL, 0);
-  pathDisplayPath (ffn, sizeof (ffn));
+  if (audiosrcGetType (ffn) == AUDIOSRC_TYPE_FILE) {
+    pathDisplayPath (ffn, sizeof (ffn));
+  }
   uiClipboardSet (ffn);
 
   return UICB_CONT;

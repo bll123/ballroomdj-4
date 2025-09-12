@@ -62,12 +62,6 @@ struct winmpintfc
   }
 
   void
-  mpInit (void)
-  {
-    /* initializing the 'apartment' causes a crash */
-  }
-
-  void
   mpPause (void)
   {
     if (mediaPlayer == nullptr) {
@@ -88,7 +82,7 @@ struct winmpintfc
     try {
       mediaPlayer.Play ();
     } catch (std::exception &exc) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-play fail %s\n", exc.what ());
+      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-play fail %s", exc.what ());
     }
   }
 
@@ -137,22 +131,22 @@ struct winmpintfc
     try {
       sfile = StorageFile::GetFileFromPathAsync (hsfn).get ();
     } catch (std::exception &exc) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "win-media open-fail %s\n", exc.what ());
+      logMsg (LOG_DBG, LOG_IMPORTANT, "win-media open-fail %s", exc.what ());
       return;
     }
     if (sfile == NULL) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "win-media fail-no-file\n");
+      logMsg (LOG_DBG, LOG_IMPORTANT, "win-media fail-no-file");
       return;
     }
     auto source = Core::MediaSource::CreateFromStorageFile (sfile);
     if (source == NULL) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "win-media source-fail\n");
+      logMsg (LOG_DBG, LOG_IMPORTANT, "win-media source-fail");
       return;
     }
     try {
       mediaPlayer.Source (source);
     } catch (std::exception &exc) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "win-source source-fail\n");
+      logMsg (LOG_DBG, LOG_IMPORTANT, "win-source source-fail");
       return;
     }
     auto ac = mediaPlayer.AudioCategory ();
@@ -164,16 +158,21 @@ struct winmpintfc
   {
     auto uri = Uri (hsfn);
     if (uri == NULL) {
-logBasic ("winmp: win-uri null-fn\n");
+logBasic ("winmp: win-uri null-url\n");
       return;
     }
     auto source = Core::MediaSource::CreateFromUri (uri);
     if (source == NULL) {
-logBasic ("winmp: win-uri fail-a\n");
+logBasic ("winmp: win-uri fail-a, bad source\n");
       return;
     }
 logBasic ("winmp: winmp-uri-b\n");
-    mediaPlayer.Source (source);
+    try {
+      mediaPlayer.Source (source);
+    } catch (std::exception &exc) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "win-uri source-fail %s", exc.what ());
+      return;
+    }
 logBasic ("winmp: winmp-uri-c\n");
     auto ac = mediaPlayer.AudioCategory ();
 logBasic ("winmp: winmp-uri-d\n");
@@ -393,6 +392,7 @@ winmpMedia (windata_t *windata, const char *fn, int sourceType)
     return 1;
   }
 
+logBasic ("winmp: %d media: %s\n", sourceType, fn);
   if (sourceType == AUDIOSRC_TYPE_FILE) {
     stpecpy (tbuff, tbuff + sizeof (tbuff), fn);
     pathDisplayPath (tbuff, sizeof (tbuff));
@@ -434,7 +434,6 @@ winmpInit (void)
   windata->curr = 0;
   for (int i = 0; i < MP_MAX_SOURCE; ++i) {
     windata->winmp [i] = new winmpintfc (windata);
-    windata->winmp [i]->mpInit ();
   }
 
   return windata;

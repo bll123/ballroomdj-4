@@ -418,6 +418,12 @@ START_TEST(validate_full_uri)
   ck_assert_int_eq (val, true);
   val = validate (tbuff, sizeof (tbuff), "fulluri", "http://a.com:9011/stuff", VAL_FULL_URI);
   ck_assert_int_eq (val, true);
+  val = validate (tbuff, sizeof (tbuff), "fulluri", "https://", VAL_FULL_URI);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "fulluri", "https://a", VAL_FULL_URI);
+  ck_assert_int_eq (val, false);
+  val = validate (tbuff, sizeof (tbuff), "fulluri", "https", VAL_FULL_URI);
+  ck_assert_int_eq (val, false);
 }
 END_TEST
 

@@ -31,7 +31,6 @@ typedef struct plidata {
   int               supported;
 } plidata_t;
 
-static void pliwinWaitUntilPlaying (plidata_t *pliData);
 static void pliwinWaitUntilStopped (plidata_t *pliData);
 
 void
@@ -87,6 +86,7 @@ pliiMediaSetup (plidata_t *pliData, const char *mediaPath,
     return;
   }
 
+logBasic ("pliwinmp: media: %s\n    %s\n", mediaPath, fullMediaPath);
   winmpMedia (pliData->windata, fullMediaPath, sourceType);
 }
 
@@ -108,19 +108,18 @@ pliiStartPlayback (plidata_t *pliData, ssize_t dpos, ssize_t speed)
     return;
   }
 
-// ### need to check and see if the seek/rate can be done ahead of time
-  winmpPlay (pliData->windata);
+  /* windows allows seek and rate changes before playing */
+// ### this needs testing with URLs
   if (dpos > 0) {
-    pliwinWaitUntilPlaying (pliData);
     winmpSeek (pliData->windata, dpos);
   }
   if (speed != 100) {
     double    drate;
 
-    pliwinWaitUntilPlaying (pliData);
     drate = (double) speed / 100.0;
     winmpRate (pliData->windata, drate);
   }
+  winmpPlay (pliData->windata);
 }
 
 void
@@ -278,26 +277,6 @@ pliiCrossFadeVolume (plidata_t *pliData, int vol)
 }
 
 /* internal routines */
-
-static void
-pliwinWaitUntilPlaying (plidata_t *pliData)
-{
-  plistate_t  state;
-  long        count;
-
-  state = winmpState (pliData->windata);
-  count = 0;
-  while (state == PLI_STATE_IDLE ||
-      state == PLI_STATE_OPENING ||
-      state == PLI_STATE_STOPPED) {
-    mssleep (1);
-    state = winmpState (pliData->windata);
-    ++count;
-    if (count > 10000) {
-      break;
-    }
-  }
-}
 
 static void
 pliwinWaitUntilStopped (plidata_t *pliData)

@@ -759,14 +759,15 @@ playerProcessing (void *udata)
       logMsg (LOG_DBG, LOG_VOLUME, "no fade-in set volume: %d", playerData->realVolume);
     }
 
-    *tempffn = '\0';
+    /* duplicate the media path */
+    stpecpy (tempffn, tempffn + sizeof (tempffn), pq->tempname);
+
     /* only need to know if this is a file-type */
     if (pq->audiosrc == AUDIOSRC_TYPE_FILE) {
       /* some pli need the full path */
       pathbldMakePath (tempffn, sizeof (tempffn), pq->tempname, "",
           PATHBLD_MP_DIR_DATATOP);
     }
-
 
     taudiosrc = pq->audiosrc;
     if (taudiosrc == AUDIOSRC_TYPE_BDJ4) {
@@ -832,8 +833,7 @@ playerProcessing (void *udata)
         connSendMessage (playerData->conn, ROUTE_MAIN,
             MSG_PLAYBACK_BEGIN, NULL);
       }
-    } else if (plistate == PLI_STATE_STOPPED ||
-        plistate == PLI_STATE_IDLE) {
+    } else if (plistate == PLI_STATE_STOPPED) {
       playerSetPlayerState (playerData, PL_STATE_STOPPED);
     }
   }

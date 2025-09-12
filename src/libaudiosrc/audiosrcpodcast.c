@@ -506,7 +506,7 @@ aspodcastRSS (asdata_t *asdata, asiterdata_t *asidata, const char *uri)
   if (asdata->clientdata [clientkey].rssdata == NULL ||
       tm > asdata->clientdata [clientkey].rsslastbldtm) {
     logMsg (LOG_ERR, LOG_IMPORTANT,
-        "rss data is null %d or %" PRId64 " > %" PRId64,
+        "do import: rss data null(%d) or time %" PRId64 " > %" PRId64,
         asdata->clientdata [clientkey].rssdata == NULL,
         (int64_t) tm, (int64_t) asdata->clientdata [clientkey].rsslastbldtm);
     asdata->clientdata [clientkey].rssdata = rssImport (uri);

@@ -18,6 +18,7 @@
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdj4ui.h"
+#include "bdjregex.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "callback.h"
@@ -83,6 +84,8 @@ typedef struct uiimppl {
   const char        *urilabel;
   const char        *newnamelabel;
   callback_t        *callbacks [UIIMPPL_CB_MAX];
+  bdjregex_t        *slashrx;
+  bdjregex_t        *winrx;
   char              origplname [MAXPATHLEN];
   char              olduri [MAXPATHLEN];
   size_t            asmaxwidth;
@@ -114,6 +117,7 @@ static int32_t uiimpplDragDropCallback (void *udata, const char *uri);
 static int uiimpplProcessURI (uiimppl_t *uiimppl, const char *uri);
 static bool uiimpplIsPlaylistFileType (pathinfo_t *pi);
 static void uiimpplBuildPlaylistSelect (uiimppl_t *uiimppl, int askey);
+static void uiimpplSetNewName (uiimppl_t *uiimppl, const char *str);
 
 uiimppl_t *
 uiimpplInit (uiwcont_t *windowp, nlist_t *opts, const char *waitmsg)
@@ -156,6 +160,8 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts, const char *waitmsg)
   uiimppl->imptype = AUDIOSRC_TYPE_NONE;
   *uiimppl->origplname = '\0';
   *uiimppl->olduri = '\0';
+  uiimppl->slashrx = regexInit ("[/\\\\]");
+  uiimppl->winrx = regexInit ("[*'\":|<>^]");
   uiimppl->asconf = bdjvarsdfGet (BDJVDF_AUDIOSRC_CONF);
   uiimppl->asconfcount = asconfGetCount (uiimppl->asconf);
 
@@ -260,6 +266,8 @@ uiimpplFree (uiimppl_t *uiimppl)
     callbackFree (uiimppl->callbacks [i]);
     uiimppl->callbacks [i] = NULL;
   }
+  regexFree (uiimppl->slashrx);
+  regexFree (uiimppl->winrx);
   mdfree (uiimppl);
 }
 
@@ -748,21 +756,6 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
     urichg = true;
   }
 
-  if (urichg) {
-    uiimppl->plselectbuilt = false;
-
-    /* re-sets the type to match the URI, sets the URI */
-    /* may also reset the import type */
-    if (uiimpplProcessURI (uiimppl, tbuff) == UICB_STOP) {
-      uiimppl->haveerrors |= UIIMPPL_ERR_URI;
-      uiimppl->in_cb = false;
-      return UIENTRY_ERROR;
-    }
-    if (uiimppl->imptype != AUDIOSRC_TYPE_FILE) {
-      uiimpplBuildPlaylistSelect (uiimppl, uiimppl->askey);
-    }
-  }
-
   if (uiimppl->imptype == AUDIOSRC_TYPE_FILE) {
     pathNormalizePath (tbuff, sizeof (tbuff));
   }
@@ -818,7 +811,7 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
   /* do not update the new-name if the user has modified it */
   if (uiimppl->newnameuserchg == false && *tbuff) {
     snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
-    uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_NEWNAME], tbuff);
+    uiimpplSetNewName (uiimppl, tbuff);
   }
 
   pathInfoFree (pi);
@@ -826,6 +819,19 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
   if (urichg) {
     stpecpy (uiimppl->olduri, uiimppl->olduri + sizeof (uiimppl->olduri), str);
     uiimpplImportTypeChg (uiimppl);
+
+    uiimppl->plselectbuilt = false;
+
+    /* re-sets the type to match the URI, sets the URI */
+    /* may also reset the import type */
+    if (uiimpplProcessURI (uiimppl, tbuff) == UICB_STOP) {
+      uiimppl->haveerrors |= UIIMPPL_ERR_URI;
+      uiimppl->in_cb = false;
+      return UIENTRY_ERROR;
+    }
+    if (uiimppl->imptype != AUDIOSRC_TYPE_FILE) {
+      uiimpplBuildPlaylistSelect (uiimppl, uiimppl->askey);
+    }
   }
 
   if (haderrors && uiimppl->haveerrors == UIIMPPL_ERR_NONE) {
@@ -879,7 +885,7 @@ uiimpplSelectHandler (void *udata, int idx)
   /* allow entry validators to run */
   uiimppl->in_cb = false;
 
-  uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_NEWNAME], str);
+  uiimpplSetNewName (uiimppl, str);
   return UICB_CONT;
 }
 
@@ -1027,6 +1033,7 @@ uiimpplDragDropCallback (void *udata, const char *uri)
     return UICB_STOP;
   }
 
+  uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_URI], uri);
   return uiimpplProcessURI (uiimppl, uri);
 }
 
@@ -1065,7 +1072,6 @@ uiimpplProcessURI (uiimppl_t *uiimppl, const char *uri)
   uiimppl->askey = nlistGetNum (uiimppl->astypelookup, type);
   uiimppl->imptype = type;
   uiSpinboxTextSetValue (uiimppl->wcont [UIIMPPL_W_IMP_TYPE], uiimppl->askey);
-  uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_URI], uri);
   uiimppl->changed = true;
 
   pathInfoFree (pi);
@@ -1116,8 +1122,24 @@ uiimpplBuildPlaylistSelect (uiimppl_t *uiimppl, int askey)
   /* podcasts only have a single playlist, set the new-name now */
   if (uiimppl->imptype == AUDIOSRC_TYPE_PODCAST &&
       ilistGetCount (uiimppl->plnames) == 1) {
-    uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_NEWNAME],
+    uiimpplSetNewName (uiimppl,
         ilistGetStr (uiimppl->plnames, 0, DD_LIST_DISP));
   }
   uiimppl->plselectbuilt = true;
+}
+
+static void
+uiimpplSetNewName (uiimppl_t *uiimppl, const char *str)
+{
+  char    *nstra;
+  char    *nstrb;
+
+  nstra = regexReplace (uiimppl->slashrx, str, "");
+  if (isWindows ()) {
+    nstrb = regexReplace (uiimppl->winrx, nstra, "");
+    mdfree (nstra);
+    nstra = nstrb;
+  }
+  uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_NEWNAME], nstra);
+  mdfree (nstra);
 }

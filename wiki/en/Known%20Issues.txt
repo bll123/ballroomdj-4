@@ -14,6 +14,7 @@
 * Windows
     * The marquee position is not saved when it is iconified (close
       the window instead).
+    * Podcasts do not work, as libVLC is not handling authentication properly.
 * Linux
     * If a non-default audio sink is configured, and the system default
       audio sink is changed, the audio will switch to the new
