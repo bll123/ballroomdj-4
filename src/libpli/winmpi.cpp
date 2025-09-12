@@ -154,7 +154,7 @@ struct winmpintfc
   }
 
   void
-  mpURI (const string &hsfn)
+  mpURI (const hstring &hsfn)
   {
     auto uri = Uri (hsfn);
     if (uri == NULL) {
