@@ -448,8 +448,8 @@ main (int argc, char *argv[])
     if (gNewProfile) {
       connDisconnectAll (starter.conn);
       connFree (starter.conn);
-      logEnd ();
       if (starter.newprofile != sysvarsGetNum (SVL_PROFILE_IDX)) {
+        logEnd ();
         loglevel = bdjoptGetNum (OPT_G_DEBUGLVL);
         logStart (lockName (ROUTE_STARTERUI), "strt", loglevel);
       }

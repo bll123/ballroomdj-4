@@ -17,6 +17,7 @@
 
 #include <vlc/vlc.h>
 #include <vlc/libvlc_version.h>
+#include <vlc/libvlc_dialog.h>
 
 #include "audiosrc.h"
 #include "bdjstring.h"
@@ -24,8 +25,15 @@
 #include "pli.h"
 #include "vlci.h"
 
-#define VLCDEBUG 0
-#define SILENCE_LOG 1
+#define VLCDEBUG 1
+#define SILENCE_LOG 0
+
+typedef enum {
+  URI_STATE_NONE,
+  URI_STATE_FILE,
+  URI_STATE_URI,
+  URI_STATE_VIEW,
+} uristate_t;
 
 typedef struct vlcdata {
   libvlc_instance_t       *inst;
@@ -33,11 +41,13 @@ typedef struct vlcdata {
   libvlc_media_t          *media;
   libvlc_media_player_t   *mp;
   libvlc_state_t          state;
+  libvlc_dialog_cbs       dialogfuncs;
   int                     argc;
   char                    **argv;
   char                    *device;
   int                     devtype;
   FILE                    *logfh;
+  uristate_t              uristate;
 } vlcdata_t;
 
 # if VLCDEBUG
@@ -69,6 +79,9 @@ static const char *stateToStr (libvlc_state_t state); /* for debugging */
 
 # endif /* VLCDEBUG */
 
+static void vlcDisplayError (void *, const char *, const char *);
+static void vlcDisplayQuestion (void *, libvlc_dialog_id *, const char *, const char *, libvlc_dialog_question_type i_type, const char *, const char *, const char *);
+static void vlcDisplayCancel (void *, libvlc_dialog_id *);
 static bool vlcHaveAudioDevList (void);
 static void vlcReleaseMedia (vlcdata_t *vlcdata);
 static void vlcSetAudioOutput (vlcdata_t *vlcdata);
@@ -305,6 +318,8 @@ vlcMedia (vlcdata_t *vlcdata, const char *fn, int sourceType)
   vlcReleaseMedia (vlcdata);
 
   if (sourceType == AUDIOSRC_TYPE_FILE) {
+    vlcdata->uristate = URI_STATE_FILE;
+    vlclog (vlcdata, "uri-state: set file %d\n", URI_STATE_FILE);
 #if LIBVLC_VERSION_INT < LIBVLC_VERSION(4,0,0,0)
     vlcdata->media = libvlc_media_new_path (vlcdata->inst, fn);
 #endif
@@ -312,6 +327,8 @@ vlcMedia (vlcdata_t *vlcdata, const char *fn, int sourceType)
     vlcdata->media = libvlc_media_new_path (fn);
 #endif
   } else {
+    vlcdata->uristate = URI_STATE_URI;
+    vlclog (vlcdata, "uri-state: set uri %d\n", URI_STATE_URI);
 #if LIBVLC_VERSION_INT < LIBVLC_VERSION(4,0,0,0)
     vlcdata->media = libvlc_media_new_location (vlcdata->inst, fn);
 #endif
@@ -367,6 +384,7 @@ vlcInit (int vlcargc, char *vlcargv [], char *vlcopt [])
   vlcdata->device = NULL;
   vlcdata->devtype = PLI_DEFAULT_DEV;
   vlcdata->logfh = NULL;
+  vlcdata->uristate = URI_STATE_NONE;
 
 #if VLCDEBUG
   vlcdata->logfh = fopen ("vlc-out.txt", "a");
@@ -412,6 +430,18 @@ vlcInit (int vlcargc, char *vlcargv [], char *vlcopt [])
   /* to be released and re-created per medium. */
   vlcCreateNewMediaPlayer (vlcdata);
 
+#if LIBVLC_VERSION_INT < LIBVLC_VERSION(4,0,0,0)
+  vlcdata->dialogfuncs.pf_display_error = vlcDisplayError;
+#endif
+  vlcdata->dialogfuncs.pf_display_login = NULL;
+  vlcdata->dialogfuncs.pf_display_question = vlcDisplayQuestion;
+  vlcdata->dialogfuncs.pf_display_progress = NULL;
+  vlcdata->dialogfuncs.pf_cancel = vlcDisplayCancel;
+  vlcdata->dialogfuncs.pf_update_progress = NULL;
+  libvlc_dialog_set_callbacks (vlcdata->inst, &vlcdata->dialogfuncs, vlcdata);
+#if LIBVLC_VERSION_INT >= LIBVLC_VERSION(4,0,0,0)
+  libvlc_dialog_set_error_callback (vlcdata->inst, vlcDisplayError, vlcdata);
+#endif
   return vlcdata;
 }
 
@@ -451,8 +481,92 @@ vlcClose (vlcdata_t *vlcdata)
   }
 }
 
+/* tests if the interface was linked with the correct libvlc version */
+bool
+vlcVersionLinkCheck (void)
+{
+  bool    valid;
+
+  valid = (LIBVLC_VERSION_MAJOR == BDJ4_VLC_VERS);
+  return valid;
+}
+
+/* tests if the loaded version matches the wanted version */
+bool
+vlcVersionCheck (void)
+{
+  bool    valid;
+  int     vers;
+
+  vers = atoi (libvlc_get_version());
+  valid = BDJ4_VLC_VERS == vers;
+  return valid;
+}
+
+/* for debugging */
+
+int
+vlcGetVolume (vlcdata_t *vlcdata)
+{
+  int     val;
+
+  val = libvlc_audio_get_volume (vlcdata->mp);
+  return val;
+}
 
 /* internal routines */
+
+static void
+vlcDisplayError (void *p_data, const char *psz_title,
+    const char *psz_text)
+{
+  vlcdata_t *vlcdata = p_data;
+
+  vlclog (vlcdata, "err: %s\n   %s\n", psz_title, psz_text);
+}
+
+static void
+vlcDisplayQuestion (void *p_data, libvlc_dialog_id *p_id,
+    const char *psz_title, const char *psz_text,
+    libvlc_dialog_question_type i_type,
+    const char *psz_cancel, const char *psz_action1,
+    const char *psz_action2)
+{
+  vlcdata_t *vlcdata = p_data;
+  int       rc;
+
+  vlclog (vlcdata, "question: %d %s %s\n   q: %d cancel:%s 1:%s 2:%s\n", *(int *)p_id, psz_title, psz_text, i_type, psz_cancel, psz_action1, psz_action2);
+  /* there's no good way to figure out which question this is... */
+  /* use a state variable to track this, and hope */
+  if (vlcdata->uristate == URI_STATE_URI &&
+      i_type == LIBVLC_DIALOG_QUESTION_WARNING &&
+      psz_action2 == NULL) {
+    vlcdata->uristate = URI_STATE_VIEW;
+    vlclog (vlcdata, "uri-state: set view %d\n", URI_STATE_VIEW);
+    rc = libvlc_dialog_post_action (p_id, 1);
+  } else if (vlcdata->uristate == URI_STATE_VIEW &&
+      i_type == LIBVLC_DIALOG_QUESTION_WARNING &&
+      psz_action2 != NULL) {
+    /* there may be multiple certificate questions, reset back to uri state */
+    vlcdata->uristate = URI_STATE_URI;
+    vlclog (vlcdata, "uri-state: set uri %d\n", URI_STATE_URI);
+    /* accept for 24-hours */
+    /* re-playing the uri will simply go through this process again */
+    /* don't really want an automatic permanent accept */
+    rc = libvlc_dialog_post_action (p_id, 1);
+  } else {
+    rc = libvlc_dialog_dismiss (p_id);
+  }
+  return;
+}
+
+static void
+vlcDisplayCancel (void *p_data, libvlc_dialog_id *p_id)
+{
+  int       rc;
+
+  rc = libvlc_dialog_dismiss (p_id);
+}
 
 static bool
 vlcHaveAudioDevList (void)
@@ -539,39 +653,6 @@ vlcSetPosition (vlcdata_t *vlcdata, double dpos)
   vlcdata->state = libvlc_media_player_get_state (vlcdata->mp);
 }
 
-/* tests if the interface was linked with the correct libvlc version */
-bool
-vlcVersionLinkCheck (void)
-{
-  bool    valid;
-
-  valid = (LIBVLC_VERSION_MAJOR == BDJ4_VLC_VERS);
-  return valid;
-}
-
-/* tests if the loaded version matches the wanted version */
-bool
-vlcVersionCheck (void)
-{
-  bool    valid;
-  int     vers;
-
-  vers = atoi (libvlc_get_version());
-  valid = BDJ4_VLC_VERS == vers;
-  return valid;
-}
-
-/* for debugging */
-
-int
-vlcGetVolume (vlcdata_t *vlcdata)
-{
-  int     val;
-
-  val = libvlc_audio_get_volume (vlcdata->mp);
-  return val;
-}
-
 #if VLCDEBUG
 
 static void
@@ -583,6 +664,9 @@ vlclog (vlcdata_t *vlcdata, const char *msg, ...)
     va_start (args, msg);
     vfprintf (vlcdata->logfh, msg, args);
     va_end (args);
+fflush (vlcdata->logfh);
+fclose (vlcdata->logfh);
+vlcdata->logfh = fopen ("vlc-out.txt", "a");
   }
 }
 

@@ -7,9 +7,10 @@
 **4.16.0 2025-9---**
 
 * Bug Fixes:
-    * Windows: Song Editor: Fix copy of URL.
-    * Import Podcast: Fix manual entry of URL.
+    * Import Playlist: Fix manual entry of URL.
     * Import Playlist: Remove invalid characters from new song list name.
+    * Player: Playback of streams with certificate questions now works with libVLC.
+    * Windows: Song Editor: Fix copy of URL.
 * New Features:
     * Windows: Player Interface: Windows Media Player.
     * Player: Cross Fade support (Windows Only).

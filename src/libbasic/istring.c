@@ -64,6 +64,7 @@ istringInit (const char *locale)
     return;
   }
 
+logStderr ("init\n");
   {
     int         version = -1;
     char        tbuff [MAXPATHLEN];
@@ -132,6 +133,7 @@ istringCleanup (void)
     return;
   }
 
+logStderr ("cleanup\n");
   if (istringdata.ucoll != NULL) {
     mdextfree (istringdata.ucoll);
     istringdata.ucol_close (istringdata.ucoll);
@@ -145,9 +147,11 @@ istringCleanup (void)
 
   if (istringdata.i18ndlh != NULL) {
     dylibClose (istringdata.i18ndlh);
+    istringdata.i18ndlh = NULL;
   }
   if (istringdata.ucdlh != NULL) {
     dylibClose (istringdata.ucdlh);
+    istringdata.ucdlh = NULL;
   }
   istringdata.initialized = false;
 }
