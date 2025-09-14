@@ -14,6 +14,9 @@
 * Windows
     * The marquee position is not saved when it is iconified (close
       the window instead).
+    * BDJ4 does not detect changes in connected storage devices.  If you want
+      to play music from an USB or external drive, you must restart BDJ4.
+    * BDJ4 does not detect changes in connected audio devices.
 * Linux
     * If a non-default audio sink is configured, and the system default
       audio sink is changed, the audio will switch to the new

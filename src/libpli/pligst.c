@@ -212,7 +212,7 @@ pliiState (plidata_t *plidata)
 }
 
 int
-pliiSetAudioDevice (plidata_t *plidata, const char *dev, int plidevtype)
+pliiSetAudioDevice (plidata_t *plidata, const char *dev, plidev_t plidevtype)
 {
   return 0;
 }

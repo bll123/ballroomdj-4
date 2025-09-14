@@ -19,6 +19,7 @@
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.System.h>
 #include <winrt/Windows.Foundation.h>
+#include <winrt/Windows.Devices.Enumeration.h>
 
 #include "bdj4.h"
 #include "audiosrc.h"
@@ -33,6 +34,7 @@
 using namespace winrt::Windows::Media;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Storage;
+using namespace winrt::Windows::Devices::Enumeration;
 using namespace winrt::Windows;
 using namespace winrt;
 
@@ -45,6 +47,7 @@ typedef struct winmpintfc winmpintfc_t;
 typedef struct windata {
   winmpintfc_t  *winmp [MP_MAX_SOURCE];
   double        vol [MP_MAX_SOURCE];
+  char          *audiodev;
   int           curr;
   plistate_t    state;
   bool          inCrossFade;
@@ -128,6 +131,15 @@ struct winmpintfc
     mediaPlayer = Playback::MediaPlayer ();
     mediaPlayer.CommandManager ().IsEnabled (false);
 
+    if (windata->audiodev != NULL) {
+      wchar_t   *wdev;
+
+      wdev = osToWideChar (windata->audiodev);
+      auto hsdev = hstring (wdev);
+      mpSetAudioDevice (hsdev);
+      mdfree (wdev);
+    }
+
     try {
       sfile = StorageFile::GetFileFromPathAsync (hsfn).get ();
     } catch (std::exception &exc) {
@@ -201,6 +213,8 @@ logBasic ("winmp: winmp-uri-b\n");
     auto sessdur = pbSession.NaturalDuration ();
     /* timespan in winrt is a std::chrono::duration */
     /* the count is in 100ns intervals */
+    /* I think there may be an easier way to do this, but */
+    /* my c++ knowledge is minimal */
     auto ms =
         std::chrono::duration_cast<std::chrono::milliseconds>(sessdur).count ();
     dur = ms;
@@ -261,6 +275,33 @@ logBasic ("winmp: winmp-uri-b\n");
     dvol = mediaPlayer.Volume ();
     vol = dvol * 100.0;
     return vol;
+  }
+
+  int
+  mpSetAudioDevice (const hstring &hsdev)
+  {
+    int     rc = -1;
+
+    if (mediaPlayer == nullptr) {
+      return 0;
+    }
+
+// ### this is crashing
+// the device id should be fine,
+// also tried prefixing with SWM(?)\MMDEVAPI\
+logBasic ("mp: set-ad: beg\n");
+    auto devinfo = DeviceInformation::CreateFromIdAsync (hsdev).get ();
+logBasic ("mp: set-ad: b\n");
+    try {
+logBasic ("mp: set-ad: d\n");
+      mediaPlayer.AudioDevice (devinfo);
+      rc = 0;
+logBasic ("mp: set-ad: e\n");
+    } catch (std::exception &exc) {
+logBasic ("mp: set-ad: fail-set-dev %s\n", exc.what ());
+    }
+logBasic ("mp: set-ad: fin %d\n", rc);
+    return rc;
   }
 
   Playback::MediaPlaybackState
@@ -431,6 +472,7 @@ winmpInit (void)
   windata->state = PLI_STATE_IDLE;
   windata->inCrossFade = false;
   windata->curr = 0;
+  windata->audiodev = NULL;
   for (int i = 0; i < MP_MAX_SOURCE; ++i) {
     windata->winmp [i] = new winmpintfc (windata);
   }
@@ -530,4 +572,13 @@ winmpCrossFadeVolume (windata_t *windata, int vol)
   windata->winmp [windata->curr]->mpVolume (dvol);
 
   return;
+}
+
+int
+winmpSetAudioDevice (windata_t *windata, const char *dev, plidev_t plidevtype)
+{
+logBasic ("winmp-set-ad: %s\n", dev);
+  windata->audiodev = strdup (dev + 18);
+
+  return 0;
 }

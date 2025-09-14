@@ -234,25 +234,22 @@ pliiState (plidata_t *pliData)
 }
 
 int
-pliiSetAudioDevice (plidata_t *pliData, const char *dev, int plidevtype)
+pliiSetAudioDevice (plidata_t *pliData, const char *dev, plidev_t plidevtype)
 {
-  int   rc = -1;
+  int   rc = 0;
 
   if (pliData == NULL || pliData->windata == NULL) {
     return -1;
   }
 
-  /* this is required for windows, not for linux or macos */
-//  rc = winSetAudioDev (pliData->windata, dev, plidevtype);
+  rc = winmpSetAudioDevice (pliData->windata, dev, plidevtype);
   return rc;
 }
 
 int
 pliiAudioDeviceList (plidata_t *pliData, volsinklist_t *sinklist)
 {
-  int   rc = 0;
-
-  return rc;
+  return 0;
 }
 
 int

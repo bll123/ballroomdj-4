@@ -64,7 +64,6 @@ istringInit (const char *locale)
     return;
   }
 
-logStderr ("init\n");
   {
     int         version = -1;
     char        tbuff [MAXPATHLEN];
@@ -133,7 +132,6 @@ istringCleanup (void)
     return;
   }
 
-logStderr ("cleanup\n");
   if (istringdata.ucoll != NULL) {
     mdextfree (istringdata.ucoll);
     istringdata.ucol_close (istringdata.ucoll);

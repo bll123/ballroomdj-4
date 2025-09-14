@@ -229,7 +229,7 @@ static void     playerCheckVolumeSink (playerdata_t *playerData);
 static void     playerVolumeMute (playerdata_t *playerData);
 static void     playerPrepQueueFree (void *);
 static void     playerSigHandler (int sig);
-static int      playerSetAudioSink (playerdata_t *playerData, const char *sinkname);
+static plidev_t playerSetAudioSink (playerdata_t *playerData, const char *sinkname);
 static void     playerInitSinkList (playerdata_t *playerData);
 static void     playerFadeVolSet (playerdata_t *playerData);
 static double   calcFadeIndex (playerdata_t *playerData, int fadeType);
@@ -266,7 +266,7 @@ main (int argc, char *argv[])
   const char      *audiosink;
   const char      *plintfc;
   char            *volintfc;
-  int             plidevtype;
+  plidev_t        plidevtype;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("play");
@@ -372,7 +372,8 @@ main (int argc, char *argv[])
   playerData.pli = pliInit (plintfc, bdjoptGetStr (OPT_M_PLAYER_INTFC_NM));
   playerData.pliSupported = pliSupported (playerData.pli);
 
-  /* vlc needs to have the audio device set */
+  /* windows needs to have the audio device set */
+  /* apparently there is no api to set the applications audio sink */
   pliSetAudioDevice (playerData.pli, playerData.actualSink, plidevtype);
 
   playerSetDefaultVolume (&playerData);
@@ -1731,9 +1732,9 @@ playerCheckVolumeSink (playerdata_t *playerData)
 {
   if (*playerData->currentSink == '\0') {
     if (volumeCheckSink (playerData->volume, playerData->currentSink)) {
-      int   currvol;
-      int   realvol;
-      int   plidevtype;
+      int       currvol;
+      int       realvol;
+      plidev_t  plidevtype;
 
       /* preserve the volume */
       currvol = playerData->currentVolume;
@@ -1808,14 +1809,14 @@ playerSigHandler (int sig)
   gKillReceived = 1;
 }
 
-static int
+static plidev_t
 playerSetAudioSink (playerdata_t *playerData, const char *sinkname)
 {
   bool        found = false;
   int         idx = -1;
   bool        isdefault = false;
   const char  *confsink;
-  int         rc;
+  plidev_t    rc;
 
   confsink = bdjoptGetStr (OPT_MP_AUDIOSINK);
   if (strcmp (confsink, VOL_DEFAULT_NAME) == 0) {

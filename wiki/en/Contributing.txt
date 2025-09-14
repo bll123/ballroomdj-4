@@ -12,6 +12,8 @@ As of 2025-8-9, development needs are:
       whoever takes this on.
 * Windows: SMTC: Use image from audio file.
   For whatever reason, a call to initialize the apartment crashes.
+* Volume Interface
+    * Windows - Needs to be modernized and updated
 * Player Interface
     * Windows Native
       in progress

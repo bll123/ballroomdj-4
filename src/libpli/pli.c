@@ -54,7 +54,7 @@ typedef struct pli {
   ssize_t           (*pliiGetDuration) (plidata_t *plidata);
   ssize_t           (*pliiGetTime) (plidata_t *plidata);
   plistate_t        (*pliiState) (plidata_t *plidata);
-  int               (*pliiSetAudioDevice) (plidata_t *plidata, const char *dev, int plidevtype);
+  int               (*pliiSetAudioDevice) (plidata_t *plidata, const char *dev, plidev_t plidevtype);
   int               (*pliiAudioDeviceList) (plidata_t *plidata, volsinklist_t *sinklist);
   int               (*pliiSupported) (plidata_t *plidata);
   int               (*pliiGetVolume) (plidata_t *plidata);
@@ -264,7 +264,7 @@ pliState (pli_t *pli)
 }
 
 int
-pliSetAudioDevice (pli_t *pli, const char *dev, int plidevtype)
+pliSetAudioDevice (pli_t *pli, const char *dev, plidev_t plidevtype)
 {
   if (pli != NULL && pli->pliiSetAudioDevice != NULL) {
     return pli->pliiSetAudioDevice (pli->plidata, dev, plidevtype);

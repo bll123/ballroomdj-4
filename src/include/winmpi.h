@@ -27,6 +27,7 @@ windata_t *       winmpInit (void);
 void              winmpClose (windata_t *windata);
 int               winmpGetVolume (windata_t *windata);
 void              winmpCrossFadeVolume (windata_t *windata, int vol);
+int               winmpSetAudioDevice (windata_t *windata, const char *dev, plidev_t plidevtype);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
