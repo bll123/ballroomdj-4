@@ -6,7 +6,7 @@
 
 * General
     * BDJ4 does not detect changes in connected storage devices.  If you want
-      to play music from an USB or external drive, you must restart BDJ4
+      to play music from an USB or external drive, you must start BDJ4
       after the device is connected.
     * BDJ4 does not detect changes in connected audio devices.
 * MacOS
@@ -26,6 +26,8 @@
       sink when a new song starts playing.
     * The dock icon does not display on the GNOME desktop
       (e.g. Ubuntu 2204 and later).
+    * There is an intermittent crash in the podcast updater in the ICU
+      library (Debian 12).  An issue with ICU version 72 library.
 
 [Wiki Home](Home)
 <br>_(Updated 2025-08-20 05:45:34; BDJ4 version 4.15.5)_
