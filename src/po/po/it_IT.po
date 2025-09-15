@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2025-09-03\n"
-"PO-Revision-Date: 2025-09-03 19:15\n"
+"PO-Revision-Date: 2025-09-15\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Italian\n"
 "Language: it\n"
@@ -634,6 +634,10 @@ msgstr "Creare una struttura di cartelle."
 msgid "Creating shortcut."
 msgstr "Creazione di una scorciatoia."
 
+#. CONTEXT: configuration: queue: the amount of time to cross-fade the songs
+msgid "Cross Fade Time"
+msgstr ""
+
 #. CONTEXT: audio identification: the data for the current song
 msgid "Current"
 msgstr "Attuale"
@@ -1222,7 +1226,8 @@ msgid "Marquee Theme"
 msgstr "Tema del tendone"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "Tempo Massimo\n"
 "Di Gioco"
@@ -1762,7 +1767,9 @@ msgid "Repeat"
 msgstr "Ripetere"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "Sostituisce il database BallroomDJ nella sua interezza. Tutte le modifiche apportate al database andranno perse."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -2153,7 +2160,9 @@ msgid "The conversion process will not be run."
 msgstr "Il processo di conversione non verrà eseguito."
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "Il processo di conversione viene eseguito solo per le nuove installazioni e per le reinstallazioni."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -2288,11 +2297,13 @@ msgstr "Aggiornato"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "Aggiorna le informazioni nel database BallroomDJ dal database %s ."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Aggiorna le informazioni nel database di BallroomDJ dai tag del file audio."
 
 #. CONTEXT: alternate installation: status message
@@ -2374,6 +2385,9 @@ msgstr "West Coast Swing"
 msgid "When the BPM value is stable, select the Save button."
 msgstr "Quando il valore BPM è stabile, selezionare il pulsante Salva."
 
+msgid "Windows Media Player"
+msgstr ""
+
 #. CONTEXT: label: work (a musical work)
 msgid "Work"
 msgstr ""
@@ -2391,7 +2405,9 @@ msgid "Write Tags to Audio Files"
 msgstr "Scrivere i tag sui file audio"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "Scrive i tag del file audio utilizzando le informazioni del database di BallroomDJ."
 
 #. CONTEXT: configuration: dialog: XML file types

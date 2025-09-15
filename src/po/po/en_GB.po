@@ -2,10 +2,10 @@
 # -- english/gb
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.15.7\n"
+"Project-Id-Version: ballroomdj-4 4.16.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2025-09-03\n"
-"PO-Revision-Date: 2025-09-03\n"
+"POT-Creation-Date: 2025-09-15\n"
+"PO-Revision-Date: 2025-09-15\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -626,6 +626,10 @@ msgstr ""
 #. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
 msgid "Creating shortcut."
+msgstr ""
+
+#. CONTEXT: configuration: queue: the amount of time to cross-fade the songs
+msgid "Cross Fade Time"
 msgstr ""
 
 #. CONTEXT: audio identification: the data for the current song
@@ -2372,6 +2376,9 @@ msgstr ""
 
 #. CONTEXT: bpm counter: instructions, line 2
 msgid "When the BPM value is stable, select the Save button."
+msgstr ""
+
+msgid "Windows Media Player"
 msgstr ""
 
 #. CONTEXT: label: work (a musical work)
