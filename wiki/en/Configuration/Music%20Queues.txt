@@ -27,9 +27,13 @@ volume when the song starts playing.  Set to 0.0 for no fade in.
 __Fade Out Time__: The amount of time used to fade out the volume when
 song ends.  Set to 0.0 for no fade out.
 
-__Gap__: The amount of time to wait before playing the next song.
+__Gap Between Songs__: The amount of time to wait before playing the next song.
 <br>The gap can also be set for a playlist
 ([Playlist&nbsp;Management](en-Management-Playlist%20Management)).
+
+__Cross Fade Time__: Use a cross fade when starting the next song.
+Cross fade is only available when using the _Windows Media Player_
+player interface.
 
 __Maximum Play Time__: The maximum duration a song will play.  This is
 often set anywhere from 2:00 minutes to 3:00 minutes. If your songs

@@ -132,7 +132,6 @@ struct winmpintfc
     if (windata->audiodev != NULL) {
       wchar_t   *wdev;
 
-logBasic ("call set-ad: %s\n", windata->audiodev);
       wdev = osToWideChar (windata->audiodev);
       auto hsdev = hstring (wdev);
       mpSetAudioDevice (hsdev);
@@ -150,22 +149,22 @@ logBasic ("call set-ad: %s\n", windata->audiodev);
     try {
       sfile = StorageFile::GetFileFromPathAsync (hsfn).get ();
     } catch (std::exception &exc) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "win-media open-fail %s", exc.what ());
+      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-media open-fail %s", exc.what ());
       return;
     }
-    if (sfile == NULL) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "win-media fail-no-file");
+    if (sfile == nullptr) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-media file-null");
       return;
     }
     auto source = Core::MediaSource::CreateFromStorageFile (sfile);
-    if (source == NULL) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "win-media source-fail");
+    if (source == nullptr) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-media source-null");
       return;
     }
     try {
       mediaPlayer.Source (source);
     } catch (std::exception &exc) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "win-source source-fail");
+      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-media source fail");
       return;
     }
     auto ac = mediaPlayer.AudioCategory ();
@@ -183,13 +182,13 @@ logBasic ("call set-ad: %s\n", windata->audiodev);
     }
     auto source = Core::MediaSource::CreateFromUri (uri);
     if (source == nullptr) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "win-uri create-fail");
+      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-uri create-fail");
       return;
     }
     try {
       mediaPlayer.Source (source);
     } catch (std::exception &exc) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "win-uri source-fail %s", exc.what ());
+      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-uri source-fail %s", exc.what ());
       return;
     }
     auto ac = mediaPlayer.AudioCategory ();
@@ -288,27 +287,21 @@ logBasic ("call set-ad: %s\n", windata->audiodev);
     int     rc = -1;
 
     if (mediaPlayer == nullptr) {
-logBasic ("mp: set-ad: null player\n");
       return 0;
     }
 
 // ### this is crashing
 // the device id should be fine,
 // also tried prefixing with XXX\\MMXXXXXX\\ ...
-//    return 0;
+    return 0;
 
-logBasic ("mp: set-ad: beg\n");
     auto devinfo = DeviceInformation::CreateFromIdAsync (hsdev).get ();
-logBasic ("mp: set-ad: b %d\n", devinfo == nullptr);
     try {
-logBasic ("mp: set-ad: d\n");
       mediaPlayer.AudioDevice (devinfo);
       rc = 0;
-logBasic ("mp: set-ad: e\n");
     } catch (std::exception &exc) {
-logBasic ("mp: set-ad: fail-set-dev %s\n", exc.what ());
+      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-ad fail %s", exc.what ());
     }
-logBasic ("mp: set-ad: fin %d\n", rc);
     return rc;
   }
 
@@ -585,7 +578,6 @@ winmpCrossFadeVolume (windata_t *windata, int vol)
 int
 winmpSetAudioDevice (windata_t *windata, const char *dev, plidev_t plidevtype)
 {
-logBasic ("winmp-set-ad: %s\n", dev);
   windata->audiodev = strdup (dev + 18);
 
   return 0;

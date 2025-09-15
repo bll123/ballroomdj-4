@@ -166,19 +166,19 @@ if [[ $DEVELOPMENT != dev ]]; then
     grc=1
   fi
 
-  wc=$(grep '^fprintf' */*.c | grep -v uitest.c | wc -l)
+  wc=$(grep '^fprintf' */*.c */*.cpp */*.m | grep -v uitest.c | wc -l)
   if [[ $wc -ne 0 ]]; then
     echo "fprintf debugging found"
     grc=1
   fi
 
-  wc=$(grep '^logBasic' */*.c | grep -v KEEP | wc -l)
+  wc=$(grep '^logBasic' */*.c */*.cpp */*.m | grep -v KEEP | wc -l)
   if [[ $wc -ne 0 ]]; then
     echo "logBasic debugging found"
     grc=1
   fi
 
-  wc=$(grep '^logStderr' */*.c | grep -v KEEP | wc -l)
+  wc=$(grep '^logStderr' */*.c */*.cpp */*.m | grep -v KEEP | wc -l)
   if [[ $wc -ne 0 ]]; then
     echo "logStderr debugging found"
     grc=1

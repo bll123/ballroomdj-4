@@ -69,6 +69,7 @@ add_executable (testsuite
   testsuite.c
 )
 target_link_libraries (testsuite PRIVATE
+  libbdj4pli
   libbdj4 libbdj4basic libbdj4common
 )
 

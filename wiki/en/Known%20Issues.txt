@@ -19,6 +19,8 @@
 * Windows
     * The marquee position is not saved when it is iconified (close
       the window instead).
+    * 2025-9 The player interface "Windows Media Player" currently does not
+      support setting the audio sink.
 * Linux
     * If a non-default audio sink is configured, and the system default
       audio sink is changed, the audio will switch to the new

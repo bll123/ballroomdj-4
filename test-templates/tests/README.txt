@@ -33,6 +33,8 @@
 #   get <route> <msg>
 #   msg <route> <msg>
 #   mssleep <time>
+#   crossfadechk
+#     if not supported, skip the test
 #   print <text>
 #   resptimeout <time>
 #     set the response timeout for 'wait'

@@ -239,7 +239,7 @@ if [[ $TESTSUITE == T ]]; then
 
   # windows media player
   TESTWINMPON=T
-  if [[ $grc -eq 0 && $TESTWINMPON == T && $os == window ]]; then
+  if [[ $grc -eq 0 && $TESTWINMPON == T && $os == win64 ]]; then
     runTestSuite WINMP
     rc=$?
     if [[ $rc -ne 0 ]]; then

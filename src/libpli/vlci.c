@@ -25,8 +25,8 @@
 #include "pli.h"
 #include "vlci.h"
 
-#define VLCDEBUG 1
-#define SILENCE_LOG 0
+#define VLCDEBUG 0
+#define SILENCE_LOG 1
 
 typedef enum {
   URI_STATE_NONE,

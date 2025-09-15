@@ -34,6 +34,7 @@
 #include "osrandom.h"
 #include "ossignal.h"
 #include "pathbld.h"
+#include "pli.h"
 #include "procutil.h"
 #include "progstate.h"
 #include "slist.h"
@@ -75,6 +76,7 @@ typedef struct {
   progstate_t *progstate;
   procutil_t  *processes [ROUTE_MAX];
   conn_t      *conn;
+  int         plisupported;
   int         stopwaitcount;
   slist_t     *routetxtlist;
   slist_t     *msgtxtlist;
@@ -164,6 +166,7 @@ main (int argc, char *argv [])
   char        *state;
   int         rc;
   char        tbuff [MAXPATHLEN];
+  pli_t       *pli;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("ts");
@@ -197,6 +200,10 @@ main (int argc, char *argv [])
   clearResults (&testsuite.sresults);
   clearResults (&testsuite.gresults);
   startResultTimer (&testsuite.gresults);
+  pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC),
+        bdjoptGetStr (OPT_M_PLAYER_INTFC_NM));
+  testsuite.plisupported = pliSupported (pli);
+  pliFree (pli);
   testsuite.failedlist = slistAlloc ("ts-failed", LIST_ORDERED, NULL);
   testsuite.progstate = progstateInit ("testsuite");
   testsuite.stopwaitcount = 0;
@@ -630,6 +637,13 @@ tsProcessScript (testsuite_t *testsuite)
   }
 
   if (testsuite->processtest) {
+    if (strncmp (tcmd, "crossfadechk", 12) == 0) {
+      if (! pliCheckSupport (testsuite->plisupported, PLI_SUPPORT_CROSSFADE)) {
+        testsuite->skiptoend = true;
+      }
+      ok = TS_OK;
+      disp = true;
+    }
     if (strncmp (tcmd, "end", 3) == 0) {
       ++testsuite->results.testcount;
       printResults (testsuite, &testsuite->results);
@@ -765,6 +779,9 @@ printResults (testsuite_t *testsuite, results_t *results)
 
   if (results->chkcount == 0 || results->chkfail == 0) {
     state = "OK";
+    if (testsuite->skiptoend) {
+      state = "SKIP";
+    }
   } else if (results->testfail == 0) {
     slistSetStr (testsuite->failedlist, testsuite->testnum, NULL);
     ++results->testfail;
@@ -844,7 +861,10 @@ tsScriptSection (testsuite_t *testsuite, const char *tcmd)
   }
 
   if (testsuite->processsection) {
-    fprintf (stdout, "== %s %s\n", testsuite->sectionnum, testsuite->sectionname);
+    char  ttm [40];
+
+    tmutilTstamp (ttm, sizeof (ttm));
+    fprintf (stdout, "== %s %s %s\n", testsuite->sectionnum, ttm, testsuite->sectionname);
     fflush (stdout);
   }
 

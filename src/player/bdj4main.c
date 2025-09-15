@@ -3306,7 +3306,6 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
     }
   }
 
-
   snprintf (tmp, sizeof (tmp),
       "mqplay%c%d%c"
       "mq0len%c%" PRId32 "%c"
