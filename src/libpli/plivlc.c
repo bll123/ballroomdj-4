@@ -116,7 +116,7 @@ pliiInit (const char *plinm, const char *playerargs)
 
   pliData->vlcdata = vlcInit (VLC_DFLT_OPT_SZ, vlcDefaultOptions, vlcOptions);
   pliData->supported = PLI_SUPPORT_SEEK | PLI_SUPPORT_SPEED |
-      PLI_SUPPORT_STREAM;
+      PLI_SUPPORT_STREAM | PLI_SUPPORT_STREAM_SPD;
   /* VLC uses the default sink set by the application */
   /* there is no need to process the audio device list */
 

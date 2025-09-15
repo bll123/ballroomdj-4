@@ -48,6 +48,8 @@ pliiInit (const char *plinm, const char *playerargs)
   plidata->supported = PLI_SUPPORT_NONE;
   plidata->supported |= PLI_SUPPORT_SEEK;
   plidata->supported |= PLI_SUPPORT_SPEED;
+  plidata->supported |= PLI_SUPPORT_STREAM;
+  plidata->supported |= PLI_SUPPORT_STREAM_SPD;
 
   return plidata;
 }

@@ -56,7 +56,7 @@ pliiInit (const char *plinm, const char *playerargs)
   pliData->windata = winmpInit ();
   pliData->name = "Windows Native";
   pliData->supported = PLI_SUPPORT_SEEK | PLI_SUPPORT_SPEED |
-      PLI_SUPPORT_CROSSFADE;
+      PLI_SUPPORT_CROSSFADE | PLI_SUPPORT_STREAM | PLI_SUPPORT_STREAM_SPD;
 
   return pliData;
 }

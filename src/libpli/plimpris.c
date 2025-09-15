@@ -47,7 +47,9 @@ pliiInit (const char *plinm, const char *playerargs)
   }
   if (mprisHasSpeed (pliData->mpris)) {
     pliData->supported |= PLI_SUPPORT_SPEED;
+    pliData->supported |= PLI_SUPPORT_STREAM_SPD;
   }
+  pliData->supported |= PLI_SUPPORT_STREAM;
 
   return pliData;
 }

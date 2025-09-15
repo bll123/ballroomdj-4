@@ -122,10 +122,8 @@ struct winmpintfc
   }
 
   void
-  mpMedia (const hstring &hsfn)
+  mpInitPlayer (void)
   {
-    StorageFile   sfile = nullptr;
-
     /* create a new media player for each playback item */
     /* in order to allow cross-fading */
     mediaPlayer = Playback::MediaPlayer ();
@@ -134,11 +132,20 @@ struct winmpintfc
     if (windata->audiodev != NULL) {
       wchar_t   *wdev;
 
+logBasic ("call set-ad: %s\n", windata->audiodev);
       wdev = osToWideChar (windata->audiodev);
       auto hsdev = hstring (wdev);
       mpSetAudioDevice (hsdev);
       mdfree (wdev);
     }
+  }
+
+  void
+  mpMedia (const hstring &hsfn)
+  {
+    StorageFile   sfile = nullptr;
+
+    mpInitPlayer ();
 
     try {
       sfile = StorageFile::GetFileFromPathAsync (hsfn).get ();
@@ -168,25 +175,23 @@ struct winmpintfc
   void
   mpURI (const hstring &hsfn)
   {
+    mpInitPlayer ();
+
     auto uri = Uri (hsfn);
-    if (uri == NULL) {
+    if (uri == nullptr) {
       return;
     }
     auto source = Core::MediaSource::CreateFromUri (uri);
-    if (source == NULL) {
+    if (source == nullptr) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "win-uri create-fail");
       return;
     }
-    /* the item wrapper did not help with the crash */
-    auto pbitem = Playback::MediaPlaybackItem (source);
-logBasic ("winmp: winmp-uri-a\n");
-    /* this is crashing when a uri is used */
     try {
-      mediaPlayer.Source (pbitem);
+      mediaPlayer.Source (source);
     } catch (std::exception &exc) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "win-uri source-fail %s", exc.what ());
       return;
     }
-logBasic ("winmp: winmp-uri-b\n");
     auto ac = mediaPlayer.AudioCategory ();
     ac = Playback::MediaPlayerAudioCategory::Media;
   }
@@ -283,15 +288,18 @@ logBasic ("winmp: winmp-uri-b\n");
     int     rc = -1;
 
     if (mediaPlayer == nullptr) {
+logBasic ("mp: set-ad: null player\n");
       return 0;
     }
 
 // ### this is crashing
 // the device id should be fine,
-// also tried prefixing with SWM(?)\MMDEVAPI\
+// also tried prefixing with XXX\\MMXXXXXX\\ ...
+//    return 0;
+
 logBasic ("mp: set-ad: beg\n");
     auto devinfo = DeviceInformation::CreateFromIdAsync (hsdev).get ();
-logBasic ("mp: set-ad: b\n");
+logBasic ("mp: set-ad: b %d\n", devinfo == nullptr);
     try {
 logBasic ("mp: set-ad: d\n");
       mediaPlayer.AudioDevice (devinfo);

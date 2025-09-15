@@ -4,6 +4,11 @@
 
 ### Known Issues
 
+* General
+    * BDJ4 does not detect changes in connected storage devices.  If you want
+      to play music from an USB or external drive, you must restart BDJ4
+      after the device is connected.
+    * BDJ4 does not detect changes in connected audio devices.
 * MacOS
     * 2025-8-16 Configuration: The font selection button crashes the
       application. This is not a problem on my end, I will post a
@@ -14,9 +19,6 @@
 * Windows
     * The marquee position is not saved when it is iconified (close
       the window instead).
-    * BDJ4 does not detect changes in connected storage devices.  If you want
-      to play music from an USB or external drive, you must restart BDJ4.
-    * BDJ4 does not detect changes in connected audio devices.
 * Linux
     * If a non-default audio sink is configured, and the system default
       audio sink is changed, the audio will switch to the new

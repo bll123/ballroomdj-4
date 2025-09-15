@@ -31,12 +31,13 @@ typedef enum {
 } plistate_t;
 
 enum {
-  PLI_SUPPORT_NONE      = 0,
-  PLI_SUPPORT_SEEK      = (1 << 0),
-  PLI_SUPPORT_SPEED     = (1 << 1),
-  PLI_SUPPORT_DEVLIST   = (1 << 2),
-  PLI_SUPPORT_CROSSFADE = (1 << 3),
-  PLI_SUPPORT_STREAM    = (1 << 4),
+  PLI_SUPPORT_NONE        = 0,
+  PLI_SUPPORT_SEEK        = (1 << 0),
+  PLI_SUPPORT_SPEED       = (1 << 1),
+  PLI_SUPPORT_DEVLIST     = (1 << 2),
+  PLI_SUPPORT_CROSSFADE   = (1 << 3),
+  PLI_SUPPORT_STREAM      = (1 << 4),
+  PLI_SUPPORT_STREAM_SPD  = (1 << 5),
 };
 
 typedef enum {
