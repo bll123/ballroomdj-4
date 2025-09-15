@@ -87,7 +87,10 @@ main (int argc, char *argv[])
     }
 
     logEnd ();
+
+    /* there is an intermittent crash on linux within the ICU library */
     mssleep (500);
+
     /* the database now needs to be loaded */
     flags = BDJ4_INIT_ALL;
     bdj4startup (argc, argv, &pcupd.musicdb, "podu", ROUTE_PODCASTUPD, &flags);
