@@ -6,7 +6,7 @@
    height="256"
    id="svg4756"
    version="1.1"
-   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
    viewBox="0 0 256 256"
    sodipodi:docname="bdj4_icon_inst-base.svg"
    inkscape:export-filename="/home/bll/s/bdj4/img/bdj4_icon_marquee.png"
@@ -29,21 +29,23 @@
      inkscape:zoom="2.0742188"
      inkscape:cx="128"
      inkscape:cy="127.75894"
-     inkscape:current-layer="layer6"
+     inkscape:current-layer="layer5"
      showgrid="true"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
      showborder="true"
      inkscape:window-width="1614"
      inkscape:window-height="931"
-     inkscape:window-x="140"
-     inkscape:window-y="68"
+     inkscape:window-x="782"
+     inkscape:window-y="60"
      inkscape:window-maximized="0"
      inkscape:pagecheckerboard="true"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
-     fit-margin-bottom="0" />
+     fit-margin-bottom="0"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
   <metadata
      id="metadata4761">
     <rdf:RDF />
@@ -61,26 +63,35 @@
        height="256"
        x="8.5333405"
        y="8.5333405" />
+    <g
+       id="g1251"
+       transform="matrix(1.7166536,0,0,1.7166536,-35.850658,-8.5183451)"
+       style="display:inline">
+      <circle
+         style="opacity:0.996;fill:none;fill-opacity:0.000889258;stroke:#1d1c6b;stroke-width:3;stroke-linecap:round;stroke-dasharray:none"
+         id="path521"
+         cx="59.324059"
+         cy="42.384079"
+         r="24.80245" />
+      <text
+         xml:space="preserve"
+         style="font-size:48px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#1d1c6b;fill-opacity:1"
+         x="39.214684"
+         y="59.282516"
+         id="text1186"><tspan
+           sodipodi:role="line"
+           id="tspan1184"
+           x="39.214684"
+           y="59.282516"
+           style="font-size:48px;fill:#1d1c6b;fill-opacity:1">⬇</tspan></text>
+    </g>
   </g>
   <g
      id="layer1"
      inkscape:label="Note"
      inkscape:groupmode="layer"
      transform="translate(-8.5333405,183.46666)"
-     style="display:inline">
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.45311px;line-height:0%;font-family:'Droid Serif';-inkscape-font-specification:'Droid Serif';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#1d1c6b;fill-opacity:1;stroke:none;stroke-width:0.787759px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="-39.012867"
-       y="27.35895"
-       id="text4173"
-       transform="scale(1.1629138,0.85990897)"><tspan
-         sodipodi:role="line"
-         id="tspan4175"
-         x="-39.012867"
-         y="27.35895"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:302.285px;line-height:125%;font-family:'Droid Serif';-inkscape-font-specification:'Droid Serif';text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#1d1c6b;fill-opacity:1;stroke-width:0.787759px">♫</tspan></text>
-  </g>
+     style="display:inline" />
   <g
      inkscape:groupmode="layer"
      id="layer4"
@@ -88,76 +99,98 @@
      style="display:inline"
      transform="translate(-8.5333405,-8.5333405)">
     <g
-       id="g39"
-       transform="translate(5.5175234,-12.836109)">
-      <text
-         id="text4150"
-         y="161.295"
-         x="28.175468"
-         style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#d71229;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:110px;line-height:1.25;font-family:Kinnari;-inkscape-font-specification:'Kinnari Bold Italic';fill:#d71229;fill-opacity:1"
-           y="161.295"
-           x="28.175468"
-           id="tspan4152"
-           sodipodi:role="line">BDJ</tspan></text>
-      <text
-         id="text4150-7"
-         y="157.295"
-         x="20.175468"
-         style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#e9b117;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:110px;line-height:1.25;font-family:Kinnari;-inkscape-font-specification:'Kinnari Bold Italic';fill:#e9b117;fill-opacity:1"
-           y="157.295"
-           x="20.175468"
-           id="tspan4152-5"
-           sodipodi:role="line">BDJ</tspan></text>
-      <text
-         id="text4150-6"
-         y="158.75494"
-         x="24.175468"
-         style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:110px;line-height:1.25;font-family:Kinnari;-inkscape-font-specification:'Kinnari Bold Italic'"
-           y="158.75494"
-           x="24.175468"
-           id="tspan4152-4"
-           sodipodi:role="line">BDJ</tspan></text>
+       id="g418"
+       transform="matrix(0.76117714,0,0,0.76117714,73.284673,73.305606)">
+      <g
+         id="layer1-6"
+         inkscape:label="Note"
+         inkscape:groupmode="layer"
+         transform="translate(-8.5333405,183.46666)"
+         style="display:inline">
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.45311px;line-height:0%;font-family:'Droid Serif';-inkscape-font-specification:'Droid Serif';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#1d1c6b;fill-opacity:1;stroke:none;stroke-width:0.787759px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           x="-39.012867"
+           y="27.35895"
+           id="text4173"
+           transform="scale(1.1629138,0.85990897)"><tspan
+             sodipodi:role="line"
+             id="tspan4175"
+             x="-39.012867"
+             y="27.35895"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:302.285px;line-height:125%;font-family:'Droid Serif';-inkscape-font-specification:'Droid Serif';text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#1d1c6b;fill-opacity:1;stroke-width:0.787759px">♫</tspan></text>
+      </g>
+      <g
+         inkscape:groupmode="layer"
+         id="layer4-7"
+         inkscape:label="BDJ"
+         style="display:inline"
+         transform="translate(-8.5333405,-8.5333405)">
+        <g
+           id="g39"
+           transform="translate(9.7343909,-6.6473806)">
+          <text
+             id="text4150"
+             y="161.295"
+             x="28.175468"
+             style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#d71229;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             xml:space="preserve"><tspan
+               style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:110px;line-height:1.25;font-family:Kinnari;-inkscape-font-specification:'Kinnari Bold Italic';fill:#d71229;fill-opacity:1"
+               y="161.295"
+               x="28.175468"
+               id="tspan4152"
+               sodipodi:role="line">BDJ</tspan></text>
+          <text
+             id="text4150-7"
+             y="157.295"
+             x="20.175468"
+             style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#e9b117;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             xml:space="preserve"><tspan
+               style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:110px;line-height:1.25;font-family:Kinnari;-inkscape-font-specification:'Kinnari Bold Italic';fill:#e9b117;fill-opacity:1"
+               y="157.295"
+               x="20.175468"
+               id="tspan4152-5"
+               sodipodi:role="line">BDJ</tspan></text>
+          <text
+             id="text4150-6"
+             y="158.75494"
+             x="24.175468"
+             style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+             xml:space="preserve"><tspan
+               style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:110px;line-height:1.25;font-family:Kinnari;-inkscape-font-specification:'Kinnari Bold Italic'"
+               y="158.75494"
+               x="24.175468"
+               id="tspan4152-4"
+               sodipodi:role="line">BDJ</tspan></text>
+        </g>
+      </g>
+      <g
+         inkscape:groupmode="layer"
+         id="layer7-5"
+         inkscape:label="4"
+         style="display:inline">
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-weight:normal;font-size:240px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#e9b117;fill-opacity:1;stroke:#090102;stroke-width:3;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           x="132.34586"
+           y="237.73302"
+           id="text67795"><tspan
+             sodipodi:role="line"
+             id="tspan67793"
+             x="132.34586"
+             y="237.73302"
+             style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:240px;font-family:'Chancery Uralic';-inkscape-font-specification:'Chancery Uralic Italic';fill:#e9b117;fill-opacity:1;stroke:#090102;stroke-width:3;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">4</tspan></text>
+      </g>
     </g>
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer7"
-     inkscape:label="4">
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:240px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#e9b117;fill-opacity:1;stroke:#090102;stroke-width:3;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       x="133.18922"
-       y="243.63663"
-       id="text67795"><tspan
-         sodipodi:role="line"
-         id="tspan67793"
-         x="133.18922"
-         y="243.63663"
-         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:240px;font-family:'Chancery Uralic';-inkscape-font-specification:'Chancery Uralic Italic';fill:#e9b117;fill-opacity:1;stroke:#090102;stroke-width:3;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">4</tspan></text>
-  </g>
+     inkscape:label="4" />
   <g
      inkscape:groupmode="layer"
      id="layer6"
      inkscape:label="Install"
      style="display:inline"
-     transform="translate(-8.5333405,-8.5333405)">
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:53.3333px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#e9b117;fill-opacity:1;stroke:#333333;stroke-width:1.49999999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       x="24.436132"
-       y="56.727303"
-       id="text4153"
-       transform="scale(1.0452636,0.95669648)"><tspan
-         sodipodi:role="line"
-         id="tspan4155"
-         x="24.436132"
-         y="56.727303"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.3333px;line-height:1.25;font-family:Roboto;-inkscape-font-specification:'Roboto Bold';fill:#e9b117;fill-opacity:1;stroke:#000000;stroke-width:1.49999999;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">INSTALL</tspan></text>
-  </g>
+     transform="translate(-8.5333405,-8.5333405)" />
 </svg>

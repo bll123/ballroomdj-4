@@ -8,7 +8,7 @@
    version="1.1"
    inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
    viewBox="0 0 256 256"
-   sodipodi:docname="bdj4_icon_player.svg"
+   sodipodi:docname="bdj4_icon_help.svg"
    inkscape:export-filename="/home/bll/s/bdj4/img/bdj4_icon_marquee.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"
@@ -49,9 +49,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.0742188"
-     inkscape:cx="128"
-     inkscape:cy="127.75894"
+     inkscape:zoom="2.671875"
+     inkscape:cx="127.81287"
+     inkscape:cy="123.50877"
      inkscape:current-layer="g7144"
      showgrid="true"
      inkscape:document-units="px"
@@ -59,8 +59,8 @@
      showborder="true"
      inkscape:window-width="1614"
      inkscape:window-height="931"
-     inkscape:window-x="554"
-     inkscape:window-y="255"
+     inkscape:window-x="140"
+     inkscape:window-y="68"
      inkscape:window-maximized="0"
      inkscape:pagecheckerboard="true"
      fit-margin-top="0"
@@ -86,11 +86,28 @@
        height="256"
        x="8.5333405"
        y="8.5333405" />
+  </g>
+  <g
+     id="layer1"
+     inkscape:label="Note"
+     inkscape:groupmode="layer"
+     transform="translate(-8.5333405,183.46666)"
+     style="display:inline" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="BDJ"
+     style="display:inline"
+     transform="translate(-8.5333405,-8.5333405)" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer7"
+     inkscape:label="4">
     <g
        id="g577"
-       transform="matrix(0.77297948,0,0,0.77297948,69.186188,64.701506)">
+       transform="matrix(0.77297948,0,0,0.77297948,57.771479,55.737458)">
       <g
-         id="layer1-3"
+         id="layer1-5"
          inkscape:label="Note"
          inkscape:groupmode="layer"
          transform="translate(-8.5333405,183.46666)"
@@ -108,7 +125,7 @@
       </g>
       <g
          inkscape:groupmode="layer"
-         id="layer4-6"
+         id="layer4-3"
          inkscape:label="BDJ"
          style="display:inline"
          transform="translate(-8.5333405,-8.5333405)">
@@ -170,7 +187,7 @@
       </g>
       <g
          inkscape:groupmode="layer"
-         id="layer7-7"
+         id="layer7-5"
          inkscape:label="4">
         <g
            aria-label="4"
@@ -185,34 +202,29 @@
     </g>
   </g>
   <g
-     id="layer1"
-     inkscape:label="Note"
-     inkscape:groupmode="layer"
-     transform="translate(-8.5333405,183.46666)"
-     style="display:inline" />
-  <g
-     inkscape:groupmode="layer"
-     id="layer4"
-     inkscape:label="BDJ"
-     style="display:inline"
-     transform="translate(-8.5333405,-8.5333405)" />
-  <g
-     inkscape:groupmode="layer"
-     id="layer7"
-     inkscape:label="4" />
-  <g
      inkscape:groupmode="layer"
      id="g7144"
-     inkscape:label="Player">
+     inkscape:label="Manage">
     <g
-       aria-label="♪"
-       id="text5956"
-       style="font-size:74.6667px;line-height:1.25;letter-spacing:0px;word-spacing:0px;fill:#1d1c6b;fill-opacity:1;stroke:#1d1c6b;stroke-width:1.5;stroke-opacity:1"
-       transform="matrix(1.8734535,0,0,1.8734535,-6.3249719,-6.8107663)">
-      <path
-         d="m 23.595512,8.5475141 h 3.171876 l 0.291667,0.2552084 v 1.4218755 q 0.984376,1.968751 7.29167,4.265627 8.750004,2.552085 8.750004,7.583337 0,5.322919 -4.447918,8.822921 h -0.145834 l -1.09375,-1.166667 q 2.223959,-1.786459 2.223959,-4.848961 0,-2.552084 -8.312504,-5.140627 -3.354168,-1.531251 -4.265627,-2.479168 v 38.864602 q 0,5.578127 -8.166671,7.218753 h -2.078125 q -8.8229214,0 -8.8229214,-6.125003 0,-4.776044 7.7291704,-5.614586 h 0.838542 q 3.500002,0 6.744795,2.333335 V 8.8027225 Z"
-         id="path9271"
-         style="fill:#1d1c6b;fill-opacity:1;stroke:#1d1c6b;stroke-opacity:1" />
+       id="g1571"
+       transform="matrix(0.26986268,0,0,0.26986268,49.290535,50.855049)">
+      <circle
+         style="opacity:0.996;fill:none;fill-opacity:1;stroke:#1d1c6b;stroke-width:17.5814;stroke-linecap:round;stroke-dasharray:none"
+         id="path521"
+         cx="16.627153"
+         cy="9.682168"
+         r="145.35432" />
+      <text
+         xml:space="preserve"
+         style="font-size:264.828px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#1d1c6b;fill-opacity:1;stroke:#1d1c6b;stroke-width:2.75862;stroke-opacity:1"
+         x="-27.069468"
+         y="110.31681"
+         id="text1516"><tspan
+           id="tspan1514"
+           x="-27.069468"
+           y="110.31681"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:264.828px;font-family:'Noto Serif';-inkscape-font-specification:'Noto Serif';fill:#1d1c6b;fill-opacity:1;stroke:#1d1c6b;stroke-width:2.75862;stroke-opacity:1"
+           sodipodi:role="line">i</tspan></text>
     </g>
   </g>
 </svg>
