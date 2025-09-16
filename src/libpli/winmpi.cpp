@@ -433,7 +433,6 @@ winmpMedia (windata_t *windata, const char *fn, int sourceType)
     return 1;
   }
 
-logBasic ("winmp: %d media: %s\n", sourceType, fn);
   if (sourceType == AUDIOSRC_TYPE_FILE) {
     stpecpy (tbuff, tbuff + sizeof (tbuff), fn);
     pathDisplayPath (tbuff, sizeof (tbuff));

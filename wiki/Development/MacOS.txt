@@ -1,7 +1,7 @@
 [Wiki Home](Home)
 <br>[Developer Notes](Development-Developer%20Notes)
 
-######
+#####
 
 otool -L <lib>
 
@@ -9,7 +9,7 @@ vtool -show-build <lib or exec>   # to see the min macos version
 
 export MACOSX_DEPLOYMENT_TARGET=11
 
-###### VLC Installation for development:
+##### VLC Installation for development:
 
 Start the VLC installer, drag the VLC installation to /Applications as
 normal.
@@ -17,7 +17,7 @@ normal.
 Start the VLC installer, drag the VLC installation to
 $HOME/Applications.  Rename to VLC3.app and VLC4.app.
 
-###### Setting up MacOS
+##### Setting up MacOS
 
 * Users & Groups:
     * For each user:
@@ -78,11 +78,11 @@ $HOME/Applications.  Rename to VLC3.app and VLC4.app.
     * Copy the \*key\* files from one of the other multi-boot instances
       that all of the ssh keys for one machine are the same.
 
-###### To reset the keychain password
+##### To reset the keychain password
 
 security set-keychain-password
 
-###### Software
+##### Software
 
 Run this first to get all the bdj4 requirements installed
 <br>$HOME/bdj4/install/macos-pre-install-macports.sh
@@ -92,7 +92,13 @@ sudo port install autossh di rlwrap                   -- for bll
 <br>sudo port uninstall gtk3
 <br>sudo port install gtk3-devel
 
-###### Boot options
+##### Personal crontab
+
+@reboot rm -f $HOME/local/tmp/*
+<br>* * * * *       $HOME/local/bin/sshtunnel.sh
+<br>@reboot sleep 10;/Volumes/Users/bll/Applications/BDJ4.app/Contents/MacOS/bin/bdj4 --bdj4cleantmp
+
+##### Boot options
 
 To boot into safe mode:
 <br>    Hold down the Shift key.
@@ -108,7 +114,12 @@ To boot into safe mode:
 To check the command line tools version:
 <br>  pkgutil --pkg-info=com.apple.pkg.CLTools_Executables
 
-###### MacOS GUI (Cocoa AppKit)
+##### Create Install Media from a downloaded installer:
+
+'/Applications/Install macOS Catalina.app/Contents/Resources/createinstallmedia' \
+    --volume /Volumes/targetvolume
+
+##### MacOS GUI (Cocoa AppKit)
 
 Stopped.
 
@@ -177,4 +188,4 @@ packed.  This may be re-worked if tracking the previous item works.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2025-08-20 05:45:34; BDJ4 version 4.15.5)_
+<br>_(Updated 2025-09-16 10:35:15; BDJ4 version 4.16.0)_

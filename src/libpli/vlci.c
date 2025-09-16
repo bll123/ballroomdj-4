@@ -520,7 +520,7 @@ static void
 vlcDisplayError (void *p_data, const char *psz_title,
     const char *psz_text)
 {
-  vlcdata_t *vlcdata = p_data;
+  [[maybe_unused]] vlcdata_t *vlcdata = p_data;
 
   vlclog (vlcdata, "err: %s\n   %s\n", psz_title, psz_text);
 }

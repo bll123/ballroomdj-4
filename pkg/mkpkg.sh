@@ -123,7 +123,8 @@ function copyreleasefiles {
   # 2024-1-16 do not ship the pli-mpv interface either.
   # 2024-6-3 for the time being, do not ship libplivlc4
   # 2024-8-23 do not ship libuimacos
-  # 2025-9-8 for the time being, do not ship libpliwin
+  # 2025-9-16 do not ship the macos images.  this script will re-stage
+  #     these for macos.
   rm -f \
       ${stage}/bin/aesed* \
       ${stage}/bin/bdj4se \
@@ -136,7 +137,6 @@ function copyreleasefiles {
       ${stage}/bin/libplimpv* \
       ${stage}/bin/libplinull* \
       ${stage}/bin/libplivlc4* \
-      ${stage}/bin/libpliwin* \
       ${stage}/bin/libuimacos* \
       ${stage}/bin/libvolnull* \
       ${stage}/bin/plisinklist* \
@@ -153,6 +153,8 @@ function copyreleasefiles {
       ${stage}/http/*.html \
       ${stage}/http/led_o*.svg \
       ${stage}/img/*-base.svg \
+      ${stage}/img/BDJ4.icns \
+      ${stage}/img/macos_icon*.png \
       ${stage}/img/mkicon.sh \
       ${stage}/img/mkmacicon.sh \
       ${stage}/img/README.txt \
@@ -524,6 +526,19 @@ case $tag in
           ${tfn} > ${tfn}.n
       mv -f ${tfn}.n ${tfn}
     done
+
+    echo "-- $(date +%T) installing macos specific icon files"
+    for tfn in img/macos_icon*.png img/macos_icon*.svg; do
+      case $tfn in
+        *-base.svg)
+          continue
+          ;;
+      esac
+      tnewfn=$(echo ${tfn} | sed -e 's,img/,,' -e 's,macos_,bdj4_,')
+      # replace the bdj4 icons with mac-specific icons in the stage dir
+      cp -f ${tfn} ${stagedir}${macosbase}/img/${tnewfn}
+    done
+
     echo "-- $(date +%T) creating release manifest"
     touch ${manfnpath}
     ./pkg/mkmanifest.sh ${stagedir} ${manfnpath}

@@ -62,7 +62,6 @@ MacOS
 
   # step a4)
   # the pre-build script only needs to be run once.
-  # check the release notes in the README.txt file for updates.
   ../install/macos-pre-build.sh
 
   # step a5)

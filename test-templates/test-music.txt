@@ -854,7 +854,7 @@ FSOURCE
 DURATION
 ..30010
 TAGS
-..tag1 tag2 tag3 ss
+..tag1 tag2 tag3
 STATUS
 ..New
 DANCELEVEL
@@ -891,7 +891,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
-..tag4 TAG5 se
+..tag4 TAG5
 STATUS
 ..Complete
 DANCELEVEL
@@ -926,7 +926,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 TAGS
-..tag6 tag7 ss se
+..tag6 tag7
 STATUS
 ..Complete
 DANCELEVEL
@@ -1902,7 +1902,7 @@ FSOURCE
 DURATION
 ..30420
 TAGS
-..tag4 TAG5
+..tag4 TAG5 ss
 STATUS
 ..Complete
 DANCELEVEL
@@ -1941,7 +1941,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
-..tag6 tag7
+..tag6 tag7 ss
 STATUS
 ..Complete
 DANCELEVEL
@@ -1986,7 +1986,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 ss
 STATUS
 ..New
 DANCELEVEL
@@ -2021,7 +2021,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 TAGS
-..tag4 TAG5
+..tag4 TAG5 ss
 STATUS
 ..Complete
 DANCELEVEL
@@ -2054,7 +2054,7 @@ FSOURCE
 DURATION
 ..30420
 TAGS
-..tag6 tag7
+..tag6 tag7 ss
 STATUS
 ..Complete
 DANCELEVEL
@@ -2798,7 +2798,7 @@ NOTES
 BPM
 ..29
 TAGS
-..tag4 TAG5 bpm
+..tag4 TAG5 bpm ss
 STATUS
 ..Complete
 DANCELEVEL
@@ -3201,7 +3201,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 ss
 STATUS
 ..New
 DANCELEVEL
@@ -3242,7 +3242,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 TAGS
-..tag4 TAG5
+..tag4 TAG5 ss
 STATUS
 ..Complete
 DANCELEVEL
@@ -3431,7 +3431,7 @@ NOTES
 BPM
 ..28
 TAGS
-..tag1 tag2 tag3 utf8 bpm
+..tag1 tag2 tag3 utf8 bpm ss
 STATUS
 ..New
 DANCELEVEL
@@ -3470,7 +3470,7 @@ NOTES
 BPM
 ..28
 TAGS
-..tag1 tag2 tag3 utf8 bpm ogg
+..tag1 tag2 tag3 utf8 bpm ss ogg
 STATUS
 ..New
 DANCELEVEL
@@ -3509,7 +3509,7 @@ NOTES
 BPM
 ..28
 TAGS
-..tag1 tag2 tag3 utf8 bpm opus
+..tag1 tag2 tag3 utf8 bpm ss opus
 STATUS
 ..New
 DANCELEVEL
@@ -3548,7 +3548,7 @@ NOTES
 BPM
 ..28
 TAGS
-..tag1 tag2 tag3 utf8 bpm flac
+..tag1 tag2 tag3 utf8 bpm ss flac
 STATUS
 ..New
 DANCELEVEL
@@ -3587,7 +3587,7 @@ NOTES
 BPM
 ..28
 TAGS
-..tag1 tag2 tag3 utf8 bpm m4a
+..tag1 tag2 tag3 utf8 bpm ss m4a
 STATUS
 ..New
 DANCELEVEL
@@ -3624,7 +3624,7 @@ DURATION
 BPM
 ..29
 TAGS
-..tag4 TAG5 utf8 bpm
+..tag4 TAG5 utf8 bpm ss
 STATUS
 ..Complete
 DANCELEVEL
@@ -4647,10 +4647,12 @@ SONGEND
 ..29000
 SONGSTART
 ..1000
+SPEEDADJUSTMENT
+..101
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 bpm ss se
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-mp3-a
 TRACKNUMBER
@@ -4714,10 +4716,12 @@ SONGEND
 ..29000
 SONGSTART
 ..1000
+SPEEDADJUSTMENT
+..101
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 bpm ss se
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-mp3-b
 TRACKNUMBER
@@ -4781,10 +4785,12 @@ SONGEND
 ..29000
 SONGSTART
 ..1000
+SPEEDADJUSTMENT
+..101
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 bpm ss se
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-m4a-c
 TRACKNUMBER
@@ -4848,10 +4854,12 @@ SONGEND
 ..29000
 SONGSTART
 ..1000
+SPEEDADJUSTMENT
+..101
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 bpm ss se
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-m4a-d
 TRACKNUMBER
@@ -4915,10 +4923,12 @@ SONGEND
 ..29000
 SONGSTART
 ..1000
+SPEEDADJUSTMENT
+..101
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 bpm ss se
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-flac-e
 TRACKNUMBER
@@ -4982,10 +4992,12 @@ SONGEND
 ..29000
 SONGSTART
 ..1000
+SPEEDADJUSTMENT
+..101
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 bpm ss se
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-flac-f
 TRACKNUMBER
@@ -5049,10 +5061,12 @@ SONGEND
 ..29000
 SONGSTART
 ..1000
+SPEEDADJUSTMENT
+..101
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 bpm ss se
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-ogg-g
 TRACKNUMBER
@@ -5116,10 +5130,12 @@ SONGEND
 ..29000
 SONGSTART
 ..1000
+SPEEDADJUSTMENT
+..101
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 bpm ss se
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-ogg-h
 TRACKNUMBER
@@ -5183,10 +5199,12 @@ SONGEND
 ..29000
 SONGSTART
 ..1000
+SPEEDADJUSTMENT
+..101
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 bpm ss se
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-opus-i
 TRACKNUMBER
@@ -5250,10 +5268,12 @@ SONGEND
 ..29000
 SONGSTART
 ..1000
+SPEEDADJUSTMENT
+..101
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 bpm ss se
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-opus-j
 TRACKNUMBER

@@ -4,11 +4,15 @@
 
 <!--
 
-**4.16.0 2025-9---**
+-->
+
+**4.16.0 2025-9-16**
 
 * Bug Fixes:
     * Import Playlist: Fix manual entry of URL.
     * Import Playlist: Remove invalid characters from new song list name.
+    * Improve BDJ4 icons.
+    * MacOS: Create MacOS specific icons due to Tahoe forcing the squircle shape.
     * Player: Playback of streams with certificate questions now works with libVLC.
     * Windows: Song Editor: Fix copy of URL.
 * New Features:
@@ -17,8 +21,6 @@
 * Translations:
     * Chinese Simplified: Updated (still machine translated - very poor quality).
     * Chinese Traditional: Updated (still machine translated - very poor quality).
-
--->
 
 **4.15.7 2025-9-2**
 
@@ -1289,4 +1291,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-09-09 10:00:03; BDJ4 version 4.15.7)_
+<br>_(Updated 2025-09-16 10:35:15; BDJ4 version 4.16.0)_

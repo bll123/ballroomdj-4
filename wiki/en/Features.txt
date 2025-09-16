@@ -5,7 +5,7 @@
 * Supported Platforms as of 2023-8-19
     * Windows 10, Windows 11
       [Install / Installing on Windows](en-Install-Windows)
-    * MacOS Big Sur, Monterey, Ventura, Sonoma, Sequoia
+    * MacOS Big Sur, Monterey, Ventura, Sonoma, Sequoia, Tahoe
       [Install / Installing on MacOS](en-Install-MacOS)
     * Linux (Only OpenSUSE and Debian are packaged, other Linux distributions must be built from source)
       [Install / Installing on Linux](en-Install-Linux)
@@ -135,4 +135,4 @@
   [Subjects / Profiles](en-Subjects-Profiles)
 
 [Wiki Home](Home)
-<br>_(Updated 2025-08-26 14:23:06; BDJ4 version 4.15.6)_
+<br>_(Updated 2025-09-16 10:35:15; BDJ4 version 4.16.0)_

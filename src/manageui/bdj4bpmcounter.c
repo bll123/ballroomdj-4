@@ -340,7 +340,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   bpmcounter->wcont [BPM_W_WINDOW] = uiCreateMainWindow (
       bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
       /* CONTEXT: bpm counter: title of window*/
-      _("BPM Counter"), "bdj4_icon");
+      _("BPM Counter"), "bdj4_icon_player");
 
   vboxmain = uiCreateVertBox ();
   uiWindowPackInWindow (bpmcounter->wcont [BPM_W_WINDOW], vboxmain);
@@ -460,7 +460,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiWindowMove (bpmcounter->wcont [BPM_W_WINDOW], x, y, -1);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
+      "bdj4_icon_player", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
 
   uiWidgetShowAll (bpmcounter->wcont [BPM_W_WINDOW]);

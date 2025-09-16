@@ -214,7 +214,7 @@ helperBuildUI (helperui_t  *helper)
   /* CONTEXT: helperui: the window title for the BDJ4 helper */
   snprintf (tbuff, sizeof (tbuff), _("%s Helper"), BDJ4_LONG_NAME);
   helper->wcont [HELPER_W_WINDOW] = uiCreateMainWindow (
-      helper->closeCallback, tbuff, "bdj4_icon");
+      helper->closeCallback, tbuff, "bdj4_icon_help");
 
   vbox = uiCreateVertBox ();
   uiWindowPackInWindow (helper->wcont [HELPER_W_WINDOW], vbox);
@@ -248,7 +248,7 @@ helperBuildUI (helperui_t  *helper)
       HELPER_HORIZ_SZ, HELPER_VERT_SZ);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
+      "bdj4_icon_help", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
 
   uiWidgetShowAll (helper->wcont [HELPER_W_WINDOW]);

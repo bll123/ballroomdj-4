@@ -56,13 +56,14 @@ If VLC is already installed, no internet connection is required.
 #### VLC Version
 
 At this time, VLC version 4 (which has not been released as of
-2025-4-9), is broken. BDJ4 will not work correctly with VLC
+2025-9), is broken. BDJ4 will not work correctly with VLC
 version&nbsp;4. BDJ4 will install VLC version 3.0.21.
 
 If VLC version 4 is already installed, the VLC installation will not
 be overwritten.  [Contact](en-Getting%20Help) the BDJ4 developers if
-you have this situation.  You will either need to install both VLC
-version&nbsp;4 and version&nbsp;3 or only use VLC version&nbsp;3.
+you have this situation.  Your choices are to install both VLC
+version&nbsp;4 and version&nbsp;3, only use VLC version&nbsp;3, or use
+the Windows&nbsp;Media&nbsp;Player interface.
 
 #### Install BallroomDJ 4
 
@@ -141,4 +142,4 @@ BDJ4, use one of the methods in
 [Setting up Windows for DJ Work](en-Install-Setting%20Up%20Windows)
 
 [Wiki Home](Home)
-<br>_(Updated 2025-08-20 05:45:34; BDJ4 version 4.15.5)_
+<br>_(Updated 2025-09-16 10:35:15; BDJ4 version 4.16.0)_
