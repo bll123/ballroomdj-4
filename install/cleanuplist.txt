@@ -174,9 +174,10 @@ plocal/share/themes/[^/]*/xfwm4
 # the libbdj4ui library has been split up
 bin/libbdj4ui\.(so|dylib|dll)$
 
-# 2025-9-16
-# the mac BDJ4.icns file should not be present
+# 2025-9-16 the mac BDJ4.icns file should not be present
+# 2025-9-19 nor squircle template
 img/BDJ4\.icns$
+img/squircle\.svg$
 
 ####
 # mac-os

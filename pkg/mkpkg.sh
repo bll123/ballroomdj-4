@@ -158,6 +158,7 @@ function copyreleasefiles {
       ${stage}/img/mkicon.sh \
       ${stage}/img/mkmacicon.sh \
       ${stage}/img/README.txt \
+      ${stage}/img/squircle.svg \
       ${stage}/plocal/bin/checkmk \
       ${stage}/plocal/bin/curl-config \
       ${stage}/plocal/bin/curl.exe \

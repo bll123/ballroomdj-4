@@ -42,6 +42,8 @@
     #   (<['file', 'http', 'https', 'rtsp', 'realrtsp', 'pnm',
     #   'ftp', 'mtp', 'smb', 'mms', 'mmsu', 'mmst', 'mmsh', 'unsv', 'itpc',
     #   'icyx', 'rtmp', 'rtp', 'dccp', 'dvd', 'vcd']>,)
+    # note that a connected phone returned null.
+    # apparently a phone can only do the play/pause/etc. commands.
 
   # CanControl
     org.mpris.MediaPlayer2.vlc
@@ -113,10 +115,11 @@
     #   'xesam:artist': <['Alejandro Sanz']>,
     #   'xesam:album': <'Si tú me miras'>,
     #   'xesam:tracknumber': <'14'>,
-    #   'vlc:time': <uint32 241>,
     #   'mpris:length': <int64 241093946>,
     #   'mb:trackId': <'cd8515f8-2d79-4ff7-9363-f73be68ed397'>,
     #   'xesam:comment': <['ddj T129 T129']>,
+    # VLC specific, don't use these.
+    #   'vlc:time': <uint32 241>,
     #   'vlc:length': <int64 241093>,
     #   'vlc:publisher': <5>}>,)
 
