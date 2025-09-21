@@ -8,6 +8,7 @@
 
 * Bug Fixes:
     * Linux: MPRIS: Fix a crash.
+    * Linux: MPRIS: Fix play-pause command.
 
 -->
 

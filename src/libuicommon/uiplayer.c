@@ -950,6 +950,7 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer)
   uiWidgetSetState (uiplayer->wcont [UIPL_W_SONG_BEGIN_B], state);
 
   controllerSetPlayState (uiplayer->controller, uiplayer->playerState);
+
   switch (uiplayer->playerState) {
     case PL_STATE_UNKNOWN:
     case PL_STATE_STOPPED: {
@@ -1011,6 +1012,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   }
   uiplayer->repeatLock = false;
   controllerSetRepeatState (uiplayer->controller, ps->repeat);
+  controllerSetPlayState (uiplayer->controller, uiplayer->playerState);
 
   /* pauseatend */
   uiplayerProcessPauseatend (uiplayer, ps->pauseatend);

@@ -256,7 +256,7 @@ contiSetPlayState (contdata_t *contdata, int state)
     case PL_STATE_LOADING:
     case PL_STATE_PLAYING: {
       nstate = MPRIS_PB_STATUS_PLAY;
-      canplay = false;
+      canplay = true;
       canpause = true;
       canseek = true;
       break;
@@ -271,10 +271,11 @@ contiSetPlayState (contdata_t *contdata, int state)
     case PL_STATE_PAUSED: {
       nstate = MPRIS_PB_STATUS_PAUSE;
       canplay = true;
-      canpause = false;
+      canpause = true;    // so that play-pause will work
       canseek = true;
       break;
     }
+    case PL_STATE_IN_CROSSFADE:
     case PL_STATE_IN_GAP: {
       nstate = MPRIS_PB_STATUS_PLAY;
       canplay = false;
@@ -288,8 +289,11 @@ contiSetPlayState (contdata_t *contdata, int state)
       /* want to be able to update the display when the player is stopped */
       nstate = MPRIS_PB_STATUS_PAUSE;
       canplay = true;
-      canpause = false;
+      canpause = true;      // so that play-pause will work
       canseek = false;
+      break;
+    }
+    default: {
       break;
     }
   }
