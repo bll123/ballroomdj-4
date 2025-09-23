@@ -2064,7 +2064,9 @@ installerVLCCheck (installer_t *installer)
 
   /* on linux, vlc is installed via other methods */
   /* also on linux, gstreamer can be used even if there is no vlc */
-  if (installer->vlcinstalled || isLinux ()) {
+  /* as of 2025-9-23 version 4.16.1, windows will use the */
+  /* windows media player interface */
+  if (installer->vlcinstalled || isLinux () || isWindows ()) {
     installer->instState = INST_FINALIZE;
     return;
   }
@@ -2206,6 +2208,12 @@ installerFinalize (installer_t *installer)
     if (installer->bdjoptloaded) {
       instutilGetMusicDir (tbuff, sizeof (tbuff));
       bdjoptSetStr (OPT_M_DIR_MUSIC, tbuff);
+      if (installer->newinstall && isWindows ()) {
+        /* only for new installations */
+        bdjoptSetStr (OPT_M_PLAYER_INTFC, "libpliwinmp");
+        /* CONTEXT: configuration: player interface: Windows Media Player */
+        bdjoptSetStr (OPT_M_PLAYER_INTFC_NM, _("Windows Media Player"));
+      }
       bdjoptSave ();
     }
   }

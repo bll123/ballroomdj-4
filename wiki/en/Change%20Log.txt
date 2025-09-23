@@ -9,7 +9,7 @@
 * Bug Fixes:
     * Player: Linux: MPRIS: Fix a crash.
     * Player: Linux: MPRIS: Fix play-pause command.
-    * Player: Windows: The Windows Media Player interface now support selection of audio output.
+    * Player: The Windows Media Player interface now supports selection of audio output.
 * Changes:
     * Installation: Windows will now use the Windows Media Player
       interface by default.  VLC will not be installed.
