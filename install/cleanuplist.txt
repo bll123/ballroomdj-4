@@ -179,6 +179,9 @@ bin/libbdj4ui\.(so|dylib|dll)$
 img/BDJ4\.icns$
 img/squircle\.svg$
 
+# 2025-9-23 possible debug file
+out-b\.txt$
+
 ####
 # mac-os
 
@@ -347,7 +350,7 @@ plocal/bin/avutil-58\.dll$
 licenses/curl.LICENSE
 
 # 2026-9-8
-# windows updates
+# msys2 updates
 plocal/bin/libngtcp2_crypto_ossl\.dll$
 
 ####

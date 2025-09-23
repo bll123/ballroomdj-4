@@ -77,7 +77,7 @@ case $systype in
     tag=win64
     platform=windows
     libvol=libvolwin
-    libpli=libplivlc
+    libpli=libpliwinmp      # default
     macdir=""
     sfx=.exe
     ;;

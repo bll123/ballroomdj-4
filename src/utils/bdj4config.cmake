@@ -168,11 +168,9 @@ if (WIN32 AND NOT LIBVLC_FOUND)
   endif()
 endif()
 
-# linux can use gstreamer.
+# this is required for the build process on all systems.
 if (NOT LIBVLC_FOUND AND NOT LIBVLC4_FOUND)
-  if (APPLE OR WIN32)
-    message (FATAL_ERROR "Unable to locate a VLC library")
-  endif()
+  message (FATAL_ERROR "Unable to locate a VLC library")
 endif()
 
 #### MPV

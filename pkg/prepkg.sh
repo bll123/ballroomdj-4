@@ -202,7 +202,13 @@ if [[ $DEVELOPMENT != dev ]]; then
   grep '^#define SMTC_ENABLED 0' src/libcont/smtc.c > /dev/null 2>&1
   rc=$?
   if [[ $rc -eq 0 ]]; then
-    echo "== WIN: SMTC: current disabled"
+    echo "== WIN: SMTC: disabled"
+    grc=1
+  fi
+
+  if [[ -f packages/libid3tag*/config.h ]]; then
+    echo "== libid3tag: config.h present when it should not be"
+    grc=1
   fi
 
   #grep '^#define MACOS_UI_DEBUG 0' src/include/uigeneral.h > /dev/null 2>&1
