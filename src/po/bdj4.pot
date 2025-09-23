@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-15 09:38-0700\n"
+"POT-Creation-Date: 2025-09-23 06:55-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -96,6 +96,11 @@ msgstr ""
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets)
 #, c-format
 msgid "%s Support Tickets"
+msgstr ""
+
+#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
+#, c-format
+msgid "%s Tags Only"
 msgstr ""
 
 #. CONTEXT: starterui: basic support dialog, version display
@@ -389,10 +394,6 @@ msgstr ""
 #. CONTEXT: playlist management: default playlist type
 #. CONTEXT: playlist management: type of playlist
 msgid "Automatic"
-msgstr ""
-
-#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
-msgid "BDJ Tags Only"
 msgstr ""
 
 #. CONTEXT: installer: status message
@@ -2382,6 +2383,7 @@ msgstr ""
 msgid "When the BPM value is stable, select the Save button."
 msgstr ""
 
+#. CONTEXT: configuration: player interface: Windows Media Player
 msgid "Windows Media Player"
 msgstr ""
 

@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2025-09-15\n"
-"PO-Revision-Date: 2025-09-15 16:43\n"
+"POT-Creation-Date: 2025-09-23\n"
+"PO-Revision-Date: 2025-09-23 14:12\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Chinese Traditional\n"
 "Language: zh\n"
@@ -99,6 +99,11 @@ msgstr "%s 播放列表"
 #, c-format
 msgid "%s Support Tickets"
 msgstr "%s 支援票"
+
+#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
+#, c-format
+msgid "%s Tags Only"
+msgstr "僅 %s 標籤"
 
 #. CONTEXT: starterui: basic support dialog, version display
 #, c-format
@@ -392,10 +397,6 @@ msgstr "自動整理"
 #. CONTEXT: playlist management: type of playlist
 msgid "Automatic"
 msgstr "自動"
-
-#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
-msgid "BDJ Tags Only"
-msgstr "僅限 BDJ 標簽 "
 
 #. CONTEXT: installer: status message
 msgid "BDJ3 database version is too old."
@@ -2377,6 +2378,7 @@ msgstr "西海岸搖擺"
 msgid "When the BPM value is stable, select the Save button."
 msgstr "當 BPM 值穩定時，選擇「儲存」按鈕。"
 
+#. CONTEXT: configuration: player interface: Windows Media Player
 msgid "Windows Media Player"
 msgstr "Windows 媒體播放器"
 

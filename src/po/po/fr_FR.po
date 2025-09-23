@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2025-09-15\n"
-"PO-Revision-Date: 2025-09-15 16:43\n"
+"POT-Creation-Date: 2025-09-23\n"
+"PO-Revision-Date: 2025-09-23 14:12\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -99,6 +99,11 @@ msgstr "%s Liste de lecture"
 #, c-format
 msgid "%s Support Tickets"
 msgstr "%s Tickets de soutien"
+
+#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
+#, c-format
+msgid "%s Tags Only"
+msgstr "Balises %s uniquement"
 
 #. CONTEXT: starterui: basic support dialog, version display
 #, c-format
@@ -392,10 +397,6 @@ msgstr "Auto organiser "
 #. CONTEXT: playlist management: type of playlist
 msgid "Automatic"
 msgstr "Automatique"
-
-#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
-msgid "BDJ Tags Only"
-msgstr "Balises BDJ uniquement"
 
 #. CONTEXT: installer: status message
 msgid "BDJ3 database version is too old."
@@ -2378,6 +2379,7 @@ msgstr "West Coast Swing"
 msgid "When the BPM value is stable, select the Save button."
 msgstr "Lorsque la valeur du BPM est stable, sélectionnez le bouton Enregistrer."
 
+#. CONTEXT: configuration: player interface: Windows Media Player
 msgid "Windows Media Player"
 msgstr ""
 

@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2025-09-15\n"
-"PO-Revision-Date: 2025-09-15 16:43\n"
+"POT-Creation-Date: 2025-09-23\n"
+"PO-Revision-Date: 2025-09-23 14:12\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Ukrainian\n"
 "Language: uk\n"
@@ -99,6 +99,11 @@ msgstr "%s Список відтворення"
 #, c-format
 msgid "%s Support Tickets"
 msgstr "%s Квитки на підтримку"
+
+#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
+#, c-format
+msgid "%s Tags Only"
+msgstr "Тільки теги %s"
 
 #. CONTEXT: starterui: basic support dialog, version display
 #, c-format
@@ -392,10 +397,6 @@ msgstr "Автоматичне впорядкування"
 #. CONTEXT: playlist management: type of playlist
 msgid "Automatic"
 msgstr "Автоматично"
-
-#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
-msgid "BDJ Tags Only"
-msgstr "Тільки теги BDJ"
 
 #. CONTEXT: installer: status message
 msgid "BDJ3 database version is too old."
@@ -2378,6 +2379,7 @@ msgstr "Гойдалки на західному узбережжі"
 msgid "When the BPM value is stable, select the Save button."
 msgstr "Коли значення BPM буде стабільним, натисніть кнопку Зберегти."
 
+#. CONTEXT: configuration: player interface: Windows Media Player
 msgid "Windows Media Player"
 msgstr ""
 
