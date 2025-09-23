@@ -19,6 +19,7 @@
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.System.h>
 #include <winrt/Windows.Foundation.h>
+#include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Devices.Enumeration.h>
 
 #include "bdj4.h"
@@ -48,6 +49,7 @@ typedef struct windata {
   winmpintfc_t  *winmp [MP_MAX_SOURCE];
   double        vol [MP_MAX_SOURCE];
   char          *audiodev;
+  size_t        audiodevlen;
   int           curr;
   plistate_t    state;
   bool          inCrossFade;
@@ -130,12 +132,7 @@ struct winmpintfc
     mediaPlayer.CommandManager ().IsEnabled (false);
 
     if (windata->audiodev != NULL) {
-      wchar_t   *wdev;
-
-      wdev = osToWideChar (windata->audiodev);
-      auto hsdev = hstring (wdev);
-      mpSetAudioDevice (hsdev);
-      mdfree (wdev);
+      mpSetAudioDevice (windata->audiodev);
     }
   }
 
@@ -281,26 +278,58 @@ struct winmpintfc
     return vol;
   }
 
-  int
-  mpSetAudioDevice (const hstring &hsdev)
+  DeviceInformation
+  mpLocateAudioDevice (const char *audiodev)
   {
-    int     rc = -1;
+    /* .createfromidasync() crashes */
+    /* instead, loop through the devices */
+    /* and locate a matching device */
+    /* the device names are prefixed with other text */
+    auto devices = DeviceInformation::FindAllAsync (
+        DeviceClass::AudioRender).get ();
+    for (auto&& tdev : devices) {
+      char          *tmp;
+      const wchar_t *val;
+      size_t        len;
 
-    if (mediaPlayer == nullptr) {
-      return 0;
+      /* returns a wide string as char * */
+      val = tdev.Properties().TryLookup (L"System.Devices.DeviceInstanceId")
+            .try_as<winrt::hstring>().value_or (L"None").c_str();
+      tmp = osFromWideChar (val);
+      len = strlen (tmp);
+      if (len >= windata->audiodevlen &&
+          strcmp (tmp + (len - windata->audiodevlen), audiodev) == 0) {
+        mdfree (tmp);
+        /* valid in C++, not in C */
+        return tdev;
+      }
+      mdfree (tmp);
     }
 
-// ### this is crashing
-// the device id should be fine,
-// also tried prefixing with XXX\\MMXXXXXX\\ ...
-    return 0;
+    return nullptr;
+  }
 
-    auto devinfo = DeviceInformation::CreateFromIdAsync (hsdev).get ();
+  int
+  mpSetAudioDevice (const char *audiodev)
+  {
+    int                 rc = -1;
+
+    if (mediaPlayer == nullptr) {
+      return rc;
+    }
+
+    auto dev = mpLocateAudioDevice (audiodev);
+
+    if (dev == nullptr) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-sad: Unable to locate audio device: %s", audiodev);
+      return rc;
+    }
+
     try {
-      mediaPlayer.AudioDevice (devinfo);
+      mediaPlayer.AudioDevice (dev);
       rc = 0;
     } catch (std::exception &exc) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-ad fail %s", exc.what ());
+      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-sad fail %s", exc.what ());
     }
     return rc;
   }
@@ -473,6 +502,7 @@ winmpInit (void)
   windata->inCrossFade = false;
   windata->curr = 0;
   windata->audiodev = NULL;
+  windata->audiodevlen = 0;
   for (int i = 0; i < MP_MAX_SOURCE; ++i) {
     windata->winmp [i] = new winmpintfc (windata);
   }
@@ -491,6 +521,12 @@ winmpClose (windata_t *windata)
     if (windata->winmp [i] != NULL) {
       windata->winmp [i]->mpClose ();
     }
+  }
+
+  if (windata->audiodev != NULL) {
+    mdfree (windata->audiodev);
+    windata->audiodev = NULL;
+    windata->audiodevlen = 0;
   }
 
   mdfree (windata);
@@ -577,7 +613,16 @@ winmpCrossFadeVolume (windata_t *windata, int vol)
 int
 winmpSetAudioDevice (windata_t *windata, const char *dev, plidev_t plidevtype)
 {
-  windata->audiodev = strdup (dev + 18);
+  if (windata->audiodev != NULL) {
+    mdfree (windata->audiodev);
+    windata->audiodev = NULL;
+    windata->audiodevlen = 0;
+  }
+
+  if (dev != NULL && *dev) {
+    windata->audiodev = strdup (dev);
+    windata->audiodevlen = strlen (dev);
+  }
 
   return 0;
 }

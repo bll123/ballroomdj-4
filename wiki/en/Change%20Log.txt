@@ -4,11 +4,15 @@
 
 <!--
 
-**4.16.1 2025-----**
+**4.16.1 2025-9--**
 
 * Bug Fixes:
-    * Linux: MPRIS: Fix a crash.
-    * Linux: MPRIS: Fix play-pause command.
+    * Player: Linux: MPRIS: Fix a crash.
+    * Player: Linux: MPRIS: Fix play-pause command.
+    * Player: Windows: The Windows Media Player interface now support selection of audio output.
+* Changes:
+    * Installation: Windows will now use the Windows Media Player
+      interface by default.  VLC will not be installed.
 
 -->
 

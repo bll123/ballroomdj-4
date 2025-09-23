@@ -8,10 +8,8 @@ The __Player__ and __Audio__ settings usually do not change.
 
 __Player__: Selects the player interface.
 <br>Linux support _Integrated&nbsp;VLC_, _GStreamer_ and _MPRIS_.
-Windows supports _Integrated&nbsp;VLC_ and
-_Windows&nbsp;Media&nbsp;Player_.  As of 2025-9, the
-_Windows&nbsp;Media&nbsp;Player_ interface does not support audio
-output (see below) selection.
+<br>Windows supports _Integrated&nbsp;VLC_ and
+_Windows&nbsp;Media&nbsp;Player_.
 
 __Player Arguments__: Specifies any additional arguments to pass to the
 player interface.
