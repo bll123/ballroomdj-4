@@ -61,6 +61,7 @@ static const char *sysvarsdesc [SV_MAX] = {
   [SV_BDJ4_DIR_MAIN] = "BDJ4_DIR_MAIN",
   [SV_BDJ4_DIR_SCRIPT] = "BDJ4_DIR_SCRIPT",
   [SV_BDJ4_DIR_TEMPLATE] = "BDJ4_DIR_TEMPLATE",
+  [SV_BDJ4_DIR_TMP] = "BDJ4_DIR_TMP",
   [SV_BDJ4_DREL_DATA] = "BDJ4_DREL_DATA",
   [SV_BDJ4_DREL_HTTP] = "BDJ4_DREL_HTTP",
   [SV_BDJ4_DREL_IMG] = "BDJ4_DREL_IMG",
@@ -531,6 +532,11 @@ sysvarsInit (const char *argv0, int flags)
   end = sysvars [SV_BDJ4_DIR_INST] + SV_MAX_SZ;
   p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
   p = stpecpy (p, end, "/install");
+
+  p = sysvars [SV_BDJ4_DIR_TMP];
+  end = sysvars [SV_BDJ4_DIR_TMP] + SV_MAX_SZ;
+  p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
+  p = stpecpy (p, end, "/tmp");
 
   p = sysvars [SV_BDJ4_DIR_LOCALE];
   end = sysvars [SV_BDJ4_DIR_LOCALE] + SV_MAX_SZ;

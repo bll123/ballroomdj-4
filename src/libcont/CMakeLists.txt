@@ -9,6 +9,7 @@ add_library (libbdj4cont SHARED
   controller.c
 )
 target_link_libraries (libbdj4cont PRIVATE
+  libbdj4audiosrc
   libbdj4basic libbdj4common
 )
 

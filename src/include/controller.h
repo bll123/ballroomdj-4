@@ -57,6 +57,7 @@ typedef struct {
   int32_t       songend;
   int32_t       trackid;
   int32_t       duration;
+  int           astype;
 } contmetadata_t;
 
 const char *controllerDesc (void);

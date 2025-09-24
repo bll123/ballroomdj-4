@@ -25,6 +25,7 @@ typedef enum {
   PATHBLD_MP_DIR_LOCALE   = ((1 << 3) | PATHBLD_IS_ABSOLUTE),
   PATHBLD_MP_DIR_TEMPLATE = ((1 << 4) | PATHBLD_IS_ABSOLUTE),
   PATHBLD_MP_DIR_INST     = ((1 << 5) | PATHBLD_IS_ABSOLUTE),
+  PATHBLD_MP_DIR_TMP      = ((1 << 6) | PATHBLD_IS_ABSOLUTE),
   /* data directory (absolute) */
   PATHBLD_MP_DIR_DATATOP  = ((1 << 6) | PATHBLD_IS_ABSOLUTE),
   /* other paths */
