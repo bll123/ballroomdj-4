@@ -27,6 +27,7 @@ if (NOT WIN32 AND NOT APPLE)
           --output ${PROJECT_SOURCE_DIR}/libmpris/mpris-root.c
           ${PROJECT_SOURCE_DIR}/libmpris/mpris-root.xml
     DEPENDS mpris-root.xml
+    DEPENDS ${GDBUSCODEGEN}
   )
   add_custom_command (
     OUTPUT
@@ -47,6 +48,7 @@ if (NOT WIN32 AND NOT APPLE)
           --output ${PROJECT_SOURCE_DIR}/libmpris/mpris-player.c
           ${PROJECT_SOURCE_DIR}/libmpris/mpris-player.xml
     DEPENDS mpris-player.xml
+    DEPENDS ${GDBUSCODEGEN}
   )
 
   add_library (objdbusi OBJECT dbusi.c)

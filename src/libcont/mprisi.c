@@ -88,7 +88,7 @@ static const char *metadatastr [CONT_METADATA_MAX] = {
   [CONT_METADATA_TRACKID] = "mpris:trackid",
   [CONT_METADATA_DURATION] = "mpris:length",
   [CONT_METADATA_URI] = "xesam:url",
-  [CONT_METADATA_ART_URI] = "xesam:url",
+  [CONT_METADATA_ART_URI] = "xesam:url",    // incorrect
   [CONT_METADATA_GENRE] = "xesam:genre",
 };
 

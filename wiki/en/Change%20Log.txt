@@ -6,6 +6,9 @@
 
 **4.17.1 2025-9---**
 
+* Changes:
+    * Windows: Player Controller: SMTC now processes images properly.
+
 -->
 
 **4.17.0 2025-9-23**

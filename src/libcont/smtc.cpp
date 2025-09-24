@@ -227,10 +227,10 @@ logBasic ("   uri-fin\n");
 
     SMTC.IsPlayEnabled (false);
     SMTC.IsPauseEnabled (false);
-    SMTC.IsStopEnabled (false);
+    SMTC.IsStopEnabled (true);
     SMTC.IsPreviousEnabled (false);
-    SMTC.IsNextEnabled (false);
-    SMTC.IsRewindEnabled (false);
+    SMTC.IsNextEnabled (true);
+    SMTC.IsRewindEnabled (true);
 
     SMTC.PlaybackStatus (MediaPlaybackStatus::Closed);
     SMTC.IsEnabled (true);
@@ -276,16 +276,16 @@ logBasic ("   uri-fin\n");
   }
 
   void
-  smtcSetRewind (bool val)
+  smtcSetNextEnabled (void)
   {
-    SMTC.IsRewindEnabled (val);
+    SMTC.IsNextEnabled (true);
 //    smtcUpdater.Update ();
   }
 
   void
-  smtcSetNextEnabled (void)
+  smtcSetRewindEnabled (bool val)
   {
-    SMTC.IsNextEnabled (true);
+    SMTC.IsRewindEnabled (val);
 //    smtcUpdater.Update ();
   }
 
@@ -325,14 +325,26 @@ logBasic ("   uri-fin\n");
     // Update the System Media transport Controls
     SMTC.UpdateTimelineProperties (timeline);
 
-    tstr = winrt::to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_TITLE));
-    smtcUpdater.MusicProperties ().Title (tstr);
-    tstr = winrt::to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_ARTIST));
-    smtcUpdater.MusicProperties ().Artist (tstr);
-    tstr = winrt::to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_ALBUM));
-    smtcUpdater.MusicProperties ().AlbumTitle (tstr);
-    tstr = winrt::to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_ALBUMARTIST));
-    smtcUpdater.MusicProperties ().AlbumArtist (tstr);
+    tmp = nlistGetStr (contdata->metadata, CONT_METADATA_TITLE);
+    if (tmp != NULL) {
+      tstr = winrt::to_hstring (tmp);
+      smtcUpdater.MusicProperties ().Title (tstr);
+    }
+    tmp = nlistGetStr (contdata->metadata, CONT_METADATA_ARTIST);
+    if (tmp != NULL) {
+      tstr = winrt::to_hstring (tmp);
+      smtcUpdater.MusicProperties ().Artist (tstr);
+    }
+    tmp = nlistGetStr (contdata->metadata, CONT_METADATA_ALBUM);
+    if (tmp != NULL) {
+      tstr = winrt::to_hstring (tmp);
+      smtcUpdater.MusicProperties ().AlbumTitle (tstr);
+    }
+    tmp = nlistGetStr (contdata->metadata, CONT_METADATA_ALBUMARTIST);
+    if (tmp != NULL) {
+      tstr = winrt::to_hstring (tmp);
+      smtcUpdater.MusicProperties ().AlbumArtist (tstr);
+    }
 
     tmp = nlistGetStr (contdata->metadata, CONT_METADATA_ART_URI);
     if (tmp == NULL) {
@@ -488,7 +500,7 @@ contiSetPlayState (contdata_t *contdata, int state)
       canplay = true;
       canpause = false;
       canseek = true;
-      canrewind = true;
+      canrewind = false;
       break;
     }
     case PL_STATE_IN_CROSSFADE:
@@ -513,7 +525,7 @@ contiSetPlayState (contdata_t *contdata, int state)
 
   contdata->mpsmtc->smtcSetPlay (canplay);
   contdata->mpsmtc->smtcSetPause (canpause);
-  contdata->mpsmtc->smtcSetRewind (canrewind);
+  contdata->mpsmtc->smtcSetRewindEnabled (canrewind);
 
   if (contdata->playstatus != nstate) {
     contdata->mpsmtc->smtcSendPlaybackStatus (nstate);
