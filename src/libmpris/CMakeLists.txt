@@ -61,7 +61,6 @@ if (NOT WIN32 AND NOT APPLE)
 
   add_library (objmprisroot OBJECT mpris-root.c)
   target_include_directories (objmprisroot
-    PRIVATE "${GTK_INCLUDE_DIRS}"
     PRIVATE "${GIO_INCLUDE_DIRS}"
   )
   target_link_libraries (objmprisroot PRIVATE
@@ -70,7 +69,6 @@ if (NOT WIN32 AND NOT APPLE)
 
   add_library (objmprisplayer OBJECT mpris-player.c)
   target_include_directories (objmprisplayer
-    PRIVATE "${GTK_INCLUDE_DIRS}"
     PRIVATE "${GIO_INCLUDE_DIRS}"
   )
   target_link_libraries (objmprisplayer PRIVATE

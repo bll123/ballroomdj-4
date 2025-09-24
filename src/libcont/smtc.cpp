@@ -10,6 +10,10 @@
  *  2024-10-29 found more references to general smtc code (not winrt)
  *  https://github.com/bolucat/Firefox/blob/dc6f9cd8a7a1ce2e3abf7ba52b53b6b7fa009a9a/widget/windows/WindowsSMTCProvider.cpp
  *  https://github.com/chromium/chromium/blob/f32b9239d52625aba333cc23a03f98d0d532e9df/components/system_media_controls/win/system_media_controls_win.cc
+ *
+ *
+ * Rewind and Position appear to do nothing, so don't bother with them.
+ *
  */
 #include "config.h"
 
@@ -67,9 +71,6 @@ typedef struct contdata {
 #if SMTC_ENABLED
   MediaPlaybackStatus playstatus;     // Windows playback status
 #endif
-  int32_t             pos;
-  int                 rate;
-  int                 volume;
   mpintfc_t           *mpsmtc;
 } contdata_t;
 
@@ -115,7 +116,6 @@ struct mpintfc
   void
   smtcSetArt (const char *fn)
   {
-logBasic ("set-art: %s\n", fn);
     auto hsfn = winrt::to_hstring (fn);
     auto sfile = StorageFile::GetFileFromPathAsync (hsfn).get ();
     if (sfile == nullptr) {
@@ -133,24 +133,17 @@ logBasic ("set-art: %s\n", fn);
     if (thumb == nullptr ||
         thumb.Size () == 0 ||
         thumb.Type () == FileProperties::ThumbnailType::Icon) {
-logBasic ("  use default-a\n");
       smtcSetDefaultArt ();
       return;
     }
 
-logBasic ("   fn-aaa\n");
     auto istream = thumb.CloneStream ();
-logBasic ("   fn-bbb\n");
     auto art = Streams::RandomAccessStreamReference::CreateFromStream (istream);
-logBasic ("   fn-ccc\n");
     if (art == nullptr) {
-logBasic ("  use default-b\n");
       smtcSetDefaultArt ();
       return;
     }
-logBasic ("   fn-eee\n");
     smtcUpdater.Thumbnail (art);
-logBasic ("   fn-fin\n");
   }
 
   void
@@ -211,9 +204,7 @@ logBasic ("   uri-fin\n");
             /* not supported -- do not implement */
             break;
           }
-          case SystemMediaTransportControlsButton::Rewind: {
-            break;
-          }
+          case SystemMediaTransportControlsButton::Rewind:
           case SystemMediaTransportControlsButton::ChannelDown:
           case SystemMediaTransportControlsButton::ChannelUp:
           case SystemMediaTransportControlsButton::FastForward:
@@ -230,7 +221,6 @@ logBasic ("   uri-fin\n");
     SMTC.IsStopEnabled (true);
     SMTC.IsPreviousEnabled (false);
     SMTC.IsNextEnabled (true);
-    SMTC.IsRewindEnabled (true);
 
     SMTC.PlaybackStatus (MediaPlaybackStatus::Closed);
     SMTC.IsEnabled (true);
@@ -258,45 +248,24 @@ logBasic ("   uri-fin\n");
   smtcSendPlaybackStatus (MediaPlaybackStatus nstate)
   {
     SMTC.PlaybackStatus (nstate);
-//    smtcUpdater.Update ();
   }
 
   void
   smtcSetPlay (bool val)
   {
     SMTC.IsPlayEnabled (val);
-//    smtcUpdater.Update ();
   }
 
   void
   smtcSetPause (bool val)
   {
     SMTC.IsPauseEnabled (val);
-//    smtcUpdater.Update ();
   }
 
   void
   smtcSetNextEnabled (void)
   {
     SMTC.IsNextEnabled (true);
-//    smtcUpdater.Update ();
-  }
-
-  void
-  smtcSetRewindEnabled (bool val)
-  {
-    SMTC.IsRewindEnabled (val);
-//    smtcUpdater.Update ();
-  }
-
-  void
-  smtcSetRepeat (bool state)
-  {
-    SMTC.AutoRepeatMode (MediaPlaybackAutoRepeatMode::None);
-    if (state) {
-      SMTC.AutoRepeatMode (MediaPlaybackAutoRepeatMode::Track);
-    }
-//    smtcUpdater.Update ();
   }
 
   void
@@ -304,26 +273,6 @@ logBasic ("   uri-fin\n");
   {
     const char      *tmp;
     winrt::hstring  tstr;
-    uint64_t    tval;
-    TimeSpan    ts;
-
-    auto timeline = SystemMediaTransportControlsTimelineProperties ();
-
-    tval = nlistGetNum (contdata->metadata, CONT_METADATA_SONGSTART);
-    ts = std::chrono::milliseconds (tval);
-    timeline.StartTime (ts);
-    timeline.MinSeekTime (ts);
-
-    tval = nlistGetNum (contdata->metadata, CONT_METADATA_DURATION);
-    ts = std::chrono::milliseconds (tval);
-    timeline.MaxSeekTime (ts);
-    timeline.EndTime (ts);
-
-    ts = std::chrono::milliseconds (0);
-    timeline.Position (ts);
-
-    // Update the System Media transport Controls
-    SMTC.UpdateTimelineProperties (timeline);
 
     tmp = nlistGetStr (contdata->metadata, CONT_METADATA_TITLE);
     if (tmp != NULL) {
@@ -350,7 +299,6 @@ logBasic ("   uri-fin\n");
     if (tmp == NULL) {
       tmp = nlistGetStr (contdata->metadata, CONT_METADATA_URI);
     }
-logBasic ("smtc: type: %d uri: %s\n", astype, tmp);
     if (tmp != NULL &&
         astype != AUDIOSRC_TYPE_FILE) {
       char    tbuff [MAXPATHLEN];
@@ -370,17 +318,6 @@ logBasic ("smtc: type: %d uri: %s\n", astype, tmp);
 
     smtcUpdater.Update ();
   }
-
-//  SystemMediaTransportControls
-//  SMTC {
-//    return mediaPlayer.SystemMediaTransportControls ();
-//  }
-
-//  SystemMediaTransportControlsDisplayUpdater
-//  smtcUpdater () {
-//    /* this is actually the older method */
-//    return SMTC().DisplayUpdater ();
-//  }
 
   Playback::MediaPlayer                       mediaPlayer;
   SystemMediaTransportControls                SMTC;
@@ -469,7 +406,6 @@ contiSetPlayState (contdata_t *contdata, int state)
   bool                canplay = false;
   bool                canpause = false;
   bool                canseek = false;
-  bool                canrewind = false;
 
   if (contdata == NULL) {
     return;
@@ -484,7 +420,6 @@ contiSetPlayState (contdata_t *contdata, int state)
       canplay = false;
       canpause = true;
       canseek = true;
-      canrewind = true;
       break;
     }
     case PL_STATE_IN_FADEOUT: {
@@ -492,7 +427,6 @@ contiSetPlayState (contdata_t *contdata, int state)
       canplay = false;
       canpause = false;
       canseek = false;
-      canrewind = false;
       break;
     }
     case PL_STATE_PAUSED: {
@@ -500,7 +434,6 @@ contiSetPlayState (contdata_t *contdata, int state)
       canplay = true;
       canpause = false;
       canseek = true;
-      canrewind = false;
       break;
     }
     case PL_STATE_IN_CROSSFADE:
@@ -509,7 +442,6 @@ contiSetPlayState (contdata_t *contdata, int state)
       canplay = false;
       canpause = false;
       canseek = false;
-      canrewind = false;
       break;
     }
     case PL_STATE_UNKNOWN:
@@ -518,84 +450,18 @@ contiSetPlayState (contdata_t *contdata, int state)
       canplay = true;
       canpause = false;
       canseek = false;
-      canrewind = false;
       break;
     }
   }
 
   contdata->mpsmtc->smtcSetPlay (canplay);
   contdata->mpsmtc->smtcSetPause (canpause);
-  contdata->mpsmtc->smtcSetRewindEnabled (canrewind);
 
   if (contdata->playstatus != nstate) {
     contdata->mpsmtc->smtcSendPlaybackStatus (nstate);
     contdata->playstatus = nstate;
   }
 #endif
-}
-
-void
-contiSetRepeatState (contdata_t *contdata, bool state)
-{
-  if (contdata == NULL) {
-    return;
-  }
-
-  contdata->mpsmtc->smtcSetRepeat (state);
-}
-
-void
-contiSetPosition (contdata_t *contdata, int32_t pos)
-{
-  if (contdata == NULL) {
-    return;
-  }
-
-  if (contdata->pos != pos) {
-    int32_t   pdiff;
-
-    pdiff = pos - contdata->pos;
-    if (pdiff < 0 || pdiff > 300) {
-      /* the seek signal is only supposed to be sent when there is */
-      /* a large change */
-// ### to-do set the position
-    }
-    contdata->pos = pos;
-  }
-}
-
-void
-contiSetRate (contdata_t *contdata, int rate)
-{
-  if (contdata == NULL) {
-    return;
-  }
-
-  /* not implemented */
-
-  if (contdata->rate != rate) {
-    double    dval;
-
-    dval = (double) rate / 100.0;
-  }
-  contdata->rate = rate;
-}
-
-void
-contiSetVolume (contdata_t *contdata, int volume)
-{
-  if (contdata == NULL) {
-    return;
-  }
-
-  /* not implemented */
-
-  if (contdata->volume != volume) {
-    double    dval;
-
-    dval = (double) volume / 100.0;
-  }
-  contdata->volume = volume;
 }
 
 void
