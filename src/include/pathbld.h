@@ -27,8 +27,6 @@ typedef enum {
   PATHBLD_MP_DIR_INST     = ((1 << 5) | PATHBLD_IS_ABSOLUTE),
   /* data directory (absolute) */
   PATHBLD_MP_DIR_DATATOP  = ((1 << 6) | PATHBLD_IS_ABSOLUTE),
-  /* used by windows smtc */
-  PATHBLD_MP_DIR_TMP      = ((1 << 7) | PATHBLD_IS_ABSOLUTE),
   /* other paths */
   PATHBLD_IS_OTHER        = 0x40000000,
   PATHBLD_MP_DIR_CACHE    = ((1 << 0) | PATHBLD_IS_OTHER),

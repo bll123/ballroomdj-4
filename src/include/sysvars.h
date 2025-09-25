@@ -20,7 +20,6 @@ typedef enum {
   SV_BDJ4_DIR_MAIN,     // path to the main directory above bin/, etc.
   SV_BDJ4_DIR_SCRIPT,   // main + /scripts
   SV_BDJ4_DIR_TEMPLATE, // main + /templates
-  SV_BDJ4_DIR_TMP,      // main + /tmp   ... needed for win smtc
   SV_BDJ4_DREL_DATA,    // data
   SV_BDJ4_DREL_HTTP,    // http
   SV_BDJ4_DREL_IMG,     // img - some images are in main/img and some here.

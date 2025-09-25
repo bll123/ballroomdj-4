@@ -89,9 +89,6 @@ pathbldMakePath (char *buff, size_t buffsz,
   if ((flags & PATHBLD_MP_DIR_INST) == PATHBLD_MP_DIR_INST) {
     dirprefix = sysvarsGetStr (SV_BDJ4_DIR_INST);
   }
-  if ((flags & PATHBLD_MP_DIR_TMP) == PATHBLD_MP_DIR_TMP) {
-    dirprefix = sysvarsGetStr (SV_BDJ4_DIR_TMP);
-  }
   if ((flags & PATHBLD_MP_DIR_ICON) == PATHBLD_MP_DIR_ICON) {
     dirprefix = sysvarsGetStr (SV_PATH_ICONDIR);
   }
