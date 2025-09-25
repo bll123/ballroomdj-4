@@ -15,9 +15,6 @@ As of 2025-8-9, development needs are:
 * Volume Interface
     * Windows - Needs to be modernized and updated
 * Player Interface
-    * Windows Native
-      in progress
-      also: https://learn.microsoft.com/en-us/windows/uwp/audio-video-camera/audio-graphs
     * Spotify
       I will not be working on this, other than providing guidance to
       whoever takes this on.

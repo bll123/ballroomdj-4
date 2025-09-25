@@ -9,7 +9,6 @@
 * Bug Fixes:
     * Player: Matroska audio files are now recognized.  Tags are not recognized.
     * Player Controller: Windows SMTC now processes images properly.
-    * PENDING: Player Controller: Linux MPRIS fixed.
 
 -->
 
