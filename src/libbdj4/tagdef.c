@@ -37,6 +37,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TXXX=ADJUSTFLAGS", "TXXX", "ADJUSTFLAGS", NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { NULL, NULL, NULL, NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -65,6 +66,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TALB", NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { "WM/AlbumTitle", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { "IPRD", NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "ALBUM/TITLE", "ALBUM", "TITLE", NULL },
     },       /* audio tags */
     "Album",                      /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -93,6 +95,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TPE2", NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { "WM/AlbumArtist", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "ALBUM/ARTIST", "ALBUM", "ARTIST", NULL },
     },       /* audio tags */
     "Album Artist",               /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -121,6 +124,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TPE1", NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { "WM/Author", NULL, NULL, NULL },   // or author?
       [TAG_TYPE_RIFF] = { "IART", NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/ARTIST", "TRACK", "ARTIST", NULL },
     },       /* audio tags */
     "Artist",                     /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -149,6 +153,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { NULL, NULL, NULL, NULL },
     },         /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -177,6 +182,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { NULL, NULL, NULL, NULL },
     },         /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -205,6 +211,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TBPM", NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { "WM/BeatsPerMinute", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/BPM", "TRACK", "BPM", NULL },
     },       /* audio tags */
     "BPM",                        /* itunes name          */
     ET_SPINBOX,                   /* edit type            */
@@ -233,6 +240,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { NULL, NULL, NULL, NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_LABEL,                     /* edit type            */
@@ -261,6 +269,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "COMM", NULL, NULL, NULL },    // handled in ati
       [TAG_TYPE_ASF] = { "Description", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { "ICMT", NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/COMMENT", NULL, NULL, NULL },
     },       /* audio tags */
     "Comment",                    /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -289,6 +298,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TCOM", NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { "WM/Composer", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "ALBUM/COMPOSER", "ALBUM", "COMPOSER", NULL },
     },       /* audio tags */
     "Composer",                   /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -317,6 +327,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TPE3", NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { "WM/Conductor", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "ALBUM/CONDUCTOR", "ALBUM", "CONDUCTOR", NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -345,6 +356,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TXXX=DANCE", "TXXX", "DANCE", NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/_DANCE", "TRACK", "_DANCE", NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_COMBOBOX,                  /* edit type            */
@@ -373,6 +385,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TXXX=DANCELEVEL", "TXXX", "DANCELEVEL", NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/_DANCELEVEL", "TRACK", "_DANCELEVEL", NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_SPINBOX_TEXT,              /* edit type            */
@@ -401,6 +414,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TXXX=DANCERATING", "TXXX", "DANCERATING", NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/_DANCERATING", "TRACK", "_DANCERATING", NULL },
     },       /* audio tags */
     "Rating",                     /* itunes name          */
     ET_SPINBOX_TEXT,              /* edit type            */
@@ -429,6 +443,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TDRC", NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { "WM/Year", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { "ICRD", NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "ALBUM/DATE_RECORDED", "ALBUM", "DATE_RECORDED", NULL },
     },       /* audio tags */
     "Year",                       /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -457,6 +472,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { NULL, NULL, NULL, NULL },
     },         /* audio tags */
     "Date Added",                 /* itunes name          */
     ET_LABEL,                     /* edit type            */
@@ -485,6 +501,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TPOS", NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { "WM/PartOfSet", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "VOLUME/PART_NUMBER", "VOLUME", "PART_NUMBER", NULL },
     },       /* audio tags */
     "Disc Number",                /* itunes name          */
     ET_SPINBOX,                   /* edit type            */
@@ -513,6 +530,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "VOLUME/TOTAL_PARTS", "VOLUME", "TOTAL_PARTS", NULL },
     },         /* audio tags */
     "Disc Count",                 /* itunes name          */
     ET_SPINBOX,                   /* edit type            */
@@ -541,6 +559,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { NULL, NULL, NULL, NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_LABEL,                     /* edit type            */
@@ -570,6 +589,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { NULL, NULL, NULL, NULL },
     },         /* audio tags */
     "Location",                   /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -598,6 +618,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TXXX=FAVORITE", "TXXX", "FAVORITE", NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/_FAVORITE", "TRACK", "_FAVORITE", NULL },
     },       /* audio tags */
     "Favorite",                   /* itunes name          */
     ET_SPINBOX_TEXT,              /* edit type            */
@@ -626,6 +647,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TCON", NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { "WM/Genre", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { "IGNR", NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "ALBUM/GENRE", "ALBUM", "GENRE", NULL },
     },       /* audio tags */
     "Genre",                      /* itunes name          */
     ET_COMBOBOX,                  /* edit type            */
@@ -654,6 +676,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "GRP1", NULL, NULL, NULL },      // itunes compat
       [TAG_TYPE_ASF] = { "WM/ContentGroupDescription", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/_GROUPING", "TRACK", "_GROUPING", NULL },
     },       /* audio tags */
     "Grouping",                   /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -682,6 +705,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TXXX=KEYWORD", "TXXX", "KEYWORD", NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/_KEYWORD", "TRACK", "_KEYWORD", NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -710,6 +734,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "MVNM", NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "MOVEMENT/TITLE", "MOVEMENT", "TITLE", NULL },
     },       /* audio tags */
     "Movement Name",              /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -738,6 +763,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "MVIN", NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "MOVEMENT/PART_NUMBER", "MOVEMENT", "PART_NUMBER", NULL },
     },       /* audio tags */
     "Movement Number",            /* itunes name          */
     ET_SPINBOX,                   /* edit type            */
@@ -766,6 +792,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "MOVEMENT/TOTAL_PARTS", "MOVEMENT", "TOTAL_PARTS", NULL },
     },       /* audio tags */
     "Movement Count",             /* itunes name          */
     ET_SPINBOX,                   /* edit type            */
@@ -794,6 +821,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TXXX=MQDISPLAY", "TXXX", "MQDISPLAY", NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/_MQDISPLAY", "TRACK", "_MQDISPLAY", NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -822,6 +850,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "UFID=http://musicbrainz.org", "UFID", "http://musicbrainz.org", NULL },
       [TAG_TYPE_ASF] = { "MusicBrainz/Track Id", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/_MUSICBRAINZ_TRACKID", "TRACK", "_MUSICBRAINZ_TRACKID", NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -850,6 +879,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TIT1", NULL, NULL, NULL },      // itunes compat
       [TAG_TYPE_ASF] = { "WM/Work", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { NULL, NULL, NULL, NULL },
     },       /* audio tags */
     "Work",                       /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -878,6 +908,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TXXX=MusicBrainz Work Id", "TXXX", "MusicBrainz Work Id", NULL },
       [TAG_TYPE_ASF] = { "MusicBrainz/Work Id", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/_MUSICBRAINZ_WORKID", "TRACK", "_MUSICBRAINZ_WORKID", NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -906,6 +937,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TXXX=MusicBrainz Release Track Id", "TXXX", "MusicBrainz Release Track Id", NULL },
       [TAG_TYPE_ASF] = { "MusicBrainz/Release Track Id", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/_MUSICBRAINZ_RELEASETRACKID", "TRACK", "_MUSICBRAINZ_RELEASETRACKID", NULL },
     },  /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -934,6 +966,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TXXX=NOPLAYTMLIMIT", "TXXX", "NOPLAYTMLIMIT", NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/_NOPLAYTMLIMIT", "TRACK", "_NOPLAYTMLIMIT", NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_SWITCH,                    /* edit type            */
@@ -962,6 +995,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TXXX=NOTES", "TXXX", "NOTES", NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/_NOTES", "TRACK", "_NOTES", NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -990,6 +1024,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TXXX=SAMESONG", "TXXX", "SAMESONG", NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/_SAMESONG", "TRACK", "_SAMESONG", NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -1018,6 +1053,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TXXX=SHOWMOVEMENT", "TXXX", "SHOWMOVEMENT", NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/_SHOWMOVEMENT", "TRACK", "_SHOWMOVEMENT", NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -1046,6 +1082,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TXXX=SONGEND", "TXXX", "SONGEND", NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/_SONGEND", "TRACK", "_SONGEND", NULL },
     },       /* audio tags */
     "Stop Time",                  /* itunes name          */
     ET_SPINBOX_TIME,              /* edit type            */
@@ -1074,6 +1111,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TXXX=SONGSTART", "TXXX", "SONGSTART", NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/_SONGSTART", "TRACK", "_SONGSTART", NULL },
     },       /* audio tags */
     "Start Time",                 /* itunes name          */
     ET_SPINBOX_TIME,              /* edit type            */
@@ -1102,6 +1140,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TXXX=SONGTYPE", "TXXX", "SONGTYPE", NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/_SONGTYPE", "TRACK", "_SONGTYPE", NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -1130,6 +1169,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TSOA", NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { "WM/AlbumSortOrder", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "ALBUM/SORT_WITH", "ALBUM", "SORT_WITH", NULL },
     },       /* audio tags */
     "Sort Album",                 /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -1158,6 +1198,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TSO2", NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { "WM/AlbumArtistSortOrder", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "ALBUM/ARTIST/SORT_WITH", "ALBUM", "ARTIST", "SORT_WITH" },
     },       /* audio tags */
     "Sort Album Artist",          /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -1186,6 +1227,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TSOP", NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { "WM/ArtistSortOrder", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/ARTIST/SORT_WITH", "TRACK", "ARTIST", "SORT_WITH" },
     },       /* audio tags */
     "Sort Artist",                /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -1214,6 +1256,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TSOC", NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { "WM/ComposerSortOrder", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "COMPOSER/SORT_WITH", "COMPOSER", "SORT_WITH", NULL },
     },       /* audio tags */
     "Sort Composer",              /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -1242,6 +1285,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TSOT", NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { "WM/TitleSortOrder", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/TITLE/SORT_WITH", "TRACK", "TITLE", "SORT_WITH" },
     },       /* audio tags */
     "Sort Name",                  /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -1270,6 +1314,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TXXX=SPEEDADJUSTMENT", "TXXX", "SPEEDADJUSTMENT", NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK_SPEEDADJUSTMENT", "TRACK", "_SPEEDADJUSTMENT", NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_SCALE,                     /* edit type            */
@@ -1298,6 +1343,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TXXX=STATUS", "TXXX", "STATUS", NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/_STATUS", "TRACK", "_STATUS", NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_SPINBOX_TEXT,              /* edit type            */
@@ -1326,6 +1372,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TXXX=TAGS", "TXXX", "TAGS", NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/_TAGS", "TRACK", "_TAGS", NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -1354,6 +1401,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TIT2", NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { "WM/Title", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { "INAM", NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/TITLE", "TRACK", "TITLE", NULL },
     },       /* audio tags */
     "Name",                       /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -1382,6 +1430,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TRCK", NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { "WM/TrackNumber", NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { "ITRK", NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/PART_NUMBER", "TRACK", "PART_NUMBER", NULL },
     },       /* audio tags */
     "Track Number",               /* itunes name          */
     ET_SPINBOX,                   /* edit type            */
@@ -1410,6 +1459,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "ALBUM/TOTAL_PARTS", "ALBUM", "TOTAL_PARTS", NULL },
     },         /* audio tags */
     "Track Count",                /* itunes name          */
     ET_SPINBOX,                   /* edit type            */
@@ -1438,6 +1488,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { NULL, NULL, NULL, NULL },
     },         /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -1466,6 +1517,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { "TXXX=VOLUMEADJUSTPERC", "TXXX", "VOLUMEADJUSTPERC", NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { "TRACK/_VOLUMEADJUSTPERC", "TRACK", "_VOLUMEADJUSTPERC", NULL },
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_SCALE,                     /* edit type            */
@@ -1494,6 +1546,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { NULL, NULL, NULL, NULL },
     },         /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -1522,6 +1575,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { NULL, NULL, NULL, NULL },
     },         /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -1550,6 +1604,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { NULL, NULL, NULL, NULL },
     },         /* audio tags */
     NULL,                         /* itunes name          */
     ET_SWITCH,                    /* edit type            */
@@ -1578,6 +1633,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { NULL, NULL, NULL, NULL },
     },        /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -1606,6 +1662,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       [TAG_TYPE_ID3] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { NULL, NULL, NULL, NULL },
     },         /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */

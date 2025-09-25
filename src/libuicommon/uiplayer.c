@@ -1131,7 +1131,6 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
   cmetadata.trackid = mqstatus.uniqueidx;
   cmetadata.duration = songGetNum (song, TAG_DURATION);
   cmetadata.astype = audiosrcGetType (uri);
-logStderr ("astype: %d\n", cmetadata.astype);
   controllerSetCurrent (uiplayer->controller, &cmetadata);
 
   idx = UIPL_W_INFO_DISP_A;

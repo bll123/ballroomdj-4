@@ -145,6 +145,10 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: riff");
     atibdj4ParseRIFFTags (atidata, tagdata, ffn, tagtype, rewrite);
   }
+  if (filetype == AFILE_TYPE_MK) {
+    needduration = true;
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mk");
+  }
 
   if (needduration) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "duration: use avformat");

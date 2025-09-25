@@ -21,6 +21,7 @@ enum {
 enum {
   AFILE_TYPE_UNKNOWN,
   AFILE_TYPE_FLAC,
+  AFILE_TYPE_MK,      // matroksa
   AFILE_TYPE_MP3,
   AFILE_TYPE_MP4,
   AFILE_TYPE_OGG,     // ogg container, codec unknown
