@@ -17,7 +17,7 @@
     org.freedesktop.DBus.Introspectable
     Introspect
     # (s)
-    # should this be (v) ?
+    # a{sv}
     # property / method / access
     #   Rate prop rw
     #   MaximumRate prop rw
@@ -29,6 +29,13 @@
     #   CanSeek r
 
 # properties
+
+  # GetAll
+    org.mpris.MediaPlayer2.vlc
+    /org/mpris/MediaPlayer2
+    org.freedesktop.DBus.Properties
+    GetAll
+    a{sv}
 
   # SupportedUriSchemes
     org.mpris.MediaPlayer2.vlc
@@ -179,6 +186,9 @@
     org.mpris.MediaPlayer2.Player
     Rate
     <rate>
+
+  # Rating
+    # saw this somewhere
 
 # methods
 

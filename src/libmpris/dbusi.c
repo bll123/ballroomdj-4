@@ -191,48 +191,6 @@ dbusMessageSetData (dbus_t *dbus, const char *sdata, ...)
   va_end (args);
 }
 
-#if 0 /* keep this for now */
-
-/* want to get the types from the children, i don't know another way */
-/* how to create an 'a{sv}' given the variant container */
-void
-dbusMessageSetDataTuple (dbus_t *dbus, const char *sdata, ...)  /* KEEP */
-{
-  va_list   args;
-  GVariant  **children;
-  void      *v;
-  int       count;
-  int       i;
-
-  count = 0;
-  va_start (args, sdata);
-  while ((v = va_arg (args, void *)) != NULL) {
-    ++count;
-  }
-  va_end (args);
-
-  dbusFreeData (dbus);
-
-  children = mdmalloc (sizeof (GVariant *) * count);
-
-  i = 0;
-  va_start (args, sdata);
-  while ((v = va_arg (args, void *)) != NULL) {
-    children [i] = v;
-    ++i;
-  }
-  va_end (args);
-
-  dbus->data = g_variant_new_tuple (children, count);
-  mdextalloc (dbus->data);
-  dbus->dataalloc = true;
-  mdfree (children);
-# if DBUS_DEBUG
-  dumpResult ("data-va", dbus->data);
-# endif
-}
-#endif
-
 void
 dbusMessageInitArray (dbus_t *dbus, const char *sdata)
 {
@@ -532,9 +490,13 @@ dumpResult (const char *tag, GVariant *data)
     }
   } else {
     if (g_variant_is_container (data)) {
-      const char  *ts;
-      ts = g_variant_get_data (data);
-      fprintf (stderr, "  data-c: %s\n", ts);
+      int       c;
+
+      c = g_variant_n_children (data);
+      for (int i = 0; i < c; ++i) {
+        v = g_variant_get_child_value (data, i);
+        dumpResult ("container", v);
+      }
     }
     if (! g_variant_is_container (data)) {
       char    *ts;

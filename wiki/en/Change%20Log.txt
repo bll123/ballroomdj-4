@@ -7,8 +7,9 @@
 **4.17.1 2025-9---**
 
 * Bug Fixes:
-    * Audio Files: Matroska audio files are now recognized.  No tag processing at this time.
-    * Windows: Player Controller: SMTC now processes images properly.
+    * Player: Matroska audio files are now recognized.  Tags are not recognized.
+    * Player Controller: Windows SMTC now processes images properly.
+    * PENDING: Player Controller: Linux MPRIS fixed.
 
 -->
 

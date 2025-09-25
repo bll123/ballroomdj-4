@@ -2,14 +2,14 @@
   <interface name='org.mpris.MediaPlayer2'>
     <method name='Raise'></method>
     <method name='Quit'></method>
-    <property type='b' access='read' name='CanQuit'/>
-    <property type='b' access='read' name='Fullscreen'/>
-    <property type='b' access='read' name='CanSetFullscreen'/>
-    <property type='b' access='read' name='CanRaise'/>
-    <property type='b' access='read' name='HasTrackList'/>
-    <property type='s' access='read' name='Identity'/>
-    <property type='s' access='read' name='DesktopEntry'/>
-    <property type='as' access='read' name='SupportedUriSchemes'/>
-    <property type='as' access='read' name='SupportedMimeTypes'/>
+    <property name='CanQuit' type='b' access='read' />
+    <property name='CanRaise' type='b' access='read' />
+    <property name='HasTrackList' type='b' access='read' />
+    <property name='Identity' type='s' access='read' />
+    <property name='DesktopEntry' type='s' access='read' />
+    <property name='SupportedUriSchemes' type='as' access='read' />
+    <property name='SupportedMimeTypes' type='as' access='read' />
+    <property name='Fullscreen' type='b' access='read' />
+    <property name='CanSetFullscreen' type='b' access='read' />
   </interface>
 </node>
