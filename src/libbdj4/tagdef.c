@@ -147,37 +147,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* text search          */
     true,                         /* vorbis multi         */
   },
-  /* used internally : at this time, not stored in the database */
-  /* i do not know that any container formats use a uri for the cover image */
-  [TAG_ART_URI] =
-  { "ART_URI",                    /* tag */
-    NULL,                         /* display name         */
-    NULL,                         /* short display name   */
-    { [TAG_TYPE_VORBIS] = { "ART_URI", NULL, NULL, NULL },
-      [TAG_TYPE_MP4] = { NULL, NULL, NULL, NULL },
-      [TAG_TYPE_ID3] = { NULL, NULL, NULL, NULL },
-      [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },   // or author?
-      [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
-      [TAG_TYPE_MK] = { NULL, NULL, NULL, NULL },
-    },       /* audio tags */
-    NULL,                         /* itunes name          */
-    ET_ENTRY,                     /* edit type            */
-    VALUE_STR,                    /* value type           */
-    NULL,                         /* conv func            */
-    false,                        /* listing display      */
-    false,                        /* secondary display    */
-    true,                         /* ellipsize            */
-    false,                        /* align end            */
-    false,                        /* is bdj tag           */
-    false,                        /* is norm tag          */
-    false,                        /* edit-all             */
-    false,                        /* editable             */
-    false,                        /* audio-id             */
-    false,                        /* marquee-disp         */
-    false,                        /* player-ui-disp       */
-    false,                        /* text search          */
-    false,                        /* vorbis multi         */
-  },
   /* used internally */
   [TAG_AUDIOID_IDENT] =
   { "AUDIOID_IDENT",              /* tag */
@@ -729,6 +698,38 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* marquee-disp         */
     false,                        /* player-ui-disp       */
     true,                         /* text search          */
+    false,                        /* vorbis multi         */
+  },
+  /* used internally : at this time, not stored in the database */
+  /* i do not know that any container formats use a uri for the cover image */
+  /* podcasts use a uri */
+  [TAG_IMAGE_URI] =
+  { "IMAGE_URI",                    /* tag */
+    NULL,                         /* display name         */
+    NULL,                         /* short display name   */
+    { [TAG_TYPE_VORBIS] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MP4] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_ID3] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },   // or author?
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { NULL, NULL, NULL, NULL },
+    },       /* audio tags */
+    NULL,                         /* itunes name          */
+    ET_ENTRY,                     /* edit type            */
+    VALUE_STR,                    /* value type           */
+    NULL,                         /* conv func            */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    true,                         /* ellipsize            */
+    false,                        /* align end            */
+    false,                        /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* edit-all             */
+    false,                        /* editable             */
+    false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
+    false,                        /* player-ui-disp       */
+    false,                        /* text search          */
     false,                        /* vorbis multi         */
   },
   [TAG_KEYWORD] =

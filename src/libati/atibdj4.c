@@ -104,7 +104,7 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
   char              pbuff [100];
   int32_t           duration = 0;
   int               rc;
-  bool              needduration = false;
+  bool              needduration = true;
 
   atibdj4LogVersion ();
 
@@ -116,6 +116,7 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
   logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "parse tags %s", ffn);
 
   if (filetype == AFILE_TYPE_FLAC) {
+    needduration = false;
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac");
     atibdj4ParseFlacTags (atidata, tagdata, ffn, tagtype, rewrite);
   }
@@ -126,22 +127,27 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
     atibdj4ParseMP3Tags (atidata, tagdata, ffn, tagtype, rewrite);
   }
   if (filetype == AFILE_TYPE_MP4) {
+    needduration = false;
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp4");
     atibdj4ParseMP4Tags (atidata, tagdata, ffn, tagtype, rewrite);
   }
   if (filetype == AFILE_TYPE_VORBIS) {
+    needduration = false;
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: ogg");
     atibdj4ParseOggTags (atidata, tagdata, ffn, tagtype, rewrite);
   }
   if (filetype == AFILE_TYPE_OPUS) {
+    needduration = false;
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: opus");
     atibdj4ParseOpusTags (atidata, tagdata, ffn, tagtype, rewrite);
   }
   if (filetype == AFILE_TYPE_ASF) {
+    needduration = false;
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: asf");
     atibdj4ParseASFTags (atidata, tagdata, ffn, tagtype, rewrite);
   }
   if (filetype == AFILE_TYPE_RIFF) {
+    needduration = false;
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: riff");
     atibdj4ParseRIFFTags (atidata, tagdata, ffn, tagtype, rewrite);
   }
@@ -149,6 +155,8 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
     needduration = true;
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mk");
   }
+
+  /* 2025-9 : any unknown type will have need-duration set to true */
 
   if (needduration) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "duration: use avformat");

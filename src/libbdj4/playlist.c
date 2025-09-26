@@ -773,17 +773,27 @@ playlistGetNextSong (playlist_t *pl,
       int     songtype;
 
       song = dbGetByName (pl->musicdb, sfname);
-
-      /* podcasts are assumed to exist */
       if (song != NULL) {
         songtype = songGetNum (song, TAG_SONG_TYPE);
+      }
+
+      if (song != NULL && songtype == SONG_TYPE_PODCAST) {
+        /* if the song does not have an art-uri set, */
+        /* use the podcast's art-uri */
+        if (songGetStr (song, TAG_IMAGE_URI) == NULL) {
+          songSetStr (song, TAG_IMAGE_URI,
+              podcastGetStr (pl->podcast, PODCAST_IMAGE_URI));
+        }
+      }
+
+      if (song != NULL) {
         /* podcasts are assumed to exist */
-        if (songtype == SONG_TYPE_PODCAST ||
-            songAudioSourceExists (song)) {
+        if (songtype == SONG_TYPE_PODCAST || songAudioSourceExists (song)) {
           /* is ok */
           break;
         }
       }
+
       song = NULL;
       logMsg (LOG_DBG, LOG_IMPORTANT, "WARN: songlist: missing: %s", sfname);
       slkey = songlistIterate (pl->songlist, &pl->songlistiter);

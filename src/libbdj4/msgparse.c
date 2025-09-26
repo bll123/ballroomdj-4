@@ -271,9 +271,10 @@ msgbuildQueuePlaylist (char *buff, size_t sz, int mqidx,
 }
 
 void
-msgbuildMusicQStatus (char *buff, size_t sz, dbidx_t dbidx, int32_t uniqueidx)
+msgbuildMusicQStatus (char *buff, size_t sz, dbidx_t dbidx, int32_t uniqueidx, const char *imguri)
 {
-  snprintf (buff, sz, "%" PRId32 "%c%" PRId32, dbidx, MSG_ARGS_RS, uniqueidx);
+  snprintf (buff, sz, "%" PRId32 "%c%" PRId32 "%c%s", dbidx, MSG_ARGS_RS,
+      uniqueidx, MSG_ARGS_RS, imguri);
 }
 
 void
@@ -286,6 +287,8 @@ msgparseMusicQStatus (mp_musicqstatus_t *mqstatus, char *data)
     return;
   }
 
+  mqstatus->imguri = NULL;
+
   p = strtok_r (data, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL) {
     mqstatus->dbidx = atol (p);
@@ -294,6 +297,11 @@ msgparseMusicQStatus (mp_musicqstatus_t *mqstatus, char *data)
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL) {
     mqstatus->uniqueidx = atol (p);
+  }
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL && *p) {
+    mqstatus->imguri = mdstrdup (p);
   }
 }
 

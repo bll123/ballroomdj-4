@@ -377,8 +377,8 @@ impplFinalize (imppl_t *imppl)
 
       tval = audiosrcIterateValue (pldataiter, podtag);
       /* someday this should be redone to table driven */
-      if (strcmp (podtag, "ART_URI") == 0) {
-        podcastSetStr (podcast, PODCAST_ART_URI, tval);
+      if (strcmp (podtag, "IMAGE_URI") == 0) {
+        podcastSetStr (podcast, PODCAST_IMAGE_URI, tval);
       }
     }
     if (podcastexists == false) {

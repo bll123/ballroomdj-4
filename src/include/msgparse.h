@@ -52,6 +52,7 @@ typedef struct {
 typedef struct {
   dbidx_t   dbidx;
   int32_t   uniqueidx;
+  char      *imguri;
 } mp_musicqstatus_t;
 
 NODISCARD mp_musicqupdate_t *msgparseMusicQueueData (char * data);
@@ -70,7 +71,7 @@ void msgparsePlayerStateFree (mp_playerstate_t *playerstate);
 
 void msgbuildQueuePlaylist (char *buff, size_t sz, int mqidx, const char *fn, int editflag);
 
-void msgbuildMusicQStatus (char *buff, size_t sz, dbidx_t dbidx, int32_t uniqueidx);
+void msgbuildMusicQStatus (char *buff, size_t sz, dbidx_t dbidx, int32_t uniqueidx, const char *imguri);
 void msgparseMusicQStatus (mp_musicqstatus_t *mqstatus, char *data);
 
 void msgparseDBEntryUpdate (char *data, dbidx_t *dbidx);

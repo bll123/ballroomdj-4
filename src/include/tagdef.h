@@ -73,7 +73,6 @@ typedef enum {
   TAG_ALBUM,                  //
   TAG_ALBUMARTIST,            //
   TAG_ARTIST,                 //
-  TAG_ART_URI,                //
   TAG_AUDIOID_IDENT,          //  audio-id
   TAG_AUDIOID_SCORE,          //  audio-id
   TAG_BPM,                    //
@@ -95,6 +94,7 @@ typedef enum {
   TAG_FAVORITE,               //
   TAG_GENRE,                  //
   TAG_GROUPING,               //
+  TAG_IMAGE_URI,              //
   TAG_KEYWORD,                //
   TAG_LAST_UPDATED,           //  internal
   TAG_MOVEMENTCOUNT,          //

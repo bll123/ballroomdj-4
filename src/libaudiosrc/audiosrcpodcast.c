@@ -394,8 +394,8 @@ aspodcastGetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *uri)
 
   slistFree (asidata->plData);
   asidata->plData = slistAlloc ("aspldata", LIST_UNORDERED, NULL);
-  slistSetStr (asidata->plData, "ART_URI",
-      nlistGetStr (asdata->clientdata [clientkey].rssdata, RSS_ART_URI));
+  slistSetStr (asidata->plData, "IMAGE_URI",
+      nlistGetStr (asdata->clientdata [clientkey].rssdata, RSS_IMAGE_URI));
   slistSort (asidata->plData);
 
   slistFree (asidata->songlist);
@@ -488,9 +488,6 @@ aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata,
       tagdefs [TAG_NO_PLAY_TM_LIMIT].tag, "yes");
   slistSetStr (asidata->songtags,
       tagdefs [TAG_SONG_TYPE].tag, "podcast");
-  slistSetStr (asidata->songtags,
-      tagdefs [TAG_ART_URI].tag,
-      nlistGetStr (asdata->clientdata [clientkey].rssdata, RSS_ART_URI));
 
   slistSort (asidata->songtags);
 

@@ -1121,6 +1121,7 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
   genres = bdjvarsdfGet (BDJVDF_GENRES);
   audiosrcURI (songGetStr (song, TAG_URI), uri, sizeof (uri), NULL, 0);
   cmetadata.uri = uri;
+  cmetadata.imageuri = mqstatus.imguri;
   cmetadata.album = songGetStr (song, TAG_ALBUM);
   cmetadata.albumartist = songGetStr (song, TAG_ALBUMARTIST);
   cmetadata.artist = songGetStr (song, TAG_ARTIST);
@@ -1173,6 +1174,10 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
     if (idx > UIPL_W_INFO_DISP_I) {
       break;
     }
+  }
+
+  if (mqstatus.imguri != NULL) {
+    mdfree (mqstatus.imguri);
   }
 
   logProcEnd ("");

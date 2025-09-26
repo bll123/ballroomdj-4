@@ -2583,15 +2583,22 @@ mainSendRemctrlData (maindata_t *mainData)
 static void
 mainSendMusicqStatus (maindata_t *mainData)
 {
-  char    tbuff [40];
-  dbidx_t dbidx;
-  int32_t uniqueidx;
+  char        tbuff [2048];
+  dbidx_t     dbidx;
+  int32_t     uniqueidx;
+  song_t      *song;
+  const char  *imguri = NULL;
 
   logProcBegin ();
 
   dbidx = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
+  song = dbGetByIdx (mainData->musicdb, dbidx);
+  imguri = songGetStr (song, TAG_IMAGE_URI);
+  if (imguri == NULL) {
+    imguri = "";
+  }
   uniqueidx = musicqGetUniqueIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
-  msgbuildMusicQStatus (tbuff, sizeof (tbuff), dbidx, uniqueidx);
+  msgbuildMusicQStatus (tbuff, sizeof (tbuff), dbidx, uniqueidx, imguri);
 
   connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_MUSICQ_STATUS_DATA, tbuff);
   connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_MUSICQ_STATUS_DATA, tbuff);
@@ -3393,3 +3400,4 @@ mainProcessPlayerState (maindata_t *mainData, char *data)
 
   msgparsePlayerStateFree (ps);
 }
+

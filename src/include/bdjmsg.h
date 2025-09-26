@@ -125,7 +125,7 @@ typedef enum {
   MSG_PLAYER_ANN_FINISHED,  // announcement is finished
 
   /* to/from manageui/playerui */
-  MSG_MUSIC_QUEUE_DATA,
+  MSG_MUSIC_QUEUE_DATA,     // main, manageui, playerui,
   MSG_QUEUE_SWITCH,         // args: queue number
   MSG_SONG_SELECT,          // args: queue number, position
   MSG_FINISHED,             // no more songs, also sent to marquee

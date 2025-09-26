@@ -102,24 +102,24 @@ struct mpintfc
       mediaPlayer { nullptr },
       SMTC { nullptr },
       smtcUpdater { nullptr },
-      defaultArt { nullptr },
+      defaultImage { nullptr },
       contdata { contdata }
   {
   }
 
   void
-  smtcSetDefaultArt (void)
+  smtcSetDefaultImage (void)
   {
-    smtcUpdater.Thumbnail (defaultArt);
+    smtcUpdater.Thumbnail (defaultImage);
   }
 
   void
-  smtcSetArt (const char *fn)
+  smtcSetImage (const char *fn)
   {
     auto hsfn = winrt::to_hstring (fn);
     auto sfile = StorageFile::GetFileFromPathAsync (hsfn).get ();
     if (sfile == nullptr) {
-      smtcSetDefaultArt ();
+      smtcSetDefaultImage ();
       return;
     }
     /* if the audio file has no image, then the generic image associated */
@@ -133,37 +133,30 @@ struct mpintfc
     if (thumb == nullptr ||
         thumb.Size () == 0 ||
         thumb.Type () == FileProperties::ThumbnailType::Icon) {
-      smtcSetDefaultArt ();
+      smtcSetDefaultImage ();
       return;
     }
 
     auto istream = thumb.CloneStream ();
     auto art = Streams::RandomAccessStreamReference::CreateFromStream (istream);
     if (art == nullptr) {
-      smtcSetDefaultArt ();
+      smtcSetDefaultImage ();
       return;
     }
     smtcUpdater.Thumbnail (art);
   }
 
   void
-  smtcSetArtUri (const char *fn)
+  smtcSetImageUri (const char *fn)
   {
-logBasic ("set-art-uri: %s\n", fn);
     auto hsfn = winrt::to_hstring (fn);
-logBasic ("   uri-aaa\n");
     auto uri = Uri (hsfn);
-logBasic ("   uri-bbb\n");
-    auto art = Streams::RandomAccessStreamReference::CreateFromUri (uri);
-logBasic ("   uri-ccc\n");
-    if (art == nullptr) {
-logBasic (" use default-c\n");
-      smtcSetDefaultArt ();
+    auto image = Streams::RandomAccessStreamReference::CreateFromUri (uri);
+    if (image == nullptr) {
+      smtcSetDefaultImage ();
       return;
     }
-logBasic ("   uri-ddd\n");
-    smtcUpdater.Thumbnail (art);
-logBasic ("   uri-fin\n");
+    smtcUpdater.Thumbnail (image);
   }
 
   void
@@ -232,8 +225,8 @@ logBasic ("   uri-fin\n");
     pathDisplayPath (tbuff, sizeof (tbuff));
     auto hsfn = winrt::to_hstring (tbuff);
     auto sfile = StorageFile::GetFileFromPathAsync (hsfn).get ();
-    defaultArt = Streams::RandomAccessStreamReference::CreateFromFile (sfile);
-    smtcSetDefaultArt ();
+    defaultImage = Streams::RandomAccessStreamReference::CreateFromFile (sfile);
+    smtcSetDefaultImage ();
 
     smtcUpdater.Update ();
   }
@@ -295,25 +288,22 @@ logBasic ("   uri-fin\n");
       smtcUpdater.MusicProperties ().AlbumArtist (tstr);
     }
 
-    tmp = nlistGetStr (contdata->metadata, CONT_METADATA_ART_URI);
+    /* by preference, use any image-uri set for the song */
+    tmp = nlistGetStr (contdata->metadata, CONT_METADATA_IMAGE_URI);
+    if (tmp != NULL && *tmp) {
+      smtcSetImageUri (tmp);
+    }
     if (tmp == NULL) {
       tmp = nlistGetStr (contdata->metadata, CONT_METADATA_URI);
-    }
-    if (tmp != NULL &&
-        astype != AUDIOSRC_TYPE_FILE) {
-      char    tbuff [MAXPATHLEN];
+      if (tmp != NULL &&
+          astype == AUDIOSRC_TYPE_FILE &&
+          strlen (tmp) > AS_FILE_PFX_LEN) {
+        char    tbuff [MAXPATHLEN];
 
-      stpecpy (tbuff, tbuff + sizeof (tbuff), tmp);
-      smtcSetArtUri (tbuff);
-    }
-    if (tmp != NULL &&
-        astype == AUDIOSRC_TYPE_FILE &&
-        strlen (tmp) > AS_FILE_PFX_LEN) {
-      char    tbuff [MAXPATHLEN];
-
-      stpecpy (tbuff, tbuff + sizeof (tbuff), tmp + AS_FILE_PFX_LEN);
-      pathDisplayPath (tbuff, sizeof (tbuff));
-      smtcSetArt (tbuff);
+        stpecpy (tbuff, tbuff + sizeof (tbuff), tmp + AS_FILE_PFX_LEN);
+        pathDisplayPath (tbuff, sizeof (tbuff));
+        smtcSetImage (tbuff);
+      }
     }
 
     smtcUpdater.Update ();
@@ -322,7 +312,7 @@ logBasic ("   uri-fin\n");
   Playback::MediaPlayer                       mediaPlayer;
   SystemMediaTransportControls                SMTC;
   SystemMediaTransportControlsDisplayUpdater  smtcUpdater;
-  Streams::RandomAccessStreamReference        defaultArt;
+  Streams::RandomAccessStreamReference        defaultImage;
   contdata_t                                  *contdata;
 };
 #endif
@@ -340,9 +330,6 @@ contiInit (const char *instname)
 #if SMTC_ENABLED
   contdata->playstatus = MediaPlaybackStatus::Closed;
 #endif
-  contdata->pos = 0;
-  contdata->rate = 100;
-  contdata->volume = 0;
 
 #if SMTC_ENABLED
   contdata->mpsmtc = new mpintfc (contdata);
@@ -507,8 +494,8 @@ contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
   if (cmetadata->uri != NULL) {
     nlistSetStr (contdata->metadata, CONT_METADATA_URI, cmetadata->uri);
   }
-  if (cmetadata->arturi != NULL) {
-    nlistSetStr (contdata->metadata, CONT_METADATA_ART_URI, cmetadata->arturi);
+  if (cmetadata->imageuri != NULL && *cmetadata->imageuri) {
+    nlistSetStr (contdata->metadata, CONT_METADATA_IMAGE_URI, cmetadata->imageuri);
   }
 
 #if SMTC_ENABLED

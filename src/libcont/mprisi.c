@@ -88,7 +88,7 @@ static const char *metadatastr [CONT_METADATA_MAX] = {
   [CONT_METADATA_TRACKID] = "mpris:trackid",
   [CONT_METADATA_DURATION] = "mpris:length",
   [CONT_METADATA_URI] = "xesam:url",
-  [CONT_METADATA_ART_URI] = "xesam:url",    // incorrect
+  [CONT_METADATA_IMAGE_URI] = "xesam:url",    // incorrect
   [CONT_METADATA_GENRE] = "xesam:genre",
 };
 
@@ -428,8 +428,8 @@ contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
   if (cmetadata->uri != NULL) {
     nlistSetStr (contdata->metadata, CONT_METADATA_URI, cmetadata->uri);
   }
-  if (cmetadata->arturi != NULL) {
-    nlistSetStr (contdata->metadata, CONT_METADATA_ART_URI, cmetadata->arturi);
+  if (cmetadata->imageuri != NULL) {
+    nlistSetStr (contdata->metadata, CONT_METADATA_IMAGE_URI, cmetadata->imageuri);
   }
 
   nlistStartIterator (contdata->metadata, &miter);

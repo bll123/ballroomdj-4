@@ -37,7 +37,7 @@ static const char *linkxpath =
     "/rss/channel/link";
 static const char *blddatexpath =
     "/rss/channel/lastBuildDate";
-static const char *arturixpath =
+static const char *imageurixpath =
     "/rss/channel/image/url";
 static const char *itemxpath =
     "/rss/channel/item/title|"
@@ -116,8 +116,8 @@ rssImport (const char *uri)
   xmlParseGetItem (xmlparse, linkxpath, tbuff, sizeof (tbuff));
   nlistSetStr (implist, RSS_URI, tbuff);
 
-  xmlParseGetItem (xmlparse, arturixpath, tbuff, sizeof (tbuff));
-  nlistSetStr (implist, RSS_ART_URI, tbuff);
+  xmlParseGetItem (xmlparse, imageurixpath, tbuff, sizeof (tbuff));
+  nlistSetStr (implist, RSS_IMAGE_URI, tbuff);
 
   xmlParseGetItem (xmlparse, blddatexpath, tbuff, sizeof (tbuff));
   tmval = tmutilStringToUTC (tbuff, "%a, %d %h %Y %T %z");

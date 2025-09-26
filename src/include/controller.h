@@ -31,9 +31,9 @@ enum {
   CONT_METADATA_ALBUM,
   CONT_METADATA_ALBUMARTIST,
   CONT_METADATA_ARTIST,
-  CONT_METADATA_ART_URI,
   CONT_METADATA_DURATION,
   CONT_METADATA_GENRE,
+  CONT_METADATA_IMAGE_URI,
   CONT_METADATA_SONGEND,
   CONT_METADATA_SONGSTART,
   CONT_METADATA_TITLE,
@@ -51,7 +51,7 @@ typedef struct {
   const char    *artist;
   const char    *title;
   const char    *uri;
-  const char    *arturi;
+  const char    *imageuri;
   const char    *genre;
   int32_t       songstart;
   int32_t       songend;
