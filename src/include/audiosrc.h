@@ -28,6 +28,7 @@ typedef enum {
   AS_ITER_DIR,
   AS_ITER_PL_NAMES,
   AS_ITER_PL,
+  AS_ITER_PL_DATA,
   AS_ITER_TAGS,
 } asitertype_t;
 

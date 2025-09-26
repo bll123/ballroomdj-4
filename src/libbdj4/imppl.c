@@ -359,6 +359,8 @@ impplFinalize (imppl_t *imppl)
   if (imppl->imptype == AUDIOSRC_TYPE_PODCAST) {
     podcast_t   *podcast;
     bool        podcastexists = true;
+    asiter_t    *pldataiter;
+    const char  *podtag;
 
     podcast = podcastLoad (imppl->plname);
     if (podcast == NULL) {
@@ -368,6 +370,17 @@ impplFinalize (imppl_t *imppl)
 
     podcastSetStr (podcast, PODCAST_URI, imppl->uri);
     podcastSetStr (podcast, PODCAST_TITLE, imppl->plname);
+    pldataiter = audiosrcStartIterator (imppl->imptype,
+        AS_ITER_PL_DATA, imppl->uri, imppl->oplname, imppl->askey);
+    while ((podtag = audiosrcIterate (pldataiter)) != NULL) {
+      const char  *tval;
+
+      tval = audiosrcIterateValue (pldataiter, podtag);
+      /* someday this should be redone to table driven */
+      if (strcmp (podtag, "ART_URI") == 0) {
+        podcastSetStr (podcast, PODCAST_ART_URI, tval);
+      }
+    }
     if (podcastexists == false) {
       podcastSetNum (podcast, PODCAST_RETAIN, 0);
     }

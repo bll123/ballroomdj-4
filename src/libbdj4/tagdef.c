@@ -27,6 +27,9 @@
 
 /* if any itunes names are added, TAG_ITUNES_MAX must be updated in tagdef.h */
 
+/* as of 2025-9-26, the tag-type-mk is not used and any data present */
+/* is probably incorrect */
+
 tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_ADJUSTFLAGS] =
   { "ADJUSTFLAGS",                /* tag */
@@ -144,6 +147,38 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* text search          */
     true,                         /* vorbis multi         */
   },
+  /* used internally : at this time, not stored in the database */
+  /* i do not know that any container formats use a uri for the cover image */
+  [TAG_ART_URI] =
+  { "ART_URI",                    /* tag */
+    NULL,                         /* display name         */
+    NULL,                         /* short display name   */
+    { [TAG_TYPE_VORBIS] = { "ART_URI", NULL, NULL, NULL },
+      [TAG_TYPE_MP4] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_ID3] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },   // or author?
+      [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
+      [TAG_TYPE_MK] = { NULL, NULL, NULL, NULL },
+    },       /* audio tags */
+    NULL,                         /* itunes name          */
+    ET_ENTRY,                     /* edit type            */
+    VALUE_STR,                    /* value type           */
+    NULL,                         /* conv func            */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    true,                         /* ellipsize            */
+    false,                        /* align end            */
+    false,                        /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* edit-all             */
+    false,                        /* editable             */
+    false,                        /* audio-id             */
+    false,                        /* marquee-disp         */
+    false,                        /* player-ui-disp       */
+    false,                        /* text search          */
+    false,                        /* vorbis multi         */
+  },
+  /* used internally */
   [TAG_AUDIOID_IDENT] =
   { "AUDIOID_IDENT",              /* tag */
     NULL,                         /* display name         */
@@ -173,6 +208,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* text search          */
     false,                        /* vorbis multi         */
   },
+  /* used internally */
   [TAG_AUDIOID_SCORE] =
   { "AUDIOID_SCORE",              /* tag */
     NULL,                         /* display name         */
@@ -579,7 +615,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* text search          */
     false,                        /* vorbis multi         */
   },
-  /* leave this as 'FILE' for now, will require a big db upgrade to fix */
   [TAG_URI] =
   { "URI",                        /* tag */
     NULL,                         /* display name         */
@@ -1537,6 +1572,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* text search          */
     false,                        /* vorbis multi         */
   },
+  /* internal : relative record number */
   [TAG_RRN] =
   { "RRN",                        /* tag */
     NULL,                         /* display name         */
@@ -1566,6 +1602,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* text search          */
     false,                        /* vorbis multi         */
   },
+  /* internal : temporary to save the dbidx */
   [TAG_DBIDX] =
   { "DBIDX",                      /* tag */
     NULL,                         /* display name         */
@@ -1595,13 +1632,14 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* text search          */
     false,                        /* vorbis multi         */
   },
+  /* prevent-rename */
   [TAG_DB_LOC_LOCK] =
   { "DB_LOC_LOCK",                /* tag */
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
-    { [TAG_TYPE_VORBIS] = { NULL, NULL, NULL, NULL },
-      [TAG_TYPE_MP4] = { NULL, NULL, NULL, NULL },
-      [TAG_TYPE_ID3] = { NULL, NULL, NULL, NULL },
+    { [TAG_TYPE_VORBIS] = { "PREVENTRENAME", NULL, NULL, NULL },
+      [TAG_TYPE_MP4] = { "----:BDJ4:PREVENTRENAME", "BDJ4", "PREVENTRENAME", NULL },
+      [TAG_TYPE_ID3] = { "TXXX=PREVENTRENAME", "TXXX", "PREVENTRENAME", NULL },
       [TAG_TYPE_ASF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_RIFF] = { NULL, NULL, NULL, NULL },
       [TAG_TYPE_MK] = { NULL, NULL, NULL, NULL },
@@ -1614,7 +1652,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
     false,                        /* align end            */
-    false,                        /* is bdj tag           */
+    true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
     true,                         /* edit-all             */
     true,                         /* editable             */
@@ -1624,6 +1662,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* text search          */
     false,                        /* vorbis multi         */
   },
+  /* internal : the length of any directory prefixing the song uri */
   [TAG_PREFIX_LEN] =
   { "PFXLEN",                     /* tag */
     NULL,                         /* display name         */
@@ -1653,6 +1692,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* text search          */
     false,                        /* vorbis multi         */
   },
+  /* internal : various database flags */
   [TAG_DB_FLAGS] =
   { "DB_FLAGS",                   /* tag */
     NULL,                         /* display name         */

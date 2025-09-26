@@ -50,6 +50,7 @@ typedef struct asiterdata {
   slist_t       *songlist;
   slist_t       *songtags;
   slist_t       *plNames;
+  slist_t       *plData;
 } asiterdata_t;
 
 typedef struct {
@@ -243,11 +244,16 @@ asiStartIterator (asdata_t *asdata, asitertype_t asitertype,
   asidata->songtags = NULL;
   asidata->iterlist = NULL;
   asidata->plNames = NULL;
+  asidata->plData = NULL;
 
   if (asitertype == AS_ITER_PL_NAMES) {
     /* a podcast only has a single playlist, use the title of the podcast */
     aspodcastGetPlaylistNames (asdata, asidata, uri);
     asidata->iterlist = asidata->plNames;
+    slistStartIterator (asidata->iterlist, &asidata->iteridx);
+  } else if (asitertype == AS_ITER_PL_DATA) {
+    aspodcastGetPlaylist (asdata, asidata, uri);
+    asidata->iterlist = asidata->plData;
     slistStartIterator (asidata->iterlist, &asidata->iteridx);
   } else if (asitertype == AS_ITER_PL) {
     aspodcastGetPlaylist (asdata, asidata, uri);
@@ -272,6 +278,7 @@ asiCleanIterator (asdata_t *asdata, asiterdata_t *asidata)
   slistFree (asidata->songlist);
   slistFree (asidata->songtags);
   slistFree (asidata->plNames);
+  slistFree (asidata->plData);
   mdfree (asidata);
 }
 
@@ -385,6 +392,12 @@ aspodcastGetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *uri)
     return false;
   }
 
+  slistFree (asidata->plData);
+  asidata->plData = slistAlloc ("aspldata", LIST_UNORDERED, NULL);
+  slistSetStr (asidata->plData, "ART_URI",
+      nlistGetStr (asdata->clientdata [clientkey].rssdata, RSS_ART_URI));
+  slistSort (asidata->plData);
+
   slistFree (asidata->songlist);
   asidata->songlist = slistAlloc ("asplsongs", LIST_UNORDERED, NULL);
   slistSetSize (asidata->songlist,
@@ -475,6 +488,9 @@ aspodcastSongTags (asdata_t *asdata, asiterdata_t *asidata,
       tagdefs [TAG_NO_PLAY_TM_LIMIT].tag, "yes");
   slistSetStr (asidata->songtags,
       tagdefs [TAG_SONG_TYPE].tag, "podcast");
+  slistSetStr (asidata->songtags,
+      tagdefs [TAG_ART_URI].tag,
+      nlistGetStr (asdata->clientdata [clientkey].rssdata, RSS_ART_URI));
 
   slistSort (asidata->songtags);
 
