@@ -73,7 +73,7 @@ main (int argc, char *argv [])
       int   count;
 
       getstr ("name", data, sizeof (data));
-      dbusConnectAcquireName (dbus, data, "org.mpris.MediaPlayer2", NULL);
+      dbusConnectAcquireName (dbus, data, "org.mpris.MediaPlayer2");
       count = 0;
       rc = dbusCheckAcquireName (dbus);
       while (! rc && count < 400) {

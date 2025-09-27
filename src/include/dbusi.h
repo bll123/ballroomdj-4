@@ -5,8 +5,6 @@
 
 #include <stdbool.h>
 
-#include "callback.h"
-
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
@@ -27,7 +25,7 @@ typedef bool (*dbusCBmethod_t)(const char *intfc, const char *method, void *udat
 typedef bool (*dbusCBpropget_t)(const char *intfc, const char *property, void *udata);
 
 dbus_t * dbusConnInit (void);
-void dbusConnectAcquireName (dbus_t *dbus, const char *instname, const char *intfc, callback_t *cbinit);
+void dbusConnectAcquireName (dbus_t *dbus, const char *instname, const char *intfc);
 int   dbusCheckAcquireName (dbus_t *dbus);
 void dbusConnClose (dbus_t *dbus);
 void dbusMessageInit (dbus_t *dbus);

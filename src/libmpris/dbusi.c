@@ -46,7 +46,6 @@ typedef struct dbus {
   GVariant        *data;
   GVariant        *result;
   GVariantBuilder gvbuild;
-  callback_t      *cbinit;
   int             acount;
   int             busid;
   _Atomic(int)    state;
@@ -86,8 +85,7 @@ dbusConnInit (void)
 }
 
 void
-dbusConnectAcquireName (dbus_t *dbus, const char *instname, const char *intfc,
-    callback_t *cbinit)
+dbusConnectAcquireName (dbus_t *dbus, const char *instname, const char *intfc)
 {
   char    fullinstname [200];
 
@@ -98,7 +96,6 @@ dbusConnectAcquireName (dbus_t *dbus, const char *instname, const char *intfc,
   snprintf (fullinstname, sizeof (fullinstname), "%s.%s", intfc, instname);
 
   dbus->busstate = DBUS_NAME_WAIT;
-  dbus->cbinit = cbinit;
 
   dbus->busid = g_bus_own_name_on_connection (dbus->dconn,
       fullinstname, G_BUS_NAME_OWNER_FLAGS_DO_NOT_QUEUE,
@@ -436,10 +433,6 @@ dbusNameAcquired (GDBusConnection *connection, const char *name, gpointer udata)
   }
 
   dbus->busstate = DBUS_NAME_OPEN;
-
-  if (dbus->cbinit != NULL) {
-    callbackHandler (dbus->cbinit);
-  }
 }
 
 static void

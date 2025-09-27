@@ -127,7 +127,6 @@ typedef struct contdata {
   mprisMediaPlayer2Player *mprisplayer;
   callback_t          *cb;
   callback_t          *cburi;
-  callback_t          *cbinit;
   nlist_t             *metadata;
   void                *metav;
   int                 playstate;      // BDJ4 play state
@@ -136,7 +135,6 @@ typedef struct contdata {
   int32_t             pos;
   int                 rate;
   int                 volume;
-  bool                setupdone;
 } contdata_t;
 
 static void mprisInitializeRoot (contdata_t *contdata);
@@ -184,12 +182,17 @@ contiInit (const char *instname)
   contdata->pos = 0;
   contdata->rate = 100;
   contdata->volume = 0;
-  contdata->setupdone = false;
 
   contdata->dbus = dbusConnInit ();
-  contdata->cbinit = callbackInit (contiSetup, contdata, NULL);
+
+  /* these must be done before the name is acquired */
+  /* otherwise the media-controller-clients may try to get */
+  /* the data before it is ready */
+  mprisInitializeRoot (contdata);
+  mprisInitializePlayer (contdata);
+
   dbusConnectAcquireName (contdata->dbus, contdata->instname,
-      interface [MPRIS_INTFC_MP2], contdata->cbinit);
+      interface [MPRIS_INTFC_MP2]);
 
   return contdata;
 }
@@ -212,15 +215,6 @@ contiFree (contdata_t *contdata)
 bool
 contiSetup (void *tcontdata)
 {
-  contdata_t *contdata = tcontdata;
-
-  if (contdata->setupdone == true) {
-    return false;
-  }
-
-  mprisInitializeRoot (contdata);
-  mprisInitializePlayer (contdata);
-  contdata->setupdone = true;
   return true;
 }
 
