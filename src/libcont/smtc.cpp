@@ -359,7 +359,7 @@ contiFree (contdata_t *contdata)
 bool
 contiSetup (void *tcontdata)
 {
-  contdata_t *contdata = tcontdata;
+  contdata_t *contdata = (contdata_t *) tcontdata;
 
 #if SMTC_ENABLED
   contdata->mpsmtc->smtcMediaPlayerInit ();

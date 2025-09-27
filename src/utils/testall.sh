@@ -123,10 +123,13 @@ if [[ $TBUILD == T ]]; then
   # 'warning generated' the compiler's display of the warning count.
   # windows has a multitude of warnings in check.h about %jd
   # mongoose.c is a third-party library.
+  # macos complains about linking w/different built-for versions.
+  #   ignore those linked against /opt/local
   grep warning $LOG |
       grep -v 'check\.h' |
       grep -v 'mongoose\.c' |
-      grep -v 'warning generated'
+      grep -v 'warning generated' |
+      grep -v 'but linking with dylib ./opt/local/'
 
   # for windows, make sure the libraries in plocal are up to date
   # on linux, make sure the localization is up to date.

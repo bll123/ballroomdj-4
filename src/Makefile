@@ -196,6 +196,11 @@ testsection:
 	./utils/mktestsetup.sh $(testoption)
 	(cd ..;./bin/bdj4 --testsuite --runsection $(start))
 
+.PHONY: testsectionv
+testsectionv:
+	./utils/mktestsetup.sh $(testoption)
+	(cd ..;./bin/bdj4 --testsuite --verbose --runsection $(start))
+
 .PHONY: testtest
 testtest:
 	./utils/mktestsetup.sh $(testoption)

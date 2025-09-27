@@ -112,10 +112,12 @@
               >Aidez-nous à traduire BallroomDJ 4</a></p>
           <!-- WT_012 -->
           <p>Autres sites où des annonces de sortie de BallroomDJ 4 peuvent être trouvées :</p>
+<!--
           <!-- WT_013 -->
           <p><a target="_blank"
               href="https://freshcode.club/projects/bdj4"
               >BDJ4 à freshcode.club</a></p>
+-->
           <!-- WT_014 -->
           <p><a target="_blank"
               href="https://www.pro-linux.de/cgi-bin/DBApp/check.cgi?ShowAppDetail.01.17981.100"
