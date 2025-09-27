@@ -34,6 +34,8 @@
 #include "nlist.h"
 #include "tmutil.h"
 
+#include "log.h" // ###
+
 static const char *urischemes [] = {
   "file",
   NULL,
@@ -125,6 +127,7 @@ typedef struct contdata {
   mprisMediaPlayer2Player *mprisplayer;
   callback_t          *cb;
   callback_t          *cburi;
+  callback_t          *cbinit;
   nlist_t             *metadata;
   void                *metav;
   int                 playstate;      // BDJ4 play state
@@ -133,6 +136,7 @@ typedef struct contdata {
   int32_t             pos;
   int                 rate;
   int                 volume;
+  bool                setupdone;
 } contdata_t;
 
 static void mprisInitializeRoot (contdata_t *contdata);
@@ -180,10 +184,12 @@ contiInit (const char *instname)
   contdata->pos = 0;
   contdata->rate = 100;
   contdata->volume = 0;
+  contdata->setupdone = false;
 
   contdata->dbus = dbusConnInit ();
+  contdata->cbinit = callbackInit (contiSetup, contdata, NULL);
   dbusConnectAcquireName (contdata->dbus, contdata->instname,
-      interface [MPRIS_INTFC_MP2]);
+      interface [MPRIS_INTFC_MP2], contdata->cbinit);
 
   return contdata;
 }
@@ -203,11 +209,19 @@ contiFree (contdata_t *contdata)
   mdfree (contdata);
 }
 
-void
-contiSetup (contdata_t *contdata)
+bool
+contiSetup (void *tcontdata)
 {
+  contdata_t *contdata = tcontdata;
+
+  if (contdata->setupdone == true) {
+    return false;
+  }
+
   mprisInitializeRoot (contdata);
   mprisInitializePlayer (contdata);
+  contdata->setupdone = true;
+  return true;
 }
 
 bool

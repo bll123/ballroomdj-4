@@ -78,7 +78,7 @@ ilist_t *controllerInterfaceList (void);
 void contiDesc (const char **ret, int max);
 contdata_t *contiInit (const char *instname);
 void contiFree (contdata_t *contdata);
-void contiSetup (contdata_t *contdata);
+bool contiSetup (void *contdata);
 bool contiCheckReady (contdata_t *contdata);
 void contiSetCallbacks (contdata_t *contdata, callback_t *cb, callback_t *cburi);
 void contiSetPlayState (contdata_t *contdata, int state);

@@ -1066,6 +1066,15 @@ pluiInitDataCallback (void *udata, programstate_t programState)
     val = bdjoptGetStr (OPT_M_CONTROLLER_INTFC);
     if (val != NULL && *val) {
       plui->controller = controllerInit (val);
+      if (plui->controller != NULL) {
+        plui->callbacks [PLUI_CB_CONTROLLER] =
+            callbackInitII (pluiControllerCallback, plui);
+        plui->callbacks [PLUI_CB_CONT_URI] =
+            callbackInitSI (pluiControllerURICallback, plui);
+        controllerSetCallbacks (plui->controller,
+            plui->callbacks [PLUI_CB_CONTROLLER],
+            plui->callbacks [PLUI_CB_CONT_URI]);
+      }
     } else {
       rc = STATE_FINISHED;
     }
@@ -1074,13 +1083,6 @@ pluiInitDataCallback (void *udata, programstate_t programState)
   if (plui->controller != NULL &&
       controllerCheckReady (plui->controller)) {
     controllerSetup (plui->controller);
-    plui->callbacks [PLUI_CB_CONTROLLER] =
-        callbackInitII (pluiControllerCallback, plui);
-    plui->callbacks [PLUI_CB_CONT_URI] =
-        callbackInitSI (pluiControllerURICallback, plui);
-    controllerSetCallbacks (plui->controller,
-        plui->callbacks [PLUI_CB_CONTROLLER],
-        plui->callbacks [PLUI_CB_CONT_URI]);
     uiplayerSetController (plui->uiplayer, plui->controller);
     rc = STATE_FINISHED;
   }
