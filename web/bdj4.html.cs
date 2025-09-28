@@ -112,8 +112,8 @@
               >Nápověda Přeložit BallroomDJ 4</a></p>
           <!-- WT_012 -->
           <p>Další stránky, kde lze najít oznámení o vydání BallroomDJ 4:</p>
-<!--
           <!-- WT_013 -->
+<!--
           <p><a target="_blank"
               href="https://freshcode.club/projects/bdj4"
               >BDJ4 na freshcode.club</a></p>

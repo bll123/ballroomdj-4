@@ -112,8 +112,8 @@
               >Help BallroomDJ 4 Vertalen</a></p>
           <!-- WT_012 -->
           <p>Andere sites waar BallroomDJ 4 release-aankondigingen te vinden zijn:</p>
-<!--
           <!-- WT_013 -->
+<!--
           <p><a target="_blank"
               href="https://freshcode.club/projects/bdj4"
               >BDJ4 op freshcode.club</a></p>

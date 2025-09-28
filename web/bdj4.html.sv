@@ -112,8 +112,8 @@
               >Hjälp att översätta BallroomDJ 4</a></p>
           <!-- WT_012 -->
           <p>Andra webbplatser där BallroomDJ 4 utgivningsmeddelanden kan hittas:</p>
-<!--
           <!-- WT_013 -->
+<!--
           <p><a target="_blank"
               href="https://freshcode.club/projects/bdj4"
               >BDJ4 på freshcode.club</a></p>
