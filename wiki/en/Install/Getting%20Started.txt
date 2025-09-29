@@ -21,7 +21,7 @@ The Nederlands (Dutch) translation is in excellent shape.  The Русский
 The other translations are machine generated and are of very low
 quality. If the translation for your locale is not good, you may want
 to select _English&nbsp;(GB)_ or _English&nbsp;(US)_ in the
-__Configure&nbsp;/General&nbsp;/&nbsp;Locale__ selection.
+__Configure&nbsp;/&nbsp;General&nbsp;/&nbsp;Locale__ selection.
 
 After selecting a locale, exit and restart BDJ4 to display the
 selected language.
@@ -33,8 +33,8 @@ methods listed in [Getting&nbsp;Help](en-Getting%20Help).
 
 The first step is to configure the location of your music folder.
 
-In the configuration window, the _General_ section will be displayed.
-In the _General_ section, the first item is the __Music&nbsp;Folder__.
+In the configuration window, the __General__ section will be displayed.
+In the __General__ section, the first item is the __Music&nbsp;Folder__.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Configure / General / Music Folder](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-config-folder-C.png)
@@ -91,8 +91,8 @@ in the left side of the window.
 Check that all the dances that you use are listed.  Add any dances you
 use that are missing from the list.  Also check to make sure the
 spelling of each dance matches what you use.  For example, _Waltz_ may
-need to be changed to _Slow&nbsp;Waltz_.  Any dances that you do not
-use may be deleted.
+need to be changed to _Slow&nbsp;Waltz_ or _English&nbsp;Waltz_.  Any
+dances that you do not use may be deleted.
 <br>__References:__
 <br>[Configuration&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances)
 
@@ -123,7 +123,9 @@ displayed when it is done.
 ![gs-update-db](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-update-db-C.png)
 <br><span id="caption" style="color:#4559bf;">__Manage / Update Database__</span> </div>
 
-Leave the management window open.
+As there is an entirely new database, the database must be re-loaded.
+Close the management window, then select __Manage__ again in the
+starter window.
 
 #### Check the dance for each song
 
@@ -202,4 +204,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2025-09-16 10:35:15; BDJ4 version 4.16.0)_
+<br>_(Updated 2025-09-29 10:00:01; BDJ4 version 4.17.1)_

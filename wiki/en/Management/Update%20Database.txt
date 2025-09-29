@@ -59,9 +59,9 @@ the BDJ4 database.
 
 Title Sort: If the title sort tag is one of: Orchestra, Pop,
 Soundtrack, World Music, Classic Music, Easy Listening, Latin Pop,
-Musette & Chanson/Folk/Gipsy, Nu Jazz, Electro Swing, Rhythm &
+Musette &amp; Chanson/Folk/Gipsy, Nu Jazz, Electro Swing, Rhythm &
 Blues/Rockabilly, Soul/Gospel, or Swing, the title sort tag will be
 ignored.  More genres may be added to this list at a future date.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-09-16 10:35:15; BDJ4 version 4.16.0)_
+<br>_(Updated 2025-09-29 10:00:01; BDJ4 version 4.17.1)_

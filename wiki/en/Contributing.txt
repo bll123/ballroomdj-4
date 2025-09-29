@@ -10,8 +10,6 @@ As of 2025-8-9, development needs are:
     * Spotify
       I will not be working on this, other than providing guidance to
       whoever takes this on.
-* Windows: SMTC: Use image from audio file.
-  For whatever reason, a call to initialize the apartment crashes.
 * Volume Interface
     * Windows - Needs to be modernized and updated
 * Player Interface
@@ -27,8 +25,7 @@ As of 2025-8-9, development needs are:
     * Qt Widgets
     * Flutter
     * Nuklear (no macos?, could still be useful)
-    * N-Curses ?  But internationalization will not work on windows.
-      https://yjlv.blogspot.com/2015/10/displaying-unicode-with-ncurses-in-c.html
+    * ncurses (is a lightweight non-gui version useful?)
 
 Development Team (as of 2024-11-15):
 
@@ -38,4 +35,4 @@ Testing, Quality&nbsp;Assurance, Documentation, Website&nbsp;Management,
 System&nbsp;Administration
 
 [Wiki Home](Home)
-<br>_(Updated 2025-09-27 11:37:58; BDJ4 version 4.17.1)_
+<br>_(Updated 2025-09-29 10:00:01; BDJ4 version 4.17.1)_

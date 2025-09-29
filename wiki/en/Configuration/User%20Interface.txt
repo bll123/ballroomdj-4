@@ -11,6 +11,8 @@ restarted for the changes to take effect.
 __Theme__: The theme to use for the user interface.  Mac OS and
 Windows only have a few themes shipped with the installation package.
 Other themes may be installed if desired.
+<br>On Windows, the _Windows&#8209;10_ light theme's selected text
+color is incorrect and this theme should not be used.
 
 __Font__: The display font used for the main user interface.
 
@@ -32,4 +34,4 @@ __Song Mark Color__: The color used to mark songs in the song list.
 <br><span id="caption" style="color:#4559bf;">__Configure / User Interface__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-09-16 10:35:15; BDJ4 version 4.16.0)_
+<br>_(Updated 2025-09-29 10:00:01; BDJ4 version 4.17.1)_

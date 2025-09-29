@@ -173,10 +173,6 @@ if (NOT LIBVLC_FOUND AND NOT LIBVLC4_FOUND)
   message (FATAL_ERROR "Unable to locate a VLC library")
 endif()
 
-#### MPV
-# 2024-2 The MPV interface has issues, and will not be supported at this time.
-# pkg_check_modules (LIBMPV mpv)
-
 #### tag parsing modules
 
 # ffmpeg : libavformat / libavutil
@@ -566,10 +562,6 @@ if (LIBVLC4_FOUND)
   check_function_exists (libvlc_new _lib_libvlc4_new)
   unset (CMAKE_REQUIRED_LIBRARIES)
 endif()
-
-set (CMAKE_REQUIRED_LIBRARIES ${LIBMPV_LDFLAGS})
-check_function_exists (mpv_create _lib_mpv_create)
-unset (CMAKE_REQUIRED_LIBRARIES)
 
 #### checks for symbols and other stuff
 
