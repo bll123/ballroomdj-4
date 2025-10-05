@@ -140,14 +140,14 @@ if [[ -f /usr/bin/pacman ]]; then
   # tested 2024-5-22
   # pre-installed: libogg, chromaprint, libopus, libopusfile, curl, ffmpeg
   # pre-installed: flac, libvorbis, json-c
-  pkglist="rsync cmake make gcc gcc-objc pipewire curl gtk3 vlc pulseaudio
+  pkglist="rsync cmake make gcc pipewire curl gtk3 vlc pulseaudio
       libgcrypt libogg opus opusfile libvorbis flac ffmpeg4.4 check pkgconfig"
 fi
 if [[ -f /usr/bin/apt ]]; then
   # debian based linux
   # updated 2025-8-8
   # tested 2025-8-8
-  pkglist="rsync cmake make gcc g++ gobjc check ffmpeg librsvg2-bin
+  pkglist="rsync cmake make gcc g++ check ffmpeg librsvg2-bin
       libgtk-3-dev libvlc-dev libvlccore-dev libpulse-dev
       libgcrypt-dev libogg-dev libopus-dev libopusfile-dev libvorbis-dev
       libflac-dev libavformat-dev libavutil-dev libxml2-dev libjson-c-dev
@@ -168,7 +168,7 @@ if [[ -f /usr/bin/dnf ]]; then
   # use ffmpeg-free, as the development libraries are only available from
   # the rpmfusion repository.
   # 38: pre-installed: libogg opus
-  pkglist="rsync cmake make gcc gcc-c++ gcc-objc
+  pkglist="rsync cmake make gcc gcc-c++
       ffmpeg-free-devel libavformat-free-devel
       pipewire-devel libcurl-devel gtk3-devel vlc-devel pulseaudio-libs-devel
       openssl-devel libgcrypt-devel libogg-devel opus-devel opusfile-devel
@@ -177,13 +177,13 @@ if [[ -f /usr/bin/dnf ]]; then
       chromaprint-tools"
 fi
 if [[ -f /usr/bin/zypper ]]; then
-  # opensuse
-  # updated 2024-4-22 (gcc13)
+  # opensuse 16
+  # updated 2025-10-3
   # tested 2024-5-22
   sudo systemctl stop pkgkit
   sudo systemctl stop packagekit
-  pkglist="rsync cmake make gcc13 gcc13-c++ gcc13-objc ffmpeg-4
-      ffmpeg-4-libavformat-devel
+  pkglist="rsync cmake make gcc gcc-c++ ffmpeg-7
+      ffmpeg-7-libavformat-devel
       libpulse-devel gtk3-devel vlc-devel
       pipewire-devel libcurl-devel libgcrypt-devel libogg-devel libopus-devel
       opusfile-devel libvorbis-devel flac-devel check-devel
@@ -194,7 +194,7 @@ if [[ -f /sbin/apk ]]; then
   # alpine linux
   # updated 2025-4-18
   # tested never
-  pkglist="rsync cmake make gcc g++ gcc-objc curl-dev
+  pkglist="rsync cmake make gcc g++ curl-dev
       ffmpeg4-dev pulseaudio-dev gtk+3.0-dev vlc-dev
       pipewire-dev curl-dev libgcrypt-dev libogg-dev opus-dev
       opusfile-dev libvorbis-dev flac-dev check-dev

@@ -31,7 +31,7 @@ case $systype in
     archtag=
     CC=gcc
     CXX=g++
-    if [[ -f /usr/bin/gcc-13 ]]; then
+    if [[ -f /usr/bin/gcc-13 && ! -f /usr/bin/gcc-15 ]]; then
       CC=gcc-13
       CXX=g++-13
     fi

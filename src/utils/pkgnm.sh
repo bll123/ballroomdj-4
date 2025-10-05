@@ -69,6 +69,7 @@ function pkgnmgetdata {
           dver=$(cat /etc/debian_version)
           dver=$(echo ${dver} | sed 's,\..*,,')
           pn_dist=-debian${dver}
+          ;;
       esac
       ;;
     Darwin)

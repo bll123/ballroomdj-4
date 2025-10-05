@@ -109,7 +109,7 @@ if [[ $TBUILD == T ]]; then
   (
     cd src
     case ${pn_dist} in
-      -opensuse*)
+      -opensuse15)
         # change this in utils/pkg.sh also
         time make CC=gcc-13 CXX=g++-13
         ;;
