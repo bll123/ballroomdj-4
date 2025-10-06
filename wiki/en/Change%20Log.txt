@@ -4,7 +4,11 @@
 
 <!--
 
-**4.17.1 2025-9---**
+**4.17.2 2025-9---**
+
+* Internal:
+    * Minor code cleanup.
+    * libmp4tag: Update to version 2.0.1.
 
 -->
 

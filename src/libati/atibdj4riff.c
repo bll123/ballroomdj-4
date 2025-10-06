@@ -148,7 +148,7 @@ atibdj4ParseRIFFTags (atidata_t *atidata, slist_t *tagdata,
     }
 
     if (doseek) {
-      if (fseek (fh, len, SEEK_CUR) != 0) {
+      if (fileopSeek (fh, len, SEEK_CUR) != 0) {
         break;
       }
     }
@@ -200,7 +200,7 @@ atibdj4RIFFParseMetadata (FILE *fh, atidata_t *atidata, slist_t *tagdata,
     tagname = atidata->tagLookup (tagtype, riffid);
     if (tagname == NULL) {
       logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw: unk %s", riffid);
-      if (fseek (fh, len, SEEK_CUR) != 0) {
+      if (fileopSeek (fh, len, SEEK_CUR) != 0) {
         break;
       }
       continue;

@@ -5,6 +5,7 @@
 
 #include "config.h"
 #include <stdio.h>
+#include <stdint.h>
 #include <time.h>
 
 #if defined (__cplusplus) || defined (c_plusplus)
@@ -20,6 +21,8 @@ bool    fileopIsDirectory (const char *fname);
 int     fileopDelete (const char *fname);
 FILE    * fileopOpen (const char *fname, const char *mode);
 bool    fileopIsAbsolutePath (const char *fname);
+int64_t fileopTell (FILE *fh);
+int fileopSeek (FILE *fh, int64_t offset, int whence);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

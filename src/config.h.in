@@ -65,7 +65,9 @@ extern "C" {
 #cmakedefine01 _lib_dlopen
 #cmakedefine01 _lib_epoll_create1
 #cmakedefine01 _lib_fcntl
+#cmakedefine01 _lib_fseeko
 #cmakedefine01 _lib_fsync
+#cmakedefine01 _lib_ftello
 #cmakedefine01 _lib_fork
 #cmakedefine01 _lib_getuid
 #cmakedefine01 _lib_kill
