@@ -4,10 +4,11 @@
 
 <!--
 
-**4.17.1.1 2025-10--**
+**4.17.2 2025-10--**
 
 * Bug Fixes:
     * Fix a memory leak.
+    * Starter: Display the square image, not the squircle on MacOS.
     * Song Editor: Copy Audio Tags: Fix file picker.
 * Internal:
     * Minor code cleanup.

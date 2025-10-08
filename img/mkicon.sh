@@ -35,5 +35,7 @@ for b in ${BASEC} ${BASEMQ} ${BASEPL} ${BASEM} ${BASEH}; do
 done
 
 cp -pf ${BASE}.ico ../http/favicon.ico
+# make sure the square version is up to date
+cp -pf ${BASE}.svg ${BASE}_sq.svg
 
 exit 0

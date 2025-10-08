@@ -155,6 +155,7 @@ function copyreleasefiles {
       ${stage}/img/*-base.svg \
       ${stage}/img/BDJ4.icns \
       ${stage}/img/macos_icon*.png \
+      ${stage}/img/macos_icon*.svg \
       ${stage}/img/mkicon.sh \
       ${stage}/img/mkmacicon.sh \
       ${stage}/img/README.txt \

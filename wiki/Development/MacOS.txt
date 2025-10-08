@@ -92,6 +92,13 @@ sudo port install autossh di rlwrap                   -- for bll
 <br>sudo port uninstall gtk3
 <br>sudo port install gtk3-devel
 
+##### Clearing the icon cache
+
+sudo rm -rfv /Library/Caches/com.apple.iconservices.store
+<br>sudo find /private/var/folders/ -name com.apple.dock.iconcache -or -name com.apple.iconservices | sudo xargs rm -rfv
+<br>killall Dock
+<br>killall Finder
+
 ##### Personal crontab
 
 @reboot rm -f $HOME/local/tmp/*
