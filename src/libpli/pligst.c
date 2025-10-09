@@ -45,11 +45,13 @@ pliiInit (const char *plinm, const char *playerargs)
   plidata = mdmalloc (sizeof (plidata_t));
   plidata->gsti = gstiInit (plinm);
   plidata->state = PLI_STATE_STOPPED;
-  plidata->supported = PLI_SUPPORT_NONE;
-  plidata->supported |= PLI_SUPPORT_SEEK;
-  plidata->supported |= PLI_SUPPORT_SPEED;
-  plidata->supported |= PLI_SUPPORT_STREAM;
-  plidata->supported |= PLI_SUPPORT_STREAM_SPD;
+  plidata->supported =
+      PLI_SUPPORT_NONE |
+      PLI_SUPPORT_SEEK |
+      PLI_SUPPORT_SPEED |
+      PLI_SUPPORT_STREAM |
+      PLI_SUPPORT_STREAM_SPD |
+      PLI_SUPPORT_CROSSFADE;
 
   return plidata;
 }
@@ -94,10 +96,8 @@ pliiStartPlayback (plidata_t *plidata, ssize_t dpos, ssize_t speed)
   }
 
   pliiPlay (plidata);
-  if (dpos > 0 || speed != 100) {
-    /* GStreamer must be in a paused or playing state to seek/set rate */
-    pliiWaitUntilPlaying (plidata);
-  }
+  /* GStreamer must be in a paused or playing state to seek/set rate */
+  pliiWaitUntilPlaying (plidata);
   /* set the rate first */
   pliiRate (plidata, speed);
   pliiSeek (plidata, dpos);
@@ -238,6 +238,23 @@ pliiGetVolume (plidata_t *plidata)
 
   val = gstiGetVolume (plidata->gsti);
   return val;
+}
+
+void
+pliiCrossFade (plidata_t *plidata, const char *mediaPath,
+    const char *fullMediaPath, int sourceType)
+{
+  if (plidata == NULL || plidata->gsti == NULL || mediaPath == NULL) {
+    return;
+  }
+
+  gstiCrossFade (plidata->gsti, fullMediaPath, sourceType);
+}
+
+void
+pliiCrossFadeVolume (plidata_t *plidata, int vol)
+{
+  gstiCrossFadeVolume (plidata->gsti, vol);
 }
 
 /* internal routines */

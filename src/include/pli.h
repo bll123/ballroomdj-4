@@ -45,6 +45,10 @@ typedef enum {
   PLI_SELECTED_DEV,
 } plidev_t;
 
+enum {
+  PLI_MAX_SOURCE = 2,
+};
+
 static inline bool
 pliCheckSupport (int supported, int supportflag)
 {

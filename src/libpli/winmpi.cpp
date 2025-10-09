@@ -39,15 +39,11 @@ using namespace winrt::Windows::Devices::Enumeration;
 using namespace winrt::Windows;
 using namespace winrt;
 
-enum {
-  MP_MAX_SOURCE = 2,
-};
-
 typedef struct winmpintfc winmpintfc_t;
 
 typedef struct windata {
-  winmpintfc_t  *winmp [MP_MAX_SOURCE];
-  double        vol [MP_MAX_SOURCE];
+  winmpintfc_t  *winmp [PLI_MAX_SOURCE];
+  double        vol [PLI_MAX_SOURCE];
   char          *audiodev;
   size_t        audiodevlen;
   int           curr;
@@ -485,7 +481,7 @@ winmpCrossFade (windata_t *windata, const char *fn, int sourceType)
     return 1;
   }
 
-  windata->curr = (MP_MAX_SOURCE - 1) - windata->curr;
+  windata->curr = (PLI_MAX_SOURCE - 1) - windata->curr;
   windata->inCrossFade = true;
   winmpMedia (windata, fn, sourceType);
 
@@ -503,7 +499,7 @@ winmpInit (void)
   windata->curr = 0;
   windata->audiodev = NULL;
   windata->audiodevlen = 0;
-  for (int i = 0; i < MP_MAX_SOURCE; ++i) {
+  for (int i = 0; i < PLI_MAX_SOURCE; ++i) {
     windata->winmp [i] = new winmpintfc (windata);
   }
 
@@ -517,7 +513,7 @@ winmpClose (windata_t *windata)
     return;
   }
 
-  for (int i = 0; i < MP_MAX_SOURCE; ++i) {
+  for (int i = 0; i < PLI_MAX_SOURCE; ++i) {
     if (windata->winmp [i] != NULL) {
       windata->winmp [i]->mpClose ();
     }
@@ -596,7 +592,7 @@ winmpCrossFadeVolume (windata_t *windata, int vol)
     return;
   }
 
-  previdx = (MP_MAX_SOURCE - 1) - windata->curr;
+  previdx = (PLI_MAX_SOURCE - 1) - windata->curr;
   dvol = (double) vol / 100.0;
   windata->winmp [previdx]->mpVolume (dvol);
   if (dvol <= 0.0) {
