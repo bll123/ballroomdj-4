@@ -57,6 +57,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <inttypes.h>
 #include <string.h>
 #include <stdarg.h>
 #include <math.h>
@@ -74,9 +75,7 @@
 #if GSTI_DEBUG_DOT
 # include "dirop.h"
 #endif
-#if GSTI_DEBUG
-# include "log.h"
-#endif
+#include "log.h"
 #include "mdebug.h"
 #include "gsti.h"
 #include "pli.h"
@@ -141,6 +140,7 @@ typedef struct gsti {
   GstElement        *pipeline [PLI_MAX_SOURCE];
   gstiidx_t         gstiidx [PLI_MAX_SOURCE];
   int               curr;
+  GstState          gststate;
   plistate_t        state;
   bool              isstopping;
   bool              inCrossFade;
@@ -285,7 +285,9 @@ gstiInit (const char *plinm)
     g_object_set (G_OBJECT (gsti->pipeline [i]), "volume", 1.0, NULL);
     gstiRunOnce (gsti);
 
-    gst_element_set_state (GST_ELEMENT (gsti->pipeline [gsti->curr]), GST_STATE_READY);
+    if (! gst_element_set_state (GST_ELEMENT (gsti->pipeline [gsti->curr]), GST_STATE_READY)) {
+      fprintf (stderr, "ERR: init: unable to set state to ready %d\n", i);
+    }
     gstiRunOnce (gsti);
   }
 
@@ -313,10 +315,15 @@ gstiFree (gsti_t *gsti)
 
     g_object_set (G_OBJECT (gsti->pipeline [i]), "volume", 0.0, NULL);
     gstiRunOnce (gsti);
-    gst_element_set_state (GST_ELEMENT (gsti->pipeline [i]), GST_STATE_READY);
+    if (! gst_element_set_state (GST_ELEMENT (gsti->pipeline [i]), GST_STATE_READY)) {
+      fprintf (stderr, "ERR: free: unable to set state to ready %d\n", i);
+    }
     gstiWaitState (gsti, GST_STATE_READY);
-    gst_element_set_state (GST_ELEMENT (gsti->pipeline [i]), GST_STATE_NULL);
-    gstiWaitState (gsti, GST_STATE_NULL);
+    if (! gst_element_set_state (GST_ELEMENT (gsti->pipeline [i]), GST_STATE_NULL)) {
+      fprintf (stderr, "ERR: free: unable to set state to null %d\n", i);
+    }
+    /* do not wait for null, I suspect both pipelines must be closed off */
+    gstiRunOnce (gsti);
   }
 
   for (int i = 0; i < PLI_MAX_SOURCE; ++i) {
@@ -324,9 +331,9 @@ gstiFree (gsti_t *gsti)
     gst_object_unref (gsti->pipeline [i]);
   }
 
-//  gstiRunOnce (gsti);
-  gsti->ident = BDJ4_IDENT_FREE;
+  gstiRunOnce (gsti);
 
+  gsti->ident = BDJ4_IDENT_FREE;
   mdfree (gsti);
 }
 
@@ -355,6 +362,8 @@ gstiMedia (gsti_t *gsti, const char *fulluri, int sourceType)
 
   gsti->gstiidx [gsti->curr].rate = 1.0;
   g_object_set (G_OBJECT (gsti->pipeline [gsti->curr]), "uri", tbuff, NULL);
+// ### is this needed? does a song keep playing after it is "finished"?
+// appears to be ok...
 //  if (! gst_element_set_state (GST_ELEMENT (gsti->pipeline [gsti->curr]), GST_STATE_PAUSED)) {
 //    fprintf (stderr, "ERR: unable to set state (media-paused) %d\n", gsti->curr);
 //  }
@@ -485,8 +494,8 @@ gstiStop (gsti_t *gsti)
   if (! gst_element_set_state (GST_ELEMENT (gsti->pipeline [gsti->curr]), GST_STATE_READY)) {
     fprintf (stderr, "ERR: unable to set state (stop) %d\n", gsti->curr);
   }
-  gstiWaitState (gsti, GST_STATE_READY);
   gstiRunOnce (gsti);
+  gstiWaitState (gsti, GST_STATE_READY);
 
   g_object_set (G_OBJECT (gsti->pipeline [gsti->curr]), "volume", 1.0, NULL);
   gstiRunOnce (gsti);
@@ -607,15 +616,20 @@ gstiCrossFadeVolume (gsti_t *gsti, int vol)
   previdx = (PLI_MAX_SOURCE - 1) - gsti->curr;
   dvol = (double) vol / 100.0;
   g_object_set (G_OBJECT (gsti->pipeline [previdx]), "volume", dvol, NULL);
+  gstiRunOnce (gsti);
+
   if (dvol <= 0.0) {
     if (! gst_element_set_state (GST_ELEMENT (gsti->pipeline [previdx]), GST_STATE_READY)) {
       fprintf (stderr, "ERR: unable to set state (crossfade-stop) %d\n", previdx);
     }
+    gstiRunOnce (gsti);
     gsti->inCrossFade = false;
+    dvol = 0.0;
   }
 
   dvol = 1.0 - dvol;
   g_object_set (G_OBJECT (gsti->pipeline [gsti->curr]), "volume", dvol, NULL);
+  gstiRunOnce (gsti);
 }
 
 #if 0
@@ -680,6 +694,11 @@ gstiBusCallback (GstBus * bus, GstMessage * message, void *udata)
       GstState old_state, new_state, pending_state;
 
       gst_message_parse_state_changed (message, &old_state, &new_state, &pending_state);
+#if GSTI_DEBUG
+      if (gsti->gststate != new_state) {
+        fprintf (stderr, "new-state: %d o:%d n:%d\n", gstiidx->idx, old_state, new_state);
+      }
+#endif
       gstiProcessState (gsti, new_state);
       break;
     }
@@ -703,6 +722,8 @@ gstiBusCallback (GstBus * bus, GstMessage * message, void *udata)
 static void
 gstiProcessState (gsti_t *gsti, GstState state)
 {
+  gsti->gststate = state;
+
   switch (state) {
     case GST_STATE_VOID_PENDING: {
       break;

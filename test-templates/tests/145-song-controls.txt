@@ -1,7 +1,8 @@
 section 145 Song-Controls
 
 test 145-10 Song-Start-End
-# ick
+# ick see SONGIDX.txt
+# all jive, 29 seconds, 10 seconds, 9 seconds
 msg main MUSICQ_INSERT 0~999~39
 msg main MUSICQ_INSERT 0~999~51
 msg main MUSICQ_INSERT 0~999~63
@@ -12,21 +13,25 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
+dispall
 mssleep 1500
 get player CHK_PLAYER_SONG
 chk p-duration 29010
+dispall
 msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 get player CHK_PLAYER_SONG
 chk p-duration 10000
+dispall
 msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 get player CHK_PLAYER_SONG
 chk p-duration 9000
+dispall
 msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_STATUS

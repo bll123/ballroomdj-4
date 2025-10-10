@@ -858,8 +858,13 @@ playerProcessing (void *udata)
       /* and see if the user changed it */
       logMsg (LOG_DBG, LOG_VOLUME, "check sysvol: before fade");
       playerCheckSystemVolume (playerData);
-      if (playerData->crossFadeTime > 0) {
-        /* this will put the player into a in_crossfade state */
+logMsg (LOG_DBG, LOG_IMPORTANT, "---- playreq: %d", queueGetCount (playerData->playRequest));
+logMsg (LOG_DBG, LOG_IMPORTANT, "---- prepreqq: %d", queueGetCount (playerData->prepRequestQueue));
+logMsg (LOG_DBG, LOG_IMPORTANT, "---- prepq: %d", queueGetCount (playerData->prepQueue));
+      /* only start a cross fade if there is another song in the prep-queue */
+      if (playerData->crossFadeTime > 0 &&
+          queueGetCount (playerData->prepQueue) > 0) {
+        /* this will put the player into a in-crossfade state */
         logMsg (LOG_DBG, LOG_BASIC, "starting cross-fade");
         playerStartCrossFade (playerData);
       } else {
@@ -2275,7 +2280,7 @@ playerFreePlayRequest (void *tpreq)
 static void
 playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
 {
-  char  tmp [2000];
+  char        tmp [4000];
 
   snprintf (tmp, sizeof (tmp),
       "playstate%c%s%c"
@@ -2289,6 +2294,7 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       "pauseatend%c%d%c"
       "repeat%c%d%c"
       "prepqueuecount%c%" PRId32 "%c"
+      "incrossfade%c%d%c"
       "currentsink%c%s",
       MSG_ARGS_RS, logPlayerState (playerData->playerState), MSG_ARGS_RS,
       MSG_ARGS_RS, pliStateText (playerData->pli), MSG_ARGS_RS,
@@ -2301,6 +2307,7 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       MSG_ARGS_RS, playerData->pauseAtEnd, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->repeat, MSG_ARGS_RS,
       MSG_ARGS_RS, queueGetCount (playerData->prepQueue), MSG_ARGS_RS,
+      MSG_ARGS_RS, playerData->inCrossFade, MSG_ARGS_RS,
       /* current sink can be empty, just put it last for now */
       MSG_ARGS_RS, playerData->currentSink);
   connSendMessage (playerData->conn, routefrom, MSG_CHK_PLAYER_STATUS, tmp);

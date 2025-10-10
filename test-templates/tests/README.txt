@@ -1,6 +1,12 @@
-# 2025-9-1
+# 2025-10-10
 #
-# The testsuite program uses set-delay of 450 to delay the prep-time.
+#   145-10 must use specific songs...
+#     the musicq-insert uses specific indices
+#     this is icky.
+#     see SONGIDX.txt
+#
+# The testsuite program uses set-delay of 450 to delay the prep-time
+# in order to simulate slow loading of songs.
 #
 # Note that the musicq chk commands currently return the internal musicq
 # index, which is offset by one.
@@ -24,7 +30,8 @@
 #     special values: defaultvol
 #     (chk-not, chk-or, chk-lt, chk-gt)
 #   disp, dispall
-#     display responses before using 'chk' or 'wait'
+#     display responses *after* using 'chk' or 'wait'
+#     does not work before or without 'chk' or 'wait'
 #   reset
 #     resets the player
 #   end
@@ -49,7 +56,7 @@
 #     (wait-not)
 #
 # main:
-#   musicq: CHK_MAIN_MUSICQ
+#   CHK_MAIN_MUSICQ
 #     mqplay mq0len mq1len m-songfn title dance
 #     dbidx
 #       only if playing, from the musicq-play-idx
@@ -58,26 +65,26 @@
 #     mqXidxN (mq 0-1 idx 0-5)
 #     paeX (pause-at-end 0-5)
 # player:
-#   status: CHK_PLAYER_STATUS
+#   CHK_PLAYER_STATUS
 #     playstate
-#       unknown stopped loading playing paused in-fadeout in-gap
+#       unknown stopped loading playing paused in-fadeout in-gap in-crossfade
 #     plistate
 #       none opening buffering playing paused stopped ended error
 #         note that these may be specific to the particular player interface.
 #         the only states that should be used in tests
-#         are playing and paused.
+#         are 'playing' and 'paused'.
 #     currvolume realvolume actualvolume
 #       actualvolume is used to test fade-in and fade-out
 #     plivolume
-#     speed playtimeplayed
-#     pauseatend repeat
-#     currentsink
+#     speed playtimeplayed pauseatend repeat currentsink
 #     prepqueuecount
 #       check the prepqueuecount can be problematical as it can take
 #       differing amounts of time to do the prep.
 #       using a artificial delay in the prep code is useful to verify
 #       the test
-#   song: CHK_PLAYER_SONG
+#     incrossfade
+# song:
+#   CHK_PLAYER_SONG
 #     p-duration p-songfn
 #   CHK_WAIT_PREP
 #     done

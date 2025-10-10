@@ -8,6 +8,7 @@
 
 * Bug Fixes:
     * Fix a memory leak.
+    * Player: Cross-Fade: Fix last song not processing properly.
     * Starter: Display the square image, not the squircle on MacOS.
     * Song Editor: Copy Audio Tags: Fix file picker.
 * Internal:

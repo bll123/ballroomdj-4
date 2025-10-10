@@ -1,0 +1,148 @@
+# 2025-10-10
+# sorted by ascii title
+#
+  0    001-argentinetango
+  1    001-chacha
+  2    001-foxtrot
+  3    001-jive
+  4    001-quickstep
+  5    001-rumba
+  6    001-salsa
+  7    001-samba
+  8    001-tango
+  9    001-viennesewaltz
+ 10    001-waltz
+ 11    001-westcoastswing
+ 12    002-argentinetango
+ 13    002-chacha
+ 14    002-foxtrot
+ 15    002-jive
+ 16    002-quickstep
+ 17    002-rumba
+ 18    002-salsa
+ 19    002-samba
+ 20    002-tango
+ 21    002-viennesewaltz
+ 22    002-waltz
+ 23    002-westcoastswing
+ 24    003-argentinetango
+ 25    003-chacha
+ 26    003-foxtrot
+ 27    003-jive
+ 28    003-quickstep
+ 29    003-rumba
+ 30    003-salsa
+ 31    003-samba
+ 32    003-tango
+ 33    003-viennesewaltz
+ 34    003-waltz
+ 35    003-westcoastswing
+ 36    004-argentinetango
+ 37    004-chacha
+ 38    004-foxtrot
+ 39    004-jive             songstart
+ 40    004-quickstep
+ 41    004-rumba
+ 42    004-salsa
+ 43    004-samba
+ 44    004-tango
+ 45    004-viennesewaltz
+ 46    004-waltz
+ 47    004-westcoastswing
+ 48    005-argentinetango
+ 49    005-chacha
+ 50    005-foxtrot
+ 51    005-jive               songend
+ 52    005-quickstep
+ 53    005-rumba
+ 54    005-salsa
+ 55    005-samba
+ 56    005-tango
+ 57    005-viennesewaltz
+ 58    005-waltz
+ 59    005-westcoastswing
+ 60    006-argentinetango
+ 61    006-chacha
+ 62    006-foxtrot
+ 63    006-jive             songstart songend
+ 64    006-quickstep
+ 65    006-rumba
+ 66    006-salsa
+ 67    006-samba
+ 68    006-tango
+ 69    006-viennesewaltz
+ 70    006-waltz
+ 71    006-westcoastswing
+ 72    007-chacha
+ 73    007-jive
+ 74    007-salsa
+ 75    007-tango-flac
+ 76    007-waltz-flac
+ 77    008-chacha
+ 78    008-jive
+ 79    008-salsa
+ 80    008-tango-flac
+ 81    008-waltz-flac
+ 82    009-tango-flac
+ 83    009-waltz-flac
+ 84    010-tango-m4a
+ 85    010-waltz
+ 86    011-tango-m4a
+ 87    011-waltz
+ 88    012-tango-m4a
+ 89    012-waltz
+ 90    013-tango-opus
+ 91    013-waltz-opus
+ 92    014-tango-opus
+ 93    014-waltz-opus
+ 94    015-tango-opus
+ 95    015-waltz-opus
+ 96    016-こんにちは-ja
+ 97    017-tango
+ 98    017-こんにちは-ja
+ 99    018-tango
+100    018-こんにちは-ja
+101    019-tango
+102    019-こんにちは-ja
+103    020-tango
+104    020-こんにちは-ja
+105    021-tango
+106    021-夕陽伴我歸-zh
+107    022-tango
+108    022-내가제일잘나가-ko
+109    023-Roman_Pokorný-cs
+110    023-tango-ogg
+111    024-Ne_Русский_Шторм-ru
+112    024-tango-ogg
+113    025-medium – dash
+114    025-tango-ogg
+115    027-waltz
+116    028-waltz
+117    029-waltz
+118    030-waltz
+119    031-waltz
+120    032-waltz
+121    033-waltz-ogg
+122    034-waltz-ogg
+123    035-waltz-ogg
+124    036-name with space
+125    037-all-tags-mp3-a       songstart songend
+126    038-all-tags-mp3-b       songstart songend
+127    039-all-tags-m4a-c       songstart songend
+128    040-all-tags-m4a-d       songstart songend
+129    041-all-tags-flac-e      songstart songend
+130    042-all-tags-flac-f      songstart songend
+131    043-all-tags-ogg-g       songstart songend
+132    044-all-tags-ogg-h       songstart songend
+133    045-all-tags-opus-i      songstart songend
+134    046-all-tags-opus-j      songstart songend
+135    047-waltz-opus-ogx
+136    048-waltz-ogg-ogx
+137    900-ZZZZ
+138    900-ÄÄÄÄ
+139    900-ÖÖÖÖ
+140    ann-foxtrot
+141    ann-quickstep
+142    ann-samba
+143    ann-tango
+144    ann-waltz
