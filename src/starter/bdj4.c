@@ -489,9 +489,12 @@ main (int argc, char * argv[])
 
     if (strncmp (plitag, "VLC", 3) == 0) {
       /* do not use double quotes w/environment var */
-      snprintf (tbuff, sz, "C:\\Program Files\\VideoLAN\\%s", plitag);
-      p = stpecpy (p, end, tbuff);
-      p = stpecpy (p, end, ";");
+      snprintf (tbuff, sz, "C:/Program Files/VideoLAN/%s", plitag);
+      if (fileopIsDirectory (tbuff)) {
+        pathDisplayPath (tbuff, sz);
+        p = stpecpy (p, end, tbuff);
+        p = stpecpy (p, end, ";");
+      }
     }
 
     osGetEnv ("PATH", tbuff, sz);

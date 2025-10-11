@@ -29,6 +29,7 @@
 #include "songlist.h"
 #include "songlistutil.h"
 #include "tagdef.h"
+#include "tmutil.h"
 
 typedef struct {
   char      *plname;
@@ -84,6 +85,8 @@ main (int argc, char *argv[])
       pcupd.itemlist [idx].plname = NULL;
       pcupd.itemlist [idx].songidxlist = NULL;
     }
+
+    logEnd ();
 
     /* the database now needs to be loaded */
     flags = BDJ4_INIT_ALL;

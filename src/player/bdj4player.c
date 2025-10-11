@@ -229,7 +229,7 @@ static void     playerCheckVolumeSink (playerdata_t *playerData);
 static void     playerVolumeMute (playerdata_t *playerData);
 static void     playerPrepQueueFree (void *);
 static void     playerSigHandler (int sig);
-static int      playerSetAudioSink (playerdata_t *playerData, const char *sinkname);
+static plidev_t playerSetAudioSink (playerdata_t *playerData, const char *sinkname);
 static void     playerInitSinkList (playerdata_t *playerData);
 static void     playerFadeVolSet (playerdata_t *playerData);
 static double   calcFadeIndex (playerdata_t *playerData, int fadeType);
@@ -266,7 +266,7 @@ main (int argc, char *argv[])
   const char      *audiosink;
   const char      *plintfc;
   char            *volintfc;
-  int             plidevtype;
+  plidev_t        plidevtype;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("play");
@@ -372,7 +372,8 @@ main (int argc, char *argv[])
   playerData.pli = pliInit (plintfc, bdjoptGetStr (OPT_M_PLAYER_INTFC_NM));
   playerData.pliSupported = pliSupported (playerData.pli);
 
-  /* vlc needs to have the audio device set */
+  /* windows needs to have the audio device set */
+  /* apparently there is no api to set the applications audio sink */
   pliSetAudioDevice (playerData.pli, playerData.actualSink, plidevtype);
 
   playerSetDefaultVolume (&playerData);
@@ -596,6 +597,10 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           playerData->fadeoutTime = atol (args);
           break;
         }
+        case MSG_SET_PLAYBACK_CROSSFADE: {
+          playerData->crossFadeTime = atol (args);
+          break;
+        }
         case MSG_PLAY_RESET_VOLUME: {
           playerData->currentVolume = playerData->baseVolume;
           break;
@@ -677,7 +682,7 @@ playerProcessing (void *udata)
     }
   }
 
-  if ((playerData->playerState == PL_STATE_LOAD_CROSSFADE ||
+  if ((playerData->playerState == PL_STATE_IN_CROSSFADE ||
       playerData->playerState == PL_STATE_STOPPED) &&
       ! playerData->inGap &&
       queueGetCount (playerData->playRequest) > 0) {
@@ -755,7 +760,9 @@ playerProcessing (void *udata)
       logMsg (LOG_DBG, LOG_VOLUME, "no fade-in set volume: %d", playerData->realVolume);
     }
 
-    *tempffn = '\0';
+    /* duplicate the media path */
+    stpecpy (tempffn, tempffn + sizeof (tempffn), pq->tempname);
+
     /* only need to know if this is a file-type */
     if (pq->audiosrc == AUDIOSRC_TYPE_FILE) {
       /* some pli need the full path */
@@ -763,12 +770,11 @@ playerProcessing (void *udata)
           PATHBLD_MP_DIR_DATATOP);
     }
 
-
     taudiosrc = pq->audiosrc;
     if (taudiosrc == AUDIOSRC_TYPE_BDJ4) {
       taudiosrc = AUDIOSRC_TYPE_FILE;
     }
-    if (playerData->playerState == PL_STATE_LOAD_CROSSFADE) {
+    if (playerData->playerState == PL_STATE_IN_CROSSFADE) {
       pliCrossFade (playerData->pli, pq->tempname, tempffn, taudiosrc);
     } else {
       pliMediaSetup (playerData->pli, pq->tempname, tempffn, taudiosrc);
@@ -780,10 +786,8 @@ playerProcessing (void *udata)
       /* if repeating, use the current speed */
       tspeed = playerData->currentSpeed;
     }
-    if (playerData->playerState != PL_STATE_LOAD_CROSSFADE) {
-      logMsg (LOG_DBG, LOG_BASIC, "start playback");
-      pliStartPlayback (playerData->pli, pq->songstart, tspeed);
-    }
+    logMsg (LOG_DBG, LOG_BASIC, "start playback");
+    pliStartPlayback (playerData->pli, pq->songstart, tspeed);
     playerData->currentSpeed = tspeed;
     playerSetPlayerState (playerData, PL_STATE_LOADING);
   }
@@ -830,8 +834,7 @@ playerProcessing (void *udata)
         connSendMessage (playerData->conn, ROUTE_MAIN,
             MSG_PLAYBACK_BEGIN, NULL);
       }
-    } else if (plistate == PLI_STATE_STOPPED ||
-        plistate == PLI_STATE_IDLE) {
+    } else if (plistate == PLI_STATE_STOPPED) {
       playerSetPlayerState (playerData, PL_STATE_STOPPED);
     }
   }
@@ -855,8 +858,13 @@ playerProcessing (void *udata)
       /* and see if the user changed it */
       logMsg (LOG_DBG, LOG_VOLUME, "check sysvol: before fade");
       playerCheckSystemVolume (playerData);
-      if (playerData->crossFadeTime > 0) {
-        /* this will put the player into a load-crossfade state */
+logMsg (LOG_DBG, LOG_IMPORTANT, "---- playreq: %d", queueGetCount (playerData->playRequest));
+logMsg (LOG_DBG, LOG_IMPORTANT, "---- prepreqq: %d", queueGetCount (playerData->prepRequestQueue));
+logMsg (LOG_DBG, LOG_IMPORTANT, "---- prepq: %d", queueGetCount (playerData->prepQueue));
+      /* only start a cross fade if there is another song in the prep-queue */
+      if (playerData->crossFadeTime > 0 &&
+          queueGetCount (playerData->prepQueue) > 0) {
+        /* this will put the player into a in-crossfade state */
         logMsg (LOG_DBG, LOG_BASIC, "starting cross-fade");
         playerStartCrossFade (playerData);
       } else {
@@ -1568,7 +1576,7 @@ playerFade (playerdata_t *playerData)
   logProcBegin ();
 
   if (playerData->inFadeOut || playerData->inCrossFade) {
-    logProcEnd ("in-fade-out");
+    logProcEnd ("in fade-out/cross-fade");
     return;
   }
 
@@ -1729,9 +1737,9 @@ playerCheckVolumeSink (playerdata_t *playerData)
 {
   if (*playerData->currentSink == '\0') {
     if (volumeCheckSink (playerData->volume, playerData->currentSink)) {
-      int   currvol;
-      int   realvol;
-      int   plidevtype;
+      int       currvol;
+      int       realvol;
+      plidev_t  plidevtype;
 
       /* preserve the volume */
       currvol = playerData->currentVolume;
@@ -1806,14 +1814,14 @@ playerSigHandler (int sig)
   gKillReceived = 1;
 }
 
-static int
+static plidev_t
 playerSetAudioSink (playerdata_t *playerData, const char *sinkname)
 {
   bool        found = false;
   int         idx = -1;
   bool        isdefault = false;
   const char  *confsink;
-  int         rc;
+  plidev_t    rc;
 
   confsink = bdjoptGetStr (OPT_MP_AUDIOSINK);
   if (strcmp (confsink, VOL_DEFAULT_NAME) == 0) {
@@ -1910,10 +1918,10 @@ playerFadeVolSet (playerdata_t *playerData)
   }
   findex = calcFadeIndex (playerData, fadeType);
 
+  /* in a cross-fade, the player interface handles the volume */
+  /* of the individual songs */
+  /* the master volume stays at the current set volume */
   if (playerData->inCrossFade) {
-    /* in a cross-fade, the player interface handles the volume */
-    /* of the individual songs */
-    /* the master volume stays at the current set volume */
     newvol = (int) round (100.0 * findex);
   } else {
     newvol = (int) round ((double) playerData->realVolume * findex);
@@ -1922,11 +1930,6 @@ playerFadeVolSet (playerdata_t *playerData)
     }
   }
 
-//  newvol = (int) round ((double) playerData->realVolume * findex);
-
-  if (newvol > playerData->realVolume) {
-    newvol = playerData->realVolume;
-  }
   if (! playerData->mute) {
     if (playerData->inCrossFade) {
       pliCrossFadeVolume (playerData->pli, newvol);
@@ -2048,8 +2051,9 @@ playerStartFadeOut (playerdata_t *playerData)
 static void
 playerStartCrossFade (playerdata_t *playerData)
 {
-  ssize_t     tm;
-  char        nsflag [20];
+  ssize_t       tm;
+  prepqueue_t   *pq = playerData->currentSong;
+  char          nsflag [20];
 
   logProcBegin ();
 
@@ -2057,11 +2061,12 @@ playerStartCrossFade (playerdata_t *playerData)
   snprintf (nsflag, sizeof (nsflag), "%d", playerData->stopNextsongFlag);
   connSendMessage (playerData->conn, ROUTE_MAIN, MSG_PLAYBACK_FINISH, nsflag);
 
-  playerSetPlayerState (playerData, PL_STATE_LOAD_CROSSFADE);
+  playerSetPlayerState (playerData, PL_STATE_IN_CROSSFADE);
 
   playerData->inFade = true;
   playerData->inCrossFade = true;
-  tm = playerData->crossFadeTime;
+  tm = pq->dur - playerCalcPlayedTime (playerData);
+  tm = tm < playerData->crossFadeTime ? tm : playerData->crossFadeTime;
   playerData->fadeSamples = tm / FADEOUT_TIMESLICE;
   playerData->fadeCount = playerData->fadeSamples;
   logMsg (LOG_DBG, LOG_VOLUME, "xfade: samples: %d", playerData->fadeSamples);
@@ -2275,7 +2280,7 @@ playerFreePlayRequest (void *tpreq)
 static void
 playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
 {
-  char  tmp [2000];
+  char        tmp [4000];
 
   snprintf (tmp, sizeof (tmp),
       "playstate%c%s%c"
@@ -2289,6 +2294,7 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       "pauseatend%c%d%c"
       "repeat%c%d%c"
       "prepqueuecount%c%" PRId32 "%c"
+      "incrossfade%c%d%c"
       "currentsink%c%s",
       MSG_ARGS_RS, logPlayerState (playerData->playerState), MSG_ARGS_RS,
       MSG_ARGS_RS, pliStateText (playerData->pli), MSG_ARGS_RS,
@@ -2301,6 +2307,7 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       MSG_ARGS_RS, playerData->pauseAtEnd, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->repeat, MSG_ARGS_RS,
       MSG_ARGS_RS, queueGetCount (playerData->prepQueue), MSG_ARGS_RS,
+      MSG_ARGS_RS, playerData->inCrossFade, MSG_ARGS_RS,
       /* current sink can be empty, just put it last for now */
       MSG_ARGS_RS, playerData->currentSink);
   connSendMessage (playerData->conn, routefrom, MSG_CHK_PLAYER_STATUS, tmp);

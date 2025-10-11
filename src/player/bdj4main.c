@@ -410,6 +410,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_CMD_PLAY: {
           if (mainData->playerState != PL_STATE_PLAYING &&
+              mainData->playerState != PL_STATE_IN_CROSSFADE &&
               mainData->playerState != PL_STATE_IN_FADEOUT) {
             mainMusicQueuePlay (mainData);
           }
@@ -421,6 +422,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_CMD_PLAYPAUSE: {
           if (mainData->playerState == PL_STATE_PLAYING ||
+              mainData->playerState == PL_STATE_IN_CROSSFADE ||
               mainData->playerState == PL_STATE_IN_FADEOUT) {
             connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_PLAY_PAUSE, NULL);
           } else {
@@ -585,6 +587,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_CHK_MAIN_SET_GAP: {
           bdjoptSetNumPerQueue (OPT_Q_GAP, atoi (args), mainData->musicqPlayIdx);
+          mainMusicqSendQueueConfig (mainData);
+          break;
+        }
+        case MSG_CHK_MAIN_SET_CROSSFADE: {
+          bdjoptSetNumPerQueue (OPT_Q_CROSSFADE, atoi (args), mainData->musicqPlayIdx);
           mainMusicqSendQueueConfig (mainData);
           break;
         }
@@ -1092,10 +1099,12 @@ mainSendMarqueeData (maindata_t *mainData)
       }
     } else if ((marqueeidx > 0 && mainData->inannounce) ||
         (marqueeidx > 0 && mainData->playerState == PL_STATE_IN_GAP) ||
+        (marqueeidx > 1 && mainData->playerState == PL_STATE_IN_CROSSFADE) ||
         (marqueeidx > 1 && mainData->playerState == PL_STATE_IN_FADEOUT)) {
       /* inannounce and marqueeidx > 0 or */
       /* in-gap and marqueeidx > 0 or */
       /* in-fadeout and marqueeidx > 1 */
+      /* in-crossfade and marqueeidx > 1 */
       dstr = MSG_ARGS_EMPTY_STR;
     } else if (qoffset >= musicqLen) {
       dstr = MSG_ARGS_EMPTY_STR;
@@ -1995,6 +2004,9 @@ mainMusicqSendQueueConfig (maindata_t *mainData)
   snprintf (tmp, sizeof (tmp), "%" PRId64,
       (int64_t) bdjoptGetNumPerQueue (OPT_Q_FADEOUTTIME, mainData->musicqPlayIdx));
   connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_FADEOUT, tmp);
+  snprintf (tmp, sizeof (tmp), "%" PRId64,
+      (int64_t) bdjoptGetNumPerQueue (OPT_Q_CROSSFADE, mainData->musicqPlayIdx));
+  connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_CROSSFADE, tmp);
 }
 
 static void
@@ -2439,6 +2451,7 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
     case PL_STATE_LOADING:
     case PL_STATE_PLAYING:
     case PL_STATE_IN_FADEOUT:
+    case PL_STATE_IN_CROSSFADE:
     case PL_STATE_IN_GAP: {
       p = "play";
       break;
@@ -2570,15 +2583,22 @@ mainSendRemctrlData (maindata_t *mainData)
 static void
 mainSendMusicqStatus (maindata_t *mainData)
 {
-  char    tbuff [40];
-  dbidx_t dbidx;
-  int32_t uniqueidx;
+  char        tbuff [2048];
+  dbidx_t     dbidx;
+  int32_t     uniqueidx;
+  song_t      *song;
+  const char  *imguri = NULL;
 
   logProcBegin ();
 
   dbidx = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
+  song = dbGetByIdx (mainData->musicdb, dbidx);
+  imguri = songGetStr (song, TAG_IMAGE_URI);
+  if (imguri == NULL) {
+    imguri = "";
+  }
   uniqueidx = musicqGetUniqueIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
-  msgbuildMusicQStatus (tbuff, sizeof (tbuff), dbidx, uniqueidx);
+  msgbuildMusicQStatus (tbuff, sizeof (tbuff), dbidx, uniqueidx, imguri);
 
   connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_MUSICQ_STATUS_DATA, tbuff);
   connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_MUSICQ_STATUS_DATA, tbuff);
@@ -3275,6 +3295,7 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
   dance = MSG_ARGS_EMPTY_STR;
   songfn = MSG_ARGS_EMPTY_STR;
   if (mainData->playerState == PL_STATE_PLAYING ||
+      mainData->playerState == PL_STATE_IN_CROSSFADE ||
       mainData->playerState == PL_STATE_IN_FADEOUT) {
     dbidx = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
     title = musicqGetData (mainData->musicQueue, mainData->musicqPlayIdx, 0, TAG_TITLE);
@@ -3291,7 +3312,6 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
       mqdbidx [mqidx][idx] = musicqGetByIdx (mainData->musicQueue, mqidx, idx);
     }
   }
-
 
   snprintf (tmp, sizeof (tmp),
       "mqplay%c%d%c"
@@ -3380,3 +3400,4 @@ mainProcessPlayerState (maindata_t *mainData, char *data)
 
   msgparsePlayerStateFree (ps);
 }
+

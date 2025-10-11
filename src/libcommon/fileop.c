@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 #include <string.h>
 #include <errno.h>
@@ -321,3 +322,22 @@ fileopIsAbsolutePath (const char *fname)
   return rc;
 }
 
+int64_t
+fileopTell (FILE *fh)
+{
+#if _lib_ftello
+  return ftello (fh);
+#else
+  return ftell (fh);
+#endif
+}
+
+int
+fileopSeek (FILE *fh, int64_t offset, int whence)
+{
+#if _lib_fseeko
+  return fseeko (fh, offset, whence);
+#else
+  return fseek (fh, offset, whence);
+#endif
+}

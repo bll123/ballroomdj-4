@@ -72,15 +72,6 @@ uicopytagsInit (uiwcont_t *windowp, nlist_t *opts)
   uict->isactive = false;
   uict->state = BDJ4_STATE_OFF;
 
-  selectInitCallback (&uict->sourcesfcb);
-  uict->sourcesfcb.title = NULL;
-  uict->sourcesfcb.entry = uict->source;
-  uict->sourcesfcb.window = uict->parentwin;
-  selectInitCallback (&uict->targetsfcb);
-  uict->targetsfcb.title = NULL;
-  uict->targetsfcb.entry = uict->target;
-  uict->targetsfcb.window = uict->parentwin;
-
   uict->callbacks [UICT_CB_DIALOG] = callbackInitI (
       uicopytagsResponseHandler, uict);
 
@@ -226,7 +217,7 @@ uicopytagsCreateDialog (uict_t *uict)
       uiEntryValidateFile, NULL, UIENTRY_DELAYED);
 
   uict->callbacks [UICT_CB_SOURCE_SEL] = callbackInit (
-      selectAllFileCallback, &uict->sourcesfcb, NULL);
+      selectAudioFileCallback, &uict->sourcesfcb, NULL);
   uict->sourcesel = uiCreateButton ("cptag-src-folder",
       uict->callbacks [UICT_CB_SOURCE_SEL], "", NULL);
   uiButtonSetImageIcon (uict->sourcesel, "folder");
@@ -260,6 +251,15 @@ uicopytagsCreateDialog (uict_t *uict)
 
   uiwcontFree (hbox);
   uiwcontFree (vbox);
+
+  selectInitCallback (&uict->sourcesfcb);
+  uict->sourcesfcb.title = NULL;
+  uict->sourcesfcb.entry = uict->source;
+  uict->sourcesfcb.window = uict->parentwin;
+  selectInitCallback (&uict->targetsfcb);
+  uict->targetsfcb.title = NULL;
+  uict->targetsfcb.entry = uict->target;
+  uict->targetsfcb.window = uict->parentwin;
 
   logProcEnd ("");
 }

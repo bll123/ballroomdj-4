@@ -24,6 +24,8 @@ void gstiStop (gsti_t *gsti);
 bool gstiSetPosition (gsti_t *gsti, int64_t pos);
 bool gstiSetRate (gsti_t *gsti, double rate);
 int gstiGetVolume (gsti_t *gsti);
+int gstiCrossFade (gsti_t *gsti, const char *fn, int sourceType);
+void gstiCrossFadeVolume (gsti_t *gsti, int vol);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

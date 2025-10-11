@@ -69,6 +69,7 @@ function pkgnmgetdata {
           dver=$(cat /etc/debian_version)
           dver=$(echo ${dver} | sed 's,\..*,,')
           pn_dist=-debian${dver}
+          ;;
       esac
       ;;
     Darwin)
@@ -117,7 +118,7 @@ function pkgsrcadditionalnm {
   if [[ ${pn_tag} == win64 ]]; then
     ext=.zip
   fi
-  nm=${pn_spkgnm}-src-${pn_tag}${pn_rlstag}${pn_devtag}${pn_datetag}${ext}
+  nm=${pn_spkgnm}-src-${pn_tag}${pn_rlstag}${pn_devtag}-${pn_date}${ext}
   echo $nm
 }
 

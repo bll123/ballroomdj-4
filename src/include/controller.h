@@ -31,9 +31,9 @@ enum {
   CONT_METADATA_ALBUM,
   CONT_METADATA_ALBUMARTIST,
   CONT_METADATA_ARTIST,
-  CONT_METADATA_ART_URI,
   CONT_METADATA_DURATION,
   CONT_METADATA_GENRE,
+  CONT_METADATA_IMAGE_URI,
   CONT_METADATA_SONGEND,
   CONT_METADATA_SONGSTART,
   CONT_METADATA_TITLE,
@@ -51,12 +51,13 @@ typedef struct {
   const char    *artist;
   const char    *title;
   const char    *uri;
-  const char    *arturi;
+  const char    *imageuri;
   const char    *genre;
   int32_t       songstart;
   int32_t       songend;
   int32_t       trackid;
   int32_t       duration;
+  int           astype;
 } contmetadata_t;
 
 const char *controllerDesc (void);
@@ -77,7 +78,7 @@ ilist_t *controllerInterfaceList (void);
 void contiDesc (const char **ret, int max);
 contdata_t *contiInit (const char *instname);
 void contiFree (contdata_t *contdata);
-void contiSetup (contdata_t *contdata);
+bool contiSetup (void *contdata);
 bool contiCheckReady (contdata_t *contdata);
 void contiSetCallbacks (contdata_t *contdata, callback_t *cb, callback_t *cburi);
 void contiSetPlayState (contdata_t *contdata, int state);

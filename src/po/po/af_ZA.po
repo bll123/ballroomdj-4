@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2025-09-03\n"
-"PO-Revision-Date: 2025-09-03 19:15\n"
+"POT-Creation-Date: 2025-09-23\n"
+"PO-Revision-Date: 2025-10-10\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Afrikaans\n"
 "Language: af\n"
@@ -99,6 +99,11 @@ msgstr "%s Snitlys"
 #, c-format
 msgid "%s Support Tickets"
 msgstr "%s Ondersteuningskaartjies"
+
+#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
+#, c-format
+msgid "%s Tags Only"
+msgstr "Slegs %s-etikette"
 
 #. CONTEXT: starterui: basic support dialog, version display
 #, c-format
@@ -393,10 +398,6 @@ msgstr "Outo-organiseer"
 msgid "Automatic"
 msgstr "Outomatiese"
 
-#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
-msgid "BDJ Tags Only"
-msgstr "Slegs BDJ-etikette"
-
 #. CONTEXT: installer: status message
 msgid "BDJ3 database version is too old."
 msgstr "BDJ3-databasisweergawe is te oud."
@@ -633,6 +634,10 @@ msgstr "Skep vouerstruktuur."
 #. CONTEXT: installer: status message
 msgid "Creating shortcut."
 msgstr "Skep kortpad."
+
+#. CONTEXT: configuration: queue: the amount of time to cross-fade the songs
+msgid "Cross Fade Time"
+msgstr ""
 
 #. CONTEXT: audio identification: the data for the current song
 msgid "Current"
@@ -1222,7 +1227,8 @@ msgid "Marquee Theme"
 msgstr "Marquee Tema"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "Maksimum\n"
 "Speeltyd"
@@ -1762,7 +1768,9 @@ msgid "Repeat"
 msgstr "Herhaal"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "Vervang die BallroomDJ-databasis in sy geheel. Alle veranderinge aan die databasis sal verlore gaan."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -2153,7 +2161,9 @@ msgid "The conversion process will not be run."
 msgstr "Die omskakelingsproses sal nie uitgevoer word nie."
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "Die omskakelingsproses sal slegs loop vir nuwe installasies en vir herinstallasies."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -2288,11 +2298,13 @@ msgstr "Opgedateer"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "Dateer die inligting in die BallroomDJ-databasis op vanaf die %s -databasis."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Dateer die inligting in die BallroomDJ-databasis op vanaf die klanklêeretikette."
 
 #. CONTEXT: alternate installation: status message
@@ -2374,6 +2386,10 @@ msgstr "Weskus Swaai"
 msgid "When the BPM value is stable, select the Save button."
 msgstr "Wanneer die BPM-waarde stabiel is, kies die Stoor-knoppie."
 
+#. CONTEXT: configuration: player interface: Windows Media Player
+msgid "Windows Media Player"
+msgstr ""
+
 #. CONTEXT: label: work (a musical work)
 msgid "Work"
 msgstr ""
@@ -2391,7 +2407,9 @@ msgid "Write Tags to Audio Files"
 msgstr "Skryf etikette na oudiolêers"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "Skryf die klanklêeretikette deur die inligting van die BallroomDJ-databasis te gebruik."
 
 #. CONTEXT: configuration: dialog: XML file types

@@ -50,6 +50,7 @@ typedef struct asiterdata {
   slist_t       *songlist;
   slist_t       *songtags;
   slist_t       *plNames;
+  slist_t       *plData;
 } asiterdata_t;
 
 typedef struct {
@@ -243,11 +244,16 @@ asiStartIterator (asdata_t *asdata, asitertype_t asitertype,
   asidata->songtags = NULL;
   asidata->iterlist = NULL;
   asidata->plNames = NULL;
+  asidata->plData = NULL;
 
   if (asitertype == AS_ITER_PL_NAMES) {
     /* a podcast only has a single playlist, use the title of the podcast */
     aspodcastGetPlaylistNames (asdata, asidata, uri);
     asidata->iterlist = asidata->plNames;
+    slistStartIterator (asidata->iterlist, &asidata->iteridx);
+  } else if (asitertype == AS_ITER_PL_DATA) {
+    aspodcastGetPlaylist (asdata, asidata, uri);
+    asidata->iterlist = asidata->plData;
     slistStartIterator (asidata->iterlist, &asidata->iteridx);
   } else if (asitertype == AS_ITER_PL) {
     aspodcastGetPlaylist (asdata, asidata, uri);
@@ -272,6 +278,7 @@ asiCleanIterator (asdata_t *asdata, asiterdata_t *asidata)
   slistFree (asidata->songlist);
   slistFree (asidata->songtags);
   slistFree (asidata->plNames);
+  slistFree (asidata->plData);
   mdfree (asidata);
 }
 
@@ -384,6 +391,12 @@ aspodcastGetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *uri)
   if (asdata->clientdata [clientkey].rssdata == NULL) {
     return false;
   }
+
+  slistFree (asidata->plData);
+  asidata->plData = slistAlloc ("aspldata", LIST_UNORDERED, NULL);
+  slistSetStr (asidata->plData, "IMAGE_URI",
+      nlistGetStr (asdata->clientdata [clientkey].rssdata, RSS_IMAGE_URI));
+  slistSort (asidata->plData);
 
   slistFree (asidata->songlist);
   asidata->songlist = slistAlloc ("asplsongs", LIST_UNORDERED, NULL);
@@ -506,7 +519,7 @@ aspodcastRSS (asdata_t *asdata, asiterdata_t *asidata, const char *uri)
   if (asdata->clientdata [clientkey].rssdata == NULL ||
       tm > asdata->clientdata [clientkey].rsslastbldtm) {
     logMsg (LOG_ERR, LOG_IMPORTANT,
-        "rss data is null %d or %" PRId64 " > %" PRId64,
+        "do import: rss data null(%d) or time %" PRId64 " > %" PRId64,
         asdata->clientdata [clientkey].rssdata == NULL,
         (int64_t) tm, (int64_t) asdata->clientdata [clientkey].rsslastbldtm);
     asdata->clientdata [clientkey].rssdata = rssImport (uri);

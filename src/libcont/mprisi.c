@@ -34,6 +34,8 @@
 #include "nlist.h"
 #include "tmutil.h"
 
+#include "log.h" // ###
+
 static const char *urischemes [] = {
   "file",
   NULL,
@@ -88,7 +90,7 @@ static const char *metadatastr [CONT_METADATA_MAX] = {
   [CONT_METADATA_TRACKID] = "mpris:trackid",
   [CONT_METADATA_DURATION] = "mpris:length",
   [CONT_METADATA_URI] = "xesam:url",
-  [CONT_METADATA_ART_URI] = "xesam:url",
+  [CONT_METADATA_IMAGE_URI] = "xesam:url",    // incorrect
   [CONT_METADATA_GENRE] = "xesam:genre",
 };
 
@@ -182,6 +184,13 @@ contiInit (const char *instname)
   contdata->volume = 0;
 
   contdata->dbus = dbusConnInit ();
+
+  /* these must be done before the name is acquired */
+  /* otherwise the media-controller-clients may try to get */
+  /* the data before it is ready */
+  mprisInitializeRoot (contdata);
+  mprisInitializePlayer (contdata);
+
   dbusConnectAcquireName (contdata->dbus, contdata->instname,
       interface [MPRIS_INTFC_MP2]);
 
@@ -203,11 +212,10 @@ contiFree (contdata_t *contdata)
   mdfree (contdata);
 }
 
-void
-contiSetup (contdata_t *contdata)
+bool
+contiSetup (void *tcontdata)
 {
-  mprisInitializeRoot (contdata);
-  mprisInitializePlayer (contdata);
+  return true;
 }
 
 bool
@@ -256,7 +264,7 @@ contiSetPlayState (contdata_t *contdata, int state)
     case PL_STATE_LOADING:
     case PL_STATE_PLAYING: {
       nstate = MPRIS_PB_STATUS_PLAY;
-      canplay = false;
+      canplay = true;
       canpause = true;
       canseek = true;
       break;
@@ -271,10 +279,11 @@ contiSetPlayState (contdata_t *contdata, int state)
     case PL_STATE_PAUSED: {
       nstate = MPRIS_PB_STATUS_PAUSE;
       canplay = true;
-      canpause = false;
+      canpause = true;    // so that play-pause will work
       canseek = true;
       break;
     }
+    case PL_STATE_IN_CROSSFADE:
     case PL_STATE_IN_GAP: {
       nstate = MPRIS_PB_STATUS_PLAY;
       canplay = false;
@@ -288,8 +297,11 @@ contiSetPlayState (contdata_t *contdata, int state)
       /* want to be able to update the display when the player is stopped */
       nstate = MPRIS_PB_STATUS_PAUSE;
       canplay = true;
-      canpause = false;
+      canpause = true;      // so that play-pause will work
       canseek = false;
+      break;
+    }
+    default: {
       break;
     }
   }
@@ -424,8 +436,8 @@ contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
   if (cmetadata->uri != NULL) {
     nlistSetStr (contdata->metadata, CONT_METADATA_URI, cmetadata->uri);
   }
-  if (cmetadata->arturi != NULL) {
-    nlistSetStr (contdata->metadata, CONT_METADATA_ART_URI, cmetadata->arturi);
+  if (cmetadata->imageuri != NULL) {
+    nlistSetStr (contdata->metadata, CONT_METADATA_IMAGE_URI, cmetadata->imageuri);
   }
 
   nlistStartIterator (contdata->metadata, &miter);

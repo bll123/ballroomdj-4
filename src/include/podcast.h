@@ -13,10 +13,11 @@ extern "C" {
 typedef struct podcast podcast_t;
 
 enum {
+  PODCAST_IMAGE_URI,
   PODCAST_LAST_BLD_DATE,
   PODCAST_RETAIN,
-  PODCAST_URI,
   PODCAST_TITLE,
+  PODCAST_URI,
   PODCAST_KEY_MAX,
 };
 

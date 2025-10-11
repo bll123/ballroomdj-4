@@ -260,6 +260,7 @@ webclient_suite (void)
   tc = tcase_create ("webclient");
   tcase_set_tags (tc, "libwebclient");
   tcase_add_unchecked_fixture (tc, setup, teardown);
+  tcase_set_timeout (tc, 4.0);
   tcase_add_test (tc, webclient_alloc);
   tcase_add_test (tc, webclient_get);
   tcase_add_test (tc, webclient_dl);

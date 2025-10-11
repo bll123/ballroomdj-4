@@ -460,10 +460,11 @@ get player CHK_PLAYER_STATUS
 wait playstate stopped
 msg main CMD_PLAY
 mssleep 4500
-resptimeout 2500
+resptimeout 2000
 get player CHK_PLAYER_STATUS
 # should be a start-wait, still stopped
 chk playstate stopped
+resptimeout 4000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1500
@@ -805,3 +806,121 @@ msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
 msg main MUSICQ_SET_PLAYBACK 0
 end
 
+# cross-fade
+# this is not supported by all players, so check and skip if not supported
+# the player in-crossfade state doesn't last long, so check the
+# incrossfade flag
+test 150-70 Cross-Fade
+crossfadechk
+msg main MUSICQ_SET_PLAYBACK 0
+msg main CHK_MAIN_SET_CROSSFADE 5000
+msg main MUSICQ_INSERT 0~999~5
+msg main MUSICQ_INSERT 0~999~6
+mssleep 100
+get player CHK_WAIT_PREP
+wait done 1
+#
+msg main CMD_PLAY
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+#
+get main CHK_MAIN_MUSICQ
+chk mq0len 2 mq0idx0 5 dance Rumba
+#
+resptimeout 10000
+msg player PLAY_SEEK 24000
+get player CHK_PLAYER_STATUS
+wait incrossfade 1
+#
+# the dance should be Salsa after hitting the crossfade
+mssleep 500
+get main CHK_MAIN_MUSICQ
+chk mq0len 1 mq0idx0 6 dance Salsa
+#
+mssleep 5500
+get player CHK_PLAYER_STATUS
+chk playstate playing incrossfade 0
+#
+resptimeout 10000
+msg player PLAY_SEEK 24000
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+get player CHK_PLAYER_STATUS
+wait playstate stopped
+#
+msg main CHK_MAIN_SET_CROSSFADE 0
+end
+
+# 2025-10-10 bug before version 4.17.2
+#   the last song in the queue would still go to a crossfade state
+# cross-fade
+# this is not supported by all players, so check and skip if not supported
+# if the last song is shorter, it should end properly
+# the player in-crossfade state doesn't last long, so check the
+# incrossfade flag
+test 150-75 Cross-Fade-Last-Song
+crossfadechk
+msg main MUSICQ_SET_PLAYBACK 0
+msg main CHK_MAIN_SET_CROSSFADE 3000
+# ick see SONGIDX.txt
+# all jive, 29 seconds, 10 seconds, 9 seconds
+msg main MUSICQ_INSERT 0~999~39
+msg main MUSICQ_INSERT 0~999~51
+msg main MUSICQ_INSERT 0~999~63
+mssleep 200
+get player CHK_WAIT_PREP
+wait done 1
+#
+msg main CMD_PLAY
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+#
+get main CHK_MAIN_MUSICQ
+chk mq0len 3 mq0idx0 39 dance Jive
+#
+resptimeout 10000
+msg player PLAY_SEEK 23000
+get player CHK_PLAYER_STATUS
+wait incrossfade 1
+#
+mssleep 500
+get main CHK_MAIN_MUSICQ
+chk mq0len 2 mq0idx0 51 dance Jive
+get player CHK_PLAYER_STATUS
+# the player is still processing the cross-fade
+chk playstate playing incrossfade 1
+#
+mssleep 3500
+get player CHK_PLAYER_STATUS
+chk playstate playing incrossfade 0
+get main CHK_MAIN_MUSICQ
+chk mq0len 2 mq0idx0 51 dance Jive
+#
+resptimeout 10000
+get player CHK_PLAYER_STATUS
+wait incrossfade 1
+#
+mssleep 500
+get main CHK_MAIN_MUSICQ
+chk mq0len 1 mq0idx0 63 dance Jive
+get player CHK_PLAYER_STATUS
+# the player is still processing the cross-fade
+chk playstate playing incrossfade 1
+#
+mssleep 3500
+get player CHK_PLAYER_STATUS
+chk playstate playing incrossfade 0
+#
+# song has 5.5 seconds or so remaining.
+# gap is 2 seconds
+# set the response timeout to make sure the song stops playing in time
+resptimeout 8000
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+get player CHK_PLAYER_STATUS
+wait playstate stopped
+#
+msg main CHK_MAIN_SET_CROSSFADE 0
+end

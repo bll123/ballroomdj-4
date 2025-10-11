@@ -30,6 +30,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "sysvars.h"
+#include "tmutil.h"
 
 typedef struct {
   dlhandle_t      *i18ndlh;
@@ -39,6 +40,7 @@ typedef struct {
   UCollator       *(*ucol_open)(const char *, UErrorCode *);
   UCollationResult (*ucol_strcollUTF8)(const UCollator *, const char *, int32_t, const char *, int32_t, UErrorCode *);
   int             (*u_strToUTF8)(char *, int32_t, int32_t *, const UChar *, int32_t, UErrorCode *);
+  const char      *(*u_errorName)(UErrorCode);
   void            (*ucol_close)(UCollator *);
   UCaseMap        *(*ucasemap_open)(const char *, uint32_t, UErrorCode *);
   int             (*ucasemap_utf8ToLower)(const UCaseMap *, char *, int32_t, const char *, int32_t, UErrorCode *);
@@ -49,7 +51,7 @@ typedef struct {
 static istring_data_t istringdata =
     { NULL, NULL,
       NULL, NULL,
-      NULL, NULL, NULL, NULL,
+      NULL, NULL, NULL, NULL, NULL,
       NULL, NULL, NULL,
       false };
 
@@ -106,6 +108,8 @@ istringInit (const char *locale)
     istringdata.u_strToUTF8 = dylibLookup (istringdata.i18ndlh, tbuff);
     snprintf (tbuff, sizeof (tbuff), "ucol_close_%d", version);
     istringdata.ucol_close = dylibLookup (istringdata.i18ndlh, tbuff);
+    snprintf (tbuff, sizeof (tbuff), "u_errorName_%d", version);
+    istringdata.u_errorName = dylibLookup (istringdata.i18ndlh, tbuff);
     snprintf (tbuff, sizeof (tbuff), "ucasemap_open_%d", version);
     istringdata.ucasemap_open = dylibLookup (istringdata.ucdlh, tbuff);
     snprintf (tbuff, sizeof (tbuff), "ucasemap_utf8ToLower_%d", version);
@@ -141,9 +145,11 @@ istringCleanup (void)
 
   if (istringdata.i18ndlh != NULL) {
     dylibClose (istringdata.i18ndlh);
+    istringdata.i18ndlh = NULL;
   }
   if (istringdata.ucdlh != NULL) {
     dylibClose (istringdata.ucdlh);
+    istringdata.ucdlh = NULL;
   }
   istringdata.initialized = false;
 }

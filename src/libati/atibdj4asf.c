@@ -352,7 +352,7 @@ atibdj4ASFReadData (FILE *fh, void *data, size_t dlen)
 static void
 atibdj4ASFSkipData (FILE *fh, size_t len)
 {
-  fseek (fh, len, SEEK_CUR);
+  fileopSeek (fh, len, SEEK_CUR);
 }
 
 

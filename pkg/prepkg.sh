@@ -166,19 +166,20 @@ if [[ $DEVELOPMENT != dev ]]; then
     grc=1
   fi
 
-  wc=$(grep '^fprintf' */*.c | grep -v uitest.c | wc -l)
+  wc=$(grep '^fprintf' src/*/*.c src/*/*.cpp src/*/*.m |
+      grep -v uitest.c | grep -v libuimacos | wc -l)
   if [[ $wc -ne 0 ]]; then
     echo "fprintf debugging found"
     grc=1
   fi
 
-  wc=$(grep '^logBasic' */*.c | grep -v KEEP | wc -l)
+  wc=$(grep '^logBasic' src/*/*.c src/*/*.cpp src/*/*.m | grep -v KEEP | wc -l)
   if [[ $wc -ne 0 ]]; then
     echo "logBasic debugging found"
     grc=1
   fi
 
-  wc=$(grep '^logStderr' */*.c | grep -v KEEP | wc -l)
+  wc=$(grep '^logStderr' src/*/*.c src/*/*.cpp src/*/*.m | grep -v KEEP | wc -l)
   if [[ $wc -ne 0 ]]; then
     echo "logStderr debugging found"
     grc=1
@@ -201,7 +202,27 @@ if [[ $DEVELOPMENT != dev ]]; then
   grep '^#define SMTC_ENABLED 0' src/libcont/smtc.c > /dev/null 2>&1
   rc=$?
   if [[ $rc -eq 0 ]]; then
-    echo "== WIN: SMTC: current disabled"
+    echo "== WIN: SMTC: disabled"
+    grc=1
+  fi
+
+  grep '^#define GSTI_DEBUG 0' src/libpli/gsti.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "== gsti.c: gsti debugging is on"
+    grc=1
+  fi
+
+  grep '^#define GSTI_DEBUG_DOT 0' src/libpli/gsti.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "== gsti.c: gsti debugging is on"
+    grc=1
+  fi
+
+  if [[ -f packages/libid3tag*/config.h ]]; then
+    echo "== libid3tag: config.h present when it should not be"
+    grc=1
   fi
 
   #grep '^#define MACOS_UI_DEBUG 0' src/include/uigeneral.h > /dev/null 2>&1

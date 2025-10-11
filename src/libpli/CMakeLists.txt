@@ -64,7 +64,7 @@ target_include_directories (libpligst
 target_link_libraries (libpligst PRIVATE
   libbdj4common
   ${GST_LDFLAGS}
-  # ${GLIB_LDFLAGS}
+  ${GLIB_LDFLAGS}
 )
 addIntlLibrary (libpligst)
 

@@ -196,6 +196,11 @@ testsection:
 	./utils/mktestsetup.sh $(testoption)
 	(cd ..;./bin/bdj4 --testsuite --runsection $(start))
 
+.PHONY: testsectionv
+testsectionv:
+	./utils/mktestsetup.sh $(testoption)
+	(cd ..;./bin/bdj4 --testsuite --verbose --runsection $(start))
+
 .PHONY: testtest
 testtest:
 	./utils/mktestsetup.sh $(testoption)
@@ -250,6 +255,8 @@ tclean:
 	@-$(RM) -f ../out-acoustid.xml ../out-acr.json ../out-mb.xml
 	@-$(RM) -f ../vlc-log.txt vlc-log.txt ../vlc-out.txt ../mpvdebug.txt
 	@-$(RM) -f ../vgcore.* vgcore.* ../core core gmon.out ../gmon.out
+	@-$(RM) -f ../tmp/*.dmp
+	@-$(RM) -rf ../tmp/gst
 	@-$(RM) -f launcher.rc bdj4_icon.ico
 	@-$(RM) -f selauncher.rc bdj4_icon_inst.ico
 	@-$(RM) -f dep-*.txt

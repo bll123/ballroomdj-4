@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2025-09-03\n"
-"PO-Revision-Date: 2025-09-03 19:15\n"
+"POT-Creation-Date: 2025-09-23\n"
+"PO-Revision-Date: 2025-09-23 14:12\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -99,6 +99,11 @@ msgstr "%s Lista de reproducción"
 #, c-format
 msgid "%s Support Tickets"
 msgstr "%s Tickets de asistencia"
+
+#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
+#, c-format
+msgid "%s Tags Only"
+msgstr "Sólo etiquetas %s"
 
 #. CONTEXT: starterui: basic support dialog, version display
 #, c-format
@@ -393,10 +398,6 @@ msgstr "Auto Organizar"
 msgid "Automatic"
 msgstr "Automático"
 
-#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
-msgid "BDJ Tags Only"
-msgstr "Sólo etiquetas BDJ"
-
 #. CONTEXT: installer: status message
 msgid "BDJ3 database version is too old."
 msgstr "La versión de la base de datos BDJ3 es demasiado antigua."
@@ -633,6 +634,10 @@ msgstr "Creación de la estructura de carpetas."
 #. CONTEXT: installer: status message
 msgid "Creating shortcut."
 msgstr "Crear acceso directo."
+
+#. CONTEXT: configuration: queue: the amount of time to cross-fade the songs
+msgid "Cross Fade Time"
+msgstr ""
 
 #. CONTEXT: audio identification: the data for the current song
 msgid "Current"
@@ -2373,6 +2378,10 @@ msgstr "Swing de la Costa Oeste"
 #. CONTEXT: bpm counter: instructions, line 2
 msgid "When the BPM value is stable, select the Save button."
 msgstr "Cuando el valor de BPM sea estable, seleccione el botón Guardar."
+
+#. CONTEXT: configuration: player interface: Windows Media Player
+msgid "Windows Media Player"
+msgstr ""
 
 #. CONTEXT: label: work (a musical work)
 msgid "Work"

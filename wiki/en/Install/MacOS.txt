@@ -4,8 +4,8 @@
 
 ## Installing BallroomDJ 4 on MacOS
 
-Supported Platforms as of 2024-4-17: Big Sur, Monterey, Ventura,
-Sonoma, Sequoia.
+Supported Platforms as of 2025-9: Big Sur, Monterey, Ventura,
+Sonoma, Sequoia, Tahoe.
 <br>If you want an earlier version supported, please
 [let&nbsp;me&nbsp;know](en-Getting%20Help)
 
@@ -38,7 +38,7 @@ this script.
 This step only needs to be run once, not for every installation or
 update.  An internet connection is required to run this script.
 
-Download the macos-pre-install-macports-v22.sh script from sourceforge.
+Download the macos-pre-install-macports-v23.sh script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
@@ -48,7 +48,7 @@ finish. You may be required to enter your administrative password more
 than once during the installation process.
 
     cd Downloads
-    bash macos-pre-install-macports-v22.sh
+    bash macos-pre-install-macports-v23.sh
 
 This script performs the following actions:
 
@@ -115,4 +115,4 @@ Visit the
 wiki page.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-08-20 05:45:34; BDJ4 version 4.15.5)_
+<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_

@@ -27,6 +27,7 @@ if (NOT WIN32 AND NOT APPLE)
           --output ${PROJECT_SOURCE_DIR}/libmpris/mpris-root.c
           ${PROJECT_SOURCE_DIR}/libmpris/mpris-root.xml
     DEPENDS mpris-root.xml
+    DEPENDS ${GDBUSCODEGEN}
   )
   add_custom_command (
     OUTPUT
@@ -47,6 +48,7 @@ if (NOT WIN32 AND NOT APPLE)
           --output ${PROJECT_SOURCE_DIR}/libmpris/mpris-player.c
           ${PROJECT_SOURCE_DIR}/libmpris/mpris-player.xml
     DEPENDS mpris-player.xml
+    DEPENDS ${GDBUSCODEGEN}
   )
 
   add_library (objdbusi OBJECT dbusi.c)
@@ -59,7 +61,6 @@ if (NOT WIN32 AND NOT APPLE)
 
   add_library (objmprisroot OBJECT mpris-root.c)
   target_include_directories (objmprisroot
-    PRIVATE "${GTK_INCLUDE_DIRS}"
     PRIVATE "${GIO_INCLUDE_DIRS}"
   )
   target_link_libraries (objmprisroot PRIVATE
@@ -68,7 +69,6 @@ if (NOT WIN32 AND NOT APPLE)
 
   add_library (objmprisplayer OBJECT mpris-player.c)
   target_include_directories (objmprisplayer
-    PRIVATE "${GTK_INCLUDE_DIRS}"
     PRIVATE "${GIO_INCLUDE_DIRS}"
   )
   target_link_libraries (objmprisplayer PRIVATE

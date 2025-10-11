@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2025-09-03\n"
-"PO-Revision-Date: 2025-09-03 19:15\n"
+"POT-Creation-Date: 2025-09-23\n"
+"PO-Revision-Date: 2025-10-10\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Czech\n"
 "Language: cs\n"
@@ -99,6 +99,11 @@ msgstr "%s Seznam skladeb"
 #, c-format
 msgid "%s Support Tickets"
 msgstr "%s Vstupenky na podporu"
+
+#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
+#, c-format
+msgid "%s Tags Only"
+msgstr "Pouze štítky %s"
 
 #. CONTEXT: starterui: basic support dialog, version display
 #, c-format
@@ -393,10 +398,6 @@ msgstr "Automatické uspořádání"
 msgid "Automatic"
 msgstr "Automatické"
 
-#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
-msgid "BDJ Tags Only"
-msgstr "Pouze štítky BDJ"
-
 #. CONTEXT: installer: status message
 msgid "BDJ3 database version is too old."
 msgstr "Verze databáze BDJ3 je příliš stará."
@@ -633,6 +634,10 @@ msgstr "Vytvoření struktury složek."
 #. CONTEXT: installer: status message
 msgid "Creating shortcut."
 msgstr "Vytvoření zkratky."
+
+#. CONTEXT: configuration: queue: the amount of time to cross-fade the songs
+msgid "Cross Fade Time"
+msgstr ""
 
 #. CONTEXT: audio identification: the data for the current song
 msgid "Current"
@@ -1222,9 +1227,6 @@ msgid "Marquee Theme"
 msgstr "Téma Marquee"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
-"Play Time"
-msgstr ""
 
 #. CONTEXT: configuration: queue: the maximum amount of time to play a song
 #. CONTEXT: playlist management: maximum play time
@@ -1761,7 +1763,9 @@ msgid "Repeat"
 msgstr "Opakování"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "Nahrazuje celou databázi BallroomDJ. Všechny změny v databázi budou ztraceny."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -2034,7 +2038,7 @@ msgstr "Seřadit podle"
 #. CONTEXT: audio identification: the audio identification source
 #. CONTEXT: song editor: copy tags: source file
 msgid "Source"
-msgstr "Zdroj:"
+msgstr "Zdroj"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow)
@@ -2152,7 +2156,9 @@ msgid "The conversion process will not be run."
 msgstr "Proces konverze se nespustí."
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "Proces převodu se spustí pouze u nových instalací a u přeinstalací."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -2287,11 +2293,13 @@ msgstr "Aktualizováno"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "Aktualizuje informace v databázi BallroomDJ z databáze %s ."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Aktualizuje informace v databázi BallroomDJ ze značek zvukových souborů."
 
 #. CONTEXT: alternate installation: status message
@@ -2373,6 +2381,10 @@ msgstr "West Coast Swing"
 msgid "When the BPM value is stable, select the Save button."
 msgstr "Když je hodnota BPM stabilní, vyberte tlačítko Uložit."
 
+#. CONTEXT: configuration: player interface: Windows Media Player
+msgid "Windows Media Player"
+msgstr ""
+
 #. CONTEXT: label: work (a musical work)
 msgid "Work"
 msgstr ""
@@ -2390,7 +2402,9 @@ msgid "Write Tags to Audio Files"
 msgstr "Zápis značek do zvukových souborů"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "Zapíše značky zvukových souborů pomocí informací z databáze BallroomDJ."
 
 #. CONTEXT: configuration: dialog: XML file types

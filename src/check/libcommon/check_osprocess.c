@@ -201,6 +201,7 @@ START_TEST(osprocess_start_redirect)
   }
   stringTrim (tbuff);
   ck_assert_str_eq (tbuff, "xyzzy");
+  fileopDelete (outfn);
 }
 END_TEST
 

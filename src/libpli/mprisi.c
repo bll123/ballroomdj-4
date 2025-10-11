@@ -201,6 +201,7 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
     mpris = mprisInit (NULL);
   }
 
+  len = 0;
   dbusMessageInit (mpris->dbus);
   dbusMessageSetData (mpris->dbus, "()", NULL);
   dbusMessage (mpris->dbus, bus [MPRIS_BUS_DBUS], objpath [MPRIS_OBJP_DBUS],
@@ -215,7 +216,7 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
       char        *ident;
       char        tbuff [200];
       const char  **svout = NULL;
-      const char  **tsvout;
+      const char  **tsvout = NULL;
       int         ok;
 
       if (strstr (*tout, BDJ4_NAME) != NULL) {
@@ -249,6 +250,7 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
         continue;
       }
 
+      len = 0;
       dbusMessageInit (mpris->dbus);
       dbusMessageSetData (mpris->dbus, "(ss)",
           property [MPRIS_PROP_MP2], propname [MPRIS_PROPNM_SUPP_URI]);
@@ -258,7 +260,7 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
 
       ok = 0;
       tsvout = svout;
-      while (*tsvout != NULL) {
+      while (tsvout != NULL && *tsvout != NULL) {
         if (strcmp (*tsvout, "file") == 0) {
           ++ok;
           break;
@@ -267,6 +269,7 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
       }
       mdfree (svout);
 
+      len = 0;
       dbusMessageInit (mpris->dbus);
       dbusMessageSetData (mpris->dbus, "(ss)",
           property [MPRIS_PROP_MP2], propname [MPRIS_PROPNM_SUPP_MIME]);
@@ -275,7 +278,7 @@ mprisGetPlayerList (mpris_t *origmpris, char **ret, int max)
       dbusResultGet (mpris->dbus, &svout, &len, NULL);
 
       tsvout = svout;
-      while (*tsvout != NULL) {
+      while (tsvout != NULL && *tsvout != NULL) {
         /* an exhaustive check for all the different audio types */
         /* is not done.  */
         if (strcmp (*tsvout, "audio/mpeg") == 0) {

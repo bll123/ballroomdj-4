@@ -168,16 +168,10 @@ if (WIN32 AND NOT LIBVLC_FOUND)
   endif()
 endif()
 
-# linux can use gstreamer.
+# this is required for the build process on all systems.
 if (NOT LIBVLC_FOUND AND NOT LIBVLC4_FOUND)
-  if (APPLE OR WIN32)
-    message (FATAL_ERROR "Unable to locate a VLC library")
-  endif()
+  message (FATAL_ERROR "Unable to locate a VLC library")
 endif()
-
-#### MPV
-# 2024-2 The MPV interface has issues, and will not be supported at this time.
-# pkg_check_modules (LIBMPV mpv)
 
 #### tag parsing modules
 
@@ -523,7 +517,9 @@ check_symbol_exists (backtrace execinfo.h _lib_backtrace)
 check_symbol_exists (epoll_create1 sys/epoll.h _lib_epoll_create1)
 check_symbol_exists (fcntl fcntl.h _lib_fcntl)
 check_symbol_exists (fork unistd.h _lib_fork)
+check_symbol_exists (fseeko stdio.h _lib_fseeko)
 check_symbol_exists (fsync unistd.h _lib_fsync)
+check_symbol_exists (ftello stdio.h _lib_ftello)
 check_symbol_exists (getuid unistd.h _lib_getuid)
 check_symbol_exists (kill signal.h _lib_kill)
 check_symbol_exists (kqueue sys/event.h _lib_kqueue)
@@ -568,10 +564,6 @@ if (LIBVLC4_FOUND)
   check_function_exists (libvlc_new _lib_libvlc4_new)
   unset (CMAKE_REQUIRED_LIBRARIES)
 endif()
-
-set (CMAKE_REQUIRED_LIBRARIES ${LIBMPV_LDFLAGS})
-check_function_exists (mpv_create _lib_mpv_create)
-unset (CMAKE_REQUIRED_LIBRARIES)
 
 #### checks for symbols and other stuff
 

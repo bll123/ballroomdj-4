@@ -31,7 +31,6 @@ typedef struct plidata {
   int               supported;
 } plidata_t;
 
-static void pliwinWaitUntilPlaying (plidata_t *pliData);
 static void pliwinWaitUntilStopped (plidata_t *pliData);
 
 void
@@ -56,8 +55,12 @@ pliiInit (const char *plinm, const char *playerargs)
 
   pliData->windata = winmpInit ();
   pliData->name = "Windows Native";
-  pliData->supported = PLI_SUPPORT_SEEK | PLI_SUPPORT_SPEED |
-      PLI_SUPPORT_CROSSFADE;
+  pliData->supported =
+      PLI_SUPPORT_SEEK |
+      PLI_SUPPORT_SPEED |
+      PLI_SUPPORT_CROSSFADE |
+      PLI_SUPPORT_STREAM |
+      PLI_SUPPORT_STREAM_SPD;
 
   return pliData;
 }
@@ -108,19 +111,18 @@ pliiStartPlayback (plidata_t *pliData, ssize_t dpos, ssize_t speed)
     return;
   }
 
-// ### need to check and see if the seek/rate can be done ahead of time
-  winmpPlay (pliData->windata);
+  /* windows allows seek and rate changes before playing */
+// ### this needs testing with URLs
   if (dpos > 0) {
-    pliwinWaitUntilPlaying (pliData);
     winmpSeek (pliData->windata, dpos);
   }
   if (speed != 100) {
     double    drate;
 
-    pliwinWaitUntilPlaying (pliData);
     drate = (double) speed / 100.0;
     winmpRate (pliData->windata, drate);
   }
+  winmpPlay (pliData->windata);
 }
 
 void
@@ -235,25 +237,22 @@ pliiState (plidata_t *pliData)
 }
 
 int
-pliiSetAudioDevice (plidata_t *pliData, const char *dev, int plidevtype)
+pliiSetAudioDevice (plidata_t *pliData, const char *dev, plidev_t plidevtype)
 {
-  int   rc = -1;
+  int   rc = 0;
 
   if (pliData == NULL || pliData->windata == NULL) {
     return -1;
   }
 
-  /* this is required for windows, not for linux or macos */
-//  rc = winSetAudioDev (pliData->windata, dev, plidevtype);
+  rc = winmpSetAudioDevice (pliData->windata, dev, plidevtype);
   return rc;
 }
 
 int
 pliiAudioDeviceList (plidata_t *pliData, volsinklist_t *sinklist)
 {
-  int   rc = 0;
-
-  return rc;
+  return 0;
 }
 
 int
@@ -267,7 +266,7 @@ pliiGetVolume (plidata_t *pliData)
 {
   int   val = 100;
 
-//  val = winGetVolume (pliData->windata);
+  val = winmpGetVolume (pliData->windata);
   return val;
 }
 
@@ -278,26 +277,6 @@ pliiCrossFadeVolume (plidata_t *pliData, int vol)
 }
 
 /* internal routines */
-
-static void
-pliwinWaitUntilPlaying (plidata_t *pliData)
-{
-  plistate_t  state;
-  long        count;
-
-  state = winmpState (pliData->windata);
-  count = 0;
-  while (state == PLI_STATE_IDLE ||
-      state == PLI_STATE_OPENING ||
-      state == PLI_STATE_STOPPED) {
-    mssleep (1);
-    state = winmpState (pliData->windata);
-    ++count;
-    if (count > 10000) {
-      break;
-    }
-  }
-}
 
 static void
 pliwinWaitUntilStopped (plidata_t *pliData)

@@ -46,6 +46,7 @@ filetypelookup_t filetypelookup [] = {
   { ".m4a",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
   { ".m4b",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
   { ".m4r",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
+  { ".mka",   TAG_TYPE_MK,      AFILE_TYPE_MK, },
   { ".mp3",   TAG_TYPE_ID3,     AFILE_TYPE_MP3, },
   { ".mp4",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
   { ".oga",   TAG_TYPE_VORBIS,  AFILE_TYPE_VORBIS, },
@@ -53,7 +54,7 @@ filetypelookup_t filetypelookup [] = {
   /* .ogx files must be parsed to see what is in the container */
   { ".ogx",   TAG_TYPE_VORBIS,  AFILE_TYPE_OGG, },
   { ".opus",  TAG_TYPE_VORBIS,  AFILE_TYPE_OPUS, },
-  { ".wav",   TAG_TYPE_RIFF,     AFILE_TYPE_RIFF, },
+  { ".wav",   TAG_TYPE_RIFF,    AFILE_TYPE_RIFF, },
   { ".wma",   TAG_TYPE_ASF,     AFILE_TYPE_ASF, },
 };
 enum {

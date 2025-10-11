@@ -33,7 +33,7 @@ grc=0
 # check for unused functions
 echo "## checking for unused functions"
 grep -E '^[a-zA-Z0-9]* \(' */*.c */*.cpp */*.m |
-  grep -E -v '(:main|:fprintf|uinull|uimacos|KEEP|UNUSED|TESTING)' |
+  grep -E -v '(:main|:fprintf|uinull|uicurses|uimacos|KEEP|UNUSED|TESTING)' |
   grep -E -v '(rlogError|rlogProcBegin|rlogProcEnd)' |
   sed -e 's, (.*,,' -e 's,.*:,,' |
   sort > ${TUFUNC}

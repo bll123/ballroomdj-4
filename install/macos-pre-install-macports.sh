@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2025 Brad Lanam Pleasant Hill CA
 #
-ver=22
+ver=23
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -78,21 +78,14 @@ case $vers in
 esac
 
 case $mp_os_vers in
-  [2345][0-9])
+  2[6-9])
     # 26: tahoe
     ;;
-  1[1-9])
+  1[1-5])
     # 11: big sur, 12: monterey, 13: ventura, 14: sonoma, 15: sequoia
     ;;
-  10.15)
-    # catalina
-    oldmacos=T
-    ;;
-  10.14)
-    # mojave
-    oldmacos=T
-    ;;
   *)
+    # 10.12: sierra, 10.13: high sierra, 10.14: mojave, 10.15: catalina
     oldmacos=T
     ;;
 esac
@@ -239,8 +232,7 @@ sudo port -N uninstall \
 sudo -v
 
 if [[ -z "$(port -q list inactive)" ]]; then
-  sudo port reclaim --disable-reminders --keep-build-deps
-  sudo port -N reclaim
+  sudo port -N reclaim --disable-reminders --keep-build-deps
 fi
 
 sudo -k

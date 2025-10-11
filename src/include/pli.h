@@ -31,16 +31,22 @@ typedef enum {
 } plistate_t;
 
 enum {
-  PLI_SUPPORT_NONE      = 0,
-  PLI_SUPPORT_SEEK      = (1 << 0),
-  PLI_SUPPORT_SPEED     = (1 << 1),
-  PLI_SUPPORT_DEVLIST   = (1 << 2),
-  PLI_SUPPORT_CROSSFADE = (1 << 3),
+  PLI_SUPPORT_NONE        = 0,
+  PLI_SUPPORT_SEEK        = (1 << 0),
+  PLI_SUPPORT_SPEED       = (1 << 1),
+  PLI_SUPPORT_DEVLIST     = (1 << 2),
+  PLI_SUPPORT_CROSSFADE   = (1 << 3),
+  PLI_SUPPORT_STREAM      = (1 << 4),
+  PLI_SUPPORT_STREAM_SPD  = (1 << 5),
 };
 
-enum {
+typedef enum {
   PLI_DEFAULT_DEV,
   PLI_SELECTED_DEV,
+} plidev_t;
+
+enum {
+  PLI_MAX_SOURCE = 2,
 };
 
 static inline bool
@@ -71,7 +77,7 @@ void          pliClose (pli_t *pli);
 ssize_t       pliGetDuration (pli_t *pli);
 ssize_t       pliGetTime (pli_t *pli);
 plistate_t    pliState (pli_t *pli);
-int           pliSetAudioDevice (pli_t *pli, const char *dev, int plidevtype);
+int           pliSetAudioDevice (pli_t *pli, const char *dev, plidev_t plidevtype);
 int           pliAudioDeviceList (pli_t *pli, volsinklist_t *sinklist);
 int           pliSupported (pli_t *pli);
 
@@ -95,7 +101,7 @@ ssize_t       pliiRate (plidata_t *pliData, ssize_t drate);
 ssize_t       pliiGetDuration (plidata_t *pliData);
 ssize_t       pliiGetTime (plidata_t *pliData);
 plistate_t    pliiState (plidata_t *pliData);
-int           pliiSetAudioDevice (plidata_t *pliData, const char *dev, int plidevtype);
+int           pliiSetAudioDevice (plidata_t *pliData, const char *dev, plidev_t plidevtype);
 int           pliiAudioDeviceList (plidata_t *pliData, volsinklist_t *);
 int           pliiSupported (plidata_t *pliData);
 void          pliiDesc (const char **ret, int max);

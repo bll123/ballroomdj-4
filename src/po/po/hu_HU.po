@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2025-09-03\n"
-"PO-Revision-Date: 2025-09-03 19:15\n"
+"POT-Creation-Date: 2025-09-23\n"
+"PO-Revision-Date: 2025-09-23 14:12\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Hungarian\n"
 "Language: hu\n"
@@ -99,6 +99,11 @@ msgstr "%s Lejátszási lista"
 #, c-format
 msgid "%s Support Tickets"
 msgstr "%s Támogatási jegyek"
+
+#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
+#, c-format
+msgid "%s Tags Only"
+msgstr "Csak %s címkék"
 
 #. CONTEXT: starterui: basic support dialog, version display
 #, c-format
@@ -393,10 +398,6 @@ msgstr "Automatikus szervezés"
 msgid "Automatic"
 msgstr "Automatikus"
 
-#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
-msgid "BDJ Tags Only"
-msgstr "Csak BDJ címkék"
-
 #. CONTEXT: installer: status message
 msgid "BDJ3 database version is too old."
 msgstr "A BDJ3 adatbázis verziója túl régi."
@@ -633,6 +634,10 @@ msgstr "Mappastruktúra létrehozása."
 #. CONTEXT: installer: status message
 msgid "Creating shortcut."
 msgstr "Rövidítés létrehozása."
+
+#. CONTEXT: configuration: queue: the amount of time to cross-fade the songs
+msgid "Cross Fade Time"
+msgstr ""
 
 #. CONTEXT: audio identification: the data for the current song
 msgid "Current"
@@ -2373,6 +2378,10 @@ msgstr "West Coast Swing"
 #. CONTEXT: bpm counter: instructions, line 2
 msgid "When the BPM value is stable, select the Save button."
 msgstr "Ha a BPM-érték stabil, válassza a Mentés gombot."
+
+#. CONTEXT: configuration: player interface: Windows Media Player
+msgid "Windows Media Player"
+msgstr ""
 
 #. CONTEXT: label: work (a musical work)
 msgid "Work"

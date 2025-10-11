@@ -1,43 +1,43 @@
 <node>
   <interface name='org.mpris.MediaPlayer2.Player'>
-    <method name='Next'></method>
-    <method name='Previous'></method>
-    <method name='Pause'></method>
-    <method name='PlayPause'></method>
-    <method name='Stop'></method>
-    <method name='Play'></method>
+    <method name='Next' />
+    <method name='Previous' />
+    <method name='Pause' />
+    <method name='PlayPause' />
+    <method name='Stop' />
+    <method name='Play' />
     <method name='Seek'>
-      <arg type='x' name='Offset' direction='in'/>
+      <arg type='x' name='Offset' direction='in' />
     </method>
     <method name='SetPosition'>
-      <arg type='o' name='TrackId' direction='in'/>
-      <arg type='x' name='Position' direction='in'/>
+      <arg type='o' name='TrackId' direction='in' />
+      <arg type='x' name='Position' direction='in' />
     </method>
     <method name='OpenUri'>
-      <arg type='s' name='Uri' direction='in'/>
+      <arg type='s' name='Uri' direction='in' />
     </method>
     <signal name='Seeked'>
-      <arg type='x' name='Position' direction='out'/>
+      <arg type='x' name='Position' direction='out' />
     </signal>
-    <property type='s' access='read' name='PlaybackStatus'/>
-    <property type='s' access='readwrite' name='LoopStatus'/>
-    <property type='d' access='readwrite' name='Rate'/>
-    <property type='b' access='read' name='Shuffle'>
-      <annotation name='org.freedesktop.DBus.Property.EmitsChangedSignal' value='false'/>
+    <property name='PlaybackStatus' type='s' access='read' />
+    <property name='LoopStatus' type='s' access='readwrite' />
+    <property name='Rate' type='d' access='readwrite' />
+    <property name='Shuffle' type='b' access='read' >
+      <annotation name='org.freedesktop.DBus.Property.EmitsChangedSignal' value='false' />
     </property>
-    <property type='a{sv}' access='read' name='Metadata'/>
-    <property type='d' access='read' name='Volume'/>
-    <property type='x' access='read' name='Position'>
-      <annotation name='org.freedesktop.DBus.Property.EmitsChangedSignal' value='false'/>
+    <property name='Metadata' type='a{sv}' access='read' />
+    <property name='Volume' type='d' access='read' />
+    <property name='Position' type='x' access='read' >
+      <annotation name='org.freedesktop.DBus.Property.EmitsChangedSignal' value='false' />
     </property>
-    <property type='d' access='read' name='MinimumRate'/>
-    <property type='d' access='read' name='MaximumRate'/>
-    <property type='b' access='read' name='CanGoNext'/>
-    <property type='b' access='read' name='CanGoPrevious'/>
-    <property type='b' access='read' name='CanPlay'/>
-    <property type='b' access='read' name='CanPause'/>
-    <property type='b' access='read' name='CanSeek'/>
-    <property type='b' access='read' name='CanControl'>
+    <property name='MinimumRate' type='d' access='read' />
+    <property name='MaximumRate' type='d' access='read' />
+    <property name='CanGoNext' type='b' access='read' />
+    <property name='CanGoPrevious' type='b' access='read' />
+    <property name='CanPlay' type='b' access='read' />
+    <property name='CanPause' type='b' access='read' />
+    <property name='CanSeek' type='b' access='read' />
+    <property name='CanControl' type='b' access='read' >
       <annotation name='org.freedesktop.DBus.Property.EmitsChangedSignal' value='false'/>
     </property>
   </interface>

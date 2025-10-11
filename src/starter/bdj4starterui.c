@@ -448,8 +448,8 @@ main (int argc, char *argv[])
     if (gNewProfile) {
       connDisconnectAll (starter.conn);
       connFree (starter.conn);
-      logEnd ();
       if (starter.newprofile != sysvarsGetNum (SVL_PROFILE_IDX)) {
+        logEnd ();
         loglevel = bdjoptGetNum (OPT_G_DEBUGLVL);
         logStart (lockName (ROUTE_STARTERUI), "strt", loglevel);
       }
@@ -722,8 +722,9 @@ starterBuildUI (startui_t  *starter)
   bvbox = uiCreateVertBox ();
   uiBoxPackStart (hbox, bvbox);
 
+  /* use the square icon, on macos the icons are squircled */
   pathbldMakePath (tbuff, sizeof (tbuff),
-     "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
+     "bdj4_icon_sq", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   uiwidgetp = uiImageScaledFromFile (tbuff, 128);
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetAllMargins (uiwidgetp, 10);

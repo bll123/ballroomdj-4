@@ -1,7 +1,8 @@
 section 145 Song-Controls
 
 test 145-10 Song-Start-End
-# ick
+# ick see SONGIDX.txt
+# all jive, 29 seconds, 10 seconds, 9 seconds
 msg main MUSICQ_INSERT 0~999~39
 msg main MUSICQ_INSERT 0~999~51
 msg main MUSICQ_INSERT 0~999~63

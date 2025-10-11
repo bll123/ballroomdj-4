@@ -20,6 +20,7 @@ enum {
   RSS_ITEMS,
   RSS_IDX,
   RSS_BUILD_DATE,
+  RSS_IMAGE_URI,
   RSS_MAX,
 };
 

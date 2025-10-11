@@ -149,16 +149,6 @@ selectAudioFileCallback (void *udata)
   return rc;
 }
 
-bool
-selectAllFileCallback (void *udata)
-{
-  uisfcb_t    *uisfcb = udata;
-  int         rc;
-
-  rc = selectFileCallback (uisfcb, NULL, NULL);
-  return rc;
-}
-
 /* internal routines */
 
 static void
@@ -286,6 +276,7 @@ selectFileCallback (uisfcb_t *uisfcb, const char *disp, const char *mimetype)
   if (uisfcb->title == NULL) {
     /* CONTEXT: select audio file: dialog title for selecting audio files */
     snprintf (tbuff, sizeof (tbuff), _("Select Audio File"));
+    uisfcb->title = tbuff;
   }
 
   defdir = uisfcb->defdir;
@@ -293,7 +284,7 @@ selectFileCallback (uisfcb_t *uisfcb, const char *disp, const char *mimetype)
     defdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
   }
   selectdata = uiSelectInit (uisfcb->window,
-      tbuff,
+      uisfcb->title,
       defdir,
       uiEntryGetValue (uisfcb->entry),
       disp, mimetype);

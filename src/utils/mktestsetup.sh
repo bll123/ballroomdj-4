@@ -152,6 +152,19 @@ for f in templates/img/*.svg; do
   cp -f $f img/profile00
 done
 
+# for macos, copy the macos icons
+if [[ $os == macos ]]; then
+  for f in img/macos_icon*.svg img/macos_icon*.png; do
+    case $f in
+      *-base.svg)
+        continue
+        ;;
+    esac
+    tfn=$(echo $f | sed 's,macos,bdj4,')
+    cp -f ${f} ${tfn}
+  done
+fi
+
 cp -f templates/bdjconfig.txt.g data/bdjconfig.txt
 cp -f templates/bdjconfig.txt.p data/profile00/bdjconfig.txt
 for fn in templates/bdjconfig.q?.txt; do

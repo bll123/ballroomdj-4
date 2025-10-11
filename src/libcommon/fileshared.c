@@ -298,7 +298,7 @@ fileSharedSeek (fileshared_t *fhandle, size_t offset, int mode)
     rc = 0;
   }
 #else
-  rc = fseek (fhandle->fh, offset, mode);
+  rc = fileopSeek (fhandle->fh, offset, mode);
 #endif
 
   return rc;
@@ -323,7 +323,7 @@ fileSharedTell (fileshared_t *fhandle)  /* TESTING */
   if (fhandle->fh == NULL) {
     return -1;
   }
-  rc = ftell (fhandle->fh);
+  rc = fileopTell (fhandle->fh);
 #endif
 
   return rc;

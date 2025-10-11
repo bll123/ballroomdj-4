@@ -2,7 +2,7 @@
 #
 # Copyright 2023-2025 Brad Lanam Pleasant Hill CA
 #
-ver=2
+ver=3
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -40,6 +40,10 @@ sudo port -N install gtk3-devel +quartz
 sudo port -N install cmake check
 
 sudo -k
+
+if [[ -z "$(port -q list inactive)" ]]; then
+  sudo port -N reclaim --disable-reminders --keep-build-deps
+fi
 
 echo "Press enter to finish."
 read answer

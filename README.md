@@ -35,6 +35,12 @@ BDJ4 #VERSION# #BUILDDATE#
 
 ### Release Notes:
 
+2025-9-23 There was a nasty bug on Windows preventing audio tag
+          processing for MP3 files.
+
+2025-9  If you have version 4.15.4 through 4.15.6 installed,
+        an upgrade should be done due to a bug on Windows.
+
 This installation will not affect any BallroomDJ 3 installation.
 (Writing audio file tags is turned off upon conversion).
 

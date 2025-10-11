@@ -27,7 +27,6 @@
 #define VLCLOGGING 0
 
 typedef struct plidata {
-  char              *name;
   vlcdata_t         *vlcdata;
   ssize_t           duration;
   ssize_t           playTime;
@@ -116,8 +115,8 @@ pliiInit (const char *plinm, const char *playerargs)
   ++optcount;
 
   pliData->vlcdata = vlcInit (VLC_DFLT_OPT_SZ, vlcDefaultOptions, vlcOptions);
-  pliData->name = "Integrated VLC";
-  pliData->supported = PLI_SUPPORT_SEEK | PLI_SUPPORT_SPEED;
+  pliData->supported = PLI_SUPPORT_SEEK | PLI_SUPPORT_SPEED |
+      PLI_SUPPORT_STREAM | PLI_SUPPORT_STREAM_SPD;
   /* VLC uses the default sink set by the application */
   /* there is no need to process the audio device list */
 
@@ -295,7 +294,7 @@ pliiState (plidata_t *pliData)
 }
 
 int
-pliiSetAudioDevice (plidata_t *pliData, const char *dev, int plidevtype)
+pliiSetAudioDevice (plidata_t *pliData, const char *dev, plidev_t plidevtype)
 {
   int   rc = -1;
 

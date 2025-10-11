@@ -6,6 +6,9 @@
  *
  * much of the original volume code from: https://gist.github.com/rdp/8363580
  *
+ * note that this uses an older API, and should probably be
+ * updated.
+ *
  */
 
 #include "config.h"
@@ -243,9 +246,7 @@ voliProcess (volaction_t action, const char *sinkname,
 
     if (sinkname == NULL || ! *sinkname) {
       wdevnm = (wchar_t *) defsinknm;
-fprintf (stderr, "   get/set sinkname: %s\n", tdefsinknm);
     } else {
-fprintf (stderr, "   get/set sinkname: %s\n", sinkname);
       wdevnm = (wchar_t *) osToWideChar (sinkname);
     }
 

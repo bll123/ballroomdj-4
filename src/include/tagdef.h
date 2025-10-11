@@ -26,11 +26,12 @@ typedef enum {
 } tagedittype_t;
 
 enum {
-  TAG_TYPE_VORBIS,    // .ogg, .flac, .opus
-  TAG_TYPE_MP4,       // MP4 .m4a, et.al.
-  TAG_TYPE_ID3,       // .mp3
   TAG_TYPE_ASF,       // ASF .wma
+  TAG_TYPE_ID3,       // .mp3
+  TAG_TYPE_MK,        // matroska
+  TAG_TYPE_MP4,       // MP4 .m4a, et.al.
   TAG_TYPE_RIFF,      // RIFF .wav
+  TAG_TYPE_VORBIS,    // .ogg, .flac, .opus
   TAG_TYPE_MAX,
 };
 
@@ -93,6 +94,7 @@ typedef enum {
   TAG_FAVORITE,               //
   TAG_GENRE,                  //
   TAG_GROUPING,               //
+  TAG_IMAGE_URI,              //
   TAG_KEYWORD,                //
   TAG_LAST_UPDATED,           //  internal
   TAG_MOVEMENTCOUNT,          //

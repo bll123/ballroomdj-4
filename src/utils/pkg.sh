@@ -33,7 +33,7 @@ echo "-- $(date +%T) building"
 (
   cd src
   case ${pn_dist} in
-    -opensuse*)
+    -opensuse15)
       # change this in utils/testall.sh also
       make CC=gcc-13 CXX=g++-13
       ;;
@@ -60,7 +60,14 @@ case $systype in
     if [[ $isprimary == T ]]; then
       cp -pf ${pnm} $INSTSTAGE
     else
-      cp -pf ${pnm} $LINUXMOUNT/$ISTAGENM
+      case ${pn_dist} in
+        -opensuse15)
+          cp -pf ${pnm} $LINUXMOUNT/$ISTAGENM
+          ;;
+        *)
+          scp -P 166 ${pnm} $PRIMARYDEV:$SHNM/$ISTAGENM
+          ;;
+      esac
     fi
     ;;
   MINGW*)

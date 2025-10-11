@@ -65,7 +65,8 @@ count=$(ls -1 $INSTSTAGE/bdj4-installer-* | grep -- "-${VERSION}" | wc -l)
 # 2024-1-15 manjaro linux (arch) dropped (icu updated)
 # 2024-8-11 debian-11 dropped
 # 2025-8-9 debian-13 added
-if [[ $count -ne 6 ]]; then
+# 2025-10-11 opensuse-16 added
+if [[ $count -ne 7 ]]; then
   echo "Failed: not all platforms built."
   exit 1
 fi
@@ -142,12 +143,13 @@ rsync -v -e ssh ${spnm}.zip \
   ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/source/
 rsync -v -e ssh ${spnm}.tar.gz \
   ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/source/
-spnm=bdj4-src-macos${pn_datetag}.tar.gz
+
+spnm=bdj4-src-macos-${pn_date}.tar.gz
 if [[ -f ${spnm} ]]; then
   rsync -v -e ssh ${spnm} \
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/source/
 fi
-spnm=bdj4-src-win64${pn_datetag}.zip
+spnm=bdj4-src-win64-${pn_date}.zip
 if [[ -f ${spnm} ]]; then
   rsync -v -e ssh ${spnm} \
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/source/

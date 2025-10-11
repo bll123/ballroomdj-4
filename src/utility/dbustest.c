@@ -105,6 +105,7 @@ getstr (const char *prompt, char *str, size_t sz)
   len = strlen (str);
   --len;
   str [len] = '\0';
+  fprintf (stderr, " %s\n", str);
 }
 
 static void

@@ -8,8 +8,13 @@ while test ! \( -d src -a -d web -a -d wiki \); do
 done
 cd img
 
-BASE=bdj4_icon
-BASEI=bdj4_icon_inst
+BASE=macos_icon
+BASEC=macos_icon_config
+BASEI=macos_icon_inst
+BASEM=macos_icon_manage
+BASEMQ=macos_icon_marquee
+BASEP=macos_icon_player
+BASEH=macos_icon_help
 
 echo -n "Enter host: "
 read host
@@ -17,7 +22,7 @@ echo -n "Enter port: "
 read port
 
 t=tmp.iconset
-mkdir ${t}
+test -d ${t} || mkdir ${t}
 
 for b in $BASE; do
   for sz in 1024 512 256 128 64 32 16; do
@@ -34,4 +39,9 @@ for b in $BASE; do
   ssh -p ${port} ${host} "rm -rf BDJ4.icns ${t}"
   rm -rf ${t}
 done
+
+for b in ${BASE} ${BASEC} ${BASEI} ${BASEM} ${BASEMQ} ${BASEP} ${BASEH}; do
+  inkscape $b.svg -w 256 -h 256 -o $b.png > /dev/null 2>&1
+done
+
 exit 0

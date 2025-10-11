@@ -6,9 +6,10 @@
 
 The __Player__ and __Audio__ settings usually do not change.
 
-__Player__: Selects the player interface.  At this time,
-_Integrated&nbsp;VLC&nbsp;3_ and _GStreamer_ are supported.  The _GStreamer_
-interface is currently only enabled for Linux platforms.
+__Player__: Selects the player interface.
+<br>Linux support _Integrated&nbsp;VLC_, _GStreamer_ and _MPRIS_.
+<br>Windows supports _Integrated&nbsp;VLC_ and
+_Windows&nbsp;Media&nbsp;Player_.
 
 __Player Arguments__: Specifies any additional arguments to pass to the
 player interface.
@@ -54,4 +55,4 @@ _ISO_ format is _Day-of-the-week YYYY-MM-DD HH:MM_.
 <br><span id="caption" style="color:#4559bf;">__Player / Speed Reset Button__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-08-20 05:45:34; BDJ4 version 4.15.5)_
+<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_

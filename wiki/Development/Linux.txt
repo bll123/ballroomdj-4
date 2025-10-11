@@ -92,13 +92,21 @@ Other notes
     zypper install name
     zypper search name
     zypper remove virtualbox-guest-kmp-default virtualbox-guest-x11 virtualbox-guest-tools
+    zypper install kernel-devel make gcc  # for virtualbox guest additions
 
 OpenSUSE packages for development
 
-    zypper install cmake make gcc13 gcc13-c++ gcc13-objc
+15:
+    zypper install libopenssl-devel gcc13 gcc13-c++
     zypper install ffmpeg-4 ffmpeg-4-libavformat-devel
+
+16:
+    zypper install gcc gcc-c++
+    zypper install ffmpeg-7 ffmpeg-7-libavformat-devel
+
+    zypper install cmake make
     zypper install pipewire-devel libcurl-devel gtk3-devel vlc-devel
-    zypper install libpulse-devel libopenssl-devel libgcrypt-devel
+    zypper install libpulse-devel libgcrypt-devel
     zypper install libogg-devel libopus-devel opusfile-devel libvorbis-devel
     zypper install flac-devel check-devel libxml2-devel
     zypper install libjson-c-devel gstreamer-devel
@@ -110,4 +118,4 @@ Other notes:
     usermod -a -G vboxsf <user>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-08-20 05:45:34; BDJ4 version 4.15.5)_
+<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_

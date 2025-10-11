@@ -10,16 +10,16 @@ As of 2025-8-9, development needs are:
     * Spotify
       I will not be working on this, other than providing guidance to
       whoever takes this on.
-* Windows: SMTC: Use image from audio file.
-  For whatever reason, a call to initialize the apartment crashes.
+* Volume Interface
+    * Windows - Needs to be modernized and updated
 * Player Interface
-    * Windows Native
-      in progress
-      also: https://learn.microsoft.com/en-us/windows/uwp/audio-video-camera/audio-graphs
     * Spotify
       I will not be working on this, other than providing guidance to
       whoever takes this on.
 * User Interface:
+    * Mobile: Android / iOS
+      This would be a major task.
+      A completely new UI/UX would need to be designed for the small screen.
     * Windows Native UI (winrt preferred)
     * MacOS Native UI
       Some attempt has been made for this. Progress is stopped at this time.
@@ -28,8 +28,7 @@ As of 2025-8-9, development needs are:
     * Qt Widgets
     * Flutter
     * Nuklear (no macos?, could still be useful)
-    * N-Curses ?  But internationalization will not work on windows.
-      https://yjlv.blogspot.com/2015/10/displaying-unicode-with-ncurses-in-c.html
+    * ncurses (is a lightweight non-gui version useful?)
 
 Development Team (as of 2024-11-15):
 
@@ -39,4 +38,4 @@ Testing, Quality&nbsp;Assurance, Documentation, Website&nbsp;Management,
 System&nbsp;Administration
 
 [Wiki Home](Home)
-<br>_(Updated 2025-09-09 10:00:50; BDJ4 version 4.15.7)_
+<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_

@@ -15,7 +15,14 @@ TCHECK=T
 DBTEST=T
 INSTTEST=T
 TESTSUITE=T
+ts=F
+TSNM=""
 for arg in "$@"; do
+  if [[ $ts == T ]]; then
+    TSNM=$arg
+    continue
+  fi
+
   case $arg in
     --nobuild)
       TBUILD=F
@@ -31,6 +38,13 @@ for arg in "$@"; do
       TCHECK=F
       DBTEST=F
       INSTTEST=F
+      ;;
+    --ts)
+      TBUILD=F
+      TCHECK=F
+      DBTEST=F
+      INSTTEST=F
+      ts=T
       ;;
   esac
   shift
@@ -75,6 +89,11 @@ function runTestSuite {
   pli=$1
   vol=$2
 
+  if [[ $TSNM != "" && $pli != $TSNM ]]; then
+    echo "-- $(date +%T) testsuite $pli $vol SKIP"
+    return
+  fi
+
   echo "-- $(date +%T) make test setup"
   pliargs="--pli $pli"
   if [[ $os == linux && $pli == VLC3 ]]; then
@@ -109,7 +128,7 @@ if [[ $TBUILD == T ]]; then
   (
     cd src
     case ${pn_dist} in
-      -opensuse*)
+      -opensuse15)
         # change this in utils/pkg.sh also
         time make CC=gcc-13 CXX=g++-13
         ;;
@@ -123,10 +142,13 @@ if [[ $TBUILD == T ]]; then
   # 'warning generated' the compiler's display of the warning count.
   # windows has a multitude of warnings in check.h about %jd
   # mongoose.c is a third-party library.
+  # macos complains about linking w/different built-for versions.
+  #   ignore those linked against /opt/local
   grep warning $LOG |
       grep -v 'check\.h' |
       grep -v 'mongoose\.c' |
-      grep -v 'warning generated'
+      grep -v 'warning generated' |
+      grep -v 'but linking with dylib ./opt/local/'
 
   # for windows, make sure the libraries in plocal are up to date
   # on linux, make sure the localization is up to date.
@@ -239,7 +261,7 @@ if [[ $TESTSUITE == T ]]; then
 
   # windows media player
   TESTWINMPON=T
-  if [[ $grc -eq 0 && $TESTWINMPON == T && $os == window ]]; then
+  if [[ $grc -eq 0 && $TESTWINMPON == T && $os == win64 ]]; then
     runTestSuite WINMP
     rc=$?
     if [[ $rc -ne 0 ]]; then

@@ -10,11 +10,16 @@
  *  2024-10-29 found more references to general smtc code (not winrt)
  *  https://github.com/bolucat/Firefox/blob/dc6f9cd8a7a1ce2e3abf7ba52b53b6b7fa009a9a/widget/windows/WindowsSMTCProvider.cpp
  *  https://github.com/chromium/chromium/blob/f32b9239d52625aba333cc23a03f98d0d532e9df/components/system_media_controls/win/system_media_controls_win.cc
+ *
+ *
+ * Rewind and Position appear to do nothing, so don't bother with them.
+ *
  */
 #include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdbool.h>
 #include <inttypes.h>
 #include <string.h>
@@ -29,25 +34,30 @@
 # include <winrt/Windows.Media.Playback.h>
 # include <winrt/Windows.Storage.h>
 # include <winrt/Windows.Storage.Streams.h>
+# include <winrt/Windows.Storage.FileProperties.h>
 #endif
 
+#include "audiosrc.h"   // for file:// prefix
 #include "bdj4.h"
 #include "bdj4ui.h"     // for speed constants
+#include "bdjstring.h"
 #include "callback.h"
 #include "controller.h"
 #include "log.h"
 #include "mdebug.h"
+#include "pathbld.h"
+#include "pathdisp.h"
 #include "pathutil.h"
 #include "player.h"
 #include "nlist.h"
 #include "tmutil.h"
 
-/* using a file:// URI did not work */
-#define DEFAULT_THUMBNAIL_URI L"https://ballroomdj4.sourceforge.io/img/bdj4_icon.png"
-
 #if SMTC_ENABLED
+using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Media;
 using namespace winrt::Windows;
+using namespace winrt;
 #endif
 
 typedef struct mpintfc mpintfc_t;
@@ -61,10 +71,7 @@ typedef struct contdata {
 #if SMTC_ENABLED
   MediaPlaybackStatus playstatus;     // Windows playback status
 #endif
-  int32_t             pos;
-  int                 rate;
-  int                 volume;
-  mpintfc_t          *sys;
+  mpintfc_t           *mpsmtc;
 } contdata_t;
 
 void smtcNext (contdata_t *contdata);
@@ -93,22 +100,79 @@ struct mpintfc
 
   explicit mpintfc (contdata_t *contdata) :
       mediaPlayer { nullptr },
-      defaultArt { nullptr },
+      SMTC { nullptr },
+      smtcUpdater { nullptr },
+      defaultImage { nullptr },
       contdata { contdata }
   {
   }
 
   void
+  smtcSetDefaultImage (void)
+  {
+    smtcUpdater.Thumbnail (defaultImage);
+  }
+
+  void
+  smtcSetImage (const char *fn)
+  {
+    auto hsfn = winrt::to_hstring (fn);
+    auto sfile = StorageFile::GetFileFromPathAsync (hsfn).get ();
+    if (sfile == nullptr) {
+      smtcSetDefaultImage ();
+      return;
+    }
+    /* if the audio file has no image, then the generic image associated */
+    /* with audio files will be returned. */
+    /* this is often the default player icon (e.g. vlc) */
+    /* or default file type icon. */
+    /* test and see if the thumbnail image is an icon, */
+    /* and replace with our default image */
+    auto thumb = sfile.GetThumbnailAsync (
+        FileProperties::ThumbnailMode::MusicView, (uint32_t) 256).get ();
+    if (thumb == nullptr ||
+        thumb.Size () == 0 ||
+        thumb.Type () == FileProperties::ThumbnailType::Icon) {
+      smtcSetDefaultImage ();
+      return;
+    }
+
+    auto istream = thumb.CloneStream ();
+    auto art = Streams::RandomAccessStreamReference::CreateFromStream (istream);
+    if (art == nullptr) {
+      smtcSetDefaultImage ();
+      return;
+    }
+    smtcUpdater.Thumbnail (art);
+  }
+
+  void
+  smtcSetImageUri (const char *fn)
+  {
+    auto hsfn = winrt::to_hstring (fn);
+    auto uri = Uri (hsfn);
+    auto image = Streams::RandomAccessStreamReference::CreateFromUri (uri);
+    if (image == nullptr) {
+      smtcSetDefaultImage ();
+      return;
+    }
+    smtcUpdater.Thumbnail (image);
+  }
+
+  void
   smtcMediaPlayerInit (void)
   {
+    char            tbuff [MAXPATHLEN];
     winrt::hstring  tstr;
 
     /* initializing the 'apartment' causes a crash */
 
     mediaPlayer = Playback::MediaPlayer ();
     mediaPlayer.CommandManager ().IsEnabled (false);
+    SMTC = mediaPlayer.SystemMediaTransportControls ();
+    smtcUpdater = SMTC.DisplayUpdater ();
 
-    SMTC().ButtonPressed (
+    SMTC.ButtonPressed (
         [this] (SystemMediaTransportControls sender,
         SystemMediaTransportControlsButtonPressedEventArgs args) {
 
@@ -130,37 +194,41 @@ struct mpintfc
             break;
           }
           case SystemMediaTransportControlsButton::Previous: {
-            /* not supported */
+            /* not supported -- do not implement */
             break;
           }
+          case SystemMediaTransportControlsButton::Rewind:
           case SystemMediaTransportControlsButton::ChannelDown:
           case SystemMediaTransportControlsButton::ChannelUp:
           case SystemMediaTransportControlsButton::FastForward:
-          case SystemMediaTransportControlsButton::Rewind:
           case SystemMediaTransportControlsButton::Record: {
+            /* not supported */
             break;
           }
         } /* switch on button type */
       } /* button-pressed */
     );  /* button-pressed def */
 
-    SMTC ().IsPlayEnabled (false);
-    SMTC ().IsPauseEnabled (false);
-    SMTC ().IsStopEnabled (false);
-    SMTC ().IsPreviousEnabled (false);
-    SMTC ().IsNextEnabled (false);
+    SMTC.IsPlayEnabled (false);
+    SMTC.IsPauseEnabled (false);
+    SMTC.IsStopEnabled (true);
+    SMTC.IsPreviousEnabled (false);
+    SMTC.IsNextEnabled (true);
 
-    SMTC ().PlaybackStatus (MediaPlaybackStatus::Closed);
-    SMTC ().IsEnabled (true);
+    SMTC.PlaybackStatus (MediaPlaybackStatus::Closed);
+    SMTC.IsEnabled (true);
 
-    /* why is it so difficult to open a file? */
-    /* create-from-uri also cannot handle the file:// protocol */
-    winrt::Windows::Foundation::Uri uri{ DEFAULT_THUMBNAIL_URI };
-    defaultArt = Storage::Streams::RandomAccessStreamReference::CreateFromUri (uri);
+    smtcUpdater.Type (MediaPlaybackType::Music);
 
-    smtcUpdater ().Thumbnail (defaultArt);
-    smtcUpdater ().Type (MediaPlaybackType::Music);
-    smtcUpdater ().Update ();
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        "bdj4_icon", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
+    pathDisplayPath (tbuff, sizeof (tbuff));
+    auto hsfn = winrt::to_hstring (tbuff);
+    auto sfile = StorageFile::GetFileFromPathAsync (hsfn).get ();
+    defaultImage = Streams::RandomAccessStreamReference::CreateFromFile (sfile);
+    smtcSetDefaultImage ();
+
+    smtcUpdater.Update ();
   }
 
   void
@@ -172,68 +240,80 @@ struct mpintfc
   void
   smtcSendPlaybackStatus (MediaPlaybackStatus nstate)
   {
-    SMTC ().PlaybackStatus (nstate);
-    smtcUpdater ().Update ();
+    SMTC.PlaybackStatus (nstate);
   }
 
   void
   smtcSetPlay (bool val)
   {
-    SMTC ().IsPlayEnabled (val);
-    smtcUpdater ().Update ();
+    SMTC.IsPlayEnabled (val);
   }
 
   void
   smtcSetPause (bool val)
   {
-    SMTC ().IsPauseEnabled (val);
-    smtcUpdater ().Update ();
+    SMTC.IsPauseEnabled (val);
   }
 
   void
   smtcSetNextEnabled (void)
   {
-    SMTC ().IsNextEnabled (true);
-    smtcUpdater ().Update ();
+    SMTC.IsNextEnabled (true);
   }
 
   void
-  smtcSendMetadata (void)
+  smtcSendMetadata (int astype)
   {
-    winrt::hstring tstr;
+    const char      *tmp;
+    winrt::hstring  tstr;
 
+    tmp = nlistGetStr (contdata->metadata, CONT_METADATA_TITLE);
+    if (tmp != NULL) {
+      tstr = winrt::to_hstring (tmp);
+      smtcUpdater.MusicProperties ().Title (tstr);
+    }
+    tmp = nlistGetStr (contdata->metadata, CONT_METADATA_ARTIST);
+    if (tmp != NULL) {
+      tstr = winrt::to_hstring (tmp);
+      smtcUpdater.MusicProperties ().Artist (tstr);
+    }
+    tmp = nlistGetStr (contdata->metadata, CONT_METADATA_ALBUM);
+    if (tmp != NULL) {
+      tstr = winrt::to_hstring (tmp);
+      smtcUpdater.MusicProperties ().AlbumTitle (tstr);
+    }
+    tmp = nlistGetStr (contdata->metadata, CONT_METADATA_ALBUMARTIST);
+    if (tmp != NULL) {
+      tstr = winrt::to_hstring (tmp);
+      smtcUpdater.MusicProperties ().AlbumArtist (tstr);
+    }
 
-    tstr = winrt::to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_TITLE));
-    smtcUpdater ().MusicProperties ().Title (tstr);
-    tstr = winrt::to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_ARTIST));
-    smtcUpdater ().MusicProperties ().Artist (tstr);
-    tstr = winrt::to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_ALBUM));
-    smtcUpdater ().MusicProperties ().AlbumTitle (tstr);
-    tstr = winrt::to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_ALBUMARTIST));
-    smtcUpdater ().MusicProperties ().AlbumArtist (tstr);
-//    tstr = winrt::to_hstring (nlistGetStr (contdata->metadata, CONT_METADATA_GENRE));
-//    smtcUpdater ().MusicProperties ().Genres (tstr);
+    /* by preference, use any image-uri set for the song */
+    tmp = nlistGetStr (contdata->metadata, CONT_METADATA_IMAGE_URI);
+    if (tmp != NULL && *tmp) {
+      smtcSetImageUri (tmp);
+    }
+    if (tmp == NULL) {
+      tmp = nlistGetStr (contdata->metadata, CONT_METADATA_URI);
+      if (tmp != NULL &&
+          astype == AUDIOSRC_TYPE_FILE &&
+          strlen (tmp) > AS_FILE_PFX_LEN) {
+        char    tbuff [MAXPATHLEN];
 
-    // TODO: artwork
-    smtcUpdater ().Thumbnail (defaultArt);
+        stpecpy (tbuff, tbuff + sizeof (tbuff), tmp + AS_FILE_PFX_LEN);
+        pathDisplayPath (tbuff, sizeof (tbuff));
+        smtcSetImage (tbuff);
+      }
+    }
 
-    smtcUpdater ().Update ();
+    smtcUpdater.Update ();
   }
 
-  SystemMediaTransportControls
-  SMTC () {
-    return mediaPlayer.SystemMediaTransportControls ();
-  }
-
-  SystemMediaTransportControlsDisplayUpdater
-  smtcUpdater () {
-    /* this is actually the older method */
-    return SMTC().DisplayUpdater ();
-  }
-
-  Playback::MediaPlayer mediaPlayer;
-  Storage::Streams::RandomAccessStreamReference defaultArt;
-  contdata_t *contdata;
+  Playback::MediaPlayer                       mediaPlayer;
+  SystemMediaTransportControls                SMTC;
+  SystemMediaTransportControlsDisplayUpdater  smtcUpdater;
+  Streams::RandomAccessStreamReference        defaultImage;
+  contdata_t                                  *contdata;
 };
 #endif
 
@@ -250,12 +330,9 @@ contiInit (const char *instname)
 #if SMTC_ENABLED
   contdata->playstatus = MediaPlaybackStatus::Closed;
 #endif
-  contdata->pos = 0;
-  contdata->rate = 100;
-  contdata->volume = 0;
 
 #if SMTC_ENABLED
-  contdata->sys = new mpintfc (contdata);
+  contdata->mpsmtc = new mpintfc (contdata);
 #endif
 
   return contdata;
@@ -269,9 +346,9 @@ contiFree (contdata_t *contdata)
   }
 
 #if SMTC_ENABLED
-  contdata->sys->smtcSendPlaybackStatus (MediaPlaybackStatus::Closed);
-  contdata->sys->smtcMediaPlayerStop ();
-  delete contdata->sys;
+  contdata->mpsmtc->smtcSendPlaybackStatus (MediaPlaybackStatus::Closed);
+  contdata->mpsmtc->smtcMediaPlayerStop ();
+  delete contdata->mpsmtc;
 #endif
 
   nlistFree (contdata->metadata);
@@ -279,13 +356,15 @@ contiFree (contdata_t *contdata)
   mdfree (contdata);
 }
 
-void
-contiSetup (contdata_t *contdata)
+bool
+contiSetup (void *tcontdata)
 {
+  contdata_t *contdata = (contdata_t *) tcontdata;
+
 #if SMTC_ENABLED
-  contdata->sys->smtcMediaPlayerInit ();
+  contdata->mpsmtc->smtcMediaPlayerInit ();
 #endif
-  return;
+  return true;
 }
 
 bool
@@ -346,6 +425,7 @@ contiSetPlayState (contdata_t *contdata, int state)
       canseek = true;
       break;
     }
+    case PL_STATE_IN_CROSSFADE:
     case PL_STATE_IN_GAP: {
       nstate = MediaPlaybackStatus::Changing;
       canplay = false;
@@ -363,81 +443,14 @@ contiSetPlayState (contdata_t *contdata, int state)
     }
   }
 
-  contdata->sys->smtcSetPlay (canplay);
-  contdata->sys->smtcSetPause (canpause);
+  contdata->mpsmtc->smtcSetPlay (canplay);
+  contdata->mpsmtc->smtcSetPause (canpause);
 
   if (contdata->playstatus != nstate) {
-    contdata->sys->smtcSendPlaybackStatus (nstate);
+    contdata->mpsmtc->smtcSendPlaybackStatus (nstate);
     contdata->playstatus = nstate;
   }
 #endif
-}
-
-void
-contiSetRepeatState (contdata_t *contdata, bool state)
-{
-  if (contdata == NULL) {
-    return;
-  }
-
-  /* not implemented */
-}
-
-void
-contiSetPosition (contdata_t *contdata, int32_t pos)
-{
-  if (contdata == NULL) {
-    return;
-  }
-
-  /* not implemented */
-
-  if (contdata->pos != pos) {
-    int64_t   tpos;
-    int32_t   pdiff;
-
-    tpos = pos * 1000;    // microseconds
-    pdiff = pos - contdata->pos;
-    if (pdiff < 0 || pdiff > 300) {
-      /* the seek signal is only supposed to be sent when there is */
-      /* a large change */
-    }
-    contdata->pos = pos;
-  }
-}
-
-void
-contiSetRate (contdata_t *contdata, int rate)
-{
-  if (contdata == NULL) {
-    return;
-  }
-
-  /* not implemented */
-
-  if (contdata->rate != rate) {
-    double    dval;
-
-    dval = (double) rate / 100.0;
-  }
-  contdata->rate = rate;
-}
-
-void
-contiSetVolume (contdata_t *contdata, int volume)
-{
-  if (contdata == NULL) {
-    return;
-  }
-
-  /* not implemented */
-
-  if (contdata->volume != volume) {
-    double    dval;
-
-    dval = (double) volume / 100.0;
-  }
-  contdata->volume = volume;
 }
 
 void
@@ -483,13 +496,13 @@ contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
   if (cmetadata->uri != NULL) {
     nlistSetStr (contdata->metadata, CONT_METADATA_URI, cmetadata->uri);
   }
-  if (cmetadata->arturi != NULL) {
-    nlistSetStr (contdata->metadata, CONT_METADATA_ART_URI, cmetadata->arturi);
+  if (cmetadata->imageuri != NULL && *cmetadata->imageuri) {
+    nlistSetStr (contdata->metadata, CONT_METADATA_IMAGE_URI, cmetadata->imageuri);
   }
 
 #if SMTC_ENABLED
-  contdata->sys->smtcSendMetadata ();
-  contdata->sys->smtcSetNextEnabled ();
+  contdata->mpsmtc->smtcSendMetadata (cmetadata->astype);
+  contdata->mpsmtc->smtcSetNextEnabled ();
 #endif
 }
 

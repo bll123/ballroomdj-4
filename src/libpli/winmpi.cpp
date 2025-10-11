@@ -1,6 +1,5 @@
 /*
  * Copyright 2025 Brad Lanam Pleasant Hill CA
- *
  */
 #include "config.h"
 
@@ -20,6 +19,8 @@
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.System.h>
 #include <winrt/Windows.Foundation.h>
+#include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Windows.Devices.Enumeration.h>
 
 #include "bdj4.h"
 #include "audiosrc.h"
@@ -34,17 +35,17 @@
 using namespace winrt::Windows::Media;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Storage;
+using namespace winrt::Windows::Devices::Enumeration;
 using namespace winrt::Windows;
 using namespace winrt;
-
-enum {
-  MP_MAX_SOURCE = 2,
-};
 
 typedef struct winmpintfc winmpintfc_t;
 
 typedef struct windata {
-  winmpintfc_t  *winmp [MP_MAX_SOURCE];
+  winmpintfc_t  *winmp [PLI_MAX_SOURCE];
+  double        vol [PLI_MAX_SOURCE];
+  char          *audiodev;
+  size_t        audiodevlen;
   int           curr;
   plistate_t    state;
   bool          inCrossFade;
@@ -59,12 +60,6 @@ struct winmpintfc
       mediaPlayer { nullptr },
       windata { windata }
   {
-  }
-
-  void
-  mpInit (void)
-  {
-    /* initializing the 'apartment' causes a crash */
   }
 
   void
@@ -88,7 +83,7 @@ struct winmpintfc
     try {
       mediaPlayer.Play ();
     } catch (std::exception &exc) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-play fail %s\n", exc.what ());
+      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-play fail %s", exc.what ());
     }
   }
 
@@ -125,33 +120,44 @@ struct winmpintfc
   }
 
   void
+  mpInitPlayer (void)
+  {
+    /* create a new media player for each playback item */
+    /* in order to allow cross-fading */
+    mediaPlayer = Playback::MediaPlayer ();
+    mediaPlayer.CommandManager ().IsEnabled (false);
+
+    if (windata->audiodev != NULL) {
+      mpSetAudioDevice (windata->audiodev);
+    }
+  }
+
+  void
   mpMedia (const hstring &hsfn)
   {
     StorageFile   sfile = nullptr;
 
-    /* create a new media player for each playback item */
-    mediaPlayer = Playback::MediaPlayer ();
-    mediaPlayer.CommandManager ().IsEnabled (false);
+    mpInitPlayer ();
 
     try {
       sfile = StorageFile::GetFileFromPathAsync (hsfn).get ();
     } catch (std::exception &exc) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "win-media open-fail %s\n", exc.what ());
+      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-media open-fail %s", exc.what ());
       return;
     }
-    if (sfile == NULL) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "win-media fail-no-file\n");
+    if (sfile == nullptr) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-media file-null");
       return;
     }
     auto source = Core::MediaSource::CreateFromStorageFile (sfile);
-    if (source == NULL) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "win-media source-fail\n");
+    if (source == nullptr) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-media source-null");
       return;
     }
     try {
       mediaPlayer.Source (source);
     } catch (std::exception &exc) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "win-source source-fail\n");
+      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-media source fail");
       return;
     }
     auto ac = mediaPlayer.AudioCategory ();
@@ -161,23 +167,25 @@ struct winmpintfc
   void
   mpURI (const hstring &hsfn)
   {
+    mpInitPlayer ();
+
     auto uri = Uri (hsfn);
-    if (uri == NULL) {
-logBasic ("win-uri null-fn\n");
+    if (uri == nullptr) {
       return;
     }
     auto source = Core::MediaSource::CreateFromUri (uri);
-    if (source == NULL) {
-logBasic ("win-uri fail-a\n");
+    if (source == nullptr) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-uri create-fail");
       return;
     }
-logBasic ("winmp-uri-b\n");
-    mediaPlayer.Source (source);
-logBasic ("winmp-uri-c\n");
+    try {
+      mediaPlayer.Source (source);
+    } catch (std::exception &exc) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-uri source-fail %s", exc.what ());
+      return;
+    }
     auto ac = mediaPlayer.AudioCategory ();
-logBasic ("winmp-uri-d\n");
     ac = Playback::MediaPlayerAudioCategory::Media;
-logBasic ("winmp-uri fin\n");
   }
 
   void
@@ -202,6 +210,8 @@ logBasic ("winmp-uri fin\n");
     auto sessdur = pbSession.NaturalDuration ();
     /* timespan in winrt is a std::chrono::duration */
     /* the count is in 100ns intervals */
+    /* I think there may be an easier way to do this, but */
+    /* my c++ knowledge is minimal */
     auto ms =
         std::chrono::duration_cast<std::chrono::milliseconds>(sessdur).count ();
     dur = ms;
@@ -236,6 +246,88 @@ logBasic ("winmp-uri fin\n");
     pbSession.PlaybackRate (rate);
     rate = pbSession.PlaybackRate ();
     return rate;
+  }
+
+  double
+  mpVolume (double dvol)
+  {
+    if (mediaPlayer == nullptr) {
+      return dvol;
+    }
+
+    mediaPlayer.Volume (dvol);
+    return dvol;
+  }
+
+  int
+  mpGetVolume (void)
+  {
+    double    dvol;
+    int       vol;
+
+    if (mediaPlayer == nullptr) {
+      return 0;
+    }
+
+    dvol = mediaPlayer.Volume ();
+    vol = dvol * 100.0;
+    return vol;
+  }
+
+  DeviceInformation
+  mpLocateAudioDevice (const char *audiodev)
+  {
+    /* .createfromidasync() crashes */
+    /* instead, loop through the devices */
+    /* and locate a matching device */
+    /* the device names are prefixed with other text */
+    auto devices = DeviceInformation::FindAllAsync (
+        DeviceClass::AudioRender).get ();
+    for (auto&& tdev : devices) {
+      char          *tmp;
+      const wchar_t *val;
+      size_t        len;
+
+      /* returns a wide string as char * */
+      val = tdev.Properties().TryLookup (L"System.Devices.DeviceInstanceId")
+            .try_as<winrt::hstring>().value_or (L"None").c_str();
+      tmp = osFromWideChar (val);
+      len = strlen (tmp);
+      if (len >= windata->audiodevlen &&
+          strcmp (tmp + (len - windata->audiodevlen), audiodev) == 0) {
+        mdfree (tmp);
+        /* valid in C++, not in C */
+        return tdev;
+      }
+      mdfree (tmp);
+    }
+
+    return nullptr;
+  }
+
+  int
+  mpSetAudioDevice (const char *audiodev)
+  {
+    int                 rc = -1;
+
+    if (mediaPlayer == nullptr) {
+      return rc;
+    }
+
+    auto dev = mpLocateAudioDevice (audiodev);
+
+    if (dev == nullptr) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-sad: Unable to locate audio device: %s", audiodev);
+      return rc;
+    }
+
+    try {
+      mediaPlayer.AudioDevice (dev);
+      rc = 0;
+    } catch (std::exception &exc) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "winmp-sad fail %s", exc.what ());
+    }
+    return rc;
   }
 
   Playback::MediaPlaybackState
@@ -360,19 +452,20 @@ int
 winmpMedia (windata_t *windata, const char *fn, int sourceType)
 {
   char    tbuff [MAXPATHLEN];
+  wchar_t *wfn = NULL;
 
   if (windata == NULL) {
     return 1;
   }
 
-  auto wfn = osToWideChar (fn);
   if (sourceType == AUDIOSRC_TYPE_FILE) {
     stpecpy (tbuff, tbuff + sizeof (tbuff), fn);
     pathDisplayPath (tbuff, sizeof (tbuff));
-    auto wfn = osToWideChar (tbuff);
+    wfn = osToWideChar (tbuff);
     auto hsfn = hstring (wfn);
     windata->winmp [windata->curr]->mpMedia (hsfn);
   } else {
+    wfn = osToWideChar (fn);
     auto hsfn = hstring (wfn);
     windata->winmp [windata->curr]->mpURI (hsfn);
   }
@@ -388,7 +481,7 @@ winmpCrossFade (windata_t *windata, const char *fn, int sourceType)
     return 1;
   }
 
-  windata->curr = (MP_MAX_SOURCE - 1) - windata->curr;
+  windata->curr = (PLI_MAX_SOURCE - 1) - windata->curr;
   windata->inCrossFade = true;
   winmpMedia (windata, fn, sourceType);
 
@@ -404,9 +497,10 @@ winmpInit (void)
   windata->state = PLI_STATE_IDLE;
   windata->inCrossFade = false;
   windata->curr = 0;
-  for (int i = 0; i < MP_MAX_SOURCE; ++i) {
+  windata->audiodev = NULL;
+  windata->audiodevlen = 0;
+  for (int i = 0; i < PLI_MAX_SOURCE; ++i) {
     windata->winmp [i] = new winmpintfc (windata);
-    windata->winmp [i]->mpInit ();
   }
 
   return windata;
@@ -417,6 +511,18 @@ winmpClose (windata_t *windata)
 {
   if (windata == NULL) {
     return;
+  }
+
+  for (int i = 0; i < PLI_MAX_SOURCE; ++i) {
+    if (windata->winmp [i] != NULL) {
+      windata->winmp [i]->mpClose ();
+    }
+  }
+
+  if (windata->audiodev != NULL) {
+    mdfree (windata->audiodev);
+    windata->audiodev = NULL;
+    windata->audiodevlen = 0;
   }
 
   mdfree (windata);
@@ -461,10 +567,20 @@ winmpState (windata_t *windata)
   return windata->state;
 }
 
+int
+winmpGetVolume (windata_t *windata)
+{
+  int   vol;
+
+  vol = windata->winmp [windata->curr]->mpGetVolume ();
+  return vol;
+}
+
 void
 winmpCrossFadeVolume (windata_t *windata, int vol)
 {
   int     previdx;
+  double  dvol;
 
   if (windata == NULL) {
     return;
@@ -476,7 +592,34 @@ winmpCrossFadeVolume (windata_t *windata, int vol)
     return;
   }
 
-  previdx = (MP_MAX_SOURCE - 1) - windata->curr;
+  previdx = (PLI_MAX_SOURCE - 1) - windata->curr;
+  dvol = (double) vol / 100.0;
+  windata->winmp [previdx]->mpVolume (dvol);
+  if (dvol <= 0.0) {
+    windata->winmp [previdx]->mpStop ();
+    windata->inCrossFade = false;
+    dvol = 0.0;
+  }
+
+  dvol = 1.0 - dvol;
+  windata->winmp [windata->curr]->mpVolume (dvol);
 
   return;
+}
+
+int
+winmpSetAudioDevice (windata_t *windata, const char *dev, plidev_t plidevtype)
+{
+  if (windata->audiodev != NULL) {
+    mdfree (windata->audiodev);
+    windata->audiodev = NULL;
+    windata->audiodevlen = 0;
+  }
+
+  if (dev != NULL && *dev) {
+    windata->audiodev = strdup (dev);
+    windata->audiodevlen = strlen (dev);
+  }
+
+  return 0;
 }

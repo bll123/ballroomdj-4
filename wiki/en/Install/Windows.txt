@@ -9,7 +9,7 @@ Windows&nbsp;11&nbsp;(64-bit).
 
 #### Windows and Anti-Virus Programs
 
-__*\* BallroomDJ 4 does not have any viruses in it. \*\*__
+__\*\* BallroomDJ 4 does not have any malware or viruses in it. \*\*__
 
 MicroSoft's Windows Defender's online anti-virus check will mark
 novel, small programs as a virus.  In BDJ4, this includes the
@@ -47,22 +47,12 @@ the entire BDJ4 folder.
 
 #### Internet Connection
 
-An internet connection is required the first time BallroomDJ&nbsp;4 is
-installed.  There are requisite packages (VLC) that
-need to be installed from the internet.
+BDJ4 versions prior to 4.16.1 require an internet connection
+the first time BallroomDJ&nbsp;4 is installed. The VLC package
+will be installed via the internet.
 
-If VLC is already installed, no internet connection is required.
-
-#### VLC Version
-
-At this time, VLC version 4 (which has not been released as of
-2025-4-9), is broken. BDJ4 will not work correctly with VLC
-version&nbsp;4. BDJ4 will install VLC version 3.0.21.
-
-If VLC version 4 is already installed, the VLC installation will not
-be overwritten.  [Contact](en-Getting%20Help) the BDJ4 developers if
-you have this situation.  You will either need to install both VLC
-version&nbsp;4 and version&nbsp;3 or only use VLC version&nbsp;3.
+If VLC is already installed, and for version 4.16.1 and later, no
+internet connection is required.
 
 #### Install BallroomDJ 4
 
@@ -101,6 +91,11 @@ __Installation&nbsp;Completed__ message.
 <div markdown style="margin-right: 20px; text-align: center;">
 ![BallroomDJ 4 Installer on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Installer-D.png)
 <br><span id="caption" style="color:#4559bf;">__BallroomDJ 4 Installer on Windows__</span> </div>
+
+#### VLC Installation: For BDJ4 prior to version 4.16.1
+
+If you are doing a new install of BDJ4 with version 4.16.1 or later,
+skip this section.
 
 If the VLC application is not installed, the VLC installer will be
 downloaded and started for you.  In the Windows __User Account
@@ -141,4 +136,4 @@ BDJ4, use one of the methods in
 [Setting up Windows for DJ Work](en-Install-Setting%20Up%20Windows)
 
 [Wiki Home](Home)
-<br>_(Updated 2025-08-20 05:45:34; BDJ4 version 4.15.5)_
+<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_

@@ -27,9 +27,15 @@ volume when the song starts playing.  Set to 0.0 for no fade in.
 __Fade Out Time__: The amount of time used to fade out the volume when
 song ends.  Set to 0.0 for no fade out.
 
-__Gap__: The amount of time to wait before playing the next song.
+__Gap Between Songs__: The amount of time to wait before playing the next song.
 <br>The gap can also be set for a playlist
 ([Playlist&nbsp;Management](en-Management-Playlist%20Management)).
+
+__Cross Fade Time__: Use a cross fade when starting the next song.
+<br>Cross fade is available on Windows using the _Windows Media Player_
+player interface, and on Linux using the _GStreamer_ interface.
+<br>When a cross fade is set, announcements are turned off, and the
+gap between songs is set to zero.
 
 __Maximum Play Time__: The maximum duration a song will play.  This is
 often set anywhere from 2:00 minutes to 3:00 minutes. If your songs
@@ -59,8 +65,8 @@ __Queue&nbsp;5__ buttons.  These buttons are usually used for
 practice and teaching.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![music-queues](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MusicQueues-D.png)
+![music-queues](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MusicQueues-E.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-08-20 05:45:34; BDJ4 version 4.15.5)_
+<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_

@@ -950,6 +950,7 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer)
   uiWidgetSetState (uiplayer->wcont [UIPL_W_SONG_BEGIN_B], state);
 
   controllerSetPlayState (uiplayer->controller, uiplayer->playerState);
+
   switch (uiplayer->playerState) {
     case PL_STATE_UNKNOWN:
     case PL_STATE_STOPPED: {
@@ -1011,6 +1012,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   }
   uiplayer->repeatLock = false;
   controllerSetRepeatState (uiplayer->controller, ps->repeat);
+  controllerSetPlayState (uiplayer->controller, uiplayer->playerState);
 
   /* pauseatend */
   uiplayerProcessPauseatend (uiplayer, ps->pauseatend);
@@ -1119,6 +1121,7 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
   genres = bdjvarsdfGet (BDJVDF_GENRES);
   audiosrcURI (songGetStr (song, TAG_URI), uri, sizeof (uri), NULL, 0);
   cmetadata.uri = uri;
+  cmetadata.imageuri = mqstatus.imguri;
   cmetadata.album = songGetStr (song, TAG_ALBUM);
   cmetadata.albumartist = songGetStr (song, TAG_ALBUMARTIST);
   cmetadata.artist = songGetStr (song, TAG_ARTIST);
@@ -1128,6 +1131,7 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
   cmetadata.songend = songGetNum (song, TAG_SONGEND);
   cmetadata.trackid = mqstatus.uniqueidx;
   cmetadata.duration = songGetNum (song, TAG_DURATION);
+  cmetadata.astype = audiosrcGetType (uri);
   controllerSetCurrent (uiplayer->controller, &cmetadata);
 
   idx = UIPL_W_INFO_DISP_A;
@@ -1170,6 +1174,10 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
     if (idx > UIPL_W_INFO_DISP_I) {
       break;
     }
+  }
+
+  if (mqstatus.imguri != NULL) {
+    mdfree (mqstatus.imguri);
   }
 
   logProcEnd ("");

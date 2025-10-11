@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2025-09-03\n"
-"PO-Revision-Date: 2025-09-03 19:15\n"
+"POT-Creation-Date: 2025-09-23\n"
+"PO-Revision-Date: 2025-09-23 14:12\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -99,6 +99,11 @@ msgstr "Плейлист %s"
 #, c-format
 msgid "%s Support Tickets"
 msgstr "талон на службу поддержки %s"
+
+#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
+#, c-format
+msgid "%s Tags Only"
+msgstr "Только теги %s"
 
 #. CONTEXT: starterui: basic support dialog, version display
 #, c-format
@@ -393,10 +398,6 @@ msgstr "Авто организация"
 msgid "Automatic"
 msgstr "Автоматический"
 
-#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
-msgid "BDJ Tags Only"
-msgstr "Только теги BDJ"
-
 #. CONTEXT: installer: status message
 msgid "BDJ3 database version is too old."
 msgstr "Версия базы данных BDJ3 устарела."
@@ -633,6 +634,10 @@ msgstr "Создать структуру папки."
 #. CONTEXT: installer: status message
 msgid "Creating shortcut."
 msgstr "Создать кратк. путь."
+
+#. CONTEXT: configuration: queue: the amount of time to cross-fade the songs
+msgid "Cross Fade Time"
+msgstr ""
 
 #. CONTEXT: audio identification: the data for the current song
 msgid "Current"
@@ -2374,6 +2379,10 @@ msgstr "Вест-кост-свинг"
 #. CONTEXT: bpm counter: instructions, line 2
 msgid "When the BPM value is stable, select the Save button."
 msgstr "Если значение BPM стабильно, нажмите на кнопку Сохранить."
+
+#. CONTEXT: configuration: player interface: Windows Media Player
+msgid "Windows Media Player"
+msgstr ""
 
 #. CONTEXT: label: work (a musical work)
 msgid "Work"

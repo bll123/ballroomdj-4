@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2025-09-03\n"
-"PO-Revision-Date: 2025-09-03 19:15\n"
+"POT-Creation-Date: 2025-09-23\n"
+"PO-Revision-Date: 2025-10-10\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh\n"
@@ -99,6 +99,11 @@ msgstr "%s播放列表"
 #, c-format
 msgid "%s Support Tickets"
 msgstr "%s支持票务"
+
+#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
+#, c-format
+msgid "%s Tags Only"
+msgstr "仅%s 标签"
 
 #. CONTEXT: starterui: basic support dialog, version display
 #, c-format
@@ -393,10 +398,6 @@ msgstr "自动整理"
 msgid "Automatic"
 msgstr "自动"
 
-#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
-msgid "BDJ Tags Only"
-msgstr "仅限 BDJ 标签 "
-
 #. CONTEXT: installer: status message
 msgid "BDJ3 database version is too old."
 msgstr "BDJ3 数据库版本太旧。"
@@ -633,6 +634,10 @@ msgstr "创建文件夹结构"
 #. CONTEXT: installer: status message
 msgid "Creating shortcut."
 msgstr "创建快捷方式。"
+
+#. CONTEXT: configuration: queue: the amount of time to cross-fade the songs
+msgid "Cross Fade Time"
+msgstr "交叉渐变时间"
 
 #. CONTEXT: audio identification: the data for the current song
 msgid "Current"
@@ -1222,7 +1227,8 @@ msgid "Marquee Theme"
 msgstr "帐篷主题"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "最长播放时间"
 
@@ -1761,7 +1767,9 @@ msgid "Repeat"
 msgstr "重复"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "替换整个 BallroomDJ 数据库。对数据库的所有更改都将丢失。"
 
 #. CONTEXT: configuration: display settings for: requests
@@ -2152,7 +2160,9 @@ msgid "The conversion process will not be run."
 msgstr "转换过程将不会运行。"
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "转换过程只会在新安装和重新安装时运行。"
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -2287,11 +2297,13 @@ msgstr "已更新"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "从%s数据库更新BallroomDJ数据库中的信息。"
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "根据音频文件标签更新 BallroomDJ 数据库中的信息。"
 
 #. CONTEXT: alternate installation: status message
@@ -2373,6 +2385,10 @@ msgstr "西海岸摇摆舞"
 msgid "When the BPM value is stable, select the Save button."
 msgstr "当 BPM 值稳定后，选择保存按钮。"
 
+#. CONTEXT: configuration: player interface: Windows Media Player
+msgid "Windows Media Player"
+msgstr "Windows 媒体播放器"
+
 #. CONTEXT: label: work (a musical work)
 msgid "Work"
 msgstr "件"
@@ -2390,7 +2406,9 @@ msgid "Write Tags to Audio Files"
 msgstr "将标签写入音频文件"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "使用 BallroomDJ 数据库中的信息写入音频文件标签。"
 
 #. CONTEXT: configuration: dialog: XML file types

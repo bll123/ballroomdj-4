@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2025-09-03\n"
-"PO-Revision-Date: 2025-09-03 19:15\n"
+"POT-Creation-Date: 2025-09-23\n"
+"PO-Revision-Date: 2025-10-10\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Danish\n"
 "Language: da\n"
@@ -99,6 +99,11 @@ msgstr "%s Playliste"
 #, c-format
 msgid "%s Support Tickets"
 msgstr "%s Supportbilletter"
+
+#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
+#, c-format
+msgid "%s Tags Only"
+msgstr "Kun %s-tags"
 
 #. CONTEXT: starterui: basic support dialog, version display
 #, c-format
@@ -393,10 +398,6 @@ msgstr "Auto Organiser"
 msgid "Automatic"
 msgstr "Automatisk"
 
-#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
-msgid "BDJ Tags Only"
-msgstr "Kun BDJ-tags"
-
 #. CONTEXT: installer: status message
 msgid "BDJ3 database version is too old."
 msgstr "BDJ3-databaseversionen er for gammel."
@@ -633,6 +634,10 @@ msgstr "Oprettelse af mappestruktur."
 #. CONTEXT: installer: status message
 msgid "Creating shortcut."
 msgstr "Opretter genvej."
+
+#. CONTEXT: configuration: queue: the amount of time to cross-fade the songs
+msgid "Cross Fade Time"
+msgstr ""
 
 #. CONTEXT: audio identification: the data for the current song
 msgid "Current"
@@ -1222,7 +1227,8 @@ msgid "Marquee Theme"
 msgstr "Marquee tema"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "Maksimal\n"
 "spilletid"
@@ -1762,7 +1768,9 @@ msgid "Repeat"
 msgstr "Gentage"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "Erstatter BallroomDJ-databasen i sin helhed. Alle ændringer i databasen vil gå tabt."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -2153,7 +2161,9 @@ msgid "The conversion process will not be run."
 msgstr "Konverteringsprocessen vil ikke blive kørt."
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "Konverteringsprocessen vil kun køre for nye installationer og for geninstallationer."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -2289,11 +2299,13 @@ msgstr "Opdateret"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "Opdaterer oplysningerne i BallroomDJ-databasen fra %s -databasen."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Opdaterer oplysningerne i BallroomDJ-databasen fra lydfil-tags."
 
 #. CONTEXT: alternate installation: status message
@@ -2375,6 +2387,10 @@ msgstr "West Coast Swing"
 msgid "When the BPM value is stable, select the Save button."
 msgstr "Når BPM-værdien er stabil, skal du vælge knappen Gem."
 
+#. CONTEXT: configuration: player interface: Windows Media Player
+msgid "Windows Media Player"
+msgstr ""
+
 #. CONTEXT: label: work (a musical work)
 msgid "Work"
 msgstr ""
@@ -2392,7 +2408,9 @@ msgid "Write Tags to Audio Files"
 msgstr "Skriv tags til lydfiler"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "Skriver lydfil-tags ved hjælp af oplysningerne fra BallroomDJ-databasen."
 
 #. CONTEXT: configuration: dialog: XML file types

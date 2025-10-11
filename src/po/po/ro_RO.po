@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2025-09-03\n"
-"PO-Revision-Date: 2025-09-03 19:15\n"
+"POT-Creation-Date: 2025-09-23\n"
+"PO-Revision-Date: 2025-10-10\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Romanian\n"
 "Language: ro\n"
@@ -99,6 +99,11 @@ msgstr "%s Playlist"
 #, c-format
 msgid "%s Support Tickets"
 msgstr "%s Bilete de asistență"
+
+#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
+#, c-format
+msgid "%s Tags Only"
+msgstr "Numai etichete %s"
 
 #. CONTEXT: starterui: basic support dialog, version display
 #, c-format
@@ -393,10 +398,6 @@ msgstr "Organizare automată"
 msgid "Automatic"
 msgstr "Automată"
 
-#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
-msgid "BDJ Tags Only"
-msgstr "Numai etichete BDJ"
-
 #. CONTEXT: installer: status message
 msgid "BDJ3 database version is too old."
 msgstr "Versiunea bazei de date BDJ3 este prea veche."
@@ -633,6 +634,10 @@ msgstr "Crearea structurii de foldere."
 #. CONTEXT: installer: status message
 msgid "Creating shortcut."
 msgstr "Crearea comenzii rapide."
+
+#. CONTEXT: configuration: queue: the amount of time to cross-fade the songs
+msgid "Cross Fade Time"
+msgstr ""
 
 #. CONTEXT: audio identification: the data for the current song
 msgid "Current"
@@ -1222,7 +1227,8 @@ msgid "Marquee Theme"
 msgstr "Tema Marquee"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "Timp maxim\n"
 "de redare"
@@ -1762,7 +1768,9 @@ msgid "Repeat"
 msgstr "Repetați"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "Înlocuiește baza de date BallroomDJ în întregime. Toate modificările aduse bazei de date vor fi pierdute."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -2153,7 +2161,9 @@ msgid "The conversion process will not be run."
 msgstr "Procesul de conversie nu va fi rulat."
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "Procesul de conversie va rula numai pentru instalațiile noi și pentru reinstalări."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -2288,11 +2298,13 @@ msgstr "Actualizat"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "Actualizează informațiile din baza de date BallroomDJ din baza de date %s ."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Actualizează informațiile din baza de date BallroomDJ din etichetele fișierului audio."
 
 #. CONTEXT: alternate installation: status message
@@ -2374,6 +2386,10 @@ msgstr "Coasta de Vest Swing"
 msgid "When the BPM value is stable, select the Save button."
 msgstr "Când valoarea BPM este stabilă, selectați butonul Salvare."
 
+#. CONTEXT: configuration: player interface: Windows Media Player
+msgid "Windows Media Player"
+msgstr ""
+
 #. CONTEXT: label: work (a musical work)
 msgid "Work"
 msgstr ""
@@ -2391,7 +2407,9 @@ msgid "Write Tags to Audio Files"
 msgstr "Scrieți etichete în fișierele audio"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "Scrie etichetele fișierului audio folosind informațiile din baza de date BallroomDJ."
 
 #. CONTEXT: configuration: dialog: XML file types

@@ -4,13 +4,53 @@
 
 <!--
 
-**4.15.7.1 2025-9---**
+**4.17.2 2025-10-11**
+-->
 
+**4.17.2 2025-10-11**
+
+* Bug Fixes:
+    * Fix a memory leak.
+    * Linux: Player Interface: GStreamer: Implement cross-fade.
+    * Player: Cross-Fade: Fix last song not processing properly.
+    * Starter: Display the square image, not the squircle on MacOS.
+    * Song Editor: Copy Audio Tags: Fix file picker.
+* Internal:
+    * Minor code cleanup.
+    * libmp4tag: Update to version 2.0.1.
+
+**4.17.1 2025-9-27**
+
+* Bug Fixes:
+    * Player Controller: Windows SMTC now processes images properly.
+    * Player Controller: Linux MPRIS now initializes properly.
+    * Player: Matroska audio files are now recognized.  Tags are not processed.
+
+**4.17.0 2025-9-23**
+
+* Bug Fixes:
+    * Player: Linux: MPRIS: Fix a crash.
+    * Player: Linux: MPRIS: Fix play-pause command.
+    * Player: The Windows Media Player interface now supports selection of audio output.
+    * Windows: Fix audio tag processing of .mp3 with international characters in the filename.
+* New Features:
+    * Installation: Windows will now use the Windows Media Player interface by default.  VLC will not be installed.
+
+**4.16.0 2025-9-16**
+
+* Bug Fixes:
+    * Import Playlist: Fix manual entry of URL.
+    * Import Playlist: Remove invalid characters from new song list name.
+    * Improve BDJ4 icons.
+    * MacOS: Create MacOS specific icons due to Tahoe forcing the squircle shape.
+    * Player: Playback of streams with certificate questions now works with libVLC.
+    * Windows: Song Editor: Fix copy of URL.
+* New Features:
+    * Windows: Player Interface: Windows Media Player.
+    * Player: Cross Fade support (Windows Only).
 * Translations:
     * Chinese Simplified: Updated (still machine translated - very poor quality).
     * Chinese Traditional: Updated (still machine translated - very poor quality).
-
--->
 
 **4.15.7 2025-9-2**
 
@@ -1281,4 +1321,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-09-09 10:00:03; BDJ4 version 4.15.7)_
+<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_

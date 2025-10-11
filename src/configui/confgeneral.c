@@ -39,14 +39,17 @@ static void confuiLoadLocaleList (confuigui_t *gui);
 void
 confuiInitGeneral (confuigui_t *gui)
 {
+  char      tmp [80];
+
   confuiLoadLocaleList (gui);
 
+  /* CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file */
+  snprintf (tmp, sizeof (tmp), _("%s Tags Only"), BDJ4_NAME);
   confuiSpinboxTextInitDataNum (gui, "cu-audio-file-tags",
       CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
       /* CONTEXT: configuration: write audio file tags: do not write any tags to the audio file */
       WRITE_TAGS_NONE, _("Don't Write"),
-      /* CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file */
-      WRITE_TAGS_BDJ_ONLY, _("BDJ Tags Only"),
+      WRITE_TAGS_BDJ_ONLY, tmp,
       /* CONTEXT: configuration: write audio file tags: write all tags (BDJ and standard) to the audio file */
       WRITE_TAGS_ALL, _("All Tags"),
       -1);
