@@ -40,4 +40,4 @@ _data/autoselection.txt_ file.  If changes to these parameters are
 desired, they must be changed manually.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-09-16 10:35:15; BDJ4 version 4.16.0)_
+<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_

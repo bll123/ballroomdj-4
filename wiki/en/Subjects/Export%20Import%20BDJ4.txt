@@ -55,4 +55,4 @@ entry will be added if it is new, or updated if the import database
 entry is newer.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-09-16 10:35:15; BDJ4 version 4.16.0)_
+<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_

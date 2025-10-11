@@ -32,8 +32,10 @@ __Gap Between Songs__: The amount of time to wait before playing the next song.
 ([Playlist&nbsp;Management](en-Management-Playlist%20Management)).
 
 __Cross Fade Time__: Use a cross fade when starting the next song.
-<br>Cross fade is only available when using the _Windows Media Player_
-player interface.
+<br>Cross fade is available on Windows using the _Windows Media Player_
+player interface, and on Linux using the _GStreamer_ interface.
+<br>When a cross fade is set, announcements are turned off, and the
+gap between songs is set to zero.
 
 __Maximum Play Time__: The maximum duration a song will play.  This is
 often set anywhere from 2:00 minutes to 3:00 minutes. If your songs
@@ -67,4 +69,4 @@ practice and teaching.
 <br><span id="caption" style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-09-18 03:40:53; BDJ4 version 4.16.0)_
+<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_

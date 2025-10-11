@@ -9,7 +9,7 @@ Windows&nbsp;11&nbsp;(64-bit).
 
 #### Windows and Anti-Virus Programs
 
-__*\* BallroomDJ 4 does not have any viruses in it. \*\*__
+__\*\* BallroomDJ 4 does not have any malware or viruses in it. \*\*__
 
 MicroSoft's Windows Defender's online anti-virus check will mark
 novel, small programs as a virus.  In BDJ4, this includes the
@@ -136,4 +136,4 @@ BDJ4, use one of the methods in
 [Setting up Windows for DJ Work](en-Install-Setting%20Up%20Windows)
 
 [Wiki Home](Home)
-<br>_(Updated 2025-09-23 15:51:58; BDJ4 version 4.17.0)_
+<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_

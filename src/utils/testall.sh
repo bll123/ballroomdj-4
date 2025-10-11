@@ -15,7 +15,14 @@ TCHECK=T
 DBTEST=T
 INSTTEST=T
 TESTSUITE=T
+ts=F
+TSNM=""
 for arg in "$@"; do
+  if [[ $ts == T ]]; then
+    TSNM=$arg
+    continue
+  fi
+
   case $arg in
     --nobuild)
       TBUILD=F
@@ -31,6 +38,13 @@ for arg in "$@"; do
       TCHECK=F
       DBTEST=F
       INSTTEST=F
+      ;;
+    --ts)
+      TBUILD=F
+      TCHECK=F
+      DBTEST=F
+      INSTTEST=F
+      ts=T
       ;;
   esac
   shift
@@ -74,6 +88,11 @@ LOG=src/testall.log
 function runTestSuite {
   pli=$1
   vol=$2
+
+  if [[ $TSNM != "" && $pli != $TSNM ]]; then
+    echo "-- $(date +%T) testsuite $pli $vol SKIP"
+    return
+  fi
 
   echo "-- $(date +%T) make test setup"
   pliargs="--pli $pli"

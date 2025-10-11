@@ -30,4 +30,4 @@
       library (Debian 12).  An issue with ICU version 72 library.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-09-27 11:37:58; BDJ4 version 4.17.1)_
+<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_

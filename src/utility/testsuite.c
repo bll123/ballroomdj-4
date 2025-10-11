@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <locale.h>
 #include <signal.h>
+#include <ctype.h>
 
 #include "bdj4.h"
 #include "bdj4init.h"
@@ -1611,7 +1612,7 @@ tsNextFile (testsuite_t *testsuite)
 
   while (1) {
     fn = slistIterateKey (testsuite->testlist, &testsuite->tliteridx);
-    if (fn != NULL && strcmp (fn, "README.md") == 0) {
+    if (fn != NULL && ! isdigit (*fn)) {
       continue;
     }
     break;

@@ -73,4 +73,4 @@ many days to keep a podcast episode.  A podcast episode older than the
 number of days configured will be removed when the podcast is updated.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-09-18 03:40:53; BDJ4 version 4.16.0)_
+<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_

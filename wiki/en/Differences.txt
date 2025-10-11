@@ -113,4 +113,4 @@ is turned on).
 (1) No one actually asked this, but I thought you might like to know.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-09-16 10:35:15; BDJ4 version 4.16.0)_
+<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_

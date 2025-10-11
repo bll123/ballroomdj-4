@@ -38,4 +38,4 @@ Testing, Quality&nbsp;Assurance, Documentation, Website&nbsp;Management,
 System&nbsp;Administration
 
 [Wiki Home](Home)
-<br>_(Updated 2025-09-29 10:00:01; BDJ4 version 4.17.1)_
+<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_
