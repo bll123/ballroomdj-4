@@ -186,10 +186,10 @@ cp -f test-templates/audiosrc.txt data
 
 for ftype in sl seq auto podcast; do
   for tag in a b c d e f g h; do
-    if [[ $ftype == auto && $tag == e ]]; then
+    if [[ $ftype == auto && $tag == f ]]; then
       break
     fi
-    if [[ $ftype == seq && $tag == e ]]; then
+    if [[ $ftype == seq && $tag == f ]]; then
       break
     fi
     if [[ $ftype == podcast && $tag == b ]]; then
@@ -211,7 +211,7 @@ for tfn in data/profile00/bdjconfig.q?.txt; do
 done
 
 tfn=data/profile00/bdjconfig.txt
-sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
+sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..20/ ; }' \
     -e '/^MARQUEE_SHOW/ { n ; s/.*/..minimize/ ; }' \
     -e '/^PROFILENAME/ { n ; s/.*/..Test-Setup/ ; }' \
     -e '/^UI_PROFILE_COL/ { n ; s/.*/..#0797ff/ ; }' \

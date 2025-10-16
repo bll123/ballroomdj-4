@@ -1,11 +1,6 @@
 # playlist
-# 2022-08-22 19:14:32
+# 2022-10-21
 # version 1
-#
-# announcements are on
-#
-version
-..1
 ALLOWEDKEYWORDS
 ..
 DANCERATING
@@ -15,9 +10,9 @@ GAP
 MAXPLAYTIME
 ..0
 PLAYANNOUNCE
-..yes
+..no
 STOPAFTER
-..0
+..3
 STOPTIME
 ..0
 DANCELEVELLOW
@@ -25,6 +20,6 @@ DANCELEVELLOW
 DANCELEVELHIGH
 ..Advanced
 TYPE
-..sequence
+..automatic
 DISABLEGROUP
 ..yes

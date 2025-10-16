@@ -59,6 +59,8 @@
             * Gap between songs.
             * Maximum play time.
             * Stop time.
+            * Cross-fade.
+              [Configuration / Music Queues](en-Configuration-Music%20Queues)
             * Pause each song.
             * Play announcement for each dance.
               [Subjects / Announcements](en-Subjects-Announcements)
@@ -129,10 +131,10 @@
 * Mobile Marquee
     * Dancers can view upcoming songs on their mobile device.
       [Configuration / Mobile Marquee](en-Configuration-Mobile%20Marquee)
-* Secondary installations with separate databases.
-  [Subjects / Alternate Folders](en-Subjects-Alternate%20Folders)
 * Multiple profiles can be set up for different playback needs.
   [Subjects / Profiles](en-Subjects-Profiles)
+* Secondary installations with separate databases.
+  [Subjects / Alternate Folders](en-Subjects-Alternate%20Folders)
 
 [Wiki Home](Home)
 <br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_

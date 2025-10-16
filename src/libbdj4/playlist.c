@@ -63,7 +63,8 @@ typedef struct playlist {
   nlistidx_t    seqiteridx;
   nlistidx_t    grpiter;
   dbidx_t       grpdbidx;
-  int           ingroup;
+  bool          ingroup;
+  bool          disablegroup;
 } playlist_t;
 
 enum {
@@ -83,6 +84,7 @@ static datafilekey_t playlistdfkeys [PLAYLIST_KEY_MAX] = {
   { "DANCELEVELHIGH", PLAYLIST_LEVEL_HIGH,        VALUE_NUM, levelConv, DF_NORM },
   { "DANCELEVELLOW",  PLAYLIST_LEVEL_LOW,         VALUE_NUM, levelConv, DF_NORM },
   { "DANCERATING",    PLAYLIST_RATING,            VALUE_NUM, ratingConv, DF_NORM },
+  { "DISABLEGROUP",   PLAYLIST_DISABLE_GROUP,     VALUE_NUM, convBoolean, DF_NORM },
   { "GAP",            PLAYLIST_GAP,               VALUE_NUM, NULL, DF_NORM },
   { "MAXPLAYTIME",    PLAYLIST_MAX_PLAY_TIME,     VALUE_NUM, NULL, DF_NORM },
   { "PLAYANNOUNCE",   PLAYLIST_ANNOUNCE,          VALUE_NUM, convBoolean, DF_NORM },
@@ -176,6 +178,10 @@ playlistLoad (const char *fname, musicdb_t *musicdb, grouping_t *grouping)
   /* 4.6.0 tags, tag-weight added */
   if (nlistGetNum (pl->plinfo, PLAYLIST_TAG_WEIGHT) < 0) {
     nlistSetNum (pl->plinfo, PLAYLIST_TAG_WEIGHT, BDJ4_DFLT_TAG_WEIGHT);
+  }
+  /* 4.17.3 disable-group added */
+  if (nlistGetNum (pl->plinfo, PLAYLIST_DISABLE_GROUP) < 0) {
+    nlistSetNum (pl->plinfo, PLAYLIST_DISABLE_GROUP, false);
   }
 
   nlistDumpInfo (pl->plinfo);
@@ -641,6 +647,7 @@ playlistGetNextSong (playlist_t *pl,
   const char  *sfname;
   int         stopAfter;
   bool        songselalloc = false;
+  bool        disablegroup = false;
 
   if (pl == NULL || pl->ident != PL_IDENT || pl->plinfo == NULL) {
     return NULL;
@@ -653,6 +660,7 @@ playlistGetNextSong (playlist_t *pl,
 
   logProcBegin ();
   type = (pltype_t) nlistGetNum (pl->plinfo, PLAYLIST_TYPE);
+  disablegroup = nlistGetNum (pl->plinfo, PLAYLIST_DISABLE_GROUP);
   stopAfter = nlistGetNum (pl->plinfo, PLAYLIST_STOP_AFTER);
   if (pl->editmode == EDIT_FALSE && stopAfter > 0 && pl->count >= stopAfter) {
     logMsg (LOG_DBG, LOG_BASIC, "pl %s stop after %d", pl->name, stopAfter);
@@ -740,7 +748,7 @@ playlistGetNextSong (playlist_t *pl,
         dbidx_t   dbidx;
 
         grpcount = groupingCheck (pl->grouping, seldbidx, seldbidx);
-        if (grpcount > 0) {
+        if (disablegroup == false && grpcount > 0) {
           pl->ingroup = true;
           pl->grpdbidx = seldbidx;
           groupingStartIterator (pl->grouping, &pl->grpiter);
@@ -1257,6 +1265,8 @@ playlistAlloc (musicdb_t *musicdb, grouping_t *grouping)
   pl->grouping = grouping;
   pl->grpiter = -1;
   pl->ingroup = false;
+  /* disable-group is used for testing */
+  pl->disablegroup = false;
 
   return pl;
 }

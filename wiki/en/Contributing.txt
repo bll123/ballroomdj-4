@@ -10,10 +10,16 @@ As of 2025-8-9, development needs are:
     * Spotify
       I will not be working on this, other than providing guidance to
       whoever takes this on.
+    * Apple Music
+      I will not be working on this, other than providing guidance to
+      whoever takes this on.
 * Volume Interface
     * Windows - Needs to be modernized and updated
 * Player Interface
     * Spotify
+      I will not be working on this, other than providing guidance to
+      whoever takes this on.
+    * Apple Music
       I will not be working on this, other than providing guidance to
       whoever takes this on.
 * User Interface:

@@ -4,7 +4,12 @@
 
 <!--
 
-**4.17.2 2025-10-11**
+**4.17.3 2025-10---**
+
+* Bug Fixes:
+    * PENDING: Playlist Management: Fix playlist not being saved for new playlists.
+
+
 -->
 
 **4.17.2 2025-10-11**

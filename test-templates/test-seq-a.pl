@@ -23,3 +23,5 @@ DANCELEVELHIGH
 ..Advanced
 TYPE
 ..sequence
+DISABLEGROUP
+..yes

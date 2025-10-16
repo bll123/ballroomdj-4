@@ -21,3 +21,5 @@ DANCELEVELHIGH
 ..Advanced
 TYPE
 ..automatic
+DISABLEGROUP
+..yes

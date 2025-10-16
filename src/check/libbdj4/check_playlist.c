@@ -813,7 +813,7 @@ START_TEST(playlist_get_pl_list)
   /* includes the special queuedance playlist */
   pllist = playlistGetPlaylistNames (PL_LIST_ALL, NULL);
   val = slistGetCount (pllist);
-  ck_assert_int_eq (val, 18);
+  ck_assert_int_eq (val, 20);
   sval = slistGetStr (pllist, _("QueueDance"));
   ck_assert_str_eq (sval, _("QueueDance"));
   slistFree (pllist);
@@ -821,7 +821,7 @@ START_TEST(playlist_get_pl_list)
   /* does not include the special queuedance playlist */
   pllist = playlistGetPlaylistNames (PL_LIST_AUTO_SEQ, NULL);
   val = slistGetCount (pllist);
-  ck_assert_int_eq (val, 9);
+  ck_assert_int_eq (val, 11);
   sval = slistGetStr (pllist, _("QueueDance"));
   ck_assert_ptr_null (sval);
   slistFree (pllist);
@@ -829,14 +829,14 @@ START_TEST(playlist_get_pl_list)
   /* does not include the special queuedance playlist */
   pllist = playlistGetPlaylistNames (PL_LIST_NORMAL, NULL);
   val = slistGetCount (pllist);
-  ck_assert_int_eq (val, 17);
+  ck_assert_int_eq (val, 19);
   sval = slistGetStr (pllist, _("QueueDance"));
   ck_assert_ptr_null (sval);
   slistFree (pllist);
 
   pllist = playlistGetPlaylistNames (PL_LIST_SEQUENCE, NULL);
   val = slistGetCount (pllist);
-  ck_assert_int_eq (val, 5);
+  ck_assert_int_eq (val, 6);
   sval = slistGetStr (pllist, _("QueueDance"));
   ck_assert_ptr_null (sval);
   slistFree (pllist);
@@ -849,7 +849,7 @@ START_TEST(playlist_get_pl_list)
 
   pllist = playlistGetPlaylistNames (PL_LIST_DIR, "data");
   val = slistGetCount (pllist);
-  ck_assert_int_eq (val, 18);
+  ck_assert_int_eq (val, 20);
   sval = slistGetStr (pllist, _("QueueDance"));
   ck_assert_ptr_nonnull (sval);
   slistFree (pllist);
