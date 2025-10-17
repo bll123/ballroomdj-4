@@ -180,14 +180,16 @@ websrvEventHandler (struct mg_connection *c, int ev, void *ev_data)
   websrv->httpmsg = hm;
 
   mg_url_decode (hm->uri.buf, hm->uri.len, uri, sizeof (uri), 1);
-  uriptr = uri + hm->uri.len - 4;
-  if (strcmp (uriptr, ".key") == 0 ||
-      strcmp (uriptr, ".crt") == 0 ||
-      strcmp (uriptr, ".pem") == 0 ||
-      strcmp (uriptr, ".csr") == 0 ||
-      strncmp (uri, "../", 3) == 0) {
-    mg_http_reply (c, WEB_FORBIDDEN, NULL, WEB_RESP_FORBIDDEN);
-    return;
+  if (hm->uri.len >= 4) {
+    uriptr = uri + hm->uri.len - 4;
+    if (strcmp (uriptr, ".key") == 0 ||
+        strcmp (uriptr, ".crt") == 0 ||
+        strcmp (uriptr, ".pem") == 0 ||
+        strcmp (uriptr, ".csr") == 0 ||
+        strncmp (uri, "../", 3) == 0) {
+      mg_http_reply (c, WEB_FORBIDDEN, NULL, WEB_RESP_FORBIDDEN);
+      return;
+    }
   }
 
   if (hm->method.len >= 3 && strncmp ("GET", hm->method.buf, 3) == 0) {

@@ -191,6 +191,10 @@ img/macos_icon_marquee\.svg$
 img/macos_icon_player\.svg$
 img/macos_icon\.svg$
 
+# 2025-10-17 remove old acrcloud execs
+plocal/bin/acrcloud$
+plocal/bin/acrcloud\.exe$
+
 ####
 # mac-os
 

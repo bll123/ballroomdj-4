@@ -874,7 +874,7 @@ sysvarsCheckPaths (const char *otherpaths)
     stringTrimChar (tbuff, '/');
 
     if (*sysvars [SV_PATH_ACRCLOUD] == '\0') {
-      checkForFile (tbuff, SV_PATH_ACRCLOUD, "acrcloud", NULL);
+      checkForFile (tbuff, SV_PATH_ACRCLOUD, "acr_extr", NULL);
     }
 
     if (*sysvars [SV_PATH_CRONTAB] == '\0') {

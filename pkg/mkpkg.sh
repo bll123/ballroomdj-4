@@ -79,12 +79,12 @@ function copyreleasefiles {
       if [[ -d plocal/lib64 ]]; then
         dirlist+=" plocal/lib64"
       fi
-      filelist+=" plocal/bin/acrcloud"
+      filelist+=" plocal/bin/acr_extr"
       ;;
     macos)
       dirlist+=" plocal/lib"
       dirlist+=" plocal/share/themes"
-      filelist+=" plocal/bin/acrcloud"
+      filelist+=" plocal/bin/acr_extr"
       ;;
     win32)
       echo "Platform not supported"
@@ -344,11 +344,11 @@ if [[ $mksrcpkg == T && $insttest == F ]]; then
 
       copysrcfiles ${tag} ${stagedir}
 
-      f="packages/acrcloud-linux"
+      f="packages/acr_extr-linux"
       dir=plocal/bin
       test -d ${stagedir}/${dir} || mkdir -p ${stagedir}/${dir}
       if [[ -f ${f} ]]; then
-        rsync -aS ${f} ${stagedir}/${dir}/acrcloud
+        rsync -aS ${f} ${stagedir}/${dir}/acr_extr
       fi
 
       dirlist="packages/libmp4tag* packages/libid3tag* "
@@ -378,11 +378,11 @@ if [[ $mksrcpkg == T && $insttest == F ]]; then
       mkdir -p ${stagedir}
       nm=$(pkgsrcadditionalnm)
 
-      f="packages/acrcloud-macos${pn_archtag}"
+      f="packages/acr_extr-macos"
       dir=plocal/bin
       test -d ${stagedir}/${dir} || mkdir -p ${stagedir}/${dir}
       if [[ -f ${f} ]]; then
-        rsync -aS ${f} ${stagedir}/${dir}/acrcloud
+        rsync -aS ${f} ${stagedir}/${dir}/acr_extr
       fi
 
       dirlist="packages/bundles/Mojave* "
@@ -403,11 +403,11 @@ if [[ $mksrcpkg == T && $insttest == F ]]; then
       mkdir -p ${stagedir}
       nm=$(pkgsrcadditionalnm)
 
-      f="packages/acrcloud-win64*"
+      f="packages/acr_extr-win64*"
       dir=plocal/bin
       test -d ${stagedir}/${dir} || mkdir -p ${stagedir}/${dir}
       if [[ -f ${f} ]]; then
-        rsync -aS ${f} ${stagedir}/${dir}/acrcloud.exe
+        rsync -aS ${f} ${stagedir}/${dir}/acr_extr.exe
       fi
 
       f="packages/fpcalc-windows.exe"

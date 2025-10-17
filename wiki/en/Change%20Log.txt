@@ -7,8 +7,9 @@
 **4.17.3 2025-10---**
 
 * Bug Fixes:
-    * PENDING: Playlist Management: Fix playlist not being saved for new playlists.
-
+    * Mobile Remote Control: Fix broken processing.
+    * Mobile Remote Control: Fix javascript in html templates.
+    * PENDING: Playlist Management: Fix changes not being saved for new playlists.
 
 -->
 

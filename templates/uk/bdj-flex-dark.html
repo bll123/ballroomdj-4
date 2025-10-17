@@ -502,7 +502,16 @@ bdj.updatePlayListSel = function (data) {
 }
 
 bdj.updateData = function (data) {
-  var jd = JSON.parse (data);
+  if (! data) {
+    return;
+  }
+
+  try {
+    var jd = JSON.parse (data);
+  } catch (error) {
+    console.log ("parse-error: error: " + error);
+    console.log ("parse-error: data: " + data);
+  }
 
   if (! jd) {
     return;

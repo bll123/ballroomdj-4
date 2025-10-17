@@ -121,9 +121,19 @@ bdj.muteState = 0;
 bdj.updateData = function (data) {
   var nm;
 
-  var jd = '';
-  if (data != '') {
-    jd = JSON.parse (data);
+  if (! data) {
+    return;
+  }
+
+  try {
+    var jd = JSON.parse (data);
+  } catch (error) {
+    console.log ("parse-error: error: " + error);
+    console.log ("parse-error: data: " + data);
+  }
+
+  if (! jd) {
+    return;
   }
 
   var o = document.getElementById("title");

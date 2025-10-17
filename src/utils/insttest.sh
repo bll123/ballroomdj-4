@@ -945,12 +945,12 @@ function checkInstallation {
       echo "  no bdj4server"
     fi
 
-    # make sure acrcloud gets installed
+    # make sure acr_extr gets installed
     res=$(($res+1))
-    if [[ $fin == T && -f "${target}/plocal/bin/acrcloud${sfx}" ]]; then
+    if [[ $fin == T && -f "${target}/plocal/bin/acr_extr${sfx}" ]]; then
       chk=$(($chk+1))
     else
-      echo "  no plocal/bin/acrcloud file"
+      echo "  no plocal/bin/acr_extr file"
     fi
 
     # bdj4 exec
@@ -1183,8 +1183,8 @@ if [[ $readonly == F && $crc -eq 0 ]]; then
   checkInstallation $section $tname "$out" $rc u y
   waitForInstallDirRemoval
 
-  # make sure acrcloud gets installed on update
-  rm -f $TARGETTOPDIR/plocal/bin/acrcloud
+  # make sure acr_extr gets installed on update
+  rm -f $TARGETTOPDIR/plocal/bin/acr_extr
 
   # update w/various update tasks
   # this should get installed as of version 4.1.0

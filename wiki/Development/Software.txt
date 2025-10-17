@@ -9,7 +9,6 @@
   curl | https://curl.se/
   ffmpeg | https://ffmpeg.org/download.html#build-windows
   &nbsp; | https://github.com/GyanD/codexffmpeg/releases
-  libressl | https://www.libressl.org/
   mongoose | https://github.com/cesanta/mongoose
   &nbsp; |
   libogg | https://xiph.org
@@ -18,6 +17,7 @@
   opusfile | https://xiph.org
   flac | https://xiph.org
   id3tag | https://github.com/audacity/libid3tag
+  acrcloud | https://github.com/acrcloud/acrcloud_extr_tools
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)

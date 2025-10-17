@@ -360,7 +360,10 @@ mobmqBuildResponse (mobmqdata_t *mobmqdata)
 
   data = mobmqdata->marqueeData;
   title = mobmqdata->title;
+
   if (data == NULL || mobmqdata->finished) {
+    /* I don't think this ever get reached...bdj4main handles the message */
+    /* and the html changes current == "" to 'Not Playing'. */
     if (title == NULL) {
       title = "";
     }

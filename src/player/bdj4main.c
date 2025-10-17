@@ -1162,12 +1162,12 @@ mainSendMarqueeData (maindata_t *mainData)
     }
 
     if (mobmarqueeactive) {
+      if (*dstr == MSG_ARGS_EMPTY) {
+        dstr = "";
+      }
       if (marqueeidx == 0) {
         snprintf (tbuff, sizeof (tbuff), "\"current\" : \"%s\"", dstr);
       } else {
-        if (*dstr == MSG_ARGS_EMPTY) {
-          dstr = "";
-        }
         snprintf (tbuff, sizeof (tbuff), "\"mq%d\" : \"%s\"", marqueeidx, dstr);
       }
       jp = stpecpy (jp, jend, ", ");

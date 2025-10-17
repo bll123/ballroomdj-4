@@ -195,7 +195,7 @@ acrLookup (audioidacr_t *acr, const song_t *song, audioid_resp_t *resp)
   const char      *query [40];
   int             qc = 0;
   const char      *targv [15];
-  const char      *acrcloud;
+  const char      *acrextr;
   int             targc = 0;
   const char      *fn;
   char            ffn [MAXPATHLEN];
@@ -210,9 +210,9 @@ acrLookup (audioidacr_t *acr, const song_t *song, audioid_resp_t *resp)
     return 0;
   }
 
-  acrcloud = sysvarsGetStr (SV_PATH_ACRCLOUD);
-  if (acrcloud == NULL || ! *acrcloud) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "acrcloud: no acrcloud executable");
+  acrextr = sysvarsGetStr (SV_PATH_ACRCLOUD);
+  if (acrextr == NULL || ! *acrextr) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "acrcloud: no acr_extr executable");
     return 0;
   }
 

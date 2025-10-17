@@ -236,22 +236,26 @@ remctrlEventHandler (void *userdata, const char *query, const char *uri)
     }
   } else if (strcmp (uri, "/cmd") == 0) {
     bool        ok = true;
-    char        querycmd [80];
+    char        querycmd [800];
     char        *ptr;
     const char  *querydata = NULL;
 
-    *tbuff = '\0';
-    ptr = strstr (query, " ");
-    if (ptr != NULL) {
-      size_t      len;
+    logMsg (LOG_DBG, LOG_IMPORTANT, "event: cmd: %s", uri);
 
-      len = ptr - query + 1;
-      if (len <= sizeof (querycmd)) {
-        stpecpy (querycmd, querycmd + len, query);
-        querydata = ptr + 1;
-      }
+    *tbuff = '\0';
+    stpecpy (querycmd, querycmd + sizeof (querycmd), query);
+    ptr = strstr (querycmd, " ");
+    if (ptr != NULL) {
+      *ptr = '\0';
+      querydata = ptr + 1;
     }
 
+    if (*querycmd) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "event: cmd: query: %s", querycmd);
+    }
+    if (querydata != NULL) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "event: cmd: query-data: %s", querydata);
+    }
     if (strcmp (querycmd, "clear") == 0) {
       /* clears any playlists and truncates the music queue */
       connSendMessage (remctrl->conn,
