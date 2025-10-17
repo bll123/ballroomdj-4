@@ -562,7 +562,8 @@ main (int argc, char *argv [])
     /* 4.3.2: 2023-4-27 : Mobile marquee HTML file has minor updates. */
     /* 4.4.8: 2023-12-22 : fix version check, update version */
     /* 4.11.3: 2024-7-28 : update for internet mode */
-    updaterCopyHTMLVersionCheck ("mobilemq", BDJ4_HTML_EXT, 4);
+    /* 4.17.3: 2025-10-17 : fixes */
+    updaterCopyHTMLVersionCheck ("mobilemq", BDJ4_HTML_EXT, 5);
   }
 
   {
