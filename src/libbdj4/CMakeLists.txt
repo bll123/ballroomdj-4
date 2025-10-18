@@ -60,7 +60,9 @@ target_include_directories (libbdj4
 )
 target_link_libraries (libbdj4 PRIVATE
   libbdj4ati
-  libbdj4audiosrc libbdj4basic libbdj4common
+  libbdj4audiosrc
+  objwebsrv
+  libbdj4basic libbdj4common
   ${GCRYPT_LDFLAGS}
   ${GLIB_LDFLAGS}
   ${JSONC_LDFLAGS}

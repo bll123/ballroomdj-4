@@ -15,7 +15,6 @@ endif()
 target_link_libraries (bdj4server PRIVATE
   libbdj4audiosrc
   libwebclient libbdj4 libbdj4basic libbdj4common
-  objwebsrv
 )
 addIntlLibrary (bdj4server)
 addWinSockLibrary (bdj4server)

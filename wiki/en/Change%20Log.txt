@@ -10,6 +10,10 @@
     * Mobile Remote Control: Fix broken processing.
     * Mobile Remote Control: Fix javascript and javascript creation.
     * Playlist Management: Fix changes not being saved in certain circumstances.
+* Internal:
+    * ffmpeg update to version 8.x (windows).
+    * libogg: update to version 1.3.6 (windows).
+    * mongoose: update to version 7.19.
 
 -->
 

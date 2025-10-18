@@ -8,6 +8,10 @@ include (../utils/bdj4macros.cmake)
 add_library (objwebsrv OBJECT
   websrv.c ${MONGOOSE_SRC}
 )
+# mongoose has mixed declarations and statements
+target_compile_options (objwebsrv PRIVATE
+  "-Wno-declaration-after-statement"
+)
 target_include_directories (objwebsrv
   PRIVATE "${MONGOOSE_INC_DIR}"
   PRIVATE "${OPENSSL_INCLUDE_DIRS}"

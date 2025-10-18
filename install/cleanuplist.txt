@@ -365,9 +365,17 @@ plocal/bin/avutil-58\.dll$
 # 2025-8-8 curl no longer shipped
 licenses/curl.LICENSE
 
-# 2026-9-8
+# 2025-9-8
 # msys2 updates
 plocal/bin/libngtcp2_crypto_ossl\.dll$
+
+# 2025-10-18
+# ffmpeg updated to version 8
+plocal/bin/avcodex-61\.dll$
+plocal/bin/avdevice-61\.dll$
+plocal/bin/avfilter-10\.dll$
+plocal/bin/avformat-61\.dll$
+plocal/bin/avutil-59\.dll$
 
 ####
 # data-dir

@@ -59,7 +59,6 @@ if (WIN32)
   target_compile_options (bdj4rc PRIVATE -municode)
 endif()
 target_link_libraries (bdj4rc PRIVATE
-  objwebsrv
   libbdj4 libbdj4basic libbdj4common
 )
 addWinSockLibrary (bdj4rc)
@@ -74,7 +73,6 @@ if (WIN32)
   target_compile_options (bdj4mobmq PRIVATE -municode)
 endif()
 target_link_libraries (bdj4mobmq PRIVATE
-  objwebsrv
   libwebclient libbdj4 libbdj4basic libbdj4common
 )
 addIntlLibrary (bdj4mobmq)
