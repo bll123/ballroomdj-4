@@ -8,8 +8,8 @@
 
 * Bug Fixes:
     * Mobile Remote Control: Fix broken processing.
-    * Mobile Remote Control: Fix javascript in html templates.
-    * PENDING: Playlist Management: Fix changes not being saved for new playlists.
+    * Mobile Remote Control: Fix javascript and javascript creation.
+    * Playlist Management: Fix changes not being saved in certain circumstances.
 
 -->
 

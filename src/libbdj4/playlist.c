@@ -334,7 +334,6 @@ playlistCheck (playlist_t *pl)
     if (pl->songlist != NULL &&
         songlistGetCount (pl->songlist) > 0) {
       rc = true;
-    } else {
     }
   }
   if (type == PLTYPE_AUTO) {

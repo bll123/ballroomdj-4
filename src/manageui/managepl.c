@@ -662,23 +662,26 @@ managePlaylistSave (managepl_t *managepl)
 
   pltype = playlistGetConfigNum (managepl->playlist, PLAYLIST_TYPE);
 
-  if (managepl->changed) {
-    manageSetPlaylistName (managepl, name);
-    managePlaylistUpdatePlaylist (managepl);
+  if (! managepl->changed) {
+    mdfree (name);
+    return;
+  }
 
-    if (! playlistCheck (managepl->playlist)) {
-      mdfree (name);
-      return;
-    }
+  manageSetPlaylistName (managepl, name);
+  managePlaylistUpdatePlaylist (managepl);
 
-    playlistSave (managepl->playlist, name);
-    /* callback to load the songlist/sequence into the music manager */
-    if (managepl->plloadcb != NULL &&
-        (pltype == PLTYPE_SONGLIST ||
-        pltype == PLTYPE_SEQUENCE ||
-        pltype == PLTYPE_PODCAST)) {
-      callbackHandlerS (managepl->plloadcb, name);
-    }
+  if (! playlistCheck (managepl->playlist)) {
+    mdfree (name);
+    return;
+  }
+
+  playlistSave (managepl->playlist, name);
+  /* callback to load the songlist/sequence into the music manager */
+  if (managepl->plloadcb != NULL &&
+      (pltype == PLTYPE_SONGLIST ||
+      pltype == PLTYPE_SEQUENCE ||
+      pltype == PLTYPE_PODCAST)) {
+    callbackHandlerS (managepl->plloadcb, name);
   }
 
   mdfree (name);

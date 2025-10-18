@@ -290,6 +290,8 @@ manageSequenceSave (manageseq_t *manageseq)
   sequenceSave (seq, slist);
   sequenceFree (seq);
 
+  uiduallistClearChanged (manageseq->seqduallist);
+
   playlistCheckAndCreate (name, PLTYPE_SEQUENCE);
   slistFree (slist);
   if (manageseq->seqloadcb != NULL) {
