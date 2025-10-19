@@ -113,18 +113,22 @@ istringInit (const char *locale)
     istringdata.ucol_open = dylibLookup (istringdata.i18ndlh, tbuff);
     snprintf (tbuff, sizeof (tbuff), "ucol_strcollUTF8_%d", version);
     istringdata.ucol_strcollUTF8 = dylibLookup (istringdata.i18ndlh, tbuff);
-    snprintf (tbuff, sizeof (tbuff), "u_strToUTF8_%d", version);
-    istringdata.u_strToUTF8 = dylibLookup (istringdata.ucdlh, tbuff);
     snprintf (tbuff, sizeof (tbuff), "ucol_close_%d", version);
     istringdata.ucol_close = dylibLookup (istringdata.i18ndlh, tbuff);
-    snprintf (tbuff, sizeof (tbuff), "u_errorName_%d", version);
-    istringdata.u_errorName = dylibLookup (istringdata.ucdlh, tbuff);
+
     snprintf (tbuff, sizeof (tbuff), "ucasemap_open_%d", version);
     istringdata.ucasemap_open = dylibLookup (istringdata.ucdlh, tbuff);
     snprintf (tbuff, sizeof (tbuff), "ucasemap_utf8ToLower_%d", version);
     istringdata.ucasemap_utf8ToLower = dylibLookup (istringdata.ucdlh, tbuff);
     snprintf (tbuff, sizeof (tbuff), "ucasemap_close_%d", version);
     istringdata.ucasemap_close = dylibLookup (istringdata.ucdlh, tbuff);
+
+    /* u_strToUTF8 and u_errorName are in both i18n and uc on linux/macos, */
+    /* but only uc on windows (fixed in 4.17.3) */
+    snprintf (tbuff, sizeof (tbuff), "u_strToUTF8_%d", version);
+    istringdata.u_strToUTF8 = dylibLookup (istringdata.ucdlh, tbuff);
+    snprintf (tbuff, sizeof (tbuff), "u_errorName_%d", version);
+    istringdata.u_errorName = dylibLookup (istringdata.ucdlh, tbuff);
   }
 
   istringdata.ucoll = istringdata.ucol_open (locale, &status);
