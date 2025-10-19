@@ -250,7 +250,7 @@ echo "-- $(date +%T) copying licenses"
 licdir=licenses
 test -d ${licdir} && rm -rf ${licdir}
 mkdir -p ${licdir}
-cp -pf packages/mongoose*/LICENSE ${licdir}/mongoose.LICENSE
+cp -pf src/mongoose/LICENSE ${licdir}/mongoose.LICENSE
 cp -pf packages/libid3tag*/COPYING ${licdir}/libid3tag.LICENSE
 cp -pf packages/libmp4tag*/LICENSE.txt ${licdir}/libmp4tag.LICENSE
 if [[ $platform == windows ]]; then

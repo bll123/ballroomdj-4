@@ -25,6 +25,7 @@ enum {
 typedef void dlhandle_t;
 
 dlhandle_t    *dylibLoad (const char *path, dlopt_t opt);
+int           dylibVersion (void);
 void          dylibClose (dlhandle_t *dlhandle);
 void          *dylibLookup (dlhandle_t *dlhandle, const char *funcname);
 int           dylibCheckVersion (dlhandle_t *dlhandle, const char *funcname, dlopt_t opt);

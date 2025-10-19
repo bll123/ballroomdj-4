@@ -632,18 +632,6 @@ gstiCrossFadeVolume (gsti_t *gsti, int vol)
   gstiRunOnce (gsti);
 }
 
-#if 0
-void
-gstiSetVolume (gsti_t *gsti, double vol)
-{
-  double  dval = vol;
-
-  gstiRunOnce (gsti);
-  g_object_set (G_OBJECT (gsti->pipeline [gsti->curr]), "volume", &dval, NULL);
-  gstiRunOnce (gsti);
-}
-#endif
-
 /* internal routines */
 
 static void

@@ -11,6 +11,12 @@
 #include <time.h>
 #include <unistd.h>
 #include <locale.h>
+#if __has_include (<uchar.h>)
+# include <uchar.h>
+#else
+/* macos does not have uchar.h */
+typedef uint_least16_t char16_t;
+#endif
 
 #pragma clang diagnostic push
 #pragma GCC diagnostic push
@@ -26,6 +32,21 @@
 #include "log.h"
 #include "osutils.h"
 #include "sysvars.h"
+
+START_TEST(istring_check)
+{
+  bool    rc;
+
+  istringCleanup ();
+  istringInit ("en_US");
+
+  rc = istringCheck ();
+  ck_assert_int_eq (rc, 1);
+
+  istringCleanup ();
+  istringInit (sysvarsGetStr (SV_LOCALE));
+}
+END_TEST
 
 /* note that this does not work within the C locale */
 START_TEST(istring_istrlen)
@@ -149,6 +170,25 @@ START_TEST(istring_tolower)
 }
 END_TEST
 
+START_TEST(istring_toutf8)
+{
+  char16_t  *inbuff;
+  char      *tbuff;
+  char      *tbuffb;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- istring_toutf8");
+  mdebugSubTag ("istring_toutf8");
+
+  tbuff = "내가제일잘나가";
+  inbuff = u"내가제일잘나가";
+  tbuffb = istring16ToUTF8 ((const unsigned char *) inbuff);
+  ck_assert_ptr_nonnull (tbuffb);
+
+  ck_assert_str_eq (tbuff, tbuffb);
+  mdfree (tbuffb);
+}
+END_TEST
+
 Suite *
 istring_suite (void)
 {
@@ -158,9 +198,11 @@ istring_suite (void)
   s = suite_create ("istring");
   tc = tcase_create ("istring");
   tcase_set_tags (tc, "libbasic");
+  tcase_add_test (tc, istring_check);
   tcase_add_test (tc, istring_istrlen);
   tcase_add_test (tc, istring_comp);
   tcase_add_test (tc, istring_tolower);
+  tcase_add_test (tc, istring_toutf8);
   suite_add_tcase (s, tc);
   return s;
 }

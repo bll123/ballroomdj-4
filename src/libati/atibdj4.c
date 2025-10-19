@@ -40,6 +40,8 @@ atiiInit (const char *atipkg, int writetags,
   atidata_t     *atidata;
   const char    *avfmtnm = "libavformat";
   const char    *avutilnm = "libavutil";
+  int           avfmtvers;
+  int           avutilvers;
 
   if (isWindows ()) {
     avfmtnm = "avformat-";
@@ -58,8 +60,11 @@ atiiInit (const char *atipkg, int writetags,
 
   atidata->avfmtdlh = dylibLoad (avfmtnm,
       DYLIB_OPT_MAC_PREFIX | DYLIB_OPT_VERSION | DYLIB_OPT_AV);
+  avfmtvers = dylibVersion ();
   atidata->avutildlh = dylibLoad (avutilnm,
       DYLIB_OPT_MAC_PREFIX | DYLIB_OPT_VERSION | DYLIB_OPT_AV);
+  avutilvers = dylibVersion ();
+  logMsg (LOG_DBG, LOG_INFO, "lib: avfmt: %d avutil: %d\n", avfmtvers, avutilvers);
 
   atidata->av_log_set_callback = dylibLookup (atidata->avutildlh, "av_log_set_callback");
   atidata->av_strerror = dylibLookup (atidata->avutildlh, "av_strerror");

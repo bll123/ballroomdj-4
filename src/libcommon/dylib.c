@@ -26,6 +26,7 @@
 #include "pathdisp.h"
 #include "sysvars.h"
 
+static int dylibvers = 0;
 static dlhandle_t * dylibBasicOpen (char *path, size_t sz);
 
 dlhandle_t *
@@ -44,6 +45,7 @@ dylibLoad (const char *path, dlopt_t opt)
 
   if ((opt & DYLIB_OPT_MAC_PREFIX) == DYLIB_OPT_MAC_PREFIX && isMacOS ()) {
     /* must have trailing slash */
+    /* this assumes macports */
     pfx = "/opt/local/lib/";
   }
 
@@ -65,7 +67,8 @@ dylibLoad (const char *path, dlopt_t opt)
         end = DYLIB_AV_END_VERS;
       }
 
-      /* ubuntu does not use plain .so links */
+      /* ubuntu(?) does not use plain .so links */
+      /* there was some version of linux that did not */
       for (int i = beg; i < end; ++i) {
         if (isWindows ()) {
           snprintf (npath, sizeof (npath), "%s%s%d%s", pfx, path, i, shlibext);
@@ -74,6 +77,7 @@ dylibLoad (const char *path, dlopt_t opt)
         }
         handle = dylibBasicOpen (npath, sizeof (npath));
         if (handle != NULL) {
+          dylibvers = i;
           break;
         }
       }
@@ -87,6 +91,13 @@ dylibLoad (const char *path, dlopt_t opt)
   }
 
   return handle;
+}
+
+/* must be called immediately after dylibLoad() */
+int
+dylibVersion (void)         /* TESTING */
+{
+  return dylibvers;
 }
 
 void

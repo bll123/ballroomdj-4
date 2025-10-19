@@ -7,6 +7,7 @@
 **4.17.3 2025-10---**
 
 * Bug Fixes:
+    * Fix WMA audio file processing (windows: introduced in 4.15.5).
     * Mobile Remote Control: Fix broken processing.
     * Mobile Remote Control: Fix javascript and javascript creation.
     * Playlist Management: Fix changes not being saved in certain circumstances.
