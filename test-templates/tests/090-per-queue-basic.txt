@@ -18,6 +18,7 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
+mssleep 100
 chk actualvolume defaultvol
 resptimeout 29000
 wait playstate in-fadeout

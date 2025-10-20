@@ -8,6 +8,10 @@ while test ! \( -d src -a -d web -a -d wiki \); do
 done
 cwd=$(pwd)
 
+if [[ ! -d tmp ]]; then
+  mkdir tmp
+fi
+
 # with audiotag/dbupdate
 # DBGLEVEL=$((1+2+8+4194304+262144))
 # with songsel
