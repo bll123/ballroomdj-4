@@ -56,17 +56,19 @@ if (NOT WIN32 AND NOT APPLE)
   )
 endif()
 
-add_library (libpligst SHARED pligst.c gsti.c)
-target_include_directories (libpligst
-  PRIVATE "${GST_INCLUDE_DIRS}"
-  PRIVATE "${GLIB_INCLUDE_DIRS}"
-)
-target_link_libraries (libpligst PRIVATE
-  libbdj4common
-  ${GST_LDFLAGS}
-  ${GLIB_LDFLAGS}
-)
-addIntlLibrary (libpligst)
+if (GST_FOUND)
+  add_library (libpligst SHARED pligst.c gsti.c)
+  target_include_directories (libpligst
+    PRIVATE "${GST_INCLUDE_DIRS}"
+    PRIVATE "${GLIB_INCLUDE_DIRS}"
+  )
+  target_link_libraries (libpligst PRIVATE
+    libbdj4common
+    ${GST_LDFLAGS}
+    ${GLIB_LDFLAGS}
+  )
+  addIntlLibrary (libpligst)
+endif()
 
 if (WIN32)
   add_library (libpliwinmp SHARED pliwinmp.c winmpi.cpp)
@@ -81,16 +83,10 @@ endif()
 install (TARGETS
   libbdj4pli
   libplinull
-  libpligst
   DESTINATION ${DEST_BIN}
 )
-if (NOT WIN32 AND NOT APPLE)
-  install (TARGETS
-    libplimpris
-    DESTINATION ${DEST_BIN}
-  )
-  updateRPath (libplimpris)
-endif()
+updateRPath (libbdj4pli)
+updateRPath (libplinull)
 
 if (LIBVLC_FOUND)
   install (TARGETS
@@ -108,6 +104,22 @@ if (LIBVLC4_FOUND)
   updateRPath (libplivlc4)
 endif()
 
+if (NOT WIN32 AND NOT APPLE)
+  install (TARGETS
+    libplimpris
+    DESTINATION ${DEST_BIN}
+  )
+  updateRPath (libplimpris)
+endif()
+
+if (GST_FOUND)
+  install (TARGETS
+    libpligst
+    DESTINATION ${DEST_BIN}
+  )
+  updateRPath (libpligst)
+endif()
+
 if (WIN32)
   install (TARGETS
     libpliwinmp
@@ -116,7 +128,4 @@ if (WIN32)
   updateRPath (libpliwinmp)
 endif()
 
-updateRPath (libbdj4pli)
-updateRPath (libplinull)
-updateRPath (libpligst)
 

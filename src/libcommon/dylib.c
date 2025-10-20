@@ -21,6 +21,7 @@
 #include "bdjstring.h"
 #include "fileop.h"
 #include "dylib.h"
+#include "log.h"
 #include "mdebug.h"
 #include "osutils.h"
 #include "pathdisp.h"
@@ -85,7 +86,8 @@ dylibLoad (const char *path, dlopt_t opt)
   }
 
   if (handle == NULL) {
-    fprintf (stderr, "ERR: dylib open %s failed: %d %s\n", path, errno, strerror (errno));
+    logMsg (LOG_DBG, LOG_IMPORTANT, "WARN: dylib open %s failed: %d %s\n",
+        path, errno, strerror (errno));
   } else {
     mdextalloc (handle);
   }

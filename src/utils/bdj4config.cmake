@@ -97,7 +97,7 @@ pkg_check_modules (XML2 libxml-2.0)
 # will need to figure out vlc3/vlc4 in the future
 pkg_check_modules (LIBVLC libvlc)
 
-# on MacOS, the libvlc.dylib is located in a different place
+# on MacOS, the libvlc.dylib is located in different locations
 # for vlc-3 and vlc-4.
 if (APPLE AND NOT LIBVLC_FOUND)
   # for development
@@ -168,9 +168,17 @@ if (WIN32 AND NOT LIBVLC_FOUND)
   endif()
 endif()
 
-# this is required for the build process on all systems.
-if (NOT LIBVLC_FOUND AND NOT LIBVLC4_FOUND)
+# gstreamer
+
+pkg_check_modules (GST gstreamer-1.0)
+
+# VLC is no longer required for a build on all systems
+# Windows can use Windows Media Player, and Linux can use GStreamer
+if (APPLE AND NOT LIBVLC_FOUND AND NOT LIBVLC4_FOUND)
   message (FATAL_ERROR "Unable to locate a VLC library")
+endif()
+if (NOT APPLE AND NOT WIN32 AND NOT LIBVLC_FOUND AND NOT LIBVLC4_FOUND AND NOT GST_FOUND)
+  message (FATAL_ERROR "Unable to locate a VLC/GStreamer library")
 endif()
 
 #### tag parsing modules
@@ -183,10 +191,6 @@ else()
   pkg_check_modules (LIBAVFORMAT libavformat)
 #  pkg_check_modules (LIBAVUTIL libavutil)
 endif()
-
-# gstreamer
-
-pkg_check_modules (GST gstreamer-1.0)
 
 # libid3tag
 pkg_check_modules (LIBID3TAG id3tag)
