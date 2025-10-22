@@ -36,6 +36,7 @@
 #include "osprocess.h"
 #include "ossignal.h"
 #include "osuiutils.h"
+#include "osutils.h"
 #include "pathbld.h"
 #include "procutil.h"
 #include "progstate.h"
@@ -522,7 +523,7 @@ starterStoppingCallback (void *udata, programstate_t programState)
   logProcBegin ();
 
   if (starter->started [ROUTE_PLAYERUI]) {
-    starterPlayerShutdown ();
+    osResumeSleep ();
   }
 
   for (int route = 0; route < ROUTE_MAX; ++route) {
@@ -1250,7 +1251,7 @@ starterCloseProcess (startui_t *starter, bdjmsgroute_t routefrom, int request)
   }
   if (routefrom == ROUTE_PLAYERUI) {
     starterSendProcessActive (starter, ROUTE_MANAGEUI, ROUTE_PLAYERUI);
-    starterPlayerShutdown ();
+    osResumeSleep ();
   }
 
   if (request == CLOSE_CRASH && wasstarted && routefrom == ROUTE_PLAYERUI) {
@@ -1344,7 +1345,7 @@ starterStartPlayerui (void *udata)
   rc = starterStartProcess (starter, "bdj4playerui", ROUTE_PLAYERUI);
   starter->lastPluiStart = mstime ();
   mstimeset (&starter->pluiCheckTime, 500);
-  starterPlayerStartup ();
+  osSuspendSleep ();
   starterSendProcessActive (starter, ROUTE_MANAGEUI, ROUTE_PLAYERUI);
   return rc;
 }

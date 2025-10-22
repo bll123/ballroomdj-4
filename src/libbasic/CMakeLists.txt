@@ -23,6 +23,33 @@ add_library (libbdj4basic SHARED
   slist.c
   xmlparse.c
 )
+# the sleep utilities are in libbasic due
+# to linux needing bdjopt
+if (APPLE)
+  target_sources (libbdj4basic PRIVATE
+    osmacsleep.m
+  )
+  target_link_options (libbdj4basic PRIVATE
+    -framework Cocoa
+  )
+endif()
+if (WIN32)
+  target_sources (libbdj4basic PRIVATE
+    oswinsleep.c
+  )
+endif()
+if (NOT APPLE AND NOT WIN32)
+  target_include_directories (libbdj4basic
+    PRIVATE "${GIO_INCLUDE_DIRS}"
+  )
+  target_sources (libbdj4basic PRIVATE
+    dbusi.c
+    oslinuxsleep.c
+  )
+  target_link_libraries (libbdj4basic PRIVATE
+    ${GIO_LDFLAGS}
+  )
+endif()
 target_include_directories (libbdj4basic
   PRIVATE "${GLIB_INCLUDE_DIRS}"
   PRIVATE "${XML2_INCLUDE_DIRS}"
@@ -32,6 +59,8 @@ target_link_libraries (libbdj4basic PRIVATE
   ${GLIB_LDFLAGS}
   ${XML2_LDFLAGS}
 )
+addIntlLibrary (libbdj4basic)
+addIOKitFramework (libbdj4basic)
 
 install (TARGETS
   libbdj4basic

@@ -3,9 +3,10 @@
 #
 cmake_minimum_required (VERSION 3.18)
 
-# avoid msys2/windows issue
+# avoid compiler check issues
 set (CMAKE_C_COMPILER_WORKS 1)
 set (CMAKE_CXX_COMPILER_WORKS 1)
+set (CMAKE_OBJC_COMPILER_WORKS 1)
 
 set (BDJ4_VERSION ${BDJ4_BUILD_VERS})
 project (BDJ4

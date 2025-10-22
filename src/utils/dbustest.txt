@@ -1,5 +1,23 @@
 # DBUS_DEBUG must be turned on for this to be useful
 
+# KDE
+#
+#init
+#call
+#org.freedesktop.PowerManagement.Inhibit
+#/org/freedesktop/PowerManagement/Inhibit
+#org.freedesktop.DBus.Introspectable
+#Introspect
+#
+#init
+#data
+#("BDJ4","playback")
+#call
+#org.freedesktop.PowerManagement.Inhibit
+#/org/freedesktop/PowerManagement/Inhibit
+#org.freedesktop.PowerManagement.Inhibit
+#Inhibit
+
 init
 call
 org.freedesktop.DBus

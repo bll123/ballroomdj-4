@@ -51,14 +51,6 @@ if (NOT WIN32 AND NOT APPLE)
     DEPENDS ${GDBUSCODEGEN}
   )
 
-  add_library (objdbusi OBJECT dbusi.c)
-  target_include_directories (objdbusi
-    PRIVATE "${GIO_INCLUDE_DIRS}"
-  )
-  target_link_libraries (objdbusi PRIVATE
-    ${GIO_LDFLAGS}
-  )
-
   add_library (objmprisroot OBJECT mpris-root.c)
   target_include_directories (objmprisroot
     PRIVATE "${GIO_INCLUDE_DIRS}"

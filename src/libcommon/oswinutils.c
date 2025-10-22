@@ -106,15 +106,3 @@ osFromWideChar (const wchar_t *buff)
   tbuff [len] = '\0';
   return tbuff;
 }
-
-void
-osSuspendSleep (void)
-{
-  SetThreadExecutionState (ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED);
-}
-
-void
-osResumeSleep (void)
-{
-  SetThreadExecutionState (ES_CONTINUOUS);
-}

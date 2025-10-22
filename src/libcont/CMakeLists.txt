@@ -20,7 +20,7 @@ if (NOT WIN32 AND NOT APPLE)
   )
   target_link_libraries (libcontmpris PRIVATE
     libbdj4basic libbdj4common
-    objmprisroot objmprisplayer objdbusi
+    objmprisroot objmprisplayer
     ${GIO_LDFLAGS}
   )
 endif()

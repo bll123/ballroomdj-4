@@ -10,7 +10,10 @@
     apt-cache search name
 
     virtualbox
-        gcc make dkms linux-headers
+        apt install gcc make dkms linux-headers
+        usermod -a -G vboxsf <user>
+        ubuntu
+            /etc/gdm3/custom.conf -- disable wayland
 
 
 Debian packages for development
@@ -24,7 +27,6 @@ Debian packages for development
     apt install libavformat-dev libavutil-dev
     apt install libxml2-dev libjson-c-dev libcurl4-openssl-dev
     apt install libgstreamer1.0-dev
-    usermod -a -G vboxsf <user>
 
 #### Red Hat based
 
@@ -46,10 +48,6 @@ Fedora packages for development
     dnf install libogg-devel opus-devel opusfile-devel flac-devel
     dnf install libvorbis-devel
     dnf install check-devel json-c-devel gstreamer-devel
-
-Other notes
-
-    usermod -a -G vboxsf <user>
 
 #### Arch based
 
@@ -77,7 +75,6 @@ Alpine Linux packages for development
 
 Other notes
 
-    usermod -a -G vboxsf <user>
     # edit /etc/locale.gen
     # add af_ZA, cs_CZ, da_DK, de_DE, en_GB, en_US, es_ES, fi_FI,
     #     fr_FR, hu_HU, it_IT, ja_JP, ko_KR, nl_BE, nl_NL, pl_PL
@@ -112,10 +109,6 @@ OpenSUSE packages for development
     zypper install libjson-c-devel gstreamer-devel
     zypper refresh
     zypper update
-
-Other notes:
-
-    usermod -a -G vboxsf <user>
 
 [Wiki Home](Home)
 <br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_

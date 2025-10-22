@@ -5,6 +5,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
 
 #include "bdj4.h"
 #include "bdjmsg.h"
@@ -153,50 +156,6 @@ starterCleanVolumeReg (void)
 {
   volregClean ();
   volregClearBDJ4Flag ();
-}
-
-void
-starterPlayerStartup (void)
-{
-  const char    *script;
-
-  osSuspendSleep ();
-
-  script = bdjoptGetStr (OPT_M_STARTUP_SCRIPT);
-  if (script != NULL &&
-      *script &&
-      fileopFileExists (script)) {
-    const char  *targv [2];
-
-    /* the startup script can be an absolute path or a relative path */
-    /* if it is a relative path, it is assumed to be from the main dir */
-    /* which is the current location, so no special processing is needed */
-    targv [0] = script;
-    targv [1] = NULL;
-    osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
-  }
-}
-
-void
-starterPlayerShutdown (void)
-{
-  const char    *script;
-
-  osResumeSleep ();
-
-  script = bdjoptGetStr (OPT_M_SHUTDOWN_SCRIPT);
-  if (script != NULL &&
-      *script &&
-      fileopFileExists (script)) {
-    const char  *targv [2];
-
-    /* the shutdown script can be an absolute path or a relative path */
-    /* if it is a relative path, it is assumed to be from the main dir */
-    /* which is the current location, so no special processing is needed */
-    targv [0] = script;
-    targv [1] = NULL;
-    osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
-  }
 }
 
 /* internal routines */

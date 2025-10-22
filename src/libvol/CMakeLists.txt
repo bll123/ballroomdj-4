@@ -78,10 +78,12 @@ if (NOT WIN32 AND NOT APPLE)
     libvolpa
     DESTINATION ${DEST_BIN}
   )
-  install (TARGETS
-    libvolpipewire
-    DESTINATION ${DEST_BIN}
-  )
+  if (PIPEWIRE_FOUND)
+    install (TARGETS
+      libvolpipewire
+      DESTINATION ${DEST_BIN}
+    )
+  endif()
 endif()
 if (APPLE)
   install (TARGETS

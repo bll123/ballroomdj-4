@@ -50,8 +50,7 @@ if (NOT WIN32 AND NOT APPLE)
     PRIVATE "${GLIB_INCLUDE_DIRS}"
   )
   target_link_libraries (libplimpris PRIVATE
-    libbdj4common
-    objdbusi
+    libbdj4basic libbdj4common
     ${GIO_LDFLAGS}
   )
 endif()

@@ -8,6 +8,10 @@
 
 * Bug Fixes:
     * Linux: Improve shortcut installer.
+    * Linux: KDE: Set presentation mode on during playback.
+    * Linux: XFCE: Fix set of presentation mode.
+* Internal:
+    * Fix some minor build issues.
 
 -->
 

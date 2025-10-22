@@ -40,14 +40,3 @@ osGetSystemFont (const char *gsettingspath)
   return rptr;
 }
 
-void
-osSuspendSleep (void)
-{
-  return;
-}
-
-void
-osResumeSleep (void)
-{
-  return;
-}

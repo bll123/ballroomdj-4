@@ -28,23 +28,28 @@ add_library (libbdj4common SHARED
   sockh.c
   vsencdec.c
 )
+
 if (APPLE)
-  target_sources (libbdj4common PRIVATE osmaclocale.m)
-endif()
-if (WIN32)
-  target_sources (libbdj4common PRIVATE oswinlocale.c)
-endif()
-if (NOT APPLE AND NOT WIN32)
-  target_sources (libbdj4common PRIVATE oslinuxlocale.c)
-endif()
-target_include_directories (libbdj4common
-  PRIVATE "${GLIB_INCLUDE_DIRS}"
-)
-if (APPLE)
+  target_sources (libbdj4common PRIVATE
+    osmaclocale.m
+  )
   target_link_options (libbdj4common PRIVATE
     -framework Cocoa
   )
 endif()
+if (WIN32)
+  target_sources (libbdj4common PRIVATE
+    oswinlocale.c
+  )
+endif()
+if (NOT APPLE AND NOT WIN32)
+  target_sources (libbdj4common PRIVATE
+    oslinuxlocale.c
+  )
+endif()
+target_include_directories (libbdj4common
+  PRIVATE "${GLIB_INCLUDE_DIRS}"
+)
 target_link_libraries (libbdj4common PRIVATE
   objosutils    # osutils.c os*utils.c
   objlauncher   # bdj4arg, pathbld, pathdisp, sysvars, pathutil,
@@ -59,8 +64,6 @@ target_link_libraries (libbdj4common PRIVATE
   ${CMAKE_DL_LIBS}
   m             # needed for Fedora gcc 13
 )
-addIOKitFramework (libbdj4common)
-addIntlLibrary (libbdj4common)
 addWinSockLibrary (libbdj4common)
 # for RtlGetVersion
 addWinNtdllLibrary (libbdj4common)

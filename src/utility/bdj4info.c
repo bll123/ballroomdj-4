@@ -55,6 +55,7 @@ static const char *envitems [] = {
   "XDG_CONFIG_HOME",
   "XDG_CURRENT_DESKTOP",
   "XDG_SESSION_DESKTOP",
+  "XDG_SESSION_TYPE",
 };
 enum {
   ENV_MAX = sizeof (envitems) / sizeof (const char *),

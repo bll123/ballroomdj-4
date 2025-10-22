@@ -33,9 +33,7 @@ If you need help building from source,
       But it does work in Ubuntu 20.04.
     * Mate (2025-8-8)
     * XFCE (2025-8-8)
-* Desktop Environments that have not been tested.
-    * KDE/Plasma
-    The linux player start and stop scripts do not support KDE (turns off screensaver, notifications).
+    * KDE/Plasma (2025-10-22)
 
 If you have a distribution or desktop environment that you want
 supported, please [let me know](Getting%20Help).
