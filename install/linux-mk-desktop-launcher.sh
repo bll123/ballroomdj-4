@@ -46,12 +46,20 @@ for idir in "$desktop" "$HOME/.local/share/applications"; do
   fi
   fpath="$idir/${fullscname}.desktop"
   if [[ -d $idir ]]; then
+    if [[ -f "${fpath}" ]]; then
+      grep -l '^Icon=bdj4_icon' "${fpath}" >/dev/null 2>&1
+      rc=$?
+    else
+      rc=1
+    fi
+    if [[ $rc == 1 ]]; then
       cp -f "${tgtpath}/install/bdj4.desktop" "${fpath}"
       sed -i -e "s,#INSTALLPATH#,${tgtpath},g" \
           -e "s,#APPNAME#,${scname},g" \
           -e "s,#WORKDIR#,${workdir},g" \
           -e "s,#PROFILE#,${profargs},g" \
           "${fpath}"
+    fi
   fi
 done
 

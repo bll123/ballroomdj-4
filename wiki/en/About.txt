@@ -29,7 +29,7 @@ player, the programming language and tools used needed to change.
 BallroomDJ&nbsp;4 (BDJ4) is a complete rewrite designed to replace
 BallroomDJ&nbsp;3.  Work started on BDJ4 in December of 2021.
 
-BDJ4 is not an upgrade to BallroomDJ, but rather a separate
+BDJ4 is not an upgrade to BallroomDJ&nbsp;3, but rather a separate
 installation with its own database and configuration files.  A
 conversion process can be used during installation to convert the
 BallroomDJ&nbsp;3 data files and database to files that can be used by

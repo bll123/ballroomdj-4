@@ -23,15 +23,15 @@ As of 2025-8-9, development needs are:
       I will not be working on this, other than providing guidance to
       whoever takes this on.
 * User Interface:
-    * Mobile: Android / iOS
+    * Tablets/iPad: Android / iOS
       This would be a major task.
       A completely new UI/UX would need to be designed for the small screen.
+    * Qt Widgets
     * Windows Native UI (winrt preferred)
     * MacOS Native UI
       Some attempt has been made for this. Progress is stopped at this time.
       This could be written using SwiftUI.
     * Ultimate&#43;&#43;
-    * Qt Widgets
     * Flutter
     * Nuklear (no macos?, could still be useful)
     * ncurses (is a lightweight non-gui version useful?)
