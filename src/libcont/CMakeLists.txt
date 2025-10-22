@@ -19,7 +19,7 @@ if (NOT WIN32 AND NOT APPLE)
     PRIVATE "${GLIB_INCLUDE_DIRS}"
   )
   target_link_libraries (libcontmpris PRIVATE
-    libbdj4basic libbdj4common
+    libbdj4common
     objmprisroot objmprisplayer
     ${GIO_LDFLAGS}
   )

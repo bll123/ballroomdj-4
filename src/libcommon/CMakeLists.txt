@@ -43,8 +43,15 @@ if (WIN32)
   )
 endif()
 if (NOT APPLE AND NOT WIN32)
+  target_include_directories (libbdj4common
+    PRIVATE "${GIO_INCLUDE_DIRS}"
+  )
   target_sources (libbdj4common PRIVATE
+    dbusi.c
     oslinuxlocale.c
+  )
+  target_link_libraries (libbdj4common PRIVATE
+    ${GIO_LDFLAGS}
   )
 endif()
 target_include_directories (libbdj4common

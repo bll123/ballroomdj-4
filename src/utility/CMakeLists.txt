@@ -101,7 +101,7 @@ if (NOT WIN32 AND NOT APPLE)
     PRIVATE "${GLIB_INCLUDE_DIRS}"
   )
   target_link_libraries (dbustest PRIVATE
-    libbdj4basic libbdj4common
+    libbdj4common
     ${GIO_LDFLAGS}
     ${GLIB_LDFLAGS}
   )

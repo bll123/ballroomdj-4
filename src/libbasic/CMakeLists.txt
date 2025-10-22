@@ -39,11 +39,7 @@ if (WIN32)
   )
 endif()
 if (NOT APPLE AND NOT WIN32)
-  target_include_directories (libbdj4basic
-    PRIVATE "${GIO_INCLUDE_DIRS}"
-  )
   target_sources (libbdj4basic PRIVATE
-    dbusi.c
     oslinuxsleep.c
   )
   target_link_libraries (libbdj4basic PRIVATE
