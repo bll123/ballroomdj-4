@@ -82,8 +82,8 @@ libraries should be updated via the following instructions.
 To get the latest software updates, simply re-run the
 macos-pre-install-macports script again.
 
-Download the latest macos-pre-install-macports-v21.sh script from
-sourceforge (version 21 as of 2025-3-30).
+Download the latest macos-pre-install-macports-v23.sh script from
+sourceforge (version 23 as of 2025-10-23).
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
@@ -93,7 +93,7 @@ finish. You may be required to enter your administrative password more
 than once during the installation process.
 
     cd Downloads
-    bash macos-pre-install-macports-v21.sh
+    bash macos-pre-install-macports-v23.sh
 
 #### Linux
 
@@ -101,4 +101,4 @@ On Linux, simply let your software updater run to get the latest
 software libraries and the latest VLC.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_
+<br>_(Updated 2025-10-23 09:13:03; BDJ4 version 4.17.3.1)_

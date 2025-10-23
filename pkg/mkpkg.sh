@@ -28,7 +28,6 @@ function copysrcfiles {
   stage=$2
 
   filelist="LICENSE.txt README.md VERSION.txt BUILD.txt "
-  filelist+="packages/mongoose*/LICENSE "
   dirlist="src conv img http install licenses scripts locale pkg
       templates test-templates web wiki wiki-i"
 
