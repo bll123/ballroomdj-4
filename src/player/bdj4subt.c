@@ -252,10 +252,8 @@ static void
 subtBuildUI (subt_t *subt)
 {
   char        imgbuff [MAXPATHLEN];
-//  uiwcont_t   *uiwidgetp;
-  uiwcont_t   *mainvbox;
-//  uiwcont_t   *hbox;
-//  uiwcont_t   *vbox;
+  uiwcont_t   *uiwidgetp;
+  uiwcont_t   *vbox;
   int         x, y;
 
   logProcBegin ();
@@ -273,13 +271,17 @@ subtBuildUI (subt_t *subt)
   y = nlistGetNum (subt->options, SUBT_SIZE_Y);
   uiWindowSetDefaultSize (subt->wcont [SUBT_W_WINDOW], x, y);
 
-  mainvbox = uiCreateVertBox ();
-  uiWindowPackInWindow (subt->wcont [SUBT_W_WINDOW], mainvbox);
-  uiWidgetSetAllMargins (mainvbox, 10);
-  uiWidgetExpandHoriz (mainvbox);
-  uiWidgetExpandVert (mainvbox);
+  vbox = uiCreateVertBox ();
+  uiWindowPackInWindow (subt->wcont [SUBT_W_WINDOW], vbox);
+  uiWidgetSetAllMargins (vbox, 2);
+  uiWidgetExpandHoriz (vbox);
+  uiWidgetExpandVert (vbox);
 
-  subt->wcont [SUBT_W_TEXTBOX] = uiTextBoxCreate (200, NULL);
+  uiwidgetp = uiTextBoxCreate (100, NULL);
+  uiTextBoxHorizExpand (uiwidgetp);
+  uiTextBoxVertExpand (uiwidgetp);
+  uiBoxPackStartExpand (vbox, uiwidgetp);
+  subt->wcont [SUBT_W_TEXTBOX] = uiwidgetp;
 
   if (subt->hideonstart) {
     uiWindowIconify (subt->wcont [SUBT_W_WINDOW]);
@@ -296,8 +298,7 @@ subtBuildUI (subt_t *subt)
       "bdj4_icon_subt", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
 
-  uiwcontFree (mainvbox);
-//  uiwcontFree (vbox);
+  uiwcontFree (vbox);
 
   subt->uibuilt = true;
 

@@ -13,6 +13,7 @@ BASEC=macos_icon_config
 BASEI=macos_icon_inst
 BASEM=macos_icon_manage
 BASEMQ=macos_icon_marquee
+BASESUBT=macos_icon_subt
 BASEP=macos_icon_player
 BASEH=macos_icon_help
 
@@ -40,7 +41,8 @@ for b in $BASE; do
   rm -rf ${t}
 done
 
-for b in ${BASE} ${BASEC} ${BASEI} ${BASEM} ${BASEMQ} ${BASEP} ${BASEH}; do
+for b in ${BASE} ${BASEC} ${BASEI} ${BASEM} \
+    ${BASEMQ} ${BASESUBT} ${BASEP} ${BASEH}; do
   inkscape $b.svg -w 256 -h 256 -o $b.png > /dev/null 2>&1
 done
 
