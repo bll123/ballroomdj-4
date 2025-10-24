@@ -39,6 +39,7 @@ typedef enum {
   BDJVL_PORT_REMCTRL,
   BDJVL_PORT_SERVER,
   BDJVL_PORT_STARTERUI,
+  BDJVL_PORT_SUBT,
   BDJVL_PORT_TEST_SUITE,
   BDJVL_NUM_PORTS,
   /* insert non-port keys here */

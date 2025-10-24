@@ -118,6 +118,7 @@ typedef struct {
   bool              switchQueueWhenEmpty;
   bool              finished;
   bool              marqueestarted;
+  bool              subtstarted;
   bool              waitforpbfinish;
   bool              marqueeChanged;
   bool              inannounce;
@@ -131,6 +132,8 @@ static bool mainConnectingCallback (void *tmaindata, programstate_t programState
 static bool mainHandshakeCallback (void *tmaindata, programstate_t programState);
 static void mainStartMarquee (maindata_t *mainData);
 static void mainStopMarquee (maindata_t *mainData);
+static void mainStartSubT (maindata_t *mainData);
+static void mainStopSubT (maindata_t *mainData);
 static bool mainStoppingCallback (void *tmaindata, programstate_t programState);
 static bool mainStopWaitCallback (void *tmaindata, programstate_t programState);
 static bool mainClosingCallback (void *tmaindata, programstate_t programState);
@@ -233,6 +236,7 @@ main (int argc, char *argv[])
   mainData.switchQueueWhenEmpty = false;
   mainData.finished = false;
   mainData.marqueestarted = false;
+  mainData.subtstarted = false;
   mainData.waitforpbfinish = false;
   /* wait for a stop message, and a playback-finish message */
   mainData.stopwaitcount = 0;
@@ -539,6 +543,14 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mainStopMarquee (mainData);
           break;
         }
+        case MSG_START_SUBT: {
+          mainStartSubT (mainData);
+          break;
+        }
+        case MSG_STOP_SUBT: {
+          mainStopSubT (mainData);
+          break;
+        }
         case MSG_DB_ENTRY_UPDATE: {
           dbidx_t   dbidx;
 
@@ -749,10 +761,15 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
     }
   }
 
-  if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) != MARQUEE_SHOW_OFF &&
+  if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) != BDJWIN_SHOW_OFF &&
       (mainData->startflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START &&
       (mainData->startflags & BDJ4_INIT_NO_MARQUEE) != BDJ4_INIT_NO_MARQUEE) {
     mainStartMarquee (mainData);
+  }
+
+  if (bdjoptGetNum (OPT_P_SUBT_SHOW) != BDJWIN_SHOW_OFF &&
+      (mainData->startflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
+    mainStartSubT (mainData);
   }
 
   logProcEnd ("");
@@ -785,10 +802,15 @@ mainConnectingCallback (void *tmaindata, programstate_t programState)
         connConnect (mainData->conn, ROUTE_REMCTRL);
       }
     }
-    if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) != MARQUEE_SHOW_OFF &&
+    if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) != BDJWIN_SHOW_OFF &&
         (mainData->startflags & BDJ4_INIT_NO_MARQUEE) != BDJ4_INIT_NO_MARQUEE) {
       if (! connIsConnected (mainData->conn, ROUTE_MARQUEE)) {
         connConnect (mainData->conn, ROUTE_MARQUEE);
+      }
+    }
+    if (bdjoptGetNum (OPT_P_SUBT_SHOW) != BDJWIN_SHOW_OFF) {
+      if (! connIsConnected (mainData->conn, ROUTE_SUBT)) {
+        connConnect (mainData->conn, ROUTE_SUBT);
       }
     }
   }
@@ -809,8 +831,14 @@ mainConnectingCallback (void *tmaindata, programstate_t programState)
       ++connCount;
     }
   }
-  if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) != MARQUEE_SHOW_OFF &&
+  if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) != BDJWIN_SHOW_OFF &&
       (mainData->startflags & BDJ4_INIT_NO_MARQUEE) != BDJ4_INIT_NO_MARQUEE) {
+    ++connMax;
+    if (connIsConnected (mainData->conn, ROUTE_MARQUEE)) {
+      ++connCount;
+    }
+  }
+  if (bdjoptGetNum (OPT_P_SUBT_SHOW) != BDJWIN_SHOW_OFF) {
     ++connMax;
     if (connIsConnected (mainData->conn, ROUTE_MARQUEE)) {
       ++connCount;
@@ -870,6 +898,7 @@ mainHandshakeCallback (void *tmaindata, programstate_t programState)
 static void
 mainStartMarquee (maindata_t *mainData)
 {
+  char        origtheme [200];
   const char  *targv [2];
   int         idx = 0;
   int         flags = 0;
@@ -878,14 +907,17 @@ mainStartMarquee (maindata_t *mainData)
     return;
   }
 
-  if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) == MARQUEE_SHOW_OFF) {
+  if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) == BDJWIN_SHOW_OFF) {
     return;
   }
+
+  *origtheme = '\0';
 
 #if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
   /* set the theme for the marquee */
   {
     const char *theme;
+    osGetEnv  ("GTK_THEME", origtheme, sizeof (origtheme));
     theme = bdjoptGetStr (OPT_M_MQ_THEME);
     osSetEnv ("GTK_THEME", theme);
   }
@@ -901,6 +933,11 @@ mainStartMarquee (maindata_t *mainData)
   mainData->processes [ROUTE_MARQUEE] = procutilStartProcess (
       ROUTE_MARQUEE, "bdj4marquee", flags, targv);
   mainData->marqueestarted = true;
+
+#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
+  /* reset the theme env var */
+  osSetEnv ("GTK_THEME", origtheme);
+#endif
 }
 
 static void
@@ -910,13 +947,57 @@ mainStopMarquee (maindata_t *mainData)
     return;
   }
 
-  if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) == MARQUEE_SHOW_OFF) {
+  if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) == BDJWIN_SHOW_OFF) {
     return;
   }
 
   procutilStopProcess (mainData->processes [ROUTE_MARQUEE],
       mainData->conn, ROUTE_MARQUEE, PROCUTIL_NORM_TERM);
   mainData->marqueestarted = false;
+}
+
+
+static void
+mainStartSubT (maindata_t *mainData)
+{
+  const char  *targv [2];
+  int         idx = 0;
+  int         flags = 0;
+
+  if (mainData->subtstarted) {
+    return;
+  }
+
+  if (bdjoptGetNum (OPT_P_SUBT_SHOW) == BDJWIN_SHOW_OFF) {
+    return;
+  }
+
+  targv [idx++] = NULL;
+
+  flags = PROCUTIL_DETACH;
+  if ((mainData->startflags & BDJ4_INIT_NO_DETACH) == BDJ4_INIT_NO_DETACH) {
+    flags = PROCUTIL_NO_DETACH;
+  }
+
+  mainData->processes [ROUTE_SUBT] = procutilStartProcess (
+      ROUTE_SUBT, "bdj4subt", flags, targv);
+  mainData->subtstarted = true;
+}
+
+static void
+mainStopSubT (maindata_t *mainData)
+{
+  if (! mainData->subtstarted) {
+    return;
+  }
+
+  if (bdjoptGetNum (OPT_P_SUBT_SHOW) == BDJWIN_SHOW_OFF) {
+    return;
+  }
+
+  procutilStopProcess (mainData->processes [ROUTE_SUBT],
+      mainData->conn, ROUTE_SUBT, PROCUTIL_NORM_TERM);
+  mainData->subtstarted = false;
 }
 
 

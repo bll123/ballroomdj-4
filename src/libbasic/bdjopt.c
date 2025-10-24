@@ -78,7 +78,7 @@ static datafilekey_t bdjoptprofiledfkeys [] = {
   { "COMPLETEMSG",          OPT_P_COMPLETE_MSG,       VALUE_STR, NULL, DF_NORM },
   { "DEFAULTVOLUME",        OPT_P_DEFAULTVOLUME,      VALUE_NUM, NULL, DF_NORM },
   { "FADETYPE",             OPT_P_FADETYPE,           VALUE_NUM, bdjoptConvFadeType, DF_NORM },
-  { "MARQUEE_SHOW",         OPT_P_MARQUEE_SHOW,       VALUE_NUM, bdjoptConvMarqueeShow, DF_NORM },
+  { "MARQUEE_SHOW",         OPT_P_MARQUEE_SHOW,       VALUE_NUM, bdjoptConvBDJWinShow, DF_NORM },
   /* the mobile mq enable switch was changed to mobmq-type */
   { "MOBILEMARQUEE",        OPT_P_MOBILEMARQUEE,      VALUE_NUM, convBoolean, DF_NO_WRITE },
   { "MOBILEMQKEY",          OPT_P_MOBMQ_KEY,          VALUE_STR, NULL, DF_NORM },
@@ -100,6 +100,7 @@ static datafilekey_t bdjoptprofiledfkeys [] = {
   { "REMCONTROLUSER",       OPT_P_REMCONTROLUSER,     VALUE_STR, NULL, DF_NORM },
   { "REMOTECONTROL",        OPT_P_REMOTECONTROL,      VALUE_NUM, convBoolean, DF_NORM },
   { "SHOWSPDCONTROL",       OPT_P_SHOW_SPD_CONTROL,   VALUE_NUM, convBoolean, DF_NORM },
+  { "SUBT_SHOW",            OPT_P_SUBT_SHOW,          VALUE_NUM, bdjoptConvBDJWinShow, DF_NORM },
   { "UI_ACCENT_COL",        OPT_P_UI_ACCENT_COL,      VALUE_STR, NULL, DF_NORM },
   { "UI_ERROR_COL",         OPT_P_UI_ERROR_COL,       VALUE_STR, NULL, DF_NORM },
   { "UI_MARK_COL",          OPT_P_UI_MARK_COL,        VALUE_STR, NULL, DF_NORM },
@@ -474,6 +475,10 @@ bdjoptInit (void)
     nlistSetStr (bdjopt->bdjoptList, OPT_DOWNLOAD_SUFFIX, tstr);
   }
 
+  /* added 4.17.4 */
+  if (nlistGetNum (bdjopt->bdjoptList, OPT_P_SUBT_SHOW) < 0) {
+    nlistSetNum (bdjopt->bdjoptList, OPT_P_SUBT_SHOW, BDJWIN_SHOW_OFF);
+  }
 }
 
 void
@@ -870,32 +875,32 @@ bdjoptConvWriteTags (datafileconv_t *conv)
 }
 
 void
-bdjoptConvMarqueeShow (datafileconv_t *conv)
+bdjoptConvBDJWinShow (datafileconv_t *conv)
 {
-  bdjmarqueeshow_t  mqshow = MARQUEE_SHOW_VISIBLE;
+  bdjwinshow_t  mqshow = BDJWIN_SHOW_VISIBLE;
   const char        *sval;
 
   if (conv->invt == VALUE_STR) {
     conv->outvt = VALUE_NUM;
 
-    mqshow = MARQUEE_SHOW_VISIBLE;
+    mqshow = BDJWIN_SHOW_VISIBLE;
     if (strcmp (conv->str, "off") == 0) {
-      mqshow = MARQUEE_SHOW_OFF;
+      mqshow = BDJWIN_SHOW_OFF;
     }
     if (strcmp (conv->str, "minimize") == 0) {
-      mqshow = MARQUEE_SHOW_MINIMIZE;
+      mqshow = BDJWIN_SHOW_MINIMIZE;
     }
     if (strcmp (conv->str, "visible") == 0) {
-      mqshow = MARQUEE_SHOW_VISIBLE;
+      mqshow = BDJWIN_SHOW_VISIBLE;
     }
     conv->num = mqshow;
   } else if (conv->invt == VALUE_NUM) {
     conv->outvt = VALUE_STR;
     sval = "visible";
     switch (conv->num) {
-      case MARQUEE_SHOW_OFF: { sval = "off"; break; }
-      case MARQUEE_SHOW_MINIMIZE: { sval = "minimize"; break; }
-      case MARQUEE_SHOW_VISIBLE: { sval = "visible"; break; }
+      case BDJWIN_SHOW_OFF: { sval = "off"; break; }
+      case BDJWIN_SHOW_MINIMIZE: { sval = "minimize"; break; }
+      case BDJWIN_SHOW_VISIBLE: { sval = "visible"; break; }
     }
     conv->str = sval;
   }

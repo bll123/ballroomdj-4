@@ -114,14 +114,14 @@ START_TEST(bdjopt_conv_mqshow)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjopt_conv_mqshow");
   mdebugSubTag ("bdjopt_conv_mqshow");
 
-  for (int i = MARQUEE_SHOW_OFF; i < MARQUEE_SHOW_MAX; ++i) {
+  for (int i = BDJWIN_SHOW_OFF; i < BDJWIN_SHOW_MAX; ++i) {
     conv.invt = VALUE_NUM;
     conv.num = i;
-    bdjoptConvMarqueeShow (&conv);
+    bdjoptConvBDJWinShow (&conv);
     ck_assert_int_eq (conv.outvt, VALUE_STR);
     ck_assert_ptr_nonnull (conv.str);
     conv.invt = VALUE_STR;
-    bdjoptConvMarqueeShow (&conv);
+    bdjoptConvBDJWinShow (&conv);
     ck_assert_int_eq (conv.outvt, VALUE_NUM);
     ck_assert_int_eq (conv.num, i);
   }

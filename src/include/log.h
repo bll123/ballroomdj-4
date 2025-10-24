@@ -35,6 +35,7 @@ extern "C" {
  *  rc   - mobile remote control
  *  srv  - server
  *  strt - starter
+ *  subt - subtitles
  *  tdbc - tdbcompare
  *  tdbs - tdbsetval
  *  tags - bdj4tags
@@ -80,6 +81,7 @@ enum {
   LOG_VIRTLIST        = (1 << 25), // 33554432
   LOG_GROUPING        = (1 << 26), // 67108864
   LOG_AUDIOSRC        = (1 << 27), // 134217728
+  LOG_SUBTITLE        = (1 << 28), // 268435456
   /* insert new values here, push redir_inst down */
   LOG_REDIR_INST      = 0x80000000,
   LOG_ALL             = ~LOG_REDIR_INST,

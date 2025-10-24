@@ -72,6 +72,16 @@ confuiInitPlayer (confuigui_t *gui)
       FADETYPE_TRIANGLE, _("Triangle"),
       -1);
 
+  confuiSpinboxTextInitDataNum (gui, "cu-subt-show",
+      CONFUI_SPINBOX_SUBT_SHOW,
+      /* CONTEXT: configuration: show-subtitles: off */
+      BDJWIN_SHOW_OFF, _("Off"),
+      /* CONTEXT: configuration: show-subtitles: minimize */
+      BDJWIN_SHOW_MINIMIZE, _("Minimised"),
+      /* CONTEXT: configuration: show-subtitles: visible */
+      BDJWIN_SHOW_VISIBLE, _("Visible"),
+      -1);
+
   confuiLoadPlayerIntfcList (gui);
   confuiLoadControllerIntfcList (gui);
 
@@ -156,6 +166,11 @@ confuiBuildUIPlayer (confuigui_t *gui)
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Clock"),
       CONFUI_SPINBOX_PLAYER_CLOCK, OPT_G_CLOCK_DISP, CONFUI_OUT_NUM,
       bdjoptGetNum (OPT_G_CLOCK_DISP), NULL);
+
+  /* CONTEXT: configuration: show-subtitles: selection */
+  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Show Subtitles"),
+      CONFUI_SPINBOX_SUBT_SHOW, OPT_P_SUBT_SHOW,
+      CONFUI_OUT_NUM, bdjoptGetNum (OPT_P_SUBT_SHOW), NULL);
 
   uiwcontFree (vbox);
   uiwcontFree (szgrp);

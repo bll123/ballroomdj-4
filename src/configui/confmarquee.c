@@ -26,11 +26,11 @@ confuiInitMarquee (confuigui_t *gui)
   confuiSpinboxTextInitDataNum (gui, "cu-marquee-show",
       CONFUI_SPINBOX_MARQUEE_SHOW,
       /* CONTEXT: configuration: show-marquee: off */
-      MARQUEE_SHOW_OFF, _("Off"),
+      BDJWIN_SHOW_OFF, _("Off"),
       /* CONTEXT: configuration: show-marquee: minimize */
-      MARQUEE_SHOW_MINIMIZE, _("Minimised"),
+      BDJWIN_SHOW_MINIMIZE, _("Minimised"),
       /* CONTEXT: configuration: show-marquee: visible */
-      MARQUEE_SHOW_VISIBLE, _("Visible"),
+      BDJWIN_SHOW_VISIBLE, _("Visible"),
       -1);
 }
 

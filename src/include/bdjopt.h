@@ -27,11 +27,11 @@ typedef enum {
 } bdjmobmqtype_t;
 
 typedef enum {
-  MARQUEE_SHOW_OFF,
-  MARQUEE_SHOW_MINIMIZE,
-  MARQUEE_SHOW_VISIBLE,
-  MARQUEE_SHOW_MAX,
-} bdjmarqueeshow_t;
+  BDJWIN_SHOW_OFF,
+  BDJWIN_SHOW_MINIMIZE,
+  BDJWIN_SHOW_VISIBLE,
+  BDJWIN_SHOW_MAX,
+} bdjwinshow_t;
 
 typedef enum {
   FADETYPE_EXPONENTIAL_SINE,
@@ -142,6 +142,7 @@ typedef enum {
   OPT_P_REMCONTROLUSER,
   OPT_P_REMOTECONTROL,
   OPT_P_SHOW_SPD_CONTROL,
+  OPT_P_SUBT_SHOW,
   OPT_P_UI_ACCENT_COL,
   OPT_P_UI_ERROR_COL,
   OPT_P_UI_MARK_COL,
@@ -193,7 +194,7 @@ void    bdjoptConvBPM (datafileconv_t *conv);
 void    bdjoptConvClock (datafileconv_t *conv);
 void    bdjoptConvFadeType (datafileconv_t *conv);
 void    bdjoptConvWriteTags (datafileconv_t *conv);
-void    bdjoptConvMarqueeShow (datafileconv_t *conv);
+void    bdjoptConvBDJWinShow (datafileconv_t *conv);
 void    bdjoptConvDanceselMethod (datafileconv_t *conv);
 void    bdjoptConvMobMQType (datafileconv_t *conv);
 

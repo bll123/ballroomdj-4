@@ -51,6 +51,22 @@ addWinSockLibrary (bdj4marquee)
 addWinVersionInfo (bdj4marquee)
 addWinManifest (bdj4marquee)
 
+add_executable (bdj4subt bdj4subt.c)
+if (WIN32)
+  target_compile_options (bdj4subt PRIVATE -municode)
+  target_compile_options (bdj4subt PRIVATE -mwindows)
+endif()
+target_link_libraries (bdj4subt PRIVATE
+  libbdj4uib ${BDJ4_UI_LIB}
+  libbdj4 libbdj4basic libbdj4common
+  ${GTK_LDFLAGS}
+  m
+)
+addIntlLibrary (bdj4subt)
+addWinSockLibrary (bdj4subt)
+addWinVersionInfo (bdj4subt)
+addWinManifest (bdj4subt)
+
 add_executable(bdj4rc bdj4rc.c)
 target_include_directories (bdj4rc
   PRIVATE "${MONGOOSE_INC_DIR}"
@@ -81,7 +97,7 @@ addWinVersionInfo (bdj4mobmq)
 addWinManifest (bdj4mobmq)
 
 install (TARGETS
-  bdj4main bdj4player bdj4marquee bdj4rc bdj4mobmq
+  bdj4main bdj4player bdj4marquee bdj4rc bdj4mobmq bdj4subt
   DESTINATION ${DEST_BIN}
 )
 
@@ -90,3 +106,4 @@ updateRPath (bdj4player)
 updateRPath (bdj4marquee)
 updateRPath (bdj4rc)
 updateRPath (bdj4mobmq)
+updateRPath (bdj4subt)

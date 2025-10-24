@@ -355,7 +355,7 @@ main (int argc, char *argv[])
 
   plui.songdb = songdbAlloc (plui.musicdb);
 
-  if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) == MARQUEE_SHOW_OFF) {
+  if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) == BDJWIN_SHOW_OFF) {
     plui.marqueeoff = true;
   }
   plui.dispsel = dispselAlloc (DISP_SEL_LOAD_PLAYER);
@@ -1709,12 +1709,13 @@ pluiMarqueeHideShow (void *udata)
     return UICB_CONT;
   }
 
-  msg = MSG_MARQUEE_SHOW;
+  msg = MSG_WINDOW_SHOW;
   if (plui->mqisiconified == false) {
-    msg = MSG_MARQUEE_HIDE;
+    msg = MSG_WINDOW_HIDE;
   }
 
   connSendMessage (plui->conn, ROUTE_MARQUEE, msg, NULL);
+  connSendMessage (plui->conn, ROUTE_SUBT, msg, NULL);
   return UICB_CONT;
 }
 

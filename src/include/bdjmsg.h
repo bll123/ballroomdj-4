@@ -32,6 +32,7 @@ typedef enum {
   ROUTE_STARTERUI,
   ROUTE_TEST_SUITE,
   ROUTE_PODCASTUPD,
+  ROUTE_SUBT,
   ROUTE_MAX,
 } bdjmsgroute_t;
 
@@ -78,6 +79,8 @@ typedef enum {
   MSG_QUEUE_MIX,            // args: music-q-idx
   MSG_START_MARQUEE,
   MSG_STOP_MARQUEE,
+  MSG_START_SUBT,
+  MSG_STOP_SUBT,
   MSG_PL_OVERRIDE_STOP_TIME,  // args: stop-time
   MSG_PL_CLEAR_QUEUE,       // args: music-q-idx
                             // tells main to clear the playlist queue.
@@ -164,8 +167,8 @@ typedef enum {
   MSG_MARQUEE_TIMER,        // args: played time, duration
   MSG_MARQUEE_SET_FONT_SZ,  // args: font-size
   MSG_MARQUEE_FONT_SIZES,   // args: font-size, font-size-fs
-  MSG_MARQUEE_HIDE,
-  MSG_MARQUEE_SHOW,
+  MSG_WINDOW_HIDE,          // also subt
+  MSG_WINDOW_SHOW,          // also subt
   MSG_MARQUEE_STATUS,       // args: bool: isicon bool: ismax
 
   /* to/from dbupdate */

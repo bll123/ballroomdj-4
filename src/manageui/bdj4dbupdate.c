@@ -556,6 +556,7 @@ dbupdateProcessing (void *udata)
             pathInfoExtCheck (pi, ".png") ||
             pathInfoExtCheck (pi, ".bak") ||
             pathInfoExtCheck (pi, ".txt") ||
+            pathInfoExtCheck (pi, ".srt") ||    // subtitles
             pathInfoExtCheck (pi, ".svg")) {
           dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
           dbupdateIncCount (dbupdate, C_SKIP_NON_AUDIO);

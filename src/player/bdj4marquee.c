@@ -200,7 +200,7 @@ main (int argc, char *argv[])
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
   bdj4startup (argc, argv, NULL, "mq", ROUTE_MARQUEE, &flags);
-  if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) == MARQUEE_SHOW_MINIMIZE ||
+  if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) == BDJWIN_SHOW_MINIMIZE ||
       ((flags & BDJ4_INIT_HIDE_MARQUEE) == BDJ4_INIT_HIDE_MARQUEE)) {
     marquee.hideonstart = true;
   }
@@ -600,13 +600,13 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           marqueeRecover (marquee);
           break;
         }
-        case MSG_MARQUEE_SHOW: {
+        case MSG_WINDOW_SHOW: {
           if (marquee->isiconified) {
             uiWindowDeIconify (marquee->wcont [MQ_W_WINDOW]);
           }
           break;
         }
-        case MSG_MARQUEE_HIDE: {
+        case MSG_WINDOW_HIDE: {
           if (! marquee->isiconified) {
             uiWindowIconify (marquee->wcont [MQ_W_WINDOW]);
           }

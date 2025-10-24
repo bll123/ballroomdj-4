@@ -46,6 +46,7 @@ static char *locknames [ROUTE_MAX] = {
   [ROUTE_REMCTRL] = "remctrl",
   [ROUTE_SERVER] = "server",
   [ROUTE_STARTERUI] = "starterui",
+  [ROUTE_SUBT] = "subt",
   [ROUTE_TEST_SUITE] = "testsuite",
 };
 
