@@ -12,6 +12,7 @@ extern "C" {
 
 uiwcont_t *uiCreateNotebook (void);
 void  uiNotebookTabPositionLeft (uiwcont_t *uiwidget);
+void  uiNotebookSetScrollable (uiwcont_t *uiwidget);
 void  uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uiwidget, uiwcont_t *uilabel);
 void  uiNotebookSetActionWidget (uiwcont_t *uinotebook, uiwcont_t *uiwidget);
 void  uiNotebookSetPage (uiwcont_t *uinotebook, int pagenum);

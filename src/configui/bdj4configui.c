@@ -472,6 +472,7 @@ confuiBuildUI (configui_t *confui)
   confui->gui.errorMsg = uiwidgetp;
 
   confui->gui.notebook = uiCreateNotebook ();
+  uiNotebookSetScrollable (confui->gui.notebook);
   uiWidgetAddClass (confui->gui.notebook, LEFT_NB_CLASS);
   uiNotebookTabPositionLeft (confui->gui.notebook);
   uiBoxPackStartExpand (confui->gui.vbox, confui->gui.notebook);

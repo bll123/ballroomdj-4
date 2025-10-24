@@ -4,7 +4,12 @@
 
 <!--
 
-**4.17.3.1 2025-10-23**
+**4.17.4 2025-10---**
+
+* Changes:
+    * Configuration: The page selection has been made scrollable.
+* New Features
+    * Player: Lyrics display, supports .srt and .lrc formats.
 
 -->
 

@@ -26,7 +26,7 @@ uiCreateNotebook (void)
 }
 
 void
-uiNotebookTabPositionLeft (uiwcont_t *uiwidget)
+uiNotebookTabPositionLeft (uiwcont_t *uinotebook)
 {
   return;
 }
@@ -62,3 +62,8 @@ uiNotebookSetCallback (uiwcont_t *uinotebook, callback_t *uicb)
   return;
 }
 
+void
+uiNotebookSetScrollable (uiwcont_t *uinotebook)
+{
+  return;
+}
