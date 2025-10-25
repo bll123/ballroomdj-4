@@ -6,6 +6,9 @@
 
 **4.17.4 2025-10---**
 
+
+* Bug Fixes:
+    * Linux
 * Changes:
     * Configuration: The page selection has been made scrollable.
 * New Features
