@@ -1,0 +1,8 @@
+# version 3
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Icon=#ICONNAME#
+Type=Application
+StartupWMClass=#WMCLASS#
+NoDisplay=true

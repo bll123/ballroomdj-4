@@ -1,5 +1,12 @@
 The *-base files have the original alpha text.
 
+2025-10-25 : The *-base files are out of date.
+
+2025-10-25 : Currently a mess.  Each file was edited individually, so
+             positioning is all different.  The macos icon files have
+             a different base size, so positioning and sizing is all
+             different.
+
 ===>  Any text must be converted using the inkscape object->path function
       before the icons can be shipped.
 

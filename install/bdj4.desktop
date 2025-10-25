@@ -1,3 +1,4 @@
+# version 3
 [Desktop Entry]
 Encoding=UTF-8
 Version=1.0
@@ -9,6 +10,7 @@ Path=#WORKDIR#
 Terminal=false
 Type=Application
 Categories=Audio;Player
+StartupWMClass=bdj4starterui
 Comment=Ballroom Music Player
 Comment[af]=Ballroom Musiekspeler
 Comment[cs]=Přehrávač taneční hudby
