@@ -2,10 +2,10 @@
 # -- english/gb
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.17.2\n"
+"Project-Id-Version: ballroomdj-4 4.17.4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2025-10-10\n"
-"PO-Revision-Date: 2025-10-10\n"
+"POT-Creation-Date: 2025-10-25\n"
+"PO-Revision-Date: 2025-10-25\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -1236,6 +1236,7 @@ msgid "Message"
 msgstr ""
 
 #. CONTEXT: configuration: show-marquee: minimize
+#. CONTEXT: configuration: show-subtitles: minimize
 msgid "Minimised"
 msgstr ""
 
@@ -1435,6 +1436,7 @@ msgstr ""
 #. CONTEXT: configuration: show-marquee: off
 #. CONTEXT: configuration: mobile marquee type: off
 #. CONTEXT: configuration: player: clock: off
+#. CONTEXT: configuration: show-subtitles: off
 msgid "Off"
 msgstr ""
 
@@ -1968,6 +1970,10 @@ msgstr ""
 msgid "Show Speed Reset"
 msgstr ""
 
+#. CONTEXT: configuration: show-subtitles: selection
+msgid "Show Subtitles"
+msgstr ""
+
 #. CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux.
 msgid "Shutdown Script"
 msgstr ""
@@ -2349,6 +2355,7 @@ msgid "Viennese Waltz"
 msgstr ""
 
 #. CONTEXT: configuration: show-marquee: visible
+#. CONTEXT: configuration: show-subtitles: visible
 msgid "Visible"
 msgstr ""
 

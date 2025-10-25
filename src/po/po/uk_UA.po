@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2025-09-23\n"
-"PO-Revision-Date: 2025-09-23 14:12\n"
+"PO-Revision-Date: 2025-10-25\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Ukrainian\n"
 "Language: uk\n"
@@ -1227,7 +1227,8 @@ msgid "Marquee Theme"
 msgstr "Тема шатра"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "Максим.\n"
 "час гри"
@@ -1242,6 +1243,7 @@ msgid "Message"
 msgstr "Повідомлення"
 
 #. CONTEXT: configuration: show-marquee: minimize
+#. CONTEXT: configuration: show-subtitles: minimize
 msgid "Minimised"
 msgstr "Зведено до мінімуму"
 
@@ -1441,6 +1443,7 @@ msgstr "Примітки"
 #. CONTEXT: configuration: show-marquee: off
 #. CONTEXT: configuration: mobile marquee type: off
 #. CONTEXT: configuration: player: clock: off
+#. CONTEXT: configuration: show-subtitles: off
 msgid "Off"
 msgstr "Вимкнено"
 
@@ -1767,7 +1770,9 @@ msgid "Repeat"
 msgstr "Повторити"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "Замінює базу даних BallroomDJ повністю. Всі зміни в базі даних будуть втрачені."
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1972,6 +1977,10 @@ msgstr "Показати інформацію про пісню"
 msgid "Show Speed Reset"
 msgstr "Показати скидання швидкості"
 
+#. CONTEXT: configuration: show-subtitles: selection
+msgid "Show Subtitles"
+msgstr ""
+
 #. CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux.
 msgid "Shutdown Script"
 msgstr "Скрипт завершення роботи"
@@ -2158,7 +2167,9 @@ msgid "The conversion process will not be run."
 msgstr "Процес конвертації не буде запущено."
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "Процес перетворення виконуватиметься лише для нових та повторних інсталяцій."
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -2293,11 +2304,13 @@ msgstr "Оновлено"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "Оновлює інформацію в базі даних BallroomDJ з бази даних %s ."
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Оновлює інформацію в базі даних BallroomDJ з тегів аудіофайлів."
 
 #. CONTEXT: alternate installation: status message
@@ -2349,6 +2362,7 @@ msgid "Viennese Waltz"
 msgstr "Віденський вальс"
 
 #. CONTEXT: configuration: show-marquee: visible
+#. CONTEXT: configuration: show-subtitles: visible
 msgid "Visible"
 msgstr "Видимий"
 
@@ -2400,7 +2414,9 @@ msgid "Write Tags to Audio Files"
 msgstr "Додавання тегів до аудіофайлів"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "Записує теги аудіофайлів, використовуючи інформацію з бази даних BallroomDJ."
 
 #. CONTEXT: configuration: dialog: XML file types

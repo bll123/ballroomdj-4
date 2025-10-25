@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2025-09-23\n"
-"PO-Revision-Date: 2025-10-10\n"
+"PO-Revision-Date: 2025-10-25\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
@@ -1242,6 +1242,7 @@ msgid "Message"
 msgstr "メッセージ"
 
 #. CONTEXT: configuration: show-marquee: minimize
+#. CONTEXT: configuration: show-subtitles: minimize
 msgid "Minimised"
 msgstr "最小化"
 
@@ -1441,6 +1442,7 @@ msgstr "備考"
 #. CONTEXT: configuration: show-marquee: off
 #. CONTEXT: configuration: mobile marquee type: off
 #. CONTEXT: configuration: player: clock: off
+#. CONTEXT: configuration: show-subtitles: off
 msgid "Off"
 msgstr "オフ"
 
@@ -1974,6 +1976,10 @@ msgstr "ショー・ソング・インフォメーション"
 msgid "Show Speed Reset"
 msgstr "スピードリセットを表示"
 
+#. CONTEXT: configuration: show-subtitles: selection
+msgid "Show Subtitles"
+msgstr ""
+
 #. CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux.
 msgid "Shutdown Script"
 msgstr "シャットダウンスクリプト"
@@ -2355,6 +2361,7 @@ msgid "Viennese Waltz"
 msgstr "ウィーン・ワルツ"
 
 #. CONTEXT: configuration: show-marquee: visible
+#. CONTEXT: configuration: show-subtitles: visible
 msgid "Visible"
 msgstr "可視"
 

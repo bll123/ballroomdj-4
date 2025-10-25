@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2025-09-23\n"
-"PO-Revision-Date: 2025-10-10\n"
+"PO-Revision-Date: 2025-10-25\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Korean\n"
 "Language: ko\n"
@@ -1243,6 +1243,7 @@ msgid "Message"
 msgstr "메시지"
 
 #. CONTEXT: configuration: show-marquee: minimize
+#. CONTEXT: configuration: show-subtitles: minimize
 msgid "Minimised"
 msgstr "최소화"
 
@@ -1442,6 +1443,7 @@ msgstr "참고"
 #. CONTEXT: configuration: show-marquee: off
 #. CONTEXT: configuration: mobile marquee type: off
 #. CONTEXT: configuration: player: clock: off
+#. CONTEXT: configuration: show-subtitles: off
 msgid "Off"
 msgstr "꺼짐"
 
@@ -1975,6 +1977,10 @@ msgstr "곡 정보 보기"
 msgid "Show Speed Reset"
 msgstr "속도 초기화 표시"
 
+#. CONTEXT: configuration: show-subtitles: selection
+msgid "Show Subtitles"
+msgstr ""
+
 #. CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux.
 msgid "Shutdown Script"
 msgstr "종료 스크립트"
@@ -2356,6 +2362,7 @@ msgid "Viennese Waltz"
 msgstr "비엔나 왈츠"
 
 #. CONTEXT: configuration: show-marquee: visible
+#. CONTEXT: configuration: show-subtitles: visible
 msgid "Visible"
 msgstr "가시성"
 
