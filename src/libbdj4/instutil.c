@@ -607,6 +607,9 @@ instutilCopyIcons (void)
   dirlist = dirlistBasicDirList (tbuff, BDJ4_IMG_SVG_EXT);
   slistStartIterator (dirlist, &iteridx);
   while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
+    if (strncmp (fname, "bdj4_icon_sq", 12) == 0) {
+      continue;
+    }
     if (strncmp (fname, "bdj4_icon", 9) != 0) {
       continue;
     }
