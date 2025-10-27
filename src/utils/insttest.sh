@@ -24,6 +24,7 @@ grc=0
 dump=F
 keep=F
 keepfirst=F
+onlyfirst=F
 readonly=F
 quiet=--quiet
 tlocale=
@@ -38,6 +39,9 @@ while test $# -gt 0; do
       ;;
     --keepfirst)
       keepfirst=T
+      ;;
+    --onlyfirst)
+      onlyfirst=T
       ;;
     --readonly)
       readonly=T
@@ -1067,26 +1071,33 @@ function cleanInstTest {
   test -d "$DATATOPDIR" && rm -rf "$DATATOPDIR"
   test -d "$DATATOPALTDIR" && rm -rf "$DATATOPALTDIR"
   # linux
+  fn="$HOME/Desktop"
+  if [[ -d $fn ]]; then
+    rm -f "${fn}"/BDJ4dev*.desktop
+    rm -f "${fn}"/BDJ4altdev*.desktop
+  fi
   fn="$HOME/.local/share/applications"
   if [[ -d $fn ]]; then
-    # there are many .desktop files installed
-    rm -f "{$fn}/BDJ4dev*.desktop"
+    rm -f "${fn}"/BDJ4dev*.desktop
+    rm -f "${fn}"/BDJ4altdev*.desktop
   fi
   # win
   UPROF=$(echo $USERPROFILE | sed -e 's,\\,/,g' -e 's,C:/,/c/,')
-  fn="$UPROF/Desktop/BDJ4dev.lnk"
-  test -f "$fn" && rm -f "$fn"
-  fn="$UPROF/Desktop/BDJ4altdev.lnk"
-  test -f "$fn" && rm -f "$fn"
+  if [[ $UPROF != "" ]]; then
+    fn="$UPROF/Desktop/BDJ4dev.lnk"
+    test -f "$fn" && rm -f "$fn"
+    fn="$UPROF/Desktop/BDJ4altdev.lnk"
+    test -f "$fn" && rm -f "$fn"
+  fi
   # macos
   fn="$HOME/Desktop/BDJ4dev.app"
-  test -d "$fn" && rm -rf "$fn"
+  test -L "$fn" && rm -rf "$fn"
   fn="$HOME/Desktop/BDJ4altdev.app"
-  test -d "$fn" && rm -rf "$fn"
+  test -L "$fn" && rm -rf "$fn"
   fn="$HOME/Desktop/BDJ4dev"
-  test -d "$fn" && rm -rf "$fn"
+  test -L "$fn" && rm -rf "$fn"
   fn="$HOME/Desktop/BDJ4altdev"
-  test -d "$fn" && rm -rf "$fn"
+  test -L "$fn" && rm -rf "$fn"
   fn="$HOME/Applications/BDJ4altdev.app"
   test -d "$fn" && rm -rf "$fn"
   fn="$HOME/Applications/BDJ4dev.app"
@@ -1149,6 +1160,10 @@ if [[ $readonly == F ]]; then
     exit 1
   fi
   waitForInstallDirRemoval
+  if [[ $onlyfirst == T ]]; then
+    cleanInstTest
+    exit 1
+  fi
 fi
 
 if [[ $readonly == F && $crc -eq 0 ]]; then

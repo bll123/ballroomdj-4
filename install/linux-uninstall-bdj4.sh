@@ -2,7 +2,9 @@
 #
 # Copyright 2021-2025 Brad Lanam Pleasant Hill CA
 #
-ver=4
+ver=5
+
+TMP=/tmp/bdj4-tmp.txt
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -32,11 +34,6 @@ function doremove () {
     if [[ ${dir} != "" && -d ${dir} ]]; then
       rm -rf "${dir}"
     fi
-    nm=$(basename "$dir")
-    sfn="$HOME/Desktop/${nm}.desktop"
-    test -h "$sfn" && rm -f "$sfn"
-    sfn="$HOME/.local/share/applications/${nm}.desktop"
-    test -h "$sfn" && rm -f "$sfn"
   fi
 }
 
@@ -73,10 +70,10 @@ if [[ $gr == Y ]]; then
     rm -rf $HOME/BDJ4
   fi
 
-  rm -f "${desktop}/BDJ4*.desktop"
-  rm -f "${desktop}/bdj4.desktop"  # old
-  rm -f "${appdir}/BDJ4*.desktop"
-  rm -f "${icondir}/bdj4_icon*.svg
+  rm -f "${desktop}"/BDJ4*.desktop
+  rm -f "${desktop}"/bdj4.desktop  # old
+  rm -f "${appdir}"/BDJ4*.desktop
+  rm -f "${icondir}"/bdj4_icon*.svg
 
   test -d "${confdira}" && rm -rf "${confdira}"  # old
   test -d "${confdirb}" && rm -rf "${confdirb}"
@@ -87,13 +84,6 @@ if [[ $gr == Y ]]; then
   crontab $TMP
   rm -f $TMP
 
-  # remove any old mutagen installed for the user
-  pipp=/usr/bin/pip
-  if [[ -f /usr/bin/pip3 ]]; then
-    pipp=/usr/bin/pip3
-  fi
-  ${pipp} uninstall -y mutagen > /dev/null 2>&1
-  ${pipp} uninstall -y --break-system-packages mutagen > /dev/null 2>&1
   echo "-- BDJ4 application removed."
 fi
 

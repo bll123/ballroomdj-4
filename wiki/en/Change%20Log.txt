@@ -4,12 +4,13 @@
 
 <!--
 
-**4.17.3.2 2025-10---**
+-->
+
+**4.17.3.2 2025-10-27**
 
 * Bug Fixes:
     * Linux: Gnome desktop: Fix dock icons.
-
--->
+    * Linux: Fix uninstaller.
 
 **4.17.3.1 2025-10-23**
 

@@ -2,6 +2,8 @@
 [Desktop Entry]
 Encoding=UTF-8
 Version=1.0
+Name=#APPNAME#
+GenericName=#APPNAME#
 Icon=#ICONNAME#
 Type=Application
 StartupWMClass=#WMCLASS#

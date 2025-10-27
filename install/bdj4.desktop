@@ -1,4 +1,5 @@
-# version 3
+# version 4
+
 [Desktop Entry]
 Encoding=UTF-8
 Version=1.0
@@ -9,7 +10,9 @@ Icon=bdj4_icon
 Path=#WORKDIR#
 Terminal=false
 Type=Application
-Categories=Audio;Player
+# KDE won't put BDJ4 in the multi-media section without AudioVideo
+# but BDJ4 does not do video.
+Categories=Audio;Player;AudioVideo
 StartupWMClass=bdj4starterui
 Keywords=Player;Audio
 Comment=Ballroom Music Player

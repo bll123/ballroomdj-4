@@ -4,6 +4,11 @@
 
 ## Uninstalling BallroomDJ 4
 
+#### Before Uninstalling
+
+Please [let us know](en-Getting%20Help) why BallroomDJ&nbsp;4 did not
+work out for your use.
+
 #### Mac OS
 
 Download the macos-uninstall-bdj4-v7.sh script from sourceforge.
@@ -39,7 +44,7 @@ e.g. Using cmd.exe:
 
 #### Linux
 
-Download the linux-uninstall-bdj4-v4.sh script from sourceforge.
+Download the linux-uninstall-bdj4-v5.sh script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
@@ -47,7 +52,7 @@ Open a terminal and run this script using the following command.
 
     :::bash
     cd Downloads
-    bash linux-uninstall-bdj4-v4.sh
+    bash linux-uninstall-bdj4-v5.sh
 
 [Wiki Home](Home)
 <br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_

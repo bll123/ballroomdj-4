@@ -8,6 +8,8 @@ if [[ $# -lt 3 || $# -gt 4 ]]; then
   exit 1
 fi
 
+DVERS=3
+
 # the gnome desktop's dock uses the StartupWMClass entry in the
 # .desktop files to figure out the icon for the process, and gets
 # the icon from the $HOME/.local/share/icons/hicolor/ hierarchy.
@@ -36,16 +38,16 @@ function installmainsc {
     rc=1
     fpath="$idir/${fullscname}.desktop"
     if [[ -f ${fpath} ]]; then
-      grep -l '^# version 3' "${fpath}" >/dev/null 2>&1
+      grep -l "^# version ${DVERS}" "${fpath}" >/dev/null 2>&1
       rc=$?
     fi
 
     if [[ $rc -ne 0 ]]; then
       cp -f "${tgtpath}/install/bdj4.desktop" "${fpath}"
-      sed -i -e "s,#INSTALLPATH#,${tgtpath},g" \
-          -e "s,#APPNAME#,${scname},g" \
-          -e "s,#WORKDIR#,${workdir},g" \
-          -e "s,#PROFILE#,${profargs},g" \
+      sed -i -e "s,#INSTALLPATH#,${tgtpath}," \
+          -e "s,#APPNAME#,${scname}," \
+          -e "s,#WORKDIR#,${workdir}," \
+          -e "s,#PROFILE#,${profargs}," \
           "${fpath}"
     fi
   done
@@ -58,28 +60,28 @@ function installmainsc {
 function installappsc {
   tscname=BDJ4
 
-  for idir in "$HOME/.local/share/applications"; do
-    if [[ ! -d $idir ]]; then
-      continue
+  idir="$HOME/.local/share/applications"
+  if [[ ! -d $idir ]]; then
+    continue
+  fi
+
+  for win in ${!ICONLIST[@]}; do
+    icon=${ICONLIST[$win]}
+    fpath="$idir/${tscname}_${win}.desktop"
+
+    rc=1
+    if [[ -f ${fpath} ]]; then
+      grep -l '^# version 3' "${fpath}" >/dev/null 2>&1
+      rc=$?
     fi
 
-    for win in ${!ICONLIST[@]}; do
-      icon=${ICONLIST[$win]}
-      fpath="$idir/${tscname}${win}.desktop"
-
-      rc=1
-      if [[ -f ${fpath} ]]; then
-        grep -l '^# version 3' "${fpath}" >/dev/null 2>&1
-        rc=$?
-      fi
-
-      if [[ $rc -ne 0 ]]; then
-        cp -f "${tgtpath}/install/bdj4win.desktop" "${fpath}"
-        sed -i -e "s,#ICONNAME#,bdj4_icon_${icon},g" \
-            -e "s,#WMCLASS#,bdj4${win},g" \
-            "${fpath}"
-      fi
-    done
+    if [[ $rc -ne 0 ]]; then
+      cp -f "${tgtpath}/install/bdj4win.desktop" "${fpath}"
+      sed -i -e "s,#ICONNAME#,bdj4_icon_${icon}," \
+          -e "s,#WMCLASS#,bdj4${win}," \
+          -e "s,#APPNAME#,${scname}," \
+          "${fpath}"
+    fi
   done
 }
 
@@ -113,6 +115,10 @@ fi
 
 desktop=$(xdg-user-dir DESKTOP)
 for idir in "$desktop" "$HOME/.local/share/applications"; do
+  if [[ ! -d ${idir} ]]; then
+    # KDE did not have a $HOME/.local/share/applications folder
+    mkdir -p "${idir}"
+  fi
   if [[ ${scname} == BDJ4 ]]; then
     # remove old shortcuts that have a lower case name
     tname=bdj4
@@ -125,5 +131,12 @@ done
 
 installmainsc
 installappsc
+
+if [[ -f /usr/bin/gtk-update-icon-cache ]]; then
+  gtk-update-icon-cache
+fi
+if [[ -f /usr/bin/gtk4-update-icon-cache ]]; then
+  gtk4-update-icon-cache
+fi
 
 exit 0
