@@ -10,7 +10,7 @@
 
 * Bug Fixes:
     * Linux: Gnome desktop: Fix dock icons.
-    * Linux: Fix uninstaller.
+    * Linux: Fix uninstaller script.
 
 **4.17.3.1 2025-10-23**
 

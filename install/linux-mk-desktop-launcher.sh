@@ -116,7 +116,7 @@ fi
 desktop=$(xdg-user-dir DESKTOP)
 for idir in "$desktop" "$HOME/.local/share/applications"; do
   if [[ ! -d ${idir} ]]; then
-    # KDE did not have a $HOME/.local/share/applications folder
+    # kubuntu did not have a $HOME/.local/share/applications folder
     mkdir -p "${idir}"
   fi
   if [[ ${scname} == BDJ4 ]]; then
