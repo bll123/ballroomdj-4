@@ -8,9 +8,11 @@ if [[ $# -lt 3 || $# -gt 4 ]]; then
   exit 1
 fi
 
-# the gnome desktop's dock uses the .desktop files to figure out the
-# icon for the process.  A .desktop file for each of the different processes
-# must be installed.
+# the gnome desktop's dock uses the StartupWMClass entry in the
+# .desktop files to figure out the icon for the process, and gets
+# the icon from the $HOME/.local/share/icons/hicolor/ hierarchy.
+# A .desktop file for each of the different processes must be installed.
+# iconlist: key: executable-suffix data: icon-name
 declare -A ICONLIST
 ICONLIST=( altinst inst \
     bpmcounter bpm \
@@ -22,18 +24,20 @@ ICONLIST=( altinst inst \
     subt subt \
     )
 
+# the main .desktop for the installation or alternate installation
+# should be installed in both $HOME/Desktop
+# and $HOME/.local/share/applications.
 function installmainsc {
   for idir in "$desktop" "$HOME/.local/share/applications"; do
     if [[ ! -d $idir ]]; then
       continue
     fi
 
+    rc=1
     fpath="$idir/${fullscname}.desktop"
     if [[ -f ${fpath} ]]; then
       grep -l '^# version 3' "${fpath}" >/dev/null 2>&1
       rc=$?
-    else
-      rc=1
     fi
 
     if [[ $rc -ne 0 ]]; then
@@ -47,7 +51,13 @@ function installmainsc {
   done
 }
 
+# the multitude of .desktop files for gnome-desktop only need
+# to be installed once, and can all use the same BDJ4 prefix.
+# these use a minimal .desktop file with the icon name and wmclass.
+# NoDisplay=true is set.
 function installappsc {
+  tscname=BDJ4
+
   for idir in "$HOME/.local/share/applications"; do
     if [[ ! -d $idir ]]; then
       continue
@@ -55,13 +65,12 @@ function installappsc {
 
     for win in ${!ICONLIST[@]}; do
       icon=${ICONLIST[$win]}
-      fpath="$idir/${fullscname}${win}.desktop"
+      fpath="$idir/${tscname}${win}.desktop"
 
+      rc=1
       if [[ -f ${fpath} ]]; then
         grep -l '^# version 3' "${fpath}" >/dev/null 2>&1
         rc=$?
-      else
-        rc=1
       fi
 
       if [[ $rc -ne 0 ]]; then
@@ -112,9 +121,9 @@ for idir in "$desktop" "$HOME/.local/share/applications"; do
       rm -f "${fpath}"
     fi
   fi
-
-  installmainsc
-  installappsc
 done
+
+installmainsc
+installappsc
 
 exit 0

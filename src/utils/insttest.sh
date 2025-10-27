@@ -160,7 +160,6 @@ function checkUpdaterClean {
 
   # audio adjust file should be installed if missing or wrong version
   fn="$DATADIR/audioadjust.txt"
-  # rm -f "${fn}"
   sed -e "s/version [2-9]/version $(($AUDIOADJVER-1))/" "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
@@ -1068,14 +1067,11 @@ function cleanInstTest {
   test -d "$DATATOPDIR" && rm -rf "$DATATOPDIR"
   test -d "$DATATOPALTDIR" && rm -rf "$DATATOPALTDIR"
   # linux
-  fn="$HOME/.local/share/applications/BDJ4dev.desktop"
-  test -f "$fn" && rm -f "$fn"
-  fn="$HOME/.local/share/applications/BDJ4altdev.desktop"
-  test -f "$fn" && rm -f "$fn"
-  fn="$HOME/Desktop/BDJ4dev.desktop"
-  test -f "$fn" && rm -f "$fn"
-  fn="$HOME/Desktop/BDJ4altdev.desktop"
-  test -f "$fn" && rm -f "$fn"
+  fn="$HOME/.local/share/applications"
+  if [[ -d $fn ]]; then
+    # there are many .desktop files installed
+    rm -f "{$fn}/BDJ4dev*.desktop"
+  fi
   # win
   UPROF=$(echo $USERPROFILE | sed -e 's,\\,/,g' -e 's,C:/,/c/,')
   fn="$UPROF/Desktop/BDJ4dev.lnk"

@@ -7,7 +7,7 @@
 **4.17.3.2 2025-10---**
 
 * Bug Fixes:
-    * Linux: Fix (some) dock icons for Ubuntu.
+    * Linux: Gnome desktop: Fix dock icons.
 
 -->
 
