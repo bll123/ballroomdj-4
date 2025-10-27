@@ -10,7 +10,7 @@ fi
 
 DVERS=3
 
-# the gnome desktop's dock uses the StartupWMClass entry in the
+# the gnome-desktop's dock uses the StartupWMClass entry in the
 # .desktop files to figure out the icon for the process, and gets
 # the icon from the $HOME/.local/share/icons/hicolor/ hierarchy.
 # A .desktop file for each of the different processes must be installed.
@@ -131,12 +131,5 @@ done
 
 installmainsc
 installappsc
-
-if [[ -f /usr/bin/gtk-update-icon-cache ]]; then
-  gtk-update-icon-cache
-fi
-if [[ -f /usr/bin/gtk4-update-icon-cache ]]; then
-  gtk4-update-icon-cache
-fi
 
 exit 0
