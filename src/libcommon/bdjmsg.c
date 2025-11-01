@@ -41,7 +41,7 @@ const char *bdjmsgroutetxt [ROUTE_MAX] = {
   [ROUTE_REMCTRL] = "REMCTRL",
   [ROUTE_SERVER] = "SERVER",
   [ROUTE_STARTERUI] = "STARTERUI",
-  [ROUTE_SUBT] = "SUBT",
+  [ROUTE_LYRICS] = "SUBT",
   [ROUTE_TEST_SUITE] = "TEST_SUITE",
 };
 

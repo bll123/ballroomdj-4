@@ -118,7 +118,7 @@ typedef struct {
   bool              switchQueueWhenEmpty;
   bool              finished;
   bool              marqueestarted;
-  bool              subtstarted;
+  bool              lyricsstarted;
   bool              waitforpbfinish;
   bool              marqueeChanged;
   bool              inannounce;
@@ -132,8 +132,8 @@ static bool mainConnectingCallback (void *tmaindata, programstate_t programState
 static bool mainHandshakeCallback (void *tmaindata, programstate_t programState);
 static void mainStartMarquee (maindata_t *mainData);
 static void mainStopMarquee (maindata_t *mainData);
-static void mainStartSubT (maindata_t *mainData);
-static void mainStopSubT (maindata_t *mainData);
+static void mainStartLyrics (maindata_t *mainData);
+static void mainStopLyrics (maindata_t *mainData);
 static bool mainStoppingCallback (void *tmaindata, programstate_t programState);
 static bool mainStopWaitCallback (void *tmaindata, programstate_t programState);
 static bool mainClosingCallback (void *tmaindata, programstate_t programState);
@@ -236,7 +236,7 @@ main (int argc, char *argv[])
   mainData.switchQueueWhenEmpty = false;
   mainData.finished = false;
   mainData.marqueestarted = false;
-  mainData.subtstarted = false;
+  mainData.lyricsstarted = false;
   mainData.waitforpbfinish = false;
   /* wait for a stop message, and a playback-finish message */
   mainData.stopwaitcount = 0;
@@ -543,12 +543,12 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mainStopMarquee (mainData);
           break;
         }
-        case MSG_START_SUBT: {
-          mainStartSubT (mainData);
+        case MSG_START_LYRICS: {
+          mainStartLyrics (mainData);
           break;
         }
-        case MSG_STOP_SUBT: {
-          mainStopSubT (mainData);
+        case MSG_STOP_LYRICS: {
+          mainStopLyrics (mainData);
           break;
         }
         case MSG_DB_ENTRY_UPDATE: {
@@ -767,9 +767,9 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
     mainStartMarquee (mainData);
   }
 
-  if (bdjoptGetNum (OPT_P_SUBT_SHOW) != BDJWIN_SHOW_OFF &&
+  if (bdjoptGetNum (OPT_P_LYRICS_SHOW) != BDJWIN_SHOW_OFF &&
       (mainData->startflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
-    mainStartSubT (mainData);
+    mainStartLyrics (mainData);
   }
 
   logProcEnd ("");
@@ -808,9 +808,9 @@ mainConnectingCallback (void *tmaindata, programstate_t programState)
         connConnect (mainData->conn, ROUTE_MARQUEE);
       }
     }
-    if (bdjoptGetNum (OPT_P_SUBT_SHOW) != BDJWIN_SHOW_OFF) {
-      if (! connIsConnected (mainData->conn, ROUTE_SUBT)) {
-        connConnect (mainData->conn, ROUTE_SUBT);
+    if (bdjoptGetNum (OPT_P_LYRICS_SHOW) != BDJWIN_SHOW_OFF) {
+      if (! connIsConnected (mainData->conn, ROUTE_LYRICS)) {
+        connConnect (mainData->conn, ROUTE_LYRICS);
       }
     }
   }
@@ -838,7 +838,7 @@ mainConnectingCallback (void *tmaindata, programstate_t programState)
       ++connCount;
     }
   }
-  if (bdjoptGetNum (OPT_P_SUBT_SHOW) != BDJWIN_SHOW_OFF) {
+  if (bdjoptGetNum (OPT_P_LYRICS_SHOW) != BDJWIN_SHOW_OFF) {
     ++connMax;
     if (connIsConnected (mainData->conn, ROUTE_MARQUEE)) {
       ++connCount;
@@ -958,17 +958,17 @@ mainStopMarquee (maindata_t *mainData)
 
 
 static void
-mainStartSubT (maindata_t *mainData)
+mainStartLyrics (maindata_t *mainData)
 {
   const char  *targv [2];
   int         idx = 0;
   int         flags = 0;
 
-  if (mainData->subtstarted) {
+  if (mainData->lyricsstarted) {
     return;
   }
 
-  if (bdjoptGetNum (OPT_P_SUBT_SHOW) == BDJWIN_SHOW_OFF) {
+  if (bdjoptGetNum (OPT_P_LYRICS_SHOW) == BDJWIN_SHOW_OFF) {
     return;
   }
 
@@ -979,25 +979,25 @@ mainStartSubT (maindata_t *mainData)
     flags = PROCUTIL_NO_DETACH;
   }
 
-  mainData->processes [ROUTE_SUBT] = procutilStartProcess (
-      ROUTE_SUBT, "bdj4subt", flags, targv);
-  mainData->subtstarted = true;
+  mainData->processes [ROUTE_LYRICS] = procutilStartProcess (
+      ROUTE_LYRICS, "bdj4lyrics", flags, targv);
+  mainData->lyricsstarted = true;
 }
 
 static void
-mainStopSubT (maindata_t *mainData)
+mainStopLyrics (maindata_t *mainData)
 {
-  if (! mainData->subtstarted) {
+  if (! mainData->lyricsstarted) {
     return;
   }
 
-  if (bdjoptGetNum (OPT_P_SUBT_SHOW) == BDJWIN_SHOW_OFF) {
+  if (bdjoptGetNum (OPT_P_LYRICS_SHOW) == BDJWIN_SHOW_OFF) {
     return;
   }
 
-  procutilStopProcess (mainData->processes [ROUTE_SUBT],
-      mainData->conn, ROUTE_SUBT, PROCUTIL_NORM_TERM);
-  mainData->subtstarted = false;
+  procutilStopProcess (mainData->processes [ROUTE_LYRICS],
+      mainData->conn, ROUTE_LYRICS, PROCUTIL_NORM_TERM);
+  mainData->lyricsstarted = false;
 }
 
 

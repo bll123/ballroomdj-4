@@ -100,7 +100,7 @@ static datafilekey_t bdjoptprofiledfkeys [] = {
   { "REMCONTROLUSER",       OPT_P_REMCONTROLUSER,     VALUE_STR, NULL, DF_NORM },
   { "REMOTECONTROL",        OPT_P_REMOTECONTROL,      VALUE_NUM, convBoolean, DF_NORM },
   { "SHOWSPDCONTROL",       OPT_P_SHOW_SPD_CONTROL,   VALUE_NUM, convBoolean, DF_NORM },
-  { "SUBT_SHOW",            OPT_P_SUBT_SHOW,          VALUE_NUM, bdjoptConvBDJWinShow, DF_NORM },
+  { "LYR_SHOW",            OPT_P_LYRICS_SHOW,          VALUE_NUM, bdjoptConvBDJWinShow, DF_NORM },
   { "UI_ACCENT_COL",        OPT_P_UI_ACCENT_COL,      VALUE_STR, NULL, DF_NORM },
   { "UI_ERROR_COL",         OPT_P_UI_ERROR_COL,       VALUE_STR, NULL, DF_NORM },
   { "UI_MARK_COL",          OPT_P_UI_MARK_COL,        VALUE_STR, NULL, DF_NORM },
@@ -476,8 +476,8 @@ bdjoptInit (void)
   }
 
   /* added 4.17.4 */
-  if (nlistGetNum (bdjopt->bdjoptList, OPT_P_SUBT_SHOW) < 0) {
-    nlistSetNum (bdjopt->bdjoptList, OPT_P_SUBT_SHOW, BDJWIN_SHOW_OFF);
+  if (nlistGetNum (bdjopt->bdjoptList, OPT_P_LYRICS_SHOW) < 0) {
+    nlistSetNum (bdjopt->bdjoptList, OPT_P_LYRICS_SHOW, BDJWIN_SHOW_OFF);
   }
 }
 

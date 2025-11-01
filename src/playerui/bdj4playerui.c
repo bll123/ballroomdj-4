@@ -1715,7 +1715,7 @@ pluiMarqueeHideShow (void *udata)
   }
 
   connSendMessage (plui->conn, ROUTE_MARQUEE, msg, NULL);
-  connSendMessage (plui->conn, ROUTE_SUBT, msg, NULL);
+  connSendMessage (plui->conn, ROUTE_LYRICS, msg, NULL);
   return UICB_CONT;
 }
 

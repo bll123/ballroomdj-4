@@ -12,7 +12,7 @@ BASE=bdj4_icon
 BASEI=bdj4_icon_inst
 BASEC=bdj4_icon_config
 BASEMQ=bdj4_icon_marquee
-BASESUBT=bdj4_icon_subt
+BASELYR=bdj4_icon_lyrics
 BASEPL=bdj4_icon_player
 BASEM=bdj4_icon_manage
 BASEH=bdj4_icon_help
@@ -29,7 +29,7 @@ for b in ${BASE} ${BASEI}; do
   mv $b-256.png $b.png
 done
 
-for b in ${BASEC} ${BASEMQ} ${BASESUBT} ${BASEPL} \
+for b in ${BASEC} ${BASEMQ} ${BASELYR} ${BASEPL} \
     ${BASEM} ${BASEH} ${BASEBPM}; do
   for sz in 256; do
     inkscape $b.svg -w $sz -h $sz -o $b-$sz.png > /dev/null 2>&1

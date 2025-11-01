@@ -379,6 +379,6 @@ connBaseInit (void)
   connports [ROUTE_REMCTRL] = bdjvarsGetNum (BDJVL_PORT_REMCTRL);
   connports [ROUTE_SERVER] = bdjvarsGetNum (BDJVL_PORT_SERVER);
   connports [ROUTE_STARTERUI] = bdjvarsGetNum (BDJVL_PORT_STARTERUI);
-  connports [ROUTE_SUBT] = bdjvarsGetNum (BDJVL_PORT_SUBT);
+  connports [ROUTE_LYRICS] = bdjvarsGetNum (BDJVL_PORT_LYRICS);
   connports [ROUTE_TEST_SUITE] = bdjvarsGetNum (BDJVL_PORT_TEST_SUITE);
 }
