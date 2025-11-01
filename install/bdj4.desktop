@@ -1,4 +1,8 @@
 # version 3
+<<<<<<< working copy
+=======
+
+>>>>>>> merge rev
 [Desktop Entry]
 Encoding=UTF-8
 Version=1.0
@@ -9,8 +13,16 @@ Icon=bdj4_icon
 Path=#WORKDIR#
 Terminal=false
 Type=Application
+<<<<<<< working copy
 Categories=Audio;Player
 StartupWMClass=bdj4starterui
+=======
+# KDE won't put BDJ4 in the multi-media section without AudioVideo
+# but BDJ4 does not do video.
+Categories=Audio;Player;AudioVideo
+StartupWMClass=bdj4starterui
+Keywords=Player;Audio
+>>>>>>> merge rev
 Comment=Ballroom Music Player
 Comment[af]=Ballroom Musiekspeler
 Comment[cs]=Přehrávač taneční hudby
@@ -36,4 +48,3 @@ Comment[uk]=Програвач бальної музики
 Comment[vi]=Máy nghe nhạc khiêu vũ
 Comment[zh_CN]=舞厅音乐播放器
 Comment[zh_TW]=舞廳音樂播放器
-Keywords=Player;Audio

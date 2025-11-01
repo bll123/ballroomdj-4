@@ -2,6 +2,11 @@
 [Desktop Entry]
 Encoding=UTF-8
 Version=1.0
+<<<<<<< working copy
+=======
+Name=#APPNAME#
+GenericName=#APPNAME#
+>>>>>>> merge rev
 Icon=#ICONNAME#
 Type=Application
 StartupWMClass=#WMCLASS#

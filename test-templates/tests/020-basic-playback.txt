@@ -11,7 +11,8 @@ wait done 1
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 songplaysentcount 0
 msg main CMD_PLAY
-resptimeout 2000
+# windows is a bit slow to start the first time
+resptimeout 4000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1500

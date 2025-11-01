@@ -6,7 +6,6 @@
 
 **4.17.4 2025-10---**
 
-
 * Bug Fixes:
     * Linux
 * Changes:
@@ -15,6 +14,13 @@
     * Player: Lyrics display, supports .srt and .lrc formats.
 
 -->
+
+**4.17.3.2 2025-10-27**
+
+* Bug Fixes:
+    * Linux: Fix uninstall script.
+    * Linux: Gnome desktop: Fix dock icons.
+    * Linux: KDE: Fix BDJ4 categorization.
 
 **4.17.3.1 2025-10-23**
 
@@ -1353,4 +1359,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-10-23 09:13:03; BDJ4 version 4.17.3.1)_
+<br>_(Updated 2025-10-27 08:13:30; BDJ4 version 4.17.3.2)_

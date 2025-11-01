@@ -1,5 +1,9 @@
 # html-list
+<<<<<<< working copy
 # generated 2025-10-25
+=======
+# generated 2025-10-27
+>>>>>>> merge rev
 KEY
 ..0
 LOCALE

@@ -29,7 +29,7 @@ for b in ${BASE} ${BASEI}; do
   mv $b-256.png $b.png
 done
 
-for b in ${BASEC} ${BASEMQ} ${BASELYR} ${BASEPL} \
+for b in ${BASEC} ${BASEMQ} ${BASESUBT} ${BASEPL} \
     ${BASEM} ${BASEH} ${BASEBPM}; do
   for sz in 256; do
     inkscape $b.svg -w $sz -h $sz -o $b-$sz.png > /dev/null 2>&1

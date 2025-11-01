@@ -18,7 +18,7 @@ across different distributions, and will require building BDJ4 from
 source.
 
 If you need help building from source,
-[contact](en-Install-Getting%20Started) the development team.
+[contact](en-Getting%20Help) the development team.
 
 * Distributions that have been tested (as of 2024-5).
     * Debian based (MX Linux, Ubuntu, Linux Mint, etc.) (2025-8)
@@ -28,9 +28,8 @@ If you need help building from source,
 * Desktop Environments that have been tested (as of 2023-8-8).
     * Budgie (2025-8-8)
     * Cinnamon (2025-8-8)
-    * GNOME
-      The dock does not display the BDJ4 icon (Ubuntu 22.04, recent Fedora)
-      But it does work in Ubuntu 20.04.
+    * GNOME (2025-10-27)
+      After installation, log out and log in again to update the icon cache.
     * Mate (2025-8-8)
     * XFCE (2025-10-22)
     * KDE/Plasma (2025-10-22)
@@ -140,4 +139,4 @@ Visit the
 wiki page.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-10-23 09:13:03; BDJ4 version 4.17.3.1)_
+<br>_(Updated 2025-10-27 08:13:30; BDJ4 version 4.17.3.2)_
