@@ -383,10 +383,10 @@ confuiClosingCallback (void *udata, programstate_t programState)
   }
   for (int i = CONFUI_SPINBOX_BEGIN + 1; i < CONFUI_SPINBOX_MAX; ++i) {
     uiwcontFree (confui->gui.uiitem [i].uiwidgetp);
-    /* the mq and ui-theme share the list */
-    if (i == CONFUI_SPINBOX_UI_THEME) {
-      continue;
-    }
+//    /* the mq and ui-theme share the list */
+//    if (i == CONFUI_DD_UI_THEME) {
+//      continue;
+//    }
     nlistFree (confui->gui.uiitem [i].displist);
     nlistFree (confui->gui.uiitem [i].sbkeylist);
   }
@@ -474,6 +474,7 @@ confuiBuildUI (configui_t *confui)
   confui->gui.notebook = uiCreateNotebook ();
   uiWidgetAddClass (confui->gui.notebook, LEFT_NB_CLASS);
   uiNotebookTabPositionLeft (confui->gui.notebook);
+  uiNotebookSetScrollable (confui->gui.notebook);
   uiBoxPackStartExpand (confui->gui.vbox, confui->gui.notebook);
 
   confuiBuildUIGeneral (&confui->gui);
@@ -507,6 +508,31 @@ confuiBuildUI (configui_t *confui)
   x = nlistGetNum (confui->options, CONFUI_POSITION_X);
   y = nlistGetNum (confui->options, CONFUI_POSITION_Y);
   uiWindowMove (confui->gui.window, x, y, -1);
+
+#if BDJ4_UI_GTK3
+  {
+    int ax, ay;
+    int bx, by;
+    int bugxoffset;
+    int bugyoffset;
+
+fprintf (stderr, "get offset\n");
+    /* work around a gtk bug */
+    /* the widget offsets in the first page of the notebook are incorrect */
+    /* they appear to not include the notebook tab width */
+    /* use this offset to pass to the drop-down */
+    /* but only for affected widgets */
+
+    /* first widget on the first page */
+    uiWidgetGetPosition (confui->gui.uiitem [CONFUI_ENTRY_CHOOSE_MUSIC_DIR].uilabelp, &ax, &ay);
+    /* first widget on the second page */
+    uiWidgetGetPosition (confui->gui.uiitem [CONFUI_SPINBOX_PLI].uilabelp, &bx, &by);
+    bugxoffset = bx - ax;
+    bugyoffset = by - ay;
+    uiddSetOffset (confui->gui.uiitem [CONFUI_DD_LOCALE].uidd, bugxoffset, bugyoffset);
+fprintf (stderr, "   b:%d/%d a:%d/%d offset: %d/%d\n", bx, by, ax, ay, bugxoffset, bugyoffset);
+  }
+#endif
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_config", ".png", PATHBLD_MP_DIR_IMG);

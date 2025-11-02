@@ -121,11 +121,9 @@ confuiBuildUIGeneral (confuigui_t *gui)
       CONFUI_SPINBOX_BPM, OPT_G_BPM,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_BPM), NULL);
 
-  /* bdj4 */
   /* CONTEXT: configuration: the locale to use (e.g. English or Nederlands) */
-  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Locale"),
-      CONFUI_SPINBOX_LOCALE, -1,
-      CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_LOCALE].listidx, NULL);
+  confuiMakeItemDropdown (gui, vbox, szgrp, _("Locale"),
+      CONFUI_DD_LOCALE, -1, confuiLocaleSelect);
 
   /* CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux. */
   confuiMakeItemEntryChooser (gui, vbox, szgrp, _("Startup Script"),
@@ -238,13 +236,12 @@ confuiSelectShutdown (void *udata)
 static void
 confuiLoadLocaleList (confuigui_t *gui)
 {
-  nlist_t       *tlist = NULL;
-  datafile_t    *df = NULL;
   slist_t       *list = NULL;
   slistidx_t    iteridx;
   const char    *key;
-  const char    *data;
-  nlist_t       *llist;
+  const char    *disp;
+  slist_t       *dlist;
+  ilist_t       *ddlist;
   int           count;
   bool          found;
   int           engbidx = 0;
@@ -252,40 +249,48 @@ confuiLoadLocaleList (confuigui_t *gui)
 
   logProcBegin ();
 
-  tlist = nlistAlloc ("cu-locale-list", LIST_ORDERED, NULL);
-  llist = nlistAlloc ("cu-locale-list-l", LIST_ORDERED, NULL);
-
   list = localeGetDisplayList ();
+
+  dlist = slistAlloc ("cu-locale-disp", LIST_UNORDERED, NULL);
+  slistSetSize (dlist, slistGetCount (list));
+  ddlist = ilistAlloc ("cu-locale-dd", LIST_ORDERED);
+  ilistSetSize (ddlist, slistGetCount (list));
+
+  gui->uiitem [CONFUI_DD_LOCALE].listidx = 0;
 
   slistStartIterator (list, &iteridx);
   count = 0;
   found = false;
   shortidx = -1;
-  while ((key = slistIterateKey (list, &iteridx)) != NULL) {
-    data = slistGetStr (list, key);
-    if (strcmp (data, "en_GB") == 0) {
+  while ((disp = slistIterateKey (list, &iteridx)) != NULL) {
+    key = slistGetStr (list, disp);
+    if (strcmp (disp, "en_GB") == 0) {
       engbidx = count;
     }
-    if (strcmp (data, sysvarsGetStr (SV_LOCALE)) == 0) {
-      gui->uiitem [CONFUI_SPINBOX_LOCALE].listidx = count;
+    if (strcmp (key, sysvarsGetStr (SV_LOCALE)) == 0) {
+      gui->uiitem [CONFUI_DD_LOCALE].listidx = count;
       found = true;
     }
-    if (strncmp (data, sysvarsGetStr (SV_LOCALE_SHORT), 2) == 0) {
+    if (strncmp (key, sysvarsGetStr (SV_LOCALE_SHORT), 2) == 0) {
       shortidx = count;
     }
-    nlistSetStr (tlist, count, key);
-    nlistSetStr (llist, count, data);
+    slistSetStr (dlist, disp, key);
+    ilistSetStr (ddlist, count, DD_LIST_DISP, disp);
+    ilistSetStr (ddlist, count, DD_LIST_KEY_STR, key);
+    ilistSetNum (ddlist, count, DD_LIST_KEY_NUM, count);
     ++count;
   }
-  if (! found && shortidx >= 0) {
-    gui->uiitem [CONFUI_SPINBOX_LOCALE].listidx = shortidx;
-  } else if (! found) {
-    gui->uiitem [CONFUI_SPINBOX_LOCALE].listidx = engbidx;
-  }
-  datafileFree (df);
+  slistSort (dlist);
 
-  gui->uiitem [CONFUI_SPINBOX_LOCALE].displist = tlist;
-  gui->uiitem [CONFUI_SPINBOX_LOCALE].sbkeylist = llist;
+  if (! found && shortidx >= 0) {
+    gui->uiitem [CONFUI_DD_LOCALE].listidx = shortidx;
+  } else if (! found) {
+    gui->uiitem [CONFUI_DD_LOCALE].listidx = engbidx;
+  }
+
+  gui->uiitem [CONFUI_DD_LOCALE].displist = dlist;
+  gui->uiitem [CONFUI_DD_LOCALE].ddlist = ddlist;
+
   logProcEnd ("");
 }
 

@@ -81,8 +81,11 @@ confuiLoadThemeList (confuigui_t *gui)
   const char  *p;
   const char  *mqtheme;
   const char  *uitheme;
+  ilist_t     *ddlist;
 
   p = bdjoptGetStr (OPT_M_UI_THEME);
+fprintf (stderr, "m-ui-theme: %s\n", p);
+fprintf (stderr, "sys-default %s\n", sysvarsGetStr (SV_THEME_DEFAULT));
   /* use the system default if the ui theme is empty */
   if (p == NULL || ! *p) {
     usesys = true;
@@ -93,27 +96,39 @@ confuiLoadThemeList (confuigui_t *gui)
 
   tlist = confuiGetThemeList ();
   nlistStartIterator (tlist, &iteridx);
-  count = 0;
+  ddlist = ilistAlloc ("c-theme-dd", LIST_ORDERED);
 
   /* need some sort of default */
-  gui->uiitem [CONFUI_SPINBOX_MQ_THEME].listidx = 0;
+  gui->uiitem [CONFUI_DD_MQ_THEME].listidx = 0;
+  gui->uiitem [CONFUI_DD_UI_THEME].listidx = 0;
 
+  count = 0;
   while ((p = nlistIterateValueData (tlist, &iteridx)) != NULL) {
-    if (mqtheme != NULL && strcmp (p, mqtheme) == 0) {
-      gui->uiitem [CONFUI_SPINBOX_MQ_THEME].listidx = count;
+    ilistSetStr (ddlist, count, DD_LIST_DISP, p);
+    ilistSetStr (ddlist, count, DD_LIST_KEY_STR, p);
+    ilistSetNum (ddlist, count, DD_LIST_KEY_NUM, count);
+
+    if (mqtheme != NULL && p != NULL && strcmp (p, mqtheme) == 0) {
+      gui->uiitem [CONFUI_DD_MQ_THEME].listidx = count;
+//      gui->uiitem [CONFUI_SPINBOX_MQ_THEME].listidx = count;
     }
-    if (! usesys && strcmp (p, uitheme) == 0) {
-      gui->uiitem [CONFUI_SPINBOX_UI_THEME].listidx = count;
+    if (! usesys && p != NULL && strcmp (p, uitheme) == 0) {
+//      gui->uiitem [CONFUI_SPINBOX_UI_THEME].listidx = count;
+      gui->uiitem [CONFUI_DD_UI_THEME].listidx = count;
     }
-    if (usesys &&
-        strcmp (p, sysvarsGetStr (SV_THEME_DEFAULT)) == 0) {
-      gui->uiitem [CONFUI_SPINBOX_UI_THEME].listidx = count;
+    if (usesys && strcmp (p, sysvarsGetStr (SV_THEME_DEFAULT)) == 0) {
+      gui->uiitem [CONFUI_DD_UI_THEME].listidx = count;
+//      gui->uiitem [CONFUI_SPINBOX_UI_THEME].listidx = count;
     }
     ++count;
   }
-  /* the theme list is ordered */
-  gui->uiitem [CONFUI_SPINBOX_UI_THEME].displist = tlist;
-  gui->uiitem [CONFUI_SPINBOX_MQ_THEME].displist = tlist;
+
+//  gui->uiitem [CONFUI_SPINBOX_UI_THEME].displist = tlist;
+  gui->uiitem [CONFUI_DD_UI_THEME].displist = tlist;
+  gui->uiitem [CONFUI_DD_UI_THEME].ddlist = ddlist;
+  gui->uiitem [CONFUI_DD_MQ_THEME].displist = tlist;
+  gui->uiitem [CONFUI_DD_MQ_THEME].ddlist = ddlist;
+//  gui->uiitem [CONFUI_SPINBOX_MQ_THEME].displist = tlist;
 }
 
 void
@@ -632,9 +647,68 @@ confuiOrgPathSelect (void *udata, const char *sval)
   logProcBegin ();
   if (sval != NULL && *sval) {
     bdjoptSetStr (OPT_G_ORGPATH, sval);
+    confuiUpdateOrgExamples (gui, sval);
   }
-  confuiUpdateOrgExamples (gui, sval);
   logProcEnd ("");
+  return UICB_CONT;
+}
+
+int32_t
+confuiLocaleSelect (void *udata, const char *sval)
+{
+  if (sval != NULL && *sval) {
+    char        tbuff [MAXPATHLEN];
+
+    sysvarsSetStr (SV_LOCALE, sval);
+    snprintf (tbuff, sizeof (tbuff), "%.2s", sval);
+    sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        "locale", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+    fileopDelete (tbuff);
+
+    /* if the set locale does not match the system or default locale */
+    /* save it in the locale file */
+    if (strcmp (sval, sysvarsGetStr (SV_LOCALE_ORIG)) != 0) {
+      FILE    *fh;
+
+      fh = fileopOpen (tbuff, "w");
+      fprintf (fh, "%s\n", sval);
+      mdextfclose (fh);
+      fclose (fh);
+    }
+  }
+  return UICB_CONT;
+}
+
+int32_t
+confuiUIThemeSelect (void *udata, const char *sval)
+{
+  if (sval != NULL && *sval) {
+    char    tbuff [MAXPATHLEN];
+    FILE    *fh;
+
+    bdjoptSetStr (OPT_M_UI_THEME, sval);
+
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        "theme", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+    fh = fileopOpen (tbuff, "w");
+    if (sval != NULL) {
+      fprintf (fh, "%s\n", sval);
+    }
+    mdextfclose (fh);
+    fclose (fh);
+  }
+
+  return UICB_CONT;
+}
+
+int32_t
+confuiMQThemeSelect (void *udata, const char *sval)
+{
+  if (sval != NULL && *sval) {
+    bdjoptSetStr (OPT_M_MQ_THEME, sval);
+  }
+
   return UICB_CONT;
 }
 

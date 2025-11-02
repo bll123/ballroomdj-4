@@ -129,6 +129,15 @@ uiNotebookSetCallback (uiwcont_t *uinotebook, callback_t *uicb)
       G_CALLBACK (uiNotebookSwitchPageHandler), uicb);
 }
 
+void
+uiNotebookSetScrollable (uiwcont_t *uinotebook)
+{
+  if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-scrollable")) {
+    return;
+  }
+  gtk_notebook_set_scrollable (GTK_NOTEBOOK (uinotebook->uidata.widget), true);
+}
+
 /* internal routines */
 
 static void

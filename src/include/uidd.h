@@ -40,6 +40,8 @@ void uiddSetSelection (uidd_t *dd, nlistidx_t idx);
 void uiddSetSelectionByNumKey (uidd_t *dd, ilistidx_t key);
 void uiddSetSelectionByStrKey (uidd_t *dd, const char *key);
 void uiddSetState (uidd_t *dd, int state);
+void uiddSetMarginStart (uidd_t *dd, int margin);
+void uiddSetOffset (uidd_t *dd, int bugxoffset, int bugyoffset);
 const char *uiddGetSelectionStr (uidd_t *dd);
 
 #if defined (__cplusplus) || defined (c_plusplus)

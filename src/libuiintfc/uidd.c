@@ -67,6 +67,8 @@ typedef struct uidd {
   int           listtype;
   size_t        dispwidth;
   ilistidx_t    selectedidx;
+  int           bugxoffset;
+  int           bugyoffset;
   bool          dialogcreated;
   bool          inchange;
   bool          open;
@@ -113,6 +115,8 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
   dd->dialogcreated = false;
   dd->open = false;
   dd->uivl = NULL;
+  dd->bugxoffset = 0;
+  dd->bugyoffset = 0;
 
   uiddProcessList (dd);
 
@@ -121,6 +125,7 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
   uiwidget = uiCreateButton ("dd-down",
       dd->callbacks [DD_CB_BUTTON], NULL,
       "button_down_small");
+
   if (where == DD_PACK_START) {
     uiBoxPackStart (boxp, uiwidget);
   }
@@ -241,6 +246,27 @@ uiddSetState (uidd_t *dd, int state)
   uiWidgetSetState (dd->wcont [DD_W_BUTTON], state);
 }
 
+void
+uiddSetMarginStart (uidd_t *dd, int margin)
+{
+  if (dd == NULL || dd->ident != DD_IDENT) {
+    return;
+  }
+
+  uiWidgetSetMarginStart (dd->wcont [DD_W_BUTTON], margin);
+}
+
+void
+uiddSetOffset (uidd_t *dd, int bugxoffset, int bugyoffset)
+{
+  if (dd == NULL || dd->ident != DD_IDENT) {
+    return;
+  }
+
+  dd->bugxoffset = bugxoffset;
+  dd->bugyoffset = bugyoffset;
+}
+
 const char *
 uiddGetSelectionStr (uidd_t *dd)
 {
@@ -301,11 +327,11 @@ static bool
 uiddDisplay (void *udata)
 {
   uidd_t    *dd = udata;
-  int       x, y, ws;
-  int       h, w;
-  int       dh, dw;
-  int       mh, mw;
-  int       bx, by;
+  int       x, y, ws;   // parent window
+  int       h, w;       // parent window
+  int       dh, dw;     // dialog window
+  int       mh, mw;     // monitor
+  int       bx, by;     // button
   int       nx, ny;
   bool      changed;
 
@@ -316,12 +342,18 @@ uiddDisplay (void *udata)
   by = 0;
   uiWindowGetPosition (dd->parentwin, &x, &y, &ws);
   uiWindowGetSize (dd->parentwin, &w, &h);
-  uiWidgetGetPosition (dd->wcont [DD_W_BUTTON], &bx, &by);
   uiWidgetShowAll (dd->wcont [DD_W_DIALOG_WIN]);
+  uiWidgetGetPosition (dd->wcont [DD_W_BUTTON], &bx, &by);
   uivlPopulate (dd->uivl);
-  nx = bx + x + 4;
-  ny = by + y + 30;
+fprintf (stderr, "dd: %s parent: x:%d y:%d w:%d h:%d\n", dd->tag, x, y, w, h);
+fprintf (stderr, "dd: %s button x:%d y:%d\n", dd->tag, bx, by);
+  nx = bx + x + 8;
+  ny = by + y + 38;
+  nx += dd->bugxoffset;
+  ny += dd->bugyoffset;
+fprintf (stderr, "dd: bugoffset: %d/%d nx: %d ny: %d\n", dd->bugxoffset, dd->bugyoffset, nx, ny);
   uiWindowMove (dd->wcont [DD_W_DIALOG_WIN], nx, ny, -1);
+  uiWidgetShowAll (dd->wcont [DD_W_DIALOG_WIN]);
   uiWindowPresent (dd->wcont [DD_W_DIALOG_WIN]);
 
   uiWindowGetSize (dd->wcont [DD_W_DIALOG_WIN], &dw, &dh);
@@ -337,6 +369,7 @@ uiddDisplay (void *udata)
     changed = true;
   }
   if (changed) {
+fprintf (stderr, "dd: %s changed: nx: %d ny: %d\n", dd->tag, nx, ny);
     uiWindowMove (dd->wcont [DD_W_DIALOG_WIN], nx, ny, -1);
   }
 

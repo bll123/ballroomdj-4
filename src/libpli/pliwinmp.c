@@ -112,7 +112,6 @@ pliiStartPlayback (plidata_t *pliData, ssize_t dpos, ssize_t speed)
   }
 
   /* windows allows seek and rate changes before playing */
-// ### this needs testing with URLs
   if (dpos > 0) {
     winmpSeek (pliData->windata, dpos);
   }

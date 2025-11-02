@@ -46,9 +46,10 @@ confuiInitOrganization (confuigui_t *gui)
   bdjoptSetStr (OPT_G_OLDORGPATH, origpath);
 
   gui->uiitem [CONFUI_DD_ORGPATH].displist = tlist;
-  ddlist = ilistAlloc ("conforg", LIST_ORDERED);
-  slistStartIterator (tlist, &iteridx);
   gui->uiitem [CONFUI_DD_ORGPATH].listidx = 0;
+  ddlist = ilistAlloc ("conforg", LIST_ORDERED);
+
+  slistStartIterator (tlist, &iteridx);
   count = 0;
   while ((disp = slistIterateKey (tlist, &iteridx)) != NULL) {
     const char  *path;
@@ -95,12 +96,13 @@ confuiBuildUIOrganization (confuigui_t *gui)
   /* CONTEXT: configuration: the audio file organization path */
   confuiMakeItemDropdown (gui, vbox, szgrp, _("Organisation Path"),
       CONFUI_DD_ORGPATH, OPT_G_ORGPATH,
-      confuiOrgPathSelect, bdjoptGetStr (OPT_G_ORGPATH));
+      confuiOrgPathSelect);
+
   /* CONTEXT: configuration: examples displayed for the audio file organization path */
   confuiMakeItemLabelDisp (gui, vbox, szgrp, _("Examples"),
-      CONFUI_WIDGET_AO_EXAMPLE_1, -1);
+      CONFUI_WIDGET_AO_EXAMPLE_1, CONFUI_INDENT_FIELD);
   for (int i = CONFUI_WIDGET_AO_EXAMPLE_2; i < CONFUI_WIDGET_AO_EXAMPLE_MAX; ++i) {
-    confuiMakeItemLabelDisp (gui, vbox, szgrp, "", i, -1);
+    confuiMakeItemLabelDisp (gui, vbox, szgrp, "", i, CONFUI_INDENT_FIELD);
   }
 
   confuiMakeItemSwitch (gui, vbox, szgrp,

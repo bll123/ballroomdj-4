@@ -4,6 +4,13 @@
 
 <!--
 
+**4.17.3.3 2025-11---**
+
+* Changes:
+    * Configuration: UI Theme and Marquee Theme are now drop-downs.
+    * Configuration: Locale is now a drop-down.
+    * Configuration: The configuration topics can now scroll when the window size is reduced.
+
 -->
 
 **4.17.3.2 2025-10-27**

@@ -185,7 +185,7 @@ main (int argc, char *argv [])
 
   logStartAppend ("testsuite", "ts",
       LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_MSGS | LOG_ACTIONS
-//      | LOG_SOCKET | LOG_PROCESS | LOG_PROGSTATE /* ### */
+ //     | LOG_SOCKET | LOG_PROCESS | LOG_PROGSTATE /* ### */
       );
 
   pathbldMakePath (tbuff, sizeof (tbuff),

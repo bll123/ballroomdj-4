@@ -40,9 +40,8 @@ confuiBuildUIUserInterface (confuigui_t *gui)
       _("User Interface"), CONFUI_ID_NONE);
 
   /* CONTEXT: configuration: the theme to use for the user interface */
-  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Theme"),
-      CONFUI_SPINBOX_UI_THEME, OPT_M_UI_THEME, CONFUI_OUT_STR,
-      gui->uiitem [CONFUI_SPINBOX_UI_THEME].listidx, NULL);
+  confuiMakeItemDropdown (gui, vbox, szgrp, _("Theme"),
+      CONFUI_DD_UI_THEME, OPT_M_UI_THEME, confuiUIThemeSelect);
 
   tstr = bdjoptGetStr (OPT_M_UI_FONT);
   if (tstr == NULL || ! *tstr) {

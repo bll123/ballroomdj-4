@@ -53,6 +53,9 @@ enum {
   CONFUI_BEGIN,
   CONFUI_DD_BEGIN,
   CONFUI_DD_ORGPATH,
+  CONFUI_DD_LOCALE,
+  CONFUI_DD_UI_THEME,
+  CONFUI_DD_MQ_THEME,
   CONFUI_DD_MAX,
   CONFUI_ENTRY_BEGIN,
   CONFUI_ENTRY_ACRCLOUD_API_HOST,
@@ -103,10 +106,8 @@ enum {
   CONFUI_SPINBOX_ITUNES_STARS_70,
   CONFUI_SPINBOX_ITUNES_STARS_80,
   CONFUI_SPINBOX_ITUNES_STARS_90,
-  CONFUI_SPINBOX_LOCALE,
   CONFUI_SPINBOX_MARQUEE_SHOW,
   CONFUI_SPINBOX_Q_MAX_PLAY_TIME,
-  CONFUI_SPINBOX_MQ_THEME,
   CONFUI_SPINBOX_PLI,
   CONFUI_SPINBOX_MOBMQ_TYPE,
   CONFUI_SPINBOX_MUSIC_QUEUE,
@@ -114,7 +115,6 @@ enum {
   CONFUI_SPINBOX_PLAYER_CLOCK,
   CONFUI_SPINBOX_RC_HTML_TEMPLATE,
   CONFUI_SPINBOX_Q_STOP_AT_TIME,
-  CONFUI_SPINBOX_UI_THEME,
   CONFUI_SPINBOX_VOL_INTFC,
   CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
   CONFUI_SPINBOX_MAX,
@@ -273,7 +273,7 @@ typedef struct {
   uiwcont_t         *uibutton;      // for entry chooser
   uisfcb_t          sfcb;           // for entry chooser, combobox
   int               listidx;        // for combobox, spinbox
-  ilist_t           *ddlist;
+  ilist_t           *ddlist;        // drop-down list
   nlist_t           *displist;      // indexed by spinbox/combobox index
                                     //    value: display
   nlist_t           *sbkeylist;     // indexed by spinbox index
@@ -316,6 +316,7 @@ enum {
   CONFUI_TABLE_NUM,
   CONFUI_NO_INDENT,
   CONFUI_INDENT,
+  CONFUI_INDENT_FIELD,
 };
 
 enum {
@@ -508,6 +509,9 @@ void confuiCreateTagListingDisp (confuigui_t *gui);
 void confuiCreateTagSelectedDisp (confuigui_t *gui);
 void confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath);
 int32_t confuiOrgPathSelect (void *udata, const char *sval);
+int32_t confuiLocaleSelect (void *udata, const char *sval);
+int32_t confuiUIThemeSelect (void *udata, const char *sval);
+int32_t confuiMQThemeSelect (void *udata, const char *sval);
 void confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces, int optidx, int opnmidx, int spinboxidx, int offset);
 
 /* confas.c */
@@ -547,7 +551,7 @@ void confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, 
 void confuiMakeItemEntry (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
 void confuiMakeItemEntryEncrypt (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
 void confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, void *dialogFunc);
-void confuiMakeItemDropdown (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, callbackFuncS ddcb, const char *value);
+void confuiMakeItemDropdown (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, callbackFuncS ddcb);
 void confuiMakeItemLink (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, const char *disp);
 void confuiMakeItemFontButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *fontname);
 void confuiMakeItemColorButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *color);
@@ -557,7 +561,7 @@ void confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg
 void confuiMakeItemSpinboxNum (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, uiwcont_t *sgB, const char *txt, int widx, int bdjoptIdx, int min, int max, int value, void *cb);
 void confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, uiwcont_t *sgB, const char *txt, int widx, int bdjoptIdx, double min, double max, double value, int indent);
 void confuiMakeItemSwitch (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, int value, void *cb, int indent);
-void confuiMakeItemLabelDisp (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx);
+void confuiMakeItemLabelDisp (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int indent);
 void confuiMakeItemCheckButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, int value);
 void confuiMakeItemLabel (confuigui_t *gui, int widx, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int indent);
 void confuiSpinboxTextInitDataNum (confuigui_t *gui, char *tag, int widx, ...);
@@ -622,4 +626,3 @@ void confuiBuildUIUserInterface (confuigui_t *gui);
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
 #endif
-
