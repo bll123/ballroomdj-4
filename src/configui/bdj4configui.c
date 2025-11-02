@@ -383,10 +383,6 @@ confuiClosingCallback (void *udata, programstate_t programState)
   }
   for (int i = CONFUI_SPINBOX_BEGIN + 1; i < CONFUI_SPINBOX_MAX; ++i) {
     uiwcontFree (confui->gui.uiitem [i].uiwidgetp);
-//    /* the mq and ui-theme share the list */
-//    if (i == CONFUI_DD_UI_THEME) {
-//      continue;
-//    }
     nlistFree (confui->gui.uiitem [i].displist);
     nlistFree (confui->gui.uiitem [i].sbkeylist);
   }
@@ -516,7 +512,6 @@ confuiBuildUI (configui_t *confui)
     int bugxoffset;
     int bugyoffset;
 
-fprintf (stderr, "get offset\n");
     /* work around a gtk bug */
     /* the widget offsets in the first page of the notebook are incorrect */
     /* they appear to not include the notebook tab width */
@@ -530,7 +525,6 @@ fprintf (stderr, "get offset\n");
     bugxoffset = bx - ax;
     bugyoffset = by - ay;
     uiddSetOffset (confui->gui.uiitem [CONFUI_DD_LOCALE].uidd, bugxoffset, bugyoffset);
-fprintf (stderr, "   b:%d/%d a:%d/%d offset: %d/%d\n", bx, by, ax, ay, bugxoffset, bugyoffset);
   }
 #endif
 

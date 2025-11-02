@@ -345,13 +345,10 @@ uiddDisplay (void *udata)
   uiWidgetShowAll (dd->wcont [DD_W_DIALOG_WIN]);
   uiWidgetGetPosition (dd->wcont [DD_W_BUTTON], &bx, &by);
   uivlPopulate (dd->uivl);
-fprintf (stderr, "dd: %s parent: x:%d y:%d w:%d h:%d\n", dd->tag, x, y, w, h);
-fprintf (stderr, "dd: %s button x:%d y:%d\n", dd->tag, bx, by);
   nx = bx + x + 8;
   ny = by + y + 38;
   nx += dd->bugxoffset;
   ny += dd->bugyoffset;
-fprintf (stderr, "dd: bugoffset: %d/%d nx: %d ny: %d\n", dd->bugxoffset, dd->bugyoffset, nx, ny);
   uiWindowMove (dd->wcont [DD_W_DIALOG_WIN], nx, ny, -1);
   uiWidgetShowAll (dd->wcont [DD_W_DIALOG_WIN]);
   uiWindowPresent (dd->wcont [DD_W_DIALOG_WIN]);
@@ -369,7 +366,6 @@ fprintf (stderr, "dd: bugoffset: %d/%d nx: %d ny: %d\n", dd->bugxoffset, dd->bug
     changed = true;
   }
   if (changed) {
-fprintf (stderr, "dd: %s changed: nx: %d ny: %d\n", dd->tag, nx, ny);
     uiWindowMove (dd->wcont [DD_W_DIALOG_WIN], nx, ny, -1);
   }
 

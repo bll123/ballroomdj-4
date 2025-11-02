@@ -81,11 +81,10 @@ confuiLoadThemeList (confuigui_t *gui)
   const char  *p;
   const char  *mqtheme;
   const char  *uitheme;
-  ilist_t     *ddlist;
+  ilist_t     *uiddlist;
+  ilist_t     *mqddlist;
 
   p = bdjoptGetStr (OPT_M_UI_THEME);
-fprintf (stderr, "m-ui-theme: %s\n", p);
-fprintf (stderr, "sys-default %s\n", sysvarsGetStr (SV_THEME_DEFAULT));
   /* use the system default if the ui theme is empty */
   if (p == NULL || ! *p) {
     usesys = true;
@@ -96,7 +95,10 @@ fprintf (stderr, "sys-default %s\n", sysvarsGetStr (SV_THEME_DEFAULT));
 
   tlist = confuiGetThemeList ();
   nlistStartIterator (tlist, &iteridx);
-  ddlist = ilistAlloc ("c-theme-dd", LIST_ORDERED);
+  uiddlist = ilistAlloc ("c-theme-dd", LIST_ORDERED);
+  ilistSetSize (uiddlist, nlistGetCount (tlist));
+  mqddlist = ilistAlloc ("c-theme-dd", LIST_ORDERED);
+  ilistSetSize (mqddlist, nlistGetCount (tlist));
 
   /* need some sort of default */
   gui->uiitem [CONFUI_DD_MQ_THEME].listidx = 0;
@@ -104,31 +106,29 @@ fprintf (stderr, "sys-default %s\n", sysvarsGetStr (SV_THEME_DEFAULT));
 
   count = 0;
   while ((p = nlistIterateValueData (tlist, &iteridx)) != NULL) {
-    ilistSetStr (ddlist, count, DD_LIST_DISP, p);
-    ilistSetStr (ddlist, count, DD_LIST_KEY_STR, p);
-    ilistSetNum (ddlist, count, DD_LIST_KEY_NUM, count);
+    ilistSetStr (uiddlist, count, DD_LIST_DISP, p);
+    ilistSetStr (uiddlist, count, DD_LIST_KEY_STR, p);
+    ilistSetNum (uiddlist, count, DD_LIST_KEY_NUM, count);
+    ilistSetStr (mqddlist, count, DD_LIST_DISP, p);
+    ilistSetStr (mqddlist, count, DD_LIST_KEY_STR, p);
+    ilistSetNum (mqddlist, count, DD_LIST_KEY_NUM, count);
 
     if (mqtheme != NULL && p != NULL && strcmp (p, mqtheme) == 0) {
       gui->uiitem [CONFUI_DD_MQ_THEME].listidx = count;
-//      gui->uiitem [CONFUI_SPINBOX_MQ_THEME].listidx = count;
     }
     if (! usesys && p != NULL && strcmp (p, uitheme) == 0) {
-//      gui->uiitem [CONFUI_SPINBOX_UI_THEME].listidx = count;
       gui->uiitem [CONFUI_DD_UI_THEME].listidx = count;
     }
     if (usesys && strcmp (p, sysvarsGetStr (SV_THEME_DEFAULT)) == 0) {
       gui->uiitem [CONFUI_DD_UI_THEME].listidx = count;
-//      gui->uiitem [CONFUI_SPINBOX_UI_THEME].listidx = count;
     }
     ++count;
   }
 
-//  gui->uiitem [CONFUI_SPINBOX_UI_THEME].displist = tlist;
   gui->uiitem [CONFUI_DD_UI_THEME].displist = tlist;
-  gui->uiitem [CONFUI_DD_UI_THEME].ddlist = ddlist;
+  gui->uiitem [CONFUI_DD_UI_THEME].ddlist = uiddlist;
   gui->uiitem [CONFUI_DD_MQ_THEME].displist = tlist;
-  gui->uiitem [CONFUI_DD_MQ_THEME].ddlist = ddlist;
-//  gui->uiitem [CONFUI_SPINBOX_MQ_THEME].displist = tlist;
+  gui->uiitem [CONFUI_DD_MQ_THEME].ddlist = mqddlist;
 }
 
 void

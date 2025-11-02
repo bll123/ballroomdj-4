@@ -58,9 +58,6 @@ confuiBuildUIMarquee (confuigui_t *gui)
   /* CONTEXT: configuration: The theme to use for the marquee display */
   confuiMakeItemDropdown (gui, vbox, szgrp, _("Marquee Theme"),
       CONFUI_DD_MQ_THEME, OPT_M_MQ_THEME, confuiMQThemeSelect);
-//  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Marquee Theme"),
-//      CONFUI_SPINBOX_MQ_THEME, OPT_M_MQ_THEME,
-//      CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_MQ_THEME].listidx, NULL);
 
   /* CONTEXT: configuration: The font to use for the marquee display */
   confuiMakeItemFontButton (gui, vbox, szgrp, _("Marquee Font"),

@@ -158,14 +158,6 @@ confuiPopulateOptions (confuigui_t *gui)
         break;
       }
       case CONFUI_OUT_STR: {
-//        uiwcont_t  *spinbox;
-
-//        if (widx == CONFUI_DD_UI_THEME) {
-//          spinbox = gui->uiitem [widx].uiwidgetp;
-//          if (uiSpinboxIsChanged (spinbox)) {
-//            gui->uiitem [widx].changed = true;
-//          }
-//        }
         if (widx == CONFUI_WIDGET_UI_ACCENT_COLOR) {
           if (strcmp (bdjoptGetStr (gui->uiitem [widx].bdjoptIdx), sval) != 0) {
             gui->uiitem [widx].changed = true;

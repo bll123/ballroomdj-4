@@ -9,7 +9,7 @@
 * Changes:
     * Configuration: UI Theme and Marquee Theme are now drop-downs.
     * Configuration: Locale is now a drop-down.
-    * Configuration: The configuration topics can now scroll when the window size is reduced.
+    * Configuration: The configuration topic selection can now scroll when the window size is reduced.
 
 -->
 
