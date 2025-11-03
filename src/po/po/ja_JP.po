@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2025-09-23\n"
-"PO-Revision-Date: 2025-10-10\n"
+"PO-Revision-Date: 2025-11-03\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
@@ -19,15 +19,549 @@ msgstr ""
 "X-Crowdin-File: en_GB.po\n"
 "X-Crowdin-File-ID: 126\n"
 
-#. CONTEXT: song editor: status msg: (song end must be greater than song start)
-#, c-format
-msgid "%1$s must be greater than %2$s"
-msgstr "%1$s は %2$sより大きくなければならない。"
+#. CONTEXT: configuration file: audio source name
+#. CONTEXT: configuration file: audio source name
+#. CONTEXT: audio source: podcast
+#. CONTEXT: playlist management: type of playlist
+msgid "Podcast"
+msgstr ""
 
-#. CONTEXT: configuration: the ACRCloud API Host
+#. CONTEXT: configuration file: dance
+msgid "Argentine Tango"
+msgstr "アルゼンチン・タンゴ"
+
+#. CONTEXT: configuration file: dance
+msgid "Cha Cha"
+msgstr "チャチャ"
+
+#. CONTEXT: configuration file: dance
+msgid "Foxtrot"
+msgstr "フォックストロット"
+
+#. CONTEXT: configuration file: dance
+msgid "Jive"
+msgstr "ジャイブ"
+
+#. CONTEXT: configuration file: dance
+msgid "Paso Doble"
+msgstr "パソドブレ"
+
+#. CONTEXT: configuration file: dance
+msgid "Quickstep"
+msgstr "クイックステップ"
+
+#. CONTEXT: configuration file: dance
+msgid "Rumba"
+msgstr "ルンバ"
+
+#. CONTEXT: configuration file: dance
+msgid "Salsa"
+msgstr "サルサ"
+
+#. CONTEXT: configuration file: dance
+msgid "Samba"
+msgstr "サンバ"
+
+#. CONTEXT: configuration file: dance
+msgid "Tango"
+msgstr "タンゴ"
+
+#. CONTEXT: configuration file: dance
+msgid "Viennese Waltz"
+msgstr "ウィーン・ワルツ"
+
+#. CONTEXT: configuration file: dance
+msgid "Waltz"
+msgstr "ワルツ"
+
+#. CONTEXT: configuration file: dance
+msgid "West Coast Swing"
+msgstr "ウエストコースト・スウィング"
+
+#. CONTEXT: configuration file: dance type
+msgid "standard"
+msgstr "標準"
+
+#. CONTEXT: configuration file: dance type
+msgid "latin"
+msgstr "ラテン"
+
+#. CONTEXT: configuration file: dance type
+msgid "club"
+msgstr "クラブ"
+
+#. CONTEXT: configuration file: rating
+msgid "Unrated"
+msgstr "未評価"
+
+#. CONTEXT: configuration file: rating
+msgid "Poor"
+msgstr "貧しい"
+
+#. CONTEXT: configuration file: rating
+msgid "Good"
+msgstr "グッド"
+
+#. CONTEXT: configuration file: rating
+msgid "Great"
+msgstr "素晴らしい"
+
+#. CONTEXT: configuration file: genre
+#. CONTEXT: configuration: controller: no controller
+msgid "None"
+msgstr "なし"
+
+#. CONTEXT: configuration file: genre
+msgid "Ballroom Dance"
+msgstr "社交ダンス"
+
+#. CONTEXT: configuration file: genre
+msgid "Classical"
+msgstr "クラシック"
+
+#. CONTEXT: configuration file: genre
+msgid "Jazz"
+msgstr "ジャズ"
+
+#. CONTEXT: configuration file: genre
+msgid "Rock"
+msgstr "ロック"
+
+#. CONTEXT: configuration file: dance level
+msgid "Easy"
+msgstr "簡単"
+
+#. CONTEXT: configuration file: dance level
+msgid "Normal"
+msgstr "ノーマル"
+
+#. CONTEXT: configuration file: dance level
+msgid "Advanced"
+msgstr "上級"
+
+#. CONTEXT: configuration file: status
+#. CONTEXT: status: default status (new) when status is not set
+msgid "New"
+msgstr "新しい"
+
+#. CONTEXT: configuration file: status
+#. CONTEXT: copy audio tags: copy of audio tags completed
+#. CONTEXT: database update: status message
+msgid "Complete"
+msgstr "完全"
+
+#. CONTEXT: configuration file: The completion message displayed on the marquee when the playlist is finished.
+msgid "Thank You Dancers"
+msgstr "ありがとうダンサーズ"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+#. CONTEXT: configuration: display settings for: music queue
+msgid "Music Queue"
+msgstr "ミュージック・キュー"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue B"
+msgstr "キューB"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue C"
+msgstr "キューC"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue D"
+msgstr "キューD"
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue E"
+msgstr "キューE"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: tooltip: play or pause the song
+msgid "Play / Pause"
+msgstr "再生/一時停止"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: fade out the song and stop playing it
+msgid "Fade"
+msgstr "フェード"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Repeat"
+msgstr "リピート"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: pause at the end of the song (toggle)
+msgid "Pause at End"
+msgstr "終了時のポーズ"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: tooltip: start playing the next song (immediate)
+msgid "Next Song"
+msgstr "次の曲"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
+#. CONTEXT: (verb) song-selection: queue a song to be played
+#. CONTEXT: (verb) external request dialog: queue the selected file
+msgid "Queue"
+msgstr "キュー"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button)
+msgid "Queue 5"
+msgstr "キュー5"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: music queue: button: clear the queue
+msgid "Clear Queue"
+msgstr "クリアキュー"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Clear & Play"
+msgstr "クリア＆プレイ"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: audio identification: next song
+#. CONTEXT: song editor : next song
+#. CONTEXT: helperui: proceed to the next step
+msgid "Next"
+msgstr "次のページ"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Mute"
+msgstr "ミュート"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: update database: button to stop the database update process
+msgid "Stop"
+msgstr "ストップ"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: The current volume of the song
+msgid "Volume"
+msgstr "ボリューム"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow)
+#. CONTEXT: playerui: the current speed for song playback
+msgid "Speed"
+msgstr "スピード"
+
+#. CONTEXT: The name of the 'standardrounds' playlist file
+msgid "standardrounds"
+msgstr "スタンダードラウンド"
+
+#. CONTEXT: The name of the 'queuedance' playlist file
+#. CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button
+#. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
+#. CONTEXT: player: the name of the special playlist for queueing a dance
+msgid "QueueDance"
+msgstr "キューダンス"
+
+#. CONTEXT: tooltip for desktop icon
+msgid "Ballroom Music Player"
+msgstr "社交音楽の再生"
+
+#. CONTEXT: configuration: configuration user interface window title
 #, c-format
-msgid "%s API Host"
-msgstr "%sAPIホスト"
+msgid "%s Configuration"
+msgstr "%s構成"
+
+#. CONTEXT: configuration: audio source mode
+#. CONTEXT: configuration: show-marquee: off
+#. CONTEXT: configuration: mobile marquee type: off
+#. CONTEXT: configuration: player: clock: off
+msgid "Off"
+msgstr "オフ"
+
+#. CONTEXT: configuration: audio source mode
+msgid "Client"
+msgstr ""
+
+#. CONTEXT: configuration: audio source mode
+msgid "Server"
+msgstr ""
+
+#. CONTEXT: configuration: audio sources
+msgid "Audio Sources"
+msgstr ""
+
+#. CONTEXT: configuration: audio source: mode (off/client/server)
+#. CONTEXT: configuration: mobile marquee: mode: (off/local/internet)
+msgid "Mode"
+msgstr ""
+
+#. CONTEXT: configuration: audio source: the client or server name
+#. CONTEXT: alternate installation: name (for shortcut)
+msgid "Name"
+msgstr "名称"
+
+#. CONTEXT: configuration: audio source: type of source
+#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+msgid "Type"
+msgstr "タイプ"
+
+#. CONTEXT: configuration: audio source: the remote client URL
+#. CONTEXT: import playlist: import location
+#. CONTEXT: playlist management: podcast URL
+msgid "URL"
+msgstr ""
+
+#. CONTEXT: configuration: audio source: the port to use for the client or server
+#. CONTEXT: configuration: the port to use for the mobile marquee
+#. CONTEXT: configuration: remote control: the port to use for remote control
+msgid "Port"
+msgstr "ポート"
+
+#. CONTEXT: configuration: audio source: the client or server user
+msgid "User"
+msgstr ""
+
+#. CONTEXT: configuration: audio source: the client or server password
+#. CONTEXT: configuration: mobile marquee: internet: password
+#. CONTEXT: configuration: remote control: the password for sign-on to remote control
+msgid "Password"
+msgstr "パスワード"
+
+#. CONTEXT: configuration: check connection for audio source
+#. CONTEXT: import playlist dialog: check the connection
+msgid "Check Connection"
+msgstr ""
+
+#. CONTEXT: configuration: name that is set when adding a new audio source
+msgid "New Audio Source"
+msgstr ""
+
+#. CONTEXT: configuration: audio source: check connection status
+msgid "Connection Failed"
+msgstr ""
+
+#. CONTEXT: configuration: audio source: check connection status
+msgid "Connection OK"
+msgstr ""
+
+#. CONTEXT: configuration: qr code: title display for mobile marquee
+#. CONTEXT: configuration: options associated with the mobile marquee
+msgid "Mobile Marquee"
+msgstr "モバイル・マーキー"
+
+#. CONTEXT: configuration: qr code: title display for mobile remote control
+#. CONTEXT: configuration: options associated with mobile remote control
+msgid "Mobile Remote Control"
+msgstr "モバイル・リモコン"
+
+#. CONTEXT: configuration: file selection dialog: window title
+msgid "Select File"
+msgstr "ファイルを選択"
+
+#. CONTEXT: configuration: dance speed
+msgid "slow"
+msgstr "遅い"
+
+#. CONTEXT: configuration: dance speed
+msgid "normal"
+msgstr "通常"
+
+#. CONTEXT: configuration: dance speed
+msgid "fast"
+msgstr "速い"
+
+#. CONTEXT: configuration: dance time signature
+msgid "2/4"
+msgstr "2/4"
+
+#. CONTEXT: configuration: dance time signature
+msgid "3/4"
+msgstr "3/4"
+
+#. CONTEXT: configuration: dance time signature
+msgid "4/4"
+msgstr "4/4"
+
+#. CONTEXT: configuration: edit the dance table
+msgid "Edit Dances"
+msgstr "ダンスを編集する"
+
+#. CONTEXT: configuration: dances: play the selected announcement before the dance is played
+msgid "Announcement"
+msgstr "発表"
+
+#. CONTEXT: configuration: dances: low BPM (or MPM) setting
+#. CONTEXT: playlist management: low bpm/mpm column header
+#, c-format
+msgid "Low %s"
+msgstr "低い %s"
+
+#. CONTEXT: configuration: dances: high BPM (or MPM) setting
+#. CONTEXT: playlist management: high bpm/mpm column header
+#, c-format
+msgid "High %s"
+msgstr "高い %s"
+
+#. CONTEXT: configuration: dances: time signature for the dance
+msgid "Time Signature"
+msgstr "タイムシグネチャー"
+
+#. CONTEXT: configuration: dance name that is set when adding a new dance
+msgid "New Dance"
+msgstr "新作ダンス"
+
+#. CONTEXT: configuration: debug options that can be turned on and off
+msgid "Debug"
+msgstr "デバッグ"
+
+#. CONTEXT: configuration: dialog display settings
+msgid "Dialogs"
+msgstr "ダイアログ"
+
+#. CONTEXT: configuration: filter display: song selection filters
+#. CONTEXT: song selection filter: title for the filter dialog
+#. CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog
+msgid "Filter Songs"
+msgstr "フィルター曲"
+
+#. CONTEXT: configuration: filter display: checkbox: status is playable
+#. CONTEXT: song selection filter: a filter: the song status is marked as playable
+msgid "Playable Status"
+msgstr "プレー可能な状態"
+
+#. CONTEXT: configuration: filter display: quick edit filters
+#. CONTEXT: quick edit: title of dialog
+msgid "Quick Edit"
+msgstr "クイック編集"
+
+#. CONTEXT: configuration: display settings for: song editor column N
+#, c-format
+msgid "Song Editor - Column %d"
+msgstr "Song Editor - コラム %d"
+
+#. CONTEXT: configuration: display settings for: history
+#. CONTEXT: playlist: the name of the history song list
+#. CONTEXT: playerui: name of the history tab : displayed played songs
+#. CONTEXT: playerui: name of the saved history playlist
+#. CONTEXT: the name of the history song list
+msgid "History"
+msgstr "歴史"
+
+#. CONTEXT: configuration: display settings for: requests
+#. CONTEXT: playerui: name of request tab : lists the songs in the database
+msgid "Request"
+msgstr "リクエスト"
+
+#. CONTEXT: configuration: display settings for: song list
+#. CONTEXT: music queue: label for song list name
+#. CONTEXT: music queue: song list name
+#. CONTEXT: select file: file type for the file selection dialog (song list)
+#. CONTEXT: export/import bdj4: playlist: select the song list
+#. CONTEXT: manage-ui: name of side-by-side view tab
+#. CONTEXT: manage-ui: name of song list notebook tab
+#. CONTEXT: playlist management: type of playlist
+msgid "Song List"
+msgstr "曲目リスト"
+
+#. CONTEXT: configuration: display settings for: song selection
+#. CONTEXT: manage-ui: name of song selection notebook tab
+msgid "Song Selection"
+msgstr "選曲"
+
+#. CONTEXT: configuration: display settings for: side-by-side song list (suggestion: combined view: song list)
+msgid "Side-by-Side Song List"
+msgstr "サイド・バイ・サイド曲リスト"
+
+#. CONTEXT: configuration: display settings for: side-by-side song selection (suggestion: combined view: song selection)
+msgid "Side-by-Side Song Selection"
+msgstr "サイド・バイ・サイド選曲"
+
+#. CONTEXT: configuration: display settings for: music manager
+#. CONTEXT: manage-ui: name of music manager notebook tab
+#. CONTEXT: manage-ui: name of song selection notebook tab
+msgid "Music Manager"
+msgstr "音楽マネージャー"
+
+#. CONTEXT: configuration: display settings for: Audio ID match listing
+msgid "Audio ID Match List"
+msgstr "オーディオID一致リスト"
+
+#. CONTEXT: configuration: display settings for: Audio Identification
+#. CONTEXT: manage-ui: name of audio identification notebook tab
+msgid "Audio ID"
+msgstr "オーディオID"
+
+#. CONTEXT: configuration: display settings for: Marquee (song display screen)
+#. CONTEXT: configuration: options associated with the marquee (suggested: song display)
+#. CONTEXT: marquee: marquee window title (suggested: song display)
+#. CONTEXT: playerui: menu selection: marquee related options (suggested: song display)
+msgid "Marquee"
+msgstr "マーキー"
+
+#. CONTEXT: configuration: display settings for: Player User Interface
+msgid "Current Song"
+msgstr "現在の曲"
+
+#. CONTEXT: configuration: change which fields are displayed in different contexts
+msgid "Display Settings"
+msgstr "ディスプレイ設定"
+
+#. CONTEXT: configuration: display settings: which set of display settings to update
+#. CONTEXT: configuration: queue: whether to display the queue
+msgid "Display"
+msgstr "ディスプレイ"
+
+#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
+#, c-format
+msgid "%s Tags Only"
+msgstr "%sタグのみ"
+
+#. CONTEXT: configuration: write audio file tags: do not write any tags to the audio file
+msgid "Don't Write"
+msgstr "書くな"
+
+#. CONTEXT: configuration: write audio file tags: write all tags (BDJ and standard) to the audio file
+msgid "All Tags"
+msgstr "すべてのタグ"
+
+#. CONTEXT: configuration: general options that apply to everything
+msgid "General"
+msgstr "一般"
+
+#. CONTEXT: configuration: the music folder where the user stores their music
+#. CONTEXT: update database: music folder to process
+msgid "Music Folder"
+msgstr "音楽フォルダ"
+
+#. CONTEXT: configuration: the name of this profile
+msgid "Profile Name"
+msgstr "プロフィール名"
+
+#. CONTEXT: configuration: the profile accent color (identifies profile)
+msgid "Profile Colour"
+msgstr "プロフィールカラー"
+
+#. CONTEXT: configuration: Whether to display BPM as BPM or MPM
+#. CONTEXT: label: beats per minute
+#. CONTEXT: bpm counter: BPM
+msgid "BPM"
+msgstr "ビーム伝搬法"
+
+#. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
+msgid "Locale"
+msgstr "ロケール"
+
+#. CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux.
+msgid "Startup Script"
+msgstr "スタートアップ・スクリプト"
+
+#. CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux.
+msgid "Shutdown Script"
+msgstr "シャットダウンスクリプト"
+
+#. CONTEXT: configuration: which audio tags will be written to the audio file
+msgid "Write Audio File Tags"
+msgstr "オーディオファイルの書き込み タグ"
+
+#. CONTEXT: configuration: classical music: use work/movement
+msgid "Use Work and Movement"
+msgstr ""
 
 #. CONTEXT: configuration: the ACRCloud API Key
 #, c-format
@@ -39,25 +573,404 @@ msgstr "%sAPIキー"
 msgid "%s API Secret Key"
 msgstr "%sAPIシークレットキー"
 
-#. CONTEXT: configuration: configuration user interface window title
+#. CONTEXT: configuration: the ACRCloud API Host
 #, c-format
-msgid "%s Configuration"
-msgstr "%s構成"
+msgid "%s API Host"
+msgstr "%sAPIホスト"
 
-#. CONTEXT: starterui: basic support dialog: support option (bdj4 download)
+#. CONTEXT: configuration: folder selection dialog: window title
+#. CONTEXT: update database: dialog title for selecting database music folder
 #, c-format
-msgid "%s Download"
-msgstr "%sダウンロード"
+msgid "Select Music Folder Location"
+msgstr "音楽フォルダの場所を選択"
 
-#. CONTEXT: starterui: basic support dialog: support option (bdj4 forums)
-#, c-format
-msgid "%s Forums"
-msgstr "%sフォーラム"
+#. CONTEXT: configuration: edit genres table
+msgid "Edit Genres"
+msgstr "編集ジャンル"
 
-#. CONTEXT: helperui: the window title for the BDJ4 helper
+#. CONTEXT: configuration: genre: title of the classical setting column
+msgid "Classical?"
+msgstr "クラシック？"
+
+#. CONTEXT: configuration: genre name that is set when adding a new genre
+msgid "New Genre"
+msgstr "新ジャンル"
+
+#. CONTEXT: configuration: itunes: the itunes media folder
 #, c-format
-msgid "%s Helper"
-msgstr "%sヘルパー"
+msgid "%s Media Folder"
+msgstr "%sメディアフォルダー"
+
+#. CONTEXT: configuration: itunes: the itunes xml file
+#, c-format
+msgid "%s XML File"
+msgstr "%sXMLファイル"
+
+#. CONTEXT: configuration: itunes: label for itunes rating conversion
+#. CONTEXT: label: dance rating (short name for listing)
+msgid "Rating"
+msgstr "評価"
+
+#. CONTEXT: configuration: itunes: which fields should be imported from itunes
+msgid "Fields to Import"
+msgstr "インポートするフィールド"
+
+#. CONTEXT: configuration: itunes media folder selection dialog: window title
+#, c-format
+msgid "Select %s Media Location"
+msgstr "%s メディアの場所を選択"
+
+#. CONTEXT: configuration: itunes xml file selection dialog: window title
+#, c-format
+msgid "Select %s XML File"
+msgstr "%s XMLファイルを選択"
+
+#. CONTEXT: configuration: dialog: XML file types
+msgid "XML Files"
+msgstr "XMLファイル"
+
+#. CONTEXT: configuration: edit the dance levels table
+msgid "Edit Levels"
+msgstr "編集レベル"
+
+#. CONTEXT: configuration: dance levels: instructions
+msgid "Order from easiest to most advanced."
+msgstr "簡単なものから順番に。"
+
+#. CONTEXT: configuration: level: title of the weight column
+#. CONTEXT: configuration: rating: title of the weight column
+#. CONTEXT: playlist management: tag weight
+msgid "Weight"
+msgstr "重量"
+
+#. CONTEXT: configuration: level: title of the default selection column
+#. CONTEXT: configuration: audio: The default audio sink (audio output)
+#. CONTEXT: user interface: default setting display
+msgid "Default"
+msgstr "デフォルト"
+
+#. CONTEXT: configuration: level name that is set when adding a new level
+msgid "New Level"
+msgstr "新しいレベル"
+
+#. CONTEXT: configuration: show-marquee: minimize
+msgid "Minimised"
+msgstr "最小化"
+
+#. CONTEXT: configuration: show-marquee: visible
+msgid "Visible"
+msgstr "可視"
+
+#. CONTEXT: configuration: show-marquee: selection
+msgid "Show Marquee"
+msgstr "ショー・マーキー"
+
+#. CONTEXT: configuration: The theme to use for the marquee display
+msgid "Marquee Theme"
+msgstr "マーキーのテーマ"
+
+#. CONTEXT: configuration: The font to use for the marquee display
+msgid "Marquee Font"
+msgstr "マーキーフォント"
+
+#. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee
+#. CONTEXT: (noun) configuration: the number of items loaded into the music queue
+msgid "Queue Length"
+msgstr "キューの長さ"
+
+#. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee
+msgid "Show Song Information"
+msgstr "ショー・ソング・インフォメーション"
+
+#. CONTEXT: configuration: marquee: the background color
+msgid "Background Colour"
+msgstr ""
+
+#. CONTEXT: configuration: marquee: the accent color
+#. CONTEXT: configuration: the accent color to use for the user interface
+msgid "Accent Colour"
+msgstr "アクセントカラー"
+
+#. CONTEXT: configuration: marquee: dance information color
+msgid "Information Colour"
+msgstr ""
+
+#. CONTEXT: configuration: marquee: upcoming dance color
+msgid "Upcoming Dance Colour"
+msgstr ""
+
+#. CONTEXT: configuration: mobile marquee type: local
+#. CONTEXT: configuration: player: clock: local
+msgid "Local"
+msgstr ""
+
+#. CONTEXT: configuration: mobile marquee type: internet
+msgid "Internet"
+msgstr ""
+
+#. CONTEXT: configuration: mobile marquee: internet: tag
+msgid "Tag"
+msgstr ""
+
+#. CONTEXT: configuration: the title to display on the mobile marquee
+#. CONTEXT: label: title
+#. CONTEXT: playlist management: podcast title
+msgid "Title"
+msgstr "タイトル"
+
+#. CONTEXT: configuration: mobile marquee: the link to display the QR code for the mobile marquee
+#. CONTEXT: configuration: remote control: the link to display the QR code for remote control
+msgid "QR Code"
+msgstr "QRコード"
+
+#. CONTEXT: configuration: music queue configuration
+msgid "Music Queues"
+msgstr "ミュージック・キュー"
+
+#. CONTEXT: (noun) configuration: queue: select which queue to configure
+msgid "Queue_noun"
+msgstr "列"
+
+#. CONTEXT: (noun) configuration: queue: the name of the music queue
+msgid "Queue Name"
+msgstr "キュー名"
+
+#. CONTEXT: configuration: queue: whether the queue is active
+msgid "Active"
+msgstr "アクティブ"
+
+#. CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song
+msgid "Start Wait Time"
+msgstr ""
+
+#. CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song
+msgid "Fade In Time"
+msgstr "フェード・イン・タイム"
+
+#. CONTEXT: configuration: queue: the amount of time to do a volume fade-out when playing a song
+msgid "Fade Out Time"
+msgstr "フェードアウト時間"
+
+#. CONTEXT: configuration: queue: the amount of time to wait inbetween songs
+#. CONTEXT: playlist management: Gap between songs
+msgid "Gap Between Songs"
+msgstr "曲間のギャップ"
+
+#. CONTEXT: configuration: queue: the amount of time to cross-fade the songs
+msgid "Cross Fade Time"
+msgstr ""
+
+#. CONTEXT: configuration: queue: the maximum amount of time to play a song
+#. CONTEXT: playlist management: maximum play time
+msgid "Maximum Play Time"
+msgstr "最大プレー時間"
+
+#. CONTEXT: configuration: queue: the time when playback will stop
+#. CONTEXT: playlist management: stop at
+msgid "Stop At"
+msgstr "ストップ・アット"
+
+#. CONTEXT: configuration: queue: pause each song
+msgid "Pause Each Song"
+msgstr "各曲を一時停止する"
+
+#. CONTEXT: configuration: queue: whether to play announcements
+#. CONTEXT: playlist management: Play Announcements
+msgid "Play Announcements"
+msgstr "プレーのお知らせ"
+
+#. CONTEXT: configuration: queue: play when queued (verb)
+msgid "Play When Queued"
+msgstr "キューに入れたら再生"
+
+#. CONTEXT: configuration: queue: whether to show the extra queue buttons (queue dance, queue 5)
+msgid "Show Extra Queue Buttons"
+msgstr "追加のキューボタンを表示する"
+
+#. CONTEXT: configuration: options associated with how audio files are organized
+msgid "Organisation"
+msgstr "組織"
+
+#. CONTEXT: configuration: the audio file organization path
+msgid "Organisation Path"
+msgstr "組織パス"
+
+#. CONTEXT: configuration: examples displayed for the audio file organization path
+msgid "Examples"
+msgstr "例"
+
+#. CONTEXT: configuration: checkbox: the database will load the dance from the audio file genre tag
+msgid "Database Loads Dance From Genre"
+msgstr "データベースはジャンルからダンスを読み込む"
+
+#. CONTEXT: configuration: checkbox: is automatic organization enabled
+msgid "Auto Organise"
+msgstr "オートオーガナイズ"
+
+#. CONTEXT: configuration: player: clock: ISO
+msgid "ISO"
+msgstr ""
+
+#. CONTEXT: configuration: player: clock: 12-hour time
+msgid "12-Hour Clock"
+msgstr ""
+
+#. CONTEXT: configuration: player: clock: 24-hour time
+msgid "24-Hour Clock"
+msgstr ""
+
+#. CONTEXT: configuration: player: fade-type: exponential sine
+msgid "Exponential Sine"
+msgstr ""
+
+#. CONTEXT: configuration: player: fade-type: half sine
+msgid "Half Sine"
+msgstr ""
+
+#. CONTEXT: configuration: player: fade-type: inverted parabola
+msgid "Inverted Parabola"
+msgstr ""
+
+#. CONTEXT: configuration: player: fade-type: quadratic
+msgid "Quadratic"
+msgstr ""
+
+#. CONTEXT: configuration: player: fade-type: quarter sine
+msgid "Quarter Sine"
+msgstr ""
+
+#. CONTEXT: configuration: player: fade-type: triangle
+msgid "Triangle"
+msgstr ""
+
+#. CONTEXT: configuration: options associated with the player
+#. CONTEXT: configuration: which player interface to use
+#. CONTEXT: starterui: button: starts the player user interface
+msgid "Player"
+msgstr "再生"
+
+#. CONTEXT: configuration: additional arguments for player
+msgid "Player Arguments"
+msgstr "再生引数"
+
+#. CONTEXT: configuration: which audio interface to use
+msgid "Audio"
+msgstr "オーディオ"
+
+#. CONTEXT: configuration: which audio sink (output) to use
+msgid "Audio Output"
+msgstr "オーディオ出力"
+
+#. CONTEXT: configuration: which controller to use
+msgid "Controller"
+msgstr ""
+
+#. CONTEXT: configuration: the volume used when starting the player
+msgid "Default Volume"
+msgstr "デフォルト音量"
+
+#. CONTEXT: configuration: The completion message displayed on the marquee when a playlist is finished
+msgid "Completion Message"
+msgstr "完了メッセージ"
+
+#. CONTEXT: configuration: the clock format
+msgid "Fade Type"
+msgstr ""
+
+#. CONTEXT: configuration: whether or not to show the speed reset button
+msgid "Show Speed Reset"
+msgstr "スピードリセットを表示"
+
+#. CONTEXT: configuration: the clock format
+msgid "Clock"
+msgstr ""
+
+#. CONTEXT: configuration: edit the dance ratings table
+msgid "Edit Ratings"
+msgstr "レーティングを編集する"
+
+#. CONTEXT: configuration: dance ratings: information on how to order the ratings
+msgid "Order from the lowest rating to the highest rating."
+msgstr "評価の低いものから高いものへ。"
+
+#. CONTEXT: configuration: rating name that is set when adding a new rating
+msgid "New Rating"
+msgstr "新規格付け"
+
+#. CONTEXT: configuration: remote control: checkbox: enable/disable
+msgid "Enable Remote Control"
+msgstr "リモートコントロールを有効にする"
+
+#. CONTEXT: configuration: remote control: the HTML template to use
+msgid "HTML Template"
+msgstr "HTMLテンプレート"
+
+#. CONTEXT: configuration: remote control: the user ID for sign-on to remote control
+msgid "User ID"
+msgstr "ユーザーID"
+
+#. CONTEXT: configuration: edit status table
+msgid "Edit Status"
+msgstr "編集状況"
+
+#. CONTEXT: configuration: status: title of the "playable" column
+msgid "Play?"
+msgstr "プレー？"
+
+#. CONTEXT: configuration: status name that is set when adding a new status
+msgid "New Status"
+msgstr "新しいステータス"
+
+#. CONTEXT: configuration: table edit: button: move selection up
+#. CONTEXT: music queue: button: move the selected song up in the queue
+#. CONTEXT: side-by-side list: button: move the selected field up
+msgid "Move Up"
+msgstr "繰り上げ"
+
+#. CONTEXT: configuration: table edit: button: move selection down
+#. CONTEXT: music queue: button: move the selected song down in the queue
+#. CONTEXT: side-by-side list: button: move the selected field down
+msgid "Move Down"
+msgstr "下に移動"
+
+#. CONTEXT: configuration: table edit: button: delete selection
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: delete song list
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: delete sequence
+msgid "Delete"
+msgstr "削除"
+
+#. CONTEXT: configuration: table edit: button: add new selection
+msgid "Add New"
+msgstr "新規追加"
+
+#. CONTEXT: configuration: options associated with the user interface
+msgid "User Interface"
+msgstr "ユーザーインターフェース"
+
+#. CONTEXT: configuration: the theme to use for the user interface
+msgid "Theme"
+msgstr "テーマ"
+
+#. CONTEXT: configuration: the font to use for the user interface
+msgid "Font"
+msgstr "フォント"
+
+#. CONTEXT: configuration: the font to use for the queues and song lists
+msgid "Listing Font"
+msgstr "リスト・フォント"
+
+#. CONTEXT: configuration: scaling factor for the user interface
+msgid "Scale"
+msgstr "スケール"
+
+#. CONTEXT: configuration: the error color to use for the user interface
+msgid "Error Colour"
+msgstr ""
+
+#. CONTEXT: configuration: user interface: the song mark color for songs in the song list
+msgid "Song Mark Colour"
+msgstr ""
 
 #. CONTEXT: alternate installation: window title
 #. CONTEXT: installer: window title
@@ -65,209 +978,288 @@ msgstr "%sヘルパー"
 msgid "%s Installer"
 msgstr "%sインストーラー"
 
+#. CONTEXT: alternate installation: installation instructions
+msgid "Enter the name of the new installation."
+msgstr "新しいインストールの名前を入力します。"
+
+#. CONTEXT: alternate installation: checkbox: re-install
+#. CONTEXT: installer: checkbox: re-install BDJ4
+msgid "Re-Install"
+msgstr "再インストール"
+
+#. CONTEXT: alternate installation: exits the alternate installer
+#. CONTEXT: installer: exits the installer
+#. CONTEXT: starterui: button: exits BDJ4 (exits everything)
+msgid "Exit"
+msgstr "出口"
+
+#. CONTEXT: alternate installation: install BDJ4 in the alternate location
+#. CONTEXT: installer: start the installation process
+msgid "Install"
+msgstr "インストール"
+
+#. CONTEXT: alternate installation: status message
+msgid "Setup complete."
+msgstr "セットアップ完了。"
+
+#. CONTEXT: alternate installer: invalid name status message
+msgid "Invalid Name"
+msgstr "無効な名前"
+
+#. CONTEXT: alternate installation: message indicating the action that will be taken
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "Re-install %s.  Overwrites existing configuration."
+msgstr "%sを再インストールする。  既存の設定を上書きします。"
+
+#. CONTEXT: alternate installation: message indicating the action that will be taken
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "Updating existing %s installation."
+msgstr "既存の %s インストールを更新する。"
+
+#. CONTEXT: alternate installation: message indicating the action that will be taken
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "New %s installation."
+msgstr "新しい %s。"
+
+#. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
+#. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
+#. CONTEXT: installer: status message
+msgid "Error: Folder already exists."
+msgstr "エラー：フォルダは既に存在します。"
+
+#. CONTEXT: alternate installation: the selected folder is not valid
+#. CONTEXT: installer: the selected folder is not valid
+#. CONTEXT: export/import bdj4: invalid target folder
+msgid "Invalid Folder"
+msgstr "無効なフォルダ"
+
+#. CONTEXT: alternate installation: dialog title for selecting location
+#. CONTEXT: installer: dialog title for selecting install location
+msgid "Install Location"
+msgstr "設置場所"
+
+#. CONTEXT: alternate installer: status message
+#. CONTEXT: installer: status message
+msgid "Saving install location."
+msgstr "インストール場所の保存"
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+msgid "Creating folder structure."
+msgstr "フォルダ構造の作成"
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+msgid "Copying template files."
+msgstr "テンプレートファイルのコピー"
+
+#. CONTEXT: alternate installation: status message
+msgid "Initial Setup."
+msgstr "初期設定。"
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+msgid "Creating shortcut."
+msgstr "ショートカットの作成"
+
+#. CONTEXT: alternate installation: status message
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Updating %s."
+msgstr "%sを更新する。"
+
+#. CONTEXT: alternate installation: failure message
+#. CONTEXT: installer: failure message
+msgid "Error: Unable to set working folder."
+msgstr "エラー：作業フォルダを設定できません。"
+
+#. CONTEXT: alternate installation: status message
+msgid "Process aborted."
+msgstr "プロセスが中断された。"
+
+#. CONTEXT: installer: status message
+#. CONTEXT: please wait... status message
+#. CONTEXT: apply adjustments: please wait... status message
+#. CONTEXT: please wait... status message
+#. CONTEXT: management ui: please wait... status message
+#. CONTEXT: export as mp3: please wait... status message
+#. CONTEXT: starter ui: please wait... status message
+#, c-format
+msgid "Please wait…"
+msgstr "お待ちください…"
+
+#. CONTEXT: installer: where BDJ4 gets installed
+msgid "Enter the destination folder where BDJ4 will be installed."
+msgstr "BDJ4 のインストール先フォルダを入力します。"
+
+#. CONTEXT: installer: asking where BallroomDJ 3 is installed
+#, c-format
+msgid "Enter the folder where %s is installed."
+msgstr "%s がインストールされているフォルダを入力してください。"
+
+#. CONTEXT: installer: instructions
+msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
+msgstr "BallroomDJ 3がインストールされていない場合は、空欄のままにしてください。"
+
+#. CONTEXT: installer: instructions
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
+msgstr "変換処理は、新規インストールと再インストールでのみ実行されます。"
+
 #. CONTEXT: installer: label for entry field asking for BDJ3 location
 #, c-format
 msgid "%s Location"
 msgstr "%s所在地"
 
-#. CONTEXT: manage-ui: management user interface window title
+#. CONTEXT: installer: checkbox: convert the BallroomDJ 3 installation
 #, c-format
-msgid "%s Management"
-msgstr "%sマネジメント"
+msgid "Convert %s"
+msgstr "変換 %s"
 
-#. CONTEXT: configuration: itunes: the itunes media folder
-#, c-format
-msgid "%s Media Folder"
-msgstr "%sメディアフォルダー"
+#. CONTEXT: installer: status message
+msgid "Installation complete."
+msgstr "設置完了。"
 
-#. CONTEXT: playerui: main window title
-#, c-format
-msgid "%s Player"
-msgstr "%s再生"
+#. CONTEXT: installer: start the upgrade process
+msgid "Upgrade"
+msgstr ""
 
-#. CONTEXT: MacOS: reason for disabling sleep: BDJ4 Player is Active
+#. CONTEXT: installer: dialog title for selecting BDJ3 location
 #, c-format
-msgid "%s Player is Active"
-msgstr "%s再生がアクティブです"
-
-#. CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist)
-#, c-format
-msgid "%s Playlist"
-msgstr "%sプレイリスト"
-
-#. CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets)
-#, c-format
-msgid "%s Support Tickets"
-msgstr "%sサポートチケット"
-
-#. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
-#, c-format
-msgid "%s Tags Only"
-msgstr "%sタグのみ"
-
-#. CONTEXT: starterui: basic support dialog, version display
-#, c-format
-msgid "%s Version"
-msgstr "%sバージョン"
-
-#. CONTEXT: starterui: basic support dialog: support option (bdj4 wiki)
-#, c-format
-msgid "%s Wiki"
-msgstr "%sウィキ"
-
-#. CONTEXT: configuration: itunes: the itunes xml file
-#, c-format
-msgid "%s XML File"
-msgstr "%sXMLファイル"
+msgid "Select %s Location"
+msgstr "%s ロケーションを選択"
 
 #. CONTEXT: installer: message indicating the conversion action that will be taken
 #, c-format
 msgid "%s data will be converted."
 msgstr "%sのデータが変換される。"
 
-#. CONTEXT: manageui: status message when deleting a song list/playlist/sequence
-#, c-format
-msgid "%s deleted."
-msgstr ""
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+msgid "The conversion process will not be run."
+msgstr "変換処理は実行されない。"
 
-#. CONTEXT: database update: status message (count)
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+msgid "No folder specified."
+msgstr "フォルダが指定されていない。"
+
+#. CONTEXT: installer: the location entered is not a valid BDJ3 location.
 #, c-format
-msgid "%s files found"
-msgstr "%s個のファイルが見つかりました"
+msgid "Not a valid %s folder."
+msgstr "有効な %s フォルダーではありません。"
+
+#. CONTEXT: installer: status message
+msgid "Verifying installation."
+msgstr "インストールの確認。"
+
+#. CONTEXT: installer: status message
+msgid "Verification complete."
+msgstr "検証完了。"
+
+#. CONTEXT: installer: status message
+msgid "Verification failed."
+msgstr "検証は失敗した。"
+
+#. CONTEXT: installer: status message
+msgid "Installation aborted."
+msgstr "インストールが中断された。"
+
+#. CONTEXT: installer: status message
+msgid "Copying files."
+msgstr "ファイルをコピーする。"
+
+#. CONTEXT: installer: status message
+msgid "Copy finished."
+msgstr "コピー完了。"
+
+#. CONTEXT: installer: status message
+msgid "Starting conversion process."
+msgstr "変換プロセスを開始する。"
+
+#. CONTEXT: installer: status message
+msgid "BDJ3 database version is too old."
+msgstr "BDJ3データベースのバージョンが古すぎる。"
+
+#. CONTEXT: installer: status message
+msgid "Unable to locate BDJ3 database."
+msgstr "BDJ3 データベースが見つかりません。"
+
+#. CONTEXT: installer: status message
+msgid "Located 'tclsh'."
+msgstr "場所は「tclsh」。"
+
+#. CONTEXT: installer: failure message
+#, c-format
+msgid "Unable to locate %s."
+msgstr "%sを見つけることができない。"
+
+#. CONTEXT: installer: status message
+msgid "Skipping conversion."
+msgstr "変換をスキップする。"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Running conversion script: %s."
+msgstr "変換スクリプトの実行: %s."
+
+#. CONTEXT: installer: status message
+msgid "Conversion complete."
+msgstr "コンバージョン完了。"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Downloading %s."
+msgstr "ダウンロード %s."
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Unable to determine %s version."
+msgstr "%s バージョンがわかりません。"
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Installing %s."
+msgstr "%sのインストール ."
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Download of %s failed."
+msgstr "%s のダウンロードに失敗しました。"
 
 #. CONTEXT: installer: status message
 #, c-format
 msgid "%s installed."
 msgstr "%sを設置した。"
 
+#. CONTEXT: configuration: player interface: Windows Media Player
+msgid "Windows Media Player"
+msgstr ""
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Registering %s."
+msgstr "%sを登録する。"
+
 #. CONTEXT: installer: display of package status
 #, c-format
 msgid "%s is installed"
 msgstr "%s設置されている"
-
-#. CONTEXT: manage ui: status message: itunes is not configured
-#, c-format
-msgid "%s is not configured."
-msgstr "%sが設定されていない。"
 
 #. CONTEXT: installer: display of package status
 #, c-format
 msgid "%s is not installed"
 msgstr "%sがインストールされていない"
 
-#. CONTEXT: song editor: status msg: (song start may not exceed the song duration)
-#. CONTEXT: song editor: status msg: (song end may not exceed the song duration)
-#, c-format
-msgid "%s may not exceed the song duration"
-msgstr "%s曲の長さを超えてはならない"
-
-#. CONTEXT: validation: characters not allowed
-#, c-format
-msgid "%s: *'\":|<>^ characters are not allowed."
-msgstr "%s：*'\":|<>^文字は使用できません。"
-
-#. CONTEXT: validation: invalid URL
-#, c-format
-msgid "%s: Invalid URL (%s)."
+#. CONTEXT: config: integrated VLC 3
+msgid "Integrated VLC 3"
 msgstr ""
 
-#. CONTEXT: validation: invalid time (hours/minutes)
-#. CONTEXT: validation: invalid time (minutes/seconds)
-#. CONTEXT: validation: invalid time (hours/minutes/seconds)
-#. CONTEXT: validation: invalid time (hour/min/sec.sec)
-#, c-format
-msgid "%s: Invalid time (%s)."
-msgstr "%s：無効な時間です (%s)。"
-
-#. CONTEXT: validation: must be numeric
-#. CONTEXT: validation: must be a numeric value
-#, c-format
-msgid "%s: Must be numeric."
-msgstr "%s：は数値でなければならない。"
-
-#. CONTEXT: validation: a value must be set
-#, c-format
-msgid "%s: Must be set."
-msgstr "%s：を設定しなければならない。"
-
-#. CONTEXT: validation: slashes ( / and \\ ) are not allowed
-#, c-format
-msgid "%s: Slashes are not allowed."
-msgstr "%s：スラッシュは使用不可。"
-
-#. CONTEXT: validation: spaces are not allowed
-#, c-format
-msgid "%s: Spaces are not allowed."
-msgstr "%s：スペースは使用できません。"
-
-#. CONTEXT: playerui: button: reset speed to 100%
-msgid "100%"
-msgstr "100%"
-
-#. CONTEXT: configuration: player: clock: 12-hour time
-msgid "12-Hour Clock"
+#. CONTEXT: config: integrated VLC 4
+msgid "Integrated VLC 4"
 msgstr ""
-
-#. CONTEXT: configuration: dance time signature
-msgid "2/4"
-msgstr "2/4"
-
-#. CONTEXT: configuration: player: clock: 24-hour time
-msgid "24-Hour Clock"
-msgstr ""
-
-#. CONTEXT: configuration: dance time signature
-msgid "3/4"
-msgstr "3/4"
-
-#. CONTEXT: configuration: dance time signature
-msgid "4/4"
-msgstr "4/4"
-
-#. CONTEXT: colon character
-msgid ":"
-msgstr "："
-
-#. CONTEXT: colon character with trailing space
-msgid ": "
-msgstr "："
-
-#. CONTEXT: configuration: marquee: the accent color
-#. CONTEXT: configuration: the accent color to use for the user interface
-msgid "Accent Colour"
-msgstr "アクセントカラー"
-
-#. CONTEXT: update database: select database update action
-msgid "Action"
-msgstr "アクション"
-
-#. CONTEXT: the 'Mix' action failed
-msgid "Action failed"
-msgstr "アクション失敗"
-
-#. CONTEXT: manage-ui: menu selection: actions for song editor
-#. CONTEXT: manage-ui: menu selection: actions for music manager
-#. CONTEXT: manage-ui: menu selection: actions for song list
-#. CONTEXT: playerui: menu selection: actions for the player
-#. CONTEXT: starterui: action menu for the starter user interface
-msgid "Actions"
-msgstr "行動"
-
-#. CONTEXT: configuration: queue: whether the queue is active
-msgid "Active"
-msgstr "アクティブ"
-
-#. CONTEXT: configuration: table edit: button: add new selection
-msgid "Add New"
-msgstr "新規追加"
-
-#. CONTEXT: apply adjustments: adjust speed/song start/song end checkbox
-msgid "Adjust Speed, Song Start and Song End"
-msgstr "スピード、ソング・スタート、ソング・エンドの調整"
-
-#. CONTEXT: configuration file: dance level
-msgid "Advanced"
-msgstr "上級"
 
 #. CONTEXT: label: album
 msgid "Album"
@@ -277,214 +1269,287 @@ msgstr "アルバム"
 msgid "Album Artist"
 msgstr "アルバム・アーティスト"
 
-#. CONTEXT: label: album artist sort order
-msgid "Album Artist Sort Order"
-msgstr "アルバム・アーティストのソート順"
+#. CONTEXT: label: artist
+msgid "Artist"
+msgstr "アーティスト"
+
+#. CONTEXT: audio identification: the score or rating of each match
+msgid "Score"
+msgstr "スコア"
+
+#. CONTEXT: audio identification: the audio identification source
+#. CONTEXT: song editor: copy tags: source file
+msgid "Source"
+msgstr "ソース"
+
+#. CONTEXT: label: measures per minute
+#. CONTEXT: bpm counter: MPM
+msgid "MPM"
+msgstr "MPM"
+
+#. CONTEXT: label: comment
+msgid "Comment"
+msgstr ""
+
+#. CONTEXT: label: composer
+msgid "Composer"
+msgstr "作曲家"
+
+#. CONTEXT: label: conductor
+msgid "Conductor"
+msgstr "コンダクター"
+
+#. CONTEXT: label: dance
+msgid "Dance"
+msgstr "ダンス"
+
+#. CONTEXT: label: dance level
+msgid "Dance Level"
+msgstr "ダンスレベル"
+
+#. CONTEXT: label: dance level (short name for listing)
+msgid "Level"
+msgstr "レベル"
+
+#. CONTEXT: label: dance rating
+msgid "Dance Rating"
+msgstr "ダンス評価"
+
+#. CONTEXT: label: date
+msgid "Date"
+msgstr "日付"
+
+#. CONTEXT: label: date added to the database
+msgid "Date Added"
+msgstr "追加日"
+
+#. CONTEXT: label: lock audio file location
+msgid "Prevent Rename"
+msgstr "名前の変更を防ぐ"
+
+#. CONTEXT: label: disc number
+msgid "Disc"
+msgstr "ディスク"
+
+#. CONTEXT: label: total disc count
+msgid "Total Discs"
+msgstr "ディスク"
+
+#. CONTEXT: label: total disc count (short name for listing)
+msgid "Tot. Discs"
+msgstr "ディスク"
+
+#. CONTEXT: label: duration of the song
+msgid "Duration"
+msgstr "期間"
+
+#. CONTEXT: label: favorite marker
+msgid "Favourite"
+msgstr "お気に入り"
+
+#. CONTEXT: label: genre
+msgid "Genre"
+msgstr "ジャンル"
+
+#. CONTEXT: label: grouping
+msgid "Grouping"
+msgstr ""
+
+#. CONTEXT: label: keyword (used to filter out songs)
+msgid "Keyword"
+msgstr "キーワード"
+
+#. CONTEXT: label: no play time limit
+msgid "No Play Time Limit"
+msgstr ""
+
+#. CONTEXT: label: notes
+msgid "Notes"
+msgstr "備考"
+
+#. CONTEXT: label: status
+msgid "Status"
+msgstr "ステータス"
+
+#. CONTEXT: label: tags (for use by the user)
+#. CONTEXT: playlist management: tags
+msgid "Tags"
+msgstr "タグ"
+
+#. CONTEXT: label: track number
+msgid "Track"
+msgstr "トラック"
+
+#. CONTEXT: label: total track count
+msgid "Total Tracks"
+msgstr "全トラック"
+
+#. CONTEXT: label: total track count (short name for listing)
+msgid "Tot. Tracks"
+msgstr "全トラック"
+
+#. CONTEXT: label: work (a musical work)
+msgid "Work"
+msgstr ""
+
+#. CONTEXT: label: title sort order
+msgid "Title Sort Order"
+msgstr "タイトルソート順"
 
 #. CONTEXT: label: album sort order
 msgid "Album Sort Order"
 msgstr "アルバムのソート順"
 
-#. CONTEXT: song selection filter: a filter: all dances are selected
-#. CONTEXT: song-selection: filter: all dances are selected
-msgid "All Dances"
-msgstr "すべてのダンス"
-
-#. CONTEXT: genre: a filter: all genres are displayed in the song selection
-msgid "All Genres"
-msgstr "すべてのジャンル"
-
-#. CONTEXT: level: a filter: all dance levels will be listed
-#. CONTEXT: level: a filter: all dance levels are displayed in the song selection
-msgid "All Levels"
-msgstr "全レベル"
-
-#. CONTEXT: rating: a filter: all dance ratings will be listed
-#. CONTEXT: rating: a filter: all dance ratings are displayed in the song selection
-msgid "All Ratings"
-msgstr "すべての評価"
-
-#. CONTEXT: configuration: write audio file tags: write all tags (BDJ and standard) to the audio file
-msgid "All Tags"
-msgstr "すべてのタグ"
-
-#. CONTEXT: playlist management: allowed keywords
-msgid "Allowed Keywords"
-msgstr "許可されたキーワード"
-
-#. CONTEXT: import from bdj4: error message if the target song list already exists
-#. CONTEXT: import playlist: message if the target song list already exists
-msgid "Already Exists"
-msgstr "すでに存在する"
-
-#. CONTEXT: configuration: dances: play the selected announcement before the dance is played
-msgid "Announcement"
-msgstr "発表"
-
-#. CONTEXT: status: a filter: all dance status will be listed
-#. CONTEXT: status: a filter: all dance status are displayed in the song selection
-msgid "Any Status"
-msgstr "ステータス"
-
-#. CONTEXT: song selection filter: filter dialog: applies the selections
-msgid "Apply"
-msgstr "応募する"
-
-#. CONTEXT: apply adjustment dialog: title for the dialog
-#. CONTEXT: apply adjustment dialog: apply adjustments
-#. CONTEXT: manage-ui: song editor menu: apply adjustments
-msgid "Apply Adjustments"
-msgstr "調整を適用する"
-
-#. CONTEXT: manage-ui: song editor menu: apply edit all
-msgid "Apply Edit All"
-msgstr "すべて編集する"
-
-#. CONTEXT: configuration file: dance
-msgid "Argentine Tango"
-msgstr "アルゼンチン・タンゴ"
-
-#. CONTEXT: label: artist
-msgid "Artist"
-msgstr "アーティスト"
+#. CONTEXT: label: album artist sort order
+msgid "Album Artist Sort Order"
+msgstr "アルバム・アーティストのソート順"
 
 #. CONTEXT: label: artist sort order
 msgid "Artist Sort Order"
 msgstr "アーティストのソート順"
 
-#. CONTEXT: starterui: sending support message: checkbox: option to send data files
-msgid "Attach Data Files"
-msgstr "データファイルの添付"
+#. CONTEXT: label: composer sort order
+msgid "Composer Sort Order"
+msgstr "作曲家のソート順"
 
-#. CONTEXT: starterui: sending support message: checkbox: option to send database
-msgid "Attach Database"
-msgstr "データベースの添付"
-
-#. CONTEXT: configuration: which audio interface to use
-msgid "Audio"
-msgstr "オーディオ"
-
-#. CONTEXT: external request: enter the audio file location
-msgid "Audio File"
-msgstr "音声ファイル"
-
-#. CONTEXT: select audio file: file selection dialog: audio file filter
-msgid "Audio Files"
-msgstr "オーディオファイル"
-
-#. CONTEXT: configuration: display settings for: Audio Identification
-#. CONTEXT: manage-ui: name of audio identification notebook tab
-msgid "Audio ID"
-msgstr "オーディオID"
-
-#. CONTEXT: configuration: display settings for: Audio ID match listing
-msgid "Audio ID Match List"
-msgstr "オーディオID一致リスト"
-
-#. CONTEXT: configuration: which audio sink (output) to use
-msgid "Audio Output"
-msgstr "オーディオ出力"
-
-#. CONTEXT: configuration: audio sources
-msgid "Audio Sources"
+#. CONTEXT: label: movement (classical music movement number)
+msgid "Movement Number"
 msgstr ""
 
-#. CONTEXT: configuration: checkbox: is automatic organization enabled
-msgid "Auto Organise"
-msgstr "オートオーガナイズ"
-
-#. CONTEXT: playlist management: default playlist type
-#. CONTEXT: playlist management: type of playlist
-msgid "Automatic"
-msgstr "自動"
-
-#. CONTEXT: installer: status message
-msgid "BDJ3 database version is too old."
-msgstr "BDJ3データベースのバージョンが古すぎる。"
-
-#. CONTEXT: configuration: Whether to display BPM as BPM or MPM
-#. CONTEXT: label: beats per minute
-#. CONTEXT: bpm counter: BPM
-msgid "BPM"
-msgstr "ビーム伝搬法"
-
-#. CONTEXT: bpm counter: title of window
-msgid "BPM Counter"
-msgstr "BPMカウンター"
-
-#. CONTEXT: configuration: marquee: the background color
-msgid "Background Colour"
+#. CONTEXT: label: movement count (classical music movement count)
+msgid "Movement Count"
 msgstr ""
 
-#. CONTEXT: configuration file: genre
-msgid "Ballroom Dance"
-msgstr "社交ダンス"
-
-#. CONTEXT: tooltip for desktop icon
-msgid "Ballroom Music Player"
-msgstr "社交音楽の再生"
-
-#. CONTEXT: bpm counter: number of beats
-msgid "Beats"
-msgstr "ビート"
-
-#. CONTEXT: manage-ui: song editor menu: cancel edit all
-msgid "Cancel Edit All"
-msgstr "すべての編集をキャンセルする"
-
-#. CONTEXT: database update: status message: number of files that cannot be renamed
-msgid "Cannot Rename"
+#. CONTEXT: label: movement name (classical music movement name)
+msgid "Movement"
 msgstr ""
 
-#. CONTEXT: configuration file: dance
-msgid "Cha Cha"
-msgstr "チャチャ"
+#. CONTEXT: label: marquee display (alternate display for the marquee, replaces dance)
+msgid "Marquee Display"
+msgstr "マーキー・ディスプレイ"
 
-#. CONTEXT: configuration: check connection for audio source
-#. CONTEXT: import playlist dialog: check the connection
-msgid "Check Connection"
+#. CONTEXT: label: time to end the song
+msgid "Song End"
+msgstr "ソング・エンド"
+
+#. CONTEXT: label: time to start the song
+msgid "Song Start"
+msgstr "ソング・スタート"
+
+#. CONTEXT: label: speed adjustment for playback
+msgid "Speed Adjustment"
+msgstr "スピード調整"
+
+#. CONTEXT: label: volume adjustment for playback
+msgid "Volume Adjustment"
+msgstr "音量調整"
+
+#. CONTEXT: label: when the database entry was last updated
+msgid "Last Updated"
+msgstr "最終更新日"
+
+#. CONTEXT: validation: a value must be set
+#, c-format
+msgid "%s: Must be set."
+msgstr "%s：を設定しなければならない。"
+
+#. CONTEXT: validation: spaces are not allowed
+#, c-format
+msgid "%s: Spaces are not allowed."
+msgstr "%s：スペースは使用できません。"
+
+#. CONTEXT: validation: slashes ( / and \\ ) are not allowed
+#, c-format
+msgid "%s: Slashes are not allowed."
+msgstr "%s：スラッシュは使用不可。"
+
+#. CONTEXT: validation: characters not allowed
+#, c-format
+msgid "%s: *'\":|<>^ characters are not allowed."
+msgstr "%s：*'\":|<>^文字は使用できません。"
+
+#. CONTEXT: validation: must be numeric
+#. CONTEXT: validation: must be a numeric value
+#, c-format
+msgid "%s: Must be numeric."
+msgstr "%s：は数値でなければならない。"
+
+#. CONTEXT: validation: invalid time (hours/minutes)
+#. CONTEXT: validation: invalid time (minutes/seconds)
+#. CONTEXT: validation: invalid time (hours/minutes/seconds)
+#. CONTEXT: validation: invalid time (hour/min/sec.sec)
+#, c-format
+msgid "%s: Invalid time (%s)."
+msgstr "%s：無効な時間です (%s)。"
+
+#. CONTEXT: validation: invalid URL
+#, c-format
+msgid "%s: Invalid URL (%s)."
 msgstr ""
 
-#. CONTEXT: database update: check for new audio files
-msgid "Check For New"
-msgstr "新しいものをチェックする"
+#. CONTEXT: The suffix for an original audio file (may be abbreviated)
+msgid "original"
+msgstr "オリジナル"
 
-#. CONTEXT: database update: check for new: help text
-msgid "Checks for new audio files."
-msgstr "新しいオーディオファイルをチェックする。"
+#. CONTEXT: The prefix name for an audio file marked for deletion (may be abbreviated)
+msgid "delete"
+msgstr "削除"
 
-#. CONTEXT: configuration file: genre
-msgid "Classical"
-msgstr "クラシック"
+#. CONTEXT: please wait... (count/total) status message
+#, c-format
+msgid "Please wait… (%1$d/%2$d)"
+msgstr "お待ちください… (%1$d/%2$d)"
 
-#. CONTEXT: configuration: genre: title of the classical setting column
-msgid "Classical?"
-msgstr "クラシック？"
+#. CONTEXT: music queue: button: move the selected song to the top of the queue
+msgid "Move to Top"
+msgstr "このページのトップへ"
 
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-msgid "Clear & Play"
-msgstr "クリア＆プレイ"
+#. CONTEXT: music queue: button: set playback to pause after the selected song is played (toggle)
+msgid "Toggle Pause"
+msgstr "トグル・ポーズ"
 
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: music queue: button: clear the queue
-msgid "Clear Queue"
-msgstr "クリアキュー"
+#. CONTEXT: music queue: button: remove the song from the queue
+#. CONTEXT: side-by-side list: button: remove the selected field
+msgid "Remove"
+msgstr "削除"
 
-#. CONTEXT: manage-ui: menu selection: music manager: clear same-song mark
-msgid "Clear Same Song Mark"
-msgstr "クリア・セイム・ソング・マーク"
+#. CONTEXT: music queue: edit the selected song
+#. CONTEXT: song-selection: edit the selected song
+#. CONTEXT: manage-ui: menu selection: song list: edit menu
+#. CONTEXT: playlist management: menu selection: playlist: edit menu
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu
+msgid "Edit"
+msgstr "編集"
 
-#. CONTEXT: bpm counter: instructions, line 1
-msgid "Click the mouse in the blue box in time with the beat."
-msgstr "ビートに合わせて青いボックスの中でマウスをクリックします。"
+#. CONTEXT: music queue: tooltip: play the selected song
+#. CONTEXT: song-selection: tooltip: play the selected songs
+#. CONTEXT: song editor : play song
+msgid "Play"
+msgstr "プレー"
 
-#. CONTEXT: configuration: audio source mode
-msgid "Client"
-msgstr ""
+#. CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue'
+msgid "Queue Playlist"
+msgstr "キュー・プレイリスト"
 
-#. CONTEXT: configuration: the clock format
-msgid "Clock"
-msgstr ""
+#. CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue
+msgid "Queue Dance"
+msgstr "キュー・ダンス"
+
+#. CONTEXT: playerui: button: reset speed to 100%
+msgid "100%"
+msgstr "100%"
+
+#. CONTEXT: playerui: the current position of the song during song playback
+msgid "Position"
+msgstr "ポジション"
+
+#. CONTEXT: playerui: button: tooltip: toggle the repeat song on and off
+msgid "Toggle Repeat"
+msgstr "トグル・リピート"
+
+#. CONTEXT: playerui: button: tooltip: return to the beginning of the song
+msgid "Return to beginning of song"
+msgstr "曲の最初に戻る"
 
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
@@ -507,64 +1572,144 @@ msgstr ""
 msgid "Close"
 msgstr "閉じる"
 
-#. CONTEXT: label: comment
-msgid "Comment"
-msgstr ""
+#. CONTEXT: song selection filter: filter dialog: resets the selections
+#. CONTEXT: bpm counter: reset button
+msgid "Reset"
+msgstr "リセット"
 
-#. CONTEXT: database update: check for new audio files
-msgid "Compact"
-msgstr "コンパクト"
+#. CONTEXT: song selection filter: filter dialog: applies the selections
+msgid "Apply"
+msgstr "応募する"
 
-#. CONTEXT: database update: compact: help text
-msgid "Compact the database.  Use after audio files have been deleted."
-msgstr "データベースをコンパクトにする。  オーディオファイルが削除された後に使用します。"
+#. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
+#. CONTEXT: select file: file type for the file selection dialog (playlist)
+#. CONTEXT: import playlist: select the song list
+#. CONTEXT: create from playlist: select the playlist to use
+#. CONTEXT: playlist management: label for playlist name
+msgid "Playlist"
+msgstr "プレイリスト"
 
-#. CONTEXT: configuration file: status
-#. CONTEXT: copy audio tags: copy of audio tags completed
-#. CONTEXT: database update: status message
-msgid "Complete"
-msgstr "完全"
+#. CONTEXT: song selection filter: a filter: select the method to sort the song selection display
+msgid "Sort by"
+msgstr "並べ替え"
 
-#. CONTEXT: configuration: The completion message displayed on the marquee when a playlist is finished
-msgid "Completion Message"
-msgstr "完了メッセージ"
+#. CONTEXT: song selection filter: a filter: filter the song selection with a search for text
+msgid "Search"
+msgstr "検索"
 
-#. CONTEXT: label: composer
-msgid "Composer"
-msgstr "作曲家"
+#. CONTEXT: song selection filter: a filter: all dances are selected
+#. CONTEXT: song-selection: filter: all dances are selected
+msgid "All Dances"
+msgstr "すべてのダンス"
 
-#. CONTEXT: label: composer sort order
-msgid "Composer Sort Order"
-msgstr "作曲家のソート順"
+#. CONTEXT: song-selection: select a song to be added to the song list
+#. CONTEXT: select folder dialog: select folder
+#. CONTEXT: select file dialog: select file
+#. CONTEXT: side-by-side list: button: add the selected field
+#. CONTEXT: select file: selects the file
+#. CONTEXT: manage-ui: config: button: add the selected songs to the song list
+msgid "Select"
+msgstr "選択"
 
-#. CONTEXT: label: conductor
-msgid "Conductor"
-msgstr "コンダクター"
+#. CONTEXT: colon character
+msgid ":"
+msgstr "："
 
-#. CONTEXT: starterui: button: starts the configuration user interface
-msgid "Configure"
-msgstr "設定"
+#. CONTEXT: select folder dialog: filter on folders.
+msgid "Folder"
+msgstr "フォルダ"
 
-#. CONTEXT: configuration: audio source: check connection status
-msgid "Connection Failed"
-msgstr ""
+#. CONTEXT: genre: a filter: all genres are displayed in the song selection
+msgid "All Genres"
+msgstr "すべてのジャンル"
 
-#. CONTEXT: configuration: audio source: check connection status
-msgid "Connection OK"
-msgstr ""
+#. CONTEXT: level: a filter: all dance levels will be listed
+#. CONTEXT: level: a filter: all dance levels are displayed in the song selection
+msgid "All Levels"
+msgstr "全レベル"
 
-#. CONTEXT: configuration: which controller to use
-msgid "Controller"
-msgstr ""
+#. CONTEXT: rating: a filter: all dance ratings will be listed
+#. CONTEXT: rating: a filter: all dance ratings are displayed in the song selection
+msgid "All Ratings"
+msgstr "すべての評価"
 
-#. CONTEXT: installer: status message
-msgid "Conversion complete."
-msgstr "コンバージョン完了。"
+#. CONTEXT: select file: file type for the file selection dialog (sequence)
+#. CONTEXT: playlist management: type of playlist
+#. CONTEXT: sequence editor: label for sequence name
+#. CONTEXT: sequence editor: sequence name
+#. CONTEXT: sequence editor: title for the sequence list
+msgid "Sequence"
+msgstr "シーケンス"
 
-#. CONTEXT: installer: checkbox: convert the BallroomDJ 3 installation
+#. CONTEXT: select audio file: file selection dialog: audio file filter
+msgid "Audio Files"
+msgstr "オーディオファイル"
+
+#. CONTEXT: select file: title of window: select <file-type>
 #, c-format
-msgid "Convert %s"
-msgstr "変換 %s"
+msgid "Select %s"
+msgstr "%sを選択"
+
+#. CONTEXT: select audio file: dialog title for selecting audio files
+#, c-format
+msgid "Select Audio File"
+msgstr "オーディオファイルを選択"
+
+#. CONTEXT: status: a filter: all dance status will be listed
+#. CONTEXT: status: a filter: all dance status are displayed in the song selection
+msgid "Any Status"
+msgstr "ステータス"
+
+#. CONTEXT: apply adjustment dialog: title for the dialog
+#. CONTEXT: apply adjustment dialog: apply adjustments
+#. CONTEXT: manage-ui: song editor menu: apply adjustments
+msgid "Apply Adjustments"
+msgstr "調整を適用する"
+
+#. CONTEXT: apply adjustment dialog: restore original file
+#. CONTEXT: manage-ui: song editor menu: restore original
+msgid "Restore Original"
+msgstr "オリジナルに戻す"
+
+#. CONTEXT: apply adjustments: trim silence checkbox
+#. CONTEXT: manage-ui: song editor menu: trim silence
+msgid "Trim Silence"
+msgstr "トリムサイレンス"
+
+#. CONTEXT: apply adjustments: adjust speed/song start/song end checkbox
+msgid "Adjust Speed, Song Start and Song End"
+msgstr "スピード、ソング・スタート、ソング・エンドの調整"
+
+#. CONTEXT: audio identification: first song
+#. CONTEXT: song editor : first song
+msgid "First"
+msgstr "最初"
+
+#. CONTEXT: audio identification: previous song
+#. CONTEXT: song editor : previous song
+msgid "Previous"
+msgstr "前へ"
+
+#. CONTEXT: audio identification: save data
+#. CONTEXT: song editor : save data
+#. CONTEXT: quick edit dialog: save button
+#. CONTEXT: bpm counter: save button
+msgid "Save"
+msgstr "セーブ"
+
+#. CONTEXT: audio identification: label for displaying the audio file path
+#. CONTEXT: import playlist: import location
+#. CONTEXT: song editor: label for displaying the audio file path
+msgid "File"
+msgstr "ファイル"
+
+#. CONTEXT: audio identification: the data for the current song
+msgid "Current"
+msgstr "現在"
+
+#. CONTEXT: audio identification: the data for the selected matched song
+msgid "Selected"
+msgstr "厳選された"
 
 #. CONTEXT: copy tags dialog: title for the dialog
 #. CONTEXT: copy tags dialog: copy audio tags button
@@ -572,276 +1717,13 @@ msgstr "変換 %s"
 msgid "Copy Audio Tags"
 msgstr "コピーオーディオタグ"
 
-#. CONTEXT: manageui: failure status message
-#, c-format
-msgid "Copy already exists."
-msgstr "コピーはすでに存在する。"
+#. CONTEXT: song editor: copy tags: target file
+msgid "Target"
+msgstr "ターゲット"
 
-#. CONTEXT: installer: status message
-msgid "Copy finished."
-msgstr "コピー完了。"
-
-#. CONTEXT: manage-ui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
-#. CONTEXT: playlist: copy of the history song list
-#. CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
-#. CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
-#, c-format
-msgid "Copy of %s"
-msgstr "%sのコピー"
-
-#. CONTEXT: installer: status message
-msgid "Copying files."
-msgstr "ファイルをコピーする。"
-
-#. CONTEXT: alternate installation: status message
-#. CONTEXT: installer: status message
-msgid "Copying template files."
-msgstr "テンプレートファイルのコピー"
-
-#. CONTEXT: playlist management: count column header
-msgid "Count"
-msgstr "カウント"
-
-#. CONTEXT: create from playlist: creates the new songlist
-msgid "Create"
-msgstr "作成"
-
-#. CONTEXT: manage-ui: menu selection: song list: edit menu: create copy
-#. CONTEXT: playlist management: menu selection: playlist: edit menu: create copy
-#. CONTEXT: sequence editor: menu selection: sequence: edit menu: create copy
-msgid "Create Copy"
-msgstr "コピー作成"
-
-#. CONTEXT: starterui: selection to create a new profile
-msgid "Create Profile"
-msgstr "プロフィール作成"
-
-#. CONTEXT: starterui: menu item: create shortcut for profile
-msgid "Create Shortcut for Profile"
-msgstr "プロフィールのショートカットを作成する"
-
-#. CONTEXT: manage-ui: menu selection: song list: actions menu: create a song list from a playlist
-#. CONTEXT: create from playlist: title for the dialog
-msgid "Create from Playlist"
-msgstr "プレイリストから作成"
-
-#. CONTEXT: alternate installation: status message
-#. CONTEXT: installer: status message
-msgid "Creating folder structure."
-msgstr "フォルダ構造の作成"
-
-#. CONTEXT: alternate installation: status message
-#. CONTEXT: installer: status message
-msgid "Creating shortcut."
-msgstr "ショートカットの作成"
-
-#. CONTEXT: configuration: queue: the amount of time to cross-fade the songs
-msgid "Cross Fade Time"
-msgstr ""
-
-#. CONTEXT: audio identification: the data for the current song
-msgid "Current"
-msgstr "現在"
-
-#. CONTEXT: configuration: display settings for: Player User Interface
-msgid "Current Song"
-msgstr "現在の曲"
-
-#. CONTEXT: label: dance
-msgid "Dance"
-msgstr "ダンス"
-
-#. CONTEXT: label: dance level
-msgid "Dance Level"
-msgstr "ダンスレベル"
-
-#. CONTEXT: label: dance rating
-msgid "Dance Rating"
-msgstr "ダンス評価"
-
-#. CONTEXT: playlist management: notebook tab title: dances
-msgid "Dances"
-msgstr "ダンス"
-
-#. CONTEXT: configuration: checkbox: the database will load the dance from the audio file genre tag
-msgid "Database Loads Dance From Genre"
-msgstr "データベースはジャンルからダンスを読み込む"
-
-#. CONTEXT: label: date
-msgid "Date"
-msgstr "日付"
-
-#. CONTEXT: label: date added to the database
-msgid "Date Added"
-msgstr "追加日"
-
-#. CONTEXT: playlist management: how many days to keep the podcast
-msgid "Days to Keep"
-msgstr ""
-
-#. CONTEXT: configuration: debug options that can be turned on and off
-msgid "Debug"
-msgstr "デバッグ"
-
-#. CONTEXT: configuration: level: title of the default selection column
-#. CONTEXT: configuration: audio: The default audio sink (audio output)
-#. CONTEXT: user interface: default setting display
-msgid "Default"
-msgstr "デフォルト"
-
-#. CONTEXT: configuration: the volume used when starting the player
-msgid "Default Volume"
-msgstr "デフォルト音量"
-
-#. CONTEXT: configuration: table edit: button: delete selection
-#. CONTEXT: manage-ui: menu selection: song list: edit menu: delete song list
-#. CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist
-#. CONTEXT: sequence editor: menu selection: sequence: edit menu: delete sequence
-msgid "Delete"
-msgstr "削除"
-
-#. CONTEXT: starterui: menu item: delete profile
-msgid "Delete Profile"
-msgstr "プロフィール削除"
-
-#. CONTEXT: configuration: dialog display settings
-msgid "Dialogs"
-msgstr "ダイアログ"
-
-#. CONTEXT: label: disc number
-msgid "Disc"
-msgstr "ディスク"
-
-#. CONTEXT: configuration: display settings: which set of display settings to update
-#. CONTEXT: configuration: queue: whether to display the queue
-msgid "Display"
-msgstr "ディスプレイ"
-
-#. CONTEXT: configuration: change which fields are displayed in different contexts
-msgid "Display Settings"
-msgstr "ディスプレイ設定"
-
-#. CONTEXT: configuration: write audio file tags: do not write any tags to the audio file
-msgid "Don't Write"
-msgstr "書くな"
-
-#. CONTEXT: starterui: basic support dialog: support option (download latest version)
-msgid "Download Latest Version"
-msgstr "最新版のダウンロード"
-
-#. CONTEXT: installer: status message
-#, c-format
-msgid "Download of %s failed."
-msgstr "%s のダウンロードに失敗しました。"
-
-#. CONTEXT: installer: status message
-#, c-format
-msgid "Downloading %s."
-msgstr "ダウンロード %s."
-
-#. CONTEXT: label: duration of the song
-msgid "Duration"
-msgstr "期間"
-
-#. CONTEXT: starterui: sending support message: user's e-mail address
-msgid "E-Mail Address"
-msgstr "Eメールアドレス"
-
-#. CONTEXT: configuration file: dance level
-msgid "Easy"
-msgstr "簡単"
-
-#. CONTEXT: music queue: edit the selected song
-#. CONTEXT: song-selection: edit the selected song
-#. CONTEXT: manage-ui: menu selection: song list: edit menu
-#. CONTEXT: playlist management: menu selection: playlist: edit menu
-#. CONTEXT: sequence editor: menu selection: sequence: edit menu
-msgid "Edit"
-msgstr "編集"
-
-#. CONTEXT: song editor: display indicator that the song editor is in edit all mode
-#. CONTEXT: manage-ui: song editor menu: edit all
-msgid "Edit All"
-msgstr "すべて編集"
-
-#. CONTEXT: configuration: edit the dance table
-msgid "Edit Dances"
-msgstr "ダンスを編集する"
-
-#. CONTEXT: configuration: edit genres table
-msgid "Edit Genres"
-msgstr "編集ジャンル"
-
-#. CONTEXT: configuration: edit the dance levels table
-msgid "Edit Levels"
-msgstr "編集レベル"
-
-#. CONTEXT: configuration: edit the dance ratings table
-msgid "Edit Ratings"
-msgstr "レーティングを編集する"
-
-#. CONTEXT: manage-ui: notebook tab title: edit sequences
-msgid "Edit Sequences"
-msgstr "シーケンス編集"
-
-#. CONTEXT: manage-ui: notebook tab title: edit song lists
-msgid "Edit Song Lists"
-msgstr "ソングリストの編集"
-
-#. CONTEXT: configuration: edit status table
-msgid "Edit Status"
-msgstr "編集状況"
-
-#. CONTEXT: configuration: remote control: checkbox: enable/disable
-msgid "Enable Remote Control"
-msgstr "リモートコントロールを有効にする"
-
-#. CONTEXT: installer: where BDJ4 gets installed
-msgid "Enter the destination folder where BDJ4 will be installed."
-msgstr "BDJ4 のインストール先フォルダを入力します。"
-
-#. CONTEXT: installer: asking where BallroomDJ 3 is installed
-#, c-format
-msgid "Enter the folder where %s is installed."
-msgstr "%s がインストールされているフォルダを入力してください。"
-
-#. CONTEXT: alternate installation: installation instructions
-msgid "Enter the name of the new installation."
-msgstr "新しいインストールの名前を入力します。"
-
-#. CONTEXT: configuration: the error color to use for the user interface
-msgid "Error Colour"
-msgstr ""
-
-#. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
-#. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
-#. CONTEXT: installer: status message
-msgid "Error: Folder already exists."
-msgstr "エラー：フォルダは既に存在します。"
-
-#. CONTEXT: alternate installation: failure message
-#. CONTEXT: installer: failure message
-msgid "Error: Unable to set working folder."
-msgstr "エラー：作業フォルダを設定できません。"
-
-#. CONTEXT: configuration: examples displayed for the audio file organization path
-msgid "Examples"
-msgstr "例"
-
-#. CONTEXT: alternate installation: exits the alternate installer
-#. CONTEXT: installer: exits the installer
-#. CONTEXT: starterui: button: exits BDJ4 (exits everything)
-msgid "Exit"
-msgstr "出口"
-
-#. CONTEXT: update database: exit BDJ4 and restart
-#, c-format
-msgid "Exit %s and restart."
-msgstr "%s を終了し、再起動する。"
-
-#. CONTEXT: configuration: player: fade-type: exponential sine
-msgid "Exponential Sine"
-msgstr ""
+#. CONTEXT: copy audio tags: one of the files does not exist
+msgid "Invalid Selections"
+msgstr "無効な選択"
 
 #. CONTEXT: export/import bdj4 dialog: export button
 #. CONTEXT: export playlist dialog: export button
@@ -849,6 +1731,50 @@ msgstr ""
 #. CONTEXT: playerui: menu selection: export
 msgid "Export"
 msgstr "輸出"
+
+#. CONTEXT: export for ballroomdj: title of dialog
+#. CONTEXT: manage-ui: menu selection: song list: export: export for ballroomdj
+#, c-format
+msgid "Export for %s"
+msgstr "%s。"
+
+#. CONTEXT: export/import bdj4 dialog: import button
+#. CONTEXT: import playlist dialog: start import process button
+#. CONTEXT: import from itunes: import the selected itunes playlist
+#. CONTEXT: manage-ui: menu selection: import actions for song list
+msgid "Import"
+msgstr "輸入"
+
+#. CONTEXT: import from ballroomdj: title of dialog
+#. CONTEXT: import from itunes: title for the dialog
+#. CONTEXT: manage-ui: menu selection: song list: import: import from ballroomdj
+#. CONTEXT: manage-ui: menu selection: song list: import: import from itunes
+#, c-format
+msgid "Import from %s"
+msgstr "%sからのインポート"
+
+#. CONTEXT: export/import bdj4: export folder location
+#. CONTEXT: export playlist: export folder location
+msgid "Export to"
+msgstr "輸出先"
+
+#. CONTEXT: export/import bdj4: import folder location
+msgid "Import from"
+msgstr "輸入元"
+
+#. CONTEXT: export/import bdj4: new song list name
+#. CONTEXT: import playlist: new song list name
+msgid "New Song List Name"
+msgstr "新曲リスト名"
+
+#. CONTEXT: export/import bdj4 folder selection dialog: window title
+msgid "Select Folder"
+msgstr "フォルダを選択"
+
+#. CONTEXT: import from bdj4: error message if the target song list already exists
+#. CONTEXT: import playlist: message if the target song list already exists
+msgid "Already Exists"
+msgstr "すでに存在する"
 
 #. CONTEXT: export playlist: title of dialog
 #. CONTEXT: managementui: export playlist: title of save dialog
@@ -860,172 +1786,23 @@ msgstr "プレイリストのエクスポート"
 msgid "Export Type"
 msgstr "輸出タイプ"
 
-#. CONTEXT: player ui: menu selection: export: export as MP3
-#. CONTEXT: export as mp3: title of save dialog
-#, c-format
-msgid "Export as %s"
-msgstr "%sとしてエクスポート"
+#. CONTEXT: managementui: export playlist: name of file export type
+#. CONTEXT: import playlist: name of import type
+msgid "Playlists"
+msgstr "プレイリスト"
 
-#. CONTEXT: export for ballroomdj: title of dialog
-#. CONTEXT: manage-ui: menu selection: song list: export: export for ballroomdj
-#, c-format
-msgid "Export for %s"
-msgstr "%s。"
-
-#. CONTEXT: export/import bdj4: export folder location
-#. CONTEXT: export playlist: export folder location
-msgid "Export to"
-msgstr "輸出先"
-
-#. CONTEXT: external request dialog: title for the dialog
-#. CONTEXT: playerui: menu selection: action: external request
-msgid "External Request"
-msgstr "外部リクエスト"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: playerui: button: fade out the song and stop playing it
-msgid "Fade"
-msgstr "フェード"
-
-#. CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song
-msgid "Fade In Time"
-msgstr "フェード・イン・タイム"
-
-#. CONTEXT: configuration: queue: the amount of time to do a volume fade-out when playing a song
-msgid "Fade Out Time"
-msgstr "フェードアウト時間"
-
-#. CONTEXT: configuration: the clock format
-msgid "Fade Type"
+#. CONTEXT: export playlist: invalid target file
+#. CONTEXT: import playlist: invalid target file
+msgid "Invalid File"
 msgstr ""
 
-#. CONTEXT: label: favorite marker
-msgid "Favourite"
-msgstr "お気に入り"
-
-#. CONTEXT: configuration: itunes: which fields should be imported from itunes
-msgid "Fields to Import"
-msgstr "インポートするフィールド"
-
-#. CONTEXT: audio identification: label for displaying the audio file path
-#. CONTEXT: import playlist: import location
-#. CONTEXT: song editor: label for displaying the audio file path
-msgid "File"
-msgstr "ファイル"
+#. CONTEXT: export playlist: invalid target file extension
+msgid "Invalid Extension"
+msgstr ""
 
 #. CONTEXT: import playlist: playlist file types (m3u/xspf/jspf)
 #, c-format
 msgid "File (%s)"
-msgstr ""
-
-#. CONTEXT: configuration: filter display: song selection filters
-#. CONTEXT: song selection filter: title for the filter dialog
-#. CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog
-msgid "Filter Songs"
-msgstr "フィルター曲"
-
-#. CONTEXT: audio identification: first song
-#. CONTEXT: song editor : first song
-msgid "First"
-msgstr "最初"
-
-#. CONTEXT: select folder dialog: filter on folders.
-msgid "Folder"
-msgstr "フォルダ"
-
-#. CONTEXT: configuration: the font to use for the user interface
-msgid "Font"
-msgstr "フォント"
-
-#. CONTEXT: playerui: menu selection: marquee: change the marquee font size
-#. CONTEXT: playerui: marquee font size dialog: the font size selector
-msgid "Font Size"
-msgstr "文字サイズ"
-
-#. CONTEXT: configuration file: dance
-msgid "Foxtrot"
-msgstr "フォックストロット"
-
-#. CONTEXT: configuration: queue: the amount of time to wait inbetween songs
-#. CONTEXT: playlist management: Gap between songs
-msgid "Gap Between Songs"
-msgstr "曲間のギャップ"
-
-#. CONTEXT: configuration: general options that apply to everything
-msgid "General"
-msgstr "一般"
-
-#. CONTEXT: label: genre
-msgid "Genre"
-msgstr "ジャンル"
-
-#. CONTEXT: configuration file: rating
-msgid "Good"
-msgstr "グッド"
-
-#. CONTEXT: configuration file: rating
-msgid "Great"
-msgstr "素晴らしい"
-
-#. CONTEXT: label: grouping
-msgid "Grouping"
-msgstr ""
-
-#. CONTEXT: configuration: remote control: the HTML template to use
-msgid "HTML Template"
-msgstr "HTMLテンプレート"
-
-#. CONTEXT: HTTP response code (error)
-msgid "HTTP Code"
-msgstr "HTTPコード"
-
-#. CONTEXT: configuration: player: fade-type: half sine
-msgid "Half Sine"
-msgstr ""
-
-#. CONTEXT: playerui: menu selection: marquee: hide the marquee
-msgid "Hide"
-msgstr ""
-
-#. CONTEXT: playlist management: hide unselected dances
-msgid "Hide Unselected"
-msgstr "未選択を隠す"
-
-#. CONTEXT: configuration: dances: high BPM (or MPM) setting
-#. CONTEXT: playlist management: high bpm/mpm column header
-#, c-format
-msgid "High %s"
-msgstr "高い %s"
-
-#. CONTEXT: playlist management: High Dance Level
-msgid "High Dance Level"
-msgstr "ハイ・ダンス・レベル"
-
-#. CONTEXT: configuration: display settings for: history
-#. CONTEXT: playlist: the name of the history song list
-#. CONTEXT: playerui: name of the history tab : displayed played songs
-#. CONTEXT: playerui: name of the saved history playlist
-#. CONTEXT: the name of the history song list
-msgid "History"
-msgstr "歴史"
-
-#. CONTEXT: configuration: player: clock: ISO
-msgid "ISO"
-msgstr ""
-
-#. CONTEXT: installer: instructions
-msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
-msgstr "BallroomDJ 3がインストールされていない場合は、空欄のままにしてください。"
-
-#. CONTEXT: export/import bdj4 dialog: import button
-#. CONTEXT: import playlist dialog: start import process button
-#. CONTEXT: import from itunes: import the selected itunes playlist
-#. CONTEXT: manage-ui: menu selection: import actions for song list
-msgid "Import"
-msgstr "輸入"
-
-#. CONTEXT: import playlist: import-from selection
-msgid "Import From"
 msgstr ""
 
 #. CONTEXT: import playlist: title of dialog
@@ -1033,129 +1810,195 @@ msgstr ""
 msgid "Import Playlist"
 msgstr "プレイリストのインポート"
 
-#. CONTEXT: export/import bdj4: import folder location
-msgid "Import from"
-msgstr "輸入元"
-
-#. CONTEXT: import from ballroomdj: title of dialog
-#. CONTEXT: import from itunes: title for the dialog
-#. CONTEXT: manage-ui: menu selection: song list: import: import from ballroomdj
-#. CONTEXT: manage-ui: menu selection: song list: import: import from itunes
-#, c-format
-msgid "Import from %s"
-msgstr "%sからのインポート"
-
-#. CONTEXT: configuration: marquee: dance information color
-msgid "Information Colour"
+#. CONTEXT: import playlist: import-from selection
+msgid "Import From"
 msgstr ""
-
-#. CONTEXT: alternate installation: status message
-msgid "Initial Setup."
-msgstr "初期設定。"
-
-#. CONTEXT: alternate installation: install BDJ4 in the alternate location
-#. CONTEXT: installer: start the installation process
-msgid "Install"
-msgstr "インストール"
-
-#. CONTEXT: alternate installation: dialog title for selecting location
-#. CONTEXT: installer: dialog title for selecting install location
-msgid "Install Location"
-msgstr "設置場所"
-
-#. CONTEXT: installer: status message
-msgid "Installation aborted."
-msgstr "インストールが中断された。"
-
-#. CONTEXT: installer: status message
-msgid "Installation complete."
-msgstr "設置完了。"
-
-#. CONTEXT: installer: status message
-#, c-format
-msgid "Installing %s."
-msgstr "%sのインストール ."
-
-#. CONTEXT: config: integrated VLC 3
-msgid "Integrated VLC 3"
-msgstr ""
-
-#. CONTEXT: config: integrated VLC 4
-msgid "Integrated VLC 4"
-msgstr ""
-
-#. CONTEXT: configuration: mobile marquee type: internet
-msgid "Internet"
-msgstr ""
-
-#. CONTEXT: Send support message: Error message for invalid e-mail.
-msgid "Invalid E-Mail Address."
-msgstr ""
-
-#. CONTEXT: export playlist: invalid target file extension
-msgid "Invalid Extension"
-msgstr ""
-
-#. CONTEXT: export playlist: invalid target file
-#. CONTEXT: import playlist: invalid target file
-msgid "Invalid File"
-msgstr ""
-
-#. CONTEXT: alternate installation: the selected folder is not valid
-#. CONTEXT: installer: the selected folder is not valid
-#. CONTEXT: export/import bdj4: invalid target folder
-msgid "Invalid Folder"
-msgstr "無効なフォルダ"
-
-#. CONTEXT: alternate installer: invalid name status message
-msgid "Invalid Name"
-msgstr "無効な名前"
-
-#. CONTEXT: copy audio tags: one of the files does not exist
-msgid "Invalid Selections"
-msgstr "無効な選択"
 
 #. CONTEXT: import playlist: invalid URL
 msgid "Invalid URL"
 msgstr ""
 
-#. CONTEXT: Saving Song List: Error message for invalid song list name.
-#. CONTEXT: Saving Playlist: Error message for invalid playlist name.
-#. CONTEXT: Saving Sequence: Error message for invalid sequence name.
-msgid "Invalid name. Using old name."
+#. CONTEXT: song editor: display indicator that the song editor is in edit all mode
+#. CONTEXT: manage-ui: song editor menu: edit all
+msgid "Edit All"
+msgstr "すべて編集"
+
+#. CONTEXT: song editor: status msg: (song start may not exceed the song duration)
+#. CONTEXT: song editor: status msg: (song end may not exceed the song duration)
+#, c-format
+msgid "%s may not exceed the song duration"
+msgstr "%s曲の長さを超えてはならない"
+
+#. CONTEXT: song editor: status msg: (song end must be greater than song start)
+#, c-format
+msgid "%1$s must be greater than %2$s"
+msgstr "%1$s は %2$sより大きくなければならない。"
+
+#. CONTEXT: external request dialog: title for the dialog
+#. CONTEXT: playerui: menu selection: action: external request
+msgid "External Request"
+msgstr "外部リクエスト"
+
+#. CONTEXT: external request: enter the audio file location
+msgid "Audio File"
+msgstr "音声ファイル"
+
+#. CONTEXT: external request: dance drop-down
+msgid "Select Dance"
+msgstr "セレクト・ダンス"
+
+#. CONTEXT: HTTP response code (error)
+msgid "HTTP Code"
+msgstr "HTTPコード"
+
+#. CONTEXT: bpm counter: number of beats
+msgid "Beats"
+msgstr "ビート"
+
+#. CONTEXT: bpm counter: number of seconds
+msgid "Seconds"
+msgstr "秒"
+
+#. CONTEXT: bpm counter: title of window
+msgid "BPM Counter"
+msgstr "BPMカウンター"
+
+#. CONTEXT: bpm counter: instructions, line 1
+msgid "Click the mouse in the blue box in time with the beat."
+msgstr "ビートに合わせて青いボックスの中でマウスをクリックします。"
+
+#. CONTEXT: bpm counter: instructions, line 2
+msgid "When the BPM value is stable, select the Save button."
+msgstr "BPMの値が安定したら、Saveボタンを選択します。"
+
+#. CONTEXT: database update: status message (count)
+#, c-format
+msgid "%s files found"
+msgstr "%s個のファイルが見つかりました"
+
+#. CONTEXT: database update: status message: total number of files found (count)
+msgid "Total Files"
+msgstr "ファイル数"
+
+#. CONTEXT: database update: status message: files found in the database
+msgid "Loaded from Database"
+msgstr "データベースからロード"
+
+#. CONTEXT: database update: status message: new files saved to the database
+msgid "New Files"
+msgstr "新しいファイル"
+
+#. CONTEXT: database update: status message: number of files updated in the database
+#. CONTEXT: database update: status message: number of files updated
+msgid "Updated"
+msgstr "更新"
+
+#. CONTEXT: database update: status message: number of files renamed
+msgid "Renamed"
+msgstr "名称変更"
+
+#. CONTEXT: database update: status message: number of files that cannot be renamed
+msgid "Cannot Rename"
 msgstr ""
 
-#. CONTEXT: configuration: player: fade-type: inverted parabola
-msgid "Inverted Parabola"
+#. CONTEXT: database update: status message: other files that cannot be processed
+msgid "Other Files"
+msgstr "その他のファイル"
+
+#. CONTEXT: colon character with trailing space
+msgid ": "
+msgstr "："
+
+#. CONTEXT: database update: status message
+msgid "Stopped by User"
+msgstr "ユーザーによる停止"
+
+#. CONTEXT: manage-ui: management user interface window title
+#, c-format
+msgid "%s Management"
+msgstr "%sマネジメント"
+
+#. CONTEXT: manage-ui: notebook tab title: edit sequences
+msgid "Edit Sequences"
+msgstr "シーケンス編集"
+
+#. CONTEXT: manage-ui: notebook tab title: playlist management
+msgid "Playlist Management"
+msgstr "プレイリスト管理"
+
+#. CONTEXT: manage-ui: notebook tab title: update database
+msgid "Update Database"
+msgstr "データベースの更新"
+
+#. CONTEXT: manage-ui: notebook tab title: edit song lists
+msgid "Edit Song Lists"
+msgstr "ソングリストの編集"
+
+#. CONTEXT: manage-ui: name of statistics tab
+msgid "Statistics"
+msgstr "統計"
+
+#. CONTEXT: manage-ui: song list: default name for a new song list
+msgid "New Song List"
+msgstr "新曲リスト"
+
+#. CONTEXT: the 'Mix' action failed
+msgid "Action failed"
+msgstr "アクション失敗"
+
+#. CONTEXT: manage-ui: menu selection: actions for song editor
+#. CONTEXT: manage-ui: menu selection: actions for music manager
+#. CONTEXT: manage-ui: menu selection: actions for song list
+#. CONTEXT: playerui: menu selection: actions for the player
+#. CONTEXT: starterui: action menu for the starter user interface
+msgid "Actions"
+msgstr "行動"
+
+#. CONTEXT: manage-ui: song editor menu: write audio tags
+msgid "Write Audio Tags"
 msgstr ""
 
-#. CONTEXT: configuration file: genre
-msgid "Jazz"
-msgstr "ジャズ"
+#. CONTEXT: manage-ui: song editor menu: apply edit all
+msgid "Apply Edit All"
+msgstr "すべて編集する"
 
-#. CONTEXT: configuration file: dance
-msgid "Jive"
-msgstr "ジャイブ"
+#. CONTEXT: manage-ui: song editor menu: cancel edit all
+msgid "Cancel Edit All"
+msgstr "すべての編集をキャンセルする"
 
-#. CONTEXT: label: keyword (used to filter out songs)
-msgid "Keyword"
-msgstr "キーワード"
+#. CONTEXT: manage ui: status message: itunes is not configured
+#, c-format
+msgid "%s is not configured."
+msgstr "%sが設定されていない。"
 
-#. CONTEXT: label: when the database entry was last updated
-msgid "Last Updated"
-msgstr "最終更新日"
+#. CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist)
+#, c-format
+msgid "%s Playlist"
+msgstr "%sプレイリスト"
 
-#. CONTEXT: starterui: basic support dialog, latest version display
-msgid "Latest Version"
-msgstr "最新バージョン"
+#. CONTEXT: manage-ui: name of song editor notebook tab
+msgid "Song Editor"
+msgstr "ソング・エディター"
 
-#. CONTEXT: label: dance level (short name for listing)
-msgid "Level"
-msgstr "レベル"
+#. CONTEXT: manage-ui: menu selection: music manager: set same-song mark
+msgid "Mark as Same Song"
+msgstr "同じ曲としてマーク"
 
-#. CONTEXT: configuration: the font to use for the queues and song lists
-msgid "Listing Font"
-msgstr "リスト・フォント"
+#. CONTEXT: manage-ui: menu selection: music manager: clear same-song mark
+msgid "Clear Same Song Mark"
+msgstr "クリア・セイム・ソング・マーク"
+
+#. CONTEXT: manage-ui: menu selection: music manager: remove song
+msgid "Remove Song"
+msgstr "歌の削除"
+
+#. CONTEXT: manage-ui: menu selection: music manager: undo song removal
+msgid "Undo Song Removal"
+msgstr "曲の削除を元に戻す"
+
+#. CONTEXT: manage-ui: menu selection: music manager: undo all song removals
+msgid "Undo All Song Removals"
+msgstr ""
 
 #. CONTEXT: manage-ui: menu selection: song list: edit menu: load
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: load
@@ -1163,68 +2006,207 @@ msgstr "リスト・フォント"
 msgid "Load"
 msgstr "負荷"
 
-#. CONTEXT: database update: status message: files found in the database
-msgid "Loaded from Database"
-msgstr "データベースからロード"
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: start new song list
+msgid "Start New Song List"
+msgstr "新しい曲リストの開始"
 
-#. CONTEXT: configuration: mobile marquee type: local
-#. CONTEXT: configuration: player: clock: local
-msgid "Local"
+#. CONTEXT: manage-ui: menu selection: song list: edit menu: create copy
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: create copy
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: create copy
+msgid "Create Copy"
+msgstr "コピー作成"
+
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: rearrange the songs and create a new mix
+msgid "Mix"
+msgstr "ミックス"
+
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: swap two songs
+msgid "Swap"
+msgstr "スワップ"
+
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: truncate the song list
+msgid "Truncate"
+msgstr "切り捨て"
+
+#. CONTEXT: manage-ui: menu selection: song list: actions menu: create a song list from a playlist
+#. CONTEXT: create from playlist: title for the dialog
+msgid "Create from Playlist"
+msgstr "プレイリストから作成"
+
+#. CONTEXT: manage-ui: menu selection: song list: options menu
+#. CONTEXT: playerui: menu selection: options for the player
+msgid "Options"
+msgstr "オプション"
+
+#. CONTEXT: manage-ui: menu checkbox: side-by-side view (suggestion: combined view)
+msgid "Side-by-Side View"
+msgstr "サイド・バイ・サイド・ビュー"
+
+#. CONTEXT: manage-ui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#. CONTEXT: playlist: copy of the history song list
+#. CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#. CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#, c-format
+msgid "Copy of %s"
+msgstr "%sのコピー"
+
+#. CONTEXT: create from playlist: creates the new songlist
+msgid "Create"
+msgstr "作成"
+
+#. CONTEXT: create from playlist: set the maximum time for the song list
+msgid "Time Limit"
+msgstr "タイムリミット"
+
+#. CONTEXT: Saving Song List: Error message for invalid song list name.
+#. CONTEXT: Saving Playlist: Error message for invalid playlist name.
+#. CONTEXT: Saving Sequence: Error message for invalid sequence name.
+msgid "Invalid name. Using old name."
 msgstr ""
 
-#. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
-msgid "Locale"
-msgstr "ロケール"
+#. CONTEXT: database update: check for new audio files
+msgid "Check For New"
+msgstr "新しいものをチェックする"
 
-#. CONTEXT: installer: status message
-msgid "Located 'tclsh'."
-msgstr "場所は「tclsh」。"
+#. CONTEXT: database update: check for new: help text
+msgid "Checks for new audio files."
+msgstr "新しいオーディオファイルをチェックする。"
 
-#. CONTEXT: configuration: dances: low BPM (or MPM) setting
-#. CONTEXT: playlist management: low bpm/mpm column header
+#. CONTEXT: database update: check for new audio files
+msgid "Compact"
+msgstr "コンパクト"
+
+#. CONTEXT: database update: compact: help text
+msgid "Compact the database.  Use after audio files have been deleted."
+msgstr "データベースをコンパクトにする。  オーディオファイルが削除された後に使用します。"
+
+#. CONTEXT: database update: reorganize : renames audio files based on organization settings
+msgid "Reorganise"
+msgstr "再編成"
+
+#. CONTEXT: database update: reorganize : help text
+msgid "Renames the audio files based on the organization settings."
+msgstr "編成設定に基づいてオーディオファイルの名前を変更します。"
+
+#. CONTEXT: database update: updates the database using the tags from the audio files
+msgid "Update from Audio File Tags"
+msgstr "オーディオ・ファイル・タグからの更新"
+
+#. CONTEXT: database update: update from audio file tags: help text
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
+msgstr "オーディオファイルのタグから BallroomDJ データベースの情報を更新します。"
+
+#. CONTEXT: database update: writes the tags in the database to the audio files
+msgid "Write Tags to Audio Files"
+msgstr "オーディオファイルにタグを書き込む"
+
+#. CONTEXT: database update: write tags to audio files: help text
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
+msgstr "BallroomDJ データベースの情報を使って、オーディオファイルのタグを書き込みます。"
+
+#. CONTEXT: database update: update from itunes
 #, c-format
-msgid "Low %s"
-msgstr "低い %s"
+msgid "Update from %s"
+msgstr "%sからの更新情報"
+
+#. CONTEXT: database update: update from itunes: help text
+#, c-format
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
+msgstr "%s データベースから BallroomDJ データベースの情報を更新する。"
+
+#. CONTEXT: database update: rebuilds the database
+msgid "Rebuild Database"
+msgstr "データベースの再構築"
+
+#. CONTEXT: database update: rebuild: help text
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
+msgstr "BallroomDJ データベースを完全に置き換えます。データベースへのすべての変更は失われます。"
+
+#. CONTEXT: update database: select database update action
+msgid "Action"
+msgstr "アクション"
+
+#. CONTEXT: update database: button to start the database update process
+msgid "Start"
+msgstr "スタート"
+
+#. CONTEXT: update database: exit BDJ4 and restart
+#, c-format
+msgid "Exit %s and restart."
+msgstr "%s を終了し、再起動する。"
+
+#. CONTEXT: manageui: failure status message
+#, c-format
+msgid "Copy already exists."
+msgstr "コピーはすでに存在する。"
+
+#. CONTEXT: manageui: status message when deleting a song list/playlist/sequence
+#, c-format
+msgid "%s deleted."
+msgstr ""
+
+#. CONTEXT: playlist management: label for playlist name
+msgid "Playlist Type"
+msgstr "プレイリスト・タイプ"
+
+#. CONTEXT: playlist management: default playlist type
+#. CONTEXT: playlist management: type of playlist
+msgid "Automatic"
+msgstr "自動"
+
+#. CONTEXT: playlist management: notebook tab title: settings
+msgid "Settings"
+msgstr "設定"
+
+#. CONTEXT: playlist management: stop after
+msgid "Stop After"
+msgstr "ストップ・アフター"
 
 #. CONTEXT: playlist management: Low Dance Level
 msgid "Low Dance Level"
 msgstr "低いダンスレベル"
 
-#. CONTEXT: label: measures per minute
-#. CONTEXT: bpm counter: MPM
-msgid "MPM"
-msgstr "MPM"
+#. CONTEXT: playlist management: High Dance Level
+msgid "High Dance Level"
+msgstr "ハイ・ダンス・レベル"
 
-#. CONTEXT: starterui: button: starts the management user interface
-msgid "Manage"
-msgstr "管理"
+#. CONTEXT: playlist management: allowed keywords
+msgid "Allowed Keywords"
+msgstr "許可されたキーワード"
 
-#. CONTEXT: manage-ui: menu selection: music manager: set same-song mark
-msgid "Mark as Same Song"
-msgstr "同じ曲としてマーク"
+#. CONTEXT: playlist management: how many days to keep the podcast
+msgid "Days to Keep"
+msgstr ""
 
-#. CONTEXT: configuration: display settings for: Marquee (song display screen)
-#. CONTEXT: configuration: options associated with the marquee (suggested: song display)
-#. CONTEXT: marquee: marquee window title (suggested: song display)
-#. CONTEXT: playerui: menu selection: marquee related options (suggested: song display)
-msgid "Marquee"
-msgstr "マーキー"
+#. CONTEXT: playlist management: notebook tab title: dances
+msgid "Dances"
+msgstr "ダンス"
 
-#. CONTEXT: label: marquee display (alternate display for the marquee, replaces dance)
-msgid "Marquee Display"
-msgstr "マーキー・ディスプレイ"
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist
+msgid "New Automatic Playlist"
+msgstr "新しい自動プレイリスト"
 
-#. CONTEXT: configuration: The font to use for the marquee display
-msgid "Marquee Font"
-msgstr "マーキーフォント"
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: new podcast
+msgid "New Podcast"
+msgstr ""
 
-#. CONTEXT: playerui: marquee font size dialog: window title
-msgid "Marquee Font Size"
-msgstr "マーキーのフォントサイズ"
+#. CONTEXT: playlist management: default name for a new playlist
+msgid "New Playlist"
+msgstr "新しいプレイリスト"
 
-#. CONTEXT: configuration: The theme to use for the marquee display
-msgid "Marquee Theme"
-msgstr "マーキーのテーマ"
+#. CONTEXT: playlist management: hide unselected dances
+msgid "Hide Unselected"
+msgstr "未選択を隠す"
+
+#. CONTEXT: playlist management: count column header
+msgid "Count"
+msgstr "カウント"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
 msgid ""
@@ -1232,465 +2214,31 @@ msgid ""
 "Play Time"
 msgstr "最大プレー時間"
 
-#. CONTEXT: configuration: queue: the maximum amount of time to play a song
-#. CONTEXT: playlist management: maximum play time
-msgid "Maximum Play Time"
-msgstr "最大プレー時間"
-
-#. CONTEXT: starterui: sending support message: message text
-msgid "Message"
-msgstr "メッセージ"
-
-#. CONTEXT: configuration: show-marquee: minimize
-msgid "Minimised"
-msgstr "最小化"
-
-#. CONTEXT: manage-ui: menu selection: song list: actions menu: rearrange the songs and create a new mix
-msgid "Mix"
-msgstr "ミックス"
-
-#. CONTEXT: configuration: qr code: title display for mobile marquee
-#. CONTEXT: configuration: options associated with the mobile marquee
-msgid "Mobile Marquee"
-msgstr "モバイル・マーキー"
-
-#. CONTEXT: configuration: qr code: title display for mobile remote control
-#. CONTEXT: configuration: options associated with mobile remote control
-msgid "Mobile Remote Control"
-msgstr "モバイル・リモコン"
-
-#. CONTEXT: configuration: audio source: mode (off/client/server)
-#. CONTEXT: configuration: mobile marquee: mode: (off/local/internet)
-msgid "Mode"
-msgstr ""
-
-#. CONTEXT: configuration: table edit: button: move selection down
-#. CONTEXT: music queue: button: move the selected song down in the queue
-#. CONTEXT: side-by-side list: button: move the selected field down
-msgid "Move Down"
-msgstr "下に移動"
-
-#. CONTEXT: configuration: table edit: button: move selection up
-#. CONTEXT: music queue: button: move the selected song up in the queue
-#. CONTEXT: side-by-side list: button: move the selected field up
-msgid "Move Up"
-msgstr "繰り上げ"
-
-#. CONTEXT: music queue: button: move the selected song to the top of the queue
-msgid "Move to Top"
-msgstr "このページのトップへ"
-
-#. CONTEXT: label: movement name (classical music movement name)
-msgid "Movement"
-msgstr ""
-
-#. CONTEXT: label: movement count (classical music movement count)
-msgid "Movement Count"
-msgstr ""
-
-#. CONTEXT: label: movement (classical music movement number)
-msgid "Movement Number"
-msgstr ""
-
-#. CONTEXT: configuration: the music folder where the user stores their music
-#. CONTEXT: update database: music folder to process
-msgid "Music Folder"
-msgstr "音楽フォルダ"
-
-#. CONTEXT: configuration: display settings for: music manager
-#. CONTEXT: manage-ui: name of music manager notebook tab
-#. CONTEXT: manage-ui: name of song selection notebook tab
-msgid "Music Manager"
-msgstr "音楽マネージャー"
-
-#. CONTEXT: (noun) configuration file: name of a music queue
-#. CONTEXT: configuration: display settings for: music queue
-msgid "Music Queue"
-msgstr "ミュージック・キュー"
-
-#. CONTEXT: configuration: music queue configuration
-msgid "Music Queues"
-msgstr "ミュージック・キュー"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-msgid "Mute"
-msgstr "ミュート"
-
-#. CONTEXT: configuration: audio source: the client or server name
-#. CONTEXT: alternate installation: name (for shortcut)
-msgid "Name"
-msgstr "名称"
-
-#. CONTEXT: configuration file: status
-#. CONTEXT: status: default status (new) when status is not set
-msgid "New"
-msgstr "新しい"
-
-#. CONTEXT: alternate installation: message indicating the action that will be taken
-#. CONTEXT: installer: message indicating the action that will be taken
-#, c-format
-msgid "New %s installation."
-msgstr "新しい %s。"
-
-#. CONTEXT: configuration: name that is set when adding a new audio source
-msgid "New Audio Source"
-msgstr ""
-
-#. CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist
-msgid "New Automatic Playlist"
-msgstr "新しい自動プレイリスト"
-
-#. CONTEXT: configuration: dance name that is set when adding a new dance
-msgid "New Dance"
-msgstr "新作ダンス"
-
-#. CONTEXT: database update: status message: new files saved to the database
-msgid "New Files"
-msgstr "新しいファイル"
-
-#. CONTEXT: configuration: genre name that is set when adding a new genre
-msgid "New Genre"
-msgstr "新ジャンル"
-
-#. CONTEXT: configuration: level name that is set when adding a new level
-msgid "New Level"
-msgstr "新しいレベル"
-
-#. CONTEXT: playlist management: default name for a new playlist
-msgid "New Playlist"
-msgstr "新しいプレイリスト"
-
-#. CONTEXT: playlist management: menu selection: playlist: edit menu: new podcast
-msgid "New Podcast"
-msgstr ""
-
-#. CONTEXT: starterui: name of the new profile (New profile 9)
-#, c-format
-msgid "New Profile %d"
-msgstr "新しいプロフィール %d"
-
-#. CONTEXT: configuration: rating name that is set when adding a new rating
-msgid "New Rating"
-msgstr "新規格付け"
-
 #. CONTEXT: sequence editor: default name for a new sequence
 msgid "New Sequence"
 msgstr "新シークエンス"
 
-#. CONTEXT: manage-ui: song list: default name for a new song list
-msgid "New Song List"
-msgstr "新曲リスト"
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: start new sequence
+msgid "Start New Sequence"
+msgstr "新しいシーケンスを開始する"
 
-#. CONTEXT: export/import bdj4: new song list name
-#. CONTEXT: import playlist: new song list name
-msgid "New Song List Name"
-msgstr "新曲リスト名"
+#. CONTEXT: statistics: Label for number of songs in song list
+msgid "Songs"
+msgstr "曲目"
 
-#. CONTEXT: configuration: status name that is set when adding a new status
-msgid "New Status"
-msgstr "新しいステータス"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: audio identification: next song
-#. CONTEXT: song editor : next song
-#. CONTEXT: helperui: proceed to the next step
-msgid "Next"
-msgstr "次のページ"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: playerui: button: tooltip: start playing the next song (immediate)
-msgid "Next Song"
-msgstr "次の曲"
-
-#. CONTEXT: label: no play time limit
-msgid "No Play Time Limit"
-msgstr ""
-
-#. CONTEXT: installer: message indicating the conversion action that will be taken
-msgid "No folder specified."
-msgstr "フォルダが指定されていない。"
-
-#. CONTEXT: starterui: no internet connection
-msgid "No internet connection"
-msgstr "インターネット接続なし"
-
-#. CONTEXT: configuration file: genre
-#. CONTEXT: configuration: controller: no controller
-msgid "None"
-msgstr "なし"
-
-#. CONTEXT: configuration file: dance level
-msgid "Normal"
-msgstr "ノーマル"
+#. CONTEXT: statistics: Label for total song list duration
+msgid "Total Time"
+msgstr "合計時間"
 
 #. CONTEXT: marquee: displayed when nothing is set to be played
 #. CONTEXT: mobile marquee: playback is not active
 msgid "Not Playing"
 msgstr "プレーしない"
 
-#. CONTEXT: installer: the location entered is not a valid BDJ3 location.
+#. CONTEXT: playerui: main window title
 #, c-format
-msgid "Not a valid %s folder."
-msgstr "有効な %s フォルダーではありません。"
-
-#. CONTEXT: label: notes
-msgid "Notes"
-msgstr "備考"
-
-#. CONTEXT: configuration: audio source mode
-#. CONTEXT: configuration: show-marquee: off
-#. CONTEXT: configuration: mobile marquee type: off
-#. CONTEXT: configuration: player: clock: off
-msgid "Off"
-msgstr "オフ"
-
-#. CONTEXT: manage-ui: menu selection: song list: options menu
-#. CONTEXT: playerui: menu selection: options for the player
-msgid "Options"
-msgstr "オプション"
-
-#. CONTEXT: configuration: dance levels: instructions
-msgid "Order from easiest to most advanced."
-msgstr "簡単なものから順番に。"
-
-#. CONTEXT: configuration: dance ratings: information on how to order the ratings
-msgid "Order from the lowest rating to the highest rating."
-msgstr "評価の低いものから高いものへ。"
-
-#. CONTEXT: configuration: options associated with how audio files are organized
-msgid "Organisation"
-msgstr "組織"
-
-#. CONTEXT: configuration: the audio file organization path
-msgid "Organisation Path"
-msgstr "組織パス"
-
-#. CONTEXT: database update: status message: other files that cannot be processed
-msgid "Other Files"
-msgstr "その他のファイル"
-
-#. CONTEXT: configuration file: dance
-msgid "Paso Doble"
-msgstr "パソドブレ"
-
-#. CONTEXT: configuration: audio source: the client or server password
-#. CONTEXT: configuration: mobile marquee: internet: password
-#. CONTEXT: configuration: remote control: the password for sign-on to remote control
-msgid "Password"
-msgstr "パスワード"
-
-#. CONTEXT: configuration: queue: pause each song
-msgid "Pause Each Song"
-msgstr "各曲を一時停止する"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: playerui: button: pause at the end of the song (toggle)
-msgid "Pause at End"
-msgstr "終了時のポーズ"
-
-#. CONTEXT: music queue: tooltip: play the selected song
-#. CONTEXT: song-selection: tooltip: play the selected songs
-#. CONTEXT: song editor : play song
-msgid "Play"
-msgstr "プレー"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: playerui: button: tooltip: play or pause the song
-msgid "Play / Pause"
-msgstr "再生/一時停止"
-
-#. CONTEXT: configuration: queue: whether to play announcements
-#. CONTEXT: playlist management: Play Announcements
-msgid "Play Announcements"
-msgstr "プレーのお知らせ"
-
-#. CONTEXT: configuration: queue: play when queued (verb)
-msgid "Play When Queued"
-msgstr "キューに入れたら再生"
-
-#. CONTEXT: configuration: status: title of the "playable" column
-msgid "Play?"
-msgstr "プレー？"
-
-#. CONTEXT: configuration: filter display: checkbox: status is playable
-#. CONTEXT: song selection filter: a filter: the song status is marked as playable
-msgid "Playable Status"
-msgstr "プレー可能な状態"
-
-#. CONTEXT: configuration: options associated with the player
-#. CONTEXT: configuration: which player interface to use
-#. CONTEXT: starterui: button: starts the player user interface
-msgid "Player"
-msgstr "再生"
-
-#. CONTEXT: configuration: additional arguments for player
-msgid "Player Arguments"
-msgstr "再生引数"
-
-#. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
-#. CONTEXT: select file: file type for the file selection dialog (playlist)
-#. CONTEXT: import playlist: select the song list
-#. CONTEXT: create from playlist: select the playlist to use
-#. CONTEXT: playlist management: label for playlist name
-msgid "Playlist"
-msgstr "プレイリスト"
-
-#. CONTEXT: manage-ui: notebook tab title: playlist management
-msgid "Playlist Management"
-msgstr "プレイリスト管理"
-
-#. CONTEXT: playlist management: label for playlist name
-msgid "Playlist Type"
-msgstr "プレイリスト・タイプ"
-
-#. CONTEXT: managementui: export playlist: name of file export type
-#. CONTEXT: import playlist: name of import type
-msgid "Playlists"
-msgstr "プレイリスト"
-
-#. CONTEXT: installer: status message
-#. CONTEXT: please wait... status message
-#. CONTEXT: apply adjustments: please wait... status message
-#. CONTEXT: please wait... status message
-#. CONTEXT: management ui: please wait... status message
-#. CONTEXT: export as mp3: please wait... status message
-#. CONTEXT: starter ui: please wait... status message
-#, c-format
-msgid "Please wait…"
-msgstr "お待ちください…"
-
-#. CONTEXT: please wait... (count/total) status message
-#, c-format
-msgid "Please wait… (%1$d/%2$d)"
-msgstr "お待ちください… (%1$d/%2$d)"
-
-#. CONTEXT: configuration file: audio source name
-#. CONTEXT: configuration file: audio source name
-#. CONTEXT: audio source: podcast
-#. CONTEXT: playlist management: type of playlist
-msgid "Podcast"
-msgstr ""
-
-#. CONTEXT: configuration file: rating
-msgid "Poor"
-msgstr "貧しい"
-
-#. CONTEXT: configuration: audio source: the port to use for the client or server
-#. CONTEXT: configuration: the port to use for the mobile marquee
-#. CONTEXT: configuration: remote control: the port to use for remote control
-msgid "Port"
-msgstr "ポート"
-
-#. CONTEXT: playerui: the current position of the song during song playback
-msgid "Position"
-msgstr "ポジション"
-
-#. CONTEXT: label: lock audio file location
-msgid "Prevent Rename"
-msgstr "名前の変更を防ぐ"
-
-#. CONTEXT: audio identification: previous song
-#. CONTEXT: song editor : previous song
-msgid "Previous"
-msgstr "前へ"
-
-#. CONTEXT: alternate installation: status message
-msgid "Process aborted."
-msgstr "プロセスが中断された。"
-
-#. CONTEXT: starterui: profile to be used when starting BDJ4
-msgid "Profile"
-msgstr "プロフィール"
-
-#. CONTEXT: configuration: the profile accent color (identifies profile)
-msgid "Profile Colour"
-msgstr "プロフィールカラー"
-
-#. CONTEXT: configuration: the name of this profile
-msgid "Profile Name"
-msgstr "プロフィール名"
-
-#. CONTEXT: starterui: profile is already in use
-msgid "Profile in use"
-msgstr "使用プロファイル"
-
-#. CONTEXT: starter: status message
-msgid "Profile may not be deleted."
-msgstr "プロフィールは削除できません。"
-
-#. CONTEXT: configuration: mobile marquee: the link to display the QR code for the mobile marquee
-#. CONTEXT: configuration: remote control: the link to display the QR code for remote control
-msgid "QR Code"
-msgstr "QRコード"
-
-#. CONTEXT: configuration: player: fade-type: quadratic
-msgid "Quadratic"
-msgstr ""
-
-#. CONTEXT: configuration: player: fade-type: quarter sine
-msgid "Quarter Sine"
-msgstr ""
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
-#. CONTEXT: (verb) song-selection: queue a song to be played
-#. CONTEXT: (verb) external request dialog: queue the selected file
-msgid "Queue"
-msgstr "キュー"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button)
-msgid "Queue 5"
-msgstr "キュー5"
-
-#. CONTEXT: (noun) configuration file: name of a music queue
-msgid "Queue B"
-msgstr "キューB"
-
-#. CONTEXT: (noun) configuration file: name of a music queue
-msgid "Queue C"
-msgstr "キューC"
-
-#. CONTEXT: (noun) configuration file: name of a music queue
-msgid "Queue D"
-msgstr "キューD"
-
-#. CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue
-msgid "Queue Dance"
-msgstr "キュー・ダンス"
-
-#. CONTEXT: (noun) configuration file: name of a music queue
-msgid "Queue E"
-msgstr "キューE"
-
-#. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee
-#. CONTEXT: (noun) configuration: the number of items loaded into the music queue
-msgid "Queue Length"
-msgstr "キューの長さ"
-
-#. CONTEXT: (noun) configuration: queue: the name of the music queue
-msgid "Queue Name"
-msgstr "キュー名"
-
-#. CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue'
-msgid "Queue Playlist"
-msgstr "キュー・プレイリスト"
-
-#. CONTEXT: The name of the 'queuedance' playlist file
-#. CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button
-#. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
-#. CONTEXT: player: the name of the special playlist for queueing a dance
-msgid "QueueDance"
-msgstr "キューダンス"
-
-#. CONTEXT: (noun) configuration: queue: select which queue to configure
-msgid "Queue_noun"
-msgstr "列"
-
-#. CONTEXT: configuration: filter display: quick edit filters
-#. CONTEXT: quick edit: title of dialog
-msgid "Quick Edit"
-msgstr "クイック編集"
+msgid "%s Player"
+msgstr "%s再生"
 
 #. CONTEXT: playerui: menu selection: action: quick edit current song
 msgid "Quick Edit: Current"
@@ -1700,211 +2248,97 @@ msgstr "クイック編集：現在"
 msgid "Quick Edit: Selected"
 msgstr "クイック編集：選択"
 
-#. CONTEXT: configuration file: dance
-msgid "Quickstep"
-msgstr "クイックステップ"
+#. CONTEXT: playerui: menu selection: action: reload
+msgid "Reload"
+msgstr "リロード"
 
-#. CONTEXT: configuration: itunes: label for itunes rating conversion
-#. CONTEXT: label: dance rating (short name for listing)
-msgid "Rating"
-msgstr "評価"
+#. CONTEXT: playerui: menu selection: marquee: show the marquee
+msgid "Show"
+msgstr ""
 
-#. CONTEXT: alternate installation: checkbox: re-install
-#. CONTEXT: installer: checkbox: re-install BDJ4
-msgid "Re-Install"
-msgstr "再インストール"
-
-#. CONTEXT: alternate installation: message indicating the action that will be taken
-#. CONTEXT: installer: message indicating the action that will be taken
-#, c-format
-msgid "Re-install %s.  Overwrites existing configuration."
-msgstr "%sを再インストールする。  既存の設定を上書きします。"
-
-#. CONTEXT: database update: rebuilds the database
-msgid "Rebuild Database"
-msgstr "データベースの再構築"
+#. CONTEXT: playerui: menu selection: marquee: change the marquee font size
+#. CONTEXT: playerui: marquee font size dialog: the font size selector
+msgid "Font Size"
+msgstr "文字サイズ"
 
 #. CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen
 msgid "Recover Marquee"
 msgstr "マーキーの回復"
 
+#. CONTEXT: player ui: menu selection: export: export as MP3
+#. CONTEXT: export as mp3: title of save dialog
+#, c-format
+msgid "Export as %s"
+msgstr "%sとしてエクスポート"
+
+#. CONTEXT: playerui: menu checkbox: show the extra queues (in addition to the main music queue)
+msgid "Show Extra Queues"
+msgstr "追加のキューを表示する"
+
+#. CONTEXT: playerui: menu checkbox: when a queue is emptied, switch playback to the next queue
+msgid "Switch Queue When Empty"
+msgstr "空キュー切り替え"
+
+#. CONTEXT: playerui: select the current queue for playback
+msgid "Set Queue for Playback"
+msgstr "再生キューの設定"
+
 #. CONTEXT: player-ui: error message
 msgid "Recovered from crash."
 msgstr "クラッシュから回復。"
 
-#. CONTEXT: installer: status message
+#. CONTEXT: playerui: marquee font size dialog: window title
+msgid "Marquee Font Size"
+msgstr "マーキーのフォントサイズ"
+
+#. CONTEXT: playerui: menu selection: marquee: hide the marquee
+msgid "Hide"
+msgstr ""
+
+#. CONTEXT: helperui: the window title for the BDJ4 helper
 #, c-format
-msgid "Registering %s."
-msgstr "%sを登録する。"
+msgid "%s Helper"
+msgstr "%sヘルパー"
 
-#. CONTEXT: playerui: menu selection: action: reload
-msgid "Reload"
-msgstr "リロード"
-
-#. CONTEXT: music queue: button: remove the song from the queue
-#. CONTEXT: side-by-side list: button: remove the selected field
-msgid "Remove"
-msgstr "削除"
-
-#. CONTEXT: manage-ui: menu selection: music manager: remove song
-msgid "Remove Song"
-msgstr "歌の削除"
-
-#. CONTEXT: database update: status message: number of files renamed
-msgid "Renamed"
-msgstr "名称変更"
-
-#. CONTEXT: database update: reorganize : help text
-msgid "Renames the audio files based on the organization settings."
-msgstr "編成設定に基づいてオーディオファイルの名前を変更します。"
-
-#. CONTEXT: database update: reorganize : renames audio files based on organization settings
-msgid "Reorganise"
-msgstr "再編成"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-msgid "Repeat"
-msgstr "リピート"
-
-#. CONTEXT: database update: rebuild: help text
-msgid ""
-"Replaces the BallroomDJ database in its entirety. All changes to the "
-"database will be lost."
-msgstr "BallroomDJ データベースを完全に置き換えます。データベースへのすべての変更は失われます。"
-
-#. CONTEXT: configuration: display settings for: requests
-#. CONTEXT: playerui: name of request tab : lists the songs in the database
-msgid "Request"
-msgstr "リクエスト"
-
-#. CONTEXT: song selection filter: filter dialog: resets the selections
-#. CONTEXT: bpm counter: reset button
-msgid "Reset"
-msgstr "リセット"
-
-#. CONTEXT: apply adjustment dialog: restore original file
-#. CONTEXT: manage-ui: song editor menu: restore original
-msgid "Restore Original"
-msgstr "オリジナルに戻す"
-
-#. CONTEXT: playerui: button: tooltip: return to the beginning of the song
-msgid "Return to beginning of song"
-msgstr "曲の最初に戻る"
-
-#. CONTEXT: configuration file: genre
-msgid "Rock"
-msgstr "ロック"
-
-#. CONTEXT: configuration file: dance
-msgid "Rumba"
-msgstr "ルンバ"
-
-#. CONTEXT: installer: status message
+#. CONTEXT: starterui: menu item: stop all BDJ4 processes
 #, c-format
-msgid "Running conversion script: %s."
-msgstr "変換スクリプトの実行: %s."
+msgid "Stop All %s Processes"
+msgstr "すべての %s プロセスを停止する"
 
-#. CONTEXT: configuration file: dance
-msgid "Salsa"
-msgstr "サルサ"
+#. CONTEXT: starterui: menu item: delete profile
+msgid "Delete Profile"
+msgstr "プロフィール削除"
 
-#. CONTEXT: configuration file: dance
-msgid "Samba"
-msgstr "サンバ"
+#. CONTEXT: starterui: menu item: create shortcut for profile
+msgid "Create Shortcut for Profile"
+msgstr "プロフィールのショートカットを作成する"
 
-#. CONTEXT: audio identification: save data
-#. CONTEXT: song editor : save data
-#. CONTEXT: quick edit dialog: save button
-#. CONTEXT: bpm counter: save button
-msgid "Save"
-msgstr "セーブ"
-
-#. CONTEXT: alternate installer: status message
-#. CONTEXT: installer: status message
-msgid "Saving install location."
-msgstr "インストール場所の保存"
-
-#. CONTEXT: configuration: scaling factor for the user interface
-msgid "Scale"
-msgstr "スケール"
-
-#. CONTEXT: audio identification: the score or rating of each match
-msgid "Score"
-msgstr "スコア"
-
-#. CONTEXT: song selection filter: a filter: filter the song selection with a search for text
-msgid "Search"
-msgstr "検索"
-
-#. CONTEXT: bpm counter: number of seconds
-msgid "Seconds"
-msgstr "秒"
-
-#. CONTEXT: song-selection: select a song to be added to the song list
-#. CONTEXT: select folder dialog: select folder
-#. CONTEXT: select file dialog: select file
-#. CONTEXT: side-by-side list: button: add the selected field
-#. CONTEXT: select file: selects the file
-#. CONTEXT: manage-ui: config: button: add the selected songs to the song list
-msgid "Select"
-msgstr "選択"
-
-#. CONTEXT: select file: title of window: select <file-type>
+#. CONTEXT: starterui: menu item: install in alternate folder
 #, c-format
-msgid "Select %s"
-msgstr "%sを選択"
+msgid "Set Up Alternate Folder"
+msgstr "代替フォルダの設定"
 
-#. CONTEXT: installer: dialog title for selecting BDJ3 location
-#, c-format
-msgid "Select %s Location"
-msgstr "%s ロケーションを選択"
+#. CONTEXT: starterui: profile to be used when starting BDJ4
+msgid "Profile"
+msgstr "プロフィール"
 
-#. CONTEXT: configuration: itunes media folder selection dialog: window title
-#, c-format
-msgid "Select %s Media Location"
-msgstr "%s メディアの場所を選択"
+#. CONTEXT: starterui: button: starts the management user interface
+msgid "Manage"
+msgstr "管理"
 
-#. CONTEXT: configuration: itunes xml file selection dialog: window title
-#, c-format
-msgid "Select %s XML File"
-msgstr "%s XMLファイルを選択"
+#. CONTEXT: starterui: button: starts the configuration user interface
+msgid "Configure"
+msgstr "設定"
 
-#. CONTEXT: select audio file: dialog title for selecting audio files
-#, c-format
-msgid "Select Audio File"
-msgstr "オーディオファイルを選択"
-
-#. CONTEXT: external request: dance drop-down
-msgid "Select Dance"
-msgstr "セレクト・ダンス"
-
-#. CONTEXT: configuration: file selection dialog: window title
-msgid "Select File"
-msgstr "ファイルを選択"
-
-#. CONTEXT: export/import bdj4 folder selection dialog: window title
-msgid "Select Folder"
-msgstr "フォルダを選択"
-
-#. CONTEXT: configuration: folder selection dialog: window title
-#. CONTEXT: update database: dialog title for selecting database music folder
-#, c-format
-msgid "Select Music Folder Location"
-msgstr "音楽フォルダの場所を選択"
-
-#. CONTEXT: audio identification: the data for the selected matched song
-msgid "Selected"
-msgstr "厳選された"
-
-#. CONTEXT: starterui: basic support dialog: button: support option
-#. CONTEXT: starterui: support message dialog: sends the support message
-msgid "Send Support Message"
-msgstr "サポートメッセージを送る"
+#. CONTEXT: starterui: button: support : support information
+#. CONTEXT: starterui: title for the support dialog
+msgid "Support"
+msgstr "サポート"
 
 #. CONTEXT: starterui: support: status message
 #, c-format
-msgid "Sending %s"
-msgstr "%s"
+msgid "Sending Support Message"
+msgstr "サポートメッセージの送信"
 
 #. CONTEXT: starterui: support: status message
 #, c-format
@@ -1918,538 +2352,104 @@ msgstr "診断の送信"
 
 #. CONTEXT: starterui: support: status message
 #, c-format
-msgid "Sending Support Message"
-msgstr "サポートメッセージの送信"
+msgid "Sending %s"
+msgstr "%s"
 
-#. CONTEXT: select file: file type for the file selection dialog (sequence)
-#. CONTEXT: playlist management: type of playlist
-#. CONTEXT: sequence editor: label for sequence name
-#. CONTEXT: sequence editor: sequence name
-#. CONTEXT: sequence editor: title for the sequence list
-msgid "Sequence"
-msgstr "シーケンス"
-
-#. CONTEXT: configuration: audio source mode
-msgid "Server"
-msgstr ""
-
-#. CONTEXT: playerui: select the current queue for playback
-msgid "Set Queue for Playback"
-msgstr "再生キューの設定"
-
-#. CONTEXT: starterui: menu item: install in alternate folder
+#. CONTEXT: starterui: basic support dialog, version display
 #, c-format
-msgid "Set Up Alternate Folder"
-msgstr "代替フォルダの設定"
+msgid "%s Version"
+msgstr "%sバージョン"
 
-#. CONTEXT: playlist management: notebook tab title: settings
-msgid "Settings"
-msgstr "設定"
+#. CONTEXT: starterui: basic support dialog, latest version display
+msgid "Latest Version"
+msgstr "最新バージョン"
 
-#. CONTEXT: alternate installation: status message
-msgid "Setup complete."
-msgstr "セットアップ完了。"
+#. CONTEXT: starterui: no internet connection
+msgid "No internet connection"
+msgstr "インターネット接続なし"
 
-#. CONTEXT: playerui: menu selection: marquee: show the marquee
-msgid "Show"
-msgstr ""
-
-#. CONTEXT: configuration: queue: whether to show the extra queue buttons (queue dance, queue 5)
-msgid "Show Extra Queue Buttons"
-msgstr "追加のキューボタンを表示する"
-
-#. CONTEXT: playerui: menu checkbox: show the extra queues (in addition to the main music queue)
-msgid "Show Extra Queues"
-msgstr "追加のキューを表示する"
-
-#. CONTEXT: configuration: show-marquee: selection
-msgid "Show Marquee"
-msgstr "ショー・マーキー"
-
-#. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee
-msgid "Show Song Information"
-msgstr "ショー・ソング・インフォメーション"
-
-#. CONTEXT: configuration: whether or not to show the speed reset button
-msgid "Show Speed Reset"
-msgstr "スピードリセットを表示"
-
-#. CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux.
-msgid "Shutdown Script"
-msgstr "シャットダウンスクリプト"
-
-#. CONTEXT: configuration: display settings for: side-by-side song list (suggestion: combined view: song list)
-msgid "Side-by-Side Song List"
-msgstr "サイド・バイ・サイド曲リスト"
-
-#. CONTEXT: configuration: display settings for: side-by-side song selection (suggestion: combined view: song selection)
-msgid "Side-by-Side Song Selection"
-msgstr "サイド・バイ・サイド選曲"
-
-#. CONTEXT: manage-ui: menu checkbox: side-by-side view (suggestion: combined view)
-msgid "Side-by-Side View"
-msgstr "サイド・バイ・サイド・ビュー"
-
-#. CONTEXT: installer: status message
-msgid "Skipping conversion."
-msgstr "変換をスキップする。"
-
-#. CONTEXT: manage-ui: name of song editor notebook tab
-msgid "Song Editor"
-msgstr "ソング・エディター"
-
-#. CONTEXT: configuration: display settings for: song editor column N
-#, c-format
-msgid "Song Editor - Column %d"
-msgstr "Song Editor - コラム %d"
-
-#. CONTEXT: label: time to end the song
-msgid "Song End"
-msgstr "ソング・エンド"
-
-#. CONTEXT: configuration: display settings for: song list
-#. CONTEXT: music queue: label for song list name
-#. CONTEXT: music queue: song list name
-#. CONTEXT: select file: file type for the file selection dialog (song list)
-#. CONTEXT: export/import bdj4: playlist: select the song list
-#. CONTEXT: manage-ui: name of side-by-side view tab
-#. CONTEXT: manage-ui: name of song list notebook tab
-#. CONTEXT: playlist management: type of playlist
-msgid "Song List"
-msgstr "曲目リスト"
-
-#. CONTEXT: configuration: user interface: the song mark color for songs in the song list
-msgid "Song Mark Colour"
-msgstr ""
-
-#. CONTEXT: configuration: display settings for: song selection
-#. CONTEXT: manage-ui: name of song selection notebook tab
-msgid "Song Selection"
-msgstr "選曲"
-
-#. CONTEXT: label: time to start the song
-msgid "Song Start"
-msgstr "ソング・スタート"
-
-#. CONTEXT: statistics: Label for number of songs in song list
-msgid "Songs"
-msgstr "曲目"
-
-#. CONTEXT: song selection filter: a filter: select the method to sort the song selection display
-msgid "Sort by"
-msgstr "並べ替え"
-
-#. CONTEXT: audio identification: the audio identification source
-#. CONTEXT: song editor: copy tags: source file
-msgid "Source"
-msgstr "ソース"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow)
-#. CONTEXT: playerui: the current speed for song playback
-msgid "Speed"
-msgstr "スピード"
-
-#. CONTEXT: label: speed adjustment for playback
-msgid "Speed Adjustment"
-msgstr "スピード調整"
-
-#. CONTEXT: update database: button to start the database update process
-msgid "Start"
-msgstr "スタート"
-
-#. CONTEXT: sequence editor: menu selection: sequence: edit menu: start new sequence
-msgid "Start New Sequence"
-msgstr "新しいシーケンスを開始する"
-
-#. CONTEXT: manage-ui: menu selection: song list: edit menu: start new song list
-msgid "Start New Song List"
-msgstr "新しい曲リストの開始"
-
-#. CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song
-msgid "Start Wait Time"
-msgstr ""
-
-#. CONTEXT: installer: status message
-msgid "Starting conversion process."
-msgstr "変換プロセスを開始する。"
-
-#. CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux.
-msgid "Startup Script"
-msgstr "スタートアップ・スクリプト"
-
-#. CONTEXT: manage-ui: name of statistics tab
-msgid "Statistics"
-msgstr "統計"
-
-#. CONTEXT: label: status
-msgid "Status"
-msgstr "ステータス"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: update database: button to stop the database update process
-msgid "Stop"
-msgstr "ストップ"
-
-#. CONTEXT: playlist management: stop after
-msgid "Stop After"
-msgstr "ストップ・アフター"
-
-#. CONTEXT: starterui: menu item: stop all BDJ4 processes
-#, c-format
-msgid "Stop All %s Processes"
-msgstr "すべての %s プロセスを停止する"
-
-#. CONTEXT: configuration: queue: the time when playback will stop
-#. CONTEXT: playlist management: stop at
-msgid "Stop At"
-msgstr "ストップ・アット"
-
-#. CONTEXT: database update: status message
-msgid "Stopped by User"
-msgstr "ユーザーによる停止"
-
-#. CONTEXT: starterui: sending support message: subject of message
-msgid "Subject"
-msgstr "テーマ"
-
-#. CONTEXT: starterui: button: support : support information
-#. CONTEXT: starterui: title for the support dialog
-msgid "Support"
-msgstr "サポート"
-
-#. CONTEXT: starterui: title for the support message dialog
-msgid "Support Message"
-msgstr "サポートメッセージ"
+#. CONTEXT: starterui: basic support dialog: support option (download latest version)
+msgid "Download Latest Version"
+msgstr "最新版のダウンロード"
 
 #. CONTEXT: starterui: basic support dialog, list of support options
 msgid "Support options"
 msgstr "サポート・オプション"
 
-#. CONTEXT: manage-ui: menu selection: song list: actions menu: swap two songs
-msgid "Swap"
-msgstr "スワップ"
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 download)
+#, c-format
+msgid "%s Download"
+msgstr "%sダウンロード"
 
-#. CONTEXT: playerui: menu checkbox: when a queue is emptied, switch playback to the next queue
-msgid "Switch Queue When Empty"
-msgstr "空キュー切り替え"
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 wiki)
+#, c-format
+msgid "%s Wiki"
+msgstr "%sウィキ"
 
-#. CONTEXT: configuration: mobile marquee: internet: tag
-msgid "Tag"
-msgstr ""
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 forums)
+#, c-format
+msgid "%s Forums"
+msgstr "%sフォーラム"
 
-#. CONTEXT: label: tags (for use by the user)
-#. CONTEXT: playlist management: tags
-msgid "Tags"
-msgstr "タグ"
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets)
+#, c-format
+msgid "%s Support Tickets"
+msgstr "%sサポートチケット"
 
-#. CONTEXT: configuration file: dance
-msgid "Tango"
-msgstr "タンゴ"
+#. CONTEXT: starterui: basic support dialog: button: support option
+#. CONTEXT: starterui: support message dialog: sends the support message
+msgid "Send Support Message"
+msgstr "サポートメッセージを送る"
 
-#. CONTEXT: song editor: copy tags: target file
-msgid "Target"
-msgstr "ターゲット"
+#. CONTEXT: starterui: selection to create a new profile
+msgid "Create Profile"
+msgstr "プロフィール作成"
 
-#. CONTEXT: configuration file: The completion message displayed on the marquee when the playlist is finished.
-msgid "Thank You Dancers"
-msgstr "ありがとうダンサーズ"
+#. CONTEXT: starterui: name of the new profile (New profile 9)
+#, c-format
+msgid "New Profile %d"
+msgstr "新しいプロフィール %d"
 
-#. CONTEXT: installer: message indicating the conversion action that will be taken
-msgid "The conversion process will not be run."
-msgstr "変換処理は実行されない。"
+#. CONTEXT: starterui: profile is already in use
+msgid "Profile in use"
+msgstr "使用プロファイル"
 
-#. CONTEXT: installer: instructions
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installations."
-msgstr "変換処理は、新規インストールと再インストールでのみ実行されます。"
+#. CONTEXT: starter: status message
+msgid "Profile may not be deleted."
+msgstr "プロフィールは削除できません。"
 
-#. CONTEXT: configuration: the theme to use for the user interface
-msgid "Theme"
+#. CONTEXT: starterui: title for the support message dialog
+msgid "Support Message"
+msgstr "サポートメッセージ"
+
+#. CONTEXT: starterui: sending support message: user's e-mail address
+msgid "E-Mail Address"
+msgstr "Eメールアドレス"
+
+#. CONTEXT: starterui: sending support message: subject of message
+msgid "Subject"
 msgstr "テーマ"
 
-#. CONTEXT: create from playlist: set the maximum time for the song list
-msgid "Time Limit"
-msgstr "タイムリミット"
+#. CONTEXT: starterui: sending support message: message text
+msgid "Message"
+msgstr "メッセージ"
 
-#. CONTEXT: configuration: dances: time signature for the dance
-msgid "Time Signature"
-msgstr "タイムシグネチャー"
+#. CONTEXT: starterui: sending support message: checkbox: option to send data files
+msgid "Attach Data Files"
+msgstr "データファイルの添付"
 
-#. CONTEXT: configuration: the title to display on the mobile marquee
-#. CONTEXT: label: title
-#. CONTEXT: playlist management: podcast title
-msgid "Title"
-msgstr "タイトル"
+#. CONTEXT: starterui: sending support message: checkbox: option to send database
+msgid "Attach Database"
+msgstr "データベースの添付"
 
-#. CONTEXT: label: title sort order
-msgid "Title Sort Order"
-msgstr "タイトルソート順"
-
-#. CONTEXT: music queue: button: set playback to pause after the selected song is played (toggle)
-msgid "Toggle Pause"
-msgstr "トグル・ポーズ"
-
-#. CONTEXT: playerui: button: tooltip: toggle the repeat song on and off
-msgid "Toggle Repeat"
-msgstr "トグル・リピート"
-
-#. CONTEXT: label: total disc count (short name for listing)
-msgid "Tot. Discs"
-msgstr "ディスク"
-
-#. CONTEXT: label: total track count (short name for listing)
-msgid "Tot. Tracks"
-msgstr "全トラック"
-
-#. CONTEXT: label: total disc count
-msgid "Total Discs"
-msgstr "ディスク"
-
-#. CONTEXT: database update: status message: total number of files found (count)
-msgid "Total Files"
-msgstr "ファイル数"
-
-#. CONTEXT: statistics: Label for total song list duration
-msgid "Total Time"
-msgstr "合計時間"
-
-#. CONTEXT: label: total track count
-msgid "Total Tracks"
-msgstr "全トラック"
-
-#. CONTEXT: label: track number
-msgid "Track"
-msgstr "トラック"
-
-#. CONTEXT: configuration: player: fade-type: triangle
-msgid "Triangle"
+#. CONTEXT: Send support message: Error message for invalid e-mail.
+msgid "Invalid E-Mail Address."
 msgstr ""
 
-#. CONTEXT: apply adjustments: trim silence checkbox
-#. CONTEXT: manage-ui: song editor menu: trim silence
-msgid "Trim Silence"
-msgstr "トリムサイレンス"
-
-#. CONTEXT: manage-ui: menu selection: song list: actions menu: truncate the song list
-msgid "Truncate"
-msgstr "切り捨て"
-
-#. CONTEXT: configuration: audio source: type of source
-#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
-msgid "Type"
-msgstr "タイプ"
-
-#. CONTEXT: configuration: audio source: the remote client URL
-#. CONTEXT: import playlist: import location
-#. CONTEXT: playlist management: podcast URL
-msgid "URL"
-msgstr ""
-
-#. CONTEXT: installer: status message
+#. CONTEXT: MacOS: reason for disabling sleep: BDJ4 Player is Active
 #, c-format
-msgid "Unable to determine %s version."
-msgstr "%s バージョンがわかりません。"
-
-#. CONTEXT: installer: failure message
-#, c-format
-msgid "Unable to locate %s."
-msgstr "%sを見つけることができない。"
-
-#. CONTEXT: installer: status message
-msgid "Unable to locate BDJ3 database."
-msgstr "BDJ3 データベースが見つかりません。"
-
-#. CONTEXT: manage-ui: menu selection: music manager: undo all song removals
-msgid "Undo All Song Removals"
-msgstr ""
-
-#. CONTEXT: manage-ui: menu selection: music manager: undo song removal
-msgid "Undo Song Removal"
-msgstr "曲の削除を元に戻す"
-
-#. CONTEXT: configuration file: rating
-msgid "Unrated"
-msgstr "未評価"
-
-#. CONTEXT: configuration: marquee: upcoming dance color
-msgid "Upcoming Dance Colour"
-msgstr ""
-
-#. CONTEXT: manage-ui: notebook tab title: update database
-msgid "Update Database"
-msgstr "データベースの更新"
-
-#. CONTEXT: database update: update from itunes
-#, c-format
-msgid "Update from %s"
-msgstr "%sからの更新情報"
-
-#. CONTEXT: database update: updates the database using the tags from the audio files
-msgid "Update from Audio File Tags"
-msgstr "オーディオ・ファイル・タグからの更新"
-
-#. CONTEXT: database update: status message: number of files updated in the database
-#. CONTEXT: database update: status message: number of files updated
-msgid "Updated"
-msgstr "更新"
-
-#. CONTEXT: database update: update from itunes: help text
-#, c-format
-msgid ""
-"Updates the information in the BallroomDJ database from the %s database."
-msgstr "%s データベースから BallroomDJ データベースの情報を更新する。"
-
-#. CONTEXT: database update: update from audio file tags: help text
-msgid ""
-"Updates the information in the BallroomDJ database from the audio file tags."
-msgstr "オーディオファイルのタグから BallroomDJ データベースの情報を更新します。"
-
-#. CONTEXT: alternate installation: status message
-#. CONTEXT: installer: status message
-#, c-format
-msgid "Updating %s."
-msgstr "%sを更新する。"
-
-#. CONTEXT: alternate installation: message indicating the action that will be taken
-#. CONTEXT: installer: message indicating the action that will be taken
-#, c-format
-msgid "Updating existing %s installation."
-msgstr "既存の %s インストールを更新する。"
-
-#. CONTEXT: installer: start the upgrade process
-msgid "Upgrade"
-msgstr ""
-
-#. CONTEXT: configuration: classical music: use work/movement
-msgid "Use Work and Movement"
-msgstr ""
-
-#. CONTEXT: configuration: audio source: the client or server user
-msgid "User"
-msgstr ""
-
-#. CONTEXT: configuration: remote control: the user ID for sign-on to remote control
-msgid "User ID"
-msgstr "ユーザーID"
-
-#. CONTEXT: configuration: options associated with the user interface
-msgid "User Interface"
-msgstr "ユーザーインターフェース"
-
-#. CONTEXT: installer: status message
-msgid "Verification complete."
-msgstr "検証完了。"
-
-#. CONTEXT: installer: status message
-msgid "Verification failed."
-msgstr "検証は失敗した。"
-
-#. CONTEXT: installer: status message
-msgid "Verifying installation."
-msgstr "インストールの確認。"
-
-#. CONTEXT: configuration file: dance
-msgid "Viennese Waltz"
-msgstr "ウィーン・ワルツ"
-
-#. CONTEXT: configuration: show-marquee: visible
-msgid "Visible"
-msgstr "可視"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: playerui: The current volume of the song
-msgid "Volume"
-msgstr "ボリューム"
-
-#. CONTEXT: label: volume adjustment for playback
-msgid "Volume Adjustment"
-msgstr "音量調整"
-
-#. CONTEXT: configuration file: dance
-msgid "Waltz"
-msgstr "ワルツ"
-
-#. CONTEXT: configuration: level: title of the weight column
-#. CONTEXT: configuration: rating: title of the weight column
-#. CONTEXT: playlist management: tag weight
-msgid "Weight"
-msgstr "重量"
-
-#. CONTEXT: configuration file: dance
-msgid "West Coast Swing"
-msgstr "ウエストコースト・スウィング"
-
-#. CONTEXT: bpm counter: instructions, line 2
-msgid "When the BPM value is stable, select the Save button."
-msgstr "BPMの値が安定したら、Saveボタンを選択します。"
-
-#. CONTEXT: configuration: player interface: Windows Media Player
-msgid "Windows Media Player"
-msgstr ""
-
-#. CONTEXT: label: work (a musical work)
-msgid "Work"
-msgstr ""
-
-#. CONTEXT: configuration: which audio tags will be written to the audio file
-msgid "Write Audio File Tags"
-msgstr "オーディオファイルの書き込み タグ"
-
-#. CONTEXT: manage-ui: song editor menu: write audio tags
-msgid "Write Audio Tags"
-msgstr ""
-
-#. CONTEXT: database update: writes the tags in the database to the audio files
-msgid "Write Tags to Audio Files"
-msgstr "オーディオファイルにタグを書き込む"
-
-#. CONTEXT: database update: write tags to audio files: help text
-msgid ""
-"Writes the audio file tags using the information from the BallroomDJ "
-"database."
-msgstr "BallroomDJ データベースの情報を使って、オーディオファイルのタグを書き込みます。"
-
-#. CONTEXT: configuration: dialog: XML file types
-msgid "XML Files"
-msgstr "XMLファイル"
-
-#. CONTEXT: configuration file: dance type
-msgid "club"
-msgstr "クラブ"
-
-#. CONTEXT: The prefix name for an audio file marked for deletion (may be abbreviated)
-msgid "delete"
-msgstr "削除"
-
-#. CONTEXT: configuration: dance speed
-msgid "fast"
-msgstr "速い"
-
-#. CONTEXT: configuration file: dance type
-msgid "latin"
-msgstr "ラテン"
-
-#. CONTEXT: configuration: dance speed
-msgid "normal"
-msgstr "通常"
-
-#. CONTEXT: The suffix for an original audio file (may be abbreviated)
-msgid "original"
-msgstr "オリジナル"
-
-#. CONTEXT: configuration: dance speed
-msgid "slow"
-msgstr "遅い"
-
-#. CONTEXT: configuration file: dance type
-msgid "standard"
-msgstr "標準"
-
-#. CONTEXT: The name of the 'standardrounds' playlist file
-msgid "standardrounds"
-msgstr "スタンダードラウンド"
+msgid "%s Player is Active"
+msgstr "%s再生がアクティブです"
 
 #. CONTEXT: title of a getting started help section
 msgid "How to get Support"

@@ -26,7 +26,7 @@ export dt
 
 echo "-- $(date +%T) extracting"
 # */*/*.c is not needed, as those are the check modules.
-xgettext -s -d bdj4 \
+xgettext -d bdj4 \
     --from-code=UTF-8 \
     --language=C \
     --add-comments=CONTEXT: \
