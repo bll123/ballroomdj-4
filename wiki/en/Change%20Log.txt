@@ -4,14 +4,16 @@
 
 <!--
 
-**4.17.3.3 2025-11---**
+**4.17.3.3 2025-11-3**
+
+-->
+
+**4.17.3.3 2025-11-3**
 
 * Changes:
     * Configuration: UI Theme and Marquee Theme are now drop-downs.
     * Configuration: Locale is now a drop-down.
     * Configuration: The configuration topic selection can now scroll when the window size is reduced.
-
--->
 
 **4.17.3.2 2025-10-27**
 
@@ -1357,4 +1359,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-10-27 08:13:30; BDJ4 version 4.17.3.2)_
+<br>_(Updated 2025-11-03 13:34:39; BDJ4 version 4.17.3.3)_

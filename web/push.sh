@@ -65,8 +65,8 @@ count=$(ls -1 $INSTSTAGE/bdj4-installer-* | grep -- "-${VERSION}" | wc -l)
 # 2024-1-15 manjaro linux (arch) dropped (icu updated)
 # 2024-8-11 debian-11 dropped
 # 2025-8-9 debian-13 added
-# 2025-10-11 opensuse-16 added
-if [[ $count -ne 7 ]]; then
+# 2025-10-11 opensuse-16 added then dropped 2025-11-3, not stable
+if [[ $count -ne 6 ]]; then
   echo "Failed: not all platforms built."
   exit 1
 fi
