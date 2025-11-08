@@ -128,6 +128,7 @@ confuiSaveiTunes (confuigui_t *gui)
 void
 confuiBuildUIiTunes (confuigui_t *gui)
 {
+  uiwcont_t     *sw;
   char          tmp [200];
   char          tbuff [MAXPATHLEN];
   const char    *tdata;
@@ -146,13 +147,21 @@ confuiBuildUIiTunes (confuigui_t *gui)
   int           cidx;
 
   logProcBegin ();
+
+  sw = uiCreateScrolledWindow (200);
+  uiWidgetExpandHoriz (sw);
+  uiWidgetExpandVert (sw);
+
   mvbox = uiCreateVertBox ();
+  uiWindowPackInWindow (sw, mvbox);
+  uiWidgetExpandHoriz (mvbox);
+  uiWidgetAlignHorizFill (mvbox);
 
   szgrp = uiCreateSizeGroupHoriz ();
   szgrpr = uiCreateSizeGroupHoriz ();
 
-  /* filter display */
-  confuiMakeNotebookTab (mvbox, gui, ITUNES_NAME, CONFUI_ID_NONE);
+  /* itunes */
+  confuiMakeNotebookTab (sw, gui, ITUNES_NAME, CONFUI_ID_NONE);
 
   *tbuff = '\0';
   tdata = bdjoptGetStr (OPT_M_DIR_ITUNES_MEDIA);
@@ -279,6 +288,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
   for (int i = 0; i < ITUNES_FIELD_COL_MAX; ++i) {
     uiwcontFree (vbox [i]);
   }
+  uiwcontFree (sw);
   uiwcontFree (mvbox);
   uiwcontFree (mhbox);
   uiwcontFree (szgrp);

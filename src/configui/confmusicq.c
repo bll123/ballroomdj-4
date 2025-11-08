@@ -52,6 +52,7 @@ confuiInitMusicQs (confuigui_t *gui)
 void
 confuiBuildUIMusicQs (confuigui_t *gui)
 {
+  uiwcont_t     *sw;
   uiwcont_t     *vbox;
   uiwcont_t     *szgrp;
   uiwcont_t     *szgrpB;
@@ -61,12 +62,19 @@ confuiBuildUIMusicQs (confuigui_t *gui)
 
   gui->inbuild = true;
 
+  sw = uiCreateScrolledWindow (200);
+  uiWidgetExpandHoriz (sw);
+  uiWidgetExpandVert (sw);
+
+  vbox = uiCreateVertBox ();
+  uiWindowPackInWindow (sw, vbox);
+  uiWidgetExpandHoriz (vbox);
+  uiWidgetAlignHorizFill (vbox);
+
   szgrp = uiCreateSizeGroupHoriz ();
   szgrpB = uiCreateSizeGroupHoriz ();
 
-  vbox = uiCreateVertBox ();
-
-  confuiMakeNotebookTab (vbox, gui,
+  confuiMakeNotebookTab (sw, gui,
       /* CONTEXT: configuration: music queue configuration*/
       _("Music Queues"), CONFUI_ID_NONE);
 
@@ -161,6 +169,7 @@ confuiBuildUIMusicQs (confuigui_t *gui)
   gui->inbuild = false;
   confuiMusicQChg (gui);   // calls active-chg
 
+  uiwcontFree (sw);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpB);
