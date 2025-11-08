@@ -15,6 +15,7 @@
 #include "listmodule.h"
 #include "log.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 #include "slist.h"
 
 /* keyed by a string */

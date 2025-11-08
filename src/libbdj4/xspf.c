@@ -18,6 +18,7 @@
 #include "filedata.h"
 #include "ilist.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 #include "musicdb.h"
 #include "nlist.h"
 #include "pathdisp.h"

@@ -15,6 +15,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
+#include "nodiscard.h"
 #include "pathbld.h"
 
 typedef struct autosel {

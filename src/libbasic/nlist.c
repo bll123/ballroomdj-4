@@ -14,6 +14,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
+#include "nodiscard.h"
 #include "bdjstring.h"
 
 /* key/value list, keyed by a nlistidx_t */

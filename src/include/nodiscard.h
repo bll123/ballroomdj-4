@@ -3,9 +3,12 @@
  */
 #pragma once
 
-#if __has_cpp_attribute( nodiscard )
-# define NODISCARD [[nodiscard]]
-#else
-# define NODISCARD
+#define NODISCARD
+#if __STDC_VERSION__ < 202000
+# undef NODISCARD
+# define NODISCARD __attribute__ ((warn_unused_result))
 #endif
-
+#if __has_cpp_attribute( nodiscard ) || __STDC_VERSION__ >= 202000
+# undef NODISCARD
+# define NODISCARD [[nodiscard]]
+#endif

@@ -23,6 +23,7 @@
 #include "mdebug.h"
 #include "musicdb.h"
 #include "nlist.h"
+#include "nodiscard.h"
 #include "orgutil.h"
 #include "pathinfo.h"
 #include "pathbld.h"

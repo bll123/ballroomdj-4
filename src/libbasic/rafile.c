@@ -20,6 +20,7 @@
 #include "lock.h"
 #include "log.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 #include "pathbld.h"
 #include "rafile.h"
 #include "tmutil.h"

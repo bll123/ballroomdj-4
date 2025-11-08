@@ -22,6 +22,7 @@
 #include "ilist.h"
 #include "log.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 #include "musicdb.h"
 #include "orgutil.h"
 #include "pathinfo.h"

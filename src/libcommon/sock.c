@@ -63,6 +63,7 @@
 #include "bdjstring.h"
 #include "log.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 #include "sock.h"
 #include "tmutil.h"
 

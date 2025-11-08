@@ -19,6 +19,7 @@
 #include "ilist.h"
 #include "log.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 #include "pathbld.h"
 #include "slist.h"
 

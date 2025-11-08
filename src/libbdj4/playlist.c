@@ -25,6 +25,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
+#include "nodiscard.h"
 #include "musicdb.h"
 #include "pathbld.h"
 #include "pathinfo.h"
@@ -156,6 +157,7 @@ playlistLoad (const char *fname, musicdb_t *musicdb, grouping_t *grouping)
   bool          fixbpm;
   dance_t       *dances;
 
+logStderr ("pl: load %s\n", fname);
   if (fname == NULL) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: null");
     return NULL;
@@ -164,6 +166,7 @@ playlistLoad (const char *fname, musicdb_t *musicdb, grouping_t *grouping)
   pathbldMakePath (tfn, sizeof (tfn), fname,
       BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
   if (! fileopFileExists (tfn)) {
+logStderr ("pl: no-file %s\n", fname);
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Missing playlist-pl %s", tfn);
     return NULL;
   }
@@ -195,6 +198,7 @@ playlistLoad (const char *fname, musicdb_t *musicdb, grouping_t *grouping)
     pathbldMakePath (tfn, sizeof (tfn), fname,
         BDJ4_PL_DANCE_EXT, PATHBLD_MP_DREL_DATA);
     if (! fileopFileExists (tfn)) {
+logStderr ("pl: no-pl-dance %s\n", fname);
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Missing playlist-dance %s", tfn);
       playlistFree (pl);
       return NULL;
@@ -203,6 +207,7 @@ playlistLoad (const char *fname, musicdb_t *musicdb, grouping_t *grouping)
     pl->pldancesdf = datafileAllocParse ("playlist-dances", DFTYPE_INDIRECT, tfn,
         playlistdancedfkeys, pldancedfcount, DF_NO_OFFSET, NULL);
     if (pl->pldancesdf == NULL) {
+logStderr ("pl: bad-pl-dance %s\n", fname);
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Bad playlist-dance %s", tfn);
       playlistFree (pl);
       return NULL;
@@ -271,9 +276,11 @@ playlistLoad (const char *fname, musicdb_t *musicdb, grouping_t *grouping)
   ilistDumpInfo (pl->pldances);
 
   if (type == PLTYPE_SONGLIST || type == PLTYPE_PODCAST) {
+logStderr ("pl: load-songlist %s\n", fname);
     logMsg (LOG_DBG, LOG_IMPORTANT, "songlist: load songlist %s", fname);
     pl->songlist = songlistLoad (fname);
     if (pl->songlist == NULL) {
+logStderr ("pl: missing-songlist %s\n", fname);
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: missing songlist %s", tfn);
       playlistFree (pl);
       return NULL;

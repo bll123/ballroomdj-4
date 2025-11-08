@@ -17,6 +17,7 @@
 #include "ilist.h"
 #include "log.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 #include "pathbld.h"
 #include "pathinfo.h"
 #include "songlist.h"
@@ -71,6 +72,7 @@ songlistLoad (const char *fname)
   sl = songlistAlloc (fname);
 
   if (! fileopFileExists (sl->path)) {
+logStderr ("songlist: missing %s\n", fname);
     // logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: songlist: missing %s", sl->path);
     songlistFree (sl);
     return NULL;

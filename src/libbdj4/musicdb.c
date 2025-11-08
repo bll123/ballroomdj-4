@@ -24,6 +24,7 @@
 #include "mdebug.h"
 #include "musicdb.h"
 #include "nlist.h"
+#include "nodiscard.h"
 #include "pathbld.h"
 #include "rafile.h"
 #include "slist.h"

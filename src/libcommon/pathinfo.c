@@ -17,6 +17,7 @@
 #endif
 
 #include "mdebug.h"
+#include "nodiscard.h"
 #include "pathinfo.h"
 
 #define PATHINFO_DEBUG 0

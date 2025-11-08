@@ -14,6 +14,7 @@
 #include "dance.h"
 #include "log.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 #include "musicdb.h"
 #include "musicq.h"
 #include "queue.h"

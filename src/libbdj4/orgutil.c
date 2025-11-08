@@ -27,6 +27,7 @@
 #include "genre.h"
 #include "log.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 #include "orgutil.h"
 #include "pathinfo.h"
 #include "rating.h"

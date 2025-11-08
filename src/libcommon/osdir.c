@@ -23,6 +23,7 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 #include "osdir.h"
 #include "osutils.h"
 

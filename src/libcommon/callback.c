@@ -14,6 +14,7 @@
 #include "callback.h"
 #include "log.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 
 enum {
   CB_IDENT_VOID     = 0xaa0064696f764243,

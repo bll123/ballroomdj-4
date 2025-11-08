@@ -17,6 +17,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "musicdb.h"
+#include "nodiscard.h"
 #include "pathinfo.h"
 #include "podcast.h"
 #include "podcastutil.h"

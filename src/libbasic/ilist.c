@@ -17,6 +17,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
+#include "nodiscard.h"
 #include "slist.h"
 
 static nlist_t *ilistGetDatalist (ilist_t *list, ilistidx_t ikey, int gsflag);

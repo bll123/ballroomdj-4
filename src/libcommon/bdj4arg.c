@@ -23,6 +23,7 @@
 
 #include "bdj4arg.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 #include "osutils.h"
 
 typedef struct bdj4arg {

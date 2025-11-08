@@ -17,6 +17,7 @@
 #include "istring.h"
 #include "log.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 #include "pathbld.h"
 #include "rating.h"
 #include "slist.h"

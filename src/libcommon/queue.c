@@ -28,6 +28,7 @@
 #include "bdjstring.h"
 #include "log.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 #include "queue.h"
 
 enum {

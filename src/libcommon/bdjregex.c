@@ -11,6 +11,7 @@
 
 #include "bdjregex.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 
 typedef struct bdjregex {
   GRegex  *regex;

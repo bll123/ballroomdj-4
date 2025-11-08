@@ -26,6 +26,7 @@
 #include "fileop.h"
 #include "fileshared.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 #include "osutils.h"
 #include "sysvars.h"
 

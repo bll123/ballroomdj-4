@@ -4,12 +4,13 @@
 
 <!--
 
-**4.17.3.4 2025-11---**
+**4.17.4 2025-11---**
 
 * Bug Fixes:
-    * Configuration: Improve notebook arrow colors.
+    * PENDING Player: Reload: Fix.
 * Changes:
-    * Configuration: Add scrollbars so that the window may be shrunk.
+    * Configuration: Add scrollbars (itunes, music queue) so that the window may be shrunk.
+    * Configuration: Improve notebook arrow colors.
 
 -->
 

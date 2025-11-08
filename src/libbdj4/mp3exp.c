@@ -23,6 +23,7 @@
 #include "mp3exp.h"
 #include "musicdb.h"
 #include "nlist.h"
+#include "nodiscard.h"
 #include "pathinfo.h"
 #include "slist.h"
 #include "song.h"

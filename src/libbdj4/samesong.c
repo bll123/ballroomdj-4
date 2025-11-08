@@ -13,6 +13,7 @@
 #include "mdebug.h"
 #include "musicdb.h"
 #include "nlist.h"
+#include "nodiscard.h"
 #include "samesong.h"
 #include "slist.h"
 #include "song.h"

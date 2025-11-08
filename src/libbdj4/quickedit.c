@@ -12,6 +12,7 @@
 #include "bdj4.h"
 #include "datafile.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 #include "pathbld.h"
 #include "quickedit.h"
 

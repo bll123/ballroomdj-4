@@ -392,6 +392,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_QUEUE_PLAYLIST: {
+logStderr ("main: queue-playlist %s\n", args);
           logMsg (LOG_DBG, LOG_MSGS, "got: playlist-queue %s", args);
           mainQueuePlaylist (mainData, args);
           break;
@@ -474,6 +475,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_MUSICQ_MOVE_UP: {
+logStderr ("main: move-up\n");
           mainMusicqMove (mainData, args, MOVE_UP);
           break;
         }
@@ -486,14 +488,17 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_MUSICQ_TRUNCATE: {
+logStderr ("main: truncate %s\n", args);
           mainMusicqClear (mainData, args);
           break;
         }
         case MSG_MUSICQ_INSERT: {
+logStderr ("main: insert %s\n", args);
           mainMusicqInsert (mainData, routefrom, args);
           break;
         }
         case MSG_MUSICQ_SET_PLAYBACK: {
+logStderr ("main: set-playback %s\n", args);
           mainMusicqSetPlayback (mainData, args);
           break;
         }
@@ -1336,14 +1341,17 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
   musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
 
   mi = mainParseQueuePlaylist (mainData, args, &plname, &editmode);
+logStderr ("main: q-pl: mi: %d %s edit:%d\n", mi, plname, editmode);
 
   playlist = playlistLoad (plname, mainData->musicdb, mainData->grouping);
   if (playlist == NULL) {
+logStderr ("main: q-pl: load failed\n");
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Queue Playlist failed: %s", plname);
     return;
   }
 
   if (! playlistCheck (playlist)) {
+logStderr ("main: q-pl: bad pl\n");
     logMsg (LOG_ERR, LOG_IMPORTANT, "bad playlist: %s", plname);
     playlistFree (playlist);
     return;
@@ -1362,6 +1370,7 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
 
   plitem = mainPlaylistItemCache (mainData, playlist, globalCounter++);
   queuePush (mainData->playlistQueue [mi], plitem);
+logStderr ("main: q-pl: push pl\n");
   logMsg (LOG_DBG, LOG_INFO, "push pl %s", plname);
   mainMusicQueueFill (mainData, mi);
   mainMusicQueuePrep (mainData, mi);
@@ -1410,6 +1419,7 @@ mainMusicQueueFill (maindata_t *mainData, int mqidx)
   if (playlist != NULL) {
     pltype = (pltype_t) playlistGetConfigNum (playlist, PLAYLIST_TYPE);
     editmode = playlistGetEditMode (playlist);
+logStderr ("main: fill: have pl %s\n", playlistGetName (playlist));
   }
 
   playerqLen = bdjoptGetNum (OPT_G_PLAYERQLEN);
@@ -1422,10 +1432,13 @@ mainMusicQueueFill (maindata_t *mainData, int mqidx)
 
   if (currlen == 0 &&
       mainData->musicqPlayIdx != mqidx) {
+    logMsg (LOG_DBG, LOG_INFO, "fill: push empty head");
+logStderr ("main: fill: push empty head\n");
     musicqPushHeadEmpty (mainData->musicQueue, mqidx);
     ++currlen;
   }
 
+logStderr ("main: fill: %d < %d\n", currlen, playerqLen);
   logMsg (LOG_DBG, LOG_BASIC, "fill: %d < %d", currlen, playerqLen);
 
   stopTime = playlistGetConfigNum (playlist, PLAYLIST_STOP_TIME);
@@ -1437,6 +1450,7 @@ mainMusicQueueFill (maindata_t *mainData, int mqidx)
     nStopTime = mainCalcStopTime (stopTime);
     stopatflag = mainCheckMusicQStopTime (mainData, nStopTime, mqidx);
   }
+logStderr ("main: fill: stopatflag: %d\n", stopatflag);
 
   /* want current + playerqLen songs */
   while (playlist != NULL && currlen <= playerqLen && stopatflag == false) {
@@ -1445,11 +1459,15 @@ mainMusicQueueFill (maindata_t *mainData, int mqidx)
     mainData->musicqLookupIdx = mqidx;
     song = playlistGetNextSong (playlist, currlen,
         mainMusicQueueLookup, mainData);
+if (song == NULL) {
+logStderr ("main: fill: null-song\n");
+}
 
     if (song != NULL) {
       logMsg (LOG_DBG, LOG_INFO, "push song to musicq");
       dur = mainCalculateSongDuration (mainData, song,
           plitem->playlistIdx, mqidx, MAIN_CALC_WITH_SPEED);
+logStderr ("main: fill: push %d %s\n", mqidx, songGetStr (song, TAG_URI));
       musicqPush (mainData->musicQueue, mqidx,
           songGetNum (song, TAG_DBIDX), plitem->playlistIdx, dur);
       mainData->musicqChanged [mqidx] = MAIN_CHG_START;

@@ -21,6 +21,7 @@
 #include "dirlist.h"
 #include "fileop.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 #include "slist.h"
 #include "osdir.h"
 #include "osutils.h"

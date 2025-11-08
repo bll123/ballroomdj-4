@@ -20,6 +20,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
+#include "nodiscard.h"
 #include "slist.h"
 #include "tmutil.h"
 

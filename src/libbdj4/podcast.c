@@ -17,6 +17,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
+#include "nodiscard.h"
 #include "podcast.h"
 
 enum {

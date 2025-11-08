@@ -18,6 +18,7 @@
 #include "mdebug.h"
 #include "msgparse.h"
 #include "nlist.h"
+#include "nodiscard.h"
 
 static void msgparseMusicQueueDispFree (void *data);
 

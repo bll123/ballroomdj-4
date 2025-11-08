@@ -22,6 +22,7 @@
 #include "level.h"
 #include "log.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 #include "musicdb.h"
 #include "nlist.h"
 #include "pathbld.h"

@@ -23,6 +23,7 @@
 #include "conn.h"
 #include "log.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 #include "progstate.h"
 #include "sock.h"
 #include "sockh.h"

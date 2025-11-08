@@ -18,6 +18,7 @@
 #include "nlist.h"
 #include "log.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 #include "musicdb.h"
 #include "osrandom.h"
 #include "queue.h"

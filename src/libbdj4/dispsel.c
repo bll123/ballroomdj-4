@@ -13,6 +13,7 @@
 #include "dispsel.h"
 #include "fileop.h"
 #include "mdebug.h"
+#include "nodiscard.h"
 #include "pathbld.h"
 #include "slist.h"
 #include "tagdef.h"
