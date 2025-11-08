@@ -18,8 +18,8 @@ length.
 
 For the showcase music queue, in
 __Configure&nbsp;/&nbsp;Music&nbsp;Queues__, use the selector to
-choose a new music queue.  Set the name of the music queue to
-_Showcase_. Change the __Active__ selection to on. Set the
+choose a new music queue.  Set __Queue&nbsp;Name__ to _Showcase_. Turn
+the __Active__ and __Display__ selections on. Set the
 __Gap&nbsp;Between&nbsp;Songs__ to 0.0, and
 __Fade&nbsp;Out&nbsp;Time__ to 0.0. Make sure
 __Play&nbsp;Announcements__ is off.  Turn
@@ -29,7 +29,7 @@ is set to 6:00 minutes to allow the entire song to play.
 Close the configuration window to save the configuration changes.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![showcase-conf-musicq](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/showcase-conf-musicq-B.png)
+![showcase-conf-musicq](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/showcase-conf-musicq-C.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 #### Running the Showcase

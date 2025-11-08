@@ -33,7 +33,7 @@ __Delete__&nbsp;(![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButt
 button.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![edit-status](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditStatus-F.png)
+![edit-status](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditStatus-G.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Edit Status__</span> </div>
 
 [Wiki Home](Home)

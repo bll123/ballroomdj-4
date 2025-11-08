@@ -4,7 +4,12 @@
 
 <!--
 
-**4.17.3.3 2025-11-3**
+**4.17.3.4 2025-11---**
+
+* Bug Fixes:
+    * Configuration: Improve notebook arrow colors.
+* Changes:
+    * Configuration: Add scrollbars so that the window may be shrunk.
 
 -->
 

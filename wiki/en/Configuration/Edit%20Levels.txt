@@ -32,7 +32,7 @@ __Delete__&nbsp;(![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButt
 button to delete a level.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![edit-levels](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditLevels-F.png)
+![edit-levels](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditLevels-G.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Edit Levels__</span> </div>
 
 [Wiki Home](Home)

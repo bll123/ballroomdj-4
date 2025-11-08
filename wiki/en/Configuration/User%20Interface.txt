@@ -30,7 +30,7 @@ __Error Color__: The color used for error messages.
 __Song Mark Color__: The color used to mark songs in the song list.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![user-interface](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/UI-E.png)
+![user-interface](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/UI-F.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / User Interface__</span> </div>
 
 [Wiki Home](Home)

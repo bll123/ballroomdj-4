@@ -36,7 +36,7 @@ The _Unrated_ rating may not have its name
 changed.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![edit-ratings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditRatings-F.png)
+![edit-ratings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditRatings-G.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Edit Ratings__</span> </div>
 
 [Wiki Home](Home)

@@ -15,8 +15,8 @@ The example below outlines one method for playing a mixer.
 
 For the mixer music queue, in
 __Configure&nbsp;/&nbsp;Music&nbsp;Queues__, use the selector to
-choose a new music queue.  Change the name of the music queue to
-_Mixer_.  Change the __Active__ selection to on. Set the
+choose a new music queue.  Set __Queue&nbsp;Name__ to _Mixer_.  Turn
+the __Active__ and __Display__ selections on. Set the
 __Gap&nbsp;Between&nbsp;Songs__ to 0.0, and use a fast fade-out time.
 Also make sure __Play&nbsp;Announcements__ is off.  For this example
 the __Maximum&nbsp;Play&nbsp;Time__ is set to 1:30 minutes.
@@ -24,7 +24,7 @@ the __Maximum&nbsp;Play&nbsp;Time__ is set to 1:30 minutes.
 Close the configuration window to save the configuration changes.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![mixer-conf-musicq](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-conf-musicq-E.png)
+![mixer-conf-musicq](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-conf-musicq-F.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 #### Turn on the Extra Queues

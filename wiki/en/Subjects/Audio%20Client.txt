@@ -1,7 +1,7 @@
 [Wiki Home](Home)
 
 <span id="blurb" style="color:#4559bf;">_A BDJ4 client audio source is used to
-play songs from a remote location._</span>
+play songs from BDJ4 installed on a different computer._</span>
 
 [TOC]
 
@@ -34,7 +34,7 @@ The __Port__ must match what the server has configured.
 The __User__ and __Password__ must match what the server has configured.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![aud-client-conf](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/aud-client-conf-A.png)
+![aud-client-conf](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/aud-client-conf-B.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Audio Sources__</span> </div>
 
 References:

@@ -47,6 +47,9 @@ Leave the configuration window open.
 
 #### Choose how your music is organized
 
+___It is very important to choose the correct organization setting
+before building the BDJ4 database.___
+
 The organization is important so that BDJ4 can determine information
 about your songs when the database is built.  Most importantly, the
 dance associated with each song, which is not usually stored in the
@@ -92,7 +95,7 @@ Check that all the dances that you use are listed.  Add any dances you
 use that are missing from the list.  Also check to make sure the
 spelling of each dance matches what you use.  For example, _Waltz_ may
 need to be changed to _Slow&nbsp;Waltz_ or _English&nbsp;Waltz_.  Any
-dances that you do not use may be deleted.
+dances that you do not use may be removed.
 <br>__References:__
 <br>[Configuration&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances)
 

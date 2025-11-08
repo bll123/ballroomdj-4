@@ -23,7 +23,7 @@ Additional filters that may be selected are _Genre_,
 _Dance&nbsp;Level_, _Status_, _Favorite_, and _Playable&nbsp;Status_.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![dialogs](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Dialogs-A.png)
+![dialogs](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Dialogs-B.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Dialogs__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">

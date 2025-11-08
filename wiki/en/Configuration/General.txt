@@ -3,6 +3,16 @@
 <span id="blurb" style="color:#4559bf;">_The general tab provide settings that
 affect the entire BDJ4 application._</span>
 
+### Configuration
+
+In the configuration window, if the left side topic list does not fit
+within the window due to screen size or if the configuration window was
+shrunk in size, arrows will appear at the top and bottom of the topic
+list, allowing selection of the topic.
+
+Not all topics may appear in the window, and the selection arrows must
+be used to view all topics.
+
 ### Configure : General
 
 __Music Folder__: The main music folder where the music is found.
@@ -50,7 +60,7 @@ identification process and have registered an ACRCloud account, copy and
 paste the appropriate information into the configuration.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![General](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/General-L.png)
+![General](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/General-M.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / General__</span> </div>
 
 [Wiki Home](Home)

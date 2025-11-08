@@ -24,7 +24,7 @@ arrows&nbsp;(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-B.pn
 to change the order of the genres to match your preference.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![edit-genres](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditGenres-F.png)
+![edit-genres](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditGenres-G.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Edit Genres__</span> </div>
 
 [Wiki Home](Home)

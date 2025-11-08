@@ -37,7 +37,7 @@ __Information Color__: The color for the dance information display.
 __Upcoming Dance Color__: The color for the upcoming dances.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Marquee-H.png)
+![Marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Marquee-I.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Marquee__</span> </div>
 
 [Wiki Home](Home)
