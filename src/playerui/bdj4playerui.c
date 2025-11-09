@@ -143,8 +143,8 @@ typedef struct {
   mstime_t        clockCheck;
   uisongfilter_t  *uisongfilter;
   uiwcont_t       *wcont [PLUI_W_MAX];
-  int             reloadexpected;
-  int             reloadrcvd;
+  int             reloadexpected;   // how many music queues will be reloaded
+  int             reloadrcvd;       // how many music queues received
   nlistidx_t      lastLoc [MUSICQ_MAX];
   mp_musicqupdate_t *musicqupdate [MUSICQ_MAX];
   /* quick edit */
@@ -181,8 +181,8 @@ typedef struct {
   bool            mqfontsizeactive;
   bool            optionsalloc;
   bool            reloadinit;
-  bool            inreload;
-  bool            reloadchk;
+  bool            inreload;         // in the reload procedure
+  bool            reloadchk;        // reload checks must be done
   bool            startmainsent;
   bool            stopping;
   bool            uibuilt;
@@ -1203,6 +1203,8 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
             }
           }
 
+          /* every time the music queue changes, the reload data */
+          /* must be saved */
           pluiReloadSave (plui, musicqupdate->mqidx);
 
           if (musicqupdate->mqidx == MUSICQ_HISTORY) {
@@ -1991,11 +1993,18 @@ pluiReload (void *udata)
   plui->reloadexpected = 0;
   plui->reloadrcvd = 0;
 
-  plui->reloadexpected = 1;
   pluiReloadCurrent (plui);
-  plui->reloadexpected = 0;
 
   for (int mqidx = 0; mqidx < MUSICQ_DISP_MAX; ++mqidx) {
+    if (! bdjoptGetNumPerQueue (OPT_Q_DISPLAY, mqidx)) {
+      /* not displayed */
+      /* updates to non-displayed queues are ignored. */
+      /* there's no need to get any updates for them */
+      /* and it will muck up the expected count */
+      continue;
+    }
+
+    plui->reloadexpected += 1;
     snprintf (msg, sizeof (msg), "%d%c%d", mqidx, MSG_ARGS_RS, 0);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_TRUNCATE, msg);
 
@@ -2004,12 +2013,11 @@ pluiReload (void *udata)
     pathbldMakePath (tbuff, sizeof (tbuff),
         tmp, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
     if (fileopFileExists (tbuff)) {
+      plui->reloadexpected += 1;
       msgbuildQueuePlaylist (msg, sizeof (msg), mqidx, tmp, EDIT_FALSE);
       connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, msg);
-      plui->reloadexpected += 1;
     }
   }
-
 
   plui->inreload = false;
   return UICB_CONT;
@@ -2048,8 +2056,12 @@ pluiReloadCurrent (playerui_t *plui)
     dbidx = songGetNum (song, TAG_DBIDX);
     snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%" PRId32, tmqplayidx,
         MSG_ARGS_RS, 0, MSG_ARGS_RS, dbidx);
+
+    plui->reloadexpected += 1;
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
     snprintf (tbuff, sizeof (tbuff), "%d%c%d", tmqplayidx, MSG_ARGS_RS, 0);
+
+    plui->reloadexpected += 1;
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_MOVE_UP, tbuff);
   }
 
@@ -2116,8 +2128,10 @@ pluiReloadSaveCurrent (playerui_t *plui)
   if (plui->inreload) {
     return;
   }
-  if (plui->reloadchk && plui->reloadrcvd < plui->reloadexpected) {
-    return;
+  if (plui->reloadchk) {
+    if (plui->reloadrcvd < plui->reloadexpected) {
+      return;
+    }
   }
 
   pathbldMakePath (tbuff, sizeof (tbuff),

@@ -7,7 +7,8 @@
 **4.17.4 2025-11---**
 
 * Bug Fixes:
-    * PENDING Player: Reload: Fix.
+    * Player: Reload: Fix reload processing.
+    * Playlists: Fix incorrect flag.
 * Changes:
     * Configuration: Add scrollbars (itunes, music queue) so that the window may be shrunk.
     * Configuration: Improve notebook arrow colors.

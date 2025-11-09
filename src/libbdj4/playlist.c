@@ -158,7 +158,6 @@ playlistLoad (const char *fname, musicdb_t *musicdb, grouping_t *grouping)
   bool          fixbpm;
   dance_t       *dances;
 
-logStderr ("pl: load %s\n", fname);
   if (fname == NULL) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: null");
     return NULL;
@@ -167,7 +166,6 @@ logStderr ("pl: load %s\n", fname);
   pathbldMakePath (tfn, sizeof (tfn), fname,
       BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
   if (! fileopFileExists (tfn)) {
-logStderr ("pl: no-file %s\n", tfn);
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Missing playlist-pl %s", tfn);
     return NULL;
   }
@@ -183,10 +181,6 @@ logStderr ("pl: no-file %s\n", tfn);
   if (nlistGetNum (pl->plinfo, PLAYLIST_TAG_WEIGHT) < 0) {
     nlistSetNum (pl->plinfo, PLAYLIST_TAG_WEIGHT, BDJ4_DFLT_TAG_WEIGHT);
   }
-  /* 4.17.3 disable-group added */
-  if (nlistGetNum (pl->plinfo, PLAYLIST_DISABLE_GROUP) < 0) {
-    nlistSetNum (pl->plinfo, PLAYLIST_DISABLE_GROUP, false);
-  }
 
   nlistDumpInfo (pl->plinfo);
 
@@ -199,7 +193,6 @@ logStderr ("pl: no-file %s\n", tfn);
     pathbldMakePath (tfn, sizeof (tfn), fname,
         BDJ4_PL_DANCE_EXT, PATHBLD_MP_DREL_DATA);
     if (! fileopFileExists (tfn)) {
-logStderr ("pl: no-pl-dance %s\n", fname);
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Missing playlist-dance %s", tfn);
       playlistFree (pl);
       return NULL;
@@ -208,7 +201,6 @@ logStderr ("pl: no-pl-dance %s\n", fname);
     pl->pldancesdf = datafileAllocParse ("playlist-dances", DFTYPE_INDIRECT, tfn,
         playlistdancedfkeys, pldancedfcount, DF_NO_OFFSET, NULL);
     if (pl->pldancesdf == NULL) {
-logStderr ("pl: bad-pl-dance %s\n", fname);
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Bad playlist-dance %s", tfn);
       playlistFree (pl);
       return NULL;
@@ -277,11 +269,9 @@ logStderr ("pl: bad-pl-dance %s\n", fname);
   ilistDumpInfo (pl->pldances);
 
   if (type == PLTYPE_SONGLIST || type == PLTYPE_PODCAST) {
-logStderr ("pl: load-songlist %s\n", fname);
     logMsg (LOG_DBG, LOG_IMPORTANT, "songlist: load songlist %s", fname);
     pl->songlist = songlistLoad (fname);
     if (pl->songlist == NULL) {
-logStderr ("pl: missing-songlist %s\n", fname);
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: missing songlist %s", tfn);
       playlistFree (pl);
       return NULL;
@@ -294,7 +284,6 @@ logStderr ("pl: missing-songlist %s\n", fname);
     logMsg (LOG_DBG, LOG_IMPORTANT, "sequence: load sequence %s", fname);
     pl->sequence = sequenceLoad (fname);
     if (pl->sequence == NULL) {
-logStderr ("pl: missing sequence %s\n", fname);
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: missing sequence %s", fname);
       playlistFree (pl);
       return NULL;
@@ -318,7 +307,6 @@ logStderr ("pl: missing sequence %s\n", fname);
     logMsg (LOG_DBG, LOG_IMPORTANT, "songlist: load podcast %s", fname);
     pl->podcast = podcastLoad (fname);
     if (pl->podcast == NULL) {
-logStderr ("pl: missing podcast %s\n", fname);
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: missing podcast %s", tfn);
       playlistFree (pl);
       return NULL;
