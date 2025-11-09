@@ -85,6 +85,7 @@ static datafilekey_t playlistdfkeys [PLAYLIST_KEY_MAX] = {
   { "DANCELEVELHIGH", PLAYLIST_LEVEL_HIGH,        VALUE_NUM, levelConv, DF_NORM },
   { "DANCELEVELLOW",  PLAYLIST_LEVEL_LOW,         VALUE_NUM, levelConv, DF_NORM },
   { "DANCERATING",    PLAYLIST_RATING,            VALUE_NUM, ratingConv, DF_NORM },
+  /* disable-group is used for testing */
   { "DISABLEGROUP",   PLAYLIST_DISABLE_GROUP,     VALUE_NUM, convBoolean, DF_NORM },
   { "GAP",            PLAYLIST_GAP,               VALUE_NUM, NULL, DF_NORM },
   { "MAXPLAYTIME",    PLAYLIST_MAX_PLAY_TIME,     VALUE_NUM, NULL, DF_NORM },
@@ -166,7 +167,7 @@ logStderr ("pl: load %s\n", fname);
   pathbldMakePath (tfn, sizeof (tfn), fname,
       BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
   if (! fileopFileExists (tfn)) {
-logStderr ("pl: no-file %s\n", fname);
+logStderr ("pl: no-file %s\n", tfn);
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Missing playlist-pl %s", tfn);
     return NULL;
   }
@@ -293,6 +294,7 @@ logStderr ("pl: missing-songlist %s\n", fname);
     logMsg (LOG_DBG, LOG_IMPORTANT, "sequence: load sequence %s", fname);
     pl->sequence = sequenceLoad (fname);
     if (pl->sequence == NULL) {
+logStderr ("pl: missing sequence %s\n", fname);
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: missing sequence %s", fname);
       playlistFree (pl);
       return NULL;
@@ -316,6 +318,7 @@ logStderr ("pl: missing-songlist %s\n", fname);
     logMsg (LOG_DBG, LOG_IMPORTANT, "songlist: load podcast %s", fname);
     pl->podcast = podcastLoad (fname);
     if (pl->podcast == NULL) {
+logStderr ("pl: missing podcast %s\n", fname);
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: missing podcast %s", tfn);
       playlistFree (pl);
       return NULL;

@@ -21,6 +21,7 @@
 
 #include "fileop.h"
 #include "datafile.h"
+#include "list.h"
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
@@ -187,6 +188,12 @@ START_TEST(datafile_conv_boolean)
   ck_assert_int_eq (conv.num, 1);
 
   conv.invt = VALUE_STR;
+  conv.str = "yes";
+  convBoolean (&conv);
+  ck_assert_int_eq (conv.outvt, VALUE_NUM);
+  ck_assert_int_eq (conv.num, 1);
+
+  conv.invt = VALUE_STR;
   conv.str = "true";
   convBoolean (&conv);
   ck_assert_int_eq (conv.outvt, VALUE_NUM);
@@ -197,6 +204,48 @@ START_TEST(datafile_conv_boolean)
   convBoolean (&conv);
   ck_assert_int_eq (conv.outvt, VALUE_NUM);
   ck_assert_int_eq (conv.num, 1);
+
+  conv.invt = VALUE_STR;
+  conv.str = "off";
+  convBoolean (&conv);
+  ck_assert_int_eq (conv.outvt, VALUE_NUM);
+  ck_assert_int_eq (conv.num, 0);
+
+  conv.invt = VALUE_STR;
+  conv.str = "no";
+  convBoolean (&conv);
+  ck_assert_int_eq (conv.outvt, VALUE_NUM);
+  ck_assert_int_eq (conv.num, 0);
+
+  conv.invt = VALUE_STR;
+  conv.str = "false";
+  convBoolean (&conv);
+  ck_assert_int_eq (conv.outvt, VALUE_NUM);
+  ck_assert_int_eq (conv.num, 0);
+
+  conv.invt = VALUE_STR;
+  conv.str = "0";
+  convBoolean (&conv);
+  ck_assert_int_eq (conv.outvt, VALUE_NUM);
+  ck_assert_int_eq (conv.num, 0);
+
+  conv.invt = VALUE_NUM;
+  conv.num = 1;
+  convBoolean (&conv);
+  ck_assert_int_eq (conv.outvt, VALUE_STR);
+  ck_assert_str_eq (conv.str, "yes");
+
+  conv.invt = VALUE_NUM;
+  conv.num = 0;
+  convBoolean (&conv);
+  ck_assert_int_eq (conv.outvt, VALUE_STR);
+  ck_assert_str_eq (conv.str, "no");
+
+  conv.invt = VALUE_NUM;
+  conv.num = LIST_VALUE_INVALID;
+  convBoolean (&conv);
+  ck_assert_int_eq (conv.outvt, VALUE_STR);
+  ck_assert_str_eq (conv.str, "no");
 }
 END_TEST
 

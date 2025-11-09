@@ -80,37 +80,51 @@ enum {
   /* a) variousartists removed */
   /* b) mangled (by mutagen) musizbrainz tag */
   UPD_FIX_AF_TAGS,
+
   /* 2023-12 4.4.8 replaced fix-db-add-date */
   /* fix-db-add-date will be set to skip by default, the user will need */
   /* to edit the updater file to set this value to 'force' */
   /* the name was changed to disambiguate from the old name */
   UPD_FIX_DB_DATE_ADDED,
+
   /* 2023-5-22 4.3.2.4 */
   /* set-mpm changes the configure/general/bpm setting to mpm */
   /* only want to do this once */
   UPD_SET_MPM,
+
   /* 2023-6-24 4.3.3 */
   /* there are bad disc numbers present in some data, and some were */
   /* converted to negative numbers */
   UPD_FIX_DB_DISCNUM,
+
   /* 2024-4-26 4.9.0 */
   /* fix any bad date-added in the new format */
   UPD_FIX_DB_DATE_ADDED_B,
+
   /* 2024-9-2 4.12.1 */
   /* fix any locale dirs that are not symlinks (usually macos) */
   UPD_FIX_LOCALE,
+
   /* 2024-10-21 4.12.4 */
   /* fix windows fonts set to 'sans regular' */
   UPD_FIX_WIN_FONT,
+
   /* 2025-2-19 4.13.0 */
   /* groupings of all digits are cleared */
   UPD_FIX_DB_GROUPING,
+
   /* 2025-5-23 4.15.0 */
   /* some companies are using the title-sort field as the genre field */
   UPD_FIX_DB_TITLE_SORT,
+
   /* 2025-6-23 4.15.3 */
   /* .wav files did not have a duration calculation */
   UPD_FIX_DB_WAV_DURATION,
+
+  /* 2025-11-9 4.17.4 */
+  /* disable-group (for testing) was getting set to yes */
+  UPD_FIX_PL_DISABLE_GRP,
+
   UPD_MAX,
 };
 enum {
@@ -129,6 +143,7 @@ static datafilekey_t upddfkeys[] = {
   { "FIX_DB_TITLE_SORT",  UPD_FIX_DB_TITLE_SORT,    VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_WAV_DURATION",UPD_FIX_DB_WAV_DURATION,  VALUE_NUM, NULL, DF_NORM },
   { "FIX_LOCALE",         UPD_FIX_LOCALE,           VALUE_NUM, NULL, DF_NORM },
+  { "FIX_PL_DISABLE_GRP", UPD_FIX_PL_DISABLE_GRP,   VALUE_NUM, NULL, DF_NORM },
   { "FIX_WIN_FONT",       UPD_FIX_WIN_FONT,         VALUE_NUM, NULL, DF_NORM },
 };
 enum {
@@ -163,7 +178,8 @@ main (int argc, char *argv [])
   int         statusflags [UPD_MAX];
   int32_t     counters [UPD_MAX];
   bool        processflags [UPD_MAX];
-  bool        processaf= false;
+  bool        processaf = false;
+  bool        processpl = false;
   bool        processdb = false;
   bool        updlistallocated = false;
   datafile_t  *df;
@@ -466,9 +482,9 @@ main (int argc, char *argv [])
         bdjoptSetStr (OPT_M_LISTING_FONT, nfont);
         bdjoptchanged = true;
       }
-
-      nlistSetNum (updlist, UPD_FIX_WIN_FONT, UPD_COMPLETE);
     }
+
+    nlistSetNum (updlist, UPD_FIX_WIN_FONT, UPD_COMPLETE);
   }
 
   if (bdjoptchanged) {
@@ -783,6 +799,11 @@ main (int argc, char *argv [])
     processflags [UPD_FIX_DB_WAV_DURATION] = true;
     processdb = true;
   }
+  if (statusflags [UPD_FIX_PL_DISABLE_GRP] == UPD_NOT_DONE) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.17.4 : fix pl disable-grp");
+    processflags [UPD_FIX_PL_DISABLE_GRP] = true;
+    processpl = true;
+  }
 
   if (processaf || processdb) {
     mstime_t    dbmt;
@@ -1011,6 +1032,38 @@ main (int argc, char *argv [])
     dbClose (musicdb);
   }
 
+  if (processpl) {
+    slist_t     *plnames;
+    slistidx_t  pliteridx;
+    const char  *plnm;
+
+    /* this does not include 'History' */
+    /* history gets re-written all the time, should not be an issue */
+    plnames = playlistGetPlaylistNames (PL_LIST_ALL, NULL);
+    slistStartIterator (plnames, &pliteridx);
+    while ((plnm = slistIterateKey (plnames, &pliteridx)) != NULL) {
+      playlist_t  *pl;
+
+      pl = playlistLoad (plnm, NULL, NULL);
+      if (processflags [UPD_FIX_PL_DISABLE_GRP]) {
+        int         val;
+
+        val = playlistGetConfigNum (pl, PLAYLIST_DISABLE_GROUP);
+        if (val) {
+          playlistSetConfigNum (pl, PLAYLIST_DISABLE_GROUP, false);
+          playlistSave (pl, plnm);
+          counters [UPD_FIX_PL_DISABLE_GRP] += 1;
+        }
+      }
+
+      playlistFree (pl);
+    }
+
+    if (processflags [UPD_FIX_PL_DISABLE_GRP]) {
+      nlistSetNum (updlist, UPD_FIX_PL_DISABLE_GRP, UPD_COMPLETE);
+    }
+  }
+
   if (counters [UPD_FIX_DB_DATE_ADDED] > 0) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-date-added: %" PRId32, counters [UPD_FIX_DB_DATE_ADDED]);
   }
@@ -1028,6 +1081,9 @@ main (int argc, char *argv [])
   }
   if (counters [UPD_FIX_DB_WAV_DURATION] > 0) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-wav-duration: %" PRId32, counters [UPD_FIX_DB_WAV_DURATION]);
+  }
+  if (counters [UPD_FIX_PL_DISABLE_GRP] > 0) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: pl-disable-grp: %" PRId32, counters [UPD_FIX_PL_DISABLE_GRP]);
   }
 
   if (statusflags [UPD_FIX_LOCALE] == UPD_NOT_DONE) {
@@ -1049,8 +1105,8 @@ main (int argc, char *argv [])
       VOLREG_BDJ3_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CONFIG);
   fileopDelete (tbuff);
 
-  /* bdj4cleantmp will remove the volreg file and volreg lock and completely */
-  /* clean up the tmp directory */
+  /* bdj4cleantmp will remove the volreg file and volreg lock and */
+  /* completely clean up the tmp directory */
   pathbldMakePath (tbuff, sizeof (tbuff),
       "bdj4cleantmp", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_EXEC);
   targv [targc++] = tbuff;

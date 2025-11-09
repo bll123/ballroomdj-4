@@ -130,7 +130,8 @@ convBoolean (datafileconv_t *conv)
 
     num = conv->num;
     conv->str = "no";
-    if (num) {
+    /* 4.17.4 make sure invalid values are converted to false */
+    if (num != 0 && num != LIST_VALUE_INVALID) {
       conv->str = "yes";
     }
   }

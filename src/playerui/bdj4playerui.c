@@ -1996,7 +1996,6 @@ pluiReload (void *udata)
   plui->reloadexpected = 0;
 
   for (int mqidx = 0; mqidx < MUSICQ_DISP_MAX; ++mqidx) {
-logStderr ("plui: reload: truncate q: %d\n", mqidx);
     snprintf (msg, sizeof (msg), "%d%c%d", mqidx, MSG_ARGS_RS, 0);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_TRUNCATE, msg);
 
@@ -2005,7 +2004,6 @@ logStderr ("plui: reload: truncate q: %d\n", mqidx);
     pathbldMakePath (tbuff, sizeof (tbuff),
         tmp, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
     if (fileopFileExists (tbuff)) {
-logStderr ("plui: reload: found %s\n", tbuff);
       msgbuildQueuePlaylist (msg, sizeof (msg), mqidx, tmp, EDIT_FALSE);
       connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, msg);
       plui->reloadexpected += 1;
@@ -2035,7 +2033,6 @@ pluiReloadCurrent (playerui_t *plui)
       reloaddfkeys, RELOAD_DFKEY_COUNT, DF_NO_OFFSET, NULL);
   reloaddata = datafileGetList (reloaddf);
   if (reloaddata == NULL) {
-logStderr ("plui: reload-curr: fail\n");
     datafileFree (reloaddf);
     return;
   }
@@ -2049,11 +2046,9 @@ logStderr ("plui: reload-curr: fail\n");
   song = dbGetByName (plui->musicdb, nm);
   if (song != NULL) {
     dbidx = songGetNum (song, TAG_DBIDX);
-logStderr ("plui: reload-curr: insert\n");
     snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%" PRId32, tmqplayidx,
         MSG_ARGS_RS, 0, MSG_ARGS_RS, dbidx);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
-logStderr ("plui: reload-curr: move-up\n");
     snprintf (tbuff, sizeof (tbuff), "%d%c%d", tmqplayidx, MSG_ARGS_RS, 0);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_MOVE_UP, tbuff);
   }
