@@ -27,3 +27,5 @@ DANCELEVELHIGH
 ..Advanced
 TYPE
 ..songlist
+DISABLEGROUP
+..yes

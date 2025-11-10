@@ -1,0 +1,18 @@
+[Wiki Home](Home)
+
+### Data Privacy
+
+BallroomDJ&nbsp;4 (BDJ4) registers the software upon installation or
+upgrade.  If the computer is not connected to the internet during
+the installation, no registration information will be sent.
+
+The registration information includes your IP address (so that the
+user's country can be determined), your user account name and computer
+name.  Any other registration information is related to the BDJ4
+version and operating system.
+
+At all other times, BDJ4 never sends any telemetry or other
+information.
+
+[Wiki Home](Home)
+<br>_(Updated 2025-11-10 14:09:30; BDJ4 version 4.17.4)_

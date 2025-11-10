@@ -27,3 +27,5 @@ TAG_WEIGHT
 ..90
 TYPE
 ..songlist
+DISABLEGROUP
+..yes

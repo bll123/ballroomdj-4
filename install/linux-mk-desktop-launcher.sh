@@ -16,15 +16,14 @@ DVERS=3
 # A .desktop file for each of the different processes must be installed.
 # iconlist: key: executable-suffix data: icon-name
 declare -A ICONLIST
-ICONLIST=( altinst inst \
-    bpmcounter bpm \
-    configui config \
-    helperui help \
-    manageui manage \
-    marquee marquee \
-    playerui player \
-    subt subt \
-    )
+ICONLIST[altinst]=inst
+ICONLIST[bpmcounter]=bpm
+ICONLIST[configui]=config
+ICONLIST[helperui]=help
+ICONLIST[manageui]=manage
+ICONLIST[marquee]=marquee
+ICONLIST[playerui]=player
+ICONLIST[subt]=subt
 
 # the main .desktop for the installation or alternate installation
 # should be installed in both $HOME/Desktop

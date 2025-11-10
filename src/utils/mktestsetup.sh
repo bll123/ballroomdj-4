@@ -335,11 +335,9 @@ fi
 
 # run with the newinstall flag to make sure various variables are
 # set correctly.
-# remove the updater config to make sure all updates get run
-rm -f data/updater.txt
+# do not remove the updater.txt file...
+# the fix-pl-disable-grp should not be run
 ./bin/bdj4 --bdj4updater --newinstall
-# run again w/o newinstall to perform the updates
-./bin/bdj4 --bdj4updater
 
 # bdj4updater will change the itunes media dir
 tfn=data/${hostname}/bdjconfig.txt

@@ -4,16 +4,18 @@
 
 <!--
 
-**4.17.4 2025-11---**
+**4.17.4 2025-11-10**
+
+-->
+
+**4.17.4 2025-11-10**
 
 * Bug Fixes:
     * Player: Reload: Fix reload processing.
-    * Playlists: Fix incorrect flag.
+    * Playlists: Fix incorrect disable group flag.
 * Changes:
     * Configuration: Add scrollbars (itunes, music queue) so that the window may be shrunk.
     * Configuration: Improve notebook arrow colors.
-
--->
 
 **4.17.3.3 2025-11-3**
 
@@ -1366,4 +1368,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-11-08 08:59:21; BDJ4 version 4.17.3.3)_
+<br>_(Updated 2025-11-10 14:09:30; BDJ4 version 4.17.4)_
