@@ -121,38 +121,48 @@ if [[ $gr == Y ]]; then
   echo "-- BDJ4 application removed."
 fi
 
-echo "Uninstall MacPorts? "
-gr=$(getresponse)
-if [[ $gr == Y ]]; then
-  TMP=tmp-umacports.txt
+if [[ -d /opt/local/bin ]]; then
+  echo "Uninstall MacPorts? "
+  gr=$(getresponse)
+  if [[ $gr == Y ]]; then
+    TMP=tmp-umacports.txt
 
-  sudo -v
+    sudo -v
 
-  echo "-- getting ports list"
-  sudo port list installed > $TMP
-  sudo -v
-  echo "-- uninstalling all ports"
-  sudo port -N uninstall --follow-dependents $(cat $TMP)
-  sudo -v
-  echo "-- cleaning all ports"
-  sudo port -N clean --all $(cat $TMP)
-  sudo -v
-  rm -f ${TMP} > /dev/null 2>&1
-  for d in \
-      /opt/local \
-      /Applications/DarwinPorts \
-      /Applications/MacPorts \
-      /Library/LaunchDaemons/org.macports.* \
-      /Library/Receipts/DarwinPorts*.pkg \
-      /Library/Receipts/MacPorts*.pkg \
-      /Library/StartupItems/DarwinPortsStartup \
-      /Library/Tcl/darwinports1.0 \
-      /Library/Tcl/macports1.0 \
-      ~/.macports \
-      ; do
-    echo "-- removing ${d}"
-    sudo rm -rf ${d}
-  done
+    echo "-- getting ports list"
+    sudo port list installed > $TMP
+    sudo -v
+    echo "-- uninstalling all ports"
+    sudo port -N uninstall --follow-dependents $(cat $TMP)
+    sudo -v
+    echo "-- cleaning all ports"
+    sudo port -N clean --all $(cat $TMP)
+    sudo -v
+    rm -f ${TMP} > /dev/null 2>&1
+    for d in \
+        /opt/local \
+        /Applications/DarwinPorts \
+        /Applications/MacPorts \
+        /Library/LaunchDaemons/org.macports.* \
+        /Library/Receipts/DarwinPorts*.pkg \
+        /Library/Receipts/MacPorts*.pkg \
+        /Library/StartupItems/DarwinPortsStartup \
+        /Library/Tcl/darwinports1.0 \
+        /Library/Tcl/macports1.0 \
+        ~/.macports \
+        ; do
+      echo "-- removing ${d}"
+      sudo rm -rf ${d}
+    done
+  fi
+fi
+
+if [[ -d /opt/homebrew/bin ]]; then
+  echo "Uninstall Homebrew? "
+  gr=$(getresponse)
+  if [[ $gr == Y ]]; then
+    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)"
+  fi
 fi
 
 sudo -k

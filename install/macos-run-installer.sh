@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2025 Brad Lanam Pleasant Hill CA
 #
-ver=4
+ver=5
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -39,13 +39,13 @@ case $arch in
     ;;
 esac
 
-if [[ ! -f /opt/local/lib/libicui18n.dylib ]]; then
+if [[ -d /opt/local/lib && ! -f /opt/local/lib/libicui18n.dylib ]]; then
   echo "The latest macos-pre-install.sh script must be run."
   exit 1
 fi
 
 latest=""
-pattern="bdj4-installer-macos-${archtag}-4.[0-9]*.[0-9]*"
+pattern="bdj4-installer-macos-${archtag}-[a-z]*-4.[0-9]*.[0-9]*"
 
 for f in $pattern; do
   if [[ -f $f ]]; then

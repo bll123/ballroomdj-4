@@ -154,9 +154,10 @@ static char *cacertFiles [] = {
   /* updated each time a package is created, used on windows, macos */
   "templates/curl-ca-bundle.crt",
   "http/curl-ca-bundle.crt",
-  /* macos */
+  /* macos, these may be older than the supplied curl-ca-bundle.crt */
   "/opt/local/etc/openssl/cert.pem",
   "/opt/local/share/curl/curl-ca-bundle.crt",
+  "/opt/homebrew/etc/ca-certificates/cert.pem",
 };
 enum {
   CACERT_FILE_COUNT = (sizeof (cacertFiles) / sizeof (char *))

@@ -14,8 +14,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include <glib.h>
-
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "dirlist.h"
@@ -39,8 +37,6 @@ dirlistBasicDirList (const char *dirname, const char *extension)
   char          temp [MAXPATHLEN];
   char          *p;
   char          *end;
-  char          *cvtname;
-  gsize         bread, bwrite;
 
 
   if (! fileopIsDirectory (dirname)) {
@@ -73,18 +69,13 @@ dirlistBasicDirList (const char *dirname, const char *extension)
       pathInfoFree (pi);
     }
 
-    // ### can this be replaced with a call to the ICU library?
-    // macos-NFD to utf8
-    // the ICU library would need to convert to unicode and
-    // back again.
-    // glib is not a major issue.
-    cvtname = g_filename_to_utf8 (fname, strlen (fname),
-        &bread, &bwrite, NULL);
-    mdextalloc (cvtname);
-    if (cvtname != NULL) {
-      slistSetStr (fileList, cvtname, NULL);
-    }
-    mdfree (cvtname);   // allocated by glib
+    /* 2025-11-14 homebrew fails to do any conversion using */
+    /*    g_filename_to_utf8 (utf8-mac is unknown) */
+    /* but macports is not showing any conversion process happening, */
+    /* bread and bwrite are the same size */
+    /* so I guess no conversion is necessary? */
+    /* the filename display appears to be ok */
+    slistSetStr (fileList, fname, NULL);
     mdfree (fname);
   }
   osDirClose (dh);
@@ -101,10 +92,8 @@ dirlistRecursiveDirList (const char *dirname, int flags)
   slist_t       *fileList;
   queue_t       *dirQueue;
   char          temp [MAXPATHLEN];
-  char          *cvtname;
   char          *p;
   size_t        dirnamelen;
-  gsize         bread, bwrite;
 
   if (! fileopIsDirectory (dirname)) {
     return NULL;
@@ -129,30 +118,24 @@ dirlistRecursiveDirList (const char *dirname, int flags)
         continue;
       }
 
-      cvtname = g_filename_to_utf8 (fname, strlen (fname),
-          &bread, &bwrite, NULL);
-      mdextalloc (cvtname);
-      if (cvtname != NULL) {
-        snprintf (temp, sizeof (temp), "%s/%s", dir, cvtname);
-        if ((flags & DIRLIST_LINKS) == DIRLIST_LINKS &&
-            osIsLink (temp)) {
-          if ((flags & DIRLIST_FILES) == DIRLIST_FILES) {
-            p = temp + dirnamelen + 1;
-            slistSetStr (fileList, temp, p);
-          }
-        } else if (fileopIsDirectory (temp)) {
-          queuePush (dirQueue, mdstrdup (temp));
-          if ((flags & DIRLIST_DIRS) == DIRLIST_DIRS) {
-            p = temp + dirnamelen + 1;
-            slistSetStr (fileList, temp, p);
-          }
-        } else if (fileopFileExists (temp)) {
-          if ((flags & DIRLIST_FILES) == DIRLIST_FILES) {
-            p = temp + dirnamelen + 1;
-            slistSetStr (fileList, temp, p);
-          }
+      snprintf (temp, sizeof (temp), "%s/%s", dir, fname);
+      if ((flags & DIRLIST_LINKS) == DIRLIST_LINKS &&
+          osIsLink (temp)) {
+        if ((flags & DIRLIST_FILES) == DIRLIST_FILES) {
+          p = temp + dirnamelen + 1;
+          slistSetStr (fileList, temp, p);
         }
-        mdfree (cvtname);     // allocated by glib
+      } else if (fileopIsDirectory (temp)) {
+        queuePush (dirQueue, mdstrdup (temp));
+        if ((flags & DIRLIST_DIRS) == DIRLIST_DIRS) {
+          p = temp + dirnamelen + 1;
+          slistSetStr (fileList, temp, p);
+        }
+      } else if (fileopFileExists (temp)) {
+        if ((flags & DIRLIST_FILES) == DIRLIST_FILES) {
+          p = temp + dirnamelen + 1;
+          slistSetStr (fileList, temp, p);
+        }
       }
       mdfree (fname);
     }

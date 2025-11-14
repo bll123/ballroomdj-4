@@ -503,7 +503,14 @@ set (CMAKE_REQUIRED_LIBRARIES pthread)
 check_symbol_exists (pthread_create pthread.h _lib_pthread_create)
 unset (CMAKE_REQUIRED_LIBRARIES)
 
-set (CMAKE_REQUIRED_INCLUDES "/opt/local/include")
+if (EXISTS "/opt/local/include" AND
+    NOT EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew")
+  set (CMAKE_REQUIRED_INCLUDES "/opt/local/include")
+endif()
+if (EXISTS "/opt/homebrew/include" AND
+    EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew")
+  set (CMAKE_REQUIRED_INCLUDES "/opt/homebrew/include")
+endif()
 if (Intl_LIBRARY AND NOT Intl_LIBRARY STREQUAL "NOTFOUND")
   set (CMAKE_REQUIRED_LIBRARIES "${Intl_LIBRARY}")
 endif()

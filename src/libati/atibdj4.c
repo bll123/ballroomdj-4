@@ -105,10 +105,6 @@ void
 atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
     int filetype, int tagtype, int *rewrite)
 {
-  AVFormatContext   *ictx = NULL;
-  char              pbuff [100];
-  int32_t           duration = 0;
-  int               rc;
   bool              needduration = true;
 
   atibdj4LogVersion ();
@@ -164,6 +160,11 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
   /* 2025-9 : any unknown type will have need-duration set to true */
 
   if (needduration) {
+    AVFormatContext   *ictx = NULL;
+    char              pbuff [100];
+    int               rc;
+    int64_t           duration = 0;
+
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "duration: use avformat");
 
     if ((rc = atidata->avformat_open_input (&ictx, ffn, NULL, NULL))) {
@@ -175,14 +176,17 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
     }
 
     if ((rc = atidata->avformat_find_stream_info (ictx, NULL)) < 0) {
-      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "unable to load stream info %d %s", rc, ffn);
+      char tbuff [200];
+
+      atidata->av_strerror (rc, tbuff, sizeof (tbuff));
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "unable to load stream info %d %s %s", rc, tbuff, ffn);
       atidata->avformat_close_input (&ictx);
       return;
     }
 
     duration = ictx->duration;
     duration /= 1000;
-    snprintf (pbuff, sizeof (pbuff), "%" PRId32, duration);
+    snprintf (pbuff, sizeof (pbuff), "%" PRId64, duration);
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "duration: %s", pbuff);
     slistSetStr (tagdata, atidata->tagName (TAG_DURATION), pbuff);
 

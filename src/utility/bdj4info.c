@@ -148,48 +148,48 @@ main (int argc, char *argv [])
 
   /* C language: integer sizes */
 
-  fprintf (stdout, " i: bool   %d\n", (int) sizeof (bool));
-  fprintf (stdout, " i: short  %d %d\n", (int) sizeof (short), SHRT_MAX);
-  fprintf (stdout, " i: int    %d %ld\n", (int) sizeof (int), (long) INT_MAX);
-  fprintf (stdout, " i: long   %d %ld\n", (int) sizeof (long), (long) LONG_MAX);
-  fprintf (stdout, " i: pid_t  %d\n", (int) sizeof (pid_t));
-  fprintf (stdout, " i: size_t %d\n", (int) sizeof (size_t));
-  fprintf (stdout, " i: off_t  %d\n", (int) sizeof (off_t));
-  fprintf (stdout, " i: time_t %d\n", (int) sizeof (time_t));
-  fprintf (stdout, " i: uint32_t %d %" PRIu32 "\n", (int) sizeof (uint32_t), UINT32_MAX);
-  fprintf (stdout, " i: uint64_t %d %" PRIu64 "\n", (int) sizeof (uint64_t), UINT64_MAX);
+  fprintf (stdout, "  i: bool   %d\n", (int) sizeof (bool));
+  fprintf (stdout, "  i: short  %d %d\n", (int) sizeof (short), SHRT_MAX);
+  fprintf (stdout, "  i: int    %d %ld\n", (int) sizeof (int), (long) INT_MAX);
+  fprintf (stdout, "  i: long   %d %ld\n", (int) sizeof (long), (long) LONG_MAX);
+  fprintf (stdout, "  i: pid_t  %d\n", (int) sizeof (pid_t));
+  fprintf (stdout, "  i: size_t %d\n", (int) sizeof (size_t));
+  fprintf (stdout, "  i: off_t  %d\n", (int) sizeof (off_t));
+  fprintf (stdout, "  i: time_t %d\n", (int) sizeof (time_t));
+  fprintf (stdout, "  i: uint32_t %d %" PRIu32 "\n", (int) sizeof (uint32_t), UINT32_MAX);
+  fprintf (stdout, "  i: uint64_t %d %" PRIu64 "\n", (int) sizeof (uint64_t), UINT64_MAX);
 
   /* C language */
 
 #if _POSIX_C_SOURCE
-  fprintf (stdout, " c: _POSIX_C_SOURCE %ld\n", _POSIX_C_SOURCE);
+  fprintf (stdout, "  c: _POSIX_C_SOURCE %ld\n", _POSIX_C_SOURCE);
 #endif
 
   c = 0;
 #if defined (__STDC_LIB_EXT1__)
   c = 1;
 #endif
-  fprintf (stdout, " c: __STDC_LIB_EXT1__ %d\n", c);
+  fprintf (stdout, "  c: __STDC_LIB_EXT1__ %d\n", c);
 
   c = 0;
 #if defined(__STDC_NO_ATOMICS__)
   c = 1;
 #endif
-  fprintf (stdout, " c: __STDC_NO_ATOMICS__ %d\n", c);
+  fprintf (stdout, "  c: __STDC_NO_ATOMICS__ %d\n", c);
 
-  fprintf (stdout, " c: __STDC_VERSION__ %ld\n", __STDC_VERSION__);
+  fprintf (stdout, "  c: __STDC_VERSION__ %ld\n", __STDC_VERSION__);
 
   /* UI */
 #if BDJ4_UI_GTK3
-  fprintf (stdout, "ui: GTK3\n");
+  fprintf (stdout, " ui: GTK3\n");
 #endif
 #if BDJ4_UI_GTK4
-  fprintf (stdout, "ui: GTK4\n");
+  fprintf (stdout, " ui: GTK4\n");
 #endif
 #if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
-  fprintf (stdout, " i: gboolean %d\n", (int) sizeof (gboolean));
-  fprintf (stdout, " i: gint  %d\n", (int) sizeof (gint));
-  fprintf (stdout, " i: glong %d\n", (int) sizeof (glong));
+  fprintf (stdout, "  i: gboolean %d\n", (int) sizeof (gboolean));
+  fprintf (stdout, "  i: gint  %d\n", (int) sizeof (gint));
+  fprintf (stdout, "  i: glong %d\n", (int) sizeof (glong));
 #endif
 #if BDJ4_UI_NULL
   fprintf (stdout, "ui: null\n");
@@ -205,8 +205,20 @@ main (int argc, char *argv [])
 
     osGetEnv (envitems [i], tmp, sizeof (tmp));
     if (*tmp) {
-      fprintf (stdout, " e: %-20s %s\n", envitems [i], tmp);
+      fprintf (stdout, "  e: %-20s %s\n", envitems [i], tmp);
     }
+  }
+
+  /* other stuff */
+
+  if (fileopIsDirectory ("/opt/local/bin")) {
+    fprintf (stdout, "pkg: MacOS: MacPorts\n");
+  }
+  if (fileopIsDirectory ("/opt/homebrew/bin")) {
+    fprintf (stdout, "pkg: MacOS: Homebrew\n");
+  }
+  if (fileopFileExists ("data/macos.homebrew")) {
+    fprintf (stdout, "pkg: MacOS: Homebrew forced\n");
   }
 
   /* sysvars */
@@ -215,20 +227,20 @@ main (int argc, char *argv [])
     if (i == SV_TEMP_A || i == SV_TEMP_B) {
       continue;
     }
-    fprintf (stdout, " s: %-20s %s (%d)\n", sysvarsDesc (i), sysvarsGetStr (i), i);
+    fprintf (stdout, "  s: %-20s %s (%d)\n", sysvarsDesc (i), sysvarsGetStr (i), i);
   }
 
   /* sysvars numeric */
 
   for (int i = 0; i < SVL_MAX; ++i) {
-    fprintf (stdout, "sl: %-20s %" PRId64 " (%d)\n", sysvarslDesc (i), sysvarsGetNum (i), i);
+    fprintf (stdout, " sl: %-20s %" PRId64 " (%d)\n", sysvarslDesc (i), sysvarsGetNum (i), i);
   }
 
   for (int i = 0; i < BDJV_MAX; ++i) {
-    fprintf (stdout, " v: %-20s %s (%d)\n", bdjvarsDesc (i), bdjvarsGetStr (i), i);
+    fprintf (stdout, "  v: %-20s %s (%d)\n", bdjvarsDesc (i), bdjvarsGetStr (i), i);
   }
   for (int i = 0; i < BDJVL_MAX; ++i) {
-    fprintf (stdout, "vl: %-20s %" PRId64 " (%d)\n", bdjvarslDesc (i), bdjvarsGetNum (i), i);
+    fprintf (stdout, " vl: %-20s %" PRId64 " (%d)\n", bdjvarslDesc (i), bdjvarsGetNum (i), i);
   }
 
   bdjoptInit ();

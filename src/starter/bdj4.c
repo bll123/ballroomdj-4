@@ -400,8 +400,27 @@ main (int argc, char * argv[])
     p = npath;
     end = npath + sz;
     if (isMacOS ()) {
-      p = stpecpy (p, end, "/opt/local/bin:");
+      const char    *tdir;
+      const char    *tfn;
+
+      tdir = "/opt/local/bin";
+      if (fileopIsDirectory (tdir)) {
+        tfn = "data/macos.homebrew";
+        if (! fileopFileExists (tfn)) {
+          p = stpecpy (p, end, tdir);
+          p = stpecpy (p, end, ":");
+        }
+      }
+      tdir = "/opt/homebrew/bin";
+      if (fileopIsDirectory (tdir)) {
+        tfn = "data/macos.homebrew";
+        if (fileopFileExists (tfn)) {
+          p = stpecpy (p, end, tdir);
+          p = stpecpy (p, end, ":");
+        }
+      }
     }
+
     p = stpecpy (p, end, path);
     snprintf (pbuff, sizeof (pbuff), "%s/../plocal/bin",
         sysvarsGetStr (SV_BDJ4_DIR_EXEC));

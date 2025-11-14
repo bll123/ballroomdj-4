@@ -39,6 +39,13 @@ for arg in "$@"; do
       DBTEST=F
       INSTTEST=F
       ;;
+    --dbtest)
+      TBUILD=F
+      TCHECK=F
+      DBTEST=T
+      INSTTEST=F
+      TESTSUITE=F
+      ;;
     --ts)
       TBUILD=F
       TCHECK=F
@@ -82,8 +89,6 @@ if [[ $TBUILD == T ]]; then
 fi
 
 LOG=src/testall.log
-> $LOG
-
 
 function runTestSuite {
   pli=$1

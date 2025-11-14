@@ -24,7 +24,16 @@ set (CMAKE_MODULE_PATH utils)
 set (CMAKE_SHARED_LIBRARY_PREFIX "")
 set (CMAKE_STATIC_LIBRARY_PREFIX "")
 set (CMAKE_INSTALL_PREFIX "")
-set (CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/../plocal;/opt/local)
+if (EXISTS "/opt/local/lib" AND
+    (NOT EXISTS "/opt/homebrew/lib" OR
+    NOT EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew"))
+  set (CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/../plocal;/opt/local)
+endif()
+if (EXISTS "/opt/homebrew/lib" AND
+    (NOT EXISTS "/opt/local/lib" OR
+    EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew"))
+  set (CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/../plocal;/opt/homebrew)
+endif()
 
 # required for libcont/smtc.cpp
 set (CMAKE_CXX_STANDARD 20)
@@ -37,9 +46,17 @@ include_directories (
   ${PROJECT_SOURCE_DIR}/../plocal/include
 )
 
-include_directories (
-  SYSTEM /opt/local/include /usr/local/include
-)
+
+if (EXISTS "/opt/local/include")
+  include_directories (
+    SYSTEM /opt/local/include
+  )
+endif()
+if (EXISTS "/opt/homebrew/include")
+  include_directories (
+    SYSTEM /opt/homebrew/include
+  )
+endif()
 
 # This seems to work on linux.
 # cmake uses '@rpath' on macos -- does not work.

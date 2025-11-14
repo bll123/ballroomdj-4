@@ -9,6 +9,8 @@ Sonoma, Sequoia, Tahoe.
 <br>If you want an earlier version supported, please
 [let&nbsp;me&nbsp;know](en-Getting%20Help)
 
+Supported package managers as of 2025-11: MacPorts
+
 #### Updating BallroomDJ 4 : Make a Backup
 
 Be sure to exit BallroomDJ&nbsp;4 before creating a backup or updating the
@@ -63,7 +65,7 @@ Be sure to select the correct architecture (Intel or Apple Silicon).
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
-Also download the macos-run-install-v4.sh script from sourceforge.
+Also download the macos-run-install-v5.sh script from sourceforge.
 This script will set up and open the downloaded install package.
 
 Make sure to exit BDJ4 if it is already started.
@@ -72,7 +74,7 @@ Open a terminal (Finder / Go / Utilities / Terminal) and run
 this script using the following command:
 
     cd Downloads
-    bash macos-run-install-v4.sh
+    bash macos-run-install-v5.sh
 
 Choose the folder in which to install BallroomDJ&nbsp;4.  The
 $HOME/Applications/BDJ4.app folder will be pre-selected for you.

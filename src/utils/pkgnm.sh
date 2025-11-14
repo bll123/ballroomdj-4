@@ -9,6 +9,7 @@ pn_rlstag=""
 pn_devtag=""
 pn_datetag=""
 pn_archtag=""
+pn_supplib=""
 pn_date=$(date '+%Y%m%d')
 BUILD=""
 BUILDDATE=""
@@ -44,6 +45,7 @@ function pkgnmgetdata {
   pn_systype=$(uname -s)
   pn_arch=$(uname -m)
   pn_dist=""
+  pn_supplib=""
   case ${pn_systype} in
     Linux)
       pn_tag=linux
@@ -83,6 +85,12 @@ function pkgnmgetdata {
           pn_archtag=-applesilicon
           ;;
       esac
+      if [[ -d /opt/local/bin && ! -f data/macos.homebrew ]]; then
+        pn_supplib=-macports
+      fi
+      if [[ -d /opt/homebrew/bin && -f data/macos.homebrew ]]; then
+        pn_supplib=-homebrew
+      fi
       ;;
     MINGW64*)
       pn_tag=win64
@@ -124,7 +132,7 @@ function pkgsrcadditionalnm {
 
 function pkginstnm {
   pkgnmgetdata
-  nm=${pn_spkgnm}-installer-${pn_tag}${pn_dist}${pn_archtag}-${VERSION}${pn_rlstag}${pn_devtag}${pn_datetag}${pn_sfx}
+  nm=${pn_spkgnm}-installer-${pn_tag}${pn_dist}${pn_archtag}${pn_supplib}-${VERSION}${pn_rlstag}${pn_devtag}${pn_datetag}${pn_sfx}
   echo $nm
 }
 

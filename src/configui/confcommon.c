@@ -464,10 +464,21 @@ confuiGetThemeList (void)
       slistSetNum (sthemelist, "Windows-10-Acrylic:dark", 0);
     }
   } else {
+    const char    *tdir;
+
     /* for macos */
-    filelist = dirlistRecursiveDirList ("/opt/local/share/themes", DIRLIST_DIRS);
-    confuiGetThemeNames (sthemelist, filelist);
-    slistFree (filelist);
+    tdir = "/opt/local/share/themes";
+    if (fileopIsDirectory (tdir)) {
+      filelist = dirlistRecursiveDirList (tdir, DIRLIST_DIRS);
+      confuiGetThemeNames (sthemelist, filelist);
+      slistFree (filelist);
+    }
+    tdir = "/opt/homebrew/share/themes";
+    if (fileopIsDirectory (tdir)) {
+      filelist = dirlistRecursiveDirList (tdir, DIRLIST_DIRS);
+      confuiGetThemeNames (sthemelist, filelist);
+      slistFree (filelist);
+    }
 
     filelist = dirlistRecursiveDirList ("/usr/share/themes", DIRLIST_DIRS);
     confuiGetThemeNames (sthemelist, filelist);

@@ -112,6 +112,11 @@ ver=$(install/${fn}.sh --version)
 rsync -v -e ssh install/${fn}.sh \
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.sh
 
+fn=macos-pre-install-homebrew
+ver=$(install/${fn}.sh --version)
+rsync -v -e ssh install/${fn}.sh \
+    ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.sh
+
 fn=macos-run-installer
 ver=$(install/${fn}.sh --version)
 rsync -v -e ssh install/${fn}.sh \

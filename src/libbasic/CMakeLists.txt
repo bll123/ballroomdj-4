@@ -47,12 +47,10 @@ if (NOT APPLE AND NOT WIN32)
   )
 endif()
 target_include_directories (libbdj4basic
-  PRIVATE "${GLIB_INCLUDE_DIRS}"
   PRIVATE "${XML2_INCLUDE_DIRS}"
 )
 target_link_libraries (libbdj4basic PRIVATE
   libbdj4common
-  ${GLIB_LDFLAGS}
   ${XML2_LDFLAGS}
 )
 addIntlLibrary (libbdj4basic)
