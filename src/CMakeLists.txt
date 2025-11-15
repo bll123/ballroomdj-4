@@ -24,15 +24,16 @@ set (CMAKE_MODULE_PATH utils)
 set (CMAKE_SHARED_LIBRARY_PREFIX "")
 set (CMAKE_STATIC_LIBRARY_PREFIX "")
 set (CMAKE_INSTALL_PREFIX "")
+set (CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/../plocal")
 if (EXISTS "/opt/local/lib" AND
     (NOT EXISTS "/opt/homebrew/lib" OR
     NOT EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew"))
-  set (CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/../plocal;/opt/local)
+  set (CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};/opt/local")
 endif()
 if (EXISTS "/opt/homebrew/lib" AND
     (NOT EXISTS "/opt/local/lib" OR
     EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew"))
-  set (CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/../plocal;/opt/homebrew)
+  set (CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};/opt/homebrew")
 endif()
 
 # required for libcont/smtc.cpp
