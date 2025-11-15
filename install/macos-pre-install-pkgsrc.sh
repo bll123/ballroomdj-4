@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2025 Brad Lanam Pleasant Hill CA
 #
-ver=23
+ver=24
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -95,6 +95,8 @@ if [[ $oldmacos == T ]]; then
   exit 1
 fi
 
+arch=$(uname -m)
+
 if [[ $skipinst == F ]]; then
   pkgsrc_installed=F
   if [[ -d /opt/pkg ]]; then
@@ -107,7 +109,6 @@ if [[ $skipinst == F ]]; then
   fi
 
   if [[ $pkgsrc_installed == F ]]; then
-    arch=$(uname -m)
     if [[ $arch == arm64 ]]; then
       BOOTSTRAP_TAR="bootstrap-macos14.5-trunk-arm64-20251114.tar.gz"
       BOOTSTRAP_SHA="512a3c209fa0e83b4f614bc6ce11928c10b75cd0"
@@ -150,7 +151,6 @@ echo "-- Installing packages needed by BDJ4"
 sudo pkgin -y install \
     adwaita-icon-theme \
     curl \
-    chromaprint \
     flac \
     glib2 \
     gtk3+ \
@@ -158,12 +158,18 @@ sudo pkgin -y install \
     json-c \
     libgcrypt \
     libogg \
-    opus \
+    libopus \
     librsvg \
     libvorbis \
     libxml2 \
     opusfile \
     xorgproto
+
+sudo -v
+
+if [[ $arch == arm64 ]]; then
+  sudo pkgin -y install chromaprint
+fi
 
 sudo -v
 

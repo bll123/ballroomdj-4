@@ -47,12 +47,20 @@ fi
 ./src/utils/testrun.sh "$@"
 grc=$?
 
+TESTPKGSRC=T
+if [[ $grc == 0 && TESTPKGSRC == T && $os == macos ]]; then
+  echo "-- $(date +%T) pkgsrc build"
+  . ./src/utils/macospath.sh pkgsrc
+  ./src/utils/testrun.sh "$@"
+  grc=$?
+fi
+
 # homebrew will never work on intel
 # homebrew is not working on apple silicon, and I'm not inclined to debug it.
-TESTBREW=F
-if [[ $grc == 0 && TESTBREW == T && $os == macos ]]; then
+TESTHOMEBREW=F
+if [[ $grc == 0 && TESTHOMEBREW == T && $os == macos ]]; then
   echo "-- $(date +%T) homebrew build"
-  . ./src/utils/macospath.sh brew
+  . ./src/utils/macospath.sh homebrew
   ./src/utils/testrun.sh "$@"
   grc=$?
 fi

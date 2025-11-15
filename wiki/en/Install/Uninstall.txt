@@ -11,7 +11,7 @@ work out for your use.
 
 #### Mac OS
 
-Download the macos-uninstall-bdj4-v7.sh script from sourceforge.
+Download the macos-uninstall-bdj4-v8.sh script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
@@ -20,14 +20,14 @@ this script using the following command.
 
     :::bash
     cd Downloads
-    bash macos-uninstall-bdj4-v7.sh
+    bash macos-uninstall-bdj4-v8.sh
 
 This script performs the following actions.  The script will ask for
-confirmation before performing each action.
+positive confirmation before performing each action.
 
 * Removes the $HOME/Applications/BDJ4.app folder (BallroomDJ 4 application).
 * Removes the $HOME/Library/Application Support/BDJ4 folder (BallroomDJ 4 data).
-* Removes the MacPorts installation.
+* Removes the MacPorts or pkgsrc installation.
 
 #### Windows
 

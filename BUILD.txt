@@ -52,8 +52,8 @@ MacOS
   tar xf bdj4-src-4*.tar.gz
 
   # step a2)
-  # bdj4-src-macos-VERSION.tar.gz
-  tar xf bdj4-src-macos.tar.gz
+  # bdj4-src-macos-DATE.tar.gz
+  tar xf bdj4-src-macos-*.tar.gz
 
   # step a3)
   # bdj4-VERSION
@@ -62,11 +62,13 @@ MacOS
 
   # step a4)
   # the pre-build script only needs to be run once.
-  ../install/macos-pre-build.sh
+  # only one of these two choices needs to be run.
+  ../install/macos-pre-build-macports.sh
+  ../install/macos-pre-build-pkgsrc.sh
 
   # step a5)
-  # build-all only needs to be run when the dependent packages are updated
-  # not every time.
+  # build-all only needs to be run when the dependent packages are
+  # updated, not every time.
   ../pkg/build-all.sh
 
   # step a6)

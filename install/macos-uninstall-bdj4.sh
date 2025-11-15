@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2025 Brad Lanam Pleasant Hill CA
 #
-ver=7
+ver=8
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -159,7 +159,7 @@ if [[ -d /opt/pkg/bin ]]; then
   gr=$(getresponse)
   if [[ $gr == Y ]]; then
     sudo rm -f /opt/pkg
-    sudo rm -f /etc/paths.d/pkgsrc
+    sudo rm -f /etc/paths.d/10-pkgsrc
   fi
 fi
 

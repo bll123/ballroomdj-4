@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2025 Brad Lanam Pleasant Hill CA
 #
-ver=23
+ver=24
 
 if [[ $1 == --version ]]; then
   echo ${ver}

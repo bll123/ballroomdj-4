@@ -40,7 +40,7 @@ if [[ $1 == pkgsrc ]]; then
   fi
 fi
 
-if [[ $1 == brew ]]; then
+if [[ $1 == brew || $1 == homebrew ]]; then
   if [[ -d /opt/homebrew ]]; then
     pfx=/opt/homebrew
   fi
@@ -60,5 +60,3 @@ if [[ $1 == brew ]]; then
     rm -f data/macos.pkgsrc
   fi
 fi
-
-exit 0

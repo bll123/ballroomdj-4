@@ -35,7 +35,7 @@ ${bdir}/macos-pre-install-pkgsrc.sh
 
 sudo -v
 
-brew install cmake check pkgconf
+sudo pkgin -y install cmake check pkgconf
 
 sudo -k
 
