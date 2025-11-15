@@ -116,5 +116,29 @@ Visit the
 [Getting&nbsp;Started&nbsp;with&nbsp;BDJ4](en-Install-Getting%20Started)
 wiki page.
 
+#### Notes on MacOS Package Managers
+
+There are currently two main MacOS Package Managers: MacPorts and
+Homebrew.
+
+MacPorts is very reliable, though sometimes slow, as not all packages
+have pre-built binaries.
+
+Homebrew is very popular, as it installs pre-built binaries.
+
+Homebrew does not use elevated permissions (except during initial
+setup), and this setup creates a security hole.
+
+On Intel MacOS, Homebrew refuses to make certain libraries available
+for easy use.  This would make building BDJ4 extremely difficult, and
+also make a pre-built BDJ4 virtually impossible to run, as users may
+have different versions of these required libraries.
+
+On Apple silicon MacOS, BDJ4 is not working properly with Homebrew,
+and I don't know that I want to spend the time debugging their builds
+to figure out what has gone wrong.  It could be possible to support
+BDJ4 + Homebrew on Apple silicon MacOS, but the effort doesn't seem to
+be worth the trouble.
+
 [Wiki Home](Home)
 <br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_

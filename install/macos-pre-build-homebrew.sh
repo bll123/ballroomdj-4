@@ -28,10 +28,17 @@ if [[ $(uname -s) != Darwin ]]; then
   exit 1
 fi
 
+if [[ true ]]; then
+  echo "Homebrew cannot be used on MacOS."
+  echo "a) On Intel MacOS, Homebrew refuses to make necessary libraries available."
+  echo "b) On Apple silicon MacOS, BDJ4+Homebrew does not work properly."
+  exit 1
+fi
+
 cwd=$(pwd)
 
 bdir=$(dirname $0)
-${bdir}/macos-pre-install-brew.sh
+${bdir}/macos-pre-install-homebrew.sh
 
 sudo -v
 

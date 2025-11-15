@@ -158,6 +158,7 @@ static char *cacertFiles [] = {
   "/opt/local/etc/openssl/cert.pem",
   "/opt/local/share/curl/curl-ca-bundle.crt",
   "/opt/homebrew/etc/ca-certificates/cert.pem",
+  "/usr/local/etc/ca-certificates/cert.pem",
 };
 enum {
   CACERT_FILE_COUNT = (sizeof (cacertFiles) / sizeof (char *))

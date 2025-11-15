@@ -215,7 +215,10 @@ main (int argc, char *argv [])
     fprintf (stdout, "pkg: MacOS: MacPorts\n");
   }
   if (fileopIsDirectory ("/opt/homebrew/bin")) {
-    fprintf (stdout, "pkg: MacOS: Homebrew\n");
+    fprintf (stdout, "pkg: MacOS: Homebrew - /opt/homebrew\n");
+  }
+  if (fileopIsDirectory ("/usr/local/Homebrew")) {
+    fprintf (stdout, "pkg: MacOS: Homebrew - /usr/local\n");
   }
   if (fileopFileExists ("data/macos.homebrew")) {
     fprintf (stdout, "pkg: MacOS: Homebrew forced\n");

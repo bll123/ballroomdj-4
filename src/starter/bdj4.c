@@ -402,6 +402,7 @@ main (int argc, char * argv[])
     if (isMacOS ()) {
       const char    *tdir;
       const char    *tfn;
+      bool          found = false;
 
       tdir = "/opt/local/bin";
       if (fileopIsDirectory (tdir)) {
@@ -409,15 +410,21 @@ main (int argc, char * argv[])
         if (! fileopFileExists (tfn)) {
           p = stpecpy (p, end, tdir);
           p = stpecpy (p, end, ":");
+          found = true;
         }
       }
       tdir = "/opt/homebrew/bin";
-      if (fileopIsDirectory (tdir)) {
-        tfn = "data/macos.homebrew";
-        if (fileopFileExists (tfn)) {
-          p = stpecpy (p, end, tdir);
-          p = stpecpy (p, end, ":");
-        }
+      if (! found && fileopIsDirectory (tdir)) {
+        p = stpecpy (p, end, tdir);
+        p = stpecpy (p, end, ":");
+        found = true;
+      }
+      tdir = "/usr/local/Homebrew";
+      if (! found && fileopIsDirectory (tdir)) {
+        tdir = "/usr/local/bin";
+        p = stpecpy (p, end, tdir);
+        p = stpecpy (p, end, ":");
+        found = true;
       }
     }
 

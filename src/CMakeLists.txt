@@ -35,6 +35,12 @@ if (EXISTS "/opt/homebrew/lib" AND
     EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew"))
   set (CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};/opt/homebrew")
 endif()
+if (EXISTS "/usr/local/Homebrew" AND
+    NOT EXISTS "/opt/homebrew/lib" AND
+    (NOT EXISTS "/opt/local/lib" OR
+    EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew"))
+  set (CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};/usr/local")
+endif()
 
 # required for libcont/smtc.cpp
 set (CMAKE_CXX_STANDARD 20)

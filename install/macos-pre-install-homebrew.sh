@@ -28,6 +28,13 @@ if [[ $(uname -s) != Darwin ]]; then
   exit 1
 fi
 
+if [[ true ]]; then
+  echo "Homebrew cannot be used on MacOS."
+  echo "a) On Intel MacOS, Homebrew refuses to make necessary libraries available."
+  echo "b) On Apple silicon MacOS, BDJ4+Homebrew does not work properly."
+  exit 1
+fi
+
 echo ""
 echo "This script uses the 'sudo' command to run various commands"
 echo "in a privileged state.  You will be required to enter your"
@@ -95,11 +102,23 @@ if [[ $oldmacos == T ]]; then
   exit 1
 fi
 
+if [[ -d /usr/local/Homebrew ]]; then
+  echo "Homebrew cannot be used on intel MacOS."
+  echo "Homebrew refuses to make necessary libraries available for use."
+  exit 1
+fi
+
 if [[ $skipmpinst == F ]]; then
   brew_installed=F
-  if [[ -d /opt/homebrew && \
-      -d /opt/homebrew/Cellar && \
-      -f /opt/homebrew/bin/brew ]]; then
+  if [[ -d /opt/homebrew ]]; then
+    pfx=/opt/homebrew
+  fi
+  if [[ -d /usr/local/Homebrew ]]; then
+    pfx=/usr/local
+  fi
+  if [[ -d $pfx && \
+      -d ${pfx}/Cellar && \
+      -f ${pfx}/bin/brew ]]; then
     brew_installed=T
   else
     echo "-- HomeBrew is not installed"
@@ -110,7 +129,13 @@ if [[ $skipmpinst == F ]]; then
   fi
 fi
 
-PATH=$PATH:/opt/homebrew/bin
+if [[ -d /opt/homebrew ]]; then
+  pfx=/opt/homebrew
+fi
+if [[ -d /usr/local/Homebrew ]]; then
+  pfx=/usr/local
+fi
+PATH=$PATH:${pfx}/bin
 
 sudo -v
 
@@ -124,7 +149,6 @@ sudo -v
 
 echo "-- Installing packages needed by BDJ4"
 # using our own libid3tag
-#    curl-ca-bundle \
 #
 brew install \
     adwaita-icon-theme \
@@ -145,7 +169,10 @@ brew install \
 
 sudo -v
 
+# this only works on apple silicon
 brew link --force icu4c
+brew link --force libxml2
+brew link --force curl
 
 # look for the macos-run-installer script
 

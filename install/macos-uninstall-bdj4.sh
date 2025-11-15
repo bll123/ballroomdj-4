@@ -66,9 +66,6 @@ fi
 
 TMP=/tmp/bdj4-ct.txt
 
-# remove any old mutagen installed for the user
-pip3 uninstall -y mutagen > /dev/null 2>&1
-
 # config dir
 cdir=${XDG_CONFIG_HOME:-$HOME/.config}
 confdir="${cdir}/BDJ4"

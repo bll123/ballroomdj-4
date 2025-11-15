@@ -3,6 +3,12 @@
 # Copyright 2021-2025 Brad Lanam Pleasant Hill CA
 #
 
+#
+# This script will contain major build differences.
+# - Different package managers
+# - Different UI flavors
+#
+
 while test ! \( -d src -a -d web -a -d wiki \); do
   cd ..
 done
@@ -41,6 +47,8 @@ fi
 ./src/utils/testrun.sh "$@"
 grc=$?
 
+# homebrew will never work on intel
+# homebrew is not working on apple silicon, and I'm not inclined to debug it.
 TESTBREW=F
 if [[ $grc == 0 && TESTBREW == T && $os == macos ]]; then
   echo "-- $(date +%T) homebrew build"

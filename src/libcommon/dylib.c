@@ -47,6 +47,7 @@ dylibLoad (const char *path, dlopt_t opt)
   if ((opt & DYLIB_OPT_MAC_PREFIX) == DYLIB_OPT_MAC_PREFIX && isMacOS ()) {
     const char  *tdir;
     const char  *tfn;
+    bool        found = false;
 
     /* must have trailing slash */
     tdir = "/opt/local/lib/";
@@ -54,14 +55,17 @@ dylibLoad (const char *path, dlopt_t opt)
       tfn = "data/macos.homebrew";
       if (! fileopFileExists (tfn)) {
         pfx = tdir;
+        found = true;
       }
     }
     tdir = "/opt/homebrew/lib/";
-    if (fileopIsDirectory (tdir)) {
-      tfn = "data/macos.homebrew";
-      if (fileopFileExists (tfn)) {
-        pfx = tdir;
-      }
+    if (! found && fileopIsDirectory (tdir)) {
+      pfx = tdir;
+    }
+    tdir = "/usr/local/Homebrew/";
+    if (! found && fileopIsDirectory (tdir)) {
+      tdir = "/usr/local/lib/";
+      pfx = tdir;
     }
   }
 

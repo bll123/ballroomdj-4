@@ -107,16 +107,6 @@ fi
 
 sudo -v
 
-pipp=/usr/bin/pip
-if [[ -f /usr/bin/pip3 ]]; then
-  pipp=/usr/bin/pip3
-fi
-# remove any old mutagen installed for the user
-${pipp} uninstall -y mutagen > /dev/null 2>&1
-${pipp} uninstall -y --break-system-packages mutagen > /dev/null 2>&1
-
-sudo -v
-
 if [[ -f /usr/bin/dnf ]]; then
   # redhat based linux (fedora/rhel/centos, dnf)
   echo "-- To install vlc, the 'rpmfusion' repository"
@@ -211,12 +201,6 @@ if [[ -f /usr/bin/pacman ]]; then
   echo "== Remove vlc-nightly" >> $LOG
   sudo $pkgprog $pkgrm $pkgconfirm vlc-nightly >> $LOG 2>&1
 fi
-
-mutpkg=python3-mutagen
-if [[ -f /usr/bin/pacman ]]; then
-  mutpkg=python-mutagen
-fi
-sudo $pkgprog $pkgrm $pkgconfirm ${mutpkg} >> $LOG 2>&1
 
 sudo -v
 

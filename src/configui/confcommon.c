@@ -479,6 +479,12 @@ confuiGetThemeList (void)
       confuiGetThemeNames (sthemelist, filelist);
       slistFree (filelist);
     }
+    tdir = "/usr/local/share/themes";
+    if (fileopIsDirectory (tdir)) {
+      filelist = dirlistRecursiveDirList (tdir, DIRLIST_DIRS);
+      confuiGetThemeNames (sthemelist, filelist);
+      slistFree (filelist);
+    }
 
     filelist = dirlistRecursiveDirList ("/usr/share/themes", DIRLIST_DIRS);
     confuiGetThemeNames (sthemelist, filelist);

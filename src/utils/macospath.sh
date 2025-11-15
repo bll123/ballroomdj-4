@@ -6,8 +6,17 @@
 npath=$(echo $PATH | sed 's,/opt/local/bin:,,g')
 npath=$(echo $npath | sed 's,/opt/local/sbin:,,g')
 npath=$(echo $npath | sed 's,/opt/homebrew/bin:,,g')
+npath=$(echo $npath | sed 's,/opt/homebrew/sbin:,,g')
+npath=$(echo $npath | sed 's,/usr/local/bin:,,g')
+npath=$(echo $npath | sed 's,/usr/local/sbin:,,g')
 if [[ $1 == brew ]]; then
-  npath=/opt/homebrew/bin:$npath
+  if [[ -d /opt/homebrew ]]; then
+    pfx=/opt/homebrew
+  fi
+  if [[ -d /usr/local/Homebrew ]]; then
+    pfx=/usr/local
+  fi
+  npath=${pfx}/bin:$npath
   PATH=$npath
   unset npath
   if [[ -d ../data ]]; then

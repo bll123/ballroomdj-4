@@ -187,13 +187,6 @@ sudo port upgrade outdated
 
 sudo -v
 
-# remove any old user-install mutagen
-pipp=/opt/local/bin/pip
-if [[ -f /opt/local/bin/pip3 ]]; then
-  pipp=/opt/local/bin/pip3
-fi
-${pipp} uninstall -y mutagen > /dev/null 2>&1
-
 echo "-- Installing packages needed by BDJ4"
 # using our own libid3tag
 # 2024-6-7 mesa is now needed to be able to build gtk3
@@ -218,16 +211,6 @@ sudo port -N install \
     mesa \
     mpstats \
     opusfile
-
-sudo -v
-
-echo "-- Cleaning up old MacPorts files"
-
-sudo port -N uninstall \
-    taglib \
-    py310-mutagen \
-    py311-mutagen \
-    py312-mutagen
 
 sudo -v
 
