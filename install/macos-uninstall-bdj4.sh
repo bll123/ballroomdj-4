@@ -154,11 +154,22 @@ if [[ -d /opt/local/bin ]]; then
   fi
 fi
 
-if [[ -d /opt/homebrew/bin || -d /usr/local/Homebrew ]]; then
+if [[ -d /opt/pkg/bin ]]; then
+  echo "Uninstall pkgsrc? "
+  gr=$(getresponse)
+  if [[ $gr == Y ]]; then
+    sudo rm -f /opt/pkg
+    sudo rm -f /etc/paths.d/pkgsrc
+  fi
+fi
+
+if [[ -d /opt/homebrew/bin ]]; then
   echo "Uninstall Homebrew? "
   gr=$(getresponse)
   if [[ $gr == Y ]]; then
     NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)"
+    sudo rm -f /opt/homebrew
+    sudo rm -f /etc/paths.d/homebrew
   fi
 fi
 

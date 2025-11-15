@@ -85,8 +85,13 @@ function pkgnmgetdata {
           pn_archtag=-applesilicon
           ;;
       esac
-      if [[ -d /opt/local/bin && ! -f data/macos.homebrew ]]; then
+      if [[ -d /opt/local/bin && \
+          ! -f data/macos.pkgsrc && \
+          ! -f data/macos.homebrew ]]; then
         pn_supplib=-macports
+      fi
+      if [[ -d /opt/pkg/bin && -f data/macos.pkgsrc ]]; then
+        pn_supplib=-pkgsrc
       fi
       if [[ -d /opt/homebrew/bin && -f data/macos.homebrew ]]; then
         pn_supplib=-homebrew

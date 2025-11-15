@@ -44,7 +44,8 @@ dylibLoad (const char *path, dlopt_t opt)
 
   shlibext = sysvarsGetStr (SV_SHLIB_EXT);
 
-  if ((opt & DYLIB_OPT_MAC_PREFIX) == DYLIB_OPT_MAC_PREFIX && isMacOS ()) {
+  if (isMacOS () &&
+      (opt & DYLIB_OPT_MAC_PREFIX) == DYLIB_OPT_MAC_PREFIX) {
     const char  *tdir;
     const char  *tfn;
     bool        found = false;
@@ -58,13 +59,12 @@ dylibLoad (const char *path, dlopt_t opt)
         found = true;
       }
     }
-    tdir = "/opt/homebrew/lib/";
+    tdir = "/opt/pkg/lib/";
     if (! found && fileopIsDirectory (tdir)) {
       pfx = tdir;
     }
-    tdir = "/usr/local/Homebrew/";
+    tdir = "/opt/homebrew/lib/";
     if (! found && fileopIsDirectory (tdir)) {
-      tdir = "/usr/local/lib/";
       pfx = tdir;
     }
   }
@@ -76,6 +76,22 @@ dylibLoad (const char *path, dlopt_t opt)
   }
 
   handle = dylibBasicOpen (npath, sizeof (npath));
+
+  if (handle == NULL &&
+      isMacOS () &&
+      strcmp (pfx, "/opt/pkg/lib/") == 0 &&
+      (opt & DYLIB_OPT_MAC_PREFIX) == DYLIB_OPT_MAC_PREFIX) {
+    const char  *tdir;
+
+    /* must have trailing slash */
+    tdir = "/opt/pkg/lib/ffmpeg8/";
+    if (fileopIsDirectory (tdir)) {
+      pfx = tdir;
+
+      snprintf (npath, sizeof (npath), "%s%s%s", pfx, path, shlibext);
+      handle = dylibBasicOpen (npath, sizeof (npath));
+    }
+  }
 
   if (handle == NULL) {
     if ((opt & DYLIB_OPT_VERSION) == DYLIB_OPT_VERSION) {

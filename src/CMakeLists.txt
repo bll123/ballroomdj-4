@@ -26,20 +26,19 @@ set (CMAKE_STATIC_LIBRARY_PREFIX "")
 set (CMAKE_INSTALL_PREFIX "")
 set (CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/../plocal")
 if (EXISTS "/opt/local/lib" AND
-    (NOT EXISTS "/opt/homebrew/lib" OR
-    NOT EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew"))
+    NOT EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew" AND
+    NOT EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.pkgsrc")
   set (CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};/opt/local")
+endif()
+if (EXISTS "/opt/pkg/lib" AND
+    (NOT EXISTS "/opt/local/lib" OR
+    EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.pkgsrc"))
+  set (CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};/opt/pkg")
 endif()
 if (EXISTS "/opt/homebrew/lib" AND
     (NOT EXISTS "/opt/local/lib" OR
     EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew"))
   set (CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};/opt/homebrew")
-endif()
-if (EXISTS "/usr/local/Homebrew" AND
-    NOT EXISTS "/opt/homebrew/lib" AND
-    (NOT EXISTS "/opt/local/lib" OR
-    EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew"))
-  set (CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};/usr/local")
 endif()
 
 # required for libcont/smtc.cpp

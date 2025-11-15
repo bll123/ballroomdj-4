@@ -9,7 +9,7 @@ Sonoma, Sequoia, Tahoe.
 <br>If you want an earlier version supported, please
 [let&nbsp;me&nbsp;know](en-Getting%20Help)
 
-Supported package managers as of 2025-11: MacPorts
+Supported package managers as of 2025-11: MacPorts, pkgsrc
 
 #### Updating BallroomDJ 4 : Make a Backup
 
@@ -118,16 +118,20 @@ wiki page.
 
 #### Notes on MacOS Package Managers
 
-There are currently two main MacOS Package Managers: MacPorts and
-Homebrew.
+MacOS has the following package managers available that are in use:
+MacPorts, pkgsrc and Homebrew.
 
 MacPorts is very reliable, though sometimes slow, as not all packages
-have pre-built binaries.
+have pre-built binaries.  MacPorts supports old versions of MacOS.
 
-Homebrew is very popular, as it installs pre-built binaries.
+pkgsrc has been around since 1997, though MacOS was added later. It
+supports Intel MacOS Monterey and later and Apple silicon MacOS
+Sonoma and later.
 
-Homebrew does not use elevated permissions (except during initial
-setup), and this setup creates a security hole.
+Homebrew is very popular, as it installs pre-built binaries. Homebrew
+does not use elevated permissions (except during initial setup), and
+this setup creates a security hole. Homebrew does not support older
+MacOS versions.
 
 On Intel MacOS, Homebrew refuses to make certain libraries available
 for easy use.  This would make building BDJ4 extremely difficult, and

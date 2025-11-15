@@ -402,26 +402,27 @@ main (int argc, char * argv[])
     if (isMacOS ()) {
       const char    *tdir;
       const char    *tfn;
+      const char    *tfnb;
       bool          found = false;
 
       tdir = "/opt/local/bin";
       if (fileopIsDirectory (tdir)) {
         tfn = "data/macos.homebrew";
-        if (! fileopFileExists (tfn)) {
+        tfnb = "data/macos.pksrc";
+        if (! fileopFileExists (tfn) && ! fileopFileExists (tfnb)) {
           p = stpecpy (p, end, tdir);
           p = stpecpy (p, end, ":");
           found = true;
         }
       }
-      tdir = "/opt/homebrew/bin";
+      tdir = "/opt/pkg/bin";
       if (! found && fileopIsDirectory (tdir)) {
         p = stpecpy (p, end, tdir);
         p = stpecpy (p, end, ":");
         found = true;
       }
-      tdir = "/usr/local/Homebrew";
+      tdir = "/opt/homebrew/bin";
       if (! found && fileopIsDirectory (tdir)) {
-        tdir = "/usr/local/bin";
         p = stpecpy (p, end, tdir);
         p = stpecpy (p, end, ":");
         found = true;

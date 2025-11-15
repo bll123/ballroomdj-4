@@ -466,20 +466,22 @@ confuiGetThemeList (void)
   } else {
     const char    *tdir;
 
-    /* for macos */
+    /* macports */
     tdir = "/opt/local/share/themes";
     if (fileopIsDirectory (tdir)) {
       filelist = dirlistRecursiveDirList (tdir, DIRLIST_DIRS);
       confuiGetThemeNames (sthemelist, filelist);
       slistFree (filelist);
     }
-    tdir = "/opt/homebrew/share/themes";
+    /* pkgsrc */
+    tdir = "/opt/pkg/share/themes";
     if (fileopIsDirectory (tdir)) {
       filelist = dirlistRecursiveDirList (tdir, DIRLIST_DIRS);
       confuiGetThemeNames (sthemelist, filelist);
       slistFree (filelist);
     }
-    tdir = "/usr/local/share/themes";
+    /* homebrew - apple silicon */
+    tdir = "/opt/homebrew/share/themes";
     if (fileopIsDirectory (tdir)) {
       filelist = dirlistRecursiveDirList (tdir, DIRLIST_DIRS);
       confuiGetThemeNames (sthemelist, filelist);
