@@ -10,10 +10,10 @@ if [[ $1 == --version ]]; then
 fi
 
 function getresponse () {
-  echo -n "[Y/n]: " > /dev/tty
+  echo -n "[y/N]: " > /dev/tty
   read answer
   case $answer in
-    Y|y|yes|Yes|YES|"")
+    Y|y|yes|Yes|YES)
       answer=Y
       ;;
     *)
@@ -154,7 +154,7 @@ if [[ -d /opt/local/bin ]]; then
   fi
 fi
 
-if [[ -d /opt/homebrew/bin ]]; then
+if [[ -d /opt/homebrew/bin || -d /usr/local/Homebrew ]]; then
   echo "Uninstall Homebrew? "
   gr=$(getresponse)
   if [[ $gr == Y ]]; then

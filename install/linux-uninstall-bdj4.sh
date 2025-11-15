@@ -12,10 +12,10 @@ if [[ $1 == --version ]]; then
 fi
 
 getresponse () {
-  echo -n "[Y/n]: " > /dev/tty
+  echo -n "[y/N]: " > /dev/tty
   read answer
   case $answer in
-    Y|y|yes|Yes|YES|"")
+    Y|y|yes|Yes|YES)
       answer=Y
       ;;
     *)
