@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2025 Brad Lanam Pleasant Hill CA
 #
-ver=1
+ver=2
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -14,19 +14,34 @@ if [[ $(uname -s) != Linux ]]; then
   exit 1
 fi
 
-flac12=plocal/lib/libFLAC.so.12
-lf=$(find /usr/lib /usr/lib64 /lib64 -name 'libFLAC.so.12' -print 2>/dev/null)
-if [[ $lf == "" ]]; then
-  lf=$(find /usr/lib -name 'libFLAC.so.8' -print)
-  if [[ $lf != "" ]]; then
-    # create a symlink for libFLAC
-    rm -f ${flac12}
-    ln -s ${lf} ${flac12}
+pfx=plocal/lib
+flacpfx=${pfx}/libFLAC.so.
+
+for fver in 12 14; do
+  if [[ -h ${flacpfx}${fver} ]]; then
+    rm -f ${flacpfx}${fver}
   fi
-else
-  if [[ -h ${flac12} ]]; then
-    rm -f ${flac12}
-  fi
+done
+
+lf=$(find -P /usr/lib /usr/lib64 /lib64 -name 'libFLAC.so.14' -print 2>/dev/null)
+if [[ $lf != "" ]]; then
+  exit 0
+
+fi
+
+lf=$(find -P /usr/lib /usr/lib64 /lib64 -name 'libFLAC.so.8' -print)
+if [[ $lf != "" ]]; then
+  # create a symlink for libFLAC
+  rm -f ${flacpfx}12
+  rm -f ${flacpfx}14
+  ln -s ${lf} ${flacpfx}14
+fi
+lf=$(find -P /usr/lib /usr/lib64 /lib64 -name 'libFLAC.so.12' -print)
+if [[ $lf != "" ]]; then
+  # create a symlink for libFLAC
+  rm -f ${flacpfx}12
+  rm -f ${flacpfx}14
+  ln -s ${lf} ${flacpfx}14
 fi
 
 exit 0

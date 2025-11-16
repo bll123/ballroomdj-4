@@ -40,11 +40,9 @@ cwd=$(pwd)
 bdir=$(dirname $0)
 ${bdir}/macos-pre-install-homebrew.sh
 
-sudo -v
+PATH=$PATH:/opt/homebrew/bin
 
 brew install cmake check pkgconf
-
-sudo -k
 
 echo "Press enter to finish."
 read answer

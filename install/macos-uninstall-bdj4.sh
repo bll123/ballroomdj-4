@@ -168,8 +168,7 @@ if [[ -d /opt/homebrew/bin ]]; then
   gr=$(getresponse)
   if [[ $gr == Y ]]; then
     NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)"
-    sudo rm -f /opt/homebrew
-    sudo rm -f /etc/paths.d/homebrew
+    sudo rm -rf /opt/homebrew
   fi
 fi
 

@@ -69,12 +69,10 @@ dirlistBasicDirList (const char *dirname, const char *extension)
       pathInfoFree (pi);
     }
 
-    /* 2025-11-14 homebrew fails to do any conversion using */
-    /*    g_filename_to_utf8 (utf8-mac is unknown) */
-    /* but macports is not showing any conversion process happening, */
-    /* bread and bwrite are the same size */
-    /* so I guess no conversion is necessary? */
-    /* the filename display appears to be ok */
+    /* used to use g_filename_to_utf8 (utf8-mac to utf8), */
+    /* but this seems to not be necessary. */
+    /* 2025-11-14 both homebrew and pkgsrc fail to do any conversion */
+    /*    using g_filename_to_utf8 (utf8-mac is unknown) */
     slistSetStr (fileList, fname, NULL);
     mdfree (fname);
   }

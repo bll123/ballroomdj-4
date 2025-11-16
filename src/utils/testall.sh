@@ -51,8 +51,12 @@ TESTPKGSRC=T
 if [[ $grc == 0 && TESTPKGSRC == T && $os == macos ]]; then
   echo "-- $(date +%T) pkgsrc build"
   . ./src/utils/macospath.sh pkgsrc
+  ../pkg/build-all.sh --pkg libid3tag >> $LOG 2>&1
   ./src/utils/testrun.sh "$@"
   grc=$?
+  # revert back to the default macports
+  . ./src/utils/macospath.sh macports
+  ../pkg/build-all.sh --pkg libid3tag >> $LOG 2>&1
 fi
 
 # homebrew will never work on intel
@@ -61,8 +65,12 @@ TESTHOMEBREW=F
 if [[ $grc == 0 && TESTHOMEBREW == T && $os == macos ]]; then
   echo "-- $(date +%T) homebrew build"
   . ./src/utils/macospath.sh homebrew
+  ../pkg/build-all.sh --pkg libid3tag >> $LOG 2>&1
   ./src/utils/testrun.sh "$@"
   grc=$?
+  # revert back to the default macports
+  . ./src/utils/macospath.sh macports
+  ../pkg/build-all.sh --pkg libid3tag >> $LOG 2>&1
 fi
 
 exit $grc

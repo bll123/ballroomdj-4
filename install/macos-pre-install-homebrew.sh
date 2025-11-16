@@ -35,6 +35,12 @@ if [[ true ]]; then
   exit 1
 fi
 
+if [[ $(uname -m) == x86_64 ]]; then
+  echo "Homebrew cannot be used on Intel MacOS."
+  echo "  On Intel MacOS, Homebrew refuses to make necessary libraries available."
+  exit 1
+fi
+
 echo ""
 echo "This script uses the 'sudo' command to run various commands"
 echo "in a privileged state.  You will be required to enter your"
@@ -104,7 +110,7 @@ fi
 
 if [[ -d /usr/local/Homebrew ]]; then
   echo "Homebrew cannot be used on intel MacOS."
-  echo "Homebrew refuses to make necessary libraries available for use."
+  echo "  Homebrew refuses to make necessary libraries available for use."
   exit 1
 fi
 
@@ -112,9 +118,6 @@ if [[ $skipmpinst == F ]]; then
   brew_installed=F
   if [[ -d /opt/homebrew ]]; then
     pfx=/opt/homebrew
-  fi
-  if [[ -d /usr/local/Homebrew ]]; then
-    pfx=/usr/local
   fi
   if [[ -d $pfx && \
       -d ${pfx}/Cellar && \
@@ -132,20 +135,13 @@ fi
 if [[ -d /opt/homebrew ]]; then
   pfx=/opt/homebrew
 fi
-if [[ -d /usr/local/Homebrew ]]; then
-  pfx=/usr/local
-fi
 PATH=$PATH:${pfx}/bin
-
-sudo -v
 
 TLOC=${TMPDIR:-/var/tmp}
 TFN="$TLOC/bdj4-pre-inst.tmp"
 
-echo "-- Running HomeBrew 'update/upgrade' with sudo"
-brew update && brew outdated && brew upgrade && brew cleanup
-
-sudo -v
+echo "-- Running HomeBrew 'update/upgrade'"
+brew update && brew outdated && brew upgrade
 
 echo "-- Installing packages needed by BDJ4"
 # using our own libid3tag
@@ -167,12 +163,12 @@ brew install \
     libxml2 \
     opusfile
 
-sudo -v
-
 # this only works on apple silicon
 brew link --force icu4c
 brew link --force libxml2
 brew link --force curl
+
+brew cleanup
 
 # look for the macos-run-installer script
 
