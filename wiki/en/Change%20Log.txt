@@ -6,9 +6,6 @@
 
 **4.17.4.1 2025-11---**
 
-* Changes:
-    * MacOS: Added support for the 'pkgsrc' package manager.
-
 -->
 
 **4.17.4 2025-11-10**

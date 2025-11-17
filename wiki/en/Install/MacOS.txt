@@ -43,8 +43,11 @@ update.  An internet connection is required to run this script.
 BDJ4 supports either the __MacPorts__ or __pkgsrc__ package manager.
 If you have no preference, choose the MacPorts version.
 
-Download either the macos-pre-install-macports-v23.sh script or the
-macos-pre-install-pkgsrc-v23.sh script from sourceforge.
+In the past, only MacPorts was supported.  If you are upgrading,
+choose the MacPorts version.
+
+Download either the macos-pre-install-macports-v24.sh script or the
+macos-pre-install-pkgsrc-v24.sh script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
@@ -56,12 +59,12 @@ than once during the installation process.
 If you are using the MacPorts script:
 
     cd Downloads
-    bash macos-pre-install-macports-v23.sh
+    bash macos-pre-install-macports-v24.sh
 
 If you are using the pkgsrc script:
 
     cd Downloads
-    bash macos-pre-install-pkgsrc-v23.sh
+    bash macos-pre-install-pkgsrc-v24.sh
 
 This script performs the following actions:
 
@@ -131,7 +134,7 @@ wiki page.
 
 #### Notes on MacOS Package Managers
 
-MacOS has the following package managers available that are in use:
+The following package managers are available for MacOS:
 MacPorts, pkgsrc and Homebrew.
 
 MacPorts is very reliable, though sometimes slow, as not all packages

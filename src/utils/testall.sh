@@ -47,7 +47,8 @@ fi
 ./src/utils/testrun.sh "$@"
 grc=$?
 
-TESTPKGSRC=T
+# the pre-built binary gtk packages from smartos.org is not built correctly
+TESTPKGSRC=F
 if [[ $grc == 0 && TESTPKGSRC == T && $os == macos ]]; then
   echo "-- $(date +%T) pkgsrc build"
   . ./src/utils/macospath.sh pkgsrc

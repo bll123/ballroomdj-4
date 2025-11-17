@@ -28,6 +28,12 @@ if [[ $(uname -s) != Darwin ]]; then
   exit 1
 fi
 
+if [[ true ]]; then
+  echo "pkgsrc cannot be used on MacOS."
+  echo "The smartos.org gtk packages are not built correctly."
+  exit 1
+fi
+
 echo ""
 echo "This script uses the 'sudo' command to run various commands"
 echo "in a privileged state.  You will be required to enter your"
@@ -149,21 +155,21 @@ echo "-- Installing packages needed by BDJ4"
 # using our own libid3tag
 #
 sudo pkgin -y install \
-    adwaita-icon-theme \
+    icu \
     curl \
     flac \
-    glib2 \
-    gtk3+ \
-    icu \
     json-c \
     libgcrypt \
     libogg \
     libopus \
-    librsvg \
     libvorbis \
-    libxml2 \
     opusfile \
-    xorgproto
+    libxml2 \
+    xorgproto \
+    librsvg \
+    adwaita-icon-theme \
+    glib2 \
+    gtk3+
 
 sudo -v
 

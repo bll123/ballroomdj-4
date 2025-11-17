@@ -386,7 +386,7 @@ main (int argc, char * argv[])
   osSetEnv ("GTK_CSD", "0");
 #endif
 
-  if (isMacOS () || isLinux ()) {
+  if (isMacOS ()) {
     char      tbuff [MAXPATHLEN];
     char      pbuff [MAXPATHLEN];
     char      *path = NULL;
@@ -401,14 +401,15 @@ main (int argc, char * argv[])
     end = npath + sz;
     if (isMacOS ()) {
       const char    *tdir;
-      const char    *tfn;
-      const char    *tfnb;
       bool          found = false;
 
       tdir = "/opt/local/bin";
       if (fileopIsDirectory (tdir)) {
+        const char    *tfn;
+        const char    *tfnb;
+
         tfn = "data/macos.homebrew";
-        tfnb = "data/macos.pksrc";
+        tfnb = "data/macos.pkgsrc";
         if (! fileopFileExists (tfn) && ! fileopFileExists (tfnb)) {
           p = stpecpy (p, end, tdir);
           p = stpecpy (p, end, ":");

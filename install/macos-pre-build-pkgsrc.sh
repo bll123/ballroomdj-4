@@ -28,6 +28,12 @@ if [[ $(uname -s) != Darwin ]]; then
   exit 1
 fi
 
+if [[ true ]]; then
+  echo "pkgsrc cannot be used on MacOS."
+  echo "The smartos.org gtk packages are not built correctly."
+  exit 1
+fi
+
 cwd=$(pwd)
 
 bdir=$(dirname $0)
