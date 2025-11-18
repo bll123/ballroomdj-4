@@ -586,12 +586,14 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_CHK_MAIN_SET_GAP: {
-          bdjoptSetNumPerQueue (OPT_Q_GAP, atoi (args), mainData->musicqPlayIdx);
+          bdjoptSetNumPerQueue (OPT_Q_GAP,
+              atol (args), mainData->musicqPlayIdx);
           mainMusicqSendQueueConfig (mainData);
           break;
         }
         case MSG_CHK_MAIN_SET_CROSSFADE: {
-          bdjoptSetNumPerQueue (OPT_Q_CROSSFADE, atoi (args), mainData->musicqPlayIdx);
+          bdjoptSetNumPerQueue (OPT_Q_CROSSFADE,
+              atol (args), mainData->musicqPlayIdx);
           mainMusicqSendQueueConfig (mainData);
           break;
         }
@@ -606,19 +608,23 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_CHK_MAIN_SET_PLAYANNOUNCE: {
-          bdjoptSetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, atoi (args), mainData->musicqPlayIdx);
+          bdjoptSetNumPerQueue (OPT_Q_PLAY_ANNOUNCE,
+              atoi (args), mainData->musicqPlayIdx);
           break;
         }
         case MSG_CHK_MAIN_SET_QUEUE_ACTIVE: {
-          bdjoptSetNumPerQueue (OPT_Q_ACTIVE, atoi (args), mainData->musicqPlayIdx);
+          bdjoptSetNumPerQueue (OPT_Q_ACTIVE,
+              atoi (args), mainData->musicqPlayIdx);
           break;
         }
         case MSG_CHK_MAIN_SET_PLAY_WHEN_QUEUED: {
-          bdjoptSetNumPerQueue (OPT_Q_PLAY_WHEN_QUEUED, atoi (args), mainData->musicqPlayIdx);
+          bdjoptSetNumPerQueue (OPT_Q_PLAY_WHEN_QUEUED,
+              atoi (args), mainData->musicqPlayIdx);
           break;
         }
         case MSG_CHK_MAIN_SET_PAUSE_EACH_SONG: {
-          bdjoptSetNumPerQueue (OPT_Q_PAUSE_EACH_SONG, atoi (args), mainData->musicqPlayIdx);
+          bdjoptSetNumPerQueue (OPT_Q_PAUSE_EACH_SONG,
+              atoi (args), mainData->musicqPlayIdx);
           break;
         }
         case MSG_CHK_MAIN_SET_STARTWAIT: {
@@ -626,12 +632,14 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_CHK_MAIN_SET_FADEIN: {
-          bdjoptSetNumPerQueue (OPT_Q_FADEINTIME, atoi (args), mainData->musicqPlayIdx);
+          bdjoptSetNumPerQueue (OPT_Q_FADEINTIME,
+              atol (args), mainData->musicqPlayIdx);
           mainMusicqSendQueueConfig (mainData);
           break;
         }
         case MSG_CHK_MAIN_SET_FADEOUT: {
-          bdjoptSetNumPerQueue (OPT_Q_FADEOUTTIME, atoi (args), mainData->musicqPlayIdx);
+          bdjoptSetNumPerQueue (OPT_Q_FADEOUTTIME,
+              atol (args), mainData->musicqPlayIdx);
           mainMusicqSendQueueConfig (mainData);
           break;
         }

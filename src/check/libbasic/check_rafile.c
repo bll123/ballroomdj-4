@@ -70,7 +70,7 @@ START_TEST(rafile_write)
   rafile_t      *rafile;
   struct stat   statbuf;
   int           rc;
-  off_t         lastsize;
+  size_t        lastsize;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_write");
   mdebugSubTag ("rafile_write");
@@ -122,7 +122,7 @@ START_TEST(rafile_write_batch)
   rafile_t      *rafile;
   struct stat   statbuf;
   int           rc;
-  off_t         lastsize;
+  size_t        lastsize;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_write_batch");
   mdebugSubTag ("rafile_write_batch");
@@ -207,7 +207,7 @@ START_TEST(rafile_rewrite)
   rafile_t      *rafile;
   struct stat   statbuf;
   ssize_t       rc;
-  off_t         lastsize;
+  size_t        lastsize;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_rewrite");
   mdebugSubTag ("rafile_rewrite");
@@ -273,7 +273,7 @@ START_TEST(rafile_write_read)
   rafile_t      *rafile;
   struct stat   statbuf;
   ssize_t       rc;
-  off_t         lastsize;
+  size_t        lastsize;
   char          data [RAFILE_REC_SIZE];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_rewrite");

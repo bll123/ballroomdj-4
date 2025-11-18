@@ -784,7 +784,7 @@ START_TEST(musicdb_db)
   (void) ! fgets (tbuff, sizeof (tbuff), fh); // comment
   (void) ! fgets (tbuff, sizeof (tbuff), fh); // rasize
   (void) ! fgets (tbuff, sizeof (tbuff), fh); // racount
-  racount = atoi (tbuff);
+  racount = atol (tbuff);
   mdextfclose (fh);
   fclose (fh);
 

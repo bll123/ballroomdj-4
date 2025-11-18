@@ -154,7 +154,6 @@ main (int argc, char *argv [])
   fprintf (stdout, "  i: long   %d %ld\n", (int) sizeof (long), (long) LONG_MAX);
   fprintf (stdout, "  i: pid_t  %d\n", (int) sizeof (pid_t));
   fprintf (stdout, "  i: size_t %d\n", (int) sizeof (size_t));
-  fprintf (stdout, "  i: off_t  %d\n", (int) sizeof (off_t));
   fprintf (stdout, "  i: time_t %d\n", (int) sizeof (time_t));
   fprintf (stdout, "  i: uint32_t %d %" PRIu32 "\n", (int) sizeof (uint32_t), UINT32_MAX);
   fprintf (stdout, "  i: uint64_t %d %" PRIu64 "\n", (int) sizeof (uint64_t), UINT64_MAX);
