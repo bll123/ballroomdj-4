@@ -112,16 +112,7 @@ ver=$(install/${fn}.sh --version)
 rsync -v -e ssh install/${fn}.sh \
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.sh
 
-fn=macos-pre-install-pkgsrc
-ver=$(install/${fn}.sh --version)
-rsync -v -e ssh install/${fn}.sh \
-    ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.sh
-
-# do not push the homebrew scripts, homebrew does not work
-#fn=macos-pre-install-homebrew
-#ver=$(install/${fn}.sh --version)
-#rsync -v -e ssh install/${fn}.sh \
-#    ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.sh
+# do not push the macos homebrew or pkgsrc scripts
 
 fn=macos-run-installer
 ver=$(install/${fn}.sh --version)

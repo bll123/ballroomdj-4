@@ -9,7 +9,7 @@ Sonoma, Sequoia, Tahoe.
 <br>If you want an earlier version supported, please
 [let&nbsp;me&nbsp;know](en-Getting%20Help)
 
-Supported package managers as of 2025-11: MacPorts, pkgsrc
+Supported package managers as of 2025-11: MacPorts
 
 #### Updating BallroomDJ 4 : Make a Backup
 
@@ -40,14 +40,7 @@ this script.
 This step only needs to be run once, not for every installation or
 update.  An internet connection is required to run this script.
 
-BDJ4 supports either the __MacPorts__ or __pkgsrc__ package manager.
-If you have no preference, choose the MacPorts version.
-
-In the past, only MacPorts was supported.  If you are upgrading,
-choose the MacPorts version.
-
-Download either the macos-pre-install-macports-v24.sh script or the
-macos-pre-install-pkgsrc-v24.sh script from sourceforge.
+Download the macos-pre-install-macports-v24.sh script.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
@@ -56,15 +49,8 @@ script using the following command. This may take a very long time to
 finish. You may be required to enter your administrative password more
 than once during the installation process.
 
-If you are using the MacPorts script:
-
     cd Downloads
     bash macos-pre-install-macports-v24.sh
-
-If you are using the pkgsrc script:
-
-    cd Downloads
-    bash macos-pre-install-pkgsrc-v24.sh
 
 This script performs the following actions:
 
@@ -76,8 +62,6 @@ Note that this process can be very slow for new releases of MacOS.
 
 Download the MacOS installer from sourceforge.
 Be sure to select the correct architecture (Intel or Apple Silicon).
-Also be sure to select the matching package manager (MacPorts or
-pkgsrc).
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
@@ -138,11 +122,13 @@ The following package managers are available for MacOS:
 MacPorts, pkgsrc and Homebrew.
 
 MacPorts is very reliable, though sometimes slow, as not all packages
-have pre-built binaries.  MacPorts supports old versions of MacOS.
+have pre-built binaries (especially on newer releases).  MacPorts
+supports older versions of MacOS.
 
-pkgsrc has been around since 1997, though MacOS was added later. It
-supports Intel MacOS Monterey and later and Apple silicon MacOS
-Sonoma and later.
+pkgsrc has been around since 1997, though MacOS was added later. There
+is one company that has pre-built binary packages available.
+Unfortunately, the GTK package is not built correctly, and pkgsrc
+cannot be easily used.
 
 Homebrew is very popular, as it installs pre-built binaries. Homebrew
 does not use elevated permissions (except during initial setup), and
