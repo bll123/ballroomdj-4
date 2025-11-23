@@ -9,7 +9,7 @@ Sonoma, Sequoia, Tahoe.
 <br>If you want an earlier version supported, please
 [let&nbsp;me&nbsp;know](en-Getting%20Help)
 
-Supported package managers as of 2025-11: MacPorts
+Supported package managers as of 2025-11: MacPorts, pkgsrc
 
 #### Updating BallroomDJ 4 : Make a Backup
 
@@ -42,6 +42,10 @@ update.  An internet connection is required to run this script.
 
 Download the macos-pre-install-macports-v24.sh script.
 
+If you wish to use the __pkgsrc__ package management system,
+<br>
+Download the macos-pre-install-pkgsrc-v24.sh script.
+
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
 Open a terminal (Finder / Go / Utilities / Terminal) and run this
@@ -52,6 +56,11 @@ than once during the installation process.
     cd Downloads
     bash macos-pre-install-macports-v24.sh
 
+If using the _pkgsrc_ package management system, use:
+
+    cd Downloads
+    bash macos-pre-install-pkgsrc-v24.sh
+
 This script performs the following actions:
 
 * Installs the required software used by BallroomDJ 4.
@@ -61,7 +70,10 @@ Note that this process can be very slow for new releases of MacOS.
 #### Install BallroomDJ 4
 
 Download the MacOS installer from sourceforge.
+
 Be sure to select the correct architecture (Intel or Apple Silicon).
+
+Be sure to select the correct package manager (macports or pkgsrc).
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 

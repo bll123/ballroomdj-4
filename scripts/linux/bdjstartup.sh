@@ -94,7 +94,7 @@ if [[ $XDG_SESSION_TYPE == x11 && -f /usr/bin/xset ]]; then
   setterm -powersave off -blank 0 2>/dev/null
 fi
 
-case $XDG_SESSION_DESKTOP in
+case $XDG_CURRENT_DESKTOP in
   KDE)
     # there is no way to set presentation mode via a script
     # because kde wants the process to stay alive
@@ -117,7 +117,7 @@ case $XDG_SESSION_DESKTOP in
           blank-on-ac blank-on-battery brightness-on-ac brightness-on-battery
     fi
     ;;
-  mate)
+  mate|MATE)
     # mate power management/screensaver
     schema=org.mate.power-manager
     do_gsettings $schema 0 \
@@ -138,7 +138,8 @@ case $XDG_SESSION_DESKTOP in
         show-notifications
     ;;
   *)
-    # gnome
+    # various gnome flavors
+    # ubuntu, ubuntu:GNOME, budgie-desktop, Budgie:GNOME
     # cinnamon
     schema=org.gnome.settings-daemon.plugins.power
     do_gsettings $schema false \

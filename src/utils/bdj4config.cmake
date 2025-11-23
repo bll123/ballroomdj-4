@@ -12,9 +12,9 @@ include (CheckTypeSize)
 include (CheckVariableExists)
 include (CheckPrototypeDefinition)
 
-find_package (PkgConfig)
+find_package (PkgConfig REQUIRED)
 
-find_package (Intl)
+find_package (Intl REQUIRED)
 find_package (Iconv)
 
 #### BDJ4 UI type
@@ -62,6 +62,10 @@ if (WIN32 AND BDJ4_BITS EQUAL 32)
 endif()
 
 #### pkg-config / modules
+
+if (BDJ4_MACOS_PKGM STREQUAL "pkgsrc")
+  set (CMAKE_PREFIX_PATH "/opt/pkg/lib/${PKGSRC_FFMPEG}/pkgconfig")
+endif()
 
 # not win and not apple == linux
 # if (linux) does not work (2023-4-3)
@@ -504,11 +508,18 @@ check_symbol_exists (pthread_create pthread.h _lib_pthread_create)
 unset (CMAKE_REQUIRED_LIBRARIES)
 
 if (EXISTS "/opt/local/include" AND
+    NOT EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.pkgsrc" AND
     NOT EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew")
   set (CMAKE_REQUIRED_INCLUDES "/opt/local/include")
 endif()
+if (EXISTS "/opt/pkg/include" AND
+    (NOT EXISTS "/opt/local/include" OR
+    EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.pkgsrc"))
+  set (CMAKE_REQUIRED_INCLUDES "/opt/pkg/include;/opt/pkg/include/gettext")
+endif()
 if (EXISTS "/opt/homebrew/include" AND
-    EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew")
+    (NOT EXISTS "/opt/local/include" OR
+    EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew"))
   set (CMAKE_REQUIRED_INCLUDES "/opt/homebrew/include")
 endif()
 if (Intl_LIBRARY AND NOT Intl_LIBRARY STREQUAL "NOTFOUND")

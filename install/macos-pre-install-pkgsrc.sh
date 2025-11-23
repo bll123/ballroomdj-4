@@ -28,12 +28,6 @@ if [[ $(uname -s) != Darwin ]]; then
   exit 1
 fi
 
-if [[ true ]]; then
-  echo "pkgsrc cannot be used on MacOS."
-  echo "The smartos.org gtk packages are not built correctly."
-  exit 1
-fi
-
 echo ""
 echo "This script uses the 'sudo' command to run various commands"
 echo "in a privileged state.  You will be required to enter your"
@@ -127,7 +121,7 @@ if [[ $skipinst == F ]]; then
     fi
     curl -O https://pkgsrc.smartos.org/packages/Darwin/bootstrap/${BOOTSTRAP_TAR}
     sudo -v
-    echo "${BOOTSTRAP_SHA}  ${BOOTSTRAP_TAR}" | shasum -c-
+    echo "${BOOTSTRAP_SHA} ${BOOTSTRAP_TAR}" | shasum -c -
     rc=$?
     if [[ $rc != 0 ]]; then
       echo "-- Download of pkgsrc failed."
@@ -147,14 +141,15 @@ TFN="$TLOC/bdj4-pre-inst.tmp"
 
 echo "-- Running pkgsrc update with sudo"
 sudo pkgin -y update
+sudo -v
 sudo pkgin -y upgrade
-
 sudo -v
 
 echo "-- Installing packages needed by BDJ4"
 # using our own libid3tag
-#
+# the librsvg-2.60 default does not work.
 sudo pkgin -y install \
+    gettext \
     icu \
     curl \
     flac \
@@ -166,7 +161,7 @@ sudo pkgin -y install \
     opusfile \
     libxml2 \
     xorgproto \
-    librsvg \
+    librsvg-2.40.21nb28 \
     adwaita-icon-theme \
     glib2 \
     gtk3+
@@ -177,6 +172,10 @@ if [[ $arch == arm64 ]]; then
   sudo pkgin -y install chromaprint
 fi
 
+sudo -v
+sudo pkgin -y update
+sudo -v
+sudo pkgin -y upgrade
 sudo -v
 
 # do not override macos getopt

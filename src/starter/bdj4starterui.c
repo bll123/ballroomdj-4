@@ -66,7 +66,8 @@ typedef enum {
   START_STATE_SUPPORT_SEND_FILES_PROFILE,
   START_STATE_SUPPORT_SEND_FILES_MACHINE,
   START_STATE_SUPPORT_SEND_FILES_MACH_PROF,
-  START_STATE_SUPPORT_SEND_DIAG_INIT,
+  START_STATE_SUPPORT_SEND_MAC_DIAG_INIT,
+  START_STATE_SUPPORT_SEND_LINUX_DIAG_INIT,
   START_STATE_SUPPORT_SEND_DIAG,
   START_STATE_SUPPORT_SEND_DB_PRE,
   START_STATE_SUPPORT_SEND_DB,
@@ -82,6 +83,7 @@ enum {
   SF_SL_ONLY,
   SF_SEQ_ONLY,
   SF_MAC_DIAG,
+  SF_LINUX_DIAG,
   CLOSE_REQUEST,
   CLOSE_CRASH,
 };
@@ -987,7 +989,7 @@ starterMainLoop (void *tstarter)
 
       sendfiles = uiToggleButtonIsActive (starter->wcont [START_W_SUPPORT_SEND_FILES]);
       if (! sendfiles) {
-        starter->startState = START_STATE_SUPPORT_SEND_DIAG_INIT;
+        starter->startState = START_STATE_SUPPORT_SEND_MAC_DIAG_INIT;
         break;
       }
 
@@ -1048,16 +1050,36 @@ starterMainLoop (void *tstarter)
       /* need all of the log files */
       starterSendFilesInit (starter, tbuff, SF_ALL);
       starter->startState = START_STATE_SUPPORT_SEND_FILE;
-      starter->nextState = START_STATE_SUPPORT_SEND_DIAG_INIT;
+      if (isLinux ()) {
+        starter->nextState = START_STATE_SUPPORT_SEND_LINUX_DIAG_INIT;
+      } else if (isMacOS ()) {
+        starter->nextState = START_STATE_SUPPORT_SEND_MAC_DIAG_INIT;
+      } else {
+        starter->nextState = START_STATE_SUPPORT_SEND_DB_PRE;
+      }
       break;
     }
-    case START_STATE_SUPPORT_SEND_DIAG_INIT: {
+    case START_STATE_SUPPORT_SEND_MAC_DIAG_INIT: {
       snprintf (tbuff, sizeof (tbuff), "%s/Library/Logs/DiagnosticReports",
           sysvarsGetStr (SV_HOME));
       starterSendFilesInit (starter, tbuff, SF_MAC_DIAG);
 
-      if (fileopFileExists ("core") ||
-          slistGetCount (starter->supportFileList) > 0) {
+      if (slistGetCount (starter->supportFileList) > 0) {
+        /* CONTEXT: starterui: support: status message */
+        snprintf (tbuff, sizeof (tbuff), _("Sending Diagnostics"));
+        uiLabelSetText (starter->wcont [START_W_STATUS_DISP], tbuff);
+        starter->startState = START_STATE_SUPPORT_SEND_DIAG;
+      } else {
+        starter->startState = START_STATE_SUPPORT_SEND_DB_PRE;
+      }
+      break;
+    }
+    case START_STATE_SUPPORT_SEND_LINUX_DIAG_INIT: {
+      pathbldMakePath (tbuff, sizeof (tbuff),
+          "", "", PATHBLD_MP_DIR_MAIN);
+      starterSendFilesInit (starter, tbuff, SF_LINUX_DIAG);
+
+      if (slistGetCount (starter->supportFileList) > 0) {
         /* CONTEXT: starterui: support: status message */
         snprintf (tbuff, sizeof (tbuff), _("Sending Diagnostics"));
         uiLabelSetText (starter->wcont [START_W_STATUS_DISP], tbuff);
@@ -1068,12 +1090,6 @@ starterMainLoop (void *tstarter)
       break;
     }
     case START_STATE_SUPPORT_SEND_DIAG: {
-      stpecpy (tbuff, tbuff + sizeof (tbuff), "core");
-      if (fileopFileExists (tbuff)) {
-        supportSendFile (starter->support, starter->ident, tbuff, SUPPORT_COMPRESSED);
-        fileopDelete (tbuff);
-      }
-
       starter->startState = START_STATE_SUPPORT_SEND_FILE;
       starter->nextState = START_STATE_SUPPORT_SEND_DB_PRE;
       break;
@@ -2123,10 +2139,13 @@ starterSupportMsgHandler (void *udata, int32_t responseid)
 static void
 starterSendFilesInit (startui_t *starter, char *dir, int sendType)
 {
-  slist_t     *list;
+  slist_t     *list = NULL;
   char        *ext = BDJ4_CONFIG_EXT;
 
   if (sendType == SF_ALL) {
+    ext = NULL;
+  }
+  if (sendType == SF_LINUX_DIAG) {
     ext = NULL;
   }
   if (sendType == SF_PL_ONLY) {
@@ -2145,7 +2164,29 @@ starterSendFilesInit (startui_t *starter, char *dir, int sendType)
     ext = ".crash";
   }
   starter->sendType = sendType;
-  list = dirlistBasicDirList (dir, ext);
+
+  if (isLinux () && sendType == SF_LINUX_DIAG) {
+    slist_t     *tmplist;
+    slistidx_t  iteridx;
+    const char  *fname;
+
+    list = slistAlloc ("core-list", LIST_UNORDERED, NULL);
+    tmplist = dirlistBasicDirList (dir, ext);
+    slistStartIterator (tmplist, &iteridx);
+    while ((fname = slistIterateKey (tmplist, &iteridx)) != NULL) {
+      if (! fileopFileExists (fname)) {
+        /* must be a file */
+        continue;
+      }
+      if (strncmp (fname, "core", 4) == 0) {
+        slistSetStr (list, fname, NULL);
+      }
+    }
+    slistFree (tmplist);
+  } else {
+    list = dirlistBasicDirList (dir, ext);
+  }
+
   starter->supportFileList = list;
   slistStartIterator (list, &starter->supportFileIterIdx);
   dataFree (starter->supportDir);
@@ -2158,14 +2199,15 @@ starterSendFiles (startui_t *starter)
   const char  *fn;
   const char  *origfn;
   char        ifn [MAXPATHLEN];
-  char        tbuff [100];
+  char        tbuff [MAXPATHLEN];
   char        *p;
   char        *end = ifn + sizeof (ifn);
 
   if (starter->supportInFname != NULL) {
     origfn = starter->supportInFname;
     supportSendFile (starter->support, starter->ident, origfn, SUPPORT_COMPRESSED);
-    if (starter->sendType == SF_MAC_DIAG) {
+    if (starter->sendType == SF_MAC_DIAG ||
+        starter->sendType == SF_LINUX_DIAG) {
       fileopDelete (starter->supportInFname);
     }
     dataFree (starter->supportInFname);

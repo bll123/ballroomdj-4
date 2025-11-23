@@ -392,8 +392,12 @@ data/\.sequence$
 # in case an alpha version converted the special raffle songs songlist
 # this can be removed at a later date. (early alpha)
 data/Raffle\ Songs\.songlist$
+data/Raffle\ Songs\.pl$
+data/Raffle\ Songs\.pldances$
 data/Raffle\ Songs\.songlist\.bak\.\d$
 data/Loterij\ liedjes\.songlist$
+data/Loterij\ liedjes\.pl$
+data/Loterij\ liedjes\.pldances$
 data/Loterij\ liedjes\.songlist\.bak\.\d$
 
 # old data file name (very early alpha)

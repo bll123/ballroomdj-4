@@ -12,32 +12,38 @@ npath=$(echo $npath | sed 's,/usr/local/sbin:,,g')
 npath=$(echo $npath | sed 's,/opt/pkg/bin:,,g')
 npath=$(echo $npath | sed 's,/opt/pkg/sbin:,,g')
 
+if [[ -d data ]]; then
+  dpath=data
+  ppath=pkg
+fi
+if [[ -d ../data ]]; then
+  dpath=../data
+  ppath=../pkg
+fi
+homebrew=${dpath}/macos.homebrew
+pkgsrc=${dpath}/macos.pkgsrc
+
 if [[ $1 == macports ]]; then
   npath=/opt/local/bin:$npath
   PATH=$npath
   unset npath
-  if [[ -d ../data ]]; then
-    rm -f ../data/macos.homebrew
-    rm -f ../data/macos.pkgsrc
+  if [[ -f ${homebrew} || -f ${pgksrc} ]]; then
+    # only libid3tag needs to be re-built
+    ${ppath}/build-all --pkg libid3tag
   fi
-  if [[ -d data ]]; then
-    rm -f data/macos.homebrew
-    rm -f data/macos.pkgsrc
-  fi
+  rm -f ${homebrew} ${pkgsrc}
 fi
 
 if [[ $1 == pkgsrc ]]; then
   npath=/opt/pkg/bin:$npath
   PATH=$npath
   unset npath
-  if [[ -d ../data ]]; then
-    touch ../data/macos.pkgsrc
-    rm -f ../data/macos.homebrew
+  if [[ ! -f ${pgksrc} ]]; then
+    # only libid3tag needs to be re-built
+    ${ppath}/build-all --pkg libid3tag
   fi
-  if [[ -d data ]]; then
-    touch data/macos.pkgsrc
-    rm -f data/macos.homebrew
-  fi
+  rm -f ${homebrew} ${pkgsrc}
+  touch ${pkgsrc}
 fi
 
 if [[ $1 == brew || $1 == homebrew ]]; then
@@ -51,12 +57,10 @@ if [[ $1 == brew || $1 == homebrew ]]; then
   npath=${pfx}/bin:$npath
   PATH=$npath
   unset npath
-  if [[ -d ../data ]]; then
-    touch ../data/macos.homebrew
-    rm -f ../data/macos.pkgsrc
+  if [[ ! -f ${homebrew} ]]; then
+    # only libid3tag needs to be re-built
+    ${ppath}/build-all --pkg libid3tag
   fi
-  if [[ -d data ]]; then
-    touch data/macos.homebrew
-    rm -f data/macos.pkgsrc
-  fi
+  rm -f ${homebrew} ${pkgsrc}
+  touch ${homebrew}
 fi

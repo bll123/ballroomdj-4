@@ -28,7 +28,7 @@ if (isset($_FILES['upfile']['name']) &&
     $fdata = base64_decode ($fdata);
   }
   if (! file_exists (dirname ($fn))) {
-    mkdir (dirname ($fn));
+    mkdir (dirname ($fn), 0755, true);
   }
   if (preg_match ("/\.gz/", $_FILES['upfile']['name'])) {
     $gzipped = true;

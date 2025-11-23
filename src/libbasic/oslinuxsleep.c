@@ -21,7 +21,7 @@
 
 static uint32_t     kdepowercookie = 0;
 static uint32_t     kdesscookie = 0;
-static uint32_t     kdenotcookie = 0;
+static uint32_t     kdenotifcookie = 0;
 
 static void osSuspendSleepKDE (void);
 static void osResumeSleepKDE (void);
@@ -31,7 +31,7 @@ osSuspendSleep (void)
 {
   char    temp [50];
 
-  osGetEnv ("XDG_SESSION_DESKTOP", temp, sizeof (temp));
+  osGetEnv ("XDG_CURRENT_DESKTOP", temp, sizeof (temp));
   if (strcmp (temp, "KDE") == 0) {
     osSuspendSleepKDE ();
   } else {
@@ -59,7 +59,7 @@ osResumeSleep (void)
 {
   char    temp [50];
 
-  osGetEnv ("XDG_SESSION_DESKTOP", temp, sizeof (temp));
+  osGetEnv ("XDG_CURRENT_DESKTOP", temp, sizeof (temp));
   if (strcmp (temp, "KDE") == 0) {
     osResumeSleepKDE ();
   } else {
@@ -137,7 +137,7 @@ osSuspendSleepKDE (void)
       "org.freedesktop.Notifications",
       "Inhibit");
   dbusResultGet (dbus, &rval, NULL);
-  kdenotcookie = rval;
+  kdenotifcookie = rval;
 
   dbusConnClose (dbus);
 
@@ -169,7 +169,7 @@ osResumeSleepKDE (void)
       "UnInhibit");
 
   dbusMessageInit (dbus);
-  dbusMessageSetData (dbus, "(u)", kdenotcookie);
+  dbusMessageSetData (dbus, "(u)", kdenotifcookie);
   dbusMessage (dbus,
       "org.freedesktop.Notifications",
       "/org/freedesktop/Notifications",

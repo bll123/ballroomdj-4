@@ -28,20 +28,16 @@ if [[ $(uname -s) != Darwin ]]; then
   exit 1
 fi
 
-if [[ true ]]; then
-  echo "pkgsrc cannot be used on MacOS."
-  echo "The smartos.org gtk packages are not built correctly."
-  exit 1
-fi
-
 cwd=$(pwd)
 
 bdir=$(dirname $0)
 ${bdir}/macos-pre-install-pkgsrc.sh
 
+PATH=$PATH:/opt/pkg/bin
+
 sudo -v
 
-sudo pkgin -y install cmake check pkgconf
+sudo pkgin -y install cmake check pkgconf gdbus-codegen
 
 sudo -k
 

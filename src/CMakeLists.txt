@@ -28,16 +28,19 @@ set (CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/../plocal")
 if (EXISTS "/opt/local/lib" AND
     NOT EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew" AND
     NOT EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.pkgsrc")
+  set (BDJ4_MACOS_PKGM macports)
   set (CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};/opt/local")
 endif()
 if (EXISTS "/opt/pkg/lib" AND
     (NOT EXISTS "/opt/local/lib" OR
     EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.pkgsrc"))
+  set (BDJ4_MACOS_PKGM pkgsrc)
   set (CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};/opt/pkg")
 endif()
 if (EXISTS "/opt/homebrew/lib" AND
     (NOT EXISTS "/opt/local/lib" OR
     EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew"))
+  set (BDJ4_MACOS_PKGM homebrew)
   set (CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};/opt/homebrew")
 endif()
 
@@ -52,13 +55,32 @@ include_directories (
   ${PROJECT_SOURCE_DIR}/../plocal/include
 )
 
-
-if (EXISTS "/opt/local/include")
+if (EXISTS "/opt/local/include" AND
+    NOT EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew" AND
+    NOT EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.pkgsrc")
   include_directories (
     SYSTEM /opt/local/include
   )
 endif()
-if (EXISTS "/opt/homebrew/include")
+if (EXISTS "/opt/pkg/include" AND
+    (NOT EXISTS "/opt/local/lib" OR
+    EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.pkgsrc"))
+  if (EXISTS "/opt/pkg/include/ffmpeg8")
+    set (PKGSRC_FFMPEG ffmpeg8)
+  endif()
+  if (EXISTS "/opt/pkg/include/ffmpeg9")
+    set (PKGSRC_FFMPEG ffmpeg9)
+  endif()
+  include_directories (
+    SYSTEM
+      /opt/pkg/include
+      /opt/pkg/include/gettext
+      /opt/pkg/include/${PKGSRC_FFMPEG}
+  )
+endif()
+if (EXISTS "/opt/homebrew/include" AND
+    (NOT EXISTS "/opt/local/lib" OR
+    EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew"))
   include_directories (
     SYSTEM /opt/homebrew/include
   )

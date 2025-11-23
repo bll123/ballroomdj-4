@@ -25,6 +25,7 @@
 #include "bdjstring.h"
 #include "bdjvarsdfload.h"
 #include "bdjvars.h"
+#include "dirlist.h"
 #include "fileop.h"
 #include "localeutil.h"
 #include "lock.h"
@@ -429,13 +430,26 @@ bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb)
   logProcBegin ();
 
   if (strcmp (sysvarsGetStr (SV_BDJ4_DEVELOPMENT), "dev") == 0) {
-    char    tbuff [MAXPATHLEN];
+    slist_t     *tmplist;
+    slistidx_t  iteridx;
+    const char  *fname;
+    char        tbuff [MAXPATHLEN];
 
     pathbldMakePath (tbuff, sizeof (tbuff),
-        "core", "", PATHBLD_MP_DIR_MAIN);
-    if (fileopFileExists (tbuff)) {
-      fprintf (stderr, "== core file exists\n");
+        "", "", PATHBLD_MP_DIR_MAIN);
+    tmplist = dirlistBasicDirList (tbuff, NULL);
+    slistStartIterator (tmplist, &iteridx);
+    while ((fname = slistIterateKey (tmplist, &iteridx)) != NULL) {
+      if (! fileopFileExists (fname)) {
+        /* must be a file */
+        continue;
+      }
+      if (strlen (fname) >= 4 && strncmp (fname, "core", 4) == 0) {
+        fprintf (stderr, "== core file exists\n");
+        break;
+      }
     }
+    slistFree (tmplist);
   }
 
   mstimestart (&mt);
