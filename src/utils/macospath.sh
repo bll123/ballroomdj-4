@@ -13,11 +13,11 @@ npath=$(echo $npath | sed 's,/opt/pkg/bin:,,g')
 npath=$(echo $npath | sed 's,/opt/pkg/sbin:,,g')
 
 if [[ -d data ]]; then
-  dpath=data
+  dpath=devel
   ppath=pkg
 fi
 if [[ -d ../data ]]; then
-  dpath=../data
+  dpath=../devel
   ppath=../pkg
 fi
 homebrew=${dpath}/macos.homebrew
@@ -27,9 +27,9 @@ if [[ $1 == macports ]]; then
   npath=/opt/local/bin:$npath
   PATH=$npath
   unset npath
-  if [[ -f ${homebrew} || -f ${pgksrc} ]]; then
+  if [[ -f ${homebrew} || -f ${pkgsrc} ]]; then
     # only libid3tag needs to be re-built
-    ${ppath}/build-all --pkg libid3tag
+    ${ppath}/build-all.sh --pkg libid3tag
   fi
   rm -f ${homebrew} ${pkgsrc}
 fi
@@ -38,9 +38,9 @@ if [[ $1 == pkgsrc ]]; then
   npath=/opt/pkg/bin:$npath
   PATH=$npath
   unset npath
-  if [[ ! -f ${pgksrc} ]]; then
+  if [[ ! -f ${pkgsrc} ]]; then
     # only libid3tag needs to be re-built
-    ${ppath}/build-all --pkg libid3tag
+    ${ppath}/build-all.sh --pkg libid3tag
   fi
   rm -f ${homebrew} ${pkgsrc}
   touch ${pkgsrc}
@@ -59,7 +59,7 @@ if [[ $1 == brew || $1 == homebrew ]]; then
   unset npath
   if [[ ! -f ${homebrew} ]]; then
     # only libid3tag needs to be re-built
-    ${ppath}/build-all --pkg libid3tag
+    ${ppath}/build-all.sh --pkg libid3tag
   fi
   rm -f ${homebrew} ${pkgsrc}
   touch ${homebrew}

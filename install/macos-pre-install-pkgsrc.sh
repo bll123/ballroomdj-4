@@ -145,13 +145,20 @@ sudo -v
 sudo pkgin -y upgrade
 sudo -v
 
+# the librsvg-2.60 default does not work.
+RSVG=$(pkgin avail | grep '^librsvg-2.40' | sed 's, .*,,')
+if [[ $arch == arm64 ]]; then
+  FFMPEG=ffmpeg8
+elif [[ $arch == x86_64 ]]; then
+  FFMPEG=ffmpeg5
+fi
+
 echo "-- Installing packages needed by BDJ4"
 # using our own libid3tag
-# the librsvg-2.60 default does not work.
 sudo pkgin -y install \
-    gettext \
     icu \
     curl \
+    $FFMPEG \
     flac \
     json-c \
     libgcrypt \
@@ -161,7 +168,7 @@ sudo pkgin -y install \
     opusfile \
     libxml2 \
     xorgproto \
-    librsvg-2.40.21nb28 \
+    $RSVG \
     adwaita-icon-theme \
     glib2 \
     gtk3+

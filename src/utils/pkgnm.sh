@@ -86,14 +86,14 @@ function pkgnmgetdata {
           ;;
       esac
       if [[ -d /opt/local/bin && \
-          ! -f data/macos.pkgsrc && \
-          ! -f data/macos.homebrew ]]; then
+          ! -f devel/macos.pkgsrc && \
+          ! -f devel/macos.homebrew ]]; then
         pn_supplib=-macports
       fi
-      if [[ -d /opt/pkg/bin && -f data/macos.pkgsrc ]]; then
+      if [[ -d /opt/pkg/bin && -f devel/macos.pkgsrc ]]; then
         pn_supplib=-pkgsrc
       fi
-      if [[ -d /opt/homebrew/bin && -f data/macos.homebrew ]]; then
+      if [[ -d /opt/homebrew/bin && -f devel/macos.homebrew ]]; then
         pn_supplib=-homebrew
       fi
       ;;

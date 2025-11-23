@@ -34,6 +34,7 @@ INSTSTAGE=$HOME/$SHNM/$ISTAGENM
 LINUXMOUNT=/media/sf_${SHNM}
 PRIMARYDEV=bll-g7.local
 LOG=pkg.log
+> $LOG
 
 function createpkg {
   . ./src/utils/pkgnm.sh
@@ -62,7 +63,7 @@ function createpkg {
         make
         ;;
     esac
-  ) > $LOG 2>&1
+  ) >> $LOG 2>&1
 
   ./pkg/mkpkg.sh
 
@@ -101,18 +102,17 @@ function createpkg {
 }
 
 if [[ $os == macos ]]; then
+  echo "-- $(date +%T) pkgsrc"
+  . ./src/utils/macospath.sh pkgsrc
+  createpkg
+fi
+
+if [[ $os == macos ]]; then
   echo "-- $(date +%T) macports"
   . ./src/utils/macospath.sh macports
 fi
 
 createpkg
-
-if [[ $os == macos ]]; then
-  echo "-- $(date +%T) pkgsrc"
-  . ./src/utils/macospath.sh pkgsrc
-  createpkg
-  . ./src/utils/macospath.sh macports
-fi
 
 rm -f $LOG
 

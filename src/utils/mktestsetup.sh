@@ -42,8 +42,6 @@ case $systype in
 esac
 
 FLAG=data/mktestdb.txt
-MACOSBREW=data/macos.homebrew
-MACOSPKGSRC=data/macos.pkgsrc
 
 function copytestf {
   ftype=$1
@@ -113,14 +111,6 @@ if [[ -f $FLAG ]]; then
   # preserve the flag file
   mv $FLAG .
 fi
-if [[ -f $MACOSBREW ]]; then
-  # preserve the flag file
-  mv $MACOSBREW .
-fi
-if [[ -f $MACOSPKGSRC ]]; then
-  # preserve the flag file
-  mv $MACOSPKGSRC .
-fi
 if [[ $KEEPDB == T ]]; then
   mv -f data/musicdb.dat .
 fi
@@ -137,14 +127,6 @@ fi
 if [[ -f $(basename $FLAG) ]]; then
   # preserve the flag file
   mv $(basename $FLAG) $FLAG
-fi
-if [[ -f $(basename $MACOSBREW) ]]; then
-  # preserve the flag file
-  mv $(basename $MACOSBREW) $MACOSBREW
-fi
-if [[ -f $(basename $MACOSPKGSRC) ]]; then
-  # preserve the flag file
-  mv $(basename $MACOSPKGSRC) $MACOSPKGSRC
 fi
 
 for f in templates/ds-*.txt; do

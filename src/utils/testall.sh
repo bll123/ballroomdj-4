@@ -14,8 +14,6 @@ while test ! \( -d src -a -d web -a -d wiki \); do
 done
 cwd=$(pwd)
 
-grc=0
-
 systype=$(uname -s)
 case $systype in
   Linux)
@@ -38,24 +36,14 @@ esac
 
 LOG=src/testall.log
 > $LOG
+grc=0
 
-if [[ $os == macos ]]; then
-  echo "-- $(date +%T) macports build"
-  . ./src/utils/macospath.sh macports
-fi
-
-./src/utils/testrun.sh "$@"
-grc=$?
-
-# the pre-built binary gtk packages from smartos.org is not built correctly
-TESTPKGSRC=F
+TESTPKGSRC=T
 if [[ $grc == 0 && TESTPKGSRC == T && $os == macos ]]; then
   echo "-- $(date +%T) pkgsrc build"
   . ./src/utils/macospath.sh pkgsrc
   ./src/utils/testrun.sh "$@"
   grc=$?
-  # revert back to the default macports
-  . ./src/utils/macospath.sh macports
 fi
 
 # homebrew will never work on intel
@@ -64,12 +52,18 @@ TESTHOMEBREW=F
 if [[ $grc == 0 && TESTHOMEBREW == T && $os == macos ]]; then
   echo "-- $(date +%T) homebrew build"
   . ./src/utils/macospath.sh homebrew
-  ../pkg/build-all.sh --pkg libid3tag >> $LOG 2>&1
   ./src/utils/testrun.sh "$@"
   grc=$?
-  # revert back to the default macports
+fi
+
+if [[ $os == macos ]]; then
+  echo "-- $(date +%T) macports build"
   . ./src/utils/macospath.sh macports
-  ../pkg/build-all.sh --pkg libid3tag >> $LOG 2>&1
+fi
+
+if [[ $grc == 0 ]]; then
+  ./src/utils/testrun.sh "$@"
+  grc=$?
 fi
 
 exit $grc

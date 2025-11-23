@@ -25,21 +25,26 @@ set (CMAKE_SHARED_LIBRARY_PREFIX "")
 set (CMAKE_STATIC_LIBRARY_PREFIX "")
 set (CMAKE_INSTALL_PREFIX "")
 set (CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/../plocal")
+
+# macos specific stuff
+# for development, we need tags to determine which package managemer
+# to use
+
 if (EXISTS "/opt/local/lib" AND
-    NOT EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew" AND
-    NOT EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.pkgsrc")
+    NOT EXISTS "${PROJECT_SOURCE_DIR}/../devel/macos.homebrew" AND
+    NOT EXISTS "${PROJECT_SOURCE_DIR}/../devel/macos.pkgsrc")
   set (BDJ4_MACOS_PKGM macports)
   set (CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};/opt/local")
 endif()
 if (EXISTS "/opt/pkg/lib" AND
     (NOT EXISTS "/opt/local/lib" OR
-    EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.pkgsrc"))
+    EXISTS "${PROJECT_SOURCE_DIR}/../devel/macos.pkgsrc"))
   set (BDJ4_MACOS_PKGM pkgsrc)
   set (CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};/opt/pkg")
 endif()
 if (EXISTS "/opt/homebrew/lib" AND
     (NOT EXISTS "/opt/local/lib" OR
-    EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew"))
+    EXISTS "${PROJECT_SOURCE_DIR}/../devel/macos.homebrew"))
   set (BDJ4_MACOS_PKGM homebrew)
   set (CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};/opt/homebrew")
 endif()
@@ -56,15 +61,24 @@ include_directories (
 )
 
 if (EXISTS "/opt/local/include" AND
-    NOT EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew" AND
-    NOT EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.pkgsrc")
+    NOT EXISTS "${PROJECT_SOURCE_DIR}/../devel/macos.homebrew" AND
+    NOT EXISTS "${PROJECT_SOURCE_DIR}/../devel/macos.pkgsrc")
   include_directories (
     SYSTEM /opt/local/include
   )
 endif()
 if (EXISTS "/opt/pkg/include" AND
     (NOT EXISTS "/opt/local/lib" OR
-    EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.pkgsrc"))
+    EXISTS "${PROJECT_SOURCE_DIR}/../devel/macos.pkgsrc"))
+  if (EXISTS "/opt/pkg/include/ffmpeg5")
+    set (PKGSRC_FFMPEG ffmpeg5)
+  endif()
+  if (EXISTS "/opt/pkg/include/ffmpeg6")
+    set (PKGSRC_FFMPEG ffmpeg6)
+  endif()
+  if (EXISTS "/opt/pkg/include/ffmpeg7")
+    set (PKGSRC_FFMPEG ffmpeg7)
+  endif()
   if (EXISTS "/opt/pkg/include/ffmpeg8")
     set (PKGSRC_FFMPEG ffmpeg8)
   endif()
@@ -80,7 +94,7 @@ if (EXISTS "/opt/pkg/include" AND
 endif()
 if (EXISTS "/opt/homebrew/include" AND
     (NOT EXISTS "/opt/local/lib" OR
-    EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew"))
+    EXISTS "${PROJECT_SOURCE_DIR}/../devel/macos.homebrew"))
   include_directories (
     SYSTEM /opt/homebrew/include
   )

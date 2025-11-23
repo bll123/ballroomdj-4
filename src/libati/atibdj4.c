@@ -64,7 +64,7 @@ atiiInit (const char *atipkg, int writetags,
   atidata->avutildlh = dylibLoad (avutilnm,
       DYLIB_OPT_MAC_PREFIX | DYLIB_OPT_VERSION | DYLIB_OPT_AV);
   avutilvers = dylibVersion ();
-  logMsg (LOG_DBG, LOG_INFO, "lib: avfmt: %d avutil: %d\n", avfmtvers, avutilvers);
+  logMsg (LOG_DBG, LOG_INFO, "lib: avfmt: %d avutil: %d", avfmtvers, avutilvers);
 
   atidata->av_log_set_callback = dylibLookup (atidata->avutildlh, "av_log_set_callback");
   atidata->av_strerror = dylibLookup (atidata->avutildlh, "av_strerror");
@@ -72,8 +72,26 @@ atiiInit (const char *atipkg, int writetags,
   atidata->avformat_find_stream_info = dylibLookup (atidata->avfmtdlh, "avformat_find_stream_info");
   atidata->avformat_close_input = dylibLookup (atidata->avfmtdlh, "avformat_close_input");
 
+  if (atidata->av_log_set_callback == NULL) {
+    logMsg (LOG_DBG, LOG_INFO, "lib: avutil: av_log_set_callback not found");
+  }
+  if (atidata->av_strerror == NULL) {
+    logMsg (LOG_DBG, LOG_INFO, "lib: avutil: av_strerror not found");
+  }
+  if (atidata->avformat_open_input == NULL) {
+    logMsg (LOG_DBG, LOG_INFO, "lib: avfmt: avformat_open_input not found");
+  }
+  if (atidata->avformat_find_stream_info == NULL) {
+    logMsg (LOG_DBG, LOG_INFO, "lib: avfmt: avformat_find_stream_info not found");
+  }
+  if (atidata->avformat_close_input == NULL) {
+    logMsg (LOG_DBG, LOG_INFO, "lib: avfmt: avformat_close_input not found");
+  }
+
   /* turn off logging for ffmpeg */
-  atidata->av_log_set_callback (atibdj4LogCallback);
+  if (atidata->av_log_set_callback != NULL) {
+    atidata->av_log_set_callback (atibdj4LogCallback);
+  }
 
   return atidata;
 }
@@ -159,7 +177,7 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
 
   /* 2025-9 : any unknown type will have need-duration set to true */
 
-  if (needduration) {
+  if (needduration && atidata->avformat_open_input != NULL) {
     AVFormatContext   *ictx = NULL;
     char              pbuff [100];
     int               rc;

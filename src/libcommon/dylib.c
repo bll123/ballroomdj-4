@@ -54,9 +54,9 @@ dylibLoad (const char *path, dlopt_t opt)
     /* this should match what the main CMakeLists.txt file does */
     tdir = "/opt/local/lib/";
     if (fileopIsDirectory (tdir)) {
-      tfn = "data/macos.homebrew";
+      tfn = "devel/macos.homebrew";
       if (! fileopFileExists (tfn)) {
-        tfn = "data/macos.pkgsrc";
+        tfn = "devel/macos.pkgsrc";
         if (! fileopFileExists (tfn)) {
           pfx = tdir;
           found = true;
@@ -90,13 +90,19 @@ dylibLoad (const char *path, dlopt_t opt)
       (opt & DYLIB_OPT_MAC_PREFIX) == DYLIB_OPT_MAC_PREFIX) {
     const char  *tdir;
 
-    /* must have trailing slash */
-    tdir = "/opt/pkg/lib/ffmpeg8/";
-    if (fileopIsDirectory (tdir)) {
-      pfx = tdir;
+    for (int i = 5; i < 9; ++i) {
+      char      tbuff [MAXPATHLEN];
 
-      snprintf (npath, sizeof (npath), "%s%s%s", pfx, path, shlibext);
-      handle = dylibBasicOpen (npath, sizeof (npath));
+      /* must have trailing slash */
+      snprintf (tbuff, sizeof (tbuff), "/opt/pkg/lib/ffmpeg%d/", i);
+      tdir = tbuff;
+      if (fileopIsDirectory (tdir)) {
+        pfx = tdir;
+
+        snprintf (npath, sizeof (npath), "%s%s%s", pfx, path, shlibext);
+        handle = dylibBasicOpen (npath, sizeof (npath));
+        break;
+      }
     }
   }
 
@@ -128,7 +134,7 @@ dylibLoad (const char *path, dlopt_t opt)
   }
 
   if (handle == NULL) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "WARN: dylib open %s failed: %d %s\n",
+    logMsg (LOG_DBG, LOG_IMPORTANT, "WARN: dylib open %s failed: %d %s",
         path, errno, strerror (errno));
   } else {
     mdextalloc (handle);

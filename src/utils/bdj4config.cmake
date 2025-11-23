@@ -64,7 +64,7 @@ endif()
 #### pkg-config / modules
 
 if (BDJ4_MACOS_PKGM STREQUAL "pkgsrc")
-  set (CMAKE_PREFIX_PATH "/opt/pkg/lib/${PKGSRC_FFMPEG}/pkgconfig")
+  set (ENV{PKG_CONFIG_PATH} "/opt/pkg/lib/${PKGSRC_FFMPEG}/pkgconfig")
 endif()
 
 # not win and not apple == linux
@@ -508,18 +508,18 @@ check_symbol_exists (pthread_create pthread.h _lib_pthread_create)
 unset (CMAKE_REQUIRED_LIBRARIES)
 
 if (EXISTS "/opt/local/include" AND
-    NOT EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.pkgsrc" AND
-    NOT EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew")
+    NOT EXISTS "${PROJECT_SOURCE_DIR}/../devel/macos.pkgsrc" AND
+    NOT EXISTS "${PROJECT_SOURCE_DIR}/../devel/macos.homebrew")
   set (CMAKE_REQUIRED_INCLUDES "/opt/local/include")
 endif()
 if (EXISTS "/opt/pkg/include" AND
     (NOT EXISTS "/opt/local/include" OR
-    EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.pkgsrc"))
+    EXISTS "${PROJECT_SOURCE_DIR}/../devel/macos.pkgsrc"))
   set (CMAKE_REQUIRED_INCLUDES "/opt/pkg/include;/opt/pkg/include/gettext")
 endif()
 if (EXISTS "/opt/homebrew/include" AND
     (NOT EXISTS "/opt/local/include" OR
-    EXISTS "${PROJECT_SOURCE_DIR}/../data/macos.homebrew"))
+    EXISTS "${PROJECT_SOURCE_DIR}/../devel/macos.homebrew"))
   set (CMAKE_REQUIRED_INCLUDES "/opt/homebrew/include")
 endif()
 if (Intl_LIBRARY AND NOT Intl_LIBRARY STREQUAL "NOTFOUND")

@@ -408,8 +408,8 @@ main (int argc, char * argv[])
         const char    *tfn;
         const char    *tfnb;
 
-        tfn = "data/macos.homebrew";
-        tfnb = "data/macos.pkgsrc";
+        tfn = "devel/macos.homebrew";
+        tfnb = "devel/macos.pkgsrc";
         if (! fileopFileExists (tfn) && ! fileopFileExists (tfnb)) {
           p = stpecpy (p, end, tdir);
           p = stpecpy (p, end, ":");
