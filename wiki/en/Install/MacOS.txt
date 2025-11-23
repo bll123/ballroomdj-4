@@ -56,7 +56,7 @@ than once during the installation process.
     cd Downloads
     bash macos-pre-install-macports-v24.sh
 
-If using the _pkgsrc_ package management system, use:
+If you are using the _pkgsrc_ package management system, use:
 
     cd Downloads
     bash macos-pre-install-pkgsrc-v24.sh
@@ -135,12 +135,13 @@ MacPorts, pkgsrc and Homebrew.
 
 MacPorts is very reliable, though sometimes slow, as not all packages
 have pre-built binaries (especially on newer releases).  MacPorts
-supports older versions of MacOS.
+supports older versions of MacOS.  MacPorts packages may not be fully
+up to date.
 
-pkgsrc has been around since 1997, though MacOS was added later. There
-is one company that has pre-built binary packages available.
-Unfortunately, the GTK package is not built correctly, and pkgsrc
-cannot be easily used.
+pkgsrc on MacOS is currently support by a commecial company that has
+pre-built binary packages available.  If this company goes away, the
+packages would have to be built from scratch, which takes a very long
+time, and has not been tested.
 
 Homebrew is very popular, as it installs pre-built binaries. Homebrew
 does not use elevated permissions (except during initial setup), and

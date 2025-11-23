@@ -159,6 +159,7 @@ if [[ -d /opt/pkg/bin ]]; then
   gr=$(getresponse)
   if [[ $gr == Y ]]; then
     sudo rm -f /opt/pkg
+    sudo rm -f /var/db/pkgin
     sudo rm -f /etc/paths.d/10-pkgsrc
   fi
 fi

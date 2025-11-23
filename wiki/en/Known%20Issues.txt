@@ -12,7 +12,8 @@
 * MacOS
     * 2025-8-16 Configuration: The font selection button crashes the
       application. This is not a problem on my end, I will post a
-      message on the forum when this is fixed.
+      message on the forum when this is fixed.  This is problem in the
+      MacPorts packages, and the pkgsrc packages do not have this issue.
     * 2025-8 In certain situations, the scrollbar stops working correctly
       when the cursor is moved past the bottom of the scrollbar.
       Try resizing the window.

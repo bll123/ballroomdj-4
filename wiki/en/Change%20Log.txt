@@ -4,14 +4,14 @@
 
 <!--
 
-**4.17.4.1 2025-11---**
+**4.17.5 2025-11---**
 
 * Bug Fixes:
     * Fix website processing of support files and mobile marquee (internet).
-    * Linux: Fix presentation mode startup script.
+    * Linux: Fix startup script (introduced in 4.17.3.1).
     * Support: Linux: Process core.pid naming convention.
 * Changes:
-    * MacOS: Support 'pkgsrc' package management.
+    * MacOS: Support 'pkgsrc' package management system.
 
 -->
 
