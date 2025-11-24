@@ -9,7 +9,8 @@ Sonoma, Sequoia, Tahoe.
 <br>If you want an earlier version supported, please
 [let&nbsp;me&nbsp;know](en-Getting%20Help)
 
-Supported package managers as of 2025-11: MacPorts, pkgsrc
+Supported package managers as of 2025-11:
+<br>MacPorts, pkgsrc, homebrew (applesilicon)
 
 #### Updating BallroomDJ 4 : Make a Backup
 
@@ -38,13 +39,26 @@ If a pre-install script before version 18 was run, you must re-run
 this script.
 
 This step only needs to be run once, not for every installation or
-update.  An internet connection is required to run this script.
+update.  An internet connection is required to run this script. You
+may want to re-run the pre-install script once a year when you update.
 
+As of 2025-11-24, the MacPorts package management system has a crash
+when the font selection button is used.
+
+If BDJ4 is already installed on your MacOS system, you are using the
+MacPorts package management system.
+
+__MacPorts__ package management system:
+<br>
 Download the macos-pre-install-macports-v24.sh script.
 
 If you wish to use the __pkgsrc__ package management system,
 <br>
 Download the macos-pre-install-pkgsrc-v24.sh script.
+
+If you wish to use the __homebrew__ package management system,
+<br>
+Download the macos-pre-install-homebrew-v24.sh script.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
@@ -53,6 +67,8 @@ script using the following command. This may take a very long time to
 finish. You may be required to enter your administrative password more
 than once during the installation process.
 
+If you are using the _MacPorts_ package management system, use:
+
     cd Downloads
     bash macos-pre-install-macports-v24.sh
 
@@ -60,6 +76,11 @@ If you are using the _pkgsrc_ package management system, use:
 
     cd Downloads
     bash macos-pre-install-pkgsrc-v24.sh
+
+If you are using the _homebrew_ package management system, use:
+
+    cd Downloads
+    bash macos-pre-install-homebrew-v24.sh
 
 This script performs the following actions:
 
@@ -73,7 +94,8 @@ Download the MacOS installer from sourceforge.
 
 Be sure to select the correct architecture (Intel or Apple Silicon).
 
-Be sure to select the correct package manager (macports or pkgsrc).
+Be sure to select the correct package manager (macports, pkgsrc or
+homebrew).
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
@@ -134,14 +156,13 @@ The following package managers are available for MacOS:
 MacPorts, pkgsrc and Homebrew.
 
 MacPorts is very reliable, though sometimes slow, as not all packages
-have pre-built binaries (especially on newer releases).  MacPorts
-supports older versions of MacOS.  MacPorts packages may not be fully
-up to date.
+have pre-built binaries (especially on newer releases of MacOS).
+MacPorts supports older versions of MacOS.  MacPorts packages may not
+be fully up to date.
 
-pkgsrc on MacOS is currently support by a commecial company that has
+pkgsrc on MacOS is currently supported by a commercial company that has
 pre-built binary packages available.  If this company goes away, the
-packages would have to be built from scratch, which takes a very long
-time, and has not been tested.
+ability to use pkgsrc is questionable, as MacOS is not well supported.
 
 Homebrew is very popular, as it installs pre-built binaries. Homebrew
 does not use elevated permissions (except during initial setup), and
@@ -152,12 +173,6 @@ On Intel MacOS, Homebrew refuses to make certain libraries available
 for easy use.  This would make building BDJ4 extremely difficult, and
 also make a pre-built BDJ4 virtually impossible to run, as users may
 have different versions of these required libraries.
-
-On Apple silicon MacOS, BDJ4 is not working properly with Homebrew,
-and I don't know that I want to spend the time debugging their builds
-to figure out what has gone wrong.  It could be possible to support
-BDJ4 + Homebrew on Apple silicon MacOS, but the effort doesn't seem to
-be worth the trouble.
 
 [Wiki Home](Home)
 <br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_

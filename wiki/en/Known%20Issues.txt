@@ -10,10 +10,10 @@
       after the device is connected.
     * BDJ4 does not detect changes in connected audio devices.
 * MacOS
-    * 2025-8-16 Configuration: The font selection button crashes the
+    * 2025-11-24 Configuration: When using the MacPorts package
+      management system, the font selection button crashes the
       application. This is not a problem on my end, I will post a
-      message on the forum when this is fixed.  This is problem in the
-      MacPorts packages, and the pkgsrc packages do not have this issue.
+      message on the forum when this is fixed.
     * 2025-8 In certain situations, the scrollbar stops working correctly
       when the cursor is moved past the bottom of the scrollbar.
       Try resizing the window.
@@ -31,7 +31,4 @@
       library (Debian 12).  An issue with ICU version 72 library.
 
 [Wiki Home](Home)
-<<<<<<< working copy
-=======
->>>>>>> merge rev
 <br>_(Updated 2025-11-03 13:34:39; BDJ4 version 4.17.3.3)_

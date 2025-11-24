@@ -3,6 +3,13 @@
 # Copyright 2025 Brad Lanam Pleasant Hill CA
 #
 
+#
+# this script must re-build any shipped packages that are
+# affected by the package management system
+# macos only builds libid3tag and libmp4tag,
+# libmp4tag does not require any external libraries at this time
+# and does not need to be rebuilt.
+
 npath=$(echo $PATH | sed 's,/opt/local/bin:,,g')
 npath=$(echo $npath | sed 's,/opt/local/sbin:,,g')
 npath=$(echo $npath | sed 's,/opt/homebrew/bin:,,g')

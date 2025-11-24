@@ -28,10 +28,9 @@ if [[ $(uname -s) != Darwin ]]; then
   exit 1
 fi
 
-if [[ true ]]; then
-  echo "Homebrew cannot be used on MacOS."
-  echo "a) On Intel MacOS, Homebrew refuses to make necessary libraries available."
-  echo "b) On Apple silicon MacOS, BDJ4+Homebrew does not work properly."
+if [[ $(uname -m) == x86_64 ]]; then
+  echo "Homebrew cannot be used on Intel MacOS."
+  echo "  On Intel MacOS, Homebrew does not make the necessary libraries available."
   exit 1
 fi
 

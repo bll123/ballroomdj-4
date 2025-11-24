@@ -47,27 +47,27 @@ dylibLoad (const char *path, dlopt_t opt)
   if (isMacOS () &&
       (opt & DYLIB_OPT_MAC_PREFIX) == DYLIB_OPT_MAC_PREFIX) {
     const char  *tdir;
-    const char  *tfn;
+    const char  *tfnh;
+    const char  *tfnp;
     bool        found = false;
+
+    tfnh = "devel/macos.homebrew";
+    tfnp = "devel/macos.pkgsrc";
 
     /* must have trailing slash */
     /* this should match what the main CMakeLists.txt file does */
     tdir = "/opt/local/lib/";
     if (fileopIsDirectory (tdir)) {
-      tfn = "devel/macos.homebrew";
-      if (! fileopFileExists (tfn)) {
-        tfn = "devel/macos.pkgsrc";
-        if (! fileopFileExists (tfn)) {
-          pfx = tdir;
-          found = true;
-        }
+      if (! fileopFileExists (tfnp) && ! fileopFileExists (tfnh)) {
+        pfx = tdir;
+        found = true;
       }
     }
 
     /* do not override if /opt/local/lib/ exists */
 
     tdir = "/opt/pkg/lib/";
-    if (! found && fileopIsDirectory (tdir)) {
+    if (! found && fileopIsDirectory (tdir) && ! fileopFileExists (tfnh)) {
       pfx = tdir;
     }
     tdir = "/opt/homebrew/lib/";

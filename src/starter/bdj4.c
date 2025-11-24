@@ -402,22 +402,22 @@ main (int argc, char * argv[])
     if (isMacOS ()) {
       const char    *tdir;
       bool          found = false;
+      const char    *tfnh;
+      const char    *tfnp;
+
+      tfnh = "devel/macos.homebrew";
+      tfnp = "devel/macos.pkgsrc";
 
       tdir = "/opt/local/bin";
       if (fileopIsDirectory (tdir)) {
-        const char    *tfn;
-        const char    *tfnb;
-
-        tfn = "devel/macos.homebrew";
-        tfnb = "devel/macos.pkgsrc";
-        if (! fileopFileExists (tfn) && ! fileopFileExists (tfnb)) {
+        if (! fileopFileExists (tfnp) && ! fileopFileExists (tfnh)) {
           p = stpecpy (p, end, tdir);
           p = stpecpy (p, end, ":");
           found = true;
         }
       }
       tdir = "/opt/pkg/bin";
-      if (! found && fileopIsDirectory (tdir)) {
+      if (! found && fileopIsDirectory (tdir) && ! fileopFileExists (tfnh)) {
         p = stpecpy (p, end, tdir);
         p = stpecpy (p, end, ":");
         found = true;
@@ -483,8 +483,6 @@ main (int argc, char * argv[])
         osSetEnv ("VLC_PLUGIN_PATH", tbuff);
       }
     }
-
-    osSetEnv ("G_FILENAME_ENCODING", "UTF8-MAC");
   }
 
   if (isWindows ()) {

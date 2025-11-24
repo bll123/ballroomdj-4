@@ -4,7 +4,9 @@
   package | url
   ------- | ---
   check | https://libcheck.github.io/check/<br>
-  https://github.com/libcheck/check/releases
+https://github.com/libcheck/check/releases
+<br>
+This can be replaced if something better is found.
   chromaprint | https://acoustid.org/chromaprint
   curl | https://curl.se/
   ffmpeg | https://ffmpeg.org/download.html#build-windows

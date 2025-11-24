@@ -45,7 +45,13 @@ if [[ -d /opt/local/lib && ! -f /opt/local/lib/libicui18n.dylib ]]; then
 fi
 
 latest=""
-pattern="bdj4-installer-macos-${archtag}-[a-z]*-4.[0-9]*.[0-9]*"
+# look for any package management system
+# make sure the old style w/o a package management system works
+# bdj4-installer-macos-<archtag>-<pkgm>-4.x.x-dev
+# bdj4-installer-macos-<archtag>-<pkgm>-4.x.x
+# bdj4-installer-macos-<archtag>-<pkgm>-4.x.x.x
+# bdj4-installer-macos-<archtag>-4.x.x (old)
+pattern="bdj4-installer-macos-${archtag}*-4.[0-9]*.[0-9]*"
 
 for f in $pattern; do
   if [[ -f $f ]]; then

@@ -60,13 +60,12 @@ if [[ ! -d $INSTSTAGE ]]; then
 fi
 
 count=$(ls -1 $INSTSTAGE/bdj4-installer-* | grep -- "-${VERSION}" | wc -l)
-# 2023-12-4 fedora failing due to some weird volume thing
-# 2024-1-15 fedora dropped
-# 2024-1-15 manjaro linux (arch) dropped (icu updated)
-# 2024-8-11 debian-11 dropped
-# 2025-8-9 debian-13 added
-# 2025-10-11 opensuse-16 added then dropped 2025-11-3, not stable
-if [[ $count -ne 6 ]]; then
+# debian-12, debian-13, opensuse-15
+# win64,
+# macos-intel-macports, macos-applesilicon-macports
+# macos-intel-pkgsrc, macos-applesilicon-pkgsrc
+# macos-applesilicon-homebrew
+if [[ $count -ne 9 ]]; then
   echo "Failed: not all platforms built."
   exit 1
 fi
@@ -112,7 +111,15 @@ ver=$(install/${fn}.sh --version)
 rsync -v -e ssh install/${fn}.sh \
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.sh
 
-# do not push the macos homebrew or pkgsrc scripts
+fn=macos-pre-install-pkgsrc
+ver=$(install/${fn}.sh --version)
+rsync -v -e ssh install/${fn}.sh \
+    ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.sh
+
+fn=macos-pre-install-homebrew
+ver=$(install/${fn}.sh --version)
+rsync -v -e ssh install/${fn}.sh \
+    ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/${fn}-v${ver}.sh
 
 fn=macos-run-installer
 ver=$(install/${fn}.sh --version)
@@ -133,7 +140,7 @@ rsync -v -e ssh install/${fn}.bat \
 
 # installers
 
-for fn in $HOME/vbox_shared/bdj4inst/bdj4-installer-*; do
+for fn in $INSTSTAGE/bdj4-installer-*; do
   rsync -v -e ssh ${fn} \
     ${remuser}@frs.sourceforge.net:/home/frs/project/${project}/v${VERSION}/
 done

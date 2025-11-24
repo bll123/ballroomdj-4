@@ -16,6 +16,12 @@ case $systype in
     ;;
   Darwin)
     os=macos
+    if [[ $arch == x86_64 ]]; then
+      archtag=intel
+    fi
+    if [[ $arch == arm64 ]]; then
+      archtag=applesilicon
+    fi
     platform=unix
     ;;
   MINGW64*)
@@ -101,9 +107,15 @@ function createpkg {
   esac
 }
 
-if [[ $os == macos ]]; then
+if [[ $os == macos && -d /opt/pkg/bin ]]; then
   echo "-- $(date +%T) pkgsrc"
   . ./src/utils/macospath.sh pkgsrc
+  createpkg
+fi
+
+if [[ $os == macos && -d /opt/homebrew/bin && $archtag == applesilicon ]]; then
+  echo "-- $(date +%T) homebrew"
+  . ./src/utils/macospath.sh homebrew
   createpkg
 fi
 

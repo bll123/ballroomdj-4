@@ -15,6 +15,8 @@ done
 cwd=$(pwd)
 
 systype=$(uname -s)
+arch=$(uname -m)
+
 case $systype in
   Linux)
     os=linux
@@ -22,6 +24,12 @@ case $systype in
     ;;
   Darwin)
     os=macos
+    if [[ $arch == x86_64 ]]; then
+      archtag=intel
+    fi
+    if [[ $arch == arm64 ]]; then
+      archtag=applesilicon
+    fi
     platform=unix
     ;;
   MINGW64*)
@@ -39,7 +47,9 @@ LOG=src/testall.log
 grc=0
 
 TESTPKGSRC=T
-if [[ $grc == 0 && TESTPKGSRC == T && $os == macos ]]; then
+if [[ $grc == 0 && \
+    TESTPKGSRC == T && \
+    $os == macos ]]; then
   echo "-- $(date +%T) pkgsrc build"
   . ./src/utils/macospath.sh pkgsrc
   ./src/utils/testrun.sh "$@"
@@ -47,9 +57,11 @@ if [[ $grc == 0 && TESTPKGSRC == T && $os == macos ]]; then
 fi
 
 # homebrew will never work on intel
-# homebrew is not working on apple silicon, and I'm not inclined to debug it.
-TESTHOMEBREW=F
-if [[ $grc == 0 && TESTHOMEBREW == T && $os == macos ]]; then
+TESTHOMEBREW=T
+if [[ $grc == 0 && \
+    TESTHOMEBREW == T && \
+    ${archtag} == applesilicon && \
+    $os == macos ]]; then
   echo "-- $(date +%T) homebrew build"
   . ./src/utils/macospath.sh homebrew
   ./src/utils/testrun.sh "$@"

@@ -1,5 +1,15 @@
 [Wiki Home](Home)
 
+###### General
+
+What is needed for a music playback library:
+
+* Good API.
+* Supported and maintained.
+* Seek in song.
+* Speed change with pitch correction.
+* Can play a single file.  Some music players are stuck in playlist mode.
+
 ###### VLC
 
 * Support for speed changes, including during playback.
@@ -18,6 +28,7 @@ the player after starting BDJ4 may be problematic.
 
 * Not sure how to get working on MacOS and Windows
 * GStreamer has a rate change, but does not adjust the pitch.
+Need to verify this statement.
 
 ###### MPV
 

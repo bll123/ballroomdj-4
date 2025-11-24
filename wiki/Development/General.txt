@@ -1,4 +1,5 @@
 [Wiki Home](Home)
+<br>[Developer Notes](Development-Developer%20Notes)
 
 ### Directory Layout
 
@@ -30,11 +31,17 @@
 
 #### General
 
+ Files|Notes
+ -----|-----
+ config.h.in|base configuration file for cmake
+ Makefile|makefile to run build, tests, etc.
+
  Directory|Notes
  ---------|-----
  libcommon|common utilities that do not use lists nor libicu
  libbasic|lists, basic utilities that use lists and/or libicu
  libbdj4|bdj4 specific utilities
+ libwebclient|web client (uses curl)
  libwebsrv|web server (uses mongoose)
  mongoose|third-party web server
 
@@ -48,7 +55,7 @@ point, both mutagen and the bdj4-ati interfaces
 were in process.
  libaudioid|audio identification
  libaudiosrc|audio source interface
- libcont|music controller
+ libcont|music controller (dynamic libraries)
  libmpris|Linux MPRIS interface
  libpli|player interface (dynamic libraries)
  libvol|volume interface (dynamic libraries)
@@ -59,13 +66,14 @@ were in process.
  ---------|-----
  libuibase|generic ui stuff (libbdj4uib)
  libuicommon|bdj4 major ui for both player and manager (libbdj4uic)
- libuigeneral|ui widget container &etc.
+ libuigeneral|ui widget container and non-specific ui routines.
  libuiintfc|bdj4 general ui interfaces (libbdj4uii)
  libuimanage|bdj4 major/minor ui specific to manageui (libbdj4uim)
  libuiplayer|bdj4 minor ui specific to playerui (libbdj4uip)
 
  Directory|Notes
  ---------|-----
+ libuicurses|curses gui layer (not started)
  libuigtk3|gtk3 gui layer
  libuimacos|macos gui layer
  libuinull|null gui layer
@@ -93,6 +101,8 @@ Only the marquee has the ui linked in.
  include|include files
  include/ui|ui include files
  po|localization
+ po/po|localization: .po files for BDJ4
+ po/web|localization: .po files for the website
  utils|various utility scripts and files
  utility|various utility programs used in testing
 

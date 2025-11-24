@@ -2,7 +2,6 @@
 
 #### Debian based
 
-
     apt update
     apt full-upgrade
     apt install name

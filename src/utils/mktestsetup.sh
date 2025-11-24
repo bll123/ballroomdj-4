@@ -289,7 +289,7 @@ fi
 
 if [[ $os == macos ]]; then
   tfn=data/${hostname}/bdjconfig.txt
-  sed -e '/^UI_THEME/ { n ; s/.*/..Mojave-dark/ ; }' \
+  sed -e '/^UI_THEME/ { n ; s/.*/..Mojave-dark-solid/ ; }' \
       -e '/^MQ_FONT/ { n ; s/.*/..Arial Narrow Regular 17/ ; }' \
       -e '/^UI_FONT/ { n ; s/.*/..Arial Regular 17/ ; }' \
       -e '/^LISTING_FONT/ { n ; s/.*/..Arial Regular 16/ ; }' \
