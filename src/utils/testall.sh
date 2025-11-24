@@ -4,9 +4,12 @@
 #
 
 #
-# This script will contain major build differences.
+# This script will contain major build differences that require
+# a clean and re-build.
 # - Different package managers
 # - Different UI flavors
+#
+# Testing with configuration differences should be in testrun.sh
 #
 
 while test ! \( -d src -a -d web -a -d wiki \); do
@@ -46,9 +49,31 @@ LOG=src/testall.log
 > $LOG
 grc=0
 
-TESTPKGSRC=T
+TDEFAULT=F
+TPKGSRC=F
+THOMEBREW=F
+for arg in "$@"; do
+  case $arg in
+    --testmacports|--testdefault)
+      TDEFAULT=T
+      ;;
+    --testpkgsrc)
+      TPKGSRC=T
+      ;;
+    --testhomebrew)
+      THOMEBREW=T
+      ;;
+  esac
+done
+
+if [[ $TDEFAULT == F && $TPKGSRC == F && $THOMEBREW == F ]]; then
+  TDEFAULT=T
+  TPKGSRC=T
+  THOMEBREW=T
+fi
+
 if [[ $grc == 0 && \
-    TESTPKGSRC == T && \
+    $TPKGSRC == T && \
     $os == macos ]]; then
   echo "-- $(date +%T) pkgsrc build"
   . ./src/utils/macospath.sh pkgsrc
@@ -57,9 +82,8 @@ if [[ $grc == 0 && \
 fi
 
 # homebrew will never work on intel
-TESTHOMEBREW=T
 if [[ $grc == 0 && \
-    TESTHOMEBREW == T && \
+    $THOMEBREW == T && \
     ${archtag} == applesilicon && \
     $os == macos ]]; then
   echo "-- $(date +%T) homebrew build"
@@ -73,7 +97,8 @@ if [[ $os == macos ]]; then
   . ./src/utils/macospath.sh macports
 fi
 
-if [[ $grc == 0 ]]; then
+if [[ $grc == 0 && \
+    $TDEFAULT == T ]]; then
   ./src/utils/testrun.sh "$@"
   grc=$?
 fi

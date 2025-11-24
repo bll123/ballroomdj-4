@@ -54,7 +54,6 @@ for arg in "$@"; do
       ts=T
       ;;
   esac
-  shift
 done
 
 systype=$(uname -s)
@@ -84,7 +83,7 @@ if [[ $TBUILD == T ]]; then
   echo "-- $(date +%T) building"
   (
     cd src
-    make distclean
+    make realclean
   )
 fi
 

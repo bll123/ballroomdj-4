@@ -46,4 +46,4 @@ right.  MPV is low priority.
 operations.  Due to this bug, development on MPV is stopped.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_
+<br>_(Updated 2025-11-24 13:59:21; BDJ4 version 4.17.5)_

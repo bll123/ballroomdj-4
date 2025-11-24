@@ -9,6 +9,7 @@ done
 cwd=$(pwd)
 
 systype=$(uname -s)
+arch=$(uname -m)
 case $systype in
   Linux)
     os=linux
@@ -55,7 +56,7 @@ function createpkg {
   echo "-- $(date +%T) building"
   (
     cd src
-    make distclean
+    make realclean
   )
 
   (
@@ -78,7 +79,6 @@ function createpkg {
     exit 1
   fi
 
-  systype=$(uname -s)
   case $systype in
     Linux)
       isprimary=F
