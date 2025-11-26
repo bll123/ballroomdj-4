@@ -195,6 +195,10 @@ img/macos_icon\.svg$
 plocal/bin/acrcloud$
 plocal/bin/acrcloud\.exe$
 
+# 2025-11-25
+# old stuff that should not have shipped
+ChangeLog\.txt$
+
 ####
 # mac-os
 

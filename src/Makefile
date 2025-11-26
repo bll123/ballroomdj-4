@@ -225,7 +225,7 @@ dataclean:
 .PHONY: distclean
 distclean:
 	@-$(MAKE) realclean
-	@-$(RM) -f testall.log zzz
+	@-$(RM) -f testall.log zzz ../pkg.log
 
 .PHONY: realclean
 realclean:
@@ -239,9 +239,8 @@ realclean:
 .PHONY: clean
 clean:
 	@-$(MAKE) tclean
-	@-$(RM) -f zz ../zz ../*/zz
 	@-$(MAKE) eclean
-	@-test -f build/CMakeCache.txt && cmake --build build --target clean
+	@-test ! -f build/CMakeCache.txt || cmake --build build --target clean
 
 .PHONY: eclean
 eclean:

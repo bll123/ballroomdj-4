@@ -1193,14 +1193,14 @@ managePlaylistCheckChanged (managepl_t *managepl)
 
   svala = uiEntryGetValue (managepl->wcont [MPL_W_URI]);
   svalb = playlistGetPodcastStr (pl, PODCAST_URI);
-  if ((svalb == NULL && svala != NULL) ||
+  if ((svalb == NULL && svala != NULL && *svala) ||
       (svala != NULL && svalb != NULL && strcmp (svala, svalb) != 0)) {
     managepl->changed = true;
   }
 
   svala = uiEntryGetValue (managepl->wcont [MPL_W_TITLE]);
   svalb = playlistGetPodcastStr (pl, PODCAST_TITLE);
-  if ((svalb == NULL && svala != NULL) ||
+  if ((svalb == NULL && svala != NULL && *svala) ||
       (svala != NULL && svalb != NULL && strcmp (svala, svalb) != 0)) {
     managepl->changed = true;
   }
