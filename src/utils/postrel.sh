@@ -13,7 +13,7 @@ ISTAGENM=bdj4inst
 INSTSTAGE=$HOME/$SHNM/$ISTAGENM
 
 count=$(ls -1 $INSTSTAGE/bdj4-installer-* | wc -l)
-if [[ $count -ne 9 ]]; then
+if [[ $count -ne 7 ]]; then
   echo "Failed: not all platforms built."
   exit 1
 fi

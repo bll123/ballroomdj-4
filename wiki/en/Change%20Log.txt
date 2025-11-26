@@ -6,10 +6,12 @@
 
 **4.17.5.1 2025-12---**
 
+-->
+
+**4.17.5.1 2025-11-26**
+
 * Bug Fixes:
     * Playlist Management: Fix deletion of playlist (introduced in 4.15.0).
-
--->
 
 **4.17.5 2025-11-24**
 
@@ -1381,4 +1383,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-11-24 13:59:21; BDJ4 version 4.17.5)_
+<br>_(Updated 2025-11-26 08:35:57; BDJ4 version 4.17.5.1)_
