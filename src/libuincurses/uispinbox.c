@@ -45,7 +45,7 @@ uiSpinboxTextCreate (void *udata)
 
 void
 uiSpinboxTextSet (uiwcont_t *uiwidget, int min, int count,
-    int maxWidth, slist_t *list, nlist_t *keylist,
+    int maxWidth, nlist_t *list, nlist_t *keylist,
     uispinboxdisp_t textGetProc)
 {
   return;

@@ -36,7 +36,7 @@ add_library (libuigtk3 SHARED
 )
 addUIInclude (libuigtk3)
 target_link_libraries (libuigtk3 PRIVATE
-  objuigeneral libbdj4 libbdj4basic libbdj4common
+  objuigeneral libbdj4basic libbdj4common
 )
 addUILibrary (libuigtk3)
 addIntlLibrary (libuigtk3)

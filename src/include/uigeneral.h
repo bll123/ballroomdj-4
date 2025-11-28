@@ -14,6 +14,9 @@
 #if BDJ4_UI_MACOS
 # include "ui-macos.h"
 #endif
+#if BDJ4_UI_NCURSES
+# include "ui-ncurses.h"
+#endif
 
 #include "uiwcont.h"
 

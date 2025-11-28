@@ -54,7 +54,8 @@ fprintf (stderr, "b: button-1 click\n");
 @end
 
 uiwcont_t *
-uiCreateButton (const char *ident, callback_t *uicb, char *title, char *imagenm)
+uiCreateButton (const char *ident, callback_t *uicb, const char *title,
+    const char *imagenm)
 {
   uiwcont_t       *uiwidget;
   uibutton_t      *uibutton;

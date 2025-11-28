@@ -35,7 +35,7 @@ add_library (libuinull SHARED
   uiwindow.c
 )
 target_link_libraries (libuinull PRIVATE
-  objuigeneral libbdj4 libbdj4basic libbdj4common
+  objuigeneral libbdj4basic libbdj4common
 )
 addIntlLibrary (libuinull)
 addWinSockLibrary (libuinull)

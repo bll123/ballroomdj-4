@@ -35,7 +35,7 @@ add_library (libuimacos SHARED
   uiwindow.m
 )
 target_link_libraries (libuimacos PRIVATE
-  objuigeneral libbdj4 libbdj4basic libbdj4common
+  objuigeneral libbdj4basic libbdj4common
 )
 target_link_options (libuimacos PRIVATE
   -framework Cocoa

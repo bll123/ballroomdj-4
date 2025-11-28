@@ -62,3 +62,11 @@ uiNotebookSetCallback (uiwcont_t *uinotebook, callback_t *uicb)
   return;
 }
 
+void
+uiNotebookSetScrollable (uiwcont_t *uinotebook)
+{
+  if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-scrollable")) {
+    return;
+  }
+}
+

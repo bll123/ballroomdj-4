@@ -148,3 +148,14 @@ uiEntrySetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
 
   return;
 }
+
+void
+uiEntryClearChanged (uiwcont_t *uiwidget)
+{
+  uientry_t   *uientry;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-changed")) {
+    return;
+  }
+}
+
