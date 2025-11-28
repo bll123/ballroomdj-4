@@ -9,20 +9,13 @@ add_library (libbdj4uip SHARED
   uiextreq.c
   uiquickedit.c
 )
-target_include_directories (libbdj4uip
-  PRIVATE ${PKG_GTK_INCLUDE_DIRS}
-)
-if (APPLE)
-  target_link_options (libbdj4uip PRIVATE
-    -framework Cocoa
-  )
-endif()
+addUIInclude (libbdj4uip)
 target_link_libraries (libbdj4uip PRIVATE
   libbdj4uii libbdj4uib ${BDJ4_UI_LIB}
   libbdj4audiosrc
   libbdj4 libbdj4basic libbdj4common
-  ${PKG_GTK_LDFLAGS}
 )
+addUILibrary (libbdj4uip)
 addIntlLibrary (libbdj4uip)
 addWinSockLibrary (libbdj4uip)
 

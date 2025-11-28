@@ -17,19 +17,12 @@ endif()
 if (NOT APPLE AND NOT WIN32)
   target_sources (libbdj4uib PRIVATE osuilinuxutils.c)
 endif()
-target_include_directories (libbdj4uib
-  PRIVATE ${PKG_GTK_INCLUDE_DIRS}
-)
-if (APPLE)
-  target_link_options (libbdj4uib PRIVATE
-    -framework Cocoa
-  )
-endif()
+addUIInclude (libbdj4uib)
 target_link_libraries (libbdj4uib PRIVATE
   ${BDJ4_UI_LIB}
   libbdj4 libbdj4basic libbdj4common
-  ${PKG_GTK_LDFLAGS}
 )
+addUILibrary (libbdj4uib)
 addIntlLibrary (libbdj4uib)
 addWinSockLibrary (libbdj4uib)
 

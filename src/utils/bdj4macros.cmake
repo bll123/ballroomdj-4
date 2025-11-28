@@ -23,6 +23,28 @@ macro (addIOKitFramework name)
   endif()
 endmacro()
 
+macro (addUIInclude name)
+  if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3" OR
+      BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
+    target_include_directories (${name} PRIVATE
+      ${PKG_GTK_INCLUDE_DIRS}
+    )
+  endif()
+endmacro()
+
+macro (addUILibrary name)
+  if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3" OR
+      BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
+    target_link_libraries (${name} PRIVATE ${PKG_GTK_LDFLAGS})
+  endif()
+  if (BDJ4_UI STREQUAL "macos" OR BDJ4_UI STREQUAL "MacOS" OR
+      BDJ4_UI STREQUAL "Macos")
+    target_link_options (${name} PRIVATE
+      -framework Cocoa
+    )
+  endif()
+endmacro()
+
 macro (addWinSockLibrary name)
   if (WIN32)
     target_link_libraries (${name} PRIVATE ws2_32)

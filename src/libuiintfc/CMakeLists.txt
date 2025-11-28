@@ -21,19 +21,12 @@ add_library (libbdj4uii SHARED
   uivirtlist.c
   uivlutil.c
 )
-target_include_directories (libbdj4uii
-  PRIVATE ${PKG_GTK_INCLUDE_DIRS}
-)
-if (APPLE)
-  target_link_options (libbdj4uii PRIVATE
-    -framework Cocoa
-  )
-endif()
+addUIInclude (libbdj4uii)
 target_link_libraries (libbdj4uii PRIVATE
   libbdj4uib ${BDJ4_UI_LIB}
   libbdj4 libbdj4basic libbdj4common
-  ${PKG_GTK_LDFLAGS}
 )
+addUILibrary (libbdj4uii)
 addIntlLibrary (libbdj4uii)
 addWinSockLibrary (libbdj4uii)
 

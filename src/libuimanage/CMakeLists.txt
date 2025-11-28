@@ -16,20 +16,13 @@ add_library (libbdj4uim SHARED
   uisongedit.c
   uisongeditui.c
 )
-target_include_directories (libbdj4uim
-  PRIVATE ${PKG_GTK_INCLUDE_DIRS}
-)
-if (APPLE)
-  target_link_options (libbdj4uim PRIVATE
-    -framework Cocoa
-  )
-endif()
+addUIInclude (libbdj4uim)
 target_link_libraries (libbdj4uim PRIVATE
   libbdj4uic libbdj4uii libbdj4uib ${BDJ4_UI_LIB}
   libbdj4audiosrc
   libbdj4 libbdj4basic libbdj4common
-  ${PKG_GTK_LDFLAGS}
 )
+addUILibrary (libbdj4uim)
 addIntlLibrary (libbdj4uim)
 addWinSockLibrary (libbdj4uim)
 

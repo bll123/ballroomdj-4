@@ -12,9 +12,7 @@ add_executable (bdj4info bdj4info.c)
 if (WIN32)
   target_compile_options (bdj4info PRIVATE -municode)
 endif()
-target_include_directories (bdj4info
-  PRIVATE ${PKG_GTK_INCLUDE_DIRS}
-)
+addUIInclude (bdj4info)
 target_link_libraries (bdj4info PRIVATE
   libbdj4basic libbdj4common
 )
@@ -129,8 +127,8 @@ endif()
 target_link_libraries (uitest PRIVATE
   libbdj4uii libbdj4uib ${BDJ4_UI_LIB}
   libbdj4 libbdj4basic libbdj4common
-  ${PKG_GTK_LDFLAGS}
 )
+addUILibrary (uitest)
 addIntlLibrary (uitest)
 
 # want to always build this

@@ -15,6 +15,4 @@ add_library (objuigeneral OBJECT
   uiwcont.c
   uiwcontfree.c
 )
-target_include_directories (objuigeneral
-  PRIVATE ${PKG_GTK_INCLUDE_DIRS}
-)
+addUIInclude (objuigeneral)

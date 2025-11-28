@@ -25,7 +25,7 @@ if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3" OR
     BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null" OR
     BDJ4_UI STREQUAL "macos" OR BDJ4_UI STREQUAL "MacOS" OR
         BDJ4_UI STREQUAL "Macos" OR
-    BDJ4_UI STREQUAL "ncurses" OR BDJ4_UI STREQUAL "curses")
+    BDJ4_UI STREQUAL "ncurses")
 else()
   message (FATAL_ERROR "BDJ4_UI (${BDJ4_UI}) not supported")
 endif()
@@ -50,7 +50,7 @@ if (BDJ4_UI STREQUAL "macos" OR BDJ4_UI STREQUAL "MacOS" OR BDJ4_UI STREQUAL "Ma
   set (BDJ4_UI_LIB libuimacos)
 endif()
 
-if (BDJ4_UI STREQUAL "ncurses" OR BDJ4_UI STREQUAL "curses")
+if (BDJ4_UI STREQUAL "ncurses")
   add_compile_options (-DBDJ4_UI_NCURSES=1)
   set (BDJ4_UI_LIB libuincurses)
 endif()
