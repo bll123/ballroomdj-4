@@ -50,7 +50,7 @@ macro (addUILibrary name)
     )
   endif()
   if (BDJ4_UI STREQUAL "ncurses")
-    target_link_options (${name} PRIVATE
+    target_link_libraries (${name} PRIVATE
       ${PKG_CDK_LDFLAGS}
       ${PKG_NCURSES_LDFLAGS}
     )

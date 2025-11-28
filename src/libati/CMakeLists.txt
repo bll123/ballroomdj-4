@@ -69,7 +69,7 @@ target_link_libraries (libatibdj4 PRIVATE
   ${PKG_LIBOPUSFILE_LDFLAGS}
   ${PKG_LIBOPUS_LDFLAGS}
   # flac
-  ${LIBFLAC_LDFLAGS}
+  ${PKG_LIBFLAC_LDFLAGS}
   libbdj4atiutil
   libbdj4basic
   libbdj4common

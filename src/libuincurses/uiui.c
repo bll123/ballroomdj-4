@@ -22,13 +22,16 @@ int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 const char *
 uiBackend (void)
 {
-  return "null";
+  return "ncurses";
 }
 
 void
 uiUIInitialize (int direction)
 {
-  return;
+  initscr ();
+  raw ();
+  keypad (stdscr, TRUE);
+  noecho ();
 }
 
 void
@@ -46,6 +49,7 @@ uiUIProcessWaitEvents (void)
 void
 uiCleanup (void)
 {
+  endwin ();
   return;
 }
 

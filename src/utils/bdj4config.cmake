@@ -73,21 +73,18 @@ if (BDJ4_MACOS_PKGM STREQUAL "pkgsrc")
   set (ENV{PKG_CONFIG_PATH} "/opt/pkg/lib/${PKGSRC_FFMPEG}/pkgconfig")
 endif()
 
-# not win and not apple == linux
-# if (linux) does not work (2023-4-3)
-if (NOT WIN32 AND NOT APPLE)
-  # not in use
-  pkg_check_modules (PKG_ALSA alsa)
-endif()
 pkg_check_modules (PKG_CHECK check)
 pkg_check_modules (PKG_CURL libcurl)
 pkg_check_modules (PKG_GCRYPT libgcrypt)
 pkg_check_modules (PKG_GIO gio-2.0)
 pkg_check_modules (PKG_GLIB glib-2.0)
 pkg_check_modules (PKG_JSONC json-c)
+pkg_check_modules (PKG_OPENSSL openssl)
 pkg_check_modules (PKG_XML2 libxml-2.0)
 
 find_program (GDBUSCODEGEN NAMES gdbus-codegen)
+
+#### UI packages
 
 if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
   pkg_check_modules (PKG_GTK gtk+-3.0)
@@ -95,16 +92,20 @@ endif()
 if (BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
   pkg_check_modules (PKG_GTK libgtk-4-1)
 endif()
-if (BDJ4_UI STREQUAL "ncurses" OR BDJ4_UI STREQUAL "curses")
-  set (PKG_NCURSES_INCLUDE_DIR "")
-  set (PKG_NCURSES_LDFLAGS "-lncurses")
-  set (PKG_NCURSES_FOUND TRUE)
-  set (PKG_CDK_INCLUDE_DIR "")
+if (BDJ4_UI STREQUAL "ncurses")
   set (PKG_CDK_LDFLAGS "-lcdk")
-  set (PKG_CDK_FOUND TRUE)
+  set (PKG_CDK_INCLUDE_DIRS "")
+  set (PKG_NCURSES_LDFLAGS "-lpanel;-lncursesw")
+  set (PKG_NCURSES_INCLUDE_DIRS "")
 endif()
-pkg_check_modules (PKG_OPENSSL openssl)
+
+#### volume
+
+# not win and not apple == linux
+# if (linux) does not work (2023-4-3)
 if (NOT WIN32 AND NOT APPLE)
+# not in use
+#  pkg_check_modules (PKG_ALSA alsa)
   pkg_check_modules (PKG_PA libpulse)
   pkg_check_modules (PKG_PIPEWIRE libpipewire-0.3)
 #  pkg_check_modules (PKG_SPA libspa-0.2)

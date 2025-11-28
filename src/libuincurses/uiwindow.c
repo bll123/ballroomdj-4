@@ -11,6 +11,14 @@
 #include <ctype.h>
 #include <math.h>
 
+#if __has_include (<ncursesw/ncurses.h>)
+# include <ncursesw/ncurses.h>
+#else
+# if __has_include (<ncurses.h>)
+#  include <ncurses.h>
+# endif
+#endif
+
 #include "callback.h"
 #include "uiwcont.h"
 
@@ -23,7 +31,19 @@
 uiwcont_t *
 uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
 {
-  return NULL;
+  uiwcont_t     *uiwin;
+
+// ### this should open a new terminal window */
+  uiwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_WINDOW);
+  uiwcontSetWidget (uiwin, NULL, NULL);
+  uiwin->uidata.wh = LINES;
+  uiwin->uidata.ww = COLS;
+  uiwin->uidata.wx = 0;
+  uiwin->uidata.wy = 0;
+mvprintw (0, 0, "%s", title);
+mvprintw (1, 0, "%s", "내가제일잘나가ははは夕陽伴我歸ne_русский_шторм");
+refresh ();
+  return uiwin;
 }
 
 void
@@ -45,6 +65,8 @@ uiCloseWindow (uiwcont_t *uiwindow)
   if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-close")) {
     return;
   }
+
+// ### close the terminal
 
   return;
 }
