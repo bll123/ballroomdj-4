@@ -43,15 +43,15 @@ if (NOT APPLE AND NOT WIN32)
     oslinuxsleep.c
   )
   target_link_libraries (libbdj4basic PRIVATE
-    ${GIO_LDFLAGS}
+    ${PKG_GIO_LDFLAGS}
   )
 endif()
 target_include_directories (libbdj4basic
-  PRIVATE "${XML2_INCLUDE_DIRS}"
+  PRIVATE "${PKG_XML2_INCLUDE_DIRS}"
 )
 target_link_libraries (libbdj4basic PRIVATE
   libbdj4common
-  ${XML2_LDFLAGS}
+  ${PKG_XML2_LDFLAGS}
 )
 addIntlLibrary (libbdj4basic)
 addIOKitFramework (libbdj4basic)

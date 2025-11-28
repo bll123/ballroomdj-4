@@ -44,18 +44,18 @@ if (WIN32)
 endif()
 if (NOT APPLE AND NOT WIN32)
   target_include_directories (libbdj4common
-    PRIVATE "${GIO_INCLUDE_DIRS}"
+    PRIVATE "${PKG_GIO_INCLUDE_DIRS}"
   )
   target_sources (libbdj4common PRIVATE
     dbusi.c
     oslinuxlocale.c
   )
   target_link_libraries (libbdj4common PRIVATE
-    ${GIO_LDFLAGS}
+    ${PKG_GIO_LDFLAGS}
   )
 endif()
 target_include_directories (libbdj4common
-  PRIVATE "${GLIB_INCLUDE_DIRS}"
+  PRIVATE "${PKG_GLIB_INCLUDE_DIRS}"
 )
 target_link_libraries (libbdj4common PRIVATE
   objosutils    # osutils.c os*utils.c
@@ -67,7 +67,7 @@ target_link_libraries (libbdj4common PRIVATE
   objosprocess  # osprocess.c os*process.c
   objstring     # bdjstring.c stpecpy.c mdebug.c
   objtmutil     # tmutil.c
-  ${GLIB_LDFLAGS}
+  ${PKG_GLIB_LDFLAGS}
   ${CMAKE_DL_LIBS}
   m             # needed for Fedora gcc 13
 )

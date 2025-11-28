@@ -38,7 +38,7 @@ if (WIN32)
   target_compile_options (bdj4g PRIVATE -municode)
 endif()
 target_include_directories (bdj4g
-  PRIVATE ${GTK_INCLUDE_DIRS}
+  PRIVATE ${PKG_GTK_INCLUDE_DIRS}
 )
 target_compile_options (bdj4g PRIVATE -DBDJ4_GUI_LAUNCHER=1)
 target_link_libraries (bdj4g PRIVATE
@@ -50,7 +50,7 @@ target_link_libraries (bdj4g PRIVATE
   objfileop
   objstring
   objtmutil
-  ${GTK_LDFLAGS}
+  ${PKG_GTK_LDFLAGS}
   m
 )
 addIOKitFramework (bdj4g)
@@ -71,7 +71,7 @@ endif()
 target_link_libraries (bdj4starterui PRIVATE
   libbdj4uib ${BDJ4_UI_LIB}
   libwebclient libbdj4 libbdj4basic libbdj4common
-  ${GTK_LDFLAGS}
+  ${PKG_GTK_LDFLAGS}
 )
 addIntlLibrary (bdj4starterui)
 addWinSockLibrary (bdj4starterui)
@@ -87,7 +87,7 @@ endif()
 target_link_libraries (bdj4helperui PRIVATE
   libbdj4uib ${BDJ4_UI_LIB}
   libbdj4 libbdj4basic libbdj4common
-  ${GTK_LDFLAGS}
+  ${PKG_GTK_LDFLAGS}
 )
 addIntlLibrary (bdj4helperui)
 addWinSockLibrary (bdj4helperui)

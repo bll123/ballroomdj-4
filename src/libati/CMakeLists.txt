@@ -10,16 +10,16 @@ add_library (libbdj4atiutil SHARED
   atioggutil.c
 )
 target_include_directories (libbdj4atiutil
-  PRIVATE ${LIBOPUS_INCLUDE_DIRS} ${LIBOPUSFILE_INCLUDE_DIRS}
+  PRIVATE ${PKG_LIBOPUS_INCLUDE_DIRS} ${PKG_LIBOPUSFILE_INCLUDE_DIRS}
 )
 target_link_libraries (libbdj4atiutil PRIVATE
   # ogg
-  ${LIBVORBISFILE_LDFLAGS}
-  ${LIBVORBIS_LDFLAGS}
-  ${LIBOGG_LDFLAGS}
+  ${PKG_LIBVORBISFILE_LDFLAGS}
+  ${PKG_LIBVORBIS_LDFLAGS}
+  ${PKG_LIBOGG_LDFLAGS}
   # opus
-  ${LIBOPUSFILE_LDFLAGS}
-  ${LIBOPUS_LDFLAGS}
+  ${PKG_LIBOPUSFILE_LDFLAGS}
+  ${PKG_LIBOPUS_LDFLAGS}
   libbdj4basic libbdj4common
 )
 
@@ -27,16 +27,16 @@ add_library (libbdj4ati SHARED
   ati.c
 )
 target_include_directories (libbdj4ati
-  PRIVATE ${LIBOPUS_INCLUDE_DIRS} ${LIBOPUSFILE_INCLUDE_DIRS}
+  PRIVATE ${PKG_LIBOPUS_INCLUDE_DIRS} ${PKG_LIBOPUSFILE_INCLUDE_DIRS}
 )
 target_link_libraries (libbdj4ati PRIVATE
   # ogg
-  ${LIBVORBISFILE_LDFLAGS}
-  ${LIBVORBIS_LDFLAGS}
-  ${LIBOGG_LDFLAGS}
+  ${PKG_LIBVORBISFILE_LDFLAGS}
+  ${PKG_LIBVORBIS_LDFLAGS}
+  ${PKG_LIBOGG_LDFLAGS}
   # opus
-  ${LIBOPUSFILE_LDFLAGS}
-  ${LIBOPUS_LDFLAGS}
+  ${PKG_LIBOPUSFILE_LDFLAGS}
+  ${PKG_LIBOPUS_LDFLAGS}
   libbdj4atiutil
   libbdj4basic libbdj4common
 )
@@ -52,22 +52,22 @@ add_library (libatibdj4 SHARED
   atibdj4riff.c
 )
 target_include_directories (libatibdj4
-  PRIVATE ${LIBOPUS_INCLUDE_DIRS}
-  PRIVATE ${LIBOPUSFILE_INCLUDE_DIRS}
+  PRIVATE ${PKG_LIBOPUS_INCLUDE_DIRS}
+  PRIVATE ${PKG_LIBOPUSFILE_INCLUDE_DIRS}
 )
 target_link_libraries (libatibdj4 PRIVATE
   # put this first, otherwise the wrong libid3tag library is picked up
   # libid3tag
-  ${LIBID3TAG_LDFLAGS}
+  ${PKG_LIBID3TAG_LDFLAGS}
   # libmp4tag
-  ${LIBMP4TAG_LDFLAGS}
+  ${PKG_LIBMP4TAG_LDFLAGS}
   # vorbis
-  ${LIBVORBISFILE_LDFLAGS}
-  ${LIBVORBIS_LDFLAGS}
-  ${LIBOGG_LDFLAGS}
+  ${PKG_LIBVORBISFILE_LDFLAGS}
+  ${PKG_LIBVORBIS_LDFLAGS}
+  ${PKG_LIBOGG_LDFLAGS}
   # opus
-  ${LIBOPUSFILE_LDFLAGS}
-  ${LIBOPUS_LDFLAGS}
+  ${PKG_LIBOPUSFILE_LDFLAGS}
+  ${PKG_LIBOPUS_LDFLAGS}
   # flac
   ${LIBFLAC_LDFLAGS}
   libbdj4atiutil

@@ -35,11 +35,11 @@ add_library (libuigtk3 SHARED
   uiwindow.c
 )
 target_include_directories (libuigtk3
-  PRIVATE ${GTK_INCLUDE_DIRS}
+  PRIVATE ${PKG_GTK_INCLUDE_DIRS}
 )
 target_link_libraries (libuigtk3 PRIVATE
   objuigeneral libbdj4 libbdj4basic libbdj4common
-  ${GTK_LDFLAGS}
+  ${PKG_GTK_LDFLAGS}
 )
 addIntlLibrary (libuigtk3)
 addWinSockLibrary (libuigtk3)

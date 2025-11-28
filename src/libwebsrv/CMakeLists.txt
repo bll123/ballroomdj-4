@@ -14,9 +14,9 @@ target_compile_options (objwebsrv PRIVATE
 )
 target_include_directories (objwebsrv
   PRIVATE "${MONGOOSE_INC_DIR}"
-  PRIVATE "${OPENSSL_INCLUDE_DIRS}"
+  PRIVATE "${PKG_OPENSSL_INCLUDE_DIRS}"
 )
 target_link_libraries (objwebsrv PRIVATE
-  ${OPENSSL_LDFLAGS}
+  ${PKG_OPENSSL_LDFLAGS}
 )
 

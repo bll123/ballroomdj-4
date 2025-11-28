@@ -36,7 +36,7 @@ endif()
 target_link_libraries (bdj4installer PRIVATE
   libbdj4uib ${BDJ4_UI_LIB}
   libwebclient libbdj4 libbdj4basic libbdj4common
-  ${GTK_LDFLAGS}
+  ${PKG_GTK_LDFLAGS}
 )
 addIntlLibrary (bdj4installer)
 addWinVersionInfo (bdj4installer)
@@ -50,7 +50,7 @@ endif()
 target_link_libraries (bdj4altinst PRIVATE
   libbdj4uib ${BDJ4_UI_LIB}
   libwebclient libbdj4 libbdj4basic libbdj4common
-  ${GTK_LDFLAGS}
+  ${PKG_GTK_LDFLAGS}
 )
 addIntlLibrary (bdj4altinst)
 addWinVersionInfo (bdj4altinst)

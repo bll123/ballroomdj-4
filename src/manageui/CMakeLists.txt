@@ -23,7 +23,7 @@ target_link_libraries (bdj4manageui PRIVATE
   libbdj4uim libbdj4uic libbdj4uii libbdj4uib ${BDJ4_UI_LIB}
   libbdj4cont libbdj4audioid
   libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
-  ${GTK_LDFLAGS}
+  ${PKG_GTK_LDFLAGS}
 )
 addIntlLibrary (bdj4manageui)
 addWinSockLibrary (bdj4manageui)
@@ -39,7 +39,7 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4bpmcounter PRIVATE
   libbdj4uib ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
-  ${GTK_LDFLAGS}
+  ${PKG_GTK_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4bpmcounter)

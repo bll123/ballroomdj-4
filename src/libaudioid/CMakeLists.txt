@@ -15,15 +15,15 @@ add_library (libbdj4audioid SHARED
   acrcloud.c
 )
 target_include_directories (libbdj4audioid
-  PRIVATE "${GLIB_INCLUDE_DIRS}"
-  PRIVATE "${XML2_INCLUDE_DIRS}"
+  PRIVATE "${PKG_GLIB_INCLUDE_DIRS}"
+  PRIVATE "${PKG_XML2_INCLUDE_DIRS}"
 )
 target_link_libraries (libbdj4audioid PRIVATE
   libwebclient libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
-  ${GLIB_LDFLAGS}
-  ${GCRYPT_LDFLAGS}
-  ${XML2_LDFLAGS}
-  ${JSONC_LDFLAGS}
+  ${PKG_GLIB_LDFLAGS}
+  ${PKG_GCRYPT_LDFLAGS}
+  ${PKG_XML2_LDFLAGS}
+  ${PKG_JSONC_LDFLAGS}
 )
 # if (APPLE)
 #  target_link_libraries (libbdj4audioid PRIVATE

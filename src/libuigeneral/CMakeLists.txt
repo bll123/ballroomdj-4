@@ -16,5 +16,5 @@ add_library (objuigeneral OBJECT
   uiwcontfree.c
 )
 target_include_directories (objuigeneral
-  PRIVATE ${GTK_INCLUDE_DIRS}
+  PRIVATE ${PKG_GTK_INCLUDE_DIRS}
 )

@@ -94,9 +94,9 @@ add_executable (check_all
 )
 target_link_libraries (check_all PRIVATE
   libwebclient libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
-  ${GCRYPT_LDFLAGS}
-  ${GLIB_LDFLAGS}
-  ${CHECK_LDFLAGS}
+  ${PKG_GCRYPT_LDFLAGS}
+  ${PKG_GLIB_LDFLAGS}
+  ${PKG_CHECK_LDFLAGS}
   pthread
 )
 target_compile_options (check_all PRIVATE -I${PROJECT_SOURCE_DIR}/check)

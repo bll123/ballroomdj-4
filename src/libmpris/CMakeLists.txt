@@ -53,17 +53,17 @@ if (NOT WIN32 AND NOT APPLE)
 
   add_library (objmprisroot OBJECT mpris-root.c)
   target_include_directories (objmprisroot
-    PRIVATE "${GIO_INCLUDE_DIRS}"
+    PRIVATE "${PKG_GIO_INCLUDE_DIRS}"
   )
   target_link_libraries (objmprisroot PRIVATE
-    ${GIO_LDFLAGS}
+    ${PKG_GIO_LDFLAGS}
   )
 
   add_library (objmprisplayer OBJECT mpris-player.c)
   target_include_directories (objmprisplayer
-    PRIVATE "${GIO_INCLUDE_DIRS}"
+    PRIVATE "${PKG_GIO_INCLUDE_DIRS}"
   )
   target_link_libraries (objmprisplayer PRIVATE
-    ${GIO_LDFLAGS}
+    ${PKG_GIO_LDFLAGS}
   )
 endif()

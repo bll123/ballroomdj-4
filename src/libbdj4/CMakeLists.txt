@@ -56,16 +56,16 @@ add_library (libbdj4 SHARED
   xspf.c
 )
 target_include_directories (libbdj4
-  PRIVATE "${GLIB_INCLUDE_DIRS}"
+  PRIVATE "${PKG_GLIB_INCLUDE_DIRS}"
 )
 target_link_libraries (libbdj4 PRIVATE
   libbdj4ati
   libbdj4audiosrc
   objwebsrv
   libbdj4basic libbdj4common
-  ${GCRYPT_LDFLAGS}
-  ${GLIB_LDFLAGS}
-  ${JSONC_LDFLAGS}
+  ${PKG_GCRYPT_LDFLAGS}
+  ${PKG_GLIB_LDFLAGS}
+  ${PKG_JSONC_LDFLAGS}
 )
 if (APPLE)
   target_link_options (libbdj4 PRIVATE

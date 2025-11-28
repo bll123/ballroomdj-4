@@ -17,29 +17,29 @@ target_link_libraries (libplinull PRIVATE
   libbdj4common
 )
 
-if (LIBVLC_FOUND)
+if (PKG_LIBVLC_FOUND)
   add_library (libplivlc SHARED plivlc.c vlci.c)
   target_compile_options (libplivlc PRIVATE -DBDJ4_VLC_VERS=3)
   target_include_directories (libplivlc
-    PRIVATE "${LIBVLC_INCLUDE_DIR}"
+    PRIVATE "${PKG_LIBVLC_INCLUDE_DIR}"
   )
   target_link_libraries (libplivlc PRIVATE
     libbdj4common
-    ${LIBVLC_LDFLAGS}
-    ${LIBVLC_LIBRARY}
+    ${PKG_LIBVLC_LDFLAGS}
+    ${PKG_LIBVLC_LIBRARY}
   )
   addIntlLibrary (libplivlc)
 endif()
 
-if (LIBVLC4_FOUND)
+if (PKG_LIBVLC4_FOUND)
   add_library (libplivlc4 SHARED plivlc.c vlci.c)
   target_compile_options (libplivlc4 PRIVATE -DBDJ4_VLC_VERS=4)
   target_include_directories (libplivlc4
-    PRIVATE "${LIBVLC4_INCLUDE_DIR}"
+    PRIVATE "${PKG_LIBVLC4_INCLUDE_DIR}"
   )
   target_link_libraries (libplivlc4 PRIVATE
     libbdj4common
-    ${LIBVLC4_LIBRARY}
+    ${PKG_LIBVLC4_LIBRARY}
   )
   addIntlLibrary (libplivlc4)
 endif()
@@ -47,24 +47,24 @@ endif()
 if (NOT WIN32 AND NOT APPLE)
   add_library (libplimpris SHARED plimpris.c mprisi.c)
   target_include_directories (libplimpris
-    PRIVATE "${GLIB_INCLUDE_DIRS}"
+    PRIVATE "${PKG_GLIB_INCLUDE_DIRS}"
   )
   target_link_libraries (libplimpris PRIVATE
     libbdj4common
-    ${GIO_LDFLAGS}
+    ${PKG_GIO_LDFLAGS}
   )
 endif()
 
-if (GST_FOUND)
+if (PKG_GST_FOUND)
   add_library (libpligst SHARED pligst.c gsti.c)
   target_include_directories (libpligst
-    PRIVATE "${GST_INCLUDE_DIRS}"
-    PRIVATE "${GLIB_INCLUDE_DIRS}"
+    PRIVATE "${PKG_GST_INCLUDE_DIRS}"
+    PRIVATE "${PKG_GLIB_INCLUDE_DIRS}"
   )
   target_link_libraries (libpligst PRIVATE
     libbdj4common
-    ${GST_LDFLAGS}
-    ${GLIB_LDFLAGS}
+    ${PKG_GST_LDFLAGS}
+    ${PKG_GLIB_LDFLAGS}
   )
   addIntlLibrary (libpligst)
 endif()
@@ -87,7 +87,7 @@ install (TARGETS
 updateRPath (libbdj4pli)
 updateRPath (libplinull)
 
-if (LIBVLC_FOUND)
+if (PKG_LIBVLC_FOUND)
   install (TARGETS
     libplivlc
     DESTINATION ${DEST_BIN}
@@ -95,7 +95,7 @@ if (LIBVLC_FOUND)
   updateRPath (libplivlc)
 endif()
 
-if (LIBVLC4_FOUND)
+if (PKG_LIBVLC4_FOUND)
   install (TARGETS
     libplivlc4
     DESTINATION ${DEST_BIN}
@@ -111,7 +111,7 @@ if (NOT WIN32 AND NOT APPLE)
   updateRPath (libplimpris)
 endif()
 
-if (GST_FOUND)
+if (PKG_GST_FOUND)
   install (TARGETS
     libpligst
     DESTINATION ${DEST_BIN}

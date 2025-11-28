@@ -10,7 +10,7 @@ add_library (libbdj4uip SHARED
   uiquickedit.c
 )
 target_include_directories (libbdj4uip
-  PRIVATE ${GTK_INCLUDE_DIRS}
+  PRIVATE ${PKG_GTK_INCLUDE_DIRS}
 )
 if (APPLE)
   target_link_options (libbdj4uip PRIVATE
@@ -21,7 +21,7 @@ target_link_libraries (libbdj4uip PRIVATE
   libbdj4uii libbdj4uib ${BDJ4_UI_LIB}
   libbdj4audiosrc
   libbdj4 libbdj4basic libbdj4common
-  ${GTK_LDFLAGS}
+  ${PKG_GTK_LDFLAGS}
 )
 addIntlLibrary (libbdj4uip)
 addWinSockLibrary (libbdj4uip)

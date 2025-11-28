@@ -24,7 +24,8 @@ if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3" OR
     BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4" OR
     BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null" OR
     BDJ4_UI STREQUAL "macos" OR BDJ4_UI STREQUAL "MacOS" OR
-        BDJ4_UI STREQUAL "Macos")
+        BDJ4_UI STREQUAL "Macos" OR
+    BDJ4_UI STREQUAL "ncurses" OR BDJ4_UI STREQUAL "curses")
 else()
   message (FATAL_ERROR "BDJ4_UI (${BDJ4_UI}) not supported")
 endif()
@@ -49,6 +50,11 @@ if (BDJ4_UI STREQUAL "macos" OR BDJ4_UI STREQUAL "MacOS" OR BDJ4_UI STREQUAL "Ma
   set (BDJ4_UI_LIB libuimacos)
 endif()
 
+if (BDJ4_UI STREQUAL "ncurses" OR BDJ4_UI STREQUAL "curses")
+  add_compile_options (-DBDJ4_UI_NCURSES=1)
+  set (BDJ4_UI_LIB libuincurses)
+endif()
+
 #### bits / check supported platforms
 
 if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
@@ -70,75 +76,80 @@ endif()
 # not win and not apple == linux
 # if (linux) does not work (2023-4-3)
 if (NOT WIN32 AND NOT APPLE)
-  pkg_check_modules (ALSA alsa)
+  # not in use
+  pkg_check_modules (PKG_ALSA alsa)
 endif()
-pkg_check_modules (CHECK check)
-pkg_check_modules (CURL libcurl)
-pkg_check_modules (GCRYPT libgcrypt)
-pkg_check_modules (GIO gio-2.0)
-pkg_check_modules (GLIB glib-2.0)
-pkg_check_modules (JSONC json-c)
+pkg_check_modules (PKG_CHECK check)
+pkg_check_modules (PKG_CURL libcurl)
+pkg_check_modules (PKG_GCRYPT libgcrypt)
+pkg_check_modules (PKG_GIO gio-2.0)
+pkg_check_modules (PKG_GLIB glib-2.0)
+pkg_check_modules (PKG_JSONC json-c)
+pkg_check_modules (PKG_XML2 libxml-2.0)
 
 find_program (GDBUSCODEGEN NAMES gdbus-codegen)
 
 if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
-  pkg_check_modules (GTK gtk+-3.0)
+  pkg_check_modules (PKG_GTK gtk+-3.0)
 endif()
 if (BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
-  pkg_check_modules (GTK libgtk-4-1)
+  pkg_check_modules (PKG_GTK libgtk-4-1)
 endif()
-pkg_check_modules (OPENSSL openssl)
+if (BDJ4_UI STREQUAL "ncurses" OR BDJ4_UI STREQUAL "curses")
+  pkg_check_modules (PKG_NCURSES libncurses)
+  pkg_check_modules (PKG_CDK libcdk)
+endif()
+pkg_check_modules (PKG_OPENSSL openssl)
 if (NOT WIN32 AND NOT APPLE)
-  pkg_check_modules (PA libpulse)
-  pkg_check_modules (PIPEWIRE libpipewire-0.3)
-  pkg_check_modules (SPA libspa-0.2)
+  pkg_check_modules (PKG_PA libpulse)
+  pkg_check_modules (PKG_PIPEWIRE libpipewire-0.3)
+#  pkg_check_modules (PKG_SPA libspa-0.2)
 endif()
-pkg_check_modules (XML2 libxml-2.0)
 
 #### VLC
 
 # linux
 # will need to figure out vlc3/vlc4 in the future
-pkg_check_modules (LIBVLC libvlc)
+pkg_check_modules (PKG_LIBVLC libvlc)
 
 # on MacOS, the libvlc.dylib is located in different locations
 # for vlc-3 and vlc-4.
-if (APPLE AND NOT LIBVLC_FOUND)
+if (APPLE AND NOT PKG_LIBVLC_FOUND)
   # for development
-  if (NOT LIBVLC_FOUND AND EXISTS "$ENV{HOME}/Applications/VLC3.app/Contents/MacOS/lib/libvlc.dylib")
+  if (NOT PKG_LIBVLC_FOUND AND EXISTS "$ENV{HOME}/Applications/VLC3.app/Contents/MacOS/lib/libvlc.dylib")
     message ("-- VLC3: Using $ENV{HOME}/Applications/VLC3.app")
     if (EXISTS "$ENV{HOME}/Applications/VLC3.app/Contents/MacOS/include")
-      set (LIBVLC_INCLUDE_DIR "$ENV{HOME}/Applications/VLC3.app/Contents/MacOS/include")
+      set (PKG_LIBVLC_INCLUDE_DIR "$ENV{HOME}/Applications/VLC3.app/Contents/MacOS/include")
     else()
-      set (LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.21")
+      set (PKG_LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.21")
     endif()
-    set (LIBVLC_LIBRARY "$ENV{HOME}/Applications/VLC3.app/Contents/MacOS/lib/libvlc.dylib")
-    set (LIBVLC_FOUND TRUE)
+    set (PKG_LIBVLC_LIBRARY "$ENV{HOME}/Applications/VLC3.app/Contents/MacOS/lib/libvlc.dylib")
+    set (PKG_LIBVLC_FOUND TRUE)
   endif()
-  if (NOT LIBVLC_FOUND AND EXISTS "/Applications/VLC.app/Contents/MacOS/lib/libvlc.dylib")
+  if (NOT PKG_LIBVLC_FOUND AND EXISTS "/Applications/VLC.app/Contents/MacOS/lib/libvlc.dylib")
     message ("-- VLC3: Using /Applications/VLC.app")
     if (EXISTS "/Applications/VLC3.app/Contents/MacOS/include")
-      set (LIBVLC_INCLUDE_DIR "/Applications/VLC.app/Contents/MacOS/include")
+      set (PKG_LIBVLC_INCLUDE_DIR "/Applications/VLC.app/Contents/MacOS/include")
     else()
-      set (LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.21")
+      set (PKG_LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.21")
     endif()
-    set (LIBVLC_LIBRARY "/Applications/VLC.app/Contents/MacOS/lib/libvlc.dylib")
-    set (LIBVLC_FOUND TRUE)
+    set (PKG_LIBVLC_LIBRARY "/Applications/VLC.app/Contents/MacOS/lib/libvlc.dylib")
+    set (PKG_LIBVLC_FOUND TRUE)
   endif()
 endif()
-if (APPLE AND NOT LIBVLC4_FOUND)
+if (APPLE AND NOT PKG_LIBVLC4_FOUND)
   # for development
-  if (NOT LIBVLC4_FOUND AND EXISTS "$ENV{HOME}/Applications/VLC4.app/Contents/Frameworks/libvlc.dylib")
+  if (NOT PKG_LIBVLC4_FOUND AND EXISTS "$ENV{HOME}/Applications/VLC4.app/Contents/Frameworks/libvlc.dylib")
     message ("-- VLC4: Using $ENV{HOME}/Applications/VLC4.app")
-    set (LIBVLC4_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-4.0.0")
-    set (LIBVLC4_LIBRARY "$ENV{HOME}/Applications/VLC4.app/Contents/Frameworks/libvlc.dylib")
-    set (LIBVLC4_FOUND TRUE)
+    set (PKG_LIBVLC4_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-4.0.0")
+    set (PKG_LIBVLC4_LIBRARY "$ENV{HOME}/Applications/VLC4.app/Contents/Frameworks/libvlc.dylib")
+    set (PKG_LIBVLC4_FOUND TRUE)
   endif()
-  if (NOT LIBVLC4_FOUND AND EXISTS "/Applications/VLC.app/Contents/Frameworks/libvlc.dylib")
+  if (NOT PKG_LIBVLC4_FOUND AND EXISTS "/Applications/VLC.app/Contents/Frameworks/libvlc.dylib")
     message ("-- VLC4: Using /Applications/VLC.app")
-    set (LIBVLC4_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-4.0.0")
-    set (LIBVLC4_LIBRARY "/Applications/VLC4.app/Contents/Frameworks/libvlc.dylib")
-    set (LIBVLC4_FOUND TRUE)
+    set (PKG_LIBVLC4_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-4.0.0")
+    set (PKG_LIBVLC4_LIBRARY "/Applications/VLC4.app/Contents/Frameworks/libvlc.dylib")
+    set (PKG_LIBVLC4_FOUND TRUE)
   endif()
 endif()
 
@@ -147,41 +158,41 @@ endif()
 #   VLC 3 is installed into Program Files/VideoLAN/VLC3
 #   VLC 4 is installed into Program Files/VideoLAN/VLC4
 # need a way to differentiate a vlc-3 and vlc-4 installation.
-if (WIN32 AND NOT LIBVLC_FOUND)
+if (WIN32 AND NOT PKG_LIBVLC_FOUND)
   if (EXISTS "C:/Program Files/VideoLAN/VLC/libvlc.dll" AND
       NOT EXISTS "C:/Program Files/VideoLAN/VLC3/libvlc.dll")
     message ("-- VLC3: Using C:/Program Files/VideoLAN/VLC")
-    set (LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.21")
-    set (LIBVLC_LIBRARY "C:/Program Files/VideoLAN/VLC/libvlc.dll")
-    set (LIBVLC_FOUND TRUE)
+    set (PKG_LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.21")
+    set (PKG_LIBVLC_LIBRARY "C:/Program Files/VideoLAN/VLC/libvlc.dll")
+    set (PKG_LIBVLC_FOUND TRUE)
   endif()
   # for development, override the usual VLC dir, as it is not known
   # what version it is.
-  if (NOT LIBVLC_FOUND AND EXISTS "C:/Program Files/VideoLAN/VLC3/libvlc.dll")
+  if (NOT PKG_LIBVLC_FOUND AND EXISTS "C:/Program Files/VideoLAN/VLC3/libvlc.dll")
     message ("-- VLC3: Using C:/Program Files/VideoLAN/VLC3")
-    set (LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.21")
-    set (LIBVLC_LIBRARY "C:/Program Files/VideoLAN/VLC3/libvlc.dll")
-    set (LIBVLC_FOUND TRUE)
+    set (PKG_LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.21")
+    set (PKG_LIBVLC_LIBRARY "C:/Program Files/VideoLAN/VLC3/libvlc.dll")
+    set (PKG_LIBVLC_FOUND TRUE)
   endif()
   # for development
-  if (NOT LIBVLC4_FOUND AND EXISTS "C:/Program Files/VideoLAN/VLC4/libvlc.dll")
+  if (NOT PKG_PKG_LIBVLC4_FOUND AND EXISTS "C:/Program Files/VideoLAN/VLC4/libvlc.dll")
     message ("-- VLC4: Using C:/Program Files/VideoLAN/VLC4")
-    set (LIBVLC4_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-4.0.0")
-    set (LIBVLC4_LIBRARY "C:/Program Files/VideoLAN/VLC4/libvlc.dll")
-    set (LIBVLC4_FOUND TRUE)
+    set (PKG_PKG_LIBVLC4_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-4.0.0")
+    set (PKG_PKG_LIBVLC4_LIBRARY "C:/Program Files/VideoLAN/VLC4/libvlc.dll")
+    set (PKG_PKG_LIBVLC4_FOUND TRUE)
   endif()
 endif()
 
 # gstreamer
 
-pkg_check_modules (GST gstreamer-1.0)
+pkg_check_modules (PKG_GST gstreamer-1.0)
 
 # VLC is no longer required for a build on all systems
 # Windows can use Windows Media Player, and Linux can use GStreamer
-if (APPLE AND NOT LIBVLC_FOUND AND NOT LIBVLC4_FOUND)
+if (APPLE AND NOT PKG_LIBVLC_FOUND AND NOT PKG_LIBVLC4_FOUND)
   message (FATAL_ERROR "Unable to locate a VLC library")
 endif()
-if (NOT APPLE AND NOT WIN32 AND NOT LIBVLC_FOUND AND NOT LIBVLC4_FOUND AND NOT GST_FOUND)
+if (NOT APPLE AND NOT WIN32 AND NOT PKG_LIBVLC_FOUND AND NOT PKG_LIBVLC4_FOUND AND NOT PKG_GST_FOUND)
   message (FATAL_ERROR "Unable to locate a VLC/GStreamer library")
 endif()
 
@@ -189,37 +200,37 @@ endif()
 
 # ffmpeg : libavformat / libavutil
 if (WIN32)
-  set (LIBAVFORMAT_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avformat-61.dll")
-#  set (LIBAVUTIL_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avutil-59.dll")
+  set (PKG_LIBAVFORMAT_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avformat-61.dll")
+#  set (PKG_LIBAVUTIL_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avutil-59.dll")
 else()
-  pkg_check_modules (LIBAVFORMAT libavformat)
-#  pkg_check_modules (LIBAVUTIL libavutil)
+  pkg_check_modules (PKG_LIBAVFORMAT libavformat)
+#  pkg_check_modules (PKG_LIBAVUTIL libavutil)
 endif()
 
 # libid3tag
-pkg_check_modules (LIBID3TAG id3tag)
+pkg_check_modules (PKG_LIBID3TAG id3tag)
 
 # libvorbisfile, libvorbis, libogg
-pkg_check_modules (LIBVORBISFILE vorbisfile)
-pkg_check_modules (LIBVORBIS vorbis)
-pkg_check_modules (LIBOGG ogg)
+pkg_check_modules (PKG_LIBVORBISFILE vorbisfile)
+pkg_check_modules (PKG_LIBVORBIS vorbis)
+pkg_check_modules (PKG_LIBOGG ogg)
 
 # libflac
-pkg_check_modules (LIBFLAC flac)
+pkg_check_modules (PKG_LIBFLAC flac)
 
 # libopus
-pkg_check_modules (LIBOPUS opus)
-pkg_check_modules (LIBOPUSFILE opusfile)
+pkg_check_modules (PKG_LIBOPUS opus)
+pkg_check_modules (PKG_LIBOPUSFILE opusfile)
 
 # libmp4tag
-pkg_check_modules (LIBMP4TAG libmp4tag)
+pkg_check_modules (PKG_LIBMP4TAG libmp4tag)
 
 #### ICU string library
 
 # The ICU library must be pre-compiled and shipped with MacOS and windows
 # ICU has incorrect library versioning packaging.
-pkg_check_modules (ICUUC icu-uc)
-pkg_check_modules (ICUI18N icu-i18n)
+pkg_check_modules (PKG_ICUUC icu-uc)
+pkg_check_modules (PKG_ICUI18N icu-i18n)
 
 #### mongoose web server
 
@@ -361,7 +372,7 @@ if (WIN32)
 else()
   # suse and fedora put the ffmpeg include files down a level
   add_compile_options (-I/usr/include/ffmpeg)
-  add_compile_options (-I${ICUI18N_INCLUDE_DIRS})
+  add_compile_options (-I${PKG_ICUI18N_INCLUDE_DIRS})
 endif()
 
 #### more compile options: fortification/address sanitizer
@@ -576,13 +587,13 @@ check_symbol_exists (sysconf unistd.h _lib_sysconf)
 check_symbol_exists (timegm time.h _lib_timegm)
 check_symbol_exists (uname sys/utsname.h _lib_uname)
 
-if (LIBVLC_FOUND)
-  set (CMAKE_REQUIRED_LIBRARIES ${LIBVLC_LDFLAGS} ${LIBVLC_LIBRARY})
+if (PKG_LIBVLC_FOUND)
+  set (CMAKE_REQUIRED_LIBRARIES ${PKG_LIBVLC_LDFLAGS} ${LIBVLC_LIBRARY})
   check_function_exists (libvlc_new _lib_libvlc3_new)
   unset (CMAKE_REQUIRED_LIBRARIES)
 endif()
-if (LIBVLC4_FOUND)
-  set (CMAKE_REQUIRED_LIBRARIES ${LIBVLC_LDFLAGS} ${LIBVLC4_LIBRARY})
+if (PKG_LIBVLC4_FOUND)
+  set (CMAKE_REQUIRED_LIBRARIES ${PKG_LIBVLC_LDFLAGS} ${PKG_LIBVLC4_LIBRARY})
   check_function_exists (libvlc_new _lib_libvlc4_new)
   unset (CMAKE_REQUIRED_LIBRARIES)
 endif()

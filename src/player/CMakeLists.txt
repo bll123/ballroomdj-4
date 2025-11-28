@@ -43,7 +43,7 @@ endif()
 target_link_libraries (bdj4marquee PRIVATE
   libbdj4uib ${BDJ4_UI_LIB}
   libbdj4 libbdj4basic libbdj4common
-  ${GTK_LDFLAGS}
+  ${PKG_GTK_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4marquee)

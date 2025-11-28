@@ -16,12 +16,12 @@ target_link_libraries (libbdj4cont PRIVATE
 if (NOT WIN32 AND NOT APPLE)
   add_library (libcontmpris SHARED mprisi.c)
   target_include_directories (libcontmpris
-    PRIVATE "${GLIB_INCLUDE_DIRS}"
+    PRIVATE "${PKG_GLIB_INCLUDE_DIRS}"
   )
   target_link_libraries (libcontmpris PRIVATE
     libbdj4common
     objmprisroot objmprisplayer
-    ${GIO_LDFLAGS}
+    ${PKG_GIO_LDFLAGS}
   )
 endif()
 

@@ -13,7 +13,7 @@ if (WIN32)
   target_compile_options (bdj4info PRIVATE -municode)
 endif()
 target_include_directories (bdj4info
-  PRIVATE ${GTK_INCLUDE_DIRS}
+  PRIVATE ${PKG_GTK_INCLUDE_DIRS}
 )
 target_link_libraries (bdj4info PRIVATE
   libbdj4basic libbdj4common
@@ -98,20 +98,20 @@ target_link_libraries (plisinklist PRIVATE
 if (NOT WIN32 AND NOT APPLE)
   add_executable (dbustest dbustest.c)
   target_include_directories (dbustest
-    PRIVATE "${GLIB_INCLUDE_DIRS}"
+    PRIVATE "${PKG_GLIB_INCLUDE_DIRS}"
   )
   target_link_libraries (dbustest PRIVATE
     libbdj4common
-    ${GIO_LDFLAGS}
-    ${GLIB_LDFLAGS}
+    ${PKG_GIO_LDFLAGS}
+    ${PKG_GLIB_LDFLAGS}
   )
 endif()
 
 add_executable (aesed aesed.c)
 target_link_libraries (aesed PRIVATE
   libbdj4 libbdj4basic libbdj4common
-  ${GCRYPT_LDFLAGS}
-  ${GLIB_LDFLAGS}
+  ${PKG_GCRYPT_LDFLAGS}
+  ${PKG_GLIB_LDFLAGS}
 )
 
 add_executable (vsed vsed.c)
@@ -129,34 +129,34 @@ endif()
 target_link_libraries (uitest PRIVATE
   libbdj4uii libbdj4uib ${BDJ4_UI_LIB}
   libbdj4 libbdj4basic libbdj4common
-  ${GTK_LDFLAGS}
+  ${PKG_GTK_LDFLAGS}
 )
 addIntlLibrary (uitest)
 
 # want to always build this
-if (LIBVLC_FOUND OR LIBVLC4_FOUND)
+if (PKG_LIBVLC_FOUND OR PKG_LIBVLC4_FOUND)
   add_executable (vlcversion
     vlcversion.c
   )
   if (WIN32)
     target_compile_options (uitest PRIVATE -municode)
   endif()
-  if (LIBVLC_FOUND)
+  if (PKG_LIBVLC_FOUND)
     target_include_directories (vlcversion
-      PRIVATE "${LIBVLC_INCLUDE_DIR}"
+      PRIVATE "${PKG_LIBVLC_INCLUDE_DIR}"
     )
     target_link_libraries (vlcversion PRIVATE
-      ${LIBVLC_LDFLAGS}
-      ${LIBVLC_LIBRARY}
+      ${PKG_LIBVLC_LDFLAGS}
+      ${PKG_LIBVLC_LIBRARY}
     )
   endif ()
-  if (LIBVLC4_FOUND)
+  if (PKG_LIBVLC4_FOUND)
     target_include_directories (vlcversion
-      PRIVATE "${LIBVLC4_INCLUDE_DIR}"
+      PRIVATE "${PKG_LIBVLC4_INCLUDE_DIR}"
     )
     target_link_libraries (vlcversion PRIVATE
-      ${LIBVLC4_LDFLAGS}
-      ${LIBVLC4_LIBRARY}
+      ${PKG_LIBVLC4_LDFLAGS}
+      ${PKG_LIBVLC4_LIBRARY}
     )
   endif ()
 endif()
@@ -188,7 +188,7 @@ if (NOT WIN32 AND NOT APPLE)
     DESTINATION ${DEST_BIN}
   )
 endif()
-if (LIBVLC_FOUND OR LIBVLC4_FOUND)
+if (PKG_LIBVLC_FOUND OR PKG_LIBVLC4_FOUND)
   install (TARGETS
     vlcversion
     DESTINATION ${DEST_BIN}
@@ -213,6 +213,6 @@ updateRPath (plisinklist)
 updateRPath (vsed)
 updateRPath (aesed)
 updateRPath (uitest)
-if (LIBVLC_FOUND OR LIBVLC4_FOUND)
+if (PKG_LIBVLC_FOUND OR PKG_LIBVLC4_FOUND)
   updateRPath (vlcversion)
 endif()

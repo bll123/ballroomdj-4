@@ -28,28 +28,28 @@ if (APPLE)
 endif()
 
 if (NOT WIN32 AND NOT APPLE)
-  if (PA_FOUND)
+  if (PKG_PA_FOUND)
     add_library (libvolpa SHARED volpa.c)
     target_include_directories (libvolpa
-      PRIVATE "${PA_INCLUDE_DIRS}"
+      PRIVATE "${PKG_PA_INCLUDE_DIRS}"
     )
     target_link_libraries (libvolpa PRIVATE
-      ${PA_LDFLAGS}
+      ${PKG_PA_LDFLAGS}
       objstring
     )
   endif()
 endif()
 
 if (NOT WIN32 AND NOT APPLE)
-  if (PIPEWIRE_FOUND)
+  if (PKG_PIPEWIRE_FOUND)
     add_library (libvolpipewire SHARED volpipewire.c)
     target_include_directories (libvolpipewire
-      PRIVATE "${PIPEWIRE_INCLUDE_DIRS}"
-      PRIVATE "${SPA_INCLUDE_DIRS}"
+      PRIVATE "${PKG_PIPEWIRE_INCLUDE_DIRS}"
+      PRIVATE "${SPKG_PA_INCLUDE_DIRS}"
     )
     target_link_libraries (libvolpipewire PRIVATE
-      ${PIPEWIRE_LDFLAGS}
-      ${SPA_LDFLAGS}
+      ${PKG_PIPEWIRE_LDFLAGS}
+      ${SPKG_PA_LDFLAGS}
     )
   endif()
 endif()
@@ -78,7 +78,7 @@ if (NOT WIN32 AND NOT APPLE)
     libvolpa
     DESTINATION ${DEST_BIN}
   )
-  if (PIPEWIRE_FOUND)
+  if (PKG_PIPEWIRE_FOUND)
     install (TARGETS
       libvolpipewire
       DESTINATION ${DEST_BIN}
