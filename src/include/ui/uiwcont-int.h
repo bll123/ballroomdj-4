@@ -138,10 +138,6 @@ typedef union {
 #  include "ui/uimacos-wcont.h"
 # endif /* BDJ4_UI_MACOS */
 
-# if BDJ4_UI_NCURSES
-#  include "ui/uincurses-wcont.h"
-# endif /* BDJ4_UI_NCURSES */
-
 typedef struct uiwcont {
   uiwconttype_t   wbasetype;
   uiwconttype_t   wtype;

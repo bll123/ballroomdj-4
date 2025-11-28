@@ -30,12 +30,6 @@ macro (addUIInclude name)
       ${PKG_GTK_INCLUDE_DIRS}
     )
   endif()
-  if (BDJ4_UI STREQUAL "ncurses")
-    target_include_directories (${name} PRIVATE
-      ${PKG_CDK_INCLUDE_DIRS}
-      ${PKG_NCURSES_INCLUDE_DIRS}
-    )
-  endif()
 endmacro()
 
 macro (addUILibrary name)
@@ -47,12 +41,6 @@ macro (addUILibrary name)
       BDJ4_UI STREQUAL "Macos")
     target_link_options (${name} PRIVATE
       -framework Cocoa
-    )
-  endif()
-  if (BDJ4_UI STREQUAL "ncurses")
-    target_link_libraries (${name} PRIVATE
-      ${PKG_CDK_LDFLAGS}
-      ${PKG_NCURSES_LDFLAGS}
     )
   endif()
 endmacro()

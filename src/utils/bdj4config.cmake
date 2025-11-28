@@ -24,8 +24,7 @@ if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3" OR
     BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4" OR
     BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null" OR
     BDJ4_UI STREQUAL "macos" OR BDJ4_UI STREQUAL "MacOS" OR
-        BDJ4_UI STREQUAL "Macos" OR
-    BDJ4_UI STREQUAL "ncurses")
+        BDJ4_UI STREQUAL "Macos")
 else()
   message (FATAL_ERROR "BDJ4_UI (${BDJ4_UI}) not supported")
 endif()
@@ -48,11 +47,6 @@ endif()
 if (BDJ4_UI STREQUAL "macos" OR BDJ4_UI STREQUAL "MacOS" OR BDJ4_UI STREQUAL "Macos")
   add_compile_options (-DBDJ4_UI_MACOS=1)
   set (BDJ4_UI_LIB libuimacos)
-endif()
-
-if (BDJ4_UI STREQUAL "ncurses")
-  add_compile_options (-DBDJ4_UI_NCURSES=1)
-  set (BDJ4_UI_LIB libuincurses)
 endif()
 
 #### bits / check supported platforms
@@ -91,12 +85,6 @@ if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
 endif()
 if (BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
   pkg_check_modules (PKG_GTK libgtk-4-1)
-endif()
-if (BDJ4_UI STREQUAL "ncurses")
-  set (PKG_CDK_LDFLAGS "-lcdk")
-  set (PKG_CDK_INCLUDE_DIRS "")
-  set (PKG_NCURSES_LDFLAGS "-lpanel;-lncursesw")
-  set (PKG_NCURSES_INCLUDE_DIRS "")
 endif()
 
 #### volume
