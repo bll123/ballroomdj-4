@@ -20,18 +20,20 @@ osLocaleDirection (const char *locale)
   tbuff [2] = '\0';
 
   /* I don't know that there is any better way for Linux */
-  if (strcmp (tbuff, "ar") == 0 ||
-      strcmp (tbuff, "dv") == 0 ||
-      strcmp (tbuff, "fa") == 0 ||
-      strcmp (tbuff, "ha") == 0 ||
-      strcmp (tbuff, "he") == 0 ||
-      strcmp (tbuff, "iw") == 0 ||
-      strcmp (tbuff, "ji") == 0 ||
-      strcmp (tbuff, "ps") == 0 ||
-      strcmp (tbuff, "sd") == 0 ||
-      strcmp (tbuff, "ug") == 0 ||
-      strcmp (tbuff, "ur") == 0 ||
-      strcmp (tbuff, "yi") == 0) {
+  if (strcmp (tbuff, "ar") == 0 ||      // arabic
+      strcmp (tbuff, "dv") == 0 ||      // divehi
+      strcmp (tbuff, "fa") == 0 ||      // persian
+      strcmp (tbuff, "ff") == 0 ||      // fulah
+      strcmp (tbuff, "ha") == 0 ||      // hausa
+      strcmp (tbuff, "he") == 0 ||      // hebrew
+      strcmp (tbuff, "iw") == 0 ||      // old hebrew
+      strcmp (tbuff, "ks") == 0 ||      // kashmiri
+      strcmp (tbuff, "ku") == 0 ||      // kurdish
+      strcmp (tbuff, "ps") == 0 ||      // pashto, pushto
+      strcmp (tbuff, "sd") == 0 ||      // sindhi
+      strcmp (tbuff, "ug") == 0 ||      // uighur
+      strcmp (tbuff, "ur") == 0 ||      // urdu
+      strcmp (tbuff, "yi") == 0) {      // yezidi
     tdir = TEXT_DIR_RTL;
   }
 

@@ -181,15 +181,13 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiwcont_t          *hbox;
   uiwcont_t          *uiwidgetp;
   uiwcont_t          *szgrp;
-  uiwcont_t          *szgrpSpinText;
-  uiwcont_t          *szgrpNum;
+  uiwcont_t          *szgrpSpin;
   uiwcont_t          *szgrpText;
 
   logProcBegin ();
 
   szgrp = uiCreateSizeGroupHoriz ();          // labels
-  szgrpSpinText = uiCreateSizeGroupHoriz ();  // time widgets + gap widget
-  szgrpNum = uiCreateSizeGroupHoriz ();       // numeric widgets
+  szgrpSpin = uiCreateSizeGroupHoriz ();  // time widgets + gap widget
   szgrpText = uiCreateSizeGroupHoriz ();      // text widgets
 
   tophbox = uiCreateHorizBox ();
@@ -270,7 +268,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
       /* CONTEXT: playlist management: maximum play time */
       _("Maximum Play Time"), managepl->callbacks [MPL_CB_MAXPLAYTIME]);
   uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpSpinText, uiwidgetp);
+  uiSizeGroupAdd (szgrpSpin, uiwidgetp);
   managepl->wcont [MPL_W_MAX_PLAY_TIME] = uiwidgetp;
 
   uiwcontFree (hbox);
@@ -294,7 +292,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSpinboxSetRange (uiwidgetp, 0.0, 1440000.0);
   uiSpinboxWrap (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpSpinText, uiwidgetp);
+  uiSizeGroupAdd (szgrpSpin, uiwidgetp);
   managepl->wcont [MPL_W_STOP_AT] = uiwidgetp;
 
   uiwcontFree (hbox);
@@ -313,7 +311,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiwidgetp = uiSpinboxIntCreate ();
   uiSpinboxSet (uiwidgetp, 0.0, 500.0);
   uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpNum, uiwidgetp);
+  uiSizeGroupAdd (szgrpSpin, uiwidgetp);
   managepl->wcont [MPL_W_STOP_AFTER] = uiwidgetp;
 
   uiwcontFree (hbox);
@@ -348,8 +346,9 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  managepl->wcont [MPL_W_PLAY_ANN] = uiCreateSwitch (0);
-  uiBoxPackStart (hbox, managepl->wcont [MPL_W_PLAY_ANN]);
+  uiwidgetp = uiCreateSwitch (0);
+  uiBoxPackStart (hbox, uiwidgetp);
+  managepl->wcont [MPL_W_PLAY_ANN] = uiwidgetp;
 
   /* automatic and sequenced playlists; keep the widget so these */
   /* can be hidden */
@@ -530,7 +529,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiwidgetp = uiSpinboxIntCreate ();
   uiSpinboxSet (uiwidgetp, 0.0, 720.0);
   uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpNum, uiwidgetp);
+  uiSizeGroupAdd (szgrpSpin, uiwidgetp);
   managepl->wcont [MPL_W_RETAIN] = uiwidgetp;
 
   uiwcontFree (hbox);
@@ -555,8 +554,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwcontFree (tophbox);
   uiwcontFree (szgrp);
-  uiwcontFree (szgrpSpinText);
-  uiwcontFree (szgrpNum);
+  uiwcontFree (szgrpSpin);
   uiwcontFree (szgrpText);
 
   managePlaylistNew (managepl, MANAGE_STD, PLTYPE_AUTO);

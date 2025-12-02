@@ -45,6 +45,7 @@
 #include "mdebug.h"
 #include "msgparse.h"
 #include "musicq.h"
+#include "oslocale.h"
 #include "ossignal.h"
 #include "osuiutils.h"
 #include "pathbld.h"
@@ -1108,6 +1109,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiwcont_t   *vbox;
   uiwcont_t   *hbox;
   uiwcont_t   *mainhbox;
+  const char  *buttonnm;
 
   /* management */
 
@@ -1153,12 +1155,17 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiWidgetSetAllMargins (vbox, 4);
   uiWidgetSetMarginTop (vbox, 64);
 
+  buttonnm = "button_left";
+  if (sysvarsGetNum (SVL_LOCALE_DIR) == TEXT_DIR_RTL) {
+    buttonnm = "button_right";
+  }
+
   manage->callbacks [MANAGE_CB_SBS_SELECT] = callbackInit (
       uisongselSelectCallback, manage->slsbssongsel, NULL);
   uiwidgetp = uiCreateButton ("mng-sbs-select",
       manage->callbacks [MANAGE_CB_SBS_SELECT],
       /* CONTEXT: manage-ui: config: button: add the selected songs to the song list */
-      _("Select"), "button_left");
+      _("Select"), buttonnm);
   uiBoxPackStart (vbox, uiwidgetp);
   manage->wcont [MANAGE_W_SELECT_BUTTON] = uiwidgetp;
 
