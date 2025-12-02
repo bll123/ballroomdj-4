@@ -14,11 +14,13 @@
 
 #include "bdj4intl.h"
 #include "bdjstring.h"
+#include "callback.h"
 #include "mdebug.h"
 #include "queue.h"
 #include "slist.h"
+#include "oslocale.h"
+#include "sysvars.h"
 #include "ui.h"
-#include "callback.h"
 #include "uiduallist.h"
 #include "uivirtlist.h"
 
@@ -86,6 +88,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiwcont_t     *dvbox;
   uiwcont_t     *uiwidgetp = NULL;
   uivirtlist_t  *uivl;
+  const char    *buttonnm;
 
   duallist = mdmalloc (sizeof (uiduallist_t));
   for (int i = 0; i < DL_LIST_MAX; ++i) {
@@ -141,18 +144,26 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiWidgetSetAllMargins (dvbox, 4);
   uiWidgetSetMarginTop (dvbox, 64);
 
+  buttonnm = "button_right";
+  if (sysvarsGetNum (SVL_LOCALE_DIR) == TEXT_DIR_RTL) {
+    buttonnm = "button_left";
+  }
   uiwidgetp = uiCreateButton ("dl-select",
       duallist->callbacks [DL_CB_SELECT],
       /* CONTEXT: side-by-side list: button: add the selected field */
-      _("Select"), "button_right");
+      _("Select"), buttonnm);
   uiBoxPackStart (dvbox, uiwidgetp);
   duallist->buttons [DL_BUTTON_SELECT] = uiwidgetp;
 
   if ((duallist->flags & DL_FLAGS_PERSISTENT) != DL_FLAGS_PERSISTENT) {
+    buttonnm = "button_left";
+    if (sysvarsGetNum (SVL_LOCALE_DIR) == TEXT_DIR_RTL) {
+      buttonnm = "button_right";
+    }
     uiwidgetp = uiCreateButton ("dl-remove",
         duallist->callbacks [DL_CB_REMOVE],
         /* CONTEXT: side-by-side list: button: remove the selected field */
-        _("Remove"), "button_left");
+        _("Remove"), buttonnm);
     uiBoxPackStart (dvbox, uiwidgetp);
     duallist->buttons [DL_BUTTON_REMOVE] = uiwidgetp;
   }
