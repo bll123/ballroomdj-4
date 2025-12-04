@@ -230,7 +230,6 @@ typedef struct {
   musicqidx_t       musicqPlayIdx;
   musicqidx_t       musicqManageIdx;
   uiwcont_t         *wcont [MANAGE_W_MAX];
-  uinbtabid_t       *nbtabid [MANAGE_NB_MAX];
   uivnb_t           *mainvnb;
   int               stopwaitcount;
   /* notebook tab handling */
@@ -238,6 +237,7 @@ typedef struct {
   int               slcurrtab;
   int               mmcurrtab;
   uiwcont_t         *currmenu;
+  uinbtabid_t       *nbtabid [MANAGE_NB_MAX];
   dbidx_t           songlistdbidx;
   dbidx_t           seldbidx;
   dbidx_t           songeditdbidx;
@@ -3801,6 +3801,9 @@ manageSwitchPage (manageui_t *manage, int pagenum, int which)
   }
 
   id = uinbutilIDGet (nbtabid, pagenum);
+  if (mainnb) {
+    id = uivnbGetID (manage->mainvnb);
+  }
 
   if (manage->currmenu != NULL) {
     uiMenuClear (manage->currmenu);

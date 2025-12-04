@@ -547,8 +547,9 @@ main (int argc, char *argv [])
     /*    This is a new file; simply check and see if it does not exist. */
     /* 4.11.0 2024-6-18 virtlist */
     /* 4.17.3.4 2025-11-8 update notebook scrolling arrows */
+    /* 4.17.6 2025-12-4 updates for new vertical notebook */
     updaterCopyIfNotPresent ("gtk-static", BDJ4_CSS_EXT, NULL);
-    updaterCopyCSSVersionCheck ("gtk-static", BDJ4_CSS_EXT, 7);
+    updaterCopyCSSVersionCheck ("gtk-static", BDJ4_CSS_EXT, 8);
   }
 
   {

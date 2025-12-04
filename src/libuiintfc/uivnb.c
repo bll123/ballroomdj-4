@@ -1,5 +1,12 @@
 /*
  * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
+ *
+ * vertical notebook
+ *    GTK: the scrollable up/down arrows do not work correctly for RTL
+ *        languages, and the arrows also do selection in addition to
+ *        scrolling.
+ *    This will be useful for MacOS, if a UI is ever written.
+ *
  */
 #include "config.h"
 
@@ -55,14 +62,14 @@ uivnbCreate (uiwcont_t *box)
 
   vnb->hbox = uiCreateHorizBox ();
 
-  vnb->sw = uiCreateScrolledWindow (100);
+  vnb->sw = uiCreateScrolledWindow (50);
   uiBoxPackStart (vnb->hbox, vnb->sw);
   vnb->vlist = uiCreateVertBox ();
   uiWindowPackInWindow (vnb->sw, vnb->vlist);
 
   vnb->nb = uiCreateNotebook ();
   uiNotebookHideTabs (vnb->nb);
-  uiBoxPackStartExpand (vnb->hbox, vnb->nb);
+  uiBoxPackStart (vnb->hbox, vnb->nb);
 
   uiBoxPackStart (box, vnb->hbox);
 
@@ -122,12 +129,12 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *label, int id)
   uiButtonAlignLeft (button);
   uiBoxPackStart (vnb->vlist, button);
   uiWidgetExpandHoriz (button);
+  uiWidgetAddClass (button, LEFT_NB_CLASS);
 
   vnb->pagecount += 1;
 
   vnb->tablist [pagenum] = button;
   vnb->idlist [pagenum] = id;
-  uiWidgetAddClass (button, LEFT_NB_CLASS);
   if (pagenum == 0) {
     uivnbSetPage (vnb, pagenum);
   }
@@ -136,7 +143,7 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *label, int id)
 void
 uivnbSetPage (uivnb_t *vnb, int pagenum)
 {
-  int     psel;
+  int     prevsel;
 
   if (vnb == NULL) {
     return;
@@ -145,9 +152,11 @@ uivnbSetPage (uivnb_t *vnb, int pagenum)
     return;
   }
 
-  uiNotebookSetPage (vnb->nb, pagenum);
+  if (pagenum == vnb->selected) {
+    return;
+  }
 
-  psel = vnb->selected;
+  prevsel = vnb->selected;
   vnb->selected = pagenum;
   uiWidgetAddClass (vnb->tablist [vnb->selected], NB_SEL_CLASS);
   if (vnb->textdir == TEXT_DIR_RTL) {
@@ -156,14 +165,17 @@ uivnbSetPage (uivnb_t *vnb, int pagenum)
     uiWidgetAddClass (vnb->tablist [vnb->selected], NB_SEL_LTR_CLASS);
   }
 
-  if (psel >= 0) {
-    uiWidgetRemoveClass (vnb->tablist [psel], NB_SEL_CLASS);
+  if (prevsel >= 0) {
+    uiWidgetRemoveClass (vnb->tablist [prevsel], NB_SEL_CLASS);
     if (vnb->textdir == TEXT_DIR_RTL) {
-      uiWidgetRemoveClass (vnb->tablist [psel], NB_SEL_RTL_CLASS);
+      uiWidgetRemoveClass (vnb->tablist [prevsel], NB_SEL_RTL_CLASS);
     } else {
-      uiWidgetRemoveClass (vnb->tablist [psel], NB_SEL_LTR_CLASS);
+      uiWidgetRemoveClass (vnb->tablist [prevsel], NB_SEL_LTR_CLASS);
     }
   }
+
+  /* after vnb->selected has been set */
+  uiNotebookSetPage (vnb->nb, pagenum);
 }
 
 void
