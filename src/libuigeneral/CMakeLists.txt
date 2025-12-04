@@ -10,7 +10,6 @@ add_library (objuigeneral OBJECT
   uibutton.c
   uientry.c
   uientryval.c
-#  uifont.c
   uilabel.c
   uiwcont.c
   uiwcontfree.c

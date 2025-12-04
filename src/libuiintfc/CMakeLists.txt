@@ -20,6 +20,7 @@ add_library (libbdj4uii SHARED
   uistatus.c
   uivirtlist.c
   uivlutil.c
+  uivnb.c
 )
 addUIInclude (libbdj4uii)
 target_link_libraries (libbdj4uii PRIVATE

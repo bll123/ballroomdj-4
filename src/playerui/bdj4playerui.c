@@ -395,7 +395,7 @@ main (int argc, char *argv[])
     nlistSetStr (plui.options, SONGSEL_SORT_BY, "TITLE");
   }
 
-  uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
+  uiUIInitialize (sysvarsGetNum (SVL_LOCALE_TEXT_DIR));
   uiutilsInitSetup (&uisetup);
   uiSetUICSS (&uisetup);
 

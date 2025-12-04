@@ -56,25 +56,27 @@ void
 uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
     uiwcont_t *uiwidget)
 {
+  GtkWidget   *nbtitle;
+
   if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-append-page")) {
     return;
   }
   /* at this time, only boxes and scrolled-windows are stored in nb pages */
   if (uibox->wbasetype != WCONT_T_BOX && uibox->wtype != WCONT_T_BOX &&
       uibox->wtype != WCONT_T_SCROLL_WINDOW) {
-    fprintf (stderr, "ERR: %s incorrect type exp:%d/%s actual:%d/%s %d/%s\n",
+    fprintf (stderr, "ERR: %s incorrect type exp:%d/%s actual:%d/%s\n",
         "nb-append-page-box",
         WCONT_T_BOX, uiwcontDesc (WCONT_T_BOX),
-        uiwidget->wbasetype, uiwcontDesc (uiwidget->wbasetype),
-        uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
+        uibox->wbasetype, uiwcontDesc (uibox->wbasetype));
     return;
   }
-  if (uiwidget == NULL) {
-    return;
+  nbtitle = NULL;
+  if (uiwidget != NULL) {
+    nbtitle = uiwidget->uidata.widget;
   }
 
   gtk_notebook_append_page (GTK_NOTEBOOK (uinotebook->uidata.widget),
-      uibox->uidata.widget, uiwidget->uidata.widget);
+      uibox->uidata.widget, nbtitle);
 }
 
 void
@@ -136,6 +138,16 @@ uiNotebookSetScrollable (uiwcont_t *uinotebook)
     return;
   }
   gtk_notebook_set_scrollable (GTK_NOTEBOOK (uinotebook->uidata.widget), true);
+}
+
+void
+uiNotebookHideTabs (uiwcont_t *uinotebook)
+{
+  if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-tabs")) {
+    return;
+  }
+
+  gtk_notebook_set_show_tabs (GTK_NOTEBOOK (uinotebook->uidata.widget), FALSE);
 }
 
 /* internal routines */

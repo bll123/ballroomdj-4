@@ -141,7 +141,7 @@ main (int argc, char *argv[])
   ilistStartIterator (helper.helplist, &helper.helpiter);
   helper.helpkey = ilistIterateKey (helper.helplist, &helper.helpiter);
 
-  uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
+  uiUIInitialize (sysvarsGetNum (SVL_LOCALE_TEXT_DIR));
   uiutilsInitSetup (&uisetup);
   uiSetUICSS (&uisetup);
 

@@ -308,7 +308,7 @@ main (int argc, char *argv[])
   if (altinst.guienabled) {
     uisetup_t   uisetup;
 
-    uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
+    uiUIInitialize (sysvarsGetNum (SVL_LOCALE_TEXT_DIR));
 
     uiutilsInitSetup (&uisetup);
     uiSetUICSS (&uisetup);

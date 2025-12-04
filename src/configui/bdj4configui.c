@@ -285,7 +285,7 @@ main (int argc, char *argv[])
   progstateSetCallback (confui.progstate, PROGSTATE_CLOSING,
       confuiClosingCallback, &confui);
 
-  uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
+  uiUIInitialize (sysvarsGetNum (SVL_LOCALE_TEXT_DIR));
   uiutilsInitSetup (&uisetup);
   uiSetUICSS (&uisetup);
 

@@ -145,7 +145,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiWidgetSetMarginTop (dvbox, 64);
 
   buttonnm = "button_right";
-  if (sysvarsGetNum (SVL_LOCALE_DIR) == TEXT_DIR_RTL) {
+  if (sysvarsGetNum (SVL_LOCALE_TEXT_DIR) == TEXT_DIR_RTL) {
     buttonnm = "button_left";
   }
   uiwidgetp = uiCreateButton ("dl-select",
@@ -157,7 +157,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
 
   if ((duallist->flags & DL_FLAGS_PERSISTENT) != DL_FLAGS_PERSISTENT) {
     buttonnm = "button_left";
-    if (sysvarsGetNum (SVL_LOCALE_DIR) == TEXT_DIR_RTL) {
+    if (sysvarsGetNum (SVL_LOCALE_TEXT_DIR) == TEXT_DIR_RTL) {
       buttonnm = "button_right";
     }
     uiwidgetp = uiCreateButton ("dl-remove",

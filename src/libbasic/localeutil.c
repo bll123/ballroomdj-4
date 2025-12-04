@@ -313,7 +313,7 @@ localePostSetup (void)
   svlocale = sysvarsGetStr (SV_LOCALE);
 
   localedata->direction = osLocaleDirection (svlocale);
-  sysvarsSetNum (SVL_LOCALE_DIR, localedata->direction);
+  sysvarsSetNum (SVL_LOCALE_TEXT_DIR, localedata->direction);
 
   ilistStartIterator (localedata->locales, &iteridx);
   while ((key = ilistIterateKey (localedata->locales, &iteridx)) >= 0) {

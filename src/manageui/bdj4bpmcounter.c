@@ -192,7 +192,7 @@ main (int argc, char *argv[])
     nlistSetNum (bpmcounter.options, BPMCOUNTER_SIZE_Y, 800);
   }
 
-  uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
+  uiUIInitialize (sysvarsGetNum (SVL_LOCALE_TEXT_DIR));
   uiutilsInitSetup (&uisetup);
   uiSetUICSS (&uisetup);
 

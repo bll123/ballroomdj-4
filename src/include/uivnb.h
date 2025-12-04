@@ -1,0 +1,24 @@
+/*
+ * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
+ */
+#pragma once
+
+#include "callback.h"
+#include "uiwcont.h"
+
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
+typedef struct uivnb uivnb_t;
+
+uivnb_t *uivnbCreate (uiwcont_t *box);
+void uivnbFree (uivnb_t *vnb);
+void uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *label);
+void uivnbSetPage (uivnb_t *vnb, int pagenum);
+void uivnbSetCallback (uivnb_t *vnb, callback_t *uicb);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
+

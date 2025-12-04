@@ -70,3 +70,11 @@ uiNotebookSetScrollable (uiwcont_t *uinotebook)
   }
 }
 
+void
+uiNotebookHideTabs (uiwcont_t *uinotebook)
+{
+  if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-tabs")) {
+    return;
+  }
+}
+

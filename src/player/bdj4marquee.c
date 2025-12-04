@@ -229,7 +229,7 @@ main (int argc, char *argv[])
     nlistSetNum (marquee.options, MQ_FONT_SZ_FS, 60);
   }
 
-  uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
+  uiUIInitialize (sysvarsGetNum (SVL_LOCALE_TEXT_DIR));
   uiutilsInitSetup (&uisetup);
   uiSetUICSS (&uisetup);
 

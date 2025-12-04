@@ -516,7 +516,7 @@ main (int argc, char *argv[])
     char      *uifont;
     uisetup_t uisetup;
 
-    uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
+    uiUIInitialize (sysvarsGetNum (SVL_LOCALE_TEXT_DIR));
 
     uifont = sysvarsGetStr (SV_FONT_DEFAULT);
     if (uifont == NULL || ! *uifont) {

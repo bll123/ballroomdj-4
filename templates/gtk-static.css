@@ -71,6 +71,35 @@ textview.bdj-dark-bg text {
 notebook tab:checked {
   background-color: shade(@theme_base_color,0.6);
 }
+/* these buttons are flat, should inherit the underlying background color */
+button.bdj-leftnotebook {
+  border: 0px solid;
+  background-color: rgba(0,0,0,0);
+}
+button.bdj-leftnotebook label {
+  color: @insensitive_fg_color;
+}
+button.bdj-notebook-sel {
+  background-color: shade(@theme_base_color,0.6);
+}
+button.bdj-notebook-sel label {
+  color: @theme_fg_color;
+}
+button.bdj-leftnotebook:hover {
+  background-color: shade(@theme_base_color,0.5);
+}
+button.bdj-leftnotebook:hover label {
+  color: @theme_fg_color;
+}
+button.bdj-notebook-sel-ltr {
+  border-right: 3px solid;
+  border-color: @selected_bg_color;
+}
+button.bdj-notebook-sel-rtl {
+  border-left: 3px solid;
+  border-color: @selected_bg_color;
+}
+
 
 /* gtk: notebook scrolling arrows.  make the disabled arrow disappear */
 notebook > header > tabs > arrow {
@@ -114,7 +143,8 @@ button.bdj-switch:hover {
 
 button.bdj-flatbutton {
   outline-width: 0px;
-  padding: 0px; border-color: @theme_bg_color;
+  padding: 0px;
+  border-color: @theme_bg_color;
   background-color: @theme_bg_color;
 }
 button.bdj-flatbutton widget {

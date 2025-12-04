@@ -657,7 +657,7 @@ main (int argc, char *argv[])
   }
   manage.sbssonglist = nlistGetNum (manage.minfo.options, MANAGE_SBS_SONGLIST);
 
-  uiUIInitialize (sysvarsGetNum (SVL_LOCALE_DIR));
+  uiUIInitialize (sysvarsGetNum (SVL_LOCALE_TEXT_DIR));
   uiutilsInitSetup (&uisetup);
   uiSetUICSS (&uisetup);
 
@@ -1156,7 +1156,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiWidgetSetMarginTop (vbox, 64);
 
   buttonnm = "button_left";
-  if (sysvarsGetNum (SVL_LOCALE_DIR) == TEXT_DIR_RTL) {
+  if (sysvarsGetNum (SVL_LOCALE_TEXT_DIR) == TEXT_DIR_RTL) {
     buttonnm = "button_right";
   }
 
