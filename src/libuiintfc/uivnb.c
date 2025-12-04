@@ -186,6 +186,22 @@ uivnbGetID (uivnb_t *vnb)
   return vnb->idlist [vnb->selected];
 }
 
+int
+uivnbGetPage (uivnb_t *vnb, int id)
+{
+  if (vnb == NULL) {
+    return 0;
+  }
+
+  for (int i = 0; i < VNB_MAX_PAGECOUNT; ++i) {
+    if (vnb->idlist [i] == id) {
+      return i;
+    }
+  }
+
+  return 0;
+}
+
 /* internal routines */
 
 bool

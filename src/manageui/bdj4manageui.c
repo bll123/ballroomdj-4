@@ -81,6 +81,7 @@
 #include "uisongfilter.h"
 #include "uisongsel.h"
 #include "uiutils.h"
+#include "uivnb.h"
 
 enum {
   /* main tabs */
@@ -196,7 +197,6 @@ enum {
   MANAGE_W_CFPL_DIALOG,
   MANAGE_W_ERROR_MSG,
   MANAGE_W_ITUNES_SEL_DIALOG,
-  MANAGE_W_MAIN_NB,
   MANAGE_W_MENUBAR,
   MANAGE_W_MENUITEM_RESTORE_ORIG,
   MANAGE_W_MENUITEM_UNDO_REMOVE,
@@ -229,14 +229,15 @@ typedef struct {
   samesong_t        *samesong;
   musicqidx_t       musicqPlayIdx;
   musicqidx_t       musicqManageIdx;
-  int               stopwaitcount;
   uiwcont_t         *wcont [MANAGE_W_MAX];
+  uinbtabid_t       *nbtabid [MANAGE_NB_MAX];
+  uivnb_t           *mainvnb;
+  int               stopwaitcount;
   /* notebook tab handling */
   int               maincurrtab;
   int               slcurrtab;
   int               mmcurrtab;
   uiwcont_t         *currmenu;
-  uinbtabid_t       *nbtabid [MANAGE_NB_MAX];
   dbidx_t           songlistdbidx;
   dbidx_t           seldbidx;
   dbidx_t           songeditdbidx;
@@ -868,10 +869,7 @@ manageBuildUI (manageui_t *manage)
   manage->wcont [MANAGE_W_MENUBAR] = uiCreateMenubar ();
   uiBoxPackStartExpand (hbox, manage->wcont [MANAGE_W_MENUBAR]);
 
-  manage->wcont [MANAGE_W_MAIN_NB] = uiCreateNotebook ();
-  uiWidgetAddClass (manage->wcont [MANAGE_W_MAIN_NB], LEFT_NB_CLASS);
-  uiNotebookTabPositionLeft (manage->wcont [MANAGE_W_MAIN_NB]);
-  uiBoxPackStartExpand (vbox, manage->wcont [MANAGE_W_MAIN_NB]);
+  manage->mainvnb = uivnbCreate (vbox);
 
   uiwcontFree (vbox);
 
@@ -883,12 +881,10 @@ manageBuildUI (manageui_t *manage)
 
   vbox = uiCreateVertBox ();
   manageBuildUISequence (manage->manageseq, vbox);
-  /* CONTEXT: manage-ui: notebook tab title: edit sequences */
-  uiwidgetp = uiCreateLabel (_("Edit Sequences"));
-  uiNotebookAppendPage (manage->wcont [MANAGE_W_MAIN_NB], vbox, uiwidgetp);
+  uivnbAppendPage (manage->mainvnb, vbox,
+      /* CONTEXT: manage-ui: notebook tab title: edit sequences */
+      _("Edit Sequences"), MANAGE_TAB_MAIN_SEQ);
   uiWidgetSetAllMargins (vbox, 2);
-  uinbutilIDAdd (manage->nbtabid [MANAGE_NB_MAIN], MANAGE_TAB_MAIN_SEQ);
-  uiwcontFree (uiwidgetp);
 
   /* playlist management */
   manage->managepl = managePlaylistAlloc (&manage->minfo);
@@ -897,12 +893,10 @@ manageBuildUI (manageui_t *manage)
   vbox = uiCreateVertBox ();
   manageBuildUIPlaylist (manage->managepl, vbox);
 
-  /* CONTEXT: manage-ui: notebook tab title: playlist management */
-  uiwidgetp = uiCreateLabel (_("Playlist Management"));
-  uiNotebookAppendPage (manage->wcont [MANAGE_W_MAIN_NB], vbox, uiwidgetp);
+  uivnbAppendPage (manage->mainvnb, vbox,
+      /* CONTEXT: manage-ui: notebook tab title: playlist management */
+      _("Playlist Management"), MANAGE_TAB_MAIN_PLMGMT);
   uiWidgetSetAllMargins (vbox, 2);
-  uinbutilIDAdd (manage->nbtabid [MANAGE_NB_MAIN], MANAGE_TAB_MAIN_PLMGMT);
-  uiwcontFree (uiwidgetp);
 
   /* music manager */
   manageBuildUIMusicManager (manage);
@@ -914,11 +908,9 @@ manageBuildUI (manageui_t *manage)
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
   manageBuildUIUpdateDatabase (manage->managedb, vbox);
-  /* CONTEXT: manage-ui: notebook tab title: update database */
-  uiwidgetp = uiCreateLabel (_("Update Database"));
-  uiNotebookAppendPage (manage->wcont [MANAGE_W_MAIN_NB], vbox, uiwidgetp);
-  uinbutilIDAdd (manage->nbtabid [MANAGE_NB_MAIN], MANAGE_TAB_MAIN_UPDDB);
-  uiwcontFree (uiwidgetp);
+  uivnbAppendPage (manage->mainvnb, vbox,
+      /* CONTEXT: manage-ui: notebook tab title: update database */
+      _("Update Database"), MANAGE_TAB_MAIN_UPDDB);
 
   x = nlistGetNum (manage->minfo.options, MANAGE_SIZE_X);
   y = nlistGetNum (manage->minfo.options, MANAGE_SIZE_Y);
@@ -926,8 +918,7 @@ manageBuildUI (manageui_t *manage)
 
   manage->callbacks [MANAGE_CB_MAIN_NB] = callbackInitI (
       manageSwitchPageMain, manage);
-  uiNotebookSetCallback (manage->wcont [MANAGE_W_MAIN_NB],
-      manage->callbacks [MANAGE_CB_MAIN_NB]);
+  uivnbSetCallback (manage->mainvnb, manage->callbacks [MANAGE_CB_MAIN_NB]);
 
   uiWidgetShowAll (manage->minfo.window);
 
@@ -1115,12 +1106,10 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   vbox = uiCreateVertBox ();
 
-  /* CONTEXT: manage-ui: notebook tab title: edit song lists */
-  uiwidgetp = uiCreateLabel (_("Edit Song Lists"));
-  uiNotebookAppendPage (manage->wcont [MANAGE_W_MAIN_NB], vbox, uiwidgetp);
+  uivnbAppendPage (manage->mainvnb, vbox,
+      /* CONTEXT: manage-ui: notebook tab title: edit song lists */
+      _("Edit Song Lists"), MANAGE_TAB_MAIN_SL);
   uiWidgetSetAllMargins (vbox, 2);
-  uinbutilIDAdd (manage->nbtabid [MANAGE_NB_MAIN], MANAGE_TAB_MAIN_SL);
-  uiwcontFree (uiwidgetp);
 
   /* management: player */
   uiwidgetp = uiplayerBuildUI (manage->slplayer);
@@ -1960,8 +1949,8 @@ manageSwitchToSongEditor (manageui_t *manage)
   logProcBegin ();
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: switch to song editor");
   if (manage->maincurrtab != MANAGE_TAB_MAIN_MM) {
-    pagenum = uinbutilIDGetPage (manage->nbtabid [MANAGE_NB_MAIN], MANAGE_TAB_MAIN_MM);
-    uiNotebookSetPage (manage->wcont [MANAGE_W_MAIN_NB], pagenum);
+    pagenum = uivnbGetPage (manage->mainvnb, MANAGE_TAB_MAIN_MM);
+    uivnbSetPage (manage->mainvnb, pagenum);
   }
   if (manage->mmcurrtab != MANAGE_TAB_SONGEDIT) {
     pagenum = uinbutilIDGetPage (manage->nbtabid [MANAGE_NB_MM], MANAGE_TAB_SONGEDIT);
@@ -2456,12 +2445,10 @@ manageBuildUIMusicManager (manageui_t *manage)
   logProcBegin ();
   /* music manager */
   vbox = uiCreateVertBox ();
-  /* CONTEXT: manage-ui: name of music manager notebook tab */
-  uiwidgetp = uiCreateLabel (_("Music Manager"));
-  uiNotebookAppendPage (manage->wcont [MANAGE_W_MAIN_NB], vbox, uiwidgetp);
+  uivnbAppendPage (manage->mainvnb, vbox,
+      /* CONTEXT: manage-ui: name of music manager notebook tab */
+      _("Music Manager"), MANAGE_TAB_MAIN_MM);
   uiWidgetSetAllMargins (vbox, 2);
-  uinbutilIDAdd (manage->nbtabid [MANAGE_NB_MAIN], MANAGE_TAB_MAIN_MM);
-  uiwcontFree (uiwidgetp);
 
   /* music manager: player */
   uiwidgetp = uiplayerBuildUI (manage->mmplayer);

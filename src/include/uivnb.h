@@ -22,6 +22,7 @@ void uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *label, int 
 void uivnbSetPage (uivnb_t *vnb, int pagenum);
 void uivnbSetCallback (uivnb_t *vnb, callback_t *uicb);
 int  uivnbGetID (uivnb_t *vnb);
+int  uivnbGetPage (uivnb_t *vnb, int id);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
