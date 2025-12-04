@@ -46,14 +46,8 @@ static int32_t confuiValHMSCallback (void *udata, const char *label, const char 
 void
 confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, int id)
 {
-  uiwcont_t   *uiwidgetp;
-
   logProcBegin ();
-  uiwidgetp = uiCreateLabel (txt);
-  uiNotebookAppendPage (gui->notebook, boxp, uiwidgetp);
-  uiWidgetSetAllMargins (uiwidgetp, 0);
-  uinbutilIDAdd (gui->nbtabid, id);
-  uiwcontFree (uiwidgetp);
+  uivnbAppendPage (gui->mainvnb, boxp, txt, id);
 
   uiWidgetExpandHoriz (boxp);
   uiWidgetExpandVert (boxp);

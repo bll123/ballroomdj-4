@@ -38,6 +38,7 @@ typedef struct uivnb {
   uiwcont_t   *tablist [VNB_MAX_PAGECOUNT];
   callback_t  *tabcblist [VNB_MAX_PAGECOUNT];
   uivnbcb_t   cbdata [VNB_MAX_PAGECOUNT];
+  int         idlist [VNB_MAX_PAGECOUNT];
   int         pagecount;
   int         selected;
   int         textdir;
@@ -70,6 +71,7 @@ uivnbCreate (uiwcont_t *box)
     vnb->tabcblist [i] = NULL;
     vnb->cbdata [i].pagenum = i;
     vnb->cbdata [i].vnb = vnb;
+    vnb->idlist [i] = VNB_NO_ID;
   }
 
   vnb->pagecount = 0;
@@ -94,7 +96,7 @@ uivnbFree (uivnb_t *vnb)
 }
 
 void
-uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *label)
+uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *label, int id)
 {
   uiwcont_t   *button;
   char        tbuff [40];
@@ -124,6 +126,7 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *label)
   vnb->pagecount += 1;
 
   vnb->tablist [pagenum] = button;
+  vnb->idlist [pagenum] = id;
   uiWidgetAddClass (button, LEFT_NB_CLASS);
   if (pagenum == 0) {
     uivnbSetPage (vnb, pagenum);
@@ -171,6 +174,16 @@ uivnbSetCallback (uivnb_t *vnb, callback_t *uicb)
   }
 
   uiNotebookSetCallback (vnb->nb, uicb);
+}
+
+int
+uivnbGetID (uivnb_t *vnb)
+{
+  if (vnb == NULL) {
+    return VNB_NO_ID;
+  }
+
+  return vnb->idlist [vnb->selected];
 }
 
 /* internal routines */

@@ -111,9 +111,8 @@ main (int argc, char *argv[])
   confui.gui.localip = NULL;
   confui.gui.window = NULL;
   confui.gui.closecb = NULL;
-  confui.gui.notebook = NULL;
+  confui.gui.mainvnb = NULL;
   confui.gui.nbcb = NULL;
-  confui.gui.nbtabid = uinbutilIDInit ();
   confui.gui.vbox = NULL;
   confui.gui.statusMsg = NULL;
   confui.gui.errorMsg = NULL;
@@ -412,7 +411,6 @@ confuiClosingCallback (void *udata, programstate_t programState)
   if (confui->optionsalloc) {
     nlistFree (confui->options);
   }
-  uinbutilIDFree (confui->gui.nbtabid);
   slistFree (confui->gui.edittaglist);
   slistFree (confui->gui.audioidtaglist);
   slistFree (confui->gui.listingtaglist);
@@ -420,7 +418,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
   slistFree (confui->gui.pluitaglist);
   callbackFree (confui->gui.closecb);
   callbackFree (confui->gui.nbcb);
-  uiwcontFree (confui->gui.notebook);
+  uivnbFree (confui->gui.mainvnb);
 
   bdj4shutdown (ROUTE_CONFIGUI, NULL);
 
@@ -467,11 +465,7 @@ confuiBuildUI (configui_t *confui)
   uiBoxPackEnd (hbox, uiwidgetp);
   confui->gui.errorMsg = uiwidgetp;
 
-  confui->gui.notebook = uiCreateNotebook ();
-  uiWidgetAddClass (confui->gui.notebook, LEFT_NB_CLASS);
-  uiNotebookTabPositionLeft (confui->gui.notebook);
-  uiNotebookSetScrollable (confui->gui.notebook);
-  uiBoxPackStartExpand (confui->gui.vbox, confui->gui.notebook);
+  confui->gui.mainvnb = uivnbCreate (confui->gui.vbox);
 
   confuiBuildUIGeneral (&confui->gui);
   confuiBuildUIPlayer (&confui->gui);
@@ -493,7 +487,7 @@ confuiBuildUI (configui_t *confui)
   confuiBuildUIDebug (&confui->gui);
 
   confui->gui.nbcb = callbackInitI (confuiSwitchTable, &confui->gui);
-  uiNotebookSetCallback (confui->gui.notebook, confui->gui.nbcb);
+  uivnbSetCallback (confui->gui.mainvnb, confui->gui.nbcb);
 
   x = nlistGetNum (confui->options, CONFUI_SIZE_X);
   y = nlistGetNum (confui->options, CONFUI_SIZE_Y);

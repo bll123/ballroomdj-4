@@ -16,6 +16,7 @@
 #include "uinbutil.h"
 #include "uiselectfile.h"
 #include "uivirtlist.h"
+#include "uivnb.h"
 #include "uiwcont.h"
 
 #if defined (__cplusplus) || defined (c_plusplus)
@@ -459,8 +460,7 @@ typedef struct confuigui {
   uiwcont_t         *window;
   callback_t        *closecb;
   /* main notebook */
-  uinbtabid_t       *nbtabid;
-  uiwcont_t         *notebook;
+  uivnb_t           *mainvnb;
   callback_t        *nbcb;
   /* widgets */
   uiwcont_t         *vbox;

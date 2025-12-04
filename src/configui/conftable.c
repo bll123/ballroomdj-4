@@ -160,7 +160,7 @@ confuiSwitchTable (void *udata, int32_t pagenum)
   confuiident_t     newid;
 
   logProcBegin ();
-  if ((newid = (confuiident_t) uinbutilIDGet (gui->nbtabid, pagenum)) < 0) {
+  if ((newid = uivnbGetID (gui->mainvnb)) < 0) {
     logProcEnd ("bad-pagenum");
     return UICB_STOP;
   }
@@ -174,8 +174,7 @@ confuiSwitchTable (void *udata, int32_t pagenum)
   confuiSetStatusMsg (gui, "");
   confuiSetErrorMsg (gui, "");
 
-  gui->tablecurr = (confuiident_t) uinbutilIDGet (
-      gui->nbtabid, pagenum);
+  gui->tablecurr = uivnbGetID (gui->mainvnb);
 
   if (gui->tablecurr == CONFUI_ID_MOBILE_MQ) {
     confuiUpdateMobmqQrcode (gui);
