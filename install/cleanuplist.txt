@@ -335,12 +335,14 @@ plocal/bin/avformat-59\.dll$
 plocal/bin/avutil-57\.dll$
 # 2023-7 windows msys2 library updates
 plocal/bin/postproc-56\.dll$
-plocal/bin/swscale-6\.dll$
 # windows msys2 library updates
 # 2023-8, 2023-11, 2024-6-1, 2025-6-10
 plocal/bin/libicudt7[23456]\.dll$
 plocal/bin/libicuin7[23456]\.dll$
 plocal/bin/libicuuc7[23456]\.dll$
+# 2025-12
+plocal/bin/swresample-5\.dll$
+plocal/bin/swscale-[678]\.dll$
 
 licenses/icu\.LICENSE$
 licenses/icu\.LICENCE$

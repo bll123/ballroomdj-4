@@ -69,7 +69,7 @@ uivnbCreate (uiwcont_t *box)
 
   vnb->nb = uiCreateNotebook ();
   uiNotebookHideTabs (vnb->nb);
-  uiBoxPackStart (vnb->hbox, vnb->nb);
+  uiBoxPackStartExpand (vnb->hbox, vnb->nb);
 
   uiBoxPackStart (box, vnb->hbox);
 
@@ -127,6 +127,7 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *label, int id)
   snprintf (tbuff, sizeof (tbuff), "vnb-%d", vnb->pagecount);
   button = uiCreateButton (tbuff, cb, label, NULL);
   uiButtonAlignLeft (button);
+  uiButtonSetReliefNone (button);
   uiBoxPackStart (vnb->vlist, button);
   uiWidgetExpandHoriz (button);
   uiWidgetAddClass (button, LEFT_NB_CLASS);

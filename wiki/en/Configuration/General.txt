@@ -5,14 +5,6 @@ affect the entire BDJ4 application._</span>
 
 ### Configuration
 
-In the configuration window, if the left side topic list does not fit
-within the window due to screen size or if the configuration window was
-shrunk in size, arrows will appear at the top and bottom of the topic
-list, allowing selection of the topic.
-
-Not all topics may appear in the window, and the selection arrows must
-be used to view all topics.
-
 ### Configure : General
 
 __Music Folder__: The main music folder where the music is found.
@@ -64,4 +56,4 @@ paste the appropriate information into the configuration.
 <br><span id="caption" style="color:#4559bf;">__Configure / General__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-11-08 08:59:21; BDJ4 version 4.17.3.3)_
+<br>_(Updated 2025-12-04 16:16:40; BDJ4 version 4.17.6)_

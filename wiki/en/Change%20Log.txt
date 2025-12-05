@@ -4,16 +4,18 @@
 
 <!--
 
-**4.17.6 2025-12---**
+**4.17.7 2025-12---**
+
+-->
+
+**4.17.6 2025-12-4**
 
 * Bug Fixes:
     * User Interface: Fix arrow directions for RTL languages.
     * Playlist Management: Clean up user interface.
     * Linux: Update list of RTL languages.
 * Changes:
-    * User Interface: Re-implement the vertical notebook.
-
--->
+    * User Interface: Re-implement the vertical notebook to use a scrollbar.
 
 **4.17.5.1 2025-11-26**
 
@@ -1390,4 +1392,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-11-26 08:35:57; BDJ4 version 4.17.5.1)_
+<br>_(Updated 2025-12-04 16:16:40; BDJ4 version 4.17.6)_

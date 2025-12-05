@@ -152,7 +152,7 @@ if [[ $TBUILD == T ]]; then
       grep -v 'check\.h' |
       grep -v 'mongoose\.c' |
       grep -v 'warning generated' |
-      grep -v 'but linking with dylib ./opt/local/'
+      grep -v 'but linking with dylib'
 
   # for windows, make sure the libraries in plocal are up to date
   # on linux, make sure the localization is up to date.

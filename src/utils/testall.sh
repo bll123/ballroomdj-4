@@ -75,7 +75,8 @@ fi
 if [[ $grc == 0 && \
     $TPKGSRC == T && \
     $os == macos ]]; then
-  echo "-- $(date +%T) pkgsrc build"
+  echo "-- $(date +%T) MacOS pkgsrc build"
+  echo "-- $(date +%T) MacOS pkgsrc build" >> $LOG
   . ./src/utils/macospath.sh pkgsrc
   ./src/utils/testrun.sh "$@"
   grc=$?
@@ -86,14 +87,16 @@ if [[ $grc == 0 && \
     $THOMEBREW == T && \
     ${archtag} == applesilicon && \
     $os == macos ]]; then
-  echo "-- $(date +%T) homebrew build"
+  echo "-- $(date +%T) MacOS homebrew build"
+  echo "-- $(date +%T) MacOS homebrew build" >> $LOG
   . ./src/utils/macospath.sh homebrew
   ./src/utils/testrun.sh "$@"
   grc=$?
 fi
 
 if [[ $os == macos ]]; then
-  echo "-- $(date +%T) macports build"
+  echo "-- $(date +%T) MacOS macports build"
+  echo "-- $(date +%T) MacOS macports build" >> $LOG
   . ./src/utils/macospath.sh macports
 fi
 
