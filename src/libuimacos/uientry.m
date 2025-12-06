@@ -22,14 +22,22 @@
 #include "ui/uiwidget.h"
 #include "ui/uientry.h"
 
+typedef struct uientry {
+  bool            changed;
+} uientry_t;
+
 uiwcont_t *
 uiEntryInit (int entrySize, int maxSize)
 {
+  uientry_t       *uientry;
   uiwcont_t       *uiwidget;
   NSTextField     *widget;
   uientrybase_t   *ebase;
 
 fprintf (stderr, "c-entry\n");
+  uientry = mdmalloc (sizeof (uientry_t));
+  uientry->changed = false;
+
   widget = [[NSTextField alloc] init];
   [widget setBezeled:YES];
   [widget setDrawsBackground:YES];
@@ -39,7 +47,7 @@ fprintf (stderr, "c-entry\n");
 
   uiwidget = uiwcontAlloc (WCONT_T_ENTRY, WCONT_T_ENTRY);
   uiwcontSetWidget (uiwidget, widget, NULL);
-  uiwidget->uiint.uientry = NULL;
+  uiwidget->uiint.uientry = uientry;
 
   ebase = &uiwidget->uiint.uientrybase;
   ebase->entrySize = entrySize;
@@ -63,10 +71,14 @@ fprintf (stderr, "c-entry\n");
 void
 uiEntryFree (uiwcont_t *uiwidget)
 {
+  uientry_t   *uientry;
+
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-free")) {
     return;
   }
 
+  uientry = uiwidget->uiint.uientry;
+  mdfree (uientry);
   /* the container is freed by uiwcontFree() */
 }
 
@@ -120,16 +132,6 @@ uiEntrySetValue (uiwcont_t *uiwidget, const char *value)
 }
 
 void
-uiEntrySetState (uiwcont_t *uiwidget, int state)
-{
-  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-state")) {
-    return;
-  }
-
-  return;
-}
-
-void
 uiEntrySetInternalValidate (uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-int-validate")) {
@@ -150,6 +152,29 @@ uiEntrySetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
 }
 
 void
+uiEntrySetState (uiwcont_t *uiwidget, int state)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-state")) {
+    return;
+  }
+
+  return;
+}
+
+bool
+uiEntryChanged (uiwcont_t *uiwidget)
+{
+  uientry_t   *uientry;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-changed")) {
+    return false;
+  }
+
+  uientry = uiwidget->uiint.uientry;
+  return uientry->changed;
+}
+
+void
 uiEntryClearChanged (uiwcont_t *uiwidget)
 {
   uientry_t   *uientry;
@@ -157,5 +182,9 @@ uiEntryClearChanged (uiwcont_t *uiwidget)
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-changed")) {
     return;
   }
+
+  uientry = uiwidget->uiint.uientry;
+  uientry->changed = false;
 }
+
 

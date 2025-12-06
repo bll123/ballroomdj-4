@@ -43,16 +43,6 @@ uiCreateNotebook (void)
 }
 
 void
-uiNotebookTabPositionLeft (uiwcont_t *uinotebook)
-{
-  if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-tab-left")) {
-    return;
-  }
-
-  gtk_notebook_set_tab_pos (GTK_NOTEBOOK (uinotebook->uidata.widget), GTK_POS_LEFT);
-}
-
-void
 uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
     uiwcont_t *uiwidget)
 {
@@ -129,15 +119,6 @@ uiNotebookSetCallback (uiwcont_t *uinotebook, callback_t *uicb)
 
   g_signal_connect (uinotebook->uidata.widget, "switch-page",
       G_CALLBACK (uiNotebookSwitchPageHandler), uicb);
-}
-
-void
-uiNotebookSetScrollable (uiwcont_t *uinotebook)
-{
-  if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-scrollable")) {
-    return;
-  }
-  gtk_notebook_set_scrollable (GTK_NOTEBOOK (uinotebook->uidata.widget), true);
 }
 
 void

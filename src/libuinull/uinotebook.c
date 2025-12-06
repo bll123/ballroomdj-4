@@ -26,12 +26,6 @@ uiCreateNotebook (void)
 }
 
 void
-uiNotebookTabPositionLeft (uiwcont_t *uiwidget)
-{
-  return;
-}
-
-void
 uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uiwidget,
     uiwcont_t *uilabel)
 {
@@ -60,14 +54,6 @@ void
 uiNotebookSetCallback (uiwcont_t *uinotebook, callback_t *uicb)
 {
   return;
-}
-
-void
-uiNotebookSetScrollable (uiwcont_t *uinotebook)
-{
-  if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-scrollable")) {
-    return;
-  }
 }
 
 void

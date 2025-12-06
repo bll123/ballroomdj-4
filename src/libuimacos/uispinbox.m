@@ -14,6 +14,7 @@
 #include "bdj4intl.h"
 #include "callback.h"
 #include "mdebug.h"
+#include "slist.h"
 #include "tmutil.h"
 #include "uiclass.h"
 #include "uiwcont.h"
@@ -28,7 +29,6 @@
 typedef struct uispinbox {
   int         junk;
 } uispinbox_t;
-
 
 void
 uiSpinboxFree (uiwcont_t *uiwidget)

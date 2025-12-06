@@ -25,6 +25,7 @@
 #include "localeutil.h"
 #include "log.h"
 #include "mdebug.h"
+#include "osenv.h"
 #include "osprocess.h"
 #include "osdirutil.h"
 #include "osutils.h"
@@ -408,6 +409,8 @@ instutilGetMusicDir (char *homemusicdir, size_t sz)
   }
 
   if (isMacOS ()) {
+    /* macos does not localize the directory name */
+    /* it has some weird localization process for the finder application */
     snprintf (homemusicdir, sz, "%s/Music", home);
   }
 

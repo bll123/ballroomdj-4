@@ -1122,32 +1122,6 @@ uitestUINotebook (uitest_t *uitest)
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Notebook", VNB_NO_ID);
 
-  /* vertical */
-
-  uitest->wcont [UITEST_W_NB_V] = uiCreateNotebook ();
-  uiWidgetAddClass (uitest->wcont [UITEST_W_NB_V], LEFT_NB_CLASS);
-  uiNotebookTabPositionLeft (uitest->wcont [UITEST_W_NB_V]);
-  uiNotebookSetScrollable (uitest->wcont [UITEST_W_NB_V]);
-  uiBoxPackStartExpand (vbox, uitest->wcont [UITEST_W_NB_V]);
-
-  /* vert %d */
-
-  for (int i = 1; i < 4; ++i) {
-    char    tbuff [200];
-
-    snprintf (tbuff, sizeof (tbuff), "Vert %d", i);
-    vboxb = uiCreateVertBox ();
-    uiwidgetp = uiCreateLabel (tbuff);
-    uiNotebookAppendPage (uitest->wcont [UITEST_W_NB_V], vboxb, uiwidgetp);
-    uiWidgetSetAllMargins (vboxb, 4);
-    uiwcontFree (uiwidgetp);
-
-    uiwidgetp = uiCreateLabel (tbuff);
-    uiBoxPackStart (vboxb, uiwidgetp);
-    uiwcontFree (uiwidgetp);
-    uiwcontFree (vboxb);
-  }
-
   /* horizontal */
 
   uitest->wcont [UITEST_W_NB_H] = uiCreateNotebook ();

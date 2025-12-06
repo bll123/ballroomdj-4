@@ -40,26 +40,11 @@ uiCreateNotebook (void)
 }
 
 void
-uiNotebookTabPositionLeft (uiwcont_t *uinotebook)
-{
-  NSTabView     *nb;
-
-  if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-tab-left")) {
-    return;
-  }
-
-  nb = uinotebook->uidata.widget;
-  [nb setTabPosition: NSTabPositionLeft];
-  return;
-}
-
-void
 uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
     uiwcont_t *uilabel)
 {
   NSTabView       *nb;
   NSTabViewItem   *tabv;
-  NSTextField     *lab;
 
   if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-append-page")) {
     return;
@@ -75,13 +60,15 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
   tabv = [[NSTabViewItem alloc] init];
 // ### will need to change to draw-label so that a custom tab w/pic can
 // be displayed.
-// macos position-left also needs to have horizontal tabs.
-  lab = uilabel->uidata.widget;
-  if ([nb tabPosition] == NSTabPositionLeft) {
-    tabv.label = @"A";
-  } else {
+  if (uilabel != NULL) {
+    NSTextField     *lab;
+
+    lab = uilabel->uidata.widget;
     tabv.label = [lab stringValue];
+  } else {
+    [nb setTabViewType: NSNoTabsNoBorder];
   }
+
   [tabv setView: uibox->uidata.widget];
   [nb addTabViewItem: tabv];
 
@@ -140,14 +127,6 @@ uiNotebookSetCallback (uiwcont_t *uinotebook, callback_t *uicb)
   }
 
   return;
-}
-
-void
-uiNotebookSetScrollable (uiwcont_t *uinotebook)
-{
-  if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-scrollable")) {
-    return;
-  }
 }
 
 void
