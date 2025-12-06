@@ -53,6 +53,7 @@ static const char *envitems [] = {
   "XDG_CACHE_HOME",
   "XDG_CONFIG_HOME",
   "XDG_CURRENT_DESKTOP",
+  "XDG_MUSIC_DIR",
   "XDG_SESSION_DESKTOP",
   "XDG_SESSION_TYPE",
 };

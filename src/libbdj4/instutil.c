@@ -349,11 +349,12 @@ instutilGetMusicDir (char *homemusicdir, size_t sz)
   if (isLinux ()) {
     const char  *targv [5];
     int         targc = 0;
-    char        data [200];
+    char        data [MAXPATHLEN];
     char        *prog;
+    bool        found = false;
 
     prog = sysvarsGetStr (SV_PATH_XDGUSERDIR);
-    if (*prog) {
+    if (prog != NULL && *prog) {
       *data = '\0';
       targc = 0;
       targv [targc++] = prog;
@@ -367,6 +368,16 @@ instutilGetMusicDir (char *homemusicdir, size_t sz)
       /* not exist */
       if (*data && strcmp (data, home) != 0) {
         stpecpy (hp, hend, data);
+        found = true;
+      }
+    }
+    if (! found) {
+      char    tmp [MAXPATHLEN];
+
+      *tmp = '\0';
+      osGetEnv ("XDG_MUSIC_DIR", tmp, sizeof (tmp));
+      if (*tmp) {
+        stpecpy (hp, hend, tmp);
       } else {
         snprintf (homemusicdir, sz, "%s/Music", home);
       }
