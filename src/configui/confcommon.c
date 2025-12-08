@@ -125,10 +125,9 @@ confuiLoadThemeList (confuigui_t *gui)
     ++count;
   }
 
-  gui->uiitem [CONFUI_DD_UI_THEME].displist = tlist;
   gui->uiitem [CONFUI_DD_UI_THEME].ddlist = uiddlist;
-  gui->uiitem [CONFUI_DD_MQ_THEME].displist = tlist;
   gui->uiitem [CONFUI_DD_MQ_THEME].ddlist = mqddlist;
+  nlistFree (tlist);
 }
 
 void

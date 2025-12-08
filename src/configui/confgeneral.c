@@ -240,7 +240,6 @@ confuiLoadLocaleList (confuigui_t *gui)
   slistidx_t    iteridx;
   const char    *key;
   const char    *disp;
-  slist_t       *dlist;
   ilist_t       *ddlist;
   int           count;
   bool          found;
@@ -251,8 +250,6 @@ confuiLoadLocaleList (confuigui_t *gui)
 
   list = localeGetDisplayList ();
 
-  dlist = slistAlloc ("cu-locale-disp", LIST_UNORDERED, NULL);
-  slistSetSize (dlist, slistGetCount (list));
   ddlist = ilistAlloc ("cu-locale-dd", LIST_ORDERED);
   ilistSetSize (ddlist, slistGetCount (list));
 
@@ -274,13 +271,11 @@ confuiLoadLocaleList (confuigui_t *gui)
     if (strncmp (key, sysvarsGetStr (SV_LOCALE_SHORT), 2) == 0) {
       shortidx = count;
     }
-    slistSetStr (dlist, disp, key);
     ilistSetStr (ddlist, count, DD_LIST_DISP, disp);
     ilistSetStr (ddlist, count, DD_LIST_KEY_STR, key);
     ilistSetNum (ddlist, count, DD_LIST_KEY_NUM, count);
     ++count;
   }
-  slistSort (dlist);
 
   if (! found && shortidx >= 0) {
     gui->uiitem [CONFUI_DD_LOCALE].listidx = shortidx;
@@ -288,7 +283,6 @@ confuiLoadLocaleList (confuigui_t *gui)
     gui->uiitem [CONFUI_DD_LOCALE].listidx = engbidx;
   }
 
-  gui->uiitem [CONFUI_DD_LOCALE].displist = dlist;
   gui->uiitem [CONFUI_DD_LOCALE].ddlist = ddlist;
 
   logProcEnd ("");

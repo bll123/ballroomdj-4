@@ -372,6 +372,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
   for (int i = CONFUI_DD_BEGIN + 1; i < CONFUI_DD_MAX; ++i) {
     uiddFree (confui->gui.uiitem [i].uidd);
     ilistFree (confui->gui.uiitem [i].ddlist);
+    nlistFree (confui->gui.uiitem [i].displist);
   }
   for (int i = CONFUI_ENTRY_BEGIN + 1; i < CONFUI_ENTRY_MAX; ++i) {
     uiwcontFree (confui->gui.uiitem [i].uiwidgetp);
