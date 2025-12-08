@@ -115,4 +115,4 @@ want to use.  To add a new organization path, the data/orgopt.txt file must
 be edited.  [Contact](en-Getting%20Help) the development team for help.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_
+<br>_(Updated 2025-12-08 10:34:23; BDJ4 version 4.17.7)_
