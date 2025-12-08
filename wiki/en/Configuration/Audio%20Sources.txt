@@ -45,7 +45,7 @@ __Check&nbsp;Connection__ button to verify that the client is
 configured correctly.  The server must be accessible.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![audiosources](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/AudioSources-C.png)
+![audiosources](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/AudioSources-D.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Player__</span> </div>
 
 [Wiki Home](Home)

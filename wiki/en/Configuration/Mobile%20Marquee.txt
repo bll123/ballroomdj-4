@@ -49,7 +49,7 @@ be printed out so that the dancers can scan the QR Code. (The link
 will show your computer's name, not what is shown in the example).
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![mobile-marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileMarquee-J.png)
+![mobile-marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileMarquee-K.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Mobile Marquee__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">

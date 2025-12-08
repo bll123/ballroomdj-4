@@ -29,7 +29,7 @@ is set to 6:00 minutes to allow the entire song to play.
 Close the configuration window to save the configuration changes.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![showcase-conf-musicq](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/showcase-conf-musicq-C.png)
+![showcase-conf-musicq](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/showcase-conf-musicq-D.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 #### Running the Showcase

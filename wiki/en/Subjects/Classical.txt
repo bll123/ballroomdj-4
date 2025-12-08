@@ -23,7 +23,7 @@ the song selection and the song editor can be set in
 [Configure&nbsp;/&nbsp;Display&nbsp;Settings](en-Configuration-Display%20Settings).
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![cm-conf-dispset](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/cm-conf-dispset-B.png)
+![cm-conf-dispset](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/cm-conf-dispset-C.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Display Settings__</span> </div>
 
 #### Classical Music Title

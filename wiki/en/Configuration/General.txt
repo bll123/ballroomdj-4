@@ -52,7 +52,7 @@ identification process and have registered an ACRCloud account, copy and
 paste the appropriate information into the configuration.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![General](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/General-M.png)
+![General](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/General-N.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / General__</span> </div>
 
 [Wiki Home](Home)

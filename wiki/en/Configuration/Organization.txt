@@ -27,8 +27,10 @@ __Auto Organize__: When enabled, the audio files are renamed to match
 the organization path.
 <br>See: [Subjects / Organizing Music](en-Subjects-Organizing%20Music).
 
+<!-- appears in install/getting-started also -->
+
 <div markdown style="margin-right: 20px; text-align: center;">
-![Organization](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Organization-G.png)
+![Organization](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Organization-H.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Organization__</span> </div>
 
 [Wiki Home](Home)

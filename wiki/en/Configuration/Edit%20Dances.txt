@@ -48,7 +48,7 @@ proper default when MPM is selected in the
 <!-- appears in install/getting started.txt also -->
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![edit-dances](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditDances-I.png)
+![edit-dances](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditDances-J.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
 
 [Wiki Home](Home)

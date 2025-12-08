@@ -47,7 +47,7 @@ _Local_ format is the preferred format for the system locale.
 _ISO_ format is _Day-of-the-week YYYY-MM-DD HH:MM_.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![player](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Player-K.png)
+![player](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Player-L.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Player__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">

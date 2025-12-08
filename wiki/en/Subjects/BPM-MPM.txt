@@ -31,7 +31,7 @@ __BPM__ setting can be set to _BPM_ or _MPM_. This affects the display
 of the BPM/MPM of the song and which label (BPM/MPM) is displayed.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![bpm-conf-general](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/bpm-conf-general-A.png)
+![bpm-conf-general](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/bpm-conf-general-B.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / General__</span> </div>
 
 For the examples below, MPM will be used.

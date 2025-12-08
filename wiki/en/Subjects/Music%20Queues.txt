@@ -50,7 +50,7 @@ The music queues are configured in
 __Configure&nbsp;/&nbsp;Music&nbsp;Queues__.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![musicq-conf](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-conf-D.png)
+![musicq-conf](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-conf-E.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 If the __Active__ switch is off, the music queue inherits its
@@ -109,7 +109,7 @@ __Show&nbsp;Extra&nbsp;Queue&nbsp;Buttons__ switches are turned on.
 __Pause&nbsp;Each&nbsp;Song__ and __Play&nbsp;Announcements__ are off.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![musicq-conf-teach](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-conf-teach-D.png)
+![musicq-conf-teach](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-conf-teach-E.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 As the queue dance buttons will be active, it is easy to quickly

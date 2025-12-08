@@ -37,7 +37,7 @@ Be sure to set the __User__ and __Password__ to your desired user and
 password combinations.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![aud-srv-conf](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/aud-srv-conf-B.png)
+![aud-srv-conf](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/aud-srv-conf-C.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Audio Sources__</span> </div>
 
 References:

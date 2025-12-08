@@ -66,7 +66,7 @@ The _Database&nbsp;Update&nbsp;/&nbsp;Reorganize_ function should be
 run once, as auto-organization will not rename existing audio files.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![org-music-conf](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/org-music-conf-B.png)
+![org-music-conf](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/org-music-conf-C.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Organization__</span> </div>
 
 [Wiki Home](Home)

@@ -37,7 +37,7 @@ In the configuration window, the __General__ section will be displayed.
 In the __General__ section, the first item is the __Music&nbsp;Folder__.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Configure / General / Music Folder](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-config-folder-C.png)
+![Configure / General / Music Folder](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-config-folder-D.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / General / Music Folder__</span> </div>
 
 Use the directory chooser button with the folder icon on the far right
@@ -58,8 +58,10 @@ audio file tags.
 In the configuration window, select the __Organization__ section from
 the list on the left side of the window.
 
+<!-- appears in configuration/organization also -->
+
 <div markdown style="margin-right: 20px; text-align: center;">
-![gs-config-org](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-config-org-C.png)
+![gs-config-org](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Organization-H.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Organization__</span> </div>
 
 In the _Organization_ section, the default organization is
@@ -104,7 +106,7 @@ Close the configuration window.
 <!-- appears in configuration/edit dances.txt also -->
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![edit-dances](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditDances-H.png)
+![edit-dances](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditDances-J.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
 
 #### Creating the database for the first time
