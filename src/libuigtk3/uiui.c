@@ -232,9 +232,6 @@ uiSetUICSS (uisetup_t *uisetup)
     tp = stpecpy (tp, tend, wbuff);
 
     tsz = sz - 1;
-    snprintf (wbuff, sizeof (wbuff), " .%s tab label { font-size: %dpt; }\n",
-        LEFT_NB_CLASS, tsz);
-    tp = stpecpy (tp, tend, wbuff);
     snprintf (wbuff, sizeof (wbuff), " button.%s label { font-size: %dpt; }\n",
         LEFT_NB_CLASS, tsz);
     tp = stpecpy (tp, tend, wbuff);

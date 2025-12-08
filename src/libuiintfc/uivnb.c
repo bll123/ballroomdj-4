@@ -38,11 +38,10 @@ typedef struct {
 } uivnbcb_t;
 
 typedef struct uivnb {
-  uiwcont_t   *hbox;
-  uiwcont_t   *sw;
-  uiwcont_t   *vlist;
   uiwcont_t   *nb;
+  uiwcont_t   *vlist;
   uiwcont_t   *tablist [VNB_MAX_PAGECOUNT];
+  uiwcont_t   *indlist [VNB_MAX_PAGECOUNT];
   callback_t  *tabcblist [VNB_MAX_PAGECOUNT];
   uivnbcb_t   cbdata [VNB_MAX_PAGECOUNT];
   int         idlist [VNB_MAX_PAGECOUNT];
@@ -57,24 +56,27 @@ uivnb_t *
 uivnbCreate (uiwcont_t *box)
 {
   uivnb_t     *vnb;
+  uiwcont_t   *hbox;
+  uiwcont_t   *sw;
 
   vnb = mdmalloc (sizeof (uivnb_t));
 
-  vnb->hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (box, hbox);
 
-  vnb->sw = uiCreateScrolledWindow (50);
-  uiBoxPackStart (vnb->hbox, vnb->sw);
+  sw = uiCreateScrolledWindow (50);
+  uiBoxPackStart (hbox, sw);
   vnb->vlist = uiCreateVertBox ();
-  uiWindowPackInWindow (vnb->sw, vnb->vlist);
+  uiWindowPackInWindow (sw, vnb->vlist);
+  uiWidgetExpandHoriz (vnb->vlist);
 
   vnb->nb = uiCreateNotebook ();
   uiNotebookHideTabs (vnb->nb);
-  uiBoxPackStartExpand (vnb->hbox, vnb->nb);
-
-  uiBoxPackStart (box, vnb->hbox);
+  uiBoxPackStart (hbox, vnb->nb);
 
   for (int i = 0; i < VNB_MAX_PAGECOUNT; ++i) {
     vnb->tablist [i] = NULL;
+    vnb->indlist [i] = NULL;
     vnb->tabcblist [i] = NULL;
     vnb->cbdata [i].pagenum = i;
     vnb->cbdata [i].vnb = vnb;
@@ -85,6 +87,9 @@ uivnbCreate (uiwcont_t *box)
   vnb->selected = -1;
   vnb->textdir = sysvarsGetNum (SVL_LOCALE_TEXT_DIR);
 
+  uiwcontFree (sw);
+  uiwcontFree (hbox);
+
   return vnb;
 }
 
@@ -93,19 +98,20 @@ uivnbFree (uivnb_t *vnb)
 {
   for (int i = 0; i < VNB_MAX_PAGECOUNT; ++i) {
     uiwcontFree (vnb->tablist [i]);
+    uiwcontFree (vnb->indlist [i]);
     callbackFree (vnb->tabcblist [i]);
   }
 
-  uiwcontFree (vnb->nb);
   uiwcontFree (vnb->vlist);
-  uiwcontFree (vnb->sw);
-  uiwcontFree (vnb->hbox);
+  uiwcontFree (vnb->nb);
 }
 
 void
-uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *label, int id)
+uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *nbtxt, int id)
 {
+  uiwcont_t   *hbox;
   uiwcont_t   *button;
+  uiwcont_t   *label;
   char        tbuff [40];
   callback_t  *cb;
   int         pagenum;
@@ -124,21 +130,31 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *label, int id)
   cb = callbackInit (uivnbSetPageCallback, &vnb->cbdata [pagenum], NULL);
   vnb->tabcblist [pagenum] = cb;
 
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vnb->vlist, hbox);
+
   snprintf (tbuff, sizeof (tbuff), "vnb-%d", vnb->pagecount);
-  button = uiCreateButton (tbuff, cb, label, NULL);
+  button = uiCreateButton (tbuff, cb, nbtxt, NULL);
   uiButtonAlignLeft (button);
   uiButtonSetReliefNone (button);
-  uiBoxPackStart (vnb->vlist, button);
-  uiWidgetExpandHoriz (button);
+  uiBoxPackStartExpand (hbox, button);
   uiWidgetAddClass (button, LEFT_NB_CLASS);
+
+  label = uiCreateLabel ("");
+  uiBoxPackStart (hbox, label);
+  uiWidgetSetMarginStart (label, 0);
+  uiWidgetAddClass (label, LEFT_NB_CLASS);
 
   vnb->pagecount += 1;
 
   vnb->tablist [pagenum] = button;
+  vnb->indlist [pagenum] = label;
   vnb->idlist [pagenum] = id;
   if (pagenum == 0) {
     uivnbSetPage (vnb, pagenum);
   }
+
+  uiwcontFree (hbox);
 }
 
 void
@@ -160,19 +176,11 @@ uivnbSetPage (uivnb_t *vnb, int pagenum)
   prevsel = vnb->selected;
   vnb->selected = pagenum;
   uiWidgetAddClass (vnb->tablist [vnb->selected], NB_SEL_CLASS);
-  if (vnb->textdir == TEXT_DIR_RTL) {
-    uiWidgetAddClass (vnb->tablist [vnb->selected], NB_SEL_RTL_CLASS);
-  } else {
-    uiWidgetAddClass (vnb->tablist [vnb->selected], NB_SEL_LTR_CLASS);
-  }
+  uiWidgetAddClass (vnb->indlist [vnb->selected], NB_SEL_CLASS);
 
   if (prevsel >= 0) {
     uiWidgetRemoveClass (vnb->tablist [prevsel], NB_SEL_CLASS);
-    if (vnb->textdir == TEXT_DIR_RTL) {
-      uiWidgetRemoveClass (vnb->tablist [prevsel], NB_SEL_RTL_CLASS);
-    } else {
-      uiWidgetRemoveClass (vnb->tablist [prevsel], NB_SEL_LTR_CLASS);
-    }
+    uiWidgetRemoveClass (vnb->indlist [prevsel], NB_SEL_CLASS);
   }
 
   /* after vnb->selected has been set */

@@ -1,7 +1,7 @@
-/* 2024-12-4 */
-/* version 8 */
+/* 2024-12-8 */
+/* version 9 */
 /*
- * Copyright 2023-2024 Brad Lanam Pleasant Hill CA
+ * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
  */
 
 /* note that these may affect dialogs started by the application */
@@ -85,6 +85,14 @@ button.bdj-leftnotebook label {
 button.bdj-notebook-sel {
   background-color: shade(@theme_base_color,0.6);
 }
+label.bdj-leftnotebook {
+  border-left-style: solid;
+  border-left-width: 4px;
+  border-left-color: transparent;
+}
+label.bdj-notebook-sel {
+  border-left-color: @selected_bg_color;
+}
 button.bdj-notebook-sel label {
   color: @theme_fg_color;
 }
@@ -93,25 +101,6 @@ button.bdj-leftnotebook:hover {
 }
 button.bdj-leftnotebook:hover label {
   color: @theme_fg_color;
-}
-button.bdj-notebook-sel-ltr {
-  border-right: 3px solid;
-  border-color: @selected_bg_color;
-}
-button.bdj-notebook-sel-rtl {
-  border-left: 3px solid;
-  border-color: @selected_bg_color;
-}
-
-
-/* gtk: notebook scrolling arrows.  make the disabled arrow disappear */
-notebook > header > tabs > arrow {
-  color: shade(@theme_text_color,1.0);
-  background-color: shade(@theme_base_color,0.6);
-}
-notebook > header > tabs > arrow:disabled {
-  color: shade(@theme_base_color,1.0);
-  background-color: shade(@theme_base_color,1.0);
 }
 
 scrolledwindow undershoot.top, scrolledwindow undershoot.right,

@@ -18,8 +18,6 @@ extern "C" {
 #define HEADING_CLASS "bdj-heading"
 #define LEFT_NB_CLASS "bdj-leftnotebook"
 #define NB_SEL_CLASS "bdj-notebook-sel"
-#define NB_SEL_LTR_CLASS "bdj-notebook-sel-ltr"
-#define NB_SEL_RTL_CLASS "bdj-notebook-sel-rtl"
 #define LISTING_CLASS "bdj-listing"
 #define LIST_FAV_CLASS "bdj-list-fav"
 #define LIST_HEAD_CLASS "bdj-list-head"

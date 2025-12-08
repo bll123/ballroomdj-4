@@ -8,6 +8,8 @@
 
 * Bug Fixes:
     * Linux: Installer: more robust check for music directory.
+* Changes:
+    * User Interface: vertical notebook cleanup.
 
 -->
 
