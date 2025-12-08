@@ -728,9 +728,8 @@ asbdj4GetAudioFile (asdata_t *asdata, const char *nm, const char *tempnm)
       if (fwrite (clientdata->webresponse, clientdata->webresplen, 1, ofh) == 1) {
         rc = true;
       }
-      fclose (ofh);
       mdextfclose (ofh);
-    } else {
+      fclose (ofh);
     }
     clientdata->state = BDJ4_STATE_OFF;
   }

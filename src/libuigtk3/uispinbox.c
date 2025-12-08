@@ -61,6 +61,7 @@ static void uiSpinboxValueChangedHandler (GtkSpinButton *sb, gpointer udata);
 static gboolean uiSpinboxDoubleDefaultDisplay (GtkSpinButton *sb, gpointer udata);
 static gboolean uiSpinboxFocusHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata);
 static void uiSpinboxTextPasteNull (GtkEntry *w, void *udata);
+static void uiDragDropDestNull (GtkWidget *w, GdkDragContext *context, gint x, gint y, GtkSelectionData *seldata, guint info, guint tm, gpointer udata);
 
 /* only frees the internals */
 void
@@ -111,6 +112,8 @@ uiSpinboxTextCreate (void *udata)
 
   uiWidgetAddClass (uiwidget, SPINBOX_READONLY_CLASS);
 
+  g_signal_connect (widget, "drag-data-received",
+      G_CALLBACK (uiDragDropDestNull), uiwidget);
   g_signal_connect (widget, "output",
       G_CALLBACK (uiSpinboxTextDisplay), uiwidget);
   g_signal_connect (widget, "input",
@@ -811,5 +814,14 @@ static void
 uiSpinboxTextPasteNull (GtkEntry *w, void *udata)
 {
   g_signal_stop_emission_by_name (G_OBJECT (w), "paste-clipboard");
+  return;
+}
+
+static void
+uiDragDropDestNull (GtkWidget *w, GdkDragContext *context,
+    gint x, gint y, GtkSelectionData *seldata, guint info, guint tm,
+    gpointer udata)
+{
+  g_signal_stop_emission_by_name (G_OBJECT (w), "drag-data-received");
   return;
 }

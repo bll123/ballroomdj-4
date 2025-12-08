@@ -596,6 +596,7 @@ static int32_t
 uiextreqDragDropCallback (void *udata, const char *uri)
 {
   uiextreq_t  *uiextreq = udata;
+  char        tbuff [MAXPATHLEN];
 
   if (uiextreq == NULL || uri == NULL || ! *uri) {
     return UICB_STOP;
@@ -605,7 +606,9 @@ uiextreqDragDropCallback (void *udata, const char *uri)
     uri += AS_FILE_PFX_LEN;
   }
 
-  uiEntrySetValue (uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE], uri);
+  stpecpy (tbuff, tbuff + sizeof (tbuff), uri);
+  stringTrim (tbuff);
+  uiEntrySetValue (uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE], tbuff);
 
   return UICB_CONT;
 }

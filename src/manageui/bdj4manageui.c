@@ -173,7 +173,6 @@ enum {
   MANAGE_CB_BDJ4_IMP,
   MANAGE_CB_IMP_PL,
   MANAGE_CB_EXP_PL,
-  MANAGE_CB_DRAG_DROP,
   MANAGE_CB_MAX,
 };
 
@@ -452,7 +451,6 @@ static void managePlaylistImportFinalize (manageui_t *manage);
 
 //static void managePlaylistImportCreateSonglist (manageui_t *manage, slist_t *songlist);
 //static bool managePlaylistImportCreateSongs (manageui_t *manage, const char *songnm, int imptype, slist_t *songlist, slist_t *tagdata, int retain);
-static int32_t manageDragDropCallback (void *udata, const char *uri);
 
 /* export/import bdj4 */
 static bool     managePlaylistExportBDJ4 (void *udata);
@@ -772,6 +770,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   uiexpplFree (manage->uiexppl);
   nlistFree (manage->removelist);
   slistFree (manage->songidxlist);
+  uivnbFree (manage->mainvnb);
 
   procutilStopAllProcess (manage->processes, manage->conn, PROCUTIL_FORCE_TERM);
   procutilFreeAll (manage->processes);
@@ -973,13 +972,6 @@ manageBuildUI (manageui_t *manage)
 
   /* set a default selection.  this will also set the song editor dbidx */
   uisongselSetSelection (manage->mmsongsel, 0);
-
-  manage->callbacks [MANAGE_CB_DRAG_DROP] = callbackInitS (
-      manageDragDropCallback, manage);
-  uimusicqDragDropSetURICallback (manage->slmusicq, 0,
-      manage->callbacks [MANAGE_CB_DRAG_DROP]);
-  uimusicqDragDropSetURICallback (manage->slsbsmusicq, 0,
-      manage->callbacks [MANAGE_CB_DRAG_DROP]);
 
   logProcEnd ("");
 }
@@ -3608,19 +3600,6 @@ managePlaylistImportFinalize (manageui_t *manage)
 
   impplFree (manage->imppl);
   manage->imppl = NULL;
-}
-
-static int32_t
-manageDragDropCallback (void *udata, const char *uri)
-{
-  manageui_t    *manage = udata;
-
-  if (strncmp (uri, AS_HTTPS_PFX, AS_HTTPS_PFX_LEN) != 0) {
-    return UICB_STOP;
-  }
-
-  uiimpplDialog (manage->uiimppl, uri);
-  return UICB_CONT;
 }
 
 /* export/import bdj4 */

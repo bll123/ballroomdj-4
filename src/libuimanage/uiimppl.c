@@ -728,6 +728,7 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
   uiwcont_t   *entry;
   const char  *str;
   char        tbuff [MAXPATHLEN];
+  char        nbuff [MAXPATHLEN];
   pathinfo_t  *pi;
   bool        haderrors = false;
   bool        urichg = false;
@@ -810,8 +811,8 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
 
   /* do not update the new-name if the user has modified it */
   if (uiimppl->newnameuserchg == false && *tbuff) {
-    snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
-    uiimpplSetNewName (uiimppl, tbuff);
+    snprintf (nbuff, sizeof (nbuff), "%.*s", (int) pi->blen, pi->basename);
+    uiimpplSetNewName (uiimppl, nbuff);
   }
 
   pathInfoFree (pi);
@@ -1028,13 +1029,20 @@ static int32_t
 uiimpplDragDropCallback (void *udata, const char *uri)
 {
   uiimppl_t   *uiimppl = udata;
+  char        tbuff [MAXPATHLEN];
 
   if (uiimppl == NULL || uri == NULL || ! *uri) {
     return UICB_STOP;
   }
 
-  uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_URI], uri);
-  return uiimpplProcessURI (uiimppl, uri);
+  if (strncmp (uri, AS_FILE_PFX, AS_FILE_PFX_LEN) == 0) {
+    uri += AS_FILE_PFX_LEN;
+  }
+
+  stpecpy (tbuff, tbuff + sizeof (tbuff), uri);
+  stringTrim (tbuff);
+  uiEntrySetValue (uiimppl->wcont [UIIMPPL_W_URI], tbuff);
+  return UICB_CONT;
 }
 
 static int

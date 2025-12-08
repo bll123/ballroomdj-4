@@ -73,19 +73,19 @@ atiiInit (const char *atipkg, int writetags,
   atidata->avformat_close_input = dylibLookup (atidata->avfmtdlh, "avformat_close_input");
 
   if (atidata->av_log_set_callback == NULL) {
-    logMsg (LOG_DBG, LOG_INFO, "lib: avutil: av_log_set_callback not found");
+    logMsg (LOG_DBG, LOG_ERR, "lib: avutil: av_log_set_callback not found");
   }
   if (atidata->av_strerror == NULL) {
-    logMsg (LOG_DBG, LOG_INFO, "lib: avutil: av_strerror not found");
+    logMsg (LOG_ERR, LOG_IMPORTANT, "lib: avutil: av_strerror not found");
   }
   if (atidata->avformat_open_input == NULL) {
-    logMsg (LOG_DBG, LOG_INFO, "lib: avfmt: avformat_open_input not found");
+    logMsg (LOG_ERR, LOG_IMPORTANT, "lib: avfmt: avformat_open_input not found");
   }
   if (atidata->avformat_find_stream_info == NULL) {
-    logMsg (LOG_DBG, LOG_INFO, "lib: avfmt: avformat_find_stream_info not found");
+    logMsg (LOG_ERR, LOG_IMPORTANT, "lib: avfmt: avformat_find_stream_info not found");
   }
   if (atidata->avformat_close_input == NULL) {
-    logMsg (LOG_DBG, LOG_INFO, "lib: avfmt: avformat_close_input not found");
+    logMsg (LOG_ERR, LOG_IMPORTANT, "lib: avfmt: avformat_close_input not found");
   }
 
   /* turn off logging for ffmpeg */

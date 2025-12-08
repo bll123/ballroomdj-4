@@ -104,6 +104,7 @@ uivnbFree (uivnb_t *vnb)
 
   uiwcontFree (vnb->vlist);
   uiwcontFree (vnb->nb);
+  mdfree (vnb);
 }
 
 void

@@ -2201,6 +2201,7 @@ pluiDragDropCallback (void *udata, const char *uri)
   playerui_t    *plui = udata;
   int           mqidx;
   int32_t       rownum;
+  char          tbuff [MAXPATHLEN];
 
   /* only file:// are handled at this time */
   if (strncmp (uri, AS_FILE_PFX, AS_FILE_PFX_LEN) != 0) {
@@ -2212,7 +2213,9 @@ pluiDragDropCallback (void *udata, const char *uri)
   rownum = uimusicqGetSelectLocation (plui->uimusicq, mqidx);
   plui->extreqRow = rownum;
 
-  uiextreqDialog (plui->uiextreq, uri + AS_FILE_PFX_LEN);
+  stpecpy (tbuff, tbuff + sizeof (tbuff), uri + AS_FILE_PFX_LEN);
+  stringTrim (tbuff);
+  uiextreqDialog (plui->uiextreq, tbuff);
   return UICB_CONT;
 }
 

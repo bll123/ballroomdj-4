@@ -70,7 +70,7 @@ uiDragDropDestHandler (GtkWidget *w, GdkDragContext *context,
     mdextalloc (nstr);
     rc = callbackHandlerS (cb, nstr);
     mdextfree (nstr);
-    dataFree (nstr);
+    free (nstr);
     gtk_drag_finish (context, rc, FALSE, tm);
   }
 

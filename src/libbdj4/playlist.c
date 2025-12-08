@@ -775,7 +775,7 @@ playlistGetNextSong (playlist_t *pl,
     slkey = songlistIterate (pl->songlist, &pl->songlistiter);
     sfname = songlistGetStr (pl->songlist, slkey, SONGLIST_URI);
     while (sfname != NULL) {
-      int     songtype;
+      int     songtype = SONG_TYPE_NORM;
 
       song = dbGetByName (pl->musicdb, sfname);
       if (song != NULL) {

@@ -89,6 +89,13 @@ if [[ $DEVELOPMENT != dev ]]; then
     grc=1
   fi
 
+  grep '^#define OSPROCESS_DEBUG 0' src/libcommon/osprocess.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "osprocess debugging is on (osprocess.c)"
+    grc=1
+  fi
+
   grep '^#define BDJ4_PW_DEBUG 0' src/libvol/volpipewire.c > /dev/null 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then

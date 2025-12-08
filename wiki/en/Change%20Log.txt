@@ -8,7 +8,12 @@
 
 * Bug Fixes:
     * Linux: Installer: more robust check for music directory.
-* Changes:
+    * Manage: Edit Song List: Removed drag and drop due to failures.
+    * Manage: Import playlist: Fix drag and drop issues.
+    * User Interface: Fix drag and drop.
+* Internal:
+    * Fix various memory leaks.
+    * Update mongoose to version 7.20.
     * User Interface: vertical notebook cleanup.
 
 -->
