@@ -27,6 +27,8 @@
 #include "osprocess.h"
 #include "tmutil.h"
 
+#define OSPROCESS_DEBUG 0
+
 enum {
   OSPROCESS_RUN_DATA_SZ = 4096,
   OSPROCESS_RUN_ARGV_SZ = 30,
@@ -49,7 +51,7 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
   pid_t       tpid;
   int         rc;
 
-# if 0
+# if OSPROCESS_DEBUG
     {
       int   k = 0;
       fprintf (stderr, "== start: ");
