@@ -1,4 +1,4 @@
-BDJ4 #VERSION# #BUILDDATE#
+BDJ4 4.17.7 2025-12-09
 
 ### Contents
 
@@ -15,23 +15,23 @@ BDJ4 #VERSION# #BUILDDATE#
 
 ### Installation:
 
-[Windows Installation Guide](https://sourceforge.net/p/ballroomdj4/wiki/Install-Windows)
+[Windows Installation Guide](https://sourceforge.net/p/ballroomdj4/wiki/en-Install-Windows)
 <br/>
-[Mac OS Installation Guide](https://sourceforge.net/p/ballroomdj4/wiki/Install-MacOS/)
+[Mac OS Installation Guide](https://sourceforge.net/p/ballroomdj4/wiki/en-Install-MacOS/)
 <br/>
-[Linux Installation Guide](https://sourceforge.net/p/ballroomdj4/wiki/Install-Linux/)
+[Linux Installation Guide](https://sourceforge.net/p/ballroomdj4/wiki/en-Install-Linux/)
 
 ### Getting Started:
 
-[Getting Started Guide](https://sourceforge.net/p/ballroomdj4/wiki/Install-Getting%20Started/)
+[Getting Started Guide](https://sourceforge.net/p/ballroomdj4/wiki/en-Install-Getting%20Started/)
 
 ### Change Log:
 
-[Change Log](https://sourceforge.net/p/ballroomdj4/wiki/Change%20Log/)
+[Change Log](https://sourceforge.net/p/ballroomdj4/wiki/en-Change%20Log/)
 
 ### Converting BallroomDJ 3:
 
-[Converting BallroomDJ 3](https://sourceforge.net/p/ballroomdj4/wiki/Install-Converting%20BDJ3)
+[Converting BallroomDJ 3](https://sourceforge.net/p/ballroomdj4/wiki/en-Install-Converting%20BDJ3)
 
 ### Release Notes:
 
@@ -47,7 +47,7 @@ This installation will not affect any BallroomDJ 3 installation.
 ### Feedback:
 
 Use one of the methods listed in the
-[Getting&nbsp;Help](https://sourceforge.net/p/ballroomdj4/wiki/Getting%20Help)
+[Getting&nbsp;Help](https://sourceforge.net/p/ballroomdj4/wiki/en-Getting%20Help)
 wiki page.
 
 You can also use the BallroomDJ 4 support function to send a message.
@@ -94,4 +94,4 @@ Except for Nederlands (Dutch), most of the translation are machine
 translated and of very poor quality.
 
 If you can help with translating, please
-[let&nbsp;me&nbsp;know](https://sourceforge.net/p/ballroomdj4/wiki/Getting%20Help).
+[let&nbsp;me&nbsp;know](https://sourceforge.net/p/ballroomdj4/wiki/en-Getting%20Help).
