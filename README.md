@@ -1,4 +1,4 @@
-BDJ4 4.17.7 2025-12-09
+BDJ4 #VERSION# #BUILDDATE#
 
 ### Contents
 
