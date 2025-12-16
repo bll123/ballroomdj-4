@@ -6,12 +6,12 @@
 
 **4.17.8 2025-12---**
 
-**4.17.7.1 2025-12---**
+-->
+
+**4.17.7.1 2025-12-16**
 
 * Bug Fixes:
-    * Linux: MPRIS: Fix duration, seek, volume.  Work around kdeconnect volume bug.
-
--->
+    * Linux: MPRIS: Fix duration, seek, volume.
 
 **4.17.7 2025-12-9**
 
@@ -1409,4 +1409,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-12-09 10:24:52; BDJ4 version 4.17.7)_
+<br>_(Updated 2025-12-16 12:07:48; BDJ4 version 4.17.7.1)_
