@@ -18,6 +18,7 @@
 #include <stdbool.h>
 #include <inttypes.h>
 #include <string.h>
+#include <math.h>
 
 #include <glib.h>
 
@@ -147,12 +148,13 @@ typedef struct contdata {
   callback_t          *cburi;
   nlist_t             *metadata;
   void                *metav;
-  int                 playstate;      // BDJ4 play state
+  playerstate_t       playstate;      // BDJ4 play state
   int                 playstatus;
   int                 repeatstatus;
   int32_t             pos;
   int                 rate;
   int                 volume;
+  bool                inprocess;
 } contdata_t;
 
 static void mprisInitializeRoot (contdata_t *contdata);
@@ -164,10 +166,12 @@ static gboolean mprisPause (mprisMediaPlayer2Player *player, GDBusMethodInvocati
 static gboolean mprisPlayPause (mprisMediaPlayer2Player *player, GDBusMethodInvocation *invocation, void *udata);
 static gboolean mprisStop (mprisMediaPlayer2Player *player, GDBusMethodInvocation *invocation, void *udata);
 static gboolean mprisSetPosition (mprisMediaPlayer2Player* player, GDBusMethodInvocation* invocation, const gchar *track_id, gint64 position, void *udata);
+static gboolean mprisSetVolume (mprisMediaPlayer2Player* player, GDBusMethodInvocation* invocation, gdouble volume, void *udata);
 static gboolean mprisSeek (mprisMediaPlayer2Player* player, GDBusMethodInvocation* invocation, gint64 offset, void *udata);
 static gboolean mprisOpenURI (mprisMediaPlayer2Player *player, GDBusMethodInvocation *invocation, const gchar *uri, void *udata);
 static gboolean mprisRepeat (mprisMediaPlayer2Player *player, GDBusMethodInvocation *invocation, void *udata);
 static gboolean mprisRate (mprisMediaPlayer2Player *player, GDBusMethodInvocation *invocation, void *udata);
+static gboolean mprisVolume (mprisMediaPlayer2Player *player, GDBusMethodInvocation *invocation, void *udata);
 
 void
 contiDesc (const char **ret, int max)
@@ -200,6 +204,7 @@ contiInit (const char *instname)
   contdata->pos = 0;
   contdata->rate = 100;
   contdata->volume = 0;
+  contdata->inprocess = false;
 
   contdata->dbus = dbusConnInit ();
 
@@ -319,9 +324,6 @@ contiSetPlayState (contdata_t *contdata, int state)
       canseek = false;
       break;
     }
-    default: {
-      break;
-    }
   }
 
   mpris_media_player2_player_set_can_play (contdata->mprisplayer, canplay);
@@ -344,6 +346,8 @@ contiSetRepeatState (contdata_t *contdata, bool state)
     return;
   }
 
+  contdata->inprocess = true;
+
   nstate = MPRIS_REPEAT_NONE;
   if (state) {
     nstate = MPRIS_REPEAT_TRACK;
@@ -353,6 +357,7 @@ contiSetRepeatState (contdata_t *contdata, bool state)
         repeatstr [nstate]);
     contdata->repeatstatus = nstate;
   }
+  contdata->inprocess = false;
 }
 
 void
@@ -361,6 +366,8 @@ contiSetPosition (contdata_t *contdata, int32_t pos)
   if (contdata == NULL) {
     return;
   }
+
+  contdata->inprocess = true;
 
   if (contdata->pos != pos) {
     int64_t   tpos;
@@ -376,6 +383,8 @@ contiSetPosition (contdata_t *contdata, int32_t pos)
     }
     contdata->pos = pos;
   }
+
+  contdata->inprocess = false;
 }
 
 void
@@ -385,6 +394,8 @@ contiSetRate (contdata_t *contdata, int rate)
     return;
   }
 
+  contdata->inprocess = true;
+
   if (contdata->rate != rate) {
     double    dval;
 
@@ -392,6 +403,7 @@ contiSetRate (contdata_t *contdata, int rate)
     mpris_media_player2_player_set_rate (contdata->mprisplayer, dval);
   }
   contdata->rate = rate;
+  contdata->inprocess = false;
 }
 
 void
@@ -401,13 +413,17 @@ contiSetVolume (contdata_t *contdata, int volume)
     return;
   }
 
+  contdata->inprocess = true;
+
   if (contdata->volume != volume) {
     double    dval;
 
-    dval = (double) volume / 100.0;
+    contdata->volume = volume;
+    dval = (double) volume;
+    dval /= 100.0;
     mpris_media_player2_player_set_volume (contdata->mprisplayer, dval);
   }
-  contdata->volume = volume;
+  contdata->inprocess = false;
 }
 
 void
@@ -417,6 +433,7 @@ contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
   nlistidx_t  miter;
   nlistidx_t  mkey;
   void        *tv;
+  int64_t     tval;
 
   if (contdata == NULL) {
     return;
@@ -433,7 +450,9 @@ contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
   }
   nlistSetStr (contdata->metadata, CONT_METADATA_TRACKID, tbuff);
 
-  nlistSetNum (contdata->metadata, CONT_METADATA_DURATION, cmetadata->duration);
+  tval = cmetadata->duration;
+  tval *= 1000;                 /* microseconds */
+  nlistSetNum (contdata->metadata, CONT_METADATA_DURATION, tval);
 
   if (cmetadata->title != NULL) {
     nlistSetStr (contdata->metadata, CONT_METADATA_TITLE, cmetadata->title);
@@ -503,7 +522,6 @@ mprisInitializeRoot (contdata_t *contdata)
 static void
 mprisInitializePlayer (contdata_t *contdata)
 {
-
   contdata->mprisplayer = mpris_media_player2_player_skeleton_new ();
 
   mpris_media_player2_player_set_playback_status (contdata->mprisplayer,
@@ -511,13 +529,16 @@ mprisInitializePlayer (contdata_t *contdata)
   mpris_media_player2_player_set_loop_status (contdata->mprisplayer,
       repeatstr [MPRIS_REPEAT_NONE]);
   mpris_media_player2_player_set_rate (contdata->mprisplayer, 0.0);
-  mpris_media_player2_player_set_volume (contdata->mprisplayer, true);
+  mpris_media_player2_player_set_volume (contdata->mprisplayer, 0.0);
   mpris_media_player2_player_set_position (contdata->mprisplayer, 0);
   mpris_media_player2_player_set_minimum_rate (contdata->mprisplayer,
       SPD_LOWER / 100.0);
   mpris_media_player2_player_set_maximum_rate (contdata->mprisplayer,
       SPD_UPPER / 100.0);
   mpris_media_player2_player_set_shuffle (contdata->mprisplayer, false);
+  /* "Not Available" might be valid, */
+  /* but kdeconnect doesn't take any action on it */
+  mpris_media_player2_player_set_shuffle_status (contdata->mprisplayer, "Off");
   mpris_media_player2_player_set_can_go_next (contdata->mprisplayer, false);
   mpris_media_player2_player_set_can_go_previous (contdata->mprisplayer, false);
   mpris_media_player2_player_set_can_play (contdata->mprisplayer, false);
@@ -537,6 +558,8 @@ mprisInitializePlayer (contdata_t *contdata)
       G_CALLBACK (mprisStop), contdata);
   g_signal_connect (contdata->mprisplayer, "handle-set-position",
       G_CALLBACK (mprisSetPosition), contdata);
+  g_signal_connect (contdata->mprisplayer, "handle-set-volume",
+      G_CALLBACK (mprisSetVolume), contdata);
   g_signal_connect (contdata->mprisplayer, "handle-seek",
       G_CALLBACK (mprisSeek), contdata);
   g_signal_connect (contdata->mprisplayer, "handle-open-uri",
@@ -545,6 +568,8 @@ mprisInitializePlayer (contdata_t *contdata)
       G_CALLBACK (mprisRepeat), contdata);
   g_signal_connect (contdata->mprisplayer, "notify::rate",
       G_CALLBACK (mprisRate), contdata);
+  g_signal_connect (contdata->mprisplayer, "notify::volume",
+      G_CALLBACK (mprisVolume), contdata);
 
   dbusSetInterfaceSkeleton (contdata->dbus, contdata->mprisplayer,
       objpath [MPRIS_OBJP_MP2]);
@@ -651,6 +676,29 @@ mprisSetPosition (mprisMediaPlayer2Player* player,
   return true;
 }
 
+/* this does not appear to be used by mpris controllers */
+/* they expect volume to be read-write instead */
+static gboolean
+mprisSetVolume (mprisMediaPlayer2Player* player,
+    GDBusMethodInvocation* invocation,
+    gdouble volume,
+    void *udata)
+{
+  contdata_t  *contdata = udata;
+  int         nvol;
+
+  volume *= 100.0;
+  volume = round (volume);
+  nvol = (int) volume;
+
+  if (contdata->cb != NULL) {
+    callbackHandlerII (contdata->cb, CONTROLLER_VOLUME, nvol);
+  }
+
+  mpris_media_player2_player_complete_set_volume (player, invocation);
+  return true;
+}
+
 static gboolean
 mprisSeek (mprisMediaPlayer2Player* player,
     GDBusMethodInvocation* invocation,
@@ -693,6 +741,10 @@ mprisRepeat (mprisMediaPlayer2Player *player,
   int         repid = MPRIS_REPEAT_NONE;
   bool        repflag = false;
 
+  if (contdata->inprocess) {
+    return true;
+  }
+
   repstatus = mpris_media_player2_player_get_loop_status (player);
   for (int i = 0; i < MPRIS_REPEAT_MAX; ++i) {
     if (strcmp (repstatus, repeatstr [i]) == 0) {
@@ -704,9 +756,11 @@ mprisRepeat (mprisMediaPlayer2Player *player,
   if (repid == contdata->repeatstatus) {
     return true;
   }
-  /* MPRIS_REPEAT_PLAYLIST is not valid for BDJ4 */
   if (repid == MPRIS_REPEAT_PLAYLIST) {
-    return false;
+    /* MPRIS_REPEAT_PLAYLIST is not valid for BDJ4 */
+    /* treat this the same as 'none' */
+    /* kdeconnect has a triple-toggle: none-track-playlist */
+    repflag = false;
   }
 
   if (repid == MPRIS_REPEAT_TRACK) {
@@ -730,9 +784,14 @@ mprisRate (mprisMediaPlayer2Player *player,
   double      nrate;
   int         rate;
 
+  if (contdata->inprocess) {
+    return true;
+  }
+
   nrate = mpris_media_player2_player_get_rate (player);
   nrate *= 100.0;
-  rate = nrate;
+  nrate = round (nrate);
+  rate = (int) nrate;
 
   if (contdata->rate == rate) {
     return true;
@@ -745,6 +804,44 @@ mprisRate (mprisMediaPlayer2Player *player,
     callbackHandlerII (contdata->cb, CONTROLLER_RATE, rate);
   }
   contdata->rate = rate;
+
+  return true;
+}
+
+/* notification handler */
+static gboolean
+mprisVolume (mprisMediaPlayer2Player *player,
+    GDBusMethodInvocation *invocation,
+    void *udata)
+{
+  contdata_t  *contdata = udata;
+  double      nvolume;
+  int         volume;
+
+  if (contdata->inprocess) {
+    return true;
+  }
+
+  nvolume = mpris_media_player2_player_get_volume (player);
+  nvolume *= 100.0;
+  nvolume = round (nvolume);
+  volume = (int) nvolume;
+
+  if (contdata->volume == volume) {
+    return true;
+  }
+
+  /* kdeconnect has an off-by one error for the volume */
+  /* ignore any notification where the volume is one less */
+  /* than the current volume */
+  if (contdata->volume == volume + 1) {
+    return true;
+  }
+
+  if (contdata->cb != NULL) {
+    contdata->volume = volume;
+    callbackHandlerII (contdata->cb, CONTROLLER_VOLUME, volume);
+  }
 
   return true;
 }

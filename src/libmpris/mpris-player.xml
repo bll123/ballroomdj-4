@@ -13,6 +13,9 @@
       <arg type='o' name='TrackId' direction='in' />
       <arg type='x' name='Position' direction='in' />
     </method>
+    <method name='SetVolume'>
+      <arg name='volume' type='d' direction='in' />
+    </method>
     <method name='OpenUri'>
       <arg type='s' name='Uri' direction='in' />
     </method>
@@ -21,15 +24,14 @@
     </signal>
     <property name='PlaybackStatus' type='s' access='read' />
     <property name='LoopStatus' type='s' access='readwrite' />
+    <property name='ShuffleStatus' type='s' access='read' />
     <property name='Rate' type='d' access='readwrite' />
     <property name='Shuffle' type='b' access='read' >
       <annotation name='org.freedesktop.DBus.Property.EmitsChangedSignal' value='false' />
     </property>
     <property name='Metadata' type='a{sv}' access='read' />
-    <property name='Volume' type='d' access='read' />
-    <property name='Position' type='x' access='read' >
-      <annotation name='org.freedesktop.DBus.Property.EmitsChangedSignal' value='false' />
-    </property>
+    <property name='Volume' type='d' access='readwrite' />
+    <property name='Position' type='x' access='readwrite'/>
     <property name='MinimumRate' type='d' access='read' />
     <property name='MaximumRate' type='d' access='read' />
     <property name='CanGoNext' type='b' access='read' />

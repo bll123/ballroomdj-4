@@ -1,0 +1,9 @@
+apt install kdeconnect playerctl
+apt remove kdeconnect playerctl
+apt autoremove
+
+firewall:
+
+ufw allow 1714:1764/udp
+ufw allow 1714:1764/tcp
+ufw reload

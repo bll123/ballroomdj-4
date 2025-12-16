@@ -22,6 +22,7 @@ if (NOT WIN32 AND NOT APPLE)
     libbdj4common
     objmprisroot objmprisplayer
     ${PKG_GIO_LDFLAGS}
+    m
   )
 endif()
 

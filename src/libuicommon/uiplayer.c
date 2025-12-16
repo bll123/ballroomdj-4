@@ -646,6 +646,10 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
         uiplayer->volumeLastValue = -1.0;
       }
     }
+    if (! uiplayer->volumeLock) {
+      mstimeset (&uiplayer->volumeLockSend, TM_TIMER_OFF);
+      uiplayer->volumeLastValue = -1.0;
+    }
   }
 
   if (mstimeCheck (&uiplayer->speedLockTimeout)) {

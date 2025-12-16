@@ -2253,6 +2253,13 @@ pluiControllerCallback (void *udata, int32_t cmd, int32_t val)
       connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_SEEK, tmp);
       break;
     }
+    case CONTROLLER_VOLUME: {
+      char    tmp [40];
+
+      snprintf (tmp, sizeof (tmp), "%d", val);
+      connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAYER_VOLUME, tmp);
+      break;
+    }
     case CONTROLLER_REPEAT: {
       bool    repflag;
 
