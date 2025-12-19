@@ -67,7 +67,7 @@ atibdj4ParseOggTags (atidata_t *atidata, slist_t *tagdata,
     const char  *kw;
 
     kw = vc->user_comments [i];
-    atioggProcessVorbisCommentCombined (atidata->tagLookup, tagdata, tagtype, kw);
+    atiProcessVorbisCommentCombined (atidata->tagLookup, tagdata, tagtype, kw);
   }
   ov_clear (&ovf);
   return;
@@ -112,7 +112,7 @@ atibdj4WriteOggTags (atidata_t *atidata, const char *ffn,
     const char  *tagname;
 
     kw = vc->user_comments [i];
-    val = atioggParseVorbisComment (kw, ttag, sizeof (ttag));
+    val = atiParseVorbisComment (kw, ttag, sizeof (ttag));
     tagname = atidata->tagLookup (tagtype, ttag);
 
     if (slistGetNum (dellist, tagname) == 1) {
@@ -287,7 +287,7 @@ atibdj4OggAddVorbisComment (struct vorbis_comment *newvc, int tagkey,
   slistidx_t  viteridx;
   const char  *tval;
 
-  vallist = atioggSplitVorbisComment (tagkey, tagname, val);
+  vallist = atiSplitVorbisComment (tagkey, tagname, val);
   slistStartIterator (vallist, &viteridx);
   while ((tval = slistIterateKey (vallist, &viteridx)) != NULL) {
     vorbis_comment_add_tag (newvc, tagname, tval);

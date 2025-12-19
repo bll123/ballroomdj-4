@@ -69,10 +69,10 @@ void atibdj4CleanOggTags (atidata_t *atidata, const char *ffn, int tagtype, int 
 void atibdj4LogOggVersion (void);
 
 /* atibdj4oggutil.c */
-void atioggProcessVorbisCommentCombined (taglookup_t tagLookup, slist_t *tagdata, int tagtype, const char *kw);
-void atioggProcessVorbisComment (taglookup_t tagLookup, slist_t *tagdata, int tagtype, const char *tag, const char *val);
-const char * atioggParseVorbisComment (const char *kw, char *buff, size_t sz);
-slist_t *atioggSplitVorbisComment (int tagkey, const char *tagname, const char *val);
+void atiProcessVorbisCommentCombined (taglookup_t tagLookup, slist_t *tagdata, int tagtype, const char *kw);
+void atiProcessVorbisComment (taglookup_t tagLookup, slist_t *tagdata, int tagtype, const char *tag, const char *val);
+const char * atiParseVorbisComment (const char *kw, char *buff, size_t sz);
+slist_t *atiSplitVorbisComment (int tagkey, const char *tagname, const char *val);
 int  atioggWriteOggFile (const char *ffn, void *newvc, int filetype);
 
 /* atibdj4opus.c */

@@ -65,7 +65,7 @@ atibdj4ParseOpusTags (atidata_t *atidata, slist_t *tagdata,
     const char  *kw;
 
     kw = tags->user_comments [i];
-    atioggProcessVorbisCommentCombined (atidata->tagLookup, tagdata, tagtype, kw);
+    atiProcessVorbisCommentCombined (atidata->tagLookup, tagdata, tagtype, kw);
   }
   op_free (of);
   return;
@@ -108,7 +108,7 @@ atibdj4WriteOpusTags (atidata_t *atidata, const char *ffn,
     const char  *tagname;
 
     kw = tags->user_comments [i];
-    val = atioggParseVorbisComment (kw, ttag, sizeof (ttag));
+    val = atiParseVorbisComment (kw, ttag, sizeof (ttag));
     tagname = atidata->tagLookup (tagtype, ttag);
 
     if (slistGetNum (dellist, tagname) == 1) {
@@ -274,7 +274,7 @@ atibdj4OpusAddVorbisComment (OpusTags *newtags, int tagkey,
   slistidx_t  viteridx;
   const char  *tval;
 
-  vallist = atioggSplitVorbisComment (tagkey, tagname, val);
+  vallist = atiSplitVorbisComment (tagkey, tagname, val);
   slistStartIterator (vallist, &viteridx);
   while ((tval = slistIterateKey (vallist, &viteridx)) != NULL) {
     opus_tags_add (newtags, tagname, tval);

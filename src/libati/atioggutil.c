@@ -21,6 +21,7 @@
 #include <opus/opusfile.h>
 
 #include "bdj4.h"
+#include "ati.h"
 #include "atioggutil.h"
 #include "audiofile.h"
 #include "fileop.h"
@@ -44,126 +45,6 @@ enum {
 
 static int  atibdj4WriteOggPage (ogg_page *p, FILE *fp);
 static void atibdj4_oggpack_string (oggpack_buffer *b, const char *s, size_t len);
-
-void
-atioggProcessVorbisCommentCombined (taglookup_t tagLookup, slist_t *tagdata,
-    int tagtype, const char *kw)
-{
-  const char  *val;
-  char        ttag [300];
-
-  val = atioggParseVorbisComment (kw, ttag, sizeof (ttag));
-  /* vorbis comments are not case sensitive */
-  stringAsciiToUpper (ttag);
-  if (strcmp (ttag, "METADATA_BLOCK_PICTURE") == 0) {
-    /* this is a lot of data to carry around, and it's not needed */
-    return;
-  }
-  atioggProcessVorbisComment (tagLookup, tagdata, tagtype, ttag, val);
-}
-
-void
-atioggProcessVorbisComment (taglookup_t tagLookup, slist_t *tagdata,
-    int tagtype, const char *tag, const char *val)
-{
-  const char  *tagname;
-  bool        exists = false;
-  char        *tmp;
-
-  /* vorbis comments are not case sensitive */
-  tagname = tagLookup (tagtype, tag);
-
-  if (tagname == NULL) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw: unk %s=%s", tag, val);
-    return;
-  }
-
-  if (strcmp (tagname, "TOTALTRACKS") == 0) {
-    tagname = "TRACKTOTAL";
-  }
-  if (strcmp (tagname, "TOTALDISCS") == 0) {
-    tagname = "DISCTOTAL";
-  }
-  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw: %s %s=%s", tagname, tag, val);
-  if (slistGetStr (tagdata, tagname) != NULL) {
-    const char  *oval;
-    size_t      sz;
-
-    oval = slistGetStr (tagdata, tagname);
-    sz = strlen (oval) + strlen (val) + 3;
-    tmp = mdmalloc (sz);
-    snprintf (tmp, sz, "%s; %s\n", oval, val);
-    val = tmp;
-    exists = true;
-  }
-  slistSetStr (tagdata, tagname, val);
-  if (exists) {
-    mdfree (tmp);
-  }
-}
-
-const char *
-atioggParseVorbisComment (const char *kw, char *buff, size_t sz)
-{
-  const char  *val;
-  size_t      len;
-
-  val = strstr (kw, "=");
-  if (val == NULL) {
-    return NULL;
-  }
-  len = val - kw + 1;
-  if (len > sz) {
-    len = sz;
-  }
-  stpecpy (buff, buff + len, kw);
-  buff [len] = '\0';
-  ++val;
-
-  return val;
-}
-
-/* the caller must free the return value */
-slist_t *
-atioggSplitVorbisComment (int tagkey, const char *tagname, const char *val)
-{
-  slist_t     *vallist = NULL;
-  char        *tokstr;
-  char        *p;
-  bool        split = false;
-
-  /* known tags that should be split: */
-  /* album-artist, artist, composer, conductor, genre */
-
-  vallist = slistAlloc ("vc-list", LIST_UNORDERED, NULL);
-  /* do this rather than using tagdefs, so that libbdj4 will not be */
-  /* linked in */
-  if (tagkey == TAG_ALBUMARTIST ||
-      tagkey == TAG_ARTIST ||
-      tagkey == TAG_COMPOSER ||
-      tagkey == TAG_CONDUCTOR ||
-      tagkey == TAG_GENRE) {
-    split = true;
-  }
-
-  if (split && strstr (val, ";") != NULL) {
-    char      *tval;
-
-    tval = mdstrdup (val);
-    p = strtok_r (tval, ";", &tokstr);
-    while (p != NULL) {
-      while (*p == ' ') {
-        ++p;
-      }
-      slistSetNum (vallist, p, 0);
-      p = strtok_r (NULL, ";", &tokstr);
-    }
-  } else {
-    slistSetNum (vallist, val, 0);
-  }
-
-  return vallist;
-}
 
 int
 atioggCheckCodec (const char *ffn, int filetype)

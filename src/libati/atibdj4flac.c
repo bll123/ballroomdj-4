@@ -84,7 +84,7 @@ atibdj4ParseFlacTags (atidata_t *atidata, slist_t *tagdata,
           FLAC__StreamMetadata_VorbisComment_Entry *entry;
 
           entry = &block->data.vorbis_comment.comments [i];
-          atioggProcessVorbisCommentCombined (atidata->tagLookup, tagdata, tagtype,
+          atiProcessVorbisCommentCombined (atidata->tagLookup, tagdata, tagtype,
               (const char *) entry->entry);
         }
         break;
@@ -475,7 +475,7 @@ atibdj4FlacAddVorbisComment (FLAC__StreamMetadata *block,
   slistidx_t  viteridx;
   const char  *tval;
 
-  vallist = atioggSplitVorbisComment (tagkey, tagname, val);
+  vallist = atiSplitVorbisComment (tagkey, tagname, val);
   slistStartIterator (vallist, &viteridx);
   while ((tval = slistIterateKey (vallist, &viteridx)) != NULL) {
     if (! FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair (

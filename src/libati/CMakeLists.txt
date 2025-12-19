@@ -8,9 +8,11 @@ include (../utils/bdj4macros.cmake)
 add_library (libbdj4atiutil SHARED
   atiutil.c
   atioggutil.c
+  ativcutil.c
 )
-target_include_directories (libbdj4atiutil
-  PRIVATE ${PKG_LIBOPUS_INCLUDE_DIRS} ${PKG_LIBOPUSFILE_INCLUDE_DIRS}
+target_include_directories (libbdj4atiutil PRIVATE
+  ${PKG_LIBOPUS_INCLUDE_DIRS}
+  ${PKG_LIBOPUSFILE_INCLUDE_DIRS}
 )
 target_link_libraries (libbdj4atiutil PRIVATE
   # ogg
@@ -26,8 +28,9 @@ target_link_libraries (libbdj4atiutil PRIVATE
 add_library (libbdj4ati SHARED
   ati.c
 )
-target_include_directories (libbdj4ati
-  PRIVATE ${PKG_LIBOPUS_INCLUDE_DIRS} ${PKG_LIBOPUSFILE_INCLUDE_DIRS}
+target_include_directories (libbdj4ati PRIVATE
+  ${PKG_LIBOPUS_INCLUDE_DIRS}
+  ${PKG_LIBOPUSFILE_INCLUDE_DIRS}
 )
 target_link_libraries (libbdj4ati PRIVATE
   # ogg
