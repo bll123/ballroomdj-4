@@ -110,8 +110,8 @@ enum {
 static slist_t *updateData (ilist_t *tmusiclist, ilistidx_t key);
 static char *createFile (const char *src, const char *dest, bool keepmusic);
 
-static int  gdiscnum [200];
-static int  gtracknum [200];
+static int  gdiscnum [300];
+static int  gtracknum [300];
 static int  gseqnum [TM_MAX_DANCE];
 static const char *tmusicorig = "test-music-orig";
 static const char *tmusicdir = "test-music";
@@ -442,11 +442,13 @@ updateData (ilist_t *tmusiclist, ilistidx_t key)
 
     tn = gtracknum [sn];
 
+    /* 2025-12-19 added test of artist tags for vorbis comments */
+    /* these have two %03d items in the artist */
     if (dfkey->itemkey == TAG_TRACKNUMBER) {
-      snprintf (nval, sizeof (nval), val, tn);
+      snprintf (nval, sizeof (nval), val, tn, tn);
       gtracknum [sn]++;
     } else {
-      snprintf (nval, sizeof (nval), val, sn);
+      snprintf (nval, sizeof (nval), val, sn, sn);
     }
 
     ilistSetStr (tmusiclist, key, dfkey->itemkey, nval);
