@@ -13,7 +13,6 @@ cwd=$(pwd)
 . src/utils/pkgnm.sh
 
 DEVTMP=devel/tmp
-GITWIKIDIR=../bdj4.wiki
 
 sfuser=bll123
 project=ballroomdj4
@@ -85,12 +84,6 @@ function updateimages {
   rsync -v -e ssh -aS --delete \
       wikiimg \
       ${sfuser}@web.sourceforge.net:/home/project-web/${project}/htdocs
-  rc=$?
-
-  # git wiki mercurial repository
-  rsync -v -e ssh -aS --delete \
-      wikiimg/ \
-      ${GITWIKIDIR}/images
   rc=$?
 
   test -d wikiimg && rm -rf wikiimg
@@ -180,25 +173,6 @@ END {
   touch --date "${dt}" ${tfn}
 }
 
-function gitchanges {
-  tfn=$1
-
-  # image urls
-  #   image markup must be preceded and follow by a space
-  #   the image url must be absolute since we're using dirs.
-  # remove toc (sourceforge only)
-  # remove all div's, they don't work
-  # remove lang- prefixes (github doesn't really support dirs)
-  #   at this time, there are no sub-sub-dirs.
-  sed -e 's,!\[\([^]]*\)\](.*/wikiimg/\([^)]*\)), [[/images/\2|\1]] ,g' \
-      -e 's,\[TOC\],,' \
-      -e '/<div / d' \
-      -e '/<\/div>/ d' \
-      -e 's,(\([a-z][a-z]\)-,(,g' \
-      $tfn \
-      > ${tmpfile}
-}
-
 function getaccesstoken {
   bearer=$(cat dev/wikibearer.txt)
 }
@@ -280,16 +254,6 @@ function put {
       '${baseurl}/${title}'"
   eval $cmd > /dev/null
   echo "$tfn: sourceforge updated"
-
-  gitchanges $tfn
-  d=$(dirname $tfn | sed -e 's,^wiki,,' -e 's,^/,,')
-  # github wiki will preserve the directory layout, though it
-  # will not use it.
-  ttfn=$(echo $title | sed -e 's,%20, ,g' -e 's,^en-,,').md
-  mkdir -p ${GITWIKIDIR}/${d}
-  cp -pf ${tmpfile} "${GITWIKIDIR}/${d}/$ttfn"
-
-  echo "$tfn: git wiki updated"
 }
 
 function delete {

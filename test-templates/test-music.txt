@@ -2837,7 +2837,7 @@ NOTES
 BPM
 ..28
 TAGS
-..tag6 tag7 bpm
+..tag6 tag7 bpm multiartist
 STATUS
 ..Complete
 DANCELEVEL
@@ -2847,7 +2847,7 @@ GENRE
 ALBUMARTIST
 ..%03d-albartist
 ARTIST
-..%03d-artist
+..%03d-artist; %03d-artist-B
 ALBUM
 ..%03d-album
 TRACKNUMBER
@@ -3057,7 +3057,7 @@ DURATION
 BPM
 ..28
 TAGS
-..tag6 tag7 m4a bpm
+..tag6 tag7 m4a bpm multiartist
 STATUS
 ..Edit
 DANCELEVEL
@@ -3067,7 +3067,7 @@ GENRE
 ALBUMARTIST
 ..%03d-albartist
 ARTIST
-..%03d-artist
+..%03d-artist; %03d-artist-B
 ALBUM
 ..%03d-album
 TRACKNUMBER
