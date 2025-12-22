@@ -34,10 +34,11 @@
 #include "slist.h"
 #include "sysvars.h"
 
+#define LOCALE_DEBUG 0
+
 /* must be sorted in ascii order */
 static datafilekey_t localedfkeys [LOCALE_KEY_MAX] = {
   { "DISPLAY",    LOCALE_KEY_DISPLAY,   VALUE_STR, NULL, DF_NORM },
-  { "ISO639_2",   LOCALE_KEY_ISO639_2,  VALUE_STR, NULL, DF_NORM },
   { "LONG",       LOCALE_KEY_LONG,      VALUE_STR, NULL, DF_NORM },
   { "QDANCE",     LOCALE_KEY_QDANCE,    VALUE_STR, NULL, DF_NORM },
   { "SHORT",      LOCALE_KEY_SHORT,     VALUE_STR, NULL, DF_NORM },
@@ -123,12 +124,17 @@ localeInit (void)
 
   localePostSetup ();
 
+#if LOCALE_DEBUG
+  localeDebug ("localeutil");
+#endif
+
   return;
 }
 
 void
 localeSetup (void)
 {
+  char          locpath [MAXPATHLEN];
   char          lbuff [MAXPATHLEN];
   char          tbuff [MAXPATHLEN];
   char          sbuff [40];
@@ -136,6 +142,7 @@ localeSetup (void)
   struct lconv  *lconv;
 
   *lbuff = '\0';
+  *locpath = '\0';
 
   /* get the locale from the environment */
   /* works on windows, but windows returns the old style locale name */
@@ -195,17 +202,17 @@ localeSetup (void)
   osSetEnv ("LC_MESSAGES", tbuff);
   osSetEnv ("LC_COLLATE", tbuff);
 
-  pathbldMakePath (lbuff, sizeof (lbuff), "", "", PATHBLD_MP_DIR_LOCALE);
+  pathbldMakePath (locpath, sizeof (locpath), "", "", PATHBLD_MP_DIR_LOCALE);
 #if _lib_wbindtextdomain
   {
     wchar_t   *wlocale;
 
-    wlocale = osToWideChar (lbuff);
+    wlocale = osToWideChar (locpath);
     wbindtextdomain (GETTEXT_DOMAIN, wlocale);
     dataFree (wlocale);
   }
 #else
-  bindtextdomain (GETTEXT_DOMAIN, lbuff);
+  bindtextdomain (GETTEXT_DOMAIN, locpath);
 #endif
   textdomain (GETTEXT_DOMAIN);
 #if _lib_bind_textdomain_codeset
@@ -268,7 +275,7 @@ localeCleanup (void)
   localedata = NULL;
 }
 
-#if 0   /* for debugging */
+#if LOCALE_DEBUG
 void
 localeDebug (const char *tag)   /* KEEP */
 {
@@ -305,6 +312,7 @@ localePostSetup (void)
   ilistidx_t    gbidx = -1;
   ilistidx_t    tlocale = -1;
   const char    *svlocale;
+  const char    *l639_2 = NULL;
 
   if (localedata == NULL) {
     return;
@@ -340,5 +348,7 @@ localePostSetup (void)
     tlocale = gbidx;
   }
   localedata->currlocale = tlocale;
-  sysvarsSetStr (SV_LOCALE_639_2, localeGetStr (LOCALE_KEY_ISO639_2));
+
+  l639_2 = istring639_2 (svlocale);
+  sysvarsSetStr (SV_LOCALE_639_2, l639_2);
 }

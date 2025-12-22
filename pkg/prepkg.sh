@@ -213,6 +213,13 @@ if [[ $DEVELOPMENT != dev ]]; then
     grc=1
   fi
 
+  grep '^#define LOCALE_DEBUG 0' src/libbasic/localeutil.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "== localeutil.c: locale debugging is on"
+    grc=1
+  fi
+
   grep '^#define GSTI_DEBUG 0' src/libpli/gsti.c > /dev/null 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then

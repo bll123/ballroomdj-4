@@ -16,8 +16,7 @@ keycount=0
 function appendlocaledata {
   keycount=$1
   locale=$2
-  iso639_2=$3
-  langdesc=$4
+  langdesc=$3
 
   slocale=$(echo $locale | sed 's,\(..\).*,\1,')
   pofile=po/${locale}.po
@@ -35,8 +34,6 @@ function appendlocaledata {
 
   echo KEY >> $LOCALEDATA
   echo "..$keycount" >> $LOCALEDATA
-  echo ISO639_2 >> $LOCALEDATA
-  echo "..${iso639_2}" >> $LOCALEDATA
   echo LONG >> $LOCALEDATA
   echo "..$locale" >> $LOCALEDATA
   echo SHORT >> $LOCALEDATA
@@ -69,16 +66,14 @@ while read line; do
   locale=$1
   tmpllocale=$2
   weblocale=$3
-  iso639_2=$4
-  englishnm=$5
-  shift
+  englishnm=$4
   shift
   shift
   shift
   shift
   langdesc="$*"
 
-  appendlocaledata ${keycount} ${locale} ${iso639_2} "${langdesc}"
+  appendlocaledata ${keycount} ${locale} "${langdesc}"
 
   keycount=$(($keycount + 1))
 

@@ -3,32 +3,31 @@
 #   po-file name (long-locale),
 #   tmpl-name (short or locale)
 #   web-name (short or dash-locale)
-#   ISO-639-2 three letter code
 #   english name (no spaces)
 #   descriptive name (to end of line)
 #
-af_ZA af af afr afrikaans Afrikaans
-cs_CZ cs cs ces czech čeština
-da_DK da da dan danish Dansk
-de_DE de de ger german Deutsch
-en_GB en en eng english/gb English (GB)
-en_US en_US en eng english/us English (US)
-es_ES es es-ES spa spanish Español
-fi_FI fi fi fin finnish Suomi
-fr_FR fr fr fra french Français
-hu_HU hu hu hun hungarian magyar
-it_IT it it ita italian Italiano
-ja_JP ja ja jpn japanese 日本語
-ko_KR ko ko kor korean 한국어
-nl_BE nl nl nld dutch Nederlands
-nb_NO nb nb-NO nob norwegian norsk
-pl_PL pl pl-PL pol polish Polski
-pt_PT pt pt-PT por portuguese Português
-ro_RO ro ro ron romanian română
-ru_RU ru ru rus russian Русский
-sr_RS sr sr-Cyrl srp serbian српски
-sv_SE sv sv swe swedish Svenska
-uk_UA uk uk ukr ukranian Українська
-vi_VN vi vi vie vietnamese Tiếng Việt
-zh_CN zh_CN zh-CN zho chinese/cn 简体中文
-zh_TW zh_TW zh-TW zho chinese/tw 繁體中文
+af_ZA af af afrikaans Afrikaans
+cs_CZ cs cs czech čeština
+da_DK da da danish Dansk
+de_DE de de german Deutsch
+en_GB en en english/gb English (GB)
+en_US en_US en english/us English (US)
+es_ES es es-ES spanish Español
+fi_FI fi fi finnish Suomi
+fr_FR fr fr french Français
+hu_HU hu hu hungarian magyar
+it_IT it it italian Italiano
+ja_JP ja ja japanese 日本語
+ko_KR ko ko korean 한국어
+nl_BE nl nl dutch Nederlands
+nb_NO nb nb-NO norwegian norsk
+pl_PL pl pl-PL polish Polski
+pt_PT pt pt-PT portuguese Português
+ro_RO ro ro romanian română
+ru_RU ru ru russian Русский
+sr_RS sr sr-Cyrl serbian српски
+sv_SE sv sv swedish Svenska
+uk_UA uk uk ukranian Українська
+vi_VN vi vi vietnamese Tiếng Việt
+zh_CN zh_CN zh-CN chinese/cn 简体中文
+zh_TW zh_TW zh-TW chinese/tw 繁體中文

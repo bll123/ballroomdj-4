@@ -68,7 +68,7 @@ done
 
 if [[ $TDEFAULT == F && $TPKGSRC == F && $THOMEBREW == F ]]; then
   TDEFAULT=T
-  TPKGSRC=T
+  TPKGSRC=F       # off unless requested
   THOMEBREW=T
 fi
 

@@ -12,6 +12,9 @@ Sonoma, Sequoia, Tahoe.
 Supported package managers as of 2025-11:
 <br>MacPorts, pkgsrc, homebrew (applesilicon)
 
+At this time (2025-12-21), the pkgsrc build is not shipped.  If you
+want to use pkgsrc, please [contact the developers](en-Getting%20Help).
+
 #### Updating BallroomDJ 4 : Make a Backup
 
 Be sure to exit BallroomDJ&nbsp;4 before creating a backup or updating the
@@ -52,10 +55,6 @@ __MacPorts__ package management system:
 <br>
 Download the macos-pre-install-macports-v24.sh script.
 
-If you wish to use the __pkgsrc__ package management system,
-<br>
-Download the macos-pre-install-pkgsrc-v24.sh script.
-
 If you wish to use the __homebrew__ package management system,
 <br>
 Download the macos-pre-install-homebrew-v24.sh script.
@@ -71,11 +70,6 @@ If you are using the _MacPorts_ package management system, use:
 
     cd Downloads
     bash macos-pre-install-macports-v24.sh
-
-If you are using the _pkgsrc_ package management system, use:
-
-    cd Downloads
-    bash macos-pre-install-pkgsrc-v24.sh
 
 If you are using the _homebrew_ package management system, use:
 
@@ -94,8 +88,7 @@ Download the MacOS installer from sourceforge.
 
 Be sure to select the correct architecture (Intel or Apple Silicon).
 
-Be sure to select the correct package manager (macports, pkgsrc or
-homebrew).
+Be sure to select the correct package manager (macports or homebrew).
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 

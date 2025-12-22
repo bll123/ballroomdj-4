@@ -22,6 +22,7 @@
 #include <unicode/ucol.h>
 #include <unicode/ucasemap.h>
 #include <unicode/utf8.h>
+#include <unicode/uloc.h>
 
 #include "bdj4.h"
 #include "bdjstring.h"
@@ -45,6 +46,7 @@ typedef struct {
   UCaseMap        *(*ucasemap_open)(const char *, uint32_t, UErrorCode *);
   int             (*ucasemap_utf8ToLower)(const UCaseMap *, char *, int32_t, const char *, int32_t, UErrorCode *);
   void            (*ucasemap_close)(UCaseMap *ucsm);
+  const char      *(*uloc_getISO3Language)(const char *);
   int             i18nvers;
   int             ucvers;
   int             icuvers;
@@ -55,7 +57,7 @@ static istring_data_t istringdata =
     { NULL, NULL,
       NULL, NULL,
       NULL, NULL, NULL, NULL, NULL,
-      NULL, NULL, NULL,
+      NULL, NULL, NULL, NULL,
       0, 0, 0, false };
 
 void
@@ -123,6 +125,9 @@ istringInit (const char *locale)
     snprintf (tbuff, sizeof (tbuff), "ucasemap_close_%d", version);
     istringdata.ucasemap_close = dylibLookup (istringdata.ucdlh, tbuff);
 
+    snprintf (tbuff, sizeof (tbuff), "uloc_getISO3Language_%d", version);
+    istringdata.uloc_getISO3Language = dylibLookup (istringdata.ucdlh, tbuff);
+
     /* u_strToUTF8 and u_errorName are in both i18n and uc on linux/macos, */
     /* but only uc on windows (fixed in 4.17.3) */
     snprintf (tbuff, sizeof (tbuff), "u_strToUTF8_%d", version);
@@ -181,6 +186,11 @@ istringCheck (void)       /* TESTING */
   }
   if (istringdata.ucasemap_close == NULL) {
     fprintf (stderr, "istring: ucasemap_close failed\n");
+    rc = false;
+  }
+
+  if (istringdata.uloc_getISO3Language == NULL) {
+    fprintf (stderr, "istring: uloc_getISO3Language failed\n");
     rc = false;
   }
 
@@ -300,6 +310,17 @@ istringToLower (char *str)
     stpecpy (str, str + sz, dest);
     mdfree (dest);
   }
+}
+
+const char *
+istring639_2 (const char *locale)
+{
+  const char  *val = "eng";
+
+  if (istringdata.uloc_getISO3Language != NULL) {
+    val = istringdata.uloc_getISO3Language (locale);
+  }
+  return val;
 }
 
 /* instr is just a buffer pointing to char16_t */

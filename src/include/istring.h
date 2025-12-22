@@ -15,6 +15,7 @@ void      istringCleanup (void);
 int       istringCompare (const char *, const char *);
 size_t    istrlen (const char *);
 void      istringToLower (char *str);
+const char * istring639_2 (const char *locale);
 char *    istring16ToUTF8 (const unsigned char *instr);
 
 #if defined (__cplusplus) || defined (c_plusplus)

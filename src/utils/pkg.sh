@@ -107,19 +107,24 @@ function createpkg {
   esac
 }
 
-if [[ $os == macos && -d /opt/pkg/bin ]]; then
+TDEFAULT=T
+TPKGSRC=F       # off unless requested
+THOMEBREW=T
+
+if [[ $TPKGSRC == T && $os == macos && -d /opt/pkg/bin ]]; then
   echo "-- $(date +%T) pkgsrc"
   . ./src/utils/macospath.sh pkgsrc
   createpkg
 fi
 
-if [[ $os == macos && -d /opt/homebrew/bin && $archtag == applesilicon ]]; then
+if [[ $THOMEBREW == T && $os == macos && \
+    -d /opt/homebrew/bin && $archtag == applesilicon ]]; then
   echo "-- $(date +%T) homebrew"
   . ./src/utils/macospath.sh homebrew
   createpkg
 fi
 
-if [[ $os == macos ]]; then
+if [[ $TDEFAULT == T && $os == macos ]]; then
   echo "-- $(date +%T) macports"
   . ./src/utils/macospath.sh macports
 fi

@@ -92,8 +92,15 @@ script using the following command. This may take a very long time to
 finish. You may be required to enter your administrative password more
 than once during the installation process.
 
+For MacPorts:
+
     cd Downloads
     bash macos-pre-install-macports-v24.sh
+
+For Homebrew:
+
+    cd Downloads
+    bash macos-pre-install-homebrew-v24.sh
 
 #### Linux
 

@@ -189,6 +189,25 @@ START_TEST(istring_toutf8)
 }
 END_TEST
 
+START_TEST(istring_639_2)
+{
+  const char  *val;
+
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- istring_639_2");
+  mdebugSubTag ("istring_639_2");
+
+  istringCleanup ();
+  istringInit ("de_DE");
+
+  val = istring639_2 ("de_DE");
+  ck_assert_str_eq (val, "deu");
+
+  istringCleanup ();
+  istringInit (sysvarsGetStr (SV_LOCALE));
+}
+END_TEST
+
 Suite *
 istring_suite (void)
 {
@@ -203,6 +222,7 @@ istring_suite (void)
   tcase_add_test (tc, istring_comp);
   tcase_add_test (tc, istring_tolower);
   tcase_add_test (tc, istring_toutf8);
+  tcase_add_test (tc, istring_639_2);
   suite_add_tcase (s, tc);
   return s;
 }
