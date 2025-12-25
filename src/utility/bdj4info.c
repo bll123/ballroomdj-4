@@ -182,6 +182,7 @@ main (int argc, char *argv [])
   /* system defines */
 
   fprintf (stdout, "  c: PATH_MAX %d\n", PATH_MAX);
+  fprintf (stdout, "bdj: BDJ4_PATH_MAX %d\n", BDJ4_PATH_MAX);
 
   /* UI */
 #if BDJ4_UI_GTK3
