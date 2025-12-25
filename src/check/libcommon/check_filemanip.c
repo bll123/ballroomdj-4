@@ -61,7 +61,7 @@ START_TEST(filemanip_move)
 
   for (int i = 0; i < fnlistsz; ++i) {
     char  *ofn;
-    char  nfn [MAXPATHLEN];
+    char  nfn [BDJ4_PATH_MAX];
 
     ofn = fnlist [i];
     snprintf (nfn, sizeof (nfn), "%s.new", ofn);
@@ -104,7 +104,7 @@ START_TEST(filemanip_copy)
 
   for (int i = 0; i < fnlistsz; ++i) {
     char  *ofn;
-    char  nfn [MAXPATHLEN];
+    char  nfn [BDJ4_PATH_MAX];
 
     ofn = fnlist [i];
     snprintf (nfn, sizeof (nfn), "%s.new", ofn);
@@ -151,11 +151,11 @@ START_TEST(filemanip_backup)
   mdebugSubTag ("filemanip_backup");
 
   for (int i = 0; i < fnlistsz; ++i) {
-    char  ofn0a [MAXPATHLEN];
-    char  ofn0 [MAXPATHLEN];
-    char  ofn1 [MAXPATHLEN];
-    char  ofn2 [MAXPATHLEN];
-    char  ofn3 [MAXPATHLEN];
+    char  ofn0a [BDJ4_PATH_MAX];
+    char  ofn0 [BDJ4_PATH_MAX];
+    char  ofn1 [BDJ4_PATH_MAX];
+    char  ofn2 [BDJ4_PATH_MAX];
+    char  ofn3 [BDJ4_PATH_MAX];
 
     char *ofn = fnlist [i];
     snprintf (ofn0a, sizeof (ofn0a), "%s.0", ofn);
@@ -321,14 +321,14 @@ START_TEST(filemanip_renameall)
   mdebugSubTag ("filemanip_renameall");
 
   for (int i = 0; i < fnlistsz; ++i) {
-    char  ofn0 [MAXPATHLEN];
-    char  ofn1 [MAXPATHLEN];
-    char  ofn2 [MAXPATHLEN];
-    char  ofn3 [MAXPATHLEN];
-    char  nfn0 [MAXPATHLEN];
-    char  nfn1 [MAXPATHLEN];
-    char  nfn2 [MAXPATHLEN];
-    char  nfn3 [MAXPATHLEN];
+    char  ofn0 [BDJ4_PATH_MAX];
+    char  ofn1 [BDJ4_PATH_MAX];
+    char  ofn2 [BDJ4_PATH_MAX];
+    char  ofn3 [BDJ4_PATH_MAX];
+    char  nfn0 [BDJ4_PATH_MAX];
+    char  nfn1 [BDJ4_PATH_MAX];
+    char  nfn2 [BDJ4_PATH_MAX];
+    char  nfn3 [BDJ4_PATH_MAX];
 
     char *ofn = fnlist [i];
     char *nfn = nfnlist [i];
@@ -425,10 +425,10 @@ START_TEST(filemanip_deleteall)
   mdebugSubTag ("filemanip_deleteall");
 
   for (int i = 0; i < fnlistsz; ++i) {
-    char  ofn0 [MAXPATHLEN];
-    char  ofn1 [MAXPATHLEN];
-    char  ofn2 [MAXPATHLEN];
-    char  ofn3 [MAXPATHLEN];
+    char  ofn0 [BDJ4_PATH_MAX];
+    char  ofn1 [BDJ4_PATH_MAX];
+    char  ofn2 [BDJ4_PATH_MAX];
+    char  ofn3 [BDJ4_PATH_MAX];
 
     char *ofn = fnlist [i];
 

@@ -197,7 +197,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiwcont_t     *uiwidgetp;
   uiwcont_t     *hbox;
   uiwcont_t     *szgrp;
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
 
 
   szgrp = uiCreateSizeGroupHoriz ();   // labels
@@ -428,7 +428,7 @@ manageDbStart (void *udata)
   const char  *sval = NULL;
   const char  *targv [10];
   int         targc = 0;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db start");
 

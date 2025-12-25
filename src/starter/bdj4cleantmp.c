@@ -31,7 +31,7 @@ main (int argc, char *argv [])
 {
   bdj4arg_t   *bdj4arg;
   const char  *targ;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
 
   bdj4arg = bdj4argInit (argc, argv);
 
@@ -51,13 +51,13 @@ main (int argc, char *argv [])
   cleantmpClean ();
 
   for (int i = 1; i < 10; ++i) {
-    char  tfn [MAXPATHLEN];
+    char  tfn [BDJ4_PATH_MAX];
 
     snprintf (tfn, sizeof (tfn), "%s/%s%s%02d%s",
         sysvarsGetStr (SV_DIR_CONFIG), ALT_INST_PATH_FN,
         sysvarsGetStr (SV_BDJ4_DEVELOPMENT), i, BDJ4_CONFIG_EXT);
     if (fileopFileExists (tfn)) {
-      char  altdir [MAXPATHLEN];
+      char  altdir [BDJ4_PATH_MAX];
       FILE  *fh;
 
       fh = fileopOpen (tfn, "r");

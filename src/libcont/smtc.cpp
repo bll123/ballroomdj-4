@@ -162,7 +162,7 @@ struct mpintfc
   void
   smtcMediaPlayerInit (void)
   {
-    char            tbuff [MAXPATHLEN];
+    char            tbuff [BDJ4_PATH_MAX];
     winrt::hstring  tstr;
 
     /* initializing the 'apartment' causes a crash */
@@ -298,7 +298,7 @@ struct mpintfc
       if (tmp != NULL &&
           astype == AUDIOSRC_TYPE_FILE &&
           strlen (tmp) > AS_FILE_PFX_LEN) {
-        char    tbuff [MAXPATHLEN];
+        char    tbuff [BDJ4_PATH_MAX];
 
         stpecpy (tbuff, tbuff + sizeof (tbuff), tmp + AS_FILE_PFX_LEN);
         pathDisplayPath (tbuff, sizeof (tbuff));

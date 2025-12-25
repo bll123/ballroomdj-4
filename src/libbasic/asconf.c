@@ -72,7 +72,7 @@ asconf_t *
 asconfAlloc (void)
 {
   asconf_t    *asconf;
-  char        fname [MAXPATHLEN];
+  char        fname [BDJ4_PATH_MAX];
 
   asconf = mdmalloc (sizeof (asconf_t));
   asconf->audiosrclist = NULL;

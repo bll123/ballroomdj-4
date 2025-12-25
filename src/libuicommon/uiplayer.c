@@ -256,7 +256,7 @@ uiplayerFree (uiplayer_t *uiplayer)
 uiwcont_t *
 uiplayerBuildUI (uiplayer_t *uiplayer)
 {
-  char            tbuff [MAXPATHLEN];
+  char            tbuff [BDJ4_PATH_MAX];
   uiwcont_t       *uiwidgetp = NULL;
   uiwcont_t       *hbox = NULL;
   uiwcont_t       *statusbox = NULL;
@@ -1092,7 +1092,7 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
   slistidx_t        seliteridx;
   mp_musicqstatus_t mqstatus;
   contmetadata_t    cmetadata;
-  char              uri [MAXPATHLEN];
+  char              uri [BDJ4_PATH_MAX];
   genre_t           *genres;
 
   logProcBegin ();

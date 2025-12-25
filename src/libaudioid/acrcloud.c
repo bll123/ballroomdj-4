@@ -181,9 +181,9 @@ acrFree (audioidacr_t *acr)
 int
 acrLookup (audioidacr_t *acr, const song_t *song, audioid_resp_t *resp)
 {
-  char            infn [MAXPATHLEN];
-  char            uri [MAXPATHLEN];
-  char            sig [MAXPATHLEN];
+  char            infn [BDJ4_PATH_MAX];
+  char            uri [BDJ4_PATH_MAX];
+  char            sig [BDJ4_PATH_MAX];
   unsigned char   digest [200];
   size_t          rdlen;
   time_t          tm;
@@ -198,8 +198,8 @@ acrLookup (audioidacr_t *acr, const song_t *song, audioid_resp_t *resp)
   const char      *acrextr;
   int             targc = 0;
   const char      *fn;
-  char            ffn [MAXPATHLEN];
-  char            fpfn [MAXPATHLEN];
+  char            ffn [BDJ4_PATH_MAX];
+  char            fpfn [BDJ4_PATH_MAX];
   mstime_t        starttm;
   int             rc;
   const char      *tstr;

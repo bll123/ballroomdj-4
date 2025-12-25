@@ -115,12 +115,12 @@ songdbWriteDB (songdb_t *songdb, dbidx_t dbidx, int forceflag)
 int32_t
 songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
 {
-  char        newuri [MAXPATHLEN];
-  char        newffn [MAXPATHLEN];
-  char        olduri [MAXPATHLEN];
-  char        ffn [MAXPATHLEN];
-  char        tbuff [MAXPATHLEN];
-  char        dirbuff [MAXPATHLEN];
+  char        newuri [BDJ4_PATH_MAX];
+  char        newffn [BDJ4_PATH_MAX];
+  char        olduri [BDJ4_PATH_MAX];
+  char        ffn [BDJ4_PATH_MAX];
+  char        tbuff [BDJ4_PATH_MAX];
+  char        dirbuff [BDJ4_PATH_MAX];
   bool        dorename = false;
   bool        renameallow = false;
   bool        renamesuccess = false;
@@ -214,7 +214,7 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
     }
 
     if (dorename && audiosrcOriginalExists (ffn)) {
-      char    neworigffn [MAXPATHLEN];
+      char    neworigffn [BDJ4_PATH_MAX];
       char    *p;
       char    *end;
 
@@ -234,7 +234,7 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
     }
 
     if (dorename && renamesuccess) {
-      char    tdir [MAXPATHLEN];
+      char    tdir [BDJ4_PATH_MAX];
       size_t  tdirlen;
 
       /* only reset the URI if the song was actually renamed */
@@ -299,7 +299,7 @@ songdbWriteDBSong (songdb_t *songdb, song_t *song, int *flags, dbidx_t rrn)
 static bool
 songdbNewName (songdb_t *songdb, song_t *song, char *newuri, size_t sz)
 {
-  char        ffn [MAXPATHLEN];
+  char        ffn [BDJ4_PATH_MAX];
   const char  *songfname;
   const char  *bypass;
   char        *tnewfn;
@@ -353,7 +353,7 @@ static void
 songdbWriteAudioTags (song_t *song, int32_t flags)
 {
   const char  *fn;
-  char        ffn [MAXPATHLEN];
+  char        ffn [BDJ4_PATH_MAX];
   slist_t     *tagdata;
   slist_t     *newtaglist;
   int         rewrite;

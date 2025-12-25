@@ -34,7 +34,7 @@ dirlistBasicDirList (const char *dirname, const char *extension)
   char          *fname;
   slist_t       *fileList;
   pathinfo_t    *pi;
-  char          temp [MAXPATHLEN];
+  char          temp [BDJ4_PATH_MAX];
   char          *p;
   char          *end;
 
@@ -89,7 +89,7 @@ dirlistRecursiveDirList (const char *dirname, int flags)
   char          *fname;
   slist_t       *fileList;
   queue_t       *dirQueue;
-  char          temp [MAXPATHLEN];
+  char          temp [BDJ4_PATH_MAX];
   char          *p;
   size_t        dirnamelen;
 

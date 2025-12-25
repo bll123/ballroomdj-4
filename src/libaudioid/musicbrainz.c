@@ -139,7 +139,7 @@ mbFree (audioidmb_t *mb)
 int
 mbRecordingIdLookup (audioidmb_t *mb, const char *recid, audioid_resp_t *resp)
 {
-  char          uri [MAXPATHLEN];
+  char          uri [BDJ4_PATH_MAX];
   mstime_t      starttm;
   char          *p = uri;
   char          *end = uri + sizeof (uri);

@@ -93,7 +93,7 @@ enum {
 typedef struct {
   uint64_t      ident;
   char          *songname;
-  char          tempname [MAXPATHLEN];
+  char          tempname [BDJ4_PATH_MAX];
   int32_t       dur;
   int32_t       plidur;
   listnum_t     songstart;
@@ -689,7 +689,7 @@ playerProcessing (void *udata)
     prepqueue_t   *pq = NULL;
     playrequest_t *preq = NULL;
     bool          temprepeat = false;
-    char          tempffn [MAXPATHLEN];
+    char          tempffn [BDJ4_PATH_MAX];
     int           tspeed;
     int           taudiosrc;
 

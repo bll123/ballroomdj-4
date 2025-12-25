@@ -148,7 +148,7 @@ playlist_t *
 playlistLoad (const char *fname, musicdb_t *musicdb, grouping_t *grouping)
 {
   playlist_t    *pl;
-  char          tfn [MAXPATHLEN];
+  char          tfn [BDJ4_PATH_MAX];
   pltype_t      type;
   ilist_t       *tpldances;
   ilistidx_t    tidx;
@@ -819,8 +819,8 @@ slist_t *
 playlistGetPlaylistNames (int flag, const char *dir)
 {
   const char  *tplfnm;
-  char        tfn [MAXPATHLEN];
-  char        tbuff [MAXPATHLEN];
+  char        tfn [BDJ4_PATH_MAX];
+  char        tbuff [BDJ4_PATH_MAX];
   slist_t     *filelist;
   slist_t     *pnlist;
   pathinfo_t  *pi;
@@ -957,7 +957,7 @@ playlistAddPlayed (playlist_t *pl, song_t *song)
 void
 playlistSave (playlist_t *pl, const char *name)
 {
-  char  tfn [MAXPATHLEN];
+  char  tfn [BDJ4_PATH_MAX];
 
   if (pl == NULL || pl->ident != PL_IDENT || pl->plinfo == NULL) {
     return;
@@ -1074,7 +1074,7 @@ playlistSetSongFilter (playlist_t *pl, songfilter_t *sf)
 bool
 playlistExists (const char *name)
 {
-  char  tbuff [MAXPATHLEN];
+  char  tbuff [BDJ4_PATH_MAX];
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
@@ -1084,8 +1084,8 @@ playlistExists (const char *name)
 void
 playlistRename (const char *oldname, const char *newname)
 {
-  char  onm [MAXPATHLEN];
-  char  nnm [MAXPATHLEN];
+  char  onm [BDJ4_PATH_MAX];
+  char  nnm [BDJ4_PATH_MAX];
 
   pathbldMakePath (onm, sizeof (onm),
       oldname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DREL_DATA);
@@ -1121,7 +1121,7 @@ playlistRename (const char *oldname, const char *newname)
 void
 playlistCheckAndCreate (const char *name, pltype_t pltype)
 {
-  char  onm [MAXPATHLEN];
+  char  onm [BDJ4_PATH_MAX];
 
   pathbldMakePath (onm, sizeof (onm),
       name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
@@ -1139,7 +1139,7 @@ playlistCheckAndCreate (const char *name, pltype_t pltype)
 void
 playlistDelete (const char *name)
 {
-  char      tnm [MAXPATHLEN];
+  char      tnm [BDJ4_PATH_MAX];
 
   pathbldMakePath (tnm, sizeof (tnm),
       name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
@@ -1161,8 +1161,8 @@ playlistDelete (const char *name)
 void
 playlistCopy (const char *oldname, const char *newname)
 {
-  char  onm [MAXPATHLEN];
-  char  nnm [MAXPATHLEN];
+  char  onm [BDJ4_PATH_MAX];
+  char  nnm [BDJ4_PATH_MAX];
 
   pathbldMakePath (onm, sizeof (onm),
       oldname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
@@ -1198,7 +1198,7 @@ playlistCopy (const char *oldname, const char *newname)
 pltype_t
 playlistGetType (const char *name)
 {
-  char      tfn [MAXPATHLEN];
+  char      tfn [BDJ4_PATH_MAX];
   pltype_t  pltype;
 
   pltype = PLTYPE_NONE;

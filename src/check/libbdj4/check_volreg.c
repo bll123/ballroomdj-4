@@ -50,7 +50,7 @@ static void checkSink (const char *fn, const char *testsink, int origvol, int co
 
 START_TEST(volreg_save)
 {
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   bool        exists;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- volreg_save");
@@ -77,7 +77,7 @@ END_TEST
 
 START_TEST(volreg_clear)
 {
-  char    tbuff [MAXPATHLEN];
+  char    tbuff [BDJ4_PATH_MAX];
   int     val;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- volreg_clear");
@@ -98,7 +98,7 @@ END_TEST
 
 START_TEST(volreg_bdj3flag)
 {
-  char    tbuff [MAXPATHLEN];
+  char    tbuff [BDJ4_PATH_MAX];
   bool    exists;
   FILE    *fh;
 
@@ -124,7 +124,7 @@ END_TEST
 
 START_TEST(volreg_bdj4flag)
 {
-  char    tbuff [MAXPATHLEN];
+  char    tbuff [BDJ4_PATH_MAX];
   bool    exists;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- volreg_bdj4flag");

@@ -173,7 +173,7 @@ audiosrcInit (void)
 
   for (int i = 0; i < audiosrc->asdycount; ++i) {
     const char  *pkgnm;
-    char        dlpath [MAXPATHLEN];
+    char        dlpath [BDJ4_PATH_MAX];
     asdylib_t   *asdylib;
 
     pkgnm = ilistGetStr (audiosrc->asdylist, i, DYI_LIB);

@@ -71,7 +71,7 @@ istringInit (const char *locale)
 
   {
     int         version = -1;
-    char        tbuff [MAXPATHLEN];
+    char        tbuff [BDJ4_PATH_MAX];
     const char  *i18nnm = "libicui18n";
 
     if (isWindows ()) {

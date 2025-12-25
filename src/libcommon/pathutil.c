@@ -80,15 +80,15 @@ pathRealPath (char *to, const char *from, size_t sz)
 #endif
 #if _lib_GetFullPathNameW
   wchar_t   *wfrom;
-  wchar_t   wto [MAXPATHLEN];
+  wchar_t   wto [BDJ4_PATH_MAX];
   char      *tto;
 
   wfrom = osToWideChar (from);
-  (void) ! GetFullPathNameW (wfrom, MAXPATHLEN, wto, NULL);
+  (void) ! GetFullPathNameW (wfrom, BDJ4_PATH_MAX, wto, NULL);
   tto = osFromWideChar (wto);
   stpecpy (to, to + sz, tto);
   mdfree (wfrom);
-
+  mdfree (tto);
 #endif
 }
 

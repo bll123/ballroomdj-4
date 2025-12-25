@@ -50,10 +50,10 @@ main (int argc, char *argv [])
   int         c = 0;
   int         option_index = 0;
   bool        isbdj4 = false;
-  char        dbfn [MAXPATHLEN];
-  char        cwd [MAXPATHLEN];
-  char        tofdir [MAXPATHLEN];
-  char        tmdir [MAXPATHLEN];
+  char        dbfn [BDJ4_PATH_MAX];
+  char        cwd [BDJ4_PATH_MAX];
+  char        tofdir [BDJ4_PATH_MAX];
+  char        tmdir [BDJ4_PATH_MAX];
   loglevel_t  loglevel = LOG_IMPORTANT | LOG_INFO | LOG_RAFILE;
   bool        loglevelset = false;
   rafile_t    *radb;
@@ -145,9 +145,9 @@ main (int argc, char *argv [])
       ilistidx_t  dkey;
       char        ext [40];
       char        tdnc [100];
-      char        ofn [MAXPATHLEN];
-      char        nfn [MAXPATHLEN];
-      char        tdir [MAXPATHLEN];
+      char        ofn [BDJ4_PATH_MAX];
+      char        nfn [BDJ4_PATH_MAX];
+      char        tdir [BDJ4_PATH_MAX];
 
       dkey = songGetNum (song, TAG_DANCE);
       if (dkey < 0) {

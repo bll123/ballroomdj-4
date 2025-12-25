@@ -58,7 +58,7 @@ typedef struct {
   const char      *pass;
   websrv_t        *websrv;
   slist_t         *plNames;
-  char            srvuri [MAXPATHLEN];
+  char            srvuri [BDJ4_PATH_MAX];
   size_t          srvurilen;
   int             stopwaitcount;
   uint16_t        port;
@@ -246,7 +246,7 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
     bool        ok = false;
     const char  *plnm = NULL;
     songlist_t  *sl;
-    char        tbuff [MAXPATHLEN];
+    char        tbuff [BDJ4_PATH_MAX];
     char        *rbuff;
     char        *rp;
     char        *rend;
@@ -306,7 +306,7 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
         resp);
   } else if (strcmp (uri, "/songget") == 0) {
     bool          ok;
-    char          ffn [MAXPATHLEN];
+    char          ffn [BDJ4_PATH_MAX];
     const char    *songuri;
 
     songuri = bdjsrvStrip (bdjsrv, query);
@@ -331,7 +331,7 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
     slist_t     *songtags;
     slistidx_t  iteridx;
     const char  *tag;
-    char        tbuff [MAXPATHLEN];
+    char        tbuff [BDJ4_PATH_MAX];
     char        *rbuff;
     char        *rp;
     char        *rend;
@@ -390,7 +390,7 @@ bdjsrvEventHandler (void *userdata, const char *query, const char *uri)
     slistFree (songtags);
     return;
   } else {
-    char          path [MAXPATHLEN];
+    char          path [BDJ4_PATH_MAX];
     const char    *turi = uri;
 
     if (*uri == '/') {

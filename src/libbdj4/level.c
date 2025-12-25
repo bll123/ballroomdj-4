@@ -46,7 +46,7 @@ levelAlloc ()
   level_t     *levels;
   ilistidx_t  key;
   ilistidx_t  iteridx;
-  char        fname [MAXPATHLEN];
+  char        fname [BDJ4_PATH_MAX];
 
   pathbldMakePath (fname, sizeof (fname), "levels",
       BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);

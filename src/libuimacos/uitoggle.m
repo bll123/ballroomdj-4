@@ -100,7 +100,7 @@ fprintf (stderr, "c-toggle-bt\n");
   if (imagenm != NULL) {
     NSString    *ns;
     NSImage     *nsimage;
-    char        tbuff [MAXPATHLEN];
+    char        tbuff [BDJ4_PATH_MAX];
 
     /* relative path */
     pathbldMakePath (tbuff, sizeof (tbuff), imagenm, BDJ4_IMG_SVG_EXT,

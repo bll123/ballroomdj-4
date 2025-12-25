@@ -95,7 +95,7 @@ main (int argc, char *argv[])
   uint16_t    listenPort;
   helperui_t  helper;
   uint32_t    flags;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   uisetup_t   uisetup;
 
 #if BDJ4_MEM_DEBUG
@@ -207,8 +207,8 @@ helperBuildUI (helperui_t  *helper)
   uiwcont_t           *uiwidgetp;
   uiwcont_t           *vbox;
   uiwcont_t           *hbox;
-  char                tbuff [MAXPATHLEN];
-  char                imgbuff [MAXPATHLEN];
+  char                tbuff [BDJ4_PATH_MAX];
+  char                imgbuff [BDJ4_PATH_MAX];
 
   helper->closeCallback = callbackInit (helperCloseCallback, helper, NULL);
   /* CONTEXT: helperui: the window title for the BDJ4 helper */

@@ -55,7 +55,7 @@ dispselAlloc (int loadtype)
 {
   dispsel_t     *dispsel;
   slist_t       *tlist;
-  char          fn [MAXPATHLEN];
+  char          fn [BDJ4_PATH_MAX];
 
 
   dispsel = mdmalloc (sizeof (dispsel_t));

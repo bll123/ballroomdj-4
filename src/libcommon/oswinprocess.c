@@ -31,8 +31,8 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
   pid_t               pid;
   STARTUPINFOW        si;
   PROCESS_INFORMATION pi;
-  char                tbuff [MAXPATHLEN];
-  char                buff [MAXPATHLEN];
+  char                tbuff [BDJ4_PATH_MAX];
+  char                buff [BDJ4_PATH_MAX];
   int                 idx;
   DWORD               val;
   BOOL                inherit = FALSE;
@@ -135,9 +135,8 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
       rc = _wstat64 (woutfname, &statbuf);
       ++count;
     }
-
-    mdfree (woutfname);
   }
+  dataFree (woutfname);
   mdfree (wbuff);
   return pid;
 }
@@ -148,8 +147,8 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
 {
   STARTUPINFOW        si;
   PROCESS_INFORMATION pi;
-  char                tbuff [MAXPATHLEN];
-  char                buff [MAXPATHLEN];
+  char                tbuff [BDJ4_PATH_MAX];
+  char                buff [BDJ4_PATH_MAX];
   int                 idx;
   DWORD               val;
   wchar_t             *wbuff;

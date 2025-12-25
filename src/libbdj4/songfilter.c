@@ -461,7 +461,7 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
       }
 
       dbidx = songGetNum (song, TAG_DBIDX);
-      songfilterMakeSortKey (sf, song, sortkey, MAXPATHLEN);
+      songfilterMakeSortKey (sf, song, sortkey, sizeof (sortkey));
       logMsg (LOG_DBG, LOG_SONGSEL, "sf: %" PRId32 " sortkey: %s", dbidx, sortkey);
       slistSetNum (sf->sortList, sortkey, idx);
       nlistSetNum (sf->indexList, idx, dbidx);
@@ -865,7 +865,7 @@ static bool
 songfilterCheckStr (const char *str, char *searchstr)
 {
   bool  found = false;
-  char  tbuff [MAXPATHLEN];
+  char  tbuff [BDJ4_PATH_MAX];
 
   logProcBegin ();
 
@@ -1065,7 +1065,7 @@ songfilterParseSortKey (songfilter_t *sf)
 static void
 songfilterLoadFilterDisplay (songfilter_t *sf)
 {
-  char    tbuff [MAXPATHLEN];
+  char    tbuff [BDJ4_PATH_MAX];
 
   logProcBegin ();
 

@@ -130,7 +130,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
 {
   uiwcont_t     *sw;
   char          tmp [200];
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
   const char    *tdata;
   uiwcont_t     *mvbox = NULL;
   uiwcont_t     *vbox [3] = { NULL, NULL, NULL };
@@ -303,7 +303,7 @@ static bool
 confuiSelectiTunesDir (void *udata)
 {
   uisfcb_t    *sfcb = udata;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
 
   logProcBegin ();
   /* CONTEXT: configuration: itunes media folder selection dialog: window title */
@@ -319,8 +319,8 @@ confuiSelectiTunesFile (void *udata)
   uisfcb_t    *sfcb = udata;
   char        *fn = NULL;
   uiselect_t  *selectdata;
-  char        tbuff [MAXPATHLEN];
-  char        dirbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
+  char        dirbuff [BDJ4_PATH_MAX];
   pathinfo_t  *pi;
 
   logProcBegin ();
@@ -351,7 +351,7 @@ confuiValidateMediaDir (uiwcont_t *entry, const char *label, void *udata)
 {
   confuigui_t *gui = udata;
   const char  *sval;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   pathinfo_t  *pi;
 
   logProcBegin ();

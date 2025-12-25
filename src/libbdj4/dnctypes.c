@@ -29,7 +29,7 @@ dnctype_t *
 dnctypesAlloc (void)
 {
   dnctype_t *dnctypes;
-  char      fname [MAXPATHLEN];
+  char      fname [BDJ4_PATH_MAX];
 
   pathbldMakePath (fname, sizeof (fname), "dancetypes",
       BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);

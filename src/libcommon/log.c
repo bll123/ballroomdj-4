@@ -154,7 +154,7 @@ rlogVarMsg (logidx_t idx, loglevel_t level,
   char          ttm [40];
   char          tbuff [LOG_MAX_BUFF];
   char          wbuff [LOG_MAX_BUFF];
-  char          tfn [MAXPATHLEN];
+  char          tfn [BDJ4_PATH_MAX];
   va_list       args;
   size_t        wlen;
 
@@ -365,7 +365,7 @@ static void
 rlogStart (const char *prog, const char *processtag,
     int truncflag, loglevel_t level)
 {
-  char      tnm [MAXPATHLEN];
+  char      tnm [BDJ4_PATH_MAX];
   char      tdt [40];
 
   logInit ();
@@ -388,7 +388,7 @@ rlogOpen (logidx_t idx, const char *fn, const char *processtag, int truncflag)
 {
   bdjlog_t      *l = NULL;
   pathinfo_t    *pi;
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
 
   logInit ();
   logAlloc ();

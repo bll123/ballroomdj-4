@@ -47,7 +47,7 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   gtk_window_set_default_icon_name ("bdj4_icon");
   if (imagenm != NULL) {
     if (isWindows ()) {
-      char      tbuff [MAXPATHLEN];
+      char      tbuff [BDJ4_PATH_MAX];
       GdkPixbuf *pixbuf;
 
       /* use a pixbuf here, otherwise, the title bar and task bar icons */

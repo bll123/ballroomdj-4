@@ -38,7 +38,7 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     dispsel_t *dispsel, dispselsel_t dispselType)
 {
   uimusicq_t    *uimusicq;
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
 
   logProcBegin ();
 

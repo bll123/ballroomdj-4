@@ -34,8 +34,8 @@ static void templateCopy (const char *fromdir, const char *fromfn, const char *t
 void
 templateImageCopy (const char *color)
 {
-  char        tbuff [MAXPATHLEN];
-  char        to [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
+  char        to [BDJ4_PATH_MAX];
   slist_t     *dirlist;
   slistidx_t  iteridx;
   const char  *fname;
@@ -56,8 +56,8 @@ templateImageCopy (const char *color)
 void
 templateFileCopy (const char *fromfn, const char *tofn)
 {
-  char    fromdir [MAXPATHLEN];
-  char    to [MAXPATHLEN];
+  char    fromdir [BDJ4_PATH_MAX];
+  char    to [BDJ4_PATH_MAX];
 
   pathbldMakePath (fromdir, sizeof (fromdir), "", "", PATHBLD_MP_DIR_TEMPLATE);
   pathbldMakePath (to, sizeof (to), tofn, "", PATHBLD_MP_DREL_DATA);
@@ -67,8 +67,8 @@ templateFileCopy (const char *fromfn, const char *tofn)
 void
 templateProfileCopy (const char *fromfn, const char *tofn)
 {
-  char    fromdir [MAXPATHLEN];
-  char    to [MAXPATHLEN];
+  char    fromdir [BDJ4_PATH_MAX];
+  char    to [BDJ4_PATH_MAX];
 
   pathbldMakePath (fromdir, sizeof (fromdir), "", "", PATHBLD_MP_DIR_TEMPLATE);
   pathbldMakePath (to, sizeof (to), tofn, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
@@ -78,8 +78,8 @@ templateProfileCopy (const char *fromfn, const char *tofn)
 void
 templateHttpCopy (const char *fromfn, const char *tofn)
 {
-  char    from [MAXPATHLEN];
-  char    to [MAXPATHLEN];
+  char    from [BDJ4_PATH_MAX];
+  char    to [BDJ4_PATH_MAX];
 
   pathbldMakePath (from, sizeof (from), "", "", PATHBLD_MP_DIR_TEMPLATE);
   pathbldMakePath (to, sizeof (to), tofn, "", PATHBLD_MP_DREL_HTTP);
@@ -89,9 +89,9 @@ templateHttpCopy (const char *fromfn, const char *tofn)
 void
 templateDisplaySettingsCopy (void)
 {
-  char        tbuff [MAXPATHLEN];
-  char        from [MAXPATHLEN];
-  char        to [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
+  char        from [BDJ4_PATH_MAX];
+  char        to [BDJ4_PATH_MAX];
   slist_t     *dirlist;
   slistidx_t  iteridx;
   const char  *fname;
@@ -117,7 +117,7 @@ templateDisplaySettingsCopy (void)
 static void
 templateCopy (const char *fromdir, const char *fromfn, const char *to, const char *color)
 {
-  char      tbuff [MAXPATHLEN];
+  char      tbuff [BDJ4_PATH_MAX];
 
   snprintf (tbuff, sizeof (tbuff), "%s/%s/%s", fromdir,
       sysvarsGetStr (SV_LOCALE), fromfn);

@@ -53,7 +53,7 @@ autosel_t *
 autoselAlloc (void)
 {
   autosel_t   *autosel;
-  char        fname [MAXPATHLEN];
+  char        fname [BDJ4_PATH_MAX];
 
   pathbldMakePath (fname, sizeof (fname), AUTOSEL_FN,
       BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);

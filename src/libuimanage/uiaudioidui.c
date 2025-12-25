@@ -266,7 +266,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiwcont_t         *vbox;
   uiwcont_t         *uiwidgetp;
   uiwcont_t         *col;
-  char              tbuff [MAXPATHLEN];
+  char              tbuff [BDJ4_PATH_MAX];
   uivirtlist_t      *uivl;
 
   logProcBegin ();

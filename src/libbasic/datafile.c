@@ -437,7 +437,7 @@ int
 datafileReadDistVersion (const char *fname)
 {
   FILE    *fh;
-  char    line [MAXPATHLEN];
+  char    line [BDJ4_PATH_MAX];
   int     distvers = 1;
   bool    done;
 

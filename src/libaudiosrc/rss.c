@@ -91,7 +91,7 @@ rssImport (const char *uri)
   webclient_t   *webclient;
   rssdata_t     rssdata;
   int           webrc;
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
   ilistidx_t    iteridx;
   ilistidx_t    key;
   time_t        tmval;

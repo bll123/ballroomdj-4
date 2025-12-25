@@ -65,7 +65,7 @@ pli_t *
 pliInit (const char *plipkg, const char *plinm)
 {
   pli_t     *pli;
-  char      dlpath [MAXPATHLEN];
+  char      dlpath [BDJ4_PATH_MAX];
 
   pli = mdmalloc (sizeof (pli_t));
   pli->plidata = NULL;

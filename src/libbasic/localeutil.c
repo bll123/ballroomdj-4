@@ -60,7 +60,7 @@ static void localePostSetup (void);
 void
 localeInit (void)
 {
-  char              fname [MAXPATHLEN];
+  char              fname [BDJ4_PATH_MAX];
   ilistidx_t        iteridx;
   ilistidx_t        key;
   ilistidx_t        gbidx = -1;
@@ -134,9 +134,9 @@ localeInit (void)
 void
 localeSetup (void)
 {
-  char          locpath [MAXPATHLEN];
-  char          lbuff [MAXPATHLEN];
-  char          tbuff [MAXPATHLEN];
+  char          locpath [BDJ4_PATH_MAX];
+  char          lbuff [BDJ4_PATH_MAX];
+  char          tbuff [BDJ4_PATH_MAX];
   char          sbuff [40];
   bool          useutf8ext = false;
   struct lconv  *lconv;

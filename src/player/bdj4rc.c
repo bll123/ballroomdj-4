@@ -348,7 +348,7 @@ remctrlEventHandler (void *userdata, const char *query, const char *uri)
         "Cache-Control: max-age=0\r\n",
         remctrl->playlistNames);
   } else {
-    char          path [MAXPATHLEN];
+    char          path [BDJ4_PATH_MAX];
     const char    *turi = uri;
 
     if (*uri == '/') {

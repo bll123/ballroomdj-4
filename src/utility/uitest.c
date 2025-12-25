@@ -530,7 +530,7 @@ uitestUIToggleButtons (uitest_t *uitest)
   uiwcont_t   *hbox;
   uiwcont_t   *sg;
   uiwcont_t   *uiwidgetp;
-  char        imgbuff [MAXPATHLEN];
+  char        imgbuff [BDJ4_PATH_MAX];
 
   sg = uiCreateSizeGroupHoriz ();
 
@@ -795,7 +795,7 @@ uitestUIImage (uitest_t *uitest)
 {
   uiwcont_t   *vbox;
   uiwcont_t   *uiwidgetp;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
 
   /* image */
 
@@ -1110,7 +1110,7 @@ uitestUINotebook (uitest_t *uitest)
   uiwcont_t   *vboxb;
   uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
-  char        imgbuff [MAXPATHLEN];
+  char        imgbuff [BDJ4_PATH_MAX];
   uivnb_t     *vnb;
 
   /* notebook */
@@ -1760,7 +1760,7 @@ uitestDDNum (void *udata, int32_t key)
 static bool
 uitestCBLink (void *udata)
 {
-  char        tmp [MAXPATHLEN];
+  char        tmp [BDJ4_PATH_MAX];
 
   snprintf (tmp, sizeof (tmp), "%s '%s'", sysvarsGetStr (SV_PATH_URI_OPEN),
       "https://ballroomdj.org");

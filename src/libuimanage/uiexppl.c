@@ -159,7 +159,7 @@ uiexpplDialog (uiexppl_t *uiexppl, const char *slname)
 {
   int           x, y;
   const char    *odir = NULL;
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
 
   if (uiexppl == NULL) {
     return UICB_STOP;
@@ -301,7 +301,7 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiEntryInit (50, MAXPATHLEN);
+  uiwidgetp = uiEntryInit (50, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
@@ -336,7 +336,7 @@ uiexpplTargetDialog (void *udata)
   uiexppl_t  *uiexppl = udata;
   uiselect_t  *selectdata;
   const char  *str;
-  char        odir [MAXPATHLEN];
+  char        odir [BDJ4_PATH_MAX];
   char        *fn = NULL;
   char        tname [200];
   pathinfo_t  *pi;
@@ -424,8 +424,8 @@ uiexpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
 {
   uiexppl_t   *uiexppl = udata;
   const char  *str;
-  char        tbuff [MAXPATHLEN];
-  char        tdir [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
+  char        tdir [BDJ4_PATH_MAX];
   pathinfo_t  *pi;
   bool        found = false;
 
@@ -510,7 +510,7 @@ uiexpplExportTypeCallback (void *udata)
   pi = pathInfo (str);
   if (pi->dlen > 0 &&
       ! pathInfoExtCheck (pi, exptypes [uiexppl->exptype].ext)) {
-    char        tbuff [MAXPATHLEN];
+    char        tbuff [BDJ4_PATH_MAX];
 
     snprintf (tbuff, sizeof (tbuff), "%.*s/%.*s%s",
         (int) pi->dlen, pi->dirname,

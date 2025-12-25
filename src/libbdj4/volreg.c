@@ -63,7 +63,7 @@ volregClear (const char *sink)
 bool
 volregCheckBDJ3Flag (void)
 {
-  char  fn [MAXPATHLEN];
+  char  fn [BDJ4_PATH_MAX];
   int   rc = false;
 
   diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
@@ -79,7 +79,7 @@ volregCheckBDJ3Flag (void)
 void
 volregCreateBDJ4Flag (void)
 {
-  char  fn [MAXPATHLEN];
+  char  fn [BDJ4_PATH_MAX];
   FILE  *fh;
 
   diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
@@ -95,7 +95,7 @@ volregCreateBDJ4Flag (void)
 void
 volregClearBDJ4Flag (void)
 {
-  char  fn [MAXPATHLEN];
+  char  fn [BDJ4_PATH_MAX];
 
   diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
   pathbldMakePath (fn, sizeof (fn),
@@ -106,7 +106,7 @@ volregClearBDJ4Flag (void)
 void
 volregClean (void)
 {
-  char  fn [MAXPATHLEN];
+  char  fn [BDJ4_PATH_MAX];
 
   volregUnlock ();
   pathbldMakePath (fn, sizeof (fn),
@@ -120,7 +120,7 @@ static void
 volregLockWait (void)
 {
   int     count;
-  char    tfn [MAXPATHLEN];
+  char    tfn [BDJ4_PATH_MAX];
 
   pathbldMakePath (tfn, sizeof (tfn),
       VOLREG_FN, BDJ4_LOCK_EXT, PATHBLD_MP_DIR_CACHE);
@@ -136,7 +136,7 @@ volregLockWait (void)
 static void
 volregUnlock (void)
 {
-  char  tfn [MAXPATHLEN];
+  char  tfn [BDJ4_PATH_MAX];
 
   diropMakeDir (sysvarsGetStr (SV_DIR_CACHE));
   pathbldMakePath (tfn, sizeof (tfn),
@@ -150,7 +150,7 @@ volregUpdate (const char *sink, int originalVolume, int inc)
   datafile_t  *df;
   ilist_t     *vlist;
   ilistidx_t  viteridx;
-  char        fn [MAXPATHLEN];
+  char        fn [BDJ4_PATH_MAX];
   ilistidx_t  key;
   ilistidx_t  vkey;
   const char  *dsink;

@@ -22,8 +22,8 @@ char *
 locatebdj3 (void)
 {
   char          *loc;
-  char          home [MAXPATHLEN];
-  char          tbuff [MAXPATHLEN];
+  char          home [BDJ4_PATH_MAX];
+  char          tbuff [BDJ4_PATH_MAX];
   char          *tp = tbuff;
   char          *tend = tbuff + sizeof (tbuff);
 
@@ -114,8 +114,8 @@ locationcheck (const char *dir)
 bool
 locatedb (const char *dir)
 {
-  char  tdir [MAXPATHLEN];
-  char  tbuff [MAXPATHLEN];
+  char  tdir [BDJ4_PATH_MAX];
+  char  tbuff [BDJ4_PATH_MAX];
   bool  rc = false;
 
 

@@ -34,7 +34,7 @@ dlhandle_t *
 dylibLoad (const char *path, dlopt_t opt)
 {
   void        *handle = NULL;
-  char        npath [MAXPATHLEN];
+  char        npath [BDJ4_PATH_MAX];
   const char  *shlibext;
   const char  *pfx = "";
 
@@ -91,7 +91,7 @@ dylibLoad (const char *path, dlopt_t opt)
     const char  *tdir;
 
     for (int i = 5; i < 9; ++i) {
-      char      tbuff [MAXPATHLEN];
+      char      tbuff [BDJ4_PATH_MAX];
 
       /* must have trailing slash */
       snprintf (tbuff, sizeof (tbuff), "/opt/pkg/lib/ffmpeg%d/", i);
@@ -214,7 +214,7 @@ dylibCheckVersion (dlhandle_t *handle, const char *funcname, dlopt_t opt)
 {
   void      *addr = NULL;
   int       version = -1;
-  char      tbuff [MAXPATHLEN];
+  char      tbuff [BDJ4_PATH_MAX];
 
   if ((opt & DYLIB_OPT_VERSION) == DYLIB_OPT_VERSION) {
     int   beg = DYLIB_ICU_BEG_VERS;
@@ -253,6 +253,7 @@ dylibBasicOpen (char *path, size_t sz)
   wpath = osToWideChar (path);
   libhandle = LoadLibraryW (wpath);
   handle = libhandle;
+  mdfree (wpath);
 #endif
 
   return handle;

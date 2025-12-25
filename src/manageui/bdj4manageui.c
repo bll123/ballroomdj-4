@@ -490,7 +490,7 @@ main (int argc, char *argv[])
   int             status = 0;
   uint16_t        listenPort;
   manageui_t      manage;
-  char            tbuff [MAXPATHLEN];
+  char            tbuff [BDJ4_PATH_MAX];
   uint32_t        flags;
   uisetup_t       uisetup;
 
@@ -825,8 +825,8 @@ manageBuildUI (manageui_t *manage)
   uiwcont_t   *vbox;
   uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
-  char        imgbuff [MAXPATHLEN];
-  char        tbuff [MAXPATHLEN];
+  char        imgbuff [BDJ4_PATH_MAX];
+  char        tbuff [BDJ4_PATH_MAX];
   int         x, y;
   uiutilsaccent_t accent;
 
@@ -2034,7 +2034,7 @@ manageTrimSilence (void *udata)
 {
   manageui_t    *manage = udata;
   song_t        *song;
-  char          ffn [MAXPATHLEN];
+  char          ffn [BDJ4_PATH_MAX];
   double        sstart;
   double        send;
   int32_t       startval;
@@ -2257,7 +2257,7 @@ static bool
 managePlaylistImportiTunes (void *udata)
 {
   manageui_t  *manage = udata;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
 
   if (manage->importitunesactive) {
     return UICB_STOP;
@@ -3277,7 +3277,7 @@ static void
 manageSonglistSave (manageui_t *manage)
 {
   char        name [MAX_PL_NM_LEN];
-  char        nnm [MAXPATHLEN];
+  char        nnm [BDJ4_PATH_MAX];
   bool        notvalid;
 
   logProcBegin ();
@@ -3522,7 +3522,7 @@ managePlaylistImportRespHandler (void *udata)
   const char  *oplname;
   int         imptype;
   int         askey;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
 
   imptype = uiimpplGetType (manage->uiimppl);
   if (imptype == AUDIOSRC_TYPE_NONE) {

@@ -41,7 +41,7 @@ sequenceLoad (const char *fname)
   slist_t       *tlist;
   const char    *seqkey;
   slistidx_t    lkey;
-  char          fn [MAXPATHLEN];
+  char          fn [BDJ4_PATH_MAX];
   nlistidx_t    iteridx;
   datafileconv_t  conv;
 
@@ -81,7 +81,7 @@ sequence_t *
 sequenceCreate (const char *fname)
 {
   sequence_t    *sequence;
-  char          fn [MAXPATHLEN];
+  char          fn [BDJ4_PATH_MAX];
 
 
   pathbldMakePath (fn, sizeof (fn), fname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DREL_DATA);
@@ -114,7 +114,7 @@ sequenceFree (sequence_t *sequence)
 bool
 sequenceExists (const char *name)
 {
-  char  fn [MAXPATHLEN];
+  char  fn [BDJ4_PATH_MAX];
 
   pathbldMakePath (fn, sizeof (fn), name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DREL_DATA);
   return fileopFileExists (fn);

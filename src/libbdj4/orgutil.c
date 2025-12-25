@@ -69,7 +69,7 @@ typedef struct org {
   char          regexstr [300];
   bdjregex_t    *rx;
   slist_t       *orgparsed;
-  char          cachepath [MAXPATHLEN];
+  char          cachepath [BDJ4_PATH_MAX];
   char          **rxdata;
   int           rxlen;
   int           chartype;
@@ -361,8 +361,8 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
   const char      *tdata;
   const char      *datap;
   char            *retval;
-  char            newpath [MAXPATHLEN];
-  char            gbuff [MAXPATHLEN];
+  char            newpath [BDJ4_PATH_MAX];
+  char            gbuff [BDJ4_PATH_MAX];
   char            tmp [40];
   orginfo_t       *orginfo;
   int             grpnum = ORG_FIRST_GRP;
@@ -528,7 +528,7 @@ orgMakeSongPath (org_t *org, song_t *song, const char *bypass)
     }
 
     if (datap != NULL && *datap) {
-      char  sbuff [MAXPATHLEN];
+      char  sbuff [BDJ4_PATH_MAX];
 
       stpecpy (sbuff, sbuff + sizeof (sbuff), datap);
       if (doclean) {

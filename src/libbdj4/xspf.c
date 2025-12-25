@@ -50,7 +50,7 @@ xspfExport (musicdb_t *musicdb, nlist_t *list,
     song_t        *song;
     const char    *str;
     const char    *pfx;
-    char          ffn [MAXPATHLEN];
+    char          ffn [BDJ4_PATH_MAX];
 
     song = dbGetByIdx (musicdb, dbidx);
 
@@ -105,7 +105,7 @@ xspfImport (musicdb_t *musicdb, const char *fname)
   const char          *val;
   song_t              *song;
   dbidx_t             dbidx;
-  char                tbuff [MAXPATHLEN];
+  char                tbuff [BDJ4_PATH_MAX];
 
   xmlparse = xmlParseInitFile (fname, XMLPARSE_NONS);
   /* the playlist name is not used */

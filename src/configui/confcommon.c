@@ -133,9 +133,9 @@ confuiLoadThemeList (confuigui_t *gui)
 void
 confuiUpdateMobmqQrcode (confuigui_t *gui)
 {
-  char          uridisp [MAXPATHLEN];
+  char          uridisp [BDJ4_PATH_MAX];
   char          qruri [200];
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
   int           type;
   uiwcont_t     *uiwidgetp = NULL;
 
@@ -175,11 +175,11 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
 void
 confuiUpdateRemctrlQrcode (confuigui_t *gui)
 {
-  char          uridisp [MAXPATHLEN];
-  char          uridispb [MAXPATHLEN];
+  char          uridisp [BDJ4_PATH_MAX];
+  char          uridispb [BDJ4_PATH_MAX];
   char          qruri [200];
   char          qrurib [200];
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
   bool          enabled;
   uiwcont_t    *uiwidgetp;
 
@@ -443,7 +443,7 @@ confuiGetThemeList (void)
   const char  *nm;
   int         count;
 #if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   slist_t     *filelist = NULL;
 #endif
 
@@ -555,8 +555,8 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
       if (dpi->flen == strlen (srchdir) &&
           strncmp (dpi->filename, srchdir, strlen (srchdir)) == 0) {
         pathinfo_t  *pi;
-        char        tbuff [MAXPATHLEN];
-        char        tmp [MAXPATHLEN];
+        char        tbuff [BDJ4_PATH_MAX];
+        char        tmp [BDJ4_PATH_MAX];
         size_t      len;
 
         snprintf (tmp, sizeof (tmp), "%s/%s", fn, srchfn);
@@ -594,8 +594,8 @@ confuiMakeQRCodeFile (const char *tag, const char *title,
 {
   char          *data;
   char          *ndata;
-  char          baseuri [MAXPATHLEN];
-  char          tbuff [MAXPATHLEN];
+  char          baseuri [BDJ4_PATH_MAX];
+  char          tbuff [BDJ4_PATH_MAX];
   char          tname [80];
   FILE          *fh;
   size_t        dlen;
@@ -675,7 +675,7 @@ int32_t
 confuiLocaleSelect (void *udata, const char *sval)
 {
   if (sval != NULL && *sval) {
-    char        tbuff [MAXPATHLEN];
+    char        tbuff [BDJ4_PATH_MAX];
 
     sysvarsSetStr (SV_LOCALE, sval);
     snprintf (tbuff, sizeof (tbuff), "%.2s", sval);
@@ -702,7 +702,7 @@ int32_t
 confuiUIThemeSelect (void *udata, const char *sval)
 {
   if (sval != NULL && *sval) {
-    char    tbuff [MAXPATHLEN];
+    char    tbuff [BDJ4_PATH_MAX];
     FILE    *fh;
 
     bdjoptSetStr (OPT_M_UI_THEME, sval);

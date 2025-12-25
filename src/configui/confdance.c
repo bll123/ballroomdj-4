@@ -96,7 +96,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
   uiwcont_t     *szgrpC;
   uiwcont_t     *szgrpD;
   const char    *bpmstr;
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
   uivirtlist_t  *uivl;
 
   logProcBegin ();
@@ -213,7 +213,7 @@ confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t dkey)
   int             timesig;
   uivirtlist_t    *uivl;
   int32_t         rownum;
-  char            tstr [MAXPATHLEN];
+  char            tstr [BDJ4_PATH_MAX];
 
 
   if (dkey < 0) {
@@ -395,7 +395,7 @@ confuiDanceEntryChg (uiwcont_t *entry, const char *label, void *udata, int widx)
   if (widx == CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT) {
     entryrc = confuiDanceValidateAnnouncement (entry, gui);
     if (entryrc == UIENTRY_OK) {
-      char    nstr [MAXPATHLEN];
+      char    nstr [BDJ4_PATH_MAX];
 
       confuiMarkValid (gui, widx);
       /* save the normalized version */
@@ -515,7 +515,7 @@ confuiDanceValidateAnnouncement (uiwcont_t *entry, confuigui_t *gui)
 {
   int         rc = UIENTRY_ERROR;
   const char  *fn;
-  char        nfn [MAXPATHLEN];
+  char        nfn [BDJ4_PATH_MAX];
 
   logProcBegin ();
   if (gui->inchange) {
@@ -539,7 +539,7 @@ confuiDanceValidateAnnouncement (uiwcont_t *entry, confuigui_t *gui)
     rc = UIENTRY_OK;
   } else {
     const char  *rfn;
-    char        ffn [MAXPATHLEN];
+    char        ffn [BDJ4_PATH_MAX];
 
     rfn = audiosrcRelativePath (nfn, 0);
     audiosrcFullPath (nfn, ffn, sizeof (ffn), NULL, 0);

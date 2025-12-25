@@ -71,8 +71,8 @@ enum {
 START_TEST(pathinfo_chk)
 {
   pathinfo_t    *pi;
-  char          tbuff [MAXPATHLEN];
-  char          tmp [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
+  char          tmp [BDJ4_PATH_MAX];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- pathinfo_chk");
   mdebugSubTag ("pathinfo_chk");

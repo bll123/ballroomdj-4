@@ -42,7 +42,7 @@ atiCheck (const char *atipkg)
 {
   bool        rc = false;
   dlhandle_t  *dlHandle = NULL;
-  char        dlpath [MAXPATHLEN];
+  char        dlpath [BDJ4_PATH_MAX];
 
   pathbldMakePath (dlpath, sizeof (dlpath),
       atipkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_DIR_EXEC);
@@ -63,7 +63,7 @@ atiInit (const char *atipkg, int writetags,
     tagname_t tagName, audiotaglookup_t audioTagLookup)
 {
   ati_t     *ati;
-  char      dlpath [MAXPATHLEN];
+  char      dlpath [BDJ4_PATH_MAX];
 
   ati = mdmalloc (sizeof (ati_t));
   ati->atiiInit = NULL;
@@ -199,7 +199,7 @@ atiGetSupportedTypes (const char *atipkg, int supported [])
 {
   dlhandle_t  *dlHandle = NULL;
   void        *(*sproc) (int supported []);
-  char        dlpath [MAXPATHLEN];
+  char        dlpath [BDJ4_PATH_MAX];
 
   for (int i = 0; i < AFILE_TYPE_MAX; ++i) {
     supported [i] = ATI_NONE;

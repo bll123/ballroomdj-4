@@ -80,7 +80,7 @@ dance_t *
 danceAlloc (const char *altfname)
 {
   dance_t     *dances;
-  char        fname [MAXPATHLEN];
+  char        fname [BDJ4_PATH_MAX];
 
   if (altfname != NULL) {
     stpecpy (fname, fname + sizeof (fname), altfname);

@@ -15,17 +15,16 @@
 #include "osprocess.h"
 #include "osutils.h"
 
-char *
-osRegistryGet (char *key, char *name)
+void
+osRegistryGet (char *key, char *name, char *buff, size_t sz)
 {
-  return NULL;
+  *buff = '\0';
 }
 
-char *
-osGetSystemFont (const char *gsettingspath)
+void
+osGetSystemFont (const char *gsettingspath, char *buff, size_t sz)
 {
   char    *tptr;
-  char    *rptr = NULL;
 
   tptr = osRunProgram (gsettingspath, "get",
       "org.gnome.desktop.interface",  "font-name", NULL);
@@ -33,10 +32,7 @@ osGetSystemFont (const char *gsettingspath)
     /* gsettings puts quotes around the data */
     stringTrim (tptr);
     stringTrimChar (tptr, '\'');
-    rptr = mdstrdup (tptr + 1);
+    stpecpy (buff, buff + sz, tptr + 1);
   }
   mdfree (tptr);
-
-  return rptr;
 }
-

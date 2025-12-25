@@ -346,7 +346,7 @@ void
 audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype)
 {
   pathinfo_t        *pi;
-  char              tmp [MAXPATHLEN];
+  char              tmp [BDJ4_PATH_MAX];
   filetypelookup_t  *ftl;
   filetypelookup_t  tftl = { NULL, 0, 0 };
 

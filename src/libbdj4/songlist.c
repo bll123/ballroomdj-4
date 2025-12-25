@@ -103,7 +103,7 @@ songlistFree (songlist_t *sl)
 bool
 songlistExists (const char *name)
 {
-  char    tfn [MAXPATHLEN];
+  char    tfn [BDJ4_PATH_MAX];
 
   pathbldMakePath (tfn, sizeof (tfn), name,
       BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
@@ -256,7 +256,7 @@ static songlist_t *
 songlistAlloc (const char *fname)
 {
   songlist_t    *sl;
-  char          tfn [MAXPATHLEN];
+  char          tfn [BDJ4_PATH_MAX];
   pathinfo_t    *pi;
 
   sl = mdmalloc (sizeof (songlist_t));

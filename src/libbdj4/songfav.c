@@ -41,7 +41,7 @@ NODISCARD
 songfav_t *
 songFavoriteAlloc (void)
 {
-  char        fname [MAXPATHLEN];
+  char        fname [BDJ4_PATH_MAX];
   songfav_t   *songfav;
   ilistidx_t  iteridx;
   ilistidx_t  key;

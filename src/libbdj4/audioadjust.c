@@ -80,7 +80,7 @@ aa_t *
 aaAlloc (void)
 {
   aa_t  *aa = NULL;
-  char        fname [MAXPATHLEN];
+  char        fname [BDJ4_PATH_MAX];
 
   pathbldMakePath (fname, sizeof (fname), AUDIOADJ_FN,
       BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
@@ -111,11 +111,11 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
 {
   song_t      *song;
   pathinfo_t  *pi;
-  char        songfn [MAXPATHLEN];
+  char        songfn [BDJ4_PATH_MAX];
   char        *infn;
-  char        origfn [MAXPATHLEN];
-  char        fullfn [MAXPATHLEN];
-  char        outfn [MAXPATHLEN];
+  char        origfn [BDJ4_PATH_MAX];
+  char        fullfn [BDJ4_PATH_MAX];
+  char        outfn [BDJ4_PATH_MAX];
   bool        changed = false;
   void        *savedtags = NULL;
 
@@ -368,7 +368,7 @@ aaAdjust (musicdb_t *musicdb, song_t *song,
   /* applying the speed change afterwards is slower, but saves a lot */
   /* of headache. */
   if (speed != 100) {
-    char  tmpfn [MAXPATHLEN];
+    char  tmpfn [BDJ4_PATH_MAX];
 
     snprintf (tmpfn, sizeof (tmpfn), "%s.tmp", outfn);
     filemanipMove (outfn, tmpfn);

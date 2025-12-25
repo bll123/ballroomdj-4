@@ -46,7 +46,7 @@ uiCreateSwitch (int value)
   uiwcont_t   *uiwidget;
   uiswitch_t  *uiswitch;
   GtkWidget   *widget;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
 
   /* the gtk switch is different in every theme, some of which are not */
   /* great.  use a toggle button instead and set our own image */

@@ -125,7 +125,7 @@ asiInit (const char *delpfx, const char *origext)
   ilistidx_t    iteridx;
   ilistidx_t    askey;
   int           count = 0;
-  char          temp [MAXPATHLEN];
+  char          temp [BDJ4_PATH_MAX];
 
   asdata = mdmalloc (sizeof (asdata_t));
 
@@ -261,7 +261,7 @@ asiExists (asdata_t *asdata, const char *nm)
   bool            exists = false;
   int             webrc;
   char            uri [1024];
-  char            query [MAXPATHLEN];
+  char            query [BDJ4_PATH_MAX];
   int             clientkey;
   asclientdata_t  *clientdata;
 
@@ -491,7 +491,7 @@ asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm, int 
   bool            rc = false;
   int             webrc;
   char            uri [1024];
-  char            query [MAXPATHLEN];
+  char            query [BDJ4_PATH_MAX];
   int             clientkey = -1;
   asclientdata_t  *clientdata;
 
@@ -535,7 +535,7 @@ asbdj4GetPlaylist (asdata_t *asdata, asiterdata_t *asidata, const char *nm, int 
 
       p = strtok_r (tdata, MSG_ARGS_RS_STR, &tokstr);
       while (p != NULL) {
-        char    tbuff [MAXPATHLEN];
+        char    tbuff [BDJ4_PATH_MAX];
 
         logMsg (LOG_DBG, LOG_AUDIOSRC, "pl-get: %s", p);
         snprintf (tbuff, sizeof (tbuff), "%s%s",
@@ -559,7 +559,7 @@ asbdj4SongTags (asdata_t *asdata, asiterdata_t *asidata, const char *songuri)
   bool            rc = false;
   int             webrc;
   char            uri [1024];
-  char            query [MAXPATHLEN];
+  char            query [BDJ4_PATH_MAX];
   int             clientkey;
   asclientdata_t  *clientdata;
 
@@ -693,7 +693,7 @@ asbdj4GetAudioFile (asdata_t *asdata, const char *nm, const char *tempnm)
   bool              rc = false;
   int               webrc;
   char              uri [1024];
-  char              query [MAXPATHLEN];
+  char              query [BDJ4_PATH_MAX];
   int               clientkey;
   asclientdata_t    *clientdata;
 

@@ -33,7 +33,7 @@
 #define LOCK_FN "test_lock"
 #define BAD_FULL_LOCK_FN "tmpz/bad_lock.lck"
 
-static char fulllockfn [MAXPATHLEN];
+static char fulllockfn [BDJ4_PATH_MAX];
 
 static void
 setup (void)

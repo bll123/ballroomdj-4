@@ -20,7 +20,7 @@ char *
 pathbldMakePath (char *buff, size_t buffsz,
     const char *base, const char *extension, int flags)
 {
-  char      tbuff [MAXPATHLEN];
+  char      tbuff [BDJ4_PATH_MAX];
   char      profpath [50];
   char      dstamp [40];
   char      *dirprefix = "";

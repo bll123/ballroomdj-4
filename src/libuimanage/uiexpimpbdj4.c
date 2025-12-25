@@ -338,7 +338,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiEntryInit (50, MAXPATHLEN);
+  uiwidgetp = uiEntryInit (50, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
@@ -517,7 +517,7 @@ uieibdj4ValidateTarget (uiwcont_t *entry, const char *label, void *udata)
   uieibdj4_t  *uieibdj4 = udata;
   const char  *str;
   int         currtype;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
 
   currtype = uieibdj4->currtype;
   uiLabelSetText (
@@ -572,8 +572,8 @@ uieibdj4ValidateNewName (uiwcont_t *entry, const char *label, void *udata)
   uiwcont_t   *errorMsg = NULL;
   int         rc = UIENTRY_ERROR;
   const char  *str;
-  char        fn [MAXPATHLEN];
-  char        tbuff [MAXPATHLEN];
+  char        fn [BDJ4_PATH_MAX];
+  char        tbuff [BDJ4_PATH_MAX];
 
   statusMsg = uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_STATUS_MSG];
   errorMsg = uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_ERROR_MSG];

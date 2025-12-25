@@ -33,9 +33,9 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
   nlistidx_t  iteridx;
   dbidx_t     dbidx;
   song_t      *song;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   const char  *str;
-  char        ffn [MAXPATHLEN];
+  char        ffn [BDJ4_PATH_MAX];
   char        *tp = tbuff;
   char        *tend = tbuff + sizeof (tbuff);
 
@@ -89,7 +89,7 @@ m3uImport (musicdb_t *musicdb, const char *fname)
   const char  *p;
   song_t      *song;
   dbidx_t     dbidx;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
 
   fh = fileopOpen (fname, "r");
   if (fh == NULL) {

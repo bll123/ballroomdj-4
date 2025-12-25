@@ -181,7 +181,7 @@ START_TEST(fileshared_write_shared)
   fileshared_t  *sfh;
   size_t        sz;
   char          *extension;
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_write_shared");
   mdebugSubTag ("fileshared_write_shared");

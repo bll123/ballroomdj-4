@@ -4,6 +4,7 @@
 #pragma once
 
 #include "config.h"
+#include "nodiscard.h"
 
 #include <stdbool.h>
 
@@ -18,16 +19,16 @@ extern "C" {
 #endif
 #define OS_FS_CHAR_SIZE sizeof (OS_FS_CHAR_TYPE)
 
-wchar_t * osToWideChar (const char *buff);
-char    * osFromWideChar (const wchar_t *buff);
+NODISCARD wchar_t * osToWideChar (const char *buff);
+NODISCARD char    * osFromWideChar (const wchar_t *buff);
 int     osCreateLink (const char *target, const char *linkpath);
 bool    osIsLink (const char *path);
 void    osSuspendSleep (void);
 void    osResumeSleep (void);
 
 /* system specific functions in separate files */
-char    *osRegistryGet (char *key, char *name);
-char    *osGetSystemFont (const char *gsettingspath);
+void  osRegistryGet (char *key, char *name, char *buff, size_t sz);
+void  osGetSystemFont (const char *gsettingspath, char *buff, size_t sz);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

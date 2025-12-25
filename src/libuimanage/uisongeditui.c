@@ -316,7 +316,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiwcont_t         *hbox;
   uiwcont_t         *uiwidgetp;
   int               count;
-  char              tbuff [MAXPATHLEN];
+  char              tbuff [BDJ4_PATH_MAX];
 
   logProcBegin ();
   logProcBegin ();
@@ -1904,7 +1904,7 @@ uisongeditCopyPath (void *udata)
   uisongedit_t  *uisongedit = udata;
   se_internal_t *seint;
   const char    *txt;
-  char          ffn [MAXPATHLEN];
+  char          ffn [BDJ4_PATH_MAX];
 
   seint = uisongedit->seInternalData;
 

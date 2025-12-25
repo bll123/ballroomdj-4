@@ -34,8 +34,8 @@ START_TEST(templateutil_file_copy)
 {
   size_t  sza;
   size_t  szb;
-  char    from [MAXPATHLEN];
-  char    to [MAXPATHLEN];
+  char    from [BDJ4_PATH_MAX];
+  char    to [BDJ4_PATH_MAX];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- templateutil_file_copy");
   mdebugSubTag ("templateutil_file_copy");
@@ -57,7 +57,7 @@ END_TEST
 
 START_TEST(templateutil_image_copy)
 {
-  char    to [MAXPATHLEN];
+  char    to [BDJ4_PATH_MAX];
   char    *data;
   char    *p;
   size_t  rlen;
@@ -96,7 +96,7 @@ END_TEST
 
 START_TEST(templateutil_http_copy)
 {
-  char    to [MAXPATHLEN];
+  char    to [BDJ4_PATH_MAX];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- templateutil_http_copy");
   mdebugSubTag ("templateutil_http_copy");
@@ -113,7 +113,7 @@ END_TEST
 
 START_TEST(templateutil_dispset_copy)
 {
-  char    to [MAXPATHLEN];
+  char    to [BDJ4_PATH_MAX];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- templateutil_dispset_copy");
   mdebugSubTag ("templateutil_dispset_copy");

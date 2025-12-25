@@ -70,8 +70,8 @@ confuiBuildUIGeneral (confuigui_t *gui)
   uiwcont_t     *vbox;
   uiwcont_t     *szgrp;
   const char    *tmp;
-  char          tbuff [MAXPATHLEN];
-  char          ebuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
+  char          ebuff [BDJ4_PATH_MAX];
 
   logProcBegin ();
   sw = uiCreateScrolledWindow (200);

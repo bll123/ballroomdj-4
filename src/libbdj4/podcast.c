@@ -46,7 +46,7 @@ podcast_t *
 podcastLoad (const char *fname)
 {
   podcast_t     *podcast;
-  char          fn [MAXPATHLEN];
+  char          fn [BDJ4_PATH_MAX];
 
   pathbldMakePath (fn, sizeof (fn), fname, BDJ4_PODCAST_EXT, PATHBLD_MP_DREL_DATA);
   if (! fileopFileExists (fn)) {
@@ -73,7 +73,7 @@ podcast_t *
 podcastCreate (const char *fname)
 {
   podcast_t    *podcast;
-  char          fn [MAXPATHLEN];
+  char          fn [BDJ4_PATH_MAX];
 
 
   pathbldMakePath (fn, sizeof (fn), fname, BDJ4_PODCAST_EXT, PATHBLD_MP_DREL_DATA);
@@ -115,7 +115,7 @@ podcastFree (podcast_t *podcast)
 bool
 podcastExists (const char *name)
 {
-  char  fn [MAXPATHLEN];
+  char  fn [BDJ4_PATH_MAX];
 
   pathbldMakePath (fn, sizeof (fn), name, BDJ4_PODCAST_EXT, PATHBLD_MP_DREL_DATA);
   return fileopFileExists (fn);
@@ -124,7 +124,7 @@ podcastExists (const char *name)
 void
 podcastSetName (podcast_t *podcast, const char *newname)
 {
-  char    fn [MAXPATHLEN];
+  char    fn [BDJ4_PATH_MAX];
 
   if (podcast == NULL || newname == NULL) {
     return;
@@ -141,7 +141,7 @@ podcastSetName (podcast_t *podcast, const char *newname)
 void
 podcastSave (podcast_t *podcast)
 {
-  char  tfn [MAXPATHLEN];
+  char  tfn [BDJ4_PATH_MAX];
 
   if (podcast == NULL || podcast->podcast == NULL) {
     return;

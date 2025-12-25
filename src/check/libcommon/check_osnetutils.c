@@ -26,7 +26,7 @@
 
 START_TEST(osnetutils_chk)
 {
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osnetutils_chk");
   mdebugSubTag ("osnetutils_chk");

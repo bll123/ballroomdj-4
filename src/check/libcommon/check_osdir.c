@@ -46,7 +46,7 @@ enum {
 
 START_TEST(osdir_chk)
 {
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   int         i;
   int         count = 0;
   bool        found [tdatasz];

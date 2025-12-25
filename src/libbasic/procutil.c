@@ -225,7 +225,7 @@ procutil_t *
 procutilStartProcess (bdjmsgroute_t route, const char *fname, int detachflag,
     const char *aargs [])
 {
-  char      tbuff [MAXPATHLEN];
+  char      tbuff [BDJ4_PATH_MAX];
   procutil_t *process = NULL;
 
 
@@ -236,7 +236,7 @@ procutilStartProcess (bdjmsgroute_t route, const char *fname, int detachflag,
   process = procutilStart (tbuff, sysvarsGetNum (SVL_PROFILE_IDX),
       bdjoptGetNum (OPT_G_DEBUGLVL), detachflag, aargs);
   if (isWindows ()) {
-    char  tmp [MAXPATHLEN];
+    char  tmp [BDJ4_PATH_MAX];
     osGetEnv ("PATH", tmp, sizeof (tmp));
     logMsg (LOG_DBG, LOG_BASIC, "PATH=%s", tmp);
   }

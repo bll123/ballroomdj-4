@@ -46,10 +46,10 @@ void
 instutilCreateLauncher (const char *name, const char *maindir,
     const char *workdir, int profilenum)
 {
-  char        path [MAXPATHLEN];
-  char        buff [MAXPATHLEN];
-  char        tbuff [MAXPATHLEN];
-  char        ibuff [MAXPATHLEN];
+  char        path [BDJ4_PATH_MAX];
+  char        buff [BDJ4_PATH_MAX];
+  char        tbuff [BDJ4_PATH_MAX];
+  char        ibuff [BDJ4_PATH_MAX];
   const char  *targv [10];
   int         targc = 0;
 
@@ -58,7 +58,7 @@ instutilCreateLauncher (const char *name, const char *maindir,
   }
 
   if (isWindows ()) {
-    char    abuff [MAXPATHLEN];
+    char    abuff [BDJ4_PATH_MAX];
 
     /* shortcut location and name */
     pathbldMakePath (ibuff, sizeof (ibuff),
@@ -150,9 +150,9 @@ instutilCopyTemplates (void)
   slist_t     *dirlist;
   slistidx_t  iteridx;
   const char  *fname;
-  char        from [MAXPATHLEN];
-  char        to [MAXPATHLEN];
-  char        tbuff [MAXPATHLEN];
+  char        from [BDJ4_PATH_MAX];
+  char        to [BDJ4_PATH_MAX];
+  char        tbuff [BDJ4_PATH_MAX];
   pathinfo_t  *pi;
   ilistidx_t  fkey = -1;
 
@@ -281,9 +281,9 @@ instutilCopyTemplates (void)
 void
 instutilCopyHttpFiles (void)
 {
-  char    from [MAXPATHLEN];
-  char    to [MAXPATHLEN];
-  char    tmp [MAXPATHLEN];
+  char    from [BDJ4_PATH_MAX];
+  char    to [BDJ4_PATH_MAX];
+  char    tmp [BDJ4_PATH_MAX];
   char    tbuff [200];
 
   instutilCopyHttpSVGFile ("led_on");
@@ -350,7 +350,7 @@ instutilGetMusicDir (char *homemusicdir, size_t sz)
   if (isLinux ()) {
     const char  *targv [5];
     int         targc = 0;
-    char        data [MAXPATHLEN];
+    char        data [BDJ4_PATH_MAX];
     char        *prog;
     bool        found = false;
 
@@ -373,7 +373,7 @@ instutilGetMusicDir (char *homemusicdir, size_t sz)
       }
     }
     if (! found) {
-      char    tmp [MAXPATHLEN];
+      char    tmp [BDJ4_PATH_MAX];
 
       *tmp = '\0';
       osGetEnv ("XDG_MUSIC_DIR", tmp, sizeof (tmp));
@@ -386,21 +386,21 @@ instutilGetMusicDir (char *homemusicdir, size_t sz)
   }
 
   if (isWindows ()) {
-    char    *data;
+    char    data [1024];
 
     snprintf (homemusicdir, sz, "%s/Music", home);
-    data = osRegistryGet (
+    osRegistryGet (
         "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders",
-        "My Music");
-    if (data != NULL && *data) {
+        "My Music", data, sizeof (data));
+    if (*data) {
       /* windows returns the path with %USERPROFILE% */
       hp = stpecpy (hp, hend, home);
       hp = stpecpy (hp, hend, data + 13);
     } else {
-      data = osRegistryGet (
+      osRegistryGet (
           "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders",
-          "My Music");
-      if (data != NULL && *data) {
+          "My Music", data, sizeof (data));
+      if (*data) {
         /* windows returns the path with %USERPROFILE% */
         hp = stpecpy (hp, hend, home);
         hp = stpecpy (hp, hend, data + 13);
@@ -462,7 +462,7 @@ instutilAppendNameToTarget (char *buff, size_t sz, const char *name, int macoson
 bool
 instutilCheckForExistingInstall (const char *dir, const char *macospfx)
 {
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   bool        exists;
 
   snprintf (tbuff, sizeof (tbuff), "%s%s/VERSION.txt",
@@ -477,7 +477,7 @@ instutilCheckForExistingInstall (const char *dir, const char *macospfx)
 bool
 instutilIsStandardInstall (const char *dir, const char *macospfx)
 {
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   bool        exists;
 
   snprintf (tbuff, sizeof (tbuff), "%s%s/locale", dir, macospfx);
@@ -522,8 +522,8 @@ instutilInstallCleanTmp (const char *rundir)
   if (isWindows ()) {
     char    *cttext;
     size_t  sz = 0;
-    char    tbuff [MAXPATHLEN];
-    char    tfn [MAXPATHLEN];
+    char    tbuff [BDJ4_PATH_MAX];
+    char    tfn [BDJ4_PATH_MAX];
     char    *tmp;
     FILE    *fh;
 
@@ -565,8 +565,8 @@ instutilInstallCleanTmp (const char *rundir)
     int         targc = 0;
     char        *cttext = NULL;
     size_t      sz = 0;
-    char        tfn [MAXPATHLEN];
-    char        tstr [MAXPATHLEN];
+    char        tfn [BDJ4_PATH_MAX];
+    char        tstr [BDJ4_PATH_MAX];
     FILE        *fh = NULL;
     const char  *tmp;
 
@@ -606,8 +606,8 @@ instutilInstallCleanTmp (const char *rundir)
 void
 instutilCopyIcons (void)
 {
-  char        tbuff [MAXPATHLEN];
-  char        to [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
+  char        to [BDJ4_PATH_MAX];
   slist_t     *dirlist;
   slistidx_t  iteridx;
   const char  *fname;
@@ -641,8 +641,8 @@ instutilCopyIcons (void)
 static void
 instutilCopyHttpSVGFile (const char *fn)
 {
-  char    from [MAXPATHLEN];
-  char    to [MAXPATHLEN];
+  char    from [BDJ4_PATH_MAX];
+  char    to [BDJ4_PATH_MAX];
 
   pathbldMakePath (from, sizeof (from),
       fn, BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
@@ -654,7 +654,7 @@ instutilCopyHttpSVGFile (const char *fn)
 void
 instutilCreateDataDirectories (void)
 {
-  char      path [MAXPATHLEN];
+  char      path [BDJ4_PATH_MAX];
 
   pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_DREL_DATA);
   diropMakeDir (path);

@@ -427,7 +427,7 @@ mprisHasSpeed (mpris_t *mpris)
 void
 mprisMedia (mpris_t *mpris, const char *fulluri, int sourceType)
 {
-  char  tbuff [MAXPATHLEN];
+  char  tbuff [BDJ4_PATH_MAX];
 
   if (mpris == NULL || mpris->ident != MPRIS_IDENT || mpris->mpbus == NULL) {
     return;

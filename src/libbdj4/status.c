@@ -44,7 +44,7 @@ statusAlloc (void)
   status_t    *status;
   ilistidx_t  key;
   ilistidx_t  iteridx;
-  char        fname [MAXPATHLEN];
+  char        fname [BDJ4_PATH_MAX];
 
 
   pathbldMakePath (fname, sizeof (fname), "status",

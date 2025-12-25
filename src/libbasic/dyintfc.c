@@ -36,7 +36,7 @@ dyInterfaceList (const char *pfx, const char *funcnm)
   slistidx_t  iteridx;
   const char  *fn;
   dlhandle_t  *dlHandle;
-  char        dlpath [MAXPATHLEN];
+  char        dlpath [BDJ4_PATH_MAX];
   char        tmp [100];
   void        (*descProc) (char **, int);
   void        (*cleanupProc) (dlhandle_t *);

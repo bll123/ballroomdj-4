@@ -8,26 +8,27 @@
 #include <stdbool.h>
 #include <string.h>
 
-
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
 
 #include "bdj4.h"
+#include "bdjstring.h"
 #include "mdebug.h"
 #include "osutils.h"
 
-char *
-osRegistryGet (char *key, char *name)
+void
+osRegistryGet (char *key, char *name, char *buff, size_t sz)
 {
-  char    *rval = NULL;
+  char    *trval = NULL;
   HKEY    hkey;
   LSTATUS rc;
-  unsigned char buff [MAXPATHLEN * 2];
-  DWORD   len = MAXPATHLEN * 2;
+  unsigned char tbuff [BDJ4_PATH_MAX * sizeof (wchar_t)];
+  DWORD   len = BDJ4_PATH_MAX * sizeof (wchar_t);
   wchar_t *wkey;
   wchar_t *wname;
 
   *buff = '\0';
+  *tbuff = '\0';
 
   wkey = osToWideChar (key);
 
@@ -48,23 +49,26 @@ osRegistryGet (char *key, char *name)
         wname,
         NULL,
         NULL,
-        buff,
+        tbuff,
         &len
         );
     if (rc == ERROR_SUCCESS) {
-      rval = osFromWideChar ((wchar_t *) buff);
+      trval = osFromWideChar ((wchar_t *) tbuff);
     }
     RegCloseKey (hkey);
     mdfree (wname);
   }
 
-  return rval;
+  *buff = '\0';
+  if (trval != NULL) {
+    stpecpy (buff, buff + sz, trval);
+  }
 }
 
-char *
-osGetSystemFont (const char *gsettingspath)
+void
+osGetSystemFont (const char *gsettingspath, char *buff, size_t sz)
 {
-  return NULL;
+  *buff = '\0';
 }
 
 int
@@ -79,6 +83,7 @@ osIsLink (const char *path)
   return false;
 }
 
+NODISCARD
 wchar_t *
 osToWideChar (const char *buff)
 {
@@ -93,6 +98,7 @@ osToWideChar (const char *buff)
   return tbuff;
 }
 
+NODISCARD
 char *
 osFromWideChar (const wchar_t *buff)
 {

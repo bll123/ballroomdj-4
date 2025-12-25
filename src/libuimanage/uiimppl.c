@@ -86,8 +86,8 @@ typedef struct uiimppl {
   callback_t        *callbacks [UIIMPPL_CB_MAX];
   bdjregex_t        *slashrx;
   bdjregex_t        *winrx;
-  char              origplname [MAXPATHLEN];
-  char              olduri [MAXPATHLEN];
+  char              origplname [BDJ4_PATH_MAX];
+  char              olduri [BDJ4_PATH_MAX];
   size_t            asmaxwidth;
   int               askey;
   int               imptype;
@@ -528,7 +528,7 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiimppl->wcont [UIIMPPL_W_URI_LABEL] = uiwidgetp;
 
-  uiwidgetp = uiEntryInit (50, MAXPATHLEN);
+  uiwidgetp = uiEntryInit (50, BDJ4_PATH_MAX);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
@@ -583,7 +583,7 @@ uiimpplTargetDialog (void *udata)
   uiselect_t  *selectdata;
   const char  *ofn = NULL;
   char        *fn = NULL;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   pathinfo_t  *pi;
 
   if (uiimppl == NULL) {
@@ -727,8 +727,8 @@ uiimpplValidateURI (uiimppl_t *uiimppl)
 {
   uiwcont_t   *entry;
   const char  *str;
-  char        tbuff [MAXPATHLEN];
-  char        nbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
+  char        nbuff [BDJ4_PATH_MAX];
   pathinfo_t  *pi;
   bool        haderrors = false;
   bool        urichg = false;
@@ -866,7 +866,7 @@ uiimpplSelectHandler (void *udata, int idx)
 
   str = ilistGetStr (uiimppl->plnames, idx, DD_LIST_DISP);
   if (uiimppl->imptype == AUDIOSRC_TYPE_BDJ4) {
-    char    tbuff [MAXPATHLEN];
+    char    tbuff [BDJ4_PATH_MAX];
 
     snprintf (tbuff, sizeof (tbuff), "%s%s:%" PRIu16 "/%s",
         AS_BDJ4_PFX,
@@ -896,8 +896,8 @@ uiimpplValidateNewName (uiimppl_t *uiimppl)
   uiwcont_t   *entry;
   int         rc = UIENTRY_ERROR;
   const char  *str;
-  char        fn [MAXPATHLEN];
-  char        tbuff [MAXPATHLEN];
+  char        fn [BDJ4_PATH_MAX];
+  char        tbuff [BDJ4_PATH_MAX];
   bool        haderrors = false;
 
   if (uiimppl == NULL) {
@@ -1029,7 +1029,7 @@ static int32_t
 uiimpplDragDropCallback (void *udata, const char *uri)
 {
   uiimppl_t   *uiimppl = udata;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
 
   if (uiimppl == NULL || uri == NULL || ! *uri) {
     return UICB_STOP;

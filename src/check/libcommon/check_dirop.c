@@ -74,7 +74,7 @@ END_TEST
 START_TEST(dirop_del)
 {
   int       rc;
-  char      tbuff [MAXPATHLEN];
+  char      tbuff [BDJ4_PATH_MAX];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dirop_del");
   mdebugSubTag ("dirop_del");
@@ -122,7 +122,7 @@ START_TEST(dirop_del_not_empty)
   for (int i = 0; i < fnlistsz; ++i) {
     const char  *fn = fnlist [i];
     FILE        *fh;
-    char        tbuff [MAXPATHLEN];
+    char        tbuff [BDJ4_PATH_MAX];
 
     if (i == 0 || i == 5 || i == 6 || i == 8) {
       snprintf (tbuff, sizeof (tbuff), "%s/abc.txt", fn);
@@ -138,7 +138,7 @@ START_TEST(dirop_del_not_empty)
   for (int i = 0; i < fnlistsz; ++i) {
     const char  *fn = fnlist [i];
     bool        ret;
-    char        tbuff [MAXPATHLEN];
+    char        tbuff [BDJ4_PATH_MAX];
 
     ret = diropDeleteDir (fn, DIROP_ONLY_IF_EMPTY);
     rc = fileopIsDirectory (fn);

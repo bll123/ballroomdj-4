@@ -42,7 +42,7 @@ confuiPopulateOptions (confuigui_t *gui)
   for (int widx = 0; widx < CONFUI_ITEM_MAX; ++widx) {
     int     musicq = 0;
     bool    isqueueitem = false;
-    char    tbuff [MAXPATHLEN];
+    char    tbuff [BDJ4_PATH_MAX];
 
     sval = "fail";
     nval = -1;

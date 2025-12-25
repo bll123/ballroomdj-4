@@ -127,10 +127,10 @@ main (int argc, char *argv [])
   ilist_t     *tmusiclist = NULL;
   ilistidx_t  tmiteridx;
   ilistidx_t  key;
-  char        dbfn [MAXPATHLEN];
-  char        infn [MAXPATHLEN];
-  char        seconddir [MAXPATHLEN];
-  char        tbuff [MAXPATHLEN];
+  char        dbfn [BDJ4_PATH_MAX];
+  char        infn [BDJ4_PATH_MAX];
+  char        seconddir [BDJ4_PATH_MAX];
+  char        tbuff [BDJ4_PATH_MAX];
   musicdb_t   *db;
   slist_t     *empty = NULL;
   loglevel_t  loglevel = LOG_IMPORTANT | LOG_INFO;
@@ -280,7 +280,7 @@ main (int argc, char *argv [])
   ilistStartIterator (tmusiclist, &tmiteridx);
   while ((key = ilistIterateKey (tmusiclist, &tmiteridx)) >= 0) {
     const char  *src;
-    char        from [MAXPATHLEN];
+    char        from [BDJ4_PATH_MAX];
     const char  *dest;
     char        *fn;
     slist_t     *tagdata = NULL;
@@ -468,9 +468,9 @@ updateData (ilist_t *tmusiclist, ilistidx_t key)
 static char *
 createFile (const char *src, const char *dest, bool keepmusic)
 {
-  char        dir [MAXPATHLEN];
-  char        from [MAXPATHLEN];
-  char        to [MAXPATHLEN];
+  char        dir [BDJ4_PATH_MAX];
+  char        from [BDJ4_PATH_MAX];
+  char        to [BDJ4_PATH_MAX];
   pathinfo_t  *pi;
 
   snprintf (from, sizeof (from), "%s/%s", tmusicorig, src);

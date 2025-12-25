@@ -48,7 +48,7 @@ int
 atiReplaceFile (const char *ffn, const char *outfn)
 {
   int     rc = -1;
-  char    tbuff [MAXPATHLEN];
+  char    tbuff [BDJ4_PATH_MAX];
   time_t  omodtime;
 
   omodtime = fileopModTime (ffn);

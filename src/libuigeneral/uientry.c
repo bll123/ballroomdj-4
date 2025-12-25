@@ -117,7 +117,7 @@ uiEntryValidateDir (uiwcont_t *uiwidget, const char *label, void *udata)
 {
   int             rc;
   const char      *dir;
-  char            tbuff [MAXPATHLEN];
+  char            tbuff [BDJ4_PATH_MAX];
   uientrybase_t   *ebase;
 
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-validate-dir")) {
@@ -146,7 +146,7 @@ uiEntryValidateFile (uiwcont_t *uiwidget, const char *label, void *udata)
 {
   int             rc;
   const char      *fn;
-  char            tbuff [MAXPATHLEN];
+  char            tbuff [BDJ4_PATH_MAX];
   uientrybase_t   *ebase;
 
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-validate-file")) {

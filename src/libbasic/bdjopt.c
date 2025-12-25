@@ -186,7 +186,7 @@ static void bdjoptCreateNewConfigs (void);
 void
 bdjoptInit (void)
 {
-  char          path [MAXPATHLEN];
+  char          path [BDJ4_PATH_MAX];
   const char    *pli;
   const char    *tstr;
 
@@ -368,7 +368,7 @@ bdjoptInit (void)
     if (! vlccheckdone &&
         (isLinux () || isWindows ()) &&
         (fileopFileExists (vlcpath) || fileopIsDirectory (vlcpath))) {
-      char    tbuff [MAXPATHLEN];
+      char    tbuff [BDJ4_PATH_MAX];
       char    *data;
 
       /* the path and environment variables are already set up */
@@ -625,7 +625,7 @@ bdjoptSetNumPerQueue (nlistidx_t idx, int64_t value, int musicq)
 void
 bdjoptDeleteProfile (void)
 {
-  char  tbuff [MAXPATHLEN];
+  char  tbuff [BDJ4_PATH_MAX];
 
   /* data/profileNN */
   pathbldMakePath (tbuff, sizeof (tbuff), "", "",
@@ -665,7 +665,7 @@ bdjoptSave (void)
 
   for (int i = 0; i < BDJ4_QUEUE_MAX; ++i) {
     int   offset;
-    char  path [MAXPATHLEN];
+    char  path [BDJ4_PATH_MAX];
 
     snprintf (path, sizeof (path), "%s.q%d%s",
         bdjopt->fname [OPTTYPE_QUEUE], i, BDJ4_CONFIG_EXT);
@@ -704,7 +704,7 @@ bdjoptDump (void)
 bool
 bdjoptProfileExists (void)
 {
-  char      tbuff [MAXPATHLEN];
+  char      tbuff [BDJ4_PATH_MAX];
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
@@ -714,7 +714,7 @@ bdjoptProfileExists (void)
 char *
 bdjoptGetProfileName (void)
 {
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   datafile_t  *df = NULL;
   nlist_t     *dflist = NULL;
   char        *pname = NULL;
@@ -982,7 +982,7 @@ bdjoptQueueIndex (nlistidx_t idx, int musicq)
 static void
 bdjoptCreateNewConfigs (void)
 {
-  char      path [MAXPATHLEN];
+  char      path [BDJ4_PATH_MAX];
 
   if (bdjopt == NULL) {
     return;
@@ -1001,8 +1001,8 @@ bdjoptCreateNewConfigs (void)
 
   /* queue */
   for (int i = 0; i < BDJ4_QUEUE_MAX; ++i) {
-    char  fpath [MAXPATHLEN];
-    char  tpath [MAXPATHLEN];
+    char  fpath [BDJ4_PATH_MAX];
+    char  tpath [BDJ4_PATH_MAX];
 
     sysvarsSetNum (SVL_PROFILE_IDX, 0);
     pathbldMakePath (path, sizeof (path),

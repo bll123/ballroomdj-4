@@ -99,11 +99,11 @@ typedef struct {
   altinststate_t  instState;
   altinststate_t  lastInstState;            // debugging
   callback_t      *callbacks [ALT_CB_MAX];
-  char            oldversion [MAXPATHLEN];
+  char            oldversion [BDJ4_PATH_MAX];
   char            *basedir;
   char            *target;
-  char            datatopdir [MAXPATHLEN];
-  char            rundir [MAXPATHLEN];      // installation dir with macospfx
+  char            datatopdir [BDJ4_PATH_MAX];
+  char            rundir [BDJ4_PATH_MAX];      // installation dir with macospfx
   const char      *launchname;
   const char      *macospfx;
   char            *maindir;
@@ -171,7 +171,7 @@ int
 main (int argc, char *argv[])
 {
   altinst_t     altinst;
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
   FILE          *fh;
   uint32_t      flags;
   const char    *tmp;
@@ -256,7 +256,7 @@ main (int argc, char *argv[])
     /* from the command line */
     altinstSetTargetDir (&altinst, tmp);
   } else {
-    char    tfn [MAXPATHLEN];
+    char    tfn [BDJ4_PATH_MAX];
 
     altinstBuildTarget (&altinst, tbuff, sizeof (tbuff), altinst.name);
 
@@ -351,7 +351,7 @@ altinstBuildUI (altinst_t *altinst)
   uiwcont_t     *hbox;
   uiwcont_t     *uiwidgetp;
   char          tbuff [100];
-  char          imgbuff [MAXPATHLEN];
+  char          imgbuff [BDJ4_PATH_MAX];
   uiutilsaccent_t accent;
 
   stpecpy (imgbuff, imgbuff + sizeof (imgbuff), "img/bdj4_icon_inst.png");
@@ -414,7 +414,7 @@ altinstBuildUI (altinst_t *altinst)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiEntryInit (80, MAXPATHLEN);
+  uiwidgetp = uiEntryInit (80, BDJ4_PATH_MAX);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
@@ -622,7 +622,7 @@ altinstValidateTarget (uiwcont_t *entry, const char *label, void *udata)
 {
   altinst_t     *altinst = udata;
   const char    *dir;
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
   int           rc = UIENTRY_ERROR;
 
   if (! altinst->guienabled) {
@@ -651,7 +651,7 @@ altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
   int         rc = UIENTRY_ERROR;
   bool        exists = false;
   bool        found = false;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
 
   if (fileopIsDirectory (dir)) {
     exists = true;
@@ -678,7 +678,7 @@ altinstValidateProcessTarget (altinst_t *altinst, const char *dir)
     }
   } else {
     pathinfo_t    *pi;
-    char          tmp [MAXPATHLEN];
+    char          tmp [BDJ4_PATH_MAX];
 
     exists = false;
     found = false;
@@ -728,7 +728,7 @@ altinstValidateName (uiwcont_t *entry, const char *label, void *udata)
 {
   altinst_t     *altinst = udata;
   const char    *name;
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
   int           rc = UIENTRY_ERROR;
   int           valflags;
   bool          val;
@@ -785,7 +785,7 @@ altinstValidateName (uiwcont_t *entry, const char *label, void *udata)
 static void
 altinstTargetFeedbackMsg (altinst_t *altinst)
 {
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
 
   if (! altinst->guienabled) {
     return;
@@ -836,7 +836,7 @@ altinstTargetDirDialog (void *udata)
       uiEntryGetValue (altinst->wcont [ALT_W_TARGET]), NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
-    char        tbuff [MAXPATHLEN];
+    char        tbuff [BDJ4_PATH_MAX];
 
     stpecpy (tbuff, tbuff + sizeof (tbuff), fn);
     instutilAppendNameToTarget (tbuff, sizeof (tbuff), NULL, false);
@@ -912,7 +912,7 @@ altinstSaveTargetDir (altinst_t *altinst)
 static void
 altinstMakeTarget (altinst_t *altinst)
 {
-  char            tbuff [MAXPATHLEN];
+  char            tbuff [BDJ4_PATH_MAX];
   sysversinfo_t   *versinfo;
 
   snprintf (altinst->rundir, sizeof (altinst->rundir), "%s%s",
@@ -990,9 +990,9 @@ altinstCopyTemplates (altinst_t *altinst)
 static void
 altinstSetup (altinst_t *altinst)
 {
-  char    buff [MAXPATHLEN];
-  char    tbuff [MAXPATHLEN];
-  char    tfn [MAXPATHLEN];
+  char    buff [BDJ4_PATH_MAX];
+  char    tbuff [BDJ4_PATH_MAX];
+  char    tfn [BDJ4_PATH_MAX];
   FILE    *fh;
   char    str [40];
   int     altcount = 1;
@@ -1139,7 +1139,7 @@ static void
 altinstFinalize (altinst_t *altinst)
 {
   uint32_t  baseport;
-  char      tbuff [MAXPATHLEN];
+  char      tbuff [BDJ4_PATH_MAX];
   FILE      *fh;
 
   if (osChangeDir (altinst->datatopdir) < 0) {
@@ -1169,7 +1169,7 @@ altinstFinalize (altinst_t *altinst)
       altinstLoadBdjOpt (altinst);
     }
     if (altinst->bdjoptloaded) {
-      char  tbuff [MAXPATHLEN];
+      char  tbuff [BDJ4_PATH_MAX];
 
       instutilGetMusicDir (tbuff, sizeof (tbuff));
       bdjoptSetStr (OPT_M_DIR_MUSIC, tbuff);
@@ -1200,7 +1200,7 @@ altinstFinalize (altinst_t *altinst)
 static void
 altinstUpdateProcessInit (altinst_t *altinst)
 {
-  char  buff [MAXPATHLEN];
+  char  buff [BDJ4_PATH_MAX];
 
   if (osChangeDir (altinst->datatopdir) < 0) {
     altinstFailWorkingDir (altinst, altinst->datatopdir, "upi");
@@ -1216,7 +1216,7 @@ altinstUpdateProcessInit (altinst_t *altinst)
 static void
 altinstUpdateProcess (altinst_t *altinst)
 {
-  char  tbuff [MAXPATHLEN];
+  char  tbuff [BDJ4_PATH_MAX];
   int   targc = 0;
   const char  *targv [10];
 
@@ -1311,7 +1311,7 @@ altinstSetTargetDir (altinst_t *altinst, const char *fn)
 static void
 altinstLoadBdjOpt (altinst_t *altinst)
 {
-  char        cwd [MAXPATHLEN];
+  char        cwd [BDJ4_PATH_MAX];
 
   if (altinst->bdjoptloaded) {
     bdjoptCleanup ();
@@ -1350,7 +1350,7 @@ altinstSigHandler (int sig)
 static void
 altinstSetTargetEntry (altinst_t *altinst, const char *fn)
 {
-  char    tbuff [MAXPATHLEN];
+  char    tbuff [BDJ4_PATH_MAX];
 
   stpecpy (tbuff, tbuff + sizeof (tbuff), fn);
   pathDisplayPath (tbuff, sizeof (tbuff));

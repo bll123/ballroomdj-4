@@ -39,8 +39,8 @@ orgoptAlloc (void)
   slistidx_t    dfiteridx;
   slist_t       *list;
   const char    *value;
-  char          dispstr [MAXPATHLEN];
-  char          path [MAXPATHLEN];
+  char          dispstr [BDJ4_PATH_MAX];
+  char          path [BDJ4_PATH_MAX];
   char          *dp;
   char          *dend = dispstr + sizeof (dispstr);
 

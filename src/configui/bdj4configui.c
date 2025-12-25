@@ -90,7 +90,7 @@ main (int argc, char *argv[])
   nlist_t         *llist = NULL;
   nlistidx_t      iteridx;
   configui_t      confui;
-  char            tbuff [MAXPATHLEN];
+  char            tbuff [BDJ4_PATH_MAX];
   uisetup_t       uisetup;
 
 #if BDJ4_MEM_DEBUG
@@ -432,8 +432,8 @@ confuiBuildUI (configui_t *confui)
 {
   uiwcont_t     *hbox;
   uiwcont_t     *uiwidgetp;
-  char          imgbuff [MAXPATHLEN];
-  char          tbuff [MAXPATHLEN];
+  char          imgbuff [BDJ4_PATH_MAX];
+  char          tbuff [BDJ4_PATH_MAX];
   int           x, y;
   uiutilsaccent_t accent;
 

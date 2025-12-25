@@ -28,19 +28,22 @@ osGetEnv (const char *name, char *buff, size_t sz)
 {
 #if _lib__wgetenv_s
   wchar_t     *wname;
-  wchar_t     wenv [MAXPATHLEN];
+  wchar_t     *wenv;
   char        *tenv;
   size_t      rv;
 
+  wenv = mdmalloc (sz);
+
   *buff = '\0';
   wname = osToWideChar (name);
-  _wgetenv_s (&rv, wenv, sizeof (wenv), wname);
+  _wgetenv_s (&rv, wenv, sz, wname);
   mdfree (wname);
   if (rv > 0) {
     tenv = osFromWideChar (wenv);
     stpecpy (buff, buff + sz, tenv);
     mdfree (tenv);
   }
+  mdfree (wenv);
 #else
   char    *tptr;
 

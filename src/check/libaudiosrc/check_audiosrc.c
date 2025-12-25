@@ -152,7 +152,7 @@ END_TEST
 
 START_TEST(audiosrc_fullpath)
 {
-  char  tbuff [MAXPATHLEN];
+  char  tbuff [BDJ4_PATH_MAX];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- audiosrc_fullpath");
   mdebugSubTag ("audiosrc_fullpath");
@@ -224,7 +224,7 @@ END_TEST
 START_TEST(audiosrc_prep)
 {
   bool    val;
-  char    tn [MAXPATHLEN];
+  char    tn [BDJ4_PATH_MAX];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- audiosrc_prep");
   mdebugSubTag ("audiosrc_prep");
@@ -285,7 +285,7 @@ END_TEST
 START_TEST(audiosrc_remove)
 {
   bool        val;
-  char        tmp [MAXPATHLEN];
+  char        tmp [BDJ4_PATH_MAX];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- audiosrc_remove");
   mdebugSubTag ("audiosrc_remove");

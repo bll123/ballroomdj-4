@@ -310,7 +310,7 @@ main (int argc, char *argv[])
   startui_t   starter;
   uint16_t    listenPort;
   uint32_t    flags;
-  char        uri [MAXPATHLEN];
+  char        uri [BDJ4_PATH_MAX];
   uisetup_t   uisetup;
 
 #if BDJ4_MEM_DEBUG
@@ -476,7 +476,7 @@ static bool
 starterInitDataCallback (void *udata, programstate_t programState)
 {
   startui_t   *starter = udata;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   asconf_t    *asconf;
   ilistidx_t  iteridx;
   ilistidx_t  key;
@@ -616,8 +616,8 @@ starterBuildUI (startui_t  *starter)
   uiwcont_t   *bvbox;
   uiwcont_t   *hbox;
   uiwcont_t   *szgrp;
-  char        imgbuff [MAXPATHLEN];
-  char        tbuff [MAXPATHLEN];
+  char        imgbuff [BDJ4_PATH_MAX];
+  char        tbuff [BDJ4_PATH_MAX];
   int         dispidx;
   uiutilsaccent_t accent;
 
@@ -822,7 +822,7 @@ starterMainLoop (void *tstarter)
   startui_t   *starter = tstarter;
   int         stop = SOCKH_CONTINUE;
   /* support message handling */
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
 
   uiUIProcessEvents ();
 
@@ -962,7 +962,7 @@ starterMainLoop (void *tstarter)
       break;
     }
     case START_STATE_SUPPORT_SEND_INFO: {
-      char        prog [MAXPATHLEN];
+      char        prog [BDJ4_PATH_MAX];
       char        arg [40];
       const char  *targv [4];
       int         targc = 0;
@@ -1427,7 +1427,7 @@ starterProcessSupport (void *udata)
   uiwcont_t     *uiwidgetp = NULL;
   uiwcont_t     *uidialog = NULL;
   uiwcont_t     *szgrp = NULL;
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
   const char    *builddate;
   const char    *devmode;
   uiutilsaccent_t accent;
@@ -1517,7 +1517,7 @@ starterProcessSupport (void *udata)
       }
     } else {
       char        *p;
-      char        uri [MAXPATHLEN];
+      char        uri [BDJ4_PATH_MAX];
       char        *nuri;
       bdjregex_t  *vrx;
 
@@ -2198,8 +2198,8 @@ starterSendFiles (startui_t *starter)
 {
   const char  *fn;
   const char  *origfn;
-  char        ifn [MAXPATHLEN];
-  char        tbuff [MAXPATHLEN];
+  char        ifn [BDJ4_PATH_MAX];
+  char        tbuff [BDJ4_PATH_MAX];
   char        *p;
   char        *end = ifn + sizeof (ifn);
 
@@ -2335,7 +2335,7 @@ starterSetWindowPosition (startui_t *starter)
 static void
 starterLoadOptions (startui_t *starter)
 {
-  char  tbuff [MAXPATHLEN];
+  char  tbuff [BDJ4_PATH_MAX];
 
   if (starter->optionsalloc) {
     nlistFree (starter->options);

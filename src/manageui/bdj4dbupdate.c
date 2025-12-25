@@ -430,7 +430,7 @@ dbupdateProcessing (void *udata)
   connProcessUnconnected (dbupdate->conn);
 
   if (dbupdate->state == DB_UPD_INIT) {
-    char  tbuff [MAXPATHLEN];
+    char  tbuff [BDJ4_PATH_MAX];
 
     if (dbupdate->rebuild) {
       dbupdate->cleandatabase = true;
@@ -522,7 +522,7 @@ dbupdateProcessing (void *udata)
 
     while ((fn = dbupdateIterate (dbupdate)) != NULL) {
       song_t      *song;
-      char        ffn [MAXPATHLEN];
+      char        ffn [BDJ4_PATH_MAX];
       const char  *tsongfn;     // the db entry filename
       const char  *relfn;       // the relative path name
 
@@ -717,8 +717,8 @@ dbupdateProcessing (void *udata)
   } /* send or process */
 
   if (dbupdate->state == DB_UPD_FINISH) {
-    char  tbuff [MAXPATHLEN];
-    char  dbfname [MAXPATHLEN];
+    char  tbuff [BDJ4_PATH_MAX];
+    char  dbfname [BDJ4_PATH_MAX];
 
     pathbldMakePath (tbuff, sizeof (tbuff),
         MUSICDB_TMP_FNAME, MUSICDB_EXT, PATHBLD_MP_DREL_DATA);

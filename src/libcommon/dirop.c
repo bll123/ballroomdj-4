@@ -50,7 +50,7 @@ diropDeleteDir (const char *dirname, int flags)
 {
   dirhandle_t   *dh;
   char          *fname;
-  char          temp [MAXPATHLEN];
+  char          temp [BDJ4_PATH_MAX];
 
   if (! fileopIsDirectory (dirname)) {
     return false;
@@ -111,10 +111,10 @@ diropDeleteDir (const char *dirname, int flags)
 static int
 diropMakeRecursiveDir (const char *dirname)
 {
-  char    tbuff [MAXPATHLEN];
+  char    tbuff [BDJ4_PATH_MAX];
   char    *p = NULL;
 
-  stpecpy (tbuff, tbuff + MAXPATHLEN, dirname);
+  stpecpy (tbuff, tbuff + BDJ4_PATH_MAX, dirname);
   stringTrimChar (tbuff, '/');
 
   for (p = tbuff + 1; *p; p++) {

@@ -139,7 +139,7 @@ main (int argc, char *argv [])
   }
 
   {
-    char tcwd [MAXPATHLEN];
+    char tcwd [BDJ4_PATH_MAX];
 
     osGetCurrentDir (tcwd, sizeof (tcwd));
     fprintf (stderr, "cwd: %s\n", tcwd);

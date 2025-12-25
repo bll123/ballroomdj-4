@@ -3,15 +3,22 @@
  */
 #pragma once
 
+#include <limits.h>
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
 
-#if ! defined (MAXPATHLEN)
-enum {
-  MAXPATHLEN = 1024,
-};
+#define TEMP_PATH_MAX PATH_MAX
+/* windows defines path_max as 260. maxpathlen as 260. */
+/* macos defines path_max as 1024. this seems short */
+#if PATH_MAX <= 1024
+# undef TEMP_PATH_MAX
+# define TEMP_PATH_MAX 4096
 #endif
+enum {
+  BDJ4_PATH_MAX = TEMP_PATH_MAX,
+};
 
 enum {
   /* used for queueing playlists */

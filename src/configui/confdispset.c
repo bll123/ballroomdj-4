@@ -26,11 +26,11 @@ static bool confuiDispSettingChg (void *udata);
 void
 confuiInitDispSettings (confuigui_t *gui)
 {
-  char  tbuffse [DISP_SEL_SONGEDIT_MAX][MAXPATHLEN];
+  char  tbuffse [DISP_SEL_SONGEDIT_MAX][BDJ4_PATH_MAX];
 
   for (int i = 0; i < DISP_SEL_SONGEDIT_MAX; ++i) {
     /* CONTEXT: configuration: display settings for: song editor column N */
-    snprintf (tbuffse [i], MAXPATHLEN, _("Song Editor - Column %d"), i + 1);
+    snprintf (tbuffse [i], BDJ4_PATH_MAX, _("Song Editor - Column %d"), i + 1);
   }
   /* as this list is set up manually, it will ignore */
   /* the disp-sel-max-player marker */

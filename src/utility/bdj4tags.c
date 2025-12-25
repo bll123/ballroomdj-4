@@ -46,8 +46,8 @@ main (int argc, char *argv [])
   bool        cleantags = false;
   bool        copy = false;
   int         rc = AUDIOTAG_WRITE_OK;
-  char        infn [MAXPATHLEN];
-  char        origcwd [MAXPATHLEN];
+  char        infn [BDJ4_PATH_MAX];
+  char        origcwd [BDJ4_PATH_MAX];
   bdj4arg_t   *bdj4arg;
   const char  *targ;
 

@@ -31,7 +31,7 @@ bool
 manageCreatePlaylistCopy (uiwcont_t *errorMsg,
     const char *oname, const char *newname)
 {
-  char  tbuff [MAXPATHLEN];
+  char  tbuff [BDJ4_PATH_MAX];
   bool  rc = true;
 
   if (playlistExists (newname)) {
@@ -63,7 +63,7 @@ manageDeletePlaylist (musicdb_t *musicdb, const char *name)
 void
 manageDeleteStatus (uiwcont_t *statusMsg, const char *name)
 {
-  char  tbuff [MAXPATHLEN];
+  char  tbuff [BDJ4_PATH_MAX];
 
   /* CONTEXT: manageui: status message when deleting a song list/playlist/sequence */
   snprintf (tbuff, sizeof (tbuff), _("%s deleted."), name);

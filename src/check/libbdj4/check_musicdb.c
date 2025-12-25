@@ -680,8 +680,8 @@ START_TEST(musicdb_rename)
   dbidx_t   tdbidx;
   dbidx_t   curridx;
   dbidx_t   iteridx;
-  char      ouri [MAXPATHLEN];
-  char      nuri [MAXPATHLEN];
+  char      ouri [BDJ4_PATH_MAX];
+  char      nuri [BDJ4_PATH_MAX];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_rename");
   mdebugSubTag ("musicdb_rename");

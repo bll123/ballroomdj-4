@@ -37,7 +37,7 @@ jspfExport (musicdb_t *musicdb, nlist_t *list,
   dbidx_t     dbidx;
   song_t      *song;
   const char  *str;
-  char        ffn [MAXPATHLEN];
+  char        ffn [BDJ4_PATH_MAX];
   bool        first = true;
 
   fh = fileopOpen (fname, "w");
@@ -118,7 +118,7 @@ jspfImport (musicdb_t *musicdb, const char *fname)
   nlist_t       *list = NULL;
   int           trkcount;
   const char    *val;
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
   song_t        *song;
   dbidx_t       dbidx;
 

@@ -26,7 +26,7 @@ static int32_t globalcount = 0;
 void
 audiosrcutilMakeTempName (const char *ffn, char *tempnm, size_t maxlen)
 {
-  char        tnm [MAXPATHLEN];
+  char        tnm [BDJ4_PATH_MAX];
   size_t      idx;
   pathinfo_t  *pi;
 

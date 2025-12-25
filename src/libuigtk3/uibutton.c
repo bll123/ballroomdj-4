@@ -55,7 +55,7 @@ uiCreateButton (const char *ident, callback_t *uicb, const char *title,
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   if (imagenm != NULL) {
     GtkWidget   *image;
-    char        tbuff [MAXPATHLEN];
+    char        tbuff [BDJ4_PATH_MAX];
 
     gtk_button_set_label (GTK_BUTTON (widget), "");
     /* relative path */

@@ -2143,7 +2143,7 @@ mainMusicQueuePlay (maindata_t *mainData)
     song = dbGetByIdx (mainData->musicdb, dbidx);
 
     if (song != NULL) {
-      char  tmp [1024];
+      char  tmp [BDJ4_PATH_MAX];
 
       flags = musicqGetFlags (mainData->musicQueue, mainData->musicqPlayIdx, 0);
       uniqueidx = musicqGetUniqueIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);

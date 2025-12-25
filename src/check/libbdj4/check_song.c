@@ -377,7 +377,7 @@ START_TEST(song_audio_file)
   song_t      *song = NULL;
   char        *data;
   FILE        *fh;
-  char        origmdir [MAXPATHLEN];
+  char        origmdir [BDJ4_PATH_MAX];
   char        tbuff [200];
   bool        rc;
 

@@ -91,7 +91,7 @@ END_TEST
 
 START_TEST(msgparse_songsel_data)
 {
-  char            tbuff [MAXPATHLEN];
+  char            tbuff [BDJ4_PATH_MAX];
   mp_songselect_t *mpss = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- msgparse_songsel_data");

@@ -122,7 +122,7 @@ atioggWriteOggFile (const char *ffn, void *tnewvc, int filetype)
 {
   struct vorbis_comment   *newvc = tnewvc;
   FILE              *ifh  = NULL;
-  char              outfn [MAXPATHLEN];
+  char              outfn [BDJ4_PATH_MAX];
   int               rc = -1;
   FILE              *ofh = NULL;
   int               state;

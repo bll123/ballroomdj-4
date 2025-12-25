@@ -30,7 +30,7 @@
 
 START_TEST(path_disppath)
 {
-  char    to [MAXPATHLEN];
+  char    to [BDJ4_PATH_MAX];
   int     owin;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- path_disppath");

@@ -484,7 +484,7 @@ sysvarsInit (const char *argv0, int flags)
         *sysvars [SV_BDJ4_DIR_DATATOP]= '\0';
       } else {
         if (isMacOS ()) {
-          char        tmp [MAXPATHLEN];
+          char        tmp [BDJ4_PATH_MAX];
           ssize_t     offset;
           const char  *tp;
           char        *bend = buff + SV_MAX_SZ;
@@ -841,7 +841,7 @@ sysvarsCheckPaths (const char *otherpaths)
   char    *end;
   char    *tsep;
   char    *tokstr;
-  char    tbuff [MAXPATHLEN];
+  char    tbuff [BDJ4_PATH_MAX];
   char    tpath [16384];
 
   sysvarsSetStr (SV_PATH_ACRCLOUD, "");
@@ -926,8 +926,8 @@ sysvarsCheckPaths (const char *otherpaths)
 void
 sysvarsCheckVLCPath (void)
 {
-  char        tbuff [MAXPATHLEN];
-  char        lbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
+  char        lbuff [BDJ4_PATH_MAX];
   const char  *libnm = NULL;
 
   *tbuff = '\0';
@@ -1137,7 +1137,7 @@ static void
 checkForFile (char *path, int idx, ...)
 {
   va_list   valist;
-  char      buff [MAXPATHLEN];
+  char      buff [BDJ4_PATH_MAX];
   char      *fn;
   bool      found = false;
 
@@ -1162,8 +1162,8 @@ svGetLinuxOSInfo (char *fn)
   static char *reltag = "DISTRIB_RELEASE=";
   static char *verstag = "VERSION_ID=";
   FILE        *fh;
-  char        tbuff [MAXPATHLEN];
-  char        buff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
+  char        buff [BDJ4_PATH_MAX];
   bool        rc = false;
   bool        haveprettyname = false;
   bool        havevers = false;
@@ -1235,12 +1235,11 @@ svGetLinuxDefaultTheme (void)
 static void
 svGetSystemFont (void)
 {
-  char    *tptr;
+  char    tptr [1024];
 
-  tptr = osGetSystemFont (sysvars [SV_PATH_GSETTINGS]);
-  if (tptr != NULL) {
+  osGetSystemFont (sysvars [SV_PATH_GSETTINGS], tptr, sizeof (tptr));
+  if (*tptr) {
     sysvarsSetStr (SV_FONT_DEFAULT, tptr);
-    mdfree (tptr);
   }
 }
 

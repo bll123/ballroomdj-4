@@ -256,7 +256,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiEntryInit (50, MAXPATHLEN);
+  uiwidgetp = uiEntryInit (50, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
@@ -290,7 +290,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiEntryInit (40, MAXPATHLEN);
+  uiwidgetp = uiEntryInit (40, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
@@ -307,7 +307,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiEntryInit (40, MAXPATHLEN);
+  uiwidgetp = uiEntryInit (40, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
@@ -342,7 +342,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiEntryInit (40, MAXPATHLEN);
+  uiwidgetp = uiEntryInit (40, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
@@ -469,7 +469,7 @@ static void
 uiextreqProcessAudioFile (uiextreq_t *uiextreq)
 {
   const char  *ffn;
-  char        wfn [MAXPATHLEN];
+  char        wfn [BDJ4_PATH_MAX];
 
   if (uiextreq == NULL) {
     return;
@@ -537,7 +537,7 @@ uiextreqValidateAudioFile (uiwcont_t *entry, const char *label, void *udata)
   if (rc == UIENTRY_OK) {
     pathinfo_t    *pi;
     const char    *fn;
-    char          tmp [MAXPATHLEN];
+    char          tmp [BDJ4_PATH_MAX];
 
     fn = uiEntryGetValue (uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE]);
     if (*fn) {
@@ -596,7 +596,7 @@ static int32_t
 uiextreqDragDropCallback (void *udata, const char *uri)
 {
   uiextreq_t  *uiextreq = udata;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
 
   if (uiextreq == NULL || uri == NULL || ! *uri) {
     return UICB_STOP;

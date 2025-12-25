@@ -531,7 +531,7 @@ dbIterate (musicdb_t *musicdb, dbidx_t *dbidx, slistidx_t *iteridx)
 void
 dbBackup (void)
 {
-  char  dbfname [MAXPATHLEN];
+  char  dbfname [BDJ4_PATH_MAX];
 
   pathbldMakePath (dbfname, sizeof (dbfname),
       MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DREL_DATA);

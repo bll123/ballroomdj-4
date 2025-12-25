@@ -64,9 +64,9 @@ enum {
 
 START_TEST(pathbld_chk)
 {
-  char    tbuff [MAXPATHLEN];
-  char    f [MAXPATHLEN];
-  char    cwd [MAXPATHLEN];
+  char    tbuff [BDJ4_PATH_MAX];
+  char    f [BDJ4_PATH_MAX];
+  char    cwd [BDJ4_PATH_MAX];
   char    *p = f;
   char    *end = f + sizeof (f);
 

@@ -28,8 +28,8 @@
 
 START_TEST(osdirutil_chk)
 {
-  char    buff [MAXPATHLEN];
-  char    nbuff [MAXPATHLEN];
+  char    buff [BDJ4_PATH_MAX];
+  char    nbuff [BDJ4_PATH_MAX];
 
   *buff = '\0';
   osGetCurrentDir (buff, sizeof (buff));

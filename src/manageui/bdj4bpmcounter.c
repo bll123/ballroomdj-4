@@ -119,7 +119,7 @@ main (int argc, char *argv[])
   int             status = 0;
   uint16_t        listenPort;
   bpmcounter_t    bpmcounter;
-  char            tbuff [MAXPATHLEN];
+  char            tbuff [BDJ4_PATH_MAX];
   uint32_t        flags;
   uisetup_t       uisetup;
 
@@ -326,7 +326,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiwcont_t   *hbox;
   uiwcont_t   *szgrp;
   uiwcont_t   *szgrpDisp;
-  char        imgbuff [MAXPATHLEN];
+  char        imgbuff [BDJ4_PATH_MAX];
   int         x, y;
   uiutilsaccent_t accent;
 

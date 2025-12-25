@@ -69,35 +69,32 @@ END_TEST
 
 START_TEST(osutils_getsysfont)
 {
-  char  *tptr = NULL;
+  char  tptr [1024];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osutils_getsysfont");
   mdebugSubTag ("osutils_getsysfont");
-  tptr = osGetSystemFont (sysvarsGetStr (SV_PATH_GSETTINGS));
+  osGetSystemFont (sysvarsGetStr (SV_PATH_GSETTINGS), tptr, sizeof (tptr));
   if (isLinux ()) {
-    ck_assert_ptr_nonnull (tptr);
     ck_assert_str_ne (tptr, "");
-    mdfree (tptr);
   } else {
-    ck_assert_ptr_null (tptr);
+    ck_assert_str_eq (tptr, "");
   }
 }
 END_TEST
 
 START_TEST(osutils_getregistry)
 {
-  char  *tptr = NULL;
+  char  tptr [1024];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osutils_getregistry");
   mdebugSubTag ("osutils_getregistry");
-  tptr = osRegistryGet (
+  osRegistryGet (
       "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders",
-      "My Music");
+      "My Music", tptr, sizeof (tptr));
   if (isWindows ()) {
-    ck_assert_ptr_nonnull (tptr);
     ck_assert_str_ne (tptr, "");
   } else {
-    ck_assert_ptr_null (tptr);
+    ck_assert_str_eq (tptr, "");
   }
 }
 END_TEST

@@ -72,7 +72,7 @@ void
 supportSendFile (support_t *support, const char *ident,
     const char *origfn, int compflag)
 {
-  char        fn [MAXPATHLEN];
+  char        fn [BDJ4_PATH_MAX];
   char        uri [1024];
   const char  *query [10];
   int         qc = 0;

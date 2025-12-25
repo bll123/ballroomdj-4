@@ -68,7 +68,7 @@ static void    bdjvarsSetInstanceName (void);
 void
 bdjvarsInit (void)
 {
-  char    tbuff [MAXPATHLEN];
+  char    tbuff [BDJ4_PATH_MAX];
 
   if (atomic_flag_test_and_set (&initialized)) {
     return;
@@ -203,7 +203,7 @@ bdjvarsSetInstanceName (void)
 {
   int   profidx = 0;
   int   altidx = 0;
-  char  tbuff [MAXPATHLEN];
+  char  tbuff [BDJ4_PATH_MAX];
 
   snprintf (tbuff, sizeof (tbuff), "%s", BDJ4_NAME);
   altidx = sysvarsGetNum (SVL_ALTIDX);

@@ -131,15 +131,15 @@ typedef struct {
   char            *target;
   char            *hostname;
   char            *macospfx;
-  char            rundir [MAXPATHLEN];      // installation dir with macospfx
+  char            rundir [BDJ4_PATH_MAX];      // installation dir with macospfx
   char            name [100];
-  char            datatopdir [MAXPATHLEN];
-  char            currdir [MAXPATHLEN];
-  char            unpackdir [MAXPATHLEN];   // where the installer is unpacked
+  char            datatopdir [BDJ4_PATH_MAX];
+  char            currdir [BDJ4_PATH_MAX];
+  char            unpackdir [BDJ4_PATH_MAX];   // where the installer is unpacked
   char            vlcversion [80];
-  char            dlfname [MAXPATHLEN];
-  char            oldversion [MAXPATHLEN];
-  char            bdj3version [MAXPATHLEN];
+  char            dlfname [BDJ4_PATH_MAX];
+  char            oldversion [BDJ4_PATH_MAX];
+  char            bdj3version [BDJ4_PATH_MAX];
   loglevel_t      loglevel;
   webclient_t     *webclient;
   const char      *webresponse;
@@ -249,8 +249,8 @@ int
 main (int argc, char *argv[])
 {
   installer_t   installer;
-  char          tbuff [MAXPATHLEN];
-  char          buff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
+  char          buff [BDJ4_PATH_MAX];
   FILE          *fh;
   int           c = 0;
   int           option_index = 0;
@@ -587,7 +587,7 @@ installerBuildUI (installer_t *installer)
   uiwcont_t     *uiwidgetp;
   uiwcont_t     *szgrp;
   char          tbuff [100];
-  char          imgbuff [MAXPATHLEN];
+  char          imgbuff [BDJ4_PATH_MAX];
 
   szgrp = uiCreateSizeGroupHoriz ();
 
@@ -636,7 +636,7 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiEntryInit (60, MAXPATHLEN);
+  uiwidgetp = uiEntryInit (60, BDJ4_PATH_MAX);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
@@ -716,7 +716,7 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiEntryInit (60, MAXPATHLEN);
+  uiwidgetp = uiEntryInit (60, BDJ4_PATH_MAX);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
@@ -1045,7 +1045,7 @@ installerValidateTarget (uiwcont_t *entry, const char *label, void *udata)
 {
   installer_t   *installer = udata;
   const char    *dir;
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
   int           rc = UIENTRY_ERROR;
 
   if (! installer->guienabled) {
@@ -1083,8 +1083,8 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
   int         rc = UIENTRY_ERROR;
   bool        exists = false;
   bool        found = false;
-  char        tbuff [MAXPATHLEN];
-  char        tdir [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
+  char        tdir [BDJ4_PATH_MAX];
   char        *p = tdir;
   char        *end = tdir + sizeof (tdir);
 
@@ -1120,7 +1120,7 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
     }
   } else {
     pathinfo_t    *pi;
-    char          tmp [MAXPATHLEN];
+    char          tmp [BDJ4_PATH_MAX];
 
     exists = false;
     found = false;
@@ -1168,7 +1168,7 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
 static void
 installerTargetFeedbackMsg (installer_t *installer)
 {
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
 
   /* one of newinstall or updateinstall must be set */
   /* reinstall matches the re-install checkbox */
@@ -1243,7 +1243,7 @@ installerValidateBDJ3Loc (uiwcont_t *entry, const char *label, void *udata)
 {
   installer_t   *installer = udata;
   const char    *dir;
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
   int           rc = UIENTRY_ERROR;
 
   if (! installer->guienabled) {
@@ -1333,7 +1333,7 @@ installerTargetDirDialog (void *udata)
       NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
-    char        tbuff [MAXPATHLEN];
+    char        tbuff [BDJ4_PATH_MAX];
 
     stpecpy (tbuff, tbuff + sizeof (tbuff), fn);
     /* after the user selected a folder via a button, */
@@ -1353,7 +1353,7 @@ installerTargetDirDialog (void *udata)
 static void
 installerSetBDJ3LocEntry (installer_t *installer, const char *bdj3loc)
 {
-  char    tbuff [MAXPATHLEN];
+  char    tbuff [BDJ4_PATH_MAX];
 
   stpecpy (tbuff, tbuff + sizeof (tbuff), bdj3loc);
   pathDisplayPath (tbuff, sizeof (tbuff));
@@ -1473,7 +1473,7 @@ static void
 installerVerifyInstall (installer_t *installer)
 {
   char        tmp [40];
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   const char  *targv [3];
 
   if (isWindows ()) {
@@ -1580,7 +1580,7 @@ installerSaveTargetDir (installer_t *installer)
 static void
 installerMakeTarget (installer_t *installer)
 {
-  char            tbuff [MAXPATHLEN];
+  char            tbuff [BDJ4_PATH_MAX];
   sysversinfo_t   *versinfo;
 
   diropMakeDir (installer->target);
@@ -1616,8 +1616,8 @@ installerCopyStart (installer_t *installer)
 static void
 installerCopyFiles (installer_t *installer)
 {
-  char      tbuff [MAXPATHLEN];
-  char      tmp [MAXPATHLEN];
+  char      tbuff [BDJ4_PATH_MAX];
+  char      tmp [BDJ4_PATH_MAX];
 
   /* due to various reasons, symlinks were not being preserved on macos */
   /* during the installation process. */
@@ -1718,8 +1718,8 @@ installerCopyTemplatesInit (installer_t *installer)
 static void
 installerCopyTemplates (installer_t *installer)
 {
-  char    from [MAXPATHLEN];
-  char    to [MAXPATHLEN];
+  char    from [BDJ4_PATH_MAX];
+  char    to [BDJ4_PATH_MAX];
 
   if (osChangeDir (installer->datatopdir) < 0) {
     installerFailWorkingDir (installer, installer->datatopdir, "copytemplates");
@@ -1756,7 +1756,7 @@ installerCopyTemplates (installer_t *installer)
 static void
 installerConvertStart (installer_t *installer)
 {
-  char    tbuff [MAXPATHLEN];
+  char    tbuff [BDJ4_PATH_MAX];
   char    *locs [15];
   int     locidx = 0;
   char    *data;
@@ -1921,8 +1921,8 @@ static void
 installerConvert (installer_t *installer)
 {
   const char  *fn;
-  char        buffa [MAXPATHLEN];
-  char        buffb [MAXPATHLEN];
+  char        buffa [BDJ4_PATH_MAX];
+  char        buffb [BDJ4_PATH_MAX];
   const char  *targv [15];
 
   fn = slistIterateKey (installer->convlist, &installer->convidx);
@@ -1979,7 +1979,7 @@ installerCreateLauncher (installer_t *installer)
 
   if (isMacOS ()) {
 #if _lib_symlink
-    char        buff [MAXPATHLEN];
+    char        buff [BDJ4_PATH_MAX];
 
     /* on macos, the startup program must be a gui program, otherwise */
     /* the dock icon is not correct */
@@ -2012,7 +2012,7 @@ installerWinStartup (installer_t *installer)
   }
 
   if (isWindows ()) {
-    char  tbuff [MAXPATHLEN];
+    char  tbuff [BDJ4_PATH_MAX];
 
     snprintf (tbuff, sizeof (tbuff), "%s/Start Menu/Programs/Startup/bdj4.bat",
         sysvarsGetStr (SV_HOME));
@@ -2038,7 +2038,7 @@ installerInstCleanTmp (installer_t *installer)
 static void
 installerSaveLocale (installer_t *installer)
 {
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   FILE        *fh;
 
   if (osChangeDir (installer->datatopdir) < 0) {
@@ -2060,7 +2060,7 @@ installerSaveLocale (installer_t *installer)
 static void
 installerVLCCheck (installer_t *installer)
 {
-  char    tbuff [MAXPATHLEN];
+  char    tbuff [BDJ4_PATH_MAX];
 
   /* on linux, vlc is installed via other methods */
   /* also on linux, gstreamer can be used even if there is no vlc */
@@ -2093,8 +2093,8 @@ installerVLCCheck (installer_t *installer)
 static void
 installerVLCDownload (installer_t *installer)
 {
-  char  url [MAXPATHLEN];
-  char  tbuff [MAXPATHLEN];
+  char  url [BDJ4_PATH_MAX];
+  char  tbuff [BDJ4_PATH_MAX];
   int   wrc;
 
   *url = '\0';
@@ -2150,7 +2150,7 @@ installerVLCDownload (installer_t *installer)
 static void
 installerVLCInstall (installer_t *installer)
 {
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   int64_t     count;
   const char  *tmp;
 
@@ -2197,7 +2197,7 @@ installerVLCInstall (installer_t *installer)
 static void
 installerFinalize (installer_t *installer)
 {
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
 
   uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], "");
 
@@ -2291,7 +2291,7 @@ installerFinalize (installer_t *installer)
 static void
 installerUpdateProcessInit (installer_t *installer)
 {
-  char  buff [MAXPATHLEN];
+  char  buff [BDJ4_PATH_MAX];
 
   installer->altidx = 1;
 
@@ -2303,7 +2303,7 @@ installerUpdateProcessInit (installer_t *installer)
   /* the updater must be run in the same locale as the installer */
   if (installer->localespecified) {
     FILE    *fh;
-    char    tbuff [MAXPATHLEN];
+    char    tbuff [BDJ4_PATH_MAX];
 
     stpecpy (tbuff, tbuff + sizeof (tbuff), "data/locale.txt");
     fh = fileopOpen (tbuff, "w");
@@ -2323,7 +2323,7 @@ installerUpdateProcessInit (installer_t *installer)
 static void
 installerUpdateProcess (installer_t *installer)
 {
-  char  tbuff [MAXPATHLEN];
+  char  tbuff [BDJ4_PATH_MAX];
   int   targc = 0;
   const char  *targv [10];
 
@@ -2349,9 +2349,9 @@ installerUpdateProcess (installer_t *installer)
 static void
 installerUpdateAltProcessInit (installer_t *installer)
 {
-  char  tfn [MAXPATHLEN];
+  char  tfn [BDJ4_PATH_MAX];
   FILE  *fh;
-  char  altdir [MAXPATHLEN];
+  char  altdir [BDJ4_PATH_MAX];
 
   if (installer->altidx >= BDJ4_MAX_ALT) {
     installer->instState = INST_REGISTER_INIT;
@@ -2396,7 +2396,7 @@ installerUpdateAltProcessInit (installer_t *installer)
   /* the updater must be run in the same locale as the installer */
   if (installer->localespecified) {
     FILE    *fh;
-    char    tbuff [MAXPATHLEN];
+    char    tbuff [BDJ4_PATH_MAX];
 
     stpecpy (tbuff, tbuff + sizeof (tbuff), "data/locale.txt");
     fh = fileopOpen (tbuff, "w");
@@ -2466,7 +2466,7 @@ installerCleanup (installer_t *installer)
   /* if installing read-only, there is no data-top-dir */
   /* if the installer was exited without installing, there is no rundir */
   if (osChangeDir (installer->rundir) < 0) {
-    char  tbuff [MAXPATHLEN];
+    char  tbuff [BDJ4_PATH_MAX];
 
     snprintf (tbuff, sizeof (tbuff), "%s/..", installer->unpackdir);
     if (osChangeDir (tbuff) < 0) {
@@ -2495,10 +2495,10 @@ installerCleanup (installer_t *installer)
   webclientClose (installer->webclient);
 
   if (installer->clean && fileopIsDirectory (installer->unpackdir)) {
-    char          buff [MAXPATHLEN];
+    char          buff [BDJ4_PATH_MAX];
 
     if (isWindows ()) {
-      char          ebuff [MAXPATHLEN];
+      char          ebuff [BDJ4_PATH_MAX];
       size_t        sz = 0;
       char          *fdata;
       char          *ndata;
@@ -2610,7 +2610,7 @@ installerVLCGetVersion (installer_t *installer)
   char      *p;
   char      *e;
   char      *platform;
-  char      tbuff [MAXPATHLEN];
+  char      tbuff [BDJ4_PATH_MAX];
   int       wrc;
 
   *installer->vlcversion = '\0';
@@ -2662,7 +2662,7 @@ installerVLCGetVersion (installer_t *installer)
 static void
 installerCheckPackages (installer_t *installer)
 {
-  char  tbuff [MAXPATHLEN];
+  char  tbuff [BDJ4_PATH_MAX];
   char  *tmp;
 
 
@@ -2741,7 +2741,7 @@ installerSetBDJ3LocDir (installer_t *installer, const char *fn)
 static void
 installerLoadBdjOpt (installer_t *installer)
 {
-  char        cwd [MAXPATHLEN];
+  char        cwd [BDJ4_PATH_MAX];
 
   if (installer->bdjoptloaded) {
     bdjoptCleanup ();

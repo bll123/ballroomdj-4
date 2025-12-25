@@ -106,8 +106,8 @@ mp3ExportQueue (mp3exp_t *mp3exp)
   }
 
   if (mp3exp->state == BDJ4_STATE_PROCESS) {
-    char    outfn [MAXPATHLEN];
-    char    ffn [MAXPATHLEN];
+    char    outfn [BDJ4_PATH_MAX];
+    char    ffn [BDJ4_PATH_MAX];
 
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &mp3exp->tokstr);
     if (p != NULL) {
@@ -178,7 +178,7 @@ mp3ExportQueue (mp3exp_t *mp3exp)
   }
 
   if (mp3exp->state == BDJ4_STATE_FINISH) {
-    char        tname [MAXPATHLEN];
+    char        tname [BDJ4_PATH_MAX];
     char        tslname [200];
 
     pi = pathInfo (mp3exp->dirname);

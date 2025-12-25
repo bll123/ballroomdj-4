@@ -40,10 +40,10 @@ typedef struct eibdj4 {
   org_t       *org;
   org_t       *orgexp;
   const char  *dirname;
-  char        datadir [MAXPATHLEN];
-  char        dbfname [MAXPATHLEN];
-  char        musicdir [MAXPATHLEN];
-  char        origmusicdir [MAXPATHLEN];
+  char        datadir [BDJ4_PATH_MAX];
+  char        dbfname [BDJ4_PATH_MAX];
+  char        musicdir [BDJ4_PATH_MAX];
+  char        origmusicdir [BDJ4_PATH_MAX];
   char        *plName;
   char        *newName;
   /* export uses the dbidxlist to determine which songs to export */
@@ -234,8 +234,8 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
 {
   bool        rc = true;
   dbidx_t     dbidx;
-  char        tbuff [MAXPATHLEN];
-  char        from [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
+  char        from [BDJ4_PATH_MAX];
   pathinfo_t  *pi;
 
   if (eibdj4 == NULL) {
@@ -288,8 +288,8 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
     bool        doupdate = false;
     bool        docopy = false;
     const char  *songuri;
-    char        ffn [MAXPATHLEN];
-    char        nsonguri [MAXPATHLEN];
+    char        ffn [BDJ4_PATH_MAX];
+    char        nsonguri [BDJ4_PATH_MAX];
     int         type;
     char        *tstr;
     const char  *bypass;
@@ -372,7 +372,7 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
       }
 
       if (type == AUDIOSRC_TYPE_FILE && docopy) {
-        char        tdir [MAXPATHLEN];
+        char        tdir [BDJ4_PATH_MAX];
 
         if (type == AUDIOSRC_TYPE_FILE) {
           pi = pathInfo (tbuff);
@@ -418,7 +418,7 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
   }
 
   if (eibdj4->state == BDJ4_STATE_START) {
-    char        tbuff [MAXPATHLEN];
+    char        tbuff [BDJ4_PATH_MAX];
 
     bdjoptSetStr (OPT_M_DIR_MUSIC, eibdj4->musicdir);
     audiosrcPostInit ();
@@ -452,8 +452,8 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
     if (slidx >= 0) {
       const char    *songuri;
       char          *nsonguri = NULL;
-      char          nfn [MAXPATHLEN];
-      char          ifn [MAXPATHLEN];
+      char          nfn [BDJ4_PATH_MAX];
+      char          ifn [BDJ4_PATH_MAX];
       song_t        *tsong;
       bool          doupdate;
       bool          docopy;
@@ -516,7 +516,7 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
 
       if (docopy) {
         pathinfo_t  *pi;
-        char        tdir [MAXPATHLEN];
+        char        tdir [BDJ4_PATH_MAX];
 
         pi = pathInfo (nfn);
         pathInfoGetDir (pi, tdir, sizeof (tdir));
@@ -543,8 +543,8 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
   }
 
   if (eibdj4->state == BDJ4_STATE_FINISH) {
-    char  from [MAXPATHLEN];
-    char  to [MAXPATHLEN];
+    char  from [BDJ4_PATH_MAX];
+    char  to [BDJ4_PATH_MAX];
 
     /* only copy the song list after the database has been updated */
 

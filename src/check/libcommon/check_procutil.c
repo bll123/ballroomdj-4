@@ -54,7 +54,7 @@ START_TEST(procutil_start)
   pid_t     ppid;
   int       rc;
   char      *extension;
-  char      tbuff [MAXPATHLEN];
+  char      tbuff [BDJ4_PATH_MAX];
   procutil_t *process;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- procutil_start");
@@ -91,7 +91,7 @@ START_TEST(procutil_kill)
   pid_t     ppid;
   int       rc;
   char      *extension;
-  char      tbuff [MAXPATHLEN];
+  char      tbuff [BDJ4_PATH_MAX];
   procutil_t *process;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- procutil_kill");

@@ -233,7 +233,7 @@ manageSequenceSave (manageseq_t *manageseq)
 {
   sequence_t  *seq = NULL;
   slist_t     *slist;
-  char        nnm [MAXPATHLEN];
+  char        nnm [BDJ4_PATH_MAX];
   char        *name;
   bool        changed = false;
   bool        notvalid = false;

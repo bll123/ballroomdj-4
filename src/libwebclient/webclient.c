@@ -413,7 +413,7 @@ webclientGetLocalIP (char *ip, size_t sz)
 {
   webclient_t   *webclient;
   char          *tip;
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
   CURLcode      res;
 
   *ip = '\0';

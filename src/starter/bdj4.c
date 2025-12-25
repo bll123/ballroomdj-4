@@ -35,8 +35,8 @@ enum {
 int
 main (int argc, char * argv[])
 {
-  char        buff [MAXPATHLEN];
-  char        origcwd [MAXPATHLEN];
+  char        buff [BDJ4_PATH_MAX];
+  char        origcwd [BDJ4_PATH_MAX];
   int         validargs = 0;
   int         c = 0;
   int         option_index = 0;
@@ -387,15 +387,15 @@ main (int argc, char * argv[])
 #endif
 
   if (isMacOS ()) {
-    char      tbuff [MAXPATHLEN];
-    char      pbuff [MAXPATHLEN];
-    char      *path = NULL;
+    char      tbuff [BDJ4_PATH_MAX];
+    char      pbuff [BDJ4_PATH_MAX];
+    char      path [BDJ4_PATH_MAX];
     char      *npath = NULL;
-    size_t    sz = 4096;
+    size_t    sz = 16384;
 
     npath = mdmalloc (sz);
 
-    path = getenv ("PATH");
+    osGetEnv ("PATH", path, sizeof (path));
     *npath = '\0';
     p = npath;
     end = npath + sz;
@@ -441,8 +441,8 @@ main (int argc, char * argv[])
   }
 
   if (isMacOS ()) {
-    char    pbuff [MAXPATHLEN];
-    char    tbuff [MAXPATHLEN];
+    char    pbuff [BDJ4_PATH_MAX];
+    char    tbuff [BDJ4_PATH_MAX];
     bool    foundvlc = false;
 
     /* players other than vlc may need a different setup */

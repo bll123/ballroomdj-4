@@ -48,7 +48,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   int         rc = 0;
   int         count = 0;
   int         option_index = 0;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   bdj4arg_t   *bdj4arg;
   const char  *targ;
   loglevel_t  loglevel = 0;
@@ -410,7 +410,7 @@ musicdb_t *
 bdj4ReloadDatabase (musicdb_t *musicdb)
 {
   mstime_t    dbmt;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
 
   mstimestart (&dbmt);
   dbClose (musicdb);
@@ -433,7 +433,7 @@ bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb)
     slist_t     *tmplist;
     slistidx_t  iteridx;
     const char  *fname;
-    char        tbuff [MAXPATHLEN];
+    char        tbuff [BDJ4_PATH_MAX];
 
     pathbldMakePath (tbuff, sizeof (tbuff),
         "", "", PATHBLD_MP_DIR_MAIN);

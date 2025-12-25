@@ -64,8 +64,8 @@ filemanipMove (const char *fname, const char *nfn)
 int
 filemanipCopy (const char *fname, const char *nfn)
 {
-  char      tfname [MAXPATHLEN];
-  char      tnfn [MAXPATHLEN];
+  char      tfname [BDJ4_PATH_MAX];
+  char      tnfn [BDJ4_PATH_MAX];
   int       rc = -1;
   time_t    origtm;
 
@@ -135,8 +135,8 @@ filemanipLinkCopy (const char *fname, const char *nfn)
 void
 filemanipBackup (const char *fname, int count)
 {
-  char      ofn [MAXPATHLEN];
-  char      nfn [MAXPATHLEN];
+  char      ofn [BDJ4_PATH_MAX];
+  char      nfn [BDJ4_PATH_MAX];
 
   for (int i = count; i >= 1; --i) {
     snprintf (nfn, sizeof (nfn), "%s.bak.%d", fname, i);
@@ -158,8 +158,8 @@ filemanipBackup (const char *fname, int count)
 void
 filemanipRenameAll (const char *ofname, const char *nfname)
 {
-  char      ofn [MAXPATHLEN];
-  char      nfn [MAXPATHLEN];
+  char      ofn [BDJ4_PATH_MAX];
+  char      nfn [BDJ4_PATH_MAX];
   int       count = 10;
 
   for (int i = count; i >= 1; --i) {
@@ -178,7 +178,7 @@ filemanipRenameAll (const char *ofname, const char *nfname)
 void
 filemanipDeleteAll (const char *name)
 {
-  char      ofn [MAXPATHLEN];
+  char      ofn [BDJ4_PATH_MAX];
   int       count = 10;
 
   for (int i = count; i >= 1; --i) {

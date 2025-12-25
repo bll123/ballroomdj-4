@@ -170,8 +170,8 @@ main (int argc, char *argv [])
 {
   bool        newinstall = false;
   bool        converted = false;
-  char        homemusicdir [MAXPATHLEN];
-  char        tbuff [MAXPATHLEN];
+  char        homemusicdir [BDJ4_PATH_MAX];
+  char        tbuff [BDJ4_PATH_MAX];
   const char  *tval = NULL;
   bool        bdjoptchanged = false;
   int         haveitunes = 0;
@@ -387,7 +387,7 @@ main (int argc, char *argv [])
   {
     const char  *pfx = "macOS-";
     size_t      len = strlen (pfx);
-    char        tbuff [MAXPATHLEN];
+    char        tbuff [BDJ4_PATH_MAX];
 
     /* 4.3.3 change name of macos theme  */
     tval = bdjoptGetStr (OPT_M_UI_THEME);
@@ -503,7 +503,7 @@ main (int argc, char *argv [])
   /* datafile updates */
 
   {
-    char to [MAXPATHLEN];
+    char to [BDJ4_PATH_MAX];
 
     /* 4.11.0 http/curl-ca-bundle.crt was not being updated. */
     /* always update it. */
@@ -682,7 +682,7 @@ main (int argc, char *argv [])
 
           tval = bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, j);
           if (tval == NULL || ! *tval) {
-            char    tbuff [MAXPATHLEN];
+            char    tbuff [BDJ4_PATH_MAX];
 
             snprintf (tbuff, sizeof (tbuff), "%s.q%d", "bdjconfig", j);
             updaterCopyProfileIfNotPresent (tbuff, BDJ4_CONFIG_EXT, UPD_FORCE);
@@ -827,7 +827,7 @@ main (int argc, char *argv [])
 
     dbStartIterator (musicdb, &dbiteridx);
     while ((song = dbIterate (musicdb, &dbidx, &dbiteridx)) != NULL) {
-      char        ffn [MAXPATHLEN];
+      char        ffn [BDJ4_PATH_MAX];
       const char  *tkey;
       int         rewrite;
       bool        process = false;
@@ -983,7 +983,7 @@ main (int argc, char *argv [])
         turi = songGetStr (song, TAG_URI);
         tlen = strlen (turi);
         if (tlen > 4 && strcmp (turi + tlen - 4, ".wav") == 0) {
-          char        ffn [MAXPATHLEN];
+          char        ffn [BDJ4_PATH_MAX];
           slist_t     *taglist;
           const char  *tdur;
           int         rewrite;
@@ -1138,9 +1138,9 @@ static void
 updaterCleanFiles (void)
 {
   FILE    *fh;
-  char    pattern [MAXPATHLEN];
-  char    fullpattern [MAXPATHLEN];
-  char    fname [MAXPATHLEN];
+  char    pattern [BDJ4_PATH_MAX];
+  char    fullpattern [BDJ4_PATH_MAX];
+  char    fname [BDJ4_PATH_MAX];
   char    *basedir = NULL;
   int     count;
   nlist_t *cleanlist;
@@ -1362,8 +1362,8 @@ updaterGetStatus (nlist_t *updlist, int key)
 static void
 updaterCopyIfNotPresent (const char *fn, const char *ext, const char *newfn)
 {
-  char        from [MAXPATHLEN];
-  char        to [MAXPATHLEN];
+  char        from [BDJ4_PATH_MAX];
+  char        to [BDJ4_PATH_MAX];
   const char  *tfn;
 
   tfn = fn;
@@ -1382,7 +1382,7 @@ updaterCopyIfNotPresent (const char *fn, const char *ext, const char *newfn)
 static void
 updaterCopyProfileIfNotPresent (const char *fn, const char *ext, int forceflag)
 {
-  char    tbuff [MAXPATHLEN];
+  char    tbuff [BDJ4_PATH_MAX];
   int     origprofile;
 
   origprofile = sysvarsGetNum (SVL_PROFILE_IDX);
@@ -1406,13 +1406,13 @@ static void
 updaterCopyVersionCheck (const char *fn, const char *ext, int currvers)
 {
   int         version;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
 
   pathbldMakePath (tbuff, sizeof (tbuff), fn, ext, PATHBLD_MP_DREL_DATA);
   version = datafileReadDistVersion (tbuff);
   logMsg (LOG_INSTALL, LOG_INFO, "version check %s%s : %d < %d", fn, ext, version, currvers);
   if (version < currvers) {
-    char  tmp [MAXPATHLEN];
+    char  tmp [BDJ4_PATH_MAX];
 
     snprintf (tmp, sizeof (tmp), "%s%s", fn, ext);
     templateFileCopy (tmp, tmp);
@@ -1423,7 +1423,7 @@ updaterCopyVersionCheck (const char *fn, const char *ext, int currvers)
 static void
 updaterCopyProfileVersionCheck (const char *fn, const char *ext, int currvers)
 {
-  char    tbuff [MAXPATHLEN];
+  char    tbuff [BDJ4_PATH_MAX];
   int     origprofile;
   int     version;
 
@@ -1437,7 +1437,7 @@ updaterCopyProfileVersionCheck (const char *fn, const char *ext, int currvers)
       version = datafileReadDistVersion (tbuff);
       logMsg (LOG_INSTALL, LOG_INFO, "version check %d %s%s : %d < %d", i, fn, ext, version, currvers);
       if (version < currvers) {
-        char  tmp [MAXPATHLEN];
+        char  tmp [BDJ4_PATH_MAX];
 
         snprintf (tmp, sizeof (tmp), "%s%s", fn, ext);
         templateProfileCopy (tmp, tmp);
@@ -1453,8 +1453,8 @@ updaterCopyHTMLVersionCheck (const char *fn, const char *ext,
     int currvers)
 {
   int         version;
-  char        from [MAXPATHLEN];
-  char        tmp [MAXPATHLEN];
+  char        from [BDJ4_PATH_MAX];
+  char        tmp [BDJ4_PATH_MAX];
   FILE        *fh;
 
   pathbldMakePath (from, sizeof (from), fn, ext, PATHBLD_MP_DREL_HTTP);
@@ -1486,8 +1486,8 @@ static void
 updaterCopyCSSVersionCheck (const char *fn, const char *ext, int currvers)
 {
   int         version;
-  char        from [MAXPATHLEN];
-  char        tmp [MAXPATHLEN];
+  char        from [BDJ4_PATH_MAX];
+  char        tmp [BDJ4_PATH_MAX];
   FILE        *fh;
 
   pathbldMakePath (from, sizeof (from), fn, ext, PATHBLD_MP_DREL_DATA);
@@ -1514,8 +1514,8 @@ updaterCopyCSSVersionCheck (const char *fn, const char *ext, int currvers)
 static void
 updaterRenameProfileFile (const char *oldfn, const char *fn, const char *ext)
 {
-  char    from [MAXPATHLEN];
-  char    to [MAXPATHLEN];
+  char    from [BDJ4_PATH_MAX];
+  char    to [BDJ4_PATH_MAX];
   int     origprofile;
 
   origprofile = sysvarsGetNum (SVL_PROFILE_IDX);
@@ -1540,8 +1540,8 @@ updaterRenameProfileFile (const char *oldfn, const char *fn, const char *ext)
 static time_t
 updaterGetSongCreationTime (song_t *song)
 {
-  char      ffn [MAXPATHLEN];
-  char      tbuff [MAXPATHLEN];
+  char      ffn [BDJ4_PATH_MAX];
+  char      tbuff [BDJ4_PATH_MAX];
   time_t    ctime;
 
   audiosrcFullPath (songGetStr (song, TAG_URI), ffn, sizeof (ffn), NULL, 0);
@@ -1562,8 +1562,8 @@ updaterFixLocales (void)
   slistidx_t  iteridx;
   const char  *fn;
   const char  *prevfn = NULL;
-  char        cwd [MAXPATHLEN];
-  char        edir [MAXPATHLEN];
+  char        cwd [BDJ4_PATH_MAX];
+  char        edir [BDJ4_PATH_MAX];
   bool        isbad = false;
 
   if (isWindows ()) {

@@ -10,15 +10,15 @@
 
 #include "osutils.h"
 
-char *
-osRegistryGet (char *key, char *name)
+void
+osRegistryGet (char *key, char *name, char *buff, size_t sz)
 {
-  return NULL;
+  *buff = '\0';
 }
 
-char *
-osGetSystemFont (const char *gsettingspath)
+void
+osGetSystemFont (const char *gsettingspath, char *buff, size_t sz)
 {
-  return NULL;
+  *buff = '\0';
 }
 

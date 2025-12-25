@@ -35,7 +35,7 @@ quickedit_t *
 quickeditAlloc (void)
 {
   quickedit_t     *qe;
-  char            tbuff [MAXPATHLEN];
+  char            tbuff [BDJ4_PATH_MAX];
 
   qe = mdmalloc (sizeof (*qe));
   qe->df = NULL;

@@ -172,15 +172,15 @@ int
 acoustidLookup (audioidacoustid_t *acoustid, const song_t *song,
     audioid_resp_t *resp)
 {
-  char          infn [MAXPATHLEN];
-  char          uri [MAXPATHLEN];
+  char          infn [BDJ4_PATH_MAX];
+  char          uri [BDJ4_PATH_MAX];
   char          *query;
   long          dur;
   double        ddur;
   char          *fpdata = NULL;
   size_t        retsz;
   const char    *fn;
-  char          ffn [MAXPATHLEN];
+  char          ffn [BDJ4_PATH_MAX];
   const char    *targv [10];
   const char    *fpcalc;
   int           targc = 0;

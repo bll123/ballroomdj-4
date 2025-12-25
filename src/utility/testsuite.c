@@ -166,7 +166,7 @@ main (int argc, char *argv [])
   int         listenPort;
   char        *state;
   int         rc;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   pli_t       *pli;
 
 #if BDJ4_MEM_DEBUG
@@ -1600,7 +1600,7 @@ tsNextFile (testsuite_t *testsuite)
 {
   const char  *fn;
   bool        rc = false;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
 
   testsuite->lineno = 0;
 

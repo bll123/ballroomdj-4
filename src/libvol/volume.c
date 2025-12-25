@@ -39,7 +39,7 @@ volume_t *
 volumeInit (const char *volpkg)
 {
   volume_t  *volume;
-  char      dlpath [MAXPATHLEN];
+  char      dlpath [BDJ4_PATH_MAX];
 
   volume = mdmalloc (sizeof (volume_t));
   volume->voliProcess = NULL;

@@ -451,7 +451,7 @@ winmpRate (windata_t *windata, double drate)
 int
 winmpMedia (windata_t *windata, const char *fn, int sourceType)
 {
-  char    tbuff [MAXPATHLEN];
+  char    tbuff [BDJ4_PATH_MAX];
   wchar_t *wfn = NULL;
 
   if (windata == NULL) {

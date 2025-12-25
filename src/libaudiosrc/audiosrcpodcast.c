@@ -551,7 +551,7 @@ aspodcastGetClientKeyByURI (asdata_t *asdata, const char *uri)
   }
 
   if (clientkey < 0) {
-    char    temp [MAXPATHLEN];
+    char    temp [BDJ4_PATH_MAX];
     char    *p;
 
     /* create a new client connection */

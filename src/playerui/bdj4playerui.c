@@ -283,7 +283,7 @@ main (int argc, char *argv[])
   int             status = 0;
   uint16_t        listenPort;
   playerui_t      plui;
-  char            tbuff [MAXPATHLEN];
+  char            tbuff [BDJ4_PATH_MAX];
   uisetup_t       uisetup;
 
 #if BDJ4_MEM_DEBUG
@@ -529,8 +529,8 @@ pluiBuildUI (playerui_t *plui)
   uiwcont_t   *uip;
   uiwcont_t   *uiwidgetp;
   const char  *str;
-  char        imgbuff [MAXPATHLEN];
-  char        tbuff [MAXPATHLEN];
+  char        imgbuff [BDJ4_PATH_MAX];
+  char        tbuff [BDJ4_PATH_MAX];
   int         x, y;
   void        *tempp;
   uiutilsaccent_t accent;
@@ -1985,7 +1985,7 @@ pluiReload (void *udata)
 {
   playerui_t    *plui = udata;
   char          msg [200];
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
   char          tmp [200];
 
   plui->inreload = true;
@@ -2072,7 +2072,7 @@ pluiReloadCurrent (playerui_t *plui)
 static void
 pluiReloadSave (playerui_t *plui, int mqidx)
 {
-  char      tmp [MAXPATHLEN];
+  char      tmp [BDJ4_PATH_MAX];
 
   if (plui->inreload) {
     return;
@@ -2121,7 +2121,7 @@ pluiReloadSaveCurrent (playerui_t *plui)
 {
   datafile_t      *reloaddf;
   nlist_t         *reloaddata;
-  char            tbuff [MAXPATHLEN];
+  char            tbuff [BDJ4_PATH_MAX];
   dbidx_t         dbidx;
   song_t          *song;
 
@@ -2201,7 +2201,7 @@ pluiDragDropCallback (void *udata, const char *uri)
   playerui_t    *plui = udata;
   int           mqidx;
   int32_t       rownum;
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
 
   /* only file:// are handled at this time */
   if (strncmp (uri, AS_FILE_PFX, AS_FILE_PFX_LEN) != 0) {
@@ -2288,7 +2288,7 @@ pluiControllerURICallback (void *udata, const char *uri, int32_t cmd)
   dbidx_t       dbidx;
   char          *tbuff;
   char          *tmp;
-  char          ffn [MAXPATHLEN];
+  char          ffn [BDJ4_PATH_MAX];
   const char    *tfn;
   int           rewrite = 0;
   slist_t       *tagdata;

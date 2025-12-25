@@ -33,7 +33,7 @@
 static void
 runchk (int flags, int *rpid, int *rexists, int exitcode)
 {
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   char        tmp [40];
   const char  *targv [10];
   int         targc = 0;
@@ -115,7 +115,7 @@ END_TEST
 
 START_TEST(osprocess_start_handle)
 {
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   const char  *targv [10];
   int         targc = 0;
   int         pid = 0;
@@ -160,7 +160,7 @@ END_TEST
 
 START_TEST(osprocess_start_redirect)
 {
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   const char  *targv [10];
   int         targc = 0;
   int         pid = 0;
@@ -207,8 +207,8 @@ END_TEST
 
 START_TEST(osprocess_pipe)
 {
-  char        tbuff [MAXPATHLEN];
-  char        pbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
+  char        pbuff [BDJ4_PATH_MAX];
   const char  *targv [10];
   int         targc = 0;
   int         rc = -2;
@@ -248,8 +248,8 @@ END_TEST
 
 START_TEST(osprocess_pipe_wait)
 {
-  char        tbuff [MAXPATHLEN];
-  char        pbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
+  char        pbuff [BDJ4_PATH_MAX];
   const char  *targv [10];
   int         targc = 0;
   int         rc = -2;
@@ -293,8 +293,8 @@ END_TEST
 
 START_TEST(osprocess_pipe_rc)
 {
-  char        pbuff [MAXPATHLEN];
-  char        tbuff [MAXPATHLEN];
+  char        pbuff [BDJ4_PATH_MAX];
+  char        tbuff [BDJ4_PATH_MAX];
   const char  *targv [10];
   int         targc = 0;
   char        *extension;
@@ -349,7 +349,7 @@ END_TEST
 
 START_TEST(osprocess_run)
 {
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   char        *extension;
   char        *data;
 

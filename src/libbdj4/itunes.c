@@ -108,7 +108,7 @@ itunes_t *
 itunesAlloc (void)
 {
   itunes_t    *itunes;
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   slist_t     *tlist;
   slistidx_t  iteridx;
   const char  *key;

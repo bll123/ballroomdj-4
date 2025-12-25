@@ -155,7 +155,7 @@ main (int argc, char *argv[])
   int             status = 0;
   uint16_t        listenPort;
   marquee_t       marquee;
-  char            tbuff [MAXPATHLEN];
+  char            tbuff [BDJ4_PATH_MAX];
   uint32_t        flags;
   uisetup_t       uisetup;
 
@@ -329,7 +329,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
 static void
 marqueeBuildUI (marquee_t *marquee)
 {
-  char        imgbuff [MAXPATHLEN];
+  char        imgbuff [BDJ4_PATH_MAX];
   uiwcont_t   *uiwidgetp;
   uiwcont_t   *mainvbox;
   uiwcont_t   *hbox;

@@ -31,7 +31,7 @@
 
 START_TEST(path_normpath)
 {
-  char    to [MAXPATHLEN];
+  char    to [BDJ4_PATH_MAX];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- path_normpath");
   mdebugSubTag ("path_normpath");
@@ -56,7 +56,7 @@ END_TEST
 
 START_TEST(path_strippath)
 {
-  char    to [MAXPATHLEN];
+  char    to [BDJ4_PATH_MAX];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- path_normpath");
   mdebugSubTag ("path_normpath");
@@ -90,10 +90,10 @@ END_TEST
 START_TEST(path_realpath)
 {
   FILE    *fh;
-  char    to [MAXPATHLEN];
-  char    from [MAXPATHLEN];
-  char    cwd [MAXPATHLEN];
-  char    actual [MAXPATHLEN];
+  char    to [BDJ4_PATH_MAX];
+  char    from [BDJ4_PATH_MAX];
+  char    cwd [BDJ4_PATH_MAX];
+  char    actual [BDJ4_PATH_MAX];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- path_realpath");
   mdebugSubTag ("path_realpath");

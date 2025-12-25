@@ -192,7 +192,7 @@ mobmqEventHandler (void *userdata, const char *query, const char *uri)
     websrvReply (mobmqdata->websrv, WEB_OK,
         "Content-Type: application/json\r\n", data);
   } else {
-    char          path [MAXPATHLEN];
+    char          path [BDJ4_PATH_MAX];
     const char    *turi = uri;
 
     if (*uri == '/') {

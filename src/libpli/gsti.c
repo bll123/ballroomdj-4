@@ -346,7 +346,7 @@ gstiCleanup (void)
 void
 gstiMedia (gsti_t *gsti, const char *fulluri, int sourceType)
 {
-  char    tbuff [MAXPATHLEN];
+  char    tbuff [BDJ4_PATH_MAX];
 
   if (gsti == NULL || gsti->ident != GSTI_IDENT || gsti->mainctx == NULL) {
     return;

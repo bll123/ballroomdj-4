@@ -53,8 +53,8 @@ static musicdb_t *db = NULL;
 typedef struct {
   bool        new;
   const char  *basefn;
-  char        testfn [MAXPATHLEN];
-  char        ffn [MAXPATHLEN];
+  char        testfn [BDJ4_PATH_MAX];
+  char        ffn [BDJ4_PATH_MAX];
 } test_fn_t;
 
 static test_fn_t test_data [] = {
@@ -110,7 +110,7 @@ static bool initialized = false;
 static void
 init (void)
 {
-  char        tbuff [MAXPATHLEN];
+  char        tbuff [BDJ4_PATH_MAX];
   int         idx = 0;
   const char  *ext = BDJ4_PLAYLIST_EXT;
 
@@ -136,9 +136,9 @@ init (void)
       ext = BDJ4_PL_DANCE_EXT;
     }
     pathbldMakePath (tbuff, sizeof (tbuff), test_data [i].basefn, ext, PATHBLD_MP_DREL_DATA);
-    stpecpy (test_data [i].ffn, test_data [i].ffn + MAXPATHLEN, tbuff);
+    stpecpy (test_data [i].ffn, test_data [i].ffn + BDJ4_PATH_MAX, tbuff);
     pathbldMakePath (tbuff, sizeof (tbuff), test_data [i].basefn, ext, PATHBLD_MP_DREL_TEST_TMPL);
-    stpecpy (test_data [i].testfn, test_data [i].testfn + MAXPATHLEN, tbuff);
+    stpecpy (test_data [i].testfn, test_data [i].testfn + BDJ4_PATH_MAX, tbuff);
     ++idx;
     if (idx >= CPL_NEW_OFFSET) {
       idx = 0;

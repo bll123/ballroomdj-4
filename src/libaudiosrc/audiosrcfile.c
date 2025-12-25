@@ -111,7 +111,7 @@ bool
 asiExists (asdata_t *asdata, const char *nm)
 {
   bool    exists;
-  char    ffn [MAXPATHLEN];
+  char    ffn [BDJ4_PATH_MAX];
 
   asiFullPath (asdata, nm, ffn, sizeof (ffn), NULL, 0);
   exists = fileopFileExists (ffn);
@@ -122,8 +122,8 @@ bool
 asiOriginalExists (asdata_t *asdata, const char *nm)
 {
   bool    exists;
-  char    ffn [MAXPATHLEN];
-  char    origfn [MAXPATHLEN];
+  char    ffn [BDJ4_PATH_MAX];
+  char    origfn [BDJ4_PATH_MAX];
 
   asiFullPath (asdata, nm, ffn, sizeof (ffn), NULL, 0);
   snprintf (origfn, sizeof (origfn), "%s%s",
@@ -143,8 +143,8 @@ bool
 asiRemove (asdata_t *asdata, const char *nm)
 {
   int           rc = false;
-  char          ffn [MAXPATHLEN];
-  char          newnm [MAXPATHLEN];
+  char          ffn [BDJ4_PATH_MAX];
+  char          newnm [BDJ4_PATH_MAX];
   pathinfo_t    *pi;
 
   asiFullPath (asdata, nm, ffn, sizeof (ffn), NULL, 0);
@@ -171,7 +171,7 @@ asiRemove (asdata_t *asdata, const char *nm)
 bool
 asiPrep (asdata_t *asdata, const char *sfname, char *tempnm, size_t sz)
 {
-  char      ffn [MAXPATHLEN];
+  char      ffn [BDJ4_PATH_MAX];
   mstime_t  mstm;
   time_t    tm;
   int       rc = false;

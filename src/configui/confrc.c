@@ -134,7 +134,7 @@ confuiRemctrlPortChg (void *udata)
 static void
 confuiLoadHTMLList (confuigui_t *gui)
 {
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [BDJ4_PATH_MAX];
   nlist_t       *tlist = NULL;
   datafile_t    *df = NULL;
   ilist_t       *list = NULL;

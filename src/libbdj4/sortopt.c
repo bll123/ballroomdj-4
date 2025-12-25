@@ -38,8 +38,8 @@ sortoptAlloc (void)
   char          *tvalue;
   char          *p;
   char          *tokstr;
-  char          dispstr [MAXPATHLEN];
-  char          fname [MAXPATHLEN];
+  char          dispstr [BDJ4_PATH_MAX];
+  char          fname [BDJ4_PATH_MAX];
   char          *dp;
   char          *dend = dispstr + sizeof (dispstr);
 

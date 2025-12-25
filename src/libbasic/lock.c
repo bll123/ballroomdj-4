@@ -72,7 +72,7 @@ pid_t
 lockExists (char *fn, int flags)
 {
   procutil_t process;
-  char      tfn [MAXPATHLEN];
+  char      tfn [BDJ4_PATH_MAX];
   pid_t     fpid = 0;
 
   lockCheckLockDir ();
@@ -111,7 +111,7 @@ lockRelease (char *fn, int flags)
 static void
 lockCheckLockDir (void)
 {
-  char  tdir [MAXPATHLEN];
+  char  tdir [BDJ4_PATH_MAX];
 
   if (lockdirchecked) {
     return;
@@ -132,7 +132,7 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
   int       rc;
   int       count;
   char      pidstr [16];
-  char      tfn [MAXPATHLEN];
+  char      tfn [BDJ4_PATH_MAX];
   procutil_t process;
 
   lockCheckLockDir ();
@@ -188,7 +188,7 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
 static int
 lockReleasePid (char *fn, pid_t pid, int flags)
 {
-  char      tfn [MAXPATHLEN];
+  char      tfn [BDJ4_PATH_MAX];
   int       rc;
   pid_t     fpid;
 

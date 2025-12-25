@@ -15,6 +15,7 @@
 #include <getopt.h>
 #include <unistd.h>
 #include <limits.h>
+#include <sys/param.h>
 
 #if BDJ4_UI_GTK3
 # include <gtk/gtk.h>
@@ -178,6 +179,10 @@ main (int argc, char *argv [])
 
   fprintf (stdout, "  c: __STDC_VERSION__ %ld\n", __STDC_VERSION__);
 
+  /* system defines */
+
+  fprintf (stdout, "  c: PATH_MAX %d\n", PATH_MAX);
+
   /* UI */
 #if BDJ4_UI_GTK3
   fprintf (stdout, " ui: GTK3\n");
@@ -200,7 +205,7 @@ main (int argc, char *argv [])
   /* environment */
 
   for (int i = 0; i < ENV_MAX; ++i) {
-    char  tmp [MAXPATHLEN];
+    char  tmp [BDJ4_PATH_MAX];
 
     osGetEnv (envitems [i], tmp, sizeof (tmp));
     if (*tmp) {

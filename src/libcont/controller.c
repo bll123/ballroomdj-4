@@ -41,7 +41,7 @@ controller_t *
 controllerInit (const char *contpkg)
 {
   controller_t  *cont;
-  char          dlpath [MAXPATHLEN];
+  char          dlpath [BDJ4_PATH_MAX];
 
   cont = mdmalloc (sizeof (controller_t));
   cont->contdata = NULL;
