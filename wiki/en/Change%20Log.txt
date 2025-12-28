@@ -4,11 +4,12 @@
 
 <!--
 
-**4.17.8 2025-12---**
+**4.17.7.2 2025-12---**
 
 * Internal:
     * Minor code cleanup.
     * Fix maximum path length, other sizing issues.
+    * Windows: long path aware.
 
 -->
 
