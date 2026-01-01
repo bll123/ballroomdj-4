@@ -9,7 +9,7 @@
 * Internal:
     * Minor code cleanup.
     * Fix maximum path length, other sizing issues.
-    * Windows: long path aware.
+    * Windows: long path aware, dpi-aware.
 
 -->
 
