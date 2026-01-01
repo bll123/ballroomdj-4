@@ -8,8 +8,9 @@ curryear=$(date '+%Y')
 
 # update the list in depcheck.sh also
 for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h \
-    */*.sh ../*/*.sh ../pkg/*/*.sh \
-    CMakeLists.txt */CMakeLists.txt Makefile \
+    */*.sh ../*/*.sh ../pkg/*/*.sh ../pkg/windows/version.rc.in \
+    CMakeLists.txt */CMakeLists.txt Makefile ../README.md \
+    ../templates/*.css \
     po/Makefile* */*.awk config.h.in */*.cmake ../pkg/macos/*.plist; do
   case $fn in
     *src/tt.sh|*src/z.sh)
@@ -52,9 +53,9 @@ for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h \
     grep "Copyright.*-" $fn > /dev/null 2>&1
     hasdash=$?
     if [[ $hasdash -eq 0 ]]; then
-      sed -i -e 's,Copyright \([0-9]*\)-[0-9]* ,Copyright \1-2025 ,' $fn
+      sed -i -e "s,Copyright \([0-9]*\)-[0-9]* ,Copyright \1-${curryear} ," $fn
     else
-      sed -i -e 's,Copyright \([0-9]*\) ,Copyright \1-2025 ,' $fn
+      sed -i -e "s,Copyright \([0-9]*\) ,Copyright \1-${curryear} ," $fn
     fi
   fi
 done
