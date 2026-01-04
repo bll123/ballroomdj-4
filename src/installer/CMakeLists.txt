@@ -19,9 +19,9 @@ target_link_libraries (bdj4se PRIVATE
   objtmutil
   m
 )
-#if (WIN32)
-#  target_sources (bdj4se PRIVATE selauncher.rc)
-#endif()
+if (WIN32)
+  target_link_options (bdj4se PRIVATE -static-libgcc)
+endif()
 addIOKitFramework (bdj4se)
 addIntlLibrary (bdj4se)
 addWinIcon (bdj4se selauncher.rc ${BDJ4INSTICON})

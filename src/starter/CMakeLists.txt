@@ -23,6 +23,9 @@ target_link_libraries (bdj4 PRIVATE
   objtmutil
   m
 )
+if (WIN32)
+  target_link_options (bdj4 PRIVATE -static-libgcc)
+endif()
 # for gethostname
 addIOKitFramework (bdj4)
 addIntlLibrary (bdj4)
@@ -36,6 +39,7 @@ updateRPath (bdj4)
 add_executable (bdj4g bdj4.c)
 if (WIN32)
   target_compile_options (bdj4g PRIVATE -municode)
+  target_link_options (bdj4 PRIVATE -static-libgcc)
 endif()
 addUIInclude (bdj4g)
 target_compile_options (bdj4g PRIVATE -DBDJ4_GUI_LAUNCHER=1)
