@@ -11,7 +11,8 @@ built for them.  Other distributions will need to build from source.
 
 As of the 4.15.5 release, BDJ4 is more robust across different Linux
 distributions.  The code has been fixed to handle versioning issues
-for the ICU, avformat and avutil libraries.
+for the ICU, avformat and avutil libraries.  The Debian 13 installer
+should install on Debian 12 and Debian 11 as well.
 
 However, there are still other libraries that have different versions
 across different distributions, and will require building BDJ4 from
@@ -25,12 +26,12 @@ If you need help building from source,
     * Arch based (Arch, Manjaro, etc.)
     * Red Hat based (Fedora)
     * OpenSUSE (2025-8)
-* Desktop Environments that have been tested (as of 2023-8-8).
-    * Budgie (2025-8-8)
-    * Cinnamon (2025-8-8)
+* Desktop Environments that have been tested (as of 2025-10-27).
+    * Budgie (2023-8-8)
+    * Cinnamon (2023-8-8)
     * GNOME (2025-10-27)
       After installation, log out and log in again to update the icon cache.
-    * Mate (2025-8-8)
+    * Mate (2023-8-8)
     * XFCE (2025-10-22)
     * KDE/Plasma (2025-10-22)
 
@@ -139,4 +140,4 @@ Visit the
 wiki page.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-11-26 08:35:57; BDJ4 version 4.17.5.1)_
+<br>_(Updated 2026-01-03 18:06:33; BDJ4 version 4.17.7.1)_
