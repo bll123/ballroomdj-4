@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
+ * Copyright 2021-2026 Brad Lanam Pleasant Hill CA
  *
  * vertical notebook
  *    GTK: the scrollable up/down arrows do not work correctly for RTL

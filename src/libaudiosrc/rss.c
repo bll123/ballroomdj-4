@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Brad Lanam Pleasant Hill CA
+ * Copyright 2025-2026 Brad Lanam Pleasant Hill CA
  *
  * Example podcast RSS files:
  *    https://www.npr.org/podcasts/2037/music

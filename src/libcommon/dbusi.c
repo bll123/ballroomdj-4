@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 Brad Lanam Pleasant Hill CA
+ * Copyright 2023-2026 Brad Lanam Pleasant Hill CA
  *
  * This could be re-written to use libdbus.
  * The glib variants are a pain to use.

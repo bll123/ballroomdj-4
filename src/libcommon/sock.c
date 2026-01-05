@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
+ * Copyright 2021-2026 Brad Lanam Pleasant Hill CA
  *
  * https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
  * 10054 - WSAECONNRESET

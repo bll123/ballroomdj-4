@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2025 Brad Lanam Pleasant Hill CA
+ * Copyright 2021-2026 Brad Lanam Pleasant Hill CA
  *
  * To convert a .mp3 file to .wav, use mpg123, do not use ffmpeg (broken).
  *

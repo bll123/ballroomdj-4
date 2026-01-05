@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2023-2025 Brad Lanam Pleasant Hill CA
+# Copyright 2023-2026 Brad Lanam Pleasant Hill CA
 #
 
 function mkhtmlsub {

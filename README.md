@@ -54,7 +54,7 @@ You can also use the BallroomDJ 4 support function to send a message.
 
 ### Copyright:
 
-Copyright 2021-2025 Brad Lanam Pleasant Hill, CA
+Copyright 2021-2026 Brad Lanam Pleasant Hill, CA
 
 ### Licenses:
 

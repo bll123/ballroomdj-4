@@ -11,7 +11,7 @@ BEGIN
       VALUE "FileDescription",    "${tversfn}\0"
       VALUE "FileVersion",        "@BDJ4_VERSION@\0"
       VALUE "InternalName",       "BDJ4\0"
-      VALUE "LegalCopyright",     "Copyright 2021-2025 Brad Lanam Pleasant Hill CA\0"
+      VALUE "LegalCopyright",     "Copyright 2021-2026 Brad Lanam Pleasant Hill CA\0"
       VALUE "LegalTrademarks1",   "zlib/libpng LICENSE\0"
       VALUE "OriginalFilename",   "${tversfn}\0"
       VALUE "ProductName",        "BallroomDJ 4\0"

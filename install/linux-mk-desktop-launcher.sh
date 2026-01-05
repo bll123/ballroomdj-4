@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2021-2025 Brad Lanam Pleasant Hill CA
+# Copyright 2021-2026 Brad Lanam Pleasant Hill CA
 #
 
 if [[ $# -lt 3 || $# -gt 4 ]]; then

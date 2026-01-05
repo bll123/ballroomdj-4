@@ -1,6 +1,6 @@
 /*
  * Copyright 2016 Brad Lanam Walnut Creek, CA US
- * Copyright 2021-2025 Brad Lanam Pleasant Hill, CA US
+ * Copyright 2021-2026 Brad Lanam Pleasant Hill, CA US
  *
  * This code is in the public domain.
  *

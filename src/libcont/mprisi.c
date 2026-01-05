@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 Brad Lanam Pleasant Hill CA
+ * Copyright 2024-2026 Brad Lanam Pleasant Hill CA
  *
  * References:
  *    https://github.com/w0rp/xmms2-mpris/tree/master/src

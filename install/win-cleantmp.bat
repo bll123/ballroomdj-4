@@ -1,5 +1,5 @@
 @echo off
-@rem Copyright 2023-2025 Brad Lanam Pleasant Hill CA
+@rem Copyright 2023-2026 Brad Lanam Pleasant Hill CA
 @rem BDJ4 clean
 
 set bdj4dir=#BDJ4DIR#
