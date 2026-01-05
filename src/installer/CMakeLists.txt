@@ -6,9 +6,6 @@ cmake_minimum_required (VERSION 3.18)
 include (../utils/bdj4macros.cmake)
 
 add_executable (bdj4se bdj4se.c)
-if (WIN32)
-  target_compile_options (bdj4se PRIVATE -municode)
-endif()
 target_link_libraries (bdj4se PRIVATE
   objdirutil
   objosprocess
@@ -30,7 +27,6 @@ addWinManifest (bdj4se)
 
 add_executable (bdj4installer bdj4installer.c locatebdj3.c)
 if (WIN32)
-  target_compile_options (bdj4installer PRIVATE -municode)
   target_compile_options (bdj4installer PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4installer PRIVATE
@@ -44,7 +40,6 @@ addWinManifest (bdj4installer)
 
 add_executable (bdj4altinst bdj4altinst.c)
 if (WIN32)
-  target_compile_options (bdj4altinst PRIVATE -municode)
   target_compile_options (bdj4altinst PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4altinst PRIVATE
@@ -57,9 +52,6 @@ addWinVersionInfo (bdj4altinst)
 addWinManifest (bdj4altinst)
 
 add_executable (bdj4updater bdj4updater.c)
-if (WIN32)
-  target_compile_options (bdj4updater PRIVATE -municode)
-endif()
 target_link_libraries (bdj4updater PRIVATE
   libbdj4ati
   libbdj4 libbdj4audiosrc libbdj4basic libbdj4common

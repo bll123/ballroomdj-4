@@ -16,7 +16,6 @@ add_executable (bdj4manageui
   managestats.c
 )
 if (WIN32)
-  target_compile_options (bdj4manageui PRIVATE -municode)
   target_compile_options (bdj4manageui PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4manageui PRIVATE
@@ -34,7 +33,6 @@ add_executable (bdj4bpmcounter
   bdj4bpmcounter.c
 )
 if (WIN32)
-  target_compile_options (bdj4bpmcounter PRIVATE -municode)
   target_compile_options (bdj4bpmcounter PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4bpmcounter PRIVATE
@@ -48,9 +46,6 @@ addWinVersionInfo (bdj4bpmcounter)
 addWinManifest (bdj4bpmcounter)
 
 add_executable (bdj4dbupdate bdj4dbupdate.c)
-if (WIN32)
-  target_compile_options (bdj4dbupdate PRIVATE -municode)
-endif()
 target_link_libraries (bdj4dbupdate PRIVATE
   libbdj4ati
   libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
@@ -61,9 +56,6 @@ addWinVersionInfo (bdj4dbupdate)
 addWinManifest (bdj4dbupdate)
 
 add_executable (bdj4podcastupd bdj4podcastupd.c)
-if (WIN32)
-  target_compile_options (bdj4podcastupd PRIVATE -municode)
-endif()
 target_link_libraries (bdj4podcastupd PRIVATE
   libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
 )

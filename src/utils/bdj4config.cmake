@@ -432,6 +432,7 @@ if (NOT WIN32)
 endif()
 if (WIN32)
   add_compile_options (-DMG_ARCH=MG_ARCH_WIN32)
+  add_compile_options (-municode)
 endif()
 
 # add_compile_options (-DMG_TLS=MG_TLS_BUILTIN)

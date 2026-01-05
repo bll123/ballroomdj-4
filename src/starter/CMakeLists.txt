@@ -8,9 +8,6 @@ include (../utils/bdj4macros.cmake)
 # want to keep the launcher at a minimum size and statically linked
 # with no shared library dependencies.
 add_executable (bdj4 bdj4.c)
-if (WIN32)
-  target_compile_options (bdj4 PRIVATE -municode)
-endif()
 addWinIcon (bdj4 launcher.rc ${BDJ4ICON})
 target_link_libraries (bdj4 PRIVATE
   objosutils
@@ -64,7 +61,6 @@ add_executable (bdj4starterui
   support.c
 )
 if (WIN32)
-  target_compile_options (bdj4starterui PRIVATE -municode)
   target_compile_options (bdj4starterui PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4starterui PRIVATE
@@ -80,7 +76,6 @@ updateRPath (bdj4starterui)
 
 add_executable (bdj4helperui bdj4helperui.c)
 if (WIN32)
-  target_compile_options (bdj4helperui PRIVATE -municode)
   target_compile_options (bdj4helperui PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4helperui PRIVATE
@@ -95,9 +90,6 @@ addWinManifest (bdj4helperui)
 updateRPath (bdj4helperui)
 
 add_executable (bdj4cleantmp bdj4cleantmp.c)
-if (WIN32)
-  target_compile_options (bdj4cleantmp PRIVATE -municode)
-endif()
 target_link_libraries (bdj4cleantmp PRIVATE
   libbdj4basic libbdj4common
 )

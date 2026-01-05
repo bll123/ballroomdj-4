@@ -7,7 +7,6 @@ include (../utils/bdj4macros.cmake)
 
 add_executable (bdj4playerui bdj4playerui.c)
 if (WIN32)
-  target_compile_options (bdj4playerui PRIVATE -municode)
   target_compile_options (bdj4playerui PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4playerui PRIVATE

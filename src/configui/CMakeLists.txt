@@ -31,7 +31,6 @@ add_executable (bdj4configui
   confui.c
 )
 if (WIN32)
-  target_compile_options (bdj4configui PRIVATE -municode)
   target_compile_options (bdj4configui PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4configui PRIVATE

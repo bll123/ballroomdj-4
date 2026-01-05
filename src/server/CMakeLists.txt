@@ -9,9 +9,6 @@ add_executable(bdj4server bdj4server.c)
 target_include_directories (bdj4server
   PRIVATE "${MONGOOSE_INC_DIR}"
 )
-if (WIN32)
-  target_compile_options (bdj4server PRIVATE -municode)
-endif()
 target_link_libraries (bdj4server PRIVATE
   libbdj4audiosrc
   libwebclient libbdj4 libbdj4basic libbdj4common
