@@ -30,9 +30,6 @@ add_executable (bdj4configui
   conftable.c
   confui.c
 )
-if (WIN32)
-  target_compile_options (bdj4configui PRIVATE -mwindows)
-endif()
 target_link_libraries (bdj4configui PRIVATE
   libbdj4uii libbdj4uib ${BDJ4_UI_LIB}
   libbdj4ati libbdj4pli libbdj4vol libbdj4cont

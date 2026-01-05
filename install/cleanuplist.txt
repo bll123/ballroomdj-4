@@ -383,6 +383,11 @@ plocal/bin/avfilter-10\.dll$
 plocal/bin/avformat-61\.dll$
 plocal/bin/avutil-59\.dll$
 
+# 2026-1-5
+# replaced with utility/bdj4winstartup
+install/win-startup\.bat$
+install/win-cleantmp\.bat$
+
 ####
 # data-dir
 

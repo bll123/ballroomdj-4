@@ -1012,7 +1012,11 @@ sockGetAddrInfo (uint16_t port, struct addrinfo **result)
   rc = getaddrinfo (NULL, portstr, &hints, result);
   if (rc != 0) {
     logError ("getaddrinfo:");
-    logMsg (LOG_ERR, LOG_SOCKET, "getaddrinfo: %s", gai_strerror (rc));
+#if _WIN32
+      logMsg (LOG_ERR, LOG_SOCKET, "getaddrinfo: %S", gai_strerror (rc));
+#else
+      logMsg (LOG_ERR, LOG_SOCKET, "getaddrinfo: %s", gai_strerror (rc));
+#endif
   } else {
     mdextalloc (*result);
   }

@@ -26,9 +26,9 @@ addWinVersionInfo (bdj4se)
 addWinManifest (bdj4se)
 
 add_executable (bdj4installer bdj4installer.c locatebdj3.c)
-if (WIN32)
-  target_compile_options (bdj4installer PRIVATE -mwindows)
-endif()
+# though a gui program, leave it as console mode
+# as that's been tested better, and the command windows
+# that pop up are not so random.
 target_link_libraries (bdj4installer PRIVATE
   libbdj4uib ${BDJ4_UI_LIB}
   libwebclient libbdj4 libbdj4basic libbdj4common
@@ -39,9 +39,6 @@ addWinVersionInfo (bdj4installer)
 addWinManifest (bdj4installer)
 
 add_executable (bdj4altinst bdj4altinst.c)
-if (WIN32)
-  target_compile_options (bdj4altinst PRIVATE -mwindows)
-endif()
 target_link_libraries (bdj4altinst PRIVATE
   libbdj4uib ${BDJ4_UI_LIB}
   libwebclient libbdj4 libbdj4basic libbdj4common

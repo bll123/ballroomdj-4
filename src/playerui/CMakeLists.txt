@@ -6,9 +6,6 @@ cmake_minimum_required (VERSION 3.18)
 include (../utils/bdj4macros.cmake)
 
 add_executable (bdj4playerui bdj4playerui.c)
-if (WIN32)
-  target_compile_options (bdj4playerui PRIVATE -mwindows)
-endif()
 target_link_libraries (bdj4playerui PRIVATE
   libbdj4uip libbdj4uic libbdj4uii libbdj4uib ${BDJ4_UI_LIB} libbdj4cont
   libbdj4audiosrc

@@ -163,14 +163,18 @@ if (NOT APPLE AND NOT WIN32)
   target_sources (objosutils PRIVATE libcommon/oslinuxutils.c)
 endif()
 
+add_library (objpathutil OBJECT
+  # uses osutils, bdjstring
+  libcommon/pathutil.c
+)
+
 add_library (objlauncher OBJECT
   libcommon/bdj4arg.c
+  libcommon/filedata.c
+  libcommon/osnetutils.c
   libcommon/pathbld.c
   libcommon/pathdisp.c
   libcommon/sysvars.c
-  libcommon/pathutil.c
-  libcommon/osnetutils.c
-  libcommon/filedata.c
 )
 
 # static libraries for build

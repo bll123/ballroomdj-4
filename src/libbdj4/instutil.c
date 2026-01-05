@@ -520,41 +520,12 @@ void
 instutilInstallCleanTmp (const char *rundir)
 {
   if (isWindows ()) {
-    char    *cttext;
-    size_t  sz = 0;
-    char    tbuff [BDJ4_PATH_MAX];
     char    tfn [BDJ4_PATH_MAX];
-    char    *tmp;
-    FILE    *fh;
 
-    stpecpy (tbuff, tbuff + sizeof (tbuff), rundir);
-    tmp = regexReplaceLiteral (rundir, sysvarsGetStr (SV_USER), WINUSERNAME);
-    stpecpy (tbuff, tbuff + sizeof (tbuff), tmp);
-    mdfree (tmp);
-    pathDisplayPath (tbuff, sizeof (tbuff));
+    /* windows now uses utility/bdj4winstartup */
     snprintf (tfn, sizeof (tfn), "%s/bdj4clean.bat",
         sysvarsGetStr (SV_DIR_CONFIG));
-    cttext = filedataReadAll (tfn, &sz);
-    if (cttext == NULL) {
-      cttext = mdstrdup ("");
-    }
-    if (strstr (cttext, tbuff) == NULL) {
-      char    *btmpl;
-      char    *tmpl;
-
-      btmpl = filedataReadAll ("install/win-cleantmp.bat", &sz);
-      tmpl = regexReplaceLiteral (btmpl, "#BDJ4DIR#", tbuff);
-      dataFree (btmpl);
-
-      fh = fileopOpen (tfn, "a");
-      if (fh != NULL) {
-        fwrite (tmpl, strlen (tmpl), 1, fh);
-        mdextfclose (fh);
-        fclose (fh);
-      }
-      dataFree (tmpl);
-    }
-    dataFree (cttext);
+    fileopDelete (tfn);
   }
 
   /* 2024-10-13 */

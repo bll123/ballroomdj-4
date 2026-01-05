@@ -7,15 +7,18 @@ include (../utils/bdj4macros.cmake)
 
 # want to keep the launcher at a minimum size and statically linked
 # with no shared library dependencies.
+# this should be a windows console program so that the text based
+# utilities work.
 add_executable (bdj4 bdj4.c)
 addWinIcon (bdj4 launcher.rc ${BDJ4ICON})
 target_link_libraries (bdj4 PRIVATE
-  objosutils
-  objlauncher
   objdirutil
-  objosprocess
-  objosenv
   objfileop
+  objlauncher
+  objosenv
+  objosprocess
+  objosutils
+  objpathutil
   objstring
   objtmutil
   m
@@ -33,18 +36,20 @@ addWinManifest (bdj4)
 updateRPath (bdj4)
 
 # this is only used on macos
-# the macos application requires an executable linked with the ui framework
+# the macos application requires an executable that
+# initializes the gui
 if (APPLE)
   add_executable (bdj4g bdj4.c)
   addUIInclude (bdj4g)
   target_compile_options (bdj4g PRIVATE -DBDJ4_GUI_LAUNCHER=1)
   target_link_libraries (bdj4g PRIVATE
-    objosutils
-    objlauncher
     objdirutil
-    objosprocess
-    objosenv
     objfileop
+    objlauncher
+    objosenv
+    objosprocess
+    objosutils
+    objpathutil
     objstring
     objtmutil
     m
@@ -60,9 +65,6 @@ add_executable (bdj4starterui
   startutil.c
   support.c
 )
-if (WIN32)
-  target_compile_options (bdj4starterui PRIVATE -mwindows)
-endif()
 target_link_libraries (bdj4starterui PRIVATE
   libbdj4uib ${BDJ4_UI_LIB}
   libwebclient libbdj4 libbdj4basic libbdj4common
@@ -75,9 +77,6 @@ addWinManifest (bdj4starterui)
 updateRPath (bdj4starterui)
 
 add_executable (bdj4helperui bdj4helperui.c)
-if (WIN32)
-  target_compile_options (bdj4helperui PRIVATE -mwindows)
-endif()
 target_link_libraries (bdj4helperui PRIVATE
   libbdj4uib ${BDJ4_UI_LIB}
   libbdj4 libbdj4basic libbdj4common

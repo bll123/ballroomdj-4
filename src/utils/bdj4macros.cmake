@@ -64,6 +64,12 @@ macro (addWinBcryptLibrary name)
   endif()
 endmacro()
 
+macro (addWinGUIFlag name)
+  if (WIN32)
+    target_link_options (${name} PRIVATE -mwindows)
+  endif()
+endmacro()
+
 macro (addWinIcon name rcnm iconnm)
   if (WIN32)
     add_custom_command (

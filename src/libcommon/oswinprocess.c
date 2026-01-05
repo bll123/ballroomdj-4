@@ -79,11 +79,16 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
   wbuff = osToWideChar (buff);
 
   val = 0;
+  /* how windows decides to create a command window is unknown. */
+  /* there seem to be different rules for gui->console, console->console */
   if ((flags & OS_PROC_DETACH) == OS_PROC_DETACH) {
     val |= DETACHED_PROCESS;
     if ((flags & OS_PROC_WINDOW_OK) != OS_PROC_WINDOW_OK) {
       val |= CREATE_NO_WINDOW;
     }
+  }
+  if ((flags & OS_PROC_NOWINDOW) == OS_PROC_NOWINDOW) {
+    val |= CREATE_NO_WINDOW;
   }
 
   /* windows and its stupid space-in-name and quoting issues */
@@ -208,6 +213,9 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
   val = 0;
   if ((flags & OS_PROC_DETACH) == OS_PROC_DETACH) {
     val |= DETACHED_PROCESS;
+    val |= CREATE_NO_WINDOW;
+  }
+  if ((flags & OS_PROC_NOWINDOW) == OS_PROC_NOWINDOW) {
     val |= CREATE_NO_WINDOW;
   }
 

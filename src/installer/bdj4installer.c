@@ -131,6 +131,7 @@ typedef struct {
   char            *target;
   char            *hostname;
   char            *macospfx;
+  bdjregex_t      *userrx;
   char            rundir [BDJ4_PATH_MAX];      // installation dir with macospfx
   char            name [100];
   char            datatopdir [BDJ4_PATH_MAX];
@@ -251,6 +252,7 @@ main (int argc, char *argv[])
   installer_t   installer;
   char          tbuff [BDJ4_PATH_MAX];
   char          buff [BDJ4_PATH_MAX];
+  char          pattern [200];
   FILE          *fh;
   int           c = 0;
   int           option_index = 0;
@@ -356,6 +358,8 @@ main (int argc, char *argv[])
 
   installer.hostname = sysvarsGetStr (SV_HOSTNAME);
   installer.home = sysvarsGetStr (SV_HOME);
+  snprintf (pattern, sizeof (pattern), "^.*/%s", sysvarsGetStr (SV_USER));
+  installer.userrx = regexInit (pattern);
 
   stpecpy (buff, buff + sizeof (buff), installer.home);
   if (isMacOS ()) {
@@ -374,7 +378,11 @@ main (int argc, char *argv[])
     if (isWindows ()) {
       char    *tmp = NULL;
 
-      tmp = regexReplaceLiteral (buff, "%USERNAME%", sysvarsGetStr (SV_USER));
+      /* old method */
+      tmp = regexReplaceLiteral (buff, WINUSERNAME, sysvarsGetStr (SV_USER));
+      stpecpy (buff, buff + sizeof (buff), tmp);
+      dataFree (tmp);
+      tmp = regexReplaceLiteral (buff, WINUSERPROFILE, installer.home);
       stpecpy (buff, buff + sizeof (buff), tmp);
       dataFree (tmp);
     }
@@ -426,6 +434,7 @@ main (int argc, char *argv[])
         if (optarg != NULL) {
           targ = bdj4argGet (bdj4arg, optind - 1, optarg);
           stpecpy (installer.unpackdir, installer.unpackdir + sizeof (installer.unpackdir), targ);
+          pathNormalizePath (installer.unpackdir, sizeof (installer.unpackdir));
         }
         break;
       }
@@ -1066,12 +1075,9 @@ installerValidateTarget (uiwcont_t *entry, const char *label, void *udata)
   stpecpy (tbuff, tbuff + sizeof (tbuff), dir);
   pathNormalizePath (tbuff, strlen (tbuff));
 
-  /* only call the validation process if the directory has changed */
-  if (strcmp (tbuff, installer->target) != 0) {
-    rc = installerValidateProcessTarget (installer, tbuff);
-  } else {
-    rc = UIENTRY_OK;
-  }
+  /* always call the val-proc-tgt, the user may have reset */
+  /* the directory to a previous known value */
+  rc = installerValidateProcessTarget (installer, tbuff);
 
   installer->invaltarget = false;
   return rc;
@@ -1524,6 +1530,8 @@ installerPrepare (installer_t *installer)
 static void
 installerInstInit (installer_t *installer)
 {
+  installer->aborted = false;
+
   /* no possible installation could be made */
   /* this is generally an attempt to install to a folder that exists */
   /* but no bdj4 installation was found */
@@ -1539,7 +1547,6 @@ installerInstInit (installer_t *installer)
 
   /* a bad conversion dir will turn off the convprocess flag */
 
-  installer->aborted = false;
   installerSetPaths (installer);
   installer->instState = INST_SAVE_TARGET;
 }
@@ -1564,9 +1571,9 @@ installerSaveTargetDir (installer_t *installer)
       /* environment variable, and the installer and any windows scripts */
       /* must replace the variable with the user name. */
 
-      tmp = regexReplaceLiteral (installer->target, sysvarsGetStr (SV_USER),
-          WINUSERNAME);
+      tmp = regexReplace (installer->userrx, installer->target, WINUSERPROFILE);
     }
+
     fprintf (fh, "%s\n", tmp);
     mdextfclose (fh);
     fclose (fh);
@@ -1641,8 +1648,7 @@ installerCopyFiles (installer_t *installer)
     char      *trundir = NULL;
 
     *tmp = '\0';
-    trundir = regexReplaceLiteral (installer->rundir,
-        sysvarsGetStr (SV_USER), WINUSERNAME);
+    trundir = regexReplace (installer->userrx, installer->rundir, WINUSERPROFILE);
     stpecpy (tmp, tmp + sizeof (tmp), trundir);
     dataFree (trundir);
     pathDisplayPath (tmp, sizeof (tmp));
@@ -2015,9 +2021,14 @@ installerWinStartup (installer_t *installer)
   if (isWindows ()) {
     char  tbuff [BDJ4_PATH_MAX];
 
+    /* this is the old method */
     snprintf (tbuff, sizeof (tbuff), "%s/Start Menu/Programs/Startup/bdj4.bat",
-        sysvarsGetStr (SV_HOME));
-    filemanipCopy ("install/win-startup.bat", tbuff);
+        installer->home);
+    fileopDelete (tbuff);
+
+    snprintf (tbuff, sizeof (tbuff), "%s/Start Menu/Programs/Startup/bdj4winstartup.exe",
+        installer->home);
+    filemanipCopy ("bin/bdj4winstartup.exe", tbuff);
   }
 
   installer->instState = INST_INST_CLEAN_TMP;
@@ -2476,26 +2487,8 @@ installerCleanup (installer_t *installer)
     }
   }
 
-  if (installer->bdjoptloaded) {
-    bdjoptCleanup ();
-  }
-
-  if (installer->guienabled) {
-    for (int i = 0; i < INST_W_MAX; ++i) {
-      uiwcontFree (installer->wcont [i]);
-    }
-  }
-  for (int i = 0; i < INST_CB_MAX; ++i) {
-    callbackFree (installer->callbacks [i]);
-  }
-  dataFree (installer->target);
-  dataFree (installer->bdj3loc);
-  slistFree (installer->convlist);
-  dataFree (installer->tclshloc);
-
-  webclientClose (installer->webclient);
-
-  if (installer->clean && fileopIsDirectory (installer->unpackdir)) {
+  if (installer->clean &&
+      fileopIsDirectory (installer->unpackdir)) {
     char          buff [BDJ4_PATH_MAX];
 
     if (isWindows ()) {
@@ -2526,9 +2519,7 @@ installerCleanup (installer_t *installer)
         return;
       }
 
-
-      ndata = regexReplaceLiteral (installer->unpackdir,
-          sysvarsGetStr (SV_USER), WINUSERNAME);
+      ndata = regexReplace (installer->userrx, installer->unpackdir, WINUSERPROFILE);
       stpecpy (buff, buff + sizeof (buff), ndata);
       dataFree (ndata);
       pathDisplayPath (buff, strlen (buff));
@@ -2558,6 +2549,27 @@ installerCleanup (installer_t *installer)
   } else {
     fprintf (stderr, "unpack-dir: %s\n", installer->unpackdir);
   }
+
+  if (installer->bdjoptloaded) {
+    bdjoptCleanup ();
+  }
+
+  if (installer->guienabled) {
+    for (int i = 0; i < INST_W_MAX; ++i) {
+      uiwcontFree (installer->wcont [i]);
+    }
+  }
+  for (int i = 0; i < INST_CB_MAX; ++i) {
+    callbackFree (installer->callbacks [i]);
+  }
+
+  regexFree (installer->userrx);
+  dataFree (installer->target);
+  dataFree (installer->bdj3loc);
+  slistFree (installer->convlist);
+  dataFree (installer->tclshloc);
+
+  webclientClose (installer->webclient);
 }
 
 static void

@@ -15,9 +15,6 @@ add_executable (bdj4manageui
   manageseq.c
   managestats.c
 )
-if (WIN32)
-  target_compile_options (bdj4manageui PRIVATE -mwindows)
-endif()
 target_link_libraries (bdj4manageui PRIVATE
   libbdj4uim libbdj4uic libbdj4uii libbdj4uib ${BDJ4_UI_LIB}
   libbdj4cont libbdj4audioid
@@ -32,9 +29,6 @@ addWinManifest (bdj4manageui)
 add_executable (bdj4bpmcounter
   bdj4bpmcounter.c
 )
-if (WIN32)
-  target_compile_options (bdj4bpmcounter PRIVATE -mwindows)
-endif()
 target_link_libraries (bdj4bpmcounter PRIVATE
   libbdj4uib ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
   m

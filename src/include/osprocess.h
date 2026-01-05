@@ -12,11 +12,12 @@ extern "C" {
 #endif
 
 enum {
-  OS_PROC_NONE      = 0,
-  OS_PROC_DETACH    = (1 << 0),
-  OS_PROC_WAIT      = (1 << 1),
-  OS_PROC_NOSTDERR  = (1 << 2),
-  OS_PROC_WINDOW_OK = (1 << 3), // windows, default is no window
+  OS_PROC_NONE        = 0,
+  OS_PROC_DETACH      = (1 << 0),
+  OS_PROC_WAIT        = (1 << 1),
+  OS_PROC_NOSTDERR    = (1 << 2),
+  OS_PROC_NOWINDOW    = (1 << 3),
+  OS_PROC_WINDOW_OK   = (1 << 4),
 };
 
 pid_t osProcessStart (const char *targv[], int flags, void **handle, char *outfname);

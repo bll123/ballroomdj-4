@@ -1,5 +1,5 @@
 
-Copyright 2021-2024 Brad Lanam Pleasant Hill CA
+Copyright 2021-2026 Brad Lanam Pleasant Hill CA
 
 This software is provided 'as-is', without any express or implied
    warranty.  In no event will the authors be held liable for any damages

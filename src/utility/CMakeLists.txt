@@ -9,9 +9,6 @@ include (../utils/bdj4macros.cmake)
 # the executables starting with 'd' are used for debug purposes.
 
 add_executable (bdj4info bdj4info.c)
-if (WIN32)
-  target_compile_options (bdj4info PRIVATE -municode)
-endif()
 addUIInclude (bdj4info)
 target_link_libraries (bdj4info PRIVATE
   libbdj4basic libbdj4common
@@ -21,9 +18,6 @@ addWinVersionInfo (bdj4info)
 addWinManifest (bdj4info)
 
 add_executable (bdj4tags bdj4tags.c)
-if (WIN32)
-  target_compile_options (bdj4tags PRIVATE -municode)
-endif()
 target_link_libraries (bdj4tags PRIVATE
   libbdj4ati libbdj4 libbdj4basic libbdj4common
 )
@@ -35,30 +29,38 @@ if (WIN32)
   add_executable (bdj4winmksc bdj4winmksc.cpp)
   addWinVersionInfo (bdj4winmksc)
   addWinManifest (bdj4winmksc)
-  target_compile_options (bdj4winmksc PRIVATE -municode)
+endif()
+
+if (WIN32)
+  add_executable (bdj4winstartup bdj4winstartup.c)
+  # this program should be set as a gui so that no command window pops up
+  addWinGUIFlag (bdj4winstartup)
+  target_link_options (bdj4winstartup PRIVATE -static-libgcc)
+  target_link_libraries (bdj4winstartup PRIVATE
+    objfileop
+    objosenv
+    objosprocess
+    objosutils
+    objpathutil
+    objstring
+    objtmutil
+  )
+  addWinVersionInfo (bdj4winstartup)
+  addWinManifest (bdj4winstartup)
 endif()
 
 add_executable (dmkmfromdb dmkmfromdb.c)
-if (WIN32)
-  target_compile_options (dmkmfromdb PRIVATE -municode)
-endif()
 target_link_libraries (dmkmfromdb PRIVATE
   libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
 )
 addIntlLibrary (dmkmfromdb)
 
 add_executable (tdbcompare tdbcompare.c)
-if (WIN32)
-  target_compile_options (tdbcompare PRIVATE -municode)
-endif()
 target_link_libraries (tdbcompare PRIVATE
   libbdj4ati libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
 )
 
 add_executable (tdbsetval tdbsetval.c)
-if (WIN32)
-  target_compile_options (tdbsetval PRIVATE -municode)
-endif()
 target_link_libraries (tdbsetval PRIVATE
   libbdj4ati libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
 )
@@ -72,18 +74,12 @@ target_link_libraries (testsuite PRIVATE
 )
 
 add_executable (tmusicsetup tmusicsetup.c)
-if (WIN32)
-  target_compile_options (tmusicsetup PRIVATE -municode)
-endif()
 target_link_libraries (tmusicsetup PRIVATE
   libbdj4ati libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
 )
 addIntlLibrary (tmusicsetup)
 
 add_executable (ttagdbchk ttagdbchk.c)
-if (WIN32)
-  target_compile_options (ttagdbchk PRIVATE -municode)
-endif()
 target_link_libraries (ttagdbchk PRIVATE
   libbdj4ati libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
 )
@@ -120,10 +116,6 @@ target_link_libraries (vsed PRIVATE
 add_executable (uitest
   uitest.c
 )
-if (WIN32)
-  target_compile_options (uitest PRIVATE -municode)
-  target_compile_options (uitest PRIVATE -mwindows)
-endif()
 target_link_libraries (uitest PRIVATE
   libbdj4uii libbdj4uib ${BDJ4_UI_LIB}
   libbdj4 libbdj4basic libbdj4common
@@ -136,9 +128,6 @@ if (PKG_LIBVLC_FOUND OR PKG_LIBVLC4_FOUND)
   add_executable (vlcversion
     vlcversion.c
   )
-  if (WIN32)
-    target_compile_options (uitest PRIVATE -municode)
-  endif()
   if (PKG_LIBVLC_FOUND)
     target_include_directories (vlcversion
       PRIVATE "${PKG_LIBVLC_INCLUDE_DIR}"
@@ -176,7 +165,7 @@ install (TARGETS
 )
 if (WIN32)
   install (TARGETS
-    bdj4winmksc
+    bdj4winmksc bdj4winstartup
     DESTINATION ${DEST_BIN}
   )
 endif()

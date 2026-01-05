@@ -7,13 +7,13 @@
 **4.17.8 2026-1--**
 
 * Bug Fixes:
-    * Installer: Fix completion after an abort and re-run.
-    * Windows: Fix flashing windows issues.
+    * Installer: Fix a validation issue.
+    * Windows: Fix flashing windows.
 * Internal:
     * Minor code cleanup.
     * Fix maximum path length, other sizing issues.
     * Windows: manifest: long path aware, dpi-aware.
-    * Windows: build cleanup.
+    * Windows: build cleanup and fixes.
 
 -->
 

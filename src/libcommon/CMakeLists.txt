@@ -58,13 +58,14 @@ target_include_directories (libbdj4common
   PRIVATE "${PKG_GLIB_INCLUDE_DIRS}"
 )
 target_link_libraries (libbdj4common PRIVATE
-  objosutils    # osutils.c os*utils.c
-  objlauncher   # bdj4arg, pathbld, pathdisp, sysvars, pathutil,
-                # osnetutils, filedata (see ../CMakeLists.txt)
-  objosenv      # osenv.c
   objdirutil    # dirutil.c
   objfileop     # fileop.c
+  objlauncher   # bdj4arg, pathbld, pathdisp, sysvars,
+                # osnetutils, filedata (see ../CMakeLists.txt)
+  objosenv      # osenv.c
   objosprocess  # osprocess.c os*process.c
+  objosutils    # osutils.c os*utils.c
+  objpathutil   # pathutil.c
   objstring     # bdjstring.c stpecpy.c mdebug.c
   objtmutil     # tmutil.c
   ${PKG_GLIB_LDFLAGS}

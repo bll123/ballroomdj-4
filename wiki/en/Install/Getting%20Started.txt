@@ -7,7 +7,8 @@
 #### Configuring BDJ4
 
 Start BDJ4.  The window that displays is the _Starter_ window. Select
-the __Configure__ button.
+the __Configure__ button.  The configuration window can be quite slow
+to start on Windows, be patient.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Starter](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-starter-C.png)

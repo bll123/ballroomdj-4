@@ -9,7 +9,7 @@ curryear=$(date '+%Y')
 # update the list in depcheck.sh also
 for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h \
     */*.sh ../*/*.sh ../pkg/*/*.sh ../pkg/windows/version.rc.in \
-    CMakeLists.txt */CMakeLists.txt Makefile ../README.md \
+    CMakeLists.txt */CMakeLists.txt Makefile ../README.md ../LICENSE.txt \
     ../templates/*.css ../install/*.bat \
     po/Makefile* */*.awk config.h.in */*.cmake ../pkg/macos/*.plist; do
   case $fn in
