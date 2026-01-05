@@ -1539,6 +1539,7 @@ installerInstInit (installer_t *installer)
 
   /* a bad conversion dir will turn off the convprocess flag */
 
+  installer->aborted = false;
   installerSetPaths (installer);
   installer->instState = INST_SAVE_TARGET;
 }

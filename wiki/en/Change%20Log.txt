@@ -6,6 +6,9 @@
 
 **4.17.7.2 2026-1--**
 
+* Bug Fixes:
+    * Installer: Fix completion after an abort.
+    * Windows: Improve login-cleanup script.
 * Internal:
     * Minor code cleanup.
     * Fix maximum path length, other sizing issues.

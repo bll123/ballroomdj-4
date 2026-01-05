@@ -1,6 +1,6 @@
 @echo off
 @rem BDJ4 removal
-@rem Copyright 2023-2024 Brad Lanam Pleasant Hill CA
+@rem Copyright 2023-2025 Brad Lanam Pleasant Hill CA
 set ver=5
 
 set bdj4startup="%USERPROFILE%\Start Menu\Programs\Startup\bdj4.bat"

@@ -1,6 +1,6 @@
 @echo off
 @rem windows install dir clean (template)
-@rem Copyright 2023 Brad Lanam Pleasant Hill CA
+@rem Copyright 2023-2025 Brad Lanam Pleasant Hill CA
 set ver=2
 
 if "%1" == "" (
