@@ -178,7 +178,6 @@ function copyreleasefiles {
   #   It is possible to make it work, but it has no speed+pitch control.
   case ${tag} in
     linux)
-      rm -f ${stage}/bin/bdj4g
       rm -f ${stage}/bin/bdj4winmksc
       ;;
     macos)
@@ -188,7 +187,6 @@ function copyreleasefiles {
       rm -f ${stage}/bin/bdj4winmksc
       ;;
     win64)
-      rm -f ${stage}/bin/bdj4g
       rm -f ${stage}/bin/libplimpris*
       rm -f ${stage}/bin/libcontmpris*   # should not exist
       rm -f ${stage}/bin/libpligst*

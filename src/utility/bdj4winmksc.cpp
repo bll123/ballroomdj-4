@@ -74,6 +74,7 @@ winmkshortcut (scinfo_t *scinfo)
 
   psl->SetPath (scinfo->targetpath);
   psl->SetWorkingDirectory (scinfo->workingdir);
+  psl->SetShowCmd (SW_SHOWMINNOACTIVE);
   if (scinfo->args != NULL) {
     psl->SetArguments (scinfo->args);
   }

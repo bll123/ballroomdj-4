@@ -4,11 +4,11 @@
 
 <!--
 
-**4.17.7.2 2026-1--**
+**4.17.8 2026-1--**
 
 * Bug Fixes:
-    * Installer: Fix completion after an abort.
-    * Windows: Improve login-cleanup script.
+    * Installer: Fix completion after an abort and re-run.
+    * Windows: Fix flashing windows issues.
 * Internal:
     * Minor code cleanup.
     * Fix maximum path length, other sizing issues.

@@ -36,30 +36,27 @@ addWinManifest (bdj4)
 updateRPath (bdj4)
 
 # this is only used on macos
-add_executable (bdj4g bdj4.c)
-if (WIN32)
-  target_compile_options (bdj4g PRIVATE -municode)
-  target_link_options (bdj4 PRIVATE -static-libgcc)
+# the macos application requires an executable linked with the ui framework
+if (APPLE)
+  add_executable (bdj4g bdj4.c)
+  addUIInclude (bdj4g)
+  target_compile_options (bdj4g PRIVATE -DBDJ4_GUI_LAUNCHER=1)
+  target_link_libraries (bdj4g PRIVATE
+    objosutils
+    objlauncher
+    objdirutil
+    objosprocess
+    objosenv
+    objfileop
+    objstring
+    objtmutil
+    m
+  )
+  addUILibrary (bdj4g)
+  addIOKitFramework (bdj4g)
+  addIntlLibrary (bdj4g)
+  updateRPath (bdj4g)
 endif()
-addUIInclude (bdj4g)
-target_compile_options (bdj4g PRIVATE -DBDJ4_GUI_LAUNCHER=1)
-target_link_libraries (bdj4g PRIVATE
-  objosutils
-  objlauncher
-  objdirutil
-  objosprocess
-  objosenv
-  objfileop
-  objstring
-  objtmutil
-  m
-)
-addUILibrary (bdj4g)
-addIOKitFramework (bdj4g)
-addIntlLibrary (bdj4g)
-addWinSockLibrary (bdj4g)
-addWinNtdllLibrary (bdj4g)
-updateRPath (bdj4g)
 
 add_executable (bdj4starterui
   bdj4starterui.c
@@ -109,8 +106,13 @@ addWinManifest (bdj4cleantmp)
 updateRPath (bdj4cleantmp)
 
 install (TARGETS
-  bdj4 bdj4g
+  bdj4
   bdj4starterui bdj4helperui bdj4cleantmp
   DESTINATION ${DEST_BIN}
 )
-
+if (APPLE)
+  install (TARGETS
+    bdj4g
+    DESTINATION ${DEST_BIN}
+  )
+endif()
