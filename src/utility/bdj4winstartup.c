@@ -24,9 +24,11 @@
 int
 main (int argc, char *argv [])
 {
+  char        user [100];
   char        home [BDJ4_PATH_MAX];
   char        tbuff [BDJ4_PATH_MAX];
   char        instdir [BDJ4_PATH_MAX];
+  char        *p;
   FILE        *fh;
   const char  *targv [10];
   int         targc = 0;
@@ -34,6 +36,7 @@ main (int argc, char *argv [])
   int         rc;
 
   osGetEnv ("USERPROFILE", home, sizeof (home));
+  osGetEnv ("USERNAME", user, sizeof (user));
   pathNormalizePath (home, sizeof (home));
   snprintf (tbuff, sizeof (tbuff), "%s/AppData/Roaming/BDJ4/%s%s",
       home, INST_PATH_FN, BDJ4_CONFIG_EXT);
@@ -46,8 +49,13 @@ main (int argc, char *argv [])
   fclose (fh);
   stringTrim (instdir);
 
-  snprintf (tbuff, sizeof (tbuff), "%s%s/bin/bdj4.exe",
-      home, instdir + strlen (WINUSERPROFILE));
+  p = strstr (instdir, WINUSERNAME_SL);
+  if (p != NULL) {
+    snprintf (tbuff, sizeof (tbuff), "%.*s/%s/%s/bin/bdj4.exe",
+        (int) (p - instdir), instdir, user, p + strlen (WINUSERNAME_SL));
+  } else {
+    snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4.exe", instdir);
+  }
   if (! fileopFileExists (tbuff)) {
     return 0;
   }

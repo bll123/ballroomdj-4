@@ -1,6 +1,6 @@
 @echo off
 @rem BDJ4 removal
-@rem Copyright 2023-2026 Brad Lanam Pleasant Hill CA
+@rem Copyright 2023-2024 Brad Lanam Pleasant Hill CA
 set ver=5
 
 set bdj4startup="%USERPROFILE%\Start Menu\Programs\Startup\bdj4.bat"
@@ -23,7 +23,6 @@ if exist %bdj4instloc% (
   set bdj4dir="!x!"
   set bdj4dir=!bdj4dir:/=\!
   @rem version 4.4.4 used USERPROFILE
-  @rem version 4.17.8 starts using USERPROFILE
   set bdj4dir=!bdj4dir:%%USERPROFILE%%=%USERPROFILE%!
   set bdj4dir=!bdj4dir:%%USERNAME%%=%USERNAME%!
   if exist !bdj4dir! (
@@ -61,7 +60,6 @@ for %%v in (01 02 03 04 05 06 07 08 09) do (
     set bdj4dir="!x!"
     set bdj4dir=!bdj4dir:/=\!
     @rem version 4.4.4 used USERPROFILE
-    @rem version 4.17.8 starts using USERPROFILE
     set bdj4dir=!bdj4dir:%%USERPROFILE%%=%USERPROFILE%!
     set bdj4dir=!bdj4dir:%%USERNAME%%=%USERNAME%!
     if exist !bdj4dir! (

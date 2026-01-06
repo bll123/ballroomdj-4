@@ -210,4 +210,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2025-12-08 10:34:23; BDJ4 version 4.17.7)_
+<br>_(Updated 2026-01-05 19:11:59; BDJ4 version 4.17.8)_

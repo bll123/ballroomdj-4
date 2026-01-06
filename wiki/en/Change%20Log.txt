@@ -4,18 +4,20 @@
 
 <!--
 
-**4.17.8 2026-1--**
+**4.17.9 2026-1---**
+
+-->
+
+**4.17.8 2026-1-5**
 
 * Bug Fixes:
     * Installer: Fix a validation issue.
-    * Windows: Fix flashing windows.
+    * Windows: Fix flashing windows (cleaner, startup).
 * Internal:
     * Minor code cleanup.
     * Fix maximum path length, other sizing issues.
     * Windows: manifest: long path aware, dpi-aware.
     * Windows: build cleanup and fixes.
-
--->
 
 **4.17.7.1 2025-12-16**
 
@@ -1418,4 +1420,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2026-01-03 18:06:33; BDJ4 version 4.17.7.1)_
+<br>_(Updated 2026-01-05 19:11:59; BDJ4 version 4.17.8)_

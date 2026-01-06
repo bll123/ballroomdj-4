@@ -90,6 +90,41 @@ typedef enum {
   INST_EXIT,
 } installstate_t;
 
+const char *initStateTxt [] = {
+  [INST_INITIALIZE] = "INITIALIZE",
+  [INST_VERIFY_INST_INIT] = "VERIFY_INST_INIT",
+  [INST_VERIFY_INSTALL] = "VERIFY_INSTALL",
+  [INST_PREPARE] = "PREPARE",
+  [INST_WAIT_USER] = "WAIT_USER",
+  [INST_INIT] = "INIT",
+  [INST_SAVE_TARGET] = "SAVE_TARGET",
+  [INST_MAKE_TARGET] = "MAKE_TARGET",
+  [INST_COPY_START] = "COPY_START",
+  [INST_COPY_FILES] = "COPY_FILES",
+  [INST_MAKE_DATA_TOP] = "MAKE_DATA_TOP",
+  [INST_CREATE_DIRS] = "CREATE_DIRS",
+  [INST_COPY_TEMPLATES_INIT] = "COPY_TEMPLATES_INIT",
+  [INST_COPY_TEMPLATES] = "COPY_TEMPLATES",
+  [INST_CONVERT_START] = "CONVERT_START",
+  [INST_CONVERT] = "CONVERT",
+  [INST_CONVERT_FINISH] = "CONVERT_FINISH",
+  [INST_CREATE_LAUNCHER] = "CREATE_LAUNCHER",
+  [INST_WIN_STARTUP] = "WIN_STARTUP",
+  [INST_INST_CLEAN_TMP] = "INST_CLEAN_TMP",
+  [INST_SAVE_LOCALE] = "SAVE_LOCALE",
+  [INST_VLC_CHECK] = "VLC_CHECK",
+  [INST_VLC_DOWNLOAD] = "VLC_DOWNLOAD",
+  [INST_VLC_INSTALL] = "VLC_INSTALL",
+  [INST_FINALIZE] = "FINALIZE",
+  [INST_UPDATE_PROCESS_INIT] = "UPDATE_PROCESS_INIT",
+  [INST_UPDATE_PROCESS] = "UPDATE_PROCESS",
+  [INST_UPDATE_ALT_PROCESS_INIT] = "UPDATE_ALT_PROCESS_INIT",
+  [INST_REGISTER_INIT] = "REGISTER_INIT",
+  [INST_REGISTER] = "REGISTER",
+  [INST_FINISH] = "FINISH",
+  [INST_EXIT] = "EXIT",
+};
+
 enum {
   INST_CB_TARGET_DIR,
   INST_CB_BDJ3LOC_DIR,
@@ -131,7 +166,6 @@ typedef struct {
   char            *target;
   char            *hostname;
   char            *macospfx;
-  bdjregex_t      *userrx;
   char            rundir [BDJ4_PATH_MAX];      // installation dir with macospfx
   char            name [100];
   char            datatopdir [BDJ4_PATH_MAX];
@@ -252,7 +286,6 @@ main (int argc, char *argv[])
   installer_t   installer;
   char          tbuff [BDJ4_PATH_MAX];
   char          buff [BDJ4_PATH_MAX];
-  char          pattern [200];
   FILE          *fh;
   int           c = 0;
   int           option_index = 0;
@@ -358,8 +391,6 @@ main (int argc, char *argv[])
 
   installer.hostname = sysvarsGetStr (SV_HOSTNAME);
   installer.home = sysvarsGetStr (SV_HOME);
-  snprintf (pattern, sizeof (pattern), "^.*/%s", sysvarsGetStr (SV_USER));
-  installer.userrx = regexInit (pattern);
 
   stpecpy (buff, buff + sizeof (buff), installer.home);
   if (isMacOS ()) {
@@ -378,11 +409,8 @@ main (int argc, char *argv[])
     if (isWindows ()) {
       char    *tmp = NULL;
 
-      /* old method */
-      tmp = regexReplaceLiteral (buff, WINUSERNAME, sysvarsGetStr (SV_USER));
-      stpecpy (buff, buff + sizeof (buff), tmp);
-      dataFree (tmp);
-      tmp = regexReplaceLiteral (buff, WINUSERPROFILE, installer.home);
+      snprintf (tbuff, sizeof (tbuff), "/%s/", sysvarsGetStr (SV_USER));
+      tmp = regexReplaceLiteral (buff, WINUSERNAME_SL, tbuff);
       stpecpy (buff, buff + sizeof (buff), tmp);
       dataFree (tmp);
     }
@@ -561,9 +589,11 @@ main (int argc, char *argv[])
   while (installer.instState != INST_EXIT) {
     if (installer.instState != installer.lastInstState) {
       if (installer.verbose && ! installer.quiet) {
-        fprintf (stderr, "state: %d\n", installer.instState);
+        fprintf (stderr, "state: %d %s\n",
+            installer.instState, initStateTxt [installer.instState]);
       }
-      logMsg (LOG_INSTALL, LOG_IMPORTANT, "state: %d", installer.instState);
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "state: %d %s",
+          installer.instState, initStateTxt [installer.instState]);
       installer.lastInstState = installer.instState;
     }
     installerMainLoop (&installer);
@@ -1565,13 +1595,16 @@ installerSaveTargetDir (installer_t *installer)
     char  *tmp = installer->target;
 
     if (isWindows ()) {
+      char    tbuff [BDJ4_PATH_MAX];
+
       /* On windows, the uninstall batch script reads the install path from */
       /* a text file.  International characters cannot be processed */
       /* in this manner.  Therefore replace the username with the */
       /* environment variable, and the installer and any windows scripts */
       /* must replace the variable with the user name. */
 
-      tmp = regexReplace (installer->userrx, installer->target, WINUSERPROFILE);
+      snprintf (tbuff, sizeof (tbuff), "/%s/", sysvarsGetStr (SV_USER));
+      tmp = regexReplaceLiteral (installer->target, tbuff, WINUSERNAME_SL);
     }
 
     fprintf (fh, "%s\n", tmp);
@@ -1599,6 +1632,10 @@ installerMakeTarget (installer_t *installer)
   versinfo = sysvarsParseVersionFile (tbuff);
   instutilOldVersionString (versinfo, installer->oldversion, sizeof (installer->oldversion));
   sysvarsParseVersionFileFree (versinfo);
+
+  if (installer->verbose && ! installer->quiet) {
+    fprintf (stderr, "make target: %s\n", installer->target);
+  }
 
   installer->instState = INST_COPY_START;
 }
@@ -1646,9 +1683,12 @@ installerCopyFiles (installer_t *installer)
 
   if (isWindows ()) {
     char      *trundir = NULL;
+    char      tuser [100];
 
     *tmp = '\0';
-    trundir = regexReplace (installer->userrx, installer->rundir, WINUSERPROFILE);
+    snprintf (tuser, sizeof (tuser), "/%s/", sysvarsGetStr (SV_USER));
+    trundir = regexReplaceLiteral (installer->rundir,
+        tuser, WINUSERNAME_SL);
     stpecpy (tmp, tmp + sizeof (tmp), trundir);
     dataFree (trundir);
     pathDisplayPath (tmp, sizeof (tmp));
@@ -1658,6 +1698,10 @@ installerCopyFiles (installer_t *installer)
         tmp);
   } else {
     snprintf (tbuff, sizeof (tbuff), "rsync -aS . '%s'", installer->target);
+  }
+
+  if (installer->verbose && ! installer->quiet) {
+    fprintf (stderr, "copy files: %s\n", tbuff);
   }
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "copy files: %s", tbuff);
   (void) ! system (tbuff);
@@ -2493,6 +2537,7 @@ installerCleanup (installer_t *installer)
 
     if (isWindows ()) {
       char          ebuff [BDJ4_PATH_MAX];
+      char          tuser [100];
       size_t        sz = 0;
       char          *fdata;
       char          *ndata;
@@ -2519,7 +2564,9 @@ installerCleanup (installer_t *installer)
         return;
       }
 
-      ndata = regexReplace (installer->userrx, installer->unpackdir, WINUSERPROFILE);
+      snprintf (tuser, sizeof (tuser), "/%s/", sysvarsGetStr (SV_USER));
+      ndata = regexReplaceLiteral (installer->unpackdir,
+          tuser, WINUSERNAME_SL);
       stpecpy (buff, buff + sizeof (buff), ndata);
       dataFree (ndata);
       pathDisplayPath (buff, strlen (buff));
@@ -2563,7 +2610,6 @@ installerCleanup (installer_t *installer)
     callbackFree (installer->callbacks [i]);
   }
 
-  regexFree (installer->userrx);
   dataFree (installer->target);
   dataFree (installer->bdj3loc);
   slistFree (installer->convlist);
@@ -2588,7 +2634,10 @@ installerDisplayText (installer_t *installer, const char *pfx,
     }
     installer->scrolltoend = true;
   } else {
-    if (! installer->quiet) {
+    if (installer->verbose && ! installer->quiet) {
+      fprintf (stderr, "%s%s\n", pfx, txt);
+      fflush (stderr);
+    } else if (! installer->quiet) {
       fprintf (stdout, "%s%s\n", pfx, txt);
       fflush (stdout);
     }
