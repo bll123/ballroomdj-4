@@ -1,9 +1,11 @@
 @echo off
 @rem BDJ4 removal
-@rem Copyright 2023-2024 Brad Lanam Pleasant Hill CA
-set ver=5
+@rem Copyright 2023-2026 Brad Lanam Pleasant Hill CA
+set ver=6
 
-set bdj4startup="%USERPROFILE%\Start Menu\Programs\Startup\bdj4.bat"
+set winstartup="%USERPROFILE%\Start Menu\Programs\Startup"
+set bdj4oldstart="%winstartup%\bdj4.bat"
+set bdj4startup="%winstartup%\bdj4winstartup.exe"
 set bdj4conf="%USERPROFILE%\AppData\Roaming\BDJ4"
 set bdj4instloc=%bdj4conf%\installdir.txt
 set bdj4cache="%TEMP%\BDJ4"
@@ -33,6 +35,7 @@ if exist %bdj4instloc% (
     del /q !bdj4sc!
   )
 )
+
 
 set bdj4dir="%USERPROFILE%\BDJ4"
 set bdj4sc="%USERPROFILE%\Desktop\BDJ4.lnk"
@@ -75,6 +78,9 @@ for %%v in (01 02 03 04 05 06 07 08 09) do (
   )
 )
 
+if exist %bdj4oldstart% (
+  del /q %bdj4oldstart%
+)
 if exist %bdj4startup% (
   del /q %bdj4startup%
 )
