@@ -74,7 +74,7 @@ for arg in "$@"; do
       setati=T
       ;;
     --pli)
-      # pli argument may be one of: VLC3, VLC4, GST, MPRISVLC, WINMP
+      # pli argument may be one of: VLC3, VLC4, GST, MPRISVLC, WINMP, MACAV
       setpli=T
       ;;
     --vol)
@@ -241,6 +241,10 @@ fi
 if [[ $PLI == WINMP ]]; then
   PLII=libpliwinmp
   PLIINM="Windows Media Player"
+fi
+if [[ $PLI == MACAV ]]; then
+  PLII=libplimacosav
+  PLIINM="MacOS AVPlayer"
 fi
 
 # if VOLI is empty, no change is made, and the default is used

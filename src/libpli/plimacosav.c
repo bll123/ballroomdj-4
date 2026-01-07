@@ -93,7 +93,6 @@ pliiPause (plidata_t *pliData)
     return;
   }
 
-fprintf (stderr, "pli-pause\n");
   macosavPause (pliData->macosav);
 }
 
@@ -104,7 +103,6 @@ pliiPlay (plidata_t *pliData)
     return;
   }
 
-fprintf (stderr, "pli-play\n");
   macosavPlay (pliData->macosav);
 }
 
@@ -115,7 +113,6 @@ pliiStop (plidata_t *pliData)
     return;
   }
 
-fprintf (stderr, "pli-stop\n");
   macosavStop (pliData->macosav);
 }
 
@@ -126,7 +123,6 @@ pliiSeek (plidata_t *pliData, ssize_t pos)
     return 0;
   }
 
-fprintf (stderr, "pli-seek\n");
   pos = macosavSeek (pliData->macosav, pos);
   return pos;
 }
@@ -140,7 +136,6 @@ pliiRate (plidata_t *pliData, ssize_t rate)
     return 100;
   }
 
-fprintf (stderr, "pli-rate\n");
   drate = (double) rate / 100.0;
   drate = macosavRate (pliData->macosav, drate);
   rate = (ssize_t) round (drate * 100.0);

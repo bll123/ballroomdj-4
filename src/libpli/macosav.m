@@ -31,6 +31,8 @@ typedef struct macosav {
 } macosav_t;
 
 static void macosavCheckTCStatus (macosav_t *macosav);
+static long macosavCheckPlayerError (macosav_t *macosav);
+static void macosavRunLoop (macosav_t *macosav);
 
 macosav_t *
 macosavInit (void)
@@ -63,8 +65,10 @@ macosavClose (macosav_t *macosav)
 int
 macosavMedia (macosav_t *macosav, const char *fullMediaPath, int sourceType)
 {
-  NSString    *ffn = NULL;
-  NSURL       *url = NULL;
+  NSString        *ffn = NULL;
+  NSURL           *url = NULL;
+  int             count = 0;
+  plistate_t      plistate;
 
   if (macosav == NULL || fullMediaPath == NULL) {
     return -1;
@@ -73,26 +77,24 @@ macosavMedia (macosav_t *macosav, const char *fullMediaPath, int sourceType)
   ffn = [NSString stringWithUTF8String: fullMediaPath];
   if (sourceType == AUDIOSRC_TYPE_FILE) {
     url = [NSURL fileURLWithPath: ffn isDirectory: false];
-fprintf (stderr, "url: %s\n", [url fileSystemRepresentation]);
   } else {
   }
 
   if (url != NULL) {
-    NSError   *err;
-
     macosav->player = [AVPlayer playerWithURL: url];
-    err = [macosav->player error];
-    if (err != 0) {
-fprintf (stderr, "pl: err: %ld %s\n", [err code], [[err domain] UTF8String]);
+    if (macosavCheckPlayerError (macosav) != 0) {
+      return -1;
     }
     macosav->player.automaticallyWaitsToMinimizeStalling = false;
     macosav->plitem = [macosav->player currentItem];
-    err = [macosav->plitem error];
-    if (err != 0) {
-fprintf (stderr, "plitem: err: %ld %s\n", [err code], [[err domain] UTF8String]);
-    }
-macosavGetDuration (macosav);
   }
+
+  plistate = macosavState (macosav);
+  while (plistate == PLI_STATE_NONE || plistate == PLI_STATE_ERROR) {
+    plistate = macosavState (macosav);
+    ++count;
+  }
+fprintf (stderr, "media-count: %d\n", count);
 
   return 0;
 }
@@ -104,9 +106,9 @@ macosavPlay (macosav_t *macosav)
     return -1;
   }
 
-fprintf (stderr, "play drate:%.2f\n", macosav->drate);
   macosav->player.defaultRate = macosav->drate;
   [macosav->player play];
+  macosavRunLoop (macosav);
   return 0;
 }
 
@@ -117,8 +119,8 @@ macosavPause (macosav_t *macosav)
     return -1;
   }
 
-fprintf (stderr, "pause\n");
   [macosav->player pause];
+  macosavRunLoop (macosav);
   return 0;
 }
 
@@ -129,8 +131,8 @@ macosavStop (macosav_t *macosav)
     return -1;
   }
 
-fprintf (stderr, "stop\n");
   [macosav->player pause];
+  macosavRunLoop (macosav);
   return 0;
 }
 
@@ -144,9 +146,9 @@ macosavGetDuration (macosav_t *macosav)
     return 0;
   }
 
+  macosavRunLoop (macosav);
   tm = [macosav->plitem duration];
   duration = (ssize_t) (CMTimeGetSeconds (tm) * 1000.0);
-fprintf (stderr, "dur: %ld\n", (long) duration);
   return duration;
 }
 
@@ -160,44 +162,37 @@ macosavGetTime (macosav_t *macosav)
     return 0;
   }
 
+  macosavRunLoop (macosav);
   tm = [macosav->player currentTime];
   currtm = (ssize_t) (CMTimeGetSeconds (tm) * 1000.0);
-fprintf (stderr, "currtm: %ld\n", (long) currtm);
   return 0;
 }
 
 plistate_t
 macosavState (macosav_t *macosav)
 {
-  AVPlayerStatus            status;
+  AVPlayerStatus      status;
 
   if (macosav == NULL || macosav->player == NULL) {
     return PLI_STATE_NONE;
   }
 
+  macosavRunLoop (macosav);
+
   status = [macosav->player status];
 
   switch (status) {
     case AVPlayerStatusUnknown: {
-      macosav->plistate = PLI_STATE_IDLE;
-fprintf (stderr, "status: unk\n");
-
-      macosavCheckTCStatus (macosav);
+      macosav->plistate = PLI_STATE_NONE;
       break;
     }
     case AVPlayerStatusReadyToPlay: {
-      float   rate;
-
-      rate = [macosav->player rate];
-fprintf (stderr, "rate: %.2f\n", (double) rate);
-fprintf (stderr, "status: ready\n");
-
+      macosav->plistate = PLI_STATE_OPENING;
       macosavCheckTCStatus (macosav);
       break;
     }
     case AVPlayerStatusFailed: {
-      macosav->plistate = PLI_STATE_STOPPED;
-fprintf (stderr, "status: failed\n");
+      macosav->plistate = PLI_STATE_ERROR;
       break;
     }
   }
@@ -212,6 +207,7 @@ macosavSeek (macosav_t *macosav, ssize_t pos)
     return 0;
   }
 
+  macosavRunLoop (macosav);
   return pos;
 }
 
@@ -224,6 +220,7 @@ macosavRate (macosav_t *macosav, double drate)
 
   macosav->drate = drate;
 
+  macosavRunLoop (macosav);
   return drate;
 }
 
@@ -238,54 +235,15 @@ macosavCheckTCStatus (macosav_t *macosav)
 
   switch (tcstatus) {
     case AVPlayerTimeControlStatusPaused: {
-      NSError     *err;
-
       macosav->plistate = PLI_STATE_PAUSED;
-fprintf (stderr, "tcstatus: paused\n");
-      err = [macosav->player error];
-      if (err != 0) {
-fprintf (stderr, "pl: err: %ld %s\n", [err code], [[err domain] UTF8String]);
-      }
-      err = [macosav->plitem error];
-      if (err != 0) {
-fprintf (stderr, "plitem: err: %ld %s\n", [err code], [[err domain] UTF8String]);
-      }
       break;
     }
     case AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate: {
-      NSString    *reason;
-      NSError   *err;
-
       macosav->plistate = PLI_STATE_BUFFERING;
-      reason = [macosav->player reasonForWaitingToPlay];
-fprintf (stderr, "tcstatus: wait/buffering\n");
-fprintf (stderr, "reason: %s\n", [reason UTF8String]);
-      [macosav->player play];
-      err = [macosav->player error];
-      if (err != 0) {
-fprintf (stderr, "pl: err: %ld %s\n", [err code], [[err domain] UTF8String]);
-      }
-      err = [macosav->plitem error];
-      if (err != 0) {
-fprintf (stderr, "plitem: err: %ld %s\n", [err code], [[err domain] UTF8String]);
-      }
       break;
     }
     case AVPlayerTimeControlStatusPlaying: {
-      NSError   *err;
-
       macosav->plistate = PLI_STATE_PLAYING;
-fprintf (stderr, "tcstatus: playing\n");
-fprintf (stderr, "is-muted: %d\n", macosav->player.isMuted);
-macosavGetDuration (macosav);
-      err = [macosav->player error];
-      if (err != 0) {
-fprintf (stderr, "pl: err: %ld %s\n", [err code], [[err domain] UTF8String]);
-      }
-      err = [macosav->plitem error];
-      if (err != 0) {
-fprintf (stderr, "plitem: err: %ld %s\n", [err code], [[err domain] UTF8String]);
-      }
       break;
     }
   }
@@ -293,3 +251,20 @@ fprintf (stderr, "plitem: err: %ld %s\n", [err code], [[err domain] UTF8String])
   macosav->tcstatus = tcstatus;
 }
 
+static long
+macosavCheckPlayerError (macosav_t *macosav)
+{
+  NSError   *err;
+
+  err = [macosav->player error];
+  return [err code];
+}
+
+static void
+macosavRunLoop (macosav_t *macosav)
+{
+  NSRunLoop           *runloop;
+
+  runloop = [NSRunLoop currentRunLoop];
+  [runloop runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
+}

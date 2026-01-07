@@ -82,7 +82,7 @@ uiUIProcessEvents (void)
   NSEvent *currev = nil;
   bool    haveev = false;
 
-  while ((currev = [NSApp nextEventMatchingMask: NSUIntegerMax
+  while ((currev = [NSApp nextEventMatchingMask: NSEventMaskAny
         untilDate: [NSDate distantPast]
         inMode: NSDefaultRunLoopMode
         dequeue: YES])) {;
