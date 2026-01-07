@@ -19,8 +19,6 @@ target_link_libraries (libvolnull PRIVATE
 
 if (APPLE)
   add_library (libvolmac SHARED volmac.m)
-  # do not know why the -framework options cannot be put into
-  # a link option section.
   target_link_libraries (libvolmac PRIVATE
     "-framework Cocoa" "-framework CoreAudio"
     objstring

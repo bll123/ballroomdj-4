@@ -27,6 +27,7 @@ if (PKG_LIBVLC_FOUND)
     libbdj4common
     ${PKG_LIBVLC_LDFLAGS}
     ${PKG_LIBVLC_LIBRARY}
+    m
   )
   addIntlLibrary (libplivlc)
 endif()
@@ -40,6 +41,7 @@ if (PKG_LIBVLC4_FOUND)
   target_link_libraries (libplivlc4 PRIVATE
     libbdj4common
     ${PKG_LIBVLC4_LIBRARY}
+    m
   )
   addIntlLibrary (libplivlc4)
 endif()
@@ -77,6 +79,15 @@ if (WIN32)
     windowsapp
   )
   addIntlLibrary (libpliwinmp)
+endif()
+
+if (APPLE)
+  add_library (libplimacosav SHARED plimacosav.c macosav.m)
+  target_link_libraries (libplimacosav PRIVATE
+    "-framework Cocoa" "-framework AVFoundation" "-framework CoreMedia"
+    libbdj4common
+    m
+  )
 endif()
 
 install (TARGETS
@@ -127,4 +138,10 @@ if (WIN32)
   updateRPath (libpliwinmp)
 endif()
 
-
+if (APPLE)
+  install (TARGETS
+    libplimacosav
+    DESTINATION ${DEST_BIN}
+  )
+  updateRPath (libplimacosav)
+endif()
