@@ -250,13 +250,31 @@ voliProcess (volaction_t action, const char *sinkname,
   /* the other. */
   /* When using channels, set the volume on both channels. */
 
+  /* On macos, a volume of zero is not zero. The volume must also */
+  /* be muted. */
+
   propertyAOPA.mSelector = kAudioDevicePropertyVolumeScalar;
   propertyAOPA.mScope = kAudioDevicePropertyScopeOutput;
   propertyAOPA.mElement = kAudioObjectPropertyElementMain;
 
   if (action == VOL_SET) {
-    propSize = sizeof (volume);
+    int     muteval;
+
+    muteval = (*vol == 0);
     volume = (Float32) ((double) (*vol) / 100.0);
+
+    propertyAOPA.mSelector = kAudioDevicePropertyMute;
+    propSize = sizeof (muteval);
+    status = AudioObjectSetPropertyData (
+        outputDeviceID,
+        &propertyAOPA,
+        0,
+        NULL,
+        propSize,
+        &muteval);
+
+    propertyAOPA.mSelector = kAudioDevicePropertyVolumeScalar;
+    propSize = sizeof (volume);
     status = AudioObjectSetPropertyData (
         outputDeviceID,
         &propertyAOPA,
@@ -264,10 +282,23 @@ voliProcess (volaction_t action, const char *sinkname,
         NULL,
         propSize,
         &volume);
+
     if (status != 0) {
       /* set all channels */
       for (int i = 0; i < CHAN_STEREO; ++i) {
+        propertyAOPA.mSelector = kAudioDevicePropertyMute;
         propertyAOPA.mElement = channels [i];
+        propSize = sizeof (muteval);
+        status = AudioObjectSetPropertyData (
+            outputDeviceID,
+            &propertyAOPA,
+            0,
+            NULL,
+            propSize,
+            &muteval);
+
+        propertyAOPA.mSelector = kAudioDevicePropertyVolumeScalar;
+        propertyAOPA.mScope = kAudioDevicePropertyScopeOutput;
         propSize = sizeof (volume);
         status = AudioObjectSetPropertyData (
             outputDeviceID,
@@ -276,12 +307,15 @@ voliProcess (volaction_t action, const char *sinkname,
             NULL,
             propSize,
             &volume);
-       }
+      }
     }
   }
 
+  propertyAOPA.mSelector = kAudioDevicePropertyVolumeScalar;
+  propertyAOPA.mScope = kAudioDevicePropertyScopeOutput;
+  propertyAOPA.mElement = kAudioObjectPropertyElementMain;
+
   if (vol != NULL && (action == VOL_SET || action == VOL_GET)) {
-    propertyAOPA.mElement = kAudioObjectPropertyElementMain;
     propSize = sizeof (volume);
     status = AudioObjectGetPropertyData (
         outputDeviceID,

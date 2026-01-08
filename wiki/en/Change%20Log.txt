@@ -6,6 +6,9 @@
 
 **4.17.9 2026-1---**
 
+* Bug Fixes:
+    * MacOS: Volume of zero is not zero.  Also mute the volume.
+
 -->
 
 **4.17.8 2026-1-5**
