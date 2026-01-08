@@ -61,12 +61,10 @@ logStderr ("close-a\n");
   if (macosav->player != NULL) {
     [macosav->player pause];
     [macosav->player release];
-    macosavRunLoop (macosav);
   }
 logStderr ("close-b\n");
   if (macosav->plitem != NULL) {
     [macosav->plitem release];
-    macosavRunLoop (macosav);
   }
 logStderr ("close-c\n");
   macosav->player = NULL;
@@ -341,9 +339,7 @@ macosavRunLoop (macosav_t *macosav)
   NSRunLoop   *runloop;
 
   /* only run the loop once */
-logStderr ("runloop: b4\n");
   runloop = [NSRunLoop currentRunLoop];
   /* using beforeDate is not supposed to block, but it does seem to */
   [runloop runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.01]];
-logStderr ("runloop: after\n");
 }
