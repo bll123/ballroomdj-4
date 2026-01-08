@@ -34,10 +34,5 @@
   <string>13</string>
   <key>LSRequiresCarbon</key>
   <true/>
-  <key>NSAppTransportSecurity</key>
-  <dict>
-    <key>NSAllowsArbitraryLoads</key>
-    <true/>
-  </dict>
 </dict>
 </plist>

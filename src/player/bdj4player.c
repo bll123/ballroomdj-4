@@ -858,9 +858,7 @@ playerProcessing (void *udata)
       /* and see if the user changed it */
       logMsg (LOG_DBG, LOG_VOLUME, "check sysvol: before fade");
       playerCheckSystemVolume (playerData);
-logMsg (LOG_DBG, LOG_IMPORTANT, "---- playreq: %d", queueGetCount (playerData->playRequest));
-logMsg (LOG_DBG, LOG_IMPORTANT, "---- prepreqq: %d", queueGetCount (playerData->prepRequestQueue));
-logMsg (LOG_DBG, LOG_IMPORTANT, "---- prepq: %d", queueGetCount (playerData->prepQueue));
+
       /* only start a cross fade if there is another song in the prep-queue */
       if (playerData->crossFadeTime > 0 &&
           queueGetCount (playerData->prepQueue) > 0) {

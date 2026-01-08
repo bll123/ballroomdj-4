@@ -5,7 +5,6 @@
 
 #import <Foundation/NSObject.h>
 #import <AVFoundation/AVFoundation.h>
-// #import <AudioToolbox/AudioServices.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,6 +18,7 @@
 #endif
 
 #include "audiosrc.h"
+#include "log.h"
 #include "macosav.h"
 #include "mdebug.h"
 
@@ -32,6 +32,7 @@ typedef struct macosav {
 
 static void macosavCheckTCStatus (macosav_t *macosav);
 static long macosavCheckPlayerError (macosav_t *macosav);
+static long macosavCheckPlayerItemError (macosav_t *macosav);
 static void macosavRunLoop (macosav_t *macosav);
 
 macosav_t *
@@ -56,7 +57,18 @@ macosavClose (macosav_t *macosav)
     return;
   }
 
-  [macosav->player release];
+logStderr ("close-a\n");
+  if (macosav->player != NULL) {
+    [macosav->player pause];
+    [macosav->player release];
+//    macosavRunLoop (macosav);
+  }
+logStderr ("close-b\n");
+  if (macosav->plitem != NULL) {
+    [macosav->plitem release];
+//    macosavRunLoop (macosav);
+  }
+logStderr ("close-c\n");
   macosav->player = NULL;
   macosav->plitem = NULL;
   mdfree (macosav);
@@ -67,7 +79,9 @@ macosavMedia (macosav_t *macosav, const char *fullMediaPath, int sourceType)
 {
   NSString        *ffn = NULL;
   NSURL           *url = NULL;
+  AVPlayerItem    *plitem = NULL;
   int             count = 0;
+  int             first = false;
   plistate_t      plistate;
 
   if (macosav == NULL || fullMediaPath == NULL) {
@@ -78,23 +92,53 @@ macosavMedia (macosav_t *macosav, const char *fullMediaPath, int sourceType)
   if (sourceType == AUDIOSRC_TYPE_FILE) {
     url = [NSURL fileURLWithPath: ffn isDirectory: false];
   } else {
+    url = [NSURL URLWithString: ffn];
   }
 
-  if (url != NULL) {
-    macosav->player = [AVPlayer playerWithURL: url];
-    if (macosavCheckPlayerError (macosav) != 0) {
-      return -1;
-    }
-    macosav->player.automaticallyWaitsToMinimizeStalling = false;
-    macosav->plitem = [macosav->player currentItem];
+  if (url == NULL) {
+    return -1;
   }
 
-  plistate = macosavState (macosav);
-  while (plistate == PLI_STATE_NONE || plistate == PLI_STATE_ERROR) {
+logStderr ("m: a\n");
+  if (macosav->player == NULL) {
+    macosav->player = [[AVPlayer alloc] init];
+    first = true;
+  } else {
+    [macosav->player pause];
+  }
+  plitem = macosav->plitem;
+  macosav->plitem = [AVPlayerItem playerItemWithURL: url];
+  if (macosavCheckPlayerItemError (macosav) != 0) {
+    return -1;
+  }
+logStderr ("m: b\n");
+  [macosav->player replaceCurrentItemWithPlayerItem: macosav->plitem];
+logStderr ("m: c\n");
+  if (macosavCheckPlayerError (macosav) != 0) {
+    return -1;
+  }
+  if (plitem != NULL) {
+    [plitem release];
+  }
+  plitem = macosav->player.currentItem;
+  if (plitem != macosav->plitem) {
+    fprintf (stderr, "AVPlayer: fatal: player item not configured\n");
+  }
+
+// this seems to hang the player when using a file
+//  macosav->player.automaticallyWaitsToMinimizeStalling = true;
+logStderr ("m: d\n");
+
+//  if (first) {
+    macosavRunLoop (macosav);
     plistate = macosavState (macosav);
-    ++count;
-  }
-fprintf (stderr, "media-count: %d\n", count);
+    while (plistate == PLI_STATE_NONE || plistate == PLI_STATE_ERROR) {
+      macosavRunLoop (macosav);
+      plistate = macosavState (macosav);
+      ++count;
+    }
+//  }
+logStderr ("m: e: %d\n", count);
 
   return 0;
 }
@@ -106,9 +150,11 @@ macosavPlay (macosav_t *macosav)
     return -1;
   }
 
+logStderr ("play\n");
+//  macosavRunLoop (macosav);
   macosav->player.defaultRate = macosav->drate;
   [macosav->player play];
-  macosavRunLoop (macosav);
+//  macosavRunLoop (macosav);
   return 0;
 }
 
@@ -119,8 +165,10 @@ macosavPause (macosav_t *macosav)
     return -1;
   }
 
+logStderr ("pause\n");
+//  macosavRunLoop (macosav);
   [macosav->player pause];
-  macosavRunLoop (macosav);
+//  macosavRunLoop (macosav);
   return 0;
 }
 
@@ -131,8 +179,10 @@ macosavStop (macosav_t *macosav)
     return -1;
   }
 
+logStderr ("stop\n");
+//  macosavRunLoop (macosav);
   [macosav->player pause];
-  macosavRunLoop (macosav);
+//  macosavRunLoop (macosav);
   return 0;
 }
 
@@ -149,6 +199,7 @@ macosavGetDuration (macosav_t *macosav)
   macosavRunLoop (macosav);
   tm = [macosav->plitem duration];
   duration = (ssize_t) (CMTimeGetSeconds (tm) * 1000.0);
+logStderr ("get-dur: %ld\n", (long) duration);
   return duration;
 }
 
@@ -165,6 +216,7 @@ macosavGetTime (macosav_t *macosav)
   macosavRunLoop (macosav);
   tm = [macosav->player currentTime];
   currtm = (ssize_t) (CMTimeGetSeconds (tm) * 1000.0);
+logStderr ("get-tm: %ld\n", (long) currtm);
   return 0;
 }
 
@@ -203,11 +255,23 @@ macosavState (macosav_t *macosav)
 ssize_t
 macosavSeek (macosav_t *macosav, ssize_t pos)
 {
+  CMTime    tm;
+  CMTime    tolerance;
+  double    dpos;
+
   if (macosav == NULL || macosav->player == NULL) {
     return 0;
   }
 
-  macosavRunLoop (macosav);
+logStderr ("seek %ld\n", (long) pos);
+//  macosavRunLoop (macosav);
+  dpos = (double) pos / 1000.0;
+  /* audio frames per second */
+  tm = CMTimeMakeWithSeconds (dpos, 192000);
+  tolerance = CMTimeMakeWithSeconds (0.01, 192000);
+  [macosav->player seekToTime: tm
+      toleranceBefore: tolerance toleranceAfter: tolerance];
+//  macosavRunLoop (macosav);
   return pos;
 }
 
@@ -218,9 +282,11 @@ macosavRate (macosav_t *macosav, double drate)
     return 100.0;
   }
 
+logStderr ("rate: %.2f\n", drate);
+//  macosavRunLoop (macosav);
   macosav->drate = drate;
-
-  macosavRunLoop (macosav);
+  macosav->player.rate = drate;
+//  macosavRunLoop (macosav);
   return drate;
 }
 
@@ -257,14 +323,32 @@ macosavCheckPlayerError (macosav_t *macosav)
   NSError   *err;
 
   err = [macosav->player error];
+  if ([err code] != 0) {
+    fprintf (stderr, "AVPlayer error: %ld %s\n", [err code],
+        [[err localizedDescription] UTF8String]);
+  }
+  return [err code];
+}
+
+static long
+macosavCheckPlayerItemError (macosav_t *macosav)
+{
+  NSError   *err;
+
+  err = [macosav->plitem error];
+  if ([err code] != 0) {
+    fprintf (stderr, "AVPlayerItem error: %ld %s\n", [err code],
+        [[err localizedDescription] UTF8String]);
+  }
   return [err code];
 }
 
 static void
 macosavRunLoop (macosav_t *macosav)
 {
-  NSRunLoop           *runloop;
+  NSRunLoop   *runloop;
 
+  /* only run the loop once */
   runloop = [NSRunLoop currentRunLoop];
   [runloop runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
 }

@@ -82,7 +82,7 @@ if (WIN32)
 endif()
 
 if (APPLE)
-  add_library (libplimacosav SHARED plimacosav.c macosav.m)
+  add_library (libplimacosav SHARED plimacosav.c macosavi.m)
   target_link_libraries (libplimacosav PRIVATE
     "-framework Cocoa" "-framework AVFoundation" "-framework CoreMedia"
     libbdj4common
