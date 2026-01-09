@@ -14,6 +14,9 @@ _Windows&nbsp;Media&nbsp;Player_.
 
 The MacOS AVPlayer interfaces does not support .ogx, .wma or .mkv audio files.
 
+The MacOS AVPlayer, Windows Media Player and GStreamer interfaces
+support cross fading.
+
 __Player Arguments__: Specifies any additional arguments to pass to the
 player interface.
 

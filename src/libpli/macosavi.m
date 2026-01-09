@@ -119,6 +119,7 @@ macosavMedia (macosav_t *macosav, const char *fullMediaPath, int sourceType)
     macosav->player [macosav->curr].automaticallyWaitsToMinimizeStalling = true;
   }
 
+  /* this version with replace... seems to be unstable */
   [macosav->player [macosav->curr]
       replaceCurrentItemWithPlayerItem: macosav->plitem [macosav->curr]];
   if (macosavCheckPlayerError (macosav) != 0) {
