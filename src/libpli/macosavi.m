@@ -175,15 +175,22 @@ macosavCrossFadeVolume (macosav_t *macosav, int vol)
 
   previdx = (PLI_MAX_SOURCE - 1) - macosav->curr;
   dvol = (double) vol / 100.0;
+  if (dvol <= 0.0) {
+    dvol = 0.0;
+  }
   macosav->player [previdx].volume = dvol;
   if (dvol <= 0.0) {
     macosavRunLoop (macosav);
     [macosav->player [previdx] pause];
+    macosav->player [previdx].muted = true;
     macosav->inCrossFade = false;
-    dvol = 0.0;
   }
 
   dvol = 1.0 - dvol;
+  if (dvol > 0.0) {
+    /* make sure the active player is no longer muted */
+    macosav->player [macosav->curr].muted = false;
+  }
   macosav->player [macosav->curr].volume = dvol;
 
   return;

@@ -594,11 +594,13 @@ winmpCrossFadeVolume (windata_t *windata, int vol)
 
   previdx = (PLI_MAX_SOURCE - 1) - windata->curr;
   dvol = (double) vol / 100.0;
+  if (dvol <= 0.0) {
+    dvol = 0.0;
+  }
   windata->winmp [previdx]->mpVolume (dvol);
   if (dvol <= 0.0) {
     windata->winmp [previdx]->mpStop ();
     windata->inCrossFade = false;
-    dvol = 0.0;
   }
 
   dvol = 1.0 - dvol;

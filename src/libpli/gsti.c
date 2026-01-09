@@ -615,6 +615,9 @@ gstiCrossFadeVolume (gsti_t *gsti, int vol)
 
   previdx = (PLI_MAX_SOURCE - 1) - gsti->curr;
   dvol = (double) vol / 100.0;
+  if (dvol <= 0.0) {
+    dvol = 0.0;
+  }
   g_object_set (G_OBJECT (gsti->pipeline [previdx]), "volume", dvol, NULL);
   gstiRunOnce (gsti);
 
@@ -624,7 +627,6 @@ gstiCrossFadeVolume (gsti_t *gsti, int vol)
     }
     gstiRunOnce (gsti);
     gsti->inCrossFade = false;
-    dvol = 0.0;
   }
 
   dvol = 1.0 - dvol;
