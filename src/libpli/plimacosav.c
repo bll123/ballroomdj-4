@@ -10,7 +10,7 @@
 #include <math.h>
 
 #include "log.h"
-#include "macosav.h"
+#include "macosavi.h"
 #include "mdebug.h"
 #include "pli.h"
 
@@ -41,7 +41,10 @@ pliiInit (const char *plinm, const char *playerargs)
 
   pliData = mdmalloc (sizeof (plidata_t));
   pliData->macosav = macosavInit ();
-  pliData->supported = PLI_SUPPORT_SEEK | PLI_SUPPORT_SPEED;
+  pliData->supported =
+      PLI_SUPPORT_SEEK |
+      PLI_SUPPORT_SPEED |
+      PLI_SUPPORT_CROSSFADE;
   return pliData;
 }
 
@@ -69,6 +72,23 @@ pliiMediaSetup (plidata_t *pliData, const char *mediaPath,
   }
 
   macosavMedia (pliData->macosav, fullMediaPath, sourceType);
+}
+
+void
+pliiCrossFade (plidata_t *pliData, const char *mediaPath,
+    const char *fullMediaPath, int sourceType)
+{
+  if (pliData == NULL || pliData->macosav == NULL || mediaPath == NULL) {
+    return;
+  }
+
+  macosavCrossFade (pliData->macosav, fullMediaPath, sourceType);
+}
+
+void
+pliiCrossFadeVolume (plidata_t *pliData, int vol)
+{
+  macosavCrossFadeVolume (pliData->macosav, vol);
 }
 
 void

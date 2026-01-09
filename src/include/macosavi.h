@@ -16,6 +16,8 @@ typedef struct macosav macosav_t;
 macosav_t *       macosavInit (void);
 void              macosavClose (macosav_t *macosav);
 int               macosavMedia (macosav_t *macosav, const char *fn, int sourceType);
+int               macosavCrossFade (macosav_t *macosav, const char *fn, int sourceType);
+void              macosavCrossFadeVolume (macosav_t *macosav, int vol);
 int               macosavPlay (macosav_t *macosav);
 int               macosavPause (macosav_t *macosav);
 int               macosavStop (macosav_t *macosav);
