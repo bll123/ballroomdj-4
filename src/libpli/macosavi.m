@@ -108,10 +108,14 @@ macosavMedia (macosav_t *macosav, const char *fullMediaPath, int sourceType)
   } else {
     [macosav->player [macosav->curr] pause];
   }
+
   plitem = macosav->plitem [macosav->curr];
   macosav->plitem [macosav->curr] = [AVPlayerItem playerItemWithURL: url];
   if (macosavCheckPlayerItemError (macosav) != 0) {
     return -1;
+  }
+  if (sourceType != AUDIOSRC_TYPE_FILE) {
+    macosav->player [macosav->curr].automaticallyWaitsToMinimizeStalling = true;
   }
 
   [macosav->player [macosav->curr]
@@ -128,10 +132,6 @@ macosavMedia (macosav_t *macosav, const char *fullMediaPath, int sourceType)
   if (plitem != macosav->plitem [macosav->curr]) {
     fprintf (stderr, "AVPlayer: fatal: player item not configured\n");
   }
-
-// this seems to hang the player when using a file
-// probably want this for non-file urls
-//  macosav->player [macosav->curr].automaticallyWaitsToMinimizeStalling = true;
 
   /* maosavState() calls the runloop */
   plistate = macosavState (macosav);

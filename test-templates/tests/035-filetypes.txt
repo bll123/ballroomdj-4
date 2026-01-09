@@ -1,0 +1,116 @@
+section 35 File-Types
+
+test 35-10 Audio-File-Types
+msg main CHK_MAIN_RESET_SENT
+get main CHK_MAIN_MUSICQ
+chk mq0len 0
+# mp3
+msg main MUSICQ_INSERT 0~999~68
+# flac
+msg main MUSICQ_INSERT 0~999~75
+# m4a
+msg main MUSICQ_INSERT 0~999~86
+# opus
+msg main MUSICQ_INSERT 0~999~90
+# ogg
+msg main MUSICQ_INSERT 0~999~110
+# opus-ogx
+msg main MUSICQ_INSERT 0~999~135
+# ogg-ogx
+msg main MUSICQ_INSERT 0~999~136
+# wav
+msg main MUSICQ_INSERT 0~999~145
+# wma
+msg main MUSICQ_INSERT 0~999~146
+mssleep 350
+get player CHK_WAIT_PREP
+wait done 1
+get main CHK_MAIN_MUSICQ
+chk mq0len 9
+msg main CMD_PLAY
+mssleep 1500
+get player CHK_PLAYER_STATUS
+wait playstate playing
+#
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 2000
+wait playstate in-fadeout
+resptimeout 7500
+wait playstate playing
+get main CHK_MAIN_MUSICQ
+chk mq0len 8
+#
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 2000
+wait playstate in-fadeout
+resptimeout 7500
+wait playstate playing
+get main CHK_MAIN_MUSICQ
+chk mq0len 7
+#
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 2000
+wait playstate in-fadeout
+resptimeout 7500
+wait playstate playing
+get main CHK_MAIN_MUSICQ
+chk mq0len 6
+#
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 2000
+wait playstate in-fadeout
+resptimeout 7500
+wait playstate playing
+get main CHK_MAIN_MUSICQ
+chk mq0len 5
+#
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 2000
+wait playstate in-fadeout
+resptimeout 7500
+wait playstate playing
+get main CHK_MAIN_MUSICQ
+chk mq0len 4
+#
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 2000
+wait playstate in-fadeout
+resptimeout 7500
+wait playstate playing
+get main CHK_MAIN_MUSICQ
+chk mq0len 3
+#
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 2000
+wait playstate in-fadeout
+resptimeout 7500
+wait playstate playing
+get main CHK_MAIN_MUSICQ
+chk mq0len 2
+#
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 2000
+wait playstate in-fadeout
+resptimeout 7500
+wait playstate playing
+get main CHK_MAIN_MUSICQ
+chk mq0len 1
+#
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 2000
+wait playstate in-fadeout
+resptimeout 7500
+wait playstate stopped
+get main CHK_MAIN_MUSICQ
+chk mq0len 0
+#
+end

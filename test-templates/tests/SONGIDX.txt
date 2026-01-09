@@ -146,3 +146,5 @@
 142    ann-samba
 143    ann-tango
 144    ann-waltz
+145    b-tango-wav
+146    b-tango-wma

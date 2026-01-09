@@ -14,7 +14,7 @@
 version
 ..1
 count
-..139
+..141
 
 # standard dances
 
@@ -5569,4 +5569,70 @@ TITLE
 ..%03d-salsa
 DEST
 ..%03d-salsa
+
+KEY
+..145
+FSOURCE
+..tango.wav
+DURATION
+..30420
+NOTES
+..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
+TAGS
+..tag6 tag7 wav
+STATUS
+..Complete
+DANCELEVEL
+..Advanced
+GENRE
+..Rock
+ALBUMARTIST
+..%03d-albartist
+ARTIST
+..%03d-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Tango
+DANCERATING
+..Great
+TITLE
+..b-tango-wav
+DEST
+..b-tango-wav
+
+KEY
+..146
+FSOURCE
+..tango.wma
+DURATION
+..30420
+NOTES
+..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
+TAGS
+..tag6 tag7 wma
+STATUS
+..Complete
+DANCELEVEL
+..Advanced
+GENRE
+..Rock
+ALBUMARTIST
+..%03d-albartist
+ARTIST
+..%03d-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Tango
+DANCERATING
+..Great
+TITLE
+..b-tango-wma
+DEST
+..b-tango-wma
 
