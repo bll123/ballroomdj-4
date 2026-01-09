@@ -296,10 +296,6 @@ main (int argc, char *argv [])
     /* need full path to determine tag type */
     snprintf (from, sizeof (from), "%s/%s", tmusicorig, src);
     audiotagDetermineTagType (from, &tagtype, &filetype);
-    if (supported [filetype] == ATI_NONE) {
-      slistFree (tagdata);
-      continue;
-    }
 
     fn = createFile (src, dest, keepmusic);
 

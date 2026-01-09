@@ -8,6 +8,8 @@
 
 * Bug Fixes:
     * MacOS: Volume of zero is not zero.  Also mute the volume.
+* New Features:
+    * MacOS: Added native MacOS player interface (AVPlayer).
 
 -->
 

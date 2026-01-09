@@ -16,7 +16,7 @@
 version
 ..1
 count
-..147
+..148
 
 # standard dances
 
@@ -5809,6 +5809,8 @@ FSOURCE
 ..tango.wav
 DURATION
 ..30420
+KEYWORD
+..noplay
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 TAGS
@@ -5842,6 +5844,8 @@ FSOURCE
 ..tango.wma
 DURATION
 ..30420
+KEYWORD
+..noplay
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 TAGS
@@ -5868,3 +5872,38 @@ TITLE
 ..b-tango-wma
 DEST
 ..b-tango-wma
+
+KEY
+..147
+FSOURCE
+..tango.mkv
+DURATION
+..30420
+KEYWORD
+..noplay
+NOTES
+..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
+TAGS
+..tag6 tag7 mkv
+STATUS
+..Complete
+DANCELEVEL
+..Advanced
+GENRE
+..Rock
+ALBUMARTIST
+..%03d-albartist
+ARTIST
+..%03d-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Tango
+DANCERATING
+..Great
+TITLE
+..c-tango-mkv
+DEST
+..c-tango-mkv

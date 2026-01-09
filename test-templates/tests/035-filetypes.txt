@@ -1,7 +1,6 @@
-section 35 File-Types
+section 35 Audio-File-Types
 
-test 35-10 Audio-File-Types
-msg main CHK_MAIN_RESET_SENT
+test 35-10 File-Type-Main
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
 # mp3
@@ -14,95 +13,87 @@ msg main MUSICQ_INSERT 0~999~86
 msg main MUSICQ_INSERT 0~999~90
 # ogg
 msg main MUSICQ_INSERT 0~999~110
-# opus-ogx
-msg main MUSICQ_INSERT 0~999~135
-# ogg-ogx
-msg main MUSICQ_INSERT 0~999~136
 # wav
 msg main MUSICQ_INSERT 0~999~145
-# wma
-msg main MUSICQ_INSERT 0~999~146
+#
+# mp3
 mssleep 350
 get player CHK_WAIT_PREP
 wait done 1
-get main CHK_MAIN_MUSICQ
-chk mq0len 9
 msg main CMD_PLAY
 mssleep 1500
 get player CHK_PLAYER_STATUS
 wait playstate playing
-#
-msg player PLAY_FADE
-get player CHK_PLAYER_STATUS
-resptimeout 2000
-wait playstate in-fadeout
-resptimeout 7500
-wait playstate playing
-get main CHK_MAIN_MUSICQ
-chk mq0len 8
-#
-msg player PLAY_FADE
-get player CHK_PLAYER_STATUS
-resptimeout 2000
-wait playstate in-fadeout
-resptimeout 7500
-wait playstate playing
-get main CHK_MAIN_MUSICQ
-chk mq0len 7
-#
-msg player PLAY_FADE
-get player CHK_PLAYER_STATUS
-resptimeout 2000
-wait playstate in-fadeout
-resptimeout 7500
-wait playstate playing
+print mp3
 get main CHK_MAIN_MUSICQ
 chk mq0len 6
+get player CHK_PLAYER_SONG
+chk p-songfn 006-tango.mp3
 #
+# flac
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate in-fadeout
 resptimeout 7500
 wait playstate playing
+print flac
 get main CHK_MAIN_MUSICQ
 chk mq0len 5
+get player CHK_PLAYER_SONG
+chk p-songfn 007-tango-flac.flac
 #
+# m4a
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate in-fadeout
 resptimeout 7500
 wait playstate playing
+print m4a
 get main CHK_MAIN_MUSICQ
 chk mq0len 4
+get player CHK_PLAYER_SONG
+chk p-songfn 011-tango-m4a.m4a
 #
+# opus
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate in-fadeout
 resptimeout 7500
 wait playstate playing
+print opus
 get main CHK_MAIN_MUSICQ
 chk mq0len 3
+get player CHK_PLAYER_SONG
+chk p-songfn 013-tango-opus.opus
 #
+# ogg
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate in-fadeout
 resptimeout 7500
 wait playstate playing
+print ogg
 get main CHK_MAIN_MUSICQ
 chk mq0len 2
+get player CHK_PLAYER_SONG
+chk p-songfn 023-tango-ogg.ogg
 #
+# wav
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate in-fadeout
 resptimeout 7500
 wait playstate playing
+print wav
 get main CHK_MAIN_MUSICQ
 chk mq0len 1
+get player CHK_PLAYER_SONG
+chk p-songfn b-tango-wav.wav
 #
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
@@ -114,3 +105,98 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 0
 #
 end
+
+test 35-20 File-Type-Other
+macosavchk
+get main CHK_MAIN_MUSICQ
+chk mq0len 0
+# ogg-ogx
+msg main MUSICQ_INSERT 0~999~136
+# opus-ogx
+msg main MUSICQ_INSERT 0~999~135
+# wma
+msg main MUSICQ_INSERT 0~999~146
+#
+# ogg-ogx
+mssleep 20
+get player CHK_WAIT_PREP
+wait done 1
+msg main CMD_PLAY
+mssleep 1500
+get player CHK_PLAYER_STATUS
+wait playstate playing
+print ogg-ogx
+get main CHK_MAIN_MUSICQ
+chk mq0len 3
+get player CHK_PLAYER_SONG
+chk p-songfn 048-waltz-ogg-ogx.ogx
+#
+# opus-ogx
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 2000
+wait playstate in-fadeout
+resptimeout 7500
+wait playstate playing
+print opus-ogx
+get main CHK_MAIN_MUSICQ
+chk mq0len 2
+get player CHK_PLAYER_SONG
+chk p-songfn 047-waltz-opus-ogx.ogx
+#
+# wma
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 2000
+wait playstate in-fadeout
+resptimeout 7500
+wait playstate playing
+print wma
+get main CHK_MAIN_MUSICQ
+chk mq0len 1
+get player CHK_PLAYER_SONG
+chk p-songfn b-tango-wma.wma
+#
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 2000
+wait playstate in-fadeout
+resptimeout 7500
+wait playstate stopped
+get main CHK_MAIN_MUSICQ
+chk mq0len 0
+#
+end
+
+test 35-30 File-Type-mkv
+macosavchk
+get main CHK_MAIN_MUSICQ
+chk mq0len 0
+# mkv
+msg main MUSICQ_INSERT 0~999~147
+#
+# mkv
+mssleep 20
+get player CHK_WAIT_PREP
+wait done 1
+msg main CMD_PLAY
+mssleep 1500
+get player CHK_PLAYER_STATUS
+wait playstate playing
+print mkv
+get main CHK_MAIN_MUSICQ
+chk mq0len 1
+get player CHK_PLAYER_SONG
+chk p-songfn c-tango-mkv.mkv
+#
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 2000
+wait playstate in-fadeout
+resptimeout 7500
+wait playstate stopped
+get main CHK_MAIN_MUSICQ
+chk mq0len 0
+#
+end
+

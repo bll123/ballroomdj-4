@@ -645,6 +645,16 @@ tsProcessScript (testsuite_t *testsuite)
       ok = TS_OK;
       disp = true;
     }
+    if (strncmp (tcmd, "macosavchk", 10) == 0) {
+      const char  *pli;
+
+      pli = bdjoptGetStr (OPT_M_PLAYER_INTFC);
+      if (strcmp (pli, "libplimacosav") == 0) {
+        testsuite->skiptoend = true;
+      }
+      ok = TS_OK;
+      disp = true;
+    }
     if (strncmp (tcmd, "end", 3) == 0) {
       ++testsuite->results.testcount;
       printResults (testsuite, &testsuite->results);

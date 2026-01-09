@@ -23,7 +23,6 @@
 #include "volsink.h"
 
 typedef struct plidata {
-  char              *name;
   windata_t         *windata;
   ssize_t           duration;
   ssize_t           playTime;
@@ -54,7 +53,6 @@ pliiInit (const char *plinm, const char *playerargs)
   pliData = mdmalloc (sizeof (plidata_t));
 
   pliData->windata = winmpInit ();
-  pliData->name = "Windows Native";
   pliData->supported =
       PLI_SUPPORT_SEEK |
       PLI_SUPPORT_SPEED |

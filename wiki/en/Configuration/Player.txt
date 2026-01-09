@@ -7,9 +7,12 @@
 The __Player__ and __Audio__ settings usually do not change.
 
 __Player__: Selects the player interface.
-<br>Linux support _Integrated&nbsp;VLC_, _GStreamer_ and _MPRIS_.
+<br>Linux supports _Integrated&nbsp;VLC_, _GStreamer_ and _MPRIS_.
+<br>MacOS supports _Integrated&nbsp;VLC_ and _MacOS&nbsp;AVPlayer_.
 <br>Windows supports _Integrated&nbsp;VLC_ and
 _Windows&nbsp;Media&nbsp;Player_.
+
+The MacOS AVPlayer interfaces does not support .ogx, .wma or .mkv audio files.
 
 __Player Arguments__: Specifies any additional arguments to pass to the
 player interface.

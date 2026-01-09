@@ -42,6 +42,8 @@
 #   mssleep <time>
 #   crossfadechk
 #     if not supported, skip the test
+#   macosavchk
+#     if using MacOS AVPlayer, skip the test
 #   print <text>
 #   resptimeout <time>
 #     set the response timeout for 'wait'
