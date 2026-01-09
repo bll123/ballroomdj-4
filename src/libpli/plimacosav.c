@@ -232,6 +232,15 @@ pliiSupported (plidata_t *pliData)
   return pliData->supported;
 }
 
+int
+pliiGetVolume (plidata_t *pliData)
+{
+  int   val = 100;
+
+  val = macosavGetVolume (pliData->macosav);
+  return val;
+}
+
 /* internal routines */
 
 static void

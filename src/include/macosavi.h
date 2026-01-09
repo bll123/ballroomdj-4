@@ -26,9 +26,7 @@ ssize_t           macosavGetTime (macosav_t *macosav);
 plistate_t        macosavState (macosav_t *macosav);
 ssize_t           macosavSeek (macosav_t *macosav, ssize_t pos);
 double            macosavRate (macosav_t *macosav, double drate);
-#if 0
-void              macosavRelease (macosav_t *macosav);
-#endif
+int               macosavGetVolume (macosav_t *macosav);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

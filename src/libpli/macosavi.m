@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <math.h>
 
 #include <MacTypes.h>
 #include <Cocoa/Cocoa.h>
@@ -329,6 +330,22 @@ macosavRate (macosav_t *macosav, double drate)
   macosav->drate = drate;
   macosav->player [macosav->curr].rate = drate;
   return drate;
+}
+
+/* for debugging, testsuite */
+int
+macosavGetVolume (macosav_t *macosav)
+{
+  int     vol;
+  double  dvol;
+
+  if (macosav == NULL || macosav->player [macosav->curr] == NULL) {
+    return 100;
+  }
+
+  dvol = macosav->player [macosav->curr].volume;
+  vol = round (dvol * 100.0);
+  return vol;
 }
 
 /* internal routines */

@@ -30,7 +30,6 @@ plistate_t        vlcState (vlcdata_t *vlcdata);
 int               vlcMedia (vlcdata_t *vlcdata, const char *fn, int sourceType);
 vlcdata_t *       vlcInit (int vlcargc, char *vlcargv [], char *vlcopt []);
 void              vlcClose (vlcdata_t *vlcdata);
-void              vlcRelease (vlcdata_t *vlcdata);
 int               vlcSetAudioDev (vlcdata_t *vlcdata, const char *dev, int plidevtype);
 bool              vlcVersionLinkCheck (void);
 bool              vlcVersionCheck (void);

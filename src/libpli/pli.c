@@ -314,7 +314,7 @@ pliInterfaceList (void)
   return interfaces;
 }
 
-/* for debugging */
+/* for debugging, testsuite */
 int
 pliGetVolume (pli_t *pli)
 {
