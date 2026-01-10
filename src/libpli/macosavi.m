@@ -90,6 +90,7 @@ macosavMedia (macosav_t *macosav, const char *fullMediaPath, int sourceType)
   plistate_t      plistate;
 
   if (macosav == NULL || fullMediaPath == NULL) {
+    fprintf (stderr, "null path\n");
     return -1;
   }
 
@@ -101,8 +102,10 @@ macosavMedia (macosav_t *macosav, const char *fullMediaPath, int sourceType)
   }
 
   if (url == NULL) {
+    fprintf (stderr, "invalid url: %s\n", fullMediaPath);
     return -1;
   }
+  [ffn release];
 
   if (macosav->player [macosav->curr] == NULL) {
     macosav->player [macosav->curr] = [[AVPlayer alloc] init];
@@ -113,16 +116,20 @@ macosavMedia (macosav_t *macosav, const char *fullMediaPath, int sourceType)
   plitem = macosav->plitem [macosav->curr];
   macosav->plitem [macosav->curr] = [AVPlayerItem playerItemWithURL: url];
   if (macosavCheckPlayerItemError (macosav) != 0) {
+    fprintf (stderr, "player item fail\n");
     return -1;
   }
+
+  [url release];
+
   if (sourceType != AUDIOSRC_TYPE_FILE) {
     macosav->player [macosav->curr].automaticallyWaitsToMinimizeStalling = true;
   }
 
-  /* this version with replace... seems to be unstable */
   [macosav->player [macosav->curr]
       replaceCurrentItemWithPlayerItem: macosav->plitem [macosav->curr]];
   if (macosavCheckPlayerError (macosav) != 0) {
+    fprintf (stderr, "player fail\n");
     return -1;
   }
 
@@ -142,6 +149,7 @@ macosavMedia (macosav_t *macosav, const char *fullMediaPath, int sourceType)
     ++count;
   }
   if (plistate == PLI_STATE_ERROR) {
+    fprintf (stderr, "pli-state-error\n");
     return -1;
   }
 

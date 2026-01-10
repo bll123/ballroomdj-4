@@ -253,6 +253,7 @@ plimacosavWaitUntilPlaying (plidata_t *pliData)
   count = 0;
   while (state == PLI_STATE_IDLE ||
       state == PLI_STATE_OPENING ||
+      state == PLI_STATE_BUFFERING ||
       state == PLI_STATE_STOPPED) {
     mssleep (1);
     state = macosavState (pliData->macosav);

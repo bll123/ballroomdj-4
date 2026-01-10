@@ -438,6 +438,8 @@ tsProcessing (void *udata)
       testsuite->haveresponse = false;
 
       /* re-send the message */
+      logMsg (LOG_DBG, LOG_BASIC, "re-send %s",
+          msgDebugText (testsuite->waitMessage));
       connSendMessage (testsuite->conn, testsuite->waitRoute,
           testsuite->waitMessage, NULL);
     }

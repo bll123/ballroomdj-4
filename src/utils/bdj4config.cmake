@@ -388,6 +388,8 @@ if (BDJ4_BUILD STREQUAL "SanitizeAddress" OR
   else()
     checkAddCompileFlag ("-fsanitize=address,undefined")
     checkAddLinkFlag ("-fsanitize=address,undefined")
+    checkAddCompileFlag ("-fsanitize=address-recover")
+    checkAddLinkFlag ("-fsanitize=address-recover")
     checkAddCompileFlag ("-fsanitize-address-use-after-scope")
     checkAddLinkFlag ("-fsanitize-address-use-after-scope")
     checkAddCompileFlag ("-fsanitize-recover=address")

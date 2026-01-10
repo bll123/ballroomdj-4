@@ -5478,6 +5478,8 @@ FSOURCE
 ..waltz-opus.ogx
 DURATION
 ..30630
+KEYWORD
+..noplaymac
 BPM
 ..28
 TAGS
@@ -5513,6 +5515,8 @@ FSOURCE
 ..waltz-ogg.ogx
 DURATION
 ..30630
+KEYWORD
+..noplaymac
 BPM
 ..28
 TAGS
@@ -5809,8 +5813,6 @@ FSOURCE
 ..tango.wav
 DURATION
 ..30420
-KEYWORD
-..noplay
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 TAGS
@@ -5845,7 +5847,7 @@ FSOURCE
 DURATION
 ..30420
 KEYWORD
-..noplay
+..noplaymac
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 TAGS
@@ -5880,7 +5882,7 @@ FSOURCE
 DURATION
 ..30420
 KEYWORD
-..noplay
+..noplaymac
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 TAGS
