@@ -26,7 +26,9 @@
 # include <pthread.h>
 #endif
 
+#include "audiofile.h"
 #include "audiosrc.h"
+#include "audiotag.h"
 #include "bdj4.h"
 #include "bdj4init.h"
 #include "bdjmsg.h"
@@ -136,6 +138,8 @@ typedef struct {
   prepqueue_t     *currentSong;
   queue_t         *playRequest;
   prepthread_t    *prepthread [PLAYER_MAX_PREP];
+  int             pliunsupportedtypes [PLI_MAX_UNSUPPORTED];
+  int             pliunsupportedcount;
   int             pliSupported;
   int             originalSystemVolume;
   /* the real volume including adjustments. */
@@ -286,6 +290,7 @@ main (int argc, char *argv[])
   playerData.priorGap = 2000;
   playerData.gap = 2000;
   playerData.pli = NULL;
+  playerData.pliunsupportedcount = 0;
   playerData.pliSupported = PLI_SUPPORT_NONE;
   playerData.prepQueue = queueAlloc ("prep-q", playerPrepQueueFree);
   playerData.prepRequestQueue = queueAlloc ("prep-req", playerPrepQueueFree);
@@ -370,6 +375,8 @@ main (int argc, char *argv[])
   logMsg (LOG_DBG, LOG_IMPORTANT, "player interface: %s", plintfc);
   logMsg (LOG_DBG, LOG_IMPORTANT, "volume sink: %s", playerData.actualSink);
   playerData.pli = pliInit (plintfc, bdjoptGetStr (OPT_M_PLAYER_INTFC_NM));
+  playerData.pliunsupportedcount = pliUnsupportedFileTypes (playerData.pli,
+      playerData.pliunsupportedtypes, PLI_MAX_UNSUPPORTED);
   playerData.pliSupported = pliSupported (playerData.pli);
 
   /* windows needs to have the audio device set */
@@ -1265,6 +1272,8 @@ playerSongPlay (playerdata_t *playerData, char *args)
   char          *tokstr = NULL;
   int32_t       uniqueidx;
   int           count = 0;
+  int           tagtype;
+  int           filetype;
 
   if (! progstateIsRunning (playerData->progstate)) {
     return;
@@ -1300,6 +1309,17 @@ playerSongPlay (playerdata_t *playerData, char *args)
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: no file: %s", pq->tempname);
     logProcEnd ("no-file");
     return;
+  }
+
+  audiotagDetermineTagType (pq->songname, &tagtype, &filetype);
+  for (int i = 0; i < playerData->pliunsupportedcount; ++i) {
+    if (filetype == playerData->pliunsupportedtypes [i]) {
+      /* no history */
+      connSendMessage (playerData->conn, ROUTE_MAIN, MSG_PLAYBACK_FINISH, "0");
+      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: not supported file type: %s", pq->songname);
+      logProcEnd ("not-supported-file-type");
+      return;
+    }
   }
 
   preq = mdmalloc (sizeof (playrequest_t));

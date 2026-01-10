@@ -19,7 +19,9 @@ fi
 # with socket, process, progstate
 # DBGLEVEL=$((1+2+4+8+512+32768+524288))
 # standard
-DBGLEVEL=$((1+2+4+8))
+# DBGLEVEL=$((1+2+4+8))
+# minimal
+DBGLEVEL=1
 
 systype=$(uname -s)
 case $systype in

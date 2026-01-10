@@ -333,6 +333,12 @@ pliiGetVolume (plidata_t *pliData)
   return val;
 }
 
+int
+pliiUnsupportedFileTypes (plidata_t *plidata, int types [], size_t typmax)
+{
+  return 0;
+}
+
 /* internal routines */
 
 static void

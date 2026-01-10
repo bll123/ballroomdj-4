@@ -184,7 +184,8 @@ main (int argc, char *argv [])
   bdj4startup (argc, argv, NULL, "ts", ROUTE_TEST_SUITE, &flags);
 
   logStartAppend ("testsuite", "ts",
-      LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_MSGS | LOG_ACTIONS
+      LOG_IMPORTANT
+ //     LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_MSGS | LOG_ACTIONS
  //     | LOG_SOCKET | LOG_PROCESS | LOG_PROGSTATE /* ### */
       );
 

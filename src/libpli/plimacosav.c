@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <math.h>
 
+#include "audiofile.h"
 #include "log.h"
 #include "macosavi.h"
 #include "mdebug.h"
@@ -239,6 +240,20 @@ pliiGetVolume (plidata_t *pliData)
 
   val = macosavGetVolume (pliData->macosav);
   return val;
+}
+
+int
+pliiUnsupportedFileTypes (plidata_t *plidata, int types [], size_t typmax)
+{
+  int     idx = 0;
+
+  if (typmax >= 3) {
+    types [idx++] = AFILE_TYPE_MK;
+    types [idx++] = AFILE_TYPE_ASF;
+    types [idx++] = AFILE_TYPE_OGX;
+  }
+
+  return idx;
 }
 
 /* internal routines */

@@ -202,3 +202,10 @@ pliiSupported (plidata_t *pliData)
 {
   return pliData->supported;
 }
+
+int
+pliiUnsupportedFileTypes (plidata_t *plidata, int types [], size_t typmax)
+{
+  return 0;
+}
+

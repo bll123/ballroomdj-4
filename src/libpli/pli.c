@@ -58,6 +58,7 @@ typedef struct pli {
   int               (*pliiAudioDeviceList) (plidata_t *plidata, volsinklist_t *sinklist);
   int               (*pliiSupported) (plidata_t *plidata);
   int               (*pliiGetVolume) (plidata_t *plidata);
+  int               (*pliiUnsupportedFileTypes) (plidata_t *plidata, int types [], size_t typmax);
   plidata_t         *plidata;
 } pli_t;
 
@@ -88,6 +89,7 @@ pliInit (const char *plipkg, const char *plinm)
   pli->pliiAudioDeviceList = NULL;
   pli->pliiSupported = NULL;
   pli->pliiGetVolume = NULL;
+  pli->pliiUnsupportedFileTypes = NULL;
 
   pathbldMakePath (dlpath, sizeof (dlpath),
       plipkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_DIR_EXEC);
@@ -119,6 +121,7 @@ pliInit (const char *plipkg, const char *plinm)
   pli->pliiAudioDeviceList = dylibLookup (pli->dlHandle, "pliiAudioDeviceList");
   pli->pliiSupported = dylibLookup (pli->dlHandle, "pliiSupported");
   pli->pliiGetVolume = dylibLookup (pli->dlHandle, "pliiGetVolume");
+  pli->pliiUnsupportedFileTypes = dylibLookup (pli->dlHandle, "pliiUnsupportedFileTypes");
 #pragma clang diagnostic pop
 
   if (pli->pliiInit != NULL) {
@@ -322,6 +325,18 @@ pliGetVolume (pli_t *pli)
 
   if (pli != NULL && pli->pliiGetVolume != NULL) {
     val = pli->pliiGetVolume (pli->plidata);
+  }
+
+  return val;
+}
+
+int
+pliUnsupportedFileTypes (pli_t *pli, int types [], size_t typmax)
+{
+  int   val = 0;
+
+  if (pli != NULL && pli->pliiUnsupportedFileTypes != NULL) {
+    val = pli->pliiUnsupportedFileTypes (pli->plidata, types, typmax);
   }
 
   return val;

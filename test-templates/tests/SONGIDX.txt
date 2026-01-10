@@ -1,4 +1,4 @@
-# 2025-10-10
+# 2026-1-10
 # sorted by ascii title
 #
   0    001-argentinetango
@@ -52,7 +52,7 @@
  48    005-argentinetango
  49    005-chacha
  50    005-foxtrot
- 51    005-jive               songend
+ 51    005-jive             songend
  52    005-quickstep
  53    005-rumba
  54    005-salsa
@@ -136,8 +136,8 @@
 132    044-all-tags-ogg-h       songstart songend
 133    045-all-tags-opus-i      songstart songend
 134    046-all-tags-opus-j      songstart songend
-135    047-waltz-opus-ogx
-136    048-waltz-ogg-ogx
+135    047-waltz-opus-ogx       noplaymac
+136    048-waltz-ogg-ogx        noplaymac
 137    900-ZZZZ
 138    900-ÄÄÄÄ
 139    900-ÖÖÖÖ
@@ -147,5 +147,5 @@
 143    ann-tango
 144    ann-waltz
 145    b-tango-wav
-146    b-tango-wma
-147    c-tango-mkv
+146    b-tango-wma              noplaymac
+147    c-tango-mkv              noplaymac

@@ -273,6 +273,12 @@ pliiCrossFadeVolume (plidata_t *pliData, int vol)
   winmpCrossFadeVolume (pliData->windata, vol);
 }
 
+int
+pliiUnsupportedFileTypes (plidata_t *plidata, int types [], size_t typmax)
+{
+  return 0;
+}
+
 /* internal routines */
 
 static void

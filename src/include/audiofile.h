@@ -16,7 +16,7 @@ enum {
   AF_FORCE_WRITE_BDJ  = (1 << 3),
 };
 
-/* these are file types that have audio tag support */
+/* these are the known file types that may have audio tag support */
 /* other audio file types may still be playable by vlc */
 enum {
   AFILE_TYPE_UNKNOWN,
@@ -24,7 +24,7 @@ enum {
   AFILE_TYPE_MK,      // matroksa
   AFILE_TYPE_MP3,
   AFILE_TYPE_MP4,
-  AFILE_TYPE_OGG,     // ogg container, codec unknown
+  AFILE_TYPE_OGX,     // ogg container, codec unknown
   AFILE_TYPE_OPUS,
   AFILE_TYPE_VORBIS,
   AFILE_TYPE_RIFF,    // .wav

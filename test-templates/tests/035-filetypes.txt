@@ -168,14 +168,14 @@ chk mq0len 0
 #
 end
 
-test 35-30 File-Type-mkv
+test 35-30 File-Type-mka
 macosavchk
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
-# mkv
+# mka
 msg main MUSICQ_INSERT 0~999~147
 #
-# mkv
+# mka
 mssleep 20
 get player CHK_WAIT_PREP
 wait done 1
@@ -183,11 +183,11 @@ msg main CMD_PLAY
 mssleep 1500
 get player CHK_PLAYER_STATUS
 wait playstate playing
-print mkv
+print mka
 get main CHK_MAIN_MUSICQ
 chk mq0len 1
 get player CHK_PLAYER_SONG
-chk p-songfn c-tango-mkv.mkv
+chk p-songfn c-tango-mka.mka
 #
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS

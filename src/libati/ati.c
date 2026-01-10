@@ -186,7 +186,7 @@ atiCleanTags (ati_t *ati, const char *ffn, int tagtype, int filetype)
 int
 atiCheckCodec (const char *ffn, int filetype)
 {
-  if (filetype == AFILE_TYPE_OGG ||
+  if (filetype == AFILE_TYPE_OGX ||
       filetype == AFILE_TYPE_VORBIS ||
       filetype == AFILE_TYPE_OPUS) {
     filetype = atioggCheckCodec (ffn, filetype);

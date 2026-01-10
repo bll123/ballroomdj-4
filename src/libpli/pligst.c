@@ -257,6 +257,12 @@ pliiCrossFadeVolume (plidata_t *plidata, int vol)
   gstiCrossFadeVolume (plidata->gsti, vol);
 }
 
+int
+pliiUnsupportedFileTypes (plidata_t *plidata, int types [], size_t typmax)
+{
+  return 0;
+}
+
 /* internal routines */
 
 static void

@@ -47,6 +47,7 @@ typedef enum {
 
 enum {
   PLI_MAX_SOURCE = 2,
+  PLI_MAX_UNSUPPORTED = 5,    /* at this time, macosavi has 3 */
 };
 
 static inline bool
@@ -80,6 +81,7 @@ plistate_t    pliState (pli_t *pli);
 int           pliSetAudioDevice (pli_t *pli, const char *dev, plidev_t plidevtype);
 int           pliAudioDeviceList (pli_t *pli, volsinklist_t *sinklist);
 int           pliSupported (pli_t *pli);
+int           pliUnsupportedFileTypes (pli_t *pli, int types [], size_t typmax);
 
 int           pliGetVolume (pli_t *pli);      // for debugging
 const char    *pliStateText (pli_t *pli);
@@ -106,6 +108,7 @@ int           pliiAudioDeviceList (plidata_t *pliData, volsinklist_t *);
 int           pliiSupported (plidata_t *pliData);
 void          pliiDesc (const char **ret, int max);
 int           pliiGetVolume (plidata_t *pliData);
+int           pliiUnsupportedFileTypes (plidata_t *pliData, int types [], size_t typmax);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
