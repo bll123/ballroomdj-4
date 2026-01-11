@@ -33,6 +33,7 @@ NODISCARD xmlparse_t * xmlParseInitData (const char *data, size_t datalen, int n
 void xmlParseFree (xmlparse_t * xmlparse);
 void xmlParseGetItem (xmlparse_t * xmlparse, const char *xpath, char *buff, size_t sz);
 NODISCARD ilist_t * xmlParseGetList (xmlparse_t * xmlparse, const char *xpath, const xmlparseattr_t attr []);
+int xmlParseIsValid (xmlparse_t * xmlparse);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

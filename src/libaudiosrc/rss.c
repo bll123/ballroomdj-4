@@ -102,13 +102,18 @@ rssImport (const char *uri)
     return NULL;
   }
 
-  implist = nlistAlloc ("rssimport", LIST_ORDERED, NULL);
-  nlistSetSize (implist, RSS_MAX);
-
   /* the RSS data has xmlns prefixes defined */
   /* using the xmlns is required */
   xmlparse = xmlParseInitData (rssdata.webresponse, rssdata.webresplen,
       XMLPARSE_USENS);
+  if (xmlParseIsValid (xmlparse) == false) {
+    xmlParseFree (xmlparse);
+    webclientClose (webclient);
+    return NULL;
+  }
+
+  implist = nlistAlloc ("rssimport", LIST_ORDERED, NULL);
+  nlistSetSize (implist, RSS_MAX);
 
   xmlParseGetItem (xmlparse, titlexpath, tbuff, sizeof (tbuff));
   nlistSetStr (implist, RSS_TITLE, tbuff);

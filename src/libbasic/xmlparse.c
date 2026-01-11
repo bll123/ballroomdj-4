@@ -29,6 +29,7 @@ typedef struct xmlparse {
   xmlDocPtr           doc;
   xmlXPathContextPtr  xpathCtx;
   char                *tdata;
+  int                 isvalid;
 } xmlparse_t;
 
 static void xmlParseXMLErrorHandler (void *udata, xmlErrorPtr xmlerr);
@@ -66,9 +67,10 @@ xmlParseInitData (const char *data, size_t datalen, int nsflag)
   xmlparse->doc = NULL;
   xmlparse->xpathCtx = NULL;
   xmlparse->tdata = NULL;
+  xmlparse->isvalid = true;
 
   xmlInitParser ();
-  xmlSetStructuredErrorFunc (NULL,
+  xmlSetStructuredErrorFunc (xmlparse,
       (xmlStructuredErrorFunc) xmlParseXMLErrorHandler);
 
   xmlparse->tdata = mdmalloc (datalen + 1);
@@ -93,7 +95,8 @@ xmlParseInitData (const char *data, size_t datalen, int nsflag)
   }
 
   xmlparse->doc = xmlParseMemory (xmlparse->tdata, datalen);
-  if (xmlparse->doc == NULL) {
+  if (xmlparse->doc == NULL || xmlparse->isvalid == false) {
+    xmlparse->isvalid = false;
     logMsg (LOG_DBG, LOG_INFO, "unable to parse xml doc");
     return xmlparse;
   }
@@ -272,6 +275,12 @@ xmlParseGetList (xmlparse_t *xmlparse, const char *xpath,
   return list;
 }
 
+int
+xmlParseIsValid (xmlparse_t *xmlparse)
+{
+  return xmlparse->isvalid;
+}
+
 /* internal routines */
 
 static void
@@ -309,7 +318,12 @@ xmlParseRegisterNamespaces (xmlparse_t *xmlparse)
 static void
 xmlParseXMLErrorHandler (void *udata, xmlErrorPtr xmlerr)
 {
+  xmlparse_t    *xmlparse = udata;
+
   logMsg (LOG_DBG, LOG_INFO, "line:%d col:%d err:%d %s",
       xmlerr->line, xmlerr->int2, xmlerr->code, xmlerr->message);
+  if (xmlparse != NULL) {
+    xmlparse->isvalid = false;
+  }
   return;
 }
