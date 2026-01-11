@@ -84,7 +84,8 @@ endif()
 if (APPLE)
   add_library (libplimacosav SHARED plimacosav.c macosavi.m)
   target_link_libraries (libplimacosav PRIVATE
-    "-framework Cocoa" "-framework AVFoundation" "-framework CoreMedia"
+    "-framework Cocoa" "-framework AVFoundation"
+    "-framework CoreMedia" "-framework CoreAudio"
     libbdj4common
     m
   )

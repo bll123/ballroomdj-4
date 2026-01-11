@@ -6,6 +6,7 @@
 
 #import <Foundation/NSObject.h>
 #import <AVFoundation/AVFoundation.h>
+#import <AudioToolbox/AudioServices.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,8 +30,10 @@
 typedef struct macosav {
   AVPlayer        *player [PLI_MAX_SOURCE];
   AVPlayerItem    *plitem [PLI_MAX_SOURCE];
+  NSString        *audiodevuid;
   double          drate;
   plistate_t      plistate;
+  int32_t         audiodev;
   int             curr;
   bool            inCrossFade;
 } macosav_t;
@@ -55,6 +58,8 @@ macosavInit (void)
   macosav->plistate = PLI_STATE_NONE;
   macosav->curr = 0;
   macosav->inCrossFade = false;
+  macosav->audiodev = 0;
+  macosav->audiodevuid = nil;
 
   return macosav;
 }
@@ -109,9 +114,13 @@ macosavMedia (macosav_t *macosav, const char *fullMediaPath, int sourceType)
 
   if (macosav->player [macosav->curr] == NULL) {
     macosav->player [macosav->curr] = [[AVPlayer alloc] init];
+    macosav->player [macosav->curr].audioOutputDeviceUniqueID =
+        macosav->audiodevuid;
   } else {
     [macosav->player [macosav->curr] pause];
   }
+
+  macosav->player [macosav->curr].volume = 1.0;
 
   plitem = macosav->plitem [macosav->curr];
   macosav->plitem [macosav->curr] = [AVPlayerItem playerItemWithURL: url];
@@ -355,6 +364,31 @@ macosavGetVolume (macosav_t *macosav)
   dvol = macosav->player [macosav->curr].volume;
   vol = round (dvol * 100.0);
   return vol;
+}
+
+int
+macosavSetAudioDevice (macosav_t *macosav, const char *dev, plidev_t plidevtype)
+{
+  OSStatus        error;
+  AudioObjectPropertyAddress propertyAOPA;
+  UInt32          propSize = 0;
+  NSString        *result;
+  int             audiodev;
+
+  audiodev = atoi (dev);
+
+  propSize = sizeof (CFStringRef);
+  propertyAOPA.mSelector = kAudioDevicePropertyDeviceUID;
+  propertyAOPA.mScope = kAudioObjectPropertyScopeGlobal;
+  propertyAOPA.mElement = kAudioObjectPropertyElementMain;
+  error = AudioObjectGetPropertyData (audiodev,
+      &propertyAOPA, 0, NULL, &propSize, &result);
+  if (result != NULL) {
+    macosav->audiodev = audiodev;
+    macosav->audiodevuid = [NSString stringWithString: result];
+  }
+
+  return 0;
 }
 
 /* internal routines */

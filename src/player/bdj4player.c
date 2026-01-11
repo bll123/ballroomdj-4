@@ -379,7 +379,7 @@ main (int argc, char *argv[])
       playerData.pliunsupportedtypes, PLI_MAX_UNSUPPORTED);
   playerData.pliSupported = pliSupported (playerData.pli);
 
-  /* windows needs to have the audio device set */
+  /* windows and macosav need to have the audio device set */
   /* apparently there is no api to set the applications audio sink */
   pliSetAudioDevice (playerData.pli, playerData.actualSink, plidevtype);
 

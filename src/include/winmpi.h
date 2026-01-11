@@ -5,7 +5,7 @@
 
 #include "config.h"
 
-# include "pli.h"
+#include "pli.h"
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {

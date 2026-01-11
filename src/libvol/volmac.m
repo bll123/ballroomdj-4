@@ -178,7 +178,7 @@ voliProcess (volaction_t action, const char *sinkname,
       AudioBufferList streamConfiguration;
       int             ccount;
       int             sinkidx;
-      char            tmp [40];
+      char            tmp [200];
 
       propSize = sizeof (streamConfiguration);
 

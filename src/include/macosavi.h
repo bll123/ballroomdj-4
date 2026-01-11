@@ -27,6 +27,7 @@ plistate_t        macosavState (macosav_t *macosav);
 ssize_t           macosavSeek (macosav_t *macosav, ssize_t pos);
 double            macosavRate (macosav_t *macosav, double drate);
 int               macosavGetVolume (macosav_t *macosav);
+int               macosavSetAudioDevice (macosav_t *macosav, const char *dev, plidev_t plidevtype);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

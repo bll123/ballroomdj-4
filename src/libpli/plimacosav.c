@@ -218,7 +218,14 @@ pliiState (plidata_t *pliData)
 int
 pliiSetAudioDevice (plidata_t *pliData, const char *dev, plidev_t plidevtype)
 {
-  return 0;
+  int   rc = 0;
+
+  if (pliData == NULL || pliData->macosav == NULL) {
+    return -1;
+  }
+
+  rc = macosavSetAudioDevice (pliData->macosav, dev, plidevtype);
+  return rc;
 }
 
 int
