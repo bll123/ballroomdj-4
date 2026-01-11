@@ -15,7 +15,7 @@ if [[ $pkgname == "" || $pkgname = "libid3tag" ]]; then
     sdir=$(pwd)
     bdir=build
 
-    export MACOSX_DEPLOYMENT_TARGET=13
+    export MACOSX_DEPLOYMENT_TARGET=11
 
     if [[ $clean == T ]]; then
       test -d "${bdir}" && rm -rf "${bdir}"

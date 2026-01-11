@@ -223,8 +223,11 @@ macosavPlay (macosav_t *macosav)
   }
 
   macosavRunLoop (macosav);
-  macosav->player [macosav->curr].defaultRate = macosav->drate;
+  /* defaultrate can be used starting with version 13 */
+  /* but try to support version 11 */
+  // macosav->player [macosav->curr].defaultRate = macosav->drate;
   [macosav->player [macosav->curr] play];
+  macosav->player [macosav->curr].rate = macosav->drate;
   return 0;
 }
 

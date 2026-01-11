@@ -426,7 +426,7 @@ if (NOT WIN32)
     # IMPORTANT: update this in:
     #     pkg/macos/Info.plist
     #     pkg/build/050-id3tag-build.sh
-    set (CMAKE_OSX_DEPLOYMENT_TARGET 13)
+    set (CMAKE_OSX_DEPLOYMENT_TARGET 11)
   endif()
 
   add_compile_options (-DMG_ARCH=MG_ARCH_UNIX)
