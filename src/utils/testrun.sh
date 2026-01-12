@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2021-2025 Brad Lanam Pleasant Hill CA
+# Copyright 2021-2026 Brad Lanam Pleasant Hill CA
 #
 
 while test ! \( -d src -a -d web -a -d wiki \); do
@@ -273,7 +273,7 @@ if [[ $TESTSUITE == T ]]; then
     fi
   fi
 
-  # macos AVPlayer
+  # MacOS AVPlayer
   TESTMACAVON=T
   if [[ $grc -eq 0 && $TESTMACAVON == T && $os == macos ]]; then
     runTestSuite MACAV
