@@ -1,8 +1,6 @@
 /*
  * Copyright 2021-2026 Brad Lanam Pleasant Hill CA
  *
- * To convert a .mp3 file to .wav, use mpg123, do not use ffmpeg (broken).
- *
  */
 #include "config.h"
 
@@ -61,7 +59,8 @@ typedef struct atisaved {
 } atisaved_t;
 
 static int atibdj4RIFFReadObjectHead (FILE *fh, char *riffid, uint32_t *len);
-static int atibdj4RIFFParseMetadata (FILE *fh, atidata_t *ati, slist_t *tagdata, int tagtype);
+static int atibdj4RIFFParseMetadata (FILE *fh, atidata_t *ati, slist_t *tagdata, int tagtype, uint32_t metalen);
+static int atibdj4RIFFSkipPadding (FILE *fh, uint32_t len);
 
 void
 atibdj4LogRIFFVersion (void)
@@ -128,6 +127,7 @@ atibdj4ParseRIFFTags (atidata_t *atidata, slist_t *tagdata,
         /* and leave the doseek flag on */
       }
     }
+
     if (strcmp (riffid, RIFF_ID_DATA) == 0) {
       slistSetStr (tagdata, atidata->tagName (TAG_DURATION), "0");
       if (fmt.blockalign > 0 && fmt.samplerate > 0) {
@@ -143,7 +143,7 @@ atibdj4ParseRIFFTags (atidata_t *atidata, slist_t *tagdata,
     }
 
     if (strcmp (riffid, RIFF_ID_LIST) == 0) {
-      atibdj4RIFFParseMetadata (fh, atidata, tagdata, tagtype);
+      atibdj4RIFFParseMetadata (fh, atidata, tagdata, tagtype, len);
       doseek = false;
     }
 
@@ -178,11 +178,12 @@ atibdj4RIFFReadObjectHead (FILE *fh, char *riffid, uint32_t *len)
 
 static int
 atibdj4RIFFParseMetadata (FILE *fh, atidata_t *atidata, slist_t *tagdata,
-    int tagtype)
+    int tagtype, uint32_t metalen)
 {
   char      riffid [RIFF_ID_LEN + 1];
   uint32_t  len;
   int       rc;
+  uint32_t  processlen = 0;
 
   /* the INFO marker is not a chunk */
   rc = fread (riffid, RIFF_ID_LEN, 1, fh);
@@ -190,8 +191,10 @@ atibdj4RIFFParseMetadata (FILE *fh, atidata_t *atidata, slist_t *tagdata,
   if (rc != 1 || strcmp (riffid, RIFF_ID_INFO) != 0) {
     return -1;
   }
+  processlen += RIFF_ID_LEN;
 
-  while (atibdj4RIFFReadObjectHead (fh, riffid, &len) == 0) {
+  while (processlen < metalen &&
+      atibdj4RIFFReadObjectHead (fh, riffid, &len) == 0) {
     const char    *tagname;
     char          *data;
     const char    *p;
@@ -203,6 +206,8 @@ atibdj4RIFFParseMetadata (FILE *fh, atidata_t *atidata, slist_t *tagdata,
       if (fileopSeek (fh, len, SEEK_CUR) != 0) {
         break;
       }
+      processlen += RIFF_ID_LEN + sizeof (uint32_t) + len;
+      processlen += atibdj4RIFFSkipPadding (fh, len);
       continue;
     }
 
@@ -219,7 +224,26 @@ atibdj4RIFFParseMetadata (FILE *fh, atidata_t *atidata, slist_t *tagdata,
     }
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw: %s %s=%s", tagname, riffid, data);
     slistSetStr (tagdata, tagname, p);
+    mdfree (data);
+    processlen += RIFF_ID_LEN + sizeof (uint32_t) + len;
+    processlen += atibdj4RIFFSkipPadding (fh, len);
   }
 
   return 0;
+}
+
+static int
+atibdj4RIFFSkipPadding (FILE *fh, uint32_t len)
+{
+  int     rem;
+  char    pbuff [40];
+
+  /* ffmpeg et.al. write the length without including the padding bytes */
+  /* in the length.  padding is to the int16 boundary */
+  rem = len % sizeof (int16_t);
+  if (rem) {
+    (void) ! fread (pbuff, rem, 1, fh);
+  }
+
+  return rem;
 }

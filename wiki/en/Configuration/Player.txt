@@ -12,7 +12,7 @@ __Player__: Selects the player interface.
 <br>Windows supports _Integrated&nbsp;VLC_ and
 _Windows&nbsp;Media&nbsp;Player_.
 
-The MacOS AVPlayer interfaces does not support .ogx, .wma or .mkv audio files.
+The MacOS AVPlayer interface does not support .ogx, .wma or .mkv audio files.
 
 The MacOS AVPlayer, Windows Media Player and GStreamer interfaces
 support cross fading.

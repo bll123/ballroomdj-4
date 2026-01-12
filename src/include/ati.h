@@ -47,7 +47,6 @@ typedef const tagaudiotag_t *(*audiotaglookup_t)(int, int);
 bool    atiCheck (const char *atipkg);
 ati_t   *atiInit (const char *atipkg, int writetags, taglookup_t tagLookup, tagcheck_t tagCheck, tagname_t tagName, audiotaglookup_t tagRawLookup);
 void    atiFree (ati_t *ati);
-void    atiSupportedTypes (ati_t *ati, int supported []);
 void    atiParseTags (ati_t *ati, slist_t *tagdata, const char *ffn, int filetype, int tagtype, int *rewrite);
 int     atiWriteTags (ati_t *ati, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype, int32_t flags);
 atisaved_t *atiSaveTags (ati_t *ati, const char *ffn, int tagtype, int filetype);

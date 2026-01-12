@@ -132,8 +132,9 @@ icon to the Applications Folder icon.
 
 #### MacOS Native player interface
 
-A MacOS native player interface is available that can be used instead
-of VLC.  This interface cannot play .ogx, .wma or .mkv files.
+The MacOS AVPlayer native player interface is available that can be
+used instead of VLC.  This interface supports cross-fading.  This
+interface cannot play .ogx, .wma or .mkv files.
 
 #### Getting Help
 

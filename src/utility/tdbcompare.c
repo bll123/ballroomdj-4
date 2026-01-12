@@ -14,6 +14,8 @@
 #include <unistd.h>
 #include <math.h>
 
+#include "ati.h"
+#include "audiofile.h"
 #include "audiosrc.h"
 #include "audiotag.h"
 #include "bdj4.h"
@@ -61,6 +63,7 @@ main (int argc, char *argv [])
   bool        loclockcheck = true;
   bdj4arg_t   *bdj4arg;
   const char  *targ;
+  int         supported [AFILE_TYPE_MAX];
 
   static struct option bdj_options [] = {
     { "tdbcompare",   no_argument,        NULL,   0 },
@@ -133,6 +136,8 @@ main (int argc, char *argv [])
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "ati: %s", bdjoptGetStr (OPT_M_AUDIOTAG_INTFC));
 
+  atiGetSupportedTypes (bdjoptGetStr (OPT_M_AUDIOTAG_INTFC), supported);
+
   for (int i = 0; i < DB_MAX; ++i) {
     dbfn [i] = NULL;
     db [i] = NULL;
@@ -190,6 +195,8 @@ main (int argc, char *argv [])
     const char  *fn;
     const char  *val;
     ssize_t     nval;
+    int         tagtype;
+    int         filetype;
 
     for (int i = 0; i < DB_MAX; ++i) {
       taglist [i] = NULL;
@@ -197,6 +204,12 @@ main (int argc, char *argv [])
     }
 
     fn = songGetStr (song [DB_A], TAG_URI);
+
+    audiotagDetermineTagType (fn, &tagtype, &filetype);
+    if (supported [filetype] != ATI_READ_WRITE) {
+      continue;
+    }
+
     if (verbose) {
       fprintf (stderr, "  -- tdbcomp: %s\n", fn);
     }

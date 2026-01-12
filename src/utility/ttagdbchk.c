@@ -13,6 +13,8 @@
 #include <getopt.h>
 #include <unistd.h>
 
+#include "ati.h"
+#include "audiofile.h"
 #include "audiosrc.h"
 #include "audiotag.h"
 #include "bdj4.h"
@@ -55,6 +57,7 @@ main (int argc, char *argv [])
   const char  *targ;
   loglevel_t  loglevel = LOG_IMPORTANT | LOG_INFO;
   bool        loglevelset = false;
+  int         supported [AFILE_TYPE_MAX];
 
   static struct option bdj_options [] = {
     { "bdj4",         no_argument,      NULL,   'B' },
@@ -127,6 +130,8 @@ main (int argc, char *argv [])
   }
   logStartAppend ("ttagdbchk", "ttdc", loglevel);
 
+  atiGetSupportedTypes (bdjoptGetStr (OPT_M_AUDIOTAG_INTFC), supported);
+
   dbfn = NULL;
   for (int i = optind; i < argc; ++i) {
     if (dbfn == NULL) {
@@ -160,6 +165,14 @@ main (int argc, char *argv [])
   while ((fn = slistIterateKey (flist, &iteridx)) != NULL) {
     slist_t *tagdata;
     int     rewrite;
+    int     tagtype;
+    int     filetype;
+
+
+    audiotagDetermineTagType (fn, &tagtype, &filetype);
+    if (supported [filetype] != ATI_READ_WRITE) {
+      continue;
+    }
 
     tagdata = audiotagParseData (fn, &rewrite);
     if (dbCompare (db, fn, tagdata)) {

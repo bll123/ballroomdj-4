@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2021-2025 Brad Lanam Pleasant Hill CA
+# Copyright 2021-2026 Brad Lanam Pleasant Hill CA
 #
 
 while test ! \( -d src -a -d web -a -d wiki \); do
@@ -321,8 +321,11 @@ done
 # DBG=4456459
 # audiotag+dbupdate+info+basic+important + db
 DBG=4457483
+# important only
+# DBG=1
+
 # norm
-NUMNORM=145
+NUMNORM=148
 # cha cha
 NUMCC=18
 # regex

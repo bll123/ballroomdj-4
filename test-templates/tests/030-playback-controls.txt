@@ -564,6 +564,7 @@ end
 # then main will know about the speed change and will send
 # the adjusted duration.
 test 30-90 Speed
+# ### this probably needs re-writing
 msg main MUSICQ_INSERT 0~999~15
 msg main MUSICQ_INSERT 0~999~16
 msg main MUSICQ_INSERT 0~999~17
@@ -599,7 +600,7 @@ msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1100
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol plivolume 100
 msg player PLAY_SPEED 70
