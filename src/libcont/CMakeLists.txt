@@ -35,6 +35,15 @@ if (WIN32)
   )
 endif()
 
+if (APPLE)
+  add_library (libcontmpnp SHARED mpnp.m)
+  target_link_libraries (libcontmpnp PRIVATE
+    "-framework Cocoa" "-framework MediaPlayer"
+    libbdj4basic libbdj4common
+  )
+  addIntlLibrary (libcontmpnp)
+endif()
+
 install (TARGETS
   libbdj4cont
   DESTINATION ${DEST_BIN}
@@ -54,10 +63,20 @@ if (WIN32)
   )
 endif()
 
+if (APPLE)
+  install (TARGETS
+    libcontmpnp
+    DESTINATION ${DEST_BIN}
+  )
+endif()
+
 updateRPath (libbdj4cont)
 if (NOT WIN32 AND NOT APPLE)
   updateRPath (libcontmpris)
 endif()
 if (WIN32)
   updateRPath (libcontsmtc)
+endif()
+if (APPLE)
+  updateRPath (libcontmpnp)
 endif()

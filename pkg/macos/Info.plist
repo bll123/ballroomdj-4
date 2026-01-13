@@ -2,24 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>BundleIsVersionChecked</key>
-  <false/>
-  <key>BundleOverwriteAction</key>
-  <string>upgrade</string>
   <key>CFBundleDevelopmentRegion</key>
-  <string>English</string>
-  <key>CFBundleDictionaryVersion</key>
-  <string>6.0</string>
+  <string>en</string>
   <key>CFBundleDisplayName</key>
   <string>#BDJPKGNAME#</string>
   <key>CFBundleExecutable</key>
   <string>#BDJPKGNAME#</string>
-  <key>CFBundleGetInfoString</key>
-  <string>Copyright 2021-2026 Brad Lanam, Pleasant Hill CA US</string>
   <key>CFBundleIconFile</key>
   <string>#BDJPKGNAME#.icns</string>
   <key>CFBundleIdentifier</key>
   <string>org.#BDJLCPKGNAME#.#BDJPKGNAME#</string>
+  <key>CFBundleInfoDictionaryVersion</key>
+  <string>6.0</string>
   <key>CFBundleName</key>
   <string>#BDJPKGNAME#</string>
   <key>CFBundlePackageType</key>
@@ -28,11 +22,17 @@
   <string>#BDJVERSION#</string>
   <key>CFBundleSignature</key>
   <string>BDJ4</string>
+  <key>CFBundleSpokenName</key>
+  <string>#BDJPKGNAME#</string>
   <key>CFBundleVersion</key>
   <string>#BDJVERSION#</string>
+  <key>LSApplicationCategoryType</key>
+  <string>public.app-category.music</string>
   <key>LSMinimumSystemVersion</key>
   <string>11</string>
   <key>LSRequiresCarbon</key>
   <true/>
+  <key>NSHumanReadableCopyright</key>
+  <string>Copyright 2021-2026 Brad Lanam, Pleasant Hill CA US</string>
 </dict>
 </plist>

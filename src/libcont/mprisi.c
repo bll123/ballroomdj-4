@@ -11,8 +11,6 @@
  */
 #include "config.h"
 
-#if __linux__
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -30,12 +28,12 @@
 #include "callback.h"
 #include "controller.h"
 #include "dbusi.h"
+#include "log.h"
 #include "mdebug.h"
 #include "player.h"
 #include "nlist.h"
 #include "tmutil.h"
 
-#include "log.h" // ###
 
 static const char *urischemes [] = {
   "file",
@@ -270,7 +268,7 @@ contiSetCallbacks (contdata_t *contdata, callback_t *cb, callback_t *cburi)
 }
 
 void
-contiSetPlayState (contdata_t *contdata, int state)
+contiSetPlayState (contdata_t *contdata, playerstate_t state)
 {
   int   nstate = MPRIS_PB_STATUS_STOP;
   bool  canplay = false;
@@ -314,6 +312,7 @@ contiSetPlayState (contdata_t *contdata, int state)
       canseek = false;
       break;
     }
+    case PL_STATE_MAX:
     case PL_STATE_UNKNOWN:
     case PL_STATE_STOPPED: {
       /* the mpris-stopped state is completely stopped, not running */
@@ -845,5 +844,3 @@ mprisVolume (mprisMediaPlayer2Player *player,
 
   return true;
 }
-
-#endif /* __linux__ */

@@ -19,6 +19,7 @@
 #include "dyintfc.h"
 #include "dylib.h"
 #include "mdebug.h"
+#include "player.h"
 #include "sysvars.h"
 
 typedef struct controller {
@@ -29,7 +30,7 @@ typedef struct controller {
   void              (*contiFree) (contdata_t *contdata);
   bool              (*contiCheckReady) (contdata_t *contdata);
   void              (*contiSetCallbacks) (contdata_t *contdata, callback_t *cb, callback_t *cburi);
-  void              (*contiSetPlayState) (contdata_t *contdata, int state);
+  void              (*contiSetPlayState) (contdata_t *contdata, playerstate_t state);
   void              (*contiSetRepeatState) (contdata_t *contdata, bool state);
   void              (*contiSetPosition) (contdata_t *contdata, int32_t pos);
   void              (*contiSetRate) (contdata_t *contdata, int rate);
@@ -137,7 +138,7 @@ controllerSetCallbacks (controller_t *cont, callback_t *cb, callback_t *cburi)
 }
 
 void
-controllerSetPlayState (controller_t *cont, int state)
+controllerSetPlayState (controller_t *cont, playerstate_t state)
 {
   if (cont == NULL) {
     return;

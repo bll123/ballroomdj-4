@@ -8,6 +8,7 @@
 
 #include "callback.h"
 #include "ilist.h"
+#include "player.h"
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -67,7 +68,7 @@ void controllerFree (controller_t *cont);
 void controllerSetup (controller_t *cont);
 bool controllerCheckReady (controller_t *cont);
 void controllerSetCallbacks (controller_t *cont, callback_t *cb, callback_t *cburi);
-void controllerSetPlayState (controller_t *cont, int state);
+void controllerSetPlayState (controller_t *cont, playerstate_t state);
 void controllerSetRepeatState (controller_t *cont, bool state);
 void controllerSetPosition (controller_t *cont, int32_t pos);
 void controllerSetRate (controller_t *cont, int rate);
@@ -82,7 +83,7 @@ void contiFree (contdata_t *contdata);
 bool contiSetup (void *contdata);
 bool contiCheckReady (contdata_t *contdata);
 void contiSetCallbacks (contdata_t *contdata, callback_t *cb, callback_t *cburi);
-void contiSetPlayState (contdata_t *contdata, int state);
+void contiSetPlayState (contdata_t *contdata, playerstate_t state);
 void contiSetRepeatState (contdata_t *contdata, bool state);
 void contiSetPosition (contdata_t *contdata, int32_t pos);
 void contiSetRate (contdata_t *contdata, int rate);

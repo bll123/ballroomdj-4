@@ -433,6 +433,7 @@ contiSetPlayState (contdata_t *contdata, int state)
       canseek = false;
       break;
     }
+    case PL_STATE_MAX:
     case PL_STATE_UNKNOWN:
     case PL_STATE_STOPPED: {
       nstate = MediaPlaybackStatus::Stopped;
