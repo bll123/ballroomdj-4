@@ -333,6 +333,8 @@ contiSetVolume (contdata_t *contdata, int volume)
 void
 contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
 {
+  MPMediaType   mt;
+
   if (contdata == NULL) {
     return;
   }
@@ -352,14 +354,26 @@ contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
   [contdata->songInfo setObject:
       [NSString stringWithUTF8String: cmetadata->genre]
       forKey: MPMediaItemPropertyGenre];
+
+  dur = cmetadata->duration;
+  if (cmetadata->songend > 0) {
+    dur = cmetadata->songend;
+  }
+  dur -= cmetadata->songstart;
   [contdata->songInfo setObject:
-      [NSNumber numberWithFloat: (Float32) cmetadata->duration / 1000.0]
+      [NSNumber numberWithFloat: (Float32) dur / 1000.0]
       forKey: MPMediaItemPropertyPlaybackDuration];
+
   [contdata->songInfo setObject:
       [NSNumber numberWithFloat: 0.0]
       forKey: MPNowPlayingInfoPropertyElapsedPlaybackTime];
+
+  mt = MPMediaTypeMusic;
+  if (astype == AUDIOSRC_TYPE_PODCAST) {
+    mt = MPMediaTypePodcast;
+  }
   [contdata->songInfo setObject:
-      [NSNumber numberWithInt: MPNowPlayingInfoMediaTypeAudio]
+      [NSNumber numberWithInt: mt]
       forKey: MPNowPlayingInfoPropertyMediaType];
 
   [contdata->infocenter setNowPlayingInfo: contdata->songInfo];

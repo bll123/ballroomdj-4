@@ -26,7 +26,7 @@
 #include "bdjvarsdf.h"
 #include "callback.h"
 #include "conn.h"
-#include "controller.h"
+#include "continst.h"
 #include "datafile.h"
 #include "dispsel.h"
 #include "fileop.h"
@@ -88,7 +88,6 @@ enum {
   PLUI_CB_KEYB,
   PLUI_CB_FONT_SZ_CHG,
   PLUI_CB_DRAG_DROP,
-  PLUI_CB_CONTROLLER,
   PLUI_CB_CONT_URI,
   PLUI_CB_MAX,
 };
@@ -169,8 +168,8 @@ typedef struct {
   mp3exp_t        *mp3exp;
   mstime_t        expmp3chkTime;
   int             expmp3state;
-  /* controller */
-  controller_t    *controller;
+  /* controller instance */
+  continst_t      *continst;
   /* flags */
   bool            fontszdialogcreated;
   bool            mainalready;
@@ -271,7 +270,6 @@ static void     pluiReloadSave (playerui_t *plui, int mqidx);
 static void     pluiReloadSaveCurrent (playerui_t *plui);
 static bool     pluiEventEvent (void *udata);
 static bool     pluiExportMP3 (void *udata);
-static bool     pluiControllerCallback (void *udata, int32_t cm, int32_t val);
 static bool     pluiControllerURICallback (void *udata, const char *uri, int32_t cmd);
 static int32_t  pluiDragDropCallback (void *udata, const char *uri);
 
@@ -330,7 +328,7 @@ main (int argc, char *argv[])
   plui.reloadrcvd = 0;
   plui.mqfontsizeactive = false;
   plui.expmp3state = BDJ4_STATE_OFF;
-  plui.controller = NULL;
+  plui.continst = NULL;
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
     plui.callbacks [i] = NULL;
   }
@@ -476,6 +474,8 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiWidgetClearPersistent (plui->wcont [PLUI_W_LED_ON]);
   uiWidgetClearPersistent (plui->wcont [PLUI_W_LED_OFF]);
 
+  contInstanceFree (plui->continst);
+
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     msgparseMusicQueueDataFree (plui->musicqupdate [i]);
   }
@@ -512,8 +512,6 @@ pluiClosingCallback (void *udata, programstate_t programState)
   plui->uimusicq = NULL;
   uisongselFree (plui->uisongsel);
   plui->uisongsel = NULL;
-
-  controllerFree (plui->controller);
 
   logProcEnd ("");
   return STATE_FINISHED;
@@ -1060,31 +1058,18 @@ pluiInitDataCallback (void *udata, programstate_t programState)
   playerui_t    *plui = udata;
   bool          rc = STATE_NOT_FINISH;
 
-  if (plui->controller == NULL) {
-    const char  *val;
-
-    val = bdjoptGetStr (OPT_M_CONTROLLER_INTFC);
-    if (val != NULL && *val) {
-      plui->controller = controllerInit (val);
-      if (plui->controller != NULL) {
-        plui->callbacks [PLUI_CB_CONTROLLER] =
-            callbackInitII (pluiControllerCallback, plui);
-        plui->callbacks [PLUI_CB_CONT_URI] =
-            callbackInitSI (pluiControllerURICallback, plui);
-        controllerSetCallbacks (plui->controller,
-            plui->callbacks [PLUI_CB_CONTROLLER],
-            plui->callbacks [PLUI_CB_CONT_URI]);
-      }
-    } else {
-      rc = STATE_FINISHED;
-    }
+  if (plui->continst == NULL) {
+    plui->continst = contInstanceInit (plui->conn, plui->uiplayer);
   }
 
-  if (plui->controller != NULL &&
-      controllerCheckReady (plui->controller)) {
-    controllerSetup (plui->controller);
-    uiplayerSetController (plui->uiplayer, plui->controller);
-    rc = STATE_FINISHED;
+  if (plui->continst != NULL) {
+    rc = contInstanceSetup (plui->continst);
+  }
+
+  if (plui->continst != NULL && rc == STATE_FINISHED) {
+    plui->callbacks [PLUI_CB_CONT_URI] =
+        callbackInitSI (pluiControllerURICallback, plui);
+    contInstanceSetURICallback (plui->continst, plui->callbacks [PLUI_CB_CONT_URI]);
   }
 
   return rc;
@@ -2217,66 +2202,6 @@ pluiDragDropCallback (void *udata, const char *uri)
   stringTrim (tbuff);
   uiextreqDialog (plui->uiextreq, tbuff);
   return UICB_CONT;
-}
-
-static bool
-pluiControllerCallback (void *udata, int32_t cmd, int32_t val)
-{
-  playerui_t    *plui = udata;
-  bool          rc = false;
-
-  switch (cmd) {
-    case CONTROLLER_PLAY: {
-      connSendMessage (plui->conn, ROUTE_MAIN, MSG_CMD_PLAY, NULL);
-      break;
-    }
-    case CONTROLLER_PAUSE: {
-      connSendMessage (plui->conn, ROUTE_MAIN, MSG_CMD_PLAYPAUSE, NULL);
-      break;
-    }
-    case CONTROLLER_PLAYPAUSE: {
-      connSendMessage (plui->conn, ROUTE_MAIN, MSG_CMD_PLAYPAUSE, NULL);
-      break;
-    }
-    case CONTROLLER_STOP: {
-      connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_STOP, NULL);
-      break;
-    }
-    case CONTROLLER_NEXT: {
-      connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
-      break;
-    }
-    case CONTROLLER_SEEK: {
-      char    tmp [40];
-
-      snprintf (tmp, sizeof (tmp), "%d", val);
-      connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_SEEK, tmp);
-      break;
-    }
-    case CONTROLLER_VOLUME: {
-      char    tmp [40];
-
-      snprintf (tmp, sizeof (tmp), "%d", val);
-      connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAYER_VOLUME, tmp);
-      break;
-    }
-    case CONTROLLER_REPEAT: {
-      bool    repflag;
-
-      repflag = uiplayerGetRepeat (plui->uiplayer);
-      if (val != repflag) {
-        /* only toggle repeat if it does not match the current setting */
-        connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_REPEAT, NULL);
-      }
-      break;
-    }
-    case CONTROLLER_QUIT: {
-      pluiCloseWin (plui);
-      break;
-    }
-  }
-
-  return rc;
 }
 
 static bool

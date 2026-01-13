@@ -28,6 +28,7 @@
 #include "bdjvarsdf.h"
 #include "callback.h"
 #include "conn.h"
+#include "continst.h"
 #include "dance.h"
 #include "datafile.h"
 #include "dispsel.h"
@@ -230,6 +231,7 @@ typedef struct {
   musicqidx_t       musicqManageIdx;
   uiwcont_t         *wcont [MANAGE_W_MAX];
   uivnb_t           *mainvnb;
+  continst_t        *continst;
   int               stopwaitcount;
   /* notebook tab handling */
   int               maincurrtab;
@@ -323,6 +325,7 @@ typedef struct {
   bool              musicqupdated;
   bool              optionsalloc;
   bool              pluiActive;
+  bool              processactivercvd;
   bool              sbssonglist;
   bool              selbypass;
   bool              slbackupcreated;
@@ -369,6 +372,7 @@ enum {
 
 static bool     manageConnectingCallback (void *udata, programstate_t programState);
 static bool     manageHandshakeCallback (void *udata, programstate_t programState);
+static bool     manageInitDataCallback (void *udata, programstate_t programState);
 static bool     manageStoppingCallback (void *udata, programstate_t programState);
 static bool     manageStopWaitCallback (void *udata, programstate_t programState);
 static bool     manageClosingCallback (void *udata, programstate_t programState);
@@ -503,6 +507,8 @@ main (int argc, char *argv[])
       manageConnectingCallback, &manage);
   progstateSetCallback (manage.progstate, PROGSTATE_WAIT_HANDSHAKE,
       manageHandshakeCallback, &manage);
+  progstateSetCallback (manage.progstate, PROGSTATE_INITIALIZE_DATA,
+      manageInitDataCallback, &manage);
 
   for (int i = 0; i < MANAGE_W_MAX; ++i) {
     manage.wcont [i] = NULL;
@@ -579,12 +585,14 @@ main (int argc, char *argv[])
   manage.musicqueueprocessflag = false;
   manage.musicqupdated = false;
   manage.pluiActive = false;
+  manage.processactivercvd = false;
   manage.sbssonglist = true;
   manage.applyadjstate = BDJ4_STATE_OFF;
   manage.impitunesstate = BDJ4_STATE_OFF;
   manage.uict = NULL;
   manage.ctstate = BDJ4_STATE_OFF;
   manage.uiaa = NULL;
+  manage.continst = NULL;
   for (int i = 0; i < MANAGE_CB_MAX; ++i) {
     manage.callbacks [i] = NULL;
   }
@@ -746,6 +754,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   uiCloseWindow (manage->minfo.window);
   uiCleanup ();
 
+  contInstanceFree (manage->continst);
   manageDbClose (manage->managedb);
 
   for (int i = 0; i < MUSICQ_MAX; ++i) {
@@ -1515,6 +1524,38 @@ manageHandshakeCallback (void *udata, programstate_t programState)
   return rc;
 }
 
+static bool
+manageInitDataCallback (void *udata, programstate_t programState)
+{
+  manageui_t   *manage = udata;
+  bool          rc = STATE_NOT_FINISH;
+
+  logProcBegin ();
+
+  if (manage->processactivercvd == false) {
+logStderr ("manage: cont-inst no-msg, wait\n");
+    return rc;
+  }
+
+  if (manage->pluiActive) {
+    rc = STATE_FINISHED;
+logStderr ("manage: cont-inst plui-active %d\n", rc);
+    return rc;
+  }
+
+  if (manage->continst == NULL) {
+    manage->continst = contInstanceInit (manage->conn, manage->slplayer);
+  }
+
+  if (manage->continst != NULL) {
+    rc = contInstanceSetup (manage->continst);
+  }
+
+logStderr ("manage: cont-inst %d\n", rc);
+  logProcEnd ("");
+  return rc;
+}
+
 static int
 manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
@@ -1626,7 +1667,9 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           char  tmp [40];
 
           val = atoi (args);
+logStderr ("manage: process-active: %d\n", val);
           manage->pluiActive = val;
+          manage->processactivercvd = true;
           uimusicqSetPlayButtonState (manage->slmusicq, val);
           uimusicqSetPlayButtonState (manage->slsbsmusicq, val);
           uisongselSetPlayButtonState (manage->slsongsel, val);
@@ -3752,9 +3795,11 @@ manageSwitchPage (manageui_t *manage, int pagenum, int which)
   nbtabid = manage->nbtabid [which];
   if (which == MANAGE_NB_SONGLIST) {
     logMsg (LOG_DBG, LOG_INFO, "switch page in songlist");
+    contInstanceSetUIPlayer (manage->continst, manage->slplayer);
     slnb = true;
   } else if (which == MANAGE_NB_MM) {
     logMsg (LOG_DBG, LOG_INFO, "switch page in mm");
+    contInstanceSetUIPlayer (manage->continst, manage->mmplayer);
     mmnb = true;
   } else {
     logMsg (LOG_DBG, LOG_INFO, "switch page in main");

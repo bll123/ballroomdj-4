@@ -27,7 +27,8 @@ play the audio.  If the selected device is not currently connected,
 the default device will be used.
 
 __Controller__: Select the media controller.  At this time,
-Linux&nbsp;MPRIS and Windows&nbsp;SMTC are implemented.
+Linux&nbsp;MPRIS, Windows&nbsp;SMTC and MacOS&nbsp;Now&nbsp;Playing
+are implemented.
 
 __Default Volume__: Sets the volume level when BDJ4 first starts.
 
