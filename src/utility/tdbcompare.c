@@ -313,10 +313,12 @@ main (int argc, char *argv [])
       if (strcmp (tag [DB_A], tagdefs [TAG_DURATION].tag) == 0) {
         if (val [DB_A] != NULL && val [dblocidx] != NULL) {
           int64_t     dura, durb;
+          int         tval;
 
           dura = atoll (val [DB_A]);
           durb = atoll (val [dblocidx]);
-          if (abs (dura - durb) > 100) {
+          tval = (int) (dura - durb);
+          if (abs (tval) > 100) {
             fprintf (stderr, "    tdbcomp:k: tag %s mismatch /%s/%s/ %s\n", tag [DB_A], val [DB_A], val [dblocidx], fn);
             grc = 1;
           }

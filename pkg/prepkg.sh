@@ -342,6 +342,7 @@ if [[ $platform == windows ]]; then
 
   # gspawn helpers are required for the link button to work.
   # librsvg is the SVG library; it is not a direct dependent.
+  # libicu/dt/in/uc is the ICU library; it is not a direct dependent.
   # gdbus
   chkdlllist="
       /${libtag}/bin/gdbus.exe
@@ -349,6 +350,9 @@ if [[ $platform == windows ]]; then
       /${libtag}/bin/gspawn-win64-helper.exe
       /${libtag}/bin/libcares-2.dll
       /${libtag}/bin/librsvg-2-2.dll
+      /${libtag}/bin/libicudt[0-9][0-9].dll
+      /${libtag}/bin/libicuin[0-9][0-9].dll
+      /${libtag}/bin/libicuuc[0-9][0-9].dll
       "
   for fn in $chkdlllist; do
     bfn=$(basename $fn)

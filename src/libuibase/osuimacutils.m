@@ -3,8 +3,6 @@
  */
 #include "config.h"
 
-#if __APPLE__
-
 #import <Foundation/NSObject.h>
 
 #include <stdio.h>
@@ -37,4 +35,3 @@ osuiFinalize (void)
   return;
 }
 
-#endif /* __APPLE__ */

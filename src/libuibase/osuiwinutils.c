@@ -3,8 +3,6 @@
  */
 #include "config.h"
 
-#if _WIN32
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -25,5 +23,3 @@ osuiFinalize (void)
 {
   return;
 }
-
-#endif

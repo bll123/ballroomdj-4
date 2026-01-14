@@ -36,12 +36,13 @@ if (WIN32)
 endif()
 
 if (APPLE)
-  add_library (libcontmpnp SHARED mpnp.m)
-  target_link_libraries (libcontmpnp PRIVATE
+  add_library (libcontmacosnp SHARED macosnp.m)
+  target_link_libraries (libcontmacosnp PRIVATE
     "-framework Cocoa" "-framework MediaPlayer"
-    libbdj4basic libbdj4common
+    "-framework AudioToolbox"
+    libbdj4common
   )
-  addIntlLibrary (libcontmpnp)
+  addIntlLibrary (libcontmacosnp)
 endif()
 
 install (TARGETS
@@ -65,7 +66,7 @@ endif()
 
 if (APPLE)
   install (TARGETS
-    libcontmpnp
+    libcontmacosnp
     DESTINATION ${DEST_BIN}
   )
 endif()
@@ -78,5 +79,5 @@ if (WIN32)
   updateRPath (libcontsmtc)
 endif()
 if (APPLE)
-  updateRPath (libcontmpnp)
+  updateRPath (libcontmacosnp)
 endif()

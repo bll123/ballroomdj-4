@@ -7,6 +7,14 @@
  */
 #include "config.h"
 
+#import <Foundation/NSObject.h>
+#import <AudioToolbox/AudioServices.h>
+#import "MediaPlayer/MPNowPlayingInfoCenter.h"
+#import "MediaPlayer/MPRemoteCommandCenter.h"
+#import "MediaPlayer/MPRemoteCommand.h"
+#import "MediaPlayer/MPMediaItem.h"
+#import "MediaPlayer/MPRemoteCommandEvent.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -14,22 +22,17 @@
 #include <string.h>
 #include <math.h>
 
-#import <Foundation/NSObject.h>
-// #import <AVFoundation/AVFoundation.h>
-// #import <objc/runtime.h>
-#import "MediaPlayer/MPNowPlayingInfoCenter.h"
-#import "MediaPlayer/MPRemoteCommandCenter.h"
-#import "MediaPlayer/MPRemoteCommand.h"
-#import "MediaPlayer/MPMediaItem.h"
-#import "MediaPlayer/MPRemoteCommandEvent.h"
+#include <MacTypes.h>
+#include <Cocoa/Cocoa.h>
 
+#include "audiosrc.h"
 #include "bdj4.h"
 #include "bdj4intl.h"
-//#include "bdj4ui.h"     // for speed constants
 #include "callback.h"
 #include "controller.h"
 #include "log.h"
 #include "mdebug.h"
+#include "pathbld.h"
 #include "player.h"
 
 @interface RemoteController : NSObject {
@@ -333,33 +336,41 @@ contiSetVolume (contdata_t *contdata, int volume)
 void
 contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
 {
-  MPMediaType   mt;
+  MPMediaType         mt;
+  int64_t             dur;
+  MPMediaItemArtwork  *artwork = NULL;
 
   if (contdata == NULL) {
     return;
   }
 
-  [contdata->songInfo setObject:
-      [NSString stringWithUTF8String: cmetadata->album]
-      forKey: MPMediaItemPropertyAlbumTitle];
-  [contdata->songInfo setObject:
-      [NSString stringWithUTF8String: cmetadata->albumartist]
-      forKey: MPMediaItemPropertyAlbumArtist];
-  [contdata->songInfo setObject:
-      [NSString stringWithUTF8String: cmetadata->artist]
-      forKey: MPMediaItemPropertyArtist];
-  [contdata->songInfo setObject:
-      [NSString stringWithUTF8String: cmetadata->title]
-      forKey: MPMediaItemPropertyTitle];
-  [contdata->songInfo setObject:
-      [NSString stringWithUTF8String: cmetadata->genre]
-      forKey: MPMediaItemPropertyGenre];
+  if (cmetadata->album != NULL) {
+    [contdata->songInfo setObject:
+        [NSString stringWithUTF8String: cmetadata->album]
+        forKey: MPMediaItemPropertyAlbumTitle];
+  }
+  if (cmetadata->albumartist != NULL) {
+    [contdata->songInfo setObject:
+        [NSString stringWithUTF8String: cmetadata->albumartist]
+        forKey: MPMediaItemPropertyAlbumArtist];
+  }
+  if (cmetadata->artist != NULL) {
+    [contdata->songInfo setObject:
+        [NSString stringWithUTF8String: cmetadata->artist]
+        forKey: MPMediaItemPropertyArtist];
+  }
+  if (cmetadata->title != NULL) {
+    [contdata->songInfo setObject:
+        [NSString stringWithUTF8String: cmetadata->title]
+        forKey: MPMediaItemPropertyTitle];
+  }
+  if (cmetadata->genre != NULL) {
+    [contdata->songInfo setObject:
+        [NSString stringWithUTF8String: cmetadata->genre]
+        forKey: MPMediaItemPropertyGenre];
+  }
 
   dur = cmetadata->duration;
-//  if (cmetadata->songend > 0) {
-//    dur = cmetadata->songend;
-//  }
-//  dur -= cmetadata->songstart;
   [contdata->songInfo setObject:
       [NSNumber numberWithFloat: (Float32) dur / 1000.0]
       forKey: MPMediaItemPropertyPlaybackDuration];
@@ -369,12 +380,75 @@ contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
       forKey: MPNowPlayingInfoPropertyElapsedPlaybackTime];
 
   mt = MPMediaTypeMusic;
-  if (astype == AUDIOSRC_TYPE_PODCAST) {
+  if (cmetadata->astype == AUDIOSRC_TYPE_PODCAST) {
     mt = MPMediaTypePodcast;
   }
   [contdata->songInfo setObject:
       [NSNumber numberWithInt: mt]
       forKey: MPNowPlayingInfoPropertyMediaType];
+
+  {
+    char      tbuff [MAXPATHLEN];
+    NSURL     *url;
+    NSString  *str;
+    NSImage   *image = NULL;
+    CGSize    cgsize;
+
+    cgsize.width = 256.0;
+    cgsize.height = 256.0;
+
+    if (cmetadata->imageuri != NULL && *cmetadata->imageuri) {
+      str = [NSString stringWithUTF8String: cmetadata->imageuri];
+      url = [NSURL URLWithString: str];
+      image = [[NSImage alloc] initWithContentsOfURL: url];
+    } else {
+      if (cmetadata->uri != NULL && *cmetadata->uri) {
+        OSStatus      error;
+        AudioFileID   afile;
+        UInt32        propSize = 0;
+        UInt32        writable = 0;
+        CFDataRef     imgdata;
+
+        str = [NSString stringWithUTF8String: cmetadata->uri];
+        url = [NSURL URLWithString: str];
+
+        error = AudioFileOpenURL ((CFURLRef) url,
+            kAudioFileReadPermission, 0, &afile);
+        if (error == 0) {
+          error = AudioFileGetPropertyInfo (afile, kAudioFilePropertyAlbumArtwork,
+              &propSize, &writable);
+        }
+        if (error == 0) {
+          error = AudioFileGetProperty (afile, kAudioFilePropertyAlbumArtwork,
+              &propSize, &imgdata);
+          if (error == 0) {
+            image = [[NSImage alloc] initWithData: (NSData *) imgdata];
+          }
+        }
+        if (error != 0) {
+          image = NULL;
+        }
+      }
+
+      if (image == NULL) {
+        pathbldMakePath (tbuff, sizeof (tbuff),
+            "bdj4_icon_sq", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
+        str = [NSString stringWithUTF8String: tbuff];
+        image = [[NSImage alloc] initWithContentsOfFile: str];
+      }
+    }
+
+    /* no idea if this is correct, though it seems to work */
+    /* image may need resizing */
+    artwork = [[MPMediaItemArtwork alloc]
+        initWithBoundsSize: image.size
+        requestHandler: ^NSImage* _Nonnull(CGSize cgsize) { return image; }];
+  }
+
+  if (artwork != NULL) {
+    [contdata->songInfo setObject: artwork
+        forKey: MPMediaItemPropertyArtwork];
+  }
 
   [contdata->infocenter setNowPlayingInfo: contdata->songInfo];
 

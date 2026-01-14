@@ -1533,13 +1533,11 @@ manageInitDataCallback (void *udata, programstate_t programState)
   logProcBegin ();
 
   if (manage->processactivercvd == false) {
-logStderr ("manage: cont-inst no-msg, wait\n");
     return rc;
   }
 
   if (manage->pluiActive) {
     rc = STATE_FINISHED;
-logStderr ("manage: cont-inst plui-active %d\n", rc);
     return rc;
   }
 
@@ -1551,7 +1549,6 @@ logStderr ("manage: cont-inst plui-active %d\n", rc);
     rc = contInstanceSetup (manage->continst);
   }
 
-logStderr ("manage: cont-inst %d\n", rc);
   logProcEnd ("");
   return rc;
 }
@@ -1667,7 +1664,6 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           char  tmp [40];
 
           val = atoi (args);
-logStderr ("manage: process-active: %d\n", val);
           manage->pluiActive = val;
           manage->processactivercvd = true;
           uimusicqSetPlayButtonState (manage->slmusicq, val);

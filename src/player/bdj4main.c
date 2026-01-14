@@ -2599,11 +2599,12 @@ mainSendMusicqStatus (maindata_t *mainData)
   song_t          *song;
   const char      *imguri = NULL;
   int64_t         dur;
-  playlistitem_t  *plitem = NULL;
+  int             plidx;
 
   logProcBegin ();
 
   mqidx = mainData->musicqPlayIdx;
+
   dbidx = musicqGetByIdx (mainData->musicQueue, mqidx, 0);
   song = dbGetByIdx (mainData->musicdb, dbidx);
   imguri = songGetStr (song, TAG_IMAGE_URI);
@@ -2611,9 +2612,9 @@ mainSendMusicqStatus (maindata_t *mainData)
     imguri = "";
   }
   uniqueidx = musicqGetUniqueIdx (mainData->musicQueue, mqidx, 0);
-  plitem = queueGetFirst (mainData->playlistQueue [mqidx]);
+  plidx = musicqGetPlaylistIdx (mainData->musicQueue, mqidx, 0);
   dur = mainCalculateSongDuration (mainData, song,
-      plitem->playlistIdx, mqidx, MAIN_CALC_WITH_SPEED);
+      plidx, mqidx, MAIN_CALC_WITH_SPEED);
 
   msgbuildMusicQStatus (tbuff, sizeof (tbuff), dbidx, uniqueidx, imguri, dur);
 
