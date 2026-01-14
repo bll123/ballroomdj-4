@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-03 12:56-0800\n"
+"POT-Creation-Date: 2026-01-14 11:49-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2447,6 +2447,9 @@ msgstr ""
 #. CONTEXT: MacOS: reason for disabling sleep: BDJ4 Player is Active
 #, c-format
 msgid "%s Player is Active"
+msgstr ""
+
+msgid "MacOS Now Playing"
 msgstr ""
 
 #. CONTEXT: title of a getting started help section

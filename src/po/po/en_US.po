@@ -2,10 +2,10 @@
 # -- english/us
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.17.8\n"
+"Project-Id-Version: ballroomdj-4 4.17.10\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2026-01-05\n"
-"PO-Revision-Date: 2026-01-05\n"
+"POT-Creation-Date: 2026-01-14\n"
+"PO-Revision-Date: 2026-01-14\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -2443,6 +2443,9 @@ msgstr ""
 #. CONTEXT: MacOS: reason for disabling sleep: BDJ4 Player is Active
 #, c-format
 msgid "%s Player is Active"
+msgstr ""
+
+msgid "MacOS Now Playing"
 msgstr ""
 
 #. CONTEXT: title of a getting started help section

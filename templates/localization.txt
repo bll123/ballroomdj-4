@@ -1,5 +1,5 @@
 # localization
-# generated 2026-01-05
+# generated 2026-01-14
 KEY
 ..0
 LONG
