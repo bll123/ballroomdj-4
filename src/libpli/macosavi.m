@@ -284,7 +284,7 @@ macosavGetTime (macosav_t *macosav)
   macosavRunLoop (macosav);
   tm = [macosav->player [macosav->curr] currentTime];
   currtm = (ssize_t) (CMTimeGetSeconds (tm) * 1000.0);
-  return 0;
+  return currtm;
 }
 
 plistate_t

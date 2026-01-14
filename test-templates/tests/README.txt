@@ -79,6 +79,9 @@
 #       actualvolume is used to test fade-in and fade-out
 #     plivolume
 #     speed playtimeplayed pauseatend repeat currentsink
+#     plitime
+#       the position as reported by the player interface
+#       this will not match playtimeplayed if the speed is changed.
 #     prepqueuecount
 #       check the prepqueuecount can be problematical as it can take
 #       differing amounts of time to do the prep.

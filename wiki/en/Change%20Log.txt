@@ -4,10 +4,12 @@
 
 <!--
 
-**4.17.9.1 2026-1---**
+**4.17.10 2026-1---**
 
 * Bug Fixes:
     * Controller: Fix duration.
+    * Controller: Now works for both the player and manage playback.
+    * MacOS: Player Interface: MacOS AVPlayer: Fix a bug.
 * New Features:
     * MacOS: Add a controller for MacOS Now Playing.
 * Internal:

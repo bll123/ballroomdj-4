@@ -2299,6 +2299,9 @@ static void
 playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
 {
   char        tmp [4000];
+  uint64_t    plitm;
+
+  plitm = pliGetTime (playerData->pli);
 
   snprintf (tmp, sizeof (tmp),
       "playstate%c%s%c"
@@ -2309,6 +2312,7 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       "plivolume%c%d%c"
       "speed%c%d%c"
       "playtimeplayed%c%" PRIu64 "%c"
+      "plitime%c%" PRIu64 "%c"
       "pauseatend%c%d%c"
       "repeat%c%d%c"
       "prepqueuecount%c%" PRId32 "%c"
@@ -2322,6 +2326,7 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       MSG_ARGS_RS, pliGetVolume (playerData->pli), MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->currentSpeed, MSG_ARGS_RS,
       MSG_ARGS_RS, (uint64_t) playerCalcPlayedTime (playerData), MSG_ARGS_RS,
+      MSG_ARGS_RS, plitm, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->pauseAtEnd, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->repeat, MSG_ARGS_RS,
       MSG_ARGS_RS, queueGetCount (playerData->prepQueue), MSG_ARGS_RS,

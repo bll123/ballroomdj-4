@@ -970,6 +970,11 @@ tsScriptChk (testsuite_t *testsuite, const char *tcmd)
 {
   int   ok;
 
+  testsuite->lessthan = false;
+  testsuite->greaterthan = false;
+  testsuite->checkor = false;
+  testsuite->checknot = false;
+
   ok = tsParseExpect (testsuite, tcmd);
   if (ok != TS_OK) {
     return ok;
@@ -1233,8 +1238,8 @@ tsScriptChkResponse (testsuite_t *testsuite)
   bool        dispflag = false;
   slistidx_t  iteridx;
   const char  *key;
-  const char  *valexp;
-  const char  *valresp;
+  const char  *valexp = NULL;
+  const char  *valresp = NULL;
   char        tmp [40];
   bool        retchk = false;
 
@@ -1269,6 +1274,10 @@ tsScriptChkResponse (testsuite_t *testsuite)
     while ((key = slistIterateKey (testsuite->chkexpect, &iteridx)) != NULL) {
       valexp = slistGetStr (testsuite->chkexpect, key);
       valresp = slistGetStr (testsuite->chkresponse, key);
+
+      if (strcmp (valexp, "playtimeplayed") == 0) {
+        valexp = slistGetStr (testsuite->chkresponse, valexp);
+      }
 
       if (strcmp (valexp, "defaultvol") == 0) {
         snprintf (tmp, sizeof (tmp), "%d", testsuite->defaultVol);
