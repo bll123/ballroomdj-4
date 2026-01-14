@@ -93,7 +93,7 @@ musicqSetDatabase (musicq_t *musicq, musicdb_t *db)
 
 void
 musicqPush (musicq_t *musicq, musicqidx_t musicqidx, dbidx_t dbidx,
-    int playlistIdx, long dur)
+    int playlistIdx, int64_t dur)
 {
   musicqitem_t      *musicqitem;
   song_t            *song = NULL;
@@ -164,7 +164,7 @@ musicqMove (musicq_t *musicq, musicqidx_t musicqidx,
 
 int
 musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, qidx_t idx,
-    dbidx_t dbidx, long dur)
+    dbidx_t dbidx, int64_t dur)
 {
   int           olddispidx;
   musicqitem_t  *musicqitem;

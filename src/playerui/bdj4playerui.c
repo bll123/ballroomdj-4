@@ -1137,12 +1137,12 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_DB_ENTRY_REMOVE: {
-          dbMarkEntryRemoved (plui->musicdb, atol (args));
+          dbMarkEntryRemoved (plui->musicdb, atoll (args));
           uisongselPopulateData (plui->uisongsel);
           break;
         }
         case MSG_DB_ENTRY_UNREMOVE: {
-          dbClearEntryRemoved (plui->musicdb, atol (args));
+          dbClearEntryRemoved (plui->musicdb, atoll (args));
           uisongselPopulateData (plui->uisongsel);
           break;
         }
@@ -1835,7 +1835,7 @@ pluiPushHistory (playerui_t *plui, const char *args)
   dbidx_t     dbidx;
   char        tbuff [100];
 
-  dbidx = atol (args);
+  dbidx = atoll (args);
 
   snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%" PRId32, MUSICQ_HISTORY,
       MSG_ARGS_RS, QUEUE_LOC_LAST, MSG_ARGS_RS, dbidx);

@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include <stdint.h>
 #include <time.h>
 
 #include "nodiscard.h"
@@ -54,12 +55,12 @@ NODISCARD musicq_t *  musicqAlloc (musicdb_t *db);
 void        musicqFree (musicq_t *musicq);
 void        musicqSetDatabase (musicq_t *musicq, musicdb_t *db);
 void        musicqPush (musicq_t *musicq, musicqidx_t idx, dbidx_t dbidx,
-                int playlistIdx, long dur);
+                int playlistIdx, int64_t dur);
 void        musicqPushHeadEmpty (musicq_t *musicq, musicqidx_t idx);
 void        musicqMove (musicq_t *musicq, musicqidx_t musicqidx,
                 qidx_t fromidx, qidx_t toidx);
 int         musicqInsert (musicq_t *musicq, musicqidx_t musicqidx,
-                qidx_t idx, dbidx_t dbidx, long dur);
+                qidx_t idx, dbidx_t dbidx, int64_t dur);
 dbidx_t     musicqGetCurrent (musicq_t *musicq, musicqidx_t musicqidx);
 musicqflag_t musicqGetFlags (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey);
 int         musicqGetDispIdx (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey);

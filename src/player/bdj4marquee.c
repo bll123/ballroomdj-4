@@ -916,7 +916,7 @@ marqueeSetTimer (marquee_t *marquee, char *args)
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokptr);
   played = atol (p);
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
-  dur = atol (p);
+  dur = atoll (p);
 
   timeleft = dur - played;
   tmutilToMS (timeleft, tbuff, sizeof (tbuff));

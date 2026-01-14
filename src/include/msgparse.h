@@ -24,22 +24,22 @@ typedef struct {
 
 typedef struct {
   musicqidx_t     mqidx;
-  int32_t         tottime;
+  int64_t         tottime;
   dbidx_t         currdbidx;
   nlist_t         *dispList;
 } mp_musicqupdate_t;
 
 typedef struct {
   int             mqidx;
-  int32_t         loc;
+  int64_t         loc;
 } mp_songselect_t;
 
 typedef struct {
   int       currentVolume;
   int       currentSpeed;
   int       baseVolume;
-  uint32_t  playedtime;
-  int32_t   duration;
+  uint64_t  playedtime;
+  int64_t   duration;
   bool      repeat : 1;
   bool      pauseatend : 1;
 } mp_playerstatus_t;
@@ -50,9 +50,10 @@ typedef struct {
 } mp_playerstate_t;
 
 typedef struct {
+  char      *imguri;
+  int64_t   duration;
   dbidx_t   dbidx;
   int32_t   uniqueidx;
-  char      *imguri;
 } mp_musicqstatus_t;
 
 NODISCARD mp_musicqupdate_t *msgparseMusicQueueData (char * data);
@@ -61,7 +62,7 @@ void  msgparseMusicQueueDataFree (mp_musicqupdate_t *musicqupdate);
 NODISCARD mp_songselect_t *msgparseSongSelect (char * data);
 void msgparseSongSelectFree (mp_songselect_t *songselect);
 
-void msgbuildPlayerStatus (char *buff, size_t sz, bool repeat, bool pauseatend, int currvol, int currspeed, int basevol, uint32_t tm, int32_t dur);
+void msgbuildPlayerStatus (char *buff, size_t sz, bool repeat, bool pauseatend, int currvol, int currspeed, int basevol, uint64_t tm, int64_t dur);
 NODISCARD mp_playerstatus_t *msgparsePlayerStatusData (char * data);
 void msgparsePlayerStatusFree (mp_playerstatus_t *playerstatus);
 
@@ -71,7 +72,7 @@ void msgparsePlayerStateFree (mp_playerstate_t *playerstate);
 
 void msgbuildQueuePlaylist (char *buff, size_t sz, int mqidx, const char *fn, int editflag);
 
-void msgbuildMusicQStatus (char *buff, size_t sz, dbidx_t dbidx, int32_t uniqueidx, const char *imguri);
+void msgbuildMusicQStatus (char *buff, size_t sz, dbidx_t dbidx, int32_t uniqueidx, const char *imguri, int64_t dur);
 void msgparseMusicQStatus (mp_musicqstatus_t *mqstatus, char *data);
 
 void msgparseDBEntryUpdate (char *data, dbidx_t *dbidx);

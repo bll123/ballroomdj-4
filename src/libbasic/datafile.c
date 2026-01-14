@@ -698,7 +698,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
     }
     if (strcmp (tkeystr, "count") == 0) {
       if (dftype == DFTYPE_INDIRECT) {
-        ilistSetSize (datalist, atol (tvalstr) + 2);
+        ilistSetSize (datalist, atoll (tvalstr) + 2);
       }
       continue;
     }
@@ -720,7 +720,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
         key = -1L;
         nikey++;
       }
-      key = atol (tvalstr);
+      key = atoll (tvalstr);
       snprintf (temp, sizeof (temp), "%s-item-%" PRId32, name, nikey);
       itemList = nlistAlloc (temp, LIST_ORDERED, NULL);
       if (isz > 0) {

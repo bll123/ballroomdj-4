@@ -549,7 +549,7 @@ itunesParseData (itunes_t *itunes, xmlparse_t *xmlparse,
       } else {
         /* start time and stop time are already in the correct format (ms) */
         if (tagdefs [tagidx].valueType == VALUE_NUM) {
-          nlistSetNum (entry, tagidx, atol (val));
+          nlistSetNum (entry, tagidx, atoll (val));
         }
         if (tagdefs [tagidx].valueType == VALUE_STR) {
           nlistSetStr (entry, tagidx, val);
@@ -652,13 +652,13 @@ itunesParsePlaylists (itunes_t *itunes, xmlparse_t *xmlparse,
       logMsg (LOG_DBG, LOG_ITUNES, "pl-name: %s", keepname);
     } else if (strcmp (key, "Track ID") == 0) {
       slist_t   *entry;
-      long      tval;
+      int32_t   tval;
 
-      tval = atol (val);
+      tval = atoll (val);
       entry = nlistGetList (itunes->songbyidx, tval);
       if (entry != NULL) {
         nlistSetNum (ids, tval, 1);
-        logMsg (LOG_DBG, LOG_ITUNES, "pl: %s %ld", keepname, tval);
+        logMsg (LOG_DBG, LOG_ITUNES, "pl: %s %" PRId32, keepname, tval);
       }
     }
   }

@@ -572,7 +572,7 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_PLAY_SEEK: {
           logMsg (LOG_DBG, LOG_MSGS, "got: seek");
-          playerSeek (playerData, atol (args));
+          playerSeek (playerData, atoll (args));
           break;
         }
         case MSG_SONG_PREP: {
@@ -1126,7 +1126,7 @@ playerSongPrep (playerdata_t *playerData, char *args)
   logMsg (LOG_DBG, LOG_BASIC, "prep request: %s", npq->songname);
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
-  npq->dur = atol (p);
+  npq->dur = atoll (p);
   npq->plidur = 0;
   logMsg (LOG_DBG, LOG_INFO, "     duration: %" PRId32, npq->dur);
 
@@ -1147,7 +1147,7 @@ playerSongPrep (playerdata_t *playerData, char *args)
   logMsg (LOG_DBG, LOG_INFO, "     announce: %d", npq->announce);
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
-  npq->uniqueidx = atol (p);
+  npq->uniqueidx = atoll (p);
   logMsg (LOG_DBG, LOG_INFO, "     uniqueidx: %" PRId32, npq->uniqueidx);
 
   queuePush (playerData->prepRequestQueue, npq);
@@ -1167,7 +1167,7 @@ playerSongClearPrep (playerdata_t *playerData, char *args)
   if (p == NULL) {
     return;
   }
-  uniqueidx = atol (p);
+  uniqueidx = atoll (p);
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   if (p == NULL) {
     return;
@@ -1286,7 +1286,7 @@ playerSongPlay (playerdata_t *playerData, char *args)
     logProcEnd ("bad-msg-a");
     return;
   }
-  uniqueidx = atol (p);
+  uniqueidx = atoll (p);
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p == NULL) {
     logProcEnd ("bad-msg-b");

@@ -356,10 +356,10 @@ contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
       forKey: MPMediaItemPropertyGenre];
 
   dur = cmetadata->duration;
-  if (cmetadata->songend > 0) {
-    dur = cmetadata->songend;
-  }
-  dur -= cmetadata->songstart;
+//  if (cmetadata->songend > 0) {
+//    dur = cmetadata->songend;
+//  }
+//  dur -= cmetadata->songstart;
   [contdata->songInfo setObject:
       [NSNumber numberWithFloat: (Float32) dur / 1000.0]
       forKey: MPMediaItemPropertyPlaybackDuration];

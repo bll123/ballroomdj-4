@@ -4,12 +4,14 @@
 
 <!--
 
-**4.17.9.1 2026-1-12**
+**4.17.9.1 2026-1---**
 
 * Bug Fixes:
-    * Controller: MPRIS: Fix duration.
+    * Controller: Fix duration.
 * New Features:
-    * MacOS: Added a controller for the "Now Playing" display.
+    * MacOS: Add a controller for MacOS Now Playing.
+* Internal:
+    * Minor code cleanup.
 
 -->
 

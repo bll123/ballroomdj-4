@@ -246,7 +246,7 @@ audioidLookup (audioid_t *audioid, const song_t *song)
       if (ident != AUDIOID_ID_MB_LOOKUP) {
         str = nlistGetStr (respdata, TAG_DURATION);
         if (str != NULL) {
-          tdur = atol (str);
+          tdur = atoll (str);
         }
         dur = songGetNum (song, TAG_DURATION);
         if (labs (dur - tdur) > AUDIOID_DUR_DIFF) {

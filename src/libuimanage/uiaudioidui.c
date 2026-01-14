@@ -794,7 +794,7 @@ uiaudioidSaveCallback (void *udata)
       nval = LIST_VALUE_INVALID;
       if (val != NULL && *val) {
         if (tagdefs [tagidx].valueType == VALUE_NUM) {
-          nval = atol (val);
+          nval = atoll (val);
           songSetNum (audioidint->song, tagidx, nval);
         } else {
           songSetStr (audioidint->song, tagidx, val);
@@ -952,7 +952,7 @@ uiaudioidPopulateSelected (uiaudioid_t *uiaudioid, int idx)
 
         /* duration must be converted */
         if (tval != NULL) {
-          dur = atol (tval);
+          dur = atoll (tval);
         }
         tmutilToMSD (dur, tmp, sizeof (tmp), 1);
         tval = tmp;
@@ -1063,7 +1063,7 @@ uiaudioidFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum)
         stpecpy (tmp, tmp + sizeof (tmp), str);
       } else {
         if (str != NULL) {
-          dur = atol (str);
+          dur = atoll (str);
         }
         tmutilToMSD (dur, tmp, sizeof (tmp), 1);
       }

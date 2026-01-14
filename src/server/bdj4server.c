@@ -440,11 +440,11 @@ bdjsrvProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_DB_ENTRY_REMOVE: {
-          dbMarkEntryRemoved (bdjsrv->musicdb, atol (args));
+          dbMarkEntryRemoved (bdjsrv->musicdb, atoll (args));
           break;
         }
         case MSG_DB_ENTRY_UNREMOVE: {
-          dbClearEntryRemoved (bdjsrv->musicdb, atol (args));
+          dbClearEntryRemoved (bdjsrv->musicdb, atoll (args));
           break;
         }
         case MSG_DB_RELOAD: {

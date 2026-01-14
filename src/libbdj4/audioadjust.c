@@ -587,7 +587,7 @@ aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx,
   songSetNum (song, TAG_SONGEND, songGetNum (tsong, TAG_SONGEND));
   songSetNum (song, TAG_SPEEDADJUSTMENT, songGetNum (tsong, TAG_SPEEDADJUSTMENT));
   songSetNum (song, TAG_BPM, songGetNum (tsong, TAG_BPM));
-  dur = atol (slistGetStr (tagdata, tagdefs [TAG_DURATION].tag));
+  dur = atoll (slistGetStr (tagdata, tagdefs [TAG_DURATION].tag));
   songSetNum (song, TAG_DURATION, dur);
 
   songdb = songdbAlloc (musicdb);
@@ -612,7 +612,7 @@ aaSetDuration (musicdb_t *musicdb, song_t *song, const char *ffn)
   }
 
   tagdata = audiotagParseData (ffn, &rewrite);
-  dur = atol (slistGetStr (tagdata, tagdefs [TAG_DURATION].tag));
+  dur = atoll (slistGetStr (tagdata, tagdefs [TAG_DURATION].tag));
   songSetNum (song, TAG_DURATION, dur);
   slistFree (tagdata);
 }

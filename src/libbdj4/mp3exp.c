@@ -121,12 +121,12 @@ mp3ExportQueue (mp3exp_t *mp3exp)
       int     intagtype, outtagtype;
       int     infiletype, outfiletype;
 
-      dbidx = atol (p);
+      dbidx = atoll (p);
       p = strtok_r (NULL, MSG_ARGS_RS_STR, &mp3exp->tokstr);
       if (p == NULL) {
         return false;
       }
-      dur = atol (p);
+      dur = atoll (p);
       p = strtok_r (NULL, MSG_ARGS_RS_STR, &mp3exp->tokstr);
       if (p == NULL) {
         return false;

@@ -474,8 +474,6 @@ contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
   }
   nlistSetStr (contdata->metadata, CONT_METADATA_TRACKID, tbuff);
 
-  nlistSetNum (contdata->metadata, CONT_METADATA_SONGSTART, cmetadata->songstart);
-  nlistSetNum (contdata->metadata, CONT_METADATA_SONGEND, cmetadata->songend);
   nlistSetNum (contdata->metadata, CONT_METADATA_DURATION, cmetadata->duration);
 
   if (cmetadata->title != NULL) {

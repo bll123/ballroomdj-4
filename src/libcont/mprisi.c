@@ -450,10 +450,10 @@ contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
   nlistSetStr (contdata->metadata, CONT_METADATA_TRACKID, tbuff);
 
   tval = cmetadata->duration;
-  if (cmetadata->songend > 0) {
-    tval = cmetadata->songend;
-  }
-  tval -= cmetadata->songstart;
+//  if (cmetadata->songend > 0) {
+//    tval = cmetadata->songend;
+//  }
+//  tval -= cmetadata->songstart;
   tval *= 1000;                 /* microseconds */
   nlistSetNum (contdata->metadata, CONT_METADATA_DURATION, tval);
 

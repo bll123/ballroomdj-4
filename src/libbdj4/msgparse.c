@@ -52,13 +52,13 @@ msgparseMusicQueueData (char *data)
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL) {
     /* queue duration */
-    musicqupdate->tottime = atol (p);
+    musicqupdate->tottime = atoll (p);
   }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL) {
     /* currently playing dbidx (music queue index 0) */
-    musicqupdate->currdbidx = atol (p);
+    musicqupdate->currdbidx = atoll (p);
   }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
@@ -69,12 +69,12 @@ msgparseMusicQueueData (char *data)
 
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
     if (p != NULL) {
-      musicqupditem->uniqueidx = atol (p);
+      musicqupditem->uniqueidx = atoll (p);
     }
 
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
     if (p != NULL) {
-      musicqupditem->dbidx = atol (p);
+      musicqupditem->dbidx = atoll (p);
     }
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
     if (p != NULL) {
@@ -125,7 +125,7 @@ msgparseSongSelect (char *data)
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL) {
-    songselect->loc = atol (p);
+    songselect->loc = atoll (p);
   }
 
   return songselect;
@@ -143,9 +143,9 @@ void
 msgbuildPlayerStatus (char *buff, size_t sz,
     bool repeat, bool pauseatend,
     int currvol, int currspeed, int basevol,
-    uint32_t tm, int32_t dur)
+    uint64_t tm, int64_t dur)
 {
-  snprintf (buff, sz, "%d%c%d%c%d%c%d%c%d%c%" PRIu32 "%c%" PRId32,
+  snprintf (buff, sz, "%d%c%d%c%d%c%d%c%d%c%" PRIu64 "%c%" PRId64,
       repeat, MSG_ARGS_RS,
       pauseatend, MSG_ARGS_RS,
       currvol, MSG_ARGS_RS,
@@ -200,12 +200,12 @@ msgparsePlayerStatusData (char * data)
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL) {
-    ps->playedtime = atol (p);
+    ps->playedtime = atoll (p);
   }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL) {
-    ps->duration = atol (p);
+    ps->duration = atoll (p);
   }
 
   return ps;
@@ -272,10 +272,14 @@ msgbuildQueuePlaylist (char *buff, size_t sz, int mqidx,
 }
 
 void
-msgbuildMusicQStatus (char *buff, size_t sz, dbidx_t dbidx, int32_t uniqueidx, const char *imguri)
+msgbuildMusicQStatus (char *buff, size_t sz, dbidx_t dbidx, int32_t uniqueidx,
+    const char *imguri, int64_t dur)
 {
-  snprintf (buff, sz, "%" PRId32 "%c%" PRId32 "%c%s", dbidx, MSG_ARGS_RS,
-      uniqueidx, MSG_ARGS_RS, imguri);
+  snprintf (buff, sz, "%" PRId32 "%c%" PRId32 "%c%" PRId64 "%c%s",
+      dbidx, MSG_ARGS_RS,
+      uniqueidx, MSG_ARGS_RS,
+      dur, MSG_ARGS_RS,
+      imguri);
 }
 
 void
@@ -292,12 +296,17 @@ msgparseMusicQStatus (mp_musicqstatus_t *mqstatus, char *data)
 
   p = strtok_r (data, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL) {
-    mqstatus->dbidx = atol (p);
+    mqstatus->dbidx = atoll (p);
   }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL) {
-    mqstatus->uniqueidx = atol (p);
+    mqstatus->uniqueidx = atoll (p);
+  }
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL) {
+    mqstatus->duration = atoll (p);
   }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
@@ -309,7 +318,7 @@ msgparseMusicQStatus (mp_musicqstatus_t *mqstatus, char *data)
 void
 msgparseDBEntryUpdate (char *data, dbidx_t *dbidx)
 {
-  *dbidx = atol (data);
+  *dbidx = atoll (data);
 }
 
 /* internal routines */

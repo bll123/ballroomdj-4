@@ -549,12 +549,12 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_DB_ENTRY_REMOVE: {
-          dbMarkEntryRemoved (mainData->musicdb, atol (args));
+          dbMarkEntryRemoved (mainData->musicdb, atoll (args));
           mainSetMusicQueuesChanged (mainData);
           break;
         }
         case MSG_DB_ENTRY_UNREMOVE: {
-          dbClearEntryRemoved (mainData->musicdb, atol (args));
+          dbClearEntryRemoved (mainData->musicdb, atoll (args));
           mainSetMusicQueuesChanged (mainData);
           break;
         }
@@ -602,7 +602,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_CHK_MAIN_SET_STOPATTIME: {
-          mainData->stopTime [mainData->musicqPlayIdx] = atol (args);
+          mainData->stopTime [mainData->musicqPlayIdx] = atoll (args);
           mainData->nStopTime [mainData->musicqPlayIdx] =
               mainCalcStopTime (mainData->stopTime [mainData->musicqPlayIdx]);
           break;
@@ -1922,7 +1922,7 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
     logProcEnd ("parse-fail-b");
     return;
   }
-  idx = atol (p);
+  idx = atoll (p);
   ++idx;  /* music-q index 0 is reserved for the current song */
   ++idx;  /* want to insert after the current song */
 
@@ -1931,7 +1931,7 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
     logProcEnd ("parse-fail-c");
     return;
   }
-  dbidx = atol (p);
+  dbidx = atoll (p);
 
   currlen = musicqGetLen (mainData->musicQueue, mi);
   song = dbGetByIdx (mainData->musicdb, dbidx);
@@ -2428,10 +2428,10 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
     tp = timerbuff;
     tend = timerbuff + BDJMSG_MAX;
 
-    snprintf (tbuff, sizeof (tbuff), "%" PRIu32 "%c", ps->playedtime, MSG_ARGS_RS);
+    snprintf (tbuff, sizeof (tbuff), "%" PRIu64 "%c", ps->playedtime, MSG_ARGS_RS);
     tp = stpecpy (tp, tend, tbuff);
 
-    snprintf (tbuff, sizeof (tbuff), "%" PRId32, ps->duration);
+    snprintf (tbuff, sizeof (tbuff), "%" PRId64, ps->duration);
     tp = stpecpy (tp, tend, tbuff);
 
     connSendMessage (mainData->conn, ROUTE_MARQUEE, MSG_MARQUEE_TIMER, timerbuff);
@@ -2592,22 +2592,30 @@ mainSendRemctrlData (maindata_t *mainData)
 static void
 mainSendMusicqStatus (maindata_t *mainData)
 {
-  char        tbuff [2048];
-  dbidx_t     dbidx;
-  int32_t     uniqueidx;
-  song_t      *song;
-  const char  *imguri = NULL;
+  char            tbuff [2048];
+  int             mqidx;
+  dbidx_t         dbidx;
+  int32_t         uniqueidx;
+  song_t          *song;
+  const char      *imguri = NULL;
+  int64_t         dur;
+  playlistitem_t  *plitem = NULL;
 
   logProcBegin ();
 
-  dbidx = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
+  mqidx = mainData->musicqPlayIdx;
+  dbidx = musicqGetByIdx (mainData->musicQueue, mqidx, 0);
   song = dbGetByIdx (mainData->musicdb, dbidx);
   imguri = songGetStr (song, TAG_IMAGE_URI);
   if (imguri == NULL) {
     imguri = "";
   }
-  uniqueidx = musicqGetUniqueIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
-  msgbuildMusicQStatus (tbuff, sizeof (tbuff), dbidx, uniqueidx, imguri);
+  uniqueidx = musicqGetUniqueIdx (mainData->musicQueue, mqidx, 0);
+  plitem = queueGetFirst (mainData->playlistQueue [mqidx]);
+  dur = mainCalculateSongDuration (mainData, song,
+      plitem->playlistIdx, mqidx, MAIN_CALC_WITH_SPEED);
+
+  msgbuildMusicQStatus (tbuff, sizeof (tbuff), dbidx, uniqueidx, imguri, dur);
 
   connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_MUSICQ_STATUS_DATA, tbuff);
   connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_MUSICQ_STATUS_DATA, tbuff);
@@ -2627,13 +2635,13 @@ mainMusicqIndexNumParse (maindata_t *mainData, char *args, ilistidx_t *b, ilisti
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   *b = 0;
   if (p != NULL) {
-    *b = atol (p);
+    *b = atoll (p);
   }
   if (c != NULL) {
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
     *c = 0;
     if (p != NULL && *p) {
-      *c = atol (p);
+      *c = atoll (p);
     }
   }
 
@@ -3025,7 +3033,7 @@ mainAddTemporarySong (maindata_t *mainData, char *args)
     songFree (song);
     return;
   }
-  tdbidx = atol (p);
+  tdbidx = atoll (p);
   songSetNum (song, TAG_DBIDX, tdbidx);
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);

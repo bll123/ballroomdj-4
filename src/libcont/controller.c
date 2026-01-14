@@ -210,8 +210,6 @@ controllerInitMetadata (contmetadata_t *cmetadata)
   cmetadata->genre = NULL;
   cmetadata->uri = NULL;
   cmetadata->imageuri = NULL;
-  cmetadata->songstart = 0;
-  cmetadata->songend = 0;
   cmetadata->trackid = 0;
   cmetadata->duration = 0;
 }
