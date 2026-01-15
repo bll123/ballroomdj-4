@@ -95,6 +95,7 @@ typedef enum {
   MSG_PLAY_PLAYPAUSE,       //
   MSG_PLAY_REPEAT,          // to player. toggle
   MSG_PLAY_SEEK,            // to player. args: position
+  MSG_PLAY_SEEK_SKIP,       // to player. args: seconds to skip
   MSG_PLAY_SONG_BEGIN,      // to player.
   MSG_PLAY_SPEED,           // to player. args: rate as percentage.
   MSG_PLAY_STOP,            // to player.

@@ -168,6 +168,13 @@ contInstanceCallback (void *udata, int32_t cmd, int32_t val)
       connSendMessage (ci->conn, ROUTE_PLAYER, MSG_PLAY_SEEK, tmp);
       break;
     }
+    case CONTROLLER_SEEK_SKIP: {
+      char    tmp [40];
+
+      snprintf (tmp, sizeof (tmp), "%d", val);
+      connSendMessage (ci->conn, ROUTE_PLAYER, MSG_PLAY_SEEK_SKIP, tmp);
+      break;
+    }
     case CONTROLLER_VOLUME: {
       char    tmp [40];
 

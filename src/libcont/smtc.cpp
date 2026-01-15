@@ -400,6 +400,10 @@ contiSetPlayState (contdata_t *contdata, int state)
     return;
   }
 
+  if (contdata->playstate == state) {
+    return;
+  }
+
   contdata->playstate = state;
 
   switch (state) {

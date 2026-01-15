@@ -50,7 +50,7 @@ typedef struct contdata {
   RemoteController        *remotecontrol;
   callback_t              *cb;
   callback_t              *cburi;
-  playerstate_t           plstate;
+  playerstate_t           playerstate;
 } contdata_t;
 
 @implementation RemoteController
@@ -101,6 +101,8 @@ typedef struct contdata {
 /* macos: now playing does not show a rate control */
 - (MPRemoteCommandHandlerStatus)
     remoteChangePlaybackRate: (MPChangePlaybackRateCommandEvent *) event {
+  // not currently implemented, as there appears to be no control
+  // in 'now playing'
   return MPRemoteCommandHandlerStatusSuccess;
 }
 /* macos: now playing does not show a repeat mode control */
@@ -108,13 +110,19 @@ typedef struct contdata {
 remoteChangeRepeatMode: (MPChangeRepeatModeCommandEvent *) event {
   int   repeat = false;
 
-  /* MPRepeatTypeNone */
+  /* MPRepeatTypeOff */
   /* MPRepeatTypeAll - not supported */
   if (event.repeatType == MPRepeatTypeOne) {
     repeat = true;
   }
   if (contdata->cb != NULL) {
     callbackHandlerII (contdata->cb, CONTROLLER_REPEAT, repeat);
+  }
+  return MPRemoteCommandHandlerStatusSuccess;
+}
+- (MPRemoteCommandHandlerStatus) remoteSkipBackward {
+  if (contdata->cb != NULL) {
+    callbackHandlerII (contdata->cb, CONTROLLER_SEEK_SKIP, -10 * 1000);
   }
   return MPRemoteCommandHandlerStatusSuccess;
 }
@@ -142,23 +150,13 @@ contiInit (const char *instname)
   contdata->instname = mdstrdup (instname);
   contdata->cb = NULL;
   contdata->cburi = NULL;
-  contdata->plstate = PL_STATE_STOPPED;
+  contdata->playerstate = PL_STATE_PLAYING;
 
   contdata->infocenter = [MPNowPlayingInfoCenter defaultCenter];
   contdata->remotecmd = [MPRemoteCommandCenter sharedCommandCenter];
   contdata->songInfo = [[NSMutableDictionary alloc] init];
   contdata->remotecontrol = [[RemoteController alloc]
       initWithContData: contdata];
-
-  [contdata->remotecmd playCommand].enabled = false;
-  [contdata->remotecmd pauseCommand].enabled = false;
-  [contdata->remotecmd stopCommand].enabled = true;
-  [contdata->remotecmd togglePlayPauseCommand].enabled = false;
-  [contdata->remotecmd changePlaybackPositionCommand].enabled = false;
-  [contdata->remotecmd changePlaybackRateCommand].enabled = false;
-  [contdata->remotecmd changeRepeatModeCommand].enabled = false;
-  [contdata->remotecmd nextTrackCommand].enabled = true;
-  [contdata->remotecmd previousTrackCommand].enabled = false;
 
   [[contdata->remotecmd playCommand]
       addTarget: contdata->remotecontrol
@@ -184,6 +182,23 @@ contiInit (const char *instname)
   [[contdata->remotecmd nextTrackCommand]
       addTarget: contdata->remotecontrol
       action: @selector (remoteNext)];
+  [[contdata->remotecmd skipBackwardCommand]
+      addTarget: contdata->remotecontrol
+      action: @selector (remoteSkipBackward)];
+
+  /* it appears that if some of these are not initially enabled */
+  /* then they don't get enabled later */
+  /* stop, rate do not seem to be implemented in 'now playing' */
+  [contdata->remotecmd playCommand].enabled = true;
+  [contdata->remotecmd pauseCommand].enabled = false;
+  [contdata->remotecmd stopCommand].enabled = true;
+  [contdata->remotecmd togglePlayPauseCommand].enabled = true;
+  [contdata->remotecmd changePlaybackPositionCommand].enabled = false;
+  [contdata->remotecmd changePlaybackRateCommand].enabled = true;
+  [contdata->remotecmd changeRepeatModeCommand].enabled = true;
+  [contdata->remotecmd nextTrackCommand].enabled = true;
+  [contdata->remotecmd previousTrackCommand].enabled = false;
+  [contdata->remotecmd skipBackwardCommand].enabled = true;
 
   return contdata;
 }
@@ -233,7 +248,11 @@ contiSetPlayState (contdata_t *contdata, playerstate_t state)
     return;
   }
 
-  contdata->plstate = state;
+  if (contdata->playerstate == state) {
+    return;
+  }
+
+  contdata->playerstate = state;
 
   switch (state) {
     case PL_STATE_LOADING:
@@ -289,6 +308,7 @@ contiSetPlayState (contdata_t *contdata, playerstate_t state)
   [contdata->remotecmd changePlaybackPositionCommand].enabled = canseek;
   [contdata->remotecmd changePlaybackRateCommand].enabled = canseek;
   [contdata->remotecmd changeRepeatModeCommand].enabled = canseek;
+  [contdata->remotecmd skipBackwardCommand].enabled = canseek;
 
   return;
 }
@@ -296,6 +316,14 @@ contiSetPlayState (contdata_t *contdata, playerstate_t state)
 void
 contiSetRepeatState (contdata_t *contdata, bool state)
 {
+  int   mrepeat;
+
+  /* repeat does not appear to be implemented in 'now playing' */
+  mrepeat = MPRepeatTypeOff;
+  if (state) {
+    mrepeat = MPRepeatTypeOne;
+  }
+  /* and there doesn't appear to be any way to set the repeat mode */
   return;
 }
 
@@ -309,6 +337,7 @@ contiSetPosition (contdata_t *contdata, int32_t pos)
   [contdata->songInfo setObject:
       [NSNumber numberWithFloat: (Float32) pos / 1000.0]
       forKey: MPNowPlayingInfoPropertyElapsedPlaybackTime];
+  [contdata->infocenter setNowPlayingInfo: contdata->songInfo];
 
   return;
 }
@@ -379,6 +408,12 @@ contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
       [NSNumber numberWithFloat: 0.0]
       forKey: MPNowPlayingInfoPropertyElapsedPlaybackTime];
 
+  if (@available(macOS 15, *)) {
+    [contdata->songInfo setObject:
+        [NSNumber numberWithInt: 1]
+        forKey: MPNowPlayingInfoPropertyExcludeFromSuggestions];
+  }
+
   mt = MPMediaTypeMusic;
   if (cmetadata->astype == AUDIOSRC_TYPE_PODCAST) {
     mt = MPMediaTypePodcast;
@@ -386,6 +421,15 @@ contiSetCurrent (contdata_t *contdata, contmetadata_t *cmetadata)
   [contdata->songInfo setObject:
       [NSNumber numberWithInt: mt]
       forKey: MPNowPlayingInfoPropertyMediaType];
+
+  /* do not know if setting the asset url is useful */
+  if (cmetadata->uri != NULL && *cmetadata->uri) {
+    NSString  *str;
+
+    str = [NSString stringWithUTF8String: cmetadata->uri];
+    [contdata->songInfo setObject: str
+        forKey: MPNowPlayingInfoPropertyAssetURL];
+  }
 
   {
     char      tbuff [MAXPATHLEN];

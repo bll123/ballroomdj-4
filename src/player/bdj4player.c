@@ -225,7 +225,7 @@ static void     playerSendPauseAtEndState (playerdata_t *playerData);
 static void     playerFade (playerdata_t *playerData);
 static void     playerSpeed (playerdata_t *playerData, char *trate);
 static void     playerChangeSpeed (playerdata_t *playerData, int speed);
-static void     playerSeek (playerdata_t *playerData, ssize_t pos);
+static void     playerSeek (playerdata_t *playerData, int64_t pos, int32_t interval);
 static void     playerStop (playerdata_t *playerData);
 static void     playerSongBegin (playerdata_t *playerData);
 static void     playerVolumeSet (playerdata_t *playerData, char *tvol);
@@ -572,7 +572,12 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_PLAY_SEEK: {
           logMsg (LOG_DBG, LOG_MSGS, "got: seek");
-          playerSeek (playerData, atoll (args));
+          playerSeek (playerData, atoll (args), 0);
+          break;
+        }
+        case MSG_PLAY_SEEK_SKIP: {
+          logMsg (LOG_DBG, LOG_MSGS, "got: seek-skip");
+          playerSeek (playerData, 0, atoll (args));
           break;
         }
         case MSG_SONG_PREP: {
@@ -1660,7 +1665,7 @@ playerChangeSpeed (playerdata_t *playerData, int speed)
 }
 
 static void
-playerSeek (playerdata_t *playerData, ssize_t reqpos)
+playerSeek (playerdata_t *playerData, int64_t reqpos, int32_t interval)
 {
   ssize_t       seekpos;
   prepqueue_t   *pq = playerData->currentSong;
@@ -1674,6 +1679,13 @@ playerSeek (playerdata_t *playerData, ssize_t reqpos)
   if (! pliCheckSupport (playerData->pliSupported, PLI_SUPPORT_SEEK)) {
     logProcEnd ("not-supported");
     return;
+  }
+
+  if (reqpos == 0 && interval != 0) {
+    reqpos = playerCalcPlayedTime (playerData) + interval;
+    if (reqpos < 0) {
+      reqpos = 0;
+    }
   }
 
   /* the requested position is adjusted for the speed, as the position */
@@ -1718,7 +1730,7 @@ playerSongBegin (playerdata_t *playerData)
     return;
   }
 
-  playerSeek (playerData, 0);
+  playerSeek (playerData, 0, 0);
   /* there is a change in position */
   playerSendStatus (playerData, STATUS_FORCE);
 }
