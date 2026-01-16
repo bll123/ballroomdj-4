@@ -8,8 +8,8 @@
 
 * Bug Fixes:
     * Controller: Fix duration.
-    * Controller: Now works for both the player and manage playback.
-    * MacOS: Player Interface: MacOS AVPlayer: Fix a bug.
+    * Controller: Now works for both the player and management.
+    * MacOS: Player Interface: MacOS AVPlayer: Fix incorrect time check.
 * New Features:
     * MacOS: Add a controller for MacOS Now Playing.
 * Internal:

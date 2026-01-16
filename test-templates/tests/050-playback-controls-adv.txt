@@ -191,3 +191,26 @@ chk-lt playtimeplayed 6000
 #
 end
 
+# test the position slider
+test 50-60 Seek-Skip
+# test while playing
+msg main MUSICQ_INSERT 0~999~3
+mssleep 100
+get player CHK_WAIT_PREP
+wait done 1
+msg main CMD_PLAY
+mssleep 500
+get player CHK_PLAYER_STATUS
+resptimeout 2000
+wait playstate playing
+mssleep 10500
+get player CHK_PLAYER_STATUS
+chk-gt playtimeplayed 10000
+msg player PLAY_SEEK_SKIP -10000
+get player CHK_PLAYER_STATUS
+chk-lt playtimeplayed 2000
+mssleep 100
+msg player PLAY_SEEK_SKIP 10000
+get player CHK_PLAYER_STATUS
+chk-gt playtimeplayed 10000
+end
