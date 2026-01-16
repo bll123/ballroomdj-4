@@ -17,7 +17,6 @@ void  contInstanceFree (continst_t *ci);
 int   contInstanceSetup (continst_t *ci);
 void  contInstanceSetUIPlayer (continst_t *ci, uiplayer_t *uiplayer);
 void  contInstanceSetURICallback (continst_t *ci, callback_t *cburi);
-controller_t *contInstanceGetController (continst_t *ci);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

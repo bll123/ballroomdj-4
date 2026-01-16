@@ -122,16 +122,6 @@ contInstanceSetURICallback (continst_t *ci, callback_t *cburi)
   ci->callbacks [CI_CB_CONT_URI_CB] = cburi;
 }
 
-controller_t *
-contInstanceGetController (continst_t *ci)
-{
-  if (ci == NULL) {
-    return NULL;
-  }
-
-  return ci->controller;
-}
-
 /* internal routines */
 
 static bool
