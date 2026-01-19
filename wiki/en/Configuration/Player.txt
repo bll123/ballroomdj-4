@@ -7,9 +7,9 @@
 The __Player__ and __Audio__ settings usually do not change.
 
 __Player__: Selects the player interface.
-<br>Linux supports _Integrated&nbsp;VLC_, _GStreamer_ and _MPRIS_.
-<br>MacOS supports _Integrated&nbsp;VLC_ and _MacOS&nbsp;AVPlayer_.
-<br>Windows supports _Integrated&nbsp;VLC_ and
+<br>Linux supports _Integrated&nbsp;VLC&nbsp;3_, _GStreamer_ and _MPRIS_.
+<br>MacOS supports _Integrated&nbsp;VLC&nbsp;3_ and _MacOS&nbsp;AVPlayer_.
+<br>Windows supports _Integrated&nbsp;VLC&nbsp;3_ and
 _Windows&nbsp;Media&nbsp;Player_.
 
 The MacOS AVPlayer interface does not support .ogx, .wma or .mkv audio files.
@@ -62,4 +62,4 @@ _ISO_ format is _Day-of-the-week YYYY-MM-DD HH:MM_.
 <br><span id="caption" style="color:#4559bf;">__Player / Speed Reset Button__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2026-01-12 15:20:19; BDJ4 version 4.17.9)_
+<br>_(Updated 2026-01-19 11:10:20; BDJ4 version 4.17.10)_
