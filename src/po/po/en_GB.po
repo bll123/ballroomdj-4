@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.17.10\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2026-01-14\n"
-"PO-Revision-Date: 2026-01-14\n"
+"POT-Creation-Date: 2026-01-19\n"
+"PO-Revision-Date: 2026-01-19\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -674,6 +674,10 @@ msgstr ""
 
 #. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee
 msgid "Show Song Information"
+msgstr ""
+
+#. CONTEXT: configuration: marquee: only show the song information (artist/title) on the marquee
+msgid "Song Information Only"
 msgstr ""
 
 #. CONTEXT: configuration: marquee: the background color

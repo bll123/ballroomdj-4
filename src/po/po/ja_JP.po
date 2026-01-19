@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2025-09-23\n"
-"PO-Revision-Date: 2026-01-14\n"
+"PO-Revision-Date: 2026-01-19\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
@@ -681,6 +681,10 @@ msgstr "キューの長さ"
 #. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee
 msgid "Show Song Information"
 msgstr "ショー・ソング・インフォメーション"
+
+#. CONTEXT: configuration: marquee: only show the song information (artist/title) on the marquee
+msgid "Song Information Only"
+msgstr ""
 
 #. CONTEXT: configuration: marquee: the background color
 msgid "Background Colour"
