@@ -1059,7 +1059,7 @@ marqueeDisplayCompletion (marquee_t *marquee)
   disp = bdjoptGetStr (OPT_P_COMPLETE_MSG);
   uiLabelSetText (marquee->wcont [MQ_W_INFO_DISP_A], disp);
 
-// ### why is this here?
+  /* the info box must be shown for the completion message */
   if (! marquee->mqShowInfo && ! marquee->mqInfoOnly) {
     uiWidgetShowAll (marquee->wcont [MQ_W_INFOBOX]);
   }

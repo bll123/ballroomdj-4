@@ -24,15 +24,21 @@ marquee.
 __Show Song Information__: If enabled, the song information configured
 in
 [Configure&nbsp;/&nbsp;Display&nbsp;Settings](en-Configure-Display%20Settings)
-will be displayed on the marquee.  Only three items can be displayed
+will be displayed on the marquee.  Only three items may be displayed
 in the marquee song information display.
+
+__Song Information Only__: If enabled, only the song information configured
+in
+[Configure&nbsp;/&nbsp;Display&nbsp;Settings](en-Configure-Display%20Settings)
+will be displayed on the marquee.  No progress bar, dance, or upcoming
+dances will be displayed.  Only three items may be displayed.
 
 __Background Color__: The background color of the marquee.
 
 __Accent Color__: The color to use for the current dance and countdown
 timer.
 
-__Information Color__: The color for the dance information display.
+__Information Color__: The color for the song information display.
 
 __Upcoming Dance Color__: The color for the upcoming dances.
 
