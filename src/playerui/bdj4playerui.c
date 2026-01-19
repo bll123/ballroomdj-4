@@ -476,6 +476,8 @@ pluiClosingCallback (void *udata, programstate_t programState)
 
   contInstanceFree (plui->continst);
 
+  datafileSave (plui->optiondf, NULL, plui->options, DF_NO_OFFSET, 1);
+
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     msgparseMusicQueueDataFree (plui->musicqupdate [i]);
   }
@@ -489,8 +491,6 @@ pluiClosingCallback (void *udata, programstate_t programState)
     uiwcontFree (plui->wcont [i]);
     plui->wcont [i] = NULL;
   }
-
-  datafileSave (plui->optiondf, NULL, plui->options, DF_NO_OFFSET, 1);
 
   groupingFree (plui->grouping);
   bdj4shutdown (ROUTE_PLAYERUI, plui->musicdb);

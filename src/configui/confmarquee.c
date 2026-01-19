@@ -66,13 +66,18 @@ confuiBuildUIMarquee (confuigui_t *gui)
 
   /* CONTEXT: (noun) configuration: the length of the queue displayed on the marquee */
   confuiMakeItemSpinboxNum (gui, vbox, szgrp, NULL, _("Queue Length"),
-      CONFUI_WIDGET_MQ_QUEUE_LEN, OPT_P_MQQLEN,
-      1, 20, bdjoptGetNum (OPT_P_MQQLEN), NULL);
+      CONFUI_WIDGET_MQ_QUEUE_LEN, OPT_P_MQ_QLEN,
+      0, 20, bdjoptGetNum (OPT_P_MQ_QLEN), NULL);
 
   /* CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee */
   confuiMakeItemSwitch (gui, vbox, szgrp, _("Show Song Information"),
       CONFUI_SWITCH_MQ_SHOW_SONG_INFO, OPT_P_MQ_SHOW_INFO,
       bdjoptGetNum (OPT_P_MQ_SHOW_INFO), NULL, CONFUI_NO_INDENT);
+
+  /* CONTEXT: configuration: marquee: only show the song information (artist/title) on the marquee */
+  confuiMakeItemSwitch (gui, vbox, szgrp, _("Song Information Only"),
+      CONFUI_SWITCH_MQ_SONG_INFO_ONLY, OPT_P_MQ_INFO_ONLY,
+      bdjoptGetNum (OPT_P_MQ_INFO_ONLY), NULL, CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: marquee: the background color */
   confuiMakeItemColorButton (gui, vbox, szgrp, _("Background Colour"),

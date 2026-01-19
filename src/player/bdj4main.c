@@ -1041,7 +1041,7 @@ mainSendMarqueeData (maindata_t *mainData)
     return;
   }
 
-  mqLen = bdjoptGetNum (OPT_P_MQQLEN);
+  mqLen = bdjoptGetNum (OPT_P_MQ_QLEN);
   mqidx = mainData->musicqPlayIdx;
   musicqLen = 0;
   if (mainData->musicQueue != NULL) {

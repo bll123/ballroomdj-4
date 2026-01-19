@@ -21,7 +21,6 @@
 enum {
   CI_CB_CONTROLLER,
   CI_CB_CONT_URI,
-  CI_CB_CONT_URI_CB,
   CI_CB_MAX,
 };
 
@@ -30,6 +29,7 @@ typedef struct continst {
   conn_t          *conn;
   uiplayer_t      *uiplayer;
   callback_t      *callbacks [CI_CB_MAX];
+  callback_t      *uricb;
 } continst_t;
 
 static bool contInstanceCallback (void *udata, int32_t cmd, int32_t val);
@@ -47,6 +47,7 @@ contInstanceInit (conn_t *conn, uiplayer_t *uiplayer)
   for (int i = 0; i < CI_CB_MAX; ++i) {
     ci->callbacks [i] = NULL;
   }
+  ci->uricb = NULL;
 
   return ci;
 }
@@ -119,7 +120,7 @@ contInstanceSetURICallback (continst_t *ci, callback_t *cburi)
     return;
   }
 
-  ci->callbacks [CI_CB_CONT_URI_CB] = cburi;
+  ci->uricb = cburi;
 }
 
 /* internal routines */
@@ -202,8 +203,8 @@ contInstanceURICallback (void *udata, const char *uri, int32_t cmd)
     return false;
   }
 
-  if (ci->callbacks [CI_CB_CONT_URI_CB] != NULL) {
-    callbackHandlerSI (ci->callbacks [CI_CB_CONT_URI_CB], uri, cmd);
+  if (ci->uricb != NULL) {
+    callbackHandlerSI (ci->uricb, uri, cmd);
   }
 
   return true;

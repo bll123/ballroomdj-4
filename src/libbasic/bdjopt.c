@@ -86,11 +86,12 @@ static datafilekey_t bdjoptprofiledfkeys [] = {
   { "MOBILEMQTAG",          OPT_P_MOBMQ_TAG,          VALUE_STR, NULL, DF_NORM },
   { "MOBILEMQTITLE",        OPT_P_MOBMQ_TITLE,        VALUE_STR, NULL, DF_NORM },
   { "MOBILEMQTYPE",         OPT_P_MOBMQ_TYPE,         VALUE_NUM, bdjoptConvMobMQType, DF_NORM },
-  { "MQQLEN",               OPT_P_MQQLEN,             VALUE_NUM, NULL, DF_NORM },
+  { "MQQLEN",               OPT_P_MQ_QLEN,             VALUE_NUM, NULL, DF_NORM },
   { "MQSHOWINFO",           OPT_P_MQ_SHOW_INFO,       VALUE_NUM, convBoolean, DF_NORM },
   { "MQ_ACCENT_COL",        OPT_P_MQ_ACCENT_COL,      VALUE_STR, NULL, DF_NORM },
   { "MQ_BG_COL",            OPT_P_MQ_BG_COL,          VALUE_STR, NULL, DF_NORM },
   { "MQ_INFO_COL",          OPT_P_MQ_INFO_COL,        VALUE_STR, NULL, DF_NORM },
+  { "MQ_INFO_ONLY",         OPT_P_MQ_INFO_ONLY,       VALUE_NUM, convBoolean, DF_NORM },
   { "MQ_INFO_SEP",          OPT_P_MQ_INFO_SEP,        VALUE_STR, NULL, DF_NORM },
   { "MQ_TEXT_COL",          OPT_P_MQ_TEXT_COL,        VALUE_STR, NULL, DF_NORM },
   { "PLAYER_UI_SEP",        OPT_P_PLAYER_UI_SEP,      VALUE_STR, NULL, DF_NORM },
@@ -474,6 +475,10 @@ bdjoptInit (void)
     nlistSetStr (bdjopt->bdjoptList, OPT_DOWNLOAD_SUFFIX, tstr);
   }
 
+  /* added 4.17.10 */
+  if (nlistGetNum (bdjopt->bdjoptList, OPT_P_MQ_INFO_ONLY) < 0) {
+    nlistSetNum (bdjopt->bdjoptList, OPT_P_MQ_INFO_ONLY, false);
+  }
 }
 
 void
