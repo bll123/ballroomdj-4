@@ -2456,6 +2456,7 @@ msgstr "Địa chỉ E-mail không hợp lệ."
 msgid "%s Player is Active"
 msgstr "%s Người chơi đang hoạt động"
 
+#. CONTEXT: controller: MacOS Now Playing
 msgid "MacOS Now Playing"
 msgstr ""
 

@@ -2456,6 +2456,7 @@ msgstr ""
 msgid "%s Player is Active"
 msgstr "%s 플레이어가 활성 상태입니다."
 
+#. CONTEXT: controller: MacOS Now Playing
 msgid "MacOS Now Playing"
 msgstr ""
 

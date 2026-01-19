@@ -2456,6 +2456,7 @@ msgstr "Adresa de e-mail invalidă."
 msgid "%s Player is Active"
 msgstr "%s Jucătorul este activ"
 
+#. CONTEXT: controller: MacOS Now Playing
 msgid "MacOS Now Playing"
 msgstr ""
 

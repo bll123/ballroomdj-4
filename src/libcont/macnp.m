@@ -137,6 +137,7 @@ contiDesc (const char **ret, int max)
     return;
   }
 
+  /* CONTEXT: controller: MacOS Now Playing */
   ret [c++] = _("MacOS Now Playing");
   ret [c++] = NULL;
 }

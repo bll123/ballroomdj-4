@@ -4,20 +4,22 @@
 
 <!--
 
-**4.17.10 2026-1---**
+**4.17.10 2026-1-19**
+
+-->
+
+**4.17.10 2026-1-19**
 
 * Bug Fixes:
     * Controller: Fix duration.
     * Controller: Now works for both the player and management.
     * MacOS: Player Interface: MacOS AVPlayer: Fix incorrect time check.
-    * Marquee: Allow 0 lines for upcoming dances.
+    * Marquee: Allow 0 lines for upcoming dance display.
 * New Features:
     * MacOS: Add a controller for MacOS Now Playing.
     * Marquee: Add 'song information only' switch.
 * Internal:
     * Minor code cleanup.
-
--->
 
 **4.17.9 2026-1-12**
 

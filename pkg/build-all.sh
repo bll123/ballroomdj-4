@@ -60,4 +60,3 @@ done
 echo "## finalize"
 find $INSTLOC -type f -print0 | xargs -0 chmod u+w
 find $INSTLOC/bin -type f -print0 | xargs -0 chmod a+rx
-exit 0

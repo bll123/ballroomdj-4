@@ -2449,6 +2449,7 @@ msgstr ""
 msgid "%s Player is Active"
 msgstr ""
 
+#. CONTEXT: controller: MacOS Now Playing
 msgid "MacOS Now Playing"
 msgstr ""
 

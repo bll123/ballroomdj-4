@@ -2455,6 +2455,7 @@ msgstr "電子郵件地址無效。"
 msgid "%s Player is Active"
 msgstr "%s 玩家處於活動狀態"
 
+#. CONTEXT: controller: MacOS Now Playing
 msgid "MacOS Now Playing"
 msgstr ""
 
