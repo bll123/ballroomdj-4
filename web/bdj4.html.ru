@@ -113,11 +113,9 @@
           <!-- WT_012 -->
           <p>Другие сайты, на которых можно найти анонсы релизов BallroomDJ 4:</p>
           <!-- WT_013 -->
-<!--
           <p><a target="_blank"
               href="https://freshcode.club/projects/bdj4"
               >BDJ4 на freshcode.club</a></p>
--->
           <!-- WT_014 -->
           <p><a target="_blank"
               href="https://www.pro-linux.de/cgi-bin/DBApp/check.cgi?ShowAppDetail.01.17981.100"
