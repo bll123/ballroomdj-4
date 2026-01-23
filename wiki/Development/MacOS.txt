@@ -3,7 +3,9 @@
 
 #####
 
-otool -L <lib>
+otool -L <fn>   # show linkage
+
+otool -l <fn> | grep -A 3 LC_RPATH    # show runpath
 
 vtool -show-build <lib or exec>   # to see the min macos version
 
