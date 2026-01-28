@@ -35,20 +35,20 @@ typedef struct uibox {
   uiwcont_t   *priorend;
 } uibox_t;
 
-static uiwcont_t * uiCreateBox (int orientation);
+static uiwcont_t * uiCreateBox (const char *ident, int orientation);
 
 uiwcont_t *
-uiCreateVertBox (void)
+uiCreateVertBox (const char *ident)
 {
-fprintf (stderr, "c-vbox\n");
-  return uiCreateBox (NSUserInterfaceLayoutOrientationVertical);
+fprintf (stderr, "c-vbox %s\n", ident == NULL ? "" : ident);
+  return uiCreateBox (ident, NSUserInterfaceLayoutOrientationVertical);
 }
 
 uiwcont_t *
-uiCreateHorizBox (void)
+uiCreateHorizBox (const char *ident)
 {
-fprintf (stderr, "c-hbox\n");
-  return uiCreateBox (NSUserInterfaceLayoutOrientationHorizontal);
+fprintf (stderr, "c-hbox %s\n", ident == NULL ? "" : ident);
+  return uiCreateBox (ident, NSUserInterfaceLayoutOrientationHorizontal);
 }
 
 void
@@ -76,6 +76,7 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.packwidget;
 
+  grav = NSStackViewGravityLeading;
   if (uibox->wtype == WCONT_T_VBOX) {
     grav = NSStackViewGravityTop;
   }
@@ -175,7 +176,7 @@ uiBoxSetSizeChgCallback (uiwcont_t *uiwindow, callback_t *uicb)
 /* internal routines */
 
 static uiwcont_t *
-uiCreateBox (int orientation)
+uiCreateBox (const char *ident, int orientation)
 {
   uiwcont_t   *uiwidget = NULL;
   uibox_t     *uibox = NULL;
@@ -206,6 +207,7 @@ uiCreateBox (int orientation)
     [box setAlignment: NSLayoutAttributeLeading];
   }
   uiwcontSetWidget (uiwidget, box, NULL);
+  uiwcontSetIdent (uiwidget, ident);
   uiwidget->uiint.uibox = uibox;
 
   return uiwidget;

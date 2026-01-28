@@ -29,7 +29,7 @@ confuiBuildUIDebug (confuigui_t *gui)
   nlistidx_t    val;
 
   logProcBegin ();
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
 
   szgrp = uiCreateSizeGroupHoriz ();
 
@@ -40,11 +40,11 @@ confuiBuildUIDebug (confuigui_t *gui)
 
   val = bdjoptGetNum (OPT_G_DEBUGLVL);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   uiwcontFree (vbox);
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiBoxPackStart (hbox, vbox);
 
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Important",
@@ -69,7 +69,7 @@ confuiBuildUIDebug (confuigui_t *gui)
       CONFUI_DBG_AUDIO_TAG, -1, (val & LOG_AUDIO_TAG));
 
   uiwcontFree (vbox);
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiBoxPackStart (hbox, vbox);
 
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Dance Selection",
@@ -92,7 +92,7 @@ confuiBuildUIDebug (confuigui_t *gui)
       CONFUI_DBG_PROC, -1, (val & LOG_PROC));
 
   uiwcontFree (vbox);
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiBoxPackStart (hbox, vbox);
 
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Process",

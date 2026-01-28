@@ -96,7 +96,7 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
 
   logProcBegin ();
   gui->inchange = true;
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
 
   szgrp = uiCreateSizeGroupHoriz ();
   szgrpB = uiCreateSizeGroupHoriz ();
@@ -106,7 +106,7 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
       /* CONTEXT: configuration: audio sources */
       _("Audio Sources"), CONFUI_ID_AUDIOSRC);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStartExpand (vbox, hbox);
   uiWidgetAlignHorizStart (hbox);
 
@@ -115,7 +115,7 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
 
   confuiAudioSrcCreateTable (gui);
 
-  dvbox = uiCreateVertBox ();
+  dvbox = uiCreateVertBox (NULL);
   uiBoxPackStart (hbox, dvbox);
   uiWidgetSetMarginStart (dvbox, 8);
 

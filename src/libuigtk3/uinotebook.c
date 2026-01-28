@@ -18,15 +18,18 @@
 
 #include "ui/uiwcont-int.h"
 
-#include "ui/uiui.h"
+#include "ui/uibox.h"
+#include "ui/uilabel.h"
 #include "ui/uinotebook.h"
+#include "ui/uiui.h"
+#include "ui/uiwidget.h"
 
 static void
 uiNotebookSwitchPageHandler (GtkNotebook *nb, GtkWidget *page,
     guint pagenum, gpointer udata);
 
 uiwcont_t *
-uiCreateNotebook (void)
+uiCreateNotebook (const char *ident)
 {
   uiwcont_t   *uiwidget;
   GtkWidget   *widget;
@@ -39,14 +42,16 @@ uiCreateNotebook (void)
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (widget), GTK_POS_TOP);
   uiwidget = uiwcontAlloc (WCONT_T_NOTEBOOK, WCONT_T_NOTEBOOK);
   uiwcontSetWidget (uiwidget, widget, NULL);
+  uiwcontSetIdent (uiwidget, ident);
   return uiwidget;
 }
 
 void
 uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
-    uiwcont_t *uiwidget)
+    const char *label, uiwcont_t *image)
 {
-  GtkWidget   *nbtitle;
+//  GtkWidget   *nbtitle;
+  uiwcont_t   *hbox;
 
   if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-append-page")) {
     return;
@@ -60,13 +65,31 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
         uibox->wbasetype, uiwcontDesc (uibox->wbasetype));
     return;
   }
-  nbtitle = NULL;
-  if (uiwidget != NULL) {
-    nbtitle = uiwidget->uidata.widget;
+
+  hbox = NULL;
+  if (label != NULL || image != NULL) {
+    hbox = uiCreateHorizBox (NULL);
+  }
+  if (label != NULL) {
+    uiwcont_t   *uiwidgetp;
+
+    uiwidgetp = uiCreateLabel (label);
+    uiBoxPackStart (hbox, uiwidgetp);
+    uiwcontFree (uiwidgetp);
+  }
+  if (image != NULL) {
+    uiBoxPackStart (hbox, image);
+    uiWidgetAlignHorizCenter (image);
+    uiWidgetAlignVertCenter (image);
+    uiWidgetSetMarginStart (image, 1);
   }
 
   gtk_notebook_append_page (GTK_NOTEBOOK (uinotebook->uidata.widget),
-      uibox->uidata.widget, nbtitle);
+      uibox->uidata.widget, hbox->uidata.widget);
+  if (hbox != NULL) {
+    uiWidgetShowAll (hbox);
+  }
+  uiwcontFree (hbox);
 }
 
 void

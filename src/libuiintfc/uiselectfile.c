@@ -178,7 +178,7 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
       );
   uiWindowSetNoMaximize (selectfile->selfileDialog);
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWidgetExpandVert (vbox);
   uiDialogPackInDialog (selectfile->selfileDialog, vbox);
 
@@ -203,7 +203,7 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   uivlDisplay (uivl);
 
   /* the dialog doesn't have any space above the buttons */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiCreateLabel (" ");

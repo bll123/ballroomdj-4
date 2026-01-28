@@ -216,7 +216,7 @@ helperBuildUI (helperui_t  *helper)
   helper->wcont [HELPER_W_WINDOW] = uiCreateMainWindow (
       helper->closeCallback, tbuff, "bdj4_icon_help");
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWindowPackInWindow (helper->wcont [HELPER_W_WINDOW], vbox);
   uiWidgetSetAllMargins (vbox, 2);
 
@@ -228,17 +228,17 @@ helperBuildUI (helperui_t  *helper)
   uiTextBoxSetReadonly (helper->wcont [HELPER_W_TEXTBOX]);
   uiBoxPackStartExpand (vbox, helper->wcont [HELPER_W_TEXTBOX]);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   helper->nextCallback = callbackInit (helperNextCallback, helper, NULL);
-  uiwidgetp = uiCreateButton ("help-next", helper->nextCallback,
+  uiwidgetp = uiCreateButton ("b-help-next", helper->nextCallback,
       /* CONTEXT: helperui: proceed to the next step */
       _("Next"), NULL);
   uiBoxPackEnd (hbox, uiwidgetp);
   helper->wcont [HELPER_W_BUTTON_NEXT] = uiwidgetp;
 
-  uiwidgetp = uiCreateButton ("help-close", helper->closeCallback,
+  uiwidgetp = uiCreateButton ("b-help-close", helper->closeCallback,
       /* CONTEXT: helperui: close the helper window */
       _("Close"), NULL);
   uiBoxPackEnd (hbox, uiwidgetp);

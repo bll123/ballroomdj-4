@@ -294,7 +294,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
       NULL
       );
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiDialogPackInDialog (
       uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_DIALOG], vbox);
   uiWidgetExpandHoriz (vbox);
@@ -302,7 +302,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   uiWidgetSetAllMargins (vbox, 4);
 
   /* status msg */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
@@ -320,7 +320,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   uiwcontFree (hbox);
 
   /* target folder */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
@@ -360,7 +360,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   uiEntrySetValidate (uiwidgetp, "",
       uieibdj4ValidateTarget, uieibdj4, UIENTRY_DELAYED);
 
-  uiwidgetp = uiCreateButton ("eibdj4-folder",
+  uiwidgetp = uiCreateButton ("b-eibdj4-folder",
       uieibdj4->callbacks [UIEIBDJ4_CB_TARGET],
       "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
@@ -372,7 +372,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
     uiwcontFree (hbox);
 
     /* playlist selector */
-    hbox = uiCreateHorizBox ();
+    hbox = uiCreateHorizBox (NULL);
     uiBoxPackStart (vbox, hbox);
 
     /* CONTEXT: export/import bdj4: playlist: select the song list */
@@ -390,7 +390,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
     uiwcontFree (hbox);
 
     /* new name */
-    hbox = uiCreateHorizBox ();
+    hbox = uiCreateHorizBox (NULL);
     uiBoxPackStart (vbox, hbox);
 
     uiwidgetp = uiCreateColonLabel (

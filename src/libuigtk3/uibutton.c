@@ -74,9 +74,9 @@ uiCreateButton (const char *ident, callback_t *uicb, const char *title,
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_BUTTON);
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uibutton = uibutton;
+  uiwcontSetIdent (uiwidget, ident);
 
   bbase = &uiwidget->uiint.uibuttonbase;
-  bbase->ident = ident;
   bbase->cb = uicb;
   bbase->presscb = callbackInit (uiButtonPressCallback,
       uiwidget, "button-repeat-press");

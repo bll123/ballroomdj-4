@@ -95,6 +95,7 @@ fprintf (stderr, "c-bt (label) %s\n", title);
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_BUTTON);
   uiwcontSetWidget (uiwidget, widget, NULL);
+  uiwcontSetIdent (uiwidget, ident);
   uiwidget->uiint.uibutton = uibutton;
 
   [widget setIdentifier: [NSString stringWithUTF8String: ident]];
@@ -112,7 +113,6 @@ fprintf (stderr, "c-bt (label) %s\n", title);
 #endif
 
   bbase = &uiwidget->uiint.uibuttonbase;
-  bbase->ident = ident;
   bbase->cb = uicb;
   bbase->presscb = callbackInit (uiButtonPressCallback,
       uiwidget, "button-repeat-press");
@@ -192,9 +192,14 @@ uiButtonSetReliefNone (uiwcont_t *uiwidget)
 void
 uiButtonSetFlat (uiwcont_t *uiwidget)
 {
+  IButton   *button = nil;
+
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-flat")) {
     return;
   }
+
+  button = uiwidget->uidata.widget;
+  [button setBordered: NO];
 
   return;
 }

@@ -41,7 +41,7 @@ confuiBuildUIEditRatings (confuigui_t *gui)
   uiwcont_t    *uiwidgetp;
 
   logProcBegin ();
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
 
   /* edit ratings */
   confuiMakeNotebookTab (vbox, gui,
@@ -53,7 +53,7 @@ confuiBuildUIEditRatings (confuigui_t *gui)
   uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStartExpand (vbox, hbox);
   uiWidgetAlignHorizStart (hbox);
 

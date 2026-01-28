@@ -358,25 +358,25 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   vl->callbacks [VL_CB_ENTER_WIN] = callbackInit (uivlEnterEvent, vl, NULL);
   vl->callbacks [VL_CB_MOTION_WIN] = callbackInitI (uivlMotionEvent, vl);
 
-  vl->wcont [VL_W_VBOX] = uiCreateVertBox ();
+  vl->wcont [VL_W_VBOX] = uiCreateVertBox (NULL);
   uiBoxPackStartExpand (boxp, vl->wcont [VL_W_VBOX]);
   uiWidgetAlignHorizFill (vl->wcont [VL_W_VBOX]);
 
   /* a scrolled window is necessary to allow the window to shrink */
   /* keep the minimum height very small so that drop-downs do not get */
   /* created with extra space */
-  vl->wcont [VL_W_SCROLL_WIN] = uiCreateScrolledWindow (50);
+  vl->wcont [VL_W_SCROLL_WIN] = uiCreateScrolledWindow ("sw-vl-data", 50);
   uiWindowSetPolicyExternal (vl->wcont [VL_W_SCROLL_WIN]);
   uiBoxPackStartExpand (vl->wcont [VL_W_VBOX], vl->wcont [VL_W_SCROLL_WIN]);
 
-  vl->wcont [VL_W_HBOX_CONT] = uiCreateHorizBox ();
+  vl->wcont [VL_W_HBOX_CONT] = uiCreateHorizBox (NULL);
   uiWindowPackInWindow (vl->wcont [VL_W_SCROLL_WIN], vl->wcont [VL_W_HBOX_CONT]);
   /* need a minimum width so it looks nice */
   if (minwidth != VL_NO_WIDTH) {
     uiWidgetSetSizeRequest (vl->wcont [VL_W_HBOX_CONT], minwidth, -1);
   }
 
-  vl->wcont [VL_W_MAIN_VBOX] = uiCreateVertBox ();
+  vl->wcont [VL_W_MAIN_VBOX] = uiCreateVertBox (NULL);
   if (vl->keyhandling) {
     /* in order to handle key events */
     uiWidgetEnableFocus (vl->wcont [VL_W_MAIN_VBOX]);
@@ -392,7 +392,7 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   /* as the child windows within it only grow */
   uiWidgetSetSizeChgCallback (vl->wcont [VL_W_SCROLL_WIN], vl->callbacks [VL_CB_VERT_SZ_CHG]);
 
-  vl->wcont [VL_W_SB_VBOX] = uiCreateVertBox ();
+  vl->wcont [VL_W_SB_VBOX] = uiCreateVertBox (NULL);
   uiBoxPackEnd (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_SB_VBOX]);
 
   vl->wcont [VL_W_SB] = uiCreateVerticalScrollbar (10.0);
@@ -1771,7 +1771,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     return;
   }
 
-  row->hbox = uiCreateHorizBox ();
+  row->hbox = uiCreateHorizBox (NULL);
 
   found = false;
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {

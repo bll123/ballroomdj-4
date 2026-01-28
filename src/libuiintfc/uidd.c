@@ -122,7 +122,7 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
 
   dd->callbacks [DD_CB_BUTTON] = callbackInit (uiddDisplay, dd, NULL);
 
-  uiwidget = uiCreateButton ("dd-down",
+  uiwidget = uiCreateButton ("b-dd-down",
       dd->callbacks [DD_CB_BUTTON], NULL,
       "button_down_small");
 
@@ -294,7 +294,7 @@ uiddCreateDialog (uidd_t *dd)
       dd->wcont [DD_W_BUTTON], dd->callbacks [DD_CB_WIN_CLOSE], "");
   uiWidgetAddClass (dd->wcont [DD_W_DIALOG_WIN], DD_DARKBG_CLASS);
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWindowPackInWindow (dd->wcont [DD_W_DIALOG_WIN], vbox);
   uiWidgetSetAllMargins (vbox, 4);
 

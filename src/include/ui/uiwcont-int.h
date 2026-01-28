@@ -71,11 +71,11 @@ typedef enum {
 enum {
   /* used so that the validity check will work (keys) */
   WCONT_EMPTY_WIDGET = 0x0001,
+  WCONT_MAX_IDENT_LEN = 80,
 };
 
 /* used in all ui interfaces */
 typedef struct uibuttonbase {
-  const char  *ident;
   callback_t  *cb;
   callback_t  *presscb;
   callback_t  *releasecb;
@@ -141,10 +141,11 @@ typedef union {
 # endif /* BDJ4_UI_MACOS */
 
 typedef struct uiwcont {
-  uiwconttype_t   wbasetype;
-  uiwconttype_t   wtype;
   uiwcontint_t    uiint;
   uispecific_t    uidata;
+  char            ident [WCONT_MAX_IDENT_LEN];
+  uiwconttype_t   wbasetype;
+  uiwconttype_t   wtype;
   bool            packed;
 } uiwcont_t;
 
@@ -159,8 +160,8 @@ uiwcontValid (uiwcont_t *uiwidget, int exptype, const char *tag)
   }
   if ((int) uiwidget->wbasetype != exptype &&
      (int) uiwidget->wtype != exptype) {
-    fprintf (stderr, "ERR: %s incorrect type exp:%d/%s actual:%d/%s %d/%s\n",
-        tag,
+    fprintf (stderr, "ERR: %s (%s) incorrect type exp:%d/%s actual:%d/%s %d/%s\n",
+        tag, uiwidget->ident,
         exptype, uiwcontDesc (exptype),
         uiwidget->wbasetype, uiwcontDesc (uiwidget->wbasetype),
         uiwidget->wtype, uiwcontDesc (uiwidget->wtype));

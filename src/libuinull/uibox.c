@@ -18,7 +18,7 @@
 #include "ui/uibox.h"
 
 uiwcont_t *
-uiCreateVertBox (void)
+uiCreateVertBox (const char *ident)
 {
   return NULL;
 }

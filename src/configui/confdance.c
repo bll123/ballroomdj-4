@@ -101,7 +101,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
 
   logProcBegin ();
   gui->inchange = true;
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
 
   szgrp = uiCreateSizeGroupHoriz ();
   szgrpB = uiCreateSizeGroupHoriz ();
@@ -113,7 +113,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
       /* CONTEXT: configuration: edit the dance table */
       _("Edit Dances"), CONFUI_ID_DANCE);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStartExpand (vbox, hbox);
   uiWidgetAlignHorizStart (hbox);
 
@@ -122,7 +122,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
 
   confuiCreateDanceTable (gui);
 
-  dvbox = uiCreateVertBox ();
+  dvbox = uiCreateVertBox (NULL);
   uiBoxPackStart (hbox, dvbox);
   uiWidgetSetMarginStart (dvbox, 8);
 

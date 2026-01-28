@@ -446,7 +446,7 @@ confuiBuildUI (configui_t *confui)
   confui->gui.window = uiCreateMainWindow (
       confui->gui.closecb, tbuff, "bdj4_icon_config");
 
-  confui->gui.vbox = uiCreateVertBox ();
+  confui->gui.vbox = uiCreateVertBox (NULL);
   uiWindowPackInWindow (confui->gui.window, confui->gui.vbox);
   uiWidgetSetAllMargins (confui->gui.vbox, 4);
   uiWidgetExpandHoriz (confui->gui.vbox);
@@ -466,7 +466,7 @@ confuiBuildUI (configui_t *confui)
   uiBoxPackEnd (hbox, uiwidgetp);
   confui->gui.errorMsg = uiwidgetp;
 
-  confui->gui.mainvnb = uivnbCreate (confui->gui.vbox);
+  confui->gui.mainvnb = uivnbCreate ("vnb-confui", confui->gui.vbox);
 
   confuiBuildUIGeneral (&confui->gui);
   confuiBuildUIPlayer (&confui->gui);

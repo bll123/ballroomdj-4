@@ -632,7 +632,7 @@ starterBuildUI (startui_t  *starter)
       bdjoptGetStr (OPT_P_PROFILENAME), "bdj4_icon");
   uiWindowSetNoMaximize (starter->wcont [START_W_WINDOW]);
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWindowPackInWindow (starter->wcont [START_W_WINDOW], vbox);
   uiWidgetSetAllMargins (vbox, 4);
   if (isMacOS ()) {
@@ -693,7 +693,7 @@ starterBuildUI (startui_t  *starter)
 
   /* line 1 */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetMarginTop (hbox, 4);
 
@@ -718,11 +718,11 @@ starterBuildUI (startui_t  *starter)
 
   /* buttons and image display */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  bvbox = uiCreateVertBox ();
+  bvbox = uiCreateVertBox (NULL);
   uiBoxPackStart (hbox, bvbox);
 
   /* use the square icon, on macos the icons are squircled */
@@ -738,7 +738,7 @@ starterBuildUI (startui_t  *starter)
 
   starter->callbacks [START_CB_PLAYER] = callbackInit (
       starterStartPlayerui, starter, NULL);
-  uiwidgetp = uiCreateButton ("strt-player",
+  uiwidgetp = uiCreateButton ("b-strt-player",
       starter->callbacks [START_CB_PLAYER],
       /* CONTEXT: starterui: button: starts the player user interface */
       _("Player"), NULL);
@@ -751,7 +751,7 @@ starterBuildUI (startui_t  *starter)
 
   starter->callbacks [START_CB_MANAGE] = callbackInit (
       starterStartManageui, starter, NULL);
-  uiwidgetp = uiCreateButton ("strt-manage",
+  uiwidgetp = uiCreateButton ("b-strt-manage",
       starter->callbacks [START_CB_MANAGE],
       /* CONTEXT: starterui: button: starts the management user interface */
       _("Manage"), NULL);
@@ -764,7 +764,7 @@ starterBuildUI (startui_t  *starter)
 
   starter->callbacks [START_CB_CONFIG] = callbackInit (
       starterStartConfig, starter, NULL);
-  uiwidgetp = uiCreateButton ("strt-conf",
+  uiwidgetp = uiCreateButton ("b-strt-conf",
       starter->callbacks [START_CB_CONFIG],
       /* CONTEXT: starterui: button: starts the configuration user interface */
       _("Configure"), NULL);
@@ -777,7 +777,7 @@ starterBuildUI (startui_t  *starter)
 
   starter->callbacks [START_CB_SUPPORT] = callbackInit (
       starterProcessSupport, starter, NULL);
-  uiwidgetp = uiCreateButton ("strt-support",
+  uiwidgetp = uiCreateButton ("b-strt-support",
       starter->callbacks [START_CB_SUPPORT],
       /* CONTEXT: starterui: button: support : support information */
       _("Support"), NULL);
@@ -788,7 +788,7 @@ starterBuildUI (startui_t  *starter)
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_SUPPORT] = uiwidgetp;
 
-  uiwidgetp = uiCreateButton ("strt-exit",
+  uiwidgetp = uiCreateButton ("b-strt-exit",
       starter->callbacks [START_CB_EXIT],
       /* CONTEXT: starterui: button: exits BDJ4 (exits everything) */
       _("Exit"), NULL);
@@ -1455,7 +1455,7 @@ starterProcessSupport (void *udata)
 
   szgrp = uiCreateSizeGroupHoriz ();
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiDialogPackInDialog (uidialog, vbox);
   uiWidgetSetAllMargins (vbox, 2);
 
@@ -1472,7 +1472,7 @@ starterProcessSupport (void *udata)
   uiwcontFree (hbox);
 
   /* begin line */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: basic support dialog, version display */
@@ -1494,7 +1494,7 @@ starterProcessSupport (void *udata)
   uiwcontFree (hbox);
 
   /* begin line */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: basic support dialog, latest version display */
@@ -1631,10 +1631,10 @@ starterProcessSupport (void *udata)
 
   /* begin line */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateButton ("strt-ssm",
+  uiwidgetp = uiCreateButton ("b-strt-ssm",
       starter->callbacks [START_CB_SEND_SUPPORT],
       /* CONTEXT: starterui: basic support dialog: button: support option */
       _("Send Support Message"), NULL);
@@ -1987,7 +1987,7 @@ starterCreateSupportMsgDialog (void *udata)
 
   szgrp = uiCreateSizeGroupHoriz ();
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiDialogPackInDialog (uidialog, vbox);
   uiWidgetSetAllMargins (vbox, 2);
 
@@ -1997,7 +1997,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiwcontFree (accent.hbox);
 
   /* line 1 */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiCreateLabel ("");
@@ -2008,7 +2008,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiwcontFree (hbox);
 
   /* line 2 */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: sending support message: user's e-mail address */
@@ -2027,7 +2027,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiwcontFree (hbox);
 
   /* line 2 */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: sending support message: subject of message */

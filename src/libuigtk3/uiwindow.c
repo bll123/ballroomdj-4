@@ -269,7 +269,7 @@ uiWindowNoFocusOnStartup (uiwcont_t *uiwindow)
 }
 
 uiwcont_t *
-uiCreateScrolledWindow (int minheight)
+uiCreateScrolledWindow (const char *ident, int minheight)
 {
   uiwcont_t   *scwindow;
   GtkWidget   *widget;
@@ -290,6 +290,8 @@ uiCreateScrolledWindow (int minheight)
 
   scwindow = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_SCROLL_WINDOW);
   uiwcontSetWidget (scwindow, widget, NULL);
+  uiwcontSetIdent (scwindow, ident);
+
   return scwindow;
 }
 
@@ -429,7 +431,6 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   }
 
   gtk_container_add (GTK_CONTAINER (uiwindow->uidata.widget), uiwidget->uidata.widget);
-  uiwidget->packed = true;
 }
 
 void

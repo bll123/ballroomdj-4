@@ -26,7 +26,7 @@ void uiWindowGetPosition (uiwcont_t *uiwindow, int *x, int *y, int *ws);
 void uiWindowMove (uiwcont_t *uiwindow, int x, int y, int ws);
 void uiWindowMoveToCurrentWorkspace (uiwcont_t *uiwindow);
 void uiWindowNoFocusOnStartup (uiwcont_t *uiwindow);
-uiwcont_t *uiCreateScrolledWindow (int minheight);
+uiwcont_t *uiCreateScrolledWindow (const char *ident, int minheight);
 void uiWindowSetPolicyExternal (uiwcont_t *uisw);
 uiwcont_t *uiCreateDialogWindow (uiwcont_t *parentwin, uiwcont_t *attachment, callback_t *uicb, const char *title);
 void uiWindowSetDoubleClickCallback (uiwcont_t *uiwindow, callback_t *uicb);

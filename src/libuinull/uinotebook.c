@@ -20,14 +20,14 @@
 #include "ui/uinotebook.h"
 
 uiwcont_t *
-uiCreateNotebook (void)
+uiCreateNotebook (const char *ident)
 {
   return NULL;
 }
 
 void
 uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uiwidget,
-    uiwcont_t *uilabel)
+    const char *label, uiwcont_t *image)
 {
   return;
 }

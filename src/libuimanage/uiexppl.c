@@ -244,7 +244,7 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
       NULL
       );
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiDialogPackInDialog (
       uiexppl->wcont [UIEXPPL_W_DIALOG], vbox);
   uiWidgetExpandHoriz (vbox);
@@ -252,7 +252,7 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiWidgetSetAllMargins (vbox, 4);
 
   /* status msg */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
@@ -270,7 +270,7 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiwcontFree (hbox);
 
   /* spinbox for export type */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetExpandHoriz (hbox);
 
@@ -290,7 +290,7 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiwcontFree (hbox);
 
   /* target folder */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetExpandHoriz (hbox);
 
@@ -312,7 +312,7 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
       uiexpplValidateTarget, uiexppl, UIENTRY_DELAYED);
 
   /* target folder button */
-  uiwidgetp = uiCreateButton ("exppl-folder",
+  uiwidgetp = uiCreateButton ("b-exppl-folder",
       uiexppl->callbacks [UIEXPPL_CB_TARGET], "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
   uiBoxPackStart (hbox, uiwidgetp);

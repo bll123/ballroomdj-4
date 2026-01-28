@@ -40,14 +40,14 @@ confuiBuildUIEditStatus (confuigui_t *gui)
   uiwcont_t    *hbox;
 
   logProcBegin ();
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
 
   /* edit status */
   confuiMakeNotebookTab (vbox, gui,
       /* CONTEXT: configuration: edit status table */
       _("Edit Status"), CONFUI_ID_STATUS);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStartExpand (vbox, hbox);
   uiWidgetAlignHorizStart (hbox);
 

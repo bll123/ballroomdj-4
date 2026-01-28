@@ -40,14 +40,14 @@ confuiBuildUIEditGenres (confuigui_t *gui)
   uiwcont_t    *hbox;
 
   logProcBegin ();
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
 
   /* edit genre */
   confuiMakeNotebookTab (vbox, gui,
       /* CONTEXT: configuration: edit genres table */
       _("Edit Genres"), CONFUI_ID_GENRES);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStartExpand (vbox, hbox);
   uiWidgetAlignHorizStart (hbox);
 

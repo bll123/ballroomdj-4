@@ -16,7 +16,7 @@ enum {
 
 typedef struct uivnb uivnb_t;
 
-uivnb_t *uivnbCreate (uiwcont_t *box);
+uivnb_t *uivnbCreate (const char *ident, uiwcont_t *box);
 void uivnbFree (uivnb_t *vnb);
 void uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *label, int id);
 void uivnbSetPage (uivnb_t *vnb, int pagenum);

@@ -342,7 +342,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       /* CONTEXT: bpm counter: title of window*/
       _("BPM Counter"), "bdj4_icon_bpm");
 
-  vboxmain = uiCreateVertBox ();
+  vboxmain = uiCreateVertBox (NULL);
   uiWindowPackInWindow (bpmcounter->wcont [BPM_W_WINDOW], vboxmain);
   uiWidgetSetAllMargins (vboxmain, 4);
 
@@ -352,7 +352,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   /* instructions */
   uiwcontFree (hbox);
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vboxmain, hbox);
 
   /* CONTEXT: bpm counter: instructions, line 1 */
@@ -361,7 +361,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vboxmain, hbox);
 
   /* CONTEXT: bpm counter: instructions, line 2 */
@@ -370,11 +370,11 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiwcontFree (uiwidgetp);
 
   /* secondary box */
-  hboxbpm = uiCreateHorizBox ();
+  hboxbpm = uiCreateHorizBox (NULL);
   uiBoxPackStartExpand (vboxmain, hboxbpm);
 
   /* left side */
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiBoxPackStartExpand (hboxbpm, vbox);
 
   /* some spacing */
@@ -384,7 +384,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
     uiwcontFree (hbox);
-    hbox = uiCreateHorizBox ();
+    hbox = uiCreateHorizBox (NULL);
     uiBoxPackStart (vbox, hbox);
 
     uiwidgetp = uiCreateColonLabel (bpmcounter->disptxt [i]);
@@ -400,19 +400,19 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   /* right side */
   uiwcontFree (vbox);
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiBoxPackStartExpand (hboxbpm, vbox);
   uiWidgetAlignHorizCenter (vbox);
   uiWidgetAlignVertCenter (vbox);
 
   /* blue box */
   uiwcontFree (hbox);
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   bpmcounter->callbacks [BPMCOUNT_CB_CLICK] = callbackInit (
       bpmcounterProcessClick, bpmcounter, NULL);
-  uiwidgetp = uiCreateButton ("bpmc-box",
+  uiwidgetp = uiCreateButton ("b-bpmc-box",
       bpmcounter->callbacks [BPMCOUNT_CB_CLICK],
       NULL, "bluebox");
   uiButtonSetReliefNone (uiwidgetp);
@@ -424,12 +424,12 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   /* buttons */
   uiwcontFree (hbox);
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vboxmain, hbox);
 
   bpmcounter->callbacks [BPMCOUNT_CB_SAVE] = callbackInit (
       bpmcounterProcessSave, bpmcounter, NULL);
-  uiwidgetp = uiCreateButton ("bpmc-save",
+  uiwidgetp = uiCreateButton ("b-bpmc-save",
       bpmcounter->callbacks [BPMCOUNT_CB_SAVE],
       /* CONTEXT: bpm counter: save button */
       _("Save"), NULL);
@@ -439,7 +439,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   bpmcounter->callbacks [BPMCOUNT_CB_RESET] = callbackInit (
       bpmcounterProcessReset, bpmcounter, NULL);
-  uiwidgetp = uiCreateButton ("bpmc-reset",
+  uiwidgetp = uiCreateButton ("b-bpmc-reset",
       bpmcounter->callbacks [BPMCOUNT_CB_RESET],
       /* CONTEXT: bpm counter: reset button */
       _("Reset"), NULL);
@@ -447,7 +447,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiWidgetSetMarginTop (uiwidgetp, 2);
   bpmcounter->wcont [BPM_W_BUTTON_RESET] = uiwidgetp;
 
-  uiwidgetp = uiCreateButton ("bpmc-close",
+  uiwidgetp = uiCreateButton ("b-bpmc-close",
       bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
       /* CONTEXT: bpm counter: close button */
       _("Close"), NULL);

@@ -148,11 +148,11 @@ confuiBuildUIiTunes (confuigui_t *gui)
 
   logProcBegin ();
 
-  sw = uiCreateScrolledWindow (200);
+  sw = uiCreateScrolledWindow ("sw-conf-itunes", 200);
   uiWidgetExpandHoriz (sw);
   uiWidgetExpandVert (sw);
 
-  mvbox = uiCreateVertBox ();
+  mvbox = uiCreateVertBox (NULL);
   uiWindowPackInWindow (sw, mvbox);
   uiWidgetExpandHoriz (mvbox);
   uiWidgetAlignHorizFill (mvbox);
@@ -191,10 +191,10 @@ confuiBuildUIiTunes (confuigui_t *gui)
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].uiwidgetp,
       "", uiEntryValidateFile, NULL, UIENTRY_DELAYED);
 
-  mhbox = uiCreateHorizBox ();
+  mhbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (mvbox, mhbox);
 
-  vboxp = uiCreateVertBox ();
+  vboxp = uiCreateVertBox (NULL);
   uiBoxPackStart (mhbox, vboxp);
   uiWidgetSetAllMargins (vboxp, 2);
 
@@ -220,7 +220,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
       p = stpecpy (p, end, "\xc2\xbd");
     }
 
-    hbox = uiCreateHorizBox ();
+    hbox = uiCreateHorizBox (NULL);
     uiBoxPackStart (vboxp, hbox);
 
     uiwidgetp = uiCreateLabel (tbuff);
@@ -237,7 +237,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
 
   uiwcontFree (vboxp);
 
-  vboxp = uiCreateVertBox ();
+  vboxp = uiCreateVertBox (NULL);
   uiBoxPackStart (mhbox, vboxp);
   uiWidgetSetAllMargins (vboxp, 2);
 
@@ -246,13 +246,13 @@ confuiBuildUIiTunes (confuigui_t *gui)
   uiBoxPackStart (vboxp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vboxp, hbox);
 
   uiwcontFree (vboxp);
 
   for (int i = 0; i < ITUNES_FIELD_COL_MAX; ++i) {
-    vbox [i] = uiCreateVertBox ();
+    vbox [i] = uiCreateVertBox (NULL);
     uiBoxPackStart (hbox, vbox [i]);
     uiWidgetSetAllMargins (vbox [i], 2);
   }

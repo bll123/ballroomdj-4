@@ -98,10 +98,10 @@ manageBuildUIStats (managestats_t *managestats)
   uiwcont_t   *hbox;
   uiwcont_t   *chbox;
 
-  managestats->vboxmain = uiCreateVertBox ();
+  managestats->vboxmain = uiCreateVertBox (NULL);
 
   /* Number of songs */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (managestats->vboxmain, hbox);
   uiWidgetSetMarginTop (hbox, 2);
 
@@ -136,7 +136,7 @@ manageBuildUIStats (managestats_t *managestats)
   }
 
   /* horizontal box to hold the columns */
-  chbox = uiCreateHorizBox ();
+  chbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (managestats->vboxmain, chbox);
   uiWidgetSetMarginTop (chbox, 2);
 
@@ -144,7 +144,7 @@ manageBuildUIStats (managestats_t *managestats)
     uiwcont_t  *vbox;
 
     /* vertical box for each column */
-    vbox = uiCreateVertBox ();
+    vbox = uiCreateVertBox (NULL);
     uiBoxPackStart (chbox, vbox);
     uiWidgetSetMarginTop (vbox, 2);
     uiWidgetSetMarginStart (vbox, 2);
@@ -155,7 +155,7 @@ manageBuildUIStats (managestats_t *managestats)
 
       idx = i * STATS_PER_COL * 2 + j * 2;
       uiwcontFree (hbox);
-      hbox = uiCreateHorizBox ();
+      hbox = uiCreateHorizBox (NULL);
       uiBoxPackStart (vbox, hbox);
       uiBoxPackStart (hbox, managestats->dancedisp [idx]);
       uiBoxPackEnd (hbox, managestats->dancedisp [idx + 1]);

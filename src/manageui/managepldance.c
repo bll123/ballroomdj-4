@@ -113,7 +113,7 @@ manageplDanceBuildUI (mpldance_t *mpldnc, uiwcont_t *vboxp)
   const char  *bpmstr;
   char        tbuff [100];
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vboxp, hbox);
   uiWidgetSetAllMargins (hbox, 2);
   uiWidgetAlignHorizEnd (hbox);

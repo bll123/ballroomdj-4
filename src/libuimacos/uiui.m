@@ -154,7 +154,7 @@ uiwcontUIInit (uiwcont_t *uiwidget)
   layout = mdmalloc (sizeof (macoslayout_t));
   uiwidget->uidata.layout = layout;
 
-  layout->margins = NSEdgeInsetsMake (0, 0, 0, 0);
+  layout->margins = NSEdgeInsetsMake (0.0, 0.0, 0.0, 0.0);
   layout->container = NULL;
   layout->centered = false;
   layout->expand = false;
@@ -164,22 +164,30 @@ uiwcontUIInit (uiwcont_t *uiwidget)
 void
 uiwcontUIWidgetInit (uiwcont_t *uiwidget)
 {
-  NSView        *view = uiwidget->uidata.widget;
-  macoslayout_t *layout = uiwidget->uidata.layout;
+  macoslayout_t *layout;
 
   if (uiwidget->wbasetype == WCONT_T_WINDOW) {
     return;
   }
 
-  /* on macos, there are standard base images, and an image view */
+  layout = uiwidget->uidata.layout;
+
+  /* on macos, there are standard images, and an image view */
   if (uiwidget->wtype != WCONT_T_IMAGE) {
+    NSView        *view;
+
+    view = uiwidget->uidata.widget;
     layout->container = [[NSStackView alloc] init];
     [layout->container addView: view inGravity: NSStackViewGravityLeading];
+    layout->container.spacing = 0.0;
+    layout->container.edgeInsets = layout->margins;
   }
 
   if (uiwidget->uidata.widget == uiwidget->uidata.packwidget) {
     uiwidget->uidata.packwidget = layout->container;
   }
+
+  return;
 }
 
 void

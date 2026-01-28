@@ -557,7 +557,7 @@ pluiBuildUI (playerui_t *plui)
 
   pluiInitializeUI (plui);
 
-  plui->wcont [PLUI_W_MAIN_VBOX] = uiCreateVertBox ();
+  plui->wcont [PLUI_W_MAIN_VBOX] = uiCreateVertBox (NULL);
   uiWindowPackInWindow (plui->wcont [PLUI_W_WINDOW], plui->wcont [PLUI_W_MAIN_VBOX]);
   uiWidgetSetAllMargins (plui->wcont [PLUI_W_MAIN_VBOX], 4);
 
@@ -706,7 +706,7 @@ pluiBuildUI (playerui_t *plui)
   uiwidgetp = uiplayerBuildUI (plui->uiplayer);
   uiBoxPackStart (plui->wcont [PLUI_W_MAIN_VBOX], uiwidgetp);
 
-  plui->wcont [PLUI_W_NOTEBOOK] = uiCreateNotebook ();
+  plui->wcont [PLUI_W_NOTEBOOK] = uiCreateNotebook ("nb-player");
   uiBoxPackStartExpand (plui->wcont [PLUI_W_MAIN_VBOX], plui->wcont [PLUI_W_NOTEBOOK]);
 
   plui->callbacks [PLUI_CB_NOTEBOOK] = callbackInitI (
@@ -715,7 +715,7 @@ pluiBuildUI (playerui_t *plui)
 
   plui->callbacks [PLUI_CB_PLAYBACK_QUEUE] = callbackInit (
       pluiProcessSetPlaybackQueue, plui, NULL);
-  uiwidgetp = uiCreateButton ("plui-set-q",
+  uiwidgetp = uiCreateButton ("b-plui-set-q",
       plui->callbacks [PLUI_CB_PLAYBACK_QUEUE],
       /* CONTEXT: playerui: select the current queue for playback */
       _("Set Queue for Playback"), NULL);
@@ -727,7 +727,8 @@ pluiBuildUI (playerui_t *plui)
       pluiDragDropCallback, plui);
 
   for (int i = 0; i < MUSICQ_DISP_MAX; ++i) {
-    int   tabtype;
+    int         tabtype;
+    uiwcont_t   *img;
     /* music queue tab */
 
     if (! bdjoptGetNumPerQueue (OPT_Q_DISPLAY, i)) {
@@ -743,8 +744,6 @@ pluiBuildUI (playerui_t *plui)
     uip = uimusicqBuildUI (plui->uimusicq, plui->wcont [PLUI_W_WINDOW], i,
         plui->wcont [PLUI_W_ERROR_MSG], plui->wcont [PLUI_W_STATUS_MSG], NULL);
 
-    uiwcontFree (hbox);
-    hbox = uiCreateHorizBox ();
     if (tabtype == UI_TAB_HISTORY) {
       /* CONTEXT: playerui: name of the history tab : displayed played songs */
       str = _("History");
@@ -752,33 +751,29 @@ pluiBuildUI (playerui_t *plui)
       str = bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, i);
     }
 
-    uiwidgetp = uiCreateLabel (str);
-    uiBoxPackStart (hbox, uiwidgetp);
-
+    img = NULL;
     if (tabtype == UI_TAB_MUSICQ) {
       plui->musicqImage [i] = uiImageNew ();
       uiImageSetFromPixbuf (plui->musicqImage [i], plui->wcont [PLUI_W_LED_ON]);
-      uiBoxPackStart (hbox, plui->musicqImage [i]);
-      uiWidgetAlignHorizCenter (plui->musicqImage [i]);
-      uiWidgetAlignVertCenter (plui->musicqImage [i]);
-      uiWidgetSetMarginStart (plui->musicqImage [i], 1);
+      img = plui->musicqImage [i];
+//      uiBoxPackStart (hbox, plui->musicqImage [i]);
+//      uiWidgetAlignHorizCenter (plui->musicqImage [i]);
+//      uiWidgetAlignVertCenter (plui->musicqImage [i]);
+//      uiWidgetSetMarginStart (plui->musicqImage [i], 1);
 
       uimusicqDragDropSetURICallback (plui->uimusicq, i, plui->callbacks [PLUI_CB_DRAG_DROP]);
     }
 
-    uiNotebookAppendPage (plui->wcont [PLUI_W_NOTEBOOK], uip, hbox);
-    uiwcontFree (uiwidgetp);
+    uiNotebookAppendPage (plui->wcont [PLUI_W_NOTEBOOK], uip, str, img);
     uinbutilIDAdd (plui->nbtabid, tabtype);
-    uiWidgetShowAll (hbox);
+//    uiWidgetShowAll (hbox);
   }
 
   /* request tab */
   uip = uisongselBuildUI (plui->uisongsel, plui->wcont [PLUI_W_WINDOW]);
   /* CONTEXT: playerui: name of request tab : lists the songs in the database */
-  uiwidgetp = uiCreateLabel (_("Request"));
-  uiNotebookAppendPage (plui->wcont [PLUI_W_NOTEBOOK], uip, uiwidgetp);
+  uiNotebookAppendPage (plui->wcont [PLUI_W_NOTEBOOK], uip, _("Request"), NULL);
   uinbutilIDAdd (plui->nbtabid, UI_TAB_SONGSEL);
-  uiwcontFree (uiwidgetp);
 
   x = nlistGetNum (plui->options, PLUI_SIZE_X);
   y = nlistGetNum (plui->options, PLUI_SIZE_Y);
@@ -1596,10 +1591,10 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
       NULL
       );
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiDialogPackInDialog (plui->wcont [PLUI_W_MQ_FONT_SZ_DIALOG], vbox);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playerui: marquee font size dialog: the font size selector */
@@ -1619,7 +1614,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 
   /* the dialog doesn't have any space above the buttons */
   uiwcontFree (hbox);
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiCreateLabel ("");

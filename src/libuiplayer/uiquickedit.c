@@ -320,14 +320,14 @@ uiqeCreateDialog (uiqe_t *uiqe)
       NULL
       );
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWidgetExpandHoriz (vbox);
   uiWidgetExpandVert (vbox);
   uiDialogPackInDialog (uiqe->wcont [UIQE_W_DIALOG], vbox);
   uiWidgetSetAllMargins (vbox, 4);
 
   /* begin line: title display */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
@@ -348,7 +348,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
 
   /* begin line: speed scale */
   if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_SPEED) == 1) {
-    hbox = uiCreateHorizBox ();
+    hbox = uiCreateHorizBox (NULL);
     uiWidgetExpandHoriz (hbox);
     uiBoxPackStart (vbox, hbox);
     uiqeAddScale (uiqe, hbox, UIQE_SCALE_SPD);
@@ -357,7 +357,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
 
   /* begin line: vol-adj scale */
   if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_VOLUME) == 1) {
-    hbox = uiCreateHorizBox ();
+    hbox = uiCreateHorizBox (NULL);
     uiWidgetExpandHoriz (hbox);
     uiBoxPackStart (vbox, hbox);
     uiqeAddScale (uiqe, hbox, UIQE_SCALE_VOLADJ);
@@ -366,7 +366,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
 
   /* begin line: rating */
   if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_DANCERATING) == 1) {
-    hbox = uiCreateHorizBox ();
+    hbox = uiCreateHorizBox (NULL);
     uiWidgetExpandHoriz (hbox);
     uiBoxPackStart (vbox, hbox);
 
@@ -380,7 +380,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
 
   /* begin line: level */
   if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_DANCELEVEL) == 1) {
-    hbox = uiCreateHorizBox ();
+    hbox = uiCreateHorizBox (NULL);
     uiWidgetExpandHoriz (hbox);
     uiBoxPackStart (vbox, hbox);
 
@@ -394,7 +394,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
 
   /* begin line: favorite */
   if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_FAVORITE) == 1) {
-    hbox = uiCreateHorizBox ();
+    hbox = uiCreateHorizBox (NULL);
     uiWidgetExpandHoriz (hbox);
     uiBoxPackStart (vbox, hbox);
 

@@ -23,18 +23,18 @@
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 
-static uiwcont_t * uiCreateBox (int orientation);
+static uiwcont_t * uiCreateBox (const char *ident, int orientation);
 
 uiwcont_t *
-uiCreateVertBox (void)
+uiCreateVertBox (const char *ident)
 {
-  return uiCreateBox (GTK_ORIENTATION_VERTICAL);
+  return uiCreateBox (ident, GTK_ORIENTATION_VERTICAL);
 }
 
 uiwcont_t *
-uiCreateHorizBox (void)
+uiCreateHorizBox (const char *ident)
 {
-  return uiCreateBox (GTK_ORIENTATION_HORIZONTAL);
+  return uiCreateBox (ident, GTK_ORIENTATION_HORIZONTAL);
 }
 
 void
@@ -56,7 +56,6 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
   }
 
   gtk_box_pack_start (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, FALSE, FALSE, 0);
-  uiwidget->packed = true;
 }
 
 void
@@ -70,7 +69,6 @@ uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   }
 
   gtk_box_pack_start (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, TRUE, TRUE, 0);
-  uiwidget->packed = true;
 }
 
 void
@@ -84,7 +82,6 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
   }
 
   gtk_box_pack_end (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, FALSE, FALSE, 0);
-  uiwidget->packed = true;
 }
 
 void
@@ -98,7 +95,6 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   }
 
   gtk_box_pack_end (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, TRUE, TRUE, 0);
-  uiwidget->packed = true;
 }
 
 void
@@ -114,7 +110,7 @@ uiBoxSetSizeChgCallback (uiwcont_t *uiwindow, callback_t *uicb)
 /* internal routines */
 
 static uiwcont_t *
-uiCreateBox (int orientation)
+uiCreateBox (const char *ident, int orientation)
 {
   uiwcont_t *uiwidget = NULL;
   GtkWidget *box;
@@ -127,6 +123,7 @@ uiCreateBox (int orientation)
     uiwidget = uiwcontAlloc (WCONT_T_BOX, WCONT_T_VBOX);
   }
   uiwcontSetWidget (uiwidget, box, NULL);
+  uiwcontSetIdent (uiwidget, ident);
   return uiwidget;
 }
 

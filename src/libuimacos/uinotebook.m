@@ -23,11 +23,12 @@
 #include "ui/uinotebook.h"
 
 uiwcont_t *
-uiCreateNotebook (void)
+uiCreateNotebook (const char *ident)
 {
   uiwcont_t   *uiwidget;
   NSTabView   *nb;
 
+fprintf (stderr, "c-notebook %s\n", ident);
   nb = [[NSTabView alloc] init];
   [nb setTabPosition: NSTabPositionTop];
 //  gtk_notebook_set_show_border (GTK_NOTEBOOK (nb), TRUE);
@@ -36,12 +37,13 @@ uiCreateNotebook (void)
 
   uiwidget = uiwcontAlloc (WCONT_T_NOTEBOOK, WCONT_T_NOTEBOOK);
   uiwcontSetWidget (uiwidget, nb, NULL);
+  uiwcontSetIdent (uiwidget, ident);
   return uiwidget;
 }
 
 void
 uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
-    uiwcont_t *uilabel)
+    const char *label, uiwcont_t *image)
 {
   NSTabView       *nb;
   NSTabViewItem   *tabv;
@@ -56,21 +58,21 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
     return;
   }
 
+fprintf (stderr, "c-notebook-page to:%s\n", uinotebook->ident);
   nb = uinotebook->uidata.widget;
   tabv = [[NSTabViewItem alloc] init];
 // ### will need to change to draw-label so that a custom tab w/pic can
 // be displayed.
-  if (uilabel != NULL) {
-    NSTextField     *lab;
-
-    lab = uilabel->uidata.widget;
-    tabv.label = [lab stringValue];
+// or rather, just re-implement as uivnb was done
+  if (label != NULL) {
+    tabv.label = [NSString stringWithUTF8String: label];
   } else {
     [nb setTabViewType: NSNoTabsNoBorder];
   }
 
   [tabv setView: uibox->uidata.widget];
   [nb addTabViewItem: tabv];
+  uibox->packed = true;
 
   return;
 }
@@ -99,6 +101,7 @@ uiNotebookSetPage (uiwcont_t *uinotebook, int pagenum)
     return;
   }
 
+fprintf (stderr, "nb-set-page %d\n", pagenum);
   nb = uinotebook->uidata.widget;
 //  [nb selectTabViewItemAtIndex: pagenum];
   return;
@@ -138,6 +141,7 @@ uiNotebookHideTabs (uiwcont_t *uinotebook)
     return;
   }
 
+fprintf (stderr, "nb-hide-tabs\n");
   nb = uinotebook->uidata.widget;
   [nb setTabViewType: NSNoTabsBezelBorder];
   [nb setTabPosition: NSTabPositionNone];

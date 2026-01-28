@@ -190,11 +190,11 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   szgrpSpin = uiCreateSizeGroupHoriz ();  // time widgets + gap widget
   szgrpText = uiCreateSizeGroupHoriz ();      // text widgets
 
-  tophbox = uiCreateHorizBox ();
+  tophbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vboxp, tophbox);
   uiWidgetAlignVertStart (tophbox);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (tophbox, hbox);
 
   /* CONTEXT: playlist management: label for playlist name */
@@ -213,7 +213,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwcontFree (hbox);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (tophbox, hbox);
   uiWidgetSetMarginStart (hbox, 20);
 
@@ -230,30 +230,29 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwcontFree (hbox);
 
-  managepl->wcont [MPL_W_NB] = uiCreateNotebook ();
+  managepl->wcont [MPL_W_NB] = uiCreateNotebook ("nb-mpl");
   uiBoxPackStartExpand (vboxp, managepl->wcont [MPL_W_NB]);
 
   /* settings */
 
-  mvbox = uiCreateVertBox ();
-  /* CONTEXT: playlist management: notebook tab title: settings */
-  uiwidgetp = uiCreateLabel (_("Settings"));
-  uiNotebookAppendPage (managepl->wcont [MPL_W_NB], mvbox, uiwidgetp);
+  mvbox = uiCreateVertBox (NULL);
+  uiNotebookAppendPage (managepl->wcont [MPL_W_NB], mvbox,
+      /* CONTEXT: playlist management: notebook tab title: settings */
+      _("Settings"), NULL);
   uiWidgetSetMarginTop (mvbox, 4);
   uiWidgetSetMarginStart (mvbox, 4);
   uiWidgetSetMarginEnd (mvbox, 4);
   uinbutilIDAdd (managepl->tabids, MPL_TAB_SETTINGS);
-  uiwcontFree (uiwidgetp);
 
   /* standard settings for most playlists, but not podcasts */
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiBoxPackStart (mvbox, vbox);
   managepl->wcont [MPL_W_STD_VBOX] = vbox;
 
   /* new line : max-play-time */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: maximum play time */
@@ -275,7 +274,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line : stop-at */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: stop at */
@@ -299,7 +298,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line : stop-after */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: stop after */
@@ -318,7 +317,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line: gap */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: Gap between songs */
@@ -337,7 +336,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line : play-announcements */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: Play Announcements */
@@ -357,7 +356,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line : blank line */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   /* add a blank line between the playlist controls and song selection */
@@ -370,13 +369,13 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* settings for automatic and sequenced playlists */
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiBoxPackStart (mvbox, vbox);
   managepl->wcont [MPL_W_AUTO_SEQ_VBOX] = vbox;
 
   /* new line : dance-rating */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
@@ -391,7 +390,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line : low dance-level */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: Low Dance Level */
@@ -407,7 +406,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line : high dance-level */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: High Dance Level */
@@ -423,7 +422,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line : allowed-keywords */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: allowed keywords */
@@ -442,7 +441,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line : tags, tag weight */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: tags */
@@ -473,13 +472,13 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* settings for automatic and sequenced playlists */
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiBoxPackStart (mvbox, vbox);
   managepl->wcont [MPL_W_PODCAST_VBOX] = vbox;
 
   /* new line : uri */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: podcast URL */
@@ -498,7 +497,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line : title */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: podcast title */
@@ -517,7 +516,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line : retain */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: how many days to keep the podcast */
@@ -537,15 +536,14 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* dance settings : holds the list of dances with settings */
 
-  vbox = uiCreateVertBox ();
-  /* CONTEXT: playlist management: notebook tab title: dances */
-  uiwidgetp = uiCreateLabel (_("Dances"));
-  uiNotebookAppendPage (managepl->wcont [MPL_W_NB], vbox, uiwidgetp);
+  vbox = uiCreateVertBox (NULL);
+  uiNotebookAppendPage (managepl->wcont [MPL_W_NB], vbox,
+      /* CONTEXT: playlist management: notebook tab title: dances */
+      _("Dances"), NULL);
   uiWidgetSetMarginTop (vbox, 4);
   uiWidgetSetMarginStart (vbox, 4);
   uiWidgetSetMarginEnd (vbox, 4);
   uinbutilIDAdd (managepl->tabids, MPL_TAB_DANCES);
-  uiwcontFree (uiwidgetp);
 
   managepl->mpldnc = manageplDanceAlloc (managepl->minfo);
   manageplDanceBuildUI (managepl->mpldnc, vbox);

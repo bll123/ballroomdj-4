@@ -70,7 +70,7 @@ confuiMakeItemEntry (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   uiwcont_t  *hbox;
 
   logProcBegin ();
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (boxp, hbox);
   confuiMakeItemEntryBasic (gui, hbox, szgrp, txt, widx, bdjoptIdx, disp, indent, CONFUI_NO_EXPAND);
   uiwcontFree (hbox);
@@ -96,7 +96,7 @@ confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp,
   uiwcont_t  *uiwidgetp;
 
   logProcBegin ();
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (boxp, hbox);
   uiWidgetExpandHoriz (hbox);
   confuiMakeItemEntryBasic (gui, hbox, szgrp, txt, widx, bdjoptIdx, disp, CONFUI_NO_INDENT, CONFUI_EXPAND);
@@ -104,7 +104,7 @@ confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp,
   gui->uiitem [widx].sfcb.window = gui->window;
   gui->uiitem [widx].callback = callbackInit (dialogFunc, &gui->uiitem [widx].sfcb, NULL);
 
-  uiwidgetp = uiCreateButton ("conf-folder",
+  uiwidgetp = uiCreateButton ("b-conf-folder",
       gui->uiitem [widx].callback, "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
   uiBoxPackStart (hbox, uiwidgetp);
@@ -127,7 +127,7 @@ confuiMakeItemDropdown (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   /* and also listidx is not set */
   gui->uiitem [widx].outtype = CONFUI_OUT_NONE;
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (boxp, hbox);
 
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, CONFUI_NO_INDENT);
@@ -155,7 +155,7 @@ confuiMakeItemLink (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   uiwcont_t  *uiwidgetp = NULL;
 
   logProcBegin ();
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (boxp, hbox);
 
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, CONFUI_NO_INDENT);
@@ -182,7 +182,7 @@ confuiMakeItemFontButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   logProcBegin ();
   gui->uiitem [widx].basetype = CONFUI_FONT;
   gui->uiitem [widx].outtype = CONFUI_OUT_STR;
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (boxp, hbox);
 
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, CONFUI_NO_INDENT);
@@ -209,7 +209,7 @@ confuiMakeItemColorButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   gui->uiitem [widx].basetype = CONFUI_COLOR;
   gui->uiitem [widx].outtype = CONFUI_OUT_STR;
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (boxp, hbox);
 
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, CONFUI_NO_INDENT);
@@ -239,12 +239,12 @@ confuiMakeItemButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     gui->uiitem [widx].callback = callbackInit (cb, gui, NULL);
   }
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (boxp, hbox);
 
   confuiMakeItemLabel (gui, widx, hbox, szgrp, "", CONFUI_NO_INDENT);
 
-  uiwidgetp = uiCreateButton ("as-chk-conn",
+  uiwidgetp = uiCreateButton ("b-conf-as-chk-conn",
       gui->uiitem [widx].callback, txt, NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 4);
@@ -270,7 +270,7 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 
   gui->uiitem [widx].basetype = CONFUI_SPINBOX_TEXT;
   gui->uiitem [widx].outtype = outtype;
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (boxp, hbox);
 
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, CONFUI_NO_INDENT);
@@ -322,7 +322,7 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp,
 
   gui->uiitem [widx].basetype = CONFUI_SPINBOX_TIME;
   gui->uiitem [widx].outtype = CONFUI_OUT_NUM;
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (boxp, hbox);
 
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, indent);
@@ -365,7 +365,7 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 
   gui->uiitem [widx].basetype = CONFUI_SPINBOX_NUM;
   gui->uiitem [widx].outtype = CONFUI_OUT_NUM;
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (boxp, hbox);
 
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, CONFUI_NO_INDENT);
@@ -401,7 +401,7 @@ confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp
 
   gui->uiitem [widx].basetype = CONFUI_SPINBOX_DOUBLE;
   gui->uiitem [widx].outtype = CONFUI_OUT_DOUBLE;
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (boxp, hbox);
 
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, indent);
@@ -430,7 +430,7 @@ confuiMakeItemSwitch (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 
   gui->uiitem [widx].basetype = CONFUI_SWITCH;
   gui->uiitem [widx].outtype = CONFUI_OUT_BOOL;
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (boxp, hbox);
 
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, indent);
@@ -462,7 +462,7 @@ confuiMakeItemLabelDisp (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 
   gui->uiitem [widx].basetype = CONFUI_NONE;
   gui->uiitem [widx].outtype = CONFUI_OUT_NONE;
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (boxp, hbox);
 
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, indent);

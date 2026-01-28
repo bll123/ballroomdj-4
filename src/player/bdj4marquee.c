@@ -381,7 +381,7 @@ marqueeBuildUI (marquee_t *marquee)
   y = nlistGetNum (marquee->options, MQ_SIZE_Y);
   uiWindowSetDefaultSize (marquee->wcont [MQ_W_WINDOW], x, y);
 
-  mainvbox = uiCreateVertBox ();
+  mainvbox = uiCreateVertBox (NULL);
   uiWindowPackInWindow (marquee->wcont [MQ_W_WINDOW], mainvbox);
   uiWidgetSetAllMargins (mainvbox, 10);
   uiWidgetSetMarginBottom (mainvbox, 3);
@@ -396,12 +396,12 @@ marqueeBuildUI (marquee_t *marquee)
     uiBoxPackStart (mainvbox, marquee->wcont [MQ_W_PBAR]);
   }
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiBoxPackStart (mainvbox, vbox);
   uiWidgetExpandHoriz (vbox);
 
   if (! marquee->mqInfoOnly) {
-    hbox = uiCreateHorizBox ();
+    hbox = uiCreateHorizBox (NULL);
     uiBoxPackStart (vbox, hbox);
     uiWidgetExpandHoriz (hbox);
     uiWidgetAlignHorizFill (hbox);
@@ -428,9 +428,9 @@ marqueeBuildUI (marquee_t *marquee)
   /* info lines */
 
   if (marquee->mqInfoOnly) {
-    tbox = uiCreateVertBox ();
+    tbox = uiCreateVertBox (NULL);
   } else {
-    tbox = uiCreateHorizBox ();
+    tbox = uiCreateHorizBox (NULL);
   }
   uiBoxPackStart (vbox, tbox);
   uiWidgetExpandHoriz (tbox);

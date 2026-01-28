@@ -3,8 +3,6 @@
  */
 #pragma once
 
-#define MACOS_UI_DEBUG 1
-
 #if BDJ4_UI_GTK3
 # include "ui-gtk3.h"
 #endif

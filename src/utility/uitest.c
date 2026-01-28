@@ -319,7 +319,7 @@ uitestBuildUI (uitest_t *uitest)
       uitest->callbacks [UITEST_CB_CLOSE], "uitest", "bdj4_icon");
   uiWindowSetDefaultSize (uitest->wcont [UITEST_W_WINDOW], -1, 800);
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWindowPackInWindow (uitest->wcont [UITEST_W_WINDOW], vbox);
   uiWidgetSetAllMargins (vbox, 4);
 
@@ -338,7 +338,7 @@ uitestBuildUI (uitest_t *uitest)
 
   /* main notebook */
 
-  uitest->mainvnb = uivnbCreate (vbox);
+  uitest->mainvnb = uivnbCreate ("vnb-main", vbox);
 
   uitestUIButtons (uitest);
   uitestUIToggleButtons (uitest);
@@ -374,19 +374,19 @@ uitestUIButtons (uitest_t *uitest)
 
   /* buttons */
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWidgetSetAllMargins (vbox, 4);
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Buttons", VNB_NO_ID);
 
   /* button: normal */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiCreateButton ("uitest-a",
+  uiwidgetp = uiCreateButton ("b-a",
       uitest->callbacks [UITEST_CB_B], "button", NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (sg, uiwidgetp);
@@ -401,12 +401,12 @@ uitestUIButtons (uitest_t *uitest)
 
   /* button: align-left */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiCreateButton ("uitest-b",
+  uiwidgetp = uiCreateButton ("b-b",
       uitest->callbacks [UITEST_CB_B], "button-left", NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (sg, uiwidgetp);
@@ -416,12 +416,12 @@ uitestUIButtons (uitest_t *uitest)
 
   /* button: long text */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiCreateButton ("uitest-long",
+  uiwidgetp = uiCreateButton ("b-long",
       uitest->callbacks [UITEST_CB_B], "button long text", NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (sg, uiwidgetp);
@@ -430,12 +430,12 @@ uitestUIButtons (uitest_t *uitest)
 
   /* button: flat */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiCreateButton ("uitest-b",
+  uiwidgetp = uiCreateButton ("b-flat",
       uitest->callbacks [UITEST_CB_B], "button-flat", NULL);
   uiButtonSetFlat (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
@@ -446,12 +446,12 @@ uitestUIButtons (uitest_t *uitest)
 
   /* button: image */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiCreateButton ("uitest-pause",
+  uiwidgetp = uiCreateButton ("b-pause",
       uitest->callbacks [UITEST_CB_B_IMG_A], NULL, "button_pause");
   uiBoxPackStart (hbox, uiwidgetp);
   uitest->wcont [UITEST_W_B_IMG_A] = uiwidgetp;
@@ -465,12 +465,12 @@ uitestUIButtons (uitest_t *uitest)
 
   /* button: image, text */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiCreateButton ("uitest-img-tt",
+  uiwidgetp = uiCreateButton ("b-img-tt",
       uitest->callbacks [UITEST_CB_B_IMG_B], "img-tooltip", "button_play");
   uiBoxPackStart (hbox, uiwidgetp);
   uitest->wcont [UITEST_W_B_IMG_B] = uiwidgetp;
@@ -484,7 +484,7 @@ uitestUIButtons (uitest_t *uitest)
 
   /* radio button */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -495,7 +495,7 @@ uitestUIButtons (uitest_t *uitest)
 
   uiwcontFree (hbox);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -509,7 +509,7 @@ uitestUIButtons (uitest_t *uitest)
 
   /* check button */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -536,14 +536,14 @@ uitestUIToggleButtons (uitest_t *uitest)
 
   /* toggle buttons */
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWidgetSetAllMargins (vbox, 4);
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Toggle Buttons", VNB_NO_ID);
 
   /* toggle button: normal */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -557,7 +557,7 @@ uitestUIToggleButtons (uitest_t *uitest)
 
   /* toggle button: tooltip */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -570,7 +570,7 @@ uitestUIToggleButtons (uitest_t *uitest)
 
   /* toggle button: with image */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -598,7 +598,7 @@ uitestUIToggleButtons (uitest_t *uitest)
 
   /* switch */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -623,14 +623,14 @@ uitestUIMiscButtons (uitest_t *uitest)
 
   /* misc buttons */
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWidgetSetAllMargins (vbox, 4);
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Misc Buttons", VNB_NO_ID);
 
   /* font button */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -643,7 +643,7 @@ uitestUIMiscButtons (uitest_t *uitest)
 
   /* color button */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -669,12 +669,12 @@ uitestUIChgInd (uitest_t *uitest)
   uitest->callbacks [UITEST_CB_CHG_IND] = callbackInit (
       uitestCBchgind, uitest, NULL);
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWidgetSetAllMargins (vbox, 4);
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Change Indicator", VNB_NO_ID);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -687,14 +687,14 @@ uitestUIChgInd (uitest_t *uitest)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiCreateButton ("uitest-switch",
+  uiwidgetp = uiCreateButton ("b-switch",
       uitest->callbacks [UITEST_CB_CHG_IND], "switch", NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   uitest->wcont [UITEST_W_CI_BUTTON] = uiwidgetp;
 
   uiwcontFree (hbox);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -720,7 +720,7 @@ uitestUIDropdown (uitest_t *uitest)
 
   /* drop-downs */
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWidgetSetAllMargins (vbox, 4);
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Drop-Down", VNB_NO_ID);
@@ -774,7 +774,7 @@ uitestUIEntry (uitest_t *uitest)
 
   /* entry */
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWidgetSetAllMargins (vbox, 4);
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Entry", VNB_NO_ID);
@@ -799,7 +799,7 @@ uitestUIImage (uitest_t *uitest)
 
   /* image */
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWidgetSetAllMargins (vbox, 4);
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Image", VNB_NO_ID);
@@ -829,14 +829,14 @@ uitestUILabels (uitest_t *uitest)
 
   /* labels */
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWidgetSetAllMargins (vbox, 4);
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Label", VNB_NO_ID);
 
   /* label: pack start */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -860,7 +860,7 @@ uitestUILabels (uitest_t *uitest)
 
   /* label: pack start / expand horiz */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -885,7 +885,7 @@ uitestUILabels (uitest_t *uitest)
 
   /* label: pack start / expand horiz / align center */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -911,7 +911,7 @@ uitestUILabels (uitest_t *uitest)
 
   /* label: pack start / expand horiz / align start */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -937,7 +937,7 @@ uitestUILabels (uitest_t *uitest)
 
   /* label: pack end */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -961,7 +961,7 @@ uitestUILabels (uitest_t *uitest)
 
   /* label: pack start / pack end */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -1000,7 +1000,7 @@ uitestUILabels (uitest_t *uitest)
 
   /* label: pack start / ellipsize */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -1026,7 +1026,7 @@ uitestUILabels (uitest_t *uitest)
 
   /* label: pack start / accent */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -1040,7 +1040,7 @@ uitestUILabels (uitest_t *uitest)
 
   /* label: pack start / error */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -1054,7 +1054,7 @@ uitestUILabels (uitest_t *uitest)
 
   /* label: pack start / dark-accent */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -1081,12 +1081,12 @@ uitestUILink (uitest_t *uitest)
 
   /* link */
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWidgetSetAllMargins (vbox, 4);
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Link", VNB_NO_ID);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -1108,14 +1108,13 @@ uitestUINotebook (uitest_t *uitest)
 {
   uiwcont_t   *vbox;
   uiwcont_t   *vboxb;
-  uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
   char        imgbuff [BDJ4_PATH_MAX];
   uivnb_t     *vnb;
 
   /* notebook */
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWidgetSetAllMargins (vbox, 4);
   uiWidgetExpandVert (vbox);
   uiWidgetExpandHoriz (vbox);
@@ -1124,7 +1123,7 @@ uitestUINotebook (uitest_t *uitest)
 
   /* horizontal */
 
-  uitest->wcont [UITEST_W_NB_H] = uiCreateNotebook ();
+  uitest->wcont [UITEST_W_NB_H] = uiCreateNotebook ("nb-horiz");
   uiBoxPackStartExpand (vbox, uitest->wcont [UITEST_W_NB_H]);
 
   /* horiz %d */
@@ -1133,11 +1132,9 @@ uitestUINotebook (uitest_t *uitest)
     char    tbuff [200];
 
     snprintf (tbuff, sizeof (tbuff), "Horiz %d", i);
-    vboxb = uiCreateVertBox ();
-    uiwidgetp = uiCreateLabel (tbuff);
-    uiNotebookAppendPage (uitest->wcont [UITEST_W_NB_H], vboxb, uiwidgetp);
+    vboxb = uiCreateVertBox (NULL);
+    uiNotebookAppendPage (uitest->wcont [UITEST_W_NB_H], vboxb, tbuff, NULL);
     uiWidgetSetAllMargins (vboxb, 4);
-    uiwcontFree (uiwidgetp);
 
     uiwidgetp = uiCreateLabel (tbuff);
     uiBoxPackStart (vboxb, uiwidgetp);
@@ -1147,7 +1144,7 @@ uitestUINotebook (uitest_t *uitest)
 
   /* horizontal w/images */
 
-  uitest->wcont [UITEST_W_NB_HI] = uiCreateNotebook ();
+  uitest->wcont [UITEST_W_NB_HI] = uiCreateNotebook ("nb-h-img");
   uiBoxPackStartExpand (vbox, uitest->wcont [UITEST_W_NB_HI]);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff), "led_off", ".svg",
@@ -1162,28 +1159,6 @@ uitestUINotebook (uitest_t *uitest)
   uiWidgetSetMarginStart (uitest->images [UITEST_NB1_I_LED_ON], 1);
   uiWidgetMakePersistent (uitest->images [UITEST_NB1_I_LED_ON]);
 
-  /* horiz-img 1 */
-
-  vboxb = uiCreateVertBox ();
-  hbox = uiCreateHorizBox ();
-  uiwidgetp = uiCreateLabel ("HI One");
-  uiBoxPackStart (hbox, uiwidgetp);
-
-  uiwcontFree (uiwidgetp);
-  uiBoxPackStart (hbox, uitest->images [UITEST_NB1_I_LED_OFF]);
-  uiWidgetAlignHorizCenter (uiwidgetp);
-  uiWidgetAlignVertCenter (uiwidgetp);
-
-  uiNotebookAppendPage (uitest->wcont [UITEST_W_NB_HI], vboxb, hbox);
-  uiWidgetSetAllMargins (vboxb, 4);
-  uiWidgetShowAll (hbox);
-  uiwcontFree (hbox);
-
-  uiwidgetp = uiCreateLabel ("HI One");
-  uiBoxPackStart (vboxb, uiwidgetp);
-  uiwcontFree (uiwidgetp);
-  uiwcontFree (vboxb);
-
   pathbldMakePath (imgbuff, sizeof (imgbuff), "led_off", ".svg",
       PATHBLD_MP_DIR_IMG);
   uitest->images [UITEST_NB2_I_LED_OFF] = uiImageFromFile (imgbuff);
@@ -1196,22 +1171,26 @@ uitestUINotebook (uitest_t *uitest)
   uiWidgetSetMarginStart (uitest->images [UITEST_NB2_I_LED_ON], 1);
   uiWidgetMakePersistent (uitest->images [UITEST_NB2_I_LED_ON]);
 
+  /* horiz-img 1 */
+
+  vboxb = uiCreateVertBox (NULL);
+
+  uiNotebookAppendPage (uitest->wcont [UITEST_W_NB_HI], vboxb, "HI One",
+      uitest->images [UITEST_NB1_I_LED_OFF]);
+  uiWidgetSetAllMargins (vboxb, 4);
+
+  uiwidgetp = uiCreateLabel ("HI One");
+  uiBoxPackStart (vboxb, uiwidgetp);
+  uiwcontFree (uiwidgetp);
+  uiwcontFree (vboxb);
+
   /* horiz-img 2 */
 
-  vboxb = uiCreateVertBox ();
-  hbox = uiCreateHorizBox ();
-  uiwidgetp = uiCreateLabel ("HI Two");
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  vboxb = uiCreateVertBox (NULL);
 
-  uiBoxPackStart (hbox, uitest->images [UITEST_NB2_I_LED_OFF]);
-  uiWidgetAlignHorizCenter (uiwidgetp);
-  uiWidgetAlignVertCenter (uiwidgetp);
-
-  uiNotebookAppendPage (uitest->wcont [UITEST_W_NB_HI], vboxb, hbox);
+  uiNotebookAppendPage (uitest->wcont [UITEST_W_NB_HI], vboxb, "HI Two",
+      uitest->images [UITEST_NB1_I_LED_OFF]);
   uiWidgetSetAllMargins (vboxb, 4);
-  uiWidgetShowAll (hbox);
-  uiwcontFree (hbox);
 
   uiwidgetp = uiCreateLabel ("HI Two");
   uiBoxPackStart (vboxb, uiwidgetp);
@@ -1220,11 +1199,8 @@ uitestUINotebook (uitest_t *uitest)
 
   /* horiz-img 3 */
 
-  vboxb = uiCreateVertBox ();
-  uiwidgetp = uiCreateLabel ("HI Three");
-  uiNotebookAppendPage (uitest->wcont [UITEST_W_NB_HI], vboxb, uiwidgetp);
-  uiWidgetSetAllMargins (vboxb, 4);
-  uiwcontFree (uiwidgetp);
+  vboxb = uiCreateVertBox (NULL);
+  uiNotebookAppendPage (uitest->wcont [UITEST_W_NB_HI], vboxb, "HI Three", NULL);
 
   uiwidgetp = uiCreateLabel ("HI Three");
   uiBoxPackStart (vboxb, uiwidgetp);
@@ -1237,7 +1213,7 @@ uitestUINotebook (uitest_t *uitest)
 
   /* VNB */
 
-  vnb = uivnbCreate (vbox);
+  vnb = uivnbCreate ("vnb-test", vbox);
   uitest->vnb = vnb;
 
   /* VNB pages */
@@ -1246,7 +1222,7 @@ uitestUINotebook (uitest_t *uitest)
     char    tbuff [200];
 
     snprintf (tbuff, sizeof (tbuff), "VNB %d", i);
-    vboxb = uiCreateVertBox ();
+    vboxb = uiCreateVertBox (NULL);
     uiWidgetSetAllMargins (vboxb, 4);
     uivnbAppendPage (vnb, vboxb, tbuff, VNB_NO_ID);
 
@@ -1271,7 +1247,7 @@ uitestUIPanedWin (uitest_t *uitest)
 
   /* paned window */
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWidgetSetAllMargins (vbox, 4);
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Paned Window", VNB_NO_ID);
@@ -1282,7 +1258,7 @@ uitestUIPanedWin (uitest_t *uitest)
   uiWidgetAlignHorizFill (pw);
   uiWidgetAddClass (pw, ACCENT_CLASS);
 
-  tvbox = uiCreateVertBox ();
+  tvbox = uiCreateVertBox (NULL);
   uiPanedWindowPackStart (pw, tvbox);
 
   uiwidgetp = uiCreateLabel ("AAA");
@@ -1291,7 +1267,7 @@ uitestUIPanedWin (uitest_t *uitest)
 
   uiwcontFree (tvbox);
 
-  tvbox = uiCreateVertBox ();
+  tvbox = uiCreateVertBox (NULL);
   uiPanedWindowPackEnd (pw, tvbox);
 
   uiwidgetp = uiCreateLabel ("BBB");
@@ -1311,7 +1287,7 @@ uitestUIMisc (uitest_t *uitest)
 
   /* progress bar */
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWidgetSetAllMargins (vbox, 4);
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Misc", VNB_NO_ID);
@@ -1329,14 +1305,14 @@ uitestUISizeGroup (uitest_t *uitest)
 
   /* size group */
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWidgetSetAllMargins (vbox, 4);
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Size Group", VNB_NO_ID);
 
   sg = uiCreateSizeGroupHoriz ();
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -1356,7 +1332,7 @@ uitestUISizeGroup (uitest_t *uitest)
 
   uiwcontFree (hbox);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -1376,7 +1352,7 @@ uitestUISizeGroup (uitest_t *uitest)
 
   uiwcontFree (hbox);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -1396,7 +1372,7 @@ uitestUISizeGroup (uitest_t *uitest)
 
   uiwcontFree (hbox);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -1416,7 +1392,7 @@ uitestUISizeGroup (uitest_t *uitest)
 
   uiwcontFree (hbox);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -1450,12 +1426,12 @@ uitestUISpinbox (uitest_t *uitest)
 
   /* spinboxes */
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWidgetSetAllMargins (vbox, 4);
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Spin Box", VNB_NO_ID);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -1474,7 +1450,7 @@ uitestUISpinbox (uitest_t *uitest)
 
   uiwcontFree (hbox);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -1486,7 +1462,7 @@ uitestUISpinbox (uitest_t *uitest)
 
   uiwcontFree (hbox);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -1498,7 +1474,7 @@ uitestUISpinbox (uitest_t *uitest)
 
   uiwcontFree (hbox);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -1511,7 +1487,7 @@ uitestUISpinbox (uitest_t *uitest)
 
   uiwcontFree (hbox);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -1523,7 +1499,7 @@ uitestUISpinbox (uitest_t *uitest)
 
   uiwcontFree (hbox);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -1534,7 +1510,7 @@ uitestUISpinbox (uitest_t *uitest)
 
   uiwcontFree (hbox);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
@@ -1555,7 +1531,7 @@ uitestUITextBox (uitest_t *uitest)
 
   /* text box */
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWidgetSetAllMargins (vbox, 4);
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Text Box", VNB_NO_ID);
@@ -1570,7 +1546,7 @@ uitestUIVirtList (uitest_t *uitest)
 
   /* tree view */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiWidgetSetAllMargins (hbox, 4);
 
   uivnbAppendPage (uitest->mainvnb, hbox, "Virtual List", VNB_NO_ID);

@@ -104,7 +104,7 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
 
 fprintf (stderr, "c-main-win\n");
   win = [[IWindow alloc] init];
-  uibox = uiCreateVertBox ();
+  uibox = uiCreateVertBox (NULL);
   if (title != NULL) {
     NSString  *nstitle;
 
@@ -303,17 +303,20 @@ uiWindowNoFocusOnStartup (uiwcont_t *uiwindow)
 }
 
 uiwcont_t *
-uiCreateScrolledWindow (int minheight)
+uiCreateScrolledWindow (const char *ident, int minheight)
 {
   uiwcont_t     *uiscwin;
   NSScrollView  *win = NULL;
 
-fprintf (stderr, "c-scroll-win\n");
+fprintf (stderr, "c-scroll-win %s\n", ident);
   win = [[NSScrollView alloc] init];
-  win.autohidesScrollers = true;
+  win.autohidesScrollers = YES;
+  win.hasVerticalScroller = YES;
+  win.hasHorizontalScroller = NO;
 
   uiscwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_SCROLL_WINDOW);
   uiwcontSetWidget (uiscwin, win, NULL);
+  uiwcontSetIdent (uiscwin, ident);
 
   return uiscwin;
 }

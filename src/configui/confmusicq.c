@@ -62,11 +62,11 @@ confuiBuildUIMusicQs (confuigui_t *gui)
 
   gui->inbuild = true;
 
-  sw = uiCreateScrolledWindow (200);
+  sw = uiCreateScrolledWindow ("sw-conf-mq", 200);
   uiWidgetExpandHoriz (sw);
   uiWidgetExpandVert (sw);
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWindowPackInWindow (sw, vbox);
   uiWidgetExpandHoriz (vbox);
   uiWidgetAlignHorizFill (vbox);

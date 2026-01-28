@@ -276,17 +276,17 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   audioidint = uiaudioid->audioidInternalData;
   audioidint->wcont [UIAUDID_W_PARENT_WIN] = parentwin;
 
-  audioidint->wcont [UIAUDID_W_MAIN_VBOX] = uiCreateVertBox ();
+  audioidint->wcont [UIAUDID_W_MAIN_VBOX] = uiCreateVertBox (NULL);
   uiWidgetExpandHoriz (audioidint->wcont [UIAUDID_W_MAIN_VBOX]);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (audioidint->wcont [UIAUDID_W_MAIN_VBOX], hbox);
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
 
   audioidint->callbacks [UIAUDID_CB_FIRST] = callbackInit (
       uiaudioidFirstSelection, uiaudioid, "audioid: first");
-  uiwidgetp = uiCreateButton ("audid-first",
+  uiwidgetp = uiCreateButton ("b-audid-first",
       audioidint->callbacks [UIAUDID_CB_FIRST],
       /* CONTEXT: audio identification: first song */
       _("First"), NULL);
@@ -295,7 +295,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   audioidint->callbacks [UIAUDID_CB_PREV] = callbackInit (
       uiaudioidPreviousSelection, uiaudioid, "audioid: previous");
-  uiwidgetp = uiCreateButton ("audid-prev",
+  uiwidgetp = uiCreateButton ("b-audid-prev",
       audioidint->callbacks [UIAUDID_CB_PREV],
       /* CONTEXT: audio identification: previous song */
       _("Previous"), NULL);
@@ -305,7 +305,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   audioidint->callbacks [UIAUDID_CB_NEXT] = callbackInit (
       uiaudioidNextSelection, uiaudioid, "audioid: next");
-  uiwidgetp = uiCreateButton ("audid-next",
+  uiwidgetp = uiCreateButton ("b-audid-next",
       audioidint->callbacks [UIAUDID_CB_NEXT],
       /* CONTEXT: audio identification: next song */
       _("Next"), NULL);
@@ -315,7 +315,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   audioidint->callbacks [UIAUDID_CB_SAVE] = callbackInit (
       uiaudioidSaveCallback, uiaudioid, "audioid: save");
-  uiwidgetp = uiCreateButton ("audid-save",
+  uiwidgetp = uiCreateButton ("b-audid-save",
       audioidint->callbacks [UIAUDID_CB_SAVE],
       /* CONTEXT: audio identification: save data */
       _("Save"), NULL);
@@ -334,7 +334,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   /* audio-identification logo, modified indicator, */
   /* copy button, file label, filename */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (audioidint->wcont [UIAUDID_W_MAIN_VBOX], hbox);
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
@@ -369,7 +369,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiWidgetAddClass (pw, ACCENT_CLASS);
   audioidint->wcont [UIAUDID_W_PANED_WINDOW] = pw;
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiPanedWindowPackStart (pw, vbox);
 
   /* match listing */
@@ -396,12 +396,12 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   /* current/selected box */
 
-  uiwidgetp = uiCreateScrolledWindow (300);
+  uiwidgetp = uiCreateScrolledWindow ("sw-audid-disp", 300);
   uiWidgetExpandHoriz (uiwidgetp);
   uiWidgetExpandVert (uiwidgetp);
   uiPanedWindowPackEnd (pw, uiwidgetp);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiWindowPackInWindow (uiwidgetp, hbox);
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
@@ -419,7 +419,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
     audioidint->items [i].callback = NULL;
   }
 
-  col = uiCreateVertBox ();
+  col = uiCreateVertBox (NULL);
   uiBoxPackStartExpand (hbox, col);
   uiWidgetSetAllMargins (col, 4);
   uiWidgetExpandHoriz (col);
@@ -429,7 +429,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   /* headings */
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (col, hbox);
 
   uiwidgetp = uiCreateLabel (" ");
@@ -707,7 +707,7 @@ uiaudioidAddItemDisplay (uiaudioid_t *uiaudioid, uiwcont_t *col)
       continue;
     }
 
-    hbox = uiCreateHorizBox ();
+    hbox = uiCreateHorizBox (NULL);
     uiBoxPackStart (col, hbox);
     uiWidgetExpandHoriz (hbox);
 

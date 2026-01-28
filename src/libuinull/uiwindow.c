@@ -180,7 +180,7 @@ uiWindowNoFocusOnStartup (uiwcont_t *uiwindow)
 }
 
 uiwcont_t *
-uiCreateScrolledWindow (int minheight)
+uiCreateScrolledWindow (const char *ident, int minheight)
 {
   return NULL;
 }

@@ -645,14 +645,14 @@ installerBuildUI (installer_t *installer)
       tbuff, "bdj4_icon_inst");
   uiWindowSetDefaultSize (installer->wcont [INST_W_WINDOW], 1000, 600);
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
   uiWindowPackInWindow (installer->wcont [INST_W_WINDOW], vbox);
   uiWidgetSetAllMargins (vbox, 4);
   uiWidgetExpandHoriz (vbox);
   uiWidgetExpandVert (vbox);
 
   /* begin line : status message */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
@@ -671,7 +671,7 @@ installerBuildUI (installer_t *installer)
   uiwcontFree (hbox);
 
   /* begin line : target entry */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
@@ -683,7 +683,7 @@ installerBuildUI (installer_t *installer)
 
   installer->callbacks [INST_CB_TARGET_DIR] = callbackInit (
       installerTargetDirDialog, installer, NULL);
-  uiwidgetp = uiCreateButton ("inst-tgt-folder",
+  uiwidgetp = uiCreateButton ("b-inst-tgt-folder",
       installer->callbacks [INST_CB_TARGET_DIR],
       "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
@@ -694,7 +694,7 @@ installerBuildUI (installer_t *installer)
   uiwcontFree (hbox);
 
   /* begin line : re-install bdj4 */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
@@ -745,7 +745,7 @@ installerBuildUI (installer_t *installer)
   uiwcontFree (uiwidgetp);
 
   /* begin line : bdj3 location */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
@@ -763,7 +763,7 @@ installerBuildUI (installer_t *installer)
 
   installer->callbacks [INST_CB_BDJ3LOC_DIR] = callbackInit (
       installerBDJ3LocDirDialog, installer, NULL);
-  uiwidgetp = uiCreateButton ("inst-bdj3loc-folder",
+  uiwidgetp = uiCreateButton ("b-inst-bdj3loc-folder",
       installer->callbacks [INST_CB_BDJ3LOC_DIR],
       "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
@@ -774,7 +774,7 @@ installerBuildUI (installer_t *installer)
   uiwcontFree (hbox);
 
   /* begin line : conversion checkbox */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
@@ -802,7 +802,7 @@ installerBuildUI (installer_t *installer)
   uiwcontFree (uiwidgetp);
 
   /* begin line : vlc message */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
@@ -820,11 +820,11 @@ installerBuildUI (installer_t *installer)
 
   /* begin line : buttons */
   /* button box */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateButton ("inst-exit",
+  uiwidgetp = uiCreateButton ("b-inst-exit",
       installer->callbacks [INST_CB_EXIT],
       /* CONTEXT: installer: exits the installer */
       _("Exit"), NULL);
@@ -833,7 +833,7 @@ installerBuildUI (installer_t *installer)
 
   installer->callbacks [INST_CB_INSTALL] = callbackInit (
       installerInstallCallback, installer, NULL);
-  uiwidgetp = uiCreateButton ("inst-install",
+  uiwidgetp = uiCreateButton ("b-inst-install",
       installer->callbacks [INST_CB_INSTALL],
       /* CONTEXT: installer: start the installation process */
       _("Install"), NULL);

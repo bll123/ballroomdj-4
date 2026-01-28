@@ -23,7 +23,6 @@
 #include "ui/uiwidget.h"
 
 static void uiWidgetUpdateLayout (uiwcont_t *uiwidget);
-static NSView * uiWidgetGetPrior (NSStackView *stview, NSView *view);
 
 /* widget interface */
 
@@ -47,7 +46,7 @@ uiWidgetExpandHoriz (uiwcont_t *uiwidget)
   widget = uiwidget->uidata.widget;
   container = [widget superview];
   if (container == nil) {
-    fprintf (stderr, "ERR: exp-horiz: widget is not packed\n");
+    fprintf (stderr, "ERR: exp-horiz: widget (%s) is not packed\n", uiwidget->ident);
     return;
   }
 
@@ -55,12 +54,8 @@ uiWidgetExpandHoriz (uiwcont_t *uiwidget)
   layout->expand = true;
 fprintf (stderr, "  add expand-horiz constraint\n");
   if (uiwidget->packed == true) {
-    [layout->container.leadingAnchor
-        constraintEqualToAnchor: container.leadingAnchor
-        constant: layout->margins.left].active = YES;
-    [layout->container.trailingAnchor
-        constraintEqualToAnchor: container.trailingAnchor
-        constant: layout->margins.right].active = YES;
+    [widget.layoutMarginsGuide.widthAnchor
+        constraintEqualToAnchor: container.layoutMarginsGuide.widthAnchor].active = YES;
   }
   [widget setAutoresizingMask : NSViewWidthSizable];
   return;
@@ -80,7 +75,7 @@ uiWidgetExpandVert (uiwcont_t *uiwidget)
   widget = uiwidget->uidata.widget;
   container = [widget superview];
   if (container == nil) {
-    fprintf (stderr, "ERR: exp-vert: widget is not packed\n");
+    fprintf (stderr, "ERR: exp-vert: widget (%s) is not packed\n", uiwidget->ident);
     return;
   }
 
@@ -88,12 +83,8 @@ uiWidgetExpandVert (uiwcont_t *uiwidget)
   layout->expand = true;
 fprintf (stderr, "  add expand-vert constraint\n");
   if (uiwidget->packed == true) {
-    [layout->container.topAnchor
-        constraintEqualToAnchor: container.topAnchor
-        constant: layout->margins.top].active = YES;
-    [layout->container.bottomAnchor
-        constraintEqualToAnchor: container.bottomAnchor
-        constant: layout->margins.bottom].active = YES;
+    [widget.layoutMarginsGuide.heightAnchor
+        constraintEqualToAnchor: container.layoutMarginsGuide.heightAnchor].active = YES;
   }
   [widget setAutoresizingMask : NSViewHeightSizable];
   return;
@@ -112,7 +103,7 @@ uiWidgetSetAllMargins (uiwcont_t *uiwidget, int mult)
 
   widget = uiwidget->uidata.widget;
   if ([widget superview] == nil) {
-    fprintf (stderr, "ERR: mg-all: widget is not packed\n");
+    fprintf (stderr, "ERR: mg-all: widget (%s) is not packed\n", uiwidget->ident);
     return;
   }
   val = (double) (uiBaseMarginSz * mult);
@@ -140,7 +131,7 @@ uiWidgetSetMarginTop (uiwcont_t *uiwidget, int mult)
 
   widget = uiwidget->uidata.widget;
   if ([widget superview] == nil) {
-    fprintf (stderr, "ERR: mg-top: widget is not packed\n");
+    fprintf (stderr, "ERR: mg-top: widget (%s) is not packed\n", uiwidget->ident);
     return;
   }
   val = (double) (uiBaseMarginSz * mult);
@@ -165,7 +156,7 @@ uiWidgetSetMarginBottom (uiwcont_t *uiwidget, int mult)
 
   widget = uiwidget->uidata.widget;
   if ([widget superview] == nil) {
-    fprintf (stderr, "ERR: mg-bottom: widget is not packed\n");
+    fprintf (stderr, "ERR: mg-bottom: widget (%s) is not packed\n", uiwidget->ident);
     return;
   }
   val = (double) (uiBaseMarginSz * mult);
@@ -190,7 +181,7 @@ uiWidgetSetMarginStart (uiwcont_t *uiwidget, int mult)
 
   widget = uiwidget->uidata.widget;
   if ([widget superview] == nil) {
-    fprintf (stderr, "ERR: mg-start: widget is not packed\n");
+    fprintf (stderr, "ERR: mg-start: widget (%s) is not packed\n", uiwidget->ident);
     return;
   }
   val = (double) (uiBaseMarginSz * mult);
@@ -215,7 +206,7 @@ uiWidgetSetMarginEnd (uiwcont_t *uiwidget, int mult)
 
   widget = uiwidget->uidata.widget;
   if ([widget superview] == nil) {
-    fprintf (stderr, "ERR: mg-end: widget is not packed\n");
+    fprintf (stderr, "ERR: mg-end: widget (%s) is not packed\n", uiwidget->ident);
     return;
   }
   val = uiBaseMarginSz * mult;
@@ -289,7 +280,7 @@ uiWidgetAlignHorizCenter (uiwcont_t *uiwidget)
   view = uiwidget->uidata.widget;
   stview = (NSStackView *) [view superview];
   if (stview == nil) {
-    fprintf (stderr, "ERR: align-h-center: widget is not packed\n");
+    fprintf (stderr, "ERR: align-h-center: widget (%s) is not packed\n", uiwidget->ident);
     return;
   }
 
@@ -304,7 +295,7 @@ void
 uiWidgetAlignVertFill (uiwcont_t *uiwidget)
 {
   NSView        *view;
-//  macoslayout_t *layout;
+  macoslayout_t *layout;
   NSStackView   *stview;
 
   if (uiwidget == NULL) {
@@ -314,11 +305,11 @@ uiWidgetAlignVertFill (uiwcont_t *uiwidget)
   view = uiwidget->uidata.widget;
   stview = (NSStackView *) [view superview];
   if (stview == nil) {
-    fprintf (stderr, "ERR: vert-fill: widget is not packed\n");
+    fprintf (stderr, "ERR: vert-fill: widget (%s) is not packed\n", uiwidget->ident);
     return;
   }
 
-//  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata.layout;
 
   return;
 }
@@ -353,7 +344,7 @@ uiWidgetAlignVertCenter (uiwcont_t *uiwidget)
   view = uiwidget->uidata.widget;
   stview = (NSStackView *) [view superview];
   if (stview == nil) {
-    fprintf (stderr, "ERR: align-v-center: widget is not packed\n");
+    fprintf (stderr, "ERR: align-v-center: widget (%s) is not packed\n", uiwidget->ident);
     return;
   }
 
@@ -489,54 +480,39 @@ static void
 uiWidgetUpdateLayout (uiwcont_t *uiwidget)
 {
   macoslayout_t *layout = NULL;
-//  NSStackView   *stview = NULL;
   NSView        *view = NULL;
   NSStackView   *container = NULL;
-//  NSView        *prior = NULL;
 
   layout = uiwidget->uidata.layout;
   view = uiwidget->uidata.widget;
   container = layout->container;
-//  /* this may not be valid... */
-//  stview = (NSStackView *) [view superview];
+
+  if (container == NULL) {
+    return;
+  }
 
   if (! layout->expand) {
+    container.edgeInsets = layout->margins;
+#if 0
+    NSLayoutGuide   *guide;
+    NSLayoutGuide   *cguide;
 fprintf (stderr, "  add margin constraint\n");
-    [container.leadingAnchor
-        constraintEqualToAnchor: container.leadingAnchor
+
+    guide = view.layoutMarginsGuide;
+    cguide = container.layoutMarginsGuide;
+    [guide.leadingAnchor
+        constraintEqualToAnchor: cguide.leadingAnchor
         constant: layout->margins.left].active = YES;
-    [container.trailingAnchor
-        constraintEqualToAnchor: container.trailingAnchor
+    [guide.trailingAnchor
+        constraintEqualToAnchor: cguide.trailingAnchor
         constant: layout->margins.right].active = YES;
-    [container.topAnchor
-        constraintEqualToAnchor: container.topAnchor
+    [guide.topAnchor
+        constraintEqualToAnchor: cguide.topAnchor
         constant: layout->margins.top].active = YES;
-    [container.bottomAnchor
-        constraintEqualToAnchor: container.bottomAnchor
+    [guide.bottomAnchor
+        constraintEqualToAnchor: cguide.bottomAnchor
         constant: layout->margins.bottom].active = YES;
+#endif
   }
 }
 
-static NSView *
-uiWidgetGetPrior (NSStackView *stview, NSView *view)
-{
-  NSView    *prior;
-  NSArray   *subviews;
-  int       svcount;
-
-  subviews = [stview subviews];
-  svcount = [subviews count];
-
-  prior = NULL;
-  for (int i = 0; i < svcount; ++i) {
-    NSView        *tview;
-
-    tview = [subviews objectAtIndex: i];
-    if (tview == view) {
-      break;
-    }
-    prior = tview;
-  }
-
-  return prior;
-}

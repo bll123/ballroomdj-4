@@ -53,24 +53,28 @@ typedef struct uivnb {
 bool uivnbSetPageCallback (void *udata);
 
 uivnb_t *
-uivnbCreate (uiwcont_t *box)
+uivnbCreate (const char *ident, uiwcont_t *box)
 {
   uivnb_t     *vnb;
   uiwcont_t   *hbox;
   uiwcont_t   *sw;
+  char        tmp [80];
 
   vnb = mdmalloc (sizeof (uivnb_t));
 
-  hbox = uiCreateHorizBox ();
+  snprintf (tmp, sizeof (tmp), "hbox-vnb-main-%s", ident);
+  hbox = uiCreateHorizBox (tmp);
   uiBoxPackStart (box, hbox);
 
-  sw = uiCreateScrolledWindow (50);
+  snprintf (tmp, sizeof (tmp), "sw-vnb-sel-%s", ident);
+  sw = uiCreateScrolledWindow (tmp, 50);
   uiBoxPackStart (hbox, sw);
-  vnb->vlist = uiCreateVertBox ();
+  vnb->vlist = uiCreateVertBox (NULL);
   uiWindowPackInWindow (sw, vnb->vlist);
   uiWidgetExpandHoriz (vnb->vlist);
 
-  vnb->nb = uiCreateNotebook ();
+  snprintf (tmp, sizeof (tmp), "vnb-%s", ident);
+  vnb->nb = uiCreateNotebook (tmp);
   uiNotebookHideTabs (vnb->nb);
   uiBoxPackStartExpand (hbox, vnb->nb);
 
@@ -125,16 +129,16 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *nbtxt, int id)
     return;
   }
 
-  uiNotebookAppendPage (vnb->nb, uiwidget, NULL);
+  uiNotebookAppendPage (vnb->nb, uiwidget, NULL, NULL);
 
   pagenum = vnb->pagecount;
   cb = callbackInit (uivnbSetPageCallback, &vnb->cbdata [pagenum], NULL);
   vnb->tabcblist [pagenum] = cb;
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vnb->vlist, hbox);
 
-  snprintf (tbuff, sizeof (tbuff), "vnb-%d", vnb->pagecount);
+  snprintf (tbuff, sizeof (tbuff), "b-%d", vnb->pagecount);
   button = uiCreateButton (tbuff, cb, nbtxt, NULL);
   uiButtonAlignLeft (button);
   uiButtonSetReliefNone (button);

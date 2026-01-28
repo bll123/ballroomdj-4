@@ -91,7 +91,7 @@ confuiBuildUIPlayer (confuigui_t *gui)
   uiwcont_t    *szgrpB;
 
   logProcBegin ();
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
 
   szgrp = uiCreateSizeGroupHoriz ();
   szgrpB = uiCreateSizeGroupHoriz ();

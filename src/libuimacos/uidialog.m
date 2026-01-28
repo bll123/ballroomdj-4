@@ -69,8 +69,8 @@ typedef struct uiselect {
 //  [clg.trailingAnchor constraintEqualToAnchor: box.trailingAnchor].active = YES;
 //  [clg.topAnchor constraintEqualToAnchor: box.topAnchor].active = YES;
 //  [clg.bottomAnchor constraintEqualToAnchor: box.bottomAnchor].active = YES;
-  [clg.heightAnchor constraintEqualToAnchor: box.heightAnchor].active = YES;
-  [clg.widthAnchor constraintEqualToAnchor: box.widthAnchor].active = YES;
+//  [clg.heightAnchor constraintEqualToAnchor: box.heightAnchor].active = YES;
+//  [clg.widthAnchor constraintEqualToAnchor: box.widthAnchor].active = YES;
 }
 
 @end
@@ -114,7 +114,7 @@ uiCreateDialog (uiwcont_t *window,
 
 fprintf (stderr, "c-dialog\n");
   win = [[IDWindow alloc] init];
-  uibox = uiCreateVertBox ();
+  uibox = uiCreateVertBox (NULL);
   if (title != NULL) {
     NSString  *nstitle;
 

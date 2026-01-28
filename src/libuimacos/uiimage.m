@@ -30,7 +30,6 @@ uiImageFromFile (const char *fn)
 {
   uiwcont_t   *uiwidget = NULL;
   NSImage     *image;
-  NSImageView *imgv;
   NSString    *ns;
 
 fprintf (stderr, "c-image-from-fn: %s\n", fn);
@@ -56,7 +55,9 @@ uiImageScaledFromFile (const char *fn, int scale)
   imgv = [[NSImageView alloc] init];
 
   /* used for the starter icon image */
+  /* wrap in an image-view */
   [imgv setImage: image];
+  [imgv setTranslatesAutoresizingMaskIntoConstraints: NO];
   imgv.imageScaling = NSImageScaleProportionallyDown;
   [imgv.widthAnchor constraintEqualToConstant: scale + 4].active = YES;
   [imgv.heightAnchor constraintEqualToConstant: scale + 4].active = YES;

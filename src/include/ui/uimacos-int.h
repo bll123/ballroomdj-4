@@ -54,8 +54,8 @@ extern "C" {
 /* structures */
 
 typedef struct macoslayout {
-  NSEdgeInsets  margins;
   NSStackView   *container;
+  NSEdgeInsets  margins;
   bool          centered;
   bool          expand;
   bool          alignright;

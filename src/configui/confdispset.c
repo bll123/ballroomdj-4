@@ -74,7 +74,7 @@ confuiBuildUIDispSettings (confuigui_t *gui)
 
   logProcBegin ();
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBox (NULL);
 
   /* display settings */
   confuiMakeNotebookTab (vbox, gui,
