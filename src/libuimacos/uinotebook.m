@@ -100,7 +100,7 @@ uiNotebookSetPage (uiwcont_t *uinotebook, int pagenum)
   }
 
   nb = uinotebook->uidata.widget;
-  [nb selectTabViewItemAtIndex: pagenum];
+//  [nb selectTabViewItemAtIndex: pagenum];
   return;
 }
 
@@ -132,8 +132,14 @@ uiNotebookSetCallback (uiwcont_t *uinotebook, callback_t *uicb)
 void
 uiNotebookHideTabs (uiwcont_t *uinotebook)
 {
+  NSTabView   *nb;
+
   if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-tabs")) {
     return;
   }
+
+  nb = uinotebook->uidata.widget;
+  [nb setTabViewType: NSNoTabsBezelBorder];
+  [nb setTabPosition: NSTabPositionNone];
 }
 

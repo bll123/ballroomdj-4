@@ -62,7 +62,6 @@ uiCreateButton (const char *ident, callback_t *uicb, const char *title,
   uibuttonbase_t  *bbase;
   IButton         *widget = nil;
 
-fprintf (stderr, "c-bt\n");
   uibutton = mdmalloc (sizeof (uibutton_t));
   uibutton->image = NULL;
 
@@ -76,16 +75,22 @@ fprintf (stderr, "c-bt\n");
     /* relative path */
     pathbldMakePath (tbuff, sizeof (tbuff), imagenm, BDJ4_IMG_SVG_EXT,
         PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
+// why is this not working?
+// the toggle button handles a .svg
+fprintf (stderr, "c-bt (image %s)\n", tbuff);
     ns = [NSString stringWithUTF8String: imagenm];
     image = [[NSImage alloc] initWithContentsOfFile: ns];
     uibutton->image = image;
     [widget setImage: image];
-    [widget setTitle:@""];
-// ### not working
-//    [widget addToolTipRect: widget.frame
-//        owner: [NSString stringWithUTF8String: title]];
+    [widget setImagePosition: NSImageOnly];
+    if (title != NULL) {
+      [widget setToolTip: [NSString stringWithUTF8String: title]];
+    }
   } else {
+fprintf (stderr, "c-bt (label) %s\n", title);
+    /* if the image is set, no label is set for the button */
     [widget setTitle: [NSString stringWithUTF8String: title]];
+    [widget setImagePosition: NSNoImage];
   }
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_BUTTON);
@@ -98,6 +103,7 @@ fprintf (stderr, "c-bt\n");
   [widget setUIWidget: uiwidget];
   [widget setAction: @selector(OnButton1Click:)];
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+  [widget setBordered: YES];
 
 #if MACOS_UI_DEBUG
   [widget setFocusRingType: NSFocusRingTypeExterior];

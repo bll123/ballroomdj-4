@@ -171,8 +171,11 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
     return;
   }
 
-  layout->container = [[NSStackView alloc] init];
-  [layout->container addView: view inGravity: NSStackViewGravityLeading];
+  /* on macos, there are standard base images, and an image view */
+  if (uiwidget->wtype != WCONT_T_IMAGE) {
+    layout->container = [[NSStackView alloc] init];
+    [layout->container addView: view inGravity: NSStackViewGravityLeading];
+  }
 
   if (uiwidget->uidata.widget == uiwidget->uidata.packwidget) {
     uiwidget->uidata.packwidget = layout->container;

@@ -29,20 +29,16 @@ uiwcont_t *
 uiImageFromFile (const char *fn)
 {
   uiwcont_t   *uiwidget = NULL;
-  NSImageView *imgv;
   NSImage     *image;
+  NSImageView *imgv;
   NSString    *ns;
 
+fprintf (stderr, "c-image-from-fn: %s\n", fn);
   ns = [NSString stringWithUTF8String: fn];
   image = [[NSImage alloc] initWithContentsOfFile: ns];
-  imgv = [[NSImageView alloc] init];
-  [imgv setImage: image];
 
   uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
-  uiwcontSetWidget (uiwidget, imgv, NULL);
-
-  uiWidgetAlignHorizCenter (uiwidget);
-  uiWidgetAlignVertCenter (uiwidget);
+  uiwcontSetWidget (uiwidget, image, NULL);
 
   return uiwidget;
 }
@@ -58,12 +54,14 @@ uiImageScaledFromFile (const char *fn, int scale)
   ns = [NSString stringWithUTF8String: fn];
   image = [[NSImage alloc] initWithContentsOfFile: ns];
   imgv = [[NSImageView alloc] init];
+
+  /* used for the starter icon image */
   [imgv setImage: image];
   imgv.imageScaling = NSImageScaleProportionallyDown;
   [imgv.widthAnchor constraintEqualToConstant: scale + 4].active = YES;
   [imgv.heightAnchor constraintEqualToConstant: scale + 4].active = YES;
 
-  uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
+  uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE_VIEW);
   uiwcontSetWidget (uiwidget, imgv, NULL);
 
   uiWidgetAlignHorizCenter (uiwidget);

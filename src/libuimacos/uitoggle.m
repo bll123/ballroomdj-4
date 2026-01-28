@@ -58,11 +58,11 @@ fprintf (stderr, "c-radio-bt\n");
 //  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
 //  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   widget = [[NSButton alloc] init];
+  [widget setButtonType: NSButtonTypeRadio];
   [widget setState: NSControlStateValueOff];
   if (value) {
     [widget setState: NSControlStateValueOn];
   }
-  [widget setButtonType: NSButtonTypeRadio];
   if (txt != NULL) {
     [widget setTitle: [NSString stringWithUTF8String: txt]];
   }
@@ -81,7 +81,7 @@ uiCreateToggleButton (const char *txt,
   uiwcont_t   *uiwidget;
   NSButton    *widget = nil;
 
-fprintf (stderr, "c-toggle-bt\n");
+fprintf (stderr, "c-toggle-bt %s\n", imagenm);
 //  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
 //  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   widget = [[NSButton alloc] init];
@@ -92,9 +92,13 @@ fprintf (stderr, "c-toggle-bt\n");
   }
   if (txt != NULL) {
     [widget setTitle: [NSString stringWithUTF8String: txt]];
+    widget.imagePosition = NSImageRight;
   }
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
+  if (tooltiptxt != NULL) {
+    [widget setToolTip: [NSString stringWithUTF8String: tooltiptxt]];
+  }
 //    gtk_widget_set_tooltip_text (widget, title);
 
   if (imagenm != NULL) {
@@ -110,6 +114,7 @@ fprintf (stderr, "c-toggle-bt\n");
     [widget setImage: nsimage];
   }
   if (image != NULL) {
+fprintf (stderr, "   image-from-wcont %s %s\n", uiwcontDesc (image->wbasetype), uiwcontDesc (image->wtype));
     [widget setImage: image->uidata.widget];
   }
 

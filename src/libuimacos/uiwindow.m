@@ -305,8 +305,17 @@ uiWindowNoFocusOnStartup (uiwcont_t *uiwindow)
 uiwcont_t *
 uiCreateScrolledWindow (int minheight)
 {
+  uiwcont_t     *uiscwin;
+  NSScrollView  *win = NULL;
+
 fprintf (stderr, "c-scroll-win\n");
-  return NULL;
+  win = [[NSScrollView alloc] init];
+  win.autohidesScrollers = true;
+
+  uiscwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_SCROLL_WINDOW);
+  uiwcontSetWidget (uiscwin, win, NULL);
+
+  return uiscwin;
 }
 
 void
@@ -428,22 +437,26 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   win = uiwindow->uidata.widget;
   widget = uiwidget->uidata.packwidget;
   winbox = [win contentView];
-  [winbox addView: widget inGravity: grav];
+  if (uiwindow->wtype == WCONT_T_WINDOW) {
+    [winbox addView: widget inGravity: grav];
+  }
   layout = uiwidget->uidata.layout;
 
 fprintf (stderr, "  add pack-in-win constraint\n");
-  [widget.leadingAnchor
-      constraintEqualToAnchor: winbox.leadingAnchor
-      constant: layout->margins.left].active = YES;
-  [widget.trailingAnchor
-      constraintEqualToAnchor: winbox.trailingAnchor
-      constant: layout->margins.right].active = YES;
-  [widget.topAnchor
-      constraintEqualToAnchor: winbox.topAnchor
-      constant: layout->margins.top].active = YES;
-  [widget.bottomAnchor
-      constraintEqualToAnchor: winbox.bottomAnchor
-      constant: layout->margins.bottom].active = YES;
+  if (uiwindow->wtype == WCONT_T_WINDOW) {
+    [widget.leadingAnchor
+        constraintEqualToAnchor: winbox.leadingAnchor
+        constant: layout->margins.left].active = YES;
+    [widget.trailingAnchor
+        constraintEqualToAnchor: winbox.trailingAnchor
+        constant: layout->margins.right].active = YES;
+    [widget.topAnchor
+        constraintEqualToAnchor: winbox.topAnchor
+        constant: layout->margins.top].active = YES;
+    [widget.bottomAnchor
+        constraintEqualToAnchor: winbox.bottomAnchor
+        constant: layout->margins.bottom].active = YES;
+  }
   [widget setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
   layout->expand = true;
 
