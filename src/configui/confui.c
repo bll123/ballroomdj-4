@@ -30,7 +30,7 @@ confuiBuildUIUserInterface (confuigui_t *gui)
   const char    *tstr;
 
   logProcBegin ();
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
 
   szgrp = uiCreateSizeGroupHoriz ();
 

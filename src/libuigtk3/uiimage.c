@@ -55,7 +55,7 @@ uiImageFromFile (const char *fn)
 }
 
 uiwcont_t *
-uiImageScaledFromFile (const char *ident, const char *fn, int scale)
+uiImageScaledFromFile (const char *fn, int scale)
 {
   uiwcont_t *uiwidget = NULL;
   GdkPixbuf *pixbuf;
@@ -71,7 +71,6 @@ uiImageScaledFromFile (const char *ident, const char *fn, int scale)
     g_object_unref (pixbuf);
   }
 
-  uiwcontSetIdent (uiwidget, ident);
   uiWidgetAlignHorizCenter (uiwidget);
   uiWidgetAlignVertCenter (uiwidget);
 

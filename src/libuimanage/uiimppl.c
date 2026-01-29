@@ -447,7 +447,7 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
       NULL
       );
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   uiDialogPackInDialog (
       uiimppl->wcont [UIIMPPL_W_DIALOG], vbox);
   uiWidgetExpandHoriz (vbox);
@@ -458,7 +458,7 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
       uiimppl->callbacks [UIIMPPL_CB_DRAG_DROP]);
 
   /* status/error msg */
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
@@ -477,7 +477,7 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiwcontFree (hbox);
 
   /* type */
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiCreateColonLabel (
@@ -499,7 +499,7 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiwcontFree (hbox);
 
   /* playlist selector */
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: import playlist: select the song list */
@@ -517,7 +517,7 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiwcontFree (hbox);
 
   /* target folder / URI */
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
@@ -535,7 +535,7 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiEntrySetValue (uiwidgetp, "");
   uiimppl->wcont [UIIMPPL_W_URI] = uiwidgetp;
 
-  uiwidgetp = uiCreateButton ("b-imppl-folder",
+  uiwidgetp = uiCreateButton (
       uiimppl->callbacks [UIIMPPL_CB_TARGET],
       "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
@@ -546,7 +546,7 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiwcontFree (hbox);
 
   /* new name */
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: import playlist: new song list name */

@@ -40,7 +40,6 @@ typedef struct uibutton {
 - (IBAction) OnButton1Click : (id) sender {
   uibuttonbase_t  *bbase;
 
-fprintf (stderr, "b : button-1 click\n");
   bbase = &uiwidget->uiint.uibuttonbase;
   if (bbase->cb != NULL) {
     callbackHandler (bbase->cb);
@@ -54,7 +53,7 @@ fprintf (stderr, "b : button-1 click\n");
 @end
 
 uiwcont_t *
-uiCreateButton (const char *ident, callback_t *uicb, const char *title,
+uiCreateButton (callback_t *uicb, const char *title,
     const char *imagenm)
 {
   uiwcont_t       *uiwidget;
@@ -77,7 +76,6 @@ uiCreateButton (const char *ident, callback_t *uicb, const char *title,
         PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
 // why is this not working?
 // the toggle button handles a .svg
-fprintf (stderr, "c-bt (image %s)\n", tbuff);
     ns = [NSString stringWithUTF8String : imagenm];
     image = [[NSImage alloc] initWithContentsOfFile : ns];
     uibutton->image = image;
@@ -87,7 +85,6 @@ fprintf (stderr, "c-bt (image %s)\n", tbuff);
       [widget setToolTip : [NSString stringWithUTF8String : title]];
     }
   } else {
-fprintf (stderr, "c-bt (label) %s\n", title);
     /* if the image is set, no label is set for the button */
     [widget setTitle : [NSString stringWithUTF8String : title]];
     [widget setImagePosition : NSNoImage];
@@ -95,10 +92,9 @@ fprintf (stderr, "c-bt (label) %s\n", title);
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_BUTTON);
   uiwcontSetWidget (uiwidget, widget, NULL);
-  uiwcontSetIdent (uiwidget, ident);
   uiwidget->uiint.uibutton = uibutton;
 
-  [widget setIdentifier : [NSString stringWithUTF8String : ident]];
+//  [widget setIdentifier : [NSString stringWithUTF8String : ident]];
   [widget setBezelStyle : NSBezelStyleRounded];
   [widget setTarget : widget];
   [widget setUIWidget : uiwidget];

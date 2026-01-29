@@ -182,12 +182,12 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
       NULL
       );
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   uiDialogPackInDialog (uiaa->aaDialog, vbox);
   uiWidgetSetAllMargins (vbox, 4);
 
   /* status message */
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiCreateLabel ("");
@@ -197,7 +197,7 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
 
   /* trim silence */
   uiwcontFree (hbox);
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: apply adjustments: trim silence checkbox */
@@ -208,7 +208,7 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
 
   /* adjust audio */
   uiwcontFree (hbox);
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: apply adjustments: adjust speed/song start/song end checkbox */

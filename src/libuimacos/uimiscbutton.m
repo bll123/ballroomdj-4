@@ -22,7 +22,6 @@
 uiwcont_t *
 uiCreateFontButton (const char *fontname)
 {
-fprintf (stderr, "c-f-bt\n");
   return NULL;
 }
 
@@ -33,16 +32,15 @@ uiFontButtonGetFont (uiwcont_t *uiwidget)
 }
 
 uiwcont_t *
-uiCreateColorButton (const char *ident, const char *colortxt)
+uiCreateColorButton (const char *colortxt)
 {
   NSColorWell     *widget;
   NSColor         *color;
   uiwcont_t       *uiwidget;
   int             r, g, b;
 
-fprintf (stderr, "c-col-bt\n");
   widget = [[NSColorWell alloc] init];
-  [widget setIdentifier : [NSString stringWithUTF8String : ident]];
+//  [widget setIdentifier : [NSString stringWithUTF8String : ident]];
 //  [widget setAction : @selector(OnButton1Click : )];
   [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
 
@@ -56,7 +54,6 @@ fprintf (stderr, "c-col-bt\n");
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_COLOR_BUTTON);
   uiwcontSetWidget (uiwidget, widget, NULL);
-  uiwcontSetIdent (uiwidget, ident);
 
   return NULL;
 }

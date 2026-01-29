@@ -34,7 +34,6 @@ uiEntryInit (int entrySize, int maxSize)
   NSTextField     *widget;
   uientrybase_t   *ebase;
 
-fprintf (stderr, "c-entry\n");
   uientry = mdmalloc (sizeof (uientry_t));
   uientry->changed = false;
 

@@ -199,7 +199,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   ssint = uisongsel->ssInternalData;
   uisongsel->windowp = parentwin;
 
-  ssint->wcont [SONGSEL_W_MAIN_VBOX] = uiCreateVertBox (NULL);
+  ssint->wcont [SONGSEL_W_MAIN_VBOX] = uiCreateVertBox ();
   uiWidgetExpandHoriz (ssint->wcont [SONGSEL_W_MAIN_VBOX]);
   uiWidgetExpandVert (ssint->wcont [SONGSEL_W_MAIN_VBOX]);
 
@@ -207,7 +207,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     uiwcont_t   *thbox;
 
     /* need a filler box to match the musicq */
-    thbox = uiCreateHorizBox (NULL);
+    thbox = uiCreateHorizBox ();
     uiWidgetExpandHoriz (thbox);
     uiBoxPackStart (ssint->wcont [SONGSEL_W_MAIN_VBOX], thbox);
 
@@ -218,7 +218,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     uiwcontFree (thbox);
   }
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox);
 
@@ -227,7 +227,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   if (uisongsel->dispselType == DISP_SEL_SONGSEL) {
     ssint->callbacks [SONGSEL_CB_SELECT] = callbackInit (
         uisongselSelectCallback, uisongsel, "songsel: select");
-    uiwidgetp = uiCreateButton ("b-ss-select",
+    uiwidgetp = uiCreateButton (
         /* CONTEXT: song-selection: select a song to be added to the song list */
         ssint->callbacks [SONGSEL_CB_SELECT], _("Select"), NULL);
     uiBoxPackStart (hbox, uiwidgetp);
@@ -239,7 +239,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
       uisongsel->dispselType == DISP_SEL_MM) {
     ssint->callbacks [SONGSEL_CB_EDIT_LOCAL] = callbackInit (
         uisongselSongEditCallback, uisongsel, "songsel: edit");
-    uiwidgetp = uiCreateButton ("b-ss-edit",
+    uiwidgetp = uiCreateButton (
         ssint->callbacks [SONGSEL_CB_EDIT_LOCAL],
         /* CONTEXT: song-selection: edit the selected song */
         _("Edit"), "button_edit");
@@ -252,7 +252,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     stpecpy (tbuff, tbuff + sizeof (tbuff), _("Queue"));
     ssint->callbacks [SONGSEL_CB_QUEUE] = callbackInit (
         uisongselQueueCallback, uisongsel, "songsel: queue");
-    uiwidgetp = uiCreateButton ("b-ss-queue",
+    uiwidgetp = uiCreateButton (
         ssint->callbacks [SONGSEL_CB_QUEUE], tbuff, NULL);
     uiBoxPackStart (hbox, uiwidgetp);
     ssint->wcont [SONGSEL_W_BUTTON_QUEUE] = uiwidgetp;
@@ -270,7 +270,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     stpecpy (tbuff, tbuff + sizeof (tbuff), _("Play"));
     ssint->callbacks [SONGSEL_CB_PLAY] = callbackInit (
         uisongselPlayCallback, uisongsel, "songsel: play");
-    uiwidgetp = uiCreateButton ("b-ss-play",
+    uiwidgetp = uiCreateButton (
         ssint->callbacks [SONGSEL_CB_PLAY], tbuff, "button_play");
     uiBoxPackStart (hbox, uiwidgetp);
     ssint->wcont [SONGSEL_W_BUTTON_PLAY] = uiwidgetp;
@@ -286,7 +286,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
 
   ssint->callbacks [SONGSEL_CB_FILTER] = callbackInit (
       uisongselStartSFDialog, uisongsel, "songsel: filters");
-  uiwidgetp = uiCreateButton ("b-ss-filter",
+  uiwidgetp = uiCreateButton (
       ssint->callbacks [SONGSEL_CB_FILTER],
       /* CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog */
       _("Filter Songs"), "button_filter");
@@ -295,7 +295,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
 
   uiwcontFree (hbox);
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStartExpand (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox);
 
   sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);

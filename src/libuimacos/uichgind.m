@@ -29,7 +29,6 @@ uiCreateChangeIndicator (uiwcont_t *boxp)
   uiwcont_t   *uiwidget;
   ILabel      *widget;
 
-fprintf (stderr, "c-chgind\n");
   widget = [[ILabel alloc] init];
   [widget setBezeled : NO];
   [widget setDrawsBackground : NO];

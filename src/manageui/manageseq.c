@@ -137,7 +137,7 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
 
   /* edit sequences */
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxp, hbox);
 
   /* CONTEXT: sequence editor: label for sequence name */

@@ -25,7 +25,6 @@ uiCreateLink (const char *label, const char *uri)
   uiwcont_t   *uiwidget;
   ILabel      *widget;
 
-fprintf (stderr, "c-link\n");
   widget = [[ILabel alloc] init];
   [widget setBezeled : NO];
   [widget setDrawsBackground : NO];

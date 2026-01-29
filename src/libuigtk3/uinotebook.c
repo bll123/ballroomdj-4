@@ -29,7 +29,7 @@ uiNotebookSwitchPageHandler (GtkNotebook *nb, GtkWidget *page,
     guint pagenum, gpointer udata);
 
 uiwcont_t *
-uiCreateNotebook (const char *ident)
+uiCreateNotebook (void)
 {
   uiwcont_t   *uiwidget;
   GtkWidget   *widget;
@@ -42,7 +42,6 @@ uiCreateNotebook (const char *ident)
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (widget), GTK_POS_TOP);
   uiwidget = uiwcontAlloc (WCONT_T_NOTEBOOK, WCONT_T_NOTEBOOK);
   uiwcontSetWidget (uiwidget, widget, NULL);
-  uiwcontSetIdent (uiwidget, ident);
   return uiwidget;
 }
 
@@ -69,7 +68,7 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
   hbox = NULL;
   nbtitle = NULL;
   if (label != NULL || image != NULL) {
-    hbox = uiCreateHorizBox (NULL);
+    hbox = uiCreateHorizBox ();
     nbtitle = hbox->uidata.widget;
   }
   if (label != NULL) {

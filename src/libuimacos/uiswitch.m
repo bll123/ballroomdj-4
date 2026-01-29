@@ -35,7 +35,6 @@ uiCreateSwitch (int value)
   uiwcont_t   *uiwidget;
   NSSwitch    *widget = nil;
 
-fprintf (stderr, "c-switch\n");
   widget = [[NSSwitch alloc] init];
   [widget setState : NSControlStateValueOff];
   if (value) {

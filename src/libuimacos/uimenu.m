@@ -25,21 +25,18 @@ typedef struct uimenu {
 uiwcont_t *
 uiCreateMenubar (void)
 {
-fprintf (stderr, "c-menubar\n");
   return NULL;
 }
 
 uiwcont_t *
 uiCreateSubMenu (uiwcont_t *uimenuitem)
 {
-fprintf (stderr, "c-sub-menu\n");
   return NULL;
 }
 
 uiwcont_t *
 uiMenuCreateItem (uiwcont_t *uimenu, const char *txt, callback_t *uicb)
 {
-fprintf (stderr, "c-menu-item\n");
   return NULL;
 }
 
@@ -53,7 +50,6 @@ uiwcont_t *
 uiMenuCreateCheckbox (uiwcont_t *uimenu,
     const char *txt, int active, callback_t *uicb)
 {
-fprintf (stderr, "c-menu-cb\n");
   return NULL;
 }
 

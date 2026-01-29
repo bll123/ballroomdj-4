@@ -184,12 +184,12 @@ uicopytagsCreateDialog (uict_t *uict)
       NULL
       );
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   uiDialogPackInDialog (uict->ctDialog, vbox);
   uiWidgetSetAllMargins (vbox, 4);
 
   /* status message */
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiCreateLabel ("");
@@ -200,7 +200,7 @@ uicopytagsCreateDialog (uict_t *uict)
   uiwcontFree (hbox);
 
   /* source */
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: song editor: copy tags: source file */
@@ -218,7 +218,7 @@ uicopytagsCreateDialog (uict_t *uict)
 
   uict->callbacks [UICT_CB_SOURCE_SEL] = callbackInit (
       selectAudioFileCallback, &uict->sourcesfcb, NULL);
-  uict->sourcesel = uiCreateButton ("b-cptag-src-folder",
+  uict->sourcesel = uiCreateButton (
       uict->callbacks [UICT_CB_SOURCE_SEL], "", NULL);
   uiButtonSetImageIcon (uict->sourcesel, "folder");
   uiBoxPackStart (hbox, uict->sourcesel);
@@ -226,7 +226,7 @@ uicopytagsCreateDialog (uict_t *uict)
   uiwcontFree (hbox);
 
   /* target */
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: song editor: copy tags: target file */
@@ -244,7 +244,7 @@ uicopytagsCreateDialog (uict_t *uict)
 
   uict->callbacks [UICT_CB_TARGET_SEL] = callbackInit (
       selectAudioFileCallback, &uict->targetsfcb, NULL);
-  uict->targetsel = uiCreateButton ("b-cptag-tgt-folder",
+  uict->targetsel = uiCreateButton (
       uict->callbacks [UICT_CB_TARGET_SEL], "", NULL);
   uiButtonSetImageIcon (uict->targetsel, "folder");
   uiBoxPackStart (hbox, uict->targetsel);

@@ -284,17 +284,17 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   szgrpScaleLabel = uiCreateSizeGroupHoriz ();
   szgrpStatus = uiCreateSizeGroupHoriz ();
 
-  uiplayer->wcont [UIPL_W_MAIN_VBOX] = uiCreateVertBox (NULL);
+  uiplayer->wcont [UIPL_W_MAIN_VBOX] = uiCreateVertBox ();
   uiWidgetExpandHoriz (uiplayer->wcont [UIPL_W_MAIN_VBOX]);
 
   /* song display */
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (uiplayer->wcont [UIPL_W_MAIN_VBOX], hbox);
 
   /* size group E */
-  statusbox = uiCreateHorizBox (NULL);
+  statusbox = uiCreateHorizBox ();
   uiBoxPackStart (hbox, statusbox);
   uiWidgetAlignVertCenter (statusbox);
   uiSizeGroupAdd (szgrpStatus, statusbox);
@@ -370,7 +370,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
     /* size group F */
     uiplayer->callbacks [UIPL_CB_SPD_RESET] = callbackInit (
         uiplayerSpdResetCallback, uiplayer, "spd-reset");
-    uiwidgetp = uiCreateButton ("b-plui-spd-reset",
+    uiwidgetp = uiCreateButton (
         uiplayer->callbacks [UIPL_CB_SPD_RESET],
         /* CONTEXT: playerui: button: reset speed to 100% */
         _("100%"), NULL);
@@ -393,7 +393,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiSizeGroupAdd (szgrpScaleDisp, uiplayer->wcont [UIPL_W_SPEED_DISP]);
 
   /* size group C */
-  uiplayer->wcont [UIPL_W_SPEED] = uiCreateScale ("scale-plui-spd",
+  uiplayer->wcont [UIPL_W_SPEED] = uiCreateScale (
       SPD_LOWER, SPD_UPPER, SPD_INCA, SPD_INCB, 100.0, SPD_DIGITS);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SPEED]);
   uiWidgetSetMarginStart (uiplayer->wcont [UIPL_W_SPEED], 2);
@@ -414,7 +414,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* position controls / display */
 
   uiwcontFree (hbox);
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (uiplayer->wcont [UIPL_W_MAIN_VBOX], hbox);
 
@@ -463,7 +463,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiLabelAlignEnd (uiplayer->wcont [UIPL_W_SEEK_DISP]);
 
   /* size group C */
-  uiplayer->wcont [UIPL_W_SEEK] = uiCreateScale ("scale-plui-pos",
+  uiplayer->wcont [UIPL_W_SEEK] = uiCreateScale (
       0.0, 180000.0, 1000.0, 10000.0, 0.0, 0);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SEEK]);
   uiWidgetSetMarginStart (uiplayer->wcont [UIPL_W_SEEK], 2);
@@ -484,7 +484,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* main controls */
 
   uiwcontFree (hbox);
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (uiplayer->wcont [UIPL_W_MAIN_VBOX], hbox);
 
@@ -496,7 +496,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiplayer->callbacks [UIPL_CB_FADE] = callbackInit (
       uiplayerFadeProcess, uiplayer, "fade");
-  uiwidgetp = uiCreateButton ("b-plui-fade",
+  uiwidgetp = uiCreateButton (
       uiplayer->callbacks [UIPL_CB_FADE],
       /* CONTEXT: playerui: button: fade out the song and stop playing it */
       _("Fade"), NULL);
@@ -505,7 +505,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiplayer->callbacks [UIPL_CB_PLAYPAUSE] = callbackInit (
       uiplayerPlayPauseProcess, uiplayer, "play-pause");
-  uiwidgetp = uiCreateButton ("b-plui-plpause",
+  uiwidgetp = uiCreateButton (
       uiplayer->callbacks [UIPL_CB_PLAYPAUSE],
       /* CONTEXT: playerui: button: tooltip: play or pause the song */
       _("Play / Pause"), "button_playpause");
@@ -525,7 +525,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiplayer->callbacks [UIPL_CB_BEGSONG] = callbackInit (
       uiplayerSongBeginProcess, uiplayer, "begin-song");
-  uiwidgetp = uiCreateButton ("b-plui-begin",
+  uiwidgetp = uiCreateButton (
       uiplayer->callbacks [UIPL_CB_BEGSONG],
       /* CONTEXT: playerui: button: tooltip: return to the beginning of the song */
       _("Return to beginning of song"), "button_begin");
@@ -534,7 +534,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiplayer->callbacks [UIPL_CB_NEXTSONG] = callbackInit (
       uiplayerNextSongProcess, uiplayer, "next-song");
-  uiwidgetp = uiCreateButton ("b-plui-next",
+  uiwidgetp = uiCreateButton (
       uiplayer->callbacks [UIPL_CB_NEXTSONG],
       /* CONTEXT: playerui: button: tooltip: start playing the next song (immediate) */
       _("Next Song"), "button_nextsong");
@@ -583,7 +583,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiSizeGroupAdd (szgrpScaleDisp, uiplayer->wcont [UIPL_W_VOLUME_DISP]);
 
   /* size group C */
-  uiplayer->wcont [UIPL_W_VOLUME] = uiCreateScale ("scale-plui-vol",
+  uiplayer->wcont [UIPL_W_VOLUME] = uiCreateScale (
       VOL_LOWER, VOL_UPPER, VOL_INCA, VOL_INCB, 0.0, VOL_DIGITS);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_VOLUME]);
   uiWidgetSetMarginStart (uiplayer->wcont [UIPL_W_VOLUME], 2);

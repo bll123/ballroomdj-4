@@ -28,7 +28,6 @@ uiCreateCheckButton (const char *txt, int value)
   uiwcont_t   *uiwidget;
   NSButton    *widget = nil;
 
-fprintf (stderr, "c-chk-bt\n");
 //  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
 //  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   widget = [[NSButton alloc] init];
@@ -54,7 +53,6 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
   uiwcont_t   *uiwidget;
   NSButton    *widget = nil;
 
-fprintf (stderr, "c-radio-bt\n");
 //  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
 //  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   widget = [[NSButton alloc] init];
@@ -81,7 +79,6 @@ uiCreateToggleButton (const char *txt,
   uiwcont_t   *uiwidget;
   NSButton    *widget = nil;
 
-fprintf (stderr, "c-toggle-bt %s\n", imagenm);
 //  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
 //  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   widget = [[NSButton alloc] init];
@@ -114,7 +111,6 @@ fprintf (stderr, "c-toggle-bt %s\n", imagenm);
     [widget setImage : nsimage];
   }
   if (image != NULL) {
-fprintf (stderr, "   image-from-wcont %s %s\n", uiwcontDesc (image->wbasetype), uiwcontDesc (image->wtype));
     [widget setImage : image->uidata.widget];
   }
 

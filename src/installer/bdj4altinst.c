@@ -365,7 +365,7 @@ altinstBuildUI (altinst_t *altinst)
       altinst->callbacks [ALT_CB_EXIT], tbuff, "bdj4_icon_inst");
   uiWindowSetDefaultSize (altinst->wcont [ALT_W_WINDOW], 1000, 600);
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   uiWindowPackInWindow (altinst->wcont [ALT_W_WINDOW], vbox);
   uiWidgetSetAllMargins (vbox, 4);
   uiWidgetExpandHoriz (vbox);
@@ -392,7 +392,7 @@ altinstBuildUI (altinst_t *altinst)
 
   /* begin line : name */
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
@@ -410,7 +410,7 @@ altinstBuildUI (altinst_t *altinst)
 
   /* begin line : target entry */
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
@@ -426,7 +426,7 @@ altinstBuildUI (altinst_t *altinst)
 
   altinst->callbacks [ALT_CB_TARGET_DIR] = callbackInit (
       altinstTargetDirDialog, altinst, NULL);
-  uiwidgetp = uiCreateButton ("b-alt-tgt-folder",
+  uiwidgetp = uiCreateButton (
       altinst->callbacks [ALT_CB_TARGET_DIR],
       "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
@@ -441,7 +441,7 @@ altinstBuildUI (altinst_t *altinst)
 
   /* begin line : re-install checkbox */
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
@@ -461,11 +461,11 @@ altinstBuildUI (altinst_t *altinst)
 
   /* begin line : button box */
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateButton ("b-alt-exit",
+  uiwidgetp = uiCreateButton (
       altinst->callbacks [ALT_CB_EXIT],
       /* CONTEXT: alternate installation: exits the alternate installer */
       _("Exit"), NULL);
@@ -474,7 +474,7 @@ altinstBuildUI (altinst_t *altinst)
 
   altinst->callbacks [ALT_CB_START] = callbackInit (
       altinstSetupCallback, altinst, NULL);
-  uiwidgetp = uiCreateButton ("b-alt-install",
+  uiwidgetp = uiCreateButton (
       altinst->callbacks [ALT_CB_START],
       /* CONTEXT: alternate installation: install BDJ4 in the alternate location */
       _("Install"), NULL);

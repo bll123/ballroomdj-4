@@ -57,20 +57,20 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
   nlistidx_t    val;
 
   logProcBegin ();
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
 
   /* filter display */
   confuiMakeNotebookTab (vbox, gui,
       /* CONTEXT: configuration: dialog display settings */
       _("Dialogs"), CONFUI_ID_NONE);
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
   uiwcontFree (vbox);
 
   /* column 1 */
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   uiBoxPackStart (hbox, vbox);
 
   szgrp = uiCreateSizeGroupHoriz ();
@@ -102,7 +102,7 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
 
   /* column 2 */
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   uiBoxPackStart (hbox, vbox);
   uiwidgetp = uiCreateLabel ("   ");
   uiBoxPackStart (vbox, uiwidgetp);
@@ -112,7 +112,7 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
 
   /* column 3 */
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   uiBoxPackStart (hbox, vbox);
 
   szgrp = uiCreateSizeGroupHoriz ();

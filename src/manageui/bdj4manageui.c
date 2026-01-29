@@ -854,7 +854,7 @@ manageBuildUI (manageui_t *manage)
 
   manageInitializeUI (manage);
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   uiWindowPackInWindow (manage->minfo.window, vbox);
   uiWidgetSetAllMargins (vbox, 4);
 
@@ -887,7 +887,7 @@ manageBuildUI (manageui_t *manage)
   /* sequence editor */
   manage->manageseq = manageSequenceAlloc (&manage->minfo);
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   manageBuildUISequence (manage->manageseq, vbox);
   uivnbAppendPage (manage->mainvnb, vbox,
       /* CONTEXT: manage-ui: notebook tab title: edit sequences */
@@ -898,7 +898,7 @@ manageBuildUI (manageui_t *manage)
   manage->managepl = managePlaylistAlloc (&manage->minfo);
 
   uiwcontFree (vbox);
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   manageBuildUIPlaylist (manage->managepl, vbox);
 
   uivnbAppendPage (manage->mainvnb, vbox,
@@ -914,7 +914,7 @@ manageBuildUI (manageui_t *manage)
       manage->conn, manage->processes);
 
   uiwcontFree (vbox);
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   manageBuildUIUpdateDatabase (manage->managedb, vbox);
   uivnbAppendPage (manage->mainvnb, vbox,
       /* CONTEXT: manage-ui: notebook tab title: update database */
@@ -1105,7 +1105,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   /* management */
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
 
   uivnbAppendPage (manage->mainvnb, vbox,
       /* CONTEXT: manage-ui: notebook tab title: edit song lists */
@@ -1116,11 +1116,11 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiwidgetp = uiplayerBuildUI (manage->slplayer);
   uiBoxPackStart (vbox, uiwidgetp);
 
-  manage->wcont [MANAGE_W_SONGLIST_NB] = uiCreateNotebook ("nb-songlist");
+  manage->wcont [MANAGE_W_SONGLIST_NB] = uiCreateNotebook ();
   uiBoxPackStartExpand (vbox, manage->wcont [MANAGE_W_SONGLIST_NB]);
 
   /* management: side-by-side view tab */
-  mainhbox = uiCreateHorizBox (NULL);
+  mainhbox = uiCreateHorizBox ();
 
   uiNotebookAppendPage (manage->wcont [MANAGE_W_SONGLIST_NB], mainhbox,
       /* CONTEXT: manage-ui: name of side-by-side view tab */
@@ -1128,7 +1128,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uinbutilIDAdd (manage->nbtabid [MANAGE_NB_SONGLIST], MANAGE_TAB_SONGLIST);
   manage->wcont [MANAGE_W_SL_SBS_MUSICQ_TAB] = mainhbox;
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStartExpand (mainhbox, hbox);
 
   uiwidgetp = uimusicqBuildUI (manage->slsbsmusicq, manage->minfo.window,
@@ -1138,7 +1138,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   uiwcontFree (vbox);
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
 
   uiBoxPackStart (hbox, vbox);
   uiWidgetSetAllMargins (vbox, 4);
@@ -1151,7 +1151,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   manage->callbacks [MANAGE_CB_SBS_SELECT] = callbackInit (
       uisongselSelectCallback, manage->slsbssongsel, NULL);
-  uiwidgetp = uiCreateButton ("b-mng-sbs-select",
+  uiwidgetp = uiCreateButton (
       manage->callbacks [MANAGE_CB_SBS_SELECT],
       /* CONTEXT: manage-ui: config: button: add the selected songs to the song list */
       _("Select"), buttonnm);
@@ -2344,11 +2344,11 @@ manageiTunesCreateDialog (manageui_t *manage)
       NULL
       );
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   uiDialogPackInDialog (manage->wcont [MANAGE_W_ITUNES_SEL_DIALOG], vbox);
   uiWidgetSetAllMargins (vbox, 4);
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist) */
@@ -2365,7 +2365,7 @@ manageiTunesCreateDialog (manageui_t *manage)
       "", DD_REPLACE_TITLE, NULL);
 
   uiwcontFree (hbox);
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   uiwcontFree (vbox);
@@ -2471,7 +2471,7 @@ manageBuildUIMusicManager (manageui_t *manage)
 
   logProcBegin ();
   /* music manager */
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   uivnbAppendPage (manage->mainvnb, vbox,
       /* CONTEXT: manage-ui: name of music manager notebook tab */
       _("Music Manager"), MANAGE_TAB_MAIN_MM);
@@ -2481,7 +2481,7 @@ manageBuildUIMusicManager (manageui_t *manage)
   uiwidgetp = uiplayerBuildUI (manage->mmplayer);
   uiBoxPackStart (vbox, uiwidgetp);
 
-  manage->wcont [MANAGE_W_MM_NB] = uiCreateNotebook ("nb-manage");
+  manage->wcont [MANAGE_W_MM_NB] = uiCreateNotebook ();
   uiBoxPackStartExpand (vbox, manage->wcont [MANAGE_W_MM_NB]);
 
   /* music manager: song selection tab*/
@@ -2925,11 +2925,11 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
       NULL
       );
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   uiDialogPackInDialog (manage->wcont [MANAGE_W_CFPL_DIALOG], vbox);
   uiWidgetSetAllMargins (vbox, 4);
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: create from playlist: select the playlist to use */
@@ -2942,7 +2942,7 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
       hbox, PL_LIST_AUTO_SEQ, NULL, UIPL_PACK_START, UIPL_FLAG_NONE);
 
   uiwcontFree (hbox);
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: create from playlist: set the maximum time for the song list */

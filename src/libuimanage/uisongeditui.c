@@ -326,7 +326,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   seint = uisongedit->seInternalData;
   seint->wcont [UISE_W_PARENT_WIN] = parentwin;
 
-  seint->wcont [UISE_W_MAIN_VBOX] = uiCreateVertBox (NULL);
+  seint->wcont [UISE_W_MAIN_VBOX] = uiCreateVertBox ();
   uiWidgetExpandHoriz (seint->wcont [UISE_W_MAIN_VBOX]);
 
   seint->wcont [UISE_W_KEY_HNDLR] = uiEventAlloc ();
@@ -335,14 +335,14 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiEventSetKeyCallback (seint->wcont [UISE_W_KEY_HNDLR],
       seint->wcont [UISE_W_MAIN_VBOX], seint->callbacks [UISE_CB_KEYB]);
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (seint->wcont [UISE_W_MAIN_VBOX], hbox);
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
 
   seint->callbacks [UISE_CB_FIRST] = callbackInit (
       uisongeditFirstSelection, uisongedit, "songedit: first");
-  uiwidgetp = uiCreateButton ("b-se-first",
+  uiwidgetp = uiCreateButton (
       seint->callbacks [UISE_CB_FIRST],
       /* CONTEXT: song editor : first song */
       _("First"), NULL);
@@ -351,7 +351,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   seint->callbacks [UISE_CB_PREV] = callbackInit (
       uisongeditPreviousSelection, uisongedit, "songedit: previous");
-  uiwidgetp = uiCreateButton ("b-se-prev",
+  uiwidgetp = uiCreateButton (
       seint->callbacks [UISE_CB_PREV],
       /* CONTEXT: song editor : previous song */
       _("Previous"), NULL);
@@ -361,7 +361,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   seint->callbacks [UISE_CB_NEXT] = callbackInit (
       uisongeditNextSelection, uisongedit, "songedit: next");
-  uiwidgetp = uiCreateButton ("b-se-next",
+  uiwidgetp = uiCreateButton (
       seint->callbacks [UISE_CB_NEXT],
       /* CONTEXT: song editor : next song */
       _("Next"), NULL);
@@ -371,7 +371,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   seint->callbacks [UISE_CB_PLAY] = callbackInit (
       uisongselPlayCallback, uisongsel, "songedit: play");
-  uiwidgetp = uiCreateButton ("b-se-play",
+  uiwidgetp = uiCreateButton (
       seint->callbacks [UISE_CB_PLAY],
       /* CONTEXT: song editor : play song */
       _("Play"), NULL);
@@ -380,7 +380,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   seint->callbacks [UISE_CB_SAVE] = callbackInit (
       uisongeditSaveCallback, uisongedit, "songedit: save");
-  uiwidgetp = uiCreateButton ("b-se-save",
+  uiwidgetp = uiCreateButton (
       seint->callbacks [UISE_CB_SAVE],
       /* CONTEXT: song editor : save data */
       _("Save"), NULL);
@@ -399,7 +399,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   /* audio-identification logo, modified indicator, */
   /* copy button, file label, filename */
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (seint->wcont [UISE_W_MAIN_VBOX], hbox);
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
@@ -427,7 +427,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   seint->callbacks [UISE_CB_COPY_TEXT] = callbackInit (
       uisongeditCopyPath, uisongedit, "songedit: copy-text");
-  uiwidgetp = uiCreateButton ("b-se-copy",
+  uiwidgetp = uiCreateButton (
       seint->callbacks [UISE_CB_COPY_TEXT],
       "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "edit-copy");
@@ -451,7 +451,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiwcontFree (hbox);
 
   /* begin line */
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStartExpand (seint->wcont [UISE_W_MAIN_VBOX], hbox);
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
@@ -498,7 +498,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
     /* don't bother building the vertical box if the column has no items */
     /* otherwise it takes up space in the song editor display */
     if (count > 0) {
-      col = uiCreateVertBox (NULL);
+      col = uiCreateVertBox ();
       uiBoxPackStartExpand (hbox, col);
       uiWidgetExpandHoriz (col);
       uiWidgetExpandVert (col);
@@ -1132,7 +1132,7 @@ uisongeditAddDisplay (uisongedit_t *uisongedit, uiwcont_t *col, uiwcont_t *sg, i
       continue;
     }
 
-    hbox = uiCreateHorizBox (NULL);
+    hbox = uiCreateHorizBox ();
     uiWidgetExpandHoriz (hbox);
     uiBoxPackStart (col, hbox);
     uisongeditAddItem (uisongedit, hbox, sg, tagkey);
@@ -1399,7 +1399,7 @@ uisongeditAddScale (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
     inca = VOL_ADJ_INCA;
     incb = VOL_ADJ_INCB;
   }
-  uiwidgetp = uiCreateScale ("scale-se", lower, upper, inca, incb, 0.0, digits);
+  uiwidgetp = uiCreateScale (lower, upper, inca, incb, 0.0, digits);
   seint->items [seint->itemcount].uiwidgetp = uiwidgetp;
   seint->items [seint->itemcount].callback = callbackInitD (
       uisongeditScaleDisplayCallback, &seint->items [seint->itemcount]);

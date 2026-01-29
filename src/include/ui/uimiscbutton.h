@@ -11,7 +11,7 @@ extern "C" {
 
 uiwcont_t *uiCreateFontButton (const char *fontname);
 const char * uiFontButtonGetFont (uiwcont_t *uiwidget);
-uiwcont_t *uiCreateColorButton (const char *ident, const char *color);
+uiwcont_t *uiCreateColorButton (const char *color);
 void uiColorButtonGetColor (uiwcont_t *uiwidget, char *tbuff, size_t sz);
 
 #if defined (__cplusplus) || defined (c_plusplus)

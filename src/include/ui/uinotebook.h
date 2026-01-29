@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 
-uiwcont_t *uiCreateNotebook (const char *ident);
+uiwcont_t *uiCreateNotebook (void);
 void  uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uiwidget, const char *label, uiwcont_t *image);
 void  uiNotebookSetActionWidget (uiwcont_t *uinotebook, uiwcont_t *uiwidget);
 void  uiNotebookSetPage (uiwcont_t *uinotebook, int pagenum);

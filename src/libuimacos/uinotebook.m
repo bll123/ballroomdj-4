@@ -23,12 +23,11 @@
 #include "ui/uinotebook.h"
 
 uiwcont_t *
-uiCreateNotebook (const char *ident)
+uiCreateNotebook (void)
 {
   uiwcont_t   *uiwidget;
   NSTabView   *nb;
 
-fprintf (stderr, "c-notebook %s\n", ident);
   nb = [[NSTabView alloc] init];
   [nb setTabPosition : NSTabPositionTop];
 //  gtk_notebook_set_show_border (GTK_NOTEBOOK (nb), TRUE);
@@ -38,7 +37,6 @@ fprintf (stderr, "c-notebook %s\n", ident);
 
   uiwidget = uiwcontAlloc (WCONT_T_NOTEBOOK, WCONT_T_NOTEBOOK);
   uiwcontSetWidget (uiwidget, nb, NULL);
-  uiwcontSetIdent (uiwidget, ident);
 
   nb.needsDisplay = true;
 
@@ -62,7 +60,6 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
     return;
   }
 
-fprintf (stderr, "c-notebook-page to : %s\n", uinotebook->ident);
   nb = uinotebook->uidata.widget;
   tabv = [[NSTabViewItem alloc] init];
 // ### will need to change to draw-label so that a custom tab w/pic can
@@ -107,7 +104,6 @@ uiNotebookSetPage (uiwcont_t *uinotebook, int pagenum)
     return;
   }
 
-fprintf (stderr, "nb-set-page %d\n", pagenum);
   nb = uinotebook->uidata.widget;
   [nb selectTabViewItemAtIndex : pagenum];
   return;
@@ -147,7 +143,6 @@ uiNotebookHideTabs (uiwcont_t *uinotebook)
     return;
   }
 
-fprintf (stderr, "nb-hide-tabs\n");
   nb = uinotebook->uidata.widget;
   [nb setTabViewType : NSNoTabsBezelBorder];
   [nb setTabPosition : NSTabPositionNone];

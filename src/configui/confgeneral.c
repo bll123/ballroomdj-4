@@ -74,11 +74,11 @@ confuiBuildUIGeneral (confuigui_t *gui)
   char          ebuff [BDJ4_PATH_MAX];
 
   logProcBegin ();
-  sw = uiCreateScrolledWindow ("sw-conf-general", 200);
+  sw = uiCreateScrolledWindow (200);
   uiWidgetExpandHoriz (sw);
   uiWidgetExpandVert (sw);
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   uiWindowPackInWindow (sw, vbox);
   uiWidgetExpandHoriz (vbox);
   uiWidgetAlignHorizFill (vbox);

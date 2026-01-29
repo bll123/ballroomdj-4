@@ -190,11 +190,11 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   szgrpSpin = uiCreateSizeGroupHoriz ();  // time widgets + gap widget
   szgrpText = uiCreateSizeGroupHoriz ();      // text widgets
 
-  tophbox = uiCreateHorizBox (NULL);
+  tophbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxp, tophbox);
   uiWidgetAlignVertStart (tophbox);
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (tophbox, hbox);
 
   /* CONTEXT: playlist management: label for playlist name */
@@ -213,7 +213,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwcontFree (hbox);
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (tophbox, hbox);
   uiWidgetSetMarginStart (hbox, 20);
 
@@ -230,12 +230,12 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwcontFree (hbox);
 
-  managepl->wcont [MPL_W_NB] = uiCreateNotebook ("nb-mpl");
+  managepl->wcont [MPL_W_NB] = uiCreateNotebook ();
   uiBoxPackStartExpand (vboxp, managepl->wcont [MPL_W_NB]);
 
   /* settings */
 
-  mvbox = uiCreateVertBox (NULL);
+  mvbox = uiCreateVertBox ();
   uiNotebookAppendPage (managepl->wcont [MPL_W_NB], mvbox,
       /* CONTEXT: playlist management: notebook tab title: settings */
       _("Settings"), NULL);
@@ -246,13 +246,13 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* standard settings for most playlists, but not podcasts */
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   uiBoxPackStart (mvbox, vbox);
   managepl->wcont [MPL_W_STD_VBOX] = vbox;
 
   /* new line : max-play-time */
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: maximum play time */
@@ -274,7 +274,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line : stop-at */
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: stop at */
@@ -298,7 +298,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line : stop-after */
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: stop after */
@@ -317,7 +317,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line: gap */
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: Gap between songs */
@@ -336,7 +336,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line : play-announcements */
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: Play Announcements */
@@ -356,7 +356,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line : blank line */
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* add a blank line between the playlist controls and song selection */
@@ -369,13 +369,13 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* settings for automatic and sequenced playlists */
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   uiBoxPackStart (mvbox, vbox);
   managepl->wcont [MPL_W_AUTO_SEQ_VBOX] = vbox;
 
   /* new line : dance-rating */
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
@@ -390,7 +390,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line : low dance-level */
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: Low Dance Level */
@@ -406,7 +406,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line : high dance-level */
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: High Dance Level */
@@ -422,7 +422,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line : allowed-keywords */
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: allowed keywords */
@@ -441,7 +441,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line : tags, tag weight */
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: tags */
@@ -472,13 +472,13 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* settings for automatic and sequenced playlists */
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   uiBoxPackStart (mvbox, vbox);
   managepl->wcont [MPL_W_PODCAST_VBOX] = vbox;
 
   /* new line : uri */
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: podcast URL */
@@ -497,7 +497,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line : title */
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: podcast title */
@@ -516,7 +516,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* new line : retain */
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: how many days to keep the podcast */
@@ -536,7 +536,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   /* dance settings : holds the list of dances with settings */
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   uiNotebookAppendPage (managepl->wcont [MPL_W_NB], vbox,
       /* CONTEXT: playlist management: notebook tab title: dances */
       _("Dances"), NULL);

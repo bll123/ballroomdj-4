@@ -103,9 +103,8 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   NSStackView   *box;
   id            windowDelegate;
 
-fprintf (stderr, "c-main-win\n");
   win = [[IWindow alloc] init];
-  uibox = uiCreateVertBox ("vbox-win-main");
+  uibox = uiCreateVertBox ();
   if (title != NULL) {
     NSString  *nstitle;
 
@@ -309,22 +308,20 @@ uiWindowNoFocusOnStartup (uiwcont_t *uiwindow)
 }
 
 uiwcont_t *
-uiCreateScrolledWindow (const char *ident, int minheight)
+uiCreateScrolledWindow (int minheight)
 {
   uiwcont_t     *uiscwin;
   NSScrollView  *win = NULL;
 
-fprintf (stderr, "c-scroll-win %s\n", ident);
   win = [[NSScrollView alloc] init];
   win.autohidesScrollers = YES;
   win.hasVerticalScroller = YES;
   win.hasHorizontalScroller = NO;
-  [win setIdentifier : [NSString stringWithUTF8String : ident]];
+//  [win setIdentifier : [NSString stringWithUTF8String : ident]];
   [win setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
 
   uiscwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_SCROLL_WINDOW);
   uiwcontSetWidget (uiscwin, win, NULL);
-  uiwcontSetIdent (uiscwin, ident);
 
   return uiscwin;
 }
@@ -347,7 +344,6 @@ uiCreateDialogWindow (uiwcont_t *parentwin,
     return NULL;
   }
 
-fprintf (stderr, "c-dialog-win\n");
   return NULL;
 }
 
@@ -445,7 +441,6 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
     return;
   }
 
-fprintf (stderr, "  pack-in-win %s %s\n", uiwcontDesc (uiwindow->wtype), uiwcontDesc (uiwidget->wtype));
   container = uiwidget->uidata.packwidget;
   widget = uiwidget->uidata.widget;
 

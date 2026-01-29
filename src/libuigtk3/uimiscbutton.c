@@ -48,7 +48,7 @@ uiFontButtonGetFont (uiwcont_t *uiwidget)
 }
 
 uiwcont_t *
-uiCreateColorButton (const char *ident, const char *color)
+uiCreateColorButton (const char *color)
 {
   uiwcont_t   *uiwidget;
   GtkWidget   *cb;
@@ -63,7 +63,6 @@ uiCreateColorButton (const char *ident, const char *color)
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_COLOR_BUTTON);
   uiwcontSetWidget (uiwidget, cb, NULL);
-  uiwcontSetIdent (uiwidget, ident);
 
   return uiwidget;
 }

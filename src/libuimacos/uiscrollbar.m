@@ -25,7 +25,6 @@ typedef struct uiscrollbar {
 uiwcont_t *
 uiCreateVerticalScrollbar (double upper)
 {
-fprintf (stderr, "c-scb-vert\n");
   return NULL;
 }
 

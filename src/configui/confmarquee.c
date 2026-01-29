@@ -41,7 +41,7 @@ confuiBuildUIMarquee (confuigui_t *gui)
   uiwcont_t    *szgrp;
 
   logProcBegin ();
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
 
   szgrp = uiCreateSizeGroupHoriz ();
 

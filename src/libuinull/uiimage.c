@@ -28,7 +28,7 @@ uiImageFromFile (const char *fn)
 }
 
 uiwcont_t *
-uiImageScaledFromFile (const char *ident, const char *fn, int scale)
+uiImageScaledFromFile (const char *fn, int scale)
 {
   return NULL;
 }

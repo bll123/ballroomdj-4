@@ -40,10 +40,10 @@ uiutilsAddProfileColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
   uiwcont_t       *hbox;
   uiwcont_t       *cbox;
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxp, hbox);
 
-  cbox = uiCreateHorizBox (NULL);
+  cbox = uiCreateHorizBox ();
   uiWidgetSetSizeRequest (cbox, PROFILE_BOX_SZ, PROFILE_BOX_SZ);
   uiutilsSetProfileColor (cbox, NULL);
   uiBoxPackEnd (hbox, cbox);

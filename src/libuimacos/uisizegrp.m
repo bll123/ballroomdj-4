@@ -23,7 +23,6 @@ uiCreateSizeGroupHoriz (void)
 {
   uiwcont_t   *uiwidget;
 
-fprintf (stderr, "c-sg-h\n");
   uiwidget = uiwcontAlloc (WCONT_T_SIZE_GROUP, WCONT_T_SIZE_GROUP);
   return uiwidget;
 }

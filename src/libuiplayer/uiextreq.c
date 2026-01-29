@@ -239,13 +239,13 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiDragDropSetDestURICallback (uiextreq->wcont [UIEXTREQ_W_DIALOG],
       uiextreq->callbacks [UIEXTREQ_CB_DRAG_DROP]);
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   uiWidgetExpandHoriz (vbox);
   uiWidgetExpandVert (vbox);
   uiDialogPackInDialog (uiextreq->wcont [UIEXTREQ_W_DIALOG], vbox);
   uiWidgetSetAllMargins (vbox, 4);
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
@@ -271,7 +271,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
 
   uiextreq->callbacks [UIEXTREQ_CB_AUDIO_FILE] = callbackInit (
       selectAudioFileCallback, &uiextreq->audiofilesfcb, NULL);
-  uiwidgetp = uiCreateButton ("b-extreq-af-folder",
+  uiwidgetp = uiCreateButton (
       uiextreq->callbacks [UIEXTREQ_CB_AUDIO_FILE],
       "", NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
@@ -282,7 +282,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiwcontFree (hbox);
 
   /* artist display */
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_ARTIST].displayname);
@@ -299,7 +299,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiwcontFree (hbox);
 
   /* title display */
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_TITLE].displayname);
@@ -316,7 +316,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiwcontFree (hbox);
 
   /* dance : always available */
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCE].displayname);
@@ -334,7 +334,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiwcontFree (hbox);
 
   /* marquee display */
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_MQDISPLAY].displayname);
@@ -351,7 +351,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiwcontFree (hbox);
 
   /* no play tm limit */
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_NO_PLAY_TM_LIMIT].displayname);

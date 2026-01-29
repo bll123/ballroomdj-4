@@ -3,6 +3,9 @@
  */
 #pragma once
 
+#include <stdint.h>
+#include <inttypes.h>
+
 #include "tmutil.h"
 #include "uigeneral.h"
 
@@ -71,7 +74,6 @@ typedef enum {
 enum {
   /* used so that the validity check will work (keys) */
   WCONT_EMPTY_WIDGET = 0x0001,
-  WCONT_MAX_IDENT_LEN = 80,
 };
 
 /* used in all ui interfaces */
@@ -143,9 +145,9 @@ typedef union {
 typedef struct uiwcont {
   uiwcontint_t    uiint;
   uispecific_t    uidata;
-  char            ident [WCONT_MAX_IDENT_LEN];
   uiwconttype_t   wbasetype;
   uiwconttype_t   wtype;
+  uint32_t        id;
   bool            packed;
 } uiwcont_t;
 
@@ -160,8 +162,8 @@ uiwcontValid (uiwcont_t *uiwidget, int exptype, const char *tag)
   }
   if ((int) uiwidget->wbasetype != exptype &&
      (int) uiwidget->wtype != exptype) {
-    fprintf (stderr, "ERR: %s (%s) incorrect type exp:%d/%s actual:%d/%s %d/%s\n",
-        tag, uiwidget->ident,
+    fprintf (stderr, "ERR: %s (id:%" PRIu32 ") incorrect type exp:%d/%s actual:%d/%s %d/%s\n",
+        tag, uiwidget->id,
         exptype, uiwcontDesc (exptype),
         uiwidget->wbasetype, uiwcontDesc (uiwidget->wbasetype),
         uiwidget->wtype, uiwcontDesc (uiwidget->wtype));

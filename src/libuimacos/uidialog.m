@@ -112,9 +112,8 @@ uiCreateDialog (uiwcont_t *window,
   NSStackView   *box;
   id            windowDelegate;
 
-fprintf (stderr, "c-dialog\n");
   win = [[IDWindow alloc] init];
-  uibox = uiCreateVertBox (NULL);
+  uibox = uiCreateVertBox ();
   if (title != NULL) {
     NSString  *nstitle;
 

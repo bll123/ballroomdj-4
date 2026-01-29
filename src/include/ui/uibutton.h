@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 
-uiwcont_t *uiCreateButton (const char *ident, callback_t *uicb, const char *title, const char *imagenm);
+uiwcont_t *uiCreateButton (callback_t *uicb, const char *title, const char *imagenm);
 void uiButtonFree (uiwcont_t *uiwidget);
 void uiButtonSetImagePosRight (uiwcont_t *uiwidget);
 void uiButtonSetImageMarginTop (uiwcont_t *uiwidget, int margin);

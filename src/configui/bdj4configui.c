@@ -446,7 +446,7 @@ confuiBuildUI (configui_t *confui)
   confui->gui.window = uiCreateMainWindow (
       confui->gui.closecb, tbuff, "bdj4_icon_config");
 
-  confui->gui.vbox = uiCreateVertBox (NULL);
+  confui->gui.vbox = uiCreateVertBox ();
   uiWindowPackInWindow (confui->gui.window, confui->gui.vbox);
   uiWidgetSetAllMargins (confui->gui.vbox, 4);
   uiWidgetExpandHoriz (confui->gui.vbox);

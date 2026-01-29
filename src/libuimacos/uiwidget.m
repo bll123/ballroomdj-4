@@ -46,7 +46,6 @@ uiWidgetExpandHoriz (uiwcont_t *uiwidget)
 
   container = uiwidget->uidata.packwidget;
 
-fprintf (stderr, "  add expand-horiz constraint %d\n", uiwidget->packed);
   if (uiwidget->packed == true) {
 // ### how to do this?
 //    [super.leadingAnchor
@@ -79,7 +78,6 @@ uiWidgetExpandVert (uiwcont_t *uiwidget)
   layout = uiwidget->uidata.layout;
 //  container = layout->container;
   layout->expand = true;
-fprintf (stderr, "  add expand-vert constraint %d\n", uiwidget->packed);
   if (uiwidget->packed == true) {
 //    [widget.topAnchor
 //        constraintLessThanOrEqualToAnchor : container.topAnchor

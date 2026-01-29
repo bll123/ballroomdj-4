@@ -557,7 +557,7 @@ pluiBuildUI (playerui_t *plui)
 
   pluiInitializeUI (plui);
 
-  plui->wcont [PLUI_W_MAIN_VBOX] = uiCreateVertBox (NULL);
+  plui->wcont [PLUI_W_MAIN_VBOX] = uiCreateVertBox ();
   uiWindowPackInWindow (plui->wcont [PLUI_W_WINDOW], plui->wcont [PLUI_W_MAIN_VBOX]);
   uiWidgetSetAllMargins (plui->wcont [PLUI_W_MAIN_VBOX], 4);
 
@@ -706,7 +706,7 @@ pluiBuildUI (playerui_t *plui)
   uiwidgetp = uiplayerBuildUI (plui->uiplayer);
   uiBoxPackStart (plui->wcont [PLUI_W_MAIN_VBOX], uiwidgetp);
 
-  plui->wcont [PLUI_W_NOTEBOOK] = uiCreateNotebook ("nb-player");
+  plui->wcont [PLUI_W_NOTEBOOK] = uiCreateNotebook ();
   uiBoxPackStartExpand (plui->wcont [PLUI_W_MAIN_VBOX], plui->wcont [PLUI_W_NOTEBOOK]);
 
   plui->callbacks [PLUI_CB_NOTEBOOK] = callbackInitI (
@@ -715,7 +715,7 @@ pluiBuildUI (playerui_t *plui)
 
   plui->callbacks [PLUI_CB_PLAYBACK_QUEUE] = callbackInit (
       pluiProcessSetPlaybackQueue, plui, NULL);
-  uiwidgetp = uiCreateButton ("b-plui-set-q",
+  uiwidgetp = uiCreateButton (
       plui->callbacks [PLUI_CB_PLAYBACK_QUEUE],
       /* CONTEXT: playerui: select the current queue for playback */
       _("Set Queue for Playback"), NULL);
@@ -1591,10 +1591,10 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
       NULL
       );
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   uiDialogPackInDialog (plui->wcont [PLUI_W_MQ_FONT_SZ_DIALOG], vbox);
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playerui: marquee font size dialog: the font size selector */
@@ -1614,7 +1614,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 
   /* the dialog doesn't have any space above the buttons */
   uiwcontFree (hbox);
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiCreateLabel ("");

@@ -41,7 +41,7 @@ confuiBuildUIEditLevels (confuigui_t *gui)
   uiwcont_t    *uiwidgetp;
 
   logProcBegin ();
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
 
   /* edit levels */
   confuiMakeNotebookTab (vbox, gui,
@@ -53,7 +53,7 @@ confuiBuildUIEditLevels (confuigui_t *gui)
   uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStartExpand (vbox, hbox);
   uiWidgetAlignHorizStart (hbox);
 

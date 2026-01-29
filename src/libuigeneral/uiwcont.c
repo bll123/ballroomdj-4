@@ -17,6 +17,8 @@
 #include "ui/uiwcont-int.h"
 #include "ui/uiui.h"
 
+static uint32_t   gcounter = 0;
+
 uiwcont_t *
 uiwcontAlloc (int basetype, int type)
 {
@@ -28,7 +30,8 @@ uiwcontAlloc (int basetype, int type)
   uiwidget->uidata.widget = NULL;
   uiwidget->uidata.packwidget = NULL;          // often the same as widget
   uiwidget->packed = false;
-  uiwidget->ident [0] = '\0';
+  uiwidget->id = gcounter;
+  ++gcounter;
   memset (&uiwidget->uiint, 0, sizeof (uiwcontint_t));
   uiwcontUIInit (uiwidget);                     // ui interface specific
   return uiwidget;
@@ -62,16 +65,6 @@ uiwcontSetWidget (uiwcont_t *uiwidget, void *widget, void *packwidget)
     uiwidget->uidata.packwidget = widget;
   }
   uiwcontUIWidgetInit (uiwidget);
-}
-
-void
-uiwcontSetIdent (uiwcont_t *uiwidget, const char *ident)
-{
-  if (uiwidget == NULL) {
-    return;
-  }
-
-  stpecpy (uiwidget->ident, uiwidget->ident + WCONT_MAX_IDENT_LEN, ident);
 }
 
 /* for debugging */

@@ -20,7 +20,7 @@
 #include "ui/uinotebook.h"
 
 uiwcont_t *
-uiCreateNotebook (const char *ident)
+uiCreateNotebook (void)
 {
   return NULL;
 }

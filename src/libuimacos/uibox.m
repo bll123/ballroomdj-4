@@ -35,20 +35,18 @@ typedef struct uibox {
   uiwcont_t   *priorend;
 } uibox_t;
 
-static uiwcont_t * uiCreateBox (const char *ident, int orientation);
+static uiwcont_t * uiCreateBox (int orientation);
 
 uiwcont_t *
-uiCreateVertBox (const char *ident)
+uiCreateVertBox (void)
 {
-fprintf (stderr, "c-vbox %s\n", ident == NULL ? "" : ident);
-  return uiCreateBox (ident, NSUserInterfaceLayoutOrientationVertical);
+  return uiCreateBox (NSUserInterfaceLayoutOrientationVertical);
 }
 
 uiwcont_t *
-uiCreateHorizBox (const char *ident)
+uiCreateHorizBox (void)
 {
-fprintf (stderr, "c-hbox %s\n", ident == NULL ? "" : ident);
-  return uiCreateBox (ident, NSUserInterfaceLayoutOrientationHorizontal);
+  return uiCreateBox (NSUserInterfaceLayoutOrientationHorizontal);
 }
 
 void
@@ -199,7 +197,7 @@ uiBoxSetSizeChgCallback (uiwcont_t *uiwindow, callback_t *uicb)
 /* internal routines */
 
 static uiwcont_t *
-uiCreateBox (const char *ident, int orientation)
+uiCreateBox (int orientation)
 {
   uiwcont_t   *uiwidget = NULL;
   uibox_t     *uibox = NULL;
@@ -231,7 +229,6 @@ uiCreateBox (const char *ident, int orientation)
     [box setAlignment : NSLayoutAttributeLeading];
   }
   uiwcontSetWidget (uiwidget, box, NULL);
-  uiwcontSetIdent (uiwidget, ident);
   uiwidget->uiint.uibox = uibox;
 
   [box setHuggingPriority : 1000

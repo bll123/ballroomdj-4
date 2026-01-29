@@ -513,7 +513,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
       NULL
       );
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ();
   uiDialogPackInDialog (uisf->wcont [UISF_W_DIALOG], vbox);
 
   /* accent color */
@@ -526,7 +526,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   /* playlist : only available for the music manager */
   /* in this case, the entire hbox will be shown/hidden */
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
   uisf->wcont [UISF_W_PLAYLIST] = hbox;
 
@@ -547,7 +547,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   /* begin line */
 
   /* sort-by : always available */
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: song selection filter: a filter: select the method to sort the song selection display */
@@ -570,7 +570,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   /* begin line */
 
   /* search : always available */
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: song selection filter: a filter: filter the song selection with a search for text */
@@ -588,7 +588,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   /* genre */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_GENRE)) {
     uiwcontFree (hbox);
-    hbox = uiCreateHorizBox (NULL);
+    hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_GENRE].displayname);
@@ -606,7 +606,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   /* dance */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_DANCE)) {
     uiwcontFree (hbox);
-    hbox = uiCreateHorizBox (NULL);
+    hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCE].displayname);
@@ -626,7 +626,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   /* rating */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_DANCERATING)) {
     uiwcontFree (hbox);
-    hbox = uiCreateHorizBox (NULL);
+    hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
@@ -641,7 +641,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   /* level */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_DANCELEVEL)) {
     uiwcontFree (hbox);
-    hbox = uiCreateHorizBox (NULL);
+    hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCELEVEL].displayname);
@@ -656,7 +656,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   /* status */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_STATUS)) {
     uiwcontFree (hbox);
-    hbox = uiCreateHorizBox (NULL);
+    hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_STATUS].displayname);
@@ -671,7 +671,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   /* favorite */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_FAVORITE)) {
     uiwcontFree (hbox);
-    hbox = uiCreateHorizBox (NULL);
+    hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_FAVORITE].displayname);
@@ -685,7 +685,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   /* status playable */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_STATUS_PLAYABLE)) {
     uiwcontFree (hbox);
-    hbox = uiCreateHorizBox (NULL);
+    hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
     /* CONTEXT: song selection filter: a filter: the song status is marked as playable */
@@ -700,7 +700,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   /* the dialog doesn't have any space above the buttons */
   uiwcontFree (hbox);
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiCreateLabel (" ");

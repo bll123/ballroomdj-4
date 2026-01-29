@@ -23,18 +23,18 @@
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 
-static uiwcont_t * uiCreateBox (const char *ident, int orientation);
+static uiwcont_t * uiCreateBox (int orientation);
 
 uiwcont_t *
-uiCreateVertBox (const char *ident)
+uiCreateVertBox (void)
 {
-  return uiCreateBox (ident, GTK_ORIENTATION_VERTICAL);
+  return uiCreateBox (GTK_ORIENTATION_VERTICAL);
 }
 
 uiwcont_t *
-uiCreateHorizBox (const char *ident)
+uiCreateHorizBox (void)
 {
-  return uiCreateBox (ident, GTK_ORIENTATION_HORIZONTAL);
+  return uiCreateBox (GTK_ORIENTATION_HORIZONTAL);
 }
 
 void
@@ -110,7 +110,7 @@ uiBoxSetSizeChgCallback (uiwcont_t *uiwindow, callback_t *uicb)
 /* internal routines */
 
 static uiwcont_t *
-uiCreateBox (const char *ident, int orientation)
+uiCreateBox (int orientation)
 {
   uiwcont_t *uiwidget = NULL;
   GtkWidget *box;
@@ -123,7 +123,6 @@ uiCreateBox (const char *ident, int orientation)
     uiwidget = uiwcontAlloc (WCONT_T_BOX, WCONT_T_VBOX);
   }
   uiwcontSetWidget (uiwidget, box, NULL);
-  uiwcontSetIdent (uiwidget, ident);
   return uiwidget;
 }
 

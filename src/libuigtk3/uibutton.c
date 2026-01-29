@@ -39,7 +39,7 @@ typedef struct uibutton {
 } uibutton_t;
 
 uiwcont_t *
-uiCreateButton (const char *ident, callback_t *uicb, const char *title,
+uiCreateButton (callback_t *uicb, const char *title,
     const char *imagenm)
 {
   uiwcont_t       *uiwidget;
@@ -74,7 +74,6 @@ uiCreateButton (const char *ident, callback_t *uicb, const char *title,
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_BUTTON);
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uibutton = uibutton;
-  uiwcontSetIdent (uiwidget, ident);
 
   bbase = &uiwidget->uiint.uibuttonbase;
   bbase->cb = uicb;
