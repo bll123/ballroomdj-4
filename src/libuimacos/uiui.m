@@ -195,8 +195,8 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
     layout->container.spacing = 0.0;
     layout->container.edgeInsets = layout->margins;
     [layout->container addView : view inGravity : NSStackViewGravityCenter];
-    layout->container.needsDisplay = YES;
-    view.needsDisplay = YES;
+//    layout->container.needsDisplay = YES;
+//    view.needsDisplay = YES;
 
     [layout->container setHuggingPriority : 1000
         forOrientation : NSLayoutConstraintOrientationHorizontal];

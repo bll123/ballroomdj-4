@@ -239,10 +239,10 @@ if [[ $DEVELOPMENT != dev ]]; then
     grc=1
   fi
 
-  #grep '^#define MACOS_UI_DEBUG 0' src/include/uigeneral.h > /dev/null 2>&1
+  #grep '^#define MACOS_UI_DEBUG 0' src/include/ui/uimacos-int.h > /dev/null 2>&1
   #rc=$?
   #if [[ $rc -ne 0 ]]; then
-  #  echo "macos-ui debugging is on (include/uigeneral.h)"
+  #  echo "macos-ui debugging is on (include/ui/uimacos-int.h)"
   #  grc=1
   #fi
 fi
