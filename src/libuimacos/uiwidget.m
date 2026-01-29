@@ -50,11 +50,11 @@ fprintf (stderr, "  add expand-horiz constraint %d\n", uiwidget->packed);
   if (uiwidget->packed == true) {
 // ### how to do this?
 //    [super.leadingAnchor
-//        constraintLessThanOrEqualToAnchor: container.leadingAnchor
-//        constant: layout->margins.left].active = YES;
+//        constraintLessThanOrEqualToAnchor : container.leadingAnchor
+//        constant : layout->margins.left].active = YES;
 //    [super.trailingAnchor
-//        constraintLessThanOrEqualToAnchor: container.trailingAnchor
-//        constant: layout->margins.right].active = YES;
+//        constraintLessThanOrEqualToAnchor : container.trailingAnchor
+//        constant : layout->margins.right].active = YES;
   }
   [container setAutoresizingMask : NSViewWidthSizable];
   container.needsDisplay = true;
@@ -82,15 +82,15 @@ uiWidgetExpandVert (uiwcont_t *uiwidget)
 fprintf (stderr, "  add expand-vert constraint %d\n", uiwidget->packed);
   if (uiwidget->packed == true) {
 //    [widget.topAnchor
-//        constraintLessThanOrEqualToAnchor: container.topAnchor
-//        constant: 600.0].active = YES;
+//        constraintLessThanOrEqualToAnchor : container.topAnchor
+//        constant : 600.0].active = YES;
 //    [widget.bottomAnchor
-//        constraintLessThanOrEqualToAnchor: container.bottomAnchor
-//        constant: 600.0].active = YES;
+//        constraintLessThanOrEqualToAnchor : container.bottomAnchor
+//        constant : 600.0].active = YES;
 //    [widget.layoutMarginsGuide.topAnchor
-//        constraintEqualToAnchor: container.layoutMarginsGuide.topAnchor].active = YES;
+//        constraintEqualToAnchor : container.layoutMarginsGuide.topAnchor].active = YES;
 //    [widget.layoutMarginsGuide.bottomAnchor
-//        constraintEqualToAnchor: container.layoutMarginsGuide.bottomAnchor].active = YES;
+//        constraintEqualToAnchor : container.layoutMarginsGuide.bottomAnchor].active = YES;
   }
   [widget setAutoresizingMask : NSViewHeightSizable];
   widget.needsDisplay = true;

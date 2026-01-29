@@ -30,11 +30,11 @@ uiCreateNotebook (const char *ident)
 
 fprintf (stderr, "c-notebook %s\n", ident);
   nb = [[NSTabView alloc] init];
-  [nb setTabPosition: NSTabPositionTop];
+  [nb setTabPosition : NSTabPositionTop];
 //  gtk_notebook_set_show_border (GTK_NOTEBOOK (nb), TRUE);
 //  gtk_widget_set_hexpand (nb, TRUE);
 //  gtk_widget_set_vexpand (nb, FALSE);
-  [bg setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
+  [nb setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
 
   uiwidget = uiwcontAlloc (WCONT_T_NOTEBOOK, WCONT_T_NOTEBOOK);
   uiwcontSetWidget (uiwidget, nb, NULL);
@@ -62,20 +62,20 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
     return;
   }
 
-fprintf (stderr, "c-notebook-page to:%s\n", uinotebook->ident);
+fprintf (stderr, "c-notebook-page to : %s\n", uinotebook->ident);
   nb = uinotebook->uidata.widget;
   tabv = [[NSTabViewItem alloc] init];
 // ### will need to change to draw-label so that a custom tab w/pic can
 // be displayed.
 // or rather, just re-implement as uivnb was done
   if (label != NULL) {
-    tabv.label = [NSString stringWithUTF8String: label];
+    tabv.label = [NSString stringWithUTF8String : label];
   } else {
-    [nb setTabViewType: NSNoTabsNoBorder];
+    [nb setTabViewType : NSNoTabsNoBorder];
   }
 
-  [tabv setView: uibox->uidata.widget];
-  [nb addTabViewItem: tabv];
+  [tabv setView : uibox->uidata.widget];
+  [nb addTabViewItem : tabv];
   uibox->packed = true;
 
   nb.needsDisplay = true;
@@ -109,7 +109,7 @@ uiNotebookSetPage (uiwcont_t *uinotebook, int pagenum)
 
 fprintf (stderr, "nb-set-page %d\n", pagenum);
   nb = uinotebook->uidata.widget;
-//  [nb selectTabViewItemAtIndex: pagenum];
+  [nb selectTabViewItemAtIndex : pagenum];
   return;
 }
 
@@ -149,7 +149,7 @@ uiNotebookHideTabs (uiwcont_t *uinotebook)
 
 fprintf (stderr, "nb-hide-tabs\n");
   nb = uinotebook->uidata.widget;
-  [nb setTabViewType: NSNoTabsBezelBorder];
-  [nb setTabPosition: NSTabPositionNone];
+  [nb setTabViewType : NSNoTabsBezelBorder];
+  [nb setTabPosition : NSTabPositionNone];
 }
 

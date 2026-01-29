@@ -80,16 +80,16 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
   if (uibox->wtype == WCONT_T_VBOX) {
     grav = NSStackViewGravityTop;
   }
-  [box addView: widget inGravity: grav];
+  [box addView : widget inGravity : grav];
 
   uiwidget->packed = true;
   uiWidgetSetMarginTop (uiwidget, 1);
   uiWidgetSetMarginStart (uiwidget, 1);
 
-  [widget setContentHuggingPriority: 500
-      forOrientation: NSLayoutConstraintOrientationHorizontal];
-  [widget setContentHuggingPriority: 500
-      forOrientation: NSLayoutConstraintOrientationVertical];
+  [widget setContentHuggingPriority : 500
+      forOrientation : NSLayoutConstraintOrientationHorizontal];
+  [widget setContentHuggingPriority : 500
+      forOrientation : NSLayoutConstraintOrientationVertical];
 
   return;
 }
@@ -110,16 +110,16 @@ uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.packwidget;
-  [box addView: widget inGravity: grav];
+  [box addView : widget inGravity : grav];
 
   uiWidgetSetMarginTop (uiwidget, 1);
   uiWidgetSetMarginStart (uiwidget, 1);
   uiwidget->packed = true;
 
-  [widget setContentHuggingPriority: 500
-      forOrientation: NSLayoutConstraintOrientationHorizontal];
-  [widget setContentHuggingPriority: 500
-      forOrientation: NSLayoutConstraintOrientationVertical];
+  [widget setContentHuggingPriority : 500
+      forOrientation : NSLayoutConstraintOrientationHorizontal];
+  [widget setContentHuggingPriority : 500
+      forOrientation : NSLayoutConstraintOrientationVertical];
 
   return;
 }
@@ -143,16 +143,16 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
   if (uibox->wtype == WCONT_T_VBOX) {
     grav = NSStackViewGravityBottom;
   }
-  [box insertView: widget atIndex: 0 inGravity: grav];
+  [box insertView : widget atIndex : 0 inGravity : grav];
 
   uiWidgetSetMarginTop (uiwidget, 1);
   uiWidgetSetMarginStart (uiwidget, 1);
   uiwidget->packed = true;
 
-  [widget setContentHuggingPriority: 500
-      forOrientation: NSLayoutConstraintOrientationHorizontal];
-  [widget setContentHuggingPriority: 500
-      forOrientation: NSLayoutConstraintOrientationVertical];
+  [widget setContentHuggingPriority : 500
+      forOrientation : NSLayoutConstraintOrientationHorizontal];
+  [widget setContentHuggingPriority : 500
+      forOrientation : NSLayoutConstraintOrientationVertical];
 
   return;
 }
@@ -173,16 +173,16 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.packwidget;
-  [box insertView: widget atIndex: 0 inGravity: grav];
+  [box insertView : widget atIndex : 0 inGravity : grav];
 
   uiWidgetSetMarginTop (uiwidget, 1);
   uiWidgetSetMarginStart (uiwidget, 1);
   uiwidget->packed = true;
 
-  [widget setContentHuggingPriority: 500
-      forOrientation: NSLayoutConstraintOrientationHorizontal];
-  [widget setContentHuggingPriority: 500
-      forOrientation: NSLayoutConstraintOrientationVertical];
+  [widget setContentHuggingPriority : 500
+      forOrientation : NSLayoutConstraintOrientationHorizontal];
+  [widget setContentHuggingPriority : 500
+      forOrientation : NSLayoutConstraintOrientationVertical];
 
   return;
 }
@@ -211,34 +211,34 @@ uiCreateBox (const char *ident, int orientation)
   uibox->priorend = NULL;
 
   box = [[IBox alloc] init];
-  [box setOrientation: orientation];
-  [box setTranslatesAutoresizingMaskIntoConstraints: NO];
-  [box setDistribution: NSStackViewDistributionGravityAreas];
+  [box setOrientation : orientation];
+  [box setTranslatesAutoresizingMaskIntoConstraints : NO];
+  [box setDistribution : NSStackViewDistributionGravityAreas];
   [box setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
   box.spacing = 1.0;
 
 #if MACOS_UI_DEBUG
-  [box setFocusRingType: NSFocusRingTypeExterior];
-  [box setWantsLayer: YES];
-  [[box layer] setBorderWidth: 2.0];
+  [box setFocusRingType : NSFocusRingTypeExterior];
+  [box setWantsLayer : YES];
+  [[box layer] setBorderWidth : 2.0];
 #endif
 
   if (orientation == NSUserInterfaceLayoutOrientationHorizontal) {
     uiwidget = uiwcontAlloc (WCONT_T_BOX, WCONT_T_HBOX);
-    [box setAlignment: NSLayoutAttributeTop];
+    [box setAlignment : NSLayoutAttributeTop];
   }
   if (orientation == NSUserInterfaceLayoutOrientationVertical) {
     uiwidget = uiwcontAlloc (WCONT_T_BOX, WCONT_T_VBOX);
-    [box setAlignment: NSLayoutAttributeLeading];
+    [box setAlignment : NSLayoutAttributeLeading];
   }
   uiwcontSetWidget (uiwidget, box, NULL);
   uiwcontSetIdent (uiwidget, ident);
   uiwidget->uiint.uibox = uibox;
 
-  [box setHuggingPriority: 500
-      forOrientation: NSLayoutConstraintOrientationHorizontal];
-  [box setHuggingPriority: 500
-      forOrientation: NSLayoutConstraintOrientationVertical];
+  [box setHuggingPriority : 500
+      forOrientation : NSLayoutConstraintOrientationHorizontal];
+  [box setHuggingPriority : 500
+      forOrientation : NSLayoutConstraintOrientationVertical];
 
   return uiwidget;
 }

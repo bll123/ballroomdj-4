@@ -39,11 +39,11 @@ fprintf (stderr, "c-entry\n");
   uientry->changed = false;
 
   widget = [[NSTextField alloc] init];
-  [widget setBezeled:YES];
-  [widget setDrawsBackground:YES];
-  [widget setEditable:YES];
-  [widget setSelectable:YES];
-  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+  [widget setBezeled : YES];
+  [widget setDrawsBackground : YES];
+  [widget setEditable : YES];
+  [widget setSelectable : YES];
+  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
   widget.needsDisplay = true;
 
   uiwidget = uiwcontAlloc (WCONT_T_ENTRY, WCONT_T_ENTRY);
@@ -127,7 +127,7 @@ uiEntrySetValue (uiwcont_t *uiwidget, const char *value)
   }
 
   widget = uiwidget->uidata.widget;
-  [widget setStringValue: [NSString stringWithUTF8String: value]];
+  [widget setStringValue : [NSString stringWithUTF8String : value]];
 
   return;
 }

@@ -39,12 +39,12 @@ typedef struct uiselect {
 
 - (instancetype)init {
 
-  [super initWithContentRect:NSMakeRect(10, 10, 100, 100)
-      styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
+  [super initWithContentRect : NSMakeRect(10, 10, 100, 100)
+      styleMask : NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
           NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable
-      backing:NSBackingStoreBuffered
-      defer:NO];
-  [self setIsVisible:YES];
+      backing : NSBackingStoreBuffered
+      defer : NO];
+  [self setIsVisible : YES];
   return self;
 }
 
@@ -61,16 +61,16 @@ typedef struct uiselect {
   nssz = [box fittingSize];
   f.size.height = nssz.height;
   f.size.width  = nssz.width;
-  [w setFrame:f display:YES];
+  [w setFrame : f display : YES];
 
 // ### this doesn't seem to be working either
   clg = w.contentLayoutGuide;
-//  [clg.leadingAnchor constraintEqualToAnchor: box.leadingAnchor].active = YES;
-//  [clg.trailingAnchor constraintEqualToAnchor: box.trailingAnchor].active = YES;
-//  [clg.topAnchor constraintEqualToAnchor: box.topAnchor].active = YES;
-//  [clg.bottomAnchor constraintEqualToAnchor: box.bottomAnchor].active = YES;
-//  [clg.heightAnchor constraintEqualToAnchor: box.heightAnchor].active = YES;
-//  [clg.widthAnchor constraintEqualToAnchor: box.widthAnchor].active = YES;
+//  [clg.leadingAnchor constraintEqualToAnchor : box.leadingAnchor].active = YES;
+//  [clg.trailingAnchor constraintEqualToAnchor : box.trailingAnchor].active = YES;
+//  [clg.topAnchor constraintEqualToAnchor : box.topAnchor].active = YES;
+//  [clg.bottomAnchor constraintEqualToAnchor : box.bottomAnchor].active = YES;
+//  [clg.heightAnchor constraintEqualToAnchor : box.heightAnchor].active = YES;
+//  [clg.widthAnchor constraintEqualToAnchor : box.widthAnchor].active = YES;
 }
 
 @end
@@ -118,17 +118,17 @@ fprintf (stderr, "c-dialog\n");
   if (title != NULL) {
     NSString  *nstitle;
 
-    nstitle = [NSString stringWithUTF8String: title];
-    [win setTitle: nstitle];
+    nstitle = [NSString stringWithUTF8String : title];
+    [win setTitle : nstitle];
   }
 
   box = uibox->uidata.widget;
-  [win setContentView: box];
+  [win setContentView : box];
 
   uibox->packed = true;
 
   windowDelegate = [[IWindowDelegate alloc] init];
-  [win setDelegate:windowDelegate];
+  [win setDelegate : windowDelegate];
 
   uiwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_DIALOG_WINDOW);
   uiwcontSetWidget (uiwin, win, NULL);

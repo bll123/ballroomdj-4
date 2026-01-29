@@ -32,9 +32,9 @@ uiImageFromFile (const char *fn)
   NSImage     *image;
   NSString    *ns;
 
-fprintf (stderr, "c-image-from-fn: %s\n", fn);
-  ns = [NSString stringWithUTF8String: fn];
-  image = [[NSImage alloc] initWithContentsOfFile: ns];
+fprintf (stderr, "c-image-from-fn : %s\n", fn);
+  ns = [NSString stringWithUTF8String : fn];
+  image = [[NSImage alloc] initWithContentsOfFile : ns];
 
   uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
   uiwcontSetWidget (uiwidget, image, NULL);
@@ -50,17 +50,17 @@ uiImageScaledFromFile (const char *ident, const char *fn, int scale)
   NSImage     *image;
   NSString    *ns;
 
-  ns = [NSString stringWithUTF8String: fn];
-  image = [[NSImage alloc] initWithContentsOfFile: ns];
+  ns = [NSString stringWithUTF8String : fn];
+  image = [[NSImage alloc] initWithContentsOfFile : ns];
   imgv = [[NSImageView alloc] init];
 
   /* used for the starter icon image */
   /* wrap in an image-view */
-  [imgv setImage: image];
-  [imgv setTranslatesAutoresizingMaskIntoConstraints: NO];
+  [imgv setImage : image];
+  [imgv setTranslatesAutoresizingMaskIntoConstraints : NO];
   imgv.imageScaling = NSImageScaleProportionallyDown;
-  [imgv.widthAnchor constraintEqualToConstant: scale + 4].active = YES;
-  [imgv.heightAnchor constraintEqualToConstant: scale + 4].active = YES;
+  [imgv.widthAnchor constraintEqualToConstant : scale + 4].active = YES;
+  [imgv.heightAnchor constraintEqualToConstant : scale + 4].active = YES;
 
   uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE_VIEW);
   uiwcontSetWidget (uiwidget, imgv, NULL);
@@ -82,9 +82,9 @@ uiImageClear (uiwcont_t *uiwidget)
     return;
   }
 
-  image = [[NSImage alloc] initWithSize: NSZeroSize];
+  image = [[NSImage alloc] initWithSize : NSZeroSize];
   imgv = [[NSImageView alloc] init];
-  [imgv setImage: image];
+  [imgv setImage : image];
   uiwcontSetWidget (uiwidget, imgv, NULL);
   return;
 }

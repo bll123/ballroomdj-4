@@ -33,14 +33,14 @@ typedef struct uibutton {
 
 @implementation IButton
 
-- (void) setUIWidget: (uiwcont_t *) tuiwidget {
+- (void) setUIWidget : (uiwcont_t *) tuiwidget {
   uiwidget = tuiwidget;
 }
 
-- (IBAction) OnButton1Click: (id) sender {
+- (IBAction) OnButton1Click : (id) sender {
   uibuttonbase_t  *bbase;
 
-fprintf (stderr, "b: button-1 click\n");
+fprintf (stderr, "b : button-1 click\n");
   bbase = &uiwidget->uiint.uibuttonbase;
   if (bbase->cb != NULL) {
     callbackHandler (bbase->cb);
@@ -78,19 +78,19 @@ uiCreateButton (const char *ident, callback_t *uicb, const char *title,
 // why is this not working?
 // the toggle button handles a .svg
 fprintf (stderr, "c-bt (image %s)\n", tbuff);
-    ns = [NSString stringWithUTF8String: imagenm];
-    image = [[NSImage alloc] initWithContentsOfFile: ns];
+    ns = [NSString stringWithUTF8String : imagenm];
+    image = [[NSImage alloc] initWithContentsOfFile : ns];
     uibutton->image = image;
-    [widget setImage: image];
-    [widget setImagePosition: NSImageOnly];
+    [widget setImage : image];
+    [widget setImagePosition : NSImageOnly];
     if (title != NULL) {
-      [widget setToolTip: [NSString stringWithUTF8String: title]];
+      [widget setToolTip : [NSString stringWithUTF8String : title]];
     }
   } else {
 fprintf (stderr, "c-bt (label) %s\n", title);
     /* if the image is set, no label is set for the button */
-    [widget setTitle: [NSString stringWithUTF8String: title]];
-    [widget setImagePosition: NSNoImage];
+    [widget setTitle : [NSString stringWithUTF8String : title]];
+    [widget setImagePosition : NSNoImage];
   }
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_BUTTON);
@@ -98,19 +98,19 @@ fprintf (stderr, "c-bt (label) %s\n", title);
   uiwcontSetIdent (uiwidget, ident);
   uiwidget->uiint.uibutton = uibutton;
 
-  [widget setIdentifier: [NSString stringWithUTF8String: ident]];
-  [widget setBezelStyle: NSBezelStyleRounded];
-  [widget setTarget: widget];
-  [widget setUIWidget: uiwidget];
-  [widget setAction: @selector(OnButton1Click:)];
-  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
-  [widget setBordered: YES];
+  [widget setIdentifier : [NSString stringWithUTF8String : ident]];
+  [widget setBezelStyle : NSBezelStyleRounded];
+  [widget setTarget : widget];
+  [widget setUIWidget : uiwidget];
+  [widget setAction : @selector(OnButton1Click : )];
+  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+  [widget setBordered : YES];
   widget.needsDisplay = true;
 
 #if MACOS_UI_DEBUG
-  [widget setFocusRingType: NSFocusRingTypeExterior];
-  [widget setWantsLayer: YES];
-  [[widget layer] setBorderWidth: 2.0];
+  [widget setFocusRingType : NSFocusRingTypeExterior];
+  [widget setWantsLayer : YES];
+  [[widget layer] setBorderWidth : 2.0];
 #endif
 
   bbase = &uiwidget->uiint.uibuttonbase;
@@ -176,7 +176,7 @@ uiButtonAlignLeft (uiwcont_t *uiwidget)
   }
 
   button = uiwidget->uidata.widget;
-  [button setAlignment: NSTextAlignmentNatural];
+  [button setAlignment : NSTextAlignmentNatural];
   return;
 }
 
@@ -200,7 +200,7 @@ uiButtonSetFlat (uiwcont_t *uiwidget)
   }
 
   button = uiwidget->uidata.widget;
-  [button setBordered: NO];
+  [button setBordered : NO];
 
   return;
 }

@@ -31,8 +31,8 @@ uisetup_t   guisetup;
 int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 
 @interface AppDelegate : NSObject
-- (void)keyDown:(NSEvent *)theEvent;
-- (void)keyUp:(NSEvent *)theEvent;
+- (void)keyDown : (NSEvent *)theEvent;
+- (void)keyUp : (NSEvent *)theEvent;
 
 - (BOOL)acceptsFirstResponder;
 - (BOOL)canBecomeKeyWindow;
@@ -40,8 +40,8 @@ int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 @end
 
 @implementation AppDelegate
-- (void)keyDown:(NSEvent *)theEvent {}
-- (void)keyUp:(NSEvent *)theEvent {}
+- (void)keyDown : (NSEvent *)theEvent {}
+- (void)keyUp : (NSEvent *)theEvent {}
 
 - (BOOL)acceptsFirstResponder { return YES; }
 - (BOOL)canBecomeKeyWindow { return YES; }
@@ -60,18 +60,18 @@ uiUIInitialize (int direction)
   id  appDelegate;
 
   [NSApplication sharedApplication];
-  [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
-  [NSApp setPresentationOptions:NSApplicationPresentationDefault];
-  [NSApp activateIgnoringOtherApps:YES];
+  [NSApp setActivationPolicy : NSApplicationActivationPolicyRegular];
+  [NSApp setPresentationOptions : NSApplicationPresentationDefault];
+  [NSApp activateIgnoringOtherApps : YES];
 
   appDelegate = [[AppDelegate alloc] init];
-  [NSApp setDelegate:appDelegate];
+  [NSApp setDelegate : appDelegate];
 
   NSDebugEnabled = YES;
   NSZombieEnabled = YES;
 
 //  if (direction == TEXT_DIR_RTL) {
-//    [NSApp userInterfaceLayoutDirection:rightToLeft];
+//    [NSApp userInterfaceLayoutDirection : rightToLeft];
 //  }
   return;
 }
@@ -82,11 +82,11 @@ uiUIProcessEvents (void)
   NSEvent *currev = nil;
   bool    haveev = false;
 
-  while ((currev = [NSApp nextEventMatchingMask: NSEventMaskAny
-        untilDate: [NSDate distantPast]
-        inMode: NSDefaultRunLoopMode
-        dequeue: YES])) {;
-    [NSApp sendEvent:currev];
+  while ((currev = [NSApp nextEventMatchingMask : NSEventMaskAny
+        untilDate : [NSDate distantPast]
+        inMode : NSDefaultRunLoopMode
+        dequeue : YES])) {;
+    [NSApp sendEvent : currev];
     haveev = true;
   }
 
@@ -178,18 +178,20 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
 
     view = uiwidget->uidata.widget;
     layout->container = [[NSStackView alloc] init];
+    [layout->container setAutoresizingMask : 
+        NSViewWidthSizable | NSViewHeightSizable];
     layout->container.spacing = 0.0;
     layout->container.edgeInsets = layout->margins;
-    [layout->container addView: view inGravity: NSStackViewGravityCenter];
+    [layout->container addView : view inGravity : NSStackViewGravityCenter];
 
-    [layout->container setHuggingPriority: 1000
-        forOrientation: NSLayoutConstraintOrientationHorizontal];
-    [layout->container setHuggingPriority: 1000
-        forOrientation: NSLayoutConstraintOrientationVertical];
-    [view setContentHuggingPriority: 1000
-        forOrientation: NSLayoutConstraintOrientationHorizontal];
-    [view setContentHuggingPriority: 1000
-        forOrientation: NSLayoutConstraintOrientationVertical];
+    [layout->container setHuggingPriority : 1000
+        forOrientation : NSLayoutConstraintOrientationHorizontal];
+    [layout->container setHuggingPriority : 1000
+        forOrientation : NSLayoutConstraintOrientationVertical];
+    [view setContentHuggingPriority : 1000
+        forOrientation : NSLayoutConstraintOrientationHorizontal];
+    [view setContentHuggingPriority : 1000
+        forOrientation : NSLayoutConstraintOrientationVertical];
   }
 
   if (uiwidget->uidata.widget == uiwidget->uidata.packwidget) {

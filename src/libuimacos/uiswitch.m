@@ -37,11 +37,11 @@ uiCreateSwitch (int value)
 
 fprintf (stderr, "c-switch\n");
   widget = [[NSSwitch alloc] init];
-  [widget setState: NSControlStateValueOff];
+  [widget setState : NSControlStateValueOff];
   if (value) {
-    [widget setState: NSControlStateValueOn];
+    [widget setState : NSControlStateValueOn];
   }
-  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
 
   uiwidget = uiwcontAlloc (WCONT_T_SWITCH, WCONT_T_SWITCH);
   uiwcontSetWidget (uiwidget, widget, NULL);

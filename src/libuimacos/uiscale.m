@@ -30,14 +30,14 @@ uiCreateScale (const char *ident, double lower, double upper,
   uiwcont_t   *uiwidget;
 
 fprintf (stderr, "c-scale\n");
-  widget = [NSSlider sliderWithValue: initvalue
-      minValue: lower
-      maxValue: upper
-      target: nil
-      action: nil];
-  [widget setIdentifier: [NSString stringWithUTF8String: ident]];
+  widget = [NSSlider sliderWithValue : initvalue
+      minValue : lower
+      maxValue : upper
+      target : nil
+      action : nil];
+  [widget setIdentifier : [NSString stringWithUTF8String : ident]];
   widget.altIncrementValue = stepinc;
-  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
   widget.needsDisplay = true;
 
   uiwidget = uiwcontAlloc (WCONT_T_SCALE, WCONT_T_SCALE);

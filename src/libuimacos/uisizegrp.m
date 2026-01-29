@@ -52,17 +52,17 @@ uiSizeGroupAdd (uiwcont_t *uisg, uiwcont_t *uiwidget)
   }
 
   if (! uisg->packed) {
-    fprintf (stderr, "ERR: first widget %d/%s not packed\n", uisg->wtype, uiwcontDesc (uisg->wtype));
+    fprintf (stderr, "ERR : first widget %d/%s not packed\n", uisg->wtype, uiwcontDesc (uisg->wtype));
   }
   if (! uiwidget->packed) {
-    fprintf (stderr, "ERR: widget %d/%s not packed\n", uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
+    fprintf (stderr, "ERR : widget %d/%s not packed\n", uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   }
   if (! uisg->packed || ! uiwidget->packed) {
     return;
   }
 
   [widget.layoutMarginsGuide.widthAnchor
-      constraintEqualToAnchor: first.layoutMarginsGuide.widthAnchor].active = YES;
+      constraintEqualToAnchor : first.layoutMarginsGuide.widthAnchor].active = YES;
   return;
 }
 

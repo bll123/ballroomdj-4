@@ -42,15 +42,15 @@ uiCreateColorButton (const char *ident, const char *colortxt)
 
 fprintf (stderr, "c-col-bt\n");
   widget = [[NSColorWell alloc] init];
-  [widget setIdentifier: [NSString stringWithUTF8String: ident]];
-//  [widget setAction: @selector(OnButton1Click:)];
-  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+  [widget setIdentifier : [NSString stringWithUTF8String : ident]];
+//  [widget setAction : @selector(OnButton1Click : )];
+  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
 
   sscanf (colortxt, "#%2x%2x%2x", &r, &g, &b);
-  color = [NSColor colorWithRed: (CGFloat) r
-      green: (CGFloat) g
-      blue: (CGFloat) b
-      alpha: 1.0];
+  color = [NSColor colorWithRed : (CGFloat) r
+      green : (CGFloat) g
+      blue : (CGFloat) b
+      alpha : 1.0];
   widget.color = color;
   widget.needsDisplay = true;
 
