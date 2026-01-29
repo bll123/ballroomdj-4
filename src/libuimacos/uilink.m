@@ -35,6 +35,10 @@ uiCreateLink (const char *label, const char *uri)
 
   uiwidget = uiwcontAlloc (WCONT_T_LINK, WCONT_T_LINK);
   uiwcontSetWidget (uiwidget, widget, NULL);
+
+  [widget setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+
   return NULL;
 }
 

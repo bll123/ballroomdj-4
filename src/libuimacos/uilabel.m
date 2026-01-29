@@ -44,6 +44,9 @@ uiCreateLabel (const char *label)
   uiwidget = uiwcontAlloc (WCONT_T_LABEL, WCONT_T_LABEL);
   uiwcontSetWidget (uiwidget, widget, NULL);
 
+  [widget setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+
   return uiwidget;
 }
 
@@ -56,16 +59,16 @@ uiLabelAddClass (const char *classnm, const char *color)
 void
 uiLabelSetTooltip (uiwcont_t *uiwidget, const char *txt)
 {
-  ILabel *nstf;
+  ILabel *lab;
 
   if (! uiwcontValid (uiwidget, WCONT_T_LABEL, "label-set-tooltip")) {
     return;
   }
 
   if (txt != NULL) {
-    nstf = uiwidget->uidata.widget;
-    [nstf setToolTip : [NSString stringWithUTF8String : txt]];
-//    widget.needsDisplay = true;
+    lab = uiwidget->uidata.widget;
+    [lab setToolTip : [NSString stringWithUTF8String : txt]];
+    lab.needsDisplay = true;
   }
   return;
 }

@@ -49,6 +49,9 @@ uiEntryInit (int entrySize, int maxSize)
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uientry = uientry;
 
+  [widget setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+
   ebase = &uiwidget->uiint.uientrybase;
   ebase->entrySize = entrySize;
   ebase->maxSize = maxSize;

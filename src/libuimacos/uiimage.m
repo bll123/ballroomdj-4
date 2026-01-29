@@ -64,6 +64,9 @@ uiImageScaledFromFile (const char *fn, int scale)
   uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE_VIEW);
   uiwcontSetWidget (uiwidget, imgv, NULL);
 
+  [imgv setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+
   uiWidgetAlignHorizCenter (uiwidget);
   uiWidgetAlignVertCenter (uiwidget);
 

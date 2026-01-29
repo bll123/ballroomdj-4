@@ -34,7 +34,7 @@ uiCreateScale (double lower, double upper,
       maxValue : upper
       target : nil
       action : nil];
-//  [widget setIdentifier : [NSString stringWithUTF8String : ident]];
+
   widget.altIncrementValue = stepinc;
   [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
   widget.needsDisplay = true;
@@ -42,6 +42,8 @@ uiCreateScale (double lower, double upper,
   uiwidget = uiwcontAlloc (WCONT_T_SCALE, WCONT_T_SCALE);
   uiwcontSetWidget (uiwidget, widget, NULL);
 
+  [widget setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
   return NULL;
 }
 

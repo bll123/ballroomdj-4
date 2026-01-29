@@ -40,7 +40,6 @@ uiCreateColorButton (const char *colortxt)
   int             r, g, b;
 
   widget = [[NSColorWell alloc] init];
-//  [widget setIdentifier : [NSString stringWithUTF8String : ident]];
 //  [widget setAction : @selector(OnButton1Click : )];
   [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
 
@@ -54,6 +53,9 @@ uiCreateColorButton (const char *colortxt)
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_COLOR_BUTTON);
   uiwcontSetWidget (uiwidget, widget, NULL);
+
+  [widget setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
 
   return NULL;
 }

@@ -133,6 +133,9 @@ uiCreateDialog (uiwcont_t *window,
   uiwcontSetWidget (uiwin, win, NULL);
   uiwin->packed = true;
 
+  [win setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwin->id] stringValue]];
+
   uiWidgetSetAllMargins (uibox, 2);
 //  uiWidgetExpandHoriz (uibox);
 //  uiWidgetExpandVert (uibox);

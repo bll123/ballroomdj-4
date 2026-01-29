@@ -231,6 +231,9 @@ uiCreateBox (int orientation)
   uiwcontSetWidget (uiwidget, box, NULL);
   uiwidget->uiint.uibox = uibox;
 
+  [box setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+
   [box setHuggingPriority : 1000
       forOrientation : NSLayoutConstraintOrientationHorizontal];
   [box setHuggingPriority : 1000

@@ -45,6 +45,9 @@ uiCreateSwitch (int value)
   uiwidget = uiwcontAlloc (WCONT_T_SWITCH, WCONT_T_SWITCH);
   uiwcontSetWidget (uiwidget, widget, NULL);
 
+  [widget setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+
   return uiwidget;
 }
 

@@ -117,6 +117,8 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   [win makeMainWindow];
 
   uibox->packed = true;
+  [box setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uibox->id] stringValue]];
 
   if (imagenm != NULL) {
     NSImage *image = nil;
@@ -133,6 +135,9 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   uiwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_WINDOW);
   uiwcontSetWidget (uiwin, win, NULL);
   uiwin->packed = true;
+
+  [win setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwin->id] stringValue]];
 
   uiWidgetSetAllMargins (uibox, 2);
 
@@ -317,12 +322,13 @@ uiCreateScrolledWindow (int minheight)
   win.autohidesScrollers = YES;
   win.hasVerticalScroller = YES;
   win.hasHorizontalScroller = NO;
-//  [win setIdentifier : [NSString stringWithUTF8String : ident]];
   [win setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
 
   uiscwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_SCROLL_WINDOW);
   uiwcontSetWidget (uiscwin, win, NULL);
 
+  [win setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiscwin->id] stringValue]];
   return uiscwin;
 }
 

@@ -94,7 +94,9 @@ uiCreateButton (callback_t *uicb, const char *title,
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uibutton = uibutton;
 
-//  [widget setIdentifier : [NSString stringWithUTF8String : ident]];
+  [widget setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+
   [widget setBezelStyle : NSBezelStyleRounded];
   [widget setTarget : widget];
   [widget setUIWidget : uiwidget];

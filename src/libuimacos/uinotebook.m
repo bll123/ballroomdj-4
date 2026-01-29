@@ -38,6 +38,9 @@ uiCreateNotebook (void)
   uiwidget = uiwcontAlloc (WCONT_T_NOTEBOOK, WCONT_T_NOTEBOOK);
   uiwcontSetWidget (uiwidget, nb, NULL);
 
+  [nb setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+
   nb.needsDisplay = true;
 
   return uiwidget;
