@@ -114,7 +114,6 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *nbtxt, int id)
   uiwcont_t   *hbox;
   uiwcont_t   *button;
   uiwcont_t   *label;
-  char        tbuff [40];
   callback_t  *cb;
   int         pagenum;
 
