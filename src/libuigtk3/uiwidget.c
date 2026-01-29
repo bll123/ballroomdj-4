@@ -36,6 +36,8 @@ uiWidgetSetState (uiwcont_t *uiwidget, int state)
   }
 }
 
+/* this uses the GTK terminology */
+/* set the widget to take any horizontal space */
 void
 uiWidgetExpandHoriz (uiwcont_t *uiwidget)
 {
@@ -48,6 +50,8 @@ uiWidgetExpandHoriz (uiwcont_t *uiwidget)
   }
 }
 
+/* this uses the GTK terminology */
+/* set the widget to take any horizontal space */
 void
 uiWidgetExpandVert (uiwcont_t *uiwidget)
 {
@@ -112,6 +116,8 @@ uiWidgetSetMarginEnd (uiwcont_t *uiwidget, int mult)
   gtk_widget_set_margin_end (uiwidget->uidata.widget, uiBaseMarginSz * mult);
 }
 
+/* this uses the GTK terminology */
+/* controls how the widget handles extra space allocated to it */
 void
 uiWidgetAlignHorizFill (uiwcont_t *uiwidget)
 {

@@ -90,7 +90,7 @@ uiImageClear (uiwcont_t *uiwidget)
 }
 
 void
-uiImageConvertToPixbuf (uiwcont_t *uiwidget)
+uiImageConvertToRaw (uiwcont_t *uiwidget)
 {
   GdkPixbuf   *pixbuf;
 
@@ -105,7 +105,7 @@ uiImageConvertToPixbuf (uiwcont_t *uiwidget)
 }
 
 void
-uiImageSetFromPixbuf (uiwcont_t *uiwidget, uiwcont_t *uipixbuf)
+uiImageSetFromRaw (uiwcont_t *uiwidget, uiwcont_t *uipixbuf)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_IMAGE, "image-set-from-pixbuf-img")) {
     return;

@@ -91,6 +91,8 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
   return;
 }
 
+/* this uses the GTK terminology */
+/* expand allows any children to expand to fill the space */
 void
 uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
@@ -154,6 +156,8 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
   return;
 }
 
+/* this uses the GTK terminology */
+/* expand allows any children to expand to fill the space */
 void
 uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {

@@ -66,7 +66,7 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   pathbldMakePath (tbuff, sizeof (tbuff), "button_pause", ".svg",
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   uimusicq->pausePixbuf = uiImageFromFile (tbuff);
-  uiImageConvertToPixbuf (uimusicq->pausePixbuf);
+  uiImageConvertToRaw (uimusicq->pausePixbuf);
   uiWidgetMakePersistent (uimusicq->pausePixbuf);
 
   uimusicqUIInit (uimusicq);

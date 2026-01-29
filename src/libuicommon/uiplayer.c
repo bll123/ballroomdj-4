@@ -304,10 +304,10 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   pathbldMakePath (tbuff, sizeof (tbuff), "button_stop", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   uiplayer->images [UIPL_PIX_STOP] = uiImageFromFile (tbuff);
-  uiImageConvertToPixbuf (uiplayer->images [UIPL_PIX_STOP]);
+  uiImageConvertToRaw (uiplayer->images [UIPL_PIX_STOP]);
   uiWidgetMakePersistent (uiplayer->images [UIPL_PIX_STOP]);
 
-  uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_STOP]);
+  uiImageSetFromRaw (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_STOP]);
   uiWidgetSetSizeRequest (uiplayer->images [UIPL_IMG_STATUS], 18, -1);
   uiBoxPackStart (statusbox, uiplayer->images [UIPL_IMG_STATUS]);
   uiWidgetAlignHorizCenter (uiplayer->images [UIPL_IMG_STATUS]);
@@ -317,25 +317,25 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   pathbldMakePath (tbuff, sizeof (tbuff), "button_play", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   uiplayer->images [UIPL_PIX_PLAY] = uiImageFromFile (tbuff);
-  uiImageConvertToPixbuf (uiplayer->images [UIPL_PIX_PLAY]);
+  uiImageConvertToRaw (uiplayer->images [UIPL_PIX_PLAY]);
   uiWidgetMakePersistent (uiplayer->images [UIPL_PIX_PLAY]);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_pause", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   uiplayer->images [UIPL_PIX_PAUSE] = uiImageFromFile (tbuff);
-  uiImageConvertToPixbuf (uiplayer->images [UIPL_PIX_PAUSE]);
+  uiImageConvertToRaw (uiplayer->images [UIPL_PIX_PAUSE]);
   uiWidgetMakePersistent (uiplayer->images [UIPL_PIX_PAUSE]);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "indicator_timer", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   uiplayer->images [UIPL_PIX_TIMER] = uiImageFromFile (tbuff);
-  uiImageConvertToPixbuf (uiplayer->images [UIPL_PIX_TIMER]);
+  uiImageConvertToRaw (uiplayer->images [UIPL_PIX_TIMER]);
   uiWidgetMakePersistent (uiplayer->images [UIPL_PIX_TIMER]);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   uiplayer->images [UIPL_PIX_REPEAT] = uiImageFromFile (tbuff);
-  uiImageConvertToPixbuf (uiplayer->images [UIPL_PIX_REPEAT]);
+  uiImageConvertToRaw (uiplayer->images [UIPL_PIX_REPEAT]);
   uiWidgetMakePersistent (uiplayer->images [UIPL_PIX_REPEAT]);
 
   uiplayer->images [UIPL_IMG_REPEAT] = uiImageNew ();
@@ -959,29 +959,29 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer)
     case PL_STATE_UNKNOWN:
     case PL_STATE_STOPPED: {
       uiImageClear (uiplayer->images [UIPL_IMG_STATUS]);
-      uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_STOP]);
+      uiImageSetFromRaw (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_STOP]);
       break;
     }
     case PL_STATE_IN_GAP: {
       uiImageClear (uiplayer->images [UIPL_IMG_STATUS]);
-      uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_TIMER]);
+      uiImageSetFromRaw (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_TIMER]);
       break;
     }
     case PL_STATE_LOADING:
     case PL_STATE_IN_FADEOUT:
     case PL_STATE_PLAYING: {
       uiImageClear (uiplayer->images [UIPL_IMG_STATUS]);
-      uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_PLAY]);
+      uiImageSetFromRaw (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_PLAY]);
       break;
     }
     case PL_STATE_PAUSED: {
       uiImageClear (uiplayer->images [UIPL_IMG_STATUS]);
-      uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_PAUSE]);
+      uiImageSetFromRaw (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_PAUSE]);
       break;
     }
     default: {
       uiImageClear (uiplayer->images [UIPL_IMG_STATUS]);
-      uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_STOP]);
+      uiImageSetFromRaw (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_STOP]);
       break;
     }
   }
@@ -1008,7 +1008,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   uiplayer->repeat = ps->repeat;
   if (ps->repeat) {
     uiImageClear (uiplayer->images [UIPL_IMG_REPEAT]);
-    uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_REPEAT], uiplayer->images [UIPL_PIX_REPEAT]);
+    uiImageSetFromRaw (uiplayer->images [UIPL_IMG_REPEAT], uiplayer->images [UIPL_PIX_REPEAT]);
     uiToggleButtonSetValue (uiplayer->wcont [UIPL_W_REPEAT_B], UI_TOGGLE_BUTTON_ON);
   } else {
     uiImageClear (uiplayer->images [UIPL_IMG_REPEAT]);
@@ -1207,7 +1207,7 @@ uiplayerPlayPauseProcess (void *udata)
     /* in case the start-wait timer is set, switch the status display to */
     /* the timer.  The status update from the player will change it */
     uiImageClear (uiplayer->images [UIPL_IMG_STATUS]);
-    uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_TIMER]);
+    uiImageSetFromRaw (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_TIMER]);
   }
 
   logProcEnd ("");

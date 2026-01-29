@@ -58,6 +58,8 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
   gtk_box_pack_start (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, FALSE, FALSE, 0);
 }
 
+/* this uses the GTK terminology */
+/* expand allows any children to expand to fill the space */
 void
 uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
@@ -84,6 +86,8 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
   gtk_box_pack_end (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, FALSE, FALSE, 0);
 }
 
+/* this uses the GTK terminology */
+/* expand allows any children to expand to fill the space */
 void
 uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {

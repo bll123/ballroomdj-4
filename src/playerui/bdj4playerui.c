@@ -538,13 +538,13 @@ pluiBuildUI (playerui_t *plui)
   pathbldMakePath (tbuff, sizeof (tbuff),  "led_off", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
   plui->wcont [PLUI_W_LED_OFF] = uiImageFromFile (tbuff);
-  uiImageConvertToPixbuf (plui->wcont [PLUI_W_LED_OFF]);
+  uiImageConvertToRaw (plui->wcont [PLUI_W_LED_OFF]);
   uiWidgetMakePersistent (plui->wcont [PLUI_W_LED_OFF]);
 
   pathbldMakePath (tbuff, sizeof (tbuff),  "led_on", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
   plui->wcont [PLUI_W_LED_ON] = uiImageFromFile (tbuff);
-  uiImageConvertToPixbuf (plui->wcont [PLUI_W_LED_ON]);
+  uiImageConvertToRaw (plui->wcont [PLUI_W_LED_ON]);
   uiWidgetMakePersistent (plui->wcont [PLUI_W_LED_ON]);
 
   plui->callbacks [PLUI_CB_CLOSE] = callbackInit (
@@ -754,7 +754,7 @@ pluiBuildUI (playerui_t *plui)
     img = NULL;
     if (tabtype == UI_TAB_MUSICQ) {
       plui->musicqImage [i] = uiImageNew ();
-      uiImageSetFromPixbuf (plui->musicqImage [i], plui->wcont [PLUI_W_LED_ON]);
+      uiImageSetFromRaw (plui->musicqImage [i], plui->wcont [PLUI_W_LED_ON]);
       img = plui->musicqImage [i];
 //      uiBoxPackStart (hbox, plui->musicqImage [i]);
 //      uiWidgetAlignHorizCenter (plui->musicqImage [i]);
@@ -1412,9 +1412,9 @@ pluiSetPlaybackQueue (playerui_t *plui, int newQueue, int updateFlag)
     }
 
     if ((int) plui->musicqPlayIdx == i) {
-      uiImageSetFromPixbuf (plui->musicqImage [i], plui->wcont [PLUI_W_LED_ON]);
+      uiImageSetFromRaw (plui->musicqImage [i], plui->wcont [PLUI_W_LED_ON]);
     } else {
-      uiImageSetFromPixbuf (plui->musicqImage [i], plui->wcont [PLUI_W_LED_OFF]);
+      uiImageSetFromRaw (plui->musicqImage [i], plui->wcont [PLUI_W_LED_OFF]);
     }
   }
 
