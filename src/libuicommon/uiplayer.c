@@ -393,7 +393,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiSizeGroupAdd (szgrpScaleDisp, uiplayer->wcont [UIPL_W_SPEED_DISP]);
 
   /* size group C */
-  uiplayer->wcont [UIPL_W_SPEED] = uiCreateScale (
+  uiplayer->wcont [UIPL_W_SPEED] = uiCreateScale ("scale-plui-spd",
       SPD_LOWER, SPD_UPPER, SPD_INCA, SPD_INCB, 100.0, SPD_DIGITS);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SPEED]);
   uiWidgetSetMarginStart (uiplayer->wcont [UIPL_W_SPEED], 2);
@@ -463,7 +463,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiLabelAlignEnd (uiplayer->wcont [UIPL_W_SEEK_DISP]);
 
   /* size group C */
-  uiplayer->wcont [UIPL_W_SEEK] = uiCreateScale (
+  uiplayer->wcont [UIPL_W_SEEK] = uiCreateScale ("scale-plui-pos",
       0.0, 180000.0, 1000.0, 10000.0, 0.0, 0);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SEEK]);
   uiWidgetSetMarginStart (uiplayer->wcont [UIPL_W_SEEK], 2);
@@ -583,7 +583,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiSizeGroupAdd (szgrpScaleDisp, uiplayer->wcont [UIPL_W_VOLUME_DISP]);
 
   /* size group C */
-  uiplayer->wcont [UIPL_W_VOLUME] = uiCreateScale (
+  uiplayer->wcont [UIPL_W_VOLUME] = uiCreateScale ("scale-plui-vol",
       VOL_LOWER, VOL_UPPER, VOL_INCA, VOL_INCB, 0.0, VOL_DIGITS);
   uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_VOLUME]);
   uiWidgetSetMarginStart (uiplayer->wcont [UIPL_W_VOLUME], 2);

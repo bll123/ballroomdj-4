@@ -632,7 +632,7 @@ starterBuildUI (startui_t  *starter)
       bdjoptGetStr (OPT_P_PROFILENAME), "bdj4_icon");
   uiWindowSetNoMaximize (starter->wcont [START_W_WINDOW]);
 
-  vbox = uiCreateVertBox (NULL);
+  vbox = uiCreateVertBox ("vbox-strt-main");
   uiWindowPackInWindow (starter->wcont [START_W_WINDOW], vbox);
   uiWidgetSetAllMargins (vbox, 4);
   if (isMacOS ()) {
@@ -693,7 +693,7 @@ starterBuildUI (startui_t  *starter)
 
   /* line 1 */
 
-  hbox = uiCreateHorizBox (NULL);
+  hbox = uiCreateHorizBox ("hbox-main");
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetMarginTop (hbox, 4);
 
@@ -718,17 +718,17 @@ starterBuildUI (startui_t  *starter)
 
   /* buttons and image display */
 
-  hbox = uiCreateHorizBox (NULL);
-  uiWidgetExpandHoriz (hbox);
+  hbox = uiCreateHorizBox ("hbox-strt-lower");
   uiBoxPackStart (vbox, hbox);
+  uiWidgetExpandHoriz (hbox);
 
-  bvbox = uiCreateVertBox (NULL);
+  bvbox = uiCreateVertBox ("vbox-strt-buttons");
   uiBoxPackStart (hbox, bvbox);
 
   /* use the square icon, on macos the icons are squircled */
   pathbldMakePath (tbuff, sizeof (tbuff),
      "bdj4_icon_sq", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
-  uiwidgetp = uiImageScaledFromFile (tbuff, 128);
+  uiwidgetp = uiImageScaledFromFile ("img-strt-logo", tbuff, 128);
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetAllMargins (uiwidgetp, 10);
   uiWidgetExpandHoriz (uiwidgetp);

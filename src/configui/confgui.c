@@ -214,7 +214,7 @@ confuiMakeItemColorButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, CONFUI_NO_INDENT);
 
-  uiwidgetp = uiCreateColorButton (color);
+  uiwidgetp = uiCreateColorButton ("cb-conf", color);
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 4);
 

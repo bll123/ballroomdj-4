@@ -50,7 +50,7 @@ void
 uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
     const char *label, uiwcont_t *image)
 {
-//  GtkWidget   *nbtitle;
+  GtkWidget   *nbtitle;
   uiwcont_t   *hbox;
 
   if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-append-page")) {
@@ -67,8 +67,10 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
   }
 
   hbox = NULL;
+  nbtitle = NULL;
   if (label != NULL || image != NULL) {
     hbox = uiCreateHorizBox (NULL);
+    nbtitle = hbox->uidata.widget;
   }
   if (label != NULL) {
     uiwcont_t   *uiwidgetp;
@@ -85,7 +87,7 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
   }
 
   gtk_notebook_append_page (GTK_NOTEBOOK (uinotebook->uidata.widget),
-      uibox->uidata.widget, hbox->uidata.widget);
+      uibox->uidata.widget, nbtitle);
   if (hbox != NULL) {
     uiWidgetShowAll (hbox);
   }

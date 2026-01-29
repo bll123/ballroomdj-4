@@ -29,7 +29,7 @@ uiFontButtonGetFont (uiwcont_t *uiwidget)
 }
 
 uiwcont_t *
-uiCreateColorButton (const char *color)
+uiCreateColorButton (const char *ident, const char *color)
 {
   return NULL;
 }

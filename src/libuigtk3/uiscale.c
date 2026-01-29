@@ -26,7 +26,7 @@
 static gboolean uiScaleChangeValueHandler (GtkRange *range, GtkScrollType scroll, gdouble value, gpointer udata);
 
 uiwcont_t *
-uiCreateScale (double lower, double upper,
+uiCreateScale (const char *ident, double lower, double upper,
     double stepinc, double pageinc, double initvalue, int digits)
 {
   uiwcont_t     *uiwidget;
@@ -48,6 +48,7 @@ uiCreateScale (double lower, double upper,
 
   uiwidget = uiwcontAlloc (WCONT_T_SCALE, WCONT_T_SCALE);
   uiwcontSetWidget (uiwidget, scale, NULL);
+  uiwcontSetIdent (uiwidget, ident);
 
   return uiwidget;
 }

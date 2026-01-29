@@ -1399,7 +1399,7 @@ uisongeditAddScale (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
     inca = VOL_ADJ_INCA;
     incb = VOL_ADJ_INCB;
   }
-  uiwidgetp = uiCreateScale (lower, upper, inca, incb, 0.0, digits);
+  uiwidgetp = uiCreateScale ("scale-se", lower, upper, inca, incb, 0.0, digits);
   seint->items [seint->itemcount].uiwidgetp = uiwidgetp;
   seint->items [seint->itemcount].callback = callbackInitD (
       uisongeditScaleDisplayCallback, &seint->items [seint->itemcount]);

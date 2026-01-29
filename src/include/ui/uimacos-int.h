@@ -51,6 +51,10 @@ extern "C" {
 - (void) awakeFromNib;
 @end
 
+enum {
+  MACOS_UI_DEBUG      = 1,
+};
+
 /* structures */
 
 typedef struct macoslayout {

@@ -34,10 +34,14 @@ fprintf (stderr, "c-notebook %s\n", ident);
 //  gtk_notebook_set_show_border (GTK_NOTEBOOK (nb), TRUE);
 //  gtk_widget_set_hexpand (nb, TRUE);
 //  gtk_widget_set_vexpand (nb, FALSE);
+  [bg setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
 
   uiwidget = uiwcontAlloc (WCONT_T_NOTEBOOK, WCONT_T_NOTEBOOK);
   uiwcontSetWidget (uiwidget, nb, NULL);
   uiwcontSetIdent (uiwidget, ident);
+
+  nb.needsDisplay = true;
+
   return uiwidget;
 }
 
@@ -73,6 +77,8 @@ fprintf (stderr, "c-notebook-page to:%s\n", uinotebook->ident);
   [tabv setView: uibox->uidata.widget];
   [nb addTabViewItem: tabv];
   uibox->packed = true;
+
+  nb.needsDisplay = true;
 
   return;
 }

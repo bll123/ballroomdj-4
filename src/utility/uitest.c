@@ -648,7 +648,7 @@ uitestUIMiscButtons (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiCreateColorButton ("#aacc00");
+  uiwidgetp = uiCreateColorButton ("cb-a", "#aacc00");
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
@@ -806,7 +806,7 @@ uitestUIImage (uitest_t *uitest)
 
   pathbldMakePath (tbuff, sizeof (tbuff),
      "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
-  uiwidgetp = uiImageScaledFromFile (tbuff, 64);
+  uiwidgetp = uiImageScaledFromFile ("img-uitest-a", tbuff, 64);
   uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 

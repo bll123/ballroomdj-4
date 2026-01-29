@@ -105,6 +105,7 @@ fprintf (stderr, "c-bt (label) %s\n", title);
   [widget setAction: @selector(OnButton1Click:)];
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
   [widget setBordered: YES];
+  widget.needsDisplay = true;
 
 #if MACOS_UI_DEBUG
   [widget setFocusRingType: NSFocusRingTypeExterior];

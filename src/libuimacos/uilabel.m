@@ -39,9 +39,11 @@ uiCreateLabel (const char *label)
   [widget setSelectable:NO];
   [widget setStringValue: [NSString stringWithUTF8String: label]];
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+  widget.needsDisplay = true;
 
   uiwidget = uiwcontAlloc (WCONT_T_LABEL, WCONT_T_LABEL);
   uiwcontSetWidget (uiwidget, widget, NULL);
+
   return uiwidget;
 }
 
@@ -54,18 +56,17 @@ uiLabelAddClass (const char *classnm, const char *color)
 void
 uiLabelSetTooltip (uiwcont_t *uiwidget, const char *txt)
 {
-//  ILabel *nstf;
+  ILabel *nstf;
 
   if (! uiwcontValid (uiwidget, WCONT_T_LABEL, "label-set-tooltip")) {
     return;
   }
 
-// ### this will be very slow, as the old tool tips need to be removed.
-// will probably be better to create a custom method and save the data
-// for that label and use the dynamic methods.
-// ### not working
-//  nstf = uiwidget->uidata.widget;
-//  [nstf addToolTip: [NSString stringWithUTF8String: txt]];
+  if (txt != NULL) {
+    nstf = uiwidget->uidata.widget;
+    [nstf setToolTip: [NSString stringWithUTF8String: txt]];
+//    widget.needsDisplay = true;
+  }
   return;
 }
 
@@ -86,6 +87,7 @@ uiLabelSetText (uiwcont_t *uiwidget, const char *text)
 
   widget = uiwidget->uidata.widget;
   [widget setStringValue: [NSString stringWithUTF8String: text]];
+  widget.needsDisplay = true;
   return;
 }
 

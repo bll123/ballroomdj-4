@@ -178,9 +178,18 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
 
     view = uiwidget->uidata.widget;
     layout->container = [[NSStackView alloc] init];
-    [layout->container addView: view inGravity: NSStackViewGravityLeading];
     layout->container.spacing = 0.0;
     layout->container.edgeInsets = layout->margins;
+    [layout->container addView: view inGravity: NSStackViewGravityCenter];
+
+    [layout->container setHuggingPriority: 1000
+        forOrientation: NSLayoutConstraintOrientationHorizontal];
+    [layout->container setHuggingPriority: 1000
+        forOrientation: NSLayoutConstraintOrientationVertical];
+    [view setContentHuggingPriority: 1000
+        forOrientation: NSLayoutConstraintOrientationHorizontal];
+    [view setContentHuggingPriority: 1000
+        forOrientation: NSLayoutConstraintOrientationVertical];
   }
 
   if (uiwidget->uidata.widget == uiwidget->uidata.packwidget) {

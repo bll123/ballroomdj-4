@@ -69,6 +69,7 @@ uivnbCreate (const char *ident, uiwcont_t *box)
   snprintf (tmp, sizeof (tmp), "sw-vnb-sel-%s", ident);
   sw = uiCreateScrolledWindow (tmp, 50);
   uiBoxPackStart (hbox, sw);
+
   vnb->vlist = uiCreateVertBox (NULL);
   uiWindowPackInWindow (sw, vnb->vlist);
   uiWidgetExpandHoriz (vnb->vlist);

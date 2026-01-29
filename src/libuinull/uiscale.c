@@ -20,7 +20,7 @@
 #include "ui/uiscale.h"
 
 uiwcont_t *
-uiCreateScale (double lower, double upper,
+uiCreateScale (const char *ident, double lower, double upper,
     double stepinc, double pageinc, double initvalue, int digits)
 {
   return NULL;

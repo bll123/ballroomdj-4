@@ -507,7 +507,7 @@ uiqeAddScale (uiqe_t *uiqe, uiwcont_t *hbox, int scidx)
   uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
   uiqe->scaledata [scidx].label = uiwidgetp;
 
-  uiwidgetp = uiCreateScale (lower, upper, inca, incb, 0.0, digits);
+  uiwidgetp = uiCreateScale ("scale-qedit", lower, upper, inca, incb, 0.0, digits);
   uiqe->scaledata [scidx].scale = uiwidgetp;
   uiqe->scaledata [scidx].scalecb = callbackInitD (
       uiqeScaleDisplayCallback, &uiqe->scaledata [scidx]);

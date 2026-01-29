@@ -7,11 +7,6 @@
 extern "C" {
 #endif
 
-enum {
-  MACOS_UI_DEBUG      = 1,
-  MACOS_UI_CONTAINTER = 0,
-};
-
 /* 2024-8-13 these are all wrong */
 enum {
   UICB_STOP = true,

@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 
-uiwcont_t *uiCreateScale (double lower, double upper,
+uiwcont_t *uiCreateScale (const char *ident, double lower, double upper,
     double stepinc, double pageinc, double initvalue, int digits);
 void    uiScaleSetCallback (uiwcont_t *uiscale, callback_t *uicb);
 double  uiScaleEnforceMax (uiwcont_t *uiscale, double value);

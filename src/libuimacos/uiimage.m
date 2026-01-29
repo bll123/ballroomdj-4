@@ -43,7 +43,7 @@ fprintf (stderr, "c-image-from-fn: %s\n", fn);
 }
 
 uiwcont_t *
-uiImageScaledFromFile (const char *fn, int scale)
+uiImageScaledFromFile (const char *ident, const char *fn, int scale)
 {
   uiwcont_t   *uiwidget = NULL;
   NSImageView *imgv;
@@ -64,6 +64,7 @@ uiImageScaledFromFile (const char *fn, int scale)
 
   uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE_VIEW);
   uiwcontSetWidget (uiwidget, imgv, NULL);
+  uiwcontSetIdent (uiwidget, ident);
 
   uiWidgetAlignHorizCenter (uiwidget);
   uiWidgetAlignVertCenter (uiwidget);

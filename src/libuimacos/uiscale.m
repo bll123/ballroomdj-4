@@ -11,6 +11,9 @@
 #include <ctype.h>
 #include <math.h>
 
+#include <Cocoa/Cocoa.h>
+#import <Foundation/NSObject.h>
+
 #include "callback.h"
 #include "uiwcont.h"
 
@@ -20,10 +23,27 @@
 #include "ui/uiscale.h"
 
 uiwcont_t *
-uiCreateScale (double lower, double upper,
+uiCreateScale (const char *ident, double lower, double upper,
     double stepinc, double pageinc, double initvalue, int digits)
 {
+  NSSlider    *widget;
+  uiwcont_t   *uiwidget;
+
 fprintf (stderr, "c-scale\n");
+  widget = [NSSlider sliderWithValue: initvalue
+      minValue: lower
+      maxValue: upper
+      target: nil
+      action: nil];
+  [widget setIdentifier: [NSString stringWithUTF8String: ident]];
+  widget.altIncrementValue = stepinc;
+  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+  widget.needsDisplay = true;
+
+  uiwidget = uiwcontAlloc (WCONT_T_SCALE, WCONT_T_SCALE);
+  uiwcontSetWidget (uiwidget, widget, NULL);
+  uiwcontSetIdent (uiwidget, ident);
+
   return NULL;
 }
 
