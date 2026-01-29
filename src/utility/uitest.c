@@ -35,6 +35,8 @@
 enum {
   UITEST_W_WINDOW,
   UITEST_W_MENUBAR,
+  UITEST_W_MENU_A,
+  UITEST_W_MENU_B,
   UITEST_W_STATUS_MSG,
   UITEST_W_B,
   UITEST_W_B_IMG_A,
@@ -78,8 +80,6 @@ enum {
   UITEST_TB_I_LED_ON,
   UITEST_NB1_I_LED_OFF,
   UITEST_NB1_I_LED_ON,
-  UITEST_NB2_I_LED_OFF,
-  UITEST_NB2_I_LED_ON,
   UITEST_I_MAX,
 };
 
@@ -303,6 +303,8 @@ uitestBuildUI (uitest_t *uitest)
   uiwcont_t   *vbox;
   uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
+  uiwcont_t   *menuitem;
+  uiwcont_t   *menu;
   uiutilsaccent_t accent;
 
   uitest->callbacks [UITEST_CB_CLOSE] = callbackInit (
@@ -329,6 +331,50 @@ uitestBuildUI (uitest_t *uitest)
 
   uitest->wcont [UITEST_W_MENUBAR] = uiCreateMenubar ();
   uiBoxPackStartExpand (hbox, uitest->wcont [UITEST_W_MENUBAR]);
+
+  uitest->wcont [UITEST_W_MENU_A] = uiMenuAlloc ();
+
+  menuitem = uiMenuAddMainItem (uitest->wcont [UITEST_W_MENUBAR],
+      uitest->wcont [UITEST_W_MENU_A], "Menu A");
+  menu = uiCreateSubMenu (menuitem);
+  uiwcontFree (menuitem);
+
+  menuitem = uiMenuCreateItem (menu, "Menu A 1", NULL);
+  uiwcontFree (menuitem);
+
+  menuitem = uiMenuCreateItem (menu, "Menu A 2", NULL);
+  uiwcontFree (menuitem);
+
+  uiMenuAddSeparator (menu);
+
+  menuitem = uiMenuCreateCheckbox (menu, "Menu A 3", 0, NULL);
+  uiwcontFree (menuitem);
+
+  menuitem = uiMenuCreateCheckbox (menu, "Menu A 4", 1, NULL);
+  uiwcontFree (menuitem);
+
+  uiMenuSetInitialized (uitest->wcont [UITEST_W_MENU_A]);
+  uiMenuDisplay (uitest->wcont [UITEST_W_MENU_A]);
+
+  uitest->wcont [UITEST_W_MENU_B] = uiMenuAlloc ();
+
+  menuitem = uiMenuAddMainItem (uitest->wcont [UITEST_W_MENUBAR],
+      uitest->wcont [UITEST_W_MENU_B], "Menu B");
+  menu = uiCreateSubMenu (menuitem);
+  uiwcontFree (menuitem);
+
+  menuitem = uiMenuCreateItem (menu, "Menu B 1", NULL);
+  uiwcontFree (menuitem);
+
+  menuitem = uiMenuCreateItem (menu, "Menu B 2", NULL);
+  uiwcontFree (menuitem);
+
+  menuitem = uiMenuCreateItem (menu, "Dis B 3", NULL);
+  uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
+  uiwcontFree (menuitem);
+
+  uiMenuSetInitialized (uitest->wcont [UITEST_W_MENU_B]);
+  uiMenuDisplay (uitest->wcont [UITEST_W_MENU_B]);
 
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackEnd (hbox, uiwidgetp);
@@ -770,6 +816,7 @@ void
 uitestUIEntry (uitest_t *uitest)
 {
   uiwcont_t   *vbox;
+  uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
 
   /* entry */
@@ -786,6 +833,15 @@ uitestUIEntry (uitest_t *uitest)
   uiwidgetp = uiEntryInit (10, 100);
   uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
+
+  hbox = uiCreateHorizBox ("hbox-uitest-entry");
+  uiBoxPackStart (vbox, hbox);
+  uiWidgetExpandHoriz (hbox);
+  uiwidgetp = uiEntryInit (10, 100);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAlignHorizFill (uiwidgetp);
+  uiwcontFree (uiwidgetp);
+  uiwcontFree (hbox);
 
   uiwcontFree (vbox);
 }
@@ -869,6 +925,32 @@ uitestUILabels (uitest_t *uitest)
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetAddClass (uiwidgetp, "gb");
   uiWidgetExpandHoriz (uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiCreateLabel ("ps-b");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "bb");
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiCreateLabel ("ps-c");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "rb");
+  uiwcontFree (uiwidgetp);
+
+  uiwcontFree (hbox);
+
+  /* label: pack start / expand horiz / align right */
+
+  hbox = uiCreateHorizBox (NULL);
+  uiBoxPackStart (vbox, hbox);
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+
+  uiwidgetp = uiCreateLabel ("ps-eh-ae");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "gb");
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiWidgetAlignHorizEnd (hbox);
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("ps-b");
@@ -1159,18 +1241,6 @@ uitestUINotebook (uitest_t *uitest)
   uiWidgetSetMarginStart (uitest->images [UITEST_NB1_I_LED_ON], 1);
   uiWidgetMakePersistent (uitest->images [UITEST_NB1_I_LED_ON]);
 
-  pathbldMakePath (imgbuff, sizeof (imgbuff), "led_off", ".svg",
-      PATHBLD_MP_DIR_IMG);
-  uitest->images [UITEST_NB2_I_LED_OFF] = uiImageFromFile (imgbuff);
-  uiWidgetSetMarginStart (uitest->images [UITEST_NB2_I_LED_OFF], 1);
-  uiWidgetMakePersistent (uitest->images [UITEST_NB2_I_LED_OFF]);
-
-  pathbldMakePath (imgbuff, sizeof (imgbuff), "led_on", ".svg",
-      PATHBLD_MP_DIR_IMG);
-  uitest->images [UITEST_NB2_I_LED_ON] = uiImageFromFile (imgbuff);
-  uiWidgetSetMarginStart (uitest->images [UITEST_NB2_I_LED_ON], 1);
-  uiWidgetMakePersistent (uitest->images [UITEST_NB2_I_LED_ON]);
-
   /* horiz-img 1 */
 
   vboxb = uiCreateVertBox (NULL);
@@ -1189,7 +1259,7 @@ uitestUINotebook (uitest_t *uitest)
   vboxb = uiCreateVertBox (NULL);
 
   uiNotebookAppendPage (uitest->wcont [UITEST_W_NB_HI], vboxb, "HI Two",
-      uitest->images [UITEST_NB1_I_LED_OFF]);
+      uitest->images [UITEST_NB1_I_LED_ON]);
   uiWidgetSetAllMargins (vboxb, 4);
 
   uiwidgetp = uiCreateLabel ("HI Two");
@@ -1284,13 +1354,29 @@ void
 uitestUIMisc (uitest_t *uitest)
 {
   uiwcont_t   *vbox;
-
-  /* progress bar */
+  uiwcont_t   *uiwidget;
 
   vbox = uiCreateVertBox (NULL);
   uiWidgetSetAllMargins (vbox, 4);
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Misc", VNB_NO_ID);
+
+  /* progress bar */
+
+  uiwidget = uiCreateProgressBar ();
+  uiBoxPackStart (vbox, uiwidget);
+  uiProgressBarSet (uiwidget, 0.4);
+  uiwcontFree (uiwidget);
+
+  uiwidget = uiCreateLabel (" ");
+  uiBoxPackStart (vbox, uiwidget);
+  uiwcontFree (uiwidget);
+
+  /* scale */
+
+  uiwidget = uiCreateScale ("scale-uitest-a", 0.0, 100.0, 1.0, 5.0, 45.0, 1);
+  uiBoxPackStart (vbox, uiwidget);
+  uiwcontFree (uiwidget);
 
   uiwcontFree (vbox);
 }
@@ -1301,6 +1387,8 @@ uitestUISizeGroup (uitest_t *uitest)
   uiwcont_t   *vbox;
   uiwcont_t   *hbox;
   uiwcont_t   *sg;
+  uiwcont_t   *sgb;
+  uiwcont_t   *sgc;
   uiwcont_t   *uiwidgetp;
 
   /* size group */
@@ -1311,6 +1399,8 @@ uitestUISizeGroup (uitest_t *uitest)
   uivnbAppendPage (uitest->mainvnb, vbox, "Size Group", VNB_NO_ID);
 
   sg = uiCreateSizeGroupHoriz ();
+  sgb = uiCreateSizeGroupHoriz ();
+  sgc = uiCreateSizeGroupHoriz ();
 
   hbox = uiCreateHorizBox (NULL);
   uiBoxPackStart (vbox, hbox);
@@ -1324,10 +1414,12 @@ uitestUISizeGroup (uitest_t *uitest)
 
   uiwidgetp = uiCreateLabel ("aaa");
   uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (sgb, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("aaa");
   uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (sgc, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
@@ -1344,10 +1436,12 @@ uitestUISizeGroup (uitest_t *uitest)
 
   uiwidgetp = uiCreateLabel ("bbbb");
   uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (sgb, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("bbbb");
   uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (sgc, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
@@ -1364,10 +1458,12 @@ uitestUISizeGroup (uitest_t *uitest)
 
   uiwidgetp = uiCreateLabel ("c");
   uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (sgb, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("c");
   uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (sgc, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
@@ -1384,10 +1480,12 @@ uitestUISizeGroup (uitest_t *uitest)
 
   uiwidgetp = uiCreateLabel ("ddddddd");
   uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (sgb, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("ddddddd");
   uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (sgc, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
@@ -1404,10 +1502,12 @@ uitestUISizeGroup (uitest_t *uitest)
 
   uiwidgetp = uiCreateLabel ("eeeeee");
   uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (sgb, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("eeeeee");
   uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (sgc, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
@@ -1528,6 +1628,7 @@ void
 uitestUITextBox (uitest_t *uitest)
 {
   uiwcont_t   *vbox;
+  uiwcont_t   *tb;
 
   /* text box */
 
@@ -1536,6 +1637,11 @@ uitestUITextBox (uitest_t *uitest)
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Text Box", VNB_NO_ID);
 
+  tb = uiTextBoxCreate (200, NULL);
+  uiBoxPackStart (vbox, tb);
+  uiTextBoxHorizExpand (tb);
+
+  uiwcontFree (tb);
   uiwcontFree (vbox);
 }
 

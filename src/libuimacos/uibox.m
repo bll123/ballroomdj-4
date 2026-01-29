@@ -76,7 +76,6 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.packwidget;
 
-  grav = NSStackViewGravityLeading;
   if (uibox->wtype == WCONT_T_VBOX) {
     grav = NSStackViewGravityTop;
   }
