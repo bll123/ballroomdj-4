@@ -58,16 +58,16 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uimusicq->musicqManageIdx = MUSICQ_PB_A;
   uimusicq->musicqPlayIdx = MUSICQ_PB_A;
   uimusicq->cbci = MUSICQ_PB_A;
-  uimusicq->pausePixbuf = NULL;
+  uimusicq->pauseRaw = NULL;
   uimusicq->backupcreated = false;
   uimusicq->changed = false;
 
   /* want a copy of the pixbuf for this image */
   pathbldMakePath (tbuff, sizeof (tbuff), "button_pause", ".svg",
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-  uimusicq->pausePixbuf = uiImageFromFile (tbuff);
-  uiImageConvertToRaw (uimusicq->pausePixbuf);
-  uiWidgetMakePersistent (uimusicq->pausePixbuf);
+  uimusicq->pauseRaw = uiImageFromFile (tbuff);
+  uiImageConvertToRaw (uimusicq->pauseRaw);
+  uiWidgetMakePersistent (uimusicq->pauseRaw);
 
   uimusicqUIInit (uimusicq);
 
@@ -117,8 +117,8 @@ uimusicqFree (uimusicq_t *uimusicq)
   }
   uimusicqUIFree (uimusicq);
 
-  uiWidgetClearPersistent (uimusicq->pausePixbuf);
-  uiwcontFree (uimusicq->pausePixbuf);
+  uiWidgetClearPersistent (uimusicq->pauseRaw);
+  uiwcontFree (uimusicq->pauseRaw);
 
   mdfree (uimusicq);
   logProcEnd ("");
