@@ -29,8 +29,6 @@ Remove and remove dependencies:
 <br>pacman -S gettext gettext-devel
 <br># current gcc (64)
 <br>pacman -S mingw-w64-ucrt-x86_64-gcc
-<br># objective C compiler
-<br>pacman -S mingw-w64-ucrt-x86_64-gcc-objc
 <br># building
 <br>pacman -S mingw-w64-ucrt-x86_64-pkgconf
 <br>pacman -S mingw-w64-ucrt-x86_64-cmake
@@ -41,6 +39,7 @@ Remove and remove dependencies:
 <br>pacman -S mingw-w64-ucrt-x86_64-libgcrypt
 <br>pacman -S mingw-w64-ucrt-x86_64-c-ares
 <br>pacman -S mingw-w64-ucrt-x86_64-icu
+<br>pacman -S mingw-w64-ucrt-x86_64-libbacktrace
 <br># winrt
 <br>pacman -S mingw-w64-ucrt-x86_64-cppwinrt
 
@@ -68,7 +67,6 @@ not be found.
 
 # compiler
 <br>pacman -S mingw-w64-clang-x86_64-clang
-<br>pacman -S mingw-w64-clang-x86_64-libobjc2
 <br># building
 <br>pacman -S mingw-w64-clang-x86_64-pkgconf
 <br>pacman -S mingw-w64-clang-x86_64-cmake

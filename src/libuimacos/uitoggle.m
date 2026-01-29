@@ -28,8 +28,6 @@ uiCreateCheckButton (const char *txt, int value)
   uiwcont_t   *uiwidget;
   NSButton    *widget = nil;
 
-//  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-//  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   widget = [[NSButton alloc] init];
   [widget setState : NSControlStateValueOff];
   if (value) {
@@ -56,8 +54,6 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
   uiwcont_t   *uiwidget;
   NSButton    *widget = nil;
 
-//  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-//  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   widget = [[NSButton alloc] init];
   [widget setButtonType : NSButtonTypeRadio];
   [widget setState : NSControlStateValueOff];
@@ -85,8 +81,6 @@ uiCreateToggleButton (const char *txt,
   uiwcont_t   *uiwidget;
   NSButton    *widget = nil;
 
-//  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-//  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   widget = [[NSButton alloc] init];
   [widget setButtonType : NSButtonTypePushOnPushOff];
   [widget setState : NSControlStateValueOff];
@@ -102,7 +96,6 @@ uiCreateToggleButton (const char *txt,
   if (tooltiptxt != NULL) {
     [widget setToolTip : [NSString stringWithUTF8String : tooltiptxt]];
   }
-//    gtk_widget_set_tooltip_text (widget, title);
 
   if (imagenm != NULL) {
     NSString    *ns;

@@ -14,8 +14,10 @@
 #include <Cocoa/Cocoa.h>
 #import <Foundation/NSObject.h>
 
+#include "bdj4.h"
 #include "callback.h"
 #include "mdebug.h"
+#include "pathbld.h"
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"
@@ -33,16 +35,32 @@ uiwcont_t *
 uiCreateSwitch (int value)
 {
   uiwcont_t   *uiwidget;
-  NSSwitch    *widget = nil;
+  NSButton    *widget = nil;
+  NSImage     *nsimage;
+  char        tbuff [BDJ4_PATH_MAX];
 
-  widget = [[NSSwitch alloc] init];
+  widget = [[NSButton alloc] init];
+  [widget setButtonType : NSButtonTypePushOnPushOff];
   [widget setState : NSControlStateValueOff];
   if (value) {
     [widget setState : NSControlStateValueOn];
   }
   [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
 
-  uiwidget = uiwcontAlloc (WCONT_T_SWITCH, WCONT_T_SWITCH);
+  /* relative path */
+  pathbldMakePath (tbuff, sizeof (tbuff), "switch-off", BDJ4_IMG_SVG_EXT,
+      PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
+  nsimage = [[NSImage alloc] initWithContentsOfFile :
+      [NSString stringWithUTF8String : tbuff]];
+  [widget setImage : nsimage];
+
+  pathbldMakePath (tbuff, sizeof (tbuff), "switch-on", BDJ4_IMG_SVG_EXT,
+      PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
+  nsimage = [[NSImage alloc] initWithContentsOfFile :
+      [NSString stringWithUTF8String : tbuff]];
+  [widget setAlternateImage : nsimage];
+
+  uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_RADIO_BUTTON);
   uiwcontSetWidget (uiwidget, widget, NULL);
 
   [widget setIdentifier :

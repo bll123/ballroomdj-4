@@ -73,6 +73,7 @@ uiUIInitialize (int direction)
 //  if (direction == TEXT_DIR_RTL) {
 //    [NSApp userInterfaceLayoutDirection : rightToLeft];
 //  }
+  guisetup.direction = direction;
   return;
 }
 
@@ -114,7 +115,11 @@ uiCleanup (void)
 void
 uiSetUICSS (uisetup_t *uisetup)
 {
+  int       tdir;
+
+  tdir = guisetup.direction;
   memcpy (&guisetup, uisetup, sizeof (uisetup_t));
+  guisetup.direction = tdir;
   return;
 }
 
@@ -154,7 +159,14 @@ uiwcontUIInit (uiwcont_t *uiwidget)
   layout = mdmalloc (sizeof (macoslayout_t));
   uiwidget->uidata.layout = layout;
 
-  layout->margins = NSEdgeInsetsMake (0.0, 0.0, 0.0, 0.0);
+  /* default margins */
+  /* top left bottom right */
+  if (guisetup.direction == TEXT_DIR_RTL) {
+    layout->margins = NSEdgeInsetsMake ((CGFloat) uiBaseMarginSz, 0.0, 0.0, (CGFloat) uiBaseMarginSz);
+  } else {
+    layout->margins = NSEdgeInsetsMake ((CGFloat) uiBaseMarginSz, (CGFloat) uiBaseMarginSz, 0.0, 0.0);
+  }
+
   layout->container = NULL;
   layout->centered = false;
   layout->expand = false;
@@ -178,15 +190,21 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
 
     view = uiwidget->uidata.widget;
     layout->container = [[NSStackView alloc] init];
-    [layout->container setAutoresizingMask : 
+    [layout->container setAutoresizingMask :
         NSViewWidthSizable | NSViewHeightSizable];
     layout->container.spacing = 0.0;
     layout->container.edgeInsets = layout->margins;
     [layout->container addView : view inGravity : NSStackViewGravityCenter];
+    layout->container.needsDisplay = YES;
+    view.needsDisplay = YES;
 
     [layout->container setHuggingPriority : 1000
         forOrientation : NSLayoutConstraintOrientationHorizontal];
     [layout->container setHuggingPriority : 1000
+        forOrientation : NSLayoutConstraintOrientationVertical];
+    [layout->container setContentHuggingPriority : 1000
+        forOrientation : NSLayoutConstraintOrientationHorizontal];
+    [layout->container setContentHuggingPriority : 1000
         forOrientation : NSLayoutConstraintOrientationVertical];
     [view setContentHuggingPriority : 1000
         forOrientation : NSLayoutConstraintOrientationHorizontal];
