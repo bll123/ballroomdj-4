@@ -23,14 +23,14 @@ As of 2025-8-9, development needs are:
       I will not be working on this, other than providing guidance to
       whoever takes this on.
 * User Interface:
+    * MacOS Native UI
+      I have re-started this code.  Some progress has been made. 2026-1-28.
+      This could be written using SwiftUI.
     * ncurses (is a lightweight non-gui version useful?)
     * Qt Widgets
     * Kotlin Multiplatform
     * Flutter
     * Windows Native UI (winrt preferred)
-    * MacOS Native UI
-      Some attempt has been made for this. Progress is stopped at this time.
-      This could be written using SwiftUI.
     * Tablets/iPad: Android / iOS
       This would be a major task.
       A completely new UI/UX would need to be designed for the small screen.
