@@ -14,7 +14,7 @@ uiwcont_t *uiImageFromFile (const char *fn);
 uiwcont_t *uiImageScaledFromFile (const char *fn, int scale);
 void  uiImageClear (uiwcont_t *uiwidget);
 void  uiImageConvertToRaw (uiwcont_t *uiwidget);
-void  uiImageSetFromRaw (uiwcont_t *uiwidget, uiwcont_t *uipixbuf);
+void  uiImageSetFromRaw (uiwcont_t *uiwidget, uiwcont_t *uiraw);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

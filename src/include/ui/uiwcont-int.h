@@ -44,7 +44,7 @@ typedef enum {
   WCONT_T_NOTEBOOK,
   WCONT_T_NOTEBOOK_VERT,
   WCONT_T_PANED_WINDOW,
-  WCONT_T_PIXBUF,           // gtk widget
+  WCONT_T_RAWIMG,           // gtk widget
   WCONT_T_PROGRESS_BAR,
   WCONT_T_RADIO_BUTTON,
   WCONT_T_SCALE,

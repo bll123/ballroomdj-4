@@ -94,25 +94,25 @@ uiImageConvertToRaw (uiwcont_t *uiwidget)
 {
   GdkPixbuf   *pixbuf;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_IMAGE, "image-cvt-pixbuf")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_IMAGE, "image-cvt-raw")) {
     return;
   }
 
   pixbuf = gtk_image_get_pixbuf (GTK_IMAGE (uiwidget->uidata.widget));
-  uiwidget->wbasetype = WCONT_T_PIXBUF;
-  uiwidget->wtype = WCONT_T_PIXBUF;
+  uiwidget->wbasetype = WCONT_T_RAWIMG;
+  uiwidget->wtype = WCONT_T_RAWIMG;
   uiwidget->uidata.pixbuf = pixbuf;
 }
 
 void
-uiImageSetFromRaw (uiwcont_t *uiwidget, uiwcont_t *uipixbuf)
+uiImageSetFromRaw (uiwcont_t *uiwidget, uiwcont_t *uiraw)
 {
-  if (! uiwcontValid (uiwidget, WCONT_T_IMAGE, "image-set-from-pixbuf-img")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_IMAGE, "image-set-from-raw-img")) {
     return;
   }
-  if (! uiwcontValid (uipixbuf, WCONT_T_PIXBUF, "image-set-from-pixbuf-pixbuf")) {
+  if (! uiwcontValid (uiraw, WCONT_T_RAWIMG, "image-set-from-raw-raw")) {
     return;
   }
 
-  gtk_image_set_from_pixbuf (GTK_IMAGE (uiwidget->uidata.widget), uipixbuf->uidata.pixbuf);
+  gtk_image_set_from_pixbuf (GTK_IMAGE (uiwidget->uidata.widget), uiraw->uidata.pixbuf);
 }

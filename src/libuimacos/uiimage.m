@@ -91,13 +91,13 @@ uiImageClear (uiwcont_t *uiwidget)
 }
 
 void
-uiImageConvertToPixbuf (uiwcont_t *uiwidget)
+uiImageConvertToRaw (uiwcont_t *uiwidget)
 {
   return;
 }
 
 void
-uiImageSetFromPixbuf (uiwcont_t *uiwidget, uiwcont_t *uipixbuf)
+uiImageSetFromRaw (uiwcont_t *uiwidget, uiwcont_t *uiraw)
 {
   return;
 }
