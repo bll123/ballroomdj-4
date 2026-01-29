@@ -86,9 +86,9 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
   uiWidgetSetMarginTop (uiwidget, 1);
   uiWidgetSetMarginStart (uiwidget, 1);
 
-  [widget setContentHuggingPriority : 500
+  [widget setContentHuggingPriority : 1000
       forOrientation : NSLayoutConstraintOrientationHorizontal];
-  [widget setContentHuggingPriority : 500
+  [widget setContentHuggingPriority : 1000
       forOrientation : NSLayoutConstraintOrientationVertical];
 
   return;
@@ -116,9 +116,9 @@ uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   uiWidgetSetMarginStart (uiwidget, 1);
   uiwidget->packed = true;
 
-  [widget setContentHuggingPriority : 500
+  [widget setContentHuggingPriority : 1000
       forOrientation : NSLayoutConstraintOrientationHorizontal];
-  [widget setContentHuggingPriority : 500
+  [widget setContentHuggingPriority : 1000
       forOrientation : NSLayoutConstraintOrientationVertical];
 
   return;
@@ -149,9 +149,9 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
   uiWidgetSetMarginStart (uiwidget, 1);
   uiwidget->packed = true;
 
-  [widget setContentHuggingPriority : 500
+  [widget setContentHuggingPriority : 1000
       forOrientation : NSLayoutConstraintOrientationHorizontal];
-  [widget setContentHuggingPriority : 500
+  [widget setContentHuggingPriority : 1000
       forOrientation : NSLayoutConstraintOrientationVertical];
 
   return;
@@ -179,9 +179,9 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   uiWidgetSetMarginStart (uiwidget, 1);
   uiwidget->packed = true;
 
-  [widget setContentHuggingPriority : 500
+  [widget setContentHuggingPriority : 1000
       forOrientation : NSLayoutConstraintOrientationHorizontal];
-  [widget setContentHuggingPriority : 500
+  [widget setContentHuggingPriority : 1000
       forOrientation : NSLayoutConstraintOrientationVertical];
 
   return;
@@ -235,9 +235,9 @@ uiCreateBox (const char *ident, int orientation)
   uiwcontSetIdent (uiwidget, ident);
   uiwidget->uiint.uibox = uibox;
 
-  [box setHuggingPriority : 500
+  [box setHuggingPriority : 1000
       forOrientation : NSLayoutConstraintOrientationHorizontal];
-  [box setHuggingPriority : 500
+  [box setHuggingPriority : 1000
       forOrientation : NSLayoutConstraintOrientationVertical];
 
   return uiwidget;
