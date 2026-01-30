@@ -490,10 +490,10 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   widget = uiwidget->uidata.widget;
 
   if (uiwindow->wtype == WCONT_T_SCROLL_WINDOW) {
-    NSScrollView  *sv;
+    NSScrollView  *scv;
 
-    sv = uiwindow->uidata.widget;
-    [sv setDocumentView : container];
+    scv = uiwindow->uidata.widget;
+    [scv setDocumentView : container];
     winbox = uiwindow->uidata.packwidget;
   }
   if (uiwindow->wtype == WCONT_T_WINDOW) {

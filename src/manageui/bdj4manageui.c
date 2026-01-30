@@ -1118,6 +1118,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   manage->wcont [MANAGE_W_SONGLIST_NB] = uiCreateNotebook ();
   uiBoxPackStartExpand (vbox, manage->wcont [MANAGE_W_SONGLIST_NB]);
+  uiWidgetExpandHoriz (manage->wcont [MANAGE_W_SONGLIST_NB]);
   uiWidgetSetMarginTop (manage->wcont [MANAGE_W_SONGLIST_NB], 2);
 
   /* management: side-by-side view tab */
@@ -2484,6 +2485,7 @@ manageBuildUIMusicManager (manageui_t *manage)
 
   manage->wcont [MANAGE_W_MM_NB] = uiCreateNotebook ();
   uiBoxPackStartExpand (vbox, manage->wcont [MANAGE_W_MM_NB]);
+  uiWidgetExpandHoriz (manage->wcont [MANAGE_W_MM_NB]);
   uiWidgetSetMarginTop (manage->wcont [MANAGE_W_MM_NB], 2);
 
   /* music manager: song selection tab*/

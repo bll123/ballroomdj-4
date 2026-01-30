@@ -708,6 +708,7 @@ pluiBuildUI (playerui_t *plui)
 
   plui->wcont [PLUI_W_NOTEBOOK] = uiCreateNotebook ();
   uiBoxPackStartExpand (plui->wcont [PLUI_W_MAIN_VBOX], plui->wcont [PLUI_W_NOTEBOOK]);
+  uiWidgetExpandHoriz (plui->wcont [PLUI_W_NOTEBOOK]);
   uiWidgetSetMarginTop (plui->wcont [PLUI_W_NOTEBOOK], 2);
 
   plui->callbacks [PLUI_CB_NOTEBOOK] = callbackInitI (

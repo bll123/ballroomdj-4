@@ -149,7 +149,7 @@ uiWidgetSetAllMargins (uiwcont_t *uiwidget, int mult)
   layout->margins.right = (CGFloat) val;
   layout->margins.top = (CGFloat) val;
   layout->margins.bottom = (CGFloat) val;
-//  uiWidgetUpdateLayout (uiwidget);
+  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -178,7 +178,7 @@ uiWidgetSetMarginTop (uiwcont_t *uiwidget, int mult)
 
   layout = uiwidget->uidata.layout;
   layout->margins.top = (CGFloat) val;
-//  uiWidgetUpdateLayout (uiwidget);
+  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -207,7 +207,7 @@ uiWidgetSetMarginBottom (uiwcont_t *uiwidget, int mult)
 
   layout = uiwidget->uidata.layout;
   layout->margins.bottom = (CGFloat) val;
-//  uiWidgetUpdateLayout (uiwidget);
+  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -236,7 +236,7 @@ uiWidgetSetMarginStart (uiwcont_t *uiwidget, int mult)
 
   layout = uiwidget->uidata.layout;
   layout->margins.left = (CGFloat) val;
-//  uiWidgetUpdateLayout (uiwidget);
+  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -265,7 +265,7 @@ uiWidgetSetMarginEnd (uiwcont_t *uiwidget, int mult)
 
   layout = uiwidget->uidata.layout;
   layout->margins.right = (CGFloat) val;
-//  uiWidgetUpdateLayout (uiwidget);
+  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -357,7 +357,7 @@ uiWidgetAlignHorizCenter (uiwcont_t *uiwidget)
 
   layout = uiwidget->uidata.layout;
 
-//  uiWidgetUpdateLayout (uiwidget);
+  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -411,7 +411,7 @@ uiWidgetAlignVertCenter (uiwcont_t *uiwidget)
   view = uiwidget->uidata.widget;
 
   layout = uiwidget->uidata.layout;
-//  uiWidgetUpdateLayout (uiwidget);
+  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -539,11 +539,9 @@ static void
 uiWidgetUpdateLayout (uiwcont_t *uiwidget)
 {
   macoslayout_t *layout = NULL;
-  NSView        *view = NULL;
   NSStackView   *container = NULL;
 
   layout = uiwidget->uidata.layout;
-  view = uiwidget->uidata.widget;
   container = layout->container;
 
   if (container == NULL) {
@@ -551,6 +549,6 @@ uiWidgetUpdateLayout (uiwcont_t *uiwidget)
   }
 
   container.edgeInsets = layout->margins;
-  view.needsDisplay = YES;
+  container.needsDisplay = YES;
 }
 

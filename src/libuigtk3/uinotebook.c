@@ -36,8 +36,8 @@ uiCreateNotebook (void)
 
   widget = gtk_notebook_new ();
   gtk_notebook_set_show_border (GTK_NOTEBOOK (widget), TRUE);
-  gtk_widget_set_hexpand (widget, TRUE);
-  gtk_widget_set_vexpand (widget, FALSE);
+//  gtk_widget_set_hexpand (widget, TRUE);
+//  gtk_widget_set_vexpand (widget, FALSE);
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (widget), GTK_POS_TOP);
   uiwidget = uiwcontAlloc (WCONT_T_NOTEBOOK, WCONT_T_NOTEBOOK);
   uiwcontSetWidget (uiwidget, widget, NULL);

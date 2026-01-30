@@ -20,8 +20,8 @@
 #include "pathbld.h"
 #include "uigeneral.h"
 
-#include "ui/uiwcont-int.h"
 #include "ui/uimacos-int.h"
+#include "ui/uiwcont-int.h"
 
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
@@ -31,26 +31,19 @@ typedef struct uibutton {
   NSImage         *image;
 } uibutton_t;
 
-@interface IButton : NSButton {
-  uiwcont_t   *uiwidget;
-}
-- (void) setUIWidget: (uiwcont_t *) tuiwidget;
-- (IBAction) OnButton1Click: (id) sender;
-- (BOOL) isFlipped;
-@end
-
 @implementation IButton
 
 - (void) setUIWidget : (uiwcont_t *) tuiwidget {
   uiwidget = tuiwidget;
 }
 
-- (IBAction) OnButton1Click : (id) sender {
-  uibuttonbase_t  *bbase;
+- (void) setCallback : (callback_t *) tcb {
+  cb = tcb;
+}
 
-  bbase = &uiwidget->uiint.uibuttonbase;
-  if (bbase->cb != NULL) {
-    callbackHandler (bbase->cb);
+- (IBAction) OnButton1Click : (id) sender {
+  if (cb != NULL) {
+    callbackHandler (cb);
   }
 }
 
@@ -109,6 +102,7 @@ uiCreateButton (callback_t *uicb, const char *title,
   [widget setBezelStyle : NSBezelStyleRounded];
   [widget setTarget : widget];
   [widget setUIWidget : uiwidget];
+  [widget setCallback : uicb];
   [widget setAction : @selector(OnButton1Click : )];
 //  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
   [widget setBordered : YES];

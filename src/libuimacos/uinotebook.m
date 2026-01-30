@@ -56,7 +56,12 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
   if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-append-page")) {
     return;
   }
-  if (! uiwcontValid (uibox, WCONT_T_BOX, "nb-append-page-box")) {
+  if (uibox->wbasetype != WCONT_T_BOX && uibox->wtype != WCONT_T_BOX &&
+      uibox->wtype != WCONT_T_SCROLL_WINDOW) {
+    fprintf (stderr, "ERR: %s incorrect type exp:%d/%s actual:%d/%s\n",
+        "nb-append-page-box",
+        WCONT_T_BOX, uiwcontDesc (WCONT_T_BOX),
+        uibox->wbasetype, uiwcontDesc (uibox->wbasetype));
     return;
   }
   if (uibox == NULL) {

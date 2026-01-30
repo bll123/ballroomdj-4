@@ -17,6 +17,7 @@
 #include "pathbld.h"
 #include "uiwcont.h"
 
+#include "ui/uimacos-int.h"
 #include "ui/uiwcont-int.h"
 
 #include "ui/uiui.h"
@@ -26,9 +27,9 @@ uiwcont_t *
 uiCreateCheckButton (const char *txt, int value)
 {
   uiwcont_t   *uiwidget;
-  NSButton    *widget = nil;
+  IButton     *widget = nil;
 
-  widget = [[NSButton alloc] init];
+  widget = [[IButton alloc] init];
   [widget setState : NSControlStateValueOff];
   if (value) {
     [widget setState : NSControlStateValueOn];
@@ -42,6 +43,7 @@ uiCreateCheckButton (const char *txt, int value)
   uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_CHECK_BOX);
   uiwcontSetWidget (uiwidget, widget, NULL);
 
+  [widget setUIWidget : uiwidget];
   [widget setIdentifier :
       [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
 
@@ -52,9 +54,9 @@ uiwcont_t *
 uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
 {
   uiwcont_t   *uiwidget;
-  NSButton    *widget = nil;
+  IButton     *widget = nil;
 
-  widget = [[NSButton alloc] init];
+  widget = [[IButton alloc] init];
   [widget setButtonType : NSButtonTypeRadio];
   [widget setState : NSControlStateValueOff];
   if (value) {
@@ -68,6 +70,7 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
   uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_RADIO_BUTTON);
   uiwcontSetWidget (uiwidget, widget, NULL);
 
+  [widget setUIWidget : uiwidget];
   [widget setIdentifier :
       [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
 
@@ -79,9 +82,9 @@ uiCreateToggleButton (const char *txt,
     const char *imagenm, const char *tooltiptxt, uiwcont_t *image, int value)
 {
   uiwcont_t   *uiwidget;
-  NSButton    *widget = nil;
+  IButton     *widget = nil;
 
-  widget = [[NSButton alloc] init];
+  widget = [[IButton alloc] init];
   [widget setButtonType : NSButtonTypePushOnPushOff];
   [widget setState : NSControlStateValueOff];
   if (value) {
@@ -116,6 +119,7 @@ uiCreateToggleButton (const char *txt,
   uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_RADIO_BUTTON);
   uiwcontSetWidget (uiwidget, widget, NULL);
 
+  [widget setUIWidget : uiwidget];
   [widget setIdentifier :
       [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
 
@@ -125,6 +129,14 @@ uiCreateToggleButton (const char *txt,
 void
 uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
+  IButton   *widget;
+
+  if (uiwidget == NULL) {
+    return;
+  }
+
+  widget = uiwidget->uidata.widget;
+  [widget setCallback : uicb];
   return;
 }
 

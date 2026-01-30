@@ -20,6 +20,7 @@
 #include "pathbld.h"
 #include "uiwcont.h"
 
+#include "ui/uimacos-int.h"
 #include "ui/uiwcont-int.h"
 
 #include "ui/uiimage.h"
@@ -35,11 +36,11 @@ uiwcont_t *
 uiCreateSwitch (int value)
 {
   uiwcont_t   *uiwidget;
-  NSButton    *widget = nil;
+  IButton     *widget = nil;
   NSImage     *nsimage;
   char        tbuff [BDJ4_PATH_MAX];
 
-  widget = [[NSButton alloc] init];
+  widget = [[IButton alloc] init];
   [widget setButtonType : NSButtonTypePushOnPushOff];
   [widget setState : NSControlStateValueOff];
   if (value) {
@@ -63,6 +64,9 @@ uiCreateSwitch (int value)
   uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_RADIO_BUTTON);
   uiwcontSetWidget (uiwidget, widget, NULL);
 
+  [widget setButtonType : NSButtonTypeToggle];
+  [widget setBezelStyle : NSBezelStyleToolbar];
+  [widget setUIWidget : uiwidget];
   [widget setIdentifier :
       [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
 
@@ -90,5 +94,13 @@ uiSwitchGetValue (uiwcont_t *uiwidget)
 void
 uiSwitchSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
+  IButton   *widget;
+
+  if (uiwidget == NULL) {
+    return;
+  }
+
+  widget = uiwidget->uidata.widget;
+  [widget setCallback : uicb];
   return;
 }

@@ -26,6 +26,16 @@ extern "C" {
 - (IBAction) OnButton2Click : (id) sender;
 @end
 
+@interface IButton : NSButton {
+  uiwcont_t   *uiwidget;
+  callback_t  *cb;
+}
+- (void) setUIWidget : (uiwcont_t *) tuiwidget;
+- (void) setCallback : (callback_t *) tcb;
+- (IBAction) OnButton1Click : (id) sender;
+- (BOOL) isFlipped;
+@end
+
 #define MACOS_UI_DEBUG 1
 
 /* structures */
