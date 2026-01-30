@@ -168,9 +168,7 @@ uiwcontUIInit (uiwcont_t *uiwidget)
   }
 
   layout->container = NULL;
-  layout->centered = false;
-  layout->expand = false;
-  layout->alignright = false;
+  layout->expandchildren = false;
 }
 
 /* on macos, every view is wrapped in a NSStackView so that the margins */
@@ -193,6 +191,7 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
     NSView        *view;
 
     view = uiwidget->uidata.widget;
+
     layout->container = [[NSStackView alloc] init];
     [layout->container setAutoresizingMask :
         NSViewWidthSizable | NSViewHeightSizable];
@@ -202,26 +201,27 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
 //    layout->container.needsDisplay = YES;
 //    view.needsDisplay = YES;
 
-    [layout->container setHuggingPriority :
-        NSLayoutPriorityRequired
-        forOrientation : NSLayoutConstraintOrientationHorizontal];
-    [layout->container setHuggingPriority :
-        NSLayoutPriorityRequired
-        forOrientation : NSLayoutConstraintOrientationVertical];
-    [layout->container setContentHuggingPriority :
-        NSLayoutPriorityRequired
-        forOrientation : NSLayoutConstraintOrientationHorizontal];
-    [layout->container setContentHuggingPriority :
-        NSLayoutPriorityRequired
-        forOrientation : NSLayoutConstraintOrientationVertical];
-
     [view setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
-    [view setContentHuggingPriority :
+
+    [layout->container setHuggingPriority :
         NSLayoutPriorityRequired
         forOrientation : NSLayoutConstraintOrientationHorizontal];
-    [view setContentHuggingPriority :
+    [layout->container setHuggingPriority :
         NSLayoutPriorityRequired
         forOrientation : NSLayoutConstraintOrientationVertical];
+//    [layout->container setContentHuggingPriority :
+//        NSLayoutPriorityRequired
+//        forOrientation : NSLayoutConstraintOrientationHorizontal];
+//    [layout->container setContentHuggingPriority :
+//        NSLayoutPriorityRequired
+//        forOrientation : NSLayoutConstraintOrientationVertical];
+//
+//    [view setContentHuggingPriority : 900
+//        NSLayoutPriorityRequired
+//        forOrientation : NSLayoutConstraintOrientationHorizontal];
+//    [view setContentHuggingPriority : 900
+//        NSLayoutPriorityRequired
+//        forOrientation : NSLayoutConstraintOrientationVertical];
     /* otherwise everything get shrunk to a minimal size */
     [view setContentCompressionResistancePriority :
         NSLayoutPriorityRequired
@@ -231,7 +231,8 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
         forOrientation : NSLayoutConstraintOrientationVertical];
   }
 
-  if (uiwidget->uidata.widget == uiwidget->uidata.packwidget) {
+// ### this situation needs to be handled
+  if (uiwidget->uidata.packwidget == uiwidget->uidata.widget) {
     uiwidget->uidata.packwidget = layout->container;
   }
 

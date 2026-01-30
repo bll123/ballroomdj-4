@@ -34,7 +34,7 @@ uiCreateChangeIndicator (uiwcont_t *boxp)
   [widget setDrawsBackground : NO];
   [widget setEditable : NO];
   [widget setStringValue : [NSString stringWithUTF8String : " "]];
-  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
 
   uiwidget = uiwcontAlloc (WCONT_T_CHGIND, WCONT_T_CHGIND);
   uiwcontSetWidget (uiwidget, widget, NULL);

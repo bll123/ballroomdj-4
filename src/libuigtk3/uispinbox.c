@@ -102,8 +102,6 @@ uiSpinboxTextCreate (void *udata)
   widget = gtk_spin_button_new (NULL, 0.0, 0);
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (widget), 1.0, 1.0);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (widget), TRUE);
-  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   uispinbox->udata = udata;
 
   uiwidget->wtype = WCONT_T_SPINBOX_TEXT;
@@ -238,8 +236,6 @@ uiSpinboxTimeCreate (sbtype_t sbtype, void *udata,
   /* 7200000 = 120 minutes */
   gtk_spin_button_set_range (GTK_SPIN_BUTTON (widget), 0.0, 7200000.0);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (widget), FALSE);
-  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   uispinbox->udata = udata;
 
   uiwidget->wtype = WCONT_T_SPINBOX_TIME;
@@ -299,8 +295,6 @@ uiSpinboxIntCreate (void)
   gtk_entry_set_alignment (GTK_ENTRY (spinbox), 1.0);
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox), 1.0, 5.0);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox), FALSE);
-  gtk_widget_set_margin_top (spinbox, uiBaseMarginSz);
-  gtk_widget_set_margin_start (spinbox, uiBaseMarginSz);
 
   uiwcontSetWidget (uiwidget, spinbox, NULL);
 
@@ -323,8 +317,6 @@ uiSpinboxDoubleCreate (void)
   gtk_entry_set_alignment (GTK_ENTRY (spinbox), 1.0);
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox), 0.1, 5.0);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox), FALSE);
-  gtk_widget_set_margin_top (spinbox, uiBaseMarginSz);
-  gtk_widget_set_margin_start (spinbox, uiBaseMarginSz);
 
   uiwcontSetWidget (uiwidget, spinbox, NULL);
 
@@ -347,8 +339,6 @@ uiSpinboxDoubleDefaultCreate (void)
   gtk_entry_set_alignment (GTK_ENTRY (widget), 1.0);
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (widget), 0.1, 5.0);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (widget), FALSE);
-  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
 
   uiwidget->wtype = WCONT_T_SPINBOX_DOUBLE_DFLT;
   uiwcontSetWidget (uiwidget, widget, NULL);

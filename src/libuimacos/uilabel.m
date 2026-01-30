@@ -38,7 +38,7 @@ uiCreateLabel (const char *label)
   [widget setEditable : NO];
   [widget setSelectable : NO];
   [widget setStringValue : [NSString stringWithUTF8String : label]];
-  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
   widget.needsDisplay = true;
 
   uiwidget = uiwcontAlloc (WCONT_T_LABEL, WCONT_T_LABEL);

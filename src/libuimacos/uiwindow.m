@@ -32,12 +32,13 @@
 - (void) setCloseCallback : (callback_t *) tcb;
 - (void) setDoubleClickCallback : (callback_t *) tcb;
 - (void) awakeFromNib;
+- (BOOL) isFlipped;
 @end
 
 @implementation IWindow
 
 - (instancetype) init {
-  [super initWithContentRect : NSMakeRect(10, 10, 100, 100)
+  [super initWithContentRect : NSMakeRect (10, 10, 100, 100)
       styleMask : NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
           NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable |
           NSWindowStyleMaskFullSizeContentView
@@ -62,6 +63,10 @@
 //  NSStackView *box;
 
 //  box = [w contentView];
+}
+
+- (BOOL) isFlipped {
+  return YES;
 }
 
 @end
@@ -110,6 +115,7 @@ NSLog (@"Window : button-2");
   IWindow *window = notification.object;
 NSLog (@"Window : closing");
   if (window.closecb != NULL) {
+NSLog (@"Window : call close-cb");
     callbackHandler (window.closecb);
   }
   if (window.isMainWindow) {
@@ -142,6 +148,7 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   [win makeMainWindow];
 
   uibox->packed = true;
+  uibox->uidata.layout->expandchildren = true;
   [box setIdentifier :
       [[NSNumber numberWithUnsignedInt : uibox->id] stringValue]];
 
@@ -487,29 +494,28 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
 
     sv = uiwindow->uidata.widget;
     [sv setDocumentView : container];
+    winbox = uiwindow->uidata.packwidget;
   }
   if (uiwindow->wtype == WCONT_T_WINDOW) {
     NSWindow    *win;
-    NSView      *twidget = NULL;
 
     win = uiwindow->uidata.widget;
     winbox = [win contentView];
     [winbox addView : container inGravity : grav];
 
-    twidget = uiwidget->uidata.packwidget;
     [winbox.safeAreaLayoutGuide.leadingAnchor
-        constraintEqualToAnchor : twidget.leadingAnchor].active = YES;
+        constraintEqualToAnchor : container.leadingAnchor].active = YES;
     [winbox.safeAreaLayoutGuide.trailingAnchor
-        constraintEqualToAnchor : twidget.trailingAnchor].active = YES;
+        constraintEqualToAnchor : container.trailingAnchor].active = YES;
     [winbox.safeAreaLayoutGuide.topAnchor
-        constraintEqualToAnchor : twidget.topAnchor].active = YES;
+        constraintEqualToAnchor : container.topAnchor].active = YES;
     [winbox.safeAreaLayoutGuide.bottomAnchor
-        constraintEqualToAnchor : twidget.bottomAnchor].active = YES;
+        constraintEqualToAnchor : container.bottomAnchor].active = YES;
   }
 
   uiwidget->packed = true;
   layout = uiwidget->uidata.layout;
-  layout->expand = true;
+  layout->expandchildren = true;
 
   [winbox setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
   [widget setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];

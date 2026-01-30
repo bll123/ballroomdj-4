@@ -106,8 +106,11 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
   [box addView : widget inGravity : grav];
 
   uiwidget->packed = true;
-  uiWidgetSetMarginTop (uiwidget, 1);
-  uiWidgetSetMarginStart (uiwidget, 1);
+
+  if (uibox->uidata.layout->expandchildren) {
+    [widget.widthAnchor
+        constraintLessThanOrEqualToConstant : 600.0].active = YES;
+  }
 
   return;
 }
@@ -132,8 +135,9 @@ uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   widget = uiwidget->uidata.packwidget;
   [box addView : widget inGravity : grav];
 
-  uiWidgetSetMarginTop (uiwidget, 1);
-  uiWidgetSetMarginStart (uiwidget, 1);
+  if (uiwidget->wbasetype == WCONT_T_BOX) {
+    uiwidget->uidata.layout->expandchildren = true;
+  }
   uiwidget->packed = true;
 
   return;
@@ -160,8 +164,6 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
   }
   [box insertView : widget atIndex : 0 inGravity : grav];
 
-  uiWidgetSetMarginTop (uiwidget, 1);
-  uiWidgetSetMarginStart (uiwidget, 1);
   uiwidget->packed = true;
 
   return;
@@ -185,10 +187,16 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.packwidget;
+
+  if (uibox->wtype == WCONT_T_VBOX) {
+    grav = NSStackViewGravityBottom;
+  }
+
   [box insertView : widget atIndex : 0 inGravity : grav];
 
-  uiWidgetSetMarginTop (uiwidget, 1);
-  uiWidgetSetMarginStart (uiwidget, 1);
+  if (uiwidget->wbasetype == WCONT_T_BOX) {
+    uiwidget->uidata.layout->expandchildren = true;
+  }
   uiwidget->packed = true;
 
   return;
@@ -219,7 +227,7 @@ uiCreateBox (int orientation)
 
   box = [[IBox alloc] init];
   [box setOrientation : orientation];
-  [box setTranslatesAutoresizingMaskIntoConstraints : NO];
+//  [box setTranslatesAutoresizingMaskIntoConstraints : NO];
   [box setDistribution : NSStackViewDistributionGravityAreas];
   [box setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
   box.spacing = 1.0;
@@ -248,6 +256,7 @@ uiCreateBox (int orientation)
     uiwidget = uiwcontAlloc (WCONT_T_BOX, WCONT_T_VBOX);
     [box setAlignment : NSLayoutAttributeLeading];
   }
+
   uiwcontSetWidget (uiwidget, box, NULL);
   uiwidget->uiint.uibox = uibox;
 

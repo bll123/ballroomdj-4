@@ -37,7 +37,7 @@ uiCreateCheckButton (const char *txt, int value)
   if (txt != NULL) {
     [widget setTitle : [NSString stringWithUTF8String : txt]];
   }
-  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
 
   uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_CHECK_BOX);
   uiwcontSetWidget (uiwidget, widget, NULL);
@@ -63,7 +63,7 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
   if (txt != NULL) {
     [widget setTitle : [NSString stringWithUTF8String : txt]];
   }
-  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
 
   uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_RADIO_BUTTON);
   uiwcontSetWidget (uiwidget, widget, NULL);
@@ -91,7 +91,7 @@ uiCreateToggleButton (const char *txt,
     [widget setTitle : [NSString stringWithUTF8String : txt]];
     widget.imagePosition = NSImageRight;
   }
-  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
 
   if (tooltiptxt != NULL) {
     [widget setToolTip : [NSString stringWithUTF8String : tooltiptxt]];

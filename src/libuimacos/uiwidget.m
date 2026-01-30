@@ -37,9 +37,20 @@ uiWidgetSetState (uiwcont_t *uiwidget, int state)
 void
 uiWidgetExpandHoriz (uiwcont_t *uiwidget)
 {
+  NSView          *widget;
+
+  if (! uiwidget->packed) {
+    fprintf (stderr, "ERR: w-exp-h widget not packed %d %s %s\n",
+        uiwidget->id, uiwcontDesc (uiwidget->wbasetype),
+        uiwcontDesc (uiwidget->wtype));
+    return;
+  }
+
+  widget = uiwidget->uidata.packwidget;
+  [widget.widthAnchor
+      constraintLessThanOrEqualToConstant : 600.0].active = YES;
 #if 0
   NSView          *super;
-  NSView          *container;
   macoslayout_t   *layout;
 
   if (uiwidget == NULL) {
@@ -68,6 +79,18 @@ uiWidgetExpandHoriz (uiwcont_t *uiwidget)
 void
 uiWidgetExpandVert (uiwcont_t *uiwidget)
 {
+  NSView          *widget;
+
+  if (! uiwidget->packed) {
+    fprintf (stderr, "ERR: w-exp-v widget not packed %d %s %s\n",
+        uiwidget->id, uiwcontDesc (uiwidget->wbasetype),
+        uiwcontDesc (uiwidget->wtype));
+    return;
+  }
+
+  widget = uiwidget->uidata.packwidget;
+  [widget.heightAnchor
+      constraintLessThanOrEqualToConstant : 600.0].active = YES;
 #if 0
   NSView          *widget;
   macoslayout_t   *layout;
@@ -81,7 +104,6 @@ uiWidgetExpandVert (uiwcont_t *uiwidget)
 
   layout = uiwidget->uidata.layout;
 //  container = layout->container;
-  layout->expand = true;
   if (uiwidget->packed == true) {
 //    [widget.topAnchor
 //        constraintLessThanOrEqualToAnchor : container.topAnchor
@@ -111,6 +133,13 @@ uiWidgetSetAllMargins (uiwcont_t *uiwidget, int mult)
     return;
   }
 
+  if (! uiwidget->packed) {
+    fprintf (stderr, "ERR: w-set-all-m widget not packed %d %s %s\n",
+        uiwidget->id, uiwcontDesc (uiwidget->wbasetype),
+        uiwcontDesc (uiwidget->wtype));
+    return;
+  }
+
   widget = uiwidget->uidata.widget;
 
   val = (double) (uiBaseMarginSz * mult);
@@ -120,7 +149,7 @@ uiWidgetSetAllMargins (uiwcont_t *uiwidget, int mult)
   layout->margins.right = (CGFloat) val;
   layout->margins.top = (CGFloat) val;
   layout->margins.bottom = (CGFloat) val;
-  uiWidgetUpdateLayout (uiwidget);
+//  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -136,13 +165,20 @@ uiWidgetSetMarginTop (uiwcont_t *uiwidget, int mult)
     return;
   }
 
+  if (! uiwidget->packed) {
+    fprintf (stderr, "ERR: w-set-m-top widget not packed %d %s %s\n",
+        uiwidget->id, uiwcontDesc (uiwidget->wbasetype),
+        uiwcontDesc (uiwidget->wtype));
+    return;
+  }
+
   widget = uiwidget->uidata.widget;
 
   val = (double) (uiBaseMarginSz * mult);
 
   layout = uiwidget->uidata.layout;
   layout->margins.top = (CGFloat) val;
-  uiWidgetUpdateLayout (uiwidget);
+//  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -158,13 +194,20 @@ uiWidgetSetMarginBottom (uiwcont_t *uiwidget, int mult)
     return;
   }
 
+  if (! uiwidget->packed) {
+    fprintf (stderr, "ERR: w-set-m-bottom widget not packed %d %s %s\n",
+        uiwidget->id, uiwcontDesc (uiwidget->wbasetype),
+        uiwcontDesc (uiwidget->wtype));
+    return;
+  }
+
   widget = uiwidget->uidata.widget;
 
   val = (double) (uiBaseMarginSz * mult);
 
   layout = uiwidget->uidata.layout;
   layout->margins.bottom = (CGFloat) val;
-  uiWidgetUpdateLayout (uiwidget);
+//  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -180,13 +223,20 @@ uiWidgetSetMarginStart (uiwcont_t *uiwidget, int mult)
     return;
   }
 
+  if (! uiwidget->packed) {
+    fprintf (stderr, "ERR: w-set-m-start widget not packed %d %s %s\n",
+        uiwidget->id, uiwcontDesc (uiwidget->wbasetype),
+        uiwcontDesc (uiwidget->wtype));
+    return;
+  }
+
   widget = uiwidget->uidata.widget;
 
   val = (double) (uiBaseMarginSz * mult);
 
   layout = uiwidget->uidata.layout;
   layout->margins.left = (CGFloat) val;
-  uiWidgetUpdateLayout (uiwidget);
+//  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -202,13 +252,20 @@ uiWidgetSetMarginEnd (uiwcont_t *uiwidget, int mult)
     return;
   }
 
+  if (! uiwidget->packed) {
+    fprintf (stderr, "ERR: w-set-m-end widget not packed %d %s %s\n",
+        uiwidget->id, uiwcontDesc (uiwidget->wbasetype),
+        uiwcontDesc (uiwidget->wtype));
+    return;
+  }
+
   widget = uiwidget->uidata.widget;
 
   val = uiBaseMarginSz * mult;
 
   layout = uiwidget->uidata.layout;
   layout->margins.right = (CGFloat) val;
-  uiWidgetUpdateLayout (uiwidget);
+//  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -224,8 +281,16 @@ uiWidgetAlignHorizFill (uiwcont_t *uiwidget)
     return;
   }
 
-  widget = uiwidget->uidata.widget;
-  widget.needsDisplay = true;
+  if (! uiwidget->packed) {
+    fprintf (stderr, "ERR: w-al-h-f widget not packed %d %s %s\n",
+        uiwidget->id, uiwcontDesc (uiwidget->wbasetype),
+        uiwcontDesc (uiwidget->wtype));
+    return;
+  }
+
+  widget = uiwidget->uidata.packwidget;
+  [widget.widthAnchor
+      constraintLessThanOrEqualToConstant : 600.0].active = YES;
   return;
 }
 
@@ -235,6 +300,13 @@ uiWidgetAlignHorizStart (uiwcont_t *uiwidget)
   NSView    *widget;
 
   if (uiwidget == NULL) {
+    return;
+  }
+
+  if (! uiwidget->packed) {
+    fprintf (stderr, "ERR: w-al-h-s widget not packed %d %s %s\n",
+        uiwidget->id, uiwcontDesc (uiwidget->wbasetype),
+        uiwcontDesc (uiwidget->wtype));
     return;
   }
 
@@ -249,6 +321,13 @@ uiWidgetAlignHorizEnd (uiwcont_t *uiwidget)
   NSView    *widget;
 
   if (uiwidget == NULL) {
+    return;
+  }
+
+  if (! uiwidget->packed) {
+    fprintf (stderr, "ERR: w-al-h-e widget not packed %d %s %s\n",
+        uiwidget->id, uiwcontDesc (uiwidget->wbasetype),
+        uiwcontDesc (uiwidget->wtype));
     return;
   }
 
@@ -267,12 +346,18 @@ uiWidgetAlignHorizCenter (uiwcont_t *uiwidget)
     return;
   }
 
+  if (! uiwidget->packed) {
+    fprintf (stderr, "ERR: w-al-h-c widget not packed %d %s %s\n",
+        uiwidget->id, uiwcontDesc (uiwidget->wbasetype),
+        uiwcontDesc (uiwidget->wtype));
+    return;
+  }
+
   view = uiwidget->uidata.widget;
 
   layout = uiwidget->uidata.layout;
-  layout->centered = true;
 
-  uiWidgetUpdateLayout (uiwidget);
+//  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -280,18 +365,22 @@ uiWidgetAlignHorizCenter (uiwcont_t *uiwidget)
 void
 uiWidgetAlignVertFill (uiwcont_t *uiwidget)
 {
-  NSView        *view;
-  macoslayout_t *layout;
+  NSView        *widget;
 
   if (uiwidget == NULL) {
     return;
   }
 
-  view = uiwidget->uidata.widget;
+  if (! uiwidget->packed) {
+    fprintf (stderr, "ERR: w-al-v-f widget not packed %d %s %s\n",
+        uiwidget->id, uiwcontDesc (uiwidget->wbasetype),
+        uiwcontDesc (uiwidget->wtype));
+    return;
+  }
 
-  layout = uiwidget->uidata.layout;
-//  uiwidget->uidata.widget.needsDisplay = true;
-
+  widget = uiwidget->uidata.packwidget;
+  [widget.heightAnchor
+      constraintLessThanOrEqualToConstant : 600.0].active = YES;
   return;
 }
 
@@ -322,8 +411,7 @@ uiWidgetAlignVertCenter (uiwcont_t *uiwidget)
   view = uiwidget->uidata.widget;
 
   layout = uiwidget->uidata.layout;
-  layout->centered = true;
-  uiWidgetUpdateLayout (uiwidget);
+//  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }

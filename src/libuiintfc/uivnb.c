@@ -74,6 +74,7 @@ uivnbCreate (const char *ident, uiwcont_t *box)
   vnb->nb = uiCreateNotebook ();
   uiNotebookHideTabs (vnb->nb);
   uiBoxPackStartExpand (hbox, vnb->nb);
+  uiWidgetSetMarginTop (vnb->nb, 2);
 
   for (int i = 0; i < VNB_MAX_PAGECOUNT; ++i) {
     vnb->tablist [i] = NULL;

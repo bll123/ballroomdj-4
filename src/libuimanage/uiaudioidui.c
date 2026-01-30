@@ -364,6 +364,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   pw = uiPanedWindowCreateVert ();
   uiBoxPackStartExpand (audioidint->wcont [UIAUDID_W_MAIN_VBOX], pw);
+  uiWidgetSetAllMargins (pw, 0);
   uiWidgetExpandHoriz (pw);
   uiWidgetAlignHorizFill (pw);
   uiWidgetAddClass (pw, ACCENT_CLASS);

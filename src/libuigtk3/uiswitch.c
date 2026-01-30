@@ -71,8 +71,6 @@ uiCreateSwitch (int value)
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uiswitch = uiswitch;
 
-  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
 
   uiWidgetAddClass (uiwidget, SWITCH_CLASS);

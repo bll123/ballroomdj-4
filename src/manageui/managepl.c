@@ -232,6 +232,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   managepl->wcont [MPL_W_NB] = uiCreateNotebook ();
   uiBoxPackStartExpand (vboxp, managepl->wcont [MPL_W_NB]);
+  uiWidgetSetMarginTop (managepl->wcont [MPL_W_NB], 2);
 
   /* settings */
 

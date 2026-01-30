@@ -36,7 +36,7 @@ uiCreateScale (double lower, double upper,
       action : nil];
 
   widget.altIncrementValue = stepinc;
-  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
   widget.needsDisplay = true;
 
   uiwidget = uiwcontAlloc (WCONT_T_SCALE, WCONT_T_SCALE);

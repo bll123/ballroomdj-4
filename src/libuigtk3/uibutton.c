@@ -51,8 +51,6 @@ uiCreateButton (callback_t *uicb, const char *title,
   uibutton->image = NULL;
 
   widget = gtk_button_new ();
-  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   if (imagenm != NULL) {
     GtkWidget   *image;
     char        tbuff [BDJ4_PATH_MAX];

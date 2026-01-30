@@ -31,7 +31,7 @@ uiCreateLink (const char *label, const char *uri)
   [widget setEditable : NO];
   [widget setSelectable : NO];
   [widget setStringValue : [NSString stringWithUTF8String : label]];
-  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
 
   uiwidget = uiwcontAlloc (WCONT_T_LINK, WCONT_T_LINK);
   uiwcontSetWidget (uiwidget, widget, NULL);

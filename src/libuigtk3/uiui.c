@@ -482,7 +482,8 @@ uiwcontUIInit (uiwcont_t *uiwidget)
 void
 uiwcontUIWidgetInit (uiwcont_t *uiwidget)
 {
-  return;
+  gtk_widget_set_margin_top (uiwidget->uidata.widget, uiBaseMarginSz);
+  gtk_widget_set_margin_start (uiwidget->uidata.widget, uiBaseMarginSz);
 }
 
 void

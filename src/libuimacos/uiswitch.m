@@ -45,7 +45,7 @@ uiCreateSwitch (int value)
   if (value) {
     [widget setState : NSControlStateValueOn];
   }
-  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
 
   /* relative path */
   pathbldMakePath (tbuff, sizeof (tbuff), "switch-off", BDJ4_IMG_SVG_EXT,

@@ -41,7 +41,7 @@ uiCreateColorButton (const char *colortxt)
 
   widget = [[NSColorWell alloc] init];
 //  [widget setAction : @selector(OnButton1Click : )];
-  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
 
   sscanf (colortxt, "#%2x%2x%2x", &r, &g, &b);
   color = [NSColor colorWithRed : (CGFloat) r

@@ -62,8 +62,6 @@ uiEntryInit (int entrySize, int maxSize)
   gtk_entry_set_width_chars (GTK_ENTRY (uiwidget->uidata.widget), ebase->entrySize);
   gtk_entry_set_max_length (GTK_ENTRY (uiwidget->uidata.widget), ebase->maxSize);
   gtk_entry_set_input_purpose (GTK_ENTRY (uiwidget->uidata.widget), GTK_INPUT_PURPOSE_FREE_FORM);
-  gtk_widget_set_margin_top (uiwidget->uidata.widget, uiBaseMarginSz);
-  gtk_widget_set_margin_start (uiwidget->uidata.widget, uiBaseMarginSz * 2);
   gtk_widget_set_halign (uiwidget->uidata.widget, GTK_ALIGN_START);
   gtk_widget_set_hexpand (uiwidget->uidata.widget, FALSE);
 

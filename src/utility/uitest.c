@@ -727,6 +727,7 @@ uitestUIChgInd (uitest_t *uitest)
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateChangeIndicator (hbox);
+  uiWidgetSetMarginEnd (uiwidgetp, 4);
   uichgindMarkNormal (uiwidgetp);
   uitest->wcont [UITEST_W_CI_A] = uiwidgetp;
 
@@ -747,6 +748,7 @@ uitestUIChgInd (uitest_t *uitest)
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateChangeIndicator (hbox);
+  uiWidgetSetMarginEnd (uiwidgetp, 4);
   uichgindMarkChanged (uiwidgetp);
   uitest->wcont [UITEST_W_CI_B] = uiwidgetp;
 
@@ -1208,6 +1210,7 @@ uitestUINotebook (uitest_t *uitest)
 
   uitest->wcont [UITEST_W_NB_H] = uiCreateNotebook ();
   uiBoxPackStartExpand (vbox, uitest->wcont [UITEST_W_NB_H]);
+  uiWidgetSetMarginTop (uitest->wcont [UITEST_W_NB_H], 2);
 
   /* horiz %d */
 
@@ -1229,6 +1232,7 @@ uitestUINotebook (uitest_t *uitest)
 
   uitest->wcont [UITEST_W_NB_HI] = uiCreateNotebook ();
   uiBoxPackStartExpand (vbox, uitest->wcont [UITEST_W_NB_HI]);
+  uiWidgetSetMarginTop (uitest->wcont [UITEST_W_NB_HI], 2);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff), "led_off", ".svg",
       PATHBLD_MP_DIR_IMG);

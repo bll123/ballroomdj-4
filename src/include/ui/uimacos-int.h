@@ -33,9 +33,7 @@ extern "C" {
 typedef struct macoslayout {
   NSStackView   *container;
   NSEdgeInsets  margins;
-  bool          centered;
-  bool          expand;
-  bool          alignright;
+  bool          expandchildren;
 } macoslayout_t;
 
 #if defined (__cplusplus) || defined (c_plusplus)

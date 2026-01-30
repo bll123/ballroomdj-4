@@ -29,8 +29,6 @@ uiCreateProgressBar (void)
   widget = gtk_progress_bar_new ();
   gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
   gtk_widget_set_hexpand (widget, TRUE);
-  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
-  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   uiwidget = uiwcontAlloc (WCONT_T_PROGRESS_BAR, WCONT_T_PROGRESS_BAR);
   uiwcontSetWidget (uiwidget, widget, NULL);
   return uiwidget;

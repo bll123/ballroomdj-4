@@ -732,6 +732,8 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetAllMargins (uiwidgetp, 10);
   uiWidgetExpandHoriz (uiwidgetp);
+  uiWidgetAlignHorizCenter (uiwidgetp);
+  uiWidgetAlignVertCenter (uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);

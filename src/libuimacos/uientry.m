@@ -42,7 +42,7 @@ uiEntryInit (int entrySize, int maxSize)
   [widget setDrawsBackground : YES];
   [widget setEditable : YES];
   [widget setSelectable : YES];
-  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
   widget.needsDisplay = true;
 
   uiwidget = uiwcontAlloc (WCONT_T_ENTRY, WCONT_T_ENTRY);
