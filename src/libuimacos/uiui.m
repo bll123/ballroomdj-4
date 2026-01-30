@@ -199,8 +199,6 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
 //    layout->container.needsDisplay = YES;
 //    view.needsDisplay = YES;
 
-    [view setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
-
     [layout->container setHuggingPriority :
         NSLayoutPriorityRequired
         forOrientation : NSLayoutConstraintOrientationHorizontal];
@@ -228,6 +226,9 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
     [view setContentCompressionResistancePriority :
         NSLayoutPriorityRequired
         forOrientation : NSLayoutConstraintOrientationVertical];
+
+    view.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
+    layout->container.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
   }
 
 // ### this situation needs to be handled
