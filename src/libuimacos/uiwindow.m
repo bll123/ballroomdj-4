@@ -144,6 +144,8 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   }
 
   box = uibox->uidata.widget;
+  box.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+
   [win setContentView : box];
   [win makeMainWindow];
 
@@ -517,8 +519,8 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   layout = uiwidget->uidata.layout;
   layout->expandchildren = true;
 
-  [winbox setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
-  [widget setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
+  winbox.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+  widget.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
 
   return;
 }

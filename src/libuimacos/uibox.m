@@ -229,7 +229,8 @@ uiCreateBox (int orientation)
   [box setOrientation : orientation];
 //  [box setTranslatesAutoresizingMaskIntoConstraints : NO];
   [box setDistribution : NSStackViewDistributionGravityAreas];
-  [box setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
+  box.autoresizingMask = NSViewNotSizable;
+  box.needsDisplay = true;
   box.spacing = 1.0;
   box.layerContentsRedrawPolicy = NSViewLayerContentsRedrawBeforeViewResize;
 

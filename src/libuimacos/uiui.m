@@ -193,8 +193,6 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
     view = uiwidget->uidata.widget;
 
     layout->container = [[NSStackView alloc] init];
-    [layout->container setAutoresizingMask :
-        NSViewWidthSizable | NSViewHeightSizable];
     layout->container.spacing = 0.0;
     layout->container.edgeInsets = layout->margins;
     [layout->container addView : view inGravity : NSStackViewGravityCenter];

@@ -49,28 +49,8 @@ uiWidgetExpandHoriz (uiwcont_t *uiwidget)
   widget = uiwidget->uidata.packwidget;
   [widget.widthAnchor
       constraintLessThanOrEqualToConstant : 600.0].active = YES;
-#if 0
-  NSView          *super;
-  macoslayout_t   *layout;
+  widget.autoresizingMask |= NSViewWidthSizable;
 
-  if (uiwidget == NULL) {
-    return;
-  }
-
-  container = uiwidget->uidata.packwidget;
-
-  if (uiwidget->packed == true) {
-// ### how to do this?
-//    [super.leadingAnchor
-//        constraintLessThanOrEqualToAnchor : container.leadingAnchor
-//        constant : layout->margins.left].active = YES;
-//    [super.trailingAnchor
-//        constraintLessThanOrEqualToAnchor : container.trailingAnchor
-//        constant : layout->margins.right].active = YES;
-  }
-  [container setAutoresizingMask : NSViewWidthSizable];
-  container.needsDisplay = true;
-#endif
   return;
 }
 
@@ -91,34 +71,8 @@ uiWidgetExpandVert (uiwcont_t *uiwidget)
   widget = uiwidget->uidata.packwidget;
   [widget.heightAnchor
       constraintLessThanOrEqualToConstant : 600.0].active = YES;
-#if 0
-  NSView          *widget;
-  macoslayout_t   *layout;
-  NSView          *container;
+  widget.autoresizingMask |= NSViewHeightSizable;
 
-  if (uiwidget == NULL) {
-    return;
-  }
-
-  widget = uiwidget->uidata.widget;
-
-  layout = uiwidget->uidata.layout;
-//  container = layout->container;
-  if (uiwidget->packed == true) {
-//    [widget.topAnchor
-//        constraintLessThanOrEqualToAnchor : container.topAnchor
-//        constant : 600.0].active = YES;
-//    [widget.bottomAnchor
-//        constraintLessThanOrEqualToAnchor : container.bottomAnchor
-//        constant : 600.0].active = YES;
-//    [widget.layoutMarginsGuide.topAnchor
-//        constraintEqualToAnchor : container.layoutMarginsGuide.topAnchor].active = YES;
-//    [widget.layoutMarginsGuide.bottomAnchor
-//        constraintEqualToAnchor : container.layoutMarginsGuide.bottomAnchor].active = YES;
-  }
-  [widget setAutoresizingMask : NSViewHeightSizable];
-  widget.needsDisplay = true;
-#endif
   return;
 }
 
@@ -291,13 +245,15 @@ uiWidgetAlignHorizFill (uiwcont_t *uiwidget)
   widget = uiwidget->uidata.packwidget;
   [widget.widthAnchor
       constraintLessThanOrEqualToConstant : 600.0].active = YES;
+  widget.autoresizingMask |= NSViewWidthSizable;
+
   return;
 }
 
 void
 uiWidgetAlignHorizStart (uiwcont_t *uiwidget)
 {
-  NSView    *widget;
+  NSView    *view;
 
   if (uiwidget == NULL) {
     return;
@@ -310,15 +266,17 @@ uiWidgetAlignHorizStart (uiwcont_t *uiwidget)
     return;
   }
 
-  widget = uiwidget->uidata.widget;
-  widget.needsDisplay = true;
+  view = uiwidget->uidata.widget;
+  view.autoresizingMask |= NSViewMaxXMargin;
+  view.needsDisplay = true;
+
   return;
 }
 
 void
 uiWidgetAlignHorizEnd (uiwcont_t *uiwidget)
 {
-  NSView    *widget;
+  NSView    *view;
 
   if (uiwidget == NULL) {
     return;
@@ -331,8 +289,10 @@ uiWidgetAlignHorizEnd (uiwcont_t *uiwidget)
     return;
   }
 
-  widget = uiwidget->uidata.widget;
-  widget.needsDisplay = true;
+  view = uiwidget->uidata.widget;
+  view.autoresizingMask |= NSViewMinXMargin;
+  view.needsDisplay = YES;
+
   return;
 }
 
@@ -340,7 +300,6 @@ void
 uiWidgetAlignHorizCenter (uiwcont_t *uiwidget)
 {
   NSView        *view;
-  macoslayout_t *layout;
 
   if (uiwidget == NULL) {
     return;
@@ -354,10 +313,8 @@ uiWidgetAlignHorizCenter (uiwcont_t *uiwidget)
   }
 
   view = uiwidget->uidata.widget;
-
-  layout = uiwidget->uidata.layout;
-
-  uiWidgetUpdateLayout (uiwidget);
+  view.autoresizingMask |= NSViewMinXMargin | NSViewMaxXMargin;
+  view.needsDisplay = YES;
 
   return;
 }
@@ -381,20 +338,23 @@ uiWidgetAlignVertFill (uiwcont_t *uiwidget)
   widget = uiwidget->uidata.packwidget;
   [widget.heightAnchor
       constraintLessThanOrEqualToConstant : 600.0].active = YES;
+
   return;
 }
 
 void
 uiWidgetAlignVertStart (uiwcont_t *uiwidget)
 {
-  NSView    *widget;
+  NSView    *view;
 
   if (uiwidget == NULL) {
     return;
   }
 
-  widget = uiwidget->uidata.widget;
-  widget.needsDisplay = true;
+  view = uiwidget->uidata.widget;
+  view.autoresizingMask |= NSViewMaxYMargin;
+  view.needsDisplay = true;
+
   return;
 }
 
@@ -402,16 +362,13 @@ void
 uiWidgetAlignVertCenter (uiwcont_t *uiwidget)
 {
   NSView        *view;
-  macoslayout_t *layout;
 
   if (uiwidget == NULL) {
     return;
   }
 
   view = uiwidget->uidata.widget;
-
-  layout = uiwidget->uidata.layout;
-  uiWidgetUpdateLayout (uiwidget);
+  view.autoresizingMask |= NSViewMinYMargin | NSViewMaxYMargin;
 
   return;
 }
