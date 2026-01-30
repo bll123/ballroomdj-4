@@ -24,6 +24,10 @@
 #include "ui/uibox.h"
 #include "ui/uiwidget.h"
 
+@interface IBox : NSStackView {}
+- (BOOL) isFlipped;
+@end
+
 @implementation IBox
 - (BOOL) isFlipped {
   return YES;
@@ -36,6 +40,28 @@ typedef struct uibox {
 } uibox_t;
 
 static uiwcont_t * uiCreateBox (int orientation);
+
+#if MACOS_UI_DEBUG
+enum {
+  MACOS_UI_DBG_COLS = 5,
+};
+
+typedef struct dbgcol {
+  double  r;
+  double  g;
+  double  b;
+} dbgcol_t;
+
+static dbgcol_t dbgcols [MACOS_UI_DBG_COLS] = {
+  { 100.0 / 255.0,   0.0 / 255.0,   0.0 / 255.0 },
+  {   0.0 / 255.0, 100.0 / 255.0,   0.0 / 255.0 },
+  {   0.0 / 255.0,   0.0 / 255.0, 100.0 / 255.0 },
+  { 100.0 / 255.0, 100.0 / 255.0,   0.0 / 255.0 },
+  {   0.0 / 255.0, 100.0 / 255.0, 100.0 / 255.0 },
+};
+static int dbgcolidx = 0;
+
+#endif
 
 uiwcont_t *
 uiCreateVertBox (void)
@@ -197,10 +223,20 @@ uiCreateBox (int orientation)
   [box setDistribution : NSStackViewDistributionGravityAreas];
   [box setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
   box.spacing = 1.0;
+  box.layerContentsRedrawPolicy = NSViewLayerContentsRedrawBeforeViewResize;
 
 #if MACOS_UI_DEBUG
   [box setFocusRingType : NSFocusRingTypeExterior];
   [box setWantsLayer : YES];
+  [[box layer] setBorderColor :
+      [NSColor colorWithRed : dbgcols [dbgcolidx].r
+      green : dbgcols [dbgcolidx].g
+      blue : dbgcols [dbgcolidx].b
+      alpha:1.0].CGColor];
+  ++dbgcolidx;
+  if (dbgcolidx >= MACOS_UI_DBG_COLS) {
+    dbgcolidx = 0;
+  }
   [[box layer] setBorderWidth : 2.0];
 #endif
 
@@ -217,6 +253,7 @@ uiCreateBox (int orientation)
 
   [box setIdentifier :
       [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+fprintf (stderr, "c-box: %d\n", uiwidget->id);
 
   return uiwidget;
 }

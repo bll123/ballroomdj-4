@@ -173,6 +173,10 @@ uiwcontUIInit (uiwcont_t *uiwidget)
   layout->alignright = false;
 }
 
+/* on macos, every view is wrapped in a NSStackView so that the margins */
+/* can be set.  */
+/* Supposedly a layoutguide can be used as a container, but */
+/* it is not a view, and I'm not sure how to make it work */
 void
 uiwcontUIWidgetInit (uiwcont_t *uiwidget)
 {
@@ -198,17 +202,32 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
 //    layout->container.needsDisplay = YES;
 //    view.needsDisplay = YES;
 
-    [layout->container setHuggingPriority : 1000
+    [layout->container setHuggingPriority :
+        NSLayoutPriorityRequired
         forOrientation : NSLayoutConstraintOrientationHorizontal];
-    [layout->container setHuggingPriority : 1000
+    [layout->container setHuggingPriority :
+        NSLayoutPriorityRequired
         forOrientation : NSLayoutConstraintOrientationVertical];
-    [layout->container setContentHuggingPriority : 1000
+    [layout->container setContentHuggingPriority :
+        NSLayoutPriorityRequired
         forOrientation : NSLayoutConstraintOrientationHorizontal];
-    [layout->container setContentHuggingPriority : 1000
+    [layout->container setContentHuggingPriority :
+        NSLayoutPriorityRequired
         forOrientation : NSLayoutConstraintOrientationVertical];
-    [view setContentHuggingPriority : 1000
+
+    [view setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
+    [view setContentHuggingPriority :
+        NSLayoutPriorityRequired
         forOrientation : NSLayoutConstraintOrientationHorizontal];
-    [view setContentHuggingPriority : 1000
+    [view setContentHuggingPriority :
+        NSLayoutPriorityRequired
+        forOrientation : NSLayoutConstraintOrientationVertical];
+    /* otherwise everything get shrunk to a minimal size */
+    [view setContentCompressionResistancePriority :
+        NSLayoutPriorityRequired
+        forOrientation : NSLayoutConstraintOrientationHorizontal];
+    [view setContentCompressionResistancePriority :
+        NSLayoutPriorityRequired
         forOrientation : NSLayoutConstraintOrientationVertical];
   }
 

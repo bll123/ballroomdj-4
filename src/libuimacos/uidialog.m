@@ -35,6 +35,12 @@ typedef struct uiselect {
   const char  *mimetype;
 } uiselect_t;
 
+@interface IDWindow : NSWindow { }
+@property uiwcont_t *uibox;
+- (instancetype) init;
+- (void) awakeFromNib;
+@end
+
 @implementation IDWindow
 
 - (instancetype)init {

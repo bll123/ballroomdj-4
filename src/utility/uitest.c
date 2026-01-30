@@ -25,6 +25,7 @@
 #include "pathbld.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "uiclass.h"
 #include "uidd.h"
 #include "uiutils.h"
 #include "uivirtlist.h"
@@ -1376,6 +1377,18 @@ uitestUIMisc (uitest_t *uitest)
 
   uiwidget = uiCreateScale (0.0, 100.0, 1.0, 5.0, 45.0, 1);
   uiBoxPackStart (vbox, uiwidget);
+  uiwcontFree (uiwidget);
+
+  uiwidget = uiCreateLabel (" ");
+  uiBoxPackStart (vbox, uiwidget);
+  uiwcontFree (uiwidget);
+
+  /* separator */
+
+  uiwidget = uiCreateHorizSeparator ();
+  uiBoxPackStart (vbox, uiwidget);
+  uiSeparatorAddClass (ACCENT_CLASS, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiWidgetAddClass (uiwidget, ACCENT_CLASS);
   uiwcontFree (uiwidget);
 
   uiwcontFree (vbox);

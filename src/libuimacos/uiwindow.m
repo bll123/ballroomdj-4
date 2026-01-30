@@ -25,10 +25,18 @@
 #include "ui/uiwidget.h"
 #include "ui/uiwindow.h"
 
+@interface IWindow : NSWindow { }
+@property callback_t  *closecb;
+@property callback_t  *doubleclickcb;
+- (instancetype) init;
+- (void) setCloseCallback : (callback_t *) tcb;
+- (void) setDoubleClickCallback : (callback_t *) tcb;
+- (void) awakeFromNib;
+@end
+
 @implementation IWindow
 
-- (instancetype)init {
-
+- (instancetype) init {
   [super initWithContentRect : NSMakeRect(10, 10, 100, 100)
       styleMask : NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
           NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable |
@@ -36,10 +44,20 @@
       backing : NSBackingStoreBuffered
       defer : NO];
   [self setIsVisible : YES];
+  self.closecb = NULL;
+  self.doubleclickcb = NULL;
   return self;
 }
 
-- (void)awakeFromNib {
+- (void) setCloseCallback : (callback_t *) tcb {
+  self.closecb = tcb;
+}
+
+- (void) setDoubleClickCallback : (callback_t *) tcb {
+  self.doubleclickcb = tcb;
+}
+
+- (void) awakeFromNib {
 //  IWindow*  w = self;
 //  NSStackView *box;
 
@@ -50,46 +68,53 @@
 
 @implementation IWindowDelegate : NSObject
 
-- (void)windowDidBecomeKey : (NSNotification *)notification {
-    NSLog(@"Window : become key");
+- (void) windowDidBecomeMain : (NSNotification *)notification {
+  NSLog (@"Window : become main");
 }
 
-- (void)windowDidBecomeMain : (NSNotification *)notification {
-    NSLog(@"Window : become main");
+- (void) windowDidResignMain : (NSNotification *)notification {
+  NSLog  (@"Window : resign main");
 }
 
-- (void)windowDidResignKey : (NSNotification *)notification {
-    NSLog(@"Window : resign key");
+- (void) windowDidBecomeKey : (NSNotification *)notification {
+  NSLog (@"Window : become key");
 }
 
-- (void)windowDidResignMain : (NSNotification *)notification {
-    NSLog(@"Window : resign main");
+- (void) windowDidResignKey : (NSNotification *)notification {
+  NSLog (@"Window : resign key");
 }
 
-- (BOOL)canBecomeKeyWindow {
-    // Required for NSWindowStyleMaskBorderless windows
-    return YES;
+- (BOOL) canBecomeKeyWindow {
+  // Required for NSWindowStyleMaskBorderless windows
+  return YES;
 }
 
-- (BOOL)canBecomeMainWindow {
-    return YES;
+- (BOOL) canBecomeMainWindow {
+  return YES;
 }
 
-- (IBAction) OnButton1Click : (id)sender {
-NSLog(@"button-1");
+- (IBAction) OnButton1Click : (id) sender {
+NSLog (@"Window : button-1");
 }
 
-- (IBAction) OnButton2Click : (id)sender {
-NSLog(@"button-2");
+- (IBAction) OnButton2Click : (id) sender {
+//  IWindow *window = sender.object;
+NSLog (@"Window : button-2");
+//  if (window.doubleclickcb != NULL) {
+//    callbackHandler (window.doubleclickcb);
+//  }
 }
 
 // This will close/terminate the application when the main window is closed.
 - (void)windowWillClose : (NSNotification *)notification {
-    IWindow *window = notification.object;
-NSLog(@"Window : closing");
-    if (window.isMainWindow) {
-      [NSApp terminate : nil];
-    }
+  IWindow *window = notification.object;
+NSLog (@"Window : closing");
+  if (window.closecb != NULL) {
+    callbackHandler (window.closecb);
+  }
+  if (window.isMainWindow) {
+    [NSApp terminate : nil];
+  }
 }
 
 @end
@@ -131,6 +156,8 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
 
   windowDelegate = [[IWindowDelegate alloc] init];
   [win setDelegate : windowDelegate];
+
+  [win setCloseCallback : uicb];
 
   uiwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_WINDOW);
   uiwcontSetWidget (uiwin, win, NULL);
@@ -356,9 +383,14 @@ uiCreateDialogWindow (uiwcont_t *parentwin,
 void
 uiWindowSetDoubleClickCallback (uiwcont_t *uiwindow, callback_t *uicb)
 {
+  IWindow  *win;
+
   if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-set-dclick-cb")) {
     return;
   }
+
+  win = uiwindow->uidata.widget;
+  [win setCloseCallback : uicb];
 
   return;
 }
@@ -458,19 +490,30 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   }
   if (uiwindow->wtype == WCONT_T_WINDOW) {
     NSWindow    *win;
+    NSView      *twidget = NULL;
 
     win = uiwindow->uidata.widget;
     winbox = [win contentView];
     [winbox addView : container inGravity : grav];
+
+    twidget = uiwidget->uidata.packwidget;
+    [winbox.safeAreaLayoutGuide.leadingAnchor
+        constraintEqualToAnchor : twidget.leadingAnchor].active = YES;
+    [winbox.safeAreaLayoutGuide.trailingAnchor
+        constraintEqualToAnchor : twidget.trailingAnchor].active = YES;
+    [winbox.safeAreaLayoutGuide.topAnchor
+        constraintEqualToAnchor : twidget.topAnchor].active = YES;
+    [winbox.safeAreaLayoutGuide.bottomAnchor
+        constraintEqualToAnchor : twidget.bottomAnchor].active = YES;
   }
 
+  uiwidget->packed = true;
   layout = uiwidget->uidata.layout;
+  layout->expand = true;
 
   [winbox setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
   [widget setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
-  layout->expand = true;
 
-  uiwidget->packed = true;
   return;
 }
 

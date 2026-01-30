@@ -31,6 +31,14 @@ typedef struct uibutton {
   NSImage         *image;
 } uibutton_t;
 
+@interface IButton : NSButton {
+  uiwcont_t   *uiwidget;
+}
+- (void) setUIWidget: (uiwcont_t *) tuiwidget;
+- (IBAction) OnButton1Click: (id) sender;
+- (BOOL) isFlipped;
+@end
+
 @implementation IButton
 
 - (void) setUIWidget : (uiwcont_t *) tuiwidget {
@@ -82,6 +90,7 @@ uiCreateButton (callback_t *uicb, const char *title,
     [widget setImage : image];
     [widget setImagePosition : NSImageOnly];
     if (title != NULL) {
+      /* if the image is set, the title text is used for the tooltip */
       [widget setToolTip : [NSString stringWithUTF8String : title]];
     }
   } else {
@@ -198,7 +207,9 @@ uiButtonSetFlat (uiwcont_t *uiwidget)
   }
 
   button = uiwidget->uidata.widget;
-  [button setBordered : NO];
+
+  button.bordered = NO;
+  button.bezelStyle = NSBezelStyleToolbar;
 
   return;
 }

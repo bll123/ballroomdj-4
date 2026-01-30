@@ -262,7 +262,6 @@ uiWidgetAlignHorizCenter (uiwcont_t *uiwidget)
 {
   NSView        *view;
   macoslayout_t *layout;
-  NSStackView   *stview;
 
   if (uiwidget == NULL) {
     return;
@@ -283,7 +282,6 @@ uiWidgetAlignVertFill (uiwcont_t *uiwidget)
 {
   NSView        *view;
   macoslayout_t *layout;
-  NSStackView   *stview;
 
   if (uiwidget == NULL) {
     return;
@@ -316,7 +314,6 @@ uiWidgetAlignVertCenter (uiwcont_t *uiwidget)
 {
   NSView        *view;
   macoslayout_t *layout;
-  NSStackView   *stview;
 
   if (uiwidget == NULL) {
     return;
