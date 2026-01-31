@@ -36,7 +36,9 @@ extern "C" {
 - (BOOL) isFlipped;
 @end
 
-#define MACOS_UI_DEBUG 1
+/* additional routines */
+
+void uiWidgetUpdateLayout (uiwcont_t *uiwidget);
 
 /* structures */
 
@@ -45,6 +47,8 @@ typedef struct macoslayout {
   NSEdgeInsets  margins;
   bool          expandchildren;
 } macoslayout_t;
+
+#define MACOS_UI_DEBUG 1
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

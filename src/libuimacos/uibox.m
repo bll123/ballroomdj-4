@@ -105,12 +105,13 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
   }
   [box addView : widget inGravity : grav];
 
-  uiwidget->packed = true;
-
   if (uibox->uidata.layout->expandchildren) {
     [widget.widthAnchor
         constraintLessThanOrEqualToConstant : 600.0].active = YES;
   }
+
+  uiwidget->packed = true;
+  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -139,6 +140,7 @@ uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
     uiwidget->uidata.layout->expandchildren = true;
   }
   uiwidget->packed = true;
+  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -165,6 +167,7 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
   [box insertView : widget atIndex : 0 inGravity : grav];
 
   uiwidget->packed = true;
+  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
@@ -198,6 +201,7 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
     uiwidget->uidata.layout->expandchildren = true;
   }
   uiwidget->packed = true;
+  uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
