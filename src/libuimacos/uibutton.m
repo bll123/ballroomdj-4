@@ -99,13 +99,13 @@ uiCreateButton (callback_t *uicb, const char *title,
   [widget setIdentifier :
       [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
 
-  [widget setBezelStyle : NSBezelStyleRounded];
+//  [widget setBezelStyle : NSBezelStyleRounded];
   [widget setTarget : widget];
   [widget setUIWidget : uiwidget];
   [widget setCallback : uicb];
   [widget setAction : @selector(OnButton1Click : )];
 //  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
-  [widget setBordered : YES];
+  widget.bordered = YES;
   widget.needsDisplay = true;
 
 #if MACOS_UI_DEBUG
@@ -204,6 +204,7 @@ uiButtonSetFlat (uiwcont_t *uiwidget)
 
   button.bordered = NO;
   button.bezelStyle = NSBezelStyleToolbar;
+  button.needsDisplay = YES;
 
   return;
 }

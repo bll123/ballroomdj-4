@@ -37,11 +37,12 @@ uiSizeGroupAdd (uiwcont_t *uisg, uiwcont_t *uiwidget)
     return;
   }
 
-  first = uisg->uidata.widget;
-  widget = uiwidget->uidata.widget;
+  first = uisg->uidata.packwidget;
+  widget = uiwidget->uidata.packwidget;
 
   if (first == NULL) {
-    uisg->uidata.widget = widget;
+    uisg->uidata.widget = uiwidget->uidata.widget;
+    uisg->uidata.packwidget = widget;
     uisg->packed = uiwidget->packed;
     return;
   }
@@ -60,8 +61,15 @@ uiSizeGroupAdd (uiwcont_t *uisg, uiwcont_t *uiwidget)
     return;
   }
 
-  [widget.layoutMarginsGuide.widthAnchor
-      constraintEqualToAnchor : first.layoutMarginsGuide.widthAnchor].active = YES;
+//  [widget.widthAnchor
+//      constraintEqualToAnchor : first.widthAnchor].active = YES;
+
+  first = uisg->uidata.widget;
+  widget = uiwidget->uidata.widget;
+
+  [widget.widthAnchor
+      constraintEqualToAnchor : first.widthAnchor].active = YES;
+
   return;
 }
 

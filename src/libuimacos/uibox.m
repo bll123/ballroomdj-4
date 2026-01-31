@@ -42,8 +42,14 @@ typedef struct uibox {
 static uiwcont_t * uiCreateBox (int orientation);
 
 #if MACOS_UI_DEBUG
+
 enum {
-  MACOS_UI_DBG_COLS = 5,
+  MACOS_UI_DBG_WINDOW,
+  MACOS_UI_DBG_EXP_CHILDREN,
+  MACOS_UI_DBG_NORM,
+  MACOS_UI_DBG_EXP_WIDTH,
+  MACOS_UI_DBG_EXP_HEIGHT,
+  MACOS_UI_DBG_COLS,
 };
 
 typedef struct dbgcol {
@@ -53,13 +59,12 @@ typedef struct dbgcol {
 } dbgcol_t;
 
 static dbgcol_t dbgcols [MACOS_UI_DBG_COLS] = {
-  { 100.0 / 255.0,   0.0 / 255.0,   0.0 / 255.0 },
-  {   0.0 / 255.0, 100.0 / 255.0,   0.0 / 255.0 },
-  {   0.0 / 255.0,   0.0 / 255.0, 100.0 / 255.0 },
-  { 100.0 / 255.0, 100.0 / 255.0,   0.0 / 255.0 },
-  {   0.0 / 255.0, 100.0 / 255.0, 100.0 / 255.0 },
+  { 150.0 / 255.0,   0.0 / 255.0,   0.0 / 255.0 },
+  {   0.0 / 255.0, 150.0 / 255.0,   0.0 / 255.0 },
+  {   0.0 / 255.0,   0.0 / 255.0, 150.0 / 255.0 },
+  { 150.0 / 255.0, 150.0 / 255.0,   0.0 / 255.0 },
+  {   0.0 / 255.0, 150.0 / 255.0, 150.0 / 255.0 },
 };
-static int dbgcolidx = 0;
 
 #endif
 
@@ -105,9 +110,23 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
   }
   [box addView : widget inGravity : grav];
 
-  if (uibox->uidata.layout->expandchildren) {
-    [widget.widthAnchor
-        constraintLessThanOrEqualToConstant : 600.0].active = YES;
+  if (uibox->uidata.layout->expandchildren &&
+      uibox->wtype == WCONT_T_VBOX) {
+    [box.widthAnchor constraintEqualToAnchor :
+        widget.widthAnchor].active = YES;
+    widget.autoresizingMask |= NSViewWidthSizable;
+#if MACOS_UI_DEBUG
+    if (uiwidget->wbasetype == WCONT_T_BOX) {
+fprintf (stderr, "c-box: %d pack into w\n", uiwidget->id);
+      widget = uiwidget->uidata.widget;
+      [[widget layer] setBorderColor :
+          [NSColor colorWithRed : dbgcols [MACOS_UI_DBG_NORM].r
+          green : dbgcols [MACOS_UI_DBG_NORM].g
+          blue : dbgcols [MACOS_UI_DBG_NORM].b
+          alpha:1.0].CGColor];
+      widget.needsDisplay = YES;
+    }
+#endif
   }
 
   uiwidget->packed = true;
@@ -136,9 +155,29 @@ uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   widget = uiwidget->uidata.packwidget;
   [box addView : widget inGravity : grav];
 
+  if (uibox->uidata.layout->expandchildren &&
+      uibox->wtype == WCONT_T_VBOX) {
+    [box.widthAnchor constraintEqualToAnchor :
+        widget.widthAnchor].active = YES;
+    widget.autoresizingMask |= NSViewWidthSizable;
+#if MACOS_UI_DEBUG
+    if (uiwidget->wbasetype == WCONT_T_BOX) {
+fprintf (stderr, "c-box: %d pack into w-e\n", uiwidget->id);
+      widget = uiwidget->uidata.widget;
+      [[widget layer] setBorderColor :
+          [NSColor colorWithRed : dbgcols [MACOS_UI_DBG_EXP_WIDTH].r
+          green : dbgcols [MACOS_UI_DBG_EXP_WIDTH].g
+          blue : dbgcols [MACOS_UI_DBG_EXP_WIDTH].b
+          alpha:1.0].CGColor];
+      widget.needsDisplay = YES;
+    }
+#endif
+  }
+
   if (uiwidget->wbasetype == WCONT_T_BOX) {
     uiwidget->uidata.layout->expandchildren = true;
   }
+
   uiwidget->packed = true;
   uiWidgetUpdateLayout (uiwidget);
 
@@ -165,6 +204,25 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
     grav = NSStackViewGravityBottom;
   }
   [box insertView : widget atIndex : 0 inGravity : grav];
+
+  if (uibox->uidata.layout->expandchildren &&
+      uibox->wtype == WCONT_T_HBOX) {
+    [box.heightAnchor constraintEqualToAnchor :
+        widget.heightAnchor].active = YES;
+    widget.autoresizingMask |= NSViewHeightSizable;
+#if MACOS_UI_DEBUG
+    if (uiwidget->wbasetype == WCONT_T_BOX) {
+fprintf (stderr, "c-box: %d pack into h\n", uiwidget->id);
+      widget = uiwidget->uidata.widget;
+      [[widget layer] setBorderColor :
+          [NSColor colorWithRed : dbgcols [MACOS_UI_DBG_NORM].r
+          green : dbgcols [MACOS_UI_DBG_NORM].g
+          blue : dbgcols [MACOS_UI_DBG_NORM].b
+          alpha:1.0].CGColor];
+      widget.needsDisplay = YES;
+    }
+#endif
+  }
 
   uiwidget->packed = true;
   uiWidgetUpdateLayout (uiwidget);
@@ -197,9 +255,29 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 
   [box insertView : widget atIndex : 0 inGravity : grav];
 
+  if (uibox->uidata.layout->expandchildren &&
+      uibox->wtype == WCONT_T_HBOX) {
+    [box.heightAnchor constraintEqualToAnchor :
+        widget.heightAnchor].active = YES;
+    widget.autoresizingMask |= NSViewHeightSizable;
+#if MACOS_UI_DEBUG
+    if (uiwidget->wbasetype == WCONT_T_BOX) {
+fprintf (stderr, "c-box: %d pack into h-e\n", uiwidget->id);
+      widget = uiwidget->uidata.widget;
+      [[widget layer] setBorderColor :
+          [NSColor colorWithRed : dbgcols [MACOS_UI_DBG_EXP_HEIGHT].r
+          green : dbgcols [MACOS_UI_DBG_EXP_HEIGHT].g
+          blue : dbgcols [MACOS_UI_DBG_EXP_HEIGHT].b
+          alpha:1.0].CGColor];
+      widget.needsDisplay = YES;
+    }
+#endif
+  }
+
   if (uiwidget->wbasetype == WCONT_T_BOX) {
     uiwidget->uidata.layout->expandchildren = true;
   }
+
   uiwidget->packed = true;
   uiWidgetUpdateLayout (uiwidget);
 
@@ -242,14 +320,10 @@ uiCreateBox (int orientation)
   [box setFocusRingType : NSFocusRingTypeExterior];
   [box setWantsLayer : YES];
   [[box layer] setBorderColor :
-      [NSColor colorWithRed : dbgcols [dbgcolidx].r
-      green : dbgcols [dbgcolidx].g
-      blue : dbgcols [dbgcolidx].b
+      [NSColor colorWithRed : dbgcols [MACOS_UI_DBG_WINDOW].r
+      green : dbgcols [MACOS_UI_DBG_WINDOW].g
+      blue : dbgcols [MACOS_UI_DBG_WINDOW].b
       alpha:1.0].CGColor];
-  ++dbgcolidx;
-  if (dbgcolidx >= MACOS_UI_DBG_COLS) {
-    dbgcolidx = 0;
-  }
   [[box layer] setBorderWidth : 2.0];
 #endif
 
@@ -267,7 +341,6 @@ uiCreateBox (int orientation)
 
   [box setIdentifier :
       [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
-fprintf (stderr, "c-box: %d\n", uiwidget->id);
 
   return uiwidget;
 }

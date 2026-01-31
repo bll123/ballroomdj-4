@@ -211,6 +211,13 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
     [layout->container setContentHuggingPriority :
         NSLayoutPriorityRequired
         forOrientation : NSLayoutConstraintOrientationVertical];
+    /* otherwise everything gets shrunk to a minimal size */
+    [layout->container setContentCompressionResistancePriority :
+        NSLayoutPriorityRequired
+        forOrientation : NSLayoutConstraintOrientationHorizontal];
+    [layout->container setContentCompressionResistancePriority :
+        NSLayoutPriorityRequired
+        forOrientation : NSLayoutConstraintOrientationVertical];
 
     [view setContentHuggingPriority :
         NSLayoutPriorityRequired
@@ -227,7 +234,7 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
         NSLayoutPriorityRequired
         forOrientation : NSLayoutConstraintOrientationVertical];
 
-    view.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
+//    view.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
     layout->container.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
   }
 

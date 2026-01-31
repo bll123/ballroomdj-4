@@ -64,8 +64,8 @@ uiCreateSwitch (int value)
   uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_RADIO_BUTTON);
   uiwcontSetWidget (uiwidget, widget, NULL);
 
-  [widget setButtonType : NSButtonTypeToggle];
-  [widget setBezelStyle : NSBezelStyleToolbar];
+  widget.ButtonType = NSButtonTypeToggle;
+  widget.bezelStyle = NSBezelStyleToolbar;
   [widget setUIWidget : uiwidget];
   [widget setIdentifier :
       [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];

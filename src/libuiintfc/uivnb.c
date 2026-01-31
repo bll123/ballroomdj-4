@@ -39,6 +39,7 @@ typedef struct {
 
 typedef struct uivnb {
   uiwcont_t   *nb;
+  uiwcont_t   *sg;
   uiwcont_t   *vlist;
   uiwcont_t   *tablist [VNB_MAX_PAGECOUNT];
   uiwcont_t   *indlist [VNB_MAX_PAGECOUNT];
@@ -90,6 +91,8 @@ uivnbCreate (const char *ident, uiwcont_t *box)
   vnb->selected = -1;
   vnb->textdir = sysvarsGetNum (SVL_LOCALE_TEXT_DIR);
 
+  vnb->sg = uiCreateSizeGroupHoriz ();
+
   uiwcontFree (sw);
   uiwcontFree (hbox);
 
@@ -107,6 +110,7 @@ uivnbFree (uivnb_t *vnb)
 
   uiwcontFree (vnb->vlist);
   uiwcontFree (vnb->nb);
+  uiwcontFree (vnb->sg);
   mdfree (vnb);
 }
 
@@ -139,8 +143,11 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *nbtxt, int id)
   button = uiCreateButton (cb, nbtxt, NULL);
   uiButtonAlignLeft (button);
   uiButtonSetReliefNone (button);
-  uiBoxPackStartExpand (hbox, button);
+  uiBoxPackStart (hbox, button);
+  uiWidgetExpandHoriz (button);
   uiWidgetAddClass (button, LEFT_NB_CLASS);
+
+  uiSizeGroupAdd (vnb->sg, button);
 
   label = uiCreateLabel ("");
   uiBoxPackStart (hbox, label);
