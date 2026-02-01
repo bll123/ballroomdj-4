@@ -76,21 +76,6 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
 }
 
 void
-uiNotebookSetActionWidget (uiwcont_t *uinotebook, uiwcont_t *uiwidget)
-{
-  if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-set-action-widget")) {
-    return;
-  }
-  if (uiwidget == NULL) {
-    return;
-  }
-
-// ### I don't know if this is possible on macos
-
-  return;
-}
-
-void
 uiNotebookSetPage (uiwcont_t *uinotebook, int pagenum)
 {
   NSTabView   *nb;
@@ -101,18 +86,6 @@ uiNotebookSetPage (uiwcont_t *uinotebook, int pagenum)
 
   nb = uinotebook->uidata.widget;
   [nb selectTabViewItemAtIndex: pagenum];
-  return;
-}
-
-void
-uiNotebookHideShowPage (uiwcont_t *uinotebook, int pagenum, bool show)
-{
-  if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-hide-show")) {
-    return;
-  }
-
-// ### is this possible on macos?
-// it's an nsview?, it should be possible.
   return;
 }
 
@@ -128,12 +101,3 @@ uiNotebookSetCallback (uiwcont_t *uinotebook, callback_t *uicb)
 
   return;
 }
-
-void
-uiNotebookHideTabs (uiwcont_t *uinotebook)
-{
-  if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-tabs")) {
-    return;
-  }
-}
-

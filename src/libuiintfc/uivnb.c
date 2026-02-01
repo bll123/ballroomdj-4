@@ -70,7 +70,6 @@ uivnbCreate (uiwcont_t *box)
   uiWindowPackInWindow (sw, vnb->vlist);
 
   vnb->nb = uiCreateNotebook ();
-  uiNotebookHideTabs (vnb->nb);
   uiBoxPackStartExpand (hbox, vnb->nb);
 
   for (int i = 0; i < VNB_MAX_PAGECOUNT; ++i) {

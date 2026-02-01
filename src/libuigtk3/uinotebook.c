@@ -37,6 +37,7 @@ uiCreateNotebook (void)
   gtk_widget_set_hexpand (widget, TRUE);
   gtk_widget_set_vexpand (widget, FALSE);
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (widget), GTK_POS_TOP);
+  gtk_notebook_set_show_tabs (GTK_NOTEBOOK (widget), FALSE);
   uiwidget = uiwcontAlloc (WCONT_T_NOTEBOOK, WCONT_T_NOTEBOOK);
   uiwcontSetWidget (uiwidget, widget, NULL);
   return uiwidget;
@@ -70,20 +71,6 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
 }
 
 void
-uiNotebookSetActionWidget (uiwcont_t *uinotebook, uiwcont_t *uiwidget)
-{
-  if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-set-action-widget")) {
-    return;
-  }
-  if (uiwidget == NULL) {
-    return;
-  }
-
-  gtk_notebook_set_action_widget (GTK_NOTEBOOK (uinotebook->uidata.widget),
-      uiwidget->uidata.widget, GTK_PACK_END);
-}
-
-void
 uiNotebookSetPage (uiwcont_t *uinotebook, int pagenum)
 {
   if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-set-page")) {
@@ -91,20 +78,6 @@ uiNotebookSetPage (uiwcont_t *uinotebook, int pagenum)
   }
 
   gtk_notebook_set_current_page (GTK_NOTEBOOK (uinotebook->uidata.widget), pagenum);
-}
-
-void
-uiNotebookHideShowPage (uiwcont_t *uinotebook, int pagenum, bool show)
-{
-  GtkWidget       *page;
-
-  if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-hide-show")) {
-    return;
-  }
-
-  page = gtk_notebook_get_nth_page (
-      GTK_NOTEBOOK (uinotebook->uidata.widget), pagenum);
-  gtk_widget_set_visible (page, show);
 }
 
 void
@@ -119,16 +92,6 @@ uiNotebookSetCallback (uiwcont_t *uinotebook, callback_t *uicb)
 
   g_signal_connect (uinotebook->uidata.widget, "switch-page",
       G_CALLBACK (uiNotebookSwitchPageHandler), uicb);
-}
-
-void
-uiNotebookHideTabs (uiwcont_t *uinotebook)
-{
-  if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-tabs")) {
-    return;
-  }
-
-  gtk_notebook_set_show_tabs (GTK_NOTEBOOK (uinotebook->uidata.widget), FALSE);
 }
 
 /* internal routines */

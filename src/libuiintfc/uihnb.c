@@ -69,7 +69,6 @@ uihnbCreate (uiwcont_t *box)
 
   hnb->nb = uiCreateNotebook ();
   uiWidgetAddClass (hnb->nb, NB_HORIZ_CLASS);
-  uiNotebookHideTabs (hnb->nb);
   uiBoxPackStartExpand (vbox, hnb->nb);
 
   for (int i = 0; i < HNB_MAX_PAGECOUNT; ++i) {
