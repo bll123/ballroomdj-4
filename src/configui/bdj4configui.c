@@ -41,7 +41,6 @@
 #include "sysvars.h"
 #include "ui.h"
 #include "callback.h"
-#include "uinbutil.h"
 #include "uiutils.h"
 
 typedef struct configui {

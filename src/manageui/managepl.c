@@ -26,8 +26,8 @@
 #include "tmutil.h"
 #include "tagdef.h"
 #include "ui.h"
+#include "uihnb.h"
 #include "uilevel.h"
-#include "uinbutil.h"
 #include "uirating.h"
 #include "uiselectfile.h"
 #include "uiutils.h"
@@ -50,7 +50,6 @@ enum {
   MPL_W_MENU_PL,
   MPL_W_PL_TYPE,
   MPL_W_PL_NAME,
-  MPL_W_NB,
   MPL_W_STD_VBOX,
   MPL_W_MAX_PLAY_TIME,
   MPL_W_STOP_AT,
@@ -75,6 +74,7 @@ enum {
 
 typedef struct managepl {
   manageinfo_t    *minfo;
+  uihnb_t         *hnb;
   callback_t      *callbacks [MPL_CB_MAX];
   callback_t      *plloadcb;
   char            *ploldname;
@@ -84,7 +84,6 @@ typedef struct managepl {
   uiwcont_t       *wcont [MPL_W_MAX];
   uilevel_t       *uilowlevel;
   uilevel_t       *uihighlevel;
-  uinbtabid_t     *tabids;
   mpldance_t      *mpldnc;
   playlist_t      *playlist;
   bool            changed;
@@ -121,7 +120,6 @@ managePlaylistAlloc (manageinfo_t *minfo)
   managepl->plbackupcreated = false;
   managepl->wcont [MPL_W_MENU_PL] = uiMenuAlloc ();
   managepl->pltype = PLTYPE_AUTO;
-  managepl->tabids = uinbutilIDInit ();
   managepl->mpldnc = NULL;
   managepl->uirating = NULL;
   managepl->uilowlevel = NULL;
@@ -144,7 +142,6 @@ void
 managePlaylistFree (managepl_t *managepl)
 {
   if (managepl != NULL) {
-    uinbutilIDFree (managepl->tabids);
     dataFree (managepl->ploldname);
     if (managepl->mpldnc != NULL) {
       manageplDanceFree (managepl->mpldnc);
@@ -230,20 +227,16 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwcontFree (hbox);
 
-  managepl->wcont [MPL_W_NB] = uiCreateNotebook ();
-  uiBoxPackStartExpand (vboxp, managepl->wcont [MPL_W_NB]);
+  managepl->hnb = uihnbCreate (vboxp);
 
   /* settings */
 
   mvbox = uiCreateVertBox ();
   /* CONTEXT: playlist management: notebook tab title: settings */
-  uiwidgetp = uiCreateLabel (_("Settings"));
-  uiNotebookAppendPage (managepl->wcont [MPL_W_NB], mvbox, uiwidgetp);
+  uihnbAppendPage (managepl->hnb, mvbox, _("Settings"), NULL, MPL_TAB_SETTINGS);
   uiWidgetSetMarginTop (mvbox, 4);
   uiWidgetSetMarginStart (mvbox, 4);
   uiWidgetSetMarginEnd (mvbox, 4);
-  uinbutilIDAdd (managepl->tabids, MPL_TAB_SETTINGS);
-  uiwcontFree (uiwidgetp);
 
   /* standard settings for most playlists, but not podcasts */
 
@@ -539,13 +532,10 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   vbox = uiCreateVertBox ();
   /* CONTEXT: playlist management: notebook tab title: dances */
-  uiwidgetp = uiCreateLabel (_("Dances"));
-  uiNotebookAppendPage (managepl->wcont [MPL_W_NB], vbox, uiwidgetp);
+  uihnbAppendPage (managepl->hnb, vbox, _("Dances"), NULL, MPL_TAB_DANCES);
   uiWidgetSetMarginTop (vbox, 4);
   uiWidgetSetMarginStart (vbox, 4);
   uiWidgetSetMarginEnd (vbox, 4);
-  uinbutilIDAdd (managepl->tabids, MPL_TAB_DANCES);
-  uiwcontFree (uiwidgetp);
 
   managepl->mpldnc = manageplDanceAlloc (managepl->minfo);
   manageplDanceBuildUI (managepl->mpldnc, vbox);

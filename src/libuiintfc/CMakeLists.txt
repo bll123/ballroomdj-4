@@ -13,7 +13,6 @@ add_library (libbdj4uii SHARED
   uigenre.c
   uihnb.c
   uilevel.c
-  uinbutil.c
   uiplaylist.c
   uirating.c
   uiselectfile.c

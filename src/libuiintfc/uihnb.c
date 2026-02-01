@@ -44,6 +44,7 @@ typedef struct uihnb {
   callback_t  *tabcblist [HNB_MAX_PAGECOUNT];
   uihnbcb_t   cbdata [HNB_MAX_PAGECOUNT];
   int         idlist [HNB_MAX_PAGECOUNT];
+  int         pageiter;
   int         pagecount;
   int         selected;
   int         textdir;
@@ -67,6 +68,7 @@ uihnbCreate (uiwcont_t *box)
   uiBoxPackStart (vbox, hnb->hlist);
 
   hnb->nb = uiCreateNotebook ();
+  uiWidgetAddClass (hnb->nb, NB_HORIZ_CLASS);
   uiNotebookHideTabs (hnb->nb);
   uiBoxPackStartExpand (vbox, hnb->nb);
 
@@ -90,6 +92,10 @@ uihnbCreate (uiwcont_t *box)
 void
 uihnbFree (uihnb_t *hnb)
 {
+  if (hnb == NULL) {
+    return;
+  }
+
   for (int i = 0; i < HNB_MAX_PAGECOUNT; ++i) {
     uiwcontFree (hnb->tablist [i]);
     callbackFree (hnb->tabcblist [i]);
@@ -197,6 +203,20 @@ uihnbGetID (uihnb_t *hnb)
 }
 
 int
+uihnbGetIDByPage (uihnb_t *hnb, int pagenum)
+{
+  if (hnb == NULL) {
+    return HNB_NO_ID;
+  }
+
+  if (pagenum < 0 || pagenum >= hnb->pagecount) {
+    return HNB_NO_ID;
+  }
+
+  return hnb->idlist [pagenum];
+}
+
+int
 uihnbGetPage (uihnb_t *hnb, int id)
 {
   if (hnb == NULL) {
@@ -210,6 +230,63 @@ uihnbGetPage (uihnb_t *hnb, int id)
   }
 
   return 0;
+}
+
+void
+uihnbSetActionWidget (uihnb_t *hnb, uiwcont_t *uiwidget)
+{
+  if (hnb == NULL || hnb->hlist == NULL || uiwidget == NULL) {
+    return;
+  }
+  uiBoxPackEnd (hnb->hlist, uiwidget);
+}
+
+void
+uihnbHideShowPage (uihnb_t *hnb, int pagenum, bool show)
+{
+  if (hnb == NULL) {
+    return;
+  }
+
+  if (pagenum < 0 || pagenum >= hnb->pagecount) {
+    return;
+  }
+
+  if (show == HNB_SHOW) {
+    uiWidgetShow (hnb->tablist [pagenum]);
+  }
+  if (show == HNB_HIDE) {
+    uiWidgetHide (hnb->tablist [pagenum]);
+  }
+}
+
+void
+uihnbStartIDIterator (uihnb_t *hnb)
+{
+  if (hnb == NULL) {
+    return;
+  }
+
+  hnb->pageiter = 0;
+}
+
+int
+uihnbIterateID (uihnb_t *hnb)
+{
+  int     id;
+
+  if (hnb == NULL) {
+    return HNB_NO_ID;
+  }
+
+  if (hnb->pageiter >= hnb->pagecount) {
+    hnb->pageiter = 0;
+    return HNB_NO_ID;
+  }
+
+  id = hnb->idlist [hnb->pageiter];
+  ++hnb->pageiter;
+  return id;
 }
 
 /* internal routines */

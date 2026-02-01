@@ -95,6 +95,10 @@ uivnbCreate (uiwcont_t *box)
 void
 uivnbFree (uivnb_t *vnb)
 {
+  if (vnb == NULL) {
+    return;
+  }
+
   for (int i = 0; i < VNB_MAX_PAGECOUNT; ++i) {
     uiwcontFree (vnb->tablist [i]);
     uiwcontFree (vnb->indlist [i]);

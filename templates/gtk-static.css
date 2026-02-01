@@ -66,14 +66,9 @@ textview.bdj-dark-bg text {
   background-color: shade(@theme_base_color,0.7);
 }
 
-/* gtk: notebook header tabs tab label */
-/* make the selected notebook tab darker */
-/*
-notebook tab:checked {
-  background-color: shade(@theme_base_color,0.6);
+notebook.bdj-horiz-nb > stack {
+  background-color: shade(@theme_base_color,0.9);
 }
-*/
-
 button.bdj-nb {
   /* the buttons are flat, inherit the underlying background color */
   background-color: rgba(0,0,0,0);

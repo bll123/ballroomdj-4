@@ -1185,7 +1185,9 @@ uitestUINotebook (uitest_t *uitest)
 
   /* action widget */
 
-  // uiNotebookSetActionWidget (plui->wcont [PLUI_W_NOTEBOOK], uiwidgetp);
+  uiwidgetp = uiCreateButton (NULL, "Action", NULL, NULL);
+  uihnbSetActionWidget (hnb, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   /* VNB */
 

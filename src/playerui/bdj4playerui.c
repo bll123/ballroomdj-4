@@ -53,8 +53,8 @@
 #include "sysvars.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "uihnb.h"
 #include "uimusicq.h"
-#include "uinbutil.h"
 #include "uiplayer.h"
 #include "uiquickedit.h"
 #include "uiexppl.h"
@@ -95,7 +95,6 @@ enum {
 enum {
   PLUI_W_WINDOW,
   PLUI_W_MAIN_VBOX,
-  PLUI_W_NOTEBOOK,
   PLUI_W_CLOCK,
   PLUI_W_LED_OFF,
   PLUI_W_LED_ON,
@@ -117,6 +116,9 @@ enum {
 enum {
   RESET_VOL_NO,
   RESET_VOL_CURR,
+  PLUI_TAB_MUSICQ,
+  PLUI_TAB_SONGSEL,
+  PLUI_TAB_HISTORY,
 };
 
 enum {
@@ -141,6 +143,7 @@ typedef struct {
   int             stopwaitcount;
   mstime_t        clockCheck;
   uisongfilter_t  *uisongfilter;
+  uihnb_t         *hnb;
   uiwcont_t       *wcont [PLUI_W_MAX];
   int             reloadexpected;   // how many music queues will be reloaded
   int             reloadrcvd;       // how many music queues received
@@ -153,7 +156,6 @@ typedef struct {
   int32_t         extreqRow;
   uiextreq_t      *uiextreq;
   /* notebook */
-  uinbtabid_t     *nbtabid;
   int             currpage;
   callback_t      *callbacks [PLUI_CB_MAX];
   uiwcont_t       *musicqImage [MUSICQ_PB_MAX];
@@ -308,7 +310,6 @@ main (int argc, char *argv[])
   mstimeset (&plui.marqueeFontSizeCheck, TM_TIMER_OFF);
   mstimeset (&plui.clockCheck, 0);
   plui.stopwaitcount = 0;
-  plui.nbtabid = uinbutilIDInit ();
   plui.uisongfilter = NULL;
   plui.uiqe = NULL;
   plui.extreqRow = -1;
@@ -487,6 +488,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   for (int i = 0; i < MUSICQ_PB_MAX; ++i) {
     uiwcontFree (plui->musicqImage [i]);
   }
+  uihnbFree (plui->hnb);
   for (int i = 0; i < PLUI_W_MAX; ++i) {
     uiwcontFree (plui->wcont [i]);
     plui->wcont [i] = NULL;
@@ -497,7 +499,6 @@ pluiClosingCallback (void *udata, programstate_t programState)
   dispselFree (plui->dispsel);
   songdbFree (plui->songdb);
 
-  uinbutilIDFree (plui->nbtabid);
   uisfFree (plui->uisongfilter);
   uiqeFree (plui->uiqe);
   uiextreqFree (plui->uiextreq);
@@ -706,12 +707,11 @@ pluiBuildUI (playerui_t *plui)
   uiwidgetp = uiplayerBuildUI (plui->uiplayer);
   uiBoxPackStart (plui->wcont [PLUI_W_MAIN_VBOX], uiwidgetp);
 
-  plui->wcont [PLUI_W_NOTEBOOK] = uiCreateNotebook ();
-  uiBoxPackStartExpand (plui->wcont [PLUI_W_MAIN_VBOX], plui->wcont [PLUI_W_NOTEBOOK]);
+  plui->hnb = uihnbCreate (plui->wcont [PLUI_W_MAIN_VBOX]);
 
   plui->callbacks [PLUI_CB_NOTEBOOK] = callbackInitI (
       pluiSwitchPage, plui);
-  uiNotebookSetCallback (plui->wcont [PLUI_W_NOTEBOOK], plui->callbacks [PLUI_CB_NOTEBOOK]);
+  uihnbSetCallback (plui->hnb, plui->callbacks [PLUI_CB_NOTEBOOK]);
 
   plui->callbacks [PLUI_CB_PLAYBACK_QUEUE] = callbackInit (
       pluiProcessSetPlaybackQueue, plui, NULL);
@@ -719,15 +719,20 @@ pluiBuildUI (playerui_t *plui)
       plui->callbacks [PLUI_CB_PLAYBACK_QUEUE],
       /* CONTEXT: playerui: select the current queue for playback */
       _("Set Queue for Playback"), NULL, NULL);
-  uiNotebookSetActionWidget (plui->wcont [PLUI_W_NOTEBOOK], uiwidgetp);
+  uihnbSetActionWidget (plui->hnb, uiwidgetp);
   uiWidgetShowAll (uiwidgetp);
   plui->wcont [PLUI_W_SET_PB_BUTTON] = uiwidgetp;
 
   plui->callbacks [PLUI_CB_DRAG_DROP] = callbackInitS (
       pluiDragDropCallback, plui);
 
+  pathbldMakePath (imgbuff, sizeof (imgbuff), "led_on", BDJ4_IMG_SVG_EXT,
+      PATHBLD_MP_DIR_IMG);
+
   for (int i = 0; i < MUSICQ_DISP_MAX; ++i) {
     int   tabtype;
+    char  *imgptr;
+
     /* music queue tab */
 
     if (! bdjoptGetNumPerQueue (OPT_Q_DISPLAY, i)) {
@@ -735,50 +740,38 @@ pluiBuildUI (playerui_t *plui)
       continue;
     }
 
-    tabtype = UI_TAB_MUSICQ;
+    tabtype = PLUI_TAB_MUSICQ;
     if (i == MUSICQ_HISTORY) {
-      tabtype = UI_TAB_HISTORY;
+      tabtype = PLUI_TAB_HISTORY;
     }
 
     uip = uimusicqBuildUI (plui->uimusicq, plui->wcont [PLUI_W_WINDOW], i,
         plui->wcont [PLUI_W_ERROR_MSG], plui->wcont [PLUI_W_STATUS_MSG], NULL);
 
-    uiwcontFree (hbox);
-    hbox = uiCreateHorizBox ();
-    if (tabtype == UI_TAB_HISTORY) {
+    if (tabtype == PLUI_TAB_HISTORY) {
       /* CONTEXT: playerui: name of the history tab : displayed played songs */
       str = _("History");
     } else {
       str = bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, i);
     }
 
-    uiwidgetp = uiCreateLabel (str);
-    uiBoxPackStart (hbox, uiwidgetp);
-
-    if (tabtype == UI_TAB_MUSICQ) {
+    imgptr = NULL;
+    if (tabtype == PLUI_TAB_MUSICQ) {
+      imgptr = imgbuff;
       plui->musicqImage [i] = uiImageNew ();
       uiImageSetFromPixbuf (plui->musicqImage [i], plui->wcont [PLUI_W_LED_ON]);
-      uiBoxPackStart (hbox, plui->musicqImage [i]);
-      uiWidgetAlignHorizCenter (plui->musicqImage [i]);
-      uiWidgetAlignVertCenter (plui->musicqImage [i]);
-      uiWidgetSetMarginStart (plui->musicqImage [i], 1);
-
+// ### did clever stuff to change the image from on to off and back again...
       uimusicqDragDropSetURICallback (plui->uimusicq, i, plui->callbacks [PLUI_CB_DRAG_DROP]);
     }
 
-    uiNotebookAppendPage (plui->wcont [PLUI_W_NOTEBOOK], uip, hbox);
-    uiwcontFree (uiwidgetp);
-    uinbutilIDAdd (plui->nbtabid, tabtype);
-    uiWidgetShowAll (hbox);
+    uihnbAppendPage (plui->hnb, uip, str, imgptr, tabtype);
   }
 
   /* request tab */
   uip = uisongselBuildUI (plui->uisongsel, plui->wcont [PLUI_W_WINDOW]);
-  /* CONTEXT: playerui: name of request tab : lists the songs in the database */
-  uiwidgetp = uiCreateLabel (_("Request"));
-  uiNotebookAppendPage (plui->wcont [PLUI_W_NOTEBOOK], uip, uiwidgetp);
-  uinbutilIDAdd (plui->nbtabid, UI_TAB_SONGSEL);
-  uiwcontFree (uiwidgetp);
+  uihnbAppendPage (plui->hnb, uip,
+      /* CONTEXT: playerui: name of request tab : lists the songs in the database */
+      _("Request"), NULL, PLUI_TAB_SONGSEL);
 
   x = nlistGetNum (plui->options, PLUI_SIZE_X);
   y = nlistGetNum (plui->options, PLUI_SIZE_Y);
@@ -1346,24 +1339,24 @@ pluiSwitchPage (void *udata, int32_t pagenum)
     return UICB_STOP;
   }
 
-  tabid = uinbutilIDGet (plui->nbtabid, pagenum);
+  tabid = uihnbGetIDByPage (plui->hnb, pagenum);
   plui->currpage = pagenum;
   /* do not call set-manage-queue on the request tab */
-  if (tabid == UI_TAB_MUSICQ) {
+  if (tabid == PLUI_TAB_MUSICQ) {
     pluiSetManageQueue (plui, pagenum);
   }
-  if (tabid == UI_TAB_HISTORY) {
+  if (tabid == PLUI_TAB_HISTORY) {
     pluiSetManageQueue (plui, MUSICQ_HISTORY);
   }
 
-  if (tabid == UI_TAB_SONGSEL) {
+  if (tabid == PLUI_TAB_SONGSEL) {
     uiWidgetSetState (plui->wcont [PLUI_W_MENU_QE_CURR], UIWIDGET_DISABLE);
     uiWidgetSetState (plui->wcont [PLUI_W_MENU_QE_SEL], UIWIDGET_DISABLE);
     uiWidgetSetState (plui->wcont [PLUI_W_MENU_EXT_REQ], UIWIDGET_DISABLE);
   } else {
     uiWidgetSetState (plui->wcont [PLUI_W_MENU_QE_CURR], UIWIDGET_ENABLE);
     uiWidgetSetState (plui->wcont [PLUI_W_MENU_QE_SEL], UIWIDGET_ENABLE);
-    if (tabid == UI_TAB_MUSICQ) {
+    if (tabid == PLUI_TAB_MUSICQ) {
       uiWidgetSetState (plui->wcont [PLUI_W_MENU_EXT_REQ], UIWIDGET_ENABLE);
     } else {
       uiWidgetSetState (plui->wcont [PLUI_W_MENU_EXT_REQ], UIWIDGET_DISABLE);
@@ -1380,13 +1373,14 @@ pluiPlaybackButtonHideShow (playerui_t *plui, long pagenum)
 {
   int         tabid;
 
-  tabid = uinbutilIDGet (plui->nbtabid, pagenum);
+  tabid = uihnbGetIDByPage (plui->hnb, pagenum);
 
-  uiWidgetHide (plui->wcont [PLUI_W_SET_PB_BUTTON]);
-  if (tabid == UI_TAB_MUSICQ) {
+  if (tabid == PLUI_TAB_MUSICQ) {
     if (nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
       uiWidgetShow (plui->wcont [PLUI_W_SET_PB_BUTTON]);
     }
+  } else {
+    uiWidgetHide (plui->wcont [PLUI_W_SET_PB_BUTTON]);
   }
 }
 
@@ -1489,7 +1483,7 @@ static void
 pluiSetExtraQueues (playerui_t *plui)
 {
   int             tabid;
-  int             pagenum;
+  int             pagenum = 0;
   bool            show;
   bool            resetcurr = false;
 
@@ -1500,14 +1494,15 @@ pluiSetExtraQueues (playerui_t *plui)
   }
 
   show = nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES);
-  uinbutilIDStartIterator (plui->nbtabid, &pagenum);
-  while ((tabid = uinbutilIDIterate (plui->nbtabid, &pagenum)) >= 0) {
-    if (tabid == UI_TAB_MUSICQ && pagenum > 0) {
+  uihnbStartIDIterator (plui->hnb);
+  while ((tabid = uihnbIterateID (plui->hnb)) >= 0) {
+    if (tabid == PLUI_TAB_MUSICQ && pagenum > 0) {
       if (! show && plui->currpage == pagenum) {
         resetcurr = true;
       }
-      uiNotebookHideShowPage (plui->wcont [PLUI_W_NOTEBOOK], pagenum, show);
+      uihnbHideShowPage (plui->hnb, pagenum, show);
     }
+    ++pagenum;
   }
   if (resetcurr) {
     /* the tab currently displayed is being hidden */
@@ -2051,7 +2046,7 @@ pluiReloadCurrent (playerui_t *plui)
   }
 
   datafileFree (reloaddf);
-  uiNotebookSetPage (plui->wcont [PLUI_W_NOTEBOOK], tmqmngidx);
+  uihnbSetPage (plui->hnb, tmqmngidx);
 }
 
 static void
