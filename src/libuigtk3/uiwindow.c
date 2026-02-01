@@ -67,7 +67,6 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
       /* still have a memory leak here */
       pixbuf = gdk_pixbuf_new_from_file (tbuff, NULL);
       gtk_window_set_icon (GTK_WINDOW (window), pixbuf);
-fprintf (stderr, "win-p-float? %d\n", g_object_is_floating (pixbuf));
       uiwindow->pixbuf = pixbuf;
     } else {
       gtk_window_set_icon_name (GTK_WINDOW (window), imagenm);

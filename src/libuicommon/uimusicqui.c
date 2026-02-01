@@ -308,7 +308,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     uiwidgetp = uiCreateButton (
         mqint->callbacks [MQINT_CB_CLEAR_QUEUE],
         /* CONTEXT: music queue: button: clear the queue */
-        NULL, NULL, _("Clear Queue"));
+        _("Clear Queue"), NULL, NULL);
     uiBoxPackStart (hbox, uiwidgetp);
     uiWidgetSetMarginStart (uiwidgetp, 2);
     mqint->wcont [UIMUSICQ_W_BUTTON_CLEAR_QUEUE] = uiwidgetp;
