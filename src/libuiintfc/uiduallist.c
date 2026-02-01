@@ -148,10 +148,10 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   if (sysvarsGetNum (SVL_LOCALE_TEXT_DIR) == TEXT_DIR_RTL) {
     buttonnm = "button_left";
   }
-  uiwidgetp = uiCreateButton ("dl-select",
+  uiwidgetp = uiCreateButton (
       duallist->callbacks [DL_CB_SELECT],
       /* CONTEXT: side-by-side list: button: add the selected field */
-      _("Select"), buttonnm);
+      NULL, buttonnm, _("Select"));
   uiBoxPackStart (dvbox, uiwidgetp);
   duallist->buttons [DL_BUTTON_SELECT] = uiwidgetp;
 
@@ -160,10 +160,10 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
     if (sysvarsGetNum (SVL_LOCALE_TEXT_DIR) == TEXT_DIR_RTL) {
       buttonnm = "button_right";
     }
-    uiwidgetp = uiCreateButton ("dl-remove",
+    uiwidgetp = uiCreateButton (
         duallist->callbacks [DL_CB_REMOVE],
         /* CONTEXT: side-by-side list: button: remove the selected field */
-        _("Remove"), buttonnm);
+        NULL, buttonnm, _("Remove"));
     uiBoxPackStart (dvbox, uiwidgetp);
     duallist->buttons [DL_BUTTON_REMOVE] = uiwidgetp;
   }
@@ -197,25 +197,25 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiWidgetSetAllMargins (dvbox, 4);
   uiWidgetSetMarginTop (dvbox, 64);
 
-  uiwidgetp = uiCreateButton ("dl-up",
+  uiwidgetp = uiCreateButton (
       duallist->callbacks [DL_CB_MOVEPREV],
       /* CONTEXT: side-by-side list: button: move the selected field up */
-      _("Move Up"), "button_up");
+      NULL, "button_up", _("Move Up"));
   uiBoxPackStart (dvbox, uiwidgetp);
   duallist->buttons [DL_BUTTON_MOVE_UP] = uiwidgetp;
 
-  uiwidgetp = uiCreateButton ("dl-down",
+  uiwidgetp = uiCreateButton (
       duallist->callbacks [DL_CB_MOVENEXT],
       /* CONTEXT: side-by-side list: button: move the selected field down */
-      _("Move Down"), "button_down");
+      NULL, "button_down", _("Move Down"));
   uiBoxPackStart (dvbox, uiwidgetp);
   duallist->buttons [DL_BUTTON_MOVE_DOWN] = uiwidgetp;
 
   if ((duallist->flags & DL_FLAGS_PERSISTENT) == DL_FLAGS_PERSISTENT) {
-    uiwidgetp = uiCreateButton ("dl-remove",
+    uiwidgetp = uiCreateButton (
         duallist->callbacks [DL_CB_REMOVE],
         /* CONTEXT: side-by-side list: button: remove the selected field */
-        _("Remove"), "button_remove");
+        NULL, "button_remove", _("Remove"));
     uiBoxPackStart (dvbox, uiwidgetp);
     duallist->buttons [DL_BUTTON_REMOVE] = uiwidgetp;
   }

@@ -1,5 +1,5 @@
-/* 2024-12-8 */
-/* version 9 */
+/* 2026-1-31 */
+/* version 10 */
 /*
  * Copyright 2023-2026 Brad Lanam Pleasant Hill CA
  */
@@ -68,39 +68,55 @@ textview.bdj-dark-bg text {
 
 /* gtk: notebook header tabs tab label */
 /* make the selected notebook tab darker */
+/*
 notebook tab:checked {
   background-color: shade(@theme_base_color,0.6);
 }
-/* these buttons are flat, should inherit the underlying background color */
-button.bdj-leftnotebook {
+*/
+
+button.bdj-nb {
+  /* the buttons are flat, inherit the underlying background color */
+  background-color: rgba(0,0,0,0);
+}
+button.bdj-nb label {
+  color: shade(@theme_fg_color,0.6);
+}
+button.bdj-nb:hover {
+  background-color: shade(@theme_base_color,0.5);
+}
+button.bdj-nb:hover label {
+  color: @theme_fg_color;
+}
+button.bdj-nb-sel {
+  background-color: shade(@theme_base_color,0.5);
+}
+button.bdj-nb-sel label {
+  color: @theme_fg_color;
+}
+/* vertical nb */
+label.bdj-vert-nb {
+  border: 0px solid;
+  border-left-width: 4px;
+  border-left-color: transparent;
+}
+button.bdj-nb {
   outline-width: 0px;
   border: 0px solid;
   border-radius: 0px;
   background-image: none;
-  background-color: rgba(0,0,0,0);
 }
-button.bdj-leftnotebook label {
-  color: shade(@theme_fg_color,0.6);
-}
-button.bdj-notebook-sel {
-  background-color: shade(@theme_base_color,0.6);
-}
-label.bdj-leftnotebook {
-  border-left-style: solid;
-  border-left-width: 4px;
-  border-left-color: transparent;
-}
-label.bdj-notebook-sel {
+label.bdj-vert-nb-sel {
   border-left-color: @selected_bg_color;
 }
-button.bdj-notebook-sel label {
-  color: @theme_fg_color;
+/* horizontal nb */
+button.bdj-horiz-nb {
+  border: 0px solid;
+  border-bottom-width: 4px;
+  border-bottom-color: transparent;
 }
-button.bdj-leftnotebook:hover {
-  background-color: shade(@theme_base_color,0.5);
-}
-button.bdj-leftnotebook:hover label {
-  color: @theme_fg_color;
+button.bdj-horiz-nb-sel {
+  border-bottom-width: 4px;
+  border-bottom-color: @selected_bg_color;
 }
 
 scrolledwindow undershoot.top, scrolledwindow undershoot.right,

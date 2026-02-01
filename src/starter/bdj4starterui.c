@@ -738,10 +738,10 @@ starterBuildUI (startui_t  *starter)
 
   starter->callbacks [START_CB_PLAYER] = callbackInit (
       starterStartPlayerui, starter, NULL);
-  uiwidgetp = uiCreateButton ("strt-player",
+  uiwidgetp = uiCreateButton (
       starter->callbacks [START_CB_PLAYER],
       /* CONTEXT: starterui: button: starts the player user interface */
-      _("Player"), NULL);
+      _("Player"), NULL, NULL);
   uiBoxPackStart (bvbox, uiwidgetp);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
@@ -751,10 +751,10 @@ starterBuildUI (startui_t  *starter)
 
   starter->callbacks [START_CB_MANAGE] = callbackInit (
       starterStartManageui, starter, NULL);
-  uiwidgetp = uiCreateButton ("strt-manage",
+  uiwidgetp = uiCreateButton (
       starter->callbacks [START_CB_MANAGE],
       /* CONTEXT: starterui: button: starts the management user interface */
-      _("Manage"), NULL);
+      _("Manage"), NULL, NULL);
   uiBoxPackStart (bvbox, uiwidgetp);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
@@ -764,10 +764,10 @@ starterBuildUI (startui_t  *starter)
 
   starter->callbacks [START_CB_CONFIG] = callbackInit (
       starterStartConfig, starter, NULL);
-  uiwidgetp = uiCreateButton ("strt-conf",
+  uiwidgetp = uiCreateButton (
       starter->callbacks [START_CB_CONFIG],
       /* CONTEXT: starterui: button: starts the configuration user interface */
-      _("Configure"), NULL);
+      _("Configure"), NULL, NULL);
   uiBoxPackStart (bvbox, uiwidgetp);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
@@ -777,10 +777,10 @@ starterBuildUI (startui_t  *starter)
 
   starter->callbacks [START_CB_SUPPORT] = callbackInit (
       starterProcessSupport, starter, NULL);
-  uiwidgetp = uiCreateButton ("strt-support",
+  uiwidgetp = uiCreateButton (
       starter->callbacks [START_CB_SUPPORT],
       /* CONTEXT: starterui: button: support : support information */
-      _("Support"), NULL);
+      _("Support"), NULL, NULL);
   uiBoxPackStart (bvbox, uiwidgetp);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
@@ -788,10 +788,10 @@ starterBuildUI (startui_t  *starter)
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_SUPPORT] = uiwidgetp;
 
-  uiwidgetp = uiCreateButton ("strt-exit",
+  uiwidgetp = uiCreateButton (
       starter->callbacks [START_CB_EXIT],
       /* CONTEXT: starterui: button: exits BDJ4 (exits everything) */
-      _("Exit"), NULL);
+      _("Exit"), NULL, NULL);
   uiBoxPackStart (bvbox, uiwidgetp);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
@@ -1634,10 +1634,10 @@ starterProcessSupport (void *udata)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateButton ("strt-ssm",
+  uiwidgetp = uiCreateButton (
       starter->callbacks [START_CB_SEND_SUPPORT],
       /* CONTEXT: starterui: basic support dialog: button: support option */
-      _("Send Support Message"), NULL);
+      _("Send Support Message"), NULL, NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   starter->buttons [START_BUTTON_SEND_SUPPORT] = uiwidgetp;
 

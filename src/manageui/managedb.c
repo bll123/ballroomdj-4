@@ -269,8 +269,8 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
 
   managedb->callbacks [MDB_CB_TOPDIR_SEL] = callbackInit (
       manageDbSelectDirCallback, managedb, NULL);
-  uiwidgetp = uiCreateButton ("mngdb-topdir-folder",
-      managedb->callbacks [MDB_CB_TOPDIR_SEL], "", NULL);
+  uiwidgetp = uiCreateButton (
+      managedb->callbacks [MDB_CB_TOPDIR_SEL], "", NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
   uiBoxPackStart (hbox, uiwidgetp);
   managedb->wcont [MDB_W_TOPDIRSEL] = uiwidgetp;
@@ -287,19 +287,19 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
 
   managedb->callbacks [MDB_CB_START] = callbackInit (
       manageDbStart, managedb, NULL);
-  uiwidgetp = uiCreateButton ("mngdb-start",
+  uiwidgetp = uiCreateButton (
       managedb->callbacks [MDB_CB_START],
       /* CONTEXT: update database: button to start the database update process */
-      _("Start"), NULL);
+      _("Start"), NULL, NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   managedb->wcont [MDB_W_DB_START] = uiwidgetp;
 
   managedb->callbacks [MDB_CB_STOP] = callbackInit (
       manageDbStop, managedb, NULL);
-  uiwidgetp = uiCreateButton ("mngdb-stop",
+  uiwidgetp = uiCreateButton (
       managedb->callbacks [MDB_CB_STOP],
       /* CONTEXT: update database: button to stop the database update process */
-      _("Stop"), NULL);
+      _("Stop"), NULL, NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);
   managedb->wcont [MDB_W_DB_STOP] = uiwidgetp;

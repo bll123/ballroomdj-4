@@ -26,6 +26,7 @@
 #include "tmutil.h"
 #include "ui.h"
 #include "uidd.h"
+#include "uihnb.h"
 #include "uiutils.h"
 #include "uivirtlist.h"
 #include "uivnb.h"
@@ -43,10 +44,6 @@ enum {
   UITEST_W_B_IMG_A_MSG,
   UITEST_W_B_IMG_B_MSG,
   UITEST_W_SW,
-  UITEST_W_NB_H,
-  UITEST_W_NB_HI,
-  UITEST_W_NB_V,
-  UITEST_W_NB_V_NEW,
   UITEST_W_CI_A,
   UITEST_W_CI_B,
   UITEST_W_CI_BUTTON,
@@ -58,6 +55,7 @@ enum {
   UITEST_W_SB_DBL_DFLT,
   UITEST_W_SB_TIME_A,
   UITEST_W_SB_TIME_B,
+  UITEST_W_NB_HI,
   UITEST_W_MAX,
 };
 
@@ -115,6 +113,8 @@ typedef struct {
   ilist_t       *lista;
   ilist_t       *listb;
   uivnb_t       *vnb;
+  uihnb_t       *hnb;
+  uihnb_t       *hnbimg;
   long          counter;
   bool          stop;
   bool          chgind;
@@ -386,8 +386,8 @@ uitestUIButtons (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiCreateButton ("uitest-a",
-      uitest->callbacks [UITEST_CB_B], "button", NULL);
+  uiwidgetp = uiCreateButton (
+      uitest->callbacks [UITEST_CB_B], "button", NULL, NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (sg, uiwidgetp);
   uitest->wcont [UITEST_W_B] = uiwidgetp;
@@ -406,8 +406,8 @@ uitestUIButtons (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiCreateButton ("uitest-b",
-      uitest->callbacks [UITEST_CB_B], "button-left", NULL);
+  uiwidgetp = uiCreateButton (
+      uitest->callbacks [UITEST_CB_B], "button-left", NULL, NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (sg, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
@@ -421,8 +421,8 @@ uitestUIButtons (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiCreateButton ("uitest-long",
-      uitest->callbacks [UITEST_CB_B], "button long text", NULL);
+  uiwidgetp = uiCreateButton (
+      uitest->callbacks [UITEST_CB_B], "button long text", NULL, NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (sg, uiwidgetp);
 
@@ -435,8 +435,8 @@ uitestUIButtons (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiCreateButton ("uitest-b",
-      uitest->callbacks [UITEST_CB_B], "button-flat", NULL);
+  uiwidgetp = uiCreateButton (
+      uitest->callbacks [UITEST_CB_B], "button-flat", NULL, NULL);
   uiButtonSetFlat (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (sg, uiwidgetp);
@@ -451,8 +451,8 @@ uitestUIButtons (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiCreateButton ("uitest-pause",
-      uitest->callbacks [UITEST_CB_B_IMG_A], NULL, "button_pause");
+  uiwidgetp = uiCreateButton (
+      uitest->callbacks [UITEST_CB_B_IMG_A], NULL, "button_pause", NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   uitest->wcont [UITEST_W_B_IMG_A] = uiwidgetp;
 
@@ -470,8 +470,8 @@ uitestUIButtons (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiCreateButton ("uitest-img-tt",
-      uitest->callbacks [UITEST_CB_B_IMG_B], "img-tooltip", "button_play");
+  uiwidgetp = uiCreateButton (
+      uitest->callbacks [UITEST_CB_B_IMG_B], NULL, "button_play", "img-tooltip");
   uiBoxPackStart (hbox, uiwidgetp);
   uitest->wcont [UITEST_W_B_IMG_B] = uiwidgetp;
 
@@ -687,8 +687,8 @@ uitestUIChgInd (uitest_t *uitest)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiCreateButton ("uitest-switch",
-      uitest->callbacks [UITEST_CB_CHG_IND], "switch", NULL);
+  uiwidgetp = uiCreateButton (
+      uitest->callbacks [UITEST_CB_CHG_IND], "switch", NULL, NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   uitest->wcont [UITEST_W_CI_BUTTON] = uiwidgetp;
 
@@ -1108,10 +1108,10 @@ uitestUINotebook (uitest_t *uitest)
 {
   uiwcont_t   *vbox;
   uiwcont_t   *vboxb;
-  uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
   char        imgbuff [BDJ4_PATH_MAX];
   uivnb_t     *vnb;
+  uihnb_t     *hnb;
 
   /* notebook */
 
@@ -1122,12 +1122,12 @@ uitestUINotebook (uitest_t *uitest)
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Notebook", VNB_NO_ID);
 
-  /* horizontal */
+  /* hnb */
 
-  uitest->wcont [UITEST_W_NB_H] = uiCreateNotebook ();
-  uiBoxPackStartExpand (vbox, uitest->wcont [UITEST_W_NB_H]);
+  hnb = uihnbCreate (vbox);
+  uitest->hnb = hnb;
 
-  /* horiz %d */
+  /* hnb %d */
 
   for (int i = 1; i < 4; ++i) {
     char    tbuff [200];
@@ -1135,9 +1135,7 @@ uitestUINotebook (uitest_t *uitest)
     snprintf (tbuff, sizeof (tbuff), "Horiz %d", i);
     vboxb = uiCreateVertBox ();
     uiwidgetp = uiCreateLabel (tbuff);
-    uiNotebookAppendPage (uitest->wcont [UITEST_W_NB_H], vboxb, uiwidgetp);
-    uiWidgetSetAllMargins (vboxb, 4);
-    uiwcontFree (uiwidgetp);
+    uihnbAppendPage (hnb, vboxb, tbuff, NULL, HNB_NO_ID);
 
     uiwidgetp = uiCreateLabel (tbuff);
     uiBoxPackStart (vboxb, uiwidgetp);
@@ -1145,90 +1143,44 @@ uitestUINotebook (uitest_t *uitest)
     uiwcontFree (vboxb);
   }
 
-  /* horizontal w/images */
+  /* hnb w/images */
 
-  uitest->wcont [UITEST_W_NB_HI] = uiCreateNotebook ();
-  uiBoxPackStartExpand (vbox, uitest->wcont [UITEST_W_NB_HI]);
-
-  pathbldMakePath (imgbuff, sizeof (imgbuff), "led_off", ".svg",
-      PATHBLD_MP_DIR_IMG);
-  uitest->images [UITEST_NB1_I_LED_OFF] = uiImageFromFile (imgbuff);
-  uiWidgetSetMarginStart (uitest->images [UITEST_NB1_I_LED_OFF], 1);
-  uiWidgetMakePersistent (uitest->images [UITEST_NB1_I_LED_OFF]);
-
-  pathbldMakePath (imgbuff, sizeof (imgbuff), "led_on", ".svg",
-      PATHBLD_MP_DIR_IMG);
-  uitest->images [UITEST_NB1_I_LED_ON] = uiImageFromFile (imgbuff);
-  uiWidgetSetMarginStart (uitest->images [UITEST_NB1_I_LED_ON], 1);
-  uiWidgetMakePersistent (uitest->images [UITEST_NB1_I_LED_ON]);
+  hnb = uihnbCreate (vbox);
+  uitest->hnbimg = hnb;
 
   /* horiz-img 1 */
 
   vboxb = uiCreateVertBox ();
-  hbox = uiCreateHorizBox ();
-  uiwidgetp = uiCreateLabel ("HI One");
-  uiBoxPackStart (hbox, uiwidgetp);
-
-  uiwcontFree (uiwidgetp);
-  uiBoxPackStart (hbox, uitest->images [UITEST_NB1_I_LED_OFF]);
-  uiWidgetAlignHorizCenter (uiwidgetp);
-  uiWidgetAlignVertCenter (uiwidgetp);
-
-  uiNotebookAppendPage (uitest->wcont [UITEST_W_NB_HI], vboxb, hbox);
-  uiWidgetSetAllMargins (vboxb, 4);
-  uiWidgetShowAll (hbox);
-  uiwcontFree (hbox);
-
-  uiwidgetp = uiCreateLabel ("HI One");
+  uiwidgetp = uiCreateLabel ("h-img One");
   uiBoxPackStart (vboxb, uiwidgetp);
   uiwcontFree (uiwidgetp);
-  uiwcontFree (vboxb);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff), "led_off", ".svg",
       PATHBLD_MP_DIR_IMG);
-  uitest->images [UITEST_NB2_I_LED_OFF] = uiImageFromFile (imgbuff);
-  uiWidgetSetMarginStart (uitest->images [UITEST_NB2_I_LED_OFF], 1);
-  uiWidgetMakePersistent (uitest->images [UITEST_NB2_I_LED_OFF]);
+  uihnbAppendPage (hnb, vboxb, "h-img 1", imgbuff, HNB_NO_ID);
 
-  pathbldMakePath (imgbuff, sizeof (imgbuff), "led_on", ".svg",
-      PATHBLD_MP_DIR_IMG);
-  uitest->images [UITEST_NB2_I_LED_ON] = uiImageFromFile (imgbuff);
-  uiWidgetSetMarginStart (uitest->images [UITEST_NB2_I_LED_ON], 1);
-  uiWidgetMakePersistent (uitest->images [UITEST_NB2_I_LED_ON]);
+  uiwcontFree (vboxb);
 
   /* horiz-img 2 */
 
   vboxb = uiCreateVertBox ();
-  hbox = uiCreateHorizBox ();
-  uiwidgetp = uiCreateLabel ("HI Two");
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
-  uiBoxPackStart (hbox, uitest->images [UITEST_NB2_I_LED_OFF]);
-  uiWidgetAlignHorizCenter (uiwidgetp);
-  uiWidgetAlignVertCenter (uiwidgetp);
-
-  uiNotebookAppendPage (uitest->wcont [UITEST_W_NB_HI], vboxb, hbox);
-  uiWidgetSetAllMargins (vboxb, 4);
-  uiWidgetShowAll (hbox);
-  uiwcontFree (hbox);
-
-  uiwidgetp = uiCreateLabel ("HI Two");
+  uiwidgetp = uiCreateLabel ("h-img Two");
   uiBoxPackStart (vboxb, uiwidgetp);
   uiwcontFree (uiwidgetp);
+
+  uihnbAppendPage (hnb, vboxb, "h-img 2", imgbuff, HNB_NO_ID);
+
   uiwcontFree (vboxb);
 
   /* horiz-img 3 */
 
   vboxb = uiCreateVertBox ();
-  uiwidgetp = uiCreateLabel ("HI Three");
-  uiNotebookAppendPage (uitest->wcont [UITEST_W_NB_HI], vboxb, uiwidgetp);
-  uiWidgetSetAllMargins (vboxb, 4);
-  uiwcontFree (uiwidgetp);
-
-  uiwidgetp = uiCreateLabel ("HI Three");
+  uiwidgetp = uiCreateLabel ("h-img Three");
   uiBoxPackStart (vboxb, uiwidgetp);
   uiwcontFree (uiwidgetp);
+
+  uihnbAppendPage (hnb, vboxb, "h-img 3", NULL, HNB_NO_ID);
+
   uiwcontFree (vboxb);
 
   /* action widget */
@@ -1695,6 +1647,9 @@ uitestCleanup (uitest_t *uitest)
   for (int i = 0; i < UITEST_I_MAX; ++i) {
     uiwcontFree (uitest->images [i]);
   }
+
+  uivnbFree (uitest->vnb);
+  uihnbFree (uitest->hnb);
 
   ilistFree (uitest->lista);
   ilistFree (uitest->listb);

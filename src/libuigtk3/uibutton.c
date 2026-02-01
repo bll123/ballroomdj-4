@@ -14,6 +14,7 @@
 #include <gtk/gtk.h>
 
 #include "bdj4.h"
+#include "bdjstring.h"
 #include "callback.h"
 #include "log.h"
 #include "mdebug.h"
@@ -39,8 +40,8 @@ typedef struct uibutton {
 } uibutton_t;
 
 uiwcont_t *
-uiCreateButton (const char *ident, callback_t *uicb, const char *title,
-    const char *imagenm)
+uiCreateButton (callback_t *uicb, const char *title,
+    const char *imagenm, const char *tooltiptxt)
 {
   uiwcont_t       *uiwidget;
   uibutton_t      *uibutton;
@@ -53,22 +54,32 @@ uiCreateButton (const char *ident, callback_t *uicb, const char *title,
   widget = gtk_button_new ();
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
+
+  gtk_button_set_label (GTK_BUTTON (widget), "");
+  if (title != NULL) {
+    gtk_button_set_label (GTK_BUTTON (widget), title);
+  }
+  if (tooltiptxt != NULL) {
+    gtk_widget_set_tooltip_text (widget, tooltiptxt);
+  }
+
   if (imagenm != NULL) {
     GtkWidget   *image;
     char        tbuff [BDJ4_PATH_MAX];
 
-    gtk_button_set_label (GTK_BUTTON (widget), "");
-    /* relative path */
-    pathbldMakePath (tbuff, sizeof (tbuff), imagenm, BDJ4_IMG_SVG_EXT,
-        PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
+    if (*imagenm != '/') {
+      /* relative path */
+      pathbldMakePath (tbuff, sizeof (tbuff), imagenm, BDJ4_IMG_SVG_EXT,
+          PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
+    } else {
+      stpecpy (tbuff, tbuff + sizeof (tbuff), imagenm);
+    }
     image = gtk_image_new_from_file (tbuff);
     gtk_button_set_image (GTK_BUTTON (widget), image);
+    gtk_button_set_image_position (GTK_BUTTON (widget), GTK_POS_RIGHT);
     gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
-    gtk_widget_set_tooltip_text (widget, title);
     gtk_widget_set_valign (image, GTK_ALIGN_CENTER);
     uibutton->image = image;
-  } else {
-    gtk_button_set_label (GTK_BUTTON (widget), title);
   }
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_BUTTON);
@@ -76,7 +87,6 @@ uiCreateButton (const char *ident, callback_t *uicb, const char *title,
   uiwidget->uiint.uibutton = uibutton;
 
   bbase = &uiwidget->uiint.uibuttonbase;
-  bbase->ident = ident;
   bbase->cb = uicb;
   bbase->presscb = callbackInit (uiButtonPressCallback,
       uiwidget, "button-repeat-press");

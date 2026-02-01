@@ -683,9 +683,9 @@ installerBuildUI (installer_t *installer)
 
   installer->callbacks [INST_CB_TARGET_DIR] = callbackInit (
       installerTargetDirDialog, installer, NULL);
-  uiwidgetp = uiCreateButton ("inst-tgt-folder",
+  uiwidgetp = uiCreateButton (
       installer->callbacks [INST_CB_TARGET_DIR],
-      "", NULL);
+      NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (hbox, uiwidgetp);
@@ -763,9 +763,9 @@ installerBuildUI (installer_t *installer)
 
   installer->callbacks [INST_CB_BDJ3LOC_DIR] = callbackInit (
       installerBDJ3LocDirDialog, installer, NULL);
-  uiwidgetp = uiCreateButton ("inst-bdj3loc-folder",
+  uiwidgetp = uiCreateButton (
       installer->callbacks [INST_CB_BDJ3LOC_DIR],
-      "", NULL);
+      NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 0);
@@ -824,19 +824,19 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateButton ("inst-exit",
+  uiwidgetp = uiCreateButton (
       installer->callbacks [INST_CB_EXIT],
       /* CONTEXT: installer: exits the installer */
-      _("Exit"), NULL);
+      _("Exit"), NULL, NULL);
   uiBoxPackEnd (hbox, uiwidgetp);
   installer->wcont [INST_W_BUTTON_EXIT] = uiwidgetp;
 
   installer->callbacks [INST_CB_INSTALL] = callbackInit (
       installerInstallCallback, installer, NULL);
-  uiwidgetp = uiCreateButton ("inst-install",
+  uiwidgetp = uiCreateButton (
       installer->callbacks [INST_CB_INSTALL],
       /* CONTEXT: installer: start the installation process */
-      _("Install"), NULL);
+      _("Install"), NULL, NULL);
   uiBoxPackEnd (hbox, uiwidgetp);
   installer->wcont [INST_W_BUTTON_INSTALL] = uiwidgetp;
 

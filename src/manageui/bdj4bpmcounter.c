@@ -412,9 +412,9 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   bpmcounter->callbacks [BPMCOUNT_CB_CLICK] = callbackInit (
       bpmcounterProcessClick, bpmcounter, NULL);
-  uiwidgetp = uiCreateButton ("bpmc-box",
+  uiwidgetp = uiCreateButton (
       bpmcounter->callbacks [BPMCOUNT_CB_CLICK],
-      NULL, "bluebox");
+      NULL, "bluebox", NULL);
   uiButtonSetReliefNone (uiwidgetp);
   uiButtonSetFlat (uiwidgetp);
   uiWidgetDisableFocus (uiwidgetp);
@@ -429,28 +429,28 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   bpmcounter->callbacks [BPMCOUNT_CB_SAVE] = callbackInit (
       bpmcounterProcessSave, bpmcounter, NULL);
-  uiwidgetp = uiCreateButton ("bpmc-save",
+  uiwidgetp = uiCreateButton (
       bpmcounter->callbacks [BPMCOUNT_CB_SAVE],
       /* CONTEXT: bpm counter: save button */
-      _("Save"), NULL);
+      _("Save"), NULL, NULL);
   uiBoxPackEnd (hbox, uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   bpmcounter->wcont [BPM_W_BUTTON_SAVE] = uiwidgetp;
 
   bpmcounter->callbacks [BPMCOUNT_CB_RESET] = callbackInit (
       bpmcounterProcessReset, bpmcounter, NULL);
-  uiwidgetp = uiCreateButton ("bpmc-reset",
+  uiwidgetp = uiCreateButton (
       bpmcounter->callbacks [BPMCOUNT_CB_RESET],
       /* CONTEXT: bpm counter: reset button */
-      _("Reset"), NULL);
+      _("Reset"), NULL, NULL);
   uiBoxPackEnd (hbox, uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   bpmcounter->wcont [BPM_W_BUTTON_RESET] = uiwidgetp;
 
-  uiwidgetp = uiCreateButton ("bpmc-close",
+  uiwidgetp = uiCreateButton (
       bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
       /* CONTEXT: bpm counter: close button */
-      _("Close"), NULL);
+      _("Close"), NULL, NULL);
   uiBoxPackEnd (hbox, uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   bpmcounter->wcont [BPM_W_BUTTON_CLOSE] = uiwidgetp;

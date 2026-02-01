@@ -312,8 +312,8 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
       uiexpplValidateTarget, uiexppl, UIENTRY_DELAYED);
 
   /* target folder button */
-  uiwidgetp = uiCreateButton ("exppl-folder",
-      uiexppl->callbacks [UIEXPPL_CB_TARGET], "", NULL);
+  uiwidgetp = uiCreateButton (
+      uiexppl->callbacks [UIEXPPL_CB_TARGET], NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 0);

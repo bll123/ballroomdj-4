@@ -76,38 +76,38 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
   if ((flags & CONFUI_TABLE_NO_UP_DOWN) != CONFUI_TABLE_NO_UP_DOWN) {
     gui->tables [id].callbacks [CONFUI_TABLE_CB_UP] = callbackInit (
         confuiTableMoveUp, gui, NULL);
-    uiwidgetp = uiCreateButton ("conf-up",
+    uiwidgetp = uiCreateButton (
         gui->tables [id].callbacks [CONFUI_TABLE_CB_UP],
         /* CONTEXT: configuration: table edit: button: move selection up */
-        _("Move Up"), "button_up");
+        NULL, "button_up", _("Move Up"));
     uiBoxPackStart (bvbox, uiwidgetp);
     gui->tables [id].buttons [CONFUI_BUTTON_TABLE_UP] = uiwidgetp;
 
     gui->tables [id].callbacks [CONFUI_TABLE_CB_DOWN] = callbackInit (
         confuiTableMoveDown, gui, NULL);
-    uiwidgetp = uiCreateButton ("conf-down",
+    uiwidgetp = uiCreateButton (
         gui->tables [id].callbacks [CONFUI_TABLE_CB_DOWN],
         /* CONTEXT: configuration: table edit: button: move selection down */
-        _("Move Down"), "button_down");
+        NULL, "button_down", _("Move Down"));
     uiBoxPackStart (bvbox, uiwidgetp);
     gui->tables [id].buttons [CONFUI_BUTTON_TABLE_DOWN] = uiwidgetp;
   }
 
   gui->tables [id].callbacks [CONFUI_TABLE_CB_REMOVE] = callbackInit (
       confuiTableRemove, gui, NULL);
-  uiwidgetp = uiCreateButton ("conf-remove",
+  uiwidgetp = uiCreateButton (
       gui->tables [id].callbacks [CONFUI_TABLE_CB_REMOVE],
       /* CONTEXT: configuration: table edit: button: delete selection */
-      _("Delete"), "button_remove");
+      NULL, "button_remove", _("Delete"));
   uiBoxPackStart (bvbox, uiwidgetp);
   gui->tables [id].buttons [CONFUI_BUTTON_TABLE_DELETE] = uiwidgetp;
 
   gui->tables [id].callbacks [CONFUI_TABLE_CB_ADD] = callbackInit (
       confuiTableAdd, gui, NULL);
-  uiwidgetp = uiCreateButton ("conf-add",
+  uiwidgetp = uiCreateButton (
       gui->tables [id].callbacks [CONFUI_TABLE_CB_ADD],
       /* CONTEXT: configuration: table edit: button: add new selection */
-      _("Add New"), "button_add");
+      NULL, "button_add", _("Add New"));
   uiBoxPackStart (bvbox, uiwidgetp);
   gui->tables [id].buttons [CONFUI_BUTTON_TABLE_ADD] = uiwidgetp;
 

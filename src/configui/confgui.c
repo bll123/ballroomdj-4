@@ -104,8 +104,8 @@ confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp,
   gui->uiitem [widx].sfcb.window = gui->window;
   gui->uiitem [widx].callback = callbackInit (dialogFunc, &gui->uiitem [widx].sfcb, NULL);
 
-  uiwidgetp = uiCreateButton ("conf-folder",
-      gui->uiitem [widx].callback, "", NULL);
+  uiwidgetp = uiCreateButton (
+      gui->uiitem [widx].callback, NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 0);
@@ -244,8 +244,8 @@ confuiMakeItemButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 
   confuiMakeItemLabel (gui, widx, hbox, szgrp, "", CONFUI_NO_INDENT);
 
-  uiwidgetp = uiCreateButton ("as-chk-conn",
-      gui->uiitem [widx].callback, txt, NULL);
+  uiwidgetp = uiCreateButton (
+      gui->uiitem [widx].callback, txt, NULL, NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 4);
 

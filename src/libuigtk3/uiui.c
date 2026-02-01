@@ -233,7 +233,7 @@ uiSetUICSS (uisetup_t *uisetup)
 
     tsz = sz - 1;
     snprintf (wbuff, sizeof (wbuff), " button.%s label { font-size: %dpt; }\n",
-        LEFT_NB_CLASS, tsz);
+        NB_VERT_CLASS, tsz);
     tp = stpecpy (tp, tend, wbuff);
 
     tsz = sz - 3;

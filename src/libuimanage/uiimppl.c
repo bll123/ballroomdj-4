@@ -535,9 +535,9 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiEntrySetValue (uiwidgetp, "");
   uiimppl->wcont [UIIMPPL_W_URI] = uiwidgetp;
 
-  uiwidgetp = uiCreateButton ("imppl-folder",
+  uiwidgetp = uiCreateButton (
       uiimppl->callbacks [UIIMPPL_CB_TARGET],
-      "", NULL);
+      NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 0);

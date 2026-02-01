@@ -55,7 +55,7 @@ fprintf (stderr, "b: button-1 click\n");
 
 uiwcont_t *
 uiCreateButton (const char *ident, callback_t *uicb, const char *title,
-    const char *imagenm)
+    const char *imagenm, const char *tooltiptxt)
 {
   uiwcont_t       *uiwidget;
   uibutton_t      *uibutton;
@@ -68,6 +68,11 @@ fprintf (stderr, "c-bt\n");
 
   widget = [[IButton alloc] init];
 
+  if (tooltiptxt != NULL) {
+  }
+  if (title != NULL) {
+    [widget setTitle: [NSString stringWithUTF8String: title]];
+  }
   if (imagenm != NULL) {
     NSString    *ns;
     NSImage     *image;
@@ -81,11 +86,6 @@ fprintf (stderr, "c-bt\n");
     uibutton->image = image;
     [widget setImage: image];
     [widget setTitle:@""];
-// ### not working
-//    [widget addToolTipRect: widget.frame
-//        owner: [NSString stringWithUTF8String: title]];
-  } else {
-    [widget setTitle: [NSString stringWithUTF8String: title]];
   }
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_BUTTON);

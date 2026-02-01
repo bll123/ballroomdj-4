@@ -426,9 +426,9 @@ altinstBuildUI (altinst_t *altinst)
 
   altinst->callbacks [ALT_CB_TARGET_DIR] = callbackInit (
       altinstTargetDirDialog, altinst, NULL);
-  uiwidgetp = uiCreateButton ("alt-tgt-folder",
+  uiwidgetp = uiCreateButton (
       altinst->callbacks [ALT_CB_TARGET_DIR],
-      "", NULL);
+      NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 0);
@@ -465,19 +465,19 @@ altinstBuildUI (altinst_t *altinst)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateButton ("alt-exit",
+  uiwidgetp = uiCreateButton (
       altinst->callbacks [ALT_CB_EXIT],
       /* CONTEXT: alternate installation: exits the alternate installer */
-      _("Exit"), NULL);
+      _("Exit"), NULL, NULL);
   uiBoxPackEnd (hbox, uiwidgetp);
   altinst->wcont [ALT_W_BUTTON_EXIT] = uiwidgetp;
 
   altinst->callbacks [ALT_CB_START] = callbackInit (
       altinstSetupCallback, altinst, NULL);
-  uiwidgetp = uiCreateButton ("alt-install",
+  uiwidgetp = uiCreateButton (
       altinst->callbacks [ALT_CB_START],
       /* CONTEXT: alternate installation: install BDJ4 in the alternate location */
-      _("Install"), NULL);
+      _("Install"), NULL, NULL);
   uiBoxPackEnd (hbox, uiwidgetp);
   altinst->wcont [ALT_W_BUTTON_START] = uiwidgetp;
 

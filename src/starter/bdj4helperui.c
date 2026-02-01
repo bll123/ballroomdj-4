@@ -232,15 +232,15 @@ helperBuildUI (helperui_t  *helper)
   uiBoxPackStart (vbox, hbox);
 
   helper->nextCallback = callbackInit (helperNextCallback, helper, NULL);
-  uiwidgetp = uiCreateButton ("help-next", helper->nextCallback,
+  uiwidgetp = uiCreateButton (helper->nextCallback,
       /* CONTEXT: helperui: proceed to the next step */
-      _("Next"), NULL);
+      _("Next"), NULL, NULL);
   uiBoxPackEnd (hbox, uiwidgetp);
   helper->wcont [HELPER_W_BUTTON_NEXT] = uiwidgetp;
 
-  uiwidgetp = uiCreateButton ("help-close", helper->closeCallback,
+  uiwidgetp = uiCreateButton (helper->closeCallback,
       /* CONTEXT: helperui: close the helper window */
-      _("Close"), NULL);
+      _("Close"), NULL, NULL);
   uiBoxPackEnd (hbox, uiwidgetp);
   helper->wcont [HELPER_W_BUTTON_CLOSE] = uiwidgetp;
 

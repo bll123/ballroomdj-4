@@ -370,10 +370,10 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
     /* size group F */
     uiplayer->callbacks [UIPL_CB_SPD_RESET] = callbackInit (
         uiplayerSpdResetCallback, uiplayer, "spd-reset");
-    uiwidgetp = uiCreateButton ("plui-spd-reset",
+    uiwidgetp = uiCreateButton (
         uiplayer->callbacks [UIPL_CB_SPD_RESET],
         /* CONTEXT: playerui: button: reset speed to 100% */
-        _("100%"), NULL);
+        _("100%"), NULL, NULL);
     uiWidgetAddClass (uiwidgetp, "bdj-spd-reset");
     uiBoxPackEnd (hbox, uiwidgetp);
     uiSizeGroupAdd (szgrpScaleButton, uiwidgetp);
@@ -496,19 +496,19 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiplayer->callbacks [UIPL_CB_FADE] = callbackInit (
       uiplayerFadeProcess, uiplayer, "fade");
-  uiwidgetp = uiCreateButton ("plui-fade",
+  uiwidgetp = uiCreateButton (
       uiplayer->callbacks [UIPL_CB_FADE],
       /* CONTEXT: playerui: button: fade out the song and stop playing it */
-      _("Fade"), NULL);
+      _("Fade"), NULL, NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   uiplayer->wcont [UIPL_W_BUTTON_FADE] = uiwidgetp;
 
   uiplayer->callbacks [UIPL_CB_PLAYPAUSE] = callbackInit (
       uiplayerPlayPauseProcess, uiplayer, "play-pause");
-  uiwidgetp = uiCreateButton ("plui-plpause",
+  uiwidgetp = uiCreateButton (
       uiplayer->callbacks [UIPL_CB_PLAYPAUSE],
       /* CONTEXT: playerui: button: tooltip: play or pause the song */
-      _("Play / Pause"), "button_playpause");
+      NULL, "button_playpause", _("Play / Pause"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiplayer->wcont [UIPL_W_BUTTON_PLAYPAUSE] = uiwidgetp;
 
@@ -525,19 +525,19 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiplayer->callbacks [UIPL_CB_BEGSONG] = callbackInit (
       uiplayerSongBeginProcess, uiplayer, "begin-song");
-  uiwidgetp = uiCreateButton ("plui-begin",
+  uiwidgetp = uiCreateButton (
       uiplayer->callbacks [UIPL_CB_BEGSONG],
       /* CONTEXT: playerui: button: tooltip: return to the beginning of the song */
-      _("Return to beginning of song"), "button_begin");
+      NULL, "button_begin", _("Return to beginning of song"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiplayer->wcont [UIPL_W_BUTTON_BEGSONG] = uiwidgetp;
 
   uiplayer->callbacks [UIPL_CB_NEXTSONG] = callbackInit (
       uiplayerNextSongProcess, uiplayer, "next-song");
-  uiwidgetp = uiCreateButton ("plui-next",
+  uiwidgetp = uiCreateButton (
       uiplayer->callbacks [UIPL_CB_NEXTSONG],
       /* CONTEXT: playerui: button: tooltip: start playing the next song (immediate) */
-      _("Next Song"), "button_nextsong");
+      NULL, "button_nextsong", _("Next Song"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiplayer->wcont [UIPL_W_BUTTON_NEXTSONG] = uiwidgetp;
 

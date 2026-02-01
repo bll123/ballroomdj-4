@@ -715,10 +715,10 @@ pluiBuildUI (playerui_t *plui)
 
   plui->callbacks [PLUI_CB_PLAYBACK_QUEUE] = callbackInit (
       pluiProcessSetPlaybackQueue, plui, NULL);
-  uiwidgetp = uiCreateButton ("plui-set-q",
+  uiwidgetp = uiCreateButton (
       plui->callbacks [PLUI_CB_PLAYBACK_QUEUE],
       /* CONTEXT: playerui: select the current queue for playback */
-      _("Set Queue for Playback"), NULL);
+      _("Set Queue for Playback"), NULL, NULL);
   uiNotebookSetActionWidget (plui->wcont [PLUI_W_NOTEBOOK], uiwidgetp);
   uiWidgetShowAll (uiwidgetp);
   plui->wcont [PLUI_W_SET_PB_BUTTON] = uiwidgetp;
