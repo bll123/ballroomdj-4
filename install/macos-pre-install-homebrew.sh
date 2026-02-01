@@ -66,7 +66,7 @@ if [[ $rc -ne 0 ]]; then
   exit 0
 fi
 
-skipmpinst=F
+skiphbinst=F
 oldmacos=F
 
 case $vers in
@@ -107,7 +107,7 @@ if [[ -d /usr/local/Homebrew ]]; then
   exit 1
 fi
 
-if [[ $skipmpinst == F ]]; then
+if [[ $skiphbinst == F ]]; then
   brew_installed=F
   if [[ -d /opt/homebrew ]]; then
     pfx=/opt/homebrew
