@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2026 Brad Lanam Pleasant Hill CA
 #
-ver=8
+ver=9
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -172,6 +172,105 @@ if [[ -d /opt/homebrew/bin ]]; then
     sudo rm -rf /opt/homebrew
   fi
 fi
+
+if [[ -d /nix ]]; then
+  echo "Uninstall NIX? "
+  gr=$(getresponse)
+
+  sudo -v
+
+  if [[ $gr == Y ]]; then
+    for f in /etc/zshrc.backup-before-nix \
+        /etc/bashrc.backup-before-nix \
+        /etc/bash.bashrc.backup-before-nix; do
+      if [[ -f $f ]]; then
+        nf=$(echo $f | sed -e 's,backup-before-nix$,,')
+        sudo mv -f $f $nf
+      fi
+    done
+
+    sudo -v
+
+    fn=/Library/LaunchDaemons/org.nixos.nix-daemon.plist
+    if [[ -f $fn ]]; then
+      sudo launchctl unload ${fn}
+      sudo /bin/rm -f ${fn}
+    fi
+
+    sudo -v
+
+    for g in $(sudo dscl . -list /Groups | grep nixbld); do
+      sudo dscl -q . -delete /Groups/$g
+    done
+    for u in $(sudo dscl . -list /Users | grep _nixbld); do
+      sudo dscl -q . -delete /Users/$u
+    done
+
+    sudo -v
+
+    fn=/etc/synthetic.conf
+    if [[ -f ${fn} ]]; then
+      grep -l '^nix' ${fn} >/dev/null 2>&1
+      rc=$?
+      if [[ $rc -eq 0 ]]; then
+        sudo ed ${fn} << _HERE_
+/^nix/ d
+w
+q
+_HERE_
+      fi
+      if [[ ! -s ${fn} ]]; then
+        sudo /bin/rm -f ${fn}
+      fi
+    fi
+
+    sudo -v
+
+    for f in /etc/nix \
+        /var/root/.nix-profile \
+        /var/root/.nix-defexpr \
+        /var/root/.nix-channels \
+        /var/root/.local/state/nix \
+        /var/root/.cache/nix \
+        $HOME/.nix-profile \
+        $HOME/.nix-defexpr \
+        $HOME/.nix-channels \
+        $HOME/.local/state/nix \
+        $HOME/.cache/nix \
+        ; do
+      if [[ -f $f ]]; then
+        sudo /bin/rm -f $f
+      fi
+      if [[ -d $f ]]; then
+        sudo /bin/rm -rf $f
+      fi
+    done
+
+    sudo -v
+
+    fn=/etc/fstab
+    if [[ -f ${fn} ]]; then
+      grep -l '/nix' ${fn} >/dev/null 2>&1
+      rc=$?
+      if [[ $rc -eq 0 ]]; then
+        EDITOR=ed VISUAL=ed sudo vifs << _HERE_
+/\/nix/ d
+w
+q
+_HERE_
+      fi
+    fi
+
+    sudo -v
+
+    diskutil list /nix > /dev/null 2>&1
+    rc=$?
+    if [[ $rc -eq 0 ]]; then
+      sudo diskutil apfs deleteVolume /nix
+    fi
+
+  fi
+fi # nix
 
 sudo -k
 
