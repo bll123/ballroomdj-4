@@ -33,19 +33,7 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uiwidget,
 }
 
 void
-uiNotebookSetActionWidget (uiwcont_t *uinotebook, uiwcont_t *uiwidget)
-{
-  return;
-}
-
-void
 uiNotebookSetPage (uiwcont_t *uinotebook, int pagenum)
-{
-  return;
-}
-
-void
-uiNotebookHideShowPage (uiwcont_t *uinotebook, int pagenum, bool show)
 {
   return;
 }
