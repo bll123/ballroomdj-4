@@ -15,26 +15,25 @@ extern "C" {
 typedef enum {
   WCONT_T_ADJUSTMENT,       // gtk widget
   WCONT_T_BOX,              // base type
-  WCONT_T_VBOX,
-  WCONT_T_HBOX,
-  /* base type for color-button, font-button */
-  WCONT_T_BUTTON,
-  WCONT_T_CHECK_BOX,
+  WCONT_T_BUTTON,           /* base type for color-button, font-button */
+  WCONT_T_BUTTON_COLOR,
+  WCONT_T_BUTTON_FONT,
+  WCONT_T_BUTTON_RADIO,
+  WCONT_T_BUTTON_TOGGLE,    /* base type for check-box, radio-button */
+  WCONT_T_BUTTON_CHKBOX,
   WCONT_T_CHGIND,
-  WCONT_T_COLOR_BUTTON,
   WCONT_T_DIALOG_WINDOW,
   WCONT_T_ENTRY,
-  WCONT_T_FONT_BUTTON,
+  WCONT_T_EVENT_BOX,
+  WCONT_T_HBOX,
   WCONT_T_IMAGE,
   WCONT_T_KEY,
   WCONT_T_LABEL,
   WCONT_T_LINK,
-  /* base type for menubar, menu-dropdown, menu-sub */
-  WCONT_T_MENU,
+  WCONT_T_MENU,          /* base type for menu, menubar, menu-sub */
   WCONT_T_MENUBAR,
   WCONT_T_MENU_CHECK_BOX,
-  /* base type for menubar-item */
-  WCONT_T_MENU_ITEM,
+  WCONT_T_MENU_ITEM,     /* base type for menubar-item */
   WCONT_T_MENU_MENUBAR_ITEM,
   WCONT_T_MENU_SUB,
   WCONT_T_NOTEBOOK,
@@ -42,14 +41,12 @@ typedef enum {
   WCONT_T_PANED_WINDOW,
   WCONT_T_PIXBUF,           // gtk widget
   WCONT_T_PROGRESS_BAR,
-  WCONT_T_RADIO_BUTTON,
   WCONT_T_SCALE,
   WCONT_T_SCROLLBAR,
-  WCONT_T_SCROLL_WINDOW,
+  WCONT_T_WINDOW_SCROLL,
   WCONT_T_SEPARATOR,
   WCONT_T_SIZE_GROUP,       // gtk widget
-  /* base type for all spinbox types */
-  WCONT_T_SPINBOX,
+  WCONT_T_SPINBOX,          /* base type for all spinbox types */
   WCONT_T_SPINBOX_DOUBLE,
   WCONT_T_SPINBOX_DOUBLE_DFLT,
   WCONT_T_SPINBOX_NUM,
@@ -58,12 +55,10 @@ typedef enum {
   WCONT_T_SWITCH,
   WCONT_T_TEXT_BOX,
   WCONT_T_TEXT_BUFFER,      // gtk widget
-  /* base type for check-box, radio-button */
-  WCONT_T_TOGGLE_BUTTON,
-  WCONT_T_EVENT_BOX,
   WCONT_T_UNKNOWN,
-  /* base type for scroll-window, dialog-window, paned-window */
-  WCONT_T_WINDOW,
+  WCONT_T_VBOX,
+  WCONT_T_WINDOW,   // base type for scroll-window, dialog-window, paned-window
+  WCONT_T_WINDOW_MAIN,
   WCONT_T_MAX,
 } uiwconttype_t;
 
@@ -98,6 +93,7 @@ typedef struct uibox uibox_t;
 typedef struct uibutton uibutton_t;
 typedef struct uientry uientry_t;
 typedef struct uievent uievent_t;
+typedef struct uiimage uiimage_t;
 typedef struct uimenu uimenu_t;
 typedef struct uiscrollbar uiscrollbar_t;
 typedef struct uispinbox uispinbox_t;
@@ -105,6 +101,7 @@ typedef struct uiswitch uiswitch_t;
 typedef struct uitextbox uitextbox_t;
 typedef struct uivirtlist uivirtlist_t;
 typedef struct uibox uibox_t;
+typedef struct uiwindow uiwindow_t;
 
 typedef union {
     void          *voidwidget;
@@ -118,12 +115,14 @@ typedef union {
       uientry_t       *uientry;
     };
     uievent_t     *uievent;
+    uiimage_t     *uiimage;
     uimenu_t      *uimenu;
     uiscrollbar_t *uiscrollbar;
     uispinbox_t   *uispinbox;
     uiswitch_t    *uiswitch;
     uitextbox_t   *uitextbox;
     uivirtlist_t  *uivirtlist;
+    uiwindow_t    *uiwindow;
 } uiwcontint_t;
 
 # if BDJ4_UI_GTK3 /* gtk3 */

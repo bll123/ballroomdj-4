@@ -34,7 +34,7 @@ uiCreateCheckButton (const char *txt, int value)
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
-  uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_CHECK_BOX);
+  uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_CHKBOX);
   uiwcontSetWidget (uiwidget, widget, NULL);
   return uiwidget;
 }
@@ -54,7 +54,7 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
-  uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_RADIO_BUTTON);
+  uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_RADIO);
   uiwcontSetWidget (uiwidget, widget, NULL);
   return uiwidget;
 }
@@ -94,7 +94,7 @@ uiCreateToggleButton (const char *txt,
     uiToggleButtonSetImageAlignment (widget, &pad);
   }
 
-  uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_TOGGLE_BUTTON);
+  uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_TOGGLE);
   uiwcontSetWidget (uiwidget, widget, NULL);
   return uiwidget;
 }
@@ -102,7 +102,7 @@ uiCreateToggleButton (const char *txt,
 void
 uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
-  if (! uiwcontValid (uiwidget, WCONT_T_TOGGLE_BUTTON, "tb-set-cb")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_TOGGLE, "tb-set-cb")) {
     return;
   }
 
@@ -113,7 +113,7 @@ uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
 void
 uiToggleButtonSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
-  if (! uiwcontValid (uiwidget, WCONT_T_TOGGLE_BUTTON, "tb-set-cb")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_TOGGLE, "tb-set-cb")) {
     return;
   }
 
@@ -126,7 +126,7 @@ uiToggleButtonSetImage (uiwcont_t *uiwidget, uiwcont_t *image)
 {
   int   pad = true;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_TOGGLE_BUTTON, "tb-set-img")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_TOGGLE, "tb-set-img")) {
     return;
   }
 
@@ -137,7 +137,7 @@ uiToggleButtonSetImage (uiwcont_t *uiwidget, uiwcont_t *image)
 void
 uiToggleButtonSetText (uiwcont_t *uiwidget, const char *txt)
 {
-  if (! uiwcontValid (uiwidget, WCONT_T_TOGGLE_BUTTON, "tb-set-txt")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_TOGGLE, "tb-set-txt")) {
     return;
   }
 
@@ -147,7 +147,7 @@ uiToggleButtonSetText (uiwcont_t *uiwidget, const char *txt)
 bool
 uiToggleButtonIsActive (uiwcont_t *uiwidget)
 {
-  if (! uiwcontValid (uiwidget, WCONT_T_TOGGLE_BUTTON, "tb-is-active")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_TOGGLE, "tb-is-active")) {
     return 0;
   }
 
@@ -157,7 +157,7 @@ uiToggleButtonIsActive (uiwcont_t *uiwidget)
 void
 uiToggleButtonSetValue (uiwcont_t *uiwidget, int state)
 {
-  if (! uiwcontValid (uiwidget, WCONT_T_TOGGLE_BUTTON, "tb-set-state")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_TOGGLE, "tb-set-state")) {
     return;
   }
 
@@ -171,7 +171,7 @@ uiToggleButtonEllipsize (uiwcont_t *uiwidget)
 {
   GtkWidget *widget;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_TOGGLE_BUTTON, "tb-ellipsize")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_TOGGLE, "tb-ellipsize")) {
     return;
   }
 

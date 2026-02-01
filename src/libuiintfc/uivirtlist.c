@@ -1018,7 +1018,7 @@ uivlSetRowColumnImage (uivirtlist_t *vl, int32_t rownum, int colidx,
         uiImageClear (row->cols [colidx].uiwidget);
       } else {
         uiWidgetSetSizeRequest (row->cols [colidx].uiwidget, width, -1);
-        uiImageSetFromPixbuf (row->cols [colidx].uiwidget, img);
+        uiImageCopy (row->cols [colidx].uiwidget, img);
       }
       break;
     }

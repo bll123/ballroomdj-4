@@ -115,6 +115,8 @@ typedef struct {
   uivnb_t       *vnb;
   uihnb_t       *hnb;
   uihnb_t       *hnbimg;
+  nlist_t       *sbtxtlist;
+  uidd_t        *uidd [UITEST_DD_MAX];
   long          counter;
   bool          stop;
   bool          chgind;
@@ -411,6 +413,7 @@ uitestUIButtons (uitest_t *uitest)
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (sg, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
 
@@ -425,6 +428,7 @@ uitestUIButtons (uitest_t *uitest)
       uitest->callbacks [UITEST_CB_B], "button long text", NULL, NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (sg, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
 
@@ -441,6 +445,7 @@ uitestUIButtons (uitest_t *uitest)
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (sg, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
 
@@ -521,6 +526,7 @@ uitestUIButtons (uitest_t *uitest)
   uiwcontFree (hbox);
 
   uiwcontFree (vbox);
+  uiwcontFree (sg);
 }
 
 void
@@ -579,13 +585,13 @@ uitestUIToggleButtons (uitest_t *uitest)
       PATHBLD_MP_DIR_IMG);
   uitest->images [UITEST_TB_I_LED_OFF] = uiImageFromFile (imgbuff);
   uiWidgetSetMarginStart (uitest->images [UITEST_TB_I_LED_OFF], 1);
-  uiWidgetMakePersistent (uitest->images [UITEST_TB_I_LED_OFF]);
+//  uiWidgetMakePersistent (uitest->images [UITEST_TB_I_LED_OFF]);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff), "led_on", ".svg",
       PATHBLD_MP_DIR_IMG);
   uitest->images [UITEST_TB_I_LED_ON] = uiImageFromFile (imgbuff);
   uiWidgetSetMarginStart (uitest->images [UITEST_TB_I_LED_ON], 1);
-  uiWidgetMakePersistent (uitest->images [UITEST_TB_I_LED_ON]);
+//  uiWidgetMakePersistent (uitest->images [UITEST_TB_I_LED_ON]);
 
   uiwidgetp = uiCreateToggleButton ("toggle image", NULL, "tool-tip",
       uitest->images [UITEST_TB_I_LED_OFF], 0);
@@ -609,6 +615,7 @@ uitestUIToggleButtons (uitest_t *uitest)
   uiwcontFree (hbox);
 
   uiwcontFree (vbox);
+  uiwcontFree (sg);
 }
 
 void
@@ -655,6 +662,7 @@ uitestUIMiscButtons (uitest_t *uitest)
   uiwcontFree (hbox);
 
   uiwcontFree (vbox);
+  uiwcontFree (sg);
 }
 
 void
@@ -716,7 +724,6 @@ void
 uitestUIDropdown (uitest_t *uitest)
 {
   uiwcont_t   *vbox;
-  uidd_t      *uidd [UITEST_DD_MAX];
 
   /* drop-downs */
 
@@ -728,40 +735,40 @@ uitestUIDropdown (uitest_t *uitest)
   uitest->callbacks [UITEST_CB_DD_STR] = callbackInitS (uitestDDStr, uitest);
   uitest->callbacks [UITEST_CB_DD_NUM] = callbackInitI (uitestDDNum, uitest);
 
-  uidd [UITEST_DD_A] = uiddCreate ("dd-a",
+  uitest->uidd [UITEST_DD_A] = uiddCreate ("dd-a",
       uitest->wcont [UITEST_W_WINDOW], vbox, DD_PACK_START,
       uitest->lista, DD_LIST_TYPE_STR,
       "Title A", DD_KEEP_TITLE,
       uitest->callbacks [UITEST_CB_DD_STR]);
-  uiddSetSelection (uidd [UITEST_DD_A], 2);
+  uiddSetSelection (uitest->uidd [UITEST_DD_A], 2);
 
-  uidd [UITEST_DD_B] = uiddCreate ("dd-b",
+  uitest->uidd [UITEST_DD_B] = uiddCreate ("dd-b",
       uitest->wcont [UITEST_W_WINDOW], vbox, DD_PACK_START,
       uitest->lista, DD_LIST_TYPE_STR,
       "Item 6", DD_REPLACE_TITLE,
       uitest->callbacks [UITEST_CB_DD_STR]);
-  uiddSetSelection (uidd [UITEST_DD_B], 5);
+  uiddSetSelection (uitest->uidd [UITEST_DD_B], 5);
 
-  uidd [UITEST_DD_C] = uiddCreate ("dd-c",
+  uitest->uidd [UITEST_DD_C] = uiddCreate ("dd-c",
       uitest->wcont [UITEST_W_WINDOW], vbox, DD_PACK_START,
       uitest->lista, DD_LIST_TYPE_NUM,
       "Title C", DD_KEEP_TITLE,
       uitest->callbacks [UITEST_CB_DD_NUM]);
-  uiddSetSelection (uidd [UITEST_DD_C], 4);
+  uiddSetSelection (uitest->uidd [UITEST_DD_C], 4);
 
-  uidd [UITEST_DD_D] = uiddCreate ("dd-d",
+  uitest->uidd [UITEST_DD_D] = uiddCreate ("dd-d",
       uitest->wcont [UITEST_W_WINDOW], vbox, DD_PACK_START,
       uitest->lista, DD_LIST_TYPE_NUM,
       "Item 4", DD_REPLACE_TITLE,
       uitest->callbacks [UITEST_CB_DD_NUM]);
-  uiddSetSelection (uidd [UITEST_DD_D], 3);
+  uiddSetSelection (uitest->uidd [UITEST_DD_D], 3);
 
-  uidd [UITEST_DD_E] = uiddCreate ("dd-e",
+  uitest->uidd [UITEST_DD_E] = uiddCreate ("dd-e",
       uitest->wcont [UITEST_W_WINDOW], vbox, DD_PACK_START,
       uitest->listb, DD_LIST_TYPE_NUM,
       "Item 1", DD_REPLACE_TITLE,
       uitest->callbacks [UITEST_CB_DD_NUM]);
-  uiddSetSelection (uidd [UITEST_DD_E], 1);
+  uiddSetSelection (uitest->uidd [UITEST_DD_E], 1);
 
   uiwcontFree (vbox);
 }
@@ -1134,7 +1141,6 @@ uitestUINotebook (uitest_t *uitest)
 
     snprintf (tbuff, sizeof (tbuff), "Horiz %d", i);
     vboxb = uiCreateVertBox ();
-    uiwidgetp = uiCreateLabel (tbuff);
     uihnbAppendPage (hnb, vboxb, tbuff, NULL, HNB_NO_ID);
 
     uiwidgetp = uiCreateLabel (tbuff);
@@ -1400,7 +1406,6 @@ uitestUISpinbox (uitest_t *uitest)
   uiwcont_t   *vbox;
   uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
-  nlist_t     *txtlist;
 
   /* spinboxes */
 
@@ -1416,13 +1421,13 @@ uitestUISpinbox (uitest_t *uitest)
 
   uiwidgetp = uiSpinboxTextCreate (uitest);
   uiBoxPackStart (hbox, uiwidgetp);
-  txtlist = nlistAlloc ("txtlist", LIST_ORDERED, NULL);
-  nlistSetStr (txtlist, 0, "aaa");
-  nlistSetStr (txtlist, 1, "bbb");
-  nlistSetStr (txtlist, 2, "ccc");
-  nlistSetStr (txtlist, 3, "ddd");
-  uiSpinboxTextSet (uiwidgetp, 0, nlistGetCount (txtlist), 10,
-      txtlist, NULL, NULL);
+  uitest->sbtxtlist = nlistAlloc ("sbtxtlist", LIST_ORDERED, NULL);
+  nlistSetStr (uitest->sbtxtlist, 0, "aaa");
+  nlistSetStr (uitest->sbtxtlist, 1, "bbb");
+  nlistSetStr (uitest->sbtxtlist, 2, "ccc");
+  nlistSetStr (uitest->sbtxtlist, 3, "ddd");
+  uiSpinboxTextSet (uiwidgetp, 0, nlistGetCount (uitest->sbtxtlist), 10,
+      uitest->sbtxtlist, NULL, NULL);
   uiSpinboxTextSetValue (uiwidgetp, 0);
   uitest->wcont [UITEST_W_SB_TEXT] = uiwidgetp;
 
@@ -1634,10 +1639,12 @@ uitestCleanup (uitest_t *uitest)
   uiCloseWindow (uitest->wcont [UITEST_W_WINDOW]);
   uiCleanup ();
 
+  for (int i = 0; i < UITEST_DD_MAX; ++i) {
+    uiddFree (uitest->uidd [i]);
+  }
   for (int i = 0; i < UITEST_VL_MAX; ++i) {
     uivlFree (uitest->vl [i]);
   }
-
   for (int i = 0; i < UITEST_W_MAX; ++i) {
     uiwcontFree (uitest->wcont [i]);
   }
@@ -1652,6 +1659,10 @@ uitestCleanup (uitest_t *uitest)
 
   uivnbFree (uitest->vnb);
   uihnbFree (uitest->hnb);
+  uihnbFree (uitest->hnbimg);
+  nlistFree (uitest->sbtxtlist);
+
+  uivnbFree (uitest->mainvnb);
 
   ilistFree (uitest->lista);
   ilistFree (uitest->listb);

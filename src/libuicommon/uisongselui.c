@@ -173,6 +173,7 @@ uisongselUIFree (uisongsel_t *uisongsel)
     callbackFree (ssint->callbacks [i]);
   }
   for (int i = 0; i < SONGSEL_W_MAX; ++i) {
+fprintf (stderr, "ssui: free-wcont: %d\n", i);
     uiwcontFree (ssint->wcont [i]);
   }
   uivlFree (ssint->uivl);

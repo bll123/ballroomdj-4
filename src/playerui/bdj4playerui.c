@@ -472,9 +472,6 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiCloseWindow (plui->wcont [PLUI_W_WINDOW]);
   uiCleanup ();
 
-  uiWidgetClearPersistent (plui->wcont [PLUI_W_LED_ON]);
-  uiWidgetClearPersistent (plui->wcont [PLUI_W_LED_OFF]);
-
   contInstanceFree (plui->continst);
 
   datafileSave (plui->optiondf, NULL, plui->options, DF_NO_OFFSET, 1);
@@ -539,14 +536,10 @@ pluiBuildUI (playerui_t *plui)
   pathbldMakePath (tbuff, sizeof (tbuff),  "led_off", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
   plui->wcont [PLUI_W_LED_OFF] = uiImageFromFile (tbuff);
-  uiImageConvertToPixbuf (plui->wcont [PLUI_W_LED_OFF]);
-  uiWidgetMakePersistent (plui->wcont [PLUI_W_LED_OFF]);
 
   pathbldMakePath (tbuff, sizeof (tbuff),  "led_on", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
   plui->wcont [PLUI_W_LED_ON] = uiImageFromFile (tbuff);
-  uiImageConvertToPixbuf (plui->wcont [PLUI_W_LED_ON]);
-  uiWidgetMakePersistent (plui->wcont [PLUI_W_LED_ON]);
 
   plui->callbacks [PLUI_CB_CLOSE] = callbackInit (
       pluiCloseWin, plui, NULL);
@@ -759,7 +752,7 @@ pluiBuildUI (playerui_t *plui)
     if (tabtype == PLUI_TAB_MUSICQ) {
       imgptr = imgbuff;
       plui->musicqImage [i] = uiImageNew ();
-      uiImageSetFromPixbuf (plui->musicqImage [i], plui->wcont [PLUI_W_LED_ON]);
+      uiImageCopy (plui->musicqImage [i], plui->wcont [PLUI_W_LED_ON]);
 // ### did clever stuff to change the image from on to off and back again...
       uimusicqDragDropSetURICallback (plui->uimusicq, i, plui->callbacks [PLUI_CB_DRAG_DROP]);
     }
@@ -1411,9 +1404,9 @@ pluiSetPlaybackQueue (playerui_t *plui, int newQueue, int updateFlag)
     }
 
     if ((int) plui->musicqPlayIdx == i) {
-      uiImageSetFromPixbuf (plui->musicqImage [i], plui->wcont [PLUI_W_LED_ON]);
+      uiImageCopy (plui->musicqImage [i], plui->wcont [PLUI_W_LED_ON]);
     } else {
-      uiImageSetFromPixbuf (plui->musicqImage [i], plui->wcont [PLUI_W_LED_OFF]);
+      uiImageCopy (plui->musicqImage [i], plui->wcont [PLUI_W_LED_OFF]);
     }
   }
 

@@ -19,12 +19,14 @@
 #include "ui/uibutton.h"
 #include "ui/uientry.h"
 #include "ui/uievents.h"
+#include "ui/uiimage.h"
 #include "ui/uimenu.h"
 #include "ui/uiscrollbar.h"
 #include "ui/uispinbox.h"
 #include "ui/uiswitch.h"
 #include "ui/uitextbox.h"
 #include "ui/uiui.h"
+#include "ui/uiwindow.h"
 
 void
 uiwcontFree (uiwcont_t *uiwidget)
@@ -48,6 +50,10 @@ uiwcontFree (uiwcont_t *uiwidget)
     }
     case WCONT_T_ENTRY: {
       uiEntryFree (uiwidget);
+      break;
+    }
+    case WCONT_T_IMAGE: {
+      uiImageFree (uiwidget);
       break;
     }
     case WCONT_T_KEY: {
@@ -74,6 +80,10 @@ uiwcontFree (uiwcont_t *uiwidget)
     }
     case WCONT_T_TEXT_BOX: {
       uiTextBoxFree (uiwidget);
+      break;
+    }
+    case WCONT_T_WINDOW_MAIN: {
+      uiMainWindowFree (uiwidget);
       break;
     }
     default: {

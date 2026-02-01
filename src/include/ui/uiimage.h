@@ -10,11 +10,11 @@ extern "C" {
 #endif
 
 uiwcont_t *uiImageNew (void);
+void  uiImageFree (uiwcont_t *uiwidget);
 uiwcont_t *uiImageFromFile (const char *fn);
 uiwcont_t *uiImageScaledFromFile (const char *fn, int scale);
 void  uiImageClear (uiwcont_t *uiwidget);
-void  uiImageConvertToPixbuf (uiwcont_t *uiwidget);
-void  uiImageSetFromPixbuf (uiwcont_t *uiwidget, uiwcont_t *uipixbuf);
+void  uiImageCopy (uiwcont_t *toimg, uiwcont_t *fromimg);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

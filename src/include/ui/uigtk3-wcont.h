@@ -14,7 +14,6 @@ typedef struct uispecific {
   union {
     GtkWidget     *widget;
     GtkSizeGroup  *sg;
-    GdkPixbuf     *pixbuf;
     GtkTextBuffer *buffer;
     GtkAdjustment *adjustment;
   };
@@ -23,4 +22,3 @@ typedef struct uispecific {
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
 #endif
-

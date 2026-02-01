@@ -1212,7 +1212,7 @@ uimusicqFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   uivlSetRowColumnStr (mqint->uivl, rownum, UIMUSICQ_COL_DISP_IDX, tmp);
 
   if (musicqupditem->pauseind) {
-    pauseimg = uimusicq->pausePixbuf;
+    pauseimg = uimusicq->pauseImage;
   }
   uivlSetRowColumnImage (mqint->uivl, rownum, UIMUSICQ_COL_PAUSEIND,
       pauseimg, 20);

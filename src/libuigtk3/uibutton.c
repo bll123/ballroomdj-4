@@ -36,7 +36,10 @@ static void uiButtonSignalHandler (GtkButton *b, gpointer udata);
 static void uiButtonRepeatSignalHandler (GtkButton *b, gpointer udata);
 
 typedef struct uibutton {
+  char            *imagenm;
   GtkWidget       *image;
+  char            *altimagenm;
+  GtkWidget       *altimage;
 } uibutton_t;
 
 uiwcont_t *
@@ -50,6 +53,9 @@ uiCreateButton (callback_t *uicb, const char *title,
 
   uibutton = mdmalloc (sizeof (uibutton_t));
   uibutton->image = NULL;
+  uibutton->imagenm = NULL;
+  uibutton->altimagenm = NULL;
+  uibutton->altimage = NULL;
 
   widget = gtk_button_new ();
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
@@ -117,8 +123,19 @@ uiButtonFree (uiwcont_t *uiwidget)
   uibutton = uiwidget->uiint.uibutton;
   bbase = &uiwidget->uiint.uibuttonbase;
 
+  dataFree (uibutton->imagenm);
+  dataFree (uibutton->altimagenm);
+
+  if (uibutton->image != NULL) {
+//    g_object_unref (G_OBJECT (uibutton->image));
+  }
+  if (uibutton->altimage != NULL) {
+    g_object_unref (uibutton->altimage);
+  }
+
   callbackFree (bbase->presscb);
   callbackFree (bbase->releasecb);
+
   mdfree (uibutton);
 }
 

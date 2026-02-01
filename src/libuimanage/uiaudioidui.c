@@ -212,8 +212,6 @@ uiaudioidUIFree (uiaudioid_t *uiaudioid)
     uivlFree (audioidint->uivl);
     nlistFree (audioidint->currlist);
 
-    uiWidgetClearPersistent (audioidint->wcont [UIAUDID_W_MB_LOGO]);
-
     for (int count = 0; count < audioidint->itemcount; ++count) {
       callbackFree (audioidint->items [count].callback);
       uiwcontFree (audioidint->items [count].currrb);
@@ -478,8 +476,6 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   pathbldMakePath (tbuff, sizeof (tbuff), "musicbrainz-logo", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
   audioidint->wcont [UIAUDID_W_MB_LOGO] = uiImageFromFile (tbuff);
-  uiImageConvertToPixbuf (audioidint->wcont [UIAUDID_W_MB_LOGO]);
-  uiWidgetMakePersistent (audioidint->wcont [UIAUDID_W_MB_LOGO]);
 
   logProcEnd ("");
   return audioidint->wcont [UIAUDID_W_MAIN_VBOX];
@@ -512,7 +508,7 @@ uiaudioidLoadData (uiaudioid_t *uiaudioid, song_t *song, dbidx_t dbidx)
   uiImageClear (audioidint->wcont [UIAUDID_W_AUDIOID_IMG]);
   data = songGetStr (song, TAG_RECORDING_ID);
   if (data != NULL && *data) {
-    uiImageSetFromPixbuf (audioidint->wcont [UIAUDID_W_AUDIOID_IMG], audioidint->wcont [UIAUDID_W_MB_LOGO]);
+    uiImageCopy (audioidint->wcont [UIAUDID_W_AUDIOID_IMG], audioidint->wcont [UIAUDID_W_MB_LOGO]);
   }
 
   for (int count = 0; count < audioidint->itemcount; ++count) {

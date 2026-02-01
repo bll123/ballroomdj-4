@@ -29,7 +29,7 @@ uiCreateFontButton (const char *fontname)
   } else {
     fb = gtk_font_button_new ();
   }
-  uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_FONT_BUTTON);
+  uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_BUTTON_FONT);
   uiwcontSetWidget (uiwidget, fb, NULL);
   return uiwidget;
 }
@@ -39,7 +39,7 @@ uiFontButtonGetFont (uiwcont_t *uiwidget)
 {
   const char *sval;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_FONT_BUTTON, "font-button-get")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_FONT, "font-button-get")) {
     return NULL;
   }
 
@@ -61,7 +61,7 @@ uiCreateColorButton (const char *color)
     cb = gtk_color_button_new ();
   }
 
-  uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_COLOR_BUTTON);
+  uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_BUTTON_COLOR);
   uiwcontSetWidget (uiwidget, cb, NULL);
   return uiwidget;
 }
@@ -71,7 +71,7 @@ uiColorButtonGetColor (uiwcont_t *uiwidget, char *tbuff, size_t sz)
 {
   GdkRGBA     gcolor;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_COLOR_BUTTON, "col-button-get")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_COLOR, "col-button-get")) {
     return;
   }
 

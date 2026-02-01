@@ -42,7 +42,7 @@ fprintf (stderr, "c-chk-bt\n");
   }
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
-  uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_CHECK_BOX);
+  uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_CHKBOX);
   uiwcontSetWidget (uiwidget, widget, NULL);
 
   return uiwidget;
@@ -68,7 +68,7 @@ fprintf (stderr, "c-radio-bt\n");
   }
   [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
-  uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_RADIO_BUTTON);
+  uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_RADIO);
   uiwcontSetWidget (uiwidget, widget, NULL);
 
   return uiwidget;
@@ -113,7 +113,7 @@ fprintf (stderr, "c-toggle-bt\n");
     [widget setImage: image->uidata.widget];
   }
 
-  uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_RADIO_BUTTON);
+  uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_RADIO);
   uiwcontSetWidget (uiwidget, widget, NULL);
 
   return uiwidget;

@@ -90,13 +90,7 @@ uiImageClear (uiwcont_t *uiwidget)
 }
 
 void
-uiImageConvertToPixbuf (uiwcont_t *uiwidget)
-{
-  return;
-}
-
-void
-uiImageSetFromPixbuf (uiwcont_t *uiwidget, uiwcont_t *uipixbuf)
+uiImageCopy (uiwcont_t *toimg, uiwcont_t *fromimg)
 {
   return;
 }

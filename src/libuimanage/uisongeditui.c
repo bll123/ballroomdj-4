@@ -285,8 +285,6 @@ uisongeditUIFree (uisongedit_t *uisongedit)
       uiwcontFree (seint->items [count].display);
     }
 
-    uiWidgetClearPersistent (seint->wcont [UISE_W_MUSICBRAINZ]);
-
     for (int i = 0; i < UISE_SZGRP_MAX; ++i) {
       uiwcontFree (seint->szgrp [i]);
     }
@@ -407,8 +405,6 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   pathbldMakePath (tbuff, sizeof (tbuff), "musicbrainz-logo", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
   seint->wcont [UISE_W_MUSICBRAINZ] = uiImageFromFile (tbuff);
-  uiImageConvertToPixbuf (seint->wcont [UISE_W_MUSICBRAINZ]);
-  uiWidgetMakePersistent (seint->wcont [UISE_W_MUSICBRAINZ]);
 
   seint->wcont [UISE_W_AUDIOID_IMG] = uiImageNew ();
   uiImageClear (seint->wcont [UISE_W_AUDIOID_IMG]);
@@ -541,7 +537,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
   uiImageClear (seint->wcont [UISE_W_AUDIOID_IMG]);
   data = songGetStr (song, TAG_RECORDING_ID);
   if (data != NULL && *data) {
-    uiImageSetFromPixbuf (seint->wcont [UISE_W_AUDIOID_IMG], seint->wcont [UISE_W_MUSICBRAINZ]);
+    uiImageCopy (seint->wcont [UISE_W_AUDIOID_IMG], seint->wcont [UISE_W_MUSICBRAINZ]);
   }
 
   if (seint->wcont [UISE_W_MODIFIED] != NULL) {
