@@ -40,6 +40,7 @@ typedef struct uibutton {
   GtkWidget       *image;
   char            *altimagenm;
   GtkWidget       *altimage;
+  int             state;
 } uibutton_t;
 
 uiwcont_t *
@@ -56,6 +57,7 @@ uiCreateButton (callback_t *uicb, const char *title,
   uibutton->imagenm = NULL;
   uibutton->altimagenm = NULL;
   uibutton->altimage = NULL;
+  uibutton->state = BUTTON_OFF;
 
   widget = gtk_button_new ();
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
@@ -73,14 +75,16 @@ uiCreateButton (callback_t *uicb, const char *title,
     GtkWidget   *image;
     char        tbuff [BDJ4_PATH_MAX];
 
-    if (*imagenm != '/') {
+    if (strchr (imagenm, '/') == NULL) {
       /* relative path */
       pathbldMakePath (tbuff, sizeof (tbuff), imagenm, BDJ4_IMG_SVG_EXT,
           PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
+      uibutton->imagenm = strdup (tbuff);
     } else {
-      stpecpy (tbuff, tbuff + sizeof (tbuff), imagenm);
+      uibutton->imagenm = strdup (imagenm);
     }
-    image = gtk_image_new_from_file (tbuff);
+    image = gtk_image_new_from_file (uibutton->imagenm);
+fprintf (stderr, "b: img: %s %d\n", imagenm, image != NULL);
     gtk_button_set_image (GTK_BUTTON (widget), image);
     gtk_button_set_image_position (GTK_BUTTON (widget), GTK_POS_RIGHT);
     gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
@@ -126,13 +130,6 @@ uiButtonFree (uiwcont_t *uiwidget)
   dataFree (uibutton->imagenm);
   dataFree (uibutton->altimagenm);
 
-  if (uibutton->image != NULL) {
-//    g_object_unref (G_OBJECT (uibutton->image));
-  }
-  if (uibutton->altimage != NULL) {
-    g_object_unref (uibutton->altimage);
-  }
-
   callbackFree (bbase->presscb);
   callbackFree (bbase->releasecb);
 
@@ -165,7 +162,6 @@ uiButtonSetImageMarginTop (uiwcont_t *uiwidget, int margin)
   }
 }
 
-
 void
 uiButtonSetImageIcon (uiwcont_t *uiwidget, const char *nm)
 {
@@ -179,6 +175,61 @@ uiButtonSetImageIcon (uiwcont_t *uiwidget, const char *nm)
   gtk_button_set_image (GTK_BUTTON (uiwidget->uidata.widget), image);
   gtk_button_set_always_show_image (
       GTK_BUTTON (uiwidget->uidata.widget), TRUE);
+}
+
+void
+uiButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
+{
+  uibutton_t      *uibutton;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-image-pos-r")) {
+    return;
+  }
+
+  uibutton = uiwidget->uiint.uibutton;
+
+  if (imagenm != NULL) {
+    GtkWidget   *image;
+    char        tbuff [BDJ4_PATH_MAX];
+
+    if (strchr (imagenm, '/') == NULL) {
+      /* relative path */
+      pathbldMakePath (tbuff, sizeof (tbuff), imagenm, BDJ4_IMG_SVG_EXT,
+          PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
+      uibutton->altimagenm = strdup (tbuff);
+    } else {
+      uibutton->altimagenm = strdup (imagenm);
+    }
+    image = gtk_image_new_from_file (uibutton->altimagenm);
+fprintf (stderr, "b: alt-img: %s %d\n", imagenm, image != NULL);
+    uibutton->altimage = image;
+  }
+}
+
+void
+uiButtonSetState (uiwcont_t *uiwidget, int newstate)
+{
+  uibutton_t      *uibutton;
+  GtkWidget       *widget;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-image-pos-r")) {
+    return;
+  }
+
+  uibutton = uiwidget->uiint.uibutton;
+
+  if (uibutton->state == newstate) {
+    return;
+  }
+
+  uibutton->state = newstate;
+  widget = uiwidget->uidata.widget;
+  if (uibutton->state == BUTTON_ON && uibutton->altimage != NULL) {
+    gtk_button_set_image (GTK_BUTTON (widget), uibutton->altimage);
+  }
+  if (uibutton->state == BUTTON_OFF && uibutton->image != NULL) {
+    gtk_button_set_image (GTK_BUTTON (widget), uibutton->image);
+  }
 }
 
 void
@@ -253,6 +304,20 @@ uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms)
       G_CALLBACK (uiButtonRepeatSignalHandler), bbase->presscb);
   g_signal_connect (uiwidget->uidata.widget, "released",
       G_CALLBACK (uiButtonRepeatSignalHandler), bbase->releasecb);
+}
+
+int
+uiButtonGetState (uiwcont_t *uiwidget)
+{
+  uibutton_t    *uibutton;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-repeat")) {
+    return BUTTON_OFF;
+  }
+
+  uibutton = uiwidget->uiint.uibutton;
+
+  return uibutton->state;
 }
 
 /* internal routines */

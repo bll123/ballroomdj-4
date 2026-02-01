@@ -38,11 +38,13 @@ enum {
   UITEST_W_MENUBAR,
   UITEST_W_STATUS_MSG,
   UITEST_W_B,
+  UITEST_W_B_MSG,
   UITEST_W_B_IMG_A,
   UITEST_W_B_IMG_B,
-  UITEST_W_B_MSG,
+  UITEST_W_B_IMG_C,
   UITEST_W_B_IMG_A_MSG,
   UITEST_W_B_IMG_B_MSG,
+  UITEST_W_B_IMG_C_MSG,
   UITEST_W_SW,
   UITEST_W_CI_A,
   UITEST_W_CI_B,
@@ -64,6 +66,7 @@ enum {
   UITEST_CB_B,
   UITEST_CB_B_IMG_A,
   UITEST_CB_B_IMG_B,
+  UITEST_CB_B_IMG_C,
   UITEST_CB_CHG_IND,
   UITEST_CB_DD_STR,
   UITEST_CB_DD_NUM,
@@ -72,12 +75,8 @@ enum {
 };
 
 enum {
-  UITEST_TB_I_LED_OFF,
-  UITEST_TB_I_LED_ON,
-  UITEST_NB1_I_LED_OFF,
-  UITEST_NB1_I_LED_ON,
-  UITEST_NB2_I_LED_OFF,
-  UITEST_NB2_I_LED_ON,
+  UITEST_LED_OFF,
+  UITEST_LED_ON,
   UITEST_I_MAX,
 };
 
@@ -108,7 +107,7 @@ typedef struct {
   uiwcont_t     *wcont [UITEST_W_MAX];
   uivirtlist_t  *vl [UITEST_VL_MAX];
   callback_t    *callbacks [UITEST_CB_MAX];
-  uiwcont_t     *images [UITEST_I_MAX];
+  char          *images [UITEST_I_MAX];
   callback_t    *chgcb;
   ilist_t       *lista;
   ilist_t       *listb;
@@ -164,6 +163,7 @@ static void uitestCounterDisp (uitest_t *uitest, uiwcont_t *uiwidgetp);
 static bool uitestCBButton (void *udata);
 static bool uitestCBButtonImgA (void *udata);
 static bool uitestCBButtonImgB (void *udata);
+static bool uitestCBButtonImgC (void *udata);
 static bool uitestCBchgind (void *udata);
 static bool uitestCBLink (void *udata);
 static void uitestCleanup (uitest_t *uitest);
@@ -184,6 +184,7 @@ main (int argc, char *argv[])
   int         c;
   int         option_index;
   uisetup_t   uisetup;
+  char        imgbuff [BDJ4_PATH_MAX];
 
   static struct option bdj_options [] = {
     { "bdj4",         no_argument,      NULL,   'B' },
@@ -276,6 +277,14 @@ main (int argc, char *argv[])
   uiutilsInitSetup (&uisetup);
   uiSetUICSS (&uisetup);
 
+  pathbldMakePath (imgbuff, sizeof (imgbuff), "led_off", ".svg",
+      PATHBLD_MP_DREL_IMG);
+  uitest.images [UITEST_LED_ON] = strdup (imgbuff);
+
+  pathbldMakePath (imgbuff, sizeof (imgbuff), "led_on", ".svg",
+      PATHBLD_MP_DREL_IMG);
+  uitest.images [UITEST_LED_ON] = strdup (imgbuff);
+
   uitestBuildUI (&uitest);
   osuiFinalize ();
 
@@ -316,6 +325,8 @@ uitestBuildUI (uitest_t *uitest)
       uitestCBButtonImgA, uitest, NULL);
   uitest->callbacks [UITEST_CB_B_IMG_B] = callbackInit (
       uitestCBButtonImgB, uitest, NULL);
+  uitest->callbacks [UITEST_CB_B_IMG_C] = callbackInit (
+      uitestCBButtonImgC, uitest, NULL);
 
   uitest->wcont [UITEST_W_WINDOW] = uiCreateMainWindow (
       uitest->callbacks [UITEST_CB_CLOSE], "uitest", "bdj4_icon");
@@ -468,7 +479,7 @@ uitestUIButtons (uitest_t *uitest)
 
   uiwcontFree (hbox);
 
-  /* button: image, text */
+  /* button: image, tooltip */
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
@@ -484,6 +495,27 @@ uitestUIButtons (uitest_t *uitest)
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   uitest->wcont [UITEST_W_B_IMG_B_MSG] = uiwidgetp;
+
+  uiwcontFree (hbox);
+
+  /* button: image, text, tooltip, chg-state */
+
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+
+  uiwidgetp = uiCreateButton (
+      uitest->callbacks [UITEST_CB_B_IMG_C], "Image-toggle",
+      uitest->images [UITEST_LED_OFF], "img-tooltip");
+  uiButtonSetAltImage (uiwidgetp, uitest->images [UITEST_LED_ON]);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uitest->wcont [UITEST_W_B_IMG_C] = uiwidgetp;
+
+  uiwidgetp = uiCreateLabel ("");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
+  uitest->wcont [UITEST_W_B_IMG_C_MSG] = uiwidgetp;
 
   uiwcontFree (hbox);
 
@@ -536,7 +568,6 @@ uitestUIToggleButtons (uitest_t *uitest)
   uiwcont_t   *hbox;
   uiwcont_t   *sg;
   uiwcont_t   *uiwidgetp;
-  char        imgbuff [BDJ4_PATH_MAX];
 
   sg = uiCreateSizeGroupHoriz ();
 
@@ -581,24 +612,12 @@ uitestUIToggleButtons (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  pathbldMakePath (imgbuff, sizeof (imgbuff), "led_off", ".svg",
-      PATHBLD_MP_DIR_IMG);
-  uitest->images [UITEST_TB_I_LED_OFF] = uiImageFromFile (imgbuff);
-  uiWidgetSetMarginStart (uitest->images [UITEST_TB_I_LED_OFF], 1);
-//  uiWidgetMakePersistent (uitest->images [UITEST_TB_I_LED_OFF]);
-
-  pathbldMakePath (imgbuff, sizeof (imgbuff), "led_on", ".svg",
-      PATHBLD_MP_DIR_IMG);
-  uitest->images [UITEST_TB_I_LED_ON] = uiImageFromFile (imgbuff);
-  uiWidgetSetMarginStart (uitest->images [UITEST_TB_I_LED_ON], 1);
-//  uiWidgetMakePersistent (uitest->images [UITEST_TB_I_LED_ON]);
-
-  uiwidgetp = uiCreateToggleButton ("toggle image", NULL, "tool-tip",
-      uitest->images [UITEST_TB_I_LED_OFF], 0);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAlignHorizCenter (uiwidgetp);
-  uiWidgetAlignVertCenter (uiwidgetp);
-  uiwcontFree (uiwidgetp);
+//  uiwidgetp = uiCreateToggleButton ("toggle image", NULL, "tool-tip",
+//      uitest->images [UITEST_LED_OFF], 0);
+//  uiBoxPackStart (hbox, uiwidgetp);
+//  uiWidgetAlignHorizCenter (uiwidgetp);
+//  uiWidgetAlignVertCenter (uiwidgetp);
+//  uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
 
@@ -1116,7 +1135,6 @@ uitestUINotebook (uitest_t *uitest)
   uiwcont_t   *vbox;
   uiwcont_t   *vboxb;
   uiwcont_t   *uiwidgetp;
-  char        imgbuff [BDJ4_PATH_MAX];
   uivnb_t     *vnb;
   uihnb_t     *hnb;
 
@@ -1161,9 +1179,8 @@ uitestUINotebook (uitest_t *uitest)
   uiBoxPackStart (vboxb, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  pathbldMakePath (imgbuff, sizeof (imgbuff), "led_off", ".svg",
-      PATHBLD_MP_DIR_IMG);
-  uihnbAppendPage (hnb, vboxb, "h-img 1", imgbuff, HNB_NO_ID);
+  uihnbAppendPage (hnb, vboxb, "h-img 1",
+      uitest->images [UITEST_LED_ON], HNB_NO_ID);
 
   uiwcontFree (vboxb);
 
@@ -1174,7 +1191,8 @@ uitestUINotebook (uitest_t *uitest)
   uiBoxPackStart (vboxb, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uihnbAppendPage (hnb, vboxb, "h-img 2", imgbuff, HNB_NO_ID);
+  uihnbAppendPage (hnb, vboxb, "h-img 2",
+      uitest->images [UITEST_LED_OFF], HNB_NO_ID);
 
   uiwcontFree (vboxb);
 
@@ -1616,6 +1634,21 @@ uitestCBButtonImgB (void *udata)
 }
 
 static bool
+uitestCBButtonImgC (void *udata)
+{
+  uitest_t  *uitest = udata;
+  int       state;
+  char      msg [40];
+
+  state = uiButtonGetState (uitest->wcont [UITEST_W_B_IMG_C]);
+  uiButtonSetState (uitest->wcont [UITEST_W_B_IMG_C], 1 - state);
+  snprintf (msg, sizeof (msg), "state: %d", state);
+  uiLabelSetText (uitest->wcont [UITEST_W_B_IMG_C_MSG], msg);
+
+  return UICB_CONT;
+}
+
+static bool
 uitestCBchgind (void *udata)
 {
   uitest_t  *uitest = udata;
@@ -1654,7 +1687,7 @@ uitestCleanup (uitest_t *uitest)
   }
 
   for (int i = 0; i < UITEST_I_MAX; ++i) {
-    uiwcontFree (uitest->images [i]);
+    dataFree (uitest->images [i]);
   }
 
   uivnbFree (uitest->vnb);
