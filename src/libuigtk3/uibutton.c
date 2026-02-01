@@ -36,10 +36,11 @@ static void uiButtonSignalHandler (GtkButton *b, gpointer udata);
 static void uiButtonRepeatSignalHandler (GtkButton *b, gpointer udata);
 
 typedef struct uibutton {
-  char            *imagenm;
+  GtkWidget       *currimage;
   GtkWidget       *image;
-  char            *altimagenm;
+  GdkPixbuf       *imageraw;
   GtkWidget       *altimage;
+  GdkPixbuf       *altimageraw;
   int             state;
 } uibutton_t;
 
@@ -54,8 +55,6 @@ uiCreateButton (callback_t *uicb, const char *title,
 
   uibutton = mdmalloc (sizeof (uibutton_t));
   uibutton->image = NULL;
-  uibutton->imagenm = NULL;
-  uibutton->altimagenm = NULL;
   uibutton->altimage = NULL;
   uibutton->state = BUTTON_OFF;
 
@@ -74,22 +73,26 @@ uiCreateButton (callback_t *uicb, const char *title,
   if (imagenm != NULL) {
     GtkWidget   *image;
     char        tbuff [BDJ4_PATH_MAX];
+    const char  *timgnm;
 
     if (strchr (imagenm, '/') == NULL) {
       /* relative path */
       pathbldMakePath (tbuff, sizeof (tbuff), imagenm, BDJ4_IMG_SVG_EXT,
           PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-      uibutton->imagenm = strdup (tbuff);
+      timgnm = tbuff;
     } else {
-      uibutton->imagenm = strdup (imagenm);
+      timgnm = imagenm;
     }
-    image = gtk_image_new_from_file (uibutton->imagenm);
-fprintf (stderr, "b: img: %s %d\n", imagenm, image != NULL);
-    gtk_button_set_image (GTK_BUTTON (widget), image);
-    gtk_button_set_image_position (GTK_BUTTON (widget), GTK_POS_RIGHT);
-    gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
-    gtk_widget_set_valign (image, GTK_ALIGN_CENTER);
+    image = gtk_image_new_from_file (timgnm);
     uibutton->image = image;
+    uibutton->imageraw = gtk_image_get_pixbuf (GTK_IMAGE (image));
+
+    image = gtk_image_new ();
+    gtk_button_set_image (GTK_BUTTON (widget), image);
+    gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
+    gtk_widget_set_halign (image, GTK_ALIGN_CENTER);
+    gtk_widget_set_valign (image, GTK_ALIGN_CENTER);
+    uibutton->currimage = image;
   }
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_BUTTON);
@@ -111,6 +114,11 @@ fprintf (stderr, "b: img: %s %d\n", imagenm, image != NULL);
         G_CALLBACK (uiButtonSignalHandler), uiwidget);
   }
 
+  if (imagenm != NULL) {
+    uibutton->state = BUTTON_ON;    // force set of image
+    uiButtonSetState (uiwidget, BUTTON_OFF);
+  }
+
   return uiwidget;
 }
 
@@ -127,9 +135,6 @@ uiButtonFree (uiwcont_t *uiwidget)
   uibutton = uiwidget->uiint.uibutton;
   bbase = &uiwidget->uiint.uibuttonbase;
 
-  dataFree (uibutton->imagenm);
-  dataFree (uibutton->altimagenm);
-
   callbackFree (bbase->presscb);
   callbackFree (bbase->releasecb);
 
@@ -139,12 +144,17 @@ uiButtonFree (uiwcont_t *uiwidget)
 void
 uiButtonSetImagePosRight (uiwcont_t *uiwidget)
 {
+  uibutton_t      *uibutton;
+
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-image-pos-r")) {
     return;
   }
 
+  uibutton = uiwidget->uiint.uibutton;
+
   gtk_button_set_image_position (GTK_BUTTON (uiwidget->uidata.widget),
       GTK_POS_RIGHT);
+  gtk_widget_set_margin_start (uibutton->currimage, 1);
 }
 
 void
@@ -157,8 +167,8 @@ uiButtonSetImageMarginTop (uiwcont_t *uiwidget, int margin)
   }
 
   uibutton = uiwidget->uiint.uibutton;
-  if (uibutton->image != NULL) {
-    gtk_widget_set_margin_top (uibutton->image, uiBaseMarginSz * margin);
+  if (uibutton->currimage != NULL) {
+    gtk_widget_set_margin_top (uibutton->currimage, uiBaseMarginSz * margin);
   }
 }
 
@@ -191,18 +201,19 @@ uiButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
   if (imagenm != NULL) {
     GtkWidget   *image;
     char        tbuff [BDJ4_PATH_MAX];
+    const char  *timgnm;
 
     if (strchr (imagenm, '/') == NULL) {
       /* relative path */
       pathbldMakePath (tbuff, sizeof (tbuff), imagenm, BDJ4_IMG_SVG_EXT,
           PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-      uibutton->altimagenm = strdup (tbuff);
+      timgnm = tbuff;
     } else {
-      uibutton->altimagenm = strdup (imagenm);
+      timgnm = imagenm;
     }
-    image = gtk_image_new_from_file (uibutton->altimagenm);
-fprintf (stderr, "b: alt-img: %s %d\n", imagenm, image != NULL);
+    image = gtk_image_new_from_file (timgnm);
     uibutton->altimage = image;
+    uibutton->altimageraw = gtk_image_get_pixbuf (GTK_IMAGE (image));
   }
 }
 
@@ -224,11 +235,14 @@ uiButtonSetState (uiwcont_t *uiwidget, int newstate)
 
   uibutton->state = newstate;
   widget = uiwidget->uidata.widget;
-  if (uibutton->state == BUTTON_ON && uibutton->altimage != NULL) {
-    gtk_button_set_image (GTK_BUTTON (widget), uibutton->altimage);
-  }
-  if (uibutton->state == BUTTON_OFF && uibutton->image != NULL) {
-    gtk_button_set_image (GTK_BUTTON (widget), uibutton->image);
+  if (uibutton->currimage != NULL) {
+    gtk_image_clear (GTK_IMAGE (uibutton->currimage));
+    if (uibutton->state == BUTTON_OFF && uibutton->imageraw != NULL) {
+      gtk_image_set_from_pixbuf (GTK_IMAGE (uibutton->currimage), uibutton->imageraw);
+    }
+    if (uibutton->state == BUTTON_ON && uibutton->altimageraw != NULL) {
+      gtk_image_set_from_pixbuf (GTK_IMAGE (uibutton->currimage), uibutton->altimageraw);
+    }
   }
 }
 

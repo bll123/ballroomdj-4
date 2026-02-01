@@ -42,6 +42,7 @@ enum {
   UITEST_W_B_IMG_A,
   UITEST_W_B_IMG_B,
   UITEST_W_B_IMG_C,
+  UITEST_W_B_IMG_D,
   UITEST_W_B_IMG_A_MSG,
   UITEST_W_B_IMG_B_MSG,
   UITEST_W_B_IMG_C_MSG,
@@ -279,7 +280,7 @@ main (int argc, char *argv[])
 
   pathbldMakePath (imgbuff, sizeof (imgbuff), "led_off", ".svg",
       PATHBLD_MP_DREL_IMG);
-  uitest.images [UITEST_LED_ON] = strdup (imgbuff);
+  uitest.images [UITEST_LED_OFF] = strdup (imgbuff);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff), "led_on", ".svg",
       PATHBLD_MP_DREL_IMG);
@@ -509,6 +510,7 @@ uitestUIButtons (uitest_t *uitest)
       uitest->callbacks [UITEST_CB_B_IMG_C], "Image-toggle",
       uitest->images [UITEST_LED_OFF], "img-tooltip");
   uiButtonSetAltImage (uiwidgetp, uitest->images [UITEST_LED_ON]);
+  uiButtonSetImagePosRight (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
   uitest->wcont [UITEST_W_B_IMG_C] = uiwidgetp;
 
@@ -516,6 +518,21 @@ uitestUIButtons (uitest_t *uitest)
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   uitest->wcont [UITEST_W_B_IMG_C_MSG] = uiwidgetp;
+
+  uiwcontFree (hbox);
+
+  /* button w/image icon */
+
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+
+  uiwidgetp = uiCreateButton (
+      uitest->callbacks [UITEST_CB_B_IMG_A], NULL, NULL, NULL);
+  uiButtonSetImageIcon (uiwidgetp, "folder");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uitest->wcont [UITEST_W_B_IMG_D] = uiwidgetp;
 
   uiwcontFree (hbox);
 
@@ -1642,7 +1659,7 @@ uitestCBButtonImgC (void *udata)
 
   state = uiButtonGetState (uitest->wcont [UITEST_W_B_IMG_C]);
   uiButtonSetState (uitest->wcont [UITEST_W_B_IMG_C], 1 - state);
-  snprintf (msg, sizeof (msg), "state: %d", state);
+  snprintf (msg, sizeof (msg), "state: %d", 1 - state);
   uiLabelSetText (uitest->wcont [UITEST_W_B_IMG_C_MSG], msg);
 
   return UICB_CONT;
