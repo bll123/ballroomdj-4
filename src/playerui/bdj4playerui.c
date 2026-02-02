@@ -158,7 +158,6 @@ typedef struct {
   /* notebook */
   int             currpage;
   callback_t      *callbacks [PLUI_CB_MAX];
-  uiwcont_t       *musicqImage [MUSICQ_PB_MAX];
   /* ui major elements */
   uiplayer_t      *uiplayer;
   uimusicq_t      *uimusicq;
@@ -333,9 +332,6 @@ main (int argc, char *argv[])
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
     plui.callbacks [i] = NULL;
   }
-  for (int i = 0; i < MUSICQ_PB_MAX; ++i) {
-    plui.musicqImage [i] = NULL;
-  }
   for (int i = 0; i < PLUI_W_MAX; ++i) {
     plui.wcont [i] = NULL;
   }
@@ -482,9 +478,6 @@ pluiClosingCallback (void *udata, programstate_t programState)
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
     callbackFree (plui->callbacks [i]);
   }
-  for (int i = 0; i < MUSICQ_PB_MAX; ++i) {
-    uiwcontFree (plui->musicqImage [i]);
-  }
   uihnbFree (plui->hnb);
   for (int i = 0; i < PLUI_W_MAX; ++i) {
     uiwcontFree (plui->wcont [i]);
@@ -526,6 +519,7 @@ pluiBuildUI (playerui_t *plui)
   uiwcont_t   *uiwidgetp;
   const char  *str;
   char        imgbuff [BDJ4_PATH_MAX];
+  char        altimgbuff [BDJ4_PATH_MAX];
   char        tbuff [BDJ4_PATH_MAX];
   int         x, y;
   void        *tempp;
@@ -719,12 +713,15 @@ pluiBuildUI (playerui_t *plui)
   plui->callbacks [PLUI_CB_DRAG_DROP] = callbackInitS (
       pluiDragDropCallback, plui);
 
-  pathbldMakePath (imgbuff, sizeof (imgbuff), "led_on", BDJ4_IMG_SVG_EXT,
-      PATHBLD_MP_DIR_IMG);
+  pathbldMakePath (imgbuff, sizeof (imgbuff), "led_off", BDJ4_IMG_SVG_EXT,
+      PATHBLD_MP_DREL_IMG);
+  pathbldMakePath (altimgbuff, sizeof (imgbuff), "led_on", BDJ4_IMG_SVG_EXT,
+      PATHBLD_MP_DREL_IMG);
 
   for (int i = 0; i < MUSICQ_DISP_MAX; ++i) {
     int   tabtype;
     char  *imgptr;
+    char  *altimgptr;
 
     /* music queue tab */
 
@@ -749,22 +746,21 @@ pluiBuildUI (playerui_t *plui)
     }
 
     imgptr = NULL;
+    altimgptr = NULL;
     if (tabtype == PLUI_TAB_MUSICQ) {
       imgptr = imgbuff;
-      plui->musicqImage [i] = uiImageNew ();
-      uiImageCopy (plui->musicqImage [i], plui->wcont [PLUI_W_LED_ON]);
-// ### did clever stuff to change the image from on to off and back again...
+      altimgptr = altimgbuff;
       uimusicqDragDropSetURICallback (plui->uimusicq, i, plui->callbacks [PLUI_CB_DRAG_DROP]);
     }
 
-    uihnbAppendPage (plui->hnb, uip, str, imgptr, tabtype);
+    uihnbAppendPage (plui->hnb, uip, str, imgptr, altimgptr, tabtype);
   }
 
   /* request tab */
   uip = uisongselBuildUI (plui->uisongsel, plui->wcont [PLUI_W_WINDOW]);
   uihnbAppendPage (plui->hnb, uip,
       /* CONTEXT: playerui: name of request tab : lists the songs in the database */
-      _("Request"), NULL, PLUI_TAB_SONGSEL);
+      _("Request"), NULL, NULL, PLUI_TAB_SONGSEL);
 
   x = nlistGetNum (plui->options, PLUI_SIZE_X);
   y = nlistGetNum (plui->options, PLUI_SIZE_Y);
@@ -1404,9 +1400,7 @@ pluiSetPlaybackQueue (playerui_t *plui, int newQueue, int updateFlag)
     }
 
     if ((int) plui->musicqPlayIdx == i) {
-      uiImageCopy (plui->musicqImage [i], plui->wcont [PLUI_W_LED_ON]);
-    } else {
-      uiImageCopy (plui->musicqImage [i], plui->wcont [PLUI_W_LED_OFF]);
+      uihnbSelect (plui->hnb, i);
     }
   }
 

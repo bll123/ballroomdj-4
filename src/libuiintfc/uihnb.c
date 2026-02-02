@@ -38,17 +38,18 @@ typedef struct {
 } uihnbcb_t;
 
 typedef struct uihnb {
-  uiwcont_t   *nb;
-  uiwcont_t   *hlist;
-  uiwcont_t   *tablist [HNB_MAX_PAGECOUNT];
-  callback_t  *tabcblist [HNB_MAX_PAGECOUNT];
-  uihnbcb_t   cbdata [HNB_MAX_PAGECOUNT];
-  int         idlist [HNB_MAX_PAGECOUNT];
-  int         show [HNB_MAX_PAGECOUNT];
-  int         pageiter;
-  int         pagecount;
-  int         selected;
-  int         textdir;
+  uiwcont_t       *nb;
+  uiwcont_t       *hlist;
+  uiwcont_t       *tablist [HNB_MAX_PAGECOUNT];
+  callback_t      *tabcblist [HNB_MAX_PAGECOUNT];
+  uihnbcb_t       cbdata [HNB_MAX_PAGECOUNT];
+  int             idlist [HNB_MAX_PAGECOUNT];
+  int             show [HNB_MAX_PAGECOUNT];
+  int             selectedpage;
+  int             pageiter;
+  int             pagecount;
+  int             selected;
+  int             textdir;
 } uihnb_t;
 
 bool uihnbSetPageCallback (void *udata);
@@ -81,6 +82,7 @@ uihnbCreate (uiwcont_t *box)
     hnb->show [i] = HNB_SHOW;
   }
 
+  hnb->selectedpage = 0;
   hnb->pagecount = 0;
   hnb->selected = -1;
   hnb->textdir = sysvarsGetNum (SVL_LOCALE_TEXT_DIR);
@@ -109,12 +111,13 @@ uihnbFree (uihnb_t *hnb)
 
 void
 uihnbAppendPage (uihnb_t *hnb, uiwcont_t *uiwidget,
-    const char *nbtxt, const char *imagenm, int id)
+    const char *nbtxt, const char *imagenm, const char *altimagenm, int id)
 {
-  uiwcont_t   *hbox;
-  uiwcont_t   *button;
-  callback_t  *cb;
-  int         pagenum;
+  uiwcont_t       *hbox;
+  uiwcont_t       *button;
+  callback_t      *cb;
+  int             pagenum;
+  uibuttonstate_t state;
 
   if (hnb == NULL) {
     return;
@@ -136,11 +139,17 @@ uihnbAppendPage (uihnb_t *hnb, uiwcont_t *uiwidget,
   uiWidgetAddClass (hbox, NB_HORIZ_CLASS);
 
   button = uiCreateButton (cb, nbtxt, imagenm, NULL);
+  uiButtonSetAltImage (button, altimagenm);
   uiWidgetAlignHorizCenter (button);
   uiButtonSetReliefNone (button);
   uiBoxPackStartExpand (hbox, button);
   uiWidgetAddClass (button, NB_CLASS);
   uiWidgetAddClass (button, NB_HORIZ_CLASS);
+  state = BUTTON_OFF;
+  if (hnb->pagecount == 0) {
+    state = BUTTON_ON;
+  }
+  uiButtonSetState (button, state);
 
   hnb->pagecount += 1;
 
@@ -252,12 +261,20 @@ uihnbHideShowPage (uihnb_t *hnb, int pagenum, bool show)
   if (pagenum < 0 || pagenum >= hnb->pagecount) {
     return;
   }
+  if (pagenum == 0) {
+    /* the first tab may not be hidden */
+    return;
+  }
 
   if (show == HNB_SHOW) {
     uiWidgetShow (hnb->tablist [pagenum]);
   }
   if (show == HNB_HIDE) {
     uiWidgetHide (hnb->tablist [pagenum]);
+    if (pagenum == hnb->selectedpage) {
+      uiButtonSetState (hnb->tablist [pagenum], BUTTON_OFF);
+      uiButtonSetState (hnb->tablist [0], BUTTON_ON);
+    }
   }
   hnb->show [pagenum] = show;
 }
@@ -303,6 +320,24 @@ uihnbIterateID (uihnb_t *hnb, int *pagenum)
   ++hnb->pageiter;
 
   return id;
+}
+
+void
+uihnbSelect (uihnb_t *hnb, int pagenum)
+{
+  if (hnb == NULL) {
+    return;
+  }
+  if (pagenum < 0 || pagenum >= hnb->pagecount) {
+    return;
+  }
+  if (hnb->show [pagenum] == HNB_HIDE) {
+    return;
+  }
+
+  uiButtonSetState (hnb->tablist [hnb->selectedpage], BUTTON_OFF);
+  uiButtonSetState (hnb->tablist [pagenum], BUTTON_ON);
+  hnb->selectedpage = pagenum;
 }
 
 /* internal routines */

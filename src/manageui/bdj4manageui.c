@@ -1127,7 +1127,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   uihnbAppendPage (manage->slhnb, mainhbox,
       /* CONTEXT: manage-ui: name of side-by-side view tab */
-      _("Song List"), NULL, MANAGE_TAB_SONGLIST);
+      _("Song List"), NULL, NULL, MANAGE_TAB_SONGLIST);
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStartExpand (mainhbox, hbox);
@@ -1168,19 +1168,19 @@ manageBuildUISongListEditor (manageui_t *manage)
       manage->minfo.statusMsg, uiutilsValidatePlaylistNameClr);
   uihnbAppendPage (manage->slhnb, uip,
       /* CONTEXT: manage-ui: name of song list notebook tab */
-      _("Song List"), NULL, MANAGE_TAB_SONGLIST);
+      _("Song List"), NULL, NULL, MANAGE_TAB_SONGLIST);
 
   /* song list: song selection tab */
   uip = uisongselBuildUI (manage->slsongsel, manage->minfo.window);
   uihnbAppendPage (manage->slhnb, uip,
       /* CONTEXT: manage-ui: name of song selection notebook tab */
-      _("Song Selection"), NULL, MANAGE_TAB_SL_SONGSEL);
+      _("Song Selection"), NULL, NULL, MANAGE_TAB_SL_SONGSEL);
 
   /* song list editor: statistics tab */
   uip = manageBuildUIStats (manage->slstats);
   uihnbAppendPage (manage->slhnb, uip,
       /* CONTEXT: manage-ui: name of statistics tab */
-      _("Statistics"), NULL, MANAGE_TAB_STATISTICS);
+      _("Statistics"), NULL, NULL, MANAGE_TAB_STATISTICS);
   uiwcontFree (uiwidgetp);
 
   manage->callbacks [MANAGE_CB_SL_NB] = callbackInitI (
@@ -2484,7 +2484,7 @@ manageBuildUIMusicManager (manageui_t *manage)
   uip = uisongselBuildUI (manage->mmsongsel, manage->minfo.window);
   uihnbAppendPage (manage->mmhnb, uip,
       /* CONTEXT: manage-ui: name of song selection notebook tab */
-      _("Music Manager"), NULL, MANAGE_TAB_MM);
+      _("Music Manager"), NULL, NULL, MANAGE_TAB_MM);
 
   /* music manager: song editor tab */
 
@@ -2497,7 +2497,7 @@ manageBuildUIMusicManager (manageui_t *manage)
   uip = uisongeditBuildUI (manage->mmsongsel, manage->mmsongedit, manage->minfo.window, manage->minfo.errorMsg);
   uihnbAppendPage (manage->mmhnb, uip,
       /* CONTEXT: manage-ui: name of song editor notebook tab */
-      _("Song Editor"), NULL, MANAGE_TAB_SONGEDIT);
+      _("Song Editor"), NULL, NULL, MANAGE_TAB_SONGEDIT);
 
   /* music manager: audio identification tab */
 
@@ -2507,7 +2507,7 @@ manageBuildUIMusicManager (manageui_t *manage)
   uip = manageAudioIdBuildUI (manage->manageaudioid, manage->mmsongsel);
   uihnbAppendPage (manage->mmhnb, uip,
       /* CONTEXT: manage-ui: name of audio identification notebook tab */
-      _("Audio ID"), NULL, MANAGE_TAB_AUDIOID);
+      _("Audio ID"), NULL, NULL, MANAGE_TAB_AUDIOID);
 
   manage->callbacks [MANAGE_CB_MM_NB] = callbackInitI (
       manageSwitchPageMM, manage);

@@ -329,20 +329,26 @@ if (BDJ4_BUILD STREQUAL "Memdebug-Sanitize")
   add_compile_options (-DBDJ4_MEM_DEBUG=1)
   add_compile_options (-DBDJ4_LIST_DEBUG=1)
   add_compile_options (-DBDJ4_USING_SANITIZER=1)
+  set (SANITIZE_ENABLED T)
 endif()
 
 if (BDJ4_BUILD STREQUAL "Memwatch-Sanitize")
-  message ("Memwatch Sanitize Build (${BDJ4_MEM_WATCH})")
+  message ("Memwatch Sanitize Build")
+  add_compile_options (-DBDJ4_MEM_WATCH=1)
   add_compile_options (-DBDJ4_USING_SANITIZER=1)
+  set (SANITIZE_ENABLED T)
 endif()
 
 if (BDJ4_BUILD STREQUAL "SanitizeAddress")
   message ("Sanitize Address Build")
   add_compile_options (-DBDJ4_USING_SANITIZER=1)
+  set (SANITIZE_ENABLED T)
 endif()
 
 if (BDJ4_BUILD STREQUAL "SanitizeThread")
   message ("Sanitize Thread Build")
+  add_compile_options (-DBDJ4_USING_SANITIZER=1)
+  set (SANITIZE_ENABLED T)
 endif()
 
 if (BDJ4_BUILD STREQUAL "Debug")
@@ -378,9 +384,7 @@ endif()
 set (BDJ4_FORTIFY T)
 
 # address sanitizer
-if (BDJ4_BUILD STREQUAL "SanitizeAddress" OR
-    BDJ4_BUILD STREQUAL "Memdebug-Sanitize" OR
-    BDJ4_BUILD STREQUAL "SanitizeThread")
+if (SANITIZE_ENABLED STREQUAL T)
   message ("Sanitize Build")
   set (BDJ4_FORTIFY F)
   add_compile_options (-Og)

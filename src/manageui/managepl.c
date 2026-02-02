@@ -233,7 +233,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   mvbox = uiCreateVertBox ();
   /* CONTEXT: playlist management: notebook tab title: settings */
-  uihnbAppendPage (managepl->hnb, mvbox, _("Settings"), NULL, MPL_TAB_SETTINGS);
+  uihnbAppendPage (managepl->hnb, mvbox, _("Settings"),
+      NULL, NULL, MPL_TAB_SETTINGS);
   uiWidgetSetMarginTop (mvbox, 4);
   uiWidgetSetMarginStart (mvbox, 4);
   uiWidgetSetMarginEnd (mvbox, 4);
@@ -532,7 +533,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   vbox = uiCreateVertBox ();
   /* CONTEXT: playlist management: notebook tab title: dances */
-  uihnbAppendPage (managepl->hnb, vbox, _("Dances"), NULL, MPL_TAB_DANCES);
+  uihnbAppendPage (managepl->hnb, vbox, _("Dances"), NULL, NULL, MPL_TAB_DANCES);
   uiWidgetSetMarginTop (vbox, 4);
   uiWidgetSetMarginStart (vbox, 4);
   uiWidgetSetMarginEnd (vbox, 4);

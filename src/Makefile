@@ -137,7 +137,6 @@ cmake-unix:
 		-DCMAKE_C_COMPILER=$(CC) \
 		-DCMAKE_CXX_COMPILER=$(CXX) \
 		-DBDJ4_BUILD:STATIC=$(BDJ4_BUILD) \
-		-DBDJ4_MEM_WATCH:STATIC=$(BDJ4_MEM_WATCH) \
 		-DBDJ4_UI=$(BDJ4_UI) \
 		-S . -B $(BUILDDIR) -Werror=deprecated
 
@@ -149,7 +148,6 @@ cmake-windows:
 		-DCMAKE_C_COMPILER="$(CC)" \
 		-DCMAKE_CXX_COMPILER="$(CXX)" \
 		-DBDJ4_BUILD:STATIC=$(BDJ4_BUILD) \
-		-DBDJ4_MEM_WATCH:STATIC=$(BDJ4_MEM_WATCH) \
 		-DBDJ4_UI=$(BDJ4_UI) \
 		-G "MSYS Makefiles" \
 		-S . -B $(BUILDDIR) -Werror=deprecated ; \

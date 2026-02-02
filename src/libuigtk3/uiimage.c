@@ -105,6 +105,7 @@ uiImageScaledFromFile (const char *fn, int scale)
     uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
     uiwidget->uidata.widget = image;
     uiwidget->uidata.packwidget = image;
+    uiwidget->uiint.uiimage = uiimage;
     uiimage->pixbuf = pixbuf;
   }
 

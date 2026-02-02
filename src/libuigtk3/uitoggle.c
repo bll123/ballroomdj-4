@@ -35,19 +35,25 @@ static void uiToggleButtonSetImageAlignment (GtkWidget *widget, void *udata);
 static void uiToggleButtonSIACallback (GtkWidget *widget, void *udata);
 static gboolean uiToggleButtonFocusHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata);
 static void uiToggleButtonSetImage (uiwcont_t *uiwidget);
+static uitoggle_t * uiToggleButtonInit (void);
 
 uiwcont_t *
 uiCreateCheckButton (const char *txt, int value)
 {
   uiwcont_t   *uiwidget;
   GtkWidget   *widget;
+  uitoggle_t  *uitoggle;
+
+  uitoggle = uiToggleButtonInit ();
 
   widget = gtk_check_button_new_with_label (txt);
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
+
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_CHKBOX);
   uiwcontSetWidget (uiwidget, widget, NULL);
+  uiwidget->uiint.uitoggle = uitoggle;
   return uiwidget;
 }
 
@@ -57,6 +63,9 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
   uiwcont_t   *uiwidget = NULL;
   GtkWidget   *widget = NULL;
   GtkWidget   *gwidget = NULL;
+  uitoggle_t  *uitoggle;
+
+  uitoggle = uiToggleButtonInit ();
 
   if (widgetgrp != NULL) {
     gwidget = widgetgrp->uidata.widget;
@@ -68,6 +77,7 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_RADIO);
   uiwcontSetWidget (uiwidget, widget, NULL);
+  uiwidget->uiint.uitoggle = uitoggle;
   return uiwidget;
 }
 
@@ -79,18 +89,14 @@ uiCreateToggleButton (const char *txt,
   GtkWidget   *widget;
   uitoggle_t  *uitoggle;
 
-  uitoggle = mdmalloc (sizeof (uitoggle_t));
-  uitoggle->currimage = NULL;
-  uitoggle->image = NULL;
-  uitoggle->imageraw = NULL;
-  uitoggle->altimage = NULL;
-  uitoggle->altimageraw = NULL;
+  uitoggle = uiToggleButtonInit ();
 
   widget = gtk_toggle_button_new_with_label (txt);
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
 
+fprintf (stderr, "toggle: image: %s\n", imagenm);
   if (imagenm != NULL) {
     GtkWidget   *image;
 
@@ -149,7 +155,7 @@ uiToggleButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
 {
   uitoggle_t      *uitoggle;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "toggle-set-alt-image")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_TOGGLE, "toggle-set-alt-image")) {
     return;
   }
 
@@ -158,6 +164,7 @@ uiToggleButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
   if (imagenm != NULL) {
     GtkWidget   *image;
 
+fprintf (stderr, "toggle: alt-image: %s\n", imagenm);
     image = uiImageWidget (imagenm);
     uitoggle->altimage = image;
     if (image != NULL) {
@@ -182,6 +189,7 @@ uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
 
   g_signal_connect (uiwidget->uidata.widget, "toggled",
       G_CALLBACK (uiToggleButtonToggleHandler), uiwidget);
+  uiToggleButtonSetImage (uiwidget);
 }
 
 void
@@ -255,10 +263,10 @@ uiToggleButtonToggleHandler (GtkButton *b, gpointer udata)
   uitoggle_t  *uitoggle = uiwidget->uiint.uitoggle;
   callback_t  *uicb = uitoggle->cb;
 
-  uiToggleButtonSetImage (uiwidget);
   if (uicb != NULL) {
     callbackHandler (uicb);
   }
+  uiToggleButtonSetImage (uiwidget);
 }
 
 /* to find the image and center it vertically, it is necessary */
@@ -313,22 +321,38 @@ uiToggleButtonSetImage (uiwcont_t *uiwidget)
   widget = uiwidget->uidata.widget;
   uitoggle = uiwidget->uiint.uitoggle;
 
-  /* the image change is only done if there is an alt-image */
   if (uitoggle->currimage == NULL) {
-    return;
-  }
-  if (uitoggle->altimage == NULL) {
+fprintf (stderr, "toggle: no-curr\n");
     return;
   }
 
   active = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget));
+fprintf (stderr, "toggle: active: %d\n", active);
 
   gtk_image_clear (GTK_IMAGE (uitoggle->currimage));
-  if (! active && uitoggle->imageraw != NULL) {
+  if ((! active || uitoggle->altimageraw == NULL) &&
+      uitoggle->imageraw != NULL) {
+fprintf (stderr, "toggle: set:\n");
     gtk_image_set_from_pixbuf (GTK_IMAGE (uitoggle->currimage), uitoggle->imageraw);
   }
   if (active && uitoggle->altimageraw != NULL) {
+fprintf (stderr, "toggle: set-alt:\n");
     gtk_image_set_from_pixbuf (GTK_IMAGE (uitoggle->currimage), uitoggle->altimageraw);
   }
+  gtk_widget_show_all (uiwidget->uidata.widget);
 }
 
+static uitoggle_t *
+uiToggleButtonInit (void)
+{
+  uitoggle_t    *uitoggle;
+
+  uitoggle = mdmalloc (sizeof (uitoggle_t));
+  uitoggle->currimage = NULL;
+  uitoggle->image = NULL;
+  uitoggle->imageraw = NULL;
+  uitoggle->altimage = NULL;
+  uitoggle->altimageraw = NULL;
+
+  return uitoggle;
+}

@@ -83,6 +83,8 @@ uiwcontFree (uiwcont_t *uiwidget)
       uiTextBoxFree (uiwidget);
       break;
     }
+    case WCONT_T_BUTTON_CHKBOX:
+    case WCONT_T_BUTTON_RADIO:
     case WCONT_T_BUTTON_TOGGLE: {
       uiToggleButtonFree (uiwidget);
       break;

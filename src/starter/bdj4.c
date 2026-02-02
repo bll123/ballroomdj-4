@@ -110,6 +110,7 @@ main (int argc, char * argv[])
     { "nostart",        no_argument,        NULL,   0 },
     { "pli",            required_argument,  NULL,   'P' },
     { "wait",           no_argument,        NULL,   'w' },
+    { "memwatch",       required_argument,  NULL,   126 },
     /* dbupdate options */
     { "checknew",       no_argument,        NULL,   0 },
     { "compact",        no_argument,        NULL,   0 },

@@ -14,24 +14,24 @@
 #include <unistd.h>
 #include <math.h>
 
-#include "bdj4.h"
 #include "bdj4arg.h"
+#include "bdj4.h"
 #include "bdjopt.h"
 #include "callback.h"
 #include "localeutil.h"
 #include "mdebug.h"
-#include "osuiutils.h"
 #include "nlist.h"
+#include "osuiutils.h"
 #include "pathbld.h"
+#include "sysvars.h"
 #include "tmutil.h"
-#include "ui.h"
 #include "uidd.h"
+#include "ui.h"
 #include "uihnb.h"
 #include "uiutils.h"
 #include "uivirtlist.h"
 #include "uivnb.h"
 #include "uiwcont.h"
-#include "sysvars.h"
 
 enum {
   UITEST_W_WINDOW,
@@ -73,6 +73,7 @@ enum {
   UITEST_CB_DD_STR,
   UITEST_CB_DD_NUM,
   UITEST_CB_LINK_A,
+  UITEST_CB_TOGGLE,
   UITEST_CB_MAX,
 };
 
@@ -166,6 +167,7 @@ static bool uitestCBButton (void *udata);
 static bool uitestCBButtonImgA (void *udata);
 static bool uitestCBButtonImgB (void *udata);
 static bool uitestCBButtonImgC (void *udata);
+static bool uitestCBNull (void *udata);
 static bool uitestCBchgind (void *udata);
 static bool uitestCBLink (void *udata);
 static void uitestCleanup (uitest_t *uitest);
@@ -189,15 +191,17 @@ main (int argc, char *argv[])
   char        imgbuff [BDJ4_PATH_MAX];
 
   static struct option bdj_options [] = {
-    { "bdj4",         no_argument,      NULL,   'B' },
-    { "uitest",       no_argument,      NULL,   0 },
-    { "debugself",    no_argument,      NULL,   0 },
-    { "verbose",      no_argument,      NULL,   0, },
-    { "quiet",        no_argument,      NULL,   0, },
-    { "nodetach",     no_argument,      NULL,   0, },
+    { "bdj4",         no_argument,        NULL,   'B' },
+    { "uitest",       no_argument,        NULL,   0 },
+    { "debugself",    no_argument,        NULL,   0 },
+    { "verbose",      no_argument,        NULL,   0, },
+    { "quiet",        no_argument,        NULL,   0, },
+    { "nodetach",     no_argument,        NULL,   0, },
     { "origcwd",      required_argument,  NULL,   0 },
-    { "scale",        required_argument,NULL,   0 },
-    { "theme",        required_argument,NULL,   0 },
+    { "scale",        required_argument,  NULL,   0 },
+    { "theme",        required_argument,  NULL,   0 },
+    { "wait",         no_argument,NULL,   0 },
+    { "memwatch",     required_argument,  NULL,   126 },
   };
 
   mdebugInit ("uitest");
@@ -209,6 +213,11 @@ main (int argc, char *argv[])
     switch (c) {
       case 'B': {
         isbdj4 = true;
+        break;
+      }
+      case 126: {
+        targ = bdj4argGet (bdj4arg, optind - 1, optarg);
+        gmemwatch = strtoll (targ, NULL, 16);
         break;
       }
       default: {
@@ -325,6 +334,8 @@ uitestBuildUI (uitest_t *uitest)
       uitestCBButtonImgB, uitest, NULL);
   uitest->callbacks [UITEST_CB_B_IMG_C] = callbackInit (
       uitestCBButtonImgC, uitest, NULL);
+  uitest->callbacks [UITEST_CB_TOGGLE] = callbackInit (
+      uitestCBNull, uitest, "toggle-1");
 
   uitest->wcont [UITEST_W_WINDOW] = uiCreateMainWindow (
       uitest->callbacks [UITEST_CB_CLOSE], "uitest", "bdj4_icon");
@@ -626,7 +637,8 @@ uitestUIToggleButtons (uitest_t *uitest)
 
   uiwidgetp = uiCreateToggleButton (
       "toggle image", uitest->images [UITEST_LED_OFF], "tool-tip", 0);
-// ### set alt image
+  uiToggleButtonSetCallback (uiwidgetp, uitest->callbacks [UITEST_CB_TOGGLE]);
+  uiToggleButtonSetAltImage (uiwidgetp, uitest->images [UITEST_LED_ON]);
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetAlignHorizCenter (uiwidgetp);
   uiWidgetAlignVertCenter (uiwidgetp);
@@ -1172,7 +1184,7 @@ uitestUINotebook (uitest_t *uitest)
 
     snprintf (tbuff, sizeof (tbuff), "Horiz %d", i);
     vboxb = uiCreateVertBox ();
-    uihnbAppendPage (hnb, vboxb, tbuff, NULL, HNB_NO_ID);
+    uihnbAppendPage (hnb, vboxb, tbuff, NULL, NULL, HNB_NO_ID);
 
     uiwidgetp = uiCreateLabel (tbuff);
     uiBoxPackStart (vboxb, uiwidgetp);
@@ -1193,6 +1205,7 @@ uitestUINotebook (uitest_t *uitest)
   uiwcontFree (uiwidgetp);
 
   uihnbAppendPage (hnb, vboxb, "h-img 1",
+      uitest->images [UITEST_LED_OFF],
       uitest->images [UITEST_LED_ON], HNB_NO_ID);
 
   uiwcontFree (vboxb);
@@ -1205,7 +1218,8 @@ uitestUINotebook (uitest_t *uitest)
   uiwcontFree (uiwidgetp);
 
   uihnbAppendPage (hnb, vboxb, "h-img 2",
-      uitest->images [UITEST_LED_OFF], HNB_NO_ID);
+      uitest->images [UITEST_LED_OFF],
+      uitest->images [UITEST_LED_ON], HNB_NO_ID);
 
   uiwcontFree (vboxb);
 
@@ -1216,7 +1230,7 @@ uitestUINotebook (uitest_t *uitest)
   uiBoxPackStart (vboxb, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uihnbAppendPage (hnb, vboxb, "h-img 3", NULL, HNB_NO_ID);
+  uihnbAppendPage (hnb, vboxb, "h-img 3", NULL, NULL, HNB_NO_ID);
 
   uiwcontFree (vboxb);
 
@@ -1658,6 +1672,12 @@ uitestCBButtonImgC (void *udata)
   snprintf (msg, sizeof (msg), "state: %d", 1 - state);
   uiLabelSetText (uitest->wcont [UITEST_W_B_IMG_C_MSG], msg);
 
+  return UICB_CONT;
+}
+
+static bool
+uitestCBNull (void *udata)
+{
   return UICB_CONT;
 }
 

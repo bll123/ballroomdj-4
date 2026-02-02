@@ -30,6 +30,7 @@
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
+#include "mdebug.h"
 #include "musicdb.h"
 #include "pathbld.h"
 #include "osrandom.h"
@@ -86,6 +87,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { "nodetach",       no_argument,        NULL,   'N' },
     { "pli",            required_argument,  NULL,   0 },
     { "wait",           no_argument,        NULL,   'w' },
+    { "memwatch",       required_argument,  NULL,   126 },
     /* starter */
     { "datatopdir",     required_argument,  NULL,   't' },
     { "nopodcastupd",   no_argument,        NULL,   8 },
@@ -308,6 +310,11 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
       }
       case 'c': {
         *flags |= BDJ4_ARG_CLI;
+        break;
+      }
+      case 126: {
+        targ = bdj4argGet (bdj4arg, optind - 1, optarg);
+        gmemwatch = strtoll (targ, NULL, 16);
         break;
       }
       default: {

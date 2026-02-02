@@ -42,7 +42,7 @@ typedef struct uibutton {
   GdkPixbuf       *imageraw;
   GtkWidget       *altimage;
   GdkPixbuf       *altimageraw;
-  int             state;
+  uibuttonstate_t state;
 } uibutton_t;
 
 uiwcont_t *
@@ -93,9 +93,7 @@ uiCreateButton (callback_t *uicb, const char *txt,
   uiwidget->uiint.uibutton = uibutton;
 
   bbase = &uiwidget->uiint.uibuttonbase;
-fprintf (stderr, "b: bbase-a: %p\n", bbase);
   bbase->cb = uicb;
-fprintf (stderr, "b: cb: %p\n", uicb);
   bbase->presscb = callbackInit (uiButtonPressCallback,
       uiwidget, "button-repeat-press");
   bbase->releasecb = callbackInit (uiButtonReleaseCallback,
@@ -194,7 +192,7 @@ uiButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
 }
 
 void
-uiButtonSetState (uiwcont_t *uiwidget, int newstate)
+uiButtonSetState (uiwcont_t *uiwidget, uibuttonstate_t newstate)
 {
   uibutton_t      *uibutton;
   GtkWidget       *widget;
@@ -204,22 +202,27 @@ uiButtonSetState (uiwcont_t *uiwidget, int newstate)
   }
 
   uibutton = uiwidget->uiint.uibutton;
-
+  if (uibutton->currimage == NULL) {
+    return;
+  }
+  if (uibutton->image == NULL) {
+    return;
+  }
   if (uibutton->state == newstate) {
     return;
   }
 
   uibutton->state = newstate;
   widget = uiwidget->uidata.widget;
-  if (uibutton->currimage != NULL) {
-    gtk_image_clear (GTK_IMAGE (uibutton->currimage));
-    if (uibutton->state == BUTTON_OFF && uibutton->imageraw != NULL) {
-      gtk_image_set_from_pixbuf (GTK_IMAGE (uibutton->currimage), uibutton->imageraw);
-    }
-    if (uibutton->state == BUTTON_ON && uibutton->altimageraw != NULL) {
-      gtk_image_set_from_pixbuf (GTK_IMAGE (uibutton->currimage), uibutton->altimageraw);
-    }
+
+  gtk_image_clear (GTK_IMAGE (uibutton->currimage));
+  if (uibutton->state == BUTTON_OFF && uibutton->imageraw != NULL) {
+    gtk_image_set_from_pixbuf (GTK_IMAGE (uibutton->currimage), uibutton->imageraw);
   }
+  if (uibutton->state == BUTTON_ON && uibutton->altimageraw != NULL) {
+    gtk_image_set_from_pixbuf (GTK_IMAGE (uibutton->currimage), uibutton->altimageraw);
+  }
+  gtk_widget_show_all (widget);
 }
 
 void
@@ -296,7 +299,7 @@ uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms)
       G_CALLBACK (uiButtonRepeatSignalHandler), bbase->releasecb);
 }
 
-int
+uibuttonstate_t
 uiButtonGetState (uiwcont_t *uiwidget)
 {
   uibutton_t    *uibutton;
@@ -323,7 +326,6 @@ uiButtonSignalHandler (GtkButton *b, gpointer udata)
   }
 
   bbase = &uiwidget->uiint.uibuttonbase;
-fprintf (stderr, "b: bbase: %p\n", bbase);
 
   if (bbase->repeatOn) {
     return;
@@ -331,7 +333,6 @@ fprintf (stderr, "b: bbase: %p\n", bbase);
   if (bbase->cb == NULL) {
     return;
   }
-fprintf (stderr, "b: bbase-cb: %p\n", bbase->cb);
 
   callbackHandler (bbase->cb);
 }

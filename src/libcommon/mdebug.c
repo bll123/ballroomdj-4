@@ -77,6 +77,8 @@ typedef struct {
   char          *bt;
 } mdebug_t;
 
+uintptr_t   gmemwatch = 0;
+
 static char     mdebugtag [20] = { "none" };
 static char     mdebugsubtag [MAXSUBTAG] = { "" };
 static mdebug_t *mdebug = NULL;
@@ -85,7 +87,7 @@ static _Atomic(bool)     initialized = false;
 static _Atomic(bool)     mdebugverbose = false;
 static _Atomic(bool)     mdebugnooutput = true;
 
-static void * mdextalloc_a (void *data, const char *fn, int lineno, const char *tag, int type, int ctype);
+static void mdextalloc_a (void *data, const char *fn, int lineno, const char *tag, int type, int ctype);
 static void mdfree_a (void *data, const char *fn, int lineno, const char *tag, int ctype);
 static void mdebugResize (void);
 static void mdebugAdd (void *data, mdebugtype_t type, const char *fn, int lineno, ssize_t sz);
@@ -311,10 +313,10 @@ mdstrdup_r (const char *s, const char *fn, int lineno)
   return str;
 }
 
-void *
+void
 mdextalloc_r (void *data, const char *fn, int lineno)
 {
-  return mdextalloc_a (data, fn, lineno, "ext-alloc",
+  mdextalloc_a (data, fn, lineno, "ext-alloc",
       MDEBUG_TYPE_EXT_ALLOC, MDEBUG_EXTALLOC);
 }
 
@@ -404,7 +406,7 @@ mdmalloc_w (size_t sz, const char *fn, int lineno)
   void    *data;
 
   data = malloc (sz);
-  if (data == BDJ4_MEM_WATCH) {
+  if (gmemwatch != 0 && (uintptr_t) data == gmemwatch) {
     fprintf (stderr, "found: %p at %s %d\n", data, fn, lineno);
   }
   return data;
@@ -417,7 +419,7 @@ mdrealloc_w (void *data, size_t sz, const char *fn, int lineno)
   void  *ndata;
 
   ndata = realloc (data, sz);
-  if (ndata == BDJ4_MEM_WATCH) {
+  if (gmemwatch != 0 && (uintptr_t) ndata == gmemwatch) {
     fprintf (stderr, "found: %p at %s %d\n", ndata, fn, lineno);
   }
   return ndata;
@@ -430,19 +432,19 @@ mdstrdup_w (const char *s, const char *fn, int lineno)
   char    *str;
 
   str = strdup (s);
-  if (str == BDJ4_MEM_WATCH) {
+  if (gmemwatch != 0 && (uintptr_t) str == gmemwatch) {
     fprintf (stderr, "found: %p at %s %d\n", str, fn, lineno);
   }
   return str;
 }
 
-void *
+void
 mdextalloc_w (void *data, const char *fn, int lineno)
 {
-  if (data == BDJ4_MEM_WATCH) {
+  if (gmemwatch != 0 && (uintptr_t) data == gmemwatch) {
     fprintf (stderr, "found: %p at %s %d\n", data, fn, lineno);
   }
-  return
+  return;
 }
 
 #endif /* BDJ4_MEM_WATCH */
@@ -473,7 +475,7 @@ mdfree_a (void *data, const char *fn, int lineno, const char *tag, int ctype)
   }
 }
 
-static void *
+static void
 mdextalloc_a (void *data, const char *fn, int lineno,
     const char *tag, int type, int ctype)
 {
@@ -485,7 +487,7 @@ mdextalloc_a (void *data, const char *fn, int lineno,
     mdebugAdd (data, type, fn, lineno, 0);
     mdebugcounts [ctype] += 1;
   }
-  return data;
+  return;
 }
 
 static void

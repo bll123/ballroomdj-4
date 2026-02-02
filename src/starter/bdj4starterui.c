@@ -727,7 +727,7 @@ starterBuildUI (startui_t  *starter)
 
   /* use the square icon, on macos the icons are squircled */
   pathbldMakePath (tbuff, sizeof (tbuff),
-     "bdj4_icon_sq", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
+     "bdj4_icon_sq", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DREL_IMG);
   uiwidgetp = uiImageScaledFromFile (tbuff, 128);
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetAllMargins (uiwidgetp, 10);
