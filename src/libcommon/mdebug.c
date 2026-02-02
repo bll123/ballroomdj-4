@@ -18,6 +18,8 @@
 # include <execinfo.h>
 #endif
 
+#define MDEBUG_ENABLE_BACKTRACE 0
+
 #include "bdjstring.h"
 #include "mdebug.h"
 #include "nodiscard.h"

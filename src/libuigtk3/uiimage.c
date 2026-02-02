@@ -157,7 +157,10 @@ uiImageCopy (uiwcont_t *toimg, uiwcont_t *fromimg)
   from = fromimg->uiint.uiimage;
   if (from != NULL) {
     to->pixbuf = from->pixbuf;
-    gtk_image_set_from_pixbuf (GTK_IMAGE (toimg->uidata.widget), from->pixbuf);
+    if (from->pixbuf != NULL) {
+      g_object_ref_sink (G_OBJECT (from->pixbuf));
+      gtk_image_set_from_pixbuf (GTK_IMAGE (toimg->uidata.widget), from->pixbuf);
+    }
   }
 }
 

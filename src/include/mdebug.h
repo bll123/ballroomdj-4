@@ -11,8 +11,6 @@
 extern "C" {
 #endif
 
-#define MDEBUG_ENABLE_BACKTRACE 0
-
 #if defined (BDJ4_MEM_DEBUG)
 # define mdfree(d)        mdfree_r (d, __FILE__, __LINE__)
 # define mdextfree(d)     mdextfree_r (d, __FILE__, __LINE__)

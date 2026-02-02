@@ -141,23 +141,26 @@ managePlaylistAlloc (manageinfo_t *minfo)
 void
 managePlaylistFree (managepl_t *managepl)
 {
-  if (managepl != NULL) {
-    dataFree (managepl->ploldname);
-    if (managepl->mpldnc != NULL) {
-      manageplDanceFree (managepl->mpldnc);
-    }
-    uiratingFree (managepl->uirating);
-    uilevelFree (managepl->uilowlevel);
-    uilevelFree (managepl->uihighlevel);
-    for (int i = 0; i < MPL_W_MAX; ++i) {
-      uiwcontFree (managepl->wcont [i]);
-    }
-    for (int i = 0; i < MPL_CB_MAX; ++i) {
-      callbackFree (managepl->callbacks [i]);
-    }
-    playlistFree (managepl->playlist);
-    mdfree (managepl);
+  if (managepl == NULL) {
+    return;
   }
+
+  dataFree (managepl->ploldname);
+  if (managepl->mpldnc != NULL) {
+    manageplDanceFree (managepl->mpldnc);
+  }
+  uiratingFree (managepl->uirating);
+  uilevelFree (managepl->uilowlevel);
+  uilevelFree (managepl->uihighlevel);
+  for (int i = 0; i < MPL_W_MAX; ++i) {
+    uiwcontFree (managepl->wcont [i]);
+  }
+  for (int i = 0; i < MPL_CB_MAX; ++i) {
+    callbackFree (managepl->callbacks [i]);
+  }
+  uihnbFree (managepl->hnb);
+  playlistFree (managepl->playlist);
+  mdfree (managepl);
 }
 
 void
