@@ -146,19 +146,6 @@ uiWidgetShowAll (uiwcont_t *uiwidget)
   return;
 }
 
-
-void
-uiWidgetMakePersistent (uiwcont_t *uiwidget)
-{
-  return;
-}
-
-void
-uiWidgetClearPersistent (uiwcont_t *uiwidget)
-{
-  return;
-}
-
 void
 uiWidgetSetSizeRequest (uiwcont_t *uiwidget, int width, int height)
 {

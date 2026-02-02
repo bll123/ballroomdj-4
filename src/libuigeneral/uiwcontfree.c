@@ -25,6 +25,7 @@
 #include "ui/uispinbox.h"
 #include "ui/uiswitch.h"
 #include "ui/uitextbox.h"
+#include "ui/uitoggle.h"
 #include "ui/uiui.h"
 #include "ui/uiwindow.h"
 
@@ -80,6 +81,10 @@ uiwcontFree (uiwcont_t *uiwidget)
     }
     case WCONT_T_TEXT_BOX: {
       uiTextBoxFree (uiwidget);
+      break;
+    }
+    case WCONT_T_BUTTON_TOGGLE: {
+      uiToggleButtonFree (uiwidget);
       break;
     }
     case WCONT_T_WINDOW_MAIN: {

@@ -28,9 +28,10 @@
 
 #include "ui/uiwcont-int.h"
 
-#include "ui/uiui.h"
-#include "ui/uiwidget.h"
 #include "ui/uibutton.h"
+#include "ui/uiui.h"
+#include "ui/uispecific.h"
+#include "ui/uiwidget.h"
 
 static void uiButtonSignalHandler (GtkButton *b, gpointer udata);
 static void uiButtonRepeatSignalHandler (GtkButton *b, gpointer udata);
@@ -45,7 +46,7 @@ typedef struct uibutton {
 } uibutton_t;
 
 uiwcont_t *
-uiCreateButton (callback_t *uicb, const char *title,
+uiCreateButton (callback_t *uicb, const char *txt,
     const char *imagenm, const char *tooltiptxt)
 {
   uiwcont_t       *uiwidget;
@@ -63,8 +64,8 @@ uiCreateButton (callback_t *uicb, const char *title,
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
 
   gtk_button_set_label (GTK_BUTTON (widget), "");
-  if (title != NULL) {
-    gtk_button_set_label (GTK_BUTTON (widget), title);
+  if (txt != NULL) {
+    gtk_button_set_label (GTK_BUTTON (widget), txt);
   }
   if (tooltiptxt != NULL) {
     gtk_widget_set_tooltip_text (widget, tooltiptxt);
@@ -72,20 +73,12 @@ uiCreateButton (callback_t *uicb, const char *title,
 
   if (imagenm != NULL) {
     GtkWidget   *image;
-    char        tbuff [BDJ4_PATH_MAX];
-    const char  *timgnm;
 
-    if (strchr (imagenm, '/') == NULL) {
-      /* relative path */
-      pathbldMakePath (tbuff, sizeof (tbuff), imagenm, BDJ4_IMG_SVG_EXT,
-          PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-      timgnm = tbuff;
-    } else {
-      timgnm = imagenm;
-    }
-    image = gtk_image_new_from_file (timgnm);
+    image = uiImageWidget (imagenm);
     uibutton->image = image;
-    uibutton->imageraw = gtk_image_get_pixbuf (GTK_IMAGE (image));
+    if (image != NULL) {
+      uibutton->imageraw = gtk_image_get_pixbuf (GTK_IMAGE (image));
+    }
 
     image = gtk_image_new ();
     gtk_button_set_image (GTK_BUTTON (widget), image);
@@ -100,7 +93,9 @@ uiCreateButton (callback_t *uicb, const char *title,
   uiwidget->uiint.uibutton = uibutton;
 
   bbase = &uiwidget->uiint.uibuttonbase;
+fprintf (stderr, "b: bbase-a: %p\n", bbase);
   bbase->cb = uicb;
+fprintf (stderr, "b: cb: %p\n", uicb);
   bbase->presscb = callbackInit (uiButtonPressCallback,
       uiwidget, "button-repeat-press");
   bbase->releasecb = callbackInit (uiButtonReleaseCallback,
@@ -117,6 +112,11 @@ uiCreateButton (callback_t *uicb, const char *title,
   if (imagenm != NULL) {
     uibutton->state = BUTTON_ON;    // force set of image
     uiButtonSetState (uiwidget, BUTTON_OFF);
+  }
+
+  if (txt != NULL && imagenm != NULL) {
+    gtk_button_set_image_position (GTK_BUTTON (widget), GTK_POS_RIGHT);
+    gtk_widget_set_margin_start (uibutton->currimage, 2);
   }
 
   return uiwidget;
@@ -139,22 +139,6 @@ uiButtonFree (uiwcont_t *uiwidget)
   callbackFree (bbase->releasecb);
 
   mdfree (uibutton);
-}
-
-void
-uiButtonSetImagePosRight (uiwcont_t *uiwidget)
-{
-  uibutton_t      *uibutton;
-
-  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-image-pos-r")) {
-    return;
-  }
-
-  uibutton = uiwidget->uiint.uibutton;
-
-  gtk_button_set_image_position (GTK_BUTTON (uiwidget->uidata.widget),
-      GTK_POS_RIGHT);
-  gtk_widget_set_margin_start (uibutton->currimage, 1);
 }
 
 void
@@ -200,20 +184,12 @@ uiButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
 
   if (imagenm != NULL) {
     GtkWidget   *image;
-    char        tbuff [BDJ4_PATH_MAX];
-    const char  *timgnm;
 
-    if (strchr (imagenm, '/') == NULL) {
-      /* relative path */
-      pathbldMakePath (tbuff, sizeof (tbuff), imagenm, BDJ4_IMG_SVG_EXT,
-          PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-      timgnm = tbuff;
-    } else {
-      timgnm = imagenm;
-    }
-    image = gtk_image_new_from_file (timgnm);
+    image = uiImageWidget (imagenm);
     uibutton->altimage = image;
-    uibutton->altimageraw = gtk_image_get_pixbuf (GTK_IMAGE (image));
+    if (image != NULL) {
+      uibutton->altimageraw = gtk_image_get_pixbuf (GTK_IMAGE (image));
+    }
   }
 }
 
@@ -223,7 +199,7 @@ uiButtonSetState (uiwcont_t *uiwidget, int newstate)
   uibutton_t      *uibutton;
   GtkWidget       *widget;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-image-pos-r")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-alt-image")) {
     return;
   }
 
@@ -347,6 +323,7 @@ uiButtonSignalHandler (GtkButton *b, gpointer udata)
   }
 
   bbase = &uiwidget->uiint.uibuttonbase;
+fprintf (stderr, "b: bbase: %p\n", bbase);
 
   if (bbase->repeatOn) {
     return;
@@ -354,6 +331,7 @@ uiButtonSignalHandler (GtkButton *b, gpointer udata)
   if (bbase->cb == NULL) {
     return;
   }
+fprintf (stderr, "b: bbase-cb: %p\n", bbase->cb);
 
   callbackHandler (bbase->cb);
 }

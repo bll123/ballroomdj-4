@@ -263,37 +263,6 @@ uiWidgetShowAll (uiwcont_t *uiwidget)
   gtk_widget_show_all (uiwidget->uidata.widget);
 }
 
-
-void
-uiWidgetMakePersistent (uiwcont_t *uiwidget)
-{
-  if (uiwidget == NULL) {
-    return;
-  }
-  if (uiwidget->uidata.widget == NULL) {
-    return;
-  }
-
-  if (G_IS_OBJECT (uiwidget->uidata.widget)) {
-    g_object_ref_sink (G_OBJECT (uiwidget->uidata.widget));
-  }
-}
-
-void
-uiWidgetClearPersistent (uiwcont_t *uiwidget)
-{
-  if (uiwidget == NULL) {
-    return;
-  }
-  if (uiwidget->uidata.widget == NULL) {
-    return;
-  }
-
-  if (G_IS_OBJECT (uiwidget->uidata.widget)) {
-    g_object_unref (G_OBJECT (uiwidget->uidata.widget));
-  }
-}
-
 void
 uiWidgetSetSizeRequest (uiwcont_t *uiwidget, int width, int height)
 {

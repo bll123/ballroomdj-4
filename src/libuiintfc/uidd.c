@@ -122,8 +122,10 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
 
   dd->callbacks [DD_CB_BUTTON] = callbackInit (uiddDisplay, dd, NULL);
 
+  /* make sure text string is set here so that the button code */
+  /* will position the image right */
   uiwidget = uiCreateButton (
-      dd->callbacks [DD_CB_BUTTON], NULL,
+      dd->callbacks [DD_CB_BUTTON], "",
       "button_down_small", NULL);
 
   if (where == DD_PACK_START) {
@@ -132,12 +134,13 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
   if (where == DD_PACK_END) {
     uiBoxPackEnd (boxp, uiwidget);
   }
+#if BDJ4_UI_GTK3
   if (isMacOS () || isWindows ()) {
     /* work around gtk not vertically centering the image */
     uiButtonSetImageMarginTop (uiwidget, 3);
   }
+#endif
   uiButtonAlignLeft (uiwidget);
-  uiButtonSetImagePosRight (uiwidget);
   uiWidgetAlignHorizStart (uiwidget);
   uiWidgetSetMarginTop (uiwidget, 1);
   uiWidgetSetMarginStart (uiwidget, 1);

@@ -26,6 +26,19 @@ extern "C" {
 # define mdextfopen(fh)   mdextfopen_r (fh, __FILE__, __LINE__)
 # define mdextfclose(fh)  mdextfclose_r (fh, __FILE__, __LINE__)
 # define dataFree(d)      mddataFree_r (d, __FILE__, __LINE__)
+#elif defined (BDJ4_MEM_WATCH)
+# define mdfree free
+# define mdextfree(d)
+# define mdmalloc(sz)     mdmalloc_w (sz, __FILE__, __LINE__)
+# define mdrealloc(d,sz)  mdrealloc_w (d, sz, __FILE__, __LINE__)
+# define mdstrdup(s)      mdstrdup_w (s, __FILE__, __LINE__)
+# define mdextalloc(d)    mdextalloc_w (d, __FILE__, __LINE__)
+# define mdextopen(fd)
+# define mdextsock(fd)
+# define mdextclose(fd)
+# define mdextfopen(fh)
+# define mdextfclose(fh)
+# define dataFree dataFree_r
 #else
 # define mdfree free
 # define mdextfree(d)
@@ -62,6 +75,10 @@ int32_t mdebugCount (void);
 int32_t mdebugErrors (void);
 void mdebugSetVerbose (void);
 void mdebugSetNoOutput (void);
+NODISCARD void * mdmalloc_w (size_t sz, const char *fn, int lineno);
+NODISCARD void * mdrealloc_w (void *data, size_t sz, const char *fn, int lineno);
+NODISCARD char * mdstrdup_w (const char *s, const char *fn, int lineno);
+void * mdextalloc_w (void *data, const char *fn, int lineno);
 #if MDEBUG_ENABLE_BACKTRACE
 char *mdebugBacktrace (void);
 #endif

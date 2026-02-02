@@ -76,7 +76,7 @@ fprintf (stderr, "c-radio-bt\n");
 
 uiwcont_t *
 uiCreateToggleButton (const char *txt,
-    const char *imagenm, const char *tooltiptxt, uiwcont_t *image, int value)
+    const char *imagenm, const char *tooltiptxt, int value)
 {
   uiwcont_t   *uiwidget;
   NSButton    *widget = nil;
@@ -108,9 +108,6 @@ fprintf (stderr, "c-toggle-bt\n");
     ns = [NSString stringWithUTF8String: imagenm];
     nsimage = [[NSImage alloc] initWithContentsOfFile: ns];
     [widget setImage: nsimage];
-  }
-  if (image != NULL) {
-    [widget setImage: image->uidata.widget];
   }
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_RADIO);

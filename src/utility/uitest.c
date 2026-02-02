@@ -59,6 +59,7 @@ enum {
   UITEST_W_SB_TIME_A,
   UITEST_W_SB_TIME_B,
   UITEST_W_NB_HI,
+  UITEST_W_IMG_A,
   UITEST_W_MAX,
 };
 
@@ -199,9 +200,7 @@ main (int argc, char *argv[])
     { "theme",        required_argument,NULL,   0 },
   };
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("uitest");
-#endif
 
   bdj4arg = bdj4argInit (argc, argv);
 
@@ -293,10 +292,8 @@ main (int argc, char *argv[])
 
   bdj4argCleanup (bdj4arg);
   uitestCleanup (&uitest);
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return 0;
 }
 
@@ -321,7 +318,7 @@ uitestBuildUI (uitest_t *uitest)
       uitestCloseWin, uitest, NULL);
 
   uitest->callbacks [UITEST_CB_B] = callbackInit (
-      uitestCBButton, uitest, NULL);
+      uitestCBButton, uitest, "button-1");
   uitest->callbacks [UITEST_CB_B_IMG_A] = callbackInit (
       uitestCBButtonImgA, uitest, NULL);
   uitest->callbacks [UITEST_CB_B_IMG_B] = callbackInit (
@@ -510,7 +507,6 @@ uitestUIButtons (uitest_t *uitest)
       uitest->callbacks [UITEST_CB_B_IMG_C], "Image-toggle",
       uitest->images [UITEST_LED_OFF], "img-tooltip");
   uiButtonSetAltImage (uiwidgetp, uitest->images [UITEST_LED_ON]);
-  uiButtonSetImagePosRight (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
   uitest->wcont [UITEST_W_B_IMG_C] = uiwidgetp;
 
@@ -529,7 +525,7 @@ uitestUIButtons (uitest_t *uitest)
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateButton (
-      uitest->callbacks [UITEST_CB_B_IMG_A], NULL, NULL, NULL);
+      uitest->callbacks [UITEST_CB_B], NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
   uiBoxPackStart (hbox, uiwidgetp);
   uitest->wcont [UITEST_W_B_IMG_D] = uiwidgetp;
@@ -602,8 +598,7 @@ uitestUIToggleButtons (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiCreateToggleButton ("toggle button",
-      NULL, NULL, NULL, 0);
+  uiwidgetp = uiCreateToggleButton ("toggle button", NULL, NULL, 0);
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
@@ -616,7 +611,7 @@ uitestUIToggleButtons (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiCreateToggleButton ("toggle tooltip", NULL, "tool-tip", NULL, 0);
+  uiwidgetp = uiCreateToggleButton ("toggle tooltip", NULL, "tool-tip", 0);
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
@@ -629,12 +624,13 @@ uitestUIToggleButtons (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-//  uiwidgetp = uiCreateToggleButton ("toggle image", NULL, "tool-tip",
-//      uitest->images [UITEST_LED_OFF], 0);
-//  uiBoxPackStart (hbox, uiwidgetp);
-//  uiWidgetAlignHorizCenter (uiwidgetp);
-//  uiWidgetAlignVertCenter (uiwidgetp);
-//  uiwcontFree (uiwidgetp);
+  uiwidgetp = uiCreateToggleButton (
+      "toggle image", uitest->images [UITEST_LED_OFF], "tool-tip", 0);
+// ### set alt image
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAlignHorizCenter (uiwidgetp);
+  uiWidgetAlignVertCenter (uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
 
@@ -848,10 +844,10 @@ uitestUIImage (uitest_t *uitest)
   uivnbAppendPage (uitest->mainvnb, vbox, "Image", VNB_NO_ID);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-     "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
+     "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DREL_IMG);
   uiwidgetp = uiImageScaledFromFile (tbuff, 64);
   uiBoxPackStart (vbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  uitest->wcont [UITEST_W_IMG_A] = uiwidgetp;
 
   uiwcontFree (vbox);
 }

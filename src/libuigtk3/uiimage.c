@@ -11,7 +11,9 @@
 
 #include <gtk/gtk.h>
 
+#include "bdj4.h"
 #include "mdebug.h"
+#include "pathbld.h"
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"
@@ -60,15 +62,14 @@ uiImageFree (uiwcont_t *uiwidget)
 uiwcont_t *
 uiImageFromFile (const char *fn)
 {
-  uiwcont_t *uiwidget = NULL;
-  GtkWidget *image;
-  GdkPixbuf *pixbuf;
-  uiimage_t *uiimage;
+  uiwcont_t   *uiwidget = NULL;
+  GtkWidget   *image;
+  GdkPixbuf   *pixbuf;
+  uiimage_t   *uiimage;
 
   uiimage = mdmalloc (sizeof (uiimage_t));
   uiimage->pixbuf = NULL;
 
-  /* using gtk_image_new_from_file creates memory leaks. */
   pixbuf = gdk_pixbuf_new_from_file (fn, NULL);
   if (pixbuf != NULL) {
     image = gtk_image_new_from_pixbuf (pixbuf);

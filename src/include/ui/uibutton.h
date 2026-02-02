@@ -17,7 +17,6 @@ enum {
 
 uiwcont_t *uiCreateButton (callback_t *uicb, const char *title, const char *imagenm, const char *tooltiptxt);
 void uiButtonFree (uiwcont_t *uiwidget);
-void uiButtonSetImagePosRight (uiwcont_t *uiwidget);
 void uiButtonSetImageMarginTop (uiwcont_t *uiwidget, int margin);
 void uiButtonSetImageIcon (uiwcont_t *uiwidget, const char *nm);
 void uiButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm);

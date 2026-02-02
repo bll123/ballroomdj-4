@@ -29,7 +29,7 @@ int  uihnbGetID (uihnb_t *hnb);
 int  uihnbGetIDByPage (uihnb_t *hnb, int pagenum);
 int  uihnbGetPage (uihnb_t *hnb, int id);
 void uihnbStartIDIterator (uihnb_t *hnb);
-int  uihnbIterateID (uihnb_t *hnb);
+int  uihnbIterateID (uihnb_t *hnb, int *pagenum);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

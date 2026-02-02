@@ -44,6 +44,7 @@ typedef struct uihnb {
   callback_t  *tabcblist [HNB_MAX_PAGECOUNT];
   uihnbcb_t   cbdata [HNB_MAX_PAGECOUNT];
   int         idlist [HNB_MAX_PAGECOUNT];
+  int         show [HNB_MAX_PAGECOUNT];
   int         pageiter;
   int         pagecount;
   int         selected;
@@ -77,6 +78,7 @@ uihnbCreate (uiwcont_t *box)
     hnb->cbdata [i].pagenum = i;
     hnb->cbdata [i].hnb = hnb;
     hnb->idlist [i] = HNB_NO_ID;
+    hnb->show [i] = HNB_SHOW;
   }
 
   hnb->pagecount = 0;
@@ -257,6 +259,7 @@ uihnbHideShowPage (uihnb_t *hnb, int pagenum, bool show)
   if (show == HNB_HIDE) {
     uiWidgetHide (hnb->tablist [pagenum]);
   }
+  hnb->show [pagenum] = show;
 }
 
 void
@@ -270,21 +273,35 @@ uihnbStartIDIterator (uihnb_t *hnb)
 }
 
 int
-uihnbIterateID (uihnb_t *hnb)
+uihnbIterateID (uihnb_t *hnb, int *pagenum)
 {
   int     id;
 
   if (hnb == NULL) {
+    *pagenum = 0;
     return HNB_NO_ID;
   }
 
   if (hnb->pageiter >= hnb->pagecount) {
     hnb->pageiter = 0;
+    *pagenum = 0;
     return HNB_NO_ID;
   }
 
+  while (hnb->show [hnb->pageiter] == HNB_HIDE) {
+    ++hnb->pageiter;
+    if (hnb->pageiter >= hnb->pagecount) {
+      hnb->pageiter = 0;
+      *pagenum = 0;
+      return HNB_NO_ID;
+    }
+  }
+
   id = hnb->idlist [hnb->pageiter];
+  *pagenum = hnb->pageiter;
+
   ++hnb->pageiter;
+
   return id;
 }
 

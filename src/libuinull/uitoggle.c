@@ -31,7 +31,7 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
 
 uiwcont_t *
 uiCreateToggleButton (const char *txt,
-    const char *imgname, const char *tooltiptxt, uiwcont_t *image, int value)
+    const char *imgname, const char *tooltiptxt, int value)
 {
   return NULL;
 }

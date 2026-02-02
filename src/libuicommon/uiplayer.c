@@ -73,8 +73,6 @@ enum {
   UIPL_IMG_PAUSE,
   UIPL_IMG_TIMER,
   UIPL_IMG_REPEAT,
-  UIPL_IMG_LED_OFF,
-  UIPL_IMG_LED_ON,
   UIPL_IMG_MAX,
 };
 
@@ -504,9 +502,9 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   uiplayer->callbacks [UIPL_CB_REPEAT] = callbackInit (
       uiplayerRepeatCallback, uiplayer, "repeat");
-  uiplayer->wcont [UIPL_W_REPEAT_B] = uiCreateToggleButton (NULL, tbuff,
+  uiplayer->wcont [UIPL_W_REPEAT_B] = uiCreateToggleButton (
       /* CONTEXT: playerui: button: tooltip: toggle the repeat song on and off */
-      _("Toggle Repeat"), NULL, 0);
+      NULL, tbuff, _("Toggle Repeat"), 0);
   uiBoxPackStart (hbox, uiplayer->wcont [UIPL_W_REPEAT_B]);
   uiToggleButtonSetCallback (uiplayer->wcont [UIPL_W_REPEAT_B],
       uiplayer->callbacks [UIPL_CB_REPEAT]);
@@ -529,21 +527,16 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (hbox, uiwidgetp);
   uiplayer->wcont [UIPL_W_BUTTON_NEXTSONG] = uiwidgetp;
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "led_on", BDJ4_IMG_SVG_EXT,
-      PATHBLD_MP_DIR_IMG);
-  uiplayer->images [UIPL_IMG_LED_ON] = uiImageFromFile (tbuff);
-  uiWidgetMakePersistent (uiplayer->images [UIPL_IMG_LED_ON]);
-
   pathbldMakePath (tbuff, sizeof (tbuff), "led_off", BDJ4_IMG_SVG_EXT,
-      PATHBLD_MP_DIR_IMG);
-  uiplayer->images [UIPL_IMG_LED_OFF] = uiImageFromFile (tbuff);
-  uiWidgetMakePersistent (uiplayer->images [UIPL_IMG_LED_OFF]);
-
+      PATHBLD_MP_DREL_IMG);
   uiplayer->callbacks [UIPL_CB_PAUSEATEND] = callbackInit (
       uiplayerPauseatendCallback, uiplayer, "pause-at-end");
   uiplayer->wcont [UIPL_W_PAUSE_AT_END_B] = uiCreateToggleButton (
       /* CONTEXT: playerui: button: pause at the end of the song (toggle) */
-      _("Pause at End"), NULL, NULL, uiplayer->images [UIPL_IMG_LED_OFF], 0);
+      _("Pause at End"), tbuff, NULL, 0);
+  pathbldMakePath (tbuff, sizeof (tbuff), "led_on", BDJ4_IMG_SVG_EXT,
+      PATHBLD_MP_DREL_IMG);
+  uiToggleButtonSetAltImage (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], tbuff);
   uiBoxPackStart (hbox, uiplayer->wcont [UIPL_W_PAUSE_AT_END_B]);
   uiToggleButtonSetCallback (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B],
       uiplayer->callbacks [UIPL_CB_PAUSEATEND]);
@@ -867,11 +860,9 @@ uiplayerProcessPauseatend (uiplayer_t *uiplayer, int onoff)
   uiplayer->pauseatendLock = true;
 
   if (onoff && ! uiplayer->pauseatendstate) {
-    uiToggleButtonSetImage (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], uiplayer->images [UIPL_IMG_LED_ON]);
     uiToggleButtonSetValue (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], UI_TOGGLE_BUTTON_ON);
   }
   if (! onoff && uiplayer->pauseatendstate) {
-    uiToggleButtonSetImage (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], uiplayer->images [UIPL_IMG_LED_OFF]);
     uiToggleButtonSetValue (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], UI_TOGGLE_BUTTON_OFF);
   }
   uiplayer->pauseatendstate = onoff;

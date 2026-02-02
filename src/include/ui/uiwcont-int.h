@@ -39,13 +39,12 @@ typedef enum {
   WCONT_T_NOTEBOOK,
   WCONT_T_NOTEBOOK_VERT,
   WCONT_T_PANED_WINDOW,
-  WCONT_T_PIXBUF,           // gtk widget
   WCONT_T_PROGRESS_BAR,
   WCONT_T_SCALE,
   WCONT_T_SCROLLBAR,
   WCONT_T_WINDOW_SCROLL,
   WCONT_T_SEPARATOR,
-  WCONT_T_SIZE_GROUP,       // gtk widget
+  WCONT_T_SIZE_GROUP,
   WCONT_T_SPINBOX,          /* base type for all spinbox types */
   WCONT_T_SPINBOX_DOUBLE,
   WCONT_T_SPINBOX_DOUBLE_DFLT,
@@ -78,6 +77,7 @@ typedef struct uibuttonbase {
   bool        repeating : 1;
 } uibuttonbase_t;
 
+/* used in all ui interfaces */
 typedef struct uientrybase {
   const char      *label;
   void            *udata;
@@ -99,10 +99,12 @@ typedef struct uiscrollbar uiscrollbar_t;
 typedef struct uispinbox uispinbox_t;
 typedef struct uiswitch uiswitch_t;
 typedef struct uitextbox uitextbox_t;
+typedef struct uitoggle uitoggle_t;
 typedef struct uivirtlist uivirtlist_t;
 typedef struct uibox uibox_t;
 typedef struct uiwindow uiwindow_t;
 
+/* data internal to each widget type */
 typedef union {
     void          *voidwidget;
     uibox_t       *uibox;
@@ -121,12 +123,17 @@ typedef union {
     uispinbox_t   *uispinbox;
     uiswitch_t    *uiswitch;
     uitextbox_t   *uitextbox;
+    uitoggle_t    *uitoggle;
     uivirtlist_t  *uivirtlist;
     uiwindow_t    *uiwindow;
 } uiwcontint_t;
 
 # if BDJ4_UI_GTK3 /* gtk3 */
 #  include "ui/uigtk3-wcont.h"
+
+/* uigeneric.c */
+GtkWidget * uiImageWidget (const char *imagenm);
+
 # endif /* BDJ4_UI_GTK3 */
 
 # if BDJ4_UI_NULL
@@ -137,10 +144,14 @@ typedef union {
 #  include "ui/uimacos-wcont.h"
 # endif /* BDJ4_UI_MACOS */
 
+/* general widget container */
 typedef struct uiwcont {
   uiwconttype_t   wbasetype;
   uiwconttype_t   wtype;
+  /* data internal to each widget type */
   uiwcontint_t    uiint;
+  /* widget data specific to the interface */
+  /* uidata must contain .widget and .packwidget */
   uispecific_t    uidata;
   bool            packed;
 } uiwcont_t;
@@ -170,4 +181,3 @@ uiwcontValid (uiwcont_t *uiwidget, int exptype, const char *tag)
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
 #endif
-
