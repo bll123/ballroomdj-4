@@ -204,9 +204,7 @@ main (int argc, char *argv[])
   maindata_t    mainData;
   uint16_t      listenPort;
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("main");
-#endif
 
   mainData.progstate = progstateInit ("main");
   progstateSetCallback (mainData.progstate, PROGSTATE_LISTENING,
@@ -286,10 +284,8 @@ main (int argc, char *argv[])
   progstateFree (mainData.progstate);
   logProcEnd ("");
   logEnd ();
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return 0;
 }
 

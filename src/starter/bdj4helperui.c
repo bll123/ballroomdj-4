@@ -98,9 +98,7 @@ main (int argc, char *argv[])
   char        tbuff [BDJ4_PATH_MAX];
   uisetup_t   uisetup;
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("help");
-#endif
   helper.conn = NULL;
   helper.helpdf = NULL;
   helper.helplist = NULL;
@@ -156,10 +154,8 @@ main (int argc, char *argv[])
   progstateFree (helper.progstate);
   logProcEnd ("");
   logEnd ();
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return status;
 }
 

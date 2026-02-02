@@ -74,9 +74,7 @@ main (int argc, char *argv[])
   uint16_t        listenPort;
   uint32_t        flags;
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("rc");
-#endif
 
   osSetStandardSignals (remctrlSigHandler);
 
@@ -127,10 +125,8 @@ main (int argc, char *argv[])
   progstateFree (remctrl.progstate);
   logEnd ();
 
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return 0;
 }
 

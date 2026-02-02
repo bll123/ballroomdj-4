@@ -17,10 +17,13 @@
 #include "ui/uiui.h"
 
 uiwcont_t *
-uiwcontAlloc (int basetype, int type)
+uiwcontAlloc_r (int basetype, int type, const char *fn, int lineno)
 {
   uiwcont_t    *uiwidget;
 
+#if 0 && BDJ4_MEM_DEBUG
+  fprintf (stderr, "wcont-alloc: %s %d\n", fn, lineno);
+#endif
   uiwidget = mdmalloc (sizeof (uiwcont_t));
   uiwidget->wbasetype = basetype;
   uiwidget->wtype = type;

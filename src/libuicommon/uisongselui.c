@@ -345,7 +345,6 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   return ssint->wcont [SONGSEL_W_MAIN_VBOX];
 }
 
-
 void
 uisongselPopulateData (uisongsel_t *uisongsel)
 {

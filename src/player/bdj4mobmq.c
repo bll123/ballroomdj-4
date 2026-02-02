@@ -78,9 +78,7 @@ main (int argc, char *argv[])
   const char      *tval;
   uint32_t        flags;
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("mm");
-#endif
 
   osSetStandardSignals (mobmqSigHandler);
 
@@ -137,10 +135,8 @@ main (int argc, char *argv[])
   connFree (mobmqdata.conn);
   progstateFree (mobmqdata.progstate);
   logEnd ();
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return 0;
 }
 

@@ -81,9 +81,7 @@ main (int argc, char *argv [])
     { "verbose",      no_argument,        NULL,   'V', },
   };
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("tdbc");
-#endif
 
   bdj4arg = bdj4argInit (argc, argv);
 
@@ -373,10 +371,8 @@ main (int argc, char *argv [])
   localeCleanup ();
   logEnd ();
   bdj4argCleanup (bdj4arg);
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return grc;
 }
 

@@ -1070,6 +1070,8 @@ starterMainLoop (void *tstarter)
         uiLabelSetText (starter->wcont [START_W_STATUS_DISP], tbuff);
         starter->startState = START_STATE_SUPPORT_SEND_DIAG;
       } else {
+        slistFree (starter->supportFileList);
+        starter->supportFileList = NULL;
         starter->startState = START_STATE_SUPPORT_SEND_DB_PRE;
       }
       break;
@@ -1085,6 +1087,8 @@ starterMainLoop (void *tstarter)
         uiLabelSetText (starter->wcont [START_W_STATUS_DISP], tbuff);
         starter->startState = START_STATE_SUPPORT_SEND_DIAG;
       } else {
+        slistFree (starter->supportFileList);
+        starter->supportFileList = NULL;
         starter->startState = START_STATE_SUPPORT_SEND_DB_PRE;
       }
       break;

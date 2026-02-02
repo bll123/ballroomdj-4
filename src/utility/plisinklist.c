@@ -25,9 +25,7 @@ main (int argc, char *argv [])
   volsinklist_t sinklist;
   pli_t         *pli;
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("tvlc");
-#endif
 
   if (! fileopIsDirectory ("data")) {
     fprintf (stderr, "run from top level\n");
@@ -55,9 +53,7 @@ main (int argc, char *argv [])
   pliFree (pli);
 
   bdjoptCleanup ();
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return 0;
 }

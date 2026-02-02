@@ -34,6 +34,7 @@ typedef enum {
   MDEBUG_TYPE_EXT_CLOSE = 'c',
   MDEBUG_TYPE_EXT_FOPEN = 'O',
   MDEBUG_TYPE_EXT_FCLOSE = 'C',
+  MDEBUG_TYPE_DONE = 'D',
 } mdebugtype_t;
 
 enum {
@@ -77,7 +78,7 @@ typedef struct {
   char          *bt;
 } mdebug_t;
 
-uintptr_t   gmemwatch = 0;
+static uintptr_t   gmemwatch = 0;
 
 static char     mdebugtag [20] = { "none" };
 static char     mdebugsubtag [MAXSUBTAG] = { "" };
@@ -102,6 +103,10 @@ static void mdebugLog (const char *fmt, ...)
 void
 mdebugInit (const char *tag)
 {
+#if ! BDJ4_MEM_DEBUG
+  return;
+#endif
+
   if (! initialized) {
     mdebugcounts [MDEBUG_INT_ALLOC] += MDEBUG_ALLOC_BUMP;
     mdebug = realloc (mdebug, mdebugcounts [MDEBUG_INT_ALLOC] * sizeof (mdebug_t));
@@ -118,84 +123,86 @@ mdebugInit (const char *tag)
     }
     initialized = true;
   }
-#if BDJ4_MEM_DEBUG
   mdebugnooutput = false;
-#endif
 }
 
 void
 mdebugReport (void)
 {
-  if (initialized) {
-    if (! mdebugnooutput) {
-      mdebugLog ("== %s ==\n", mdebugtag);
-    }
-
-    for (int32_t i = 0; i < mdebugcounts [MDEBUG_COUNT]; ++i) {
-      mdebugcounts [MDEBUG_ERRORS] += 1;
-      if (mdebugnooutput) {
-        continue;
-      }
-      mdebugLog ("%4s %s 0x%08" PRIx64 " no-free %c %s %d\n", mdebugtag,
-          mdebug [i].subtag,
-          (int64_t) mdebug [i].addr, mdebug [i].type,
-          mdebug [i].fn, mdebug [i].lineno);
-#if MDEBUG_ENABLE_BACKTRACE
-      if (mdebug [i].bt != NULL) {
-        mdebugLog ("%s\n", mdebug [i].bt);
-        free (mdebug [i].bt);
-      }
-      mdebug [i].bt = NULL;
-#endif
-    }
-
-    if (mdebugnooutput) {
-      return;
-    }
-
-    mdebugLog ("   count: %" PRId32 "\n", mdebugcounts [MDEBUG_COUNT]);
-    mdebugLog ("  ERRORS: %" PRId32 "\n", mdebugcounts [MDEBUG_ERRORS]);
-    mdebugLog ("  malloc: %" PRId32 "\n", mdebugcounts [MDEBUG_MALLOC]);
-    mdebugLog (" realloc: %" PRId32 "\n", mdebugcounts [MDEBUG_REALLOC]);
-    mdebugLog ("  strdup: %" PRId32 "\n", mdebugcounts [MDEBUG_STRDUP]);
-    mdebugLog (" Emalloc: %" PRId32 "\n", mdebugcounts [MDEBUG_EXTALLOC]);
-    mdebugLog ("   Efree: %" PRId32 "\n", mdebugcounts [MDEBUG_EXTFREE]);
-    mdebugLog ("    free: %" PRId32 "\n", mdebugcounts [MDEBUG_FREE]);
-    mdebugLog ("     max: %" PRId32 "\n", mdebugcounts [MDEBUG_COUNT_MAX]);
-    mdebugLog ("    open: %" PRId32 "\n", mdebugcounts [MDEBUG_OPEN]);
-    mdebugLog ("    sock: %" PRId32 "\n", mdebugcounts [MDEBUG_SOCK]);
-    mdebugLog ("   close: %" PRId32 "\n", mdebugcounts [MDEBUG_CLOSE]);
-    mdebugLog ("   fopen: %" PRId32 "\n", mdebugcounts [MDEBUG_FOPEN]);
-    mdebugLog ("  fclose: %" PRId32 "\n", mdebugcounts [MDEBUG_FCLOSE]);
-    mdebugLog ("mem-curr: %" PRId32 "\n", mdebugcounts [MDEBUG_MEM_CURR]);
-    mdebugLog (" mem-max: %" PRId32 "\n", mdebugcounts [MDEBUG_MEM_MAX]);
+  if (! initialized) {
+    return;
   }
+
+  if (! mdebugnooutput) {
+    mdebugLog ("== %s ==\n", mdebugtag);
+  }
+
+  for (int32_t i = 0; i < mdebugcounts [MDEBUG_COUNT]; ++i) {
+    mdebugcounts [MDEBUG_ERRORS] += 1;
+    if (mdebugnooutput) {
+      continue;
+    }
+    mdebugLog ("%4s %s 0x%08" PRIx64 " no-free %c %s %d\n", mdebugtag,
+        mdebug [i].subtag,
+        (int64_t) mdebug [i].addr, mdebug [i].type,
+        mdebug [i].fn, mdebug [i].lineno);
+#if MDEBUG_ENABLE_BACKTRACE
+    if (mdebug [i].bt != NULL) {
+      mdebugLog ("%s\n", mdebug [i].bt);
+      free (mdebug [i].bt);
+    }
+    mdebug [i].bt = NULL;
+#endif
+  }
+
+  if (mdebugnooutput) {
+    return;
+  }
+
+  mdebugLog ("   count: %" PRId32 "\n", mdebugcounts [MDEBUG_COUNT]);
+  mdebugLog ("  ERRORS: %" PRId32 "\n", mdebugcounts [MDEBUG_ERRORS]);
+  mdebugLog ("  malloc: %" PRId32 "\n", mdebugcounts [MDEBUG_MALLOC]);
+  mdebugLog (" realloc: %" PRId32 "\n", mdebugcounts [MDEBUG_REALLOC]);
+  mdebugLog ("  strdup: %" PRId32 "\n", mdebugcounts [MDEBUG_STRDUP]);
+  mdebugLog (" Emalloc: %" PRId32 "\n", mdebugcounts [MDEBUG_EXTALLOC]);
+  mdebugLog ("   Efree: %" PRId32 "\n", mdebugcounts [MDEBUG_EXTFREE]);
+  mdebugLog ("    free: %" PRId32 "\n", mdebugcounts [MDEBUG_FREE]);
+  mdebugLog ("     max: %" PRId32 "\n", mdebugcounts [MDEBUG_COUNT_MAX]);
+  mdebugLog ("    open: %" PRId32 "\n", mdebugcounts [MDEBUG_OPEN]);
+  mdebugLog ("    sock: %" PRId32 "\n", mdebugcounts [MDEBUG_SOCK]);
+  mdebugLog ("   close: %" PRId32 "\n", mdebugcounts [MDEBUG_CLOSE]);
+  mdebugLog ("   fopen: %" PRId32 "\n", mdebugcounts [MDEBUG_FOPEN]);
+  mdebugLog ("  fclose: %" PRId32 "\n", mdebugcounts [MDEBUG_FCLOSE]);
+  mdebugLog ("mem-curr: %" PRId32 "\n", mdebugcounts [MDEBUG_MEM_CURR]);
+  mdebugLog (" mem-max: %" PRId32 "\n", mdebugcounts [MDEBUG_MEM_MAX]);
 }
 
 void
 mdebugCleanup (void)
 {
-  if (initialized) {
-    for (int i = 0; i < mdebugcounts [MDEBUG_INT_ALLOC]; ++i) {
-#if MDEBUG_ENABLE_BACKTRACE
-      if (mdebug [i].bt != NULL) {
-        free (mdebug [i].bt);
-      }
-#endif
-      if (mdebug [i].fn != NULL && strcmp (mdebug [i].fn, "null") != 0) {
-        free (mdebug [i].fn);
-      }
-    }
-
-    if (mdebug != NULL) {
-      free (mdebug);
-      mdebug = NULL;
-    }
-    for (int i = 0; i < MDEBUG_MAX; ++i) {
-      mdebugcounts [i] = 0;
-    }
-    initialized = false;
+  if (! initialized) {
+    return;
   }
+
+  for (int i = 0; i < mdebugcounts [MDEBUG_INT_ALLOC]; ++i) {
+#if MDEBUG_ENABLE_BACKTRACE
+    if (mdebug [i].bt != NULL) {
+      free (mdebug [i].bt);
+    }
+#endif
+    if (mdebug [i].fn != NULL && strcmp (mdebug [i].fn, "null") != 0) {
+      free (mdebug [i].fn);
+    }
+  }
+
+  if (mdebug != NULL) {
+    free (mdebug);
+    mdebug = NULL;
+  }
+  for (int i = 0; i < MDEBUG_MAX; ++i) {
+    mdebugcounts [i] = 0;
+  }
+  initialized = false;
 }
 
 void
@@ -210,6 +217,18 @@ void
 mdebugSubTag (const char *tag)
 {
   stpecpy (mdebugsubtag, mdebugsubtag + sizeof (mdebugsubtag), tag);
+}
+
+void
+mdebugSetWatch (uintptr_t value)
+{
+  gmemwatch = value;
+}
+
+uintptr_t
+mdebugGetWatch (void)
+{
+  return gmemwatch;
 }
 
 void
@@ -408,6 +427,7 @@ mdmalloc_w (size_t sz, const char *fn, int lineno)
   data = malloc (sz);
   if (gmemwatch != 0 && (uintptr_t) data == gmemwatch) {
     fprintf (stderr, "found: %p at %s %d\n", data, fn, lineno);
+    fprintf (stderr, "%s\n", mdebugBacktrace ());
   }
   return data;
 }
@@ -421,6 +441,7 @@ mdrealloc_w (void *data, size_t sz, const char *fn, int lineno)
   ndata = realloc (data, sz);
   if (gmemwatch != 0 && (uintptr_t) ndata == gmemwatch) {
     fprintf (stderr, "found: %p at %s %d\n", ndata, fn, lineno);
+    fprintf (stderr, "%s\n", mdebugBacktrace ());
   }
   return ndata;
 }
@@ -434,6 +455,7 @@ mdstrdup_w (const char *s, const char *fn, int lineno)
   str = strdup (s);
   if (gmemwatch != 0 && (uintptr_t) str == gmemwatch) {
     fprintf (stderr, "found: %p at %s %d\n", str, fn, lineno);
+    fprintf (stderr, "%s\n", mdebugBacktrace ());
   }
   return str;
 }
@@ -443,6 +465,7 @@ mdextalloc_w (void *data, const char *fn, int lineno)
 {
   if (gmemwatch != 0 && (uintptr_t) data == gmemwatch) {
     fprintf (stderr, "found: %p at %s %d\n", data, fn, lineno);
+    fprintf (stderr, "%s\n", mdebugBacktrace ());
   }
   return;
 }
@@ -617,7 +640,7 @@ mdebugSort (void)
   }
 }
 
-#if MDEBUG_ENABLE_BACKTRACE
+#if MDEBUG_ENABLE_BACKTRACE || BDJ4_MEM_WATCH
 
 char *
 mdebugBacktrace (void)

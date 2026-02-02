@@ -66,9 +66,7 @@ main (int argc, char *argv [])
     { "theme",        required_argument,  NULL,   0 },
   };
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("tags");
-#endif
 
   bdj4arg = bdj4argInit (argc, argv);
 
@@ -250,8 +248,6 @@ bdj4tagsCleanup (void)
   audiotagCleanup ();
   localeCleanup ();
   logEnd ();
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
 }

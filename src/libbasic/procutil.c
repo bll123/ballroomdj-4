@@ -91,9 +91,11 @@ procutilStart (const char *fn, int profile, loglevel_t loglvl,
   procutil_t  * process;
   char        sprof [40];
   char        sloglvl [40];
+  char        smemwatch [40];
   const char  * targv [30];
   int         idx;
   int         flags;
+  uintptr_t   memwatch;
 
 
   process = mdmalloc (sizeof (procutil_t));
@@ -105,12 +107,19 @@ procutilStart (const char *fn, int profile, loglevel_t loglvl,
   snprintf (sprof, sizeof (sprof), "%d", profile);
   snprintf (sloglvl, sizeof (sloglvl), "%" PRId32, loglvl);
 
+  memwatch = mdebugGetWatch ();
+  snprintf (smemwatch, sizeof (smemwatch), "%" PRIx64, memwatch);
+
   idx = 0;
   targv [idx++] = (char *) fn;
   targv [idx++] = "--profile";
   targv [idx++] = sprof;
   targv [idx++] = "--debug";
   targv [idx++] = sloglvl;
+  if (memwatch != 0) {
+    targv [idx++] = "--memwatch";
+    targv [idx++] = smemwatch;
+  }
   targv [idx++] = "--bdj4";
 
   if (aargs != NULL) {

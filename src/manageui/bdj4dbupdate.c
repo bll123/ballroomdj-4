@@ -202,9 +202,7 @@ main (int argc, char *argv[])
   char          *p;
   const char    *topt;
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("dbup");
-#endif
 
   dbupdate.state = DB_UPD_INIT;
   dbupdate.musicdb = NULL;
@@ -343,10 +341,8 @@ main (int argc, char *argv[])
 
   logProcEnd ("");
   logEnd ();
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return 0;
 }
 

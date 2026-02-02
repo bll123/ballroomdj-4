@@ -272,9 +272,7 @@ main (int argc, char *argv[])
   char            *volintfc;
   plidev_t        plidevtype;
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("play");
-#endif
   osSetStandardSignals (playerSigHandler);
 
   playerData.currentSong = NULL;
@@ -390,10 +388,8 @@ main (int argc, char *argv[])
   connFree (playerData.conn);
   progstateFree (playerData.progstate);
   logEnd ();
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return 0;
 }
 

@@ -11,8 +11,6 @@
 extern "C" {
 #endif
 
-extern uintptr_t   gmemwatch;
-
 #define MDEBUG_ENABLE_BACKTRACE 0
 
 #if defined (BDJ4_MEM_DEBUG)
@@ -73,6 +71,8 @@ void mdebugReport (void);
 void mdebugInit (const char *tag);
 void mdebugSubTag (const char *tag);
 void mdebugCleanup (void);
+void mdebugSetWatch (uintptr_t value);
+uintptr_t mdebugGetWatch (void);
 int32_t mdebugCount (void);
 int32_t mdebugErrors (void);
 void mdebugSetVerbose (void);
@@ -81,7 +81,7 @@ NODISCARD void * mdmalloc_w (size_t sz, const char *fn, int lineno);
 NODISCARD void * mdrealloc_w (void *data, size_t sz, const char *fn, int lineno);
 NODISCARD char * mdstrdup_w (const char *s, const char *fn, int lineno);
 void mdextalloc_w (void *data, const char *fn, int lineno);
-#if MDEBUG_ENABLE_BACKTRACE
+#if MDEBUG_ENABLE_BACKTRACE || BDJ4_MEM_WATCH
 char *mdebugBacktrace (void);
 #endif
 

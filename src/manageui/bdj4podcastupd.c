@@ -57,9 +57,7 @@ main (int argc, char *argv[])
   slist_t     *filelist;
   pcupd_t     pcupd;
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("podu");
-#endif
 
   pcupd.itemlist = NULL;
   pcupd.musicdb = NULL;
@@ -105,10 +103,8 @@ main (int argc, char *argv[])
 
   logProcEnd ("");
   logEnd ();
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return 0;
 }
 

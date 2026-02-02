@@ -176,9 +176,7 @@ main (int argc, char *argv[])
   uint32_t      flags;
   const char    *tmp;
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("alt");
-#endif
 
   altinst.instState = ALT_PRE_INIT;
   altinst.lastInstState = ALT_PRE_INIT;
@@ -337,10 +335,8 @@ main (int argc, char *argv[])
 
   altinstCleanup (&altinst);
   bdj4shutdown (ROUTE_ALTINST, NULL);
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return 0;
 }
 

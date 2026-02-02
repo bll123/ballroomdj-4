@@ -87,9 +87,7 @@ main (int argc, char *argv[])
   ilistidx_t      iteridx;
   ilistidx_t      askey;
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("bdjsrv");
-#endif
 
   osSetStandardSignals (bdjsrvSigHandler);
 
@@ -142,10 +140,8 @@ main (int argc, char *argv[])
   progstateFree (bdjsrv.progstate);
   logEnd ();
 
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return 0;
 }
 

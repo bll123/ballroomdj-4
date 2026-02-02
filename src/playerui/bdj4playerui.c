@@ -285,9 +285,7 @@ main (int argc, char *argv[])
   char            tbuff [BDJ4_PATH_MAX];
   uisetup_t       uisetup;
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("plui");
-#endif
 
   plui.progstate = progstateInit ("playerui");
   progstateSetCallback (plui.progstate, PROGSTATE_CONNECTING,
@@ -411,10 +409,8 @@ main (int argc, char *argv[])
   progstateFree (plui.progstate);
   logProcEnd ("");
   logEnd ();
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return status;
 }
 

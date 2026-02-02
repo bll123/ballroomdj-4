@@ -508,9 +508,8 @@ main (int argc, char *argv[])
   uint32_t        flags;
   uisetup_t       uisetup;
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("mui");
-#endif
+  // mdebugSetVerbose ();
 
   manage.progstate = progstateInit ("manageui");
   progstateSetCallback (manage.progstate, PROGSTATE_CONNECTING,
@@ -694,10 +693,8 @@ main (int argc, char *argv[])
   progstateFree (manage.progstate);
   logProcEnd ("");
   logEnd ();
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return status;
 }
 
@@ -1159,8 +1156,8 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiBoxPackStart (vbox, uiwidgetp);
   manage->wcont [MANAGE_W_SELECT_BUTTON] = uiwidgetp;
 
-  uiwidgetp = uisongselBuildUI (manage->slsbssongsel, manage->minfo.window);
-  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uip = uisongselBuildUI (manage->slsbssongsel, manage->minfo.window);
+  uiBoxPackStartExpand (hbox, uip);
 
   /* song list: music queue tab */
   uip = uimusicqBuildUI (manage->slmusicq, manage->minfo.window,
@@ -1181,7 +1178,6 @@ manageBuildUISongListEditor (manageui_t *manage)
   uihnbAppendPage (manage->slhnb, uip,
       /* CONTEXT: manage-ui: name of statistics tab */
       _("Statistics"), NULL, NULL, MANAGE_TAB_STATISTICS);
-  uiwcontFree (uiwidgetp);
 
   manage->callbacks [MANAGE_CB_SL_NB] = callbackInitI (
       manageSwitchPageSonglist, manage);

@@ -144,9 +144,7 @@ main (int argc, char * argv[])
     { NULL,             0,                  NULL,   0 }
   };
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("lnch");
-#endif
 
   bdj4arg = bdj4argInit (argc, argv);
 
@@ -644,11 +642,9 @@ main (int argc, char * argv[])
   }
   rc = osProcessStart (targv, flags, NULL, NULL);
 
-#if BDJ4_MEM_DEBUG
   /* report is generally not needed unless source is changed */
-  //mdebugReport ();
+  // mdebugReport ();
   mdebugCleanup ();
-#endif
 
   bdj4argCleanup (bdj4arg);
   return rc;

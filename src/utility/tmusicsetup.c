@@ -165,9 +165,7 @@ main (int argc, char *argv [])
     { "wait",         no_argument,        NULL,   0, },
   };
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("tset");
-#endif
 
   stpecpy (dbfn, dbfn + sizeof (dbfn), "data/musicdb.dat");
   stpecpy (infn, infn + sizeof (infn), "test-templates/test-music.txt");
@@ -386,10 +384,8 @@ main (int argc, char *argv [])
   localeCleanup ();
   logEnd ();
   bdj4argCleanup (bdj4arg);
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return 0;
 }
 

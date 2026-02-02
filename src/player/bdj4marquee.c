@@ -164,9 +164,7 @@ main (int argc, char *argv[])
   dispsel_t       *dispsel;
   slist_t         *sellist;
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("mq");
-#endif
 
   marquee.progstate = progstateInit ("marquee");
   progstateSetCallback (marquee.progstate, PROGSTATE_CONNECTING,
@@ -254,10 +252,8 @@ main (int argc, char *argv[])
     callbackFree (marquee.callbacks [i]);
   }
   logEnd ();
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return status;
 }
 

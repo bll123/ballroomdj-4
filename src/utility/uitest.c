@@ -218,7 +218,7 @@ main (int argc, char *argv[])
       }
       case 126: {
         targ = bdj4argGet (bdj4arg, optind - 1, optarg);
-        gmemwatch = strtoll (targ, NULL, 16);
+        mdebugSetWatch (strtoll (targ, NULL, 16));
         break;
       }
       default: {

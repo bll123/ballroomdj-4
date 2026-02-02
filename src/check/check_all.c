@@ -40,10 +40,8 @@ main (int argc, char *argv [])
   fputs ("en_GB\n", fh);
   fclose (fh);
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("chk");
   // mdebugSetVerbose ();
-#endif
 
   bdj4arg = bdj4argInit (argc, argv);
 
@@ -80,10 +78,8 @@ main (int argc, char *argv [])
   localeCleanup ();
   logEnd ();
   bdj4argCleanup (bdj4arg);
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

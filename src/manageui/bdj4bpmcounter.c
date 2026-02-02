@@ -123,9 +123,7 @@ main (int argc, char *argv[])
   uint32_t        flags;
   uisetup_t       uisetup;
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("bpmc");
-#endif
 
   /* CONTEXT: bpm counter: number of beats */
   bpmcounter.disptxt [BPMCOUNT_DISP_BEATS] = _("Beats");
@@ -204,10 +202,8 @@ main (int argc, char *argv[])
   progstateFree (bpmcounter.progstate);
   logProcEnd ("");
   logEnd ();
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return status;
 }
 

@@ -88,9 +88,7 @@ main (int argc, char *argv [])
     { NULL,           0,                  NULL,   0 }
   };
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("info");
-#endif
 
   bdj4arg = bdj4argInit (argc, argv);
 
@@ -264,9 +262,7 @@ main (int argc, char *argv [])
   bdjoptCleanup ();
   localeCleanup ();
   bdj4argCleanup (bdj4arg);
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return 0;
 }

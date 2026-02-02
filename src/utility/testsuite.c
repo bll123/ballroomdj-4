@@ -169,9 +169,7 @@ main (int argc, char *argv [])
   char        tbuff [BDJ4_PATH_MAX];
   pli_t       *pli;
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("ts");
-#endif
 
   osSetStandardSignals (tsSigHandler);
 #if _define_SIGCHLD
@@ -334,10 +332,8 @@ main (int argc, char *argv [])
     rc = 1;
   }
 
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return rc;
 }
 

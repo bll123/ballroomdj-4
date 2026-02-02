@@ -13,7 +13,9 @@ typedef struct uiwcont uiwcont_t;
 
 /* uiwcont.c */
 
-uiwcont_t *uiwcontAlloc (int basetype, int type);
+#define uiwcontAlloc(bt,t) uiwcontAlloc_r (bt,t, __FILE__, __LINE__)
+
+uiwcont_t *uiwcontAlloc_r (int basetype, int type, const char *, int);
 /* basefree only frees the uiwidget, not any internals */
 void uiwcontBaseFree (uiwcont_t *uiwidget);
 void uiwcontSetWidget (uiwcont_t *uiwidget, void *widget, void *packwidget);

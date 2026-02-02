@@ -92,9 +92,7 @@ main (int argc, char *argv[])
   char            tbuff [BDJ4_PATH_MAX];
   uisetup_t       uisetup;
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("cfui");
-#endif
 
   confui.progstate = progstateInit ("configui");
   progstateSetCallback (confui.progstate, PROGSTATE_WAIT_HANDSHAKE,
@@ -299,10 +297,8 @@ main (int argc, char *argv[])
 
   logProcEnd ("");
   logEnd ();
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return status;
 }
 

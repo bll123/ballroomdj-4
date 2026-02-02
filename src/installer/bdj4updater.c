@@ -189,9 +189,7 @@ main (int argc, char *argv [])
   const char  *targv [10];
   int         targc = 0;
 
-#if BDJ4_MEM_DEBUG
   mdebugInit ("updt");
-#endif
 
   for (int i = 0; i < UPD_MAX; ++i) {
     processflags [i] = false;
@@ -1128,10 +1126,8 @@ main (int argc, char *argv [])
 finish:
   bdj4shutdown (ROUTE_NONE, NULL);
   logEnd ();
-#if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();
-#endif
   return 0;
 }
 
