@@ -4,6 +4,6 @@
 #
 
 flist=$(find ./build -name 'build.make')
-sed -i 's,-l\([^\.]*\)\.lib,-l\1,g' ${flist}
+sed -i 's,-l\([^ \.]*\)\.lib,-l\1,g' ${flist}
 
 exit 0
