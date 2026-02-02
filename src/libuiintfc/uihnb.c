@@ -261,10 +261,6 @@ uihnbHideShowPage (uihnb_t *hnb, int pagenum, bool show)
   if (pagenum < 0 || pagenum >= hnb->pagecount) {
     return;
   }
-  if (pagenum == 0) {
-    /* the first tab may not be hidden */
-    return;
-  }
 
   if (show == HNB_SHOW) {
     uiWidgetShow (hnb->tablist [pagenum]);
@@ -305,14 +301,7 @@ uihnbIterateID (uihnb_t *hnb, int *pagenum)
     return HNB_NO_ID;
   }
 
-  while (hnb->show [hnb->pageiter] == HNB_HIDE) {
-    ++hnb->pageiter;
-    if (hnb->pageiter >= hnb->pagecount) {
-      hnb->pageiter = 0;
-      *pagenum = 0;
-      return HNB_NO_ID;
-    }
-  }
+  /* iterate over all pages, hidden or not */
 
   id = hnb->idlist [hnb->pageiter];
   *pagenum = hnb->pageiter;
