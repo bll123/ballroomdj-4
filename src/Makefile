@@ -146,7 +146,8 @@ cmake-windows:
 		-DBDJ4_BUILD:STATIC=$(BDJ4_BUILD) \
 		-DBDJ4_UI=$(BDJ4_UI) \
 		-G "MSYS Makefiles" \
-		-S . -B $(BUILDDIR) -Werror=deprecated
+		-S . -B $(BUILDDIR) -Werror=deprecated ; \
+	./utils/winfixcmake.sh
 
 # cmake on windows installs extra unneeded crap
 # --parallel does not work correctly on msys2
