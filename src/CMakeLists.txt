@@ -23,7 +23,6 @@ set (default_build_type "Debug")
 set (CMAKE_MODULE_PATH utils)
 set (CMAKE_SHARED_LIBRARY_PREFIX "")
 set (CMAKE_STATIC_LIBRARY_PREFIX "")
-set (CMAKE_STATIC_LIBRARY_SUFFIX "")
 set (CMAKE_INSTALL_PREFIX "")
 set (CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/../plocal")
 
