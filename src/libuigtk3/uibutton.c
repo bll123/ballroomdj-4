@@ -137,6 +137,7 @@ uiButtonFree (uiwcont_t *uiwidget)
   callbackFree (bbase->releasecb);
 
   mdfree (uibutton);
+  uiwidget->uiint.uibutton = NULL;
 }
 
 void
@@ -149,7 +150,7 @@ uiButtonSetImageMarginTop (uiwcont_t *uiwidget, int margin)
   }
 
   uibutton = uiwidget->uiint.uibutton;
-  if (uibutton->currimage != NULL) {
+  if (uibutton != NULL && uibutton->currimage != NULL) {
     gtk_widget_set_margin_top (uibutton->currimage, uiBaseMarginSz * margin);
   }
 }
@@ -179,6 +180,9 @@ uiButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
   }
 
   uibutton = uiwidget->uiint.uibutton;
+  if (uibutton == NULL) {
+    return;
+  }
 
   if (imagenm != NULL) {
     GtkWidget   *image;
@@ -202,7 +206,7 @@ uiButtonSetState (uiwcont_t *uiwidget, uibuttonstate_t newstate)
   }
 
   uibutton = uiwidget->uiint.uibutton;
-  if (uibutton->currimage == NULL) {
+  if (uibutton == NULL || uibutton->currimage == NULL) {
     return;
   }
   if (uibutton->image == NULL) {
@@ -309,6 +313,9 @@ uiButtonGetState (uiwcont_t *uiwidget)
   }
 
   uibutton = uiwidget->uiint.uibutton;
+  if (uibutton == NULL) {
+    return BUTTON_OFF;
+  }
 
   return uibutton->state;
 }

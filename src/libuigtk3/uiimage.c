@@ -57,6 +57,7 @@ uiImageFree (uiwcont_t *uiwidget)
     g_object_unref (G_OBJECT (uiimage->pixbuf));
   }
   mdfree (uiimage);
+  uiwidget->uiint.uiimage = NULL;
 }
 
 uiwcont_t *
@@ -137,7 +138,8 @@ uiImageClear (uiwcont_t *uiwidget)
 void
 uiImageCopy (uiwcont_t *toimg, uiwcont_t *fromimg)
 {
-  uiimage_t   *uiimage;
+  uiimage_t   *from;
+  uiimage_t   *to;
 
   if (! uiwcontValid (toimg, WCONT_T_IMAGE, "image-copy-to")) {
     return;
@@ -147,10 +149,15 @@ uiImageCopy (uiwcont_t *toimg, uiwcont_t *fromimg)
   }
 
   uiImageClear (toimg);
-  uiimage = toimg->uiint.uiimage;
-  uiimage->pixbuf = fromimg->uiint.uiimage->pixbuf;
-  g_object_ref_sink (G_OBJECT (uiimage->pixbuf));
-  gtk_image_set_from_pixbuf (GTK_IMAGE (toimg->uidata.widget),
-      uiimage->pixbuf);
+
+  to = toimg->uiint.uiimage;
+  if (to == NULL) {
+    return;
+  }
+  from = fromimg->uiint.uiimage;
+  if (from != NULL) {
+    to->pixbuf = from->pixbuf;
+    gtk_image_set_from_pixbuf (GTK_IMAGE (toimg->uidata.widget), from->pixbuf);
+  }
 }
 
