@@ -96,7 +96,6 @@ uiCreateToggleButton (const char *txt,
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
 
-fprintf (stderr, "toggle: image: %s\n", imagenm);
   if (imagenm != NULL) {
     GtkWidget   *image;
 
@@ -148,6 +147,7 @@ uiToggleButtonFree (uiwcont_t *uiwidget)
 
   uitoggle = uiwidget->uiint.uitoggle;
   mdfree (uitoggle);
+  uiwidget->uiint.uitoggle = NULL;
 }
 
 void
@@ -164,7 +164,6 @@ uiToggleButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
   if (imagenm != NULL) {
     GtkWidget   *image;
 
-fprintf (stderr, "toggle: alt-image: %s\n", imagenm);
     image = uiImageWidget (imagenm);
     uitoggle->altimage = image;
     if (image != NULL) {
@@ -185,6 +184,10 @@ uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
   }
 
   uitoggle = uiwidget->uiint.uitoggle;
+  if (uitoggle == NULL) {
+    return;
+  }
+
   uitoggle->cb = uicb;
 
   g_signal_connect (uiwidget->uidata.widget, "toggled",
@@ -260,9 +263,15 @@ static void
 uiToggleButtonToggleHandler (GtkButton *b, gpointer udata)
 {
   uiwcont_t   *uiwidget = udata;
-  uitoggle_t  *uitoggle = uiwidget->uiint.uitoggle;
-  callback_t  *uicb = uitoggle->cb;
+  uitoggle_t  *uitoggle;
+  callback_t  *uicb;
 
+  uitoggle = uiwidget->uiint.uitoggle;
+  if (uitoggle == NULL) {
+    return;
+  }
+
+  uicb = uitoggle->cb;
   if (uicb != NULL) {
     callbackHandler (uicb);
   }
@@ -320,23 +329,23 @@ uiToggleButtonSetImage (uiwcont_t *uiwidget)
 
   widget = uiwidget->uidata.widget;
   uitoggle = uiwidget->uiint.uitoggle;
+  if (uitoggle == NULL) {
+    return;
+  }
+
 
   if (uitoggle->currimage == NULL) {
-fprintf (stderr, "toggle: no-curr\n");
     return;
   }
 
   active = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget));
-fprintf (stderr, "toggle: active: %d\n", active);
 
   gtk_image_clear (GTK_IMAGE (uitoggle->currimage));
   if ((! active || uitoggle->altimageraw == NULL) &&
       uitoggle->imageraw != NULL) {
-fprintf (stderr, "toggle: set:\n");
     gtk_image_set_from_pixbuf (GTK_IMAGE (uitoggle->currimage), uitoggle->imageraw);
   }
   if (active && uitoggle->altimageraw != NULL) {
-fprintf (stderr, "toggle: set-alt:\n");
     gtk_image_set_from_pixbuf (GTK_IMAGE (uitoggle->currimage), uitoggle->altimageraw);
   }
   gtk_widget_show_all (uiwidget->uidata.widget);

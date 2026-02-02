@@ -60,6 +60,7 @@ enum {
   UITEST_W_SB_TIME_B,
   UITEST_W_NB_HI,
   UITEST_W_IMG_A,
+  UITEST_W_TOGGLE_C,
   UITEST_W_MAX,
 };
 
@@ -563,8 +564,8 @@ uitestUIButtons (uitest_t *uitest)
 
   uiwidgetp = uiCreateRadioButton (twidgetp, "radio b", UI_TOGGLE_BUTTON_OFF);
   uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
   uiwcontFree (twidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
 
@@ -642,8 +643,7 @@ uitestUIToggleButtons (uitest_t *uitest)
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetAlignHorizCenter (uiwidgetp);
   uiWidgetAlignVertCenter (uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
+  uitest->wcont [UITEST_W_TOGGLE_C] = uiwidgetp;
   uiwcontFree (hbox);
 
   /* switch */
