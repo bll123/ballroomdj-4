@@ -25,7 +25,7 @@ add_library (libbdj4basic SHARED
 )
 # the sleep utilities are in libbasic due
 # to linux needing bdjopt
-if (APPLE)
+if (SYSMACOS)
   target_sources (libbdj4basic PRIVATE
     osmacsleep.m
   )
@@ -33,12 +33,12 @@ if (APPLE)
     -framework Cocoa
   )
 endif()
-if (WIN32)
+if (SYSWIN)
   target_sources (libbdj4basic PRIVATE
     oswinsleep.c
   )
 endif()
-if (NOT APPLE AND NOT WIN32)
+if (SYSLINUX)
   target_sources (libbdj4basic PRIVATE
     oslinuxsleep.c
   )

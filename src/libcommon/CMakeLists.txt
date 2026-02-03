@@ -29,7 +29,7 @@ add_library (libbdj4common SHARED
   vsencdec.c
 )
 
-if (APPLE)
+if (SYSMACOS)
   target_sources (libbdj4common PRIVATE
     osmaclocale.m
   )
@@ -37,12 +37,12 @@ if (APPLE)
     -framework Cocoa
   )
 endif()
-if (WIN32)
+if (SYSWIN)
   target_sources (libbdj4common PRIVATE
     oswinlocale.c
   )
 endif()
-if (NOT APPLE AND NOT WIN32)
+if (SYSLINUX)
   target_include_directories (libbdj4common
     PRIVATE "${PKG_GIO_INCLUDE_DIRS}"
   )

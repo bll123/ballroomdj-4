@@ -22,7 +22,7 @@ case $systype in
     platform=unix
     sfx=
     ;;
-  MINGW64*)
+  MINGW64*|CYGWIN*)
     tag=win64
     platform=windows
     sfx=.exe
@@ -321,6 +321,9 @@ if [[ $platform == windows ]]; then
 
   libtag=""
   case $MSYSTEM in
+    "")
+      libtag=usr
+      ;;
     MINGW64)
       libtag=mingw64
       ;;

@@ -24,6 +24,8 @@ getresponse () {
 }
 
 case $(uname -s) in
+  CYGWIN*)
+    ;;
   MINGW64*)
     case ${MSYSTEM} in
       UCRT64)

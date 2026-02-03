@@ -24,7 +24,7 @@ case $systype in
     tag=macos
     platform=unix
     ;;
-  MINGW64*)
+  MINGW64*|CYGWIN*)
     tag=win64
     platform=windows
     ;;

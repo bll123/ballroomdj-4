@@ -13,7 +13,7 @@ target_link_libraries (libbdj4cont PRIVATE
   libbdj4basic libbdj4common
 )
 
-if (NOT WIN32 AND NOT APPLE)
+if (SYSLINUX)
   add_library (libcontmpris SHARED mprisi.c)
   target_include_directories (libcontmpris
     PRIVATE "${PKG_GLIB_INCLUDE_DIRS}"
@@ -26,7 +26,7 @@ if (NOT WIN32 AND NOT APPLE)
   )
 endif()
 
-if (WIN32)
+if (SYSWIN)
   add_library (libcontsmtc SHARED smtc.cpp)
   target_link_libraries (libcontsmtc PRIVATE
     libbdj4basic libbdj4common
@@ -35,7 +35,7 @@ if (WIN32)
   )
 endif()
 
-if (APPLE)
+if (SYSMACOS)
   add_library (libcontmacnp SHARED macnp.m)
   target_link_libraries (libcontmacnp PRIVATE
     "-framework Cocoa" "-framework MediaPlayer"
@@ -50,21 +50,21 @@ install (TARGETS
   DESTINATION ${DEST_BIN}
 )
 
-if (NOT WIN32 AND NOT APPLE)
+if (SYSLINUX)
   install (TARGETS
     libcontmpris
     DESTINATION ${DEST_BIN}
   )
 endif()
 
-if (WIN32)
+if (SYSWIN)
   install (TARGETS
     libcontsmtc
     DESTINATION ${DEST_BIN}
   )
 endif()
 
-if (APPLE)
+if (SYSMACOS)
   install (TARGETS
     libcontmacnp
     DESTINATION ${DEST_BIN}
@@ -72,12 +72,12 @@ if (APPLE)
 endif()
 
 updateRPath (libbdj4cont)
-if (NOT WIN32 AND NOT APPLE)
+if (SYSLINUX)
   updateRPath (libcontmpris)
 endif()
-if (WIN32)
+if (SYSWIN)
   updateRPath (libcontsmtc)
 endif()
-if (APPLE)
+if (SYSMACOS)
   updateRPath (libcontmacnp)
 endif()

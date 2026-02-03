@@ -23,7 +23,7 @@ target_link_libraries (bdj4 PRIVATE
   objtmutil
   m
 )
-if (WIN32)
+if (SYSWIN)
   target_link_options (bdj4 PRIVATE -static-libgcc)
 endif()
 # for gethostname
@@ -38,7 +38,7 @@ updateRPath (bdj4)
 # this is only used on macos
 # the macos application requires an executable that
 # initializes the gui
-if (APPLE)
+if (SYSMACOS)
   add_executable (bdj4g bdj4.c)
   addUIInclude (bdj4g)
   target_compile_options (bdj4g PRIVATE -DBDJ4_GUI_LAUNCHER=1)
@@ -101,7 +101,7 @@ install (TARGETS
   bdj4starterui bdj4helperui bdj4cleantmp
   DESTINATION ${DEST_BIN}
 )
-if (APPLE)
+if (SYSMACOS)
   install (TARGETS
     bdj4g
     DESTINATION ${DEST_BIN}

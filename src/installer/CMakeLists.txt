@@ -16,7 +16,7 @@ target_link_libraries (bdj4se PRIVATE
   objtmutil
   m
 )
-if (WIN32)
+if (SYSWIN)
   target_link_options (bdj4se PRIVATE -static-libgcc)
 endif()
 addIOKitFramework (bdj4se)

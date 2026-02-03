@@ -77,7 +77,7 @@ case $systype in
     macdir=/Contents/MacOS
     sfx=
     ;;
-  MINGW64*)
+  MINGW64*|CYGWIN*)
     tag=win64
     platform=windows
     libvol=libvolwin

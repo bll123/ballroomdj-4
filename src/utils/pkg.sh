@@ -25,7 +25,7 @@ case $systype in
     fi
     platform=unix
     ;;
-  MINGW64*)
+  MINGW64*|CYGWIN*)
     os=win64
     platform=windows
     ;;

@@ -97,6 +97,11 @@ function pkgnmgetdata {
         pn_supplib=-homebrew
       fi
       ;;
+    CYGWIN*)
+      pn_tag=win64
+      pn_sfx=.exe
+      pn_archtag=
+      ;;
     MINGW64*)
       pn_tag=win64
       pn_sfx=.exe

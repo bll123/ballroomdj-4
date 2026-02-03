@@ -25,13 +25,13 @@ addIntlLibrary (bdj4tags)
 addWinVersionInfo (bdj4tags)
 addWinManifest (bdj4tags)
 
-if (WIN32)
+if (SYSWIN)
   add_executable (bdj4winmksc bdj4winmksc.cpp)
   addWinVersionInfo (bdj4winmksc)
   addWinManifest (bdj4winmksc)
 endif()
 
-if (WIN32)
+if (SYSWIN)
   add_executable (bdj4winstartup bdj4winstartup.c)
   # this program should be set as a gui so that no command window pops up
   addWinGUIFlag (bdj4winstartup)
@@ -89,7 +89,7 @@ target_link_libraries (plisinklist PRIVATE
   libbdj4pli libbdj4vol libbdj4basic libbdj4common
 )
 
-if (NOT WIN32 AND NOT APPLE)
+if (SYSLINUX)
   add_executable (dbustest dbustest.c)
   target_include_directories (dbustest
     PRIVATE "${PKG_GLIB_INCLUDE_DIRS}"
@@ -163,13 +163,13 @@ install (TARGETS
   uitest
   DESTINATION ${DEST_BIN}
 )
-if (WIN32)
+if (SYSWIN)
   install (TARGETS
     bdj4winmksc bdj4winstartup
     DESTINATION ${DEST_BIN}
   )
 endif()
-if (NOT WIN32 AND NOT APPLE)
+if (SYSLINUX)
   install (TARGETS
     dbustest
     DESTINATION ${DEST_BIN}
@@ -184,7 +184,7 @@ endif()
 
 updateRPath (bdj4info)
 updateRPath (bdj4tags)
-if (WIN32)
+if (SYSWIN)
   updateRPath (bdj4winmksc)
 endif()
 updateRPath (dmkmfromdb)
@@ -193,7 +193,7 @@ updateRPath (tdbsetval)
 updateRPath (testsuite)
 updateRPath (tmusicsetup)
 updateRPath (ttagdbchk)
-if (NOT WIN32 AND NOT APPLE)
+if (SYSLINUX_
   updateRPath (dbustest)
 endif()
 updateRPath (plisinklist)

@@ -20,6 +20,19 @@ set (BDJ4INSTICON bdj4_icon_inst.ico)
 
 set (default_build_type "Debug")
 
+if (CMAKE_SYSTEM_NAME STREQUAL CYGWIN)
+  set (SYSWIN T)
+endif()
+if (CMAKE_SYSTEM_NAME STREQUAL Windows)
+  set (SYSWIN T)
+endif()
+if (CMAKE_SYSTEM_NAME STREQUAL Linux)
+  set (SYSLINUX T)
+endif()
+if (CMAKE_SYSTEM_NAME STREQUAL Darwin)
+  set (SYSMACOS T)
+endif()
+
 set (CMAKE_MODULE_PATH utils)
 set (CMAKE_SHARED_LIBRARY_PREFIX "")
 set (CMAKE_STATIC_LIBRARY_PREFIX "")
@@ -121,7 +134,7 @@ include (utils/bdj4macros.cmake)
 add_library (objosprocess OBJECT
   libcommon/osprocess.c
 )
-if (WIN32)
+if (SYSWIN)
   target_sources (objosprocess PRIVATE libcommon/oswinprocess.c)
 endif()
 
@@ -153,13 +166,13 @@ add_library (objtmutil OBJECT
 add_library (objosutils OBJECT
   libcommon/osutils.c
 )
-if (APPLE)
+if (SYSMACOS)
   target_sources (objosutils PRIVATE libcommon/osmacutils.m)
 endif()
-if (WIN32)
+if (SYSWIN)
   target_sources (objosutils PRIVATE libcommon/oswinutils.c)
 endif()
-if (NOT APPLE AND NOT WIN32)
+if (SYSLINUX)
   target_sources (objosutils PRIVATE libcommon/oslinuxutils.c)
 endif()
 

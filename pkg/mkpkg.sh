@@ -246,16 +246,8 @@ case $systype in
   Darwin)
     tag=macos
     ;;
-  MINGW64*)
+  MINGW64*|CYGWIN*)
     tag=win64
-    case ${MSYSTEM} in
-      UCRT64)
-        ;;
-      MINGW64)
-        ;;
-      CLANG64)
-        ;;
-    esac
     ;;
   MINGW32*)
     echo "Platform not supported"
