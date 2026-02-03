@@ -710,9 +710,9 @@ pluiBuildUI (playerui_t *plui)
       pluiDragDropCallback, plui);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff), "led_off", BDJ4_IMG_SVG_EXT,
-      PATHBLD_MP_DREL_IMG);
+      PATHBLD_MP_DIR_IMG);
   pathbldMakePath (altimgbuff, sizeof (imgbuff), "led_on", BDJ4_IMG_SVG_EXT,
-      PATHBLD_MP_DREL_IMG);
+      PATHBLD_MP_DIR_IMG);
 
   for (int i = 0; i < MUSICQ_DISP_MAX; ++i) {
     int   tabtype;

@@ -288,11 +288,11 @@ main (int argc, char *argv[])
   uiSetUICSS (&uisetup);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff), "led_off", ".svg",
-      PATHBLD_MP_DREL_IMG);
+      PATHBLD_MP_DIR_IMG);
   uitest.images [UITEST_LED_OFF] = strdup (imgbuff);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff), "led_on", ".svg",
-      PATHBLD_MP_DREL_IMG);
+      PATHBLD_MP_DIR_IMG);
   uitest.images [UITEST_LED_ON] = strdup (imgbuff);
 
   uitestBuildUI (&uitest);
@@ -856,7 +856,7 @@ uitestUIImage (uitest_t *uitest)
   uivnbAppendPage (uitest->mainvnb, vbox, "Image", VNB_NO_ID);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-     "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DREL_IMG);
+     "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   uiwidgetp = uiImageScaledFromFile (tbuff, 64);
   uiBoxPackStart (vbox, uiwidgetp);
   uitest->wcont [UITEST_W_IMG_A] = uiwidgetp;

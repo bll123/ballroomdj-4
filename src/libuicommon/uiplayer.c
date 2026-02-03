@@ -528,14 +528,14 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiplayer->wcont [UIPL_W_BUTTON_NEXTSONG] = uiwidgetp;
 
   pathbldMakePath (tbuff, sizeof (tbuff), "led_off", BDJ4_IMG_SVG_EXT,
-      PATHBLD_MP_DREL_IMG);
+      PATHBLD_MP_DIR_IMG);
   uiplayer->callbacks [UIPL_CB_PAUSEATEND] = callbackInit (
       uiplayerPauseatendCallback, uiplayer, "pause-at-end");
   uiplayer->wcont [UIPL_W_PAUSE_AT_END_B] = uiCreateToggleButton (
       /* CONTEXT: playerui: button: pause at the end of the song (toggle) */
       _("Pause at End"), tbuff, NULL, 0);
   pathbldMakePath (tbuff, sizeof (tbuff), "led_on", BDJ4_IMG_SVG_EXT,
-      PATHBLD_MP_DREL_IMG);
+      PATHBLD_MP_DIR_IMG);
   uiToggleButtonSetAltImage (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], tbuff);
   uiBoxPackStart (hbox, uiplayer->wcont [UIPL_W_PAUSE_AT_END_B]);
   uiToggleButtonSetCallback (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B],
