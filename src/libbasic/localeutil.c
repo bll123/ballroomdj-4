@@ -203,6 +203,7 @@ localeSetup (void)
   /* MacOS seems to need this also, setlocale() apparently is not enough */
   osSetEnv ("LC_MESSAGES", tbuff);
   osSetEnv ("LC_COLLATE", tbuff);
+  osSetEnv ("LC_CTYPE", tbuff);
 
   pathbldMakePath (locpath, sizeof (locpath), "", "", PATHBLD_MP_DIR_LOCALE);
 #if _lib_wbindtextdomain
@@ -310,6 +311,8 @@ localeDebug (const char *tag)   /* KEEP */
   fprintf (stderr, "  env-lc-messages:%s\n", tbuff);
   osGetEnv ("LC_COLLATE", tbuff, sizeof (tbuff));
   fprintf (stderr, "  env-lc-collate:%s\n", tbuff);
+  osGetEnv ("LC_CTYPE", tbuff, sizeof (tbuff));
+  fprintf (stderr, "  env-lc-ctype:%s\n", tbuff);
 #if _lib_wbindtextdomain
   fprintf (stderr, "  wbindtextdomain:%S\n", wbindtextdomain (GETTEXT_DOMAIN, NULL));
 #else

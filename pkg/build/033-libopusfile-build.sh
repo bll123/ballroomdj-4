@@ -37,7 +37,7 @@ if [[ $pkgname == "" || $pkgname = "libopusfile" ]]; then
     if [[ $clean == T ]]; then
       make clean
     fi
-    make -j $procs LIBS="-static-libgcc -static-libstdc++"
+    make -j $procs # LIBS="-static-libgcc -static-libstdc++"
     make install
     if [[ $platform != windows && $clean == T ]]; then
       make distclean
