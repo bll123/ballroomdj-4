@@ -59,7 +59,7 @@ main (int argc, char *argv [])
   isWindows = true;
   archivenm = "bdj4-install.cab";
 # if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
-  osSetEnv ("GTK_THEME", "Windows-10-Dark");
+  osSetEnv ("GTK_THEME", "Adwaita:dark");
 # endif
 #endif
 

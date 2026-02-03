@@ -305,7 +305,7 @@ fi
 
 if [[ $platform == windows ]]; then
   tfn=data/${hostname}/bdjconfig.txt
-  sed -e '/^UI_THEME/ { n ; s/.*/..Windows-10-Dark/ ; }' \
+  sed -e '/^UI_THEME/ { n ; s/.*/..Adwaita:dark/ ; }' \
       -e '/^UI_FONT/ { n ; s/.*/..Arial Regular 14/ ; }' \
       -e '/^LISTING_FONT/ { n ; s/.*/..Arial Regular 13/ ; }' \
       ${tfn} > ${tfn}.n

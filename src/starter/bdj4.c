@@ -579,7 +579,7 @@ main (int argc, char * argv[])
 
 #if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
   if (! havetheme && isWindows ()) {
-    osSetEnv ("GTK_THEME", "Windows-10-Dark");
+    osSetEnv ("GTK_THEME", "Adwaita:dark");
   }
   if (! havetheme && isMacOS ()) {
     osSetEnv ("GTK_THEME", "Mojave-dark-solid");
