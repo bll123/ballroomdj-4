@@ -1468,7 +1468,6 @@ pluiSetExtraQueues (playerui_t *plui)
   int             tabid;
   int             pagenum = 0;
   bool            show;
-  bool            resetcurr = false;
 
   logProcBegin ();
   if (! plui->uibuilt) {
@@ -1481,14 +1480,12 @@ pluiSetExtraQueues (playerui_t *plui)
   while ((tabid = uihnbIterateID (plui->hnb, &pagenum)) >= 0) {
     if (tabid == PLUI_TAB_MUSICQ && pagenum > 0) {
       if (! show && plui->currpage == pagenum) {
-        resetcurr = true;
+        plui->currpage = 0;
+        uihnbSelect (plui->hnb, 0);
+        uihnbSetPage (plui->hnb, 0);
       }
       uihnbHideShowPage (plui->hnb, pagenum, show);
     }
-  }
-  if (resetcurr) {
-    /* the tab currently displayed is being hidden */
-    plui->currpage = 0;
   }
 
   pluiPlaybackButtonHideShow (plui, plui->currpage);

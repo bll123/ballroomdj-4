@@ -45,7 +45,7 @@ typedef struct uihnb {
   uihnbcb_t       cbdata [HNB_MAX_PAGECOUNT];
   int             idlist [HNB_MAX_PAGECOUNT];
   int             show [HNB_MAX_PAGECOUNT];
-  int             selectedpage;
+  int             buttononpage;
   int             pageiter;
   int             pagecount;
   int             selected;
@@ -82,7 +82,7 @@ uihnbCreate (uiwcont_t *box)
     hnb->show [i] = HNB_SHOW;
   }
 
-  hnb->selectedpage = 0;
+  hnb->buttononpage = 0;
   hnb->pagecount = 0;
   hnb->selected = -1;
   hnb->textdir = sysvarsGetNum (SVL_LOCALE_TEXT_DIR);
@@ -267,10 +267,6 @@ uihnbHideShowPage (uihnb_t *hnb, int pagenum, bool show)
   }
   if (show == HNB_HIDE) {
     uiWidgetHide (hnb->tablist [pagenum]);
-    if (pagenum == hnb->selectedpage) {
-      uiButtonSetState (hnb->tablist [pagenum], BUTTON_OFF);
-      uiButtonSetState (hnb->tablist [0], BUTTON_ON);
-    }
   }
   hnb->show [pagenum] = show;
 }
@@ -324,9 +320,9 @@ uihnbSelect (uihnb_t *hnb, int pagenum)
     return;
   }
 
-  uiButtonSetState (hnb->tablist [hnb->selectedpage], BUTTON_OFF);
+  uiButtonSetState (hnb->tablist [hnb->buttononpage], BUTTON_OFF);
   uiButtonSetState (hnb->tablist [pagenum], BUTTON_ON);
-  hnb->selectedpage = pagenum;
+  hnb->buttononpage = pagenum;
 }
 
 /* internal routines */
