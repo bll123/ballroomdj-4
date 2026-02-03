@@ -2478,6 +2478,7 @@ installerRegisterInit (installer_t *installer)
   }
 
   if ((strcmp (sysvarsGetStr (SV_USER), "bll") == 0 ||
+      strcmp (sysvarsGetStr (SV_USER), "bradl") == 0 ||
       strncmp (sysvarsGetStr (SV_USER), "test ", 5) == 0) &&
       ! installer->testregistration) {
     /* no need to register */
@@ -2739,8 +2740,13 @@ installerCheckPackages (installer_t *installer)
     installer->vlcinstalled = true;
   } else {
     if (installer->guienabled && installer->uiBuilt) {
-      /* CONTEXT: installer: display of package status */
-      snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "VLC");
+      if (isWindows ()) {
+        /* CONTEXT: installer: display of package status */
+        snprintf (tbuff, sizeof (tbuff), _("%s is not required on Windows"), "VLC");
+      } else {
+        /* CONTEXT: installer: display of package status */
+        snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "VLC");
+      }
       uiLabelSetText (installer->wcont [INST_W_VLC_MSG], tbuff);
     }
     installer->vlcinstalled = false;

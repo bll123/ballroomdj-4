@@ -34,7 +34,9 @@
 #include "slist.h"
 #include "sysvars.h"
 
-#define LOCALE_DEBUG 0
+#include "osdirutil.h"
+
+#define LOCALE_DEBUG 1
 
 /* must be sorted in ascii order */
 static datafilekey_t localedfkeys [LOCALE_KEY_MAX] = {
@@ -208,13 +210,19 @@ localeSetup (void)
     wchar_t   *wlocale;
 
     wlocale = osToWideChar (locpath);
-    wbindtextdomain (GETTEXT_DOMAIN, wlocale);
+    if (wbindtextdomain (GETTEXT_DOMAIN, wlocale) == NULL) {
+      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: localeutil: wbindtextdomain failed %s", locpath);
+    }
     dataFree (wlocale);
   }
 #else
-  bindtextdomain (GETTEXT_DOMAIN, locpath);
+  if (bindtextdomain (GETTEXT_DOMAIN, locpath) == NULL) {
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: localeutil: bindtextdomain failed %s", locpath);
+  }
 #endif
-  textdomain (GETTEXT_DOMAIN);
+  if (textdomain (GETTEXT_DOMAIN) == NULL) {
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: localeutil: textdomain failed %s", GETTEXT_DOMAIN);
+  }
 #if _lib_bind_textdomain_codeset
   bind_textdomain_codeset (GETTEXT_DOMAIN, "UTF-8");
 #endif
@@ -282,22 +290,31 @@ localeDebug (const char *tag)   /* KEEP */
   char    tbuff [200];
 
   fprintf (stderr, "-- locale : %s\n", tag);
-  fprintf (stderr, "  set-locale-all:%s\n", setlocale (LC_ALL, NULL));
-  fprintf (stderr, "  set-locale-collate:%s\n", setlocale (LC_COLLATE, NULL));
-  fprintf (stderr, "  set-locale-messages:%s\n", setlocale (LC_MESSAGES, NULL));
+  fprintf (stderr, "  os-setlocale-all:%s\n", setlocale (LC_ALL, NULL));
+  fprintf (stderr, "  os-setlocale-collate:%s\n", setlocale (LC_COLLATE, NULL));
+  fprintf (stderr, "  os-setlocale-messages:%s\n", setlocale (LC_MESSAGES, NULL));
   osGetLocale (tbuff, sizeof (tbuff));
-  fprintf (stderr, "  os-locale:%s\n", tbuff);
-  fprintf (stderr, "  locale-system:%s\n", sysvarsGetStr (SV_LOCALE_SYSTEM));
-  fprintf (stderr, "  locale-orig:%s\n", sysvarsGetStr (SV_LOCALE_ORIG));
-  fprintf (stderr, "  locale:%s\n", sysvarsGetStr (SV_LOCALE));
-  fprintf (stderr, "  locale-short:%s\n", sysvarsGetStr (SV_LOCALE_SHORT));
-  fprintf (stderr, "  locale-639-2:%s\n", sysvarsGetStr (SV_LOCALE_639_2));
-  fprintf (stderr, "  locale-set:%d\n", (int) sysvarsGetNum (SVL_LOCALE_SET));
-  fprintf (stderr, "  locale-sys-set:%d\n", (int) sysvarsGetNum (SVL_LOCALE_SYS_SET));
-  fprintf (stderr, "  env-lang:%s\n", getenv ("LANG"));
-  fprintf (stderr, "  env-all:%s\n", getenv ("LC_ALL"));
-  fprintf (stderr, "  env-mess:%s\n", getenv ("LC_MESSAGES"));
+  fprintf (stderr, "  os-get-locale:%s\n", tbuff);
+  fprintf (stderr, "  sv-locale-system:%s\n", sysvarsGetStr (SV_LOCALE_SYSTEM));
+  fprintf (stderr, "  sv-locale-orig:%s\n", sysvarsGetStr (SV_LOCALE_ORIG));
+  fprintf (stderr, "  sv-locale:%s\n", sysvarsGetStr (SV_LOCALE));
+  fprintf (stderr, "  sv-locale-short:%s\n", sysvarsGetStr (SV_LOCALE_SHORT));
+  fprintf (stderr, "  sv-locale-639-2:%s\n", sysvarsGetStr (SV_LOCALE_639_2));
+  fprintf (stderr, "  sv-locale-set:%d\n", (int) sysvarsGetNum (SVL_LOCALE_SET));
+  fprintf (stderr, "  sv-locale-sys-set:%d\n", (int) sysvarsGetNum (SVL_LOCALE_SYS_SET));
+  osGetEnv ("LANG", tbuff, sizeof (tbuff));
+  fprintf (stderr, "  env-lang:%s\n", tbuff);
+  osGetEnv ("LC_ALL", tbuff, sizeof (tbuff));
+  fprintf (stderr, "  env-lc-all:%s\n", tbuff);
+  osGetEnv ("LC_MESSAGES", tbuff, sizeof (tbuff));
+  fprintf (stderr, "  env-lc-messages:%s\n", tbuff);
+  osGetEnv ("LC_COLLATE", tbuff, sizeof (tbuff));
+  fprintf (stderr, "  env-lc-collate:%s\n", tbuff);
+#if _lib_wbindtextdomain
+  fprintf (stderr, "  wbindtextdomain:%S\n", wbindtextdomain (GETTEXT_DOMAIN, NULL));
+#else
   fprintf (stderr, "  bindtextdomain:%s\n", bindtextdomain (GETTEXT_DOMAIN, NULL));
+#endif
   fprintf (stderr, "  textdomain:%s\n", textdomain (NULL));
 }
 #endif

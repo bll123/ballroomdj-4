@@ -4,7 +4,14 @@
 
 <!--
 
-**4.17.10 2026-1-19**
+**4.17.11 2026-2---**
+
+* Bug Fixes:
+    * Windows: Fix installation when OneDrive is active.
+    * Windows: Fix uninstaller.
+    * PENDING Windows: Fix localization.
+* Changes:
+    * PENDING Windows: Change the default theme to Adwaita:dark
 
 -->
 

@@ -24,7 +24,8 @@ Remove and remove dependencies:
 #### ucrt64 environment
 
 # tools
-<br>pacman -S ed make rsync vim rlwrap tar unzip zip diffutils man
+<br># unix2dos needed for packaging
+<br>pacman -S ed make rsync vim rlwrap tar unzip zip diffutils man dos2unix
 <br># libraries
 <br>pacman -S gettext gettext-devel
 <br># current gcc (64)

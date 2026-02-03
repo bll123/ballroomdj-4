@@ -56,13 +56,20 @@ locatebdj3 (void)
   }
 
   /* windows: %USERPROFILE%/Desktop/BallroomDJ */
+  /* windows: %USERPROFILE%/OneDrive/Desktop/BallroomDJ */
   *tbuff = '\0';
   tp = tbuff;
   tp = stpecpy (tp, tend, home);
-  tp = stpecpy (tp, tend, "/");
-  tp = stpecpy (tp, tend, "Desktop");
-  tp = stpecpy (tp, tend, "/");
-  tp = stpecpy (tp, tend, "BallroomDJ");
+  tp = stpecpy (tp, tend, "/OneDrive/Desktop");
+  if (fileopIsDirectory (tp)) {
+    tp = stpecpy (tp, tend, "/BallroomDJ");
+  } else {
+    /* not in onedrive location, use the usual path */
+    *tbuff = '\0';
+    tp = tbuff;
+    tp = stpecpy (tp, tend, home);
+    tp = stpecpy (tp, tend, "/Desktop/BallroomDJ");
+  }
 
   if (locationcheck (tbuff)) {
     return mdstrdup (tbuff);
