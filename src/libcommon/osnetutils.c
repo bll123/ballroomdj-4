@@ -9,7 +9,9 @@
 #include <string.h>
 #include <errno.h>
 #include <time.h>
-#include <sys/types.h>
+#if ! __has_include (<winsock2.h>)
+# include <sys/types.h>
+#endif
 #include <unistd.h>
 
 #if __has_include (<winsock2.h>)

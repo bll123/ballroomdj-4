@@ -78,7 +78,7 @@ pathRealPath (char *to, const char *from, size_t sz)
 #if _lib_realpath
   (void) ! realpath (from, to);
 #endif
-#if _lib_GetFullPathNameW
+#if ! lib_realpath && _lib_GetFullPathNameW
   wchar_t   *wfrom;
   wchar_t   wto [BDJ4_PATH_MAX];
   char      *tto;

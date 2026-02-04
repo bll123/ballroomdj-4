@@ -193,7 +193,7 @@ updateRPath (tdbsetval)
 updateRPath (testsuite)
 updateRPath (tmusicsetup)
 updateRPath (ttagdbchk)
-if (SYSLINUX_
+if (SYSLINUX)
   updateRPath (dbustest)
 endif()
 updateRPath (plisinklist)

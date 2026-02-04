@@ -213,6 +213,13 @@ if [[ $DEVELOPMENT != dev ]]; then
     grc=1
   fi
 
+  grep '^#define MPI_ENABLED 0' src/libcont/smtc.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -eq 0 ]]; then
+    echo "== WIN: MPI: disabled"
+    grc=1
+  fi
+
   grep '^#define LOCALE_DEBUG 0' src/libbasic/localeutil.c > /dev/null 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then

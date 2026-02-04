@@ -3,6 +3,10 @@
  */
 #include "config.h"
 
+#define MPI_ENABLED 1
+
+#if MPI_ENABLED
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -625,3 +629,4 @@ winmpSetAudioDevice (windata_t *windata, const char *dev, plidev_t plidevtype)
 
   return 0;
 }
+#endif

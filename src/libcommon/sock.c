@@ -23,7 +23,9 @@
 #include <signal.h>
 #include <string.h>
 #include <sys/time.h>
-#include <sys/types.h>
+#if ! __has_include (<winsock2.h>)
+# include <sys/types.h>
+#endif
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -45,8 +47,9 @@
 #if __has_include (<sys/event.h>)
 # include <sys/event.h>               /* kqueue */
 #endif
-#if __has_include (<sys/select.h>) && \
-   (FORCE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue))
+#if ! __has_include (<winsock2.h>) && \
+    __has_include (<sys/select.h>) && \
+    (FORCE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue))
 # include <sys/select.h>
 #endif
 #if __has_include (<sys/socket.h>)
