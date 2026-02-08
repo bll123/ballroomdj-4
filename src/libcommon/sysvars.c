@@ -525,43 +525,29 @@ sysvarsInit (const char *argv0, int flags)
 
   p = sysvars [SV_BDJ4_DIR_IMG];
   end = sysvars [SV_BDJ4_DIR_IMG] + SV_MAX_SZ;
-  if (isMacOS ()) {
-    p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
-    p = stpecpy (p, end, "/");
-  }
-  p = stpecpy (p, end, "img");
+  /* this must be the full path for macos and for alternate installations */
+  p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
+  p = stpecpy (p, end, "/img");
 
   p = sysvars [SV_BDJ4_DIR_INST];
   end = sysvars [SV_BDJ4_DIR_INST] + SV_MAX_SZ;
-  if (isMacOS ()) {
-    p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
-    p = stpecpy (p, end, "/");
-  }
-  p = stpecpy (p, end, "install");
+  p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
+  p = stpecpy (p, end, "/install");
 
   p = sysvars [SV_BDJ4_DIR_LOCALE];
   end = sysvars [SV_BDJ4_DIR_LOCALE] + SV_MAX_SZ;
-  if (isMacOS ()) {
-    p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
-    p = stpecpy (p, end, "/");
-  }
-  p = stpecpy (p, end, "locale");
+  p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
+  p = stpecpy (p, end, "/locale");
 
   p = sysvars [SV_BDJ4_DIR_TEMPLATE];
   end = sysvars [SV_BDJ4_DIR_TEMPLATE] + SV_MAX_SZ;
-  if (isMacOS ()) {
-    p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
-    p = stpecpy (p, end, "/");
-  }
-  p = stpecpy (p, end, "templates");
+  p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
+  p = stpecpy (p, end, "/templates");
 
   p = sysvars [SV_BDJ4_DIR_SCRIPT];
   end = sysvars [SV_BDJ4_DIR_SCRIPT] + SV_MAX_SZ;
-  if (isMacOS ()) {
-    p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
-    p = stpecpy (p, end, "/");
-  }
-  p = stpecpy (p, end, "scripts");
+  p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
+  p = stpecpy (p, end, "/scripts");
 
   sysvarsSetStr (SV_BDJ4_DREL_HTTP, "http");
   sysvarsSetStr (SV_BDJ4_DREL_TMP, "tmp");

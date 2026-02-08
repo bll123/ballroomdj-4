@@ -145,7 +145,7 @@ cmake-windows:
 		-DCMAKE_CXX_COMPILER="$(CXX)" \
 		-DBDJ4_BUILD:STATIC=$(BDJ4_BUILD) \
 		-DBDJ4_UI=$(BDJ4_UI) \
-		-G "Unix Makefiles" \
+		-G "MSYS Makefiles" \
 		-S . -B $(BUILDDIR) -Werror=deprecated ; \
 	./utils/winfixcmake.sh
 
