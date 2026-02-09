@@ -77,7 +77,7 @@ enum {
 };
 #define DF_DOUBLE_MULT 1000.0
 
-NODISCARD parseinfo_t * parseInit (void);
+BDJ_NODISCARD parseinfo_t * parseInit (void);
 void          parseFree (parseinfo_t *);
 char **       parseGetData (parseinfo_t *);
 ssize_t       parseSimple (parseinfo_t *, char *, int *distvers);
@@ -85,14 +85,14 @@ ssize_t       parseKeyValue (parseinfo_t *, char *, int *distvers);
 void          convBoolean (datafileconv_t *conv);
 void          convTextList (datafileconv_t *conv);
 
-NODISCARD datafile_t *  datafileAlloc (const char *tag, datafiletype_t dftype, const char *fname, datafilekey_t *dfkeys, int dfkeycount);
-NODISCARD datafile_t *  datafileAllocParse (const char *tag, datafiletype_t dftype, const char *fname, datafilekey_t *dfkeys, int dfkeycount, int offset, datafile_t *mergedf);
+BDJ_NODISCARD datafile_t *  datafileAlloc (const char *tag, datafiletype_t dftype, const char *fname, datafilekey_t *dfkeys, int dfkeycount);
+BDJ_NODISCARD datafile_t *  datafileAllocParse (const char *tag, datafiletype_t dftype, const char *fname, datafilekey_t *dfkeys, int dfkeycount, int offset, datafile_t *mergedf);
 void          datafileFree (void *);
 char *        datafileLoad (datafile_t *df, datafiletype_t dftype, const char *fname);
-NODISCARD list_t        *datafileParse (char *data, const char *name, datafiletype_t dftype, datafilekey_t *dfkeys, int dfkeycount, int *distvers);
+BDJ_NODISCARD list_t        *datafileParse (char *data, const char *name, datafiletype_t dftype, datafilekey_t *dfkeys, int dfkeycount, int *distvers);
 listidx_t     dfkeyBinarySearch (const datafilekey_t *dfkeys, int count, const char *key);
 list_t *      datafileGetList (datafile_t *);
-NODISCARD slist_t *     datafileSaveKeyValList (const char *tag, datafilekey_t *dfkeys, int dfkeycount, nlist_t *list);
+BDJ_NODISCARD slist_t *     datafileSaveKeyValList (const char *tag, datafilekey_t *dfkeys, int dfkeycount, nlist_t *list);
 size_t        datafileSaveKeyValBuffer (char *buff, size_t sz, const char *tag, datafilekey_t *dfkeys, int dfkeycount, nlist_t *list, int offset, int flags);
 void          datafileSave (datafile_t *df, const char *fn, nlist_t *list, int offset, int distvers);
 void          datafileDumpKeyVal (const char *tag, datafilekey_t *dfkeys, int dfkeycount, nlist_t *list, int offset);

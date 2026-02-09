@@ -23,7 +23,7 @@ typedef listnum_t   ilistnum_t;
 typedef listorder_t ilistorder_t;
 
 /* keyed by a ilistidx_t */
-NODISCARD ilist_t   *ilistAlloc (const char *name, ilistorder_t);
+BDJ_NODISCARD ilist_t   *ilistAlloc (const char *name, ilistorder_t);
 void      ilistFree (void * list);
 void      ilistSetVersion (ilist_t *list, int version);
 int       ilistGetVersion (ilist_t *list);

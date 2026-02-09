@@ -19,8 +19,8 @@ extern "C" {
 #endif
 #define OS_FS_CHAR_SIZE sizeof (OS_FS_CHAR_TYPE)
 
-NODISCARD wchar_t * osToWideChar (const char *buff);
-NODISCARD char    * osFromWideChar (const wchar_t *buff);
+BDJ_NODISCARD wchar_t * osToWideChar (const char *buff);
+BDJ_NODISCARD char    * osFromWideChar (const wchar_t *buff);
 int     osCreateLink (const char *target, const char *linkpath);
 bool    osIsLink (const char *path);
 void    osSuspendSleep (void);

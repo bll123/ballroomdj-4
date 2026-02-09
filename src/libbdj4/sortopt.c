@@ -26,7 +26,7 @@ typedef struct sortopt {
   slist_t         *sortoptList;
 } sortopt_t;
 
-NODISCARD
+BDJ_NODISCARD
 sortopt_t *
 sortoptAlloc (void)
 {

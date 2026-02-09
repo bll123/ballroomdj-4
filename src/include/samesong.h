@@ -14,7 +14,7 @@ extern "C" {
 typedef struct samesong samesong_t;
 typedef struct sscheck sscheck_t;
 
-NODISCARD samesong_t  *samesongAlloc (musicdb_t *musicdb);
+BDJ_NODISCARD samesong_t  *samesongAlloc (musicdb_t *musicdb);
 void        samesongFree (samesong_t *ss);
 const char  * samesongGetColorByDBIdx (samesong_t *ss, dbidx_t dbidx);
 const char  * samesongGetColorBySSIdx (samesong_t *ss, ssize_t ssidx);

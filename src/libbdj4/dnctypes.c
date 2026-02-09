@@ -24,7 +24,7 @@ typedef struct dnctype {
   slist_t     *dnctypes;
 } dnctype_t;
 
-NODISCARD
+BDJ_NODISCARD
 dnctype_t *
 dnctypesAlloc (void)
 {

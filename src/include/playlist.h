@@ -78,9 +78,9 @@ enum {
 
 typedef struct playlist playlist_t;
 
-NODISCARD playlist_t *playlistLoad (const char *name, musicdb_t *musicdb, grouping_t *grouping);
+BDJ_NODISCARD playlist_t *playlistLoad (const char *name, musicdb_t *musicdb, grouping_t *grouping);
 bool      playlistCheck (playlist_t *pl);
-NODISCARD playlist_t *playlistCreate (const char *plname, pltype_t type, musicdb_t *musicdb, grouping_t *grouping);
+BDJ_NODISCARD playlist_t *playlistCreate (const char *plname, pltype_t type, musicdb_t *musicdb, grouping_t *grouping);
 void      playlistFree (void *tpl);
 void      playlistResetAll (playlist_t *pl);
 void      playlistSetName (playlist_t *pl, const char *newname);

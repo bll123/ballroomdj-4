@@ -30,7 +30,7 @@
 #include "sysvars.h"
 #include "tagdef.h"
 
-NODISCARD
+BDJ_NODISCARD
 orgopt_t *
 orgoptAlloc (void)
 {

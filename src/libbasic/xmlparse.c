@@ -35,7 +35,7 @@ typedef struct xmlparse {
 static void xmlParseXMLErrorHandler (void *udata, xmlErrorPtr xmlerr);
 static void xmlParseRegisterNamespaces (xmlparse_t *xmlparse);
 
-NODISCARD
+BDJ_NODISCARD
 xmlparse_t *
 xmlParseInitFile (const char *fname, int nsflag)
 {
@@ -56,7 +56,7 @@ xmlParseInitFile (const char *fname, int nsflag)
   return xmlparse;
 }
 
-NODISCARD
+BDJ_NODISCARD
 xmlparse_t *
 xmlParseInitData (const char *data, size_t datalen, int nsflag)
 {
@@ -173,7 +173,7 @@ xmlParseGetItem (xmlparse_t *xmlparse, const char *xpath,
   xmlXPathFreeObject (xpathObj);
 }
 
-NODISCARD
+BDJ_NODISCARD
 ilist_t *
 xmlParseGetList (xmlparse_t *xmlparse, const char *xpath,
     const xmlparseattr_t attr [])

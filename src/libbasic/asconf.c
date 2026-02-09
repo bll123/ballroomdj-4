@@ -67,7 +67,7 @@ static const char *asconfmode [ASCONF_MODE_MAX] = {
 static_assert (sizeof (asconfmode) / sizeof (const char *) == ASCONF_MODE_MAX,
     "missing asconf entry");
 
-NODISCARD
+BDJ_NODISCARD
 asconf_t *
 asconfAlloc (void)
 {

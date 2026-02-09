@@ -53,7 +53,7 @@ static Sock_t connTryConnect (uint16_t port, int *connerr, Sock_t sock);
 static void connBaseInit (void);
 
 /* note that connInit() must be called after bdjvarsInit() */
-NODISCARD
+BDJ_NODISCARD
 conn_t *
 connInit (bdjmsgroute_t routefrom)
 {

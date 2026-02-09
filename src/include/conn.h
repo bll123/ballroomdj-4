@@ -24,7 +24,7 @@ typedef struct conn conn_t;
  * @param[in] routefrom The route that is sending messages.
  * @return conn_t array.
  */
-NODISCARD conn_t    * connInit (bdjmsgroute_t routefrom);
+BDJ_NODISCARD conn_t    * connInit (bdjmsgroute_t routefrom);
 
 /**
  * Free a connection.

@@ -39,7 +39,7 @@ static datafilekey_t leveldfkeys [LEVEL_KEY_MAX] = {
   { "WEIGHT",   LEVEL_WEIGHT,       VALUE_NUM, NULL, DF_NORM },
 };
 
-NODISCARD
+BDJ_NODISCARD
 level_t *
 levelAlloc ()
 {

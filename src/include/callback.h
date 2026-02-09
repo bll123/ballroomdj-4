@@ -34,13 +34,13 @@ int32_t callbackHandlerSS (callback_t *cb, const char *a, const char *b);
 bool callbackHandlerSI (callback_t *cb, const char *str, int32_t value);
 
 void callbackFree (callback_t *cb);
-NODISCARD callback_t *callbackInit (callbackFunc cb, void *udata, const char *actiontext);
-NODISCARD callback_t *callbackInitD (callbackFuncD cb, void *udata);
-NODISCARD callback_t *callbackInitI (callbackFuncI cb, void *udata);
-NODISCARD callback_t *callbackInitII (callbackFuncII cb, void *udata);
-NODISCARD callback_t *callbackInitS (callbackFuncS cb, void *udata);
-NODISCARD callback_t *callbackInitSS (callbackFuncSS cb, void *udata);
-NODISCARD callback_t *callbackInitSI (callbackFuncSI cb, void *udata);
+BDJ_NODISCARD callback_t *callbackInit (callbackFunc cb, void *udata, const char *actiontext);
+BDJ_NODISCARD callback_t *callbackInitD (callbackFuncD cb, void *udata);
+BDJ_NODISCARD callback_t *callbackInitI (callbackFuncI cb, void *udata);
+BDJ_NODISCARD callback_t *callbackInitII (callbackFuncII cb, void *udata);
+BDJ_NODISCARD callback_t *callbackInitS (callbackFuncS cb, void *udata);
+BDJ_NODISCARD callback_t *callbackInitSS (callbackFuncSS cb, void *udata);
+BDJ_NODISCARD callback_t *callbackInitSI (callbackFuncSI cb, void *udata);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

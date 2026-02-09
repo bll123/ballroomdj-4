@@ -66,7 +66,7 @@ static void     datafileDumpItem (const char *tag, const char *name, dfConvFunc_
 
 /* parsing routines */
 
-NODISCARD
+BDJ_NODISCARD
 parseinfo_t *
 parseInit (void)
 {
@@ -192,7 +192,7 @@ convTextList (datafileconv_t *conv)
 
 /* datafile loading routines */
 
-NODISCARD
+BDJ_NODISCARD
 datafile_t *
 datafileAlloc (const char *tag, datafiletype_t dftype, const char *fname, datafilekey_t *dfkeys, int dfkeycount)
 {
@@ -211,7 +211,7 @@ datafileAlloc (const char *tag, datafiletype_t dftype, const char *fname, datafi
   return df;
 }
 
-NODISCARD
+BDJ_NODISCARD
 datafile_t *
 datafileAllocParse (const char *tag, datafiletype_t dftype, const char *fname,
     datafilekey_t *dfkeys, int dfkeycount, int offset, datafile_t *mergedf)
@@ -275,7 +275,7 @@ datafileFree (void *tdf)
 
 /* datafileLoad is also used by bdjopt to load the data before */
 /* a parse-merge */
-NODISCARD
+BDJ_NODISCARD
 char *
 datafileLoad (datafile_t *df, datafiletype_t dftype, const char *fname)
 {
@@ -294,7 +294,7 @@ datafileLoad (datafile_t *df, datafiletype_t dftype, const char *fname)
   return data;
 }
 
-NODISCARD
+BDJ_NODISCARD
 list_t *
 datafileParse (char *data, const char *name, datafiletype_t dftype,
     datafilekey_t *dfkeys, int dfkeycount, int *distvers)
@@ -307,7 +307,7 @@ datafileParse (char *data, const char *name, datafiletype_t dftype,
 }
 
 /* save the key-value data to a list */
-NODISCARD
+BDJ_NODISCARD
 slist_t *
 datafileSaveKeyValList (const char *tag,
     datafilekey_t *dfkeys, int dfkeycount, nlist_t *list)

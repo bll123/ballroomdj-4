@@ -178,7 +178,17 @@ fi
 # check the object file hierarchy for problems.
 echo "## checking object file hierarchy"
 #
-./utils/lorder $(find ./build -name '*.o') > $TOIN
+OBJEXT=.o
+LORD=./utils/lorder
+case ${systype} in
+  Darwin)
+    LORD=lorder
+    ;;
+  MINGW64*)
+    OBJEXT=.obj
+    ;;
+esac
+${LORD} $(find ./build -name '*'${OBJEXT}) > $TOIN
 tsort < $TOIN > $TOSORT
 rc=$?
 if [[ $rc -ne 0 ]]; then

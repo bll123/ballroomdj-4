@@ -36,7 +36,7 @@
 
 #include "osdirutil.h"
 
-#define LOCALE_DEBUG 1
+#define LOCALE_DEBUG 0
 
 /* must be sorted in ascii order */
 static datafilekey_t localedfkeys [LOCALE_KEY_MAX] = {

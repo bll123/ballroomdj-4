@@ -16,7 +16,7 @@ typedef struct {
   slist_t       *orgList;
 } orgopt_t;
 
-NODISCARD orgopt_t  * orgoptAlloc (void);
+BDJ_NODISCARD orgopt_t  * orgoptAlloc (void);
 void      orgoptFree (orgopt_t *org);
 slist_t   * orgoptGetList (orgopt_t *org);
 

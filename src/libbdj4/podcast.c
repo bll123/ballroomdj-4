@@ -41,7 +41,7 @@ static datafilekey_t podcastdfkeys [PODCAST_KEY_MAX] = {
   { "URI",            PODCAST_URI,            VALUE_STR, NULL, DF_NORM },
 };
 
-NODISCARD
+BDJ_NODISCARD
 podcast_t *
 podcastLoad (const char *fname)
 {
@@ -68,7 +68,7 @@ podcastLoad (const char *fname)
   return podcast;
 }
 
-NODISCARD
+BDJ_NODISCARD
 podcast_t *
 podcastCreate (const char *fname)
 {

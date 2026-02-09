@@ -104,7 +104,7 @@ static void songfilterMakeSortKey (songfilter_t *sf, song_t *song, char *sortkey
 static nlist_t *songfilterParseSortKey (songfilter_t *sf);
 static void songfilterLoadFilterDisplay (songfilter_t *sf);
 
-NODISCARD
+BDJ_NODISCARD
 songfilter_t *
 songfilterAlloc (void)
 {

@@ -101,7 +101,7 @@ static const char *unixChars = { "" };
 static void orgutilClean (const char *from, char *target, size_t sz, int which);
 static void orgutilInfoFree (void *data);
 
-NODISCARD
+BDJ_NODISCARD
 org_t *
 orgAlloc (const char *orgpath)
 {

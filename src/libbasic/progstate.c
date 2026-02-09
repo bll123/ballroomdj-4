@@ -55,7 +55,7 @@ static_assert (sizeof (progstatetext) / sizeof (const char *) == PROGSTATE_MAX,
 
 static programstate_t progstateProcessLoop (progstate_t *progstate);
 
-NODISCARD
+BDJ_NODISCARD
 progstate_t *
 progstateInit (char *progtag)
 {

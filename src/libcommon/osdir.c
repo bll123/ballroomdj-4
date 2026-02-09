@@ -35,7 +35,7 @@ typedef struct dirhandle {
 #endif
 } dirhandle_t;
 
-NODISCARD
+BDJ_NODISCARD
 dirhandle_t *
 osDirOpen (const char *dirname)
 {
@@ -69,7 +69,7 @@ osDirOpen (const char *dirname)
   return dirh;
 }
 
-NODISCARD
+BDJ_NODISCARD
 char *
 osDirIterate (dirhandle_t *dirh)
 {

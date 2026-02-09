@@ -44,7 +44,7 @@ typedef enum {
 
 typedef struct org org_t;
 
-NODISCARD org_t   * orgAlloc (const char *orgpath);
+BDJ_NODISCARD org_t   * orgAlloc (const char *orgpath);
 void    orgFree (org_t *org);
 void    orgSetCleanType (org_t *org, int type);
 const char * orgGetFromPath (org_t *org, const char *path, tagdefkey_t tagkey);

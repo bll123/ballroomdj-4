@@ -37,7 +37,7 @@ typedef struct songfav {
   int           count;
 } songfav_t;
 
-NODISCARD
+BDJ_NODISCARD
 songfav_t *
 songFavoriteAlloc (void)
 {

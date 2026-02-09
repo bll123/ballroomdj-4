@@ -24,7 +24,7 @@ static nlist_t *ilistGetDatalist (ilist_t *list, ilistidx_t ikey, int gsflag);
 
 /* key/value list, keyed by a ilistidx_t */
 
-NODISCARD
+BDJ_NODISCARD
 ilist_t *
 ilistAlloc (const char *name, ilistorder_t ordered)
 {

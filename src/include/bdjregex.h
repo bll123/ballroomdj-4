@@ -11,7 +11,7 @@ extern "C" {
 
 typedef struct bdjregex bdjregex_t;
 
-NODISCARD bdjregex_t * regexInit (const char *pattern);
+BDJ_NODISCARD bdjregex_t * regexInit (const char *pattern);
 void regexFree (bdjregex_t *rx);
 char * regexEscape (const char *str);
 bool regexMatch (bdjregex_t *rx, const char *str);

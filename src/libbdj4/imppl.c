@@ -57,7 +57,7 @@ typedef struct imppl {
 
 static bool impplCreateSong (imppl_t *imppl, const char *songuri, slist_t *tagdata);
 
-NODISCARD
+BDJ_NODISCARD
 imppl_t *
 impplInit (slist_t *songidxlist, int imptype,
     const char *uri, const char *oplname, const char *plname, int askey)

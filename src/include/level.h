@@ -20,7 +20,7 @@ typedef enum {
 
 typedef struct level level_t;
 
-NODISCARD level_t     *levelAlloc (void);
+BDJ_NODISCARD level_t     *levelAlloc (void);
 void        levelFree (level_t *);
 ilistidx_t  levelGetCount (level_t *levels);
 int         levelGetMaxWidth (level_t *levels);

@@ -33,7 +33,7 @@ typedef struct sequence {
   int         distvers;
 } sequence_t;
 
-NODISCARD
+BDJ_NODISCARD
 sequence_t *
 sequenceLoad (const char *fname)
 {
@@ -76,7 +76,7 @@ sequenceLoad (const char *fname)
   return sequence;
 }
 
-NODISCARD
+BDJ_NODISCARD
 sequence_t *
 sequenceCreate (const char *fname)
 {

@@ -12,6 +12,8 @@
     * PENDING Windows: Fix localization.
 * Changes:
     * PENDING Windows: Change the default theme to Adwaita:dark
+* Internal:
+    * Update libmp4tag to version 2.0.3.
 
 -->
 

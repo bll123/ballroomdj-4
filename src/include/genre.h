@@ -20,7 +20,7 @@ typedef enum {
 
 typedef struct genre genre_t;
 
-NODISCARD genre_t   *genreAlloc (void);
+BDJ_NODISCARD genre_t   *genreAlloc (void);
 void      genreFree (genre_t *);
 ilistidx_t genreGetCount (genre_t *genres);
 

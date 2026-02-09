@@ -22,7 +22,7 @@
 
 #define PATHINFO_DEBUG 0
 
-NODISCARD
+BDJ_NODISCARD
 pathinfo_t *
 pathInfo (const char *path)
 {

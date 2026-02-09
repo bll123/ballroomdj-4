@@ -30,7 +30,7 @@ typedef struct quickedit {
   nlist_t       *dispsel;
 } quickedit_t;
 
-NODISCARD
+BDJ_NODISCARD
 quickedit_t *
 quickeditAlloc (void)
 {
