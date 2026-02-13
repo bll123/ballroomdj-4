@@ -14,6 +14,7 @@
 #include <MacTypes.h>
 #include <Cocoa/Cocoa.h>
 
+#include "bdjstring.h"
 #include "oslocale.h"
 
 int
@@ -33,4 +34,30 @@ osLocaleDirection (const char *locale)
   }
 
   return tdir;
+}
+
+void
+osGetPreferredLocales (char *buff, size_t sz)
+{
+  NSArray   *langs;
+  int       lcount;
+  char      *p;
+
+  *buff = '\0';
+  p = buff;
+
+  langs = [NSLocale preferredLanguages];
+  lcount = [langs count];
+  for (int i = 0; i < lcount; ++i) {
+    NSString    *lang;
+    char        tbuff [20];
+
+    lang = [langs objectAtIndex: i];
+    stpecpy (tbuff, tbuff + sizeof (tbuff), [lang UTF8String]);
+    tbuff [2] = '_';
+    p = stpecpy (p, buff + sz, tbuff);
+    if (i < lcount - 1) {
+      p = stpecpy (p, buff + sz, ":");
+    }
+  }
 }

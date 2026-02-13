@@ -37,7 +37,8 @@
 
 #include "osdirutil.h"
 
-#define LOCALE_DEBUG 1
+#define LOCALE_DEBUG 0
+
 static const char *BDJ4_TEXT_DOMAIN = "bdj4";
 
 /* must be sorted in ascii order */
@@ -141,6 +142,7 @@ localeSetup (void)
   char          locpath [BDJ4_PATH_MAX];
   char          lbuff [BDJ4_PATH_MAX];
   char          tbuff [BDJ4_PATH_MAX];
+  char          preferred [BDJ4_PATH_MAX];
   char          sbuff [40];
   bool          useutf8ext = false;
   struct lconv  *lconv;
@@ -148,14 +150,13 @@ localeSetup (void)
   *lbuff = '\0';
   *locpath = '\0';
 
-  /* get the locale from the environment */
-  /* on Linux, this must be done first */
-  if (setlocale (LC_ALL, "") == NULL) {
-    fprintf (stderr, "set of locale from env failed\n");
-  }
-
   /* on windows, returns the locale set for the user, not what's set */
   /* in the environment. GTK apparently uses the appropriate locale */
+  osGetPreferredLocales (preferred, sizeof (preferred));
+  if (*preferred) {
+    osSetEnv ("LANGUAGE", preferred);
+  }
+
   if (sysvarsGetNum (SVL_LOCALE_SET) == SYSVARS_LOCALE_NOT_SET) {
     osGetLocale (lbuff, sizeof (lbuff));
     sysvarsSetStr (SV_LOCALE_SYSTEM, lbuff);
@@ -202,6 +203,20 @@ localeSetup (void)
   /* lbuff contains the locale tag without any trailing character set */
   /* tbuff now contains the full locale tag */
 
+  /* windows doesn't work without this */
+  /* note that LC_MESSAGES is an msys2 extension */
+  /* windows normally has no LC_MESSAGES setting */
+  /* setlocale of LC_MESSAGES, etc. apparently does nothing */
+  osSetEnv ("LC_MESSAGES", tbuff);
+  osSetEnv ("LC_COLLATE", tbuff);
+  osSetEnv ("LC_CTYPE", tbuff);
+
+  /* get the locale from the environment */
+  /* on Linux, this must be done first */
+  if (setlocale (LC_ALL, "") == NULL) {
+    fprintf (stderr, "set of locale from env failed\n");
+  }
+
   pathbldMakePath (locpath, sizeof (locpath), "", "", PATHBLD_MP_DIR_LOCALE);
 #if _lib_wbindtextdomain
   {
@@ -227,14 +242,6 @@ localeSetup (void)
 #if _lib_bind_textdomain_codeset
   bind_textdomain_codeset (BDJ4_TEXT_DOMAIN, "UTF-8");
 #endif
-
-  /* windows doesn't work without this */
-  /* note that LC_MESSAGES is an msys2 extension */
-  /* windows normally has no LC_MESSAGES setting */
-  /* setlocale of LC_MESSAGES, etc. apparently does nothing */
-  osSetEnv ("LC_MESSAGES", tbuff);
-  osSetEnv ("LC_COLLATE", tbuff);
-  osSetEnv ("LC_CTYPE", tbuff);
 
   lconv = localeconv ();
   sysvarsSetStr (SV_LOCALE_RADIX, lconv->decimal_point);

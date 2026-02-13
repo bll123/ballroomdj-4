@@ -16,6 +16,7 @@ enum {
 
 char  *osGetLocale (char *buff, size_t sz);
 int   osLocaleDirection (const char *);
+void  osGetPreferredLocales (char *buff, size_t sz);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

@@ -7,10 +7,12 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <wchar.h>
 
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
 
+#include "bdj4.h"
 #include "mdebug.h"
 #include "oslocale.h"
 #include "osutils.h"
@@ -33,4 +35,12 @@ osLocaleDirection (const char *locale)
 #endif
 
   return tdir;
+}
+
+void
+osGetPreferredLocales (char *buff, size_t sz)
+{
+  /* windows does not return a list of languages.  */
+  /* the current get-os-locale method is fine. */
+  *buff = '\0';
 }

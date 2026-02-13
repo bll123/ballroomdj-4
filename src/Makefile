@@ -10,6 +10,8 @@ BUILDDIR = build
 CLANG = clang
 CLANGXX = clang++
 CLANGDIR = ucrt64
+CMAKE = cmake
+CMAKEWIN = ../packages/cmake-3/bin/cmake
 
 # bdj4 options
 BDJ4_UI = GTK3
@@ -71,8 +73,8 @@ cmake:
 	  $(MAKE) CC=$(CLANG) CXX=$(CLANGXX) cmake-unix; \
 	  pmode=--parallel $(MAKE) build; \
 	else \
-	  $(MAKE) CC=$(CC) CXX=$(CXX) cmake-windows; \
-	  $(MAKE) build; \
+	  $(MAKE) CC=$(CC) CXX=$(CXX) CMAKE=$(CMAKEWIN) cmake-windows; \
+	  $(MAKE) CMAKE=$(CMAKEWIN) build; \
 	fi
 
 .PHONY: cmakesinglecpu
@@ -84,8 +86,8 @@ cmakesinglecpu:
 	  $(MAKE) CC=$(CLANG) CXX=$(CLANGXX) cmake-unix; \
 	  $(MAKE) build; \
 	else \
-	  $(MAKE) CC=$(CC) CXX=$(CXX) cmake-windows; \
-	  $(MAKE) build; \
+	  $(MAKE) CC=$(CC) CXX=$(CXX) CMAKE=$(CMAKEWIN) cmake-windows; \
+	  $(MAKE) CMAKE=$(CMAKEWIN) build; \
 	fi
 
 .PHONY: cmakesinglecpuverbose
@@ -97,8 +99,8 @@ cmakesinglecpuverbose:
 	  $(MAKE) CC=$(CLANG) CXX=$(CLANGXX) cmake-unix; \
 	  $(MAKE) VERBOSE=1 build; \
 	else \
-	  $(MAKE) CC=$(CC) CXX=$(CXX) cmake-windows; \
-	  $(MAKE) VERBOSE=1 build; \
+	  $(MAKE) CC=$(CC) CXX=$(CXX) CMAKE=$(CMAKEWIN) cmake-windows; \
+	  $(MAKE) VERBOSE=1 CMAKE=$(CMAKEWIN) build; \
 	fi
 
 # for the windows clang64 msys2 environment
@@ -121,14 +123,15 @@ cmakeclang:
 	  CLANGDIR=$(CLANGDIR) \
 	  CC=/$(CLANGDIR)/bin/clang.exe \
 	  CXX=/$(CLANGDIR)/bin/clang++.exe \
+          CMAKE=$(CMAKEWIN) \
 	  cmake-windows; \
-	  $(MAKE) build; \
+	  $(MAKE) CMAKE=$(CMAKEWIN) build; \
 	fi
 
 .PHONY: cmake-unix
 cmake-unix:
 	. ../VERSION.txt; \
-	cmake \
+	$(CMAKE) \
 		-DBDJ4_BUILD_VERS:STATIC=$${VERSION} \
 		-DCMAKE_C_COMPILER=$(CC) \
 		-DCMAKE_CXX_COMPILER=$(CXX) \
@@ -139,7 +142,7 @@ cmake-unix:
 .PHONY: cmake-windows
 cmake-windows:
 	. ../VERSION.txt; \
-	cmake \
+	$(CMAKE) \
 		-DBDJ4_BUILD_VERS:STATIC=$${VERSION} \
 		-DCMAKE_C_COMPILER="$(CC)" \
 		-DCMAKE_CXX_COMPILER="$(CXX)" \
@@ -152,8 +155,8 @@ cmake-windows:
 # --parallel does not work correctly on msys2
 .PHONY: build
 build:
-	cmake --build $(BUILDDIR) $(pmode)
-	cmake --install $(BUILDDIR)
+	$(CMAKE) --build $(BUILDDIR) $(pmode)
+	$(CMAKE) --install $(BUILDDIR)
 	@-rm -f ../bin/liblib*.a
 
 # testing
@@ -240,7 +243,8 @@ realclean:
 clean:
 	@-$(MAKE) tclean
 	@-$(MAKE) eclean
-	@-test ! -f build/CMakeCache.txt || cmake --build build --target clean
+	@-test ! -f build/CMakeCache.txt || \
+	  $(CMAKE) --build build --target clean
 
 .PHONY: eclean
 eclean:

@@ -9,10 +9,9 @@
 * Bug Fixes:
     * Windows: Fix installation when OneDrive is active.
     * Windows: Fix uninstaller.
-    * PENDING Windows: Select the appropriate locale from the preferred list.
-    * PENDING MacOS: Select the appropriate locale from the preferred list.
+    * MacOS: Select locale from preferred list of languages.
 * Changes:
-    * PENDING Windows: Change the default theme to Adwaita:dark
+    * Windows: Change the default theme to Adwaita:dark
 * Internal:
     * Update libmp4tag to version 2.0.3.
 

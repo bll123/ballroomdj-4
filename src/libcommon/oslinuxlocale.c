@@ -39,3 +39,9 @@ osLocaleDirection (const char *locale)
 
   return tdir;
 }
+
+void
+osGetPreferredLocales (char *buff, size_t sz)
+{
+  *buff = '\0';
+}

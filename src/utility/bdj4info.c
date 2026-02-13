@@ -41,6 +41,7 @@ static const char *envitems [] = {
   "GTK_CSD",
   "GTK_THEME",
   "HOME",
+  "LANGUAGE",
   "LC_ALL",
   "LC_COLLATE",
   "LC_CTYPE",
