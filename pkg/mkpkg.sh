@@ -567,8 +567,7 @@ case $tag in
 
     tfnl=$(find ${stagedir}/templates -name bdjconfig.txt.mp)
     for tfn in ${tfnl}*; do
-      sed -e '/UI_THEME/ { n ; s/.*/..Windows-10-Dark/ ; }' \
-          -e '/UIFONT/ { n ; s/.*/..Arial Regular 11/ ; }' \
+      sed -e '/UIFONT/ { n ; s/.*/..Arial Regular 11/ ; }' \
           -e '/LISTINGFONT/ { n ; s/.*/..Arial Regular 10/ ; }' \
           ${tfn} > ${tfn}.n
       mv -f ${tfn}.n ${tfn}

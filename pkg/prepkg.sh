@@ -436,7 +436,7 @@ gtk-enable-animations = 0
 gtk-dialogs-use-header = 0
 gtk-overlay-scrolling = 0
 gtk-icon-theme-name = Adwaita
-gtk-theme-name = Windows-10-Dark
+gtk-theme-name = Adwaita:dark
 _HERE_
 
   mkdir -p plocal/etc/fonts

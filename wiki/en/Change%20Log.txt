@@ -7,9 +7,10 @@
 **4.17.11 2026-2---**
 
 * Bug Fixes:
+    * Installer: Fix a non-localized message.
+    * MacOS: Populate locale environment from preferred list of languages.
     * Windows: Fix installation when OneDrive is active.
     * Windows: Fix uninstaller.
-    * MacOS: Populate locale environment from preferred list of languages.
 * Changes:
     * Windows: Change the default theme to Adwaita:dark
 * Internal:

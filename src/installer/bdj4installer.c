@@ -342,8 +342,7 @@ main (int argc, char *argv[])
   installer.tclshloc = NULL;
   installer.currdir [0] = '\0';
   /* CONTEXT: installer: status message */
-  installer.pleasewaitmsg = _("Please wait\xe2\x80\xa6");
-
+  installer.pleasewaitmsg = NULL;
   installer.aborted = false;
   installer.bdjoptloaded = false;
   installer.clean = true;
@@ -389,6 +388,7 @@ main (int argc, char *argv[])
     installer.macospfx = MACOS_APP_PREFIX;
   }
 
+  installer.pleasewaitmsg = _("Please wait\xe2\x80\xa6");
   installer.hostname = sysvarsGetStr (SV_HOSTNAME);
   installer.home = sysvarsGetStr (SV_HOME);
 
