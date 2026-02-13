@@ -56,7 +56,6 @@ pacman -S --noconfirm --needed \
     mingw-w64-ucrt-x86_64-libgcrypt \
     mingw-w64-ucrt-x86_64-c-ares \
     mingw-w64-ucrt-x86_64-icu \
-    mingw-w64-ucrt-x86_64-libbacktrace \
     mingw-w64-ucrt-x86_64-cppwinrt
 
 exit 0

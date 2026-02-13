@@ -40,7 +40,6 @@ Remove and remove dependencies:
 <br>pacman -S mingw-w64-ucrt-x86_64-libgcrypt
 <br>pacman -S mingw-w64-ucrt-x86_64-c-ares
 <br>pacman -S mingw-w64-ucrt-x86_64-icu
-<br>pacman -S mingw-w64-ucrt-x86_64-libbacktrace
 <br># winrt
 <br>pacman -S mingw-w64-ucrt-x86_64-cppwinrt
 

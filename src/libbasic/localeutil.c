@@ -31,12 +31,14 @@
 #include "oslocale.h"
 #include "osutils.h"
 #include "pathbld.h"
+#include "pathdisp.h"
 #include "slist.h"
 #include "sysvars.h"
 
 #include "osdirutil.h"
 
-#define LOCALE_DEBUG 0
+#define LOCALE_DEBUG 1
+static const char *BDJ4_TEXT_DOMAIN = "bdj4";
 
 /* must be sorted in ascii order */
 static datafilekey_t localedfkeys [LOCALE_KEY_MAX] = {
@@ -147,7 +149,7 @@ localeSetup (void)
   *locpath = '\0';
 
   /* get the locale from the environment */
-  /* works on windows, but windows returns the old style locale name */
+  /* on Linux, this must be done first */
   if (setlocale (LC_ALL, "") == NULL) {
     fprintf (stderr, "set of locale from env failed\n");
   }
@@ -197,50 +199,45 @@ localeSetup (void)
     stpecpy (tbuff, tbuff + sizeof (tbuff), lbuff);
   }
 
-  /* windows doesn't work without this */
-  /* note that LC_MESSAGES is an msys2 extension */
-  /* windows normally has no LC_MESSAGES setting */
-  /* MacOS seems to need this also, setlocale() apparently is not enough */
-  osSetEnv ("LC_MESSAGES", tbuff);
-  osSetEnv ("LC_COLLATE", tbuff);
-  osSetEnv ("LC_CTYPE", tbuff);
+  /* lbuff contains the locale tag without any trailing character set */
+  /* tbuff now contains the full locale tag */
 
   pathbldMakePath (locpath, sizeof (locpath), "", "", PATHBLD_MP_DIR_LOCALE);
 #if _lib_wbindtextdomain
   {
     wchar_t   *wlocale;
 
+    pathDisplayPath (locpath, sizeof (locpath));
     wlocale = osToWideChar (locpath);
-    if (wbindtextdomain (GETTEXT_DOMAIN, wlocale) == NULL) {
+    if (wbindtextdomain (BDJ4_TEXT_DOMAIN, wlocale) == NULL) {
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: localeutil: wbindtextdomain failed %s", locpath);
     }
     dataFree (wlocale);
   }
 #else
-  if (bindtextdomain (GETTEXT_DOMAIN, locpath) == NULL) {
+  if (bindtextdomain (BDJ4_TEXT_DOMAIN, locpath) == NULL) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: localeutil: bindtextdomain failed %s", locpath);
   }
 #endif
-  if (textdomain (GETTEXT_DOMAIN) == NULL) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: localeutil: textdomain failed %s", GETTEXT_DOMAIN);
+
+  if (textdomain (BDJ4_TEXT_DOMAIN) == NULL) {
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: localeutil: textdomain failed %s", BDJ4_TEXT_DOMAIN);
   }
+
 #if _lib_bind_textdomain_codeset
-  bind_textdomain_codeset (GETTEXT_DOMAIN, "UTF-8");
+  bind_textdomain_codeset (BDJ4_TEXT_DOMAIN, "UTF-8");
 #endif
+
+  /* windows doesn't work without this */
+  /* note that LC_MESSAGES is an msys2 extension */
+  /* windows normally has no LC_MESSAGES setting */
+  /* setlocale of LC_MESSAGES, etc. apparently does nothing */
+  osSetEnv ("LC_MESSAGES", tbuff);
+  osSetEnv ("LC_COLLATE", tbuff);
+  osSetEnv ("LC_CTYPE", tbuff);
 
   lconv = localeconv ();
   sysvarsSetStr (SV_LOCALE_RADIX, lconv->decimal_point);
-
-  /* setlocale on windows cannot handle utf-8 strings */
-  /* nor will it handle the sv_SE style format */
-  if (! isWindows ()) {
-    if (setlocale (LC_MESSAGES, tbuff) == NULL) {
-      fprintf (stderr, "set of locale failed; unknown locale %s\n", tbuff);
-    }
-    if (setlocale (LC_COLLATE, tbuff) == NULL) {
-      fprintf (stderr, "set of locale failed; unknown locale %s\n", tbuff);
-    }
-  }
 
   localePostSetup ();
 }
@@ -292,8 +289,10 @@ localeDebug (const char *tag)   /* KEEP */
 
   fprintf (stderr, "-- locale : %s\n", tag);
   fprintf (stderr, "  os-setlocale-all:%s\n", setlocale (LC_ALL, NULL));
-  fprintf (stderr, "  os-setlocale-collate:%s\n", setlocale (LC_COLLATE, NULL));
   fprintf (stderr, "  os-setlocale-messages:%s\n", setlocale (LC_MESSAGES, NULL));
+  fprintf (stderr, "  os-setlocale-collate:%s\n", setlocale (LC_COLLATE, NULL));
+  fprintf (stderr, "  os-setlocale-ctype:%s\n", setlocale (LC_CTYPE, NULL));
+  fprintf (stderr, "  os-setlocale-numeric:%s\n", setlocale (LC_NUMERIC, NULL));
   osGetLocale (tbuff, sizeof (tbuff));
   fprintf (stderr, "  os-get-locale:%s\n", tbuff);
   fprintf (stderr, "  sv-locale-system:%s\n", sysvarsGetStr (SV_LOCALE_SYSTEM));
@@ -313,10 +312,12 @@ localeDebug (const char *tag)   /* KEEP */
   fprintf (stderr, "  env-lc-collate:%s\n", tbuff);
   osGetEnv ("LC_CTYPE", tbuff, sizeof (tbuff));
   fprintf (stderr, "  env-lc-ctype:%s\n", tbuff);
+  osGetEnv ("LC_NUMERIC", tbuff, sizeof (tbuff));
+  fprintf (stderr, "  env-lc-numeric:%s\n", tbuff);
 #if _lib_wbindtextdomain
-  fprintf (stderr, "  wbindtextdomain:%S\n", wbindtextdomain (GETTEXT_DOMAIN, NULL));
+  fprintf (stderr, "  wbindtextdomain:%S\n", wbindtextdomain (BDJ4_TEXT_DOMAIN, NULL));
 #else
-  fprintf (stderr, "  bindtextdomain:%s\n", bindtextdomain (GETTEXT_DOMAIN, NULL));
+  fprintf (stderr, "  bindtextdomain:%s\n", bindtextdomain (BDJ4_TEXT_DOMAIN, NULL));
 #endif
   fprintf (stderr, "  textdomain:%s\n", textdomain (NULL));
 }

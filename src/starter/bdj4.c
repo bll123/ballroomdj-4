@@ -152,6 +152,7 @@ main (int argc, char * argv[])
 #if BDJ4_GUI_LAUNCHER && (BDJ4_UI_GTK3 || BDJ4_UI_GTK4)
   /* for macos; turns the launcher into a gui program, then the icon */
   /* shows up in the dock */
+  gtk_disable_setlocale ();
   gtk_init (&argc, NULL);
 #endif
 

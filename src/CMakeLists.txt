@@ -3,22 +3,12 @@
 #
 cmake_minimum_required (VERSION 3.18)
 
-# avoid compiler check issues
-set (CMAKE_C_COMPILER_WORKS 1)
-set (CMAKE_CXX_COMPILER_WORKS 1)
-set (CMAKE_OBJC_COMPILER_WORKS 1)
-
 set (BDJ4_VERSION ${BDJ4_BUILD_VERS})
 project (BDJ4
   VERSION ${BDJ4_VERSION}
   DESCRIPTION "BallroomDJ 4"
   HOMEPAGE_URL "https://ballroomdj4.sourceforge.io"
-  LANGUAGES C CXX OBJC
 )
-set (BDJ4ICON bdj4_icon.ico)
-set (BDJ4INSTICON bdj4_icon_inst.ico)
-
-set (default_build_type "Debug")
 
 if (CMAKE_SYSTEM_NAME STREQUAL CYGWIN)
   set (SYSWIN T)
@@ -32,6 +22,18 @@ endif()
 if (CMAKE_SYSTEM_NAME STREQUAL Darwin)
   set (SYSMACOS T)
 endif()
+
+# avoid compiler check issues
+set (CMAKE_C_COMPILER_WORKS 1)
+set (CMAKE_CXX_COMPILER_WORKS 1)
+if (SYSMACOS)
+  set (CMAKE_OBJC_COMPILER_WORKS 1)
+endif()
+
+set (BDJ4ICON bdj4_icon.ico)
+set (BDJ4INSTICON bdj4_icon_inst.ico)
+
+set (default_build_type "Debug")
 
 set (CMAKE_MODULE_PATH utils)
 set (CMAKE_SHARED_LIBRARY_PREFIX "")

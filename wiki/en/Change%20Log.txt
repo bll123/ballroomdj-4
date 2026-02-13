@@ -9,7 +9,8 @@
 * Bug Fixes:
     * Windows: Fix installation when OneDrive is active.
     * Windows: Fix uninstaller.
-    * PENDING Windows: Fix localization.
+    * PENDING Windows: Select the appropriate locale from the preferred list.
+    * PENDING MacOS: Select the appropriate locale from the preferred list.
 * Changes:
     * PENDING Windows: Change the default theme to Adwaita:dark
 * Internal:

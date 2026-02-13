@@ -16,6 +16,7 @@
 
 #include "bdj4.h"
 #include "bdj4arg.h"
+#include "bdj4intl.h"
 #include "bdjopt.h"
 #include "callback.h"
 #include "localeutil.h"
@@ -833,6 +834,17 @@ uitestUILabels (uitest_t *uitest)
   uiWidgetSetAllMargins (vbox, 4);
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Label", VNB_NO_ID);
+
+  /* label: translated */
+
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+
+  uiwidgetp = uiCreateLabel (_("Actions"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   /* label: pack start */
 
