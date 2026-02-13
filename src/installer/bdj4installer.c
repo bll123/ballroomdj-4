@@ -388,6 +388,7 @@ main (int argc, char *argv[])
     installer.macospfx = MACOS_APP_PREFIX;
   }
 
+  /* CONTEXT: installer: status message */
   installer.pleasewaitmsg = _("Please wait\xe2\x80\xa6");
   installer.hostname = sysvarsGetStr (SV_HOSTNAME);
   installer.home = sysvarsGetStr (SV_HOME);
