@@ -28,7 +28,6 @@ extern "C" {
 #cmakedefine01 _lib_GetNativeSystemInfo
 #cmakedefine01 _lib_GetTimeFormatEx
 #cmakedefine01 _lib_GetUserDefaultUILanguage
-#cmakedefine01 _lib_GetUserPreferredUILanguages
 #cmakedefine01 _lib_ReadFile
 #cmakedefine01 _lib_RemoveDirectoryW
 #cmakedefine01 _lib_RtlGetVersion

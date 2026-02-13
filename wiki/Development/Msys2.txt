@@ -32,10 +32,11 @@ Remove and remove dependencies:
 <br>pacman -S mingw-w64-ucrt-x86_64-gcc
 <br># building
 <br>pacman -S mingw-w64-ucrt-x86_64-pkgconf
-<br>pacman -S mingw-w64-ucrt-x86_64-cmake
 <br># gtk3
 <br>pacman -S mingw-w64-ucrt-x86_64-gtk3
+<br>pacman -S mingw-w64-ucrt-x86_64-librsvg
 <br># other libraries
+<br>pacman -S mingw-w64-ucrt-x86_64-curl
 <br>pacman -S mingw-w64-ucrt-x86_64-json-c
 <br>pacman -S mingw-w64-ucrt-x86_64-libgcrypt
 <br>pacman -S mingw-w64-ucrt-x86_64-c-ares
@@ -48,7 +49,7 @@ Remove and remove dependencies:
 # current clang (64)
 <br>pacman -S mingw-w64-ucrt-x86_64-clang
 <br># clang icu library
-<br>mingw-w64-ucrt-clang-x86_64-icu
+<br>pacman -S mingw-w64-ucrt-clang-x86_64-icu
 
 ###### Optional
 
@@ -70,10 +71,11 @@ not be found.
 <br>pacman -S mingw-w64-clang-x86_64-libobjc2
 <br># building
 <br>pacman -S mingw-w64-clang-x86_64-pkgconf
-<br>pacman -S mingw-w64-clang-x86_64-cmake
 <br># gtk3
 <br>pacman -S mingw-w64-clang-x86_64-gtk3
+<br>pacman -S mingw-w64-clang-x86_64-librsvg
 <br># other libraries
+<br>pacman -S mingw-w64-clang-x86_64-curl
 <br>pacman -S mingw-w64-clang-x86_64-json-c
 <br>pacman -S mingw-w64-clang-x86_64-libgcrypt
 <br>pacman -S mingw-w64-clang-x86_64-c-ares

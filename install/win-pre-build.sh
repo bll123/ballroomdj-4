@@ -50,11 +50,11 @@ pacman -S --noconfirm --needed \
     gettext gettext-devel \
     mingw-w64-ucrt-x86_64-gcc \
     mingw-w64-ucrt-x86_64-pkgconf \
-    mingw-w64-ucrt-x86_64-cmake \
     mingw-w64-ucrt-x86_64-gtk3 \
     mingw-w64-ucrt-x86_64-json-c \
     mingw-w64-ucrt-x86_64-libgcrypt \
-    mingw-w64-ucrt-x86_64-c-ares \
+    mingw-w64-ucrt-x86_64-curl \
+    mingw-w64-ucrt-x86_64-librsvg \
     mingw-w64-ucrt-x86_64-icu \
     mingw-w64-ucrt-x86_64-cppwinrt
 

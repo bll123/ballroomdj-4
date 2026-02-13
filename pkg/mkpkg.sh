@@ -407,11 +407,12 @@ if [[ $mksrcpkg == T && $insttest == F ]]; then
         rsync -aS ${f} ${stagedir}/${dir}/fpcalc.exe
       fi
 
-      dirlist="packages/check* packages/ffmpeg* "
-      dirlist+="packages/flac* "
-      dirlist+="packages/libogg* packages/libvorbis* "
-      dirlist+="packages/opus* packages/opusfile* "
-      dirlist+="packages/bundles/Windows* "
+      dirlist="packages/check* packages/ffmpeg*"
+      dirlist+=" packages/flac* "
+      dirlist+=" packages/libogg* packages/libvorbis*"
+      dirlist+=" packages/opus* packages/opusfile*"
+      dirlist+=" packages/bundles/Windows*"
+      dirlist+=" packages/cmake-3"
       for d in $dirlist; do
         dir=$(dirname ${d})
         test -d ${stagedir}/${dir} || mkdir -p ${stagedir}/${dir}
