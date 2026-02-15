@@ -8,8 +8,9 @@ extern "C" {
 #endif
 
 void          pathStripPath (char *buff, size_t len);
-/* pathRealPath also returns the windows short name */
 void          pathRealPath (char *path, size_t sz);
+/* these are used for windows */
+void          pathShortPath (char *path, size_t sz);
 void          pathLongPath (char *path, size_t sz);
 
 #if defined (__cplusplus) || defined (c_plusplus)

@@ -44,6 +44,7 @@ if (SYSMACOS)
   addUIInclude (bdj4g)
   target_compile_options (bdj4g PRIVATE -DBDJ4_GUI_LAUNCHER=1)
   target_link_libraries (bdj4g PRIVATE
+    objarg
     objdirutil
     objfileop
     objlauncher

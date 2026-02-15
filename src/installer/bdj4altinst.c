@@ -1172,7 +1172,6 @@ altinstFinalize (altinst_t *altinst)
       char  tbuff [BDJ4_PATH_MAX];
 
       instutilGetMusicDir (tbuff, sizeof (tbuff));
-      /* also converts to the short name on windows */
       pathRealPath (tbuff, sizeof (tbuff));
       pathNormalizePath (tbuff, sizeof (tbuff));
       bdjoptSetStr (OPT_M_DIR_MUSIC, tbuff);

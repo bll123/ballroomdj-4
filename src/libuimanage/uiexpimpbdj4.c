@@ -356,7 +356,6 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   }
   stpecpy (tbuff, tbuff + sizeof (tbuff), odir);
   pathDisplayPath (tbuff, sizeof (tbuff));
-  pathLongPath (tbuff, sizeof (tbuff));
   uiEntrySetValue (uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_TARGET], tbuff);
   uiEntrySetValidate (uiwidgetp, "",
       uieibdj4ValidateTarget, uieibdj4, UIENTRY_DELAYED);

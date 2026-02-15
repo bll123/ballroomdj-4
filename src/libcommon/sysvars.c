@@ -202,7 +202,6 @@ sysvarsInit (const char *argv0, int flags)
   enable_core_dump ();
 
   osGetCurrentDir (tcwd, sizeof (tcwd));
-  /* also converts to the short name on windows */
   pathRealPath (tcwd, SV_MAX_SZ);
   pathNormalizePath (tcwd, SV_MAX_SZ);
 
@@ -368,7 +367,6 @@ sysvarsInit (const char *argv0, int flags)
   pathNormalizePath (altpath, sizeof (altpath));
 
   /* this gives us the real path to the executable */
-  /* also converts to the short name on windows */
   stpecpy (buff, buff + sizeof (buff), tbuff);
   pathRealPath (buff, sizeof (buff));
   pathNormalizePath (buff, sizeof (buff));

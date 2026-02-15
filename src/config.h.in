@@ -27,6 +27,7 @@ extern "C" {
 #cmakedefine01 _lib_GetLocaleInfoEx
 #cmakedefine01 _lib_GetLongPathNameW
 #cmakedefine01 _lib_GetNativeSystemInfo
+#cmakedefine01 _lib_GetShortPathNameW
 #cmakedefine01 _lib_GetTimeFormatEx
 #cmakedefine01 _lib_GetUserDefaultUILanguage
 #cmakedefine01 _lib_ReadFile

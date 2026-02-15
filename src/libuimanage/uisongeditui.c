@@ -1912,7 +1912,6 @@ uisongeditCopyPath (void *udata)
   audiosrcFullPath (txt, ffn, sizeof (ffn), NULL, 0);
   if (audiosrcGetType (ffn) == AUDIOSRC_TYPE_FILE) {
     pathDisplayPath (ffn, sizeof (ffn));
-    /* use the short names here */
   }
   uiClipboardSet (ffn);
 

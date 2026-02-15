@@ -71,7 +71,6 @@ jspfExport (musicdb_t *musicdb, nlist_t *list,
     str = songGetStr (song, TAG_URI);
     audiosrcFullPath (str, ffn, sizeof (ffn), NULL, 0);
     pathDisplayPath (ffn, sizeof (ffn));
-    /* use windows short names here */
     fprintf (fh, "      \"location\" : [\"%s%s\"],\n", pfx, ffn);
 
     fprintf (fh, "      \"title\" : \"%s\",\n", songGetStr (song, TAG_TITLE));

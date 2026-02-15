@@ -132,6 +132,7 @@ enum {
   INST_CB_INSTALL,
   INST_CB_REINST,
   INST_CB_CONV,
+  INST_CB_REQUEST_VLC,
   INST_CB_MAX,
 };
 
@@ -146,6 +147,7 @@ enum {
   INST_W_FEEDBACK_MSG,
   INST_W_CONVERT,
   INST_W_CONV_FEEDBACK_MSG,
+  INST_W_REQUEST_VLC,
   INST_W_VLC_MSG,
   INST_W_STATUS_DISP,
   INST_W_TARGET,
@@ -157,6 +159,8 @@ enum {
   INST_TARGET,
   INST_BDJ3LOC,
 };
+
+static const char *VLCName = "VLC";
 
 typedef struct {
   installstate_t  instState;
@@ -224,6 +228,7 @@ static void installerBuildUI (installer_t *installer);
 static int  installerMainLoop (void *udata);
 static bool installerExitCallback (void *udata);
 static bool installerReinstallCBHandler (void *udata);
+static bool installerRequestVLCCBHandler (void *udata);
 static bool installerConversionCBHandler (void *udata);
 static bool installerTargetDirDialog (void *udata);
 static void installerSetBDJ3LocEntry (installer_t *installer, const char *bdj3loc);
@@ -807,12 +812,31 @@ installerBuildUI (installer_t *installer)
   uiWidgetSetMarginBottom (uiwidgetp, 2);
   uiwcontFree (uiwidgetp);
 
+  if (isWindows ()) {
+    /* begin line : request VLC */
+    hbox = uiCreateHorizBox ();
+    uiWidgetExpandHoriz (hbox);
+    uiBoxPackStart (vbox, hbox);
+
+    /* CONTEXT: installer: checkbox: windows: request VLC installation */
+    snprintf (tbuff, sizeof (tbuff), _("Please install %s"), VLCName);
+    installer->wcont [INST_W_REQUEST_VLC] = uiCreateCheckButton (tbuff, 0);
+    uiBoxPackStart (hbox, installer->wcont [INST_W_REQUEST_VLC]);
+    uiWidgetSetMarginStart (installer->wcont [INST_W_REQUEST_VLC], 4);
+    installer->callbacks [INST_CB_REQUEST_VLC] = callbackInit (
+        installerRequestVLCCBHandler, installer, NULL);
+    uiToggleButtonSetCallback (installer->wcont [INST_W_REQUEST_VLC],
+        installer->callbacks [INST_CB_REQUEST_VLC]);
+
+    uiwcontFree (hbox);
+  }
+
   /* begin line : vlc message */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateColonLabel ("VLC");
+  uiwidgetp = uiCreateColonLabel (VLCName);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
@@ -846,7 +870,7 @@ installerBuildUI (installer_t *installer)
   uiBoxPackEnd (hbox, uiwidgetp);
   installer->wcont [INST_W_BUTTON_INSTALL] = uiwidgetp;
 
-  uiwidgetp = uiTextBoxCreate (250, INST_HL_COLOR);
+  uiwidgetp = uiTextBoxCreate (175, INST_HL_COLOR);
   uiTextBoxSetReadonly (uiwidgetp);
   uiTextBoxHorizExpand (uiwidgetp);
   uiTextBoxVertExpand (uiwidgetp);
@@ -1059,6 +1083,17 @@ installerReinstallCBHandler (void *udata)
   nval = uiToggleButtonIsActive (installer->wcont [INST_W_RE_INSTALL]);
   installer->reinstall = nval;
   installerTargetFeedbackMsg (installer);
+  return UICB_CONT;
+}
+
+static bool
+installerRequestVLCCBHandler (void *udata)
+{
+  installer_t   *installer = udata;
+  int           nval;
+
+  nval = uiToggleButtonIsActive (installer->wcont [INST_W_REQUEST_VLC]);
+  installerCheckPackages (installer);
   return UICB_CONT;
 }
 
@@ -1608,6 +1643,7 @@ installerSaveTargetDir (installer_t *installer)
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ACTION, _("Saving install location."), false);
 
+logBasic ("mkdir %s\n", sysvarsGetStr (SV_DIR_CONFIG));
   diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
   fh = fileopOpen (sysvarsGetStr (SV_FILE_INST_PATH), "w");
   if (fh != NULL) {
@@ -1648,7 +1684,9 @@ installerMakeTarget (installer_t *installer)
 
   logBasic ("make-tgt\n");
 
+logBasic ("mkdir %s\n", installer->target);
   diropMakeDir (installer->target);
+logBasic ("mkdir %s\n", installer->rundir);
   diropMakeDir (installer->rundir);
 
   *installer->oldversion = '\0';
@@ -1720,6 +1758,7 @@ installerCopyFiles (installer_t *installer)
     stpecpy (tmp, tmp + sizeof (tmp), trundir);
     dataFree (trundir);
     pathDisplayPath (tmp, sizeof (tmp));
+    pathShortPath (tmp, sizeof (tmp));
 
     snprintf (tbuff, sizeof (tbuff),
         "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl . \"%s\"",
@@ -1751,6 +1790,7 @@ installerMakeDataTop (installer_t *installer)
 {
   logBasic ("make-data-top\n");
 
+logBasic ("mkdir %s\n", installer->datatopdir);
   diropMakeDir (installer->datatopdir);
 
   if (osChangeDir (installer->datatopdir) < 0) {
@@ -2166,14 +2206,22 @@ static void
 installerVLCCheck (installer_t *installer)
 {
   char    tbuff [BDJ4_PATH_MAX];
+  int     tval;
 
   logBasic ("vlc-check\n");
 
   /* on linux, vlc is installed via other methods */
   /* also on linux, gstreamer can be used even if there is no vlc */
+  if (installer->vlcinstalled || isLinux ()) {
+    installer->instState = INST_FINALIZE;
+    return;
+  }
+
   /* as of 2025-9-23 version 4.16.1, windows will use the */
   /* windows media player interface */
-  if (installer->vlcinstalled || isLinux () || isWindows ()) {
+  /* a checkbox was added 2026-2-15 to require VLC installation */
+  tval = uiToggleButtonIsActive (installer->wcont [INST_W_REQUEST_VLC]);
+  if (! installer->vlcinstalled && isWindows () && ! tval) {
     installer->instState = INST_FINALIZE;
     return;
   }
@@ -2182,7 +2230,7 @@ installerVLCCheck (installer_t *installer)
 
   if (*installer->vlcversion) {
     /* CONTEXT: installer: status message */
-    snprintf (tbuff, sizeof (tbuff), _("Downloading %s."), "VLC");
+    snprintf (tbuff, sizeof (tbuff), _("Downloading %s."), VLCName);
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
     installerDisplayText (installer, INST_DISP_STATUS, installer->pleasewaitmsg, false);
     uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], installer->pleasewaitmsg);
@@ -2190,7 +2238,7 @@ installerVLCCheck (installer_t *installer)
   } else {
     snprintf (tbuff, sizeof (tbuff),
         /* CONTEXT: installer: status message */
-        _("Unable to determine %s version."), "VLC");
+        _("Unable to determine %s version."), VLCName);
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
 
     installer->instState = INST_FINALIZE;
@@ -2209,17 +2257,27 @@ installerVLCDownload (installer_t *installer)
   *url = '\0';
   *installer->dlfname = '\0';
   if (isWindows ()) {
+    const char  * platform = "win64";     /* intel */
+    const char  * arch;
+
+    arch = sysvarsGetStr (SV_OS_ARCH);
+    if (strcmp (arch, "arm64") == 0) {
+      platform = "winarm64";              /* arm */
+    }
+
     snprintf (installer->dlfname, sizeof (installer->dlfname),
-        "vlc-%s-win%" PRId64 ".exe",
-        installer->vlcversion, sysvarsGetNum (SVL_OS_BITS));
+        "vlc-%s-%s.exe", installer->vlcversion, platform);
+    /* for windows, the version is hard-coded, as VLC 4 does */
+    /* not work on windows and should not be downloaded */
     snprintf (url, sizeof (url),
-        "https://get.videolan.org/vlc/last/win%" PRId64 "/%s",
-        sysvarsGetNum (SVL_OS_BITS), installer->dlfname);
+        "https://get.videolan.org/vlc/%s/%s/%s",
+        installer->vlcversion, platform, installer->dlfname);
   }
+
   if (isMacOS ()) {
     char    *arch;
 
-    /* the os architecture on m1 is 'arm64' and includes the bits */
+    /* the os architecture on m1 is 'arm64' */
     /* the os architecture on intel is 'x86_64' */
     arch = sysvarsGetStr (SV_OS_ARCH);
     if (strcmp (arch, "x86_64") == 0) {
@@ -2231,6 +2289,7 @@ installerVLCDownload (installer_t *installer)
         "https://get.videolan.org/vlc/last/macosx/%s",
         installer->dlfname);
   }
+
   wrc = WEB_NO_CONTENT;
   if (*url && *installer->vlcversion) {
     wrc = webclientDownload (installer->webclient, url, installer->dlfname);
@@ -2242,14 +2301,14 @@ installerVLCDownload (installer_t *installer)
     removexattr (installer->dlfname, "com.apple.quarantine", XATTR_NOFOLLOW);
 #endif
     /* CONTEXT: installer: status message */
-    snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "VLC");
+    snprintf (tbuff, sizeof (tbuff), _("Installing %s."), VLCName);
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
     installerDisplayText (installer, INST_DISP_STATUS, installer->pleasewaitmsg, false);
     uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], installer->pleasewaitmsg);
     installer->instState = INST_VLC_INSTALL;
   } else {
     /* CONTEXT: installer: status message */
-    snprintf (tbuff, sizeof (tbuff), _("Download of %s failed."), "VLC");
+    snprintf (tbuff, sizeof (tbuff), _("Download of %s failed."), VLCName);
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
 
     installer->instState = INST_FINALIZE;
@@ -2276,7 +2335,7 @@ installerVLCInstall (installer_t *installer)
     /* due to privilege escalation */
     (void) ! system (tbuff);
     /* CONTEXT: installer: status message */
-    snprintf (tbuff, sizeof (tbuff), _("%s installed."), "VLC");
+    snprintf (tbuff, sizeof (tbuff), _("%s installed."), VLCName);
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
     installer->vlcinstalled = true;
   }
@@ -2337,6 +2396,7 @@ installerFinalize (installer_t *installer)
     if (! fileopFileExists (sysvarsGetStr (SV_FILE_ALTCOUNT))) {
       FILE    *fh;
 
+logBasic ("mkdir %s\n", sysvarsGetStr (SV_DIR_CONFIG));
       diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
       fh = fileopOpen (sysvarsGetStr (SV_FILE_ALTCOUNT), "w");
       if (fh != NULL) {
@@ -2725,11 +2785,12 @@ installerSetRundir (installer_t *installer, const char *dir)
 static void
 installerVLCGetVersion (installer_t *installer)
 {
-  char      *p;
-  char      *e;
-  char      *platform;
-  char      tbuff [BDJ4_PATH_MAX];
-  int       wrc;
+  char        *p;
+  char        *e;
+  char        *platform;
+  char        tbuff [BDJ4_PATH_MAX];
+  int         wrc;
+  const char  * urlpath;
 
   *installer->vlcversion = '\0';
   installer->webresponse = NULL;
@@ -2740,17 +2801,29 @@ installerVLCGetVersion (installer_t *installer)
   /* linux is not installed via this method, nor does it have a  */
   /* directory in the videolan 'last' directory */
 
+  /* use this url path if only the latest version is wanted */
+  /* VLC 4 does not currently work on windows, so windows */
+  /* overrides this path */
+  urlpath = "https://get.videolan.org/vlc/last/%s/";
   platform = "macosx";
+
   if (isWindows ()) {
+    const char  * arch;
+
     platform = "win64";
+    arch = sysvarsGetStr (SV_OS_ARCH);
+    if (strcmp (arch, "arm64") == 0) {
+      platform = "winarm64";
+    }
+
     /* for the time being, until VLC version 4 is fixed on windows, */
-    /* hard-code the downloaded version to 3.0.21 */
+    /* hard-code the downloaded version to 3.0.23 */
     stpecpy (installer->vlcversion,
-        installer->vlcversion + sizeof (installer->vlcversion), "3.0.21");
+        installer->vlcversion + sizeof (installer->vlcversion), "3.0.23");
     return;
   }
 
-  snprintf (tbuff, sizeof (tbuff), "https://get.videolan.org/vlc/last/%s/", platform);
+  snprintf (tbuff, sizeof (tbuff), urlpath, platform);
 
   wrc = webclientGet (installer->webclient, tbuff);
 
@@ -2763,6 +2836,8 @@ installerVLCGetVersion (installer_t *installer)
     /* vlc-3.0.16-intel64.dmg */
     /* vlc-3.0.17.4-universal.dmg */
     /* vlc-3.0.17.4-win64.exe */
+    /* vlc-3.0.23-win64.exe */
+    /* vlc-3.0.23-winarm64.exe */
     p = strstr (installer->webresponse, srchvlc);
     if (p != NULL) {
       p += strlen (srchvlc);
@@ -2782,25 +2857,27 @@ installerCheckPackages (installer_t *installer)
 {
   char  tbuff [BDJ4_PATH_MAX];
   char  *tmp;
+  int   tval;
 
 
   tmp = sysvarsGetStr (SV_PATH_VLC_LIB);
+  tval = uiToggleButtonIsActive (installer->wcont [INST_W_REQUEST_VLC]);
 
   if (*tmp) {
     if (installer->guienabled && installer->uiBuilt) {
       /* CONTEXT: installer: display of package status */
-      snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "VLC");
+      snprintf (tbuff, sizeof (tbuff), _("%s is installed"), VLCName);
       uiLabelSetText (installer->wcont [INST_W_VLC_MSG], tbuff);
     }
     installer->vlcinstalled = true;
   } else {
     if (installer->guienabled && installer->uiBuilt) {
-      if (isWindows ()) {
+      if (isWindows () && ! tval) {
         /* CONTEXT: installer: display of package status */
-        snprintf (tbuff, sizeof (tbuff), _("%s is not required on Windows"), "VLC");
+        snprintf (tbuff, sizeof (tbuff), _("%s is not required on Windows"), VLCName);
       } else {
         /* CONTEXT: installer: display of package status */
-        snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "VLC");
+        snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), VLCName);
       }
       uiLabelSetText (installer->wcont [INST_W_VLC_MSG], tbuff);
     }

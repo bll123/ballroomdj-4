@@ -47,12 +47,11 @@ the entire BDJ4 folder.
 
 #### Internet Connection
 
-BDJ4 versions prior to 4.16.1 require an internet connection
-the first time BallroomDJ&nbsp;4 is installed. The VLC package
-will be installed via the internet.
+If the __Please&nbsp;install&nbsp;VLC__ checkbox is selected, an
+internet connection is required the first time BallroomDJ&nbsp;4 is
+installed. The VLC package will be installed via the internet.
 
-If VLC is already installed, and for version 4.16.1 and later, no
-internet connection is required.
+If VLC is already installed, no internet connection is required.
 
 #### Install BallroomDJ 4
 
@@ -101,16 +100,22 @@ __Installation&nbsp;Completed__ message.
 ![BallroomDJ 4 Installer on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Installer-D.png)
 <br><span id="caption" style="color:#4559bf;">__BallroomDJ 4 Installer on Windows__</span> </div>
 
-#### VLC Installation: For BDJ4 prior to version 4.16.1
+#### VLC Installation
 
-If you are doing a new install of BDJ4 with version 4.16.1 or later,
+If you are doing a new install of BDJ4 and the
+__Please&nbsp;install&nbsp;VLC__ checkbox is not selected, you may
 skip this section.
 
 If the VLC application is not installed, the VLC installer will be
-downloaded and started for you.  In the Windows __User Account
-Control__ window, select __Yes__.  Select the VLC installation
-language and select __OK__. Select the __Next__ button twice and you
-should be in the VLC __Choose Components__ selection.
+downloaded and started for you.
+
+If the VLC installation starts, and there is no window displayed,
+check for a blinking icon in your Windows taskbar, and select it.
+
+In the Windows __User&nbsp;Account&nbsp;Control__ window, select
+__Yes__.  Select the VLC installation language and select __OK__.
+Select the __Next__ button twice and you should be in the VLC __Choose
+Components__ selection.
 
 Scroll down until you see __File Type Associations__.
 
@@ -118,14 +123,15 @@ Scroll down until you see __File Type Associations__.
 ![VLC Installer on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Install-VLC-Comp.png)
 <br><span id="caption" style="color:#4559bf;">__VLC Installer on Windows__</span> </div>
 
-If you do not use VLC as your current media player, select the __File
-Type Associations__ checkbox twice.  The first click will turn on all
-file type associations, the second click will turn all file type
-associations off.
+If you do not use VLC as your current media player, select the
+__File&nbsp;&nbsp;Type&nbsp;Associations__ checkbox twice.  The first
+click will turn on all file type associations, the second click will
+turn off all file type associations.
 
 Now select __Next__, then select __Install__. After the VLC
-installation is complete, turn off the __Run VLC media player__
-checkbox, and select __Finish__.
+installation is complete, turn off the
+__Run&nbsp;VLC&nbsp;media&nbsp;player__ checkbox, and select
+__Finish__.
 
 #### Getting Started with BDJ4
 

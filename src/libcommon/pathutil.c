@@ -60,6 +60,8 @@ pathStripPath (char *buff, size_t len)
     ++j;
     ++p;
   }
+
+  return;
 }
 
 void
@@ -80,15 +82,32 @@ pathRealPath (char *path, size_t sz)
   wfrom = osToWideChar (path);
   (void) ! GetFullPathNameW (wfrom, BDJ4_PATH_MAX, wto, NULL);
   mdfree (wfrom);
-  /* convert the path to use the short name so that account */
-  /* names with international characters will work */
-  wfrom = wcsdup (wto);
+  tto = osFromWideChar (wto);
+  stpecpy (path, path + sz, tto);
+  mdfree (tto);
+#endif
+
+  return;
+}
+
+void
+pathShortPath (char *path, size_t sz)
+{
+#if _lib_GetShortPathNameW
+  wchar_t   *wfrom;
+  wchar_t   wto [BDJ4_PATH_MAX];
+  char      *tto;
+
+  pathDisplayPath (path, sz);
+  wfrom = osToWideChar (path);
   (void) ! GetShortPathNameW (wfrom, wto, BDJ4_PATH_MAX);
   tto = osFromWideChar (wto);
   stpecpy (path, path + sz, tto);
   mdfree (wfrom);
   mdfree (tto);
 #endif
+
+  return;
 }
 
 void

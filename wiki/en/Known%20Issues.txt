@@ -18,6 +18,8 @@
       when the cursor is moved past the bottom of the scrollbar.
       Try resizing the window.
 * Windows
+    * The native windows media player seems to make a popping noise
+      when the song first starts playing.  Use VLC instead to avoid this.
     * The marquee position is not saved when it is iconified (close
       the window instead).
 * Linux

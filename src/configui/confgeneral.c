@@ -99,7 +99,6 @@ confuiBuildUIGeneral (confuigui_t *gui)
 
   stpecpy (tbuff, tbuff + sizeof (tbuff), bdjoptGetStr (OPT_M_DIR_MUSIC));
   pathDisplayPath (tbuff, sizeof (tbuff));
-  pathLongPath (tbuff, sizeof (tbuff));
 
   /* CONTEXT: configuration: the music folder where the user stores their music */
   confuiMakeItemEntryChooser (gui, vbox, szgrp, _("Music Folder"),

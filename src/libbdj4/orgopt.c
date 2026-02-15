@@ -91,7 +91,6 @@ orgoptAlloc (void)
     }
 
     pathDisplayPath (dispstr, sizeof (dispstr));
-    pathLongPath (dispstr, sizeof (dispstr));
     slistSetStr (list, dispstr, value);
     orgFree (org);
   }
