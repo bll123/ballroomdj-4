@@ -1172,8 +1172,6 @@ altinstFinalize (altinst_t *altinst)
       char  tbuff [BDJ4_PATH_MAX];
 
       instutilGetMusicDir (tbuff, sizeof (tbuff));
-      pathRealPath (tbuff, sizeof (tbuff));
-      pathNormalizePath (tbuff, sizeof (tbuff));
       bdjoptSetStr (OPT_M_DIR_MUSIC, tbuff);
       bdjoptSave ();
     }
@@ -1356,6 +1354,5 @@ altinstSetTargetEntry (altinst_t *altinst, const char *fn)
 
   stpecpy (tbuff, tbuff + sizeof (tbuff), fn);
   pathDisplayPath (tbuff, sizeof (tbuff));
-  pathLongPath (tbuff, sizeof (tbuff));
   uiEntrySetValue (altinst->wcont [ALT_W_TARGET], tbuff);
 }

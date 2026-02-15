@@ -168,7 +168,6 @@ typedef struct {
   callback_t      *callbacks [INST_CB_MAX];
   char            *home;
   char            target [BDJ4_PATH_MAX];
-  char            modtarget [BDJ4_PATH_MAX];
   char            *hostname;
   char            *macospfx;
   char            rundir [BDJ4_PATH_MAX];      // installation dir with macospfx
@@ -340,7 +339,6 @@ main (int argc, char *argv[])
   installer.instState = INST_INITIALIZE;
   installer.lastInstState = INST_INITIALIZE;
   installer.target [0] = '\0';
-  installer.modtarget [0] = '\0';
   installer.macospfx = "";
   installer.rundir [0] = '\0';
   installer.bdj3loc = mdstrdup ("");
@@ -1384,7 +1382,7 @@ installerValidateProcessBDJ3Loc (installer_t *installer, const char *dir)
 static void
 installerSetPaths (installer_t *installer)
 {
-  installerSetRundir (installer, installer->modtarget);
+  installerSetRundir (installer, installer->target);
 
   stpecpy (installer->datatopdir,
       installer->datatopdir + sizeof (installer->datatopdir), installer->rundir);
@@ -1690,7 +1688,7 @@ logBasic ("mkdir %s\n", installer->rundir);
   diropMakeDir (installer->rundir);
 
   *installer->oldversion = '\0';
-  snprintf (tbuff, sizeof (tbuff), "%s/VERSION.txt", installer->modtarget);
+  snprintf (tbuff, sizeof (tbuff), "%s/VERSION.txt", installer->target);
   versinfo = sysvarsParseVersionFile (tbuff);
   instutilOldVersionString (versinfo, installer->oldversion, sizeof (installer->oldversion));
   sysvarsParseVersionFileFree (versinfo);
@@ -2379,8 +2377,6 @@ installerFinalize (installer_t *installer)
     }
     if (installer->bdjoptloaded) {
       instutilGetMusicDir (tbuff, sizeof (tbuff));
-      pathRealPath (tbuff, sizeof (tbuff));
-      pathNormalizePath (tbuff, sizeof (tbuff));
       bdjoptSetStr (OPT_M_DIR_MUSIC, tbuff);
       if (installer->newinstall && isWindows ()) {
         /* only for new installations */
@@ -2776,7 +2772,6 @@ installerSetRundir (installer_t *installer, const char *dir)
   if (*dir) {
     snprintf (installer->rundir, sizeof (installer->rundir),
         "%s%s", dir, installer->macospfx);
-    pathRealPath (installer->rundir, sizeof (installer->rundir));
     pathNormalizePath (installer->rundir, sizeof (installer->rundir));
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "set rundir: %s", installer->rundir);
   }
@@ -2911,7 +2906,6 @@ static void
 installerSetTargetDir (installer_t *installer, const char *fn)
 {
   char        *tmp;
-  char        tbuff [BDJ4_PATH_MAX];
   pathinfo_t  *pi;
 
   /* fn may be pointing to an allocated value, which is installer->target */
@@ -2923,17 +2917,7 @@ installerSetTargetDir (installer_t *installer, const char *fn)
   snprintf (installer->name, sizeof (installer->name), "%.*s",
       (int) pi->blen, pi->basename);
 
-  /* the problem here is that the directory may not exist, and */
-  /* the windows full-path api will not convert it */
-  snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->dlen, pi->dirname);
-  pathRealPath (tbuff, sizeof (tbuff));
-  pathNormalizePath (tbuff, sizeof (tbuff));
-  snprintf (installer->modtarget, sizeof (installer->modtarget), "%s/%s",
-      tbuff, installer->name);
-  pathDisplayPath (installer->modtarget, sizeof (installer->modtarget));
-
   dataFree (tmp);
-
   pathInfoFree (pi);
 
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "set target: %s", installer->target);

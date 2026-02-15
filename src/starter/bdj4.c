@@ -501,11 +501,13 @@ main (int argc, char * argv[])
 
     stpecpy (pbuff, pbuff + sz, sysvarsGetStr (SV_BDJ4_DIR_EXEC));
     pathRealPath (pbuff, sz);
+    pathShortPath (pbuff, sz);
     p = stpecpy (p, end, pbuff);
     p = stpecpy (p, end, ";");
 
     snprintf (pbuff, sz, "%s/../plocal/bin", sysvarsGetStr (SV_BDJ4_DIR_EXEC));
     pathRealPath (pbuff, sz);
+    pathShortPath (pbuff, sz);
     p = stpecpy (p, end, pbuff);
     p = stpecpy (p, end, ";");
 
@@ -514,6 +516,7 @@ main (int argc, char * argv[])
       snprintf (pbuff, sz, "C:/Program Files/VideoLAN/%s", plitag);
       if (fileopIsDirectory (pbuff)) {
         pathRealPath (pbuff, sz);
+        pathShortPath (pbuff, sz);
         p = stpecpy (p, end, pbuff);
         p = stpecpy (p, end, ";");
       }

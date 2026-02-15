@@ -21,8 +21,6 @@
 #include "log.h"
 #include "mdebug.h"
 #include "pathinfo.h"
-#include "pathdisp.h"
-#include "pathutil.h"
 #include "slist.h"
 #include "sysvars.h"
 #include "tmutil.h"
@@ -73,7 +71,6 @@ asiPostInit (asdata_t *asdata, const char *uri)
   if (uri == NULL) {
     return;
   }
-
   asdata->musicdir = uri;
   asdata->musicdirlen = strlen (asdata->musicdir);
 }
@@ -255,7 +252,6 @@ asiFullPath (asdata_t *asdata, const char *sfname, char *buff, size_t sz,
 
   if (fileopIsAbsolutePath (sfname)) {
     stpecpy (buff, buff + sz, sfname);
-logBasic ("as-full: is-abs: %s\n", buff);
   } else {
     /* in most cases, the sfname passed in is either relative to */
     /* the music-dir, or is a full path, and the prefix-length and old name */
@@ -263,13 +259,10 @@ logBasic ("as-full: is-abs: %s\n", buff);
     /* from a relative filename, */
     /* the prefix length and old filename must be set */
     /* the prefix length includes the trailing slash */
-logBasic ("as-full: prefix: %s\n", prefix);
     if (pfxlen > 0 && prefix != NULL) {
       snprintf (buff, sz, "%.*s%s", pfxlen, prefix, sfname);
-logBasic ("as-full: full-a: %s\n", buff);
     } else {
       snprintf (buff, sz, "%s/%s", asdata->musicdir, sfname);
-logBasic ("as-full: full-b: %s\n", buff);
     }
   }
 }
@@ -288,14 +281,12 @@ asiRelativePath (asdata_t *asdata, const char *sfname, int pfxlen)
   }
 
   if (fileopIsAbsolutePath (p)) {
-logBasic ("as-is-abs: %s\n", p);
     if (pfxlen < 0) {
       pfxlen = 0;
     }
     if (pfxlen > 0) {
       p += pfxlen;
     } else {
-logBasic ("music-dir: %s\n", asdata->musicdir);
       if (strncmp (p, asdata->musicdir, asdata->musicdirlen) == 0) {
         p += asdata->musicdirlen + 1;
       }

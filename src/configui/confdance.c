@@ -255,9 +255,7 @@ confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t dkey)
   sval = danceGetStr (dances, dkey, DANCE_ANNOUNCE);
   widx = CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT;
   stpecpy (tstr, tstr + sizeof (tstr), sval);
-logBasic ("dance: set-ann: %s\n", tstr);
   pathDisplayPath (tstr, strlen (tstr));
-logBasic ("dance: set-ann-fin: %s\n", tstr);
   uiEntrySetValue (gui->uiitem [widx].uiwidgetp, tstr);
   uiEntryValidateClear (gui->uiitem [widx].uiwidgetp);
 
@@ -402,9 +400,7 @@ confuiDanceEntryChg (uiwcont_t *entry, const char *label, void *udata, int widx)
       confuiMarkValid (gui, widx);
       /* save the normalized version */
       stpecpy (nstr, nstr + sizeof (nstr), str);
-logBasic ("ann-ok-a: %s\n", nstr);
       pathNormalizePath (nstr, strlen (nstr));
-logBasic ("ann-ok-b: %s\n", nstr);
       danceSetStr (dances, dkey, itemidx, nstr);
     } else {
       confuiMarkNotValid (gui, widx);
@@ -536,9 +532,7 @@ confuiDanceValidateAnnouncement (uiwcont_t *entry, confuigui_t *gui)
     return UIENTRY_ERROR;
   }
 
-logBasic ("fn: %s\n", fn);
   stpecpy (nfn, nfn + sizeof (nfn), fn);
-  pathRealPath (nfn, sizeof (nfn));
   pathNormalizePath (nfn, sizeof (nfn));
 
   if (*nfn == '\0') {
@@ -547,18 +541,13 @@ logBasic ("fn: %s\n", fn);
     const char  *rfn;
     char        ffn [BDJ4_PATH_MAX];
 
-logBasic ("nfn: %s\n", nfn);
     rfn = audiosrcRelativePath (nfn, 0);
-logBasic ("rfn: %s\n", rfn);
     audiosrcFullPath (nfn, ffn, sizeof (ffn), NULL, 0);
-logBasic ("ffn: %s\n", ffn);
 
     if (fileopFileExists (ffn)) {
-logBasic ("  found ffn\n");
       if (strcmp (rfn, nfn) != 0) {
-logBasic ("  relative not eq to ffn\n");
+        pathDisplayPath (nfn, strlen (nfn));
         uiEntrySetValue (entry, rfn);
-logBasic ("  set-to: %s\n", rfn);
       }
       rc = UIENTRY_OK;
     }
