@@ -183,8 +183,6 @@ START_TEST(bdjopt_get)
   ck_assert_ptr_nonnull (tstr);
   tstr = bdjoptGetStr (OPT_M_DIR_MUSIC);
   ck_assert_ptr_nonnull (tstr);
-  tstr = bdjoptGetStr (OPT_M_UI_FONT);
-  ck_assert_ptr_nonnull (tstr);
   val = bdjoptGetNum (OPT_P_FADETYPE);
   ck_assert_int_ge (val, 0);
   val = bdjoptGetNumPerQueue (OPT_Q_START_WAIT_TIME, MUSICQ_PB_A);

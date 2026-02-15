@@ -13,6 +13,7 @@
 #include <unistd.h>
 
 #include "bdj4.h"
+#include "bdj4arg.h"
 #include "bdjstring.h"
 #include "fileop.h"
 #include "osdirutil.h"
@@ -32,15 +33,16 @@ static char * memsrch (char *buff, size_t bsz, char *srch, size_t ssz);
 int
 main (int argc, char *argv [])
 {
+  bdj4arg_t   *bdjarg;
   struct stat statbuf;
-  const char  *fn = argv [0];
+  const char  *fn = NULL;
   FILE        *ifh = NULL;
   FILE        *archivefh = NULL;
   char        *buff = NULL;
   char        tagstr [40];
-  char        tbuff [1024];
-  char        tmpdir [1024];
-  char        unpackdir [1024];
+  char        tbuff [BDJ4_PATH_MAX];
+  char        tmpdir [BDJ4_PATH_MAX];
+  char        unpackdir [BDJ4_PATH_MAX];
   char        *archivep = NULL;
   char        *p = NULL;
   char        *tfn = NULL;
@@ -54,6 +56,8 @@ main (int argc, char *argv [])
   char        *tp;
   char        *tend;
 
+  bdjarg = bdj4argInit (argc, argv);
+  fn = bdj4argGet (bdjarg, 0, argv [0]);
 
 #if _WIN32
   isWindows = true;
@@ -79,8 +83,10 @@ main (int argc, char *argv [])
   ifh = fileopOpen (fn, "rb");
   if (ifh == NULL) {
     fprintf (stderr, "Unable to open input %s %d %s\n", fn, errno, strerror (errno));
+    bdj4argCleanup (bdjarg);
     exit (1);
   }
+  bdj4argCleanup (bdjarg);
 
   osGetEnv ("TMPDIR", tmpdir, sizeof (tmpdir));
   if (! *tmpdir) {

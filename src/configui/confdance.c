@@ -256,6 +256,7 @@ confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t dkey)
   widx = CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT;
   stpecpy (tstr, tstr + sizeof (tstr), sval);
   pathDisplayPath (tstr, strlen (tstr));
+  pathLongPath (tstr, strlen (tstr));
   uiEntrySetValue (gui->uiitem [widx].uiwidgetp, tstr);
   uiEntryValidateClear (gui->uiitem [widx].uiwidgetp);
 
@@ -547,6 +548,7 @@ confuiDanceValidateAnnouncement (uiwcont_t *entry, confuigui_t *gui)
     if (fileopFileExists (ffn)) {
       if (strcmp (rfn, nfn) != 0) {
         pathDisplayPath (nfn, strlen (nfn));
+        pathLongPath (nfn, strlen (nfn));
         uiEntrySetValue (entry, rfn);
       }
       rc = UIENTRY_OK;

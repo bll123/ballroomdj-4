@@ -199,6 +199,9 @@ plocal/bin/acrcloud\.exe$
 # old stuff that should not have shipped
 ChangeLog\.txt$
 
+# install logging
+out\.txt$
+
 ####
 # mac-os
 

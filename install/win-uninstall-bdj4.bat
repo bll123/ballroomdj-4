@@ -8,6 +8,9 @@ set bdj4oldstartnm=bdj4.bat
 set bdj4startupnm=bdj4winstartup.exe
 set roaming=%USERPROFILE%\AppData\Roaming
 set bdj4conf=BDJ4
+set bdj4inst=bdj4-install
+set bdj4cab=bdj4-install.cab
+set bdj4instlog=bdj4-expand.log
 set bdj4instloc=installdir.txt
 set bdj4cache=BDJ4
 set desktop=%USERPROFILE%\OneDrive\Desktop
@@ -33,7 +36,8 @@ if exist "%roaming%\%bdj4conf%" (
     set /p x=<%bdj4instloc%
     set bdj4dir=!x!
     set bdj4dir=!bdj4dir:/=\!
-    @rem version 4.4.4 used USERPROFILE
+    @rem version 4.4.4 and prior used USERPROFILE
+    @rem version 4.17.11 and later use USERPROFILE
     set bdj4dir=!bdj4dir:%%USERPROFILE%%=%USERPROFILE%!
     set bdj4dir=!bdj4dir:%%USERNAME%%=%USERNAME%!
     for /f "delims=" %%i in ("!bdj4dir!") do (
@@ -128,11 +132,25 @@ if exist "%bdj4startupnm%" (
 )
 
 cd %roaming%
+
 if exist "%bdj4conf%" (
   echo Removing configuration folder
   rmdir /s/q %bdj4conf%
 )
+if exist "%bdj4inst%" (
+  echo Removing temporary installation folder
+  rmdir /s/q %bdj4inst%
+)
+if exist "%bdj4cab%" (
+  echo Removing temporary installation cabinet
+  rmdir /s/q %bdj4cab%
+)
+if exist "%bdj4instlog%" (
+  rmdir /s/q %bdj4instlog%
+)
+
 cd %TEMP%
+
 if exist "%bdj4cache%" (
   echo Removing cache folder
   rmdir /s/q %bdj4cache%

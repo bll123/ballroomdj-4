@@ -7,6 +7,7 @@ include (../utils/bdj4macros.cmake)
 
 add_executable (bdj4se bdj4se.c)
 target_link_libraries (bdj4se PRIVATE
+  objarg
   objdirutil
   objosprocess
   objosenv

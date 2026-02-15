@@ -30,89 +30,17 @@ DEPBASIC=dep-libbasic.txt
 DEPBDJ4=dep-libbdj4.txt
 grc=0
 
-# check for unused functions
-echo "## checking for unused functions"
-grep -E '^[a-zA-Z0-9]* \(' */*.c */*.cpp */*.m |
-  grep -E -v '(:main|:fprintf|uinull|uicurses|uimacos|KEEP|UNUSED|TESTING)' |
-  grep -E -v '(rlogError|rlogProcBegin|rlogProcEnd)' |
-  sed -e 's, (.*,,' -e 's,.*:,,' |
-  sort > ${TUFUNC}
-> ${TUFUNCOUT}
-for pat in $(cat ${TUFUNC}); do
-  #  <sp>func<sp>(
-  #  ->func<sp>(
-  #  <sp>func,
-  #  (func,
-  #  (func)
-  #  "func"
-  # do not search the check/*/*.c files
-  grep -E "([ >\(]${pat} \(|[ \(]${pat}[,)]|\"${pat}\")" \
-      */*.c */*.cpp */*.m > /dev/null 2>&1
-  rc=$?
-  if [[ $rc -ne 0 ]]; then
-    echo $pat >> ${TUFUNCOUT}
-    echo "unused function $pat"
-  fi
-done
-
-# check for missing copyrights
-echo "## checking for missing copyright"
-
-# this is run from the src/ directory
-# update the list in updatecopyright.sh also
-for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h \
-    */*.sh ../*/*.sh ../pkg/*/*.sh ../pkg/windows/version.rc.in \
-    CMakeLists.txt */CMakeLists.txt Makefile ../README.md ../LICENSE.txt \
-    ../templates/*.css ../install/*.bat \
-    po/Makefile* */*.awk config.h.in */*.cmake ../pkg/macos/*.plist; do
-  case $fn in
-    *src/tt.sh|*src/z.sh)
-      continue
-      ;;
-    build/*)
-      continue
-      ;;
-    *mongoose.c)
-      continue
-      ;;
-    *mpris-root.[ch]|*mpris-player.[ch])
-      # generated file
-      continue
-      ;;
-    *potemplates.c)
-      # temporary file
-      continue
-      ;;
-    ../dev/*)
-      continue
-      ;;
-    utils/dumpvars.cmake)
-      continue
-      ;;
-    utils/*.sh)
-      # most of this can be skipped
-      continue
-      ;;
-  esac
-  grep "Copyright" $fn > /dev/null 2>&1
-  rc=$?
-  if [[ $rc -ne 0 ]]; then
-    echo "$fn : missing copyright"
-    grc=$rc
-  fi
-done
-if [[ $grc != 0 ]]; then
-  exit $grc
-fi
-
 # check to make sure the include files can be compiled w/o dependencies
 echo "## checking include file compilation"
 test -f $INCTOUT && rm -f $INCTOUT
 for fn in include/*.h include/ui/*.h; do
   case $fn in
     *uimacos-int.h)
-      if [[ $systype == Linux ]]; then
-        continue
+      continue
+      ;;
+    ui*.h)
+      if [[ $systype == Darwin ]]; then
+        continue;
       fi
       ;;
   esac
@@ -193,6 +121,81 @@ tsort < $TOIN > $TOSORT
 rc=$?
 if [[ $rc -ne 0 ]]; then
   grc=$rc
+fi
+
+# check for unused functions
+echo "## checking for unused functions"
+grep -E '^[a-zA-Z0-9]* \(' */*.c */*.cpp */*.m |
+  grep -E -v '(:main|:fprintf|uinull|uicurses|uimacos|KEEP|UNUSED|TESTING)' |
+  grep -E -v '(rlogError|rlogProcBegin|rlogProcEnd)' |
+  sed -e 's, (.*,,' -e 's,.*:,,' |
+  sort > ${TUFUNC}
+> ${TUFUNCOUT}
+for pat in $(cat ${TUFUNC}); do
+  #  <sp>func<sp>(
+  #  ->func<sp>(
+  #  <sp>func,
+  #  (func,
+  #  (func)
+  #  "func"
+  # do not search the check/*/*.c files
+  grep -E "([ >\(]${pat} \(|[ \(]${pat}[,)]|\"${pat}\")" \
+      */*.c */*.cpp */*.m > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo $pat >> ${TUFUNCOUT}
+    echo "unused function $pat"
+  fi
+done
+
+# check for missing copyrights
+echo "## checking for missing copyright"
+
+# this is run from the src/ directory
+# update the list in updatecopyright.sh also
+for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h \
+    */*.sh ../*/*.sh ../pkg/*/*.sh ../pkg/windows/version.rc.in \
+    CMakeLists.txt */CMakeLists.txt Makefile ../README.md ../LICENSE.txt \
+    ../templates/*.css ../install/*.bat \
+    po/Makefile* */*.awk config.h.in */*.cmake ../pkg/macos/*.plist; do
+  case $fn in
+    *src/tt.sh|*src/z.sh)
+      continue
+      ;;
+    build/*)
+      continue
+      ;;
+    *mongoose.c)
+      continue
+      ;;
+    *mpris-root.[ch]|*mpris-player.[ch])
+      # generated file
+      continue
+      ;;
+    *potemplates.c)
+      # temporary file
+      continue
+      ;;
+    ../dev/*)
+      continue
+      ;;
+    utils/dumpvars.cmake)
+      continue
+      ;;
+    utils/*.sh)
+      # most of this can be skipped
+      continue
+      ;;
+  esac
+  grep "Copyright" $fn > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "$fn : missing copyright"
+    grc=$rc
+  fi
+done
+if [[ $grc != 0 ]]; then
+  exit $grc
 fi
 
 if [[ $keep == T ]]; then

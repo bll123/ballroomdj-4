@@ -36,23 +36,6 @@ commands.
 * MpCmdRun.exe&nbsp;-removedefinitions&nbsp;-dynamicsignatures
 * MpCmdRun.exe&nbsp;-SignatureUpdate
 
-#### Windows Account Names with International Characters
-
-Windows account names that have internationalized characters in them
-(e.g. Gergő) will generally not work correctly.  Though I have made
-every effort to make BDJ4 work in this situation, there are third
-party libraries that BDJ4 uses that fail to work.
-
-There are two solutions.
-
-Create a second account on your computer without any international
-characters, and install BDJ4 there.  You will probably need to give
-the new account permissions to access your music in the original
-account, or move the music to the second account.
-
-Or rename your account.  This is not the easiest thing to do, and you
-will need to seek help online.
-
 #### Updating BallroomDJ 4 : Make a Backup
 
 Be sure to exit BallroomDJ&nbsp;4 before creating a backup or updating the
@@ -81,6 +64,15 @@ Make sure to exit BDJ4 if it is already started.
 
 Start the installer by double clicking the downloaded file in your
 Downloads folder. (This image shows an out of date installer).
+
+If you have an account name with international characters, and
+___double-clicking on the installer does not start it___, do the following:
+
+Open a __cmd.exe__ window.  Type the following to start the installer,
+replacing the version number with the version number you downloaded:
+
+    cd Downloads
+    .\bdj4-installer-win64-4.17.11.exe
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![BallroomDJ 4 File Selection on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Install-File-Select.png)

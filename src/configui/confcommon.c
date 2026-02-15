@@ -33,8 +33,9 @@
 #include "nlist.h"
 #include "orgutil.h"
 #include "pathbld.h"
-#include "pathdisp.h"
 #include "pathinfo.h"
+#include "pathdisp.h"
+#include "pathutil.h"
 #include "slist.h"
 #include "sysvars.h"
 #include "ui.h"
@@ -650,6 +651,7 @@ confuiUpdateOrgExample (org_t *org, const char *data, uiwcont_t *uiwidgetp)
   songParse (song, tdata, 0);
   disp = orgMakeSongPath (org, song, NULL);
   pathDisplayPath (disp, strlen (disp));
+  pathLongPath (disp, strlen (disp));
   uiLabelSetText (uiwidgetp, disp);
   songFree (song);
   mdfree (disp);

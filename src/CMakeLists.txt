@@ -178,17 +178,20 @@ if (SYSLINUX)
   target_sources (objosutils PRIVATE libcommon/oslinuxutils.c)
 endif()
 
-add_library (objpathutil OBJECT
+add_library (objpath OBJECT
   # uses osutils, bdjstring
+  libcommon/pathdisp.c
   libcommon/pathutil.c
 )
 
-add_library (objlauncher OBJECT
+add_library (objarg OBJECT
   libcommon/bdj4arg.c
+)
+
+add_library (objlauncher OBJECT
   libcommon/filedata.c
   libcommon/osnetutils.c
   libcommon/pathbld.c
-  libcommon/pathdisp.c
   libcommon/sysvars.c
 )
 

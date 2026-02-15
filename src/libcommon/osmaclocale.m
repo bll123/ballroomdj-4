@@ -39,6 +39,12 @@ osLocaleDirection (const char *locale)
 void
 osGetPreferredLocales (char *buff, size_t sz)
 {
+  *buff = '\0';
+
+  /* though the list of languages is fetched properly, the libintl */
+  /* library does not process the LANGUAGE environment variable */
+  /* correctly */
+#if 0
   NSArray   *langs;
   int       lcount;
   char      *p;
@@ -54,10 +60,18 @@ osGetPreferredLocales (char *buff, size_t sz)
 
     lang = [langs objectAtIndex: i];
     stpecpy (tbuff, tbuff + sizeof (tbuff), [lang UTF8String]);
+    /* the specific language first */
     tbuff [2] = '_';
     p = stpecpy (p, buff + sz, tbuff);
+
+    /* the general language of the specific */
+    tbuff [2] = '\0';
+    p = stpecpy (p, buff + sz, ":");
+    p = stpecpy (p, buff + sz, tbuff);
+
     if (i < lcount - 1) {
       p = stpecpy (p, buff + sz, ":");
     }
   }
+#endif
 }

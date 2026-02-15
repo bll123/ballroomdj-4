@@ -32,7 +32,6 @@
 #include "pathbld.h"
 #include "pathdisp.h"
 #include "pathinfo.h"
-#include "pathutil.h"
 #include "sysvars.h"
 #include "templateutil.h"
 
@@ -396,7 +395,7 @@ instutilGetMusicDir (char *homemusicdir, size_t sz)
   }
 
   if (isWindows ()) {
-    char    data [1024];
+    char    data [BDJ4_PATH_MAX];
 
     snprintf (homemusicdir, sz, "%s/Music", home);
     osRegistryGet (

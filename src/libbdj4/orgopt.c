@@ -25,6 +25,7 @@
 #include "orgutil.h"
 #include "pathbld.h"
 #include "pathdisp.h"
+#include "pathutil.h"
 #include "song.h"
 #include "slist.h"
 #include "sysvars.h"
@@ -90,6 +91,7 @@ orgoptAlloc (void)
     }
 
     pathDisplayPath (dispstr, sizeof (dispstr));
+    pathLongPath (dispstr, sizeof (dispstr));
     slistSetStr (list, dispstr, value);
     orgFree (org);
   }

@@ -28,6 +28,7 @@ onlyfirst=F
 readonly=F
 quiet=--quiet
 tlocale=
+noclean=
 
 while test $# -gt 0; do
   case $1 in
@@ -39,6 +40,7 @@ while test $# -gt 0; do
       ;;
     --keepfirst)
       keepfirst=T
+      noclean=--noclean
       ;;
     --onlyfirst)
       onlyfirst=T
@@ -1150,7 +1152,7 @@ if [[ $readonly == F ]]; then
       --verbose --unattended ${quiet} \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
-      $localeopt $locale \
+      $localeopt $locale $noclean \
       )
   rc=$?
   checkInstallation $section $tname "$out" $rc n y

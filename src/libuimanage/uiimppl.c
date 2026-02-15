@@ -30,7 +30,6 @@
 #include "pathbld.h"
 #include "pathdisp.h"
 #include "pathinfo.h"
-#include "pathutil.h"
 #include "playlist.h"
 #include "slist.h"
 #include "sysvars.h"

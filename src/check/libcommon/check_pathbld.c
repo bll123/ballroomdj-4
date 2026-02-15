@@ -25,6 +25,7 @@
 #include "log.h"
 #include "osdirutil.h"
 #include "pathbld.h"
+#include "pathdisp.h"
 #include "pathutil.h"
 #include "sysvars.h"
 

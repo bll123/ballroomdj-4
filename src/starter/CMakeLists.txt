@@ -12,13 +12,14 @@ include (../utils/bdj4macros.cmake)
 add_executable (bdj4 bdj4.c)
 addWinIcon (bdj4 launcher.rc ${BDJ4ICON})
 target_link_libraries (bdj4 PRIVATE
+  objarg
   objdirutil
   objfileop
   objlauncher
   objosenv
   objosprocess
   objosutils
-  objpathutil
+  objpath
   objstring
   objtmutil
   m
@@ -49,7 +50,7 @@ if (SYSMACOS)
     objosenv
     objosprocess
     objosutils
-    objpathutil
+    objpath
     objstring
     objtmutil
     m

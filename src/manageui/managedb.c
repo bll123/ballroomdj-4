@@ -258,6 +258,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiwidgetp = uiEntryInit (50, 1024);
   stpecpy (tbuff, tbuff + sizeof (tbuff), bdjoptGetStr (OPT_M_DIR_MUSIC));
   pathDisplayPath (tbuff, sizeof (tbuff));
+  pathLongPath (tbuff, sizeof (tbuff));
   uiEntrySetValue (uiwidgetp, tbuff);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);

@@ -388,15 +388,15 @@ main (int argc, char * argv[])
 #endif
 
   if (isMacOS ()) {
-    char      tbuff [BDJ4_PATH_MAX];
     char      pbuff [BDJ4_PATH_MAX];
-    char      path [BDJ4_PATH_MAX];
+    char      *path;
     char      *npath = NULL;
     size_t    sz = 16384;
 
+    path = mdmalloc (sz);
     npath = mdmalloc (sz);
 
-    osGetEnv ("PATH", path, sizeof (path));
+    osGetEnv ("PATH", path, sz);
     *npath = '\0';
     p = npath;
     end = npath + sz;
@@ -434,11 +434,12 @@ main (int argc, char * argv[])
     p = stpecpy (p, end, path);
     snprintf (pbuff, sizeof (pbuff), "%s/../plocal/bin",
         sysvarsGetStr (SV_BDJ4_DIR_EXEC));
-    pathRealPath (tbuff, pbuff, sizeof (tbuff));
+    pathRealPath (pbuff, sizeof (pbuff));
     p = stpecpy (p, end, ":");
-    p = stpecpy (p, end, tbuff);
+    p = stpecpy (p, end, pbuff);
     osSetEnv ("PATH", npath);
     mdfree (npath);
+    mdfree (path);
   }
 
   if (isMacOS ()) {
@@ -488,12 +489,10 @@ main (int argc, char * argv[])
 
   if (isWindows ()) {
     char      * pbuff = NULL;
-    char      * tbuff = NULL;
-    char      * path = NULL;
+    char      * path = NULL;      // path being built
     size_t    sz = 16384;
 
     pbuff = mdmalloc (sz);
-    tbuff = mdmalloc (sz);
     path = mdmalloc (sz);
 
     *path = '\0';
@@ -501,39 +500,39 @@ main (int argc, char * argv[])
     end = path + sz;
 
     stpecpy (pbuff, pbuff + sz, sysvarsGetStr (SV_BDJ4_DIR_EXEC));
-    pathDisplayPath (pbuff, sz);
+    pathRealPath (pbuff, sz);
     p = stpecpy (p, end, pbuff);
     p = stpecpy (p, end, ";");
 
     snprintf (pbuff, sz, "%s/../plocal/bin", sysvarsGetStr (SV_BDJ4_DIR_EXEC));
-    pathRealPath (tbuff, pbuff, sz);
-    p = stpecpy (p, end, tbuff);
+    pathRealPath (pbuff, sz);
+    p = stpecpy (p, end, pbuff);
     p = stpecpy (p, end, ";");
+
+    if (strncmp (plitag, "VLC", 3) == 0) {
+      /* do not use double quotes w/environment var */
+      snprintf (pbuff, sz, "C:/Program Files/VideoLAN/%s", plitag);
+      if (fileopIsDirectory (pbuff)) {
+        pathRealPath (pbuff, sz);
+        p = stpecpy (p, end, pbuff);
+        p = stpecpy (p, end, ";");
+      }
+    }
 
     if (debugself) {
       fprintf (stderr, "base path: %s\n", path);
     }
 
-    if (strncmp (plitag, "VLC", 3) == 0) {
-      /* do not use double quotes w/environment var */
-      snprintf (tbuff, sz, "C:/Program Files/VideoLAN/%s", plitag);
-      if (fileopIsDirectory (tbuff)) {
-        pathDisplayPath (tbuff, sz);
-        p = stpecpy (p, end, tbuff);
-        p = stpecpy (p, end, ";");
-      }
-    }
-
-    osGetEnv ("PATH", tbuff, sz);
+    osGetEnv ("PATH", pbuff, sz);
     if (debugself) {
-      fprintf (stderr, "sys path: %s\n", tbuff);
+      fprintf (stderr, "sys path: %s\n", pbuff);
     }
-    p = stpecpy (p, end, tbuff);
+    p = stpecpy (p, end, pbuff);
     osSetEnv ("PATH", path);
 
     if (debugself) {
-      osGetEnv ("PATH", tbuff, sz);
-      fprintf (stderr, "final PATH=%s\n", tbuff);
+      osGetEnv ("PATH", pbuff, sz);
+      fprintf (stderr, "final PATH=%s\n", pbuff);
     }
 
 #if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
@@ -541,7 +540,6 @@ main (int argc, char * argv[])
 #endif
 
     dataFree (pbuff);
-    dataFree (tbuff);
     dataFree (path);
   }
 

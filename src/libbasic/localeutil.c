@@ -142,7 +142,6 @@ localeSetup (void)
   char          locpath [BDJ4_PATH_MAX];
   char          lbuff [BDJ4_PATH_MAX];
   char          tbuff [BDJ4_PATH_MAX];
-  char          preferred [BDJ4_PATH_MAX];
   char          sbuff [40];
   bool          useutf8ext = false;
   struct lconv  *lconv;
@@ -150,11 +149,10 @@ localeSetup (void)
   *lbuff = '\0';
   *locpath = '\0';
 
-  /* on windows, returns the locale set for the user, not what's set */
-  /* in the environment. GTK apparently uses the appropriate locale */
-  osGetPreferredLocales (preferred, sizeof (preferred));
-  if (*preferred) {
-    osSetEnv ("LANGUAGE", preferred);
+  /* get the locale from the environment */
+  /* on Linux, this must be done first */
+  if (setlocale (LC_ALL, "") == NULL) {
+    fprintf (stderr, "set of locale from env failed\n");
   }
 
   if (sysvarsGetNum (SVL_LOCALE_SET) == SYSVARS_LOCALE_NOT_SET) {
@@ -210,12 +208,6 @@ localeSetup (void)
   osSetEnv ("LC_MESSAGES", tbuff);
   osSetEnv ("LC_COLLATE", tbuff);
   osSetEnv ("LC_CTYPE", tbuff);
-
-  /* get the locale from the environment */
-  /* on Linux, this must be done first */
-  if (setlocale (LC_ALL, "") == NULL) {
-    fprintf (stderr, "set of locale from env failed\n");
-  }
 
   pathbldMakePath (locpath, sizeof (locpath), "", "", PATHBLD_MP_DIR_LOCALE);
 #if _lib_wbindtextdomain

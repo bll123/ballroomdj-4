@@ -41,7 +41,7 @@ if (SYSWIN)
     objosenv
     objosprocess
     objosutils
-    objpathutil
+    objpath
     objstring
     objtmutil
   )

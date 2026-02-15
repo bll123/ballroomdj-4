@@ -181,6 +181,7 @@ uiexpplDialog (uiexppl_t *uiexppl, const char *slname)
   snprintf (tbuff, sizeof (tbuff), "%s/%s%s",
       odir, uiexppl->slname, exptypes [uiexppl->exptype].ext);
   pathDisplayPath (tbuff, sizeof (tbuff));
+  pathLongPath (tbuff, sizeof (tbuff));
   uiEntrySetValue (uiexppl->wcont [UIEXPPL_W_TARGET], tbuff);
 
   uiDialogShow (uiexppl->wcont [UIEXPPL_W_DIALOG]);

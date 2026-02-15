@@ -20,6 +20,7 @@
 #include "mdebug.h"
 #include "nlist.h"
 #include "pathbld.h"
+#include "pathdisp.h"
 #include "pathutil.h"
 #include "sysvars.h"
 #include "templateutil.h"
@@ -171,6 +172,14 @@ confuiPopulateOptions (confuigui_t *gui)
           if (widx == CONFUI_SPINBOX_PLI) {
             bdjoptSetStr (OPT_M_PLAYER_INTFC_NM,
                 nlistGetStr (gui->uiitem [widx].displist, nval));
+          }
+          if (widx == CONFUI_ENTRY_CHOOSE_MUSIC_DIR) {
+            char    tbuff [BDJ4_PATH_MAX];
+
+            stpecpy (tbuff, tbuff + sizeof (tbuff), sval);
+            pathRealPath (tbuff, sizeof (tbuff));
+            pathNormalizePath (tbuff, sizeof (tbuff));
+            bdjoptSetStr (OPT_M_DIR_MUSIC, tbuff);
           }
         }
         break;

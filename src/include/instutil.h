@@ -17,6 +17,7 @@ enum {
 #define WINUSERNAME       "%USERNAME%"
 #define WINUSERNAME_SL    "/%USERNAME%/"
 #define WINUSERPROFILE    "%USERPROFILE%"
+#define WINUSERPROFILE_SL "%USERPROFILE%/"
 
 #define INST_HL_COLOR "#b16400"
 #define INST_HL_CLASS "insthl"
