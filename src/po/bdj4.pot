@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-13 07:49-0800\n"
+"POT-Creation-Date: 2026-02-15 06:18-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1120,6 +1120,11 @@ msgstr ""
 #. CONTEXT: installer: checkbox: convert the BallroomDJ 3 installation
 #, c-format
 msgid "Convert %s"
+msgstr ""
+
+#. CONTEXT: installer: checkbox: windows: request VLC installation
+#, c-format
+msgid "Please install %s"
 msgstr ""
 
 #. CONTEXT: installer: status message
