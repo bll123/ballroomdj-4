@@ -8,7 +8,7 @@
 
 * Bug Fixes:
     * Installer: Fix a non-localized message.
-    * PENDING Windows: Fix handling of account names with international characters.
+    * Windows: Fix handling of account names with international characters.
     * Windows: Fix installation when OneDrive is active.
     * Windows: Fix uninstaller.
     * Windows: Installer: Add an option to request VLC installation.

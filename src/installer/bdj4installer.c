@@ -1434,7 +1434,6 @@ installerSetBDJ3LocEntry (installer_t *installer, const char *bdj3loc)
 
   stpecpy (tbuff, tbuff + sizeof (tbuff), bdj3loc);
   pathDisplayPath (tbuff, sizeof (tbuff));
-  pathLongPath (tbuff, sizeof (tbuff));
   if (installer->guienabled) {
     uiEntrySetValue (installer->wcont [INST_W_BDJ3_LOC], tbuff);
   }
@@ -1641,7 +1640,6 @@ installerSaveTargetDir (installer_t *installer)
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ACTION, _("Saving install location."), false);
 
-logBasic ("mkdir %s\n", sysvarsGetStr (SV_DIR_CONFIG));
   diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
   fh = fileopOpen (sysvarsGetStr (SV_FILE_INST_PATH), "w");
   if (fh != NULL) {
@@ -1682,9 +1680,7 @@ installerMakeTarget (installer_t *installer)
 
   logBasic ("make-tgt\n");
 
-logBasic ("mkdir %s\n", installer->target);
   diropMakeDir (installer->target);
-logBasic ("mkdir %s\n", installer->rundir);
   diropMakeDir (installer->rundir);
 
   *installer->oldversion = '\0';
@@ -1788,7 +1784,6 @@ installerMakeDataTop (installer_t *installer)
 {
   logBasic ("make-data-top\n");
 
-logBasic ("mkdir %s\n", installer->datatopdir);
   diropMakeDir (installer->datatopdir);
 
   if (osChangeDir (installer->datatopdir) < 0) {
@@ -2204,22 +2199,24 @@ static void
 installerVLCCheck (installer_t *installer)
 {
   char    tbuff [BDJ4_PATH_MAX];
-  int     tval;
+  int     requestvlc;
 
   logBasic ("vlc-check\n");
 
-  /* on linux, vlc is installed via other methods */
-  /* also on linux, gstreamer can be used even if there is no vlc */
+
+  /* on Linux, VLC is installed via other methods */
+  /* also on linux, gstreamer can be used even if there is no VLC */
+  /* if VLC is already installed, don't bother with anything else */
   if (installer->vlcinstalled || isLinux ()) {
     installer->instState = INST_FINALIZE;
     return;
   }
 
   /* as of 2025-9-23 version 4.16.1, windows will use the */
-  /* windows media player interface */
-  /* a checkbox was added 2026-2-15 to require VLC installation */
-  tval = uiToggleButtonIsActive (installer->wcont [INST_W_REQUEST_VLC]);
-  if (! installer->vlcinstalled && isWindows () && ! tval) {
+  /* windows media player interface by default */
+  /* a checkbox was added 2026-2-15 to request VLC installation */
+  requestvlc = uiToggleButtonIsActive (installer->wcont [INST_W_REQUEST_VLC]);
+  if (! installer->vlcinstalled && isWindows () && ! requestvlc) {
     installer->instState = INST_FINALIZE;
     return;
   }
@@ -2346,7 +2343,7 @@ installerVLCInstall (installer_t *installer)
   count = 0;
   sysvarsCheckVLCPath ();
   tmp = sysvarsGetStr (SV_PATH_VLC_LIB);
-  while (! *tmp && count < 30000000L) {
+  while (! *tmp && count < 30000000LL) {
     mssleep (10);
     sysvarsCheckVLCPath ();
     tmp = sysvarsGetStr (SV_PATH_VLC_LIB);
@@ -2354,7 +2351,13 @@ installerVLCInstall (installer_t *installer)
   }
 
   /* macos: at this point, VLC is partially installed */
-  /* as VLC is not used by the updater, it is ok to proceed */
+
+  /* wait a short while longer */
+  count = 0;
+  while (count < 200LL) {
+    mssleep (10);
+    ++count;
+  }
 
   fileopDelete (installer->dlfname);
   installerCheckPackages (installer);
@@ -2379,10 +2382,19 @@ installerFinalize (installer_t *installer)
       instutilGetMusicDir (tbuff, sizeof (tbuff));
       bdjoptSetStr (OPT_M_DIR_MUSIC, tbuff);
       if (installer->newinstall && isWindows ()) {
+        int   requestvlc;
+
         /* only for new installations */
-        bdjoptSetStr (OPT_M_PLAYER_INTFC, "libpliwinmp");
-        /* CONTEXT: configuration: player interface: Windows Media Player */
-        bdjoptSetStr (OPT_M_PLAYER_INTFC_NM, _("Windows Media Player"));
+        requestvlc = uiToggleButtonIsActive (installer->wcont [INST_W_REQUEST_VLC]);
+        if (requestvlc) {
+          bdjoptSetStr (OPT_M_PLAYER_INTFC, "libplivlc");
+          /* CONTEXT: configuration: player interface: Integrated VLC 3 */
+          bdjoptSetStr (OPT_M_PLAYER_INTFC_NM, _("Integrated VLC 3"));
+        } else {
+          bdjoptSetStr (OPT_M_PLAYER_INTFC, "libpliwinmp");
+          /* CONTEXT: configuration: player interface: Windows Media Player */
+          bdjoptSetStr (OPT_M_PLAYER_INTFC_NM, _("Windows Media Player"));
+        }
       }
       bdjoptSave ();
     }
@@ -2392,7 +2404,6 @@ installerFinalize (installer_t *installer)
     if (! fileopFileExists (sysvarsGetStr (SV_FILE_ALTCOUNT))) {
       FILE    *fh;
 
-logBasic ("mkdir %s\n", sysvarsGetStr (SV_DIR_CONFIG));
       diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
       fh = fileopOpen (sysvarsGetStr (SV_FILE_ALTCOUNT), "w");
       if (fh != NULL) {
@@ -2852,11 +2863,11 @@ installerCheckPackages (installer_t *installer)
 {
   char  tbuff [BDJ4_PATH_MAX];
   char  *tmp;
-  int   tval;
+  int   requestvlc;
 
 
   tmp = sysvarsGetStr (SV_PATH_VLC_LIB);
-  tval = uiToggleButtonIsActive (installer->wcont [INST_W_REQUEST_VLC]);
+  requestvlc = uiToggleButtonIsActive (installer->wcont [INST_W_REQUEST_VLC]);
 
   if (*tmp) {
     if (installer->guienabled && installer->uiBuilt) {
@@ -2867,7 +2878,7 @@ installerCheckPackages (installer_t *installer)
     installer->vlcinstalled = true;
   } else {
     if (installer->guienabled && installer->uiBuilt) {
-      if (isWindows () && ! tval) {
+      if (isWindows () && ! requestvlc) {
         /* CONTEXT: installer: display of package status */
         snprintf (tbuff, sizeof (tbuff), _("%s is not required on Windows"), VLCName);
       } else {

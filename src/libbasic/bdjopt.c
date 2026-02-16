@@ -369,11 +369,14 @@ bdjoptInit (void)
   pli = nlistGetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC);
   if (pli != NULL && strncmp (pli, "libplivlc", 9) == 0) {
     const char  *vlcpath;
+    const char  *vlclib;
 
     vlcpath = sysvarsGetStr (SV_PATH_VLC);
+    vlclib = sysvarsGetStr (SV_PATH_VLC_LIB);
     if (! vlccheckdone &&
         (isLinux () || isWindows ()) &&
-        (fileopFileExists (vlcpath) || fileopIsDirectory (vlcpath))) {
+        (fileopFileExists (vlcpath) || fileopIsDirectory (vlcpath)) &&
+        fileopFileExists (vlclib)) {
       char    tbuff [BDJ4_PATH_MAX];
       char    *data;
 
