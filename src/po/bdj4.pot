@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-15 06:18-0800\n"
+"POT-Creation-Date: 2026-02-16 05:53-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1241,6 +1241,11 @@ msgstr ""
 msgid "%s installed."
 msgstr ""
 
+#. CONTEXT: configuration: player interface: Integrated VLC 3
+#. CONTEXT: config: integrated VLC 3
+msgid "Integrated VLC 3"
+msgstr ""
+
 #. CONTEXT: configuration: player interface: Windows Media Player
 msgid "Windows Media Player"
 msgstr ""
@@ -1263,10 +1268,6 @@ msgstr ""
 #. CONTEXT: installer: display of package status
 #, c-format
 msgid "%s is not installed"
-msgstr ""
-
-#. CONTEXT: config: integrated VLC 3
-msgid "Integrated VLC 3"
 msgstr ""
 
 #. CONTEXT: config: integrated VLC 4
