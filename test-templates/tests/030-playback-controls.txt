@@ -1,4 +1,4 @@
-\section 30 Playback-Controls
+section 30 Playback-Controls
 
 # test the fade function
 test 30-10 Fade

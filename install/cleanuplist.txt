@@ -129,10 +129,6 @@ templates/nl/Standaardrondes\.pl$
 templates/nl/Standaardrondes\.pldances$
 templates/nl/Standaardrondes\.sequence$
 
-# 2023-10-20 bdj4cleaninst has been retired
-bin/bdj4cleaninst$
-bin/bdj4cleaninst\.exe$
-
 # 2023-11-5 dbtag is no longer in use (mutagen removed)
 bin/bdj4dbtag$
 bin/bdj4dbtag\.exe$
@@ -201,6 +197,8 @@ ChangeLog\.txt$
 
 # install logging
 out\.txt$
+# 2026-2-16 removed, no longer used
+install/win-clean-inst\.bat$
 
 ####
 # mac-os

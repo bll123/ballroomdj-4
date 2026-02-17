@@ -93,11 +93,8 @@ START_TEST(path_realpath)
   fclose (fh);
   pathRealPath (path, sizeof (path));
   pathNormalizePath (path, sizeof (path));
-  if (isWindows ()) {
-    ck_assert_str_ne (path, actual);
-  } else {
-    ck_assert_str_eq (path, actual);
-  }
+  ck_assert_str_eq (path, actual);
+
   pathDisplayPath (path, sizeof (path));
   pathLongPath (path, sizeof (path));
   pathNormalizePath (path, sizeof (path));

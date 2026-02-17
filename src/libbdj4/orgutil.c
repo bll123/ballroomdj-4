@@ -646,6 +646,8 @@ orgutilClean (const char *from, char *target, size_t sz, int chartype)
       /* which has no knowledge of utf-8 */
       if (strcmp (sysvarsGetStr (SV_LOCALE), "C") == 0) {
         memcpy (tgtp, tstr, 1);
+        ++tgtp;
+        tgtlen += 1;
       }
       tstr += 1;
       slen -= 1;
@@ -677,7 +679,6 @@ orgutilClean (const char *from, char *target, size_t sz, int chartype)
         tptr = strchr (commonChars, *tstr);
         if (tptr != NULL) {
           skip = true;
-          break;
         }
       }
       /* windows special characters */
@@ -687,7 +688,6 @@ orgutilClean (const char *from, char *target, size_t sz, int chartype)
         tptr = strchr (winChars, *tstr);
         if (tptr != NULL) {
           skip = true;
-          break;
         }
       }
       /* linux/macos special characters */
@@ -697,7 +697,6 @@ orgutilClean (const char *from, char *target, size_t sz, int chartype)
         tptr = strchr (unixChars, *tstr);
         if (tptr != NULL) {
           skip = true;
-          break;
         }
       }
 

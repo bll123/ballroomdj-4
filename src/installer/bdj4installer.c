@@ -2090,7 +2090,7 @@ installerCreateLauncher (installer_t *installer)
   logBasic ("create-launcher\n");
 
   if (osChangeDir (installer->rundir) < 0) {
-    installerFailWorkingDir (installer, installer->rundir, "CreateLauncher");
+    installerFailWorkingDir (installer, installer->rundir, "createlauncher");
     return;
   }
 
@@ -2654,70 +2654,39 @@ installerRegister (installer_t *installer)
 static void
 installerCleanup (installer_t *installer)
 {
+  logBasic ("cleanup\n");
+
   /* make sure the installer is not in the bdj4-install dir before */
   /* the clean-inst process is run. */
   /* if installing read-only, there is no data-top-dir */
   /* if the installer was exited without installing, there is no rundir */
   if (osChangeDir (installer->rundir) < 0) {
-    char  tbuff [BDJ4_PATH_MAX];
+    char    tbuff [BDJ4_PATH_MAX];
 
     snprintf (tbuff, sizeof (tbuff), "%s/..", installer->unpackdir);
     if (osChangeDir (tbuff) < 0) {
-      installerFailWorkingDir (installer, installer->datatopdir, "cleanup");
-      return;
+      installerFailWorkingDir (installer, tbuff, "cleanup");
     }
+    return;
   }
 
-  if (installer->clean &&
-      fileopIsDirectory (installer->unpackdir)) {
-    if (isWindows ()) {
-      char          ebuff [BDJ4_PATH_MAX];
-      size_t        sz = 0;
-      char          *fdata;
-      FILE          *fh;
-      const char    *targv [10];
-      int           targc = 0;
+  if (installer->clean && fileopIsDirectory (installer->unpackdir)) {
+    char          ebuff [BDJ4_PATH_MAX];
+    char          tbuff [BDJ4_PATH_MAX];
+    const char    *targv [10];
+    int           targc = 0;
 
-      /* create the batch file from a template. */
-      /* solves many quoting and startup issues. */
+    snprintf (ebuff, sizeof (ebuff), "%s/bin/bdj4%s",
+        installer->rundir, sysvarsGetStr (SV_OS_EXEC_EXT));
+    pathNormalizePath (ebuff, sizeof (ebuff));
+    snprintf (tbuff, sizeof (tbuff), "%s", installer->unpackdir);
+    pathNormalizePath (tbuff, sizeof (tbuff));
 
-      /* template */
-      snprintf (ebuff, sizeof (ebuff), "%s/install/win-clean-inst.bat",
-          installer->unpackdir);
-      fdata = filedataReadAll (ebuff, &sz);
-      if (fdata == NULL) {
-        return;
-      }
-
-      /* target filename */
-      snprintf (ebuff, sizeof (ebuff), "%s/bdj4-clean-inst.bat",
-          sysvarsGetStr (SV_DIR_CACHE_BASE));
-      fh = fileopOpen (ebuff, "w");
-      if (fh == NULL) {
-        return;
-      }
-      fwrite (fdata, sz, 1, fh);
-      mdextfclose (fh);
-      fclose (fh);
-
-      /* target filename */
-      pathDisplayPath (ebuff, sizeof (ebuff));
-      targv [targc++] = ebuff;
-      targv [targc++] = NULL;
-
-      osProcessStart (targv,
-          OS_PROC_DETACH | OS_PROC_NOSTDERR | OS_PROC_WINDOW_OK, NULL, NULL);
-      if (! sysvarsGetNum (SVL_IS_MSYS)) {
-        /* give windows a short bit to start the script */
-        mssleep (100);
-      }
-    }
-    if (! isWindows ()) {
-      /* cleaning up on not-windows is easy */
-      diropDeleteDir (installer->unpackdir, DIROP_ALL);
-    }
-  } else {
-    fprintf (stderr, "unpack-dir: %s\n", installer->unpackdir);
+    targv [targc++] = ebuff;
+    targv [targc++] = "--bdj4cleaninst";
+    targv [targc++] = tbuff;
+    targv [targc++] = NULL;
+    osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
   }
 
   if (installer->bdjoptloaded) {
@@ -2905,6 +2874,7 @@ static void
 installerFailWorkingDir (installer_t *installer, const char *dir, const char *msg)
 {
   fprintf (stderr, "Unable to set working dir: %s (%s)\n", dir, msg);
+  fprintf (stderr, "Unable to set working dir: (%s)\n", msg);
   /* CONTEXT: installer: failure message */
   installerDisplayText (installer, INST_DISP_ERROR, _("Error: Unable to set working folder."), false);
   /* CONTEXT: installer: status message */

@@ -11,7 +11,7 @@ work out for your use.
 
 #### Mac OS
 
-Download the macos-uninstall-bdj4-v8.sh script from sourceforge.
+Download the macos-uninstall-bdj4-v9.sh script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
@@ -20,7 +20,7 @@ this script using the following command.
 
     :::bash
     cd Downloads
-    bash macos-uninstall-bdj4-v8.sh
+    bash macos-uninstall-bdj4-v9.sh
 
 This script performs the following actions.  The script will ask for
 positive confirmation before performing each action.
@@ -31,16 +31,16 @@ positive confirmation before performing each action.
 
 #### Windows
 
-Download the win-uninstall-bdj4-v6.bat script from sourceforge.
+Download the win-uninstall-bdj4-v7.bat script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
-Run the win-uninstall-bdj4-v6.bat script.
+Run the win-uninstall-bdj4-v7.bat script.
 
 e.g. Using cmd.exe:
 
     cd Downloads
-    .\win-uninstall-bdj4-v6.bat
+    .\win-uninstall-bdj4-v7.bat
 
 #### Linux
 
@@ -55,4 +55,4 @@ Open a terminal and run this script using the following command.
     bash linux-uninstall-bdj4-v5.sh
 
 [Wiki Home](Home)
-<br>_(Updated 2026-01-06 09:51:30; BDJ4 version 4.17.8)_
+<br>_(Updated 2026-02-16 20:57:39; BDJ4 version 4.17.11)_

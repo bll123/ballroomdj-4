@@ -47,6 +47,7 @@ main (int argc, char * argv[])
   bool        forcenodetach = false;
   bool        forcewait = false;
   bool        isinstaller = false;
+  bool        isclean = false;
   int         flags;
   const char  *targv [BDJ4_LAUNCHER_MAX_ARGS];
   int         targc;
@@ -81,6 +82,7 @@ main (int argc, char * argv[])
     { "uitest",         no_argument,        NULL,   17 },
     { "vlcsinklist",    no_argument,        NULL,   18 },
     { "vlcversion",     no_argument,        NULL,   19 },
+    { "bdj4cleaninst",  required_argument,  NULL,   21 },
     /* used by installer */
     { "bdj3dir",        required_argument,  NULL,   0 },
     { "noclean",        no_argument,        NULL,   0 },
@@ -308,6 +310,12 @@ main (int argc, char * argv[])
         ++validargs;
         break;
       }
+      case 21: {
+        prog = "bdj4cleaninst";
+        isclean = true;
+        ++validargs;
+        break;
+      }
       case 'c': {
         forcenodetach = true;
         break;
@@ -365,7 +373,8 @@ main (int argc, char * argv[])
   osGetCurrentDir (origcwd, sizeof (origcwd));
   pathNormalizePath (origcwd, sizeof (origcwd));
 
-  if (sysvarsGetNum (SVL_DATAPATH) == SYSVARS_DATAPATH_UNKNOWN) {
+  if (isclean == false &&
+      sysvarsGetNum (SVL_DATAPATH) == SYSVARS_DATAPATH_UNKNOWN) {
     prog = "bdj4altinst";
     nodetach = true;
     wait = true;
@@ -376,7 +385,7 @@ main (int argc, char * argv[])
     }
   }
 
-  if (isinstaller == false) {
+  if (isclean == false && isinstaller == false) {
     if (osChangeDir (sysvarsGetStr (SV_BDJ4_DIR_DATATOP)) < 0) {
       fprintf (stderr, "Unable to set working dir: %s\n", sysvarsGetStr (SV_BDJ4_DIR_DATATOP));
       exit (1);
