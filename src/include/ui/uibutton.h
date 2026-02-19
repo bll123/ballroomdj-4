@@ -10,11 +10,6 @@
 extern "C" {
 #endif
 
-typedef enum {
-  BUTTON_ON = true,
-  BUTTON_OFF = false,
-} uibuttonstate_t;
-
 uiwcont_t *uiCreateButton (callback_t *uicb, const char *title, const char *imagenm, const char *tooltiptxt);
 void uiButtonFree (uiwcont_t *uiwidget);
 void uiButtonSetImageMarginTop (uiwcont_t *uiwidget, int margin);
@@ -26,7 +21,6 @@ void uiButtonSetText (uiwcont_t *uiwidget, const char *txt);
 void uiButtonSetReliefNone (uiwcont_t *uiwidget);
 void uiButtonSetFlat (uiwcont_t *uiwidget);
 void uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms);
-uibuttonstate_t uiButtonGetState (uiwcont_t *uiwidget);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

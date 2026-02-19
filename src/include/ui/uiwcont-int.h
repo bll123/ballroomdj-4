@@ -68,13 +68,14 @@ enum {
 
 /* used in all ui interfaces */
 typedef struct uibuttonbase {
-  callback_t  *cb;
-  callback_t  *presscb;
-  callback_t  *releasecb;
-  mstime_t    repeatTimer;
-  int         repeatMS;
-  bool        repeatOn : 1;
-  bool        repeating : 1;
+  callback_t      *cb;
+  callback_t      *presscb;
+  callback_t      *releasecb;
+  mstime_t        repeatTimer;
+  int             repeatMS;
+  uibuttonstate_t state;
+  bool            repeatOn : 1;
+  bool            repeating : 1;
 } uibuttonbase_t;
 
 /* used in all ui interfaces */

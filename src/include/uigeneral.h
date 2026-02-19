@@ -28,6 +28,7 @@ extern "C" {
 bool uiButtonCheckRepeat (uiwcont_t *uiwidget);
 bool uiButtonPressCallback (void *udata);
 bool uiButtonReleaseCallback (void *udata);
+uibuttonstate_t uiButtonGetState (uiwcont_t *uiwidget);
 
 /* uilabel.c */
 uiwcont_t * uiCreateColonLabel (const char *txt);

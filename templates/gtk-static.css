@@ -105,7 +105,7 @@ label.bdj-vert-nb-sel {
 }
 /* horizontal nb */
 button.bdj-horiz-nb {
-  border: 0px solid;
+  border: 1px solid black;
   border-bottom-width: 4px;
   border-bottom-color: transparent;
 }

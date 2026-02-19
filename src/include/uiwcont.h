@@ -7,6 +7,11 @@
 extern "C" {
 #endif
 
+typedef enum {
+  BUTTON_ON = true,
+  BUTTON_OFF = false,
+} uibuttonstate_t;
+
 typedef struct uiwcont uiwcont_t;
 
 /* general routines that are called by the ui specific code */

@@ -24,6 +24,10 @@ release:
 memdebug:
 	$(MAKE) BDJ4_BUILD=Memdebug cmake
 
+.PHONY: memwatch
+memwatch:
+	$(MAKE) BDJ4_BUILD=Memwatch cmake
+
 .PHONY: memwatch-sanitize
 memwatch-sanitize:
 	$(MAKE) BDJ4_BUILD=Memwatch-Sanitize cmake

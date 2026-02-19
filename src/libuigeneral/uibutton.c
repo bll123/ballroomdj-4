@@ -92,3 +92,21 @@ uiButtonReleaseCallback (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: button-release");
   return UICB_CONT;
 }
+
+uibuttonstate_t
+uiButtonGetState (uiwcont_t *uiwidget)
+{
+  uibuttonbase_t  *bbase;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-repeat")) {
+    return BUTTON_OFF;
+  }
+
+  bbase = &uiwidget->uiint.uibuttonbase;
+  if (bbase == NULL) {
+    return BUTTON_OFF;
+  }
+
+  return bbase->state;
+}
+

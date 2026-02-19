@@ -29,6 +29,7 @@
 
 typedef struct uibutton {
   NSImage         *image;
+  NSImage         *altimage;
 } uibutton_t;
 
 @implementation IButton
@@ -53,22 +54,28 @@ fprintf (stderr, "b: button-1 click\n");
 
 @end
 
+static long   gident = 0;
+
+
 uiwcont_t *
-uiCreateButton (const char *ident, callback_t *uicb, const char *title,
+uiCreateButton (callback_t *uicb, const char *title,
     const char *imagenm, const char *tooltiptxt)
 {
   uiwcont_t       *uiwidget;
   uibutton_t      *uibutton;
   uibuttonbase_t  *bbase;
   IButton         *widget = nil;
+  char            tmp [40];
 
 fprintf (stderr, "c-bt\n");
   uibutton = mdmalloc (sizeof (uibutton_t));
   uibutton->image = NULL;
+  uibutton->altimage = NULL;
 
   widget = [[IButton alloc] init];
 
   if (tooltiptxt != NULL) {
+    ;
   }
   if (title != NULL) {
     [widget setTitle: [NSString stringWithUTF8String: title]];
@@ -92,7 +99,8 @@ fprintf (stderr, "c-bt\n");
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uibutton = uibutton;
 
-  [widget setIdentifier: [NSString stringWithUTF8String: ident]];
+  snprintf (tmp, sizeof (tmp), "button-%ld\n", gident);
+  [widget setIdentifier: [NSString stringWithUTF8String: tmp]];
   [widget setBezelStyle: NSBezelStyleRounded];
   [widget setTarget: widget];
   [widget setUIWidget: uiwidget];
@@ -106,7 +114,6 @@ fprintf (stderr, "c-bt\n");
 #endif
 
   bbase = &uiwidget->uiint.uibuttonbase;
-  bbase->ident = ident;
   bbase->cb = uicb;
   bbase->presscb = callbackInit (uiButtonPressCallback,
       uiwidget, "button-repeat-press");
@@ -115,6 +122,12 @@ fprintf (stderr, "c-bt\n");
   bbase->repeating = false;
   bbase->repeatOn = false;
   bbase->repeatMS = 250;
+  bbase->state = BUTTON_OFF;
+
+  if (imagenm != NULL) {
+    bbase->state = BUTTON_ON;    // force set of image
+    uiButtonSetState (uiwidget, BUTTON_OFF);
+  }
 
   return uiwidget;
 }
@@ -123,16 +136,6 @@ void
 uiButtonFree (uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-free")) {
-    return;
-  }
-
-  return;
-}
-
-void
-uiButtonSetImagePosRight (uiwcont_t *uiwidget)
-{
-  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-image-pos-r")) {
     return;
   }
 
@@ -157,6 +160,73 @@ uiButtonSetImageIcon (uiwcont_t *uiwidget, const char *nm)
   }
 
   return;
+}
+
+void
+uiButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
+{
+  uibutton_t      *uibutton;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-image-pos-r")) {
+    return;
+  }
+
+  uibutton = uiwidget->uiint.uibutton;
+  if (uibutton == NULL) {
+    return;
+  }
+
+  if (imagenm != NULL) {
+    NSString    *ns;
+    NSImage     *image;
+    char        tbuff [BDJ4_PATH_MAX];
+
+    /* relative path */
+    pathbldMakePath (tbuff, sizeof (tbuff), imagenm, BDJ4_IMG_SVG_EXT,
+        PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
+    ns = [NSString stringWithUTF8String: imagenm];
+    image = [[NSImage alloc] initWithContentsOfFile: ns];
+    uibutton->altimage = image;
+  }
+}
+
+void
+uiButtonSetState (uiwcont_t *uiwidget, uibuttonstate_t newstate)
+{
+  uibutton_t      *uibutton;
+  IButton         *widget = nil;
+  uibuttonbase_t  *bbase;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-alt-image")) {
+    return;
+  }
+
+  uibutton = uiwidget->uiint.uibutton;
+  if (uibutton == NULL) {
+    return;
+  }
+  if (uibutton->image == NULL) {
+    return;
+  }
+
+  bbase = &uiwidget->uiint.uibuttonbase;
+  if (bbase == NULL) {
+    return;
+  }
+
+  if (bbase->state == newstate) {
+    return;
+  }
+
+  bbase->state = newstate;
+  widget = uiwidget->uidata.widget;
+
+  if (bbase->state == BUTTON_OFF && uibutton->image != NULL) {
+    [widget setImage: uibutton->image];
+  }
+  if (bbase->state == BUTTON_ON && uibutton->altimage != NULL) {
+    [widget setImage: uibutton->altimage];
+  }
 }
 
 void

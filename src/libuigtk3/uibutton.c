@@ -42,7 +42,6 @@ typedef struct uibutton {
   GdkPixbuf       *imageraw;
   GtkWidget       *altimage;
   GdkPixbuf       *altimageraw;
-  uibuttonstate_t state;
 } uibutton_t;
 
 uiwcont_t *
@@ -57,7 +56,6 @@ uiCreateButton (callback_t *uicb, const char *txt,
   uibutton = mdmalloc (sizeof (uibutton_t));
   uibutton->image = NULL;
   uibutton->altimage = NULL;
-  uibutton->state = BUTTON_OFF;
 
   widget = gtk_button_new ();
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
@@ -101,6 +99,7 @@ uiCreateButton (callback_t *uicb, const char *txt,
   bbase->repeating = false;
   bbase->repeatOn = false;
   bbase->repeatMS = 250;
+  bbase->state = BUTTON_OFF;
 
   if (uicb != NULL) {
     g_signal_connect (widget, "clicked",
@@ -108,7 +107,7 @@ uiCreateButton (callback_t *uicb, const char *txt,
   }
 
   if (imagenm != NULL) {
-    uibutton->state = BUTTON_ON;    // force set of image
+    bbase->state = BUTTON_ON;    // force set of image
     uiButtonSetState (uiwidget, BUTTON_OFF);
   }
 
@@ -199,6 +198,7 @@ void
 uiButtonSetState (uiwcont_t *uiwidget, uibuttonstate_t newstate)
 {
   uibutton_t      *uibutton;
+  uibuttonbase_t  *bbase;
   GtkWidget       *widget;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-alt-image")) {
@@ -212,18 +212,24 @@ uiButtonSetState (uiwcont_t *uiwidget, uibuttonstate_t newstate)
   if (uibutton->image == NULL) {
     return;
   }
-  if (uibutton->state == newstate) {
+
+  bbase = &uiwidget->uiint.uibuttonbase;
+  if (bbase == NULL) {
     return;
   }
 
-  uibutton->state = newstate;
+  if (bbase->state == newstate) {
+    return;
+  }
+
+  bbase->state = newstate;
   widget = uiwidget->uidata.widget;
 
   gtk_image_clear (GTK_IMAGE (uibutton->currimage));
-  if (uibutton->state == BUTTON_OFF && uibutton->imageraw != NULL) {
+  if (bbase->state == BUTTON_OFF && uibutton->imageraw != NULL) {
     gtk_image_set_from_pixbuf (GTK_IMAGE (uibutton->currimage), uibutton->imageraw);
   }
-  if (uibutton->state == BUTTON_ON && uibutton->altimageraw != NULL) {
+  if (bbase->state == BUTTON_ON && uibutton->altimageraw != NULL) {
     gtk_image_set_from_pixbuf (GTK_IMAGE (uibutton->currimage), uibutton->altimageraw);
   }
   gtk_widget_show_all (widget);
@@ -303,23 +309,6 @@ uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms)
       G_CALLBACK (uiButtonRepeatSignalHandler), bbase->releasecb);
 }
 
-uibuttonstate_t
-uiButtonGetState (uiwcont_t *uiwidget)
-{
-  uibutton_t    *uibutton;
-
-  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-repeat")) {
-    return BUTTON_OFF;
-  }
-
-  uibutton = uiwidget->uiint.uibutton;
-  if (uibutton == NULL) {
-    return BUTTON_OFF;
-  }
-
-  return uibutton->state;
-}
-
 /* internal routines */
 
 static void
@@ -329,6 +318,10 @@ uiButtonSignalHandler (GtkButton *b, gpointer udata)
   uibuttonbase_t  *bbase;
 
   if (uiwidget == NULL) {
+    return;
+  }
+
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-signal")) {
     return;
   }
 

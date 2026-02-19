@@ -41,6 +41,9 @@ enum {
   UITEST_W_STATUS_MSG,
   UITEST_W_B,
   UITEST_W_B_MSG,
+  UITEST_W_B_LEFT,
+  UITEST_W_B_LONG,
+  UITEST_W_B_FLAT,
   UITEST_W_B_IMG_A,
   UITEST_W_B_IMG_B,
   UITEST_W_B_IMG_C,
@@ -63,6 +66,7 @@ enum {
   UITEST_W_NB_HI,
   UITEST_W_IMG_A,
   UITEST_W_TOGGLE_C,
+  UITEST_W_NB_ACTION,
   UITEST_W_MAX,
 };
 
@@ -72,6 +76,7 @@ enum {
   UITEST_CB_B_IMG_A,
   UITEST_CB_B_IMG_B,
   UITEST_CB_B_IMG_C,
+  UITEST_CB_NB_ACTION,
   UITEST_CB_CHG_IND,
   UITEST_CB_DD_STR,
   UITEST_CB_DD_NUM,
@@ -123,6 +128,7 @@ typedef struct {
   nlist_t       *sbtxtlist;
   uidd_t        *uidd [UITEST_DD_MAX];
   long          counter;
+  int           hnbimgsel;
   bool          stop;
   bool          chgind;
 } uitest_t;
@@ -170,6 +176,7 @@ static bool uitestCBButton (void *udata);
 static bool uitestCBButtonImgA (void *udata);
 static bool uitestCBButtonImgB (void *udata);
 static bool uitestCBButtonImgC (void *udata);
+static bool uitestCBNBAction (void *udata);
 static bool uitestCBNull (void *udata);
 static bool uitestCBchgind (void *udata);
 static bool uitestCBLink (void *udata);
@@ -250,6 +257,7 @@ main (int argc, char *argv[])
   }
   uitest.stop = false;
   uitest.chgind = false;
+  uitest.hnbimgsel = 0;
   uitest.counter = 1;
   uitest.lista = NULL;
   uitest.listb = NULL;
@@ -393,7 +401,6 @@ uitestUIButtons (uitest_t *uitest)
   uiwcont_t   *hbox;
   uiwcont_t   *sg;
   uiwcont_t   *uiwidgetp;
-  uiwcont_t   *twidgetp;
 
   sg = uiCreateSizeGroupHoriz ();
 
@@ -436,7 +443,7 @@ uitestUIButtons (uitest_t *uitest)
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (sg, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  uitest->wcont [UITEST_W_B_LEFT] = uiwidgetp;
 
   uiwcontFree (hbox);
 
@@ -451,7 +458,7 @@ uitestUIButtons (uitest_t *uitest)
       uitest->callbacks [UITEST_CB_B], "button long text", NULL, NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (sg, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  uitest->wcont [UITEST_W_B_LONG] = uiwidgetp;
 
   uiwcontFree (hbox);
 
@@ -468,7 +475,7 @@ uitestUIButtons (uitest_t *uitest)
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (sg, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  uitest->wcont [UITEST_W_B_FLAT] = uiwidgetp;
 
   uiwcontFree (hbox);
 
@@ -546,44 +553,6 @@ uitestUIButtons (uitest_t *uitest)
 
   uiwcontFree (hbox);
 
-  /* radio button */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
-  uiwidgetp = uiCreateRadioButton (NULL, "radio a", UI_TOGGLE_BUTTON_ON);
-  uiBoxPackStart (hbox, uiwidgetp);
-  twidgetp = uiwidgetp;
-
-  uiwcontFree (hbox);
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
-  uiwidgetp = uiCreateRadioButton (twidgetp, "radio b", UI_TOGGLE_BUTTON_OFF);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (twidgetp);
-  uiwcontFree (uiwidgetp);
-
-  uiwcontFree (hbox);
-
-  /* check button */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
-  uiwidgetp = uiCreateCheckButton ("check button", UI_TOGGLE_BUTTON_OFF);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
-
-  uiwcontFree (hbox);
-
   uiwcontFree (vbox);
   uiwcontFree (sg);
 }
@@ -595,6 +564,7 @@ uitestUIToggleButtons (uitest_t *uitest)
   uiwcont_t   *hbox;
   uiwcont_t   *sg;
   uiwcont_t   *uiwidgetp;
+  uiwcont_t   *twidgetp;
 
   sg = uiCreateSizeGroupHoriz ();
 
@@ -657,6 +627,44 @@ uitestUIToggleButtons (uitest_t *uitest)
 
   uitest->wcont [UITEST_W_SW] = uiCreateSwitch (1);
   uiBoxPackStart (hbox, uitest->wcont [UITEST_W_SW]);
+
+  uiwcontFree (hbox);
+
+  /* radio button */
+
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+
+  uiwidgetp = uiCreateRadioButton (NULL, "radio a", UI_TOGGLE_BUTTON_ON);
+  uiBoxPackStart (hbox, uiwidgetp);
+  twidgetp = uiwidgetp;
+
+  uiwcontFree (hbox);
+
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+
+  uiwidgetp = uiCreateRadioButton (twidgetp, "radio b", UI_TOGGLE_BUTTON_OFF);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (twidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiwcontFree (hbox);
+
+  /* check button */
+
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+
+  uiwidgetp = uiCreateCheckButton ("check button", UI_TOGGLE_BUTTON_OFF);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
 
@@ -897,6 +905,8 @@ uitestUILabels (uitest_t *uitest)
   uiwidgetp = uiCreateLabel (_("Actions"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
+
+  uiwcontFree (hbox);
 
   /* label: pack start */
 
@@ -1220,7 +1230,6 @@ uitestUINotebook (uitest_t *uitest)
   uihnbAppendPage (hnb, vboxb, "h-img 1",
       uitest->images [UITEST_LED_OFF],
       uitest->images [UITEST_LED_ON], HNB_NO_ID);
-
   uiwcontFree (vboxb);
 
   /* horiz-img 2 */
@@ -1249,9 +1258,12 @@ uitestUINotebook (uitest_t *uitest)
 
   /* action widget */
 
-  uiwidgetp = uiCreateButton (NULL, "Action", NULL, NULL);
+  uitest->callbacks [UITEST_CB_NB_ACTION] = callbackInit (
+      uitestCBNBAction, uitest, NULL);
+  uiwidgetp = uiCreateButton (
+      uitest->callbacks [UITEST_CB_NB_ACTION], "Action", NULL, NULL);
   uihnbSetActionWidget (hnb, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  uitest->wcont [UITEST_W_NB_ACTION] = uiwidgetp;
 
   /* VNB */
 
@@ -1689,6 +1701,21 @@ uitestCBButtonImgC (void *udata)
 }
 
 static bool
+uitestCBNBAction (void *udata)
+{
+  uitest_t  *uitest = udata;
+
+  if (uitest == NULL) {
+    return UICB_STOP;
+  }
+
+  uitest->hnbimgsel = 1 - uitest->hnbimgsel;
+  uihnbSelect (uitest->hnbimg, uitest->hnbimgsel);
+
+  return UICB_CONT;
+}
+
+static bool
 uitestCBNull (void *udata)
 {
   return UICB_CONT;
@@ -1727,7 +1754,6 @@ uitestCleanup (uitest_t *uitest)
   for (int i = 0; i < UITEST_W_MAX; ++i) {
     uiwcontFree (uitest->wcont [i]);
   }
-
   for (int i = 0; i < UITEST_CB_MAX; ++i) {
     callbackFree (uitest->callbacks [i]);
   }

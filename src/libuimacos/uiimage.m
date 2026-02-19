@@ -25,6 +25,16 @@ uiImageNew (void)
   return NULL;
 }
 
+void
+uiImageFree (uiwcont_t *uiwidget)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_IMAGE, "image-free")) {
+    return;
+  }
+
+  return;
+}
+
 uiwcont_t *
 uiImageFromFile (const char *fn)
 {

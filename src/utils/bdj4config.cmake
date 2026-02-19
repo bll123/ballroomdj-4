@@ -321,6 +321,11 @@ if (BDJ4_BUILD STREQUAL "Memdebug")
   add_compile_options (-DBDJ4_MEM_DEBUG=1)
 endif()
 
+if (BDJ4_BUILD STREQUAL "Memwtach")
+  message ("Memwatch Build")
+  add_compile_options (-DBDJ4_MEM_WATCH=1)
+endif()
+
 if (BDJ4_BUILD STREQUAL "Memdebug-Sanitize")
   message ("Memdebug Sanitize Build")
   add_compile_options (-DBDJ4_MEM_DEBUG=1)

@@ -1397,6 +1397,7 @@ pluiSetPlaybackQueue (playerui_t *plui, int newQueue, int updateFlag)
 
     if ((int) plui->musicqPlayIdx == i) {
       uihnbSelect (plui->hnb, i);
+      break;
     }
   }
 

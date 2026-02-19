@@ -143,6 +143,16 @@ fprintf (stderr, "c-main-win\n");
 }
 
 void
+uiMainWindowFree (uiwcont_t *uiwindow)
+{
+  if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "main-win-free")) {
+    return;
+  }
+
+  return;
+}
+
+void
 uiWindowSetTitle (uiwcont_t *uiwindow, const char *title)
 {
   IWindow   *win = NULL;

@@ -145,6 +145,10 @@ uiToggleButtonFree (uiwcont_t *uiwidget)
 {
   uitoggle_t      *uitoggle;
 
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_TOGGLE, "toggle-free")) {
+    return;
+  }
+
   uitoggle = uiwidget->uiint.uitoggle;
   mdfree (uitoggle);
   uiwidget->uiint.uitoggle = NULL;
@@ -332,7 +336,6 @@ uiToggleButtonSetImage (uiwcont_t *uiwidget)
   if (uitoggle == NULL) {
     return;
   }
-
 
   if (uitoggle->currimage == NULL) {
     return;
