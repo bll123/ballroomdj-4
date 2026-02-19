@@ -87,6 +87,7 @@ uihnbCreate (uiwcont_t *box)
   hnb->selected = -1;
   hnb->textdir = sysvarsGetNum (SVL_LOCALE_TEXT_DIR);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 
   return hnb;
@@ -159,6 +160,7 @@ uihnbAppendPage (uihnb_t *hnb, uiwcont_t *uiwidget,
     uihnbSetPage (hnb, pagenum);
   }
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 }
 

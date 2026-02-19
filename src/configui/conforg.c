@@ -116,6 +116,7 @@ confuiBuildUIOrganization (confuigui_t *gui)
       CONFUI_SWITCH_AUTO_ORGANIZE, OPT_G_AUTOORGANIZE,
       bdjoptGetNum (OPT_G_AUTOORGANIZE), NULL, CONFUI_NO_INDENT);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 

@@ -170,6 +170,7 @@ confuiBuildUIMusicQs (confuigui_t *gui)
   confuiMusicQChg (gui);   // calls active-chg
 
   uiwcontFree (sw);
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpB);

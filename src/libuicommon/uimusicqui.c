@@ -232,6 +232,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
           validateFunc, errorMsg, UIENTRY_IMMEDIATE);
     }
 
+    uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
   }
 
@@ -435,10 +436,13 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     uivlSetKeyCallback (mqint->uivl, mqint->callbacks [MQINT_CB_KEYB]);
   }
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   uimusicq->musicqManageIdx = saveci;
   uimusicq->cbci = ci;
+
+  uiBoxPostProcess (uimusicq->ui [ci].mainbox);
 
   logProcEnd ("");
   return uimusicq->ui [ci].mainbox;

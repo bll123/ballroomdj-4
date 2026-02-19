@@ -92,6 +92,10 @@ fprintf (stderr, "c-bt\n");
     image = [[NSImage alloc] initWithContentsOfFile: ns];
     uibutton->image = image;
     [widget setImage: image];
+    widget.imagePosition = NSImageTrailing;
+    if (title == NULL) {
+      widget.imagePosition = NSImageOnly;
+    }
     [widget setTitle:@""];
   }
 
@@ -167,7 +171,7 @@ uiButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
 {
   uibutton_t      *uibutton;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-image-pos-r")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-alt-image")) {
     return;
   }
 

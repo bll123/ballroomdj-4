@@ -157,6 +157,7 @@ confuiBuildUIPlayer (confuigui_t *gui)
       CONFUI_SPINBOX_PLAYER_CLOCK, OPT_G_CLOCK_DISP, CONFUI_OUT_NUM,
       bdjoptGetNum (OPT_G_CLOCK_DISP), NULL);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpB);

@@ -171,6 +171,7 @@ manageplDanceBuildUI (mpldance_t *mpldnc, uiwcont_t *vboxp)
 
   uivlSetRowFillCallback (mpldnc->uivl, manageplDanceFillRow, mpldnc);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   manageplDanceRebuildCurrList (mpldnc);

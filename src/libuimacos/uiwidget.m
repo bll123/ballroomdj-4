@@ -52,7 +52,7 @@ uiWidgetExpandHoriz (uiwcont_t *uiwidget)
   }
 
   layout = uiwidget->uidata.layout;
-  layout->expand = true;
+  layout->expandhoriz = true;
 fprintf (stderr, "  add expand-horiz constraint\n");
   [layout->container.leadingAnchor
       constraintEqualToAnchor: container.leadingAnchor
@@ -83,7 +83,7 @@ uiWidgetExpandVert (uiwcont_t *uiwidget)
   }
 
   layout = uiwidget->uidata.layout;
-  layout->expand = true;
+  layout->expandvert = true;
 fprintf (stderr, "  add expand-vert constraint\n");
   [layout->container.topAnchor
       constraintEqualToAnchor: container.topAnchor
@@ -483,7 +483,7 @@ uiWidgetUpdateLayout (uiwcont_t *uiwidget)
 //  /* this may not be valid... */
 //  stview = (NSStackView *) [view superview];
 
-  if (! layout->expand) {
+  if (! layout->expandhoriz) {
 fprintf (stderr, "  add margin constraint\n");
     [container.leadingAnchor
         constraintEqualToAnchor: container.leadingAnchor
@@ -491,6 +491,8 @@ fprintf (stderr, "  add margin constraint\n");
     [container.trailingAnchor
         constraintEqualToAnchor: container.trailingAnchor
         constant: layout->margins.right].active = YES;
+  }
+  if (! layout->expandvert) {
     [container.topAnchor
         constraintEqualToAnchor: container.topAnchor
         constant: layout->margins.top].active = YES;

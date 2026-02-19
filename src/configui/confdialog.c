@@ -66,6 +66,7 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 
   /* column 1 */
@@ -98,6 +99,7 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
   }
 
   uiwcontFree (szgrp);
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 
   /* column 2 */
@@ -108,6 +110,7 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
   uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 
   /* column 3 */
@@ -133,8 +136,10 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
     gui->uiitem [j].outtype = CONFUI_OUT_CB;
   }
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   logProcEnd ("");

@@ -861,6 +861,7 @@ manageBuildUI (manageui_t *manage)
 
   uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
+  uiBoxPostProcess (accent.cbox);
   uiwcontFree (accent.cbox);
 
   uiwidgetp = uiCreateLabel ("");
@@ -880,6 +881,7 @@ manageBuildUI (manageui_t *manage)
 
   manage->mainvnb = uivnbCreate (vbox);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 
   /* edit song lists */
@@ -898,6 +900,7 @@ manageBuildUI (manageui_t *manage)
   /* playlist management */
   manage->managepl = managePlaylistAlloc (&manage->minfo);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
   manageBuildUIPlaylist (manage->managepl, vbox);
@@ -914,6 +917,7 @@ manageBuildUI (manageui_t *manage)
   manage->managedb = manageDbAlloc (&manage->minfo,
       manage->conn, manage->processes);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
   manageBuildUIUpdateDatabase (manage->managedb, vbox);
@@ -977,7 +981,9 @@ manageBuildUI (manageui_t *manage)
   /* set up the initial menu */
   manageSwitchPage (manage, 0, MANAGE_NB_SONGLIST);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 
   /* set a default selection.  this will also set the song editor dbidx */
@@ -1134,6 +1140,7 @@ manageBuildUISongListEditor (manageui_t *manage)
       manage->minfo.statusMsg, uiutilsValidatePlaylistNameClr);
   uiBoxPackStartExpand (hbox, uiwidgetp);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 
   vbox = uiCreateVertBox ();
@@ -1183,7 +1190,9 @@ manageBuildUISongListEditor (manageui_t *manage)
       manageSwitchPageSonglist, manage);
   uihnbSetCallback (manage->slhnb, manage->callbacks [MANAGE_CB_SL_NB]);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 }
 
@@ -2357,11 +2366,14 @@ manageiTunesCreateDialog (manageui_t *manage)
       manage->itunesddlist, DD_LIST_TYPE_STR,
       "", DD_REPLACE_TITLE, NULL);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   logProcEnd ("");
@@ -2509,6 +2521,7 @@ manageBuildUIMusicManager (manageui_t *manage)
       manageSwitchPageMM, manage);
   uihnbSetCallback (manage->mmhnb, manage->callbacks [MANAGE_CB_MM_NB]);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 
   logProcEnd ("");
@@ -2929,6 +2942,7 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   manage->cfpl = uiplaylistCreate (manage->wcont [MANAGE_W_CFPL_DIALOG],
       hbox, PL_LIST_AUTO_SEQ, NULL, UIPL_PACK_START, UIPL_FLAG_NONE);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
@@ -2946,7 +2960,9 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uiBoxPackStart (hbox, uiwidgetp);
   manage->wcont [MANAGE_W_CFPL_TM_LIMIT] = uiwidgetp;
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   uiwcontFree (szgrp);
 

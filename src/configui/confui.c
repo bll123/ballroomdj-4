@@ -79,6 +79,7 @@ confuiBuildUIUserInterface (confuigui_t *gui)
       CONFUI_WIDGET_UI_MARK_COLOR, OPT_P_UI_MARK_COL,
       bdjoptGetStr (OPT_P_UI_MARK_COL));
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 

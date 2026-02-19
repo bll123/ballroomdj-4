@@ -519,8 +519,10 @@ uisfCreateDialog (uisongfilter_t *uisf)
   /* accent color */
   uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
+  uiBoxPostProcess (accent.cbox);
   uiwcontFree (accent.cbox);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   /* begin line */
 
@@ -565,6 +567,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
       uisf->ddsortbylist, DD_LIST_TYPE_STR,
       "", DD_REPLACE_TITLE, uisf->callbacks [UISF_CB_SORT_BY_SEL]);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* begin line */
@@ -587,6 +590,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   /* genre */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_GENRE)) {
+    uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
@@ -605,6 +609,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   /* dance */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_DANCE)) {
+    uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
@@ -625,6 +630,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   /* rating */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_DANCERATING)) {
+    uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
@@ -640,6 +646,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   /* level */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_DANCELEVEL)) {
+    uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
@@ -655,6 +662,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   /* status */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_STATUS)) {
+    uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
@@ -670,6 +678,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   /* favorite */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_FAVORITE)) {
+    uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
@@ -684,6 +693,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   /* status playable */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_STATUS_PLAYABLE)) {
+    uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
@@ -699,6 +709,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   }
 
   /* the dialog doesn't have any space above the buttons */
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
@@ -707,7 +718,9 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpEntry);

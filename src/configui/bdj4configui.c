@@ -449,6 +449,7 @@ confuiBuildUI (configui_t *confui)
 
   uiutilsAddProfileColorDisplay (confui->gui.vbox, &accent);
   hbox = accent.hbox;
+  uiBoxPostProcess (accent.cbox);
   uiwcontFree (accent.cbox);
 
   uiwidgetp = uiCreateLabel ("");
@@ -522,6 +523,7 @@ confuiBuildUI (configui_t *confui)
       "bdj4_icon_config", ".png", PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   logProcEnd ("");

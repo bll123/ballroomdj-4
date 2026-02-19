@@ -267,6 +267,7 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
   uiexppl->wcont [UIEXPPL_W_ERROR_MSG] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* spinbox for export type */
@@ -287,6 +288,7 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiSpinboxTextSetValue (uiwidgetp, uiexppl->exptype);
   uiBoxPackStart (hbox, uiwidgetp);
   uiexppl->wcont [UIEXPPL_W_EXP_TYPE] = uiwidgetp;
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* target folder */
@@ -319,8 +321,10 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiexppl->wcont [UIEXPPL_W_TGT_BUTTON] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 

@@ -174,7 +174,7 @@ uiButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
 {
   uibutton_t      *uibutton;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-image-pos-r")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-alt-image")) {
     return;
   }
 

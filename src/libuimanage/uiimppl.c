@@ -473,6 +473,7 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
   uiimppl->wcont [UIIMPPL_W_ERROR_MSG] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* type */
@@ -495,6 +496,7 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiimppl->wcont [UIIMPPL_W_IMP_TYPE] = uiwidgetp;
   uiBoxPackStart (hbox, uiwidgetp);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* playlist selector */
@@ -513,6 +515,7 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
       DD_PACK_START, NULL, DD_LIST_TYPE_NUM, "", DD_REPLACE_TITLE,
       uiimppl->callbacks [UIIMPPL_CB_PL_SEL]);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* target folder / URI */
@@ -542,6 +545,7 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiimppl->wcont [UIIMPPL_W_URI_BUTTON] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* new name */
@@ -560,8 +564,10 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiBoxPackStart (hbox, uiwidgetp);
   uiimppl->wcont [UIIMPPL_W_NEWNAME] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 

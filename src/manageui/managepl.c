@@ -211,6 +211,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
       uiutilsValidatePlaylistNameClr,
       managepl->minfo->errorMsg, UIENTRY_IMMEDIATE);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   hbox = uiCreateHorizBox ();
@@ -228,6 +229,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiWidgetSetMarginStart (uiwidgetp, 3);
   managepl->wcont [MPL_W_PL_TYPE] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   managepl->hnb = uihnbCreate (vboxp);
@@ -268,6 +270,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrpSpin, uiwidgetp);
   managepl->wcont [MPL_W_MAX_PLAY_TIME] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* new line : stop-at */
@@ -292,6 +295,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrpSpin, uiwidgetp);
   managepl->wcont [MPL_W_STOP_AT] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* new line : stop-after */
@@ -311,6 +315,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrpSpin, uiwidgetp);
   managepl->wcont [MPL_W_STOP_AFTER] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* new line: gap */
@@ -330,6 +335,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrpText, uiwidgetp);
   managepl->wcont [MPL_W_GAP] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* new line : play-announcements */
@@ -350,6 +356,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   /* automatic and sequenced playlists; keep the widget so these */
   /* can be hidden */
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* new line : blank line */
@@ -363,6 +370,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* settings for automatic and sequenced playlists */
@@ -384,6 +392,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   managepl->uirating = uiratingSpinboxCreate (hbox, UIRATING_NORM);
   uiratingSizeGroupAdd (managepl->uirating, szgrpText);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* new line : low dance-level */
@@ -400,6 +409,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   managepl->uilowlevel = uilevelSpinboxCreate (hbox, false);
   uilevelSizeGroupAdd (managepl->uilowlevel, szgrpText);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* new line : high dance-level */
@@ -416,6 +426,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   managepl->uihighlevel = uilevelSpinboxCreate (hbox, false);
   uilevelSizeGroupAdd (managepl->uilowlevel, szgrpText);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* new line : allowed-keywords */
@@ -435,6 +446,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
       managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
   managepl->wcont [MPL_W_ALLOWED_KEYWORDS] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* new line : tags, tag weight */
@@ -466,6 +478,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (hbox, uiwidgetp);
   managepl->wcont [MPL_W_TAG_WEIGHT] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* settings for automatic and sequenced playlists */
@@ -491,6 +504,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
       managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
   managepl->wcont [MPL_W_URI] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* new line : title */
@@ -510,6 +524,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
       managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
   managepl->wcont [MPL_W_TITLE] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* new line : retain */
@@ -529,7 +544,9 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrpSpin, uiwidgetp);
   managepl->wcont [MPL_W_RETAIN] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
+  uiBoxPostProcess (mvbox);
   uiwcontFree (mvbox);
 
   /* dance settings : holds the list of dances with settings */
@@ -544,8 +561,10 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   managepl->mpldnc = manageplDanceAlloc (managepl->minfo);
   manageplDanceBuildUI (managepl->mpldnc, vbox);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 
+  uiBoxPostProcess (tophbox);
   uiwcontFree (tophbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpSpin);

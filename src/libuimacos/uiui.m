@@ -157,7 +157,8 @@ uiwcontUIInit (uiwcont_t *uiwidget)
   layout->margins = NSEdgeInsetsMake (0, 0, 0, 0);
   layout->container = NULL;
   layout->centered = false;
-  layout->expand = false;
+  layout->expandhoriz = false;
+  layout->expandvert = false;
   layout->alignright = false;
 }
 

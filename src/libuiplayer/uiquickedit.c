@@ -352,6 +352,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
     uiWidgetExpandHoriz (hbox);
     uiBoxPackStart (vbox, hbox);
     uiqeAddScale (uiqe, hbox, UIQE_SCALE_SPD);
+    uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
   }
 
@@ -361,6 +362,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
     uiWidgetExpandHoriz (hbox);
     uiBoxPackStart (vbox, hbox);
     uiqeAddScale (uiqe, hbox, UIQE_SCALE_VOLADJ);
+    uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
   }
 
@@ -375,6 +377,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
     uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
 
     uiqe->uirating = uiratingSpinboxCreate (hbox, UIRATING_NORM);
+    uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
   }
 
@@ -389,6 +392,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
     uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
 
     uiqe->uilevel = uilevelSpinboxCreate (hbox, UIRATING_NORM);
+    uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
   }
 
@@ -403,9 +407,11 @@ uiqeCreateDialog (uiqe_t *uiqe)
     uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
 
     uiqe->uifavorite = uifavoriteSpinboxCreate (hbox);
+    uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
   }
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 
   logProcEnd ("");

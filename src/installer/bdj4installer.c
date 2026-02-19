@@ -671,6 +671,7 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* begin line : target entry */
@@ -694,6 +695,7 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (hbox, uiwidgetp);
   installer->wcont [INST_W_BUTTON_TARGET_DIR] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* begin line : re-install bdj4 */
@@ -714,6 +716,7 @@ installerBuildUI (installer_t *installer)
   uiWidgetAddClass (installer->wcont [INST_W_FEEDBACK_MSG], INST_HL_CLASS);
   uiBoxPackStart (hbox, installer->wcont [INST_W_FEEDBACK_MSG]);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* begin line : separator */
@@ -774,6 +777,7 @@ installerBuildUI (installer_t *installer)
   uiWidgetSetMarginStart (uiwidgetp, 0);
   installer->wcont [INST_W_BUTTON_BDJ3LOC_DIR] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* begin line : conversion checkbox */
@@ -794,6 +798,7 @@ installerBuildUI (installer_t *installer)
   uiWidgetAddClass (installer->wcont [INST_W_CONV_FEEDBACK_MSG], INST_HL_CLASS);
   uiBoxPackStart (hbox, installer->wcont [INST_W_CONV_FEEDBACK_MSG]);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* begin line : separator */
@@ -820,6 +825,7 @@ installerBuildUI (installer_t *installer)
     uiToggleButtonSetCallback (installer->wcont [INST_W_REQUEST_VLC],
         installer->callbacks [INST_CB_REQUEST_VLC]);
 
+    uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
   }
 
@@ -838,6 +844,7 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (hbox, installer->wcont [INST_W_VLC_MSG]);
   uiWidgetSetMarginStart (installer->wcont [INST_W_VLC_MSG], 4);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* begin line : buttons */
@@ -872,7 +879,9 @@ installerBuildUI (installer_t *installer)
   uiWidgetShowAll (installer->wcont [INST_W_WINDOW]);
   installer->uiBuilt = true;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 

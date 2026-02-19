@@ -181,8 +181,11 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
   uivl = gui->tables [CONFUI_ID_AUDIOSRC].uivl;
   confuiAudioSrcSelect (gui, uivl, 0, CONFUI_AUDIOSRC_COL_NAME);
 
+  uiBoxPostProcess (dvbox);
   uiwcontFree (dvbox);
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpB);

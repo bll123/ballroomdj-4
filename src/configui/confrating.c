@@ -64,7 +64,9 @@ confuiBuildUIEditRatings (confuigui_t *gui)
   gui->tables [CONFUI_ID_RATINGS].movefunc = confuiRatingMove;
   confuiCreateRatingTable (gui);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   logProcEnd ("");

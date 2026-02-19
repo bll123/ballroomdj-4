@@ -326,6 +326,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiWidgetAddClass (uiwidgetp, DARKACCENT_CLASS);
   audioidint->wcont [UIAUDID_W_EDIT_ALL] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* begin line */
@@ -358,6 +359,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiLabelSetSelectable (uiwidgetp);
   audioidint->wcont [UIAUDID_W_FILE_DISP] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   pw = uiPanedWindowCreateVert ();
@@ -386,6 +388,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   /* lock the first row display */
   uivlSetRowLock (audioidint->uivl, 0);;
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 
   uivlSetNumRows (audioidint->uivl, 0);
@@ -423,6 +426,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiWidgetExpandHoriz (col);
   uiWidgetExpandVert (col);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* headings */
@@ -456,6 +460,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiLabelSetFont (uiwidgetp, tbuff);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_ITEM_COL_B], uiwidgetp);
   uiwcontFree (uiwidgetp);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   uiaudioidAddItemDisplay (uiaudioid, col);
@@ -711,6 +716,7 @@ uiaudioidAddItemDisplay (uiaudioid_t *uiaudioid, uiwcont_t *col)
     audioidint->items [count].tagidx = tagidx;
     ++count;
 
+    uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
   }
 

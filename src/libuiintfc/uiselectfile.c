@@ -210,7 +210,9 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 }
 

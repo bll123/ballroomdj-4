@@ -33,6 +33,8 @@
 typedef struct uibox {
   uiwcont_t   *priorstart;
   uiwcont_t   *priorend;
+  bool        expandchildren;
+  bool        postprocess;
 } uibox_t;
 
 static uiwcont_t * uiCreateBox (int orientation);
@@ -57,6 +59,12 @@ uiBoxFree (uiwcont_t *uibox)
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-free")) {
     return;
   }
+}
+
+void
+uiBoxPostProcess (uiwcont_t *uibox)
+{
+  return;
 }
 
 void
@@ -93,6 +101,7 @@ uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   IBox          *box;
   NSView        *widget = NULL;
   int           grav = NSStackViewGravityLeading;
+  uibox_t       *uiboxint;
 
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start-exp")) {
     return;
@@ -101,13 +110,19 @@ uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
     return;
   }
 
+  uiboxint = uiwidget->uiint.uibox;
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.packwidget;
+
+  if (uibox->wtype == WCONT_T_VBOX) {
+    grav = NSStackViewGravityTop;
+  }
   [box addView: widget inGravity: grav];
 
   uiWidgetSetMarginTop (uiwidget, 1);
   uiWidgetSetMarginStart (uiwidget, 1);
   uiwidget->packed = true;
+  uiboxint->expandchildren = true;
   return;
 }
 
@@ -141,9 +156,10 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
 void
 uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
-  IBox          *box;
-  NSView        *widget = NULL;
-  int           grav = NSStackViewGravityTrailing;
+  IBox        *box;
+  NSView      *widget = NULL;
+  int         grav = NSStackViewGravityTrailing;
+  uibox_t     *uiboxint = NULL;
 
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end-exp")) {
     return;
@@ -152,13 +168,18 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
     return;
   }
 
+  uiboxint = uiwidget->uiint.uibox;
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.packwidget;
+  if (uibox->wtype == WCONT_T_VBOX) {
+    grav = NSStackViewGravityBottom;
+  }
   [box insertView: widget atIndex: 0 inGravity: grav];
 
   uiWidgetSetMarginTop (uiwidget, 1);
   uiWidgetSetMarginStart (uiwidget, 1);
   uiwidget->packed = true;
+  uiboxint->expandchildren = true;
   return;
 }
 
@@ -184,6 +205,8 @@ uiCreateBox (int orientation)
   uibox = mdmalloc (sizeof (uibox_t));
   uibox->priorstart = NULL;
   uibox->priorend = NULL;
+  uibox->expandchildren = false;
+  uibox->postprocess = false;
 
   box = [[IBox alloc] init];
   [box setOrientation: orientation];

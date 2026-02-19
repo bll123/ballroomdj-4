@@ -190,6 +190,7 @@ confuiBuildUIGeneral (confuigui_t *gui)
       bdjoptGetStr (OPT_G_ACRCLOUD_API_HOST), CONFUI_NO_INDENT);
 
   uiwcontFree (sw);
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 

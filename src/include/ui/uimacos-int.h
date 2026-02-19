@@ -57,7 +57,8 @@ typedef struct macoslayout {
   NSEdgeInsets  margins;
   NSStackView   *container;
   bool          centered;
-  bool          expand;
+  bool          expandvert;
+  bool          expandhoriz;
   bool          alignright;
 } macoslayout_t;
 

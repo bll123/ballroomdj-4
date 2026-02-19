@@ -154,6 +154,7 @@ manageBuildUIStats (managestats_t *managestats)
       int   idx;
 
       idx = i * STATS_PER_COL * 2 + j * 2;
+      uiBoxPostProcess (hbox);
       uiwcontFree (hbox);
       hbox = uiCreateHorizBox ();
       uiBoxPackStart (vbox, hbox);
@@ -161,10 +162,13 @@ manageBuildUIStats (managestats_t *managestats)
       uiBoxPackEnd (hbox, managestats->dancedisp [idx + 1]);
     }
 
+    uiBoxPostProcess (vbox);
     uiwcontFree (vbox);
   }
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
+  uiBoxPostProcess (chbox);
   uiwcontFree (chbox);
 
   return managestats->vboxmain;

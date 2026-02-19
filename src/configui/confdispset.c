@@ -93,6 +93,7 @@ confuiBuildUIDispSettings (confuigui_t *gui)
   gui->dispselduallist = uiCreateDualList (vbox,
       DL_FLAGS_NONE, NULL, NULL);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   logProcEnd ("");
 }

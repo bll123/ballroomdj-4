@@ -43,6 +43,7 @@ confuiBuildUIDebug (confuigui_t *gui)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
   uiBoxPackStart (hbox, vbox);
@@ -68,6 +69,7 @@ confuiBuildUIDebug (confuigui_t *gui)
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Audio Tags",
       CONFUI_DBG_AUDIO_TAG, -1, (val & LOG_AUDIO_TAG));
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
   uiBoxPackStart (hbox, vbox);
@@ -91,6 +93,7 @@ confuiBuildUIDebug (confuigui_t *gui)
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Procedures",
       CONFUI_DBG_PROC, -1, (val & LOG_PROC));
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
   uiBoxPackStart (hbox, vbox);
@@ -124,7 +127,9 @@ confuiBuildUIDebug (confuigui_t *gui)
     gui->uiitem [i].debuglvl = bitval;
   }
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   uiwcontFree (szgrp);
 

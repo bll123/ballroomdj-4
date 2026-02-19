@@ -65,6 +65,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
   uiWidgetSetAllMargins (vbox, 1);
   uivl = uivlCreate (tag, gui->window, vbox, 10, 100, vlflags);
   gui->tables [id].uivl = uivl;
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 
   bvbox = uiCreateVertBox ();
@@ -111,6 +112,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
   uiBoxPackStart (bvbox, uiwidgetp);
   gui->tables [id].buttons [CONFUI_BUTTON_TABLE_ADD] = uiwidgetp;
 
+  uiBoxPostProcess (bvbox);
   uiwcontFree (bvbox);
 
   logProcEnd ("");

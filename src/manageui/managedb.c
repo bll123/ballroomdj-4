@@ -225,6 +225,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiBoxPackStart (hbox, managedb->dbspinbox);
 
   /* help display */
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
@@ -243,6 +244,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   managedb->wcont [MDB_W_DB_HELP_DISP] = uiwidgetp;
 
   /* db top dir  */
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
@@ -276,6 +278,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   managedb->wcont [MDB_W_TOPDIRSEL] = uiwidgetp;
 
   /* buttons */
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxp, hbox);
@@ -318,6 +321,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiBoxPackStartExpand (vboxp, uiwidgetp);
   managedb->wcont [MDB_W_DB_STATUS] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   uiwcontFree (szgrp);
 }

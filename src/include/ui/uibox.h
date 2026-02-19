@@ -13,11 +13,13 @@ extern "C" {
 uiwcont_t *uiCreateVertBox (void);
 uiwcont_t *uiCreateHorizBox (void);
 void uiBoxFree (uiwcont_t *uibox);
+void uiBoxPostProcess (uiwcont_t *uibox);
 void uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget);
 void uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget);
 void uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget);
 void uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget);
 void uiBoxSetSizeChgCallback (uiwcont_t *uiwidget, callback_t *uicb);
+void uiBoxPostProcess (uiwcont_t *uiwidget);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

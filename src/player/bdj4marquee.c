@@ -418,6 +418,7 @@ marqueeBuildUI (marquee_t *marquee)
     uiWidgetAlignHorizEnd (uiwidgetp);
     marquee->wcont [MQ_W_COUNTDOWN_TIMER] = uiwidgetp;
 
+    uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
   }
 
@@ -453,6 +454,8 @@ marqueeBuildUI (marquee_t *marquee)
       ++icount;
     }
   }
+
+  uiBoxPostProcess (tbox);
 
   if (! marquee->mqInfoOnly) {
     marquee->wcont [MQ_W_SEP] = uiCreateHorizSeparator ();
@@ -495,7 +498,9 @@ marqueeBuildUI (marquee_t *marquee)
   osuiSetIcon (imgbuff);
 
   /* do not free the infobox hbox */
+  uiBoxPostProcess (mainvbox);
   uiwcontFree (mainvbox);
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 
   marquee->uibuilt = true;

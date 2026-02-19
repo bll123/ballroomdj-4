@@ -554,6 +554,7 @@ pluiBuildUI (playerui_t *plui)
   /* menu */
   uiutilsAddProfileColorDisplay (plui->wcont [PLUI_W_MAIN_VBOX], &accent);
   hbox = accent.hbox;
+  uiBoxPostProcess (accent.cbox);
   uiwcontFree (accent.cbox);
   uiWidgetExpandHoriz (hbox);
 
@@ -784,6 +785,7 @@ pluiBuildUI (playerui_t *plui)
 
   plui->uibuilt = true;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   uiwcontFree (menu);
   uiwcontFree (menubar);
@@ -1593,6 +1595,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
       plui->callbacks [PLUI_CB_FONT_SZ_CHG]);
 
   /* the dialog doesn't have any space above the buttons */
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
@@ -1602,8 +1605,10 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
   uiwcontFree (uiwidgetp);
   plui->fontszdialogcreated = true;
 
-  uiwcontFree (vbox);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
+  uiBoxPostProcess (vbox);
+  uiwcontFree (vbox);
 
   logProcEnd ("");
 }

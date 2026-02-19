@@ -652,6 +652,7 @@ starterBuildUI (startui_t  *starter)
 
   menubar = uiCreateMenubar ();
   uiBoxPackStartExpand (hbox, menubar);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* CONTEXT: starterui: action menu for the starter user interface */
@@ -714,6 +715,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetMarginStart (uiwidgetp, 4);
   starter->wcont [START_W_PROFILE_SEL] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* buttons and image display */
@@ -734,6 +736,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetExpandHoriz (uiwidgetp);
   uiwcontFree (uiwidgetp);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   starter->callbacks [START_CB_PLAYER] = callbackInit (
@@ -807,7 +810,9 @@ starterBuildUI (startui_t  *starter)
 
   uiWidgetShowAll (starter->wcont [START_W_WINDOW]);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
+  uiBoxPostProcess (bvbox);
   uiwcontFree (bvbox);
   uiwcontFree (szgrp);
   uiwcontFree (menu);
@@ -1466,6 +1471,7 @@ starterProcessSupport (void *udata)
   /* status message line */
   uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
+  uiBoxPostProcess (accent.cbox);
   uiwcontFree (accent.cbox);
 
   uiwidgetp = uiCreateLabel ("");
@@ -1473,6 +1479,7 @@ starterProcessSupport (void *udata)
   uiBoxPackEnd (hbox, uiwidgetp);
   starter->wcont [START_W_STATUS_DISP_MSG] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* begin line */
@@ -1495,6 +1502,7 @@ starterProcessSupport (void *udata)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* begin line */
@@ -1631,6 +1639,7 @@ starterProcessSupport (void *udata)
   uiBoxPackStart (vbox, uiwidgetp);
   starter->linkinfo [START_LINK_CB_TICKETS].uiwidgetp = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* begin line */
@@ -1645,11 +1654,13 @@ starterProcessSupport (void *udata)
   uiBoxPackStart (hbox, uiwidgetp);
   starter->buttons [START_BUTTON_SEND_SUPPORT] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   starter->wcont [START_W_SUPPORT_DIALOG] = uidialog;
   uiDialogShow (uidialog);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
@@ -1997,7 +2008,9 @@ starterCreateSupportMsgDialog (void *udata)
 
   /* profile color line */
   uiutilsAddProfileColorDisplay (vbox, &accent);
+  uiBoxPostProcess (accent.cbox);
   uiwcontFree (accent.cbox);
+  uiBoxPostProcess (accent.hbox);
   uiwcontFree (accent.hbox);
 
   /* line 1 */
@@ -2009,6 +2022,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiBoxPackEnd (hbox, uiwidgetp);
   starter->wcont [START_W_SUPPORT_STATUS_MSG] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* line 2 */
@@ -2028,6 +2042,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiEntrySetValidate (uiwidgetp, _("E-Mail Address"),
       starterValidateEmail, starter, UIENTRY_DELAYED);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* line 2 */
@@ -2077,7 +2092,9 @@ starterCreateSupportMsgDialog (void *udata)
   starter->wcont [START_W_SUPPORT_MSG_DIALOG] = uidialog;
   uiDialogShow (uidialog);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   uiwcontFree (szgrp);
 

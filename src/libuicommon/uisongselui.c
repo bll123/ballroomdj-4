@@ -215,6 +215,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     uiBoxPackStart (thbox, uiwidgetp);
     uiWidgetSetMarginBottom (uiwidgetp, 5);
     uiwcontFree (uiwidgetp);
+    uiBoxPostProcess (thbox);
     uiwcontFree (thbox);
   }
 
@@ -292,6 +293,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uiBoxPackEnd (hbox, uiwidgetp);
   ssint->wcont [SONGSEL_W_BUTTON_FILTER] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   hbox = uiCreateHorizBox ();
@@ -339,6 +341,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uisongselApplySongFilter (uisongsel);
   uidanceSetKey (uisongsel->uidance, -1);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   logProcEnd ("");

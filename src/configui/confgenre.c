@@ -58,7 +58,9 @@ confuiBuildUIEditGenres (confuigui_t *gui)
   gui->tables [CONFUI_ID_GENRES].movefunc = confuiGenreMove;
   confuiCreateGenreTable (gui);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   logProcEnd ("");

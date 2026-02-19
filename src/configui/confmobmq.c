@@ -97,6 +97,7 @@ confuiBuildUIMobileMarquee (confuigui_t *gui)
   confuiMakeItemLink (gui, vbox, szgrp, _("QR Code"),
       CONFUI_WIDGET_MOBMQ_QR_CODE, "");
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 

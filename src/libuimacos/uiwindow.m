@@ -455,7 +455,6 @@ fprintf (stderr, "  add pack-in-win constraint\n");
       constraintEqualToAnchor: winbox.bottomAnchor
       constant: layout->margins.bottom].active = YES;
   [widget setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
-  layout->expand = true;
 
   uiwidget->packed = true;
   return;

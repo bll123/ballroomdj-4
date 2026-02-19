@@ -317,6 +317,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
   uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_ERROR_MSG] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* target folder */
@@ -369,6 +370,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   uieibdj4->dialog [currtype].targetButton = uiwidgetp;
 
   if (currtype == UIEIBDJ4_IMPORT) {
+    uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
 
     /* playlist selector */
@@ -387,6 +389,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
     uiplaylistSetSelectCallback (uieibdj4->dialog [currtype].uiplaylist,
         uieibdj4->callbacks [UIEIBDJ4_CB_SEL]);
 
+    uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
 
     /* new name */
@@ -410,7 +413,9 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
         uieibdj4ValidateNewName, uieibdj4, UIENTRY_IMMEDIATE);
   }
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 

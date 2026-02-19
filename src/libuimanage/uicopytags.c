@@ -197,6 +197,7 @@ uicopytagsCreateDialog (uict_t *uict)
   uiBoxPackEnd (hbox, uiwidgetp);
   uict->statusMsg = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* source */
@@ -223,6 +224,7 @@ uicopytagsCreateDialog (uict_t *uict)
   uiButtonSetImageIcon (uict->sourcesel, "folder");
   uiBoxPackStart (hbox, uict->sourcesel);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* target */
@@ -249,7 +251,9 @@ uicopytagsCreateDialog (uict_t *uict)
   uiButtonSetImageIcon (uict->targetsel, "folder");
   uiBoxPackStart (hbox, uict->targetsel);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 
   selectInitCallback (&uict->sourcesfcb);

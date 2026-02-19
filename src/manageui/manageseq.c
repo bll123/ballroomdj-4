@@ -167,6 +167,7 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
   /* setting the duallist target */
   uiduallistSet (manageseq->seqduallist, dancelist, DL_LIST_SOURCE);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   logProcEnd ("");

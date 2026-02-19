@@ -196,6 +196,7 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
   uiaa->statusMsg = uiwidgetp;
 
   /* trim silence */
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
@@ -207,6 +208,7 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
   uiaa->cbTrim = uiwidgetp;
 
   /* adjust audio */
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
@@ -217,7 +219,9 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
   uiBoxPackStart (hbox, uiwidgetp);
   uiaa->cbAdjust = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 
   logProcEnd ("");

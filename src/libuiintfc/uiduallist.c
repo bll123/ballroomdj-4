@@ -168,6 +168,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
     duallist->buttons [DL_BUTTON_REMOVE] = uiwidgetp;
   }
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
   uiBoxPackStartExpand (hbox, vbox);
@@ -189,6 +190,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uivlSetColumnGrow (uivl, DL_COL_DISP, VL_COL_WIDTH_GROW_ONLY);
   uivlSetRowFillCallback (uivl, uiduallistVLFillTargetCB, duallist);
 
+  uiBoxPostProcess (dvbox);
   uiwcontFree (dvbox);
 
   dvbox = uiCreateVertBox ();
@@ -220,8 +222,11 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
     duallist->buttons [DL_BUTTON_REMOVE] = uiwidgetp;
   }
 
+  uiBoxPostProcess (dvbox);
   uiwcontFree (dvbox);
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   for (int i = 0; i < DL_LIST_MAX; ++i) {

@@ -249,8 +249,10 @@ helperBuildUI (helperui_t  *helper)
 
   uiWidgetShowAll (helper->wcont [HELPER_W_WINDOW]);
 
-  uiwcontFree (vbox);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
+  uiBoxPostProcess (vbox);
+  uiwcontFree (vbox);
 }
 
 static int

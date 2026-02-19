@@ -279,6 +279,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE_CHOOSER] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* artist display */
@@ -296,6 +297,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiWidgetAlignHorizFill (uiwidgetp);
   uiextreq->wcont [UIEXTREQ_W_ARTIST] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* title display */
@@ -313,6 +315,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiWidgetAlignHorizFill (uiwidgetp);
   uiextreq->wcont [UIEXTREQ_W_TITLE] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* dance : always available */
@@ -331,6 +334,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
       UIDANCE_EMPTY_DANCE, _("Select Dance"), UIDANCE_PACK_START, 1);
   uidanceSetCallback (uiextreq->uidance, uiextreq->callbacks [UIEXTREQ_CB_DANCE]);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* marquee display */
@@ -348,6 +352,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiWidgetAlignHorizFill (uiwidgetp);
   uiextreq->wcont [UIEXTREQ_W_MQ_DISP] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* no play tm limit */
@@ -363,8 +368,10 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiBoxPackStart (hbox, uiwidgetp);
   uiextreq->wcont [UIEXTREQ_W_NO_PLAY_TM_LIMIT] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpEntry);

@@ -232,9 +232,11 @@ confuiBuildUIiTunes (confuigui_t *gui)
 
     uiratingSetValue (gui->itunes->uirating [i],
         itunesGetStars (gui->itunes->itunes, ITUNES_STARS_10 + i));
+    uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
   }
 
+  uiBoxPostProcess (vboxp);
   uiwcontFree (vboxp);
 
   vboxp = uiCreateVertBox ();
@@ -249,6 +251,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxp, hbox);
 
+  uiBoxPostProcess (vboxp);
   uiwcontFree (vboxp);
 
   for (int i = 0; i < ITUNES_FIELD_COL_MAX; ++i) {
@@ -284,12 +287,16 @@ confuiBuildUIiTunes (confuigui_t *gui)
     }
   }
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   for (int i = 0; i < ITUNES_FIELD_COL_MAX; ++i) {
+    uiBoxPostProcess (vbox [i]);
     uiwcontFree (vbox [i]);
   }
   uiwcontFree (sw);
+  uiBoxPostProcess (mvbox);
   uiwcontFree (mvbox);
+  uiBoxPostProcess (mhbox);
   uiwcontFree (mhbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpr);

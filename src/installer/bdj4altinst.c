@@ -369,6 +369,7 @@ altinstBuildUI (altinst_t *altinst)
 
   uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
+  uiBoxPostProcess (accent.cbox);
   uiwcontFree (accent.cbox);
 
   /* begin line : status message */
@@ -402,6 +403,7 @@ altinstBuildUI (altinst_t *altinst)
   uiBoxPackStart (hbox, uiwidgetp);
   altinst->wcont [ALT_W_NAME] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* begin line : target entry */
@@ -433,6 +435,7 @@ altinstBuildUI (altinst_t *altinst)
     uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);
   }
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* begin line : re-install checkbox */
@@ -453,6 +456,7 @@ altinstBuildUI (altinst_t *altinst)
   uiWidgetAddClass (altinst->wcont [ALT_W_FEEDBACK_MSG], ACCENT_CLASS);
   uiBoxPackStart (hbox, altinst->wcont [ALT_W_FEEDBACK_MSG]);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* begin line : button box */
@@ -493,7 +497,9 @@ altinstBuildUI (altinst_t *altinst)
   uiEntrySetValidate (altinst->wcont [ALT_W_NAME], _("Name"),
       altinstValidateName, altinst, UIENTRY_IMMEDIATE);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 }
 

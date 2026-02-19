@@ -64,7 +64,9 @@ confuiBuildUIEditLevels (confuigui_t *gui)
   gui->tables [CONFUI_ID_LEVELS].movefunc = confuiLevelMove;
   confuiCreateLevelTable (gui);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   logProcEnd ("");

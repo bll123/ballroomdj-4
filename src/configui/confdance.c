@@ -190,8 +190,11 @@ confuiBuildUIEditDances (confuigui_t *gui)
   uivl = gui->tables [CONFUI_ID_DANCE].uivl;
   confuiDanceSelect (gui, uivl, 0, CONFUI_DANCE_COL_DANCE);
 
+  uiBoxPostProcess (dvbox);
   uiwcontFree (dvbox);
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpB);

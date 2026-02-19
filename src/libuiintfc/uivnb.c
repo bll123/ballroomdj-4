@@ -86,6 +86,7 @@ uivnbCreate (uiwcont_t *box)
   vnb->textdir = sysvarsGetNum (SVL_LOCALE_TEXT_DIR);
 
   uiwcontFree (sw);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   return vnb;
@@ -159,6 +160,7 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *nbtxt, int id)
     uivnbSetPage (vnb, pagenum);
   }
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 }
 

@@ -318,6 +318,7 @@ uiddCreateDialog (uidd_t *dd)
 
   uivlDisplay (dd->uivl);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 
   uiddSetSelectionInternal (dd, dd->selectedidx);

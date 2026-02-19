@@ -59,7 +59,9 @@ confuiBuildUIEditStatus (confuigui_t *gui)
   gui->tables [CONFUI_ID_STATUS].movefunc = confuiStatusMove;
   confuiCreateStatusTable (gui);
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   logProcEnd ("");

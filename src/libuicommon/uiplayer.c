@@ -399,6 +399,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   /* position controls / display */
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
@@ -469,6 +470,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   /* main controls */
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
@@ -584,7 +586,9 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiplayer->uibuilt = true;
 
+  uiBoxPostProcess (statusbox);
   uiwcontFree (statusbox);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   if (showspd) {
     uiwcontFree (szgrpScaleButton);

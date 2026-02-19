@@ -95,6 +95,7 @@ confuiBuildUIMobileRemoteControl (confuigui_t *gui)
   confuiMakeItemLink (gui, vbox, szgrp, "",
       CONFUI_WIDGET_RC_QR_CODE_B, "");
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 

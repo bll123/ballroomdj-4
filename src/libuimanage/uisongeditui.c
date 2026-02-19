@@ -391,6 +391,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiWidgetAddClass (uiwidgetp, DARKACCENT_CLASS);
   seint->wcont [UISE_W_EDIT_ALL] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* begin line */
@@ -444,6 +445,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiLabelSetSelectable (uiwidgetp);
   seint->wcont [UISE_W_FILE_DISP] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   /* begin line */
@@ -506,6 +508,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
     }
   }
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
   logProcEnd ("");
@@ -1139,6 +1142,7 @@ uisongeditAddDisplay (uisongedit_t *uisongedit, uiwcont_t *col, uiwcont_t *sg, i
       seint->items [seint->itemcount].tagkey = TAG_BPM_DISPLAY;
     }
     ++seint->itemcount;
+    uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
   }
 

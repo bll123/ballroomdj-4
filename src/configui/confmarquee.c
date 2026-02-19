@@ -99,6 +99,7 @@ confuiBuildUIMarquee (confuigui_t *gui)
       CONFUI_WIDGET_MQ_TEXT_COLOR, OPT_P_MQ_TEXT_COL,
       bdjoptGetStr (OPT_P_MQ_TEXT_COL));
 
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 

@@ -344,9 +344,11 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   uiutilsAddProfileColorDisplay (vboxmain, &accent);
   hbox = accent.hbox;
+  uiBoxPostProcess (accent.cbox);
   uiwcontFree (accent.cbox);
 
   /* instructions */
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxmain, hbox);
@@ -356,6 +358,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxmain, hbox);
@@ -379,6 +382,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiwcontFree (uiwidgetp);
 
   for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
+    uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
@@ -395,6 +399,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   }
 
   /* right side */
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
   uiBoxPackStartExpand (hboxbpm, vbox);
@@ -402,6 +407,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiWidgetAlignVertCenter (vbox);
 
   /* blue box */
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
@@ -419,6 +425,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   bpmcounter->wcont [BPM_W_BUTTON_BLUEBOX] = uiwidgetp;
 
   /* buttons */
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxmain, hbox);
@@ -461,9 +468,13 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   uiWidgetShowAll (bpmcounter->wcont [BPM_W_WINDOW]);
 
+  uiBoxPostProcess (vboxmain);
   uiwcontFree (vboxmain);
+  uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
+  uiBoxPostProcess (hboxbpm);
   uiwcontFree (hboxbpm);
+  uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpDisp);
