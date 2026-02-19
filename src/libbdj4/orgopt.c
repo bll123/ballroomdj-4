@@ -25,12 +25,13 @@
 #include "orgutil.h"
 #include "pathbld.h"
 #include "pathdisp.h"
+#include "pathutil.h"
 #include "song.h"
 #include "slist.h"
 #include "sysvars.h"
 #include "tagdef.h"
 
-NODISCARD
+BDJ_NODISCARD
 orgopt_t *
 orgoptAlloc (void)
 {

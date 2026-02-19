@@ -17,7 +17,7 @@ extern "C" {
 
 typedef struct songsel songsel_t;
 
-NODISCARD songsel_t * songselAlloc (musicdb_t *musicdb, nlist_t *dancelist);
+BDJ_NODISCARD songsel_t * songselAlloc (musicdb_t *musicdb, nlist_t *dancelist);
 void      songselFree (songsel_t *songsel);
 void      songselSetTags (songsel_t *songsel, slist_t *taglist, int tagweight);
 void      songselInitialize (songsel_t *songsel, nlist_t *songlist, songfilter_t *songfilter);

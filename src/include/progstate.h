@@ -35,7 +35,7 @@ enum {
   STATE_FINISHED = 1,
 };
 
-NODISCARD progstate_t     * progstateInit (char *progtag);
+BDJ_NODISCARD progstate_t     * progstateInit (char *progtag);
 void            progstateFree (progstate_t *progstate);
 void            progstateSetCallback (progstate_t *progstate,
                     programstate_t cbtype, progstateCallback_t callback,

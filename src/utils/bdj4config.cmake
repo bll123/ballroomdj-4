@@ -57,7 +57,7 @@ else()
   set (BDJ4_BITS 32)
 endif()
 
-if (WIN32 AND BDJ4_BITS EQUAL 32)
+if (SYSWIN AND BDJ4_BITS EQUAL 32)
   message (FATAL_ERROR "Platform not supported.")
 endif()
 
@@ -89,9 +89,7 @@ endif()
 
 #### volume
 
-# not win and not apple == linux
-# if (linux) does not work (2023-4-3)
-if (NOT WIN32 AND NOT APPLE)
+if (SYSLINUX)
 # not in use
 #  pkg_check_modules (PKG_ALSA alsa)
   pkg_check_modules (PKG_PA libpulse)
@@ -107,7 +105,7 @@ pkg_check_modules (PKG_LIBVLC libvlc)
 
 # on MacOS, the libvlc.dylib is located in different locations
 # for vlc-3 and vlc-4.
-if (APPLE AND NOT PKG_LIBVLC_FOUND)
+if (SYSMACOS AND NOT PKG_LIBVLC_FOUND)
   # for development
   if (NOT PKG_LIBVLC_FOUND AND EXISTS "$ENV{HOME}/Applications/VLC3.app/Contents/MacOS/lib/libvlc.dylib")
     message ("-- VLC3: Using $ENV{HOME}/Applications/VLC3.app")
@@ -130,7 +128,7 @@ if (APPLE AND NOT PKG_LIBVLC_FOUND)
     set (PKG_LIBVLC_FOUND TRUE)
   endif()
 endif()
-if (APPLE AND NOT PKG_LIBVLC4_FOUND)
+if (SYSMACOS AND NOT PKG_LIBVLC4_FOUND)
   # for development
   if (NOT PKG_LIBVLC4_FOUND AND EXISTS "$ENV{HOME}/Applications/VLC4.app/Contents/Frameworks/libvlc.dylib")
     message ("-- VLC4: Using $ENV{HOME}/Applications/VLC4.app")
@@ -151,7 +149,7 @@ endif()
 #   VLC 3 is installed into Program Files/VideoLAN/VLC3
 #   VLC 4 is installed into Program Files/VideoLAN/VLC4
 # need a way to differentiate a vlc-3 and vlc-4 installation.
-if (WIN32 AND NOT PKG_LIBVLC_FOUND)
+if (SYSWIN AND NOT PKG_LIBVLC_FOUND)
   if (EXISTS "C:/Program Files/VideoLAN/VLC/libvlc.dll" AND
       NOT EXISTS "C:/Program Files/VideoLAN/VLC3/libvlc.dll")
     message ("-- VLC3: Using C:/Program Files/VideoLAN/VLC")
@@ -182,17 +180,17 @@ pkg_check_modules (PKG_GST gstreamer-1.0)
 
 # VLC is no longer required for a build on all systems
 # Windows can use Windows Media Player, and Linux can use GStreamer
-if (APPLE AND NOT PKG_LIBVLC_FOUND AND NOT PKG_LIBVLC4_FOUND)
+if (SYSMACOS AND NOT PKG_LIBVLC_FOUND AND NOT PKG_LIBVLC4_FOUND)
   message (FATAL_ERROR "Unable to locate a VLC library")
 endif()
-if (NOT APPLE AND NOT WIN32 AND NOT PKG_LIBVLC_FOUND AND NOT PKG_LIBVLC4_FOUND AND NOT PKG_GST_FOUND)
+if (SYSLINUX AND NOT PKG_LIBVLC_FOUND AND NOT PKG_LIBVLC4_FOUND AND NOT PKG_GST_FOUND)
   message (FATAL_ERROR "Unable to locate a VLC/GStreamer library")
 endif()
 
 #### tag parsing modules
 
 # ffmpeg : libavformat / libavutil
-if (WIN32)
+if (SYSWIN)
   set (PKG_LIBAVFORMAT_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avformat-61.dll")
 #  set (PKG_LIBAVUTIL_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avutil-59.dll")
 else()
@@ -365,10 +363,10 @@ endif()
 
 add_compile_options (-g)
 add_link_options (-g)
-if (NOT WIN32)
+if (NOT SYSWIN)
   checkAddLinkFlag ("-rdynamic")
 endif()
-if (WIN32)
+if (SYSWIN)
   # msys2 puts the include files for ICU in /usr/include
   add_compile_options (-I/usr/include)
 else()
@@ -423,11 +421,11 @@ endif()
 
 #### system specific compile options
 
-if (NOT WIN32)
-  if (NOT APPLE)
+if (NOT SYSWIN)
+  if (SYSLINUX)
     SET (CMAKE_INSTALL_RPATH "\${ORIGIN}")
   endif()
-  if (APPLE)
+  if (SYSMACOS)
     # 10.14 = Mojave, 10.15 = Catalina 11 = Big Sur, 12 = Monterey,
     # 13 = Ventura, 14 = Sonoma, 15 = Sequoia, 26 = Tahoe
     # IMPORTANT: update this in:
@@ -438,7 +436,7 @@ if (NOT WIN32)
 
   add_compile_options (-DMG_ARCH=MG_ARCH_UNIX)
 endif()
-if (WIN32)
+if (SYSWIN)
   add_compile_options (-DMG_ARCH=MG_ARCH_WIN32)
   add_compile_options (-municode)
 endif()
@@ -466,7 +464,9 @@ check_function_exists (GetCommandLineW _lib_GetCommandLineW)
 check_function_exists (GetDateFormatEx _lib_GetDateFormatEx)
 check_function_exists (GetFullPathNameW _lib_GetFullPathNameW)
 check_function_exists (GetLocaleInfoEx _lib_GetLocaleInfoEx)
+check_function_exists (GetLongPathNameW _lib_GetLongPathNameW)
 check_function_exists (GetNativeSystemInfo _lib_GetNativeSystemInfo)
+check_function_exists (GetShortPathNameW _lib_GetShortPathNameW)
 check_function_exists (GetTimeFormatEx _lib_GetTimeFormatEx)
 check_function_exists (GetUserDefaultUILanguage _lib_GetUserDefaultUILanguage)
 check_function_exists (LoadLibraryW _lib_LoadLibraryW)
@@ -496,7 +496,7 @@ check_function_exists (_wunlink _lib__wunlink)
 check_function_exists (_wutime _lib__wutime)
 
 # these do exist
-if (WIN32)
+if (SYSWIN)
   set (_lib_gmtime_s 1)
   set (_lib_localtime_s 1)
   set (_lib__sprintf_p 1)
@@ -616,7 +616,7 @@ endif()
 check_symbol_exists (st_birthtime sys/stat.h _mem_struct_stat_st_birthtime)
 
 check_symbol_exists (INVALID_SOCKET "winsock2.h;ws2tcpip.h;windows.h" _define_INVALID_SOCKET)
-if (WIN32)
+if (SYSWIN)
   # another cmake issue
   set (_define_INVALID_SOCKET 1)
 endif ()
@@ -638,7 +638,7 @@ set (CMAKE_EXTRA_INCLUDE_FILES "")
 #### build the config file
 
 configure_file (config.h.in config.h)
-if (WIN32)
+if (SYSWIN)
   configure_file (
       ${PROJECT_SOURCE_DIR}/../pkg/windows/manifest.manifest.in
       manifest.manifest

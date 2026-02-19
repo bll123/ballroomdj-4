@@ -21,8 +21,8 @@ enum {
   PODCAST_KEY_MAX,
 };
 
-NODISCARD podcast_t *podcastLoad (const char *fname);
-NODISCARD podcast_t *podcastCreate (const char *fname);
+BDJ_NODISCARD podcast_t *podcastLoad (const char *fname);
+BDJ_NODISCARD podcast_t *podcastCreate (const char *fname);
 void      podcastFree (podcast_t *podcast);
 bool      podcastExists (const char *name);
 void      podcastSetName (podcast_t *podcast, const char *newname);

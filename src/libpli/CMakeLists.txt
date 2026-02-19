@@ -46,7 +46,7 @@ if (PKG_LIBVLC4_FOUND)
   addIntlLibrary (libplivlc4)
 endif()
 
-if (NOT WIN32 AND NOT APPLE)
+if (SYSLINUX)
   add_library (libplimpris SHARED plimpris.c mprisi.c)
   target_include_directories (libplimpris
     PRIVATE "${PKG_GLIB_INCLUDE_DIRS}"
@@ -71,7 +71,7 @@ if (PKG_GST_FOUND)
   addIntlLibrary (libpligst)
 endif()
 
-if (WIN32)
+if (SYSWIN)
   add_library (libpliwinmp SHARED pliwinmp.c winmpi.cpp)
   target_link_libraries (libpliwinmp PRIVATE
     libbdj4common
@@ -81,7 +81,7 @@ if (WIN32)
   addIntlLibrary (libpliwinmp)
 endif()
 
-if (APPLE)
+if (SYSMACOS)
   add_library (libplimacosav SHARED plimacosav.c macosavi.m)
   target_link_libraries (libplimacosav PRIVATE
     "-framework Cocoa" "-framework AVFoundation"
@@ -115,7 +115,7 @@ if (PKG_LIBVLC4_FOUND)
   updateRPath (libplivlc4)
 endif()
 
-if (NOT WIN32 AND NOT APPLE)
+if (SYSLINUX)
   install (TARGETS
     libplimpris
     DESTINATION ${DEST_BIN}
@@ -131,7 +131,7 @@ if (PKG_GST_FOUND)
   updateRPath (libpligst)
 endif()
 
-if (WIN32)
+if (SYSWIN)
   install (TARGETS
     libpliwinmp
     DESTINATION ${DEST_BIN}
@@ -139,7 +139,7 @@ if (WIN32)
   updateRPath (libpliwinmp)
 endif()
 
-if (APPLE)
+if (SYSMACOS)
   install (TARGETS
     libplimacosav
     DESTINATION ${DEST_BIN}

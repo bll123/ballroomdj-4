@@ -129,10 +129,6 @@ templates/nl/Standaardrondes\.pl$
 templates/nl/Standaardrondes\.pldances$
 templates/nl/Standaardrondes\.sequence$
 
-# 2023-10-20 bdj4cleaninst has been retired
-bin/bdj4cleaninst$
-bin/bdj4cleaninst\.exe$
-
 # 2023-11-5 dbtag is no longer in use (mutagen removed)
 bin/bdj4dbtag$
 bin/bdj4dbtag\.exe$
@@ -199,6 +195,11 @@ plocal/bin/acrcloud\.exe$
 # old stuff that should not have shipped
 ChangeLog\.txt$
 
+# install logging
+out\.txt$
+# 2026-2-16 removed, no longer used
+install/win-clean-inst\.bat$
+
 ####
 # mac-os
 
@@ -233,7 +234,7 @@ plocal/lib/libvorbisfile\.3\.dylib$
 plocal/lib/libmp4tag-1\.2\.[3456789]\.dylib$
 plocal/lib/libmp4tag-1\.2\.1[0123]\.dylib$
 plocal/lib/libmp4tag-1\.3\.[0-9]\.dylib$
-plocal/lib/libmp4tag-2\.0\.0\.dylib$
+plocal/lib/libmp4tag-2\.0\.[012]\.dylib$
 plocal/lib/libmp4tag-2\.0\.0\.1\.dylib$
 
 # 2023-11-13 bdj4winmksc is only used by windows
@@ -292,7 +293,7 @@ plocal/lib64/libmp4tag\.so\.2\.0\.0\.1$
 plocal/lib/libmp4tag\.so\.1\.2\.[3456789]$
 plocal/lib/libmp4tag\.so\.1\.2\.1[0123]$
 plocal/lib/libmp4tag\.so\.1\.3\.[0-9]$
-plocal/lib/libmp4tag\.so\.2\.0\.0$
+plocal/lib/libmp4tag\.so\.2\.0\.[012]$
 plocal/lib/libmp4tag\.so\.2\.0\.0\.1$
 
 # 2023-11-13 bdj4winmksc is only used by windows
@@ -327,12 +328,6 @@ plocal/bin/libcrypto-1_1-x86\.dll$
 plocal/bin/libssl-1_1-x86\.dll$
 plocal/bin/libunistring-2\.dll$
 
-# 2023-6 windows msys2 library updates
-plocal/bin/avcodec-59\.dll$
-plocal/bin/avdevice-59\.dll$
-plocal/bin/avfilter-8\.dll$
-plocal/bin/avformat-59\.dll$
-plocal/bin/avutil-57\.dll$
 # 2023-7 windows msys2 library updates
 plocal/bin/postproc-56\.dll$
 # windows msys2 library updates
@@ -348,15 +343,24 @@ licenses/icu\.LICENSE$
 licenses/icu\.LICENCE$
 
 # 2024-5-5 windows library updates
-plocal/bin/avcodec-60\.dll$
-plocal/bin/avdevice-60\.dll$
-plocal/bin/avfilter-9\.dll$
-plocal/bin/avformat-60\.dll$
-plocal/bin/avutil-58\.dll$
 plocal/bin/postproc-57\.dll$
 plocal/bin/swresample-3\.dll$
 plocal/bin/swresample-4\.dll$
 plocal/bin/swscale-7\.dll$
+
+# 2023-6 windows msys2 library updates
+# 2024-5-5 windows library updates, 2026-2-3
+plocal/bin/avcodec-59\.dll$
+plocal/bin/avdevice-59\.dll$
+plocal/bin/avfilter-8\.dll$
+plocal/bin/avformat-59\.dll$
+plocal/bin/avutil-57\.dll$
+plocal/bin/avfilter-9\.dll$
+plocal/bin/avutil-58\.dll$
+plocal/bin/avfilter-10\.dll$
+plocal/bin/avformat-6[01]\.dll$
+plocal/bin/avcodec-6[01]\.dll$
+plocal/bin/avdevice-6[01]\.dll$
 
 # 2025-6-10 windows updates
 plocal/bin/libFLAC-12\.dll$

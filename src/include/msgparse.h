@@ -56,18 +56,18 @@ typedef struct {
   int32_t   uniqueidx;
 } mp_musicqstatus_t;
 
-NODISCARD mp_musicqupdate_t *msgparseMusicQueueData (char * data);
+BDJ_NODISCARD mp_musicqupdate_t *msgparseMusicQueueData (char * data);
 void  msgparseMusicQueueDataFree (mp_musicqupdate_t *musicqupdate);
 
-NODISCARD mp_songselect_t *msgparseSongSelect (char * data);
+BDJ_NODISCARD mp_songselect_t *msgparseSongSelect (char * data);
 void msgparseSongSelectFree (mp_songselect_t *songselect);
 
 void msgbuildPlayerStatus (char *buff, size_t sz, bool repeat, bool pauseatend, int currvol, int currspeed, int basevol, uint64_t tm, int64_t dur);
-NODISCARD mp_playerstatus_t *msgparsePlayerStatusData (char * data);
+BDJ_NODISCARD mp_playerstatus_t *msgparsePlayerStatusData (char * data);
 void msgparsePlayerStatusFree (mp_playerstatus_t *playerstatus);
 
 void msgbuildPlayerState (char *buff, size_t sz, int playerState, bool newsong);
-NODISCARD mp_playerstate_t *msgparsePlayerStateData (char * data);
+BDJ_NODISCARD mp_playerstate_t *msgparsePlayerStateData (char * data);
 void msgparsePlayerStateFree (mp_playerstate_t *playerstate);
 
 void msgbuildQueuePlaylist (char *buff, size_t sz, int mqidx, const char *fn, int editflag);

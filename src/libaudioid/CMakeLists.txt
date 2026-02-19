@@ -25,7 +25,7 @@ target_link_libraries (libbdj4audioid PRIVATE
   ${PKG_XML2_LDFLAGS}
   ${PKG_JSONC_LDFLAGS}
 )
-# if (APPLE)
+# if (SYSMACOS)
 #  target_link_libraries (libbdj4audioid PRIVATE
 #    "-framework Cocoa"
 #  )

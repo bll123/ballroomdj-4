@@ -17,7 +17,7 @@ typedef struct bdjregex {
   GRegex  *regex;
 } bdjregex_t;
 
-NODISCARD
+BDJ_NODISCARD
 bdjregex_t *
 regexInit (const char *pattern)
 {

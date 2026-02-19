@@ -35,7 +35,7 @@ static datafilekey_t genredfkeys [GENRE_KEY_MAX] = {
   { "GENRE",      GENRE_GENRE,          VALUE_STR, NULL, DF_NORM },
 };
 
-NODISCARD
+BDJ_NODISCARD
 genre_t *
 genreAlloc (void)
 {

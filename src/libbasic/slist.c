@@ -20,7 +20,7 @@
 
 /* keyed by a string */
 
-NODISCARD
+BDJ_NODISCARD
 slist_t *
 slistAlloc (const char *name, listorder_t ordered, slistFree_t valueFreeHook)
 {

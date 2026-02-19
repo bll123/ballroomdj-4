@@ -78,7 +78,7 @@ static long     mergeSort (list_t *, listidx_t, listidx_t);
 static void     listClearCache (list_t *list);
 static listidx_t listCheckCache (list_t *list, listkeylookup_t *key);
 
-NODISCARD
+BDJ_NODISCARD
 list_t *
 listAlloc (const char *name, keytype_t keytype, listorder_t ordered, listFree_t valueFreeHook)
 {

@@ -20,7 +20,7 @@
 #include "mdebug.h"
 #include "nlist.h"
 #include "pathbld.h"
-#include "pathutil.h"
+#include "pathdisp.h"
 #include "sysvars.h"
 #include "templateutil.h"
 #include "vsencdec.h"

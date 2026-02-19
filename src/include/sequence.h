@@ -13,8 +13,8 @@ extern "C" {
 
 typedef struct sequence sequence_t;
 
-NODISCARD sequence_t    *sequenceLoad (const char *fname);
-NODISCARD sequence_t    *sequenceCreate (const char *fname);
+BDJ_NODISCARD sequence_t    *sequenceLoad (const char *fname);
+BDJ_NODISCARD sequence_t    *sequenceCreate (const char *fname);
 void          sequenceFree (sequence_t *sequence);
 bool          sequenceExists (const char *name);
 int32_t       sequenceGetCount (sequence_t *sequence);

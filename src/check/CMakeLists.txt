@@ -15,6 +15,7 @@ add_executable (check_all
   libcommon/check_callback.c
   libcommon/check_colorutils.c
   libcommon/check_dirop.c
+  libcommon/check_dylib.c
   libcommon/check_filedata.c
   libcommon/check_filemanip.c
   libcommon/check_fileshared.c

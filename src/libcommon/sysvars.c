@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <inttypes.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -41,7 +42,10 @@
 #include "osnetutils.h"
 #include "osprocess.h"
 #include "osutils.h"
+#include "pathdisp.h"
 #include "pathutil.h"
+
+#include "log.h"
 
 typedef struct {
   char    *data;
@@ -119,7 +123,6 @@ static const char *sysvarsldesc [SVL_MAX] = {
   [SVL_ALTIDX] = "ALTIDX",
   [SVL_BASEPORT] = "BASEPORT",
   [SVL_DATAPATH] = "DATAPATH",
-  [SVL_HOME_SZ] = "HOME_SZ",
   [SVL_INITIAL_PORT] = "INITIAL_PORT",
   [SVL_IS_LINUX] = "IS_LINUX",
   [SVL_IS_MACOS] = "IS_MACOS",
@@ -141,7 +144,7 @@ static_assert (sizeof (sysvarsldesc) / sizeof (const char *) == SVL_MAX,
     "missing sysvars svl_ entry");
 
 enum {
-  SV_MAX_SZ = 512,
+  SV_MAX_SZ = 1024,
 };
 
 static char       sysvars [SV_MAX][SV_MAX_SZ];
@@ -170,15 +173,15 @@ static void svGetLinuxDefaultTheme (void);
 static void svGetSystemFont (void);
 static sysdistinfo_t *sysvarsParseDistFile (const char *path);
 static void sysvarsParseDistFileFree (sysdistinfo_t *distinfo);
-static void sysvarsSetVLCLibPath (char *tbuff, char *lbuff, size_t sz, const char *libnm);
+static void sysvarsBuildVLCLibPath (char *tbuff, char *lbuff, size_t sz, const char *libnm);
 
 void
 sysvarsInit (const char *argv0, int flags)
 {
-  char          tcwd [SV_MAX_SZ+1];
-  char          tbuff [SV_MAX_SZ+1];
-  char          altpath [SV_MAX_SZ+1];
-  char          buff [SV_MAX_SZ+1];
+  char          tcwd [SV_MAX_SZ];
+  char          tbuff [SV_MAX_SZ];
+  char          altpath [SV_MAX_SZ];
+  char          buff [SV_MAX_SZ];
   char          *p;
   char          *end;
   size_t        dlen;
@@ -199,6 +202,7 @@ sysvarsInit (const char *argv0, int flags)
   enable_core_dump ();
 
   osGetCurrentDir (tcwd, sizeof (tcwd));
+  pathRealPath (tcwd, SV_MAX_SZ);
   pathNormalizePath (tcwd, SV_MAX_SZ);
 
   sysvarsSetStr (SV_OS_NAME, "");
@@ -323,14 +327,14 @@ sysvarsInit (const char *argv0, int flags)
   getHostname (sysvars [SV_HOSTNAME], SV_MAX_SZ);
 
   if (isWindows ()) {
+    /* the home directory is left as the long name */
+    /* any process using it must do the conversion for windows */
     osGetEnv ("USERPROFILE", sysvars [SV_HOME], SV_MAX_SZ);
-    pathNormalizePath (sysvars [SV_HOME], SV_MAX_SZ);
     osGetEnv ("USERNAME", sysvars [SV_USER], SV_MAX_SZ);
   } else {
     osGetEnv ("HOME", sysvars [SV_HOME], SV_MAX_SZ);
     osGetEnv ("USER", sysvars [SV_USER], SV_MAX_SZ);
   }
-  lsysvars [SVL_HOME_SZ] = strlen (sysvars [SV_HOME]);
   dlen = strlen (sysvars [SV_USER]);
   sysvarsSetStr (SV_USER_MUNGE, sysvars [SV_USER]);
   for (size_t i = 0; i < dlen; ++i) {
@@ -363,7 +367,8 @@ sysvarsInit (const char *argv0, int flags)
   pathNormalizePath (altpath, sizeof (altpath));
 
   /* this gives us the real path to the executable */
-  pathRealPath (buff, tbuff, sizeof (buff));
+  stpecpy (buff, buff + sizeof (buff), tbuff);
+  pathRealPath (buff, sizeof (buff));
   pathNormalizePath (buff, sizeof (buff));
 
   if (strcmp (altpath, buff) != 0) {
@@ -398,6 +403,7 @@ sysvarsInit (const char *argv0, int flags)
     /* a change of directories is contra-indicated. */
 
     sysvarsSetStr (SV_BDJ4_DIR_DATATOP, tcwd);
+
     lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_LOCAL;
   } else {
     bool found = false;
@@ -406,7 +412,6 @@ sysvarsInit (const char *argv0, int flags)
     if (alternatepath) {
       char    *bp;
       char    *bend = buff + SV_MAX_SZ;
-
 
       if (isMacOS ()) {
         /* altpath is something like: */
@@ -524,7 +529,8 @@ sysvarsInit (const char *argv0, int flags)
   sysvarsSetStr (SV_BDJ4_DREL_DATA, "data");
 
   p = sysvars [SV_BDJ4_DIR_IMG];
-  end = sysvars [SV_BDJ4_DIR_IMG] + SV_MAX_SZ,
+  end = sysvars [SV_BDJ4_DIR_IMG] + SV_MAX_SZ;
+  /* this must be the full path for macos and for alternate installations */
   p = stpecpy (p, end, sysvars [SV_BDJ4_DIR_MAIN]);
   p = stpecpy (p, end, "/img");
 
@@ -648,8 +654,12 @@ sysvarsInit (const char *argv0, int flags)
   sysvarsParseDistFileFree (distinfo);
 
   if (isWindows ()) {
-    snprintf (sysvars [SV_DIR_CONFIG_BASE], SV_MAX_SZ,
+    char    tbuff [BDJ4_PATH_MAX];
+
+    snprintf (tbuff, sizeof (tbuff),
         "%s/AppData/Roaming", sysvars [SV_HOME]);
+    pathRealPath (tbuff, sizeof (tbuff));
+    strcpy (sysvars [SV_DIR_CONFIG_BASE], tbuff);
   } else {
     osGetEnv ("XDG_CONFIG_HOME", sysvars [SV_DIR_CONFIG_BASE], SV_MAX_SZ);
     if (! *sysvars [SV_DIR_CONFIG_BASE]) {
@@ -670,8 +680,12 @@ sysvarsInit (const char *argv0, int flags)
   sysvarsSetStr (SV_FILE_INST_PATH, tbuff);
 
   if (isWindows ()) {
-    snprintf (sysvars [SV_DIR_CACHE_BASE], SV_MAX_SZ,
+    char    tbuff [BDJ4_PATH_MAX];
+
+    snprintf (tbuff, sizeof (tbuff),
         "%s/AppData/Local/Temp", sysvars [SV_HOME]);
+    pathRealPath (tbuff, sizeof (tbuff));
+    strcpy (sysvars [SV_DIR_CACHE_BASE], tbuff);
   } else {
     osGetEnv ("XDG_CACHE_HOME", sysvars [SV_DIR_CACHE_BASE], SV_MAX_SZ);
     if (! *sysvars [SV_DIR_CACHE_BASE]) {
@@ -744,7 +758,7 @@ sysvarsInit (const char *argv0, int flags)
   /* this is not set for mac-os (how to do is unknown) */
   if (strcmp (sysvars [SV_OS_NAME], "linux") == 0) {
     FILE        *fh;
-    char        tbuff [2048];
+    char        tbuff [BDJ4_PATH_MAX];
     static char *flagtag = "flags";
     static char *vmtag = " hypervisor ";
 
@@ -928,6 +942,7 @@ sysvarsCheckVLCPath (void)
 {
   char        tbuff [BDJ4_PATH_MAX];
   char        lbuff [BDJ4_PATH_MAX];
+  char        cbuff [BDJ4_PATH_MAX];
   const char  *libnm = NULL;
 
   *tbuff = '\0';
@@ -936,7 +951,9 @@ sysvarsCheckVLCPath (void)
     stpecpy (tbuff, tbuff + sizeof (tbuff),
         "C:/Program Files/VideoLAN/VLC");
     libnm = "libvlc.dll";
-    sysvarsSetVLCLibPath (tbuff, lbuff, sizeof (lbuff), libnm);
+    sysvarsBuildVLCLibPath (tbuff, lbuff, sizeof (lbuff), libnm);
+    libnm = "libvlccore.dll";
+    sysvarsBuildVLCLibPath (tbuff, cbuff, sizeof (cbuff), libnm);
   }
   if (isMacOS ()) {
     /* determine if this is vlc-3 or vlc-4 */
@@ -946,11 +963,16 @@ sysvarsCheckVLCPath (void)
     stpecpy (tbuff, tbuff + sizeof (tbuff),
         "/Applications/VLC.app/Contents/MacOS/lib");
     libnm = "libvlc.dylib";
-    sysvarsSetVLCLibPath (tbuff, lbuff, sizeof (lbuff), libnm);
+    sysvarsBuildVLCLibPath (tbuff, lbuff, sizeof (lbuff), libnm);
+    libnm = "libvlccore.dylib";
+    sysvarsBuildVLCLibPath (tbuff, cbuff, sizeof (cbuff), libnm);
     if (! fileopFileExists (lbuff)) {
       stpecpy (tbuff, tbuff + sizeof (tbuff),
           "/Applications/VLC.app/Contents/Frameworks");
-      sysvarsSetVLCLibPath (tbuff, lbuff, sizeof (lbuff), libnm);
+      libnm = "libvlc.dylib";
+      sysvarsBuildVLCLibPath (tbuff, lbuff, sizeof (lbuff), libnm);
+      libnm = "libvlccore.dylib";
+      sysvarsBuildVLCLibPath (tbuff, cbuff, sizeof (cbuff), libnm);
       if (fileopFileExists (lbuff)) {
         lsysvars [SVL_VLC_VERSION] = 4;
         /* only on macos is the vlc version known */
@@ -958,24 +980,34 @@ sysvarsCheckVLCPath (void)
     }
   }
   if (isLinux ()) {
-    libnm = "libvlc.so.5";
+    /* this will probably fail to work with vlc-4, but that */
+    /* is not a serious issue on linux */
     /* the usual bunch */
     snprintf (tbuff, sizeof (tbuff), "/usr/lib/%s-linux-gnu",
         sysvarsGetStr (SV_OS_ARCH));
-    sysvarsSetVLCLibPath (tbuff, lbuff, sizeof (lbuff), libnm);
+    libnm = "libvlc.so.5";
+    sysvarsBuildVLCLibPath (tbuff, lbuff, sizeof (lbuff), libnm);
+    libnm = "libvlccore.so.9";
+    sysvarsBuildVLCLibPath (tbuff, cbuff, sizeof (cbuff), libnm);
     if (! fileopFileExists (lbuff)) {
       /* opensuse et.al. */
       stpecpy (tbuff, tbuff + sizeof (tbuff), "/usr/lib64");
-      sysvarsSetVLCLibPath (tbuff, lbuff, sizeof (lbuff), libnm);
+      libnm = "libvlc.so.5";
+      sysvarsBuildVLCLibPath (tbuff, lbuff, sizeof (lbuff), libnm);
+      libnm = "libvlccore.so.9";
+      sysvarsBuildVLCLibPath (tbuff, cbuff, sizeof (cbuff), libnm);
       if (! fileopFileExists (lbuff)) {
         /* alpine linux */
         stpecpy (tbuff, tbuff + sizeof (tbuff), "/usr/lib");
-        sysvarsSetVLCLibPath (tbuff, lbuff, sizeof (lbuff), libnm);
+        libnm = "libvlc.so.5";
+        sysvarsBuildVLCLibPath (tbuff, lbuff, sizeof (lbuff), libnm);
+        libnm = "libvlccore.so.9";
+        sysvarsBuildVLCLibPath (tbuff, cbuff, sizeof (cbuff), libnm);
       }
     }
   }
 
-  if (fileopFileExists (lbuff)) {
+  if (fileopFileExists (lbuff) && fileopFileExists (cbuff)) {
     sysvarsSetStr (SV_PATH_VLC, tbuff);
     sysvarsSetStr (SV_PATH_VLC_LIB, lbuff);
   }
@@ -1286,7 +1318,7 @@ sysvarsParseDistFileFree (sysdistinfo_t *distinfo)
 }
 
 static void
-sysvarsSetVLCLibPath (char *tbuff, char *lbuff, size_t sz, const char *libnm)
+sysvarsBuildVLCLibPath (char *tbuff, char *lbuff, size_t sz, const char *libnm)
 {
   char    *p;
 

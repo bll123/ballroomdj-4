@@ -22,7 +22,7 @@ case $systype in
     platform=unix
     sfx=
     ;;
-  MINGW64*)
+  MINGW64*|CYGWIN*)
     tag=win64
     platform=windows
     sfx=.exe
@@ -213,6 +213,13 @@ if [[ $DEVELOPMENT != dev ]]; then
     grc=1
   fi
 
+  grep '^#define MPI_ENABLED 0' src/libcont/smtc.c > /dev/null 2>&1
+  rc=$?
+  if [[ $rc -eq 0 ]]; then
+    echo "== WIN: MPI: disabled"
+    grc=1
+  fi
+
   grep '^#define LOCALE_DEBUG 0' src/libbasic/localeutil.c > /dev/null 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then
@@ -328,6 +335,9 @@ if [[ $platform == windows ]]; then
 
   libtag=""
   case $MSYSTEM in
+    "")
+      libtag=usr
+      ;;
     MINGW64)
       libtag=mingw64
       ;;
@@ -433,7 +443,7 @@ gtk-enable-animations = 0
 gtk-dialogs-use-header = 0
 gtk-overlay-scrolling = 0
 gtk-icon-theme-name = Adwaita
-gtk-theme-name = Windows-10-Dark
+gtk-theme-name = Adwaita:dark
 _HERE_
 
   mkdir -p plocal/etc/fonts

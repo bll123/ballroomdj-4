@@ -14,7 +14,7 @@
 #include "callback.h"
 #include "fileop.h"
 #include "log.h"
-#include "pathutil.h"
+#include "pathdisp.h"
 #include "tmutil.h"
 #include "uigeneral.h"
 #include "uiwcont.h"

@@ -246,16 +246,8 @@ case $systype in
   Darwin)
     tag=macos
     ;;
-  MINGW64*)
+  MINGW64*|CYGWIN*)
     tag=win64
-    case ${MSYSTEM} in
-      UCRT64)
-        ;;
-      MINGW64)
-        ;;
-      CLANG64)
-        ;;
-    esac
     ;;
   MINGW32*)
     echo "Platform not supported"
@@ -415,11 +407,12 @@ if [[ $mksrcpkg == T && $insttest == F ]]; then
         rsync -aS ${f} ${stagedir}/${dir}/fpcalc.exe
       fi
 
-      dirlist="packages/check* packages/ffmpeg* "
-      dirlist+="packages/flac* "
-      dirlist+="packages/libogg* packages/libvorbis* "
-      dirlist+="packages/opus* packages/opusfile* "
-      dirlist+="packages/bundles/Windows* "
+      dirlist="packages/check* packages/ffmpeg*"
+      dirlist+=" packages/flac* "
+      dirlist+=" packages/libogg* packages/libvorbis*"
+      dirlist+=" packages/opus* packages/opusfile*"
+      dirlist+=" packages/bundles/Windows*"
+      dirlist+=" packages/cmake-3"
       for d in $dirlist; do
         dir=$(dirname ${d})
         test -d ${stagedir}/${dir} || mkdir -p ${stagedir}/${dir}
@@ -574,8 +567,7 @@ case $tag in
 
     tfnl=$(find ${stagedir}/templates -name bdjconfig.txt.mp)
     for tfn in ${tfnl}*; do
-      sed -e '/UI_THEME/ { n ; s/.*/..Windows-10-Dark/ ; }' \
-          -e '/UIFONT/ { n ; s/.*/..Arial Regular 11/ ; }' \
+      sed -e '/UIFONT/ { n ; s/.*/..Arial Regular 11/ ; }' \
           -e '/LISTINGFONT/ { n ; s/.*/..Arial Regular 10/ ; }' \
           ${tfn} > ${tfn}.n
       mv -f ${tfn}.n ${tfn}

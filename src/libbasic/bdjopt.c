@@ -322,23 +322,27 @@ bdjoptInit (void)
   }
 
   /* added 4.4.8, make sure it is set */
-  if (nlistGetStr (bdjopt->bdjoptList, OPT_G_OLDORGPATH) == NULL) {
+  tstr = nlistGetStr (bdjopt->bdjoptList, OPT_G_OLDORGPATH);
+  if (tstr == NULL || ! *tstr) {
     nlistSetStr (bdjopt->bdjoptList, OPT_G_OLDORGPATH,
         nlistGetStr (bdjopt->bdjoptList, OPT_G_ORGPATH));
   }
 
   /* added 4.4.8, make sure it is set */
-  if (nlistGetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC_NM) == NULL) {
+  tstr = nlistGetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC_NM);
+  if (tstr == NULL || ! *tstr) {
     nlistSetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC_NM, "");
   }
 
   /* added 4.6.0, make sure it is set */
-  if (nlistGetStr (bdjopt->bdjoptList, OPT_P_MQ_INFO_SEP) == NULL) {
+  tstr = nlistGetStr (bdjopt->bdjoptList, OPT_P_MQ_INFO_SEP);
+  if (tstr == NULL || ! *tstr) {
     nlistSetStr (bdjopt->bdjoptList, OPT_P_MQ_INFO_SEP, "/");
   }
 
   /* added 4.8.3, make sure it is set */
-  if (nlistGetStr (bdjopt->bdjoptList, OPT_P_PLAYER_UI_SEP) == NULL) {
+  tstr = nlistGetStr (bdjopt->bdjoptList, OPT_P_PLAYER_UI_SEP);
+  if (tstr == NULL || ! *tstr) {
     nlistSetStr (bdjopt->bdjoptList, OPT_P_PLAYER_UI_SEP, ":");
   }
 
@@ -348,7 +352,8 @@ bdjoptInit (void)
   }
 
   /* added 4.11.0, make sure it is set */
-  if (nlistGetStr (bdjopt->bdjoptList, OPT_P_UI_MARK_TEXT) == NULL) {
+  tstr = nlistGetStr (bdjopt->bdjoptList, OPT_P_UI_MARK_TEXT);
+  if (tstr == NULL || ! *tstr) {
     /* left five-eights block */
     nlistSetStr (bdjopt->bdjoptList, OPT_P_UI_MARK_TEXT, "\xe2\x96\x8B");
   }
@@ -364,11 +369,14 @@ bdjoptInit (void)
   pli = nlistGetStr (bdjopt->bdjoptList, OPT_M_PLAYER_INTFC);
   if (pli != NULL && strncmp (pli, "libplivlc", 9) == 0) {
     const char  *vlcpath;
+    const char  *vlclib;
 
     vlcpath = sysvarsGetStr (SV_PATH_VLC);
+    vlclib = sysvarsGetStr (SV_PATH_VLC_LIB);
     if (! vlccheckdone &&
         (isLinux () || isWindows ()) &&
-        (fileopFileExists (vlcpath) || fileopIsDirectory (vlcpath))) {
+        (fileopFileExists (vlcpath) || fileopIsDirectory (vlcpath)) &&
+        fileopFileExists (vlclib)) {
       char    tbuff [BDJ4_PATH_MAX];
       char    *data;
 
@@ -411,7 +419,8 @@ bdjoptInit (void)
   }
 
   /* added for macos ui */
-  if (nlistGetStr (bdjopt->bdjoptList, OPT_P_MQ_BG_COL) == NULL) {
+  tstr = nlistGetStr (bdjopt->bdjoptList, OPT_P_MQ_BG_COL);
+  if (tstr == NULL || ! *tstr) {
     nlistSetStr (bdjopt->bdjoptList, OPT_P_MQ_BG_COL, "#f6f5f4");
   }
 
@@ -422,29 +431,39 @@ bdjoptInit (void)
 
   /* 4.12.3, moved font and theme to per-machine from per-machine-per-profile */
   tstr = nlistGetStr (bdjopt->bdjoptList, OPT_M_UI_FONT);
-  if (tstr == NULL) {
+  if (tstr == NULL || ! *tstr) {
     tstr = nlistGetStr (bdjopt->bdjoptList, OPT_MP_UIFONT);
-    nlistSetStr (bdjopt->bdjoptList, OPT_M_UI_FONT, tstr);
+    if (tstr != NULL && *tstr) {
+      nlistSetStr (bdjopt->bdjoptList, OPT_M_UI_FONT, tstr);
+    }
   }
   tstr = nlistGetStr (bdjopt->bdjoptList, OPT_M_UI_THEME);
-  if (tstr == NULL) {
+  if (tstr == NULL || ! *tstr) {
     tstr = nlistGetStr (bdjopt->bdjoptList, OPT_MP_UI_THEME);
-    nlistSetStr (bdjopt->bdjoptList, OPT_M_UI_THEME, tstr);
+    if (tstr != NULL && *tstr) {
+      nlistSetStr (bdjopt->bdjoptList, OPT_M_UI_THEME, tstr);
+    }
   }
   tstr = nlistGetStr (bdjopt->bdjoptList, OPT_M_MQ_FONT);
-  if (tstr == NULL) {
+  if (tstr == NULL || ! *tstr) {
     tstr = nlistGetStr (bdjopt->bdjoptList, OPT_MP_MQFONT);
-    nlistSetStr (bdjopt->bdjoptList, OPT_M_MQ_FONT, tstr);
+    if (tstr != NULL && *tstr) {
+      nlistSetStr (bdjopt->bdjoptList, OPT_M_MQ_FONT, tstr);
+    }
   }
   tstr = nlistGetStr (bdjopt->bdjoptList, OPT_M_MQ_THEME);
-  if (tstr == NULL) {
+  if (tstr == NULL || ! *tstr) {
     tstr = nlistGetStr (bdjopt->bdjoptList, OPT_MP_MQ_THEME);
-    nlistSetStr (bdjopt->bdjoptList, OPT_M_MQ_THEME, tstr);
+    if (tstr != NULL && *tstr) {
+      nlistSetStr (bdjopt->bdjoptList, OPT_M_MQ_THEME, tstr);
+    }
   }
   tstr = nlistGetStr (bdjopt->bdjoptList, OPT_M_LISTING_FONT);
-  if (tstr == NULL) {
+  if (tstr == NULL || ! *tstr) {
     tstr = nlistGetStr (bdjopt->bdjoptList, OPT_MP_LISTING_FONT);
-    nlistSetStr (bdjopt->bdjoptList, OPT_M_LISTING_FONT, tstr);
+    if (tstr != NULL && *tstr) {
+      nlistSetStr (bdjopt->bdjoptList, OPT_M_LISTING_FONT, tstr);
+    }
   }
 
   for (int i = 0; i < BDJ4_QUEUE_MAX; ++i) {
@@ -470,7 +489,7 @@ bdjoptInit (void)
 
   /* added 4.15.5.1, default to sourceforge */
   tstr = nlistGetStr (bdjopt->bdjoptList, OPT_DOWNLOAD_SUFFIX);
-  if (tstr == NULL) {
+  if (tstr == NULL || ! *tstr) {
     tstr = "v{VERSION}";
     nlistSetStr (bdjopt->bdjoptList, OPT_DOWNLOAD_SUFFIX, tstr);
   }

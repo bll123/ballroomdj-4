@@ -52,7 +52,7 @@ typedef enum {
 
 typedef struct songfilter songfilter_t;
 
-NODISCARD songfilter_t  * songfilterAlloc (void);
+BDJ_NODISCARD songfilter_t  * songfilterAlloc (void);
 void          songfilterFree (songfilter_t *sf);
 void          songfilterReset (songfilter_t *sf);
 nlist_t       * songfilterGetList (songfilter_t *sf);

@@ -2,6 +2,8 @@
 
 ### Contributing to BallroomDJ 4 Development
 
+Practice the three C's: Consideration, Cooperations, Conscientousness.
+
 As of 2025-8-9, development needs are:
 
 * Translations
@@ -29,8 +31,7 @@ As of 2025-8-9, development needs are:
     * Flutter
     * Windows Native UI (winrt preferred)
     * MacOS Native UI
-      Some attempt has been made for this. Progress is stopped at this time.
-      This could be written using SwiftUI.
+      Some more progress has been made on this as of 2026-1.
     * Tablets/iPad: Android / iOS
       This would be a major task.
       A completely new UI/UX would need to be designed for the small screen.
@@ -45,4 +46,4 @@ Testing, Quality&nbsp;Assurance, Documentation, Website&nbsp;Management,
 System&nbsp;Administration
 
 [Wiki Home](Home)
-<br>_(Updated 2026-01-03 18:06:33; BDJ4 version 4.17.7.1)_
+<br>_(Updated 2026-02-16 20:57:39; BDJ4 version 4.17.11)_

@@ -7,24 +7,46 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <wchar.h>
 
-#include "mdebug.h"
+#if __has_include (<windows.h>)
+# define WIN32_LEAN_AND_MEAN 1
+# include <windows.h>
+#endif
+
 #include "pathdisp.h"
-#include "sysvars.h"
+
+/* use #if _WIN32 here so there is no dependency on sysvars */
 
 void
-pathDisplayPath (char *buff, size_t len)
+pathDisplayPath (char *path, size_t sz)
 {
-  if (! isWindows ()) {
-    return;
+#if _WIN32
+  for (size_t i = 0; i < sz; ++i) {
+    if (path [i] == '\0') {
+      break;
+    }
+    if (path [i] == '/') {
+      path [i] = '\\';
+    }
   }
+#endif
+  return;
+}
 
+void
+pathNormalizePath (char *buff, size_t len)
+{
+#if _WIN32
   for (size_t i = 0; i < len; ++i) {
     if (buff [i] == '\0') {
       break;
     }
-    if (buff [i] == '/') {
-      buff [i] = '\\';
+    if (buff [i] == '\\') {
+      buff [i] = '/';
     }
   }
+#endif
+  return;
 }
+

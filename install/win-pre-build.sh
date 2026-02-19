@@ -2,7 +2,7 @@
 #
 # Copyright 2023-2026 Brad Lanam Pleasant Hill CA
 #
-ver=1
+ver=2
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -24,6 +24,8 @@ getresponse () {
 }
 
 case $(uname -s) in
+  CYGWIN*)
+    ;;
   MINGW64*)
     case ${MSYSTEM} in
       UCRT64)
@@ -47,13 +49,13 @@ pacman -S --noconfirm --needed \
     make rsync vim tar unzip zip diffutils dos2unix \
     gettext gettext-devel \
     mingw-w64-ucrt-x86_64-gcc \
-    mingw-w64-ucrt-x86_64-gcc-objc \
     mingw-w64-ucrt-x86_64-pkgconf \
     mingw-w64-ucrt-x86_64-gtk3 \
-    mingw-w64-ucrt-x86_64-cmake \
-    mingw-w64-ucrt-x86_64-icu \
     mingw-w64-ucrt-x86_64-json-c \
     mingw-w64-ucrt-x86_64-libgcrypt \
-    mingw-w64-ucrt-x86_64-c-ares
+    mingw-w64-ucrt-x86_64-curl \
+    mingw-w64-ucrt-x86_64-librsvg \
+    mingw-w64-ucrt-x86_64-icu \
+    mingw-w64-ucrt-x86_64-cppwinrt
 
 exit 0

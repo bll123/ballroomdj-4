@@ -132,6 +132,7 @@ enum {
   INST_CB_INSTALL,
   INST_CB_REINST,
   INST_CB_CONV,
+  INST_CB_REQUEST_VLC,
   INST_CB_MAX,
 };
 
@@ -146,6 +147,7 @@ enum {
   INST_W_FEEDBACK_MSG,
   INST_W_CONVERT,
   INST_W_CONV_FEEDBACK_MSG,
+  INST_W_REQUEST_VLC,
   INST_W_VLC_MSG,
   INST_W_STATUS_DISP,
   INST_W_TARGET,
@@ -158,12 +160,14 @@ enum {
   INST_BDJ3LOC,
 };
 
+static const char *VLCName = "VLC";
+
 typedef struct {
   installstate_t  instState;
   installstate_t  lastInstState;            // debugging
   callback_t      *callbacks [INST_CB_MAX];
   char            *home;
-  char            *target;
+  char            target [BDJ4_PATH_MAX];
   char            *hostname;
   char            *macospfx;
   char            rundir [BDJ4_PATH_MAX];      // installation dir with macospfx
@@ -223,6 +227,7 @@ static void installerBuildUI (installer_t *installer);
 static int  installerMainLoop (void *udata);
 static bool installerExitCallback (void *udata);
 static bool installerReinstallCBHandler (void *udata);
+static bool installerRequestVLCCBHandler (void *udata);
 static bool installerConversionCBHandler (void *udata);
 static bool installerTargetDirDialog (void *udata);
 static void installerSetBDJ3LocEntry (installer_t *installer, const char *bdj3loc);
@@ -331,7 +336,7 @@ main (int argc, char *argv[])
   installer.home = NULL;
   installer.instState = INST_INITIALIZE;
   installer.lastInstState = INST_INITIALIZE;
-  installer.target = mdstrdup ("");
+  installer.target [0] = '\0';
   installer.macospfx = "";
   installer.rundir [0] = '\0';
   installer.bdj3loc = mdstrdup ("");
@@ -340,8 +345,7 @@ main (int argc, char *argv[])
   installer.tclshloc = NULL;
   installer.currdir [0] = '\0';
   /* CONTEXT: installer: status message */
-  installer.pleasewaitmsg = _("Please wait\xe2\x80\xa6");
-
+  installer.pleasewaitmsg = NULL;
   installer.aborted = false;
   installer.bdjoptloaded = false;
   installer.clean = true;
@@ -387,6 +391,8 @@ main (int argc, char *argv[])
     installer.macospfx = MACOS_APP_PREFIX;
   }
 
+  /* CONTEXT: installer: status message */
+  installer.pleasewaitmsg = _("Please wait\xe2\x80\xa6");
   installer.hostname = sysvarsGetStr (SV_HOSTNAME);
   installer.home = sysvarsGetStr (SV_HOME);
 
@@ -409,6 +415,9 @@ main (int argc, char *argv[])
 
       snprintf (tbuff, sizeof (tbuff), "/%s/", sysvarsGetStr (SV_USER));
       tmp = regexReplaceLiteral (buff, WINUSERNAME_SL, tbuff);
+      stpecpy (buff, buff + sizeof (buff), tmp);
+      snprintf (tbuff, sizeof (tbuff), "%s/", installer.home);
+      tmp = regexReplaceLiteral (buff, WINUSERPROFILE_SL, tbuff);
       stpecpy (buff, buff + sizeof (buff), tmp);
       dataFree (tmp);
     }
@@ -460,6 +469,7 @@ main (int argc, char *argv[])
         if (optarg != NULL) {
           targ = bdj4argGet (bdj4arg, optind - 1, optarg);
           stpecpy (installer.unpackdir, installer.unpackdir + sizeof (installer.unpackdir), targ);
+          pathRealPath (installer.unpackdir, sizeof (installer.unpackdir));
           pathNormalizePath (installer.unpackdir, sizeof (installer.unpackdir));
         }
         break;
@@ -510,7 +520,6 @@ main (int argc, char *argv[])
     if (installer.verbose) {
       fprintf (stdout, "finish NG\n");
     }
-    dataFree (installer.target);
     dataFree (installer.bdj3loc);
     bdj4argCleanup (bdj4arg);
     mdebugReport ();
@@ -542,8 +551,6 @@ main (int argc, char *argv[])
       }
     }
   }
-
-  pathDisplayPath (installer.target, strlen (installer.target));
 
   if (installer.guienabled) {
     char      *uifont;
@@ -577,8 +584,10 @@ main (int argc, char *argv[])
   installerCheckPackages (&installer);
 
   if (installer.guienabled) {
+    pathDisplayPath (installer.target, sizeof (installer.target));
     uiEntrySetValue (installer.wcont [INST_W_TARGET], installer.target);
   }
+
   installerSetBDJ3LocEntry (&installer, installer.bdj3loc);
   installerConversionFeedbackMsg (&installer);
 
@@ -795,12 +804,31 @@ installerBuildUI (installer_t *installer)
   uiWidgetSetMarginBottom (uiwidgetp, 2);
   uiwcontFree (uiwidgetp);
 
+  if (isWindows ()) {
+    /* begin line : request VLC */
+    hbox = uiCreateHorizBox ();
+    uiWidgetExpandHoriz (hbox);
+    uiBoxPackStart (vbox, hbox);
+
+    /* CONTEXT: installer: checkbox: windows: request VLC installation */
+    snprintf (tbuff, sizeof (tbuff), _("Please install %s"), VLCName);
+    installer->wcont [INST_W_REQUEST_VLC] = uiCreateCheckButton (tbuff, 0);
+    uiBoxPackStart (hbox, installer->wcont [INST_W_REQUEST_VLC]);
+    uiWidgetSetMarginStart (installer->wcont [INST_W_REQUEST_VLC], 4);
+    installer->callbacks [INST_CB_REQUEST_VLC] = callbackInit (
+        installerRequestVLCCBHandler, installer, NULL);
+    uiToggleButtonSetCallback (installer->wcont [INST_W_REQUEST_VLC],
+        installer->callbacks [INST_CB_REQUEST_VLC]);
+
+    uiwcontFree (hbox);
+  }
+
   /* begin line : vlc message */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateColonLabel ("VLC");
+  uiwidgetp = uiCreateColonLabel (VLCName);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
@@ -834,7 +862,7 @@ installerBuildUI (installer_t *installer)
   uiBoxPackEnd (hbox, uiwidgetp);
   installer->wcont [INST_W_BUTTON_INSTALL] = uiwidgetp;
 
-  uiwidgetp = uiTextBoxCreate (250, INST_HL_COLOR);
+  uiwidgetp = uiTextBoxCreate (175, INST_HL_COLOR);
   uiTextBoxSetReadonly (uiwidgetp);
   uiTextBoxHorizExpand (uiwidgetp);
   uiTextBoxVertExpand (uiwidgetp);
@@ -1047,6 +1075,17 @@ installerReinstallCBHandler (void *udata)
   nval = uiToggleButtonIsActive (installer->wcont [INST_W_RE_INSTALL]);
   installer->reinstall = nval;
   installerTargetFeedbackMsg (installer);
+  return UICB_CONT;
+}
+
+static bool
+installerRequestVLCCBHandler (void *udata)
+{
+  installer_t   *installer = udata;
+  int           nval;
+
+  nval = uiToggleButtonIsActive (installer->wcont [INST_W_REQUEST_VLC]);
+  installerCheckPackages (installer);
   return UICB_CONT;
 }
 
@@ -1339,7 +1378,8 @@ installerSetPaths (installer_t *installer)
 {
   installerSetRundir (installer, installer->target);
 
-  stpecpy (installer->datatopdir, installer->datatopdir + sizeof (installer->datatopdir), installer->rundir);
+  stpecpy (installer->datatopdir,
+      installer->datatopdir + sizeof (installer->datatopdir), installer->rundir);
   if (isMacOS ()) {
     snprintf (installer->datatopdir, sizeof (installer->datatopdir),
         "%s%s/%s", installer->home, MACOS_DIR_LIBDATA, installer->name);
@@ -1372,6 +1412,7 @@ installerTargetDirDialog (void *udata)
     /* the validation routine gets called upon set, */
     /* which will call the set-target routine */
     pathDisplayPath (tbuff, sizeof (tbuff));
+    pathLongPath (tbuff, sizeof (tbuff));
     uiEntrySetValue (installer->wcont [INST_W_TARGET], tbuff);
     mdfree (fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected target loc: %s", installer->target);
@@ -1484,6 +1525,8 @@ installerInstallCallback (void *udata)
 static void
 installerVerifyInstInit (installer_t *installer)
 {
+  logBasic ("verify-inst-init\n");
+
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ACTION, _("Verifying installation."), false);
   installerDisplayText (installer, INST_DISP_STATUS, installer->pleasewaitmsg, false);
@@ -1505,6 +1548,8 @@ installerVerifyInstall (installer_t *installer)
   char        tmp [40];
   char        tbuff [BDJ4_PATH_MAX];
   const char  *targv [3];
+
+  logBasic ("verify-install\n");
 
   if (isWindows ()) {
     /* verification on windows is too slow */
@@ -1532,6 +1577,8 @@ installerVerifyInstall (installer_t *installer)
 static void
 installerPrepare (installer_t *installer)
 {
+  logBasic ("prepare\n");
+
   /* to get initial feedback messages displayed and to set variables */
   installerValidateProcessTarget (installer, installer->target);
   installerValidateProcessBDJ3Loc (installer, installer->bdj3loc);
@@ -1554,6 +1601,8 @@ installerPrepare (installer_t *installer)
 static void
 installerInstInit (installer_t *installer)
 {
+  logBasic ("inst-init\n");
+
   installer->aborted = false;
 
   /* no possible installation could be made */
@@ -1580,6 +1629,8 @@ installerSaveTargetDir (installer_t *installer)
 {
   FILE        *fh;
 
+  logBasic ("save-tgt-dir\n");
+
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ACTION, _("Saving install location."), false);
 
@@ -1589,6 +1640,7 @@ installerSaveTargetDir (installer_t *installer)
     char  *tmp = installer->target;
 
     if (isWindows ()) {
+      char    hbuff [BDJ4_PATH_MAX];
       char    tbuff [BDJ4_PATH_MAX];
 
       /* On windows, the uninstall batch script reads the install path from */
@@ -1597,8 +1649,10 @@ installerSaveTargetDir (installer_t *installer)
       /* environment variable, and the installer and any windows scripts */
       /* must replace the variable with the user name. */
 
-      snprintf (tbuff, sizeof (tbuff), "/%s/", sysvarsGetStr (SV_USER));
-      tmp = regexReplaceLiteral (installer->target, tbuff, WINUSERNAME_SL);
+      snprintf (hbuff, sizeof (hbuff), "%s/", installer->home);
+      stpecpy (tbuff, tbuff + sizeof (tbuff), installer->target);
+      pathNormalizePath (tbuff, sizeof (tbuff));
+      tmp = regexReplaceLiteral (tbuff, hbuff, WINUSERPROFILE_SL);
     }
 
     fprintf (fh, "%s\n", tmp);
@@ -1617,6 +1671,8 @@ installerMakeTarget (installer_t *installer)
 {
   char            tbuff [BDJ4_PATH_MAX];
   sysversinfo_t   *versinfo;
+
+  logBasic ("make-tgt\n");
 
   diropMakeDir (installer->target);
   diropMakeDir (installer->rundir);
@@ -1637,6 +1693,8 @@ installerMakeTarget (installer_t *installer)
 static void
 installerCopyStart (installer_t *installer)
 {
+  logBasic ("copy-start\n");
+
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ACTION, _("Copying files."), false);
   installerDisplayText (installer, INST_DISP_STATUS, installer->pleasewaitmsg, false);
@@ -1658,6 +1716,8 @@ installerCopyFiles (installer_t *installer)
   char      tbuff [BDJ4_PATH_MAX];
   char      tmp [BDJ4_PATH_MAX];
 
+  logBasic ("copy-files\n");
+
   /* due to various reasons, symlinks were not being preserved on macos */
   /* during the installation process. */
   /* in order to properly install the locale/en and locale/nl symlinks, */
@@ -1676,16 +1736,17 @@ installerCopyFiles (installer_t *installer)
   }
 
   if (isWindows ()) {
+    char      thome [BDJ4_PATH_MAX];
     char      *trundir = NULL;
-    char      tuser [100];
 
     *tmp = '\0';
-    snprintf (tuser, sizeof (tuser), "/%s/", sysvarsGetStr (SV_USER));
+    snprintf (thome, sizeof (thome), "%s/", installer->home);
     trundir = regexReplaceLiteral (installer->rundir,
-        tuser, WINUSERNAME_SL);
+        thome, WINUSERPROFILE_SL);
     stpecpy (tmp, tmp + sizeof (tmp), trundir);
     dataFree (trundir);
     pathDisplayPath (tmp, sizeof (tmp));
+    pathShortPath (tmp, sizeof (tmp));
 
     snprintf (tbuff, sizeof (tbuff),
         "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl . \"%s\"",
@@ -1715,6 +1776,8 @@ installerCopyFiles (installer_t *installer)
 static void
 installerMakeDataTop (installer_t *installer)
 {
+  logBasic ("make-data-top\n");
+
   diropMakeDir (installer->datatopdir);
 
   if (osChangeDir (installer->datatopdir) < 0) {
@@ -1728,6 +1791,8 @@ installerMakeDataTop (installer_t *installer)
 static void
 installerCreateDirs (installer_t *installer)
 {
+  logBasic ("create-dirs\n");
+
   if (installer->updateinstall) {
     installerLoadBdjOpt (installer);
   }
@@ -1755,6 +1820,8 @@ installerCreateDirs (installer_t *installer)
 static void
 installerCopyTemplatesInit (installer_t *installer)
 {
+  logBasic ("copy-templates-init\n");
+
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ACTION, _("Copying template files."), false);
   installer->instState = INST_COPY_TEMPLATES;
@@ -1765,6 +1832,8 @@ installerCopyTemplates (installer_t *installer)
 {
   char    from [BDJ4_PATH_MAX];
   char    to [BDJ4_PATH_MAX];
+
+  logBasic ("copy-templates\n");
 
   if (osChangeDir (installer->datatopdir) < 0) {
     installerFailWorkingDir (installer, installer->datatopdir, "copytemplates");
@@ -1814,6 +1883,7 @@ installerConvertStart (installer_t *installer)
   char    *b3vp;
   char    *b3vend;
 
+  logBasic ("convert-start\n");
 
   if (! installer->convprocess) {
     installer->instState = INST_CREATE_LAUNCHER;
@@ -1970,6 +2040,8 @@ installerConvert (installer_t *installer)
   char        buffb [BDJ4_PATH_MAX];
   const char  *targv [15];
 
+  logBasic ("convert\n");
+
   fn = slistIterateKey (installer->convlist, &installer->convidx);
   if (fn == NULL) {
     installer->instState = INST_CONVERT_FINISH;
@@ -1997,6 +2069,8 @@ installerConvert (installer_t *installer)
 static void
 installerConvertFinish (installer_t *installer)
 {
+  logBasic ("convert-finish\n");
+
   installerLoadBdjOpt (installer);
 
   /* CONTEXT: installer: status message */
@@ -2007,8 +2081,10 @@ installerConvertFinish (installer_t *installer)
 static void
 installerCreateLauncher (installer_t *installer)
 {
+  logBasic ("create-launcher\n");
+
   if (osChangeDir (installer->rundir) < 0) {
-    installerFailWorkingDir (installer, installer->rundir, "CreateLauncher");
+    installerFailWorkingDir (installer, installer->rundir, "createlauncher");
     return;
   }
 
@@ -2051,6 +2127,8 @@ installerCreateLauncher (installer_t *installer)
 static void
 installerWinStartup (installer_t *installer)
 {
+  logBasic ("win-startup\n");
+
   if (osChangeDir (installer->rundir) < 0) {
     installerFailWorkingDir (installer, installer->rundir, "winstartup");
     return;
@@ -2075,6 +2153,8 @@ installerWinStartup (installer_t *installer)
 static void
 installerInstCleanTmp (installer_t *installer)
 {
+  logBasic ("clean-tmp\n");
+
   if (osChangeDir (installer->rundir) < 0) {
     installerFailWorkingDir (installer, installer->rundir, "instcleantmp");
     return;
@@ -2090,6 +2170,8 @@ installerSaveLocale (installer_t *installer)
 {
   char        tbuff [BDJ4_PATH_MAX];
   FILE        *fh;
+
+  logBasic ("save-locale\n");
 
   if (osChangeDir (installer->datatopdir) < 0) {
     installerFailWorkingDir (installer, installer->datatopdir, "savelocale");
@@ -2111,12 +2193,24 @@ static void
 installerVLCCheck (installer_t *installer)
 {
   char    tbuff [BDJ4_PATH_MAX];
+  int     requestvlc;
 
-  /* on linux, vlc is installed via other methods */
-  /* also on linux, gstreamer can be used even if there is no vlc */
+  logBasic ("vlc-check\n");
+
+
+  /* on Linux, VLC is installed via other methods */
+  /* also on linux, gstreamer can be used even if there is no VLC */
+  /* if VLC is already installed, don't bother with anything else */
+  if (installer->vlcinstalled || isLinux ()) {
+    installer->instState = INST_FINALIZE;
+    return;
+  }
+
   /* as of 2025-9-23 version 4.16.1, windows will use the */
-  /* windows media player interface */
-  if (installer->vlcinstalled || isLinux () || isWindows ()) {
+  /* windows media player interface by default */
+  /* a checkbox was added 2026-2-15 to request VLC installation */
+  requestvlc = uiToggleButtonIsActive (installer->wcont [INST_W_REQUEST_VLC]);
+  if (! installer->vlcinstalled && isWindows () && ! requestvlc) {
     installer->instState = INST_FINALIZE;
     return;
   }
@@ -2125,7 +2219,7 @@ installerVLCCheck (installer_t *installer)
 
   if (*installer->vlcversion) {
     /* CONTEXT: installer: status message */
-    snprintf (tbuff, sizeof (tbuff), _("Downloading %s."), "VLC");
+    snprintf (tbuff, sizeof (tbuff), _("Downloading %s."), VLCName);
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
     installerDisplayText (installer, INST_DISP_STATUS, installer->pleasewaitmsg, false);
     uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], installer->pleasewaitmsg);
@@ -2133,7 +2227,7 @@ installerVLCCheck (installer_t *installer)
   } else {
     snprintf (tbuff, sizeof (tbuff),
         /* CONTEXT: installer: status message */
-        _("Unable to determine %s version."), "VLC");
+        _("Unable to determine %s version."), VLCName);
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
 
     installer->instState = INST_FINALIZE;
@@ -2147,20 +2241,32 @@ installerVLCDownload (installer_t *installer)
   char  tbuff [BDJ4_PATH_MAX];
   int   wrc;
 
+  logBasic ("vlc-download\n");
+
   *url = '\0';
   *installer->dlfname = '\0';
   if (isWindows ()) {
+    const char  * platform = "win64";     /* intel */
+    const char  * arch;
+
+    arch = sysvarsGetStr (SV_OS_ARCH);
+    if (strcmp (arch, "arm64") == 0) {
+      platform = "winarm64";              /* arm */
+    }
+
     snprintf (installer->dlfname, sizeof (installer->dlfname),
-        "vlc-%s-win%" PRId64 ".exe",
-        installer->vlcversion, sysvarsGetNum (SVL_OS_BITS));
+        "vlc-%s-%s.exe", installer->vlcversion, platform);
+    /* for windows, the version is hard-coded, as VLC 4 does */
+    /* not work on windows and should not be downloaded */
     snprintf (url, sizeof (url),
-        "https://get.videolan.org/vlc/last/win%" PRId64 "/%s",
-        sysvarsGetNum (SVL_OS_BITS), installer->dlfname);
+        "https://get.videolan.org/vlc/%s/%s/%s",
+        installer->vlcversion, platform, installer->dlfname);
   }
+
   if (isMacOS ()) {
     char    *arch;
 
-    /* the os architecture on m1 is 'arm64' and includes the bits */
+    /* the os architecture on m1 is 'arm64' */
     /* the os architecture on intel is 'x86_64' */
     arch = sysvarsGetStr (SV_OS_ARCH);
     if (strcmp (arch, "x86_64") == 0) {
@@ -2172,6 +2278,7 @@ installerVLCDownload (installer_t *installer)
         "https://get.videolan.org/vlc/last/macosx/%s",
         installer->dlfname);
   }
+
   wrc = WEB_NO_CONTENT;
   if (*url && *installer->vlcversion) {
     wrc = webclientDownload (installer->webclient, url, installer->dlfname);
@@ -2183,14 +2290,14 @@ installerVLCDownload (installer_t *installer)
     removexattr (installer->dlfname, "com.apple.quarantine", XATTR_NOFOLLOW);
 #endif
     /* CONTEXT: installer: status message */
-    snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "VLC");
+    snprintf (tbuff, sizeof (tbuff), _("Installing %s."), VLCName);
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
     installerDisplayText (installer, INST_DISP_STATUS, installer->pleasewaitmsg, false);
     uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], installer->pleasewaitmsg);
     installer->instState = INST_VLC_INSTALL;
   } else {
     /* CONTEXT: installer: status message */
-    snprintf (tbuff, sizeof (tbuff), _("Download of %s failed."), "VLC");
+    snprintf (tbuff, sizeof (tbuff), _("Download of %s failed."), VLCName);
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
 
     installer->instState = INST_FINALIZE;
@@ -2204,6 +2311,8 @@ installerVLCInstall (installer_t *installer)
   int64_t     count;
   const char  *tmp;
 
+  logBasic ("vlc-install\n");
+
   if (fileopFileExists (installer->dlfname)) {
     if (isWindows ()) {
       snprintf (tbuff, sizeof (tbuff), ".\\%s", installer->dlfname);
@@ -2215,7 +2324,7 @@ installerVLCInstall (installer_t *installer)
     /* due to privilege escalation */
     (void) ! system (tbuff);
     /* CONTEXT: installer: status message */
-    snprintf (tbuff, sizeof (tbuff), _("%s installed."), "VLC");
+    snprintf (tbuff, sizeof (tbuff), _("%s installed."), VLCName);
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
     installer->vlcinstalled = true;
   }
@@ -2228,7 +2337,7 @@ installerVLCInstall (installer_t *installer)
   count = 0;
   sysvarsCheckVLCPath ();
   tmp = sysvarsGetStr (SV_PATH_VLC_LIB);
-  while (! *tmp && count < 30000000L) {
+  while (! *tmp && count < 30000000LL) {
     mssleep (10);
     sysvarsCheckVLCPath ();
     tmp = sysvarsGetStr (SV_PATH_VLC_LIB);
@@ -2236,7 +2345,13 @@ installerVLCInstall (installer_t *installer)
   }
 
   /* macos: at this point, VLC is partially installed */
-  /* as VLC is not used by the updater, it is ok to proceed */
+
+  /* wait a short while longer */
+  count = 0;
+  while (count < 200LL) {
+    mssleep (10);
+    ++count;
+  }
 
   fileopDelete (installer->dlfname);
   installerCheckPackages (installer);
@@ -2249,6 +2364,8 @@ installerFinalize (installer_t *installer)
 {
   char        tbuff [BDJ4_PATH_MAX];
 
+  logBasic ("finalize\n");
+
   uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], "");
 
   if (installer->newinstall || installer->reinstall) {
@@ -2259,10 +2376,19 @@ installerFinalize (installer_t *installer)
       instutilGetMusicDir (tbuff, sizeof (tbuff));
       bdjoptSetStr (OPT_M_DIR_MUSIC, tbuff);
       if (installer->newinstall && isWindows ()) {
+        int   requestvlc;
+
         /* only for new installations */
-        bdjoptSetStr (OPT_M_PLAYER_INTFC, "libpliwinmp");
-        /* CONTEXT: configuration: player interface: Windows Media Player */
-        bdjoptSetStr (OPT_M_PLAYER_INTFC_NM, _("Windows Media Player"));
+        requestvlc = uiToggleButtonIsActive (installer->wcont [INST_W_REQUEST_VLC]);
+        if (requestvlc) {
+          bdjoptSetStr (OPT_M_PLAYER_INTFC, "libplivlc");
+          /* CONTEXT: configuration: player interface: Integrated VLC 3 */
+          bdjoptSetStr (OPT_M_PLAYER_INTFC_NM, _("Integrated VLC 3"));
+        } else {
+          bdjoptSetStr (OPT_M_PLAYER_INTFC, "libpliwinmp");
+          /* CONTEXT: configuration: player interface: Windows Media Player */
+          bdjoptSetStr (OPT_M_PLAYER_INTFC_NM, _("Windows Media Player"));
+        }
       }
       bdjoptSave ();
     }
@@ -2343,6 +2469,8 @@ installerUpdateProcessInit (installer_t *installer)
 {
   char  buff [BDJ4_PATH_MAX];
 
+  logBasic ("upd-process-init\n");
+
   installer->altidx = 1;
 
   if (osChangeDir (installer->datatopdir) < 0) {
@@ -2377,6 +2505,8 @@ installerUpdateProcess (installer_t *installer)
   int   targc = 0;
   const char  *targv [10];
 
+  logBasic ("upd-process\n");
+
   snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4%s",
       installer->rundir, sysvarsGetStr (SV_OS_EXEC_EXT));
   targv [targc++] = tbuff;
@@ -2402,6 +2532,8 @@ installerUpdateAltProcessInit (installer_t *installer)
   char  tfn [BDJ4_PATH_MAX];
   FILE  *fh;
   char  altdir [BDJ4_PATH_MAX];
+
+  logBasic ("upd-alt-process-init\n");
 
   if (installer->altidx >= BDJ4_MAX_ALT) {
     installer->instState = INST_REGISTER_INIT;
@@ -2464,6 +2596,8 @@ installerRegisterInit (installer_t *installer)
 {
   char    tbuff [200];
 
+  logBasic ("register-init\n");
+
   uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], "");
 
   if (osChangeDir (installer->datatopdir) < 0) {
@@ -2472,6 +2606,7 @@ installerRegisterInit (installer_t *installer)
   }
 
   if ((strcmp (sysvarsGetStr (SV_USER), "bll") == 0 ||
+      strcmp (sysvarsGetStr (SV_USER), "bradl") == 0 ||
       strncmp (sysvarsGetStr (SV_USER), "test ", 5) == 0) &&
       ! installer->testregistration) {
     /* no need to register */
@@ -2490,6 +2625,8 @@ static void
 installerRegister (installer_t *installer)
 {
   char          tbuff [500];
+
+  logBasic ("register\n");
 
   snprintf (tbuff, sizeof (tbuff),
       "&bdj3version=%s&oldversion=%s"
@@ -2511,84 +2648,39 @@ installerRegister (installer_t *installer)
 static void
 installerCleanup (installer_t *installer)
 {
+  logBasic ("cleanup\n");
+
   /* make sure the installer is not in the bdj4-install dir before */
   /* the clean-inst process is run. */
   /* if installing read-only, there is no data-top-dir */
   /* if the installer was exited without installing, there is no rundir */
   if (osChangeDir (installer->rundir) < 0) {
-    char  tbuff [BDJ4_PATH_MAX];
+    char    tbuff [BDJ4_PATH_MAX];
 
     snprintf (tbuff, sizeof (tbuff), "%s/..", installer->unpackdir);
     if (osChangeDir (tbuff) < 0) {
-      installerFailWorkingDir (installer, installer->datatopdir, "cleanup");
-      return;
+      installerFailWorkingDir (installer, tbuff, "cleanup");
     }
+    return;
   }
 
-  if (installer->clean &&
-      fileopIsDirectory (installer->unpackdir)) {
-    char          buff [BDJ4_PATH_MAX];
+  if (installer->clean && fileopIsDirectory (installer->unpackdir)) {
+    char          ebuff [BDJ4_PATH_MAX];
+    char          tbuff [BDJ4_PATH_MAX];
+    const char    *targv [10];
+    int           targc = 0;
 
-    if (isWindows ()) {
-      char          ebuff [BDJ4_PATH_MAX];
-      char          tuser [100];
-      size_t        sz = 0;
-      char          *fdata;
-      char          *ndata;
-      FILE          *fh;
-      const char    *targv [10];
-      int           targc = 0;
+    snprintf (ebuff, sizeof (ebuff), "%s/bin/bdj4%s",
+        installer->rundir, sysvarsGetStr (SV_OS_EXEC_EXT));
+    pathNormalizePath (ebuff, sizeof (ebuff));
+    snprintf (tbuff, sizeof (tbuff), "%s", installer->unpackdir);
+    pathNormalizePath (tbuff, sizeof (tbuff));
 
-      /* create the batch file from a template. */
-      /* solves many quoting and startup issues. */
-
-      /* template */
-      snprintf (ebuff, sizeof (ebuff), "%s/install/win-clean-inst.bat",
-          installer->unpackdir);
-      fdata = filedataReadAll (ebuff, &sz);
-      if (fdata == NULL) {
-        return;
-      }
-
-      /* target filename */
-      snprintf (ebuff, sizeof (ebuff), "%s/bdj4-clean-inst.bat",
-          sysvarsGetStr (SV_DIR_CACHE_BASE));
-      fh = fileopOpen (ebuff, "w");
-      if (fh == NULL) {
-        return;
-      }
-
-      snprintf (tuser, sizeof (tuser), "/%s/", sysvarsGetStr (SV_USER));
-      ndata = regexReplaceLiteral (installer->unpackdir,
-          tuser, WINUSERNAME_SL);
-      stpecpy (buff, buff + sizeof (buff), ndata);
-      dataFree (ndata);
-      pathDisplayPath (buff, strlen (buff));
-      ndata = regexReplaceLiteral (fdata, "#UNPACKDIR#", buff);
-      fprintf (fh, "%s", ndata);
-      mdextfclose (fh);
-      fclose (fh);
-      dataFree (ndata);
-      dataFree (fdata);
-
-      /* target filename */
-      pathDisplayPath (ebuff, strlen (ebuff));
-      targv [targc++] = ebuff;
-      targv [targc++] = NULL;
-
-      osProcessStart (targv,
-          OS_PROC_DETACH | OS_PROC_NOSTDERR | OS_PROC_WINDOW_OK, NULL, NULL);
-      if (! sysvarsGetNum (SVL_IS_MSYS)) {
-        /* give windows a short bit to start the script */
-        mssleep (100);
-      }
-    }
-    if (! isWindows ()) {
-      /* cleaning up on not-windows is easy */
-      diropDeleteDir (installer->unpackdir, DIROP_ALL);
-    }
-  } else {
-    fprintf (stderr, "unpack-dir: %s\n", installer->unpackdir);
+    targv [targc++] = ebuff;
+    targv [targc++] = "--bdj4cleaninst";
+    targv [targc++] = tbuff;
+    targv [targc++] = NULL;
+    osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
   }
 
   if (installer->bdjoptloaded) {
@@ -2604,7 +2696,6 @@ installerCleanup (installer_t *installer)
     callbackFree (installer->callbacks [i]);
   }
 
-  dataFree (installer->target);
   dataFree (installer->bdj3loc);
   slistFree (installer->convlist);
   dataFree (installer->tclshloc);
@@ -2663,11 +2754,12 @@ installerSetRundir (installer_t *installer, const char *dir)
 static void
 installerVLCGetVersion (installer_t *installer)
 {
-  char      *p;
-  char      *e;
-  char      *platform;
-  char      tbuff [BDJ4_PATH_MAX];
-  int       wrc;
+  char        *p;
+  char        *e;
+  char        *platform;
+  char        tbuff [BDJ4_PATH_MAX];
+  int         wrc;
+  const char  * urlpath;
 
   *installer->vlcversion = '\0';
   installer->webresponse = NULL;
@@ -2678,17 +2770,29 @@ installerVLCGetVersion (installer_t *installer)
   /* linux is not installed via this method, nor does it have a  */
   /* directory in the videolan 'last' directory */
 
+  /* use this url path if only the latest version is wanted */
+  /* VLC 4 does not currently work on windows, so windows */
+  /* overrides this path */
+  urlpath = "https://get.videolan.org/vlc/last/%s/";
   platform = "macosx";
+
   if (isWindows ()) {
+    const char  * arch;
+
     platform = "win64";
+    arch = sysvarsGetStr (SV_OS_ARCH);
+    if (strcmp (arch, "arm64") == 0) {
+      platform = "winarm64";
+    }
+
     /* for the time being, until VLC version 4 is fixed on windows, */
-    /* hard-code the downloaded version to 3.0.21 */
+    /* hard-code the downloaded version to 3.0.23 */
     stpecpy (installer->vlcversion,
-        installer->vlcversion + sizeof (installer->vlcversion), "3.0.21");
+        installer->vlcversion + sizeof (installer->vlcversion), "3.0.23");
     return;
   }
 
-  snprintf (tbuff, sizeof (tbuff), "https://get.videolan.org/vlc/last/%s/", platform);
+  snprintf (tbuff, sizeof (tbuff), urlpath, platform);
 
   wrc = webclientGet (installer->webclient, tbuff);
 
@@ -2701,6 +2805,8 @@ installerVLCGetVersion (installer_t *installer)
     /* vlc-3.0.16-intel64.dmg */
     /* vlc-3.0.17.4-universal.dmg */
     /* vlc-3.0.17.4-win64.exe */
+    /* vlc-3.0.23-win64.exe */
+    /* vlc-3.0.23-winarm64.exe */
     p = strstr (installer->webresponse, srchvlc);
     if (p != NULL) {
       p += strlen (srchvlc);
@@ -2720,21 +2826,28 @@ installerCheckPackages (installer_t *installer)
 {
   char  tbuff [BDJ4_PATH_MAX];
   char  *tmp;
+  int   requestvlc;
 
 
   tmp = sysvarsGetStr (SV_PATH_VLC_LIB);
+  requestvlc = uiToggleButtonIsActive (installer->wcont [INST_W_REQUEST_VLC]);
 
   if (*tmp) {
     if (installer->guienabled && installer->uiBuilt) {
       /* CONTEXT: installer: display of package status */
-      snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "VLC");
+      snprintf (tbuff, sizeof (tbuff), _("%s is installed"), VLCName);
       uiLabelSetText (installer->wcont [INST_W_VLC_MSG], tbuff);
     }
     installer->vlcinstalled = true;
   } else {
     if (installer->guienabled && installer->uiBuilt) {
-      /* CONTEXT: installer: display of package status */
-      snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "VLC");
+      if (isWindows () && ! requestvlc) {
+        /* CONTEXT: installer: display of package status */
+        snprintf (tbuff, sizeof (tbuff), _("%s is not required on Windows"), VLCName);
+      } else {
+        /* CONTEXT: installer: display of package status */
+        snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), VLCName);
+      }
       uiLabelSetText (installer->wcont [INST_W_VLC_MSG], tbuff);
     }
     installer->vlcinstalled = false;
@@ -2755,6 +2868,7 @@ static void
 installerFailWorkingDir (installer_t *installer, const char *dir, const char *msg)
 {
   fprintf (stderr, "Unable to set working dir: %s (%s)\n", dir, msg);
+  fprintf (stderr, "Unable to set working dir: (%s)\n", msg);
   /* CONTEXT: installer: failure message */
   installerDisplayText (installer, INST_DISP_ERROR, _("Error: Unable to set working folder."), false);
   /* CONTEXT: installer: status message */
@@ -2771,13 +2885,14 @@ installerSetTargetDir (installer_t *installer, const char *fn)
 
   /* fn may be pointing to an allocated value, which is installer->target */
   tmp = mdstrdup (fn);
-  dataFree (installer->target);
-  installer->target = tmp;
-  pathNormalizePath (installer->target, strlen (installer->target));
+  stpecpy (installer->target,
+      installer->target + sizeof (installer->target), tmp);
 
   pi = pathInfo (installer->target);
   snprintf (installer->name, sizeof (installer->name), "%.*s",
       (int) pi->blen, pi->basename);
+
+  dataFree (tmp);
   pathInfoFree (pi);
 
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "set target: %s", installer->target);

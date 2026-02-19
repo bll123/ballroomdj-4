@@ -2,10 +2,10 @@
 # -- english/us
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.17.10\n"
+"Project-Id-Version: ballroomdj-4 4.17.11\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2026-01-19\n"
-"PO-Revision-Date: 2026-01-19\n"
+"POT-Creation-Date: 2026-02-16\n"
+"PO-Revision-Date: 2026-02-16\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -1118,6 +1118,11 @@ msgstr ""
 msgid "Convert %s"
 msgstr ""
 
+#. CONTEXT: installer: checkbox: windows: request VLC installation
+#, c-format
+msgid "Please install %s"
+msgstr ""
+
 #. CONTEXT: installer: status message
 msgid "Installation complete."
 msgstr ""
@@ -1232,6 +1237,11 @@ msgstr ""
 msgid "%s installed."
 msgstr ""
 
+#. CONTEXT: configuration: player interface: Integrated VLC 3
+#. CONTEXT: config: integrated VLC 3
+msgid "Integrated VLC 3"
+msgstr ""
+
 #. CONTEXT: configuration: player interface: Windows Media Player
 msgid "Windows Media Player"
 msgstr ""
@@ -1248,11 +1258,12 @@ msgstr ""
 
 #. CONTEXT: installer: display of package status
 #, c-format
-msgid "%s is not installed"
+msgid "%s is not required on Windows"
 msgstr ""
 
-#. CONTEXT: config: integrated VLC 3
-msgid "Integrated VLC 3"
+#. CONTEXT: installer: display of package status
+#, c-format
+msgid "%s is not installed"
 msgstr ""
 
 #. CONTEXT: config: integrated VLC 4

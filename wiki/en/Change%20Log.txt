@@ -4,9 +4,22 @@
 
 <!--
 
-**4.17.10 2026-1-19**
+**4.17.12 2026-2---**
 
 -->
+
+**4.17.11 2026-2-16**
+
+* Bug Fixes:
+    * Installer: Fix a non-localized message.
+    * Windows: Fix handling of account names with international characters.
+    * Windows: Fix installation when OneDrive is active.
+    * Windows: Fix uninstaller.
+* Changes:
+    * Windows: Change the default theme to Adwaita:dark
+    * Windows: Installer: Add an option to request VLC installation.
+* Internal:
+    * Update libmp4tag to version 2.0.3.
 
 **4.17.10 2026-1-19**
 
@@ -1442,4 +1455,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2026-01-19 11:10:20; BDJ4 version 4.17.10)_
+<br>_(Updated 2026-02-18 17:44:35; BDJ4 version 4.17.11)_

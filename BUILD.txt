@@ -133,5 +133,4 @@ Windows
   cd \msys64\home\USER
   cd bdj4-4*
   # bdj4-installer-win64-VERSION.exe
-  .\bdj4-installer-win64*
-
+  .\bdj4-installer-win64-VERSION.exe

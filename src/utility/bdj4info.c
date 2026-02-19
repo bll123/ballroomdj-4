@@ -23,6 +23,7 @@
 
 #include "bdj4.h"
 #include "bdj4arg.h"
+#include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjvars.h"
 #include "fileop.h"
@@ -40,7 +41,12 @@ static const char *envitems [] = {
   "GTK_CSD",
   "GTK_THEME",
   "HOME",
+  "LANGUAGE",
   "LC_ALL",
+  "LC_COLLATE",
+  "LC_CTYPE",
+  "LC_MESSAGES",
+  "LC_NUMERIC",
   "NUMBER_OF_PROCESSORS",
   "PANGOCAIRO_BACKEND",
   "PATH",
@@ -144,6 +150,9 @@ main (int argc, char *argv [])
   }
 
   bdjvarsUpdateData ();
+
+  /* translation test */
+  fprintf (stdout, "xlate: %s\n", _("Waltz"));
 
   /* C language: integer sizes */
 

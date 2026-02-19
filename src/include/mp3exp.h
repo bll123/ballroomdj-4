@@ -12,7 +12,7 @@ extern "C" {
 
 typedef struct mp3exp mp3exp_t;
 
-NODISCARD mp3exp_t *mp3ExportInit (char *msgdata, musicdb_t *musicdb, const char *dirname, int mqidx);
+BDJ_NODISCARD mp3exp_t *mp3ExportInit (char *msgdata, musicdb_t *musicdb, const char *dirname, int mqidx);
 void mp3ExportFree (mp3exp_t *mp3exp);
 void mp3ExportGetCount (mp3exp_t *mp3exp, int *count, int *tot);
 bool mp3ExportQueue (mp3exp_t *mp3exp);

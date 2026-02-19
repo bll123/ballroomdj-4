@@ -30,6 +30,99 @@ DEPBASIC=dep-libbasic.txt
 DEPBDJ4=dep-libbdj4.txt
 grc=0
 
+# check to make sure the include files can be compiled w/o dependencies
+echo "## checking include file compilation"
+test -f $INCTOUT && rm -f $INCTOUT
+for fn in include/*.h include/ui/*.h; do
+  case $fn in
+    *uimacos-int.h)
+      continue
+      ;;
+    ui*.h)
+      if [[ $systype == Darwin ]]; then
+        continue;
+      fi
+      ;;
+  esac
+  bfn=$(echo $fn | sed 's,include/,,')
+  cat > $INCTC << _HERE_
+#include "config.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#include "${bfn}"
+
+int
+main (int argc, char *argv [])
+{
+  return 0;
+}
+_HERE_
+  cc -c \
+      -DBDJ4_UI_GTK3=1 \
+      -I build -I include \
+      $(pkg-config --cflags gtk+-3.0) \
+      $(pkg-config --cflags glib-2.0) \
+      -I mongoose \
+      $INCTC >> $INCTOUT 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "compile of $bfn failed"
+    if [[ $rc -ne 0 ]]; then
+      grc=$rc
+    fi
+  fi
+  rm -f $INCTC $INCTO
+done
+rm -f $INCTC $INCTO
+if [[ $grc -ne 0 ]]; then
+  exit $grc
+fi
+rm -f $INCTOUT
+
+# check the include file hierarchy for problems.
+echo "## checking include file hierarchy"
+> $TIIN
+for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h build/config.h; do
+  echo $fn $fn >> $TIIN
+  grep -E '^# *include "' $fn |
+      sed -e 's,^# *include ",,' \
+      -e 's,".*$,,' \
+      -e "s,^,$fn include/," >> $TIIN
+done
+tsort < $TIIN > $TISORT
+rc=$?
+
+if [[ $keep == F ]]; then
+  rm -f $TIIN $TISORT > /dev/null 2>&1
+fi
+if [[ $rc -ne 0 ]]; then
+  grc=$rc
+  exit $grc
+fi
+
+# check the object file hierarchy for problems.
+echo "## checking object file hierarchy"
+#
+OBJEXT=.o
+LORD=./utils/lorder
+case ${systype} in
+  Darwin)
+    LORD=lorder
+    ;;
+  MINGW64*)
+    OBJEXT=.obj
+    ;;
+esac
+${LORD} $(find ./build -name '*'${OBJEXT}) > $TOIN
+tsort < $TOIN > $TOSORT
+rc=$?
+if [[ $rc -ne 0 ]]; then
+  grc=$rc
+fi
+
 # check for unused functions
 echo "## checking for unused functions"
 grep -E '^[a-zA-Z0-9]* \(' */*.c */*.cpp */*.m |
@@ -103,86 +196,6 @@ for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h \
 done
 if [[ $grc != 0 ]]; then
   exit $grc
-fi
-
-# check to make sure the include files can be compiled w/o dependencies
-echo "## checking include file compilation"
-test -f $INCTOUT && rm -f $INCTOUT
-for fn in include/*.h include/ui/*.h; do
-  case $fn in
-    *uimacos-int.h)
-      if [[ $systype == Linux ]]; then
-        continue
-      fi
-      ;;
-  esac
-  bfn=$(echo $fn | sed 's,include/,,')
-  cat > $INCTC << _HERE_
-#include "config.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-
-#include "${bfn}"
-
-int
-main (int argc, char *argv [])
-{
-  return 0;
-}
-_HERE_
-  cc -c \
-      -DBDJ4_UI_GTK3=1 \
-      -I build -I include \
-      $(pkg-config --cflags gtk+-3.0) \
-      $(pkg-config --cflags glib-2.0) \
-      -I mongoose \
-      $INCTC >> $INCTOUT 2>&1
-  rc=$?
-  if [[ $rc -ne 0 ]]; then
-    echo "compile of $bfn failed"
-    if [[ $rc -ne 0 ]]; then
-      grc=$rc
-    fi
-  fi
-  rm -f $INCTC $INCTO
-done
-rm -f $INCTC $INCTO
-if [[ $grc -ne 0 ]]; then
-  exit $grc
-fi
-rm -f $INCTOUT
-
-# check the include file hierarchy for problems.
-echo "## checking include file hierarchy"
-> $TIIN
-for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h build/config.h; do
-  echo $fn $fn >> $TIIN
-  grep -E '^# *include "' $fn |
-      sed -e 's,^# *include ",,' \
-      -e 's,".*$,,' \
-      -e "s,^,$fn include/," >> $TIIN
-done
-tsort < $TIIN > $TISORT
-rc=$?
-
-if [[ $keep == F ]]; then
-  rm -f $TIIN $TISORT > /dev/null 2>&1
-fi
-if [[ $rc -ne 0 ]]; then
-  grc=$rc
-  exit $grc
-fi
-
-# check the object file hierarchy for problems.
-echo "## checking object file hierarchy"
-#
-./utils/lorder $(find ./build -name '*.o') > $TOIN
-tsort < $TOIN > $TOSORT
-rc=$?
-if [[ $rc -ne 0 ]]; then
-  grc=$rc
 fi
 
 if [[ $keep == T ]]; then

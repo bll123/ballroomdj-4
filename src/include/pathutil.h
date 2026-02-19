@@ -8,8 +8,10 @@ extern "C" {
 #endif
 
 void          pathStripPath (char *buff, size_t len);
-void          pathNormalizePath (char *buff, size_t len);
-void          pathRealPath (char *to, const char *from, size_t sz);
+void          pathRealPath (char *path, size_t sz);
+/* these are used for windows */
+void          pathShortPath (char *path, size_t sz);
+void          pathLongPath (char *path, size_t sz);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

@@ -17,7 +17,7 @@ typedef void (*queueFree_t)(void *);
 typedef struct queuenode queuenode_t;
 typedef struct queue queue_t;
 
-NODISCARD queue_t *queueAlloc (const char *name, queueFree_t freeHook);
+BDJ_NODISCARD queue_t *queueAlloc (const char *name, queueFree_t freeHook);
 void    queueFree (queue_t *q);
 void    queuePush (queue_t *q, void *data);
 void    queuePushHead (queue_t *q, void *data);

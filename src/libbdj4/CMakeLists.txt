@@ -67,7 +67,7 @@ target_link_libraries (libbdj4 PRIVATE
   ${PKG_GLIB_LDFLAGS}
   ${PKG_JSONC_LDFLAGS}
 )
-if (APPLE)
+if (SYSMACOS)
   target_link_options (libbdj4 PRIVATE
     -framework Cocoa
   )

@@ -31,7 +31,7 @@ typedef struct bdj4arg {
   int       nargc;
 } bdj4arg_t;
 
-NODISCARD
+BDJ_NODISCARD
 bdj4arg_t *
 bdj4argInit (int argc, char *argv [])
 {

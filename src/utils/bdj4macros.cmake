@@ -16,7 +16,7 @@ macro (addIntlLibrary name)
 endmacro()
 
 macro (addIOKitFramework name)
-  if (APPLE)
+  if (SYSMACOS)
     target_link_libraries (${name} PRIVATE
       "-framework IOKit" "-framework CoreFoundation"
     )
@@ -46,32 +46,32 @@ macro (addUILibrary name)
 endmacro()
 
 macro (addWinSockLibrary name)
-  if (WIN32)
+  if (SYSWIN)
     target_link_libraries (${name} PRIVATE ws2_32)
   endif()
 endmacro()
 
 # the ntdll library is used for RtlGetVersion()
 macro (addWinNtdllLibrary name)
-  if (WIN32)
+  if (SYSWIN)
     target_link_libraries (${name} PRIVATE ntdll)
   endif()
 endmacro()
 
 macro (addWinBcryptLibrary name)
-  if (WIN32)
+  if (SYSWIN)
     target_link_libraries (${name} PRIVATE Bcrypt)
   endif()
 endmacro()
 
 macro (addWinGUIFlag name)
-  if (WIN32)
+  if (SYSWIN)
     target_link_options (${name} PRIVATE -mwindows)
   endif()
 endmacro()
 
 macro (addWinIcon name rcnm iconnm)
-  if (WIN32)
+  if (SYSWIN)
     add_custom_command (
       OUTPUT ${rcnm}
       COMMAND cp -f ${PROJECT_SOURCE_DIR}/../img/${iconnm} .
@@ -85,7 +85,7 @@ macro (addWinIcon name rcnm iconnm)
 endmacro()
 
 macro (addWinVersionInfo name)
-  if (WIN32)
+  if (SYSWIN)
     set (tversfn ${name})
     # this will fail for x.x.x.x forms.
     string (REPLACE "." "," tbdj4vers "${BDJ4_VERSION}")
@@ -103,7 +103,7 @@ macro (addWinVersionInfo name)
 endmacro()
 
 macro (addWinManifest name)
-  if (WIN32)
+  if (SYSWIN)
     set (t${name}man "${name}.manifest")
     add_custom_command (
       OUTPUT ${name}.rc
@@ -118,14 +118,14 @@ macro (addWinManifest name)
 endmacro()
 
 macro (updateRPath name)
-  if (APPLE)
+  if (SYSMACOS)
     set_property (TARGET ${name}
         PROPERTY INSTALL_RPATH
         "@loader_path"
         "@loader_path/../plocal/lib"
     )
   endif()
-  if (NOT APPLE AND NOT WIN32)
+  if (SYSLINUX)
     set_property (TARGET ${name}
         PROPERTY INSTALL_RPATH
         "\${ORIGIN}"

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2025-09-23\n"
-"PO-Revision-Date: 2026-01-19\n"
+"PO-Revision-Date: 2026-02-16\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Chinese Traditional\n"
 "Language: zh\n"
@@ -1124,6 +1124,11 @@ msgstr "%s 位置"
 msgid "Convert %s"
 msgstr "轉換 %s"
 
+#. CONTEXT: installer: checkbox: windows: request VLC installation
+#, c-format
+msgid "Please install %s"
+msgstr ""
+
 #. CONTEXT: installer: status message
 msgid "Installation complete."
 msgstr "安裝完成。"
@@ -1238,6 +1243,11 @@ msgstr "%s 下載失敗。"
 msgid "%s installed."
 msgstr "%s 已安裝。"
 
+#. CONTEXT: configuration: player interface: Integrated VLC 3
+#. CONTEXT: config: integrated VLC 3
+msgid "Integrated VLC 3"
+msgstr "整合VLC 3"
+
 #. CONTEXT: configuration: player interface: Windows Media Player
 msgid "Windows Media Player"
 msgstr "Windows 媒體播放器"
@@ -1254,12 +1264,13 @@ msgstr "%s 已安裝"
 
 #. CONTEXT: installer: display of package status
 #, c-format
+msgid "%s is not required on Windows"
+msgstr ""
+
+#. CONTEXT: installer: display of package status
+#, c-format
 msgid "%s is not installed"
 msgstr "%s 尚未被安裝"
-
-#. CONTEXT: config: integrated VLC 3
-msgid "Integrated VLC 3"
-msgstr "整合VLC 3"
 
 #. CONTEXT: config: integrated VLC 4
 msgid "Integrated VLC 4"

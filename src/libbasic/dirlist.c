@@ -26,7 +26,7 @@
 #include "pathinfo.h"
 #include "queue.h"
 
-NODISCARD
+BDJ_NODISCARD
 slist_t *
 dirlistBasicDirList (const char *dirname, const char *extension)
 {
@@ -81,7 +81,7 @@ dirlistBasicDirList (const char *dirname, const char *extension)
   return fileList;
 }
 
-NODISCARD
+BDJ_NODISCARD
 slist_t *
 dirlistRecursiveDirList (const char *dirname, int flags)
 {

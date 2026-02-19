@@ -25,10 +25,8 @@
       audio sink is changed, the audio will switch to the new
       default.  The audio will revert back to the configured audio
       sink when a new song starts playing.
-    * The dock icon does not display on the GNOME desktop
-      (e.g. Ubuntu 2204 and later).
     * There is an intermittent crash in the podcast updater in the ICU
       library (Debian 12).  An issue with ICU version 72 library.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-11-24 13:59:21; BDJ4 version 4.17.5)_
+<br>_(Updated 2026-02-18 17:44:35; BDJ4 version 4.17.11)_

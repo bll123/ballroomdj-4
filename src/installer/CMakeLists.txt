@@ -7,6 +7,7 @@ include (../utils/bdj4macros.cmake)
 
 add_executable (bdj4se bdj4se.c)
 target_link_libraries (bdj4se PRIVATE
+  objarg
   objdirutil
   objosprocess
   objosenv
@@ -16,7 +17,7 @@ target_link_libraries (bdj4se PRIVATE
   objtmutil
   m
 )
-if (WIN32)
+if (SYSWIN)
   target_link_options (bdj4se PRIVATE -static-libgcc)
 endif()
 addIOKitFramework (bdj4se)
@@ -38,6 +39,14 @@ addIntlLibrary (bdj4installer)
 addWinVersionInfo (bdj4installer)
 addWinManifest (bdj4installer)
 
+add_executable (bdj4cleaninst bdj4cleaninst.c)
+target_link_libraries (bdj4cleaninst PRIVATE
+  libbdj4uib ${BDJ4_UI_LIB}
+  libwebclient libbdj4 libbdj4basic libbdj4common
+)
+addWinVersionInfo (bdj4cleaninst)
+addWinManifest (bdj4cleaninst)
+
 add_executable (bdj4altinst bdj4altinst.c)
 target_link_libraries (bdj4altinst PRIVATE
   libbdj4uib ${BDJ4_UI_LIB}
@@ -58,10 +67,11 @@ addWinVersionInfo (bdj4updater)
 addWinManifest (bdj4updater)
 
 install (TARGETS
-  bdj4se bdj4installer bdj4altinst bdj4updater
+  bdj4se bdj4installer bdj4cleaninst bdj4altinst bdj4updater
   DESTINATION ${DEST_BIN}
 )
 
 updateRPath (bdj4installer)
+updateRPath (bdj4cleaninst)
 updateRPath (bdj4altinst)
 updateRPath (bdj4updater)

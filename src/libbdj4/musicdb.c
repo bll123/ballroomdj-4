@@ -59,7 +59,7 @@ static song_t *dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn, int chkflag);
 static void   dbRebuildDanceCounts (musicdb_t *musicdb);
 static int dbOpenDB (musicdb_t *musicdb, int mode);
 
-NODISCARD
+BDJ_NODISCARD
 musicdb_t *
 dbOpen (const char *fn)
 {

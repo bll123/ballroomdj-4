@@ -22,7 +22,7 @@ case ${systype} in
     shaprog="shasum -a 512"
     macos=T
     ;;
-  MINGW64*)
+  MINGW64*|CYGWIN*)
     nproc=$NUMBER_OF_PROCESSORS
     win=T
     ;;

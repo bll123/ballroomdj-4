@@ -83,7 +83,7 @@ osIsLink (const char *path)
   return false;
 }
 
-NODISCARD
+BDJ_NODISCARD
 wchar_t *
 osToWideChar (const char *buff)
 {
@@ -98,7 +98,7 @@ osToWideChar (const char *buff)
   return tbuff;
 }
 
-NODISCARD
+BDJ_NODISCARD
 char *
 osFromWideChar (const wchar_t *buff)
 {

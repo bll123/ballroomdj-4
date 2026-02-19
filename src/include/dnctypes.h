@@ -13,7 +13,7 @@ extern "C" {
 
 typedef struct dnctype dnctype_t;
 
-NODISCARD dnctype_t   *dnctypesAlloc (void);
+BDJ_NODISCARD dnctype_t   *dnctypesAlloc (void);
 void        dnctypesFree (dnctype_t *);
 void        dnctypesStartIterator (dnctype_t *dnctypes, slistidx_t *iteridx);
 const char  *dnctypesIterate (dnctype_t *dnctypes, slistidx_t *iteridx);

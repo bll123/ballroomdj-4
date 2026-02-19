@@ -35,7 +35,7 @@ enum {
 
 typedef struct asconf asconf_t;
 
-NODISCARD asconf_t *asconfAlloc (void);
+BDJ_NODISCARD asconf_t *asconfAlloc (void);
 void asconfFree (asconf_t *);
 ssize_t asconfGetCount (asconf_t *);
 const char * asconfGetStr (asconf_t *, ilistidx_t key, ilistidx_t idx);

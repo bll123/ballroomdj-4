@@ -66,7 +66,7 @@ case $systype in
     os=macos
     platform=unix
     ;;
-  MINGW64*)
+  MINGW64*|CYGWIN*)
     os=win64
     platform=windows
     ;;

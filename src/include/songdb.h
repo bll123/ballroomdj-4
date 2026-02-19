@@ -36,7 +36,7 @@ typedef struct songdb songdb_t;
 
 void  songdbWriteDB (songdb_t *songdb, dbidx_t dbidx, int forceflag);
 int32_t songdbWriteDBSong (songdb_t *songdb, song_t *song, int32_t *flags, dbidx_t rrn);
-NODISCARD songdb_t *songdbAlloc (musicdb_t *musicdb);
+BDJ_NODISCARD songdb_t *songdbAlloc (musicdb_t *musicdb);
 void  songdbFree (songdb_t *songdb);
 void  songdbSetMusicDB (songdb_t *songdb, musicdb_t *musicdb);
 

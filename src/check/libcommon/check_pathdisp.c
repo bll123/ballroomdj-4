@@ -27,27 +27,63 @@
 #include "sysvars.h"
 #include "check_bdj.h"
 #include "mdebug.h"
+#include "sysvars.h"
 
 START_TEST(path_disppath)
 {
   char    to [BDJ4_PATH_MAX];
-  int     owin;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- path_disppath");
   mdebugSubTag ("path_disppath");
 
-  owin = sysvarsGetNum (SVL_IS_WINDOWS);
-  sysvarsSetNum (SVL_IS_WINDOWS, 1);
-
   stpecpy (to, to + sizeof (to), "/tmp/abc.txt");
   pathDisplayPath (to, sizeof (to));
-  ck_assert_str_eq (to, "\\tmp\\abc.txt");
+  if (isWindows ()) {
+    ck_assert_str_eq (to, "\\tmp\\abc.txt");
+  } else {
+    ck_assert_str_eq (to, "/tmp/abc.txt");
+  }
 
   stpecpy (to, to + sizeof (to), "C:/tmp/abc.txt");
   pathDisplayPath (to, sizeof (to));
-  ck_assert_str_eq (to, "C:\\tmp\\abc.txt");
+  if (isWindows ()) {
+    ck_assert_str_eq (to, "C:\\tmp\\abc.txt");
+  } else {
+    ck_assert_str_eq (to, "C:/tmp/abc.txt");
+  }
+}
+END_TEST
 
-  sysvarsSetNum (SVL_IS_WINDOWS, owin);
+START_TEST(path_normpath)
+{
+  char    to [BDJ4_PATH_MAX];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- path_normpath");
+  mdebugSubTag ("path_normpath");
+
+  stpecpy (to, to + sizeof (to), "/tmp/abc.txt");
+  pathNormalizePath (to, sizeof (to));
+  ck_assert_str_eq (to, "/tmp/abc.txt");
+
+  stpecpy (to, to + sizeof (to), "\\tmp\\abc.txt");
+  pathNormalizePath (to, sizeof (to));
+  if (isWindows ()) {
+    ck_assert_str_eq (to, "/tmp/abc.txt");
+  } else {
+    ck_assert_str_eq (to, "\\tmp\\abc.txt");
+  }
+
+  stpecpy (to, to + sizeof (to), "C:/tmp/abc.txt");
+  pathNormalizePath (to, sizeof (to));
+  ck_assert_str_eq (to, "C:/tmp/abc.txt");
+
+  stpecpy (to, to + sizeof (to), "C:\\tmp\\abc.txt");
+  pathNormalizePath (to, sizeof (to));
+  if (isWindows ()) {
+    ck_assert_str_eq (to, "C:/tmp/abc.txt");
+  } else {
+    ck_assert_str_eq (to, "C:\\tmp\\abc.txt");
+  }
 }
 END_TEST
 
@@ -61,6 +97,7 @@ pathdisp_suite (void)
   tc = tcase_create ("pathdisp");
   tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, path_disppath);
+  tcase_add_test (tc, path_normpath);
   suite_add_tcase (s, tc);
   return s;
 }

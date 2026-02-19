@@ -10,6 +10,7 @@
 #include <string.h>
 #include <inttypes.h>
 #include <errno.h>
+#include <wchar.h>
 
 #if __has_include (<windows.h>)
 # define WIN32_LEAN_AND_MEAN 1
@@ -20,20 +21,9 @@
 #include "bdjstring.h"
 #include "mdebug.h"
 #include "osutils.h"
+#include "pathdisp.h"
 #include "pathutil.h"
-
-void
-pathNormalizePath (char *buff, size_t len)
-{
-  for (size_t i = 0; i < len; ++i) {
-    if (buff [i] == '\0') {
-      break;
-    }
-    if (buff [i] == '\\') {
-      buff [i] = '/';
-    }
-  }
-}
+#include "sysvars.h"
 
 /* remove all /./ ../dir components */
 void
@@ -70,25 +60,75 @@ pathStripPath (char *buff, size_t len)
     ++j;
     ++p;
   }
+
+  return;
 }
 
 void
-pathRealPath (char *to, const char *from, size_t sz)
+pathRealPath (char *path, size_t sz)
 {
 #if _lib_realpath
-  (void) ! realpath (from, to);
+  char      tbuff [BDJ4_PATH_MAX];
+
+  (void) ! realpath (path, tbuff);
+  stpecpy (path, path + sz, tbuff);
 #endif
-#if _lib_GetFullPathNameW
+#if ! lib_realpath && _lib_GetFullPathNameW
   wchar_t   *wfrom;
   wchar_t   wto [BDJ4_PATH_MAX];
   char      *tto;
 
-  wfrom = osToWideChar (from);
+  pathDisplayPath (path, sz);
+  wfrom = osToWideChar (path);
   (void) ! GetFullPathNameW (wfrom, BDJ4_PATH_MAX, wto, NULL);
+  mdfree (wfrom);
   tto = osFromWideChar (wto);
-  stpecpy (to, to + sz, tto);
+  stpecpy (path, path + sz, tto);
+  mdfree (tto);
+#endif
+
+  return;
+}
+
+void
+pathShortPath (char *path, size_t sz)
+{
+#if _lib_GetShortPathNameW
+  wchar_t   *wfrom;
+  wchar_t   wto [BDJ4_PATH_MAX];
+  char      *tto;
+
+  pathDisplayPath (path, sz);
+  wfrom = osToWideChar (path);
+  (void) ! GetShortPathNameW (wfrom, wto, BDJ4_PATH_MAX);
+  tto = osFromWideChar (wto);
+  stpecpy (path, path + sz, tto);
   mdfree (wfrom);
   mdfree (tto);
 #endif
+
+  return;
 }
 
+void
+pathLongPath (char *path, size_t sz)
+{
+#if _lib_GetLongPathNameW
+  wchar_t   *wfrom;
+  wchar_t   wto [BDJ4_PATH_MAX];
+  char      *tto;
+
+  wfrom = osToWideChar (path);
+  (void) ! GetFullPathNameW (wfrom, BDJ4_PATH_MAX, wto, NULL);
+  mdfree (wfrom);
+  /* convert the path to use the long name */
+  wfrom = wcsdup (wto);
+  (void) ! GetLongPathNameW (wfrom, wto, BDJ4_PATH_MAX);
+  tto = osFromWideChar (wto);
+  stpecpy (path, path + sz, tto);
+  mdfree (wfrom);
+  mdfree (tto);
+#endif
+
+  return;
+}

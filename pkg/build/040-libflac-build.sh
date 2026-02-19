@@ -33,7 +33,7 @@ if [[ $pkgname == "" || $pkgname = "libflac" ]]; then
     if [[ $clean == T ]]; then
       make clean
     fi
-    make -j $procs LIBS="-static-libgcc -static-libstdc++"
+    make -j $procs # LIBS="-static-libgcc -static-libstdc++"
     make install
     # don't need the c++ version
     rm -f $INSTLOC/bin/libFLAC++* $INSTLOC/lib/libFLAC++* $INSTLOC/lib/pkgconfig/flac++.pc

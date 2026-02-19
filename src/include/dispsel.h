@@ -49,7 +49,7 @@ enum {
 
 typedef struct dispsel dispsel_t;
 
-NODISCARD dispsel_t * dispselAlloc (int loadtype);
+BDJ_NODISCARD dispsel_t * dispselAlloc (int loadtype);
 void      dispselFree (dispsel_t *dispsel);
 slist_t   * dispselGetList (dispsel_t *dispsel, dispselsel_t idx);
 void      dispselSave (dispsel_t *dispsel, dispselsel_t idx, slist_t *list);

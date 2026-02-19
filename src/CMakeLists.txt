@@ -3,18 +3,33 @@
 #
 cmake_minimum_required (VERSION 3.18)
 
-# avoid compiler check issues
-set (CMAKE_C_COMPILER_WORKS 1)
-set (CMAKE_CXX_COMPILER_WORKS 1)
-set (CMAKE_OBJC_COMPILER_WORKS 1)
-
 set (BDJ4_VERSION ${BDJ4_BUILD_VERS})
 project (BDJ4
   VERSION ${BDJ4_VERSION}
   DESCRIPTION "BallroomDJ 4"
   HOMEPAGE_URL "https://ballroomdj4.sourceforge.io"
-  LANGUAGES C CXX OBJC
 )
+
+if (CMAKE_SYSTEM_NAME STREQUAL CYGWIN)
+  set (SYSWIN T)
+endif()
+if (CMAKE_SYSTEM_NAME STREQUAL Windows)
+  set (SYSWIN T)
+endif()
+if (CMAKE_SYSTEM_NAME STREQUAL Linux)
+  set (SYSLINUX T)
+endif()
+if (CMAKE_SYSTEM_NAME STREQUAL Darwin)
+  set (SYSMACOS T)
+endif()
+
+# avoid compiler check issues
+set (CMAKE_C_COMPILER_WORKS 1)
+set (CMAKE_CXX_COMPILER_WORKS 1)
+if (SYSMACOS)
+  set (CMAKE_OBJC_COMPILER_WORKS 1)
+endif()
+
 set (BDJ4ICON bdj4_icon.ico)
 set (BDJ4INSTICON bdj4_icon_inst.ico)
 
@@ -121,7 +136,7 @@ include (utils/bdj4macros.cmake)
 add_library (objosprocess OBJECT
   libcommon/osprocess.c
 )
-if (WIN32)
+if (SYSWIN)
   target_sources (objosprocess PRIVATE libcommon/oswinprocess.c)
 endif()
 
@@ -153,27 +168,30 @@ add_library (objtmutil OBJECT
 add_library (objosutils OBJECT
   libcommon/osutils.c
 )
-if (APPLE)
+if (SYSMACOS)
   target_sources (objosutils PRIVATE libcommon/osmacutils.m)
 endif()
-if (WIN32)
+if (SYSWIN)
   target_sources (objosutils PRIVATE libcommon/oswinutils.c)
 endif()
-if (NOT APPLE AND NOT WIN32)
+if (SYSLINUX)
   target_sources (objosutils PRIVATE libcommon/oslinuxutils.c)
 endif()
 
-add_library (objpathutil OBJECT
+add_library (objpath OBJECT
   # uses osutils, bdjstring
+  libcommon/pathdisp.c
   libcommon/pathutil.c
 )
 
-add_library (objlauncher OBJECT
+add_library (objarg OBJECT
   libcommon/bdj4arg.c
+)
+
+add_library (objlauncher OBJECT
   libcommon/filedata.c
   libcommon/osnetutils.c
   libcommon/pathbld.c
-  libcommon/pathdisp.c
   libcommon/sysvars.c
 )
 

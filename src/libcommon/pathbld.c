@@ -61,7 +61,7 @@ pathbldMakePath (char *buff, size_t buffsz,
     dirprefix = "test-templates";
   }
 
-  /* absolute prefixes */
+  /* absolute */
   if ((flags & PATHBLD_MP_DIR_DATATOP) == PATHBLD_MP_DIR_DATATOP) {
     dirprefix = sysvarsGetStr (SV_BDJ4_DIR_DATATOP);
   }
@@ -71,24 +71,34 @@ pathbldMakePath (char *buff, size_t buffsz,
   if ((flags & PATHBLD_MP_DIR_MAIN) == PATHBLD_MP_DIR_MAIN) {
     dirprefix = sysvarsGetStr (SV_BDJ4_DIR_MAIN);
   }
+
+  /* absolute on macos */
   if ((flags & PATHBLD_MP_DIR_TEMPLATE) == PATHBLD_MP_DIR_TEMPLATE) {
     dirprefix = sysvarsGetStr (SV_BDJ4_DIR_TEMPLATE);
   }
+  /* absolute on macos */
   if ((flags & PATHBLD_MP_DIR_LOCALE) == PATHBLD_MP_DIR_LOCALE) {
     dirprefix = sysvarsGetStr (SV_BDJ4_DIR_LOCALE);
   }
+
+  /* absolute */
   if ((flags & PATHBLD_MP_DIR_CONFIG) == PATHBLD_MP_DIR_CONFIG) {
     dirprefix = sysvarsGetStr (SV_DIR_CONFIG);
   }
+  /* absolute */
   if ((flags & PATHBLD_MP_DIR_CACHE) == PATHBLD_MP_DIR_CACHE) {
     dirprefix = sysvarsGetStr (SV_DIR_CACHE);
   }
+
+  /* absolute on macos */
   if ((flags & PATHBLD_MP_DIR_IMG) == PATHBLD_MP_DIR_IMG) {
     dirprefix = sysvarsGetStr (SV_BDJ4_DIR_IMG);
   }
+  /* absolute on macos */
   if ((flags & PATHBLD_MP_DIR_INST) == PATHBLD_MP_DIR_INST) {
     dirprefix = sysvarsGetStr (SV_BDJ4_DIR_INST);
   }
+  /* absolute on macos */
   if ((flags & PATHBLD_MP_DIR_ICON) == PATHBLD_MP_DIR_ICON) {
     dirprefix = sysvarsGetStr (SV_PATH_ICONDIR);
   }

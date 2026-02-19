@@ -23,7 +23,9 @@
 #include <signal.h>
 #include <string.h>
 #include <sys/time.h>
-#include <sys/types.h>
+#if ! __has_include (<winsock2.h>)
+# include <sys/types.h>
+#endif
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -45,8 +47,9 @@
 #if __has_include (<sys/event.h>)
 # include <sys/event.h>               /* kqueue */
 #endif
-#if __has_include (<sys/select.h>) && \
-   (FORCE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue))
+#if ! __has_include (<winsock2.h>) && \
+    __has_include (<sys/select.h>) && \
+    (FORCE_SELECT || (! _lib_epoll_create1 && ! _lib_kqueue))
 # include <sys/select.h>
 #endif
 #if __has_include (<sys/socket.h>)
@@ -115,7 +118,7 @@ static Sock_t sockOpenClientSocket (struct addrinfo *rp, int *connerr);
 static int      sockCheckAlready (int rc, int *connerr);
 static int      sockCheckInProgress (int rc, int *connerr);
 
-NODISCARD
+BDJ_NODISCARD
 Sock_t
 sockServer (uint16_t listenPort, int *err)
 {
@@ -203,7 +206,7 @@ sockClose (Sock_t sock)
   }
 }
 
-NODISCARD
+BDJ_NODISCARD
 sockinfo_t *
 sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
 {
@@ -478,7 +481,7 @@ sockCheck (sockinfo_t *sockinfo)
   return 0;
 }
 
-NODISCARD
+BDJ_NODISCARD
 Sock_t
 sockAccept (Sock_t lsock, int *err)
 {
@@ -509,7 +512,7 @@ sockAccept (Sock_t lsock, int *err)
 
 /* note that in many cases, especially on windows, multiple calls to */
 /* connect are necessary to make the connection */
-NODISCARD
+BDJ_NODISCARD
 Sock_t
 sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
 {
@@ -645,7 +648,7 @@ sockWriteBinary (Sock_t sock, const char *data, size_t dlen,
   return 0;
 }
 
-NODISCARD
+BDJ_NODISCARD
 bool
 socketInvalid (Sock_t sock)
 {

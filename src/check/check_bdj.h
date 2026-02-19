@@ -25,6 +25,7 @@ Suite *     bdjvars_suite (void);
 Suite *     callback_suite (void);
 Suite *     colorutils_suite (void);
 Suite *     dirop_suite (void);
+Suite *     dylib_suite (void);
 Suite *     filedata_suite (void);
 Suite *     filemanip_suite (void);
 Suite *     fileop_suite (void);

@@ -22,7 +22,6 @@
 #include "musicdb.h"
 #include "nlist.h"
 #include "pathdisp.h"
-#include "pathutil.h"
 #include "song.h"
 #include "tagdef.h"
 #include "xmlparse.h"
@@ -63,7 +62,7 @@ xspfExport (musicdb_t *musicdb, nlist_t *list,
 
     str = songGetStr (song, TAG_URI);
     audiosrcFullPath (str, ffn, sizeof (ffn), NULL, 0);
-    pathDisplayPath (ffn, strlen (ffn));
+    pathDisplayPath (ffn, sizeof (ffn));
     fprintf (fh, "      <location>%s%s</location>\n", pfx, ffn);
 
     fprintf (fh, "      <title>%s</title>\n", songGetStr (song, TAG_TITLE));
@@ -91,7 +90,7 @@ xspfExport (musicdb_t *musicdb, nlist_t *list,
   fclose (fh);
 }
 
-NODISCARD
+BDJ_NODISCARD
 nlist_t *
 xspfImport (musicdb_t *musicdb, const char *fname)
 {

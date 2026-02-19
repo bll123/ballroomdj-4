@@ -35,9 +35,10 @@ main (int argc, char *argv [])
   int         flags;
   int         rc;
 
-  osGetEnv ("USERPROFILE", home, sizeof (home));
+  osGetEnv ("USERPROFILE", tbuff, sizeof (tbuff));
+  pathRealPath (home, sizeof (home));
+
   osGetEnv ("USERNAME", user, sizeof (user));
-  pathNormalizePath (home, sizeof (home));
   snprintf (tbuff, sizeof (tbuff), "%s/AppData/Roaming/BDJ4/%s%s",
       home, INST_PATH_FN, BDJ4_CONFIG_EXT);
   if (! fileopFileExists (tbuff)) {
@@ -53,6 +54,11 @@ main (int argc, char *argv [])
   if (p != NULL) {
     snprintf (tbuff, sizeof (tbuff), "%.*s/%s/%s/bin/bdj4.exe",
         (int) (p - instdir), instdir, user, p + strlen (WINUSERNAME_SL));
+  }
+  p = strstr (instdir, WINUSERPROFILE_SL);
+  if (p != NULL) {
+    snprintf (tbuff, sizeof (tbuff), "%s/%s/bin/bdj4.exe",
+        home, p + strlen (WINUSERPROFILE_SL));
   } else {
     snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4.exe", instdir);
   }

@@ -32,7 +32,6 @@
 #include "pathbld.h"
 #include "pathdisp.h"
 #include "pathinfo.h"
-#include "pathutil.h"
 #include "sysvars.h"
 #include "templateutil.h"
 
@@ -65,8 +64,18 @@ instutilCreateLauncher (const char *name, const char *maindir,
         "bin/bdj4winmksc", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_MAIN);
     targv [targc++] = ibuff;
 
-    snprintf (path, sizeof (path), "%s/Desktop/%s.lnk",
-        sysvarsGetStr (SV_HOME), name);
+    /* if onedrive is in use, the Desktop folder may be within the */
+    /* onedrive folder. */
+    snprintf (path, sizeof (path), "%s/OneDrive/Desktop",
+        sysvarsGetStr (SV_HOME));
+    if (fileopIsDirectory (path)) {
+      snprintf (path, sizeof (path), "%s/OneDrive/Desktop/%s.lnk",
+          sysvarsGetStr (SV_HOME), name);
+    } else {
+      /* if the onedrive path is not found, assume the usual path */
+      snprintf (path, sizeof (path), "%s/Desktop/%s.lnk",
+          sysvarsGetStr (SV_HOME), name);
+    }
     pathDisplayPath (path, sizeof (path));
     targv [targc++] = path;
 
@@ -386,7 +395,7 @@ instutilGetMusicDir (char *homemusicdir, size_t sz)
   }
 
   if (isWindows ()) {
-    char    data [1024];
+    char    data [BDJ4_PATH_MAX];
 
     snprintf (homemusicdir, sz, "%s/Music", home);
     osRegistryGet (

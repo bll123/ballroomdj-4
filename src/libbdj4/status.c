@@ -37,7 +37,7 @@ static datafilekey_t statusdfkeys [STATUS_KEY_MAX] = {
   { "STATUS",     STATUS_STATUS,      VALUE_STR, NULL, DF_NORM },
 };
 
-NODISCARD
+BDJ_NODISCARD
 status_t *
 statusAlloc (void)
 {

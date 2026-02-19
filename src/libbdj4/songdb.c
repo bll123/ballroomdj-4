@@ -48,7 +48,7 @@ static bool songdbNewName (songdb_t *songdb, song_t *song, char *newuri, size_t 
 static void songdbWriteAudioTags (song_t *song, int forceflag);
 static void songdbUpdateAllSonglists (song_t *song, const char *olduri);
 
-NODISCARD
+BDJ_NODISCARD
 songdb_t *
 songdbAlloc (musicdb_t *musicdb)
 {

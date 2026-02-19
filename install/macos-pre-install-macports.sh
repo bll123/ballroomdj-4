@@ -215,7 +215,7 @@ sudo port -N install \
 sudo -v
 
 if [[ -z "$(port -q list inactive)" ]]; then
-  sudo port -N reclaim --disable-reminders --keep-build-deps
+  sudo port -N reclaim --keep-build-deps
 fi
 
 sudo -k

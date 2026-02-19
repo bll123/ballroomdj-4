@@ -17,7 +17,7 @@ target_link_libraries (libvolnull PRIVATE
   objstring
 )
 
-if (APPLE)
+if (SYSMACOS)
   add_library (libvolmac SHARED volmac.m)
   target_link_libraries (libvolmac PRIVATE
     "-framework Cocoa" "-framework CoreAudio"
@@ -25,7 +25,7 @@ if (APPLE)
   )
 endif()
 
-if (NOT WIN32 AND NOT APPLE)
+if (SYSLINUX)
   if (PKG_PA_FOUND)
     add_library (libvolpa SHARED volpa.c)
     target_include_directories (libvolpa
@@ -38,7 +38,7 @@ if (NOT WIN32 AND NOT APPLE)
   endif()
 endif()
 
-if (NOT WIN32 AND NOT APPLE)
+if (SYSLINUX)
   if (PKG_PIPEWIRE_FOUND)
     add_library (libvolpipewire SHARED volpipewire.c)
     target_include_directories (libvolpipewire
@@ -52,7 +52,7 @@ if (NOT WIN32 AND NOT APPLE)
   endif()
 endif()
 
-if (WIN32)
+if (SYSWIN)
   add_library (libvolwin SHARED volwin.cpp)
   target_link_libraries (libvolwin PRIVATE
     objfileop
@@ -71,7 +71,7 @@ install (TARGETS
   voltest
   DESTINATION ${DEST_BIN}
 )
-if (NOT WIN32 AND NOT APPLE)
+if (SYSLINUX)
   install (TARGETS
     libvolpa
     DESTINATION ${DEST_BIN}
@@ -83,13 +83,13 @@ if (NOT WIN32 AND NOT APPLE)
     )
   endif()
 endif()
-if (APPLE)
+if (SYSMACOS)
   install (TARGETS
     libvolmac
     DESTINATION ${DEST_BIN}
   )
 endif()
-if (WIN32)
+if (SYSWIN)
   install (TARGETS
     libvolwin
     DESTINATION ${DEST_BIN}

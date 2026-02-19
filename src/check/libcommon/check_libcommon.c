@@ -35,14 +35,15 @@ check_libcommon (SRunner *sr)
    *  osenv       complete 2022-12-27
    *  bdjstring   complete
    *  osprocess   complete                // uses procutil, pathbld, ossignal
+   *  pathdisp    complete
    *  osdirutil   complete 2024-5-21
    *  filedata    complete
    *  osnetutils  complete 2022-12-27
+   *  oslinuxutils
    *  pathutil    complete
    *  mdebug      complete
    *  sysvars
    *  osdir       complete 2022-12-27     // test uses dirop
-   *  pathdisp    complete
    *  osutils     complete 2022-12-27
    *  pathbld     complete
    *  dirop       complete
@@ -51,24 +52,30 @@ check_libcommon (SRunner *sr)
    *  fileshared  complete 2025-2-8 // uses procutil, pathbld, ossignal
    *  pathinfo    complete
    *  log
+   *  dylib       --
    *  bdjmsg      complete
    *  sock        partial                 // uses ossignal
    *  bdjvars     complete
    *  sockh
    *  queue       complete 2022-11-1
    *  conn
+   *  roman       complete 2024-11-20
    *  callback    complete 2023-3-4
-   *  osrandom    complete
    *  bdjregex
+   *  osrandom    complete
    *  colorutils  complete
    *  vsencdec    complete
+   *  oslinuxlocale
    *  oslocale
    *  ossignal    complete
    *  bdj4arg
-   *  roman       complete 2024-11-20
+   *  dbusi
+   *  strptime
    */
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==chk== libcommon");
+
+  /* stpecpy */
 
   s = tmutil_suite();
   srunner_add_suite (sr, s);
@@ -83,6 +90,9 @@ check_libcommon (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = osprocess_suite();
+  srunner_add_suite (sr, s);
+
+  s = pathdisp_suite();
   srunner_add_suite (sr, s);
 
   s = osdirutil_suite();
@@ -103,9 +113,6 @@ check_libcommon (SRunner *sr)
   /* sysvars */
 
   s = osdir_suite();
-  srunner_add_suite (sr, s);
-
-  s = pathdisp_suite();
   srunner_add_suite (sr, s);
 
   s = osutils_suite();
@@ -131,6 +138,9 @@ check_libcommon (SRunner *sr)
 
   /* log */
 
+  s = dylib_suite();
+  srunner_add_suite (sr, s);
+
   s = bdjmsg_suite();
   srunner_add_suite (sr, s);
 
@@ -147,13 +157,16 @@ check_libcommon (SRunner *sr)
 
   /* conn */
 
+  s = roman_suite();
+  srunner_add_suite (sr, s);
+
   s = callback_suite();
   srunner_add_suite (sr, s);
 
+  /* bdjregex */
+
   s = osrandom_suite();
   srunner_add_suite (sr, s);
-
-  /* bdjregex */
 
   s = colorutils_suite();
   srunner_add_suite (sr, s);
@@ -167,9 +180,8 @@ check_libcommon (SRunner *sr)
   srunner_add_suite (sr, s);
 
   /* bdj4arg */
-
-  s = roman_suite();
-  srunner_add_suite (sr, s);
+  /* dbusi */
+  /* strptime */
 }
 
 #pragma clang diagnostic pop

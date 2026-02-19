@@ -101,7 +101,7 @@ static const char *unixChars = { "" };
 static void orgutilClean (const char *from, char *target, size_t sz, int which);
 static void orgutilInfoFree (void *data);
 
-NODISCARD
+BDJ_NODISCARD
 org_t *
 orgAlloc (const char *orgpath)
 {
@@ -622,7 +622,7 @@ orgutilClean (const char *from, char *target, size_t sz, int chartype)
 {
   size_t      bytelen;
   size_t      slen;
-  size_t      mlen;
+  ssize_t     mlen;
   mbstate_t   ps;
   const char  *tstr;
   char        *tgtp;
@@ -642,6 +642,13 @@ orgutilClean (const char *from, char *target, size_t sz, int chartype)
     mlen = mbrlen (tstr, slen, &ps);
     if (mlen <= 0) {
       /* bad character; do not copy to target */
+      /* the other situation is if the user is using the C locale, */
+      /* which has no knowledge of utf-8 */
+      if (strcmp (sysvarsGetStr (SV_LOCALE), "C") == 0) {
+        memcpy (tgtp, tstr, 1);
+        ++tgtp;
+        tgtlen += 1;
+      }
       tstr += 1;
       slen -= 1;
       continue;
@@ -667,29 +674,29 @@ orgutilClean (const char *from, char *target, size_t sz, int chartype)
       /* these characters cause issues with filename handling */
       /* using scripts */
       if (! skip) {
-        for (size_t i = 0; i < strlen (commonChars); ++i) {
-          if (*tstr == commonChars [i]) {
-            skip = true;
-            break;
-          }
+        char  *tptr;
+
+        tptr = strchr (commonChars, *tstr);
+        if (tptr != NULL) {
+          skip = true;
         }
       }
       /* windows special characters */
       if (! skip && (chartype & ORG_WIN_CHARS) == ORG_WIN_CHARS) {
-        for (size_t i = 0; i < strlen (winChars); ++i) {
-          if (*tstr == winChars [i]) {
-            skip = true;
-            break;
-          }
+        char    *tptr;
+
+        tptr = strchr (winChars, *tstr);
+        if (tptr != NULL) {
+          skip = true;
         }
       }
       /* linux/macos special characters */
       if (! skip && (chartype & ORG_UNIX_CHARS) == ORG_UNIX_CHARS) {
-        for (size_t i = 0; i < strlen (unixChars); ++i) {
-          if (*tstr == unixChars [i]) {
-            skip = true;
-            break;
-          }
+        char    *tptr;
+
+        tptr = strchr (unixChars, *tstr);
+        if (tptr != NULL) {
+          skip = true;
         }
       }
 

@@ -35,7 +35,7 @@ typedef enum {
 
 typedef struct autosel autosel_t;
 
-NODISCARD autosel_t     *autoselAlloc (void);
+BDJ_NODISCARD autosel_t     *autoselAlloc (void);
 void          autoselFree (autosel_t *);
 double        autoselGetDouble (autosel_t *autosel, autoselkey_t idx);
 ssize_t       autoselGetNum (autosel_t *autosel, autoselkey_t idx);

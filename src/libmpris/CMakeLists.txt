@@ -5,7 +5,7 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
-if (NOT WIN32 AND NOT APPLE)
+if (SYSLINUX)
   # gdbus-codegen claims indicates that --generate-c-code is deprecated,
   # so the command must be run twice for the header and body.
   add_custom_command (

@@ -12,18 +12,19 @@ include (../utils/bdj4macros.cmake)
 add_executable (bdj4 bdj4.c)
 addWinIcon (bdj4 launcher.rc ${BDJ4ICON})
 target_link_libraries (bdj4 PRIVATE
+  objarg
   objdirutil
   objfileop
   objlauncher
   objosenv
   objosprocess
   objosutils
-  objpathutil
+  objpath
   objstring
   objtmutil
   m
 )
-if (WIN32)
+if (SYSWIN)
   target_link_options (bdj4 PRIVATE -static-libgcc)
 endif()
 # for gethostname
@@ -38,18 +39,19 @@ updateRPath (bdj4)
 # this is only used on macos
 # the macos application requires an executable that
 # initializes the gui
-if (APPLE)
+if (SYSMACOS)
   add_executable (bdj4g bdj4.c)
   addUIInclude (bdj4g)
   target_compile_options (bdj4g PRIVATE -DBDJ4_GUI_LAUNCHER=1)
   target_link_libraries (bdj4g PRIVATE
+    objarg
     objdirutil
     objfileop
     objlauncher
     objosenv
     objosprocess
     objosutils
-    objpathutil
+    objpath
     objstring
     objtmutil
     m
@@ -101,7 +103,7 @@ install (TARGETS
   bdj4starterui bdj4helperui bdj4cleantmp
   DESTINATION ${DEST_BIN}
 )
-if (APPLE)
+if (SYSMACOS)
   install (TARGETS
     bdj4g
     DESTINATION ${DEST_BIN}

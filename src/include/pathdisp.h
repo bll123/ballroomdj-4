@@ -7,7 +7,8 @@
 extern "C" {
 #endif
 
-void  pathDisplayPath (char *buff, size_t len);
+void  pathDisplayPath (char *path, size_t sz);
+void  pathNormalizePath (char *path, size_t sz);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

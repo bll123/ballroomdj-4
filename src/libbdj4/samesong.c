@@ -29,7 +29,7 @@ typedef struct samesong {
 static ssize_t  samesongGetSSIdx (samesong_t *ss, dbidx_t dbidx);
 static void     samesongCleanSingletons (samesong_t *ss);
 
-NODISCARD
+BDJ_NODISCARD
 samesong_t *
 samesongAlloc (musicdb_t *musicdb)
 {

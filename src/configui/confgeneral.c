@@ -26,6 +26,7 @@
 #include "nlist.h"
 #include "pathbld.h"
 #include "pathdisp.h"
+#include "pathutil.h"
 #include "slist.h"
 #include "sysvars.h"
 #include "ui.h"

@@ -320,9 +320,9 @@ done
 # audiotag+dbupdate+info+basic+important
 # DBG=4456459
 # audiotag+dbupdate+info+basic+important + db
-DBG=4457483
+# DBG=4457483
 # important only
-# DBG=1
+DBG=1
 
 # norm
 NUMNORM=148

@@ -36,7 +36,7 @@ static datafilekey_t ratingdfkeys [RATING_KEY_MAX] = {
   { "WEIGHT", RATING_WEIGHT, VALUE_NUM, NULL, DF_NORM },
 };
 
-NODISCARD
+BDJ_NODISCARD
 rating_t *
 ratingAlloc (void)
 {
