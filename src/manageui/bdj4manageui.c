@@ -861,7 +861,6 @@ manageBuildUI (manageui_t *manage)
 
   uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
-  uiBoxPostProcess (accent.cbox);
   uiwcontFree (accent.cbox);
 
   uiwidgetp = uiCreateLabel ("");

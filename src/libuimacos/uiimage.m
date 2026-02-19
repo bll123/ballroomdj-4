@@ -22,7 +22,22 @@
 uiwcont_t *
 uiImageNew (void)
 {
-  return NULL;
+  uiwcont_t     *uiwidget;
+  NSImage       *image;
+  NSImageView   *imgv;
+
+  image = [[NSImage alloc] init];
+  imgv = [[NSImageView alloc] init];
+  [imgv setImage: image];
+  imgv.imageScaling = NSImageScaleProportionallyDown;
+
+  uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
+  uiwcontSetWidget (uiwidget, imgv, NULL);
+
+  uiWidgetAlignHorizCenter (uiwidget);
+  uiWidgetAlignVertCenter (uiwidget);
+
+  return uiwidget;
 }
 
 void
@@ -47,6 +62,7 @@ uiImageFromFile (const char *fn)
   image = [[NSImage alloc] initWithContentsOfFile: ns];
   imgv = [[NSImageView alloc] init];
   [imgv setImage: image];
+  imgv.imageScaling = NSImageScaleProportionallyDown;
 
   uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
   uiwcontSetWidget (uiwidget, imgv, NULL);

@@ -358,7 +358,6 @@ uitestBuildUI (uitest_t *uitest)
 
   uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
-  uiBoxPostProcess (accent.cbox);
   uiwcontFree (accent.cbox);
 
   uitest->wcont [UITEST_W_MENUBAR] = uiCreateMenubar ();

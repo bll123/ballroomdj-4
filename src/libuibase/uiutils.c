@@ -50,6 +50,7 @@ uiutilsAddProfileColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
   uiWidgetAlignHorizCenter (cbox);
   uiWidgetAlignVertCenter (cbox);
   uiWidgetSetMarginStart (cbox, 4);
+  uiBoxPostProcess (cbox);
 
   uiWidgetShowAll (hbox);
 

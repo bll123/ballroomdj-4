@@ -519,7 +519,6 @@ uisfCreateDialog (uisongfilter_t *uisf)
   /* accent color */
   uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
-  uiBoxPostProcess (accent.cbox);
   uiwcontFree (accent.cbox);
 
   uiBoxPostProcess (hbox);

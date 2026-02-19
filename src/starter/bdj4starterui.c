@@ -641,6 +641,7 @@ starterBuildUI (startui_t  *starter)
     uiWidgetSetMarginEnd (vbox, 6);
   }
 
+fprintf (stderr, "strt: prof-col-display\n");
   uiutilsAddProfileColorDisplay (vbox, &accent);
   hbox = accent.hbox;
   starter->wcont [START_W_PROFILE_ACCENT] = accent.cbox;
@@ -650,11 +651,13 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackEnd (hbox, uiwidgetp);
   starter->wcont [START_W_STATUS_MSG] = uiwidgetp;
 
+fprintf (stderr, "strt: menubar\n");
   menubar = uiCreateMenubar ();
   uiBoxPackStartExpand (hbox, menubar);
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
+fprintf (stderr, "strt: menu-items\n");
   /* CONTEXT: starterui: action menu for the starter user interface */
   menuitem = uiMenuCreateItem (menubar, _("Actions"), NULL);
   menu = uiCreateSubMenu (menuitem);
@@ -694,6 +697,7 @@ starterBuildUI (startui_t  *starter)
 
   /* line 1 */
 
+fprintf (stderr, "strt: profile selection\n");
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetMarginTop (hbox, 4);
@@ -720,13 +724,16 @@ starterBuildUI (startui_t  *starter)
 
   /* buttons and image display */
 
+fprintf (stderr, "strt: buttons+img\n");
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
+fprintf (stderr, "strt: button-box\n");
   bvbox = uiCreateVertBox ();
   uiBoxPackStart (hbox, bvbox);
 
+fprintf (stderr, "strt: img\n");
   /* use the square icon, on macos the icons are squircled */
   pathbldMakePath (tbuff, sizeof (tbuff),
      "bdj4_icon_sq", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
@@ -734,11 +741,13 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetAllMargins (uiwidgetp, 10);
   uiWidgetExpandHoriz (uiwidgetp);
+  uiWidgetExpandVert (uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
+fprintf (stderr, "strt: buttons\n");
   starter->callbacks [START_CB_PLAYER] = callbackInit (
       starterStartPlayerui, starter, NULL);
   uiwidgetp = uiCreateButton (

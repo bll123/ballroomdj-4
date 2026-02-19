@@ -43,7 +43,7 @@ fprintf (stderr, "c-entry\n");
   [widget setDrawsBackground:YES];
   [widget setEditable:YES];
   [widget setSelectable:YES];
-  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
   uiwidget = uiwcontAlloc (WCONT_T_ENTRY, WCONT_T_ENTRY);
   uiwcontSetWidget (uiwidget, widget, NULL);

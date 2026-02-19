@@ -16,11 +16,11 @@ typedef enum {
   WCONT_T_ADJUSTMENT,       // gtk widget
   WCONT_T_BOX,              // base type
   WCONT_T_BUTTON,           /* base type for color-button, font-button */
+  WCONT_T_BUTTON_CHKBOX,
   WCONT_T_BUTTON_COLOR,
   WCONT_T_BUTTON_FONT,
   WCONT_T_BUTTON_RADIO,
   WCONT_T_BUTTON_TOGGLE,    /* base type for check-box, radio-button */
-  WCONT_T_BUTTON_CHKBOX,
   WCONT_T_CHGIND,
   WCONT_T_DIALOG_WINDOW,
   WCONT_T_ENTRY,
@@ -37,7 +37,6 @@ typedef enum {
   WCONT_T_MENU_MENUBAR_ITEM,
   WCONT_T_MENU_SUB,
   WCONT_T_NOTEBOOK,
-  WCONT_T_NOTEBOOK_VERT,
   WCONT_T_PANED_WINDOW,
   WCONT_T_PROGRESS_BAR,
   WCONT_T_SCALE,

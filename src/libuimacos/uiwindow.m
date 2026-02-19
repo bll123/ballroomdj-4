@@ -98,13 +98,10 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
 {
   uiwcont_t     *uiwin;
   IWindow       *win = NULL;
-  uiwcont_t     *uibox;
-  NSStackView   *box;
   id            windowDelegate;
 
 fprintf (stderr, "c-main-win\n");
   win = [[IWindow alloc] init];
-  uibox = uiCreateVertBox ();
   if (title != NULL) {
     NSString  *nstitle;
 
@@ -112,11 +109,7 @@ fprintf (stderr, "c-main-win\n");
     [win setTitle: nstitle];
   }
 
-  box = uibox->uidata.widget;
-  [win setContentView: box];
   [win makeMainWindow];
-
-  uibox->packed = true;
 
   if (imagenm != NULL) {
     NSImage *image = nil;
@@ -133,11 +126,6 @@ fprintf (stderr, "c-main-win\n");
   uiwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_WINDOW);
   uiwcontSetWidget (uiwin, win, NULL);
   uiwin->packed = true;
-
-  uiWidgetSetAllMargins (uibox, 2);
-// ### these should not be necessary
-//  uiWidgetExpandHoriz (uibox);
-//  uiWidgetExpandVert (uibox);
 
   return uiwin;
 }
@@ -315,7 +303,22 @@ uiWindowNoFocusOnStartup (uiwcont_t *uiwindow)
 uiwcont_t *
 uiCreateScrolledWindow (int minheight)
 {
+  NSScrollView  * sv;
+  uiwcont_t     * uisw;
+
 fprintf (stderr, "c-scroll-win\n");
+  sv = [[NSScrollView alloc] init];
+  sv.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+  sv.hasVerticalScroller = YES;
+  sv.hasHorizontalScroller = NO;
+  sv.autohidesScrollers = NO;
+  sv.drawsBackground = NO;
+
+  uisw = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_WINDOW);
+  uiwcontSetWidget (uisw, sv, NULL);
+
+  uiWidgetSetAllMargins (uisw, 2);
+
   return NULL;
 }
 
@@ -423,8 +426,6 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
 {
   NSWindow      *win;
   NSStackView   *widget = NULL;
-  NSStackView   *winbox;
-  int           grav = NSStackViewGravityTop;
   macoslayout_t *layout = NULL;
 
   if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-pack-in-win-win")) {
@@ -434,27 +435,28 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
   }
+fprintf (stderr, "  pack-in-win: %d/%s\n", uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
 
   win = uiwindow->uidata.widget;
   widget = uiwidget->uidata.packwidget;
-  winbox = [win contentView];
-  [winbox addView: widget inGravity: grav];
+
+  [win setContentView: widget];
   layout = uiwidget->uidata.layout;
 
 fprintf (stderr, "  add pack-in-win constraint\n");
   [widget.leadingAnchor
-      constraintEqualToAnchor: winbox.leadingAnchor
+      constraintEqualToAnchor: widget.leadingAnchor
       constant: layout->margins.left].active = YES;
   [widget.trailingAnchor
-      constraintEqualToAnchor: winbox.trailingAnchor
+      constraintEqualToAnchor: widget.trailingAnchor
       constant: layout->margins.right].active = YES;
   [widget.topAnchor
-      constraintEqualToAnchor: winbox.topAnchor
+      constraintEqualToAnchor: widget.topAnchor
       constant: layout->margins.top].active = YES;
   [widget.bottomAnchor
-      constraintEqualToAnchor: winbox.bottomAnchor
+      constraintEqualToAnchor: widget.bottomAnchor
       constant: layout->margins.bottom].active = YES;
-  [widget setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
+  widget.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
 
   uiwidget->packed = true;
   return;

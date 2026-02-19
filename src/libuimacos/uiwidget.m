@@ -23,7 +23,6 @@
 #include "ui/uiwidget.h"
 
 static void uiWidgetUpdateLayout (uiwcont_t *uiwidget);
-static NSView * uiWidgetGetPrior (NSStackView *stview, NSView *view);
 
 /* widget interface */
 
@@ -53,14 +52,6 @@ uiWidgetExpandHoriz (uiwcont_t *uiwidget)
 
   layout = uiwidget->uidata.layout;
   layout->expandhoriz = true;
-fprintf (stderr, "  add expand-horiz constraint\n");
-  [layout->container.leadingAnchor
-      constraintEqualToAnchor: container.leadingAnchor
-      constant: layout->margins.left].active = YES;
-  [layout->container.trailingAnchor
-      constraintEqualToAnchor: container.trailingAnchor
-      constant: layout->margins.right].active = YES;
-  [widget setAutoresizingMask : NSViewWidthSizable];
   return;
 }
 
@@ -84,14 +75,6 @@ uiWidgetExpandVert (uiwcont_t *uiwidget)
 
   layout = uiwidget->uidata.layout;
   layout->expandvert = true;
-fprintf (stderr, "  add expand-vert constraint\n");
-  [layout->container.topAnchor
-      constraintEqualToAnchor: container.topAnchor
-      constant: layout->margins.top].active = YES;
-  [layout->container.bottomAnchor
-      constraintEqualToAnchor: container.bottomAnchor
-      constant: layout->margins.bottom].active = YES;
-  [widget setAutoresizingMask : NSViewHeightSizable];
   return;
 }
 
@@ -483,45 +466,18 @@ uiWidgetUpdateLayout (uiwcont_t *uiwidget)
 //  /* this may not be valid... */
 //  stview = (NSStackView *) [view superview];
 
-  if (! layout->expandhoriz) {
-fprintf (stderr, "  add margin constraint\n");
-    [container.leadingAnchor
-        constraintEqualToAnchor: container.leadingAnchor
-        constant: layout->margins.left].active = YES;
-    [container.trailingAnchor
-        constraintEqualToAnchor: container.trailingAnchor
-        constant: layout->margins.right].active = YES;
-  }
-  if (! layout->expandvert) {
-    [container.topAnchor
-        constraintEqualToAnchor: container.topAnchor
-        constant: layout->margins.top].active = YES;
-    [container.bottomAnchor
-        constraintEqualToAnchor: container.bottomAnchor
-        constant: layout->margins.bottom].active = YES;
-  }
+fprintf (stderr, "  set margin constraints\n");
+  [container.leadingAnchor
+      constraintEqualToAnchor: container.leadingAnchor
+      constant: layout->margins.left].active = YES;
+  [container.trailingAnchor
+      constraintEqualToAnchor: container.trailingAnchor
+      constant: layout->margins.right].active = YES;
+  [container.topAnchor
+      constraintEqualToAnchor: container.topAnchor
+      constant: layout->margins.top].active = YES;
+  [container.bottomAnchor
+      constraintEqualToAnchor: container.bottomAnchor
+      constant: layout->margins.bottom].active = YES;
 }
 
-static NSView *
-uiWidgetGetPrior (NSStackView *stview, NSView *view)
-{
-  NSView    *prior;
-  NSArray   *subviews;
-  int       svcount;
-
-  subviews = [stview subviews];
-  svcount = [subviews count];
-
-  prior = NULL;
-  for (int i = 0; i < svcount; ++i) {
-    NSView        *tview;
-
-    tview = [subviews objectAtIndex: i];
-    if (tview == view) {
-      break;
-    }
-    prior = tview;
-  }
-
-  return prior;
-}

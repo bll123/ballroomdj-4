@@ -105,11 +105,13 @@ fprintf (stderr, "c-bt\n");
 
   snprintf (tmp, sizeof (tmp), "button-%ld\n", gident);
   [widget setIdentifier: [NSString stringWithUTF8String: tmp]];
+  ++gident;
+
   [widget setBezelStyle: NSBezelStyleRounded];
   [widget setTarget: widget];
   [widget setUIWidget: uiwidget];
   [widget setAction: @selector(OnButton1Click:)];
-  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
 #if MACOS_UI_DEBUG
   [widget setFocusRingType: NSFocusRingTypeExterior];

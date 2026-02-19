@@ -41,7 +41,7 @@ fprintf (stderr, "c-switch\n");
   if (value) {
     [widget setState: NSControlStateValueOn];
   }
-  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
   uiwidget = uiwcontAlloc (WCONT_T_SWITCH, WCONT_T_SWITCH);
   uiwcontSetWidget (uiwidget, widget, NULL);

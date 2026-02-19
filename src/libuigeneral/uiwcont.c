@@ -21,9 +21,6 @@ uiwcontAlloc_r (int basetype, int type, const char *fn, int lineno)
 {
   uiwcont_t    *uiwidget;
 
-#if 0 && BDJ4_MEM_DEBUG
-  fprintf (stderr, "wcont-alloc: %s %d\n", fn, lineno);
-#endif
   uiwidget = mdmalloc (sizeof (uiwcont_t));
   uiwidget->wbasetype = basetype;
   uiwidget->wtype = type;
@@ -78,6 +75,8 @@ static const char *uiwcontdesc [WCONT_T_MAX] = {
   [WCONT_T_CHGIND] = "CHGIND",
   [WCONT_T_DIALOG_WINDOW] = "DIALOG_WINDOW",
   [WCONT_T_ENTRY] = "ENTRY",
+  [WCONT_T_EVENT_BOX] = "EVENT_BOX",
+  [WCONT_T_HBOX] = "H-BOX",
   [WCONT_T_IMAGE] = "IMAGE",
   [WCONT_T_KEY] = "KEY",
   [WCONT_T_LABEL] = "LABEL",
@@ -96,17 +95,19 @@ static const char *uiwcontdesc [WCONT_T_MAX] = {
   [WCONT_T_WINDOW_SCROLL] = "SCROLL_WINDOW",
   [WCONT_T_SEPARATOR] = "SEPARATOR",
   [WCONT_T_SIZE_GROUP] = "SIZE_GROUP",
+  [WCONT_T_SPINBOX] = "SPINBOX",
   [WCONT_T_SPINBOX_DOUBLE_DFLT] = "SPINBOX_DOUBLE_DFLT",
   [WCONT_T_SPINBOX_DOUBLE] = "SPINBOX_DOUBLE",
   [WCONT_T_SPINBOX_NUM] = "SPINBOX_NUM",
-  [WCONT_T_SPINBOX] = "SPINBOX",
   [WCONT_T_SPINBOX_TEXT] = "SPINBOX_TEXT",
   [WCONT_T_SPINBOX_TIME] = "SPINBOX_TIME",
   [WCONT_T_SWITCH] = "SWITCH",
   [WCONT_T_TEXT_BOX] = "TEXT_BOX",
   [WCONT_T_TEXT_BUFFER] = "TEXT_BUFFER",
   [WCONT_T_UNKNOWN] = "unknown",
+  [WCONT_T_VBOX] = "V-BOX",
   [WCONT_T_WINDOW] = "WINDOW",
+  [WCONT_T_WINDOW_MAIN] = "MAIN-WINDOW",
 };
 
 static_assert (sizeof (uiwcontdesc) / sizeof (const char *) == WCONT_T_MAX,

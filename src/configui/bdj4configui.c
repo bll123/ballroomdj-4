@@ -449,7 +449,6 @@ confuiBuildUI (configui_t *confui)
 
   uiutilsAddProfileColorDisplay (confui->gui.vbox, &accent);
   hbox = accent.hbox;
-  uiBoxPostProcess (accent.cbox);
   uiwcontFree (accent.cbox);
 
   uiwidgetp = uiCreateLabel ("");

@@ -39,7 +39,7 @@ fprintf (stderr, "c-label\n");
   [widget setEditable:NO];
   [widget setSelectable:NO];
   [widget setStringValue: [NSString stringWithUTF8String: label]];
-  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
   uiwidget = uiwcontAlloc (WCONT_T_LABEL, WCONT_T_LABEL);
   uiwcontSetWidget (uiwidget, widget, NULL);

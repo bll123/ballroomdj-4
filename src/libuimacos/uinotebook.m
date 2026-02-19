@@ -28,6 +28,7 @@ uiCreateNotebook (void)
   uiwcont_t   *uiwidget;
   NSTabView   *nb;
 
+fprintf (stderr, "c-nb\n");
   nb = [[NSTabView alloc] init];
   [nb setTabPosition: NSTabPositionTop];
 //  gtk_notebook_set_show_border (GTK_NOTEBOOK (nb), TRUE);
