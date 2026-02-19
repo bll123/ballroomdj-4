@@ -108,7 +108,7 @@ procutilStart (const char *fn, int profile, loglevel_t loglvl,
   snprintf (sloglvl, sizeof (sloglvl), "%" PRId32, loglvl);
 
   memwatch = mdebugGetWatch ();
-  snprintf (smemwatch, sizeof (smemwatch), "%" PRIx64, memwatch);
+  snprintf (smemwatch, sizeof (smemwatch), "%" PRIx64, (uint64_t) memwatch);
 
   idx = 0;
   targv [idx++] = (char *) fn;

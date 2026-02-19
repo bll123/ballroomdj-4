@@ -105,10 +105,7 @@ static void mdebugLog (const char *fmt, ...)
 void
 mdebugInit (const char *tag)
 {
-#if ! BDJ4_MEM_DEBUG
-  return;
-#endif
-
+#if BDJ4_MEM_DEBUG
   if (! initialized) {
     mdebugcounts [MDEBUG_INT_ALLOC] += MDEBUG_ALLOC_BUMP;
     mdebug = realloc (mdebug, mdebugcounts [MDEBUG_INT_ALLOC] * sizeof (mdebug_t));
@@ -118,14 +115,17 @@ mdebugInit (const char *tag)
       mdebugcounts [i] = 0;
     }
     for (int i = 0; i < mdebugcounts [MDEBUG_INT_ALLOC]; ++i) {
-#if MDEBUG_ENABLE_BACKTRACE
+# if MDEBUG_ENABLE_BACKTRACE
       mdebug [i].bt = NULL;
-#endif
+# endif
       mdebug [i].fn = NULL;
     }
     initialized = true;
   }
   mdebugnooutput = false;
+#else
+  return;
+#endif
 }
 
 void
