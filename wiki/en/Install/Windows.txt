@@ -11,19 +11,21 @@ Windows&nbsp;11&nbsp;(64-bit).
 
 __\*\* BallroomDJ 4 does not have any malware or viruses in it. \*\*__
 
-MicroSoft's Windows Defender's online anti-virus check will mark
+Microsoft's Windows Defender's online anti-virus check will mark
 novel, small programs as a virus.  In BDJ4, this includes the
-installation extractor and the BDJ4 launcher.  Other anti-virus
-programs will probably have similar issues.
+installation extractor, the BDJ4 launcher and the BDJ4 startup helper.
+Other anti-virus programs will probably have similar issues.
 
-I can submit false positives to MicroSoft, and they will fix their
+I can submit false positives to Microsoft, and they will fix their
 database.   But many other anti-virus companies do not have a method
 where false positives can be submitted.  And there are far too many
 anti-virus products for me to do so.
 
 If you have a false positive for BDJ4, and use Windows Defender,
 [let&nbsp;me&nbsp;know](en-Getting%20Help), and I can get the false
-positive cleared.
+positive cleared.  Please include a screenshot from Virus &amp; Threat
+Protection / Protection History and open the message about the
+quarantined threat (I need the information from the "Detected:" line).
 
 For other anti-virus products you will need to submit the
 false positive yourself, or mark BDJ4 as safe on your computer.
@@ -151,4 +153,4 @@ BDJ4, use one of the methods in
 [Setting up Windows for DJ Work](en-Install-Setting%20Up%20Windows)
 
 [Wiki Home](Home)
-<br>_(Updated 2026-02-16 20:57:39; BDJ4 version 4.17.11)_
+<br>_(Updated 2026-02-17 07:16:49; BDJ4 version 4.17.11)_
