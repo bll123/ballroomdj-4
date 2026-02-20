@@ -55,4 +55,4 @@ Open a terminal and run this script using the following command.
     bash linux-uninstall-bdj4-v5.sh
 
 [Wiki Home](Home)
-<br>_(Updated 2026-02-16 20:57:39; BDJ4 version 4.17.11)_
+<br>_(Updated 2026-02-20 08:35:08; BDJ4 version 4.17.11)_
