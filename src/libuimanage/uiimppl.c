@@ -36,6 +36,7 @@
 #include "ui.h"
 #include "uidd.h"
 #include "uiimppl.h"
+#include "uisbtext.h"
 #include "uiutils.h"
 #include "validate.h"
 
@@ -56,7 +57,6 @@ enum {
   UIIMPPL_W_URI,
   UIIMPPL_W_URI_BUTTON,
   UIIMPPL_W_NEWNAME,
-  UIIMPPL_W_IMP_TYPE,
   UIIMPPL_W_PL_SEL_LABEL,
   UIIMPPL_W_MAX,
 };
@@ -70,13 +70,13 @@ enum {
 typedef struct uiimppl {
   uiwcont_t         *parentwin;
   uiwcont_t         *wcont [UIIMPPL_W_MAX];
+  uisbtext_t        *sb;
   const char        *pleasewaitmsg;
   asconf_t          *asconf;
   callback_t        *responsecb;
   uidd_t            *plselect;
   nlist_t           *options;
   nlist_t           *aslist;
-  nlist_t           *askeys;
   nlist_t           *astypes;
   nlist_t           *astypelookup;
   ilist_t           *plnames;
@@ -136,6 +136,7 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts, const char *waitmsg)
   for (int j = 0; j < UIIMPPL_W_MAX; ++j) {
     uiimppl->wcont [j] = NULL;
   }
+  uiimppl->sb = NULL;
   uiimppl->responsecb = NULL;
   uiimppl->parentwin = windowp;
   uiimppl->options = opts;
@@ -149,7 +150,6 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts, const char *waitmsg)
   uiimppl->changed = false;
   uiimppl->plselectbuilt = false;
   uiimppl->aslist = NULL;
-  uiimppl->askeys = NULL;
   uiimppl->astypes = NULL;
   uiimppl->plnames = NULL;
   uiimppl->urilabel = NULL;
@@ -187,8 +187,6 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts, const char *waitmsg)
   count = slistGetCount (tlist) + 1;
   uiimppl->aslist = nlistAlloc ("aslist", LIST_UNORDERED, NULL);
   nlistSetSize (uiimppl->aslist, count);
-  uiimppl->askeys = nlistAlloc ("askeys", LIST_UNORDERED, NULL);
-  nlistSetSize (uiimppl->askeys, count);
   uiimppl->astypes = nlistAlloc ("astypes", LIST_UNORDERED, NULL);
   nlistSetSize (uiimppl->astypes, count);
   uiimppl->astypelookup = nlistAlloc ("astypelookup", LIST_UNORDERED, NULL);
@@ -204,8 +202,7 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts, const char *waitmsg)
     if (len > uiimppl->asmaxwidth) {
       uiimppl->asmaxwidth = len;
     }
-    nlistSetStr (uiimppl->aslist, count, asnm);
-    nlistSetNum (uiimppl->askeys, count, askey);
+    nlistSetStr (uiimppl->aslist, askey, asnm);
     type = asconfGetNum (uiimppl->asconf, askey, ASCONF_TYPE);
     if (type < 0) {
       type = AUDIOSRC_TYPE_FILE;
@@ -216,7 +213,6 @@ uiimpplInit (uiwcont_t *windowp, nlist_t *opts, const char *waitmsg)
     ++count;
   }
   nlistSort (uiimppl->aslist);
-  nlistSort (uiimppl->askeys);
   nlistSort (uiimppl->astypes);
   nlistSort (uiimppl->astypelookup);
   slistFree (tlist);
@@ -255,8 +251,6 @@ uiimpplFree (uiimppl_t *uiimppl)
   uiimppl->plnames = NULL;
   nlistFree (uiimppl->aslist);
   uiimppl->aslist = NULL;
-  nlistFree (uiimppl->askeys);
-  uiimppl->askeys = NULL;
   nlistFree (uiimppl->astypes);
   uiimppl->astypes = NULL;
   nlistFree (uiimppl->astypelookup);
@@ -301,7 +295,7 @@ uiimpplDialog (uiimppl_t *uiimppl, const char *uri)
     uiimppl->askey = uiimppl->asconfcount;
   }
   uiimppl->imptype = nlistGetNum (uiimppl->astypes, uiimppl->askey);
-  uiSpinboxTextSetValue (uiimppl->wcont [UIIMPPL_W_IMP_TYPE], uiimppl->askey);
+  uisbtextSetValue (uiimppl->sb, uiimppl->askey);
 
   x = nlistGetNum (uiimppl->options, IMP_PL_POSITION_X);
   y = nlistGetNum (uiimppl->options, IMP_PL_POSITION_Y);
@@ -487,14 +481,12 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiSpinboxTextCreate (uiimppl);
-  uiSpinboxTextSet (uiwidgetp, 0, nlistGetCount (uiimppl->aslist),
-      uiimppl->asmaxwidth, uiimppl->aslist, uiimppl->askeys, NULL);
-  uiSpinboxTextSetValue (uiwidgetp, uiimppl->askey);
-  uiSpinboxTextSetValueChangedCallback (uiwidgetp,
+  uiimppl->sb = uisbtextCreate (hbox);
+  uisbtextSetList (uiimppl->sb, uiimppl->aslist);
+  uisbtextSetWidth (uiimppl->sb, uiimppl->asmaxwidth);
+  uisbtextSetValue (uiimppl->sb, uiimppl->askey);
+  uisbtextSetChangeCallback (uiimppl->sb,
       uiimppl->callbacks [UIIMPPL_CB_TYPE_SEL]);
-  uiimppl->wcont [UIIMPPL_W_IMP_TYPE] = uiwidgetp;
-  uiBoxPackStart (hbox, uiwidgetp);
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
@@ -575,8 +567,6 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
       uiimpplValidateURIEntry, uiimppl, UIENTRY_DELAYED);
   uiEntrySetValidate (uiimppl->wcont [UIIMPPL_W_NEWNAME], "",
       uiimpplValidateNNEntry, uiimppl, UIENTRY_IMMEDIATE);
-  uiSpinboxTextSetValueChangedCallback (uiimppl->wcont [UIIMPPL_W_IMP_TYPE],
-      uiimppl->callbacks [UIIMPPL_CB_TYPE_SEL]);
 
   logProcEnd ("");
 }
@@ -972,7 +962,7 @@ uiimpplImportTypeChg (void *udata)
   uiLabelSetText (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], "");
   uiimppl->haveerrors = UIIMPPL_ERR_NONE;
 
-  askey = uiSpinboxTextGetValue (uiimppl->wcont [UIIMPPL_W_IMP_TYPE]);
+  askey = uisbtextGetValue (uiimppl->sb);
   uiimppl->askey = askey;
   uiimppl->imptype = nlistGetNum (uiimppl->astypes, uiimppl->askey);
 
@@ -1084,7 +1074,7 @@ uiimpplProcessURI (uiimppl_t *uiimppl, const char *uri)
 
   uiimppl->askey = nlistGetNum (uiimppl->astypelookup, type);
   uiimppl->imptype = type;
-  uiSpinboxTextSetValue (uiimppl->wcont [UIIMPPL_W_IMP_TYPE], uiimppl->askey);
+  uisbtextSetValue (uiimppl->sb, uiimppl->askey);
   uiimppl->changed = true;
 
   pathInfoFree (pi);

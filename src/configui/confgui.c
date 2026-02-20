@@ -26,6 +26,7 @@
 #include "ui.h"
 #include "uidd.h"
 #include "uiduallist.h"
+#include "uisbtext.h"
 #include "uiutils.h"
 #include "validate.h"
 
@@ -266,8 +267,8 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     uiwcont_t *szgrpB, const char *txt, int widx, int bdjoptIdx,
     confuiouttype_t outtype, ssize_t value, void *cb)
 {
-  uiwcont_t  *hbox;
-  uiwcont_t  *uiwidgetp;
+  uiwcont_t   *hbox;
+  uisbtext_t  *sb;
   nlist_t     *list;
   nlist_t     *keylist;
   size_t      maxWidth;
@@ -281,8 +282,8 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, CONFUI_NO_INDENT);
 
-  uiwidgetp = uiSpinboxTextCreate (gui);
-  gui->uiitem [widx].uiwidgetp = uiwidgetp;
+  sb = uisbtextCreate (hbox);
+  gui->uiitem [widx].sb = sb;
   list = gui->uiitem [widx].displist;
   keylist = gui->uiitem [widx].sbkeylist;
   if (outtype == CONFUI_OUT_STR) {
@@ -295,22 +296,19 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     maxWidth = nlistGetMaxValueWidth (list);
   }
 
-  uiSpinboxTextSet (uiwidgetp, 0,
-      nlistGetCount (list), maxWidth, list, keylist, NULL);
-  uiSpinboxTextSetValue (uiwidgetp, value);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetSetMarginStart (uiwidgetp, 4);
+  uisbtextSetList (sb, list);
+  uisbtextSetValue (sb, value);
+  uisbtextSetWidth (sb, maxWidth);
+//  uiWidgetSetMarginStart (uiwidgetp, 4);
   if (szgrpB != NULL) {
-    uiSizeGroupAdd (szgrpB, uiwidgetp);
+    uisbtextSizeGroupAdd (sb, szgrpB);
   }
 
-  gui->uiitem [widx].uiwidgetp = uiwidgetp;
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
 
   if (cb != NULL) {
     gui->uiitem [widx].callback = callbackInit (cb, gui, NULL);
-    uiSpinboxTextSetValueChangedCallback (gui->uiitem [widx].uiwidgetp,
-        gui->uiitem [widx].callback);
+    uisbtextSetChangeCallback (sb, gui->uiitem [widx].callback);
   }
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);

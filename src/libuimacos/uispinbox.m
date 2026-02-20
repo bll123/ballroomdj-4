@@ -37,33 +37,6 @@ uiSpinboxFree (uiwcont_t *uiwidget)
 }
 
 
-uiwcont_t *
-uiSpinboxTextCreate (void *udata)
-{
-fprintf (stderr, "c-sb-text\n");
-  return NULL;
-}
-
-void
-uiSpinboxTextSet (uiwcont_t *uiwidget, int min, int count,
-    int maxWidth, slist_t *list, nlist_t *keylist,
-    uispinboxdisp_t textGetProc)
-{
-  return;
-}
-
-int
-uiSpinboxTextGetValue (uiwcont_t *uiwidget)
-{
-  return 0;
-}
-
-void
-uiSpinboxTextSetValue (uiwcont_t *uiwidget, int value)
-{
-  return;
-}
-
 void
 uiSpinboxSetState (uiwcont_t *uiwidget, int state)
 {
@@ -86,12 +59,6 @@ uiSpinboxTimeGetValue (uiwcont_t *uiwidget)
 
 void
 uiSpinboxTimeSetValue (uiwcont_t *uiwidget, int32_t value)
-{
-  return;
-}
-
-void
-uiSpinboxTextSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
   return;
 }

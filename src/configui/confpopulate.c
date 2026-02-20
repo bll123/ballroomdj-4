@@ -79,12 +79,14 @@ confuiPopulateOptions (confuigui_t *gui)
         break;
       }
       case CONFUI_SPINBOX_TEXT: {
-        nval = uiSpinboxTextGetValue (gui->uiitem [widx].uiwidgetp);
+        nval = uisbtextGetValue (gui->uiitem [widx].sb);
         if (outtype == CONFUI_OUT_STR) {
           if (gui->uiitem [widx].sbkeylist != NULL) {
             sval = nlistGetStr (gui->uiitem [widx].sbkeylist, nval);
+fprintf (stderr, "sb: from keylist: %s\n", sval);
           } else {
             sval = nlistGetStr (gui->uiitem [widx].displist, nval);
+fprintf (stderr, "sb: from displist: %s\n", sval);
           }
         }
         break;
@@ -140,10 +142,10 @@ confuiPopulateOptions (confuigui_t *gui)
     }
 
     if (widx == CONFUI_SPINBOX_AUDIO_OUTPUT) {
-      uiwcont_t  *spinbox;
+      uisbtext_t    *sb;
 
-      spinbox = gui->uiitem [widx].uiwidgetp;
-      if (! uiSpinboxIsChanged (spinbox)) {
+      sb = gui->uiitem [widx].sb;
+      if (! uisbtextIsChanged (sb)) {
         continue;
       }
     }
@@ -159,6 +161,7 @@ confuiPopulateOptions (confuigui_t *gui)
       }
       case CONFUI_OUT_STR: {
         if (widx == CONFUI_WIDGET_UI_ACCENT_COLOR) {
+fprintf (stderr, "sval: %s\n", sval);
           if (strcmp (bdjoptGetStr (gui->uiitem [widx].bdjoptIdx), sval) != 0) {
             gui->uiitem [widx].changed = true;
           }
@@ -265,12 +268,12 @@ confuiPopulateOptions (confuigui_t *gui)
     }
 
     if (widx == CONFUI_SPINBOX_RC_HTML_TEMPLATE) {
-      uiwcont_t  *spinbox;
+      uisbtext_t    *sb;
 
       /* only copy if the spinbox changed */
 
-      spinbox = gui->uiitem [widx].uiwidgetp;
-      if (uiSpinboxIsChanged (spinbox)) {
+      sb = gui->uiitem [widx].sb;
+      if (uisbtextIsChanged (sb)) {
         sval = bdjoptGetStr (gui->uiitem [widx].bdjoptIdx);
         templateHttpCopy (sval, "bdj4remote.html");
       }

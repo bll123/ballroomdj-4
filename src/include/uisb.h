@@ -22,6 +22,7 @@ void uisbFree (uisb_t *sb);
 void uisbExpandHoriz (uisb_t *sb);
 void uisbSetCallback (uisb_t *sb, callback_t *uicb);
 void uisbSetState (uisb_t *sb, int state);
+void uisbSizeGroupAdd (uisb_t *sb, uiwcont_t *sg);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 }

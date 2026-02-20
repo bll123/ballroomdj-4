@@ -19,11 +19,12 @@
 #include "mdebug.h"
 #include "status.h"
 #include "ui.h"
+#include "uisbtext.h"
 #include "uistatus.h"
 
 typedef struct uistatus {
   status_t      *status;
-  uiwcont_t     *spinbox;
+  uisbtext_t    *sb;
   bool          allflag;
 } uistatus_t;
 
@@ -34,30 +35,28 @@ uistatusSpinboxCreate (uiwcont_t *boxp, bool allflag)
 {
   uistatus_t  *uistatus;
   int         maxw;
-  int         start;
-  int         len;
 
 
   uistatus = mdmalloc (sizeof (uistatus_t));
   uistatus->status = bdjvarsdfGet (BDJVDF_STATUS);
   uistatus->allflag = allflag;
-  uistatus->spinbox = uiSpinboxTextCreate (uistatus);
+  uistatus->sb = uisbtextCreate (boxp);
 
-  start = 0;
   maxw = statusGetMaxWidth (uistatus->status);
   if (allflag) {
+    const char  *txt;
+    int         len;
+
     /* CONTEXT: status: a filter: all dance status will be listed */
-    len = istrlen (_("Any Status"));
+    txt = _("Any Status");
+    len = istrlen (txt);
     if (len > maxw) {
       maxw = len;
     }
-    start = -1;
+    uisbtextPrependList (uistatus->sb, txt);
   }
-  uiSpinboxTextSet (uistatus->spinbox, start,
-      statusGetCount (uistatus->status),
-      maxw, NULL, NULL, uistatusStatusGet);
-
-  uiBoxPackStart (boxp, uistatus->spinbox);
+  uisbtextSetDisplayCallback (uistatus->sb, uistatusStatusGet, uistatus);
+  uisbtextSetCount (uistatus->sb, statusGetCount (uistatus->status));
 
   return uistatus;
 }
@@ -70,7 +69,7 @@ uistatusFree (uistatus_t *uistatus)
     return;
   }
 
-  uiwcontFree (uistatus->spinbox);
+  uisbtextFree (uistatus->sb);
   mdfree (uistatus);
 }
 
@@ -83,7 +82,7 @@ uistatusGetValue (uistatus_t *uistatus)
     return 0;
   }
 
-  idx = uiSpinboxTextGetValue (uistatus->spinbox);
+  idx = uisbtextGetValue (uistatus->sb);
   return idx;
 }
 
@@ -94,28 +93,32 @@ uistatusSetValue (uistatus_t *uistatus, int value)
     return;
   }
 
-  uiSpinboxTextSetValue (uistatus->spinbox, value);
+  uisbtextSetValue (uistatus->sb, value);
 }
 
 void
 uistatusSetState (uistatus_t *uistatus, int state)
 {
-  if (uistatus == NULL || uistatus->spinbox == NULL) {
+  if (uistatus == NULL || uistatus->sb == NULL) {
     return;
   }
-  uiSpinboxSetState (uistatus->spinbox, state);
+  uisbtextSetState (uistatus->sb, state);
 }
 
 void
 uistatusSizeGroupAdd (uistatus_t *uistatus, uiwcont_t *sg)
 {
-  uiSizeGroupAdd (sg, uistatus->spinbox);
+  if (uistatus == NULL || uistatus->sb == NULL) {
+    return;
+  }
+
+  uisbtextSizeGroupAdd (uistatus->sb, sg);
 }
 
 void
 uistatusSetChangedCallback (uistatus_t *uistatus, callback_t *cb)
 {
-  uiSpinboxTextSetValueChangedCallback (uistatus->spinbox, cb);
+  uisbtextSetChangeCallback (uistatus->sb, cb);
 }
 
 /* internal routines */

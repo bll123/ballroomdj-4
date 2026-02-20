@@ -13,6 +13,7 @@
 #include "orgutil.h"
 #include "uidd.h"
 #include "uiduallist.h"
+#include "uisbtext.h"
 #include "uiselectfile.h"
 #include "uivirtlist.h"
 #include "uivnb.h"
@@ -286,6 +287,7 @@ typedef struct {
   uiwcont_t         *uilabelp;
   const char        *labeltxt;
   uiwcont_t         *uiwidgetp;
+  uisbtext_t        *sb;
   callback_t        *callback;
   uidd_t            *uidd;
   char              *uri;

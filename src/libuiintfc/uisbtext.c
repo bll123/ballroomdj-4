@@ -34,6 +34,7 @@ typedef struct uisbtext {
   int32_t         old_index;
   int32_t         index;
   int32_t         count;
+  bool            changed;
 } uisbtext_t;
 
 static bool uisbtextCBHandler (void *udata, int32_t dir);
@@ -50,7 +51,7 @@ uisbtextCreate (uiwcont_t *box)
   sbtext->sb = uisbCreate (box, sbtext->display);
   sbtext->txtlist = NULL;
   sbtext->idxlist = NULL;
-  sbtext->old_index = -2;
+  sbtext->old_index = LIST_VALUE_INVALID;
   sbtext->index = 0;
   sbtext->pre_text = NULL;
   sbtext->sbtextcb = NULL;
@@ -58,6 +59,7 @@ uisbtextCreate (uiwcont_t *box)
   sbtext->dispcb = NULL;
   sbtext->udata = NULL;
   sbtext->count = 0;
+  sbtext->changed = false;
 
   sbtext->sbtextcb = callbackInitI (uisbtextCBHandler, sbtext);
   uisbSetCallback (sbtext->sb, sbtext->sbtextcb);
@@ -143,6 +145,16 @@ uisbtextSetWidth (uisbtext_t *sbtext, int width)
   uiLabelSetMaxWidth (sbtext->display, width);
 }
 
+bool
+uisbtextIsChanged (uisbtext_t *sbtext)
+{
+  if (sbtext == NULL) {
+    return false;
+  }
+
+  return sbtext->changed;
+}
+
 void
 uisbtextSetDisplayCallback (uisbtext_t *sbtext, uisbtextdisp_t cb, void *udata)
 {
@@ -192,6 +204,16 @@ uisbtextSetState (uisbtext_t *sbtext, int state)
   }
 
   uisbSetState (sbtext->sb, state);
+}
+
+void
+uisbtextSizeGroupAdd (uisbtext_t *sbtext, uiwcont_t *sg)
+{
+  if (sbtext == NULL || sg == NULL) {
+    return;
+  }
+
+  uisbSizeGroupAdd (sbtext->sb, sg);
 }
 
 void
@@ -294,6 +316,9 @@ uisbtextSetDisplay (uisbtext_t *sbtext)
   }
 
   if (sbtext->chgcb != NULL) {
+    if (sbtext->old_index != LIST_VALUE_INVALID) {
+      sbtext->changed = true;
+    }
     callbackHandler (sbtext->chgcb);
   }
 

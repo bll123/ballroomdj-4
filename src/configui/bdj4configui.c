@@ -171,6 +171,7 @@ main (int argc, char *argv[])
     confui.gui.uiitem [i].danceitemidx = DANCE_DANCE;
     confui.gui.uiitem [i].uilabelp = NULL;
     confui.gui.uiitem [i].uiwidgetp = NULL;
+    confui.gui.uiitem [i].sb = NULL;
     confui.gui.uiitem [i].callback = NULL;
     confui.gui.uiitem [i].sfcb.entry = NULL;
     confui.gui.uiitem [i].sfcb.window = NULL;
@@ -377,7 +378,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
     uiwcontFree (confui->gui.uiitem [i].uibutton);
   }
   for (int i = CONFUI_SPINBOX_BEGIN + 1; i < CONFUI_SPINBOX_MAX; ++i) {
-    uiwcontFree (confui->gui.uiitem [i].uiwidgetp);
+    uisbtextFree (confui->gui.uiitem [i].sb);
     nlistFree (confui->gui.uiitem [i].displist);
     nlistFree (confui->gui.uiitem [i].sbkeylist);
   }

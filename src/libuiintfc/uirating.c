@@ -20,10 +20,11 @@
 #include "rating.h"
 #include "ui.h"
 #include "uirating.h"
+#include "uisbtext.h"
 
 typedef struct uirating {
   rating_t    *ratings;
-  uiwcont_t   *spinbox;
+  uisbtext_t  *sb;
   bool        allflag;
 } uirating_t;
 
@@ -34,30 +35,29 @@ uiratingSpinboxCreate (uiwcont_t *boxp, bool allflag)
 {
   uirating_t  *uirating;
   int         maxw;
-  int         start;
-  int         len;
 
 
   uirating = mdmalloc (sizeof (uirating_t));
   uirating->ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   uirating->allflag = allflag;
-  uirating->spinbox = uiSpinboxTextCreate (uirating);
+  uirating->sb = uisbtextCreate (boxp);
 
-  start = 0;
   maxw = ratingGetMaxWidth (uirating->ratings);
   if (allflag == UIRATING_ALL) {
+    const char  *txt;
+    int         len;
+
     /* CONTEXT: rating: a filter: all dance ratings will be listed */
-    len = istrlen (_("All Ratings"));
+    txt = _("All Ratings");
+    len = istrlen (txt);
     if (len > maxw) {
       maxw = len;
     }
-    start = -1;
+    uisbtextPrependList (uirating->sb, txt);
   }
-  uiSpinboxTextSet (uirating->spinbox, start,
-      ratingGetCount (uirating->ratings),
-      maxw, NULL, NULL, uiratingRatingGet);
-
-  uiBoxPackStart (boxp, uirating->spinbox);
+  uisbtextSetDisplayCallback (uirating->sb, uiratingRatingGet, uirating);
+  uisbtextSetCount (uirating->sb, ratingGetCount (uirating->ratings));
+  uisbtextSetWidth (uirating->sb, maxw);
 
   return uirating;
 }
@@ -70,7 +70,7 @@ uiratingFree (uirating_t *uirating)
     return;
   }
 
-  uiwcontFree (uirating->spinbox);
+  uisbtextFree (uirating->sb);
   mdfree (uirating);
 }
 
@@ -83,7 +83,7 @@ uiratingGetValue (uirating_t *uirating)
     return 0;
   }
 
-  idx = uiSpinboxTextGetValue (uirating->spinbox);
+  idx = uisbtextGetValue (uirating->sb);
   return idx;
 }
 
@@ -94,28 +94,28 @@ uiratingSetValue (uirating_t *uirating, int value)
     return;
   }
 
-  uiSpinboxTextSetValue (uirating->spinbox, value);
+  uisbtextSetValue (uirating->sb, value);
 }
 
 void
 uiratingSetState (uirating_t *uirating, int state)
 {
-  if (uirating == NULL || uirating->spinbox == NULL) {
+  if (uirating == NULL || uirating->sb == NULL) {
     return;
   }
-  uiSpinboxSetState (uirating->spinbox, state);
+  uisbtextSetState (uirating->sb, state);
 }
 
 void
 uiratingSizeGroupAdd (uirating_t *uirating, uiwcont_t *sg)
 {
-  uiSizeGroupAdd (sg, uirating->spinbox);
+  uisbtextSizeGroupAdd (uirating->sb, sg);
 }
 
 void
 uiratingSetChangedCallback (uirating_t *uirating, callback_t *cb)
 {
-  uiSpinboxTextSetValueChangedCallback (uirating->spinbox, cb);
+  uisbtextSetChangeCallback (uirating->sb, cb);
 }
 
 /* internal routines */

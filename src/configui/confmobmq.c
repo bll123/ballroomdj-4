@@ -119,7 +119,7 @@ confuiMobmqTypeChg (void *udata)
     logProcEnd ("not-table-mobmq");
     return UIENTRY_OK;
   }
-  type = uiSpinboxTextGetValue (gui->uiitem [CONFUI_SPINBOX_MOBMQ_TYPE].uiwidgetp);
+  type = uisbtextGetValue (gui->uiitem [CONFUI_SPINBOX_MOBMQ_TYPE].sb);
   bdjoptSetNum (OPT_P_MOBMQ_TYPE, type);
 
   /* on a type change, clear any existing validation errors */
@@ -144,7 +144,7 @@ confuiMobmqPortChg (void *udata)
     logProcEnd ("not-table-mobmq");
     return UIENTRY_OK;
   }
-  value = uiSpinboxGetValue (gui->uiitem [CONFUI_WIDGET_MOBMQ_PORT].uiwidgetp);
+  value = uisbtextGetValue (gui->uiitem [CONFUI_WIDGET_MOBMQ_PORT].sb);
   nval = (long) value;
   bdjoptSetNum (OPT_P_MOBMQ_PORT, nval);
   confuiUpdateMobmqQrcode (gui);

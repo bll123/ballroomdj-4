@@ -20,10 +20,11 @@
 #include "mdebug.h"
 #include "ui.h"
 #include "uilevel.h"
+#include "uisbtext.h"
 
 typedef struct uilevel {
   level_t       *levels;
-  uiwcont_t     *spinbox;
+  uisbtext_t    *sb;
   bool          allflag;
 } uilevel_t;
 
@@ -34,31 +35,30 @@ uilevelSpinboxCreate (uiwcont_t *boxp, bool allflag)
 {
   uilevel_t  *uilevel;
   int         maxw;
-  int         start;
-  int         len;
 
 
   uilevel = mdmalloc (sizeof (uilevel_t));
   uilevel->levels = bdjvarsdfGet (BDJVDF_LEVELS);
   uilevel->allflag = allflag;
 
-  uilevel->spinbox = uiSpinboxTextCreate (uilevel);
+  uilevel->sb = uisbtextCreate (boxp);
 
-  start = 0;
   maxw = levelGetMaxWidth (uilevel->levels);
   if (allflag) {
+    int         len;
+    const char  *txt;
+
     /* CONTEXT: level: a filter: all dance levels will be listed */
-    len = istrlen (_("All Levels"));
+    txt = _("All Levels");
+    len = istrlen (txt);
     if (len > maxw) {
       maxw = len;
     }
-    start = -1;
+    uisbtextPrependList (uilevel->sb, txt);
   }
-  uiSpinboxTextSet (uilevel->spinbox, start,
-      levelGetCount (uilevel->levels),
-      maxw, NULL, NULL, uilevelLevelGet);
-
-  uiBoxPackStart (boxp, uilevel->spinbox);
+  uisbtextSetDisplayCallback (uilevel->sb, uilevelLevelGet, uilevel);
+  uisbtextSetCount (uilevel->sb, levelGetCount (uilevel->levels));
+  uisbtextSetWidth (uilevel->sb, maxw);
 
   return uilevel;
 }
@@ -71,7 +71,7 @@ uilevelFree (uilevel_t *uilevel)
     return;
   }
 
-  uiwcontFree (uilevel->spinbox);
+  uisbtextFree (uilevel->sb);
   mdfree (uilevel);
 }
 
@@ -84,7 +84,7 @@ uilevelGetValue (uilevel_t *uilevel)
     return 0;
   }
 
-  idx = uiSpinboxTextGetValue (uilevel->spinbox);
+  idx = uisbtextGetValue (uilevel->sb);
   return idx;
 }
 
@@ -95,28 +95,28 @@ uilevelSetValue (uilevel_t *uilevel, int value)
     return;
   }
 
-  uiSpinboxTextSetValue (uilevel->spinbox, value);
+  uisbtextSetValue (uilevel->sb, value);
 }
 
 void
 uilevelSetState (uilevel_t *uilevel, int state)
 {
-  if (uilevel == NULL || uilevel->spinbox == NULL) {
+  if (uilevel == NULL || uilevel->sb == NULL) {
     return;
   }
-  uiSpinboxSetState (uilevel->spinbox, state);
+  uisbtextSetState (uilevel->sb, state);
 }
 
 void
 uilevelSizeGroupAdd (uilevel_t *uilevel, uiwcont_t *sg)
 {
-  uiSizeGroupAdd (sg, uilevel->spinbox);
+  uisbtextSizeGroupAdd (uilevel->sb, sg);
 }
 
 void
 uilevelSetChangedCallback (uilevel_t *uilevel, callback_t *cb)
 {
-  uiSpinboxTextSetValueChangedCallback (uilevel->spinbox, cb);
+  uisbtextSetChangeCallback (uilevel->sb, cb);
 }
 
 /* internal routines */

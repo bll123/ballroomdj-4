@@ -198,7 +198,7 @@ confuiMusicQActiveChg (void *udata)
   tval = uiSwitchGetValue (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiwidgetp);
 
   /* force a no-change for ui backends where enable/disable are buggy */
-  selidx = uiSpinboxTextGetValue (gui->uiitem [CONFUI_SPINBOX_MUSIC_QUEUE].uiwidgetp);
+  selidx = uisbtextGetValue (gui->uiitem [CONFUI_SPINBOX_MUSIC_QUEUE].sb);
   if (selidx == 0 && tval == 0) {
     uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiwidgetp, 1);
     return UICB_CONT;
@@ -271,7 +271,7 @@ confuiMusicQDisplayChg (void *udata)
   tval = uiSwitchGetValue (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiwidgetp);
 
   /* force a no-change for ui backends where enable/disable are buggy */
-  selidx = uiSpinboxTextGetValue (gui->uiitem [CONFUI_SPINBOX_MUSIC_QUEUE].uiwidgetp);
+  selidx = uisbtextGetValue (gui->uiitem [CONFUI_SPINBOX_MUSIC_QUEUE].sb);
   if (selidx == 0 && tval == 0) {
     uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiwidgetp, 1);
     return UICB_CONT;
@@ -303,13 +303,13 @@ confuiMusicQChg (void *udata)
 
   widx = CONFUI_SPINBOX_MUSIC_QUEUE;
   oselidx = gui->uiitem [widx].listidx;
-  nselidx = uiSpinboxTextGetValue (gui->uiitem [widx].uiwidgetp);
+  nselidx = uisbtextGetValue (gui->uiitem [widx].sb);
   if (oselidx != nselidx) {
     /* make sure the current selection gets saved to the options data */
     confuiPopulateOptions (gui);
     confuiSetMusicQList (gui);
     confuiUpdateMusicQList (gui);
-    uiSpinboxTextSetValue (gui->uiitem [widx].uiwidgetp, nselidx);
+    uisbtextSetValue (gui->uiitem [widx].sb, nselidx);
   }
   gui->uiitem [widx].listidx = nselidx;
 
@@ -407,8 +407,8 @@ confuiUpdateMusicQList (confuigui_t *gui)
   nlistCalcMaxValueWidth (tlist);
   maxWidth = nlistGetMaxValueWidth (tlist);
 
-  uiSpinboxTextSet (gui->uiitem [widx].uiwidgetp, 0,
-      nlistGetCount (tlist), maxWidth, tlist, NULL, NULL);
+  uisbtextSetList (gui->uiitem [widx].sb, tlist);
+  uisbtextSetWidth (gui->uiitem [widx].sb, maxWidth);
 }
 
 static bool

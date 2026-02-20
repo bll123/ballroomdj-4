@@ -124,7 +124,7 @@ confuiRemctrlPortChg (void *udata)
   long          nval;
 
   logProcBegin ();
-  value = uiSpinboxGetValue (gui->uiitem [CONFUI_WIDGET_RC_PORT].uiwidgetp);
+  value = uisbtextGetValue (gui->uiitem [CONFUI_WIDGET_RC_PORT].sb);
   nval = (long) value;
   bdjoptSetNum (OPT_P_REMCONTROLPORT, nval);
   confuiUpdateRemctrlQrcode (gui);

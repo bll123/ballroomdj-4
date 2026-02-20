@@ -209,7 +209,7 @@ confuiPlayerAudioSinkChg (void *udata)
     return;
   }
 
-  nval = uiSpinboxTextGetValue (gui->uiitem [widx].uiwidgetp);
+  nval = uisbtextGetValue (gui->uiitem [widx].sb);
   sval = nlistGetStr (gui->uiitem [widx].sbkeylist, nval);
   bdjoptSetStr (OPT_M_VOLUME_INTFC, sval);
   confuiPlayerLoadSinkList (gui, sval);
@@ -225,8 +225,8 @@ confuiPlayerAudioSinkChg (void *udata)
   nlistCalcMaxValueWidth (tlist);
   maxWidth = nlistGetMaxValueWidth (tlist);
 
-  uiSpinboxTextSet (gui->uiitem [widx].uiwidgetp, 0,
-      nlistGetCount (tlist), maxWidth, tlist, keylist, NULL);
+  uisbtextSetList (gui->uiitem [widx].sb, tlist);
+  uisbtextSetWidth (gui->uiitem [widx].sb, maxWidth);
 }
 
 static void

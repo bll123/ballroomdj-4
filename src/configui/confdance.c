@@ -274,14 +274,14 @@ confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t dkey)
 
   num = danceGetNum (dances, dkey, DANCE_SPEED);
   widx = CONFUI_SPINBOX_DANCE_SPEED;
-  uiSpinboxTextSetValue (gui->uiitem [widx].uiwidgetp, num);
+  uisbtextSetValue (gui->uiitem [widx].sb, num);
 
   widx = CONFUI_SPINBOX_DANCE_TIME_SIG;
-  uiSpinboxTextSetValue (gui->uiitem [widx].uiwidgetp, timesig);
+  uisbtextSetValue (gui->uiitem [widx].sb, timesig);
 
   num = danceGetNum (dances, dkey, DANCE_TYPE);
   widx = CONFUI_SPINBOX_DANCE_TYPE;
-  uiSpinboxTextSetValue (gui->uiitem [widx].uiwidgetp, num);
+  uisbtextSetValue (gui->uiitem [widx].sb, num);
 }
 
 void
@@ -487,7 +487,7 @@ confuiDanceSpinboxChg (void *udata, int widx)
 
   if (gui->uiitem [widx].basetype == CONFUI_SPINBOX_TEXT) {
     /* text spinbox */
-    nval = uiSpinboxTextGetValue (gui->uiitem [widx].uiwidgetp);
+    nval = uisbtextGetValue (gui->uiitem [widx].sb);
   }
   if (gui->uiitem [widx].basetype == CONFUI_SPINBOX_NUM) {
     double    value;
@@ -589,7 +589,6 @@ static void
 confuiLoadDanceTypeList (confuigui_t *gui)
 {
   nlist_t       *tlist = NULL;
-  nlist_t       *llist = NULL;
   dnctype_t     *dnctypes;
   slistidx_t    iteridx;
   const char    *key;
@@ -598,19 +597,17 @@ confuiLoadDanceTypeList (confuigui_t *gui)
   logProcBegin ();
 
   tlist = nlistAlloc ("cu-dance-type", LIST_ORDERED, NULL);
-  llist = nlistAlloc ("cu-dance-type-l", LIST_ORDERED, NULL);
 
   dnctypes = bdjvarsdfGet (BDJVDF_DANCE_TYPES);
   dnctypesStartIterator (dnctypes, &iteridx);
   count = 0;
   while ((key = dnctypesIterate (dnctypes, &iteridx)) != NULL) {
     nlistSetStr (tlist, count, key);
-    nlistSetNum (llist, count, count);
     ++count;
   }
 
   gui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].displist = tlist;
-  gui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].sbkeylist = llist;
+  gui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].sbkeylist = NULL;
   logProcEnd ("");
 }
 

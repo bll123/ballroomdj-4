@@ -30,6 +30,7 @@
 #include "sysvars.h"
 #include "ui.h"
 #include "uiexppl.h"
+#include "uisbtext.h"
 #include "validate.h"
 
 enum {
@@ -43,7 +44,6 @@ enum {
   UIEXPPL_W_DIALOG,
   UIEXPPL_W_STATUS_MSG,
   UIEXPPL_W_ERROR_MSG,
-  UIEXPPL_W_EXP_TYPE,
   UIEXPPL_W_TARGET,
   UIEXPPL_W_TGT_BUTTON,
   UIEXPPL_W_MAX,
@@ -73,6 +73,7 @@ typedef struct uiexppl {
   callback_t        *callbacks [UIEXPPL_CB_MAX];
   nlist_t           *typelist;
   char              *slname;
+  uisbtext_t        *sb;
   int               exptype;
   bool              isactive;
   bool              in_validate;
@@ -270,7 +271,7 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
-  /* spinbox for export type */
+  /* text-spinbox for export type */
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
   uiWidgetExpandHoriz (hbox);
@@ -282,12 +283,10 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiSpinboxTextCreate (uiexppl);
-  uiSpinboxTextSet (uiwidgetp, 0, nlistGetCount (uiexppl->typelist), 5,
-      uiexppl->typelist, NULL, NULL);
-  uiSpinboxTextSetValue (uiwidgetp, uiexppl->exptype);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiexppl->wcont [UIEXPPL_W_EXP_TYPE] = uiwidgetp;
+  uiexppl->sb = uisbtextCreate (hbox);
+  uisbtextSetList (uiexppl->sb, uiexppl->typelist);
+  uisbtextSetWidth (uiexppl->sb, 5);
+  uisbtextSetValue (uiexppl->sb, uiexppl->exptype);
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
@@ -328,7 +327,7 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
-  uiSpinboxTextSetValueChangedCallback (uiexppl->wcont [UIEXPPL_W_EXP_TYPE],
+  uisbtextSetChangeCallback (uiexppl->sb,
       uiexppl->callbacks [UIEXPPL_CB_EXP_TYPE]);
 
   logProcEnd ("");
@@ -470,7 +469,7 @@ uiexpplValidateTarget (uiwcont_t *entry, const char *label, void *udata)
     if (pathInfoExtCheck (pi, exptypes [i].ext) ||
         (exptypes [i].extb != NULL &&
         pathInfoExtCheck (pi, exptypes [i].extb))) {
-      uiSpinboxTextSetValue (uiexppl->wcont [UIEXPPL_W_EXP_TYPE], i);
+      uisbtextSetValue (uiexppl->sb, i);
       uiexppl->exptype = i;
       found = true;
       break;
@@ -507,8 +506,7 @@ uiexpplExportTypeCallback (void *udata)
 
   uiexppl->in_validate = true;
 
-  uiexppl->exptype = uiSpinboxTextGetValue (
-      uiexppl->wcont [UIEXPPL_W_EXP_TYPE]);
+  uiexppl->exptype = uisbtextGetValue (uiexppl->sb);
 
   str = uiEntryGetValue (uiexppl->wcont [UIEXPPL_W_TARGET]);
   pi = pathInfo (str);

@@ -145,8 +145,7 @@ confuiDispSettingChg (void *udata)
 
 
   oselidx = gui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx;
-  nselidx = uiSpinboxTextGetValue (
-      gui->uiitem [CONFUI_SPINBOX_DISP_SEL].uiwidgetp);
+  nselidx = uisbtextGetValue (gui->uiitem [CONFUI_SPINBOX_DISP_SEL].sb);
   gui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = nselidx;
 
   confuiDispSaveTable (gui, oselidx);

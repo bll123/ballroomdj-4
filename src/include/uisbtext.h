@@ -8,6 +8,7 @@
 
 #include "callback.h"
 #include "nlist.h"
+#include "uiwcont.h"
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
@@ -24,9 +25,11 @@ void uisbtextPrependList (uisbtext_t *sbtext, const char *txt);
 void uisbtextSetList (uisbtext_t *sbtext, nlist_t *txtlist);
 void uisbtextSetCount (uisbtext_t *sbtext, int count);
 void uisbtextSetWidth (uisbtext_t *sbtext, int width);
+bool uisbtextIsChanged (uisbtext_t *sbtext);
 void uisbtextAddClass (uisbtext_t *sbtext, const char *name);
 void uisbtextRemoveClass (uisbtext_t *sbtext, const char *name);
 void uisbtextSetState (uisbtext_t *sbtext, int state);
+void uisbtextSizeGroupAdd (uisbtext_t *sbtext, uiwcont_t *sg);
 void uisbtextSetValue (uisbtext_t *sbtext, int32_t value);
 int32_t uisbtextGetValue (uisbtext_t *sbtext);
 

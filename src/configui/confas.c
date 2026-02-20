@@ -229,11 +229,11 @@ confuiAudioSrcSelectLoadValues (confuigui_t *gui, ilistidx_t askey)
 
   num = asconfGetNum (gui->asconf, askey, ASCONF_MODE);
   widx = CONFUI_SPINBOX_AUDIOSRC_MODE;
-  uiSpinboxTextSetValue (gui->uiitem [widx].uiwidgetp, num);
+  uisbtextSetValue (gui->uiitem [widx].sb, num);
 
   num = asconfGetNum (gui->asconf, askey, ASCONF_TYPE);
   widx = CONFUI_SPINBOX_AUDIOSRC_TYPE;
-  uiSpinboxTextSetValue (gui->uiitem [widx].uiwidgetp, num);
+  uisbtextSetValue (gui->uiitem [widx].sb, num);
 
   num = asconfGetNum (gui->asconf, askey, ASCONF_PORT);
   widx = CONFUI_WIDGET_AUDIOSRC_PORT;
@@ -463,7 +463,7 @@ confuiAudioSrcSpinboxChg (void *udata, int widx)
 
   if (gui->uiitem [widx].basetype == CONFUI_SPINBOX_TEXT) {
     /* text spinbox */
-    nval = uiSpinboxTextGetValue (gui->uiitem [widx].uiwidgetp);
+    nval = uisbtextGetValue (gui->uiitem [widx].sb);
   }
   if (gui->uiitem [widx].basetype == CONFUI_SPINBOX_NUM) {
     double    value;
@@ -501,7 +501,7 @@ confuiAudioSrcSpinboxChg (void *udata, int widx)
       int   twidx;
 
       twidx = CONFUI_SPINBOX_AUDIOSRC_TYPE;
-      uiSpinboxTextSetValue (gui->uiitem [twidx].uiwidgetp, AUDIOSRC_TYPE_BDJ4);
+      uisbtextSetValue (gui->uiitem [twidx].sb, AUDIOSRC_TYPE_BDJ4);
     }
     confuiAudioSrcValidateAll (gui, true);
   }
@@ -661,7 +661,7 @@ confuiAudioSrcSetWidgetStates (confuigui_t *gui, int askey)
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_PASS].uilabelp, upstate);
 
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_NAME].uiwidgetp, state);
-  uiSpinboxSetState (gui->uiitem [CONFUI_SPINBOX_AUDIOSRC_TYPE].uiwidgetp, state);
+  uisbtextSetState (gui->uiitem [CONFUI_SPINBOX_AUDIOSRC_TYPE].sb, state);
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_URI].uiwidgetp, ustate);
   uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_AUDIOSRC_PORT].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_USER].uiwidgetp, upstate);
