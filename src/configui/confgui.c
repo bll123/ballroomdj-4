@@ -548,7 +548,7 @@ confuiMakeItemLabel (confuigui_t *gui, int widx,
 }
 
 void
-confuiSpinboxTextInitDataNum (confuigui_t *gui, char *tag, int widx, ...)
+confuiSBTextInitDataNum (confuigui_t *gui, char *tag, int widx, ...)
 {
   va_list     valist;
   nlistidx_t  key;

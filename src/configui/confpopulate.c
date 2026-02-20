@@ -280,8 +280,8 @@ fprintf (stderr, "sval: %s\n", sval);
     }
   } /* for each item */
 
-  selidx = uiSpinboxTextGetValue (
-      gui->uiitem [CONFUI_SPINBOX_DISP_SEL].uiwidgetp);
+  selidx = uisbtextGetValue (
+      gui->uiitem [CONFUI_SPINBOX_DISP_SEL].sb);
   confuiDispSaveTable (gui, selidx);
 
   bdjoptSetNum (OPT_G_DEBUGLVL, debug);

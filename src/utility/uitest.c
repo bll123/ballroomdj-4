@@ -1581,13 +1581,6 @@ uitestUISpinbox (uitest_t *uitest)
   nlistSetStr (uitest->sbtxtlist, 2, "ccc");
   nlistSetStr (uitest->sbtxtlist, 3, "ddd");
 
-  uiwidgetp = uiSpinboxTextCreate (uitest);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSpinboxTextSet (uiwidgetp, 0, nlistGetCount (uitest->sbtxtlist), 10,
-      uitest->sbtxtlist, NULL, NULL);
-  uiSpinboxTextSetValue (uiwidgetp, 0);
-  uitest->wcont [UITEST_W_SB_TEXT] = uiwidgetp;
-
   uitest->sbtext = uisbtextCreate (hbox);
   uisbtextSetList (uitest->sbtext, uitest->sbtxtlist);
   uisbtextSetValue (uitest->sbtext, 0);

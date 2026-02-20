@@ -23,13 +23,6 @@ typedef const char * (*uispinboxdisp_t)(void *, int);
 
 void  uiSpinboxFree (uiwcont_t *uiwidget);
 
-uiwcont_t *uiSpinboxTextCreate (void *udata);
-void  uiSpinboxTextSet (uiwcont_t *uiwidget, int min, int count,
-    int maxWidth, nlist_t *list, nlist_t *keylist, uispinboxdisp_t textGetProc);
-int   uiSpinboxTextGetValue (uiwcont_t *uiwidget);
-void  uiSpinboxTextSetValue (uiwcont_t *uiwidget, int ivalue);
-void uiSpinboxTextSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb);
-
 uiwcont_t *uiSpinboxIntCreate (void);
 uiwcont_t *uiSpinboxDoubleCreate (void);
 

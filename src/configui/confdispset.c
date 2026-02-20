@@ -34,7 +34,7 @@ confuiInitDispSettings (confuigui_t *gui)
   }
   /* as this list is set up manually, it will ignore */
   /* the disp-sel-max-player marker */
-  confuiSpinboxTextInitDataNum (gui, "cu-disp-settings",
+  confuiSBTextInitDataNum (gui, "cu-disp-settings",
       CONFUI_SPINBOX_DISP_SEL,
       /* CONTEXT: configuration: display settings for: music queue */
       DISP_SEL_MUSICQ, _("Music Queue"),

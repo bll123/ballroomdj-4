@@ -48,20 +48,14 @@ typedef struct uispinbox {
 } uispinbox_t;
 
 static uiwcont_t * uiSpinboxInit (void);
-static gint uiSpinboxTextInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
 static gint uiSpinboxNumInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
 static gint uiSpinboxDoubleInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
 static gint uiSpinboxTimeInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
-static gboolean uiSpinboxTextDisplay (GtkSpinButton *sb, gpointer udata);
 static gboolean uiSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata);
-static char * uiSpinboxTextGetDisp (nlist_t *list, int idx);
 
-static bool uiSpinboxTextKeyCallback (void *udata);
 static void uiSpinboxValueChangedHandler (GtkSpinButton *sb, gpointer udata);
 static gboolean uiSpinboxDoubleDefaultDisplay (GtkSpinButton *sb, gpointer udata);
 static gboolean uiSpinboxFocusHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata);
-static void uiSpinboxTextPasteNull (GtkEntry *w, void *udata);
-static void uiDragDropDestNull (GtkWidget *w, GdkDragContext *context, gint x, gint y, GtkSelectionData *seldata, guint info, guint tm, gpointer udata);
 
 /* only frees the internals */
 void
@@ -86,124 +80,6 @@ uiSpinboxFree (uiwcont_t *uiwidget)
   uiwcontBaseFree (uispinbox->uievent);
 
   mdfree (uispinbox);
-}
-
-
-uiwcont_t *
-uiSpinboxTextCreate (void *udata)
-{
-  GtkWidget   *widget;
-  uiwcont_t   *uiwidget;
-  uispinbox_t *uispinbox;
-
-  uiwidget = uiSpinboxInit ();
-  uispinbox = uiwidget->uiint.uispinbox;
-
-  widget = gtk_spin_button_new (NULL, 0.0, 0);
-  gtk_spin_button_set_increments (GTK_SPIN_BUTTON (widget), 1.0, 1.0);
-  gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (widget), TRUE);
-  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
-  uispinbox->udata = udata;
-
-  uiwidget->wtype = WCONT_T_SPINBOX_TEXT;
-  uiwcontSetWidget (uiwidget, widget, NULL);
-  uiEventSetKeyCallback (uispinbox->uievent, uiwidget, uispinbox->presscb);
-
-  uiWidgetAddClass (uiwidget, SPINBOX_READONLY_CLASS);
-
-  g_signal_connect (widget, "drag-data-received",
-      G_CALLBACK (uiDragDropDestNull), uiwidget);
-  g_signal_connect (widget, "output",
-      G_CALLBACK (uiSpinboxTextDisplay), uiwidget);
-  g_signal_connect (widget, "input",
-      G_CALLBACK (uiSpinboxTextInput), uiwidget);
-  g_signal_connect (widget, "paste-clipboard",
-      G_CALLBACK (uiSpinboxTextPasteNull), uiwidget);
-
-  return uiwidget;
-}
-
-void
-uiSpinboxTextSet (uiwcont_t *uiwidget, int min, int count,
-    int maxWidth, nlist_t *list, nlist_t *keylist,
-    uispinboxdisp_t textGetProc)
-{
-  uispinbox_t   *uispinbox;
-
-  if (! uiwcontValid (uiwidget, WCONT_T_SPINBOX_TEXT, "spinbox-text-set")) {
-    return;
-  }
-
-  uispinbox = uiwidget->uiint.uispinbox;
-
-  uispinbox->maxWidth = maxWidth;
-  gtk_entry_set_width_chars (GTK_ENTRY (uiwidget->uidata.widget), uispinbox->maxWidth + 2);
-  gtk_entry_set_max_width_chars (GTK_ENTRY (uiwidget->uidata.widget), uispinbox->maxWidth + 2);
-  uispinbox->list = list;
-  uispinbox->keylist = keylist;
-  if (uispinbox->keylist != NULL) {
-    nlistidx_t  iteridx;
-    nlistidx_t  sbidx;
-    nlistidx_t  val;
-
-    uispinbox->idxlist = nlistAlloc ("sb-idxlist", LIST_ORDERED, NULL);
-    nlistStartIterator (uispinbox->keylist, &iteridx);
-    while ((sbidx = nlistIterateKey (uispinbox->keylist, &iteridx)) >= 0) {
-      val = nlistGetNum (uispinbox->keylist, sbidx);
-      nlistSetNum (uispinbox->idxlist, val, sbidx);
-    }
-  }
-  uispinbox->textGetProc = textGetProc;
-  /* set the range after setting up the list as the range set will */
-  /* generate a call to gtk display processing */
-  uiSpinboxSet (uiwidget, (double) min, (double) (count - 1));
-}
-
-int
-uiSpinboxTextGetValue (uiwcont_t *uiwidget)
-{
-  int         nval;
-  uispinbox_t *uispinbox;
-
-  if (! uiwcontValid (uiwidget, WCONT_T_SPINBOX_TEXT, "spinbox-text-get-val")) {
-    return -1;
-  }
-
-  uispinbox = uiwidget->uiint.uispinbox;
-  nval = (int) uiSpinboxGetValue (uiwidget);
-  if (uispinbox->keylist != NULL) {
-    nval = nlistGetNum (uispinbox->keylist, nval);
-  }
-  return nval;
-}
-
-void
-uiSpinboxTextSetValue (uiwcont_t *uiwidget, int value)
-{
-  nlistidx_t    idx;
-  uispinbox_t   *uispinbox;
-
-  if (! uiwcontValid (uiwidget, WCONT_T_SPINBOX_TEXT, "spinbox-text-set-val")) {
-    return;
-  }
-
-  uispinbox = uiwidget->uiint.uispinbox;
-  idx = value;
-  if (uispinbox->idxlist != NULL) {
-    idx = nlistGetNum (uispinbox->idxlist, value);
-  }
-  uiSpinboxSetValue (uiwidget, (double) idx);
-}
-
-void
-uiSpinboxTextSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb)
-{
-  if (! uiwcontValid (uiwidget, WCONT_T_SPINBOX_TEXT, "spinbox-text-val-chg-cb")) {
-    return;
-  }
-
-  uiSpinboxSetValueChangedCallback (uiwidget, uicb);
 }
 
 uiwcont_t *
@@ -537,38 +413,12 @@ uiSpinboxInit (void)
   uispinbox->idxlist = NULL;
   uispinbox->sbtype = SB_TEXT;
   uispinbox->uievent = uiEventAlloc ();
-  uispinbox->presscb = callbackInit (&uiSpinboxTextKeyCallback, uiwidget, NULL);
 
   uiwidget->uiint.uispinbox = uispinbox;
 
   return uiwidget;
 }
 
-
-/* gtk spinboxes are a bit bizarre */
-static gint
-uiSpinboxTextInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
-{
-  uiwcont_t     *uiwidget = udata;
-  uispinbox_t   *uispinbox;
-  GtkAdjustment *adjustment;
-  gdouble       value;
-
-  /* text spinboxes do not allow text entry, so the value from the */
-  /* adjustment is correct */
-
-  adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (sb));
-  value = gtk_adjustment_get_value (adjustment);
-  if (newval != NULL) {
-    *newval = value;
-  }
-
-  uispinbox = uiwidget->uiint.uispinbox;
-  if (uispinbox != NULL) {
-    uispinbox->changed = true;
-  }
-  return UICB_CONVERTED;
-}
 
 /* gtk spinboxes are definitely bizarre */
 static gint
@@ -645,42 +495,6 @@ uiSpinboxTimeInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
 }
 
 static gboolean
-uiSpinboxTextDisplay (GtkSpinButton *sb, gpointer udata)
-{
-  uiwcont_t     *uiwidget = udata;
-  uispinbox_t   *uispinbox;
-  GtkAdjustment *adjustment;
-  const char    *disp;
-  double        value;
-  char          tbuff [300];
-
-  uispinbox = uiwidget->uiint.uispinbox;
-
-  if (uispinbox->processing) {
-    return UICB_DISPLAY_OFF;
-  }
-  uispinbox->processing = true;
-
-  *tbuff = '\0';
-  adjustment = gtk_spin_button_get_adjustment (
-      GTK_SPIN_BUTTON (uiwidget->uidata.widget));
-  value = gtk_adjustment_get_value (adjustment);
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (uiwidget->uidata.widget), value);
-  uispinbox->curridx = (int) value;
-  disp = "";
-  if (uispinbox->textGetProc != NULL) {
-    disp = uispinbox->textGetProc (uispinbox->udata, uispinbox->curridx);
-  } else if (uispinbox->list != NULL) {
-    disp = uiSpinboxTextGetDisp (uispinbox->list, uispinbox->curridx);
-  }
-  snprintf (tbuff, sizeof (tbuff), "%-*s", uispinbox->maxWidth, disp);
-  gtk_entry_set_text (GTK_ENTRY (uiwidget->uidata.widget), tbuff);
-  uispinbox->processing = false;
-
-  return UICB_DISPLAY_ON;
-}
-
-static gboolean
 uiSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata)
 {
   uiwcont_t     *uiwidget = udata;
@@ -709,44 +523,6 @@ uiSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata)
   gtk_entry_set_text (GTK_ENTRY (uiwidget->uidata.widget), tbuff);
   uispinbox->processing = false;
   return UICB_DISPLAY_ON;
-}
-
-static char *
-uiSpinboxTextGetDisp (nlist_t *list, int idx)
-{
-  return nlistGetDataByIdx (list, idx);
-}
-
-static bool
-uiSpinboxTextKeyCallback (void *udata)
-{
-  uiwcont_t     *uiwidget = udata;
-  uispinbox_t   *uispinbox;
-  bool          rc;
-
-  uispinbox = uiwidget->uiint.uispinbox;
-
-  rc = uiEventIsMovementKey (uispinbox->uievent);
-  if (rc) {
-    return UICB_CONT;
-  }
-  rc = uiEventIsNavKey (uispinbox->uievent);
-  if (rc) {
-    return UICB_CONT;
-  }
-
-  rc = uiEventIsMaskedKey (uispinbox->uievent);
-  if (rc) {
-    /* masked keys are allowed, but not paste or cut */
-    /* this allows the pass-through of keys like control-s */
-    if (uiEventIsPasteCutKey (uispinbox->uievent)) {
-      return UICB_STOP;
-    }
-
-    return UICB_CONT;
-  }
-
-  return UICB_STOP;
 }
 
 static void
@@ -808,20 +584,4 @@ uiSpinboxFocusHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata)
   }
 
   return false;
-}
-
-static void
-uiSpinboxTextPasteNull (GtkEntry *w, void *udata)
-{
-  g_signal_stop_emission_by_name (G_OBJECT (w), "paste-clipboard");
-  return;
-}
-
-static void
-uiDragDropDestNull (GtkWidget *w, GdkDragContext *context,
-    gint x, gint y, GtkSelectionData *seldata, guint info, guint tm,
-    gpointer udata)
-{
-  g_signal_stop_emission_by_name (G_OBJECT (w), "drag-data-received");
-  return;
 }

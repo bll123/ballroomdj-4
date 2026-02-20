@@ -59,7 +59,7 @@ static void confuiAudioSrcValidateAll (confuigui_t *gui, bool forceflag);
 void
 confuiAudioSourceInit (confuigui_t *gui)
 {
-  confuiSpinboxTextInitDataNum (gui, "cu-as-type",
+  confuiSBTextInitDataNum (gui, "cu-as-type",
       CONFUI_SPINBOX_AUDIOSRC_MODE,
       /* CONTEXT: configuration: audio source mode */
       ASCONF_MODE_OFF, _("Off"),
@@ -69,7 +69,7 @@ confuiAudioSourceInit (confuigui_t *gui)
       ASCONF_MODE_SERVER, _("Server"),
       -1);
 
-  confuiSpinboxTextInitDataNum (gui, "cu-as-type",
+  confuiSBTextInitDataNum (gui, "cu-as-type",
       CONFUI_SPINBOX_AUDIOSRC_TYPE,
       AUDIOSRC_TYPE_BDJ4, "BDJ4",
       /* CONTEXT: audio source: podcast */

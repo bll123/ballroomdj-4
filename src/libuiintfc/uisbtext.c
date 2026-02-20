@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2026 Brad Lanam Pleasant Hill CA
+ * Copyright 2026 Brad Lanam Pleasant Hill CA
  *
  * spinbox-text
  *
@@ -148,11 +148,15 @@ uisbtextSetWidth (uisbtext_t *sbtext, int width)
 bool
 uisbtextIsChanged (uisbtext_t *sbtext)
 {
+  bool      chg;
+
   if (sbtext == NULL) {
     return false;
   }
 
-  return sbtext->changed;
+  chg = sbtext->changed;
+  sbtext->changed = false;
+  return chg;
 }
 
 void
@@ -164,6 +168,8 @@ uisbtextSetDisplayCallback (uisbtext_t *sbtext, uisbtextdisp_t cb, void *udata)
 
   sbtext->dispcb = cb;
   sbtext->udata = udata;
+
+  uisbtextSetDisplay (sbtext);
 }
 
 void
@@ -238,6 +244,7 @@ uisbtextSetValue (uisbtext_t *sbtext, int value)
     }
   }
   uisbtextSetDisplay (sbtext);
+  sbtext->changed = false;
 }
 
 int32_t
@@ -317,6 +324,7 @@ uisbtextSetDisplay (uisbtext_t *sbtext)
 
   if (sbtext->chgcb != NULL) {
     if (sbtext->old_index != LIST_VALUE_INVALID) {
+fprintf (stderr, "sb: chg: %s set true\n", uiLabelGetText (sbtext->display));
       sbtext->changed = true;
     }
     callbackHandler (sbtext->chgcb);

@@ -9,6 +9,8 @@
 enum {
   SB_INCREMENT = 1,
   SB_DECREMENT = -1,
+  SB_PAGE_INCR = 2,
+  SB_PAGE_DECR = -2,
 };
 
 typedef struct uisb uisb_t;

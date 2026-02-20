@@ -46,7 +46,7 @@ confuiInitGeneral (confuigui_t *gui)
 
   /* CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file */
   snprintf (tmp, sizeof (tmp), _("%s Tags Only"), BDJ4_NAME);
-  confuiSpinboxTextInitDataNum (gui, "cu-audio-file-tags",
+  confuiSBTextInitDataNum (gui, "cu-audio-file-tags",
       CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
       /* CONTEXT: configuration: write audio file tags: do not write any tags to the audio file */
       WRITE_TAGS_NONE, _("Don't Write"),
@@ -55,7 +55,7 @@ confuiInitGeneral (confuigui_t *gui)
       WRITE_TAGS_ALL, _("All Tags"),
       -1);
 
-  confuiSpinboxTextInitDataNum (gui, "cu-bpm",
+  confuiSBTextInitDataNum (gui, "cu-bpm",
       CONFUI_SPINBOX_BPM,
       /* CONTEXT: configuration: BPM: beats per minute (not bars per minute) */
       BPM_BPM, "BPM",

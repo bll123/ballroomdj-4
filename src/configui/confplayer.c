@@ -42,7 +42,7 @@ confuiInitPlayer (confuigui_t *gui)
 {
   char            *volintfc;
 
-  confuiSpinboxTextInitDataNum (gui, "cu-player-clock",
+  confuiSBTextInitDataNum (gui, "cu-player-clock",
       CONFUI_SPINBOX_PLAYER_CLOCK,
       /* CONTEXT: configuration: player: clock: off */
       TM_CLOCK_OFF, _("Off"),
@@ -56,7 +56,7 @@ confuiInitPlayer (confuigui_t *gui)
       TM_CLOCK_TIME_24, _("24-Hour Clock"),
       -1);
 
-  confuiSpinboxTextInitDataNum (gui, "cu-player-fade-type",
+  confuiSBTextInitDataNum (gui, "cu-player-fade-type",
       CONFUI_SPINBOX_PLAYER_FADE_TYPE,
       /* CONTEXT: configuration: player: fade-type: exponential sine */
       FADETYPE_EXPONENTIAL_SINE, _("Exponential Sine"),

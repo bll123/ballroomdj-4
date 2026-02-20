@@ -31,7 +31,7 @@ static void confuiMobmqSetWidgetStates (confuigui_t *gui, int type);
 void
 confuiInitMobileMarquee (confuigui_t *gui)
 {
-  confuiSpinboxTextInitDataNum (gui, "cu-mobmq-type",
+  confuiSBTextInitDataNum (gui, "cu-mobmq-type",
       CONFUI_SPINBOX_MOBMQ_TYPE,
       /* CONTEXT: configuration: mobile marquee type: off */
       MOBMQ_TYPE_OFF, _("Off"),

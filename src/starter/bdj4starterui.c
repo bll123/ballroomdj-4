@@ -48,6 +48,7 @@
 #include "templateutil.h"
 #include "ui.h"
 #include "callback.h"
+#include "uisbtext.h"
 #include "uiutils.h"
 #include "volreg.h"
 #include "webclient.h"
@@ -127,7 +128,6 @@ enum {
   START_W_WINDOW,
   START_W_MENU_DEL_PROFILE,
   START_W_PROFILE_ACCENT,
-  START_W_PROFILE_SEL,
   START_W_STATUS_DISP,
   START_W_STATUS_DISP_MSG,
   START_W_STATUS_MSG,
@@ -185,6 +185,7 @@ typedef struct {
   startlinkinfo_t linkinfo [START_LINK_CB_MAX];
   uiwcont_t       *buttons [START_BUTTON_MAX];
   uiwcont_t       *wcont [START_W_MAX];
+  uisbtext_t      *sb;
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
@@ -705,15 +706,12 @@ starterBuildUI (startui_t  *starter)
 
   /* get the profile list after bdjopt has been initialized */
   dispidx = starterGetProfiles (starter);
-  uiwidgetp = uiSpinboxTextCreate (starter);
-  uiSpinboxTextSet (uiwidgetp, 0,
-      nlistGetCount (starter->proflist), starter->maxProfileWidth,
-      starter->proflist, NULL, starterSetProfile);
-  uiSpinboxTextSetValue (uiwidgetp, dispidx);
-  uiWidgetAlignHorizFill (uiwidgetp);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetSetMarginStart (uiwidgetp, 4);
-  starter->wcont [START_W_PROFILE_SEL] = uiwidgetp;
+  starter->sb = uisbtextCreate (hbox);
+  uisbtextSetCount (starter->sb, nlistGetCount (starter->proflist));
+  uisbtextSetDisplayCallback (starter->sb, starterSetProfile, starter);
+  uisbtextSetWidth (starter->sb, starter->maxProfileWidth);
+  uisbtextSetValue (starter->sb, dispidx);
+//  uiWidgetAlignHorizFill (uiwidgetp);
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
@@ -1842,7 +1840,7 @@ starterSetProfile (void *udata, int idx)
   int         profidx;
   int         chg;
 
-  dispidx = uiSpinboxTextGetValue (starter->wcont [START_W_PROFILE_SEL]);
+  dispidx = uisbtextGetValue (starter->sb);
 
   if (dispidx < 0) {
     return "";
@@ -1909,7 +1907,7 @@ starterCheckProfile (startui_t *starter)
     /* CONTEXT: starterui: profile is already in use */
     uiLabelSetText (starter->wcont [START_W_STATUS_MSG], _("Profile in use"));
   } else {
-    uiSpinboxSetState (starter->wcont [START_W_PROFILE_SEL], UIWIDGET_DISABLE);
+    uisbtextSetState (starter->sb, UIWIDGET_DISABLE);
   }
 
   return rc;
@@ -1950,10 +1948,8 @@ starterRebuildProfileList (startui_t *starter)
   int       dispidx;
 
   dispidx = starterGetProfiles (starter);
-  uiSpinboxTextSet (starter->wcont [START_W_PROFILE_SEL], 0,
-      nlistGetCount (starter->proflist), starter->maxProfileWidth,
-      starter->proflist, NULL, starterSetProfile);
-  uiSpinboxTextSetValue (starter->wcont [START_W_PROFILE_SEL], dispidx);
+  uisbtextSetCount (starter->sb, nlistGetCount (starter->proflist));
+  uisbtextSetValue (starter->sb, dispidx);
 }
 
 static bool

@@ -61,7 +61,7 @@ confuiInitEditDances (confuigui_t *gui)
 {
   confuiLoadDanceTypeList (gui);
 
-  confuiSpinboxTextInitDataNum (gui, "cu-dance-speed",
+  confuiSBTextInitDataNum (gui, "cu-dance-speed",
       CONFUI_SPINBOX_DANCE_SPEED,
       /* CONTEXT: configuration: dance speed */
       DANCE_SPEED_SLOW, _("slow"),
@@ -71,7 +71,7 @@ confuiInitEditDances (confuigui_t *gui)
       DANCE_SPEED_FAST, _("fast"),
       -1);
 
-  confuiSpinboxTextInitDataNum (gui, "cu-dance-time-sig",
+  confuiSBTextInitDataNum (gui, "cu-dance-time-sig",
       CONFUI_SPINBOX_DANCE_TIME_SIG,
       /* CONTEXT: configuration: dance time signature */
       DANCE_TIMESIG_24, _("2/4"),

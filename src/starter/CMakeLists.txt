@@ -68,7 +68,7 @@ add_executable (bdj4starterui
   support.c
 )
 target_link_libraries (bdj4starterui PRIVATE
-  libbdj4uib ${BDJ4_UI_LIB}
+  libbdj4uii libbdj4uib ${BDJ4_UI_LIB}
   libwebclient libbdj4 libbdj4basic libbdj4common
 )
 addUILibrary (bdj4starterui)

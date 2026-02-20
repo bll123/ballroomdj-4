@@ -23,7 +23,7 @@
 void
 confuiInitMarquee (confuigui_t *gui)
 {
-  confuiSpinboxTextInitDataNum (gui, "cu-marquee-show",
+  confuiSBTextInitDataNum (gui, "cu-marquee-show",
       CONFUI_SPINBOX_MARQUEE_SHOW,
       /* CONTEXT: configuration: show-marquee: off */
       MARQUEE_SHOW_OFF, _("Off"),
