@@ -28,6 +28,7 @@
 #include "procutil.h"
 #include "sysvars.h"
 #include "ui.h"
+#include "uisbtext.h"
 
 enum {
   MANAGE_DB_CHECK_NEW,
@@ -64,7 +65,7 @@ typedef struct managedb {
   conn_t            *conn;
   uiwcont_t         *wcont [MDB_W_MAX];
   callback_t        *callbacks [MDB_CB_MAX];
-  uiwcont_t         *dbspinbox;
+  uisbtext_t        *dbsb;
   nlist_t           *dblist;
   int               dblistWidth;
   nlist_t           *dbhelp;
@@ -96,7 +97,7 @@ manageDbAlloc (manageinfo_t *minfo, conn_t *conn, procutil_t **processes)
   for (int i = 0; i < MDB_W_MAX; ++i) {
     managedb->wcont [i] = NULL;
   }
-  managedb->dbspinbox = NULL;
+  managedb->dbsb = NULL;
   managedb->compact = false;
   managedb->reorganize = false;
   for (int i = 0; i < MDB_CB_MAX; ++i) {
@@ -174,7 +175,7 @@ manageDbFree (managedb_t *managedb)
   for (int i = 0; i < MDB_W_MAX; ++i) {
     uiwcontFree (managedb->wcont [i]);
   }
-  uiwcontFree (managedb->dbspinbox);
+  uisbtextFree (managedb->dbsb);
   for (int i = 0; i < MDB_CB_MAX; ++i) {
     callbackFree (managedb->callbacks [i]);
   }
@@ -213,16 +214,14 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  managedb->dbspinbox = uiSpinboxTextCreate (managedb);
-  uiSpinboxTextSet (managedb->dbspinbox, 0,
-      nlistGetCount (managedb->dblist), managedb->dblistWidth,
-      managedb->dblist, NULL, NULL);
-  uiSpinboxTextSetValue (managedb->dbspinbox, MANAGE_DB_CHECK_NEW);
+  managedb->dbsb = uisbtextCreate (hbox);
+  uisbtextSetList (managedb->dbsb, managedb->dblist);
+  uisbtextSetWidth (managedb->dbsb, managedb->dblistWidth);
+  uisbtextSetValue (managedb->dbsb, MANAGE_DB_CHECK_NEW);
   managedb->callbacks [MDB_CB_DB_CHG] = callbackInit (
       manageDbChg, managedb, NULL);
-  uiSpinboxTextSetValueChangedCallback (managedb->dbspinbox,
+  uisbtextSetChangeCallback (managedb->dbsb,
       managedb->callbacks [MDB_CB_DB_CHG]);
-  uiBoxPackStart (hbox, managedb->dbspinbox);
 
   /* help display */
   uiBoxPostProcess (hbox);
@@ -336,7 +335,7 @@ manageDbChg (void *udata)
 
   nval = MANAGE_DB_CHECK_NEW;
 
-  value = uiSpinboxTextGetValue (managedb->dbspinbox);
+  value = uisbtextGetValue (managedb->dbsb);
   nval = (int) value;
 
   uiLabelSetText (managedb->minfo->errorMsg, "");
@@ -419,7 +418,7 @@ manageDbResetButtons (managedb_t *managedb)
 
   uiWidgetSetState (managedb->wcont [MDB_W_DB_START], UIWIDGET_ENABLE);
   uiWidgetSetState (managedb->wcont [MDB_W_DB_STOP], UIWIDGET_DISABLE);
-  uiSpinboxSetState (managedb->dbspinbox, UIWIDGET_ENABLE);
+  uisbtextSetState (managedb->dbsb, UIWIDGET_ENABLE);
 }
 
 /* internal routines */
@@ -441,12 +440,12 @@ manageDbStart (void *udata)
 
   uiWidgetSetState (managedb->wcont [MDB_W_DB_START], UIWIDGET_DISABLE);
   uiWidgetSetState (managedb->wcont [MDB_W_DB_STOP], UIWIDGET_ENABLE);
-  uiSpinboxSetState (managedb->dbspinbox, UIWIDGET_DISABLE);
+  uisbtextSetState (managedb->dbsb, UIWIDGET_DISABLE);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "bdj4dbupdate", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_EXEC);
 
-  nval = uiSpinboxTextGetValue (managedb->dbspinbox);
+  nval = uisbtextGetValue (managedb->dbsb);
 
   sval = nlistGetStr (managedb->dblist, nval);
   uiTextBoxAppendStr (managedb->wcont [MDB_W_DB_STATUS], "-- ");

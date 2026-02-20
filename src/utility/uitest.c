@@ -29,7 +29,9 @@
 #include "tmutil.h"
 #include "uidd.h"
 #include "ui.h"
+#include "uiclass.h"
 #include "uihnb.h"
+#include "uisbtext.h"
 #include "uiutils.h"
 #include "uivirtlist.h"
 #include "uivnb.h"
@@ -63,10 +65,12 @@ enum {
   UITEST_W_SB_DBL_DFLT,
   UITEST_W_SB_TIME_A,
   UITEST_W_SB_TIME_B,
-  UITEST_W_NB_HI,
   UITEST_W_IMG_A,
   UITEST_W_TOGGLE_C,
   UITEST_W_NB_ACTION,
+  UITEST_W_SCALE,
+  UITEST_W_PBAR,
+  UITEST_W_SEp,
   UITEST_W_MAX,
 };
 
@@ -125,6 +129,8 @@ typedef struct {
   uivnb_t       *vnb;
   uihnb_t       *hnb;
   uihnb_t       *hnbimg;
+  uisbtext_t    *sbtext;
+  uisbtext_t    *sbtextb;
   nlist_t       *sbtxtlist;
   uidd_t        *uidd [UITEST_DD_MAX];
   long          counter;
@@ -1389,13 +1395,35 @@ void
 uitestUIMisc (uitest_t *uitest)
 {
   uiwcont_t   *vbox;
-
-  /* progress bar */
+  uiwcont_t   *uiwidgetp;
 
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 4);
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Misc", VNB_NO_ID);
+
+  /* progress bar */
+  uiwidgetp = uiCreateProgressBar ();
+  uiBoxPackStart (vbox, uiwidgetp);
+  uiProgressBarSet (uiwidgetp, 0.33);
+  uiWidgetSetMarginTop (uiwidgetp, 4);
+  uiwcontFree (uiwidgetp);
+
+  /* scale */
+  uiwidgetp = uiCreateScale (0.0, 100.0, 1.0, 10.0, 33.0, 0);
+  uiBoxPackStart (vbox, uiwidgetp);
+  uiWidgetSetMarginTop (uiwidgetp, 4);
+  uiwcontFree (uiwidgetp);
+
+  /* separator */
+  uiSeparatorAddClass (ACCENT_CLASS, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+
+  uiwidgetp = uiCreateHorizSeparator ();
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
+  uiBoxPackStart (vbox, uiwidgetp);
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiWidgetSetMarginTop (uiwidgetp, 4);
+  uiwcontFree (uiwidgetp);
 
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
@@ -1547,20 +1575,42 @@ uitestUISpinbox (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiSpinboxTextCreate (uitest);
-  uiBoxPackStart (hbox, uiwidgetp);
   uitest->sbtxtlist = nlistAlloc ("sbtxtlist", LIST_ORDERED, NULL);
   nlistSetStr (uitest->sbtxtlist, 0, "aaa");
   nlistSetStr (uitest->sbtxtlist, 1, "bbb");
   nlistSetStr (uitest->sbtxtlist, 2, "ccc");
   nlistSetStr (uitest->sbtxtlist, 3, "ddd");
+
+  uiwidgetp = uiSpinboxTextCreate (uitest);
+  uiBoxPackStart (hbox, uiwidgetp);
   uiSpinboxTextSet (uiwidgetp, 0, nlistGetCount (uitest->sbtxtlist), 10,
       uitest->sbtxtlist, NULL, NULL);
   uiSpinboxTextSetValue (uiwidgetp, 0);
   uitest->wcont [UITEST_W_SB_TEXT] = uiwidgetp;
 
+  uitest->sbtext = uisbtextCreate (hbox);
+  uisbtextSetList (uitest->sbtext, uitest->sbtxtlist);
+  uisbtextSetValue (uitest->sbtext, 0);
+
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
+
+  /* next line */
+
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+
+  uitest->sbtextb = uisbtextCreate (hbox);
+  uisbtextPrependList (uitest->sbtextb, "All");
+  uisbtextSetList (uitest->sbtextb, uitest->sbtxtlist);
+  uisbtextSetValue (uitest->sbtextb, -1);
+
+  uiBoxPostProcess (hbox);
+  uiwcontFree (hbox);
+
+  /* next line */
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
@@ -1647,13 +1697,18 @@ void
 uitestUITextBox (uitest_t *uitest)
 {
   uiwcont_t   *vbox;
-
-  /* text box */
+  uiwcont_t   *tb;
 
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 4);
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Text Box", VNB_NO_ID);
+
+  /* text box */
+  tb = uiTextBoxCreate (200, NULL);
+  uiTextBoxHorizExpand (tb);
+  uiTextBoxVertExpand (tb);
+  uiBoxPackStartExpand (vbox, tb);
 
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);

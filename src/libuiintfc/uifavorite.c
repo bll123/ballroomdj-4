@@ -21,14 +21,15 @@
 #include "songfav.h"
 #include "ui.h"
 #include "uifavorite.h"
+#include "uisbtext.h"
 #include "uiutils.h"
 
 typedef struct uifavorite {
-  uiwcont_t   *spinbox;
+  uisbtext_t  *sb;
   songfav_t   *songfav;
 } uifavorite_t;
 
-static const char *uifavoriteFavoriteGet (void *udata, int idx);
+static const char *uifavoriteCBHandler (void *udata, int idx);
 
 uifavorite_t *
 uifavoriteSpinboxCreate (uiwcont_t *boxp)
@@ -37,15 +38,13 @@ uifavoriteSpinboxCreate (uiwcont_t *boxp)
 
   uifavorite = mdmalloc (sizeof (uifavorite_t));
   uifavorite->songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
-  uifavorite->spinbox = uiSpinboxTextCreate (uifavorite);
+  uifavorite->sb = uisbtextCreate (boxp);
 
   uiutilsAddFavoriteClasses ();
 
-  uiSpinboxTextSet (uifavorite->spinbox, 0,
-      songFavoriteGetCount (uifavorite->songfav),
-      2, NULL, NULL, uifavoriteFavoriteGet);
-
-  uiBoxPackStart (boxp, uifavorite->spinbox);
+  uisbtextSetDisplayCallback (uifavorite->sb, uifavoriteCBHandler, uifavorite);
+  uisbtextSetCount (uifavorite->sb, songFavoriteGetCount (uifavorite->songfav));
+  uisbtextSetWidth (uifavorite->sb, 2);
 
   return uifavorite;
 }
@@ -58,7 +57,7 @@ uifavoriteFree (uifavorite_t *uifavorite)
     return;
   }
 
-  uiwcontFree (uifavorite->spinbox);
+  uisbtextFree (uifavorite->sb);
   mdfree (uifavorite);
 }
 
@@ -71,7 +70,7 @@ uifavoriteGetValue (uifavorite_t *uifavorite)
     return 0;
   }
 
-  idx = uiSpinboxTextGetValue (uifavorite->spinbox);
+  idx = uisbtextGetValue (uifavorite->sb);
   return idx;
 }
 
@@ -82,28 +81,36 @@ uifavoriteSetValue (uifavorite_t *uifavorite, int value)
     return;
   }
 
-  uiSpinboxTextSetValue (uifavorite->spinbox, value);
+  if (value < 0) {
+    value = 0;
+  }
+
+  uisbtextSetValue (uifavorite->sb, value);
 }
 
 void
 uifavoriteSetState (uifavorite_t *uifavorite, int state)
 {
-  if (uifavorite == NULL || uifavorite->spinbox == NULL) {
+  if (uifavorite == NULL || uifavorite->sb == NULL) {
     return;
   }
-  uiSpinboxSetState (uifavorite->spinbox, state);
+  uisbtextSetState (uifavorite->sb, state);
 }
 
 void
 uifavoriteSetChangedCallback (uifavorite_t *uifavorite, callback_t *cb)
 {
-  uiSpinboxTextSetValueChangedCallback (uifavorite->spinbox, cb);
+  if (uifavorite == NULL || cb == NULL || uifavorite->sb == NULL) {
+    return;
+  }
+
+  uisbtextSetChangeCallback (uifavorite->sb, cb);
 }
 
 /* internal routines */
 
 static const char *
-uifavoriteFavoriteGet (void *udata, int idx)
+uifavoriteCBHandler (void *udata, int idx)
 {
   uifavorite_t  *uifavorite = udata;
   const char    *name;
@@ -113,11 +120,11 @@ uifavoriteFavoriteGet (void *udata, int idx)
   for (int i = 0; i < count; ++i) {
     name = songFavoriteGetStr (uifavorite->songfav, i, SONGFAV_NAME);
     if (i == idx) {
-      uiWidgetAddClass (uifavorite->spinbox, name);
+      uisbtextAddClass (uifavorite->sb, name);
     } else {
-      uiWidgetRemoveClass (uifavorite->spinbox, name);
+      uisbtextRemoveClass (uifavorite->sb, name);
     }
   }
+
   return songFavoriteGetStr (uifavorite->songfav, idx, SONGFAV_DISPLAY);
 }
-

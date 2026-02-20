@@ -15,6 +15,8 @@ add_library (libbdj4uii SHARED
   uilevel.c
   uiplaylist.c
   uirating.c
+  uisb.c
+  uisbtext.c
   uiselectfile.c
   uisong.c
   uistatus.c

@@ -31,6 +31,7 @@ extern "C" {
 #define NB_VERT_SEL_CLASS "bdj-vert-nb-sel"
 #define NORMBG_CLASS "bdj-norm-bg"
 #define ROW_HL_CLASS "bdj-row-hl"
+#define SB_CLASS "bdj-sb"
 #define SELECTED_CLASS "bdj-selected"
 #define SPINBOX_READONLY_CLASS "bdj-sb-readonly"
 #define SWITCH_CLASS "bdj-switch"

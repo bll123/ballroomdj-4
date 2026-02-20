@@ -1,4 +1,4 @@
-/* 2026-1-31 */
+/* 2026-2-19 */
 /* version 10 */
 /*
  * Copyright 2023-2026 Brad Lanam Pleasant Hill CA
@@ -108,10 +108,25 @@ button.bdj-horiz-nb {
   border: 1px solid black;
   border-bottom-width: 4px;
   border-bottom-color: transparent;
+  border-radius: 5px;
 }
 button.bdj-horiz-nb-sel {
   border-bottom-width: 4px;
   border-bottom-color: @selected_bg_color;
+}
+
+box.bdj-sb {
+  border: 1px solid shade(@theme_base_color,0.4);
+  background-color: @theme_base_color;
+}
+button.bdj-sb {
+  border: 0px solid black;
+  border-left: 1px solid shade(@theme_base_color,0.4);
+  border-radius: 0px;
+}
+label.bdj-sb {
+  color: @theme_fg_color;
+  background-color: @theme_base_color;
 }
 
 scrolledwindow undershoot.top, scrolledwindow undershoot.right,
@@ -133,22 +148,22 @@ button.bdj-switch {
   border-bottom-right-radius: 15px;
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
-  background-color: shade(@theme_base_color,0.8);
-  border-color: shade(@theme_base_color,0.8);
+  background-color: shade(@theme_base_color,0.7);
+  border-color: shade(@theme_base_color,0.7);
   background-image: none;
 }
 button.bdj-switch:checked {
-  background-color: shade(@theme_base_color,0.8);
+  background-color: shade(@theme_base_color,0.7);
 }
 button.bdj-switch:hover {
-  background-color: shade(@theme_base_color,0.7);
+  background-color: shade(@theme_base_color,0.6);
 }
 
 button.bdj-flatbutton {
   outline-width: 0px;
   padding: 0px;
   border-color: @theme_bg_color;
-  background-color: @theme_bg_color;
+  background-color: rgba(0,0,0,0.0);
 }
 button.bdj-flatbutton widget {
   outline-width: 0px;
