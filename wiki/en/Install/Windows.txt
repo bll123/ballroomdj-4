@@ -66,15 +66,6 @@ Make sure to exit BDJ4 if it is already started.
 Start the installer by double clicking the downloaded file in your
 Downloads folder. (This image shows an out of date installer).
 
-If you have an account name with international characters, and
-___double-clicking on the installer does not start it___, do the following:
-
-Open a __cmd.exe__ window.  Type the following to start the installer,
-replacing the version number with the version number you downloaded:
-
-    cd Downloads
-    .\bdj4-installer-win64-4.17.11.exe
-
 <div markdown style="margin-right: 20px; text-align: center;">
 ![BallroomDJ 4 File Selection on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Install-File-Select.png)
 <br><span id="caption" style="color:#4559bf;">__BallroomDJ 4 Installer Selection __</span> </div>
