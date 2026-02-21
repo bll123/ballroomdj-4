@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2025-09-23\n"
-"PO-Revision-Date: 2026-02-16\n"
+"PO-Revision-Date: 2026-02-21\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Finnish\n"
 "Language: fi\n"
@@ -1431,8 +1431,16 @@ msgstr "Säveltäjä Lajittelujärjestys"
 msgid "Movement Number"
 msgstr ""
 
+#. CONTEXT: label: movement (classical music movement number) (short name for listing)
+msgid "Mvt No."
+msgstr ""
+
 #. CONTEXT: label: movement count (classical music movement count)
 msgid "Movement Count"
+msgstr ""
+
+#. CONTEXT: label: movement (classical music movement count) (short name for listing)
+msgid "Mvt Count"
 msgstr ""
 
 #. CONTEXT: label: movement name (classical music movement name)
