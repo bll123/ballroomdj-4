@@ -73,9 +73,6 @@ uisbCreate (uiwcont_t *box, uiwcont_t *disp)
 
   sb->display = disp;
   uiWidgetAddClass (sb->display, SB_CLASS);
-  uiWidgetSetAllMargins (sb->display, 0);
-  uiWidgetSetMarginStart (sb->display, 4);
-  uiWidgetSetMarginEnd (sb->display, 4);
   uiBoxPackStart (sb->hbox, sb->display);
 //  uiWidgetExpandHoriz (sb->display);
 
@@ -139,6 +136,28 @@ uisbSizeGroupAdd (uisb_t *sb, uiwcont_t *sg)
   }
 
   uiSizeGroupAdd (sg, sb->hbox);
+}
+
+void
+uisbSetRepeat (uisb_t *sb, int repeatms)
+{
+  if (sb == NULL) {
+    return;
+  }
+
+  uiButtonSetRepeat (sb->incr, repeatms);
+  uiButtonSetRepeat (sb->decr, repeatms);
+}
+
+void
+uisbCheck (uisb_t *sb)
+{
+  if (sb == NULL) {
+    return;
+  }
+
+  uiButtonCheckRepeat (sb->incr);
+  uiButtonCheckRepeat (sb->decr);
 }
 
 /* internal routines */

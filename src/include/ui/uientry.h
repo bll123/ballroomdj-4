@@ -32,6 +32,7 @@ void uiEntrySetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb);
 void uiEntrySetState (uiwcont_t *entry, int state);
 bool  uiEntryChanged (uiwcont_t *uiwidget);
 void  uiEntryClearChanged (uiwcont_t *uiwidget);
+void  uiEntryAlignEnd (uiwcont_t *uiwidget);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

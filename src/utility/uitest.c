@@ -31,6 +31,7 @@
 #include "ui.h"
 #include "uiclass.h"
 #include "uihnb.h"
+#include "uisbnum.h"
 #include "uisbtext.h"
 #include "uiutils.h"
 #include "uivirtlist.h"
@@ -58,7 +59,6 @@ enum {
   UITEST_W_CI_B,
   UITEST_W_CI_BUTTON,
   UITEST_W_LINK_A,
-  UITEST_W_SB_TEXT,
   UITEST_W_SB_INT,
   UITEST_W_SB_DBL_A,
   UITEST_W_SB_DBL_B,
@@ -70,7 +70,7 @@ enum {
   UITEST_W_NB_ACTION,
   UITEST_W_SCALE,
   UITEST_W_PBAR,
-  UITEST_W_SEp,
+  UITEST_W_SEP,
   UITEST_W_MAX,
 };
 
@@ -131,6 +131,12 @@ typedef struct {
   uihnb_t       *hnbimg;
   uisbtext_t    *sbtext;
   uisbtext_t    *sbtextb;
+  uisbnum_t     *sbnumint;
+  uisbnum_t     *sbnumdbl;
+  uisbnum_t     *sbnumdblb;
+  uisbnum_t     *sbnumdbldef;
+  uisbnum_t     *sbnumtma;
+  uisbnum_t     *sbnumtmb;
   nlist_t       *sbtxtlist;
   uidd_t        *uidd [UITEST_DD_MAX];
   long          counter;
@@ -268,6 +274,14 @@ main (int argc, char *argv[])
   uitest.lista = NULL;
   uitest.listb = NULL;
   uitest.chgcb = NULL;
+  uitest.sbtext = NULL;
+  uitest.sbtextb = NULL;
+  uitest.sbnumint = NULL;
+  uitest.sbnumdbl = NULL;
+  uitest.sbnumdblb = NULL;
+  uitest.sbnumdbldef = NULL;
+  uitest.sbnumtma = NULL;
+  uitest.sbnumtmb = NULL;
 
   uitest.lista = ilistAlloc ("dd-a", LIST_ORDERED);
   uitest.listb = ilistAlloc ("dd-b", LIST_ORDERED);
@@ -328,6 +342,14 @@ uitestMainLoop (uitest_t *uitest)
 {
   while (uitest->stop == false) {
     uiUIProcessEvents ();
+
+    uisbnumCheck (uitest->sbnumint);
+    uisbnumCheck (uitest->sbnumdbl);
+    uisbnumCheck (uitest->sbnumdblb);
+    uisbnumCheck (uitest->sbnumdbldef);
+    uisbnumCheck (uitest->sbnumtma);
+    uisbnumCheck (uitest->sbnumtmb);
+
     mssleep (50);
   }
 }
@@ -1603,7 +1625,7 @@ uitestUISpinbox (uitest_t *uitest)
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
 
-  /* next line */
+  /* next line - int */
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
@@ -1615,8 +1637,15 @@ uitestUISpinbox (uitest_t *uitest)
   uiSpinboxSetRange (uiwidgetp, 3.0, 15.0);
   uitest->wcont [UITEST_W_SB_INT] = uiwidgetp;
 
+  uitest->sbnumint = uisbnumCreate (hbox, 5);
+  uisbnumSetLimits (uitest->sbnumint, 3.0, 15.0, 0);
+  uisbnumSetIncrements (uitest->sbnumint, 1.0, 5.0);
+  uisbnumSetValue (uitest->sbnumint, 4.0);
+
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
+
+  /* next line - double */
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
@@ -1628,8 +1657,15 @@ uitestUISpinbox (uitest_t *uitest)
   uiSpinboxSetRange (uiwidgetp, 1.0, 20.0);
   uitest->wcont [UITEST_W_SB_DBL_A] = uiwidgetp;
 
+  uitest->sbnumdbl = uisbnumCreate (hbox, 5);
+  uisbnumSetLimits (uitest->sbnumdbl, 1.0, 20.0, 1);
+  uisbnumSetIncrements (uitest->sbnumdbl, 0.1, 1.0);
+  uisbnumSetValue (uitest->sbnumdbl, 5.0);
+
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
+
+  /* next line - double */
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
@@ -1642,8 +1678,15 @@ uitestUISpinbox (uitest_t *uitest)
   uiSpinboxSetIncrement (uiwidgetp, 1.0, 5.0);
   uitest->wcont [UITEST_W_SB_DBL_B] = uiwidgetp;
 
+  uitest->sbnumdblb = uisbnumCreate (hbox, 5);
+  uisbnumSetLimits (uitest->sbnumdblb, 1.0, 20.0, 1);
+  uisbnumSetIncrements (uitest->sbnumdblb, 1.0, 5.0);
+  uisbnumSetValue (uitest->sbnumdblb, 5.0);
+
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
+
+  /* next line - double/default */
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
@@ -1651,12 +1694,20 @@ uitestUISpinbox (uitest_t *uitest)
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiSpinboxDoubleDefaultCreate ();
+
   uiBoxPackStart (hbox, uiwidgetp);
-  uiSpinboxSetRange (uiwidgetp, 2.0, 10.0);
+  uiSpinboxSetRange (uiwidgetp, -1.0, 10.0);
   uitest->wcont [UITEST_W_SB_DBL_DFLT] = uiwidgetp;
+
+  uitest->sbnumdbldef = uisbnumCreate (hbox, 10);
+  uisbnumSetLimits (uitest->sbnumdbldef, -1.0, 20.0, 0);
+  uisbnumSetIncrements (uitest->sbnumdbldef, 1.0, 5.0);
+  uisbnumSetValue (uitest->sbnumdbldef, 5.0);
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
+
+  /* next line - time spinbox */
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
@@ -1667,8 +1718,14 @@ uitestUISpinbox (uitest_t *uitest)
   uiBoxPackStart (hbox, uiwidgetp);
   uitest->wcont [UITEST_W_SB_TIME_A] = uiwidgetp;
 
+  uitest->sbnumtma = uisbnumCreate (hbox, 10);
+  uisbnumSetTime (uitest->sbnumtma, 0.0, 1440000.0, SBNUM_TIME_BASIC);
+  uisbnumSetValue (uitest->sbnumtma, 5.0);
+
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
+
+  /* next line - time spinbox/precise */
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
@@ -1678,6 +1735,10 @@ uitestUISpinbox (uitest_t *uitest)
   uiwidgetp = uiSpinboxTimeCreate (SB_TIME_PRECISE, uitest, "precise", NULL);
   uiBoxPackStart (hbox, uiwidgetp);
   uitest->wcont [UITEST_W_SB_TIME_B] = uiwidgetp;
+
+  uitest->sbnumtmb = uisbnumCreate (hbox, 10);
+  uisbnumSetTime (uitest->sbnumtmb, 0.0, 1440000.0, SBNUM_TIME_PRECISE);
+  uisbnumSetValue (uitest->sbnumtmb, 5.0);
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
@@ -1877,6 +1938,15 @@ uitestCleanup (uitest_t *uitest)
   for (int i = 0; i < UITEST_I_MAX; ++i) {
     dataFree (uitest->images [i]);
   }
+
+  uisbtextFree (uitest->sbtext);
+  uisbtextFree (uitest->sbtextb);
+  uisbnumFree (uitest->sbnumint);
+  uisbnumFree (uitest->sbnumdbl);
+  uisbnumFree (uitest->sbnumdblb);
+  uisbnumFree (uitest->sbnumdbldef);
+  uisbnumFree (uitest->sbnumtma);
+  uisbnumFree (uitest->sbnumtmb);
 
   uivnbFree (uitest->vnb);
   uihnbFree (uitest->hnb);

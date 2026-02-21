@@ -47,6 +47,9 @@ uisbtextCreate (uiwcont_t *box)
 
   sbtext = mdmalloc (sizeof (uisbtext_t));
   sbtext->display = uiCreateLabel ("");
+  uiWidgetSetAllMargins (sbtext->display, 0);
+  uiWidgetSetMarginStart (sbtext->display, 4);
+  uiWidgetSetMarginEnd (sbtext->display, 4);
   uiLabelSetMinWidth (sbtext->display, 5);
   sbtext->sb = uisbCreate (box, sbtext->display);
   sbtext->txtlist = NULL;

@@ -120,13 +120,16 @@ box.bdj-sb {
   background-color: @theme_base_color;
 }
 button.bdj-sb {
-  border: 0px solid black;
+  border: 0px;
   border-left: 1px solid shade(@theme_base_color,0.4);
   border-radius: 0px;
 }
 label.bdj-sb {
   color: @theme_fg_color;
   background-color: @theme_base_color;
+}
+entry.bdj-sb {
+  border-radius: 0px;
 }
 
 scrolledwindow undershoot.top, scrolledwindow undershoot.right,

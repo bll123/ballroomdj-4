@@ -12,13 +12,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "bdjstring.h"
+#include "bdj4intl.h"
 #include "callback.h"
 #include "log.h"
 #include "mdebug.h"
+#include "tmutil.h"
 #include "ui.h"
 #include "uisb.h"
 #include "uisbnum.h"
 #include "uiwcont.h"
+#include "validate.h"
+
+static double SB_INVALID = -65534;
 
 typedef struct uisbnum {
   uisb_t          *sb;
@@ -27,14 +33,21 @@ typedef struct uisbnum {
   callback_t      *chgcb;
   double          min;
   double          max;
-  int             digits;
+  double          old_value;
   double          value;
   double          incr;
   double          pageincr;
+  int             digits;
+  int             valtype;
+  int             type;
+  bool            changed;
+  char            fmt [20];
 } uisbnum_t;
 
 static bool uisbnumCBHandler (void *udata, int32_t dir);
 static void uisbnumSetDisplay (uisbnum_t *sbnum);
+static void uisbnumSetFormat (uisbnum_t *sbnum);
+static int uisbnumEntryValidate (uiwcont_t *entry, const char *label, void *udata);
 
 uisbnum_t *
 uisbnumCreate (uiwcont_t *box, int maxWidth)
@@ -43,13 +56,29 @@ uisbnumCreate (uiwcont_t *box, int maxWidth)
 
   sbnum = mdmalloc (sizeof (uisbnum_t));
   sbnum->entry = uiEntryInit (maxWidth, maxWidth);
+  uiEntryAlignEnd (sbnum->entry);
+  uiWidgetSetAllMargins (sbnum->entry, 0);
   sbnum->sb = uisbCreate (box, sbnum->entry);
-  sbnum->value = 0;
+  uisbSetRepeat (sbnum->sb, 50);
   sbnum->sbnumcb = NULL;
   sbnum->chgcb = NULL;
+  sbnum->min = 1.0;
+  sbnum->max = 100.0;
+  sbnum->old_value = SB_INVALID;
+  sbnum->value = 0;
+  sbnum->incr = 1.0;
+  sbnum->pageincr = 5.0;
+  sbnum->digits = 1;
+  sbnum->valtype = VAL_NUMERIC | VAL_NOT_EMPTY;
+  sbnum->type = SBNUM_NUMERIC;
+  sbnum->changed = false;
+  uisbnumSetFormat (sbnum);
 
   sbnum->sbnumcb = callbackInitI (uisbnumCBHandler, sbnum);
   uisbSetCallback (sbnum->sb, sbnum->sbnumcb);
+
+  uiEntrySetValidate (sbnum->entry, "",
+      uisbnumEntryValidate, sbnum, UIENTRY_IMMEDIATE);
 
   return sbnum;
 }
@@ -67,6 +96,68 @@ uisbnumFree (uisbnum_t *sbnum)
   mdfree (sbnum);
 }
 
+void
+uisbnumSetIncrements (uisbnum_t *sbnum, double incr, double pageincr)
+{
+  if (sbnum == NULL) {
+    return;
+  }
+
+  sbnum->incr = incr;
+  sbnum->pageincr = pageincr;
+}
+
+void
+uisbnumSetLimits (uisbnum_t *sbnum, double min, double max, int digits)
+{
+  if (sbnum == NULL) {
+    return;
+  }
+
+  sbnum->min = min;
+  sbnum->max = max;
+  sbnum->type = SBNUM_NUMERIC;
+  sbnum->digits = digits;
+  sbnum->valtype = VAL_NUMERIC | VAL_NOT_EMPTY;
+  if (digits > 0) {
+    sbnum->valtype = VAL_FLOAT | VAL_NOT_EMPTY;
+  }
+
+  uisbnumSetFormat (sbnum);
+}
+
+void
+uisbnumSetTime (uisbnum_t *sbnum, double min, double max, int timetype)
+{
+  if (sbnum == NULL) {
+    return;
+  }
+
+  sbnum->min = min;
+  sbnum->max = max;
+  sbnum->type = timetype;
+  if (timetype == SBNUM_TIME_BASIC) {
+    sbnum->valtype = VAL_HMS | VAL_NOT_EMPTY;
+    sbnum->incr = 5000.0;
+    sbnum->pageincr = 60000.0;
+  }
+  if (timetype == SBNUM_TIME_PRECISE) {
+    sbnum->valtype = VAL_HMS_PRECISE | VAL_NOT_EMPTY;
+    sbnum->incr = 100.0;
+    sbnum->pageincr = 30000.0;
+  }
+}
+
+void
+uisbnumCheck (uisbnum_t *sbnum)
+{
+  if (sbnum == NULL) {
+    return;
+  }
+
+  uisbCheck (sbnum->sb);
+}
+
 bool
 uisbnumIsChanged (uisbnum_t *sbnum)
 {
@@ -76,8 +167,8 @@ uisbnumIsChanged (uisbnum_t *sbnum)
     return false;
   }
 
-  chg = uiEntryChanged (sbnum->entry);
-  uiEntryClearChanged (sbnum->entry);
+  chg = sbnum->changed;
+  sbnum->changed = false;
   return chg;
 }
 
@@ -140,9 +231,10 @@ uisbnumSetValue (uisbnum_t *sbnum, double value)
     return;
   }
 
+  sbnum->old_value = SB_INVALID;
   sbnum->value = value;
   uisbnumSetDisplay (sbnum);
-  uiEntryClearChanged (sbnum->entry);
+  sbnum->changed = false;
 }
 
 double
@@ -173,6 +265,7 @@ uisbnumCBHandler (void *udata, int32_t dir)
     sbnum->value -= sbnum->incr;
   }
 
+  uiWidgetGrabFocus (sbnum->entry);
   uisbnumSetDisplay (sbnum);
 
   return UICB_CONT;
@@ -181,12 +274,63 @@ uisbnumCBHandler (void *udata, int32_t dir)
 static void
 uisbnumSetDisplay (uisbnum_t *sbnum)
 {
+  char    tbuff [40];
+
+  if (sbnum->value < sbnum->min) {
+    sbnum->value = sbnum->min;
+  }
+  if (sbnum->value > sbnum->max) {
+    sbnum->value = sbnum->max;
+  }
+
+  if (sbnum->old_value != SB_INVALID &&
+      sbnum->old_value != sbnum->value) {
+    sbnum->changed = true;
+  }
+
   if (sbnum->chgcb != NULL) {
-    if (uiEntryChanged (sbnum->entry)) {
+    if (sbnum->changed) {
       callbackHandler (sbnum->chgcb);
+      sbnum->changed = false;
     }
   }
 
-// ### set display...
+  if (sbnum->type == SBNUM_NUMERIC) {
+    if (sbnum->value < 0) {
+      /* CONTEXT: user interface: default setting display */
+      stpecpy (tbuff, tbuff + sizeof (tbuff), _("Default"));
+    } else {
+      snprintf (tbuff, sizeof (tbuff), sbnum->fmt, sbnum->value);
+    }
+  }
+  if (sbnum->type == SBNUM_TIME_BASIC) {
+    tmutilToMS ((time_t) sbnum->value, tbuff, sizeof (tbuff));
+  }
+  if (sbnum->type == SBNUM_TIME_PRECISE) {
+    tmutilToMSD ((time_t) sbnum->value, tbuff, sizeof (tbuff), sbnum->digits);
+  }
 
+  uiEntrySetValue (sbnum->entry, tbuff);
+}
+
+static void
+uisbnumSetFormat (uisbnum_t *sbnum)
+{
+  snprintf (sbnum->fmt, sizeof (sbnum->fmt), "%%.%df", sbnum->digits);
+}
+
+static int
+uisbnumEntryValidate (uiwcont_t *entry, const char *label, void *udata)
+{
+  uisbnum_t   *sbnum = udata;
+  int         rc = UIENTRY_OK;
+  char        msg [200];
+  const char  *str;
+
+  str = uiEntryGetValue (sbnum->entry);
+  if (! validate (msg, sizeof (msg), label, str, sbnum->valtype)) {
+    rc = UIENTRY_ERROR;
+  }
+
+  return rc;
 }

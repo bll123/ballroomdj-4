@@ -207,6 +207,16 @@ uiEntryClearChanged (uiwcont_t *uiwidget)
   uientry->changed = false;
 }
 
+void
+uiEntryAlignEnd (uiwcont_t *uiwidget)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-align-end")) {
+    return;
+  }
+
+  gtk_entry_set_alignment (GTK_ENTRY (uiwidget->uidata.widget), 1.0);
+}
+
 /* internal routines */
 
 static void
