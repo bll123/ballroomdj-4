@@ -299,7 +299,8 @@ main (int argc, char *argv[])
   }
 
   if (bdjoptGetStr (OPT_P_UI_ACCENT_COL) == NULL) {
-    bdjoptSetStr (OPT_P_UI_ACCENT_COL, INST_HL_COLOR);
+//    bdjoptSetStr (OPT_P_UI_ACCENT_COL, INST_HL_COLOR);
+    bdjoptSetStr (OPT_P_UI_ACCENT_COL, "ffa600");
   }
   if (bdjoptGetStr (OPT_P_UI_ERROR_COL) == NULL) {
     bdjoptSetStr (OPT_P_UI_ERROR_COL, "#ff2222");

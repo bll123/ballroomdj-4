@@ -1,14 +1,11 @@
-/* 2024-12-8 */
-/* version 9 */
+/* 2026-2-21 */
+/* version 10 */
 /*
  * Copyright 2023-2026 Brad Lanam Pleasant Hill CA
  */
 
 /* note that these may affect dialogs started by the application */
 
-menu {
-  background-color: shade(@theme_base_color,0.7);
-}
 scale, scale trough {
   min-height: 5px;
 }
@@ -18,8 +15,14 @@ separator {
 scrollbar, scrollbar slider {
   min-width: 9px;
 }
-tooltip {
-  background-color: shade(@theme_base_color,0.7);
+
+menu separator {
+  margin-right: 12px;
+  margin-left: 8px;
+}
+
+textview.bdj-dark-bg text {
+  background-color: mix(@theme_base_color,#000000,0.2);
 }
 
 /* for some reason, if the selection background color alone is set, the */
@@ -47,30 +50,20 @@ progressbar > trough progress {
   min-height: 25px;
 }
 
-.bdj-dark-bg {
-  background-color: shade(@theme_base_color,0.85);
-}
 /* used by drop-downs */
 .bdj-norm-bg {
   background-color: @theme_base_color;
   margin-right: 4pt;
 }
+/*
 label.bdj-selected {
   color: @theme_selected_fg_color;
 }
+*/
 label.bdj-nodisp {
   color: rgba(0,0,0,0);
 }
 
-textview.bdj-dark-bg text {
-  background-color: shade(@theme_base_color,0.7);
-}
-
-/* gtk: notebook header tabs tab label */
-/* make the selected notebook tab darker */
-notebook tab:checked {
-  background-color: shade(@theme_base_color,0.6);
-}
 /* these buttons are flat, should inherit the underlying background color */
 button.bdj-leftnotebook {
   outline-width: 0px;
@@ -79,25 +72,16 @@ button.bdj-leftnotebook {
   background-image: none;
   background-color: rgba(0,0,0,0);
 }
-button.bdj-leftnotebook label {
-  color: shade(@theme_fg_color,0.6);
-}
-button.bdj-notebook-sel {
-  background-color: shade(@theme_base_color,0.6);
-}
 label.bdj-leftnotebook {
   border-left-style: solid;
   border-left-width: 4px;
   border-left-color: transparent;
 }
 label.bdj-notebook-sel {
-  border-left-color: @selected_bg_color;
+  border-left-color: @theme_selected_bg_color;
 }
 button.bdj-notebook-sel label {
   color: @theme_fg_color;
-}
-button.bdj-leftnotebook:hover {
-  background-color: shade(@theme_base_color,0.5);
 }
 button.bdj-leftnotebook:hover label {
   color: @theme_fg_color;
@@ -115,22 +99,6 @@ button.bdj-spd-reset {
   padding-left: 1px;
   padding-right: 1px;
   border-color: black;
-}
-
-button.bdj-switch {
-  border-bottom-left-radius: 15px;
-  border-bottom-right-radius: 15px;
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
-  background-color: shade(@theme_base_color,0.8);
-  border-color: shade(@theme_base_color,0.8);
-  background-image: none;
-}
-button.bdj-switch:checked {
-  background-color: shade(@theme_base_color,0.8);
-}
-button.bdj-switch:hover {
-  background-color: shade(@theme_base_color,0.7);
 }
 
 button.bdj-flatbutton {
@@ -161,4 +129,24 @@ label.bdj-chginderror {
 
 entry {
   color: @theme_fg_color;
+}
+
+button.bdj-switch {
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  background-image: none;
+  background-color: @theme_base_color;
+}
+button.bdj-switch:checked {
+  background-color: @theme_base_color;
+}
+button.bdj-switch:focus {
+  border-color: @theme_selected_bg_color;
+}
+
+entry:disabled.bdj-selected {
+  background-color: @insensitive_bg_color;
+  color: @insensitive_fg_color;
 }

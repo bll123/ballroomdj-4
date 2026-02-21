@@ -19,6 +19,7 @@ typedef struct {
   const char *rowselColor;
   const char *rowhlColor;
   const char *mqbgColor;
+  bool        is_dark;
 } uisetup_t;
 
 enum {

@@ -6,6 +6,11 @@
 
 **4.17.12 2026-2---**
 
+* Bug Fixes:
+    * Management: Fix layout, unable to resize.
+    * Listings: Fix 'favorite' taking more space than it should.
+    * Listings: 'Movement Number', 'Movement Count': create abbreviated names for heading.
+
 -->
 
 **4.17.11 2026-2-16**

@@ -244,22 +244,6 @@ confuiPopulateOptions (confuigui_t *gui)
       bdjoptSetStr (gui->uiitem [widx].bdjoptIdx, tbuff);
     }
 
-#if 0
-    if (widx == CONFUI_SPINBOX_UI_THEME && gui->uiitem [widx].changed) {
-      FILE    *fh;
-
-      sval = bdjoptGetStr (gui->uiitem [widx].bdjoptIdx);
-      pathbldMakePath (tbuff, sizeof (tbuff),
-          "theme", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-      fh = fileopOpen (tbuff, "w");
-      if (sval != NULL) {
-        fprintf (fh, "%s\n", sval);
-      }
-      mdextfclose (fh);
-      fclose (fh);
-    }
-#endif
-
     if (widx == CONFUI_WIDGET_UI_ACCENT_COLOR && gui->uiitem [widx].changed) {
       templateImageCopy (sval);
     }

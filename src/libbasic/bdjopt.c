@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stdatomic.h>
 #include <string.h>
@@ -498,6 +499,12 @@ bdjoptInit (void)
   if (nlistGetNum (bdjopt->bdjoptList, OPT_P_MQ_INFO_ONLY) < 0) {
     nlistSetNum (bdjopt->bdjoptList, OPT_P_MQ_INFO_ONLY, false);
   }
+
+  /* added 4.17.12 */
+  nlistSetNum (bdjopt->bdjoptList, OPT_M_UI_DARK, false);
+  if (bdjoptIsDarkTheme ()) {
+    nlistSetNum (bdjopt->bdjoptList, OPT_M_UI_DARK, true);
+  }
 }
 
 void
@@ -611,6 +618,24 @@ bdjoptGetNumPerQueue (nlistidx_t idx, int musicq)
   return value;
 }
 
+bool
+bdjoptIsDarkTheme (void)
+{
+  bool        rc = false;
+  const char  *tstr;
+
+  tstr = nlistGetStr (bdjopt->bdjoptList, OPT_M_UI_THEME);
+  if (tstr == NULL || ! *tstr) {
+    tstr = sysvarsGetStr (SV_THEME_DEFAULT);
+  }
+  if (strstr (tstr, "dark") != NULL ||
+      strstr (tstr, "Dark") != NULL) {
+    rc = true;
+  }
+
+  return rc;
+}
+
 void
 bdjoptSetStrPerQueue (nlistidx_t idx, const char *value, int musicq)
 {
@@ -713,6 +738,10 @@ bdjoptDump (void)
     }
     datafileDumpKeyVal (bdjopt->shorttag [i], bdjopt->dfkeys [i],
         bdjopt->dfcount [i], bdjopt->bdjoptList, 0);
+    if (i == OPTTYPE_MACHINE) {
+      fprintf (stdout, "  m: %-20s %" PRId64 "\n", "UI_DARK",
+          bdjoptGetNum (OPT_M_UI_DARK));
+    }
   }
   for (int i = 0; i < BDJ4_QUEUE_MAX; ++i) {
     char  tmp [20];

@@ -34,8 +34,7 @@
 #define BDJ4_DEBUG_CSS 0
 
 enum {
-  UIUI_MIX,
-  UIUI_SHADE,
+  UIUI_MAX_CSS = 8192,
 };
 
 static char **cssdata = NULL;
@@ -46,7 +45,7 @@ static const char *currcss = NULL;
 static GLogWriterOutput uiGtkLogger (GLogLevelFlags logLevel, const GLogField* fields, gsize n_fields, gpointer udata);
 static void uiAddScreenCSS (const char *css);
 static void uicssParseError (GtkCssProvider* self, GtkCssSection* section, GError* error, gpointer udata);
-static char *uiSetRowHighlight (char *currp, char *endp, const char *accentColor, const char *color, const char *classnm, double shadeval, int type);
+static char *uiSetRowHighlight (char *currp, char *endp, const char *accentColor, const char *color, const char *classnm, double shadeval, bool is_dark);
 
 int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 int uiTextDirection = TEXT_DIR_DEFAULT;
@@ -126,12 +125,14 @@ uiCleanup (void)
 void
 uiSetUICSS (uisetup_t *uisetup)
 {
-  char            tbuff [8192];
+  char            *cssbuff;
+  char            tbuff [BDJ4_PATH_MAX];
   char            wbuff [400];
   char            *p;
   int             sz = 0;
-  char            *tp = tbuff;
-  char            *tend = tbuff + sizeof (tbuff);
+  char            *tp = NULL;
+  char            *tend = NULL;
+  const char      *cssnm;
 
   if (uisetup->rowselColor == NULL || ! *uisetup->rowselColor) {
     uisetup->rowselColor = uisetup->accentColor;
@@ -144,12 +145,38 @@ uiSetUICSS (uisetup_t *uisetup)
       "gtk-static", BDJ4_CSS_EXT, PATHBLD_MP_DREL_DATA);
   p = filedataReadAll (tbuff, NULL);
   if (p == NULL) {
+    /* the installer does not have a data directory */
     pathbldMakePath (tbuff, sizeof (tbuff),
         "gtk-static", BDJ4_CSS_EXT, PATHBLD_MP_DIR_TEMPLATE);
     p = filedataReadAll (tbuff, NULL);
   }
 
-  *tbuff = '\0';
+  /* append the main css */
+  cssbuff = mdmalloc (UIUI_MAX_CSS);
+  *cssbuff = '\0';
+  tp = cssbuff;
+  tend = cssbuff + UIUI_MAX_CSS;
+
+  if (p != NULL) {
+    tp = stpecpy (tp, tend, p);
+    mdfree (p);
+  }
+
+  cssnm = "gtk-light";
+  if (uisetup->is_dark) {
+    cssnm = "gtk-dark";
+  }
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      cssnm, BDJ4_CSS_EXT, PATHBLD_MP_DREL_DATA);
+  p = filedataReadAll (tbuff, NULL);
+  if (p == NULL) {
+    /* the installer does not have a data directory */
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        cssnm, BDJ4_CSS_EXT, PATHBLD_MP_DIR_TEMPLATE);
+    p = filedataReadAll (tbuff, NULL);
+  }
+
+  /* append the light/dark specific css */
   if (p != NULL) {
     tp = stpecpy (tp, tend, p);
     mdfree (p);
@@ -254,7 +281,7 @@ uiSetUICSS (uisetup_t *uisetup)
         "label.%s { color: %s; }\n", ACCENT_CLASS, uisetup->accentColor);
     tp = stpecpy (tp, tend, wbuff);
     snprintf (wbuff, sizeof (wbuff),
-        "label.%s { color: shade(%s,0.7); }\n", DARKACCENT_CLASS,
+        "label.%s { color: shade(%s,0.8); }\n", DARKACCENT_CLASS,
         uisetup->accentColor);
     tp = stpecpy (tp, tend, wbuff);
 
@@ -268,7 +295,7 @@ uiSetUICSS (uisetup_t *uisetup)
     tp = stpecpy (tp, tend, wbuff);
 
     snprintf (wbuff, sizeof (wbuff),
-        "menu separator { background-color: shade(%s,0.5); margin-right: 12px; margin-left: 8px; }\n",
+        "menu separator { background-color: shade(%s,0.8); }\n",
         uisetup->accentColor);
     tp = stpecpy (tp, tend, wbuff);
 
@@ -279,13 +306,15 @@ uiSetUICSS (uisetup_t *uisetup)
   }
 
   if (uisetup->rowselColor != NULL) {
-    tp = uiSetRowHighlight (tp, tend, uisetup->accentColor,
-        uisetup->rowselColor, SELECTED_CLASS, 0.55, UIUI_SHADE);
+    tp = uiSetRowHighlight (tp, tend,
+        uisetup->accentColor, uisetup->rowselColor,
+        SELECTED_CLASS, 0.15, uisetup->is_dark);
   }
 
   if (uisetup->rowhlColor != NULL) {
-    tp = uiSetRowHighlight (tp, tend, uisetup->accentColor,
-        uisetup->rowhlColor, ROW_HL_CLASS, 0.2, UIUI_MIX);
+    tp = uiSetRowHighlight (tp, tend,
+        uisetup->accentColor, uisetup->rowhlColor,
+        ROW_HL_CLASS, 0.05, uisetup->is_dark);
   }
 
   if (uisetup->errorColor != NULL) {
@@ -307,13 +336,15 @@ uiSetUICSS (uisetup_t *uisetup)
   }
 
   /* as of 2023-1-29, the length is 2600+ */
-  if (strlen (tbuff) >= sizeof (tbuff)) {
-    fprintf (stderr, "WARN: possible css overflow: %zd\n", strlen (tbuff));
+  if (strlen (cssbuff) >= UIUI_MAX_CSS) {
+    fprintf (stderr, "WARN: possible css overflow: %zd\n", strlen (cssbuff));
   }
+
 #if BDJ4_DEBUG_CSS
   unlink ("css.txt");
 #endif
-  uiAddScreenCSS (tbuff);
+  uiAddScreenCSS (cssbuff);
+  mdfree (cssbuff);
 }
 
 void
@@ -433,8 +464,9 @@ uicssParseError (GtkCssProvider* self, GtkCssSection* section,
 }
 
 static char *
-uiSetRowHighlight (char *tp, char *tend, const char *accentColor,
-    const char *color, const char *classnm, double shadeval, int type)
+uiSetRowHighlight (char *tp, char *tend,
+    const char *accentColor, const char *color,
+    const char *classnm, double shadeval, bool is_dark)
 {
   char    tmpcolor [40];
   char    wbuff [400];
@@ -442,17 +474,12 @@ uiSetRowHighlight (char *tp, char *tend, const char *accentColor,
   if (color == accentColor) {
     /* gtk must have the radix as a . character */
     /* do a little math to force this */
-    if (type == UIUI_SHADE) {
-      snprintf (tmpcolor, sizeof (tmpcolor), "shade(%s,%d.%02d)",
-          color, (int) shadeval, (int) ((shadeval - (int) shadeval) * 100.0));
-    }
-    if (type == UIUI_MIX) {
-      snprintf (tmpcolor, sizeof (tmpcolor), "mix(@theme_bg_color,%s,%d.%02d)",
-          color, (int) shadeval, (int) ((shadeval - (int) shadeval) * 100.0));
-    }
+    snprintf (tmpcolor, sizeof (tmpcolor), "mix(@theme_bg_color,%s,%d.%02d)",
+        color, (int) shadeval, (int) ((shadeval - (int) shadeval) * 100.0));
   } else {
     stpecpy (tmpcolor, tmpcolor + sizeof (tmpcolor), color);
   }
+
   /* the problem with using the standard selected-bg-color with virtlist */
   /* is it matches the radio button and check button colors */
   /* (in the matcha series of themes) and */
@@ -468,6 +495,11 @@ uiSetRowHighlight (char *tp, char *tend, const char *accentColor,
       "spinbutton.%s button "
       "{ background-color: %s; }\n",
       classnm, classnm, classnm, tmpcolor);
+  tp = stpecpy (tp, tend, wbuff);
+  snprintf (wbuff, sizeof (wbuff),
+      "entry.%s "
+      "{ background-color: %s; }\n",
+      classnm, tmpcolor);
   tp = stpecpy (tp, tend, wbuff);
 
   return tp;

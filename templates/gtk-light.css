@@ -1,0 +1,38 @@
+/* 2026-2-21 */
+/* version 1 */
+/*
+ * Copyright 2023-2026 Brad Lanam Pleasant Hill CA
+ */
+
+/* note that these may affect dialogs started by the application */
+
+menu {
+  background-color: shade(@theme_base_color,0.9);
+}
+menuitem:hover {
+  color: @theme_fg_color;
+}
+tooltip {
+  background-color: shade(@theme_base_color,0.4);
+}
+
+.bdj-dark-bg {
+  background-color: shade(@theme_base_color,0.9);
+}
+
+/* gtk: notebook header tabs tab label */
+/* make the selected notebook tab darker */
+notebook tab:checked {
+  background-color: shade(@theme_base_color,0.7);
+}
+button.bdj-notebook-sel {
+  background-color: shade(@theme_base_color,0.7);
+}
+button.bdj-leftnotebook:hover {
+  background-color: shade(@theme_base_color,0.8);
+}
+
+button.bdj-switch:hover {
+  background-color: shade(@theme_base_color,0.9);
+}
+

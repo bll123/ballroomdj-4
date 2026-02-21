@@ -702,11 +702,18 @@ confuiLocaleSelect (void *udata, const char *sval)
 int32_t
 confuiUIThemeSelect (void *udata, const char *sval)
 {
+  confuigui_t *gui = udata;
+  bool        was_dark;
+  bool        is_dark;
+
+  was_dark = bdjoptIsDarkTheme ();
+
   if (sval != NULL && *sval) {
     char    tbuff [BDJ4_PATH_MAX];
     FILE    *fh;
 
     bdjoptSetStr (OPT_M_UI_THEME, sval);
+    is_dark = bdjoptIsDarkTheme ();
 
     pathbldMakePath (tbuff, sizeof (tbuff),
         "theme", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
@@ -716,6 +723,24 @@ confuiUIThemeSelect (void *udata, const char *sval)
     }
     mdextfclose (fh);
     fclose (fh);
+
+    if (was_dark != is_dark) {
+      const char  *tval;
+      uiwcont_t   *uiwidget;
+
+      tval = bdjoptGetStr (OPT_P_UI_ACCENT_COL);
+      if (strcmp (tval, "#ffa600") == 0) {
+        uiwidget = gui->uiitem [CONFUI_WIDGET_UI_ACCENT_COLOR].uiwidgetp;
+        uiColorButtonSetColor (uiwidget, "#be6c0b");
+//        bdjoptSetStr (OPT_P_UI_ACCENT_COL, "#be6c0b");
+      }
+      tval = bdjoptGetStr (OPT_P_UI_ERROR_COL);
+      if (strcmp (tval, "#ff2222") == 0) {
+        uiwidget = gui->uiitem [CONFUI_WIDGET_UI_ERROR_COLOR].uiwidgetp;
+        uiColorButtonSetColor (uiwidget, "#e01b24");
+//        bdjoptSetStr (OPT_P_UI_ERROR_COL, "#e01b24");
+      }
+    }
   }
 
   return UICB_CONT;

@@ -571,7 +571,7 @@ main (int argc, char *argv[])
     }
     uisetup.uifont = uifont;
     uisetup.listingfont = uifont;
-    uisetup.accentColor = INST_HL_COLOR;
+    uisetup.accentColor = "#ffa600"; // INST_HL_COLOR;
     uisetup.errorColor = NULL;
     uisetup.markColor = NULL;
     uisetup.rowselColor = NULL;
@@ -639,8 +639,8 @@ installerBuildUI (installer_t *installer)
 
   szgrp = uiCreateSizeGroupHoriz ();
 
-  uiLabelAddClass (INST_HL_CLASS, INST_HL_COLOR);
-  uiSeparatorAddClass (INST_SEP_CLASS, INST_SEP_COLOR);
+//  uiLabelAddClass (INST_HL_CLASS, INST_HL_COLOR);
+//  uiSeparatorAddClass (INST_SEP_CLASS, INST_SEP_COLOR);
 
   stpecpy (imgbuff, imgbuff + sizeof (imgbuff), "img/bdj4_icon_inst.png");
   osuiSetIcon (imgbuff);
@@ -666,7 +666,8 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (vbox, hbox);
 
   installer->wcont [INST_W_STATUS_MSG] = uiCreateLabel ("");
-  uiWidgetAddClass (installer->wcont [INST_W_STATUS_MSG], INST_HL_CLASS);
+//  uiWidgetAddClass (installer->wcont [INST_W_STATUS_MSG], INST_HL_CLASS);
+  uiWidgetAddClass (installer->wcont [INST_W_STATUS_MSG], ACCENT_CLASS);
   uiBoxPackEndExpand (hbox, installer->wcont [INST_W_STATUS_MSG]);
   uiWidgetAlignHorizEnd (installer->wcont [INST_W_STATUS_MSG]);
 
@@ -717,14 +718,15 @@ installerBuildUI (installer_t *installer)
       installer->callbacks [INST_CB_REINST]);
 
   installer->wcont [INST_W_FEEDBACK_MSG] = uiCreateLabel ("");
-  uiWidgetAddClass (installer->wcont [INST_W_FEEDBACK_MSG], INST_HL_CLASS);
+//  uiWidgetAddClass (installer->wcont [INST_W_FEEDBACK_MSG], INST_HL_CLASS);
+  uiWidgetAddClass (installer->wcont [INST_W_FEEDBACK_MSG], ACCENT_CLASS);
   uiBoxPackStart (hbox, installer->wcont [INST_W_FEEDBACK_MSG]);
 
   uiwcontFree (hbox);
 
   /* begin line : separator */
   uiwidgetp = uiCreateHorizSeparator ();
-  uiWidgetAddClass (uiwidgetp, INST_SEP_CLASS);
+//  uiWidgetAddClass (uiwidgetp, INST_SEP_CLASS);
   uiBoxPackStart (vbox, uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 4);
   uiWidgetSetMarginBottom (uiwidgetp, 2);
@@ -797,14 +799,15 @@ installerBuildUI (installer_t *installer)
       installer->callbacks [INST_CB_CONV]);
 
   installer->wcont [INST_W_CONV_FEEDBACK_MSG] = uiCreateLabel ("");
-  uiWidgetAddClass (installer->wcont [INST_W_CONV_FEEDBACK_MSG], INST_HL_CLASS);
+//  uiWidgetAddClass (installer->wcont [INST_W_CONV_FEEDBACK_MSG], INST_HL_CLASS);
+  uiWidgetAddClass (installer->wcont [INST_W_CONV_FEEDBACK_MSG], ACCENT_CLASS);
   uiBoxPackStart (hbox, installer->wcont [INST_W_CONV_FEEDBACK_MSG]);
 
   uiwcontFree (hbox);
 
   /* begin line : separator */
   uiwidgetp = uiCreateHorizSeparator ();
-  uiWidgetAddClass (uiwidgetp, INST_SEP_CLASS);
+//  uiWidgetAddClass (uiwidgetp, INST_SEP_CLASS);
   uiBoxPackStart (vbox, uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 4);
   uiWidgetSetMarginBottom (uiwidgetp, 2);
@@ -840,7 +843,8 @@ installerBuildUI (installer_t *installer)
   uiwcontFree (uiwidgetp);
 
   installer->wcont [INST_W_VLC_MSG] = uiCreateLabel ("");
-  uiWidgetAddClass (installer->wcont [INST_W_VLC_MSG], INST_HL_CLASS);
+//  uiWidgetAddClass (installer->wcont [INST_W_VLC_MSG], INST_HL_CLASS);
+  uiWidgetAddClass (installer->wcont [INST_W_VLC_MSG], ACCENT_CLASS);
   uiBoxPackStart (hbox, installer->wcont [INST_W_VLC_MSG]);
   uiWidgetSetMarginStart (installer->wcont [INST_W_VLC_MSG], 4);
 
@@ -868,7 +872,8 @@ installerBuildUI (installer_t *installer)
   uiBoxPackEnd (hbox, uiwidgetp);
   installer->wcont [INST_W_BUTTON_INSTALL] = uiwidgetp;
 
-  uiwidgetp = uiTextBoxCreate (175, INST_HL_COLOR);
+//  uiwidgetp = uiTextBoxCreate (175, INST_HL_COLOR);
+  uiwidgetp = uiTextBoxCreate (175, ACCENT_CLASS);
   uiTextBoxSetReadonly (uiwidgetp);
   uiTextBoxHorizExpand (uiwidgetp);
   uiTextBoxVertExpand (uiwidgetp);
