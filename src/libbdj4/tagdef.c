@@ -1839,8 +1839,12 @@ tagdefInit (void)
 
   /* CONTEXT: label: movement (classical music movement number) */
   tagdefs [TAG_MOVEMENTNUM].displayname = _("Movement Number");
+  /* CONTEXT: label: movement (classical music movement number) (short name for listing) */
+  tagdefs [TAG_MOVEMENTNUM].shortdisplayname = _("Mvt No.");
   /* CONTEXT: label: movement count (classical music movement count) */
   tagdefs [TAG_MOVEMENTCOUNT].displayname = _("Movement Count");
+  /* CONTEXT: label: movement (classical music movement count) (short name for listing) */
+  tagdefs [TAG_MOVEMENTCOUNT].shortdisplayname = _("Mvt Count");
   /* CONTEXT: label: movement name (classical music movement name) */
   tagdefs [TAG_MOVEMENTNAME].displayname = _("Movement");
 

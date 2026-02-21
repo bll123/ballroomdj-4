@@ -62,13 +62,12 @@ uivnbCreate (uiwcont_t *box)
   vnb = mdmalloc (sizeof (uivnb_t));
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (box, hbox);
+  uiBoxPackStartExpand (box, hbox);
 
   sw = uiCreateScrolledWindow (50);
   uiBoxPackStart (hbox, sw);
   vnb->vlist = uiCreateVertBox ();
   uiWindowPackInWindow (sw, vnb->vlist);
-  uiWidgetExpandHoriz (vnb->vlist);
 
   vnb->nb = uiCreateNotebook ();
   uiNotebookHideTabs (vnb->nb);

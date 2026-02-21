@@ -453,9 +453,6 @@ static bool managePlaylistImport (void *udata);
 static bool managePlaylistImportRespHandler (void *udata);
 static void managePlaylistImportFinalize (manageui_t *manage);
 
-//static void managePlaylistImportCreateSonglist (manageui_t *manage, slist_t *songlist);
-//static bool managePlaylistImportCreateSongs (manageui_t *manage, const char *songnm, int imptype, slist_t *songlist, slist_t *tagdata, int retain);
-
 /* export/import bdj4 */
 static bool     managePlaylistExportBDJ4 (void *udata);
 static bool     managePlaylistImportBDJ4 (void *udata);
@@ -875,7 +872,7 @@ manageBuildUI (manageui_t *manage)
   manage->wcont [MANAGE_W_STATUS_MSG] = uiwidgetp;
 
   manage->wcont [MANAGE_W_MENUBAR] = uiCreateMenubar ();
-  uiBoxPackStartExpand (hbox, manage->wcont [MANAGE_W_MENUBAR]);
+  uiBoxPackStart (hbox, manage->wcont [MANAGE_W_MENUBAR]);
 
   manage->mainvnb = uivnbCreate (vbox);
 
@@ -894,10 +891,11 @@ manageBuildUI (manageui_t *manage)
       _("Edit Sequences"), MANAGE_TAB_MAIN_SEQ);
   uiWidgetSetAllMargins (vbox, 2);
 
+  uiwcontFree (vbox);
+
   /* playlist management */
   manage->managepl = managePlaylistAlloc (&manage->minfo);
 
-  uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
   manageBuildUIPlaylist (manage->managepl, vbox);
 
@@ -906,6 +904,8 @@ manageBuildUI (manageui_t *manage)
       _("Playlist Management"), MANAGE_TAB_MAIN_PLMGMT);
   uiWidgetSetAllMargins (vbox, 2);
 
+  uiwcontFree (vbox);
+
   /* music manager */
   manageBuildUIMusicManager (manage);
 
@@ -913,7 +913,6 @@ manageBuildUI (manageui_t *manage)
   manage->managedb = manageDbAlloc (&manage->minfo,
       manage->conn, manage->processes);
 
-  uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
   manageBuildUIUpdateDatabase (manage->managedb, vbox);
   uivnbAppendPage (manage->mainvnb, vbox,

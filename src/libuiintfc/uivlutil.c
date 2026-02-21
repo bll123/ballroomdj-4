@@ -54,7 +54,7 @@ uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist, int startcol)
     if (tagdefs [tagidx].ellipsize) {
       minwidth = 10;
     }
-    if (tagidx == TAG_TITLE || tagidx == TAG_NOTES) {
+    if (tagidx == TAG_TITLE || tagidx == TAG_NOTES || tagidx == TAG_COMMENT) {
       minwidth = 20;
     }
     if (tagidx == TAG_ARTIST || tagidx == TAG_ALBUMARTIST ||
@@ -63,6 +63,7 @@ uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist, int startcol)
     }
     if (tagdefs [tagidx].ellipsize) {
       uivlSetColumnMinWidth (vl, colidx, minwidth);
+      /* also turns on grow-shrink */
       uivlSetColumnEllipsizeOn (vl, colidx);
     }
     if (! tagdefs [tagidx].ellipsize &&

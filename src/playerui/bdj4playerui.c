@@ -574,7 +574,7 @@ pluiBuildUI (playerui_t *plui)
   uiWidgetExpandHoriz (hbox);
 
   menubar = uiCreateMenubar ();
-  uiBoxPackStartExpand (hbox, menubar);
+  uiBoxPackStart (hbox, menubar);
 
   plui->wcont [PLUI_W_CLOCK] = uiCreateLabel ("");
   uiBoxPackEnd (hbox, plui->wcont [PLUI_W_CLOCK]);
@@ -704,6 +704,7 @@ pluiBuildUI (playerui_t *plui)
 
   /* player */
   uiwidgetp = uiplayerBuildUI (plui->uiplayer);
+  uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStart (plui->wcont [PLUI_W_MAIN_VBOX], uiwidgetp);
 
   plui->wcont [PLUI_W_NOTEBOOK] = uiCreateNotebook ();

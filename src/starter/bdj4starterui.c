@@ -651,7 +651,7 @@ starterBuildUI (startui_t  *starter)
   starter->wcont [START_W_STATUS_MSG] = uiwidgetp;
 
   menubar = uiCreateMenubar ();
-  uiBoxPackStartExpand (hbox, menubar);
+  uiBoxPackStart (hbox, menubar);
   uiwcontFree (hbox);
 
   /* CONTEXT: starterui: action menu for the starter user interface */

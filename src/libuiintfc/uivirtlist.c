@@ -359,7 +359,7 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   vl->callbacks [VL_CB_MOTION_WIN] = callbackInitI (uivlMotionEvent, vl);
 
   vl->wcont [VL_W_VBOX] = uiCreateVertBox ();
-  uiBoxPackStartExpand (boxp, vl->wcont [VL_W_VBOX]);
+  uiBoxPackStartExpand  (boxp, vl->wcont [VL_W_VBOX]);
   uiWidgetAlignHorizFill (vl->wcont [VL_W_VBOX]);
 
   /* a scrolled window is necessary to allow the window to shrink */
@@ -1911,7 +1911,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       /* this works if the widget is set to expand-horiz, and */
       /* it is not part of a size group */
       uiWidgetAlignHorizCenter (col->uiwidget);
-      uiWidgetExpandHoriz (col->uiwidget);
+//      uiWidgetExpandHoriz (col->uiwidget);
     } else {
       uiWidgetAlignHorizStart (col->uiwidget);
     }
