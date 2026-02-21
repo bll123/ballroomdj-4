@@ -41,6 +41,7 @@ typedef struct uisbnum {
   int             valtype;
   int             type;
   bool            changed;
+  bool            set_value;
   char            fmt [20];
 } uisbnum_t;
 
@@ -72,6 +73,7 @@ uisbnumCreate (uiwcont_t *box, int maxWidth)
   sbnum->valtype = VAL_NUMERIC | VAL_NOT_EMPTY;
   sbnum->type = SBNUM_NUMERIC;
   sbnum->changed = false;
+  sbnum->set_value = false;
   uisbnumSetFormat (sbnum);
 
   sbnum->sbnumcb = callbackInitI (uisbnumCBHandler, sbnum);
@@ -310,7 +312,9 @@ uisbnumSetDisplay (uisbnum_t *sbnum)
     tmutilToMSD ((time_t) sbnum->value, tbuff, sizeof (tbuff), sbnum->digits);
   }
 
+  sbnum->set_value = true;
   uiEntrySetValue (sbnum->entry, tbuff);
+  sbnum->set_value = false;
 }
 
 static void
@@ -327,9 +331,23 @@ uisbnumEntryValidate (uiwcont_t *entry, const char *label, void *udata)
   char        msg [200];
   const char  *str;
 
+  if (sbnum->set_value) {
+    return UIENTRY_OK;
+  }
+
   str = uiEntryGetValue (sbnum->entry);
   if (! validate (msg, sizeof (msg), label, str, sbnum->valtype)) {
     rc = UIENTRY_ERROR;
+  }
+  if (rc == UIENTRY_OK) {
+    if (sbnum->type == SBNUM_NUMERIC) {
+      sbnum->value = atof (str);
+    }
+    if (sbnum->type == SBNUM_TIME_BASIC ||
+        sbnum->type == SBNUM_TIME_PRECISE) {
+      sbnum->value = tmutilStrToMS (str);
+    }
+    sbnum->changed = true;
   }
 
   return rc;
