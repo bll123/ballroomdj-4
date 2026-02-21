@@ -19,6 +19,11 @@ enum {
 #define WINUSERPROFILE    "%USERPROFILE%"
 #define WINUSERPROFILE_SL "%USERPROFILE%/"
 
+#define INST_HL_COLOR "#ffa600"
+#define INST_HL_CLASS "insthl"
+#define INST_SEP_COLOR "#ffa600"
+#define INST_SEP_CLASS "instsep"
+
 #define INST_DISP_ACTION "-- "
 #define INST_DISP_STATUS "   "
 #define INST_DISP_ERROR "** "

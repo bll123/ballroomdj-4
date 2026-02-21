@@ -1911,7 +1911,6 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       /* this works if the widget is set to expand-horiz, and */
       /* it is not part of a size group */
       uiWidgetAlignHorizCenter (col->uiwidget);
-//      uiWidgetExpandHoriz (col->uiwidget);
     } else {
       uiWidgetAlignHorizStart (col->uiwidget);
     }

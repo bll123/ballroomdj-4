@@ -54,6 +54,11 @@ enum {
   BDJ4_IDENT_FREE = 0xccaa006465657266,
 };
 
+#define BDJ4_DFLT_DARK_ACCENT_COLOR   "#ffa600"
+#define BDJ4_DFLT_LIGHT_ACCENT_COLOR  "#1C1DAE"
+#define BDJ4_DFLT_DARK_ERROR_COLOR    "#ff2222"
+#define BDJ4_DFLT_LIGHT_ERROR_COLOR   "e01b24"
+
 #define BDJ4_LONG_NAME    "BallroomDJ 4"
 #define BDJ4_NAME         "BDJ4"
 #define BDJ3_NAME         "BallroomDJ 3"

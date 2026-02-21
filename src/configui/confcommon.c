@@ -725,20 +725,29 @@ confuiUIThemeSelect (void *udata, const char *sval)
     fclose (fh);
 
     if (was_dark != is_dark) {
-      const char  *tval;
+      char        tbuff [40];
       uiwcont_t   *uiwidget;
 
-      tval = bdjoptGetStr (OPT_P_UI_ACCENT_COL);
-      if (strcmp (tval, "#ffa600") == 0) {
-        uiwidget = gui->uiitem [CONFUI_WIDGET_UI_ACCENT_COLOR].uiwidgetp;
-        uiColorButtonSetColor (uiwidget, "#be6c0b");
-//        bdjoptSetStr (OPT_P_UI_ACCENT_COL, "#be6c0b");
+      uiwidget = gui->uiitem [CONFUI_WIDGET_UI_ACCENT_COLOR].uiwidgetp;
+      uiColorButtonGetColor (uiwidget, tbuff, sizeof (tbuff));
+      if ((was_dark && strcmp (tbuff, BDJ4_DFLT_DARK_ACCENT_COLOR) == 0) ||
+          (! was_dark && strcmp (tbuff, BDJ4_DFLT_LIGHT_ACCENT_COLOR) == 0)) {
+        if (is_dark) {
+          uiColorButtonSetColor (uiwidget, BDJ4_DFLT_DARK_ACCENT_COLOR);
+        } else {
+          uiColorButtonSetColor (uiwidget, BDJ4_DFLT_LIGHT_ACCENT_COLOR);
+        }
       }
-      tval = bdjoptGetStr (OPT_P_UI_ERROR_COL);
-      if (strcmp (tval, "#ff2222") == 0) {
-        uiwidget = gui->uiitem [CONFUI_WIDGET_UI_ERROR_COLOR].uiwidgetp;
-        uiColorButtonSetColor (uiwidget, "#e01b24");
-//        bdjoptSetStr (OPT_P_UI_ERROR_COL, "#e01b24");
+
+      uiwidget = gui->uiitem [CONFUI_WIDGET_UI_ERROR_COLOR].uiwidgetp;
+      uiColorButtonGetColor (uiwidget, tbuff, sizeof (tbuff));
+      if ((was_dark && strcmp (tbuff, BDJ4_DFLT_DARK_ERROR_COLOR) == 0) ||
+          (! was_dark && strcmp (tbuff, BDJ4_DFLT_LIGHT_ERROR_COLOR) == 0)) {
+        if (is_dark) {
+          uiColorButtonSetColor (uiwidget, BDJ4_DFLT_DARK_ERROR_COLOR);
+        } else {
+          uiColorButtonSetColor (uiwidget, BDJ4_DFLT_LIGHT_ERROR_COLOR);
+        }
       }
     }
   }
