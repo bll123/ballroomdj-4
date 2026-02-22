@@ -7,7 +7,6 @@
 **4.17.12 2026-2---**
 
 * Bug Fixes:
-    * Configuration: Music Queues: Fixed an interface issue.
     * Listings: Fix 'favorite' taking more space than it should.
     * Listings: Created abbreviated names for: 'Movement Number', 'Movement Count'.
     * Management: Fixed the window not resizing properly.

@@ -739,6 +739,10 @@ sysvarsInit (const char *argv0, int flags)
       p = stpecpy (p, end, data);
     }
   }
+
+  /* set the default theme */
+  sysvarsSetStr (SV_THEME_DEFAULT, "Adwaita:dark");
+
   if (strcmp (sysvars [SV_OS_NAME], "linux") == 0) {
     static char *fna = "/etc/lsb-release";
     static char *fnb = "/etc/os-release";
@@ -747,9 +751,8 @@ sysvarsInit (const char *argv0, int flags)
       svGetLinuxOSInfo (fnb);
     }
 
-    /* gtk cannot seem to retrieve the properties from settings */
-    /* so run the gsettings program to get the info */
     if (flags == SYSVARS_FLAG_ALL && *sysvars [SV_PATH_GSETTINGS]) {
+      /* override the default theme with what the user has set */
       svGetLinuxDefaultTheme ();
     }
   }
@@ -1250,6 +1253,10 @@ static void
 svGetLinuxDefaultTheme (void)
 {
   char    *tptr;
+
+  /* gtk cannot seem to retrieve the properties from settings */
+  /* (or i don't know how) */
+  /* so run the gsettings program to get the info */
 
   tptr = osRunProgram (sysvars [SV_PATH_GSETTINGS], "get",
       "org.gnome.desktop.interface", "gtk-theme", NULL);
