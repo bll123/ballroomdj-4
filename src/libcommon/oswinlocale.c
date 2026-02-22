@@ -37,10 +37,3 @@ osLocaleDirection (const char *locale)
   return tdir;
 }
 
-void
-osGetPreferredLocales (char *buff, size_t sz)
-{
-  /* windows does not return a list of languages.  */
-  /* the current get-os-locale method is fine. */
-  *buff = '\0';
-}
