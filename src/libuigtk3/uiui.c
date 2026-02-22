@@ -33,6 +33,7 @@
 
 #define BDJ4_DEBUG_CSS 0
 
+/* as of 2026-2-22, the length is 5549+ */
 enum {
   UIUI_MAX_CSS = 8192,
 };
@@ -201,10 +202,6 @@ uiSetUICSS (uisetup_t *uisetup)
     tp = stpecpy (tp, tend, wbuff);
   }
 
-  snprintf (wbuff, sizeof (wbuff),
-      "label.%s { font-weight: bold; }\n", HEADING_CLASS);
-  tp = stpecpy (tp, tend, wbuff);
-
   if (uisetup->listingfont != NULL && *uisetup->listingfont) {
     char  tmp [100];
     int   listingsz = 0;
@@ -281,10 +278,15 @@ uiSetUICSS (uisetup_t *uisetup)
         "label.%s { color: %s; }\n", ACCENT_CLASS, uisetup->accentColor);
     tp = stpecpy (tp, tend, wbuff);
     snprintf (wbuff, sizeof (wbuff),
+        "label.%s { color: %s; font-weight: bold; }\n",
+        BOLD_ACCENT_CLASS, uisetup->accentColor);
+    tp = stpecpy (tp, tend, wbuff);
+    snprintf (wbuff, sizeof (wbuff),
         "label.%s { color: shade(%s,0.8); }\n", DARKACCENT_CLASS,
         uisetup->accentColor);
     tp = stpecpy (tp, tend, wbuff);
 
+    /* entry foreground color */
     snprintf (wbuff, sizeof (wbuff),
         "entry.%s { color: %s; }\n", ACCENT_CLASS, uisetup->accentColor);
     tp = stpecpy (tp, tend, wbuff);
@@ -335,7 +337,7 @@ uiSetUICSS (uisetup_t *uisetup)
     tp = stpecpy (tp, tend, wbuff);
   }
 
-  /* as of 2023-1-29, the length is 2600+ */
+  /* as of 2026-2-22, the length is 5549+ */
   if (strlen (cssbuff) >= UIUI_MAX_CSS) {
     fprintf (stderr, "WARN: possible css overflow: %zd\n", strlen (cssbuff));
   }
@@ -483,12 +485,13 @@ uiSetRowHighlight (char *tp, char *tend,
   /* the problem with using the standard selected-bg-color with virtlist */
   /* is it matches the radio button and check button colors */
   /* (in the matcha series of themes) and */
-  /* there is no easy way to switch the radio buttons and */
+  /* there is no easy way that i can find to switch the radio buttons and */
   /* check buttons to the obverse colors */
   snprintf (wbuff, sizeof (wbuff),
       "box.horizontal.%s { background-color: %s; }\n",
       classnm, tmpcolor);
   tp = stpecpy (tp, tend, wbuff);
+
   snprintf (wbuff, sizeof (wbuff),
       "spinbutton.%s, "
       "spinbutton.%s entry, "
@@ -496,6 +499,7 @@ uiSetRowHighlight (char *tp, char *tend,
       "{ background-color: %s; }\n",
       classnm, classnm, classnm, tmpcolor);
   tp = stpecpy (tp, tend, wbuff);
+
   snprintf (wbuff, sizeof (wbuff),
       "entry.%s "
       "{ background-color: %s; }\n",

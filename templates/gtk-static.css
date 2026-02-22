@@ -16,6 +16,10 @@ scrollbar, scrollbar slider {
   min-width: 9px;
 }
 
+label.bdj-heading {
+  font-weight: bold;
+}
+
 menu separator {
   margin-right: 12px;
   margin-left: 8px;
@@ -55,11 +59,6 @@ progressbar > trough progress {
   background-color: @theme_base_color;
   margin-right: 4pt;
 }
-/*
-label.bdj-selected {
-  color: @theme_selected_fg_color;
-}
-*/
 label.bdj-nodisp {
   color: rgba(0,0,0,0);
 }
@@ -78,11 +77,6 @@ label.bdj-leftnotebook {
   border-left-color: transparent;
 }
 
-/*
-button.bdj-leftnotebook label {
-  color: @theme_fg_color;
-}
-*/
 button.bdj-leftnotebook label {
   color: mix(@theme_base_color,@theme_fg_color,0.7);
 }

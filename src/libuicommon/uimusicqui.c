@@ -1168,7 +1168,7 @@ uimusicqMarkPreviousSelection (uimusicq_t *uimusicq, bool disp)
   }
   if (disp) {
     uivlSetRowColumnClass (mqint->uivl, mqui->prevSelection,
-        UIMUSICQ_COL_DISP_IDX, ACCENT_CLASS);
+        UIMUSICQ_COL_DISP_IDX, BOLD_ACCENT_CLASS);
   }
 }
 

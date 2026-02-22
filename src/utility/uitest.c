@@ -1050,6 +1050,20 @@ uitestUILabels (uitest_t *uitest)
 
   uiwcontFree (hbox);
 
+  /* label: pack start / bold-accent */
+
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+
+  uiwidgetp = uiCreateLabel ("bold-accent");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, BOLD_ACCENT_CLASS);
+  uiwcontFree (uiwidgetp);
+
+  uiwcontFree (hbox);
+
   /* label: pack start / error */
 
   hbox = uiCreateHorizBox ();

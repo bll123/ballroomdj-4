@@ -8,9 +8,9 @@
 
 * Bug Fixes:
     * Listings: Fix 'favorite' taking more space than it should.
-    * Listings: 'Movement Number', 'Movement Count': create abbreviated names for heading.
-    * Management: Fix layout, unable to resize.
-    * Themes: color fixes.  Light themes have much better colors.
+    * Listings: Created abbreviated names for: 'Movement Number', 'Movement Count'.
+    * Management: Fixed the window not resizing properly.
+    * Themes: Color fixes.  Light themes have much better colors.
 
 -->
 

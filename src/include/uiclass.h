@@ -8,6 +8,7 @@ extern "C" {
 #endif
 
 #define ACCENT_CLASS "bdj-accent"
+#define BOLD_ACCENT_CLASS "bdj-bold-accent"
 #define CHGIND_CHANGED_CLASS "bdj-chgindchanged"
 #define CHGIND_ERROR_CLASS "bdj-chginderror"
 #define CHGIND_NORMAL_CLASS "bdj-chgindnormal"
