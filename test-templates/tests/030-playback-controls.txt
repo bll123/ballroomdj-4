@@ -274,6 +274,7 @@ mssleep 1500
 get player CHK_PLAYER_STATUS
 resptimeout 1000
 wait playstate playing
+mssleep 100
 get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
 msg player PLAY_NEXTSONG
