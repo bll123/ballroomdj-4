@@ -33,7 +33,7 @@
 
 #define BDJ4_DEBUG_CSS 0
 
-/* as of 2026-2-22, the length is 5549+ */
+/* as of 2026-2-22, the length is 5600+ */
 enum {
   UIUI_MAX_CSS = 8192,
 };
@@ -142,30 +142,30 @@ uiSetUICSS (uisetup_t *uisetup)
     uisetup->rowhlColor = uisetup->accentColor;
   }
 
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      "gtk-static", BDJ4_CSS_EXT, PATHBLD_MP_DREL_DATA);
-  p = filedataReadAll (tbuff, NULL);
-  if (p == NULL) {
-    /* the installer does not have a data directory */
-    pathbldMakePath (tbuff, sizeof (tbuff),
-        "gtk-static", BDJ4_CSS_EXT, PATHBLD_MP_DIR_TEMPLATE);
-    p = filedataReadAll (tbuff, NULL);
-  }
-
-  /* append the main css */
   cssbuff = mdmalloc (UIUI_MAX_CSS);
   *cssbuff = '\0';
   tp = cssbuff;
   tend = cssbuff + UIUI_MAX_CSS;
 
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      GTK_CSS_STATIC_FN, BDJ4_CSS_EXT, PATHBLD_MP_DREL_DATA);
+  p = filedataReadAll (tbuff, NULL);
+  if (p == NULL) {
+    /* the installer does not have a data directory */
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        GTK_CSS_STATIC_FN, BDJ4_CSS_EXT, PATHBLD_MP_DIR_TEMPLATE);
+    p = filedataReadAll (tbuff, NULL);
+  }
+
+  /* append the main css */
   if (p != NULL) {
     tp = stpecpy (tp, tend, p);
     mdfree (p);
   }
 
-  cssnm = "gtk-light";
+  cssnm = GTK_CSS_LIGHT_FN;
   if (uisetup->is_dark) {
-    cssnm = "gtk-dark";
+    cssnm = GTK_CSS_DARK_FN;
   }
   pathbldMakePath (tbuff, sizeof (tbuff),
       cssnm, BDJ4_CSS_EXT, PATHBLD_MP_DREL_DATA);
@@ -337,9 +337,17 @@ uiSetUICSS (uisetup_t *uisetup)
     tp = stpecpy (tp, tend, wbuff);
   }
 
-  /* as of 2026-2-22, the length is 5549+ */
+  /* append any user CSS */
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      GTK_CSS_USER_FN, BDJ4_CSS_EXT, PATHBLD_MP_DREL_DATA);
+  p = filedataReadAll (tbuff, NULL);
+  if (p != NULL) {
+    tp = stpecpy (tp, tend, p);
+  }
+
+  /* as of 2026-2-22, the length is 5600+ */
   if (strlen (cssbuff) >= UIUI_MAX_CSS) {
-    fprintf (stderr, "WARN: possible css overflow: %zd\n", strlen (cssbuff));
+    fprintf (stderr, "ERR: CSS overflow: %zd\n", strlen (cssbuff));
   }
 
 #if BDJ4_DEBUG_CSS

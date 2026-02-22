@@ -126,6 +126,12 @@ enum {
 #define INST_PATH_FN        "installdir"
 #define NEWINST_FN          "newinstall"
 #define READONLY_FN         "readonly"
+/* gtk css */
+#define GTK_CSS_STATIC_FN   "gtk-static"
+#define GTK_CSS_DARK_FN     "gtk-dark"
+#define GTK_CSS_LIGHT_FN    "gtk-light"
+#define GTK_CSS_USER_FN     "gtk-user"
+
 /* installation */
 #define BDJ4_INST_DIR  "bdj4-install"
 
