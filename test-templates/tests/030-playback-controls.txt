@@ -288,7 +288,7 @@ chk prepqueuecount 4 playstate playing
 msg player PLAY_NEXTSONG
 mssleep 1500
 get main CHK_MAIN_MUSICQ
-chk mq0len 5 dbidx 6
+chk mq0len 5 dbidx 6 dance Salsa
 get player CHK_WAIT_PREP
 wait done 1
 get player CHK_PLAYER_STATUS
@@ -296,7 +296,7 @@ chk prepqueuecount 4 playstate playing actualvolume defaultvol
 msg player PLAY_NEXTSONG
 mssleep 1500
 get main CHK_MAIN_MUSICQ
-chk mq0len 4 dbidx 8
+chk mq0len 4 dbidx 8 dance Tango
 get player CHK_WAIT_PREP
 wait done 1
 get player CHK_PLAYER_STATUS
@@ -304,7 +304,7 @@ chk prepqueuecount 3 playstate playing actualvolume defaultvol
 msg player PLAY_NEXTSONG
 mssleep 1500
 get main CHK_MAIN_MUSICQ
-chk mq0len 3 dbidx 10
+chk mq0len 3 dbidx 10 dance Waltz
 get player CHK_WAIT_PREP
 wait done 1
 get player CHK_PLAYER_STATUS
@@ -312,6 +312,7 @@ chk prepqueuecount 2 playstate playing actualvolume defaultvol
 msg player PLAY_NEXTSONG
 mssleep 1500
 get main CHK_MAIN_MUSICQ
+# argentine tango
 chk mq0len 2 dbidx 12
 get player CHK_WAIT_PREP
 wait done 1
@@ -320,7 +321,7 @@ chk prepqueuecount 1 playstate playing actualvolume defaultvol
 msg player PLAY_NEXTSONG
 mssleep 1500
 get main CHK_MAIN_MUSICQ
-chk mq0len 1 dbidx 14
+chk mq0len 1 dbidx 14 dance Foxtrot
 get player CHK_WAIT_PREP
 wait done 1
 get player CHK_PLAYER_STATUS
