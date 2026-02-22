@@ -146,6 +146,9 @@ button.bdj-switch {
 button.bdj-switch:checked {
   background-color: @theme_base_color;
 }
+button.bdj-switch:disabled {
+  border-color: @theme_base_color;
+}
 button.bdj-switch:focus {
   border-color: @theme_selected_bg_color;
 }

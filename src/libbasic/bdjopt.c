@@ -628,8 +628,10 @@ bdjoptIsDarkTheme (void)
   if (tstr == NULL || ! *tstr) {
     tstr = sysvarsGetStr (SV_THEME_DEFAULT);
   }
+  /* HighContrastInverse is dark */
   if (strstr (tstr, "dark") != NULL ||
-      strstr (tstr, "Dark") != NULL) {
+      strstr (tstr, "Dark") != NULL ||
+      strstr (tstr, "Inverse") != NULL) {
     rc = true;
   }
 

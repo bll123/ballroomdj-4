@@ -29,7 +29,6 @@
 static bool confuiMusicQActiveChg (void *udata);
 static bool confuiMusicQDisplayChg (void *udata);
 static bool confuiMusicQChg (void *udata);
-static void confuiMusicQUpdateState (confuigui_t *gui, int idx);
 static void confuiSetMusicQList (confuigui_t *gui);
 static void confuiUpdateMusicQList (confuigui_t *gui);
 static bool confuiMusicqCrossFadeChg (void *udata);
@@ -250,6 +249,16 @@ confuiMusicQActiveChg (void *udata)
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE].uiwidgetp, state);
 
+  state = UIWIDGET_ENABLE;
+  if (selidx == 0) {
+    state = UIWIDGET_DISABLE;
+  }
+
+  /* this didn't work when it was coded in a different place */
+  /* works here */
+  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiwidgetp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiwidgetp, state);
+
   return UICB_CONT;
 }
 
@@ -346,30 +355,9 @@ confuiMusicQChg (void *udata)
   gui->inchange = false;
 
   confuiMusicQActiveChg (gui);
-  confuiMusicQUpdateState (gui, nselidx);
 
   logProcEnd ("");
   return UICB_CONT;
-}
-
-static void
-confuiMusicQUpdateState (confuigui_t *gui, int idx)
-{
-  int   state;
-
-  if (strcmp (uiBackend (), "gtk3") == 0) {
-    /* enabling and disabling these is buggy on gtk3 */
-    /* skip it altogether */
-    return;
-  }
-
-  state = UIWIDGET_ENABLE;
-  if (idx == 0) {
-    state = UIWIDGET_DISABLE;
-  }
-
-  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiwidgetp, state);
-  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiwidgetp, state);
 }
 
 static void

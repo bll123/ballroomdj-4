@@ -549,7 +549,7 @@ main (int argc, char *argv [])
     /* 4.17.3.4 2025-11-8 update notebook scrolling arrows */
     /* 4.17.6 2025-12-4 updates for new vertical notebook */
     /* 4.17.7 2025-12-8 updates for new vertical notebook */
-    /* 4.17.12 v10 2026-2-21 split out light/dark */
+    /* 4.17.12 v10 2026-2-21 split out light/dark (v1) */
     updaterCopyIfNotPresent ("gtk-static", BDJ4_CSS_EXT, NULL);
     updaterCopyCSSVersionCheck ("gtk-static", BDJ4_CSS_EXT, 10);
     updaterCopyIfNotPresent ("gtk-light", BDJ4_CSS_EXT, NULL);
@@ -1491,6 +1491,7 @@ static void
 updaterCopyCSSVersionCheck (const char *fn, const char *ext, int currvers)
 {
   int         version;
+  int         count = 0;
   char        from [BDJ4_PATH_MAX];
   char        tmp [BDJ4_PATH_MAX];
   FILE        *fh;
@@ -1501,11 +1502,14 @@ updaterCopyCSSVersionCheck (const char *fn, const char *ext, int currvers)
     return;
   }
   *tmp = '\0';
-  (void) ! fgets (tmp, sizeof (tmp), fh);
+  while (strstr (tmp, "version") == NULL && count < 10) {
+    (void) ! fgets (tmp, sizeof (tmp), fh);
+    ++count;
+  }
   mdextfclose (fh);
   fclose (fh);
   if (sscanf (tmp, "/* version %d", &version) != 1) {
-    version = 1;
+    version = 0;
   }
 
   logMsg (LOG_INSTALL, LOG_INFO, "version check %s%s : %d < %d", fn, ext, version, currvers);

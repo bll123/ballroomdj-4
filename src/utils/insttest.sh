@@ -122,8 +122,14 @@ fn="templates/itunes-fields.txt"
 ITUNESFIELDSVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
 fn="templates/sortopt.txt"
 SORTOPTVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
+
 fn="templates/gtk-static.css"
 GTKSTATICVER=$(grep "version [1-9]" "${fn}" | sed 's,[^0-9],,g')
+fn="templates/gtk-dark.css"
+GTKDARKVER=$(grep "version [1-9]" "${fn}" | sed 's,[^0-9],,g')
+fn="templates/gtk-light.css"
+GTKLIGHTVER=$(grep "version [1-9]" "${fn}" | sed 's,[^0-9],,g')
+
 fn="templates/autoselection.txt"
 AUTOSELVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
 fn="templates/audioadjust.txt"
@@ -161,12 +167,12 @@ function checkUpdaterClean {
 
   # 4.2.0 2023-3-5 autoselection values changed
   fn="$DATADIR/autoselection.txt"
-  sed -e "s/version [2-9]/version $(($AUTOSELVER-1))/" "${fn}" > "${fn}.n"
+  sed -e "s/version [0-9]/version $(($AUTOSELVER-1))/" "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
   # audio adjust file should be installed if missing or wrong version
   fn="$DATADIR/audioadjust.txt"
-  sed -e "s/version [2-9]/version $(($AUDIOADJVER-1))/" "${fn}" > "${fn}.n"
+  sed -e "s/version [0-9]/version $(($AUDIOADJVER-1))/" "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
   # ds-audioid.txt file should be installed if missing
@@ -179,7 +185,7 @@ function checkUpdaterClean {
 
   # ds-audioid-list.txt version number should be updated
   fn="$DATADIR/profile00/ds-audioid-list.txt"
-  sed -e "s/version [2-9]/version $(($AUDIOIDLISTVER-1))/" "${fn}" > "${fn}.n"
+  sed -e "s/version [0-9]/version $(($AUDIOIDLISTVER-1))/" "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
   # bdjconfig.q4.txt file should be installed if missing
@@ -188,18 +194,25 @@ function checkUpdaterClean {
 
   # itunes-fields version number should be updated
   fn="$DATADIR/itunes-fields.txt"
-  sed -e "s/version [2-9]/version $(($ITUNESFIELDSVER-1))/" "${fn}" > "${fn}.n"
+  sed -e "s/version [0-9]/version $(($ITUNESFIELDSVER-1))/" "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
   # sortopt version number should be updated
   fn="$DATADIR/sortopt.txt"
-  sed -e "s/version [2-9]/version $(($SORTOPTVER-1))/" "${fn}" > "${fn}.n"
+  sed -e "s/version [0-9]/version $(($SORTOPTVER-1))/" "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
-  # gtk-static version number should be updated to version 4.
+  # gtk-static version number should be updated to version 10.
   fn="$DATADIR/gtk-static.css"
   if [[ -f $fn ]]; then
-    sed -e "s/version [2-9]/version $(($GTKSTATICVER-1))/" "${fn}" > "${fn}.n"
+    sed -e "s/version [0-9]*/version $(($GTKSTATICVER-1))/" "${fn}" > "${fn}.n"
+    mv -f "${fn}.n" "${fn}"
+  fi
+
+  # gtk-dark version number should be updated to version 1.
+  fn="$DATADIR/gtk-dark.css"
+  if [[ -f $fn ]]; then
+    sed -e "s/version [0-9]*/version $(($GTKDARKVER-1))/" "${fn}" > "${fn}.n"
     mv -f "${fn}.n" "${fn}"
   fi
 
@@ -717,6 +730,34 @@ function checkInstallation {
       fi
     else
       echo "  no gtk-static.css file"
+    fi
+
+    res=$(($res+1))  # gtk-dark.css file
+    fn="${DATADIR}/gtk-dark.css"
+    if [[ $fin == T && -f ${fn} ]]; then
+      grep "version ${GTKDARKVER}" "${fn}" > /dev/null 2>&1
+      rc=$?
+      if [[ $rc -eq 0 ]]; then
+        chk=$(($chk+1))
+      else
+        echo "  gtk-dark.css file has wrong version"
+      fi
+    else
+      echo "  no gtk-dark.css file"
+    fi
+
+    res=$(($res+1))  # gtk-light.css file
+    fn="${DATADIR}/gtk-light.css"
+    if [[ $fin == T && -f ${fn} ]]; then
+      grep "version ${GTKLIGHTVER}" "${fn}" > /dev/null 2>&1
+      rc=$?
+      if [[ $rc -eq 0 ]]; then
+        chk=$(($chk+1))
+      else
+        echo "  gtk-light.css file has wrong version"
+      fi
+    else
+      echo "  no gtk-light.css file"
     fi
 
     fna="${DATADIR}/QueueDance.pldances"
