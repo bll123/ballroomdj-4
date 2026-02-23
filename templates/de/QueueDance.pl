@@ -20,7 +20,7 @@ STOPTIME
 DANCELEVELLOW
 ..Einfach
 DANCELEVELHIGH
-..Fortgeschrittene
+..Fortgeschritten
 TAGS
 ..
 TAG_WEIGHT

@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2025-09-23\n"
-"PO-Revision-Date: 2026-02-21\n"
+"POT-Creation-Date: 2026-02-21\n"
+"PO-Revision-Date: 2026-02-23 22:47\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Czech\n"
 "Language: cs\n"
@@ -1109,9 +1109,7 @@ msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
 msgstr "Pokud není BallroomDJ 3 nainstalován, ponechte položku prázdnou."
 
 #. CONTEXT: installer: instructions
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installations."
+msgid "The conversion process will only run for new installations and for re-installations."
 msgstr "Proces převodu se spustí pouze u nových instalací a u přeinstalací."
 
 #. CONTEXT: installer: label for entry field asking for BDJ3 location
@@ -1295,7 +1293,7 @@ msgstr "Skóre"
 #. CONTEXT: audio identification: the audio identification source
 #. CONTEXT: song editor: copy tags: source file
 msgid "Source"
-msgstr "Zdroj"
+msgstr "Zdroj:"
 
 #. CONTEXT: label: measures per minute
 #. CONTEXT: bpm counter: MPM
@@ -2116,8 +2114,7 @@ msgid "Update from Audio File Tags"
 msgstr "Aktualizace ze štítků zvukových souborů"
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid ""
-"Updates the information in the BallroomDJ database from the audio file tags."
+msgid "Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Aktualizuje informace v databázi BallroomDJ ze značek zvukových souborů."
 
 #. CONTEXT: database update: writes the tags in the database to the audio files
@@ -2125,9 +2122,7 @@ msgid "Write Tags to Audio Files"
 msgstr "Zápis značek do zvukových souborů"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid ""
-"Writes the audio file tags using the information from the BallroomDJ "
-"database."
+msgid "Writes the audio file tags using the information from the BallroomDJ database."
 msgstr "Zapíše značky zvukových souborů pomocí informací z databáze BallroomDJ."
 
 #. CONTEXT: database update: update from itunes
@@ -2137,8 +2132,7 @@ msgstr "Aktualizace z %s"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid ""
-"Updates the information in the BallroomDJ database from the %s database."
+msgid "Updates the information in the BallroomDJ database from the %s database."
 msgstr "Aktualizuje informace v databázi BallroomDJ z databáze %s ."
 
 #. CONTEXT: database update: rebuilds the database
@@ -2146,9 +2140,7 @@ msgid "Rebuild Database"
 msgstr "Obnovení databáze"
 
 #. CONTEXT: database update: rebuild: help text
-msgid ""
-"Replaces the BallroomDJ database in its entirety. All changes to the "
-"database will be lost."
+msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
 msgstr "Nahrazuje celou databázi BallroomDJ. Všechny změny v databázi budou ztraceny."
 
 #. CONTEXT: update database: select database update action
@@ -2232,6 +2224,9 @@ msgid "Count"
 msgstr "Hrabě"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
+msgid "Maximum\n"
+"Play Time"
+msgstr ""
 
 #. CONTEXT: sequence editor: default name for a new sequence
 msgid "New Sequence"

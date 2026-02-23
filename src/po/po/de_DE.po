@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2025-09-23\n"
-"PO-Revision-Date: 2026-02-21\n"
+"POT-Creation-Date: 2026-02-21\n"
+"PO-Revision-Date: 2026-02-23 22:47\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -24,7 +24,7 @@ msgstr ""
 #. CONTEXT: audio source: podcast
 #. CONTEXT: playlist management: type of playlist
 msgid "Podcast"
-msgstr ""
+msgstr "Podcast"
 
 #. CONTEXT: configuration file: dance
 msgid "Argentine Tango"
@@ -32,11 +32,11 @@ msgstr "Tango Argentino"
 
 #. CONTEXT: configuration file: dance
 msgid "Cha Cha"
-msgstr "Cha-Cha-Cha"
+msgstr "Cha Cha Cha"
 
 #. CONTEXT: configuration file: dance
 msgid "Foxtrot"
-msgstr "Slowfox"
+msgstr "Slowfox "
 
 #. CONTEXT: configuration file: dance
 msgid "Jive"
@@ -72,7 +72,7 @@ msgstr "Wiener Walzer"
 
 #. CONTEXT: configuration file: dance
 msgid "Waltz"
-msgstr "Walzer"
+msgstr "Langsamer Walzer"
 
 #. CONTEXT: configuration file: dance
 msgid "West Coast Swing"
@@ -84,7 +84,7 @@ msgstr "Standard"
 
 #. CONTEXT: configuration file: dance type
 msgid "latin"
-msgstr "lateinisch"
+msgstr "Latein"
 
 #. CONTEXT: configuration file: dance type
 msgid "club"
@@ -117,7 +117,7 @@ msgstr "Gesellschaftstänze"
 
 #. CONTEXT: configuration file: genre
 msgid "Classical"
-msgstr "Klassisch"
+msgstr "Klassik"
 
 #. CONTEXT: configuration file: genre
 msgid "Jazz"
@@ -125,7 +125,7 @@ msgstr "Jazz"
 
 #. CONTEXT: configuration file: genre
 msgid "Rock"
-msgstr "Felsen"
+msgstr "Rock"
 
 #. CONTEXT: configuration file: dance level
 msgid "Easy"
@@ -137,12 +137,12 @@ msgstr "Normal"
 
 #. CONTEXT: configuration file: dance level
 msgid "Advanced"
-msgstr "Fortgeschrittene"
+msgstr "Fortgeschritten"
 
 #. CONTEXT: configuration file: status
 #. CONTEXT: status: default status (new) when status is not set
 msgid "New"
-msgstr "Neue"
+msgstr "Neu"
 
 #. CONTEXT: configuration file: status
 #. CONTEXT: copy audio tags: copy of audio tags completed
@@ -178,7 +178,7 @@ msgstr "Warteschlange E"
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: button: tooltip: play or pause the song
 msgid "Play / Pause"
-msgstr "Wiedergabe/Pause"
+msgstr "Wiedergabe / Pause"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: button: fade out the song and stop playing it
@@ -187,7 +187,7 @@ msgstr "Ausblenden"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 msgid "Repeat"
-msgstr "wiederhole"
+msgstr "Wiederholen"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: button: pause at the end of the song (toggle)
@@ -234,7 +234,7 @@ msgstr "Stummschalten"
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: update database: button to stop the database update process
 msgid "Stop"
-msgstr "Halt"
+msgstr "Stop"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: The current volume of the song
@@ -305,7 +305,7 @@ msgstr "Typ"
 #. CONTEXT: import playlist: import location
 #. CONTEXT: playlist management: podcast URL
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #. CONTEXT: configuration: audio source: the port to use for the client or server
 #. CONTEXT: configuration: the port to use for the mobile marquee
@@ -688,7 +688,7 @@ msgstr ""
 
 #. CONTEXT: configuration: marquee: the background color
 msgid "Background Colour"
-msgstr ""
+msgstr "Hintergrundfarbe"
 
 #. CONTEXT: configuration: marquee: the accent color
 #. CONTEXT: configuration: the accent color to use for the user interface
@@ -697,7 +697,7 @@ msgstr "Akzentfarbe"
 
 #. CONTEXT: configuration: marquee: dance information color
 msgid "Information Colour"
-msgstr ""
+msgstr "Informationen Farbe"
 
 #. CONTEXT: configuration: marquee: upcoming dance color
 msgid "Upcoming Dance Colour"
@@ -710,7 +710,7 @@ msgstr ""
 
 #. CONTEXT: configuration: mobile marquee type: internet
 msgid "Internet"
-msgstr ""
+msgstr "Internet"
 
 #. CONTEXT: configuration: mobile marquee: internet: tag
 msgid "Tag"
@@ -929,13 +929,13 @@ msgstr "Neuer Status"
 #. CONTEXT: music queue: button: move the selected song up in the queue
 #. CONTEXT: side-by-side list: button: move the selected field up
 msgid "Move Up"
-msgstr "Aufsteigen"
+msgstr "Nach oben"
 
 #. CONTEXT: configuration: table edit: button: move selection down
 #. CONTEXT: music queue: button: move the selected song down in the queue
 #. CONTEXT: side-by-side list: button: move the selected field down
 msgid "Move Down"
-msgstr "Nach unten bewegen"
+msgstr "Nach unten"
 
 #. CONTEXT: configuration: table edit: button: delete selection
 #. CONTEXT: manage-ui: menu selection: song list: edit menu: delete song list
@@ -954,7 +954,7 @@ msgstr "Benutzeroberfläche"
 
 #. CONTEXT: configuration: the theme to use for the user interface
 msgid "Theme"
-msgstr "Thema"
+msgstr "Farbschema"
 
 #. CONTEXT: configuration: the font to use for the user interface
 msgid "Font"
@@ -962,29 +962,29 @@ msgstr "Schriftart"
 
 #. CONTEXT: configuration: the font to use for the queues and song lists
 msgid "Listing Font"
-msgstr "Auflistung Schriftart"
+msgstr "Schriftart Auflistungen"
 
 #. CONTEXT: configuration: scaling factor for the user interface
 msgid "Scale"
-msgstr "Skala"
+msgstr "Skalierung"
 
 #. CONTEXT: configuration: the error color to use for the user interface
 msgid "Error Colour"
-msgstr ""
+msgstr "Farbe Fehlermeldungen"
 
 #. CONTEXT: configuration: user interface: the song mark color for songs in the song list
 msgid "Song Mark Colour"
-msgstr ""
+msgstr "Songauswahl Farbe"
 
 #. CONTEXT: alternate installation: window title
 #. CONTEXT: installer: window title
 #, c-format
 msgid "%s Installer"
-msgstr "%s Installateur"
+msgstr "%s Installationsprogramm"
 
 #. CONTEXT: alternate installation: installation instructions
 msgid "Enter the name of the new installation."
-msgstr "Geben Sie den Namen der neuen Anlage ein."
+msgstr "Geben Sie den Namen der neuen Installation ein."
 
 #. CONTEXT: alternate installation: checkbox: re-install
 #. CONTEXT: installer: checkbox: re-install BDJ4
@@ -995,12 +995,12 @@ msgstr "Neuinstallation"
 #. CONTEXT: installer: exits the installer
 #. CONTEXT: starterui: button: exits BDJ4 (exits everything)
 msgid "Exit"
-msgstr "Verlassen"
+msgstr "Beenden"
 
 #. CONTEXT: alternate installation: install BDJ4 in the alternate location
 #. CONTEXT: installer: start the installation process
 msgid "Install"
-msgstr "Installieren Sie"
+msgstr "Installieren"
 
 #. CONTEXT: alternate installation: status message
 msgid "Setup complete."
@@ -1109,9 +1109,7 @@ msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
 msgstr "Wenn es keine BallroomDJ 3 Installation gibt, lassen Sie den Eintrag leer."
 
 #. CONTEXT: installer: instructions
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installations."
+msgid "The conversion process will only run for new installations and for re-installations."
 msgstr "Der Konvertierungsprozess wird nur bei Neuinstallationen und bei Neuinstallationen durchgeführt."
 
 #. CONTEXT: installer: label for entry field asking for BDJ3 location
@@ -1636,7 +1634,7 @@ msgstr "wähle aus"
 
 #. CONTEXT: colon character
 msgid ":"
-msgstr ""
+msgstr ":"
 
 #. CONTEXT: select folder dialog: filter on folders.
 msgid "Folder"
@@ -1909,7 +1907,7 @@ msgstr "Geladen aus Datenbank"
 
 #. CONTEXT: database update: status message: new files saved to the database
 msgid "New Files"
-msgstr "Neuer Datei"
+msgstr "Neue Dateien"
 
 #. CONTEXT: database update: status message: number of files updated in the database
 #. CONTEXT: database update: status message: number of files updated
@@ -1930,7 +1928,7 @@ msgstr "Andere Dateien"
 
 #. CONTEXT: colon character with trailing space
 msgid ": "
-msgstr ""
+msgstr ": "
 
 #. CONTEXT: database update: status message
 msgid "Stopped by User"
@@ -2116,8 +2114,7 @@ msgid "Update from Audio File Tags"
 msgstr "Update von Audio File Tags"
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid ""
-"Updates the information in the BallroomDJ database from the audio file tags."
+msgid "Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Aktualisiert die Informationen in der BallroomDJ-Datenbank anhand der Tags der Audiodatei."
 
 #. CONTEXT: database update: writes the tags in the database to the audio files
@@ -2125,9 +2122,7 @@ msgid "Write Tags to Audio Files"
 msgstr "Tags in Audiodateien schreiben"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid ""
-"Writes the audio file tags using the information from the BallroomDJ "
-"database."
+msgid "Writes the audio file tags using the information from the BallroomDJ database."
 msgstr "Schreibt die Tags der Audiodatei anhand der Informationen aus der BallroomDJ-Datenbank."
 
 #. CONTEXT: database update: update from itunes
@@ -2137,8 +2132,7 @@ msgstr "Update von %s"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid ""
-"Updates the information in the BallroomDJ database from the %s database."
+msgid "Updates the information in the BallroomDJ database from the %s database."
 msgstr "Aktualisiert die Informationen in der BallroomDJ-Datenbank aus der Datenbank %s ."
 
 #. CONTEXT: database update: rebuilds the database
@@ -2146,9 +2140,7 @@ msgid "Rebuild Database"
 msgstr "Datenbank wiederherstellen"
 
 #. CONTEXT: database update: rebuild: help text
-msgid ""
-"Replaces the BallroomDJ database in its entirety. All changes to the "
-"database will be lost."
+msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
 msgstr "Ersetzt die BallroomDJ-Datenbank in ihrer Gesamtheit. Alle Änderungen an der Datenbank gehen dabei verloren."
 
 #. CONTEXT: update database: select database update action
@@ -2232,8 +2224,7 @@ msgid "Count"
 msgstr "Zählen Sie"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid ""
-"Maximum\n"
+msgid "Maximum\n"
 "Play Time"
 msgstr "Maximale\n"
 "Spielzeit"
@@ -2372,7 +2363,7 @@ msgstr "Senden von %s Informationen"
 #. CONTEXT: starterui: support: status message
 #, c-format
 msgid "Sending Diagnostics"
-msgstr "Senden von Diagnosen"
+msgstr "Senden von Diagnosedaten"
 
 #. CONTEXT: starterui: support: status message
 #, c-format
@@ -2468,7 +2459,7 @@ msgstr "Datenbank anhängen"
 
 #. CONTEXT: Send support message: Error message for invalid e-mail.
 msgid "Invalid E-Mail Address."
-msgstr ""
+msgstr "Ungültige E-Mail-Adresse."
 
 #. CONTEXT: MacOS: reason for disabling sleep: BDJ4 Player is Active
 #, c-format

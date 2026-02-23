@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2025-09-23\n"
-"PO-Revision-Date: 2026-02-21\n"
+"POT-Creation-Date: 2026-02-21\n"
+"PO-Revision-Date: 2026-02-23 22:47\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Italian\n"
 "Language: it\n"
@@ -1109,9 +1109,7 @@ msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
 msgstr "Se non esiste un'installazione di BallroomDJ 3, lasciare la voce vuota."
 
 #. CONTEXT: installer: instructions
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installations."
+msgid "The conversion process will only run for new installations and for re-installations."
 msgstr "Il processo di conversione viene eseguito solo per le nuove installazioni e per le reinstallazioni."
 
 #. CONTEXT: installer: label for entry field asking for BDJ3 location
@@ -2116,8 +2114,7 @@ msgid "Update from Audio File Tags"
 msgstr "Aggiornamento dai tag dei file audio"
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid ""
-"Updates the information in the BallroomDJ database from the audio file tags."
+msgid "Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Aggiorna le informazioni nel database di BallroomDJ dai tag del file audio."
 
 #. CONTEXT: database update: writes the tags in the database to the audio files
@@ -2125,9 +2122,7 @@ msgid "Write Tags to Audio Files"
 msgstr "Scrivere i tag sui file audio"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid ""
-"Writes the audio file tags using the information from the BallroomDJ "
-"database."
+msgid "Writes the audio file tags using the information from the BallroomDJ database."
 msgstr "Scrive i tag del file audio utilizzando le informazioni del database di BallroomDJ."
 
 #. CONTEXT: database update: update from itunes
@@ -2137,8 +2132,7 @@ msgstr "Aggiornamento da %s"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid ""
-"Updates the information in the BallroomDJ database from the %s database."
+msgid "Updates the information in the BallroomDJ database from the %s database."
 msgstr "Aggiorna le informazioni nel database BallroomDJ dal database %s ."
 
 #. CONTEXT: database update: rebuilds the database
@@ -2146,9 +2140,7 @@ msgid "Rebuild Database"
 msgstr "Ricostruire il database"
 
 #. CONTEXT: database update: rebuild: help text
-msgid ""
-"Replaces the BallroomDJ database in its entirety. All changes to the "
-"database will be lost."
+msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
 msgstr "Sostituisce il database BallroomDJ nella sua interezza. Tutte le modifiche apportate al database andranno perse."
 
 #. CONTEXT: update database: select database update action
@@ -2232,8 +2224,7 @@ msgid "Count"
 msgstr "Conteggio"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid ""
-"Maximum\n"
+msgid "Maximum\n"
 "Play Time"
 msgstr "Tempo Massimo\n"
 "Di Gioco"
