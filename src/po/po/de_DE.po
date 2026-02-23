@@ -28,15 +28,15 @@ msgstr ""
 
 #. CONTEXT: configuration file: dance
 msgid "Argentine Tango"
-msgstr "Argentinischer Tango"
+msgstr "Tango Argentino"
 
 #. CONTEXT: configuration file: dance
 msgid "Cha Cha"
-msgstr "Cha Cha"
+msgstr "Cha-Cha-Cha"
 
 #. CONTEXT: configuration file: dance
 msgid "Foxtrot"
-msgstr "Foxtrott"
+msgstr "Slowfox"
 
 #. CONTEXT: configuration file: dance
 msgid "Jive"

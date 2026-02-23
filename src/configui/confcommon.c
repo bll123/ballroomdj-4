@@ -53,21 +53,21 @@ static void confuiCreateTagListingMultDisp (confuigui_t *gui, slist_t *dlist, in
 static const char *orgexamples [] = {
   "FILE\n..none.mp3\nDISC\n..1\nTRACKNUMBER\n..1\n"
       "ALBUM\n..Smooth\nALBUMARTIST\n..Santana\n"
-      "ARTIST\n..Santana\nDANCE\n..Cha Cha\nTITLE\n..Smooth\n"
-      "GENRE\n..Ballroom Dance\n",
+      "ARTIST\n..Santana\nDANCE\n..{CHACHA}\nTITLE\n..Smooth\n"
+      "GENRE\n..{GENRE}\n",
   "FILE\n..none2.mp3\nDISC\n..1\nTRACKNUMBER\n..2\n"
       "ALBUM\n..The Ultimate Latin Album 4: Latin Eyes\nALBUMARTIST\n..WRD\n"
-      "ARTIST\n..Gizelle D'Cole\nDANCE\n..Rumba\nTITLE\n..Asi\n"
-      "GENRE\n..Ballroom Dance\n",
-  "FILE\n..none.mp3\nDISC\n..1\nTRACKNUMBER\n..3\n"
+      "ARTIST\n..Gizelle D'Cole\nDANCE\n..{RUMBA}\nTITLE\n..Asi\n"
+      "GENRE\n..{GENRE}\n",
+  "FILE\n..none3.mp3\nDISC\n..1\nTRACKNUMBER\n..3\n"
       "ALBUM\n..Ballroom Stars 6\nALBUMARTIST\n..Various Artists\n"
-      "ARTIST\n..Léa\nDANCE\n..Waltz\nTITLE\n..Je Vole! (from 'La Famille Bélier')\n"
-      "GENRE\n..Ballroom Dance",
+      "ARTIST\n..Léa\nDANCE\n..{WALTZ}\nTITLE\n..Je Vole! (from 'La Famille Bélier')\n"
+      "GENRE\n..{GENRE}",
   /* empty album artist */
   "FILE\n..none4.mp3\nDISC\n..2\nTRACKNUMBER\n..4\n"
       "ALBUM\n..The Ultimate Latin Album 9: Footloose\nALBUMARTIST\n..\n"
-      "ARTIST\n..Gloria Estefan\nDANCE\n..Rumba\nTITLE\n..Me voy\n"
-      "GENRE\n..Ballroom Dance",
+      "ARTIST\n..Gloria Estefan\nDANCE\n..{RUMBA}\nTITLE\n..Me voy\n"
+      "GENRE\n..{GENRE}",
 };
 
 
@@ -234,10 +234,13 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
 void
 confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath)
 {
-  org_t     *org;
-  uiwcont_t *uiwidgetp;
-  int       max;
-
+  org_t       *org;
+  uiwcont_t   *uiwidgetp;
+  int         max;
+  bdjregex_t  *rxchacha;
+  bdjregex_t  *rxrumba;
+  bdjregex_t  *rxwaltz;
+  bdjregex_t  *rxgenre;
 
   if (orgpath == NULL) {
     return;
@@ -249,12 +252,35 @@ confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath)
   /* the only genres that are shipped are : */
   /* ballroom dance, jazz, rock, classical */
 
+  rxchacha = regexInit ("{CHACHA}");
+  rxrumba = regexInit ("{RUMBA}");
+  rxwaltz = regexInit ("{WALTZ}");
+  rxgenre = regexInit ("{GENRE}");
+
   max = CONFUI_WIDGET_AO_EXAMPLE_MAX - CONFUI_WIDGET_AO_EXAMPLE_1;
   for (int i = 0; i < max; ++i) {
+    char      tbuff [200];
+    char      *tmp;
+
     uiwidgetp = gui->uiitem [i + CONFUI_WIDGET_AO_EXAMPLE_1].uiwidgetp;
-    confuiUpdateOrgExample (org, orgexamples [i], uiwidgetp);
+    tmp = regexReplace (rxchacha, orgexamples [i], _("Cha Cha"));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), tmp);
+    mdfree (tmp);
+    tmp = regexReplace (rxrumba, tbuff, _("Rumba"));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), tmp);
+    mdfree (tmp);
+    tmp = regexReplace (rxwaltz, tbuff, _("Waltz"));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), tmp);
+    mdfree (tmp);
+    tmp = regexReplace (rxgenre, tbuff, _("Ballroom Dance"));
+    confuiUpdateOrgExample (org, tmp, uiwidgetp);
+    mdfree (tmp);
   }
 
+  regexFree (rxchacha);
+  regexFree (rxrumba);
+  regexFree (rxwaltz);
+  regexFree (rxgenre);
   orgFree (org);
   logProcEnd ("");
 }

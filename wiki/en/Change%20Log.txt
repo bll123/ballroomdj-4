@@ -8,6 +8,9 @@
 
 * Bug Fixes:
     * Support: MacOS: Fix 'Download Latest' link.
+    * Configuration: Organization: localize the examples.
+* Translations:
+    * PENDING: German (Deutsch) is now professionally translated.
 
 -->
 
