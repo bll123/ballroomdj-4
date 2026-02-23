@@ -1527,15 +1527,21 @@ starterProcessSupport (void *udata)
         *p = '\0';
       }
 
+      /* the {VERSION} string appears in URI_DOWNLOAD string */
       vrx = regexInit ("{VERSION}");
 
       /* sourceforge: .../v%s/... */
       /* github .../download/%s/... */
-      snprintf (uri, sizeof (uri), "%s%s/%s/bdj4-installer-%s%s%s-%s%s",
-          bdjoptGetStr (OPT_HOST_DOWNLOAD), bdjoptGetStr (OPT_URI_DOWNLOAD),
-          bdjoptGetStr (OPT_DOWNLOAD_SUFFIX), sysvarsGetStr (SV_OS_PLATFORM),
-          sysvarsGetStr (SV_OS_DIST_TAG), sysvarsGetStr (SV_OS_ARCH_TAG),
-          starter->latestversion, sysvarsGetStr (SV_OS_EXEC_EXT));
+      snprintf (uri, sizeof (uri), "%s%s/%s/bdj4-installer-%s%s%s%s-%s%s",
+          bdjoptGetStr (OPT_HOST_DOWNLOAD),
+          bdjoptGetStr (OPT_URI_DOWNLOAD),
+          bdjoptGetStr (OPT_DOWNLOAD_SUFFIX),
+          sysvarsGetStr (SV_OS_PLATFORM),   // linux, macos, win64
+          sysvarsGetStr (SV_OS_DIST_TAG),   // debian13
+          sysvarsGetStr (SV_OS_ARCH_TAG),   // intel, applesilicon
+          sysvarsGetStr (SV_OS_PKG_SYS),    // homebrew, macports
+          starter->latestversion,
+          sysvarsGetStr (SV_OS_EXEC_EXT));
       nuri = regexReplace (vrx, uri, starter->latestversion);
       stpecpy (uri, uri + sizeof (uri), nuri);
       mdfree (nuri);

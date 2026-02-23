@@ -97,6 +97,7 @@ static const char *sysvarsdesc [SV_MAX] = {
   [SV_OS_DIST_TAG] = "OS_DIST_TAG",
   [SV_OS_EXEC_EXT] = "OS_EXEC_EXT",
   [SV_OS_NAME] = "OS_NAME",
+  [SV_OS_PKG_SYS] = "OS_PKG_SYS",
   [SV_OS_PLATFORM] = "OS_PLATFORM",
   [SV_OS_VERS] = "OS_VERS",
   [SV_PATH_ACRCLOUD] = "PATH_ACRCLOUD",
@@ -205,15 +206,16 @@ sysvarsInit (const char *argv0, int flags)
   pathRealPath (tcwd, SV_MAX_SZ);
   pathNormalizePath (tcwd, SV_MAX_SZ);
 
-  sysvarsSetStr (SV_OS_NAME, "");
-  sysvarsSetStr (SV_OS_PLATFORM, "");
-  sysvarsSetStr (SV_OS_DISP, "");
-  sysvarsSetStr (SV_OS_VERS, "");
   sysvarsSetStr (SV_OS_ARCH, "");
   sysvarsSetStr (SV_OS_ARCH_TAG, "");
-  sysvarsSetStr (SV_OS_DIST_TAG, "");
   sysvarsSetStr (SV_OS_BUILD, "");
+  sysvarsSetStr (SV_OS_DISP, "");
+  sysvarsSetStr (SV_OS_DIST_TAG, "");
   sysvarsSetStr (SV_OS_EXEC_EXT, "");
+  sysvarsSetStr (SV_OS_NAME, "");
+  sysvarsSetStr (SV_OS_PKG_SYS, "");
+  sysvarsSetStr (SV_OS_PLATFORM, "");
+  sysvarsSetStr (SV_OS_VERS, "");
   lsysvars [SVL_IS_MSYS] = false;
   lsysvars [SVL_IS_LINUX] = false;
   lsysvars [SVL_IS_WINDOWS] = false;
@@ -299,15 +301,37 @@ sysvarsInit (const char *argv0, int flags)
   }
 
   if (strcmp (sysvars [SV_OS_NAME], "darwin") == 0) {
+    const char  *tdir = NULL;
+    bool        found = false;
+
     lsysvars [SVL_IS_MACOS] = true;
     sysvarsSetStr (SV_OS_PLATFORM, "macos");
-    /* arch will be arm64 or x86_64 */
+    /* arch: arm64, 86_64 */
     /* be sure to include the leading - */
     if (strcmp (sysvars [SV_OS_ARCH], "x86_64") == 0) {
       sysvarsSetStr (SV_OS_ARCH_TAG, "-intel");
     }
     if (strcmp (sysvars [SV_OS_ARCH], "arm64") == 0) {
       sysvarsSetStr (SV_OS_ARCH_TAG, "-applesilicon");
+    }
+
+    /* macos has multiple packaging systems */
+    /* this is not necessarily the best method to check. */
+    /* the user could have multiple packaging systems installed */
+    tdir = "/opt/local/bin";
+    if (fileopIsDirectory (tdir)) {
+      sysvarsSetStr (SV_OS_PKG_SYS, "-macports");
+      found = true;
+    }
+    tdir = "/opt/homebrew/bin";
+    if (! found && fileopIsDirectory (tdir)) {
+      sysvarsSetStr (SV_OS_PKG_SYS, "-homebrew");
+      found = true;
+    }
+    tdir = "/opt/pkg/bin";
+    if (! found && fileopIsDirectory (tdir)) {
+      sysvarsSetStr (SV_OS_PKG_SYS, "-pkgsrc");
+      found = true;
     }
   }
   if (strcmp (sysvars [SV_OS_NAME], "linux") == 0) {
