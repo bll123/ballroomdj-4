@@ -6,14 +6,15 @@
 
 **4.17.12 2026-2---**
 
+-->
+
+**4.17.12 2026-2-22**
+
 * Bug Fixes:
     * Listings: Fix 'favorite' taking more space than it should.
     * Listings: Created abbreviated names for: 'Movement Number', 'Movement Count'.
     * Management: Fixed the window not resizing properly.
     * Themes: Color fixes.  Light themes have much better colors.
-    * Updater: Fix version check for .css files.
-
--->
 
 **4.17.11 2026-2-16**
 
@@ -1462,4 +1463,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2026-02-20 08:35:08; BDJ4 version 4.17.11)_
+<br>_(Updated 2026-02-22 20:14:40; BDJ4 version 4.17.12)_

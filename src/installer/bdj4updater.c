@@ -160,7 +160,6 @@ static void updaterCopyProfileIfNotPresent (const char *fn, const char *ext, int
 static void updaterCopyVersionCheck (const char *fn, const char *ext, int currvers);
 static void updaterCopyProfileVersionCheck (const char *fn, const char *ext, int currvers);
 static void updaterCopyHTMLVersionCheck (const char *fn, const char *ext, int currvers);
-static void updaterCopyCSSVersionCheck (const char *fn, const char *ext, int currvers);
 static void updaterRenameProfileFile (const char *oldfn, const char *fn, const char *ext);
 static time_t updaterGetSongCreationTime (song_t *song);
 static void updaterFixLocales (void);
@@ -543,19 +542,8 @@ main (int argc, char *argv [])
   }
 
   {
-    /* 4.10.0 2023-1-29 gtk-static.css */
-    /*    This is a new file; simply check and see if it does not exist. */
-    /* 4.11.0 2024-6-18 virtlist */
-    /* 4.17.3.4 2025-11-8 update notebook scrolling arrows */
-    /* 4.17.6 2025-12-4 updates for new vertical notebook */
-    /* 4.17.7 2025-12-8 updates for new vertical notebook */
     /* 4.17.12 v10 2026-2-21 split out light/dark (v1) */
-    updaterCopyIfNotPresent (GTK_CSS_STATIC_FN, BDJ4_CSS_EXT, NULL);
-    updaterCopyCSSVersionCheck (GTK_CSS_STATIC_FN, BDJ4_CSS_EXT, 10);
-    updaterCopyIfNotPresent (GTK_CSS_LIGHT_FN, BDJ4_CSS_EXT, NULL);
-    updaterCopyCSSVersionCheck (GTK_CSS_LIGHT_FN, BDJ4_CSS_EXT, 1);
-    updaterCopyIfNotPresent (GTK_CSS_DARK_FN, BDJ4_CSS_EXT, NULL);
-    updaterCopyCSSVersionCheck (GTK_CSS_DARK_FN, BDJ4_CSS_EXT, 1);
+    /* these all live in templates except for user-css */
     updaterCopyIfNotPresent (GTK_CSS_USER_FN, BDJ4_CSS_EXT, NULL);
   }
 
@@ -1484,39 +1472,6 @@ updaterCopyHTMLVersionCheck (const char *fn, const char *ext,
   if (version < currvers) {
     snprintf (tmp, sizeof (tmp), "%s%s", fn, ext);
     templateHttpCopy (tmp, tmp);
-    logMsg (LOG_INSTALL, LOG_INFO, "%s updated", fn);
-  }
-}
-
-static void
-updaterCopyCSSVersionCheck (const char *fn, const char *ext, int currvers)
-{
-  int         version;
-  int         count = 0;
-  char        from [BDJ4_PATH_MAX];
-  char        tmp [BDJ4_PATH_MAX];
-  FILE        *fh;
-
-  pathbldMakePath (from, sizeof (from), fn, ext, PATHBLD_MP_DREL_DATA);
-  fh = fileopOpen (from, "r");
-  if (fh == NULL) {
-    return;
-  }
-  *tmp = '\0';
-  while (strstr (tmp, "version") == NULL && count < 10) {
-    (void) ! fgets (tmp, sizeof (tmp), fh);
-    ++count;
-  }
-  mdextfclose (fh);
-  fclose (fh);
-  if (sscanf (tmp, "/* version %d", &version) != 1) {
-    version = 0;
-  }
-
-  logMsg (LOG_INSTALL, LOG_INFO, "version check %s%s : %d < %d", fn, ext, version, currvers);
-  if (version < currvers) {
-    snprintf (tmp, sizeof (tmp), "%s%s", fn, ext);
-    templateFileCopy (tmp, tmp);
     logMsg (LOG_INSTALL, LOG_INFO, "%s updated", fn);
   }
 }

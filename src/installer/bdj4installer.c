@@ -1653,9 +1653,10 @@ installerSaveTargetDir (installer_t *installer)
       /* a text file.  International characters cannot be processed */
       /* in this manner.  Therefore replace the username with the */
       /* environment variable, and the installer and any windows scripts */
-      /* must replace the variable with the user name. */
+      /* will process the directory correctly. */
 
       snprintf (hbuff, sizeof (hbuff), "%s/", installer->home);
+      pathNormalizePath (hbuff, sizeof (hbuff));
       stpecpy (tbuff, tbuff + sizeof (tbuff), installer->target);
       pathNormalizePath (tbuff, sizeof (tbuff));
       tmp = regexReplaceLiteral (tbuff, hbuff, WINUSERPROFILE_SL);

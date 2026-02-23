@@ -123,13 +123,6 @@ ITUNESFIELDSVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
 fn="templates/sortopt.txt"
 SORTOPTVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
 
-fn="templates/gtk-static.css"
-GTKSTATICVER=$(grep "version [1-9]" "${fn}" | sed 's,[^0-9],,g')
-fn="templates/gtk-dark.css"
-GTKDARKVER=$(grep "version [1-9]" "${fn}" | sed 's,[^0-9],,g')
-fn="templates/gtk-light.css"
-GTKLIGHTVER=$(grep "version [1-9]" "${fn}" | sed 's,[^0-9],,g')
-
 fn="templates/autoselection.txt"
 AUTOSELVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
 fn="templates/audioadjust.txt"
@@ -201,20 +194,6 @@ function checkUpdaterClean {
   fn="$DATADIR/sortopt.txt"
   sed -e "s/version [0-9]/version $(($SORTOPTVER-1))/" "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
-
-  # gtk-static version number should be updated to version 10.
-  fn="$DATADIR/gtk-static.css"
-  if [[ -f $fn ]]; then
-    sed -e "s/version [0-9]*/version $(($GTKSTATICVER-1))/" "${fn}" > "${fn}.n"
-    mv -f "${fn}.n" "${fn}"
-  fi
-
-  # gtk-dark version number should be updated to version 1.
-  fn="$DATADIR/gtk-dark.css"
-  if [[ -f $fn ]]; then
-    sed -e "s/version [0-9]*/version $(($GTKDARKVER-1))/" "${fn}" > "${fn}.n"
-    mv -f "${fn}.n" "${fn}"
-  fi
 
   # standard rounds had bad data
   fn="$DATADIR/standardrounds.pldances"
@@ -716,48 +695,6 @@ function checkInstallation {
       fi
     else
       echo "  no sortopt.txt file"
-    fi
-
-    res=$(($res+1))  # gtk-static.css file
-    fn="${DATADIR}/gtk-static.css"
-    if [[ $fin == T && -f ${fn} ]]; then
-      grep "version ${GTKSTATICVER}" "${fn}" > /dev/null 2>&1
-      rc=$?
-      if [[ $rc -eq 0 ]]; then
-        chk=$(($chk+1))
-      else
-        echo "  gtk-static.css file has wrong version"
-      fi
-    else
-      echo "  no gtk-static.css file"
-    fi
-
-    res=$(($res+1))  # gtk-dark.css file
-    fn="${DATADIR}/gtk-dark.css"
-    if [[ $fin == T && -f ${fn} ]]; then
-      grep "version ${GTKDARKVER}" "${fn}" > /dev/null 2>&1
-      rc=$?
-      if [[ $rc -eq 0 ]]; then
-        chk=$(($chk+1))
-      else
-        echo "  gtk-dark.css file has wrong version"
-      fi
-    else
-      echo "  no gtk-dark.css file"
-    fi
-
-    res=$(($res+1))  # gtk-light.css file
-    fn="${DATADIR}/gtk-light.css"
-    if [[ $fin == T && -f ${fn} ]]; then
-      grep "version ${GTKLIGHTVER}" "${fn}" > /dev/null 2>&1
-      rc=$?
-      if [[ $rc -eq 0 ]]; then
-        chk=$(($chk+1))
-      else
-        echo "  gtk-light.css file has wrong version"
-      fi
-    else
-      echo "  no gtk-light.css file"
     fi
 
     fna="${DATADIR}/QueueDance.pldances"

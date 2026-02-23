@@ -485,3 +485,7 @@ data/localization\.txt$
 # buggy profile stuff.
 data/profile-65534$
 data/[^/]*/profile-65534$
+
+# 2026-2-22 remove gtk-static stuff, now lives in templates
+data/gtk-static\.css$
+data/gtk-static\.css\.bak\.1$

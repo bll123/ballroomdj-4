@@ -47,4 +47,4 @@ __Upcoming Dance Color__: The color for the upcoming dances.
 <br><span id="caption" style="color:#4559bf;">__Configure / Marquee__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2026-02-20 08:35:08; BDJ4 version 4.17.11)_
+<br>_(Updated 2026-02-22 20:14:40; BDJ4 version 4.17.12)_

@@ -147,17 +147,10 @@ uiSetUICSS (uisetup_t *uisetup)
   tp = cssbuff;
   tend = cssbuff + UIUI_MAX_CSS;
 
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      GTK_CSS_STATIC_FN, BDJ4_CSS_EXT, PATHBLD_MP_DREL_DATA);
-  p = filedataReadAll (tbuff, NULL);
-  if (p == NULL) {
-    /* the installer does not have a data directory */
-    pathbldMakePath (tbuff, sizeof (tbuff),
-        GTK_CSS_STATIC_FN, BDJ4_CSS_EXT, PATHBLD_MP_DIR_TEMPLATE);
-    p = filedataReadAll (tbuff, NULL);
-  }
-
   /* append the main css */
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      GTK_CSS_STATIC_FN, BDJ4_CSS_EXT, PATHBLD_MP_DIR_TEMPLATE);
+  p = filedataReadAll (tbuff, NULL);
   if (p != NULL) {
     tp = stpecpy (tp, tend, p);
     mdfree (p);
@@ -168,14 +161,8 @@ uiSetUICSS (uisetup_t *uisetup)
     cssnm = GTK_CSS_DARK_FN;
   }
   pathbldMakePath (tbuff, sizeof (tbuff),
-      cssnm, BDJ4_CSS_EXT, PATHBLD_MP_DREL_DATA);
+      cssnm, BDJ4_CSS_EXT, PATHBLD_MP_DIR_TEMPLATE);
   p = filedataReadAll (tbuff, NULL);
-  if (p == NULL) {
-    /* the installer does not have a data directory */
-    pathbldMakePath (tbuff, sizeof (tbuff),
-        cssnm, BDJ4_CSS_EXT, PATHBLD_MP_DIR_TEMPLATE);
-    p = filedataReadAll (tbuff, NULL);
-  }
 
   /* append the light/dark specific css */
   if (p != NULL) {

@@ -241,7 +241,6 @@ instutilCopyTemplates (void)
         continue;
       }
     } else if (pathInfoExtCheck (pi, BDJ4_CONFIG_EXT) ||
-        pathInfoExtCheck (pi, BDJ4_CSS_EXT) ||
         pathInfoExtCheck (pi, BDJ4_SEQUENCE_EXT) ||
         pathInfoExtCheck (pi, BDJ4_PL_DANCE_EXT) ||
         pathInfoExtCheck (pi, BDJ4_PLAYLIST_EXT) ) {
