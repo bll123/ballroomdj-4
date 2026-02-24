@@ -2,10 +2,10 @@
 # -- english/us
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.17.12\n"
+"Project-Id-Version: ballroomdj-4 4.17.13\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2026-02-21\n"
-"PO-Revision-Date: 2026-02-21\n"
+"POT-Creation-Date: 2026-02-23\n"
+"PO-Revision-Date: 2026-02-23\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -537,8 +537,8 @@ msgstr "Profile Color"
 msgid "BPM"
 msgstr ""
 
-#. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
-msgid "Locale"
+#. CONTEXT: configuration: the languages for the user interface
+msgid "Display Language"
 msgstr ""
 
 #. CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux.
@@ -1091,6 +1091,10 @@ msgstr ""
 
 #. CONTEXT: installer: where BDJ4 gets installed
 msgid "Enter the destination folder where BDJ4 will be installed."
+msgstr ""
+
+#. CONTEXT: installer: language to install
+msgid "Language"
 msgstr ""
 
 #. CONTEXT: installer: asking where BallroomDJ 3 is installed

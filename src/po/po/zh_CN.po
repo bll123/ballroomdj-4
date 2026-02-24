@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2026-02-21\n"
-"PO-Revision-Date: 2026-02-23 22:47\n"
+"PO-Revision-Date: 2026-02-23\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh\n"
@@ -543,9 +543,9 @@ msgstr "轮廓颜色"
 msgid "BPM"
 msgstr "BPM"
 
-#. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
-msgid "Locale"
-msgstr "地点"
+#. CONTEXT: configuration: the languages for the user interface
+msgid "Display Language"
+msgstr ""
 
 #. CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux.
 msgid "Startup Script"
@@ -1099,6 +1099,10 @@ msgstr "请稍候…"
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr "输入安装 BDJ4 的目标文件夹。"
 
+#. CONTEXT: installer: language to install
+msgid "Language"
+msgstr ""
+
 #. CONTEXT: installer: asking where BallroomDJ 3 is installed
 #, c-format
 msgid "Enter the folder where %s is installed."
@@ -1109,7 +1113,9 @@ msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
 msgstr "如果没有安装 BallroomDJ 3，则留空。"
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "转换过程只会在新安装和重新安装时运行。"
 
 #. CONTEXT: installer: label for entry field asking for BDJ3 location
@@ -2114,7 +2120,8 @@ msgid "Update from Audio File Tags"
 msgstr "音频文件标签的更新"
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "根据音频文件标签更新 BallroomDJ 数据库中的信息。"
 
 #. CONTEXT: database update: writes the tags in the database to the audio files
@@ -2122,7 +2129,9 @@ msgid "Write Tags to Audio Files"
 msgstr "将标签写入音频文件"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "使用 BallroomDJ 数据库中的信息写入音频文件标签。"
 
 #. CONTEXT: database update: update from itunes
@@ -2132,7 +2141,8 @@ msgstr "来自%s的最新消息"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "从%s数据库更新BallroomDJ数据库中的信息。"
 
 #. CONTEXT: database update: rebuilds the database
@@ -2140,7 +2150,9 @@ msgid "Rebuild Database"
 msgstr "重建数据库"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "替换整个 BallroomDJ 数据库。对数据库的所有更改都将丢失。"
 
 #. CONTEXT: update database: select database update action
@@ -2224,7 +2236,8 @@ msgid "Count"
 msgstr "计数"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "最长播放时间"
 

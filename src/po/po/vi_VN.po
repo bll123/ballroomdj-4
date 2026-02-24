@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2026-02-21\n"
-"PO-Revision-Date: 2026-02-23 22:47\n"
+"PO-Revision-Date: 2026-02-23\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Vietnamese\n"
 "Language: vi\n"
@@ -543,9 +543,9 @@ msgstr "Màu sắc hồ sơ"
 msgid "BPM"
 msgstr "Nhịp tim"
 
-#. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
-msgid "Locale"
-msgstr "Địa phương"
+#. CONTEXT: configuration: the languages for the user interface
+msgid "Display Language"
+msgstr ""
 
 #. CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux.
 msgid "Startup Script"
@@ -1099,6 +1099,10 @@ msgstr "Vui lòng đợi…"
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr "Nhập thư mục đích mà BDJ4 sẽ được cài đặt."
 
+#. CONTEXT: installer: language to install
+msgid "Language"
+msgstr ""
+
 #. CONTEXT: installer: asking where BallroomDJ 3 is installed
 #, c-format
 msgid "Enter the folder where %s is installed."
@@ -1109,7 +1113,9 @@ msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
 msgstr "Nếu chưa cài đặt BallroomDJ 3, hãy để mục này trống."
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "Quá trình chuyển đổi chỉ chạy đối với các cài đặt mới và cài đặt lại."
 
 #. CONTEXT: installer: label for entry field asking for BDJ3 location
@@ -2114,7 +2120,8 @@ msgid "Update from Audio File Tags"
 msgstr "Cập nhật từ Thẻ tệp âm thanh"
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Cập nhật thông tin trong cơ sở dữ liệu BallroomDJ từ các thẻ tệp âm thanh."
 
 #. CONTEXT: database update: writes the tags in the database to the audio files
@@ -2122,7 +2129,9 @@ msgid "Write Tags to Audio Files"
 msgstr "Viết thẻ vào tệp âm thanh"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "Ghi thẻ tệp âm thanh bằng cách sử dụng thông tin từ cơ sở dữ liệu BallroomDJ."
 
 #. CONTEXT: database update: update from itunes
@@ -2132,7 +2141,8 @@ msgstr "Cập nhật từ %s"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "Cập nhật thông tin trong cơ sở dữ liệu BallroomDJ từ cơ sở dữ liệu %s ."
 
 #. CONTEXT: database update: rebuilds the database
@@ -2140,7 +2150,9 @@ msgid "Rebuild Database"
 msgstr "Xây dựng lại cơ sở dữ liệu"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "Thay thế toàn bộ cơ sở dữ liệu BallroomDJ. Mọi thay đổi đối với cơ sở dữ liệu sẽ bị mất."
 
 #. CONTEXT: update database: select database update action
@@ -2224,7 +2236,8 @@ msgid "Count"
 msgstr "Đếm"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "Tối đa\n"
 "Thời gian chơi"

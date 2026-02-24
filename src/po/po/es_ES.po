@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2026-02-21\n"
-"PO-Revision-Date: 2026-02-24 03:20\n"
+"PO-Revision-Date: 2026-02-23\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -543,9 +543,9 @@ msgstr "Color del perfil"
 msgid "BPM"
 msgstr "BPM"
 
-#. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
-msgid "Locale"
-msgstr "Local"
+#. CONTEXT: configuration: the languages for the user interface
+msgid "Display Language"
+msgstr ""
 
 #. CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux.
 msgid "Startup Script"
@@ -1099,6 +1099,10 @@ msgstr "Por favor, espere…"
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr "Introduzca la carpeta de destino donde se instalará BDJ4."
 
+#. CONTEXT: installer: language to install
+msgid "Language"
+msgstr ""
+
 #. CONTEXT: installer: asking where BallroomDJ 3 is installed
 #, c-format
 msgid "Enter the folder where %s is installed."
@@ -1109,7 +1113,9 @@ msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
 msgstr "Si no hay ninguna instalación de BallroomDJ 3, deje la entrada en blanco."
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "El proceso de conversión sólo se ejecutará para las nuevas instalaciones y para las reinstalaciones."
 
 #. CONTEXT: installer: label for entry field asking for BDJ3 location
@@ -1634,7 +1640,7 @@ msgstr "Seleccione"
 
 #. CONTEXT: colon character
 msgid ":"
-msgstr ":"
+msgstr ""
 
 #. CONTEXT: select folder dialog: filter on folders.
 msgid "Folder"
@@ -2114,7 +2120,8 @@ msgid "Update from Audio File Tags"
 msgstr "Actualización de las etiquetas de archivos de audio"
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Actualiza la información de la base de datos BallroomDJ a partir de las etiquetas de los archivos de audio."
 
 #. CONTEXT: database update: writes the tags in the database to the audio files
@@ -2122,7 +2129,9 @@ msgid "Write Tags to Audio Files"
 msgstr "Escribir etiquetas en archivos de audio"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "Escribe las etiquetas del archivo de audio utilizando la información de la base de datos BallroomDJ."
 
 #. CONTEXT: database update: update from itunes
@@ -2132,7 +2141,8 @@ msgstr "Información actualizada de %s"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "Actualiza la información de la base de datos BallroomDJ a partir de la base de datos %s ."
 
 #. CONTEXT: database update: rebuilds the database
@@ -2140,7 +2150,9 @@ msgid "Rebuild Database"
 msgstr "Reconstruir base de datos"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "Sustituye la base de datos BallroomDJ en su totalidad. Se perderán todos los cambios realizados en la base de datos."
 
 #. CONTEXT: update database: select database update action
@@ -2224,7 +2236,8 @@ msgid "Count"
 msgstr "Cuenta"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "Tiempo\n"
 "máximo"

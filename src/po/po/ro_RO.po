@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2026-02-21\n"
-"PO-Revision-Date: 2026-02-23 22:47\n"
+"PO-Revision-Date: 2026-02-23\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Romanian\n"
 "Language: ro\n"
@@ -543,9 +543,9 @@ msgstr "Culoarea profilului"
 msgid "BPM"
 msgstr "BPM"
 
-#. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
-msgid "Locale"
-msgstr "Local"
+#. CONTEXT: configuration: the languages for the user interface
+msgid "Display Language"
+msgstr ""
 
 #. CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux.
 msgid "Startup Script"
@@ -1099,6 +1099,10 @@ msgstr "Vă rugăm să așteptați…"
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr "Introduceți folderul de destinație în care va fi instalat BDJ4."
 
+#. CONTEXT: installer: language to install
+msgid "Language"
+msgstr ""
+
 #. CONTEXT: installer: asking where BallroomDJ 3 is installed
 #, c-format
 msgid "Enter the folder where %s is installed."
@@ -1109,7 +1113,9 @@ msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
 msgstr "Dacă nu există nicio instalare BallroomDJ 3, lăsați intrarea goală."
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr "Procesul de conversie va rula numai pentru instalațiile noi și pentru reinstalări."
 
 #. CONTEXT: installer: label for entry field asking for BDJ3 location
@@ -2114,7 +2120,8 @@ msgid "Update from Audio File Tags"
 msgstr "Actualizare de la Etichetele fișierelor audio"
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Actualizează informațiile din baza de date BallroomDJ din etichetele fișierului audio."
 
 #. CONTEXT: database update: writes the tags in the database to the audio files
@@ -2122,7 +2129,9 @@ msgid "Write Tags to Audio Files"
 msgstr "Scrieți etichete în fișierele audio"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr "Scrie etichetele fișierului audio folosind informațiile din baza de date BallroomDJ."
 
 #. CONTEXT: database update: update from itunes
@@ -2132,7 +2141,8 @@ msgstr "Informații actualizate de la %s"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr "Actualizează informațiile din baza de date BallroomDJ din baza de date %s ."
 
 #. CONTEXT: database update: rebuilds the database
@@ -2140,7 +2150,9 @@ msgid "Rebuild Database"
 msgstr "Reconstruirea bazei de date"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr "Înlocuiește baza de date BallroomDJ în întregime. Toate modificările aduse bazei de date vor fi pierdute."
 
 #. CONTEXT: update database: select database update action
@@ -2224,7 +2236,8 @@ msgid "Count"
 msgstr "Numărătoarea"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "Timp maxim\n"
 "de redare"
