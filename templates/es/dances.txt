@@ -82,7 +82,7 @@ KEY
 ANNOUNCE
 ..
 DANCE
-..Paso Doble
+..Pasodoble
 LOWMPM
 ..60
 HIGHMPM

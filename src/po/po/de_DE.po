@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2026-02-21\n"
-"PO-Revision-Date: 2026-02-23 22:47\n"
+"PO-Revision-Date: 2026-02-24 03:20\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -197,7 +197,7 @@ msgstr "Pause am Ende"
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: button: tooltip: start playing the next song (immediate)
 msgid "Next Song"
-msgstr "Nächster Song"
+msgstr "Nächster Musiktitel"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
@@ -218,7 +218,7 @@ msgstr "Warteschlange löschen"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 msgid "Clear & Play"
-msgstr "Löschen & Spielen"
+msgstr "Löschen & Abspielen"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: audio identification: next song
@@ -256,7 +256,7 @@ msgstr "Standardrunden"
 #. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: player: the name of the special playlist for queueing a dance
 msgid "QueueDance"
-msgstr "Schlangentanz"
+msgstr "WarteschlangenTänze"
 
 #. CONTEXT: tooltip for desktop icon
 msgid "Ballroom Music Player"
@@ -276,20 +276,20 @@ msgstr "Aus"
 
 #. CONTEXT: configuration: audio source mode
 msgid "Client"
-msgstr ""
+msgstr "Client"
 
 #. CONTEXT: configuration: audio source mode
 msgid "Server"
-msgstr ""
+msgstr "Server"
 
 #. CONTEXT: configuration: audio sources
 msgid "Audio Sources"
-msgstr ""
+msgstr "Audioquellen"
 
 #. CONTEXT: configuration: audio source: mode (off/client/server)
 #. CONTEXT: configuration: mobile marquee: mode: (off/local/internet)
 msgid "Mode"
-msgstr ""
+msgstr "Modus"
 
 #. CONTEXT: configuration: audio source: the client or server name
 #. CONTEXT: alternate installation: name (for shortcut)
@@ -311,11 +311,11 @@ msgstr "URL"
 #. CONTEXT: configuration: the port to use for the mobile marquee
 #. CONTEXT: configuration: remote control: the port to use for remote control
 msgid "Port"
-msgstr "Hafen"
+msgstr "Port"
 
 #. CONTEXT: configuration: audio source: the client or server user
 msgid "User"
-msgstr ""
+msgstr "Benutzer"
 
 #. CONTEXT: configuration: audio source: the client or server password
 #. CONTEXT: configuration: mobile marquee: internet: password
@@ -326,19 +326,19 @@ msgstr "Passwort"
 #. CONTEXT: configuration: check connection for audio source
 #. CONTEXT: import playlist dialog: check the connection
 msgid "Check Connection"
-msgstr ""
+msgstr "Verbindung prüfen"
 
 #. CONTEXT: configuration: name that is set when adding a new audio source
 msgid "New Audio Source"
-msgstr ""
+msgstr "Neue Audioquelle"
 
 #. CONTEXT: configuration: audio source: check connection status
 msgid "Connection Failed"
-msgstr ""
+msgstr "Verbindung fehlgeschlagen"
 
 #. CONTEXT: configuration: audio source: check connection status
 msgid "Connection OK"
-msgstr ""
+msgstr "Verbindung OK"
 
 #. CONTEXT: configuration: qr code: title display for mobile marquee
 #. CONTEXT: configuration: options associated with the mobile marquee
@@ -352,7 +352,7 @@ msgstr "Mobile Fernsteuerung"
 
 #. CONTEXT: configuration: file selection dialog: window title
 msgid "Select File"
-msgstr "wähle Datei"
+msgstr "Dateiauswahl"
 
 #. CONTEXT: configuration: dance speed
 msgid "slow"
@@ -390,17 +390,17 @@ msgstr "Ankündigung"
 #. CONTEXT: playlist management: low bpm/mpm column header
 #, c-format
 msgid "Low %s"
-msgstr "Niedrig %s"
+msgstr "Niedrige %s"
 
 #. CONTEXT: configuration: dances: high BPM (or MPM) setting
 #. CONTEXT: playlist management: high bpm/mpm column header
 #, c-format
 msgid "High %s"
-msgstr "Hoch %s"
+msgstr "Hohe %s"
 
 #. CONTEXT: configuration: dances: time signature for the dance
 msgid "Time Signature"
-msgstr "Zeitsignatur"
+msgstr "Taktart"
 
 #. CONTEXT: configuration: dance name that is set when adding a new dance
 msgid "New Dance"
@@ -418,7 +418,7 @@ msgstr "Dialoge"
 #. CONTEXT: song selection filter: title for the filter dialog
 #. CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog
 msgid "Filter Songs"
-msgstr "Lieder filtern"
+msgstr "Musiktitel filtern"
 
 #. CONTEXT: configuration: filter display: checkbox: status is playable
 #. CONTEXT: song selection filter: a filter: the song status is marked as playable
@@ -428,12 +428,12 @@ msgstr "Spielbarer Status"
 #. CONTEXT: configuration: filter display: quick edit filters
 #. CONTEXT: quick edit: title of dialog
 msgid "Quick Edit"
-msgstr "Schnell bearbeiten"
+msgstr "Schnellbearbeitung"
 
 #. CONTEXT: configuration: display settings for: song editor column N
 #, c-format
 msgid "Song Editor - Column %d"
-msgstr "Song Editor - Kolumne %d"
+msgstr "Musiktitel-Editor – Spalte %d"
 
 #. CONTEXT: configuration: display settings for: history
 #. CONTEXT: playlist: the name of the history song list
@@ -441,12 +441,12 @@ msgstr "Song Editor - Kolumne %d"
 #. CONTEXT: playerui: name of the saved history playlist
 #. CONTEXT: the name of the history song list
 msgid "History"
-msgstr "Geschichte"
+msgstr "Zuletzt gespielt"
 
 #. CONTEXT: configuration: display settings for: requests
 #. CONTEXT: playerui: name of request tab : lists the songs in the database
 msgid "Request"
-msgstr "frage an"
+msgstr "Musikwünsche"
 
 #. CONTEXT: configuration: display settings for: song list
 #. CONTEXT: music queue: label for song list name
@@ -462,15 +462,15 @@ msgstr "Titelliste"
 #. CONTEXT: configuration: display settings for: song selection
 #. CONTEXT: manage-ui: name of song selection notebook tab
 msgid "Song Selection"
-msgstr "Songauswahl"
+msgstr "Titelauswahl"
 
 #. CONTEXT: configuration: display settings for: side-by-side song list (suggestion: combined view: song list)
 msgid "Side-by-Side Song List"
-msgstr "Seite an Seite Songliste"
+msgstr "Nebeneinanderliegende Titelauswahl"
 
 #. CONTEXT: configuration: display settings for: side-by-side song selection (suggestion: combined view: song selection)
 msgid "Side-by-Side Song Selection"
-msgstr "Seite an Seite Songauswahl"
+msgstr "Nebeneinanderliegende Titelauswahl"
 
 #. CONTEXT: configuration: display settings for: music manager
 #. CONTEXT: manage-ui: name of music manager notebook tab
@@ -531,11 +531,11 @@ msgstr "Musik-Ordner"
 
 #. CONTEXT: configuration: the name of this profile
 msgid "Profile Name"
-msgstr "Profil Name"
+msgstr "Profilname"
 
 #. CONTEXT: configuration: the profile accent color (identifies profile)
 msgid "Profile Colour"
-msgstr "Profil Farbe"
+msgstr "Profilfarbe"
 
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
 #. CONTEXT: label: beats per minute
@@ -590,7 +590,7 @@ msgstr "Genres bearbeiten"
 
 #. CONTEXT: configuration: genre: title of the classical setting column
 msgid "Classical?"
-msgstr "Klassisch?"
+msgstr "Klassik?"
 
 #. CONTEXT: configuration: genre name that is set when adding a new genre
 msgid "New Genre"
@@ -641,7 +641,7 @@ msgstr "Reihenfolge vom einfachsten zum fortgeschrittensten."
 #. CONTEXT: configuration: rating: title of the weight column
 #. CONTEXT: playlist management: tag weight
 msgid "Weight"
-msgstr "Gewicht"
+msgstr "Gewichtung"
 
 #. CONTEXT: configuration: level: title of the default selection column
 #. CONTEXT: configuration: audio: The default audio sink (audio output)
@@ -680,7 +680,7 @@ msgstr "Länge der Warteschlange"
 
 #. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee
 msgid "Show Song Information"
-msgstr "Song-Informationen anzeigen"
+msgstr "Musiktitel-Informationen anzeigen"
 
 #. CONTEXT: configuration: marquee: only show the song information (artist/title) on the marquee
 msgid "Song Information Only"
@@ -697,11 +697,11 @@ msgstr "Akzentfarbe"
 
 #. CONTEXT: configuration: marquee: dance information color
 msgid "Information Colour"
-msgstr "Informationen Farbe"
+msgstr "Farbe Informationen"
 
 #. CONTEXT: configuration: marquee: upcoming dance color
 msgid "Upcoming Dance Colour"
-msgstr ""
+msgstr "Farbe Nächster Tanz"
 
 #. CONTEXT: configuration: mobile marquee type: local
 #. CONTEXT: configuration: player: clock: local
@@ -1004,7 +1004,7 @@ msgstr "Installieren"
 
 #. CONTEXT: alternate installation: status message
 msgid "Setup complete."
-msgstr "Einrichtung abgeschlossen."
+msgstr "Installation abgeschlossen."
 
 #. CONTEXT: alternate installer: invalid name status message
 msgid "Invalid Name"
@@ -1014,19 +1014,19 @@ msgstr "Ungültiger Name"
 #. CONTEXT: installer: message indicating the action that will be taken
 #, c-format
 msgid "Re-install %s.  Overwrites existing configuration."
-msgstr "%sneu installieren.  Überschreibt die bestehende Konfiguration."
+msgstr "Neuinstallation von %s. Vorhandene Konfigurationen werden überschrieben."
 
 #. CONTEXT: alternate installation: message indicating the action that will be taken
 #. CONTEXT: installer: message indicating the action that will be taken
 #, c-format
 msgid "Updating existing %s installation."
-msgstr "Aktualisierung der bestehenden %s Installation."
+msgstr "Aktualisierung der bestehenden %s-Installation."
 
 #. CONTEXT: alternate installation: message indicating the action that will be taken
 #. CONTEXT: installer: message indicating the action that will be taken
 #, c-format
 msgid "New %s installation."
-msgstr "Neue %s Installation."
+msgstr "Neue %s-Installation."
 
 #. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
@@ -2468,7 +2468,7 @@ msgstr "%s Spieler ist aktiv"
 
 #. CONTEXT: controller: MacOS Now Playing
 msgid "MacOS Now Playing"
-msgstr ""
+msgstr "MacOS Jetzt läuft"
 
 #. CONTEXT: title of a getting started help section
 msgid "How to get Support"

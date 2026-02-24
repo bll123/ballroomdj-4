@@ -47,7 +47,7 @@ DISPLAY
 STDROUNDS
 ..Standardrunden
 QDANCE
-..Schlangentanz
+..WarteschlangenTänze
 KEY
 ..4
 LONG
