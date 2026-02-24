@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-24 06:47-0800\n"
+"POT-Creation-Date: 2026-02-24 08:53-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1368,7 +1368,7 @@ msgstr ""
 msgid "Genre"
 msgstr ""
 
-#. CONTEXT: label: grouping
+#. CONTEXT: label: grouping (typically used to group classical movements in a work together)
 msgid "Grouping"
 msgstr ""
 

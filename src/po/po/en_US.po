@@ -1364,7 +1364,7 @@ msgstr "Favorite"
 msgid "Genre"
 msgstr ""
 
-#. CONTEXT: label: grouping
+#. CONTEXT: label: grouping (typically used to group classical movements in a work together)
 msgid "Grouping"
 msgstr ""
 
