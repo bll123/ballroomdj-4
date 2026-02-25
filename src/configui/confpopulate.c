@@ -247,18 +247,6 @@ confuiPopulateOptions (confuigui_t *gui)
     if (widx == CONFUI_WIDGET_UI_ACCENT_COLOR && gui->uiitem [widx].changed) {
       templateImageCopy (sval);
     }
-
-    if (widx == CONFUI_SPINBOX_RC_HTML_TEMPLATE) {
-      uiwcont_t  *spinbox;
-
-      /* only copy if the spinbox changed */
-
-      spinbox = gui->uiitem [widx].uiwidgetp;
-      if (uiSpinboxIsChanged (spinbox)) {
-        sval = bdjoptGetStr (gui->uiitem [widx].bdjoptIdx);
-        templateHttpCopy (sval, "bdj4remote.html");
-      }
-    }
   } /* for each item */
 
   selidx = uiSpinboxTextGetValue (

@@ -17,11 +17,14 @@
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "configui.h"
+#include "ilist.h"
 #include "log.h"
 #include "nlist.h"
 #include "pathbld.h"
 #include "sysvars.h"
+#include "templateutil.h"
 #include "ui.h"
+#include "uidd.h"
 
 static bool confuiRemctrlChg (void *udata, int value);
 static bool confuiRemctrlPortChg (void *udata);
@@ -39,6 +42,8 @@ static datafilekey_t htmldfkeys [HTML_KEY_MAX] = {
   { "LOCALE",    HTML_LOCALE,   VALUE_STR, NULL, DF_NORM },
   { "TITLE",     HTML_TITLE,    VALUE_STR, NULL, DF_NORM },
 };
+
+static int32_t confuiUIHTMLSelect (void *udata, const char *sval);
 
 void
 confuiInitMobileRemoteControl (confuigui_t *gui)
@@ -69,9 +74,8 @@ confuiBuildUIMobileRemoteControl (confuigui_t *gui)
       confuiRemctrlChg, CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: remote control: the HTML template to use */
-  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("HTML Template"),
-      CONFUI_SPINBOX_RC_HTML_TEMPLATE, OPT_G_REMCONTROLHTML,
-      CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].listidx, NULL);
+  confuiMakeItemDropdown (gui, vbox, szgrp, _("HTML Template"),
+      CONFUI_DD_RC_HTML_TEMPLATE, OPT_G_REMCONTROLHTML, confuiUIHTMLSelect);
 
   /* CONTEXT: configuration: remote control: the user ID for sign-on to remote control */
   confuiMakeItemEntry (gui, vbox, szgrp, _("User ID"),
@@ -135,7 +139,6 @@ static void
 confuiLoadHTMLList (confuigui_t *gui)
 {
   char          tbuff [BDJ4_PATH_MAX];
-  nlist_t       *tlist = NULL;
   datafile_t    *df = NULL;
   ilist_t       *list = NULL;
   ilistidx_t    iteridx;
@@ -145,8 +148,8 @@ confuiLoadHTMLList (confuigui_t *gui)
   const char    *locale;
   const char    *localeshort;
   const char    *currfn;
-  nlist_t       *llist;
   int           count;
+  ilist_t       *ddlist;
 
   logProcBegin ();
 
@@ -155,8 +158,7 @@ confuiLoadHTMLList (confuigui_t *gui)
   locale = sysvarsGetStr (SV_LOCALE);
   localeshort = sysvarsGetStr (SV_LOCALE_SHORT);
 
-  tlist = nlistAlloc ("cu-html-list", LIST_ORDERED, NULL);
-  llist = nlistAlloc ("cu-html-list-l", LIST_ORDERED, NULL);
+  ddlist = ilistAlloc ("c-html-dd", LIST_ORDERED);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "html-list", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_TEMPLATE);
@@ -165,6 +167,7 @@ confuiLoadHTMLList (confuigui_t *gui)
   list = datafileGetList (df);
 
   currfn = bdjoptGetStr (OPT_G_REMCONTROLHTML);
+
   ilistStartIterator (list, &iteridx);
   count = 0;
   while ((key = ilistIterateKey (list, &iteridx)) >= 0) {
@@ -188,21 +191,34 @@ confuiLoadHTMLList (confuigui_t *gui)
     if (! ok) {
       continue;
     }
+
     title = ilistGetStr (list, key, HTML_TITLE);
     htmlfn = ilistGetStr (list, key, HTML_FILE);
 
     if (strcmp (htmlfn, currfn) == 0) {
-      gui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].listidx = count;
+      gui->uiitem [CONFUI_DD_RC_HTML_TEMPLATE].listidx = count;
     }
-    nlistSetStr (tlist, count, title);
-    nlistSetStr (llist, count, htmlfn);
+
+    ilistSetStr (ddlist, count, DD_LIST_DISP, title);
+    ilistSetStr (ddlist, count, DD_LIST_KEY_STR, htmlfn);
+    ilistSetNum (ddlist, count, DD_LIST_KEY_NUM, count);
     ++count;
   }
   datafileFree (df);
 
-  gui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].displist = tlist;
-  gui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].sbkeylist = llist;
+  gui->uiitem [CONFUI_DD_RC_HTML_TEMPLATE].ddlist = ddlist;
   logProcEnd ("");
+}
+
+static int32_t
+confuiUIHTMLSelect (void *udata, const char *sval)
+{
+  if (sval != NULL && *sval) {
+    bdjoptSetStr (OPT_G_REMCONTROLHTML, sval);
+    templateHttpCopy (sval, "bdj4remote.html");
+  }
+
+  return UICB_CONT;
 }
 
 
