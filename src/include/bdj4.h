@@ -126,7 +126,6 @@ enum {
 #define INST_PATH_FN        "installdir"
 #define LOCALE_FN           "locale"
 #define LOCALE_ORIG_FN      "localeorig"
-#define LOCALE_DATA_FN      "localedata"
 #define NEWINST_FN          "newinstall"
 #define READONLY_FN         "readonly"
 /* gtk css */

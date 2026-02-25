@@ -745,6 +745,7 @@ managePlaylistLoadFile (managepl_t *managepl, const char *plname,
 
   if (managepl->wcont [MPL_W_MENUITEM_DELETE] != NULL) {
     uiWidgetSetState (managepl->wcont [MPL_W_MENUITEM_DELETE], UIWIDGET_ENABLE);
+// ### needs to be fetched using the data locale
     /* CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button */
     if (strcmp (playlistGetName (pl), _("QueueDance")) == 0 ||
         strcmp (playlistGetName (pl), "QueueDance") == 0) {

@@ -162,6 +162,12 @@ localeSetup (void)
   } else {
     stpecpy (lbuff, lbuff + sizeof (lbuff), sysvarsGetStr (SV_LOCALE_SYSTEM));
   }
+
+  /* convert the C locale to something that has messages */
+  if (strcmp (lbuff, "C") == 0) {
+    stpecpy (lbuff, lbuff + sizeof (lbuff), "en_GB.UTF-8");
+  }
+
   snprintf (tbuff, sizeof (tbuff), "%-.5s", lbuff);
   /* windows uses en-US rather than en_US */
   if (strlen (tbuff) >= 3 && tbuff [2] == '-') {
@@ -206,13 +212,8 @@ localeSetup (void)
   /* note that LC_MESSAGES is an msys2 extension */
   /* windows normally has no LC_MESSAGES setting */
 
-  /* setlocale of LC_MESSAGES, etc. is needed for bdj4starterui */
-  setlocale (LC_MESSAGES, tbuff);
-  setlocale (LC_COLLATE, tbuff);
-  setlocale (LC_CTYPE, tbuff);
   osSetEnv ("LC_MESSAGES", tbuff);
   osSetEnv ("LC_COLLATE", tbuff);
-  osSetEnv ("LC_CTYPE", tbuff);
 
   pathbldMakePath (locpath, sizeof (locpath), "", "", PATHBLD_MP_DIR_LOCALE);
 #if _lib_wbindtextdomain
@@ -242,6 +243,14 @@ localeSetup (void)
 
   lconv = localeconv ();
   sysvarsSetStr (SV_LOCALE_RADIX, lconv->decimal_point);
+
+  /* setlocale of LC_MESSAGES, etc. is needed for bdj4starterui */
+  if (setlocale (LC_MESSAGES, tbuff) == NULL) {
+    fprintf (stderr, "set of locale failed; unknown locale %s\n", tbuff);
+  }
+  if (setlocale (LC_COLLATE, tbuff) == NULL) {
+    fprintf (stderr, "set of locale failed; unknown locale %s\n", tbuff);
+  }
 
   localePostSetup ();
 }
@@ -295,7 +304,6 @@ localeDebug (const char *tag)   /* KEEP */
   fprintf (stderr, "  os-setlocale-all:%s\n", setlocale (LC_ALL, NULL));
   fprintf (stderr, "  os-setlocale-messages:%s\n", setlocale (LC_MESSAGES, NULL));
   fprintf (stderr, "  os-setlocale-collate:%s\n", setlocale (LC_COLLATE, NULL));
-  fprintf (stderr, "  os-setlocale-ctype:%s\n", setlocale (LC_CTYPE, NULL));
   fprintf (stderr, "  os-setlocale-numeric:%s\n", setlocale (LC_NUMERIC, NULL));
   osGetLocale (tbuff, sizeof (tbuff));
   fprintf (stderr, "  os-get-locale:%s\n", tbuff);
@@ -314,8 +322,6 @@ localeDebug (const char *tag)   /* KEEP */
   fprintf (stderr, "  env-lc-messages:%s\n", tbuff);
   osGetEnv ("LC_COLLATE", tbuff, sizeof (tbuff));
   fprintf (stderr, "  env-lc-collate:%s\n", tbuff);
-  osGetEnv ("LC_CTYPE", tbuff, sizeof (tbuff));
-  fprintf (stderr, "  env-lc-ctype:%s\n", tbuff);
   osGetEnv ("LC_NUMERIC", tbuff, sizeof (tbuff));
   fprintf (stderr, "  env-lc-numeric:%s\n", tbuff);
 #if _lib_wbindtextdomain
@@ -339,15 +345,8 @@ localeCreateDropDownList (int *idx, bool uselocale)
   bool          found;
   int           engbidx = 0;
   int           shortidx = 0;
-  sysvarkey_t   localekey = SV_LOCALE;
-  sysvarkey_t   localeshortkey = SV_LOCALE_SHORT;
 
   logProcBegin ();
-
-  if (uselocale == LOCALE_USE_DATA) {
-    localekey = SV_LOCALE_DATA;
-    localeshortkey = SV_LOCALE_DATA_SHORT;
-  }
 
   *idx = 0;
   list = localeGetDisplayList ();
@@ -364,11 +363,11 @@ localeCreateDropDownList (int *idx, bool uselocale)
     if (strcmp (disp, "en_GB") == 0) {
       engbidx = count;
     }
-    if (strcmp (key, sysvarsGetStr (localekey)) == 0) {
+    if (strcmp (key, sysvarsGetStr (SV_LOCALE)) == 0) {
       *idx = count;
       found = true;
     }
-    if (strncmp (key, sysvarsGetStr (localeshortkey), 2) == 0) {
+    if (strncmp (key, sysvarsGetStr (SV_LOCALE_SHORT), 2) == 0) {
       shortidx = count;
     }
     ilistSetStr (ddlist, count, DD_LIST_DISP, disp);

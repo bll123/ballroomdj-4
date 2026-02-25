@@ -387,8 +387,10 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   bdjoptSetNum (OPT_G_DEBUGLVL, loglevel);
 
   tagdefInit ();
-  audiotagInit ();
-  audiosrcInit ();
+  if ((*flags & BDJ4_INIT_NO_DATAFILE_LOAD) != BDJ4_INIT_NO_DATAFILE_LOAD) {
+    audiotagInit ();
+    audiosrcInit ();
+  }
 
   if ((*flags & BDJ4_INIT_NO_DB_LOAD) != BDJ4_INIT_NO_DB_LOAD &&
       musicdb != NULL) {

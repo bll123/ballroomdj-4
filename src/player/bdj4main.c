@@ -1299,6 +1299,7 @@ mainQueueDance (maindata_t *mainData, char *args)
   mi = mainMusicqIndexNumParse (mainData, args, &danceIdx, &count);
 
   logMsg (LOG_DBG, LOG_BASIC, "queue dance %d %d %d", mi, danceIdx, count);
+// ### needs to be fetched using the data locale
   /* CONTEXT: player: the name of the special playlist for queueing a dance */
   if ((playlist = playlistLoad (_("QueueDance"), mainData->musicdb, mainData->grouping)) == NULL) {
     playlist = playlistCreate ("main_queue_dance", PLTYPE_AUTO, mainData->musicdb, mainData->grouping);

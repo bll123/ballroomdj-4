@@ -44,7 +44,6 @@ static const char *envitems [] = {
   "LANGUAGE",
   "LC_ALL",
   "LC_COLLATE",
-  "LC_CTYPE",
   "LC_MESSAGES",
   "LC_NUMERIC",
   "NUMBER_OF_PROCESSORS",

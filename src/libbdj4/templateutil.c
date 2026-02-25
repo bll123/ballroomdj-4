@@ -120,10 +120,10 @@ templateCopy (const char *fromdir, const char *fromfn, const char *to, const cha
   char      tbuff [BDJ4_PATH_MAX];
 
   snprintf (tbuff, sizeof (tbuff), "%s/%s/%s", fromdir,
-      sysvarsGetStr (SV_LOCALE_DATA), fromfn);
+      sysvarsGetStr (SV_LOCALE), fromfn);
   if (! fileopFileExists (tbuff)) {
     snprintf (tbuff, sizeof (tbuff), "%s/%s/%s", fromdir,
-        sysvarsGetStr (SV_LOCALE_DATA_SHORT), fromfn);
+        sysvarsGetStr (SV_LOCALE_SHORT), fromfn);
     if (! fileopFileExists (tbuff)) {
       snprintf (tbuff, sizeof (tbuff), "%s/%s", fromdir, fromfn);
       if (! fileopFileExists (tbuff)) {

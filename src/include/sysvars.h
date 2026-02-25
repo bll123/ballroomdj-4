@@ -42,8 +42,6 @@ typedef enum {
   SV_HOSTNAME,
   SV_HOST_REGISTER,
   SV_LOCALE,
-  SV_LOCALE_DATA,
-  SV_LOCALE_DATA_SHORT,
   SV_LOCALE_ORIG,
   SV_LOCALE_ORIG_SHORT,
   SV_LOCALE_RADIX,
@@ -140,6 +138,7 @@ bool    isWindows (void);
 bool    isLinux (void);
 sysversinfo_t *sysvarsParseVersionFile (const char *path);
 void    sysvarsParseVersionFileFree (sysversinfo_t *versinfo);
+void    sysvarsLoadLocale (const char *path);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

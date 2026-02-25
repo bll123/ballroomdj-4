@@ -871,6 +871,7 @@ playlistGetPlaylistNames (int flag, const char *dir)
       continue;
     }
 
+// ### this needs to be fetched using the data locale
     /* check for the special 'QueueDance' playlist */
     if ((flag == PL_LIST_NORMAL || flag == PL_LIST_AUTO_SEQ) &&
         /* CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button */

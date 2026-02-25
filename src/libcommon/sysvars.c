@@ -84,8 +84,6 @@ static const char *sysvarsdesc [SV_MAX] = {
   [SV_HOSTNAME] = "HOSTNAME",
   [SV_HOST_REGISTER] = "HOST_REGISTER",
   [SV_LOCALE] = "LOCALE",
-  [SV_LOCALE_DATA] = "LOCALE_DATA",
-  [SV_LOCALE_DATA_SHORT] = "LOCALE_DATA_SHORT",
   [SV_LOCALE_ORIG] = "LOCALE_ORIG",
   [SV_LOCALE_ORIG_SHORT] = "LOCALE_ORIG_SHORT",
   [SV_LOCALE_RADIX] = "LOCALE_RADIX",
@@ -612,8 +610,6 @@ sysvarsInit (const char *argv0, int flags)
   sysvarsSetStr (SV_LOCALE_SYSTEM, "en_GB.UTF-8");
   sysvarsSetStr (SV_LOCALE_ORIG, "en_GB");
   sysvarsSetStr (SV_LOCALE_ORIG_SHORT, "en");
-  sysvarsSetStr (SV_LOCALE_DATA, "en_GB");
-  sysvarsSetStr (SV_LOCALE_DATA_SHORT, "en");
   sysvarsSetStr (SV_LOCALE, "en_GB");
   sysvarsSetStr (SV_LOCALE_SHORT, "en");
   sysvarsSetStr (SV_LOCALE_RADIX, ".");
@@ -707,50 +703,7 @@ sysvarsInit (const char *argv0, int flags)
 
   snprintf (buff, sizeof (buff), "%s/%s%s",
       sysvars [SV_BDJ4_DREL_DATA], LOCALE_FN, BDJ4_CONFIG_EXT);
-  if (fileopFileExists (buff)) {
-    FILE    *fh;
-
-    *tbuff = '\0';
-    fh = fileopOpen (buff, "r");
-    if (fh != NULL) {
-      (void) ! fgets (tbuff, sizeof (tbuff), fh);
-      mdextfclose (fh);
-      fclose (fh);
-    }
-    stringTrim (tbuff);
-    if (*tbuff) {
-      if (strcmp (tbuff, sysvars [SV_LOCALE_SYSTEM]) != 0) {
-        sysvarsSetStr (SV_LOCALE, tbuff);
-        snprintf (buff, sizeof (buff), "%-.2s", tbuff);
-        sysvarsSetStr (SV_LOCALE_SHORT, buff);
-        lsysvars [SVL_LOCALE_SET] = SYSVARS_LOCALE_SET;
-      }
-    }
-  }
-
-  /* the installer creates the user's preferred locale */
-  /* this is the locale used for the data files */
-  snprintf (buff, sizeof (buff), "%s/%s%s%s",
-      sysvars [SV_DIR_CONFIG], LOCALE_DATA_FN,
-      sysvars [SV_BDJ4_DEVELOPMENT], BDJ4_CONFIG_EXT);
-  if (fileopFileExists (buff)) {
-    FILE    *fh;
-
-    *tbuff = '\0';
-    fh = fileopOpen (buff, "r");
-    if (fh != NULL) {
-      (void) ! fgets (tbuff, sizeof (tbuff), fh);
-      mdextfclose (fh);
-      fclose (fh);
-    }
-    stringTrim (tbuff);
-    if (*tbuff) {
-      /* save the data locale */
-      sysvarsSetStr (SV_LOCALE_DATA, tbuff);
-      tbuff [2] = '\0';
-      sysvarsSetStr (SV_LOCALE_DATA_SHORT, tbuff);
-    }
-  }
+  sysvarsLoadLocale (buff);
 
   sysvarsCheckPaths (NULL);
 
@@ -1206,6 +1159,35 @@ sysvarsParseVersionFileFree (sysversinfo_t *versinfo)
   mdfree (versinfo);
 }
 
+void
+sysvarsLoadLocale (const char *path)
+{
+  char    tbuff [BDJ4_PATH_MAX];
+
+  if (fileopFileExists (path)) {
+    FILE    *fh;
+
+    *tbuff = '\0';
+    fh = fileopOpen (path, "r");
+    if (fh != NULL) {
+      (void) ! fgets (tbuff, sizeof (tbuff), fh);
+      mdextfclose (fh);
+      fclose (fh);
+    }
+    stringTrim (tbuff);
+    if (*tbuff) {
+      if (strcmp (tbuff, sysvars [SV_LOCALE_SYSTEM]) != 0) {
+        char    buff [40];
+
+        sysvarsSetStr (SV_LOCALE, tbuff);
+        snprintf (buff, sizeof (buff), "%-.2s", tbuff);
+        sysvarsSetStr (SV_LOCALE_SHORT, buff);
+        lsysvars [SVL_LOCALE_SET] = SYSVARS_LOCALE_SET;
+      }
+    }
+  }
+}
+
 /* internal routines */
 
 static void
@@ -1387,3 +1369,4 @@ sysvarsBuildVLCLibPath (char *tbuff, char *lbuff, size_t sz, const char *libnm)
   p = stpecpy (p, lbuff + sz, "/");
   p = stpecpy (p, lbuff + sz, libnm);
 }
+

@@ -289,8 +289,6 @@ static void installerSetBDJ3LocDir (installer_t *installer, const char *fn);
 static void installerLoadBdjOpt (installer_t *installer);
 static void installerDoRegister (installer_t *installer, const char *data);
 int32_t installerLocaleSelect (void *udata, const char *sval);
-void installerLoadDataLocale (void);
-void installerMakeDataLocaleFN (char *tbuff, size_t sz);
 
 int
 main (int argc, char *argv[])
@@ -394,24 +392,12 @@ main (int argc, char *argv[])
   /* the installer only needs the home, hostname, os info and locale */
   targ = bdj4argGet (bdj4arg, 0, argv [0]);
   sysvarsInit (targ, SYSVARS_FLAG_ALL);
-  localeInit ();
 
   if (isMacOS ()) {
     installer.macospfx = MACOS_APP_PREFIX;
   }
-
-  /* CONTEXT: installer: status message */
-  installer.pleasewaitmsg = _("Please wait\xe2\x80\xa6");
   installer.hostname = sysvarsGetStr (SV_HOSTNAME);
   installer.home = sysvarsGetStr (SV_HOME);
-
-  stpecpy (buff, buff + sizeof (buff), installer.home);
-  if (isMacOS ()) {
-    snprintf (buff, sizeof (buff), "%s/Applications", installer.home);
-  }
-  snprintf (installer.name, sizeof (installer.name), "%s%s",
-      BDJ4_NAME, sysvarsGetStr (SV_BDJ4_DEVELOPMENT));
-  instutilAppendNameToTarget (buff, sizeof (buff), installer.name, false);
 
   fh = fileopOpen (sysvarsGetStr (SV_FILE_INST_PATH), "r");
   if (fh != NULL) {
@@ -435,6 +421,27 @@ main (int argc, char *argv[])
   /* at this point the target dir will have either a good default */
   /* or the saved target name */
   installerSetTargetDir (&installer, buff);
+
+  /* if the target exists, fetch the user's locale from */
+  /* the target data directory */
+  if (fileopIsDirectory (installer.target)) {
+    snprintf (buff, sizeof (buff), "%s/data/%s%s",
+        installer.target, LOCALE_FN, BDJ4_CONFIG_EXT);
+    sysvarsLoadLocale (buff);
+  }
+
+  localeInit ();
+
+  /* CONTEXT: installer: status message */
+  installer.pleasewaitmsg = _("Please wait\xe2\x80\xa6");
+
+  stpecpy (buff, buff + sizeof (buff), installer.home);
+  if (isMacOS ()) {
+    snprintf (buff, sizeof (buff), "%s/Applications", installer.home);
+  }
+  snprintf (installer.name, sizeof (installer.name), "%s%s",
+      BDJ4_NAME, sysvarsGetStr (SV_BDJ4_DEVELOPMENT));
+  instutilAppendNameToTarget (buff, sizeof (buff), installer.name, false);
 
   while ((c = getopt_long_only (argc, bdj4argGetArgv (bdj4arg),
       "Cru:l:", bdj_options, &option_index)) != -1) {
@@ -509,10 +516,8 @@ main (int argc, char *argv[])
         /* this is used for testing */
         if (optarg != NULL) {
           sysvarsSetStr (SV_LOCALE, optarg);
-          sysvarsSetStr (SV_LOCALE_DATA, optarg);
           snprintf (tbuff, sizeof (tbuff), "%.2s", optarg);
           sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
-          sysvarsSetStr (SV_LOCALE_DATA_SHORT, tbuff);
           sysvarsSetNum (SVL_LOCALE_SET, 1);
           installer.localespecified = true;
           localeSetup ();
@@ -596,7 +601,6 @@ main (int argc, char *argv[])
     /* this will create the data/img/profile00/ tree within the */
     /* temporary installer directory */
     templateImageCopy (NULL);
-    installerLoadDataLocale ();
     installerBuildUI (&installer);
     osuiFinalize ();
   }
@@ -2523,7 +2527,7 @@ installerUpdateProcessInit (installer_t *installer)
   }
 
   /* the updater must use the same data locale as the installer */
-  /* when the locale is specified, this is generally for testing */
+  /* when the locale is specified. this is only for testing */
   if (installer->localespecified) {
     FILE    *fh;
     char    tbuff [BDJ4_PATH_MAX];
@@ -3025,10 +3029,9 @@ installerLocaleSelect (void *udata, const char *sval)
     FILE    *fh;
     char    tbuff [BDJ4_PATH_MAX];
 
-    sysvarsSetStr (SV_LOCALE_DATA, sval);
+    sysvarsSetStr (SV_LOCALE, sval);
     snprintf (tbuff, sizeof (tbuff), "%.2s", sval);
-    sysvarsSetStr (SV_LOCALE_DATA_SHORT, tbuff);
-    installerMakeDataLocaleFN (tbuff, sizeof (tbuff));
+    sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
 
     /* save the user's data-locale */
     fh = fileopOpen (tbuff, "w");
@@ -3038,44 +3041,5 @@ installerLocaleSelect (void *udata, const char *sval)
   }
 
   return UICB_CONT;
-}
-
-void
-installerLoadDataLocale (void)
-{
-  char    tbuff [BDJ4_PATH_MAX];
-  FILE    *fh;
-
-  installerMakeDataLocaleFN (tbuff, sizeof (tbuff));
-
-  if (! fileopFileExists (tbuff)) {
-    return;
-  }
-
-  fh = fileopOpen (tbuff, "r");
-  if (fh == NULL) {
-    return;
-  }
-
-  (void) ! fgets (tbuff, sizeof (tbuff), fh);
-  mdextfclose (fh);
-  fclose (fh);
-  stringTrim (tbuff);
-
-  sysvarsSetStr (SV_LOCALE_DATA, tbuff);
-  tbuff [2] = '\0';
-  sysvarsSetStr (SV_LOCALE_DATA_SHORT, tbuff);
-}
-
-
-void
-installerMakeDataLocaleFN (char *tbuff, size_t sz)
-{
-  char  tfn [BDJ4_PATH_MAX];
-
-  snprintf (tfn, sizeof (tfn), "%s%s",
-      LOCALE_DATA_FN, sysvarsGetStr (SV_BDJ4_DEVELOPMENT));
-  pathbldMakePath (tbuff, sz,
-      tfn, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CONFIG);
 }
 

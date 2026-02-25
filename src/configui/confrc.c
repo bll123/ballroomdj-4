@@ -142,8 +142,6 @@ confuiLoadHTMLList (confuigui_t *gui)
   ilistidx_t    key;
   const char    *origlocale;
   const char    *origlocaleshort;
-  const char    *datalocale;
-  const char    *datalocaleshort;
   const char    *locale;
   const char    *localeshort;
   const char    *currfn;
@@ -154,8 +152,6 @@ confuiLoadHTMLList (confuigui_t *gui)
 
   origlocale = sysvarsGetStr (SV_LOCALE_ORIG);
   origlocaleshort = sysvarsGetStr (SV_LOCALE_ORIG_SHORT);
-  datalocale = sysvarsGetStr (SV_LOCALE_DATA);
-  datalocaleshort = sysvarsGetStr (SV_LOCALE_DATA_SHORT);
   locale = sysvarsGetStr (SV_LOCALE);
   localeshort = sysvarsGetStr (SV_LOCALE_SHORT);
 
@@ -184,8 +180,6 @@ confuiLoadHTMLList (confuigui_t *gui)
     /* and english locale */
     if (strcmp (tlocale, locale) == 0 ||
         strcmp (tlocale, localeshort) == 0 ||
-        strcmp (tlocale, datalocale) == 0 ||
-        strcmp (tlocale, datalocaleshort) == 0 ||
         strcmp (tlocale, origlocale) == 0 ||
         strcmp (tlocale, origlocaleshort) == 0 ||
         strcmp (tlocale, "en") == 0) {
