@@ -46,7 +46,7 @@ KEY
 ANNOUNCE
 ..
 DANCE
-..Slowfox 
+..Slowfox
 LOWMPM
 ..28
 HIGHMPM

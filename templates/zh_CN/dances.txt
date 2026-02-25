@@ -10,7 +10,7 @@ KEY
 ANNOUNCE
 ..
 DANCE
-..阿根廷探戈 
+..阿根廷探戈
 LOWMPM
 ..30
 HIGHMPM

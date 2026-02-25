@@ -35,9 +35,9 @@ function mkpo {
 
   lang=$(echo $locale | sed 's,\(..\).*,\1,')
 
-  echo "-- $(date +%T) creating $out"
 
   if [[ ! -f ${out} && ${locale} != en_GB ]]; then
+    echo "-- $(date +%T) creating $out"
     > ${out}
     # this is not quite right...there are fields
     # that need fixing.

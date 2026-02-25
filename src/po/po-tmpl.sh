@@ -12,35 +12,30 @@ cwd=$(pwd)
 function mksub {
   tmpl=$1
   tempf=$2
-  locale=$3
+  uselocale=$3
   pofile=$4
 
-echo "-- $(date +%T) creating ${locale} ${tmpl}"
+  # echo "-- $(date +%T) creating ${locale} ${tmpl}"
   set -o noglob
   sedcmd=""
   ok=F
   while read -r line; do
     nl=$(echo $line | sed -e 's,^\.\.,,')
-echo "line: $line"
-echo "nl: $nl"
     xl=$(LC_MESSAGES=${locale}.UTF-8 TEXTDOMAINDIR=${LOCALEDIR} \
         gettext -s -d bdj4 "$nl")
-echo "xl: $xl"
     xl=$(echo $xl | sed -e 's,&,\\&,g' -e "s,',!!!,g")
-echo "xl: $xl"
     case $line in
       ..*)
         xl=$(echo "..$xl")
         ;;
     esac
-echo "xl: $xl"
     sedcmd+="-e '\~^${line}\$~ s~.*~${xl}~' "
     ok=T
   done < $tempf
 
   if [[ $ok == T ]]; then
     sedcmd+="-e \"s,!!!,',g\""
-    eval sed ${sedcmd} "$tmpl" > "${TMPLDIR}/${locale}/$(basename ${tmpl})"
+    eval sed ${sedcmd} "$tmpl" > "${TMPLDIR}/${uselocale}/$(basename ${tmpl})"
   fi
   set +o noglob
 }
@@ -133,9 +128,6 @@ for fn in ${TMPLDIR}/*.sequence; do
   sed -e '/^#/d' $fn > $TMP
   mksub $fn $TMP $uselocale $pofile
 done
-
-
-exit 1
 
 test -f $TMP && rm -f $TMP
 exit 0
