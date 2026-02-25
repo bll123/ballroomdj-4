@@ -468,6 +468,12 @@ uiSetRowHighlight (char *tp, char *tend,
   char    tmpcolor [40];
   char    wbuff [400];
 
+  if (is_dark) {
+    /* the selected shadeval works well for the light themes */
+    /* the dark themes need a bit more color */
+    shadeval += 0.05;
+  }
+
   if (color == accentColor) {
     /* gtk must have the radix as a . character */
     /* do a little math to force this */
