@@ -224,23 +224,25 @@ main (int argc, char *argv [])
 
   /* other stuff */
 
-  if (fileopIsDirectory ("/opt/local/bin")) {
-    fprintf (stdout, "pkg: MacOS: MacPorts\n");
-  }
-  if (fileopIsDirectory ("/opt/pkg/bin")) {
-    fprintf (stdout, "pkg: MacOS: pkgsrc\n");
-  }
-  if (fileopIsDirectory ("/opt/homebrew/bin")) {
-    fprintf (stdout, "pkg: MacOS: Homebrew - /opt/homebrew\n");
-  }
-  if (fileopIsDirectory ("/usr/local/Homebrew")) {
-    fprintf (stdout, "pkg: MacOS: Homebrew - /usr/local\n");
-  }
-  if (fileopFileExists ("devel/macos.homebrew")) {
-    fprintf (stdout, "pkg: MacOS: Homebrew forced\n");
-  }
-  if (fileopFileExists ("devel/macos.pkgsrc")) {
-    fprintf (stdout, "pkg: MacOS: pkgsrc forced\n");
+  if (isMacOS ()) {
+    if (fileopIsDirectory ("/opt/local/bin")) {
+      fprintf (stdout, "pkg: MacOS: MacPorts\n");
+    }
+    if (fileopIsDirectory ("/opt/pkg/bin")) {
+      fprintf (stdout, "pkg: MacOS: pkgsrc\n");
+    }
+    if (fileopIsDirectory ("/opt/homebrew/bin")) {
+      fprintf (stdout, "pkg: MacOS: Homebrew - /opt/homebrew\n");
+    }
+    if (fileopIsDirectory ("/usr/local/Homebrew")) {
+      fprintf (stdout, "pkg: MacOS: Homebrew - /usr/local\n");
+    }
+    if (fileopFileExists ("devel/macos.homebrew")) {
+      fprintf (stdout, "pkg: MacOS: Homebrew forced\n");
+    }
+    if (fileopFileExists ("devel/macos.pkgsrc")) {
+      fprintf (stdout, "pkg: MacOS: pkgsrc forced\n");
+    }
   }
 
   /* sysvars */
