@@ -234,7 +234,7 @@ helperBuildUI (helperui_t  *helper)
   helper->nextCallback = callbackInit (helperNextCallback, helper, NULL);
   uiwidgetp = uiCreateButton ("help-next", helper->nextCallback,
       /* CONTEXT: helperui: proceed to the next step */
-      _("Next"), NULL);
+      C_("Help-Section","Next"), NULL);
   uiBoxPackEnd (hbox, uiwidgetp);
   helper->wcont [HELPER_W_BUTTON_NEXT] = uiwidgetp;
 

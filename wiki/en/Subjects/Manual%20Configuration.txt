@@ -7,7 +7,7 @@ These items are not configurable via the user interface.
 ###### data/dancetypes.txt
 
 Specifies the types of dances that may be selected.
-The defaults are standard, latin and club.
+The defaults are standard, latin and other.
 
 ###### data/bdjconfig.txt
 

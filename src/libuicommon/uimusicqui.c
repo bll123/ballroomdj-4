@@ -341,7 +341,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     uiwidgetp = uiCreateButton ("musq-hist-queue",
         mqint->callbacks [MQINT_CB_HIST_QUEUE],
         /* CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue' */
-        _("Queue"), NULL);
+        C_("Verb","Queue"), NULL);
     uiBoxPackStart (hbox, uiwidgetp);
     mqint->wcont [UIMUSICQ_W_BUTTON_QUEUE] = uiwidgetp;
 

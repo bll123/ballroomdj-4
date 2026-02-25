@@ -13,6 +13,8 @@ macro (addIntlLibrary name)
       ${Iconv_LIBRARY}
     )
   endif()
+  # the glib internationalization routines are used
+  target_link_libraries (${name} PRIVATE ${PKG_GLIB_LDFLAGS})
 endmacro()
 
 macro (addIOKitFramework name)

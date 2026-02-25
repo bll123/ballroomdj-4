@@ -29,9 +29,11 @@
 #include "bdjvars.h"
 #include "bdjvarsdf.h"
 #include "bdjvarsdfload.h"
+#include "dance.h"
 #include "datafile.h"
 #include "dirlist.h"
 #include "dirop.h"
+#include "dnctypes.h"
 #include "filedata.h"
 #include "filemanip.h"
 #include "fileop.h"
@@ -125,6 +127,10 @@ enum {
   /* disable-group (for testing) was getting set to yes */
   UPD_FIX_PL_DISABLE_GRP,
 
+  /* 2026-2-25 4.17.13 */
+  /* 'club' was changed to 'other' */
+  UPD_FIX_DANCE_TYPE,
+
   UPD_MAX,
 };
 enum {
@@ -136,6 +142,7 @@ static datafilekey_t upddfkeys[] = {
   { "CONVERTED",          UPD_CONVERTED,            VALUE_NUM, NULL, DF_NORM },
   { "FIRSTVERSION",       UPD_FIRST_VERS,           VALUE_STR, NULL, DF_NORM },
   { "FIX_AF_TAGS",        UPD_FIX_AF_TAGS,          VALUE_NUM, NULL, DF_NORM },
+  { "FIX_DANCE_TYPE",     UPD_FIX_DANCE_TYPE,       VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_DATE_ADDED",  UPD_FIX_DB_DATE_ADDED,    VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_DATE_ADD_B",  UPD_FIX_DB_DATE_ADDED_B,  VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_DISCNUM",     UPD_FIX_DB_DISCNUM,       VALUE_NUM, NULL, DF_NORM },
@@ -601,12 +608,50 @@ main (int argc, char *argv [])
     updaterCopyVersionCheck (NULL, "favorites", BDJ4_CONFIG_EXT, 2);
   }
 
+  {
+    /* 4.11.7 2023-9-5 (version number bump) audioadjust.txt */
+    updaterCopyVersionCheck (NULL, AUDIOADJ_FN, BDJ4_CONFIG_EXT, 5);
+  }
+
+  {
+    /* 4.17.13 2026-2-25 (version number bump) dancetypes.txt */
+    updaterCopyVersionCheck (NULL, "dancetypes", BDJ4_CONFIG_EXT, 2);
+  }
+
   /* The datafiles must be loaded for the MPM update process */
 
   if (bdjvarsdfloadInit () < 0) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "unable to load all data files");
     fprintf (stderr, "unable to load all data files\n");
     exit (1);
+  }
+
+  if (statusflags [UPD_FIX_DANCE_TYPE] == UPD_NOT_DONE) {
+    dance_t         *dances;
+    slistidx_t      didx;
+    slistidx_t      iteridx;
+    int             otheridx;
+    datafileconv_t  conv;
+
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.17.13 : fix dance-type");
+    dances = bdjvarsdfGet (BDJVDF_DANCES);
+    danceStartIterator (dances, &iteridx);
+
+    conv.invt = VALUE_STR;
+    conv.str = _("other");
+    dnctypesConv (&conv);
+    otheridx = conv.num;
+
+    while ((didx = danceIterate (dances, &iteridx)) >= 0) {
+      int64_t   tval;
+
+      tval = danceGetNum (dances, didx, DANCE_TYPE);
+      if (tval == LIST_VALUE_INVALID) {
+        danceSetNum (dances, didx, DANCE_TYPE, otheridx);
+      }
+    }
+    danceSave (dances, NULL, -1);
+    nlistSetNum (updlist, UPD_FIX_DANCE_TYPE, UPD_COMPLETE);
   }
 
   logMsg (LOG_INSTALL, LOG_INFO, "loaded data files A");
@@ -720,11 +765,6 @@ main (int argc, char *argv [])
     /* 4.10.1 2024-5-20. Rename to ds-currsong.txt */
     updaterRenameProfileFile ("ds-player", "ds-currsong", BDJ4_CONFIG_EXT);
     updaterCopyProfileIfNotPresent ("ds-currsong", BDJ4_CONFIG_EXT, UPD_NO_FORCE);
-  }
-
-  {
-    /* 4.11.7 2023-9-5 (version number bump) audioadjust.txt */
-    updaterCopyVersionCheck (NULL, AUDIOADJ_FN, BDJ4_CONFIG_EXT, 5);
   }
 
   /* now re-load the data files */

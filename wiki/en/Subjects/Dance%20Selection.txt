@@ -21,7 +21,7 @@ throughout the playlist.
 * Fast dances adjacent to each other.
 <br>Fast dances played adjacent to each other are avoided.
 * Type of dance.
-<br>Dances adjacent to each other of the same type (standard/latin/club)
+<br>Dances adjacent to each other of the same type (standard/latin/other)
 are avoided.
 * Dance tags.
 <br>Dances that are adjacent to each other or recently played and have

@@ -284,6 +284,6 @@ confuiLoadControllerIntfcList (confuigui_t *gui)
 
   nlistSetStr (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].displist, 0,
       /* CONTEXT: configuration: controller: no controller */
-      _("None"));
+      C_("Controller","None"));
   nlistSetStr (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].sbkeylist, 0, "");
 }

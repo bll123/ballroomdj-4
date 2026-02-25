@@ -79,7 +79,7 @@ confuiBuildUIMusicQs (confuigui_t *gui)
       _("Music Queues"), CONFUI_ID_NONE);
 
   /* CONTEXT: (noun) configuration: queue: select which queue to configure */
-  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Queue_noun"),
+  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, C_("Noun","Queue"),
       CONFUI_SPINBOX_MUSIC_QUEUE, -1, CONFUI_OUT_NUM,
       gui->uiitem [CONFUI_SPINBOX_MUSIC_QUEUE].listidx, confuiMusicQChg);
 

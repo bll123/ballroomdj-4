@@ -366,6 +366,9 @@ else()
   add_compile_options (-I${PKG_ICUI18N_INCLUDE_DIRS})
 endif()
 
+# the internationalization macros used are needed all over the place
+include_directories (${PKG_GLIB_INCLUDE_DIRS})
+
 #### more compile options: fortification/address sanitizer
 
 set (BDJ4_FORTIFY T)

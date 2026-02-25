@@ -54,9 +54,6 @@ if (SYSLINUX)
     ${PKG_GIO_LDFLAGS}
   )
 endif()
-target_include_directories (libbdj4common
-  PRIVATE "${PKG_GLIB_INCLUDE_DIRS}"
-)
 target_link_libraries (libbdj4common PRIVATE
   objarg        # bdj4arg.c
   objdirutil    # dirutil.c
@@ -69,10 +66,10 @@ target_link_libraries (libbdj4common PRIVATE
   objpath       # pathdisp.c, pathutil.c
   objstring     # bdjstring.c stpecpy.c mdebug.c
   objtmutil     # tmutil.c
-  ${PKG_GLIB_LDFLAGS}
   ${CMAKE_DL_LIBS}
   m             # needed for Fedora gcc 13
 )
+addIntlLibrary (libbdj4common)
 addWinSockLibrary (libbdj4common)
 # for RtlGetVersion
 addWinNtdllLibrary (libbdj4common)

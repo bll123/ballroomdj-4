@@ -122,6 +122,8 @@ fn="templates/itunes-fields.txt"
 ITUNESFIELDSVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
 fn="templates/sortopt.txt"
 SORTOPTVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
+fn="templates/dancetypes.txt"
+DANCETYPESVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
 
 fn="templates/autoselection.txt"
 AUTOSELVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
@@ -193,6 +195,11 @@ function checkUpdaterClean {
   # sortopt version number should be updated
   fn="$DATADIR/sortopt.txt"
   sed -e "s/version [0-9]/version $(($SORTOPTVER-1))/" "${fn}" > "${fn}.n"
+  mv -f "${fn}.n" "${fn}"
+
+  # dancetypes version number should be updated
+  fn="$DATADIR/dancetypes.txt"
+  sed -e "s/version [0-9]/version $(($DANCETYPESVER-1))/" "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
   # standard rounds had bad data
@@ -698,6 +705,34 @@ function checkInstallation {
       fi
     else
       echo "  no sortopt.txt file"
+    fi
+
+    res=$(($res+1))  # dancetypes.txt file
+    fn="${DATADIR}/dancetypes.txt"
+    if [[ $fin == T && -f ${fn} ]]; then
+      grep "version ${DANCETYPESVER}" "${fn}" > /dev/null 2>&1
+      rc=$?
+      if [[ $rc -eq 0 ]]; then
+        chk=$(($chk+1))
+      else
+        echo "  dancetypes file has wrong version"
+      fi
+    else
+      echo "  no dancetypes.txt file"
+    fi
+
+    res=$(($res+1))  # dances.txt file
+    fn="${DATADIR}/dances.txt"
+    if [[ $fin == T && -f ${fn} ]]; then
+      grep '^\.\.club' "${fn}" > /dev/null 2>&1
+      rc=$?
+      if [[ $rc -eq 0 ]]; then
+        echo "  dances.txt not updated club->other"
+      else
+        chk=$(($chk+1))
+      fi
+    else
+      echo "  no dances.txt file"
     fi
 
     fna="${DATADIR}/QueueDance.pldances"

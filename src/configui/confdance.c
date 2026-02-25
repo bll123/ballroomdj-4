@@ -134,7 +134,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
   gui->uiitem [CONFUI_ENTRY_DANCE_DANCE].danceitemidx = DANCE_DANCE;
 
   /* CONTEXT: configuration: dances: the type of the dance (club/latin/standard) */
-  confuiMakeItemSpinboxText (gui, dvbox, szgrp, szgrpB, _("Type"),
+  confuiMakeItemSpinboxText (gui, dvbox, szgrp, szgrpB, C_("Dance","Type"),
       CONFUI_SPINBOX_DANCE_TYPE, -1, CONFUI_OUT_NUM, 0,
       confuiDanceSpinboxTypeChg);
   gui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].danceitemidx = DANCE_TYPE;

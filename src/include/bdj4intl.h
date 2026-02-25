@@ -7,14 +7,7 @@
 #if __has_include (<libintl.h>)
 # include <libintl.h>
 #endif
-
-#if defined (__cplusplus) || defined (c_plusplus)
-extern "C" {
+/* the gettext macros are in glib (and pgettext!) */
+#if __has_include (<glib/gi18n.h>)
+# include <glib/gi18n.h>
 #endif
-
-#define _(str) gettext (str)
-
-#if defined (__cplusplus) || defined (c_plusplus)
-} /* extern C */
-#endif
-

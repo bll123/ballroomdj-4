@@ -249,7 +249,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
 
   if (uisongsel->dispselType == DISP_SEL_REQUEST) {
     /* CONTEXT: (verb) song-selection: queue a song to be played */
-    stpecpy (tbuff, tbuff + sizeof (tbuff), _("Queue"));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), C_("Verb","Queue"));
     ssint->callbacks [SONGSEL_CB_QUEUE] = callbackInit (
         uisongselQueueCallback, uisongsel, "songsel: queue");
     uiwidgetp = uiCreateButton ("ss-queue",

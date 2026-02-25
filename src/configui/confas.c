@@ -134,7 +134,7 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
   gui->uiitem [CONFUI_ENTRY_AUDIOSRC_NAME].audiosrcitemidx = ASCONF_NAME;
 
   /* CONTEXT: configuration: audio source: type of source */
-  label = _("Type");
+  label = C_("AudioSource","Type");
   confuiMakeItemSpinboxText (gui, dvbox, szgrp, szgrpB, label,
       CONFUI_SPINBOX_AUDIOSRC_TYPE, -1, CONFUI_OUT_NUM, CONFUI_NO_INDENT,
       confuiAudioSrcTypeChg);
