@@ -20,7 +20,7 @@ CLASSICAL
 KEY
 ..2
 GENRE
-..Klassik
+..Klassisch
 CLASSICAL
 ..1
 KEY
@@ -32,6 +32,6 @@ CLASSICAL
 KEY
 ..4
 GENRE
-..Rock
+..Felsen
 CLASSICAL
 ..0

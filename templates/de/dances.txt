@@ -10,7 +10,7 @@ KEY
 ANNOUNCE
 ..
 DANCE
-..Tango Argentino
+..Argentinischer Tango
 LOWMPM
 ..30
 HIGHMPM
@@ -28,7 +28,7 @@ KEY
 ANNOUNCE
 ..
 DANCE
-..Cha Cha Cha
+..Cha Cha
 LOWMPM
 ..30
 HIGHMPM
@@ -46,7 +46,7 @@ KEY
 ANNOUNCE
 ..
 DANCE
-..Slowfox
+..Foxtrott
 LOWMPM
 ..28
 HIGHMPM
@@ -208,7 +208,7 @@ KEY
 ANNOUNCE
 ..
 DANCE
-..Langsamer Walzer
+..Walzer
 LOWMPM
 ..28
 HIGHMPM

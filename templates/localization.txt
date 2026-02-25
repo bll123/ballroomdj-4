@@ -1,5 +1,5 @@
 # localization
-# generated 2026-02-24
+# generated 2026-02-25
 KEY
 ..0
 LONG
@@ -47,7 +47,7 @@ DISPLAY
 STDROUNDS
 ..Standardrunden
 QDANCE
-..WarteschlangenTänze
+..Schlangentanz
 KEY
 ..4
 LONG

@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2026-02-21\n"
-"PO-Revision-Date: 2026-02-24\n"
+"POT-Creation-Date: 2025-09-23\n"
+"PO-Revision-Date: 2026-02-21\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -44,7 +44,7 @@ msgstr "Jive"
 
 #. CONTEXT: configuration file: dance
 msgid "Paso Doble"
-msgstr "Pasodoble"
+msgstr "Paso Doble"
 
 #. CONTEXT: configuration file: dance
 msgid "Quickstep"
@@ -543,9 +543,9 @@ msgstr "Color del perfil"
 msgid "BPM"
 msgstr "BPM"
 
-#. CONTEXT: configuration: the languages for the user interface
-msgid "Display Language"
-msgstr ""
+#. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
+msgid "Locale"
+msgstr "Local"
 
 #. CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux.
 msgid "Startup Script"
@@ -1099,10 +1099,6 @@ msgstr "Por favor, espere…"
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr "Introduzca la carpeta de destino donde se instalará BDJ4."
 
-#. CONTEXT: installer: language to install
-msgid "Preferred Language"
-msgstr ""
-
 #. CONTEXT: installer: asking where BallroomDJ 3 is installed
 #, c-format
 msgid "Enter the folder where %s is installed."
@@ -1370,7 +1366,7 @@ msgstr "Favoritos"
 msgid "Genre"
 msgstr "Género"
 
-#. CONTEXT: label: grouping (typically used to group classical movements in a work together)
+#. CONTEXT: label: grouping
 msgid "Grouping"
 msgstr ""
 
@@ -1934,7 +1930,7 @@ msgstr "Otros archivos"
 
 #. CONTEXT: colon character with trailing space
 msgid ": "
-msgstr ": "
+msgstr ""
 
 #. CONTEXT: database update: status message
 msgid "Stopped by User"
@@ -2481,7 +2477,7 @@ msgstr "%s El jugador está activo"
 
 #. CONTEXT: controller: MacOS Now Playing
 msgid "MacOS Now Playing"
-msgstr "MacOS Ahora suena"
+msgstr ""
 
 #. CONTEXT: title of a getting started help section
 msgid "How to get Support"

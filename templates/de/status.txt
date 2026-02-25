@@ -8,7 +8,7 @@ count
 KEY
 ..0
 STATUS
-..Neu
+..Neue
 PLAYFLAG
 ..1
 KEY
