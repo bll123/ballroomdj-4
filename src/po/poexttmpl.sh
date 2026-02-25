@@ -18,6 +18,7 @@ dt=$(date '+%F')
 export dt
 
 echo "-- $(date +%T) extracting additional strings"
+TMP=potmp.txt
 TMPLOUT=po/potemplates.c
 > $TMPLOUT
 
@@ -59,6 +60,7 @@ for fn in ../templates/bdjconfig.q?.txt; do
   sed -n -e "/^QUEUE_NAME/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMPLOUT
 done
 
+> $TMP
 # be sure to handle the &amp; in the text for 'Clear & Play'.
 ctxt=" // CONTEXT: text from the HTML templates (buttons/labels/alt-text)"
 grep -E 'value=' ../templates/*.html |
@@ -67,23 +69,23 @@ grep -E 'value=' ../templates/*.html |
       -e '/^100$/ d' \
       -e 's,^,..,' \
       -e 's,\&amp;,\\&,' \
-      -e "s,^,${ctxt}\n," \
-      >> $TMPLOUT
+      >> $TMP
 grep -E 'alt=' ../templates/*.html |
   sed -e 's,.*alt=",,' \
       -e 's,".*,,' \
       -e '/^BDJ4$/ d' \
       -e 's,^,..,' \
-      -e "s,^,${ctxt}\n," \
-      >> $TMPLOUT
+      >> $TMP
 grep -E '<p[^>]*>[A-Za-z][A-Za-z]*</p>' ../templates/*.html |
   sed -e 's,.*: *<,<,' \
       -e 's,<[^>]*>,,g' \
       -e 's,^ *,,' \
       -e 's, *$,,' \
       -e 's,^,..,' \
-      -e "s,^,${ctxt}\n," \
-      >> $TMPLOUT
+      >> $TMP
+sort -u $TMP > $TMP.n
+mv -f $TMP.n $TMP
+sed -e "s,^,${ctxt}\n," $TMP >> $TMPLOUT
 
 # names of playlist files
 echo " // CONTEXT: The name of the 'standardrounds' playlist file" >> $TMPLOUT
@@ -97,7 +99,12 @@ grep -E '^Comment=' ../install/bdj4.desktop |
   sed -e 's,Comment=,,' -e 's,^,..,' >> $TMPLOUT
 
 sed -e '/^\.\./ {s,^\.\.,, ; s,^,_(", ; s,$,"),}' \
+    -e 's|_."Queue"|C_("Verb","Queue"|' \
+    -e 's|_."Next"|C_("Page","Next"|' \
+    -e 's|_."None"|C_("Genre","None"|' \
     $TMPLOUT > $TMPLOUT.n
 mv -f $TMPLOUT.n $TMPLOUT
+
+rm -f $TMP
 
 exit 0

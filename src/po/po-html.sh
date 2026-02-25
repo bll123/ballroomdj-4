@@ -33,6 +33,7 @@ if [[ -d "${TMPLDIR}/${locale}" ]]; then
 fi
 test -d "${TMPLDIR}/${uselocale}" || mkdir "${TMPLDIR}/${uselocale}"
 
+> $TMP
 for fn in ${TMPLDIR}/*.html; do
   case $fn in
     *qrcode.html)
@@ -44,7 +45,6 @@ for fn in ${TMPLDIR}/*.html; do
       ;;
   esac
 
-  > $TMP
   grep -E 'value=' $fn |
       sed -e 's,.*value=",,' \
           -e 's,".*,,' -e '/^100$/ d' \
@@ -58,30 +58,52 @@ for fn in ${TMPLDIR}/*.html; do
       sed -e 's, *<p[^>]*>,,' \
           -e 's,</p>,,' \
           >> $TMP
-  sort -u $TMP > $TMP.n
-  mv -f $TMP.n $TMP
+done
 
-  set -o noglob
-  sedcmd=""
-  while read -r nl; do
-    case $nl in
-      "")
-        continue
-        ;;
-    esac
-    tnl=$(echo ${nl} | sed -e 's,&amp;,\&,g')
+sort -u $TMP > $TMP.n
+mv -f $TMP.n $TMP
+
+set -o noglob
+sedcmd=""
+while read -r nl; do
+  case $nl in
+    "")
+      continue
+      ;;
+  esac
+  tnl=$(echo ${nl} | sed -e 's,&amp;,\&,g')
+  if [[ $tnl == Next ]]; then
+    xl=$(LC_MESSAGES=${locale}.UTF-8 TEXTDOMAINDIR=${LOCALEDIR} \
+        gettext -s -d bdj4 -c Page "$tnl")
+  elif [[ $tnl == Queue ]]; then
+    xl=$(LC_MESSAGES=${locale}.UTF-8 TEXTDOMAINDIR=${LOCALEDIR} \
+        gettext -s -d bdj4 -c Verb "$tnl")
+  else
     xl=$(LC_MESSAGES=${locale}.UTF-8 TEXTDOMAINDIR=${LOCALEDIR} \
         gettext -s -d bdj4 "$tnl")
-    # any &amp; removed must go back in
-    xl=$(echo ${xl} | sed -e 's,&,\\&amp;,g' -e "s,',!!!,g")
-    sedcmd+="-e '\~value=\"${nl}\"~ s~value=\"${nl}\"~value=\"${xl}\"~' "
-    sedcmd+="-e '\~alt=\"${nl}\"~ s~alt=\"${nl}\"~alt=\"${xl}\"~' "
-    sedcmd+="-e '\~>${nl}</p>~ s~${nl}~${xl}~' "
-  done < $TMP
+  fi
+  # any &amp; removed must go back in
+  xl=$(echo ${xl} | sed -e 's,&,\\&amp;,g' -e "s,',!!!,g")
+  sedcmd+="-e '\~value=\"${nl}\"~ s~value=\"${nl}\"~value=\"${xl}\"~' "
+  sedcmd+="-e '\~alt=\"${nl}\"~ s~alt=\"${nl}\"~alt=\"${xl}\"~' "
+  sedcmd+="-e '\~>${nl}</p>~ s~${nl}~${xl}~' "
+done < $TMP
+
+sedcmd+="-e \"s,!!!,',g\""
+
+for fn in ${TMPLDIR}/*.html; do
+  case $fn in
+    *qrcode.html)
+      continue
+      ;;
+    *mobilemq.html)
+      # 2023-11-28: mobilemq changed to not have any title
+      continue
+      ;;
+  esac
 
   outfn="${TMPLDIR}/${uselocale}/$(basename ${fn})"
 
-  sedcmd+="-e \"s,!!!,',g\""
   eval sed ${sedcmd} "$fn" > "$outfn"
   rc=$?
   if [[ $rc -ne 0 ]]; then
@@ -89,11 +111,11 @@ for fn in ${TMPLDIR}/*.html; do
     echo "   sedcmd: $sedcmd"
     exit 1
   fi
-  set +o noglob
 
   sed -e "s/English/${langdesc}/" "$outfn" > "$outfn.n"
   mv -f "$outfn.n" "$outfn"
 done
+set +o noglob
 
 test -f $TMP && rm -f $TMP
 exit 0

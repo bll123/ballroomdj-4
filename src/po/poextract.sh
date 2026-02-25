@@ -32,7 +32,7 @@ xgettext -d bdj4 \
     --add-comments=CONTEXT: \
     --no-location \
     --keyword=_ \
-    --keyword=_ctxt:1c,2 \
+    --keyword=C_:1c,2 \
     --flag=_:1:pass-c-format \
     po/potemplates.c */*.c */*.m */*.cpp \
     -p po -o ${POTFILE}

@@ -81,7 +81,7 @@ msgid "latin"
 msgstr ""
 
 #. CONTEXT: configuration file: dance type
-msgid "club"
+msgid "other"
 msgstr ""
 
 #. CONTEXT: configuration file: rating
@@ -101,7 +101,7 @@ msgid "Great"
 msgstr ""
 
 #. CONTEXT: configuration file: genre
-#. CONTEXT: configuration: controller: no controller
+msgctxt "Genre"
 msgid "None"
 msgstr ""
 
@@ -170,8 +170,12 @@ msgid "Queue E"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: playerui: button: tooltip: play or pause the song
-msgid "Play / Pause"
+msgid "Clear & Play"
+msgstr ""
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: music queue: button: clear the queue
+msgid "Clear Queue"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
@@ -180,12 +184,12 @@ msgid "Fade"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-msgid "Repeat"
+msgid "Mute"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: playerui: button: pause at the end of the song (toggle)
-msgid "Pause at End"
+msgctxt "Page"
+msgid "Next"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
@@ -194,9 +198,20 @@ msgid "Next Song"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: pause at the end of the song (toggle)
+msgid "Pause at End"
+msgstr ""
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: tooltip: play or pause the song
+msgid "Play / Pause"
+msgstr ""
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
 #. CONTEXT: (verb) song-selection: queue a song to be played
 #. CONTEXT: (verb) external request dialog: queue the selected file
+msgctxt "Verb"
 msgid "Queue"
 msgstr ""
 
@@ -206,23 +221,13 @@ msgid "Queue 5"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: music queue: button: clear the queue
-msgid "Clear Queue"
+msgid "Repeat"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-msgid "Clear & Play"
-msgstr ""
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: audio identification: next song
-#. CONTEXT: song editor : next song
-#. CONTEXT: helperui: proceed to the next step
-msgid "Next"
-msgstr ""
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-msgid "Mute"
+#. CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow)
+#. CONTEXT: playerui: the current speed for song playback
+msgid "Speed"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
@@ -233,12 +238,6 @@ msgstr ""
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: The current volume of the song
 msgid "Volume"
-msgstr ""
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow)
-#. CONTEXT: playerui: the current speed for song playback
-msgid "Speed"
 msgstr ""
 
 #. CONTEXT: The name of the 'standardrounds' playlist file
@@ -291,7 +290,7 @@ msgid "Name"
 msgstr ""
 
 #. CONTEXT: configuration: audio source: type of source
-#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+msgctxt "AudioSource"
 msgid "Type"
 msgstr ""
 
@@ -374,6 +373,11 @@ msgstr ""
 
 #. CONTEXT: configuration: edit the dance table
 msgid "Edit Dances"
+msgstr ""
+
+#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+msgctxt "Dance"
+msgid "Type"
 msgstr ""
 
 #. CONTEXT: configuration: dances: play the selected announcement before the dance is played
@@ -726,8 +730,9 @@ msgid "Music Queues"
 msgstr ""
 
 #. CONTEXT: (noun) configuration: queue: select which queue to configure
-msgid "Queue_noun"
-msgstr "Queue"
+msgctxt "Noun"
+msgid "Queue"
+msgstr ""
 
 #. CONTEXT: (noun) configuration: queue: the name of the music queue
 msgid "Queue Name"
@@ -881,6 +886,11 @@ msgstr ""
 
 #. CONTEXT: configuration: the clock format
 msgid "Clock"
+msgstr ""
+
+#. CONTEXT: configuration: controller: no controller
+msgctxt "Controller"
+msgid "None"
 msgstr ""
 
 #. CONTEXT: configuration: edit the dance ratings table
@@ -1340,11 +1350,11 @@ msgstr ""
 msgid "Prevent Rename"
 msgstr ""
 
-#. CONTEXT: label: disc number
+#. CONTEXT: label: disc number (Audio Tag: The disc number of a CD in a collection of CDs)
 msgid "Disc"
 msgstr ""
 
-#. CONTEXT: label: total disc count
+#. CONTEXT: label: total disc count (Audio Tag: The total number of discs in a collection)
 msgid "Total Discs"
 msgstr ""
 
@@ -1709,6 +1719,12 @@ msgstr ""
 #. CONTEXT: audio identification: previous song
 #. CONTEXT: song editor : previous song
 msgid "Previous"
+msgstr ""
+
+#. CONTEXT: audio identification: next song
+#. CONTEXT: song editor : next song
+msgctxt "Song"
+msgid "Next"
 msgstr ""
 
 #. CONTEXT: audio identification: save data
@@ -2319,6 +2335,11 @@ msgstr ""
 #. CONTEXT: helperui: the window title for the BDJ4 helper
 #, c-format
 msgid "%s Helper"
+msgstr ""
+
+#. CONTEXT: helperui: proceed to the next step
+msgctxt "Help-Section"
+msgid "Next"
 msgstr ""
 
 #. CONTEXT: starterui: menu item: stop all BDJ4 processes
