@@ -9,8 +9,6 @@ done
 cd src
 cwd=$(pwd)
 
-rm -f po/*~ po/po/*~ po/web/*~ > /dev/null 2>&1
-
 . ../VERSION.txt
 export VERSION
 dt=$(date '+%F')

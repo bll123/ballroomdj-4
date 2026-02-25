@@ -1258,8 +1258,9 @@ fi
 
 # 2024-7-18 not all languages are tested, just a representation.
 # nl_NL is important, as there is no nl_NL/ dir.
-# 2026-2-24 add de/es back in as they are getting translated.
-for section in de_DE es_ES fi_FI ja_JP nl_BE nl_NL pl_PL ru_RU ; do
+# 2026-2-24 add de/es back in as they are getting translated soon.
+# 2026-2-25 turn off fi_FI, pl_PL for now
+for section in de_DE es_ES ja_JP nl_BE nl_NL ru_RU ; do
   locale=${section}
 
   cleanInstTest

@@ -2,10 +2,10 @@
 # -- english/gb
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.17.12\n"
+"Project-Id-Version: ballroomdj-4 4.17.13\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2026-02-21\n"
-"PO-Revision-Date: 2026-02-21\n"
+"POT-Creation-Date: 2026-02-25\n"
+"PO-Revision-Date: 2026-02-25\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -537,8 +537,8 @@ msgstr ""
 msgid "BPM"
 msgstr ""
 
-#. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
-msgid "Locale"
+#. CONTEXT: configuration: the languages for the user interface
+msgid "Display Language"
 msgstr ""
 
 #. CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux.
@@ -1093,6 +1093,10 @@ msgstr ""
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr ""
 
+#. CONTEXT: installer: language to install
+msgid "Preferred Language"
+msgstr ""
+
 #. CONTEXT: installer: asking where BallroomDJ 3 is installed
 #, c-format
 msgid "Enter the folder where %s is installed."
@@ -1360,7 +1364,7 @@ msgstr ""
 msgid "Genre"
 msgstr ""
 
-#. CONTEXT: label: grouping
+#. CONTEXT: label: grouping (typically used to group classical movements in a work together)
 msgid "Grouping"
 msgstr ""
 

@@ -35,7 +35,6 @@ function mkpo {
 
   lang=$(echo $locale | sed 's,\(..\).*,\1,')
 
-
   if [[ ! -f ${out} && ${locale} != en_GB ]]; then
     echo "-- $(date +%T) creating $out"
     > ${out}
@@ -46,7 +45,8 @@ function mkpo {
     sed -n '/^msgid/,/^$/ p' ${POTFILE} >> ${out}
   fi
 
-  if [[ ! -f ${out} && ${locale} != en_GB ]]; then
+  if [[ ! -f ${out} || ${locale} == en_GB ]]; then
+    echo "-- $(date +%T) creating $out"
     # new file; $out does not exist or this is the en-gb locale
     > ${out}
     echo "# == $dlang" >> ${out}

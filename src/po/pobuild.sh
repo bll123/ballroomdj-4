@@ -11,8 +11,6 @@
 #         extract-helptext.awk
 #       po-en-gb.sh (po/en_GB.po)
 #         po-mk.sh
-#           lang-lookup.sh
-#             lang-lookup.awk
 #       po-en-us.sh (po/en_US.po)
 #         mken_us.awk
 # b) Create any .po files for new languages
@@ -37,6 +35,8 @@ while test ! \( -d src -a -d web -a -d wiki \); do
 done
 cd src/po
 cwd=$(pwd)
+
+rm -f *~ po/*~ web/*~ > /dev/null 2>&1
 
 # during this process, create the localization.txt file
 # set up the stuff that is needed
