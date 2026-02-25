@@ -399,6 +399,14 @@ main (int argc, char *argv[])
   installer.hostname = sysvarsGetStr (SV_HOSTNAME);
   installer.home = sysvarsGetStr (SV_HOME);
 
+  stpecpy (buff, buff + sizeof (buff), installer.home);
+  if (isMacOS ()) {
+    snprintf (buff, sizeof (buff), "%s/Applications", installer.home);
+  }
+  snprintf (installer.name, sizeof (installer.name), "%s%s",
+      BDJ4_NAME, sysvarsGetStr (SV_BDJ4_DEVELOPMENT));
+  instutilAppendNameToTarget (buff, sizeof (buff), installer.name, false);
+
   fh = fileopOpen (sysvarsGetStr (SV_FILE_INST_PATH), "r");
   if (fh != NULL) {
     (void) ! fgets (buff, sizeof (buff), fh);
@@ -434,14 +442,6 @@ main (int argc, char *argv[])
 
   /* CONTEXT: installer: status message */
   installer.pleasewaitmsg = _("Please wait\xe2\x80\xa6");
-
-  stpecpy (buff, buff + sizeof (buff), installer.home);
-  if (isMacOS ()) {
-    snprintf (buff, sizeof (buff), "%s/Applications", installer.home);
-  }
-  snprintf (installer.name, sizeof (installer.name), "%s%s",
-      BDJ4_NAME, sysvarsGetStr (SV_BDJ4_DEVELOPMENT));
-  instutilAppendNameToTarget (buff, sizeof (buff), installer.name, false);
 
   while ((c = getopt_long_only (argc, bdj4argGetArgv (bdj4arg),
       "Cru:l:", bdj_options, &option_index)) != -1) {
