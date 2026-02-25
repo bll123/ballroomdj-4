@@ -7,7 +7,15 @@
 #if __has_include (<libintl.h>)
 # include <libintl.h>
 #endif
-/* the gettext macros are in glib (and pgettext!) */
-#if __has_include (<glib/gi18n.h>)
-# include <glib/gi18n.h>
+
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
 #endif
+
+#define _(str) gettext(str)
+#define C_(ctxt,str) gettext(ctxt "\x04" str)
+
+#if defined (__cplusplus) || defined (c_plusplus)
+}
+#endif
+
