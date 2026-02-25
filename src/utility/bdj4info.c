@@ -251,20 +251,20 @@ main (int argc, char *argv [])
     if (i == SV_TEMP_A || i == SV_TEMP_B) {
       continue;
     }
-    fprintf (stdout, "  s: %-20s %s (%d)\n", sysvarsDesc (i), sysvarsGetStr (i), i);
+    fprintf (stdout, "  s: %-20s %s\n", sysvarsDesc (i), sysvarsGetStr (i));
   }
 
   /* sysvars numeric */
 
   for (int i = 0; i < SVL_MAX; ++i) {
-    fprintf (stdout, " sl: %-20s %" PRId64 " (%d)\n", sysvarslDesc (i), sysvarsGetNum (i), i);
+    fprintf (stdout, " sl: %-20s %" PRId64 "\n", sysvarslDesc (i), sysvarsGetNum (i));
   }
 
   for (int i = 0; i < BDJV_MAX; ++i) {
-    fprintf (stdout, "  v: %-20s %s (%d)\n", bdjvarsDesc (i), bdjvarsGetStr (i), i);
+    fprintf (stdout, "  v: %-20s %s\n", bdjvarsDesc (i), bdjvarsGetStr (i));
   }
   for (int i = 0; i < BDJVL_MAX; ++i) {
-    fprintf (stdout, " vl: %-20s %" PRId64 " (%d)\n", bdjvarslDesc (i), bdjvarsGetNum (i), i);
+    fprintf (stdout, " vl: %-20s %" PRId64 "\n", bdjvarslDesc (i), bdjvarsGetNum (i));
   }
 
   bdjoptInit ();
