@@ -46,25 +46,7 @@ function mkpo {
     sed -n '/^msgid/,/^$/ p' ${POTFILE} >> ${out}
   fi
 
-  if [[ -f ${out} && ${locale} != en_GB ]]; then
-    # re-use data from existing file
-    mv -f ${out} ${out}.current
-    > ${out}
-
-    sed -n '1,/^$/ p' ${out}.current >> ${out}
-    # "POT-Creation-Date: 2022-05-26"
-    cdt=$(grep -E '^"POT-Creation-Date:' bdj4.pot)
-    # "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE"
-    # "PO-Revision-Date: 2022-05-27 14:09"
-    sed -i \
-      -e "s,PO-Revision-Date:.*,PO-Revision-Date: ${dt}\\\\n\"," \
-      -e "s/: [0-9][0-9-]* [0-9][0-9:-]*/: ${dt}/" \
-      ${out}
-    sed -n '/^$/,$ p' bdj4.pot >> ${out}
-
-    # echo "-- $(date +%T) updating translations from older .po files"
-    ./lang-lookup.sh ${out}
-  else
+  if [[ ! -f ${out} && ${locale} != en_GB ]]; then
     # new file; $out does not exist or this is the en-gb locale
     > ${out}
     echo "# == $dlang" >> ${out}

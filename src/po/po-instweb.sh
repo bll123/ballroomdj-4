@@ -32,6 +32,8 @@ while read -r line; do
     "msgid \"\"")
       continue
       ;;
+    msgctxt*)
+      ;;
     msgid*)
       ;;
     msgstr*)

@@ -15,11 +15,9 @@
 #             lang-lookup.awk
 #       po-en-us.sh (po/en_US.po)
 #         mken_us.awk
-# b) Create the other language .po files
+# b) Create any .po files for new languages
 #     Makefile-po
 #       po-mk.sh
-#         lang-lookup.sh
-#           lang-lookup.awk
 # c) Update the .mo files
 #     Makefile-inst
 # d) Create the localization.txt file while processing the locales.
@@ -77,6 +75,7 @@ while read line; do
   # create the .po file
 
   # The .po files for en_GB and en_US are already created
+  # this is for new languages.
   if [[ $locale != en_GB && $locale != en_US ]]; then
     make -f Makefile-po \
         LOCALE=${locale} \

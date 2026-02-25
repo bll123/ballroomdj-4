@@ -79,7 +79,7 @@ $(PLAYLISTS) $(DATAFILES) &:	$(PLAYLISTSRC) $(DATAFILESRC) \
 	@# echo "-- $$(date +%T) Update templates for $(LOCALE)"
 	@./po-tmpl.sh $(PODIR)/$(LOCALE).po $(LOCALE) $(TMPLLOCALE)
 
-$(HTMLFILES) &:   $(HTMLFILESRC) $(PODIR)/$(LOCALE).po complete.txt po-html.sh
+(HTMLFILES) &:   $(HTMLFILESRC) $(PODIR)/$(LOCALE).po complete.txt po-html.sh
 	@# echo "-- $$(date +%T) Update html for $(LOCALE)"
 	@./po-html.sh $(PODIR)/$(LOCALE).po \
             $(LOCALE) $(TMPLLOCALE) "$(LANGDESC)"

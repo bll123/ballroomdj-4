@@ -59,16 +59,31 @@ for fn in ../templates/bdjconfig.q?.txt; do
   sed -n -e "/^QUEUE_NAME/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMPLOUT
 done
 
+# be sure to handle the &amp; in the text for 'Clear & Play'.
 ctxt=" // CONTEXT: text from the HTML templates (buttons/labels/alt-text)"
 grep -E 'value=' ../templates/*.html |
-  sed -e 's,.*value=",,' -e 's,".*,,' -e '/^100$/ d' \
-      -e 's,^,..,' -e "s,^,${ctxt}\n," >> $TMPLOUT
+  sed -e 's,.*value=",,' \
+      -e 's,".*,,' \
+      -e '/^100$/ d' \
+      -e 's,^,..,' \
+      -e 's,\&amp;,\\&,' \
+      -e "s,^,${ctxt}\n," \
+      >> $TMPLOUT
 grep -E 'alt=' ../templates/*.html |
-  sed -e 's,.*alt=",,' -e 's,".*,,' -e '/^BDJ4$/ d' \
-      -e 's,^,..,' -e "s,^,${ctxt}\n," >> $TMPLOUT
+  sed -e 's,.*alt=",,' \
+      -e 's,".*,,' \
+      -e '/^BDJ4$/ d' \
+      -e 's,^,..,' \
+      -e "s,^,${ctxt}\n," \
+      >> $TMPLOUT
 grep -E '<p[^>]*>[A-Za-z][A-Za-z]*</p>' ../templates/*.html |
-  sed -e 's,.*: *<,<,' -e 's,<[^>]*>,,g' -e 's,^ *,,' -e 's, *$,,' \
-      -e 's,^,..,' -e "s,^,${ctxt}\n," >> $TMPLOUT
+  sed -e 's,.*: *<,<,' \
+      -e 's,<[^>]*>,,g' \
+      -e 's,^ *,,' \
+      -e 's, *$,,' \
+      -e 's,^,..,' \
+      -e "s,^,${ctxt}\n," \
+      >> $TMPLOUT
 
 # names of playlist files
 echo " // CONTEXT: The name of the 'standardrounds' playlist file" >> $TMPLOUT
@@ -81,7 +96,8 @@ echo " // CONTEXT: tooltip for desktop icon" >> $TMPLOUT
 grep -E '^Comment=' ../install/bdj4.desktop |
   sed -e 's,Comment=,,' -e 's,^,..,' >> $TMPLOUT
 
-sed -e '/^\.\./ {s,^\.\.,, ; s,^,_(", ; s,$,"),}' $TMPLOUT > $TMPLOUT.n
+sed -e '/^\.\./ {s,^\.\.,, ; s,^,_(", ; s,$,"),}' \
+    $TMPLOUT > $TMPLOUT.n
 mv -f $TMPLOUT.n $TMPLOUT
 
 exit 0
