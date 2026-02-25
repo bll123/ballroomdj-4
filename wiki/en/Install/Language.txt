@@ -37,15 +37,15 @@ control and the mobile marquee are also translated.
 
 #### Installing in one locale and displaying another
 
-If the locale is set in the BDJ4 configuration,
+If the language is set in the BDJ4 configuration,
 ([Configure&nbsp;/&nbsp;General](en-Configuration-General)),
-then the BDJ4 display text will use the configured locale.
+then the BDJ4 display text will use the configured language.
 
-For example, if BDJ4 is installed using the Nederlands (Dutch) locale,
-then the configured locale is changed to use the English/GB locale,
-then the configuration will use the Nederlands translations for dance
-names, ratings, etc.  The BDJ4 display text will be in English. This
-configuration works without any issues.
+For example, if BDJ4 is installed with the Nederlands (Dutch) language
+selected, then later the configured locale is changed to use the
+English/GB locale, then the configuration will use the Nederlands
+translations for dance names, ratings, etc.  The BDJ4 display text
+will be in English.
 
 [Wiki Home](Home)
 <br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_

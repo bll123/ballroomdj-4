@@ -114,6 +114,10 @@ The __Re-Install__ checkbox is only used if you want to completely
 reset all of the BDJ4 data files.  Any changes you have made within
 BDJ4 will be lost if a re-install is done.
 
+__Select your preferred language__.  This language will be used to
+install the localized configuration files.  The display language will
+also be set to this language, but may be changed later.
+
 If you want to convert a BallroomDJ&nbsp;3 installation, select the
 BallroomDJ&nbsp;3 folder and select the __Convert&nbsp;BallroomDJ&nbsp;3__
 checkbox.

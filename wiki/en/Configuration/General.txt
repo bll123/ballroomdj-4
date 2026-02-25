@@ -27,7 +27,8 @@ are displayed.  When set to MPM, measures per minute are displayed.
 <br>__References:__
 <br>[Subjects&nbsp;/&nbsp;BPM&nbsp;&amp;&nbsp;MPM](en-Subjects-BPM-MPM)
 
-__Locale__: Which locale is used for the text in BDJ4.
+__Display Language__: Which language is used for the text in BDJ4.
+Changing this only changes the language the user interface uses.
 
 __Startup Script__: A script that is run before the player is started.
 This is automatically set for Linux installations.
