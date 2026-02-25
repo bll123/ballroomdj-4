@@ -361,7 +361,7 @@ main (int argc, char *argv[])
   installer.convspecified = false;
   installer.guienabled = true;
   installer.invaltarget = false;
-  installer.localespecified = false;
+  installer.localespecified = false;      // for testing
   installer.newinstall = true;
   installer.quiet = false;
   installer.readonly = false;
@@ -1855,7 +1855,8 @@ installerCreateDirs (installer_t *installer)
   installerDisplayText (installer, INST_DISP_ACTION, _("Creating folder structure."), false);
 
   /* this will create the directories necessary for the configs */
-  /* namely: profile00, <hostname>, <hostname>/profile00 */
+  /* namely: data, data/profile00, data/<hostname>, */
+  /*        data/<hostname>/profile00 */
   instutilCreateDataDirectories ();
   /* create the directories that are not included in the distribution */
   diropMakeDir ("tmp");
@@ -2234,6 +2235,14 @@ installerSaveLocale (installer_t *installer)
     fclose (fh);
   }
 
+  snprintf (tbuff, sizeof (tbuff), "data/%s%s", LOCALE_FN, BDJ4_CONFIG_EXT);
+  fh = fileopOpen (tbuff, "w");
+  if (fh != NULL) {
+    fprintf (fh, "%s\n", sysvarsGetStr (SV_LOCALE));
+    mdextfclose (fh);
+    fclose (fh);
+  }
+
   installer->instState = INST_VLC_CHECK;
 }
 
@@ -2526,7 +2535,7 @@ installerUpdateProcessInit (installer_t *installer)
     return;
   }
 
-  /* the updater must use the same data locale as the installer */
+  /* the updater must use the same locale as the installer */
   /* when the locale is specified. this is only for testing */
   if (installer->localespecified) {
     FILE    *fh;
@@ -3026,18 +3035,11 @@ int32_t
 installerLocaleSelect (void *udata, const char *sval)
 {
   if (sval != NULL && *sval) {
-    FILE    *fh;
     char    tbuff [BDJ4_PATH_MAX];
 
     sysvarsSetStr (SV_LOCALE, sval);
     snprintf (tbuff, sizeof (tbuff), "%.2s", sval);
     sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
-
-    /* save the user's data-locale */
-    fh = fileopOpen (tbuff, "w");
-    fprintf (fh, "%s\n", sval);
-    mdextfclose (fh);
-    fclose (fh);
   }
 
   return UICB_CONT;
