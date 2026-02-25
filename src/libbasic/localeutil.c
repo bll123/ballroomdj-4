@@ -34,6 +34,7 @@
 #include "pathdisp.h"
 #include "slist.h"
 #include "sysvars.h"
+#include "uidd.h"
 
 #include "osdirutil.h"
 
@@ -204,7 +205,11 @@ localeSetup (void)
   /* windows doesn't work without this */
   /* note that LC_MESSAGES is an msys2 extension */
   /* windows normally has no LC_MESSAGES setting */
-  /* setlocale of LC_MESSAGES, etc. apparently does nothing */
+
+  /* setlocale of LC_MESSAGES, etc. is needed for bdj4starterui */
+  setlocale (LC_MESSAGES, tbuff);
+  setlocale (LC_COLLATE, tbuff);
+  setlocale (LC_CTYPE, tbuff);
   osSetEnv ("LC_MESSAGES", tbuff);
   osSetEnv ("LC_COLLATE", tbuff);
   osSetEnv ("LC_CTYPE", tbuff);
@@ -322,6 +327,66 @@ localeDebug (const char *tag)   /* KEEP */
 }
 #endif
 
+ilist_t *
+localeCreateDropDownList (int *idx, bool uselocale)
+{
+  slist_t       *list = NULL;
+  slistidx_t    iteridx;
+  const char    *key;
+  const char    *disp;
+  ilist_t       *ddlist;
+  int           count;
+  bool          found;
+  int           engbidx = 0;
+  int           shortidx = 0;
+  sysvarkey_t   localekey = SV_LOCALE;
+  sysvarkey_t   localeshortkey = SV_LOCALE_SHORT;
+
+  logProcBegin ();
+
+  if (uselocale == LOCALE_USE_DATA) {
+    localekey = SV_LOCALE_DATA;
+    localeshortkey = SV_LOCALE_DATA_SHORT;
+  }
+
+  *idx = 0;
+  list = localeGetDisplayList ();
+
+  ddlist = ilistAlloc ("cu-locale-dd", LIST_ORDERED);
+  ilistSetSize (ddlist, slistGetCount (list));
+
+  slistStartIterator (list, &iteridx);
+  count = 0;
+  found = false;
+  shortidx = -1;
+  while ((disp = slistIterateKey (list, &iteridx)) != NULL) {
+    key = slistGetStr (list, disp);
+    if (strcmp (disp, "en_GB") == 0) {
+      engbidx = count;
+    }
+    if (strcmp (key, sysvarsGetStr (localekey)) == 0) {
+      *idx = count;
+      found = true;
+    }
+    if (strncmp (key, sysvarsGetStr (localeshortkey), 2) == 0) {
+      shortidx = count;
+    }
+    ilistSetStr (ddlist, count, DD_LIST_DISP, disp);
+    ilistSetStr (ddlist, count, DD_LIST_KEY_STR, key);
+    ilistSetNum (ddlist, count, DD_LIST_KEY_NUM, count);
+    ++count;
+  }
+
+  if (! found && shortidx >= 0) {
+    *idx = shortidx;
+  } else if (! found) {
+    *idx = engbidx;
+  }
+
+  logProcEnd ("");
+  return ddlist;
+}
+
 /* internal routines */
 
 void
@@ -372,3 +437,4 @@ localePostSetup (void)
   l639_2 = istring639_2 (svlocale);
   sysvarsSetStr (SV_LOCALE_639_2, l639_2);
 }
+

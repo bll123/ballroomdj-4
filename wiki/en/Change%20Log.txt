@@ -7,10 +7,14 @@
 **4.17.13 2026-2---**
 
 * Bug Fixes:
-    * Support: MacOS: Fix 'Download Latest' link.
+    * Configuration: Mobile Marquee: Change template selection to a drop-down.
     * Configuration: Organization: localize the examples.
+    * Installer: Ask for the preferred language.
+    * Localization: Fix the starter not being localized.
+    * Support: MacOS: Fix 'Download Latest' link.
 * Translations:
     * PENDING: German (Deutsch) is now professionally translated.
+    * PENDING: Spanish (Español) is now professionally translated.
 
 -->
 

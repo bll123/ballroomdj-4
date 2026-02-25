@@ -49,7 +49,7 @@
 
 [Setting up Windows for DJ Work](en-Install-Setting%20Up%20Windows)
 
-[Installing BDJ4 in Other Locales](en-Install-Locales)
+[Installing BDJ4 in Other Languages](en-Install-Language)
 <br>[Converting BallroomDJ 3](en-Install-Converting%20BDJ3)
 
 [BDJ4 Maintenance](en-Install-Maintenance)

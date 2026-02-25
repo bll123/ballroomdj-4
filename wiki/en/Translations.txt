@@ -12,10 +12,10 @@ Current Translations and Status:
  Afrikaans|Machine Translated<br>Very poor quality|
  čeština|Machine Translated<br>Very poor quality|
  Dansk|Machine Translated<br>Very poor quality|
- Deutsch|Machine Translated<br>Very poor quality|
+ Deutsch|In Progress|[Simon Thomas](https://mcsaimen.wixsite.com/mysite)<br>English / German
  English (GB)|Complete|bll
  English (US)|Complete|bll
- Español|Machine Translated<br>Very poor quality|
+ Español|In Progress|[Daniel de la Nava](https://www.proz.com/translator/4555219)<br>English / Spanish / German
  Suomi‬|Machine Translated<br>Very poor quality|
  Français|Machine Translated<br>Very poor quality|
  magyar|Machine Translated<br>Very poor quality|

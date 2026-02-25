@@ -102,6 +102,9 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
   for (int i = 0; i < DD_CB_MAX; ++i) {
     dd->callbacks [i] = NULL;
   }
+  if (title == NULL) {
+    title = "";
+  }
   dd->title = mdstrdup (title);
   dd->titleflag = titleflag;
   dd->ddcb = ddcb;

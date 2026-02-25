@@ -32,6 +32,7 @@
 #include "filedata.h"
 #include "fileop.h"
 #include "filemanip.h"
+#include "ilist.h"
 #include "instutil.h"
 #include "localeutil.h"
 #include "locatebdj3.h"
@@ -51,6 +52,7 @@
 #include "tmutil.h"
 #include "templateutil.h"
 #include "ui.h"
+#include "uidd.h"
 #include "uiutils.h"
 #include "webclient.h"
 
@@ -133,6 +135,7 @@ enum {
   INST_CB_REINST,
   INST_CB_CONV,
   INST_CB_REQUEST_VLC,
+  INST_CB_LOCALE,
   INST_CB_MAX,
 };
 
@@ -191,6 +194,7 @@ typedef struct {
   slist_t         *convlist;
   slistidx_t      convidx;
   uiwcont_t       *wcont [INST_W_MAX];
+  uidd_t          *ddlang;
   /* ati */
   char            ati [40];
   int             atiselect;
@@ -284,6 +288,9 @@ static void installerSetTargetDir (installer_t *installer, const char *fn);
 static void installerSetBDJ3LocDir (installer_t *installer, const char *fn);
 static void installerLoadBdjOpt (installer_t *installer);
 static void installerDoRegister (installer_t *installer, const char *data);
+int32_t installerLocaleSelect (void *udata, const char *sval);
+void installerLoadDataLocale (void);
+void installerMakeDataLocaleFN (char *tbuff, size_t sz);
 
 int
 main (int argc, char *argv[])
@@ -499,10 +506,13 @@ main (int argc, char *argv[])
         break;
       }
       case 'L': {
+        /* this is used for testing */
         if (optarg != NULL) {
           sysvarsSetStr (SV_LOCALE, optarg);
+          sysvarsSetStr (SV_LOCALE_DATA, optarg);
           snprintf (tbuff, sizeof (tbuff), "%.2s", optarg);
           sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
+          sysvarsSetStr (SV_LOCALE_DATA_SHORT, tbuff);
           sysvarsSetNum (SVL_LOCALE_SET, 1);
           installer.localespecified = true;
           localeSetup ();
@@ -581,6 +591,12 @@ main (int argc, char *argv[])
   }
 
   if (installer.guienabled) {
+    /* the template image copy is only needed for the drop-down arrow */
+    /* for the language selection */
+    /* this will create the data/img/profile00/ tree within the */
+    /* temporary installer directory */
+    templateImageCopy (NULL);
+    installerLoadDataLocale ();
     installerBuildUI (&installer);
     osuiFinalize ();
   }
@@ -636,6 +652,8 @@ installerBuildUI (installer_t *installer)
   uiwcont_t     *szgrp;
   char          tbuff [100];
   char          imgbuff [BDJ4_PATH_MAX];
+  ilist_t       *ddlist;
+  int           langidx;
 
   szgrp = uiCreateSizeGroupHoriz ();
 
@@ -721,6 +739,25 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (hbox, installer->wcont [INST_W_FEEDBACK_MSG]);
 
   uiwcontFree (hbox);
+
+  /* begin line : installation locale */
+
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
+
+  ddlist = localeCreateDropDownList (&langidx, LOCALE_USE_DATA);
+
+  /* CONTEXT: installer: language to install */
+  uiwidgetp = uiCreateColonLabel (_("Preferred Language"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  installer->callbacks [INST_CB_LOCALE] =
+      callbackInitS (installerLocaleSelect, installer);
+  installer->ddlang = uiddCreate ("instlang",
+      installer->wcont [INST_W_WINDOW], hbox, DD_PACK_START,
+      ddlist, DD_LIST_TYPE_STR, NULL, DD_REPLACE_TITLE,
+      installer->callbacks [INST_CB_LOCALE]);
+  uiddSetSelection (installer->ddlang, langidx);
 
   /* begin line : separator */
   uiwidgetp = uiCreateHorizSeparator ();
@@ -2485,7 +2522,8 @@ installerUpdateProcessInit (installer_t *installer)
     return;
   }
 
-  /* the updater must be run in the same locale as the installer */
+  /* the updater must use the same data locale as the installer */
+  /* when the locale is specified, this is generally for testing */
   if (installer->localespecified) {
     FILE    *fh;
     char    tbuff [BDJ4_PATH_MAX];
@@ -2978,5 +3016,66 @@ installerDoRegister (installer_t *installer, const char *data)
       );
   webclientPost (webclient, uri, tbuff);
   webclientClose (webclient);
+}
+
+int32_t
+installerLocaleSelect (void *udata, const char *sval)
+{
+  if (sval != NULL && *sval) {
+    FILE    *fh;
+    char    tbuff [BDJ4_PATH_MAX];
+
+    sysvarsSetStr (SV_LOCALE_DATA, sval);
+    snprintf (tbuff, sizeof (tbuff), "%.2s", sval);
+    sysvarsSetStr (SV_LOCALE_DATA_SHORT, tbuff);
+    installerMakeDataLocaleFN (tbuff, sizeof (tbuff));
+
+    /* save the user's data-locale */
+    fh = fileopOpen (tbuff, "w");
+    fprintf (fh, "%s\n", sval);
+    mdextfclose (fh);
+    fclose (fh);
+  }
+
+  return UICB_CONT;
+}
+
+void
+installerLoadDataLocale (void)
+{
+  char    tbuff [BDJ4_PATH_MAX];
+  FILE    *fh;
+
+  installerMakeDataLocaleFN (tbuff, sizeof (tbuff));
+
+  if (! fileopFileExists (tbuff)) {
+    return;
+  }
+
+  fh = fileopOpen (tbuff, "r");
+  if (fh == NULL) {
+    return;
+  }
+
+  (void) ! fgets (tbuff, sizeof (tbuff), fh);
+  mdextfclose (fh);
+  fclose (fh);
+  stringTrim (tbuff);
+
+  sysvarsSetStr (SV_LOCALE_DATA, tbuff);
+  tbuff [2] = '\0';
+  sysvarsSetStr (SV_LOCALE_DATA_SHORT, tbuff);
+}
+
+
+void
+installerMakeDataLocaleFN (char *tbuff, size_t sz)
+{
+  char  tfn [BDJ4_PATH_MAX];
+
+  snprintf (tfn, sizeof (tfn), "%s%s",
+      LOCALE_DATA_FN, sysvarsGetStr (SV_BDJ4_DEVELOPMENT));
+  pathbldMakePath (tbuff, sz,
+      tfn, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CONFIG);
 }
 

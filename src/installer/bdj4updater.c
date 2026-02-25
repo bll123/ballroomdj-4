@@ -543,7 +543,7 @@ main (int argc, char *argv [])
 
   {
     /* 4.17.12 v10 2026-2-21 split out light/dark (v1) */
-    /* these all live in templates except for user-css */
+    /* these all now live in templates except for user-css */
     updaterCopyIfNotPresent (GTK_CSS_USER_FN, BDJ4_CSS_EXT, NULL);
   }
 
@@ -903,7 +903,6 @@ main (int argc, char *argv [])
       /* bugs in restore-original and restore audio file data */
       /* 2023-12 : the database add date could have been munged */
       /* by bugs in the db-updater, update all add-dates */
-
 
       if (processflags [UPD_FIX_DB_DATE_ADDED_B]) {
         time_t      addval, luval;

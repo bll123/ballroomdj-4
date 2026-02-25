@@ -257,7 +257,7 @@ tclean:
 	@find ../wiki -name '*.txt.bak' -print0 | xargs -0 rm -f
 	@-$(RM) -f w ww www ../w ../ww ../www */w */ww ../*/w ../*/ww ../*/www
 	@-$(RM) -f ww.v ../ww.v
-	@-$(RM) -f ../asan.* ./asan.* po/*.debug
+	@-$(RM) -f ../asan.* ./asan.* po/*.debug po/temp.txt
 	@-$(RM) -f ../tsan.* ./tsan.*
 	@-$(RM) -f ../mdebug.txt ../out.txt out.txt
 	@-$(RM) -f ../out-acoustid.xml ../out-acr.json ../out-mb.xml

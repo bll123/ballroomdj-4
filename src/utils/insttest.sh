@@ -231,7 +231,9 @@ function checkUpdaterClean {
   # queue dance had bad data
   fn="$DATADIR/QueueDance.pldances"
   if [[ $section == de_DE ]]; then
-    fn="${DATADIR}/Schlangentanz.pldances"
+    # old name
+    # fn="${DATADIR}/Schlangentanz.pldances"
+    fn="${DATADIR}/WarteschlangenTänze.pldances"
   fi
   if [[ $section == es_ES ]]; then
     fn="${DATADIR}/Danza en cola.pldances"
@@ -700,7 +702,9 @@ function checkInstallation {
     fna="${DATADIR}/QueueDance.pldances"
     fnb=""
     if [[ $section == de_DE ]]; then
-      fna="${DATADIR}/Schlangentanz.pldances"
+      # old name
+      # fna="${DATADIR}/Schlangentanz.pldances"
+      fna="${DATADIR}/WarteschlangenTänze.pldances"
       fnb="${DATADIR}/QueueDance.pldances"
     fi
     if [[ $section == es_ES ]]; then
@@ -755,7 +759,9 @@ function checkInstallation {
     fna="${DATADIR}/QueueDance.pl"
     fnb=""
     if [[ $section == de_DE ]]; then
-      fna="${DATADIR}/Schlangentanz.pl"
+      # old name
+      # fna="${DATADIR}/Schlangentanz.pl"
+      fna="$DATADIR/WarteschlangenTänze.pl"
       fnb="${DATADIR}/QueueDance.pl"
     fi
     if [[ $section == es_ES ]]; then
@@ -1249,7 +1255,8 @@ fi
 
 # 2024-7-18 not all languages are tested, just a representation.
 # nl_NL is important, as there is no nl_NL/ dir.
-for section in fi_FI ja_JP nl_BE nl_NL pl_PL ru_RU ; do
+# 2026-2-24 add de/es back in as they are getting translated.
+for section in de_DE es_ES fi_FI ja_JP nl_BE nl_NL pl_PL ru_RU ; do
   locale=${section}
 
   cleanInstTest

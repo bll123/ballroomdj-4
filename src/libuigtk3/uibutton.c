@@ -62,10 +62,12 @@ uiCreateButton (const char *ident, callback_t *uicb, const char *title,
     pathbldMakePath (tbuff, sizeof (tbuff), imagenm, BDJ4_IMG_SVG_EXT,
         PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
     image = gtk_image_new_from_file (tbuff);
-    gtk_button_set_image (GTK_BUTTON (widget), image);
-    gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
-    gtk_widget_set_tooltip_text (widget, title);
-    gtk_widget_set_valign (image, GTK_ALIGN_CENTER);
+    if (image != NULL) {
+      gtk_button_set_image (GTK_BUTTON (widget), image);
+      gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
+      gtk_widget_set_tooltip_text (widget, title);
+      gtk_widget_set_valign (image, GTK_ALIGN_CENTER);
+    }
     uibutton->image = image;
   } else {
     gtk_button_set_label (GTK_BUTTON (widget), title);

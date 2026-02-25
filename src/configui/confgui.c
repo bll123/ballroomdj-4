@@ -136,7 +136,7 @@ confuiMakeItemDropdown (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   gui->uiitem [widx].uidd = uiddCreate ("confgui",
       gui->window, hbox, DD_PACK_START,
       gui->uiitem [widx].ddlist, DD_LIST_TYPE_STR,
-      txt, DD_REPLACE_TITLE, gui->uiitem [widx].callback);
+      NULL, DD_REPLACE_TITLE, gui->uiitem [widx].callback);
   /* this is the only time the index is used */
   uiddSetSelection (gui->uiitem [widx].uidd, gui->uiitem [widx].listidx);
 

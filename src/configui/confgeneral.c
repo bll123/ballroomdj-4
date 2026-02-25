@@ -122,8 +122,8 @@ confuiBuildUIGeneral (confuigui_t *gui)
       CONFUI_SPINBOX_BPM, OPT_G_BPM,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_BPM), NULL);
 
-  /* CONTEXT: configuration: the locale to use (e.g. English or Nederlands) */
-  confuiMakeItemDropdown (gui, vbox, szgrp, _("Locale"),
+  /* CONTEXT: configuration: the languages for the user interface */
+  confuiMakeItemDropdown (gui, vbox, szgrp, _("Display Language"),
       CONFUI_DD_LOCALE, -1, confuiLocaleSelect);
 
   /* CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux. */
@@ -237,55 +237,11 @@ confuiSelectShutdown (void *udata)
 static void
 confuiLoadLocaleList (confuigui_t *gui)
 {
-  slist_t       *list = NULL;
-  slistidx_t    iteridx;
-  const char    *key;
-  const char    *disp;
   ilist_t       *ddlist;
-  int           count;
-  bool          found;
-  int           engbidx = 0;
-  int           shortidx = 0;
+  int           idx = 0;
 
-  logProcBegin ();
-
-  list = localeGetDisplayList ();
-
-  ddlist = ilistAlloc ("cu-locale-dd", LIST_ORDERED);
-  ilistSetSize (ddlist, slistGetCount (list));
-
-  gui->uiitem [CONFUI_DD_LOCALE].listidx = 0;
-
-  slistStartIterator (list, &iteridx);
-  count = 0;
-  found = false;
-  shortidx = -1;
-  while ((disp = slistIterateKey (list, &iteridx)) != NULL) {
-    key = slistGetStr (list, disp);
-    if (strcmp (disp, "en_GB") == 0) {
-      engbidx = count;
-    }
-    if (strcmp (key, sysvarsGetStr (SV_LOCALE)) == 0) {
-      gui->uiitem [CONFUI_DD_LOCALE].listidx = count;
-      found = true;
-    }
-    if (strncmp (key, sysvarsGetStr (SV_LOCALE_SHORT), 2) == 0) {
-      shortidx = count;
-    }
-    ilistSetStr (ddlist, count, DD_LIST_DISP, disp);
-    ilistSetStr (ddlist, count, DD_LIST_KEY_STR, key);
-    ilistSetNum (ddlist, count, DD_LIST_KEY_NUM, count);
-    ++count;
-  }
-
-  if (! found && shortidx >= 0) {
-    gui->uiitem [CONFUI_DD_LOCALE].listidx = shortidx;
-  } else if (! found) {
-    gui->uiitem [CONFUI_DD_LOCALE].listidx = engbidx;
-  }
-
+  ddlist = localeCreateDropDownList (&idx, LOCALE_USE_SYS);
+  gui->uiitem [CONFUI_DD_LOCALE].listidx = idx;
   gui->uiitem [CONFUI_DD_LOCALE].ddlist = ddlist;
-
-  logProcEnd ("");
 }
 

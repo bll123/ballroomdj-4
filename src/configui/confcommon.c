@@ -708,7 +708,7 @@ confuiLocaleSelect (void *udata, const char *sval)
     snprintf (tbuff, sizeof (tbuff), "%.2s", sval);
     sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
     pathbldMakePath (tbuff, sizeof (tbuff),
-        "locale", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+        LOCALE_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
     fileopDelete (tbuff);
 
     /* if the set locale does not match the system or default locale */

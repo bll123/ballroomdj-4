@@ -1803,7 +1803,7 @@ tagdefInit (void)
   tagdefs [TAG_FAVORITE].displayname = _("Favourite");
   /* CONTEXT: label: genre */
   tagdefs [TAG_GENRE].displayname = _("Genre");
-  /* CONTEXT: label: grouping */
+  /* CONTEXT: label: grouping (typically used to group classical movements in a work together) */
   tagdefs [TAG_GROUPING].displayname = _("Grouping");
   /* CONTEXT: label: keyword (used to filter out songs) */
   tagdefs [TAG_KEYWORD].displayname = _("Keyword");

@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include "ilist.h"
 #include "slist.h"
 
 #if defined (__cplusplus) || defined (c_plusplus)
@@ -20,12 +21,18 @@ enum {
   LOCALE_KEY_MAX,
 };
 
+enum {
+  LOCALE_USE_SYS,
+  LOCALE_USE_DATA,
+};
+
 void  localeInit (void);
 void  localeSetup (void);
 void  localeCleanup (void);
 const char *localeGetStr (int key);
 slist_t *localeGetDisplayList (void);
 void  localeDebug (const char *tag);
+ilist_t * localeCreateDropDownList (int *idx, bool uselocale);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

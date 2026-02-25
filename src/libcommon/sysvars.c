@@ -84,6 +84,8 @@ static const char *sysvarsdesc [SV_MAX] = {
   [SV_HOSTNAME] = "HOSTNAME",
   [SV_HOST_REGISTER] = "HOST_REGISTER",
   [SV_LOCALE] = "LOCALE",
+  [SV_LOCALE_DATA] = "LOCALE_DATA",
+  [SV_LOCALE_DATA_SHORT] = "LOCALE_DATA_SHORT",
   [SV_LOCALE_ORIG] = "LOCALE_ORIG",
   [SV_LOCALE_ORIG_SHORT] = "LOCALE_ORIG_SHORT",
   [SV_LOCALE_RADIX] = "LOCALE_RADIX",
@@ -610,6 +612,8 @@ sysvarsInit (const char *argv0, int flags)
   sysvarsSetStr (SV_LOCALE_SYSTEM, "en_GB.UTF-8");
   sysvarsSetStr (SV_LOCALE_ORIG, "en_GB");
   sysvarsSetStr (SV_LOCALE_ORIG_SHORT, "en");
+  sysvarsSetStr (SV_LOCALE_DATA, "en_GB");
+  sysvarsSetStr (SV_LOCALE_DATA_SHORT, "en");
   sysvarsSetStr (SV_LOCALE, "en_GB");
   sysvarsSetStr (SV_LOCALE_SHORT, "en");
   sysvarsSetStr (SV_LOCALE_RADIX, ".");
@@ -617,50 +621,6 @@ sysvarsInit (const char *argv0, int flags)
 
   lsysvars [SVL_LOCALE_SET] = SYSVARS_LOCALE_NOT_SET;
   lsysvars [SVL_LOCALE_SYS_SET] = SYSVARS_LOCALE_NOT_SET;
-
-  /* the installer creates this file to save the original system locale */
-  snprintf (buff, sizeof (buff), "%s/localeorig.txt", sysvars [SV_BDJ4_DREL_DATA]);
-  if (fileopFileExists (buff)) {
-    FILE    *fh;
-
-    *tbuff = '\0';
-    fh = fileopOpen (buff, "r");
-    if (fh != NULL) {
-      (void) ! fgets (tbuff, sizeof (tbuff), fh);
-      mdextfclose (fh);
-      fclose (fh);
-    }
-    stringTrim (tbuff);
-    if (*tbuff) {
-      /* save the system locale */
-      sysvarsSetStr (SV_LOCALE_SYSTEM, tbuff);
-      /* do not mark locale-set, only locale-sys-set */
-      lsysvars [SVL_LOCALE_SYS_SET] = SYSVARS_LOCALE_SET;
-      /* localeInit() will set locale-orig and the other variables */
-    }
-  }
-
-  snprintf (buff, sizeof (buff), "%s/locale.txt", sysvars [SV_BDJ4_DREL_DATA]);
-  if (fileopFileExists (buff)) {
-    FILE    *fh;
-
-    *tbuff = '\0';
-    fh = fileopOpen (buff, "r");
-    if (fh != NULL) {
-      (void) ! fgets (tbuff, sizeof (tbuff), fh);
-      mdextfclose (fh);
-      fclose (fh);
-    }
-    stringTrim (tbuff);
-    if (*tbuff) {
-      if (strcmp (tbuff, sysvars [SV_LOCALE_SYSTEM]) != 0) {
-        sysvarsSetStr (SV_LOCALE, tbuff);
-        snprintf (buff, sizeof (buff), "%-.2s", tbuff);
-        sysvarsSetStr (SV_LOCALE_SHORT, buff);
-        lsysvars [SVL_LOCALE_SET] = SYSVARS_LOCALE_SET;
-      }
-    }
-  }
 
   sysvarsSetStr (SV_BDJ4_VERSION, "unknown");
   snprintf (buff, sizeof (buff), "%s/VERSION.txt", sysvars [SV_BDJ4_DIR_MAIN]);
@@ -721,6 +681,76 @@ sysvarsInit (const char *argv0, int flags)
 
   snprintf (tbuff, sizeof (tbuff), "%s/%s", sysvars [SV_DIR_CACHE_BASE], BDJ4_NAME);
   sysvarsSetStr (SV_DIR_CACHE, tbuff);
+
+  /* the installer creates this file to save the original system locale */
+  snprintf (buff, sizeof (buff), "%s/%s%s",
+      sysvars [SV_BDJ4_DREL_DATA], LOCALE_ORIG_FN, BDJ4_CONFIG_EXT);
+  if (fileopFileExists (buff)) {
+    FILE    *fh;
+
+    *tbuff = '\0';
+    fh = fileopOpen (buff, "r");
+    if (fh != NULL) {
+      (void) ! fgets (tbuff, sizeof (tbuff), fh);
+      mdextfclose (fh);
+      fclose (fh);
+    }
+    stringTrim (tbuff);
+    if (*tbuff) {
+      /* save the system locale */
+      sysvarsSetStr (SV_LOCALE_SYSTEM, tbuff);
+      /* do not mark locale-set, only locale-sys-set */
+      lsysvars [SVL_LOCALE_SYS_SET] = SYSVARS_LOCALE_SET;
+      /* localeInit() will set locale-orig and the other variables */
+    }
+  }
+
+  snprintf (buff, sizeof (buff), "%s/%s%s",
+      sysvars [SV_BDJ4_DREL_DATA], LOCALE_FN, BDJ4_CONFIG_EXT);
+  if (fileopFileExists (buff)) {
+    FILE    *fh;
+
+    *tbuff = '\0';
+    fh = fileopOpen (buff, "r");
+    if (fh != NULL) {
+      (void) ! fgets (tbuff, sizeof (tbuff), fh);
+      mdextfclose (fh);
+      fclose (fh);
+    }
+    stringTrim (tbuff);
+    if (*tbuff) {
+      if (strcmp (tbuff, sysvars [SV_LOCALE_SYSTEM]) != 0) {
+        sysvarsSetStr (SV_LOCALE, tbuff);
+        snprintf (buff, sizeof (buff), "%-.2s", tbuff);
+        sysvarsSetStr (SV_LOCALE_SHORT, buff);
+        lsysvars [SVL_LOCALE_SET] = SYSVARS_LOCALE_SET;
+      }
+    }
+  }
+
+  /* the installer creates the user's preferred locale */
+  /* this is the locale used for the data files */
+  snprintf (buff, sizeof (buff), "%s/%s%s%s",
+      sysvars [SV_DIR_CONFIG], LOCALE_DATA_FN,
+      sysvars [SV_BDJ4_DEVELOPMENT], BDJ4_CONFIG_EXT);
+  if (fileopFileExists (buff)) {
+    FILE    *fh;
+
+    *tbuff = '\0';
+    fh = fileopOpen (buff, "r");
+    if (fh != NULL) {
+      (void) ! fgets (tbuff, sizeof (tbuff), fh);
+      mdextfclose (fh);
+      fclose (fh);
+    }
+    stringTrim (tbuff);
+    if (*tbuff) {
+      /* save the data locale */
+      sysvarsSetStr (SV_LOCALE_DATA, tbuff);
+      tbuff [2] = '\0';
+      sysvarsSetStr (SV_LOCALE_DATA_SHORT, tbuff);
+    }
+  }
 
   sysvarsCheckPaths (NULL);
 
