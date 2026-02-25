@@ -1,6 +1,6 @@
 # dance-types
-# 2022-8-4
-# version 1
+# 2026-2-25
+# version 2
 standardi
 latinankielinen
-klubi
+other

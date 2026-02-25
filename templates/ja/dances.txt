@@ -18,11 +18,11 @@ HIGHMPM
 SPEED
 ..normal
 TAGS
-..tango club
+..tango
 TIMESIG
 ..4/4
 TYPE
-..club
+..other
 KEY
 ..1
 ANNOUNCE
@@ -166,7 +166,7 @@ TAGS
 TIMESIG
 ..2/4
 TYPE
-..latin
+..other
 KEY
 ..9
 ANNOUNCE
@@ -238,4 +238,4 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..club
+..other

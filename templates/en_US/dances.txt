@@ -18,11 +18,11 @@ HIGHMPM
 SPEED
 ..normal
 TAGS
-..tango club
+..tango
 TIMESIG
 ..4/4
 TYPE
-..club
+..other
 KEY
 ..1
 ANNOUNCE
@@ -36,11 +36,11 @@ HIGHMPM
 SPEED
 ..normal
 TAGS
-..club
+..
 TIMESIG
 ..4/4
 TYPE
-..club
+..other
 KEY
 ..2
 ANNOUNCE
@@ -126,11 +126,11 @@ HIGHMPM
 SPEED
 ..fast
 TAGS
-..club
+..
 TIMESIG
 ..4/4
 TYPE
-..club
+..other
 KEY
 ..7
 ANNOUNCE
@@ -198,11 +198,11 @@ HIGHMPM
 SPEED
 ..normal
 TAGS
-..club
+..
 TIMESIG
 ..4/4
 TYPE
-..club
+..other
 KEY
 ..11
 ANNOUNCE
@@ -270,11 +270,11 @@ HIGHMPM
 SPEED
 ..fast
 TAGS
-..salsa club
+..salsa
 TIMESIG
 ..4/4
 TYPE
-..latin
+..other
 KEY
 ..15
 ANNOUNCE
@@ -360,8 +360,8 @@ HIGHMPM
 SPEED
 ..normal
 TAGS
-..swing club
+..swing
 TIMESIG
 ..4/4
 TYPE
-..club
+..other
