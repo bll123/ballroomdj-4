@@ -15,7 +15,7 @@
 **4.17.13.1 2026-2-26**
 
 * Bug Fixes:
-    * Fixed loclalized text not being processed properly.
+    * Fixed localized text not being processed properly.
 
 **4.17.13 2026-2-25**
 
