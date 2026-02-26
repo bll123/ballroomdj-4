@@ -84,7 +84,8 @@ TEXT
 # => Change the selection to 'Rebuild Database'.
 # => Select the 'Start' button.
 # => Wait for the database rebuild to finish.
-# => Leave the 'BDJ4 Management' window open.
+# => Close the 'BDJ4 Management' window.
+# => Select the 'Manage' button to open again.
 KEY
 ..5
 TITLE

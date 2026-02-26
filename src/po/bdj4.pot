@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-25 18:10-0800\n"
+"POT-Creation-Date: 2026-02-26 05:27-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2554,7 +2554,8 @@ msgstr ""
 "=> Change the selection to 'Rebuild Database'."
 "=> Select the 'Start' button."
 "=> Wait for the database rebuild to finish."
-"=> Leave the 'BDJ4 Management' window open."
+"=> Close the 'BDJ4 Management' window."
+"=> Select the 'Manage' button to open again."
 
 
 #. CONTEXT: title of a getting started help section
