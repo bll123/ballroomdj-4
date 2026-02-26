@@ -10,17 +10,18 @@
     * PENDING: German (Deutsch) is now professionally translated.
     * PENDING: Spanish (Español) is now professionally translated.
 
-**4.17.13 2026-2---**
+-->
+
+**4.17.13 2026-2-25**
 
 * Bug Fixes:
     * Configuration: Mobile Marquee: Change template selection to a drop-down.
     * Configuration: Organization: localize the examples.
+    * Fixed a memory corruption issue.
     * Installer: Ask for the preferred language.
     * Localization: Fix the starter not being localized (introduced in 4.17.11).
     * Support: MacOS: Fix 'Download Latest' link.
     * Themes: Adjusted dark theme row highlight color.
-
--->
 
 **4.17.12 2026-2-22**
 
@@ -1477,4 +1478,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2026-02-22 20:14:40; BDJ4 version 4.17.12)_
+<br>_(Updated 2026-02-25 19:35:36; BDJ4 version 4.17.13)_

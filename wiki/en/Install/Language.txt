@@ -48,4 +48,4 @@ translations for dance names, ratings, etc.  The BDJ4 display text
 will be in English.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_
+<br>_(Updated 2026-02-25 19:35:36; BDJ4 version 4.17.13)_

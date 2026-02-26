@@ -57,4 +57,4 @@ paste the appropriate information into the configuration.
 <br><span id="caption" style="color:#4559bf;">__Configure / General__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-12-08 10:34:23; BDJ4 version 4.17.7)_
+<br>_(Updated 2026-02-25 19:35:36; BDJ4 version 4.17.13)_

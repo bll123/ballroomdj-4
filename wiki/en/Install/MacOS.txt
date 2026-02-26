@@ -178,4 +178,4 @@ also make a pre-built BDJ4 virtually impossible to run, as users may
 have different versions of these required libraries.
 
 [Wiki Home](Home)
-<br>_(Updated 2026-01-12 15:20:19; BDJ4 version 4.17.9)_
+<br>_(Updated 2026-02-25 19:35:36; BDJ4 version 4.17.13)_
