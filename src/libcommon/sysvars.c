@@ -1325,7 +1325,7 @@ sysvarsParseDistFile (const char *path)
 
   distinfo = mdmalloc (sizeof (sysdistinfo_t));
   distinfo->data = NULL;
-  distinfo->dist = "";
+  distinfo->dist = mdstrdup ("");
 
   if (fileopFileExists (path)) {
     char    *tokptr;
@@ -1340,7 +1340,7 @@ sysvarsParseDistFile (const char *path)
       vnm = strtok_r (tp, "=", &tokptrb);
       p = strtok_r (NULL, "=", &tokptrb);
       if (vnm != NULL && p != NULL && strcmp (vnm, "DIST_TAG") == 0) {
-        distinfo->dist = p;
+        distinfo->dist = mdstrdup (p);
       }
       tp = strtok_r (NULL, "\r\n", &tokptr);
     }
