@@ -94,7 +94,7 @@ __Install__ or __Upgrade__ button and wait for the
 __Installation&nbsp;Completed__ message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![BallroomDJ 4 Installer on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Installer-E.png)
+![BallroomDJ 4 Installer on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Installer-F.png)
 <br><span id="caption" style="color:#4559bf;">__BallroomDJ 4 Installer on Windows__</span> </div>
 
 #### VLC Installation
@@ -148,4 +148,4 @@ BDJ4, use one of the methods in
 [Setting up Windows for DJ Work](en-Install-Setting%20Up%20Windows)
 
 [Wiki Home](Home)
-<br>_(Updated 2026-02-25 19:35:36; BDJ4 version 4.17.13)_
+<br>_(Updated 2026-02-26 07:18:22; BDJ4 version 4.17.13.1)_

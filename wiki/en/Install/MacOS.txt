@@ -123,7 +123,7 @@ __Install__ or __Upgrade__ button and wait for the
 __Installation&nbsp;Completed__ message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![BallroomDJ 4 Installer on MacOS](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Installer-D.png)
+![BallroomDJ 4 Installer on MacOS](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Installer-E.png)
 <br><span id="caption" style="color:#4559bf;">__BallroomDJ 4 Installer on MacOS__</span> </div>
 
 If VLC is not already installed on your computer, the installation
@@ -178,4 +178,4 @@ also make a pre-built BDJ4 virtually impossible to run, as users may
 have different versions of these required libraries.
 
 [Wiki Home](Home)
-<br>_(Updated 2026-02-25 19:35:36; BDJ4 version 4.17.13)_
+<br>_(Updated 2026-02-26 07:14:22; BDJ4 version 4.17.13.1)_

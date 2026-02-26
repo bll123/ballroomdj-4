@@ -34,7 +34,7 @@ QR code can be scanned with your mobile phone or tablet. (The link
 will show your computer's name, not what is shown in the example).
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![mobile-remote-control](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileRemoteControl-J.png)
+![mobile-remote-control](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileRemoteControl-K.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Mobile Remote Control__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -43,4 +43,4 @@ will show your computer's name, not what is shown in the example).
 <br><span id="caption" style="color:#4559bf;">__Mobile Device / Mobile Remote Control__</span></div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-12-08 10:34:23; BDJ4 version 4.17.7)_
+<br>_(Updated 2026-02-26 07:23:23; BDJ4 version 4.17.13.1)_

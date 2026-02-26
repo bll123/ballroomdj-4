@@ -127,7 +127,7 @@ __Install__ or __Upgrade__ button and wait for the
 __Installation&nbsp;Completed__ message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![BallroomDJ 4 Installer on Linux](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Linux-Installer-D.png)
+![BallroomDJ 4 Installer on Linux](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Linux-Installer-E.png)
 <br><span id="caption" style="color:#4559bf;">__BallroomDJ 4 Installer on Linux__</span> </div>
 
 #### Getting Help
@@ -144,4 +144,4 @@ Visit the
 wiki page.
 
 [Wiki Home](Home)
-<br>_(Updated 2026-02-25 19:35:36; BDJ4 version 4.17.13)_
+<br>_(Updated 2026-02-26 07:08:33; BDJ4 version 4.17.13.1)_

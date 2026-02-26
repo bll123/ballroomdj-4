@@ -53,8 +53,8 @@ identification process and have registered an ACRCloud account, copy and
 paste the appropriate information into the configuration.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![General](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/General-N.png)
+![General](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/General-O.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / General__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2026-02-25 19:35:36; BDJ4 version 4.17.13)_
+<br>_(Updated 2026-02-26 07:20:56; BDJ4 version 4.17.13.1)_
