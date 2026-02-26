@@ -72,16 +72,14 @@ while read -r nl; do
       ;;
   esac
   tnl=$(echo ${nl} | sed -e 's,&amp;,\&,g')
+  ctxt=""
   if [[ $tnl == Next ]]; then
-    xl=$(LC_MESSAGES=${locale}.UTF-8 TEXTDOMAINDIR=${LOCALEDIR} \
-        gettext -s -d bdj4 -c Page "$tnl")
+    ctxt="-c Page"
   elif [[ $tnl == Queue ]]; then
-    xl=$(LC_MESSAGES=${locale}.UTF-8 TEXTDOMAINDIR=${LOCALEDIR} \
-        gettext -s -d bdj4 -c Verb "$tnl")
-  else
-    xl=$(LC_MESSAGES=${locale}.UTF-8 TEXTDOMAINDIR=${LOCALEDIR} \
-        gettext -s -d bdj4 "$tnl")
+    ctxt="-c Verb"
   fi
+  xl=$(LC_MESSAGES=${locale}.UTF-8 TEXTDOMAINDIR=${LOCALEDIR} \
+      gettext -s -d bdj4 ${ctxt} "$tnl")
   # any &amp; removed must go back in
   xl=$(echo ${xl} | sed -e 's,&,\\&amp;,g' -e "s,',!!!,g")
   sedcmd+="-e '\~value=\"${nl}\"~ s~value=\"${nl}\"~value=\"${xl}\"~' "

@@ -13,7 +13,15 @@ extern "C" {
 #endif
 
 #define _(str) gettext(str)
-#define C_(ctxt,str) gettext(ctxt "\x04" str)
+#define C_(ctxt,str) bdj4_pgettext(ctxt "\x04" str, str)
+
+/* taken from vlc/plugins/vlc_common.h */
+static inline const char *
+bdj4_pgettext (const char *ctx, const char *str)
+{
+  const char *tr = _(ctx);
+  return (tr == ctx) ? str : tr;
+}
 
 #if defined (__cplusplus) || defined (c_plusplus)
 }

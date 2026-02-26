@@ -21,8 +21,19 @@ function mksub {
   ok=F
   while read -r line; do
     nl=$(echo $line | sed -e 's,^\.\.,,')
+    ctxt=""
+    if [[ $nl == None ]]; then
+      case $tmpl in
+        *audiosrc.txt)
+          ctxt="-c AudioSource"
+          ;;
+        *genres.txt)
+          ctxt="-c Genre"
+          ;;
+      esac
+    fi
     xl=$(LC_MESSAGES=${locale}.UTF-8 TEXTDOMAINDIR=${LOCALEDIR} \
-        gettext -s -d bdj4 "$nl")
+        gettext -s -d bdj4 ${ctxt} "$nl")
     xl=$(echo $xl | sed -e 's,&,\\&,g' -e "s,',!!!,g")
     case $line in
       ..*)
