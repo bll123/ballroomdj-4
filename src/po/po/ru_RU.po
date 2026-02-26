@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2025-09-23\n"
-"PO-Revision-Date: 2026-02-21\n"
+"POT-Creation-Date: 2026-02-25\n"
+"PO-Revision-Date: 2026-02-26 13:58\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -87,8 +87,8 @@ msgid "latin"
 msgstr "латинский"
 
 #. CONTEXT: configuration file: dance type
-msgid "club"
-msgstr "клуб"
+msgid "other"
+msgstr ""
 
 #. CONTEXT: configuration file: rating
 msgid "Unrated"
@@ -107,7 +107,7 @@ msgid "Great"
 msgstr "Отлично"
 
 #. CONTEXT: configuration file: genre
-#. CONTEXT: configuration: controller: no controller
+msgctxt "Genre"
 msgid "None"
 msgstr "Ничего"
 
@@ -176,9 +176,13 @@ msgid "Queue E"
 msgstr "Очередь E"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: playerui: button: tooltip: play or pause the song
-msgid "Play / Pause"
-msgstr "Воспроизвести / Пауза"
+msgid "Clear & Play"
+msgstr "Очистить и Играть"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: music queue: button: clear the queue
+msgid "Clear Queue"
+msgstr "Очистить очередь"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: button: fade out the song and stop playing it
@@ -186,13 +190,13 @@ msgid "Fade"
 msgstr "Затухание звука"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-msgid "Repeat"
-msgstr "Повтор"
+msgid "Mute"
+msgstr "Выкл. звук"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: playerui: button: pause at the end of the song (toggle)
-msgid "Pause at End"
-msgstr "Пауза в конце"
+msgctxt "Page"
+msgid "Next"
+msgstr "Следующее"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: button: tooltip: start playing the next song (immediate)
@@ -200,9 +204,20 @@ msgid "Next Song"
 msgstr "Следующая песня"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: pause at the end of the song (toggle)
+msgid "Pause at End"
+msgstr "Пауза в конце"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: tooltip: play or pause the song
+msgid "Play / Pause"
+msgstr "Воспроизвести / Пауза"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
 #. CONTEXT: (verb) song-selection: queue a song to be played
 #. CONTEXT: (verb) external request dialog: queue the selected file
+msgctxt "Verb"
 msgid "Queue"
 msgstr "Добавить песню в очередь"
 
@@ -212,24 +227,14 @@ msgid "Queue 5"
 msgstr "Добавить 5"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: music queue: button: clear the queue
-msgid "Clear Queue"
-msgstr "Очистить очередь"
+msgid "Repeat"
+msgstr "Повтор"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-msgid "Clear & Play"
-msgstr "Очистить и Играть"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: audio identification: next song
-#. CONTEXT: song editor : next song
-#. CONTEXT: helperui: proceed to the next step
-msgid "Next"
-msgstr "Следующее"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-msgid "Mute"
-msgstr "Выкл. звук"
+#. CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow)
+#. CONTEXT: playerui: the current speed for song playback
+msgid "Speed"
+msgstr "Скорость"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: update database: button to stop the database update process
@@ -240,12 +245,6 @@ msgstr "Остановить"
 #. CONTEXT: playerui: The current volume of the song
 msgid "Volume"
 msgstr "Громкость"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow)
-#. CONTEXT: playerui: the current speed for song playback
-msgid "Speed"
-msgstr "Скорость"
 
 #. CONTEXT: The name of the 'standardrounds' playlist file
 msgid "standardrounds"
@@ -297,7 +296,7 @@ msgid "Name"
 msgstr "Название"
 
 #. CONTEXT: configuration: audio source: type of source
-#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+msgctxt "AudioSource"
 msgid "Type"
 msgstr "Тип"
 
@@ -381,6 +380,11 @@ msgstr "4/4"
 #. CONTEXT: configuration: edit the dance table
 msgid "Edit Dances"
 msgstr "Редактировать танцы"
+
+#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+msgctxt "Dance"
+msgid "Type"
+msgstr "Тип"
 
 #. CONTEXT: configuration: dances: play the selected announcement before the dance is played
 msgid "Announcement"
@@ -543,9 +547,9 @@ msgstr "Цвет профиля"
 msgid "BPM"
 msgstr "BPM"
 
-#. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
-msgid "Locale"
-msgstr "Локаль"
+#. CONTEXT: configuration: the languages for the user interface
+msgid "Display Language"
+msgstr ""
 
 #. CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux.
 msgid "Startup Script"
@@ -732,7 +736,8 @@ msgid "Music Queues"
 msgstr "Очереди музыки"
 
 #. CONTEXT: (noun) configuration: queue: select which queue to configure
-msgid "Queue_noun"
+msgctxt "Noun"
+msgid "Queue"
 msgstr "Очередь"
 
 #. CONTEXT: (noun) configuration: queue: the name of the music queue
@@ -888,6 +893,11 @@ msgstr "Показать сброс скорости"
 #. CONTEXT: configuration: the clock format
 msgid "Clock"
 msgstr ""
+
+#. CONTEXT: configuration: controller: no controller
+msgctxt "Controller"
+msgid "None"
+msgstr "Ничего"
 
 #. CONTEXT: configuration: edit the dance ratings table
 msgid "Edit Ratings"
@@ -1099,6 +1109,10 @@ msgstr "Пожалуйста, подождите…"
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr "Введите папку для сохранения BDJ4."
 
+#. CONTEXT: installer: language to install
+msgid "Preferred Language"
+msgstr ""
+
 #. CONTEXT: installer: asking where BallroomDJ 3 is installed
 #, c-format
 msgid "Enter the folder where %s is installed."
@@ -1109,9 +1123,7 @@ msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
 msgstr "Если не установлен BallroomDJ 3, оставьте поле пустым."
 
 #. CONTEXT: installer: instructions
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installations."
+msgid "The conversion process will only run for new installations and for re-installations."
 msgstr "Процесс конверсии будет запущен только для новых установок и для переустановок."
 
 #. CONTEXT: installer: label for entry field asking for BDJ3 location
@@ -1342,11 +1354,11 @@ msgstr "Дата добавлена"
 msgid "Prevent Rename"
 msgstr "Предотвратить переименование"
 
-#. CONTEXT: label: disc number
+#. CONTEXT: label: disc number (Audio Tag: The disc number of a CD in a collection of CDs)
 msgid "Disc"
 msgstr "Диск"
 
-#. CONTEXT: label: total disc count
+#. CONTEXT: label: total disc count (Audio Tag: The total number of discs in a collection)
 msgid "Total Discs"
 msgstr "Всего дисков"
 
@@ -1366,7 +1378,7 @@ msgstr "Избранное"
 msgid "Genre"
 msgstr "Жанр"
 
-#. CONTEXT: label: grouping
+#. CONTEXT: label: grouping (typically used to group classical movements in a work together)
 msgid "Grouping"
 msgstr ""
 
@@ -1712,6 +1724,12 @@ msgstr "Первая"
 #. CONTEXT: song editor : previous song
 msgid "Previous"
 msgstr "Предыдущ."
+
+#. CONTEXT: audio identification: next song
+#. CONTEXT: song editor : next song
+msgctxt "Song"
+msgid "Next"
+msgstr ""
 
 #. CONTEXT: audio identification: save data
 #. CONTEXT: song editor : save data
@@ -2116,8 +2134,7 @@ msgid "Update from Audio File Tags"
 msgstr "Обновление с тегов аудио файла"
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid ""
-"Updates the information in the BallroomDJ database from the audio file tags."
+msgid "Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "Обновляет информацию в базе данных BallroomDJ из тегов аудио файлов."
 
 #. CONTEXT: database update: writes the tags in the database to the audio files
@@ -2125,9 +2142,7 @@ msgid "Write Tags to Audio Files"
 msgstr "Записать теги в аудио файлы"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid ""
-"Writes the audio file tags using the information from the BallroomDJ "
-"database."
+msgid "Writes the audio file tags using the information from the BallroomDJ database."
 msgstr "Запись тегов аудио файла, используя информацию из базы данных BallroomDJ."
 
 #. CONTEXT: database update: update from itunes
@@ -2137,8 +2152,7 @@ msgstr "Обновление с %s"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid ""
-"Updates the information in the BallroomDJ database from the %s database."
+msgid "Updates the information in the BallroomDJ database from the %s database."
 msgstr "Обновляет инфо. о базе данных BallroomDJ из базы данных %s."
 
 #. CONTEXT: database update: rebuilds the database
@@ -2146,9 +2160,7 @@ msgid "Rebuild Database"
 msgstr "Восстановить базу данных"
 
 #. CONTEXT: database update: rebuild: help text
-msgid ""
-"Replaces the BallroomDJ database in its entirety. All changes to the "
-"database will be lost."
+msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
 msgstr "Заменяет базу данных BallroomDJ целиком. Все изменения в базе данных будут потеряны."
 
 #. CONTEXT: update database: select database update action
@@ -2232,8 +2244,7 @@ msgid "Count"
 msgstr "Счет"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid ""
-"Maximum\n"
+msgid "Maximum\n"
 "Play Time"
 msgstr "Максим.\n"
 "время\n"
@@ -2324,6 +2335,11 @@ msgstr ""
 #, c-format
 msgid "%s Helper"
 msgstr "Помощник %s"
+
+#. CONTEXT: helperui: proceed to the next step
+msgctxt "Help-Section"
+msgid "Next"
+msgstr ""
 
 #. CONTEXT: starterui: menu item: stop all BDJ4 processes
 #, c-format
