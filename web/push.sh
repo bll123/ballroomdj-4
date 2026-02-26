@@ -59,12 +59,13 @@ if [[ ! -d $INSTSTAGE ]]; then
   exit 1
 fi
 
+tcount=$(ls -1 $INSTSTAGE/bdj4-installer-* | wc -l)
 count=$(ls -1 $INSTSTAGE/bdj4-installer-* | grep -- "-${VERSION}" | wc -l)
 # debian-13
 # win64,
 # macos-intel-macports,
 # macos-applesilicon-macports, macos-applesilicon-homebrew
-if [[ $count -ne 5 ]]; then
+if [[ $tcount -ne 5 || $count -ne 5 ]]; then
   echo "Failed: not all platforms built."
   exit 1
 fi
