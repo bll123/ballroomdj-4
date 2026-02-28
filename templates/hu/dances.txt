@@ -148,7 +148,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..other
 KEY
 ..8
 ANNOUNCE
@@ -166,7 +166,7 @@ TAGS
 TIMESIG
 ..2/4
 TYPE
-..other
+..latin
 KEY
 ..9
 ANNOUNCE

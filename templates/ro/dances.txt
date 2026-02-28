@@ -40,7 +40,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..latină
 KEY
 ..2
 ANNOUNCE
@@ -76,7 +76,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..latină
 KEY
 ..4
 ANNOUNCE
@@ -94,7 +94,7 @@ TAGS
 TIMESIG
 ..2/4
 TYPE
-..latin
+..latină
 KEY
 ..5
 ANNOUNCE
@@ -130,7 +130,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..latină
 KEY
 ..7
 ANNOUNCE
@@ -148,7 +148,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..other
 KEY
 ..8
 ANNOUNCE
@@ -166,7 +166,7 @@ TAGS
 TIMESIG
 ..2/4
 TYPE
-..other
+..latină
 KEY
 ..9
 ANNOUNCE

@@ -594,7 +594,7 @@ main (int argc, char * argv[])
     osSetEnv ("GTK_THEME", "Adwaita:dark");
   }
   if (! havetheme && isMacOS ()) {
-    osSetEnv ("GTK_THEME", "Mojave-dark-solid");
+    osSetEnv ("GTK_THEME", "Adwaita:dark");
   }
 #endif
 

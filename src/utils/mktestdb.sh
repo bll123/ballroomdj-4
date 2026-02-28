@@ -88,6 +88,10 @@ while test $# -gt 0; do
     --nodbcopy)
       # ignored
       ;;
+    --locale)
+      # ignored
+      shift
+      ;;
     --musicdir)
       args+=$1
       args+=" "

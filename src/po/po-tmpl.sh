@@ -90,6 +90,7 @@ done
 
 fn=${TMPLDIR}/dances.txt
 sed -n -e '/^DANCE/ {n;p;}' $fn > $TMP
+sed -n -e '/^TYPE/ {n;p;}' $fn >> $TMP
 sort -u $TMP > $TMP.n
 mv -f $TMP.n $TMP
 mksub $fn $TMP $uselocale $pofile

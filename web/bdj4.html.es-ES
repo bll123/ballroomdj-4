@@ -6,9 +6,9 @@
   <meta name="google-site-verification" content="ah8fN8rvRWoqb1FzT4B-uAfR1MwRdWvYzhyAFKXFWS8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- WT_021 -->
-  <title>BallroomDJ 4 - Reproductor de música de salón</title>
+  <title>BallroomDJ 4 - Reproductor de Música de Salón de Baile</title>
   <!-- WT_022 -->
-  <meta name="Description" content="BallroomDJ 4 - Reproductor de música de salón">
+  <meta name="Description" content="BallroomDJ 4 - Reproductor de Música de Salón de Baile">
   <meta name="Keywords" content="Ballroom Music Player,
       Přehrávač taneční hudby,
       Ballroom musikafspiller,
@@ -52,7 +52,7 @@
     <div>
       <!-- WT_001 -->
       <img src="/img/ballroomdj4.svg"
-        alt="BallroomDJ 4 - El reproductor de música de salón"
+        alt="BallroomDJ 4 - El Reproductor de Música de Salón de Baile"
         width="50%" style="max-width: 420px">
     </div>
     <div class="donatewidget">
@@ -82,7 +82,7 @@
       <div class="dflex">
         <div class="tleft dtext">
           <!-- WT_003 -->
-          <p>BallroomDJ 4 (BDJ4) es un reproductor de música diseñado para ordenadores de sobremesa y portátiles (y funcionará en algunas tabletas). Está diseñado para poder reproducir música durante toda la velada sin ninguna intervención.</p>
+          <p>BallroomDJ 4 (BDJ4) es un reproductor de música diseñado para ordenadores de sobremesa y portátiles (y funcionará en algunas tabletas). Está diseñado para poder reproducir música durante toda la tarde sin ninguna intervención.</p>
           <!-- WT_004 -->
           <p>BDJ4 es altamente personalizable y proporciona facilidades para organizar la música de baile de salón y crear listas de canciones, listas de reproducción automáticas y listas de reproducción secuenciadas.</p>
           <!-- WT_005 -->
@@ -97,7 +97,7 @@
               >Registro de cambios</a></p>
           <!-- WT_008 -->
           <p><a target="_blank"
-              href="https://ballroomdj.org/forum/">Foro BDJ4</a></p>
+              href="https://ballroomdj.org/forum/">Foro de BDJ4</a></p>
           <!-- WT_009 -->
           <p><a target="_blank"
               href="https://sourceforge.net/p/ballroomdj4/wiki/Home/"
@@ -105,11 +105,11 @@
           <!-- WT_010 -->
           <p><a target="_blank"
               href="https://sourceforge.net/p/ballroomdj4/wiki/en-Features/"
-              >BDJ4 Características</a></p>
+              >Características de BDJ4</a></p>
           <!-- WT_011 -->
           <p><a target="_blank"
               href="https://crowdin.com/project/ballroomdj-4"
-              >Ayuda para traducir BallroomDJ 4</a></p>
+              >Ayuda a traducir BallroomDJ 4</a></p>
           <!-- WT_012 -->
           <p>Otros sitios donde se pueden encontrar anuncios del lanzamiento de BallroomDJ 4:</p>
           <!-- WT_013 -->
@@ -155,7 +155,7 @@
     <div id="dbdj3" class="mdiv dispnone">
       <div class="tleft dinlineblock">
         <!-- WT_015 -->
-        <p>BallroomDJ era el anterior reproductor de música de salón. Ya no es compatible.</p>
+        <p>BallroomDJ era el anterior reproductor de música de salón de baile. Ya no esta bajo soporte.</p>
         <!-- WT_016 -->
         <p>Se insta a todos los usuarios de BallroomDJ a pasar a BallroomDJ 4</p>
         <!-- WT_017 -->
@@ -175,7 +175,7 @@
         <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
       </form>
       <!-- WT_019 -->
-      <p>Dona a proyectos de software que utiliza BDJ4:</p>
+      <p>Dona a proyectos de software que BDJ4 utiliza:</p>
       <!-- WT_020 -->
       <p><a href="https://videolan.org">VLC</a> (botón de donación arriba del todo)</p>
       <p><a href="https://curl.se/donation.html">Curl</a></p>

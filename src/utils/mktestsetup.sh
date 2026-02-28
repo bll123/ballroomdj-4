@@ -66,9 +66,12 @@ PLI=VLC3
 VOL=
 DBCOPY=T
 KEEPDB=F
+LOCALE=
+SLOCALE=
 setpli=F
 setvol=F
 setati=F
+setlocale=F
 # $@ must be preserved, it is passed on to mkdbtest.sh
 for arg in "$@"; do
   case $arg in
@@ -86,10 +89,18 @@ for arg in "$@"; do
     --nodbcopy)
       DBCOPY=F
       ;;
+    --locale)
+      setlocale=T
+      ;;
     --keepdb)
       KEEPDB=T
       ;;
     *)
+      if [[ $setlocale == T ]]; then
+        LOCALE=$arg
+        SLOCALE=$(echo $arg | sed 's,^\(..\).*,\1,')
+        setlocale=F
+      fi
       if [[ $setpli == T ]]; then
         PLI=$arg
         setpli=F
@@ -152,7 +163,14 @@ for f in templates/*.txt; do
       continue
       ;;
   esac
-  cp -f $f data
+  nf=$f
+  if [[ $LOCALE != "" ]]; then
+    nf=$(echo $f | sed -e "s,/,/${SLOCALE}/,")
+    if [[ ! -f $nf ]]; then
+      nf=$f
+    fi
+  fi
+  cp -f $nf data
 done
 for f in templates/img/*.svg; do
   cp -f $f img/profile00
@@ -181,14 +199,23 @@ cp -f templates/bdjconfig.txt.mp data/${hostname}/profile00/bdjconfig.txt
 cp -f templates/QueueDance.* data
 cp -f templates/standardrounds.* data
 # the test dances data file has announcements set for tango & waltz
-cp -f test-templates/dances.txt data
+if [[ $LOCALE == "" ]]; then
+  cp -f test-templates/dances.txt data
+fi
 # the test status data file has an additional 'edit' status.
-cp -f test-templates/status.txt data
+if [[ $LOCALE == "" ]]; then
+  cp -f test-templates/status.txt data
+fi
 cp -f test-templates/ds-songfilter.txt data/profile00
 cp -f test-templates/ds-songedit-b.txt data/profile00
 cp -f test-templates/ui-*.txt data/profile00
 mv -f data/profile00/ui-starter.txt data
-cp -f test-templates/audiosrc.txt data
+if [[ $LOCALE == "" ]]; then
+  cp -f test-templates/audiosrc.txt data
+fi
+if [[ $LOCALE != "" ]]; then
+  echo $LOCALE > data/locale.txt
+fi
 
 for ftype in sl seq auto podcast; do
   for tag in a b c d e f g h; do

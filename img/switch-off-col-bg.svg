@@ -7,8 +7,8 @@
    id="svg4168"
    version="1.1"
    inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
-   viewBox="0 0 50.000001 26"
-   sodipodi:docname="switch-on-col-circ.svg"
+   viewBox="0 0 50 26"
+   sodipodi:docname="switch-off-col-base.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -19,29 +19,29 @@
    xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs4170">
-    <linearGradient
-       inkscape:collect="always"
-       id="linearGradient907">
-      <stop
-         style="stop-color:#d1efcd;stop-opacity:1;"
-         offset="0"
-         id="stop903" />
-      <stop
-         style="stop-color:#105b0f;stop-opacity:1;"
-         offset="1"
-         id="stop905" />
-    </linearGradient>
     <radialGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient907"
-       id="radialGradient909"
+       xlink:href="#linearGradient907-6"
+       id="radialGradient909-3"
        cx="41.897316"
        cy="26.995226"
        fx="41.897316"
        fy="26.995226"
        r="26.999996"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.48309778,0.42825738,-0.31156376,0.34689405,-20.089954,17.128986)" />
+       gradientTransform="matrix(0.42242035,0.37446794,-0.27243113,0.30332391,0.22387656,-13.047652)" />
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient907-6">
+      <stop
+         style="stop-color:#f5f5ed;stop-opacity:1;"
+         offset="0"
+         id="stop903-7" />
+      <stop
+         style="stop-color:#1c1c1c;stop-opacity:1;"
+         offset="1"
+         id="stop905-5" />
+    </linearGradient>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -50,10 +50,10 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="12.96"
-     inkscape:cx="25"
-     inkscape:cy="12.962963"
-     inkscape:current-layer="layer1"
+     inkscape:zoom="12.610531"
+     inkscape:cx="25.17737"
+     inkscape:cy="13.044653"
+     inkscape:current-layer="svg4168"
      showgrid="true"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
@@ -61,10 +61,10 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1681"
-     inkscape:window-height="801"
-     inkscape:window-x="229"
-     inkscape:window-y="160"
+     inkscape:window-width="1559"
+     inkscape:window-height="872"
+     inkscape:window-x="752"
+     inkscape:window-y="436"
      inkscape:window-maximized="0"
      showborder="true"
      inkscape:pagecheckerboard="true"
@@ -96,26 +96,25 @@
       </cc:License>
     </rdf:RDF>
   </metadata>
+  <rect
+     style="opacity:0.996;fill:#8c2832;fill-opacity:1;stroke:#ffffff;stroke-width:0;stroke-linecap:round;paint-order:fill markers stroke"
+     id="rect1"
+     width="50"
+     height="26"
+     x="0"
+     y="0"
+     ry="13"
+     inkscape:label="rect1" />
   <g
      id="layer1"
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     transform="translate(40.989731,-34.05454)">
-    <rect
-       style="opacity:0.996;fill:#000000;fill-opacity:0.33134219;stroke:#ffffff;stroke-width:0;stroke-linecap:round;paint-order:fill markers stroke"
-       id="rect1"
-       width="50"
-       height="26"
-       x="-40.989731"
-       y="34.054539"
-       ry="13"
-       inkscape:label="rect1" />
-    <ellipse
-       style="fill:url(#radialGradient909);fill-opacity:1;stroke:#c8c8c8;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="path4754"
-       cx="-3.9700577"
-       cy="47.054539"
-       rx="12.980327"
-       ry="12.744393" />
-  </g>
+     transform="translate(50.426922,-38.483255)" />
+  <ellipse
+     style="fill:url(#radialGradient909-3);fill-opacity:1;stroke:#c8c8c8;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path4754-5"
+     cx="14.319103"
+     cy="13.119229"
+     rx="11.349988"
+     ry="11.143688" />
 </svg>

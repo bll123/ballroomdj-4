@@ -40,7 +40,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..latino
 KEY
 ..2
 ANNOUNCE
@@ -58,7 +58,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..standard
+..padrão
 KEY
 ..3
 ANNOUNCE
@@ -76,7 +76,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..latino
 KEY
 ..4
 ANNOUNCE
@@ -94,7 +94,7 @@ TAGS
 TIMESIG
 ..2/4
 TYPE
-..latin
+..latino
 KEY
 ..5
 ANNOUNCE
@@ -112,7 +112,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..standard
+..padrão
 KEY
 ..6
 ANNOUNCE
@@ -130,7 +130,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..latino
 KEY
 ..7
 ANNOUNCE
@@ -148,7 +148,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..other
 KEY
 ..8
 ANNOUNCE
@@ -166,7 +166,7 @@ TAGS
 TIMESIG
 ..2/4
 TYPE
-..other
+..latino
 KEY
 ..9
 ANNOUNCE
@@ -184,7 +184,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..standard
+..padrão
 KEY
 ..10
 ANNOUNCE
@@ -202,7 +202,7 @@ TAGS
 TIMESIG
 ..3/4
 TYPE
-..standard
+..padrão
 KEY
 ..11
 ANNOUNCE
@@ -220,7 +220,7 @@ TAGS
 TIMESIG
 ..3/4
 TYPE
-..standard
+..padrão
 KEY
 ..12
 ANNOUNCE

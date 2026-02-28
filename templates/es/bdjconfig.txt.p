@@ -6,7 +6,7 @@ version
 DEFAULTVOLUME
 ..30
 COMPLETEMSG
-..Gracias Bailarines
+..Gracias bailarines
 FADETYPE
 ..triangle
 MARQUEE_SHOW

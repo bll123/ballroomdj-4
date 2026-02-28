@@ -49,6 +49,7 @@ fi
     *)
       lang=$(echo $zipfile |
           sed -e 's,.*(,,' -e 's,).*,,')
+      # lang could be short (es) or longer with dash (es-ES)
       mkdir $lang
       cd $lang
       loc=../..

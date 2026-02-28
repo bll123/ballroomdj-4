@@ -8,12 +8,12 @@ count
 KEY
 ..0
 STATUS
-..Nuevo
+..Nueva
 PLAYFLAG
 ..1
 KEY
 ..1
 STATUS
-..Complete
+..Completado
 PLAYFLAG
 ..1

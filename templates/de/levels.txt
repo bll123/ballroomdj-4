@@ -24,7 +24,7 @@ WEIGHT
 KEY
 ..2
 LEVEL
-..Fortgeschrittene
+..Fortgeschritten
 DEFAULT
 ..0
 WEIGHT

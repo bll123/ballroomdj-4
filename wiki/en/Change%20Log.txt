@@ -6,6 +6,12 @@
 
 **4.17.14 2026-2---**
 
+* Bug Fixes:
+    * Localization: Fix datafile templates.
+    * Marquee: Fix incorrect display when switching to a different queue for playback.
+    * Player: Fix a hang when switching to a different queue for playback.
+* Changes:
+    * Changed the toggle switch to a more cultural neutral design.
 * Translations:
     * PENDING: German (Deutsch) is now professionally translated.
     * PENDING: Spanish (Español) is now professionally translated.

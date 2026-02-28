@@ -35,19 +35,19 @@ ctxt=" // CONTEXT: configuration file: dance type"
 fn=../templates/dancetypes.txt
 sed -e '/^#/d' -e 's,^,..,' -e "s,^,${ctxt}\n," $fn >> $TMPLOUT
 
-ctxt=" // CONTEXT: configuration file: rating"
+ctxt=" // CONTEXT: configuration file: rating: songs can be assigned this rating"
 fn=../templates/ratings.txt
 sed -n -e "/^RATING/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMPLOUT
 
-ctxt=" // CONTEXT: configuration file: genre"
+ctxt=" // CONTEXT: configuration file: genre: songs can be assigned this genre"
 fn=../templates/genres.txt
 sed -n -e "/^GENRE/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMPLOUT
 
-ctxt=" // CONTEXT: configuration file: dance level"
+ctxt=" // CONTEXT: configuration file: dance level: songs can be assigned this dance-level"
 fn=../templates/levels.txt
 sed -n -e "/^LEVEL/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMPLOUT
 
-ctxt=" // CONTEXT: configuration file: status"
+ctxt=" // CONTEXT: configuration file: status: songs can be assigned this status"
 fn=../templates/status.txt
 sed -n -e "/^STATUS/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMPLOUT
 
@@ -98,6 +98,9 @@ echo " // CONTEXT: tooltip for desktop icon" >> $TMPLOUT
 grep -E '^Comment=' ../install/bdj4.desktop |
   sed -e 's,Comment=,,' -e 's,^,..,' >> $TMPLOUT
 
+# 'Queue' in the html files is the verb
+# 'None' in the genre template
+# 'Next' in the html files is the next-page
 sed -e '/^\.\./ {s,^\.\.,, ; s,^,_(", ; s,$,"),}' \
     -e 's|_."Queue"|C_("Verb","Queue"|' \
     -e 's|_."Next"|C_("Page","Next"|' \

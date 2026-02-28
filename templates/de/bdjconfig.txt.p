@@ -6,7 +6,7 @@ version
 DEFAULTVOLUME
 ..30
 COMPLETEMSG
-..Dankeschön Tänzer
+..Dankeschön, Tänzerinnen und Tänzer!
 FADETYPE
 ..triangle
 MARQUEE_SHOW

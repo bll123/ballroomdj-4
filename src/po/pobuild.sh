@@ -47,7 +47,7 @@ LOCALEDIR=../../locale
 # first, make bdj4.pot, en_GB.po, en_US.po
 make
 
-echo "-- $(date +%T) Updating templates/web"
+echo "-- $(date +%T) Updating templates/html"
 # if there are any changes to complete.txt,
 # this loop is duplicated in po-ltxt.sh
 while read line; do

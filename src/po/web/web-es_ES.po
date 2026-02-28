@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-09-27\n"
-"PO-Revision-Date: 2026-02-24 03:20\n"
+"PO-Revision-Date: 2026-02-28 19:11\n"
 "Last-Translator: manually generated\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -25,15 +25,15 @@ msgstr "Se insta a todos los usuarios de BallroomDJ a pasar a BallroomDJ 4"
 
 #. CONTEXT: website : title, description
 msgid "BallroomDJ 4 - Ballroom Music Player"
-msgstr "BallroomDJ 4 - Reproductor de música de salón"
+msgstr "BallroomDJ 4 - Reproductor de Música de Salón de Baile"
 
 #. CONTEXT: website : descriptive text A
 msgid "BallroomDJ 4 (BDJ4) is a music player designed for desktop and laptop computers (and will work on some tablets). It is designed to be able to play music for the entire evening without any intervention."
-msgstr "BallroomDJ 4 (BDJ4) es un reproductor de música diseñado para ordenadores de sobremesa y portátiles (y funcionará en algunas tabletas). Está diseñado para poder reproducir música durante toda la velada sin ninguna intervención."
+msgstr "BallroomDJ 4 (BDJ4) es un reproductor de música diseñado para ordenadores de sobremesa y portátiles (y funcionará en algunas tabletas). Está diseñado para poder reproducir música durante toda la tarde sin ninguna intervención."
 
 #. CONTEXT: website : image alt-text for main logo
 msgid "BallroomDJ 4 - The Ballroom Music Player"
-msgstr "BallroomDJ 4 - El reproductor de música de salón"
+msgstr "BallroomDJ 4 - El Reproductor de Música de Salón de Baile"
 
 #. CONTEXT: website : resource link
 msgid "BallroomDJ at pro-linux.de"
@@ -41,7 +41,7 @@ msgstr "BallroomDJ en pro-linux.de"
 
 #. CONTEXT: website : ballroomdj 3 descriptive text
 msgid "BallroomDJ was the previous ballroom music player. It is no longer supported."
-msgstr "BallroomDJ era el anterior reproductor de música de salón. Ya no es compatible."
+msgstr "BallroomDJ era el anterior reproductor de música de salón de baile. Ya no esta bajo soporte."
 
 #. CONTEXT: website : resource link
 msgid "BDJ4 at freshcode.club"
@@ -49,11 +49,11 @@ msgstr "BDJ4 en freshcode.club"
 
 #. CONTEXT: website : link
 msgid "BDJ4 Features"
-msgstr "BDJ4 Características"
+msgstr "Características de BDJ4"
 
 #. CONTEXT: website : link
 msgid "BDJ4 Forum"
-msgstr "Foro BDJ4"
+msgstr "Foro de BDJ4"
 
 #. CONTEXT: website : descriptive text B
 msgid "BDJ4 is highly customizable and provides facilities to organize ballroom dance music and create song lists, automatic playlists and sequenced playlists."
@@ -77,7 +77,7 @@ msgstr "Donar"
 
 #. CONTEXT: website : donation description
 msgid "Donate to software projects that BDJ4 uses:"
-msgstr "Dona a proyectos de software que utiliza BDJ4:"
+msgstr "Dona a proyectos de software que BDJ4 utiliza:"
 
 #. CONTEXT: website : link
 msgid "Download BallroomDJ 3"
@@ -89,7 +89,7 @@ msgstr "Descargar BallroomDJ 4"
 
 #. CONTEXT: website : link to crowdin
 msgid "Help Translate BallroomDJ 4"
-msgstr "Ayuda para traducir BallroomDJ 4"
+msgstr "Ayuda a traducir BallroomDJ 4"
 
 #. CONTEXT: website : information text
 msgid "latest version"

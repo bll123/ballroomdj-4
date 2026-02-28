@@ -63,13 +63,13 @@ enum {
   dancedfcount = sizeof (dancedfkeys) / sizeof (datafilekey_t),
 };
 
-static datafilekey_t dancespeeddfkeys [DANCE_SPEED_MAX] = {
+static datafilekey_t dancespeedkeys [DANCE_SPEED_MAX] = {
   { "fast",       DANCE_SPEED_FAST,   VALUE_NUM, NULL, DF_NORM },
   { "normal",     DANCE_SPEED_NORMAL, VALUE_NUM, NULL, DF_NORM },
   { "slow",       DANCE_SPEED_SLOW,   VALUE_NUM, NULL, DF_NORM },
 };
 
-static datafilekey_t dancetimesigdfkeys [DANCE_TIMESIG_MAX] = {
+static datafilekey_t dancetimesigkeys [DANCE_TIMESIG_MAX] = {
   { "2/4",       DANCE_TIMESIG_24,   VALUE_NUM, NULL, DF_NORM },
   { "3/4",       DANCE_TIMESIG_34,   VALUE_NUM, NULL, DF_NORM },
   { "4/4",       DANCE_TIMESIG_44,   VALUE_NUM, NULL, DF_NORM },
@@ -348,17 +348,17 @@ danceConvSpeed (datafileconv_t *conv)
   if (conv->invt == VALUE_STR) {
     conv->outvt = VALUE_NUM;
     sval = conv->str;
-    idx = dfkeyBinarySearch (dancespeeddfkeys, DANCE_SPEED_MAX, sval);
+    idx = dfkeyBinarySearch (dancespeedkeys, DANCE_SPEED_MAX, sval);
     conv->num = LIST_VALUE_INVALID;
     if (idx >= 0) {
-      conv->num = dancespeeddfkeys [idx].itemkey;
+      conv->num = dancespeedkeys [idx].itemkey;
     }
   } else if (conv->invt == VALUE_NUM) {
     conv->outvt = VALUE_STR;
     if (conv->num < 0 || conv->num >= DANCE_SPEED_MAX) {
-      sval = dancespeeddfkeys [DANCE_SPEED_NORMAL].name;  // unknown -> normal
+      sval = dancespeedkeys [DANCE_SPEED_NORMAL].name;  // unknown -> normal
     } else {
-      sval = dancespeeddfkeys [conv->num].name;
+      sval = dancespeedkeys [conv->num].name;
     }
     conv->str = sval;
   }
@@ -371,10 +371,10 @@ danceConvTimeSig (datafileconv_t *conv)
 
   if (conv->invt == VALUE_STR) {
     conv->outvt = VALUE_NUM;
-    idx = dfkeyBinarySearch (dancetimesigdfkeys, DANCE_TIMESIG_MAX, conv->str);
+    idx = dfkeyBinarySearch (dancetimesigkeys, DANCE_TIMESIG_MAX, conv->str);
     conv->num = LIST_VALUE_INVALID;
     if (idx >= 0) {
-      conv->num = dancetimesigdfkeys [idx].itemkey;
+      conv->num = dancetimesigkeys [idx].itemkey;
     } else {
       /* in case there are any leftover 4/8 settings */
       conv->num = DANCE_TIMESIG_44;
@@ -384,7 +384,7 @@ danceConvTimeSig (datafileconv_t *conv)
     if (conv->num < 0 || conv->num >= DANCE_TIMESIG_MAX) {
       conv->str = NULL;
     } else {
-      conv->str = dancetimesigdfkeys [conv->num].name;
+      conv->str = dancetimesigkeys [conv->num].name;
     }
   }
 }

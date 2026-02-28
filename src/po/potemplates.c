@@ -33,33 +33,33 @@ _("standard")
 _("latin")
  // CONTEXT: configuration file: dance type
 _("other")
- // CONTEXT: configuration file: rating
+ // CONTEXT: configuration file: rating: songs can be assigned this rating
 _("Unrated")
- // CONTEXT: configuration file: rating
+ // CONTEXT: configuration file: rating: songs can be assigned this rating
 _("Poor")
- // CONTEXT: configuration file: rating
+ // CONTEXT: configuration file: rating: songs can be assigned this rating
 _("Good")
- // CONTEXT: configuration file: rating
+ // CONTEXT: configuration file: rating: songs can be assigned this rating
 _("Great")
- // CONTEXT: configuration file: genre
+ // CONTEXT: configuration file: genre: songs can be assigned this genre
 C_("Genre","None")
- // CONTEXT: configuration file: genre
+ // CONTEXT: configuration file: genre: songs can be assigned this genre
 _("Ballroom Dance")
- // CONTEXT: configuration file: genre
+ // CONTEXT: configuration file: genre: songs can be assigned this genre
 _("Classical")
- // CONTEXT: configuration file: genre
+ // CONTEXT: configuration file: genre: songs can be assigned this genre
 _("Jazz")
- // CONTEXT: configuration file: genre
+ // CONTEXT: configuration file: genre: songs can be assigned this genre
 _("Rock")
- // CONTEXT: configuration file: dance level
+ // CONTEXT: configuration file: dance level: songs can be assigned this dance-level
 _("Easy")
- // CONTEXT: configuration file: dance level
+ // CONTEXT: configuration file: dance level: songs can be assigned this dance-level
 _("Normal")
- // CONTEXT: configuration file: dance level
+ // CONTEXT: configuration file: dance level: songs can be assigned this dance-level
 _("Advanced")
- // CONTEXT: configuration file: status
+ // CONTEXT: configuration file: status: songs can be assigned this status
 _("New")
- // CONTEXT: configuration file: status
+ // CONTEXT: configuration file: status: songs can be assigned this status
 _("Complete")
  // CONTEXT: configuration file: The completion message displayed on the marquee when the playlist is finished.
 _("Thank You Dancers")

@@ -1,5 +1,5 @@
 # localization
-# generated 2026-02-26
+# generated 2026-02-28
 KEY
 ..0
 LONG
@@ -47,7 +47,7 @@ DISPLAY
 STDROUNDS
 ..Standardrunden
 QDANCE
-..Schlangentanz
+..Tanz zur Warteschlange hinzufügen
 KEY
 ..4
 LONG
@@ -81,9 +81,9 @@ SHORT
 DISPLAY
 ..Español
 STDROUNDS
-..estándares
+..Rondas de estándar
 QDANCE
-..Danza en cola
+..Poner baile en cola
 KEY
 ..7
 LONG

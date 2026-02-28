@@ -162,7 +162,7 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
   }
 
   if (type != MOBMQ_TYPE_OFF) {
-    /* CONTEXT: configuration: qr code: title display for mobile marquee */
+    /* CONTEXT: configuration: qr code: a message displayed above the qr code */
     confuiMakeQRCodeFile ("", _("Mobile Marquee"), uridisp, qruri, sizeof (qruri));
   }
 
@@ -210,7 +210,7 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
   }
 
   if (enabled) {
-    /* CONTEXT: configuration: qr code: title display for mobile remote control */
+    /* CONTEXT: configuration: qr code: a message displayed above the qr code */
     confuiMakeQRCodeFile ("", _("Mobile Remote Control"), uridisp, qruri, sizeof (qruri));
     if (*uridispb) {
       confuiMakeQRCodeFile ("b", _("Mobile Remote Control"), uridispb, qrurib, sizeof (qrurib));

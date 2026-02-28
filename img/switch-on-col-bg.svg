@@ -8,7 +8,7 @@
    version="1.1"
    inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
    viewBox="0 0 50.000001 26"
-   sodipodi:docname="switch-on-col-circ.svg"
+   sodipodi:docname="switch-on-col-base.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -23,11 +23,11 @@
        inkscape:collect="always"
        id="linearGradient907">
       <stop
-         style="stop-color:#d1efcd;stop-opacity:1;"
+         style="stop-color:#f5f5ed;stop-opacity:1;"
          offset="0"
          id="stop903" />
       <stop
-         style="stop-color:#105b0f;stop-opacity:1;"
+         style="stop-color:#1c1c1c;stop-opacity:1;"
          offset="1"
          id="stop905" />
     </linearGradient>
@@ -41,7 +41,7 @@
        fy="26.995226"
        r="26.999996"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.48309778,0.42825738,-0.31156376,0.34689405,-20.089954,17.128986)" />
+       gradientTransform="matrix(0.42242035,0.37446794,-0.27243113,0.30332391,-18.727921,20.740382)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -50,9 +50,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="12.96"
-     inkscape:cx="25"
-     inkscape:cy="12.962963"
+     inkscape:zoom="12.574074"
+     inkscape:cx="27.159057"
+     inkscape:cy="14.951399"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:document-units="px"
@@ -96,26 +96,26 @@
       </cc:License>
     </rdf:RDF>
   </metadata>
+  <rect
+     style="opacity:0.996;fill:#236628;fill-opacity:1;stroke:#ffffff;stroke-width:0;stroke-linecap:round;paint-order:fill markers stroke"
+     id="rect1"
+     width="50"
+     height="26"
+     x="0"
+     y="0"
+     ry="13"
+     inkscape:label="rect1" />
   <g
      id="layer1"
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      transform="translate(40.989731,-34.05454)">
-    <rect
-       style="opacity:0.996;fill:#000000;fill-opacity:0.33134219;stroke:#ffffff;stroke-width:0;stroke-linecap:round;paint-order:fill markers stroke"
-       id="rect1"
-       width="50"
-       height="26"
-       x="-40.989731"
-       y="34.054539"
-       ry="13"
-       inkscape:label="rect1" />
     <ellipse
        style="fill:url(#radialGradient909);fill-opacity:1;stroke:#c8c8c8;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path4754"
-       cx="-3.9700577"
-       cy="47.054539"
-       rx="12.980327"
-       ry="12.744393" />
+       cx="-4.6326947"
+       cy="46.907265"
+       rx="11.349988"
+       ry="11.143688" />
   </g>
 </svg>
