@@ -61,6 +61,22 @@ function copytestf {
   fi
 }
 
+function copytmpl {
+  from=$1
+  to=$2
+
+  tlocale=""
+  if [[ $LOCALE != "" ]]; then
+    tlocale="${SLOCALE}/"
+  fi
+
+  nfrom=$(echo $from | sed -e "s,/,/${tlocale},")
+  if [[ ! -f ${nfrom} ]]; then
+    nfrom=$from
+  fi
+  cp -f $nfrom $to
+}
+
 ATI=BDJ4
 PLI=VLC3
 VOL=
@@ -189,33 +205,35 @@ if [[ $os == macos ]]; then
   done
 fi
 
-cp -f templates/bdjconfig.txt.g data/bdjconfig.txt
-cp -f templates/bdjconfig.txt.p data/profile00/bdjconfig.txt
-for fn in templates/bdjconfig.q?.txt; do
-  cp -f ${fn} data/profile00
-done
-cp -f templates/bdjconfig.txt.m data/${hostname}/bdjconfig.txt
-cp -f templates/bdjconfig.txt.mp data/${hostname}/profile00/bdjconfig.txt
+tlocale=""
+if [[ $LOCALE != "" ]]; then
+  tlocale="${SLOCALE}/"
+  echo $LOCALE > data/locale.txt
+fi
+
 cp -f templates/QueueDance.* data
 cp -f templates/standardrounds.* data
-# the test dances data file has announcements set for tango & waltz
+
+copytmpl templates/bdjconfig.txt.g data/bdjconfig.txt
+copytmpl templates/bdjconfig.txt.p data/profile00/bdjconfig.txt
+for fn in templates/bdjconfig.q?.txt; do
+  copytmpl ${fn} data/profile00
+done
+copytmpl templates/bdjconfig.txt.m data/${hostname}/bdjconfig.txt
+copytmpl templates/bdjconfig.txt.mp data/${hostname}/profile00/bdjconfig.txt
+
 if [[ $LOCALE == "" ]]; then
-  cp -f test-templates/dances.txt data
+  # the test dances data file has announcements set for tango & waltz
+  cp -f test-templates/${tlocale}dances.txt data
+  # the test status data file has an additional 'edit' status.
+  cp -f test-templates/${tlocale}status.txt data
+  cp -f test-templates/${tlocale}audiosrc.txt data
 fi
-# the test status data file has an additional 'edit' status.
-if [[ $LOCALE == "" ]]; then
-  cp -f test-templates/status.txt data
-fi
+
 cp -f test-templates/ds-songfilter.txt data/profile00
 cp -f test-templates/ds-songedit-b.txt data/profile00
 cp -f test-templates/ui-*.txt data/profile00
 mv -f data/profile00/ui-starter.txt data
-if [[ $LOCALE == "" ]]; then
-  cp -f test-templates/audiosrc.txt data
-fi
-if [[ $LOCALE != "" ]]; then
-  echo $LOCALE > data/locale.txt
-fi
 
 for ftype in sl seq auto podcast; do
   for tag in a b c d e f g h; do

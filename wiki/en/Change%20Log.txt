@@ -7,6 +7,7 @@
 **4.17.14 2026-2---**
 
 * Bug Fixes:
+    * Configuration: Fix size limits of some configuration items.
     * Localization: Fix datafile templates.
     * Marquee: Fix incorrect display when switching to a different queue for playback.
     * Player: Fix a hang when switching to a different queue for playback.
