@@ -202,7 +202,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiEntryInit (30, 100);
+  uiwidgetp = uiEntryInit (30, MAX_PL_NM_LEN);
   uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackStart (hbox, uiwidgetp);
   managepl->wcont [MPL_W_PL_NAME] = uiwidgetp;
@@ -432,7 +432,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiEntryInit (15, 50);
+  uiwidgetp = uiEntryInit (15, 80);
   uiBoxPackStart (hbox, uiwidgetp);
   uiEntrySetValidate (uiwidgetp, "",
       managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
@@ -451,7 +451,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiEntryInit (15, 50);
+  uiwidgetp = uiEntryInit (15, 100);
   uiBoxPackStart (hbox, uiwidgetp);
   uiEntrySetValidate (uiwidgetp, "",
       managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
@@ -488,7 +488,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiEntryInit (40, 300);
+  uiwidgetp = uiEntryInit (40, 500);
   uiBoxPackStart (hbox, uiwidgetp);
   uiEntrySetValidate (uiwidgetp, "",
       managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);

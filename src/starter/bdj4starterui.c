@@ -2023,7 +2023,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiEntryInit (50, 100);
+  uiwidgetp = uiEntryInit (50, 200);
   uiBoxPackStart (hbox, uiwidgetp);
   starter->wcont [START_W_SUPPORT_EMAIL] = uiwidgetp;
   /* CONTEXT: starterui: sending support message: user's e-mail address */
@@ -2042,7 +2042,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiEntryInit (50, 100);
+  uiwidgetp = uiEntryInit (50, 200);
   uiBoxPackStart (hbox, uiwidgetp);
   starter->wcont [START_W_SUPPORT_SUBJECT] = uiwidgetp;
 

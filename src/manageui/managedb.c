@@ -255,7 +255,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiEntryInit (50, 1024);
+  uiwidgetp = uiEntryInit (50, BDJ4_PATH_MAX);
   stpecpy (tbuff, tbuff + sizeof (tbuff), bdjoptGetStr (OPT_M_DIR_MUSIC));
   pathDisplayPath (tbuff, sizeof (tbuff));
   uiEntrySetValue (uiwidgetp, tbuff);
