@@ -1819,6 +1819,8 @@ tagdefInit (void)
   tagdefs [TAG_TITLE].displayname = _("Title");
   /* CONTEXT: label: track number */
   tagdefs [TAG_TRACKNUMBER].displayname = _("Track");
+  /* CONTEXT: label: track number (short name for listing) */
+  tagdefs [TAG_TRACKNUMBER].shortdisplayname = C_("Short", "Track");
   /* CONTEXT: label: total track count */
   tagdefs [TAG_TRACKTOTAL].displayname = _("Total Tracks");
   /* CONTEXT: label: total track count (short name for listing) */

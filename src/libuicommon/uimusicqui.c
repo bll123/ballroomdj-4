@@ -72,7 +72,7 @@ enum {
 
 enum {
   MQ_IDENT_INT      = 0xbbaa00746e69716d,
-  UIMUSICQ_MAX_QDANCE_LEN = 35,
+  UIMUSICQ_MAX_QDANCE_LEN = 62,
 };
 
 typedef struct mq_internal {
@@ -185,8 +185,9 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   int               tagidx;
   mq_internal_t     *mqint;
   uivirtlist_t      *uivl;
-  const char        *qdancetxt = NULL;
-  const char        *q5dancetxt = NULL;
+  const char        *qdancetxt = "";
+  const char        *q5dancetxt = "";
+  const char        *qpltxt = "";
   size_t            qdancelen = 0;
 
 
@@ -241,7 +242,12 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     uiwcontFree (hbox);
   }
 
+  qdancelen = 0;
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
+    /* CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue' */
+    qpltxt = _("Queue Playlist");
+    qdancelen = istrlen (qpltxt);
+
     if (bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, ci)) {
       if (uimusicq->callbacks [UIMUSICQ_CB_QUEUE_DANCE] == NULL) {
         uimusicq->callbacks [UIMUSICQ_CB_QUEUE_DANCE] = callbackInitII (
@@ -251,7 +257,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
       q5dancetxt = _("Queue 5");
       /* CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue */
       qdancetxt = _("Queue Dance");
-      qdancelen = istrlen (q5dancetxt) + istrlen (qdancetxt);
+      qdancelen += istrlen (q5dancetxt) + istrlen (qdancetxt);
 
       if (qdancelen > UIMUSICQ_MAX_QDANCE_LEN) {
         hbox = uiCreateHorizBox ();
@@ -386,8 +392,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
           uimusicqQueuePlaylistCallback, uimusicq);
     }
     uimusicq->ui [ci].playlistsel = uiplaylistCreate (parentwin,
-        /* CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue' */
-        hbox, PL_LIST_NORMAL, _("Queue Playlist"), UIPL_PACK_END, UIPL_FLAG_NONE);
+        hbox, PL_LIST_NORMAL, qpltxt, UIPL_PACK_END, UIPL_FLAG_NONE);
     uiplaylistSetSelectCallback (uimusicq->ui [ci].playlistsel,
         uimusicq->callbacks [UIMUSICQ_CB_QUEUE_PLAYLIST]);
 

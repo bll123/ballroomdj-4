@@ -4,6 +4,9 @@
 
 <!--
 
+**4.17.15 2026-2---**
+    * PENDING: Spanish (Español) is now professionally translated.
+
 **4.17.14 2026-2---**
 
 * Bug Fixes:
@@ -15,7 +18,6 @@
     * Changed the toggle switch to a more cultural neutral design.
 * Translations:
     * PENDING: German (Deutsch) is now professionally translated.
-    * PENDING: Spanish (Español) is now professionally translated.
 
 -->
 

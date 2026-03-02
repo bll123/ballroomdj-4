@@ -239,9 +239,9 @@ function checkUpdaterClean {
   fn="$DATADIR/QueueDance.pldances"
   if [[ $section == de_DE ]]; then
     # old name
-    fn="${DATADIR}/Schlangentanz.pldances"
+    # fn="${DATADIR}/Schlangentanz.pldances"
     # new name
-    # fn="${DATADIR}/WarteschlangenTänze.pldances"
+    fn="${DATADIR}/Tanz zur Warteschlange.pldances"
   fi
   if [[ $section == es_ES ]]; then
     fn="${DATADIR}/Danza en cola.pldances"
@@ -739,9 +739,9 @@ function checkInstallation {
     fnb=""
     if [[ $section == de_DE ]]; then
       # old name
-      fna="${DATADIR}/Schlangentanz.pldances"
+      # fna="${DATADIR}/Schlangentanz.pldances"
       # new name
-      # fna="${DATADIR}/WarteschlangenTänze.pldances"
+      fna="${DATADIR}/Tanz zur Warteschlange.pldances"
       fnb="${DATADIR}/QueueDance.pldances"
     fi
     if [[ $section == es_ES ]]; then
@@ -797,9 +797,9 @@ function checkInstallation {
     fnb=""
     if [[ $section == de_DE ]]; then
       # old name
-      fna="${DATADIR}/Schlangentanz.pl"
+      # fna="${DATADIR}/Schlangentanz.pl"
       # new name
-      # fna="$DATADIR/WarteschlangenTänze.pl"
+      fna="${DATADIR}/Tanz zur Warteschlange.pl"
       fnb="${DATADIR}/QueueDance.pl"
     fi
     if [[ $section == es_ES ]]; then

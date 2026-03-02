@@ -12,7 +12,7 @@ Current Translations and Status:
  Afrikaans|Machine Translated<br>Very poor quality|
  čeština|Machine Translated<br>Very poor quality|
  Dansk|Machine Translated<br>Very poor quality|
- Deutsch|In Progress|[Simon Thomas](https://www.proz.com/translator/2935381)<br>English / German
+ Deutsch|Professionally<br>Translated|[Simon Thomas](https://www.proz.com/translator/2935381)<br>English / German
  English (GB)|Complete|bll
  English (US)|Complete|bll
  Español|In Progress|[Daniel de la Nava](https://www.proz.com/translator/4555219)<br>English / Spanish / German

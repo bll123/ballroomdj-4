@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.17.14\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2026-03-01\n"
-"PO-Revision-Date: 2026-03-01\n"
+"POT-Creation-Date: 2026-03-02\n"
+"PO-Revision-Date: 2026-03-02\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -1403,6 +1403,11 @@ msgstr ""
 msgid "Track"
 msgstr ""
 
+#. CONTEXT: label: track number (short name for listing)
+msgctxt "Short"
+msgid "Track"
+msgstr ""
+
 #. CONTEXT: label: total track count
 msgid "Total Tracks"
 msgstr ""
@@ -1531,6 +1536,10 @@ msgstr ""
 msgid "Please wait… (%1$d/%2$d)"
 msgstr ""
 
+#. CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue'
+msgid "Queue Playlist"
+msgstr ""
+
 #. CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue
 msgid "Queue Dance"
 msgstr ""
@@ -1560,10 +1569,6 @@ msgstr ""
 #. CONTEXT: song-selection: tooltip: play the selected songs
 #. CONTEXT: song editor : play song
 msgid "Play"
-msgstr ""
-
-#. CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue'
-msgid "Queue Playlist"
 msgstr ""
 
 #. CONTEXT: playerui: button: reset speed to 100%

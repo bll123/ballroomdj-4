@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-01 21:06-0800\n"
+"POT-Creation-Date: 2026-03-02 13:04-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1407,6 +1407,11 @@ msgstr ""
 msgid "Track"
 msgstr ""
 
+#. CONTEXT: label: track number (short name for listing)
+msgctxt "Short"
+msgid "Track"
+msgstr ""
+
 #. CONTEXT: label: total track count
 msgid "Total Tracks"
 msgstr ""
@@ -1535,6 +1540,10 @@ msgstr ""
 msgid "Please wait… (%1$d/%2$d)"
 msgstr ""
 
+#. CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue'
+msgid "Queue Playlist"
+msgstr ""
+
 #. CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue
 msgid "Queue Dance"
 msgstr ""
@@ -1564,10 +1573,6 @@ msgstr ""
 #. CONTEXT: song-selection: tooltip: play the selected songs
 #. CONTEXT: song editor : play song
 msgid "Play"
-msgstr ""
-
-#. CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue'
-msgid "Queue Playlist"
 msgstr ""
 
 #. CONTEXT: playerui: button: reset speed to 100%
