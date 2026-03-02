@@ -33,7 +33,7 @@ TITLE
 TEXT
 ..helptext_music_org
 # Setting the organisation method is important so that BallroomDJ 4
-#  can determine the information about your songs when the database is built.
+# can determine the information about your songs when the database is built.
 # => Select 'Organisation' in the left side of the 'BDJ4 Configuration' window.
 # <br>
 # Many people have their music organised by putting each dance into a

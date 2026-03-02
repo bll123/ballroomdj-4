@@ -42,8 +42,8 @@ enum {
 };
 
 enum {
-  HELPER_HORIZ_SZ = 1100,
-  HELPER_VERT_SZ = 680,
+  HELPER_HORIZ_SZ = 1200,
+  HELPER_VERT_SZ = 760,
 };
 
 typedef struct {
@@ -220,7 +220,7 @@ helperBuildUI (helperui_t  *helper)
   uiWindowPackInWindow (helper->wcont [HELPER_W_WINDOW], vbox);
   uiWidgetSetAllMargins (vbox, 2);
 
-  helper->wcont [HELPER_W_TEXTBOX] = uiTextBoxCreate (400,
+  helper->wcont [HELPER_W_TEXTBOX] = uiTextBoxCreate (650,
         bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiTextBoxSetParagraph (helper->wcont [HELPER_W_TEXTBOX], 0, 5);
   uiTextBoxHorizExpand (helper->wcont [HELPER_W_TEXTBOX]);
