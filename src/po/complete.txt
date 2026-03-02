@@ -6,6 +6,9 @@
 #   english name (no spaces)
 #   descriptive name (to end of line)
 #
+# de_DE translated by Simon Thomas https://www.proz.com/translator/2935381
+# es_ES translated by Daniel de la Nava https://www.proz.com/translator/4555219
+#
 af_ZA af af afrikaans Afrikaans
 cs_CZ cs cs czech čeština
 da_DK da da danish Dansk
