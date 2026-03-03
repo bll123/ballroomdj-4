@@ -512,7 +512,7 @@ msgstr ""
 
 #. CONTEXT: configuration: write audio file tags: do not write any tags to the audio file
 msgid "Don't Write"
-msgstr "Don’t Write"
+msgstr ""
 
 #. CONTEXT: configuration: write audio file tags: write all tags (BDJ and standard) to the audio file
 msgid "All Tags"
@@ -1350,7 +1350,12 @@ msgstr ""
 msgid "Prevent Rename"
 msgstr ""
 
-#. CONTEXT: label: disc number (Audio Tag: The disc number of a CD in a collection of CDs)
+#. CONTEXT: label: disc number (Audio Tag: The disc number of a disc in a collection)
+msgid "Disc"
+msgstr ""
+
+#. CONTEXT: label: disc number (short name for listing)
+msgctxt "Short"
 msgid "Disc"
 msgstr ""
 

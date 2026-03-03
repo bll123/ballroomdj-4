@@ -1791,8 +1791,10 @@ tagdefInit (void)
   tagdefs [TAG_DBADDDATE].displayname = _("Date Added");
   /* CONTEXT: label: lock audio file location */
   tagdefs [TAG_DB_LOC_LOCK].displayname = _("Prevent Rename");
-  /* CONTEXT: label: disc number (Audio Tag: The disc number of a CD in a collection of CDs) */
+  /* CONTEXT: label: disc number (Audio Tag: The disc number of a disc in a collection) */
   tagdefs [TAG_DISCNUMBER].displayname = _("Disc");
+  /* CONTEXT: label: disc number (short name for listing) */
+  tagdefs [TAG_DISCNUMBER].shortdisplayname = C_("Short", "Disc");
   /* CONTEXT: label: total disc count (Audio Tag: The total number of discs in a collection) */
   tagdefs [TAG_DISCTOTAL].displayname = _("Total Discs");
   /* CONTEXT: label: total disc count (short name for listing) */
