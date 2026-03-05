@@ -15,7 +15,7 @@ Current Translations and Status:
  Deutsch|Professionally<br>Translated|[Simon Thomas](https://www.proz.com/translator/2935381)<br>English / German
  English (GB)|Complete|bll
  English (US)|Complete|bll
- Español|In Progress|[Daniel de la Nava](https://www.proz.com/translator/4555219)<br>English / Spanish / German
+ Español|Professionally<br>Translated|[Daniel de la Nava](https://www.proz.com/translator/4555219)<br>English / Spanish / German
  Suomi‬|Machine Translated<br>Very poor quality|
  Français|Machine Translated<br>Very poor quality|
  magyar|Machine Translated<br>Very poor quality|

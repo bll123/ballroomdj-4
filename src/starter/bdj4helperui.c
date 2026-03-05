@@ -56,6 +56,7 @@ typedef struct {
   ilist_t         *helplist;
   ilistidx_t      helpiter;
   ilistidx_t      helpkey;
+  bdjregex_t      *rx_nl;
   bdjregex_t      *rx_br;
   bdjregex_t      *rx_nlsp;
   bdjregex_t      *rx_dot;
@@ -111,6 +112,7 @@ main (int argc, char *argv[])
   }
   helper.closeCallback = NULL;
   helper.nextCallback = NULL;
+  helper.rx_nl = regexInit ("[\\r\\n]");
   helper.rx_br = regexInit ("<br>");
   helper.rx_nlsp = regexInit ("\\n *");
   /* . or japanese/chinese full-stop */
@@ -187,6 +189,7 @@ helperClosingCallback (void *udata, programstate_t programState)
   for (int i = 0; i < HELPER_W_MAX; ++i) {
     uiwcontFree (helper->wcont [i]);
   }
+  regexFree (helper->rx_nl);
   regexFree (helper->rx_br);
   regexFree (helper->rx_nlsp);
   regexFree (helper->rx_dot);
@@ -393,7 +396,11 @@ helpDisplay (helperui_t *helper)
   title = ilistGetStr (helper->helplist, helper->helpkey, HELP_TEXT_TITLE);
   text = ilistGetStr (helper->helplist, helper->helpkey, HELP_TEXT_TEXT);
   ttext = _(text);
+  ntext = regexReplace (helper->rx_nl, ttext, "");
+
+  ttext = ntext;
   ntext = regexReplace (helper->rx_br, ttext, "\n\n");
+  mdfree (ttext);
 
   ttext = ntext;
   ntext = regexReplace (helper->rx_nlsp, ttext, "\n");

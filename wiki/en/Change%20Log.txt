@@ -4,9 +4,6 @@
 
 <!--
 
-**4.17.15 2026-3---**
-    * PENDING: Spanish (Español) is now professionally translated.
-
 **4.17.14 2026-3---**
 
 * Bug Fixes:
@@ -17,7 +14,8 @@
 * Changes:
     * Changed the toggle switch to a more cultural neutral design.
 * Translations:
-    * PENDING: German (Deutsch) is now professionally translated by [Simon Thomas](https://www.proz.com/translator/2935381)
+    * German (Deutsch) is now professionally translated by [Simon Thomas](https://www.proz.com/translator/2935381)
+    * Spanish (Español) is now professionally translated by [Daniel de la Nava](https://www.proz.com/translator/4555219).
 
 -->
 
