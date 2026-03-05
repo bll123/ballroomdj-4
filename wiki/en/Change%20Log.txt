@@ -4,10 +4,10 @@
 
 <!--
 
-**4.17.15 2026-2---**
+**4.17.15 2026-3---**
     * PENDING: Spanish (Español) is now professionally translated.
 
-**4.17.14 2026-2---**
+**4.17.14 2026-3---**
 
 * Bug Fixes:
     * Configuration: Fix size limits of some configuration items.
@@ -17,7 +17,7 @@
 * Changes:
     * Changed the toggle switch to a more cultural neutral design.
 * Translations:
-    * PENDING: German (Deutsch) is now professionally translated.
+    * PENDING: German (Deutsch) is now professionally translated by [Simon Thomas](https://www.proz.com/translator/2935381)
 
 -->
 

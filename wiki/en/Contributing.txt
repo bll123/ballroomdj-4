@@ -2,7 +2,9 @@
 
 ### Contributing to BallroomDJ 4 Development
 
-Practice the three C's: Consideration, Cooperations, Conscientousness.
+No LLM generated code allowed.
+
+Practice the three C's: Consideration, Cooperation, Conscientousness.
 
 As of 2025-8-9, development needs are:
 

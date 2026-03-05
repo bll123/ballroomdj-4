@@ -257,6 +257,7 @@ done
 for tfn in data/profile00/bdjconfig.q?.txt; do
   sed -e '/^FADEOUTTIME/ { n ; s/.*/..4000/ ; }' \
       -e '/^GAP/ { n ; s/.*/..2000/ ; }' \
+      -e '/^PLAY_WHEN_QUEUED/ { n ; s/.*/..no/ ; }' \
       ${tfn} > ${tfn}.n
   mv -f ${tfn}.n ${tfn}
 done

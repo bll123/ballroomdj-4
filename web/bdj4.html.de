@@ -82,9 +82,9 @@
       <div class="dflex">
         <div class="tleft dtext">
           <!-- WT_003 -->
-          <p>BallroomDJ 4 (BDJ4) ist ein Musik-Player, der für Desktop- und Laptop-Computer entwickelt wurde (und zudem auf einigen Tablets funktioniert). Er ist so konzipiert, dass er den ganzen Abend lang ohne jegliches Eingreifen Musik abspielen kann.</p>
+          <p>BallroomDJ 4 (BDJ4) ist ein Musik-Player, der für Desktop- und Laptop-Computer entwickelt wurde (und zudem auf einigen Tablets funktioniert). Er ist so konzipiert, dass er den gesamten Abend lang ohne jegliches Eingreifen Musik abspielen kann.</p>
           <!-- WT_004 -->
-          <p>BDJ4 ist in hohem Maße anpassbar und bietet Funktionen zur Organisation von Tanzmusik sowie zur Erstellung von Songlisten, automatischen Wiedergabelisten und sequenzierten Playlists.</p>
+          <p>BDJ4 ist in hohem Maße anpassbar und bietet Funktionen zur Organisation von Tanzmusik sowie zur Erstellung von Songlisten, automatischen Wiedergabelisten und sequenzierten Wiedergabelisten.</p>
           <!-- WT_005 -->
           <p>BDJ4 läuft unter Windows, MacOS und Linux.</p>
           <!-- WT_006 -->
@@ -167,7 +167,7 @@
 
     <div id="ddonate" class="mdiv dispnone tleft">
       <!-- WT_018 -->
-      <p>Spenden Sie für BDJ4</p>
+      <p>BDJ4 mit einer Spende unterstützen</p>
       <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
         <input type="hidden" name="cmd" value="_s-xclick" />
         <input type="hidden" name="hosted_button_id" value="BLTFRDM5KHNDJ" />

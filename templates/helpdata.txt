@@ -45,8 +45,7 @@ Configuration’ window.
 # => Select the organisation method you use for your songs in the
 # ‘Organisation Path’ drop-down.
 # <br>
-# If the organisation path you need is not present, select the
-‘support’
+# If the organisation path you need is not present, select the ‘support’
 # button in the starter window and send a support message.
 # Almost any organisation path can be configured.
 # <br>
@@ -95,8 +94,7 @@ TITLE
 ..Check the Dance for Each Song
 TEXT
 ..helptext_check_dance
-# => Select ‘Music Manager’ in the left side of the ‘BDJ4
-Management’ window.
+# => Select ‘Music Manager’ in the left side of the ‘BDJ4 Management’ window.
 # <br>
 # Scroll through the list of songs and check to make sure the dance is set
 # for each song.
@@ -105,8 +103,7 @@ Management’ window.
 # => Select the ‘Song Editor’ tab (below the player, above the list of songs).
 # => Next to the ‘Dance’ label, use the dance drop-down selection and
 # select the dance for the song.
-# => In the upper right of the ‘Song Editor’ tab, select the ‘Save’
-button.
+# => In the upper right of the ‘Song Editor’ tab, select the ‘Save’ button.
 # <br>
 # You can switch back to the ‘Music Manager’ tab and check for other
 # songs that need to have the dance set.
@@ -117,8 +114,7 @@ TITLE
 ..Create an Example Playlist
 TEXT
 ..helptext_create_playlist
-# => Select ‘Edit Song Lists’ in the left side of the ‘BDJ4
-Management’ window.
+# => Select ‘Edit Song Lists’ in the left side of the ‘BDJ4 Management’ window.
 # <br>
 # On the right side of the lower section of the window is a list of your songs.
 # => Select a song by clicking on it.
