@@ -83,7 +83,7 @@ DISPLAY
 STDROUNDS
 ..Rondas de estándar
 QDANCE
-..Poner baile en cola
+..baile en cola
 KEY
 ..7
 LONG

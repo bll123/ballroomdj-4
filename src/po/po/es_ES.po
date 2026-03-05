@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2026-03-02\n"
-"PO-Revision-Date: 2026-03-05 17:19\n"
+"PO-Revision-Date: 2026-03-05 19:58\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -255,7 +255,7 @@ msgstr "Rondas de estándar"
 #. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: player: the name of the special playlist for queueing a dance
 msgid "QueueDance"
-msgstr "Poner baile en cola"
+msgstr "baile en cola"
 
 #. CONTEXT: tooltip for desktop icon
 msgid "Ballroom Music Player"
@@ -470,11 +470,11 @@ msgstr "Selección de canciones"
 
 #. CONTEXT: configuration: display settings for: side-by-side song list (suggestion: combined view: song list)
 msgid "Side-by-Side Song List"
-msgstr "Lista de canciones lado a lado"
+msgstr "Lista de canciones vista en paralelo"
 
 #. CONTEXT: configuration: display settings for: side-by-side song selection (suggestion: combined view: song selection)
 msgid "Side-by-Side Song Selection"
-msgstr "Selección de canciones lado a lado"
+msgstr "Selección de canciones vista en paralelo"
 
 #. CONTEXT: configuration: display settings for: music manager
 #. CONTEXT: manage-ui: name of music manager notebook tab
@@ -2567,11 +2567,7 @@ msgstr "Establecer la ubicación de la carpeta de música"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_location"
-msgstr "El primer paso es configurar la ubicación de tu carpeta de música.\n"
-"=> Selecciona el botón 'Configurar'. <br>\n"
-"En la ventana 'Configuración BDJ4' se muestra la sección 'General'. El primer elemento de 'General' es 'Carpeta de música'.\n"
-"=> Cambia la 'Carpeta de música' a la ubicación donde tienes tu música.\n"
-"=> Deja abierta la ventana 'Configuración BDJ4'."
+msgstr "El primer paso es configurar la ubicación de tu carpeta de música. => Selecciona el botón 'Configurar'. <br>En la ventana 'Configuración BDJ4' se muestra la sección 'General'. El primer elemento de 'General' es 'Carpeta de música'. => Cambia la 'Carpeta de música' a la ubicación donde tienes tu música. => Deja abierta la ventana 'Configuración BDJ4'."
 
 #. CONTEXT: title of a getting started help section
 msgid "Verify the Configured Dances"
@@ -2592,7 +2588,7 @@ msgstr "Introducción / Primeros pasos"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_intro"
-msgstr "Este asistente te guiará por unos pocos pasos para ayudarte a empezar."
+msgstr "Este asistente te guiará por unos pocos pasos para ayudarte a empezar.\n"
 "=> Selecciona el botón 'Siguiente' para continuar con el siguiente paso."
 
 #. CONTEXT: title of a getting started help section

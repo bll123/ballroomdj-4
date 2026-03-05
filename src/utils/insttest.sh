@@ -208,7 +208,8 @@ function checkUpdaterClean {
     fn="${DATADIR}/Standardrunden.pldances"
   fi
   if [[ $section == es_ES ]]; then
-    fn="${DATADIR}/estándares.pldances"
+    # fn="${DATADIR}/estándares.pldances"
+    fn="${DATADIR}/Rondas de estándar.pldances"
   fi
   if [[ $section == fi_FI ]]; then
     fn="${DATADIR}/vakiokierrokset.pldances"
@@ -244,7 +245,10 @@ function checkUpdaterClean {
     fn="${DATADIR}/Tanz zur Warteschlange.pldances"
   fi
   if [[ $section == es_ES ]]; then
-    fn="${DATADIR}/Danza en cola.pldances"
+    # old name
+    # fn="${DATADIR}/Danza en cola.pldances"
+    # new name
+    fn="${DATADIR}/baile en cola.pldances"
   fi
   if [[ $section == fi_FI ]]; then
     fn="$DATADIR/Jonotanssi.pldances"
@@ -745,7 +749,10 @@ function checkInstallation {
       fnb="${DATADIR}/QueueDance.pldances"
     fi
     if [[ $section == es_ES ]]; then
-      fna="${DATADIR}/Danza en cola.pldances"
+      # old name
+      # fna="${DATADIR}/Danza en cola.pldances"
+      # new name
+      fna="${DATADIR}/baile en cola.pldances"
       fnb="${DATADIR}/QueueDance.pldances"
     fi
     if [[ $section == fi_FI ]]; then
@@ -803,7 +810,10 @@ function checkInstallation {
       fnb="${DATADIR}/QueueDance.pl"
     fi
     if [[ $section == es_ES ]]; then
-      fna="$DATADIR/Danza en cola.pl"
+      # old name
+      # fna="$DATADIR/Danza en cola.pl"
+      # new name
+      fna="$DATADIR/baile en cola.pl"
       fnb="${DATADIR}/QueueDance.pl"
     fi
     if [[ $section == fi_FI ]]; then
@@ -850,7 +860,8 @@ function checkInstallation {
       fn="${DATADIR}/Standardrunden.pldances"
     fi
     if [[ $section == es_ES ]]; then
-      fn="${DATADIR}/estándares.pldances"
+      # fn="${DATADIR}/estándares.pldances"
+      fn="${DATADIR}/Rondas de estándar.pldances"
     fi
     if [[ $section == fi_FI ]]; then
       fn="${DATADIR}/vakiokierrokset.pldances"

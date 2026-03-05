@@ -490,8 +490,16 @@ data/[^/]*/profile-65534$
 data/gtk-static\.css$
 data/gtk-static\.css\.bak\.1$
 
-# 4.17.14 2026-3-2 name change for de queuedance playlist
+# 4.17.14 2026-3-2 name change for de/es queuedance playlist
 data/Schlangentanz\.pldances$
 data/Schlangentanz\.pldances.bak.1$
 data/Schlangentanz\.pl$
 data/Schlangentanz\.pl\.bak\.1$
+data/estándares\.pldances$
+data/estándares\.pldances\.bak\.1$
+data/estándares\.pl$
+data/estándares\.pl\.bak\.1$
+data/Danza en cola\.pl$
+data/Danza en cola\.pl\.bak\.1$
+data/Danza en cola\.pldances$
+data/Danza en cola\.pldances\.bak\.1$
