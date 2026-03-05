@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-09-27\n"
-"PO-Revision-Date: 2026-02-28 19:11\n"
+"PO-Revision-Date: 2026-03-05 17:19\n"
 "Last-Translator: manually generated\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -29,7 +29,7 @@ msgstr "BallroomDJ 4 - Reproductor de Música de Salón de Baile"
 
 #. CONTEXT: website : descriptive text A
 msgid "BallroomDJ 4 (BDJ4) is a music player designed for desktop and laptop computers (and will work on some tablets). It is designed to be able to play music for the entire evening without any intervention."
-msgstr "BallroomDJ 4 (BDJ4) es un reproductor de música diseñado para ordenadores de sobremesa y portátiles (y funcionará en algunas tabletas). Está diseñado para poder reproducir música durante toda la tarde sin ninguna intervención."
+msgstr "BallroomDJ 4 (BDJ4) es un reproductor de música diseñado para ordenadores de sobremesa y portátiles (y funcionará en algunas tabletas). Está diseñado para poder reproducir música durante toda una tarde sin ninguna intervención."
 
 #. CONTEXT: website : image alt-text for main logo
 msgid "BallroomDJ 4 - The Ballroom Music Player"

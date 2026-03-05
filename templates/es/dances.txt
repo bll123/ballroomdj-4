@@ -22,13 +22,13 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..otros
+..Otros
 KEY
 ..1
 ANNOUNCE
 ..
 DANCE
-..Chachachá
+..Cha-cha-chá
 LOWMPM
 ..30
 HIGHMPM
@@ -40,7 +40,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latino
+..Latino
 KEY
 ..2
 ANNOUNCE
@@ -76,13 +76,13 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latino
+..Latino
 KEY
 ..4
 ANNOUNCE
 ..
 DANCE
-..Pasodoble
+..Paso Doble
 LOWMPM
 ..60
 HIGHMPM
@@ -94,7 +94,7 @@ TAGS
 TIMESIG
 ..2/4
 TYPE
-..latino
+..Latino
 KEY
 ..5
 ANNOUNCE
@@ -130,7 +130,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latino
+..Latino
 KEY
 ..7
 ANNOUNCE
@@ -148,7 +148,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..otros
+..Otros
 KEY
 ..8
 ANNOUNCE
@@ -166,7 +166,7 @@ TAGS
 TIMESIG
 ..2/4
 TYPE
-..latino
+..Latino
 KEY
 ..9
 ANNOUNCE
@@ -238,4 +238,4 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..otros
+..Otros

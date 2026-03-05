@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2025-09-23\n"
-"PO-Revision-Date: 2026-02-21\n"
+"POT-Creation-Date: 2026-03-02\n"
+"PO-Revision-Date: 2026-03-05 17:19\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
@@ -87,64 +87,64 @@ msgid "latin"
 msgstr "ラテン"
 
 #. CONTEXT: configuration file: dance type
-msgid "club"
-msgstr "クラブ"
+msgid "other"
+msgstr ""
 
-#. CONTEXT: configuration file: rating
+#. CONTEXT: configuration file: rating: songs can be assigned this rating
 msgid "Unrated"
 msgstr "未評価"
 
-#. CONTEXT: configuration file: rating
+#. CONTEXT: configuration file: rating: songs can be assigned this rating
 msgid "Poor"
 msgstr "貧しい"
 
-#. CONTEXT: configuration file: rating
+#. CONTEXT: configuration file: rating: songs can be assigned this rating
 msgid "Good"
 msgstr "グッド"
 
-#. CONTEXT: configuration file: rating
+#. CONTEXT: configuration file: rating: songs can be assigned this rating
 msgid "Great"
 msgstr "素晴らしい"
 
-#. CONTEXT: configuration file: genre
-#. CONTEXT: configuration: controller: no controller
+#. CONTEXT: configuration file: genre: songs can be assigned this genre
+msgctxt "Genre"
 msgid "None"
-msgstr "なし"
+msgstr ""
 
-#. CONTEXT: configuration file: genre
+#. CONTEXT: configuration file: genre: songs can be assigned this genre
 msgid "Ballroom Dance"
 msgstr "社交ダンス"
 
-#. CONTEXT: configuration file: genre
+#. CONTEXT: configuration file: genre: songs can be assigned this genre
 msgid "Classical"
 msgstr "クラシック"
 
-#. CONTEXT: configuration file: genre
+#. CONTEXT: configuration file: genre: songs can be assigned this genre
 msgid "Jazz"
 msgstr "ジャズ"
 
-#. CONTEXT: configuration file: genre
+#. CONTEXT: configuration file: genre: songs can be assigned this genre
 msgid "Rock"
 msgstr "ロック"
 
-#. CONTEXT: configuration file: dance level
+#. CONTEXT: configuration file: dance level: songs can be assigned this dance-level
 msgid "Easy"
 msgstr "簡単"
 
-#. CONTEXT: configuration file: dance level
+#. CONTEXT: configuration file: dance level: songs can be assigned this dance-level
 msgid "Normal"
 msgstr "ノーマル"
 
-#. CONTEXT: configuration file: dance level
+#. CONTEXT: configuration file: dance level: songs can be assigned this dance-level
 msgid "Advanced"
 msgstr "上級"
 
-#. CONTEXT: configuration file: status
-#. CONTEXT: status: default status (new) when status is not set
+#. CONTEXT: configuration file: status: songs can be assigned this status
+#. CONTEXT: status: default status (New) assigned to a song when status is not set
 msgid "New"
 msgstr "新しい"
 
-#. CONTEXT: configuration file: status
+#. CONTEXT: configuration file: status: songs can be assigned this status
 #. CONTEXT: copy audio tags: copy of audio tags completed
 #. CONTEXT: database update: status message
 msgid "Complete"
@@ -176,40 +176,8 @@ msgid "Queue E"
 msgstr "キューE"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: playerui: button: tooltip: play or pause the song
-msgid "Play / Pause"
-msgstr "再生/一時停止"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: playerui: button: fade out the song and stop playing it
-msgid "Fade"
-msgstr "フェード"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-msgid "Repeat"
-msgstr "リピート"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: playerui: button: pause at the end of the song (toggle)
-msgid "Pause at End"
-msgstr "終了時のポーズ"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: playerui: button: tooltip: start playing the next song (immediate)
-msgid "Next Song"
-msgstr "次の曲"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
-#. CONTEXT: (verb) song-selection: queue a song to be played
-#. CONTEXT: (verb) external request dialog: queue the selected file
-msgid "Queue"
-msgstr "キュー"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button)
-msgid "Queue 5"
-msgstr "キュー5"
+msgid "Clear & Play"
+msgstr "クリア＆プレイ"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: music queue: button: clear the queue
@@ -217,19 +185,56 @@ msgid "Clear Queue"
 msgstr "クリアキュー"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-msgid "Clear & Play"
-msgstr "クリア＆プレイ"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: audio identification: next song
-#. CONTEXT: song editor : next song
-#. CONTEXT: helperui: proceed to the next step
-msgid "Next"
-msgstr "次のページ"
+#. CONTEXT: playerui: button: fade out the song and stop playing it
+msgid "Fade"
+msgstr "フェード"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 msgid "Mute"
 msgstr "ミュート"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgctxt "Page"
+msgid "Next"
+msgstr ""
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: tooltip: start playing the next song (immediate)
+msgid "Next Song"
+msgstr "次の曲"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: pause at the end of the song (toggle)
+msgid "Pause at End"
+msgstr "終了時のポーズ"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: tooltip: play or pause the song
+msgid "Play / Pause"
+msgstr "再生/一時停止"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
+#. CONTEXT: (verb) song-selection: queue a song to be played
+#. CONTEXT: (verb) external request dialog: queue the selected file
+msgctxt "Verb"
+msgid "Queue"
+msgstr ""
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button)
+msgid "Queue 5"
+msgstr "キュー5"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Repeat"
+msgstr "リピート"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow)
+#. CONTEXT: playerui: the current speed for song playback
+msgid "Speed"
+msgstr "スピード"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: update database: button to stop the database update process
@@ -240,12 +245,6 @@ msgstr "ストップ"
 #. CONTEXT: playerui: The current volume of the song
 msgid "Volume"
 msgstr "ボリューム"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow)
-#. CONTEXT: playerui: the current speed for song playback
-msgid "Speed"
-msgstr "スピード"
 
 #. CONTEXT: The name of the 'standardrounds' playlist file
 msgid "standardrounds"
@@ -297,9 +296,9 @@ msgid "Name"
 msgstr "名称"
 
 #. CONTEXT: configuration: audio source: type of source
-#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+msgctxt "AudioSource"
 msgid "Type"
-msgstr "タイプ"
+msgstr ""
 
 #. CONTEXT: configuration: audio source: the remote client URL
 #. CONTEXT: import playlist: import location
@@ -340,12 +339,12 @@ msgstr ""
 msgid "Connection OK"
 msgstr ""
 
-#. CONTEXT: configuration: qr code: title display for mobile marquee
+#. CONTEXT: configuration: qr code: a message displayed above the qr code
 #. CONTEXT: configuration: options associated with the mobile marquee
 msgid "Mobile Marquee"
 msgstr "モバイル・マーキー"
 
-#. CONTEXT: configuration: qr code: title display for mobile remote control
+#. CONTEXT: configuration: qr code: a message displayed above the qr code
 #. CONTEXT: configuration: options associated with mobile remote control
 msgid "Mobile Remote Control"
 msgstr "モバイル・リモコン"
@@ -381,6 +380,11 @@ msgstr "4/4"
 #. CONTEXT: configuration: edit the dance table
 msgid "Edit Dances"
 msgstr "ダンスを編集する"
+
+#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+msgctxt "Dance"
+msgid "Type"
+msgstr ""
 
 #. CONTEXT: configuration: dances: play the selected announcement before the dance is played
 msgid "Announcement"
@@ -543,9 +547,9 @@ msgstr "プロフィールカラー"
 msgid "BPM"
 msgstr "ビーム伝搬法"
 
-#. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
-msgid "Locale"
-msgstr "ロケール"
+#. CONTEXT: configuration: the languages for the user interface
+msgid "Display Language"
+msgstr ""
 
 #. CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux.
 msgid "Startup Script"
@@ -732,8 +736,9 @@ msgid "Music Queues"
 msgstr "ミュージック・キュー"
 
 #. CONTEXT: (noun) configuration: queue: select which queue to configure
-msgid "Queue_noun"
-msgstr "列"
+msgctxt "Noun"
+msgid "Queue"
+msgstr ""
 
 #. CONTEXT: (noun) configuration: queue: the name of the music queue
 msgid "Queue Name"
@@ -877,7 +882,7 @@ msgstr "デフォルト音量"
 msgid "Completion Message"
 msgstr "完了メッセージ"
 
-#. CONTEXT: configuration: the clock format
+#. CONTEXT: configuration: type of fade to apply
 msgid "Fade Type"
 msgstr ""
 
@@ -887,6 +892,11 @@ msgstr "スピードリセットを表示"
 
 #. CONTEXT: configuration: the clock format
 msgid "Clock"
+msgstr ""
+
+#. CONTEXT: configuration: controller: no controller
+msgctxt "Controller"
+msgid "None"
 msgstr ""
 
 #. CONTEXT: configuration: edit the dance ratings table
@@ -1099,6 +1109,10 @@ msgstr "お待ちください…"
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr "BDJ4 のインストール先フォルダを入力します。"
 
+#. CONTEXT: installer: language to install
+msgid "Preferred Language"
+msgstr ""
+
 #. CONTEXT: installer: asking where BallroomDJ 3 is installed
 #, c-format
 msgid "Enter the folder where %s is installed."
@@ -1109,9 +1123,7 @@ msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
 msgstr "BallroomDJ 3がインストールされていない場合は、空欄のままにしてください。"
 
 #. CONTEXT: installer: instructions
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installations."
+msgid "The conversion process will only run for new installations and for re-installations."
 msgstr "変換処理は、新規インストールと再インストールでのみ実行されます。"
 
 #. CONTEXT: installer: label for entry field asking for BDJ3 location
@@ -1342,11 +1354,16 @@ msgstr "追加日"
 msgid "Prevent Rename"
 msgstr "名前の変更を防ぐ"
 
-#. CONTEXT: label: disc number
+#. CONTEXT: label: disc number (Audio Tag: The disc number of a disc in a collection)
 msgid "Disc"
 msgstr "ディスク"
 
-#. CONTEXT: label: total disc count
+#. CONTEXT: label: disc number (short name for listing)
+msgctxt "Short"
+msgid "Disc"
+msgstr ""
+
+#. CONTEXT: label: total disc count (Audio Tag: The total number of discs in a collection)
 msgid "Total Discs"
 msgstr "ディスク"
 
@@ -1366,7 +1383,7 @@ msgstr "お気に入り"
 msgid "Genre"
 msgstr "ジャンル"
 
-#. CONTEXT: label: grouping
+#. CONTEXT: label: grouping (typically used to group classical movements in a work together)
 msgid "Grouping"
 msgstr ""
 
@@ -1394,6 +1411,11 @@ msgstr "タグ"
 #. CONTEXT: label: track number
 msgid "Track"
 msgstr "トラック"
+
+#. CONTEXT: label: track number (short name for listing)
+msgctxt "Short"
+msgid "Track"
+msgstr ""
 
 #. CONTEXT: label: total track count
 msgid "Total Tracks"
@@ -1523,6 +1545,14 @@ msgstr "削除"
 msgid "Please wait… (%1$d/%2$d)"
 msgstr "お待ちください… (%1$d/%2$d)"
 
+#. CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue'
+msgid "Queue Playlist"
+msgstr "キュー・プレイリスト"
+
+#. CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue
+msgid "Queue Dance"
+msgstr "キュー・ダンス"
+
 #. CONTEXT: music queue: button: move the selected song to the top of the queue
 msgid "Move to Top"
 msgstr "このページのトップへ"
@@ -1549,14 +1579,6 @@ msgstr "編集"
 #. CONTEXT: song editor : play song
 msgid "Play"
 msgstr "プレー"
-
-#. CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue'
-msgid "Queue Playlist"
-msgstr "キュー・プレイリスト"
-
-#. CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue
-msgid "Queue Dance"
-msgstr "キュー・ダンス"
 
 #. CONTEXT: playerui: button: reset speed to 100%
 msgid "100%"
@@ -1712,6 +1734,12 @@ msgstr "最初"
 #. CONTEXT: song editor : previous song
 msgid "Previous"
 msgstr "前へ"
+
+#. CONTEXT: audio identification: next song
+#. CONTEXT: song editor : next song
+msgctxt "Song"
+msgid "Next"
+msgstr ""
 
 #. CONTEXT: audio identification: save data
 #. CONTEXT: song editor : save data
@@ -2116,8 +2144,7 @@ msgid "Update from Audio File Tags"
 msgstr "オーディオ・ファイル・タグからの更新"
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid ""
-"Updates the information in the BallroomDJ database from the audio file tags."
+msgid "Updates the information in the BallroomDJ database from the audio file tags."
 msgstr "オーディオファイルのタグから BallroomDJ データベースの情報を更新します。"
 
 #. CONTEXT: database update: writes the tags in the database to the audio files
@@ -2125,9 +2152,7 @@ msgid "Write Tags to Audio Files"
 msgstr "オーディオファイルにタグを書き込む"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid ""
-"Writes the audio file tags using the information from the BallroomDJ "
-"database."
+msgid "Writes the audio file tags using the information from the BallroomDJ database."
 msgstr "BallroomDJ データベースの情報を使って、オーディオファイルのタグを書き込みます。"
 
 #. CONTEXT: database update: update from itunes
@@ -2137,8 +2162,7 @@ msgstr "%sからの更新情報"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid ""
-"Updates the information in the BallroomDJ database from the %s database."
+msgid "Updates the information in the BallroomDJ database from the %s database."
 msgstr "%s データベースから BallroomDJ データベースの情報を更新する。"
 
 #. CONTEXT: database update: rebuilds the database
@@ -2146,9 +2170,7 @@ msgid "Rebuild Database"
 msgstr "データベースの再構築"
 
 #. CONTEXT: database update: rebuild: help text
-msgid ""
-"Replaces the BallroomDJ database in its entirety. All changes to the "
-"database will be lost."
+msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
 msgstr "BallroomDJ データベースを完全に置き換えます。データベースへのすべての変更は失われます。"
 
 #. CONTEXT: update database: select database update action
@@ -2232,8 +2254,7 @@ msgid "Count"
 msgstr "カウント"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid ""
-"Maximum\n"
+msgid "Maximum\n"
 "Play Time"
 msgstr "最大プレー時間"
 
@@ -2322,6 +2343,11 @@ msgstr ""
 #, c-format
 msgid "%s Helper"
 msgstr "%sヘルパー"
+
+#. CONTEXT: helperui: proceed to the next step
+msgctxt "Help-Section"
+msgid "Next"
+msgstr ""
 
 #. CONTEXT: starterui: menu item: stop all BDJ4 processes
 #, c-format
