@@ -42,7 +42,7 @@ while test $# -gt 0; do
       keepfirst=T
       noclean=--noclean
       ;;
-    --onlyfirst)
+    --onlyfirst|--firstonly)
       onlyfirst=T
       ;;
     --readonly)
@@ -783,6 +783,7 @@ function checkInstallation {
       fna="${DATADIR}/Танец в очередь.pldances"
       fnb="${DATADIR}/QueueDance.pldances"
     fi
+
     res=$(($res+1))  # queuedance.pldances file
     if [[ $fin == T && -f ${fna} ]]; then
       if [[ -f ${fnb} ]]; then
@@ -1100,11 +1101,12 @@ function checkInstallation {
 }
 
 function cleanInstTest {
-  test -d "$UNPACKDIR" && rm -rf "$UNPACKDIR"
-  test -d "$TARGETTOPDIR" && rm -rf "$TARGETTOPDIR"
-  test -d "$TARGETTOPALTDIR" && rm -rf "$TARGETTOPALTDIR"
   test -d "$DATATOPDIR" && rm -rf "$DATATOPDIR"
   test -d "$DATATOPALTDIR" && rm -rf "$DATATOPALTDIR"
+  test -d "$TARGETTOPDIR" && rm -rf "$TARGETTOPDIR"
+  test -d "$TARGETTOPALTDIR" && rm -rf "$TARGETTOPALTDIR"
+  test -d "$UNPACKDIR" && rm -rf "$UNPACKDIR"
+
   # linux
   fn="$HOME/Desktop"
   if [[ -d $fn ]]; then
@@ -1312,7 +1314,7 @@ for section in de_DE es_ES ja_JP nl_BE nl_NL ru_RU ; do
   cleanInstTest
   resetInstallDir
 
-  # main test db : rebuild of standard test database, nl_BE
+  # main test db : rebuild of standard test database
   tname=new-install
   echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \

@@ -4,7 +4,11 @@
 
 <!--
 
-**4.17.14 2026-3---**
+**4.17.15 2026-3---**
+
+-->
+
+**4.17.14 2026-3-6**
 
 * Bug Fixes:
     * Configuration: Fix size limits of some configuration items.
@@ -16,8 +20,6 @@
 * Translations:
     * German (Deutsch) is now professionally translated by [Simon Thomas](https://www.proz.com/translator/2935381)
     * Spanish (Español) is now professionally translated by [Daniel de la Nava](https://www.proz.com/translator/4555219).
-
--->
 
 **4.17.13.1 2026-2-26**
 
@@ -1490,4 +1492,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2026-02-26 06:57:03; BDJ4 version 4.17.13.1)_
+<br>_(Updated 2026-03-06 12:23:45; BDJ4 version 4.17.14)_

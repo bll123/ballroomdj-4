@@ -46,6 +46,12 @@ for arg in "$@"; do
       INSTTEST=F
       TESTSUITE=F
       ;;
+    --nocheck)
+      TCHECK=F
+      ;;
+    --nodbtest)
+      DBTEST=F
+      ;;
     --ts)
       TBUILD=F
       TCHECK=F

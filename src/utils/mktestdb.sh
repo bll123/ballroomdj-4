@@ -100,6 +100,10 @@ while test $# -gt 0; do
       args+=" "
       MUSICDIR=$1
       ;;
+    --nochanges)
+      # ignored
+      shift
+      ;;
     *)
       echo "unknown argument $1" >&2
       exit 1

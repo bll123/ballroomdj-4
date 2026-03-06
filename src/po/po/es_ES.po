@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2026-03-02\n"
-"PO-Revision-Date: 2026-03-05 19:58\n"
+"PO-Revision-Date: 2026-03-06 17:08\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -2503,7 +2503,7 @@ msgstr "El reproductor %s está activo"
 
 #. CONTEXT: controller: MacOS Now Playing
 msgid "MacOS Now Playing"
-msgstr "MacOS Now Playing"
+msgstr "MacOS Ahora suena"
 
 #. CONTEXT: title of a getting started help section
 msgid "How to get Support"
