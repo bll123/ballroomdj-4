@@ -31,7 +31,7 @@ _Dance&nbsp;Level_, _Status_, _Favorite_, and _Playable&nbsp;Status_.
 <br><span id="caption" style="color:#4559bf;">__Filter Dialog - Default filters__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![filter-dialog-all](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/FilterDisplay-Dialog-All-A.png)
+![filter-dialog-all](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/FilterDisplay-Dialog-All-B.png)
 <br><span id="caption" style="color:#4559bf;">__Filter Dialog - All filters enabled__</span> </div>
 
 #### Quick Edit
@@ -44,4 +44,4 @@ By default, all fields are displayed.  Select the fields that you want
 displayed.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-12-08 10:34:23; BDJ4 version 4.17.7)_
+<br>_(Updated 2026-03-10 10:10:34; BDJ4 version 4.17.14)_

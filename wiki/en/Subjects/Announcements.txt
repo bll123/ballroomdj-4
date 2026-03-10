@@ -72,7 +72,7 @@ In __Configure&nbsp;/&nbsp;Music&nbsp;Queues__, turn on the
 __Play&nbsp;Announcements__ switch.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![ann-mq](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-mq-C.png)
+![ann-mq](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-mq-D.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 #### Configuring a Playlist to Play Announcements
@@ -81,8 +81,8 @@ In __Manage&nbsp;/&nbsp;Playlist&nbsp;Management__, load the playlist to be
 configured, and turn on the __Play&nbsp;Announcements__ switch.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![ann-playlist](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-playlist-B.png)
+![ann-playlist](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-playlist-C.png)
 <br><span id="caption" style="color:#4559bf;">__Manage / Playlist Management__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_
+<br>_(Updated 2026-03-10 10:10:34; BDJ4 version 4.17.14)_

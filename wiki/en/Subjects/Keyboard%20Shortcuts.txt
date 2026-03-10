@@ -25,11 +25,11 @@ __Multi-media Play__: Plays the selected song.
 
 #### Song Editor
 
-__Control-P__: Moves to the previous song.
+__Control-p__: Moves to the previous song.
 
-__Control-N__: Moves to the next song.
+__Control-n__: Moves to the next song.
 
-__Control-S__: Saves the changes.  Note that after changing a field,
+__Control-s__: Saves the changes.  Note that after changing a field,
 the focus needs to moved to another field in order for the changes to
 be saved.
 
@@ -39,7 +39,7 @@ __Multi-media Play__: Plays the selected song.
 
 __Multi-media Play__: Plays the selected song.
 
-__Control-S__: Swap songs.
+__Control-s__: Swap songs.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_
+<br>_(Updated 2026-03-10 10:10:34; BDJ4 version 4.17.14)_

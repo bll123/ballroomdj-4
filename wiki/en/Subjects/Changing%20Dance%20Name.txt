@@ -65,7 +65,7 @@ active. Make sure no other change indicators are active, as only the
 dance should be changed.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![chg-dnc-se](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/chg-dnc-se-A.png)
+![chg-dnc-se](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/chg-dnc-se-B.png)
 <br><span id="caption" style="color:#4559bf;">__Song Editor__</span> </div>
 
 In the __Actions__ menu, select __Apply&nbsp;Edit&nbsp;All__.
@@ -94,4 +94,4 @@ button to remove the old dance name.
 <br>[Subjects / Batch Editing](en-Subjects-Batch%20Editing)
 
 [Wiki Home](Home)
-<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_
+<br>_(Updated 2026-03-10 10:31:13; BDJ4 version 4.17.14)_

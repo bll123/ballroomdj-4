@@ -36,8 +36,8 @@ the music queue settings.
 Select the __Queue__ button to queue the song.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![ext-req](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/ext-req-E.png)
+![ext-req](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/ext-req-F.png)
 <br><span id="caption" style="color:#4559bf;">__Player / External Request__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_
+<br>_(Updated 2026-03-10 10:10:34; BDJ4 version 4.17.14)_

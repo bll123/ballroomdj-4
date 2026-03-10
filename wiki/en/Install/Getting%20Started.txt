@@ -62,7 +62,7 @@ the list on the left side of the window.
 <!-- appears in configuration/organization also -->
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![gs-config-org](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Organization-H.png)
+![gs-config-org](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Organization-I.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Organization__</span> </div>
 
 In the _Organization_ section, the default organization is
@@ -152,7 +152,7 @@ _Music&nbsp;Manager_ tab and check for other songs that need to have
 the dance set.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![gs-se](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-se-C.png)
+![gs-se](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-se-D.png)
 <br><span id="caption" style="color:#4559bf;">__Manage / Song Editor__</span> </div>
 
 Leave the management window open.
@@ -210,4 +210,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2026-01-05 19:11:59; BDJ4 version 4.17.8)_
+<br>_(Updated 2026-03-10 10:10:34; BDJ4 version 4.17.14)_

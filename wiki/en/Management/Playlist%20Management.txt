@@ -24,7 +24,7 @@ playlist controls are available for song lists, seuqences and
 automatic playlists.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![plmgmt-controls](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-controls-B.png)
+![plmgmt-controls](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-controls-C.png)
 <br><span id="caption" style="color:#4559bf;">__Manage / Playlist Management / Playlist Controls__</span> </div>
 
 __Maximum&nbsp;Play&nbsp;Time__ sets the maximum duration of a song for
@@ -192,4 +192,4 @@ __Edit&nbsp;/&nbsp;Delete__ will delete the currently loaded playlist
 from your storage device and start a new automatic playlist.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_
+<br>_(Updated 2026-03-10 10:10:34; BDJ4 version 4.17.14)_
