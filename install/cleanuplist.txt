@@ -200,6 +200,10 @@ out\.txt$
 # 2026-2-16 removed, no longer used
 install/win-clean-inst\.bat$
 
+# 2026-3-11 remove old switch-on/off.svg; now lives in main img/ dir
+templates/img/switch-on\.svg$
+templates/img/switch-off\.svg$
+
 ####
 # mac-os
 
@@ -503,3 +507,15 @@ data/Danza en cola\.pl$
 data/Danza en cola\.pl\.bak\.1$
 data/Danza en cola\.pldances$
 data/Danza en cola\.pldances\.bak\.1$
+
+# 4.18.0 2026-3-11 remove old switch-on/off; now lives in base img/ dir.
+img/profile\d\d/switch-on\.svg$
+img/profile\d\d/switch-on\.svg\.bak\.1$
+img/profile\d\d/switch-off\.svg$
+img/profile\d\d/switch-off\.svg\.bak\.1$
+img/profile\d\d/switch-on-col-bg\.svg$
+img/profile\d\d/switch-off-col-bg\.svg$
+img/profile\d\d/switch-on-col-circ\.svg$
+img/profile\d\d/switch-off-col-circ\.svg$
+img/profile\d\d/switch-on-marks\.svg$
+img/profile\d\d/switch-off-marks\.svg$

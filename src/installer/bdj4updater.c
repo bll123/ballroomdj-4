@@ -127,10 +127,6 @@ enum {
   /* disable-group (for testing) was getting set to yes */
   UPD_FIX_PL_DISABLE_GRP,
 
-  /* 2026-2-25 4.17.13 */
-  /* 'club' was changed to 'other' */
-  UPD_FIX_DANCE_TYPE,
-
   UPD_MAX,
 };
 enum {
@@ -142,7 +138,6 @@ static datafilekey_t upddfkeys[] = {
   { "CONVERTED",          UPD_CONVERTED,            VALUE_NUM, NULL, DF_NORM },
   { "FIRSTVERSION",       UPD_FIRST_VERS,           VALUE_STR, NULL, DF_NORM },
   { "FIX_AF_TAGS",        UPD_FIX_AF_TAGS,          VALUE_NUM, NULL, DF_NORM },
-  { "FIX_DANCE_TYPE",     UPD_FIX_DANCE_TYPE,       VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_DATE_ADDED",  UPD_FIX_DB_DATE_ADDED,    VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_DATE_ADD_B",  UPD_FIX_DB_DATE_ADDED_B,  VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_DISCNUM",     UPD_FIX_DB_DISCNUM,       VALUE_NUM, NULL, DF_NORM },
@@ -625,34 +620,6 @@ main (int argc, char *argv [])
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "unable to load all data files");
     fprintf (stderr, "unable to load all data files\n");
     exit (1);
-  }
-
-  if (statusflags [UPD_FIX_DANCE_TYPE] == UPD_NOT_DONE) {
-    dance_t         *dances;
-    slistidx_t      didx;
-    slistidx_t      iteridx;
-    int             otheridx;
-    datafileconv_t  conv;
-
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.17.13 : fix dance-type");
-    dances = bdjvarsdfGet (BDJVDF_DANCES);
-    danceStartIterator (dances, &iteridx);
-
-    conv.invt = VALUE_STR;
-    conv.str = _("other");
-    dnctypesConv (&conv);
-    otheridx = conv.num;
-
-    while ((didx = danceIterate (dances, &iteridx)) >= 0) {
-      int64_t   tval;
-
-      tval = danceGetNum (dances, didx, DANCE_TYPE);
-      if (tval == LIST_VALUE_INVALID) {
-        danceSetNum (dances, didx, DANCE_TYPE, otheridx);
-      }
-    }
-    danceSave (dances, NULL, -1);
-    nlistSetNum (updlist, UPD_FIX_DANCE_TYPE, UPD_COMPLETE);
   }
 
   logMsg (LOG_INSTALL, LOG_INFO, "loaded data files A");
@@ -1245,7 +1212,7 @@ updaterCleanFiles (void)
     if (*pattern == '\0') {
       continue;
     }
-    // logMsg (LOG_INSTALL, LOG_IMPORTANT, "pattern: %s", pattern); //
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "pattern: %s", pattern); //
 
     /* on any change of directory or flag, process what has been queued */
     if (strcmp (pattern, "::macosonly") == 0 ||
@@ -1301,7 +1268,7 @@ updaterCleanFiles (void)
     }
 
     snprintf (fullpattern, sizeof (fullpattern), "%s/%s", basedir, pattern);
-    // logMsg (LOG_INSTALL, LOG_IMPORTANT, "clean %s", fullpattern); //
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "clean %s", fullpattern); //
     rx = regexInit (fullpattern);
     nlistSetData (cleanlist, count, rx);
     ++count;
