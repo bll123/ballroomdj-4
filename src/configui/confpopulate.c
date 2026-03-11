@@ -250,18 +250,6 @@ fprintf (stderr, "sval: %s\n", sval);
     if (widx == CONFUI_WIDGET_UI_ACCENT_COLOR && gui->uiitem [widx].changed) {
       templateImageCopy (sval);
     }
-
-    if (widx == CONFUI_SPINBOX_RC_HTML_TEMPLATE) {
-      uisbtext_t    *sb;
-
-      /* only copy if the spinbox changed */
-
-      sb = gui->uiitem [widx].sb;
-      if (uisbtextIsChanged (sb)) {
-        sval = bdjoptGetStr (gui->uiitem [widx].bdjoptIdx);
-        templateHttpCopy (sval, "bdj4remote.html");
-      }
-    }
   } /* for each item */
 
   selidx = uisbtextGetValue (

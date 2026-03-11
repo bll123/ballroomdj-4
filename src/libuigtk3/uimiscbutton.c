@@ -88,7 +88,7 @@ uiColorButtonSetColor (uiwcont_t *uiwidget, const char *color)
 {
   GdkRGBA     rgba;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_COLOR_BUTTON, "col-button-get")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_COLOR, "col-button-get")) {
     return;
   }
 

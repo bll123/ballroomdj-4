@@ -306,7 +306,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiwidgetp = uiCreateButton (
       audioidint->callbacks [UIAUDID_CB_NEXT],
       /* CONTEXT: audio identification: next song */
-      C_("Song","Next"), NULL);
+      C_("Song","Next"), NULL, NULL);
   uiButtonSetRepeat (uiwidgetp, REPEAT_TIME);
   uiBoxPackStart (hbox, uiwidgetp);
   audioidint->wcont [UIAUDID_W_BUTTON_NEXT] = uiwidgetp;
