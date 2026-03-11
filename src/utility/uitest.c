@@ -1714,8 +1714,9 @@ uitestUISpinbox (uitest_t *uitest)
   uitest->wcont [UITEST_W_SB_DBL_DFLT] = uiwidgetp;
 
   uitest->sbnumdbldef = uisbnumCreate (hbox, 10);
-  uisbnumSetLimits (uitest->sbnumdbldef, -1.0, 20.0, 0);
-  uisbnumSetIncrements (uitest->sbnumdbldef, 1.0, 5.0);
+  uisbnumSetLimits (uitest->sbnumdbldef, 0.0, 10.0, 1);
+  uisbnumSetIncrements (uitest->sbnumdbldef, 0.1, 5.0);
+  uisbnumSetType (uitest->sbnumdbldef, SBNUM_NUM_DEFAULT);
   uisbnumSetValue (uitest->sbnumdbldef, 5.0);
 
   uiBoxPostProcess (hbox);

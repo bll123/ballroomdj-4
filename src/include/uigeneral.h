@@ -37,6 +37,7 @@ uiwcont_t * uiCreateColonLabel (const char *txt);
 
 enum {
   UIENTRY_VAL_TIMER = 400,
+  UIENTRY_VAL_TIMER_LONG = 800,
 };
 
 typedef int (*uientryval_t)(uiwcont_t *uiwidget, const char *label, void *udata);

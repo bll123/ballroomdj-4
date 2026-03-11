@@ -51,7 +51,7 @@ uisbtextCreate (uiwcont_t *box)
   uiWidgetSetMarginStart (sbtext->display, 4);
   uiWidgetSetMarginEnd (sbtext->display, 4);
   uiLabelSetMinWidth (sbtext->display, 5);
-  sbtext->sb = uisbCreate (box, sbtext->display);
+  sbtext->sb = uisbCreate (box, sbtext->display, SB_IS_TEXT);
   sbtext->txtlist = NULL;
   sbtext->idxlist = NULL;
   sbtext->old_index = LIST_VALUE_INVALID;
@@ -278,10 +278,10 @@ uisbtextCBHandler (void *udata, int32_t dir)
     return UICB_STOP;
   }
 
-  if (dir == SB_INCREMENT) {
+  if (dir == SB_INCREMENT || dir == SB_PAGE_INCR) {
     sbtext->index += 1;
   }
-  if (dir == SB_DECREMENT) {
+  if (dir == SB_DECREMENT || dir == SB_PAGE_DECR) {
     sbtext->index -= 1;
   }
 

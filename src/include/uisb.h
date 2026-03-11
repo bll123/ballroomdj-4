@@ -6,11 +6,19 @@
 
 #include "callback.h"
 
+/* decrement values must be the negative of the increment value */
 enum {
   SB_INCREMENT = 1,
-  SB_DECREMENT = -1,
+  SB_DECREMENT = - (SB_INCREMENT),
   SB_PAGE_INCR = 2,
-  SB_PAGE_DECR = -2,
+  SB_PAGE_DECR = - (SB_PAGE_INCR),
+  SB_VALIDATE = 3,
+  SB_VAL_FORCE = 4,
+};
+
+enum {
+  SB_IS_NUM,
+  SB_IS_TEXT,
 };
 
 typedef struct uisb uisb_t;
@@ -19,7 +27,7 @@ typedef struct uisb uisb_t;
 extern "C" {
 #endif
 
-uisb_t * uisbCreate (uiwcont_t *box, uiwcont_t *disp);
+uisb_t * uisbCreate (uiwcont_t *box, uiwcont_t *disp, bool istext);
 void uisbFree (uisb_t *sb);
 void uisbExpandHoriz (uisb_t *sb);
 void uisbSetCallback (uisb_t *sb, callback_t *uicb);

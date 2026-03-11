@@ -19,64 +19,103 @@
 #include "log.h"
 #include "mdebug.h"
 #include "slist.h"
+#include "sysvars.h"
 #include "ui.h"
 #include "uiclass.h"
 #include "uisb.h"
 #include "uisbtext.h"
 #include "uiwcont.h"
 
+enum {
+  SB_W_HBOX,
+  SB_W_B_INCR,
+  SB_W_B_DECR,
+  SB_W_VAL_EVENTH,
+  SB_W_MAX,
+};
+
+enum {
+  SB_CB_INCR,
+  SB_CB_DECR,
+  SB_CB_VALUE_KEY,
+  SB_CB_MAX,
+};
+
 typedef struct uisb {
-  uiwcont_t       *hbox;
-  uiwcont_t       *incr;
-  uiwcont_t       *decr;
+  uiwcont_t       *wcont [SB_W_MAX];
   uiwcont_t       *display;
-  callback_t      *sbcbincr;
-  callback_t      *sbcbdecr;
+  callback_t      *callbacks [SB_CB_MAX];
   callback_t      *cb;
+  bool            istext;
 } uisb_t;
 
 static bool uisbCBIncrement (void *udata);
 static bool uisbCBDecrement (void *udata);
+static bool uisbKeyEvent (void *udata);
+static void uisbSetFocus (uisb_t *sb);
 
 uisb_t *
-uisbCreate (uiwcont_t *box, uiwcont_t *disp)
+uisbCreate (uiwcont_t *box, uiwcont_t *disp, bool istext)
 {
   uisb_t      *sb;
+  uiwcont_t   *uiwidgetp;
 
   sb = mdmalloc (sizeof (uisb_t));
-  sb->hbox = NULL;
-  sb->incr = NULL;
-  sb->decr = NULL;
+  for (int i = 0; i < SB_W_MAX; ++i) {
+    sb->wcont [i] = NULL;
+  }
   sb->display = NULL;
-  sb->sbcbincr = NULL;
-  sb->sbcbdecr = NULL;
+  for (int i = 0; i < SB_CB_MAX; ++i) {
+    sb->callbacks [i] = NULL;
+  }
   sb->cb = NULL;
+  sb->wcont [SB_W_VAL_EVENTH] = uiEventAlloc ();
+  sb->istext = istext;
 
-  sb->hbox = uiCreateHorizBox ();
-  uiWidgetAddClass (sb->hbox, SB_CLASS);
-  sb->sbcbincr = callbackInit (uisbCBIncrement, sb, "sb-incr");
-  sb->sbcbdecr = callbackInit (uisbCBDecrement, sb, "sb-decr");
+  uiwidgetp = uiCreateHorizBox ();
+  uiWidgetAddClass (uiwidgetp, SB_CLASS);
+  if (sb->istext == SB_IS_TEXT) {
+    uiWidgetEnableFocus (uiwidgetp);
+  }
+  sb->wcont [SB_W_HBOX] = uiwidgetp;
 
-  sb->incr = uiCreateButton (sb->sbcbincr, NULL, "sb_incr", _("Increment"));
-  uiWidgetAddClass (sb->incr, SB_CLASS);
-  uiWidgetAlignHorizCenter (sb->incr);
-  uiWidgetAlignVertCenter (sb->incr);
-  uiWidgetSetAllMargins (sb->incr, 0);
-  uiBoxPackEnd (sb->hbox, sb->incr);
+  sb->callbacks [SB_CB_INCR] = callbackInit (uisbCBIncrement, sb, "sb-incr");
+  sb->callbacks [SB_CB_DECR] = callbackInit (uisbCBDecrement, sb, "sb-decr");
+  sb->callbacks [SB_CB_VALUE_KEY] = callbackInit (uisbKeyEvent, sb, "sb-val-key");
 
-  sb->decr = uiCreateButton (sb->sbcbdecr, NULL, "sb_decr", _("Decrement"));
-  uiWidgetAddClass (sb->decr, SB_CLASS);
-  uiWidgetAlignHorizCenter (sb->decr);
-  uiWidgetAlignVertCenter (sb->decr);
-  uiWidgetSetAllMargins (sb->decr, 0);
-  uiBoxPackEnd (sb->hbox, sb->decr);
+  uiwidgetp = uiCreateButton (sb->callbacks [SB_CB_INCR],
+      NULL, "sb_incr", NULL);
+  uiWidgetAddClass (uiwidgetp, SB_CLASS);
+  uiWidgetAlignHorizCenter (uiwidgetp);
+  uiWidgetAlignVertCenter (uiwidgetp);
+  uiWidgetSetAllMargins (uiwidgetp, 0);
+  uiWidgetDisableFocus (uiwidgetp);
+  uiBoxPackEnd (sb->wcont [SB_W_HBOX], uiwidgetp);
+  sb->wcont [SB_W_B_INCR] = uiwidgetp;
+
+  uiwidgetp = uiCreateButton (sb->callbacks [SB_CB_DECR],
+      NULL, "sb_decr", NULL);
+  uiWidgetAddClass (uiwidgetp, SB_CLASS);
+  uiWidgetAlignHorizCenter (uiwidgetp);
+  uiWidgetAlignVertCenter (uiwidgetp);
+  uiWidgetSetAllMargins (uiwidgetp, 0);
+  uiWidgetDisableFocus (uiwidgetp);
+  uiBoxPackEnd (sb->wcont [SB_W_HBOX], uiwidgetp);
+  sb->wcont [SB_W_B_DECR] = uiwidgetp;
 
   sb->display = disp;
   uiWidgetAddClass (sb->display, SB_CLASS);
-  uiBoxPackStart (sb->hbox, sb->display);
-//  uiWidgetExpandHoriz (sb->display);
+  uiBoxPackStart (sb->wcont [SB_W_HBOX], sb->display);
 
-  uiBoxPackStart (box, sb->hbox);
+  uiBoxPackStart (box, sb->wcont [SB_W_HBOX]);
+
+  if (sb->istext == SB_IS_TEXT) {
+    uiEventSetKeyCallback (sb->wcont [SB_W_VAL_EVENTH], sb->wcont [SB_W_HBOX],
+        sb->callbacks [SB_CB_VALUE_KEY]);
+  } else {
+    uiEventSetKeyCallback (sb->wcont [SB_W_VAL_EVENTH], sb->display,
+        sb->callbacks [SB_CB_VALUE_KEY]);
+  }
 
   return sb;
 }
@@ -88,11 +127,12 @@ uisbFree (uisb_t *sb)
     return;
   }
 
-  uiwcontFree (sb->incr);
-  uiwcontFree (sb->decr);
-  uiwcontFree (sb->hbox);
-  callbackFree (sb->sbcbincr);
-  callbackFree (sb->sbcbdecr);
+  for (int i = 0; i < SB_W_MAX; ++i) {
+    uiwcontFree (sb->wcont [i]);
+  }
+  for (int i = 0; i < SB_CB_MAX; ++i) {
+    callbackFree (sb->callbacks [i]);
+  }
   mdfree (sb);
 }
 
@@ -103,7 +143,7 @@ uisbExpandHoriz (uisb_t *sb)
     return;
   }
 
-  uiWidgetExpandHoriz (sb->hbox);
+  uiWidgetExpandHoriz (sb->wcont [SB_W_HBOX]);
 }
 
 void
@@ -124,8 +164,8 @@ uisbSetState (uisb_t *sb, int state)
   }
 
   uiWidgetSetState (sb->display, state);
-  uiWidgetSetState (sb->incr, state);
-  uiWidgetSetState (sb->decr, state);
+  uiWidgetSetState (sb->wcont [SB_W_B_INCR], state);
+  uiWidgetSetState (sb->wcont [SB_W_B_DECR], state);
 }
 
 void
@@ -135,7 +175,7 @@ uisbSizeGroupAdd (uisb_t *sb, uiwcont_t *sg)
     return;
   }
 
-  uiSizeGroupAdd (sg, sb->hbox);
+  uiSizeGroupAdd (sg, sb->wcont [SB_W_HBOX]);
 }
 
 void
@@ -145,8 +185,8 @@ uisbSetRepeat (uisb_t *sb, int repeatms)
     return;
   }
 
-  uiButtonSetRepeat (sb->incr, repeatms);
-  uiButtonSetRepeat (sb->decr, repeatms);
+  uiButtonSetRepeat (sb->wcont [SB_W_B_INCR], repeatms);
+  uiButtonSetRepeat (sb->wcont [SB_W_B_DECR], repeatms);
 }
 
 void
@@ -156,8 +196,9 @@ uisbCheck (uisb_t *sb)
     return;
   }
 
-  uiButtonCheckRepeat (sb->incr);
-  uiButtonCheckRepeat (sb->decr);
+  uiButtonCheckRepeat (sb->wcont [SB_W_B_INCR]);
+  uiButtonCheckRepeat (sb->wcont [SB_W_B_DECR]);
+  callbackHandlerI (sb->cb, SB_VALIDATE);
 }
 
 /* internal routines */
@@ -172,6 +213,7 @@ uisbCBIncrement (void *udata)
     return UICB_STOP;
   }
 
+  uisbSetFocus (sb);
   rc = callbackHandlerI (sb->cb, SB_INCREMENT);
   return rc;
 }
@@ -186,6 +228,63 @@ uisbCBDecrement (void *udata)
     return UICB_STOP;
   }
 
+  uisbSetFocus (sb);
   rc = callbackHandlerI (sb->cb, SB_DECREMENT);
   return rc;
+}
+
+static bool
+uisbKeyEvent (void *udata)
+{
+  uisb_t    *sb = udata;
+
+  logProcBegin ();
+  if (sb == NULL) {
+    logProcEnd ("bad-sb");
+    return UICB_CONT;
+  }
+
+  /* need to grab the press event as otherwise gtk grabs the key */
+  if (uiEventIsMovementKey (sb->wcont [SB_W_VAL_EVENTH]) &&
+      uiEventIsKeyPressEvent (sb->wcont [SB_W_VAL_EVENTH])) {
+    int     inctype;
+    int     rc;
+
+    inctype = SB_INCREMENT;
+    if (uiEventIsPageUpDownKey (sb->wcont [SB_W_VAL_EVENTH])) {
+      inctype = SB_PAGE_INCR;
+    }
+    if (uiEventIsDownKey (sb->wcont [SB_W_VAL_EVENTH])) {
+      inctype = - inctype;
+    }
+    uisbSetFocus (sb);
+    rc = callbackHandlerI (sb->cb, inctype);
+
+    logProcEnd ("up-down");
+    /* do not want gtk to process this key */
+    return UICB_STOP;
+  }
+
+  if (uiEventIsKeyPressEvent (sb->wcont [SB_W_VAL_EVENTH])) {
+    if (uiEventIsNavKey (sb->wcont [SB_W_VAL_EVENTH]) ||
+        uiEventIsEnterKey (sb->wcont [SB_W_VAL_EVENTH])) {
+      int   rc;
+
+      rc = callbackHandlerI (sb->cb, SB_VAL_FORCE);
+      return rc;
+    }
+  }
+
+  logProcEnd ("");
+  return UICB_CONT;
+}
+
+static void
+uisbSetFocus (uisb_t *sb)
+{
+  if (sb->istext == SB_IS_TEXT) {
+    uiWidgetGrabFocus (sb->wcont [SB_W_HBOX]);
+  } else {
+    uiWidgetGrabFocus (sb->display);
+  }
 }

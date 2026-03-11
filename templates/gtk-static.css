@@ -63,18 +63,8 @@ label.bdj-nodisp {
   color: rgba(0,0,0,0);
 }
 
-/* ### move to dark/light */
-notebook.bdj-horiz-nb > stack {
-  background-color: shade(@theme_base_color,0.9);
-}
 /* these buttons are flat, should inherit the underlying background color */
 button.bdj-nb {
-/*
-  outline-width: 0px;
-  border: 0px solid;
-  border-radius: 0px;
-  background-image: none;
-*/
   background-color: rgba(0,0,0,0);
 }
 button.bdj-nb label {
@@ -83,9 +73,8 @@ button.bdj-nb label {
 button.bdj-nb:hover label {
   color: @theme_fg_color;
 }
-/* ### move to dark/light */
-button.bdj-nb-sel {
-  background-color: shade(@theme_base_color,0.6);
+button.bdj-nb:focus label {
+  color: @theme_fg_color;
 }
 button.bdj-nb-sel label {
   color: @theme_fg_color;
@@ -122,6 +111,9 @@ button.bdj-horiz-nb-sel {
 box.bdj-sb {
   border: 1px solid shade(@theme_base_color,0.4);
   background-color: @theme_base_color;
+}
+box.bdj-sb:focus {
+  border-color: @theme_selected_bg_color;
 }
 button.bdj-sb {
   border: 0px;

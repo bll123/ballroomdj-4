@@ -13,6 +13,7 @@ extern "C" {
 enum {
   UIENTRY_IMMEDIATE,
   UIENTRY_DELAYED,
+  UIENTRY_DELAY_LONG,
 };
 
 enum {

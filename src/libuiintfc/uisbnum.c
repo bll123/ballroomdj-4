@@ -49,6 +49,7 @@ static bool uisbnumCBHandler (void *udata, int32_t dir);
 static void uisbnumSetDisplay (uisbnum_t *sbnum);
 static void uisbnumSetFormat (uisbnum_t *sbnum);
 static int uisbnumEntryValidate (uiwcont_t *entry, const char *label, void *udata);
+static void uisbnumValueToStr (uisbnum_t *sbnum, char *tbuff, size_t sz);
 
 uisbnum_t *
 uisbnumCreate (uiwcont_t *box, int maxWidth)
@@ -59,7 +60,7 @@ uisbnumCreate (uiwcont_t *box, int maxWidth)
   sbnum->entry = uiEntryInit (maxWidth, maxWidth);
   uiEntryAlignEnd (sbnum->entry);
   uiWidgetSetAllMargins (sbnum->entry, 0);
-  sbnum->sb = uisbCreate (box, sbnum->entry);
+  sbnum->sb = uisbCreate (box, sbnum->entry, SB_IS_NUM);
   uisbSetRepeat (sbnum->sb, 50);
   sbnum->sbnumcb = NULL;
   sbnum->chgcb = NULL;
@@ -80,7 +81,7 @@ uisbnumCreate (uiwcont_t *box, int maxWidth)
   uisbSetCallback (sbnum->sb, sbnum->sbnumcb);
 
   uiEntrySetValidate (sbnum->entry, "",
-      uisbnumEntryValidate, sbnum, UIENTRY_IMMEDIATE);
+      uisbnumEntryValidate, sbnum, UIENTRY_DELAY_LONG);
 
   return sbnum;
 }
@@ -148,6 +149,22 @@ uisbnumSetTime (uisbnum_t *sbnum, double min, double max, int timetype)
     sbnum->incr = 100.0;
     sbnum->pageincr = 30000.0;
   }
+}
+
+void
+uisbnumSetType (uisbnum_t *sbnum, int type)
+{
+  if (sbnum == NULL) {
+    return;
+  }
+
+  if (type != SBNUM_NUM_DEFAULT) {
+    /* other type changes are not supported */
+    return;
+  }
+
+  sbnum->type = type;
+  sbnum->min = - sbnum->incr;
 }
 
 void
@@ -257,6 +274,26 @@ uisbnumCBHandler (void *udata, int32_t dir)
   uisbnum_t  *sbnum = udata;
 
   if (sbnum == NULL) {
+    return UICB_CONT;
+  }
+
+  if (dir == SB_VALIDATE || dir == SB_VAL_FORCE) {
+    int     rc;
+    bool    force = false;
+
+    if (dir == SB_VAL_FORCE) {
+      force = true;
+    }
+
+    rc = uiEntryValidate (sbnum->entry, force);
+    if (rc == UIENTRY_OK) {
+      return UICB_CONT;
+    } else if (force) {
+      char    tbuff [40];
+
+      uisbnumValueToStr (sbnum, tbuff, sizeof (tbuff));
+      uiEntrySetValue (sbnum->entry, tbuff);
+    }
     return UICB_STOP;
   }
 
@@ -266,8 +303,13 @@ uisbnumCBHandler (void *udata, int32_t dir)
   if (dir == SB_DECREMENT) {
     sbnum->value -= sbnum->incr;
   }
+  if (dir == SB_PAGE_INCR) {
+    sbnum->value += sbnum->pageincr;
+  }
+  if (dir == SB_PAGE_DECR) {
+    sbnum->value -= sbnum->pageincr;
+  }
 
-  uiWidgetGrabFocus (sbnum->entry);
   uisbnumSetDisplay (sbnum);
 
   return UICB_CONT;
@@ -284,6 +326,11 @@ uisbnumSetDisplay (uisbnum_t *sbnum)
   if (sbnum->value > sbnum->max) {
     sbnum->value = sbnum->max;
   }
+  if (sbnum->type == SBNUM_NUM_DEFAULT) {
+    if (sbnum->value < 0) {
+      sbnum->value = - sbnum->incr;
+    }
+  }
 
   if (sbnum->old_value != SB_INVALID &&
       sbnum->old_value != sbnum->value) {
@@ -297,21 +344,7 @@ uisbnumSetDisplay (uisbnum_t *sbnum)
     }
   }
 
-  if (sbnum->type == SBNUM_NUMERIC) {
-    if (sbnum->value < 0) {
-      /* CONTEXT: user interface: default setting display */
-      stpecpy (tbuff, tbuff + sizeof (tbuff), _("Default"));
-    } else {
-      snprintf (tbuff, sizeof (tbuff), sbnum->fmt, sbnum->value);
-    }
-  }
-  if (sbnum->type == SBNUM_TIME_BASIC) {
-    tmutilToMS ((time_t) sbnum->value, tbuff, sizeof (tbuff));
-  }
-  if (sbnum->type == SBNUM_TIME_PRECISE) {
-    tmutilToMSD ((time_t) sbnum->value, tbuff, sizeof (tbuff), sbnum->digits);
-  }
-
+  uisbnumValueToStr (sbnum, tbuff, sizeof (tbuff));
   sbnum->set_value = true;
   uiEntrySetValue (sbnum->entry, tbuff);
   sbnum->set_value = false;
@@ -337,11 +370,21 @@ uisbnumEntryValidate (uiwcont_t *entry, const char *label, void *udata)
 
   str = uiEntryGetValue (sbnum->entry);
   if (! validate (msg, sizeof (msg), label, str, sbnum->valtype)) {
+// logStderr ("val: %s %s\n", msg, str);
+//    uisbnumValueToStr (sbnum, tbuff, sizeof (tbuff));
+//    uiEntrySetValue (sbnum->entry, tbuff);
     rc = UIENTRY_ERROR;
   }
   if (rc == UIENTRY_OK) {
     if (sbnum->type == SBNUM_NUMERIC) {
       sbnum->value = atof (str);
+    }
+    if (sbnum->type == SBNUM_NUM_DEFAULT) {
+      if (sbnum->value < 0) {
+        sbnum->value = - sbnum->incr;
+      } else {
+        sbnum->value = atof (str);
+      }
     }
     if (sbnum->type == SBNUM_TIME_BASIC ||
         sbnum->type == SBNUM_TIME_PRECISE) {
@@ -351,4 +394,26 @@ uisbnumEntryValidate (uiwcont_t *entry, const char *label, void *udata)
   }
 
   return rc;
+}
+
+static void
+uisbnumValueToStr (uisbnum_t *sbnum, char *tbuff, size_t sz)
+{
+  if (sbnum->type == SBNUM_NUM_DEFAULT) {
+    if (sbnum->value < 0) {
+      /* CONTEXT: user interface: default setting display */
+      stpecpy (tbuff, tbuff + sz, _("Default"));
+    } else {
+      snprintf (tbuff, sz, sbnum->fmt, sbnum->value);
+    }
+  }
+  if (sbnum->type == SBNUM_NUMERIC) {
+    snprintf (tbuff, sz, sbnum->fmt, sbnum->value);
+  }
+  if (sbnum->type == SBNUM_TIME_BASIC) {
+    tmutilToMS ((time_t) sbnum->value, tbuff, sz);
+  }
+  if (sbnum->type == SBNUM_TIME_PRECISE) {
+    tmutilToMSD ((time_t) sbnum->value, tbuff, sz, sbnum->digits);
+  }
 }

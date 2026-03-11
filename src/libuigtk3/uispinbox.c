@@ -412,6 +412,7 @@ uiSpinboxInit (void)
   uispinbox->keylist = NULL;
   uispinbox->idxlist = NULL;
   uispinbox->sbtype = SB_TEXT;
+  uispinbox->presscb = NULL;
   uispinbox->uievent = uiEventAlloc ();
 
   uiwidget->uiint.uispinbox = uispinbox;

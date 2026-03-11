@@ -40,8 +40,12 @@ uiEntrySetValidate (uiwcont_t *uiwidget, const char *label,
   ebase->udata = udata;
 
   if (valfunc != NULL) {
-    if (valdelay == UIENTRY_DELAYED) {
-      mstimeset (&ebase->validateTimer, UIENTRY_VAL_TIMER);
+    if (valdelay == UIENTRY_DELAYED || valdelay == UIENTRY_DELAY_LONG) {
+      ebase->valdelaytime = UIENTRY_VAL_TIMER;
+      if (valdelay == UIENTRY_DELAY_LONG) {
+        ebase->valdelaytime = UIENTRY_VAL_TIMER_LONG;
+      }
+      mstimeset (&ebase->validateTimer, ebase->valdelaytime);
       ebase->valdelay = true;
     }
     uiEntrySetInternalValidate (uiwidget);
@@ -77,7 +81,7 @@ uiEntryValidate (uiwcont_t *uiwidget, bool forceflag)
   mstimeset (&ebase->validateTimer, TM_TIMER_OFF);
   rc = ebase->validateFunc (uiwidget, ebase->label, ebase->udata);
   if (rc == UIENTRY_RESET) {
-    mstimeset (&ebase->validateTimer, UIENTRY_VAL_TIMER);
+    mstimeset (&ebase->validateTimer, ebase->valdelaytime);
   }
   if (rc == UIENTRY_ERROR) {
     uiEntrySetIcon (uiwidget, "dialog-error");
@@ -88,7 +92,7 @@ uiEntryValidate (uiwcont_t *uiwidget, bool forceflag)
     ebase->valid = true;
   }
   if (ebase->valdelay) {
-    mstimeset (&ebase->validateTimer, UIENTRY_VAL_TIMER);
+    mstimeset (&ebase->validateTimer, ebase->valdelaytime);
   }
   return rc;
 }

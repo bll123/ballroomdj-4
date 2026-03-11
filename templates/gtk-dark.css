@@ -31,11 +31,14 @@ textview.bdj-dark-bg text {
 notebook tab:checked {
   background-color: shade(@theme_base_color,0.6);
 }
+notebook.bdj-horiz-nb > stack {
+  background-color: shade(@theme_base_color,0.9);
+}
 
-button.bdj-notebook-sel {
+button.bdj-nb-sel {
   background-color: shade(@theme_base_color,0.6);
 }
-button.bdj-leftnotebook:hover {
+button.bdj-nb:hover, button.bdj-nb:focus {
   background-color: shade(@theme_base_color,0.5);
 }
 

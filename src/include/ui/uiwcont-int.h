@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include <stdint.h>
+
 #include "tmutil.h"
 #include "uigeneral.h"
 
@@ -85,6 +87,7 @@ typedef struct uientrybase {
   mstime_t        validateTimer;
   int             entrySize;
   int             maxSize;
+  int32_t         valdelaytime;
   bool            valdelay : 1;
   bool            valid : 1;
 } uientrybase_t;

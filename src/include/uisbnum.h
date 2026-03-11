@@ -16,6 +16,7 @@ extern "C" {
 
 enum {
   SBNUM_NUMERIC,
+  SBNUM_NUM_DEFAULT,
   SBNUM_TIME_BASIC,
   SBNUM_TIME_PRECISE,
 };
@@ -28,6 +29,7 @@ void uisbnumFree (uisbnum_t *sbnum);
 void uisbnumSetIncrements (uisbnum_t *sbnum, double incr, double pageincr);
 void uisbnumSetLimits (uisbnum_t *sbnum, double min, double max, int digits);
 void uisbnumSetTime (uisbnum_t *sbnum, double min, double max, int timetype);
+void uisbnumSetType (uisbnum_t *sbnum, int type);
 
 void uisbnumCheck (uisbnum_t *sbnum);
 bool uisbnumIsChanged (uisbnum_t *sbnum);

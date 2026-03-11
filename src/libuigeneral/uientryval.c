@@ -58,7 +58,7 @@ uiEntryValidateStart (uiwcont_t *uiwidget)
 
   ebase = &uiwidget->uiint.uientrybase;
   if (ebase->validateFunc != NULL) {
-    mstimeset (&ebase->validateTimer, UIENTRY_VAL_TIMER);
+    mstimeset (&ebase->validateTimer, ebase->valdelaytime);
   }
 }
 
