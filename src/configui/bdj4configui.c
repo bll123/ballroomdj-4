@@ -187,25 +187,25 @@ main (int argc, char *argv[])
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_ACRCLOUD_API_HOST, 45, 100);
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_ACRCLOUD_API_KEY, 40, 40);
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_ACRCLOUD_API_SECRET, 45, 45);
-  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_AUDIOSRC_PASS, 10, 20);
-  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_AUDIOSRC_URI, 45, 100);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_AUDIOSRC_PASS, 10, 30);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_AUDIOSRC_URI, 45, 200);
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_AUDIOSRC_USER, 10, 20);
-  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_COMPLETE_MSG, 20, 30);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_COMPLETE_MSG, 45, 100);
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_DANCE_DANCE, 30, 50);
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_DANCE_TAGS, 30, 100);
-  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_MOBMQ_TITLE, 20, 100);
-  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_PLAYER_ARGS, 45, 100);
-  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_PROFILE_NAME, 20, 30);
-  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_QUEUE_NM, 20, 30);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_MOBMQ_TITLE, 40, 100);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_PLAYER_ARGS, 45, 200);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_PROFILE_NAME, 20, 40);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_QUEUE_NM, 30, 40);
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_RC_PASS, 10, 20);
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_RC_USER_ID, 10, 30);
 
-  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT, 30, 300);
-  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_ITUNES_DIR, 50, 300);
-  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_ITUNES_XML, 50, 300);
-  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_MUSIC_DIR, 50, 300);
-  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_SHUTDOWN, 50, 300);
-  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_STARTUP, 50, 300);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT, 30, BDJ4_PATH_MAX);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_ITUNES_DIR, 50, BDJ4_PATH_MAX);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_ITUNES_XML, 50, BDJ4_PATH_MAX);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_MUSIC_DIR, 50, BDJ4_PATH_MAX);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_SHUTDOWN, 50, BDJ4_PATH_MAX);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_CHOOSE_STARTUP, 50, BDJ4_PATH_MAX);
 
   osSetStandardSignals (confuiSigHandler);
 

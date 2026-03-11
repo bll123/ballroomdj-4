@@ -142,7 +142,7 @@ confuiBuildUIPlayer (confuigui_t *gui)
       CONFUI_ENTRY_COMPLETE_MSG, OPT_P_COMPLETE_MSG,
       bdjoptGetStr (OPT_P_COMPLETE_MSG), CONFUI_NO_INDENT);
 
-  /* CONTEXT: configuration: the clock format */
+  /* CONTEXT: configuration: type of fade to apply */
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Fade Type"),
       CONFUI_SPINBOX_PLAYER_FADE_TYPE, OPT_P_FADETYPE, CONFUI_OUT_NUM,
       bdjoptGetNum (OPT_P_FADETYPE), NULL);
@@ -285,6 +285,6 @@ confuiLoadControllerIntfcList (confuigui_t *gui)
 
   nlistSetStr (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].displist, 0,
       /* CONTEXT: configuration: controller: no controller */
-      _("None"));
+      C_("Controller","None"));
   nlistSetStr (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].sbkeylist, 0, "");
 }

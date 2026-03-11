@@ -31,7 +31,7 @@ add_executable (bdj4installer bdj4installer.c locatebdj3.c)
 # as that's been tested better, and the command windows
 # that pop up are not so random.
 target_link_libraries (bdj4installer PRIVATE
-  libbdj4uib ${BDJ4_UI_LIB}
+  libbdj4uii libbdj4uib ${BDJ4_UI_LIB}
   libwebclient libbdj4 libbdj4basic libbdj4common
 )
 addUILibrary (bdj4installer)

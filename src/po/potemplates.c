@@ -32,34 +32,34 @@ _("standard")
  // CONTEXT: configuration file: dance type
 _("latin")
  // CONTEXT: configuration file: dance type
-_("club")
- // CONTEXT: configuration file: rating
+_("other")
+ // CONTEXT: configuration file: rating: songs can be assigned this rating
 _("Unrated")
- // CONTEXT: configuration file: rating
+ // CONTEXT: configuration file: rating: songs can be assigned this rating
 _("Poor")
- // CONTEXT: configuration file: rating
+ // CONTEXT: configuration file: rating: songs can be assigned this rating
 _("Good")
- // CONTEXT: configuration file: rating
+ // CONTEXT: configuration file: rating: songs can be assigned this rating
 _("Great")
- // CONTEXT: configuration file: genre
-_("None")
- // CONTEXT: configuration file: genre
+ // CONTEXT: configuration file: genre: songs can be assigned this genre
+C_("Genre","None")
+ // CONTEXT: configuration file: genre: songs can be assigned this genre
 _("Ballroom Dance")
- // CONTEXT: configuration file: genre
+ // CONTEXT: configuration file: genre: songs can be assigned this genre
 _("Classical")
- // CONTEXT: configuration file: genre
+ // CONTEXT: configuration file: genre: songs can be assigned this genre
 _("Jazz")
- // CONTEXT: configuration file: genre
+ // CONTEXT: configuration file: genre: songs can be assigned this genre
 _("Rock")
- // CONTEXT: configuration file: dance level
+ // CONTEXT: configuration file: dance level: songs can be assigned this dance-level
 _("Easy")
- // CONTEXT: configuration file: dance level
+ // CONTEXT: configuration file: dance level: songs can be assigned this dance-level
 _("Normal")
- // CONTEXT: configuration file: dance level
+ // CONTEXT: configuration file: dance level: songs can be assigned this dance-level
 _("Advanced")
- // CONTEXT: configuration file: status
+ // CONTEXT: configuration file: status: songs can be assigned this status
 _("New")
- // CONTEXT: configuration file: status
+ // CONTEXT: configuration file: status: songs can be assigned this status
 _("Complete")
  // CONTEXT: configuration file: The completion message displayed on the marquee when the playlist is finished.
 _("Thank You Dancers")
@@ -74,107 +74,33 @@ _("Queue D")
  // CONTEXT: (noun) configuration file: name of a music queue
 _("Queue E")
  // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Play / Pause")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Fade")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Repeat")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Pause at End")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Next Song")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Queue")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Queue 5")
+_("Clear & Play")
  // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 _("Clear Queue")
  // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Clear & Play")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Queue")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Play / Pause")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 _("Fade")
  // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Repeat")
+_("Mute")
  // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Pause at End")
+C_("Page","Next")
  // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 _("Next Song")
  // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Queue")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Queue 5")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Clear Queue")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Clear & Play")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Queue")
+_("Pause at End")
  // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 _("Play / Pause")
  // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Fade")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Repeat")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Pause at End")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Next Song")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Queue")
+C_("Verb","Queue")
  // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 _("Queue 5")
  // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Clear Queue")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Clear & Play")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Queue")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Next")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Mute")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Stop")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 _("Repeat")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Pause at End")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Next")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Mute")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Stop")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Repeat")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Pause at End")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Next")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Mute")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Stop")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Repeat")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Pause at End")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Volume")
  // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 _("Speed")
  // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Volume")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Speed")
+_("Stop")
  // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 _("Volume")
- // CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-_("Speed")
  // CONTEXT: The name of the 'standardrounds' playlist file
 _("standardrounds")
  // CONTEXT: The name of the 'queuedance' playlist file

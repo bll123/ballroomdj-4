@@ -32,6 +32,7 @@
 #include "filedata.h"
 #include "fileop.h"
 #include "filemanip.h"
+#include "ilist.h"
 #include "instutil.h"
 #include "localeutil.h"
 #include "locatebdj3.h"
@@ -51,6 +52,7 @@
 #include "tmutil.h"
 #include "templateutil.h"
 #include "ui.h"
+#include "uidd.h"
 #include "uiutils.h"
 #include "webclient.h"
 
@@ -133,6 +135,7 @@ enum {
   INST_CB_REINST,
   INST_CB_CONV,
   INST_CB_REQUEST_VLC,
+  INST_CB_LOCALE,
   INST_CB_MAX,
 };
 
@@ -191,6 +194,7 @@ typedef struct {
   slist_t         *convlist;
   slistidx_t      convidx;
   uiwcont_t       *wcont [INST_W_MAX];
+  uidd_t          *ddlang;
   /* ati */
   char            ati [40];
   int             atiselect;
@@ -284,6 +288,7 @@ static void installerSetTargetDir (installer_t *installer, const char *fn);
 static void installerSetBDJ3LocDir (installer_t *installer, const char *fn);
 static void installerLoadBdjOpt (installer_t *installer);
 static void installerDoRegister (installer_t *installer, const char *data);
+int32_t installerLocaleSelect (void *udata, const char *sval);
 
 int
 main (int argc, char *argv[])
@@ -354,7 +359,7 @@ main (int argc, char *argv[])
   installer.convspecified = false;
   installer.guienabled = true;
   installer.invaltarget = false;
-  installer.localespecified = false;
+  installer.localespecified = false;      // for testing
   installer.newinstall = true;
   installer.quiet = false;
   installer.readonly = false;
@@ -385,14 +390,10 @@ main (int argc, char *argv[])
   /* the installer only needs the home, hostname, os info and locale */
   targ = bdj4argGet (bdj4arg, 0, argv [0]);
   sysvarsInit (targ, SYSVARS_FLAG_ALL);
-  localeInit ();
 
   if (isMacOS ()) {
     installer.macospfx = MACOS_APP_PREFIX;
   }
-
-  /* CONTEXT: installer: status message */
-  installer.pleasewaitmsg = _("Please wait\xe2\x80\xa6");
   installer.hostname = sysvarsGetStr (SV_HOSTNAME);
   installer.home = sysvarsGetStr (SV_HOME);
 
@@ -426,6 +427,19 @@ main (int argc, char *argv[])
   /* at this point the target dir will have either a good default */
   /* or the saved target name */
   installerSetTargetDir (&installer, buff);
+
+  /* if the target exists, fetch the user's locale from */
+  /* the target data directory */
+  if (fileopIsDirectory (installer.target)) {
+    snprintf (buff, sizeof (buff), "%s/data/%s%s",
+        installer.target, LOCALE_FN, BDJ4_CONFIG_EXT);
+    sysvarsLoadLocale (buff);
+  }
+
+  localeInit ();
+
+  /* CONTEXT: installer: status message */
+  installer.pleasewaitmsg = _("Please wait\xe2\x80\xa6");
 
   while ((c = getopt_long_only (argc, bdj4argGetArgv (bdj4arg),
       "Cru:l:", bdj_options, &option_index)) != -1) {
@@ -497,6 +511,7 @@ main (int argc, char *argv[])
         break;
       }
       case 'L': {
+        /* this is used for testing */
         if (optarg != NULL) {
           sysvarsSetStr (SV_LOCALE, optarg);
           snprintf (tbuff, sizeof (tbuff), "%.2s", optarg);
@@ -577,6 +592,11 @@ main (int argc, char *argv[])
   }
 
   if (installer.guienabled) {
+    /* the template image copy is only needed for the drop-down arrow */
+    /* for the language selection */
+    /* this will create the data/img/profile00/ tree within the */
+    /* temporary installer directory */
+    templateImageCopy (NULL);
     installerBuildUI (&installer);
     osuiFinalize ();
   }
@@ -630,6 +650,8 @@ installerBuildUI (installer_t *installer)
   uiwcont_t     *szgrp;
   char          tbuff [100];
   char          imgbuff [BDJ4_PATH_MAX];
+  ilist_t       *ddlist;
+  int           langidx;
 
   szgrp = uiCreateSizeGroupHoriz ();
 
@@ -718,6 +740,25 @@ installerBuildUI (installer_t *installer)
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
+
+  /* begin line : installation locale */
+
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
+
+  ddlist = localeCreateDropDownList (&langidx, LOCALE_USE_DATA);
+
+  /* CONTEXT: installer: language to install */
+  uiwidgetp = uiCreateColonLabel (_("Preferred Language"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  installer->callbacks [INST_CB_LOCALE] =
+      callbackInitS (installerLocaleSelect, installer);
+  installer->ddlang = uiddCreate ("instlang",
+      installer->wcont [INST_W_WINDOW], hbox, DD_PACK_START,
+      ddlist, DD_LIST_TYPE_STR, NULL, DD_REPLACE_TITLE,
+      installer->callbacks [INST_CB_LOCALE]);
+  uiddSetSelection (installer->ddlang, langidx);
 
   /* begin line : separator */
   uiwidgetp = uiCreateHorizSeparator ();
@@ -1656,9 +1697,10 @@ installerSaveTargetDir (installer_t *installer)
       /* a text file.  International characters cannot be processed */
       /* in this manner.  Therefore replace the username with the */
       /* environment variable, and the installer and any windows scripts */
-      /* must replace the variable with the user name. */
+      /* will process the directory correctly. */
 
       snprintf (hbuff, sizeof (hbuff), "%s/", installer->home);
+      pathNormalizePath (hbuff, sizeof (hbuff));
       stpecpy (tbuff, tbuff + sizeof (tbuff), installer->target);
       pathNormalizePath (tbuff, sizeof (tbuff));
       tmp = regexReplaceLiteral (tbuff, hbuff, WINUSERPROFILE_SL);
@@ -1816,7 +1858,8 @@ installerCreateDirs (installer_t *installer)
   installerDisplayText (installer, INST_DISP_ACTION, _("Creating folder structure."), false);
 
   /* this will create the directories necessary for the configs */
-  /* namely: profile00, <hostname>, <hostname>/profile00 */
+  /* namely: data, data/profile00, data/<hostname>, */
+  /*        data/<hostname>/profile00 */
   instutilCreateDataDirectories ();
   /* create the directories that are not included in the distribution */
   diropMakeDir ("tmp");
@@ -2195,6 +2238,14 @@ installerSaveLocale (installer_t *installer)
     fclose (fh);
   }
 
+  snprintf (tbuff, sizeof (tbuff), "data/%s%s", LOCALE_FN, BDJ4_CONFIG_EXT);
+  fh = fileopOpen (tbuff, "w");
+  if (fh != NULL) {
+    fprintf (fh, "%s\n", sysvarsGetStr (SV_LOCALE));
+    mdextfclose (fh);
+    fclose (fh);
+  }
+
   installer->instState = INST_VLC_CHECK;
 }
 
@@ -2487,7 +2538,8 @@ installerUpdateProcessInit (installer_t *installer)
     return;
   }
 
-  /* the updater must be run in the same locale as the installer */
+  /* the updater must use the same locale as the installer */
+  /* when the locale is specified. this is only for testing */
   if (installer->localespecified) {
     FILE    *fh;
     char    tbuff [BDJ4_PATH_MAX];
@@ -2980,5 +3032,19 @@ installerDoRegister (installer_t *installer, const char *data)
       );
   webclientPost (webclient, uri, tbuff);
   webclientClose (webclient);
+}
+
+int32_t
+installerLocaleSelect (void *udata, const char *sval)
+{
+  if (sval != NULL && *sval) {
+    char    tbuff [BDJ4_PATH_MAX];
+
+    sysvarsSetStr (SV_LOCALE, sval);
+    snprintf (tbuff, sizeof (tbuff), "%.2s", sval);
+    sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
+  }
+
+  return UICB_CONT;
 }
 

@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "bdj4.h"
+#include "bdj4intl.h"
 #include "dnctypes.h"
 #include "datafile.h"
 #include "fileop.h"
@@ -92,6 +93,16 @@ dnctypesConv (datafileconv_t *conv)
       num = LIST_VALUE_INVALID;
     } else {
       num = slistGetIdx (dnctypes->dnctypes, conv->str);
+    }
+    /* 2026-3-11 handle dance type change to 'other' */
+    /* anything that is invalid, try the 'other' string */
+    if (num < 0) {
+      /* CONTEXT: dance type: 'other' */
+      num = slistGetIdx (dnctypes->dnctypes, _("other"));
+    }
+    if (num < 0) {
+      /* just set to some valid value */
+      num = 0;
     }
     conv->outvt = VALUE_NUM;
     conv->num = num;

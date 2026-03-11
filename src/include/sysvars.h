@@ -55,6 +55,7 @@ typedef enum {
   SV_OS_DIST_TAG,
   SV_OS_EXEC_EXT,
   SV_OS_NAME,
+  SV_OS_PKG_SYS,
   SV_OS_PLATFORM,
   SV_OS_VERS,
   SV_PATH_ACRCLOUD,
@@ -137,6 +138,7 @@ bool    isWindows (void);
 bool    isLinux (void);
 sysversinfo_t *sysvarsParseVersionFile (const char *path);
 void    sysvarsParseVersionFileFree (sysversinfo_t *versinfo);
+void    sysvarsLoadLocale (const char *path);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

@@ -398,6 +398,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_QUEUE_SWITCH_EMPTY: {
           mainData->switchQueueWhenEmpty = atoi (args);
+          mainData->marqueeChanged = true;
           break;
         }
         case MSG_QUEUE_MIX: {
@@ -1002,21 +1003,24 @@ mainSendMarqueeData (maindata_t *mainData)
   char        tbuff [300];
   char        *sbuff = NULL;
   const char  *dstr = NULL;
-  int         mqLen;
+  int         marqueeLimit;
   int         mqidx;
-  int         musicqLen;
+  int         stopmqidx;
+  int         musicqLen = 0;
   time_t      currTime;
   time_t      qdur = 0;
-  int         lastmqidx;
   int         marqueeidx;
   int         qoffset;
+  int         qidx [MUSICQ_PB_MAX];
   char        *jbuff = NULL;
   bool        marqueeactive = false;
   bool        mobmarqueeactive = false;
+  bool        deferchecked = false;
+  bool        isfirst = true;
   char        *jp = NULL;
   char        *jend = NULL;
   char        *sp = NULL;
-  char        *send = NULL;
+  char        *sbuffend = NULL;
 
   logProcBegin ();
   mainData->marqueeChanged = false;
@@ -1037,12 +1041,7 @@ mainSendMarqueeData (maindata_t *mainData)
     return;
   }
 
-  mqLen = bdjoptGetNum (OPT_P_MQ_QLEN);
-  mqidx = mainData->musicqPlayIdx;
-  musicqLen = 0;
-  if (mainData->musicQueue != NULL) {
-    musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
-  }
+  marqueeLimit = bdjoptGetNum (OPT_P_MQ_QLEN);
 
   if (mobmarqueeactive) {
     const char  *title = NULL;
@@ -1052,7 +1051,7 @@ mainSendMarqueeData (maindata_t *mainData)
       title = "";
     }
     jp = stpecpy (jp, jend, "{ ");
-    snprintf (tbuff, sizeof (tbuff), "\"mqlen\" : \"%d\", ", mqLen);
+    snprintf (tbuff, sizeof (tbuff), "\"mqlen\" : \"%d\", ", marqueeLimit);
     jp = stpecpy (jp, jend, tbuff);
     snprintf (tbuff, sizeof (tbuff), "\"title\" : \"%s\"", title);
     jp = stpecpy (jp, jend, tbuff);
@@ -1082,70 +1081,62 @@ mainSendMarqueeData (maindata_t *mainData)
     sbuff = mdmalloc (BDJMSG_MAX);
     sbuff [0] = '\0';
     sp = sbuff;
-    send = sbuff + BDJMSG_MAX;
+    sbuffend = sbuff + BDJMSG_MAX;
+  }
+
+  mqidx = mainData->musicqPlayIdx;
+  stopmqidx = mqidx;
+  musicqLen = 0;
+  if (mainData->musicQueue != NULL) {
+    musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
+  }
+
+  /* need to track the q-offset for all music queues */
+  for (int i = 0; i < MUSICQ_PB_MAX; ++i) {
+    qidx [i] = 1;
+    if (i == mainData->musicqPlayIdx) {
+      qidx [i] = 0;
+    }
   }
 
   currTime = mstime ();
   marqueeidx = 0;
-  qoffset = 0;
-  lastmqidx = -1;
-  while (marqueeidx <= mqLen) {
+  qoffset = qidx [mqidx];
+  isfirst = true;
+
+  while (marqueeidx <= marqueeLimit) {
     dbidx_t   dbidx;
     song_t    *song;
     bool      docheck = false;
 
-    if (mainData->stopTime [mqidx] > 0 &&
-        (currTime + qdur) > mainData->nStopTime [mqidx]) {
-      /* process stoptime for the marquee display */
-      dstr = MSG_ARGS_EMPTY_STR;
-      if (lastmqidx != mainData->musicqPlayIdx) {
-        docheck = true;
-      }
-    } else if ((marqueeidx > 0 && mainData->inannounce) ||
-        (marqueeidx > 0 && mainData->playerState == PL_STATE_IN_GAP) ||
-        (marqueeidx > 1 && mainData->playerState == PL_STATE_IN_CROSSFADE) ||
-        (marqueeidx > 1 && mainData->playerState == PL_STATE_IN_FADEOUT)) {
-      /* inannounce and marqueeidx > 0 or */
-      /* in-gap and marqueeidx > 0 or */
-      /* in-fadeout and marqueeidx > 1 */
-      /* in-crossfade and marqueeidx > 1 */
-      dstr = MSG_ARGS_EMPTY_STR;
-    } else if (qoffset >= musicqLen) {
-      dstr = MSG_ARGS_EMPTY_STR;
-      if (lastmqidx != mainData->musicqPlayIdx) {
-        docheck = true;
-      }
-    } else {
-      dstr = mainSongGetDanceDisplay (mainData, mqidx, qoffset);
-    }
-
-    if (mainData->musicqDeferredPlayIdx != MAIN_NOT_SET) {
-      mqidx = mainData->musicqDeferredPlayIdx;
+    /* musicq length check to see if a skip-next should be done */
+    qoffset = qidx [mqidx];
+    if (qoffset >= musicqLen) {
+      docheck = true;
     }
 
     /* if the queue is empty (or will be empty), and */
     /* switch-queue-when-empty is on */
     /* check the next queue for display */
     if (docheck && mainData->switchQueueWhenEmpty) {
-      lastmqidx = mqidx;
       mqidx = musicqNextQueue (mqidx);
+      isfirst = false;
       musicqLen = 0;
       if (mainData->musicQueue != NULL) {
         musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
       }
-      while (mqidx != mainData->musicqPlayIdx && musicqLen == 0) {
+
+      while (mqidx != stopmqidx && qidx [mqidx] >= musicqLen) {
         mqidx = musicqNextQueue (mqidx);
         musicqLen = 0;
         if (mainData->musicQueue != NULL) {
           musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
         }
       }
-      if (mqidx != mainData->musicqPlayIdx) {
-        /* offset 0 is not active if this is not the queue set for playback */
-        qoffset = 1;
-        continue;
-      }
     }
+
+    qoffset = qidx [mqidx];
+    qidx [mqidx] += 1;
 
     /* queue duration data needed for stoptime check */
     dbidx = musicqGetByIdx (mainData->musicQueue, mqidx, qoffset);
@@ -1159,10 +1150,36 @@ mainSendMarqueeData (maindata_t *mainData)
       }
     }
 
+    if (mainData->stopTime [mqidx] > 0 &&
+        (currTime + qdur) > mainData->nStopTime [mqidx]) {
+      /* process stoptime for the marquee display */
+      dstr = MSG_ARGS_EMPTY_STR;
+      if (isfirst == false && mqidx != stopmqidx) {
+        docheck = true;
+      }
+    } else if ((marqueeidx > 0 && mainData->inannounce) ||
+        (marqueeidx > 0 && mainData->playerState == PL_STATE_IN_GAP) ||
+        (marqueeidx > 1 && mainData->playerState == PL_STATE_IN_CROSSFADE) ||
+        (marqueeidx > 1 && mainData->playerState == PL_STATE_IN_FADEOUT)) {
+      /* blank out the marquee under these conditions */
+      /* inannounce and marqueeidx > 0 or */
+      /* in-gap and marqueeidx > 0 or */
+      /* in-fadeout and marqueeidx > 1 */
+      /* in-crossfade and marqueeidx > 1 */
+      dstr = MSG_ARGS_EMPTY_STR;
+    } else if (qoffset >= musicqLen) {
+      dstr = MSG_ARGS_EMPTY_STR;
+      if (isfirst == false && mqidx != stopmqidx) {
+        docheck = true;
+      }
+    } else {
+      dstr = mainSongGetDanceDisplay (mainData, mqidx, qoffset);
+    }
+
     if (marqueeactive) {
       /* dance display */
       snprintf (tbuff, sizeof (tbuff), "%s%c", dstr, MSG_ARGS_RS);
-      sp = stpecpy (sp, send, tbuff);
+      sp = stpecpy (sp, sbuffend, tbuff);
     }
 
     if (mobmarqueeactive) {
@@ -1178,8 +1195,26 @@ mainSendMarqueeData (maindata_t *mainData)
       jp = stpecpy (jp, jend, tbuff);
     }
 
+    /* this check must only be done once */
+    /* if a deferred queue is active, it must be checked */
+    /* note that the deferred queue has not yet been processed */
+    /* and the docheck test must be skipped */
+    if (deferchecked == false &&
+        mainData->musicqDeferredPlayIdx != MAIN_NOT_SET) {
+      mqidx = mainData->musicqDeferredPlayIdx;
+      stopmqidx = mqidx;
+      deferchecked = true;
+      /* turn isfirst on, as the check against the stopidx must be skipped */
+      isfirst = true;
+      /* turn docheck off, as this queue has not been checked before */
+      docheck = false;
+      musicqLen = 0;
+      if (mainData->musicQueue != NULL) {
+        musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
+      }
+    }
+
     ++marqueeidx;
-    ++qoffset;
   }
 
   if (marqueeactive) {
@@ -1199,7 +1234,7 @@ mainSendMarqueeData (maindata_t *mainData)
         tstr = MSG_ARGS_EMPTY_STR;
       }
       snprintf (tbuff, sizeof (tbuff), "%s%c", tstr, MSG_ARGS_RS);
-      sp = stpecpy (sp, send, tbuff);
+      sp = stpecpy (sp, sbuffend, tbuff);
     }
 
     connSendMessage (mainData->conn, ROUTE_MARQUEE, MSG_MARQUEE_DATA, sbuff);
@@ -1295,6 +1330,7 @@ mainQueueDance (maindata_t *mainData, char *args)
   mi = mainMusicqIndexNumParse (mainData, args, &danceIdx, &count);
 
   logMsg (LOG_DBG, LOG_BASIC, "queue dance %d %d %d", mi, danceIdx, count);
+// ### needs to be fetched using the data locale
   /* CONTEXT: player: the name of the special playlist for queueing a dance */
   if ((playlist = playlistLoad (_("QueueDance"), mainData->musicdb, mainData->grouping)) == NULL) {
     playlist = playlistCreate ("main_queue_dance", PLTYPE_AUTO, mainData->musicdb, mainData->grouping);

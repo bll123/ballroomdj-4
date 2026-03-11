@@ -32,7 +32,7 @@ dance rating will be set to _Great_.  In addition, the maximum play
 time for _Viennese&nbsp;Waltz_ will be set to 2:00.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![create-sl-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/create-song-list-settings-B.png)
+![create-sl-settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/create-song-list-settings-C.png)
 <br><span id="caption" style="color:#4559bf;">__Management / Playlist Management / Settings__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -100,4 +100,4 @@ another may show up a little more or a little less often.
 [Management&nbsp;/&nbsp;Playlist&nbsp;Management](en-Management-Playlist%20Management)
 
 [Wiki Home](Home)
-<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_
+<br>_(Updated 2026-03-10 10:10:34; BDJ4 version 4.17.14)_

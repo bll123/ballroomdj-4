@@ -1,4 +1,4 @@
-/* 2026-2-19 */
+/* 2026-2-21 */
 /* version 10 */
 /*
  * Copyright 2023-2026 Brad Lanam Pleasant Hill CA
@@ -6,9 +6,6 @@
 
 /* note that these may affect dialogs started by the application */
 
-menu {
-  background-color: shade(@theme_base_color,0.7);
-}
 scale, scale trough {
   min-height: 5px;
 }
@@ -18,8 +15,18 @@ separator {
 scrollbar, scrollbar slider {
   min-width: 9px;
 }
-tooltip {
-  background-color: shade(@theme_base_color,0.7);
+
+label.bdj-heading {
+  font-weight: bold;
+}
+
+menu separator {
+  margin-right: 12px;
+  margin-left: 8px;
+}
+
+textview.bdj-dark-bg text {
+  background-color: mix(@theme_base_color,#000000,0.2);
 }
 
 /* for some reason, if the selection background color alone is set, the */
@@ -47,47 +54,43 @@ progressbar > trough progress {
   min-height: 25px;
 }
 
-.bdj-dark-bg {
-  background-color: shade(@theme_base_color,0.85);
-}
 /* used by drop-downs */
 .bdj-norm-bg {
   background-color: @theme_base_color;
   margin-right: 4pt;
 }
-label.bdj-selected {
-  color: @theme_selected_fg_color;
-}
 label.bdj-nodisp {
   color: rgba(0,0,0,0);
 }
 
-textview.bdj-dark-bg text {
-  background-color: shade(@theme_base_color,0.6);
-}
-
+/* ### move to dark/light */
 notebook.bdj-horiz-nb > stack {
   background-color: shade(@theme_base_color,0.9);
 }
+/* these buttons are flat, should inherit the underlying background color */
 button.bdj-nb {
-  /* the buttons are flat, inherit the underlying background color */
+/*
+  outline-width: 0px;
+  border: 0px solid;
+  border-radius: 0px;
+  background-image: none;
+*/
   background-color: rgba(0,0,0,0);
 }
 button.bdj-nb label {
-  color: shade(@theme_fg_color,0.6);
-}
-button.bdj-nb:hover {
-  background-color: shade(@theme_base_color,0.6);
+  color: mix(@theme_base_color,@theme_fg_color,0.7);
 }
 button.bdj-nb:hover label {
   color: @theme_fg_color;
 }
+/* ### move to dark/light */
 button.bdj-nb-sel {
   background-color: shade(@theme_base_color,0.6);
 }
 button.bdj-nb-sel label {
   color: @theme_fg_color;
 }
+
 /* vertical nb */
 label.bdj-vert-nb {
   border: 0px solid;
@@ -115,6 +118,7 @@ button.bdj-horiz-nb-sel {
   border-bottom-color: @selected_bg_color;
 }
 
+/* ### move to dark/light */
 box.bdj-sb {
   border: 1px solid shade(@theme_base_color,0.4);
   background-color: @theme_base_color;
@@ -146,27 +150,11 @@ button.bdj-spd-reset {
   border-color: black;
 }
 
-button.bdj-switch {
-  border-bottom-left-radius: 15px;
-  border-bottom-right-radius: 15px;
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
-  background-color: shade(@theme_base_color,0.7);
-  border-color: shade(@theme_base_color,0.7);
-  background-image: none;
-}
-button.bdj-switch:checked {
-  background-color: shade(@theme_base_color,0.7);
-}
-button.bdj-switch:hover {
-  background-color: shade(@theme_base_color,0.6);
-}
-
 button.bdj-flatbutton {
   outline-width: 0px;
   padding: 0px;
   border-color: @theme_bg_color;
-  background-color: rgba(0,0,0,0.0);
+  background-color: @theme_bg_color;
 }
 button.bdj-flatbutton widget {
   outline-width: 0px;
@@ -190,4 +178,27 @@ label.bdj-chginderror {
 
 entry {
   color: @theme_fg_color;
+}
+
+button.bdj-switch {
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  background-image: none;
+  background-color: @theme_base_color;
+}
+button.bdj-switch:checked {
+  background-color: @theme_base_color;
+}
+button.bdj-switch:disabled {
+  border-color: @theme_base_color;
+}
+button.bdj-switch:focus {
+  border-color: @theme_selected_bg_color;
+}
+
+entry:disabled.bdj-selected {
+  background-color: @insensitive_bg_color;
+  color: @insensitive_fg_color;
 }

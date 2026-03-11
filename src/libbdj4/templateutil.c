@@ -137,7 +137,7 @@ templateCopy (const char *fromdir, const char *fromfn, const char *to, const cha
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "    to: %s", to);
 
   if (color == NULL ||
-      strcmp (color, "#ffa600") == 0) {
+      strcmp (color, BDJ4_DFLT_DARK_ACCENT_COLOR) == 0) {
     filemanipBackup (to, 1);
     if (filemanipCopy (tbuff, to) < 0) {
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: copy failed %s %s", tbuff, to);
@@ -156,7 +156,7 @@ templateCopy (const char *fromdir, const char *fromfn, const char *to, const cha
     if (data != NULL) {
       fh = fileopOpen (to, "w");
       if (fh != NULL) {
-        ndata = regexReplaceLiteral (data, "#ffa600", color);
+        ndata = regexReplaceLiteral (data, BDJ4_DFLT_DARK_ACCENT_COLOR, color);
         len = strlen (ndata);
         fwrite (ndata, len, 1, fh);
         mdextfclose (fh);

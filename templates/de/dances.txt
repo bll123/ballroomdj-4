@@ -1,6 +1,6 @@
 # dances
-# 2023-5-22
-# version 2
+# 2026-2-25
+# version 3
 version
 ..2
 count
@@ -10,7 +10,7 @@ KEY
 ANNOUNCE
 ..
 DANCE
-..Argentinischer Tango
+..Tango Argentino
 LOWMPM
 ..30
 HIGHMPM
@@ -18,17 +18,17 @@ HIGHMPM
 SPEED
 ..normal
 TAGS
-..tango club
+..tango
 TIMESIG
 ..4/4
 TYPE
-..club
+..Andere
 KEY
 ..1
 ANNOUNCE
 ..
 DANCE
-..Cha Cha
+..Cha Cha Cha
 LOWMPM
 ..30
 HIGHMPM
@@ -40,13 +40,13 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..Latein
 KEY
 ..2
 ANNOUNCE
 ..
 DANCE
-..Foxtrott
+..Slowfox
 LOWMPM
 ..28
 HIGHMPM
@@ -58,7 +58,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..standard
+..Standard
 KEY
 ..3
 ANNOUNCE
@@ -76,7 +76,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..Latein
 KEY
 ..4
 ANNOUNCE
@@ -94,7 +94,7 @@ TAGS
 TIMESIG
 ..2/4
 TYPE
-..latin
+..Latein
 KEY
 ..5
 ANNOUNCE
@@ -112,7 +112,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..standard
+..Standard
 KEY
 ..6
 ANNOUNCE
@@ -130,7 +130,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..Latein
 KEY
 ..7
 ANNOUNCE
@@ -148,7 +148,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..Andere
 KEY
 ..8
 ANNOUNCE
@@ -166,7 +166,7 @@ TAGS
 TIMESIG
 ..2/4
 TYPE
-..latin
+..Latein
 KEY
 ..9
 ANNOUNCE
@@ -184,7 +184,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..standard
+..Standard
 KEY
 ..10
 ANNOUNCE
@@ -202,13 +202,13 @@ TAGS
 TIMESIG
 ..3/4
 TYPE
-..standard
+..Standard
 KEY
 ..11
 ANNOUNCE
 ..
 DANCE
-..Walzer
+..Langsamer Walzer
 LOWMPM
 ..28
 HIGHMPM
@@ -220,7 +220,7 @@ TAGS
 TIMESIG
 ..3/4
 TYPE
-..standard
+..Standard
 KEY
 ..12
 ANNOUNCE
@@ -238,4 +238,4 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..club
+..Andere

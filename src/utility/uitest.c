@@ -389,7 +389,7 @@ uitestBuildUI (uitest_t *uitest)
   uiwcontFree (accent.cbox);
 
   uitest->wcont [UITEST_W_MENUBAR] = uiCreateMenubar ();
-  uiBoxPackStartExpand (hbox, uitest->wcont [UITEST_W_MENUBAR]);
+  uiBoxPackStart (hbox, uitest->wcont [UITEST_W_MENUBAR]);
 
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackEnd (hbox, uiwidgetp);
@@ -1175,6 +1175,20 @@ uitestUILabels (uitest_t *uitest)
   uiwcontFree (uiwidgetp);
 
   uiBoxPostProcess (hbox);
+  uiwcontFree (hbox);
+
+  /* label: pack start / bold-accent */
+
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+
+  uiwidgetp = uiCreateLabel ("bold-accent");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, BOLD_ACCENT_CLASS);
+  uiwcontFree (uiwidgetp);
+
   uiwcontFree (hbox);
 
   /* label: pack start / error */

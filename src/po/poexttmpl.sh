@@ -18,6 +18,7 @@ dt=$(date '+%F')
 export dt
 
 echo "-- $(date +%T) extracting additional strings"
+TMP=potmp.txt
 TMPLOUT=po/potemplates.c
 > $TMPLOUT
 
@@ -34,19 +35,19 @@ ctxt=" // CONTEXT: configuration file: dance type"
 fn=../templates/dancetypes.txt
 sed -e '/^#/d' -e 's,^,..,' -e "s,^,${ctxt}\n," $fn >> $TMPLOUT
 
-ctxt=" // CONTEXT: configuration file: rating"
+ctxt=" // CONTEXT: configuration file: rating: songs can be assigned this rating"
 fn=../templates/ratings.txt
 sed -n -e "/^RATING/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMPLOUT
 
-ctxt=" // CONTEXT: configuration file: genre"
+ctxt=" // CONTEXT: configuration file: genre: songs can be assigned this genre"
 fn=../templates/genres.txt
 sed -n -e "/^GENRE/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMPLOUT
 
-ctxt=" // CONTEXT: configuration file: dance level"
+ctxt=" // CONTEXT: configuration file: dance level: songs can be assigned this dance-level"
 fn=../templates/levels.txt
 sed -n -e "/^LEVEL/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMPLOUT
 
-ctxt=" // CONTEXT: configuration file: status"
+ctxt=" // CONTEXT: configuration file: status: songs can be assigned this status"
 fn=../templates/status.txt
 sed -n -e "/^STATUS/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMPLOUT
 
@@ -59,16 +60,32 @@ for fn in ../templates/bdjconfig.q?.txt; do
   sed -n -e "/^QUEUE_NAME/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMPLOUT
 done
 
+> $TMP
+# be sure to handle the &amp; in the text for 'Clear & Play'.
 ctxt=" // CONTEXT: text from the HTML templates (buttons/labels/alt-text)"
 grep -E 'value=' ../templates/*.html |
-  sed -e 's,.*value=",,' -e 's,".*,,' -e '/^100$/ d' \
-      -e 's,^,..,' -e "s,^,${ctxt}\n," >> $TMPLOUT
+  sed -e 's,.*value=",,' \
+      -e 's,".*,,' \
+      -e '/^100$/ d' \
+      -e 's,^,..,' \
+      -e 's,\&amp;,\\&,' \
+      >> $TMP
 grep -E 'alt=' ../templates/*.html |
-  sed -e 's,.*alt=",,' -e 's,".*,,' -e '/^BDJ4$/ d' \
-      -e 's,^,..,' -e "s,^,${ctxt}\n," >> $TMPLOUT
+  sed -e 's,.*alt=",,' \
+      -e 's,".*,,' \
+      -e '/^BDJ4$/ d' \
+      -e 's,^,..,' \
+      >> $TMP
 grep -E '<p[^>]*>[A-Za-z][A-Za-z]*</p>' ../templates/*.html |
-  sed -e 's,.*: *<,<,' -e 's,<[^>]*>,,g' -e 's,^ *,,' -e 's, *$,,' \
-      -e 's,^,..,' -e "s,^,${ctxt}\n," >> $TMPLOUT
+  sed -e 's,.*: *<,<,' \
+      -e 's,<[^>]*>,,g' \
+      -e 's,^ *,,' \
+      -e 's, *$,,' \
+      -e 's,^,..,' \
+      >> $TMP
+sort -u $TMP > $TMP.n
+mv -f $TMP.n $TMP
+sed -e "s,^,${ctxt}\n," $TMP >> $TMPLOUT
 
 # names of playlist files
 echo " // CONTEXT: The name of the 'standardrounds' playlist file" >> $TMPLOUT
@@ -81,7 +98,16 @@ echo " // CONTEXT: tooltip for desktop icon" >> $TMPLOUT
 grep -E '^Comment=' ../install/bdj4.desktop |
   sed -e 's,Comment=,,' -e 's,^,..,' >> $TMPLOUT
 
-sed -e '/^\.\./ {s,^\.\.,, ; s,^,_(", ; s,$,"),}' $TMPLOUT > $TMPLOUT.n
+# 'Queue' in the html files is the verb
+# 'None' in the genre template
+# 'Next' in the html files is the next-page
+sed -e '/^\.\./ {s,^\.\.,, ; s,^,_(", ; s,$,"),}' \
+    -e 's|_."Queue"|C_("Verb","Queue"|' \
+    -e 's|_."Next"|C_("Page","Next"|' \
+    -e 's|_."None"|C_("Genre","None"|' \
+    $TMPLOUT > $TMPLOUT.n
 mv -f $TMPLOUT.n $TMPLOUT
+
+rm -f $TMP
 
 exit 0

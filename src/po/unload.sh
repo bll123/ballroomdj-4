@@ -42,8 +42,21 @@ fi
 
 (
   cd $TMP
+  case $zipfile in
+    *translations*)
+      loc=..
+      ;;
+    *)
+      lang=$(echo $zipfile |
+          sed -e 's,.*(,,' -e 's,).*,,')
+      # lang could be short (es) or longer with dash (es-ES)
+      mkdir $lang
+      cd $lang
+      loc=../..
+      ;;
+  esac
   echo "Unpacking $zipfile"
-  unzip -q "../$zipfile"
+  unzip -q "${loc}/$zipfile"
 )
 
 if [[ $UNPACKONLY == T ]];then

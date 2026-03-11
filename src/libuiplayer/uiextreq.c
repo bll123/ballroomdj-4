@@ -229,7 +229,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
       _("Close"),
       RESPONSE_CLOSE,
       /* CONTEXT: (verb) external request dialog: queue the selected file */
-      _("Queue"),
+      C_("Verb","Queue"),
       RESPONSE_APPLY,
       NULL
       );

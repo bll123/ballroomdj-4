@@ -11,15 +11,11 @@
 #         extract-helptext.awk
 #       po-en-gb.sh (po/en_GB.po)
 #         po-mk.sh
-#           lang-lookup.sh
-#             lang-lookup.awk
 #       po-en-us.sh (po/en_US.po)
 #         mken_us.awk
-# b) Create the other language .po files
+# b) Create any .po files for new languages
 #     Makefile-po
 #       po-mk.sh
-#         lang-lookup.sh
-#           lang-lookup.awk
 # c) Update the .mo files
 #     Makefile-inst
 # d) Create the localization.txt file while processing the locales.
@@ -40,6 +36,8 @@ done
 cd src/po
 cwd=$(pwd)
 
+rm -f *~ po/*~ web/*~ > /dev/null 2>&1
+
 # during this process, create the localization.txt file
 # set up the stuff that is needed
 
@@ -49,6 +47,7 @@ LOCALEDIR=../../locale
 # first, make bdj4.pot, en_GB.po, en_US.po
 make
 
+echo "-- $(date +%T) Updating templates/html"
 # if there are any changes to complete.txt,
 # this loop is duplicated in po-ltxt.sh
 while read line; do
@@ -77,6 +76,7 @@ while read line; do
   # create the .po file
 
   # The .po files for en_GB and en_US are already created
+  # this is for new languages.
   if [[ $locale != en_GB && $locale != en_US ]]; then
     make -f Makefile-po \
         LOCALE=${locale} \

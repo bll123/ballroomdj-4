@@ -241,12 +241,9 @@ instutilCopyTemplates (void)
         continue;
       }
     } else if (pathInfoExtCheck (pi, BDJ4_CONFIG_EXT) ||
-        pathInfoExtCheck (pi, BDJ4_CSS_EXT) ||
         pathInfoExtCheck (pi, BDJ4_SEQUENCE_EXT) ||
         pathInfoExtCheck (pi, BDJ4_PL_DANCE_EXT) ||
         pathInfoExtCheck (pi, BDJ4_PLAYLIST_EXT) ) {
-
-      stpecpy (tbuff, tbuff + sizeof (tbuff), fname);
 
       fkey = -1;
       if (strncmp (pi->basename, "standardrounds", pi->blen) == 0) {
@@ -263,6 +260,8 @@ instutilCopyTemplates (void)
       if (fkey != -1) {
         const char  *tval;
 
+// ### this is fetched from the localization.txt file.
+// should be ok
         tval = localeGetStr (fkey);
         if (tval != NULL) {
           snprintf (tbuff, sizeof (tbuff), "%s%.*s", tval, (int) pi->elen,

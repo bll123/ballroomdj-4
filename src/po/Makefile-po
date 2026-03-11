@@ -15,7 +15,7 @@ all: $(PODIR)/$(LOCALE).po
 	@:
 
 $(PODIR)/$(LOCALE).po:	bdj4.pot complete.txt \
-		po-mk.sh lang-lookup.sh lang-lookup.awk
-	@echo "-- $$(date +%T) update $(LOCALE).po"
+		po-mk.sh
+	@# echo "-- $$(date +%T) update $(LOCALE).po"
 	@./po-mk.sh $@ $(LOCALE) $(ENGNM) "$(LANGDESC)"
 

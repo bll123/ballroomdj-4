@@ -59,7 +59,9 @@
 #
 # main:
 #   CHK_MAIN_MUSICQ
-#     mqplay mq0len mq1len m-songfn title dance
+#     mqplay mq0len mq1len
+#     m-songfn title dance
+#       only if playing
 #     dbidx
 #       only if playing, from the musicq-play-idx
 #     qdbidx

@@ -52,14 +52,14 @@ music manager has not yet been closed.
 When the music manager is closed, the final song removal processing
 takes place.  Each audio file that was marked for removal is renamed
 to have a 'delete-' prefix.  For example, _Sway.mp3_ will be renamed
-to _delete-Sway.png_.
+to _delete-Sway.mp3_.
 
 #### Fixing an Accidental Removal
 
 If a song was removed, and you want to restore it after having closed
 the music manager, use your file explorer to locate the audio file in
 your music folder.  Rename the audio file and remove the 'delete-'
-prefix.  For example rename _delete-Sway.png_ to _Sway.png_.  Be sure
+prefix.  For example rename _delete-Sway.mp3_ to _Sway.mp3_.  Be sure
 to keep the original name intact.  Exit and restart BDJ4.
 
 As the song removal process does not clear the database entry, the
@@ -77,4 +77,4 @@ the __Start__ button.  This will remove any unused entries from the
 database.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_
+<br>_(Updated 2026-03-10 10:10:34; BDJ4 version 4.17.14)_

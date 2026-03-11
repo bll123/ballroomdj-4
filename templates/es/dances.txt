@@ -1,6 +1,6 @@
 # dances
-# 2023-5-22
-# version 2
+# 2026-2-25
+# version 3
 version
 ..2
 count
@@ -10,7 +10,7 @@ KEY
 ANNOUNCE
 ..
 DANCE
-..Tango argentino
+..Tango Argentino
 LOWMPM
 ..30
 HIGHMPM
@@ -18,17 +18,17 @@ HIGHMPM
 SPEED
 ..normal
 TAGS
-..tango club
+..tango
 TIMESIG
 ..4/4
 TYPE
-..club
+..Otros
 KEY
 ..1
 ANNOUNCE
 ..
 DANCE
-..Cha Cha
+..Cha-cha-chá
 LOWMPM
 ..30
 HIGHMPM
@@ -40,7 +40,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..Latino
 KEY
 ..2
 ANNOUNCE
@@ -58,7 +58,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..standard
+..Estándar
 KEY
 ..3
 ANNOUNCE
@@ -76,7 +76,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..Latino
 KEY
 ..4
 ANNOUNCE
@@ -94,7 +94,7 @@ TAGS
 TIMESIG
 ..2/4
 TYPE
-..latin
+..Latino
 KEY
 ..5
 ANNOUNCE
@@ -112,7 +112,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..standard
+..Estándar
 KEY
 ..6
 ANNOUNCE
@@ -130,7 +130,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..Latino
 KEY
 ..7
 ANNOUNCE
@@ -148,7 +148,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..Otros
 KEY
 ..8
 ANNOUNCE
@@ -166,7 +166,7 @@ TAGS
 TIMESIG
 ..2/4
 TYPE
-..latin
+..Latino
 KEY
 ..9
 ANNOUNCE
@@ -184,7 +184,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..standard
+..Estándar
 KEY
 ..10
 ANNOUNCE
@@ -202,7 +202,7 @@ TAGS
 TIMESIG
 ..3/4
 TYPE
-..standard
+..Estándar
 KEY
 ..11
 ANNOUNCE
@@ -220,13 +220,13 @@ TAGS
 TIMESIG
 ..3/4
 TYPE
-..standard
+..Estándar
 KEY
 ..12
 ANNOUNCE
 ..
 DANCE
-..Swing de la Costa Oeste
+..West Coast Swing
 LOWMPM
 ..22
 HIGHMPM
@@ -238,4 +238,4 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..club
+..Otros

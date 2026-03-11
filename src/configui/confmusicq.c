@@ -79,7 +79,7 @@ confuiBuildUIMusicQs (confuigui_t *gui)
       _("Music Queues"), CONFUI_ID_NONE);
 
   /* CONTEXT: (noun) configuration: queue: select which queue to configure */
-  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Queue_noun"),
+  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, C_("Noun","Queue"),
       CONFUI_SPINBOX_MUSIC_QUEUE, -1, CONFUI_OUT_NUM,
       gui->uiitem [CONFUI_SPINBOX_MUSIC_QUEUE].listidx, confuiMusicQChg);
 
@@ -358,6 +358,12 @@ confuiMusicQUpdateState (confuigui_t *gui, int idx)
 {
   int   state;
 
+  if (gui->inchange) {
+    return;
+  }
+
+  /* still broken as of 2026-2-22 */
+  /* there is some weird interaction with the signal handlers in gtk */
   if (strcmp (uiBackend (), "gtk3") == 0) {
     /* enabling and disabling these is buggy on gtk3 */
     /* skip it altogether */

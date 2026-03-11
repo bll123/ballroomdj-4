@@ -4,9 +4,51 @@
 
 <!--
 
-**4.17.12 2026-2---**
+**4.18.0 2026-3---**
+
+* Bug Fixes:
+    * Dances: Fix conversion from old 'club' designation.
+* Internal:
+    * Minor cleanup.
 
 -->
+
+**4.17.14 2026-3-6**
+
+* Bug Fixes:
+    * Configuration: Fix size limits of some configuration items.
+    * Localization: Fix datafile templates.
+    * Marquee: Fix incorrect display when switching to a different queue for playback.
+    * Player: Fix a hang when switching to a different queue for playback.
+* Changes:
+    * Changed the toggle switch to a more cultural neutral design.
+* Translations:
+    * German (Deutsch) is now professionally translated by [Simon Thomas](https://www.proz.com/translator/2935381)
+    * Spanish (Español) is now professionally translated by [Daniel de la Nava](https://www.proz.com/translator/4555219).
+
+**4.17.13.1 2026-2-26**
+
+* Bug Fixes:
+    * Fixed localized text not being processed properly.
+
+**4.17.13 2026-2-25**
+
+* Bug Fixes:
+    * Configuration: Mobile Marquee: Change template selection to a drop-down.
+    * Configuration: Organization: localize the examples.
+    * Fixed a memory corruption issue.
+    * Installer: Ask for the preferred language.
+    * Localization: Fix the starter not being localized (introduced in 4.17.11).
+    * Support: MacOS: Fix 'Download Latest' link.
+    * Themes: Adjusted dark theme row highlight color.
+
+**4.17.12 2026-2-22**
+
+* Bug Fixes:
+    * Listings: Fix 'favorite' taking more space than it should.
+    * Listings: Created abbreviated names for: 'Movement Number', 'Movement Count'.
+    * Management: Fixed the window not resizing properly.
+    * Themes: Color fixes.  Light themes have much better colors.
 
 **4.17.11 2026-2-16**
 
@@ -1455,4 +1497,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2026-02-18 17:44:35; BDJ4 version 4.17.11)_
+<br>_(Updated 2026-03-06 12:23:45; BDJ4 version 4.17.14)_

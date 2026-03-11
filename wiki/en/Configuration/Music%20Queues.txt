@@ -65,8 +65,8 @@ __Queue&nbsp;5__ buttons.  These buttons are usually used for
 practice and teaching.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![music-queues](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MusicQueues-G.png)
+![music-queues](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MusicQueues-H.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-12-08 10:34:23; BDJ4 version 4.17.7)_
+<br>_(Updated 2026-03-10 10:10:34; BDJ4 version 4.17.14)_

@@ -90,8 +90,11 @@ For MacOS, the bdj4-src-macos-DATE.zip file is also needed.
 
 ### Translations:
 
-Except for Nederlands (Dutch), most of the translation are machine
-translated and of very poor quality.
+Deutsch (German) and Español (Spanish) are professionally translated.
+Nederlands (Dutch) is in very good shape though incomplete.
+Русский‬ (Russian) is OK.
+
+All of the other translations are machine translated and of very poor quality.
 
 If you can help with translating, please
 [let&nbsp;me&nbsp;know](https://sourceforge.net/p/ballroomdj4/wiki/en-Getting%20Help).

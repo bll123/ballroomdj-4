@@ -35,7 +35,7 @@ For the purposes of this example, the line dance will just be named
 _LD_ to keep it short.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![ld-edit-dance](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-edit-dance-C.png)
+![ld-edit-dance](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-edit-dance-D.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
 
 #### Setting up the Line Dances (Marquee Display)
@@ -48,7 +48,7 @@ dance (_LD_ in this example), and set the _Marquee&nbsp;Display_ to
 the name of the line dance.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![ld-dance-one](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-dance-one-A.png)
+![ld-dance-one](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/ld-dance-one-B.png)
 <br><span id="caption" style="color:#4559bf;">__Manage / Song Editor__</span> </div>
 
 #### Listing the Line Dances
@@ -86,4 +86,4 @@ on the marquee instead of the dance.
 <br><span id="caption" style="color:#4559bf;">__Marquee__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_
+<br>_(Updated 2026-03-10 10:10:34; BDJ4 version 4.17.14)_

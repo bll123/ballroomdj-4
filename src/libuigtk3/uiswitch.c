@@ -66,7 +66,7 @@ uiCreateSwitch (int value)
   uiswitch->altimageraw = NULL;
 
   pathbldMakePath (tbuff, sizeof (tbuff), "switch-off", BDJ4_IMG_SVG_EXT,
-      PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
+      PATHBLD_MP_DIR_IMG);
   image = uiImageWidget (tbuff);
   uiswitch->image = image;
   if (image != NULL) {
@@ -74,7 +74,7 @@ uiCreateSwitch (int value)
   }
 
   pathbldMakePath (tbuff, sizeof (tbuff), "switch-on", BDJ4_IMG_SVG_EXT,
-      PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
+      PATHBLD_MP_DIR_IMG);
   image = uiImageWidget (tbuff);
   uiswitch->altimage = image;
   if (image != NULL) {

@@ -34,6 +34,7 @@
 #include "pathdisp.h"
 #include "slist.h"
 #include "sysvars.h"
+#include "uidd.h"
 
 #include "osdirutil.h"
 
@@ -161,6 +162,12 @@ localeSetup (void)
   } else {
     stpecpy (lbuff, lbuff + sizeof (lbuff), sysvarsGetStr (SV_LOCALE_SYSTEM));
   }
+
+  /* convert the C locale to something that has messages */
+  if (strcmp (lbuff, "C") == 0) {
+    stpecpy (lbuff, lbuff + sizeof (lbuff), "en_GB.UTF-8");
+  }
+
   snprintf (tbuff, sizeof (tbuff), "%-.5s", lbuff);
   /* windows uses en-US rather than en_US */
   if (strlen (tbuff) >= 3 && tbuff [2] == '-') {
@@ -204,10 +211,9 @@ localeSetup (void)
   /* windows doesn't work without this */
   /* note that LC_MESSAGES is an msys2 extension */
   /* windows normally has no LC_MESSAGES setting */
-  /* setlocale of LC_MESSAGES, etc. apparently does nothing */
+
   osSetEnv ("LC_MESSAGES", tbuff);
   osSetEnv ("LC_COLLATE", tbuff);
-  osSetEnv ("LC_CTYPE", tbuff);
 
   pathbldMakePath (locpath, sizeof (locpath), "", "", PATHBLD_MP_DIR_LOCALE);
 #if _lib_wbindtextdomain
@@ -237,6 +243,14 @@ localeSetup (void)
 
   lconv = localeconv ();
   sysvarsSetStr (SV_LOCALE_RADIX, lconv->decimal_point);
+
+  /* setlocale of LC_MESSAGES, etc. is needed for bdj4starterui */
+  if (setlocale (LC_MESSAGES, tbuff) == NULL) {
+    fprintf (stderr, "set of locale failed; unknown locale %s\n", tbuff);
+  }
+  if (setlocale (LC_COLLATE, tbuff) == NULL) {
+    fprintf (stderr, "set of locale failed; unknown locale %s\n", tbuff);
+  }
 
   localePostSetup ();
 }
@@ -290,7 +304,6 @@ localeDebug (const char *tag)   /* KEEP */
   fprintf (stderr, "  os-setlocale-all:%s\n", setlocale (LC_ALL, NULL));
   fprintf (stderr, "  os-setlocale-messages:%s\n", setlocale (LC_MESSAGES, NULL));
   fprintf (stderr, "  os-setlocale-collate:%s\n", setlocale (LC_COLLATE, NULL));
-  fprintf (stderr, "  os-setlocale-ctype:%s\n", setlocale (LC_CTYPE, NULL));
   fprintf (stderr, "  os-setlocale-numeric:%s\n", setlocale (LC_NUMERIC, NULL));
   osGetLocale (tbuff, sizeof (tbuff));
   fprintf (stderr, "  os-get-locale:%s\n", tbuff);
@@ -309,8 +322,6 @@ localeDebug (const char *tag)   /* KEEP */
   fprintf (stderr, "  env-lc-messages:%s\n", tbuff);
   osGetEnv ("LC_COLLATE", tbuff, sizeof (tbuff));
   fprintf (stderr, "  env-lc-collate:%s\n", tbuff);
-  osGetEnv ("LC_CTYPE", tbuff, sizeof (tbuff));
-  fprintf (stderr, "  env-lc-ctype:%s\n", tbuff);
   osGetEnv ("LC_NUMERIC", tbuff, sizeof (tbuff));
   fprintf (stderr, "  env-lc-numeric:%s\n", tbuff);
 #if _lib_wbindtextdomain
@@ -321,6 +332,59 @@ localeDebug (const char *tag)   /* KEEP */
   fprintf (stderr, "  textdomain:%s\n", textdomain (NULL));
 }
 #endif
+
+ilist_t *
+localeCreateDropDownList (int *idx, bool uselocale)
+{
+  slist_t       *list = NULL;
+  slistidx_t    iteridx;
+  const char    *key;
+  const char    *disp;
+  ilist_t       *ddlist;
+  int           count;
+  bool          found;
+  int           engbidx = 0;
+  int           shortidx = 0;
+
+  logProcBegin ();
+
+  *idx = 0;
+  list = localeGetDisplayList ();
+
+  ddlist = ilistAlloc ("cu-locale-dd", LIST_ORDERED);
+  ilistSetSize (ddlist, slistGetCount (list));
+
+  slistStartIterator (list, &iteridx);
+  count = 0;
+  found = false;
+  shortidx = -1;
+  while ((disp = slistIterateKey (list, &iteridx)) != NULL) {
+    key = slistGetStr (list, disp);
+    if (strcmp (disp, "en_GB") == 0) {
+      engbidx = count;
+    }
+    if (strcmp (key, sysvarsGetStr (SV_LOCALE)) == 0) {
+      *idx = count;
+      found = true;
+    }
+    if (strncmp (key, sysvarsGetStr (SV_LOCALE_SHORT), 2) == 0) {
+      shortidx = count;
+    }
+    ilistSetStr (ddlist, count, DD_LIST_DISP, disp);
+    ilistSetStr (ddlist, count, DD_LIST_KEY_STR, key);
+    ilistSetNum (ddlist, count, DD_LIST_KEY_NUM, count);
+    ++count;
+  }
+
+  if (! found && shortidx >= 0) {
+    *idx = shortidx;
+  } else if (! found) {
+    *idx = engbidx;
+  }
+
+  logProcEnd ("");
+  return ddlist;
+}
 
 /* internal routines */
 
@@ -372,3 +436,4 @@ localePostSetup (void)
   l639_2 = istring639_2 (svlocale);
   sysvarsSetStr (SV_LOCALE_639_2, l639_2);
 }
+

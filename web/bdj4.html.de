@@ -6,9 +6,9 @@
   <meta name="google-site-verification" content="ah8fN8rvRWoqb1FzT4B-uAfR1MwRdWvYzhyAFKXFWS8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- WT_021 -->
-  <title>BallroomDJ 4 - Ballroom-Musikspieler</title>
+  <title>BallroomDJ 4 – Ballsaal-Musik-Player</title>
   <!-- WT_022 -->
-  <meta name="Description" content="BallroomDJ 4 - Ballroom-Musikspieler">
+  <meta name="Description" content="BallroomDJ 4 – Ballsaal-Musik-Player">
   <meta name="Keywords" content="Ballroom Music Player,
       Přehrávač taneční hudby,
       Ballroom musikafspiller,
@@ -52,7 +52,7 @@
     <div>
       <!-- WT_001 -->
       <img src="/img/ballroomdj4.svg"
-        alt="BallroomDJ 4 - Der Ballroom-Musikspieler"
+        alt="BallroomDJ 4 – Der Ballsaal-Musik-Player"
         width="50%" style="max-width: 420px">
     </div>
     <div class="donatewidget">
@@ -74,7 +74,7 @@
               onclick="javascript:setDisplay('bdj3');">BallroomDJ 3</li>
           <!-- WT_002 -->
           <li id="" class="menuitem"
-              onclick="javascript:setDisplay('donate');">Spenden Sie</li>
+              onclick="javascript:setDisplay('donate');">Spenden</li>
         </ul>
       </div>
     </div>
@@ -82,9 +82,9 @@
       <div class="dflex">
         <div class="tleft dtext">
           <!-- WT_003 -->
-          <p>BallroomDJ 4 (BDJ4) ist ein Musik-Player, der für Desktop- und Laptop-Computer entwickelt wurde (und auf einigen Tablets funktioniert). Er ist so konzipiert, dass er einen ganzen Abend lang Musik abspielen kann, ohne dass man eingreifen muss.</p>
+          <p>BallroomDJ 4 (BDJ4) ist ein Musik-Player, der für Desktop- und Laptop-Computer entwickelt wurde (und zudem auf einigen Tablets funktioniert). Er ist so konzipiert, dass er den gesamten Abend lang ohne jegliches Eingreifen Musik abspielen kann.</p>
           <!-- WT_004 -->
-          <p>BDJ4 ist in hohem Maße anpassbar und bietet Möglichkeiten zur Organisation von Tanzmusik und zur Erstellung von Songlisten, automatischen Playlists und sequenzierten Playlists.</p>
+          <p>BDJ4 ist in hohem Maße anpassbar und bietet Funktionen zur Organisation von Tanzmusik sowie zur Erstellung von Songlisten, automatischen Wiedergabelisten und sequenzierten Wiedergabelisten.</p>
           <!-- WT_005 -->
           <p>BDJ4 läuft unter Windows, MacOS und Linux.</p>
           <!-- WT_006 -->
@@ -94,24 +94,24 @@
           <!-- WT_007 -->
           <p><a target="_blank"
               href="https://sourceforge.net/p/ballroomdj4/wiki/en-Change%20Log"
-              >Anderungsprotokoll</a></p>
+              >Änderungsprotokoll</a></p>
           <!-- WT_008 -->
           <p><a target="_blank"
               href="https://ballroomdj.org/forum/">BDJ4-Forum</a></p>
           <!-- WT_009 -->
           <p><a target="_blank"
               href="https://sourceforge.net/p/ballroomdj4/wiki/Home/"
-              >BDJ4 Wiki</a></p>
+              >BDJ4-Wiki</a></p>
           <!-- WT_010 -->
           <p><a target="_blank"
               href="https://sourceforge.net/p/ballroomdj4/wiki/en-Features/"
-              >BDJ4 Merkmale</a></p>
+              >BDJ4-Funktionen</a></p>
           <!-- WT_011 -->
           <p><a target="_blank"
               href="https://crowdin.com/project/ballroomdj-4"
-              >Hilfe zum Übersetzen von BallroomDJ 4</a></p>
+              >Helfen Sie bei der Übersetzung von BallroomDJ 4</a></p>
           <!-- WT_012 -->
-          <p>Andere Seiten, auf denen BallroomDJ 4-Veröffentlichungen angekündigt werden können:</p>
+          <p>Weitere Webseiten, auf denen Ankündigungen zur Veröffentlichung von BallroomDJ 4 zu finden sind:</p>
           <!-- WT_013 -->
           <p><a target="_blank"
               href="https://freshcode.club/projects/bdj4"
@@ -155,7 +155,7 @@
     <div id="dbdj3" class="mdiv dispnone">
       <div class="tleft dinlineblock">
         <!-- WT_015 -->
-        <p>BallroomDJ war der bisherige Ballroom-Musikplayer. Er wird nicht mehr unterstützt.</p>
+        <p>BallroomDJ war der vorherige Ballsaal-Musik-Player. Er wird nicht mehr unterstützt.</p>
         <!-- WT_016 -->
         <p>Alle Nutzer von BallroomDJ werden dringend gebeten, auf BallroomDJ 4 umzusteigen.</p>
         <!-- WT_017 -->
@@ -167,7 +167,7 @@
 
     <div id="ddonate" class="mdiv dispnone tleft">
       <!-- WT_018 -->
-      <p>Spenden Sie an BDJ4</p>
+      <p>BDJ4 mit einer Spende unterstützen</p>
       <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
         <input type="hidden" name="cmd" value="_s-xclick" />
         <input type="hidden" name="hosted_button_id" value="BLTFRDM5KHNDJ" />
@@ -177,7 +177,7 @@
       <!-- WT_019 -->
       <p>Spenden Sie für Softwareprojekte, die BDJ4 nutzt:</p>
       <!-- WT_020 -->
-      <p><a href="https://videolan.org">VLC</a> (Spendentaste ganz oben)</p>
+      <p><a href="https://videolan.org">VLC</a> (Spenden-Schaltfläche ganz oben)</p>
       <p><a href="https://curl.se/donation.html">Curl</a></p>
       <p><a href="https://www.msys2.org/#donations">MSYS2</a> (Windows)</p>
       <p><a href="https://ffmpeg.org/donations.html">ffmpeg</a></p>

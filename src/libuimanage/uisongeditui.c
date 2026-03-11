@@ -362,7 +362,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiwidgetp = uiCreateButton (
       seint->callbacks [UISE_CB_NEXT],
       /* CONTEXT: song editor : next song */
-      _("Next"), NULL, NULL);
+      C_("Song","Next"), NULL);
   uiButtonSetRepeat (uiwidgetp, REPEAT_TIME);
   uiBoxPackStart (hbox, uiwidgetp);
   seint->wcont [UISE_W_BUTTON_NEXT] = uiwidgetp;

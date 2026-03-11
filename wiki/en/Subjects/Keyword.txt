@@ -30,9 +30,12 @@ automatic playlist.  In addition, the _holiday_ keyword is added to
 __Tags__ and the __Tag&nbsp;Weight__ is set to 90 so that the holiday
 songs will have a greater chance of being selected.
 
+For an automatic playlist, be sure to select the _Dances_ tab, and
+select the dances that will be included in the playlist.
+
 <div markdown style="margin-right: 20px; text-align: center;">
-![keyword-playlist](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/keyword-playlist-B.png)
+![keyword-playlist](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/keyword-playlist-C.png)
 <br><span id="caption" style="color:#4559bf;">__Playlist Management__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_
+<br>_(Updated 2026-03-10 10:10:34; BDJ4 version 4.17.14)_

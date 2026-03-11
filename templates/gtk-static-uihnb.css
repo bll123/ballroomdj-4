@@ -1,0 +1,193 @@
+/* 2026-2-19 */
+/* version 10 */
+/*
+ * Copyright 2023-2026 Brad Lanam Pleasant Hill CA
+ */
+
+/* note that these may affect dialogs started by the application */
+
+menu {
+  background-color: shade(@theme_base_color,0.7);
+}
+scale, scale trough {
+  min-height: 5px;
+}
+separator {
+  min-height: 4px;
+}
+scrollbar, scrollbar slider {
+  min-width: 9px;
+}
+tooltip {
+  background-color: shade(@theme_base_color,0.7);
+}
+
+/* for some reason, if the selection background color alone is set, the */
+/* text color temporarily becomes white on light colored themes */
+/* the text color must be set also */
+/* these changes are for read-only spinboxes */
+spinbutton.bdj-sb-readonly {
+  caret-color: @theme_base_color;
+}
+spinbutton.bdj-sb-readonly selection {
+  background-color: @theme_base_color;
+  color: @theme_text_color;
+}
+
+/* progress bars */
+progressbar {
+  background-image: none;
+}
+progressbar > trough {
+  border-width: 0px;
+  min-height: 25px;
+}
+progressbar > trough progress {
+  border-width: 0px;
+  min-height: 25px;
+}
+
+.bdj-dark-bg {
+  background-color: shade(@theme_base_color,0.85);
+}
+/* used by drop-downs */
+.bdj-norm-bg {
+  background-color: @theme_base_color;
+  margin-right: 4pt;
+}
+label.bdj-selected {
+  color: @theme_selected_fg_color;
+}
+label.bdj-nodisp {
+  color: rgba(0,0,0,0);
+}
+
+textview.bdj-dark-bg text {
+  background-color: shade(@theme_base_color,0.6);
+}
+
+notebook.bdj-horiz-nb > stack {
+  background-color: shade(@theme_base_color,0.9);
+}
+button.bdj-nb {
+  /* the buttons are flat, inherit the underlying background color */
+  background-color: rgba(0,0,0,0);
+}
+button.bdj-nb label {
+  color: shade(@theme_fg_color,0.6);
+}
+button.bdj-nb:hover {
+  background-color: shade(@theme_base_color,0.6);
+}
+button.bdj-nb:hover label {
+  color: @theme_fg_color;
+}
+button.bdj-nb-sel {
+  background-color: shade(@theme_base_color,0.6);
+}
+button.bdj-nb-sel label {
+  color: @theme_fg_color;
+}
+/* vertical nb */
+label.bdj-vert-nb {
+  border: 0px solid;
+  border-left-width: 4px;
+  border-left-color: transparent;
+}
+button.bdj-nb {
+  outline-width: 0px;
+  border: 0px solid;
+  border-radius: 0px;
+  background-image: none;
+}
+label.bdj-vert-nb-sel {
+  border-left-color: @selected_bg_color;
+}
+/* horizontal nb */
+button.bdj-horiz-nb {
+  border: 1px solid black;
+  border-bottom-width: 4px;
+  border-bottom-color: transparent;
+  border-radius: 5px;
+}
+button.bdj-horiz-nb-sel {
+  border-bottom-width: 4px;
+  border-bottom-color: @selected_bg_color;
+}
+
+box.bdj-sb {
+  border: 1px solid shade(@theme_base_color,0.4);
+  background-color: @theme_base_color;
+}
+button.bdj-sb {
+  border: 0px;
+  border-left: 1px solid shade(@theme_base_color,0.4);
+  border-radius: 0px;
+}
+label.bdj-sb {
+  color: @theme_fg_color;
+  background-color: @theme_base_color;
+}
+entry.bdj-sb {
+  border-radius: 0px;
+}
+
+scrolledwindow undershoot.top, scrolledwindow undershoot.right,
+scrolledwindow undershoot.left, scrolledwindow undershoot.bottom {
+  background-image: none;
+  outline-width: 0px;
+}
+
+button.bdj-spd-reset {
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 1px;
+  padding-right: 1px;
+  border-color: black;
+}
+
+button.bdj-switch {
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  background-color: shade(@theme_base_color,0.7);
+  border-color: shade(@theme_base_color,0.7);
+  background-image: none;
+}
+button.bdj-switch:checked {
+  background-color: shade(@theme_base_color,0.7);
+}
+button.bdj-switch:hover {
+  background-color: shade(@theme_base_color,0.6);
+}
+
+button.bdj-flatbutton {
+  outline-width: 0px;
+  padding: 0px;
+  border-color: @theme_bg_color;
+  background-color: rgba(0,0,0,0.0);
+}
+button.bdj-flatbutton widget {
+  outline-width: 0px;
+}
+
+label.bdj-chgindnormal {
+  border-left-style: solid;
+  border-left-width: 4px;
+  border-left-color: transparent;
+}
+label.bdj-chgindchanged {
+  border-left-style: solid;
+  border-left-width: 4px;
+  border-left-color: #11ff11;
+}
+label.bdj-chginderror {
+  border-left-style: solid;
+  border-left-width: 4px;
+  border-left-color: #ff1111;
+}
+
+entry {
+  color: @theme_fg_color;
+}

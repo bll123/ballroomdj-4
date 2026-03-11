@@ -21,7 +21,7 @@ source in the list on the left.
 Change __Mode__ to _Client_.
 
 Change the __Name__ to your preference.
-For this example, the name will be set to _bll-mac-m1_.
+For this example, the name will be set to _bll-mac_.
 
 __Type__ is set to _BDJ4_.
 
@@ -44,8 +44,10 @@ References:
 #### Checking the Connection
 
 Select the __Check&nbsp;Connection__ button to check the configured
-connection.  The server must be accessible.  A status message will be
-displayed in the top right of the window indicating success or failure.
+connection.  The server must be accessible.  After configuring the
+server, BDJ4 on the server must be exited and re-started. A status
+message will be displayed in the top right of the window indicating
+success or failure.
 
 #### Using the Client Connection
 
@@ -54,7 +56,7 @@ __Manage__, then select __Import&nbsp;Playlist__ from the __Import__
 menu.
 
 For __Import&nbsp;From__, use the spinbox to select the audio source.
-In this example, _bll-mac-m1_, the configured audio source.
+In this example, _bll-mac_, the configured audio source.
 
 A list of available playlists will be populated, and a playlist may be
 selected in the __Playlist__ drop-down.  After selecting a playlist,
@@ -77,4 +79,4 @@ be available to be able to play the imported songs.
 <br><span id="caption" style="color:#4559bf;">__Edit Song Lists / Import / Import Playlist__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2025-12-08 10:34:23; BDJ4 version 4.17.7)_
+<br>_(Updated 2026-03-10 10:10:34; BDJ4 version 4.17.14)_

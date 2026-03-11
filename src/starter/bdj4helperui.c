@@ -42,8 +42,8 @@ enum {
 };
 
 enum {
-  HELPER_HORIZ_SZ = 1100,
-  HELPER_VERT_SZ = 680,
+  HELPER_HORIZ_SZ = 1200,
+  HELPER_VERT_SZ = 760,
 };
 
 typedef struct {
@@ -56,6 +56,7 @@ typedef struct {
   ilist_t         *helplist;
   ilistidx_t      helpiter;
   ilistidx_t      helpkey;
+  bdjregex_t      *rx_nl;
   bdjregex_t      *rx_br;
   bdjregex_t      *rx_nlsp;
   bdjregex_t      *rx_dot;
@@ -109,6 +110,7 @@ main (int argc, char *argv[])
   }
   helper.closeCallback = NULL;
   helper.nextCallback = NULL;
+  helper.rx_nl = regexInit ("[\\r\\n]");
   helper.rx_br = regexInit ("<br>");
   helper.rx_nlsp = regexInit ("\\n *");
   /* . or japanese/chinese full-stop */
@@ -183,6 +185,7 @@ helperClosingCallback (void *udata, programstate_t programState)
   for (int i = 0; i < HELPER_W_MAX; ++i) {
     uiwcontFree (helper->wcont [i]);
   }
+  regexFree (helper->rx_nl);
   regexFree (helper->rx_br);
   regexFree (helper->rx_nlsp);
   regexFree (helper->rx_dot);
@@ -216,7 +219,7 @@ helperBuildUI (helperui_t  *helper)
   uiWindowPackInWindow (helper->wcont [HELPER_W_WINDOW], vbox);
   uiWidgetSetAllMargins (vbox, 2);
 
-  helper->wcont [HELPER_W_TEXTBOX] = uiTextBoxCreate (400,
+  helper->wcont [HELPER_W_TEXTBOX] = uiTextBoxCreate (650,
         bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiTextBoxSetParagraph (helper->wcont [HELPER_W_TEXTBOX], 0, 5);
   uiTextBoxHorizExpand (helper->wcont [HELPER_W_TEXTBOX]);
@@ -230,7 +233,7 @@ helperBuildUI (helperui_t  *helper)
   helper->nextCallback = callbackInit (helperNextCallback, helper, NULL);
   uiwidgetp = uiCreateButton (helper->nextCallback,
       /* CONTEXT: helperui: proceed to the next step */
-      _("Next"), NULL, NULL);
+      C_("Help-Section","Next"), NULL);
   uiBoxPackEnd (hbox, uiwidgetp);
   helper->wcont [HELPER_W_BUTTON_NEXT] = uiwidgetp;
 
@@ -391,7 +394,11 @@ helpDisplay (helperui_t *helper)
   title = ilistGetStr (helper->helplist, helper->helpkey, HELP_TEXT_TITLE);
   text = ilistGetStr (helper->helplist, helper->helpkey, HELP_TEXT_TEXT);
   ttext = _(text);
+  ntext = regexReplace (helper->rx_nl, ttext, "");
+
+  ttext = ntext;
   ntext = regexReplace (helper->rx_br, ttext, "\n\n");
+  mdfree (ttext);
 
   ttext = ntext;
   ntext = regexReplace (helper->rx_nlsp, ttext, "\n");

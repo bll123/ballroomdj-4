@@ -8,13 +8,13 @@ count
 KEY
 ..0
 RATING
-..Sin clasificar
+..Sin calificación
 WEIGHT
 ..5
 KEY
 ..1
 RATING
-..Pobre
+..Deficiente
 WEIGHT
 ..0
 KEY
@@ -26,6 +26,6 @@ WEIGHT
 KEY
 ..3
 RATING
-..Genial
+..Excelente
 WEIGHT
 ..80

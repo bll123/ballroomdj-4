@@ -64,19 +64,10 @@ Download the Windows installer from sourceforge.
 Make sure to exit BDJ4 if it is already started.
 
 Start the installer by double clicking the downloaded file in your
-Downloads folder. (This image shows an out of date installer).
-
-If you have an account name with international characters, and
-___double-clicking on the installer does not start it___, do the following:
-
-Open a __cmd.exe__ window.  Type the following to start the installer,
-replacing the version number with the version number you downloaded:
-
-    cd Downloads
-    .\bdj4-installer-win64-4.17.11.exe
+Downloads folder.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![BallroomDJ 4 File Selection on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Install-File-Select.png)
+![BallroomDJ 4 File Selection on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Install-File-Select-B.png)
 <br><span id="caption" style="color:#4559bf;">__BallroomDJ 4 Installer Selection __</span> </div>
 
 If windows displays the __Windows Protected your PC__ message, select
@@ -90,6 +81,10 @@ The __Re-Install__ checkbox is only used if you want to completely
 reset all of the BDJ4 data files.  Any changes you have made within
 BDJ4 will be lost if a re-install is done.
 
+__Select your preferred language__.  This language will be used to
+install the localized configuration files.  The display language will
+also be set to this language, but may be changed later.
+
 If you want to convert a BallroomDJ&nbsp;3 installation, select the
 BallroomDJ&nbsp;3 folder and select the __Convert&nbsp;BallroomDJ&nbsp;3__
 checkbox.
@@ -99,7 +94,7 @@ __Install__ or __Upgrade__ button and wait for the
 __Installation&nbsp;Completed__ message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![BallroomDJ 4 Installer on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Installer-D.png)
+![BallroomDJ 4 Installer on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Installer-F.png)
 <br><span id="caption" style="color:#4559bf;">__BallroomDJ 4 Installer on Windows__</span> </div>
 
 #### VLC Installation
@@ -153,4 +148,4 @@ BDJ4, use one of the methods in
 [Setting up Windows for DJ Work](en-Install-Setting%20Up%20Windows)
 
 [Wiki Home](Home)
-<br>_(Updated 2026-02-17 07:16:49; BDJ4 version 4.17.11)_
+<br>_(Updated 2026-02-26 07:18:22; BDJ4 version 4.17.13.1)_

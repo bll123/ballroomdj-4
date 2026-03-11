@@ -12,10 +12,10 @@ Current Translations and Status:
  Afrikaans|Machine Translated<br>Very poor quality|
  čeština|Machine Translated<br>Very poor quality|
  Dansk|Machine Translated<br>Very poor quality|
- Deutsch|Machine Translated<br>Very poor quality|
+ Deutsch|Professionally<br>Translated|[Simon Thomas](https://www.proz.com/translator/2935381)<br>English / German
  English (GB)|Complete|bll
  English (US)|Complete|bll
- Español|Machine Translated<br>Very poor quality|
+ Español|Professionally<br>Translated|[Daniel de la Nava](https://www.proz.com/translator/4555219)<br>English / Spanish / German
  Suomi‬|Machine Translated<br>Very poor quality|
  Français|Machine Translated<br>Very poor quality|
  magyar|Machine Translated<br>Very poor quality|
@@ -36,4 +36,4 @@ Current Translations and Status:
  繁體中文‬|Machine Translated<br>Very poor quality|
 
 [Wiki Home](Home)
-<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_
+<br>_(Updated 2026-03-06 12:23:45; BDJ4 version 4.17.14)_

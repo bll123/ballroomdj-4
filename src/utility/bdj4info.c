@@ -44,7 +44,6 @@ static const char *envitems [] = {
   "LANGUAGE",
   "LC_ALL",
   "LC_COLLATE",
-  "LC_CTYPE",
   "LC_MESSAGES",
   "LC_NUMERIC",
   "NUMBER_OF_PROCESSORS",
@@ -223,23 +222,25 @@ main (int argc, char *argv [])
 
   /* other stuff */
 
-  if (fileopIsDirectory ("/opt/local/bin")) {
-    fprintf (stdout, "pkg: MacOS: MacPorts\n");
-  }
-  if (fileopIsDirectory ("/opt/pkg/bin")) {
-    fprintf (stdout, "pkg: MacOS: pkgsrc\n");
-  }
-  if (fileopIsDirectory ("/opt/homebrew/bin")) {
-    fprintf (stdout, "pkg: MacOS: Homebrew - /opt/homebrew\n");
-  }
-  if (fileopIsDirectory ("/usr/local/Homebrew")) {
-    fprintf (stdout, "pkg: MacOS: Homebrew - /usr/local\n");
-  }
-  if (fileopFileExists ("devel/macos.homebrew")) {
-    fprintf (stdout, "pkg: MacOS: Homebrew forced\n");
-  }
-  if (fileopFileExists ("devel/macos.pkgsrc")) {
-    fprintf (stdout, "pkg: MacOS: pkgsrc forced\n");
+  if (isMacOS ()) {
+    if (fileopIsDirectory ("/opt/local/bin")) {
+      fprintf (stdout, "pkg: MacOS: MacPorts\n");
+    }
+    if (fileopIsDirectory ("/opt/pkg/bin")) {
+      fprintf (stdout, "pkg: MacOS: pkgsrc\n");
+    }
+    if (fileopIsDirectory ("/opt/homebrew/bin")) {
+      fprintf (stdout, "pkg: MacOS: Homebrew - /opt/homebrew\n");
+    }
+    if (fileopIsDirectory ("/usr/local/Homebrew")) {
+      fprintf (stdout, "pkg: MacOS: Homebrew - /usr/local\n");
+    }
+    if (fileopFileExists ("devel/macos.homebrew")) {
+      fprintf (stdout, "pkg: MacOS: Homebrew forced\n");
+    }
+    if (fileopFileExists ("devel/macos.pkgsrc")) {
+      fprintf (stdout, "pkg: MacOS: pkgsrc forced\n");
+    }
   }
 
   /* sysvars */
@@ -248,20 +249,20 @@ main (int argc, char *argv [])
     if (i == SV_TEMP_A || i == SV_TEMP_B) {
       continue;
     }
-    fprintf (stdout, "  s: %-20s %s (%d)\n", sysvarsDesc (i), sysvarsGetStr (i), i);
+    fprintf (stdout, "  s: %-20s %s\n", sysvarsDesc (i), sysvarsGetStr (i));
   }
 
   /* sysvars numeric */
 
   for (int i = 0; i < SVL_MAX; ++i) {
-    fprintf (stdout, " sl: %-20s %" PRId64 " (%d)\n", sysvarslDesc (i), sysvarsGetNum (i), i);
+    fprintf (stdout, " sl: %-20s %" PRId64 "\n", sysvarslDesc (i), sysvarsGetNum (i));
   }
 
   for (int i = 0; i < BDJV_MAX; ++i) {
-    fprintf (stdout, "  v: %-20s %s (%d)\n", bdjvarsDesc (i), bdjvarsGetStr (i), i);
+    fprintf (stdout, "  v: %-20s %s\n", bdjvarsDesc (i), bdjvarsGetStr (i));
   }
   for (int i = 0; i < BDJVL_MAX; ++i) {
-    fprintf (stdout, " vl: %-20s %" PRId64 " (%d)\n", bdjvarslDesc (i), bdjvarsGetNum (i), i);
+    fprintf (stdout, " vl: %-20s %" PRId64 "\n", bdjvarslDesc (i), bdjvarsGetNum (i));
   }
 
   bdjoptInit ();

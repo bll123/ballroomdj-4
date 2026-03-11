@@ -13,6 +13,7 @@
 #include <math.h>
 #include <ctype.h>
 
+#include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjstring.h"      // needed for snprintf macro
@@ -67,7 +68,7 @@ uiutilsSetProfileColor (uiwcont_t *uiwidgetp, const char *oldcolor)
 
   tcolor = bdjoptGetStr (OPT_P_UI_PROFILE_COL);
   if (tcolor == NULL || ! *tcolor) {
-    tcolor = "#ffa600";
+    tcolor = BDJ4_DFLT_DARK_ACCENT_COLOR;
   }
 
   if (oldcolor != NULL) {
@@ -250,4 +251,5 @@ uiutilsInitSetup (uisetup_t *uisetup)
   uisetup->rowhlColor = bdjoptGetStr (OPT_P_UI_ROW_HL_COL);
   uisetup->mqbgColor = bdjoptGetStr (OPT_P_MQ_BG_COL);
   uisetup->changedColor = "#11ff11";
+  uisetup->is_dark = bdjoptGetNum (OPT_M_UI_DARK);
 }

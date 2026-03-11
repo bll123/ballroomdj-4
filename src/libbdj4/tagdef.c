@@ -1791,9 +1791,11 @@ tagdefInit (void)
   tagdefs [TAG_DBADDDATE].displayname = _("Date Added");
   /* CONTEXT: label: lock audio file location */
   tagdefs [TAG_DB_LOC_LOCK].displayname = _("Prevent Rename");
-  /* CONTEXT: label: disc number */
+  /* CONTEXT: label: disc number (Audio Tag: The disc number of a disc in a collection) */
   tagdefs [TAG_DISCNUMBER].displayname = _("Disc");
-  /* CONTEXT: label: total disc count */
+  /* CONTEXT: label: disc number (short name for listing) */
+  tagdefs [TAG_DISCNUMBER].shortdisplayname = C_("Short", "Disc");
+  /* CONTEXT: label: total disc count (Audio Tag: The total number of discs in a collection) */
   tagdefs [TAG_DISCTOTAL].displayname = _("Total Discs");
   /* CONTEXT: label: total disc count (short name for listing) */
   tagdefs [TAG_DISCTOTAL].shortdisplayname = _("Tot. Discs");
@@ -1803,7 +1805,7 @@ tagdefInit (void)
   tagdefs [TAG_FAVORITE].displayname = _("Favourite");
   /* CONTEXT: label: genre */
   tagdefs [TAG_GENRE].displayname = _("Genre");
-  /* CONTEXT: label: grouping */
+  /* CONTEXT: label: grouping (typically used to group classical movements in a work together) */
   tagdefs [TAG_GROUPING].displayname = _("Grouping");
   /* CONTEXT: label: keyword (used to filter out songs) */
   tagdefs [TAG_KEYWORD].displayname = _("Keyword");
@@ -1819,6 +1821,8 @@ tagdefInit (void)
   tagdefs [TAG_TITLE].displayname = _("Title");
   /* CONTEXT: label: track number */
   tagdefs [TAG_TRACKNUMBER].displayname = _("Track");
+  /* CONTEXT: label: track number (short name for listing) */
+  tagdefs [TAG_TRACKNUMBER].shortdisplayname = C_("Short", "Track");
   /* CONTEXT: label: total track count */
   tagdefs [TAG_TRACKTOTAL].displayname = _("Total Tracks");
   /* CONTEXT: label: total track count (short name for listing) */
@@ -1839,8 +1843,12 @@ tagdefInit (void)
 
   /* CONTEXT: label: movement (classical music movement number) */
   tagdefs [TAG_MOVEMENTNUM].displayname = _("Movement Number");
+  /* CONTEXT: label: movement (classical music movement number) (short name for listing) */
+  tagdefs [TAG_MOVEMENTNUM].shortdisplayname = _("Mvt No.");
   /* CONTEXT: label: movement count (classical music movement count) */
   tagdefs [TAG_MOVEMENTCOUNT].displayname = _("Movement Count");
+  /* CONTEXT: label: movement (classical music movement count) (short name for listing) */
+  tagdefs [TAG_MOVEMENTCOUNT].shortdisplayname = _("Mvt Count");
   /* CONTEXT: label: movement name (classical music movement name) */
   tagdefs [TAG_MOVEMENTNAME].displayname = _("Movement");
 

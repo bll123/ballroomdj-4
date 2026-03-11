@@ -62,11 +62,12 @@ uivnbCreate (uiwcont_t *box)
   vnb = mdmalloc (sizeof (uivnb_t));
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (box, hbox);
+  uiBoxPackStartExpand (box, hbox);
 
   sw = uiCreateScrolledWindow (50);
   uiBoxPackStart (hbox, sw);
   vnb->vlist = uiCreateVertBox ();
+  uiWidgetAddClass (vnb->vlist, DARKBG_CLASS);
   uiWindowPackInWindow (sw, vnb->vlist);
 
   vnb->nb = uiCreateNotebook ();

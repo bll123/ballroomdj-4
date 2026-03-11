@@ -92,10 +92,60 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Waltz bpm 28
 msg player PLAY_NEXTSONG
 mssleep 1500
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Tango
 msg player PLAY_NEXTSONG
 mssleep 1500
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Foxtrot
 msg player PLAY_NEXTSONG
 mssleep 1500
+get main CHK_MAIN_MUSICQ
+chk mq0len 91
+msg player PLAY_NEXTSONG
+mssleep 1500
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Waltz bpm 28
+get player CHK_PLAYER_STATUS
+wait playstate playing
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Waltz bpm 28
+msg player PLAY_NEXTSONG
+mssleep 1500
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Tango
+msg player PLAY_NEXTSONG
+mssleep 1500
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Foxtrot
+msg player PLAY_NEXTSONG
+mssleep 1500
+get main CHK_MAIN_MUSICQ
+chk mq0len 91
+msg player PLAY_NEXTSONG
+mssleep 1500
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Waltz bpm 28
+get player CHK_PLAYER_STATUS
+wait playstate playing
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Waltz bpm 28
+msg player PLAY_NEXTSONG
+mssleep 1500
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Tango
+msg player PLAY_NEXTSONG
+mssleep 1500
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Foxtrot
+msg player PLAY_NEXTSONG
+mssleep 1500
+get main CHK_MAIN_MUSICQ
+chk mq0len 91
 msg player PLAY_NEXTSONG
 mssleep 1500
 get player CHK_PLAYER_STATUS
@@ -106,38 +156,16 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Waltz bpm 28
 msg player PLAY_NEXTSONG
 mssleep 1500
-msg player PLAY_NEXTSONG
-mssleep 1500
-msg player PLAY_NEXTSONG
-mssleep 1500
-msg player PLAY_NEXTSONG
-mssleep 1500
-get player CHK_PLAYER_STATUS
-wait playstate playing
-get player CHK_PLAYER_STATUS
-chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
-chk mq0len 91 dance Waltz bpm 28
+chk mq0len 91 dance Tango
 msg player PLAY_NEXTSONG
 mssleep 1500
-msg player PLAY_NEXTSONG
-mssleep 1500
-msg player PLAY_NEXTSONG
-mssleep 1500
-msg player PLAY_NEXTSONG
-mssleep 1500
-get player CHK_PLAYER_STATUS
-wait playstate playing
-get player CHK_PLAYER_STATUS
-chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
-chk mq0len 91 dance Waltz bpm 28
+chk mq0len 91 dance Foxtrot
 msg player PLAY_NEXTSONG
 mssleep 1500
-msg player PLAY_NEXTSONG
-mssleep 1500
-msg player PLAY_NEXTSONG
-mssleep 1500
+get main CHK_MAIN_MUSICQ
+chk mq0len 91
 msg player PLAY_NEXTSONG
 mssleep 1500
 get player CHK_PLAYER_STATUS

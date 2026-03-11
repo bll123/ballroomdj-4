@@ -54,6 +54,13 @@ enum {
   BDJ4_IDENT_FREE = 0xccaa006465657266,
 };
 
+/* #ffa600 is used as the default in the image templates */
+/* these must be lower case */
+#define BDJ4_DFLT_DARK_ACCENT_COLOR   "#ffa600"
+#define BDJ4_DFLT_LIGHT_ACCENT_COLOR  "#a74119"
+#define BDJ4_DFLT_DARK_ERROR_COLOR    "#ff2222"
+#define BDJ4_DFLT_LIGHT_ERROR_COLOR   "#e01b24"
+
 #define BDJ4_LONG_NAME    "BallroomDJ 4"
 #define BDJ4_NAME         "BDJ4"
 #define BDJ3_NAME         "BallroomDJ 3"
@@ -117,8 +124,16 @@ enum {
 #define ALT_IDX_FN          "altidx"
 #define BASE_PORT_FN        "baseport"
 #define INST_PATH_FN        "installdir"
+#define LOCALE_FN           "locale"
+#define LOCALE_ORIG_FN      "localeorig"
 #define NEWINST_FN          "newinstall"
 #define READONLY_FN         "readonly"
+/* gtk css */
+#define GTK_CSS_STATIC_FN   "gtk-static"
+#define GTK_CSS_DARK_FN     "gtk-dark"
+#define GTK_CSS_LIGHT_FN    "gtk-light"
+#define GTK_CSS_USER_FN     "gtk-user"
+
 /* installation */
 #define BDJ4_INST_DIR  "bdj4-install"
 

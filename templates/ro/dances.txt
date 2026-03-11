@@ -1,6 +1,6 @@
 # dances
-# 2023-5-22
-# version 2
+# 2026-2-25
+# version 3
 version
 ..2
 count
@@ -18,11 +18,11 @@ HIGHMPM
 SPEED
 ..normal
 TAGS
-..tango club
+..tango
 TIMESIG
 ..4/4
 TYPE
-..club
+..other
 KEY
 ..1
 ANNOUNCE
@@ -40,7 +40,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..latină
 KEY
 ..2
 ANNOUNCE
@@ -76,7 +76,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..latină
 KEY
 ..4
 ANNOUNCE
@@ -94,7 +94,7 @@ TAGS
 TIMESIG
 ..2/4
 TYPE
-..latin
+..latină
 KEY
 ..5
 ANNOUNCE
@@ -130,7 +130,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..latină
 KEY
 ..7
 ANNOUNCE
@@ -148,7 +148,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..other
 KEY
 ..8
 ANNOUNCE
@@ -166,7 +166,7 @@ TAGS
 TIMESIG
 ..2/4
 TYPE
-..latin
+..latină
 KEY
 ..9
 ANNOUNCE
@@ -238,4 +238,4 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..club
+..other

@@ -29,7 +29,7 @@ is set to 6:00 minutes to allow the entire song to play.
 Close the configuration window to save the configuration changes.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![showcase-conf-musicq](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/showcase-conf-musicq-D.png)
+![showcase-conf-musicq](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/showcase-conf-musicq-E.png)
 <br><span id="caption" style="color:#4559bf;">__Configure / Music Queues__</span> </div>
 
 #### Running the Showcase
@@ -61,7 +61,7 @@ toggle will be turned on as __Pause&nbsp;Each&nbsp;Song__ is set on for
 the music queue.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![showcase-ext-req](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/showcase-ext-req-C.png)
+![showcase-ext-req](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/showcase-ext-req-D.png)
 <br><span id="caption" style="color:#4559bf;">__Player / Actions / External Request__</span> </div>
 
 ###### Playing a Song in the Database
@@ -92,4 +92,4 @@ ready to be played.  The Tango will be ready to play, and the Waltz
 will be put back into the music queue.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-12-08 10:34:23; BDJ4 version 4.17.7)_
+<br>_(Updated 2026-03-10 10:10:34; BDJ4 version 4.17.14)_

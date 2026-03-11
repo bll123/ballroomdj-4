@@ -42,7 +42,7 @@ while test $# -gt 0; do
       keepfirst=T
       noclean=--noclean
       ;;
-    --onlyfirst)
+    --onlyfirst|--firstonly)
       onlyfirst=T
       ;;
     --readonly)
@@ -122,8 +122,9 @@ fn="templates/itunes-fields.txt"
 ITUNESFIELDSVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
 fn="templates/sortopt.txt"
 SORTOPTVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
-fn="templates/gtk-static.css"
-GTKSTATICVER=$(grep "version [1-9]" "${fn}" | sed 's,[^0-9],,g')
+fn="templates/dancetypes.txt"
+DANCETYPESVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
+
 fn="templates/autoselection.txt"
 AUTOSELVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
 fn="templates/audioadjust.txt"
@@ -161,12 +162,12 @@ function checkUpdaterClean {
 
   # 4.2.0 2023-3-5 autoselection values changed
   fn="$DATADIR/autoselection.txt"
-  sed -e "s/version [2-9]/version $(($AUTOSELVER-1))/" "${fn}" > "${fn}.n"
+  sed -e "s/version [0-9]/version $(($AUTOSELVER-1))/" "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
   # audio adjust file should be installed if missing or wrong version
   fn="$DATADIR/audioadjust.txt"
-  sed -e "s/version [2-9]/version $(($AUDIOADJVER-1))/" "${fn}" > "${fn}.n"
+  sed -e "s/version [0-9]/version $(($AUDIOADJVER-1))/" "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
   # ds-audioid.txt file should be installed if missing
@@ -179,7 +180,7 @@ function checkUpdaterClean {
 
   # ds-audioid-list.txt version number should be updated
   fn="$DATADIR/profile00/ds-audioid-list.txt"
-  sed -e "s/version [2-9]/version $(($AUDIOIDLISTVER-1))/" "${fn}" > "${fn}.n"
+  sed -e "s/version [0-9]/version $(($AUDIOIDLISTVER-1))/" "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
   # bdjconfig.q4.txt file should be installed if missing
@@ -188,20 +189,18 @@ function checkUpdaterClean {
 
   # itunes-fields version number should be updated
   fn="$DATADIR/itunes-fields.txt"
-  sed -e "s/version [2-9]/version $(($ITUNESFIELDSVER-1))/" "${fn}" > "${fn}.n"
+  sed -e "s/version [0-9]/version $(($ITUNESFIELDSVER-1))/" "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
   # sortopt version number should be updated
   fn="$DATADIR/sortopt.txt"
-  sed -e "s/version [2-9]/version $(($SORTOPTVER-1))/" "${fn}" > "${fn}.n"
+  sed -e "s/version [0-9]/version $(($SORTOPTVER-1))/" "${fn}" > "${fn}.n"
   mv -f "${fn}.n" "${fn}"
 
-  # gtk-static version number should be updated to version 4.
-  fn="$DATADIR/gtk-static.css"
-  if [[ -f $fn ]]; then
-    sed -e "s/version [2-9]/version $(($GTKSTATICVER-1))/" "${fn}" > "${fn}.n"
-    mv -f "${fn}.n" "${fn}"
-  fi
+  # dancetypes version number should be updated
+  fn="$DATADIR/dancetypes.txt"
+  sed -e "s/version [0-9]/version $(($DANCETYPESVER-1))/" "${fn}" > "${fn}.n"
+  mv -f "${fn}.n" "${fn}"
 
   # standard rounds had bad data
   fn="$DATADIR/standardrounds.pldances"
@@ -209,7 +208,8 @@ function checkUpdaterClean {
     fn="${DATADIR}/Standardrunden.pldances"
   fi
   if [[ $section == es_ES ]]; then
-    fn="${DATADIR}/estándares.pldances"
+    # fn="${DATADIR}/estándares.pldances"
+    fn="${DATADIR}/Rondas de estándar.pldances"
   fi
   if [[ $section == fi_FI ]]; then
     fn="${DATADIR}/vakiokierrokset.pldances"
@@ -239,10 +239,16 @@ function checkUpdaterClean {
   # queue dance had bad data
   fn="$DATADIR/QueueDance.pldances"
   if [[ $section == de_DE ]]; then
-    fn="${DATADIR}/Schlangentanz.pldances"
+    # old name
+    # fn="${DATADIR}/Schlangentanz.pldances"
+    # new name
+    fn="${DATADIR}/Tanz zur Warteschlange.pldances"
   fi
   if [[ $section == es_ES ]]; then
-    fn="${DATADIR}/Danza en cola.pldances"
+    # old name
+    # fn="${DATADIR}/Danza en cola.pldances"
+    # new name
+    fn="${DATADIR}/baile en cola.pldances"
   fi
   if [[ $section == fi_FI ]]; then
     fn="$DATADIR/Jonotanssi.pldances"
@@ -705,28 +711,48 @@ function checkInstallation {
       echo "  no sortopt.txt file"
     fi
 
-    res=$(($res+1))  # gtk-static.css file
-    fn="${DATADIR}/gtk-static.css"
+    res=$(($res+1))  # dancetypes.txt file
+    fn="${DATADIR}/dancetypes.txt"
     if [[ $fin == T && -f ${fn} ]]; then
-      grep "version ${GTKSTATICVER}" "${fn}" > /dev/null 2>&1
+      grep "version ${DANCETYPESVER}" "${fn}" > /dev/null 2>&1
       rc=$?
       if [[ $rc -eq 0 ]]; then
         chk=$(($chk+1))
       else
-        echo "  gtk-static.css file has wrong version"
+        echo "  dancetypes file has wrong version"
       fi
     else
-      echo "  no gtk-static.css file"
+      echo "  no dancetypes.txt file"
+    fi
+
+    res=$(($res+1))  # dances.txt file
+    fn="${DATADIR}/dances.txt"
+    if [[ $fin == T && -f ${fn} ]]; then
+      grep '^\.\.club' "${fn}" > /dev/null 2>&1
+      rc=$?
+      if [[ $rc -eq 0 ]]; then
+        echo "  dances.txt not updated club->other"
+      else
+        chk=$(($chk+1))
+      fi
+    else
+      echo "  no dances.txt file"
     fi
 
     fna="${DATADIR}/QueueDance.pldances"
     fnb=""
     if [[ $section == de_DE ]]; then
-      fna="${DATADIR}/Schlangentanz.pldances"
+      # old name
+      # fna="${DATADIR}/Schlangentanz.pldances"
+      # new name
+      fna="${DATADIR}/Tanz zur Warteschlange.pldances"
       fnb="${DATADIR}/QueueDance.pldances"
     fi
     if [[ $section == es_ES ]]; then
-      fna="${DATADIR}/Danza en cola.pldances"
+      # old name
+      # fna="${DATADIR}/Danza en cola.pldances"
+      # new name
+      fna="${DATADIR}/baile en cola.pldances"
       fnb="${DATADIR}/QueueDance.pldances"
     fi
     if [[ $section == fi_FI ]]; then
@@ -757,6 +783,7 @@ function checkInstallation {
       fna="${DATADIR}/Танец в очередь.pldances"
       fnb="${DATADIR}/QueueDance.pldances"
     fi
+
     res=$(($res+1))  # queuedance.pldances file
     if [[ $fin == T && -f ${fna} ]]; then
       if [[ -f ${fnb} ]]; then
@@ -777,11 +804,17 @@ function checkInstallation {
     fna="${DATADIR}/QueueDance.pl"
     fnb=""
     if [[ $section == de_DE ]]; then
-      fna="${DATADIR}/Schlangentanz.pl"
+      # old name
+      # fna="${DATADIR}/Schlangentanz.pl"
+      # new name
+      fna="${DATADIR}/Tanz zur Warteschlange.pl"
       fnb="${DATADIR}/QueueDance.pl"
     fi
     if [[ $section == es_ES ]]; then
-      fna="$DATADIR/Danza en cola.pl"
+      # old name
+      # fna="$DATADIR/Danza en cola.pl"
+      # new name
+      fna="$DATADIR/baile en cola.pl"
       fnb="${DATADIR}/QueueDance.pl"
     fi
     if [[ $section == fi_FI ]]; then
@@ -828,7 +861,8 @@ function checkInstallation {
       fn="${DATADIR}/Standardrunden.pldances"
     fi
     if [[ $section == es_ES ]]; then
-      fn="${DATADIR}/estándares.pldances"
+      # fn="${DATADIR}/estándares.pldances"
+      fn="${DATADIR}/Rondas de estándar.pldances"
     fi
     if [[ $section == fi_FI ]]; then
       fn="${DATADIR}/vakiokierrokset.pldances"
@@ -1067,11 +1101,12 @@ function checkInstallation {
 }
 
 function cleanInstTest {
-  test -d "$UNPACKDIR" && rm -rf "$UNPACKDIR"
-  test -d "$TARGETTOPDIR" && rm -rf "$TARGETTOPDIR"
-  test -d "$TARGETTOPALTDIR" && rm -rf "$TARGETTOPALTDIR"
   test -d "$DATATOPDIR" && rm -rf "$DATATOPDIR"
   test -d "$DATATOPALTDIR" && rm -rf "$DATATOPALTDIR"
+  test -d "$TARGETTOPDIR" && rm -rf "$TARGETTOPDIR"
+  test -d "$TARGETTOPALTDIR" && rm -rf "$TARGETTOPALTDIR"
+  test -d "$UNPACKDIR" && rm -rf "$UNPACKDIR"
+
   # linux
   fn="$HOME/Desktop"
   if [[ -d $fn ]]; then
@@ -1271,13 +1306,15 @@ fi
 
 # 2024-7-18 not all languages are tested, just a representation.
 # nl_NL is important, as there is no nl_NL/ dir.
-for section in fi_FI ja_JP nl_BE nl_NL pl_PL ru_RU ; do
+# 2026-2-24 add de/es back in as they are getting translated soon.
+# 2026-2-25 turn off fi_FI, pl_PL for now
+for section in de_DE es_ES ja_JP nl_BE nl_NL ru_RU ; do
   locale=${section}
 
   cleanInstTest
   resetInstallDir
 
-  # main test db : rebuild of standard test database, nl_BE
+  # main test db : rebuild of standard test database
   tname=new-install
   echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer \

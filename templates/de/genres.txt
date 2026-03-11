@@ -8,7 +8,7 @@ count
 KEY
 ..0
 GENRE
-..Keine
+..Kein Genre
 CLASSICAL
 ..0
 KEY
@@ -20,7 +20,7 @@ CLASSICAL
 KEY
 ..2
 GENRE
-..Klassisch
+..Klassik
 CLASSICAL
 ..1
 KEY
@@ -32,6 +32,6 @@ CLASSICAL
 KEY
 ..4
 GENRE
-..Felsen
+..Rock
 CLASSICAL
 ..0

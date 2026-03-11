@@ -17,7 +17,7 @@ _Note that the fields displayed in the
 [Configure&nbsp;/&nbsp;Display&nbsp;Settings](en-Configuration-Display%20Settings)._
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![pb-song-editor](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/pb-song-editor-B.png)
+![pb-song-editor](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/pb-song-editor-C.png)
 <br><span id="caption" style="color:#4559bf;">__Manage / Music Manager / Song Editor__</span> </div>
 
 __Song&nbsp;Start__ is used to skip non-danceable or long introductory
@@ -50,4 +50,4 @@ playback volume is adjusted by the set percentage during playback.
 <br>[Subjects&nbsp;/&nbsp;Quick&nbsp;Edit](en-Subjects-Quick%20Edit)
 
 [Wiki Home](Home)
-<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_
+<br>_(Updated 2026-03-10 10:10:34; BDJ4 version 4.17.14)_

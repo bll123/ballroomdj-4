@@ -61,14 +61,34 @@ function copytestf {
   fi
 }
 
+function copytmpl {
+  from=$1
+  to=$2
+
+  tlocale=""
+  if [[ $LOCALE != "" ]]; then
+    tlocale="${SLOCALE}/"
+  fi
+
+  nfrom=$(echo $from | sed -e "s,/,/${tlocale},")
+  if [[ ! -f ${nfrom} ]]; then
+    nfrom=$from
+  fi
+  cp -f $nfrom $to
+}
+
 ATI=BDJ4
 PLI=VLC3
 VOL=
 DBCOPY=T
 KEEPDB=F
+LOCALE=
+SLOCALE=
 setpli=F
 setvol=F
 setati=F
+setlocale=F
+CHANGES=T
 # $@ must be preserved, it is passed on to mkdbtest.sh
 for arg in "$@"; do
   case $arg in
@@ -86,10 +106,21 @@ for arg in "$@"; do
     --nodbcopy)
       DBCOPY=F
       ;;
+    --locale)
+      setlocale=T
+      ;;
+    --nochanges)
+      CHANGES=F
+      ;;
     --keepdb)
       KEEPDB=T
       ;;
     *)
+      if [[ $setlocale == T ]]; then
+        LOCALE=$arg
+        SLOCALE=$(echo $arg | sed 's,^\(..\).*,\1,')
+        setlocale=F
+      fi
       if [[ $setpli == T ]]; then
         PLI=$arg
         setpli=F
@@ -152,7 +183,14 @@ for f in templates/*.txt; do
       continue
       ;;
   esac
-  cp -f $f data
+  nf=$f
+  if [[ $LOCALE != "" ]]; then
+    nf=$(echo $f | sed -e "s,/,/${SLOCALE}/,")
+    if [[ ! -f $nf ]]; then
+      nf=$f
+    fi
+  fi
+  cp -f $nf data
 done
 for f in templates/img/*.svg; do
   cp -f $f img/profile00
@@ -171,156 +209,170 @@ if [[ $os == macos ]]; then
   done
 fi
 
-cp -f templates/bdjconfig.txt.g data/bdjconfig.txt
-cp -f templates/bdjconfig.txt.p data/profile00/bdjconfig.txt
-for fn in templates/bdjconfig.q?.txt; do
-  cp -f ${fn} data/profile00
-done
-cp -f templates/bdjconfig.txt.m data/${hostname}/bdjconfig.txt
-cp -f templates/bdjconfig.txt.mp data/${hostname}/profile00/bdjconfig.txt
+tlocale=""
+if [[ $LOCALE != "" ]]; then
+  tlocale="${SLOCALE}/"
+  echo $LOCALE > data/locale.txt
+fi
+
 cp -f templates/QueueDance.* data
 cp -f templates/standardrounds.* data
-# the test dances data file has announcements set for tango & waltz
-cp -f test-templates/dances.txt data
-# the test status data file has an additional 'edit' status.
-cp -f test-templates/status.txt data
-cp -f test-templates/ds-songfilter.txt data/profile00
-cp -f test-templates/ds-songedit-b.txt data/profile00
-cp -f test-templates/ui-*.txt data/profile00
-mv -f data/profile00/ui-starter.txt data
-cp -f test-templates/audiosrc.txt data
 
-for ftype in sl seq auto podcast; do
-  for tag in a b c d e f g h; do
-    if [[ $ftype == auto && $tag == f ]]; then
-      break
-    fi
-    if [[ $ftype == seq && $tag == f ]]; then
-      break
-    fi
-    if [[ $ftype == podcast && $tag == b ]]; then
-      break
-    fi
-    copytestf ${ftype} ${tag} pl 1
-    copytestf ${ftype} ${tag} pldances 0
-    copytestf ${ftype} ${tag} songlist 0
-    copytestf ${ftype} ${tag} sequence 0
-    copytestf ${ftype} ${tag} podcast 0
+copytmpl templates/bdjconfig.txt.g data/bdjconfig.txt
+copytmpl templates/bdjconfig.txt.p data/profile00/bdjconfig.txt
+for fn in templates/bdjconfig.q?.txt; do
+  copytmpl ${fn} data/profile00
+done
+copytmpl templates/bdjconfig.txt.m data/${hostname}/bdjconfig.txt
+copytmpl templates/bdjconfig.txt.mp data/${hostname}/profile00/bdjconfig.txt
+
+if [[ $LOCALE == "" ]]; then
+  # the test dances data file has announcements set for tango & waltz
+  cp -f test-templates/${tlocale}dances.txt data
+  # the test status data file has an additional 'edit' status.
+  cp -f test-templates/${tlocale}status.txt data
+  cp -f test-templates/${tlocale}audiosrc.txt data
+fi
+
+if [[ $CHANGES == T ]]; then
+  cp -f test-templates/ds-songfilter.txt data/profile00
+  cp -f test-templates/ds-songedit-b.txt data/profile00
+  cp -f test-templates/ui-*.txt data/profile00
+  mv -f data/profile00/ui-starter.txt data
+
+  for ftype in sl seq auto podcast; do
+    for tag in a b c d e f g h; do
+      if [[ $ftype == auto && $tag == f ]]; then
+        break
+      fi
+      if [[ $ftype == seq && $tag == f ]]; then
+        break
+      fi
+      if [[ $ftype == podcast && $tag == b ]]; then
+        break
+      fi
+      copytestf ${ftype} ${tag} pl 1
+      copytestf ${ftype} ${tag} pldances 0
+      copytestf ${ftype} ${tag} songlist 0
+      copytestf ${ftype} ${tag} sequence 0
+      copytestf ${ftype} ${tag} podcast 0
+    done
   done
-done
 
-for tfn in data/profile00/bdjconfig.q?.txt; do
-  sed -e '/^FADEOUTTIME/ { n ; s/.*/..4000/ ; }' \
-      -e '/^GAP/ { n ; s/.*/..2000/ ; }' \
+  for tfn in data/profile00/bdjconfig.q?.txt; do
+    sed -e '/^FADEOUTTIME/ { n ; s/.*/..4000/ ; }' \
+        -e '/^GAP/ { n ; s/.*/..2000/ ; }' \
+        -e '/^PLAY_WHEN_QUEUED/ { n ; s/.*/..no/ ; }' \
+        ${tfn} > ${tfn}.n
+    mv -f ${tfn}.n ${tfn}
+  done
+
+  tfn=data/profile00/bdjconfig.txt
+  sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..20/ ; }' \
+      -e '/^MARQUEE_SHOW/ { n ; s/.*/..minimize/ ; }' \
+      -e '/^PROFILENAME/ { n ; s/.*/..Test-Setup/ ; }' \
+      -e '/^UI_PROFILE_COL/ { n ; s/.*/..#0797ff/ ; }' \
       ${tfn} > ${tfn}.n
   mv -f ${tfn}.n ${tfn}
-done
 
-tfn=data/profile00/bdjconfig.txt
-sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..20/ ; }' \
-    -e '/^MARQUEE_SHOW/ { n ; s/.*/..minimize/ ; }' \
-    -e '/^PROFILENAME/ { n ; s/.*/..Test-Setup/ ; }' \
-    -e '/^UI_PROFILE_COL/ { n ; s/.*/..#0797ff/ ; }' \
-    ${tfn} > ${tfn}.n
-mv -f ${tfn}.n ${tfn}
+  ATII=libatibdj4
 
-ATII=libatibdj4
+  PLII=libplivlc
+  PLIINM="Integrated VLC 3"
+  if [[ $PLI == VLC4 ]]; then
+    PLII=libplivlc4
+    PLIINM="Integrated VLC 4"
+  fi
+  if [[ $PLI == MPRISVLC ]]; then
+    PLII=libplimpris
+    PLIINM="MPRIS VLC Media Player"
+  fi
+  if [[ $PLI == GST ]]; then
+    PLII=libpligst
+    PLIINM="GStreamer"
+  fi
+  if [[ $PLI == WINMP ]]; then
+    PLII=libpliwinmp
+    PLIINM="Windows Media Player"
+  fi
+  if [[ $PLI == MACAV ]]; then
+    PLII=libplimacosav
+    PLIINM="MacOS AVPlayer"
+  fi
 
-PLII=libplivlc
-PLIINM="Integrated VLC 3"
-if [[ $PLI == VLC4 ]]; then
-  PLII=libplivlc4
-  PLIINM="Integrated VLC 4"
-fi
-if [[ $PLI == MPRISVLC ]]; then
-  PLII=libplimpris
-  PLIINM="MPRIS VLC Media Player"
-fi
-if [[ $PLI == GST ]]; then
-  PLII=libpligst
-  PLIINM="GStreamer"
-fi
-if [[ $PLI == WINMP ]]; then
-  PLII=libpliwinmp
-  PLIINM="Windows Media Player"
-fi
-if [[ $PLI == MACAV ]]; then
-  PLII=libplimacosav
-  PLIINM="MacOS AVPlayer"
-fi
+  # if VOLI is empty, no change is made, and the default is used
+  VOLI=
+  if [[ $VOL == pipewire ]]; then
+    VOLI=libvolpipewire
+  fi
 
-# if VOLI is empty, no change is made, and the default is used
-VOLI=
-if [[ $VOL == pipewire ]]; then
-  VOLI=libvolpipewire
-fi
-
-tfn=data/${hostname}/bdjconfig.txt
-tmusicdir="${cwd}/test-music"
-titunes="${cwd}/test-files/iTunes-test-music.xml"
-if [[ $platform == windows ]]; then
-  tmusicdir=$(cygpath --mixed "${tmusicdir}")
-  titunes=$(cygpath --mixed "${titunes}")
-fi
-sed \
-    -e "/^AUDIOTAG/ { n ; s,.*,..${ATII}, ; }" \
-    -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
-    -e "/^DIRMUSIC/ { n ; s,.*,..${tmusicdir}, ; }" \
-    -e "/^ITUNESXMLFILE/ { n ; s,.*,..${titunes}, ; }" \
-    -e "/^PLAYER$/ { n ; s,.*,..${PLII}, ; }" \
-    -e "/^PLAYER_I_NM/ { n ; s,.*,..${PLIINM}, ; }" \
-    ${tfn} > ${tfn}.n
-mv -f ${tfn}.n ${tfn}
-if [[ $VOLI != "" ]]; then
+  tfn=data/${hostname}/bdjconfig.txt
+  tmusicdir="${cwd}/test-music"
+  titunes="${cwd}/test-files/iTunes-test-music.xml"
+  if [[ $platform == windows ]]; then
+    tmusicdir=$(cygpath --mixed "${tmusicdir}")
+    titunes=$(cygpath --mixed "${titunes}")
+  fi
   sed \
-      -e "/^VOLUME$/ { n ; s,.*,..${VOLI}, ; }" \
+      -e "/^AUDIOTAG/ { n ; s,.*,..${ATII}, ; }" \
+      -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
+      -e "/^DIRMUSIC/ { n ; s,.*,..${tmusicdir}, ; }" \
+      -e "/^ITUNESXMLFILE/ { n ; s,.*,..${titunes}, ; }" \
+      -e "/^PLAYER$/ { n ; s,.*,..${PLII}, ; }" \
+      -e "/^PLAYER_I_NM/ { n ; s,.*,..${PLIINM}, ; }" \
       ${tfn} > ${tfn}.n
   mv -f ${tfn}.n ${tfn}
-fi
+  if [[ $VOLI != "" ]]; then
+    sed \
+        -e "/^VOLUME$/ { n ; s,.*,..${VOLI}, ; }" \
+        ${tfn} > ${tfn}.n
+    mv -f ${tfn}.n ${tfn}
+  fi
 
-tfn=data/bdjconfig.txt
-sed -e "/^DEBUGLVL/ { n ; s/.*/..${DBGLEVEL}/ ; }" \
-    -e '/^CLOCKDISP/ { n ; s/.*/..iso/ ; }' \
-    -e '/^BPM/ { n ; s/.*/..BPM/ ; }' \
-    ${tfn} > ${tfn}.n
-mv -f ${tfn}.n ${tfn}
-
-if [[ $os == linux ]]; then
-  tfn=data/${hostname}/bdjconfig.txt
-  sed -e '/^MQ_FONT/ { n ; s/.*/..Yanone Kaffeesatz 12/ ; }' \
-      -e '/^LISTING_FONT/ { n ; s/.*/..Noto Sans Regular 15/ ; }' \
+  tfn=data/bdjconfig.txt
+  sed -e "/^DEBUGLVL/ { n ; s/.*/..${DBGLEVEL}/ ; }" \
+      -e '/^CLOCKDISP/ { n ; s/.*/..iso/ ; }' \
+      -e '/^BPM/ { n ; s/.*/..BPM/ ; }' \
       ${tfn} > ${tfn}.n
   mv -f ${tfn}.n ${tfn}
-fi
 
-if [[ $os == macos ]]; then
-  tfn=data/${hostname}/bdjconfig.txt
-  sed -e '/^UI_THEME/ { n ; s/.*/..Mojave-dark-solid/ ; }' \
-      -e '/^MQ_FONT/ { n ; s/.*/..Arial Narrow Regular 17/ ; }' \
-      -e '/^UI_FONT/ { n ; s/.*/..Arial Regular 17/ ; }' \
-      -e '/^LISTING_FONT/ { n ; s/.*/..Arial Regular 16/ ; }' \
-      ${tfn} > ${tfn}.n
-  mv -f ${tfn}.n ${tfn}
-fi
+  if [[ $os == linux ]]; then
+    tfn=data/${hostname}/bdjconfig.txt
+    sed -e '/^MQ_FONT/ { n ; s/.*/..Yanone Kaffeesatz 12/ ; }' \
+        -e '/^LISTING_FONT/ { n ; s/.*/..Noto Sans Regular 15/ ; }' \
+        ${tfn} > ${tfn}.n
+    mv -f ${tfn}.n ${tfn}
+  fi
 
-if [[ $platform == windows ]]; then
-  tfn=data/${hostname}/bdjconfig.txt
-  sed -e '/^UI_FONT/ { n ; s/.*/..Arial Regular 14/ ; }' \
-      -e '/^LISTING_FONT/ { n ; s/.*/..Arial Regular 13/ ; }' \
-      ${tfn} > ${tfn}.n
-  mv -f ${tfn}.n ${tfn}
-fi
+  if [[ $os == macos ]]; then
+    tfn=data/${hostname}/bdjconfig.txt
+    sed -e '/^UI_THEME/ { n ; s/.*/..Mojave-dark-solid/ ; }' \
+        -e '/^MQ_FONT/ { n ; s/.*/..Arial Narrow Regular 17/ ; }' \
+        -e '/^UI_FONT/ { n ; s/.*/..Arial Regular 17/ ; }' \
+        -e '/^LISTING_FONT/ { n ; s/.*/..Arial Regular 16/ ; }' \
+        ${tfn} > ${tfn}.n
+    mv -f ${tfn}.n ${tfn}
+  fi
 
-for f in ds-history.txt ds-mm.txt ds-musicq.txt ds-ezsonglist.txt \
-    ds-ezsongsel.txt ds-request.txt ds-songlist.txt ds-songsel.txt; do
-  tfn=data/profile00/$f
-  if [[ -f $tfn ]]; then
-    cat >> $tfn << _HERE_
+  if [[ $platform == windows ]]; then
+    tfn=data/${hostname}/bdjconfig.txt
+    sed -e '/^UI_FONT/ { n ; s/.*/..Arial Regular 14/ ; }' \
+        -e '/^LISTING_FONT/ { n ; s/.*/..Arial Regular 13/ ; }' \
+        ${tfn} > ${tfn}.n
+    mv -f ${tfn}.n ${tfn}
+  fi
+
+  for f in ds-history.txt ds-mm.txt ds-musicq.txt ds-ezsonglist.txt \
+      ds-ezsongsel.txt ds-request.txt ds-songlist.txt ds-songsel.txt; do
+    tfn=data/profile00/$f
+    if [[ -f $tfn ]]; then
+      cat >> $tfn << _HERE_
 KEYWORD
 FAVORITE
 _HERE_
-  fi
-done
+    fi
+  done
+fi  # apply changes?
 
 args=""
 

@@ -12,7 +12,7 @@ TITLE
 TEXT
 ..helptext_intro
 # This utility will walk you through a few steps to help you get started.
-# => Select the 'Next' button to continue on to the next step.
+# => Select the ‘Next’ button to continue on to the next step.
 KEY
 ..1
 TITLE
@@ -20,12 +20,12 @@ TITLE
 TEXT
 ..helptext_music_location
 # The first step is to configure the location of your music folder.
-# => Select the 'Configure' button.
+# => Select the ‘Configure’ button.
 # <br>
-# In the 'BDJ4 Configuration' window, the 'General' section is displayed.
-# The first item in 'General' is the 'Music Folder'.
-# => Change the 'Music Folder' to the location of your music.
-# => Leave the 'BDJ4 Configuration' window open.
+# In the ‘BDJ4 Configuration’ window, the ‘General’ section is displayed.
+# The first item in ‘General’ is the ‘Music Folder’.
+# => Change the ‘Music Folder’ to the location of your music.
+# => Leave the ‘BDJ4 Configuration’ window open.
 KEY
 ..2
 TITLE
@@ -33,24 +33,25 @@ TITLE
 TEXT
 ..helptext_music_org
 # Setting the organisation method is important so that BallroomDJ 4
-#  can determine the information about your songs when the database is built.
-# => Select 'Organisation' in the left side of the 'BDJ4 Configuration' window.
+# can determine the information about your songs when the database is built.
+# => Select ‘Organisation’ in the left side of the ‘BDJ4
+Configuration’ window.
 # <br>
 # Many people have their music organised by putting each dance into a
 # separate folder.
-# <br>The default organisation is 'Dance/Title'.
+# <br>The default organisation is ‘Dance/Title’.
 # If you have iTunes installed, the organization path will be set to
-# 'Album Artist/Album/Disc - Track0 Title'.
+# ‘Album Artist/Album/Disc - Track0 Title’.
 # => Select the organisation method you use for your songs in the
-# 'Organisation Path' drop-down.
+# ‘Organisation Path’ drop-down.
 # <br>
-# If the organisation path you need is not present, select the 'support'
+# If the organisation path you need is not present, select the ‘support’
 # button in the starter window and send a support message.
 # Almost any organisation path can be configured.
 # <br>
 # If your audio files have the dance stored in the genre audio tag,
-# turn on 'Database Loads Dance from Genre'.
-# => Leave the 'BDJ4 Configuration' window open.
+# turn on ‘Database Loads Dance from Genre’.
+# => Leave the ‘BDJ4 Configuration’ window open.
 KEY
 ..3
 TITLE
@@ -58,15 +59,16 @@ TITLE
 TEXT
 ..helptext_configure_dances
 # The names of the dances need to match what you use.
-# => Select 'Edit Dances' in the left side of the 'BDJ4 Configuration' window.
+# => Select ‘Edit Dances’ in the left side of the ‘BDJ4
+Configuration’ window.
 # <br>
 # Review the list of dances.
 # If a dance has a different name than
 # what you use, select the dance and change the name.
-# If a dance you use is missing, select the 'Add' button and add the dance.
+# If a dance you use is missing, select the ‘Add’ button and add the dance.
 # If there are dances you will never use, select the dance,
-# then select the 'Remove' button.
-# => Close the 'BDJ4 Configuration' window.
+# then select the ‘Remove’ button.
+# => Close the ‘BDJ4 Configuration’ window.
 KEY
 ..4
 TITLE
@@ -75,43 +77,44 @@ TEXT
 ..helptext_build_db
 # In order to function, BallroomDJ 4 maintains a database of all of your songs.
 # This database must be built for the first time.
-# => Select the 'Manage' button.
-# => In the 'BDJ4 Management' window, select
-# the 'Update Database' section in the left side of the window.
+# => Select the ‘Manage’ button.
+# => In the ‘BDJ4 Management’ window, select
+# the ‘Update Database’ section in the left side of the window.
 # <br>
-# The default selection 'Check for New' is used when you add or remove
+# The default selection ‘Check for New’ is used when you add or remove
 # songs from your music collection.
-# => Change the selection to 'Rebuild Database'.
-# => Select the 'Start' button.
+# => Change the selection to ‘Rebuild Database’.
+# => Select the ‘Start’ button.
 # => Wait for the database rebuild to finish.
-# => Leave the 'BDJ4 Management' window open.
+# => Close the ‘BDJ4 Management’ window.
+# => Select the ‘Manage’ button to open again.
 KEY
 ..5
 TITLE
 ..Check the Dance for Each Song
 TEXT
 ..helptext_check_dance
-# => Select 'Music Manager' in the left side of the 'BDJ4 Management' window.
+# => Select ‘Music Manager’ in the left side of the ‘BDJ4 Management’ window.
 # <br>
 # Scroll through the list of songs and check to make sure the dance is set
 # for each song.
 # <br>To set the dance for a song:
 # => Select the song.
-# => Select the 'Song Editor' tab (below the player, above the list of songs).
-# => Next to the 'Dance' label, use the dance drop-down selection and
+# => Select the ‘Song Editor’ tab (below the player, above the list of songs).
+# => Next to the ‘Dance’ label, use the dance drop-down selection and
 # select the dance for the song.
-# => In the upper right of the 'Song Editor' tab, select the 'Save' button.
+# => In the upper right of the ‘Song Editor’ tab, select the ‘Save’ button.
 # <br>
-# You can switch back to the 'Music Manager' tab and check for other
+# You can switch back to the ‘Music Manager’ tab and check for other
 # songs that need to have the dance set.
-# => Leave the 'BDJ4 Management' window open.
+# => Leave the ‘BDJ4 Management’ window open.
 KEY
 ..6
 TITLE
 ..Create an Example Playlist
 TEXT
 ..helptext_create_playlist
-# => Select 'Edit Song Lists' in the left side of the 'BDJ4 Management' window.
+# => Select ‘Edit Song Lists’ in the left side of the ‘BDJ4 Management’ window.
 # <br>
 # On the right side of the lower section of the window is a list of your songs.
 # => Select a song by clicking on it.
@@ -121,9 +124,9 @@ TEXT
 # selected to the song list that is being created.
 # => Select a few songs and add each of them to the song list.
 # <br>
-# Above the song list is an entry box with the name 'New Song List' in it.
+# Above the song list is an entry box with the name ‘New Song List’ in it.
 # => Click in the box and change the name of the song list.
-# => Close the 'BDJ4 Management' window. The song list is automatically saved.
+# => Close the ‘BDJ4 Management’ window. The song list is automatically saved.
 KEY
 ..7
 TITLE
@@ -131,8 +134,8 @@ TITLE
 TEXT
 ..helptext_play_playlist
 # Now you will play the playlist that was just created.
-# => Select the 'Player' button.
-# => In the player window, select the 'Queue Playlist' drop-down.
+# => Select the ‘Player’ button.
+# => In the player window, select the ‘Queue Playlist’ drop-down.
 # => Select the name of the playlist that you entered previously.
 KEY
 ..8
@@ -140,8 +143,6 @@ TITLE
 ..How to get Support
 TEXT
 ..helptext_get_support
-# To get support, select the 'Support' button. There are links to the
+# To get support, select the ‘Support’ button. There are links to the
 # wiki, forums and problem ticketing system. Or use the
-# 'Send Support Message' button to send a message.
-
-
+# ‘Send Support Message’ button to send a message.

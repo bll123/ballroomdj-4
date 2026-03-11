@@ -17,6 +17,7 @@
 #include "bdjvarsdf.h"
 #include "callback.h"
 #include "dispsel.h"
+#include "istring.h"
 #include "log.h"
 #include "mdebug.h"
 #include "musicdb.h"
@@ -71,6 +72,7 @@ enum {
 
 enum {
   MQ_IDENT_INT      = 0xbbaa00746e69716d,
+  UIMUSICQ_MAX_QDANCE_LEN = 62,
 };
 
 typedef struct mq_internal {
@@ -114,6 +116,7 @@ static bool   uimusicqRemoveCallback (void *udata);
 static bool   uimusicqKeyEvent (void *udata);
 static void   uimusicqMarkPreviousSelection (uimusicq_t *uimusicq, bool disp);
 static void   uimusicqFillRow (void *udata, uivirtlist_t *vl, int32_t rownum);
+static void   uimusicquiCreateQueueDanceButtons (uimusicq_t *uimusicq, mq_internal_t *mqint, uiwcont_t *hbox, uiwcont_t *parentwin, const char * q5dancetxt, const char * qdancetxt);
 
 void
 uimusicqUIInit (uimusicq_t *uimusicq)
@@ -182,6 +185,10 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   int               tagidx;
   mq_internal_t     *mqint;
   uivirtlist_t      *uivl;
+  const char        *qdancetxt = "";
+  const char        *q5dancetxt = "";
+  const char        *qpltxt = "";
+  size_t            qdancelen = 0;
 
 
   logProcBegin ();
@@ -234,6 +241,34 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
     uiBoxPostProcess (hbox);
     uiwcontFree (hbox);
+  }
+
+  qdancelen = 0;
+  if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
+    /* CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue' */
+    qpltxt = _("Queue Playlist");
+    qdancelen = istrlen (qpltxt);
+
+    if (bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, ci)) {
+      if (uimusicq->callbacks [UIMUSICQ_CB_QUEUE_DANCE] == NULL) {
+        uimusicq->callbacks [UIMUSICQ_CB_QUEUE_DANCE] = callbackInitII (
+            uimusicqQueueDanceCallback, uimusicq);
+      }
+      /* CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button) */
+      q5dancetxt = _("Queue 5");
+      /* CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue */
+      qdancetxt = _("Queue Dance");
+      qdancelen += istrlen (q5dancetxt) + istrlen (qdancetxt);
+
+      if (qdancelen > UIMUSICQ_MAX_QDANCE_LEN) {
+        hbox = uiCreateHorizBox ();
+        uiWidgetExpandHoriz (hbox);
+        uiBoxPackStart (uimusicq->ui [ci].mainbox, hbox);
+        uiWidgetSetMarginTop (hbox, 1);
+        uimusicquiCreateQueueDanceButtons (uimusicq, mqint, hbox, parentwin, q5dancetxt, qdancetxt);
+        uiwcontFree (hbox);
+      }
+    }
   }
 
   hbox = uiCreateHorizBox ();
@@ -342,7 +377,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     uiwidgetp = uiCreateButton (
         mqint->callbacks [MQINT_CB_HIST_QUEUE],
         /* CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue' */
-        _("Queue"), NULL, NULL);
+        C_("Verb","Queue"), NULL);
     uiBoxPackStart (hbox, uiwidgetp);
     mqint->wcont [UIMUSICQ_W_BUTTON_QUEUE] = uiwidgetp;
 
@@ -358,25 +393,14 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
           uimusicqQueuePlaylistCallback, uimusicq);
     }
     uimusicq->ui [ci].playlistsel = uiplaylistCreate (parentwin,
-        /* CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue' */
-        hbox, PL_LIST_NORMAL, _("Queue Playlist"), UIPL_PACK_END, UIPL_FLAG_NONE);
+        hbox, PL_LIST_NORMAL, qpltxt, UIPL_PACK_END, UIPL_FLAG_NONE);
     uiplaylistSetSelectCallback (uimusicq->ui [ci].playlistsel,
         uimusicq->callbacks [UIMUSICQ_CB_QUEUE_PLAYLIST]);
 
     if (bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, ci)) {
-      if (uimusicq->callbacks [UIMUSICQ_CB_QUEUE_DANCE] == NULL) {
-        uimusicq->callbacks [UIMUSICQ_CB_QUEUE_DANCE] = callbackInitII (
-            uimusicqQueueDanceCallback, uimusicq);
+      if (qdancelen <= UIMUSICQ_MAX_QDANCE_LEN) {
+        uimusicquiCreateQueueDanceButtons (uimusicq, mqint, hbox, parentwin, q5dancetxt, qdancetxt);
       }
-      mqint->uidance5 = uidanceCreate (hbox, parentwin,
-          /* CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button) */
-          UIDANCE_NONE, _("Queue 5"), UIDANCE_PACK_END, 5);
-      uidanceSetCallback (mqint->uidance5, uimusicq->callbacks [UIMUSICQ_CB_QUEUE_DANCE]);
-
-      mqint->uidance = uidanceCreate (hbox, parentwin,
-          /* CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue */
-          UIDANCE_NONE, _("Queue Dance"), UIDANCE_PACK_END, 1);
-      uidanceSetCallback (mqint->uidance, uimusicq->callbacks [UIMUSICQ_CB_QUEUE_DANCE]);
     }
   }
 
@@ -1172,7 +1196,7 @@ uimusicqMarkPreviousSelection (uimusicq_t *uimusicq, bool disp)
   }
   if (disp) {
     uivlSetRowColumnClass (mqint->uivl, mqui->prevSelection,
-        UIMUSICQ_COL_DISP_IDX, ACCENT_CLASS);
+        UIMUSICQ_COL_DISP_IDX, BOLD_ACCENT_CLASS);
   }
 }
 
@@ -1250,4 +1274,18 @@ uimusicqFillRow (void *udata, uivirtlist_t *vl, int32_t rownum)
   nlistFree (tdlist);
 
   mqint->inchange = false;
+}
+
+static void
+uimusicquiCreateQueueDanceButtons (uimusicq_t *uimusicq,
+    mq_internal_t *mqint, uiwcont_t *hbox, uiwcont_t *parentwin,
+    const char * q5dancetxt, const char * qdancetxt)
+{
+  mqint->uidance5 = uidanceCreate (hbox, parentwin,
+      UIDANCE_NONE, q5dancetxt, UIDANCE_PACK_END, 5);
+  uidanceSetCallback (mqint->uidance5, uimusicq->callbacks [UIMUSICQ_CB_QUEUE_DANCE]);
+
+  mqint->uidance = uidanceCreate (hbox, parentwin,
+      UIDANCE_NONE, qdancetxt, UIDANCE_PACK_END, 1);
+  uidanceSetCallback (mqint->uidance, uimusicq->callbacks [UIMUSICQ_CB_QUEUE_DANCE]);
 }

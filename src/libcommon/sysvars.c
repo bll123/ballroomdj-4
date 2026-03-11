@@ -97,6 +97,7 @@ static const char *sysvarsdesc [SV_MAX] = {
   [SV_OS_DIST_TAG] = "OS_DIST_TAG",
   [SV_OS_EXEC_EXT] = "OS_EXEC_EXT",
   [SV_OS_NAME] = "OS_NAME",
+  [SV_OS_PKG_SYS] = "OS_PKG_SYS",
   [SV_OS_PLATFORM] = "OS_PLATFORM",
   [SV_OS_VERS] = "OS_VERS",
   [SV_PATH_ACRCLOUD] = "PATH_ACRCLOUD",
@@ -205,15 +206,16 @@ sysvarsInit (const char *argv0, int flags)
   pathRealPath (tcwd, SV_MAX_SZ);
   pathNormalizePath (tcwd, SV_MAX_SZ);
 
-  sysvarsSetStr (SV_OS_NAME, "");
-  sysvarsSetStr (SV_OS_PLATFORM, "");
-  sysvarsSetStr (SV_OS_DISP, "");
-  sysvarsSetStr (SV_OS_VERS, "");
   sysvarsSetStr (SV_OS_ARCH, "");
   sysvarsSetStr (SV_OS_ARCH_TAG, "");
-  sysvarsSetStr (SV_OS_DIST_TAG, "");
   sysvarsSetStr (SV_OS_BUILD, "");
+  sysvarsSetStr (SV_OS_DISP, "");
+  sysvarsSetStr (SV_OS_DIST_TAG, "");
   sysvarsSetStr (SV_OS_EXEC_EXT, "");
+  sysvarsSetStr (SV_OS_NAME, "");
+  sysvarsSetStr (SV_OS_PKG_SYS, "");
+  sysvarsSetStr (SV_OS_PLATFORM, "");
+  sysvarsSetStr (SV_OS_VERS, "");
   lsysvars [SVL_IS_MSYS] = false;
   lsysvars [SVL_IS_LINUX] = false;
   lsysvars [SVL_IS_WINDOWS] = false;
@@ -299,15 +301,37 @@ sysvarsInit (const char *argv0, int flags)
   }
 
   if (strcmp (sysvars [SV_OS_NAME], "darwin") == 0) {
+    const char  *tdir = NULL;
+    bool        found = false;
+
     lsysvars [SVL_IS_MACOS] = true;
     sysvarsSetStr (SV_OS_PLATFORM, "macos");
-    /* arch will be arm64 or x86_64 */
+    /* arch: arm64, 86_64 */
     /* be sure to include the leading - */
     if (strcmp (sysvars [SV_OS_ARCH], "x86_64") == 0) {
       sysvarsSetStr (SV_OS_ARCH_TAG, "-intel");
     }
     if (strcmp (sysvars [SV_OS_ARCH], "arm64") == 0) {
       sysvarsSetStr (SV_OS_ARCH_TAG, "-applesilicon");
+    }
+
+    /* macos has multiple packaging systems */
+    /* this is not necessarily the best method to check. */
+    /* the user could have multiple packaging systems installed */
+    tdir = "/opt/local/bin";
+    if (fileopIsDirectory (tdir)) {
+      sysvarsSetStr (SV_OS_PKG_SYS, "-macports");
+      found = true;
+    }
+    tdir = "/opt/homebrew/bin";
+    if (! found && fileopIsDirectory (tdir)) {
+      sysvarsSetStr (SV_OS_PKG_SYS, "-homebrew");
+      found = true;
+    }
+    tdir = "/opt/pkg/bin";
+    if (! found && fileopIsDirectory (tdir)) {
+      sysvarsSetStr (SV_OS_PKG_SYS, "-pkgsrc");
+      found = true;
     }
   }
   if (strcmp (sysvars [SV_OS_NAME], "linux") == 0) {
@@ -594,50 +618,6 @@ sysvarsInit (const char *argv0, int flags)
   lsysvars [SVL_LOCALE_SET] = SYSVARS_LOCALE_NOT_SET;
   lsysvars [SVL_LOCALE_SYS_SET] = SYSVARS_LOCALE_NOT_SET;
 
-  /* the installer creates this file to save the original system locale */
-  snprintf (buff, sizeof (buff), "%s/localeorig.txt", sysvars [SV_BDJ4_DREL_DATA]);
-  if (fileopFileExists (buff)) {
-    FILE    *fh;
-
-    *tbuff = '\0';
-    fh = fileopOpen (buff, "r");
-    if (fh != NULL) {
-      (void) ! fgets (tbuff, sizeof (tbuff), fh);
-      mdextfclose (fh);
-      fclose (fh);
-    }
-    stringTrim (tbuff);
-    if (*tbuff) {
-      /* save the system locale */
-      sysvarsSetStr (SV_LOCALE_SYSTEM, tbuff);
-      /* do not mark locale-set, only locale-sys-set */
-      lsysvars [SVL_LOCALE_SYS_SET] = SYSVARS_LOCALE_SET;
-      /* localeInit() will set locale-orig and the other variables */
-    }
-  }
-
-  snprintf (buff, sizeof (buff), "%s/locale.txt", sysvars [SV_BDJ4_DREL_DATA]);
-  if (fileopFileExists (buff)) {
-    FILE    *fh;
-
-    *tbuff = '\0';
-    fh = fileopOpen (buff, "r");
-    if (fh != NULL) {
-      (void) ! fgets (tbuff, sizeof (tbuff), fh);
-      mdextfclose (fh);
-      fclose (fh);
-    }
-    stringTrim (tbuff);
-    if (*tbuff) {
-      if (strcmp (tbuff, sysvars [SV_LOCALE_SYSTEM]) != 0) {
-        sysvarsSetStr (SV_LOCALE, tbuff);
-        snprintf (buff, sizeof (buff), "%-.2s", tbuff);
-        sysvarsSetStr (SV_LOCALE_SHORT, buff);
-        lsysvars [SVL_LOCALE_SET] = SYSVARS_LOCALE_SET;
-      }
-    }
-  }
-
   sysvarsSetStr (SV_BDJ4_VERSION, "unknown");
   snprintf (buff, sizeof (buff), "%s/VERSION.txt", sysvars [SV_BDJ4_DIR_MAIN]);
   versinfo = sysvarsParseVersionFile (buff);
@@ -698,6 +678,33 @@ sysvarsInit (const char *argv0, int flags)
   snprintf (tbuff, sizeof (tbuff), "%s/%s", sysvars [SV_DIR_CACHE_BASE], BDJ4_NAME);
   sysvarsSetStr (SV_DIR_CACHE, tbuff);
 
+  /* the installer creates this file to save the original system locale */
+  snprintf (buff, sizeof (buff), "%s/%s%s",
+      sysvars [SV_BDJ4_DREL_DATA], LOCALE_ORIG_FN, BDJ4_CONFIG_EXT);
+  if (fileopFileExists (buff)) {
+    FILE    *fh;
+
+    *tbuff = '\0';
+    fh = fileopOpen (buff, "r");
+    if (fh != NULL) {
+      (void) ! fgets (tbuff, sizeof (tbuff), fh);
+      mdextfclose (fh);
+      fclose (fh);
+    }
+    stringTrim (tbuff);
+    if (*tbuff) {
+      /* save the system locale */
+      sysvarsSetStr (SV_LOCALE_SYSTEM, tbuff);
+      /* do not mark locale-set, only locale-sys-set */
+      lsysvars [SVL_LOCALE_SYS_SET] = SYSVARS_LOCALE_SET;
+      /* localeInit() will set locale-orig and the other variables */
+    }
+  }
+
+  snprintf (buff, sizeof (buff), "%s/%s%s",
+      sysvars [SV_BDJ4_DREL_DATA], LOCALE_FN, BDJ4_CONFIG_EXT);
+  sysvarsLoadLocale (buff);
+
   sysvarsCheckPaths (NULL);
 
   if (flags == SYSVARS_FLAG_ALL &&
@@ -739,6 +746,10 @@ sysvarsInit (const char *argv0, int flags)
       p = stpecpy (p, end, data);
     }
   }
+
+  /* set the default theme */
+  sysvarsSetStr (SV_THEME_DEFAULT, "Adwaita:dark");
+
   if (strcmp (sysvars [SV_OS_NAME], "linux") == 0) {
     static char *fna = "/etc/lsb-release";
     static char *fnb = "/etc/os-release";
@@ -747,9 +758,8 @@ sysvarsInit (const char *argv0, int flags)
       svGetLinuxOSInfo (fnb);
     }
 
-    /* gtk cannot seem to retrieve the properties from settings */
-    /* so run the gsettings program to get the info */
     if (flags == SYSVARS_FLAG_ALL && *sysvars [SV_PATH_GSETTINGS]) {
+      /* override the default theme with what the user has set */
       svGetLinuxDefaultTheme ();
     }
   }
@@ -1149,6 +1159,35 @@ sysvarsParseVersionFileFree (sysversinfo_t *versinfo)
   mdfree (versinfo);
 }
 
+void
+sysvarsLoadLocale (const char *path)
+{
+  char    tbuff [BDJ4_PATH_MAX];
+
+  if (fileopFileExists (path)) {
+    FILE    *fh;
+
+    *tbuff = '\0';
+    fh = fileopOpen (path, "r");
+    if (fh != NULL) {
+      (void) ! fgets (tbuff, sizeof (tbuff), fh);
+      mdextfclose (fh);
+      fclose (fh);
+    }
+    stringTrim (tbuff);
+    if (*tbuff) {
+      if (strcmp (tbuff, sysvars [SV_LOCALE_SYSTEM]) != 0) {
+        char    buff [40];
+
+        sysvarsSetStr (SV_LOCALE, tbuff);
+        snprintf (buff, sizeof (buff), "%-.2s", tbuff);
+        sysvarsSetStr (SV_LOCALE_SHORT, buff);
+        lsysvars [SVL_LOCALE_SET] = SYSVARS_LOCALE_SET;
+      }
+    }
+  }
+}
+
 /* internal routines */
 
 static void
@@ -1251,6 +1290,10 @@ svGetLinuxDefaultTheme (void)
 {
   char    *tptr;
 
+  /* gtk cannot seem to retrieve the properties from settings */
+  /* (or i don't know how) */
+  /* so run the gsettings program to get the info */
+
   tptr = osRunProgram (sysvars [SV_PATH_GSETTINGS], "get",
       "org.gnome.desktop.interface", "gtk-theme", NULL);
   if (tptr != NULL) {
@@ -1282,7 +1325,7 @@ sysvarsParseDistFile (const char *path)
 
   distinfo = mdmalloc (sizeof (sysdistinfo_t));
   distinfo->data = NULL;
-  distinfo->dist = "";
+  distinfo->dist = mdstrdup ("");
 
   if (fileopFileExists (path)) {
     char    *tokptr;
@@ -1297,7 +1340,7 @@ sysvarsParseDistFile (const char *path)
       vnm = strtok_r (tp, "=", &tokptrb);
       p = strtok_r (NULL, "=", &tokptrb);
       if (vnm != NULL && p != NULL && strcmp (vnm, "DIST_TAG") == 0) {
-        distinfo->dist = p;
+        distinfo->dist = mdstrdup (p);
       }
       tp = strtok_r (NULL, "\r\n", &tokptr);
     }
@@ -1326,3 +1369,4 @@ sysvarsBuildVLCLibPath (char *tbuff, char *lbuff, size_t sz, const char *libnm)
   p = stpecpy (p, lbuff + sz, "/");
   p = stpecpy (p, lbuff + sz, libnm);
 }
+

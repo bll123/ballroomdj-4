@@ -53,21 +53,21 @@ static void confuiCreateTagListingMultDisp (confuigui_t *gui, slist_t *dlist, in
 static const char *orgexamples [] = {
   "FILE\n..none.mp3\nDISC\n..1\nTRACKNUMBER\n..1\n"
       "ALBUM\n..Smooth\nALBUMARTIST\n..Santana\n"
-      "ARTIST\n..Santana\nDANCE\n..Cha Cha\nTITLE\n..Smooth\n"
-      "GENRE\n..Ballroom Dance\n",
+      "ARTIST\n..Santana\nDANCE\n..{CHACHA}\nTITLE\n..Smooth\n"
+      "GENRE\n..{GENRE}\n",
   "FILE\n..none2.mp3\nDISC\n..1\nTRACKNUMBER\n..2\n"
       "ALBUM\n..The Ultimate Latin Album 4: Latin Eyes\nALBUMARTIST\n..WRD\n"
-      "ARTIST\n..Gizelle D'Cole\nDANCE\n..Rumba\nTITLE\n..Asi\n"
-      "GENRE\n..Ballroom Dance\n",
-  "FILE\n..none.mp3\nDISC\n..1\nTRACKNUMBER\n..3\n"
+      "ARTIST\n..Gizelle D'Cole\nDANCE\n..{RUMBA}\nTITLE\n..Asi\n"
+      "GENRE\n..{GENRE}\n",
+  "FILE\n..none3.mp3\nDISC\n..1\nTRACKNUMBER\n..3\n"
       "ALBUM\n..Ballroom Stars 6\nALBUMARTIST\n..Various Artists\n"
-      "ARTIST\n..Léa\nDANCE\n..Waltz\nTITLE\n..Je Vole! (from 'La Famille Bélier')\n"
-      "GENRE\n..Ballroom Dance",
+      "ARTIST\n..Léa\nDANCE\n..{WALTZ}\nTITLE\n..Je Vole! (from 'La Famille Bélier')\n"
+      "GENRE\n..{GENRE}",
   /* empty album artist */
   "FILE\n..none4.mp3\nDISC\n..2\nTRACKNUMBER\n..4\n"
       "ALBUM\n..The Ultimate Latin Album 9: Footloose\nALBUMARTIST\n..\n"
-      "ARTIST\n..Gloria Estefan\nDANCE\n..Rumba\nTITLE\n..Me voy\n"
-      "GENRE\n..Ballroom Dance",
+      "ARTIST\n..Gloria Estefan\nDANCE\n..{RUMBA}\nTITLE\n..Me voy\n"
+      "GENRE\n..{GENRE}",
 };
 
 
@@ -162,7 +162,7 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
   }
 
   if (type != MOBMQ_TYPE_OFF) {
-    /* CONTEXT: configuration: qr code: title display for mobile marquee */
+    /* CONTEXT: configuration: qr code: a message displayed above the qr code */
     confuiMakeQRCodeFile ("", _("Mobile Marquee"), uridisp, qruri, sizeof (qruri));
   }
 
@@ -210,7 +210,7 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
   }
 
   if (enabled) {
-    /* CONTEXT: configuration: qr code: title display for mobile remote control */
+    /* CONTEXT: configuration: qr code: a message displayed above the qr code */
     confuiMakeQRCodeFile ("", _("Mobile Remote Control"), uridisp, qruri, sizeof (qruri));
     if (*uridispb) {
       confuiMakeQRCodeFile ("b", _("Mobile Remote Control"), uridispb, qrurib, sizeof (qrurib));
@@ -234,10 +234,13 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
 void
 confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath)
 {
-  org_t     *org;
-  uiwcont_t *uiwidgetp;
-  int       max;
-
+  org_t       *org;
+  uiwcont_t   *uiwidgetp;
+  int         max;
+  bdjregex_t  *rxchacha;
+  bdjregex_t  *rxrumba;
+  bdjregex_t  *rxwaltz;
+  bdjregex_t  *rxgenre;
 
   if (orgpath == NULL) {
     return;
@@ -249,12 +252,35 @@ confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath)
   /* the only genres that are shipped are : */
   /* ballroom dance, jazz, rock, classical */
 
+  rxchacha = regexInit ("{CHACHA}");
+  rxrumba = regexInit ("{RUMBA}");
+  rxwaltz = regexInit ("{WALTZ}");
+  rxgenre = regexInit ("{GENRE}");
+
   max = CONFUI_WIDGET_AO_EXAMPLE_MAX - CONFUI_WIDGET_AO_EXAMPLE_1;
   for (int i = 0; i < max; ++i) {
+    char      tbuff [200];
+    char      *tmp;
+
     uiwidgetp = gui->uiitem [i + CONFUI_WIDGET_AO_EXAMPLE_1].uiwidgetp;
-    confuiUpdateOrgExample (org, orgexamples [i], uiwidgetp);
+    tmp = regexReplace (rxchacha, orgexamples [i], _("Cha Cha"));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), tmp);
+    mdfree (tmp);
+    tmp = regexReplace (rxrumba, tbuff, _("Rumba"));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), tmp);
+    mdfree (tmp);
+    tmp = regexReplace (rxwaltz, tbuff, _("Waltz"));
+    stpecpy (tbuff, tbuff + sizeof (tbuff), tmp);
+    mdfree (tmp);
+    tmp = regexReplace (rxgenre, tbuff, _("Ballroom Dance"));
+    confuiUpdateOrgExample (org, tmp, uiwidgetp);
+    mdfree (tmp);
   }
 
+  regexFree (rxchacha);
+  regexFree (rxrumba);
+  regexFree (rxwaltz);
+  regexFree (rxgenre);
   orgFree (org);
   logProcEnd ("");
 }
@@ -681,7 +707,7 @@ confuiLocaleSelect (void *udata, const char *sval)
     snprintf (tbuff, sizeof (tbuff), "%.2s", sval);
     sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
     pathbldMakePath (tbuff, sizeof (tbuff),
-        "locale", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+        LOCALE_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
     fileopDelete (tbuff);
 
     /* if the set locale does not match the system or default locale */
@@ -701,11 +727,18 @@ confuiLocaleSelect (void *udata, const char *sval)
 int32_t
 confuiUIThemeSelect (void *udata, const char *sval)
 {
+  confuigui_t *gui = udata;
+  bool        was_dark;
+  bool        is_dark;
+
+  was_dark = bdjoptIsDarkTheme ();
+
   if (sval != NULL && *sval) {
     char    tbuff [BDJ4_PATH_MAX];
     FILE    *fh;
 
     bdjoptSetStr (OPT_M_UI_THEME, sval);
+    is_dark = bdjoptIsDarkTheme ();
 
     pathbldMakePath (tbuff, sizeof (tbuff),
         "theme", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
@@ -715,6 +748,33 @@ confuiUIThemeSelect (void *udata, const char *sval)
     }
     mdextfclose (fh);
     fclose (fh);
+
+    if (was_dark != is_dark) {
+      char        tbuff [40];
+      uiwcont_t   *uiwidget;
+
+      uiwidget = gui->uiitem [CONFUI_WIDGET_UI_ACCENT_COLOR].uiwidgetp;
+      uiColorButtonGetColor (uiwidget, tbuff, sizeof (tbuff));
+      if ((was_dark && strcmp (tbuff, BDJ4_DFLT_DARK_ACCENT_COLOR) == 0) ||
+          (! was_dark && strcmp (tbuff, BDJ4_DFLT_LIGHT_ACCENT_COLOR) == 0)) {
+        if (is_dark) {
+          uiColorButtonSetColor (uiwidget, BDJ4_DFLT_DARK_ACCENT_COLOR);
+        } else {
+          uiColorButtonSetColor (uiwidget, BDJ4_DFLT_LIGHT_ACCENT_COLOR);
+        }
+      }
+
+      uiwidget = gui->uiitem [CONFUI_WIDGET_UI_ERROR_COLOR].uiwidgetp;
+      uiColorButtonGetColor (uiwidget, tbuff, sizeof (tbuff));
+      if ((was_dark && strcmp (tbuff, BDJ4_DFLT_DARK_ERROR_COLOR) == 0) ||
+          (! was_dark && strcmp (tbuff, BDJ4_DFLT_LIGHT_ERROR_COLOR) == 0)) {
+        if (is_dark) {
+          uiColorButtonSetColor (uiwidget, BDJ4_DFLT_DARK_ERROR_COLOR);
+        } else {
+          uiColorButtonSetColor (uiwidget, BDJ4_DFLT_LIGHT_ERROR_COLOR);
+        }
+      }
+    }
   }
 
   return UICB_CONT;

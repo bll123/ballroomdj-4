@@ -114,6 +114,10 @@ The __Re-Install__ checkbox is only used if you want to completely
 reset all of the BDJ4 data files.  Any changes you have made within
 BDJ4 will be lost if a re-install is done.
 
+__Select your preferred language__.  This language will be used to
+install the localized configuration files.  The display language will
+also be set to this language, but may be changed later.
+
 If you want to convert a BallroomDJ&nbsp;3 installation, select the
 BallroomDJ&nbsp;3 folder and select the __Convert&nbsp;BallroomDJ&nbsp;3__
 checkbox.
@@ -123,7 +127,7 @@ __Install__ or __Upgrade__ button and wait for the
 __Installation&nbsp;Completed__ message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![BallroomDJ 4 Installer on Linux](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Linux-Installer-D.png)
+![BallroomDJ 4 Installer on Linux](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Linux-Installer-E.png)
 <br><span id="caption" style="color:#4559bf;">__BallroomDJ 4 Installer on Linux__</span> </div>
 
 #### Getting Help
@@ -140,4 +144,4 @@ Visit the
 wiki page.
 
 [Wiki Home](Home)
-<br>_(Updated 2026-01-03 18:06:33; BDJ4 version 4.17.7.1)_
+<br>_(Updated 2026-02-26 07:08:33; BDJ4 version 4.17.13.1)_

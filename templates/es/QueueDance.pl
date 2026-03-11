@@ -6,7 +6,7 @@ version
 ALLOWEDKEYWORDS
 ..
 DANCERATING
-..Sin clasificar
+..Sin calificación
 GAP
 ..500
 MAXPLAYTIME

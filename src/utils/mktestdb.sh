@@ -88,6 +88,10 @@ while test $# -gt 0; do
     --nodbcopy)
       # ignored
       ;;
+    --locale)
+      # ignored
+      shift
+      ;;
     --musicdir)
       args+=$1
       args+=" "
@@ -95,6 +99,10 @@ while test $# -gt 0; do
       args+="'$1'"
       args+=" "
       MUSICDIR=$1
+      ;;
+    --nochanges)
+      # ignored
+      shift
       ;;
     *)
       echo "unknown argument $1" >&2

@@ -21,7 +21,7 @@ throughout the playlist.
 * Fast dances adjacent to each other.
 <br>Fast dances played adjacent to each other are avoided.
 * Type of dance.
-<br>Dances adjacent to each other of the same type (standard/latin/club)
+<br>Dances adjacent to each other of the same type (standard/latin/other)
 are avoided.
 * Dance tags.
 <br>Dances that are adjacent to each other or recently played and have
@@ -40,4 +40,4 @@ _data/autoselection.txt_ file.  If changes to these parameters are
 desired, they must be changed manually.
 
 [Wiki Home](Home)
-<br>_(Updated 2025-10-11 10:08:15; BDJ4 version 4.17.2)_
+<br>_(Updated 2026-02-25 19:35:36; BDJ4 version 4.17.13)_

@@ -29,9 +29,11 @@
 #include "bdjvars.h"
 #include "bdjvarsdf.h"
 #include "bdjvarsdfload.h"
+#include "dance.h"
 #include "datafile.h"
 #include "dirlist.h"
 #include "dirop.h"
+#include "dnctypes.h"
 #include "filedata.h"
 #include "filemanip.h"
 #include "fileop.h"
@@ -157,10 +159,9 @@ static void updaterCleanRegex (const char *basedir, slist_t *filelist, nlist_t *
 static int  updaterGetStatus (nlist_t *updlist, int key);
 static void updaterCopyIfNotPresent (const char *fn, const char *ext, const char *newfn);
 static void updaterCopyProfileIfNotPresent (const char *fn, const char *ext, int forceflag);
-static void updaterCopyVersionCheck (const char *fn, const char *ext, int currvers);
+static void updaterCopyVersionCheck (const char *fromfn, const char *tofn, const char *ext, int currvers);
 static void updaterCopyProfileVersionCheck (const char *fn, const char *ext, int currvers);
 static void updaterCopyHTMLVersionCheck (const char *fn, const char *ext, int currvers);
-static void updaterCopyCSSVersionCheck (const char *fn, const char *ext, int currvers);
 static void updaterRenameProfileFile (const char *oldfn, const char *fn, const char *ext);
 static time_t updaterGetSongCreationTime (song_t *song);
 static void updaterFixLocales (void);
@@ -519,7 +520,7 @@ main (int argc, char *argv [])
     /*   overwrite version 1. */
     /* 4.8.3.1 2024-4-19 updated to version 3 */
     /* 4.9.0 2024-4-22 updated to version 4 */
-    updaterCopyVersionCheck (ITUNES_FIELDS_FN, BDJ4_CONFIG_EXT, 4);
+    updaterCopyVersionCheck (NULL, ITUNES_FIELDS_FN, BDJ4_CONFIG_EXT, 4);
   }
 
   {
@@ -530,31 +531,26 @@ main (int argc, char *argv [])
     /* added fastprior (version 5) */
     /* 4.6.0 2024-2-18 */
     /* added tagweight (version 6) */
-    updaterCopyVersionCheck (AUTOSEL_FN, BDJ4_CONFIG_EXT, 6);
+    updaterCopyVersionCheck (NULL, AUTOSEL_FN, BDJ4_CONFIG_EXT, 6);
   }
 
   {
     /* 4.1.0 2023-1-5 audioadjust.txt */
     updaterCopyIfNotPresent (AUDIOADJ_FN, BDJ4_CONFIG_EXT, NULL);
     /* 4.12.1 2024-9-1 (version number bump) audioadjust.txt */
-    updaterCopyVersionCheck (AUDIOADJ_FN, BDJ4_CONFIG_EXT, 5);
+    updaterCopyVersionCheck (NULL, AUDIOADJ_FN, BDJ4_CONFIG_EXT, 5);
   }
 
   {
-    /* 4.10.0 2023-1-29 gtk-static.css */
-    /*    This is a new file; simply check and see if it does not exist. */
-    /* 4.11.0 2024-6-18 virtlist */
-    /* 4.17.3.4 2025-11-8 update notebook scrolling arrows */
-    /* 4.17.6 2025-12-4 updates for new vertical notebook */
-    /* 4.17.7 2025-12-8 updates for new vertical notebook */
-    /* 4.18.x 2026-1-31 updates for new horizontal notebook */
-    updaterCopyIfNotPresent ("gtk-static", BDJ4_CSS_EXT, NULL);
-    updaterCopyCSSVersionCheck ("gtk-static", BDJ4_CSS_EXT, 10);
+    /* 4.17.12 v10 2026-2-21 split out light/dark (v1) */
+    /* these all now live in templates except for user-css */
+    updaterCopyIfNotPresent (GTK_CSS_USER_FN, BDJ4_CSS_EXT, NULL);
   }
 
   {
     /* 4.1.0 2023-2-9 nl renamed, just re-install if not there */
     /* 4.4.1.2 2023-10-5 nl renamed, just re-install if not there */
+    /* 4.17.14 2026-3-2 de renamed, just re-install if not there */
     updaterCopyIfNotPresent ("QueueDance", BDJ4_PLAYLIST_EXT, _("QueueDance"));
     updaterCopyIfNotPresent ("QueueDance", BDJ4_PL_DANCE_EXT, _("QueueDance"));
   }
@@ -569,10 +565,11 @@ main (int argc, char *argv [])
     /* 2023-12-22 : 4.4.8 */
     /*             Cleanup, fix en-us */
     /* 2024-6-17 : 4.10.5 remove automatic */
-    updaterCopyVersionCheck (_("QueueDance"), BDJ4_PLAYLIST_EXT, 3);
-    updaterCopyVersionCheck (_("QueueDance"), BDJ4_PL_DANCE_EXT, 5);
-    updaterCopyVersionCheck (_("standardrounds"), BDJ4_PLAYLIST_EXT, 3);
-    updaterCopyVersionCheck (_("standardrounds"), BDJ4_PL_DANCE_EXT, 4);
+    /* 2026-2-25 : fix */
+    updaterCopyVersionCheck ("QueueDance", _("QueueDance"), BDJ4_PLAYLIST_EXT, 3);
+    updaterCopyVersionCheck ("QueueDance", _("QueueDance"), BDJ4_PL_DANCE_EXT, 5);
+    updaterCopyVersionCheck ("standardrounds", _("standardrounds"), BDJ4_PLAYLIST_EXT, 3);
+    updaterCopyVersionCheck ("standardrounds", _("standardrounds"), BDJ4_PL_DANCE_EXT, 4);
   }
 
   {
@@ -586,23 +583,33 @@ main (int argc, char *argv [])
   {
     /* 4.8.0 sortopt.txt updated to version 2 */
     /* 4.8.3.1 sortopt.txt updated to version 3 */
-    updaterCopyVersionCheck (SORTOPT_FN, BDJ4_CONFIG_EXT, 3);
+    updaterCopyVersionCheck (NULL, SORTOPT_FN, BDJ4_CONFIG_EXT, 3);
   }
 
   {
     /* 4.12.1 2024-9-12 new file bdjuri.txt */
     /* 4.12.8 2024-12-5 updated bdjuri.txt */
     updaterCopyIfNotPresent (BDJ_URIFN, BDJ4_CONFIG_EXT, NULL);
-    updaterCopyVersionCheck (BDJ_URIFN, BDJ4_CONFIG_EXT, 3);
+    updaterCopyVersionCheck (NULL, BDJ_URIFN, BDJ4_CONFIG_EXT, 3);
   }
 
   {
     /* 4.14.0 2025-3-26 new file audiosrc.txt */
     updaterCopyIfNotPresent (ASCONF_FN, BDJ4_CONFIG_EXT, NULL);
     /* 4.15.0 2025-5-1 update audiosrc.txt */
-    updaterCopyVersionCheck (ASCONF_FN, BDJ4_CONFIG_EXT, 2);
+    updaterCopyVersionCheck (NULL, ASCONF_FN, BDJ4_CONFIG_EXT, 2);
     /* 4.15.0 2025-6-8 update favorites.txt */
-    updaterCopyVersionCheck ("favorites", BDJ4_CONFIG_EXT, 2);
+    updaterCopyVersionCheck (NULL, "favorites", BDJ4_CONFIG_EXT, 2);
+  }
+
+  {
+    /* 4.11.7 2023-9-5 (version number bump) audioadjust.txt */
+    updaterCopyVersionCheck (NULL, AUDIOADJ_FN, BDJ4_CONFIG_EXT, 5);
+  }
+
+  {
+    /* 4.17.13 2026-2-25 (version number bump) dancetypes.txt */
+    updaterCopyVersionCheck (NULL, "dancetypes", BDJ4_CONFIG_EXT, 2);
   }
 
   /* The datafiles must be loaded for the MPM update process */
@@ -724,11 +731,6 @@ main (int argc, char *argv [])
     /* 4.10.1 2024-5-20. Rename to ds-currsong.txt */
     updaterRenameProfileFile ("ds-player", "ds-currsong", BDJ4_CONFIG_EXT);
     updaterCopyProfileIfNotPresent ("ds-currsong", BDJ4_CONFIG_EXT, UPD_NO_FORCE);
-  }
-
-  {
-    /* 4.11.7 2023-9-5 (version number bump) audioadjust.txt */
-    updaterCopyVersionCheck (AUDIOADJ_FN, BDJ4_CONFIG_EXT, 5);
   }
 
   /* now re-load the data files */
@@ -908,7 +910,6 @@ main (int argc, char *argv [])
       /* bugs in restore-original and restore audio file data */
       /* 2023-12 : the database add date could have been munged */
       /* by bugs in the db-updater, update all add-dates */
-
 
       if (processflags [UPD_FIX_DB_DATE_ADDED_B]) {
         time_t      addval, luval;
@@ -1207,7 +1208,7 @@ updaterCleanFiles (void)
     if (*pattern == '\0') {
       continue;
     }
-    // logMsg (LOG_INSTALL, LOG_IMPORTANT, "pattern: %s", pattern); //
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "pattern: %s", pattern); //
 
     /* on any change of directory or flag, process what has been queued */
     if (strcmp (pattern, "::macosonly") == 0 ||
@@ -1263,7 +1264,7 @@ updaterCleanFiles (void)
     }
 
     snprintf (fullpattern, sizeof (fullpattern), "%s/%s", basedir, pattern);
-    // logMsg (LOG_INSTALL, LOG_IMPORTANT, "clean %s", fullpattern); //
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "clean %s", fullpattern); //
     rx = regexInit (fullpattern);
     nlistSetData (cleanlist, count, rx);
     ++count;
@@ -1400,20 +1401,27 @@ updaterCopyProfileIfNotPresent (const char *fn, const char *ext, int forceflag)
 }
 
 static void
-updaterCopyVersionCheck (const char *fn, const char *ext, int currvers)
+updaterCopyVersionCheck (const char *fromfn, const char *tofn,
+      const char *ext, int currvers)
 {
   int         version;
   char        tbuff [BDJ4_PATH_MAX];
 
-  pathbldMakePath (tbuff, sizeof (tbuff), fn, ext, PATHBLD_MP_DREL_DATA);
+  pathbldMakePath (tbuff, sizeof (tbuff), tofn, ext, PATHBLD_MP_DREL_DATA);
   version = datafileReadDistVersion (tbuff);
-  logMsg (LOG_INSTALL, LOG_INFO, "version check %s%s : %d < %d", fn, ext, version, currvers);
+  logMsg (LOG_INSTALL, LOG_INFO, "version check %s%s : %d < %d", tofn, ext, version, currvers);
   if (version < currvers) {
-    char  tmp [BDJ4_PATH_MAX];
+    char  from [BDJ4_PATH_MAX];
+    char  to [BDJ4_PATH_MAX];
 
-    snprintf (tmp, sizeof (tmp), "%s%s", fn, ext);
-    templateFileCopy (tmp, tmp);
-    logMsg (LOG_INSTALL, LOG_INFO, "%s updated", fn);
+    snprintf (to, sizeof (to), "%s%s", tofn, ext);
+    if (fromfn != NULL) {
+      snprintf (from, sizeof (from), "%s%s", fromfn, ext);
+    } else {
+      stpecpy (from, from + sizeof (from), to);
+    }
+    templateFileCopy (from, to);
+    logMsg (LOG_INSTALL, LOG_INFO, "%s updated", tofn);
   }
 }
 
@@ -1475,35 +1483,6 @@ updaterCopyHTMLVersionCheck (const char *fn, const char *ext,
   if (version < currvers) {
     snprintf (tmp, sizeof (tmp), "%s%s", fn, ext);
     templateHttpCopy (tmp, tmp);
-    logMsg (LOG_INSTALL, LOG_INFO, "%s updated", fn);
-  }
-}
-
-static void
-updaterCopyCSSVersionCheck (const char *fn, const char *ext, int currvers)
-{
-  int         version;
-  char        from [BDJ4_PATH_MAX];
-  char        tmp [BDJ4_PATH_MAX];
-  FILE        *fh;
-
-  pathbldMakePath (from, sizeof (from), fn, ext, PATHBLD_MP_DREL_DATA);
-  fh = fileopOpen (from, "r");
-  if (fh == NULL) {
-    return;
-  }
-  *tmp = '\0';
-  (void) ! fgets (tmp, sizeof (tmp), fh);
-  mdextfclose (fh);
-  fclose (fh);
-  if (sscanf (tmp, "/* version %d", &version) != 1) {
-    version = 1;
-  }
-
-  logMsg (LOG_INSTALL, LOG_INFO, "version check %s%s : %d < %d", fn, ext, version, currvers);
-  if (version < currvers) {
-    snprintf (tmp, sizeof (tmp), "%s%s", fn, ext);
-    templateFileCopy (tmp, tmp);
     logMsg (LOG_INSTALL, LOG_INFO, "%s updated", fn);
   }
 }

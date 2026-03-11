@@ -12,7 +12,7 @@ cwd=$(pwd)
 function mksub {
   tmpl=$1
   tempf=$2
-  locale=$3
+  uselocale=$3
   pofile=$4
 
   # echo "-- $(date +%T) creating ${locale} ${tmpl}"
@@ -20,15 +20,21 @@ function mksub {
   sedcmd=""
   ok=F
   while read -r line; do
-    nl=$(echo $line |
-      sed -e 's,^\.\.,,' -e 's,^,msgid ",' -e 's,$,",')
-    xl=$(sed -n "\~^${nl}$~ {n;p;}" $pofile)
-    case $xl in
-      ""|msgstr\ \"\")
-        continue
-        ;;
-    esac
-    xl=$(echo $xl | sed -e 's,^msgstr ",,' -e 's,"$,,' -e 's,\&,\\&,g' -e "s,',!!!,g")
+    nl=$(echo $line | sed -e 's,^\.\.,,')
+    ctxt=""
+    if [[ $nl == None ]]; then
+      case $tmpl in
+        *audiosrc.txt)
+          ctxt="-c AudioSource"
+          ;;
+        *genres.txt)
+          ctxt="-c Genre"
+          ;;
+      esac
+    fi
+    xl=$(LC_MESSAGES=${locale}.UTF-8 TEXTDOMAINDIR=${LOCALEDIR} \
+        gettext -s -d bdj4 ${ctxt} "$nl")
+    xl=$(echo $xl | sed -e 's,&,\\&,g' -e "s,',!!!,g")
     case $line in
       ..*)
         xl=$(echo "..$xl")
@@ -40,8 +46,7 @@ function mksub {
 
   if [[ $ok == T ]]; then
     sedcmd+="-e \"s,!!!,',g\""
-
-    eval sed ${sedcmd} "$tmpl" > "${TMPLDIR}/${locale}/$(basename ${tmpl})"
+    eval sed ${sedcmd} "$tmpl" > "${TMPLDIR}/${uselocale}/$(basename ${tmpl})"
   fi
   set +o noglob
 }
@@ -71,7 +76,7 @@ test -d "${TMPLDIR}/${uselocale}" || mkdir "${TMPLDIR}/${uselocale}"
 # note that the extraction is also done in poexttmpl.sh
 
 fn=${TMPLDIR}/audiosrc.txt
-echo "..Podcast" > $TMP
+echo "..Podcast" >> $TMP
 mksub $fn $TMP $uselocale $pofile
 
 fn=${TMPLDIR}/bdjconfig.txt.p
@@ -85,6 +90,7 @@ done
 
 fn=${TMPLDIR}/dances.txt
 sed -n -e '/^DANCE/ {n;p;}' $fn > $TMP
+sed -n -e '/^TYPE/ {n;p;}' $fn >> $TMP
 sort -u $TMP > $TMP.n
 mv -f $TMP.n $TMP
 mksub $fn $TMP $uselocale $pofile

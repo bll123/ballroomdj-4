@@ -171,7 +171,7 @@ statusConv (datafileconv_t *conv)
     conv->num = num;
   } else if (conv->invt == VALUE_NUM) {
     if (status == NULL || conv->num == LIST_VALUE_INVALID) {
-      /* CONTEXT: status: default status (new) when status is not set */
+      /* CONTEXT: status: default status (New) assigned to a song when status is not set */
       conv->str = _("New");
       return;
     }

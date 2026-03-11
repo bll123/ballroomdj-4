@@ -82,3 +82,17 @@ uiColorButtonGetColor (uiwcont_t *uiwidget, char *tbuff, size_t sz)
       (int) round (gcolor.green * 255.0),
       (int) round (gcolor.blue * 255.0));
 }
+
+void
+uiColorButtonSetColor (uiwcont_t *uiwidget, const char *color)
+{
+  GdkRGBA     rgba;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_COLOR_BUTTON, "col-button-get")) {
+    return;
+  }
+
+  gdk_rgba_parse (&rgba, color);
+  gtk_color_chooser_set_rgba (
+      GTK_COLOR_CHOOSER (uiwidget->uidata.widget), &rgba);
+}

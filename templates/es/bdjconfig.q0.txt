@@ -20,9 +20,9 @@ PAUSEEACHSONG
 PLAYANNOUNCE
 ..no
 PLAY_WHEN_QUEUED
-..no
+..yes
 QUEUE_NAME
-..Cola de música
+..Cola de reproducción
 SHOWQUEUEDANCE
 ..no
 START_WAIT_TIME

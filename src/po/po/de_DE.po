@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2025-09-23\n"
-"PO-Revision-Date: 2026-02-16\n"
+"POT-Creation-Date: 2026-03-02\n"
+"PO-Revision-Date: 2026-03-05 19:47\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -24,19 +24,19 @@ msgstr ""
 #. CONTEXT: audio source: podcast
 #. CONTEXT: playlist management: type of playlist
 msgid "Podcast"
-msgstr ""
+msgstr "Podcast"
 
 #. CONTEXT: configuration file: dance
 msgid "Argentine Tango"
-msgstr "Argentinischer Tango"
+msgstr "Tango Argentino"
 
 #. CONTEXT: configuration file: dance
 msgid "Cha Cha"
-msgstr "Cha Cha"
+msgstr "Cha Cha Cha"
 
 #. CONTEXT: configuration file: dance
 msgid "Foxtrot"
-msgstr "Foxtrott"
+msgstr "Slowfox"
 
 #. CONTEXT: configuration file: dance
 msgid "Jive"
@@ -72,7 +72,7 @@ msgstr "Wiener Walzer"
 
 #. CONTEXT: configuration file: dance
 msgid "Waltz"
-msgstr "Walzer"
+msgstr "Langsamer Walzer"
 
 #. CONTEXT: configuration file: dance
 msgid "West Coast Swing"
@@ -84,67 +84,67 @@ msgstr "Standard"
 
 #. CONTEXT: configuration file: dance type
 msgid "latin"
-msgstr "lateinisch"
+msgstr "Latein"
 
 #. CONTEXT: configuration file: dance type
-msgid "club"
-msgstr "Verein"
+msgid "other"
+msgstr "Andere"
 
-#. CONTEXT: configuration file: rating
+#. CONTEXT: configuration file: rating: songs can be assigned this rating
 msgid "Unrated"
 msgstr "Unbewertet"
 
-#. CONTEXT: configuration file: rating
+#. CONTEXT: configuration file: rating: songs can be assigned this rating
 msgid "Poor"
 msgstr "Schlecht"
 
-#. CONTEXT: configuration file: rating
+#. CONTEXT: configuration file: rating: songs can be assigned this rating
 msgid "Good"
 msgstr "Gut"
 
-#. CONTEXT: configuration file: rating
+#. CONTEXT: configuration file: rating: songs can be assigned this rating
 msgid "Great"
 msgstr "Großartig"
 
-#. CONTEXT: configuration file: genre
-#. CONTEXT: configuration: controller: no controller
+#. CONTEXT: configuration file: genre: songs can be assigned this genre
+msgctxt "Genre"
 msgid "None"
-msgstr "Keine"
+msgstr "Kein Genre"
 
-#. CONTEXT: configuration file: genre
+#. CONTEXT: configuration file: genre: songs can be assigned this genre
 msgid "Ballroom Dance"
 msgstr "Gesellschaftstänze"
 
-#. CONTEXT: configuration file: genre
+#. CONTEXT: configuration file: genre: songs can be assigned this genre
 msgid "Classical"
-msgstr "Klassisch"
+msgstr "Klassik"
 
-#. CONTEXT: configuration file: genre
+#. CONTEXT: configuration file: genre: songs can be assigned this genre
 msgid "Jazz"
 msgstr "Jazz"
 
-#. CONTEXT: configuration file: genre
+#. CONTEXT: configuration file: genre: songs can be assigned this genre
 msgid "Rock"
-msgstr "Felsen"
+msgstr "Rock"
 
-#. CONTEXT: configuration file: dance level
+#. CONTEXT: configuration file: dance level: songs can be assigned this dance-level
 msgid "Easy"
 msgstr "Einfach"
 
-#. CONTEXT: configuration file: dance level
+#. CONTEXT: configuration file: dance level: songs can be assigned this dance-level
 msgid "Normal"
 msgstr "Normal"
 
-#. CONTEXT: configuration file: dance level
+#. CONTEXT: configuration file: dance level: songs can be assigned this dance-level
 msgid "Advanced"
-msgstr "Fortgeschrittene"
+msgstr "Fortgeschritten"
 
-#. CONTEXT: configuration file: status
-#. CONTEXT: status: default status (new) when status is not set
+#. CONTEXT: configuration file: status: songs can be assigned this status
+#. CONTEXT: status: default status (New) assigned to a song when status is not set
 msgid "New"
-msgstr "Neue"
+msgstr "Neu"
 
-#. CONTEXT: configuration file: status
+#. CONTEXT: configuration file: status: songs can be assigned this status
 #. CONTEXT: copy audio tags: copy of audio tags completed
 #. CONTEXT: database update: status message
 msgid "Complete"
@@ -152,7 +152,7 @@ msgstr "Vollständig"
 
 #. CONTEXT: configuration file: The completion message displayed on the marquee when the playlist is finished.
 msgid "Thank You Dancers"
-msgstr "Dankeschön Tänzer"
+msgstr "Dankeschön, Tänzerinnen und Tänzer!"
 
 #. CONTEXT: (noun) configuration file: name of a music queue
 #. CONTEXT: configuration: display settings for: music queue
@@ -176,40 +176,8 @@ msgid "Queue E"
 msgstr "Warteschlange E"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: playerui: button: tooltip: play or pause the song
-msgid "Play / Pause"
-msgstr "Wiedergabe/Pause"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: playerui: button: fade out the song and stop playing it
-msgid "Fade"
-msgstr "Ausblenden"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-msgid "Repeat"
-msgstr "wiederhole"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: playerui: button: pause at the end of the song (toggle)
-msgid "Pause at End"
-msgstr "Pause am Ende"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: playerui: button: tooltip: start playing the next song (immediate)
-msgid "Next Song"
-msgstr "Nächster Song"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
-#. CONTEXT: (verb) song-selection: queue a song to be played
-#. CONTEXT: (verb) external request dialog: queue the selected file
-msgid "Queue"
-msgstr "Warteschlange"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button)
-msgid "Queue 5"
-msgstr "Warteschlange 5"
+msgid "Clear & Play"
+msgstr "Löschen & Abspielen"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: music queue: button: clear the queue
@@ -217,35 +185,66 @@ msgid "Clear Queue"
 msgstr "Warteschlange löschen"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-msgid "Clear & Play"
-msgstr "Löschen & Spielen"
-
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: audio identification: next song
-#. CONTEXT: song editor : next song
-#. CONTEXT: helperui: proceed to the next step
-msgid "Next"
-msgstr "Weiter"
+#. CONTEXT: playerui: button: fade out the song and stop playing it
+msgid "Fade"
+msgstr "Ausblenden"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 msgid "Mute"
 msgstr "Stummschalten"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: update database: button to stop the database update process
-msgid "Stop"
-msgstr "Halt"
+msgctxt "Page"
+msgid "Next"
+msgstr "Weiter"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: playerui: The current volume of the song
-msgid "Volume"
-msgstr "Lautstärke"
+#. CONTEXT: playerui: button: tooltip: start playing the next song (immediate)
+msgid "Next Song"
+msgstr "Nächster Song"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: pause at the end of the song (toggle)
+msgid "Pause at End"
+msgstr "Am Ende pausieren"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: button: tooltip: play or pause the song
+msgid "Play / Pause"
+msgstr "Wiedergabe / Pause"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue'
+#. CONTEXT: (verb) song-selection: queue a song to be played
+#. CONTEXT: (verb) external request dialog: queue the selected file
+msgctxt "Verb"
+msgid "Queue"
+msgstr "Zur Warteschlange hinzufügen"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: (verb) music queue: button: queue 5 dances for playback: suggested '5 in queue' (this button gets context from the 'queue dance' button)
+msgid "Queue 5"
+msgstr "Alle 5 hinzufügen"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Repeat"
+msgstr "Wiederholen"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow)
 #. CONTEXT: playerui: the current speed for song playback
 msgid "Speed"
 msgstr "Geschwindigkeit"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: update database: button to stop the database update process
+msgid "Stop"
+msgstr "Stopp"
+
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+#. CONTEXT: playerui: The current volume of the song
+msgid "Volume"
+msgstr "Lautstärke"
 
 #. CONTEXT: The name of the 'standardrounds' playlist file
 msgid "standardrounds"
@@ -256,16 +255,16 @@ msgstr "Standardrunden"
 #. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: player: the name of the special playlist for queueing a dance
 msgid "QueueDance"
-msgstr "Schlangentanz"
+msgstr "Tanz zur Warteschlange"
 
 #. CONTEXT: tooltip for desktop icon
 msgid "Ballroom Music Player"
-msgstr "Ballroom Music Player"
+msgstr "Ballsaal-Musik-Player"
 
 #. CONTEXT: configuration: configuration user interface window title
 #, c-format
 msgid "%s Configuration"
-msgstr "%s Konfiguration"
+msgstr "%s-Konfiguration"
 
 #. CONTEXT: configuration: audio source mode
 #. CONTEXT: configuration: show-marquee: off
@@ -276,20 +275,20 @@ msgstr "Aus"
 
 #. CONTEXT: configuration: audio source mode
 msgid "Client"
-msgstr ""
+msgstr "Client"
 
 #. CONTEXT: configuration: audio source mode
 msgid "Server"
-msgstr ""
+msgstr "Server"
 
 #. CONTEXT: configuration: audio sources
 msgid "Audio Sources"
-msgstr ""
+msgstr "Audioquellen"
 
 #. CONTEXT: configuration: audio source: mode (off/client/server)
 #. CONTEXT: configuration: mobile marquee: mode: (off/local/internet)
 msgid "Mode"
-msgstr ""
+msgstr "Modus"
 
 #. CONTEXT: configuration: audio source: the client or server name
 #. CONTEXT: alternate installation: name (for shortcut)
@@ -297,7 +296,7 @@ msgid "Name"
 msgstr "Name"
 
 #. CONTEXT: configuration: audio source: type of source
-#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+msgctxt "AudioSource"
 msgid "Type"
 msgstr "Typ"
 
@@ -305,17 +304,17 @@ msgstr "Typ"
 #. CONTEXT: import playlist: import location
 #. CONTEXT: playlist management: podcast URL
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #. CONTEXT: configuration: audio source: the port to use for the client or server
 #. CONTEXT: configuration: the port to use for the mobile marquee
 #. CONTEXT: configuration: remote control: the port to use for remote control
 msgid "Port"
-msgstr "Hafen"
+msgstr "Port"
 
 #. CONTEXT: configuration: audio source: the client or server user
 msgid "User"
-msgstr ""
+msgstr "Benutzer"
 
 #. CONTEXT: configuration: audio source: the client or server password
 #. CONTEXT: configuration: mobile marquee: internet: password
@@ -326,33 +325,33 @@ msgstr "Passwort"
 #. CONTEXT: configuration: check connection for audio source
 #. CONTEXT: import playlist dialog: check the connection
 msgid "Check Connection"
-msgstr ""
+msgstr "Verbindung prüfen"
 
 #. CONTEXT: configuration: name that is set when adding a new audio source
 msgid "New Audio Source"
-msgstr ""
+msgstr "Neue Audioquelle"
 
 #. CONTEXT: configuration: audio source: check connection status
 msgid "Connection Failed"
-msgstr ""
+msgstr "Verbindung fehlgeschlagen"
 
 #. CONTEXT: configuration: audio source: check connection status
 msgid "Connection OK"
-msgstr ""
+msgstr "Verbindung OK"
 
-#. CONTEXT: configuration: qr code: title display for mobile marquee
+#. CONTEXT: configuration: qr code: a message displayed above the qr code
 #. CONTEXT: configuration: options associated with the mobile marquee
 msgid "Mobile Marquee"
-msgstr "Mobiles Festzelt"
+msgstr "Mobile Wiedergabeanzeige"
 
-#. CONTEXT: configuration: qr code: title display for mobile remote control
+#. CONTEXT: configuration: qr code: a message displayed above the qr code
 #. CONTEXT: configuration: options associated with mobile remote control
 msgid "Mobile Remote Control"
 msgstr "Mobile Fernsteuerung"
 
 #. CONTEXT: configuration: file selection dialog: window title
 msgid "Select File"
-msgstr "wähle Datei"
+msgstr "Dateiauswahl"
 
 #. CONTEXT: configuration: dance speed
 msgid "slow"
@@ -382,25 +381,30 @@ msgstr "4/4"
 msgid "Edit Dances"
 msgstr "Tänze bearbeiten"
 
+#. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
+msgctxt "Dance"
+msgid "Type"
+msgstr "Tanzart"
+
 #. CONTEXT: configuration: dances: play the selected announcement before the dance is played
 msgid "Announcement"
-msgstr "Ankündigung"
+msgstr "Ansage"
 
 #. CONTEXT: configuration: dances: low BPM (or MPM) setting
 #. CONTEXT: playlist management: low bpm/mpm column header
 #, c-format
 msgid "Low %s"
-msgstr "Niedrig %s"
+msgstr "Niedrige %s"
 
 #. CONTEXT: configuration: dances: high BPM (or MPM) setting
 #. CONTEXT: playlist management: high bpm/mpm column header
 #, c-format
 msgid "High %s"
-msgstr "Hoch %s"
+msgstr "Hohe %s"
 
 #. CONTEXT: configuration: dances: time signature for the dance
 msgid "Time Signature"
-msgstr "Zeitsignatur"
+msgstr "Taktart"
 
 #. CONTEXT: configuration: dance name that is set when adding a new dance
 msgid "New Dance"
@@ -408,7 +412,7 @@ msgstr "Neuer Tanz"
 
 #. CONTEXT: configuration: debug options that can be turned on and off
 msgid "Debug"
-msgstr "Debuggen"
+msgstr "Debug-Optionen"
 
 #. CONTEXT: configuration: dialog display settings
 msgid "Dialogs"
@@ -418,22 +422,22 @@ msgstr "Dialoge"
 #. CONTEXT: song selection filter: title for the filter dialog
 #. CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog
 msgid "Filter Songs"
-msgstr "Lieder filtern"
+msgstr "Songs filtern"
 
 #. CONTEXT: configuration: filter display: checkbox: status is playable
 #. CONTEXT: song selection filter: a filter: the song status is marked as playable
 msgid "Playable Status"
-msgstr "Spielbarer Status"
+msgstr "Wiedergabestatus"
 
 #. CONTEXT: configuration: filter display: quick edit filters
 #. CONTEXT: quick edit: title of dialog
 msgid "Quick Edit"
-msgstr "Schnell bearbeiten"
+msgstr "Schnellbearbeitung"
 
 #. CONTEXT: configuration: display settings for: song editor column N
 #, c-format
 msgid "Song Editor - Column %d"
-msgstr "Song Editor - Kolumne %d"
+msgstr "Song-Editor – Spalte %d"
 
 #. CONTEXT: configuration: display settings for: history
 #. CONTEXT: playlist: the name of the history song list
@@ -441,12 +445,12 @@ msgstr "Song Editor - Kolumne %d"
 #. CONTEXT: playerui: name of the saved history playlist
 #. CONTEXT: the name of the history song list
 msgid "History"
-msgstr "Geschichte"
+msgstr "Zuletzt gespielt"
 
 #. CONTEXT: configuration: display settings for: requests
 #. CONTEXT: playerui: name of request tab : lists the songs in the database
 msgid "Request"
-msgstr "frage an"
+msgstr "Wünsche"
 
 #. CONTEXT: configuration: display settings for: song list
 #. CONTEXT: music queue: label for song list name
@@ -457,7 +461,7 @@ msgstr "frage an"
 #. CONTEXT: manage-ui: name of song list notebook tab
 #. CONTEXT: playlist management: type of playlist
 msgid "Song List"
-msgstr "Titelliste"
+msgstr "Songliste"
 
 #. CONTEXT: configuration: display settings for: song selection
 #. CONTEXT: manage-ui: name of song selection notebook tab
@@ -466,11 +470,11 @@ msgstr "Songauswahl"
 
 #. CONTEXT: configuration: display settings for: side-by-side song list (suggestion: combined view: song list)
 msgid "Side-by-Side Song List"
-msgstr "Seite an Seite Songliste"
+msgstr "Nebeneinanderliegende Songliste"
 
 #. CONTEXT: configuration: display settings for: side-by-side song selection (suggestion: combined view: song selection)
 msgid "Side-by-Side Song Selection"
-msgstr "Seite an Seite Songauswahl"
+msgstr "Nebeneinanderliegende Songauswahl"
 
 #. CONTEXT: configuration: display settings for: music manager
 #. CONTEXT: manage-ui: name of music manager notebook tab
@@ -492,7 +496,7 @@ msgstr "Audio-ID"
 #. CONTEXT: marquee: marquee window title (suggested: song display)
 #. CONTEXT: playerui: menu selection: marquee related options (suggested: song display)
 msgid "Marquee"
-msgstr "Laufschrift"
+msgstr "Wiedergabeanzeige"
 
 #. CONTEXT: configuration: display settings for: Player User Interface
 msgid "Current Song"
@@ -500,7 +504,7 @@ msgstr "Aktueller Song"
 
 #. CONTEXT: configuration: change which fields are displayed in different contexts
 msgid "Display Settings"
-msgstr "Einstellungen anzeigen"
+msgstr "Anzeigeeinstellungen"
 
 #. CONTEXT: configuration: display settings: which set of display settings to update
 #. CONTEXT: configuration: queue: whether to display the queue
@@ -514,7 +518,7 @@ msgstr "Nur %s-Tags"
 
 #. CONTEXT: configuration: write audio file tags: do not write any tags to the audio file
 msgid "Don't Write"
-msgstr "Schreiben Sie nicht"
+msgstr "Nein"
 
 #. CONTEXT: configuration: write audio file tags: write all tags (BDJ and standard) to the audio file
 msgid "All Tags"
@@ -531,11 +535,11 @@ msgstr "Musik-Ordner"
 
 #. CONTEXT: configuration: the name of this profile
 msgid "Profile Name"
-msgstr "Profil Name"
+msgstr "Profilname"
 
 #. CONTEXT: configuration: the profile accent color (identifies profile)
 msgid "Profile Colour"
-msgstr "Profil Farbe"
+msgstr "Profilfarbe"
 
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
 #. CONTEXT: label: beats per minute
@@ -543,40 +547,40 @@ msgstr "Profil Farbe"
 msgid "BPM"
 msgstr "BPM"
 
-#. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
-msgid "Locale"
-msgstr "Ländereinstellungen"
+#. CONTEXT: configuration: the languages for the user interface
+msgid "Display Language"
+msgstr "Anzeigesprache"
 
 #. CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux.
 msgid "Startup Script"
-msgstr "Startup-Skript"
+msgstr "Startskript"
 
 #. CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux.
 msgid "Shutdown Script"
-msgstr "Skript zum Herunterfahren"
+msgstr "Skript beim Beenden"
 
 #. CONTEXT: configuration: which audio tags will be written to the audio file
 msgid "Write Audio File Tags"
-msgstr "Audio-Datei schreiben Tags"
+msgstr "Tags in Audiodateien speichern"
 
 #. CONTEXT: configuration: classical music: use work/movement
 msgid "Use Work and Movement"
-msgstr ""
+msgstr "Werk- und Satzangaben verwenden"
 
 #. CONTEXT: configuration: the ACRCloud API Key
 #, c-format
 msgid "%s API Key"
-msgstr "%s API-Schlüssel"
+msgstr "API-Schlüssel für %s"
 
 #. CONTEXT: configuration: the ACRCloud API Secret Key
 #, c-format
 msgid "%s API Secret Key"
-msgstr "%s API-Geheimschlüssel"
+msgstr "Geheimer API-Schlüssel für %s"
 
 #. CONTEXT: configuration: the ACRCloud API Host
 #, c-format
 msgid "%s API Host"
-msgstr "%s API-Host"
+msgstr "API-Host für %s"
 
 #. CONTEXT: configuration: folder selection dialog: window title
 #. CONTEXT: update database: dialog title for selecting database music folder
@@ -590,7 +594,7 @@ msgstr "Genres bearbeiten"
 
 #. CONTEXT: configuration: genre: title of the classical setting column
 msgid "Classical?"
-msgstr "Klassisch?"
+msgstr "Klassik?"
 
 #. CONTEXT: configuration: genre name that is set when adding a new genre
 msgid "New Genre"
@@ -599,12 +603,12 @@ msgstr "Neues Genre"
 #. CONTEXT: configuration: itunes: the itunes media folder
 #, c-format
 msgid "%s Media Folder"
-msgstr "%s Medien-Ordner"
+msgstr "%s-Medien-Ordner"
 
 #. CONTEXT: configuration: itunes: the itunes xml file
 #, c-format
 msgid "%s XML File"
-msgstr "%s XML-Datei"
+msgstr "%s-XML-Datei"
 
 #. CONTEXT: configuration: itunes: label for itunes rating conversion
 #. CONTEXT: label: dance rating (short name for listing)
@@ -618,12 +622,12 @@ msgstr "Zu importierende Felder"
 #. CONTEXT: configuration: itunes media folder selection dialog: window title
 #, c-format
 msgid "Select %s Media Location"
-msgstr "Wählen Sie %s Medienstandort"
+msgstr "Speicherort der %s-Medien auswählen"
 
 #. CONTEXT: configuration: itunes xml file selection dialog: window title
 #, c-format
 msgid "Select %s XML File"
-msgstr "Wählen Sie %s XML-Datei"
+msgstr "%s-XML-Datei auswählen"
 
 #. CONTEXT: configuration: dialog: XML file types
 msgid "XML Files"
@@ -631,17 +635,17 @@ msgstr "XML-Dateien"
 
 #. CONTEXT: configuration: edit the dance levels table
 msgid "Edit Levels"
-msgstr "Ebenen bearbeiten"
+msgstr "Niveaus bearbeiten"
 
 #. CONTEXT: configuration: dance levels: instructions
 msgid "Order from easiest to most advanced."
-msgstr "Reihenfolge vom einfachsten zum fortgeschrittensten."
+msgstr "Von einfach bis fortgeschritten sortieren."
 
 #. CONTEXT: configuration: level: title of the weight column
 #. CONTEXT: configuration: rating: title of the weight column
 #. CONTEXT: playlist management: tag weight
 msgid "Weight"
-msgstr "Gewicht"
+msgstr "Gewichtung"
 
 #. CONTEXT: configuration: level: title of the default selection column
 #. CONTEXT: configuration: audio: The default audio sink (audio output)
@@ -651,7 +655,7 @@ msgstr "Standard"
 
 #. CONTEXT: configuration: level name that is set when adding a new level
 msgid "New Level"
-msgstr "Neue Ebene"
+msgstr "Neues Niveau"
 
 #. CONTEXT: configuration: show-marquee: minimize
 msgid "Minimised"
@@ -663,15 +667,15 @@ msgstr "Sichtbar"
 
 #. CONTEXT: configuration: show-marquee: selection
 msgid "Show Marquee"
-msgstr "Festzelt anzeigen"
+msgstr "Darstellung der Wiedergabeanzeige"
 
 #. CONTEXT: configuration: The theme to use for the marquee display
 msgid "Marquee Theme"
-msgstr "Marquee Thema"
+msgstr "Design der Wiedergabeanzeige"
 
 #. CONTEXT: configuration: The font to use for the marquee display
 msgid "Marquee Font"
-msgstr "Laufschrift-Schriftart"
+msgstr "Schriftart der Wiedergabeanzeige"
 
 #. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee
 #. CONTEXT: (noun) configuration: the number of items loaded into the music queue
@@ -684,11 +688,11 @@ msgstr "Song-Informationen anzeigen"
 
 #. CONTEXT: configuration: marquee: only show the song information (artist/title) on the marquee
 msgid "Song Information Only"
-msgstr ""
+msgstr "Nur Song-Informationen"
 
 #. CONTEXT: configuration: marquee: the background color
 msgid "Background Colour"
-msgstr ""
+msgstr "Hintergrundfarbe"
 
 #. CONTEXT: configuration: marquee: the accent color
 #. CONTEXT: configuration: the accent color to use for the user interface
@@ -697,24 +701,24 @@ msgstr "Akzentfarbe"
 
 #. CONTEXT: configuration: marquee: dance information color
 msgid "Information Colour"
-msgstr ""
+msgstr "Farbe von Informationen"
 
 #. CONTEXT: configuration: marquee: upcoming dance color
 msgid "Upcoming Dance Colour"
-msgstr ""
+msgstr "Farbe für den nächsten Tanz"
 
 #. CONTEXT: configuration: mobile marquee type: local
 #. CONTEXT: configuration: player: clock: local
 msgid "Local"
-msgstr ""
+msgstr "Ländereinstellung"
 
 #. CONTEXT: configuration: mobile marquee type: internet
 msgid "Internet"
-msgstr ""
+msgstr "Internet"
 
 #. CONTEXT: configuration: mobile marquee: internet: tag
 msgid "Tag"
-msgstr ""
+msgstr "Tag"
 
 #. CONTEXT: configuration: the title to display on the mobile marquee
 #. CONTEXT: label: title
@@ -732,7 +736,8 @@ msgid "Music Queues"
 msgstr "Musik-Warteschlangen"
 
 #. CONTEXT: (noun) configuration: queue: select which queue to configure
-msgid "Queue_noun"
+msgctxt "Noun"
+msgid "Queue"
 msgstr "Warteschlange"
 
 #. CONTEXT: (noun) configuration: queue: the name of the music queue
@@ -745,11 +750,11 @@ msgstr "Aktiv"
 
 #. CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song
 msgid "Start Wait Time"
-msgstr ""
+msgstr "Startverzögerung"
 
 #. CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song
 msgid "Fade In Time"
-msgstr "Verblassen der Zeit"
+msgstr "Einblendzeit"
 
 #. CONTEXT: configuration: queue: the amount of time to do a volume fade-out when playing a song
 msgid "Fade Out Time"
@@ -758,30 +763,30 @@ msgstr "Ausblendzeit"
 #. CONTEXT: configuration: queue: the amount of time to wait inbetween songs
 #. CONTEXT: playlist management: Gap between songs
 msgid "Gap Between Songs"
-msgstr "Lücke zwischen den Songs"
+msgstr "Stille zwischen Songs"
 
 #. CONTEXT: configuration: queue: the amount of time to cross-fade the songs
 msgid "Cross Fade Time"
-msgstr ""
+msgstr "Überblendzeit"
 
 #. CONTEXT: configuration: queue: the maximum amount of time to play a song
 #. CONTEXT: playlist management: maximum play time
 msgid "Maximum Play Time"
-msgstr "Maximale Spielzeit"
+msgstr "Maximale Wiedergabezeit"
 
 #. CONTEXT: configuration: queue: the time when playback will stop
 #. CONTEXT: playlist management: stop at
 msgid "Stop At"
-msgstr "Anhalten bei"
+msgstr "Stopp bei"
 
 #. CONTEXT: configuration: queue: pause each song
 msgid "Pause Each Song"
-msgstr "Pausiere jedes Stück"
+msgstr "Nach jedem Song pausieren"
 
 #. CONTEXT: configuration: queue: whether to play announcements
 #. CONTEXT: playlist management: Play Announcements
 msgid "Play Announcements"
-msgstr "Spielankündigungen"
+msgstr "Ansagen abspielen"
 
 #. CONTEXT: configuration: queue: play when queued (verb)
 msgid "Play When Queued"
@@ -797,7 +802,7 @@ msgstr "Organisation"
 
 #. CONTEXT: configuration: the audio file organization path
 msgid "Organisation Path"
-msgstr "Organisation Pfad"
+msgstr "Organisationspfad"
 
 #. CONTEXT: configuration: examples displayed for the audio file organization path
 msgid "Examples"
@@ -809,53 +814,53 @@ msgstr "Datenbank lädt Tanz aus Genre"
 
 #. CONTEXT: configuration: checkbox: is automatic organization enabled
 msgid "Auto Organise"
-msgstr "Auto Organisieren"
+msgstr "Automatische Organisation"
 
 #. CONTEXT: configuration: player: clock: ISO
 msgid "ISO"
-msgstr ""
+msgstr "ISO"
 
 #. CONTEXT: configuration: player: clock: 12-hour time
 msgid "12-Hour Clock"
-msgstr ""
+msgstr "12-Stunden-Uhr"
 
 #. CONTEXT: configuration: player: clock: 24-hour time
 msgid "24-Hour Clock"
-msgstr ""
+msgstr "24-Stunden-Uhr"
 
 #. CONTEXT: configuration: player: fade-type: exponential sine
 msgid "Exponential Sine"
-msgstr ""
+msgstr "Exponentielle Sinuskurve"
 
 #. CONTEXT: configuration: player: fade-type: half sine
 msgid "Half Sine"
-msgstr ""
+msgstr "Halbe Sinuskurve"
 
 #. CONTEXT: configuration: player: fade-type: inverted parabola
 msgid "Inverted Parabola"
-msgstr ""
+msgstr "Umgekehrte Parabel"
 
 #. CONTEXT: configuration: player: fade-type: quadratic
 msgid "Quadratic"
-msgstr ""
+msgstr "Quadratische Kurve"
 
 #. CONTEXT: configuration: player: fade-type: quarter sine
 msgid "Quarter Sine"
-msgstr ""
+msgstr "Viertel-Sinuskurve"
 
 #. CONTEXT: configuration: player: fade-type: triangle
 msgid "Triangle"
-msgstr ""
+msgstr "Dreieckskurve"
 
 #. CONTEXT: configuration: options associated with the player
 #. CONTEXT: configuration: which player interface to use
 #. CONTEXT: starterui: button: starts the player user interface
 msgid "Player"
-msgstr "Spieler"
+msgstr "Player"
 
 #. CONTEXT: configuration: additional arguments for player
 msgid "Player Arguments"
-msgstr ""
+msgstr "Zusätzliche Parameter für den Player"
 
 #. CONTEXT: configuration: which audio interface to use
 msgid "Audio"
@@ -867,27 +872,32 @@ msgstr "Audio-Ausgang"
 
 #. CONTEXT: configuration: which controller to use
 msgid "Controller"
-msgstr ""
+msgstr "Controller"
 
 #. CONTEXT: configuration: the volume used when starting the player
 msgid "Default Volume"
-msgstr "Standard-Lautstärke"
+msgstr "Standardlautstärke"
 
 #. CONTEXT: configuration: The completion message displayed on the marquee when a playlist is finished
 msgid "Completion Message"
-msgstr "Fertigstellungsnachricht"
+msgstr "Abschlussmeldung"
 
-#. CONTEXT: configuration: the clock format
+#. CONTEXT: configuration: type of fade to apply
 msgid "Fade Type"
-msgstr ""
+msgstr "Art der Ein-/Ausblendung"
 
 #. CONTEXT: configuration: whether or not to show the speed reset button
 msgid "Show Speed Reset"
-msgstr "Geschwindigkeit anzeigen Zurücksetzen"
+msgstr "„Geschwindigkeit zurücksetzen“ anzeigen"
 
 #. CONTEXT: configuration: the clock format
 msgid "Clock"
-msgstr ""
+msgstr "Uhrzeitformat"
+
+#. CONTEXT: configuration: controller: no controller
+msgctxt "Controller"
+msgid "None"
+msgstr "Deaktiviert"
 
 #. CONTEXT: configuration: edit the dance ratings table
 msgid "Edit Ratings"
@@ -895,7 +905,7 @@ msgstr "Bewertungen bearbeiten"
 
 #. CONTEXT: configuration: dance ratings: information on how to order the ratings
 msgid "Order from the lowest rating to the highest rating."
-msgstr "Die Reihenfolge ist von der niedrigsten zur höchsten Einstufung."
+msgstr "Von der niedrigsten zur höchsten Bewertung sortieren."
 
 #. CONTEXT: configuration: rating name that is set when adding a new rating
 msgid "New Rating"
@@ -903,7 +913,7 @@ msgstr "Neue Bewertung"
 
 #. CONTEXT: configuration: remote control: checkbox: enable/disable
 msgid "Enable Remote Control"
-msgstr "Fernsteuerung einschalten"
+msgstr "Fernsteuerung aktivieren"
 
 #. CONTEXT: configuration: remote control: the HTML template to use
 msgid "HTML Template"
@@ -915,11 +925,11 @@ msgstr "Benutzer-ID"
 
 #. CONTEXT: configuration: edit status table
 msgid "Edit Status"
-msgstr "Bearbeite Status"
+msgstr "Status bearbeiten"
 
 #. CONTEXT: configuration: status: title of the "playable" column
 msgid "Play?"
-msgstr "Abspielen?"
+msgstr "Wiedergeben?"
 
 #. CONTEXT: configuration: status name that is set when adding a new status
 msgid "New Status"
@@ -929,13 +939,13 @@ msgstr "Neuer Status"
 #. CONTEXT: music queue: button: move the selected song up in the queue
 #. CONTEXT: side-by-side list: button: move the selected field up
 msgid "Move Up"
-msgstr "Aufsteigen"
+msgstr "Nach oben"
 
 #. CONTEXT: configuration: table edit: button: move selection down
 #. CONTEXT: music queue: button: move the selected song down in the queue
 #. CONTEXT: side-by-side list: button: move the selected field down
 msgid "Move Down"
-msgstr "Nach unten bewegen"
+msgstr "Nach unten"
 
 #. CONTEXT: configuration: table edit: button: delete selection
 #. CONTEXT: manage-ui: menu selection: song list: edit menu: delete song list
@@ -946,7 +956,7 @@ msgstr "Löschen"
 
 #. CONTEXT: configuration: table edit: button: add new selection
 msgid "Add New"
-msgstr "Neu hinzufügen"
+msgstr "Neuer Eintrag"
 
 #. CONTEXT: configuration: options associated with the user interface
 msgid "User Interface"
@@ -954,7 +964,7 @@ msgstr "Benutzeroberfläche"
 
 #. CONTEXT: configuration: the theme to use for the user interface
 msgid "Theme"
-msgstr "Thema"
+msgstr "Design"
 
 #. CONTEXT: configuration: the font to use for the user interface
 msgid "Font"
@@ -962,29 +972,29 @@ msgstr "Schriftart"
 
 #. CONTEXT: configuration: the font to use for the queues and song lists
 msgid "Listing Font"
-msgstr "Auflistung Schriftart"
+msgstr "Schriftart für Auflistungen"
 
 #. CONTEXT: configuration: scaling factor for the user interface
 msgid "Scale"
-msgstr "Skala"
+msgstr "Skalierung"
 
 #. CONTEXT: configuration: the error color to use for the user interface
 msgid "Error Colour"
-msgstr ""
+msgstr "Farbe Fehlermeldungen"
 
 #. CONTEXT: configuration: user interface: the song mark color for songs in the song list
 msgid "Song Mark Colour"
-msgstr ""
+msgstr "Farbe Songauswahl"
 
 #. CONTEXT: alternate installation: window title
 #. CONTEXT: installer: window title
 #, c-format
 msgid "%s Installer"
-msgstr "%s Installateur"
+msgstr "%s-Installationsprogramm"
 
 #. CONTEXT: alternate installation: installation instructions
 msgid "Enter the name of the new installation."
-msgstr "Geben Sie den Namen der neuen Anlage ein."
+msgstr "Geben Sie den Namen der neuen Installation ein."
 
 #. CONTEXT: alternate installation: checkbox: re-install
 #. CONTEXT: installer: checkbox: re-install BDJ4
@@ -995,16 +1005,16 @@ msgstr "Neuinstallation"
 #. CONTEXT: installer: exits the installer
 #. CONTEXT: starterui: button: exits BDJ4 (exits everything)
 msgid "Exit"
-msgstr "Verlassen"
+msgstr "Beenden"
 
 #. CONTEXT: alternate installation: install BDJ4 in the alternate location
 #. CONTEXT: installer: start the installation process
 msgid "Install"
-msgstr "Installieren Sie"
+msgstr "Installieren"
 
 #. CONTEXT: alternate installation: status message
 msgid "Setup complete."
-msgstr "Einrichtung abgeschlossen."
+msgstr "Installation abgeschlossen."
 
 #. CONTEXT: alternate installer: invalid name status message
 msgid "Invalid Name"
@@ -1014,19 +1024,19 @@ msgstr "Ungültiger Name"
 #. CONTEXT: installer: message indicating the action that will be taken
 #, c-format
 msgid "Re-install %s.  Overwrites existing configuration."
-msgstr "%sneu installieren.  Überschreibt die bestehende Konfiguration."
+msgstr "Neuinstallation von %s. Vorhandene Konfigurationen werden überschrieben."
 
 #. CONTEXT: alternate installation: message indicating the action that will be taken
 #. CONTEXT: installer: message indicating the action that will be taken
 #, c-format
 msgid "Updating existing %s installation."
-msgstr "Aktualisierung der bestehenden %s Installation."
+msgstr "Aktualisierung der bestehenden %s-Installation."
 
 #. CONTEXT: alternate installation: message indicating the action that will be taken
 #. CONTEXT: installer: message indicating the action that will be taken
 #, c-format
 msgid "New %s installation."
-msgstr "Neue %s Installation."
+msgstr "Neue %s-Installation."
 
 #. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
@@ -1058,7 +1068,7 @@ msgstr "Erstellen einer Ordnerstruktur."
 #. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
 msgid "Copying template files."
-msgstr "Kopieren von Vorlagendateien."
+msgstr "Vorlagendateien werden kopiert."
 
 #. CONTEXT: alternate installation: status message
 msgid "Initial Setup."
@@ -1067,7 +1077,7 @@ msgstr "Ersteinrichtung."
 #. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
 msgid "Creating shortcut."
-msgstr "Abkürzung erstellen."
+msgstr "Verknüpfung wird erstellt."
 
 #. CONTEXT: alternate installation: status message
 #. CONTEXT: installer: status message
@@ -1093,11 +1103,15 @@ msgstr "Der Vorgang wurde abgebrochen."
 #. CONTEXT: starter ui: please wait... status message
 #, c-format
 msgid "Please wait…"
-msgstr "Bitte warten Sie…"
+msgstr "Bitte warten …"
 
 #. CONTEXT: installer: where BDJ4 gets installed
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr "Geben Sie den Zielordner an, in dem BDJ4 installiert werden soll."
+
+#. CONTEXT: installer: language to install
+msgid "Preferred Language"
+msgstr "Bevorzugte Sprache"
 
 #. CONTEXT: installer: asking where BallroomDJ 3 is installed
 #, c-format
@@ -1106,28 +1120,26 @@ msgstr "Geben Sie den Ordner an, in dem %s installiert ist."
 
 #. CONTEXT: installer: instructions
 msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
-msgstr "Wenn es keine BallroomDJ 3 Installation gibt, lassen Sie den Eintrag leer."
+msgstr "Falls keine Installation von BallroomDJ 3 existiert, lassen Sie das Feld leer."
 
 #. CONTEXT: installer: instructions
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installations."
-msgstr "Der Konvertierungsprozess wird nur bei Neuinstallationen und bei Neuinstallationen durchgeführt."
+msgid "The conversion process will only run for new installations and for re-installations."
+msgstr "Der Konvertierungsprozess wird nur bei Neu- und Wiederinstallationen durchgeführt."
 
 #. CONTEXT: installer: label for entry field asking for BDJ3 location
 #, c-format
 msgid "%s Location"
-msgstr "%s Standort"
+msgstr "Installationsort von %s"
 
 #. CONTEXT: installer: checkbox: convert the BallroomDJ 3 installation
 #, c-format
 msgid "Convert %s"
-msgstr "Konvertieren %s"
+msgstr "Konvertierung von %s"
 
 #. CONTEXT: installer: checkbox: windows: request VLC installation
 #, c-format
 msgid "Please install %s"
-msgstr ""
+msgstr "%s installieren"
 
 #. CONTEXT: installer: status message
 msgid "Installation complete."
@@ -1135,17 +1147,17 @@ msgstr "Installation abgeschlossen."
 
 #. CONTEXT: installer: start the upgrade process
 msgid "Upgrade"
-msgstr ""
+msgstr "Upgrade"
 
 #. CONTEXT: installer: dialog title for selecting BDJ3 location
 #, c-format
 msgid "Select %s Location"
-msgstr "Wählen Sie %s Standort"
+msgstr "Bitte wählen Sie den Installationsort für %s"
 
 #. CONTEXT: installer: message indicating the conversion action that will be taken
 #, c-format
 msgid "%s data will be converted."
-msgstr "%s Daten konvertiert werden."
+msgstr "%s-Daten werden konvertiert."
 
 #. CONTEXT: installer: message indicating the conversion action that will be taken
 msgid "The conversion process will not be run."
@@ -1158,19 +1170,19 @@ msgstr "Kein Ordner angegeben."
 #. CONTEXT: installer: the location entered is not a valid BDJ3 location.
 #, c-format
 msgid "Not a valid %s folder."
-msgstr "Kein gültiger %s Ordner."
+msgstr "Kein gültiger %s-Ordner."
 
 #. CONTEXT: installer: status message
 msgid "Verifying installation."
-msgstr "Überprüfung der Installation."
+msgstr "Installation wird überprüft."
 
 #. CONTEXT: installer: status message
 msgid "Verification complete."
-msgstr "Die Verifizierung ist abgeschlossen."
+msgstr "Überprüfung abgeschlossen."
 
 #. CONTEXT: installer: status message
 msgid "Verification failed."
-msgstr "Die Verifizierung ist fehlgeschlagen."
+msgstr "Überprüfung fehlgeschlagen."
 
 #. CONTEXT: installer: status message
 msgid "Installation aborted."
@@ -1182,11 +1194,11 @@ msgstr "Kopieren von Dateien."
 
 #. CONTEXT: installer: status message
 msgid "Copy finished."
-msgstr "Kopie fertig."
+msgstr "Kopiervorgang abgeschlossen."
 
 #. CONTEXT: installer: status message
 msgid "Starting conversion process."
-msgstr "Beginn des Konvertierungsprozesses."
+msgstr "Konvertierungsprozess wird gestartet."
 
 #. CONTEXT: installer: status message
 msgid "BDJ3 database version is too old."
@@ -1198,16 +1210,16 @@ msgstr "Die BDJ3-Datenbank kann nicht gefunden werden."
 
 #. CONTEXT: installer: status message
 msgid "Located 'tclsh'."
-msgstr "Gesucht wird 'tclsh'."
+msgstr "„tclsh“ gefunden."
 
 #. CONTEXT: installer: failure message
 #, c-format
 msgid "Unable to locate %s."
-msgstr "%sist nicht auffindbar."
+msgstr "%s konnte nicht gefunden werden."
 
 #. CONTEXT: installer: status message
 msgid "Skipping conversion."
-msgstr "Überspringen der Umwandlung."
+msgstr "Konvertierung wird übersprungen."
 
 #. CONTEXT: installer: status message
 #, c-format
@@ -1216,7 +1228,7 @@ msgstr "Konvertierungsskript wird ausgeführt: %s."
 
 #. CONTEXT: installer: status message
 msgid "Conversion complete."
-msgstr "Umstellung abgeschlossen."
+msgstr "Konvertierung abgeschlossen."
 
 #. CONTEXT: installer: status message
 #, c-format
@@ -1226,7 +1238,7 @@ msgstr "Herunterladen von %s."
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Unable to determine %s version."
-msgstr "Die Version %s kann nicht ermittelt werden."
+msgstr "Die Version von %s kann nicht ermittelt werden."
 
 #. CONTEXT: installer: status message
 #, c-format
@@ -1236,7 +1248,7 @@ msgstr "Installieren von %s."
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Download of %s failed."
-msgstr "Der Download von %s ist fehlgeschlagen."
+msgstr "Das Herunterladen von %s ist fehlgeschlagen."
 
 #. CONTEXT: installer: status message
 #, c-format
@@ -1246,11 +1258,11 @@ msgstr "%s installiert."
 #. CONTEXT: configuration: player interface: Integrated VLC 3
 #. CONTEXT: config: integrated VLC 3
 msgid "Integrated VLC 3"
-msgstr ""
+msgstr "Integriertes VLC 3"
 
 #. CONTEXT: configuration: player interface: Windows Media Player
 msgid "Windows Media Player"
-msgstr ""
+msgstr "Windows Media Player"
 
 #. CONTEXT: installer: status message
 #, c-format
@@ -1260,12 +1272,12 @@ msgstr "Registrierung von %s."
 #. CONTEXT: installer: display of package status
 #, c-format
 msgid "%s is installed"
-msgstr "%s installiert ist"
+msgstr "%s ist installiert"
 
 #. CONTEXT: installer: display of package status
 #, c-format
 msgid "%s is not required on Windows"
-msgstr ""
+msgstr "%s ist unter Windows nicht erforderlich"
 
 #. CONTEXT: installer: display of package status
 #, c-format
@@ -1274,7 +1286,7 @@ msgstr "%s ist nicht installiert"
 
 #. CONTEXT: config: integrated VLC 4
 msgid "Integrated VLC 4"
-msgstr ""
+msgstr "Integriertes VLC 4"
 
 #. CONTEXT: label: album
 msgid "Album"
@@ -1282,15 +1294,15 @@ msgstr "Album"
 
 #. CONTEXT: label: album artist
 msgid "Album Artist"
-msgstr "Künstler des Albums"
+msgstr "Album-Interpret"
 
 #. CONTEXT: label: artist
 msgid "Artist"
-msgstr "Künstler"
+msgstr "Interpret"
 
 #. CONTEXT: audio identification: the score or rating of each match
 msgid "Score"
-msgstr "Ergebnis"
+msgstr "Übereinstimmung"
 
 #. CONTEXT: audio identification: the audio identification source
 #. CONTEXT: song editor: copy tags: source file
@@ -1304,7 +1316,7 @@ msgstr "MPM"
 
 #. CONTEXT: label: comment
 msgid "Comment"
-msgstr ""
+msgstr "Kommentar"
 
 #. CONTEXT: label: composer
 msgid "Composer"
@@ -1324,11 +1336,11 @@ msgstr "Tanzniveau"
 
 #. CONTEXT: label: dance level (short name for listing)
 msgid "Level"
-msgstr "Ebene"
+msgstr "Niveau"
 
 #. CONTEXT: label: dance rating
 msgid "Dance Rating"
-msgstr "Tanz Bewertung"
+msgstr "Tanz-Bewertung"
 
 #. CONTEXT: label: date
 msgid "Date"
@@ -1336,23 +1348,28 @@ msgstr "Datum"
 
 #. CONTEXT: label: date added to the database
 msgid "Date Added"
-msgstr "Datum hinzugefügt"
+msgstr "Hinzugefügt (Datum)"
 
 #. CONTEXT: label: lock audio file location
 msgid "Prevent Rename"
 msgstr "Umbenennen verhindern"
 
-#. CONTEXT: label: disc number
+#. CONTEXT: label: disc number (Audio Tag: The disc number of a disc in a collection)
 msgid "Disc"
-msgstr "Scheibe"
+msgstr "Disc-Nummer"
 
-#. CONTEXT: label: total disc count
+#. CONTEXT: label: disc number (short name for listing)
+msgctxt "Short"
+msgid "Disc"
+msgstr "Disc-Nr."
+
+#. CONTEXT: label: total disc count (Audio Tag: The total number of discs in a collection)
 msgid "Total Discs"
-msgstr "Scheiben insgesamt"
+msgstr "Gesamtanzahl der Discs"
 
 #. CONTEXT: label: total disc count (short name for listing)
 msgid "Tot. Discs"
-msgstr "Scheiben insgesamt"
+msgstr "Anzahl Discs"
 
 #. CONTEXT: label: duration of the song
 msgid "Duration"
@@ -1366,9 +1383,9 @@ msgstr "Favorit"
 msgid "Genre"
 msgstr "Genre"
 
-#. CONTEXT: label: grouping
+#. CONTEXT: label: grouping (typically used to group classical movements in a work together)
 msgid "Grouping"
-msgstr ""
+msgstr "Gruppierung"
 
 #. CONTEXT: label: keyword (used to filter out songs)
 msgid "Keyword"
@@ -1376,7 +1393,7 @@ msgstr "Schlüsselwort"
 
 #. CONTEXT: label: no play time limit
 msgid "No Play Time Limit"
-msgstr ""
+msgstr "Keine Begrenzung der Wiedergabezeit"
 
 #. CONTEXT: label: notes
 msgid "Notes"
@@ -1393,63 +1410,76 @@ msgstr "Tags"
 
 #. CONTEXT: label: track number
 msgid "Track"
-msgstr "Spur"
+msgstr "Titel-Nummer"
+
+#. CONTEXT: label: track number (short name for listing)
+msgctxt "Short"
+msgid "Track"
+msgstr "Titel-Nr."
 
 #. CONTEXT: label: total track count
 msgid "Total Tracks"
-msgstr "Total Spuren"
+msgstr "Titel gesamt"
 
 #. CONTEXT: label: total track count (short name for listing)
 msgid "Tot. Tracks"
-msgstr "Total Spuren"
+msgstr "Titel ges."
 
 #. CONTEXT: label: work (a musical work)
 msgid "Work"
-msgstr ""
+msgstr "Werk"
 
 #. CONTEXT: label: title sort order
 msgid "Title Sort Order"
-msgstr "Titel Sortierreihenfolge"
+msgstr "Sortierreihenfolge Titel"
 
 #. CONTEXT: label: album sort order
 msgid "Album Sort Order"
-msgstr "Album-Sortierreihenfolge"
+msgstr "Sortierreihenfolge Album"
 
 #. CONTEXT: label: album artist sort order
 msgid "Album Artist Sort Order"
-msgstr "Album Künstler Sortierreihenfolge"
+msgstr "Sortierreihenfolge Album-Interpret"
 
 #. CONTEXT: label: artist sort order
 msgid "Artist Sort Order"
-msgstr "Sortierreihenfolge der Künstler"
+msgstr "Sortierreihenfolge Interpret"
 
 #. CONTEXT: label: composer sort order
 msgid "Composer Sort Order"
-msgstr "Komponist Sortierreihenfolge"
+msgstr "Sortierreihenfolge Komponist"
 
 #. CONTEXT: label: movement (classical music movement number)
 msgid "Movement Number"
-msgstr ""
+msgstr "Satznummer"
+
+#. CONTEXT: label: movement (classical music movement number) (short name for listing)
+msgid "Mvt No."
+msgstr "Satz-Nr."
 
 #. CONTEXT: label: movement count (classical music movement count)
 msgid "Movement Count"
-msgstr ""
+msgstr "Satzanzahl"
+
+#. CONTEXT: label: movement (classical music movement count) (short name for listing)
+msgid "Mvt Count"
+msgstr "Satzanz."
 
 #. CONTEXT: label: movement name (classical music movement name)
 msgid "Movement"
-msgstr ""
+msgstr "Satz"
 
 #. CONTEXT: label: marquee display (alternate display for the marquee, replaces dance)
 msgid "Marquee Display"
-msgstr "Laufschrift-Text"
+msgstr "Display der Wiedergabeanzeige"
 
 #. CONTEXT: label: time to end the song
 msgid "Song End"
-msgstr "Lied Ende"
+msgstr "Ende des Songs"
 
 #. CONTEXT: label: time to start the song
 msgid "Song Start"
-msgstr "Stück-Start"
+msgstr "Start des Songs"
 
 #. CONTEXT: label: speed adjustment for playback
 msgid "Speed Adjustment"
@@ -1466,7 +1496,7 @@ msgstr "Zuletzt Aktualisiert"
 #. CONTEXT: validation: a value must be set
 #, c-format
 msgid "%s: Must be set."
-msgstr "%s: Eingestellt werden."
+msgstr "%s: Muss festgelegt werden."
 
 #. CONTEXT: validation: spaces are not allowed
 #, c-format
@@ -1481,7 +1511,7 @@ msgstr "%s: Schrägstriche sind nicht erlaubt."
 #. CONTEXT: validation: characters not allowed
 #, c-format
 msgid "%s: *'\":|<>^ characters are not allowed."
-msgstr "%s: *'\":|<>^ Zeichen sind nicht erlaubt."
+msgstr "%s: Die Zeichen *'\":|<>^ sind nicht erlaubt."
 
 #. CONTEXT: validation: must be numeric
 #. CONTEXT: validation: must be a numeric value
@@ -1500,7 +1530,7 @@ msgstr "%s: Ungültige Zeit (%s)."
 #. CONTEXT: validation: invalid URL
 #, c-format
 msgid "%s: Invalid URL (%s)."
-msgstr ""
+msgstr "%s: Ungültige URL (%s)."
 
 #. CONTEXT: The suffix for an original audio file (may be abbreviated)
 msgid "original"
@@ -1508,25 +1538,33 @@ msgstr "Original"
 
 #. CONTEXT: The prefix name for an audio file marked for deletion (may be abbreviated)
 msgid "delete"
-msgstr "löschen"
+msgstr "entf"
 
 #. CONTEXT: please wait... (count/total) status message
 #, c-format
 msgid "Please wait… (%1$d/%2$d)"
-msgstr "Bitte warten Sie… (%1$d/%2$d)"
+msgstr "Bitte warten … (%1$d/%2$d)"
+
+#. CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue'
+msgid "Queue Playlist"
+msgstr "Wiedergabeliste zur Warteschlange hinzufügen"
+
+#. CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue
+msgid "Queue Dance"
+msgstr "Tanz zur Warteschlange hinzufügen"
 
 #. CONTEXT: music queue: button: move the selected song to the top of the queue
 msgid "Move to Top"
-msgstr "Nach oben gehen"
+msgstr "Ganz nach oben"
 
 #. CONTEXT: music queue: button: set playback to pause after the selected song is played (toggle)
 msgid "Toggle Pause"
-msgstr "Pause umschalten"
+msgstr "Pause am Ende (an/aus)"
 
 #. CONTEXT: music queue: button: remove the song from the queue
 #. CONTEXT: side-by-side list: button: remove the selected field
 msgid "Remove"
-msgstr "entfernen"
+msgstr "Entfernen"
 
 #. CONTEXT: music queue: edit the selected song
 #. CONTEXT: song-selection: edit the selected song
@@ -1534,21 +1572,13 @@ msgstr "entfernen"
 #. CONTEXT: playlist management: menu selection: playlist: edit menu
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu
 msgid "Edit"
-msgstr "bearbeiten"
+msgstr "Bearbeiten"
 
 #. CONTEXT: music queue: tooltip: play the selected song
 #. CONTEXT: song-selection: tooltip: play the selected songs
 #. CONTEXT: song editor : play song
 msgid "Play"
-msgstr "Spielen"
-
-#. CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue'
-msgid "Queue Playlist"
-msgstr "Warteschlangen-Wiedergabeliste"
-
-#. CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue
-msgid "Queue Dance"
-msgstr "Schlangentanz"
+msgstr "Wiedergabe"
 
 #. CONTEXT: playerui: button: reset speed to 100%
 msgid "100%"
@@ -1560,11 +1590,11 @@ msgstr "Position"
 
 #. CONTEXT: playerui: button: tooltip: toggle the repeat song on and off
 msgid "Toggle Repeat"
-msgstr "Wiederholung umschalten"
+msgstr "Wiederholen (an/aus)"
 
 #. CONTEXT: playerui: button: tooltip: return to the beginning of the song
 msgid "Return to beginning of song"
-msgstr "Zurück zum Anfang des Liedes"
+msgstr "Zurück zum Anfang des Songs"
 
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
@@ -1590,11 +1620,11 @@ msgstr "Schließen"
 #. CONTEXT: song selection filter: filter dialog: resets the selections
 #. CONTEXT: bpm counter: reset button
 msgid "Reset"
-msgstr "zurücksetzen"
+msgstr "Zurücksetzen"
 
 #. CONTEXT: song selection filter: filter dialog: applies the selections
 msgid "Apply"
-msgstr "Bewerbung"
+msgstr "Anwenden"
 
 #. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
 #. CONTEXT: select file: file type for the file selection dialog (playlist)
@@ -1602,7 +1632,7 @@ msgstr "Bewerbung"
 #. CONTEXT: create from playlist: select the playlist to use
 #. CONTEXT: playlist management: label for playlist name
 msgid "Playlist"
-msgstr "Spielliste"
+msgstr "Wiedergabeliste"
 
 #. CONTEXT: song selection filter: a filter: select the method to sort the song selection display
 msgid "Sort by"
@@ -1624,15 +1654,15 @@ msgstr "Alle Tänze"
 #. CONTEXT: select file: selects the file
 #. CONTEXT: manage-ui: config: button: add the selected songs to the song list
 msgid "Select"
-msgstr "wähle aus"
+msgstr "Auswählen"
 
 #. CONTEXT: colon character
 msgid ":"
-msgstr ""
+msgstr ":"
 
 #. CONTEXT: select folder dialog: filter on folders.
 msgid "Folder"
-msgstr "Mappe"
+msgstr "Ordner"
 
 #. CONTEXT: genre: a filter: all genres are displayed in the song selection
 msgid "All Genres"
@@ -1658,17 +1688,17 @@ msgstr "Sequenz"
 
 #. CONTEXT: select audio file: file selection dialog: audio file filter
 msgid "Audio Files"
-msgstr "Audio-Dateien"
+msgstr "Audiodateien"
 
 #. CONTEXT: select file: title of window: select <file-type>
 #, c-format
 msgid "Select %s"
-msgstr "Wählen Sie %s"
+msgstr "%s auswählen"
 
 #. CONTEXT: select audio file: dialog title for selecting audio files
 #, c-format
 msgid "Select Audio File"
-msgstr "wähle Audiodatei"
+msgstr "Audiodatei auswählen"
 
 #. CONTEXT: status: a filter: all dance status will be listed
 #. CONTEXT: status: a filter: all dance status are displayed in the song selection
@@ -1679,7 +1709,7 @@ msgstr "Jeder Status"
 #. CONTEXT: apply adjustment dialog: apply adjustments
 #. CONTEXT: manage-ui: song editor menu: apply adjustments
 msgid "Apply Adjustments"
-msgstr "Einstellungen anwenden"
+msgstr "Anpassungen übernehmen"
 
 #. CONTEXT: apply adjustment dialog: restore original file
 #. CONTEXT: manage-ui: song editor menu: restore original
@@ -1689,21 +1719,27 @@ msgstr "Original wiederherstellen"
 #. CONTEXT: apply adjustments: trim silence checkbox
 #. CONTEXT: manage-ui: song editor menu: trim silence
 msgid "Trim Silence"
-msgstr "Trimmen Stille"
+msgstr "Stille kürzen"
 
 #. CONTEXT: apply adjustments: adjust speed/song start/song end checkbox
 msgid "Adjust Speed, Song Start and Song End"
-msgstr "Geschwindigkeit, Songstart und Songende einstellen"
+msgstr "Geschwindigkeit, Songstart und Songende anpassen"
 
 #. CONTEXT: audio identification: first song
 #. CONTEXT: song editor : first song
 msgid "First"
-msgstr "Erste"
+msgstr "Erster"
 
 #. CONTEXT: audio identification: previous song
 #. CONTEXT: song editor : previous song
 msgid "Previous"
-msgstr "voriges"
+msgstr "Vorheriger"
+
+#. CONTEXT: audio identification: next song
+#. CONTEXT: song editor : next song
+msgctxt "Song"
+msgid "Next"
+msgstr "Nächster"
 
 #. CONTEXT: audio identification: save data
 #. CONTEXT: song editor : save data
@@ -1720,11 +1756,11 @@ msgstr "Datei"
 
 #. CONTEXT: audio identification: the data for the current song
 msgid "Current"
-msgstr "Aktuell"
+msgstr "Aktueller Song"
 
 #. CONTEXT: audio identification: the data for the selected matched song
 msgid "Selected"
-msgstr "Ausgewählte"
+msgstr "Ausgewählt"
 
 #. CONTEXT: copy tags dialog: title for the dialog
 #. CONTEXT: copy tags dialog: copy audio tags button
@@ -1738,14 +1774,14 @@ msgstr "Ziel"
 
 #. CONTEXT: copy audio tags: one of the files does not exist
 msgid "Invalid Selections"
-msgstr "Ungültige Selektionen"
+msgstr "Ungültige Auswahl"
 
 #. CONTEXT: export/import bdj4 dialog: export button
 #. CONTEXT: export playlist dialog: export button
 #. CONTEXT: manage-ui: menu selection: export actions for song list
 #. CONTEXT: playerui: menu selection: export
 msgid "Export"
-msgstr "Exportiere"
+msgstr "Exportieren"
 
 #. CONTEXT: export for ballroomdj: title of dialog
 #. CONTEXT: manage-ui: menu selection: song list: export: export for ballroomdj
@@ -1780,7 +1816,7 @@ msgstr "Importieren von"
 #. CONTEXT: export/import bdj4: new song list name
 #. CONTEXT: import playlist: new song list name
 msgid "New Song List Name"
-msgstr "Neuer Name der Titelliste"
+msgstr "Name der neuen Songliste"
 
 #. CONTEXT: export/import bdj4 folder selection dialog: window title
 msgid "Select Folder"
@@ -1789,7 +1825,7 @@ msgstr "Ordner auswählen"
 #. CONTEXT: import from bdj4: error message if the target song list already exists
 #. CONTEXT: import playlist: message if the target song list already exists
 msgid "Already Exists"
-msgstr "Existiert bereits"
+msgstr "Bereits vorhanden"
 
 #. CONTEXT: export playlist: title of dialog
 #. CONTEXT: managementui: export playlist: title of save dialog
@@ -1799,7 +1835,7 @@ msgstr "Wiedergabeliste exportieren"
 
 #. CONTEXT: export playlist: type of export
 msgid "Export Type"
-msgstr "Art der Ausfuhr"
+msgstr "Exportformat"
 
 #. CONTEXT: managementui: export playlist: name of file export type
 #. CONTEXT: import playlist: name of import type
@@ -1809,16 +1845,16 @@ msgstr "Wiedergabelisten"
 #. CONTEXT: export playlist: invalid target file
 #. CONTEXT: import playlist: invalid target file
 msgid "Invalid File"
-msgstr ""
+msgstr "Ungültige Datei"
 
 #. CONTEXT: export playlist: invalid target file extension
 msgid "Invalid Extension"
-msgstr ""
+msgstr "Ungültige Dateiendung"
 
 #. CONTEXT: import playlist: playlist file types (m3u/xspf/jspf)
 #, c-format
 msgid "File (%s)"
-msgstr ""
+msgstr "Datei (%s)"
 
 #. CONTEXT: import playlist: title of dialog
 #. CONTEXT: manage-ui: menu selection: song list: import
@@ -1827,11 +1863,11 @@ msgstr "Wiedergabeliste importieren"
 
 #. CONTEXT: import playlist: import-from selection
 msgid "Import From"
-msgstr ""
+msgstr "Importieren von"
 
 #. CONTEXT: import playlist: invalid URL
 msgid "Invalid URL"
-msgstr ""
+msgstr "Ungültige URL"
 
 #. CONTEXT: song editor: display indicator that the song editor is in edit all mode
 #. CONTEXT: manage-ui: song editor menu: edit all
@@ -1852,11 +1888,11 @@ msgstr "%1$s muss größer sein als %2$s"
 #. CONTEXT: external request dialog: title for the dialog
 #. CONTEXT: playerui: menu selection: action: external request
 msgid "External Request"
-msgstr "Externe Anfrage"
+msgstr "Externe Wünsche"
 
 #. CONTEXT: external request: enter the audio file location
 msgid "Audio File"
-msgstr "Audio-Datei"
+msgstr "Audiodatei"
 
 #. CONTEXT: external request: dance drop-down
 msgid "Select Dance"
@@ -1876,7 +1912,7 @@ msgstr "Sekunden"
 
 #. CONTEXT: bpm counter: title of window
 msgid "BPM Counter"
-msgstr "BPM Zähler"
+msgstr "BPM-Zähler"
 
 #. CONTEXT: bpm counter: instructions, line 1
 msgid "Click the mouse in the blue box in time with the beat."
@@ -1884,7 +1920,7 @@ msgstr "Klicken Sie mit der Maus im Takt des Beats in das blaue Feld."
 
 #. CONTEXT: bpm counter: instructions, line 2
 msgid "When the BPM value is stable, select the Save button."
-msgstr "Wenn der BPM-Wert stabil ist, klicken Sie auf die Schaltfläche Speichern."
+msgstr "Wenn der BPM-Wert konstant ist, wählen Sie die Schaltfläche „Speichern“."
 
 #. CONTEXT: database update: status message (count)
 #, c-format
@@ -1901,7 +1937,7 @@ msgstr "Geladen aus Datenbank"
 
 #. CONTEXT: database update: status message: new files saved to the database
 msgid "New Files"
-msgstr "Neuer Datei"
+msgstr "Neue Dateien"
 
 #. CONTEXT: database update: status message: number of files updated in the database
 #. CONTEXT: database update: status message: number of files updated
@@ -1910,11 +1946,11 @@ msgstr "Aktualisiert"
 
 #. CONTEXT: database update: status message: number of files renamed
 msgid "Renamed"
-msgstr "Umbenannt in"
+msgstr "Umbenannt"
 
 #. CONTEXT: database update: status message: number of files that cannot be renamed
 msgid "Cannot Rename"
-msgstr ""
+msgstr "Umbenennen nicht möglich"
 
 #. CONTEXT: database update: status message: other files that cannot be processed
 msgid "Other Files"
@@ -1922,16 +1958,16 @@ msgstr "Andere Dateien"
 
 #. CONTEXT: colon character with trailing space
 msgid ": "
-msgstr ""
+msgstr ": "
 
 #. CONTEXT: database update: status message
 msgid "Stopped by User"
-msgstr "Von Benutzer angehalten"
+msgstr "Vom Benutzer gestoppt"
 
 #. CONTEXT: manage-ui: management user interface window title
 #, c-format
 msgid "%s Management"
-msgstr "%s Verwaltung"
+msgstr "%s-Verwaltung"
 
 #. CONTEXT: manage-ui: notebook tab title: edit sequences
 msgid "Edit Sequences"
@@ -1939,7 +1975,7 @@ msgstr "Sequenzen bearbeiten"
 
 #. CONTEXT: manage-ui: notebook tab title: playlist management
 msgid "Playlist Management"
-msgstr "Spiellisten-Verwaltung"
+msgstr "Wiedergabelisten-Verwaltung"
 
 #. CONTEXT: manage-ui: notebook tab title: update database
 msgid "Update Database"
@@ -1947,7 +1983,7 @@ msgstr "Datenbank aktualisieren"
 
 #. CONTEXT: manage-ui: notebook tab title: edit song lists
 msgid "Edit Song Lists"
-msgstr "Bearbeite Stückeliste"
+msgstr "Songlisten bearbeiten"
 
 #. CONTEXT: manage-ui: name of statistics tab
 msgid "Statistics"
@@ -1959,7 +1995,7 @@ msgstr "Neue Songliste"
 
 #. CONTEXT: the 'Mix' action failed
 msgid "Action failed"
-msgstr "Aktion gescheitert"
+msgstr "Aktion fehlgeschlagen"
 
 #. CONTEXT: manage-ui: menu selection: actions for song editor
 #. CONTEXT: manage-ui: menu selection: actions for music manager
@@ -1971,25 +2007,25 @@ msgstr "Aktionen"
 
 #. CONTEXT: manage-ui: song editor menu: write audio tags
 msgid "Write Audio Tags"
-msgstr ""
+msgstr "Audio-Tags schreiben"
 
 #. CONTEXT: manage-ui: song editor menu: apply edit all
 msgid "Apply Edit All"
-msgstr "Anwenden Bearbeiten Alle"
+msgstr "Alle Änderungen übernehmen"
 
 #. CONTEXT: manage-ui: song editor menu: cancel edit all
 msgid "Cancel Edit All"
-msgstr "Abbrechen Bearbeiten Alle"
+msgstr "Bearbeitung für alle abbrechen"
 
 #. CONTEXT: manage ui: status message: itunes is not configured
 #, c-format
 msgid "%s is not configured."
-msgstr "%s nicht konfiguriert ist."
+msgstr "%s ist nicht konfiguriert."
 
 #. CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist)
 #, c-format
 msgid "%s Playlist"
-msgstr "%s Wiedergabeliste"
+msgstr "%s-Wiedergabeliste"
 
 #. CONTEXT: manage-ui: name of song editor notebook tab
 msgid "Song Editor"
@@ -1997,15 +2033,15 @@ msgstr "Song-Editor"
 
 #. CONTEXT: manage-ui: menu selection: music manager: set same-song mark
 msgid "Mark as Same Song"
-msgstr "Als dasselbe Stück markieren"
+msgstr "„Gleicher Song“-Markierung setzen"
 
 #. CONTEXT: manage-ui: menu selection: music manager: clear same-song mark
 msgid "Clear Same Song Mark"
-msgstr "Lösche dieselbe Stücke-Markierung"
+msgstr "„Gleicher Song“-Markierung entfernen"
 
 #. CONTEXT: manage-ui: menu selection: music manager: remove song
 msgid "Remove Song"
-msgstr "Lied entfernen"
+msgstr "Song entfernen"
 
 #. CONTEXT: manage-ui: menu selection: music manager: undo song removal
 msgid "Undo Song Removal"
@@ -2013,7 +2049,7 @@ msgstr "Song-Entfernung rückgängig machen"
 
 #. CONTEXT: manage-ui: menu selection: music manager: undo all song removals
 msgid "Undo All Song Removals"
-msgstr ""
+msgstr "Alle Song-Entfernungen rückgängig machen"
 
 #. CONTEXT: manage-ui: menu selection: song list: edit menu: load
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: load
@@ -2023,7 +2059,7 @@ msgstr "Laden"
 
 #. CONTEXT: manage-ui: menu selection: song list: edit menu: start new song list
 msgid "Start New Song List"
-msgstr "Neue Titelliste starten"
+msgstr "Neue Songliste erstellen"
 
 #. CONTEXT: manage-ui: menu selection: song list: edit menu: create copy
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: create copy
@@ -2033,15 +2069,15 @@ msgstr "Kopie erstellen"
 
 #. CONTEXT: manage-ui: menu selection: song list: actions menu: rearrange the songs and create a new mix
 msgid "Mix"
-msgstr "Mischen Sie"
+msgstr "Mix erstellen"
 
 #. CONTEXT: manage-ui: menu selection: song list: actions menu: swap two songs
 msgid "Swap"
-msgstr "Tauschen"
+msgstr "Songs tauschen"
 
 #. CONTEXT: manage-ui: menu selection: song list: actions menu: truncate the song list
 msgid "Truncate"
-msgstr "Abschneiden"
+msgstr "Kürzen"
 
 #. CONTEXT: manage-ui: menu selection: song list: actions menu: create a song list from a playlist
 #. CONTEXT: create from playlist: title for the dialog
@@ -2055,7 +2091,7 @@ msgstr "Optionen"
 
 #. CONTEXT: manage-ui: menu checkbox: side-by-side view (suggestion: combined view)
 msgid "Side-by-Side View"
-msgstr "Seite-an-Seite-Ansicht"
+msgstr "Nebeneinanderliegende Ansicht"
 
 #. CONTEXT: manage-ui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #. CONTEXT: playlist: copy of the history song list
@@ -2067,7 +2103,7 @@ msgstr "Kopie von %s"
 
 #. CONTEXT: create from playlist: creates the new songlist
 msgid "Create"
-msgstr "Erzeuge"
+msgstr "Erstellen"
 
 #. CONTEXT: create from playlist: set the maximum time for the song list
 msgid "Time Limit"
@@ -2077,23 +2113,23 @@ msgstr "Zeitbegrenzung"
 #. CONTEXT: Saving Playlist: Error message for invalid playlist name.
 #. CONTEXT: Saving Sequence: Error message for invalid sequence name.
 msgid "Invalid name. Using old name."
-msgstr ""
+msgstr "Ungültiger Name. Alter Name wird verwendet."
 
 #. CONTEXT: database update: check for new audio files
 msgid "Check For New"
-msgstr "Überprüfung auf neue"
+msgstr "Auf neue Dateien prüfen"
 
 #. CONTEXT: database update: check for new: help text
 msgid "Checks for new audio files."
-msgstr "Prüft auf neue Audiodateien."
+msgstr "Suche nach neuen Audiodateien."
 
 #. CONTEXT: database update: check for new audio files
 msgid "Compact"
-msgstr "Kompakt"
+msgstr "Komprimieren"
 
 #. CONTEXT: database update: compact: help text
 msgid "Compact the database.  Use after audio files have been deleted."
-msgstr "Komprimieren Sie die Datenbank.  Verwenden Sie diese Option, nachdem Audiodateien gelöscht worden sind."
+msgstr "Datenbank komprimieren. Nutzen Sie diese Option, nachdem Audiodateien gelöscht wurden."
 
 #. CONTEXT: database update: reorganize : renames audio files based on organization settings
 msgid "Reorganise"
@@ -2101,26 +2137,23 @@ msgstr "Neu organisieren"
 
 #. CONTEXT: database update: reorganize : help text
 msgid "Renames the audio files based on the organization settings."
-msgstr "Benennt die Audiodateien anhand der Organisationseinstellungen um."
+msgstr "Benennt die Audiodateien gemäß den Organisationseinstellungen um."
 
 #. CONTEXT: database update: updates the database using the tags from the audio files
 msgid "Update from Audio File Tags"
-msgstr "Update von Audio File Tags"
+msgstr "Aus Audiodatei-Tags aktualisieren"
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid ""
-"Updates the information in the BallroomDJ database from the audio file tags."
-msgstr "Aktualisiert die Informationen in der BallroomDJ-Datenbank anhand der Tags der Audiodatei."
+msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgstr "Aktualisiert die Informationen in der BallroomDJ-Datenbank anhand der Tags der Audiodateien."
 
 #. CONTEXT: database update: writes the tags in the database to the audio files
 msgid "Write Tags to Audio Files"
 msgstr "Tags in Audiodateien schreiben"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid ""
-"Writes the audio file tags using the information from the BallroomDJ "
-"database."
-msgstr "Schreibt die Tags der Audiodatei anhand der Informationen aus der BallroomDJ-Datenbank."
+msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgstr "Schreibt die Tags der Audiodateien anhand der Informationen aus der BallroomDJ-Datenbank."
 
 #. CONTEXT: database update: update from itunes
 #, c-format
@@ -2129,18 +2162,15 @@ msgstr "Update von %s"
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid ""
-"Updates the information in the BallroomDJ database from the %s database."
-msgstr "Aktualisiert die Informationen in der BallroomDJ-Datenbank aus der Datenbank %s ."
+msgid "Updates the information in the BallroomDJ database from the %s database."
+msgstr "Aktualisiert die Informationen in der BallroomDJ-Datenbank aus der %s-Datenbank."
 
 #. CONTEXT: database update: rebuilds the database
 msgid "Rebuild Database"
-msgstr "Datenbank wiederherstellen"
+msgstr "Datenbank neu erstellen"
 
 #. CONTEXT: database update: rebuild: help text
-msgid ""
-"Replaces the BallroomDJ database in its entirety. All changes to the "
-"database will be lost."
+msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
 msgstr "Ersetzt die BallroomDJ-Datenbank in ihrer Gesamtheit. Alle Änderungen an der Datenbank gehen dabei verloren."
 
 #. CONTEXT: update database: select database update action
@@ -2154,21 +2184,21 @@ msgstr "Start"
 #. CONTEXT: update database: exit BDJ4 and restart
 #, c-format
 msgid "Exit %s and restart."
-msgstr "Verlasse %s und starte neu."
+msgstr "%s beenden und neu starten."
 
 #. CONTEXT: manageui: failure status message
 #, c-format
 msgid "Copy already exists."
-msgstr "Die Kopie existiert bereits."
+msgstr "Kopie ist bereits vorhanden."
 
 #. CONTEXT: manageui: status message when deleting a song list/playlist/sequence
 #, c-format
 msgid "%s deleted."
-msgstr ""
+msgstr "%s gelöscht."
 
 #. CONTEXT: playlist management: label for playlist name
 msgid "Playlist Type"
-msgstr "Wiedergabeliste Typ"
+msgstr "Wiedergabelisten-Typ"
 
 #. CONTEXT: playlist management: default playlist type
 #. CONTEXT: playlist management: type of playlist
@@ -2181,7 +2211,7 @@ msgstr "Einstellungen"
 
 #. CONTEXT: playlist management: stop after
 msgid "Stop After"
-msgstr "Anhalten nach"
+msgstr "Stoppen nach"
 
 #. CONTEXT: playlist management: Low Dance Level
 msgid "Low Dance Level"
@@ -2193,11 +2223,11 @@ msgstr "Hohes Tanzniveau"
 
 #. CONTEXT: playlist management: allowed keywords
 msgid "Allowed Keywords"
-msgstr "Erlaubte Schlüsselwörter"
+msgstr "Zulässige Schlüsselwörter"
 
 #. CONTEXT: playlist management: how many days to keep the podcast
 msgid "Days to Keep"
-msgstr ""
+msgstr "Aufbewahrungstage"
 
 #. CONTEXT: playlist management: notebook tab title: dances
 msgid "Dances"
@@ -2209,7 +2239,7 @@ msgstr "Neue automatische Wiedergabeliste"
 
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: new podcast
 msgid "New Podcast"
-msgstr ""
+msgstr "Neuer Podcast"
 
 #. CONTEXT: playlist management: default name for a new playlist
 msgid "New Playlist"
@@ -2217,18 +2247,17 @@ msgstr "Neue Wiedergabeliste"
 
 #. CONTEXT: playlist management: hide unselected dances
 msgid "Hide Unselected"
-msgstr "Unausgewähltes ausblenden"
+msgstr "Nicht ausgewählte ausblenden"
 
 #. CONTEXT: playlist management: count column header
 msgid "Count"
-msgstr "Zählen Sie"
+msgstr "Anzahl"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid ""
-"Maximum\n"
+msgid "Maximum\n"
 "Play Time"
 msgstr "Maximale\n"
-"Spielzeit"
+"Wiedergabezeit"
 
 #. CONTEXT: sequence editor: default name for a new sequence
 msgid "New Sequence"
@@ -2240,7 +2269,7 @@ msgstr "Neue Sequenz starten"
 
 #. CONTEXT: statistics: Label for number of songs in song list
 msgid "Songs"
-msgstr "Stücke"
+msgstr "Songs"
 
 #. CONTEXT: statistics: Label for total song list duration
 msgid "Total Time"
@@ -2249,20 +2278,20 @@ msgstr "Gesamtzeit"
 #. CONTEXT: marquee: displayed when nothing is set to be played
 #. CONTEXT: mobile marquee: playback is not active
 msgid "Not Playing"
-msgstr "Nicht spielend"
+msgstr "Keine Wiedergabe"
 
 #. CONTEXT: playerui: main window title
 #, c-format
 msgid "%s Player"
-msgstr "%s Spieler"
+msgstr "%s-Player"
 
 #. CONTEXT: playerui: menu selection: action: quick edit current song
 msgid "Quick Edit: Current"
-msgstr "Schnellbearbeitung: Aktuell"
+msgstr "Schnellbearbeitung: Aktueller Song"
 
 #. CONTEXT: playerui: menu selection: action: quick edit selected song
 msgid "Quick Edit: Selected"
-msgstr "Schnellbearbeitung: Ausgewählt"
+msgstr "Schnellbearbeitung: Ausgewählter Song"
 
 #. CONTEXT: playerui: menu selection: action: reload
 msgid "Reload"
@@ -2270,7 +2299,7 @@ msgstr "Neu laden"
 
 #. CONTEXT: playerui: menu selection: marquee: show the marquee
 msgid "Show"
-msgstr ""
+msgstr "Anzeigen"
 
 #. CONTEXT: playerui: menu selection: marquee: change the marquee font size
 #. CONTEXT: playerui: marquee font size dialog: the font size selector
@@ -2279,13 +2308,13 @@ msgstr "Schriftgröße"
 
 #. CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen
 msgid "Recover Marquee"
-msgstr "Marquee wiederherstellen"
+msgstr " Wiedergabeanzeige wiederherstellen"
 
 #. CONTEXT: player ui: menu selection: export: export as MP3
 #. CONTEXT: export as mp3: title of save dialog
 #, c-format
 msgid "Export as %s"
-msgstr "Exportiere als %s"
+msgstr "Export als %s"
 
 #. CONTEXT: playerui: menu checkbox: show the extra queues (in addition to the main music queue)
 msgid "Show Extra Queues"
@@ -2293,33 +2322,38 @@ msgstr "Zusätzliche Warteschlangen anzeigen"
 
 #. CONTEXT: playerui: menu checkbox: when a queue is emptied, switch playback to the next queue
 msgid "Switch Queue When Empty"
-msgstr "Warteschlange wechseln, wenn sie leer ist"
+msgstr "Bei leerer Warteschlange zur nächsten wechseln"
 
 #. CONTEXT: playerui: select the current queue for playback
 msgid "Set Queue for Playback"
-msgstr "Warteschlange für die Wiedergabe festlegen"
+msgstr "Warteschlange zur Wiedergabe festlegen"
 
 #. CONTEXT: player-ui: error message
 msgid "Recovered from crash."
-msgstr "Nach dem Absturz wiederhergestellt."
+msgstr "Nach Absturz wiederhergestellt."
 
 #. CONTEXT: playerui: marquee font size dialog: window title
 msgid "Marquee Font Size"
-msgstr "Marquee Schriftgröße"
+msgstr "Schriftgröße der Wiedergabeanzeige"
 
 #. CONTEXT: playerui: menu selection: marquee: hide the marquee
 msgid "Hide"
-msgstr ""
+msgstr "Ausblenden"
 
 #. CONTEXT: helperui: the window title for the BDJ4 helper
 #, c-format
 msgid "%s Helper"
-msgstr "%s Helfer"
+msgstr "%s-Helfer"
+
+#. CONTEXT: helperui: proceed to the next step
+msgctxt "Help-Section"
+msgid "Next"
+msgstr "Weiter"
 
 #. CONTEXT: starterui: menu item: stop all BDJ4 processes
 #, c-format
 msgid "Stop All %s Processes"
-msgstr "Alle %s Prozesse stoppen"
+msgstr "Alle %s-Prozesse stoppen"
 
 #. CONTEXT: starterui: menu item: delete profile
 msgid "Delete Profile"
@@ -2327,12 +2361,12 @@ msgstr "Profil löschen"
 
 #. CONTEXT: starterui: menu item: create shortcut for profile
 msgid "Create Shortcut for Profile"
-msgstr "Abkürzung für Profil erstellen"
+msgstr "Verknüpfung für Profil erstellen"
 
 #. CONTEXT: starterui: menu item: install in alternate folder
 #, c-format
 msgid "Set Up Alternate Folder"
-msgstr "Ersatzordner einrichten"
+msgstr "Alternativordner einrichten"
 
 #. CONTEXT: starterui: profile to be used when starting BDJ4
 msgid "Profile"
@@ -2340,31 +2374,31 @@ msgstr "Profil"
 
 #. CONTEXT: starterui: button: starts the management user interface
 msgid "Manage"
-msgstr "Verwalten Sie"
+msgstr "Verwalten"
 
 #. CONTEXT: starterui: button: starts the configuration user interface
 msgid "Configure"
-msgstr "Konfigurieren Sie"
+msgstr "Konfigurieren"
 
 #. CONTEXT: starterui: button: support : support information
 #. CONTEXT: starterui: title for the support dialog
 msgid "Support"
-msgstr "Unterstützung"
+msgstr "Support"
 
 #. CONTEXT: starterui: support: status message
 #, c-format
 msgid "Sending Support Message"
-msgstr "Senden einer Support-Nachricht"
+msgstr "Support-Nachricht wird gesendet"
 
 #. CONTEXT: starterui: support: status message
 #, c-format
 msgid "Sending %s Information"
-msgstr "Senden von %s Informationen"
+msgstr "Senden von %s-Informationen"
 
 #. CONTEXT: starterui: support: status message
 #, c-format
 msgid "Sending Diagnostics"
-msgstr "Senden von Diagnosen"
+msgstr "Senden von Diagnosedaten"
 
 #. CONTEXT: starterui: support: status message
 #, c-format
@@ -2374,7 +2408,7 @@ msgstr "Senden von %s"
 #. CONTEXT: starterui: basic support dialog, version display
 #, c-format
 msgid "%s Version"
-msgstr "%s Version"
+msgstr "%s-Version"
 
 #. CONTEXT: starterui: basic support dialog, latest version display
 msgid "Latest Version"
@@ -2390,27 +2424,27 @@ msgstr "Neueste Version herunterladen"
 
 #. CONTEXT: starterui: basic support dialog, list of support options
 msgid "Support options"
-msgstr "Optionen zur Unterstützung"
+msgstr "Support-Optionen"
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 download)
 #, c-format
 msgid "%s Download"
-msgstr "%s Herunterladen"
+msgstr "%s herunterladen"
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 wiki)
 #, c-format
 msgid "%s Wiki"
-msgstr "%s Wiki"
+msgstr "%s-Wiki"
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 forums)
 #, c-format
 msgid "%s Forums"
-msgstr "%s Foren"
+msgstr "%s-Foren"
 
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets)
 #, c-format
 msgid "%s Support Tickets"
-msgstr "%s Support-Tickets"
+msgstr "%s-Support-Tickets"
 
 #. CONTEXT: starterui: basic support dialog: button: support option
 #. CONTEXT: starterui: support message dialog: sends the support message
@@ -2428,7 +2462,7 @@ msgstr "Neues Profil %d"
 
 #. CONTEXT: starterui: profile is already in use
 msgid "Profile in use"
-msgstr "Verwendetes Profil"
+msgstr "Profil wird verwendet"
 
 #. CONTEXT: starter: status message
 msgid "Profile may not be deleted."
@@ -2436,7 +2470,7 @@ msgstr "Das Profil darf nicht gelöscht werden."
 
 #. CONTEXT: starterui: title for the support message dialog
 msgid "Support Message"
-msgstr "Support-Mitteilung"
+msgstr "Support-Nachricht"
 
 #. CONTEXT: starterui: sending support message: user's e-mail address
 msgid "E-Mail Address"
@@ -2460,40 +2494,40 @@ msgstr "Datenbank anhängen"
 
 #. CONTEXT: Send support message: Error message for invalid e-mail.
 msgid "Invalid E-Mail Address."
-msgstr ""
+msgstr "Ungültige E-Mail-Adresse."
 
 #. CONTEXT: MacOS: reason for disabling sleep: BDJ4 Player is Active
 #, c-format
 msgid "%s Player is Active"
-msgstr "%s Spieler ist aktiv"
+msgstr "%s-Player ist aktiv"
 
 #. CONTEXT: controller: MacOS Now Playing
 msgid "MacOS Now Playing"
-msgstr ""
+msgstr "MacOS: Jetzt läuft"
 
 #. CONTEXT: title of a getting started help section
 msgid "How to get Support"
-msgstr "Wie Sie Unterstützung erhalten"
+msgstr "So erhalten Sie Support"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_get_support"
-msgstr "Um Support zu erhalten, wählen Sie die Schaltfläche „Support“. Dort finden Sie Links zum Wiki, zu Foren und zum Problemticketsystem. Oder verwenden Sie die Schaltfläche „Supportnachricht senden“, um eine Nachricht zu senden."
+msgstr "Um Support zu erhalten, wählen Sie die Schaltfläche „Support“. Dort finden Sie Links zum Wiki, zu den Foren und zum Ticket-System für Problemmeldungen. Alternativ können Sie über die Schaltfläche „Support-Nachricht senden“ eine Nachricht verschicken."
 
 #. CONTEXT: title of a getting started help section
 msgid "Check the Dance for Each Song"
-msgstr "Prüfen Sie den Tanz für jedes Lied"
+msgstr "Tanz für jeden Song überprüfen"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_check_dance"
-msgstr "=> Wählen Sie links im Fenster „BDJ4-Verwaltung“ „Musikmanager“.<br>Scrollen Sie durch die Liste der Songs und prüfen Sie, ob der Tanz für jeden Song eingestellt ist.<br>So legen Sie den Tanz für einen Song fest: => Wählen Sie den Song aus. => Wählen Sie die Registerkarte „Song-Editor“ (unter dem Player, über der Liste der Songs). => Verwenden Sie neben der Beschriftung „Tanz“ die Dropdown-Auswahl „Tanz“ und wählen Sie den Tanz für den Song aus. => Wählen Sie oben rechts auf der Registerkarte „Song-Editor“ die Schaltfläche „Speichern“.<br>Sie können zurück zur Registerkarte „Musikmanager“ wechseln und nach anderen Songs suchen, für die der Tanz eingestellt werden muss. => Lassen Sie das Fenster „BDJ4-Verwaltung“ geöffnet."
+msgstr "=> Wählen Sie „Musik-Manager“ auf der linken Seite des Fensters „BDJ4-Verwaltung“. <br> Scrollen Sie durch die Songliste und überprüfen Sie, ob für jeden Song der richtige Tanz festgelegt ist. <br> Um den Tanz für einen Song festzulegen: => Wählen Sie den Song aus. => Wählen Sie den Reiter „Song-Editor“ (unterhalb des Players, oberhalb der Songliste). => Neben der Bezeichnung „Tanz“ verwenden Sie das Dropdown-Menü und wählen den passenden Tanz für den Song aus. => Wählen Sie oben rechts im Reiter „Song-Editor“ die Schaltfläche „Speichern“. <br> Sie können nun zurück zum Reiter „Musik-Manager“ wechseln und weitere Songs überprüfen, bei denen der Tanz noch festgelegt werden muss. => Lassen Sie das Fenster „BDJ4-Verwaltung“ geöffnet."
 
 #. CONTEXT: title of a getting started help section
 msgid "Build the Database for the First Time"
-msgstr "Erstellen Sie die Datenbank zum ersten Mal"
+msgstr "Datenbank erstmalig erstellen"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_build_db"
-msgstr "Damit BallroomDJ 4 funktioniert, verwaltet es eine Datenbank mit all Ihren Songs. Diese Datenbank muss zum ersten Mal erstellt werden. => Wählen Sie die Schaltfläche „Verwalten“. => Wählen Sie im Fenster „BDJ4-Verwaltung“ den Abschnitt „Datenbank aktualisieren“ auf der linken Seite des Fensters.<br>Die Standardauswahl „Nach Neuem suchen“ wird verwendet, wenn Sie Songs zu Ihrer Musiksammlung hinzufügen oder daraus entfernen. => Ändern Sie die Auswahl in „Datenbank neu erstellen“. => Wählen Sie die Schaltfläche „Start“. => Warten Sie, bis die Datenbankneuerstellung abgeschlossen ist. => Lassen Sie das Fenster „BDJ4-Verwaltung“ geöffnet."
+msgstr "Damit BallroomDJ 4 ordnungsgemäß funktioniert, wird eine Datenbank mit all Ihren Songs geführt. Diese Datenbank muss beim ersten Mal erstellt werden. => Wählen Sie die Schaltfläche „Verwalten“. => Wählen Sie im Fenster „BDJ4-Verwaltung“ auf der linken Seite den Bereich „Datenbank aktualisieren“. <br> Die Standardauswahl „Auf neue Dateien prüfen“ ist dafür vorgesehen, neue oder entfernte Titel in Ihrer Musiksammlung zu erkennen. => Ändern Sie die Auswahl zu „Datenbank neu erstellen“. => Wählen Sie die Schaltfläche „Start“. => Warten Sie, bis der Neuaufbau der Datenbank abgeschlossen ist. => Schließen Sie das Fenster „BDJ4-Verwaltung“. => Wählen Sie die Schaltfläche „Verwalten“, um diesen Bereich erneut zu öffnen."
 
 #. CONTEXT: title of a getting started help section
 msgid "Create an Example Playlist"
@@ -2501,23 +2535,23 @@ msgstr "Erstellen einer Beispiel-Wiedergabeliste"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_create_playlist"
-msgstr "=> Wählen Sie im linken Bereich des Fensters „BDJ4-Verwaltung“ „Songlisten bearbeiten“.<br>Im rechten unteren Bereich des Fensters befindet sich eine Liste Ihrer Songs. => Wählen Sie einen Song durch Anklicken aus. => Wählen Sie nun in der Mitte des unteren Bereichs den linken Pfeil-Button aus.<br>Dadurch wird der ausgewählte Song der gerade erstellten Songliste hinzugefügt. => Wählen Sie einige Songs aus und fügen Sie jeden davon der Songliste hinzu.<br>Über der Songliste befindet sich ein Eingabefeld mit der Bezeichnung „Neue Songliste“. => Klicken Sie in das Feld und ändern Sie den Namen der Songliste. => Schließen Sie das Fenster „BDJ4-Verwaltung“. Die Songliste wird automatisch gespeichert."
+msgstr "=> Wählen Sie „Songlisten bearbeiten“ auf der linken Seite des Fensters „BDJ4-Verwaltung“. <br> Auf der rechten Seite im unteren Bereich des Fensters befindet sich eine Liste Ihrer Songs. => Wählen Sie einen Song aus, indem Sie darauf klicken. => Klicken Sie nun auf die linke Pfeilschaltfläche in der Mitte des unteren Bereichs. <br> Dadurch wird der ausgewählte Song zur gerade erstellten Songliste hinzugefügt. => Wählen Sie Songs aus und fügen Sie jeden einzelnen der Songliste hinzu. <br> Oberhalb der Songliste befindet sich ein Eingabefeld mit dem Namen „Neue Songliste“. => Klicken Sie in dieses Feld und ändern Sie den Namen der Songliste. => Schließen Sie das Fenster „BDJ4-Verwaltung“. Die Songliste wird automatisch gespeichert."
 
 #. CONTEXT: title of a getting started help section
 msgid "Set the Location of the Music Folder"
-msgstr "Festlegen des Speicherorts für den Musikordner"
+msgstr "Speicherort des Musikordners festlegen"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_location"
-msgstr "Der erste Schritt besteht darin, den Speicherort Ihres Musikordners zu konfigurieren. => Wählen Sie die Schaltfläche 'Konfigurieren'.<br>Im Fenster 'BDJ4 Konfiguration' wird der Abschnitt 'Allgemein' angezeigt. Der erste Punkt unter 'Allgemein' ist der 'Musikordner' => Ändern Sie den 'Musikordner' auf den Speicherort Ihrer Musik => Lassen Sie das Fenster 'BDJ4 Konfiguration' geöffnet."
+msgstr "Der erste Schritt besteht darin, den Speicherort Ihres Musikordners zu konfigurieren. => Wählen Sie die Schaltfläche „Konfigurieren“. <br> Im Fenster „BDJ4-Konfiguration“ wird der Bereich „Allgemein“ angezeigt. Der erste Eintrag unter „Allgemein“ ist „Musik-Ordner“. => Ändern Sie das Ziel von „Musik-Ordner“ auf den Speicherort Ihrer Musik. => Lassen Sie das Fenster „BDJ4-Konfiguration“ geöffnet."
 
 #. CONTEXT: title of a getting started help section
 msgid "Verify the Configured Dances"
-msgstr "Überprüfen Sie die konfigurierten Tänze"
+msgstr "Konfigurierte Tänze überprüfen"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_configure_dances"
-msgstr "Die Namen der Tänze müssen mit denen übereinstimmen, die Sie verwenden. => Wählen Sie „Tänze bearbeiten“ auf der linken Seite des Fensters „BDJ4-Konfiguration“.<br>Überprüfen Sie die Liste der Tänze. Wenn ein Tanz einen anderen Namen hat als der, den Sie verwenden, wählen Sie den Tanz aus und ändern Sie den Namen. Wenn ein von Ihnen verwendeter Tanz fehlt, wählen Sie die Schaltfläche „Hinzufügen“ und fügen Sie den Tanz hinzu. Wenn es Tänze gibt, die Sie nie verwenden werden, wählen Sie den Tanz aus und wählen Sie dann die Schaltfläche „Entfernen“. => Schließen Sie das Fenster „BDJ4-Konfiguration“."
+msgstr "Die Namen der Tänze müssen mit den von Ihnen verwendeten Bezeichnungen übereinstimmen. => Wählen Sie „Tänze bearbeiten“ auf der linken Seite des Fensters „BDJ4-Konfiguration“. <br> Überprüfen Sie die Liste der Tänze. Wenn ein Tanz anders benannt ist als von Ihnen verwendet, wählen Sie den Tanz aus und ändern Sie den Namen. Sollte ein von Ihnen genutzter Tanz in der Liste fehlen, klicken Sie auf „Neuer Eintrag“ und ergänzen ihn entsprechend. Falls es Tänze gibt, die Sie nicht verwenden werden, wählen Sie den entsprechenden Tanz aus und klicken Sie auf „Entfernen“. => Schließen Sie das Fenster „BDJ4-Konfiguration“."
 
 #. CONTEXT: title of a getting started help section
 msgid "Introduction / Getting Started"
@@ -2525,7 +2559,7 @@ msgstr "Einführung / Erste Schritte"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_intro"
-msgstr "Dieses Dienstprogramm führt Sie durch einige Schritte, um Ihnen den Einstieg zu erleichtern => Wählen Sie die Schaltfläche \"Weiter\", um mit dem nächsten Schritt fortzufahren."
+msgstr "Dieses Hilfsprogramm führt Sie Schritt für Schritt durch die wichtigsten Einstellungen, um Ihnen den Einstieg zu erleichtern. => Wählen Sie die Schaltfläche „Weiter“, um mit dem nächsten Schritt fortzufahren."
 
 #. CONTEXT: title of a getting started help section
 msgid "Play a Playlist"
@@ -2533,7 +2567,7 @@ msgstr "Eine Wiedergabeliste abspielen"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_play_playlist"
-msgstr "Jetzt spielen Sie die gerade erstellte Wiedergabeliste ab. => Wählen Sie die Schaltfläche „Player“. => Wählen Sie im Player-Fenster das Dropdown-Menü „Wiedergabeliste in Warteschlange stellen“. => Wählen Sie den Namen der Wiedergabeliste aus, den Sie zuvor eingegeben haben."
+msgstr "Spielen Sie nun die soeben erstellte Wiedergabeliste ab. => Wählen Sie die Schaltfläche „Player“. => Wählen Sie im Player-Fenster das Dropdown-Menü „Wiedergabeliste zur Warteschlange hinzufügen“. => Wählen Sie den Namen der Wiedergabeliste aus, den Sie zuvor vergeben haben."
 
 #. CONTEXT: title of a getting started help section
 msgid "How is the Music Organised"
@@ -2541,5 +2575,5 @@ msgstr "Wie ist die Musik organisiert?"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_org"
-msgstr "Das Festlegen der Organisationsmethode ist wichtig, damit BallroomDJ 4 beim Erstellen der Datenbank die Informationen zu Ihren Songs ermitteln kann. => Wählen Sie links im Fenster „BDJ4-Konfiguration“ „Organisation“.<br>Viele Leute organisieren ihre Musik, indem sie jeden Tanz in einen separaten Ordner legen.<br>Die Standardorganisation ist „Tanz/Titel“. Wenn Sie iTunes installiert haben, wird der Organisationspfad auf „Albumkünstler/Album/Disc – Track0-Titel“ festgelegt. => Wählen Sie im Dropdown-Menü „Organisationspfad“ die Organisationsmethode aus, die Sie für Ihre Songs verwenden.<br>Wenn der benötigte Organisationspfad nicht vorhanden ist, wählen Sie im Startfenster die Schaltfläche „Support“ und senden Sie eine Support-Nachricht. Fast jeder Organisationspfad kann konfiguriert werden.<br>Wenn Ihre Audiodateien den Tanz im Genre-Audiotag gespeichert haben, aktivieren Sie „Datenbank lädt Tanz aus Genre“. => Lassen Sie das Fenster „BDJ4-Konfiguration“ geöffnet."
+msgstr "Das Festlegen der Organisationsmethode ist wichtig, damit BallroomDJ 4 die Informationen zu Ihren Songs beim Erstellen der Datenbank korrekt ermitteln kann. => Wählen Sie „Organisation“ auf der linken Seite des Fensters „BDJ4-Konfiguration“. <br> Viele organisieren ihre Musik, indem sie für jeden Tanz einen separaten Ordner anlegen. <br> Die Standard-Organisation ist „Tanz/Titel“. Wenn Sie iTunes installiert haben, wird der Organisationspfad auf „Album-Interpret/Album/Disc-Nummer-Titel-Nummer0 Titel“ gesetzt. => Wählen Sie im Dropdown-Feld „Organisationspfad“ die Organisationsmethode aus, die Sie für Ihre Songs verwenden. <br> Falls der benötigte Organisationspfad nicht vorhanden ist, wählen Sie im Start-Fenster die Schaltfläche „Support“ und senden Sie eine Support-Nachricht. Nahezu jeder Organisationspfad kann konfiguriert werden. <br> Wenn in Ihren Audiodateien der Tanz im Genre-Tag gespeichert ist, aktivieren Sie „Datenbank lädt Tanz aus Genre“. => Lassen Sie das Fenster „BDJ4-Konfiguration“ geöffnet."
 

@@ -289,8 +289,6 @@ if [[ $clean == T ]]; then
 fi
 
 if [[ $insttest == F && $sourceonly == F ]]; then
-  # update build number
-
   # only rebuild the version.txt file on linux on the primary development
   # machine.
   if [[ $tag == linux ]]; then
@@ -307,6 +305,9 @@ DEVELOPMENT=$DEVELOPMENT
 _HERE_
     fi
   fi
+fi
+
+if [[ $sourceonly == F ]]; then
   # always create the DIST.txt file
   cat > DIST.txt << _HERE_
 DIST_TAG=${pn_dist}

@@ -109,6 +109,7 @@ typedef enum {
   OPT_M_SCALE,
   OPT_M_SHUTDOWN_SCRIPT,
   OPT_M_STARTUP_SCRIPT,
+  OPT_M_UI_DARK,
   OPT_M_UI_FONT,
   OPT_M_UI_THEME,
   OPT_M_VOLUME_INTFC,
@@ -181,6 +182,7 @@ void    bdjoptSetStr (nlistidx_t idx, const char *value);
 void    bdjoptSetNum (nlistidx_t idx, int64_t value);
 const char *bdjoptGetStrPerQueue (nlistidx_t idx, int musicq);
 int64_t bdjoptGetNumPerQueue (nlistidx_t idx, int musicq);
+bool    bdjoptIsDarkTheme (void);
 void    bdjoptSetStrPerQueue (nlistidx_t idx, const char *value, int musicq);
 void    bdjoptSetNumPerQueue (nlistidx_t idx, int64_t value, int musicq);
 void    bdjoptDeleteProfile (void);
