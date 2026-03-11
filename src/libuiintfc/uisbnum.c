@@ -81,7 +81,7 @@ uisbnumCreate (uiwcont_t *box, int maxWidth)
   uisbSetCallback (sbnum->sb, sbnum->sbnumcb);
 
   uiEntrySetValidate (sbnum->entry, "",
-      uisbnumEntryValidate, sbnum, UIENTRY_DELAY_LONG);
+      uisbnumEntryValidate, sbnum, UIENTRY_DELAY_NO_ICON);
 
   return sbnum;
 }
@@ -370,9 +370,6 @@ uisbnumEntryValidate (uiwcont_t *entry, const char *label, void *udata)
 
   str = uiEntryGetValue (sbnum->entry);
   if (! validate (msg, sizeof (msg), label, str, sbnum->valtype)) {
-// logStderr ("val: %s %s\n", msg, str);
-//    uisbnumValueToStr (sbnum, tbuff, sizeof (tbuff));
-//    uiEntrySetValue (sbnum->entry, tbuff);
     rc = UIENTRY_ERROR;
   }
   if (rc == UIENTRY_OK) {

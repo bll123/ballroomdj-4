@@ -75,8 +75,8 @@ typedef struct uibuttonbase {
   mstime_t        repeatTimer;
   int             repeatMS;
   uibuttonstate_t state;
-  bool            repeatOn : 1;
-  bool            repeating : 1;
+  bool            repeatOn;
+  bool            repeating;
 } uibuttonbase_t;
 
 /* used in all ui interfaces */
@@ -88,8 +88,9 @@ typedef struct uientrybase {
   int             entrySize;
   int             maxSize;
   int32_t         valdelaytime;
-  bool            valdelay : 1;
-  bool            valid : 1;
+  bool            valdelay;
+  bool            valid;
+  bool            useicon;
 } uientrybase_t;
 
 typedef struct uibox uibox_t;
