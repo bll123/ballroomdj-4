@@ -134,6 +134,7 @@ atiSplitVorbisComment (int tagkey, const char *tagname, const char *val)
       slistSetNum (vallist, p, 0);
       p = strtok_r (NULL, ";", &tokstr);
     }
+    mdfree (tval);
   } else {
     slistSetNum (vallist, val, 0);
   }

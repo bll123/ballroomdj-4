@@ -10,6 +10,7 @@
     * Dances: Fix conversion from old 'club' designation.
 * Internal:
     * Minor cleanup.
+    * Fix some memory leaks.
 
 -->
 
