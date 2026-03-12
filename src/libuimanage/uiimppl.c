@@ -481,7 +481,7 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiimppl->sb = uisbtextCreate (hbox);
+  uiimppl->sb = uisbtextCreate (hbox, 2);
   uisbtextSetList (uiimppl->sb, uiimppl->aslist);
   uisbtextSetWidth (uiimppl->sb, uiimppl->asmaxwidth);
   uisbtextSetValue (uiimppl->sb, uiimppl->askey);

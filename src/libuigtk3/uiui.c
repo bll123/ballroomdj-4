@@ -330,6 +330,7 @@ uiSetUICSS (uisetup_t *uisetup)
   p = filedataReadAll (tbuff, NULL);
   if (p != NULL) {
     tp = stpecpy (tp, tend, p);
+    mdfree (p);
   }
 
   /* as of 2026-2-22, the length is 5600+ */

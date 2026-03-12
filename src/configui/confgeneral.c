@@ -47,7 +47,7 @@ confuiInitGeneral (confuigui_t *gui)
   /* CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file */
   snprintf (tmp, sizeof (tmp), _("%s Tags Only"), BDJ4_NAME);
   confuiSBTextInitDataNum (gui, "cu-audio-file-tags",
-      CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
+      CONFUI_SB_TXT_WRITE_AUDIO_FILE_TAGS,
       /* CONTEXT: configuration: write audio file tags: do not write any tags to the audio file */
       WRITE_TAGS_NONE, _("Don't Write"),
       WRITE_TAGS_BDJ_ONLY, tmp,
@@ -56,7 +56,7 @@ confuiInitGeneral (confuigui_t *gui)
       -1);
 
   confuiSBTextInitDataNum (gui, "cu-bpm",
-      CONFUI_SPINBOX_BPM,
+      CONFUI_SB_TXT_BPM,
       /* CONTEXT: configuration: BPM: beats per minute (not bars per minute) */
       BPM_BPM, "BPM",
       /* CONTEXT: configuration: MPM: measures per minute (aka bars per minute) */
@@ -119,7 +119,7 @@ confuiBuildUIGeneral (confuigui_t *gui)
 
   /* CONTEXT: configuration: Whether to display BPM as BPM or MPM */
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("BPM"),
-      CONFUI_SPINBOX_BPM, OPT_G_BPM,
+      CONFUI_SB_TXT_BPM, OPT_G_BPM,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_BPM), NULL);
 
   /* CONTEXT: configuration: the languages for the user interface */
@@ -144,7 +144,7 @@ confuiBuildUIGeneral (confuigui_t *gui)
 
   /* CONTEXT: configuration: which audio tags will be written to the audio file */
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Write Audio File Tags"),
-      CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS, OPT_G_WRITETAGS,
+      CONFUI_SB_TXT_WRITE_AUDIO_FILE_TAGS, OPT_G_WRITETAGS,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_WRITETAGS), NULL);
 
   /* CONTEXT: configuration: classical music: use work/movement */

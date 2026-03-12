@@ -1340,6 +1340,7 @@ sysvarsParseDistFile (const char *path)
       vnm = strtok_r (tp, "=", &tokptrb);
       p = strtok_r (NULL, "=", &tokptrb);
       if (vnm != NULL && p != NULL && strcmp (vnm, "DIST_TAG") == 0) {
+        mdfree (distinfo->dist);
         distinfo->dist = mdstrdup (p);
       }
       tp = strtok_r (NULL, "\r\n", &tokptr);
@@ -1356,6 +1357,7 @@ sysvarsParseDistFileFree (sysdistinfo_t *distinfo)
     return;
   }
 
+  dataFree (distinfo->dist);
   dataFree (distinfo->data);
   mdfree (distinfo);
 }

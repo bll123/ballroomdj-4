@@ -283,7 +283,7 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiexppl->sb = uisbtextCreate (hbox);
+  uiexppl->sb = uisbtextCreate (hbox, 2);
   uisbtextSetList (uiexppl->sb, uiexppl->typelist);
   uisbtextSetWidth (uiexppl->sb, 5);
   uisbtextSetValue (uiexppl->sb, uiexppl->exptype);

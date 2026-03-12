@@ -17,7 +17,7 @@ extern "C" {
 typedef const char * (*uisbtextdisp_t)(void *, int);
 typedef struct uisbtext uisbtext_t;
 
-uisbtext_t * uisbtextCreate (uiwcont_t *box);
+uisbtext_t * uisbtextCreate (uiwcont_t *box, int margin);
 void uisbtextFree (uisbtext_t *sbtext);
 void uisbtextSetDisplayCallback (uisbtext_t *sbtext, uisbtextdisp_t cb, void *udata);
 void uisbtextSetChangeCallback (uisbtext_t *sbtext, callback_t *cb);

@@ -60,7 +60,7 @@ void
 confuiAudioSourceInit (confuigui_t *gui)
 {
   confuiSBTextInitDataNum (gui, "cu-as-type",
-      CONFUI_SPINBOX_AUDIOSRC_MODE,
+      CONFUI_SB_TXT_AUDIOSRC_MODE,
       /* CONTEXT: configuration: audio source mode */
       ASCONF_MODE_OFF, _("Off"),
       /* CONTEXT: configuration: audio source mode */
@@ -70,7 +70,7 @@ confuiAudioSourceInit (confuigui_t *gui)
       -1);
 
   confuiSBTextInitDataNum (gui, "cu-as-type",
-      CONFUI_SPINBOX_AUDIOSRC_TYPE,
+      CONFUI_SB_TXT_AUDIOSRC_TYPE,
       AUDIOSRC_TYPE_BDJ4, "BDJ4",
       /* CONTEXT: audio source: podcast */
       AUDIOSRC_TYPE_PODCAST, _("Podcast"),
@@ -121,9 +121,9 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
 
   /* CONTEXT: configuration: audio source: mode (off/client/server) */
   confuiMakeItemSpinboxText (gui, dvbox, szgrp, szgrpB, _("Mode"),
-      CONFUI_SPINBOX_AUDIOSRC_MODE, -1, CONFUI_OUT_NUM, CONFUI_NO_INDENT,
+      CONFUI_SB_TXT_AUDIOSRC_MODE, -1, CONFUI_OUT_NUM, CONFUI_NO_INDENT,
       confuiAudioSrcModeChg);
-  gui->uiitem [CONFUI_SPINBOX_AUDIOSRC_MODE].audiosrcitemidx = ASCONF_MODE;
+  gui->uiitem [CONFUI_SB_TXT_AUDIOSRC_MODE].audiosrcitemidx = ASCONF_MODE;
 
   /* CONTEXT: configuration: audio source: the client or server name */
   label = _("Name");
@@ -136,9 +136,9 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
   /* CONTEXT: configuration: audio source: type of source */
   label = C_("AudioSource","Type");
   confuiMakeItemSpinboxText (gui, dvbox, szgrp, szgrpB, label,
-      CONFUI_SPINBOX_AUDIOSRC_TYPE, -1, CONFUI_OUT_NUM, CONFUI_NO_INDENT,
+      CONFUI_SB_TXT_AUDIOSRC_TYPE, -1, CONFUI_OUT_NUM, CONFUI_NO_INDENT,
       confuiAudioSrcTypeChg);
-  gui->uiitem [CONFUI_SPINBOX_AUDIOSRC_TYPE].audiosrcitemidx = ASCONF_TYPE;
+  gui->uiitem [CONFUI_SB_TXT_AUDIOSRC_TYPE].audiosrcitemidx = ASCONF_TYPE;
 
   /* CONTEXT: configuration: audio source: the remote client URL */
   label = _("URL");
@@ -151,10 +151,10 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
   /* CONTEXT: configuration: audio source: the port to use for the client or server */
   label = _("Port");
   confuiMakeItemSpinboxNum (gui, dvbox, szgrp, NULL, label,
-      CONFUI_WIDGET_AUDIOSRC_PORT, -1,
+      CONFUI_SB_NUM_AUDIOSRC_PORT, -1,
       443, 30000, 0, confuiAudioSrcPortChg);
-  gui->uiitem [CONFUI_WIDGET_AUDIOSRC_PORT].audiosrcitemidx = ASCONF_PORT;
-  uiSpinboxSetValue (gui->uiitem [CONFUI_WIDGET_AUDIOSRC_PORT].uiwidgetp, 9011);
+  gui->uiitem [CONFUI_SB_NUM_AUDIOSRC_PORT].audiosrcitemidx = ASCONF_PORT;
+  uiSpinboxSetValue (gui->uiitem [CONFUI_SB_NUM_AUDIOSRC_PORT].uiwidgetp, 9011);
 
   /* CONTEXT: configuration: audio source: the client or server user */
   label = _("User");
@@ -228,15 +228,15 @@ confuiAudioSrcSelectLoadValues (confuigui_t *gui, ilistidx_t askey)
   uiEntryValidateClear (gui->uiitem [widx].uiwidgetp);
 
   num = asconfGetNum (gui->asconf, askey, ASCONF_MODE);
-  widx = CONFUI_SPINBOX_AUDIOSRC_MODE;
-  uisbtextSetValue (gui->uiitem [widx].sb, num);
+  widx = CONFUI_SB_TXT_AUDIOSRC_MODE;
+  uisbtextSetValue (gui->uiitem [widx].sbtxt, num);
 
   num = asconfGetNum (gui->asconf, askey, ASCONF_TYPE);
-  widx = CONFUI_SPINBOX_AUDIOSRC_TYPE;
-  uisbtextSetValue (gui->uiitem [widx].sb, num);
+  widx = CONFUI_SB_TXT_AUDIOSRC_TYPE;
+  uisbtextSetValue (gui->uiitem [widx].sbtxt, num);
 
   num = asconfGetNum (gui->asconf, askey, ASCONF_PORT);
-  widx = CONFUI_WIDGET_AUDIOSRC_PORT;
+  widx = CONFUI_SB_NUM_AUDIOSRC_PORT;
   uiSpinboxSetValue (gui->uiitem [widx].uiwidgetp, num);
 
   sval = asconfGetStr (gui->asconf, askey, ASCONF_URI);
@@ -421,21 +421,21 @@ confuiAudioSrcEntryChg (void *udata, const char *label, int widx)
 static bool
 confuiAudioSrcTypeChg (void *udata)
 {
-  confuiAudioSrcSpinboxChg (udata, CONFUI_SPINBOX_AUDIOSRC_TYPE);
+  confuiAudioSrcSpinboxChg (udata, CONFUI_SB_TXT_AUDIOSRC_TYPE);
   return UICB_CONT;
 }
 
 static bool
 confuiAudioSrcModeChg (void *udata)
 {
-  confuiAudioSrcSpinboxChg (udata, CONFUI_SPINBOX_AUDIOSRC_MODE);
+  confuiAudioSrcSpinboxChg (udata, CONFUI_SB_TXT_AUDIOSRC_MODE);
   return UICB_CONT;
 }
 
 static bool
 confuiAudioSrcPortChg (void *udata)
 {
-  confuiAudioSrcSpinboxChg (udata, CONFUI_WIDGET_AUDIOSRC_PORT);
+  confuiAudioSrcSpinboxChg (udata, CONFUI_SB_NUM_AUDIOSRC_PORT);
   return UICB_CONT;
 }
 
@@ -463,7 +463,7 @@ confuiAudioSrcSpinboxChg (void *udata, int widx)
 
   if (gui->uiitem [widx].basetype == CONFUI_SPINBOX_TEXT) {
     /* text spinbox */
-    nval = uisbtextGetValue (gui->uiitem [widx].sb);
+    nval = uisbtextGetValue (gui->uiitem [widx].sbtxt);
   }
   if (gui->uiitem [widx].basetype == CONFUI_SPINBOX_NUM) {
     double    value;
@@ -479,16 +479,16 @@ confuiAudioSrcSpinboxChg (void *udata, int widx)
     return;
   }
 
-  if (widx == CONFUI_SPINBOX_AUDIOSRC_TYPE) {
+  if (widx == CONFUI_SB_TXT_AUDIOSRC_TYPE) {
     if (nval == AUDIOSRC_TYPE_PODCAST) {
-      uiSpinboxSetValue (gui->uiitem [CONFUI_WIDGET_AUDIOSRC_PORT].uiwidgetp, 443);
+      uiSpinboxSetValue (gui->uiitem [CONFUI_SB_NUM_AUDIOSRC_PORT].uiwidgetp, 443);
     }
   }
 
   askey = gui->asconfkey;
   asconfSetNum (gui->asconf, askey, itemidx, nval);
   gui->tables [gui->tablecurr].changed = true;
-  if (widx == CONFUI_SPINBOX_AUDIOSRC_MODE) {
+  if (widx == CONFUI_SB_TXT_AUDIOSRC_MODE) {
     int   mode;
 
     /* clear all status/error messages */
@@ -500,8 +500,8 @@ confuiAudioSrcSpinboxChg (void *udata, int widx)
     if (mode == ASCONF_MODE_SERVER) {
       int   twidx;
 
-      twidx = CONFUI_SPINBOX_AUDIOSRC_TYPE;
-      uisbtextSetValue (gui->uiitem [twidx].sb, AUDIOSRC_TYPE_BDJ4);
+      twidx = CONFUI_SB_TXT_AUDIOSRC_TYPE;
+      uisbtextSetValue (gui->uiitem [twidx].sbtxt, AUDIOSRC_TYPE_BDJ4);
     }
     confuiAudioSrcValidateAll (gui, true);
   }
@@ -654,16 +654,16 @@ confuiAudioSrcSetWidgetStates (confuigui_t *gui, int askey)
   }
 
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_NAME].uilabelp, state);
-  uiWidgetSetState (gui->uiitem [CONFUI_SPINBOX_AUDIOSRC_TYPE].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SB_TXT_AUDIOSRC_TYPE].uilabelp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_URI].uilabelp, ustate);
-  uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_AUDIOSRC_PORT].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SB_NUM_AUDIOSRC_PORT].uilabelp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_USER].uilabelp, upstate);
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_PASS].uilabelp, upstate);
 
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_NAME].uiwidgetp, state);
-  uisbtextSetState (gui->uiitem [CONFUI_SPINBOX_AUDIOSRC_TYPE].sb, state);
+  uisbtextSetState (gui->uiitem [CONFUI_SB_TXT_AUDIOSRC_TYPE].sbtxt, state);
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_URI].uiwidgetp, ustate);
-  uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_AUDIOSRC_PORT].uiwidgetp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SB_NUM_AUDIOSRC_PORT].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_USER].uiwidgetp, upstate);
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_PASS].uiwidgetp, upstate);
 }

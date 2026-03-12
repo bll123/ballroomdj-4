@@ -54,8 +54,11 @@ uiCreateButton (callback_t *uicb, const char *txt,
   GtkWidget       *widget;
 
   uibutton = mdmalloc (sizeof (uibutton_t));
+  uibutton->currimage = NULL;
   uibutton->image = NULL;
+  uibutton->imageraw = NULL;
   uibutton->altimage = NULL;
+  uibutton->altimageraw = NULL;
 
   widget = gtk_button_new ();
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);

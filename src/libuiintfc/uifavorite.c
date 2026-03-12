@@ -38,13 +38,13 @@ uifavoriteSpinboxCreate (uiwcont_t *boxp)
 
   uifavorite = mdmalloc (sizeof (uifavorite_t));
   uifavorite->songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
-  uifavorite->sb = uisbtextCreate (boxp);
+  uifavorite->sb = uisbtextCreate (boxp, 2);
 
   uiutilsAddFavoriteClasses ();
 
   uisbtextSetDisplayCallback (uifavorite->sb, uifavoriteCBHandler, uifavorite);
   uisbtextSetCount (uifavorite->sb, songFavoriteGetCount (uifavorite->songfav));
-  uisbtextSetWidth (uifavorite->sb, 2);
+  uisbtextSetWidth (uifavorite->sb, 3);
 
   return uifavorite;
 }

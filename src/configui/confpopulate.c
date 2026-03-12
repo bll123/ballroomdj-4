@@ -79,14 +79,14 @@ confuiPopulateOptions (confuigui_t *gui)
         break;
       }
       case CONFUI_SPINBOX_TEXT: {
-        nval = uisbtextGetValue (gui->uiitem [widx].sb);
+        nval = uisbtextGetValue (gui->uiitem [widx].sbtxt);
         if (outtype == CONFUI_OUT_STR) {
           if (gui->uiitem [widx].sbkeylist != NULL) {
             sval = nlistGetStr (gui->uiitem [widx].sbkeylist, nval);
-fprintf (stderr, "sb: from keylist: %s\n", sval);
+fprintf (stderr, "sbtxt: from keylist: %s\n", sval);
           } else {
             sval = nlistGetStr (gui->uiitem [widx].displist, nval);
-fprintf (stderr, "sb: from displist: %s\n", sval);
+fprintf (stderr, "sbtxt: from displist: %s\n", sval);
           }
         }
         break;
@@ -110,7 +110,7 @@ fprintf (stderr, "sb: from displist: %s\n", sval);
           nval = 0;
         }
 
-        if (widx == CONFUI_SPINBOX_Q_STOP_AT_TIME) {
+        if (widx == CONFUI_SB_NUM_Q_STOP_AT_TIME) {
           /* convert to hh:mm */
           nval *= 60;
         }
@@ -141,17 +141,17 @@ fprintf (stderr, "sb: from displist: %s\n", sval);
       }
     }
 
-    if (widx == CONFUI_SPINBOX_AUDIO_OUTPUT) {
+    if (widx == CONFUI_SB_TXT_AUDIO_OUTPUT) {
       uisbtext_t    *sb;
 
-      sb = gui->uiitem [widx].sb;
+      sb = gui->uiitem [widx].sbtxt;
       if (! uisbtextIsChanged (sb)) {
         continue;
       }
     }
 
     if (gui->uiitem [widx].bdjoptIdx >= OPT_Q_ACTIVE) {
-      musicq = gui->uiitem [CONFUI_SPINBOX_MUSIC_QUEUE].listidx;
+      musicq = gui->uiitem [CONFUI_SB_TXT_MUSIC_QUEUE].listidx;
       isqueueitem = true;
     }
 
@@ -171,7 +171,7 @@ fprintf (stderr, "sval: %s\n", sval);
           bdjoptSetStrPerQueue (gui->uiitem [widx].bdjoptIdx, sval, musicq);
         } else {
           bdjoptSetStr (gui->uiitem [widx].bdjoptIdx, sval);
-          if (widx == CONFUI_SPINBOX_PLI) {
+          if (widx == CONFUI_SB_TXT_PLI) {
             bdjoptSetStr (OPT_M_PLAYER_INTFC_NM,
                 nlistGetStr (gui->uiitem [widx].displist, nval));
           }
@@ -182,7 +182,7 @@ fprintf (stderr, "sval: %s\n", sval);
         if (isqueueitem) {
           bdjoptSetNumPerQueue (gui->uiitem [widx].bdjoptIdx, nval, musicq);
         } else {
-          if (widx == CONFUI_WIDGET_UI_SCALE) {
+          if (widx == CONFUI_SB_NUM_UI_SCALE) {
             if (nval != bdjoptGetNum (gui->uiitem [widx].bdjoptIdx)) {
               gui->uiitem [widx].changed = true;
             }
@@ -228,7 +228,7 @@ fprintf (stderr, "sval: %s\n", sval);
       }
     } /* out type */
 
-    if (widx == CONFUI_WIDGET_UI_SCALE && gui->uiitem [widx].changed) {
+    if (widx == CONFUI_SB_NUM_UI_SCALE && gui->uiitem [widx].changed) {
       FILE    *fh;
 
       pathbldMakePath (tbuff, sizeof (tbuff),
@@ -253,7 +253,7 @@ fprintf (stderr, "sval: %s\n", sval);
   } /* for each item */
 
   selidx = uisbtextGetValue (
-      gui->uiitem [CONFUI_SPINBOX_DISP_SEL].sb);
+      gui->uiitem [CONFUI_SB_TXT_DISP_SEL].sbtxt);
   confuiDispSaveTable (gui, selidx);
 
   bdjoptSetNum (OPT_G_DEBUGLVL, debug);

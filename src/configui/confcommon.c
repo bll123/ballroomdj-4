@@ -365,7 +365,7 @@ confuiCreateTagListingDisp (confuigui_t *gui)
 
   logProcBegin ();
 
-  selidx = uisbtextGetValue (gui->uiitem [CONFUI_SPINBOX_DISP_SEL].sb);
+  selidx = uisbtextGetValue (gui->uiitem [CONFUI_SB_TXT_DISP_SEL].sbtxt);
 
   if (selidx == DISP_SEL_SONGEDIT_A ||
       selidx == DISP_SEL_SONGEDIT_B ||
@@ -398,7 +398,7 @@ confuiCreateTagSelectedDisp (confuigui_t *gui)
 
   logProcBegin ();
 
-  selidx = uisbtextGetValue (gui->uiitem [CONFUI_SPINBOX_DISP_SEL].sb);
+  selidx = uisbtextGetValue (gui->uiitem [CONFUI_SB_TXT_DISP_SEL].sbtxt);
 
   dispsel = gui->dispsel;
   sellist = dispselGetList (dispsel, selidx);

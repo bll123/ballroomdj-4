@@ -171,7 +171,8 @@ main (int argc, char *argv[])
     confui.gui.uiitem [i].danceitemidx = DANCE_DANCE;
     confui.gui.uiitem [i].uilabelp = NULL;
     confui.gui.uiitem [i].uiwidgetp = NULL;
-    confui.gui.uiitem [i].sb = NULL;
+    confui.gui.uiitem [i].sbtxt = NULL;
+    confui.gui.uiitem [i].sbnum = NULL;
     confui.gui.uiitem [i].callback = NULL;
     confui.gui.uiitem [i].sfcb.entry = NULL;
     confui.gui.uiitem [i].sfcb.window = NULL;
@@ -377,8 +378,13 @@ confuiClosingCallback (void *udata, programstate_t programState)
     uiwcontFree (confui->gui.uiitem [i].uiwidgetp);
     uiwcontFree (confui->gui.uiitem [i].uibutton);
   }
-  for (int i = CONFUI_SPINBOX_BEGIN + 1; i < CONFUI_SPINBOX_MAX; ++i) {
-    uisbtextFree (confui->gui.uiitem [i].sb);
+  for (int i = CONFUI_SB_TXT_BEGIN + 1; i < CONFUI_SB_TXT_MAX; ++i) {
+    uisbtextFree (confui->gui.uiitem [i].sbtxt);
+    nlistFree (confui->gui.uiitem [i].displist);
+    nlistFree (confui->gui.uiitem [i].sbkeylist);
+  }
+  for (int i = CONFUI_SB_NUM_BEGIN + 1; i < CONFUI_SB_NUM_MAX; ++i) {
+    uisbnumFree (confui->gui.uiitem [i].sbnum);
     nlistFree (confui->gui.uiitem [i].displist);
     nlistFree (confui->gui.uiitem [i].sbkeylist);
   }
@@ -512,7 +518,7 @@ confuiBuildUI (configui_t *confui)
     /* first widget on the first page */
     uiWidgetGetPosition (confui->gui.uiitem [CONFUI_ENTRY_CHOOSE_MUSIC_DIR].uilabelp, &ax, &ay);
     /* first widget on the second page */
-    uiWidgetGetPosition (confui->gui.uiitem [CONFUI_SPINBOX_PLI].uilabelp, &bx, &by);
+    uiWidgetGetPosition (confui->gui.uiitem [CONFUI_SB_TXT_PLI].uilabelp, &bx, &by);
     bugxoffset = bx - ax;
     bugyoffset = by - ay;
     uiddSetOffset (confui->gui.uiitem [CONFUI_DD_LOCALE].uidd, bugxoffset, bugyoffset);

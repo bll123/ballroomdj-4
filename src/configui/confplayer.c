@@ -43,7 +43,7 @@ confuiInitPlayer (confuigui_t *gui)
   char            *volintfc;
 
   confuiSBTextInitDataNum (gui, "cu-player-clock",
-      CONFUI_SPINBOX_PLAYER_CLOCK,
+      CONFUI_SB_TXT_PLAYER_CLOCK,
       /* CONTEXT: configuration: player: clock: off */
       TM_CLOCK_OFF, _("Off"),
       /* CONTEXT: configuration: player: clock: local */
@@ -57,7 +57,7 @@ confuiInitPlayer (confuigui_t *gui)
       -1);
 
   confuiSBTextInitDataNum (gui, "cu-player-fade-type",
-      CONFUI_SPINBOX_PLAYER_FADE_TYPE,
+      CONFUI_SB_TXT_PLAYER_FADE_TYPE,
       /* CONTEXT: configuration: player: fade-type: exponential sine */
       FADETYPE_EXPONENTIAL_SINE, _("Exponential Sine"),
       /* CONTEXT: configuration: player: fade-type: half sine */
@@ -103,8 +103,8 @@ confuiBuildUIPlayer (confuigui_t *gui)
 
   /* CONTEXT: configuration: which player interface to use */
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Player"),
-      CONFUI_SPINBOX_PLI, OPT_M_PLAYER_INTFC,
-      CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_PLI].listidx, NULL);
+      CONFUI_SB_TXT_PLI, OPT_M_PLAYER_INTFC,
+      CONFUI_OUT_STR, gui->uiitem [CONFUI_SB_TXT_PLI].listidx, NULL);
 
   /* CONTEXT: configuration: additional arguments for player */
   confuiMakeItemEntry (gui, vbox, szgrp, _("Player Arguments"),
@@ -113,28 +113,28 @@ confuiBuildUIPlayer (confuigui_t *gui)
 
   /* CONTEXT: configuration: which audio interface to use */
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Audio"),
-      CONFUI_SPINBOX_VOL_INTFC, OPT_M_VOLUME_INTFC,
-      CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_VOL_INTFC].listidx,
+      CONFUI_SB_TXT_VOL_INTFC, OPT_M_VOLUME_INTFC,
+      CONFUI_OUT_STR, gui->uiitem [CONFUI_SB_TXT_VOL_INTFC].listidx,
       confuiPlayerAudioSinkChg);
 
   /* CONTEXT: configuration: which audio sink (output) to use */
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Audio Output"),
-      CONFUI_SPINBOX_AUDIO_OUTPUT, OPT_MP_AUDIOSINK,
-      CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx, NULL);
+      CONFUI_SB_TXT_AUDIO_OUTPUT, OPT_MP_AUDIOSINK,
+      CONFUI_OUT_STR, gui->uiitem [CONFUI_SB_TXT_AUDIO_OUTPUT].listidx, NULL);
 
   /* CONTEXT: configuration: which controller to use */
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Controller"),
-      CONFUI_SPINBOX_CONTROLLER, OPT_M_CONTROLLER_INTFC,
-      CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_CONTROLLER].listidx, NULL);
+      CONFUI_SB_TXT_CONTROLLER, OPT_M_CONTROLLER_INTFC,
+      CONFUI_OUT_STR, gui->uiitem [CONFUI_SB_TXT_CONTROLLER].listidx, NULL);
 
   /* CONTEXT: configuration: the volume used when starting the player */
   confuiMakeItemSpinboxNum (gui, vbox, szgrp, szgrpB, _("Default Volume"),
-      CONFUI_WIDGET_DEFAULT_VOL, OPT_P_DEFAULTVOLUME,
+      CONFUI_SB_NUM_DEFAULT_VOL, OPT_P_DEFAULTVOLUME,
       1, 100, bdjoptGetNum (OPT_P_DEFAULTVOLUME), NULL);
 
   /* CONTEXT: (noun) configuration: the number of items loaded into the music queue */
   confuiMakeItemSpinboxNum (gui, vbox, szgrp, szgrpB, _("Queue Length"),
-      CONFUI_WIDGET_PL_QUEUE_LEN, OPT_G_PLAYERQLEN,
+      CONFUI_SB_NUM_PL_QUEUE_LEN, OPT_G_PLAYERQLEN,
       20, 400, bdjoptGetNum (OPT_G_PLAYERQLEN), NULL);
 
   /* CONTEXT: configuration: The completion message displayed on the marquee when a playlist is finished */
@@ -144,7 +144,7 @@ confuiBuildUIPlayer (confuigui_t *gui)
 
   /* CONTEXT: configuration: type of fade to apply */
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Fade Type"),
-      CONFUI_SPINBOX_PLAYER_FADE_TYPE, OPT_P_FADETYPE, CONFUI_OUT_NUM,
+      CONFUI_SB_TXT_PLAYER_FADE_TYPE, OPT_P_FADETYPE, CONFUI_OUT_NUM,
       bdjoptGetNum (OPT_P_FADETYPE), NULL);
 
   /* CONTEXT: configuration: whether or not to show the speed reset button */
@@ -154,7 +154,7 @@ confuiBuildUIPlayer (confuigui_t *gui)
 
   /* CONTEXT: configuration: the clock format */
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Clock"),
-      CONFUI_SPINBOX_PLAYER_CLOCK, OPT_G_CLOCK_DISP, CONFUI_OUT_NUM,
+      CONFUI_SB_TXT_PLAYER_CLOCK, OPT_G_CLOCK_DISP, CONFUI_OUT_NUM,
       bdjoptGetNum (OPT_G_CLOCK_DISP), NULL);
 
   uiBoxPostProcess (vbox);
@@ -174,7 +174,7 @@ confuiLoadVolIntfcList (confuigui_t *gui)
   /* if there is no configuration file */
   interfaces = volumeInterfaceList ();
   confuiLoadIntfcList (gui, interfaces, OPT_M_VOLUME_INTFC,
-      CONFUI_OPT_NONE, CONFUI_SPINBOX_VOL_INTFC, 0);
+      CONFUI_OPT_NONE, CONFUI_SB_TXT_VOL_INTFC, 0);
   ilistFree (interfaces);
 }
 
@@ -185,7 +185,7 @@ confuiLoadPlayerIntfcList (confuigui_t *gui)
 
   interfaces = pliInterfaceList ();
   confuiLoadIntfcList (gui, interfaces, OPT_M_PLAYER_INTFC,
-      OPT_M_PLAYER_INTFC_NM, CONFUI_SPINBOX_PLI, 0);
+      OPT_M_PLAYER_INTFC_NM, CONFUI_SB_TXT_PLI, 0);
   ilistFree (interfaces);
 }
 
@@ -204,17 +204,17 @@ confuiPlayerAudioSinkChg (void *udata)
     return;
   }
 
-  widx = CONFUI_SPINBOX_VOL_INTFC;
+  widx = CONFUI_SB_TXT_VOL_INTFC;
   if (gui->uiitem [widx].uiwidgetp == NULL) {
     return;
   }
 
-  nval = uisbtextGetValue (gui->uiitem [widx].sb);
+  nval = uisbtextGetValue (gui->uiitem [widx].sbtxt);
   sval = nlistGetStr (gui->uiitem [widx].sbkeylist, nval);
   bdjoptSetStr (OPT_M_VOLUME_INTFC, sval);
   confuiPlayerLoadSinkList (gui, sval);
 
-  widx = CONFUI_SPINBOX_AUDIO_OUTPUT;
+  widx = CONFUI_SB_TXT_AUDIO_OUTPUT;
   if (gui->uiitem [widx].uiwidgetp == NULL) {
     return;
   }
@@ -225,8 +225,8 @@ confuiPlayerAudioSinkChg (void *udata)
   nlistCalcMaxValueWidth (tlist);
   maxWidth = nlistGetMaxValueWidth (tlist);
 
-  uisbtextSetList (gui->uiitem [widx].sb, tlist);
-  uisbtextSetWidth (gui->uiitem [widx].sb, maxWidth);
+  uisbtextSetList (gui->uiitem [widx].sbtxt, tlist);
+  uisbtextSetWidth (gui->uiitem [widx].sbtxt, maxWidth);
 }
 
 static void
@@ -256,18 +256,18 @@ confuiPlayerLoadSinkList (confuigui_t *gui, const char *intfc)
   /* CONTEXT: configuration: audio: The default audio sink (audio output) */
   nlistSetStr (tlist, 0, _("Default"));
   nlistSetStr (llist, 0, VOL_DEFAULT_NAME);
-  gui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx = 0;
+  gui->uiitem [CONFUI_SB_TXT_AUDIO_OUTPUT].listidx = 0;
   audiosink = bdjoptGetStr (OPT_MP_AUDIOSINK);
   for (int i = 0; i < sinklist.count; ++i) {
     if (audiosink != NULL &&
         strcmp (sinklist.sinklist [i].name, audiosink) == 0) {
-      gui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx = i + 1;
+      gui->uiitem [CONFUI_SB_TXT_AUDIO_OUTPUT].listidx = i + 1;
     }
     nlistSetStr (tlist, i + 1, sinklist.sinklist [i].description);
     nlistSetStr (llist, i + 1, sinklist.sinklist [i].name);
   }
-  gui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].displist = tlist;
-  gui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].sbkeylist = llist;
+  gui->uiitem [CONFUI_SB_TXT_AUDIO_OUTPUT].displist = tlist;
+  gui->uiitem [CONFUI_SB_TXT_AUDIO_OUTPUT].sbkeylist = llist;
 
   volumeFreeSinkList (&sinklist);
   volumeFree (volume);
@@ -280,11 +280,11 @@ confuiLoadControllerIntfcList (confuigui_t *gui)
 
   interfaces = controllerInterfaceList ();
   confuiLoadIntfcList (gui, interfaces, OPT_M_CONTROLLER_INTFC,
-      CONFUI_OPT_NONE, CONFUI_SPINBOX_CONTROLLER, 1);
+      CONFUI_OPT_NONE, CONFUI_SB_TXT_CONTROLLER, 1);
   ilistFree (interfaces);
 
-  nlistSetStr (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].displist, 0,
+  nlistSetStr (gui->uiitem [CONFUI_SB_TXT_CONTROLLER].displist, 0,
       /* CONTEXT: configuration: controller: no controller */
       C_("Controller","None"));
-  nlistSetStr (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].sbkeylist, 0, "");
+  nlistSetStr (gui->uiitem [CONFUI_SB_TXT_CONTROLLER].sbkeylist, 0, "");
 }

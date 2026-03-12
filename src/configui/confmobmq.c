@@ -32,7 +32,7 @@ void
 confuiInitMobileMarquee (confuigui_t *gui)
 {
   confuiSBTextInitDataNum (gui, "cu-mobmq-type",
-      CONFUI_SPINBOX_MOBMQ_TYPE,
+      CONFUI_SB_TXT_MOBMQ_TYPE,
       /* CONTEXT: configuration: mobile marquee type: off */
       MOBMQ_TYPE_OFF, _("Off"),
       /* CONTEXT: configuration: mobile marquee type: local */
@@ -62,7 +62,7 @@ confuiBuildUIMobileMarquee (confuigui_t *gui)
 
   /* CONTEXT: configuration: mobile marquee: mode: (off/local/internet)*/
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Mode"),
-      CONFUI_SPINBOX_MOBMQ_TYPE, OPT_P_MOBMQ_TYPE,
+      CONFUI_SB_TXT_MOBMQ_TYPE, OPT_P_MOBMQ_TYPE,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_P_MOBMQ_TYPE),
       confuiMobmqTypeChg);
 
@@ -82,7 +82,7 @@ confuiBuildUIMobileMarquee (confuigui_t *gui)
 
   /* CONTEXT: configuration: the port to use for the mobile marquee */
   confuiMakeItemSpinboxNum (gui, vbox, szgrp, NULL, _("Port"),
-      CONFUI_WIDGET_MOBMQ_PORT, OPT_P_MOBMQ_PORT,
+      CONFUI_SB_NUM_MOBMQ_PORT, OPT_P_MOBMQ_PORT,
       8000, 30000, bdjoptGetNum (OPT_P_MOBMQ_PORT),
       confuiMobmqPortChg);
 
@@ -119,7 +119,7 @@ confuiMobmqTypeChg (void *udata)
     logProcEnd ("not-table-mobmq");
     return UIENTRY_OK;
   }
-  type = uisbtextGetValue (gui->uiitem [CONFUI_SPINBOX_MOBMQ_TYPE].sb);
+  type = uisbtextGetValue (gui->uiitem [CONFUI_SB_TXT_MOBMQ_TYPE].sbtxt);
   bdjoptSetNum (OPT_P_MOBMQ_TYPE, type);
 
   /* on a type change, clear any existing validation errors */
@@ -144,7 +144,7 @@ confuiMobmqPortChg (void *udata)
     logProcEnd ("not-table-mobmq");
     return UIENTRY_OK;
   }
-  value = uisbtextGetValue (gui->uiitem [CONFUI_WIDGET_MOBMQ_PORT].sb);
+  value = uisbtextGetValue (gui->uiitem [CONFUI_SB_NUM_MOBMQ_PORT].sbtxt);
   nval = (long) value;
   bdjoptSetNum (OPT_P_MOBMQ_PORT, nval);
   confuiUpdateMobmqQrcode (gui);
@@ -247,19 +247,19 @@ confuiMobmqSetWidgetStates (confuigui_t *gui, int type)
   if (type == MOBMQ_TYPE_LOCAL || type == MOBMQ_TYPE_OFF) {
     uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_TAG].uilabelp, UIWIDGET_DISABLE);
     uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_KEY].uilabelp, UIWIDGET_DISABLE);
-    uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_MOBMQ_PORT].uilabelp, UIWIDGET_ENABLE);
+    uiWidgetSetState (gui->uiitem [CONFUI_SB_NUM_MOBMQ_PORT].uilabelp, UIWIDGET_ENABLE);
 
     uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_TAG].uiwidgetp, UIWIDGET_DISABLE);
     uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_KEY].uiwidgetp, UIWIDGET_DISABLE);
-    uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_MOBMQ_PORT].uiwidgetp, UIWIDGET_ENABLE);
+    uiWidgetSetState (gui->uiitem [CONFUI_SB_NUM_MOBMQ_PORT].uiwidgetp, UIWIDGET_ENABLE);
   }
   if (type == MOBMQ_TYPE_INTERNET) {
     uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_TAG].uilabelp, UIWIDGET_ENABLE);
     uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_KEY].uilabelp, UIWIDGET_ENABLE);
-    uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_MOBMQ_PORT].uilabelp, UIWIDGET_DISABLE);
+    uiWidgetSetState (gui->uiitem [CONFUI_SB_NUM_MOBMQ_PORT].uilabelp, UIWIDGET_DISABLE);
 
     uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_TAG].uiwidgetp, UIWIDGET_ENABLE);
     uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_KEY].uiwidgetp, UIWIDGET_ENABLE);
-    uiWidgetSetState (gui->uiitem [CONFUI_WIDGET_MOBMQ_PORT].uiwidgetp, UIWIDGET_DISABLE);
+    uiWidgetSetState (gui->uiitem [CONFUI_SB_NUM_MOBMQ_PORT].uiwidgetp, UIWIDGET_DISABLE);
   }
 }

@@ -40,7 +40,7 @@ uiratingSpinboxCreate (uiwcont_t *boxp, bool allflag)
   uirating = mdmalloc (sizeof (uirating_t));
   uirating->ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   uirating->allflag = allflag;
-  uirating->sb = uisbtextCreate (boxp);
+  uirating->sb = uisbtextCreate (boxp, 2);
 
   maxw = ratingGetMaxWidth (uirating->ratings);
   if (allflag == UIRATING_ALL) {

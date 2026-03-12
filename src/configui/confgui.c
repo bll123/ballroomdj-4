@@ -26,6 +26,7 @@
 #include "ui.h"
 #include "uidd.h"
 #include "uiduallist.h"
+#include "uisbnum.h"
 #include "uisbtext.h"
 #include "uiutils.h"
 #include "validate.h"
@@ -282,8 +283,8 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, CONFUI_NO_INDENT);
 
-  sb = uisbtextCreate (hbox);
-  gui->uiitem [widx].sb = sb;
+  sb = uisbtextCreate (hbox, 4);
+  gui->uiitem [widx].sbtxt = sb;
   list = gui->uiitem [widx].displist;
   keylist = gui->uiitem [widx].sbkeylist;
   if (outtype == CONFUI_OUT_STR) {
@@ -299,7 +300,6 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   uisbtextSetList (sb, list);
   uisbtextSetValue (sb, value);
   uisbtextSetWidth (sb, maxWidth);
-//  uiWidgetSetMarginStart (uiwidgetp, 4);
   if (szgrpB != NULL) {
     uisbtextSizeGroupAdd (sb, szgrpB);
   }
@@ -364,8 +364,9 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     uiwcont_t *szgrpB, const char *txt, int widx, int bdjoptIdx,
     int min, int max, int value, void *cb)
 {
-  uiwcont_t  *hbox;
-  uiwcont_t  *uiwidgetp;
+  uiwcont_t   *hbox;
+//  uiwcont_t   *uiwidgetp;
+  uisbnum_t   *sb;
 
   logProcBegin ();
 
@@ -375,20 +376,27 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   uiBoxPackStart (boxp, hbox);
 
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, CONFUI_NO_INDENT);
-  uiwidgetp = uiSpinboxIntCreate ();
-  uiSpinboxSet (uiwidgetp, (double) min, (double) max);
-  uiSpinboxSetValue (uiwidgetp, (double) value);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetSetMarginStart (uiwidgetp, 4);
+
+//  uiwidgetp = uiSpinboxIntCreate ();
+  sb = uisbnumCreate (hbox, 6, 4);
+  uisbnumSetLimits (sb, (double) min, (double) max, 0);
+  uisbnumSetValue (sb, (double) value);
+//  uiSpinboxSet (uiwidgetp, (double) min, (double) max);
+//  uiSpinboxSetValue (uiwidgetp, (double) value);
+//  uiBoxPackStart (hbox, uiwidgetp);
+//  uiWidgetSetMarginStart (uiwidgetp, 4);
   if (szgrpB != NULL) {
-    uiSizeGroupAdd (szgrpB, uiwidgetp);
+    uisbnumSizeGroupAdd (sb, szgrpB);
+//    uiSizeGroupAdd (szgrpB, uiwidgetp);
   }
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   if (cb != NULL) {
     gui->uiitem [widx].callback = callbackInit (cb, gui, NULL);
-    uiSpinboxSetValueChangedCallback (uiwidgetp, gui->uiitem [widx].callback);
+    uisbnumSetChangeCallback (sb, gui->uiitem [widx].callback);
+//    uiSpinboxSetValueChangedCallback (uiwidgetp, gui->uiitem [widx].callback);
   }
-  gui->uiitem [widx].uiwidgetp = uiwidgetp;
+//  gui->uiitem [widx].uiwidgetp = uiwidgetp;
+  gui->uiitem [widx].sbnum = sb;
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
@@ -402,7 +410,8 @@ confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp
     double min, double max, double value, int indent)
 {
   uiwcont_t  *hbox;
-  uiwcont_t  *uiwidgetp;
+//  uiwcont_t  *uiwidgetp;
+  uisbnum_t   *sb;
 
   logProcBegin ();
 
@@ -412,16 +421,21 @@ confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp
   uiBoxPackStart (boxp, hbox);
 
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, indent);
-  uiwidgetp = uiSpinboxDoubleCreate ();
-  uiSpinboxSet (uiwidgetp, min, max);
-  uiSpinboxSetValue (uiwidgetp, value);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetSetMarginStart (uiwidgetp, 4);
+  sb = uisbnumCreate (hbox, 6, 4);
+  uisbnumSetLimits (sb, min, max, 1);
+  uisbnumSetValue (sb, value);
+//  uiwidgetp = uiSpinboxDoubleCreate ();
+//  uiSpinboxSet (uiwidgetp, min, max);
+//  uiSpinboxSetValue (uiwidgetp, value);
+//  uiBoxPackStart (hbox, uiwidgetp);
+//  uiWidgetSetMarginStart (uiwidgetp, 4);
   if (szgrpB != NULL) {
-    uiSizeGroupAdd (szgrpB, uiwidgetp);
+    uisbnumSizeGroupAdd (sb, szgrpB);
+//    uiSizeGroupAdd (szgrpB, uiwidgetp);
   }
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
-  gui->uiitem [widx].uiwidgetp = uiwidgetp;
+//  gui->uiitem [widx].uiwidgetp = uiwidgetp;
+  gui->uiitem [widx].sbnum = sb;
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   logProcEnd ("");

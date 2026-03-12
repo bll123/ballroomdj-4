@@ -706,7 +706,7 @@ starterBuildUI (startui_t  *starter)
 
   /* get the profile list after bdjopt has been initialized */
   dispidx = starterGetProfiles (starter);
-  starter->sb = uisbtextCreate (hbox);
+  starter->sb = uisbtextCreate (hbox, 4);
   uisbtextSetCount (starter->sb, nlistGetCount (starter->proflist));
   uisbtextSetDisplayCallback (starter->sb, starterSetProfile, starter);
   uisbtextSetWidth (starter->sb, starter->maxProfileWidth);

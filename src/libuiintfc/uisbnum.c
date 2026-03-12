@@ -50,17 +50,20 @@ static void uisbnumSetDisplay (uisbnum_t *sbnum);
 static void uisbnumSetFormat (uisbnum_t *sbnum);
 static int uisbnumEntryValidate (uiwcont_t *entry, const char *label, void *udata);
 static void uisbnumValueToStr (uisbnum_t *sbnum, char *tbuff, size_t sz);
+static void uisbnumProcessChangeCallback (uisbnum_t *sbnum);
 
 uisbnum_t *
-uisbnumCreate (uiwcont_t *box, int maxWidth)
+uisbnumCreate (uiwcont_t *box, int maxSize, int margin)
 {
   uisbnum_t  *sbnum;
 
   sbnum = mdmalloc (sizeof (uisbnum_t));
-  sbnum->entry = uiEntryInit (maxWidth, maxWidth);
+fprintf (stderr, "sbnum: create entry\n");
+  sbnum->entry = uiEntryInit (10, maxSize);
   uiEntryAlignEnd (sbnum->entry);
   uiWidgetSetAllMargins (sbnum->entry, 0);
-  sbnum->sb = uisbCreate (box, sbnum->entry, SB_IS_NUM);
+fprintf (stderr, "sbnum: create sb\n");
+  sbnum->sb = uisbCreate (box, sbnum->entry, SB_IS_NUM, margin);
   uisbSetRepeat (sbnum->sb, 50);
   sbnum->sbnumcb = NULL;
   sbnum->chgcb = NULL;
@@ -334,19 +337,14 @@ uisbnumSetDisplay (uisbnum_t *sbnum)
 
   if (sbnum->old_value != SB_INVALID &&
       sbnum->old_value != sbnum->value) {
+fprintf (stderr, "sbnum: chg: set true\n");
     sbnum->changed = true;
-  }
-
-  if (sbnum->chgcb != NULL) {
-    if (sbnum->changed) {
-      callbackHandler (sbnum->chgcb);
-      sbnum->changed = false;
-    }
   }
 
   uisbnumValueToStr (sbnum, tbuff, sizeof (tbuff));
   sbnum->set_value = true;
   uiEntrySetValue (sbnum->entry, tbuff);
+  uisbnumProcessChangeCallback (sbnum);
   sbnum->set_value = false;
 }
 
@@ -390,6 +388,8 @@ uisbnumEntryValidate (uiwcont_t *entry, const char *label, void *udata)
     sbnum->changed = true;
   }
 
+  uisbnumProcessChangeCallback (sbnum);
+
   return rc;
 }
 
@@ -412,5 +412,16 @@ uisbnumValueToStr (uisbnum_t *sbnum, char *tbuff, size_t sz)
   }
   if (sbnum->type == SBNUM_TIME_PRECISE) {
     tmutilToMSD ((time_t) sbnum->value, tbuff, sz, sbnum->digits);
+  }
+}
+
+static void
+uisbnumProcessChangeCallback (uisbnum_t *sbnum)
+{
+  if (sbnum->chgcb != NULL) {
+    if (sbnum->changed) {
+      callbackHandler (sbnum->chgcb);
+      sbnum->changed = false;
+    }
   }
 }

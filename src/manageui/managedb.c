@@ -214,7 +214,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  managedb->dbsb = uisbtextCreate (hbox);
+  managedb->dbsb = uisbtextCreate (hbox, 2);
   uisbtextSetList (managedb->dbsb, managedb->dblist);
   uisbtextSetWidth (managedb->dbsb, managedb->dblistWidth);
   uisbtextSetValue (managedb->dbsb, MANAGE_DB_CHECK_NEW);

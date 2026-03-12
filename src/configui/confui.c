@@ -61,7 +61,7 @@ confuiBuildUIUserInterface (confuigui_t *gui)
 
   /* CONTEXT: configuration: scaling factor for the user interface */
   confuiMakeItemSpinboxNum (gui, vbox, szgrp, NULL, _("Scale"),
-      CONFUI_WIDGET_UI_SCALE, OPT_M_SCALE,
+      CONFUI_SB_NUM_UI_SCALE, OPT_M_SCALE,
       1, 4, bdjoptGetNum (OPT_M_SCALE), NULL);
 
   /* CONTEXT: configuration: the accent color to use for the user interface */

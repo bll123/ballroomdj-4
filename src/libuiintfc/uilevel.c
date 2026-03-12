@@ -41,7 +41,7 @@ uilevelSpinboxCreate (uiwcont_t *boxp, bool allflag)
   uilevel->levels = bdjvarsdfGet (BDJVDF_LEVELS);
   uilevel->allflag = allflag;
 
-  uilevel->sb = uisbtextCreate (boxp);
+  uilevel->sb = uisbtextCreate (boxp, 2);
 
   maxw = levelGetMaxWidth (uilevel->levels);
   if (allflag) {

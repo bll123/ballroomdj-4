@@ -62,7 +62,7 @@ confuiInitEditDances (confuigui_t *gui)
   confuiLoadDanceTypeList (gui);
 
   confuiSBTextInitDataNum (gui, "cu-dance-speed",
-      CONFUI_SPINBOX_DANCE_SPEED,
+      CONFUI_SB_TXT_DANCE_SPEED,
       /* CONTEXT: configuration: dance speed */
       DANCE_SPEED_SLOW, _("slow"),
       /* CONTEXT: configuration: dance speed */
@@ -72,7 +72,7 @@ confuiInitEditDances (confuigui_t *gui)
       -1);
 
   confuiSBTextInitDataNum (gui, "cu-dance-time-sig",
-      CONFUI_SPINBOX_DANCE_TIME_SIG,
+      CONFUI_SB_TXT_DANCE_TIME_SIG,
       /* CONTEXT: configuration: dance time signature */
       DANCE_TIMESIG_24, _("2/4"),
       /* CONTEXT: configuration: dance time signature */
@@ -135,15 +135,15 @@ confuiBuildUIEditDances (confuigui_t *gui)
 
   /* CONTEXT: configuration: dances: the type of the dance (club/latin/standard) */
   confuiMakeItemSpinboxText (gui, dvbox, szgrp, szgrpB, C_("Dance","Type"),
-      CONFUI_SPINBOX_DANCE_TYPE, -1, CONFUI_OUT_NUM, 0,
+      CONFUI_SB_TXT_DANCE_TYPE, -1, CONFUI_OUT_NUM, 0,
       confuiDanceSpinboxTypeChg);
-  gui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].danceitemidx = DANCE_TYPE;
+  gui->uiitem [CONFUI_SB_TXT_DANCE_TYPE].danceitemidx = DANCE_TYPE;
 
   /* CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow) */
   confuiMakeItemSpinboxText (gui, dvbox, szgrp, szgrpB, _("Speed"),
-      CONFUI_SPINBOX_DANCE_SPEED, -1, CONFUI_OUT_NUM, 0,
+      CONFUI_SB_TXT_DANCE_SPEED, -1, CONFUI_OUT_NUM, 0,
       confuiDanceSpinboxSpeedChg);
-  gui->uiitem [CONFUI_SPINBOX_DANCE_SPEED].danceitemidx = DANCE_SPEED;
+  gui->uiitem [CONFUI_SB_TXT_DANCE_SPEED].danceitemidx = DANCE_SPEED;
 
   confuiMakeItemEntry (gui, dvbox, szgrp, tagdefs [TAG_TAGS].displayname,
       CONFUI_ENTRY_DANCE_TAGS, -1, "", CONFUI_NO_INDENT);
@@ -165,22 +165,22 @@ confuiBuildUIEditDances (confuigui_t *gui)
   /* CONTEXT: configuration: dances: low BPM (or MPM) setting */
   snprintf (tbuff, sizeof (tbuff), _("Low %s"), bpmstr);
   confuiMakeItemSpinboxNum (gui, dvbox, szgrp, szgrpD, tbuff,
-      CONFUI_WIDGET_DANCE_MPM_LOW, -1, 10, 500, 0,
+      CONFUI_SB_NUM_DANCE_MPM_LOW, -1, 10, 500, 0,
       confuiDanceSpinboxLowMPMChg);
-  gui->uiitem [CONFUI_WIDGET_DANCE_MPM_LOW].danceitemidx = DANCE_MPM_LOW;
+  gui->uiitem [CONFUI_SB_NUM_DANCE_MPM_LOW].danceitemidx = DANCE_MPM_LOW;
 
   /* CONTEXT: configuration: dances: high BPM (or MPM) setting */
   snprintf (tbuff, sizeof (tbuff), _("High %s"), bpmstr);
   confuiMakeItemSpinboxNum (gui, dvbox, szgrp, szgrpD, tbuff,
-      CONFUI_WIDGET_DANCE_MPM_HIGH, -1, 10, 500, 0,
+      CONFUI_SB_NUM_DANCE_MPM_HIGH, -1, 10, 500, 0,
       confuiDanceSpinboxHighMPMChg);
-  gui->uiitem [CONFUI_WIDGET_DANCE_MPM_HIGH].danceitemidx = DANCE_MPM_HIGH;
+  gui->uiitem [CONFUI_SB_NUM_DANCE_MPM_HIGH].danceitemidx = DANCE_MPM_HIGH;
 
   /* CONTEXT: configuration: dances: time signature for the dance */
   confuiMakeItemSpinboxText (gui, dvbox, szgrp, szgrpC, _("Time Signature"),
-      CONFUI_SPINBOX_DANCE_TIME_SIG, -1, CONFUI_OUT_NUM, 0,
+      CONFUI_SB_TXT_DANCE_TIME_SIG, -1, CONFUI_OUT_NUM, 0,
       confuiDanceSpinboxTimeSigChg);
-  gui->uiitem [CONFUI_SPINBOX_DANCE_TIME_SIG].danceitemidx = DANCE_TIMESIG;
+  gui->uiitem [CONFUI_SB_TXT_DANCE_TIME_SIG].danceitemidx = DANCE_TIMESIG;
 
   uivlSetSelectChgCallback (gui->tables [CONFUI_ID_DANCE].uivl,
       confuiDanceSelect, gui);
@@ -263,25 +263,25 @@ confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t dkey)
   uiEntryValidateClear (gui->uiitem [widx].uiwidgetp);
 
   num = danceGetNum (dances, dkey, DANCE_MPM_HIGH);
-  widx = CONFUI_WIDGET_DANCE_MPM_HIGH;
+  widx = CONFUI_SB_NUM_DANCE_MPM_HIGH;
   num = danceConvertMPMtoBPM (dkey, num);
   uiSpinboxSetValue (gui->uiitem [widx].uiwidgetp, num);
 
   num = danceGetNum (dances, dkey, DANCE_MPM_LOW);
-  widx = CONFUI_WIDGET_DANCE_MPM_LOW;
+  widx = CONFUI_SB_NUM_DANCE_MPM_LOW;
   num = danceConvertMPMtoBPM (dkey, num);
   uiSpinboxSetValue (gui->uiitem [widx].uiwidgetp, num);
 
   num = danceGetNum (dances, dkey, DANCE_SPEED);
-  widx = CONFUI_SPINBOX_DANCE_SPEED;
-  uisbtextSetValue (gui->uiitem [widx].sb, num);
+  widx = CONFUI_SB_TXT_DANCE_SPEED;
+  uisbtextSetValue (gui->uiitem [widx].sbtxt, num);
 
-  widx = CONFUI_SPINBOX_DANCE_TIME_SIG;
-  uisbtextSetValue (gui->uiitem [widx].sb, timesig);
+  widx = CONFUI_SB_TXT_DANCE_TIME_SIG;
+  uisbtextSetValue (gui->uiitem [widx].sbtxt, timesig);
 
   num = danceGetNum (dances, dkey, DANCE_TYPE);
-  widx = CONFUI_SPINBOX_DANCE_TYPE;
-  uisbtextSetValue (gui->uiitem [widx].sb, num);
+  widx = CONFUI_SB_TXT_DANCE_TYPE;
+  uisbtextSetValue (gui->uiitem [widx].sbtxt, num);
 }
 
 void
@@ -430,35 +430,35 @@ confuiDanceEntryChg (uiwcont_t *entry, const char *label, void *udata, int widx)
 static bool
 confuiDanceSpinboxTypeChg (void *udata)
 {
-  confuiDanceSpinboxChg (udata, CONFUI_SPINBOX_DANCE_TYPE);
+  confuiDanceSpinboxChg (udata, CONFUI_SB_TXT_DANCE_TYPE);
   return UICB_CONT;
 }
 
 static bool
 confuiDanceSpinboxSpeedChg (void *udata)
 {
-  confuiDanceSpinboxChg (udata, CONFUI_SPINBOX_DANCE_SPEED);
+  confuiDanceSpinboxChg (udata, CONFUI_SB_TXT_DANCE_SPEED);
   return UICB_CONT;
 }
 
 static bool
 confuiDanceSpinboxLowMPMChg (void *udata)
 {
-  confuiDanceSpinboxChg (udata, CONFUI_WIDGET_DANCE_MPM_LOW);
+  confuiDanceSpinboxChg (udata, CONFUI_SB_NUM_DANCE_MPM_LOW);
   return UICB_CONT;
 }
 
 static bool
 confuiDanceSpinboxHighMPMChg (void *udata)
 {
-  confuiDanceSpinboxChg (udata, CONFUI_WIDGET_DANCE_MPM_HIGH);
+  confuiDanceSpinboxChg (udata, CONFUI_SB_NUM_DANCE_MPM_HIGH);
   return UICB_CONT;
 }
 
 static bool
 confuiDanceSpinboxTimeSigChg (void *udata)
 {
-  confuiDanceSpinboxChg (udata, CONFUI_SPINBOX_DANCE_TIME_SIG);
+  confuiDanceSpinboxChg (udata, CONFUI_SB_TXT_DANCE_TIME_SIG);
   return UICB_CONT;
 }
 
@@ -487,7 +487,7 @@ confuiDanceSpinboxChg (void *udata, int widx)
 
   if (gui->uiitem [widx].basetype == CONFUI_SPINBOX_TEXT) {
     /* text spinbox */
-    nval = uisbtextGetValue (gui->uiitem [widx].sb);
+    nval = uisbtextGetValue (gui->uiitem [widx].sbtxt);
   }
   if (gui->uiitem [widx].basetype == CONFUI_SPINBOX_NUM) {
     double    value;
@@ -606,8 +606,8 @@ confuiLoadDanceTypeList (confuigui_t *gui)
     ++count;
   }
 
-  gui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].displist = tlist;
-  gui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].sbkeylist = NULL;
+  gui->uiitem [CONFUI_SB_TXT_DANCE_TYPE].displist = tlist;
+  gui->uiitem [CONFUI_SB_TXT_DANCE_TYPE].sbkeylist = NULL;
   logProcEnd ("");
 }
 

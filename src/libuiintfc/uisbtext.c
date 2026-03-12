@@ -30,7 +30,7 @@ typedef struct uisbtext {
   callback_t      *chgcb;
   uisbtextdisp_t  dispcb;
   void            *udata;
-  const char      *pre_text;
+  const char      *prepend_text;
   int32_t         old_index;
   int32_t         index;
   int32_t         count;
@@ -41,7 +41,7 @@ static bool uisbtextCBHandler (void *udata, int32_t dir);
 static void uisbtextSetDisplay (uisbtext_t *sbtext);
 
 uisbtext_t *
-uisbtextCreate (uiwcont_t *box)
+uisbtextCreate (uiwcont_t *box, int margin)
 {
   uisbtext_t  *sbtext;
 
@@ -49,14 +49,14 @@ uisbtextCreate (uiwcont_t *box)
   sbtext->display = uiCreateLabel ("");
   uiWidgetSetAllMargins (sbtext->display, 0);
   uiWidgetSetMarginStart (sbtext->display, 4);
-  uiWidgetSetMarginEnd (sbtext->display, 4);
   uiLabelSetMinWidth (sbtext->display, 5);
-  sbtext->sb = uisbCreate (box, sbtext->display, SB_IS_TEXT);
+fprintf (stderr, "sbtxt: create sb\n");
+  sbtext->sb = uisbCreate (box, sbtext->display, SB_IS_TEXT, margin);
   sbtext->txtlist = NULL;
   sbtext->idxlist = NULL;
   sbtext->old_index = LIST_VALUE_INVALID;
   sbtext->index = 0;
-  sbtext->pre_text = NULL;
+  sbtext->prepend_text = NULL;
   sbtext->sbtextcb = NULL;
   sbtext->chgcb = NULL;
   sbtext->dispcb = NULL;
@@ -91,7 +91,7 @@ uisbtextPrependList (uisbtext_t *sbtext, const char *txt)
     return;
   }
 
-  sbtext->pre_text = txt;
+  sbtext->prepend_text = txt;
   sbtext->index = -1;
 }
 
@@ -287,14 +287,14 @@ uisbtextCBHandler (void *udata, int32_t dir)
 
   /* text spinboxes wrap around to the beginning/end */
   if (sbtext->index < 0) {
-    if (sbtext->pre_text == NULL || sbtext->index < -1) {
+    if (sbtext->prepend_text == NULL || sbtext->index < -1) {
       sbtext->index = sbtext->count - 1;
     }
   }
 
   if (sbtext->index >= sbtext->count) {
     sbtext->index = 0;
-    if (sbtext->pre_text != NULL) {
+    if (sbtext->prepend_text != NULL) {
       sbtext->index = -1;
     }
   }
@@ -317,8 +317,8 @@ uisbtextSetDisplay (uisbtext_t *sbtext)
     disp = sbtext->dispcb (sbtext->udata, sbtext->index);
     uiLabelSetText (sbtext->display, disp);
   } else {
-    if (sbtext->pre_text != NULL && sbtext->index == -1) {
-      uiLabelSetText (sbtext->display, sbtext->pre_text);
+    if (sbtext->prepend_text != NULL && sbtext->index == -1) {
+      uiLabelSetText (sbtext->display, sbtext->prepend_text);
     } else {
       uiLabelSetText (sbtext->display,
          nlistGetDataByIdx (sbtext->txtlist, sbtext->index));
@@ -327,7 +327,7 @@ uisbtextSetDisplay (uisbtext_t *sbtext)
 
   if (sbtext->chgcb != NULL) {
     if (sbtext->old_index != LIST_VALUE_INVALID) {
-fprintf (stderr, "sb: chg: %s set true\n", uiLabelGetText (sbtext->display));
+fprintf (stderr, "sbtxt: chg: %s set true\n", uiLabelGetText (sbtext->display));
       sbtext->changed = true;
     }
     callbackHandler (sbtext->chgcb);

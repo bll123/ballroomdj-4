@@ -35,7 +35,7 @@ confuiInitDispSettings (confuigui_t *gui)
   /* as this list is set up manually, it will ignore */
   /* the disp-sel-max-player marker */
   confuiSBTextInitDataNum (gui, "cu-disp-settings",
-      CONFUI_SPINBOX_DISP_SEL,
+      CONFUI_SB_TXT_DISP_SEL,
       /* CONTEXT: configuration: display settings for: music queue */
       DISP_SEL_MUSICQ, _("Music Queue"),
       /* CONTEXT: configuration: display settings for: history */
@@ -64,7 +64,7 @@ confuiInitDispSettings (confuigui_t *gui)
       /* CONTEXT: configuration: display settings for: Player User Interface */
       DISP_SEL_CURRSONG, _("Current Song"),
       -1);
-  gui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = DISP_SEL_MUSICQ;
+  gui->uiitem [CONFUI_SB_TXT_DISP_SEL].listidx = DISP_SEL_MUSICQ;
 }
 
 void
@@ -83,8 +83,8 @@ confuiBuildUIDispSettings (confuigui_t *gui)
 
   /* CONTEXT: configuration: display settings: which set of display settings to update */
   confuiMakeItemSpinboxText (gui, vbox, NULL, NULL, _("Display"),
-      CONFUI_SPINBOX_DISP_SEL, -1, CONFUI_OUT_NUM,
-      gui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx,
+      CONFUI_SB_TXT_DISP_SEL, -1, CONFUI_OUT_NUM,
+      gui->uiitem [CONFUI_SB_TXT_DISP_SEL].listidx,
       confuiDispSettingChg);
 
   gui->tables [CONFUI_ID_DISP_SEL_LIST].flags = CONFUI_TABLE_NONE;
@@ -144,9 +144,9 @@ confuiDispSettingChg (void *udata)
   logProcBegin ();
 
 
-  oselidx = gui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx;
-  nselidx = uisbtextGetValue (gui->uiitem [CONFUI_SPINBOX_DISP_SEL].sb);
-  gui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = nselidx;
+  oselidx = gui->uiitem [CONFUI_SB_TXT_DISP_SEL].listidx;
+  nselidx = uisbtextGetValue (gui->uiitem [CONFUI_SB_TXT_DISP_SEL].sbtxt);
+  gui->uiitem [CONFUI_SB_TXT_DISP_SEL].listidx = nselidx;
 
   confuiDispSaveTable (gui, oselidx);
   /* be sure to create the selected list (target) first */

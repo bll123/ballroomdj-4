@@ -27,7 +27,7 @@ typedef struct uisb uisb_t;
 extern "C" {
 #endif
 
-uisb_t * uisbCreate (uiwcont_t *box, uiwcont_t *disp, bool istext);
+uisb_t * uisbCreate (uiwcont_t *box, uiwcont_t *disp, bool istext, int margin);
 void uisbFree (uisb_t *sb);
 void uisbExpandHoriz (uisb_t *sb);
 void uisbSetCallback (uisb_t *sb, callback_t *uicb);

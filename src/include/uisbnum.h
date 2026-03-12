@@ -24,7 +24,7 @@ enum {
 typedef const char * (*uisbnumdisp_t)(void *, int);
 typedef struct uisbnum uisbnum_t;
 
-uisbnum_t * uisbnumCreate (uiwcont_t *box, int maxWidth);
+uisbnum_t * uisbnumCreate (uiwcont_t *box, int maxSize, int margin);
 void uisbnumFree (uisbnum_t *sbnum);
 void uisbnumSetIncrements (uisbnum_t *sbnum, double incr, double pageincr);
 void uisbnumSetLimits (uisbnum_t *sbnum, double min, double max, int digits);

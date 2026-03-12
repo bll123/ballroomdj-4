@@ -89,7 +89,7 @@ confuiBuildUIMobileRemoteControl (confuigui_t *gui)
 
   /* CONTEXT: configuration: remote control: the port to use for remote control */
   confuiMakeItemSpinboxNum (gui, vbox, szgrp, NULL, _("Port"),
-      CONFUI_WIDGET_RC_PORT, OPT_P_REMCONTROLPORT,
+      CONFUI_SB_NUM_RC_PORT, OPT_P_REMCONTROLPORT,
       8000, 30000, bdjoptGetNum (OPT_P_REMCONTROLPORT),
       confuiRemctrlPortChg);
 
@@ -128,7 +128,7 @@ confuiRemctrlPortChg (void *udata)
   long          nval;
 
   logProcBegin ();
-  value = uisbtextGetValue (gui->uiitem [CONFUI_WIDGET_RC_PORT].sb);
+  value = uisbtextGetValue (gui->uiitem [CONFUI_SB_NUM_RC_PORT].sbtxt);
   nval = (long) value;
   bdjoptSetNum (OPT_P_REMCONTROLPORT, nval);
   confuiUpdateRemctrlQrcode (gui);

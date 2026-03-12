@@ -126,6 +126,10 @@ label.bdj-sb {
 }
 entry.bdj-sb {
   border-radius: 0px;
+  border-color: rgba(0,0,0,0);
+}
+entry.bdj-sb:focus {
+  border-color: @theme_selected_bg_color;
 }
 
 scrolledwindow undershoot.top, scrolledwindow undershoot.right,

@@ -55,7 +55,7 @@ static bool uisbKeyEvent (void *udata);
 static void uisbSetFocus (uisb_t *sb);
 
 uisb_t *
-uisbCreate (uiwcont_t *box, uiwcont_t *disp, bool istext)
+uisbCreate (uiwcont_t *box, uiwcont_t *disp, bool istext, int margin)
 {
   uisb_t      *sb;
   uiwcont_t   *uiwidgetp;
@@ -77,6 +77,7 @@ uisbCreate (uiwcont_t *box, uiwcont_t *disp, bool istext)
   if (sb->istext == SB_IS_TEXT) {
     uiWidgetEnableFocus (uiwidgetp);
   }
+  uiWidgetSetMarginStart (uiwidgetp, margin);
   sb->wcont [SB_W_HBOX] = uiwidgetp;
 
   sb->callbacks [SB_CB_INCR] = callbackInit (uisbCBIncrement, sb, "sb-incr");
@@ -105,7 +106,7 @@ uisbCreate (uiwcont_t *box, uiwcont_t *disp, bool istext)
 
   sb->display = disp;
   uiWidgetAddClass (sb->display, SB_CLASS);
-  uiBoxPackStart (sb->wcont [SB_W_HBOX], sb->display);
+  uiBoxPackStartExpand (sb->wcont [SB_W_HBOX], sb->display);
 
   uiBoxPackStart (box, sb->wcont [SB_W_HBOX]);
 

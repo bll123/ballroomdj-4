@@ -24,7 +24,7 @@ void
 confuiInitMarquee (confuigui_t *gui)
 {
   confuiSBTextInitDataNum (gui, "cu-marquee-show",
-      CONFUI_SPINBOX_MARQUEE_SHOW,
+      CONFUI_SB_TXT_MARQUEE_SHOW,
       /* CONTEXT: configuration: show-marquee: off */
       MARQUEE_SHOW_OFF, _("Off"),
       /* CONTEXT: configuration: show-marquee: minimize */
@@ -52,7 +52,7 @@ confuiBuildUIMarquee (confuigui_t *gui)
 
   /* CONTEXT: configuration: show-marquee: selection */
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Show Marquee"),
-      CONFUI_SPINBOX_MARQUEE_SHOW, OPT_P_MARQUEE_SHOW,
+      CONFUI_SB_TXT_MARQUEE_SHOW, OPT_P_MARQUEE_SHOW,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_P_MARQUEE_SHOW), NULL);
 
   /* CONTEXT: configuration: The theme to use for the marquee display */
@@ -66,7 +66,7 @@ confuiBuildUIMarquee (confuigui_t *gui)
 
   /* CONTEXT: (noun) configuration: the length of the queue displayed on the marquee */
   confuiMakeItemSpinboxNum (gui, vbox, szgrp, NULL, _("Queue Length"),
-      CONFUI_WIDGET_MQ_QUEUE_LEN, OPT_P_MQ_QLEN,
+      CONFUI_SB_NUM_MQ_QUEUE_LEN, OPT_P_MQ_QLEN,
       0, 20, bdjoptGetNum (OPT_P_MQ_QLEN), NULL);
 
   /* CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee */
