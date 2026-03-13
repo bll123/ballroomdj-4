@@ -184,7 +184,7 @@ TAGS
 TIMESIG
 ..2/4
 TYPE
-..latin
+..other
 KEY
 ..10
 ANNOUNCE

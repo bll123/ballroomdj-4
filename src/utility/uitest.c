@@ -59,6 +59,7 @@ enum {
   UITEST_W_SB_DBL_DFLT,
   UITEST_W_SB_TIME_A,
   UITEST_W_SB_TIME_B,
+  UITEST_W_TOGGLE,
   UITEST_W_MAX,
 };
 
@@ -71,6 +72,7 @@ enum {
   UITEST_CB_DD_STR,
   UITEST_CB_DD_NUM,
   UITEST_CB_LINK_A,
+  UITEST_CB_TOGGLE,
   UITEST_CB_MAX,
 };
 
@@ -160,6 +162,7 @@ static void uitestUIVirtList (uitest_t *uitest);
 
 static bool uitestCloseWin (void *udata);
 static void uitestCounterDisp (uitest_t *uitest, uiwcont_t *uiwidgetp);
+static bool uitestCBToggle (void *udata);
 static bool uitestCBButton (void *udata);
 static bool uitestCBButtonImgA (void *udata);
 static bool uitestCBButtonImgB (void *udata);
@@ -315,6 +318,8 @@ uitestBuildUI (uitest_t *uitest)
       uitestCBButtonImgA, uitest, NULL);
   uitest->callbacks [UITEST_CB_B_IMG_B] = callbackInit (
       uitestCBButtonImgB, uitest, NULL);
+  uitest->callbacks [UITEST_CB_TOGGLE] = callbackInit (
+      uitestCBToggle, uitest, "toggle-1");
 
   uitest->wcont [UITEST_W_WINDOW] = uiCreateMainWindow (
       uitest->callbacks [UITEST_CB_CLOSE], "uitest", "bdj4_icon");
@@ -590,10 +595,11 @@ uitestUIToggleButtons (uitest_t *uitest)
 
   uiwidgetp = uiCreateToggleButton ("toggle image", NULL, "tool-tip",
       uitest->images [UITEST_TB_I_LED_OFF], 0);
+  uiToggleButtonSetCallback (uiwidgetp, uitest->callbacks [UITEST_CB_TOGGLE]);
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetAlignHorizCenter (uiwidgetp);
   uiWidgetAlignVertCenter (uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  uitest->wcont [UITEST_W_TOGGLE] = uiwidgetp;
 
   uiwcontFree (hbox);
 
@@ -1653,6 +1659,21 @@ uitestCounterDisp (uitest_t *uitest, uiwcont_t *uiwidgetp)
   snprintf (tmp, sizeof (tmp), "%ld", uitest->counter);
   uiLabelSetText (uiwidgetp, tmp);
   uitest->counter += 1;
+}
+
+static bool
+uitestCBToggle (void *udata)
+{
+  uitest_t  *uitest = udata;
+
+  if (uiToggleButtonIsActive (uitest->wcont [UITEST_W_TOGGLE])) {
+    uiToggleButtonSetImage (uitest->wcont [UITEST_W_TOGGLE],
+        uitest->images [UITEST_TB_I_LED_ON]);
+  } else {
+    uiToggleButtonSetImage (uitest->wcont [UITEST_W_TOGGLE],
+        uitest->images [UITEST_TB_I_LED_OFF]);
+  }
+  return UICB_CONT;
 }
 
 static bool
