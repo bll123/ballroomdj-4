@@ -174,6 +174,7 @@ uisongselUIFree (uisongsel_t *uisongsel)
   }
   for (int i = 0; i < SONGSEL_W_MAX; ++i) {
     uiwcontFree (ssint->wcont [i]);
+    ssint->wcont [i] = NULL;
   }
   uivlFree (ssint->uivl);
   mdfree (ssint);
@@ -520,7 +521,17 @@ uisongselSetPlayButtonState (uisongsel_t *uisongsel, int active)
   ss_internal_t  *ssint;
 
   logProcBegin ();
+
   ssint = uisongsel->ssInternalData;
+  if (ssint == NULL) {
+    logProcEnd ("null");
+    return;
+  }
+
+  if (ssint->wcont [SONGSEL_W_BUTTON_PLAY] == NULL) {
+    logProcEnd ("null-play-button");
+    return;
+  }
 
   /* if the player is active, disable the button */
   if (active) {

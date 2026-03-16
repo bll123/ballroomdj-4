@@ -4,17 +4,20 @@
 
 <!--
 
-**4.18.0 2026-3---**
+**4.18.0 2026-3-16**
+
+-->
+
+**4.18.0 2026-3-16**
 
 Maintenance Release
 
 * Bug Fixes:
     * Dances: Fix dance type conversion from old 'club' designation.
+    * Management: Fix a crash.
 * Internal:
     * Minor cleanup.
     * Fix some memory leaks.
-
--->
 
 **4.17.14 2026-3-6**
 
