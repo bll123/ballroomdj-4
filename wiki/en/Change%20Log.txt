@@ -10,8 +10,6 @@
 
 **4.18.0 2026-3-16**
 
-Maintenance Release
-
 * Bug Fixes:
     * Dances: Fix dance type conversion from old 'club' designation.
     * Management: Fix a crash.
@@ -1503,4 +1501,4 @@ Maintenance Release
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2026-03-16 11:10:15; BDJ4 version 4.18.0)_
+<br>_(Updated 2026-03-16 11:13:14; BDJ4 version 4.18.0)_
