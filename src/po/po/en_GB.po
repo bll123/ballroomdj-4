@@ -2,10 +2,10 @@
 # -- english/gb
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.17.14\n"
+"Project-Id-Version: ballroomdj-4 4.18.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2026-03-05\n"
-"PO-Revision-Date: 2026-03-05\n"
+"POT-Creation-Date: 2026-03-16\n"
+"PO-Revision-Date: 2026-03-16\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -81,6 +81,7 @@ msgid "latin"
 msgstr ""
 
 #. CONTEXT: configuration file: dance type
+#. CONTEXT: dance type: 'other'
 msgid "other"
 msgstr ""
 
