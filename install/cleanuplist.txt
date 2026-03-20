@@ -63,10 +63,6 @@ img/mkmacicon\.sh$
 # these belong in img/profileNN
 img/button_[a-z_]*\.svg$
 img/button_[a-z_]*\.svg\.bak\.1$
-img/switch-off\.svg$
-img/switch-off\.svg\.bak\.1$
-img/switch-on\.svg$
-img/switch-on\.svg\.bak\.1$
 
 # installed locales that should not have been
 # note that if turkish is re-enabled, this must be removed.
@@ -203,6 +199,14 @@ install/win-clean-inst\.bat$
 # 2026-3-11 remove old switch-on/off.svg; now lives in main img/ dir
 templates/img/switch-on\.svg$
 templates/img/switch-off\.svg$
+
+# 2026-3-17 remove unused switch images.
+img/switch-off-col-bg\.svg$
+img/switch-off-col-circ\.svg$
+img/switch-off-marks\.svg$
+img/switch-on-col-bg\.svg$
+img/switch-on-col-circ\.svg$
+img/switch-on-marks\.svg$
 
 ####
 # mac-os

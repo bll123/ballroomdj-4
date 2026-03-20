@@ -7,16 +7,23 @@
 **4.19.0 2026-----**
 
 * Bug Fixes:
-    * PENDING Configuration: Fix display of validation messages.
-
-**4.19.0 2026-3---**
-
-* Bug Fixes:
-    * Dances: Fix conversion from old 'club' designation.
-* Internal:
-    * Minor cleanup.
+    * Configuration: Fix display of validation messages.
 
 -->
+
+**4.18.1 2026-3-17**
+
+* Bug Fixes:
+    * Fix bad installation of 4.18.0.
+
+**4.18.0 2026-3-16**
+
+* Bug Fixes:
+    * Dances: Fix dance type conversion from old 'club' designation.
+    * Management: Fix a crash.
+* Internal:
+    * Minor cleanup.
+    * Fix some memory leaks.
 
 **4.17.14 2026-3-6**
 
@@ -1502,4 +1509,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2026-03-06 12:23:45; BDJ4 version 4.17.14)_
+<br>_(Updated 2026-03-17 08:10:49; BDJ4 version 4.18.1)_
