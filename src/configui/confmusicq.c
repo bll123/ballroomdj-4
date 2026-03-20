@@ -132,12 +132,12 @@ confuiBuildUIMusicQs (confuigui_t *gui)
 
   /* CONTEXT: configuration: queue: the maximum amount of time to play a song */
   confuiMakeItemSpinboxTime (gui, vbox, szgrp, szgrpB, _("Maximum Play Time"),
-      CONFUI_SB_NUM_Q_MAX_PLAY_TIME, OPT_Q_MAXPLAYTIME,
+      CONFUI_SB_TIME_Q_MAX_PLAY_TIME, OPT_Q_MAXPLAYTIME,
       bdjoptGetNumPerQueue (OPT_Q_MAXPLAYTIME, 0), CONFUI_INDENT);
 
   /* CONTEXT: configuration: queue: the time when playback will stop */
   confuiMakeItemSpinboxTime (gui, vbox, szgrp, szgrpB, _("Stop At"),
-      CONFUI_SB_NUM_Q_STOP_AT_TIME, OPT_Q_STOP_AT_TIME,
+      CONFUI_SB_TIME_Q_STOP_AT_TIME, OPT_Q_STOP_AT_TIME,
       bdjoptGetNum (OPT_Q_STOP_AT_TIME), CONFUI_INDENT);
 
   /* CONTEXT: configuration: queue: pause each song */
@@ -232,8 +232,8 @@ confuiMusicQActiveChg (void *udata)
   uiWidgetSetState (gui->uiitem [CONFUI_SB_NUM_Q_FADE_OUT_TIME].uilabelp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_SB_NUM_Q_GAP].uilabelp, ncfstate);
   uiWidgetSetState (gui->uiitem [CONFUI_SB_NUM_Q_CROSSFADE].uilabelp, cfstate);
-  uiWidgetSetState (gui->uiitem [CONFUI_SB_NUM_Q_MAX_PLAY_TIME].uilabelp, state);
-  uiWidgetSetState (gui->uiitem [CONFUI_SB_NUM_Q_STOP_AT_TIME].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SB_TIME_Q_MAX_PLAY_TIME].uilabelp, state);
+  uiWidgetSetState (gui->uiitem [CONFUI_SB_TIME_Q_STOP_AT_TIME].uilabelp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PAUSE_EACH_SONG].uilabelp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uilabelp, ncfstate);
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED].uilabelp, state);
@@ -244,8 +244,8 @@ confuiMusicQActiveChg (void *udata)
   uisbnumSetState (gui->uiitem [CONFUI_SB_NUM_Q_FADE_OUT_TIME].sbnum, state);
   uisbnumSetState (gui->uiitem [CONFUI_SB_NUM_Q_GAP].sbnum, ncfstate);
   uisbnumSetState (gui->uiitem [CONFUI_SB_NUM_Q_CROSSFADE].sbnum, cfstate);
-  uisbnumSetState (gui->uiitem [CONFUI_SB_NUM_Q_MAX_PLAY_TIME].sbnum, state);
-  uisbnumSetState (gui->uiitem [CONFUI_SB_NUM_Q_STOP_AT_TIME].sbnum, state);
+  uisbnumSetState (gui->uiitem [CONFUI_SB_TIME_Q_MAX_PLAY_TIME].sbnum, state);
+  uisbnumSetState (gui->uiitem [CONFUI_SB_TIME_Q_STOP_AT_TIME].sbnum, state);
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PAUSE_EACH_SONG].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uiwidgetp, ncfstate);
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED].uiwidgetp, state);
@@ -330,10 +330,10 @@ confuiMusicQChg (void *udata)
       (double) bdjoptGetNumPerQueue (OPT_Q_GAP, nselidx) / 1000.0);
   uiSpinboxSetValue (gui->uiitem [CONFUI_SB_NUM_Q_CROSSFADE].uiwidgetp,
       (double) bdjoptGetNumPerQueue (OPT_Q_CROSSFADE, nselidx) / 1000.0);
-  uiSpinboxTimeSetValue (gui->uiitem [CONFUI_SB_NUM_Q_MAX_PLAY_TIME].uiwidgetp,
+  uiSpinboxTimeSetValue (gui->uiitem [CONFUI_SB_TIME_Q_MAX_PLAY_TIME].uiwidgetp,
       bdjoptGetNumPerQueue (OPT_Q_MAXPLAYTIME, nselidx));
   /* divide by to convert from hh:mm to mm:ss for the spinbox */
-  uiSpinboxTimeSetValue (gui->uiitem [CONFUI_SB_NUM_Q_STOP_AT_TIME].uiwidgetp,
+  uiSpinboxTimeSetValue (gui->uiitem [CONFUI_SB_TIME_Q_STOP_AT_TIME].uiwidgetp,
       bdjoptGetNumPerQueue (OPT_Q_STOP_AT_TIME, nselidx) / 60);
   uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_PAUSE_EACH_SONG].uiwidgetp,
       bdjoptGetNumPerQueue (OPT_Q_PAUSE_EACH_SONG, nselidx));

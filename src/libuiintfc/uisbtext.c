@@ -50,7 +50,6 @@ uisbtextCreate (uiwcont_t *box, int margin)
   uiWidgetSetAllMargins (sbtext->display, 0);
   uiWidgetSetMarginStart (sbtext->display, 4);
   uiLabelSetMinWidth (sbtext->display, 5);
-fprintf (stderr, "sbtxt: create sb\n");
   sbtext->sb = uisbCreate (box, sbtext->display, SB_IS_TEXT, margin);
   sbtext->txtlist = NULL;
   sbtext->idxlist = NULL;
@@ -327,7 +326,6 @@ uisbtextSetDisplay (uisbtext_t *sbtext)
 
   if (sbtext->chgcb != NULL) {
     if (sbtext->old_index != LIST_VALUE_INVALID) {
-fprintf (stderr, "sbtxt: chg: %s set true\n", uiLabelGetText (sbtext->display));
       sbtext->changed = true;
     }
     callbackHandler (sbtext->chgcb);

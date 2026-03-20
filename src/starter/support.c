@@ -52,7 +52,7 @@ supportFree (support_t *support)
 void
 supportGetLatestVersion (support_t *support, char *buff, size_t sz)
 {
-  char  uri [200];
+  char  uri [400];
 
   *buff = '\0';
   if (support == NULL) {

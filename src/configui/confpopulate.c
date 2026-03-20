@@ -78,31 +78,29 @@ confuiPopulateOptions (confuigui_t *gui)
         }
         break;
       }
-      case CONFUI_SPINBOX_TEXT: {
+      case CONFUI_SB_TXT: {
         nval = uisbtextGetValue (gui->uiitem [widx].sbtxt);
         if (outtype == CONFUI_OUT_STR) {
           if (gui->uiitem [widx].sbkeylist != NULL) {
             sval = nlistGetStr (gui->uiitem [widx].sbkeylist, nval);
-fprintf (stderr, "sbtxt: from keylist: %s\n", sval);
           } else {
             sval = nlistGetStr (gui->uiitem [widx].displist, nval);
-fprintf (stderr, "sbtxt: from displist: %s\n", sval);
           }
         }
         break;
       }
-      case CONFUI_SPINBOX_NUM: {
-        nval = (ssize_t) uiSpinboxGetValue (gui->uiitem [widx].uiwidgetp);
+      case CONFUI_SB_NUM: {
+        nval = (ssize_t) uisbnumGetValue (gui->uiitem [widx].sbnum);
         break;
       }
-      case CONFUI_SPINBOX_DOUBLE: {
-        dval = uiSpinboxGetValue (gui->uiitem [widx].uiwidgetp);
+      case CONFUI_SB_DOUBLE: {
+        dval = uisbnumGetValue (gui->uiitem [widx].sbnum);
         nval = (ssize_t) (dval * 1000.0);
         outtype = CONFUI_OUT_NUM;
         break;
       }
-      case CONFUI_SPINBOX_TIME: {
-        nval = (ssize_t) uiSpinboxTimeGetValue (gui->uiitem [widx].uiwidgetp);
+      case CONFUI_SB_TIME: {
+        nval = (ssize_t) uisbnumGetValue (gui->uiitem [widx].sbnum);
 
         /* do some additional validation, as after a failed validation, */
         /* the spinbox value can be junk */
@@ -110,7 +108,7 @@ fprintf (stderr, "sbtxt: from displist: %s\n", sval);
           nval = 0;
         }
 
-        if (widx == CONFUI_SB_NUM_Q_STOP_AT_TIME) {
+        if (widx == CONFUI_SB_TIME_Q_STOP_AT_TIME) {
           /* convert to hh:mm */
           nval *= 60;
         }
@@ -161,7 +159,6 @@ fprintf (stderr, "sbtxt: from displist: %s\n", sval);
       }
       case CONFUI_OUT_STR: {
         if (widx == CONFUI_WIDGET_UI_ACCENT_COLOR) {
-fprintf (stderr, "sval: %s\n", sval);
           if (strcmp (bdjoptGetStr (gui->uiitem [widx].bdjoptIdx), sval) != 0) {
             gui->uiitem [widx].changed = true;
           }

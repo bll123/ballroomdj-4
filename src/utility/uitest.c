@@ -1651,7 +1651,7 @@ uitestUISpinbox (uitest_t *uitest)
   uiSpinboxSetRange (uiwidgetp, 3.0, 15.0);
   uitest->wcont [UITEST_W_SB_INT] = uiwidgetp;
 
-  uitest->sbnumint = uisbnumCreate (hbox, 5, 0);
+  uitest->sbnumint = uisbnumCreate (hbox, "a", 5, 0);
   uisbnumSetLimits (uitest->sbnumint, 3.0, 15.0, 0);
   uisbnumSetIncrements (uitest->sbnumint, 1.0, 5.0);
   uisbnumSetValue (uitest->sbnumint, 4.0);
@@ -1671,7 +1671,7 @@ uitestUISpinbox (uitest_t *uitest)
   uiSpinboxSetRange (uiwidgetp, 1.0, 20.0);
   uitest->wcont [UITEST_W_SB_DBL_A] = uiwidgetp;
 
-  uitest->sbnumdbl = uisbnumCreate (hbox, 5, 0);
+  uitest->sbnumdbl = uisbnumCreate (hbox, "dbl", 5, 0);
   uisbnumSetLimits (uitest->sbnumdbl, 1.0, 20.0, 1);
   uisbnumSetIncrements (uitest->sbnumdbl, 0.1, 1.0);
   uisbnumSetValue (uitest->sbnumdbl, 5.0);
@@ -1692,7 +1692,7 @@ uitestUISpinbox (uitest_t *uitest)
   uiSpinboxSetIncrement (uiwidgetp, 1.0, 5.0);
   uitest->wcont [UITEST_W_SB_DBL_B] = uiwidgetp;
 
-  uitest->sbnumdblb = uisbnumCreate (hbox, 5, 0);
+  uitest->sbnumdblb = uisbnumCreate (hbox, "dbl-b", 5, 0);
   uisbnumSetLimits (uitest->sbnumdblb, 1.0, 20.0, 1);
   uisbnumSetIncrements (uitest->sbnumdblb, 1.0, 5.0);
   uisbnumSetValue (uitest->sbnumdblb, 5.0);
@@ -1713,7 +1713,7 @@ uitestUISpinbox (uitest_t *uitest)
   uiSpinboxSetRange (uiwidgetp, -1.0, 10.0);
   uitest->wcont [UITEST_W_SB_DBL_DFLT] = uiwidgetp;
 
-  uitest->sbnumdbldef = uisbnumCreate (hbox, 10, 0);
+  uitest->sbnumdbldef = uisbnumCreate (hbox, "dbl-def", 10, 0);
   uisbnumSetLimits (uitest->sbnumdbldef, 0.0, 10.0, 1);
   uisbnumSetIncrements (uitest->sbnumdbldef, 0.1, 5.0);
   uisbnumSetType (uitest->sbnumdbldef, SBNUM_NUM_DEFAULT);
@@ -1733,7 +1733,7 @@ uitestUISpinbox (uitest_t *uitest)
   uiBoxPackStart (hbox, uiwidgetp);
   uitest->wcont [UITEST_W_SB_TIME_A] = uiwidgetp;
 
-  uitest->sbnumtma = uisbnumCreate (hbox, 10, 0);
+  uitest->sbnumtma = uisbnumCreate (hbox, "tm-a", 10, 0);
   uisbnumSetTime (uitest->sbnumtma, 0.0, 1440000.0, SBNUM_TIME_BASIC);
   uisbnumSetValue (uitest->sbnumtma, 5.0);
 
@@ -1751,7 +1751,7 @@ uitestUISpinbox (uitest_t *uitest)
   uiBoxPackStart (hbox, uiwidgetp);
   uitest->wcont [UITEST_W_SB_TIME_B] = uiwidgetp;
 
-  uitest->sbnumtmb = uisbnumCreate (hbox, 10, 0);
+  uitest->sbnumtmb = uisbnumCreate (hbox, "tm-b", 10, 0);
   uisbnumSetTime (uitest->sbnumtmb, 0.0, 1440000.0, SBNUM_TIME_PRECISE);
   uisbnumSetValue (uitest->sbnumtmb, 5.0);
 

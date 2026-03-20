@@ -485,11 +485,11 @@ confuiDanceSpinboxChg (void *udata, int widx)
 
   itemidx = gui->uiitem [widx].danceitemidx;
 
-  if (gui->uiitem [widx].basetype == CONFUI_SPINBOX_TEXT) {
+  if (gui->uiitem [widx].basetype == CONFUI_SB_TXT) {
     /* text spinbox */
     nval = uisbtextGetValue (gui->uiitem [widx].sbtxt);
   }
-  if (gui->uiitem [widx].basetype == CONFUI_SPINBOX_NUM) {
+  if (gui->uiitem [widx].basetype == CONFUI_SB_NUM) {
     double    value;
 
     value = uiSpinboxGetValue (gui->uiitem [widx].uiwidgetp);

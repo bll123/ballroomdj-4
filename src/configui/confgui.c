@@ -21,6 +21,7 @@
 #include "configui.h"
 #include "istring.h"
 #include "log.h"
+#include "mdebug.h"
 #include "sysvars.h"
 #include "tmutil.h"
 #include "ui.h"
@@ -41,8 +42,7 @@ static const char * INDENT_STR = "      ";
 
 static void confuiMakeItemEntryBasic (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent, int expand);
 static bool confuiLinkCallback (void *udata);
-static int32_t confuiValHMCallback (void *udata, const char *label, const char *txt);
-static int32_t confuiValHMSCallback (void *udata, const char *label, const char *txt);
+static bool confuiValidateCallback (void *udata);
 
 void
 confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, int id)
@@ -276,7 +276,7 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 
   logProcBegin ();
 
-  gui->uiitem [widx].basetype = CONFUI_SPINBOX_TEXT;
+  gui->uiitem [widx].basetype = CONFUI_SB_TXT;
   gui->uiitem [widx].outtype = outtype;
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (boxp, hbox);
@@ -320,38 +320,56 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp,
     uiwcont_t *szgrp, uiwcont_t *szgrpB, const char *txt, int widx,
     int bdjoptIdx, ssize_t value, int indent)
 {
-  uiwcont_t  *hbox;
-  uiwcont_t  *uiwidgetp;
+  uiwcont_t   *hbox;
+  uisbnum_t   *sb;
+  double      maxlimit;
 
   logProcBegin ();
 
-  gui->uiitem [widx].basetype = CONFUI_SPINBOX_TIME;
+  gui->uiitem [widx].basetype = CONFUI_SB_TIME;
   gui->uiitem [widx].outtype = CONFUI_OUT_NUM;
+
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (boxp, hbox);
 
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, indent);
 
+  gui->uiitem [widx].callback = callbackInit (
+      confuiValidateCallback, &gui->uiitem [widx], NULL);
   if (bdjoptIdx == OPT_Q_STOP_AT_TIME) {
-    gui->uiitem [widx].callback = callbackInitSS (
-        confuiValHMCallback, &gui->uiitem [widx]);
+//    gui->uiitem [widx].callback = callbackInitSS (
+//        confuiValHMCallback, &gui->uiitem [widx]);
     /* convert value to mm:ss for display */
     value /= 60;
-  } else if (bdjoptIdx == OPT_Q_MAXPLAYTIME) {
-    gui->uiitem [widx].callback = callbackInitSS (
-        confuiValHMSCallback, &gui->uiitem [widx]);
   }
-  uiwidgetp = uiSpinboxTimeCreate (SB_TIME_BASIC, gui,
-      txt, gui->uiitem [widx].callback);
-  gui->uiitem [widx].uiwidgetp = uiwidgetp;
+///  } else if (bdjoptIdx == OPT_Q_MAXPLAYTIME) {
+//    gui->uiitem [widx].callback = callbackInitSS (
+//        confuiValHMSCallback, &gui->uiitem [widx]);
+//  }
+
+  sb = uisbnumCreate (hbox, gui->uiitem [widx].labeltxt, 6, 4);
+  /* the default increments are set in uisbnumSetTime() */
+  /* 7200000 = 120 minutes */
+  maxlimit = 7200000.0;
   if (bdjoptIdx == OPT_Q_STOP_AT_TIME) {
-    uiSpinboxSetRange (uiwidgetp, 0.0, 1440000.0);
+    maxlimit = 1440000.0;
   }
-  uiSpinboxTimeSetValue (uiwidgetp, value);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetSetMarginStart (uiwidgetp, 4);
+  uisbnumSetTime (sb, 0.0, maxlimit, SBNUM_TIME_BASIC);
+//  uiwidgetp = uiSpinboxTimeCreate (SB_TIME_BASIC, gui,
+//      txt, gui->uiitem [widx].callback);
+//  gui->uiitem [widx].uiwidgetp = uiwidgetp;
+  uisbnumSetChangeCallback (sb, gui->uiitem [widx].callback);
+  gui->uiitem [widx].sbnum = sb;
+//  if (bdjoptIdx == OPT_Q_STOP_AT_TIME) {
+//    uiSpinboxSetRange (uiwidgetp, 0.0, 1440000.0);
+//  }
+  uisbnumSetValue (sb, value);
+//  uiSpinboxTimeSetValue (uiwidgetp, value);
+//  uiBoxPackStart (hbox, uiwidgetp);
+//  uiWidgetSetMarginStart (uiwidgetp, 4);
   if (szgrpB != NULL) {
-    uiSizeGroupAdd (szgrpB, uiwidgetp);
+    uisbnumSizeGroupAdd (sb, szgrpB);
+//    uiSizeGroupAdd (szgrpB, uiwidgetp);
   }
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   uiBoxPostProcess (hbox);
@@ -370,17 +388,20 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 
   logProcBegin ();
 
-  gui->uiitem [widx].basetype = CONFUI_SPINBOX_NUM;
+  gui->uiitem [widx].basetype = CONFUI_SB_NUM;
   gui->uiitem [widx].outtype = CONFUI_OUT_NUM;
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (boxp, hbox);
 
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, CONFUI_NO_INDENT);
 
+  gui->uiitem [widx].callback = callbackInit (
+      confuiValidateCallback, &gui->uiitem [widx], NULL);
 //  uiwidgetp = uiSpinboxIntCreate ();
-  sb = uisbnumCreate (hbox, 6, 4);
+  sb = uisbnumCreate (hbox, gui->uiitem [widx].labeltxt, 6, 4);
   uisbnumSetLimits (sb, (double) min, (double) max, 0);
   uisbnumSetValue (sb, (double) value);
+  uisbnumSetChangeCallback (sb, gui->uiitem [widx].callback);
 //  uiSpinboxSet (uiwidgetp, (double) min, (double) max);
 //  uiSpinboxSetValue (uiwidgetp, (double) value);
 //  uiBoxPackStart (hbox, uiwidgetp);
@@ -415,15 +436,18 @@ confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp
 
   logProcBegin ();
 
-  gui->uiitem [widx].basetype = CONFUI_SPINBOX_DOUBLE;
+  gui->uiitem [widx].basetype = CONFUI_SB_DOUBLE;
   gui->uiitem [widx].outtype = CONFUI_OUT_DOUBLE;
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (boxp, hbox);
 
+  gui->uiitem [widx].callback = callbackInit (
+      confuiValidateCallback, &gui->uiitem [widx], NULL);
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, indent);
-  sb = uisbnumCreate (hbox, 6, 4);
+  sb = uisbnumCreate (hbox, gui->uiitem [widx].labeltxt, 6, 4);
   uisbnumSetLimits (sb, min, max, 1);
   uisbnumSetValue (sb, value);
+  uisbnumSetChangeCallback (sb, gui->uiitem [widx].callback);
 //  uiwidgetp = uiSpinboxDoubleCreate ();
 //  uiSpinboxSet (uiwidgetp, min, max);
 //  uiSpinboxSetValue (uiwidgetp, value);
@@ -549,7 +573,8 @@ confuiMakeItemLabel (confuigui_t *gui, int widx,
     uiSizeGroupAdd (szgrp, uiwidgetp);
   }
   gui->uiitem [widx].uilabelp = uiwidgetp;
-  gui->uiitem [widx].labeltxt = txt;
+  /* the labeltxt may not necessarily be static (low/high bpm) */
+  gui->uiitem [widx].labeltxt = mdstrdup (txt);
 
   if (indent == CONFUI_INDENT || indent == CONFUI_INDENT_FIELD) {
     *ntxt = '\0';
@@ -648,58 +673,21 @@ confuiLinkCallback (void *udata)
   return UICB_CONT;
 }
 
-static int32_t
-confuiValHMCallback (void *udata, const char *label, const char *txt)
+static bool
+confuiValidateCallback (void *udata)
 {
   confuiitem_t  *uiitem = udata;
   confuigui_t   *gui = uiitem->gui;
-  char          tbuff [200];
-  int32_t       value;
-  bool          val;
 
   logProcBegin ();
 
-  val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HOUR_MIN);
-  if (val == false) {
-    int32_t oval;
-
-    oval = uiSpinboxTimeGetValue (uiitem->uiwidgetp);
-    confuiSetErrorMsg (gui, tbuff);
+  if (! uisbnumIsValid (uiitem->sbnum)) {
     confuiMarkNotValid (gui, uiitem->widx);
-    return oval;
+    return UICB_STOP;
   }
   confuiMarkValid (gui, uiitem->widx);
 
-  value = tmutilStrToHM (txt);
   logProcEnd ("");
-  return value;
-}
-
-static int32_t
-confuiValHMSCallback (void *udata, const char *label, const char *txt)
-{
-  confuiitem_t  *uiitem = udata;
-  confuigui_t   *gui = uiitem->gui;
-  char          tbuff [200];
-  int32_t       value;
-  bool          val;
-
-  logProcBegin ();
-
-  val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HMS);
-  if (val == false) {
-    int32_t oval;
-
-    oval = uiSpinboxTimeGetValue (uiitem->uiwidgetp);
-    confuiSetErrorMsg (gui, tbuff);
-    confuiMarkNotValid (gui, uiitem->widx);
-    return oval;
-  }
-  confuiSetErrorMsg (gui, "");
-  confuiMarkValid (gui, uiitem->widx);
-
-  value = tmutilStrToMS (txt);
-  logProcEnd ("");
-  return value;
+  return UICB_CONT;
 }
 

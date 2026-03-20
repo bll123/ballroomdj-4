@@ -172,7 +172,7 @@ confuiSwitchTable (void *udata, int32_t pagenum)
     return UICB_CONT;
   }
 
-  gui->valid = 0;
+  gui->reset_validation = true;
   confuiSetStatusMsg (gui, "");
   confuiSetErrorMsg (gui, "");
 

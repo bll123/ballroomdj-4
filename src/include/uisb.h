@@ -5,6 +5,7 @@
 #pragma once
 
 #include "callback.h"
+#include "uiwcont.h"
 
 /* decrement values must be the negative of the increment value */
 enum {

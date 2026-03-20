@@ -179,7 +179,7 @@ remctrlEventHandler (void *userdata, const char *query, const char *uri)
   remctrl_t     *remctrl = userdata;
   char          user [40];
   char          pass [40];
-  char          tbuff [300];
+  char          tbuff [400];
 
   websrvGetUserPass (remctrl->websrv, user, sizeof (user), pass, sizeof (pass));
 
@@ -524,7 +524,7 @@ remctrlProcessDanceList (remctrl_t *remctrl, char *danceList)
   char        *didx;
   char        *dstr;
   char        *tokstr;
-  char        tbuff [200];
+  char        tbuff [400];
   char        obuff [3096];
   char        *p = obuff;
   char        *end = obuff + sizeof (obuff);

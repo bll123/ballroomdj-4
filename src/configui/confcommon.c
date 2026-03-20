@@ -289,7 +289,8 @@ void
 confuiMarkNotValid (confuigui_t *gui, int widx)
 {
   if (gui->uiitem [widx].valid) {
-    ++gui->valid;
+    ++gui->invalid_count;
+    gui->validate_check = true;
   }
   gui->uiitem [widx].valid = false;
 }
@@ -297,11 +298,18 @@ confuiMarkNotValid (confuigui_t *gui, int widx)
 void
 confuiMarkValid (confuigui_t *gui, int widx)
 {
-  if (gui->valid > 0 && gui->uiitem [widx].valid == false) {
-    --gui->valid;
+  bool    wasinvalid;
+
+  wasinvalid = false;
+  if (gui->invalid_count > 0) {
+    wasinvalid = true;
+  }
+  if (gui->invalid_count > 0 && gui->uiitem [widx].valid == false) {
+    --gui->invalid_count;
+    gui->validate_check = true;
   }
   gui->uiitem [widx].valid = true;
-  if (gui->valid == 0) {
+  if (wasinvalid && gui->invalid_count == 0) {
     confuiSetErrorMsg (gui, "");
   }
 }

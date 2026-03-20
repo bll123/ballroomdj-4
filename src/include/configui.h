@@ -32,10 +32,10 @@ typedef enum {
   CONFUI_FONT,
   CONFUI_COLOR,
   CONFUI_DD,
-  CONFUI_SPINBOX_TEXT,
-  CONFUI_SPINBOX_NUM,
-  CONFUI_SPINBOX_DOUBLE,
-  CONFUI_SPINBOX_TIME,
+  CONFUI_SB_TXT,
+  CONFUI_SB_NUM,
+  CONFUI_SB_DOUBLE,
+  CONFUI_SB_TIME,
   CONFUI_CHECK_BUTTON,
   CONFUI_SWITCH,
 } confuibasetype_t;
@@ -130,11 +130,11 @@ enum {
   CONFUI_SB_NUM_Q_FADE_IN_TIME,       // per queue
   CONFUI_SB_NUM_Q_FADE_OUT_TIME,      // per queue
   CONFUI_SB_NUM_Q_GAP,                // per queue
-  CONFUI_SB_NUM_Q_MAX_PLAY_TIME,      // per queue
   CONFUI_SB_NUM_Q_START_WAIT_TIME,    // per queue
-  CONFUI_SB_NUM_Q_STOP_AT_TIME,       // per queue
   CONFUI_SB_NUM_RC_PORT,
   CONFUI_SB_NUM_UI_SCALE,
+  CONFUI_SB_TIME_Q_MAX_PLAY_TIME,     // per queue
+  CONFUI_SB_TIME_Q_STOP_AT_TIME,      // per queue
   CONFUI_SB_NUM_MAX,
   CONFUI_WIDGET_BEGIN,
   CONFUI_SWITCH_AUTO_ORGANIZE,
@@ -288,7 +288,7 @@ typedef struct {
   int               entrysz;
   int               entrymaxsz;
   uiwcont_t         *uilabelp;
-  const char        *labeltxt;
+  char              *labeltxt;
   uiwcont_t         *uiwidgetp;
   uisbtext_t        *sbtxt;
   uisbnum_t         *sbnum;
@@ -458,10 +458,12 @@ typedef struct confuigui {
   asconf_t          *asconf;
   confuiitem_t      uiitem [CONFUI_ITEM_MAX];
   char              *localip;
-  int               valid;
+  int               invalid_count;
   int               haveerrors;
   bool              inbuild;
   bool              changed;      // currently only confas uses this
+  bool              validate_check;
+  bool              reset_validation;
   /* main window */
   uiwcont_t         *window;
   callback_t        *closecb;

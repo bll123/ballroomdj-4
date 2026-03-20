@@ -55,6 +55,7 @@ static void confuiAudioSrcRemove (confuigui_t *gui, ilistidx_t idx);
 static void confuiAudioSrcAdd (confuigui_t *gui);
 static void confuiAudioSrcSetWidgetStates (confuigui_t *gui, int askey);
 static void confuiAudioSrcValidateAll (confuigui_t *gui, bool forceflag);
+static void confuiAudioSrcCleanValidation (confuigui_t *gui);
 
 void
 confuiAudioSourceInit (confuigui_t *gui)
@@ -350,18 +351,12 @@ confuiAudioSrcEntryChg (void *udata, const char *label, int widx)
 
   mode = asconfGetNum (gui->asconf, gui->asconfkey, ASCONF_MODE);
   if (mode == ASCONF_MODE_OFF) {
-    confuiMarkValid (gui, widx);
-    if (gui->valid == 0) {
-      confuiSetErrorMsg (gui, "");
-    }
+    confuiAudioSrcCleanValidation (gui);
     return UIENTRY_OK;
   }
   if (mode == ASCONF_MODE_SERVER &&
       widx == CONFUI_ENTRY_AUDIOSRC_URI) {
     confuiMarkValid (gui, widx);
-    if (gui->valid == 0) {
-      confuiSetErrorMsg (gui, "");
-    }
     return UIENTRY_OK;
   }
 
@@ -391,9 +386,6 @@ confuiAudioSrcEntryChg (void *udata, const char *label, int widx)
   }
 
   confuiMarkValid (gui, widx);
-  if (gui->valid == 0) {
-    confuiSetErrorMsg (gui, "");
-  }
 
   itemidx = gui->uiitem [widx].audiosrcitemidx;
 
@@ -461,11 +453,11 @@ confuiAudioSrcSpinboxChg (void *udata, int widx)
 
   itemidx = gui->uiitem [widx].audiosrcitemidx;
 
-  if (gui->uiitem [widx].basetype == CONFUI_SPINBOX_TEXT) {
+  if (gui->uiitem [widx].basetype == CONFUI_SB_TXT) {
     /* text spinbox */
     nval = uisbtextGetValue (gui->uiitem [widx].sbtxt);
   }
-  if (gui->uiitem [widx].basetype == CONFUI_SPINBOX_NUM) {
+  if (gui->uiitem [widx].basetype == CONFUI_SB_NUM) {
     double    value;
 
     value = uiSpinboxGetValue (gui->uiitem [widx].uiwidgetp);
@@ -519,7 +511,7 @@ confuiAudioSrcSave (confuigui_t *gui)
     return;
   }
 
-  if (gui->valid != 0) {
+  if (gui->invalid_count != 0) {
     logProcEnd ("not-valid");
     return;
   }
@@ -675,7 +667,7 @@ confuiAudioSrcChkConn (void *udata)
   bool          rc = false;
   int           widx;
 
-  if (gui->valid != 0) {
+  if (gui->invalid_count != 0) {
     return UICB_CONT;
   }
 
@@ -700,18 +692,29 @@ confuiAudioSrcValidateAll (confuigui_t *gui, bool forceflag)
 {
   int         widx;
 
-  gui->valid = 0;
+  confuiAudioSrcCleanValidation (gui);
   widx = CONFUI_ENTRY_AUDIOSRC_NAME;
-  confuiMarkValid (gui, widx);
   uiEntryValidate (gui->uiitem [widx].uiwidgetp, forceflag);
   widx = CONFUI_ENTRY_AUDIOSRC_URI;
-  confuiMarkValid (gui, widx);
   uiEntryValidate (gui->uiitem [widx].uiwidgetp, forceflag);
   widx = CONFUI_ENTRY_AUDIOSRC_USER;
-  confuiMarkValid (gui, widx);
   uiEntryValidate (gui->uiitem [widx].uiwidgetp, forceflag);
   widx = CONFUI_ENTRY_AUDIOSRC_PASS;
-  confuiMarkValid (gui, widx);
   uiEntryValidate (gui->uiitem [widx].uiwidgetp, forceflag);
+}
+
+static void
+confuiAudioSrcCleanValidation (confuigui_t *gui)
+{
+  int         widx;
+
+  widx = CONFUI_ENTRY_AUDIOSRC_NAME;
+  confuiMarkValid (gui, widx);
+  widx = CONFUI_ENTRY_AUDIOSRC_URI;
+  confuiMarkValid (gui, widx);
+  widx = CONFUI_ENTRY_AUDIOSRC_USER;
+  confuiMarkValid (gui, widx);
+  widx = CONFUI_ENTRY_AUDIOSRC_PASS;
+  confuiMarkValid (gui, widx);
 }
 

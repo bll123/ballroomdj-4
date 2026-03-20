@@ -31,6 +31,7 @@ typedef struct uisbnum {
   uiwcont_t       *entry;
   callback_t      *sbnumcb;
   callback_t      *chgcb;
+  const char      *label;
   double          min;
   double          max;
   double          old_value;
@@ -42,7 +43,9 @@ typedef struct uisbnum {
   int             type;
   bool            changed;
   bool            set_value;
+  bool            isvalid;
   char            fmt [20];
+  char            valmsg [400];
 } uisbnum_t;
 
 static bool uisbnumCBHandler (void *udata, int32_t dir);
@@ -51,22 +54,22 @@ static void uisbnumSetFormat (uisbnum_t *sbnum);
 static int uisbnumEntryValidate (uiwcont_t *entry, const char *label, void *udata);
 static void uisbnumValueToStr (uisbnum_t *sbnum, char *tbuff, size_t sz);
 static void uisbnumProcessChangeCallback (uisbnum_t *sbnum);
+static void uisbnumSetValid (uisbnum_t *sbnum, bool isvalid);
 
 uisbnum_t *
-uisbnumCreate (uiwcont_t *box, int maxSize, int margin)
+uisbnumCreate (uiwcont_t *box, const char *label, int maxSize, int margin)
 {
   uisbnum_t  *sbnum;
 
   sbnum = mdmalloc (sizeof (uisbnum_t));
-fprintf (stderr, "sbnum: create entry\n");
   sbnum->entry = uiEntryInit (10, maxSize);
   uiEntryAlignEnd (sbnum->entry);
   uiWidgetSetAllMargins (sbnum->entry, 0);
-fprintf (stderr, "sbnum: create sb\n");
   sbnum->sb = uisbCreate (box, sbnum->entry, SB_IS_NUM, margin);
   uisbSetRepeat (sbnum->sb, 50);
   sbnum->sbnumcb = NULL;
   sbnum->chgcb = NULL;
+  sbnum->label = label;
   sbnum->min = 1.0;
   sbnum->max = 100.0;
   sbnum->old_value = SB_INVALID;
@@ -78,12 +81,14 @@ fprintf (stderr, "sbnum: create sb\n");
   sbnum->type = SBNUM_NUMERIC;
   sbnum->changed = false;
   sbnum->set_value = false;
+  sbnum->isvalid = true;
   uisbnumSetFormat (sbnum);
+  sbnum->valmsg [0] = '\0';
 
   sbnum->sbnumcb = callbackInitI (uisbnumCBHandler, sbnum);
   uisbSetCallback (sbnum->sb, sbnum->sbnumcb);
 
-  uiEntrySetValidate (sbnum->entry, "",
+  uiEntrySetValidate (sbnum->entry, label,
       uisbnumEntryValidate, sbnum, UIENTRY_DELAY_NO_ICON);
 
   return sbnum;
@@ -204,6 +209,16 @@ uisbnumSetChangeCallback (uisbnum_t *sbnum, callback_t *chgcb)
   sbnum->chgcb = chgcb;
 }
 
+void
+uisbnumValidate (uisbnum_t *sbnum)
+{
+  if (sbnum == NULL) {
+    return;
+  }
+
+  uiEntryValidate (sbnum->entry, false);
+}
+
 #if 0
 void
 uisbnumAddClass (uisbnum_t *sbnum, const char *name)
@@ -253,7 +268,7 @@ uisbnumSetValue (uisbnum_t *sbnum, double value)
     return;
   }
 
-  sbnum->old_value = SB_INVALID;
+  sbnum->old_value = value;
   sbnum->value = value;
   uisbnumSetDisplay (sbnum);
   sbnum->changed = false;
@@ -267,6 +282,28 @@ uisbnumGetValue (uisbnum_t *sbnum)
   }
 
   return sbnum->value;
+}
+
+bool
+uisbnumIsValid (uisbnum_t *sbnum)
+{
+  if (sbnum == NULL) {
+    return false;
+  }
+
+fprintf (stderr, "sbnum: valid: %s %d\n", sbnum->label, sbnum->isvalid);
+  return sbnum->isvalid;
+}
+
+const char *
+uisbnumGetValidationError (uisbnum_t *sbnum)
+{
+  if (sbnum == NULL) {
+    return "";
+  }
+
+fprintf (stderr, "sbnum: valmsg: %s\n", sbnum->valmsg);
+  return sbnum->valmsg;
 }
 
 /* internal routines */
@@ -290,12 +327,17 @@ uisbnumCBHandler (void *udata, int32_t dir)
 
     rc = uiEntryValidate (sbnum->entry, force);
     if (rc == UIENTRY_OK) {
+      uisbnumSetValid (sbnum, true);
       return UICB_CONT;
-    } else if (force) {
-      char    tbuff [40];
+    } else {
+      uisbnumSetValid (sbnum, false);
+      if (force) {
+        char    tbuff [40];
 
-      uisbnumValueToStr (sbnum, tbuff, sizeof (tbuff));
-      uiEntrySetValue (sbnum->entry, tbuff);
+        uisbnumValueToStr (sbnum, tbuff, sizeof (tbuff));
+        uiEntrySetValue (sbnum->entry, tbuff);
+        uisbnumSetValid (sbnum, true);
+      }
     }
     return UICB_STOP;
   }
@@ -337,13 +379,13 @@ uisbnumSetDisplay (uisbnum_t *sbnum)
 
   if (sbnum->old_value != SB_INVALID &&
       sbnum->old_value != sbnum->value) {
-fprintf (stderr, "sbnum: chg: set true\n");
     sbnum->changed = true;
   }
 
   uisbnumValueToStr (sbnum, tbuff, sizeof (tbuff));
   sbnum->set_value = true;
   uiEntrySetValue (sbnum->entry, tbuff);
+  uiEntryValidateClear (sbnum->entry);
   uisbnumProcessChangeCallback (sbnum);
   sbnum->set_value = false;
 }
@@ -359,15 +401,21 @@ uisbnumEntryValidate (uiwcont_t *entry, const char *label, void *udata)
 {
   uisbnum_t   *sbnum = udata;
   int         rc = UIENTRY_OK;
-  char        msg [200];
   const char  *str;
 
+  if (sbnum == NULL) {
+    return UIENTRY_ERROR;
+  }
+
   if (sbnum->set_value) {
+    sbnum->isvalid = true;
     return UIENTRY_OK;
   }
 
   str = uiEntryGetValue (sbnum->entry);
-  if (! validate (msg, sizeof (msg), label, str, sbnum->valtype)) {
+  if (! validate (sbnum->valmsg, sizeof (sbnum->valmsg),
+        label, str, sbnum->valtype)) {
+    uisbnumSetValid (sbnum, false);
     rc = UIENTRY_ERROR;
   }
   if (rc == UIENTRY_OK) {
@@ -386,6 +434,7 @@ uisbnumEntryValidate (uiwcont_t *entry, const char *label, void *udata)
       sbnum->value = tmutilStrToMS (str);
     }
     sbnum->changed = true;
+    uisbnumSetValid (sbnum, true);
   }
 
   uisbnumProcessChangeCallback (sbnum);
@@ -423,5 +472,18 @@ uisbnumProcessChangeCallback (uisbnum_t *sbnum)
       callbackHandler (sbnum->chgcb);
       sbnum->changed = false;
     }
+  }
+}
+
+static void
+uisbnumSetValid (uisbnum_t *sbnum, bool isvalid)
+{
+  if (sbnum->isvalid != isvalid) {
+fprintf (stderr, "sbnum: set valid: %s %d\n", sbnum->label, isvalid);
+    sbnum->changed = true;
+  }
+  sbnum->isvalid = isvalid;
+  if (sbnum->changed) {
+    uisbnumProcessChangeCallback (sbnum);
   }
 }

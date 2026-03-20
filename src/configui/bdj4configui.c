@@ -125,7 +125,9 @@ main (int argc, char *argv[])
   confui.gui.marqueetaglist = NULL;
   confui.gui.pluitaglist = NULL;
   confui.gui.inbuild = false;
-  confui.gui.valid = 0;
+  confui.gui.invalid_count = 0;
+  confui.gui.validate_check = false;
+  confui.gui.reset_validation = false;
   confui.gui.changed = false;
   confui.gui.dancedkey = LIST_VALUE_INVALID;
   confui.gui.inchange = false;
@@ -393,6 +395,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
     uiwcontFree (confui->gui.uiitem [i].uiwidgetp);
   }
   for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
+    dataFree (confui->gui.uiitem [i].labeltxt);
     uiwcontFree (confui->gui.uiitem [i].uilabelp);
     callbackFree (confui->gui.uiitem [i].callback);
   }
@@ -564,6 +567,26 @@ confuiMainLoop (void *tconfui)
   }
   for (int i = CONFUI_ENTRY_CHOOSE_BEGIN + 1; i < CONFUI_ENTRY_CHOOSE_MAX; ++i) {
     uiEntryValidate (confui->gui.uiitem [i].uiwidgetp, false);
+  }
+  for (int i = CONFUI_SB_NUM_BEGIN + 1; i < CONFUI_SB_NUM_MAX; ++i) {
+    if (confui->gui.reset_validation) {
+      /* this happens when switching to a different vertical tab */
+      confuiMarkValid (&confui->gui, i);
+    }
+    uisbnumValidate (confui->gui.uiitem [i].sbnum);
+  }
+  if (confui->gui.validate_check) {
+    for (int i = CONFUI_SB_NUM_BEGIN + 1; i < CONFUI_SB_NUM_MAX; ++i) {
+      if (confui->gui.uiitem [i].sbnum != NULL) {
+        if (! uisbnumIsValid (confui->gui.uiitem [i].sbnum)) {
+          const char  *tmsg;
+
+          tmsg = uisbnumGetValidationError (confui->gui.uiitem [i].sbnum);
+          confuiSetErrorMsg (&confui->gui, tmsg);
+        }
+      }
+    }
+    confui->gui.validate_check = false;
   }
 
   confuiAudioSrcProcess (&confui->gui);

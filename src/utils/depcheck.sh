@@ -179,6 +179,9 @@ for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h \
     ../dev/*)
       continue
       ;;
+    ../templates/gtk-user.css)
+      continue
+      ;;
     utils/dumpvars.cmake)
       continue
       ;;

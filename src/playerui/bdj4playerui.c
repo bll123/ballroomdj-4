@@ -1291,7 +1291,7 @@ pluiExportMP3Dialog (playerui_t *plui)
   uiwcont_t   *windowp;
   uiselect_t  *selectdata;
   char        *dir;
-  char        tbuff [200];
+  char        tbuff [400];
   const char  *defdir = NULL;
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: export mp3");
@@ -1949,9 +1949,9 @@ static bool
 pluiReload (void *udata)
 {
   playerui_t    *plui = udata;
-  char          msg [200];
+  char          msg [400];
   char          tbuff [BDJ4_PATH_MAX];
-  char          tmp [200];
+  char          tmp [400];
 
   plui->inreload = true;
   plui->reloadchk = true;
@@ -1993,7 +1993,7 @@ pluiReloadCurrent (playerui_t *plui)
 {
   datafile_t      *reloaddf;
   nlist_t         *reloaddata;
-  char            tbuff [200];
+  char            tbuff [400];
   dbidx_t         dbidx;
   const char      *nm;
   song_t          *song;
