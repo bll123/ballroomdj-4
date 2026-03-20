@@ -565,6 +565,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
       uisf->wcont [UISF_W_DIALOG], hbox, DD_PACK_START,
       uisf->ddsortbylist, DD_LIST_TYPE_STR,
       "", DD_REPLACE_TITLE, uisf->callbacks [UISF_CB_SORT_BY_SEL]);
+  uiddSetMarginStart (uisf->ddsortby, 2);
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
@@ -701,6 +702,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiwidgetp = uiCreateColonLabel (_("Playable Status"));
     uiBoxPackStart (hbox, uiwidgetp);
     uiSizeGroupAdd (szgrp, uiwidgetp);
+    uiWidgetSetMarginStart (uiwidgetp, 2);
     uisf->labels [UISF_LABEL_PLAY_STATUS] = uiwidgetp;
 
     uisf->wcont [UISF_W_PLAY_STATUS] = uiCreateSwitch (uisf->dfltpbflag);

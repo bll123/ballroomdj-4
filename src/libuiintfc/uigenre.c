@@ -58,6 +58,7 @@ uigenreDropDownCreate (uiwcont_t *boxp, uiwcont_t *parentwin, bool allflag)
       parentwin, boxp, DD_PACK_START,
       uigenre->ddlist, DD_LIST_TYPE_NUM,
       "", DD_REPLACE_TITLE, uigenre->internalselcb);
+  uiddSetMarginStart (uigenre->uidd, 2);
 
   return uigenre;
 }

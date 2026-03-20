@@ -70,6 +70,7 @@ uiplaylistCreate (uiwcont_t *parentwin, uiwcont_t *hbox, int type,
       parentwin, hbox, dwhere,
       uiplaylist->ddlist, DD_LIST_TYPE_STR,
       label, titleflag, uiplaylist->internalselcb);
+  uiddSetMarginStart (uiplaylist->uidd, 2);
 
   return uiplaylist;
 }

@@ -76,6 +76,7 @@ uidanceCreate (uiwcont_t *boxp, uiwcont_t *parentwin, int flags,
   uidance->uidd = uiddCreate ("uidance", parentwin, boxp, ddwhere,
       uidance->ddlist, DD_LIST_TYPE_NUM,
       label, ddflag, uidance->internalselcb);
+  uiddSetMarginStart (uidance->uidd, 2);
 
   return uidance;
 }
