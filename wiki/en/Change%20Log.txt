@@ -8,6 +8,10 @@
 
 * Bug Fixes:
     * Configuration: Fix display of validation messages.
+* Changes:
+    * User Interface: re-write of horizontal notebooks.
+    * User Interface: re-write of text spinboxes.
+    * User Interface: re-write of numeric spinboxes.
 
 -->
 
