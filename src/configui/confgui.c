@@ -337,15 +337,9 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp,
   gui->uiitem [widx].callback = callbackInit (
       confuiValidateCallback, &gui->uiitem [widx], NULL);
   if (bdjoptIdx == OPT_Q_STOP_AT_TIME) {
-//    gui->uiitem [widx].callback = callbackInitSS (
-//        confuiValHMCallback, &gui->uiitem [widx]);
     /* convert value to mm:ss for display */
     value /= 60;
   }
-///  } else if (bdjoptIdx == OPT_Q_MAXPLAYTIME) {
-//    gui->uiitem [widx].callback = callbackInitSS (
-//        confuiValHMSCallback, &gui->uiitem [widx]);
-//  }
 
   sb = uisbnumCreate (hbox, gui->uiitem [widx].labeltxt, 6, 4);
   /* the default increments are set in uisbnumSetTime() */
@@ -355,21 +349,11 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp,
     maxlimit = 1440000.0;
   }
   uisbnumSetTime (sb, 0.0, maxlimit, SBNUM_TIME_BASIC);
-//  uiwidgetp = uiSpinboxTimeCreate (SB_TIME_BASIC, gui,
-//      txt, gui->uiitem [widx].callback);
-//  gui->uiitem [widx].uiwidgetp = uiwidgetp;
   uisbnumSetChangeCallback (sb, gui->uiitem [widx].callback);
   gui->uiitem [widx].sbnum = sb;
-//  if (bdjoptIdx == OPT_Q_STOP_AT_TIME) {
-//    uiSpinboxSetRange (uiwidgetp, 0.0, 1440000.0);
-//  }
   uisbnumSetValue (sb, value);
-//  uiSpinboxTimeSetValue (uiwidgetp, value);
-//  uiBoxPackStart (hbox, uiwidgetp);
-//  uiWidgetSetMarginStart (uiwidgetp, 4);
   if (szgrpB != NULL) {
     uisbnumSizeGroupAdd (sb, szgrpB);
-//    uiSizeGroupAdd (szgrpB, uiwidgetp);
   }
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   uiBoxPostProcess (hbox);
@@ -383,7 +367,6 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     int min, int max, int value, void *cb)
 {
   uiwcont_t   *hbox;
-//  uiwcont_t   *uiwidgetp;
   uisbnum_t   *sb;
 
   logProcBegin ();
@@ -397,26 +380,18 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 
   gui->uiitem [widx].callback = callbackInit (
       confuiValidateCallback, &gui->uiitem [widx], NULL);
-//  uiwidgetp = uiSpinboxIntCreate ();
   sb = uisbnumCreate (hbox, gui->uiitem [widx].labeltxt, 6, 4);
   uisbnumSetLimits (sb, (double) min, (double) max, 0);
   uisbnumSetValue (sb, (double) value);
   uisbnumSetChangeCallback (sb, gui->uiitem [widx].callback);
-//  uiSpinboxSet (uiwidgetp, (double) min, (double) max);
-//  uiSpinboxSetValue (uiwidgetp, (double) value);
-//  uiBoxPackStart (hbox, uiwidgetp);
-//  uiWidgetSetMarginStart (uiwidgetp, 4);
   if (szgrpB != NULL) {
     uisbnumSizeGroupAdd (sb, szgrpB);
-//    uiSizeGroupAdd (szgrpB, uiwidgetp);
   }
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   if (cb != NULL) {
     gui->uiitem [widx].callback = callbackInit (cb, gui, NULL);
     uisbnumSetChangeCallback (sb, gui->uiitem [widx].callback);
-//    uiSpinboxSetValueChangedCallback (uiwidgetp, gui->uiitem [widx].callback);
   }
-//  gui->uiitem [widx].uiwidgetp = uiwidgetp;
   gui->uiitem [widx].sbnum = sb;
 
   uiBoxPostProcess (hbox);
@@ -431,7 +406,6 @@ confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp
     double min, double max, double value, int indent)
 {
   uiwcont_t  *hbox;
-//  uiwcont_t  *uiwidgetp;
   uisbnum_t   *sb;
 
   logProcBegin ();
@@ -448,17 +422,10 @@ confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp
   uisbnumSetLimits (sb, min, max, 1);
   uisbnumSetValue (sb, value);
   uisbnumSetChangeCallback (sb, gui->uiitem [widx].callback);
-//  uiwidgetp = uiSpinboxDoubleCreate ();
-//  uiSpinboxSet (uiwidgetp, min, max);
-//  uiSpinboxSetValue (uiwidgetp, value);
-//  uiBoxPackStart (hbox, uiwidgetp);
-//  uiWidgetSetMarginStart (uiwidgetp, 4);
   if (szgrpB != NULL) {
     uisbnumSizeGroupAdd (sb, szgrpB);
-//    uiSizeGroupAdd (szgrpB, uiwidgetp);
   }
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
-//  gui->uiitem [widx].uiwidgetp = uiwidgetp;
   gui->uiitem [widx].sbnum = sb;
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
