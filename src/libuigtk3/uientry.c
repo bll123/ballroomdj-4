@@ -86,6 +86,20 @@ uiEntryFree (uiwcont_t *uiwidget)
 }
 
 void
+uiEntrySetWidth (uiwcont_t *uiwidget, int maxWidth)
+{
+  uientrybase_t *ebase;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-width")) {
+    return;
+  }
+
+  gtk_entry_set_width_chars (GTK_ENTRY (uiwidget->uidata.widget), maxWidth);
+  ebase = &uiwidget->uiint.uientrybase;
+  ebase->entrySize = maxWidth;
+}
+
+void
 uiEntrySetIcon (uiwcont_t *uiwidget, const char *name)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-icon")) {

@@ -370,10 +370,11 @@ void
 confuiCreateTagListingDisp (confuigui_t *gui)
 {
   dispselsel_t  selidx;
+  int           widx = CONFUI_SB_TXT_DISP_SEL;
 
   logProcBegin ();
 
-  selidx = uisbtextGetValue (gui->uiitem [CONFUI_SB_TXT_DISP_SEL].sbtxt);
+  selidx = uisbtextGetValue (gui->uiitem [widx].sbtxt);
 
   if (selidx == DISP_SEL_SONGEDIT_A ||
       selidx == DISP_SEL_SONGEDIT_B ||
@@ -382,17 +383,13 @@ confuiCreateTagListingDisp (confuigui_t *gui)
         DISP_SEL_SONGEDIT_A, DISP_SEL_SONGEDIT_C);
   } else if (selidx == DISP_SEL_AUDIOID_LIST ||
       selidx == DISP_SEL_AUDIOID) {
-    uiduallistSet (gui->dispselduallist, gui->audioidtaglist,
-        DL_LIST_SOURCE);
+    uiduallistSet (gui->dispselduallist, gui->audioidtaglist, DL_LIST_SOURCE);
   } else if (selidx == DISP_SEL_MARQUEE) {
-    uiduallistSet (gui->dispselduallist, gui->marqueetaglist,
-        DL_LIST_SOURCE);
+    uiduallistSet (gui->dispselduallist, gui->marqueetaglist, DL_LIST_SOURCE);
   } else if (selidx == DISP_SEL_CURRSONG) {
-    uiduallistSet (gui->dispselduallist, gui->pluitaglist,
-        DL_LIST_SOURCE);
+    uiduallistSet (gui->dispselduallist, gui->pluitaglist, DL_LIST_SOURCE);
   } else {
-    uiduallistSet (gui->dispselduallist, gui->listingtaglist,
-        DL_LIST_SOURCE);
+    uiduallistSet (gui->dispselduallist, gui->listingtaglist, DL_LIST_SOURCE);
   }
   logProcEnd ("");
 }
@@ -403,10 +400,11 @@ confuiCreateTagSelectedDisp (confuigui_t *gui)
   dispselsel_t  selidx;
   slist_t       *sellist;
   dispsel_t     *dispsel;
+  int           widx = CONFUI_SB_TXT_DISP_SEL;
 
   logProcBegin ();
 
-  selidx = uisbtextGetValue (gui->uiitem [CONFUI_SB_TXT_DISP_SEL].sbtxt);
+  selidx = uisbtextGetValue (gui->uiitem [widx].sbtxt);
 
   dispsel = gui->dispsel;
   sellist = dispselGetList (dispsel, selidx);

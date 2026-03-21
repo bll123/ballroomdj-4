@@ -197,7 +197,6 @@ confuiPlayerAudioSinkChg (void *udata)
   const char  *sval;
   nlist_t     *tlist;
   nlist_t     *keylist;
-  size_t      maxWidth = 10;
   int         widx;
 
   if (gui == NULL) {
@@ -222,11 +221,7 @@ confuiPlayerAudioSinkChg (void *udata)
   tlist = gui->uiitem [widx].displist;
   keylist = gui->uiitem [widx].sbkeylist;
 
-  nlistCalcMaxValueWidth (tlist);
-  maxWidth = nlistGetMaxValueWidth (tlist);
-
   uisbtextSetList (gui->uiitem [widx].sbtxt, tlist);
-  uisbtextSetWidth (gui->uiitem [widx].sbtxt, maxWidth);
 }
 
 static void

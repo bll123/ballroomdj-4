@@ -100,8 +100,9 @@ uisbtextSetList (uisbtext_t *sbtext, nlist_t *txtlist)
   nlistidx_t    iteridx;
   nlistidx_t    key;
   int32_t       idx;
+  int           width;
 
-  if (sbtext == NULL) {
+  if (sbtext == NULL || txtlist == NULL) {
     return;
   }
 
@@ -115,6 +116,10 @@ uisbtextSetList (uisbtext_t *sbtext, nlist_t *txtlist)
 
   sbtext->idxlist = nlistAlloc ("sbtextidx", LIST_UNORDERED, NULL);
   nlistSetSize (sbtext->idxlist, sbtext->count);
+
+  nlistCalcMaxValueWidth (sbtext->txtlist);
+  width = nlistGetMaxValueWidth (sbtext->txtlist);
+  uiLabelSetMinWidth (sbtext->display, width + 1);
 
   idx = 0;
   nlistStartIterator (sbtext->txtlist, &iteridx);

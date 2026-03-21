@@ -35,6 +35,7 @@
 
 static void uiButtonSignalHandler (GtkButton *b, gpointer udata);
 static void uiButtonRepeatSignalHandler (GtkButton *b, gpointer udata);
+static gboolean uiButtonFocusHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata);
 
 typedef struct uibutton {
   GtkWidget       *currimage;
@@ -198,6 +199,17 @@ uiButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
 }
 
 void
+uiButtonSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-focus-cb")) {
+    return;
+  }
+
+  g_signal_connect (uiwidget->uidata.widget, "focus-in-event",
+      G_CALLBACK (uiButtonFocusHandler), uicb);
+}
+
+void
 uiButtonSetState (uiwcont_t *uiwidget, uibuttonstate_t newstate)
 {
   uibutton_t      *uibutton;
@@ -348,3 +360,14 @@ uiButtonRepeatSignalHandler (GtkButton *b, gpointer udata)
   callbackHandler (uicb);
 }
 
+static gboolean
+uiButtonFocusHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata)
+{
+  callback_t    *uicb = udata;
+
+  if (uicb != NULL) {
+    callbackHandler (uicb);
+  }
+
+  return false;
+}

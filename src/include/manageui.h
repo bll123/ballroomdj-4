@@ -45,6 +45,7 @@ typedef struct managepl managepl_t;
 
 managepl_t *managePlaylistAlloc (manageinfo_t *minfo);
 void managePlaylistFree (managepl_t *managepl);
+void managePlaylistProcess (managepl_t *managepl);
 void managePlaylistSetLoadCallback (managepl_t *managepl, callback_t *uicb);
 void manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp);
 uiwcont_t *managePlaylistMenu (managepl_t *managepl, uiwcont_t *menubar);

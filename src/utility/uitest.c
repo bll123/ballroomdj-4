@@ -75,6 +75,16 @@ enum {
 };
 
 enum {
+  UITEST_SB_INT,
+  UITEST_SB_DBL,
+  UITEST_SB_DBL_B,
+  UITEST_SB_DBL_DFLT,
+  UITEST_SB_TM_A,
+  UITEST_SB_TM_B,
+  UITEST_SB_MAX,
+};
+
+enum {
   UITEST_CB_CLOSE,
   UITEST_CB_B,
   UITEST_CB_B_IMG_A,
@@ -120,6 +130,7 @@ enum {
 typedef struct {
   uivnb_t       *mainvnb;
   uiwcont_t     *wcont [UITEST_W_MAX];
+  uisbnum_t     *sbnum [UITEST_SB_MAX];
   uivirtlist_t  *vl [UITEST_VL_MAX];
   callback_t    *callbacks [UITEST_CB_MAX];
   char          *images [UITEST_I_MAX];
@@ -131,12 +142,6 @@ typedef struct {
   uihnb_t       *hnbimg;
   uisbtext_t    *sbtext;
   uisbtext_t    *sbtextb;
-  uisbnum_t     *sbnumint;
-  uisbnum_t     *sbnumdbl;
-  uisbnum_t     *sbnumdblb;
-  uisbnum_t     *sbnumdbldef;
-  uisbnum_t     *sbnumtma;
-  uisbnum_t     *sbnumtmb;
   nlist_t       *sbtxtlist;
   uidd_t        *uidd [UITEST_DD_MAX];
   long          counter;
@@ -276,12 +281,9 @@ main (int argc, char *argv[])
   uitest.chgcb = NULL;
   uitest.sbtext = NULL;
   uitest.sbtextb = NULL;
-  uitest.sbnumint = NULL;
-  uitest.sbnumdbl = NULL;
-  uitest.sbnumdblb = NULL;
-  uitest.sbnumdbldef = NULL;
-  uitest.sbnumtma = NULL;
-  uitest.sbnumtmb = NULL;
+  for (int i = 0; i < UITEST_SB_MAX; ++i) {
+    uitest.sbnum [i] = NULL;
+  }
 
   uitest.lista = ilistAlloc ("dd-a", LIST_ORDERED);
   uitest.listb = ilistAlloc ("dd-b", LIST_ORDERED);
@@ -343,12 +345,9 @@ uitestMainLoop (uitest_t *uitest)
   while (uitest->stop == false) {
     uiUIProcessEvents ();
 
-    uisbnumCheck (uitest->sbnumint);
-    uisbnumCheck (uitest->sbnumdbl);
-    uisbnumCheck (uitest->sbnumdblb);
-    uisbnumCheck (uitest->sbnumdbldef);
-    uisbnumCheck (uitest->sbnumtma);
-    uisbnumCheck (uitest->sbnumtmb);
+    for (int i = 0; i < UITEST_SB_MAX; ++i) {
+      uisbnumCheck (uitest->sbnum [i]);
+    }
 
     mssleep (50);
   }
@@ -1598,6 +1597,7 @@ uitestUISpinbox (uitest_t *uitest)
   uiwcont_t   *vbox;
   uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
+  uisbnum_t   *sb;
 
   /* spinboxes */
 
@@ -1613,9 +1613,9 @@ uitestUISpinbox (uitest_t *uitest)
 
   uitest->sbtxtlist = nlistAlloc ("sbtxtlist", LIST_ORDERED, NULL);
   nlistSetStr (uitest->sbtxtlist, 0, "aaa");
-  nlistSetStr (uitest->sbtxtlist, 1, "bbb");
+  nlistSetStr (uitest->sbtxtlist, 1, "bbbb");
   nlistSetStr (uitest->sbtxtlist, 2, "ccc");
-  nlistSetStr (uitest->sbtxtlist, 3, "ddd");
+  nlistSetStr (uitest->sbtxtlist, 3, "ddddddddd");
 
   uitest->sbtext = uisbtextCreate (hbox, 4);
   uisbtextSetList (uitest->sbtext, uitest->sbtxtlist);
@@ -1646,15 +1646,11 @@ uitestUISpinbox (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiSpinboxIntCreate ();
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSpinboxSetRange (uiwidgetp, 3.0, 15.0);
-  uitest->wcont [UITEST_W_SB_INT] = uiwidgetp;
-
-  uitest->sbnumint = uisbnumCreate (hbox, "a", 5, 0);
-  uisbnumSetLimits (uitest->sbnumint, 3.0, 15.0, 0);
-  uisbnumSetIncrements (uitest->sbnumint, 1.0, 5.0);
-  uisbnumSetValue (uitest->sbnumint, 4.0);
+  sb = uisbnumCreate (hbox, "a", -1, 0);
+  uisbnumSetLimits (sb, 3.0, 15.0, 0);
+  uisbnumSetIncrements (sb, 1.0, 5.0);
+  uisbnumSetValue (sb, 4.0);
+  uitest->sbnum [UITEST_SB_INT] = sb;
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
@@ -1671,10 +1667,11 @@ uitestUISpinbox (uitest_t *uitest)
   uiSpinboxSetRange (uiwidgetp, 1.0, 20.0);
   uitest->wcont [UITEST_W_SB_DBL_A] = uiwidgetp;
 
-  uitest->sbnumdbl = uisbnumCreate (hbox, "dbl", 5, 0);
-  uisbnumSetLimits (uitest->sbnumdbl, 1.0, 20.0, 1);
-  uisbnumSetIncrements (uitest->sbnumdbl, 0.1, 1.0);
-  uisbnumSetValue (uitest->sbnumdbl, 5.0);
+  sb = uisbnumCreate (hbox, "dbl", -1, 0);
+  uisbnumSetLimits (sb, 1.0, 20.0, 1);
+  uisbnumSetIncrements (sb, 0.1, 1.0);
+  uisbnumSetValue (sb, 5.0);
+  uitest->sbnum [UITEST_SB_DBL] = sb;
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
@@ -1692,10 +1689,11 @@ uitestUISpinbox (uitest_t *uitest)
   uiSpinboxSetIncrement (uiwidgetp, 1.0, 5.0);
   uitest->wcont [UITEST_W_SB_DBL_B] = uiwidgetp;
 
-  uitest->sbnumdblb = uisbnumCreate (hbox, "dbl-b", 5, 0);
-  uisbnumSetLimits (uitest->sbnumdblb, 1.0, 20.0, 1);
-  uisbnumSetIncrements (uitest->sbnumdblb, 1.0, 5.0);
-  uisbnumSetValue (uitest->sbnumdblb, 5.0);
+  sb = uisbnumCreate (hbox, "dbl-b", -1, 0);
+  uisbnumSetLimits (sb, 1.0, 20.0, 1);
+  uisbnumSetIncrements (sb, 0.1, 5.0);
+  uisbnumSetValue (sb, 5.0);
+  uitest->sbnum [UITEST_SB_DBL_B] = sb;
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
@@ -1711,13 +1709,15 @@ uitestUISpinbox (uitest_t *uitest)
 
   uiBoxPackStart (hbox, uiwidgetp);
   uiSpinboxSetRange (uiwidgetp, -1.0, 10.0);
+  uiSpinboxSetValue (uiwidgetp, -0.1);
   uitest->wcont [UITEST_W_SB_DBL_DFLT] = uiwidgetp;
 
-  uitest->sbnumdbldef = uisbnumCreate (hbox, "dbl-def", 10, 0);
-  uisbnumSetLimits (uitest->sbnumdbldef, 0.0, 10.0, 1);
-  uisbnumSetIncrements (uitest->sbnumdbldef, 0.1, 5.0);
-  uisbnumSetType (uitest->sbnumdbldef, SBNUM_NUM_DEFAULT);
-  uisbnumSetValue (uitest->sbnumdbldef, 5.0);
+  sb = uisbnumCreate (hbox, "dbl-def", -1, 0);
+  uisbnumSetLimits (sb, 0.0, 10.0, 1);
+  uisbnumSetIncrements (sb, 0.1, 5.0);
+  uisbnumSetType (sb, SBNUM_NUM_DEFAULT);
+  uisbnumSetValue (sb, -0.1);
+  uitest->sbnum [UITEST_SB_DBL_DFLT] = sb;
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
@@ -1733,9 +1733,10 @@ uitestUISpinbox (uitest_t *uitest)
   uiBoxPackStart (hbox, uiwidgetp);
   uitest->wcont [UITEST_W_SB_TIME_A] = uiwidgetp;
 
-  uitest->sbnumtma = uisbnumCreate (hbox, "tm-a", 10, 0);
-  uisbnumSetTime (uitest->sbnumtma, 0.0, 1440000.0, SBNUM_TIME_BASIC);
-  uisbnumSetValue (uitest->sbnumtma, 5.0);
+  sb = uisbnumCreate (hbox, "tm-a", -1, 0);
+  uisbnumSetTime (sb, 0.0, 1440000.0, SBNUM_TIME_BASIC);
+  uisbnumSetValue (sb, 5.0);
+  uitest->sbnum [UITEST_SB_TM_A] = sb;
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
@@ -1751,9 +1752,10 @@ uitestUISpinbox (uitest_t *uitest)
   uiBoxPackStart (hbox, uiwidgetp);
   uitest->wcont [UITEST_W_SB_TIME_B] = uiwidgetp;
 
-  uitest->sbnumtmb = uisbnumCreate (hbox, "tm-b", 10, 0);
-  uisbnumSetTime (uitest->sbnumtmb, 0.0, 1440000.0, SBNUM_TIME_PRECISE);
-  uisbnumSetValue (uitest->sbnumtmb, 5.0);
+  sb = uisbnumCreate (hbox, "tm-b", -1, 0);
+  uisbnumSetTime (sb, 0.0, 1440000.0, SBNUM_TIME_PRECISE);
+  uisbnumSetValue (sb, 5.0);
+  uitest->sbnum [UITEST_SB_TM_B] = sb;
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
@@ -1956,12 +1958,9 @@ uitestCleanup (uitest_t *uitest)
 
   uisbtextFree (uitest->sbtext);
   uisbtextFree (uitest->sbtextb);
-  uisbnumFree (uitest->sbnumint);
-  uisbnumFree (uitest->sbnumdbl);
-  uisbnumFree (uitest->sbnumdblb);
-  uisbnumFree (uitest->sbnumdbldef);
-  uisbnumFree (uitest->sbnumtma);
-  uisbnumFree (uitest->sbnumtmb);
+  for (int i = 0; i < UITEST_SB_MAX; ++i) {
+    uisbnumFree (uitest->sbnum [i]);
+  }
 
   uivnbFree (uitest->vnb);
   uihnbFree (uitest->hnb);

@@ -285,7 +285,7 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
 
   uiexppl->sb = uisbtextCreate (hbox, 2);
   uisbtextSetList (uiexppl->sb, uiexppl->typelist);
-  uisbtextSetWidth (uiexppl->sb, 5);
+//  uisbtextSetWidth (uiexppl->sb, 5);
   uisbtextSetValue (uiexppl->sb, uiexppl->exptype);
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);

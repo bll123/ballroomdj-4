@@ -32,6 +32,7 @@ uisb_t * uisbCreate (uiwcont_t *box, uiwcont_t *disp, bool istext, int margin);
 void uisbFree (uisb_t *sb);
 void uisbExpandHoriz (uisb_t *sb);
 void uisbSetCallback (uisb_t *sb, callback_t *uicb);
+void uisbSetFocusCallback (uisb_t *sb, callback_t *cb);
 void uisbSetState (uisb_t *sb, int state);
 void uisbSizeGroupAdd (uisb_t *sb, uiwcont_t *sg);
 void uisbSetRepeat (uisb_t *sb, int repeatms);

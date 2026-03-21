@@ -125,9 +125,10 @@ void uivlCopySelectList (uivirtlist_t *vl_a, uivirtlist_t *vl_b);
 void uivlCopyPosition (uivirtlist_t *vl_a, uivirtlist_t *vl_b);
 
 /* processing */
-void  uivlDisplay (uivirtlist_t *vl);
+void uivlDisplay (uivirtlist_t *vl);
 void uivlUpdateDisplay (uivirtlist_t *vl);
-void  uivlPopulate (uivirtlist_t *vl);
+void uivlProcess (uivirtlist_t *vl);
+void uivlPopulate (uivirtlist_t *vl);
 uiwcont_t *uivlGetEventHandler (uivirtlist_t *vl);
 
 #if defined (__cplusplus) || defined (c_plusplus)

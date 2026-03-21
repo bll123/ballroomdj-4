@@ -39,6 +39,7 @@
 #include "uigenre.h"
 #include "uilevel.h"
 #include "uirating.h"
+#include "uisbnum.h"
 #include "uistatus.h"
 #include "uisong.h"
 #include "uisongsel.h"
@@ -85,12 +86,14 @@ typedef struct {
     uilevel_t     *uilevel;
     uirating_t    *uirating;
     uistatus_t    *uistatus;
+    uisbnum_t     *sbnum;
   };
   uiwcont_t       *display;
   callback_t      *callback;
   se_internal_t   *seint;           // need for scale changed.
   bool            lastchanged;
   bool            changed;
+  bool            issbnum;
 } uisongedititem_t;
 
 enum {
@@ -306,6 +309,25 @@ uisongeditUIFree (uisongedit_t *uisongedit)
   logProcEnd ("");
 }
 
+void
+uisongeditProcess (uisongedit_t *uisongedit)
+{
+  se_internal_t *seint;
+
+  if (uisongedit == NULL) {
+    return;
+  }
+
+  seint = uisongedit->seInternalData;
+  if (seint != NULL) {
+    for (int count = 0; count < seint->itemcount; ++count) {
+      if (seint->items [count].issbnum) {
+        uisbnumCheck (seint->items [count].sbnum);
+      }
+    }
+  }
+}
+
 uiwcont_t *
 uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
     uiwcont_t *parentwin, uiwcont_t *statusMsg)
@@ -476,6 +498,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
     seint->items [i].seint = seint;
     seint->items [i].lastchanged = false;
     seint->items [i].changed = false;
+    seint->items [i].issbnum = false;
   }
 
   /* must be set before the items are instantiated */
@@ -622,7 +645,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
           fprintf (stderr, "et_spinbox: mismatch type\n");
         }
         if (val < 0) { val = 0; }
-        uiSpinboxSetValue (seint->items [count].uiwidgetp, val);
+        uisbnumSetValue (seint->items [count].sbnum, val);
         break;
       }
       case ET_SPINBOX_TIME: {
@@ -671,7 +694,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
     speed = songGetNum (seint->song, TAG_SPEEDADJUSTMENT);
     val = songutilAdjustBPM (val, speed);
     val = danceConvertMPMtoBPM (seint->currdanceidx, val);
-    uiSpinboxSetValue (seint->items [seint->bpmidx].uiwidgetp, val);
+    uisbnumSetValue (seint->items [seint->bpmidx].sbnum, val);
   }
 
   uisongeditSetBPMRangeDisplay (seint, bpmdispidx, seint->currdanceidx);
@@ -689,6 +712,7 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
 
   uiButtonCheckRepeat (seint->wcont [UISE_W_BUTTON_NEXT]);
   uiButtonCheckRepeat (seint->wcont [UISE_W_BUTTON_PREV]);
+  /* checkchanged also calls uisbnumCheck() */
   uisongeditCheckChanged (uisongedit);
   return;
 }
@@ -709,7 +733,7 @@ uisongeditSetBPMValue (uisongedit_t *uisongedit, int val)
   /* the bpm value received from the bpm counter is always mpm */
   val = danceConvertMPMtoBPM (seint->currdanceidx, val);
 
-  uiSpinboxSetValue (seint->items [seint->bpmidx].uiwidgetp, val);
+  uisbnumSetValue (seint->items [seint->bpmidx].sbnum, val);
   logProcEnd ("");
 }
 
@@ -961,7 +985,7 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
         }
         case ET_SPINBOX: {
           if (val < 0) { val = 0; }
-          nval = uiSpinboxGetValue (seint->items [count].uiwidgetp);
+          nval = uisbnumGetValue (seint->items [count].sbnum);
           if (nval < 0) { nval = 0; }
           if (count == seint->bpmidx && nval > 0) {
             nval = songutilNormalizeBPM (nval, seint->lastspeed);
@@ -1086,11 +1110,11 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
         }
       }
       if (seint->bpmidx != UISE_NOT_DISPLAYED) {
-        nval = uiSpinboxGetValue (seint->items [seint->bpmidx].uiwidgetp);
+        nval = uisbnumGetValue (seint->items [seint->bpmidx].sbnum);
         if (nval > 0) {
           nval = songutilNormalizeBPM (nval, seint->lastspeed);
           nval = songutilAdjustBPM (nval, speed);
-          uiSpinboxSetValue (seint->items [seint->bpmidx].uiwidgetp, nval);
+          uisbnumSetValue (seint->items [seint->bpmidx].sbnum, nval);
         }
       }
       seint->lastspeed = speed;
@@ -1291,25 +1315,24 @@ uisongeditAddEntry (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
 static void
 uisongeditAddSpinboxInt (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
 {
-  uiwcont_t      *uiwidgetp;
+  uisbnum_t     *sb;
   se_internal_t *seint;
 
   logProcBegin ();
   seint = uisongedit->seInternalData;
-  uiwidgetp = uiSpinboxIntCreate ();
-  seint->items [seint->itemcount].uiwidgetp = uiwidgetp;
+  sb = uisbnumCreate (hbox, tagdefs [tagkey].displayname, -1, 2);
+  seint->items [seint->itemcount].sbnum = sb;
+  seint->items [seint->itemcount].issbnum = true;
   if (tagkey == TAG_BPM) {
-    uiSpinboxSet (uiwidgetp, 0.0, 400.0);
+    uisbnumSetLimits (sb, 0.0, 400.0, 0);
   }
   if (tagkey == TAG_TRACKNUMBER || tagkey == TAG_TRACKTOTAL ||
       tagkey == TAG_DISCNUMBER || tagkey == TAG_DISCTOTAL ||
       tagkey == TAG_MOVEMENTNUM || tagkey == TAG_MOVEMENTCOUNT) {
-    uiSpinboxSet (uiwidgetp, 1.0, 300.0);
+    uisbnumSetLimits (sb, 1.0, 300.0, 0);
   }
-  uiSpinboxSetValueChangedCallback (uiwidgetp,
-      seint->callbacks [UISE_CB_CHANGED]);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_SPIN_NUM], uiwidgetp);
+  uisbnumSetChangeCallback (sb, seint->callbacks [UISE_CB_CHANGED]);
+  uisbnumSizeGroupAdd (sb, seint->szgrp [UISE_SZGRP_SPIN_NUM]);
   logProcEnd ("");
 }
 
@@ -1814,7 +1837,7 @@ uisongeditGetChangedData (uisongedit_t *uisongedit)
         break;
       }
       case ET_SPINBOX: {
-        nval = uiSpinboxGetValue (seint->items [count].uiwidgetp);
+        nval = uisbnumGetValue (seint->items [count].sbnum);
         break;
       }
       case ET_SPINBOX_TIME: {
@@ -2043,7 +2066,7 @@ uisongeditSetBPMIncrement (se_internal_t *seint, ilistidx_t danceidx)
 
     /* set the bpm increment values */
     timesig = danceGetTimeSignature (danceidx);
-    uiSpinboxSetIncrement (seint->items [seint->bpmidx].uiwidgetp,
+    uisbnumSetIncrements (seint->items [seint->bpmidx].sbnum,
         (double) danceTimesigValues [timesig],
         (double) danceTimesigValues [timesig] * 5.0);
   }

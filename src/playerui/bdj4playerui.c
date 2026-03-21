@@ -52,13 +52,14 @@
 #include "songfav.h"
 #include "sysvars.h"
 #include "tmutil.h"
+#include "uiexppl.h"
+#include "uiextreq.h"
 #include "ui.h"
 #include "uihnb.h"
 #include "uimusicq.h"
 #include "uiplayer.h"
 #include "uiquickedit.h"
-#include "uiexppl.h"
-#include "uiextreq.h"
+#include "uisbnum.h"
 #include "uisongfilter.h"
 #include "uisongsel.h"
 #include "uiutils.h"
@@ -99,7 +100,6 @@ enum {
   PLUI_W_LED_OFF,
   PLUI_W_LED_ON,
   PLUI_W_MQ_FONT_SZ_DIALOG,
-  PLUI_W_MQ_SZ,
   PLUI_W_STATUS_MSG,
   PLUI_W_ERROR_MSG,
   PLUI_W_MENU_MQ_HIDE_SHOW,
@@ -145,6 +145,7 @@ typedef struct {
   uisongfilter_t  *uisongfilter;
   uihnb_t         *hnb;
   uiwcont_t       *wcont [PLUI_W_MAX];
+  uisbnum_t       *mqszsb;
   int             reloadexpected;   // how many music queues will be reloaded
   int             reloadrcvd;       // how many music queues received
   nlistidx_t      lastLoc [MUSICQ_MAX];
@@ -479,6 +480,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
     uiwcontFree (plui->wcont [i]);
     plui->wcont [i] = NULL;
   }
+  uisbnumFree (plui->mqszsb);
 
   groupingFree (plui->grouping);
   bdj4shutdown (ROUTE_PLAYERUI, plui->musicdb);
@@ -855,6 +857,10 @@ pluiMainLoop (void *tplui)
 
   if (mstimeCheck (&plui->clockCheck)) {
     pluiClock (plui);
+  }
+
+  if (plui->mqfontsizeactive) {
+    uisbnumCheck (plui->mqszsb);
   }
 
   if (plui->expmp3state == BDJ4_STATE_PROCESS) {
@@ -1545,7 +1551,7 @@ pluiMarqueeFontSizeDialog (void *udata)
     sz = plui->marqueeFontSize;
   }
 
-  uiSpinboxSetValue (plui->wcont [PLUI_W_MQ_SZ], (double) sz);
+  uisbnumSetValue (plui->mqszsb, (double) sz);
   uiDialogShow (plui->wcont [PLUI_W_MQ_FONT_SZ_DIALOG]);
 
   logProcEnd ("");
@@ -1555,9 +1561,10 @@ pluiMarqueeFontSizeDialog (void *udata)
 static void
 pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 {
-  uiwcont_t    *vbox;
-  uiwcont_t    *hbox;
-  uiwcont_t    *uiwidgetp;
+  uiwcont_t     *vbox;
+  uiwcont_t     *hbox;
+  uiwcont_t     *uiwidgetp;
+  const char    *tlabel;
 
   logProcBegin ();
 
@@ -1580,19 +1587,18 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playerui: marquee font size dialog: the font size selector */
-  uiwidgetp = uiCreateColonLabel (_("Font Size"));
+  tlabel = _("Font Size");
+  uiwidgetp = uiCreateColonLabel (tlabel);
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  plui->wcont [PLUI_W_MQ_SZ] = uiSpinboxIntCreate ();
-  uiSpinboxSet (plui->wcont [PLUI_W_MQ_SZ], 10.0, 300.0);
-  uiSpinboxSetValue (plui->wcont [PLUI_W_MQ_SZ], 36.0);
-  uiBoxPackStart (hbox, plui->wcont [PLUI_W_MQ_SZ]);
+  plui->mqszsb = uisbnumCreate (hbox, tlabel, -1, 2);
+  uisbnumSetLimits (plui->mqszsb, 10.0, 400.0, 0);
+  uisbnumSetValue (plui->mqszsb, 36.0);
 
   plui->callbacks [PLUI_CB_FONT_SZ_CHG] = callbackInit (
       pluiMarqueeFontSizeChg, plui, NULL);
-  uiSpinboxSetValueChangedCallback (plui->wcont [PLUI_W_MQ_SZ],
-      plui->callbacks [PLUI_CB_FONT_SZ_CHG]);
+  uisbnumSetChangeCallback (plui->mqszsb, plui->callbacks [PLUI_CB_FONT_SZ_CHG]);
 
   /* the dialog doesn't have any space above the buttons */
   uiBoxPostProcess (hbox);
@@ -1642,7 +1648,7 @@ pluiMarqueeFontSizeChg (void *udata)
   int         fontsz;
   double      value;
 
-  value = uiSpinboxGetValue (plui->wcont [PLUI_W_MQ_SZ]);
+  value = uisbnumGetValue (plui->mqszsb);
   fontsz = (int) round (value);
   if (plui->mqismaximized) {
     plui->marqueeFontSizeFS = fontsz;

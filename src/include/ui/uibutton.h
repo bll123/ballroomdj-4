@@ -15,6 +15,7 @@ void uiButtonFree (uiwcont_t *uiwidget);
 void uiButtonSetImageMarginTop (uiwcont_t *uiwidget, int margin);
 void uiButtonSetImageIcon (uiwcont_t *uiwidget, const char *nm);
 void uiButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm);
+void uiButtonSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb);
 void uiButtonSetState (uiwcont_t *uiwidget, uibuttonstate_t newstate);
 void uiButtonAlignLeft (uiwcont_t *uiwidget);
 void uiButtonSetText (uiwcont_t *uiwidget, const char *txt);

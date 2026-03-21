@@ -711,7 +711,6 @@ starterBuildUI (startui_t  *starter)
   uisbtextSetDisplayCallback (starter->sb, starterSetProfile, starter);
   uisbtextSetWidth (starter->sb, starter->maxProfileWidth);
   uisbtextSetValue (starter->sb, dispidx);
-//  uiWidgetAlignHorizFill (uiwidgetp);
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);

@@ -20,6 +20,7 @@
 #include "tmutil.h"
 #include "ui.h"
 #include "uiclass.h"
+#include "uisbnum.h"
 #include "uivirtlist.h"
 #include "uiwcont.h"
 
@@ -142,6 +143,7 @@ typedef struct uivlcoldata {
 typedef struct uivlcol {
   uint64_t    ident;
   uiwcont_t   *uiwidget;
+  uisbnum_t   *sbnum;
   /* class needs to be held temporarily so it can be removed */
   char        *class;
   int         colidx;
@@ -858,13 +860,15 @@ uivlSetRowColumnEditable (uivirtlist_t *vl, int32_t rownum, int colidx, int stat
     return;
   }
 
-  /* at this time, the user interfaces only have read-only entries */
   switch (vl->coldata [colidx].type) {
     case VL_TYPE_ENTRY: {
       uiEntrySetState (row->cols [colidx].uiwidget, state);
       break;
     }
-    case VL_TYPE_SPINBOX_NUM:
+    case VL_TYPE_SPINBOX_NUM: {
+      uisbnumSetState (row->cols [colidx].sbnum, state);
+      break;
+    }
     case VL_TYPE_SPINBOX_TIME: {
       uiSpinboxSetState (row->cols [colidx].uiwidget, state);
       break;
@@ -1078,7 +1082,7 @@ uivlSetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx, int32_t val)
       break;
     }
     case VL_TYPE_SPINBOX_NUM: {
-      uiSpinboxSetValue (row->cols [colidx].uiwidget, val);
+      uisbnumSetValue (row->cols [colidx].sbnum, val);
       break;
     }
     case VL_TYPE_SPINBOX_TIME: {
@@ -1157,7 +1161,7 @@ uivlGetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx)
       break;
     }
     case VL_TYPE_SPINBOX_NUM: {
-      value = uiSpinboxGetValue (row->cols [colidx].uiwidget);
+      value = uisbnumGetValue (row->cols [colidx].sbnum);
       break;
     }
     case VL_TYPE_SPINBOX_TIME: {
@@ -1610,6 +1614,34 @@ uivlUpdateDisplay (uivirtlist_t *vl)
   uivlConfigureScrollbar (vl);
 }
 
+void
+uivlProcess (uivirtlist_t *vl)
+{
+  for (int dispidx = vl->headingoffset; dispidx < vl->dispsize; ++dispidx) {
+    uivlrow_t   *row;
+
+    if ((dispidx - vl->headingoffset) + vl->rowoffset >= vl->numrows) {
+      break;
+    }
+
+    row = &vl->rows [dispidx];
+    for (int colidx = 0; colidx < vl->numcols; ++colidx) {
+      int         hidden;
+      uivlcol_t   *col;
+
+      hidden = vl->coldata [colidx].hidden;
+      if (hidden == VL_COL_HIDE || hidden == VL_COL_DISABLE) {
+        continue;
+      }
+
+      col = &row->cols [colidx];
+      if (col->sbnum != NULL) {
+        uisbnumCheck (col->sbnum);
+      }
+    }
+  }
+}
+
 /* display after a change */
 void
 uivlPopulate (uivirtlist_t *vl)
@@ -1818,6 +1850,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
 
     col->ident = VL_IDENT_COL;
     col->uiwidget = NULL;
+    col->sbnum = NULL;
     col->class = NULL;
     col->colidx = colidx;
     col->value = LIST_VALUE_INVALID;
@@ -1874,13 +1907,13 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
         break;
       }
       case VL_TYPE_SPINBOX_NUM: {
-        col->uiwidget = uiSpinboxIntCreate ();
-        uiSpinboxSetRange (col->uiwidget, coldata->sbmin, coldata->sbmax);
-        uiSpinboxSetIncrement (col->uiwidget, coldata->sbincr, coldata->sbpageincr);
-        uiWidgetEnableFocus (col->uiwidget);
-        uiSpinboxSetFocusCallback (col->uiwidget, row->rowcb->focuscb);
+        col->uiwidget = uiCreateHorizBox ();
+        col->sbnum = uisbnumCreate (col->uiwidget, "", -1, 2);
+        uisbnumSetLimits (col->sbnum, coldata->sbmin, coldata->sbmax, 0);
+        uisbnumSetIncrements (col->sbnum, coldata->sbincr, coldata->sbpageincr);
+        uisbnumSetFocusCallback (col->sbnum, row->rowcb->focuscb);
         if (coldata->spinboxcb != NULL) {
-          uiSpinboxSetValueChangedCallback (col->uiwidget, coldata->spinboxcb);
+          uisbnumSetChangeCallback (col->sbnum, coldata->spinboxcb);
         }
         break;
       }

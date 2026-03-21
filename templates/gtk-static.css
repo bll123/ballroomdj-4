@@ -194,7 +194,11 @@ button.bdj-switch:focus {
   border-color: @theme_selected_bg_color;
 }
 
-entry:disabled.bdj-selected {
+entry:disabled {
+  background-color: @insensitive_bg_color;
+  color: @insensitive_fg_color;
+}
+entry.bdj-selected:disabled {
   background-color: @insensitive_bg_color;
   color: @insensitive_fg_color;
 }

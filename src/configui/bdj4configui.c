@@ -562,6 +562,11 @@ confuiMainLoop (void *tconfui)
 
   connProcessUnconnected (confui->conn);
 
+  uivlProcess (confui->gui.tables [CONFUI_ID_RATINGS].uivl);
+  uivlProcess (confui->gui.tables [CONFUI_ID_LEVELS].uivl);
+  uivlProcess (confui->gui.tables [CONFUI_ID_STATUS].uivl);
+  uivlProcess (confui->gui.tables [CONFUI_ID_GENRES].uivl);
+
   for (int i = CONFUI_ENTRY_BEGIN + 1; i < CONFUI_ENTRY_MAX; ++i) {
     uiEntryValidate (confui->gui.uiitem [i].uiwidgetp, false);
   }
@@ -569,12 +574,18 @@ confuiMainLoop (void *tconfui)
     uiEntryValidate (confui->gui.uiitem [i].uiwidgetp, false);
   }
   for (int i = CONFUI_SB_NUM_BEGIN + 1; i < CONFUI_SB_NUM_MAX; ++i) {
+    /* for button repeat */
+    uisbnumCheck (confui->gui.uiitem [i].sbnum);
+  }
+  for (int i = CONFUI_SB_NUM_BEGIN + 1; i < CONFUI_SB_NUM_MAX; ++i) {
+    /* this happens when switching to a different vertical tab */
     if (confui->gui.reset_validation) {
-      /* this happens when switching to a different vertical tab */
       confuiMarkValid (&confui->gui, i);
     }
     uisbnumValidate (confui->gui.uiitem [i].sbnum);
   }
+  confui->gui.reset_validation = false;
+
   if (confui->gui.validate_check) {
     for (int i = CONFUI_SB_NUM_BEGIN + 1; i < CONFUI_SB_NUM_MAX; ++i) {
       if (confui->gui.uiitem [i].sbnum != NULL) {

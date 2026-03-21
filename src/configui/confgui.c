@@ -271,8 +271,6 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   uiwcont_t   *hbox;
   uisbtext_t  *sb;
   nlist_t     *list;
-  nlist_t     *keylist;
-  size_t      maxWidth;
 
   logProcBegin ();
 
@@ -286,20 +284,9 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   sb = uisbtextCreate (hbox, 4);
   gui->uiitem [widx].sbtxt = sb;
   list = gui->uiitem [widx].displist;
-  keylist = gui->uiitem [widx].sbkeylist;
-  if (outtype == CONFUI_OUT_STR) {
-    keylist = NULL;
-  }
-  maxWidth = 0;
-
-  if (list != NULL) {
-    nlistCalcMaxValueWidth (list);
-    maxWidth = nlistGetMaxValueWidth (list);
-  }
 
   uisbtextSetList (sb, list);
   uisbtextSetValue (sb, value);
-  uisbtextSetWidth (sb, maxWidth);
   if (szgrpB != NULL) {
     uisbtextSizeGroupAdd (sb, szgrpB);
   }
@@ -341,7 +328,7 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp,
     value /= 60;
   }
 
-  sb = uisbnumCreate (hbox, gui->uiitem [widx].labeltxt, 6, 4);
+  sb = uisbnumCreate (hbox, gui->uiitem [widx].labeltxt, -1, 4);
   /* the default increments are set in uisbnumSetTime() */
   /* 7200000 = 120 minutes */
   maxlimit = 7200000.0;
@@ -380,7 +367,7 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 
   gui->uiitem [widx].callback = callbackInit (
       confuiValidateCallback, &gui->uiitem [widx], NULL);
-  sb = uisbnumCreate (hbox, gui->uiitem [widx].labeltxt, 6, 4);
+  sb = uisbnumCreate (hbox, gui->uiitem [widx].labeltxt, -1, 4);
   uisbnumSetLimits (sb, (double) min, (double) max, 0);
   uisbnumSetValue (sb, (double) value);
   uisbnumSetChangeCallback (sb, gui->uiitem [widx].callback);
@@ -418,8 +405,9 @@ confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp
   gui->uiitem [widx].callback = callbackInit (
       confuiValidateCallback, &gui->uiitem [widx], NULL);
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, indent);
-  sb = uisbnumCreate (hbox, gui->uiitem [widx].labeltxt, 6, 4);
+  sb = uisbnumCreate (hbox, gui->uiitem [widx].labeltxt, -1, 4);
   uisbnumSetLimits (sb, min, max, 1);
+  uisbnumSetIncrements (sb, 0.1, 5.0);
   uisbnumSetValue (sb, value);
   uisbnumSetChangeCallback (sb, gui->uiitem [widx].callback);
   if (szgrpB != NULL) {
@@ -559,24 +547,16 @@ confuiSBTextInitDataNum (confuigui_t *gui, char *tag, int widx, ...)
   va_list     valist;
   nlistidx_t  key;
   char        *disp;
-  int         sbidx;
   nlist_t     *tlist;
-  nlist_t     *llist;
 
   va_start (valist, widx);
 
   tlist = nlistAlloc (tag, LIST_ORDERED, NULL);
-  llist = nlistAlloc (tag, LIST_ORDERED, NULL);
-  sbidx = 0;
   while ((key = va_arg (valist, nlistidx_t)) != -1) {
     disp = va_arg (valist, char *);
-
-    nlistSetStr (tlist, sbidx, disp);
-    nlistSetNum (llist, sbidx, key);
-    ++sbidx;
+    nlistSetStr (tlist, key, disp);
   }
   gui->uiitem [widx].displist = tlist;
-  gui->uiitem [widx].sbkeylist = llist;
 
   va_end (valist);
 }

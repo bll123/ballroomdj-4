@@ -15,6 +15,7 @@
 #include "bdjstring.h"
 #include "bdj4intl.h"
 #include "callback.h"
+#include "istring.h"
 #include "log.h"
 #include "mdebug.h"
 #include "tmutil.h"
@@ -32,6 +33,8 @@ typedef struct uisbnum {
   callback_t      *sbnumcb;
   callback_t      *chgcb;
   const char      *label;
+  const char      *dfltstr;
+  size_t          dfltlen;
   double          min;
   double          max;
   double          old_value;
@@ -57,12 +60,16 @@ static void uisbnumProcessChangeCallback (uisbnum_t *sbnum);
 static void uisbnumSetValid (uisbnum_t *sbnum, bool isvalid);
 
 uisbnum_t *
-uisbnumCreate (uiwcont_t *box, const char *label, int maxSize, int margin)
+uisbnumCreate (uiwcont_t *box, const char *label, int maxWidth, int margin)
 {
   uisbnum_t  *sbnum;
 
   sbnum = mdmalloc (sizeof (uisbnum_t));
-  sbnum->entry = uiEntryInit (10, maxSize);
+  if (maxWidth < 0) {
+    maxWidth = 5;
+  }
+  sbnum->entry = uiEntryInit (maxWidth, 10);
+  uiWidgetAlignHorizFill (sbnum->entry);
   uiEntryAlignEnd (sbnum->entry);
   uiWidgetSetAllMargins (sbnum->entry, 0);
   sbnum->sb = uisbCreate (box, sbnum->entry, SB_IS_NUM, margin);
@@ -70,6 +77,9 @@ uisbnumCreate (uiwcont_t *box, const char *label, int maxSize, int margin)
   sbnum->sbnumcb = NULL;
   sbnum->chgcb = NULL;
   sbnum->label = label;
+  /* CONTEXT: user interface: default setting display */
+  sbnum->dfltstr = _("Default");
+  sbnum->dfltlen = istrlen (sbnum->dfltstr);
   sbnum->min = 1.0;
   sbnum->max = 100.0;
   sbnum->old_value = SB_INVALID;
@@ -127,7 +137,6 @@ uisbnumSetLimits (uisbnum_t *sbnum, double min, double max, int digits)
 
   sbnum->min = min;
   sbnum->max = max;
-  sbnum->type = SBNUM_NUMERIC;
   sbnum->digits = digits;
   sbnum->valtype = VAL_NUMERIC | VAL_NOT_EMPTY;
   if (digits > 0) {
@@ -151,11 +160,15 @@ uisbnumSetTime (uisbnum_t *sbnum, double min, double max, int timetype)
     sbnum->valtype = VAL_HMS | VAL_NOT_EMPTY;
     sbnum->incr = 5000.0;
     sbnum->pageincr = 60000.0;
+    /* h:mm:ss */
+    uiEntrySetWidth (sbnum->entry, 7);
   }
   if (timetype == SBNUM_TIME_PRECISE) {
     sbnum->valtype = VAL_HMS_PRECISE | VAL_NOT_EMPTY;
     sbnum->incr = 100.0;
     sbnum->pageincr = 30000.0;
+    /* mm:ss.v */
+    uiEntrySetWidth (sbnum->entry, 7);
   }
 }
 
@@ -200,6 +213,16 @@ uisbnumIsChanged (uisbnum_t *sbnum)
 }
 
 void
+uisbnumResetChanged (uisbnum_t *sbnum)
+{
+  if (sbnum == NULL) {
+    return;
+  }
+
+  sbnum->changed = false;
+}
+
+void
 uisbnumSetChangeCallback (uisbnum_t *sbnum, callback_t *chgcb)
 {
   if (sbnum == NULL) {
@@ -219,27 +242,16 @@ uisbnumValidate (uisbnum_t *sbnum)
   uiEntryValidate (sbnum->entry, false);
 }
 
-#if 0
 void
-uisbnumAddClass (uisbnum_t *sbnum, const char *name)
+uisbnumSetFocusCallback (uisbnum_t *sbnum, callback_t *cb)
 {
-  if (sbnum == NULL || name == NULL) {
+  if (sbnum == NULL) {
     return;
   }
 
-  uiWidgetAddClass (sbnum->entry, name);
+  uiEntrySetFocusCallback (sbnum->entry, cb);
+  uisbSetFocusCallback (sbnum->sb, cb);
 }
-
-void
-uisbnumRemoveClass (uisbnum_t *sbnum, const char *name)
-{
-  if (sbnum == NULL || name == NULL) {
-    return;
-  }
-
-  uiWidgetRemoveClass (sbnum->entry, name);
-}
-#endif
 
 void
 uisbnumSetState (uisbnum_t *sbnum, int state)
@@ -291,7 +303,6 @@ uisbnumIsValid (uisbnum_t *sbnum)
     return false;
   }
 
-fprintf (stderr, "sbnum: valid: %s %d\n", sbnum->label, sbnum->isvalid);
   return sbnum->isvalid;
 }
 
@@ -302,7 +313,6 @@ uisbnumGetValidationError (uisbnum_t *sbnum)
     return "";
   }
 
-fprintf (stderr, "sbnum: valmsg: %s\n", sbnum->valmsg);
   return sbnum->valmsg;
 }
 
@@ -447,8 +457,8 @@ uisbnumValueToStr (uisbnum_t *sbnum, char *tbuff, size_t sz)
 {
   if (sbnum->type == SBNUM_NUM_DEFAULT) {
     if (sbnum->value < 0) {
-      /* CONTEXT: user interface: default setting display */
-      stpecpy (tbuff, tbuff + sz, _("Default"));
+      stpecpy (tbuff, tbuff + sz, sbnum->dfltstr);
+      uiEntrySetWidth (sbnum->entry, sbnum->dfltlen + 1);
     } else {
       snprintf (tbuff, sz, sbnum->fmt, sbnum->value);
     }
@@ -479,7 +489,6 @@ static void
 uisbnumSetValid (uisbnum_t *sbnum, bool isvalid)
 {
   if (sbnum->isvalid != isvalid) {
-fprintf (stderr, "sbnum: set valid: %s %d\n", sbnum->label, isvalid);
     sbnum->changed = true;
   }
   sbnum->isvalid = isvalid;

@@ -607,7 +607,6 @@ confuiLoadDanceTypeList (confuigui_t *gui)
   }
 
   gui->uiitem [CONFUI_SB_TXT_DANCE_TYPE].displist = tlist;
-  gui->uiitem [CONFUI_SB_TXT_DANCE_TYPE].sbkeylist = NULL;
   logProcEnd ("");
 }
 

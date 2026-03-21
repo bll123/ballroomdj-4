@@ -97,16 +97,6 @@ uiEntrySetInternalValidate (uiwcont_t *uiwidget)
   return;
 }
 
-void
-uiEntrySetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
-{
-  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-focus-cb")) {
-    return;
-  }
-
-  return;
-}
-
 bool
 uiEntryChanged (uiwcont_t *uiwidget)
 {

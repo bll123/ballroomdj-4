@@ -158,6 +158,13 @@ uisbSetCallback (uisb_t *sb, callback_t *uicb)
 }
 
 void
+uisbSetFocusCallback (uisb_t *sb, callback_t *cb)
+{
+  uiButtonSetFocusCallback (sb->wcont [SB_W_B_INCR], cb);
+  uiButtonSetFocusCallback (sb->wcont [SB_W_B_DECR], cb);
+}
+
+void
 uisbSetState (uisb_t *sb, int state)
 {
   if (sb == NULL) {

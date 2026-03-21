@@ -230,12 +230,6 @@ uiToggleButtonEllipsize (uiwcont_t *uiwidget)
   return;
 }
 
-void
-uiToggleButtonSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
-{
-  return;
-}
-
 static void
 uiToggleButtonSetImage (uiwcont_t *uiwidget)
 {

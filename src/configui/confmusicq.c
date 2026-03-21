@@ -401,7 +401,6 @@ confuiUpdateMusicQList (confuigui_t *gui)
 {
   nlist_t     *tlist;
   int         widx;
-  size_t      maxWidth = 10;
 
   widx = CONFUI_SB_TXT_MUSIC_QUEUE;
   if (gui->uiitem [widx].uiwidgetp == NULL) {
@@ -410,11 +409,7 @@ confuiUpdateMusicQList (confuigui_t *gui)
 
   tlist = gui->uiitem [widx].displist;
 
-  nlistCalcMaxValueWidth (tlist);
-  maxWidth = nlistGetMaxValueWidth (tlist);
-
   uisbtextSetList (gui->uiitem [widx].sbtxt, tlist);
-  uisbtextSetWidth (gui->uiitem [widx].sbtxt, maxWidth);
 }
 
 static bool

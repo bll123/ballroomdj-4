@@ -140,13 +140,14 @@ confuiDispSettingChg (void *udata)
   confuigui_t *gui = udata;
   int         oselidx;
   int         nselidx;
+  int         widx = CONFUI_SB_TXT_DISP_SEL;
 
   logProcBegin ();
 
 
-  oselidx = gui->uiitem [CONFUI_SB_TXT_DISP_SEL].listidx;
-  nselidx = uisbtextGetValue (gui->uiitem [CONFUI_SB_TXT_DISP_SEL].sbtxt);
-  gui->uiitem [CONFUI_SB_TXT_DISP_SEL].listidx = nselidx;
+  oselidx = gui->uiitem [widx].listidx;
+  nselidx = uisbtextGetValue (gui->uiitem [widx].sbtxt);
+  gui->uiitem [widx].listidx = nselidx;
 
   confuiDispSaveTable (gui, oselidx);
   /* be sure to create the selected list (target) first */

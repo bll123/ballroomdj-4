@@ -29,6 +29,7 @@
 #include "uihnb.h"
 #include "uilevel.h"
 #include "uirating.h"
+#include "uisbnum.h"
 #include "uiselectfile.h"
 #include "uiutils.h"
 #include "validate.h"
@@ -53,18 +54,22 @@ enum {
   MPL_W_STD_VBOX,
   MPL_W_MAX_PLAY_TIME,
   MPL_W_STOP_AT,
-  MPL_W_STOP_AFTER,
-  MPL_W_GAP,
   MPL_W_PLAY_ANN,
   MPL_W_AUTO_SEQ_VBOX,
   MPL_W_ALLOWED_KEYWORDS,
   MPL_W_TAGS,
-  MPL_W_TAG_WEIGHT,
   MPL_W_PODCAST_VBOX,
   MPL_W_URI,
   MPL_W_TITLE,
-  MPL_W_RETAIN,
   MPL_W_MAX,
+};
+
+enum {
+  MPL_SB_GAP,
+  MPL_SB_STOP_AFTER,
+  MPL_SB_TAG_WEIGHT,
+  MPL_SB_RETAIN,
+  MPL_SB_MAX,
 };
 
 enum {
@@ -82,6 +87,7 @@ typedef struct managepl {
   pltype_t        pltype;
   uirating_t      *uirating;
   uiwcont_t       *wcont [MPL_W_MAX];
+  uisbnum_t       *sbnum [MPL_SB_MAX];
   uilevel_t       *uilowlevel;
   uilevel_t       *uihighlevel;
   mpldance_t      *mpldnc;
@@ -155,6 +161,9 @@ managePlaylistFree (managepl_t *managepl)
   for (int i = 0; i < MPL_W_MAX; ++i) {
     uiwcontFree (managepl->wcont [i]);
   }
+  for (int i = 0; i < MPL_SB_MAX; ++i) {
+    uisbnumFree (managepl->sbnum [i]);
+  }
   for (int i = 0; i < MPL_CB_MAX; ++i) {
     callbackFree (managepl->callbacks [i]);
   }
@@ -162,6 +171,15 @@ managePlaylistFree (managepl_t *managepl)
   playlistFree (managepl->playlist);
   mdfree (managepl);
 }
+
+void
+managePlaylistProcess (managepl_t *managepl)
+{
+  for (int i = 0; i < MPL_SB_MAX; ++i) {
+    uisbnumCheck (managepl->sbnum [i]);
+  }
+}
+
 
 void
 managePlaylistSetLoadCallback (managepl_t *managepl, callback_t *uicb)
@@ -175,14 +193,16 @@ managePlaylistSetLoadCallback (managepl_t *managepl, callback_t *uicb)
 void
 manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 {
-  uiwcont_t          *mvbox;
-  uiwcont_t          *vbox;
-  uiwcont_t          *tophbox;
-  uiwcont_t          *hbox;
-  uiwcont_t          *uiwidgetp;
-  uiwcont_t          *szgrp;
-  uiwcont_t          *szgrpSpin;
-  uiwcont_t          *szgrpText;
+  uiwcont_t         *mvbox;
+  uiwcont_t         *vbox;
+  uiwcont_t         *tophbox;
+  uiwcont_t         *hbox;
+  uiwcont_t         *uiwidgetp;
+  uiwcont_t         *szgrp;
+  uiwcont_t         *szgrpSpin;
+  uiwcont_t         *szgrpText;
+  uisbnum_t         *sb;
+  const char        *tlabel;
 
   logProcBegin ();
 
@@ -304,16 +324,16 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: stop after */
-  uiwidgetp = uiCreateColonLabel (_("Stop After"));
+  tlabel = _("Stop After");
+  uiwidgetp = uiCreateColonLabel (tlabel);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiSpinboxIntCreate ();
-  uiSpinboxSet (uiwidgetp, 0.0, 500.0);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpSpin, uiwidgetp);
-  managepl->wcont [MPL_W_STOP_AFTER] = uiwidgetp;
+  sb = uisbnumCreate (hbox, tlabel, -1, 2);
+  uisbnumSetLimits (sb, 0.0, 500.0, 0);
+  uisbnumSizeGroupAdd (sb, szgrpSpin);
+  managepl->sbnum [MPL_SB_STOP_AFTER] = sb;
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
@@ -324,16 +344,18 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: Gap between songs */
-  uiwidgetp = uiCreateColonLabel (_("Gap Between Songs"));
+  tlabel = _("Gap Between Songs");
+  uiwidgetp = uiCreateColonLabel (tlabel);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiSpinboxDoubleDefaultCreate ();
-  uiSpinboxSetRange (uiwidgetp, -1.0, 60.0);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpText, uiwidgetp);
-  managepl->wcont [MPL_W_GAP] = uiwidgetp;
+  sb = uisbnumCreate (hbox, tlabel, -1, 2);
+  uisbnumSetType (sb, SBNUM_NUM_DEFAULT);
+  uisbnumSetLimits (sb, 0.0, 60.0, 1);
+  uisbnumSetIncrements (sb, 0.1, 5.0);
+  uisbnumSizeGroupAdd (sb, szgrpText);
+  managepl->sbnum [MPL_SB_GAP] = sb;
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
@@ -467,16 +489,16 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   managepl->wcont [MPL_W_TAGS] = uiwidgetp;
 
   /* CONTEXT: playlist management: tag weight */
-  uiwidgetp = uiCreateColonLabel (_("Weight"));
+  tlabel = _("Weight");
+  uiwidgetp = uiCreateColonLabel (tlabel);
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 2);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiSpinboxIntCreate ();
-  uiSpinboxSetRange (uiwidgetp, 5.0, 100.0);
-  uiSpinboxSetValue (uiwidgetp, BDJ4_DFLT_TAG_WEIGHT);
-  uiBoxPackStart (hbox, uiwidgetp);
-  managepl->wcont [MPL_W_TAG_WEIGHT] = uiwidgetp;
+  sb = uisbnumCreate (hbox, tlabel, -1, 2);
+  uisbnumSetLimits (sb, 5.0, 100.0, 0);
+  uisbnumSetValue (sb, BDJ4_DFLT_TAG_WEIGHT);
+  managepl->sbnum [MPL_SB_TAG_WEIGHT] = sb;
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
@@ -533,16 +555,16 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: how many days to keep the podcast */
-  uiwidgetp = uiCreateColonLabel (_("Days to Keep"));
+  tlabel = _("Days to Keep");
+  uiwidgetp = uiCreateColonLabel (tlabel);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiSpinboxIntCreate ();
-  uiSpinboxSet (uiwidgetp, 0.0, 720.0);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpSpin, uiwidgetp);
-  managepl->wcont [MPL_W_RETAIN] = uiwidgetp;
+  sb = uisbnumCreate (hbox, tlabel, -1, 2);
+  uisbnumSetLimits (sb, 0.0, 720.0, 0);
+  uisbnumSizeGroupAdd (sb, szgrpSpin);
+  managepl->sbnum [MPL_SB_RETAIN] = sb;
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
@@ -913,9 +935,9 @@ managePlaylistUpdateData (managepl_t *managepl)
   /* convert the hh:mm value to mm:ss for the spinbox */
   uiSpinboxTimeSetValue (managepl->wcont [MPL_W_STOP_AT],
       playlistGetConfigNum (pl, PLAYLIST_STOP_TIME) / 60);
-  uiSpinboxSetValue (managepl->wcont [MPL_W_STOP_AFTER],
-      playlistGetConfigNum (pl, PLAYLIST_STOP_AFTER));
-  uiSpinboxSetValue (managepl->wcont [MPL_W_GAP],
+  uisbnumSetValue (managepl->sbnum [MPL_SB_STOP_AFTER],
+      (double) playlistGetConfigNum (pl, PLAYLIST_STOP_AFTER));
+  uisbnumSetValue (managepl->sbnum [MPL_SB_GAP],
       (double) playlistGetConfigNum (pl, PLAYLIST_GAP) / 1000.0);
   uiSwitchSetValue (managepl->wcont [MPL_W_PLAY_ANN],
       playlistGetConfigNum (pl, PLAYLIST_ANNOUNCE));
@@ -929,15 +951,15 @@ managePlaylistUpdateData (managepl_t *managepl)
   uiEntrySetValue (managepl->wcont [MPL_W_ALLOWED_KEYWORDS], tbuff);
   playlistGetConfigListStr (pl, PLAYLIST_TAGS, tbuff, sizeof (tbuff));
   uiEntrySetValue (managepl->wcont [MPL_W_TAGS], tbuff);
-  uiSpinboxSetValue (managepl->wcont [MPL_W_TAG_WEIGHT],
-      playlistGetConfigNum (pl, PLAYLIST_TAG_WEIGHT));
+  uisbnumSetValue (managepl->sbnum [MPL_SB_TAG_WEIGHT],
+      (double) playlistGetConfigNum (pl, PLAYLIST_TAG_WEIGHT));
 
   if (pltype == PLTYPE_PODCAST) {
     uiEntrySetValue (managepl->wcont [MPL_W_URI],
         playlistGetPodcastStr (pl, PODCAST_URI));
     uiEntrySetValue (managepl->wcont [MPL_W_TITLE],
         playlistGetPodcastStr (pl, PODCAST_TITLE));
-    uiSpinboxSetValue (managepl->wcont [MPL_W_RETAIN],
+    uisbnumSetValue (managepl->sbnum [MPL_SB_RETAIN],
         playlistGetPodcastNum (pl, PODCAST_RETAIN));
   }
 
@@ -1074,10 +1096,10 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
   tval *= 60;
   playlistSetConfigNum (pl, PLAYLIST_STOP_TIME, tval);
 
-  tval = uiSpinboxGetValue (managepl->wcont [MPL_W_STOP_AFTER]);
+  tval = uisbnumGetValue (managepl->sbnum [MPL_SB_STOP_AFTER]);
   playlistSetConfigNum (pl, PLAYLIST_STOP_AFTER, tval);
 
-  dval = uiSpinboxGetValue (managepl->wcont [MPL_W_GAP]);
+  dval = uisbnumGetValue (managepl->sbnum [MPL_SB_GAP]);
   playlistSetConfigNum (pl, PLAYLIST_GAP, (long) (dval * 1000.0));
 
   tval = uiSwitchGetValue (managepl->wcont [MPL_W_PLAY_ANN]);
@@ -1098,7 +1120,7 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
   tstr = uiEntryGetValue (managepl->wcont [MPL_W_TAGS]);
   playlistSetConfigList (pl, PLAYLIST_TAGS, tstr);
 
-  tval = uiSpinboxGetValue (managepl->wcont [MPL_W_TAG_WEIGHT]);
+  tval = uisbnumGetValue (managepl->sbnum [MPL_SB_TAG_WEIGHT]);
   playlistSetConfigNum (pl, PLAYLIST_TAG_WEIGHT, tval);
 
   if (pltype == PLTYPE_PODCAST) {
@@ -1106,7 +1128,7 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
     playlistSetPodcastStr (pl, PODCAST_URI, tstr);
     tstr = uiEntryGetValue (managepl->wcont [MPL_W_TITLE]);
     playlistSetPodcastStr (pl, PODCAST_TITLE, tstr);
-    tval = uiSpinboxGetValue (managepl->wcont [MPL_W_RETAIN]);
+    tval = uisbnumGetValue (managepl->sbnum [MPL_SB_RETAIN]);
     playlistSetPodcastNum (pl, PODCAST_RETAIN, tval);
   }
 
@@ -1138,7 +1160,7 @@ managePlaylistCheckChanged (managepl_t *managepl)
     managepl->changed = true;
   }
 
-  if (uiSpinboxIsChanged (managepl->wcont [MPL_W_GAP])) {
+  if (uisbnumIsChanged (managepl->sbnum [MPL_SB_GAP])) {
     managepl->changed = true;
   }
 
@@ -1152,7 +1174,7 @@ managePlaylistCheckChanged (managepl_t *managepl)
     managepl->changed = true;
   }
 
-  if (uiSpinboxIsChanged (managepl->wcont [MPL_W_RETAIN])) {
+  if (uisbnumIsChanged (managepl->sbnum [MPL_SB_RETAIN])) {
     managepl->changed = true;
   }
 
@@ -1165,12 +1187,12 @@ managePlaylistCheckChanged (managepl_t *managepl)
 
   pl = managepl->playlist;
 
-  tval = uiSpinboxGetValue (managepl->wcont [MPL_W_STOP_AFTER]);
+  tval = uisbnumGetValue (managepl->sbnum [MPL_SB_STOP_AFTER]);
   if (tval != playlistGetConfigNum (pl, PLAYLIST_STOP_AFTER)) {
     managepl->changed = true;
   }
 
-  dval = uiSpinboxGetValue (managepl->wcont [MPL_W_GAP]);
+  dval = uisbnumGetValue (managepl->sbnum [MPL_SB_GAP]);
   if (dval != (double) playlistGetConfigNum (pl, PLAYLIST_GAP) / 1000.0 ) {
     managepl->changed = true;
   }
@@ -1195,7 +1217,7 @@ managePlaylistCheckChanged (managepl_t *managepl)
     managepl->changed = true;
   }
 
-  tval = uiSpinboxGetValue (managepl->wcont [MPL_W_TAG_WEIGHT]);
+  tval = uisbnumGetValue (managepl->sbnum [MPL_SB_TAG_WEIGHT]);
   if (tval != playlistGetConfigNum (pl, PLAYLIST_TAG_WEIGHT)) {
     managepl->changed = true;
   }
@@ -1216,7 +1238,7 @@ managePlaylistCheckChanged (managepl_t *managepl)
     managepl->changed = true;
   }
 
-  dval = uiSpinboxGetValue (managepl->wcont [MPL_W_RETAIN]);
+  dval = uisbnumGetValue (managepl->sbnum [MPL_SB_RETAIN]);
   if (dval != (double) playlistGetPodcastNum (pl, PODCAST_RETAIN)) {
     managepl->changed = true;
   }
@@ -1239,6 +1261,6 @@ manageResetChanged (managepl_t *managepl)
 {
   uiSpinboxResetChanged (managepl->wcont [MPL_W_MAX_PLAY_TIME]);
   uiSpinboxResetChanged (managepl->wcont [MPL_W_STOP_AT]);
-  uiSpinboxResetChanged (managepl->wcont [MPL_W_GAP]);
+  uisbnumResetChanged (managepl->sbnum [MPL_SB_GAP]);
   managepl->changed = false;
 }
