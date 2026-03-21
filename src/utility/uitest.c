@@ -59,12 +59,6 @@ enum {
   UITEST_W_CI_B,
   UITEST_W_CI_BUTTON,
   UITEST_W_LINK_A,
-  UITEST_W_SB_INT,
-  UITEST_W_SB_DBL_A,
-  UITEST_W_SB_DBL_B,
-  UITEST_W_SB_DBL_DFLT,
-  UITEST_W_SB_TIME_A,
-  UITEST_W_SB_TIME_B,
   UITEST_W_IMG_A,
   UITEST_W_TOGGLE_C,
   UITEST_W_NB_ACTION,
@@ -1596,7 +1590,6 @@ uitestUISpinbox (uitest_t *uitest)
 {
   uiwcont_t   *vbox;
   uiwcont_t   *hbox;
-  uiwcont_t   *uiwidgetp;
   uisbnum_t   *sb;
 
   /* spinboxes */
@@ -1662,11 +1655,6 @@ uitestUISpinbox (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiSpinboxDoubleCreate ();
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSpinboxSetRange (uiwidgetp, 1.0, 20.0);
-  uitest->wcont [UITEST_W_SB_DBL_A] = uiwidgetp;
-
   sb = uisbnumCreate (hbox, "dbl", -1, 0);
   uisbnumSetLimits (sb, 1.0, 20.0, 1);
   uisbnumSetIncrements (sb, 0.1, 1.0);
@@ -1683,12 +1671,6 @@ uitestUISpinbox (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiSpinboxDoubleCreate ();
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSpinboxSetRange (uiwidgetp, 1.0, 20.0);
-  uiSpinboxSetIncrement (uiwidgetp, 1.0, 5.0);
-  uitest->wcont [UITEST_W_SB_DBL_B] = uiwidgetp;
-
   sb = uisbnumCreate (hbox, "dbl-b", -1, 0);
   uisbnumSetLimits (sb, 1.0, 20.0, 1);
   uisbnumSetIncrements (sb, 0.1, 5.0);
@@ -1704,13 +1686,6 @@ uitestUISpinbox (uitest_t *uitest)
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
-
-  uiwidgetp = uiSpinboxDoubleDefaultCreate ();
-
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSpinboxSetRange (uiwidgetp, -1.0, 10.0);
-  uiSpinboxSetValue (uiwidgetp, -0.1);
-  uitest->wcont [UITEST_W_SB_DBL_DFLT] = uiwidgetp;
 
   sb = uisbnumCreate (hbox, "dbl-def", -1, 0);
   uisbnumSetLimits (sb, 0.0, 10.0, 1);
@@ -1729,10 +1704,6 @@ uitestUISpinbox (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uiwidgetp = uiSpinboxTimeCreate (SB_TIME_BASIC, uitest, "basic", NULL);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uitest->wcont [UITEST_W_SB_TIME_A] = uiwidgetp;
-
   sb = uisbnumCreate (hbox, "tm-a", -1, 0);
   uisbnumSetTime (sb, 0.0, 1440000.0, SBNUM_TIME_BASIC);
   uisbnumSetValue (sb, 5.0);
@@ -1747,10 +1718,6 @@ uitestUISpinbox (uitest_t *uitest)
   uiBoxPackStart (vbox, hbox);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
-
-  uiwidgetp = uiSpinboxTimeCreate (SB_TIME_PRECISE, uitest, "precise", NULL);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uitest->wcont [UITEST_W_SB_TIME_B] = uiwidgetp;
 
   sb = uisbnumCreate (hbox, "tm-b", -1, 0);
   uisbnumSetTime (sb, 0.0, 1440000.0, SBNUM_TIME_PRECISE);

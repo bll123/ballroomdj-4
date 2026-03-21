@@ -351,9 +351,10 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiwcontFree (uiwidgetp);
 
   sb = uisbnumCreate (hbox, tlabel, -1, 2);
-  uisbnumSetType (sb, SBNUM_NUM_DEFAULT);
   uisbnumSetLimits (sb, 0.0, 60.0, 1);
   uisbnumSetIncrements (sb, 0.1, 5.0);
+  /* must come after limits are set */
+  uisbnumSetType (sb, SBNUM_NUM_DEFAULT);
   uisbnumSizeGroupAdd (sb, szgrpText);
   managepl->sbnum [MPL_SB_GAP] = sb;
 
