@@ -190,13 +190,13 @@ uisbtextSetChangeCallback (uisbtext_t *sbtext, callback_t *chgcb)
 }
 
 void
-uisbtextAddClass (uisbtext_t *sbtext, const char *name)
+uisbtextSetClass (uisbtext_t *sbtext, const char *name)
 {
   if (sbtext == NULL || name == NULL) {
     return;
   }
 
-  uiWidgetAddClass (sbtext->display, name);
+  uiWidgetSetClass (sbtext->display, name);
 }
 
 void

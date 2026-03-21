@@ -67,7 +67,7 @@ uivnbCreate (uiwcont_t *box)
   sw = uiCreateScrolledWindow (50);
   uiBoxPackStart (hbox, sw);
   vnb->vlist = uiCreateVertBox ();
-  uiWidgetAddClass (vnb->vlist, DARKBG_CLASS);
+  uiWidgetSetClass (vnb->vlist, DARKBG_CLASS);
   uiWindowPackInWindow (sw, vnb->vlist);
 
   vnb->nb = uiCreateNotebook ();
@@ -136,21 +136,21 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *nbtxt, int id)
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vnb->vlist, hbox);
-  uiWidgetAddClass (hbox, NB_CLASS);
-  uiWidgetAddClass (hbox, NB_VERT_CLASS);
+  uiWidgetSetClass (hbox, NB_CLASS);
+  uiWidgetSetClass (hbox, NB_VERT_CLASS);
 
   button = uiCreateButton (cb, nbtxt, NULL, NULL);
   uiButtonSetReliefNone (button);
   uiButtonAlignLeft (button);
   uiBoxPackStartExpand (hbox, button);
-  uiWidgetAddClass (button, NB_CLASS);
-  uiWidgetAddClass (button, NB_VERT_CLASS);
+  uiWidgetSetClass (button, NB_CLASS);
+  uiWidgetSetClass (button, NB_VERT_CLASS);
 
   label = uiCreateLabel ("");
   uiBoxPackStart (hbox, label);
   uiWidgetSetMarginStart (label, 0);
-  uiWidgetAddClass (label, NB_CLASS);
-  uiWidgetAddClass (label, NB_VERT_CLASS);
+  uiWidgetSetClass (label, NB_CLASS);
+  uiWidgetSetClass (label, NB_VERT_CLASS);
 
   vnb->pagecount += 1;
 
@@ -183,8 +183,8 @@ uivnbSetPage (uivnb_t *vnb, int pagenum)
 
   prevsel = vnb->selected;
   vnb->selected = pagenum;
-  uiWidgetAddClass (vnb->tablist [vnb->selected], NB_SEL_CLASS);
-  uiWidgetAddClass (vnb->indlist [vnb->selected], NB_VERT_SEL_CLASS);
+  uiWidgetSetClass (vnb->tablist [vnb->selected], NB_SEL_CLASS);
+  uiWidgetSetClass (vnb->indlist [vnb->selected], NB_VERT_SEL_CLASS);
 
   if (prevsel >= 0) {
     uiWidgetRemoveClass (vnb->tablist [prevsel], NB_SEL_CLASS);

@@ -62,6 +62,7 @@ void manageplDanceFree (mpldance_t *mpldnc);
 void manageplDanceBuildUI (mpldance_t *mpldnc, uiwcont_t *vboxp);
 void manageplDanceSetPlaylist (mpldance_t *mpldnc, playlist_t *pl);
 bool manageplDanceIsChanged (mpldance_t *mpldnc);
+void manageplDanceProcess (mpldance_t *mpldnc);
 
 /* manageseq.c */
 typedef struct manageseq manageseq_t;

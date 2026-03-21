@@ -70,7 +70,7 @@ uihnbCreate (uiwcont_t *box)
   uiBoxPackStart (vbox, hnb->hlist);
 
   hnb->nb = uiCreateNotebook ();
-  uiWidgetAddClass (hnb->nb, NB_HORIZ_CLASS);
+  uiWidgetSetClass (hnb->nb, NB_HORIZ_CLASS);
   uiBoxPackStartExpand (vbox, hnb->nb);
 
   for (int i = 0; i < HNB_MAX_PAGECOUNT; ++i) {
@@ -136,16 +136,16 @@ uihnbAppendPage (uihnb_t *hnb, uiwcont_t *uiwidget,
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (hnb->hlist, hbox);
-  uiWidgetAddClass (hbox, NB_CLASS);
-  uiWidgetAddClass (hbox, NB_HORIZ_CLASS);
+  uiWidgetSetClass (hbox, NB_CLASS);
+  uiWidgetSetClass (hbox, NB_HORIZ_CLASS);
 
   button = uiCreateButton (cb, nbtxt, imagenm, NULL);
   uiButtonSetAltImage (button, altimagenm);
   uiWidgetAlignHorizCenter (button);
   uiButtonSetReliefNone (button);
   uiBoxPackStartExpand (hbox, button);
-  uiWidgetAddClass (button, NB_CLASS);
-  uiWidgetAddClass (button, NB_HORIZ_CLASS);
+  uiWidgetSetClass (button, NB_CLASS);
+  uiWidgetSetClass (button, NB_HORIZ_CLASS);
   state = BUTTON_OFF;
   if (hnb->pagecount == 0) {
     state = BUTTON_ON;
@@ -182,8 +182,8 @@ uihnbSetPage (uihnb_t *hnb, int pagenum)
 
   prevsel = hnb->selected;
   hnb->selected = pagenum;
-  uiWidgetAddClass (hnb->tablist [hnb->selected], NB_SEL_CLASS);
-  uiWidgetAddClass (hnb->tablist [hnb->selected], NB_HORIZ_SEL_CLASS);
+  uiWidgetSetClass (hnb->tablist [hnb->selected], NB_SEL_CLASS);
+  uiWidgetSetClass (hnb->tablist [hnb->selected], NB_HORIZ_SEL_CLASS);
 
   if (prevsel >= 0) {
     uiWidgetRemoveClass (hnb->tablist [prevsel], NB_SEL_CLASS);

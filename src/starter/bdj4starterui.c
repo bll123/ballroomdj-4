@@ -647,7 +647,7 @@ starterBuildUI (startui_t  *starter)
   starter->wcont [START_W_PROFILE_ACCENT] = accent.cbox;
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   starter->wcont [START_W_STATUS_MSG] = uiwidgetp;
 
@@ -1473,7 +1473,7 @@ starterProcessSupport (void *udata)
   uiwcontFree (accent.cbox);
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   starter->wcont [START_W_STATUS_DISP_MSG] = uiwidgetp;
 
@@ -2020,7 +2020,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   starter->wcont [START_W_SUPPORT_STATUS_MSG] = uiwidgetp;
 
@@ -2088,7 +2088,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackStart (vbox, uiwidgetp);
   uiLabelEllipsizeOn (uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   starter->wcont [START_W_STATUS_DISP] = uiwidgetp;
 
   starter->wcont [START_W_SUPPORT_MSG_DIALOG] = uidialog;

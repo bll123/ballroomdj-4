@@ -682,7 +682,7 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (vbox, hbox);
 
   installer->wcont [INST_W_STATUS_MSG] = uiCreateLabel ("");
-  uiWidgetAddClass (installer->wcont [INST_W_STATUS_MSG], INST_HL_CLASS);
+  uiWidgetSetClass (installer->wcont [INST_W_STATUS_MSG], INST_HL_CLASS);
   uiBoxPackEndExpand (hbox, installer->wcont [INST_W_STATUS_MSG]);
   uiWidgetAlignHorizEnd (installer->wcont [INST_W_STATUS_MSG]);
 
@@ -735,7 +735,7 @@ installerBuildUI (installer_t *installer)
       installer->callbacks [INST_CB_REINST]);
 
   installer->wcont [INST_W_FEEDBACK_MSG] = uiCreateLabel ("");
-  uiWidgetAddClass (installer->wcont [INST_W_FEEDBACK_MSG], INST_HL_CLASS);
+  uiWidgetSetClass (installer->wcont [INST_W_FEEDBACK_MSG], INST_HL_CLASS);
   uiBoxPackStart (hbox, installer->wcont [INST_W_FEEDBACK_MSG]);
 
   uiBoxPostProcess (hbox);
@@ -762,7 +762,7 @@ installerBuildUI (installer_t *installer)
 
   /* begin line : separator */
   uiwidgetp = uiCreateHorizSeparator ();
-  uiWidgetAddClass (uiwidgetp, INST_SEP_CLASS);
+  uiWidgetSetClass (uiwidgetp, INST_SEP_CLASS);
   uiBoxPackStart (vbox, uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 4);
   uiWidgetSetMarginBottom (uiwidgetp, 2);
@@ -836,7 +836,7 @@ installerBuildUI (installer_t *installer)
       installer->callbacks [INST_CB_CONV]);
 
   installer->wcont [INST_W_CONV_FEEDBACK_MSG] = uiCreateLabel ("");
-  uiWidgetAddClass (installer->wcont [INST_W_CONV_FEEDBACK_MSG], INST_HL_CLASS);
+  uiWidgetSetClass (installer->wcont [INST_W_CONV_FEEDBACK_MSG], INST_HL_CLASS);
   uiBoxPackStart (hbox, installer->wcont [INST_W_CONV_FEEDBACK_MSG]);
 
   uiBoxPostProcess (hbox);
@@ -844,7 +844,7 @@ installerBuildUI (installer_t *installer)
 
   /* begin line : separator */
   uiwidgetp = uiCreateHorizSeparator ();
-  uiWidgetAddClass (uiwidgetp, INST_SEP_CLASS);
+  uiWidgetSetClass (uiwidgetp, INST_SEP_CLASS);
   uiBoxPackStart (vbox, uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 4);
   uiWidgetSetMarginBottom (uiwidgetp, 2);
@@ -881,7 +881,7 @@ installerBuildUI (installer_t *installer)
   uiwcontFree (uiwidgetp);
 
   installer->wcont [INST_W_VLC_MSG] = uiCreateLabel ("");
-  uiWidgetAddClass (installer->wcont [INST_W_VLC_MSG], INST_HL_CLASS);
+  uiWidgetSetClass (installer->wcont [INST_W_VLC_MSG], INST_HL_CLASS);
   uiBoxPackStart (hbox, installer->wcont [INST_W_VLC_MSG]);
   uiWidgetSetMarginStart (installer->wcont [INST_W_VLC_MSG], 4);
 

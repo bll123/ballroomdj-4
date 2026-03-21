@@ -200,7 +200,7 @@ uiTextBoxSetDarkBG (uiwcont_t *uiwidget)
     return;
   }
 
-  uiWidgetAddClass (uiwidget, DARKBG_CLASS);
+  uiWidgetSetClass (uiwidget, DARKBG_CLASS);
 }
 
 void

@@ -223,7 +223,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     uiwcontFree (uiwidgetp);
 
     uiwidgetp = uiEntryInit (30, 100);
-    uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
+    uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
     if (uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
       uiBoxPackStartExpand (hbox, uiwidgetp);
       uiWidgetExpandHoriz (uiwidgetp);
@@ -382,7 +382,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     mqint->wcont [UIMUSICQ_W_BUTTON_QUEUE] = uiwidgetp;
 
     uiwidgetp = uiCreateLabel ("");
-    uiWidgetAddClass (uiwidgetp, DARKACCENT_CLASS);
+    uiWidgetSetClass (uiwidgetp, DARKACCENT_CLASS);
     uiBoxPackStart (hbox, uiwidgetp);
     mqint->wcont [UIMUSICQ_W_REQ_QUEUE] = uiwidgetp;
   }

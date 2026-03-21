@@ -36,7 +36,6 @@
 #include "ui/uiscrollbar.h"
 #include "ui/uisep.h"
 #include "ui/uisizegrp.h"
-#include "ui/uispinbox.h"
 #include "ui/uiswitch.h"
 #include "ui/uitextbox.h"
 #include "ui/uitoggle.h"

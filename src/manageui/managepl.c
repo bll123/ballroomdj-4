@@ -52,8 +52,6 @@ enum {
   MPL_W_PL_TYPE,
   MPL_W_PL_NAME,
   MPL_W_STD_VBOX,
-  MPL_W_MAX_PLAY_TIME,
-  MPL_W_STOP_AT,
   MPL_W_PLAY_ANN,
   MPL_W_AUTO_SEQ_VBOX,
   MPL_W_ALLOWED_KEYWORDS,
@@ -69,6 +67,8 @@ enum {
   MPL_SB_STOP_AFTER,
   MPL_SB_TAG_WEIGHT,
   MPL_SB_RETAIN,
+  MPL_SB_MAX_PLAY_TIME,
+  MPL_SB_STOP_AT,
   MPL_SB_MAX,
 };
 
@@ -104,8 +104,9 @@ static bool managePlaylistCopy (void *udata);
 static void managePlaylistUpdateData (managepl_t *managepl);
 static bool managePlaylistDelete (void *udata);
 static void manageSetPlaylistName (managepl_t *managepl, const char *nm);
-static int32_t managePlaylistValHMSCallback (void *udata, const char *label, const char *txt);
-static int32_t managePlaylistValHMCallback (void *udata, const char *label, const char *txt);
+static bool managePlaylistValMaxPlayTimeCallback (void *udata);
+static bool managePlaylistValStopAtCallback (void *udata);
+static bool managePlaylistValidateCallback (managepl_t *managepl, int idx);
 static void managePlaylistUpdatePlaylist (managepl_t *managepl);
 static bool managePlaylistCheckChanged (managepl_t *managepl);
 static int  managePlaylistTextEntryChg (uiwcont_t *e, const char *label, void *udata);
@@ -178,6 +179,7 @@ managePlaylistProcess (managepl_t *managepl)
   for (int i = 0; i < MPL_SB_MAX; ++i) {
     uisbnumCheck (managepl->sbnum [i]);
   }
+  manageplDanceProcess (managepl->mpldnc);
 }
 
 
@@ -223,7 +225,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiEntryInit (30, MAX_PL_NM_LEN);
-  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackStart (hbox, uiwidgetp);
   managepl->wcont [MPL_W_PL_NAME] = uiwidgetp;
   /* CONTEXT: playlist management: label for playlist name */
@@ -276,19 +278,19 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: maximum play time */
-  uiwidgetp = uiCreateColonLabel (_("Maximum Play Time"));
+  tlabel = _("Maximum Play Time");
+  uiwidgetp = uiCreateColonLabel (tlabel);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  managepl->callbacks [MPL_CB_MAXPLAYTIME] = callbackInitSS (
-      managePlaylistValHMSCallback, managepl);
-  uiwidgetp = uiSpinboxTimeCreate (SB_TIME_BASIC, managepl,
-      /* CONTEXT: playlist management: maximum play time */
-      _("Maximum Play Time"), managepl->callbacks [MPL_CB_MAXPLAYTIME]);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpSpin, uiwidgetp);
-  managepl->wcont [MPL_W_MAX_PLAY_TIME] = uiwidgetp;
+  managepl->callbacks [MPL_CB_MAXPLAYTIME] = callbackInit (
+      managePlaylistValMaxPlayTimeCallback, managepl, NULL);
+  sb = uisbnumCreate (hbox, tlabel, -1, 2);
+  uisbnumSetTime (sb, 0.0, 7200000.0, SBNUM_TIME_BASIC);
+  uisbnumSizeGroupAdd (sb, szgrpSpin);
+  uisbnumSetChangeCallback (sb, managepl->callbacks [MPL_CB_MAXPLAYTIME]);
+  managepl->sbnum [MPL_SB_MAX_PLAY_TIME] = sb;
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
@@ -299,21 +301,19 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playlist management: stop at */
-  uiwidgetp = uiCreateColonLabel (_("Stop At"));
+  tlabel = _("Stop At");
+  uiwidgetp = uiCreateColonLabel (tlabel);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  managepl->callbacks [MPL_CB_STOPAT] = callbackInitSS (
-      managePlaylistValHMCallback, managepl);
-  uiwidgetp = uiSpinboxTimeCreate (SB_TIME_BASIC, managepl,
-      /* CONTEXT: playlist management: stop at */
-      _("Stop At"), managepl->callbacks [MPL_CB_STOPAT]);
-  uiSpinboxSetRange (uiwidgetp, 0.0, 1440000.0);
-  uiSpinboxWrap (uiwidgetp);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiSizeGroupAdd (szgrpSpin, uiwidgetp);
-  managepl->wcont [MPL_W_STOP_AT] = uiwidgetp;
+  managepl->callbacks [MPL_CB_STOPAT] = callbackInit (
+      managePlaylistValStopAtCallback, managepl, NULL);
+  sb = uisbnumCreate (hbox, tlabel, -1, 2);
+  uisbnumSetTime (sb, 0.0, 1440000.0, SBNUM_TIME_BASIC);
+  uisbnumSizeGroupAdd (sb, szgrpSpin);
+  managepl->sbnum [MPL_SB_STOP_AT] = sb;
+  uisbnumSetChangeCallback (sb, managepl->callbacks [MPL_CB_STOPAT]);
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
@@ -931,11 +931,11 @@ managePlaylistUpdateData (managepl_t *managepl)
     uiLabelSetText (managepl->wcont [MPL_W_PL_TYPE], _("Podcast"));
   }
 
-  uiSpinboxTimeSetValue (managepl->wcont [MPL_W_MAX_PLAY_TIME],
+  uisbnumSetValue (managepl->sbnum [MPL_SB_MAX_PLAY_TIME],
       playlistGetConfigNum (pl, PLAYLIST_MAX_PLAY_TIME));
-  /* convert the hh:mm value to mm:ss for the spinbox */
-  uiSpinboxTimeSetValue (managepl->wcont [MPL_W_STOP_AT],
-      playlistGetConfigNum (pl, PLAYLIST_STOP_TIME) / 60);
+  /* convert the hh:mm value to mm:ss for stop-at */
+  uisbnumSetValue (managepl->sbnum [MPL_SB_STOP_AT],
+      (double) playlistGetConfigNum (pl, PLAYLIST_STOP_TIME) / 60.0);
   uisbnumSetValue (managepl->sbnum [MPL_SB_STOP_AFTER],
       (double) playlistGetConfigNum (pl, PLAYLIST_STOP_AFTER));
   uisbnumSetValue (managepl->sbnum [MPL_SB_GAP],
@@ -1024,56 +1024,6 @@ manageSetPlaylistName (managepl_t *managepl, const char *name)
   logProcEnd ("");
 }
 
-static int32_t
-managePlaylistValHMSCallback (void *udata, const char *label, const char *txt)
-{
-  managepl_t  *managepl = udata;
-  char        tbuff [MAX_PL_NM_LEN];
-  int32_t     value;
-  bool        val;
-
-  logProcBegin ();
-  uiLabelSetText (managepl->minfo->errorMsg, "");
-  val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HMS);
-  if (val == false) {
-    int32_t oval;
-
-    oval = uiSpinboxTimeGetValue (managepl->wcont [MPL_W_MAX_PLAY_TIME]);
-    uiLabelSetText (managepl->minfo->errorMsg, tbuff);
-    logProcEnd ("not-valid");
-    return oval;
-  }
-
-  value = tmutilStrToMS (txt);
-  logProcEnd ("");
-  return value;
-}
-
-static int32_t
-managePlaylistValHMCallback (void *udata, const char *label, const char *txt)
-{
-  managepl_t  *managepl = udata;
-  char        tbuff [MAX_PL_NM_LEN];
-  int32_t     value;
-  bool        val;
-
-  logProcBegin ();
-  uiLabelSetText (managepl->minfo->errorMsg, "");
-  val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HOUR_MIN);
-  if (val == false) {
-    int32_t     oval;
-
-    oval = uiSpinboxGetValue (managepl->wcont [MPL_W_STOP_AT]);
-    uiLabelSetText (managepl->minfo->errorMsg, tbuff);
-    logProcEnd ("not-valid");
-    return oval;
-  }
-
-  value = tmutilStrToHM (txt);
-  logProcEnd ("");
-  return value;
-}
-
 static void
 managePlaylistUpdatePlaylist (managepl_t *managepl)
 {
@@ -1089,10 +1039,10 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
 
   manageplDanceSetPlaylist (managepl->mpldnc, pl);
 
-  tval = uiSpinboxGetValue (managepl->wcont [MPL_W_MAX_PLAY_TIME]);
+  tval = uisbnumGetValue (managepl->sbnum [MPL_SB_MAX_PLAY_TIME]);
   playlistSetConfigNum (pl, PLAYLIST_MAX_PLAY_TIME, tval);
 
-  tval = uiSpinboxGetValue (managepl->wcont [MPL_W_STOP_AT]);
+  tval = uisbnumGetValue (managepl->sbnum [MPL_SB_STOP_AT]);
   /* convert the mm:ss value to hh:mm for stop-time */
   tval *= 60;
   playlistSetConfigNum (pl, PLAYLIST_STOP_TIME, tval);
@@ -1153,11 +1103,11 @@ managePlaylistCheckChanged (managepl_t *managepl)
     managepl->changed = true;
   }
 
-  if (uiSpinboxIsChanged (managepl->wcont [MPL_W_MAX_PLAY_TIME])) {
+  if (uisbnumIsChanged (managepl->sbnum [MPL_SB_MAX_PLAY_TIME])) {
     managepl->changed = true;
   }
 
-  if (uiSpinboxIsChanged (managepl->wcont [MPL_W_STOP_AT])) {
+  if (uisbnumIsChanged (managepl->sbnum [MPL_SB_STOP_AT])) {
     managepl->changed = true;
   }
 
@@ -1260,8 +1210,36 @@ managePlaylistTextEntryChg (uiwcont_t *e, const char *label, void *udata)
 static void
 manageResetChanged (managepl_t *managepl)
 {
-  uiSpinboxResetChanged (managepl->wcont [MPL_W_MAX_PLAY_TIME]);
-  uiSpinboxResetChanged (managepl->wcont [MPL_W_STOP_AT]);
+  uisbnumResetChanged (managepl->sbnum [MPL_SB_MAX_PLAY_TIME]);
+  uisbnumResetChanged (managepl->sbnum [MPL_SB_STOP_AT]);
   uisbnumResetChanged (managepl->sbnum [MPL_SB_GAP]);
   managepl->changed = false;
 }
+
+static bool
+managePlaylistValMaxPlayTimeCallback (void *udata)
+{
+  return managePlaylistValidateCallback (udata, MPL_SB_MAX_PLAY_TIME);
+}
+
+static bool
+managePlaylistValStopAtCallback (void *udata)
+{
+  return managePlaylistValidateCallback (udata, MPL_SB_STOP_AT);
+}
+
+static bool
+managePlaylistValidateCallback (managepl_t *managepl, int idx)
+{
+  uiLabelSetText (managepl->minfo->errorMsg, "");
+  if (! uisbnumIsValid (managepl->sbnum [idx])) {
+    const char  *tmsg;
+
+    tmsg = uisbnumGetValidationError (managepl->sbnum [idx]);
+    uiLabelSetText (managepl->minfo->errorMsg, tmsg);
+    return UICB_STOP;
+  }
+
+  return UICB_CONT;
+}
+

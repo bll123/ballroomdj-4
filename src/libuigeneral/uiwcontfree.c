@@ -22,7 +22,6 @@
 #include "ui/uiimage.h"
 #include "ui/uimenu.h"
 #include "ui/uiscrollbar.h"
-#include "ui/uispinbox.h"
 #include "ui/uiswitch.h"
 #include "ui/uitextbox.h"
 #include "ui/uitoggle.h"
@@ -67,12 +66,6 @@ uiwcontFree (uiwcont_t *uiwidget)
     }
     case WCONT_T_SCROLLBAR: {
       uiScrollbarFree (uiwidget);
-      break;
-    }
-    case WCONT_T_SPINBOX_DOUBLE_DFLT:
-    case WCONT_T_SPINBOX_TIME:
-    case WCONT_T_SPINBOX_TEXT: {
-      uiSpinboxFree (uiwidget);
       break;
     }
     case WCONT_T_SWITCH: {

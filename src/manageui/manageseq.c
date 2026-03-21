@@ -147,7 +147,7 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
 
   uiwidgetp = uiEntryInit (30, 100);
   manageseq->seqname = uiwidgetp;
-  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   manageSetSequenceName (manageseq, manageseq->newseqname);
   uiBoxPackStart (hbox, uiwidgetp);
   /* CONTEXT: sequence editor: sequence name */

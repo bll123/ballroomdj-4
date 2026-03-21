@@ -26,7 +26,7 @@ void uisbtextSetList (uisbtext_t *sbtext, nlist_t *txtlist);
 void uisbtextSetCount (uisbtext_t *sbtext, int count);
 void uisbtextSetWidth (uisbtext_t *sbtext, int width);
 bool uisbtextIsChanged (uisbtext_t *sbtext);
-void uisbtextAddClass (uisbtext_t *sbtext, const char *name);
+void uisbtextSetClass (uisbtext_t *sbtext, const char *name);
 void uisbtextRemoveClass (uisbtext_t *sbtext, const char *name);
 void uisbtextSetState (uisbtext_t *sbtext, int state);
 void uisbtextSizeGroupAdd (uisbtext_t *sbtext, uiwcont_t *sg);

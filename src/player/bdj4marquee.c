@@ -360,7 +360,7 @@ marqueeBuildUI (marquee_t *marquee)
       marquee->callbacks [MQ_CB_EXIT],
       /* CONTEXT: marquee: marquee window title (suggested: song display) */
       _("Marquee"), "bdj4_icon_marquee");
-  uiWidgetAddClass (marquee->wcont [MQ_W_WINDOW], MQ_WIN_CLASS);
+  uiWidgetSetClass (marquee->wcont [MQ_W_WINDOW], MQ_WIN_CLASS);
   uiWindowNoFocusOnStartup (marquee->wcont [MQ_W_WINDOW]);
 
   marquee->callbacks [MQ_CB_DBL_CLICK] = callbackInit (
@@ -388,7 +388,7 @@ marqueeBuildUI (marquee_t *marquee)
   if (! marquee->mqInfoOnly) {
     marquee->wcont [MQ_W_PBAR] = uiCreateProgressBar ();
     uiAddProgressbarClass (MQ_ACCENT_CLASS, bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
-    uiWidgetAddClass (marquee->wcont [MQ_W_PBAR], MQ_ACCENT_CLASS);
+    uiWidgetSetClass (marquee->wcont [MQ_W_PBAR], MQ_ACCENT_CLASS);
     uiBoxPackStart (mainvbox, marquee->wcont [MQ_W_PBAR]);
   }
 
@@ -405,7 +405,7 @@ marqueeBuildUI (marquee_t *marquee)
     /* CONTEXT: marquee: displayed when nothing is set to be played */
     uiwidgetp = uiCreateLabel (_("Not Playing"));
     uiWidgetDisableFocus (uiwidgetp);
-    uiWidgetAddClass (uiwidgetp, MQ_ACCENT_CLASS);
+    uiWidgetSetClass (uiwidgetp, MQ_ACCENT_CLASS);
     uiBoxPackStart (hbox, uiwidgetp);
     uiWidgetAlignHorizStart (uiwidgetp);
     marquee->wcont [MQ_W_INFO_DANCE] = uiwidgetp;
@@ -413,7 +413,7 @@ marqueeBuildUI (marquee_t *marquee)
     uiwidgetp = uiCreateLabel ("0:00");
     uiLabelSetMaxWidth (uiwidgetp, 6);
     uiWidgetDisableFocus (uiwidgetp);
-    uiWidgetAddClass (uiwidgetp, MQ_ACCENT_CLASS);
+    uiWidgetSetClass (uiwidgetp, MQ_ACCENT_CLASS);
     uiBoxPackEnd (hbox, uiwidgetp);
     uiWidgetAlignHorizEnd (uiwidgetp);
     marquee->wcont [MQ_W_COUNTDOWN_TIMER] = uiwidgetp;
@@ -448,7 +448,7 @@ marqueeBuildUI (marquee_t *marquee)
     uiWidgetAlignHorizStart (uiwidgetp);
     uiWidgetAlignVertBaseline (uiwidgetp);
     marquee->wcont [i] = uiwidgetp;
-    uiWidgetAddClass (marquee->wcont [i], MQ_INFO_CLASS);
+    uiWidgetSetClass (marquee->wcont [i], MQ_INFO_CLASS);
     if (marquee->mqInfoOnly) {
       /* if the info-only flag is not on, simply skip incrementing icount */
       ++icount;
@@ -459,7 +459,7 @@ marqueeBuildUI (marquee_t *marquee)
 
   if (! marquee->mqInfoOnly) {
     marquee->wcont [MQ_W_SEP] = uiCreateHorizSeparator ();
-    uiWidgetAddClass (marquee->wcont [MQ_W_SEP], MQ_ACCENT_CLASS);
+    uiWidgetSetClass (marquee->wcont [MQ_W_SEP], MQ_ACCENT_CLASS);
     uiWidgetExpandHoriz (marquee->wcont [MQ_W_SEP]);
     uiBoxPackEnd (vbox, marquee->wcont [MQ_W_SEP]);
     uiWidgetSetMarginTop (marquee->wcont [MQ_W_SEP], 2);
@@ -1006,7 +1006,7 @@ marqueeSetFont (marquee_t *marquee, int sz)
     uiutilsNewFontSize (newfont, sizeof (newfont), f, NULL, sz);
     for (int i = 0; i < marquee->mqLen; ++i) {
       marqueeSetFontSize (marquee, marquee->marqueeLabs [i], newfont);
-      uiWidgetAddClass (marquee->marqueeLabs [i], MQ_TEXT_CLASS);
+      uiWidgetSetClass (marquee->marqueeLabs [i], MQ_TEXT_CLASS);
     }
   }
 

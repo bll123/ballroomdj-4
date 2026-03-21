@@ -24,6 +24,7 @@
 #include "tagdef.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "uisbnum.h"
 #include "uivirtlist.h"
 #include "validate.h"
 
@@ -132,7 +133,7 @@ manageplDanceBuildUI (mpldance_t *mpldnc, uiwcont_t *vboxp)
   uivlMakeColumn (mpldnc->uivl, "sel", MPLDNC_COL_DANCE_SELECT, VL_TYPE_CHECKBOX);
   uivlMakeColumn (mpldnc->uivl, "dnc", MPLDNC_COL_DANCE, VL_TYPE_LABEL);
   uivlMakeColumnSpinboxNum (mpldnc->uivl, "count", MPLDNC_COL_COUNT, 0.0, 100.0, 1.0, 5.0);
-  uivlMakeColumnSpinboxTime (mpldnc->uivl, "mpt", MPLDNC_COL_MAXPLAYTIME, SB_TIME_BASIC, NULL);
+  uivlMakeColumnSpinboxTime (mpldnc->uivl, "mpt", MPLDNC_COL_MAXPLAYTIME, SBNUM_TIME_BASIC, NULL);
   uivlMakeColumnSpinboxNum (mpldnc->uivl, "lowmpm", MPLDNC_COL_LOWMPM, 0.0, 500.0, 1.0, 5.0);
   uivlMakeColumnSpinboxNum (mpldnc->uivl, "himpm", MPLDNC_COL_HIGHMPM, 0.0, 500.0, 1.0, 5.0);
   uivlMakeColumn (mpldnc->uivl, "dkey", MPLDNC_COL_DANCE_KEY, VL_TYPE_INTERNAL_NUMERIC);
@@ -223,6 +224,16 @@ bool
 manageplDanceIsChanged (mpldance_t *mpldnc)
 {
   return mpldnc->changed;
+}
+
+void
+manageplDanceProcess (mpldance_t *mpldnc)
+{
+  if (mpldnc == NULL) {
+    return;
+  }
+
+  uivlProcess (mpldnc->uivl);
 }
 
 /* internal routines */

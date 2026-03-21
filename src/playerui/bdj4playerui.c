@@ -568,12 +568,12 @@ pluiBuildUI (playerui_t *plui)
   uiWidgetSetState (plui->wcont [PLUI_W_CLOCK], UIWIDGET_DISABLE);
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   plui->wcont [PLUI_W_ERROR_MSG] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   plui->wcont [PLUI_W_STATUS_MSG] = uiwidgetp;
 

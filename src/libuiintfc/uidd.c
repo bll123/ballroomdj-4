@@ -298,7 +298,7 @@ uiddCreateDialog (uidd_t *dd)
 
   dd->wcont [DD_W_DIALOG_WIN] = uiCreateDialogWindow (dd->parentwin,
       dd->wcont [DD_W_BUTTON], dd->callbacks [DD_CB_WIN_CLOSE], "");
-  uiWidgetAddClass (dd->wcont [DD_W_DIALOG_WIN], DD_DARKBG_CLASS);
+  uiWidgetSetClass (dd->wcont [DD_W_DIALOG_WIN], DD_DARKBG_CLASS);
 
   vbox = uiCreateVertBox ();
   uiWindowPackInWindow (dd->wcont [DD_W_DIALOG_WIN], vbox);

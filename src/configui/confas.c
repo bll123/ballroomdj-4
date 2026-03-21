@@ -155,7 +155,7 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
       CONFUI_SB_NUM_AUDIOSRC_PORT, -1,
       443, 30000, 0, confuiAudioSrcPortChg);
   gui->uiitem [CONFUI_SB_NUM_AUDIOSRC_PORT].audiosrcitemidx = ASCONF_PORT;
-  uiSpinboxSetValue (gui->uiitem [CONFUI_SB_NUM_AUDIOSRC_PORT].uiwidgetp, 9011);
+  uisbnumSetValue (gui->uiitem [CONFUI_SB_NUM_AUDIOSRC_PORT].sbnum, 9011);
 
   /* CONTEXT: configuration: audio source: the client or server user */
   label = _("User");
@@ -238,7 +238,7 @@ confuiAudioSrcSelectLoadValues (confuigui_t *gui, ilistidx_t askey)
 
   num = asconfGetNum (gui->asconf, askey, ASCONF_PORT);
   widx = CONFUI_SB_NUM_AUDIOSRC_PORT;
-  uiSpinboxSetValue (gui->uiitem [widx].uiwidgetp, num);
+  uisbnumSetValue (gui->uiitem [widx].sbnum, num);
 
   sval = asconfGetStr (gui->asconf, askey, ASCONF_URI);
   widx = CONFUI_ENTRY_AUDIOSRC_URI;
@@ -460,7 +460,7 @@ confuiAudioSrcSpinboxChg (void *udata, int widx)
   if (gui->uiitem [widx].basetype == CONFUI_SB_NUM) {
     double    value;
 
-    value = uiSpinboxGetValue (gui->uiitem [widx].uiwidgetp);
+    value = uisbnumGetValue (gui->uiitem [widx].sbnum);
     nval = (int32_t) value;
   }
 
@@ -473,7 +473,7 @@ confuiAudioSrcSpinboxChg (void *udata, int widx)
 
   if (widx == CONFUI_SB_TXT_AUDIOSRC_TYPE) {
     if (nval == AUDIOSRC_TYPE_PODCAST) {
-      uiSpinboxSetValue (gui->uiitem [CONFUI_SB_NUM_AUDIOSRC_PORT].uiwidgetp, 443);
+      uisbnumSetValue (gui->uiitem [CONFUI_SB_NUM_AUDIOSRC_PORT].sbnum, 443);
     }
   }
 

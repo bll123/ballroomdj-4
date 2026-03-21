@@ -192,7 +192,7 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
 
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackEnd (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   uiaa->statusMsg = uiwidgetp;
 
   /* trim silence */

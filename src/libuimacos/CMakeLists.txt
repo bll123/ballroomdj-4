@@ -26,7 +26,6 @@ add_library (libuimacos SHARED
   uiscrollbar.m
   uisep.m
   uisizegrp.m
-  uispinbox.m
   uiswitch.m
   uitextbox.m
   uitoggle.m

@@ -22,6 +22,7 @@
 #include "songfav.h"
 #include "sysvars.h"
 #include "ui.h"
+#include "uisbtext.h"
 #include "uiutils.h"
 #include "validate.h"
 
@@ -81,7 +82,7 @@ uiutilsSetProfileColor (uiwcont_t *uiwidgetp, const char *oldcolor)
   snprintf (bclassnm, sizeof (bclassnm), "box.horizontal.profcol%s", tcolor + 1);
   /* the ui library has code to prevent duplicates */
   uiAddBGColorClass (bclassnm, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
-  uiWidgetAddClass (uiwidgetp, classnm);
+  uiWidgetSetClass (uiwidgetp, classnm);
 }
 
 const char *
@@ -205,12 +206,15 @@ uiutilsAddFavoriteClasses (void)
   songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
   count = songFavoriteGetCount (songfav);
   for (int idx = 0; idx < count; ++idx) {
+    char    tbuff [100];
+
     name = songFavoriteGetStr (songfav, idx, SONGFAV_NAME);
     color = songFavoriteGetStr (songfav, idx, SONGFAV_COLOR);
     if (name == NULL || ! *name || color == NULL || ! *color) {
       continue;
     }
-    uiSpinboxAddClass (name, color);
+    snprintf (tbuff, sizeof (tbuff), "bdj-sb.%s", name);
+    uiAddColorClass (tbuff, color);
     uiLabelAddClass (name, color);
   }
 

@@ -307,7 +307,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   managedb->wcont [MDB_W_DB_STOP] = uiwidgetp;
 
   uiwidgetp = uiCreateProgressBar ();
-  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackStart (vboxp, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 2);
   uiWidgetSetMarginEnd (uiwidgetp, 2);
@@ -346,7 +346,7 @@ manageDbChg (void *udata)
     uiLabelSetText (managedb->wcont [MDB_W_DB_HELP_DISP], sval);
     uiWidgetRemoveClass (managedb->wcont [MDB_W_DB_HELP_DISP], ACCENT_CLASS);
     if (nval == MANAGE_DB_REBUILD) {
-      uiWidgetAddClass (managedb->wcont [MDB_W_DB_HELP_DISP], ACCENT_CLASS);
+      uiWidgetSetClass (managedb->wcont [MDB_W_DB_HELP_DISP], ACCENT_CLASS);
     }
     uiWidgetSetState (managedb->wcont [MDB_W_DB_START], UIWIDGET_ENABLE);
     if (nval == MANAGE_DB_UPD_FROM_ITUNES) {

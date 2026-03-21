@@ -462,12 +462,12 @@ confuiBuildUI (configui_t *confui)
   uiwcontFree (accent.cbox);
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   confui->gui.statusMsg = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   confui->gui.errorMsg = uiwidgetp;
 

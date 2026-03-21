@@ -375,7 +375,7 @@ altinstBuildUI (altinst_t *altinst)
   /* begin line : status message */
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   altinst->wcont [ALT_W_ERROR_MSG] = uiwidgetp;
 
@@ -453,7 +453,7 @@ altinstBuildUI (altinst_t *altinst)
   uiToggleButtonSetCallback (altinst->wcont [ALT_W_REINST], altinst->callbacks [ALT_CB_REINST]);
 
   altinst->wcont [ALT_W_FEEDBACK_MSG] = uiCreateLabel ("");
-  uiWidgetAddClass (altinst->wcont [ALT_W_FEEDBACK_MSG], ACCENT_CLASS);
+  uiWidgetSetClass (altinst->wcont [ALT_W_FEEDBACK_MSG], ACCENT_CLASS);
   uiBoxPackStart (hbox, altinst->wcont [ALT_W_FEEDBACK_MSG]);
 
   uiBoxPostProcess (hbox);

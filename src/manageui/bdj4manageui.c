@@ -77,6 +77,7 @@
 #include "uimusicq.h"
 #include "uiplayer.h"
 #include "uiplaylist.h"
+#include "uisbnum.h"
 #include "uiselectfile.h"
 #include "uisongedit.h"
 #include "uisongfilter.h"
@@ -221,8 +222,12 @@ enum {
   MANAGE_W_STATUS_MSG,
   MANAGE_W_WINDOW,
   MANAGE_W_SELECT_BUTTON,
-  MANAGE_W_CFPL_TM_LIMIT,
   MANAGE_W_MAX,
+};
+
+enum {
+  MANAGE_SB_CFPL_TM_LIMIT,
+  MANAGE_SB_MAX,
 };
 
 typedef struct {
@@ -239,6 +244,7 @@ typedef struct {
   musicqidx_t       musicqPlayIdx;
   musicqidx_t       musicqManageIdx;
   uiwcont_t         *wcont [MANAGE_W_MAX];
+  uisbnum_t         *sbnum [MANAGE_SB_MAX];
   uivnb_t           *mainvnb;
   uihnb_t           *slhnb;
   uihnb_t           *mmhnb;
@@ -766,6 +772,9 @@ manageClosingCallback (void *udata, programstate_t programState)
   for (int i = 0; i < MANAGE_W_MAX; ++i) {
     uiwcontFree (manage->wcont [i]);
   }
+  for (int i = 0; i < MANAGE_SB_MAX; ++i) {
+    uisbnumFree (manage->sbnum [i]);
+  }
   uihnbFree (manage->slhnb);
   uihnbFree (manage->mmhnb);
   itunesFree (manage->itunes);
@@ -861,13 +870,13 @@ manageBuildUI (manageui_t *manage)
   uiwcontFree (accent.cbox);
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   manage->minfo.errorMsg = uiwidgetp;
   manage->wcont [MANAGE_W_ERROR_MSG] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   manage->minfo.statusMsg = uiwidgetp;
   manage->wcont [MANAGE_W_STATUS_MSG] = uiwidgetp;
@@ -2900,10 +2909,12 @@ manageSonglistCreateFromPlaylist (void *udata)
 static void
 manageSongListCFPLCreateDialog (manageui_t *manage)
 {
-  uiwcont_t  *vbox;
-  uiwcont_t  *hbox;
-  uiwcont_t  *uiwidgetp;
-  uiwcont_t  *szgrp;  // labels
+  uiwcont_t   *vbox;
+  uiwcont_t   *hbox;
+  uiwcont_t   *uiwidgetp;
+  uiwcont_t   *szgrp;  // labels
+  uisbnum_t   *sb;
+  const char  *tlabel;
 
   logProcBegin ();
   if (manage->wcont [MANAGE_W_CFPL_DIALOG] != NULL) {
@@ -2948,17 +2959,17 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: create from playlist: set the maximum time for the song list */
-  uiwidgetp = uiCreateColonLabel (_("Time Limit"));
+  tlabel = _("Time Limit");
+  uiwidgetp = uiCreateColonLabel (tlabel);
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   /* FIX: no validation! */
-  uiwidgetp = uiSpinboxTimeCreate (SB_TIME_BASIC, manage, "", NULL);
-  uiSpinboxTimeSetValue (uiwidgetp, 3 * 60 * 1000);
-  uiSpinboxSetRange (uiwidgetp, 0.0, 600000.0);
-  uiBoxPackStart (hbox, uiwidgetp);
-  manage->wcont [MANAGE_W_CFPL_TM_LIMIT] = uiwidgetp;
+  sb = uisbnumCreate (hbox, tlabel, -1, 2);
+  uisbnumSetTime (sb, 0.0, 600000.0, SBNUM_TIME_BASIC);
+  uisbnumSetValue (sb, 3.0 * 60.0 * 1000.0);
+  manage->sbnum [MANAGE_SB_CFPL_TM_LIMIT] = sb;
 
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
@@ -3024,7 +3035,7 @@ manageCFPLCreate (manageui_t *manage)
 
   dataFree (manage->cfplfn);
   manage->cfplfn = mdstrdup (fn);
-  stoptime = uiSpinboxTimeGetValue (manage->wcont [MANAGE_W_CFPL_TM_LIMIT]);
+  stoptime = uisbnumGetValue (manage->sbnum [MANAGE_SB_CFPL_TM_LIMIT]);
   /* convert from mm:ss to hh:mm */
   stoptime *= 60;
   /* adjust : add in the current hh:mm */

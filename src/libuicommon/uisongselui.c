@@ -260,7 +260,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     ssint->wcont [SONGSEL_W_BUTTON_QUEUE] = uiwidgetp;
 
     uiwidgetp = uiCreateLabel ("");
-    uiWidgetAddClass (uiwidgetp, DARKACCENT_CLASS);
+    uiWidgetSetClass (uiwidgetp, DARKACCENT_CLASS);
     uiBoxPackStart (hbox, uiwidgetp);
     ssint->wcont [SONGSEL_W_REQ_QUEUE] = uiwidgetp;
   }

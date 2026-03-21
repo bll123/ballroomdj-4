@@ -120,7 +120,7 @@ uifavoriteCBHandler (void *udata, int idx)
   for (int i = 0; i < count; ++i) {
     name = songFavoriteGetStr (uifavorite->songfav, i, SONGFAV_NAME);
     if (i == idx) {
-      uisbtextAddClass (uifavorite->sb, name);
+      uisbtextSetClass (uifavorite->sb, name);
     } else {
       uisbtextRemoveClass (uifavorite->sb, name);
     }

@@ -335,7 +335,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   for (int i = UIPL_W_INFO_DISP_A; i <= UIPL_W_INFO_DISP_I; ++i) {
     uiwidgetp = uiCreateLabel ("");
     if (i == UIPL_W_INFO_DISP_A) {
-      uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
+      uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
     }
     if ((i - UIPL_W_INFO_DISP_A) % 2 == 0) {
       uiLabelEllipsizeOn (uiwidgetp);
@@ -360,7 +360,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
         uiplayer->callbacks [UIPL_CB_SPD_RESET],
         /* CONTEXT: playerui: button: reset speed to 100% */
         _("100%"), NULL, NULL);
-    uiWidgetAddClass (uiwidgetp, "bdj-spd-reset");
+    uiWidgetSetClass (uiwidgetp, "bdj-spd-reset");
     uiBoxPackEnd (hbox, uiwidgetp);
     uiSizeGroupAdd (szgrpScaleButton, uiwidgetp);
     uiplayer->wcont [UIPL_W_BUTTON_SPD_RESET] = uiwidgetp;

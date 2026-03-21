@@ -550,7 +550,7 @@ uivlSetDarkBackground (uivirtlist_t *vl)
   }
 
   vl->darkbg = true;
-  uiWidgetAddClass (vl->wcont [VL_W_HBOX_CONT], DARKBG_CLASS);
+  uiWidgetSetClass (vl->wcont [VL_W_HBOX_CONT], DARKBG_CLASS);
   logProcEnd ("");
 }
 
@@ -563,7 +563,7 @@ uivlSetDropdownBackground (uivirtlist_t *vl)
     return;
   }
 
-  uiWidgetAddClass (vl->wcont [VL_W_MAIN_VBOX], NORMBG_CLASS);
+  uiWidgetSetClass (vl->wcont [VL_W_MAIN_VBOX], NORMBG_CLASS);
   logProcEnd ("");
 }
 
@@ -865,12 +865,9 @@ uivlSetRowColumnEditable (uivirtlist_t *vl, int32_t rownum, int colidx, int stat
       uiEntrySetState (row->cols [colidx].uiwidget, state);
       break;
     }
-    case VL_TYPE_SPINBOX_NUM: {
-      uisbnumSetState (row->cols [colidx].sbnum, state);
-      break;
-    }
+    case VL_TYPE_SPINBOX_NUM:
     case VL_TYPE_SPINBOX_TIME: {
-      uiSpinboxSetState (row->cols [colidx].uiwidget, state);
+      uisbnumSetState (row->cols [colidx].sbnum, state);
       break;
     }
     case VL_TYPE_CHECKBOX:
@@ -913,7 +910,7 @@ uivlSetRowColumnClass (uivirtlist_t *vl, int32_t rownum, int colidx, const char 
   if (class != NULL) {
     /* save for removal process */
     col->class = mdstrdup (class);
-    uiWidgetAddClass (col->uiwidget, class);
+    uiWidgetSetClass (col->uiwidget, class);
   }
   logProcEnd ("");
 }
@@ -1081,12 +1078,9 @@ uivlSetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx, int32_t val)
       uiToggleButtonSetValue (row->cols [colidx].uiwidget, nstate);
       break;
     }
-    case VL_TYPE_SPINBOX_NUM: {
-      uisbnumSetValue (row->cols [colidx].sbnum, val);
-      break;
-    }
+    case VL_TYPE_SPINBOX_NUM:
     case VL_TYPE_SPINBOX_TIME: {
-      uiSpinboxTimeSetValue (row->cols [colidx].uiwidget, val);
+      uisbnumSetValue (row->cols [colidx].sbnum, val);
       break;
     }
   }
@@ -1160,12 +1154,9 @@ uivlGetRowColumnNum (uivirtlist_t *vl, int32_t rownum, int colidx)
       }
       break;
     }
-    case VL_TYPE_SPINBOX_NUM: {
-      value = uisbnumGetValue (row->cols [colidx].sbnum);
-      break;
-    }
+    case VL_TYPE_SPINBOX_NUM:
     case VL_TYPE_SPINBOX_TIME: {
-      value = uiSpinboxTimeGetValue (row->cols [colidx].uiwidget);
+      value = uisbnumGetValue (row->cols [colidx].sbnum);
       break;
     }
   }
@@ -1586,7 +1577,7 @@ uivlDisplay (uivirtlist_t *vl)
 
     uiwidget = uiCreateLabel (" ");
     if (vl->uselistingfont) {
-      uiWidgetAddClass (uiwidget, LISTING_CLASS);
+      uiWidgetSetClass (uiwidget, LISTING_CLASS);
     }
     uiBoxPackStart (vl->wcont [VL_W_SB_VBOX], uiwidget);
     uiWidgetAlignVertBaseline (uiwidget);
@@ -1686,7 +1677,7 @@ uivlPopulate (uivirtlist_t *vl)
           uiWidgetRemoveClass (col->uiwidget, row->oldclass);
         }
 
-        uiWidgetAddClass (col->uiwidget, row->newclass);
+        uiWidgetSetClass (col->uiwidget, row->newclass);
       }
     }
 
@@ -1834,7 +1825,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     /* setting this to list-fav-class allows gtk to calculate the */
     /* row height better, otherwise there are annoying display glitches */
     /* when only the favorite (at the end of the row) has this class set. */
-    uiWidgetAddClass (uiwidget, LIST_FAV_CLASS);
+    uiWidgetSetClass (uiwidget, LIST_FAV_CLASS);
   }
   uiWidgetShow (uiwidget);
   uiwcontFree (uiwidget);
@@ -1918,12 +1909,12 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
         break;
       }
       case VL_TYPE_SPINBOX_TIME: {
-        col->uiwidget = uiSpinboxTimeCreate (coldata->sbtype,
-            vl, "", coldata->sbcb);
-        uiWidgetEnableFocus (col->uiwidget);
-        uiSpinboxSetFocusCallback (col->uiwidget, row->rowcb->focuscb);
-        if (coldata->spinboxtimecb != NULL) {
-          uiSpinboxTimeSetValueChangedCallback (col->uiwidget, coldata->spinboxtimecb);
+        col->uiwidget = uiCreateHorizBox ();
+        col->sbnum = uisbnumCreate (col->uiwidget, "", -1, 2);
+        uisbnumSetTime (col->sbnum, 0.0, 7200000.0, SBNUM_TIME_BASIC);
+        uisbnumSetFocusCallback (col->sbnum, row->rowcb->focuscb);
+        if (coldata->spinboxcb != NULL) {
+          uisbnumSetChangeCallback (col->sbnum, coldata->spinboxcb);
         }
         break;
       }
@@ -1973,18 +1964,18 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     }
 
     if (isheading) {
-      uiWidgetAddClass (col->uiwidget, HEADING_CLASS);
+      uiWidgetSetClass (col->uiwidget, HEADING_CLASS);
     }
     if (vl->uselistingfont) {
       if (isheading) {
-        uiWidgetAddClass (col->uiwidget, LIST_HEAD_CLASS);
+        uiWidgetSetClass (col->uiwidget, LIST_HEAD_CLASS);
       } else {
-        uiWidgetAddClass (col->uiwidget, LISTING_CLASS);
+        uiWidgetSetClass (col->uiwidget, LISTING_CLASS);
       }
     }
 
     if (coldata->baseclass != NULL) {
-      uiWidgetAddClass (col->uiwidget, coldata->baseclass);
+      uiWidgetSetClass (col->uiwidget, coldata->baseclass);
     }
     if (coldata->type == VL_TYPE_LABEL) {
       if (coldata->minwidth != VL_MIN_WIDTH_ANY) {
@@ -2352,11 +2343,11 @@ uivlSetDisplaySelections (uivirtlist_t *vl)
     vl->lastselidx = row->dispidx;
 
     uivlRemoveLastHighlight (vl);
-    uiWidgetAddClass (row->hbox, SELECTED_CLASS);
+    uiWidgetSetClass (row->hbox, SELECTED_CLASS);
     row->selected = true;
     for (int colidx = 0; colidx < vl->numcols; ++colidx) {
       if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
-        uiWidgetAddClass (row->cols [colidx].uiwidget, SELECTED_CLASS);
+        uiWidgetSetClass (row->cols [colidx].uiwidget, SELECTED_CLASS);
       }
     }
   }
@@ -3060,7 +3051,7 @@ uivlMotionEvent (void *udata, int32_t dispidx)
     return UICB_CONT;
   }
 
-  uiWidgetAddClass (row->hbox, ROW_HL_CLASS);
+  uiWidgetSetClass (row->hbox, ROW_HL_CLASS);
   vl->lastdisphighlight = dispidx;
 
   logProcEnd ("");

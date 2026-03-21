@@ -259,13 +259,13 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
 
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackEnd (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   uiexppl->wcont [UIEXPPL_W_STATUS_MSG] = uiwidgetp;
 
   /* error msg */
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackEnd (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
   uiexppl->wcont [UIEXPPL_W_ERROR_MSG] = uiwidgetp;
 
   uiBoxPostProcess (hbox);

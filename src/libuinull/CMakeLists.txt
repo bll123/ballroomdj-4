@@ -26,7 +26,6 @@ add_library (libuinull SHARED
   uiscrollbar.c
   uisep.c
   uisizegrp.c
-  uispinbox.c
   uiswitch.c
   uitextbox.c
   uitoggle.c

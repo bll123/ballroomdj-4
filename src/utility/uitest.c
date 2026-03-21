@@ -386,7 +386,7 @@ uitestBuildUI (uitest_t *uitest)
 
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackEnd (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   uitest->wcont [UITEST_W_STATUS_MSG] = uiwidgetp;
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
@@ -967,17 +967,17 @@ uitestUILabels (uitest_t *uitest)
 
   uiwidgetp = uiCreateLabel ("ps-a");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "gb");
+  uiWidgetSetClass (uiwidgetp, "gb");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("ps-b");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "bb");
+  uiWidgetSetClass (uiwidgetp, "bb");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("ps-c");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "rb");
+  uiWidgetSetClass (uiwidgetp, "rb");
   uiwcontFree (uiwidgetp);
 
   uiBoxPostProcess (hbox);
@@ -992,18 +992,18 @@ uitestUILabels (uitest_t *uitest)
 
   uiwidgetp = uiCreateLabel ("ps-eh");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "gb");
+  uiWidgetSetClass (uiwidgetp, "gb");
   uiWidgetExpandHoriz (uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("ps-b");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "bb");
+  uiWidgetSetClass (uiwidgetp, "bb");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("ps-c");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "rb");
+  uiWidgetSetClass (uiwidgetp, "rb");
   uiwcontFree (uiwidgetp);
 
   uiBoxPostProcess (hbox);
@@ -1018,19 +1018,19 @@ uitestUILabels (uitest_t *uitest)
 
   uiwidgetp = uiCreateLabel ("ps-eh-ac");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "gb");
+  uiWidgetSetClass (uiwidgetp, "gb");
   uiWidgetAlignHorizCenter (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("b");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "bb");
+  uiWidgetSetClass (uiwidgetp, "bb");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("c");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "rb");
+  uiWidgetSetClass (uiwidgetp, "rb");
   uiwcontFree (uiwidgetp);
 
   uiBoxPostProcess (hbox);
@@ -1045,19 +1045,19 @@ uitestUILabels (uitest_t *uitest)
 
   uiwidgetp = uiCreateLabel ("ps-eh-as");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "gb");
+  uiWidgetSetClass (uiwidgetp, "gb");
   uiWidgetExpandHoriz (uiwidgetp);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("b");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "bb");
+  uiWidgetSetClass (uiwidgetp, "bb");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("c");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "rb");
+  uiWidgetSetClass (uiwidgetp, "rb");
   uiwcontFree (uiwidgetp);
 
   uiBoxPostProcess (hbox);
@@ -1072,17 +1072,17 @@ uitestUILabels (uitest_t *uitest)
 
   uiwidgetp = uiCreateLabel ("pe-a");
   uiBoxPackEnd (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "gb");
+  uiWidgetSetClass (uiwidgetp, "gb");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("pe-b");
   uiBoxPackEnd (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "bb");
+  uiWidgetSetClass (uiwidgetp, "bb");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("pe-c");
   uiBoxPackEnd (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "rb");
+  uiWidgetSetClass (uiwidgetp, "rb");
   uiwcontFree (uiwidgetp);
 
   uiBoxPostProcess (hbox);
@@ -1097,32 +1097,32 @@ uitestUILabels (uitest_t *uitest)
 
   uiwidgetp = uiCreateLabel ("ps-a");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "gb");
+  uiWidgetSetClass (uiwidgetp, "gb");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("ps-b");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "bb");
+  uiWidgetSetClass (uiwidgetp, "bb");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("ps-c");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "rb");
+  uiWidgetSetClass (uiwidgetp, "rb");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("pe-a");
   uiBoxPackEnd (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "gb");
+  uiWidgetSetClass (uiwidgetp, "gb");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("pe-b");
   uiBoxPackEnd (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "bb");
+  uiWidgetSetClass (uiwidgetp, "bb");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("pe-c");
   uiBoxPackEnd (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "rb");
+  uiWidgetSetClass (uiwidgetp, "rb");
   uiwcontFree (uiwidgetp);
 
   uiBoxPostProcess (hbox);
@@ -1139,17 +1139,17 @@ uitestUILabels (uitest_t *uitest)
   uiBoxPackStart (hbox, uiwidgetp);
   uiLabelEllipsizeOn (uiwidgetp);
   uiLabelSetMaxWidth (uiwidgetp, 20);
-  uiWidgetAddClass (uiwidgetp, "gb");
+  uiWidgetSetClass (uiwidgetp, "gb");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("a");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "bb");
+  uiWidgetSetClass (uiwidgetp, "bb");
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("b");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "rb");
+  uiWidgetSetClass (uiwidgetp, "rb");
   uiwcontFree (uiwidgetp);
 
   uiBoxPostProcess (hbox);
@@ -1164,7 +1164,7 @@ uitestUILabels (uitest_t *uitest)
 
   uiwidgetp = uiCreateLabel ("accent");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   uiwcontFree (uiwidgetp);
 
   uiBoxPostProcess (hbox);
@@ -1179,7 +1179,7 @@ uitestUILabels (uitest_t *uitest)
 
   uiwidgetp = uiCreateLabel ("bold-accent");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, BOLD_ACCENT_CLASS);
+  uiWidgetSetClass (uiwidgetp, BOLD_ACCENT_CLASS);
   uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
@@ -1193,7 +1193,7 @@ uitestUILabels (uitest_t *uitest)
 
   uiwidgetp = uiCreateLabel ("error");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
+  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
   uiwcontFree (uiwidgetp);
 
   uiBoxPostProcess (hbox);
@@ -1208,7 +1208,7 @@ uitestUILabels (uitest_t *uitest)
 
   uiwidgetp = uiCreateLabel ("dark-accent");
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, DARKACCENT_CLASS);
+  uiWidgetSetClass (uiwidgetp, DARKACCENT_CLASS);
   uiwcontFree (uiwidgetp);
 
   uiBoxPostProcess (hbox);
@@ -1393,7 +1393,7 @@ uitestUIPanedWin (uitest_t *uitest)
   uiBoxPackStartExpand (vbox, pw);
   uiWidgetExpandHoriz (pw);
   uiWidgetAlignHorizFill (pw);
-  uiWidgetAddClass (pw, ACCENT_CLASS);
+  uiWidgetSetClass (pw, ACCENT_CLASS);
 
   tvbox = uiCreateVertBox ();
   uiPanedWindowPackStart (pw, tvbox);
@@ -1448,7 +1448,7 @@ uitestUIMisc (uitest_t *uitest)
   uiSeparatorAddClass (ACCENT_CLASS, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
 
   uiwidgetp = uiCreateHorizSeparator ();
-  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackStart (vbox, uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 4);

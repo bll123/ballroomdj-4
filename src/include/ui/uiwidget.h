@@ -38,7 +38,7 @@ void  uiWidgetShowAll (uiwcont_t *uiwidget);
 void  uiWidgetSetSizeRequest (uiwcont_t *uiuiwidget, int width, int height);
 bool  uiWidgetIsMapped (uiwcont_t *uiuiwidget);
 void  uiWidgetGetPosition (uiwcont_t *widget, int *x, int *y);
-void  uiWidgetAddClass (uiwcont_t *uiwidget, const char *class);
+void  uiWidgetSetClass (uiwcont_t *uiwidget, const char *class);
 void  uiWidgetRemoveClass (uiwcont_t *uiwidget, const char *class);
 void  uiWidgetSetTooltip (uiwcont_t *uiwidget, const char *tooltip);
 void  uiWidgetSetSizeChgCallback (uiwcont_t *uiwidget, callback_t *uicb);

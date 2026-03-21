@@ -73,7 +73,7 @@ uisbCreate (uiwcont_t *box, uiwcont_t *disp, bool istext, int margin)
   sb->istext = istext;
 
   uiwidgetp = uiCreateHorizBox ();
-  uiWidgetAddClass (uiwidgetp, SB_CLASS);
+  uiWidgetSetClass (uiwidgetp, SB_CLASS);
   if (sb->istext == SB_IS_TEXT) {
     uiWidgetEnableFocus (uiwidgetp);
   }
@@ -86,7 +86,7 @@ uisbCreate (uiwcont_t *box, uiwcont_t *disp, bool istext, int margin)
 
   uiwidgetp = uiCreateButton (sb->callbacks [SB_CB_INCR],
       NULL, "sb_incr", NULL);
-  uiWidgetAddClass (uiwidgetp, SB_CLASS);
+  uiWidgetSetClass (uiwidgetp, SB_CLASS);
   uiWidgetAlignHorizCenter (uiwidgetp);
   uiWidgetAlignVertCenter (uiwidgetp);
   uiWidgetSetAllMargins (uiwidgetp, 0);
@@ -96,7 +96,7 @@ uisbCreate (uiwcont_t *box, uiwcont_t *disp, bool istext, int margin)
 
   uiwidgetp = uiCreateButton (sb->callbacks [SB_CB_DECR],
       NULL, "sb_decr", NULL);
-  uiWidgetAddClass (uiwidgetp, SB_CLASS);
+  uiWidgetSetClass (uiwidgetp, SB_CLASS);
   uiWidgetAlignHorizCenter (uiwidgetp);
   uiWidgetAlignVertCenter (uiwidgetp);
   uiWidgetSetAllMargins (uiwidgetp, 0);
@@ -105,7 +105,7 @@ uisbCreate (uiwcont_t *box, uiwcont_t *disp, bool istext, int margin)
   sb->wcont [SB_W_B_DECR] = uiwidgetp;
 
   sb->display = disp;
-  uiWidgetAddClass (sb->display, SB_CLASS);
+  uiWidgetSetClass (sb->display, SB_CLASS);
   uiBoxPackStartExpand (sb->wcont [SB_W_HBOX], sb->display);
 
   uiBoxPackStart (box, sb->wcont [SB_W_HBOX]);

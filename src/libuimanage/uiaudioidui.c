@@ -323,7 +323,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackEnd (hbox, uiwidgetp);
   uiWidgetSetMarginEnd (uiwidgetp, 6);
-  uiWidgetAddClass (uiwidgetp, DARKACCENT_CLASS);
+  uiWidgetSetClass (uiwidgetp, DARKACCENT_CLASS);
   audioidint->wcont [UIAUDID_W_EDIT_ALL] = uiwidgetp;
 
   uiBoxPostProcess (hbox);
@@ -355,7 +355,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiwidgetp = uiCreateLabel ("");
   uiLabelEllipsizeOn (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, DARKACCENT_CLASS);
+  uiWidgetSetClass (uiwidgetp, DARKACCENT_CLASS);
   uiLabelSetSelectable (uiwidgetp);
   audioidint->wcont [UIAUDID_W_FILE_DISP] = uiwidgetp;
 
@@ -366,7 +366,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiBoxPackStartExpand (audioidint->wcont [UIAUDID_W_MAIN_VBOX], pw);
   uiWidgetExpandHoriz (pw);
   uiWidgetAlignHorizFill (pw);
-  uiWidgetAddClass (pw, ACCENT_CLASS);
+  uiWidgetSetClass (pw, ACCENT_CLASS);
   audioidint->wcont [UIAUDID_W_PANED_WINDOW] = pw;
 
   vbox = uiCreateVertBox ();

@@ -193,7 +193,7 @@ uicopytagsCreateDialog (uict_t *uict)
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiCreateLabel ("");
-  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
+  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   uiBoxPackEnd (hbox, uiwidgetp);
   uict->statusMsg = uiwidgetp;
 

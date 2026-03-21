@@ -94,7 +94,7 @@ uiCreateSwitch (int value)
 
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
 
-  uiWidgetAddClass (uiwidget, SWITCH_CLASS);
+  uiWidgetSetClass (uiwidget, SWITCH_CLASS);
   gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
 
   g_signal_connect (widget, "toggled",

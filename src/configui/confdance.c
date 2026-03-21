@@ -265,12 +265,12 @@ confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t dkey)
   num = danceGetNum (dances, dkey, DANCE_MPM_HIGH);
   widx = CONFUI_SB_NUM_DANCE_MPM_HIGH;
   num = danceConvertMPMtoBPM (dkey, num);
-  uiSpinboxSetValue (gui->uiitem [widx].uiwidgetp, num);
+  uisbnumSetValue (gui->uiitem [widx].sbnum, num);
 
   num = danceGetNum (dances, dkey, DANCE_MPM_LOW);
   widx = CONFUI_SB_NUM_DANCE_MPM_LOW;
   num = danceConvertMPMtoBPM (dkey, num);
-  uiSpinboxSetValue (gui->uiitem [widx].uiwidgetp, num);
+  uisbnumSetValue (gui->uiitem [widx].sbnum, num);
 
   num = danceGetNum (dances, dkey, DANCE_SPEED);
   widx = CONFUI_SB_TXT_DANCE_SPEED;
@@ -492,7 +492,7 @@ confuiDanceSpinboxChg (void *udata, int widx)
   if (gui->uiitem [widx].basetype == CONFUI_SB_NUM) {
     double    value;
 
-    value = uiSpinboxGetValue (gui->uiitem [widx].uiwidgetp);
+    value = uisbnumGetValue (gui->uiitem [widx].sbnum);
     nval = (int32_t) value;
   }
 

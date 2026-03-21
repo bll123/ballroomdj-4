@@ -27,7 +27,6 @@ add_library (libuigtk3 SHARED
   uisep.c
   uisizegrp.c
   uispecific.c
-  uispinbox.c
   uiswitch.c
   uitextbox.c
   uitoggle.c

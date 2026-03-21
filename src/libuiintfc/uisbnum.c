@@ -172,6 +172,7 @@ uisbnumSetTime (uisbnum_t *sbnum, double min, double max, int timetype)
   }
 }
 
+/* be sure to call this after setting the limits */
 void
 uisbnumSetType (uisbnum_t *sbnum, int type)
 {
