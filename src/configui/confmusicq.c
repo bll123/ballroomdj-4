@@ -198,6 +198,8 @@ confuiMusicQActiveChg (void *udata)
   tval = uiSwitchGetValue (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiwidgetp);
 
   /* force a no-change for ui backends where enable/disable are buggy */
+  /* this is older code for gtk3, and may no longer be needed, */
+  /* but doesn't hurt anything */
   selidx = uisbtextGetValue (gui->uiitem [CONFUI_SB_TXT_MUSIC_QUEUE].sbtxt);
   if (selidx == 0 && tval == 0) {
     uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiwidgetp, 1);
@@ -271,6 +273,8 @@ confuiMusicQDisplayChg (void *udata)
   tval = uiSwitchGetValue (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiwidgetp);
 
   /* force a no-change for ui backends where enable/disable are buggy */
+  /* this is older code for gtk3, and may no longer be needed, */
+  /* but doesn't hurt anything */
   selidx = uisbtextGetValue (gui->uiitem [CONFUI_SB_TXT_MUSIC_QUEUE].sbtxt);
   if (selidx == 0 && tval == 0) {
     uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiwidgetp, 1);
@@ -362,19 +366,19 @@ confuiMusicQUpdateState (confuigui_t *gui, int idx)
     return;
   }
 
-  /* still broken as of 2026-2-22 */
-  /* there is some weird interaction with the signal handlers in gtk */
-  if (strcmp (uiBackend (), "gtk3") == 0) {
-    /* enabling and disabling these is buggy on gtk3 */
-    /* skip it altogether */
-    return;
-  }
-
   state = UIWIDGET_ENABLE;
   if (idx == 0) {
     state = UIWIDGET_DISABLE;
   }
 
+  if (state == UIWIDGET_DISABLE) {
+    /* with gtk3, the disabled active/display switches */
+    /* still seem to have focus */
+    /* clearing the focus allows the disabled state to be properly */
+    /* displayed */
+    uiWidgetDisableFocus (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiwidgetp);
+    uiWidgetDisableFocus (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiwidgetp);
+  }
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiwidgetp, state);
 }

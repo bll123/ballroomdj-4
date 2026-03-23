@@ -404,7 +404,11 @@ manageDbClose (managedb_t *managedb)
 void
 manageDbResetButtons (managedb_t *managedb)
 {
-  if (managedb->compact || managedb->reorganize) {
+  int     nval;
+
+  nval = uisbtextGetValue (managedb->dbsb);
+
+  if (managedb->compact || managedb->reorganize || nval == MANAGE_DB_REBUILD) {
     char  tbuff [200];
 
     /* CONTEXT: update database: exit BDJ4 and restart */
