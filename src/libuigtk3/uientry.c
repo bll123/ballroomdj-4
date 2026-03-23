@@ -29,7 +29,8 @@ typedef struct uientry {
 } uientry_t;
 
 static void uigtkEntryValidateHandler (GtkEditable *e, gpointer udata);
-static gboolean uiEntryFocusHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata);
+static gboolean uiEntryFocusInHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata);
+static gboolean uiEntryFocusOutHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata);
 
 uiwcont_t *
 uiEntryInit (int entrySize, int maxSize)
@@ -177,12 +178,23 @@ uiEntrySetInternalValidate (uiwcont_t *uiwidget)
 void
 uiEntrySetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
-  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-focus-cb")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-focus-in-cb")) {
     return;
   }
 
   g_signal_connect (uiwidget->uidata.widget, "focus-in-event",
-      G_CALLBACK (uiEntryFocusHandler), uicb);
+      G_CALLBACK (uiEntryFocusInHandler), uicb);
+}
+
+void
+uiEntrySetFocusOutCallback (uiwcont_t *uiwidget, callback_t *uicb)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-focus-out-cb")) {
+    return;
+  }
+
+  g_signal_connect (uiwidget->uidata.widget, "focus-out-event",
+      G_CALLBACK (uiEntryFocusOutHandler), uicb);
 }
 
 void
@@ -246,7 +258,19 @@ uigtkEntryValidateHandler (GtkEditable *e, gpointer udata)
 }
 
 static gboolean
-uiEntryFocusHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata)
+uiEntryFocusInHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata)
+{
+  callback_t    *uicb = udata;
+
+  if (uicb != NULL) {
+    callbackHandler (uicb);
+  }
+
+  return false;
+}
+
+static gboolean
+uiEntryFocusOutHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata)
 {
   callback_t    *uicb = udata;
 

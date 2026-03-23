@@ -37,6 +37,8 @@ void uisbSetState (uisb_t *sb, int state);
 void uisbSizeGroupAdd (uisb_t *sb, uiwcont_t *sg);
 void uisbSetRepeat (uisb_t *sb, int repeatms);
 void uisbCheck (uisb_t *sb);
+void uisbSetFocusHighlight (uisb_t *sb);
+void uisbClearFocusHighlight (uisb_t *sb);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 }

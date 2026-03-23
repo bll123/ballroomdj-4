@@ -25,16 +25,51 @@ tooltip {
 /* gtk: notebook header tabs tab label */
 /* make the selected notebook tab darker */
 notebook tab:checked {
-  background-color: shade(@theme_base_color,0.7);
+  background-color: shade(@theme_base_color,0.6);
 }
 button.bdj-notebook-sel {
-  background-color: shade(@theme_base_color,0.7);
+  background-color: shade(@theme_base_color,0.6);
 }
 button.bdj-leftnotebook:hover {
+  background-color: shade(@theme_base_color,0.6);
+}
+
+/* gtk: notebook header tabs tab label */
+/* make the selected notebook tab darker */
+notebook tab:checked {
+  background-color: shade(@theme_base_color,0.8);
+}
+notebook.bdj-horiz-nb > stack {
+  background-color: shade(@theme_base_color,0.92);
+}
+
+.bdj-vert-nb-bg {
+  background-color: shade(@theme_base_color,0.95);
+}
+
+button.bdj-horiz-nb {
+  border-top-color: shade(@theme_base_color,0.8);
+  border-left-color: shade(@theme_base_color,0.8);
+  border-right-color: shade(@theme_base_color,0.8);
+}
+button.bdj-nb-sel {
+  background-color: shade(@theme_base_color,0.8);
+}
+button.bdj-nb:hover, button.bdj-nb:focus {
   background-color: shade(@theme_base_color,0.8);
 }
 
 button.bdj-switch:hover {
-  background-color: shade(@theme_base_color,0.9);
+  background-color: shade(@theme_base_color,0.7);
+}
+
+box.bdj-sb {
+  border: 1px solid shade(@theme_base_color,0.8);
+}
+box.bdj-sb-focus {
+  border-color: @theme_selected_bg_color;
+}
+button.bdj-sb {
+  border-left: 1px solid shade(@theme_base_color,0.6);
 }
 

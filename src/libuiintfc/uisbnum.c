@@ -27,10 +27,17 @@
 
 static double SB_INVALID = -65534;
 
+enum {
+  SBNUM_CB_MAIN,
+  SBNUM_CB_ENTRY_IN,
+  SBNUM_CB_ENTRY_OUT,
+  SBNUM_CB_MAX,
+};
+
 typedef struct uisbnum {
   uisb_t          *sb;
   uiwcont_t       *entry;
-  callback_t      *sbnumcb;
+  callback_t      *callbacks [SBNUM_CB_MAX];
   callback_t      *chgcb;
   const char      *label;
   const char      *dfltstr;
@@ -58,6 +65,8 @@ static int uisbnumEntryValidate (uiwcont_t *entry, const char *label, void *udat
 static void uisbnumValueToStr (uisbnum_t *sbnum, char *tbuff, size_t sz);
 static void uisbnumProcessChangeCallback (uisbnum_t *sbnum);
 static void uisbnumSetValid (uisbnum_t *sbnum, bool isvalid);
+static bool uisbnumFocusHandler (void *udata);
+static bool uisbnumFocusOutHandler (void *udata);
 
 uisbnum_t *
 uisbnumCreate (uiwcont_t *box, const char *label, int margin)
@@ -71,7 +80,9 @@ uisbnumCreate (uiwcont_t *box, const char *label, int margin)
   uiWidgetSetAllMargins (sbnum->entry, 0);
   sbnum->sb = uisbCreate (box, sbnum->entry, SB_IS_NUM, margin);
   uisbSetRepeat (sbnum->sb, 50);
-  sbnum->sbnumcb = NULL;
+  for (int i = 0; i < SBNUM_CB_MAX; ++i) {
+    sbnum->callbacks [i] = NULL;
+  }
   sbnum->chgcb = NULL;
   sbnum->label = label;
   /* CONTEXT: user interface: default setting display */
@@ -92,8 +103,14 @@ uisbnumCreate (uiwcont_t *box, const char *label, int margin)
   uisbnumSetFormat (sbnum);
   sbnum->valmsg [0] = '\0';
 
-  sbnum->sbnumcb = callbackInitI (uisbnumCBHandler, sbnum);
-  uisbSetCallback (sbnum->sb, sbnum->sbnumcb);
+  sbnum->callbacks [SBNUM_CB_MAIN] = callbackInitI (uisbnumCBHandler, sbnum);
+  uisbSetCallback (sbnum->sb, sbnum->callbacks [SBNUM_CB_MAIN]);
+  sbnum->callbacks [SBNUM_CB_ENTRY_IN] =
+      callbackInit (uisbnumFocusHandler, sbnum, NULL);
+  uiEntrySetFocusCallback (sbnum->entry, sbnum->callbacks [SBNUM_CB_ENTRY_IN]);
+  sbnum->callbacks [SBNUM_CB_ENTRY_OUT] =
+      callbackInit (uisbnumFocusOutHandler, sbnum, NULL);
+  uiEntrySetFocusOutCallback (sbnum->entry, sbnum->callbacks [SBNUM_CB_ENTRY_OUT]);
 
   uiEntrySetValidate (sbnum->entry, label,
       uisbnumEntryValidate, sbnum, UIENTRY_DELAY_NO_ICON);
@@ -109,7 +126,9 @@ uisbnumFree (uisbnum_t *sbnum)
   }
 
   uisbFree (sbnum->sb);
-  callbackFree (sbnum->sbnumcb);
+  for (int i = 0; i < SBNUM_CB_MAX; ++i) {
+    callbackFree (sbnum->callbacks [i]);
+  }
   uiwcontFree (sbnum->entry);
   mdfree (sbnum);
 }
@@ -365,6 +384,32 @@ uisbnumCBHandler (void *udata, int32_t dir)
 
   uisbnumSetDisplay (sbnum);
 
+  return UICB_CONT;
+}
+
+static bool
+uisbnumFocusHandler (void *udata)
+{
+  uisbnum_t  *sbnum = udata;
+
+  if (sbnum == NULL) {
+    return UICB_CONT;
+  }
+
+  uisbSetFocusHighlight (sbnum->sb);
+  return UICB_CONT;
+}
+
+static bool
+uisbnumFocusOutHandler (void *udata)
+{
+  uisbnum_t  *sbnum = udata;
+
+  if (sbnum == NULL) {
+    return UICB_CONT;
+  }
+
+  uisbClearFocusHighlight (sbnum->sb);
   return UICB_CONT;
 }
 

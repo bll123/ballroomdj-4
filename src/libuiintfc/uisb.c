@@ -209,6 +209,26 @@ uisbCheck (uisb_t *sb)
   callbackHandlerI (sb->cb, SB_VALIDATE);
 }
 
+void
+uisbSetFocusHighlight (uisb_t *sb)
+{
+  if (sb == NULL) {
+    return;
+  }
+
+  uiWidgetSetClass (sb->wcont [SB_W_HBOX], SB_FOCUS_CLASS);
+}
+
+void
+uisbClearFocusHighlight (uisb_t *sb)
+{
+  if (sb == NULL) {
+    return;
+  }
+
+  uiWidgetClearClass (sb->wcont [SB_W_HBOX], SB_FOCUS_CLASS);
+}
+
 /* internal routines */
 
 static bool

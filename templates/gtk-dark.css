@@ -19,7 +19,7 @@ tooltip {
 }
 
 .bdj-dark-bg {
-  background-color: shade(@theme_base_color,0.9);
+  background-color: shade(@theme_base_color,0.7);
 }
 
 textview.bdj-dark-bg text {
@@ -32,16 +32,35 @@ notebook tab:checked {
   background-color: shade(@theme_base_color,0.6);
 }
 notebook.bdj-horiz-nb > stack {
-  background-color: shade(@theme_base_color,0.9);
+  background-color: shade(@theme_base_color,0.8);
 }
 
+.bdj-vert-nb-bg {
+  background-color: shade(@theme_base_color,0.7);
+}
+
+button.bdj-horiz-nb {
+  border-top-color: shade(@theme_base_color,0.0);
+  border-left-color: shade(@theme_base_color,0.0);
+  border-right-color: shade(@theme_base_color,0.0);
+}
 button.bdj-nb-sel {
-  background-color: shade(@theme_base_color,0.6);
+  background-color: shade(@theme_base_color,0.5);
 }
 button.bdj-nb:hover, button.bdj-nb:focus {
-  background-color: shade(@theme_base_color,0.5);
+  background-color: shade(@theme_base_color,0.4);
 }
 
 button.bdj-switch:hover {
   background-color: shade(@theme_base_color,0.7);
+}
+
+box.bdj-sb {
+  border: 1px solid shade(@theme_base_color,0.4);
+}
+box.bdj-sb-focus {
+  border-color: @theme_selected_bg_color;
+}
+button.bdj-sb {
+  border-left: 1px solid shade(@theme_base_color,0.4);
 }
