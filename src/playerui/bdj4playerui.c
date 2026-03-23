@@ -1592,7 +1592,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  plui->mqszsb = uisbnumCreate (hbox, tlabel, -1, 2);
+  plui->mqszsb = uisbnumCreate (hbox, tlabel, 2);
   uisbnumSetLimits (plui->mqszsb, 10.0, 400.0, 0);
   uisbnumSetValue (plui->mqszsb, 36.0);
 

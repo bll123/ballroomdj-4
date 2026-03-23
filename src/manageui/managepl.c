@@ -286,7 +286,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   managepl->callbacks [MPL_CB_MAXPLAYTIME] = callbackInit (
       managePlaylistValMaxPlayTimeCallback, managepl, NULL);
-  sb = uisbnumCreate (hbox, tlabel, -1, 2);
+  sb = uisbnumCreate (hbox, tlabel, 2);
   uisbnumSetTime (sb, 0.0, 7200000.0, SBNUM_TIME_BASIC);
   uisbnumSizeGroupAdd (sb, szgrpSpin);
   uisbnumSetChangeCallback (sb, managepl->callbacks [MPL_CB_MAXPLAYTIME]);
@@ -309,7 +309,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   managepl->callbacks [MPL_CB_STOPAT] = callbackInit (
       managePlaylistValStopAtCallback, managepl, NULL);
-  sb = uisbnumCreate (hbox, tlabel, -1, 2);
+  sb = uisbnumCreate (hbox, tlabel, 2);
   uisbnumSetTime (sb, 0.0, 1440000.0, SBNUM_TIME_BASIC);
   uisbnumSizeGroupAdd (sb, szgrpSpin);
   managepl->sbnum [MPL_SB_STOP_AT] = sb;
@@ -330,7 +330,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  sb = uisbnumCreate (hbox, tlabel, -1, 2);
+  sb = uisbnumCreate (hbox, tlabel, 2);
   uisbnumSetLimits (sb, 0.0, 500.0, 0);
   uisbnumSizeGroupAdd (sb, szgrpSpin);
   managepl->sbnum [MPL_SB_STOP_AFTER] = sb;
@@ -350,7 +350,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  sb = uisbnumCreate (hbox, tlabel, -1, 2);
+  sb = uisbnumCreate (hbox, tlabel, 2);
   uisbnumSetLimits (sb, 0.0, 60.0, 1);
   uisbnumSetIncrements (sb, 0.1, 5.0);
   /* must come after limits are set */
@@ -496,7 +496,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiWidgetSetMarginStart (uiwidgetp, 2);
   uiwcontFree (uiwidgetp);
 
-  sb = uisbnumCreate (hbox, tlabel, -1, 2);
+  sb = uisbnumCreate (hbox, tlabel, 2);
   uisbnumSetLimits (sb, 5.0, 100.0, 0);
   uisbnumSetValue (sb, BDJ4_DFLT_TAG_WEIGHT);
   managepl->sbnum [MPL_SB_TAG_WEIGHT] = sb;
@@ -562,7 +562,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  sb = uisbnumCreate (hbox, tlabel, -1, 2);
+  sb = uisbnumCreate (hbox, tlabel, 2);
   uisbnumSetLimits (sb, 0.0, 720.0, 0);
   uisbnumSizeGroupAdd (sb, szgrpSpin);
   managepl->sbnum [MPL_SB_RETAIN] = sb;

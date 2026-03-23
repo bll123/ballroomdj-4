@@ -1639,7 +1639,7 @@ uitestUISpinbox (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  sb = uisbnumCreate (hbox, "a", -1, 0);
+  sb = uisbnumCreate (hbox, "a", 0);
   uisbnumSetLimits (sb, 3.0, 15.0, 0);
   uisbnumSetIncrements (sb, 1.0, 5.0);
   uisbnumSetValue (sb, 4.0);
@@ -1655,7 +1655,7 @@ uitestUISpinbox (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  sb = uisbnumCreate (hbox, "dbl", -1, 0);
+  sb = uisbnumCreate (hbox, "dbl", 0);
   uisbnumSetLimits (sb, 1.0, 20.0, 1);
   uisbnumSetIncrements (sb, 0.1, 1.0);
   uisbnumSetValue (sb, 5.0);
@@ -1671,7 +1671,7 @@ uitestUISpinbox (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  sb = uisbnumCreate (hbox, "dbl-b", -1, 0);
+  sb = uisbnumCreate (hbox, "dbl-b", 0);
   uisbnumSetLimits (sb, 1.0, 20.0, 1);
   uisbnumSetIncrements (sb, 0.1, 5.0);
   uisbnumSetValue (sb, 5.0);
@@ -1687,7 +1687,7 @@ uitestUISpinbox (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  sb = uisbnumCreate (hbox, "dbl-def", -1, 0);
+  sb = uisbnumCreate (hbox, "dbl-def", 0);
   uisbnumSetLimits (sb, 0.0, 10.0, 1);
   uisbnumSetIncrements (sb, 0.1, 5.0);
   uisbnumSetType (sb, SBNUM_NUM_DEFAULT);
@@ -1704,7 +1704,7 @@ uitestUISpinbox (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  sb = uisbnumCreate (hbox, "tm-a", -1, 0);
+  sb = uisbnumCreate (hbox, "tm-a", 0);
   uisbnumSetTime (sb, 0.0, 1440000.0, SBNUM_TIME_BASIC);
   uisbnumSetValue (sb, 5.0);
   uitest->sbnum [UITEST_SB_TM_A] = sb;
@@ -1719,7 +1719,7 @@ uitestUISpinbox (uitest_t *uitest)
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  sb = uisbnumCreate (hbox, "tm-b", -1, 0);
+  sb = uisbnumCreate (hbox, "tm-b", 0);
   uisbnumSetTime (sb, 0.0, 1440000.0, SBNUM_TIME_PRECISE);
   uisbnumSetValue (sb, 5.0);
   uitest->sbnum [UITEST_SB_TM_B] = sb;

@@ -1320,7 +1320,7 @@ uisongeditAddSpinboxInt (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
 
   logProcBegin ();
   seint = uisongedit->seInternalData;
-  sb = uisbnumCreate (hbox, tagdefs [tagkey].displayname, -1, 2);
+  sb = uisbnumCreate (hbox, tagdefs [tagkey].displayname, 2);
   seint->items [seint->itemcount].sbnum = sb;
   seint->items [seint->itemcount].issbnum = true;
   if (tagkey == TAG_BPM) {
@@ -1383,7 +1383,7 @@ uisongeditAddSpinboxTime (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   seint->callbacks [cbidx] = callbackInit (
       uisongeditValTimeCallback, &seint->items [seint->itemcount], NULL);
 
-  sb = uisbnumCreate (hbox, tagdefs [tagkey].displayname, -1, 2);
+  sb = uisbnumCreate (hbox, tagdefs [tagkey].displayname, 2);
   uisbnumSetTime (sb, 0.0, 1200000.0, SBNUM_TIME_PRECISE);
   uisbnumSetValue (sb, 0);
   uisbnumSetChangeCallback (sb, seint->callbacks [cbidx]);

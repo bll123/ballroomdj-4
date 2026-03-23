@@ -1899,7 +1899,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       }
       case VL_TYPE_SPINBOX_NUM: {
         col->uiwidget = uiCreateHorizBox ();
-        col->sbnum = uisbnumCreate (col->uiwidget, "", -1, 2);
+        col->sbnum = uisbnumCreate (col->uiwidget, "", 2);
         uisbnumSetLimits (col->sbnum, coldata->sbmin, coldata->sbmax, 0);
         uisbnumSetIncrements (col->sbnum, coldata->sbincr, coldata->sbpageincr);
         uisbnumSetFocusCallback (col->sbnum, row->rowcb->focuscb);
@@ -1910,7 +1910,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       }
       case VL_TYPE_SPINBOX_TIME: {
         col->uiwidget = uiCreateHorizBox ();
-        col->sbnum = uisbnumCreate (col->uiwidget, "", -1, 2);
+        col->sbnum = uisbnumCreate (col->uiwidget, "", 2);
         uisbnumSetTime (col->sbnum, 0.0, 7200000.0, SBNUM_TIME_BASIC);
         uisbnumSetFocusCallback (col->sbnum, row->rowcb->focuscb);
         if (coldata->spinboxcb != NULL) {

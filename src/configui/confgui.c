@@ -328,7 +328,7 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp,
     value /= 60;
   }
 
-  sb = uisbnumCreate (hbox, gui->uiitem [widx].labeltxt, -1, 4);
+  sb = uisbnumCreate (hbox, gui->uiitem [widx].labeltxt, 4);
   /* the default increments are set in uisbnumSetTime() */
   /* 7200000 = 120 minutes */
   maxlimit = 7200000.0;
@@ -367,7 +367,7 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 
   gui->uiitem [widx].callback = callbackInit (
       confuiValidateCallback, &gui->uiitem [widx], NULL);
-  sb = uisbnumCreate (hbox, gui->uiitem [widx].labeltxt, -1, 4);
+  sb = uisbnumCreate (hbox, gui->uiitem [widx].labeltxt, 4);
   uisbnumSetLimits (sb, (double) min, (double) max, 0);
   uisbnumSetValue (sb, (double) value);
   uisbnumSetChangeCallback (sb, gui->uiitem [widx].callback);
@@ -405,7 +405,7 @@ confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp
   gui->uiitem [widx].callback = callbackInit (
       confuiValidateCallback, &gui->uiitem [widx], NULL);
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, indent);
-  sb = uisbnumCreate (hbox, gui->uiitem [widx].labeltxt, -1, 4);
+  sb = uisbnumCreate (hbox, gui->uiitem [widx].labeltxt, 4);
   uisbnumSetLimits (sb, min, max, 1);
   uisbnumSetIncrements (sb, 0.1, 5.0);
   uisbnumSetValue (sb, value);

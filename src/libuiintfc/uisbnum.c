@@ -60,15 +60,12 @@ static void uisbnumProcessChangeCallback (uisbnum_t *sbnum);
 static void uisbnumSetValid (uisbnum_t *sbnum, bool isvalid);
 
 uisbnum_t *
-uisbnumCreate (uiwcont_t *box, const char *label, int maxWidth, int margin)
+uisbnumCreate (uiwcont_t *box, const char *label, int margin)
 {
   uisbnum_t  *sbnum;
 
   sbnum = mdmalloc (sizeof (uisbnum_t));
-  if (maxWidth < 0) {
-    maxWidth = 5;
-  }
-  sbnum->entry = uiEntryInit (maxWidth, 10);
+  sbnum->entry = uiEntryInit (5, 10);
   uiWidgetAlignHorizFill (sbnum->entry);
   uiEntryAlignEnd (sbnum->entry);
   uiWidgetSetAllMargins (sbnum->entry, 0);
