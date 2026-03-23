@@ -206,7 +206,7 @@ uisbtextRemoveClass (uisbtext_t *sbtext, const char *name)
     return;
   }
 
-  uiWidgetRemoveClass (sbtext->display, name);
+  uiWidgetClearClass (sbtext->display, name);
 }
 
 void

@@ -186,8 +186,8 @@ uihnbSetPage (uihnb_t *hnb, int pagenum)
   uiWidgetSetClass (hnb->tablist [hnb->selected], NB_HORIZ_SEL_CLASS);
 
   if (prevsel >= 0) {
-    uiWidgetRemoveClass (hnb->tablist [prevsel], NB_SEL_CLASS);
-    uiWidgetRemoveClass (hnb->tablist [prevsel], NB_HORIZ_SEL_CLASS);
+    uiWidgetClearClass (hnb->tablist [prevsel], NB_SEL_CLASS);
+    uiWidgetClearClass (hnb->tablist [prevsel], NB_HORIZ_SEL_CLASS);
   }
 
   /* after hnb->selected has been set */

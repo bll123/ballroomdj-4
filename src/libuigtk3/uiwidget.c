@@ -326,7 +326,7 @@ uiWidgetSetClass (uiwcont_t *uiwidget, const char *class)
 }
 
 void
-uiWidgetRemoveClass (uiwcont_t *uiwidget, const char *class)
+uiWidgetClearClass (uiwcont_t *uiwidget, const char *class)
 {
   if (uiwidget == NULL) {
     return;

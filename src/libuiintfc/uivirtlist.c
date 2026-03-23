@@ -935,7 +935,7 @@ uivlClearRowColumnClass (uivirtlist_t *vl, int32_t rownum, int colidx)
 
   col = &row->cols [colidx];
   if (col->class != NULL) {
-    uiWidgetRemoveClass (col->uiwidget, col->class);
+    uiWidgetClearClass (col->uiwidget, col->class);
     dataFree (col->class);
     col->class = NULL;
   }
@@ -1666,7 +1666,7 @@ uivlPopulate (uivirtlist_t *vl)
     for (int colidx = 0; colidx < vl->numcols; ++colidx) {
       col = &row->cols [colidx];
       if (col->class != NULL) {
-        uiWidgetRemoveClass (col->uiwidget, col->class);
+        uiWidgetClearClass (col->uiwidget, col->class);
         dataFree (col->class);
         col->class = NULL;
       }
@@ -1674,7 +1674,7 @@ uivlPopulate (uivirtlist_t *vl)
       if (row->newclass != NULL &&
           vl->coldata [colidx].type == VL_TYPE_LABEL) {
         if (row->oldclass != NULL) {
-          uiWidgetRemoveClass (col->uiwidget, row->oldclass);
+          uiWidgetClearClass (col->uiwidget, row->oldclass);
         }
 
         uiWidgetSetClass (col->uiwidget, row->newclass);
@@ -2300,11 +2300,11 @@ uivlClearDisplaySelections (uivirtlist_t *vl)
     uivlrow_t   *row = &vl->rows [dispidx];
 
     if (row->selected) {
-      uiWidgetRemoveClass (row->hbox, SELECTED_CLASS);
+      uiWidgetClearClass (row->hbox, SELECTED_CLASS);
 
       for (int colidx = 0; colidx < vl->numcols; ++colidx) {
         if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
-          uiWidgetRemoveClass (row->cols [colidx].uiwidget, SELECTED_CLASS);
+          uiWidgetClearClass (row->cols [colidx].uiwidget, SELECTED_CLASS);
         }
       }
       row->selected = false;
@@ -3116,7 +3116,7 @@ uivlRemoveLastHighlight (uivirtlist_t *vl)
 
   if (vl->lastdisphighlight >= 0) {
     row = &vl->rows [vl->lastdisphighlight];
-    uiWidgetRemoveClass (row->hbox, ROW_HL_CLASS);
+    uiWidgetClearClass (row->hbox, ROW_HL_CLASS);
     vl->lastdisphighlight = VL_UNK_ROW;
   }
 }

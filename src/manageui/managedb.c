@@ -344,7 +344,7 @@ manageDbChg (void *udata)
 
   if (managedb->wcont [MDB_W_DB_HELP_DISP] != NULL) {
     uiLabelSetText (managedb->wcont [MDB_W_DB_HELP_DISP], sval);
-    uiWidgetRemoveClass (managedb->wcont [MDB_W_DB_HELP_DISP], ACCENT_CLASS);
+    uiWidgetClearClass (managedb->wcont [MDB_W_DB_HELP_DISP], ACCENT_CLASS);
     if (nval == MANAGE_DB_REBUILD) {
       uiWidgetSetClass (managedb->wcont [MDB_W_DB_HELP_DISP], ACCENT_CLASS);
     }

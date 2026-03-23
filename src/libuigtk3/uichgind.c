@@ -49,8 +49,8 @@ uichgindMarkNormal (uiwcont_t *uiwidget)
     return;
   }
 
-  uiWidgetRemoveClass (uiwidget, CHGIND_CHANGED_CLASS);
-  uiWidgetRemoveClass (uiwidget, CHGIND_ERROR_CLASS);
+  uiWidgetClearClass (uiwidget, CHGIND_CHANGED_CLASS);
+  uiWidgetClearClass (uiwidget, CHGIND_ERROR_CLASS);
   uiWidgetSetClass (uiwidget, CHGIND_NORMAL_CLASS);
 }
 
@@ -62,7 +62,7 @@ uichgindMarkChanged (uiwcont_t *uiwidget)
     return;
   }
 
-  uiWidgetRemoveClass (uiwidget, CHGIND_NORMAL_CLASS);
-  uiWidgetRemoveClass (uiwidget, CHGIND_ERROR_CLASS);
+  uiWidgetClearClass (uiwidget, CHGIND_NORMAL_CLASS);
+  uiWidgetClearClass (uiwidget, CHGIND_ERROR_CLASS);
   uiWidgetSetClass (uiwidget, CHGIND_CHANGED_CLASS);
 }

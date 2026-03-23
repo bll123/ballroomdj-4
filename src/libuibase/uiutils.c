@@ -74,7 +74,7 @@ uiutilsSetProfileColor (uiwcont_t *uiwidgetp, const char *oldcolor)
 
   if (oldcolor != NULL) {
     snprintf (classnm, sizeof (classnm), "profcol%s", oldcolor + 1);
-    uiWidgetRemoveClass (uiwidgetp, classnm);
+    uiWidgetClearClass (uiwidgetp, classnm);
   }
 
   snprintf (classnm, sizeof (classnm), "profcol%s", tcolor + 1);

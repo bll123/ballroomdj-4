@@ -187,8 +187,8 @@ uivnbSetPage (uivnb_t *vnb, int pagenum)
   uiWidgetSetClass (vnb->indlist [vnb->selected], NB_VERT_SEL_CLASS);
 
   if (prevsel >= 0) {
-    uiWidgetRemoveClass (vnb->tablist [prevsel], NB_SEL_CLASS);
-    uiWidgetRemoveClass (vnb->indlist [prevsel], NB_VERT_SEL_CLASS);
+    uiWidgetClearClass (vnb->tablist [prevsel], NB_SEL_CLASS);
+    uiWidgetClearClass (vnb->indlist [prevsel], NB_VERT_SEL_CLASS);
   }
 
   /* after vnb->selected has been set */
