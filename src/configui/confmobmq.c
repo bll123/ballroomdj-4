@@ -144,7 +144,7 @@ confuiMobmqPortChg (void *udata)
     logProcEnd ("not-table-mobmq");
     return UIENTRY_OK;
   }
-  value = uisbtextGetValue (gui->uiitem [CONFUI_SB_NUM_MOBMQ_PORT].sbtxt);
+  value = uisbnumGetValue (gui->uiitem [CONFUI_SB_NUM_MOBMQ_PORT].sbnum);
   nval = (long) value;
   bdjoptSetNum (OPT_P_MOBMQ_PORT, nval);
   confuiUpdateMobmqQrcode (gui);
@@ -244,22 +244,27 @@ confuiMobmqKeyChg (uiwcont_t *entry, const char *label, void *udata)
 static void
 confuiMobmqSetWidgetStates (confuigui_t *gui, int type)
 {
-  if (type == MOBMQ_TYPE_LOCAL || type == MOBMQ_TYPE_OFF) {
-    uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_TAG].uilabelp, UIWIDGET_DISABLE);
-    uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_KEY].uilabelp, UIWIDGET_DISABLE);
-    uiWidgetSetState (gui->uiitem [CONFUI_SB_NUM_MOBMQ_PORT].uilabelp, UIWIDGET_ENABLE);
+  int     tstate = UIWIDGET_ENABLE;
+  int     pstate = UIWIDGET_ENABLE;
 
-    uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_TAG].uiwidgetp, UIWIDGET_DISABLE);
-    uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_KEY].uiwidgetp, UIWIDGET_DISABLE);
-    uiWidgetSetState (gui->uiitem [CONFUI_SB_NUM_MOBMQ_PORT].uiwidgetp, UIWIDGET_ENABLE);
+  if (type == MOBMQ_TYPE_OFF) {
+    tstate = UIWIDGET_DISABLE;
+    pstate = UIWIDGET_DISABLE;
+  }
+  if (type == MOBMQ_TYPE_LOCAL) {
+    tstate = UIWIDGET_DISABLE;
+    pstate = UIWIDGET_ENABLE;
   }
   if (type == MOBMQ_TYPE_INTERNET) {
-    uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_TAG].uilabelp, UIWIDGET_ENABLE);
-    uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_KEY].uilabelp, UIWIDGET_ENABLE);
-    uiWidgetSetState (gui->uiitem [CONFUI_SB_NUM_MOBMQ_PORT].uilabelp, UIWIDGET_DISABLE);
-
-    uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_TAG].uiwidgetp, UIWIDGET_ENABLE);
-    uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_KEY].uiwidgetp, UIWIDGET_ENABLE);
-    uiWidgetSetState (gui->uiitem [CONFUI_SB_NUM_MOBMQ_PORT].uiwidgetp, UIWIDGET_DISABLE);
+    tstate = UIWIDGET_ENABLE;
+    pstate = UIWIDGET_DISABLE;
   }
+
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_TAG].uilabelp, tstate);
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_KEY].uilabelp, tstate);
+  uiWidgetSetState (gui->uiitem [CONFUI_SB_NUM_MOBMQ_PORT].uilabelp, pstate);
+
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_TAG].uiwidgetp, tstate);
+  uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_MOBMQ_KEY].uiwidgetp, tstate);
+  uisbnumSetState (gui->uiitem [CONFUI_SB_NUM_MOBMQ_PORT].sbnum, pstate);
 }

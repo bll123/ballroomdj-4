@@ -239,6 +239,11 @@ uisbtextSetValue (uisbtext_t *sbtext, int value)
     return;
   }
 
+  if (sbtext->old_index != LIST_VALUE_INVALID &&
+      sbtext->old_index != value) {
+    sbtext->changed = true;
+  }
+
   if (sbtext->idxlist == NULL) {
     sbtext->index = value;
   } else {
@@ -251,7 +256,6 @@ uisbtextSetValue (uisbtext_t *sbtext, int value)
     }
   }
   uisbtextSetDisplay (sbtext);
-  sbtext->changed = false;
 }
 
 int32_t
@@ -330,10 +334,9 @@ uisbtextSetDisplay (uisbtext_t *sbtext)
   }
 
   if (sbtext->chgcb != NULL) {
-    if (sbtext->old_index != LIST_VALUE_INVALID) {
-      sbtext->changed = true;
-    }
+    sbtext->changed = true;
     callbackHandler (sbtext->chgcb);
+    sbtext->changed = false;
   }
 
   sbtext->old_index = sbtext->index;

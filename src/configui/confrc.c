@@ -128,7 +128,7 @@ confuiRemctrlPortChg (void *udata)
   long          nval;
 
   logProcBegin ();
-  value = uisbtextGetValue (gui->uiitem [CONFUI_SB_NUM_RC_PORT].sbtxt);
+  value = uisbnumGetValue (gui->uiitem [CONFUI_SB_NUM_RC_PORT].sbnum);
   nval = (long) value;
   bdjoptSetNum (OPT_P_REMCONTROLPORT, nval);
   confuiUpdateRemctrlQrcode (gui);

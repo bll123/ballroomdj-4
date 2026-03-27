@@ -139,15 +139,6 @@ confuiPopulateOptions (confuigui_t *gui)
       }
     }
 
-    if (widx == CONFUI_SB_TXT_AUDIO_OUTPUT) {
-      uisbtext_t    *sb;
-
-      sb = gui->uiitem [widx].sbtxt;
-      if (! uisbtextIsChanged (sb)) {
-        continue;
-      }
-    }
-
     if (gui->uiitem [widx].bdjoptIdx >= OPT_Q_ACTIVE) {
       musicq = gui->uiitem [CONFUI_SB_TXT_MUSIC_QUEUE].listidx;
       isqueueitem = true;

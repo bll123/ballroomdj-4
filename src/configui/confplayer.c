@@ -204,7 +204,7 @@ confuiPlayerAudioSinkChg (void *udata)
   }
 
   widx = CONFUI_SB_TXT_VOL_INTFC;
-  if (gui->uiitem [widx].uiwidgetp == NULL) {
+  if (gui->uiitem [widx].sbtxt == NULL) {
     return;
   }
 
@@ -214,7 +214,7 @@ confuiPlayerAudioSinkChg (void *udata)
   confuiPlayerLoadSinkList (gui, sval);
 
   widx = CONFUI_SB_TXT_AUDIO_OUTPUT;
-  if (gui->uiitem [widx].uiwidgetp == NULL) {
+  if (gui->uiitem [widx].sbtxt == NULL) {
     return;
   }
 

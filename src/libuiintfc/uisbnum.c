@@ -74,7 +74,7 @@ uisbnumCreate (uiwcont_t *box, const char *label, int margin)
   uisbnum_t  *sbnum;
 
   sbnum = mdmalloc (sizeof (uisbnum_t));
-  sbnum->entry = uiEntryInit (5, 10);
+  sbnum->entry = uiEntryInit (6, 10);
   uiWidgetAlignHorizFill (sbnum->entry);
   uiEntryAlignEnd (sbnum->entry);
   uiWidgetSetAllMargins (sbnum->entry, 0);
@@ -297,10 +297,14 @@ uisbnumSetValue (uisbnum_t *sbnum, double value)
     return;
   }
 
+
+  if (sbnum->old_value != SB_INVALID &&
+      sbnum->old_value != value) {
+    sbnum->changed = true;
+  }
   sbnum->old_value = value;
   sbnum->value = value;
   uisbnumSetDisplay (sbnum);
-  sbnum->changed = false;
 }
 
 double

@@ -8,6 +8,7 @@
 
 * Bug Fixes:
     * Configuration: Fix display of validation messages.
+    * Configuration: Minor interface fixes.
     * User Interface: clean up theme colors.
 * Changes:
     * User Interface: re-write of horizontal notebooks.

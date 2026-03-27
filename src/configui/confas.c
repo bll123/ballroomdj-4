@@ -498,6 +498,11 @@ confuiAudioSrcSpinboxChg (void *udata, int widx)
     confuiAudioSrcValidateAll (gui, true);
   }
 
+  if (widx == CONFUI_SB_TXT_AUDIOSRC_TYPE) {
+    confuiAudioSrcSetWidgetStates (gui, askey);
+    confuiAudioSrcValidateAll (gui, true);
+  }
+
   logProcEnd ("");
 }
 

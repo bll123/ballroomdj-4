@@ -312,7 +312,6 @@ confuiMusicQChg (void *udata)
     /* make sure the current selection gets saved to the options data */
     confuiPopulateOptions (gui);
     confuiSetMusicQList (gui);
-    confuiUpdateMusicQList (gui);
     uisbtextSetValue (gui->uiitem [widx].sbtxt, nselidx);
   }
   gui->uiitem [widx].listidx = nselidx;
@@ -378,6 +377,9 @@ confuiMusicQUpdateState (confuigui_t *gui, int idx)
     /* displayed */
     uiWidgetDisableFocus (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiwidgetp);
     uiWidgetDisableFocus (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiwidgetp);
+  } else {
+    uiWidgetEnableFocus (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiwidgetp);
+    uiWidgetEnableFocus (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiwidgetp);
   }
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiwidgetp, state);
   uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiwidgetp, state);
@@ -398,6 +400,7 @@ confuiSetMusicQList (confuigui_t *gui)
   }
   nlistFree (gui->uiitem [widx].displist);
   gui->uiitem [widx].displist = tlist;
+  confuiUpdateMusicQList (gui);
 }
 
 static void
@@ -407,12 +410,11 @@ confuiUpdateMusicQList (confuigui_t *gui)
   int         widx;
 
   widx = CONFUI_SB_TXT_MUSIC_QUEUE;
-  if (gui->uiitem [widx].uiwidgetp == NULL) {
+  if (gui->uiitem [widx].sbtxt == NULL) {
     return;
   }
 
   tlist = gui->uiitem [widx].displist;
-
   uisbtextSetList (gui->uiitem [widx].sbtxt, tlist);
 }
 

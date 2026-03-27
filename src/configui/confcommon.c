@@ -453,6 +453,7 @@ confuiLoadIntfcList (confuigui_t *gui, ilist_t *interfaces,
         gui->uiitem [spinboxidx].listidx = count;
       }
     }
+
     nlistSetStr (tlist, count, ilistGetStr (interfaces, key, DYI_DESC));
     nlistSetStr (llist, count, intfc);
     ++count;
