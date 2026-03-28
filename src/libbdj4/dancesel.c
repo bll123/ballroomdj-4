@@ -546,10 +546,10 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
 
   tval = dRandom ();
   didx = nlistSearchProbTable (dancesel->danceProbTable, tval);
-  logMsg (LOG_DBG, LOG_BASIC, "== select %.6f %" PRId32 "/%s",
+  logMsg (LOG_DBG, LOG_BASIC, "-- select %.6f %" PRId32 "/%s",
         tval, didx, danceGetStr (dancesel->dances, didx, DANCE_DANCE));
 #if DANCESEL_DEBUG
-  fprintf (stderr, "== select %.6f %" PRId32 "/%s\n",
+  fprintf (stderr, "-- select %.6f %" PRId32 "/%s\n",
       tval, didx, danceGetStr (dancesel->dances, didx, DANCE_DANCE));
 #endif
   if (dancesel->method == DANCESEL_METHOD_WINDOWED) {

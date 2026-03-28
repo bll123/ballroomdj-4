@@ -1210,9 +1210,9 @@ managePlaylistTextEntryChg (uiwcont_t *e, const char *label, void *udata)
 static void
 manageResetChanged (managepl_t *managepl)
 {
-  uisbnumResetChanged (managepl->sbnum [MPL_SB_MAX_PLAY_TIME]);
-  uisbnumResetChanged (managepl->sbnum [MPL_SB_STOP_AT]);
-  uisbnumResetChanged (managepl->sbnum [MPL_SB_GAP]);
+  uisbnumClearChanged (managepl->sbnum [MPL_SB_MAX_PLAY_TIME]);
+  uisbnumClearChanged (managepl->sbnum [MPL_SB_STOP_AT]);
+  uisbnumClearChanged (managepl->sbnum [MPL_SB_GAP]);
   managepl->changed = false;
 }
 

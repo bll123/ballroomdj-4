@@ -8,12 +8,12 @@
 
 * Bug Fixes:
     * Configuration: Fix display of validation messages.
-    * Configuration: Minor interface fixes.
-    * User Interface: clean up theme colors.
+    * User Interface: Clean up theme colors.
+    * User Interface: Minor interface fixes.
 * Changes:
-    * User Interface: re-write of horizontal notebooks.
-    * User Interface: re-write of text spin-boxes.
-    * User Interface: re-write of numeric spin-boxes.
+    * User Interface: Re-write of horizontal notebooks.
+    * User Interface: Re-write of text spin-boxes.
+    * User Interface: Re-write of numeric spin-boxes.
 
 -->
 

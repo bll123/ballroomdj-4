@@ -33,7 +33,7 @@ void uisbnumSetType (uisbnum_t *sbnum, int type);
 
 void uisbnumCheck (uisbnum_t *sbnum);
 bool uisbnumIsChanged (uisbnum_t *sbnum);
-void uisbnumResetChanged (uisbnum_t *sbnum);
+void uisbnumClearChanged (uisbnum_t *sbnum);
 void uisbnumSetChangeCallback (uisbnum_t *sbnum, callback_t *cb);
 void uisbnumValidate (uisbnum_t *sbnum);
 

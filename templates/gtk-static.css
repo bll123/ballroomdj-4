@@ -99,6 +99,9 @@ box.bdj-sb {
 box.bdj-sb:focus {
   border-color: @theme_selected_bg_color;
 }
+label.bdj-sb:disabled {
+  color: @insensitive_fg_color;
+}
 button.bdj-sb {
   border: 0px;
   border-radius: 0px;

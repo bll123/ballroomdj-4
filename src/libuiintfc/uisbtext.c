@@ -31,10 +31,11 @@ typedef struct uisbtext {
   uisbtextdisp_t  dispcb;
   void            *udata;
   const char      *prepend_text;
-  int32_t         old_index;
+  int32_t         old_value;
   int32_t         index;
   int32_t         count;
   bool            changed;
+  bool            force;
 } uisbtext_t;
 
 static bool uisbtextCBHandler (void *udata, int32_t dir);
@@ -53,7 +54,7 @@ uisbtextCreate (uiwcont_t *box, int margin)
   sbtext->sb = uisbCreate (box, sbtext->display, SB_IS_TEXT, margin);
   sbtext->txtlist = NULL;
   sbtext->idxlist = NULL;
-  sbtext->old_index = LIST_VALUE_INVALID;
+  sbtext->old_value = LIST_VALUE_INVALID;
   sbtext->index = 0;
   sbtext->prepend_text = NULL;
   sbtext->sbtextcb = NULL;
@@ -62,6 +63,7 @@ uisbtextCreate (uiwcont_t *box, int margin)
   sbtext->udata = NULL;
   sbtext->count = 0;
   sbtext->changed = false;
+  sbtext->force = false;
 
   sbtext->sbtextcb = callbackInitI (uisbtextCBHandler, sbtext);
   uisbSetCallback (sbtext->sb, sbtext->sbtextcb);
@@ -162,7 +164,6 @@ uisbtextIsChanged (uisbtext_t *sbtext)
   }
 
   chg = sbtext->changed;
-  sbtext->changed = false;
   return chg;
 }
 
@@ -230,6 +231,18 @@ uisbtextSizeGroupAdd (uisbtext_t *sbtext, uiwcont_t *sg)
 }
 
 void
+uisbtextSetValueForce (uisbtext_t *sbtext, int value)
+{
+  if (sbtext == NULL) {
+    return;
+  }
+
+  sbtext->force = true;
+  uisbtextSetValue (sbtext, value);
+  sbtext->force = false;
+}
+
+void
 uisbtextSetValue (uisbtext_t *sbtext, int value)
 {
   nlistidx_t    iteridx;
@@ -239,14 +252,14 @@ uisbtextSetValue (uisbtext_t *sbtext, int value)
     return;
   }
 
-  if (sbtext->old_index != LIST_VALUE_INVALID &&
-      sbtext->old_index != value) {
-    sbtext->changed = true;
+  if (sbtext->old_value == LIST_VALUE_INVALID) {
+    sbtext->old_value = value;
   }
 
   if (sbtext->idxlist == NULL) {
     sbtext->index = value;
   } else {
+    /* locate the index for the set value */
     nlistStartIterator (sbtext->idxlist, &iteridx);
     while ((idx = nlistIterateKey (sbtext->idxlist, &iteridx)) >= 0) {
       if (nlistGetNum (sbtext->idxlist, idx) == value) {
@@ -316,28 +329,30 @@ static void
 uisbtextSetDisplay (uisbtext_t *sbtext)
 {
   const char  *disp;
-
-  if (sbtext->old_index == sbtext->index) {
-    return;
-  }
+  int32_t     newvalue = LIST_VALUE_INVALID;
 
   if (sbtext->dispcb != NULL) {
+    newvalue = sbtext->index;
     disp = sbtext->dispcb (sbtext->udata, sbtext->index);
     uiLabelSetText (sbtext->display, disp);
   } else {
     if (sbtext->prepend_text != NULL && sbtext->index == -1) {
+      newvalue = sbtext->index;
       uiLabelSetText (sbtext->display, sbtext->prepend_text);
     } else {
+      newvalue = nlistGetNum (sbtext->idxlist, sbtext->index);
       uiLabelSetText (sbtext->display,
-         nlistGetDataByIdx (sbtext->txtlist, sbtext->index));
+          nlistGetStr (sbtext->txtlist, newvalue));
     }
   }
 
-  if (sbtext->chgcb != NULL) {
+  if (sbtext->old_value != newvalue) {
     sbtext->changed = true;
+    sbtext->old_value = newvalue;
+  }
+
+  if (sbtext->chgcb != NULL && sbtext->changed) {
     callbackHandler (sbtext->chgcb);
     sbtext->changed = false;
   }
-
-  sbtext->old_index = sbtext->index;
 }

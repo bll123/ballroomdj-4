@@ -185,7 +185,7 @@ typedef struct {
   startlinkinfo_t linkinfo [START_LINK_CB_MAX];
   uiwcont_t       *buttons [START_BUTTON_MAX];
   uiwcont_t       *wcont [START_W_MAX];
-  uisbtext_t      *sb;
+  uisbtext_t      *sbtxt;
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
@@ -193,6 +193,7 @@ typedef struct {
   bool            supportmsgactive;
   bool            optionsalloc;
   bool            podcastupd;
+  bool            createprofile;
 } startui_t;
 
 enum {
@@ -301,7 +302,6 @@ static void     starterSendProcessActive (startui_t *starter, bdjmsgroute_t rout
 static int      starterValidateEmail (uiwcont_t *entry, const char *label, void *udata);
 
 static bool gKillReceived = false;
-static bool gNewProfile = false;
 static bool gStopProgram = false;
 
 int
@@ -443,13 +443,13 @@ main (int argc, char *argv[])
   while (! gStopProgram) {
     loglevel_t    loglevel = 0;
 
-    gNewProfile = false;
+    starter.createprofile = false;
     listenPort = bdjvarsGetNum (BDJVL_PORT_STARTERUI);
     starter.conn = connInit (ROUTE_STARTERUI);
 
     sockhMainLoop (listenPort, starterProcessMsg, starterMainLoop, &starter);
 
-    if (gNewProfile) {
+    if (starter.createprofile) {
       connDisconnectAll (starter.conn);
       connFree (starter.conn);
       if (starter.newprofile != sysvarsGetNum (SVL_PROFILE_IDX)) {
@@ -706,11 +706,11 @@ starterBuildUI (startui_t  *starter)
 
   /* get the profile list after bdjopt has been initialized */
   dispidx = starterGetProfiles (starter);
-  starter->sb = uisbtextCreate (hbox, 4);
-  uisbtextSetCount (starter->sb, nlistGetCount (starter->proflist));
-  uisbtextSetDisplayCallback (starter->sb, starterSetProfile, starter);
-  uisbtextSetWidth (starter->sb, starter->maxProfileWidth);
-  uisbtextSetValue (starter->sb, dispidx);
+  starter->sbtxt = uisbtextCreate (hbox, 4);
+  uisbtextSetCount (starter->sbtxt, nlistGetCount (starter->proflist));
+  uisbtextSetDisplayCallback (starter->sbtxt, starterSetProfile, starter);
+  uisbtextSetWidth (starter->sbtxt, starter->maxProfileWidth);
+  uisbtextSetValue (starter->sbtxt, dispidx);
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
@@ -829,7 +829,7 @@ starterMainLoop (void *tstarter)
 
   uiUIProcessEvents ();
 
-  if (gNewProfile) {
+  if (starter->createprofile) {
     return SOCKH_STOP;
   }
 
@@ -1182,6 +1182,9 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_SOCKET_CLOSE: {
           starterCloseProcess (starter, routefrom, CLOSE_REQUEST);
+          if (routefrom == ROUTE_CONFIGUI) {
+            starterRebuildProfileList (starter);
+          }
           break;
         }
         case MSG_EXIT_REQUEST: {
@@ -1798,8 +1801,6 @@ starterGetProfiles (startui_t *starter)
     starterResetProfile (starter, starter->currprofile);
   }
 
-  bdjvarsUpdateData ();
-
   if (dispidx == 0) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "clean old locks");
     starterRemoveAllLocks ();
@@ -1831,8 +1832,8 @@ starterResetProfile (startui_t *starter, int profidx)
     uiWindowSetTitle (starter->wcont [START_W_WINDOW], bdjoptGetStr (OPT_P_PROFILENAME));
     uiutilsSetProfileColor (starter->wcont [START_W_PROFILE_ACCENT], oldcolor);
     starterLoadOptions (starter);
-    bdjvarsUpdateData ();
   }
+  bdjvarsUpdateData ();
 }
 
 
@@ -1845,7 +1846,7 @@ starterSetProfile (void *udata, int idx)
   int         profidx;
   int         chg;
 
-  dispidx = uisbtextGetValue (starter->sb);
+  dispidx = uisbtextGetValue (starter->sbtxt);
 
   if (dispidx < 0) {
     return "";
@@ -1859,7 +1860,7 @@ starterSetProfile (void *udata, int idx)
   if (chg) {
     uiLabelSetText (starter->wcont [START_W_STATUS_MSG], "");
     starterResetProfile (starter, profidx);
-    gNewProfile = true;
+    starter->createprofile = true;
   }
 
   return disp;
@@ -1912,7 +1913,7 @@ starterCheckProfile (startui_t *starter)
     /* CONTEXT: starterui: profile is already in use */
     uiLabelSetText (starter->wcont [START_W_STATUS_MSG], _("Profile in use"));
   } else {
-    uisbtextSetState (starter->sb, UIWIDGET_DISABLE);
+    uisbtextSetState (starter->sbtxt, UIWIDGET_DISABLE);
   }
 
   return rc;
@@ -1953,8 +1954,8 @@ starterRebuildProfileList (startui_t *starter)
   int       dispidx;
 
   dispidx = starterGetProfiles (starter);
-  uisbtextSetCount (starter->sb, nlistGetCount (starter->proflist));
-  uisbtextSetValue (starter->sb, dispidx);
+  uisbtextSetCount (starter->sbtxt, nlistGetCount (starter->proflist));
+  uisbtextSetValueForce (starter->sbtxt, dispidx);
 }
 
 static bool

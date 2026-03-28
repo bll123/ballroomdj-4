@@ -30,6 +30,7 @@ void uisbtextSetClass (uisbtext_t *sbtext, const char *name);
 void uisbtextRemoveClass (uisbtext_t *sbtext, const char *name);
 void uisbtextSetState (uisbtext_t *sbtext, int state);
 void uisbtextSizeGroupAdd (uisbtext_t *sbtext, uiwcont_t *sg);
+void uisbtextSetValueForce (uisbtext_t *sbtext, int32_t value);
 void uisbtextSetValue (uisbtext_t *sbtext, int32_t value);
 int32_t uisbtextGetValue (uisbtext_t *sbtext);
 

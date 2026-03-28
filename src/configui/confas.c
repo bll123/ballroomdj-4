@@ -660,7 +660,7 @@ confuiAudioSrcSetWidgetStates (confuigui_t *gui, int askey)
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_NAME].uiwidgetp, state);
   uisbtextSetState (gui->uiitem [CONFUI_SB_TXT_AUDIOSRC_TYPE].sbtxt, state);
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_URI].uiwidgetp, ustate);
-  uiWidgetSetState (gui->uiitem [CONFUI_SB_NUM_AUDIOSRC_PORT].uiwidgetp, state);
+  uisbnumSetState (gui->uiitem [CONFUI_SB_NUM_AUDIOSRC_PORT].sbnum, state);
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_USER].uiwidgetp, upstate);
   uiWidgetSetState (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_PASS].uiwidgetp, upstate);
 }

@@ -25,7 +25,7 @@
 #include "uiwcont.h"
 #include "validate.h"
 
-static double SB_INVALID = -65534;
+static double SB_INVALID = -65534.0;
 
 enum {
   SBNUM_CB_MAIN,
@@ -225,12 +225,11 @@ uisbnumIsChanged (uisbnum_t *sbnum)
   }
 
   chg = sbnum->changed;
-  sbnum->changed = false;
   return chg;
 }
 
 void
-uisbnumResetChanged (uisbnum_t *sbnum)
+uisbnumClearChanged (uisbnum_t *sbnum)
 {
   if (sbnum == NULL) {
     return;
@@ -298,11 +297,9 @@ uisbnumSetValue (uisbnum_t *sbnum, double value)
   }
 
 
-  if (sbnum->old_value != SB_INVALID &&
-      sbnum->old_value != value) {
-    sbnum->changed = true;
+  if (sbnum->old_value == SB_INVALID) {
+    sbnum->old_value = value;
   }
-  sbnum->old_value = value;
   sbnum->value = value;
   uisbnumSetDisplay (sbnum);
 }
@@ -438,6 +435,7 @@ uisbnumSetDisplay (uisbnum_t *sbnum)
       sbnum->old_value != sbnum->value) {
     sbnum->changed = true;
   }
+  sbnum->old_value = sbnum->value;
 
   uisbnumValueToStr (sbnum, tbuff, sizeof (tbuff));
   sbnum->set_value = true;
@@ -524,11 +522,9 @@ uisbnumValueToStr (uisbnum_t *sbnum, char *tbuff, size_t sz)
 static void
 uisbnumProcessChangeCallback (uisbnum_t *sbnum)
 {
-  if (sbnum->chgcb != NULL) {
-    if (sbnum->changed) {
-      callbackHandler (sbnum->chgcb);
-      sbnum->changed = false;
-    }
+  if (sbnum->chgcb != NULL && sbnum->changed) {
+    callbackHandler (sbnum->chgcb);
+    sbnum->changed = false;
   }
 }
 
