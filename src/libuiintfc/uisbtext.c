@@ -13,6 +13,7 @@
 #include <string.h>
 
 #include "callback.h"
+#include "istring.h"
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
@@ -102,9 +103,10 @@ uisbtextSetList (uisbtext_t *sbtext, nlist_t *txtlist)
   nlistidx_t    iteridx;
   nlistidx_t    key;
   int32_t       idx;
-  int           width;
+  size_t        width;
 
   if (sbtext == NULL || txtlist == NULL) {
+fprintf (stderr, "sbtxt: null\n");
     return;
   }
 
@@ -121,11 +123,18 @@ uisbtextSetList (uisbtext_t *sbtext, nlist_t *txtlist)
 
   nlistCalcMaxValueWidth (sbtext->txtlist);
   width = nlistGetMaxValueWidth (sbtext->txtlist);
+  if (sbtext->prepend_text != NULL) {
+    size_t      len;
+
+    len = istrlen (sbtext->prepend_text);
+    width = len > width ? len : width;
+  }
   uiLabelSetMinWidth (sbtext->display, width + 1);
 
   idx = 0;
   nlistStartIterator (sbtext->txtlist, &iteridx);
   while ((key = nlistIterateKey (sbtext->txtlist, &iteridx)) >= 0) {
+fprintf (stderr, "sbtxt: %d %d %s\n", idx, key, nlistGetStr (sbtext->txtlist, key));
     nlistSetNum (sbtext->idxlist, idx, key);
     ++idx;
   }

@@ -102,6 +102,7 @@ enum {
   START_CB_MENU_ALT_SETUP,
   START_CB_SUPPORT_RESP,
   START_CB_SUPPORT_MSG_RESP,
+  START_CB_PROF_CHG,
   START_CB_MAX,
 };
 
@@ -156,7 +157,6 @@ typedef struct {
   int             currprofile;
   int             newprofile;
   loglevel_t      loglevel;
-  int             maxProfileWidth;
   int             stopallState;
   int             stopallCount;
   startstate_t    startState;
@@ -269,7 +269,7 @@ static bool     starterStartProcess (startui_t *starter, const char *procname, b
 
 static int      starterGetProfiles (startui_t *starter);
 static void     starterResetProfile (startui_t *starter, int profidx);
-static const char * starterSetProfile (void *udata, int idx);
+static bool     starterSetProfile (void *udata);
 static int      starterCheckProfile (startui_t *starter);
 static bool     starterDeleteProfile (void *udata);
 static void     starterRebuildProfileList (startui_t *starter);
@@ -329,7 +329,6 @@ main (int argc, char *argv[])
       starterClosingCallback, &starter);
   starter.conn = NULL;
   starter.emailrx = NULL;
-  starter.maxProfileWidth = 0;
   starter.stopallState = BDJ4_STATE_OFF;
   starter.stopallCount = 5;
   starter.startState = START_STATE_NONE;
@@ -705,11 +704,13 @@ starterBuildUI (startui_t  *starter)
   uiwcontFree (uiwidgetp);
 
   /* get the profile list after bdjopt has been initialized */
-  dispidx = starterGetProfiles (starter);
   starter->sbtxt = uisbtextCreate (hbox, 4);
-  uisbtextSetCount (starter->sbtxt, nlistGetCount (starter->proflist));
-  uisbtextSetDisplayCallback (starter->sbtxt, starterSetProfile, starter);
-  uisbtextSetWidth (starter->sbtxt, starter->maxProfileWidth);
+  starter->callbacks [START_CB_PROF_CHG] = callbackInit (
+      starterSetProfile, starter, NULL);
+  uisbtextSetChangeCallback (starter->sbtxt,
+      starter->callbacks [START_CB_PROF_CHG]);
+  /* must call this after the text-spinbox is created, as it sets the list */
+  dispidx = starterGetProfiles (starter);
   uisbtextSetValue (starter->sbtxt, dispidx);
 
   uiBoxPostProcess (hbox);
@@ -1713,8 +1714,6 @@ static int
 starterGetProfiles (startui_t *starter)
 {
   int         count;
-  size_t      max;
-  size_t      len;
   char        *pname = NULL;
   int         availprof = -1;
   nlist_t     *proflist = NULL;
@@ -1730,11 +1729,10 @@ starterGetProfiles (startui_t *starter)
   /* use two lists, one with the display ordering, and an index list */
   proflist = nlistAlloc ("profile-list", LIST_ORDERED, NULL);
   profidxlist = nlistAlloc ("profile-idx-list", LIST_ORDERED, NULL);
-  max = 0;
 
   count = 0;
-  for (int i = 0; i < BDJOPT_MAX_PROFILES; ++i) {
-    sysvarsSetNum (SVL_PROFILE_IDX, i);
+  for (int profidx = 0; profidx < BDJOPT_MAX_PROFILES; ++profidx) {
+    sysvarsSetNum (SVL_PROFILE_IDX, profidx);
 
     if (bdjoptProfileExists ()) {
       pid_t   pid;
@@ -1742,35 +1740,35 @@ starterGetProfiles (startui_t *starter)
       pid = lockExists (lockName (ROUTE_STARTERUI), PATHBLD_MP_USEIDX);
       if (pid > 0) {
         /* do not add this selection to the profile list */
-        if (starter->currprofile == i) {
+        if (starter->currprofile == profidx) {
           profileinuse = true;
         }
         continue;
       }
 
       if (profileinuse) {
-        starter->currprofile = i;
+        starter->currprofile = profidx;
         profileinuse = false;
       }
 
-      if (starter->currprofile == i) {
+      if (starter->currprofile == profidx) {
         dispidx = count;
       }
 
       pname = bdjoptGetProfileName ();
       if (pname != NULL) {
-        len = istrlen (pname);
-        max = len > max ? len : max;
         nlistSetStr (proflist, count, pname);
-        nlistSetNum (profidxlist, count, i);
+        nlistSetNum (profidxlist, count, profidx);
+fprintf (stderr, "disp: %d profidx:%d %s\n", count, profidx, pname);
         mdfree (pname);
       }
       ++count;
     } else if (availprof == -1) {
-      if (starter->currprofile == i) {
+      if (starter->currprofile == profidx) {
         profileinuse = true;
       }
-      availprof = i;
+fprintf (stderr, "avail: %d\n", profidx);
+      availprof = profidx;
     }
   }
 
@@ -1778,12 +1776,9 @@ starterGetProfiles (startui_t *starter)
     /* CONTEXT: starterui: selection to create a new profile */
     nlistSetStr (proflist, count, _("Create Profile"));
     nlistSetNum (profidxlist, count, availprof);
+fprintf (stderr, "disp: %d profidx:%d %s\n", count, availprof, "create profile");
     starter->newprofile = availprof;
-    len = istrlen (nlistGetStr (proflist, count));
-    max = len > max ? len : max;
   }
-
-  starter->maxProfileWidth = (int) max;
 
   if (profileinuse) {
     dispidx = count;
@@ -1805,6 +1800,9 @@ starterGetProfiles (startui_t *starter)
     logMsg (LOG_DBG, LOG_IMPORTANT, "clean old locks");
     starterRemoveAllLocks ();
   }
+
+fprintf (stderr, "strt: set prof-list\n");
+  uisbtextSetList (starter->sbtxt, starter->proflist);
 
   return dispidx;
 }
@@ -1837,8 +1835,8 @@ starterResetProfile (startui_t *starter, int profidx)
 }
 
 
-static const char *
-starterSetProfile (void *udata, int idx)
+static bool
+starterSetProfile (void *udata)
 {
   startui_t   *starter = udata;
   const char  *disp;
@@ -1847,9 +1845,10 @@ starterSetProfile (void *udata, int idx)
   int         chg;
 
   dispidx = uisbtextGetValue (starter->sbtxt);
+fprintf (stderr, "chg: dispidx:%d\n", dispidx);
 
   if (dispidx < 0) {
-    return "";
+    return UICB_CONT;
   }
 
   disp = nlistGetStr (starter->proflist, dispidx);
@@ -1860,10 +1859,12 @@ starterSetProfile (void *udata, int idx)
   if (chg) {
     uiLabelSetText (starter->wcont [START_W_STATUS_MSG], "");
     starterResetProfile (starter, profidx);
-    starter->createprofile = true;
+    if (profidx == starter->newprofile) {
+      starter->createprofile = true;
+    }
   }
 
-  return disp;
+  return UICB_CONT;
 }
 
 static int
@@ -1954,7 +1955,6 @@ starterRebuildProfileList (startui_t *starter)
   int       dispidx;
 
   dispidx = starterGetProfiles (starter);
-  uisbtextSetCount (starter->sbtxt, nlistGetCount (starter->proflist));
   uisbtextSetValueForce (starter->sbtxt, dispidx);
 }
 
