@@ -185,6 +185,7 @@ static char * uisongeditGetBPMRangeDisplay (int danceidx);
 static void uisongeditSetBPMRangeDisplay (se_internal_t *seint, int bpmdispidx, ilistidx_t danceidx);
 static void uisongeditSetBPMIncrement (se_internal_t *seint, ilistidx_t danceidx);
 static bool uisongeditValTimeCallback (void *udata);
+static void uisongeditProcess (uisongedit_t *uisongedit);
 
 void
 uisongeditUIInit (uisongedit_t *uisongedit)
@@ -273,10 +274,13 @@ uisongeditUIFree (uisongedit_t *uisongedit)
         }
         case ET_SWITCH:
         case ET_SCALE:
-        case ET_LABEL:
+        case ET_LABEL: {
+          uiwcontFree (seint->items [count].uiwidgetp);
+          break;
+        }
         case ET_SPINBOX:
         case ET_SPINBOX_TIME: {
-          uiwcontFree (seint->items [count].uiwidgetp);
+          uisbnumFree (seint->items [count].sbnum);
           break;
         }
         case ET_NA: {
@@ -307,25 +311,6 @@ uisongeditUIFree (uisongedit_t *uisongedit)
   }
 
   logProcEnd ("");
-}
-
-void
-uisongeditProcess (uisongedit_t *uisongedit)
-{
-  se_internal_t *seint;
-
-  if (uisongedit == NULL) {
-    return;
-  }
-
-  seint = uisongedit->seInternalData;
-  if (seint != NULL) {
-    for (int count = 0; count < seint->itemcount; ++count) {
-      if (seint->items [count].issbnum) {
-        uisbnumCheck (seint->items [count].sbnum);
-      }
-    }
-  }
 }
 
 uiwcont_t *
@@ -640,15 +625,11 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
         }
         break;
       }
-      case ET_SPINBOX: {
-        if (tval != NULL) {
-          fprintf (stderr, "et_spinbox: mismatch type\n");
-        }
-        if (val < 0) { val = 0; }
-        uisbnumSetValue (seint->items [count].sbnum, val);
-        break;
-      }
+      case ET_SPINBOX:
       case ET_SPINBOX_TIME: {
+        if (tval != NULL) {
+          fprintf (stderr, "et_spinbox/time: mismatch type\n");
+        }
         if (val < 0) { val = 0; }
         uisbnumSetValue (seint->items [count].sbnum, val);
         break;
@@ -712,7 +693,7 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
 
   uiButtonCheckRepeat (seint->wcont [UISE_W_BUTTON_NEXT]);
   uiButtonCheckRepeat (seint->wcont [UISE_W_BUTTON_PREV]);
-  /* checkchanged also calls uisbnumCheck() */
+  uisongeditProcess (uisongedit);
   uisongeditCheckChanged (uisongedit);
   return;
 }
@@ -828,6 +809,7 @@ uisongeditEditAllSetFields (uisongedit_t *uisongedit, int editflag)
         }
         break;
       }
+      case ET_SPINBOX:
       case ET_SPINBOX_TIME: {
         uisbnumSetState (seint->items [count].sbnum, newstate);
         break;
@@ -848,8 +830,7 @@ uisongeditEditAllSetFields (uisongedit_t *uisongedit, int editflag)
         break;
       }
       case ET_SWITCH:
-      case ET_SCALE:
-      case ET_SPINBOX: {
+      case ET_SCALE: {
         uiWidgetSetState (seint->items [count].uiwidgetp, newstate);
         break;
       }
@@ -983,7 +964,8 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
           }
           break;
         }
-        case ET_SPINBOX: {
+        case ET_SPINBOX:
+        case ET_SPINBOX_TIME: {
           if (val < 0) { val = 0; }
           nval = uisbnumGetValue (seint->items [count].sbnum);
           if (nval < 0) { nval = 0; }
@@ -991,11 +973,6 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
             nval = songutilNormalizeBPM (nval, seint->lastspeed);
             nval = danceConvertBPMtoMPM (seint->currdanceidx, nval, DANCE_NO_FORCE);
           }
-          break;
-        }
-        case ET_SPINBOX_TIME: {
-          if (val < 0) { val = 0; }
-          nval = uisbnumGetValue (seint->items [count].sbnum);
           break;
         }
         case ET_SCALE: {
@@ -1034,23 +1011,27 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
       }
 
       if (chkvalue == UISE_CHK_NUM) {
-        int   rcdisc, rctotdisc, rctrk, rctottrk, rcmvnum, rcmvcount;
+        bool      initvalchg = false;
 
-        rcdisc = (tagkey == TAG_DISCNUMBER && val == 0.0 && nval == 1.0);
-        rctotdisc = (tagkey == TAG_DISCTOTAL && val == 0.0 && nval == 1.0);
-        rctrk = (tagkey == TAG_TRACKNUMBER && val == 0.0 && nval == 1.0);
-        rctottrk = (tagkey == TAG_TRACKTOTAL && val == 0.0 && nval == 1.0);
-        rcmvnum = (tagkey == TAG_MOVEMENTNUM && val == 0.0 && nval == 1.0);
-        rcmvcount = (tagkey == TAG_MOVEMENTCOUNT && val == 0.0 && nval == 1.0);
         if (tagkey == TAG_FAVORITE || tagkey == TAG_GENRE) {
           if (val < 0) { val = 0; }
         }
-        if (! rcdisc && ! rctrk && ! rctotdisc && ! rctottrk &&
-            ! rcmvnum && ! rcmvcount && nval != val) {
+        if (tagkey == TAG_DISCNUMBER ||
+            tagkey == TAG_DISCTOTAL ||
+            tagkey == TAG_TRACKNUMBER ||
+            tagkey == TAG_TRACKTOTAL ||
+            tagkey == TAG_MOVEMENTNUM ||
+            tagkey == TAG_MOVEMENTCOUNT) {
+          if (val == 0 && nval == 1) {
+            initvalchg = true;
+          }
+        }
+
+        if (initvalchg == false && nval != val) {
           seint->items [count].changed = true;
         } else {
           if (seint->items [count].changed) {
-            seint->items [count].changed = false;
+           seint->items [count].changed = false;
           }
         }
       }
@@ -1321,8 +1302,6 @@ uisongeditAddSpinboxInt (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   logProcBegin ();
   seint = uisongedit->seInternalData;
   sb = uisbnumCreate (hbox, tagdefs [tagkey].displayname, 2);
-  seint->items [seint->itemcount].sbnum = sb;
-  seint->items [seint->itemcount].issbnum = true;
   if (tagkey == TAG_BPM) {
     uisbnumSetLimits (sb, 0.0, 400.0, 0);
   }
@@ -1333,6 +1312,10 @@ uisongeditAddSpinboxInt (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   }
   uisbnumSetChangeCallback (sb, seint->callbacks [UISE_CB_CHANGED]);
   uisbnumSizeGroupAdd (sb, seint->szgrp [UISE_SZGRP_SPIN_NUM]);
+
+  seint->items [seint->itemcount].sbnum = sb;
+  seint->items [seint->itemcount].issbnum = true;
+
   logProcEnd ("");
 }
 
@@ -1388,6 +1371,9 @@ uisongeditAddSpinboxTime (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   uisbnumSetValue (sb, 0);
   uisbnumSetChangeCallback (sb, seint->callbacks [cbidx]);
   uisbnumSizeGroupAdd (sb, seint->szgrp [UISE_SZGRP_SPIN_TIME]);
+
+  seint->items [seint->itemcount].sbnum = sb;
+  seint->items [seint->itemcount].issbnum = true;
 
   logProcEnd ("");
 }
@@ -1725,10 +1711,7 @@ uisongeditGetCheckValue (uisongedit_t *uisongedit, int tagkey)
       }
       break;
     }
-    case ET_SPINBOX: {
-      chkvalue = UISE_CHK_NUM;
-      break;
-    }
+    case ET_SPINBOX:
     case ET_SPINBOX_TIME: {
       chkvalue = UISE_CHK_NUM;
       break;
@@ -1831,10 +1814,7 @@ uisongeditGetChangedData (uisongedit_t *uisongedit)
         }
         break;
       }
-      case ET_SPINBOX: {
-        nval = uisbnumGetValue (seint->items [count].sbnum);
-        break;
-      }
+      case ET_SPINBOX:
       case ET_SPINBOX_TIME: {
         nval = uisbnumGetValue (seint->items [count].sbnum);
         break;
@@ -2118,7 +2098,25 @@ uisongeditValTimeCallback (void *udata)
     return UICB_STOP;
   }
 
+  seint->checkchanged = true;
   return UICB_CONT;
 }
 
+static void
+uisongeditProcess (uisongedit_t *uisongedit)
+{
+  se_internal_t *seint;
 
+  if (uisongedit == NULL) {
+    return;
+  }
+
+  seint = uisongedit->seInternalData;
+  if (seint != NULL) {
+    for (int count = 0; count < seint->itemcount; ++count) {
+      if (seint->items [count].issbnum) {
+        uisbnumCheck (seint->items [count].sbnum);
+      }
+    }
+  }
+}

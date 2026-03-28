@@ -63,7 +63,7 @@ static void uisbnumSetDisplay (uisbnum_t *sbnum);
 static void uisbnumSetFormat (uisbnum_t *sbnum);
 static int uisbnumEntryValidate (uiwcont_t *entry, const char *label, void *udata);
 static void uisbnumValueToStr (uisbnum_t *sbnum, char *tbuff, size_t sz);
-static void uisbnumProcessChangeCallback (uisbnum_t *sbnum);
+static void uisbnumProcessChange (uisbnum_t *sbnum);
 static void uisbnumSetValid (uisbnum_t *sbnum, bool isvalid);
 static bool uisbnumFocusHandler (void *udata);
 static bool uisbnumFocusOutHandler (void *udata);
@@ -296,7 +296,6 @@ uisbnumSetValue (uisbnum_t *sbnum, double value)
     return;
   }
 
-
   if (sbnum->old_value == SB_INVALID) {
     sbnum->old_value = value;
   }
@@ -435,13 +434,12 @@ uisbnumSetDisplay (uisbnum_t *sbnum)
       sbnum->old_value != sbnum->value) {
     sbnum->changed = true;
   }
-  sbnum->old_value = sbnum->value;
 
   uisbnumValueToStr (sbnum, tbuff, sizeof (tbuff));
   sbnum->set_value = true;
   uiEntrySetValue (sbnum->entry, tbuff);
   uiEntryValidateClear (sbnum->entry);
-  uisbnumProcessChangeCallback (sbnum);
+  uisbnumProcessChange (sbnum);
   sbnum->set_value = false;
 }
 
@@ -492,7 +490,7 @@ uisbnumEntryValidate (uiwcont_t *entry, const char *label, void *udata)
     uisbnumSetValid (sbnum, true);
   }
 
-  uisbnumProcessChangeCallback (sbnum);
+  uisbnumProcessChange (sbnum);
 
   return rc;
 }
@@ -520,8 +518,12 @@ uisbnumValueToStr (uisbnum_t *sbnum, char *tbuff, size_t sz)
 }
 
 static void
-uisbnumProcessChangeCallback (uisbnum_t *sbnum)
+uisbnumProcessChange (uisbnum_t *sbnum)
 {
+  if (sbnum->changed) {
+    sbnum->old_value = sbnum->value;
+  }
+
   if (sbnum->chgcb != NULL && sbnum->changed) {
     callbackHandler (sbnum->chgcb);
     sbnum->changed = false;
@@ -536,6 +538,6 @@ uisbnumSetValid (uisbnum_t *sbnum, bool isvalid)
   }
   sbnum->isvalid = isvalid;
   if (sbnum->changed) {
-    uisbnumProcessChangeCallback (sbnum);
+    uisbnumProcessChange (sbnum);
   }
 }

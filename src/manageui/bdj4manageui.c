@@ -1314,7 +1314,6 @@ manageMainLoop (void *tmanage)
   }
 
   managePlaylistProcess (manage->managepl);
-  uisongeditProcess (manage->mmsongedit);
   uieibdj4Process (manage->uieibdj4);
   uiexpplProcess (manage->uiexppl);
   uiimpplProcess (manage->uiimppl);
