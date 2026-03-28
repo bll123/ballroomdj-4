@@ -106,7 +106,6 @@ uisbtextSetList (uisbtext_t *sbtext, nlist_t *txtlist)
   size_t        width;
 
   if (sbtext == NULL || txtlist == NULL) {
-fprintf (stderr, "sbtxt: null\n");
     return;
   }
 
@@ -134,7 +133,6 @@ fprintf (stderr, "sbtxt: null\n");
   idx = 0;
   nlistStartIterator (sbtext->txtlist, &iteridx);
   while ((key = nlistIterateKey (sbtext->txtlist, &iteridx)) >= 0) {
-fprintf (stderr, "sbtxt: %d %d %s\n", idx, key, nlistGetStr (sbtext->txtlist, key));
     nlistSetNum (sbtext->idxlist, idx, key);
     ++idx;
   }

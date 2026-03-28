@@ -1759,7 +1759,6 @@ starterGetProfiles (startui_t *starter)
       if (pname != NULL) {
         nlistSetStr (proflist, count, pname);
         nlistSetNum (profidxlist, count, profidx);
-fprintf (stderr, "disp: %d profidx:%d %s\n", count, profidx, pname);
         mdfree (pname);
       }
       ++count;
@@ -1767,7 +1766,6 @@ fprintf (stderr, "disp: %d profidx:%d %s\n", count, profidx, pname);
       if (starter->currprofile == profidx) {
         profileinuse = true;
       }
-fprintf (stderr, "avail: %d\n", profidx);
       availprof = profidx;
     }
   }
@@ -1776,7 +1774,6 @@ fprintf (stderr, "avail: %d\n", profidx);
     /* CONTEXT: starterui: selection to create a new profile */
     nlistSetStr (proflist, count, _("Create Profile"));
     nlistSetNum (profidxlist, count, availprof);
-fprintf (stderr, "disp: %d profidx:%d %s\n", count, availprof, "create profile");
     starter->newprofile = availprof;
   }
 
@@ -1801,7 +1798,6 @@ fprintf (stderr, "disp: %d profidx:%d %s\n", count, availprof, "create profile")
     starterRemoveAllLocks ();
   }
 
-fprintf (stderr, "strt: set prof-list\n");
   uisbtextSetList (starter->sbtxt, starter->proflist);
 
   return dispidx;
@@ -1845,7 +1841,6 @@ starterSetProfile (void *udata)
   int         chg;
 
   dispidx = uisbtextGetValue (starter->sbtxt);
-fprintf (stderr, "chg: dispidx:%d\n", dispidx);
 
   if (dispidx < 0) {
     return UICB_CONT;
