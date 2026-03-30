@@ -26,23 +26,15 @@
 static uiwcont_t * uiCreateBox (int orientation);
 
 uiwcont_t *
-uiCreateVertBox (void)
+ruiCreateVertBox (void)
 {
   return uiCreateBox (GTK_ORIENTATION_VERTICAL);
 }
 
 uiwcont_t *
-uiCreateHorizBox (void)
+ruiCreateHorizBox (void)
 {
   return uiCreateBox (GTK_ORIENTATION_HORIZONTAL);
-}
-
-void
-uiBoxFree (uiwcont_t *uibox)
-{
-  if (! uiwcontValid (uibox, WCONT_T_BOX, "box-free")) {
-    return;
-  }
 }
 
 void
@@ -52,7 +44,17 @@ uiBoxPostProcess (uiwcont_t *uibox)
 }
 
 void
-uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
+uiBoxSetSizeChgCallback (uiwcont_t *uiwindow, callback_t *uicb)
+{
+  if (! uiwcontValid (uiwindow, WCONT_T_BOX, "box-set-size-chg-cb")) {
+    return;
+  }
+
+  uiWidgetSetSizeChgCallback (uiwindow, uicb);
+}
+
+void
+ruiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start")) {
     return;
@@ -66,7 +68,7 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
 }
 
 void
-uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
+ruiBoxPackStartExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start-exp")) {
     return;
@@ -80,7 +82,7 @@ uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 }
 
 void
-uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
+ruiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end")) {
     return;
@@ -94,7 +96,7 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
 }
 
 void
-uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
+ruiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end-exp")) {
     return;
@@ -107,23 +109,13 @@ uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
   uiwidget->packed = true;
 }
 
-void
-uiBoxSetSizeChgCallback (uiwcont_t *uiwindow, callback_t *uicb)
-{
-  if (! uiwcontValid (uiwindow, WCONT_T_BOX, "box-set-size-chg-cb")) {
-    return;
-  }
-
-  uiWidgetSetSizeChgCallback (uiwindow, uicb);
-}
-
 /* internal routines */
 
 static uiwcont_t *
 uiCreateBox (int orientation)
 {
-  uiwcont_t *uiwidget = NULL;
-  GtkWidget *box;
+  uiwcont_t     *uiwidget = NULL;
+  GtkWidget     *box;
 
   box = gtk_box_new (orientation, 0);
   if (orientation == GTK_ORIENTATION_HORIZONTAL) {
@@ -133,6 +125,7 @@ uiCreateBox (int orientation)
     uiwidget = uiwcontAlloc (WCONT_T_BOX, WCONT_T_VBOX);
   }
   uiwcontSetWidget (uiwidget, box, NULL);
+
   return uiwidget;
 }
 

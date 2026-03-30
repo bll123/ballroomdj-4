@@ -1390,7 +1390,7 @@ uitestUIPanedWin (uitest_t *uitest)
   uivnbAppendPage (uitest->mainvnb, vbox, "Paned Window", VNB_NO_ID);
 
   pw = uiPanedWindowCreateVert ();
-  uiBoxPackStartExpand (vbox, pw);
+  uiBoxPackStartExpandChildren (vbox, pw);
   uiWidgetExpandHoriz (pw);
   uiWidgetAlignHorizFill (pw);
   uiWidgetSetClass (pw, ACCENT_CLASS);
@@ -1746,7 +1746,7 @@ uitestUITextBox (uitest_t *uitest)
   tb = uiTextBoxCreate (200, NULL);
   uiTextBoxHorizExpand (tb);
   uiTextBoxVertExpand (tb);
-  uiBoxPackStartExpand (vbox, tb);
+  uiBoxPackStartExpandChildren (vbox, tb);
 
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);

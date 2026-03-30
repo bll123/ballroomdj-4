@@ -115,11 +115,11 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
       uiduallistDispRemove, duallist, NULL);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpand (mainvbox, hbox);
+  uiBoxPackStartExpandChildren (mainvbox, hbox);
   uiWidgetAlignHorizStart (hbox);
 
   vbox = uiCreateVertBox ();
-  uiBoxPackStartExpand (hbox, vbox);
+  uiBoxPackStartExpandChildren (hbox, vbox);
   uiWidgetSetMarginStart (vbox, 8);
   uiWidgetSetMarginTop (vbox, 8);
 
@@ -171,7 +171,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
-  uiBoxPackStartExpand (hbox, vbox);
+  uiBoxPackStartExpandChildren (hbox, vbox);
   uiWidgetSetMarginStart (vbox, 8);
   uiWidgetSetMarginTop (vbox, 8);
 

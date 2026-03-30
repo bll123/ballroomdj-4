@@ -413,7 +413,7 @@ altinstBuildUI (altinst_t *altinst)
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiEntryInit (80, BDJ4_PATH_MAX);
-  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   altinst->wcont [ALT_W_TARGET] = uiwidgetp;
@@ -485,7 +485,7 @@ altinstBuildUI (altinst_t *altinst)
   uiTextBoxSetReadonly (uiwidgetp);
   uiTextBoxHorizExpand (uiwidgetp);
   uiTextBoxVertExpand (uiwidgetp);
-  uiBoxPackStartExpand (vbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (vbox, uiwidgetp);
   altinst->wcont [ALT_W_STATUS_DISP] = uiwidgetp;
 
   uiWidgetShowAll (altinst->wcont [ALT_W_WINDOW]);

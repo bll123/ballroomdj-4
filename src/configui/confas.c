@@ -108,7 +108,7 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
       _("Audio Sources"), CONFUI_ID_AUDIOSRC);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpand (vbox, hbox);
+  uiBoxPackStartExpandChildren (vbox, hbox);
   uiWidgetAlignHorizStart (hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_AUDIOSRC, CONFUI_TABLE_NO_UP_DOWN);

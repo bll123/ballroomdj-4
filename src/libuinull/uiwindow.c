@@ -27,6 +27,14 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
 }
 
 void
+uiMainWindowFree (uiwcont_t *uiwin)
+{
+  if (uiwin == NULL) {
+    return;
+  }
+}
+
+void
 uiWindowSetTitle (uiwcont_t *uiwidget, const char *title)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_WINDOW, "win-set-title")) {

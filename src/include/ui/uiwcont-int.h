@@ -5,6 +5,7 @@
 
 #include <stdint.h>
 
+#include "nlist.h"
 #include "tmutil.h"
 #include "uigeneral.h"
 
@@ -62,6 +63,14 @@ enum {
 };
 
 /* used in all ui interfaces */
+typedef struct uiboxbase {
+  nlist_t         *startlist;
+  nlist_t         *endlist;
+  int             startcount;
+  int             endcount;
+} uiboxbase_t;
+
+/* used in all ui interfaces */
 typedef struct uibuttonbase {
   callback_t      *cb;
   callback_t      *presscb;
@@ -105,7 +114,10 @@ typedef struct uiwindow uiwindow_t;
 /* data internal to each widget type */
 typedef union {
     void          *voidwidget;
-    uibox_t       *uibox;
+    struct {
+      uiboxbase_t     uiboxbase;
+      uibox_t         *uibox;
+    };
     struct {
       uibuttonbase_t  uibuttonbase;
       uibutton_t      *uibutton;

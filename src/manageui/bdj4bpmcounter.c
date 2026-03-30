@@ -369,11 +369,11 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   /* secondary box */
   hboxbpm = uiCreateHorizBox ();
-  uiBoxPackStartExpand (vboxmain, hboxbpm);
+  uiBoxPackStartExpandChildren (vboxmain, hboxbpm);
 
   /* left side */
   vbox = uiCreateVertBox ();
-  uiBoxPackStartExpand (hboxbpm, vbox);
+  uiBoxPackStartExpandChildren (hboxbpm, vbox);
 
   /* some spacing */
   uiwidgetp = uiCreateLabel ("");
@@ -401,7 +401,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
-  uiBoxPackStartExpand (hboxbpm, vbox);
+  uiBoxPackStartExpandChildren (hboxbpm, vbox);
   uiWidgetAlignHorizCenter (vbox);
   uiWidgetAlignVertCenter (vbox);
 

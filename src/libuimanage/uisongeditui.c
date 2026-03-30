@@ -457,7 +457,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   /* begin line */
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpand (seint->wcont [UISE_W_MAIN_VBOX], hbox);
+  uiBoxPackStartExpandChildren (seint->wcont [UISE_W_MAIN_VBOX], hbox);
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
 
@@ -505,7 +505,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
     /* otherwise it takes up space in the song editor display */
     if (count > 0) {
       col = uiCreateVertBox ();
-      uiBoxPackStartExpand (hbox, col);
+      uiBoxPackStartExpandChildren (hbox, col);
       uiWidgetExpandHoriz (col);
       uiWidgetExpandVert (col);
       uiWidgetSetAllMargins (col, 4);
@@ -1287,7 +1287,7 @@ uisongeditAddEntry (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   uiEntrySetValidate (entryp, tagdefs [tagkey].displayname,
       uisongeditEntryChgCB, seint, UIENTRY_IMMEDIATE);
 
-  uiBoxPackStartExpand (hbox, entryp);
+  uiBoxPackStartExpandChildren (hbox, entryp);
   uiWidgetAlignHorizFill (entryp);
   uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_ENTRY], entryp);
   logProcEnd ("");
@@ -1328,7 +1328,7 @@ uisongeditAddLabel (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   logProcBegin ();
   seint = uisongedit->seInternalData;
   uiwidgetp = uiCreateLabel ("");
-  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
   uiSizeGroupAdd (seint->szgrp [UISE_SZGRP_ENTRY], uiwidgetp);
   seint->items [seint->itemcount].uiwidgetp = uiwidgetp;
   logProcEnd ("");

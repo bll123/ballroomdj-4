@@ -298,7 +298,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uiwcontFree (hbox);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpand (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox);
+  uiBoxPackStartExpandChildren (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox);
 
   sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
   ssint->sellist = sellist;

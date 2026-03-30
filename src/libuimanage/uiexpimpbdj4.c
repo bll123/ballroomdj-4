@@ -341,7 +341,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
 
   uiwidgetp = uiEntryInit (50, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
-  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_TARGET] = uiwidgetp;

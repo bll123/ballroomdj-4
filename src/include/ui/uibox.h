@@ -10,16 +10,18 @@
 extern "C" {
 #endif
 
-uiwcont_t *uiCreateVertBox (void);
-uiwcont_t *uiCreateHorizBox (void);
-void uiBoxFree (uiwcont_t *uibox);
+/* real create vert/horiz box */
+uiwcont_t *ruiCreateVertBox (void);
+uiwcont_t *ruiCreateHorizBox (void);
 void uiBoxPostProcess (uiwcont_t *uibox);
-void uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget);
-void uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget);
-void uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget);
-void uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget);
 void uiBoxSetSizeChgCallback (uiwcont_t *uiwidget, callback_t *uicb);
 void uiBoxPostProcess (uiwcont_t *uiwidget);
+
+/* real box pack */
+void ruiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget);
+void ruiBoxPackStartExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget);
+void ruiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget);
+void ruiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

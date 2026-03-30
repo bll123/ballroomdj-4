@@ -225,7 +225,7 @@ helperBuildUI (helperui_t  *helper)
   uiTextBoxHorizExpand (helper->wcont [HELPER_W_TEXTBOX]);
   uiTextBoxVertExpand (helper->wcont [HELPER_W_TEXTBOX]);
   uiTextBoxSetReadonly (helper->wcont [HELPER_W_TEXTBOX]);
-  uiBoxPackStartExpand (vbox, helper->wcont [HELPER_W_TEXTBOX]);
+  uiBoxPackStartExpandChildren (vbox, helper->wcont [HELPER_W_TEXTBOX]);
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);

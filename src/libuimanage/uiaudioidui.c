@@ -363,7 +363,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiwcontFree (hbox);
 
   pw = uiPanedWindowCreateVert ();
-  uiBoxPackStartExpand (audioidint->wcont [UIAUDID_W_MAIN_VBOX], pw);
+  uiBoxPackStartExpandChildren (audioidint->wcont [UIAUDID_W_MAIN_VBOX], pw);
   uiWidgetExpandHoriz (pw);
   uiWidgetAlignHorizFill (pw);
   uiWidgetSetClass (pw, ACCENT_CLASS);
@@ -421,7 +421,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   }
 
   col = uiCreateVertBox ();
-  uiBoxPackStartExpand (hbox, col);
+  uiBoxPackStartExpandChildren (hbox, col);
   uiWidgetSetAllMargins (col, 4);
   uiWidgetExpandHoriz (col);
   uiWidgetExpandVert (col);
@@ -444,7 +444,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   /* CONTEXT: audio identification: the data for the current song */
   uiwidgetp = uiCreateLabel (_("Current"));
-  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
   uiLabelSetFont (uiwidgetp, tbuff);
   uiWidgetSetMarginEnd (uiwidgetp, 4);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_ITEM_COL_A], uiwidgetp);
@@ -456,7 +456,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   /* CONTEXT: audio identification: the data for the selected matched song */
   uiwidgetp = uiCreateLabel (_("Selected"));
-  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
   uiLabelSetFont (uiwidgetp, tbuff);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_ITEM_COL_B], uiwidgetp);
   uiwcontFree (uiwidgetp);
@@ -743,7 +743,7 @@ uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx, int idx)
 
   rb = uiCreateRadioButton (NULL, "", UI_TOGGLE_BUTTON_ON);
   /* ellipsize set after text is set */
-  uiBoxPackStartExpand (hbox, rb);
+  uiBoxPackStartExpandChildren (hbox, rb);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_ITEM_COL_A], rb);
   if (idx + UIAUDID_SZGRP_ITEM_A < UIAUDID_SZGRP_MAX) {
     uiSizeGroupAdd (audioidint->szgrp [idx + UIAUDID_SZGRP_ITEM_A], rb);
@@ -756,7 +756,7 @@ uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx, int idx)
 
   uiwidgetp = uiCreateRadioButton (rb, "", UI_TOGGLE_BUTTON_OFF);
   /* ellipsize set after text is set */
-  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_ITEM_COL_B], uiwidgetp);
   if (idx + UIAUDID_SZGRP_ITEM_A < UIAUDID_SZGRP_MAX) {
     uiSizeGroupAdd (audioidint->szgrp [idx + UIAUDID_SZGRP_ITEM_A], uiwidgetp);

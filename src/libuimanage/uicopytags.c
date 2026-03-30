@@ -210,7 +210,7 @@ uicopytagsCreateDialog (uict_t *uict)
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiEntryInit (50, 200);
-  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uict->source = uiwidgetp;
@@ -237,7 +237,7 @@ uicopytagsCreateDialog (uict_t *uict)
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiEntryInit (50, 200);
-  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uict->target = uiwidgetp;

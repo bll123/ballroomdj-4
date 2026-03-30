@@ -304,7 +304,7 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
 
   uiwidgetp = uiEntryInit (50, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
-  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiexppl->wcont [UIEXPPL_W_TARGET] = uiwidgetp;

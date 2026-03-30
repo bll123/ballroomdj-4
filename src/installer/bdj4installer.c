@@ -683,7 +683,7 @@ installerBuildUI (installer_t *installer)
 
   installer->wcont [INST_W_STATUS_MSG] = uiCreateLabel ("");
   uiWidgetSetClass (installer->wcont [INST_W_STATUS_MSG], INST_HL_CLASS);
-  uiBoxPackEndExpand (hbox, installer->wcont [INST_W_STATUS_MSG]);
+  uiBoxPackEndExpandChildren (hbox, installer->wcont [INST_W_STATUS_MSG]);
   uiWidgetAlignHorizEnd (installer->wcont [INST_W_STATUS_MSG]);
 
   /* begin line : target instructions */
@@ -702,7 +702,7 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiEntryInit (60, BDJ4_PATH_MAX);
-  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   installer->wcont [INST_W_TARGET] = uiwidgetp;
@@ -803,7 +803,7 @@ installerBuildUI (installer_t *installer)
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiEntryInit (60, BDJ4_PATH_MAX);
-  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   installer->wcont [INST_W_BDJ3_LOC] = uiwidgetp;
@@ -914,7 +914,7 @@ installerBuildUI (installer_t *installer)
   uiTextBoxSetReadonly (uiwidgetp);
   uiTextBoxHorizExpand (uiwidgetp);
   uiTextBoxVertExpand (uiwidgetp);
-  uiBoxPackStartExpand (vbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (vbox, uiwidgetp);
   installer->wcont [INST_W_STATUS_DISP] = uiwidgetp;
 
   uiWidgetShowAll (installer->wcont [INST_W_WINDOW]);

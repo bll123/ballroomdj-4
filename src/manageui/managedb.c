@@ -238,7 +238,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
 
   uiwidgetp = uiCreateLabel ("");
   uiLabelWrapOn (uiwidgetp);
-  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 6);
   managedb->wcont [MDB_W_DB_HELP_DISP] = uiwidgetp;
 
@@ -260,7 +260,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   stpecpy (tbuff, tbuff + sizeof (tbuff), bdjoptGetStr (OPT_M_DIR_MUSIC));
   pathDisplayPath (tbuff, sizeof (tbuff));
   uiEntrySetValue (uiwidgetp, tbuff);
-  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   managedb->wcont [MDB_W_DB_MUSIC_DIR] = uiwidgetp;
@@ -317,7 +317,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiTextBoxSetReadonly (uiwidgetp);
   uiTextBoxSetDarkBG (uiwidgetp);
   uiTextBoxSetHeight (uiwidgetp, 300);
-  uiBoxPackStartExpand (vboxp, uiwidgetp);
+  uiBoxPackStartExpandChildren (vboxp, uiwidgetp);
   managedb->wcont [MDB_W_DB_STATUS] = uiwidgetp;
 
   uiBoxPostProcess (hbox);

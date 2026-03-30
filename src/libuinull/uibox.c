@@ -18,23 +18,15 @@
 #include "ui/uibox.h"
 
 uiwcont_t *
-uiCreateVertBox (void)
+ruiCreateVertBox (void)
 {
   return NULL;
 }
 
 uiwcont_t *
-uiCreateHorizBox (void)
+ruiCreateHorizBox (void)
 {
   return NULL;
-}
-
-void
-uiBoxFree (uiwcont_t *uibox)
-{
-  if (! uiwcontValid (uibox, WCONT_T_BOX, "box-free")) {
-    return;
-  }
 }
 
 void
@@ -44,7 +36,7 @@ uiBoxPostProcess (uiwcont_t *uibox)
 }
 
 void
-uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
+ruiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start")) {
     return;
@@ -57,7 +49,7 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
 }
 
 void
-uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
+ruiBoxPackStartExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start-exp")) {
     return;
@@ -70,7 +62,7 @@ uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 }
 
 void
-uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
+ruiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end")) {
     return;
@@ -83,7 +75,7 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
 }
 
 void
-uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
+ruiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end-exp")) {
     return;

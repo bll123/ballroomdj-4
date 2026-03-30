@@ -258,7 +258,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
 
   uiwidgetp = uiEntryInit (50, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
-  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE] = uiwidgetp;

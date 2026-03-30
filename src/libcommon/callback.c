@@ -34,7 +34,6 @@ typedef struct callback {
     callbackFuncI       intcbfunc;
     callbackFuncII      intintcbfunc;
     callbackFuncS       strcbfunc;
-    callbackFuncSS      strstrcbfunc;
     callbackFuncSI      strintcbfunc;
   };
   void            *udata;
@@ -120,20 +119,6 @@ callbackInitS (callbackFuncS cbfunc, void *udata)
   cb = mdmalloc (sizeof (callback_t));
   cb->ident = CB_IDENT_STR;
   cb->strcbfunc = cbfunc;
-  cb->udata = udata;
-  cb->actiontext = NULL;
-  return cb;
-}
-
-BDJ_NODISCARD
-callback_t *
-callbackInitSS (callbackFuncSS cbfunc, void *udata)
-{
-  callback_t    *cb;
-
-  cb = mdmalloc (sizeof (callback_t));
-  cb->ident = CB_IDENT_STR_STR;
-  cb->strstrcbfunc = cbfunc;
   cb->udata = udata;
   cb->actiontext = NULL;
   return cb;
@@ -238,21 +223,6 @@ callbackHandlerS (callback_t *cb, const char *str)
   }
 
   value = cb->strcbfunc (cb->udata, str);
-  return value;
-}
-
-int32_t
-callbackHandlerSS (callback_t *cb, const char *a, const char *b)
-{
-  int32_t   value;
-  bool      rc = false;
-
-  rc = callbackValidate (cb, CB_IDENT_STR_STR);
-  if (rc == false) {
-    return 0;
-  }
-
-  value = cb->strstrcbfunc (cb->udata, a, b);
   return value;
 }
 

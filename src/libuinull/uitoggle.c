@@ -37,6 +37,14 @@ uiCreateToggleButton (const char *txt,
 }
 
 void
+uiToggleButtonFree (uiwcont_t *uiwidget)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_TOGGLE, "toggle-free")) {
+    return;
+  }
+}
+
+void
 uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
   return;

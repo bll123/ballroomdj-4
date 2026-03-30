@@ -24,6 +24,15 @@
 extern "C" {
 #endif
 
+/* uibox.c */
+uiwcont_t * uiCreateVertBox (void);
+uiwcont_t * uiCreateHorizBox (void);
+void uiBoxFree (uiwcont_t *uibox);
+void uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget);
+void uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget);
+void uiBoxPackStartExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget);
+void uiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget);
+
 /* uibutton.c */
 bool uiButtonCheckRepeat (uiwcont_t *uiwidget);
 bool uiButtonPressCallback (void *udata);

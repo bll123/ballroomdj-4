@@ -32,7 +32,6 @@
 @end
 
 typedef struct uibox {
-  nlist_t     *widgetlist;
   long        ident;
   int         count;
   int         endcount;
@@ -45,30 +44,23 @@ static long     gident = 0;
 static uiwcont_t * uiCreateBox (int orientation);
 
 uiwcont_t *
-uiCreateVertBox (void)
+ruiCreateVertBox (void)
 {
 fprintf (stderr, "c-vbox\n");
   return uiCreateBox (NSUserInterfaceLayoutOrientationVertical);
 }
 
 uiwcont_t *
-uiCreateHorizBox (void)
+ruiCreateHorizBox (void)
 {
 fprintf (stderr, "c-hbox\n");
   return uiCreateBox (NSUserInterfaceLayoutOrientationHorizontal);
 }
 
 void
-uiBoxFree (uiwcont_t *uibox)
-{
-  if (! uiwcontValid (uibox, WCONT_T_BOX, "box-free")) {
-    return;
-  }
-}
-
-void
 uiBoxPostProcess (uiwcont_t *uibox)
 {
+  uiboxbase_t *boxbase = NULL;
   uibox_t     *uiboxint = NULL;
   nlist_t     *wlist = NULL;
   nlistidx_t  iteridx;
@@ -81,11 +73,10 @@ uiBoxPostProcess (uiwcont_t *uibox)
   }
 
   uiboxint = uibox->uiint.uibox;
-  wlist = uiboxint->widgetlist;
-  nlistSort (wlist);
+  boxbase = &uibox->uiint.uiboxbase;
 fprintf (stderr, "    post-process %d count: %d %d/%s\n", uiboxint->ident, (int) nlistGetCount (wlist), uibox->wtype, uiwcontDesc (uibox->wtype));
 
-  if (nlistGetCount (wlist) == 0) {
+  if (boxbase->startcount == 0 && boxbase->endcount == 0) {
     return;
   }
 
@@ -93,6 +84,8 @@ fprintf (stderr, "    post-process %d count: %d %d/%s\n", uiboxint->ident, (int)
     fprintf (stderr, "ERR: box post-process twice\n");
     return;
   }
+
+  wlist = boxbase->startlist;
 
   box = uibox->uidata.widget;
 
@@ -228,7 +221,7 @@ fprintf (stderr, "    pp: l: expand-vert\n");
 }
 
 void
-uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
+ruiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   IBox          *box;
   NSView        *widget = NULL;
@@ -261,7 +254,7 @@ fprintf (stderr, "box: %ld p-st: %d %d/%s\n", uiboxint->ident, uiboxint->count, 
 }
 
 void
-uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
+ruiBoxPackStartExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   IBox          *box;
   NSView        *widget = NULL;
@@ -295,7 +288,7 @@ fprintf (stderr, "box: %ld p-st-exp: %d %d/%s\n", uiboxint->ident, uiboxint->cou
 }
 
 void
-uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
+ruiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   IBox        *box;
   NSView      *widget = NULL;
@@ -327,7 +320,7 @@ fprintf (stderr, "box: %ld p-end: %d %d/%s\n", uiboxint->ident, uiboxint->endcou
 }
 
 void
-uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
+ruiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   IBox        *box;
   NSView      *widget = NULL;

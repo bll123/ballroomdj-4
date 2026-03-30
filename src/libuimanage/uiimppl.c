@@ -523,7 +523,7 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   uiimppl->wcont [UIIMPPL_W_URI_LABEL] = uiwidgetp;
 
   uiwidgetp = uiEntryInit (50, BDJ4_PATH_MAX);
-  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiEntrySetValue (uiwidgetp, "");

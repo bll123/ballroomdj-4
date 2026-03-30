@@ -54,7 +54,7 @@ confuiBuildUIEditLevels (confuigui_t *gui)
   uiwcontFree (uiwidgetp);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpand (vbox, hbox);
+  uiBoxPackStartExpandChildren (vbox, hbox);
   uiWidgetAlignHorizStart (hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_LEVELS, CONFUI_TABLE_NONE);

@@ -1140,12 +1140,12 @@ manageBuildUISongListEditor (manageui_t *manage)
       _("Song List"), NULL, NULL, MANAGE_TAB_SONGLIST);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpand (mainhbox, hbox);
+  uiBoxPackStartExpandChildren (mainhbox, hbox);
 
   uiwidgetp = uimusicqBuildUI (manage->slsbsmusicq, manage->minfo.window,
       MUSICQ_SL, manage->minfo.errorMsg,
       manage->minfo.statusMsg, uiutilsValidatePlaylistNameClr);
-  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
 
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
@@ -1171,7 +1171,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   manage->wcont [MANAGE_W_SELECT_BUTTON] = uiwidgetp;
 
   uip = uisongselBuildUI (manage->slsbssongsel, manage->minfo.window);
-  uiBoxPackStartExpand (hbox, uip);
+  uiBoxPackStartExpandChildren (hbox, uip);
 
   /* song list: music queue tab */
   uip = uimusicqBuildUI (manage->slmusicq, manage->minfo.window,

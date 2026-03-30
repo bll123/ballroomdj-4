@@ -106,7 +106,9 @@ uisbCreate (uiwcont_t *box, uiwcont_t *disp, bool istext, int margin)
 
   sb->display = disp;
   uiWidgetSetClass (sb->display, SB_CLASS);
-  uiBoxPackStartExpand (sb->wcont [SB_W_HBOX], sb->display);
+  uiBoxPackStartExpandChildren (sb->wcont [SB_W_HBOX], sb->display);
+
+  uiBoxPostProcess (sb->wcont [SB_W_HBOX]);
 
   uiBoxPackStart (box, sb->wcont [SB_W_HBOX]);
 
@@ -135,16 +137,6 @@ uisbFree (uisb_t *sb)
     callbackFree (sb->callbacks [i]);
   }
   mdfree (sb);
-}
-
-void
-uisbExpandHoriz (uisb_t *sb)
-{
-  if (sb == NULL) {
-    return;
-  }
-
-  uiWidgetExpandHoriz (sb->wcont [SB_W_HBOX]);
 }
 
 void

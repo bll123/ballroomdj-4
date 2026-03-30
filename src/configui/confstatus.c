@@ -48,7 +48,7 @@ confuiBuildUIEditStatus (confuigui_t *gui)
       _("Edit Status"), CONFUI_ID_STATUS);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpand (vbox, hbox);
+  uiBoxPackStartExpandChildren (vbox, hbox);
   uiWidgetAlignHorizStart (hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_STATUS,

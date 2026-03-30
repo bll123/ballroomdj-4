@@ -54,7 +54,7 @@ confuiBuildUIEditRatings (confuigui_t *gui)
   uiwcontFree (uiwidgetp);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpand (vbox, hbox);
+  uiBoxPackStartExpandChildren (vbox, hbox);
   uiWidgetAlignHorizStart (hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_RATINGS, CONFUI_TABLE_KEEP_FIRST);

@@ -361,7 +361,7 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   vl->callbacks [VL_CB_MOTION_WIN] = callbackInitI (uivlMotionEvent, vl);
 
   vl->wcont [VL_W_VBOX] = uiCreateVertBox ();
-  uiBoxPackStartExpand  (boxp, vl->wcont [VL_W_VBOX]);
+  uiBoxPackStartExpandChildren  (boxp, vl->wcont [VL_W_VBOX]);
   uiWidgetAlignHorizFill (vl->wcont [VL_W_VBOX]);
 
   /* a scrolled window is necessary to allow the window to shrink */
@@ -369,7 +369,7 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   /* created with extra space */
   vl->wcont [VL_W_SCROLL_WIN] = uiCreateScrolledWindow (50);
   uiWindowSetPolicyExternal (vl->wcont [VL_W_SCROLL_WIN]);
-  uiBoxPackStartExpand (vl->wcont [VL_W_VBOX], vl->wcont [VL_W_SCROLL_WIN]);
+  uiBoxPackStartExpandChildren (vl->wcont [VL_W_VBOX], vl->wcont [VL_W_SCROLL_WIN]);
 
   vl->wcont [VL_W_HBOX_CONT] = uiCreateHorizBox ();
   uiWindowPackInWindow (vl->wcont [VL_W_SCROLL_WIN], vl->wcont [VL_W_HBOX_CONT]);
@@ -386,7 +386,7 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
 
   /* the event box is necessary to receive mouse clicks */
   vl->wcont [VL_W_EVENT_BOX] = uiEventCreateEventBox (vl->wcont [VL_W_MAIN_VBOX]);
-  uiBoxPackStartExpand (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_EVENT_BOX]);
+  uiBoxPackStartExpandChildren (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_EVENT_BOX]);
   uiWidgetSetEnterCallback (vl->wcont [VL_W_EVENT_BOX], vl->callbacks [VL_CB_ENTER_WIN]);
 
   /* important */
@@ -398,7 +398,7 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   uiBoxPackEnd (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_SB_VBOX]);
 
   vl->wcont [VL_W_SB] = uiCreateVerticalScrollbar (10.0);
-  uiBoxPackEndExpand (vl->wcont [VL_W_SB_VBOX], vl->wcont [VL_W_SB]);
+  uiBoxPackEndExpandChildren (vl->wcont [VL_W_SB_VBOX], vl->wcont [VL_W_SB]);
 
   vl->callbacks [VL_CB_SB] = callbackInitD (uivlScrollbarCallback, vl);
   uiScrollbarSetStepIncrement (vl->wcont [VL_W_SB], 1.0);
@@ -1945,7 +1945,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     }
 
     if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK) {
-      uiBoxPackStartExpand (row->hbox, col->uiwidget);
+      uiBoxPackStartExpandChildren (row->hbox, col->uiwidget);
     } else {
       uiBoxPackStart (row->hbox, col->uiwidget);
     }

@@ -7,6 +7,7 @@ include (../utils/bdj4macros.cmake)
 
 # the various main ui libraries (libuigtk3, libuimacos) will link this in
 add_library (objuigeneral OBJECT
+  uibox.c
   uibutton.c
   uientry.c
   uientryval.c

@@ -63,7 +63,7 @@ uihnbCreate (uiwcont_t *box)
   hnb = mdmalloc (sizeof (uihnb_t));
 
   vbox = uiCreateVertBox ();
-  uiBoxPackStartExpand (box, vbox);
+  uiBoxPackStartExpandChildren (box, vbox);
   uiWidgetExpandHoriz (vbox);
 
   hnb->hlist = uiCreateHorizBox ();
@@ -71,7 +71,7 @@ uihnbCreate (uiwcont_t *box)
 
   hnb->nb = uiCreateNotebook ();
   uiWidgetSetClass (hnb->nb, NB_HORIZ_CLASS);
-  uiBoxPackStartExpand (vbox, hnb->nb);
+  uiBoxPackStartExpandChildren (vbox, hnb->nb);
 
   for (int i = 0; i < HNB_MAX_PAGECOUNT; ++i) {
     hnb->tablist [i] = NULL;
@@ -143,7 +143,7 @@ uihnbAppendPage (uihnb_t *hnb, uiwcont_t *uiwidget,
   uiButtonSetAltImage (button, altimagenm);
   uiWidgetAlignHorizCenter (button);
   uiButtonSetReliefNone (button);
-  uiBoxPackStartExpand (hbox, button);
+  uiBoxPackStartExpandChildren (hbox, button);
   uiWidgetSetClass (button, NB_CLASS);
   uiWidgetSetClass (button, NB_HORIZ_CLASS);
   state = BUTTON_OFF;

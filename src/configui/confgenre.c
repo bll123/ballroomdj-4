@@ -48,7 +48,7 @@ confuiBuildUIEditGenres (confuigui_t *gui)
       _("Edit Genres"), CONFUI_ID_GENRES);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpand (vbox, hbox);
+  uiBoxPackStartExpandChildren (vbox, hbox);
   uiWidgetAlignHorizStart (hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_GENRES, CONFUI_TABLE_NONE);
