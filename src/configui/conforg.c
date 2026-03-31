@@ -45,7 +45,6 @@ confuiInitOrganization (confuigui_t *gui)
   origpath = bdjoptGetStr (OPT_G_ORGPATH);
   bdjoptSetStr (OPT_G_OLDORGPATH, origpath);
 
-  gui->uiitem [CONFUI_DD_ORGPATH].displist = tlist;
   gui->uiitem [CONFUI_DD_ORGPATH].listidx = 0;
   ddlist = ilistAlloc ("conforg", LIST_ORDERED);
 
