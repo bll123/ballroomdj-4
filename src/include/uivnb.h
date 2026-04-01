@@ -19,6 +19,7 @@ typedef struct uivnb uivnb_t;
 uivnb_t *uivnbCreate (uiwcont_t *box);
 void uivnbFree (uivnb_t *vnb);
 void uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *label, int id);
+void uivnbPostProcess (uivnb_t *vnb);
 void uivnbSetPage (uivnb_t *vnb, int pagenum);
 void uivnbSetCallback (uivnb_t *vnb, callback_t *uicb);
 int  uivnbGetID (uivnb_t *vnb);

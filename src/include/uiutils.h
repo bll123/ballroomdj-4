@@ -18,6 +18,9 @@ typedef struct {
 
 /* uiutils.c */
 void uiutilsAddProfileColorDisplay (uiwcont_t *vbox, uiutilsaccent_t *accent);
+uiwcont_t *uiutilsProfileAddMenubar (uiutilsaccent_t *accent);
+uiwcont_t *uiutilsProfileAddLabel (uiutilsaccent_t *accent, const char *class);
+void uiutilsProfilePostProcess (uiutilsaccent_t *accent);
 void uiutilsSetProfileColor (uiwcont_t *uiwidgetp, const char *oldcolor);
 const char * uiutilsGetCurrentFont (void);
 const char * uiutilsGetListingFont (void);

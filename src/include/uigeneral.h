@@ -25,6 +25,12 @@ extern "C" {
 #endif
 
 /* uibox.c */
+
+typedef enum {
+  WCONT_FREE,
+  WCONT_KEEP,
+} uiwcontrls_t;
+
 uiwcont_t * uiCreateVertBox (void);
 uiwcont_t * uiCreateHorizBox (void);
 void uiBoxFree (uiwcont_t *uibox);
@@ -32,6 +38,10 @@ void uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget);
 void uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget);
 void uiBoxPackStartExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget);
 void uiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget);
+void nuiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release);
+void nuiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release);
+void nuiBoxPackStartExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release);
+void nuiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release);
 
 /* uibutton.c */
 bool uiButtonCheckRepeat (uiwcont_t *uiwidget);

@@ -40,6 +40,7 @@ typedef struct {
 typedef struct uivnb {
   uiwcont_t   *nb;
   uiwcont_t   *vlist;
+  uiwcont_t   *boxlist [VNB_MAX_PAGECOUNT];
   uiwcont_t   *tablist [VNB_MAX_PAGECOUNT];
   uiwcont_t   *indlist [VNB_MAX_PAGECOUNT];
   callback_t  *tabcblist [VNB_MAX_PAGECOUNT];
@@ -48,6 +49,7 @@ typedef struct uivnb {
   int         pagecount;
   int         selected;
   int         textdir;
+  bool        processed;
 } uivnb_t;
 
 bool uivnbSetPageCallback (void *udata);
@@ -62,18 +64,19 @@ uivnbCreate (uiwcont_t *box)
   vnb = mdmalloc (sizeof (uivnb_t));
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpandChildren (box, hbox);
+  nuiBoxPackStartExpandChildren (box, hbox, WCONT_FREE);
 
   sw = uiCreateScrolledWindow (50);
-  uiBoxPackStart (hbox, sw);
+  nuiBoxPackStart (hbox, sw, WCONT_FREE);
   vnb->vlist = uiCreateVertBox ();
   uiWidgetSetClass (vnb->vlist, VERTNB_BG_CLASS);
   uiWindowPackInWindow (sw, vnb->vlist);
 
   vnb->nb = uiCreateNotebook ();
-  uiBoxPackStartExpandChildren (hbox, vnb->nb);
+  nuiBoxPackStartExpandChildren (hbox, vnb->nb, WCONT_KEEP);
 
   for (int i = 0; i < VNB_MAX_PAGECOUNT; ++i) {
+    vnb->boxlist [i] = NULL;
     vnb->tablist [i] = NULL;
     vnb->indlist [i] = NULL;
     vnb->tabcblist [i] = NULL;
@@ -85,10 +88,9 @@ uivnbCreate (uiwcont_t *box)
   vnb->pagecount = 0;
   vnb->selected = -1;
   vnb->textdir = sysvarsGetNum (SVL_LOCALE_TEXT_DIR);
+  vnb->processed = false;
 
-  uiwcontFree (sw);
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   return vnb;
 }
@@ -101,8 +103,10 @@ uivnbFree (uivnb_t *vnb)
   }
 
   for (int i = 0; i < VNB_MAX_PAGECOUNT; ++i) {
-    uiwcontFree (vnb->tablist [i]);
-    uiwcontFree (vnb->indlist [i]);
+    if (vnb->boxlist [i] == NULL) {
+      break;
+    }
+    uiwcontFree (vnb->boxlist [i]);
     callbackFree (vnb->tabcblist [i]);
   }
 
@@ -112,7 +116,7 @@ uivnbFree (uivnb_t *vnb)
 }
 
 void
-uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *nbtxt, int id)
+uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uibox, const char *nbtxt, int id)
 {
   uiwcont_t   *hbox;
   uiwcont_t   *button;
@@ -128,26 +132,28 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *nbtxt, int id)
     return;
   }
 
-  uiNotebookAppendPage (vnb->nb, uiwidget, NULL);
+  uiNotebookAppendPage (vnb->nb, uibox, NULL);
 
   pagenum = vnb->pagecount;
+  vnb->boxlist [pagenum] = uibox;
+
   cb = callbackInit (uivnbSetPageCallback, &vnb->cbdata [pagenum], NULL);
   vnb->tabcblist [pagenum] = cb;
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vnb->vlist, hbox);
+  nuiBoxPackStart (vnb->vlist, hbox, WCONT_FREE);
   uiWidgetSetClass (hbox, NB_CLASS);
   uiWidgetSetClass (hbox, NB_VERT_CLASS);
 
   button = uiCreateButton (cb, nbtxt, NULL, NULL);
   uiButtonSetReliefNone (button);
   uiButtonAlignLeft (button);
-  uiBoxPackStartExpandChildren (hbox, button);
+  nuiBoxPackStartExpandChildren (hbox, button, WCONT_FREE);
   uiWidgetSetClass (button, NB_CLASS);
   uiWidgetSetClass (button, NB_VERT_CLASS);
 
   label = uiCreateLabel ("");
-  uiBoxPackStart (hbox, label);
+  nuiBoxPackStart (hbox, label, WCONT_FREE);
   uiWidgetSetMarginStart (label, 0);
   uiWidgetSetClass (label, NB_CLASS);
   uiWidgetSetClass (label, NB_VERT_CLASS);
@@ -157,12 +163,23 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *nbtxt, int id)
   vnb->tablist [pagenum] = button;
   vnb->indlist [pagenum] = label;
   vnb->idlist [pagenum] = id;
+// ### remove this after all progs use post-process
   if (pagenum == 0) {
     uivnbSetPage (vnb, pagenum);
   }
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
+}
+
+void
+uivnbPostProcess (uivnb_t *vnb)
+{
+  if (vnb == NULL) {
+    return;
+  }
+
+  uiBoxPostProcess (vnb->vlist);
+  uivnbSetPage (vnb, 0);
 }
 
 void
@@ -173,6 +190,7 @@ uivnbSetPage (uivnb_t *vnb, int pagenum)
   if (vnb == NULL) {
     return;
   }
+
   if (pagenum < 0 || pagenum > vnb->pagecount) {
     return;
   }

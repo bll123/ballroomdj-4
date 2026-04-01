@@ -40,6 +40,7 @@ typedef struct {
 typedef struct uihnb {
   uiwcont_t       *nb;
   uiwcont_t       *hlist;
+  uiwcont_t       *boxlist [HNB_MAX_PAGECOUNT];
   uiwcont_t       *tablist [HNB_MAX_PAGECOUNT];
   callback_t      *tabcblist [HNB_MAX_PAGECOUNT];
   uihnbcb_t       cbdata [HNB_MAX_PAGECOUNT];
@@ -63,17 +64,18 @@ uihnbCreate (uiwcont_t *box)
   hnb = mdmalloc (sizeof (uihnb_t));
 
   vbox = uiCreateVertBox ();
-  uiBoxPackStartExpandChildren (box, vbox);
+  nuiBoxPackStartExpandChildren (box, vbox, WCONT_FREE);
   uiWidgetExpandHoriz (vbox);
 
   hnb->hlist = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hnb->hlist);
+  nuiBoxPackStart (vbox, hnb->hlist, WCONT_KEEP);
 
   hnb->nb = uiCreateNotebook ();
   uiWidgetSetClass (hnb->nb, NB_HORIZ_CLASS);
-  uiBoxPackStartExpandChildren (vbox, hnb->nb);
+  nuiBoxPackStartExpandChildren (vbox, hnb->nb, WCONT_KEEP);
 
   for (int i = 0; i < HNB_MAX_PAGECOUNT; ++i) {
+    hnb->boxlist [i] = NULL;
     hnb->tablist [i] = NULL;
     hnb->tabcblist [i] = NULL;
     hnb->cbdata [i].pagenum = i;
@@ -88,7 +90,6 @@ uihnbCreate (uiwcont_t *box)
   hnb->textdir = sysvarsGetNum (SVL_LOCALE_TEXT_DIR);
 
   uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
 
   return hnb;
 }
@@ -101,6 +102,10 @@ uihnbFree (uihnb_t *hnb)
   }
 
   for (int i = 0; i < HNB_MAX_PAGECOUNT; ++i) {
+    if (hnb->boxlist [i] == NULL) {
+      break;
+    }
+    uiwcontFree (hnb->boxlist [i]);
     uiwcontFree (hnb->tablist [i]);
     callbackFree (hnb->tabcblist [i]);
   }
@@ -111,7 +116,7 @@ uihnbFree (uihnb_t *hnb)
 }
 
 void
-uihnbAppendPage (uihnb_t *hnb, uiwcont_t *uiwidget,
+uihnbAppendPage (uihnb_t *hnb, uiwcont_t *uibox,
     const char *nbtxt, const char *imagenm, const char *altimagenm, int id)
 {
   uiwcont_t       *hbox;
@@ -128,14 +133,16 @@ uihnbAppendPage (uihnb_t *hnb, uiwcont_t *uiwidget,
     return;
   }
 
-  uiNotebookAppendPage (hnb->nb, uiwidget, NULL);
+  uiNotebookAppendPage (hnb->nb, uibox, NULL);
 
   pagenum = hnb->pagecount;
+  hnb->boxlist [pagenum] = uibox;
+
   cb = callbackInit (uihnbSetPageCallback, &hnb->cbdata [pagenum], NULL);
   hnb->tabcblist [pagenum] = cb;
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (hnb->hlist, hbox);
+  nuiBoxPackStart (hnb->hlist, hbox, WCONT_FREE);
   uiWidgetSetClass (hbox, NB_CLASS);
   uiWidgetSetClass (hbox, NB_HORIZ_CLASS);
 
@@ -143,7 +150,7 @@ uihnbAppendPage (uihnb_t *hnb, uiwcont_t *uiwidget,
   uiButtonSetAltImage (button, altimagenm);
   uiWidgetAlignHorizCenter (button);
   uiButtonSetReliefNone (button);
-  uiBoxPackStartExpandChildren (hbox, button);
+  nuiBoxPackStartExpandChildren (hbox, button, WCONT_KEEP);
   uiWidgetSetClass (button, NB_CLASS);
   uiWidgetSetClass (button, NB_HORIZ_CLASS);
   state = BUTTON_OFF;
@@ -161,7 +168,7 @@ uihnbAppendPage (uihnb_t *hnb, uiwcont_t *uiwidget,
   }
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
+  uiBoxPostProcess (hnb->hlist);
 }
 
 void
@@ -250,7 +257,8 @@ uihnbSetActionWidget (uihnb_t *hnb, uiwcont_t *uiwidget)
   if (hnb == NULL || hnb->hlist == NULL || uiwidget == NULL) {
     return;
   }
-  uiBoxPackEnd (hnb->hlist, uiwidget);
+  nuiBoxPackEnd (hnb->hlist, uiwidget, WCONT_KEEP);
+  uiBoxPostProcess (hnb->hlist);
 }
 
 void

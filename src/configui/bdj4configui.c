@@ -44,6 +44,7 @@
 #include "uiutils.h"
 
 typedef struct configui {
+  uiutilsaccent_t   accent;
   progstate_t       *progstate;
   char              *locknm;
   conn_t            *conn;
@@ -404,8 +405,6 @@ confuiClosingCallback (void *udata, programstate_t programState)
   }
 
   uiwcontFree (confui->gui.vbox);
-  uiwcontFree (confui->gui.statusMsg);
-  uiwcontFree (confui->gui.errorMsg);
   uiduallistFree (confui->gui.dispselduallist);
   songfilterFree (confui->sf);
   quickeditFree (confui->qe);
@@ -435,12 +434,9 @@ confuiClosingCallback (void *udata, programstate_t programState)
 static void
 confuiBuildUI (configui_t *confui)
 {
-  uiwcont_t     *hbox;
-  uiwcont_t     *uiwidgetp;
   char          imgbuff [BDJ4_PATH_MAX];
   char          tbuff [BDJ4_PATH_MAX];
   int           x, y;
-  uiutilsaccent_t accent;
 
   logProcBegin ();
 
@@ -457,19 +453,10 @@ confuiBuildUI (configui_t *confui)
   uiWidgetExpandHoriz (confui->gui.vbox);
   uiWidgetExpandVert (confui->gui.vbox);
 
-  uiutilsAddProfileColorDisplay (confui->gui.vbox, &accent);
-  hbox = accent.hbox;
-  uiwcontFree (accent.cbox);
-
-  uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
-  uiBoxPackEnd (hbox, uiwidgetp);
-  confui->gui.statusMsg = uiwidgetp;
-
-  uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
-  uiBoxPackEnd (hbox, uiwidgetp);
-  confui->gui.errorMsg = uiwidgetp;
+  uiutilsAddProfileColorDisplay (confui->gui.vbox, &confui->accent);
+  confui->gui.statusMsg = uiutilsProfileAddLabel (&confui->accent, ACCENT_CLASS);
+  confui->gui.errorMsg = uiutilsProfileAddLabel (&confui->accent, ERROR_CLASS);
+  uiutilsProfilePostProcess (&confui->accent);
 
   confui->gui.mainvnb = uivnbCreate (confui->gui.vbox);
 
@@ -531,9 +518,6 @@ confuiBuildUI (configui_t *confui)
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_config", ".png", PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
-
-  uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   logProcEnd ("");
 }

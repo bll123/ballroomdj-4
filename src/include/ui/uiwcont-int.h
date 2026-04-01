@@ -16,6 +16,7 @@ extern "C" {
 #endif
 
 typedef enum {
+  WCONT_T_UNKNOWN,
   WCONT_T_ADJUSTMENT,       // gtk widget
   WCONT_T_BOX,              // base type
   WCONT_T_BUTTON,           /* base type for color-button, font-button */
@@ -50,7 +51,6 @@ typedef enum {
   WCONT_T_SWITCH,
   WCONT_T_TEXT_BOX,
   WCONT_T_TEXT_BUFFER,      // gtk widget
-  WCONT_T_UNKNOWN,
   WCONT_T_VBOX,
   WCONT_T_WINDOW,   // base type for scroll-window, dialog-window, paned-window
   WCONT_T_WINDOW_MAIN,
@@ -64,10 +64,13 @@ enum {
 
 /* used in all ui interfaces */
 typedef struct uiboxbase {
-  nlist_t         *startlist;
-  nlist_t         *endlist;
+  nlist_t         *widgetlist;
+  nlist_t         *releaselist;
   int             startcount;
   int             endcount;
+  int             indent;
+  int32_t         id;
+  int32_t         parentid;
 } uiboxbase_t;
 
 /* used in all ui interfaces */

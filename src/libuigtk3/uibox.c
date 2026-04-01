@@ -40,6 +40,34 @@ ruiCreateHorizBox (void)
 void
 uiBoxPostProcess (uiwcont_t *uibox)
 {
+  uiboxbase_t *boxbase;
+  nlist_t     *wlist;
+  nlist_t     *rlist;
+  nlistidx_t  iteridx;
+  int         key;
+
+  if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pp")) {
+    return;
+  }
+
+  boxbase = &uibox->uiint.uiboxbase;
+  wlist = boxbase->widgetlist;
+  rlist = boxbase->releaselist;
+  nlistSort (wlist);
+  nlistSort (rlist);
+
+  nlistStartIterator (wlist, &iteridx);
+  while ((key = nlistIterateKey (wlist, &iteridx)) >= 0) {
+    uiwcontrls_t    release;
+    uiwcont_t       *uiwidgetp;
+
+    release = nlistGetNum (rlist, key);
+    uiwidgetp = nlistGetData (wlist, key);
+    if (uiwidgetp == NULL || uiwidgetp->uidata.widget == NULL) {
+      return;
+    }
+  }
+
   return;
 }
 

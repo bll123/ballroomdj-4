@@ -361,7 +361,7 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   vl->callbacks [VL_CB_MOTION_WIN] = callbackInitI (uivlMotionEvent, vl);
 
   vl->wcont [VL_W_VBOX] = uiCreateVertBox ();
-  uiBoxPackStartExpandChildren  (boxp, vl->wcont [VL_W_VBOX]);
+  nuiBoxPackStartExpandChildren  (boxp, vl->wcont [VL_W_VBOX], WCONT_KEEP);
   uiWidgetAlignHorizFill (vl->wcont [VL_W_VBOX]);
 
   /* a scrolled window is necessary to allow the window to shrink */
@@ -369,7 +369,7 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   /* created with extra space */
   vl->wcont [VL_W_SCROLL_WIN] = uiCreateScrolledWindow (50);
   uiWindowSetPolicyExternal (vl->wcont [VL_W_SCROLL_WIN]);
-  uiBoxPackStartExpandChildren (vl->wcont [VL_W_VBOX], vl->wcont [VL_W_SCROLL_WIN]);
+  nuiBoxPackStartExpandChildren (vl->wcont [VL_W_VBOX], vl->wcont [VL_W_SCROLL_WIN], WCONT_KEEP);
 
   vl->wcont [VL_W_HBOX_CONT] = uiCreateHorizBox ();
   uiWindowPackInWindow (vl->wcont [VL_W_SCROLL_WIN], vl->wcont [VL_W_HBOX_CONT]);
@@ -386,7 +386,7 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
 
   /* the event box is necessary to receive mouse clicks */
   vl->wcont [VL_W_EVENT_BOX] = uiEventCreateEventBox (vl->wcont [VL_W_MAIN_VBOX]);
-  uiBoxPackStartExpandChildren (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_EVENT_BOX]);
+  nuiBoxPackStartExpandChildren (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_EVENT_BOX], WCONT_KEEP);
   uiWidgetSetEnterCallback (vl->wcont [VL_W_EVENT_BOX], vl->callbacks [VL_CB_ENTER_WIN]);
 
   /* important */
@@ -395,10 +395,11 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   uiWidgetSetSizeChgCallback (vl->wcont [VL_W_SCROLL_WIN], vl->callbacks [VL_CB_VERT_SZ_CHG]);
 
   vl->wcont [VL_W_SB_VBOX] = uiCreateVertBox ();
-  uiBoxPackEnd (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_SB_VBOX]);
+  nuiBoxPackEnd (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_SB_VBOX], WCONT_KEEP);
 
   vl->wcont [VL_W_SB] = uiCreateVerticalScrollbar (10.0);
-  uiBoxPackEndExpandChildren (vl->wcont [VL_W_SB_VBOX], vl->wcont [VL_W_SB]);
+  nuiBoxPackEndExpandChildren (vl->wcont [VL_W_SB_VBOX], vl->wcont [VL_W_SB], WCONT_KEEP);
+  uiBoxPostProcess (vl->wcont [VL_W_SB_VBOX]);
 
   vl->callbacks [VL_CB_SB] = callbackInitD (uivlScrollbarCallback, vl);
   uiScrollbarSetStepIncrement (vl->wcont [VL_W_SB], 1.0);
@@ -1579,9 +1580,9 @@ uivlDisplay (uivirtlist_t *vl)
     if (vl->uselistingfont) {
       uiWidgetSetClass (uiwidget, LISTING_CLASS);
     }
-    uiBoxPackStart (vl->wcont [VL_W_SB_VBOX], uiwidget);
+    nuiBoxPackStart (vl->wcont [VL_W_SB_VBOX], uiwidget, WCONT_FREE);
     uiWidgetAlignVertBaseline (uiwidget);
-    uiwcontFree (uiwidget);
+    uiBoxPostProcess (vl->wcont [VL_W_SB_VBOX]);
 
     for (int colidx = 0; colidx < vl->numcols; ++colidx) {
       if (vl->coldata [colidx].heading == NULL) {
@@ -1819,7 +1820,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
   /* note that this changes the mouse-button column return */
   /* the mouse button event handler adjusts for this column */
   uiwidget = uiCreateLabel ("\xe2\x80\x8a");
-  uiBoxPackStart (row->hbox, uiwidget);
+  nuiBoxPackStart (row->hbox, uiwidget, WCONT_FREE);
   uiWidgetAlignVertBaseline (uiwidget);
   if (vl->uselistingfont) {
     /* setting this to list-fav-class allows gtk to calculate the */
@@ -1828,7 +1829,6 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     uiWidgetSetClass (uiwidget, LIST_FAV_CLASS);
   }
   uiWidgetShow (uiwidget);
-  uiwcontFree (uiwidget);
 
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
     vltype_t      origtype;
@@ -1945,9 +1945,9 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     }
 
     if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK) {
-      uiBoxPackStartExpandChildren (row->hbox, col->uiwidget);
+      nuiBoxPackStartExpandChildren (row->hbox, col->uiwidget, WCONT_KEEP);
     } else {
-      uiBoxPackStart (row->hbox, col->uiwidget);
+      nuiBoxPackStart (row->hbox, col->uiwidget, WCONT_KEEP);
     }
 
     if (row->dispidx == vl->headingoffset &&
@@ -1989,6 +1989,9 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     /* when a row is first created, it is in the cleared state */
     uiWidgetHide (col->uiwidget);
   }
+
+  uiBoxPostProcess (row->hbox);
+
   logProcEnd ("");
 }
 
@@ -2023,7 +2026,7 @@ uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
     return;
   }
 
-  uiBoxPackStart (vl->wcont [VL_W_MAIN_VBOX], row->hbox);
+  nuiBoxPackStart (vl->wcont [VL_W_MAIN_VBOX], row->hbox, WCONT_FREE);
   uiWidgetExpandHoriz (vl->wcont [VL_W_MAIN_VBOX]);
 
   uiWidgetAlignHorizFill (row->hbox);

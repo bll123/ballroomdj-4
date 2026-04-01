@@ -43,21 +43,47 @@ uiutilsAddProfileColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
   uiwcont_t       *cbox;
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vboxp, hbox);
+  nuiBoxPackStart (vboxp, hbox, WCONT_FREE);
 
   cbox = uiCreateHorizBox ();
   uiWidgetSetSizeRequest (cbox, PROFILE_BOX_SZ, PROFILE_BOX_SZ);
   uiutilsSetProfileColor (cbox, NULL);
-  uiBoxPackEnd (hbox, cbox);
+  nuiBoxPackEnd (hbox, cbox, WCONT_FREE);
   uiWidgetAlignHorizCenter (cbox);
   uiWidgetAlignVertCenter (cbox);
   uiWidgetSetMarginStart (cbox, 4);
   uiBoxPostProcess (cbox);
 
-  uiWidgetShowAll (hbox);
-
   accent->cbox = cbox;
   accent->hbox = hbox;
+}
+
+uiwcont_t *
+uiutilsProfileAddMenubar (uiutilsaccent_t *accent)
+{
+  uiwcont_t     *menubar;
+
+  menubar = uiCreateMenubar ();
+  nuiBoxPackStart (accent->hbox, menubar, WCONT_FREE);
+  return menubar;
+}
+
+uiwcont_t *
+uiutilsProfileAddLabel (uiutilsaccent_t *accent, const char *class)
+{
+  uiwcont_t     *msg;
+
+  msg = uiCreateLabel ("");
+  nuiBoxPackEnd (accent->hbox, msg, WCONT_FREE);
+  uiWidgetSetClass (msg, class);
+  return msg;
+}
+
+void
+uiutilsProfilePostProcess (uiutilsaccent_t *accent)
+{
+  uiWidgetShowAll (accent->hbox);
+  uiBoxPostProcess (accent->hbox);
 }
 
 void

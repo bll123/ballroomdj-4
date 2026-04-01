@@ -38,7 +38,7 @@ uiCreateChangeIndicator (uiwcont_t *boxp)
   uiwcontSetWidget (uiwidget, widget, NULL);
   /* the change indicator is a label packed in the beginning of */
   /* the supplied box */
-  uiBoxPackStart (boxp, uiwidget);
+  nuiBoxPackStart (boxp, uiwidget, WCONT_KEEP);
   return uiwidget;
 }
 
