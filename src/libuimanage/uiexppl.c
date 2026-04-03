@@ -255,56 +255,52 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   /* status msg */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateLabel ("");
-  uiBoxPackEnd (hbox, uiwidgetp);
+  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   uiexppl->wcont [UIEXPPL_W_STATUS_MSG] = uiwidgetp;
 
   /* error msg */
   uiwidgetp = uiCreateLabel ("");
-  uiBoxPackEnd (hbox, uiwidgetp);
+  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
   uiexppl->wcont [UIEXPPL_W_ERROR_MSG] = uiwidgetp;
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   /* text-spinbox for export type */
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateColonLabel (
       /* CONTEXT: export playlist: type of export*/
       _("Export Type"));
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (szgrp, uiwidgetp);
-  uiwcontFree (uiwidgetp);
 
   uiexppl->sb = uisbtextCreate (hbox, 2);
   uisbtextSetList (uiexppl->sb, uiexppl->typelist);
-//  uisbtextSetWidth (uiexppl->sb, 5);
   uisbtextSetValue (uiexppl->sb, uiexppl->exptype);
+
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   /* target folder */
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateColonLabel (
       /* CONTEXT: export playlist: export folder location */
       _("Export to"));
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (szgrp, uiwidgetp);
-  uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiEntryInit (50, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
-  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
+  nuiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiexppl->wcont [UIEXPPL_W_TARGET] = uiwidgetp;
@@ -316,12 +312,11 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiwidgetp = uiCreateButton (
       uiexppl->callbacks [UIEXPPL_CB_TARGET], NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiexppl->wcont [UIEXPPL_W_TGT_BUTTON] = uiwidgetp;
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);

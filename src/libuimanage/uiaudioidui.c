@@ -278,7 +278,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiWidgetExpandHoriz (audioidint->wcont [UIAUDID_W_MAIN_VBOX]);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (audioidint->wcont [UIAUDID_W_MAIN_VBOX], hbox);
+  nuiBoxPackStart (audioidint->wcont [UIAUDID_W_MAIN_VBOX], hbox, WCONT_FREE);
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
 
@@ -288,7 +288,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
       audioidint->callbacks [UIAUDID_CB_FIRST],
       /* CONTEXT: audio identification: first song */
       _("First"), NULL, NULL);
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   audioidint->wcont [UIAUDID_W_BUTTON_FIRST] = uiwidgetp;
 
   audioidint->callbacks [UIAUDID_CB_PREV] = callbackInit (
@@ -298,7 +298,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
       /* CONTEXT: audio identification: previous song */
       _("Previous"), NULL, NULL);
   uiButtonSetRepeat (uiwidgetp, REPEAT_TIME);
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   audioidint->wcont [UIAUDID_W_BUTTON_PREV] = uiwidgetp;
 
   audioidint->callbacks [UIAUDID_CB_NEXT] = callbackInit (
@@ -308,7 +308,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
       /* CONTEXT: audio identification: next song */
       C_("Song","Next"), NULL, NULL);
   uiButtonSetRepeat (uiwidgetp, REPEAT_TIME);
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   audioidint->wcont [UIAUDID_W_BUTTON_NEXT] = uiwidgetp;
 
   audioidint->callbacks [UIAUDID_CB_SAVE] = callbackInit (
@@ -317,53 +317,50 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
       audioidint->callbacks [UIAUDID_CB_SAVE],
       /* CONTEXT: audio identification: save data */
       _("Save"), NULL, NULL);
-  uiBoxPackEnd (hbox, uiwidgetp);
+  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
   audioidint->wcont [UIAUDID_W_BUTTON_SAVE] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
-  uiBoxPackEnd (hbox, uiwidgetp);
+  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginEnd (uiwidgetp, 6);
   uiWidgetSetClass (uiwidgetp, DARKACCENT_CLASS);
   audioidint->wcont [UIAUDID_W_EDIT_ALL] = uiwidgetp;
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   /* begin line */
 
   /* audio-identification logo, modified indicator, */
   /* copy button, file label, filename */
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (audioidint->wcont [UIAUDID_W_MAIN_VBOX], hbox);
+  nuiBoxPackStart (audioidint->wcont [UIAUDID_W_MAIN_VBOX], hbox, WCONT_FREE);
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
 
   audioidint->wcont [UIAUDID_W_AUDIOID_IMG] = uiImageNew ();
   uiImageClear (audioidint->wcont [UIAUDID_W_AUDIOID_IMG]);
   uiWidgetSetSizeRequest (audioidint->wcont [UIAUDID_W_AUDIOID_IMG], 24, -1);
-  uiBoxPackStart (hbox, audioidint->wcont [UIAUDID_W_AUDIOID_IMG]);
+  nuiBoxPackStart (hbox, audioidint->wcont [UIAUDID_W_AUDIOID_IMG], WCONT_KEEP);
   uiWidgetAlignHorizCenter (audioidint->wcont [UIAUDID_W_AUDIOID_IMG]);
   uiWidgetAlignVertCenter (audioidint->wcont [UIAUDID_W_AUDIOID_IMG]);
   uiWidgetSetMarginStart (audioidint->wcont [UIAUDID_W_AUDIOID_IMG], 1);
 
   /* CONTEXT: audio identification: label for displaying the audio file path */
   uiwidgetp = uiCreateColonLabel (_("File"));
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);
-  uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("");
   uiLabelEllipsizeOn (uiwidgetp);
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetClass (uiwidgetp, DARKACCENT_CLASS);
   uiLabelSetSelectable (uiwidgetp);
   audioidint->wcont [UIAUDID_W_FILE_DISP] = uiwidgetp;
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   pw = uiPanedWindowCreateVert ();
-  uiBoxPackStartExpandChildren (audioidint->wcont [UIAUDID_W_MAIN_VBOX], pw);
+  nuiBoxPackStartExpandChildren (audioidint->wcont [UIAUDID_W_MAIN_VBOX], pw, WCONT_KEEP);
   uiWidgetExpandHoriz (pw);
   uiWidgetAlignHorizFill (pw);
   uiWidgetSetClass (pw, ACCENT_CLASS);
@@ -421,51 +418,43 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   }
 
   col = uiCreateVertBox ();
-  uiBoxPackStartExpandChildren (hbox, col);
+  nuiBoxPackStartExpandChildren (hbox, col, WCONT_FREE);
   uiWidgetSetAllMargins (col, 4);
   uiWidgetExpandHoriz (col);
   uiWidgetExpandVert (col);
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   /* headings */
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (col, hbox);
+  nuiBoxPackStart (col, hbox, WCONT_KEEP);
 
   uiwidgetp = uiCreateLabel (" ");
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetMarginEnd (uiwidgetp, 4);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_LABEL], uiwidgetp);
-  uiwcontFree (uiwidgetp);
 
   snprintf (tbuff, sizeof (tbuff), "%s bold", bdjoptGetStr (OPT_M_UI_FONT));
 
   /* CONTEXT: audio identification: the data for the current song */
   uiwidgetp = uiCreateLabel (_("Current"));
-  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
+  nuiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_FREE);
   uiLabelSetFont (uiwidgetp, tbuff);
   uiWidgetSetMarginEnd (uiwidgetp, 4);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_ITEM_COL_A], uiwidgetp);
-  uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel (" ");
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   /* CONTEXT: audio identification: the data for the selected matched song */
   uiwidgetp = uiCreateLabel (_("Selected"));
-  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
+  nuiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_FREE);
   uiLabelSetFont (uiwidgetp, tbuff);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_ITEM_COL_B], uiwidgetp);
-  uiwcontFree (uiwidgetp);
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   uiaudioidAddItemDisplay (uiaudioid, col);
-
-  uiwcontFree (col);
 
   audioidint->wcont [UIAUDID_W_KEY_HNDLR] = uiEventAlloc ();
   audioidint->callbacks [UIAUDID_CB_KEYB] = callbackInit (
@@ -709,7 +698,7 @@ uiaudioidAddItemDisplay (uiaudioid_t *uiaudioid, uiwcont_t *col)
     }
 
     hbox = uiCreateHorizBox ();
-    uiBoxPackStart (col, hbox);
+    nuiBoxPackStart (col, hbox, WCONT_FREE);
     uiWidgetExpandHoriz (hbox);
 
     uiaudioidAddItem (uiaudioid, hbox, tagidx, count);
@@ -717,7 +706,6 @@ uiaudioidAddItemDisplay (uiaudioid_t *uiaudioid, uiwcont_t *col)
     ++count;
 
     uiBoxPostProcess (hbox);
-    uiwcontFree (hbox);
   }
 
   logProcEnd ("");
@@ -736,14 +724,13 @@ uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx, int idx)
   /* line: label, curr-rb, sel-rb */
 
   uiwidgetp = uiCreateColonLabel (tagdefs [tagidx].displayname);
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetMarginEnd (uiwidgetp, 4);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_LABEL], uiwidgetp);
-  uiwcontFree (uiwidgetp);
 
   rb = uiCreateRadioButton (NULL, "", UI_TOGGLE_BUTTON_ON);
   /* ellipsize set after text is set */
-  uiBoxPackStartExpandChildren (hbox, rb);
+  nuiBoxPackStartExpandChildren (hbox, rb, WCONT_KEEP);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_ITEM_COL_A], rb);
   if (idx + UIAUDID_SZGRP_ITEM_A < UIAUDID_SZGRP_MAX) {
     uiSizeGroupAdd (audioidint->szgrp [idx + UIAUDID_SZGRP_ITEM_A], rb);
@@ -751,12 +738,11 @@ uiaudioidAddItem (uiaudioid_t *uiaudioid, uiwcont_t *hbox, int tagidx, int idx)
   audioidint->items [idx].currrb = rb;
 
   uiwidgetp = uiCreateLabel (" ");
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiCreateRadioButton (rb, "", UI_TOGGLE_BUTTON_OFF);
   /* ellipsize set after text is set */
-  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
+  nuiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_ITEM_COL_B], uiwidgetp);
   if (idx + UIAUDID_SZGRP_ITEM_A < UIAUDID_SZGRP_MAX) {
     uiSizeGroupAdd (audioidint->szgrp [idx + UIAUDID_SZGRP_ITEM_A], uiwidgetp);

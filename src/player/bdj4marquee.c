@@ -389,16 +389,16 @@ marqueeBuildUI (marquee_t *marquee)
     marquee->wcont [MQ_W_PBAR] = uiCreateProgressBar ();
     uiAddProgressbarClass (MQ_ACCENT_CLASS, bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
     uiWidgetSetClass (marquee->wcont [MQ_W_PBAR], MQ_ACCENT_CLASS);
-    uiBoxPackStart (mainvbox, marquee->wcont [MQ_W_PBAR]);
+    nuiBoxPackStart (mainvbox, marquee->wcont [MQ_W_PBAR], WCONT_KEEP);
   }
 
   vbox = uiCreateVertBox ();
-  uiBoxPackStart (mainvbox, vbox);
+  nuiBoxPackStart (mainvbox, vbox, WCONT_FREE);
   uiWidgetExpandHoriz (vbox);
 
   if (! marquee->mqInfoOnly) {
     hbox = uiCreateHorizBox ();
-    uiBoxPackStart (vbox, hbox);
+    nuiBoxPackStart (vbox, hbox, WCONT_FREE);
     uiWidgetExpandHoriz (hbox);
     uiWidgetAlignHorizFill (hbox);
 
@@ -406,7 +406,7 @@ marqueeBuildUI (marquee_t *marquee)
     uiwidgetp = uiCreateLabel (_("Not Playing"));
     uiWidgetDisableFocus (uiwidgetp);
     uiWidgetSetClass (uiwidgetp, MQ_ACCENT_CLASS);
-    uiBoxPackStart (hbox, uiwidgetp);
+    nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     uiWidgetAlignHorizStart (uiwidgetp);
     marquee->wcont [MQ_W_INFO_DANCE] = uiwidgetp;
 
@@ -414,12 +414,11 @@ marqueeBuildUI (marquee_t *marquee)
     uiLabelSetMaxWidth (uiwidgetp, 6);
     uiWidgetDisableFocus (uiwidgetp);
     uiWidgetSetClass (uiwidgetp, MQ_ACCENT_CLASS);
-    uiBoxPackEnd (hbox, uiwidgetp);
+    nuiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
     uiWidgetAlignHorizEnd (uiwidgetp);
     marquee->wcont [MQ_W_COUNTDOWN_TIMER] = uiwidgetp;
 
     uiBoxPostProcess (hbox);
-    uiwcontFree (hbox);
   }
 
   /* info lines */
@@ -429,7 +428,7 @@ marqueeBuildUI (marquee_t *marquee)
   } else {
     tbox = uiCreateHorizBox ();
   }
-  uiBoxPackStart (vbox, tbox);
+  nuiBoxPackStart (vbox, tbox, WCONT_KEEP);
   uiWidgetExpandHoriz (tbox);
   uiWidgetAlignHorizFill (tbox);
   marquee->wcont [MQ_W_INFOBOX] = tbox;
@@ -444,7 +443,7 @@ marqueeBuildUI (marquee_t *marquee)
       uiLabelEllipsizeOn (uiwidgetp);
     }
     uiWidgetDisableFocus (uiwidgetp);
-    uiBoxPackStart (tbox, uiwidgetp);
+    nuiBoxPackStart (tbox, uiwidgetp, WCONT_KEEP);
     uiWidgetAlignHorizStart (uiwidgetp);
     uiWidgetAlignVertBaseline (uiwidgetp);
     marquee->wcont [i] = uiwidgetp;
@@ -461,7 +460,7 @@ marqueeBuildUI (marquee_t *marquee)
     marquee->wcont [MQ_W_SEP] = uiCreateHorizSeparator ();
     uiWidgetSetClass (marquee->wcont [MQ_W_SEP], MQ_ACCENT_CLASS);
     uiWidgetExpandHoriz (marquee->wcont [MQ_W_SEP]);
-    uiBoxPackEnd (vbox, marquee->wcont [MQ_W_SEP]);
+    nuiBoxPackEnd (vbox, marquee->wcont [MQ_W_SEP], WCONT_KEEP);
     uiWidgetSetMarginTop (marquee->wcont [MQ_W_SEP], 2);
     uiWidgetSetMarginBottom (marquee->wcont [MQ_W_SEP], 4);
 
@@ -470,7 +469,7 @@ marqueeBuildUI (marquee_t *marquee)
     for (int i = 0; i < marquee->mqLen; ++i) {
       marquee->marqueeLabs [i] = uiCreateLabel ("");
       uiWidgetDisableFocus (marquee->marqueeLabs [i]);
-      uiBoxPackStart (mainvbox, marquee->marqueeLabs [i]);
+      nuiBoxPackStart (mainvbox, marquee->marqueeLabs [i], WCONT_KEEP);
       uiWidgetAlignHorizStart (marquee->marqueeLabs [i]);
       uiWidgetExpandHoriz (marquee->marqueeLabs [i]);
       uiWidgetSetMarginTop (marquee->marqueeLabs [i], 4);
@@ -498,10 +497,9 @@ marqueeBuildUI (marquee_t *marquee)
   osuiSetIcon (imgbuff);
 
   /* do not free the infobox hbox */
+  uiBoxPostProcess (vbox);
   uiBoxPostProcess (mainvbox);
   uiwcontFree (mainvbox);
-  uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
 
   marquee->uibuilt = true;
 

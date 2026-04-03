@@ -204,14 +204,12 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
 
   /* the dialog doesn't have any space above the buttons */
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateLabel (" ");
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 }

@@ -231,6 +231,7 @@ enum {
 };
 
 typedef struct {
+  uiutilsaccent_t   accent;
   progstate_t       *progstate;
   char              *locknm;
   conn_t            *conn;
@@ -839,12 +840,9 @@ static void
 manageBuildUI (manageui_t *manage)
 {
   uiwcont_t   *vbox;
-  uiwcont_t   *hbox;
-  uiwcont_t   *uiwidgetp;
   char        imgbuff [BDJ4_PATH_MAX];
   char        tbuff [BDJ4_PATH_MAX];
   int         x, y;
-  uiutilsaccent_t accent;
 
   logProcBegin ();
   *imgbuff = '\0';
@@ -865,27 +863,15 @@ manageBuildUI (manageui_t *manage)
   uiWindowPackInWindow (manage->minfo.window, vbox);
   uiWidgetSetAllMargins (vbox, 4);
 
-  uiutilsAddProfileColorDisplay (vbox, &accent);
-  hbox = accent.hbox;
-  uiwcontFree (accent.cbox);
-
-  uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
-  uiBoxPackEnd (hbox, uiwidgetp);
-  manage->minfo.errorMsg = uiwidgetp;
-  manage->wcont [MANAGE_W_ERROR_MSG] = uiwidgetp;
-
-  uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
-  uiBoxPackEnd (hbox, uiwidgetp);
-  manage->minfo.statusMsg = uiwidgetp;
-  manage->wcont [MANAGE_W_STATUS_MSG] = uiwidgetp;
-
-  manage->wcont [MANAGE_W_MENUBAR] = uiCreateMenubar ();
-  uiBoxPackStart (hbox, manage->wcont [MANAGE_W_MENUBAR]);
+  uiutilsAddProfileColorDisplay (vbox, &manage->accent);
+  manage->wcont [MANAGE_W_MENUBAR] = uiutilsProfileAddMenubar (&manage->accent);
+  manage->wcont [MANAGE_W_STATUS_MSG] =
+      uiutilsProfileAddLabel (&manage->accent, ACCENT_CLASS);
+  manage->wcont [MANAGE_W_ERROR_MSG] =
+      uiutilsProfileAddLabel (&manage->accent, ERROR_CLASS);
+  uiutilsProfileAddLabel (&manage->accent, ERROR_CLASS);
 
   manage->mainvnb = uivnbCreate (vbox);
-
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 
@@ -988,8 +974,6 @@ manageBuildUI (manageui_t *manage)
   /* set up the initial menu */
   manageSwitchPage (manage, 0, MANAGE_NB_SONGLIST);
 
-  uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 
@@ -1128,7 +1112,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   /* management: player */
   uiwidgetp = uiplayerBuildUI (manage->slplayer);
-  uiBoxPackStart (vbox, uiwidgetp);
+  nuiBoxPackStart (vbox, uiwidgetp, WCONT_KEEP);
 
   manage->slhnb = uihnbCreate (vbox);
 
@@ -1140,19 +1124,18 @@ manageBuildUISongListEditor (manageui_t *manage)
       _("Song List"), NULL, NULL, MANAGE_TAB_SONGLIST);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpandChildren (mainhbox, hbox);
+  nuiBoxPackStartExpandChildren (mainhbox, hbox, WCONT_FREE);
 
   uiwidgetp = uimusicqBuildUI (manage->slsbsmusicq, manage->minfo.window,
       MUSICQ_SL, manage->minfo.errorMsg,
       manage->minfo.statusMsg, uiutilsValidatePlaylistNameClr);
-  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
+  nuiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
 
   uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
 
   vbox = uiCreateVertBox ();
 
-  uiBoxPackStart (hbox, vbox);
+  nuiBoxPackStart (hbox, vbox, WCONT_FREE);
   uiWidgetSetAllMargins (vbox, 4);
   uiWidgetSetMarginTop (vbox, 64);
 
@@ -1167,11 +1150,11 @@ manageBuildUISongListEditor (manageui_t *manage)
       manage->callbacks [MANAGE_CB_SBS_SELECT],
       /* CONTEXT: manage-ui: config: button: add the selected songs to the song list */
       NULL, buttonnm, _("Select"));
-  uiBoxPackStart (vbox, uiwidgetp);
+  nuiBoxPackStart (vbox, uiwidgetp, WCONT_KEEP);
   manage->wcont [MANAGE_W_SELECT_BUTTON] = uiwidgetp;
 
   uip = uisongselBuildUI (manage->slsbssongsel, manage->minfo.window);
-  uiBoxPackStartExpandChildren (hbox, uip);
+  nuiBoxPackStartExpandChildren (hbox, uip, WCONT_KEEP);
 
   /* song list: music queue tab */
   uip = uimusicqBuildUI (manage->slmusicq, manage->minfo.window,
@@ -1198,9 +1181,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uihnbSetCallback (manage->slhnb, manage->callbacks [MANAGE_CB_SL_NB]);
 
   uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 }
 
 static int
@@ -2359,13 +2340,12 @@ manageiTunesCreateDialog (manageui_t *manage)
   uiWidgetSetAllMargins (vbox, 4);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   /* CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist) */
   snprintf (tbuff, sizeof (tbuff), _("%s Playlist"), ITUNES_NAME);
   uiwidgetp = uiCreateColonLabel (tbuff);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   /* returns the button */
   manageiTunesDialogCreateList (manage);
@@ -2375,14 +2355,9 @@ manageiTunesCreateDialog (manageui_t *manage)
       "", DD_REPLACE_TITLE, NULL);
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
 
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
-  uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   logProcEnd ("");
 }
@@ -2492,7 +2467,7 @@ manageBuildUIMusicManager (manageui_t *manage)
 
   /* music manager: player */
   uiwidgetp = uiplayerBuildUI (manage->mmplayer);
-  uiBoxPackStart (vbox, uiwidgetp);
+  nuiBoxPackStart (vbox, uiwidgetp, WCONT_KEEP);
 
   manage->mmhnb = uihnbCreate (vbox);
 
@@ -2941,28 +2916,26 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uiWidgetSetAllMargins (vbox, 4);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   /* CONTEXT: create from playlist: select the playlist to use */
   uiwidgetp = uiCreateColonLabel (_("Playlist"));
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (szgrp, uiwidgetp);
-  uiwcontFree (uiwidgetp);
 
   manage->cfpl = uiplaylistCreate (manage->wcont [MANAGE_W_CFPL_DIALOG],
       hbox, PL_LIST_AUTO_SEQ, NULL, UIPL_PACK_START, UIPL_FLAG_NONE);
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
+
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   /* CONTEXT: create from playlist: set the maximum time for the song list */
   tlabel = _("Time Limit");
   uiwidgetp = uiCreateColonLabel (tlabel);
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (szgrp, uiwidgetp);
-  uiwcontFree (uiwidgetp);
 
   /* FIX: no validation! */
   sb = uisbnumCreate (hbox, tlabel, 2);
@@ -2970,10 +2943,9 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uisbnumSetValue (sb, 3.0 * 60.0 * 1000.0);
   manage->sbnum [MANAGE_SB_CFPL_TM_LIMIT] = sb;
 
+  uiBoxPostProcess (hbox);
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
-  uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
   uiwcontFree (szgrp);
 
   logProcEnd ("");

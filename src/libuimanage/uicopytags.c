@@ -190,27 +190,25 @@ uicopytagsCreateDialog (uict_t *uict)
 
   /* status message */
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateLabel ("");
   uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
-  uiBoxPackEnd (hbox, uiwidgetp);
+  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
   uict->statusMsg = uiwidgetp;
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   /* source */
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   /* CONTEXT: song editor: copy tags: source file */
   uiwidgetp = uiCreateColonLabel (_("Source"));
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiEntryInit (50, 200);
-  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
+  nuiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uict->source = uiwidgetp;
@@ -222,22 +220,20 @@ uicopytagsCreateDialog (uict_t *uict)
   uict->sourcesel = uiCreateButton (
       uict->callbacks [UICT_CB_SOURCE_SEL], NULL, NULL, NULL);
   uiButtonSetImageIcon (uict->sourcesel, "folder");
-  uiBoxPackStart (hbox, uict->sourcesel);
+  nuiBoxPackStart (hbox, uict->sourcesel, WCONT_KEEP);
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   /* target */
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   /* CONTEXT: song editor: copy tags: target file */
   uiwidgetp = uiCreateColonLabel (_("Target"));
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiEntryInit (50, 200);
-  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
+  nuiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uict->target = uiwidgetp;
@@ -249,10 +245,9 @@ uicopytagsCreateDialog (uict_t *uict)
   uict->targetsel = uiCreateButton (
       uict->callbacks [UICT_CB_TARGET_SEL], NULL, NULL, NULL);
   uiButtonSetImageIcon (uict->targetsel, "folder");
-  uiBoxPackStart (hbox, uict->targetsel);
+  nuiBoxPackStart (hbox, uict->targetsel, WCONT_KEEP);
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 

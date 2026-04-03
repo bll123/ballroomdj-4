@@ -329,86 +329,83 @@ uiqeCreateDialog (uiqe_t *uiqe)
   /* begin line: title display */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateLabel ("");
   uiLabelEllipsizeOn (uiwidgetp);
   uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignVertBaseline (uiwidgetp);
   uiqe->wcont [UIQE_W_ARTIST_DISP] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
   uiLabelEllipsizeOn (uiwidgetp);
   uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 10);
   uiWidgetAlignVertBaseline (uiwidgetp);
   uiqe->wcont [UIQE_W_TITLE_DISP] = uiwidgetp;
+
+  uiBoxPostProcess (hbox);
 
   /* begin line: speed scale */
   if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_SPEED) == 1) {
     hbox = uiCreateHorizBox ();
     uiWidgetExpandHoriz (hbox);
-    uiBoxPackStart (vbox, hbox);
+    nuiBoxPackStart (vbox, hbox, WCONT_FREE);
     uiqeAddScale (uiqe, hbox, UIQE_SCALE_SPD);
     uiBoxPostProcess (hbox);
-    uiwcontFree (hbox);
   }
 
   /* begin line: vol-adj scale */
   if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_VOLUME) == 1) {
     hbox = uiCreateHorizBox ();
     uiWidgetExpandHoriz (hbox);
-    uiBoxPackStart (vbox, hbox);
+    nuiBoxPackStart (vbox, hbox, WCONT_FREE);
     uiqeAddScale (uiqe, hbox, UIQE_SCALE_VOLADJ);
     uiBoxPostProcess (hbox);
-    uiwcontFree (hbox);
   }
 
   /* begin line: rating */
   if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_DANCERATING) == 1) {
     hbox = uiCreateHorizBox ();
     uiWidgetExpandHoriz (hbox);
-    uiBoxPackStart (vbox, hbox);
+    nuiBoxPackStart (vbox, hbox, WCONT_FREE);
 
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
-    uiBoxPackStart (hbox, uiwidgetp);
+    nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
 
     uiqe->uirating = uiratingSpinboxCreate (hbox, UIRATING_NORM);
     uiBoxPostProcess (hbox);
-    uiwcontFree (hbox);
   }
 
   /* begin line: level */
   if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_DANCELEVEL) == 1) {
     hbox = uiCreateHorizBox ();
     uiWidgetExpandHoriz (hbox);
-    uiBoxPackStart (vbox, hbox);
+    nuiBoxPackStart (vbox, hbox, WCONT_FREE);
 
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCELEVEL].displayname);
-    uiBoxPackStart (hbox, uiwidgetp);
+    nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
 
     uiqe->uilevel = uilevelSpinboxCreate (hbox, UIRATING_NORM);
     uiBoxPostProcess (hbox);
-    uiwcontFree (hbox);
   }
 
   /* begin line: favorite */
   if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_FAVORITE) == 1) {
     hbox = uiCreateHorizBox ();
     uiWidgetExpandHoriz (hbox);
-    uiBoxPackStart (vbox, hbox);
+    nuiBoxPackStart (vbox, hbox, WCONT_FREE);
 
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_FAVORITE].displayname);
-    uiBoxPackStart (hbox, uiwidgetp);
+    nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
 
     uiqe->uifavorite = uifavoriteSpinboxCreate (hbox);
     uiBoxPostProcess (hbox);
-    uiwcontFree (hbox);
   }
 
   uiBoxPostProcess (vbox);
@@ -509,7 +506,7 @@ uiqeAddScale (uiqe_t *uiqe, uiwcont_t *hbox, int scidx)
   uiqe->scaledata [scidx].tagkey = tagkey;
 
   uiwidgetp = uiCreateColonLabel (tagdefs [tagkey].displayname);
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
   uiqe->scaledata [scidx].label = uiwidgetp;
 
@@ -519,14 +516,14 @@ uiqeAddScale (uiqe_t *uiqe, uiwcont_t *hbox, int scidx)
       uiqeScaleDisplayCallback, &uiqe->scaledata [scidx]);
   uiScaleSetCallback (uiwidgetp, uiqe->scaledata [scidx].scalecb);
 
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 2);
 
   uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_SCALE], uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("100%");
   uiLabelAlignEnd (uiwidgetp);
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 2);
   uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_SCALE_DISP], uiwidgetp);
   uiqe->scaledata [scidx].scaledisp = uiwidgetp;

@@ -188,39 +188,38 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
 
   /* status message */
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateLabel ("");
-  uiBoxPackEnd (hbox, uiwidgetp);
+  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   uiaa->statusMsg = uiwidgetp;
 
-  /* trim silence */
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
+
+  /* trim silence */
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   /* CONTEXT: apply adjustments: trim silence checkbox */
   uiwidgetp = uiCreateCheckButton (_("Trim Silence"),
       (aaflags & SONG_ADJUST_TRIM) == SONG_ADJUST_TRIM);
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiaa->cbTrim = uiwidgetp;
 
-  /* adjust audio */
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
+
+  /* adjust audio */
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   /* CONTEXT: apply adjustments: adjust speed/song start/song end checkbox */
   uiwidgetp = uiCreateCheckButton (_("Adjust Speed, Song Start and Song End"),
       (aaflags & SONG_ADJUST_ADJUST) == SONG_ADJUST_ADJUST);
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiaa->cbAdjust = uiwidgetp;
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 
