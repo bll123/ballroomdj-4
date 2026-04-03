@@ -102,30 +102,28 @@ manageBuildUIStats (managestats_t *managestats)
 
   /* Number of songs */
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (managestats->vboxmain, hbox);
+  nuiBoxPackStart (managestats->vboxmain, hbox, WCONT_FREE);
   uiWidgetSetMarginTop (hbox, 2);
 
   /* CONTEXT: statistics: Label for number of songs in song list */
   uiwidgetp = uiCreateColonLabel (_("Songs"));
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetMarginEnd (uiwidgetp, 2);
-  uiwcontFree (uiwidgetp);
 
   managestats->songcountdisp = uiCreateLabel ("");
   uiLabelAlignEnd (managestats->songcountdisp);
-  uiBoxPackStart (hbox, managestats->songcountdisp);
+  nuiBoxPackStart (hbox, managestats->songcountdisp, WCONT_KEEP);
 
   /* total time (same horiz row) */
   /* CONTEXT: statistics: Label for total song list duration */
   uiwidgetp = uiCreateColonLabel (_("Total Time"));
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetMarginEnd (uiwidgetp, 2);
   uiWidgetSetMarginStart (uiwidgetp, 10);
-  uiwcontFree (uiwidgetp);
 
   managestats->tottimedisp = uiCreateLabel ("");
   uiLabelAlignEnd (managestats->tottimedisp);
-  uiBoxPackStart (hbox, managestats->tottimedisp);
+  nuiBoxPackStart (hbox, managestats->tottimedisp, WCONT_KEEP);
 
   for (int i = 0; i < STATS_MAX_DISP; ++i) {
     managestats->dancedisp [i] = uiCreateLabel ("");
@@ -135,9 +133,11 @@ manageBuildUIStats (managestats_t *managestats)
     }
   }
 
+  uiBoxPostProcess (hbox);
+
   /* horizontal box to hold the columns */
   chbox = uiCreateHorizBox ();
-  uiBoxPackStart (managestats->vboxmain, chbox);
+  nuiBoxPackStart (managestats->vboxmain, chbox, WCONT_FREE);
   uiWidgetSetMarginTop (chbox, 2);
 
   for (int i = 0; i < STATS_COLS; ++i) {
@@ -145,7 +145,7 @@ manageBuildUIStats (managestats_t *managestats)
 
     /* vertical box for each column */
     vbox = uiCreateVertBox ();
-    uiBoxPackStart (chbox, vbox);
+    nuiBoxPackStart (chbox, vbox, WCONT_FREE);
     uiWidgetSetMarginTop (vbox, 2);
     uiWidgetSetMarginStart (vbox, 2);
     uiWidgetSetMarginEnd (vbox, 8);
@@ -154,22 +154,17 @@ manageBuildUIStats (managestats_t *managestats)
       int   idx;
 
       idx = i * STATS_PER_COL * 2 + j * 2;
-      uiBoxPostProcess (hbox);
-      uiwcontFree (hbox);
       hbox = uiCreateHorizBox ();
-      uiBoxPackStart (vbox, hbox);
-      uiBoxPackStart (hbox, managestats->dancedisp [idx]);
-      uiBoxPackEnd (hbox, managestats->dancedisp [idx + 1]);
+      nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+      nuiBoxPackStart (hbox, managestats->dancedisp [idx], WCONT_KEEP);
+      nuiBoxPackEnd (hbox, managestats->dancedisp [idx + 1], WCONT_KEEP);
+      uiBoxPostProcess (hbox);
     }
 
     uiBoxPostProcess (vbox);
-    uiwcontFree (vbox);
   }
 
-  uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
   uiBoxPostProcess (chbox);
-  uiwcontFree (chbox);
 
   return managestats->vboxmain;
 }

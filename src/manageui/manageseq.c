@@ -138,18 +138,17 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
   /* edit sequences */
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vboxp, hbox);
+  nuiBoxPackStart (vboxp, hbox, WCONT_FREE);
 
   /* CONTEXT: sequence editor: label for sequence name */
   uiwidgetp = uiCreateColonLabel (_("Sequence"));
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiEntryInit (30, 100);
   manageseq->seqname = uiwidgetp;
   uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   manageSetSequenceName (manageseq, manageseq->newseqname);
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   /* CONTEXT: sequence editor: sequence name */
   uiEntrySetValidate (manageseq->seqname, _("Sequence"),
       uiutilsValidatePlaylistNameClr,
@@ -168,7 +167,6 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
   uiduallistSet (manageseq->seqduallist, dancelist, DL_LIST_SOURCE);
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   logProcEnd ("");
 }

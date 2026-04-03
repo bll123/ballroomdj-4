@@ -205,14 +205,13 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
 
   /* action selection */
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vboxp, hbox);
+  nuiBoxPackStart (vboxp, hbox, WCONT_FREE);
 
   /* CONTEXT: update database: select database update action */
   uiwidgetp = uiCreateColonLabel (_("Action"));
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetMarginStart (uiwidgetp, 2);
   uiSizeGroupAdd (szgrp, uiwidgetp);
-  uiwcontFree (uiwidgetp);
 
   managedb->dbsb = uisbtextCreate (hbox, 2);
   uisbtextSetList (managedb->dbsb, managedb->dblist);
@@ -223,44 +222,42 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uisbtextSetChangeCallback (managedb->dbsb,
       managedb->callbacks [MDB_CB_DB_CHG]);
 
-  /* help display */
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
+
+  /* help display */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vboxp, hbox);
+  nuiBoxPackStart (vboxp, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateLabel ("");
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetMarginStart (uiwidgetp, 2);
   uiSizeGroupAdd (szgrp, uiwidgetp);
-  uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("");
   uiLabelWrapOn (uiwidgetp);
-  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
+  nuiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 6);
   managedb->wcont [MDB_W_DB_HELP_DISP] = uiwidgetp;
 
-  /* db top dir  */
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
+
+  /* db top dir  */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vboxp, hbox);
+  nuiBoxPackStart (vboxp, hbox, WCONT_FREE);
 
   /* CONTEXT: update database: music folder to process */
   uiwidgetp = uiCreateColonLabel (_("Music Folder"));
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetMarginStart (uiwidgetp, 2);
   uiSizeGroupAdd (szgrp, uiwidgetp);
-  uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiEntryInit (50, BDJ4_PATH_MAX);
   stpecpy (tbuff, tbuff + sizeof (tbuff), bdjoptGetStr (OPT_M_DIR_MUSIC));
   pathDisplayPath (tbuff, sizeof (tbuff));
   uiEntrySetValue (uiwidgetp, tbuff);
-  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
+  nuiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetExpandHoriz (uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   managedb->wcont [MDB_W_DB_MUSIC_DIR] = uiwidgetp;
@@ -273,19 +270,18 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiwidgetp = uiCreateButton (
       managedb->callbacks [MDB_CB_TOPDIR_SEL], "", NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   managedb->wcont [MDB_W_TOPDIRSEL] = uiwidgetp;
 
-  /* buttons */
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
+
+  /* buttons */
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vboxp, hbox);
+  nuiBoxPackStart (vboxp, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateLabel ("");
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (szgrp, uiwidgetp);
-  uiwcontFree (uiwidgetp);
 
   managedb->callbacks [MDB_CB_START] = callbackInit (
       manageDbStart, managedb, NULL);
@@ -293,7 +289,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
       managedb->callbacks [MDB_CB_START],
       /* CONTEXT: update database: button to start the database update process */
       _("Start"), NULL, NULL);
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   managedb->wcont [MDB_W_DB_START] = uiwidgetp;
 
   managedb->callbacks [MDB_CB_STOP] = callbackInit (
@@ -302,13 +298,13 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
       managedb->callbacks [MDB_CB_STOP],
       /* CONTEXT: update database: button to stop the database update process */
       _("Stop"), NULL, NULL);
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);
   managedb->wcont [MDB_W_DB_STOP] = uiwidgetp;
 
   uiwidgetp = uiCreateProgressBar ();
   uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
-  uiBoxPackStart (vboxp, uiwidgetp);
+  nuiBoxPackStart (vboxp, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 2);
   uiWidgetSetMarginEnd (uiwidgetp, 2);
   managedb->wcont [MDB_W_DB_PROGRESS] = uiwidgetp;
@@ -317,11 +313,10 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiTextBoxSetReadonly (uiwidgetp);
   uiTextBoxSetDarkBG (uiwidgetp);
   uiTextBoxSetHeight (uiwidgetp, 300);
-  uiBoxPackStartExpandChildren (vboxp, uiwidgetp);
+  nuiBoxPackStartExpandChildren (vboxp, uiwidgetp, WCONT_KEEP);
   managedb->wcont [MDB_W_DB_STATUS] = uiwidgetp;
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
   uiwcontFree (szgrp);
 }
 
