@@ -317,6 +317,7 @@ uiCreateScrolledWindow (int minheight)
 
   scwindow = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_WINDOW_SCROLL);
   uiwcontSetWidget (scwindow, widget, NULL);
+
   return scwindow;
 }
 

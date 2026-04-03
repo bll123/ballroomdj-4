@@ -47,8 +47,6 @@ uiCreateCheckButton (const char *txt, int value)
   uitoggle = uiToggleButtonInit ();
 
   widget = gtk_check_button_new_with_label (txt);
-  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_CHKBOX);
@@ -72,8 +70,6 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
   }
   widget = gtk_radio_button_new_with_label_from_widget (
       GTK_RADIO_BUTTON (gwidget), txt);
-  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_RADIO);
   uiwcontSetWidget (uiwidget, widget, NULL);
@@ -92,8 +88,6 @@ uiCreateToggleButton (const char *txt,
   uitoggle = uiToggleButtonInit ();
 
   widget = gtk_toggle_button_new_with_label (txt);
-  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
 
   if (imagenm != NULL) {

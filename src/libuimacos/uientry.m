@@ -34,20 +34,23 @@ uiEntryInit (int entrySize, int maxSize)
   NSTextField     *widget;
   uientrybase_t   *ebase;
 
-fprintf (stderr, "c-entry\n");
   uientry = mdmalloc (sizeof (uientry_t));
   uientry->changed = false;
 
   widget = [[NSTextField alloc] init];
-  [widget setBezeled:YES];
-  [widget setDrawsBackground:YES];
-  [widget setEditable:YES];
-  [widget setSelectable:YES];
-//  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+  [widget setBezeled : YES];
+  [widget setDrawsBackground : YES];
+  [widget setEditable : YES];
+  [widget setSelectable : YES];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+  widget.needsDisplay = true;
 
   uiwidget = uiwcontAlloc (WCONT_T_ENTRY, WCONT_T_ENTRY);
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uientry = uientry;
+
+  [widget setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
 
   ebase = &uiwidget->uiint.uientrybase;
   ebase->entrySize = entrySize;
@@ -126,7 +129,7 @@ uiEntrySetValue (uiwcont_t *uiwidget, const char *value)
   }
 
   widget = uiwidget->uidata.widget;
-  [widget setStringValue: [NSString stringWithUTF8String: value]];
+  [widget setStringValue : [NSString stringWithUTF8String : value]];
 
   return;
 }

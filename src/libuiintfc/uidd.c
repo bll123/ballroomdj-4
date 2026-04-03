@@ -128,8 +128,7 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
   /* make sure text string is set here so that the button code */
   /* will position the image right */
   uiwidget = uiCreateButton (
-      dd->callbacks [DD_CB_BUTTON], "",
-      "button_down_small", NULL);
+      dd->callbacks [DD_CB_BUTTON], "", "button_down_small", NULL);
 
   if (where == DD_PACK_START) {
     uiBoxPackStart (boxp, uiwidget, WCONT_KEEP);

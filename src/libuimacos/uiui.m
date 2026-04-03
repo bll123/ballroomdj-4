@@ -31,8 +31,8 @@ uisetup_t   guisetup;
 int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 
 @interface AppDelegate : NSObject
-- (void)keyDown:(NSEvent *)theEvent;
-- (void)keyUp:(NSEvent *)theEvent;
+- (void)keyDown : (NSEvent *)theEvent;
+- (void)keyUp : (NSEvent *)theEvent;
 
 - (BOOL)acceptsFirstResponder;
 - (BOOL)canBecomeKeyWindow;
@@ -40,8 +40,8 @@ int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 @end
 
 @implementation AppDelegate
-- (void)keyDown:(NSEvent *)theEvent {}
-- (void)keyUp:(NSEvent *)theEvent {}
+- (void)keyDown : (NSEvent *)theEvent {}
+- (void)keyUp : (NSEvent *)theEvent {}
 
 - (BOOL)acceptsFirstResponder { return YES; }
 - (BOOL)canBecomeKeyWindow { return YES; }
@@ -60,19 +60,20 @@ uiUIInitialize (int direction)
   id  appDelegate;
 
   [NSApplication sharedApplication];
-  [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
-  [NSApp setPresentationOptions:NSApplicationPresentationDefault];
-  [NSApp activateIgnoringOtherApps:YES];
+  [NSApp setActivationPolicy : NSApplicationActivationPolicyRegular];
+  [NSApp setPresentationOptions : NSApplicationPresentationDefault];
+  [NSApp activateIgnoringOtherApps : YES];
 
   appDelegate = [[AppDelegate alloc] init];
-  [NSApp setDelegate:appDelegate];
+  [NSApp setDelegate : appDelegate];
 
   NSDebugEnabled = YES;
   NSZombieEnabled = YES;
 
 //  if (direction == TEXT_DIR_RTL) {
-//    [NSApp userInterfaceLayoutDirection:rightToLeft];
+//    [NSApp userInterfaceLayoutDirection : rightToLeft];
 //  }
+  guisetup.direction = direction;
   return;
 }
 
@@ -82,11 +83,11 @@ uiUIProcessEvents (void)
   NSEvent *currev = nil;
   bool    haveev = false;
 
-  while ((currev = [NSApp nextEventMatchingMask: NSEventMaskAny
-        untilDate: [NSDate distantPast]
-        inMode: NSDefaultRunLoopMode
-        dequeue: YES])) {;
-    [NSApp sendEvent:currev];
+  while ((currev = [NSApp nextEventMatchingMask : NSEventMaskAny
+        untilDate : [NSDate distantPast]
+        inMode : NSDefaultRunLoopMode
+        dequeue : YES])) {;
+    [NSApp sendEvent : currev];
     haveev = true;
   }
 
@@ -114,7 +115,11 @@ uiCleanup (void)
 void
 uiSetUICSS (uisetup_t *uisetup)
 {
+  int       tdir;
+
+  tdir = guisetup.direction;
   memcpy (&guisetup, uisetup, sizeof (uisetup_t));
+  guisetup.direction = tdir;
   return;
 }
 
@@ -154,7 +159,14 @@ uiwcontUIInit (uiwcont_t *uiwidget)
   layout = mdmalloc (sizeof (macoslayout_t));
   uiwidget->uidata.layout = layout;
 
-  layout->margins = NSEdgeInsetsMake (0, 0, 0, 0);
+  /* default margins */
+  /* top left bottom right */
+  if (guisetup.direction == TEXT_DIR_RTL) {
+    layout->margins = NSEdgeInsetsMake ((CGFloat) uiBaseMarginSz, 0.0, 0.0, (CGFloat) uiBaseMarginSz);
+  } else {
+    layout->margins = NSEdgeInsetsMake ((CGFloat) uiBaseMarginSz, (CGFloat) uiBaseMarginSz, 0.0, 0.0);
+  }
+
   layout->container = NULL;
   layout->centered = false;
   layout->expandhoriz = false;
@@ -162,22 +174,79 @@ uiwcontUIInit (uiwcont_t *uiwidget)
   layout->alignright = false;
 }
 
+/* on macos, every view is wrapped in a NSStackView so that the margins */
+/* can be set.  */
+/* Supposedly a layoutguide can be used as a container, but */
+/* it is not a view, and I'm not sure how to make it work */
 void
 uiwcontUIWidgetInit (uiwcont_t *uiwidget)
 {
-  NSView        *view = uiwidget->uidata.widget;
-  macoslayout_t *layout = uiwidget->uidata.layout;
+  macoslayout_t *layout;
 
   if (uiwidget->wbasetype == WCONT_T_WINDOW) {
     return;
   }
 
-  layout->container = [[NSStackView alloc] init];
-  [layout->container addView: view inGravity: NSStackViewGravityLeading];
+  layout = uiwidget->uidata.layout;
 
-  if (uiwidget->uidata.widget == uiwidget->uidata.packwidget) {
+  /* on macos, there are standard images, and an image view */
+  if (uiwidget->wtype != WCONT_T_IMAGE) {
+    NSView        *view;
+
+    view = uiwidget->uidata.widget;
+
+    layout->container = [[NSStackView alloc] init];
+    layout->container.spacing = 0.0;
+    layout->container.edgeInsets = layout->margins;
+    [layout->container addView : view inGravity : NSStackViewGravityCenter];
+//    layout->container.needsDisplay = YES;
+//    view.needsDisplay = YES;
+
+    [layout->container setHuggingPriority :
+        NSLayoutPriorityRequired
+        forOrientation : NSLayoutConstraintOrientationHorizontal];
+    [layout->container setHuggingPriority :
+        NSLayoutPriorityRequired
+        forOrientation : NSLayoutConstraintOrientationVertical];
+    [layout->container setContentHuggingPriority :
+        NSLayoutPriorityRequired
+        forOrientation : NSLayoutConstraintOrientationHorizontal];
+    [layout->container setContentHuggingPriority :
+        NSLayoutPriorityRequired
+        forOrientation : NSLayoutConstraintOrientationVertical];
+    /* otherwise everything gets shrunk to a minimal size */
+    [layout->container setContentCompressionResistancePriority :
+        NSLayoutPriorityRequired
+        forOrientation : NSLayoutConstraintOrientationHorizontal];
+    [layout->container setContentCompressionResistancePriority :
+        NSLayoutPriorityRequired
+        forOrientation : NSLayoutConstraintOrientationVertical];
+
+    [view setContentHuggingPriority :
+        NSLayoutPriorityRequired
+        forOrientation : NSLayoutConstraintOrientationHorizontal];
+    [view setContentHuggingPriority :
+        NSLayoutPriorityRequired
+        forOrientation : NSLayoutConstraintOrientationVertical];
+
+    /* otherwise everything gets shrunk to a minimal size */
+    [view setContentCompressionResistancePriority :
+        NSLayoutPriorityRequired
+        forOrientation : NSLayoutConstraintOrientationHorizontal];
+    [view setContentCompressionResistancePriority :
+        NSLayoutPriorityRequired
+        forOrientation : NSLayoutConstraintOrientationVertical];
+
+//    view.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
+    layout->container.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
+  }
+
+// ### this situation needs to be handled
+  if (uiwidget->uidata.packwidget == uiwidget->uidata.widget) {
     uiwidget->uidata.packwidget = layout->container;
   }
+
+  return;
 }
 
 void

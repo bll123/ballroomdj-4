@@ -40,6 +40,10 @@
 
 enum {
   UITEST_W_WINDOW,
+  UITEST_W_MENUBAR,
+  UITEST_W_MENU_A,
+  UITEST_W_MENU_B,
+  UITEST_W_STATUS_MSG,
   UITEST_W_B,
   UITEST_W_B_MSG,
   UITEST_W_B_LEFT,
@@ -350,8 +354,6 @@ static void
 uitestBuildUI (uitest_t *uitest)
 {
   uiwcont_t   *vbox;
-//  uiwcont_t   *hbox;
-//  uiwcont_t   *uiwidgetp;
 
   uitest->callbacks [UITEST_CB_CLOSE] = callbackInit (
       uitestCloseWin, uitest, NULL);
@@ -376,11 +378,58 @@ uitestBuildUI (uitest_t *uitest)
   uiWidgetSetAllMargins (vbox, 4);
 
   uiutilsHeaderLineSetup (vbox, &uitest->accent);
+  uitest->wcont [UITEST_W_MENUBAR] = uiutilsHeaderLineAddMenubar (&uitest->accent);
+  uitest->wcont [UITEST_W_STATUS_MSG] =
+      uiutilsHeaderLineAddLabel (&uitset->accent, ACCENT_CLASS);
   uiutilsHeaderLinePostProcess (&uitest->accent);
+
+  uitest->wcont [UITEST_W_MENU_A] = uiMenuAlloc ();
+
+  menuitem = uiMenuAddMainItem (uitest->wcont [UITEST_W_MENUBAR],
+      uitest->wcont [UITEST_W_MENU_A], "Menu A");
+  menu = uiCreateSubMenu (menuitem);
+  uiwcontFree (menuitem);
+
+  menuitem = uiMenuCreateItem (menu, "Menu A 1", NULL);
+  uiwcontFree (menuitem);
+
+  menuitem = uiMenuCreateItem (menu, "Menu A 2", NULL);
+  uiwcontFree (menuitem);
+
+  uiMenuAddSeparator (menu);
+
+  menuitem = uiMenuCreateCheckbox (menu, "Menu A 3", 0, NULL);
+  uiwcontFree (menuitem);
+
+  menuitem = uiMenuCreateCheckbox (menu, "Menu A 4", 1, NULL);
+  uiwcontFree (menuitem);
+
+  uiMenuSetInitialized (uitest->wcont [UITEST_W_MENU_A]);
+  uiMenuDisplay (uitest->wcont [UITEST_W_MENU_A]);
+
+  uitest->wcont [UITEST_W_MENU_B] = uiMenuAlloc ();
+
+  menuitem = uiMenuAddMainItem (uitest->wcont [UITEST_W_MENUBAR],
+      uitest->wcont [UITEST_W_MENU_B], "Menu B");
+  menu = uiCreateSubMenu (menuitem);
+  uiwcontFree (menuitem);
+
+  menuitem = uiMenuCreateItem (menu, "Menu B 1", NULL);
+  uiwcontFree (menuitem);
+
+  menuitem = uiMenuCreateItem (menu, "Menu B 2", NULL);
+  uiwcontFree (menuitem);
+
+  menuitem = uiMenuCreateItem (menu, "Dis B 3", NULL);
+  uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
+  uiwcontFree (menuitem);
+
+  uiMenuSetInitialized (uitest->wcont [UITEST_W_MENU_B]);
+  uiMenuDisplay (uitest->wcont [UITEST_W_MENU_B]);
 
   /* main notebook */
 
-  uitest->mainvnb = uivnbCreate (vbox);
+  uitest->mainvnb = uivnbCreate ("vnb-main", vbox);
 
   uitestUIButtons (uitest);
   uitestUIToggleButtons (uitest);
@@ -750,6 +799,7 @@ fprintf (stderr, "ChgInd\n");
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateChangeIndicator (hbox);
+  uiWidgetSetMarginEnd (uiwidgetp, 4);
   uichgindMarkNormal (uiwidgetp);
   uitest->wcont [UITEST_W_CI_A] = uiwidgetp;
 
@@ -769,6 +819,7 @@ fprintf (stderr, "ChgInd\n");
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateChangeIndicator (hbox);
+  uiWidgetSetMarginEnd (uiwidgetp, 4);
   uichgindMarkChanged (uiwidgetp);
   uitest->wcont [UITEST_W_CI_B] = uiwidgetp;
 
@@ -837,6 +888,7 @@ void
 uitestUIEntry (uitest_t *uitest)
 {
   uiwcont_t   *vbox;
+  uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
 
 fprintf (stderr, "Entry\n");
@@ -956,6 +1008,32 @@ fprintf (stderr, "Labels\n");
   uiWidgetSetClass (uiwidgetp, "rb");
 
   uiBoxPostProcess (hbox);
+
+  /* label: pack start / expand horiz / align right */
+
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+
+  uiwidgetp = uiCreateLabel ("ps-eh-ae");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "gb");
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiWidgetAlignHorizEnd (hbox);
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiCreateLabel ("ps-b");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "bb");
+  uiwcontFree (uiwidgetp);
+
+  uiwidgetp = uiCreateLabel ("ps-c");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, "rb");
+  uiwcontFree (uiwidgetp);
+
+  uiwcontFree (hbox);
 
   /* label: pack start / expand horiz / align center */
 
@@ -1365,6 +1443,8 @@ uitestUISizeGroup (uitest_t *uitest)
   uiwcont_t   *vbox;
   uiwcont_t   *hbox;
   uiwcont_t   *sg;
+  uiwcont_t   *sgb;
+  uiwcont_t   *sgc;
   uiwcont_t   *uiwidgetp;
 
 fprintf (stderr, "SizeGroup\n");
@@ -1376,6 +1456,8 @@ fprintf (stderr, "SizeGroup\n");
   uivnbAppendPage (uitest->mainvnb, vbox, "Size Group", VNB_NO_ID);
 
   sg = uiCreateSizeGroupHoriz ();
+  sgb = uiCreateSizeGroupHoriz ();
+  sgc = uiCreateSizeGroupHoriz ();
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox, WCONT_FREE);

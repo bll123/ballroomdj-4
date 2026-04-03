@@ -23,7 +23,6 @@ uiCreateSizeGroupHoriz (void)
 {
   uiwcont_t   *uiwidget;
 
-fprintf (stderr, "c-sg-h\n");
   uiwidget = uiwcontAlloc (WCONT_T_SIZE_GROUP, WCONT_T_SIZE_GROUP);
   return uiwidget;
 }
@@ -38,11 +37,12 @@ uiSizeGroupAdd (uiwcont_t *uisg, uiwcont_t *uiwidget)
     return;
   }
 
-  first = uisg->uidata.widget;
-  widget = uiwidget->uidata.widget;
+  first = uisg->uidata.packwidget;
+  widget = uiwidget->uidata.packwidget;
 
   if (first == NULL) {
-    uisg->uidata.widget = widget;
+    uisg->uidata.widget = uiwidget->uidata.widget;
+    uisg->uidata.packwidget = widget;
     uisg->packed = uiwidget->packed;
     return;
   }
@@ -52,17 +52,24 @@ uiSizeGroupAdd (uiwcont_t *uisg, uiwcont_t *uiwidget)
   }
 
   if (! uisg->packed) {
-    fprintf (stderr, "ERR: first widget %d/%s not packed\n", uisg->wtype, uiwcontDesc (uisg->wtype));
+    fprintf (stderr, "ERR : first widget %d/%s not packed\n", uisg->wtype, uiwcontDesc (uisg->wtype));
   }
   if (! uiwidget->packed) {
-    fprintf (stderr, "ERR: widget %d/%s not packed\n", uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
+    fprintf (stderr, "ERR : widget %d/%s not packed\n", uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   }
   if (! uisg->packed || ! uiwidget->packed) {
     return;
   }
 
-  [widget.layoutMarginsGuide.widthAnchor
-      constraintEqualToAnchor: first.layoutMarginsGuide.widthAnchor].active = YES;
+//  [widget.widthAnchor
+//      constraintEqualToAnchor : first.widthAnchor].active = YES;
+
+  first = uisg->uidata.widget;
+  widget = uiwidget->uidata.widget;
+
+  [widget.widthAnchor
+      constraintEqualToAnchor : first.widthAnchor].active = YES;
+
   return;
 }
 

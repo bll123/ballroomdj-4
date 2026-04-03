@@ -30,19 +30,26 @@ uiCreateNotebook (void)
 
 fprintf (stderr, "c-nb\n");
   nb = [[NSTabView alloc] init];
-  [nb setTabPosition: NSTabPositionTop];
+  [nb setTabPosition : NSTabPositionTop];
 //  gtk_notebook_set_show_border (GTK_NOTEBOOK (nb), TRUE);
 //  gtk_widget_set_hexpand (nb, TRUE);
 //  gtk_widget_set_vexpand (nb, FALSE);
+  [nb setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
 
   uiwidget = uiwcontAlloc (WCONT_T_NOTEBOOK, WCONT_T_NOTEBOOK);
   uiwcontSetWidget (uiwidget, nb, NULL);
+
+  [nb setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+
+  nb.needsDisplay = true;
+
   return uiwidget;
 }
 
 void
 uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
-    uiwcont_t *uilabel)
+    const char *label, uiwcont_t *image)
 {
   NSTabView       *nb;
   NSTabViewItem   *tabv;
@@ -50,7 +57,12 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
   if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-append-page")) {
     return;
   }
-  if (! uiwcontValid (uibox, WCONT_T_BOX, "nb-append-page-box")) {
+  if (uibox->wbasetype != WCONT_T_BOX && uibox->wtype != WCONT_T_BOX &&
+      uibox->wtype != WCONT_T_SCROLL_WINDOW) {
+    fprintf (stderr, "ERR: %s incorrect type exp:%d/%s actual:%d/%s\n",
+        "nb-append-page-box",
+        WCONT_T_BOX, uiwcontDesc (WCONT_T_BOX),
+        uibox->wbasetype, uiwcontDesc (uibox->wbasetype));
     return;
   }
   if (uibox == NULL) {
@@ -61,17 +73,18 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
   tabv = [[NSTabViewItem alloc] init];
 // ### will need to change to draw-label so that a custom tab w/pic can
 // be displayed.
-  if (uilabel != NULL) {
-    NSTextField     *lab;
-
-    lab = uilabel->uidata.widget;
-    tabv.label = [lab stringValue];
+// or rather, just re-implement as uivnb was done
+  if (label != NULL) {
+    tabv.label = [NSString stringWithUTF8String : label];
   } else {
-    [nb setTabViewType: NSNoTabsNoBorder];
+    [nb setTabViewType : NSNoTabsNoBorder];
   }
 
-  [tabv setView: uibox->uidata.widget];
-  [nb addTabViewItem: tabv];
+  [tabv setView : uibox->uidata.widget];
+  [nb addTabViewItem : tabv];
+  uibox->packed = true;
+
+  nb.needsDisplay = true;
 
   return;
 }
@@ -86,7 +99,7 @@ uiNotebookSetPage (uiwcont_t *uinotebook, int pagenum)
   }
 
   nb = uinotebook->uidata.widget;
-  [nb selectTabViewItemAtIndex: pagenum];
+  [nb selectTabViewItemAtIndex : pagenum];
   return;
 }
 
@@ -101,4 +114,18 @@ uiNotebookSetCallback (uiwcont_t *uinotebook, callback_t *uicb)
   }
 
   return;
+}
+
+void
+uiNotebookHideTabs (uiwcont_t *uinotebook)
+{
+  NSTabView   *nb;
+
+  if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-tabs")) {
+    return;
+  }
+
+  nb = uinotebook->uidata.widget;
+  [nb setTabViewType : NSNoTabsBezelBorder];
+  [nb setTabPosition : NSTabPositionNone];
 }

@@ -54,21 +54,14 @@ uiwcont_t *
 uiImageFromFile (const char *fn)
 {
   uiwcont_t   *uiwidget = NULL;
-  NSImageView *imgv;
   NSImage     *image;
   NSString    *ns;
 
-  ns = [NSString stringWithUTF8String: fn];
-  image = [[NSImage alloc] initWithContentsOfFile: ns];
-  imgv = [[NSImageView alloc] init];
-  [imgv setImage: image];
-  imgv.imageScaling = NSImageScaleProportionallyDown;
+  ns = [NSString stringWithUTF8String : fn];
+  image = [[NSImage alloc] initWithContentsOfFile : ns];
 
   uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
-  uiwcontSetWidget (uiwidget, imgv, NULL);
-
-  uiWidgetAlignHorizCenter (uiwidget);
-  uiWidgetAlignVertCenter (uiwidget);
+  uiwcontSetWidget (uiwidget, image, NULL);
 
   return uiwidget;
 }
@@ -81,19 +74,23 @@ uiImageScaledFromFile (const char *fn, int scale)
   NSImage     *image;
   NSString    *ns;
 
-  ns = [NSString stringWithUTF8String: fn];
-  image = [[NSImage alloc] initWithContentsOfFile: ns];
+  ns = [NSString stringWithUTF8String : fn];
+  image = [[NSImage alloc] initWithContentsOfFile : ns];
   imgv = [[NSImageView alloc] init];
-  [imgv setImage: image];
-  imgv.imageScaling = NSImageScaleProportionallyDown;
-  [imgv.widthAnchor constraintEqualToConstant: scale + 4].active = YES;
-  [imgv.heightAnchor constraintEqualToConstant: scale + 4].active = YES;
 
-  uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
+  /* used for the starter icon image */
+  /* wrap in an image-view */
+  [imgv setImage : image];
+//  [imgv setTranslatesAutoresizingMaskIntoConstraints : NO];
+  imgv.imageScaling = NSImageScaleProportionallyDown;
+  [imgv.widthAnchor constraintEqualToConstant : scale + 4].active = YES;
+  [imgv.heightAnchor constraintEqualToConstant : scale + 4].active = YES;
+
+  uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE_VIEW);
   uiwcontSetWidget (uiwidget, imgv, NULL);
 
-  uiWidgetAlignHorizCenter (uiwidget);
-  uiWidgetAlignVertCenter (uiwidget);
+  [imgv setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
 
   return uiwidget;
 }
@@ -108,9 +105,9 @@ uiImageClear (uiwcont_t *uiwidget)
     return;
   }
 
-  image = [[NSImage alloc] initWithSize: NSZeroSize];
+  image = [[NSImage alloc] initWithSize : NSZeroSize];
   imgv = [[NSImageView alloc] init];
-  [imgv setImage: image];
+  [imgv setImage : image];
   uiwcontSetWidget (uiwidget, imgv, NULL);
   return;
 }

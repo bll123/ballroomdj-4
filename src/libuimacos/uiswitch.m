@@ -14,10 +14,13 @@
 #include <Cocoa/Cocoa.h>
 #import <Foundation/NSObject.h>
 
+#include "bdj4.h"
 #include "callback.h"
 #include "mdebug.h"
+#include "pathbld.h"
 #include "uiwcont.h"
 
+#include "ui/uimacos-int.h"
 #include "ui/uiwcont-int.h"
 
 #include "ui/uiimage.h"
@@ -33,18 +36,39 @@ uiwcont_t *
 uiCreateSwitch (int value)
 {
   uiwcont_t   *uiwidget;
-  NSSwitch    *widget = nil;
+  IButton     *widget = nil;
+  NSImage     *nsimage;
+  char        tbuff [BDJ4_PATH_MAX];
 
-fprintf (stderr, "c-switch\n");
-  widget = [[NSSwitch alloc] init];
-  [widget setState: NSControlStateValueOff];
+  widget = [[IButton alloc] init];
+  [widget setButtonType : NSButtonTypePushOnPushOff];
+  [widget setState : NSControlStateValueOff];
   if (value) {
-    [widget setState: NSControlStateValueOn];
+    [widget setState : NSControlStateValueOn];
   }
-//  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
 
-  uiwidget = uiwcontAlloc (WCONT_T_SWITCH, WCONT_T_SWITCH);
+  /* relative path */
+  pathbldMakePath (tbuff, sizeof (tbuff), "switch-off", BDJ4_IMG_SVG_EXT,
+      PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
+  nsimage = [[NSImage alloc] initWithContentsOfFile :
+      [NSString stringWithUTF8String : tbuff]];
+  [widget setImage : nsimage];
+
+  pathbldMakePath (tbuff, sizeof (tbuff), "switch-on", BDJ4_IMG_SVG_EXT,
+      PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
+  nsimage = [[NSImage alloc] initWithContentsOfFile :
+      [NSString stringWithUTF8String : tbuff]];
+  [widget setAlternateImage : nsimage];
+
+  uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_RADIO_BUTTON);
   uiwcontSetWidget (uiwidget, widget, NULL);
+
+  widget.ButtonType = NSButtonTypeToggle;
+  widget.bezelStyle = NSBezelStyleToolbar;
+  [widget setUIWidget : uiwidget];
+  [widget setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
 
   return uiwidget;
 }
@@ -70,5 +94,13 @@ uiSwitchGetValue (uiwcont_t *uiwidget)
 void
 uiSwitchSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
+  IButton   *widget;
+
+  if (uiwidget == NULL) {
+    return;
+  }
+
+  widget = uiwidget->uidata.widget;
+  [widget setCallback : uicb];
   return;
 }

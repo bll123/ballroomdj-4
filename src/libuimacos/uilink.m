@@ -25,17 +25,20 @@ uiCreateLink (const char *label, const char *uri)
   uiwcont_t   *uiwidget;
   ILabel      *widget;
 
-fprintf (stderr, "c-link\n");
   widget = [[ILabel alloc] init];
-  [widget setBezeled:NO];
-  [widget setDrawsBackground:NO];
-  [widget setEditable:NO];
-  [widget setSelectable:NO];
-  [widget setStringValue: [NSString stringWithUTF8String: label]];
-//  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+  [widget setBezeled : NO];
+  [widget setDrawsBackground : NO];
+  [widget setEditable : NO];
+  [widget setSelectable : NO];
+  [widget setStringValue : [NSString stringWithUTF8String : label]];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
 
   uiwidget = uiwcontAlloc (WCONT_T_LINK, WCONT_T_LINK);
   uiwcontSetWidget (uiwidget, widget, NULL);
+
+  [widget setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+
   return NULL;
 }
 

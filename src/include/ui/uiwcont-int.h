@@ -31,6 +31,7 @@ typedef enum {
   WCONT_T_EVENT_BOX,
   WCONT_T_HBOX,
   WCONT_T_IMAGE,
+  WCONT_T_IMAGE_VIEW,       // used by macos
   WCONT_T_KEY,
   WCONT_T_LABEL,
   WCONT_T_LINK,
@@ -157,6 +158,8 @@ GtkWidget * uiImageWidget (const char *imagenm);
 
 /* general widget container */
 typedef struct uiwcont {
+  uiwcontint_t    uiint;
+  uispecific_t    uidata;
   uiwconttype_t   wbasetype;
   uiwconttype_t   wtype;
   /* data internal to each widget type */
@@ -180,8 +183,8 @@ uiwcontValid (uiwcont_t *uiwidget, int exptype, const char *tag)
   }
   if ((int) uiwidget->wbasetype != exptype &&
      (int) uiwidget->wtype != exptype) {
-    fprintf (stderr, "ERR: %s incorrect type exp:%d/%s actual:%d/%s %d/%s\n",
-        tag,
+    fprintf (stderr, "ERR: %s (id:%" PRIu32 ") incorrect type exp:%d/%s actual:%d/%s %d/%s\n",
+        tag, uiwidget->id,
         exptype, uiwcontDesc (exptype),
         uiwidget->wbasetype, uiwcontDesc (uiwidget->wbasetype),
         uiwidget->wtype, uiwcontDesc (uiwidget->wtype));

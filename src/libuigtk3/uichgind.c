@@ -30,9 +30,6 @@ uiCreateChangeIndicator (uiwcont_t *boxp)
 
   widget = gtk_label_new ("");
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
-  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
-  gtk_widget_set_margin_end (widget, uiBaseMarginSz);
 
   uiwidget = uiwcontAlloc (WCONT_T_CHGIND, WCONT_T_CHGIND);
   uiwcontSetWidget (uiwidget, widget, NULL);

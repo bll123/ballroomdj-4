@@ -467,8 +467,20 @@ fprintf (stderr, "-- conf prof-disp\n");
   confui->gui.errorMsg = uiutilsHeaderLineAddLabel (&confui->accent, ERROR_CLASS);
   uiutilsHeaderLinePostProcess (&confui->accent);
 
-fprintf (stderr, "-- conf vnb\n");
+fprintf (stderr, "-- conf mainvnb\n");
   confui->gui.mainvnb = uivnbCreate (confui->gui.vbox);
+  uiwidgetp = uiCreateLabel ("");
+  uiWidgetAddClass (uiwidgetp, ACCENT_CLASS);
+  uiBoxPackEnd (hbox, uiwidgetp);
+  confui->gui.statusMsg = uiwidgetp;
+
+  uiwidgetp = uiCreateLabel ("");
+  uiWidgetAddClass (uiwidgetp, ERROR_CLASS);
+  uiBoxPackEnd (hbox, uiwidgetp);
+  confui->gui.errorMsg = uiwidgetp;
+
+  confui->gui.mainvnb = uivnbCreate ("vnb-confui", confui->gui.vbox);
+>>>>>>> merge rev
 
   confuiBuildUIGeneral (&confui->gui);
   confuiBuildUIPlayer (&confui->gui);

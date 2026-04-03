@@ -18,6 +18,7 @@
 #include "pathbld.h"
 #include "uiwcont.h"
 
+#include "ui/uimacos-int.h"
 #include "ui/uiwcont-int.h"
 
 #include "ui/uiui.h"
@@ -36,28 +37,29 @@ uiwcont_t *
 uiCreateCheckButton (const char *txt, int value)
 {
   uiwcont_t   *uiwidget;
-  NSButton    *widget = nil;
   uitoggle_t  *uitoggle;
+  IButton     *widget = nil;
 
   uitoggle = uiToggleButtonInit ();
 
-fprintf (stderr, "c-chk-bt\n");
-//  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-//  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
-  widget = [[NSButton alloc] init];
-  [widget setState: NSControlStateValueOff];
+  widget = [[IButton alloc] init];
+  [widget setState : NSControlStateValueOff];
   if (value) {
-    [widget setState: NSControlStateValueOn];
+    [widget setState : NSControlStateValueOn];
   }
-  [widget setButtonType: NSButtonTypeSwitch];
+  [widget setButtonType : NSButtonTypeSwitch];
   if (txt != NULL) {
-    [widget setTitle: [NSString stringWithUTF8String: txt]];
+    [widget setTitle : [NSString stringWithUTF8String : txt]];
   }
-//  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_CHKBOX);
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uitoggle = uitoggle;
+
+  [widget setUIWidget : uiwidget];
+  [widget setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
 
   return uiwidget;
 }
@@ -66,28 +68,29 @@ uiwcont_t *
 uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
 {
   uiwcont_t   *uiwidget;
-  NSButton    *widget = nil;
+  IButton     *widget = nil;
   uitoggle_t  *uitoggle;
 
   uitoggle = uiToggleButtonInit ();
 
-fprintf (stderr, "c-radio-bt\n");
-//  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-//  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
-  widget = [[NSButton alloc] init];
-  [widget setState: NSControlStateValueOff];
+  widget = [[IButton alloc] init];
+  [widget setButtonType : NSButtonTypeRadio];
+  [widget setState : NSControlStateValueOff];
   if (value) {
-    [widget setState: NSControlStateValueOn];
+    [widget setState : NSControlStateValueOn];
   }
-  [widget setButtonType: NSButtonTypeRadio];
   if (txt != NULL) {
-    [widget setTitle: [NSString stringWithUTF8String: txt]];
+    [widget setTitle : [NSString stringWithUTF8String : txt]];
   }
 //  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_RADIO);
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uitoggle = uitoggle;
+
+  [widget setUIWidget : uiwidget];
+  [widget setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
 
   return uiwidget;
 }
@@ -97,26 +100,26 @@ uiCreateToggleButton (const char *txt,
     const char *imagenm, const char *tooltiptxt, int value)
 {
   uiwcont_t   *uiwidget;
-  NSButton    *widget = nil;
+  IButton     *widget = nil;
   uitoggle_t  *uitoggle;
 
   uitoggle = uiToggleButtonInit ();
 
-fprintf (stderr, "c-toggle-bt\n");
-//  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-//  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
-  widget = [[NSButton alloc] init];
-  [widget setButtonType: NSButtonTypePushOnPushOff];
-  [widget setState: NSControlStateValueOff];
+  widget = [[IButton alloc] init];
+  [widget setButtonType : NSButtonTypePushOnPushOff];
+  [widget setState : NSControlStateValueOff];
   if (value) {
-    [widget setState: NSControlStateValueOn];
+    [widget setState : NSControlStateValueOn];
   }
   if (txt != NULL) {
-    [widget setTitle: [NSString stringWithUTF8String: txt]];
+    [widget setTitle : [NSString stringWithUTF8String : txt]];
+    widget.imagePosition = NSImageRight;
   }
-//  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
 
-//    gtk_widget_set_tooltip_text (widget, title);
+  if (tooltiptxt != NULL) {
+    [widget setToolTip : [NSString stringWithUTF8String : tooltiptxt]];
+  }
 
   if (imagenm != NULL) {
     NSString    *ns;
@@ -126,15 +129,21 @@ fprintf (stderr, "c-toggle-bt\n");
     /* relative path */
     pathbldMakePath (tbuff, sizeof (tbuff), imagenm, BDJ4_IMG_SVG_EXT,
         PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-    ns = [NSString stringWithUTF8String: imagenm];
-    nsimage = [[NSImage alloc] initWithContentsOfFile: ns];
-    [widget setImage: nsimage];
-    uitoggle->image = nsimage;
+    ns = [NSString stringWithUTF8String : imagenm];
+    nsimage = [[NSImage alloc] initWithContentsOfFile : ns];
+    [widget setImage : nsimage];
+  }
+  if (image != NULL) {
+    [widget setImage : image->uidata.widget];
   }
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_RADIO);
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uitoggle = uitoggle;
+
+  [widget setUIWidget : uiwidget];
+  [widget setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
 
   return uiwidget;
 }
@@ -142,7 +151,7 @@ fprintf (stderr, "c-toggle-bt\n");
 void
 uiToggleButtonFree (uiwcont_t *uiwidget)
 {
-  uitoggle_t      *uitoggle;
+  uitoggle_t    *uitoggle;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_TOGGLE, "toggle-free")) {
     return;
@@ -150,7 +159,6 @@ uiToggleButtonFree (uiwcont_t *uiwidget)
 
   uitoggle = uiwidget->uiint.uitoggle;
   mdfree (uitoggle);
-
   return;
 }
 

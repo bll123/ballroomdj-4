@@ -39,6 +39,7 @@ typedef struct {
 
 typedef struct uivnb {
   uiwcont_t   *nb;
+  uiwcont_t   *sg;
   uiwcont_t   *vlist;
   uiwcont_t   *boxlist [VNB_MAX_PAGECOUNT];
   uiwcont_t   *tablist [VNB_MAX_PAGECOUNT];
@@ -55,7 +56,7 @@ typedef struct uivnb {
 bool uivnbSetPageCallback (void *udata);
 
 uivnb_t *
-uivnbCreate (uiwcont_t *box)
+uivnbCreate (const char *ident, uiwcont_t *box)
 {
   uivnb_t     *vnb;
   uiwcont_t   *hbox;
@@ -68,6 +69,7 @@ uivnbCreate (uiwcont_t *box)
 
   sw = uiCreateScrolledWindow (50);
   uiBoxPackStart (hbox, sw, WCONT_FREE);
+
   vnb->vlist = uiCreateVertBox ();
   uiWidgetSetClass (vnb->vlist, VERTNB_BG_CLASS);
   uiWindowPackInWindow (sw, vnb->vlist);
@@ -112,6 +114,7 @@ uivnbFree (uivnb_t *vnb)
 
   uiwcontFree (vnb->vlist);
   uiwcontFree (vnb->nb);
+  uiwcontFree (vnb->sg);
   mdfree (vnb);
 }
 
@@ -151,6 +154,8 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uibox, const char *nbtxt, int id)
   uiBoxPackStartExpandChildren (hbox, button, WCONT_FREE);
   uiWidgetSetClass (button, NB_CLASS);
   uiWidgetSetClass (button, NB_VERT_CLASS);
+
+  uiSizeGroupAdd (vnb->sg, button);
 
   label = uiCreateLabel ("");
   uiBoxPackStart (hbox, label, WCONT_FREE);

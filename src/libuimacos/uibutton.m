@@ -20,8 +20,8 @@
 #include "pathbld.h"
 #include "uigeneral.h"
 
-#include "ui/uiwcont-int.h"
 #include "ui/uimacos-int.h"
+#include "ui/uiwcont-int.h"
 
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
@@ -34,17 +34,17 @@ typedef struct uibutton {
 
 @implementation IButton
 
-- (void) setUIWidget: (uiwcont_t *) tuiwidget {
+- (void) setUIWidget : (uiwcont_t *) tuiwidget {
   uiwidget = tuiwidget;
 }
 
-- (IBAction) OnButton1Click: (id) sender {
-  uibuttonbase_t  *bbase;
+- (void) setCallback : (callback_t *) tcb {
+  cb = tcb;
+}
 
-fprintf (stderr, "b: button-1 click\n");
-  bbase = &uiwidget->uiint.uibuttonbase;
-  if (bbase->cb != NULL) {
-    callbackHandler (bbase->cb);
+- (IBAction) OnButton1Click : (id) sender {
+  if (cb != NULL) {
+    callbackHandler (cb);
   }
 }
 
@@ -67,7 +67,6 @@ uiCreateButton (callback_t *uicb, const char *title,
   IButton         *widget = nil;
   char            tmp [40];
 
-fprintf (stderr, "c-bt\n");
   uibutton = mdmalloc (sizeof (uibutton_t));
   uibutton->image = NULL;
   uibutton->altimage = NULL;
@@ -88,35 +87,43 @@ fprintf (stderr, "c-bt\n");
     /* relative path */
     pathbldMakePath (tbuff, sizeof (tbuff), imagenm, BDJ4_IMG_SVG_EXT,
         PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-    ns = [NSString stringWithUTF8String: imagenm];
-    image = [[NSImage alloc] initWithContentsOfFile: ns];
+// why is this not working?
+// the toggle button handles a .svg
+    ns = [NSString stringWithUTF8String : imagenm];
+    image = [[NSImage alloc] initWithContentsOfFile : ns];
     uibutton->image = image;
-    [widget setImage: image];
-    widget.imagePosition = NSImageTrailing;
-    if (title == NULL) {
-      widget.imagePosition = NSImageOnly;
+    [widget setImage : image];
+    [widget setImagePosition : NSImageOnly];
+    if (title != NULL) {
+      /* if the image is set, the title text is used for the tooltip */
+      [widget setToolTip : [NSString stringWithUTF8String : title]];
     }
-    [widget setTitle:@""];
+  } else {
+    /* if the image is set, no label is set for the button */
+    [widget setTitle : [NSString stringWithUTF8String : title]];
+    [widget setImagePosition : NSNoImage];
   }
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_BUTTON);
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uibutton = uibutton;
 
-  snprintf (tmp, sizeof (tmp), "button-%ld\n", gident);
-  [widget setIdentifier: [NSString stringWithUTF8String: tmp]];
-  ++gident;
+  [widget setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
 
-  [widget setBezelStyle: NSBezelStyleRounded];
-  [widget setTarget: widget];
-  [widget setUIWidget: uiwidget];
-  [widget setAction: @selector(OnButton1Click:)];
-//  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+//  [widget setBezelStyle : NSBezelStyleRounded];
+  [widget setTarget : widget];
+  [widget setUIWidget : uiwidget];
+  [widget setCallback : uicb];
+  [widget setAction : @selector(OnButton1Click : )];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+  widget.bordered = YES;
+  widget.needsDisplay = true;
 
 #if MACOS_UI_DEBUG
-  [widget setFocusRingType: NSFocusRingTypeExterior];
-  [widget setWantsLayer: YES];
-  [[widget layer] setBorderWidth: 2.0];
+  [widget setFocusRingType : NSFocusRingTypeExterior];
+  [widget setWantsLayer : YES];
+  [[widget layer] setBorderWidth : 2.0];
 #endif
 
   bbase = &uiwidget->uiint.uibuttonbase;
@@ -245,7 +252,7 @@ uiButtonAlignLeft (uiwcont_t *uiwidget)
   }
 
   button = uiwidget->uidata.widget;
-  [button setAlignment: NSTextAlignmentNatural];
+  [button setAlignment : NSTextAlignmentNatural];
   return;
 }
 
@@ -262,9 +269,17 @@ uiButtonSetReliefNone (uiwcont_t *uiwidget)
 void
 uiButtonSetFlat (uiwcont_t *uiwidget)
 {
+  IButton   *button = nil;
+
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-flat")) {
     return;
   }
+
+  button = uiwidget->uidata.widget;
+
+  button.bordered = NO;
+  button.bezelStyle = NSBezelStyleToolbar;
+  button.needsDisplay = YES;
 
   return;
 }

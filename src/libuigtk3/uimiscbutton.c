@@ -63,6 +63,7 @@ uiCreateColorButton (const char *color)
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_BUTTON_COLOR);
   uiwcontSetWidget (uiwidget, cb, NULL);
+
   return uiwidget;
 }
 

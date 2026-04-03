@@ -27,7 +27,7 @@ uiCreateNotebook (void)
 
 void
 uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uiwidget,
-    uiwcont_t *uilabel)
+    const char *label, uiwcont_t *image)
 {
   return;
 }

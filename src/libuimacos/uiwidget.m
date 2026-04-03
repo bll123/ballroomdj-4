@@ -14,6 +14,7 @@
 
 #include "callback.h"
 #include "mdebug.h"
+#include "oslocale.h"
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"
@@ -32,46 +33,34 @@ uiWidgetSetState (uiwcont_t *uiwidget, int state)
   return;
 }
 
+/* this uses the GTK terminology */
+/* set the widget to take any horizontal space */
 void
 uiWidgetExpandHoriz (uiwcont_t *uiwidget)
 {
-  NSView        *widget;
-  NSView        *container;
-  macoslayout_t *layout;
+  NSView          *widget;
 
-  if (uiwidget == NULL) {
-    return;
-  }
-
-  widget = uiwidget->uidata.widget;
-  container = [widget superview];
-  if (container == nil) {
-    fprintf (stderr, "ERR: exp-horiz: widget is not packed\n");
-    return;
-  }
+  widget = uiwidget->uidata.packwidget;
+  [widget.widthAnchor
+      constraintLessThanOrEqualToConstant : 600.0].active = YES;
+  widget.autoresizingMask |= NSViewWidthSizable;
 
   layout = uiwidget->uidata.layout;
   layout->expandhoriz = true;
   return;
 }
 
+/* this uses the GTK terminology */
+/* set the widget to take any horizontal space */
 void
 uiWidgetExpandVert (uiwcont_t *uiwidget)
 {
-  NSView        *widget;
-  macoslayout_t *layout;
-  NSView        *container;
+  NSView          *widget;
 
-  if (uiwidget == NULL) {
-    return;
-  }
-
-  widget = uiwidget->uidata.widget;
-  container = [widget superview];
-  if (container == nil) {
-    fprintf (stderr, "ERR: exp-vert: widget is not packed\n");
-    return;
-  }
+  widget = uiwidget->uidata.packwidget;
+  [widget.heightAnchor
+      constraintLessThanOrEqualToConstant : 600.0].active = YES;
+  widget.autoresizingMask |= NSViewHeightSizable;
 
   layout = uiwidget->uidata.layout;
   layout->expandvert = true;
@@ -90,17 +79,14 @@ uiWidgetSetAllMargins (uiwcont_t *uiwidget, int mult)
   }
 
   widget = uiwidget->uidata.widget;
-  if ([widget superview] == nil) {
-    fprintf (stderr, "ERR: mg-all: widget is not packed\n");
-    return;
-  }
+
   val = (double) (uiBaseMarginSz * mult);
 
   layout = uiwidget->uidata.layout;
-  layout->margins.left = val;
-  layout->margins.right = val;
-  layout->margins.top = val;
-  layout->margins.bottom = val;
+  layout->margins.left = (CGFloat) val;
+  layout->margins.right = (CGFloat) val;
+  layout->margins.top = (CGFloat) val;
+  layout->margins.bottom = (CGFloat) val;
   uiWidgetUpdateLayout (uiwidget);
 
   return;
@@ -118,14 +104,11 @@ uiWidgetSetMarginTop (uiwcont_t *uiwidget, int mult)
   }
 
   widget = uiwidget->uidata.widget;
-  if ([widget superview] == nil) {
-    fprintf (stderr, "ERR: mg-top: widget is not packed\n");
-    return;
-  }
+
   val = (double) (uiBaseMarginSz * mult);
 
   layout = uiwidget->uidata.layout;
-  layout->margins.top = val;
+  layout->margins.top = (CGFloat) val;
   uiWidgetUpdateLayout (uiwidget);
 
   return;
@@ -143,14 +126,11 @@ uiWidgetSetMarginBottom (uiwcont_t *uiwidget, int mult)
   }
 
   widget = uiwidget->uidata.widget;
-  if ([widget superview] == nil) {
-    fprintf (stderr, "ERR: mg-bottom: widget is not packed\n");
-    return;
-  }
+
   val = (double) (uiBaseMarginSz * mult);
 
   layout = uiwidget->uidata.layout;
-  layout->margins.bottom = val;
+  layout->margins.bottom = (CGFloat) val;
   uiWidgetUpdateLayout (uiwidget);
 
   return;
@@ -168,14 +148,15 @@ uiWidgetSetMarginStart (uiwcont_t *uiwidget, int mult)
   }
 
   widget = uiwidget->uidata.widget;
-  if ([widget superview] == nil) {
-    fprintf (stderr, "ERR: mg-start: widget is not packed\n");
-    return;
-  }
+
   val = (double) (uiBaseMarginSz * mult);
 
   layout = uiwidget->uidata.layout;
-  layout->margins.left = val;
+  if (guisetup.direction == TEXT_DIR_RTL) {
+    layout->margins.right = (CGFloat) val;
+  } else {
+    layout->margins.left = (CGFloat) val;
+  }
   uiWidgetUpdateLayout (uiwidget);
 
   return;
@@ -193,19 +174,22 @@ uiWidgetSetMarginEnd (uiwcont_t *uiwidget, int mult)
   }
 
   widget = uiwidget->uidata.widget;
-  if ([widget superview] == nil) {
-    fprintf (stderr, "ERR: mg-end: widget is not packed\n");
-    return;
-  }
+
   val = uiBaseMarginSz * mult;
 
   layout = uiwidget->uidata.layout;
-  layout->margins.right = val;
+  if (guisetup.direction == TEXT_DIR_RTL) {
+    layout->margins.left = (CGFloat) val;
+  } else {
+    layout->margins.right = (CGFloat) val;
+  }
   uiWidgetUpdateLayout (uiwidget);
 
   return;
 }
 
+/* this uses the GTK terminology */
+/* controls how the widget handles extra space allocated to it */
 void
 uiWidgetAlignHorizFill (uiwcont_t *uiwidget)
 {
@@ -215,42 +199,43 @@ uiWidgetAlignHorizFill (uiwcont_t *uiwidget)
     return;
   }
 
-  widget = uiwidget->uidata.widget;
-  if ([widget superview] == nil) {
-    return;
-  }
+  widget = uiwidget->uidata.packwidget;
+  [widget.widthAnchor
+      constraintLessThanOrEqualToConstant : 600.0].active = YES;
+  widget.autoresizingMask |= NSViewWidthSizable;
+
   return;
 }
 
 void
 uiWidgetAlignHorizStart (uiwcont_t *uiwidget)
 {
-  NSView    *widget;
+  NSView    *view;
 
   if (uiwidget == NULL) {
     return;
   }
 
-  widget = uiwidget->uidata.widget;
-  if ([widget superview] == nil) {
-    return;
-  }
+  view = uiwidget->uidata.widget;
+  view.autoresizingMask |= NSViewMaxXMargin;
+  view.needsDisplay = true;
+
   return;
 }
 
 void
 uiWidgetAlignHorizEnd (uiwcont_t *uiwidget)
 {
-  NSView    *widget;
+  NSView    *view;
 
   if (uiwidget == NULL) {
     return;
   }
 
-  widget = uiwidget->uidata.widget;
-  if ([widget superview] == nil) {
-    return;
-  }
+  view = uiwidget->uidata.widget;
+  view.autoresizingMask |= NSViewMinXMargin;
+  view.needsDisplay = YES;
+
   return;
 }
 
@@ -258,23 +243,14 @@ void
 uiWidgetAlignHorizCenter (uiwcont_t *uiwidget)
 {
   NSView        *view;
-  macoslayout_t *layout;
-  NSStackView   *stview;
 
   if (uiwidget == NULL) {
     return;
   }
 
   view = uiwidget->uidata.widget;
-  stview = (NSStackView *) [view superview];
-  if (stview == nil) {
-    fprintf (stderr, "ERR: align-h-center: widget is not packed\n");
-    return;
-  }
-
-  layout = uiwidget->uidata.layout;
-  layout->centered = true;
-  uiWidgetUpdateLayout (uiwidget);
+  view.autoresizingMask |= NSViewMinXMargin | NSViewMaxXMargin;
+  view.needsDisplay = YES;
 
   return;
 }
@@ -282,22 +258,15 @@ uiWidgetAlignHorizCenter (uiwcont_t *uiwidget)
 void
 uiWidgetAlignVertFill (uiwcont_t *uiwidget)
 {
-  NSView        *view;
-//  macoslayout_t *layout;
-  NSStackView   *stview;
+  NSView        *widget;
 
   if (uiwidget == NULL) {
     return;
   }
 
-  view = uiwidget->uidata.widget;
-  stview = (NSStackView *) [view superview];
-  if (stview == nil) {
-    fprintf (stderr, "ERR: vert-fill: widget is not packed\n");
-    return;
-  }
-
-//  layout = uiwidget->uidata.layout;
+  widget = uiwidget->uidata.packwidget;
+  [widget.heightAnchor
+      constraintLessThanOrEqualToConstant : 600.0].active = YES;
 
   return;
 }
@@ -305,16 +274,16 @@ uiWidgetAlignVertFill (uiwcont_t *uiwidget)
 void
 uiWidgetAlignVertStart (uiwcont_t *uiwidget)
 {
-  NSView    *widget;
+  NSView    *view;
 
   if (uiwidget == NULL) {
     return;
   }
 
-  widget = uiwidget->uidata.widget;
-  if ([widget superview] == nil) {
-    return;
-  }
+  view = uiwidget->uidata.widget;
+  view.autoresizingMask |= NSViewMaxYMargin;
+  view.needsDisplay = true;
+
   return;
 }
 
@@ -322,23 +291,13 @@ void
 uiWidgetAlignVertCenter (uiwcont_t *uiwidget)
 {
   NSView        *view;
-  macoslayout_t *layout;
-  NSStackView   *stview;
 
   if (uiwidget == NULL) {
     return;
   }
 
   view = uiwidget->uidata.widget;
-  stview = (NSStackView *) [view superview];
-  if (stview == nil) {
-    fprintf (stderr, "ERR: align-v-center: widget is not packed\n");
-    return;
-  }
-
-  layout = uiwidget->uidata.layout;
-  layout->centered = true;
-  uiWidgetUpdateLayout (uiwidget);
+  view.autoresizingMask |= NSViewMinYMargin | NSViewMaxYMargin;
 
   return;
 }
@@ -359,9 +318,7 @@ uiWidgetAlignVertEnd (uiwcont_t *uiwidget)
   }
 
   widget = uiwidget->uidata.widget;
-  if ([widget superview] == nil) {
-    return;
-  }
+  widget.needsDisplay = true;
   return;
 }
 
@@ -451,21 +408,17 @@ uiWidgetSetEnterCallback (uiwcont_t *uiwidget, callback_t *uicb)
 
 /* internal routines */
 
-static void
+void
 uiWidgetUpdateLayout (uiwcont_t *uiwidget)
 {
   macoslayout_t *layout = NULL;
-//  NSStackView   *stview = NULL;
-  NSView        *view = NULL;
   NSStackView   *container = NULL;
-//  NSView        *prior = NULL;
 
   layout = uiwidget->uidata.layout;
-  view = uiwidget->uidata.widget;
   container = layout->container;
-//  /* this may not be valid... */
-//  stview = (NSStackView *) [view superview];
 
+#if 0
+<<<<<<< working copy
 fprintf (stderr, "  set margin constraints\n");
   [container.leadingAnchor
       constraintEqualToAnchor: container.leadingAnchor
@@ -479,5 +432,13 @@ fprintf (stderr, "  set margin constraints\n");
   [container.bottomAnchor
       constraintEqualToAnchor: container.bottomAnchor
       constant: layout->margins.bottom].active = YES;
+=======
+#endif
+  if (container == NULL) {
+    return;
+  }
+
+  container.edgeInsets = layout->margins;
+  container.needsDisplay = YES;
 }
 

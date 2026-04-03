@@ -32,17 +32,21 @@ uiCreateLabel (const char *label)
   uiwcont_t   *uiwidget;
   ILabel      *widget;
 
-fprintf (stderr, "c-label\n");
   widget = [[ILabel alloc] init];
-  [widget setBezeled:NO];
-  [widget setDrawsBackground:NO];
-  [widget setEditable:NO];
-  [widget setSelectable:NO];
-  [widget setStringValue: [NSString stringWithUTF8String: label]];
-//  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+  [widget setBezeled : NO];
+  [widget setDrawsBackground : NO];
+  [widget setEditable : NO];
+  [widget setSelectable : NO];
+  [widget setStringValue : [NSString stringWithUTF8String : label]];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+  widget.needsDisplay = true;
 
   uiwidget = uiwcontAlloc (WCONT_T_LABEL, WCONT_T_LABEL);
   uiwcontSetWidget (uiwidget, widget, NULL);
+
+  [widget setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+
   return uiwidget;
 }
 
@@ -55,18 +59,17 @@ uiLabelAddClass (const char *classnm, const char *color)
 void
 uiLabelSetTooltip (uiwcont_t *uiwidget, const char *txt)
 {
-//  ILabel *nstf;
+  ILabel *lab;
 
   if (! uiwcontValid (uiwidget, WCONT_T_LABEL, "label-set-tooltip")) {
     return;
   }
 
-// ### this will be very slow, as the old tool tips need to be removed.
-// will probably be better to create a custom method and save the data
-// for that label and use the dynamic methods.
-// ### not working
-//  nstf = uiwidget->uidata.widget;
-//  [nstf addToolTip: [NSString stringWithUTF8String: txt]];
+  if (txt != NULL) {
+    lab = uiwidget->uidata.widget;
+    [lab setToolTip : [NSString stringWithUTF8String : txt]];
+    lab.needsDisplay = true;
+  }
   return;
 }
 
@@ -86,7 +89,8 @@ uiLabelSetText (uiwcont_t *uiwidget, const char *text)
   }
 
   widget = uiwidget->uidata.widget;
-  [widget setStringValue: [NSString stringWithUTF8String: text]];
+  [widget setStringValue : [NSString stringWithUTF8String : text]];
+  widget.needsDisplay = true;
   return;
 }
 
@@ -108,7 +112,7 @@ uiLabelWrapOn (uiwcont_t *uiwidget)
   ILabel *widget;
 
   widget = uiwidget->uidata.widget;
-  [widget setMaximumNumberOfLines:3];
+  [widget setMaximumNumberOfLines : 3];
   return;
 }
 
@@ -118,7 +122,7 @@ uiLabelSetSelectable (uiwcont_t *uiwidget)
   ILabel *widget;
 
   widget = uiwidget->uidata.widget;
-  [widget setSelectable:YES];
+  [widget setSelectable : YES];
   return;
 }
 

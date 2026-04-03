@@ -110,9 +110,6 @@ uiImageScaledFromFile (const char *fn, int scale)
     uiimage->pixbuf = pixbuf;
   }
 
-  uiWidgetAlignHorizCenter (uiwidget);
-  uiWidgetAlignVertCenter (uiwidget);
-
   return uiwidget;
 }
 

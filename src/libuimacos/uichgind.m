@@ -29,17 +29,20 @@ uiCreateChangeIndicator (uiwcont_t *boxp)
   uiwcont_t   *uiwidget;
   ILabel      *widget;
 
-fprintf (stderr, "c-chgind\n");
   widget = [[ILabel alloc] init];
-  [widget setBezeled:NO];
-  [widget setDrawsBackground:NO];
-  [widget setEditable:NO];
-  [widget setStringValue: [NSString stringWithUTF8String: " "]];
-//  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+  [widget setBezeled : NO];
+  [widget setDrawsBackground : NO];
+  [widget setEditable : NO];
+  [widget setStringValue : [NSString stringWithUTF8String : " "]];
+//  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
 
   uiwidget = uiwcontAlloc (WCONT_T_CHGIND, WCONT_T_CHGIND);
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiBoxPackStart (boxp, uiwidget);
+
+  [widget setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+
   return uiwidget;
 }
 
@@ -54,8 +57,8 @@ uichgindMarkNormal (uiwcont_t *uiwidget)
   }
 
   widget = uiwidget->uidata.widget;
-  col = [NSColor colorWithCalibratedWhite:0.0 alpha:0.0];
-  [widget setTextColor: col];
+  col = [NSColor colorWithCalibratedWhite : 0.0 alpha : 0.0];
+  [widget setTextColor : col];
 
   return;
 }
@@ -73,8 +76,8 @@ uichgindMarkChanged (uiwcont_t *uiwidget)
 
   widget = uiwidget->uidata.widget;
   colorValues (guisetup.changedColor, &r, &g, &b);
-  col = [NSColor colorWithCalibratedRed:r green:g blue:b alpha:1.0];
-  [widget setTextColor: col];
+  col = [NSColor colorWithCalibratedRed : r green : g blue : b alpha : 1.0];
+  [widget setTextColor : col];
 
   return;
 }

@@ -25,70 +25,102 @@
 #include "ui/uiwidget.h"
 #include "ui/uiwindow.h"
 
+@interface IWindow : NSWindow { }
+@property callback_t  *closecb;
+@property callback_t  *doubleclickcb;
+- (instancetype) init;
+- (void) setCloseCallback : (callback_t *) tcb;
+- (void) setDoubleClickCallback : (callback_t *) tcb;
+- (void) awakeFromNib;
+- (BOOL) isFlipped;
+@end
+
 @implementation IWindow
 
-- (instancetype)init {
-
-  [super initWithContentRect:NSMakeRect(10, 10, 100, 100)
-      styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
-          NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable
-      backing:NSBackingStoreBuffered
-      defer:NO];
-  [self setIsVisible:YES];
+- (instancetype) init {
+  [super initWithContentRect : NSMakeRect (10, 10, 100, 100)
+      styleMask : NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
+          NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable |
+          NSWindowStyleMaskFullSizeContentView
+      backing : NSBackingStoreBuffered
+      defer : NO];
+  [self setIsVisible : YES];
+  self.closecb = NULL;
+  self.doubleclickcb = NULL;
   return self;
 }
 
-- (void)awakeFromNib {
+- (void) setCloseCallback : (callback_t *) tcb {
+  self.closecb = tcb;
+}
+
+- (void) setDoubleClickCallback : (callback_t *) tcb {
+  self.doubleclickcb = tcb;
+}
+
+- (void) awakeFromNib {
 //  IWindow*  w = self;
 //  NSStackView *box;
 
 //  box = [w contentView];
 }
 
+- (BOOL) isFlipped {
+  return YES;
+}
+
 @end
 
 @implementation IWindowDelegate : NSObject
 
-- (void)windowDidBecomeKey:(NSNotification *)notification {
-    NSLog(@"Window: become key");
+- (void) windowDidBecomeMain : (NSNotification *)notification {
+  NSLog (@"Window : become main");
 }
 
-- (void)windowDidBecomeMain:(NSNotification *)notification {
-    NSLog(@"Window: become main");
+- (void) windowDidResignMain : (NSNotification *)notification {
+  NSLog  (@"Window : resign main");
 }
 
-- (void)windowDidResignKey:(NSNotification *)notification {
-    NSLog(@"Window: resign key");
+- (void) windowDidBecomeKey : (NSNotification *)notification {
+  NSLog (@"Window : become key");
 }
 
-- (void)windowDidResignMain:(NSNotification *)notification {
-    NSLog(@"Window: resign main");
+- (void) windowDidResignKey : (NSNotification *)notification {
+  NSLog (@"Window : resign key");
 }
 
-- (BOOL)canBecomeKeyWindow {
-    // Required for NSWindowStyleMaskBorderless windows
-    return YES;
+- (BOOL) canBecomeKeyWindow {
+  // Required for NSWindowStyleMaskBorderless windows
+  return YES;
 }
 
-- (BOOL)canBecomeMainWindow {
-    return YES;
+- (BOOL) canBecomeMainWindow {
+  return YES;
 }
 
-- (IBAction) OnButton1Click:(id)sender {
-NSLog(@"button-1");
+- (IBAction) OnButton1Click : (id) sender {
+NSLog (@"Window : button-1");
 }
 
-- (IBAction) OnButton2Click:(id)sender {
-NSLog(@"button-2");
+- (IBAction) OnButton2Click : (id) sender {
+//  IWindow *window = sender.object;
+NSLog (@"Window : button-2");
+//  if (window.doubleclickcb != NULL) {
+//    callbackHandler (window.doubleclickcb);
+//  }
 }
 
 // This will close/terminate the application when the main window is closed.
-- (void)windowWillClose:(NSNotification *)notification {
-    IWindow *window = notification.object;
-NSLog(@"Window: closing");
-    if (window.isMainWindow) {
-      [NSApp terminate:nil];
-    }
+- (void)windowWillClose : (NSNotification *)notification {
+  IWindow *window = notification.object;
+NSLog (@"Window : closing");
+  if (window.closecb != NULL) {
+NSLog (@"Window : call close-cb");
+    callbackHandler (window.closecb);
+  }
+  if (window.isMainWindow) {
+    [NSApp terminate : nil];
+  }
 }
 
 @end
@@ -100,32 +132,47 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   IWindow       *win = NULL;
   id            windowDelegate;
 
-fprintf (stderr, "c-main-win\n");
   win = [[IWindow alloc] init];
   if (title != NULL) {
     NSString  *nstitle;
 
-    nstitle = [NSString stringWithUTF8String: title];
-    [win setTitle: nstitle];
+    nstitle = [NSString stringWithUTF8String : title];
+    [win setTitle : nstitle];
   }
 
+  box = uibox->uidata.widget;
+  box.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
+
+  [win setContentView : box];
   [win makeMainWindow];
+
+  uibox->packed = true;
+  uibox->uidata.layout->expandchildren = true;
+  [box setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uibox->id] stringValue]];
 
   if (imagenm != NULL) {
     NSImage *image = nil;
 
-    NSString *ns = [NSString stringWithUTF8String: imagenm];
-    image = [[NSImage alloc] initWithContentsOfFile: ns];
-    [[NSApplication sharedApplication] setApplicationIconImage:image];
+    NSString *ns = [NSString stringWithUTF8String : imagenm];
+    image = [[NSImage alloc] initWithContentsOfFile : ns];
+    [[NSApplication sharedApplication] setApplicationIconImage : image];
     [image release];
   }
 
   windowDelegate = [[IWindowDelegate alloc] init];
-  [win setDelegate:windowDelegate];
+  [win setDelegate : windowDelegate];
+
+  [win setCloseCallback : uicb];
 
   uiwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_WINDOW);
   uiwcontSetWidget (uiwin, win, NULL);
   uiwin->packed = true;
+
+  [win setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiwin->id] stringValue]];
+
+  uiWidgetSetAllMargins (uibox, 2);
 
   return uiwin;
 }
@@ -153,10 +200,10 @@ uiWindowSetTitle (uiwcont_t *uiwindow, const char *title)
     return;
   }
 
-  nstitle = [NSString stringWithUTF8String: title];
+  nstitle = [NSString stringWithUTF8String : title];
 
   win = uiwindow->uidata.widget;
-  [win setTitle:nstitle];
+  [win setTitle : nstitle];
   return;
 }
 
@@ -253,9 +300,17 @@ uiWindowGetSize (uiwcont_t *uiwindow, int *x, int *y)
 void
 uiWindowSetDefaultSize (uiwcont_t *uiwindow, int x, int y)
 {
+  NSWindow  *win;
+  NSSize    nssz;
+
   if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-set-dflt-sz")) {
     return;
   }
+
+  win = uiwindow->uidata.widget;
+  nssz.width = (CGFloat) x;
+  nssz.height = (CGFloat) y;
+  [win setContentSize : nssz];
 
   return;
 }
@@ -303,23 +358,21 @@ uiWindowNoFocusOnStartup (uiwcont_t *uiwindow)
 uiwcont_t *
 uiCreateScrolledWindow (int minheight)
 {
-  NSScrollView  * sv;
-  uiwcont_t     * uisw;
+  uiwcont_t     *uiscwin;
+  NSScrollView  *win = NULL;
 
-fprintf (stderr, "c-scroll-win\n");
-  sv = [[NSScrollView alloc] init];
-  sv.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-  sv.hasVerticalScroller = YES;
-  sv.hasHorizontalScroller = NO;
-  sv.autohidesScrollers = NO;
-  sv.drawsBackground = NO;
+  win = [[NSScrollView alloc] init];
+  win.autohidesScrollers = YES;
+  win.hasVerticalScroller = YES;
+  win.hasHorizontalScroller = NO;
+  win.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
 
-  uisw = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_WINDOW);
-  uiwcontSetWidget (uisw, sv, NULL);
+  uiscwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_SCROLL_WINDOW);
+  uiwcontSetWidget (uiscwin, win, NULL);
 
-  uiWidgetSetAllMargins (uisw, 2);
-
-  return NULL;
+  [win setIdentifier :
+      [[NSNumber numberWithUnsignedInt : uiscwin->id] stringValue]];
+  return uiscwin;
 }
 
 void
@@ -340,16 +393,20 @@ uiCreateDialogWindow (uiwcont_t *parentwin,
     return NULL;
   }
 
-fprintf (stderr, "c-dialog-win\n");
   return NULL;
 }
 
 void
 uiWindowSetDoubleClickCallback (uiwcont_t *uiwindow, callback_t *uicb)
 {
+  IWindow  *win;
+
   if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-set-dclick-cb")) {
     return;
   }
+
+  win = uiwindow->uidata.widget;
+  [win setCloseCallback : uicb];
 
   return;
 }
@@ -424,8 +481,10 @@ uiWindowSetNoMaximize (uiwcont_t *uiwindow)
 void
 uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
 {
-  NSWindow      *win;
-  NSStackView   *widget = NULL;
+  NSStackView   *container = NULL;
+  NSView        *widget = NULL;
+  NSStackView   *winbox = NULL;
+  int           grav = NSStackViewGravityTop;
   macoslayout_t *layout = NULL;
 
   if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-pack-in-win-win")) {
@@ -437,28 +496,40 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   }
 fprintf (stderr, "  pack-in-win: %d/%s\n", uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
 
-  win = uiwindow->uidata.widget;
-  widget = uiwidget->uidata.packwidget;
+  container = uiwidget->uidata.packwidget;
+  widget = uiwidget->uidata.widget;
 
-  [win setContentView: widget];
-  layout = uiwidget->uidata.layout;
+  if (uiwindow->wtype == WCONT_T_SCROLL_WINDOW) {
+    NSScrollView  *scv;
 
-fprintf (stderr, "  add pack-in-win constraint\n");
-  [widget.leadingAnchor
-      constraintEqualToAnchor: widget.leadingAnchor
-      constant: layout->margins.left].active = YES;
-  [widget.trailingAnchor
-      constraintEqualToAnchor: widget.trailingAnchor
-      constant: layout->margins.right].active = YES;
-  [widget.topAnchor
-      constraintEqualToAnchor: widget.topAnchor
-      constant: layout->margins.top].active = YES;
-  [widget.bottomAnchor
-      constraintEqualToAnchor: widget.bottomAnchor
-      constant: layout->margins.bottom].active = YES;
-  widget.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    scv = uiwindow->uidata.widget;
+    [scv setDocumentView : container];
+    winbox = uiwindow->uidata.packwidget;
+  }
+  if (uiwindow->wtype == WCONT_T_WINDOW) {
+    NSWindow    *win;
+
+    win = uiwindow->uidata.widget;
+    winbox = [win contentView];
+    [winbox addView : container inGravity : grav];
+
+    [winbox.safeAreaLayoutGuide.leadingAnchor
+        constraintEqualToAnchor : container.leadingAnchor].active = YES;
+    [winbox.safeAreaLayoutGuide.trailingAnchor
+        constraintEqualToAnchor : container.trailingAnchor].active = YES;
+    [winbox.safeAreaLayoutGuide.topAnchor
+        constraintEqualToAnchor : container.topAnchor].active = YES;
+    [winbox.safeAreaLayoutGuide.bottomAnchor
+        constraintEqualToAnchor : container.bottomAnchor].active = YES;
+  }
 
   uiwidget->packed = true;
+  layout = uiwidget->uidata.layout;
+  layout->expandchildren = true;
+
+  winbox.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
+  widget.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
+
   return;
 }
 

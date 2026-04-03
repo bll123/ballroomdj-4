@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2026 Brad Lanam Pleasant Hill CA
 #
-ver=24
+ver=25
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -164,7 +164,7 @@ PATH=$PATH:/opt/local/bin
 sudo -v
 
 echo "-- Running MacPorts 'port selfupdate' with sudo"
-sudo port selfupdate
+sudo port -N selfupdate
 
 sudo -v
 
@@ -183,7 +183,7 @@ if [[ $rc -ne 0 ]]; then
 fi
 
 echo "-- Running MacPorts 'port upgrade outdated' with sudo"
-sudo port upgrade outdated
+sudo port -N upgrade outdated
 
 sudo -v
 
