@@ -21,6 +21,7 @@ typedef struct uihnb uihnb_t;
 uihnb_t *uihnbCreate (uiwcont_t *box);
 void uihnbFree (uihnb_t *hnb);
 void uihnbAppendPage (uihnb_t *hnb, uiwcont_t *uiwidget, const char *label, const char *imagenm, const char *altimagenm, int id);
+void uihnbPostProcess (uihnb_t *hnb);
 void uihnbHideShowPage (uihnb_t *hnb, int pagenum, bool show);
 void uihnbSetPage (uihnb_t *hnb, int pagenum);
 void uihnbSetCallback (uihnb_t *hnb, callback_t *uicb);

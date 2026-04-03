@@ -26,48 +26,21 @@
 static uiwcont_t * uiCreateBox (int orientation);
 
 uiwcont_t *
-ruiCreateVertBox (void)
+uiCreateVertBox_r (void)
 {
   return uiCreateBox (GTK_ORIENTATION_VERTICAL);
 }
 
 uiwcont_t *
-ruiCreateHorizBox (void)
+uiCreateHorizBox_r (void)
 {
   return uiCreateBox (GTK_ORIENTATION_HORIZONTAL);
 }
 
 void
-uiBoxPostProcess (uiwcont_t *uibox)
+uiBoxPostProcess_r (uiwcont_t *uibox, uiwcont_t *prev,
+    uiwcont_t *curr, uiwcont_t *next)
 {
-  uiboxbase_t *boxbase;
-  nlist_t     *wlist;
-  nlist_t     *rlist;
-  nlistidx_t  iteridx;
-  int         key;
-
-  if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pp")) {
-    return;
-  }
-
-  boxbase = &uibox->uiint.uiboxbase;
-  wlist = boxbase->widgetlist;
-  rlist = boxbase->releaselist;
-  nlistSort (wlist);
-  nlistSort (rlist);
-
-  nlistStartIterator (wlist, &iteridx);
-  while ((key = nlistIterateKey (wlist, &iteridx)) >= 0) {
-    uiwcontrls_t    release;
-    uiwcont_t       *uiwidgetp;
-
-    release = nlistGetNum (rlist, key);
-    uiwidgetp = nlistGetData (wlist, key);
-    if (uiwidgetp == NULL || uiwidgetp->uidata.widget == NULL) {
-      return;
-    }
-  }
-
   return;
 }
 
@@ -82,7 +55,7 @@ uiBoxSetSizeChgCallback (uiwcont_t *uiwindow, callback_t *uicb)
 }
 
 void
-ruiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
+uiBoxPackStart_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start")) {
     return;
@@ -92,11 +65,10 @@ ruiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
   }
 
   gtk_box_pack_start (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, FALSE, FALSE, 0);
-  uiwidget->packed = true;
 }
 
 void
-ruiBoxPackStartExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget)
+uiBoxPackStartExpandChildren_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start-exp")) {
     return;
@@ -106,11 +78,10 @@ ruiBoxPackStartExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget)
   }
 
   gtk_box_pack_start (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, TRUE, TRUE, 0);
-  uiwidget->packed = true;
 }
 
 void
-ruiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
+uiBoxPackEnd_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end")) {
     return;
@@ -120,11 +91,10 @@ ruiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
   }
 
   gtk_box_pack_end (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, FALSE, FALSE, 0);
-  uiwidget->packed = true;
 }
 
 void
-ruiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget)
+uiBoxPackEndExpandChildren_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end-exp")) {
     return;
@@ -134,7 +104,6 @@ ruiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget)
   }
 
   gtk_box_pack_end (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, TRUE, TRUE, 0);
-  uiwidget->packed = true;
 }
 
 /* internal routines */

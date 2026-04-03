@@ -16,6 +16,8 @@
 #include "ui/uiwcont-int.h"
 #include "ui/uiui.h"
 
+static int32_t gboxcount = 100;
+
 uiwcont_t *
 uiwcontAlloc_r (int basetype, int type, const char *fn, int lineno)
 {
@@ -27,6 +29,14 @@ uiwcontAlloc_r (int basetype, int type, const char *fn, int lineno)
   uiwidget->uidata.widget = NULL;
   uiwidget->uidata.packwidget = NULL;          // often the same as widget
   uiwidget->packed = false;
+  uiwidget->id = 0;
+  if (uiwidget->wbasetype == WCONT_T_BOX ||
+      uiwidget->wbasetype == WCONT_T_WINDOW) {
+    uiwidget->id = gboxcount;
+fprintf (stderr, "wcont: box/win: %d\n", gboxcount);
+    gboxcount += 100;
+  }
+
   memset (&uiwidget->uiint, 0, sizeof (uiwcontint_t));
   uiwcontUIInit (uiwidget);                     // ui interface specific
   return uiwidget;

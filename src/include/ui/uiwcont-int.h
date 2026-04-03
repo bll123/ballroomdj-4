@@ -68,9 +68,7 @@ typedef struct uiboxbase {
   nlist_t         *releaselist;
   int             startcount;
   int             endcount;
-  int             indent;
-  int32_t         id;
-  int32_t         parentid;
+  bool            postprocess;
 } uiboxbase_t;
 
 /* used in all ui interfaces */
@@ -166,6 +164,8 @@ typedef struct uiwcont {
   /* widget data specific to the interface */
   /* uidata must contain .widget and .packwidget */
   uispecific_t    uidata;
+  int32_t         id;
+  int32_t         parentid;
   bool            packed;
 } uiwcont_t;
 

@@ -36,7 +36,6 @@ typedef struct uibox {
   int         count;
   int         endcount;
   bool        expandchildren;
-  bool        postprocess;
 } uibox_t;
 
 static long     gident = 0;
@@ -80,7 +79,7 @@ fprintf (stderr, "    post-process %d count: %d %d/%s\n", uiboxint->ident, (int)
     return;
   }
 
-  if (uiboxint->postprocess) {
+  if (boxbase->postprocess) {
     fprintf (stderr, "ERR: box post-process twice\n");
     return;
   }
@@ -215,7 +214,7 @@ fprintf (stderr, "    pp: l: expand-vert\n");
     }
   }
 
-  uiboxint->postprocess = true;
+  boxbase->postprocess = true;
 
   return;
 }

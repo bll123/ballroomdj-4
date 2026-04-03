@@ -414,6 +414,10 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
     uivlRowBasicInit (vl, &vl->rows [dispidx], dispidx);
   }
 
+  uiBoxPostProcess (vl->wcont [VL_W_MAIN_VBOX]);
+  uiBoxPostProcess (vl->wcont [VL_W_HBOX_CONT]);
+  uiBoxPostProcess (vl->wcont [VL_W_VBOX]);
+
   if (vl->keyhandling) {
     uiEventSetKeyCallback (vl->wcont [VL_W_EVENTH], vl->wcont [VL_W_MAIN_VBOX],
         vl->callbacks [VL_CB_KEY]);

@@ -89,6 +89,7 @@ uihnbCreate (uiwcont_t *box)
   hnb->selected = -1;
   hnb->textdir = sysvarsGetNum (SVL_LOCALE_TEXT_DIR);
 
+fprintf (stderr, "hnb: vbox\n");
   uiBoxPostProcess (vbox);
 
   return hnb;
@@ -163,11 +164,20 @@ uihnbAppendPage (uihnb_t *hnb, uiwcont_t *uibox,
 
   hnb->tablist [pagenum] = button;
   hnb->idlist [pagenum] = id;
-  if (pagenum == 0) {
-    uihnbSetPage (hnb, pagenum);
+
+fprintf (stderr, "hnb: hbox\n");
+  uiBoxPostProcess (hbox);
+}
+
+void
+uihnbPostProcess (uihnb_t *hnb)
+{
+  if (hnb == NULL) {
+    return;
   }
 
-  uiBoxPostProcess (hbox);
+  uihnbSetPage (hnb, 0);
+fprintf (stderr, "hnb: hlist\n");
   uiBoxPostProcess (hnb->hlist);
 }
 
@@ -258,7 +268,6 @@ uihnbSetActionWidget (uihnb_t *hnb, uiwcont_t *uiwidget)
     return;
   }
   nuiBoxPackEnd (hnb->hlist, uiwidget, WCONT_KEEP);
-  uiBoxPostProcess (hnb->hlist);
 }
 
 void

@@ -37,22 +37,27 @@ static bool favclassinit = false;
 /* = as a side effect, hbox is set, and */
 /* uiwidget is set to the profile color box (needed by bdj4starterui) */
 void
-uiutilsAddProfileColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
+uiutilsAddProfileColorDisplay (uiwcont_t *boxp, uiutilsaccent_t *accent)
 {
   uiwcont_t       *hbox;
   uiwcont_t       *cbox;
 
+  if (boxp == NULL || accent == NULL) {
+    return;
+  }
+
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vboxp, hbox, WCONT_FREE);
+  nuiBoxPackStart (boxp, hbox, WCONT_KEEP);
 
   cbox = uiCreateHorizBox ();
   uiWidgetSetSizeRequest (cbox, PROFILE_BOX_SZ, PROFILE_BOX_SZ);
-  uiutilsSetProfileColor (cbox, NULL);
-  nuiBoxPackEnd (hbox, cbox, WCONT_FREE);
+  nuiBoxPackEnd (hbox, cbox, WCONT_KEEP);
   uiWidgetAlignHorizCenter (cbox);
   uiWidgetAlignVertCenter (cbox);
   uiWidgetSetMarginStart (cbox, 4);
   uiBoxPostProcess (cbox);
+
+  uiutilsProfileSetColor (accent, NULL);
 
   accent->cbox = cbox;
   accent->hbox = hbox;
@@ -63,8 +68,12 @@ uiutilsProfileAddMenubar (uiutilsaccent_t *accent)
 {
   uiwcont_t     *menubar;
 
+  if (accent == NULL) {
+    return NULL;
+  }
+
   menubar = uiCreateMenubar ();
-  nuiBoxPackStart (accent->hbox, menubar, WCONT_FREE);
+  nuiBoxPackStart (accent->hbox, menubar, WCONT_KEEP);
   return menubar;
 }
 
@@ -73,8 +82,12 @@ uiutilsProfileAddLabel (uiutilsaccent_t *accent, const char *class)
 {
   uiwcont_t     *msg;
 
+  if (accent == NULL) {
+    return NULL;
+  }
+
   msg = uiCreateLabel ("");
-  nuiBoxPackEnd (accent->hbox, msg, WCONT_FREE);
+  nuiBoxPackEnd (accent->hbox, msg, WCONT_KEEP);
   uiWidgetSetClass (msg, class);
   return msg;
 }
@@ -82,16 +95,35 @@ uiutilsProfileAddLabel (uiutilsaccent_t *accent, const char *class)
 void
 uiutilsProfilePostProcess (uiutilsaccent_t *accent)
 {
+  if (accent == NULL) {
+    return;
+  }
+
   uiWidgetShowAll (accent->hbox);
   uiBoxPostProcess (accent->hbox);
 }
 
 void
-uiutilsSetProfileColor (uiwcont_t *uiwidgetp, const char *oldcolor)
+uiutilsProfileFree (uiutilsaccent_t *accent)
+{
+  if (accent == NULL) {
+    return;
+  }
+
+  uiwcontFree (accent->hbox);
+  uiwcontFree (accent->cbox);
+}
+
+void
+uiutilsProfileSetColor (uiutilsaccent_t *accent, const char *oldcolor)
 {
   char        classnm [100];
   char        bclassnm [100];
   const char  *tcolor = NULL;
+
+  if (accent == NULL) {
+    return;
+  }
 
   tcolor = bdjoptGetStr (OPT_P_UI_PROFILE_COL);
   if (tcolor == NULL || ! *tcolor) {
@@ -100,7 +132,7 @@ uiutilsSetProfileColor (uiwcont_t *uiwidgetp, const char *oldcolor)
 
   if (oldcolor != NULL) {
     snprintf (classnm, sizeof (classnm), "profcol%s", oldcolor + 1);
-    uiWidgetClearClass (uiwidgetp, classnm);
+    uiWidgetClearClass (accent->cbox, classnm);
   }
 
   snprintf (classnm, sizeof (classnm), "profcol%s", tcolor + 1);
@@ -108,7 +140,7 @@ uiutilsSetProfileColor (uiwcont_t *uiwidgetp, const char *oldcolor)
   snprintf (bclassnm, sizeof (bclassnm), "box.horizontal.profcol%s", tcolor + 1);
   /* the ui library has code to prevent duplicates */
   uiAddBGColorClass (bclassnm, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
-  uiWidgetSetClass (uiwidgetp, classnm);
+  uiWidgetSetClass (accent->cbox, classnm);
 }
 
 const char *

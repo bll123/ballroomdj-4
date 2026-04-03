@@ -413,6 +413,7 @@ uitestUIButtons (uitest_t *uitest)
   uiwcont_t   *sg;
   uiwcont_t   *uiwidgetp;
 
+fprintf (stderr, "Buttons\n");
   sg = uiCreateSizeGroupHoriz ();
 
   /* buttons */
@@ -576,6 +577,7 @@ uitestUIToggleButtons (uitest_t *uitest)
   uiwcont_t   *uiwidgetp;
   uiwcont_t   *twidgetp;
 
+fprintf (stderr, "ToggleButtons\n");
   sg = uiCreateSizeGroupHoriz ();
 
   /* toggle buttons */
@@ -686,6 +688,7 @@ uitestUIMiscButtons (uitest_t *uitest)
   uiwcont_t   *sg;
   uiwcont_t   *uiwidgetp;
 
+fprintf (stderr, "MiscButtons\n");
   sg = uiCreateSizeGroupHoriz ();
 
   /* misc buttons */
@@ -730,6 +733,7 @@ uitestUIChgInd (uitest_t *uitest)
   uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
 
+fprintf (stderr, "ChgInd\n");
   /* change indicator */
 
   uitest->callbacks [UITEST_CB_CHG_IND] = callbackInit (
@@ -780,6 +784,7 @@ uitestUIDropdown (uitest_t *uitest)
 {
   uiwcont_t   *vbox;
 
+fprintf (stderr, "Dropdown\n");
   /* drop-downs */
 
   vbox = uiCreateVertBox ();
@@ -834,6 +839,7 @@ uitestUIEntry (uitest_t *uitest)
   uiwcont_t   *vbox;
   uiwcont_t   *uiwidgetp;
 
+fprintf (stderr, "Entry\n");
   /* entry */
 
   vbox = uiCreateVertBox ();
@@ -857,6 +863,7 @@ uitestUIImage (uitest_t *uitest)
   uiwcont_t   *uiwidgetp;
   char        tbuff [BDJ4_PATH_MAX];
 
+fprintf (stderr, "Image\n");
   /* image */
 
   vbox = uiCreateVertBox ();
@@ -880,6 +887,7 @@ uitestUILabels (uitest_t *uitest)
   uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
 
+fprintf (stderr, "Labels\n");
   uiLabelAddClass ("ra", "#cc0000");
   uiLabelAddClass ("ga", "#00cc00");
   uiLabelAddClass ("ba", "#0000cc");
@@ -1133,6 +1141,7 @@ uitestUILink (uitest_t *uitest)
   uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
 
+fprintf (stderr, "Link\n");
   uitest->callbacks [UITEST_CB_LINK_A] = callbackInit (
       uitestCBLink, uitest, NULL);
 
@@ -1168,6 +1177,7 @@ uitestUINotebook (uitest_t *uitest)
   uivnb_t     *vnb;
   uihnb_t     *hnb;
 
+fprintf (stderr, "Notebook\n");
   /* notebook */
 
   vbox = uiCreateVertBox ();
@@ -1179,6 +1189,7 @@ uitestUINotebook (uitest_t *uitest)
 
   /* hnb */
 
+fprintf (stderr, "hnb-a\n");
   hnb = uihnbCreate (vbox);
   uitest->hnb = hnb;
 
@@ -1196,8 +1207,11 @@ uitestUINotebook (uitest_t *uitest)
     uiBoxPostProcess (vboxb);
   }
 
+  uihnbPostProcess (hnb);
+
   /* hnb w/images */
 
+fprintf (stderr, "hnb-img\n");
   hnb = uihnbCreate (vbox);
   uitest->hnbimg = hnb;
 
@@ -1241,8 +1255,11 @@ uitestUINotebook (uitest_t *uitest)
   uihnbSetActionWidget (hnb, uiwidgetp);
   uitest->wcont [UITEST_W_NB_ACTION] = uiwidgetp;
 
+  uihnbPostProcess (hnb);
+
   /* VNB */
 
+fprintf (stderr, "vnb-a\n");
   vnb = uivnbCreate (vbox);
   uitest->vnb = vnb;
 
@@ -1275,6 +1292,7 @@ uitestUIPanedWin (uitest_t *uitest)
   uiwcont_t   *tvbox;
   uiwcont_t   *uiwidgetp;
 
+fprintf (stderr, "PanedWin\n");
   /* paned window */
 
   vbox = uiCreateVertBox ();
@@ -1312,6 +1330,7 @@ uitestUIMisc (uitest_t *uitest)
   uiwcont_t   *vbox;
   uiwcont_t   *uiwidgetp;
 
+fprintf (stderr, "Misc\n");
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 4);
 
@@ -1348,6 +1367,7 @@ uitestUISizeGroup (uitest_t *uitest)
   uiwcont_t   *sg;
   uiwcont_t   *uiwidgetp;
 
+fprintf (stderr, "SizeGroup\n");
   /* size group */
 
   vbox = uiCreateVertBox ();
@@ -1452,6 +1472,7 @@ uitestUISpinbox (uitest_t *uitest)
   uiwcont_t   *hbox;
   uisbnum_t   *sb;
 
+fprintf (stderr, "Spinbox\n");
   /* spinboxes */
 
   vbox = uiCreateVertBox ();
@@ -1587,6 +1608,7 @@ uitestUITextBox (uitest_t *uitest)
   uiwcont_t   *vbox;
   uiwcont_t   *tb;
 
+fprintf (stderr, "TextBox\n");
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 4);
 
@@ -1606,6 +1628,7 @@ uitestUIVirtList (uitest_t *uitest)
 {
   uiwcont_t   *hbox;
 
+fprintf (stderr, "VirtList\n");
   hbox = uiCreateHorizBox ();
   uiWidgetSetAllMargins (hbox, 4);
 

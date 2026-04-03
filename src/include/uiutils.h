@@ -11,17 +11,19 @@
 extern "C" {
 #endif
 
-typedef struct {
+typedef struct uiutilsaccent {
   uiwcont_t   *hbox;
   uiwcont_t   *cbox;
 } uiutilsaccent_t;
 
 /* uiutils.c */
-void uiutilsAddProfileColorDisplay (uiwcont_t *vbox, uiutilsaccent_t *accent);
+void uiutilsAddProfileColorDisplay (uiwcont_t *boxp, uiutilsaccent_t *accent);
 uiwcont_t *uiutilsProfileAddMenubar (uiutilsaccent_t *accent);
 uiwcont_t *uiutilsProfileAddLabel (uiutilsaccent_t *accent, const char *class);
 void uiutilsProfilePostProcess (uiutilsaccent_t *accent);
-void uiutilsSetProfileColor (uiwcont_t *uiwidgetp, const char *oldcolor);
+void uiutilsProfileSetColor (uiutilsaccent_t *accent, const char *oldcolor);
+void uiutilsProfileFree (uiutilsaccent_t *accent);
+
 const char * uiutilsGetCurrentFont (void);
 const char * uiutilsGetListingFont (void);
 int uiutilsValidatePlaylistNameClr (uiwcont_t *entry, const char *label, void *udata);

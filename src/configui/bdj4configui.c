@@ -367,6 +367,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
   uiCloseWindow (confui->gui.window);
   uiCleanup ();
 
+  uiutilsProfileFree (&confui->accent);
   uiwcontFree (confui->gui.window);
 
   for (int i = CONFUI_DD_BEGIN + 1; i < CONFUI_DD_MAX; ++i) {

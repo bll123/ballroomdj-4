@@ -320,6 +320,9 @@ uiWidgetSetClass (uiwcont_t *uiwidget, const char *class)
   if (uiwidget->uidata.widget == NULL) {
     return;
   }
+  if (class == NULL) {
+    return;
+  }
 
   gtk_style_context_add_class (
      gtk_widget_get_style_context (uiwidget->uidata.widget), class);
