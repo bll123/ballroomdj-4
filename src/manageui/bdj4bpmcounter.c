@@ -61,6 +61,7 @@ enum {
 };
 
 typedef struct {
+  uiutilsaccent_t accent;
   progstate_t     *progstate;
   const char      *disptxt [BPMCOUNT_DISP_MAX];
   procutil_t      *processes [ROUTE_MAX];
@@ -286,6 +287,9 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
   logProcBegin ();
   uiCloseWindow (bpmcounter->wcont [BPM_W_WINDOW]);
   uiCleanup ();
+
+  uiutilsHeaderLineFree (&bpmcounter->accent);
+
   for (int i = 0; i < BPM_W_MAX; ++i) {
     uiwcontFree (bpmcounter->wcont [i]);
   }
@@ -324,7 +328,6 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiwcont_t   *szgrpDisp;
   char        imgbuff [BDJ4_PATH_MAX];
   int         x, y;
-  uiutilsaccent_t accent;
 
   logProcBegin ();
 
@@ -342,74 +345,69 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiWindowPackInWindow (bpmcounter->wcont [BPM_W_WINDOW], vboxmain);
   uiWidgetSetAllMargins (vboxmain, 4);
 
-  uiutilsAddProfileColorDisplay (vboxmain, &accent);
-  hbox = accent.hbox;
-  uiwcontFree (accent.cbox);
+  uiutilsHeaderLineSetup (vboxmain, &bpmcounter->accent);
+  uiutilsHeaderLinePostProcess (&bpmcounter->accent);
 
   /* instructions */
-  uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
+
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vboxmain, hbox);
+  nuiBoxPackStart (vboxmain, hbox, WCONT_FREE);
 
   /* CONTEXT: bpm counter: instructions, line 1 */
   uiwidgetp = uiCreateLabel (_("Click the mouse in the blue box in time with the beat."));
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiBoxPostProcess (hbox);
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vboxmain, hbox);
+  nuiBoxPackStart (vboxmain, hbox, WCONT_FREE);
 
   /* CONTEXT: bpm counter: instructions, line 2 */
   uiwidgetp = uiCreateLabel (_("When the BPM value is stable, select the Save button."));
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   /* secondary box */
   hboxbpm = uiCreateHorizBox ();
-  uiBoxPackStartExpandChildren (vboxmain, hboxbpm);
+  nuiBoxPackStartExpandChildren (vboxmain, hboxbpm, WCONT_FREE);
 
   /* left side */
   vbox = uiCreateVertBox ();
-  uiBoxPackStartExpandChildren (hboxbpm, vbox);
+  nuiBoxPackStartExpandChildren (hboxbpm, vbox, WCONT_FREE);
 
   /* some spacing */
   uiwidgetp = uiCreateLabel ("");
-  uiBoxPackStart (vbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  nuiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
+
+  uiBoxPostProcess (hbox);
 
   for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
-    uiBoxPostProcess (hbox);
-    uiwcontFree (hbox);
     hbox = uiCreateHorizBox ();
-    uiBoxPackStart (vbox, hbox);
+    nuiBoxPackStart (vbox, hbox, WCONT_FREE);
 
     uiwidgetp = uiCreateColonLabel (bpmcounter->disptxt [i]);
-    uiBoxPackStart (hbox, uiwidgetp);
+    nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     uiSizeGroupAdd (szgrp, uiwidgetp);
     bpmcounter->dispwidget [i] = uiwidgetp;
 
     bpmcounter->dispvalue [i] = uiCreateLabel ("");
     uiLabelAlignEnd (bpmcounter->dispvalue [i]);
-    uiBoxPackStart (hbox, bpmcounter->dispvalue [i]);
+    nuiBoxPackStart (hbox, bpmcounter->dispvalue [i], WCONT_KEEP);
     uiSizeGroupAdd (szgrpDisp, bpmcounter->dispvalue [i]);
+
+    uiBoxPostProcess (hbox);
   }
 
-  /* right side */
   uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
+
+  /* right side */
   vbox = uiCreateVertBox ();
-  uiBoxPackStartExpandChildren (hboxbpm, vbox);
+  nuiBoxPackStartExpandChildren (hboxbpm, vbox, WCONT_FREE);
   uiWidgetAlignHorizCenter (vbox);
   uiWidgetAlignVertCenter (vbox);
 
   /* blue box */
-  uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   bpmcounter->callbacks [BPMCOUNT_CB_CLICK] = callbackInit (
       bpmcounterProcessClick, bpmcounter, NULL);
@@ -419,15 +417,16 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiButtonSetReliefNone (uiwidgetp);
   uiButtonSetFlat (uiwidgetp);
   uiWidgetDisableFocus (uiwidgetp);
-  uiBoxPackEnd (hbox, uiwidgetp);
+  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetAllMargins (uiwidgetp, 0);
   bpmcounter->wcont [BPM_W_BUTTON_BLUEBOX] = uiwidgetp;
 
-  /* buttons */
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
+  uiBoxPostProcess (hboxbpm);
+
+  /* buttons */
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vboxmain, hbox);
+  nuiBoxPackStart (vboxmain, hbox, WCONT_FREE);
 
   bpmcounter->callbacks [BPMCOUNT_CB_SAVE] = callbackInit (
       bpmcounterProcessSave, bpmcounter, NULL);
@@ -435,7 +434,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       bpmcounter->callbacks [BPMCOUNT_CB_SAVE],
       /* CONTEXT: bpm counter: save button */
       _("Save"), NULL, NULL);
-  uiBoxPackEnd (hbox, uiwidgetp);
+  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   bpmcounter->wcont [BPM_W_BUTTON_SAVE] = uiwidgetp;
 
@@ -445,7 +444,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       bpmcounter->callbacks [BPMCOUNT_CB_RESET],
       /* CONTEXT: bpm counter: reset button */
       _("Reset"), NULL, NULL);
-  uiBoxPackEnd (hbox, uiwidgetp);
+  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   bpmcounter->wcont [BPM_W_BUTTON_RESET] = uiwidgetp;
 
@@ -453,9 +452,11 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
       /* CONTEXT: bpm counter: close button */
       _("Close"), NULL, NULL);
-  uiBoxPackEnd (hbox, uiwidgetp);
+  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   bpmcounter->wcont [BPM_W_BUTTON_CLOSE] = uiwidgetp;
+
+  uiBoxPostProcess (hbox);
 
   x = nlistGetNum (bpmcounter->options, BPMCOUNTER_POSITION_X);
   y = nlistGetNum (bpmcounter->options, BPMCOUNTER_POSITION_Y);
@@ -469,12 +470,6 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   uiBoxPostProcess (vboxmain);
   uiwcontFree (vboxmain);
-  uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
-  uiBoxPostProcess (hboxbpm);
-  uiwcontFree (hboxbpm);
-  uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpDisp);
 

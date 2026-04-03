@@ -120,26 +120,27 @@ enum {
 };
 
 typedef struct {
-  uivnb_t       *mainvnb;
-  uiwcont_t     *wcont [UITEST_W_MAX];
-  uisbnum_t     *sbnum [UITEST_SB_MAX];
-  uivirtlist_t  *vl [UITEST_VL_MAX];
-  callback_t    *callbacks [UITEST_CB_MAX];
-  char          *images [UITEST_I_MAX];
-  callback_t    *chgcb;
-  ilist_t       *lista;
-  ilist_t       *listb;
-  uivnb_t       *vnb;
-  uihnb_t       *hnb;
-  uihnb_t       *hnbimg;
-  uisbtext_t    *sbtext;
-  uisbtext_t    *sbtextb;
-  nlist_t       *sbtxtlist;
-  uidd_t        *uidd [UITEST_DD_MAX];
-  long          counter;
-  int           hnbimgsel;
-  bool          stop;
-  bool          chgind;
+  uiutilsaccent_t accent;
+  uivnb_t         *mainvnb;
+  uiwcont_t       *wcont [UITEST_W_MAX];
+  uisbnum_t       *sbnum [UITEST_SB_MAX];
+  uivirtlist_t    *vl [UITEST_VL_MAX];
+  callback_t      *callbacks [UITEST_CB_MAX];
+  char            *images [UITEST_I_MAX];
+  callback_t      *chgcb;
+  ilist_t         *lista;
+  ilist_t         *listb;
+  uivnb_t         *vnb;
+  uihnb_t         *hnb;
+  uihnb_t         *hnbimg;
+  uisbtext_t      *sbtext;
+  uisbtext_t      *sbtextb;
+  nlist_t         *sbtxtlist;
+  uidd_t          *uidd [UITEST_DD_MAX];
+  long            counter;
+  int             hnbimgsel;
+  bool            stop;
+  bool            chgind;
 } uitest_t;
 
 typedef struct {
@@ -351,7 +352,6 @@ uitestBuildUI (uitest_t *uitest)
   uiwcont_t   *vbox;
 //  uiwcont_t   *hbox;
 //  uiwcont_t   *uiwidgetp;
-  uiutilsaccent_t accent;
 
   uitest->callbacks [UITEST_CB_CLOSE] = callbackInit (
       uitestCloseWin, uitest, NULL);
@@ -375,8 +375,8 @@ uitestBuildUI (uitest_t *uitest)
   uiWindowPackInWindow (uitest->wcont [UITEST_W_WINDOW], vbox);
   uiWidgetSetAllMargins (vbox, 4);
 
-  uiutilsAddProfileColorDisplay (vbox, &accent);
-  uiutilsProfilePostProcess (&accent);
+  uiutilsHeaderLineSetup (vbox, &uitest->accent);
+  uiutilsHeaderLinePostProcess (&uitest->accent);
 
   /* main notebook */
 
@@ -1775,6 +1775,7 @@ uitestCleanup (uitest_t *uitest)
   uiCloseWindow (uitest->wcont [UITEST_W_WINDOW]);
   uiCleanup ();
 
+  uiutilsHeaderLineFree (&uitest->accent);
   for (int i = 0; i < UITEST_DD_MAX; ++i) {
     uiddFree (uitest->uidd [i]);
   }

@@ -126,6 +126,7 @@ enum {
 };
 
 typedef struct {
+  uiutilsaccent_t accent;
   progstate_t     *progstate;
   char            *locknm;
   conn_t          *conn;
@@ -465,6 +466,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiCloseWindow (plui->wcont [PLUI_W_WINDOW]);
   uiCleanup ();
 
+  uiutilsHeaderLineFree (&plui->accent);
   contInstanceFree (plui->continst);
 
   datafileSave (plui->optiondf, NULL, plui->options, DF_NO_OFFSET, 1);
@@ -512,7 +514,6 @@ pluiBuildUI (playerui_t *plui)
   uiwcont_t   *menubar;
   uiwcont_t   *menu;
   uiwcont_t   *menuitem;
-  uiwcont_t   *hbox;
   uiwcont_t   *uip;
   uiwcont_t   *uiwidgetp;
   const char  *str;
@@ -521,7 +522,6 @@ pluiBuildUI (playerui_t *plui)
   char        tbuff [BDJ4_PATH_MAX];
   int         x, y;
   void        *tempp;
-  uiutilsaccent_t accent;
 
   logProcBegin ();
 
@@ -554,28 +554,17 @@ pluiBuildUI (playerui_t *plui)
       plui->wcont [PLUI_W_MAIN_VBOX], plui->callbacks [PLUI_CB_KEYB]);
 
   /* menu */
-  uiutilsAddProfileColorDisplay (plui->wcont [PLUI_W_MAIN_VBOX], &accent);
-  hbox = accent.hbox;
-  uiwcontFree (accent.cbox);
-  uiWidgetExpandHoriz (hbox);
-
-  menubar = uiCreateMenubar ();
-  uiBoxPackStart (hbox, menubar);
-
-  plui->wcont [PLUI_W_CLOCK] = uiCreateLabel ("");
-  uiBoxPackEnd (hbox, plui->wcont [PLUI_W_CLOCK]);
+  uiutilsHeaderLineSetup (plui->wcont [PLUI_W_MAIN_VBOX], &plui->accent);
+  menubar = uiutilsHeaderLineAddMenubar (&plui->accent);
+  plui->wcont [PLUI_W_CLOCK] =
+      uiutilsHeaderLineAddLabel (&plui->accent, NULL);
   uiWidgetSetMarginStart (plui->wcont [PLUI_W_CLOCK], 4);
   uiWidgetSetState (plui->wcont [PLUI_W_CLOCK], UIWIDGET_DISABLE);
 
-  uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
-  uiBoxPackEnd (hbox, uiwidgetp);
-  plui->wcont [PLUI_W_ERROR_MSG] = uiwidgetp;
-
-  uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
-  uiBoxPackEnd (hbox, uiwidgetp);
-  plui->wcont [PLUI_W_STATUS_MSG] = uiwidgetp;
+  plui->wcont [PLUI_W_ERROR_MSG] =
+      uiutilsHeaderLineAddLabel (&plui->accent, ERROR_CLASS);
+  plui->wcont [PLUI_W_STATUS_MSG] =
+      uiutilsHeaderLineAddLabel (&plui->accent, ACCENT_CLASS);
 
   /* actions */
   /* CONTEXT: playerui: menu selection: actions for the player */
@@ -691,7 +680,7 @@ pluiBuildUI (playerui_t *plui)
   /* player */
   uiwidgetp = uiplayerBuildUI (plui->uiplayer);
   uiWidgetExpandHoriz (uiwidgetp);
-  uiBoxPackStart (plui->wcont [PLUI_W_MAIN_VBOX], uiwidgetp);
+  nuiBoxPackStart (plui->wcont [PLUI_W_MAIN_VBOX], uiwidgetp, WCONT_KEEP);
 
   plui->hnb = uihnbCreate (plui->wcont [PLUI_W_MAIN_VBOX]);
 
@@ -787,8 +776,8 @@ pluiBuildUI (playerui_t *plui)
 
   plui->uibuilt = true;
 
-  uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
+  uiBoxPostProcess (plui->wcont [PLUI_W_MAIN_VBOX]);
+
   uiwcontFree (menu);
   uiwcontFree (menubar);
 
@@ -1584,13 +1573,12 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
   uiDialogPackInDialog (plui->wcont [PLUI_W_MQ_FONT_SZ_DIALOG], vbox);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   /* CONTEXT: playerui: marquee font size dialog: the font size selector */
   tlabel = _("Font Size");
   uiwidgetp = uiCreateColonLabel (tlabel);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   plui->mqszsb = uisbnumCreate (hbox, tlabel, 2);
   uisbnumSetLimits (plui->mqszsb, 10.0, 400.0, 0);
@@ -1600,19 +1588,18 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
       pluiMarqueeFontSizeChg, plui, NULL);
   uisbnumSetChangeCallback (plui->mqszsb, plui->callbacks [PLUI_CB_FONT_SZ_CHG]);
 
-  /* the dialog doesn't have any space above the buttons */
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
+
+  /* the dialog doesn't have any space above the buttons */
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateLabel ("");
-  uiBoxPackStart (hbox, uiwidgetp);
+  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiwcontFree (uiwidgetp);
   plui->fontszdialogcreated = true;
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 

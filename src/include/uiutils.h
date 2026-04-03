@@ -17,12 +17,12 @@ typedef struct uiutilsaccent {
 } uiutilsaccent_t;
 
 /* uiutils.c */
-void uiutilsAddProfileColorDisplay (uiwcont_t *boxp, uiutilsaccent_t *accent);
-uiwcont_t *uiutilsProfileAddMenubar (uiutilsaccent_t *accent);
-uiwcont_t *uiutilsProfileAddLabel (uiutilsaccent_t *accent, const char *class);
-void uiutilsProfilePostProcess (uiutilsaccent_t *accent);
-void uiutilsProfileSetColor (uiutilsaccent_t *accent, const char *oldcolor);
-void uiutilsProfileFree (uiutilsaccent_t *accent);
+void uiutilsHeaderLineSetup (uiwcont_t *boxp, uiutilsaccent_t *accent);
+uiwcont_t *uiutilsHeaderLineAddMenubar (uiutilsaccent_t *accent);
+uiwcont_t *uiutilsHeaderLineAddLabel (uiutilsaccent_t *accent, const char *class);
+void uiutilsHeaderLinePostProcess (uiutilsaccent_t *accent);
+void uiutilsHeaderLineSetColor (uiutilsaccent_t *accent, const char *oldcolor);
+void uiutilsHeaderLineFree (uiutilsaccent_t *accent);
 
 const char * uiutilsGetCurrentFont (void);
 const char * uiutilsGetListingFont (void);

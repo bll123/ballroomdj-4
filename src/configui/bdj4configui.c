@@ -369,7 +369,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
   uiCloseWindow (confui->gui.window);
   uiCleanup ();
 
-  uiutilsProfileFree (&confui->accent);
+  uiutilsHeaderLineFree (&confui->accent);
   uiwcontFree (confui->gui.statusMsg);
   uiwcontFree (confui->gui.errorMsg);
   uiwcontFree (confui->gui.window);
@@ -462,10 +462,10 @@ fprintf (stderr, "-- conf vbox\n");
   uiWidgetExpandVert (confui->gui.vbox);
 
 fprintf (stderr, "-- conf prof-disp\n");
-  uiutilsAddProfileColorDisplay (confui->gui.vbox, &confui->accent);
-  confui->gui.statusMsg = uiutilsProfileAddLabel (&confui->accent, ACCENT_CLASS);
-  confui->gui.errorMsg = uiutilsProfileAddLabel (&confui->accent, ERROR_CLASS);
-  uiutilsProfilePostProcess (&confui->accent);
+  uiutilsHeaderLineSetup (confui->gui.vbox, &confui->accent);
+  confui->gui.statusMsg = uiutilsHeaderLineAddLabel (&confui->accent, ACCENT_CLASS);
+  confui->gui.errorMsg = uiutilsHeaderLineAddLabel (&confui->accent, ERROR_CLASS);
+  uiutilsHeaderLinePostProcess (&confui->accent);
 
 fprintf (stderr, "-- conf vnb\n");
   confui->gui.mainvnb = uivnbCreate (confui->gui.vbox);

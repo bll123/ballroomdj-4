@@ -79,6 +79,7 @@ enum {
 };
 
 typedef struct uisongfilter {
+  uiutilsaccent_t   accent;
   char              *playlistname;
   rating_t          *ratings;
   level_t           *levels;
@@ -179,6 +180,7 @@ uisfFree (uisongfilter_t *uisf)
     return;
   }
 
+  uiutilsHeaderLineFree (&uisf->accent);
   dataFree (uisf->playlistname);
   uisfFreeDialog (uisf);
   sortoptFree (uisf->sortopt);
@@ -482,7 +484,6 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiwcont_t    *szgrpEntry;     // playlist, title, search
   uiwcont_t    *szgrpDD;        // drop-downs, not including title
   uiwcont_t    *szgrpSpinText;  // spinboxes, not including favorite
-  uiutilsaccent_t accent;
 
   logProcBegin ();
 
@@ -517,12 +518,9 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiDialogPackInDialog (uisf->wcont [UISF_W_DIALOG], vbox);
 
   /* accent color */
-  uiutilsAddProfileColorDisplay (vbox, &accent);
-  hbox = accent.hbox;
-  uiwcontFree (accent.cbox);
+  uiutilsHeaderLineSetup (vbox, &uisf->accent);
+  uiutilsHeaderLinePostProcess (&uisf->accent);
 
-  uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
   /* begin line */
 
   /* playlist : only available for the music manager */

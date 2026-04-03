@@ -566,7 +566,7 @@ starterClosingCallback (void *udata, programstate_t programState)
 
   starterSupportMsgDialogClear (starter);
   starterSupportDialogClear (starter);
-  uiutilsProfileFree (&starter->accent);
+  uiutilsHeaderLineFree (&starter->accent);
   for (int i = 0; i < START_W_MAX; ++i) {
     uiwcontFree (starter->wcont [i]);
   }
@@ -641,11 +641,11 @@ starterBuildUI (startui_t  *starter)
     uiWidgetSetMarginEnd (vbox, 6);
   }
 
-  uiutilsAddProfileColorDisplay (vbox, &starter->accent);
-  menubar = uiutilsProfileAddMenubar (&starter->accent);
+  uiutilsHeaderLineSetup (vbox, &starter->accent);
+  menubar = uiutilsHeaderLineAddMenubar (&starter->accent);
   starter->wcont [START_W_STATUS_MSG] =
-      uiutilsProfileAddLabel (&starter->accent, ACCENT_CLASS);
-  uiutilsProfilePostProcess (&starter->accent);
+      uiutilsHeaderLineAddLabel (&starter->accent, ACCENT_CLASS);
+  uiutilsHeaderLinePostProcess (&starter->accent);
 
   /* CONTEXT: starterui: action menu for the starter user interface */
   menuitem = uiMenuCreateItem (menubar, _("Actions"), NULL);
@@ -1458,10 +1458,10 @@ starterProcessSupport (void *udata)
   uiWidgetSetAllMargins (vbox, 2);
 
   /* status message line */
-  uiutilsAddProfileColorDisplay (vbox, &accent);
+  uiutilsHeaderLineSetup (vbox, &accent);
   starter->wcont [START_W_DIALOG_STATUS_MSG] =
-      uiutilsProfileAddLabel (&accent, ACCENT_CLASS);
-  uiutilsProfilePostProcess (&accent);
+      uiutilsHeaderLineAddLabel (&accent, ACCENT_CLASS);
+  uiutilsHeaderLinePostProcess (&accent);
 
   /* begin line */
   hbox = uiCreateHorizBox ();
@@ -1796,7 +1796,7 @@ starterResetProfile (startui_t *starter, int profidx)
     stpecpy (oldcolor, oldcolor + sizeof (oldcolor), bdjoptGetStr (OPT_P_UI_PROFILE_COL));
     bdjoptInit ();
     uiWindowSetTitle (starter->wcont [START_W_WINDOW], bdjoptGetStr (OPT_P_PROFILENAME));
-    uiutilsProfileSetColor (&starter->accent, oldcolor);
+    uiutilsHeaderLineSetColor (&starter->accent, oldcolor);
     starterLoadOptions (starter);
   }
   bdjvarsUpdateData ();
@@ -1863,7 +1863,7 @@ starterCheckProfile (startui_t *starter)
     /* select a completely random color */
     createRandomColor (tbuff, sizeof (tbuff));
     bdjoptSetStr (OPT_P_UI_PROFILE_COL, tbuff);
-    uiutilsProfileSetColor (&starter->accent, oldcolor);
+    uiutilsHeaderLineSetColor (&starter->accent, oldcolor);
 
     bdjoptSave ();
 
@@ -1908,7 +1908,7 @@ starterDeleteProfile (void *udata)
   bdjoptDeleteProfile ();
   starterResetProfile (starter, 0);
   bdjoptInit ();
-  uiutilsProfileSetColor (&starter->accent, oldcolor);
+  uiutilsHeaderLineSetColor (&starter->accent, oldcolor);
 
   starterRebuildProfileList (starter);
 
@@ -1976,7 +1976,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiWidgetSetAllMargins (vbox, 2);
 
   /* profile color line */
-  uiutilsAddProfileColorDisplay (vbox, &accent);
+  uiutilsHeaderLineSetup (vbox, &accent);
   uiBoxPostProcess (accent.cbox);
   uiwcontFree (accent.cbox);
   uiBoxPostProcess (accent.hbox);

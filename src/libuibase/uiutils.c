@@ -37,7 +37,7 @@ static bool favclassinit = false;
 /* = as a side effect, hbox is set, and */
 /* uiwidget is set to the profile color box (needed by bdj4starterui) */
 void
-uiutilsAddProfileColorDisplay (uiwcont_t *boxp, uiutilsaccent_t *accent)
+uiutilsHeaderLineSetup (uiwcont_t *boxp, uiutilsaccent_t *accent)
 {
   uiwcont_t       *hbox;
   uiwcont_t       *cbox;
@@ -48,6 +48,7 @@ uiutilsAddProfileColorDisplay (uiwcont_t *boxp, uiutilsaccent_t *accent)
 
   hbox = uiCreateHorizBox ();
   nuiBoxPackStart (boxp, hbox, WCONT_KEEP);
+  uiWidgetExpandHoriz (hbox);
 
   cbox = uiCreateHorizBox ();
   uiWidgetSetSizeRequest (cbox, PROFILE_BOX_SZ, PROFILE_BOX_SZ);
@@ -60,11 +61,11 @@ uiutilsAddProfileColorDisplay (uiwcont_t *boxp, uiutilsaccent_t *accent)
   accent->cbox = cbox;
   accent->hbox = hbox;
 
-  uiutilsProfileSetColor (accent, NULL);
+  uiutilsHeaderLineSetColor (accent, NULL);
 }
 
 uiwcont_t *
-uiutilsProfileAddMenubar (uiutilsaccent_t *accent)
+uiutilsHeaderLineAddMenubar (uiutilsaccent_t *accent)
 {
   uiwcont_t     *menubar;
 
@@ -78,7 +79,7 @@ uiutilsProfileAddMenubar (uiutilsaccent_t *accent)
 }
 
 uiwcont_t *
-uiutilsProfileAddLabel (uiutilsaccent_t *accent, const char *class)
+uiutilsHeaderLineAddLabel (uiutilsaccent_t *accent, const char *class)
 {
   uiwcont_t     *msg;
 
@@ -93,7 +94,7 @@ uiutilsProfileAddLabel (uiutilsaccent_t *accent, const char *class)
 }
 
 void
-uiutilsProfilePostProcess (uiutilsaccent_t *accent)
+uiutilsHeaderLinePostProcess (uiutilsaccent_t *accent)
 {
   if (accent == NULL) {
     return;
@@ -104,7 +105,7 @@ uiutilsProfilePostProcess (uiutilsaccent_t *accent)
 }
 
 void
-uiutilsProfileFree (uiutilsaccent_t *accent)
+uiutilsHeaderLineFree (uiutilsaccent_t *accent)
 {
   if (accent == NULL) {
     return;
@@ -115,7 +116,7 @@ uiutilsProfileFree (uiutilsaccent_t *accent)
 }
 
 void
-uiutilsProfileSetColor (uiutilsaccent_t *accent, const char *oldcolor)
+uiutilsHeaderLineSetColor (uiutilsaccent_t *accent, const char *oldcolor)
 {
   char        classnm [100];
   char        bclassnm [100];

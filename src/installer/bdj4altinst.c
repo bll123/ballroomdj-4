@@ -96,6 +96,7 @@ enum {
 };
 
 typedef struct {
+  uiutilsaccent_t accent;
   altinststate_t  instState;
   altinststate_t  lastInstState;            // debugging
   callback_t      *callbacks [ALT_CB_MAX];
@@ -349,7 +350,6 @@ altinstBuildUI (altinst_t *altinst)
   uiwcont_t     *uiwidgetp;
   char          tbuff [100];
   char          imgbuff [BDJ4_PATH_MAX];
-  uiutilsaccent_t accent;
 
   stpecpy (imgbuff, imgbuff + sizeof (imgbuff), "img/bdj4_icon_inst.png");
   osuiSetIcon (imgbuff);
@@ -368,16 +368,12 @@ altinstBuildUI (altinst_t *altinst)
   uiWidgetExpandHoriz (vbox);
   uiWidgetExpandVert (vbox);
 
-  uiutilsAddProfileColorDisplay (vbox, &accent);
-  hbox = accent.hbox;
-  uiwcontFree (accent.cbox);
-
   /* begin line : status message */
 
-  uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
-  uiBoxPackEnd (hbox, uiwidgetp);
-  altinst->wcont [ALT_W_ERROR_MSG] = uiwidgetp;
+  uiutilsHeaderLineSetup (vbox, &altinst->accent);
+  altinst->wcont [ALT_W_ERROR_MSG] =
+      uiutilsHeaderLineAddLabel (&altinst->accent, ERROR_CLASS);
+  uiutilsHeaderLinePostProcess (&altinst->accent);
 
   /* begin line : instructions */
 
@@ -1243,19 +1239,22 @@ altinstUpdateProcess (altinst_t *altinst)
 static void
 altinstCleanup (altinst_t *altinst)
 {
-  if (altinst != NULL) {
-    for (int i = 0; i < ALT_CB_MAX; ++i) {
-      callbackFree (altinst->callbacks [i]);
-    }
-    if (altinst->guienabled) {
-      for (int i = 0; i < ALT_W_MAX; ++i) {
-        uiwcontFree (altinst->wcont [i]);
-      }
-    }
-    dataFree (altinst->target);
-    dataFree (altinst->name);
-    dataFree (altinst->basedir);
+  if (altinst == NULL) {
+    return;
   }
+
+  uiutilsHeaderLineFree (&altinst->accent);
+  for (int i = 0; i < ALT_CB_MAX; ++i) {
+    callbackFree (altinst->callbacks [i]);
+  }
+  if (altinst->guienabled) {
+    for (int i = 0; i < ALT_W_MAX; ++i) {
+      uiwcontFree (altinst->wcont [i]);
+    }
+  }
+  dataFree (altinst->target);
+  dataFree (altinst->name);
+  dataFree (altinst->basedir);
 }
 
 static void

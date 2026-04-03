@@ -764,6 +764,8 @@ manageClosingCallback (void *udata, programstate_t programState)
   uiCloseWindow (manage->minfo.window);
   uiCleanup ();
 
+  uiutilsHeaderLineFree (&manage->accent);
+
   contInstanceFree (manage->continst);
   manageDbClose (manage->managedb);
 
@@ -863,13 +865,14 @@ manageBuildUI (manageui_t *manage)
   uiWindowPackInWindow (manage->minfo.window, vbox);
   uiWidgetSetAllMargins (vbox, 4);
 
-  uiutilsAddProfileColorDisplay (vbox, &manage->accent);
-  manage->wcont [MANAGE_W_MENUBAR] = uiutilsProfileAddMenubar (&manage->accent);
+  uiutilsHeaderLineSetup (vbox, &manage->accent);
+  manage->wcont [MANAGE_W_MENUBAR] =
+      uiutilsHeaderLineAddMenubar (&manage->accent);
   manage->wcont [MANAGE_W_STATUS_MSG] =
-      uiutilsProfileAddLabel (&manage->accent, ACCENT_CLASS);
+      uiutilsHeaderLineAddLabel (&manage->accent, ACCENT_CLASS);
   manage->wcont [MANAGE_W_ERROR_MSG] =
-      uiutilsProfileAddLabel (&manage->accent, ERROR_CLASS);
-  uiutilsProfileAddLabel (&manage->accent, ERROR_CLASS);
+      uiutilsHeaderLineAddLabel (&manage->accent, ERROR_CLASS);
+  uiutilsHeaderLineAddLabel (&manage->accent, ERROR_CLASS);
 
   manage->mainvnb = uivnbCreate (vbox);
   uiBoxPostProcess (vbox);
