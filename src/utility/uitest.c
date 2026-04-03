@@ -39,34 +39,33 @@
 #include "uiwcont.h"
 
 enum {
-  UITEST_W_WINDOW,
-  UITEST_W_MENUBAR,
-  UITEST_W_MENU_A,
-  UITEST_W_MENU_B,
-  UITEST_W_STATUS_MSG,
   UITEST_W_B,
-  UITEST_W_B_MSG,
-  UITEST_W_B_LEFT,
-  UITEST_W_B_LONG,
   UITEST_W_B_FLAT,
   UITEST_W_B_IMG_A,
-  UITEST_W_B_IMG_B,
-  UITEST_W_B_IMG_C,
-  UITEST_W_B_IMG_D,
   UITEST_W_B_IMG_A_MSG,
+  UITEST_W_B_IMG_B,
   UITEST_W_B_IMG_B_MSG,
+  UITEST_W_B_IMG_C,
   UITEST_W_B_IMG_C_MSG,
-  UITEST_W_SW,
+  UITEST_W_B_IMG_D,
+  UITEST_W_B_LEFT,
+  UITEST_W_B_LONG,
+  UITEST_W_B_MSG,
   UITEST_W_CI_A,
   UITEST_W_CI_B,
   UITEST_W_CI_BUTTON,
-  UITEST_W_LINK_A,
   UITEST_W_IMG_A,
-  UITEST_W_TOGGLE_C,
+  UITEST_W_LINK_A,
+  UITEST_W_MENU_A,
+  UITEST_W_MENU_B,
+  UITEST_W_MENUBAR,
   UITEST_W_NB_ACTION,
-  UITEST_W_SCALE,
   UITEST_W_PBAR,
+  UITEST_W_SCALE,
   UITEST_W_SEP,
+  UITEST_W_SW,
+  UITEST_W_TOGGLE_C,
+  UITEST_W_WINDOW,
   UITEST_W_MAX,
 };
 
@@ -354,6 +353,8 @@ static void
 uitestBuildUI (uitest_t *uitest)
 {
   uiwcont_t   *vbox;
+  uiwcont_t   *menuitem;
+  uiwcont_t   *menu;
 
   uitest->callbacks [UITEST_CB_CLOSE] = callbackInit (
       uitestCloseWin, uitest, NULL);
@@ -379,9 +380,8 @@ uitestBuildUI (uitest_t *uitest)
 
   uiutilsHeaderLineSetup (vbox, &uitest->accent);
   uitest->wcont [UITEST_W_MENUBAR] = uiutilsHeaderLineAddMenubar (&uitest->accent);
-  uitest->wcont [UITEST_W_STATUS_MSG] =
-      uiutilsHeaderLineAddLabel (&uitset->accent, ACCENT_CLASS);
   uiutilsHeaderLinePostProcess (&uitest->accent);
+
 
   uitest->wcont [UITEST_W_MENU_A] = uiMenuAlloc ();
 
@@ -429,7 +429,7 @@ uitestBuildUI (uitest_t *uitest)
 
   /* main notebook */
 
-  uitest->mainvnb = uivnbCreate ("vnb-main", vbox);
+  uitest->mainvnb = uivnbCreate (vbox);
 
   uitestUIButtons (uitest);
   uitestUIToggleButtons (uitest);
@@ -799,7 +799,6 @@ fprintf (stderr, "ChgInd\n");
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateChangeIndicator (hbox);
-  uiWidgetSetMarginEnd (uiwidgetp, 4);
   uichgindMarkNormal (uiwidgetp);
   uitest->wcont [UITEST_W_CI_A] = uiwidgetp;
 
@@ -819,7 +818,6 @@ fprintf (stderr, "ChgInd\n");
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateChangeIndicator (hbox);
-  uiWidgetSetMarginEnd (uiwidgetp, 4);
   uichgindMarkChanged (uiwidgetp);
   uitest->wcont [UITEST_W_CI_B] = uiwidgetp;
 
@@ -888,7 +886,6 @@ void
 uitestUIEntry (uitest_t *uitest)
 {
   uiwcont_t   *vbox;
-  uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
 
 fprintf (stderr, "Entry\n");
@@ -1008,32 +1005,6 @@ fprintf (stderr, "Labels\n");
   uiWidgetSetClass (uiwidgetp, "rb");
 
   uiBoxPostProcess (hbox);
-
-  /* label: pack start / expand horiz / align right */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
-  uiwidgetp = uiCreateLabel ("ps-eh-ae");
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "gb");
-  uiWidgetExpandHoriz (uiwidgetp);
-  uiWidgetAlignHorizEnd (hbox);
-  uiwcontFree (uiwidgetp);
-
-  uiwidgetp = uiCreateLabel ("ps-b");
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "bb");
-  uiwcontFree (uiwidgetp);
-
-  uiwidgetp = uiCreateLabel ("ps-c");
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, "rb");
-  uiwcontFree (uiwidgetp);
-
-  uiwcontFree (hbox);
 
   /* label: pack start / expand horiz / align center */
 
@@ -1443,8 +1414,6 @@ uitestUISizeGroup (uitest_t *uitest)
   uiwcont_t   *vbox;
   uiwcont_t   *hbox;
   uiwcont_t   *sg;
-  uiwcont_t   *sgb;
-  uiwcont_t   *sgc;
   uiwcont_t   *uiwidgetp;
 
 fprintf (stderr, "SizeGroup\n");
@@ -1456,8 +1425,6 @@ fprintf (stderr, "SizeGroup\n");
   uivnbAppendPage (uitest->mainvnb, vbox, "Size Group", VNB_NO_ID);
 
   sg = uiCreateSizeGroupHoriz ();
-  sgb = uiCreateSizeGroupHoriz ();
-  sgc = uiCreateSizeGroupHoriz ();
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox, WCONT_FREE);

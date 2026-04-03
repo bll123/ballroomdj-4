@@ -106,7 +106,7 @@ confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp,
   gui->uiitem [widx].callback = callbackInit (dialogFunc, &gui->uiitem [widx].sfcb, NULL);
 
   uiwidgetp = uiCreateButton (
-      gui->uiitem [widx].callback, NULL, NULL);
+      gui->uiitem [widx].callback, NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
   uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 0);

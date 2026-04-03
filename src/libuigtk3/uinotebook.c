@@ -18,11 +18,8 @@
 
 #include "ui/uiwcont-int.h"
 
-#include "ui/uibox.h"
-#include "ui/uilabel.h"
-#include "ui/uinotebook.h"
 #include "ui/uiui.h"
-#include "ui/uiwidget.h"
+#include "ui/uinotebook.h"
 
 static void
 uiNotebookSwitchPageHandler (GtkNotebook *nb, GtkWidget *page,
@@ -36,8 +33,9 @@ uiCreateNotebook (void)
 
   widget = gtk_notebook_new ();
   gtk_notebook_set_show_border (GTK_NOTEBOOK (widget), TRUE);
-//  gtk_widget_set_hexpand (widget, TRUE);
-//  gtk_widget_set_vexpand (widget, FALSE);
+  gtk_widget_set_margin_top (widget, uiBaseMarginSz * 2);
+  gtk_widget_set_hexpand (widget, TRUE);
+  gtk_widget_set_vexpand (widget, FALSE);
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (widget), GTK_POS_TOP);
   gtk_notebook_set_show_tabs (GTK_NOTEBOOK (widget), FALSE);
   uiwidget = uiwcontAlloc (WCONT_T_NOTEBOOK, WCONT_T_NOTEBOOK);
@@ -47,10 +45,9 @@ uiCreateNotebook (void)
 
 void
 uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
-    const char *label, uiwcont_t *image)
+    uiwcont_t *uiwidget)
 {
   GtkWidget   *nbtitle;
-  uiwcont_t   *hbox;
 
   if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-append-page")) {
     return;
@@ -63,33 +60,13 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
         uibox->id, uibox->wbasetype, uiwcontDesc (uibox->wbasetype));
     return;
   }
-
-  hbox = NULL;
   nbtitle = NULL;
-  if (label != NULL || image != NULL) {
-    hbox = uiCreateHorizBox ();
-    nbtitle = hbox->uidata.widget;
-  }
-  if (label != NULL) {
-    uiwcont_t   *uiwidgetp;
-
-    uiwidgetp = uiCreateLabel (label);
-    uiBoxPackStart (hbox, uiwidgetp);
-    uiwcontFree (uiwidgetp);
-  }
-  if (image != NULL) {
-    uiBoxPackStart (hbox, image);
-    uiWidgetAlignHorizCenter (image);
-    uiWidgetAlignVertCenter (image);
-    uiWidgetSetMarginStart (image, 1);
+  if (uiwidget != NULL) {
+    nbtitle = uiwidget->uidata.widget;
   }
 
   gtk_notebook_append_page (GTK_NOTEBOOK (uinotebook->uidata.widget),
       uibox->uidata.widget, nbtitle);
-  if (hbox != NULL) {
-    uiWidgetShowAll (hbox);
-  }
-  uiwcontFree (hbox);
 }
 
 void

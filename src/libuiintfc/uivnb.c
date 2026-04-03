@@ -56,7 +56,7 @@ typedef struct uivnb {
 bool uivnbSetPageCallback (void *udata);
 
 uivnb_t *
-uivnbCreate (const char *ident, uiwcont_t *box)
+uivnbCreate (uiwcont_t *box)
 {
   uivnb_t     *vnb;
   uiwcont_t   *hbox;

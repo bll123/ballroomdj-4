@@ -158,8 +158,6 @@ GtkWidget * uiImageWidget (const char *imagenm);
 
 /* general widget container */
 typedef struct uiwcont {
-  uiwcontint_t    uiint;
-  uispecific_t    uidata;
   uiwconttype_t   wbasetype;
   uiwconttype_t   wtype;
   /* data internal to each widget type */
