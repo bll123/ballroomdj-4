@@ -35,14 +35,10 @@ uiwcont_t * uiCreateVertBox (void);
 uiwcont_t * uiCreateHorizBox (void);
 void uiBoxPostProcess (uiwcont_t *uiwidget);
 void uiBoxFree (uiwcont_t *uibox);
-void uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget);
-void uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget);
-void uiBoxPackStartExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget);
-void uiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget);
-void nuiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release);
-void nuiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release);
-void nuiBoxPackStartExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release);
-void nuiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release);
+void uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release);
+void uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release);
+void uiBoxPackStartExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release);
+void uiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release);
 
 /* uibutton.c */
 bool uiButtonCheckRepeat (uiwcont_t *uiwidget);

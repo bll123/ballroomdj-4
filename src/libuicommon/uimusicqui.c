@@ -212,24 +212,24 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
       uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
     hbox = uiCreateHorizBox ();
     uiWidgetExpandHoriz (hbox);
-    nuiBoxPackStart (uimusicq->ui [ci].mainbox, hbox, WCONT_FREE);
+    uiBoxPackStart (uimusicq->ui [ci].mainbox, hbox, WCONT_FREE);
     uiWidgetSetMarginTop (hbox, 1);
 
     /* CONTEXT: music queue: label for song list name */
     uiwidgetp = uiCreateColonLabel (_("Song List"));
-    nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
     uiWidgetSetMarginStart (uiwidgetp, 2);
     uiWidgetSetMarginEnd (uiwidgetp, 2);
 
     uiwidgetp = uiEntryInit (30, 100);
     uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
     if (uimusicq->ui [ci].dispselType == DISP_SEL_SBS_SONGLIST) {
-      nuiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
+      uiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
       uiWidgetExpandHoriz (uiwidgetp);
       uiWidgetAlignHorizFill (uiwidgetp);
     }
     if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST) {
-      nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+      uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     }
     uimusicq->ui [ci].slname = uiwidgetp;
     if (validateFunc != NULL) {
@@ -261,7 +261,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
       if (qdancelen > UIMUSICQ_MAX_QDANCE_LEN) {
         hbox = uiCreateHorizBox ();
         uiWidgetExpandHoriz (hbox);
-        nuiBoxPackStart (uimusicq->ui [ci].mainbox, hbox, WCONT_FREE);
+        uiBoxPackStart (uimusicq->ui [ci].mainbox, hbox, WCONT_FREE);
         uiWidgetSetMarginTop (hbox, 1);
         uimusicquiCreateQueueDanceButtons (uimusicq, mqint, hbox, parentwin, q5dancetxt, qdancetxt);
         uiBoxPostProcess (hbox);
@@ -271,7 +271,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  nuiBoxPackStart (uimusicq->ui [ci].mainbox, hbox, WCONT_FREE);
+  uiBoxPackStart (uimusicq->ui [ci].mainbox, hbox, WCONT_FREE);
   uiWidgetSetMarginTop (hbox, 1);
 
   /* dispseltype can be a music queue, history, */
@@ -286,7 +286,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         mqint->callbacks [MQINT_CB_MOVE_TOP],
         /* CONTEXT: music queue: button: move the selected song to the top of the queue */
         NULL, "button_movetop", _("Move to Top"));
-    nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     mqint->wcont [UIMUSICQ_W_BUTTON_MOVE_TOP] = uiwidgetp;
 
     mqint->callbacks [MQINT_CB_MOVE_UP] = callbackInit (
@@ -296,7 +296,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         /* CONTEXT: music queue: button: move the selected song up in the queue */
         NULL, "button_up", _("Move Up"));
     uiButtonSetRepeat (uiwidgetp, REPEAT_TIME);
-    nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     mqint->wcont [UIMUSICQ_W_BUTTON_MOVE_UP] = uiwidgetp;
 
     mqint->callbacks [MQINT_CB_MOVE_DOWN] = callbackInit (
@@ -306,7 +306,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         /* CONTEXT: music queue: button: move the selected song down in the queue */
         NULL, "button_down", _("Move Down"));
     uiButtonSetRepeat (uiwidgetp, REPEAT_TIME);
-    nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     mqint->wcont [UIMUSICQ_W_BUTTON_MOVE_DOWN] = uiwidgetp;
   }
 
@@ -317,7 +317,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         mqint->callbacks [MQINT_CB_TOGGLE_PAUSE],
         /* CONTEXT: music queue: button: set playback to pause after the selected song is played (toggle) */
         NULL, "button_pause", _("Toggle Pause"));
-    nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     mqint->wcont [UIMUSICQ_W_BUTTON_TOGGLE_PAUSE] = uiwidgetp;
   }
 
@@ -330,7 +330,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         mqint->callbacks [MQINT_CB_AUDIO_REMOVE],
         /* CONTEXT: music queue: button: remove the song from the queue */
         NULL, "button_audioremove", _("Remove"));
-    nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     uiWidgetSetMarginStart (uiwidgetp, 3);
     uiWidgetSetMarginEnd (uiwidgetp, 2);
     mqint->wcont [UIMUSICQ_W_BUTTON_REMOVE] = uiwidgetp;
@@ -343,7 +343,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         mqint->callbacks [MQINT_CB_CLEAR_QUEUE],
         /* CONTEXT: music queue: button: clear the queue */
         _("Clear Queue"), NULL, NULL);
-    nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     uiWidgetSetMarginStart (uiwidgetp, 2);
     mqint->wcont [UIMUSICQ_W_BUTTON_CLEAR_QUEUE] = uiwidgetp;
   }
@@ -356,7 +356,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         mqint->callbacks [MQINT_CB_EDIT_LOCAL],
         /* CONTEXT: music queue: edit the selected song */
         NULL, "button_edit", _("Edit"));
-    nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     mqint->wcont [UIMUSICQ_W_BUTTON_EDIT] = uiwidgetp;
 
     mqint->callbacks [MQINT_CB_PLAY] = callbackInit (
@@ -365,7 +365,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         mqint->callbacks [MQINT_CB_PLAY],
         /* CONTEXT: music queue: tooltip: play the selected song */
         NULL, "button_play", _("Play"));
-    nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     mqint->wcont [UIMUSICQ_W_BUTTON_PLAY] = uiwidgetp;
   }
 
@@ -376,12 +376,12 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         mqint->callbacks [MQINT_CB_HIST_QUEUE],
         /* CONTEXT: (verb) history: re-queue the selected song: suggested: 'put song in queue' */
         C_("Verb","Queue"), NULL, NULL);
-    nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     mqint->wcont [UIMUSICQ_W_BUTTON_QUEUE] = uiwidgetp;
 
     uiwidgetp = uiCreateLabel ("");
     uiWidgetSetClass (uiwidgetp, DARKACCENT_CLASS);
-    nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     mqint->wcont [UIMUSICQ_W_REQ_QUEUE] = uiwidgetp;
   }
 

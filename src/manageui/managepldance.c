@@ -115,7 +115,7 @@ manageplDanceBuildUI (mpldance_t *mpldnc, uiwcont_t *vboxp)
   char        tbuff [100];
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vboxp, hbox, WCONT_FREE);
+  uiBoxPackStart (vboxp, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 2);
   uiWidgetAlignHorizEnd (hbox);
 
@@ -124,7 +124,7 @@ manageplDanceBuildUI (mpldance_t *mpldnc, uiwcont_t *vboxp)
   mpldnc->callbacks [MPLDNC_CB_UNSEL] = callbackInit (
       manageplDanceHideUnselectedCB, mpldnc, NULL);
   uiToggleButtonSetCallback (uiwidgetp, mpldnc->callbacks [MPLDNC_CB_UNSEL]);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   mpldnc->uihideunsel = uiwidgetp;
 
   mpldnc->uivl = uivlCreate ("mpl-dance", mpldnc->minfo->window, vboxp,

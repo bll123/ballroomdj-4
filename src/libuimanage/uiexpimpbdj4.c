@@ -304,16 +304,16 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   /* status msg */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateLabel ("");
-  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_STATUS_MSG] = uiwidgetp;
 
   /* error msg */
   uiwidgetp = uiCreateLabel ("");
-  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
   uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_ERROR_MSG] = uiwidgetp;
 
@@ -322,7 +322,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   /* target folder */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   if (currtype == UIEIBDJ4_EXPORT) {
     uiwidgetp = uiCreateColonLabel (
@@ -334,12 +334,12 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
         /* CONTEXT: export/import bdj4: import folder location */
         _("Import from"));
   }
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (szgrp, uiwidgetp);
 
   uiwidgetp = uiEntryInit (50, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
-  nuiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_TARGET] = uiwidgetp;
@@ -363,7 +363,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
       uieibdj4->callbacks [UIEIBDJ4_CB_TARGET],
       NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uieibdj4->dialog [currtype].targetButton = uiwidgetp;
 
@@ -372,11 +372,11 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   if (currtype == UIEIBDJ4_IMPORT) {
     /* playlist selector */
     hbox = uiCreateHorizBox ();
-    nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+    uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
     /* CONTEXT: export/import bdj4: playlist: select the song list */
     uiwidgetp = uiCreateColonLabel (_("Song List"));
-    nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
     uiSizeGroupAdd (szgrp, uiwidgetp);
 
     uieibdj4->dialog [currtype].uiplaylist = uiplaylistCreate (
@@ -389,17 +389,17 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
 
     /* new name */
     hbox = uiCreateHorizBox ();
-    nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+    uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
     uiwidgetp = uiCreateColonLabel (
         /* CONTEXT: export/import bdj4: new song list name */
         _("New Song List Name"));
-    nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
     uiSizeGroupAdd (szgrp, uiwidgetp);
 
     uiwidgetp = uiEntryInit (30, MAX_PL_NM_LEN);
     uiEntrySetValue (uiwidgetp, "");
-    nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_NEWNAME] = uiwidgetp;
 
     /* CONTEXT: export/import bdj4: playlist: select the song list */

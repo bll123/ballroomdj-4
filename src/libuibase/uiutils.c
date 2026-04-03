@@ -47,12 +47,12 @@ uiutilsHeaderLineSetup (uiwcont_t *boxp, uiutilsaccent_t *accent)
   }
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (boxp, hbox, WCONT_KEEP);
+  uiBoxPackStart (boxp, hbox, WCONT_KEEP);
   uiWidgetExpandHoriz (hbox);
 
   cbox = uiCreateHorizBox ();
   uiWidgetSetSizeRequest (cbox, PROFILE_BOX_SZ, PROFILE_BOX_SZ);
-  nuiBoxPackEnd (hbox, cbox, WCONT_KEEP);
+  uiBoxPackEnd (hbox, cbox, WCONT_KEEP);
   uiWidgetAlignHorizCenter (cbox);
   uiWidgetAlignVertCenter (cbox);
   uiWidgetSetMarginStart (cbox, 4);
@@ -74,7 +74,7 @@ uiutilsHeaderLineAddMenubar (uiutilsaccent_t *accent)
   }
 
   menubar = uiCreateMenubar ();
-  nuiBoxPackStart (accent->hbox, menubar, WCONT_KEEP);
+  uiBoxPackStart (accent->hbox, menubar, WCONT_KEEP);
   return menubar;
 }
 
@@ -88,7 +88,7 @@ uiutilsHeaderLineAddLabel (uiutilsaccent_t *accent, const char *class)
   }
 
   msg = uiCreateLabel ("");
-  nuiBoxPackEnd (accent->hbox, msg, WCONT_KEEP);
+  uiBoxPackEnd (accent->hbox, msg, WCONT_KEEP);
   uiWidgetSetClass (msg, class);
   return msg;
 }

@@ -426,18 +426,18 @@ fprintf (stderr, "Buttons\n");
   /* button: normal */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateButton (
       uitest->callbacks [UITEST_CB_B], "button", NULL, NULL);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiSizeGroupAdd (sg, uiwidgetp);
   uitest->wcont [UITEST_W_B] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   uitest->wcont [UITEST_W_B_MSG] = uiwidgetp;
 
@@ -446,13 +446,13 @@ fprintf (stderr, "Buttons\n");
   /* button: align-left */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateButton (
       uitest->callbacks [UITEST_CB_B], "button-left", NULL, NULL);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiSizeGroupAdd (sg, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
   uitest->wcont [UITEST_W_B_LEFT] = uiwidgetp;
@@ -462,13 +462,13 @@ fprintf (stderr, "Buttons\n");
   /* button: long text */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateButton (
       uitest->callbacks [UITEST_CB_B], "button long text", NULL, NULL);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiSizeGroupAdd (sg, uiwidgetp);
   uitest->wcont [UITEST_W_B_LONG] = uiwidgetp;
 
@@ -477,14 +477,14 @@ fprintf (stderr, "Buttons\n");
   /* button: flat */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateButton (
       uitest->callbacks [UITEST_CB_B], "button-flat", NULL, NULL);
   uiButtonSetFlat (uiwidgetp);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiSizeGroupAdd (sg, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
   uitest->wcont [UITEST_W_B_FLAT] = uiwidgetp;
@@ -494,17 +494,17 @@ fprintf (stderr, "Buttons\n");
   /* button: image */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateButton (
       uitest->callbacks [UITEST_CB_B_IMG_A], NULL, "button_pause", NULL);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uitest->wcont [UITEST_W_B_IMG_A] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   uitest->wcont [UITEST_W_B_IMG_A_MSG] = uiwidgetp;
 
@@ -513,17 +513,17 @@ fprintf (stderr, "Buttons\n");
   /* button: image, tooltip */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateButton (
       uitest->callbacks [UITEST_CB_B_IMG_B], NULL, "button_play", "img-tooltip");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uitest->wcont [UITEST_W_B_IMG_B] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   uitest->wcont [UITEST_W_B_IMG_B_MSG] = uiwidgetp;
 
@@ -532,7 +532,7 @@ fprintf (stderr, "Buttons\n");
   /* button: image, text, tooltip, chg-state */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
@@ -540,11 +540,11 @@ fprintf (stderr, "Buttons\n");
       uitest->callbacks [UITEST_CB_B_IMG_C], "Image-toggle",
       uitest->images [UITEST_LED_OFF], "img-tooltip");
   uiButtonSetAltImage (uiwidgetp, uitest->images [UITEST_LED_ON]);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uitest->wcont [UITEST_W_B_IMG_C] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   uitest->wcont [UITEST_W_B_IMG_C_MSG] = uiwidgetp;
 
@@ -553,14 +553,14 @@ fprintf (stderr, "Buttons\n");
   /* button w/image icon */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateButton (
       uitest->callbacks [UITEST_CB_B], NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uitest->wcont [UITEST_W_B_IMG_D] = uiwidgetp;
 
   uiBoxPostProcess (hbox);
@@ -590,31 +590,31 @@ fprintf (stderr, "ToggleButtons\n");
   /* toggle button: normal */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateToggleButton ("toggle button", NULL, NULL, 0);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiBoxPostProcess (hbox);
 
   /* toggle button: tooltip */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateToggleButton ("toggle tooltip", NULL, "tool-tip", 0);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiBoxPostProcess (hbox);
 
   /* toggle button: with image */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
@@ -622,7 +622,7 @@ fprintf (stderr, "ToggleButtons\n");
       "toggle image", uitest->images [UITEST_LED_OFF], "tool-tip", 0);
   uiToggleButtonSetCallback (uiwidgetp, uitest->callbacks [UITEST_CB_TOGGLE]);
   uiToggleButtonSetAltImage (uiwidgetp, uitest->images [UITEST_LED_ON]);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizCenter (uiwidgetp);
   uiWidgetAlignVertCenter (uiwidgetp);
   uitest->wcont [UITEST_W_TOGGLE_C] = uiwidgetp;
@@ -632,35 +632,35 @@ fprintf (stderr, "ToggleButtons\n");
   /* switch */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uitest->wcont [UITEST_W_SW] = uiCreateSwitch (1);
-  nuiBoxPackStart (hbox, uitest->wcont [UITEST_W_SW], WCONT_KEEP);
+  uiBoxPackStart (hbox, uitest->wcont [UITEST_W_SW], WCONT_KEEP);
 
   uiBoxPostProcess (hbox);
 
   /* radio button */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateRadioButton (NULL, "radio a", UI_TOGGLE_BUTTON_ON);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   twidgetp = uiwidgetp;
 
   uiBoxPostProcess (hbox);
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateRadioButton (twidgetp, "radio b", UI_TOGGLE_BUTTON_OFF);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiBoxPostProcess (hbox);
   uiwcontFree (twidgetp);
@@ -668,12 +668,12 @@ fprintf (stderr, "ToggleButtons\n");
   /* check button */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateCheckButton ("check button", UI_TOGGLE_BUTTON_OFF);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiBoxPostProcess (hbox);
   uiBoxPostProcess (vbox);
@@ -701,24 +701,24 @@ fprintf (stderr, "MiscButtons\n");
   /* font button */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateFontButton ("Sans Bold 10");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiBoxPostProcess (hbox);
 
   /* color button */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateColorButton ("#aacc00");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiBoxPostProcess (hbox);
 
@@ -745,7 +745,7 @@ fprintf (stderr, "ChgInd\n");
   uivnbAppendPage (uitest->mainvnb, vbox, "Change Indicator", VNB_NO_ID);
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
@@ -754,17 +754,17 @@ fprintf (stderr, "ChgInd\n");
   uitest->wcont [UITEST_W_CI_A] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("aaa");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiCreateButton (
       uitest->callbacks [UITEST_CB_CHG_IND], "switch", NULL, NULL);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uitest->wcont [UITEST_W_CI_BUTTON] = uiwidgetp;
 
   uiBoxPostProcess (hbox);
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
@@ -773,7 +773,7 @@ fprintf (stderr, "ChgInd\n");
   uitest->wcont [UITEST_W_CI_B] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("bbb");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiBoxPostProcess (hbox);
   uiBoxPostProcess (vbox);
@@ -848,10 +848,10 @@ fprintf (stderr, "Entry\n");
   uivnbAppendPage (uitest->mainvnb, vbox, "Entry", VNB_NO_ID);
 
   uiwidgetp = uiEntryInit (10, 100);
-  nuiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiEntryInit (10, 100);
-  nuiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
 
   uiBoxPostProcess (vbox);
 }
@@ -874,7 +874,7 @@ fprintf (stderr, "Image\n");
   pathbldMakePath (tbuff, sizeof (tbuff),
      "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   uiwidgetp = uiImageScaledFromFile (tbuff, 64);
-  nuiBoxPackStart (vbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (vbox, uiwidgetp, WCONT_KEEP);
   uitest->wcont [UITEST_W_IMG_A] = uiwidgetp;
 
   uiBoxPostProcess (vbox);
@@ -905,32 +905,32 @@ fprintf (stderr, "Labels\n");
   /* label: translated */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateLabel (_("Actions"));
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiBoxPostProcess (hbox);
 
   /* label: pack start */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateLabel ("ps-a");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "gb");
 
   uiwidgetp = uiCreateLabel ("ps-b");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "bb");
 
   uiwidgetp = uiCreateLabel ("ps-c");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "rb");
 
   uiBoxPostProcess (hbox);
@@ -938,21 +938,21 @@ fprintf (stderr, "Labels\n");
   /* label: pack start / expand horiz */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateLabel ("ps-eh");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "gb");
   uiWidgetExpandHoriz (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("ps-b");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "bb");
 
   uiwidgetp = uiCreateLabel ("ps-c");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "rb");
 
   uiBoxPostProcess (hbox);
@@ -960,22 +960,22 @@ fprintf (stderr, "Labels\n");
   /* label: pack start / expand horiz / align center */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateLabel ("ps-eh-ac");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "gb");
   uiWidgetAlignHorizCenter (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("b");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "bb");
 
   uiwidgetp = uiCreateLabel ("c");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "rb");
 
   uiBoxPostProcess (hbox);
@@ -983,22 +983,22 @@ fprintf (stderr, "Labels\n");
   /* label: pack start / expand horiz / align start */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateLabel ("ps-eh-as");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "gb");
   uiWidgetExpandHoriz (uiwidgetp);
   uiWidgetAlignHorizStart (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("b");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "bb");
 
   uiwidgetp = uiCreateLabel ("c");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "rb");
 
   uiBoxPostProcess (hbox);
@@ -1006,20 +1006,20 @@ fprintf (stderr, "Labels\n");
   /* label: pack end */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateLabel ("pe-a");
-  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackEnd (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "gb");
 
   uiwidgetp = uiCreateLabel ("pe-b");
-  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackEnd (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "bb");
 
   uiwidgetp = uiCreateLabel ("pe-c");
-  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackEnd (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "rb");
 
   uiBoxPostProcess (hbox);
@@ -1027,32 +1027,32 @@ fprintf (stderr, "Labels\n");
   /* label: pack start / pack end */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateLabel ("ps-a");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "gb");
 
   uiwidgetp = uiCreateLabel ("ps-b");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "bb");
 
   uiwidgetp = uiCreateLabel ("ps-c");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "rb");
 
   uiwidgetp = uiCreateLabel ("pe-a");
-  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackEnd (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "gb");
 
   uiwidgetp = uiCreateLabel ("pe-b");
-  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackEnd (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "bb");
 
   uiwidgetp = uiCreateLabel ("pe-c");
-  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackEnd (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "rb");
 
   uiBoxPostProcess (hbox);
@@ -1060,22 +1060,22 @@ fprintf (stderr, "Labels\n");
   /* label: pack start / ellipsize */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateLabel ("ps-el ellipsize ellipsize ellipsize ellipsize ellipsize ellipsize ellipsize ellipsize ellipsize");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiLabelEllipsizeOn (uiwidgetp);
   uiLabelSetMaxWidth (uiwidgetp, 20);
   uiWidgetSetClass (uiwidgetp, "gb");
 
   uiwidgetp = uiCreateLabel ("a");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "bb");
 
   uiwidgetp = uiCreateLabel ("b");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, "rb");
 
   uiBoxPostProcess (hbox);
@@ -1083,12 +1083,12 @@ fprintf (stderr, "Labels\n");
   /* label: pack start / accent */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateLabel ("accent");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
 
   uiBoxPostProcess (hbox);
@@ -1096,12 +1096,12 @@ fprintf (stderr, "Labels\n");
   /* label: pack start / bold-accent */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateLabel ("bold-accent");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, BOLD_ACCENT_CLASS);
 
   uiBoxPostProcess (hbox);
@@ -1109,12 +1109,12 @@ fprintf (stderr, "Labels\n");
   /* label: pack start / error */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateLabel ("error");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
 
   uiBoxPostProcess (hbox);
@@ -1122,12 +1122,12 @@ fprintf (stderr, "Labels\n");
   /* label: pack start / dark-accent */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateLabel ("dark-accent");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetClass (uiwidgetp, DARKACCENT_CLASS);
 
   uiBoxPostProcess (hbox);
@@ -1153,7 +1153,7 @@ fprintf (stderr, "Link\n");
   uivnbAppendPage (uitest->mainvnb, vbox, "Link", VNB_NO_ID);
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
@@ -1161,7 +1161,7 @@ fprintf (stderr, "Link\n");
   if (isMacOS ()) {
     uiLinkSetActivateCallback (uiwidgetp, uitest->callbacks [UITEST_CB_LINK_A]);
   }
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uitest->wcont [UITEST_W_LINK_A] = uiwidgetp;
 
   uiBoxPostProcess (hbox);
@@ -1203,7 +1203,7 @@ fprintf (stderr, "hnb-a\n");
     uihnbAppendPage (hnb, vboxb, tbuff, NULL, NULL, HNB_NO_ID);
 
     uiwidgetp = uiCreateLabel (tbuff);
-    nuiBoxPackStart (vboxb, uiwidgetp, WCONT_FREE);
+    uiBoxPackStart (vboxb, uiwidgetp, WCONT_FREE);
     uiBoxPostProcess (vboxb);
   }
 
@@ -1219,7 +1219,7 @@ fprintf (stderr, "hnb-img\n");
 
   vboxb = uiCreateVertBox ();
   uiwidgetp = uiCreateLabel ("h-img One");
-  nuiBoxPackStart (vboxb, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (vboxb, uiwidgetp, WCONT_FREE);
 
   uihnbAppendPage (hnb, vboxb, "h-img 1",
       uitest->images [UITEST_LED_OFF],
@@ -1230,7 +1230,7 @@ fprintf (stderr, "hnb-img\n");
 
   vboxb = uiCreateVertBox ();
   uiwidgetp = uiCreateLabel ("h-img Two");
-  nuiBoxPackStart (vboxb, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (vboxb, uiwidgetp, WCONT_FREE);
 
   uihnbAppendPage (hnb, vboxb, "h-img 2",
       uitest->images [UITEST_LED_OFF],
@@ -1241,7 +1241,7 @@ fprintf (stderr, "hnb-img\n");
 
   vboxb = uiCreateVertBox ();
   uiwidgetp = uiCreateLabel ("h-img Three");
-  nuiBoxPackStart (vboxb, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (vboxb, uiwidgetp, WCONT_FREE);
 
   uihnbAppendPage (hnb, vboxb, "h-img 3", NULL, NULL, HNB_NO_ID);
   uiBoxPostProcess (vboxb);
@@ -1274,7 +1274,7 @@ fprintf (stderr, "vnb-a\n");
     uivnbAppendPage (vnb, vboxb, tbuff, VNB_NO_ID);
 
     uiwidgetp = uiCreateLabel (tbuff);
-    nuiBoxPackStart (vboxb, uiwidgetp, WCONT_FREE);
+    uiBoxPackStart (vboxb, uiwidgetp, WCONT_FREE);
     uiBoxPostProcess (vboxb);
   }
   uivnbPostProcess (vnb);
@@ -1301,7 +1301,7 @@ fprintf (stderr, "PanedWin\n");
   uivnbAppendPage (uitest->mainvnb, vbox, "Paned Window", VNB_NO_ID);
 
   pw = uiPanedWindowCreateVert ();
-  nuiBoxPackStartExpandChildren (vbox, pw, WCONT_FREE);
+  uiBoxPackStartExpandChildren (vbox, pw, WCONT_FREE);
   uiWidgetExpandHoriz (pw);
   uiWidgetAlignHorizFill (pw);
   uiWidgetSetClass (pw, ACCENT_CLASS);
@@ -1310,14 +1310,14 @@ fprintf (stderr, "PanedWin\n");
   uiPanedWindowPackStart (pw, tvbox);
 
   uiwidgetp = uiCreateLabel ("AAA");
-  nuiBoxPackStart (tvbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (tvbox, uiwidgetp, WCONT_FREE);
   uiBoxPostProcess (tvbox);
   uiwcontFree (tvbox);
 
   tvbox = uiCreateVertBox ();
   uiPanedWindowPackEnd (pw, tvbox);
   uiwidgetp = uiCreateLabel ("BBB");
-  nuiBoxPackStart (tvbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (tvbox, uiwidgetp, WCONT_FREE);
 
   uiBoxPostProcess (tvbox);
   uiBoxPostProcess (vbox);
@@ -1338,13 +1338,13 @@ fprintf (stderr, "Misc\n");
 
   /* progress bar */
   uiwidgetp = uiCreateProgressBar ();
-  nuiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
   uiProgressBarSet (uiwidgetp, 0.33);
   uiWidgetSetMarginTop (uiwidgetp, 4);
 
   /* scale */
   uiwidgetp = uiCreateScale (0.0, 100.0, 1.0, 10.0, 33.0, 0);
-  nuiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetMarginTop (uiwidgetp, 4);
 
   /* separator */
@@ -1352,7 +1352,7 @@ fprintf (stderr, "Misc\n");
 
   uiwidgetp = uiCreateHorizSeparator ();
   uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
-  nuiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
   uiWidgetExpandHoriz (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 4);
 
@@ -1378,87 +1378,87 @@ fprintf (stderr, "SizeGroup\n");
   sg = uiCreateSizeGroupHoriz ();
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateLabel ("aaa");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (sg, uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("aaa");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiCreateLabel ("aaa");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiBoxPostProcess (hbox);
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateLabel ("bbbb");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (sg, uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("bbbb");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiCreateLabel ("bbbb");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiBoxPostProcess (hbox);
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateLabel ("c");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (sg, uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("c");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiCreateLabel ("c");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiBoxPostProcess (hbox);
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateLabel ("ddddddd");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (sg, uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("ddddddd");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiCreateLabel ("ddddddd");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiBoxPostProcess (hbox);
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
   uiwidgetp = uiCreateLabel ("eeeeee");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (sg, uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("eeeeee");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiCreateLabel ("eeeeee");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiBoxPostProcess (hbox);
   uiBoxPostProcess (vbox);
@@ -1481,7 +1481,7 @@ fprintf (stderr, "Spinbox\n");
   uivnbAppendPage (uitest->mainvnb, vbox, "Spin Box", VNB_NO_ID);
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
@@ -1500,7 +1500,7 @@ fprintf (stderr, "Spinbox\n");
   /* next line */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
@@ -1514,7 +1514,7 @@ fprintf (stderr, "Spinbox\n");
   /* next line - int */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
@@ -1529,7 +1529,7 @@ fprintf (stderr, "Spinbox\n");
   /* next line - double */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
@@ -1544,7 +1544,7 @@ fprintf (stderr, "Spinbox\n");
   /* next line - double */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
@@ -1559,7 +1559,7 @@ fprintf (stderr, "Spinbox\n");
   /* next line - double/default */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
@@ -1575,7 +1575,7 @@ fprintf (stderr, "Spinbox\n");
   /* next line - time spinbox */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
@@ -1589,7 +1589,7 @@ fprintf (stderr, "Spinbox\n");
   /* next line - time spinbox/precise */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
@@ -1618,7 +1618,7 @@ fprintf (stderr, "TextBox\n");
   tb = uiTextBoxCreate (200, NULL);
   uiTextBoxHorizExpand (tb);
   uiTextBoxVertExpand (tb);
-  nuiBoxPackStartExpandChildren (vbox, tb, WCONT_FREE);
+  uiBoxPackStartExpandChildren (vbox, tb, WCONT_FREE);
 
   uiBoxPostProcess (vbox);
 }

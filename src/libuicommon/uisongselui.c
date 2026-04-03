@@ -210,17 +210,17 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     /* need a filler box to match the musicq */
     thbox = uiCreateHorizBox ();
     uiWidgetExpandHoriz (thbox);
-    nuiBoxPackStart (ssint->wcont [SONGSEL_W_MAIN_VBOX], thbox, WCONT_FREE);
+    uiBoxPackStart (ssint->wcont [SONGSEL_W_MAIN_VBOX], thbox, WCONT_FREE);
 
     uiwidgetp = uiCreateLabel (" ");
-    nuiBoxPackStart (thbox, uiwidgetp, WCONT_FREE);
+    uiBoxPackStart (thbox, uiwidgetp, WCONT_FREE);
     uiWidgetSetMarginBottom (uiwidgetp, 5);
     uiBoxPostProcess (thbox);
   }
 
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  nuiBoxPackStart (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox, WCONT_FREE);
+  uiBoxPackStart (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox, WCONT_FREE);
 
   /* The side-by-side song selection does not need a select button, */
   /* as it has the left-arrow button.  Saves real estate. */
@@ -230,7 +230,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     uiwidgetp = uiCreateButton (
         /* CONTEXT: song-selection: select a song to be added to the song list */
         ssint->callbacks [SONGSEL_CB_SELECT], _("Select"), NULL, NULL);
-    nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     ssint->wcont [SONGSEL_W_BUTTON_SELECT] = uiwidgetp;
   }
 
@@ -243,7 +243,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
         ssint->callbacks [SONGSEL_CB_EDIT_LOCAL],
         /* CONTEXT: song-selection: edit the selected song */
         NULL, "button_edit", _("Edit"));
-    nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     ssint->wcont [SONGSEL_W_BUTTON_EDIT] = uiwidgetp;
   }
 
@@ -254,12 +254,12 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
         uisongselQueueCallback, uisongsel, "songsel: queue");
     uiwidgetp = uiCreateButton (
         ssint->callbacks [SONGSEL_CB_QUEUE], tbuff, NULL, NULL);
-    nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     ssint->wcont [SONGSEL_W_BUTTON_QUEUE] = uiwidgetp;
 
     uiwidgetp = uiCreateLabel ("");
     uiWidgetSetClass (uiwidgetp, DARKACCENT_CLASS);
-    nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     ssint->wcont [SONGSEL_W_REQ_QUEUE] = uiwidgetp;
   }
 
@@ -271,7 +271,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     uiwidgetp = uiCreateButton (
         /* CONTEXT: song-selection: tooltip: play the selected songs */
         ssint->callbacks [SONGSEL_CB_PLAY], NULL, "button_play", _("Play"));
-    nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
     ssint->wcont [SONGSEL_W_BUTTON_PLAY] = uiwidgetp;
   }
 
@@ -289,13 +289,13 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
       ssint->callbacks [SONGSEL_CB_FILTER],
       /* CONTEXT: song-selection: tooltip: a button that starts the filters (narrowing down song selections) dialog */
       NULL, "button_filter", _("Filter Songs"));
-  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
   ssint->wcont [SONGSEL_W_BUTTON_FILTER] = uiwidgetp;
 
   uiBoxPostProcess (hbox);
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStartExpandChildren (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox, WCONT_FREE);
+  uiBoxPackStartExpandChildren (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox, WCONT_FREE);
 
   sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
   ssint->sellist = sellist;

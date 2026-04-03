@@ -115,7 +115,7 @@ fprintf (stderr, "== conf: dances\n");
       _("Edit Dances"), CONFUI_ID_DANCE);
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStartExpandChildren (vbox, hbox, WCONT_FREE);
+  uiBoxPackStartExpandChildren (vbox, hbox, WCONT_FREE);
   uiWidgetAlignHorizStart (hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_DANCE, CONFUI_TABLE_NO_UP_DOWN);
@@ -124,7 +124,7 @@ fprintf (stderr, "== conf: dances\n");
   confuiCreateDanceTable (gui);
 
   dvbox = uiCreateVertBox ();
-  nuiBoxPackStart (hbox, dvbox, WCONT_FREE);
+  uiBoxPackStart (hbox, dvbox, WCONT_FREE);
   uiWidgetSetMarginStart (dvbox, 8);
 
   confuiMakeItemEntry (gui, dvbox, szgrp, tagdefs [TAG_DANCE].displayname,

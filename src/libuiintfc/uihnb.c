@@ -64,15 +64,15 @@ uihnbCreate (uiwcont_t *box)
   hnb = mdmalloc (sizeof (uihnb_t));
 
   vbox = uiCreateVertBox ();
-  nuiBoxPackStartExpandChildren (box, vbox, WCONT_FREE);
+  uiBoxPackStartExpandChildren (box, vbox, WCONT_FREE);
   uiWidgetExpandHoriz (vbox);
 
   hnb->hlist = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hnb->hlist, WCONT_KEEP);
+  uiBoxPackStart (vbox, hnb->hlist, WCONT_KEEP);
 
   hnb->nb = uiCreateNotebook ();
   uiWidgetSetClass (hnb->nb, NB_HORIZ_CLASS);
-  nuiBoxPackStartExpandChildren (vbox, hnb->nb, WCONT_KEEP);
+  uiBoxPackStartExpandChildren (vbox, hnb->nb, WCONT_KEEP);
 
   for (int i = 0; i < HNB_MAX_PAGECOUNT; ++i) {
     hnb->boxlist [i] = NULL;
@@ -143,7 +143,7 @@ uihnbAppendPage (uihnb_t *hnb, uiwcont_t *uibox,
   hnb->tabcblist [pagenum] = cb;
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (hnb->hlist, hbox, WCONT_FREE);
+  uiBoxPackStart (hnb->hlist, hbox, WCONT_FREE);
   uiWidgetSetClass (hbox, NB_CLASS);
   uiWidgetSetClass (hbox, NB_HORIZ_CLASS);
 
@@ -151,7 +151,7 @@ uihnbAppendPage (uihnb_t *hnb, uiwcont_t *uibox,
   uiButtonSetAltImage (button, altimagenm);
   uiWidgetAlignHorizCenter (button);
   uiButtonSetReliefNone (button);
-  nuiBoxPackStartExpandChildren (hbox, button, WCONT_KEEP);
+  uiBoxPackStartExpandChildren (hbox, button, WCONT_KEEP);
   uiWidgetSetClass (button, NB_CLASS);
   uiWidgetSetClass (button, NB_HORIZ_CLASS);
   state = BUTTON_OFF;
@@ -267,7 +267,7 @@ uihnbSetActionWidget (uihnb_t *hnb, uiwcont_t *uiwidget)
   if (hnb == NULL || hnb->hlist == NULL || uiwidget == NULL) {
     return;
   }
-  nuiBoxPackEnd (hnb->hlist, uiwidget, WCONT_KEEP);
+  uiBoxPackEnd (hnb->hlist, uiwidget, WCONT_KEEP);
 }
 
 void

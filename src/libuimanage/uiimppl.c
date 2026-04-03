@@ -453,17 +453,17 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   /* status/error msg */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   /* status msg */
   uiwidgetp = uiCreateLabel ("");
-  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   uiimppl->wcont [UIIMPPL_W_STATUS_MSG] = uiwidgetp;
 
   /* error msg */
   uiwidgetp = uiCreateLabel ("");
-  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
   uiimppl->wcont [UIIMPPL_W_ERROR_MSG] = uiwidgetp;
 
@@ -471,12 +471,12 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
 
   /* type */
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateColonLabel (
       /* CONTEXT: import playlist: import-from selection */
       _("Import From"));
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (szgrp, uiwidgetp);
 
   uiimppl->sb = uisbtextCreate (hbox, 2);
@@ -490,11 +490,11 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
 
   /* playlist selector */
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   /* CONTEXT: import playlist: select the song list */
   uiwidgetp = uiCreateColonLabel (_("Playlist"));
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiimppl->wcont [UIIMPPL_W_PL_SEL_LABEL] = uiwidgetp;
 
@@ -509,17 +509,17 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   /* target folder / URI */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateColonLabel (
       /* CONTEXT: import playlist: import location */
       _("File"));
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiimppl->wcont [UIIMPPL_W_URI_LABEL] = uiwidgetp;
 
   uiwidgetp = uiEntryInit (50, BDJ4_PATH_MAX);
-  nuiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiEntrySetValue (uiwidgetp, "");
@@ -529,7 +529,7 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
       uiimppl->callbacks [UIIMPPL_CB_TARGET],
       NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiimppl->wcont [UIIMPPL_W_URI_BUTTON] = uiwidgetp;
 
@@ -537,17 +537,17 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
 
   /* new name */
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   /* CONTEXT: import playlist: new song list name */
   uiimppl->newnamelabel = _("New Song List Name");
   uiwidgetp = uiCreateColonLabel (uiimppl->newnamelabel);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (szgrp, uiwidgetp);
 
   uiwidgetp = uiEntryInit (30, MAX_PL_NM_LEN);
   uiEntrySetValue (uiwidgetp, "");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiimppl->wcont [UIIMPPL_W_NEWNAME] = uiwidgetp;
 
   uiBoxPostProcess (hbox);

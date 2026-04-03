@@ -138,31 +138,7 @@ uiBoxPostProcess (uiwcont_t *uibox)
 }
 
 void
-uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
-{
-  nuiBoxPackStart (uibox, uiwidget, WCONT_KEEP);
-}
-
-void
-uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
-{
-  nuiBoxPackEnd (uibox, uiwidget, WCONT_KEEP);
-}
-
-void
-uiBoxPackStartExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget)
-{
-  nuiBoxPackStartExpandChildren (uibox, uiwidget, WCONT_KEEP);
-}
-
-void
-uiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget)
-{
-  nuiBoxPackEndExpandChildren (uibox, uiwidget, WCONT_KEEP);
-}
-
-void
-nuiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release)
+uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release)
 {
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start")) {
     return;
@@ -176,7 +152,7 @@ nuiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release)
 }
 
 void
-nuiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release)
+uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release)
 {
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end")) {
     return;
@@ -190,7 +166,7 @@ nuiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release)
 }
 
 void
-nuiBoxPackStartExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget,
+uiBoxPackStartExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget,
     uiwcontrls_t release)
 {
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start-ec")) {
@@ -205,7 +181,7 @@ nuiBoxPackStartExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget,
 }
 
 void
-nuiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget,
+uiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget,
     uiwcontrls_t release)
 {
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end-ec")) {

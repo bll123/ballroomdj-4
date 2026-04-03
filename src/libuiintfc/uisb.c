@@ -91,7 +91,7 @@ uisbCreate (uiwcont_t *box, uiwcont_t *disp, bool istext, int margin)
   uiWidgetAlignVertCenter (uiwidgetp);
   uiWidgetSetAllMargins (uiwidgetp, 0);
   uiWidgetDisableFocus (uiwidgetp);
-  nuiBoxPackEnd (sb->wcont [SB_W_HBOX], uiwidgetp, WCONT_KEEP);
+  uiBoxPackEnd (sb->wcont [SB_W_HBOX], uiwidgetp, WCONT_KEEP);
   sb->wcont [SB_W_B_INCR] = uiwidgetp;
 
   uiwidgetp = uiCreateButton (sb->callbacks [SB_CB_DECR],
@@ -101,15 +101,15 @@ uisbCreate (uiwcont_t *box, uiwcont_t *disp, bool istext, int margin)
   uiWidgetAlignVertCenter (uiwidgetp);
   uiWidgetSetAllMargins (uiwidgetp, 0);
   uiWidgetDisableFocus (uiwidgetp);
-  nuiBoxPackEnd (sb->wcont [SB_W_HBOX], uiwidgetp, WCONT_KEEP);
+  uiBoxPackEnd (sb->wcont [SB_W_HBOX], uiwidgetp, WCONT_KEEP);
   sb->wcont [SB_W_B_DECR] = uiwidgetp;
 
   sb->display = disp;
   uiWidgetSetClass (sb->display, SB_CLASS);
-  nuiBoxPackStartExpandChildren (sb->wcont [SB_W_HBOX], sb->display, WCONT_KEEP);
+  uiBoxPackStartExpandChildren (sb->wcont [SB_W_HBOX], sb->display, WCONT_KEEP);
 
   uiBoxPostProcess (sb->wcont [SB_W_HBOX]);
-  nuiBoxPackStart (box, sb->wcont [SB_W_HBOX], WCONT_KEEP);
+  uiBoxPackStart (box, sb->wcont [SB_W_HBOX], WCONT_KEEP);
 
   if (sb->istext == SB_IS_TEXT) {
     uiEventSetKeyCallback (sb->wcont [SB_W_VAL_EVENTH], sb->wcont [SB_W_HBOX],

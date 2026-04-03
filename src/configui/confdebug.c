@@ -42,7 +42,7 @@ fprintf (stderr, "== conf: debug\n");
   val = bdjoptGetNum (OPT_G_DEBUGLVL);
 
   vbox = uiCreateVertBox ();
-  nuiBoxPackStart (hbox, vbox, WCONT_FREE);
+  uiBoxPackStart (hbox, vbox, WCONT_FREE);
 
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Important",
       CONFUI_DBG_IMPORTANT, -1, (val & LOG_IMPORTANT));
@@ -68,7 +68,7 @@ fprintf (stderr, "== conf: debug\n");
   uiBoxPostProcess (vbox);
 
   vbox = uiCreateVertBox ();
-  nuiBoxPackStart (hbox, vbox, WCONT_FREE);
+  uiBoxPackStart (hbox, vbox, WCONT_FREE);
 
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Dance Selection",
       CONFUI_DBG_DANCESEL, -1, (val & LOG_DANCESEL));
@@ -92,7 +92,7 @@ fprintf (stderr, "== conf: debug\n");
   uiBoxPostProcess (vbox);
 
   vbox = uiCreateVertBox ();
-  nuiBoxPackStart (hbox, vbox, WCONT_FREE);
+  uiBoxPackStart (hbox, vbox, WCONT_FREE);
 
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Process",
       CONFUI_DBG_PROCESS, -1, (val & LOG_PROCESS));

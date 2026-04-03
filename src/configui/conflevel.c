@@ -51,10 +51,10 @@ fprintf (stderr, "== conf: level\n");
 
   /* CONTEXT: configuration: dance levels: instructions */
   uiwidgetp = uiCreateLabel (_("Order from easiest to most advanced."));
-  nuiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStartExpandChildren (vbox, hbox, WCONT_FREE);
+  uiBoxPackStartExpandChildren (vbox, hbox, WCONT_FREE);
   uiWidgetAlignHorizStart (hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_LEVELS, CONFUI_TABLE_NONE);

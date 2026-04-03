@@ -49,7 +49,7 @@ fprintf (stderr, "== conf: status\n");
       _("Edit Status"), CONFUI_ID_STATUS);
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStartExpandChildren (vbox, hbox, WCONT_FREE);
+  uiBoxPackStartExpandChildren (vbox, hbox, WCONT_FREE);
   uiWidgetAlignHorizStart (hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_STATUS,

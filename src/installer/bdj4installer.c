@@ -679,30 +679,28 @@ installerBuildUI (installer_t *installer)
   /* begin line : status message */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   installer->wcont [INST_W_STATUS_MSG] = uiCreateLabel ("");
   uiWidgetSetClass (installer->wcont [INST_W_STATUS_MSG], INST_HL_CLASS);
-  uiBoxPackEndExpandChildren (hbox, installer->wcont [INST_W_STATUS_MSG]);
+  uiBoxPackEndExpandChildren (hbox, installer->wcont [INST_W_STATUS_MSG], WCONT_KEEP);
   uiWidgetAlignHorizEnd (installer->wcont [INST_W_STATUS_MSG]);
 
   /* begin line : target instructions */
   uiwidgetp = uiCreateLabel (
       /* CONTEXT: installer: where BDJ4 gets installed */
       _("Enter the destination folder where BDJ4 will be installed."));
-  uiBoxPackStart (vbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   /* begin line : target entry */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiEntryInit (60, BDJ4_PATH_MAX);
-  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   installer->wcont [INST_W_TARGET] = uiwidgetp;
@@ -714,21 +712,20 @@ installerBuildUI (installer_t *installer)
       NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
-  uiBoxPackStart (hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   installer->wcont [INST_W_BUTTON_TARGET_DIR] = uiwidgetp;
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   /* begin line : re-install bdj4 */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   /* CONTEXT: installer: checkbox: re-install BDJ4 */
   installer->wcont [INST_W_RE_INSTALL] = uiCreateCheckButton (_("Re-Install"),
       installer->reinstall);
-  uiBoxPackStart (hbox, installer->wcont [INST_W_RE_INSTALL]);
+  uiBoxPackStart (hbox, installer->wcont [INST_W_RE_INSTALL], WCONT_KEEP);
   installer->callbacks [INST_CB_REINST] = callbackInit (
       installerReinstallCBHandler, installer, NULL);
   uiToggleButtonSetCallback (installer->wcont [INST_W_RE_INSTALL],
@@ -736,22 +733,21 @@ installerBuildUI (installer_t *installer)
 
   installer->wcont [INST_W_FEEDBACK_MSG] = uiCreateLabel ("");
   uiWidgetSetClass (installer->wcont [INST_W_FEEDBACK_MSG], INST_HL_CLASS);
-  uiBoxPackStart (hbox, installer->wcont [INST_W_FEEDBACK_MSG]);
+  uiBoxPackStart (hbox, installer->wcont [INST_W_FEEDBACK_MSG], WCONT_KEEP);
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   /* begin line : installation locale */
 
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   ddlist = localeCreateDropDownList (&langidx, LOCALE_USE_DATA);
 
   /* CONTEXT: installer: language to install */
   uiwidgetp = uiCreateColonLabel (_("Preferred Language"));
-  uiBoxPackStart (hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   installer->callbacks [INST_CB_LOCALE] =
       callbackInitS (installerLocaleSelect, installer);
   installer->ddlang = uiddCreate ("instlang",
@@ -760,13 +756,14 @@ installerBuildUI (installer_t *installer)
       installer->callbacks [INST_CB_LOCALE]);
   uiddSetSelection (installer->ddlang, langidx);
 
+  uiBoxPostProcess (hbox);
+
   /* begin line : separator */
   uiwidgetp = uiCreateHorizSeparator ();
   uiWidgetSetClass (uiwidgetp, INST_SEP_CLASS);
-  uiBoxPackStart (vbox, uiwidgetp);
+  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetMarginTop (uiwidgetp, 4);
   uiWidgetSetMarginBottom (uiwidgetp, 2);
-  uiwcontFree (uiwidgetp);
 
   /* begin line : instructions a */
   /* conversion process */
@@ -774,36 +771,32 @@ installerBuildUI (installer_t *installer)
       /* CONTEXT: installer: asking where BallroomDJ 3 is installed */
       _("Enter the folder where %s is installed."), BDJ3_NAME);
   uiwidgetp = uiCreateLabel (tbuff);
-  uiBoxPackStart (vbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
 
   /* begin line : instructions b */
   uiwidgetp = uiCreateLabel (
       /* CONTEXT: installer: instructions */
       _("If there is no BallroomDJ 3 installation, leave the entry blank."));
-  uiBoxPackStart (vbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
 
   /* begin line : instructions c */
   uiwidgetp = uiCreateLabel (
       /* CONTEXT: installer: instructions */
       _("The conversion process will only run for new installations and for re-installations."));
-  uiBoxPackStart (vbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
 
   /* begin line : bdj3 location */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   /* CONTEXT: installer: label for entry field asking for BDJ3 location */
   snprintf (tbuff, sizeof (tbuff), _("%s Location"), BDJ3_NAME);
   uiwidgetp = uiCreateColonLabel (tbuff);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiEntryInit (60, BDJ4_PATH_MAX);
-  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   installer->wcont [INST_W_BDJ3_LOC] = uiwidgetp;
@@ -814,22 +807,21 @@ installerBuildUI (installer_t *installer)
       installer->callbacks [INST_CB_BDJ3LOC_DIR],
       NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
-  uiBoxPackStart (hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 0);
   installer->wcont [INST_W_BUTTON_BDJ3LOC_DIR] = uiwidgetp;
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   /* begin line : conversion checkbox */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   /* CONTEXT: installer: checkbox: convert the BallroomDJ 3 installation */
   snprintf (tbuff, sizeof (tbuff), _("Convert %s"), BDJ3_NAME);
   installer->wcont [INST_W_CONVERT] = uiCreateCheckButton (tbuff, 0);
-  uiBoxPackStart (hbox, installer->wcont [INST_W_CONVERT]);
+  uiBoxPackStart (hbox, installer->wcont [INST_W_CONVERT], WCONT_KEEP);
   installer->callbacks [INST_CB_CONV] = callbackInit (
       installerConversionCBHandler, installer, NULL);
   uiToggleButtonSetCallback (installer->wcont [INST_W_CONVERT],
@@ -837,29 +829,27 @@ installerBuildUI (installer_t *installer)
 
   installer->wcont [INST_W_CONV_FEEDBACK_MSG] = uiCreateLabel ("");
   uiWidgetSetClass (installer->wcont [INST_W_CONV_FEEDBACK_MSG], INST_HL_CLASS);
-  uiBoxPackStart (hbox, installer->wcont [INST_W_CONV_FEEDBACK_MSG]);
+  uiBoxPackStart (hbox, installer->wcont [INST_W_CONV_FEEDBACK_MSG], WCONT_KEEP);
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   /* begin line : separator */
   uiwidgetp = uiCreateHorizSeparator ();
   uiWidgetSetClass (uiwidgetp, INST_SEP_CLASS);
-  uiBoxPackStart (vbox, uiwidgetp);
+  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetMarginTop (uiwidgetp, 4);
   uiWidgetSetMarginBottom (uiwidgetp, 2);
-  uiwcontFree (uiwidgetp);
 
   if (isWindows ()) {
     /* begin line : request VLC */
     hbox = uiCreateHorizBox ();
     uiWidgetExpandHoriz (hbox);
-    uiBoxPackStart (vbox, hbox);
+    uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
     /* CONTEXT: installer: checkbox: windows: request VLC installation */
     snprintf (tbuff, sizeof (tbuff), _("Please install %s"), VLCName);
     installer->wcont [INST_W_REQUEST_VLC] = uiCreateCheckButton (tbuff, 0);
-    uiBoxPackStart (hbox, installer->wcont [INST_W_REQUEST_VLC]);
+    uiBoxPackStart (hbox, installer->wcont [INST_W_REQUEST_VLC], WCONT_KEEP);
     uiWidgetSetMarginStart (installer->wcont [INST_W_REQUEST_VLC], 4);
     installer->callbacks [INST_CB_REQUEST_VLC] = callbackInit (
         installerRequestVLCCBHandler, installer, NULL);
@@ -867,38 +857,35 @@ installerBuildUI (installer_t *installer)
         installer->callbacks [INST_CB_REQUEST_VLC]);
 
     uiBoxPostProcess (hbox);
-    uiwcontFree (hbox);
   }
 
   /* begin line : vlc message */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateColonLabel (VLCName);
-  uiBoxPackStart (hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (szgrp, uiwidgetp);
-  uiwcontFree (uiwidgetp);
 
   installer->wcont [INST_W_VLC_MSG] = uiCreateLabel ("");
   uiWidgetSetClass (installer->wcont [INST_W_VLC_MSG], INST_HL_CLASS);
-  uiBoxPackStart (hbox, installer->wcont [INST_W_VLC_MSG]);
+  uiBoxPackStart (hbox, installer->wcont [INST_W_VLC_MSG], WCONT_KEEP);
   uiWidgetSetMarginStart (installer->wcont [INST_W_VLC_MSG], 4);
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   /* begin line : buttons */
   /* button box */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateButton (
       installer->callbacks [INST_CB_EXIT],
       /* CONTEXT: installer: exits the installer */
       _("Exit"), NULL, NULL);
-  uiBoxPackEnd (hbox, uiwidgetp);
+  uiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
   installer->wcont [INST_W_BUTTON_EXIT] = uiwidgetp;
 
   installer->callbacks [INST_CB_INSTALL] = callbackInit (
@@ -907,21 +894,21 @@ installerBuildUI (installer_t *installer)
       installer->callbacks [INST_CB_INSTALL],
       /* CONTEXT: installer: start the installation process */
       _("Install"), NULL, NULL);
-  uiBoxPackEnd (hbox, uiwidgetp);
+  uiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
   installer->wcont [INST_W_BUTTON_INSTALL] = uiwidgetp;
 
   uiwidgetp = uiTextBoxCreate (175, INST_HL_COLOR);
   uiTextBoxSetReadonly (uiwidgetp);
   uiTextBoxHorizExpand (uiwidgetp);
   uiTextBoxVertExpand (uiwidgetp);
-  uiBoxPackStartExpandChildren (vbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (vbox, uiwidgetp, WCONT_KEEP);
   installer->wcont [INST_W_STATUS_DISP] = uiwidgetp;
 
   uiWidgetShowAll (installer->wcont [INST_W_WINDOW]);
   installer->uiBuilt = true;
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
+
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);

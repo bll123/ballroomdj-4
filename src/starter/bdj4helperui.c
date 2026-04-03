@@ -225,22 +225,22 @@ helperBuildUI (helperui_t  *helper)
   uiTextBoxHorizExpand (helper->wcont [HELPER_W_TEXTBOX]);
   uiTextBoxVertExpand (helper->wcont [HELPER_W_TEXTBOX]);
   uiTextBoxSetReadonly (helper->wcont [HELPER_W_TEXTBOX]);
-  nuiBoxPackStartExpandChildren (vbox, helper->wcont [HELPER_W_TEXTBOX], WCONT_KEEP);
+  uiBoxPackStartExpandChildren (vbox, helper->wcont [HELPER_W_TEXTBOX], WCONT_KEEP);
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   helper->nextCallback = callbackInit (helperNextCallback, helper, NULL);
   uiwidgetp = uiCreateButton (helper->nextCallback,
       /* CONTEXT: helperui: proceed to the next step */
       C_("Help-Section","Next"), NULL, NULL);
-  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
   helper->wcont [HELPER_W_BUTTON_NEXT] = uiwidgetp;
 
   uiwidgetp = uiCreateButton (helper->closeCallback,
       /* CONTEXT: helperui: close the helper window */
       _("Close"), NULL, NULL);
-  nuiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
   helper->wcont [HELPER_W_BUTTON_CLOSE] = uiwidgetp;
 
   uiWindowSetDefaultSize (helper->wcont [HELPER_W_WINDOW],

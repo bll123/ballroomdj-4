@@ -680,7 +680,7 @@ pluiBuildUI (playerui_t *plui)
   /* player */
   uiwidgetp = uiplayerBuildUI (plui->uiplayer);
   uiWidgetExpandHoriz (uiwidgetp);
-  nuiBoxPackStart (plui->wcont [PLUI_W_MAIN_VBOX], uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (plui->wcont [PLUI_W_MAIN_VBOX], uiwidgetp, WCONT_KEEP);
 
   plui->hnb = uihnbCreate (plui->wcont [PLUI_W_MAIN_VBOX]);
 
@@ -1573,12 +1573,12 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
   uiDialogPackInDialog (plui->wcont [PLUI_W_MQ_FONT_SZ_DIALOG], vbox);
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   /* CONTEXT: playerui: marquee font size dialog: the font size selector */
   tlabel = _("Font Size");
   uiwidgetp = uiCreateColonLabel (tlabel);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   plui->mqszsb = uisbnumCreate (hbox, tlabel, 2);
   uisbnumSetLimits (plui->mqszsb, 10.0, 400.0, 0);
@@ -1592,10 +1592,10 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 
   /* the dialog doesn't have any space above the buttons */
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateLabel ("");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiwcontFree (uiwidgetp);
   plui->fontszdialogcreated = true;
 

@@ -380,36 +380,33 @@ altinstBuildUI (altinst_t *altinst)
   uiwidgetp = uiCreateLabel (
       /* CONTEXT: alternate installation: installation instructions */
       _("Enter the name of the new installation."));
-  uiBoxPackStart (vbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
 
   /* begin line : name */
 
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   /* CONTEXT: alternate installation: name (for shortcut) */
   uiwidgetp = uiCreateColonLabel (_("Name"));
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiEntryInit (30, 30);
   uiEntrySetValue (uiwidgetp, altinst->name);
-  uiBoxPackStart (hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   altinst->wcont [ALT_W_NAME] = uiwidgetp;
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   /* begin line : target entry */
 
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiEntryInit (80, BDJ4_PATH_MAX);
-  uiBoxPackStartExpandChildren (hbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   altinst->wcont [ALT_W_TARGET] = uiwidgetp;
@@ -424,7 +421,7 @@ altinstBuildUI (altinst_t *altinst)
       altinst->callbacks [ALT_CB_TARGET_DIR],
       NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
-  uiBoxPackStart (hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 0);
   altinst->wcont [ALT_W_BUTTON_TARGET_DIR] = uiwidgetp;
   if (isMacOS ()) {
@@ -432,40 +429,38 @@ altinstBuildUI (altinst_t *altinst)
   }
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   /* begin line : re-install checkbox */
 
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   /* CONTEXT: alternate installation: checkbox: re-install */
   altinst->wcont [ALT_W_REINST] = uiCreateCheckButton (_("Re-Install"),
       altinst->reinstall);
-  uiBoxPackStart (hbox, altinst->wcont [ALT_W_REINST]);
+  uiBoxPackStart (hbox, altinst->wcont [ALT_W_REINST], WCONT_KEEP);
   altinst->callbacks [ALT_CB_REINST] = callbackInit (
       altinstReinstallCBHandler, altinst, NULL);
   uiToggleButtonSetCallback (altinst->wcont [ALT_W_REINST], altinst->callbacks [ALT_CB_REINST]);
 
   altinst->wcont [ALT_W_FEEDBACK_MSG] = uiCreateLabel ("");
   uiWidgetSetClass (altinst->wcont [ALT_W_FEEDBACK_MSG], ACCENT_CLASS);
-  uiBoxPackStart (hbox, altinst->wcont [ALT_W_FEEDBACK_MSG]);
+  uiBoxPackStart (hbox, altinst->wcont [ALT_W_FEEDBACK_MSG], WCONT_KEEP);
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 
   /* begin line : button box */
 
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateButton (
       altinst->callbacks [ALT_CB_EXIT],
       /* CONTEXT: alternate installation: exits the alternate installer */
       _("Exit"), NULL, NULL);
-  uiBoxPackEnd (hbox, uiwidgetp);
+  uiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
   altinst->wcont [ALT_W_BUTTON_EXIT] = uiwidgetp;
 
   altinst->callbacks [ALT_CB_START] = callbackInit (
@@ -474,15 +469,20 @@ altinstBuildUI (altinst_t *altinst)
       altinst->callbacks [ALT_CB_START],
       /* CONTEXT: alternate installation: install BDJ4 in the alternate location */
       _("Install"), NULL, NULL);
-  uiBoxPackEnd (hbox, uiwidgetp);
+  uiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
   altinst->wcont [ALT_W_BUTTON_START] = uiwidgetp;
+
+  uiBoxPostProcess (hbox);
 
   uiwidgetp = uiTextBoxCreate (200, NULL);
   uiTextBoxSetReadonly (uiwidgetp);
   uiTextBoxHorizExpand (uiwidgetp);
   uiTextBoxVertExpand (uiwidgetp);
-  uiBoxPackStartExpandChildren (vbox, uiwidgetp);
+  uiBoxPackStartExpandChildren (vbox, uiwidgetp, WCONT_KEEP);
   altinst->wcont [ALT_W_STATUS_DISP] = uiwidgetp;
+
+  uiBoxPostProcess (vbox);
+  uiwcontFree (vbox);
 
   uiWidgetShowAll (altinst->wcont [ALT_W_WINDOW]);
   altinst->uiBuilt = true;
@@ -492,11 +492,6 @@ altinstBuildUI (altinst_t *altinst)
   /* CONTEXT: alternate installation: name (for shortcut) */
   uiEntrySetValidate (altinst->wcont [ALT_W_NAME], _("Name"),
       altinstValidateName, altinst, UIENTRY_IMMEDIATE);
-
-  uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
-  uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
 }
 
 static int

@@ -102,28 +102,28 @@ manageBuildUIStats (managestats_t *managestats)
 
   /* Number of songs */
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (managestats->vboxmain, hbox, WCONT_FREE);
+  uiBoxPackStart (managestats->vboxmain, hbox, WCONT_FREE);
   uiWidgetSetMarginTop (hbox, 2);
 
   /* CONTEXT: statistics: Label for number of songs in song list */
   uiwidgetp = uiCreateColonLabel (_("Songs"));
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetMarginEnd (uiwidgetp, 2);
 
   managestats->songcountdisp = uiCreateLabel ("");
   uiLabelAlignEnd (managestats->songcountdisp);
-  nuiBoxPackStart (hbox, managestats->songcountdisp, WCONT_KEEP);
+  uiBoxPackStart (hbox, managestats->songcountdisp, WCONT_KEEP);
 
   /* total time (same horiz row) */
   /* CONTEXT: statistics: Label for total song list duration */
   uiwidgetp = uiCreateColonLabel (_("Total Time"));
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetMarginEnd (uiwidgetp, 2);
   uiWidgetSetMarginStart (uiwidgetp, 10);
 
   managestats->tottimedisp = uiCreateLabel ("");
   uiLabelAlignEnd (managestats->tottimedisp);
-  nuiBoxPackStart (hbox, managestats->tottimedisp, WCONT_KEEP);
+  uiBoxPackStart (hbox, managestats->tottimedisp, WCONT_KEEP);
 
   for (int i = 0; i < STATS_MAX_DISP; ++i) {
     managestats->dancedisp [i] = uiCreateLabel ("");
@@ -137,7 +137,7 @@ manageBuildUIStats (managestats_t *managestats)
 
   /* horizontal box to hold the columns */
   chbox = uiCreateHorizBox ();
-  nuiBoxPackStart (managestats->vboxmain, chbox, WCONT_FREE);
+  uiBoxPackStart (managestats->vboxmain, chbox, WCONT_FREE);
   uiWidgetSetMarginTop (chbox, 2);
 
   for (int i = 0; i < STATS_COLS; ++i) {
@@ -145,7 +145,7 @@ manageBuildUIStats (managestats_t *managestats)
 
     /* vertical box for each column */
     vbox = uiCreateVertBox ();
-    nuiBoxPackStart (chbox, vbox, WCONT_FREE);
+    uiBoxPackStart (chbox, vbox, WCONT_FREE);
     uiWidgetSetMarginTop (vbox, 2);
     uiWidgetSetMarginStart (vbox, 2);
     uiWidgetSetMarginEnd (vbox, 8);
@@ -155,9 +155,9 @@ manageBuildUIStats (managestats_t *managestats)
 
       idx = i * STATS_PER_COL * 2 + j * 2;
       hbox = uiCreateHorizBox ();
-      nuiBoxPackStart (vbox, hbox, WCONT_FREE);
-      nuiBoxPackStart (hbox, managestats->dancedisp [idx], WCONT_KEEP);
-      nuiBoxPackEnd (hbox, managestats->dancedisp [idx + 1], WCONT_KEEP);
+      uiBoxPackStart (vbox, hbox, WCONT_FREE);
+      uiBoxPackStart (hbox, managestats->dancedisp [idx], WCONT_KEEP);
+      uiBoxPackEnd (hbox, managestats->dancedisp [idx + 1], WCONT_KEEP);
       uiBoxPostProcess (hbox);
     }
 

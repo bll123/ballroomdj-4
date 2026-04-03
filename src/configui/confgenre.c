@@ -49,7 +49,7 @@ fprintf (stderr, "== conf: genre\n");
       _("Edit Genres"), CONFUI_ID_GENRES);
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStartExpandChildren (vbox, hbox, WCONT_FREE);
+  uiBoxPackStartExpandChildren (vbox, hbox, WCONT_FREE);
   uiWidgetAlignHorizStart (hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_GENRES, CONFUI_TABLE_NONE);

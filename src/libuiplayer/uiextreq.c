@@ -247,17 +247,17 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
 
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateColonLabel (
       /* CONTEXT: external request: enter the audio file location */
       _("Audio File"));
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (szgrp, uiwidgetp);
 
   uiwidgetp = uiEntryInit (50, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
-  nuiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE] = uiwidgetp;
@@ -274,7 +274,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
       uiextreq->callbacks [UIEXTREQ_CB_AUDIO_FILE],
       NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE_CHOOSER] = uiwidgetp;
 
@@ -282,15 +282,15 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
 
   /* artist display */
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_KEEP);
+  uiBoxPackStart (vbox, hbox, WCONT_KEEP);
 
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_ARTIST].displayname);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (szgrp, uiwidgetp);
 
   uiwidgetp = uiEntryInit (40, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiextreq->wcont [UIEXTREQ_W_ARTIST] = uiwidgetp;
 
@@ -298,15 +298,15 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
 
   /* title display */
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_KEEP);
+  uiBoxPackStart (vbox, hbox, WCONT_KEEP);
 
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_TITLE].displayname);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (szgrp, uiwidgetp);
 
   uiwidgetp = uiEntryInit (40, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiextreq->wcont [UIEXTREQ_W_TITLE] = uiwidgetp;
 
@@ -314,10 +314,10 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
 
   /* dance : always available */
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCE].displayname);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (szgrp, uiwidgetp);
 
   uiextreq->callbacks [UIEXTREQ_CB_DANCE] = callbackInitII (
@@ -331,15 +331,15 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
 
   /* marquee display */
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_MQDISPLAY].displayname);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (szgrp, uiwidgetp);
 
   uiwidgetp = uiEntryInit (40, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiextreq->wcont [UIEXTREQ_W_MQ_DISP] = uiwidgetp;
 
@@ -347,14 +347,14 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
 
   /* no play tm limit */
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_NO_PLAY_TM_LIMIT].displayname);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (szgrp, uiwidgetp);
 
   uiwidgetp = uiCreateSwitch (0);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiextreq->wcont [UIEXTREQ_W_NO_PLAY_TM_LIMIT] = uiwidgetp;
 
   uiBoxPostProcess (hbox);

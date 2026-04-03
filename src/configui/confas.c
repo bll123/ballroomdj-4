@@ -109,7 +109,7 @@ fprintf (stderr, "== conf: as\n");
       _("Audio Sources"), CONFUI_ID_AUDIOSRC);
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStartExpandChildren (vbox, hbox, WCONT_FREE);
+  uiBoxPackStartExpandChildren (vbox, hbox, WCONT_FREE);
   uiWidgetAlignHorizStart (hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_AUDIOSRC, CONFUI_TABLE_NO_UP_DOWN);
@@ -119,7 +119,7 @@ fprintf (stderr, "-- as: mk-table\n");
   confuiAudioSrcCreateTable (gui);
 
   dvbox = uiCreateVertBox ();
-  nuiBoxPackStart (hbox, dvbox, WCONT_FREE);
+  uiBoxPackStart (hbox, dvbox, WCONT_FREE);
   uiWidgetSetMarginStart (dvbox, 8);
 
 fprintf (stderr, "-- as: sb-txt mode\n");

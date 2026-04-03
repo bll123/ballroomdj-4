@@ -138,17 +138,17 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
   /* edit sequences */
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vboxp, hbox, WCONT_FREE);
+  uiBoxPackStart (vboxp, hbox, WCONT_FREE);
 
   /* CONTEXT: sequence editor: label for sequence name */
   uiwidgetp = uiCreateColonLabel (_("Sequence"));
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiEntryInit (30, 100);
   manageseq->seqname = uiwidgetp;
   uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
   manageSetSequenceName (manageseq, manageseq->newseqname);
-  nuiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   /* CONTEXT: sequence editor: sequence name */
   uiEntrySetValidate (manageseq->seqname, _("Sequence"),
       uiutilsValidatePlaylistNameClr,

@@ -66,19 +66,19 @@ fprintf (stderr, "== conf: dialog\n");
       _("Dialogs"), CONFUI_ID_NONE);
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiBoxPostProcess (vbox);
 
   /* column 1 */
 
   vbox = uiCreateVertBox ();
-  nuiBoxPackStart (hbox, vbox, WCONT_FREE);
+  uiBoxPackStart (hbox, vbox, WCONT_FREE);
 
   szgrp = uiCreateSizeGroupHoriz ();
 
   /* CONTEXT: configuration: filter display: song selection filters */
   uiwidgetp = uiCreateLabel (_("Filter Songs"));
-  nuiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
 
   for (int i = 0; i < FILTER_DISP_MAX; ++i) {
     int         j;
@@ -103,22 +103,22 @@ fprintf (stderr, "== conf: dialog\n");
   /* column 2 */
 
   vbox = uiCreateVertBox ();
-  nuiBoxPackStart (hbox, vbox, WCONT_FREE);
+  uiBoxPackStart (hbox, vbox, WCONT_FREE);
   uiwidgetp = uiCreateLabel ("   ");
-  nuiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
 
   uiBoxPostProcess (vbox);
 
   /* column 3 */
 
   vbox = uiCreateVertBox ();
-  nuiBoxPackStart (hbox, vbox, WCONT_FREE);
+  uiBoxPackStart (hbox, vbox, WCONT_FREE);
 
   szgrp = uiCreateSizeGroupHoriz ();
 
   /* CONTEXT: configuration: filter display: quick edit filters */
   uiwidgetp = uiCreateLabel (_("Quick Edit"));
-  nuiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
 
   for (int i = 0; i < QUICKEDIT_DISP_MAX; ++i) {
     int     j;

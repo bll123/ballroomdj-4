@@ -51,10 +51,10 @@ fprintf (stderr, "conf: rating\n");
 
   /* CONTEXT: configuration: dance ratings: information on how to order the ratings */
   uiwidgetp = uiCreateLabel (_("Order from the lowest rating to the highest rating."));
-  nuiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStartExpandChildren (vbox, hbox, WCONT_FREE);
+  uiBoxPackStartExpandChildren (vbox, hbox, WCONT_FREE);
   uiWidgetAlignHorizStart (hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_RATINGS, CONFUI_TABLE_KEEP_FIRST);

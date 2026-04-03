@@ -64,16 +64,16 @@ uivnbCreate (uiwcont_t *box)
   vnb = mdmalloc (sizeof (uivnb_t));
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStartExpandChildren (box, hbox, WCONT_FREE);
+  uiBoxPackStartExpandChildren (box, hbox, WCONT_FREE);
 
   sw = uiCreateScrolledWindow (50);
-  nuiBoxPackStart (hbox, sw, WCONT_FREE);
+  uiBoxPackStart (hbox, sw, WCONT_FREE);
   vnb->vlist = uiCreateVertBox ();
   uiWidgetSetClass (vnb->vlist, VERTNB_BG_CLASS);
   uiWindowPackInWindow (sw, vnb->vlist);
 
   vnb->nb = uiCreateNotebook ();
-  nuiBoxPackStartExpandChildren (hbox, vnb->nb, WCONT_KEEP);
+  uiBoxPackStartExpandChildren (hbox, vnb->nb, WCONT_KEEP);
 
   for (int i = 0; i < VNB_MAX_PAGECOUNT; ++i) {
     vnb->boxlist [i] = NULL;
@@ -141,19 +141,19 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uibox, const char *nbtxt, int id)
   vnb->tabcblist [pagenum] = cb;
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vnb->vlist, hbox, WCONT_FREE);
+  uiBoxPackStart (vnb->vlist, hbox, WCONT_FREE);
   uiWidgetSetClass (hbox, NB_CLASS);
   uiWidgetSetClass (hbox, NB_VERT_CLASS);
 
   button = uiCreateButton (cb, nbtxt, NULL, NULL);
   uiButtonSetReliefNone (button);
   uiButtonAlignLeft (button);
-  nuiBoxPackStartExpandChildren (hbox, button, WCONT_FREE);
+  uiBoxPackStartExpandChildren (hbox, button, WCONT_FREE);
   uiWidgetSetClass (button, NB_CLASS);
   uiWidgetSetClass (button, NB_VERT_CLASS);
 
   label = uiCreateLabel ("");
-  nuiBoxPackStart (hbox, label, WCONT_FREE);
+  uiBoxPackStart (hbox, label, WCONT_FREE);
   uiWidgetSetMarginStart (label, 0);
   uiWidgetSetClass (label, NB_CLASS);
   uiWidgetSetClass (label, NB_VERT_CLASS);

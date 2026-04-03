@@ -132,10 +132,10 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
       "button_down_small", NULL);
 
   if (where == DD_PACK_START) {
-    nuiBoxPackStart (boxp, uiwidget, WCONT_KEEP);
+    uiBoxPackStart (boxp, uiwidget, WCONT_KEEP);
   }
   if (where == DD_PACK_END) {
-    nuiBoxPackEnd (boxp, uiwidget, WCONT_KEEP);
+    uiBoxPackEnd (boxp, uiwidget, WCONT_KEEP);
   }
 #if BDJ4_UI_GTK3
   if (isMacOS () || isWindows ()) {

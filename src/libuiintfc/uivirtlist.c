@@ -361,7 +361,7 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   vl->callbacks [VL_CB_MOTION_WIN] = callbackInitI (uivlMotionEvent, vl);
 
   vl->wcont [VL_W_VBOX] = uiCreateVertBox ();
-  nuiBoxPackStartExpandChildren  (boxp, vl->wcont [VL_W_VBOX], WCONT_KEEP);
+  uiBoxPackStartExpandChildren  (boxp, vl->wcont [VL_W_VBOX], WCONT_KEEP);
   uiWidgetAlignHorizFill (vl->wcont [VL_W_VBOX]);
 
   /* a scrolled window is necessary to allow the window to shrink */
@@ -369,7 +369,7 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   /* created with extra space */
   vl->wcont [VL_W_SCROLL_WIN] = uiCreateScrolledWindow (50);
   uiWindowSetPolicyExternal (vl->wcont [VL_W_SCROLL_WIN]);
-  nuiBoxPackStartExpandChildren (vl->wcont [VL_W_VBOX], vl->wcont [VL_W_SCROLL_WIN], WCONT_KEEP);
+  uiBoxPackStartExpandChildren (vl->wcont [VL_W_VBOX], vl->wcont [VL_W_SCROLL_WIN], WCONT_KEEP);
 
   vl->wcont [VL_W_HBOX_CONT] = uiCreateHorizBox ();
   uiWindowPackInWindow (vl->wcont [VL_W_SCROLL_WIN], vl->wcont [VL_W_HBOX_CONT]);
@@ -386,7 +386,7 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
 
   /* the event box is necessary to receive mouse clicks */
   vl->wcont [VL_W_EVENT_BOX] = uiEventCreateEventBox (vl->wcont [VL_W_MAIN_VBOX]);
-  nuiBoxPackStartExpandChildren (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_EVENT_BOX], WCONT_KEEP);
+  uiBoxPackStartExpandChildren (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_EVENT_BOX], WCONT_KEEP);
   uiWidgetSetEnterCallback (vl->wcont [VL_W_EVENT_BOX], vl->callbacks [VL_CB_ENTER_WIN]);
 
   /* important */
@@ -395,10 +395,10 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   uiWidgetSetSizeChgCallback (vl->wcont [VL_W_SCROLL_WIN], vl->callbacks [VL_CB_VERT_SZ_CHG]);
 
   vl->wcont [VL_W_SB_VBOX] = uiCreateVertBox ();
-  nuiBoxPackEnd (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_SB_VBOX], WCONT_KEEP);
+  uiBoxPackEnd (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_SB_VBOX], WCONT_KEEP);
 
   vl->wcont [VL_W_SB] = uiCreateVerticalScrollbar (10.0);
-  nuiBoxPackEndExpandChildren (vl->wcont [VL_W_SB_VBOX], vl->wcont [VL_W_SB], WCONT_KEEP);
+  uiBoxPackEndExpandChildren (vl->wcont [VL_W_SB_VBOX], vl->wcont [VL_W_SB], WCONT_KEEP);
   uiBoxPostProcess (vl->wcont [VL_W_SB_VBOX]);
 
   vl->callbacks [VL_CB_SB] = callbackInitD (uivlScrollbarCallback, vl);
@@ -1584,7 +1584,7 @@ fprintf (stderr, "-- vl: %s display\n", vl->tag);
     if (vl->uselistingfont) {
       uiWidgetSetClass (uiwidget, LISTING_CLASS);
     }
-    nuiBoxPackStart (vl->wcont [VL_W_SB_VBOX], uiwidget, WCONT_FREE);
+    uiBoxPackStart (vl->wcont [VL_W_SB_VBOX], uiwidget, WCONT_FREE);
     uiWidgetAlignVertBaseline (uiwidget);
     uiBoxPostProcess (vl->wcont [VL_W_SB_VBOX]);
 
@@ -1826,7 +1826,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
   /* note that this changes the mouse-button column return */
   /* the mouse button event handler adjusts for this column */
   uiwidget = uiCreateLabel ("\xe2\x80\x8a");
-  nuiBoxPackStart (row->hbox, uiwidget, WCONT_FREE);
+  uiBoxPackStart (row->hbox, uiwidget, WCONT_FREE);
   uiWidgetAlignVertBaseline (uiwidget);
   if (vl->uselistingfont) {
     /* setting this to list-fav-class allows gtk to calculate the */
@@ -1953,9 +1953,9 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     }
 
     if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK) {
-      nuiBoxPackStartExpandChildren (row->hbox, col->uiwidget, WCONT_KEEP);
+      uiBoxPackStartExpandChildren (row->hbox, col->uiwidget, WCONT_KEEP);
     } else {
-      nuiBoxPackStart (row->hbox, col->uiwidget, WCONT_KEEP);
+      uiBoxPackStart (row->hbox, col->uiwidget, WCONT_KEEP);
     }
 
     if (row->dispidx == vl->headingoffset &&
@@ -2034,7 +2034,7 @@ uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
     return;
   }
 
-  nuiBoxPackStart (vl->wcont [VL_W_MAIN_VBOX], row->hbox, WCONT_FREE);
+  uiBoxPackStart (vl->wcont [VL_W_MAIN_VBOX], row->hbox, WCONT_FREE);
   uiWidgetExpandHoriz (vl->wcont [VL_W_MAIN_VBOX]);
 
   uiWidgetAlignHorizFill (row->hbox);

@@ -115,17 +115,17 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
       uiduallistDispRemove, duallist, NULL);
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStartExpandChildren (mainvbox, hbox, WCONT_FREE);
+  uiBoxPackStartExpandChildren (mainvbox, hbox, WCONT_FREE);
   uiWidgetAlignHorizStart (hbox);
 
   vbox = uiCreateVertBox ();
-  nuiBoxPackStartExpandChildren (hbox, vbox, WCONT_FREE);
+  uiBoxPackStartExpandChildren (hbox, vbox, WCONT_FREE);
   uiWidgetSetMarginStart (vbox, 8);
   uiWidgetSetMarginTop (vbox, 8);
 
   if (sourcetitle != NULL) {
     uiwidgetp = uiCreateLabel (sourcetitle);
-    nuiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
+    uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
   }
 
   uivl = uivlCreate ("dl-source", NULL, vbox, 7, DL_MIN_WIDTH,
@@ -138,7 +138,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uivlSetRowFillCallback (uivl, uiduallistVLFillSourceCB, duallist);
 
   dvbox = uiCreateVertBox ();
-  nuiBoxPackStart (hbox, dvbox, WCONT_FREE);
+  uiBoxPackStart (hbox, dvbox, WCONT_FREE);
   uiWidgetAlignVertStart (dvbox);
   uiWidgetSetAllMargins (dvbox, 4);
   uiWidgetSetMarginTop (dvbox, 64);
@@ -151,7 +151,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
       duallist->callbacks [DL_CB_SELECT],
       /* CONTEXT: side-by-side list: button: add the selected field */
       NULL, buttonnm, _("Select"));
-  nuiBoxPackStart (dvbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (dvbox, uiwidgetp, WCONT_KEEP);
   duallist->buttons [DL_BUTTON_SELECT] = uiwidgetp;
 
   if ((duallist->flags & DL_FLAGS_PERSISTENT) != DL_FLAGS_PERSISTENT) {
@@ -163,20 +163,20 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
         duallist->callbacks [DL_CB_REMOVE],
         /* CONTEXT: side-by-side list: button: remove the selected field */
         NULL, buttonnm, _("Remove"));
-    nuiBoxPackStart (dvbox, uiwidgetp, WCONT_KEEP);
+    uiBoxPackStart (dvbox, uiwidgetp, WCONT_KEEP);
     duallist->buttons [DL_BUTTON_REMOVE] = uiwidgetp;
   }
 
   uiBoxPostProcess (vbox);
 
   vbox = uiCreateVertBox ();
-  nuiBoxPackStartExpandChildren (hbox, vbox, WCONT_FREE);
+  uiBoxPackStartExpandChildren (hbox, vbox, WCONT_FREE);
   uiWidgetSetMarginStart (vbox, 8);
   uiWidgetSetMarginTop (vbox, 8);
 
   if (targettitle != NULL) {
     uiwidgetp = uiCreateLabel (targettitle);
-    nuiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
+    uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
   }
 
   uivl = uivlCreate ("dl-target", NULL, vbox, 7, DL_MIN_WIDTH,
@@ -191,7 +191,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiBoxPostProcess (dvbox);
 
   dvbox = uiCreateVertBox ();
-  nuiBoxPackStart (hbox, dvbox, WCONT_FREE);
+  uiBoxPackStart (hbox, dvbox, WCONT_FREE);
   uiWidgetAlignVertStart (dvbox);
   uiWidgetSetAllMargins (dvbox, 4);
   uiWidgetSetMarginTop (dvbox, 64);
@@ -200,14 +200,14 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
       duallist->callbacks [DL_CB_MOVEPREV],
       /* CONTEXT: side-by-side list: button: move the selected field up */
       NULL, "button_up", _("Move Up"));
-  nuiBoxPackStart (dvbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (dvbox, uiwidgetp, WCONT_KEEP);
   duallist->buttons [DL_BUTTON_MOVE_UP] = uiwidgetp;
 
   uiwidgetp = uiCreateButton (
       duallist->callbacks [DL_CB_MOVENEXT],
       /* CONTEXT: side-by-side list: button: move the selected field down */
       NULL, "button_down", _("Move Down"));
-  nuiBoxPackStart (dvbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (dvbox, uiwidgetp, WCONT_KEEP);
   duallist->buttons [DL_BUTTON_MOVE_DOWN] = uiwidgetp;
 
   if ((duallist->flags & DL_FLAGS_PERSISTENT) == DL_FLAGS_PERSISTENT) {
@@ -215,7 +215,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
         duallist->callbacks [DL_CB_REMOVE],
         /* CONTEXT: side-by-side list: button: remove the selected field */
         NULL, "button_remove", _("Remove"));
-    nuiBoxPackStart (dvbox, uiwidgetp, WCONT_KEEP);
+    uiBoxPackStart (dvbox, uiwidgetp, WCONT_KEEP);
     duallist->buttons [DL_BUTTON_REMOVE] = uiwidgetp;
   }
 

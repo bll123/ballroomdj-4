@@ -195,15 +195,15 @@ fprintf (stderr, "-- itunes: mvbox\n");
 
 fprintf (stderr, "-- itunes: mhbox\n");
   mhbox = uiCreateHorizBox ();
-  nuiBoxPackStart (mvbox, mhbox, WCONT_FREE);
+  uiBoxPackStart (mvbox, mhbox, WCONT_FREE);
 
   vboxp = uiCreateVertBox ();
-  nuiBoxPackStart (mhbox, vboxp, WCONT_FREE);
+  uiBoxPackStart (mhbox, vboxp, WCONT_FREE);
   uiWidgetSetAllMargins (vboxp, 2);
 
   /* CONTEXT: configuration: itunes: label for itunes rating conversion */
   uiwidgetp = uiCreateLabel (_("Rating"));
-  nuiBoxPackStart (vboxp, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (vboxp, uiwidgetp, WCONT_FREE);
 
 fprintf (stderr, "-- itunes mapping\n");
   /* itunes uses 10..100 mapping to 0.5,1,1.5,...,4.5,5 stars */
@@ -224,10 +224,10 @@ fprintf (stderr, "-- itunes mapping\n");
     }
 
     hbox = uiCreateHorizBox ();
-    nuiBoxPackStart (vboxp, hbox, WCONT_FREE);
+    uiBoxPackStart (vboxp, hbox, WCONT_FREE);
 
     uiwidgetp = uiCreateLabel (tbuff);
-    nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
     uiSizeGroupAdd (szgrpr, uiwidgetp);
 
     gui->itunes->uirating [i] = uiratingSpinboxCreate (hbox, UIRATING_NORM);
@@ -241,21 +241,21 @@ fprintf (stderr, "-- itunes mapping\n");
 
 fprintf (stderr, "-- itunes fields\n");
   vboxp = uiCreateVertBox ();
-  nuiBoxPackStart (mhbox, vboxp, WCONT_FREE);
+  uiBoxPackStart (mhbox, vboxp, WCONT_FREE);
   uiWidgetSetAllMargins (vboxp, 2);
 
   /* CONTEXT: configuration: itunes: which fields should be imported from itunes */
   uiwidgetp = uiCreateLabel (_("Fields to Import"));
-  nuiBoxPackStart (vboxp, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (vboxp, uiwidgetp, WCONT_FREE);
 
   hbox = uiCreateHorizBox ();
-  nuiBoxPackStart (vboxp, hbox, WCONT_FREE);
+  uiBoxPackStart (vboxp, hbox, WCONT_FREE);
 
   uiBoxPostProcess (vboxp);
 
   for (int i = 0; i < ITUNES_FIELD_COL_MAX; ++i) {
     vbox [i] = uiCreateVertBox ();
-    nuiBoxPackStart (hbox, vbox [i], WCONT_FREE);
+    uiBoxPackStart (hbox, vbox [i], WCONT_FREE);
     uiWidgetSetAllMargins (vbox [i], 2);
   }
 
