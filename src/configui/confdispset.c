@@ -74,6 +74,7 @@ confuiBuildUIDispSettings (confuigui_t *gui)
 
   logProcBegin ();
 
+fprintf (stderr, "== conf: disp-set\n");
   vbox = uiCreateVertBox ();
 
   /* display settings */
@@ -94,7 +95,6 @@ confuiBuildUIDispSettings (confuigui_t *gui)
       DL_FLAGS_NONE, NULL, NULL);
 
   uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
   logProcEnd ("");
 }
 

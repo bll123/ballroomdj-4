@@ -95,6 +95,7 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
   uivirtlist_t  *uivl;
   const char    *label;
 
+fprintf (stderr, "== conf: as\n");
   logProcBegin ();
   gui->inchange = true;
   vbox = uiCreateVertBox ();
@@ -108,18 +109,20 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
       _("Audio Sources"), CONFUI_ID_AUDIOSRC);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpandChildren (vbox, hbox);
+  nuiBoxPackStartExpandChildren (vbox, hbox, WCONT_FREE);
   uiWidgetAlignHorizStart (hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_AUDIOSRC, CONFUI_TABLE_NO_UP_DOWN);
   gui->tables [CONFUI_ID_AUDIOSRC].savefunc = confuiAudioSrcSave;
 
+fprintf (stderr, "-- as: mk-table\n");
   confuiAudioSrcCreateTable (gui);
 
   dvbox = uiCreateVertBox ();
-  uiBoxPackStart (hbox, dvbox);
+  nuiBoxPackStart (hbox, dvbox, WCONT_FREE);
   uiWidgetSetMarginStart (dvbox, 8);
 
+fprintf (stderr, "-- as: sb-txt mode\n");
   /* CONTEXT: configuration: audio source: mode (off/client/server) */
   confuiMakeItemSpinboxText (gui, dvbox, szgrp, szgrpB, _("Mode"),
       CONFUI_SB_TXT_AUDIOSRC_MODE, -1, CONFUI_OUT_NUM, CONFUI_NO_INDENT,
@@ -134,6 +137,7 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
       label, confuiAudioSrcNameChg, gui, UIENTRY_IMMEDIATE);
   gui->uiitem [CONFUI_ENTRY_AUDIOSRC_NAME].audiosrcitemidx = ASCONF_NAME;
 
+fprintf (stderr, "-- as: sb-txt type\n");
   /* CONTEXT: configuration: audio source: type of source */
   label = C_("AudioSource","Type");
   confuiMakeItemSpinboxText (gui, dvbox, szgrp, szgrpB, label,
@@ -149,6 +153,7 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
       label, confuiAudioSrcURIChg, gui, UIENTRY_IMMEDIATE);
   gui->uiitem [CONFUI_ENTRY_AUDIOSRC_URI].audiosrcitemidx = ASCONF_URI;
 
+fprintf (stderr, "-- as: sb-num port\n");
   /* CONTEXT: configuration: audio source: the port to use for the client or server */
   label = _("Port");
   confuiMakeItemSpinboxNum (gui, dvbox, szgrp, NULL, label,
@@ -183,11 +188,8 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
   confuiAudioSrcSelect (gui, uivl, 0, CONFUI_AUDIOSRC_COL_NAME);
 
   uiBoxPostProcess (dvbox);
-  uiwcontFree (dvbox);
-  uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
+  uiBoxPostProcess (vbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpB);
   uiwcontFree (szgrpC);

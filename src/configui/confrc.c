@@ -57,6 +57,7 @@ confuiBuildUIMobileRemoteControl (confuigui_t *gui)
   uiwcont_t   *vbox;
   uiwcont_t   *szgrp;
 
+fprintf (stderr, "== conf: rc\n");
   logProcBegin ();
   vbox = uiCreateVertBox ();
 
@@ -100,7 +101,6 @@ confuiBuildUIMobileRemoteControl (confuigui_t *gui)
       CONFUI_WIDGET_RC_QR_CODE_B, "");
 
   uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
   logProcEnd ("");

@@ -60,16 +60,15 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
     vlflags = VL_NO_HEADING;
   }
   vbox = uiCreateVertBox ();
-  uiBoxPackStart (boxp, vbox);
+  nuiBoxPackStart (boxp, vbox, WCONT_FREE);
   uiWidgetAlignHorizStart (vbox);
   uiWidgetSetAllMargins (vbox, 1);
   uivl = uivlCreate (tag, gui->window, vbox, 10, 100, vlflags);
   gui->tables [id].uivl = uivl;
   uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
 
   bvbox = uiCreateVertBox ();
-  uiBoxPackStart (boxp, bvbox);
+  nuiBoxPackStart (boxp, bvbox, WCONT_FREE);
   uiWidgetAlignVertStart (bvbox);
   uiWidgetSetAllMargins (bvbox, 4);
   uiWidgetSetMarginTop (bvbox, 32);
@@ -81,7 +80,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
         gui->tables [id].callbacks [CONFUI_TABLE_CB_UP],
         /* CONTEXT: configuration: table edit: button: move selection up */
         NULL, "button_up", _("Move Up"));
-    uiBoxPackStart (bvbox, uiwidgetp);
+    nuiBoxPackStart (bvbox, uiwidgetp, WCONT_KEEP);
     gui->tables [id].buttons [CONFUI_BUTTON_TABLE_UP] = uiwidgetp;
 
     gui->tables [id].callbacks [CONFUI_TABLE_CB_DOWN] = callbackInit (
@@ -90,7 +89,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
         gui->tables [id].callbacks [CONFUI_TABLE_CB_DOWN],
         /* CONTEXT: configuration: table edit: button: move selection down */
         NULL, "button_down", _("Move Down"));
-    uiBoxPackStart (bvbox, uiwidgetp);
+    nuiBoxPackStart (bvbox, uiwidgetp, WCONT_KEEP);
     gui->tables [id].buttons [CONFUI_BUTTON_TABLE_DOWN] = uiwidgetp;
   }
 
@@ -100,7 +99,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
       gui->tables [id].callbacks [CONFUI_TABLE_CB_REMOVE],
       /* CONTEXT: configuration: table edit: button: delete selection */
       NULL, "button_remove", _("Delete"));
-  uiBoxPackStart (bvbox, uiwidgetp);
+  nuiBoxPackStart (bvbox, uiwidgetp, WCONT_KEEP);
   gui->tables [id].buttons [CONFUI_BUTTON_TABLE_DELETE] = uiwidgetp;
 
   gui->tables [id].callbacks [CONFUI_TABLE_CB_ADD] = callbackInit (
@@ -109,11 +108,10 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
       gui->tables [id].callbacks [CONFUI_TABLE_CB_ADD],
       /* CONTEXT: configuration: table edit: button: add new selection */
       NULL, "button_add", _("Add New"));
-  uiBoxPackStart (bvbox, uiwidgetp);
+  nuiBoxPackStart (bvbox, uiwidgetp, WCONT_KEEP);
   gui->tables [id].buttons [CONFUI_BUTTON_TABLE_ADD] = uiwidgetp;
 
   uiBoxPostProcess (bvbox);
-  uiwcontFree (bvbox);
 
   logProcEnd ("");
 }

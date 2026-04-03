@@ -39,6 +39,7 @@ confuiBuildUIEditGenres (confuigui_t *gui)
   uiwcont_t    *vbox;
   uiwcont_t    *hbox;
 
+fprintf (stderr, "== conf: genre\n");
   logProcBegin ();
   vbox = uiCreateVertBox ();
 
@@ -48,7 +49,7 @@ confuiBuildUIEditGenres (confuigui_t *gui)
       _("Edit Genres"), CONFUI_ID_GENRES);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpandChildren (vbox, hbox);
+  nuiBoxPackStartExpandChildren (vbox, hbox, WCONT_FREE);
   uiWidgetAlignHorizStart (hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_GENRES, CONFUI_TABLE_NONE);
@@ -58,10 +59,8 @@ confuiBuildUIEditGenres (confuigui_t *gui)
   gui->tables [CONFUI_ID_GENRES].movefunc = confuiGenreMove;
   confuiCreateGenreTable (gui);
 
-  uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
+  uiBoxPostProcess (vbox);
 
   logProcEnd ("");
 }

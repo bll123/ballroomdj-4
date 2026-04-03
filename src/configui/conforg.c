@@ -82,6 +82,7 @@ confuiBuildUIOrganization (confuigui_t *gui)
   uiwcont_t    *vbox;
   uiwcont_t    *szgrp;
 
+fprintf (stderr, "== conf: org\n");
   logProcBegin ();
   vbox = uiCreateVertBox ();
 
@@ -116,7 +117,6 @@ confuiBuildUIOrganization (confuigui_t *gui)
       bdjoptGetNum (OPT_G_AUTOORGANIZE), NULL, CONFUI_NO_INDENT);
 
   uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
   logProcEnd ("");

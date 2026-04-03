@@ -28,25 +28,21 @@ confuiBuildUIDebug (confuigui_t *gui)
   uiwcont_t     *szgrp;
   nlistidx_t    val;
 
+fprintf (stderr, "== conf: debug\n");
   logProcBegin ();
-  vbox = uiCreateVertBox ();
+  hbox = uiCreateHorizBox ();
 
   szgrp = uiCreateSizeGroupHoriz ();
 
   /* debug */
-  confuiMakeNotebookTab (vbox, gui,
+  confuiMakeNotebookTab (hbox, gui,
       /* CONTEXT: configuration: debug options that can be turned on and off */
       _("Debug"), CONFUI_ID_NONE);
 
   val = bdjoptGetNum (OPT_G_DEBUGLVL);
 
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
-
-  uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
-  uiBoxPackStart (hbox, vbox);
+  nuiBoxPackStart (hbox, vbox, WCONT_FREE);
 
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Important",
       CONFUI_DBG_IMPORTANT, -1, (val & LOG_IMPORTANT));
@@ -70,9 +66,9 @@ confuiBuildUIDebug (confuigui_t *gui)
       CONFUI_DBG_AUDIO_TAG, -1, (val & LOG_AUDIO_TAG));
 
   uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
+
   vbox = uiCreateVertBox ();
-  uiBoxPackStart (hbox, vbox);
+  nuiBoxPackStart (hbox, vbox, WCONT_FREE);
 
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Dance Selection",
       CONFUI_DBG_DANCESEL, -1, (val & LOG_DANCESEL));
@@ -94,9 +90,9 @@ confuiBuildUIDebug (confuigui_t *gui)
       CONFUI_DBG_PROC, -1, (val & LOG_PROC));
 
   uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
+
   vbox = uiCreateVertBox ();
-  uiBoxPackStart (hbox, vbox);
+  nuiBoxPackStart (hbox, vbox, WCONT_FREE);
 
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Process",
       CONFUI_DBG_PROCESS, -1, (val & LOG_PROCESS));
@@ -128,9 +124,7 @@ confuiBuildUIDebug (confuigui_t *gui)
   }
 
   uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
   uiwcontFree (szgrp);
 
   logProcEnd ("");

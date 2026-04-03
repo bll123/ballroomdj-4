@@ -74,6 +74,7 @@ confuiBuildUIGeneral (confuigui_t *gui)
   char          tbuff [BDJ4_PATH_MAX];
   char          ebuff [BDJ4_PATH_MAX];
 
+fprintf (stderr, "== conf: general\n");
   logProcBegin ();
   sw = uiCreateScrolledWindow (200);
   uiWidgetExpandHoriz (sw);
@@ -189,7 +190,6 @@ confuiBuildUIGeneral (confuigui_t *gui)
       CONFUI_ENTRY_ACRCLOUD_API_HOST, OPT_G_ACRCLOUD_API_HOST,
       bdjoptGetStr (OPT_G_ACRCLOUD_API_HOST), CONFUI_NO_INDENT);
 
-  uiwcontFree (sw);
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);

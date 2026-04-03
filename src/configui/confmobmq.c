@@ -50,6 +50,7 @@ confuiBuildUIMobileMarquee (confuigui_t *gui)
   uiwcont_t   *vbox;
   uiwcont_t   *szgrp;
 
+fprintf (stderr, "== conf: mobmq\n");
   logProcBegin ();
   vbox = uiCreateVertBox ();
 
@@ -98,7 +99,6 @@ confuiBuildUIMobileMarquee (confuigui_t *gui)
       CONFUI_WIDGET_MOBMQ_QR_CODE, "");
 
   uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
   confuiMobmqSetWidgetStates (gui, bdjoptGetNum (OPT_P_MOBMQ_TYPE));

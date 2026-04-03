@@ -292,6 +292,7 @@ typedef struct {
   uiwcont_t         *uiwidgetp;
   uisbtext_t        *sbtxt;
   uisbnum_t         *sbnum;
+  callback_t        *sbcallback;
   callback_t        *callback;
   uidd_t            *uidd;
   char              *uri;

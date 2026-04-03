@@ -39,6 +39,7 @@ confuiBuildUIEditStatus (confuigui_t *gui)
   uiwcont_t    *vbox;
   uiwcont_t    *hbox;
 
+fprintf (stderr, "== conf: status\n");
   logProcBegin ();
   vbox = uiCreateVertBox ();
 
@@ -48,7 +49,7 @@ confuiBuildUIEditStatus (confuigui_t *gui)
       _("Edit Status"), CONFUI_ID_STATUS);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpandChildren (vbox, hbox);
+  nuiBoxPackStartExpandChildren (vbox, hbox, WCONT_FREE);
   uiWidgetAlignHorizStart (hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_STATUS,
@@ -59,10 +60,8 @@ confuiBuildUIEditStatus (confuigui_t *gui)
   gui->tables [CONFUI_ID_STATUS].movefunc = confuiStatusMove;
   confuiCreateStatusTable (gui);
 
-  uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
+  uiBoxPostProcess (vbox);
 
   logProcEnd ("");
 }

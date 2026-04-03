@@ -58,6 +58,7 @@ confuiBuildUIMusicQs (confuigui_t *gui)
   uiwcont_t     *szgrpB;
   int           widx;
 
+fprintf (stderr, "== conf: musicq\n");
   logProcBegin ();
 
   gui->inbuild = true;
@@ -169,7 +170,6 @@ confuiBuildUIMusicQs (confuigui_t *gui)
   gui->inbuild = false;
   confuiMusicQChg (gui);   // calls active-chg
 
-  uiwcontFree (sw);
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
   uiwcontFree (szgrp);

@@ -56,6 +56,7 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
   uiwcont_t     *uiwidgetp;
   nlistidx_t    val;
 
+fprintf (stderr, "== conf: dialog\n");
   logProcBegin ();
   vbox = uiCreateVertBox ();
 
@@ -65,21 +66,19 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
       _("Dialogs"), CONFUI_ID_NONE);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  nuiBoxPackStart (vbox, hbox, WCONT_FREE);
   uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
 
   /* column 1 */
 
   vbox = uiCreateVertBox ();
-  uiBoxPackStart (hbox, vbox);
+  nuiBoxPackStart (hbox, vbox, WCONT_FREE);
 
   szgrp = uiCreateSizeGroupHoriz ();
 
   /* CONTEXT: configuration: filter display: song selection filters */
   uiwidgetp = uiCreateLabel (_("Filter Songs"));
-  uiBoxPackStart (vbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  nuiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
 
   for (int i = 0; i < FILTER_DISP_MAX; ++i) {
     int         j;
@@ -100,30 +99,26 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
 
   uiwcontFree (szgrp);
   uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
 
   /* column 2 */
 
   vbox = uiCreateVertBox ();
-  uiBoxPackStart (hbox, vbox);
+  nuiBoxPackStart (hbox, vbox, WCONT_FREE);
   uiwidgetp = uiCreateLabel ("   ");
-  uiBoxPackStart (vbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  nuiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
 
   uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
 
   /* column 3 */
 
   vbox = uiCreateVertBox ();
-  uiBoxPackStart (hbox, vbox);
+  nuiBoxPackStart (hbox, vbox, WCONT_FREE);
 
   szgrp = uiCreateSizeGroupHoriz ();
 
   /* CONTEXT: configuration: filter display: quick edit filters */
   uiwidgetp = uiCreateLabel (_("Quick Edit"));
-  uiBoxPackStart (vbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  nuiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
 
   for (int i = 0; i < QUICKEDIT_DISP_MAX; ++i) {
     int     j;
@@ -136,11 +131,9 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
     gui->uiitem [j].outtype = CONFUI_OUT_CB;
   }
 
-  uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
-  uiwcontFree (szgrp);
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
+  uiBoxPostProcess (vbox);
+  uiwcontFree (szgrp);
 
   logProcEnd ("");
 }

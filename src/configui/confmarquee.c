@@ -40,6 +40,7 @@ confuiBuildUIMarquee (confuigui_t *gui)
   uiwcont_t    *vbox;
   uiwcont_t    *szgrp;
 
+fprintf (stderr, "== conf: marquee\n");
   logProcBegin ();
   vbox = uiCreateVertBox ();
 
@@ -100,7 +101,6 @@ confuiBuildUIMarquee (confuigui_t *gui)
       bdjoptGetStr (OPT_P_MQ_TEXT_COL));
 
   uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
   logProcEnd ("");

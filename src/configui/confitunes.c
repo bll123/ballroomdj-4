@@ -146,12 +146,14 @@ confuiBuildUIiTunes (confuigui_t *gui)
   int           tagidx;
   int           cidx;
 
+fprintf (stderr, "== conf: itunes\n");
   logProcBegin ();
 
   sw = uiCreateScrolledWindow (200);
   uiWidgetExpandHoriz (sw);
   uiWidgetExpandVert (sw);
 
+fprintf (stderr, "-- itunes: mvbox\n");
   mvbox = uiCreateVertBox ();
   uiWindowPackInWindow (sw, mvbox);
   uiWidgetExpandHoriz (mvbox);
@@ -191,18 +193,19 @@ confuiBuildUIiTunes (confuigui_t *gui)
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].uiwidgetp,
       "", uiEntryValidateFile, NULL, UIENTRY_DELAYED);
 
+fprintf (stderr, "-- itunes: mhbox\n");
   mhbox = uiCreateHorizBox ();
-  uiBoxPackStart (mvbox, mhbox);
+  nuiBoxPackStart (mvbox, mhbox, WCONT_FREE);
 
   vboxp = uiCreateVertBox ();
-  uiBoxPackStart (mhbox, vboxp);
+  nuiBoxPackStart (mhbox, vboxp, WCONT_FREE);
   uiWidgetSetAllMargins (vboxp, 2);
 
   /* CONTEXT: configuration: itunes: label for itunes rating conversion */
   uiwidgetp = uiCreateLabel (_("Rating"));
-  uiBoxPackStart (vboxp, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  nuiBoxPackStart (vboxp, uiwidgetp, WCONT_FREE);
 
+fprintf (stderr, "-- itunes mapping\n");
   /* itunes uses 10..100 mapping to 0.5,1,1.5,...,4.5,5 stars */
   for (int i = 0; i < ITUNES_STARS_MAX; ++i) {
     char    *p;
@@ -221,42 +224,38 @@ confuiBuildUIiTunes (confuigui_t *gui)
     }
 
     hbox = uiCreateHorizBox ();
-    uiBoxPackStart (vboxp, hbox);
+    nuiBoxPackStart (vboxp, hbox, WCONT_FREE);
 
     uiwidgetp = uiCreateLabel (tbuff);
-    uiBoxPackStart (hbox, uiwidgetp);
+    nuiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
     uiSizeGroupAdd (szgrpr, uiwidgetp);
-    uiwcontFree (uiwidgetp);
 
     gui->itunes->uirating [i] = uiratingSpinboxCreate (hbox, UIRATING_NORM);
 
     uiratingSetValue (gui->itunes->uirating [i],
         itunesGetStars (gui->itunes->itunes, ITUNES_STARS_10 + i));
     uiBoxPostProcess (hbox);
-    uiwcontFree (hbox);
   }
 
   uiBoxPostProcess (vboxp);
-  uiwcontFree (vboxp);
 
+fprintf (stderr, "-- itunes fields\n");
   vboxp = uiCreateVertBox ();
-  uiBoxPackStart (mhbox, vboxp);
+  nuiBoxPackStart (mhbox, vboxp, WCONT_FREE);
   uiWidgetSetAllMargins (vboxp, 2);
 
   /* CONTEXT: configuration: itunes: which fields should be imported from itunes */
   uiwidgetp = uiCreateLabel (_("Fields to Import"));
-  uiBoxPackStart (vboxp, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  nuiBoxPackStart (vboxp, uiwidgetp, WCONT_FREE);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vboxp, hbox);
+  nuiBoxPackStart (vboxp, hbox, WCONT_FREE);
 
   uiBoxPostProcess (vboxp);
-  uiwcontFree (vboxp);
 
   for (int i = 0; i < ITUNES_FIELD_COL_MAX; ++i) {
     vbox [i] = uiCreateVertBox ();
-    uiBoxPackStart (hbox, vbox [i]);
+    nuiBoxPackStart (hbox, vbox [i], WCONT_FREE);
     uiWidgetSetAllMargins (vbox [i], 2);
   }
 
@@ -287,17 +286,13 @@ confuiBuildUIiTunes (confuigui_t *gui)
     }
   }
 
-  uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
   for (int i = 0; i < ITUNES_FIELD_COL_MAX; ++i) {
     uiBoxPostProcess (vbox [i]);
-    uiwcontFree (vbox [i]);
   }
-  uiwcontFree (sw);
+  uiBoxPostProcess (hbox);
   uiBoxPostProcess (mvbox);
-  uiwcontFree (mvbox);
   uiBoxPostProcess (mhbox);
-  uiwcontFree (mhbox);
+  uiwcontFree (mvbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpr);
 

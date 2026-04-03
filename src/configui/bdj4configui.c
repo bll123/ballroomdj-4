@@ -176,6 +176,8 @@ main (int argc, char *argv[])
     confui.gui.uiitem [i].uiwidgetp = NULL;
     confui.gui.uiitem [i].sbtxt = NULL;
     confui.gui.uiitem [i].sbnum = NULL;
+    confui.gui.uiitem [i].labeltxt = NULL;
+    confui.gui.uiitem [i].sbcallback = NULL;
     confui.gui.uiitem [i].callback = NULL;
     confui.gui.uiitem [i].sfcb.entry = NULL;
     confui.gui.uiitem [i].sfcb.window = NULL;
@@ -368,6 +370,8 @@ confuiClosingCallback (void *udata, programstate_t programState)
   uiCleanup ();
 
   uiutilsProfileFree (&confui->accent);
+  uiwcontFree (confui->gui.statusMsg);
+  uiwcontFree (confui->gui.errorMsg);
   uiwcontFree (confui->gui.window);
 
   for (int i = CONFUI_DD_BEGIN + 1; i < CONFUI_DD_MAX; ++i) {
@@ -400,6 +404,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
     dataFree (confui->gui.uiitem [i].labeltxt);
     uiwcontFree (confui->gui.uiitem [i].uilabelp);
     callbackFree (confui->gui.uiitem [i].callback);
+    callbackFree (confui->gui.uiitem [i].sbcallback);
   }
   for (int i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {
     confuiTableFree (&confui->gui, i);
@@ -441,6 +446,7 @@ confuiBuildUI (configui_t *confui)
 
   logProcBegin ();
 
+fprintf (stderr, "== conf\n");
   /* CONTEXT: configuration: configuration user interface window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Configuration"),
       bdjoptGetStr (OPT_P_PROFILENAME));
@@ -448,17 +454,20 @@ confuiBuildUI (configui_t *confui)
   confui->gui.window = uiCreateMainWindow (
       confui->gui.closecb, tbuff, "bdj4_icon_config");
 
+fprintf (stderr, "-- conf vbox\n");
   confui->gui.vbox = uiCreateVertBox ();
   uiWindowPackInWindow (confui->gui.window, confui->gui.vbox);
   uiWidgetSetAllMargins (confui->gui.vbox, 4);
   uiWidgetExpandHoriz (confui->gui.vbox);
   uiWidgetExpandVert (confui->gui.vbox);
 
+fprintf (stderr, "-- conf prof-disp\n");
   uiutilsAddProfileColorDisplay (confui->gui.vbox, &confui->accent);
   confui->gui.statusMsg = uiutilsProfileAddLabel (&confui->accent, ACCENT_CLASS);
   confui->gui.errorMsg = uiutilsProfileAddLabel (&confui->accent, ERROR_CLASS);
   uiutilsProfilePostProcess (&confui->accent);
 
+fprintf (stderr, "-- conf vnb\n");
   confui->gui.mainvnb = uivnbCreate (confui->gui.vbox);
 
   confuiBuildUIGeneral (&confui->gui);
@@ -479,6 +488,12 @@ confuiBuildUI (configui_t *confui)
   confuiBuildUIMobileRemoteControl (&confui->gui);
   confuiBuildUIMobileMarquee (&confui->gui);
   confuiBuildUIDebug (&confui->gui);
+fprintf (stderr, "-- conf build-ui done\n");
+
+fprintf (stderr, "-- conf vnb pp\n");
+  uivnbPostProcess (confui->gui.mainvnb);
+  uiBoxPostProcess (confui->gui.vbox);
+fprintf (stderr, "-- conf pp done\n");
 
   confui->gui.nbcb = callbackInitI (confuiSwitchTable, &confui->gui);
   uivnbSetCallback (confui->gui.mainvnb, confui->gui.nbcb);

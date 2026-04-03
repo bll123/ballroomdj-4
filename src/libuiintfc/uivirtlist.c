@@ -414,7 +414,6 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
     uivlRowBasicInit (vl, &vl->rows [dispidx], dispidx);
   }
 
-  uiBoxPostProcess (vl->wcont [VL_W_MAIN_VBOX]);
   uiBoxPostProcess (vl->wcont [VL_W_HBOX_CONT]);
   uiBoxPostProcess (vl->wcont [VL_W_VBOX]);
 
@@ -1529,6 +1528,7 @@ uivlDisplay (uivirtlist_t *vl)
   uivlrow_t   *row;
   int         clickmap;
 
+fprintf (stderr, "-- vl: %s display\n", vl->tag);
   logProcBegin ();
   if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
     logProcEnd ("not-valid");
@@ -1648,6 +1648,8 @@ uivlPopulate (uivirtlist_t *vl)
     return;
   }
 
+  uiBoxPostProcess (vl->wcont [VL_W_MAIN_VBOX]);
+
   for (int dispidx = vl->dispsize; dispidx < vl->dispalloc; ++dispidx) {
     if (vl->rows [dispidx].offscreen) {
       continue;
@@ -1749,7 +1751,6 @@ uivlFreeRow (uivirtlist_t *vl, uivlrow_t *row)
     dataFree (row->rowcb);
   }
 
-  uiwcontFree (row->hbox);
   uiwcontFree (row->szgrp);
 
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
@@ -1775,6 +1776,7 @@ uivlFreeCol (uivlcol_t *col)
   dataFree (col->class);
   col->class = NULL;
   uiwcontFree (col->uiwidget);
+  uisbnumFree (col->sbnum);
   col->ident = 0;
 }
 
@@ -1910,6 +1912,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
         if (coldata->spinboxcb != NULL) {
           uisbnumSetChangeCallback (col->sbnum, coldata->spinboxcb);
         }
+        uiBoxPostProcess (col->uiwidget);
         break;
       }
       case VL_TYPE_SPINBOX_TIME: {
@@ -1920,6 +1923,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
         if (coldata->spinboxcb != NULL) {
           uisbnumSetChangeCallback (col->sbnum, coldata->spinboxcb);
         }
+        uiBoxPostProcess (col->uiwidget);
         break;
       }
       case VL_TYPE_INTERNAL_NUMERIC: {
@@ -2871,6 +2875,7 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
   logProcBegin ();
   /* only if the number of rows has increased */
   if (vl->dispalloc < newdispsize) {
+fprintf (stderr, "-- vl: %s chg-increase\n", vl->tag);
     vl->rows = mdrealloc (vl->rows, sizeof (uivlrow_t) * newdispsize);
 
     for (int dispidx = vl->dispalloc; dispidx < newdispsize; ++dispidx) {

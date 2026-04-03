@@ -32,6 +32,7 @@ confuiBuildUIUserInterface (confuigui_t *gui)
   logProcBegin ();
   vbox = uiCreateVertBox ();
 
+fprintf (stderr, "== conf: ui\n");
   szgrp = uiCreateSizeGroupHoriz ();
 
   /* user interface */
@@ -80,7 +81,6 @@ confuiBuildUIUserInterface (confuigui_t *gui)
       bdjoptGetStr (OPT_P_UI_MARK_COL));
 
   uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
   logProcEnd ("");

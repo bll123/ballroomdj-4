@@ -99,6 +99,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
   char          tbuff [BDJ4_PATH_MAX];
   uivirtlist_t  *uivl;
 
+fprintf (stderr, "== conf: dances\n");
   logProcBegin ();
   gui->inchange = true;
   vbox = uiCreateVertBox ();
@@ -114,7 +115,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
       _("Edit Dances"), CONFUI_ID_DANCE);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpandChildren (vbox, hbox);
+  nuiBoxPackStartExpandChildren (vbox, hbox, WCONT_FREE);
   uiWidgetAlignHorizStart (hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_DANCE, CONFUI_TABLE_NO_UP_DOWN);
@@ -123,7 +124,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
   confuiCreateDanceTable (gui);
 
   dvbox = uiCreateVertBox ();
-  uiBoxPackStart (hbox, dvbox);
+  nuiBoxPackStart (hbox, dvbox, WCONT_FREE);
   uiWidgetSetMarginStart (dvbox, 8);
 
   confuiMakeItemEntry (gui, dvbox, szgrp, tagdefs [TAG_DANCE].displayname,
@@ -191,11 +192,8 @@ confuiBuildUIEditDances (confuigui_t *gui)
   confuiDanceSelect (gui, uivl, 0, CONFUI_DANCE_COL_DANCE);
 
   uiBoxPostProcess (dvbox);
-  uiwcontFree (dvbox);
-  uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
+  uiBoxPostProcess (vbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpB);
   uiwcontFree (szgrpC);

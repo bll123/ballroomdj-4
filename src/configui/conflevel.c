@@ -40,6 +40,7 @@ confuiBuildUIEditLevels (confuigui_t *gui)
   uiwcont_t    *hbox;
   uiwcont_t    *uiwidgetp;
 
+fprintf (stderr, "== conf: level\n");
   logProcBegin ();
   vbox = uiCreateVertBox ();
 
@@ -50,11 +51,10 @@ confuiBuildUIEditLevels (confuigui_t *gui)
 
   /* CONTEXT: configuration: dance levels: instructions */
   uiwidgetp = uiCreateLabel (_("Order from easiest to most advanced."));
-  uiBoxPackStart (vbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  nuiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpandChildren (vbox, hbox);
+  nuiBoxPackStartExpandChildren (vbox, hbox, WCONT_FREE);
   uiWidgetAlignHorizStart (hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_LEVELS, CONFUI_TABLE_NONE);
@@ -64,10 +64,8 @@ confuiBuildUIEditLevels (confuigui_t *gui)
   gui->tables [CONFUI_ID_LEVELS].movefunc = confuiLevelMove;
   confuiCreateLevelTable (gui);
 
-  uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
+  uiBoxPostProcess (vbox);
 
   logProcEnd ("");
 }

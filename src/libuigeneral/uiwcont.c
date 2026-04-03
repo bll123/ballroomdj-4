@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <stdatomic.h>
 
 #include "mdebug.h"
 #include "uiwcont.h"
@@ -16,7 +17,7 @@
 #include "ui/uiwcont-int.h"
 #include "ui/uiui.h"
 
-static int32_t gboxcount = 100;
+static _Atomic(int32_t) gboxcount = 100;
 
 uiwcont_t *
 uiwcontAlloc_r (int basetype, int type, const char *fn, int lineno)

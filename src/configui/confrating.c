@@ -40,6 +40,7 @@ confuiBuildUIEditRatings (confuigui_t *gui)
   uiwcont_t    *hbox;
   uiwcont_t    *uiwidgetp;
 
+fprintf (stderr, "conf: rating\n");
   logProcBegin ();
   vbox = uiCreateVertBox ();
 
@@ -50,11 +51,10 @@ confuiBuildUIEditRatings (confuigui_t *gui)
 
   /* CONTEXT: configuration: dance ratings: information on how to order the ratings */
   uiwidgetp = uiCreateLabel (_("Order from the lowest rating to the highest rating."));
-  uiBoxPackStart (vbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  nuiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpandChildren (vbox, hbox);
+  nuiBoxPackStartExpandChildren (vbox, hbox, WCONT_FREE);
   uiWidgetAlignHorizStart (hbox);
 
   confuiMakeItemTable (gui, hbox, CONFUI_ID_RATINGS, CONFUI_TABLE_KEEP_FIRST);
@@ -64,10 +64,8 @@ confuiBuildUIEditRatings (confuigui_t *gui)
   gui->tables [CONFUI_ID_RATINGS].movefunc = confuiRatingMove;
   confuiCreateRatingTable (gui);
 
-  uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
+  uiBoxPostProcess (vbox);
 
   logProcEnd ("");
 }

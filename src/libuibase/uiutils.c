@@ -57,10 +57,10 @@ uiutilsAddProfileColorDisplay (uiwcont_t *boxp, uiutilsaccent_t *accent)
   uiWidgetSetMarginStart (cbox, 4);
   uiBoxPostProcess (cbox);
 
-  uiutilsProfileSetColor (accent, NULL);
-
   accent->cbox = cbox;
   accent->hbox = hbox;
+
+  uiutilsProfileSetColor (accent, NULL);
 }
 
 uiwcont_t *
