@@ -192,7 +192,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
 
   logProcBegin ();
-  uiwcontInitID (UI_UIMUSICQ_ID);
+  uiwcontPushID (UI_UIMUSICQ_ID);
 
   saveci = uimusicq->musicqManageIdx;
   /* temporary */
@@ -465,6 +465,8 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   uimusicq->cbci = ci;
 
   uiBoxPostProcess (uimusicq->ui [ci].mainbox);
+
+  uiwcontPopID ();
 
   logProcEnd ("");
   return uimusicq->ui [ci].mainbox;

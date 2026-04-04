@@ -200,7 +200,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
 
   logProcBegin ();
 
-  uiwcontInitID (UI_UISONGSEL_ID);
+  uiwcontPushID (UI_UISONGSEL_ID);
 
   ssint = uisongsel->ssInternalData;
   uisongsel->windowp = parentwin;
@@ -348,6 +348,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uiBoxPostProcess (ssint->mainvbox);
 
   logProcEnd ("");
+  uiwcontPopID ();
   return ssint->mainvbox;
 }
 

@@ -75,9 +75,9 @@ uiutilsHeaderLineSetup (uiwcont_t *boxp)
   uiutilsHeaderLineSetColor (hdrline, NULL);
 
   /* put a blank in so that the header line does not change size */
+// ### not working
   filler = uiCreateLabel (" ");
   uiBoxPackEnd (hbox, filler, WCONT_FREE);
-  uiBoxPostProcess (hbox);
 
   return hdrline;
 }

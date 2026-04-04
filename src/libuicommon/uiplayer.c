@@ -269,7 +269,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   }
 
   logProcBegin ();
-  uiwcontInitID (UI_UIPLAYER_ID);
+  uiwcontPushID (UI_UIPLAYER_ID);
 
   showspd = bdjoptGetNum (OPT_P_SHOW_SPD_CONTROL);
   if (showspd) {
@@ -591,9 +591,10 @@ fprintf (stderr, "-- uipl: vol\n");
   uiwcontFree (szgrpScaleLabel);
   uiwcontFree (szgrpStatus);
 
-  logProcEnd ("");
-
   uiBoxPostProcess (uiplayer->wcont [UIPL_W_MAIN_VBOX]);
+  uiwcontPopID ();
+
+  logProcEnd ("");
   return uiplayer->wcont [UIPL_W_MAIN_VBOX];
 }
 

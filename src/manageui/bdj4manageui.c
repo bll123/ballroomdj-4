@@ -1007,7 +1007,6 @@ manageInitializeUI (manageui_t *manage)
 
   manage->slplayer = uiplayerInit ("sl-player", manage->progstate, manage->conn,
       manage->musicdb, manage->minfo.dispsel);
-  uiwcontInitID (UI_MANAGE_ID);
 
   manage->slmusicq = uimusicqInit ("m-sl", manage->conn,
       manage->musicdb, manage->minfo.dispsel, DISP_SEL_SONGLIST);
@@ -1046,7 +1045,6 @@ manageInitializeUI (manageui_t *manage)
 
   manage->mmplayer = uiplayerInit ("mm-player", manage->progstate, manage->conn,
       manage->musicdb, manage->minfo.dispsel);
-  uiwcontInitID (UI_MANAGE_ID);
 
   manage->mmsongsel = uisongselInit ("m-mm-songsel", manage->conn,
       manage->musicdb, manage->grouping,
@@ -1141,7 +1139,6 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiwidgetp = uimusicqBuildUI (manage->slsbsmusicq, manage->minfo.window,
       MUSICQ_SL, manage->minfo.errorMsg,
       manage->minfo.statusMsg, uiutilsValidatePlaylistNameClr);
-  uiwcontInitID (UI_MANAGE_ID);
   uiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
 
   uiBoxPostProcess (vbox);
@@ -1167,21 +1164,18 @@ manageBuildUISongListEditor (manageui_t *manage)
   manage->wcont [MANAGE_W_SELECT_BUTTON] = uiwidgetp;
 
   uip = uisongselBuildUI (manage->slsbssongsel, manage->minfo.window);
-  uiwcontInitID (UI_MANAGE_ID);
   uiBoxPackStartExpandChildren (hbox, uip, WCONT_KEEP);
 
   /* song list: music queue tab */
   uip = uimusicqBuildUI (manage->slmusicq, manage->minfo.window,
       MUSICQ_SL, manage->minfo.errorMsg,
       manage->minfo.statusMsg, uiutilsValidatePlaylistNameClr);
-  uiwcontInitID (UI_MANAGE_ID);
   uihnbAppendPage (manage->slhnb, uip,
       /* CONTEXT: manage-ui: name of song list notebook tab */
       _("Song List"), NULL, NULL, MANAGE_TAB_SONGLIST);
 
   /* song list: song selection tab */
   uip = uisongselBuildUI (manage->slsongsel, manage->minfo.window);
-  uiwcontInitID (UI_MANAGE_ID);
   uihnbAppendPage (manage->slhnb, uip,
       /* CONTEXT: manage-ui: name of song selection notebook tab */
       _("Song Selection"), NULL, NULL, MANAGE_TAB_SL_SONGSEL);
@@ -2490,7 +2484,6 @@ manageBuildUIMusicManager (manageui_t *manage)
 
   /* music manager: song selection tab*/
   uip = uisongselBuildUI (manage->mmsongsel, manage->minfo.window);
-  uiwcontInitID (UI_MANAGE_ID);
   uihnbAppendPage (manage->mmhnb, uip,
       /* CONTEXT: manage-ui: name of song selection notebook tab */
       _("Music Manager"), NULL, NULL, MANAGE_TAB_MM);

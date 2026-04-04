@@ -731,7 +731,6 @@ fprintf (stderr, "-- plui: main ui\n");
 fprintf (stderr, "-- plui: music-q %d\n", i);
     uip = uimusicqBuildUI (plui->uimusicq, plui->wcont [PLUI_W_WINDOW], i,
         plui->wcont [PLUI_W_ERROR_MSG], plui->wcont [PLUI_W_STATUS_MSG], NULL);
-    uiwcontInitID (UI_PLUI_ID);
 
     if (tabtype == PLUI_TAB_HISTORY) {
       /* CONTEXT: playerui: name of the history tab : displayed played songs */
@@ -754,7 +753,6 @@ fprintf (stderr, "-- plui: music-q %d\n", i);
 fprintf (stderr, "-- plui: request\n");
   /* request tab */
   uip = uisongselBuildUI (plui->uisongsel, plui->wcont [PLUI_W_WINDOW]);
-  uiwcontInitID (UI_PLUI_ID);
 
   uihnbAppendPage (plui->hnb, uip,
       /* CONTEXT: playerui: name of request tab : lists the songs in the database */
@@ -800,7 +798,6 @@ pluiInitializeUI (playerui_t *plui)
 {
   plui->uiplayer = uiplayerInit ("player", plui->progstate, plui->conn,
       plui->musicdb, plui->dispsel);
-  uiwcontInitID (UI_PLUI_ID);
 
   plui->uiqe = uiqeInit (plui->wcont [PLUI_W_WINDOW],
       plui->musicdb, plui->options);

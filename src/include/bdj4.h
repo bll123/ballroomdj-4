@@ -150,6 +150,7 @@ enum {
   UI_UIMUSICQ_ID   = 100,
   UI_UIPLAYER_ID   = 110,
   UI_UISONGSEL_ID  = 120,
+  UI_UITEST_ID     = 130,
 };
 
 /* macos stuff */

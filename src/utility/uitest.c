@@ -357,6 +357,8 @@ uitestBuildUI (uitest_t *uitest)
   uiwcont_t   *menuitem;
   uiwcont_t   *menu;
 
+  uiwcontInitID (UI_UITEST_ID);
+
   uitest->callbacks [UITEST_CB_CLOSE] = callbackInit (
       uitestCloseWin, uitest, NULL);
 

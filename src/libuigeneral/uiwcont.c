@@ -18,13 +18,27 @@
 #include "ui/uiwcont-int.h"
 #include "ui/uiui.h"
 
+static _Atomic(int32_t) gbdj4id_old = 0;
 static _Atomic(int32_t) gbdj4id = 0;
 static _Atomic(int32_t) gboxcount = 100;
 
 void
-uiwcontInitID (int32_t offset)
+uiwcontInitID (int32_t id)
 {
-  gbdj4id = offset;
+  gbdj4id = id;
+}
+
+void
+uiwcontPushID (int32_t id)
+{
+  gbdj4id_old = gbdj4id;
+  gbdj4id = id;
+}
+
+void
+uiwcontPopID (void)
+{
+  gbdj4id = gbdj4id_old;
 }
 
 uiwcont_t *
