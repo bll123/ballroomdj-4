@@ -209,6 +209,8 @@ helperBuildUI (helperui_t  *helper)
   char                tbuff [BDJ4_PATH_MAX];
   char                imgbuff [BDJ4_PATH_MAX];
 
+  uiwcontInitID (UI_HELPER_ID);
+
   helper->closeCallback = callbackInit (helperCloseCallback, helper, NULL);
   /* CONTEXT: helperui: the window title for the BDJ4 helper */
   snprintf (tbuff, sizeof (tbuff), _("%s Helper"), BDJ4_LONG_NAME);

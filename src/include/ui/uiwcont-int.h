@@ -165,6 +165,7 @@ typedef struct uiwcont {
   /* widget data specific to the interface */
   /* uidata must contain .widget and .packwidget */
   uispecific_t    uidata;
+  int32_t         ui_id;
   int32_t         id;
   int32_t         parentid;
   bool            packed;

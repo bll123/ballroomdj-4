@@ -109,7 +109,9 @@ uimusicqFree (uimusicq_t *uimusicq)
     callbackFree (uimusicq->callbacks [i]);
   }
   for (int i = 0; i < MUSICQ_MAX; ++i) {
-    uiwcontFree (uimusicq->ui [i].mainbox);
+    /* the mainbox is packed into a notebook page, and the notebook */
+    /* takes responsibility for freeing it */
+    // uiwcontFree (uimusicq->ui [i].mainbox);
     uiplaylistFree (uimusicq->ui [i].playlistsel);
     uiwcontFree (uimusicq->ui [i].slname);
   }

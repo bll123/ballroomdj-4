@@ -203,7 +203,7 @@ uiMenuAddMainItem (uiwcont_t *uimenubar, uiwcont_t *uimenu, const char *txt)
   menu = uimenu->uiint.uimenu;
 
   if (menu->menucount >= UIUTILS_MENU_MAX) {
-    fprintf (stderr, "ERR: %d exceeds menu max\n", uimenu->id);
+    fprintf (stderr, "ERR: %d-%d exceeds menu max\n", uimenu->ui_id, uimenu->id);
     return NULL;
   }
 

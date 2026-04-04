@@ -18,7 +18,14 @@
 #include "ui/uiwcont-int.h"
 #include "ui/uiui.h"
 
+static _Atomic(int32_t) gbdj4id = 0;
 static _Atomic(int32_t) gboxcount = 100;
+
+void
+uiwcontInitID (int32_t offset)
+{
+  gbdj4id = offset;
+}
 
 uiwcont_t *
 uiwcontAlloc_r (int basetype, int type, const char *fn, int lineno)
@@ -31,11 +38,11 @@ uiwcontAlloc_r (int basetype, int type, const char *fn, int lineno)
   uiwidget->uidata.widget = NULL;
   uiwidget->uidata.packwidget = NULL;          // often the same as widget
   uiwidget->packed = false;
-  uiwidget->id = 0;
+  uiwidget->ui_id = gbdj4id;
   if (uiwidget->wbasetype == WCONT_T_BOX ||
       uiwidget->wbasetype == WCONT_T_WINDOW) {
     uiwidget->id = gboxcount;
-fprintf (stderr, "wcont: box/win: %d\n", gboxcount);
+fprintf (stderr, "wcont: box/win: %d-%d\n", uiwidget->ui_id, uiwidget->id);
     gboxcount += 100;
   }
 

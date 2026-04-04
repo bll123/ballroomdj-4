@@ -134,6 +134,7 @@ uisfInit (uiwcont_t *windowp, nlist_t *options, songfilterpb_t pbflag)
 
   uisf = mdmalloc (sizeof (uisongfilter_t));
 
+  uisf->hdrline = NULL;
   uisf->playlistname = NULL;
   uisf->playlist = NULL;
   uisf->ratings = bdjvarsdfGet (BDJVDF_RATINGS);

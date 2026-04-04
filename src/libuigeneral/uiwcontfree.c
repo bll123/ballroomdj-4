@@ -37,7 +37,7 @@ uiwcontFree (uiwcont_t *uiwidget)
 
   switch (uiwidget->wtype) {
     case WCONT_T_UNKNOWN: {
-      fprintf (stderr, "ERR: trying to free %d twice\n", uiwidget->id);
+      fprintf (stderr, "ERR: trying to free %d-%d twice\n", uiwidget->ui_id, uiwidget->id);
       break;
     }
     case WCONT_T_HBOX:

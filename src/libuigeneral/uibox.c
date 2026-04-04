@@ -62,7 +62,7 @@ uiBoxFree (uiwcont_t *uibox)
   tid = uibox->id;
 
   if (! boxbase->postprocess) {
-    fprintf (stderr, "ERR: box %d not post-process\n", tid);
+    fprintf (stderr, "ERR: box %d-%d not post-process\n", uibox->ui_id, tid);
   }
 
   wlist = boxbase->widgetlist;
@@ -105,7 +105,7 @@ uiBoxPostProcess (uiwcont_t *uibox)
 
   if (boxbase->postprocess) {
 // ### remove this later
-    fprintf (stderr, "INFO: box %d post-process twice\n", uibox->id);
+    fprintf (stderr, "INFO: box %d-%d post-process twice\n", uibox->ui_id, uibox->id);
   }
 
   wlist = boxbase->widgetlist;
@@ -249,7 +249,7 @@ uiBoxListAdd (uiwcont_t *uibox, uiwcont_t *uiwidget,
       uiwidget->wbasetype != WCONT_T_WINDOW) {
     uiwidget->id = uibox->id + nlistGetCount (wlist);
   }
-fprintf (stderr, "wcont: pack: %d %s box: %d\n", uiwidget->id, uiwcontDesc (uiwidget->wtype), uibox->id);
+fprintf (stderr, "wcont: pack: %d-%d %s box: %d-%d\n", uiwidget->ui_id, uiwidget->id, uiwcontDesc (uiwidget->wtype), uibox->ui_id, uibox->id);
   uiwidget->parentid = uibox->id;
   uiwidget->packed = true;
 }

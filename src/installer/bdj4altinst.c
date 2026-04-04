@@ -352,6 +352,7 @@ altinstBuildUI (altinst_t *altinst)
   char          tbuff [100];
   char          imgbuff [BDJ4_PATH_MAX];
 
+  uiwcontInitID (UI_ALTINST_ID);
   stpecpy (imgbuff, imgbuff + sizeof (imgbuff), "img/bdj4_icon_inst.png");
   osuiSetIcon (imgbuff);
 

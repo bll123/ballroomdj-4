@@ -653,6 +653,8 @@ installerBuildUI (installer_t *installer)
   ilist_t       *ddlist;
   int           langidx;
 
+  uiwcontInitID (UI_INSTALL_ID);
+
   szgrp = uiCreateSizeGroupHoriz ();
 
   uiLabelAddClass (INST_HL_CLASS, INST_HL_COLOR);

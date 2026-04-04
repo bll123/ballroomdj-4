@@ -575,6 +575,7 @@ starterClosingCallback (void *udata, programstate_t programState)
   for (int i = 0; i < START_W_MAX; ++i) {
     uiwcontFree (starter->wcont [i]);
   }
+  uisbtextFree (starter->sbtxt);
   for (int i = 0; i < START_BUTTON_MAX; ++i) {
     uiwcontFree (starter->buttons [i]);
   }
@@ -628,6 +629,7 @@ starterBuildUI (startui_t  *starter)
 
   logProcBegin ();
 
+  uiwcontInitID (UI_STARTER_ID);
   szgrp = uiCreateSizeGroupHoriz ();
 
   starter->callbacks [START_CB_EXIT] = callbackInit (

@@ -447,6 +447,8 @@ confuiBuildUI (configui_t *confui)
 
   logProcBegin ();
 
+  uiwcontInitID (UI_CONFIG_ID);
+
 fprintf (stderr, "== conf\n");
   /* CONTEXT: configuration: configuration user interface window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Configuration"),

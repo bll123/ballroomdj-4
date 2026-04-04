@@ -332,6 +332,8 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   logProcBegin ();
 
+  uiwcontInitID (UI_BPMCOUNTER_ID);
+
   szgrp = uiCreateSizeGroupHoriz ();      // labels
   szgrpDisp = uiCreateSizeGroupHoriz ();     // display
 

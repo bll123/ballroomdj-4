@@ -526,6 +526,9 @@ pluiBuildUI (playerui_t *plui)
 
   logProcBegin ();
 
+  uiwcontInitID (UI_PLUI_ID);
+
+fprintf (stderr, "-- plui: main ui\n");
   pathbldMakePath (tbuff, sizeof (tbuff),  "led_off", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
   plui->wcont [PLUI_W_LED_OFF] = uiImageFromFile (tbuff);
@@ -653,8 +656,8 @@ pluiBuildUI (playerui_t *plui)
   if (tempp == NULL) {
     uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
   }
-  uiwcontFree (menuitem);
 
+  uiwcontFree (menuitem);
   uiwcontFree (menu);
 
   /* options */
@@ -725,8 +728,10 @@ pluiBuildUI (playerui_t *plui)
       tabtype = PLUI_TAB_HISTORY;
     }
 
+fprintf (stderr, "-- plui: music-q %d\n", i);
     uip = uimusicqBuildUI (plui->uimusicq, plui->wcont [PLUI_W_WINDOW], i,
         plui->wcont [PLUI_W_ERROR_MSG], plui->wcont [PLUI_W_STATUS_MSG], NULL);
+    uiwcontInitID (UI_PLUI_ID);
 
     if (tabtype == PLUI_TAB_HISTORY) {
       /* CONTEXT: playerui: name of the history tab : displayed played songs */
@@ -746,11 +751,17 @@ pluiBuildUI (playerui_t *plui)
     uihnbAppendPage (plui->hnb, uip, str, imgptr, altimgptr, tabtype);
   }
 
+fprintf (stderr, "-- plui: request\n");
   /* request tab */
   uip = uisongselBuildUI (plui->uisongsel, plui->wcont [PLUI_W_WINDOW]);
+  uiwcontInitID (UI_PLUI_ID);
+
   uihnbAppendPage (plui->hnb, uip,
       /* CONTEXT: playerui: name of request tab : lists the songs in the database */
       _("Request"), NULL, NULL, PLUI_TAB_SONGSEL);
+
+  uihnbPostProcess (plui->hnb);
+  uiBoxPostProcess (plui->wcont [PLUI_W_MAIN_VBOX]);
 
   x = nlistGetNum (plui->options, PLUI_SIZE_X);
   y = nlistGetNum (plui->options, PLUI_SIZE_Y);
@@ -778,9 +789,6 @@ pluiBuildUI (playerui_t *plui)
 
   plui->uibuilt = true;
 
-  uiBoxPostProcess (plui->wcont [PLUI_W_MAIN_VBOX]);
-  uihnbPostProcess (plui->hnb);
-
   uiwcontFree (menu);
   uiwcontFree (menubar);
 
@@ -792,6 +800,7 @@ pluiInitializeUI (playerui_t *plui)
 {
   plui->uiplayer = uiplayerInit ("player", plui->progstate, plui->conn,
       plui->musicdb, plui->dispsel);
+  uiwcontInitID (UI_PLUI_ID);
 
   plui->uiqe = uiqeInit (plui->wcont [PLUI_W_WINDOW],
       plui->musicdb, plui->options);

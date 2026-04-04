@@ -45,8 +45,9 @@ uihdrline_t *
 uiutilsHeaderLineSetup (uiwcont_t *boxp)
 {
   uihdrline_t *hdrline;
-  uiwcont_t       *hbox;
-  uiwcont_t       *cbox;
+  uiwcont_t   *hbox;
+  uiwcont_t   *cbox;
+  uiwcont_t   *filler;
 
   if (boxp == NULL) {
     return NULL;
@@ -72,6 +73,12 @@ uiutilsHeaderLineSetup (uiwcont_t *boxp)
   hdrline->hbox = hbox;
 
   uiutilsHeaderLineSetColor (hdrline, NULL);
+
+  /* put a blank in so that the header line does not change size */
+  filler = uiCreateLabel (" ");
+  uiBoxPackEnd (hbox, filler, WCONT_FREE);
+  uiBoxPostProcess (hbox);
+
   return hdrline;
 }
 

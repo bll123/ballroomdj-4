@@ -72,7 +72,6 @@ enum {
   SONGSEL_W_BUTTON_PLAY,
   SONGSEL_W_BUTTON_QUEUE,
   SONGSEL_W_BUTTON_SELECT,
-  SONGSEL_W_MAIN_VBOX,
   SONGSEL_W_SCROLL_WIN,
   SONGSEL_W_REQ_QUEUE,
   SONGSEL_W_SCROLLBAR,
@@ -82,6 +81,7 @@ enum {
 typedef struct ss_internal {
   callback_t          *callbacks [SONGSEL_CB_MAX];
   uiwcont_t           *wcont [SONGSEL_W_MAX];
+  uiwcont_t           *mainvbox;
   uisongsel_t         *uisongsel;
   uivirtlist_t        *uivl;
   genre_t             *genres;
@@ -176,6 +176,9 @@ uisongselUIFree (uisongsel_t *uisongsel)
     uiwcontFree (ssint->wcont [i]);
     ssint->wcont [i] = NULL;
   }
+  /* the mainvbox is packed into a notebook page, and the notebook */
+  /* takes responsibility for freeing it */
+  // uiwcontFree (ssint->mainvbox);
   uivlFree (ssint->uivl);
   mdfree (ssint);
   uisongsel->ssInternalData = NULL;
@@ -197,12 +200,14 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
 
   logProcBegin ();
 
+  uiwcontInitID (UI_UISONGSEL_ID);
+
   ssint = uisongsel->ssInternalData;
   uisongsel->windowp = parentwin;
 
-  ssint->wcont [SONGSEL_W_MAIN_VBOX] = uiCreateVertBox ();
-  uiWidgetExpandHoriz (ssint->wcont [SONGSEL_W_MAIN_VBOX]);
-  uiWidgetExpandVert (ssint->wcont [SONGSEL_W_MAIN_VBOX]);
+  ssint->mainvbox = uiCreateVertBox ();
+  uiWidgetExpandHoriz (ssint->mainvbox);
+  uiWidgetExpandVert (ssint->mainvbox);
 
   if (uisongsel->dispselType == DISP_SEL_SBS_SONGSEL) {
     uiwcont_t   *thbox;
@@ -210,7 +215,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     /* need a filler box to match the musicq */
     thbox = uiCreateHorizBox ();
     uiWidgetExpandHoriz (thbox);
-    uiBoxPackStart (ssint->wcont [SONGSEL_W_MAIN_VBOX], thbox, WCONT_FREE);
+    uiBoxPackStart (ssint->mainvbox, thbox, WCONT_FREE);
 
     uiwidgetp = uiCreateLabel (" ");
     uiBoxPackStart (thbox, uiwidgetp, WCONT_FREE);
@@ -220,7 +225,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
 
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox, WCONT_FREE);
+  uiBoxPackStart (ssint->mainvbox, hbox, WCONT_FREE);
 
   /* The side-by-side song selection does not need a select button, */
   /* as it has the left-arrow button.  Saves real estate. */
@@ -295,7 +300,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uiBoxPostProcess (hbox);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpandChildren (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox, WCONT_FREE);
+  uiBoxPackStartExpandChildren (ssint->mainvbox, hbox, WCONT_FREE);
 
   sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
   ssint->sellist = sellist;
@@ -340,9 +345,10 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uidanceSetKey (uisongsel->uidance, -1);
 
   uiBoxPostProcess (hbox);
+  uiBoxPostProcess (ssint->mainvbox);
 
   logProcEnd ("");
-  return ssint->wcont [SONGSEL_W_MAIN_VBOX];
+  return ssint->mainvbox;
 }
 
 void

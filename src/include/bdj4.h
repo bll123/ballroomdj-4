@@ -137,6 +137,21 @@ enum {
 /* installation */
 #define BDJ4_INST_DIR  "bdj4-install"
 
+enum {
+  UI_ALTINST_ID    = 10,
+  UI_BPMCOUNTER_ID = 20,
+  UI_CONFIG_ID     = 30,
+  UI_HELPER_ID     = 40,
+  UI_INSTALL_ID    = 50,
+  UI_MANAGE_ID     = 60,
+  UI_MARQUEE_ID    = 70,
+  UI_PLUI_ID       = 80,
+  UI_STARTER_ID    = 90,
+  UI_UIMUSICQ_ID   = 100,
+  UI_UIPLAYER_ID   = 110,
+  UI_UISONGSEL_ID  = 120,
+};
+
 /* macos stuff */
 #define MACOS_APP_EXT       ".app"
 #define MACOS_APP_PREFIX    "/Contents/MacOS"

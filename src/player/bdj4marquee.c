@@ -349,6 +349,8 @@ marqueeBuildUI (marquee_t *marquee)
 
   logProcBegin ();
 
+  uiwcontInitID (UI_MARQUEE_ID);
+
   uiLabelAddClass (MQ_ACCENT_CLASS, bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   uiLabelAddClass (MQ_TEXT_CLASS, bdjoptGetStr (OPT_P_MQ_TEXT_COL));
   uiLabelAddClass (MQ_INFO_CLASS, bdjoptGetStr (OPT_P_MQ_INFO_COL));

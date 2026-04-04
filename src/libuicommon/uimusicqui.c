@@ -192,6 +192,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
 
   logProcBegin ();
+  uiwcontInitID (UI_UIMUSICQ_ID);
 
   saveci = uimusicq->musicqManageIdx;
   /* temporary */
