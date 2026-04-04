@@ -231,7 +231,7 @@ enum {
 };
 
 typedef struct {
-  uiutilsaccent_t   accent;
+  uihdrline_t       *hdrline;
   progstate_t       *progstate;
   char              *locknm;
   conn_t            *conn;
@@ -523,6 +523,7 @@ main (int argc, char *argv[])
   progstateSetCallback (manage.progstate, PROGSTATE_INITIALIZE_DATA,
       manageInitDataCallback, &manage);
 
+  manage.hdrline = NULL;
   for (int i = 0; i < MANAGE_W_MAX; ++i) {
     manage.wcont [i] = NULL;
   }
@@ -764,7 +765,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   uiCloseWindow (manage->minfo.window);
   uiCleanup ();
 
-  uiutilsHeaderLineFree (&manage->accent);
+  uiutilsHeaderLineFree (manage->hdrline);
 
   contInstanceFree (manage->continst);
   manageDbClose (manage->managedb);
@@ -865,14 +866,15 @@ manageBuildUI (manageui_t *manage)
   uiWindowPackInWindow (manage->minfo.window, vbox);
   uiWidgetSetAllMargins (vbox, 4);
 
-  uiutilsHeaderLineSetup (vbox, &manage->accent);
+  manage->hdrline = uiutilsHeaderLineSetup (vbox);
   manage->wcont [MANAGE_W_MENUBAR] =
-      uiutilsHeaderLineAddMenubar (&manage->accent);
+      uiutilsHeaderLineAddMenubar (manage->hdrline);
   manage->wcont [MANAGE_W_STATUS_MSG] =
-      uiutilsHeaderLineAddLabel (&manage->accent, ACCENT_CLASS);
+      uiutilsHeaderLineAddLabel (manage->hdrline, ACCENT_CLASS);
   manage->wcont [MANAGE_W_ERROR_MSG] =
-      uiutilsHeaderLineAddLabel (&manage->accent, ERROR_CLASS);
-  uiutilsHeaderLineAddLabel (&manage->accent, ERROR_CLASS);
+      uiutilsHeaderLineAddLabel (manage->hdrline, ERROR_CLASS);
+  uiutilsHeaderLineAddLabel (manage->hdrline, ERROR_CLASS);
+  uiutilsHeaderLinePostProcess (manage->hdrline);
 
   manage->mainvnb = uivnbCreate (vbox);
   uiBoxPostProcess (vbox);
@@ -1179,12 +1181,13 @@ manageBuildUISongListEditor (manageui_t *manage)
       /* CONTEXT: manage-ui: name of statistics tab */
       _("Statistics"), NULL, NULL, MANAGE_TAB_STATISTICS);
 
+  uiBoxPostProcess (vbox);
+  uiBoxPostProcess (hbox);
+  uihnbPostProcess (manage->slhnb);
+
   manage->callbacks [MANAGE_CB_SL_NB] = callbackInitI (
       manageSwitchPageSonglist, manage);
   uihnbSetCallback (manage->slhnb, manage->callbacks [MANAGE_CB_SL_NB]);
-
-  uiBoxPostProcess (vbox);
-  uiBoxPostProcess (hbox);
 }
 
 static int
@@ -2503,12 +2506,13 @@ manageBuildUIMusicManager (manageui_t *manage)
       /* CONTEXT: manage-ui: name of audio identification notebook tab */
       _("Audio ID"), NULL, NULL, MANAGE_TAB_AUDIOID);
 
+  uiBoxPostProcess (vbox);
+  uiwcontFree (vbox);
+  uihnbPostProcess (manage->mmhnb);
+
   manage->callbacks [MANAGE_CB_MM_NB] = callbackInitI (
       manageSwitchPageMM, manage);
   uihnbSetCallback (manage->mmhnb, manage->callbacks [MANAGE_CB_MM_NB]);
-
-  uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
 
   logProcEnd ("");
 }

@@ -153,7 +153,9 @@ typedef struct {
   procutil_t      *processes [ROUTE_MAX];
   conn_t          *conn;
   bdjregex_t      *emailrx;
-  uiutilsaccent_t accent;
+  uihdrline_t     *hdrline;
+  uihdrline_t     *dialoghdr;
+  uihdrline_t     *supporthdr;
   int             currprofile;
   int             newprofile;
   loglevel_t      loglevel;
@@ -327,6 +329,9 @@ main (int argc, char *argv[])
       starterStopWaitCallback, &starter);
   progstateSetCallback (starter.progstate, PROGSTATE_CLOSING,
       starterClosingCallback, &starter);
+  starter.hdrline = NULL;
+  starter.dialoghdr = NULL;
+  starter.supporthdr = NULL;
   starter.conn = NULL;
   starter.emailrx = NULL;
   starter.stopallState = BDJ4_STATE_OFF;
@@ -566,7 +571,7 @@ starterClosingCallback (void *udata, programstate_t programState)
 
   starterSupportMsgDialogClear (starter);
   starterSupportDialogClear (starter);
-  uiutilsHeaderLineFree (&starter->accent);
+  uiutilsHeaderLineFree (starter->hdrline);
   for (int i = 0; i < START_W_MAX; ++i) {
     uiwcontFree (starter->wcont [i]);
   }
@@ -641,11 +646,11 @@ starterBuildUI (startui_t  *starter)
     uiWidgetSetMarginEnd (vbox, 6);
   }
 
-  uiutilsHeaderLineSetup (vbox, &starter->accent);
-  menubar = uiutilsHeaderLineAddMenubar (&starter->accent);
+  starter->hdrline = uiutilsHeaderLineSetup (vbox);
+  menubar = uiutilsHeaderLineAddMenubar (starter->hdrline);
   starter->wcont [START_W_STATUS_MSG] =
-      uiutilsHeaderLineAddLabel (&starter->accent, ACCENT_CLASS);
-  uiutilsHeaderLinePostProcess (&starter->accent);
+      uiutilsHeaderLineAddLabel (starter->hdrline, ACCENT_CLASS);
+  uiutilsHeaderLinePostProcess (starter->hdrline);
 
   /* CONTEXT: starterui: action menu for the starter user interface */
   menuitem = uiMenuCreateItem (menubar, _("Actions"), NULL);
@@ -1428,7 +1433,7 @@ starterProcessSupport (void *udata)
   char          tbuff [BDJ4_PATH_MAX];
   const char    *builddate;
   const char    *devmode;
-  uiutilsaccent_t accent;
+  uihdrline_t   *hdrline;
 
   if (starter->supportactive) {
     return UICB_STOP;
@@ -1458,10 +1463,11 @@ starterProcessSupport (void *udata)
   uiWidgetSetAllMargins (vbox, 2);
 
   /* status message line */
-  uiutilsHeaderLineSetup (vbox, &accent);
+  hdrline = uiutilsHeaderLineSetup (vbox);
   starter->wcont [START_W_DIALOG_STATUS_MSG] =
-      uiutilsHeaderLineAddLabel (&accent, ACCENT_CLASS);
-  uiutilsHeaderLinePostProcess (&accent);
+      uiutilsHeaderLineAddLabel (hdrline, ACCENT_CLASS);
+  uiutilsHeaderLinePostProcess (hdrline);
+  starter->dialoghdr = hdrline;
 
   /* begin line */
   hbox = uiCreateHorizBox ();
@@ -1664,6 +1670,9 @@ starterSupportDialogClear (startui_t *starter)
   uiwcontFree (starter->wcont [START_W_DIALOG]);
   starter->wcont [START_W_DIALOG] = NULL;
 
+  uiutilsHeaderLineFree (starter->dialoghdr);
+  starter->dialoghdr = NULL;
+
   starter->supportactive = false;
 }
 
@@ -1796,7 +1805,7 @@ starterResetProfile (startui_t *starter, int profidx)
     stpecpy (oldcolor, oldcolor + sizeof (oldcolor), bdjoptGetStr (OPT_P_UI_PROFILE_COL));
     bdjoptInit ();
     uiWindowSetTitle (starter->wcont [START_W_WINDOW], bdjoptGetStr (OPT_P_PROFILENAME));
-    uiutilsHeaderLineSetColor (&starter->accent, oldcolor);
+    uiutilsHeaderLineSetColor (starter->hdrline, oldcolor);
     starterLoadOptions (starter);
   }
   bdjvarsUpdateData ();
@@ -1863,7 +1872,7 @@ starterCheckProfile (startui_t *starter)
     /* select a completely random color */
     createRandomColor (tbuff, sizeof (tbuff));
     bdjoptSetStr (OPT_P_UI_PROFILE_COL, tbuff);
-    uiutilsHeaderLineSetColor (&starter->accent, oldcolor);
+    uiutilsHeaderLineSetColor (starter->hdrline, oldcolor);
 
     bdjoptSave ();
 
@@ -1908,7 +1917,7 @@ starterDeleteProfile (void *udata)
   bdjoptDeleteProfile ();
   starterResetProfile (starter, 0);
   bdjoptInit ();
-  uiutilsHeaderLineSetColor (&starter->accent, oldcolor);
+  uiutilsHeaderLineSetColor (starter->hdrline, oldcolor);
 
   starterRebuildProfileList (starter);
 
@@ -1946,7 +1955,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiwcont_t     *hbox;
   uiwcont_t     *uidialog;
   uiwcont_t     *szgrp;
-  uiutilsaccent_t accent;
+  uihdrline_t   *hdrline;
   uiwcont_t     *tb;
 
   if (starter->supportmsgactive) {
@@ -1976,11 +1985,9 @@ starterCreateSupportMsgDialog (void *udata)
   uiWidgetSetAllMargins (vbox, 2);
 
   /* profile color line */
-  uiutilsHeaderLineSetup (vbox, &accent);
-  uiBoxPostProcess (accent.cbox);
-  uiwcontFree (accent.cbox);
-  uiBoxPostProcess (accent.hbox);
-  uiwcontFree (accent.hbox);
+  hdrline = uiutilsHeaderLineSetup (vbox);
+  uiutilsHeaderLinePostProcess (hdrline);
+  starter->supporthdr = hdrline;
 
   /* line 1 */
   hbox = uiCreateHorizBox ();
@@ -2087,6 +2094,9 @@ starterSupportMsgDialogClear (startui_t *starter)
 
   uiwcontFree (starter->wcont [START_W_SUPPORT_EMAIL]);
   starter->wcont [START_W_SUPPORT_EMAIL] = NULL;
+
+  uiutilsHeaderLineFree (starter->supporthdr);
+  starter->supporthdr = NULL;
 
   starter->supportmsgactive = false;
 }

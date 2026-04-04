@@ -126,7 +126,7 @@ enum {
 };
 
 typedef struct {
-  uiutilsaccent_t accent;
+  uihdrline_t     *hdrline;
   progstate_t     *progstate;
   char            *locknm;
   conn_t          *conn;
@@ -335,6 +335,7 @@ main (int argc, char *argv[])
   for (int i = 0; i < PLUI_W_MAX; ++i) {
     plui.wcont [i] = NULL;
   }
+  plui.mqszsb = NULL;
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     plui.lastLoc [i] = -1;
     plui.musicqupdate [i] = NULL;
@@ -466,7 +467,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiCloseWindow (plui->wcont [PLUI_W_WINDOW]);
   uiCleanup ();
 
-  uiutilsHeaderLineFree (&plui->accent);
+  uiutilsHeaderLineFree (plui->hdrline);
   contInstanceFree (plui->continst);
 
   datafileSave (plui->optiondf, NULL, plui->options, DF_NO_OFFSET, 1);
@@ -554,17 +555,18 @@ pluiBuildUI (playerui_t *plui)
       plui->wcont [PLUI_W_MAIN_VBOX], plui->callbacks [PLUI_CB_KEYB]);
 
   /* menu */
-  uiutilsHeaderLineSetup (plui->wcont [PLUI_W_MAIN_VBOX], &plui->accent);
-  menubar = uiutilsHeaderLineAddMenubar (&plui->accent);
+  plui->hdrline = uiutilsHeaderLineSetup (plui->wcont [PLUI_W_MAIN_VBOX]);
+  menubar = uiutilsHeaderLineAddMenubar (plui->hdrline);
   plui->wcont [PLUI_W_CLOCK] =
-      uiutilsHeaderLineAddLabel (&plui->accent, NULL);
+      uiutilsHeaderLineAddLabel (plui->hdrline, NULL);
   uiWidgetSetMarginStart (plui->wcont [PLUI_W_CLOCK], 4);
   uiWidgetSetState (plui->wcont [PLUI_W_CLOCK], UIWIDGET_DISABLE);
 
   plui->wcont [PLUI_W_ERROR_MSG] =
-      uiutilsHeaderLineAddLabel (&plui->accent, ERROR_CLASS);
+      uiutilsHeaderLineAddLabel (plui->hdrline, ERROR_CLASS);
   plui->wcont [PLUI_W_STATUS_MSG] =
-      uiutilsHeaderLineAddLabel (&plui->accent, ACCENT_CLASS);
+      uiutilsHeaderLineAddLabel (plui->hdrline, ACCENT_CLASS);
+  uiutilsHeaderLinePostProcess (plui->hdrline);
 
   /* actions */
   /* CONTEXT: playerui: menu selection: actions for the player */
@@ -777,6 +779,7 @@ pluiBuildUI (playerui_t *plui)
   plui->uibuilt = true;
 
   uiBoxPostProcess (plui->wcont [PLUI_W_MAIN_VBOX]);
+  uihnbPostProcess (plui->hnb);
 
   uiwcontFree (menu);
   uiwcontFree (menubar);

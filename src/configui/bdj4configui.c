@@ -44,7 +44,7 @@
 #include "uiutils.h"
 
 typedef struct configui {
-  uiutilsaccent_t   accent;
+  uihdrline_t       *hdrline;
   progstate_t       *progstate;
   char              *locknm;
   conn_t            *conn;
@@ -95,6 +95,7 @@ main (int argc, char *argv[])
 
   mdebugInit ("cfui");
 
+  confui.hdrline = NULL;
   confui.progstate = progstateInit ("configui");
   progstateSetCallback (confui.progstate, PROGSTATE_WAIT_HANDSHAKE,
       confuiHandshakeCallback, &confui);
@@ -369,7 +370,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
   uiCloseWindow (confui->gui.window);
   uiCleanup ();
 
-  uiutilsHeaderLineFree (&confui->accent);
+  uiutilsHeaderLineFree (confui->hdrline);
   uiwcontFree (confui->gui.statusMsg);
   uiwcontFree (confui->gui.errorMsg);
   uiwcontFree (confui->gui.window);
@@ -462,10 +463,10 @@ fprintf (stderr, "-- conf vbox\n");
   uiWidgetExpandVert (confui->gui.vbox);
 
 fprintf (stderr, "-- conf prof-disp\n");
-  uiutilsHeaderLineSetup (confui->gui.vbox, &confui->accent);
-  confui->gui.statusMsg = uiutilsHeaderLineAddLabel (&confui->accent, ACCENT_CLASS);
-  confui->gui.errorMsg = uiutilsHeaderLineAddLabel (&confui->accent, ERROR_CLASS);
-  uiutilsHeaderLinePostProcess (&confui->accent);
+  confui->hdrline = uiutilsHeaderLineSetup (confui->gui.vbox);
+  confui->gui.statusMsg = uiutilsHeaderLineAddLabel (confui->hdrline, ACCENT_CLASS);
+  confui->gui.errorMsg = uiutilsHeaderLineAddLabel (confui->hdrline, ERROR_CLASS);
+  uiutilsHeaderLinePostProcess (confui->hdrline);
 
 fprintf (stderr, "-- conf mainvnb\n");
   confui->gui.mainvnb = uivnbCreate (confui->gui.vbox);

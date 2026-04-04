@@ -559,6 +559,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiwcontFree (szgrpSpin);
   uiwcontFree (szgrpText);
 
+  uihnbPostProcess (managepl->hnb);
+
   managePlaylistNew (managepl, MANAGE_STD, PLTYPE_AUTO);
   manageResetChanged (managepl);
 

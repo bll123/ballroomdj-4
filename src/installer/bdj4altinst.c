@@ -96,7 +96,7 @@ enum {
 };
 
 typedef struct {
-  uiutilsaccent_t accent;
+  uihdrline_t     *hdrline;
   altinststate_t  instState;
   altinststate_t  lastInstState;            // debugging
   callback_t      *callbacks [ALT_CB_MAX];
@@ -179,6 +179,7 @@ main (int argc, char *argv[])
 
   mdebugInit ("alt");
 
+  altinst.hdrline = NULL;
   altinst.instState = ALT_PRE_INIT;
   altinst.lastInstState = ALT_PRE_INIT;
   altinst.basedir = mdstrdup ("");
@@ -370,10 +371,10 @@ altinstBuildUI (altinst_t *altinst)
 
   /* begin line : status message */
 
-  uiutilsHeaderLineSetup (vbox, &altinst->accent);
+  altinst->hdrline = uiutilsHeaderLineSetup (vbox);
   altinst->wcont [ALT_W_ERROR_MSG] =
-      uiutilsHeaderLineAddLabel (&altinst->accent, ERROR_CLASS);
-  uiutilsHeaderLinePostProcess (&altinst->accent);
+      uiutilsHeaderLineAddLabel (altinst->hdrline, ERROR_CLASS);
+  uiutilsHeaderLinePostProcess (altinst->hdrline);
 
   /* begin line : instructions */
 
@@ -1238,7 +1239,7 @@ altinstCleanup (altinst_t *altinst)
     return;
   }
 
-  uiutilsHeaderLineFree (&altinst->accent);
+  uiutilsHeaderLineFree (altinst->hdrline);
   for (int i = 0; i < ALT_CB_MAX; ++i) {
     callbackFree (altinst->callbacks [i]);
   }

@@ -11,18 +11,15 @@
 extern "C" {
 #endif
 
-typedef struct uiutilsaccent {
-  uiwcont_t   *hbox;
-  uiwcont_t   *cbox;
-} uiutilsaccent_t;
+typedef struct uihdrline uihdrline_t;
 
 /* uiutils.c */
-void uiutilsHeaderLineSetup (uiwcont_t *boxp, uiutilsaccent_t *accent);
-uiwcont_t *uiutilsHeaderLineAddMenubar (uiutilsaccent_t *accent);
-uiwcont_t *uiutilsHeaderLineAddLabel (uiutilsaccent_t *accent, const char *class);
-void uiutilsHeaderLinePostProcess (uiutilsaccent_t *accent);
-void uiutilsHeaderLineSetColor (uiutilsaccent_t *accent, const char *oldcolor);
-void uiutilsHeaderLineFree (uiutilsaccent_t *accent);
+uihdrline_t *uiutilsHeaderLineSetup (uiwcont_t *boxp);
+uiwcont_t *uiutilsHeaderLineAddMenubar (uihdrline_t *hdrline);
+uiwcont_t *uiutilsHeaderLineAddLabel (uihdrline_t *hdrline, const char *class);
+void uiutilsHeaderLinePostProcess (uihdrline_t *hdrline);
+void uiutilsHeaderLineSetColor (uihdrline_t *hdrline, const char *oldcolor);
+void uiutilsHeaderLineFree (uihdrline_t *hdrline);
 
 const char * uiutilsGetCurrentFont (void);
 const char * uiutilsGetListingFont (void);

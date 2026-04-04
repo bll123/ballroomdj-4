@@ -61,7 +61,7 @@ enum {
 };
 
 typedef struct {
-  uiutilsaccent_t accent;
+  uihdrline_t     *hdrline;
   progstate_t     *progstate;
   const char      *disptxt [BPMCOUNT_DISP_MAX];
   procutil_t      *processes [ROUTE_MAX];
@@ -135,6 +135,7 @@ main (int argc, char *argv[])
   /* CONTEXT: bpm counter: MPM  */
   bpmcounter.disptxt [BPMCOUNT_DISP_MPM] = _("MPM");
 
+  bpmcounter.hdrline = NULL;
   bpmcounter.count = 0;
   bpmcounter.begtime = 0;
   bpmcounter.timesig = DANCE_TIMESIG_44;
@@ -288,7 +289,7 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
   uiCloseWindow (bpmcounter->wcont [BPM_W_WINDOW]);
   uiCleanup ();
 
-  uiutilsHeaderLineFree (&bpmcounter->accent);
+  uiutilsHeaderLineFree (bpmcounter->hdrline);
 
   for (int i = 0; i < BPM_W_MAX; ++i) {
     uiwcontFree (bpmcounter->wcont [i]);
@@ -345,8 +346,8 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiWindowPackInWindow (bpmcounter->wcont [BPM_W_WINDOW], vboxmain);
   uiWidgetSetAllMargins (vboxmain, 4);
 
-  uiutilsHeaderLineSetup (vboxmain, &bpmcounter->accent);
-  uiutilsHeaderLinePostProcess (&bpmcounter->accent);
+  bpmcounter->hdrline = uiutilsHeaderLineSetup (vboxmain);
+  uiutilsHeaderLinePostProcess (bpmcounter->hdrline);
 
   /* instructions */
 

@@ -123,7 +123,7 @@ enum {
 };
 
 typedef struct {
-  uiutilsaccent_t accent;
+  uihdrline_t     *hdrline;
   uivnb_t         *mainvnb;
   uiwcont_t       *wcont [UITEST_W_MAX];
   uisbnum_t       *sbnum [UITEST_SB_MAX];
@@ -268,6 +268,7 @@ main (int argc, char *argv[])
     vlcb [i].idx = i;
     vlcb [i].uitest = &uitest;
   }
+  uitest.hdrline = NULL;
   uitest.stop = false;
   uitest.chgind = false;
   uitest.hnbimgsel = 0;
@@ -378,9 +379,9 @@ uitestBuildUI (uitest_t *uitest)
   uiWindowPackInWindow (uitest->wcont [UITEST_W_WINDOW], vbox);
   uiWidgetSetAllMargins (vbox, 4);
 
-  uiutilsHeaderLineSetup (vbox, &uitest->accent);
-  uitest->wcont [UITEST_W_MENUBAR] = uiutilsHeaderLineAddMenubar (&uitest->accent);
-  uiutilsHeaderLinePostProcess (&uitest->accent);
+  uitest->hdrline = uiutilsHeaderLineSetup (vbox);
+  uitest->wcont [UITEST_W_MENUBAR] = uiutilsHeaderLineAddMenubar (uitest->hdrline);
+  uiutilsHeaderLinePostProcess (uitest->hdrline);
 
 
   uitest->wcont [UITEST_W_MENU_A] = uiMenuAlloc ();
@@ -1824,7 +1825,7 @@ uitestCleanup (uitest_t *uitest)
   uiCloseWindow (uitest->wcont [UITEST_W_WINDOW]);
   uiCleanup ();
 
-  uiutilsHeaderLineFree (&uitest->accent);
+  uiutilsHeaderLineFree (uitest->hdrline);
   for (int i = 0; i < UITEST_DD_MAX; ++i) {
     uiddFree (uitest->uidd [i]);
   }

@@ -12,12 +12,14 @@
 #include <unistd.h>
 #include <math.h>
 #include <ctype.h>
+#include <stdatomic.h>
 
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjstring.h"      // needed for snprintf macro
 #include "bdjvarsdf.h"
+#include "mdebug.h"
 #include "oslocale.h"
 #include "songfav.h"
 #include "sysvars.h"
@@ -32,19 +34,27 @@ enum {
   PROFILE_BOX_SZ = 26,
 };
 
-static bool favclassinit = false;
+typedef struct uihdrline {
+  uiwcont_t   *hbox;
+  uiwcont_t   *cbox;
+} uihdrline_t;
 
-/* = as a side effect, hbox is set, and */
-/* uiwidget is set to the profile color box (needed by bdj4starterui) */
-void
-uiutilsHeaderLineSetup (uiwcont_t *boxp, uiutilsaccent_t *accent)
+static _Atomic(bool) favclassinit = false;
+
+uihdrline_t *
+uiutilsHeaderLineSetup (uiwcont_t *boxp)
 {
+  uihdrline_t *hdrline;
   uiwcont_t       *hbox;
   uiwcont_t       *cbox;
 
-  if (boxp == NULL || accent == NULL) {
-    return;
+  if (boxp == NULL) {
+    return NULL;
   }
+
+  hdrline = mdmalloc (sizeof (uihdrline_t));
+  hdrline->hbox = NULL;
+  hdrline->cbox = NULL;
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (boxp, hbox, WCONT_KEEP);
@@ -58,71 +68,73 @@ uiutilsHeaderLineSetup (uiwcont_t *boxp, uiutilsaccent_t *accent)
   uiWidgetSetMarginStart (cbox, 4);
   uiBoxPostProcess (cbox);
 
-  accent->cbox = cbox;
-  accent->hbox = hbox;
+  hdrline->cbox = cbox;
+  hdrline->hbox = hbox;
 
-  uiutilsHeaderLineSetColor (accent, NULL);
+  uiutilsHeaderLineSetColor (hdrline, NULL);
+  return hdrline;
 }
 
 uiwcont_t *
-uiutilsHeaderLineAddMenubar (uiutilsaccent_t *accent)
+uiutilsHeaderLineAddMenubar (uihdrline_t *hdrline)
 {
   uiwcont_t     *menubar;
 
-  if (accent == NULL) {
+  if (hdrline == NULL) {
     return NULL;
   }
 
   menubar = uiCreateMenubar ();
-  uiBoxPackStart (accent->hbox, menubar, WCONT_KEEP);
+  uiBoxPackStart (hdrline->hbox, menubar, WCONT_KEEP);
   return menubar;
 }
 
 uiwcont_t *
-uiutilsHeaderLineAddLabel (uiutilsaccent_t *accent, const char *class)
+uiutilsHeaderLineAddLabel (uihdrline_t *hdrline, const char *class)
 {
   uiwcont_t     *msg;
 
-  if (accent == NULL) {
+  if (hdrline == NULL) {
     return NULL;
   }
 
   msg = uiCreateLabel ("");
-  uiBoxPackEnd (accent->hbox, msg, WCONT_KEEP);
+  uiBoxPackEnd (hdrline->hbox, msg, WCONT_KEEP);
   uiWidgetSetClass (msg, class);
   return msg;
 }
 
 void
-uiutilsHeaderLinePostProcess (uiutilsaccent_t *accent)
+uiutilsHeaderLinePostProcess (uihdrline_t *hdrline)
 {
-  if (accent == NULL) {
+  if (hdrline == NULL) {
     return;
   }
 
-  uiWidgetShowAll (accent->hbox);
-  uiBoxPostProcess (accent->hbox);
+  uiWidgetShowAll (hdrline->hbox);
+  uiBoxPostProcess (hdrline->hbox);
 }
 
 void
-uiutilsHeaderLineFree (uiutilsaccent_t *accent)
+uiutilsHeaderLineFree (uihdrline_t *hdrline)
 {
-  if (accent == NULL) {
+  if (hdrline == NULL) {
     return;
   }
 
-  uiwcontFree (accent->hbox);
-  uiwcontFree (accent->cbox);
+  uiwcontFree (hdrline->hbox);
+  uiwcontFree (hdrline->cbox);
+  mdfree (hdrline);
 }
 
 void
-uiutilsHeaderLineSetColor (uiutilsaccent_t *accent, const char *oldcolor)
+uiutilsHeaderLineSetColor (uihdrline_t *hdrline, const char *oldcolor)
 {
   char        classnm [100];
   char        bclassnm [100];
   const char  *tcolor = NULL;
 
-  if (accent == NULL) {
+  if (hdrline == NULL) {
     return;
   }
 
@@ -133,7 +145,7 @@ uiutilsHeaderLineSetColor (uiutilsaccent_t *accent, const char *oldcolor)
 
   if (oldcolor != NULL) {
     snprintf (classnm, sizeof (classnm), "profcol%s", oldcolor + 1);
-    uiWidgetClearClass (accent->cbox, classnm);
+    uiWidgetClearClass (hdrline->cbox, classnm);
   }
 
   snprintf (classnm, sizeof (classnm), "profcol%s", tcolor + 1);
@@ -141,7 +153,7 @@ uiutilsHeaderLineSetColor (uiutilsaccent_t *accent, const char *oldcolor)
   snprintf (bclassnm, sizeof (bclassnm), "box.horizontal.profcol%s", tcolor + 1);
   /* the ui library has code to prevent duplicates */
   uiAddBGColorClass (bclassnm, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
-  uiWidgetSetClass (accent->cbox, classnm);
+  uiWidgetSetClass (hdrline->cbox, classnm);
 }
 
 const char *

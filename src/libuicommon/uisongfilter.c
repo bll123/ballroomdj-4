@@ -79,7 +79,7 @@ enum {
 };
 
 typedef struct uisongfilter {
-  uiutilsaccent_t   accent;
+  uihdrline_t       *hdrline;
   char              *playlistname;
   rating_t          *ratings;
   level_t           *levels;
@@ -180,7 +180,7 @@ uisfFree (uisongfilter_t *uisf)
     return;
   }
 
-  uiutilsHeaderLineFree (&uisf->accent);
+  uiutilsHeaderLineFree (uisf->hdrline);
   dataFree (uisf->playlistname);
   uisfFreeDialog (uisf);
   sortoptFree (uisf->sortopt);
@@ -518,8 +518,8 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiDialogPackInDialog (uisf->wcont [UISF_W_DIALOG], vbox);
 
   /* accent color */
-  uiutilsHeaderLineSetup (vbox, &uisf->accent);
-  uiutilsHeaderLinePostProcess (&uisf->accent);
+  uisf->hdrline = uiutilsHeaderLineSetup (vbox);
+  uiutilsHeaderLinePostProcess (uisf->hdrline);
 
   /* begin line */
 
