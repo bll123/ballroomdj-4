@@ -87,6 +87,9 @@ uivnbCreate (uiwcont_t *box)
     vnb->idlist [i] = VNB_NO_ID;
   }
 
+  /* the size group is needed for macos */
+  vnb->sg = uiCreateSizeGroupHoriz ();
+
   vnb->pagecount = 0;
   vnb->selected = -1;
   vnb->textdir = sysvarsGetNum (SVL_LOCALE_TEXT_DIR);
@@ -168,10 +171,6 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uibox, const char *nbtxt, int id)
   vnb->tablist [pagenum] = button;
   vnb->indlist [pagenum] = label;
   vnb->idlist [pagenum] = id;
-// ### remove this after all progs use post-process
-  if (pagenum == 0) {
-    uivnbSetPage (vnb, pagenum);
-  }
 
   uiBoxPostProcess (hbox);
 }
