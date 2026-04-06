@@ -226,6 +226,7 @@ uiaudioidUIFree (uiaudioid_t *uiaudioid)
       if (i == UIAUDID_W_PARENT_WIN) {
         continue;
       }
+fprintf (stderr, "aud-id: free wcont %d\n", i);
       uiwcontFree (audioidint->wcont [i]);
     }
     for (int i = 0; i < UIAUDID_CB_MAX; ++i) {
@@ -261,6 +262,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 {
   aid_internal_t    *audioidint;
   uiwcont_t         *pw;
+  uiwcont_t         *lowerhbox;
   uiwcont_t         *hbox;
   uiwcont_t         *vbox;
   uiwcont_t         *uiwidgetp;
@@ -405,10 +407,10 @@ fprintf (stderr, "aud-id: curr/sel\n");
   uiWidgetExpandVert (uiwidgetp);
   uiPanedWindowPackEnd (pw, uiwidgetp);
 
-  hbox = uiCreateHorizBox ();
-  uiWindowPackInWindow (uiwidgetp, hbox);
-  uiWidgetExpandHoriz (hbox);
-  uiWidgetAlignHorizFill (hbox);
+  lowerhbox = uiCreateHorizBox ();
+  uiWindowPackInWindow (uiwidgetp, lowerhbox);
+  uiWidgetExpandHoriz (lowerhbox);
+  uiWidgetAlignHorizFill (lowerhbox);
 
   uiwcontFree (uiwidgetp);
 
@@ -424,18 +426,16 @@ fprintf (stderr, "aud-id: curr/sel\n");
   }
 
   col = uiCreateVertBox ();
-  uiBoxPackStartExpandChildren (hbox, col, WCONT_FREE);
+  uiBoxPackStartExpandChildren (lowerhbox, col, WCONT_FREE);
   uiWidgetSetAllMargins (col, 4);
   uiWidgetExpandHoriz (col);
   uiWidgetExpandVert (col);
-
-  uiBoxPostProcess (hbox);
 
   /* headings */
 
 fprintf (stderr, "aud-id: headings\n");
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (col, hbox, WCONT_KEEP);
+  uiBoxPackStart (col, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateLabel (" ");
   uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
@@ -465,6 +465,12 @@ fprintf (stderr, "aud-id: headings\n");
 fprintf (stderr, "aud-id: item-disp\n");
   uiaudioidAddItemDisplay (uiaudioid, col);
 
+  uiBoxPostProcess (col);
+  uiBoxPostProcess (lowerhbox);
+fprintf (stderr, "aud-id: free lowerhbox\n");
+  uiwcontFree (lowerhbox);
+  uiBoxPostProcess (audioidint->mainvbox);
+
   audioidint->wcont [UIAUDID_W_KEY_HNDLR] = uiEventAlloc ();
   audioidint->callbacks [UIAUDID_CB_KEYB] = callbackInit (
       uiaudioidKeyEvent, uiaudioid, NULL);
@@ -479,8 +485,6 @@ fprintf (stderr, "aud-id: item-disp\n");
   pathbldMakePath (tbuff, sizeof (tbuff), "musicbrainz-logo", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
   audioidint->wcont [UIAUDID_W_MB_LOGO] = uiImageFromFile (tbuff);
-
-  uiBoxPostProcess (audioidint->mainvbox);
 
   logProcEnd ("");
   return audioidint->mainvbox;

@@ -885,7 +885,6 @@ fprintf (stderr, "mng: main\n");
   manage->wcont [MANAGE_W_ERROR_MSG] =
       uiutilsHeaderLineAddLabel (manage->hdrline, ERROR_CLASS);
   manage->minfo.errorMsg = manage->wcont [MANAGE_W_ERROR_MSG];
-  uiutilsHeaderLineAddLabel (manage->hdrline, ERROR_CLASS);
   uiutilsHeaderLinePostProcess (manage->hdrline);
 
   manage->mainvnb = uivnbCreate (vbox, "mng-main");
@@ -1156,6 +1155,7 @@ fprintf (stderr, "mng: sl-edit: mq\n");
       MUSICQ_SL, manage->minfo.errorMsg,
       manage->minfo.statusMsg, uiutilsValidatePlaylistNameClr);
   uiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
+  uiwcontFree (uiwidgetp);
 
   uiBoxPostProcess (vbox);
 
@@ -1181,6 +1181,7 @@ fprintf (stderr, "mng: sl-edit: mq\n");
 
   uip = uisongselBuildUI (manage->slsbssongsel, manage->minfo.window);
   uiBoxPackStartExpandChildren (hbox, uip, WCONT_KEEP);
+  uiwcontFree (uip);
 
 fprintf (stderr, "mng: sl-edit: mq tab\n");
   /* song list: music queue tab */
