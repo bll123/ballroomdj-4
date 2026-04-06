@@ -18,7 +18,7 @@ enum {
 
 typedef struct uihnb uihnb_t;
 
-uihnb_t *uihnbCreate (uiwcont_t *box);
+uihnb_t *uihnbCreate (uiwcont_t *box, const char *tag);
 void uihnbFree (uihnb_t *hnb);
 void uihnbAppendPage (uihnb_t *hnb, uiwcont_t *uiwidget, const char *label, const char *imagenm, const char *altimagenm, int id);
 void uihnbPostProcess (uihnb_t *hnb);

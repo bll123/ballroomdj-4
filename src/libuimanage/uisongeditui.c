@@ -125,7 +125,6 @@ enum {
   UISE_W_BUTTON_COPY_TEXT,
   UISE_W_EDIT_ALL,
   UISE_W_PARENT_WIN,
-  UISE_W_MAIN_VBOX,
   UISE_W_MUSICBRAINZ,
   UISE_W_MODIFIED,
   UISE_W_AUDIOID_IMG,
@@ -136,6 +135,8 @@ enum {
 
 typedef struct se_internal {
   uisongedit_t        *uisongedit;
+  /* the main vbox will be freed by the owning notebook page */
+  uiwcont_t           *mainvbox;
   uiwcont_t           *wcont [UISE_W_MAX];
   uiwcont_t           *szgrp [UISE_SZGRP_MAX];
   callback_t          *callbacks [UISE_CB_MAX];
@@ -324,24 +325,24 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   char              tbuff [BDJ4_PATH_MAX];
 
   logProcBegin ();
-  logProcBegin ();
 
   uisongedit->statusMsg = statusMsg;
   uisongedit->uisongsel = uisongsel;
   seint = uisongedit->seInternalData;
   seint->wcont [UISE_W_PARENT_WIN] = parentwin;
 
-  seint->wcont [UISE_W_MAIN_VBOX] = uiCreateVertBox ();
-  uiWidgetExpandHoriz (seint->wcont [UISE_W_MAIN_VBOX]);
+fprintf (stderr, "se: main\n");
+  seint->mainvbox = uiCreateVertBox ();
+  uiWidgetExpandHoriz (seint->mainvbox);
 
   seint->wcont [UISE_W_KEY_HNDLR] = uiEventAlloc ();
   seint->callbacks [UISE_CB_KEYB] = callbackInit (
       uisongeditKeyEvent, uisongedit, NULL);
   uiEventSetKeyCallback (seint->wcont [UISE_W_KEY_HNDLR],
-      seint->wcont [UISE_W_MAIN_VBOX], seint->callbacks [UISE_CB_KEYB]);
-
+      seint->mainvbox, seint->callbacks [UISE_CB_KEYB]);
+fprintf (stderr, "se: button-box\n");
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (seint->wcont [UISE_W_MAIN_VBOX], hbox, WCONT_FREE);
+  uiBoxPackStart (seint->mainvbox, hbox, WCONT_FREE);
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
 
@@ -400,12 +401,13 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   uiBoxPostProcess (hbox);
 
+fprintf (stderr, "se: disp\n");
   /* begin line */
 
   /* audio-identification logo, modified indicator, */
   /* copy button, file label, filename */
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (seint->wcont [UISE_W_MAIN_VBOX], hbox, WCONT_FREE);
+  uiBoxPackStart (seint->mainvbox, hbox, WCONT_FREE);
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
 
@@ -452,9 +454,10 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   uiBoxPostProcess (hbox);
 
+fprintf (stderr, "se: main-hbox\n");
   /* begin line */
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpandChildren (seint->wcont [UISE_W_MAIN_VBOX], hbox, WCONT_FREE);
+  uiBoxPackStartExpandChildren (seint->mainvbox, hbox, WCONT_FREE);
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
 
@@ -509,13 +512,15 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
       uisongeditAddDisplay (uisongedit, col,
           seint->szgrp [UISE_SZGRP_LABEL_A + i - DISP_SEL_SONGEDIT_A], i);
+      uiBoxPostProcess (col);
     }
   }
 
   uiBoxPostProcess (hbox);
+  uiBoxPostProcess (seint->mainvbox);
 
   logProcEnd ("");
-  return seint->wcont [UISE_W_MAIN_VBOX];
+  return seint->mainvbox;
 }
 
 void

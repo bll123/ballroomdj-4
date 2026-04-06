@@ -687,7 +687,7 @@ fprintf (stderr, "-- plui: main ui\n");
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStart (plui->wcont [PLUI_W_MAIN_VBOX], uiwidgetp, WCONT_KEEP);
 
-  plui->hnb = uihnbCreate (plui->wcont [PLUI_W_MAIN_VBOX]);
+  plui->hnb = uihnbCreate (plui->wcont [PLUI_W_MAIN_VBOX], "plui-main");
 
   plui->callbacks [PLUI_CB_NOTEBOOK] = callbackInitI (
       pluiSwitchPage, plui);

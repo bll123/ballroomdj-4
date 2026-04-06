@@ -432,7 +432,7 @@ uitestBuildUI (uitest_t *uitest)
 
   /* main notebook */
 
-  uitest->mainvnb = uivnbCreate (vbox);
+  uitest->mainvnb = uivnbCreate (vbox, "uitest-main");
 
   uitestUIButtons (uitest);
   uitestUIToggleButtons (uitest);
@@ -1242,7 +1242,7 @@ fprintf (stderr, "Notebook\n");
   /* hnb */
 
 fprintf (stderr, "hnb-a\n");
-  hnb = uihnbCreate (vbox);
+  hnb = uihnbCreate (vbox, "uitest-hnb-a");
   uitest->hnb = hnb;
 
   /* hnb %d */
@@ -1264,7 +1264,7 @@ fprintf (stderr, "hnb-a\n");
   /* hnb w/images */
 
 fprintf (stderr, "hnb-img\n");
-  hnb = uihnbCreate (vbox);
+  hnb = uihnbCreate (vbox, "uitest-hnb-img");
   uitest->hnbimg = hnb;
 
   /* horiz-img 1 */
@@ -1312,7 +1312,7 @@ fprintf (stderr, "hnb-img\n");
   /* VNB */
 
 fprintf (stderr, "vnb-a\n");
-  vnb = uivnbCreate (vbox);
+  vnb = uivnbCreate (vbox, "uitest-vnb-a");
   uitest->vnb = vnb;
 
   /* VNB pages */

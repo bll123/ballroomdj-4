@@ -38,6 +38,7 @@ typedef struct {
 } uivnbcb_t;
 
 typedef struct uivnb {
+  const char  *tag;
   uiwcont_t   *nb;
   uiwcont_t   *sg;
   uiwcont_t   *vlist;
@@ -56,13 +57,14 @@ typedef struct uivnb {
 bool uivnbSetPageCallback (void *udata);
 
 uivnb_t *
-uivnbCreate (uiwcont_t *box)
+uivnbCreate (uiwcont_t *box, const char *tag)
 {
   uivnb_t     *vnb;
   uiwcont_t   *hbox;
   uiwcont_t   *sw;
 
   vnb = mdmalloc (sizeof (uivnb_t));
+  vnb->tag = tag;
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStartExpandChildren (box, hbox, WCONT_FREE);

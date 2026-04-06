@@ -74,7 +74,8 @@ void
 manageStatsFree (managestats_t *managestats)
 {
   if (managestats != NULL) {
-    uiwcontFree (managestats->vboxmain);
+    /* vboxmain is freed by the owning notebook */
+    // uiwcontFree (managestats->vboxmain);
     nlistFree (managestats->dancecounts);
     for (int i = 0; i < STATS_MAX_DISP; ++i) {
       uiwcontFree (managestats->dancedisp [i]);
@@ -165,6 +166,7 @@ manageBuildUIStats (managestats_t *managestats)
   }
 
   uiBoxPostProcess (chbox);
+  uiBoxPostProcess (managestats->vboxmain);
 
   return managestats->vboxmain;
 }

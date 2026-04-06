@@ -471,7 +471,7 @@ fprintf (stderr, "-- conf prof-disp\n");
   uiutilsHeaderLinePostProcess (confui->hdrline);
 
 fprintf (stderr, "-- conf mainvnb\n");
-  confui->gui.mainvnb = uivnbCreate (confui->gui.vbox);
+  confui->gui.mainvnb = uivnbCreate (confui->gui.vbox, "conf-main");
 
   confuiBuildUIGeneral (&confui->gui);
   confuiBuildUIPlayer (&confui->gui);

@@ -156,6 +156,8 @@ manageplDanceBuildUI (mpldance_t *mpldnc, uiwcont_t *vboxp)
   manageplDanceColumnHeading (tbuff, sizeof (tbuff), _("High %s"), bpmstr);
   uivlSetColumnHeading (mpldnc->uivl, MPLDNC_COL_HIGHMPM, tbuff);
 
+  uiBoxPostProcess (hbox);
+
   mpldnc->callbacks [MPLDNC_CB_CHANGED] = callbackInit (
       manageplDanceChanged, mpldnc, NULL);
 
@@ -171,8 +173,6 @@ manageplDanceBuildUI (mpldance_t *mpldnc, uiwcont_t *vboxp)
       mpldnc->callbacks [MPLDNC_CB_CHANGED]);
 
   uivlSetRowFillCallback (mpldnc->uivl, manageplDanceFillRow, mpldnc);
-
-  uiBoxPostProcess (hbox);
 
   manageplDanceRebuildCurrList (mpldnc);
   uivlDisplay (mpldnc->uivl);

@@ -250,7 +250,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiBoxPostProcess (hbox);
 
-  managepl->hnb = uihnbCreate (vboxp);
+  managepl->hnb = uihnbCreate (vboxp, "mng-pl");
 
   /* settings */
 
@@ -262,6 +262,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiWidgetSetMarginStart (mvbox, 4);
   uiWidgetSetMarginEnd (mvbox, 4);
 
+fprintf (stderr, "pl-mgmt: std settings\n");
   /* standard settings for most playlists, but not podcasts */
 
   vbox = uiCreateVertBox ();
@@ -363,12 +364,18 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   managepl->wcont [MPL_W_PLAY_ANN] = uiwidgetp;
 
+  uiBoxPostProcess (hbox);
+  uiBoxPostProcess (vbox);
+
+fprintf (stderr, "pl-mgmt: auto/seq\n");
   /* automatic and sequenced playlists; keep the widget so these */
   /* can be hidden */
 
-  uiBoxPostProcess (hbox);
-
   /* new line : blank line */
+
+  vbox = uiCreateVertBox ();
+  uiBoxPackStart (mvbox, vbox, WCONT_KEEP);
+  managepl->wcont [MPL_W_AUTO_SEQ_VBOX] = vbox;
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox, WCONT_FREE);
@@ -379,12 +386,6 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiSizeGroupAdd (szgrp, uiwidgetp);
 
   uiBoxPostProcess (hbox);
-
-  /* settings for automatic and sequenced playlists */
-
-  vbox = uiCreateVertBox ();
-  uiBoxPackStart (mvbox, vbox, WCONT_KEEP);
-  managepl->wcont [MPL_W_AUTO_SEQ_VBOX] = vbox;
 
   /* new line : dance-rating */
 
@@ -476,8 +477,10 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   managepl->sbnum [MPL_SB_TAG_WEIGHT] = sb;
 
   uiBoxPostProcess (hbox);
+  uiBoxPostProcess (vbox);
 
-  /* settings for automatic and sequenced playlists */
+fprintf (stderr, "pl-mgmt: podcast\n");
+  /* settings for podcasts */
 
   vbox = uiCreateVertBox ();
   uiBoxPackStart (mvbox, vbox, WCONT_KEEP);
@@ -536,25 +539,26 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   managepl->sbnum [MPL_SB_RETAIN] = sb;
 
   uiBoxPostProcess (hbox);
+  uiBoxPostProcess (vbox);
   uiBoxPostProcess (mvbox);
-  uiwcontFree (mvbox);
 
   /* dance settings : holds the list of dances with settings */
 
   vbox = uiCreateVertBox ();
   /* CONTEXT: playlist management: notebook tab title: dances */
-  uihnbAppendPage (managepl->hnb, vbox, _("Dances"), NULL, NULL, MPL_TAB_DANCES);
+  uihnbAppendPage (managepl->hnb, vbox, _("Dances"),
+      NULL, NULL, MPL_TAB_DANCES);
   uiWidgetSetMarginTop (vbox, 4);
   uiWidgetSetMarginStart (vbox, 4);
   uiWidgetSetMarginEnd (vbox, 4);
 
+fprintf (stderr, "pl-mgmt: dance\n");
   managepl->mpldnc = manageplDanceAlloc (managepl->minfo);
   manageplDanceBuildUI (managepl->mpldnc, vbox);
 
   uiBoxPostProcess (vbox);
 
   uiBoxPostProcess (tophbox);
-  uiwcontFree (tophbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpSpin);
   uiwcontFree (szgrpText);

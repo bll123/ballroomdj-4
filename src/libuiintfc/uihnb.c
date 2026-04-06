@@ -38,6 +38,7 @@ typedef struct {
 } uihnbcb_t;
 
 typedef struct uihnb {
+  const char      *tag;
   uiwcont_t       *nb;
   uiwcont_t       *hlist;
   uiwcont_t       *boxlist [HNB_MAX_PAGECOUNT];
@@ -56,12 +57,13 @@ typedef struct uihnb {
 bool uihnbSetPageCallback (void *udata);
 
 uihnb_t *
-uihnbCreate (uiwcont_t *box)
+uihnbCreate (uiwcont_t *box, const char *tag)
 {
   uihnb_t     *hnb;
   uiwcont_t   *vbox;
 
   hnb = mdmalloc (sizeof (uihnb_t));
+  hnb->tag = tag;
 
   vbox = uiCreateVertBox ();
   uiBoxPackStartExpandChildren (box, vbox, WCONT_FREE);
@@ -89,7 +91,7 @@ uihnbCreate (uiwcont_t *box)
   hnb->selected = -1;
   hnb->textdir = sysvarsGetNum (SVL_LOCALE_TEXT_DIR);
 
-fprintf (stderr, "hnb: vbox\n");
+fprintf (stderr, "hnb: %s vbox pp\n", hnb->tag);
   uiBoxPostProcess (vbox);
 
   return hnb;
@@ -165,7 +167,7 @@ uihnbAppendPage (uihnb_t *hnb, uiwcont_t *uibox,
   hnb->tablist [pagenum] = button;
   hnb->idlist [pagenum] = id;
 
-fprintf (stderr, "hnb: hbox\n");
+fprintf (stderr, "hnb: %s hbox pp\n", hnb->tag);
   uiBoxPostProcess (hbox);
 }
 
@@ -177,7 +179,7 @@ uihnbPostProcess (uihnb_t *hnb)
   }
 
   uihnbSetPage (hnb, 0);
-fprintf (stderr, "hnb: hlist\n");
+fprintf (stderr, "hnb: %s hlist pp\n", hnb->tag);
   uiBoxPostProcess (hnb->hlist);
 }
 

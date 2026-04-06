@@ -527,6 +527,9 @@ main (int argc, char *argv[])
   for (int i = 0; i < MANAGE_W_MAX; ++i) {
     manage.wcont [i] = NULL;
   }
+  for (int i = 0; i < MANAGE_SB_MAX; ++i) {
+    manage.sbnum [i] = NULL;
+  }
   manage.slhnb = NULL;
   manage.mmhnb = NULL;
   manage.slplayer = NULL;
@@ -627,7 +630,10 @@ main (int argc, char *argv[])
   manage.grouping = groupingAlloc (manage.musicdb);
 
   manage.songdb = songdbAlloc (manage.musicdb);
+  manage.minfo.window = NULL;
   manage.minfo.dispsel = dispselAlloc (DISP_SEL_LOAD_MANAGE);
+  manage.minfo.statusMsg = NULL;
+  manage.minfo.errorMsg = NULL;
   manage.minfo.musicdb = manage.musicdb;
 
   listenPort = bdjvarsGetNum (BDJVL_PORT_MANAGEUI);
@@ -865,6 +871,7 @@ manageBuildUI (manageui_t *manage)
 
   manageInitializeUI (manage);
 
+fprintf (stderr, "mng: main\n");
   vbox = uiCreateVertBox ();
   uiWindowPackInWindow (manage->minfo.window, vbox);
   uiWidgetSetAllMargins (vbox, 4);
@@ -874,33 +881,39 @@ manageBuildUI (manageui_t *manage)
       uiutilsHeaderLineAddMenubar (manage->hdrline);
   manage->wcont [MANAGE_W_STATUS_MSG] =
       uiutilsHeaderLineAddLabel (manage->hdrline, ACCENT_CLASS);
+  manage->minfo.statusMsg = manage->wcont [MANAGE_W_STATUS_MSG];
   manage->wcont [MANAGE_W_ERROR_MSG] =
       uiutilsHeaderLineAddLabel (manage->hdrline, ERROR_CLASS);
+  manage->minfo.errorMsg = manage->wcont [MANAGE_W_ERROR_MSG];
   uiutilsHeaderLineAddLabel (manage->hdrline, ERROR_CLASS);
   uiutilsHeaderLinePostProcess (manage->hdrline);
 
-  manage->mainvnb = uivnbCreate (vbox);
+  manage->mainvnb = uivnbCreate (vbox, "mng-main");
+
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 
+fprintf (stderr, "mng: edit-sl\n");
   /* edit song lists */
   manageBuildUISongListEditor (manage);
 
+fprintf (stderr, "mng: seq-editor\n");
   /* sequence editor */
   manage->manageseq = manageSequenceAlloc (&manage->minfo);
 
   vbox = uiCreateVertBox ();
   manageBuildUISequence (manage->manageseq, vbox);
+
   uivnbAppendPage (manage->mainvnb, vbox,
       /* CONTEXT: manage-ui: notebook tab title: edit sequences */
       _("Edit Sequences"), MANAGE_TAB_MAIN_SEQ);
   uiWidgetSetAllMargins (vbox, 2);
 
+  uiBoxPostProcess (vbox);
+
+fprintf (stderr, "mng: pl-mgmt\n");
   /* playlist management */
   manage->managepl = managePlaylistAlloc (&manage->minfo);
-
-  uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
 
   vbox = uiCreateVertBox ();
   manageBuildUIPlaylist (manage->managepl, vbox);
@@ -910,21 +923,25 @@ manageBuildUI (manageui_t *manage)
       _("Playlist Management"), MANAGE_TAB_MAIN_PLMGMT);
   uiWidgetSetAllMargins (vbox, 2);
 
+  uiBoxPostProcess (vbox);
+
+fprintf (stderr, "mng: mm\n");
   /* music manager */
   manageBuildUIMusicManager (manage);
 
+fprintf (stderr, "mng: upd-db\n");
   /* update database */
   manage->managedb = manageDbAlloc (&manage->minfo,
       manage->conn, manage->processes);
-
-  uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
 
   vbox = uiCreateVertBox ();
   manageBuildUIUpdateDatabase (manage->managedb, vbox);
   uivnbAppendPage (manage->mainvnb, vbox,
       /* CONTEXT: manage-ui: notebook tab title: update database */
       _("Update Database"), MANAGE_TAB_MAIN_UPDDB);
+
+  uiBoxPostProcess (vbox);
+  uivnbPostProcess (manage->mainvnb);
 
   x = nlistGetNum (manage->minfo.options, MANAGE_SIZE_X);
   y = nlistGetNum (manage->minfo.options, MANAGE_SIZE_Y);
@@ -981,9 +998,6 @@ manageBuildUI (manageui_t *manage)
   manage->currmusicq = manageGetCurrMusicQ (manage);
   /* set up the initial menu */
   manageSwitchPage (manage, 0, MANAGE_NB_SONGLIST);
-
-  uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
 
   /* set a default selection.  this will also set the song editor dbidx */
   uisongselSetSelection (manage->mmsongsel, 0);
@@ -1120,11 +1134,12 @@ manageBuildUISongListEditor (manageui_t *manage)
       _("Edit Song Lists"), MANAGE_TAB_MAIN_SL);
   uiWidgetSetAllMargins (vbox, 2);
 
+fprintf (stderr, "mng: sl-edit: player\n");
   /* management: player */
   uiwidgetp = uiplayerBuildUI (manage->slplayer);
   uiBoxPackStart (vbox, uiwidgetp, WCONT_KEEP);
 
-  manage->slhnb = uihnbCreate (vbox);
+  manage->slhnb = uihnbCreate (vbox, "mng-sl");
 
   /* management: side-by-side view tab */
   mainhbox = uiCreateHorizBox ();
@@ -1136,6 +1151,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   hbox = uiCreateHorizBox ();
   uiBoxPackStartExpandChildren (mainhbox, hbox, WCONT_FREE);
 
+fprintf (stderr, "mng: sl-edit: mq\n");
   uiwidgetp = uimusicqBuildUI (manage->slsbsmusicq, manage->minfo.window,
       MUSICQ_SL, manage->minfo.errorMsg,
       manage->minfo.statusMsg, uiutilsValidatePlaylistNameClr);
@@ -1166,6 +1182,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uip = uisongselBuildUI (manage->slsbssongsel, manage->minfo.window);
   uiBoxPackStartExpandChildren (hbox, uip, WCONT_KEEP);
 
+fprintf (stderr, "mng: sl-edit: mq tab\n");
   /* song list: music queue tab */
   uip = uimusicqBuildUI (manage->slmusicq, manage->minfo.window,
       MUSICQ_SL, manage->minfo.errorMsg,
@@ -1174,12 +1191,14 @@ manageBuildUISongListEditor (manageui_t *manage)
       /* CONTEXT: manage-ui: name of song list notebook tab */
       _("Song List"), NULL, NULL, MANAGE_TAB_SONGLIST);
 
+fprintf (stderr, "mng: sl-edit: ss tab\n");
   /* song list: song selection tab */
   uip = uisongselBuildUI (manage->slsongsel, manage->minfo.window);
   uihnbAppendPage (manage->slhnb, uip,
       /* CONTEXT: manage-ui: name of song selection notebook tab */
       _("Song Selection"), NULL, NULL, MANAGE_TAB_SL_SONGSEL);
 
+fprintf (stderr, "mng: sl-edit: stats\n");
   /* song list editor: statistics tab */
   uip = manageBuildUIStats (manage->slstats);
   uihnbAppendPage (manage->slhnb, uip,
@@ -1188,6 +1207,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   uiBoxPostProcess (vbox);
   uiBoxPostProcess (hbox);
+  uiBoxPostProcess (mainhbox);
   uihnbPostProcess (manage->slhnb);
 
   manage->callbacks [MANAGE_CB_SL_NB] = callbackInitI (
@@ -2476,18 +2496,21 @@ manageBuildUIMusicManager (manageui_t *manage)
       _("Music Manager"), MANAGE_TAB_MAIN_MM);
   uiWidgetSetAllMargins (vbox, 2);
 
+fprintf (stderr, "mng: mm: player\n");
   /* music manager: player */
   uiwidgetp = uiplayerBuildUI (manage->mmplayer);
   uiBoxPackStart (vbox, uiwidgetp, WCONT_KEEP);
 
-  manage->mmhnb = uihnbCreate (vbox);
+  manage->mmhnb = uihnbCreate (vbox, "mng-mm");
 
+fprintf (stderr, "mng: mm: ss\n");
   /* music manager: song selection tab*/
   uip = uisongselBuildUI (manage->mmsongsel, manage->minfo.window);
   uihnbAppendPage (manage->mmhnb, uip,
       /* CONTEXT: manage-ui: name of song selection notebook tab */
       _("Music Manager"), NULL, NULL, MANAGE_TAB_MM);
 
+fprintf (stderr, "mng: mm: se\n");
   /* music manager: song editor tab */
 
   manage->uict = uicopytagsInit (manage->minfo.window, manage->minfo.options);
@@ -2501,6 +2524,7 @@ manageBuildUIMusicManager (manageui_t *manage)
       /* CONTEXT: manage-ui: name of song editor notebook tab */
       _("Song Editor"), NULL, NULL, MANAGE_TAB_SONGEDIT);
 
+fprintf (stderr, "mng: mm: aud-id\n");
   /* music manager: audio identification tab */
 
   manage->manageaudioid = manageAudioIdAlloc (&manage->minfo);
@@ -2511,9 +2535,8 @@ manageBuildUIMusicManager (manageui_t *manage)
       /* CONTEXT: manage-ui: name of audio identification notebook tab */
       _("Audio ID"), NULL, NULL, MANAGE_TAB_AUDIOID);
 
-  uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
   uihnbPostProcess (manage->mmhnb);
+  uiBoxPostProcess (vbox);
 
   manage->callbacks [MANAGE_CB_MM_NB] = callbackInitI (
       manageSwitchPageMM, manage);

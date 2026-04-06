@@ -80,7 +80,6 @@ enum {
   UIAUDID_W_BUTTON_SAVE,
   UIAUDID_W_EDIT_ALL,
   UIAUDID_W_PARENT_WIN,
-  UIAUDID_W_MAIN_VBOX,
   UIAUDID_W_AUDIOID_IMG,
   UIAUDID_W_FILE_DISP,
   UIAUDID_W_PANED_WINDOW,
@@ -101,6 +100,8 @@ enum {
 };
 
 typedef struct aid_internal {
+  /* the main vbox is freed by the owning notebook page */
+  uiwcont_t           *mainvbox;
   uiwcont_t           *wcont [UIAUDID_W_MAX];
   uivirtlist_t        *uivl;
   uiwcont_t           *szgrp [UIAUDID_SZGRP_MAX];
@@ -269,16 +270,17 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   logProcBegin ();
 
+fprintf (stderr, "aud-id: main\n");
   uiaudioid->statusMsg = statusMsg;
   uiaudioid->uisongsel = uisongsel;
   audioidint = uiaudioid->audioidInternalData;
   audioidint->wcont [UIAUDID_W_PARENT_WIN] = parentwin;
 
-  audioidint->wcont [UIAUDID_W_MAIN_VBOX] = uiCreateVertBox ();
-  uiWidgetExpandHoriz (audioidint->wcont [UIAUDID_W_MAIN_VBOX]);
+  audioidint->mainvbox = uiCreateVertBox ();
+  uiWidgetExpandHoriz (audioidint->mainvbox);
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (audioidint->wcont [UIAUDID_W_MAIN_VBOX], hbox, WCONT_FREE);
+  uiBoxPackStart (audioidint->mainvbox, hbox, WCONT_FREE);
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
 
@@ -328,12 +330,13 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   uiBoxPostProcess (hbox);
 
+fprintf (stderr, "aud-id: disp\n");
   /* begin line */
 
   /* audio-identification logo, modified indicator, */
   /* copy button, file label, filename */
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (audioidint->wcont [UIAUDID_W_MAIN_VBOX], hbox, WCONT_FREE);
+  uiBoxPackStart (audioidint->mainvbox, hbox, WCONT_FREE);
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
 
@@ -359,17 +362,19 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   uiBoxPostProcess (hbox);
 
+fprintf (stderr, "aud-id: pw\n");
   pw = uiPanedWindowCreateVert ();
-  uiBoxPackStartExpandChildren (audioidint->wcont [UIAUDID_W_MAIN_VBOX], pw, WCONT_KEEP);
+  uiBoxPackStartExpandChildren (audioidint->mainvbox, pw, WCONT_KEEP);
   uiWidgetExpandHoriz (pw);
   uiWidgetAlignHorizFill (pw);
   uiWidgetSetClass (pw, ACCENT_CLASS);
   audioidint->wcont [UIAUDID_W_PANED_WINDOW] = pw;
 
+fprintf (stderr, "aud-id: match\n");
+  /* match listing */
+
   vbox = uiCreateVertBox ();
   uiPanedWindowPackStart (pw, vbox);
-
-  /* match listing */
 
   uivl = uivlCreate ("audioid", NULL, vbox, UIAUDID_INIT_DISP_SZ,
       VL_NO_WIDTH, VL_ENABLE_KEYS);
@@ -392,6 +397,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uivlDisplay (audioidint->uivl);
   uivlSetSelectChgCallback (audioidint->uivl, uiaudioidRowSelect, uiaudioid);
 
+fprintf (stderr, "aud-id: curr/sel\n");
   /* current/selected box */
 
   uiwidgetp = uiCreateScrolledWindow (300);
@@ -427,6 +433,7 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   /* headings */
 
+fprintf (stderr, "aud-id: headings\n");
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (col, hbox, WCONT_KEEP);
 
@@ -452,15 +459,17 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
   uiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_FREE);
   uiLabelSetFont (uiwidgetp, tbuff);
   uiSizeGroupAdd (audioidint->szgrp [UIAUDID_SZGRP_ITEM_COL_B], uiwidgetp);
+
   uiBoxPostProcess (hbox);
 
+fprintf (stderr, "aud-id: item-disp\n");
   uiaudioidAddItemDisplay (uiaudioid, col);
 
   audioidint->wcont [UIAUDID_W_KEY_HNDLR] = uiEventAlloc ();
   audioidint->callbacks [UIAUDID_CB_KEYB] = callbackInit (
       uiaudioidKeyEvent, uiaudioid, NULL);
   uiEventSetKeyCallback (audioidint->wcont [UIAUDID_W_KEY_HNDLR],
-      audioidint->wcont [UIAUDID_W_MAIN_VBOX],
+      audioidint->mainvbox,
       audioidint->callbacks [UIAUDID_CB_KEYB]);
 
   if (audioidint->paneposition >= 0) {
@@ -471,8 +480,10 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
       PATHBLD_MP_DIR_IMG);
   audioidint->wcont [UIAUDID_W_MB_LOGO] = uiImageFromFile (tbuff);
 
+  uiBoxPostProcess (audioidint->mainvbox);
+
   logProcEnd ("");
-  return audioidint->wcont [UIAUDID_W_MAIN_VBOX];
+  return audioidint->mainvbox;
 }
 
 void
