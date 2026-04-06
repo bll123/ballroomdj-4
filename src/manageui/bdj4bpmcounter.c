@@ -361,13 +361,15 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
 
   uiBoxPostProcess (hbox);
-  uiwcontFree (hbox);
+
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxmain, hbox, WCONT_FREE);
 
   /* CONTEXT: bpm counter: instructions, line 2 */
   uiwidgetp = uiCreateLabel (_("When the BPM value is stable, select the Save button."));
   uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+
+  uiBoxPostProcess (hbox);
 
   /* secondary box */
   hboxbpm = uiCreateHorizBox ();
@@ -380,8 +382,6 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   /* some spacing */
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
-
-  uiBoxPostProcess (hbox);
 
   for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
     hbox = uiCreateHorizBox ();
@@ -408,6 +408,8 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiWidgetAlignHorizCenter (vbox);
   uiWidgetAlignVertCenter (vbox);
 
+  uiBoxPostProcess (hboxbpm);
+
   /* blue box */
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox, WCONT_FREE);
@@ -425,7 +427,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   bpmcounter->wcont [BPM_W_BUTTON_BLUEBOX] = uiwidgetp;
 
   uiBoxPostProcess (hbox);
-  uiBoxPostProcess (hboxbpm);
+  uiBoxPostProcess (vbox);
 
   /* buttons */
   hbox = uiCreateHorizBox ();
@@ -460,6 +462,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   bpmcounter->wcont [BPM_W_BUTTON_CLOSE] = uiwidgetp;
 
   uiBoxPostProcess (hbox);
+  uiBoxPostProcess (vboxmain);
 
   x = nlistGetNum (bpmcounter->options, BPMCOUNTER_POSITION_X);
   y = nlistGetNum (bpmcounter->options, BPMCOUNTER_POSITION_Y);
@@ -471,7 +474,6 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   uiWidgetShowAll (bpmcounter->wcont [BPM_W_WINDOW]);
 
-  uiBoxPostProcess (vboxmain);
   uiwcontFree (vboxmain);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpDisp);
