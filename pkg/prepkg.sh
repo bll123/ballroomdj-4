@@ -180,6 +180,12 @@ if [[ $DEVELOPMENT != dev ]]; then
     grc=1
   fi
 
+  wc=$(grep 'fprintf .stderr, "INFO: ' src/libuigeneral/uibox.c | wc -l)
+  if [[ $wc -ne 0 ]]; then
+    echo "fprintf/INFO found in uibox.c"
+    grc=1
+  fi
+
   wc=$(grep '^logBasic' src/*/*.c src/*/*.cpp src/*/*.m | grep -v KEEP | wc -l)
   if [[ $wc -ne 0 ]]; then
     echo "logBasic debugging found"

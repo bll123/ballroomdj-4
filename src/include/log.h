@@ -72,14 +72,15 @@ enum {
   LOG_WEBCLIENT       = (1 << 17), // 131072
   LOG_DBUPDATE        = (1 << 18), // 262144
   LOG_PROGSTATE       = (1 << 19), // 524288
-  LOG_ITUNES          = (1 << 20), // 1048576
-  LOG_AUDIO_ADJUST    = (1 << 21), // 2097152
-  LOG_AUDIO_TAG       = (1 << 22), // 4194304
-  LOG_AUDIO_ID        = (1 << 23), // 8388608
-  LOG_AUDIOID_DUMP    = (1 << 24), // 16777216
-  LOG_VIRTLIST        = (1 << 25), // 33554432
-  LOG_GROUPING        = (1 << 26), // 67108864
-  LOG_AUDIOSRC        = (1 << 27), // 134217728
+  LOG_ITUNES          = (1 << 20), // 1048576   0x00100000
+  LOG_AUDIO_ADJUST    = (1 << 21), // 2097152   0x00200000
+  LOG_AUDIO_TAG       = (1 << 22), // 4194304   0x00400000
+  LOG_AUDIO_ID        = (1 << 23), // 8388608   0x00800000
+  LOG_AUDIOID_DUMP    = (1 << 24), // 16777216  0x01000000
+  LOG_VIRTLIST        = (1 << 25), // 33554432  0x02000000
+  LOG_GROUPING        = (1 << 26), // 67108864  0x04000000
+  LOG_AUDIOSRC        = (1 << 27), // 134217728 0x08000000
+  LOG_UI              = (1 << 28), // 268435456 0x10000000
   /* insert new values here, push redir_inst down */
   LOG_REDIR_INST      = 0x80000000,
   LOG_ALL             = ~LOG_REDIR_INST,

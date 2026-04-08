@@ -87,14 +87,14 @@ confuiBuildUIDebug (confuigui_t *gui)
       CONFUI_DBG_PLAYER, -1, (val & LOG_PLAYER));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Procedures",
       CONFUI_DBG_PROC, -1, (val & LOG_PROC));
+  confuiMakeItemCheckButton (gui, vbox, szgrp, "Process",
+      CONFUI_DBG_PROCESS, -1, (val & LOG_PROCESS));
 
   uiBoxPostProcess (vbox);
 
   vbox = uiCreateVertBox ();
   uiBoxPackStart (hbox, vbox, WCONT_FREE);
 
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Process",
-      CONFUI_DBG_PROCESS, -1, (val & LOG_PROCESS));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Program State",
       CONFUI_DBG_PROGSTATE, -1, (val & LOG_PROGSTATE));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Random Access File",
@@ -103,6 +103,8 @@ confuiBuildUIDebug (confuigui_t *gui)
       CONFUI_DBG_SOCKET, -1, (val & LOG_SOCKET));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Song Selection",
       CONFUI_DBG_SONGSEL, -1, (val & LOG_SONGSEL));
+  confuiMakeItemCheckButton (gui, vbox, szgrp, "User Interface",
+      CONFUI_DBG_UI, -1, (val & LOG_UI));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Virtual List",
       CONFUI_DBG_VIRTLIST, -1, (val & LOG_VIRTLIST));
   confuiMakeItemCheckButton (gui, vbox, szgrp, "Volume",

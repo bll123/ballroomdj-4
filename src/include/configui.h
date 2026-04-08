@@ -187,6 +187,7 @@ enum {
   CONFUI_DBG_VIRTLIST,
   CONFUI_DBG_GROUPING,
   CONFUI_DBG_AUDIOSRC,
+  CONFUI_DBG_UI,
   CONFUI_DBG_MAX,
   /* should be in the same order as in songfilter.h */
   CONFUI_WIDGET_FILTER_START,

@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "log.h"
 #include "mdebug.h"
 #include "uiwcont.h"
 
@@ -37,6 +38,7 @@ uiwcontFree (uiwcont_t *uiwidget)
 
   switch (uiwidget->wtype) {
     case WCONT_T_UNKNOWN: {
+      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: trying to free %d-%d twice", uiwidget->ui_id, uiwidget->id);
       fprintf (stderr, "ERR: trying to free %d-%d twice\n", uiwidget->ui_id, uiwidget->id);
       break;
     }
