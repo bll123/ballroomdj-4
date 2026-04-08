@@ -57,7 +57,6 @@ confuiBuildUIMobileRemoteControl (confuigui_t *gui)
   uiwcont_t   *vbox;
   uiwcont_t   *szgrp;
 
-fprintf (stderr, "== conf: rc\n");
   logProcBegin ();
   vbox = uiCreateVertBox ();
 

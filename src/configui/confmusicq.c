@@ -58,7 +58,6 @@ confuiBuildUIMusicQs (confuigui_t *gui)
   uiwcont_t     *szgrpB;
   int           widx;
 
-fprintf (stderr, "== conf: musicq\n");
   logProcBegin ();
 
   gui->inbuild = true;

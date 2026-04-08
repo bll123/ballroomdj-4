@@ -39,7 +39,6 @@ confuiBuildUIEditStatus (confuigui_t *gui)
   uiwcont_t    *vbox;
   uiwcont_t    *hbox;
 
-fprintf (stderr, "== conf: status\n");
   logProcBegin ();
   vbox = uiCreateVertBox ();
 

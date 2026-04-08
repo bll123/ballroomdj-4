@@ -99,7 +99,6 @@ confuiBuildUIEditDances (confuigui_t *gui)
   char          tbuff [BDJ4_PATH_MAX];
   uivirtlist_t  *uivl;
 
-fprintf (stderr, "== conf: dances\n");
   logProcBegin ();
   gui->inchange = true;
   vbox = uiCreateVertBox ();

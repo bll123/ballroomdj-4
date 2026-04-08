@@ -40,7 +40,6 @@ confuiBuildUIEditLevels (confuigui_t *gui)
   uiwcont_t    *hbox;
   uiwcont_t    *uiwidgetp;
 
-fprintf (stderr, "== conf: level\n");
   logProcBegin ();
   vbox = uiCreateVertBox ();
 

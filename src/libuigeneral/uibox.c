@@ -250,7 +250,7 @@ uiBoxListAdd (uiwcont_t *uibox, uiwcont_t *uiwidget,
       uiwidget->wbasetype != WCONT_T_WINDOW) {
     uiwidget->id = uibox->id + nlistGetCount (wlist);
   }
-fprintf (stderr, "wcont: pack: %d-%d %s box: %d-%d\n", uiwidget->ui_id, uiwidget->id, uiwcontDesc (uiwidget->wtype), uibox->ui_id, uibox->id);
+  // fprintf (stderr, "wcont: pack: %d-%d %s box: %d-%d\n", uiwidget->ui_id, uiwidget->id, uiwcontDesc (uiwidget->wtype), uibox->ui_id, uibox->id);
   uiwidget->parentid = uibox->id;
   uiwidget->packed = true;
 }

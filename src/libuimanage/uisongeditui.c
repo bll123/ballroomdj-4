@@ -331,7 +331,6 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   seint = uisongedit->seInternalData;
   seint->wcont [UISE_W_PARENT_WIN] = parentwin;
 
-fprintf (stderr, "se: main\n");
   seint->mainvbox = uiCreateVertBox ();
   uiWidgetExpandHoriz (seint->mainvbox);
 
@@ -340,7 +339,6 @@ fprintf (stderr, "se: main\n");
       uisongeditKeyEvent, uisongedit, NULL);
   uiEventSetKeyCallback (seint->wcont [UISE_W_KEY_HNDLR],
       seint->mainvbox, seint->callbacks [UISE_CB_KEYB]);
-fprintf (stderr, "se: button-box\n");
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (seint->mainvbox, hbox, WCONT_FREE);
   uiWidgetExpandHoriz (hbox);
@@ -401,7 +399,6 @@ fprintf (stderr, "se: button-box\n");
 
   uiBoxPostProcess (hbox);
 
-fprintf (stderr, "se: disp\n");
   /* begin line */
 
   /* audio-identification logo, modified indicator, */
@@ -454,7 +451,6 @@ fprintf (stderr, "se: disp\n");
 
   uiBoxPostProcess (hbox);
 
-fprintf (stderr, "se: main-hbox\n");
   /* begin line */
   hbox = uiCreateHorizBox ();
   uiBoxPackStartExpandChildren (seint->mainvbox, hbox, WCONT_FREE);

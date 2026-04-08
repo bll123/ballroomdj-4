@@ -226,7 +226,6 @@ uiaudioidUIFree (uiaudioid_t *uiaudioid)
       if (i == UIAUDID_W_PARENT_WIN) {
         continue;
       }
-fprintf (stderr, "aud-id: free wcont %d\n", i);
       uiwcontFree (audioidint->wcont [i]);
     }
     for (int i = 0; i < UIAUDID_CB_MAX; ++i) {
@@ -272,7 +271,6 @@ uiaudioidBuildUI (uiaudioid_t *uiaudioid, uisongsel_t *uisongsel,
 
   logProcBegin ();
 
-fprintf (stderr, "aud-id: main\n");
   uiaudioid->statusMsg = statusMsg;
   uiaudioid->uisongsel = uisongsel;
   audioidint = uiaudioid->audioidInternalData;
@@ -332,7 +330,6 @@ fprintf (stderr, "aud-id: main\n");
 
   uiBoxPostProcess (hbox);
 
-fprintf (stderr, "aud-id: disp\n");
   /* begin line */
 
   /* audio-identification logo, modified indicator, */
@@ -364,7 +361,6 @@ fprintf (stderr, "aud-id: disp\n");
 
   uiBoxPostProcess (hbox);
 
-fprintf (stderr, "aud-id: pw\n");
   pw = uiPanedWindowCreateVert ();
   uiBoxPackStartExpandChildren (audioidint->mainvbox, pw, WCONT_KEEP);
   uiWidgetExpandHoriz (pw);
@@ -372,7 +368,6 @@ fprintf (stderr, "aud-id: pw\n");
   uiWidgetSetClass (pw, ACCENT_CLASS);
   audioidint->wcont [UIAUDID_W_PANED_WINDOW] = pw;
 
-fprintf (stderr, "aud-id: match\n");
   /* match listing */
 
   vbox = uiCreateVertBox ();
@@ -399,7 +394,6 @@ fprintf (stderr, "aud-id: match\n");
   uivlDisplay (audioidint->uivl);
   uivlSetSelectChgCallback (audioidint->uivl, uiaudioidRowSelect, uiaudioid);
 
-fprintf (stderr, "aud-id: curr/sel\n");
   /* current/selected box */
 
   uiwidgetp = uiCreateScrolledWindow (300);
@@ -433,7 +427,6 @@ fprintf (stderr, "aud-id: curr/sel\n");
 
   /* headings */
 
-fprintf (stderr, "aud-id: headings\n");
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (col, hbox, WCONT_FREE);
 
@@ -462,12 +455,10 @@ fprintf (stderr, "aud-id: headings\n");
 
   uiBoxPostProcess (hbox);
 
-fprintf (stderr, "aud-id: item-disp\n");
   uiaudioidAddItemDisplay (uiaudioid, col);
 
   uiBoxPostProcess (col);
   uiBoxPostProcess (lowerhbox);
-fprintf (stderr, "aud-id: free lowerhbox\n");
   uiwcontFree (lowerhbox);
   uiBoxPostProcess (audioidint->mainvbox);
 

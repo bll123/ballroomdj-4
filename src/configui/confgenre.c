@@ -39,7 +39,6 @@ confuiBuildUIEditGenres (confuigui_t *gui)
   uiwcont_t    *vbox;
   uiwcont_t    *hbox;
 
-fprintf (stderr, "== conf: genre\n");
   logProcBegin ();
   vbox = uiCreateVertBox ();
 

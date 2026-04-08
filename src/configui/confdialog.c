@@ -56,7 +56,6 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
   uiwcont_t     *uiwidgetp;
   nlistidx_t    val;
 
-fprintf (stderr, "== conf: dialog\n");
   logProcBegin ();
   vbox = uiCreateVertBox ();
 

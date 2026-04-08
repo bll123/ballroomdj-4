@@ -40,7 +40,6 @@ confuiBuildUIEditRatings (confuigui_t *gui)
   uiwcont_t    *hbox;
   uiwcont_t    *uiwidgetp;
 
-fprintf (stderr, "conf: rating\n");
   logProcBegin ();
   vbox = uiCreateVertBox ();
 

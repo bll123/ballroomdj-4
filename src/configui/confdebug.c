@@ -28,7 +28,6 @@ confuiBuildUIDebug (confuigui_t *gui)
   uiwcont_t     *szgrp;
   nlistidx_t    val;
 
-fprintf (stderr, "== conf: debug\n");
   logProcBegin ();
   hbox = uiCreateHorizBox ();
 

@@ -262,7 +262,6 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiWidgetSetMarginStart (mvbox, 4);
   uiWidgetSetMarginEnd (mvbox, 4);
 
-fprintf (stderr, "pl-mgmt: std settings\n");
   /* standard settings for most playlists, but not podcasts */
 
   vbox = uiCreateVertBox ();
@@ -367,7 +366,6 @@ fprintf (stderr, "pl-mgmt: std settings\n");
   uiBoxPostProcess (hbox);
   uiBoxPostProcess (vbox);
 
-fprintf (stderr, "pl-mgmt: auto/seq\n");
   /* automatic and sequenced playlists; keep the widget so these */
   /* can be hidden */
 
@@ -479,7 +477,6 @@ fprintf (stderr, "pl-mgmt: auto/seq\n");
   uiBoxPostProcess (hbox);
   uiBoxPostProcess (vbox);
 
-fprintf (stderr, "pl-mgmt: podcast\n");
   /* settings for podcasts */
 
   vbox = uiCreateVertBox ();
@@ -552,7 +549,6 @@ fprintf (stderr, "pl-mgmt: podcast\n");
   uiWidgetSetMarginStart (vbox, 4);
   uiWidgetSetMarginEnd (vbox, 4);
 
-fprintf (stderr, "pl-mgmt: dance\n");
   managepl->mpldnc = manageplDanceAlloc (managepl->minfo);
   manageplDanceBuildUI (managepl->mpldnc, vbox);
 

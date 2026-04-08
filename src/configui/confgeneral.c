@@ -74,7 +74,6 @@ confuiBuildUIGeneral (confuigui_t *gui)
   char          tbuff [BDJ4_PATH_MAX];
   char          ebuff [BDJ4_PATH_MAX];
 
-fprintf (stderr, "== conf: general\n");
   logProcBegin ();
   sw = uiCreateScrolledWindow (200);
   uiWidgetExpandHoriz (sw);

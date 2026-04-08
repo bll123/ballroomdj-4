@@ -284,14 +284,12 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiplayer->wcont [UIPL_W_MAIN_VBOX] = uiCreateVertBox ();
   uiWidgetExpandHoriz (uiplayer->wcont [UIPL_W_MAIN_VBOX]);
 
-fprintf (stderr, "-- uipl: song disp\n");
   /* song display */
 
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (uiplayer->wcont [UIPL_W_MAIN_VBOX], hbox, WCONT_FREE);
 
-fprintf (stderr, "-- uipl: status\n");
   /* size group E */
   statusbox = uiCreateHorizBox ();
   uiBoxPackStart (hbox, statusbox, WCONT_FREE);
@@ -300,7 +298,6 @@ fprintf (stderr, "-- uipl: status\n");
 
   uiplayer->images [UIPL_IMG_DISP_STATUS] = uiImageNew ();
 
-fprintf (stderr, "-- uipl: buttons\n");
   pathbldMakePath (tbuff, sizeof (tbuff), "button_stop", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   uiplayer->images [UIPL_IMG_STOP] = uiImageFromFile (tbuff);
@@ -336,7 +333,6 @@ fprintf (stderr, "-- uipl: buttons\n");
   uiWidgetAlignVertCenter (uiplayer->images [UIPL_IMG_DISP_REPEAT]);
   uiWidgetSetMarginStart (uiplayer->images [UIPL_IMG_DISP_REPEAT], 1);
 
-fprintf (stderr, "-- uipl: info\n");
   for (int i = UIPL_W_INFO_DISP_A; i <= UIPL_W_INFO_DISP_I; ++i) {
     uiwidgetp = uiCreateLabel ("");
     if (i == UIPL_W_INFO_DISP_A) {
@@ -356,7 +352,6 @@ fprintf (stderr, "-- uipl: info\n");
   uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetExpandHoriz (uiwidgetp);
 
-fprintf (stderr, "-- uipl: spd\n");
   if (showspd) {
     /* size group F */
     uiplayer->callbacks [UIPL_CB_SPD_RESET] = callbackInit (
@@ -402,7 +397,6 @@ fprintf (stderr, "-- uipl: spd\n");
 
   uiBoxPostProcess (hbox);
 
-fprintf (stderr, "-- uipl: pos\n");
   /* position controls / display */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
@@ -467,7 +461,6 @@ fprintf (stderr, "-- uipl: pos\n");
 
   uiBoxPostProcess (hbox);
 
-fprintf (stderr, "-- uipl: controls\n");
   /* main controls */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
@@ -539,7 +532,6 @@ fprintf (stderr, "-- uipl: controls\n");
   uiToggleButtonSetCallback (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B],
       uiplayer->callbacks [UIPL_CB_PAUSEATEND]);
 
-fprintf (stderr, "-- uipl: vol\n");
   /* volume controls / display */
 
   if (showspd) {

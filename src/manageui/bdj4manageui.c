@@ -871,7 +871,6 @@ manageBuildUI (manageui_t *manage)
 
   manageInitializeUI (manage);
 
-fprintf (stderr, "mng: main\n");
   vbox = uiCreateVertBox ();
   uiWindowPackInWindow (manage->minfo.window, vbox);
   uiWidgetSetAllMargins (vbox, 4);
@@ -892,11 +891,9 @@ fprintf (stderr, "mng: main\n");
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
 
-fprintf (stderr, "mng: edit-sl\n");
   /* edit song lists */
   manageBuildUISongListEditor (manage);
 
-fprintf (stderr, "mng: seq-editor\n");
   /* sequence editor */
   manage->manageseq = manageSequenceAlloc (&manage->minfo);
 
@@ -910,7 +907,6 @@ fprintf (stderr, "mng: seq-editor\n");
 
   uiBoxPostProcess (vbox);
 
-fprintf (stderr, "mng: pl-mgmt\n");
   /* playlist management */
   manage->managepl = managePlaylistAlloc (&manage->minfo);
 
@@ -924,11 +920,9 @@ fprintf (stderr, "mng: pl-mgmt\n");
 
   uiBoxPostProcess (vbox);
 
-fprintf (stderr, "mng: mm\n");
   /* music manager */
   manageBuildUIMusicManager (manage);
 
-fprintf (stderr, "mng: upd-db\n");
   /* update database */
   manage->managedb = manageDbAlloc (&manage->minfo,
       manage->conn, manage->processes);
@@ -1133,7 +1127,6 @@ manageBuildUISongListEditor (manageui_t *manage)
       _("Edit Song Lists"), MANAGE_TAB_MAIN_SL);
   uiWidgetSetAllMargins (vbox, 2);
 
-fprintf (stderr, "mng: sl-edit: player\n");
   /* management: player */
   uiwidgetp = uiplayerBuildUI (manage->slplayer);
   uiBoxPackStart (vbox, uiwidgetp, WCONT_KEEP);
@@ -1150,7 +1143,6 @@ fprintf (stderr, "mng: sl-edit: player\n");
   hbox = uiCreateHorizBox ();
   uiBoxPackStartExpandChildren (mainhbox, hbox, WCONT_FREE);
 
-fprintf (stderr, "mng: sl-edit: mq\n");
   uiwidgetp = uimusicqBuildUI (manage->slsbsmusicq, manage->minfo.window,
       MUSICQ_SL, manage->minfo.errorMsg,
       manage->minfo.statusMsg, uiutilsValidatePlaylistNameClr);
@@ -1183,7 +1175,6 @@ fprintf (stderr, "mng: sl-edit: mq\n");
   uiBoxPackStartExpandChildren (hbox, uip, WCONT_KEEP);
   uiwcontFree (uip);
 
-fprintf (stderr, "mng: sl-edit: mq tab\n");
   /* song list: music queue tab */
   uip = uimusicqBuildUI (manage->slmusicq, manage->minfo.window,
       MUSICQ_SL, manage->minfo.errorMsg,
@@ -1192,14 +1183,12 @@ fprintf (stderr, "mng: sl-edit: mq tab\n");
       /* CONTEXT: manage-ui: name of song list notebook tab */
       _("Song List"), NULL, NULL, MANAGE_TAB_SONGLIST);
 
-fprintf (stderr, "mng: sl-edit: ss tab\n");
   /* song list: song selection tab */
   uip = uisongselBuildUI (manage->slsongsel, manage->minfo.window);
   uihnbAppendPage (manage->slhnb, uip,
       /* CONTEXT: manage-ui: name of song selection notebook tab */
       _("Song Selection"), NULL, NULL, MANAGE_TAB_SL_SONGSEL);
 
-fprintf (stderr, "mng: sl-edit: stats\n");
   /* song list editor: statistics tab */
   uip = manageBuildUIStats (manage->slstats);
   uihnbAppendPage (manage->slhnb, uip,
@@ -2497,21 +2486,18 @@ manageBuildUIMusicManager (manageui_t *manage)
       _("Music Manager"), MANAGE_TAB_MAIN_MM);
   uiWidgetSetAllMargins (vbox, 2);
 
-fprintf (stderr, "mng: mm: player\n");
   /* music manager: player */
   uiwidgetp = uiplayerBuildUI (manage->mmplayer);
   uiBoxPackStart (vbox, uiwidgetp, WCONT_KEEP);
 
   manage->mmhnb = uihnbCreate (vbox, "mng-mm");
 
-fprintf (stderr, "mng: mm: ss\n");
   /* music manager: song selection tab*/
   uip = uisongselBuildUI (manage->mmsongsel, manage->minfo.window);
   uihnbAppendPage (manage->mmhnb, uip,
       /* CONTEXT: manage-ui: name of song selection notebook tab */
       _("Music Manager"), NULL, NULL, MANAGE_TAB_MM);
 
-fprintf (stderr, "mng: mm: se\n");
   /* music manager: song editor tab */
 
   manage->uict = uicopytagsInit (manage->minfo.window, manage->minfo.options);
@@ -2525,7 +2511,6 @@ fprintf (stderr, "mng: mm: se\n");
       /* CONTEXT: manage-ui: name of song editor notebook tab */
       _("Song Editor"), NULL, NULL, MANAGE_TAB_SONGEDIT);
 
-fprintf (stderr, "mng: mm: aud-id\n");
   /* music manager: audio identification tab */
 
   manage->manageaudioid = manageAudioIdAlloc (&manage->minfo);

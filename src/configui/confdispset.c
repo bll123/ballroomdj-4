@@ -74,7 +74,6 @@ confuiBuildUIDispSettings (confuigui_t *gui)
 
   logProcBegin ();
 
-fprintf (stderr, "== conf: disp-set\n");
   vbox = uiCreateVertBox ();
 
   /* display settings */

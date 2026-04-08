@@ -40,7 +40,6 @@ confuiBuildUIMarquee (confuigui_t *gui)
   uiwcont_t    *vbox;
   uiwcont_t    *szgrp;
 
-fprintf (stderr, "== conf: marquee\n");
   logProcBegin ();
   vbox = uiCreateVertBox ();
 

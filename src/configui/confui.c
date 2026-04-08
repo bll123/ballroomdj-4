@@ -32,7 +32,6 @@ confuiBuildUIUserInterface (confuigui_t *gui)
   logProcBegin ();
   vbox = uiCreateVertBox ();
 
-fprintf (stderr, "== conf: ui\n");
   szgrp = uiCreateSizeGroupHoriz ();
 
   /* user interface */

@@ -90,7 +90,6 @@ confuiBuildUIPlayer (confuigui_t *gui)
   uiwcont_t    *szgrp;
   uiwcont_t    *szgrpB;
 
-fprintf (stderr, "== conf: player\n");
   logProcBegin ();
   vbox = uiCreateVertBox ();
 

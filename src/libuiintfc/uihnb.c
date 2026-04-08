@@ -91,7 +91,6 @@ uihnbCreate (uiwcont_t *box, const char *tag)
   hnb->selected = -1;
   hnb->textdir = sysvarsGetNum (SVL_LOCALE_TEXT_DIR);
 
-fprintf (stderr, "hnb: %s vbox pp\n", hnb->tag);
   uiBoxPostProcess (vbox);
 
   return hnb;
@@ -167,7 +166,6 @@ uihnbAppendPage (uihnb_t *hnb, uiwcont_t *uibox,
   hnb->tablist [pagenum] = button;
   hnb->idlist [pagenum] = id;
 
-fprintf (stderr, "hnb: %s hbox pp\n", hnb->tag);
   uiBoxPostProcess (hbox);
 }
 
@@ -179,7 +177,6 @@ uihnbPostProcess (uihnb_t *hnb)
   }
 
   uihnbSetPage (hnb, 0);
-fprintf (stderr, "hnb: %s hlist pp\n", hnb->tag);
   uiBoxPostProcess (hnb->hlist);
 }
 

@@ -749,7 +749,7 @@ installerBuildUI (installer_t *installer)
 
   /* CONTEXT: installer: language to install */
   uiwidgetp = uiCreateColonLabel (_("Preferred Language"));
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   installer->callbacks [INST_CB_LOCALE] =
       callbackInitS (installerLocaleSelect, installer);
   installer->ddlang = uiddCreate ("instlang",

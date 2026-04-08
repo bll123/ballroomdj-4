@@ -56,7 +56,7 @@ uiwcontAlloc_r (int basetype, int type, const char *fn, int lineno)
   if (uiwidget->wbasetype == WCONT_T_BOX ||
       uiwidget->wbasetype == WCONT_T_WINDOW) {
     uiwidget->id = gboxcount;
-fprintf (stderr, "wcont: %s %d-%d\n", uiwcontDesc (uiwidget->wtype), uiwidget->ui_id, uiwidget->id);
+    // fprintf (stderr, "wcont: %s %d-%d\n", uiwcontDesc (uiwidget->wtype), uiwidget->ui_id, uiwidget->id);
     gboxcount += 100;
   }
 

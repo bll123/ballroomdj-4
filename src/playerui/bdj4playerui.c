@@ -528,7 +528,6 @@ pluiBuildUI (playerui_t *plui)
 
   uiwcontInitID (UI_PLUI_ID);
 
-fprintf (stderr, "-- plui: main ui\n");
   pathbldMakePath (tbuff, sizeof (tbuff),  "led_off", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
   plui->wcont [PLUI_W_LED_OFF] = uiImageFromFile (tbuff);
@@ -728,7 +727,6 @@ fprintf (stderr, "-- plui: main ui\n");
       tabtype = PLUI_TAB_HISTORY;
     }
 
-fprintf (stderr, "-- plui: music-q %d\n", i);
     uip = uimusicqBuildUI (plui->uimusicq, plui->wcont [PLUI_W_WINDOW], i,
         plui->wcont [PLUI_W_ERROR_MSG], plui->wcont [PLUI_W_STATUS_MSG], NULL);
 
@@ -750,7 +748,6 @@ fprintf (stderr, "-- plui: music-q %d\n", i);
     uihnbAppendPage (plui->hnb, uip, str, imgptr, altimgptr, tabtype);
   }
 
-fprintf (stderr, "-- plui: request\n");
   /* request tab */
   uip = uisongselBuildUI (plui->uisongsel, plui->wcont [PLUI_W_WINDOW]);
 

@@ -146,14 +146,12 @@ confuiBuildUIiTunes (confuigui_t *gui)
   int           tagidx;
   int           cidx;
 
-fprintf (stderr, "== conf: itunes\n");
   logProcBegin ();
 
   sw = uiCreateScrolledWindow (200);
   uiWidgetExpandHoriz (sw);
   uiWidgetExpandVert (sw);
 
-fprintf (stderr, "-- itunes: mvbox\n");
   mvbox = uiCreateVertBox ();
   uiWindowPackInWindow (sw, mvbox);
   uiWidgetExpandHoriz (mvbox);
@@ -193,7 +191,6 @@ fprintf (stderr, "-- itunes: mvbox\n");
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].uiwidgetp,
       "", uiEntryValidateFile, NULL, UIENTRY_DELAYED);
 
-fprintf (stderr, "-- itunes: mhbox\n");
   mhbox = uiCreateHorizBox ();
   uiBoxPackStart (mvbox, mhbox, WCONT_FREE);
 
@@ -205,7 +202,6 @@ fprintf (stderr, "-- itunes: mhbox\n");
   uiwidgetp = uiCreateLabel (_("Rating"));
   uiBoxPackStart (vboxp, uiwidgetp, WCONT_FREE);
 
-fprintf (stderr, "-- itunes mapping\n");
   /* itunes uses 10..100 mapping to 0.5,1,1.5,...,4.5,5 stars */
   for (int i = 0; i < ITUNES_STARS_MAX; ++i) {
     char    *p;
@@ -239,7 +235,6 @@ fprintf (stderr, "-- itunes mapping\n");
 
   uiBoxPostProcess (vboxp);
 
-fprintf (stderr, "-- itunes fields\n");
   vboxp = uiCreateVertBox ();
   uiBoxPackStart (mhbox, vboxp, WCONT_FREE);
   uiWidgetSetAllMargins (vboxp, 2);

@@ -1528,7 +1528,6 @@ uivlDisplay (uivirtlist_t *vl)
   uivlrow_t   *row;
   int         clickmap;
 
-fprintf (stderr, "-- vl: %s display\n", vl->tag);
   logProcBegin ();
   if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
     logProcEnd ("not-valid");
@@ -2875,7 +2874,6 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
   logProcBegin ();
   /* only if the number of rows has increased */
   if (vl->dispalloc < newdispsize) {
-fprintf (stderr, "-- vl: %s chg-increase\n", vl->tag);
     vl->rows = mdrealloc (vl->rows, sizeof (uivlrow_t) * newdispsize);
 
     for (int dispidx = vl->dispalloc; dispidx < newdispsize; ++dispidx) {

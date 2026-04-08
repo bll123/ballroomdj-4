@@ -449,7 +449,6 @@ confuiBuildUI (configui_t *confui)
 
   uiwcontInitID (UI_CONFIG_ID);
 
-fprintf (stderr, "== conf\n");
   /* CONTEXT: configuration: configuration user interface window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Configuration"),
       bdjoptGetStr (OPT_P_PROFILENAME));
@@ -457,20 +456,17 @@ fprintf (stderr, "== conf\n");
   confui->gui.window = uiCreateMainWindow (
       confui->gui.closecb, tbuff, "bdj4_icon_config");
 
-fprintf (stderr, "-- conf vbox\n");
   confui->gui.vbox = uiCreateVertBox ();
   uiWindowPackInWindow (confui->gui.window, confui->gui.vbox);
   uiWidgetSetAllMargins (confui->gui.vbox, 4);
   uiWidgetExpandHoriz (confui->gui.vbox);
   uiWidgetExpandVert (confui->gui.vbox);
 
-fprintf (stderr, "-- conf prof-disp\n");
   confui->hdrline = uiutilsHeaderLineSetup (confui->gui.vbox);
   confui->gui.statusMsg = uiutilsHeaderLineAddLabel (confui->hdrline, ACCENT_CLASS);
   confui->gui.errorMsg = uiutilsHeaderLineAddLabel (confui->hdrline, ERROR_CLASS);
   uiutilsHeaderLinePostProcess (confui->hdrline);
 
-fprintf (stderr, "-- conf mainvnb\n");
   confui->gui.mainvnb = uivnbCreate (confui->gui.vbox, "conf-main");
 
   confuiBuildUIGeneral (&confui->gui);
@@ -491,12 +487,9 @@ fprintf (stderr, "-- conf mainvnb\n");
   confuiBuildUIMobileRemoteControl (&confui->gui);
   confuiBuildUIMobileMarquee (&confui->gui);
   confuiBuildUIDebug (&confui->gui);
-fprintf (stderr, "-- conf build-ui done\n");
 
-fprintf (stderr, "-- conf vnb pp\n");
   uivnbPostProcess (confui->gui.mainvnb);
   uiBoxPostProcess (confui->gui.vbox);
-fprintf (stderr, "-- conf pp done\n");
 
   confui->gui.nbcb = callbackInitI (confuiSwitchTable, &confui->gui);
   uivnbSetCallback (confui->gui.mainvnb, confui->gui.nbcb);

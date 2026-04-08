@@ -50,7 +50,6 @@ confuiBuildUIMobileMarquee (confuigui_t *gui)
   uiwcont_t   *vbox;
   uiwcont_t   *szgrp;
 
-fprintf (stderr, "== conf: mobmq\n");
   logProcBegin ();
   vbox = uiCreateVertBox ();
 
