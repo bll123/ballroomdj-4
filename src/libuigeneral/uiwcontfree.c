@@ -123,7 +123,7 @@ uiwcontBoxFree (uiwcont_t *uibox)
     fprintf (stderr, "ERR: box %d-%d not post-process\n", uibox->ui_id, tid);
   }
 
-  // fprintf (stderr, "   free %d-%d \n", uibox->ui_id, tid);
+fprintf (stderr, "   free %d-%d \n", uibox->ui_id, tid);
   wlist = boxbase->widgetlist;
   rlist = boxbase->releaselist;
   nlistStartIterator (wlist, &iteridx);

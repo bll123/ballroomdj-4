@@ -182,8 +182,8 @@ uiwcontValid (uiwcont_t *uiwidget, int exptype, const char *tag)
   }
   if ((int) uiwidget->wbasetype != exptype &&
      (int) uiwidget->wtype != exptype) {
-    fprintf (stderr, "ERR: %s (id:%" PRIu32 ") incorrect type exp:%d/%s actual:%d/%s %d/%s\n",
-        tag, uiwidget->id,
+    fprintf (stderr, "ERR: %s (id:%" PRIu32 "-%" PRIu32 ") incorrect type exp:%d/%s actual:%d/%s %d/%s\n",
+        tag, uiwidget->ui_id, uiwidget->id,
         exptype, uiwcontDesc (exptype),
         uiwidget->wbasetype, uiwcontDesc (uiwidget->wbasetype),
         uiwidget->wtype, uiwcontDesc (uiwidget->wtype));

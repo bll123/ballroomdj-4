@@ -136,7 +136,7 @@ enum {
   START_W_SUPPORT_SEND_DB,
   START_W_SUPPORT_SEND_FILES,
   START_W_SUPPORT_SEND_STATUS_MSG,
-  START_W_SUPPORT_STATUS_MSG,
+  START_W_SUPPORT_ERROR_MSG,
   START_W_SUPPORT_SUBJECT,
   START_W_SUPPORT_TEXTBOX,
   START_W_MAX,
@@ -1556,7 +1556,6 @@ starterProcessSupport (void *udata)
     }
   }
   uiLabelSetText (uiwidgetp, starter->latestversiondisp);
-  uiwcontFree (uiwidgetp);
 
   /* begin line */
 
@@ -1989,18 +1988,9 @@ starterCreateSupportMsgDialog (void *udata)
   /* profile color line */
   hdrline = uiutilsHeaderLineSetup (vbox);
   uiutilsHeaderLinePostProcess (hdrline);
+  starter->wcont [START_W_SUPPORT_ERROR_MSG] =
+      uiutilsHeaderLineAddLabel (hdrline, ERROR_CLASS);
   starter->supporthdr = hdrline;
-
-  /* line 1 */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-
-  uiwidgetp = uiCreateLabel ("");
-  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
-  uiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
-  starter->wcont [START_W_SUPPORT_STATUS_MSG] = uiwidgetp;
-
-  uiBoxPostProcess (hbox);
 
   /* line 2 */
   hbox = uiCreateHorizBox ();
@@ -2032,6 +2022,8 @@ starterCreateSupportMsgDialog (void *udata)
   uiwidgetp = uiEntryInit (50, 200);
   uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   starter->wcont [START_W_SUPPORT_SUBJECT] = uiwidgetp;
+
+  uiBoxPostProcess (hbox);
 
   /* line 3 */
   /* CONTEXT: starterui: sending support message: message text */
@@ -2067,7 +2059,6 @@ starterCreateSupportMsgDialog (void *udata)
 
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
-  uiBoxPostProcess (hbox);
   uiwcontFree (szgrp);
 
   return UICB_CONT;
@@ -2122,7 +2113,7 @@ starterSupportMsgHandler (void *udata, int32_t responseid)
     case RESPONSE_APPLY: {
       if (uiEntryIsNotValid (starter->wcont [START_W_SUPPORT_EMAIL])) {
         /* CONTEXT: Send support message: Error message for invalid e-mail. */
-        uiLabelSetText (starter->wcont [START_W_SUPPORT_STATUS_MSG], _("Invalid E-Mail Address."));
+        uiLabelSetText (starter->wcont [START_W_SUPPORT_ERROR_MSG], _("Invalid E-Mail Address."));
         break;
       }
       starter->startState = START_STATE_SUPPORT_INIT;

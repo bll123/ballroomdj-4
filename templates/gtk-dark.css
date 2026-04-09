@@ -28,15 +28,12 @@ textview.bdj-dark-bg text {
 
 /* gtk: notebook header tabs tab label */
 /* make the selected notebook tab darker */
-notebook tab:checked {
-  background-color: shade(@theme_base_color,0.6);
-}
 notebook.bdj-horiz-nb > stack {
   background-color: shade(@theme_base_color,0.8);
 }
 
 .bdj-vert-nb-bg {
-  background-color: shade(@theme_base_color,0.7);
+  background-color: shade(@theme_base_color,0.8);
 }
 
 button.bdj-horiz-nb {
