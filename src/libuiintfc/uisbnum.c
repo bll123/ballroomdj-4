@@ -361,10 +361,11 @@ uisbnumCBHandler (void *udata, int32_t dir)
     }
 
     rc = uiEntryValidate (sbnum->entry, force);
-    if (rc == UIENTRY_OK) {
+    if (rc == UIENTRY_OK && sbnum->changed) {
       uisbnumSetValid (sbnum, true);
       return UICB_CONT;
-    } else {
+    }
+    if (rc == UIENTRY_ERROR) {
       uisbnumSetValid (sbnum, false);
       if (force) {
         char    tbuff [40];
@@ -479,6 +480,7 @@ uisbnumEntryValidate (uiwcont_t *entry, const char *label, void *udata)
     uisbnumSetValid (sbnum, false);
     rc = UIENTRY_ERROR;
   }
+
   if (rc == UIENTRY_OK) {
     if (sbnum->type == SBNUM_NUMERIC) {
       sbnum->value = atof (str);
