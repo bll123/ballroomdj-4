@@ -161,19 +161,6 @@ uisbtextSetWidth (uisbtext_t *sbtext, int width)
   uiLabelSetMaxWidth (sbtext->display, width);
 }
 
-bool
-uisbtextIsChanged (uisbtext_t *sbtext)
-{
-  bool      chg;
-
-  if (sbtext == NULL) {
-    return false;
-  }
-
-  chg = sbtext->changed;
-  return chg;
-}
-
 void
 uisbtextSetDisplayCallback (uisbtext_t *sbtext, uisbtextdisp_t cb, void *udata)
 {

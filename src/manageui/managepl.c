@@ -282,7 +282,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   managepl->callbacks [MPL_CB_MAXPLAYTIME] = callbackInit (
       managePlaylistValMaxPlayTimeCallback, managepl, NULL);
   sb = uisbnumCreate (hbox, tlabel, 2);
-  uisbnumSetTime (sb, 0.0, 7200000.0, SBNUM_TIME_BASIC);
+  /* max 2 hours */
+  uisbnumSetTime (sb, 0.0, 3600.0 * 2.0, SBNUM_TIME_MS);
   uisbnumSizeGroupAdd (sb, szgrpSpin);
   uisbnumSetChangeCallback (sb, managepl->callbacks [MPL_CB_MAXPLAYTIME]);
   managepl->sbnum [MPL_SB_MAX_PLAY_TIME] = sb;
@@ -303,7 +304,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   managepl->callbacks [MPL_CB_STOPAT] = callbackInit (
       managePlaylistValStopAtCallback, managepl, NULL);
   sb = uisbnumCreate (hbox, tlabel, 2);
-  uisbnumSetTime (sb, 0.0, 1440000.0, SBNUM_TIME_BASIC);
+  /* max 24 hours */
+  uisbnumSetTime (sb, 0.0, 3600.0 * 24.0, SBNUM_TIME_HM);
   uisbnumSizeGroupAdd (sb, szgrpSpin);
   managepl->sbnum [MPL_SB_STOP_AT] = sb;
   uisbnumSetChangeCallback (sb, managepl->callbacks [MPL_CB_STOPAT]);

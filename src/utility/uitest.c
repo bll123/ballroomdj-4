@@ -74,8 +74,9 @@ enum {
   UITEST_SB_DBL,
   UITEST_SB_DBL_B,
   UITEST_SB_DBL_DFLT,
-  UITEST_SB_TM_A,
-  UITEST_SB_TM_B,
+  UITEST_SB_TM_MS,
+  UITEST_SB_TM_HM,
+  UITEST_SB_TM_MSD,
   UITEST_SB_MAX,
 };
 
@@ -406,6 +407,7 @@ uitestBuildUI (uitest_t *uitest)
 
   menuitem = uiMenuCreateCheckbox (menu, "Menu A 4", 1, NULL);
   uiwcontFree (menuitem);
+  uiwcontFree (menu);
 
   uiMenuSetInitialized (uitest->wcont [UITEST_W_MENU_A]);
   uiMenuDisplay (uitest->wcont [UITEST_W_MENU_A]);
@@ -426,6 +428,7 @@ uitestBuildUI (uitest_t *uitest)
   menuitem = uiMenuCreateItem (menu, "Dis B 3", NULL);
   uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
   uiwcontFree (menuitem);
+  uiwcontFree (menu);
 
   uiMenuSetInitialized (uitest->wcont [UITEST_W_MENU_B]);
   uiMenuDisplay (uitest->wcont [UITEST_W_MENU_B]);
@@ -1631,10 +1634,28 @@ fprintf (stderr, "Spinbox\n");
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  sb = uisbnumCreate (hbox, "tm-a", 0);
-  uisbnumSetTime (sb, 0.0, 1440000.0, SBNUM_TIME_BASIC);
-  uisbnumSetValue (sb, 5.0);
-  uitest->sbnum [UITEST_SB_TM_A] = sb;
+  sb = uisbnumCreate (hbox, "tm-hm", 0);
+  /* max 24 hours */
+  uisbnumSetTime (sb, 0.0, 3600.0 * 24.0, SBNUM_TIME_HM);
+  /* 4:05 */
+  uisbnumSetValue (sb, 14700.0 * 1000.0);
+  uitest->sbnum [UITEST_SB_TM_HM] = sb;
+
+  uiBoxPostProcess (hbox);
+
+  /* next line - time spinbox */
+
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiWidgetSetAllMargins (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+
+  sb = uisbnumCreate (hbox, "tm-ms", 0);
+  /* max 4 hours */
+  uisbnumSetTime (sb, 0.0, 3600.0 * 4.0, SBNUM_TIME_MS);
+  /* 1:05 */
+  uisbnumSetValue (sb, 65.0 * 1000.0);
+  uitest->sbnum [UITEST_SB_TM_MS] = sb;
 
   uiBoxPostProcess (hbox);
 
@@ -1646,9 +1667,11 @@ fprintf (stderr, "Spinbox\n");
   uiWidgetExpandHoriz (hbox);
 
   sb = uisbnumCreate (hbox, "tm-b", 0);
-  uisbnumSetTime (sb, 0.0, 1440000.0, SBNUM_TIME_PRECISE);
-  uisbnumSetValue (sb, 5.0);
-  uitest->sbnum [UITEST_SB_TM_B] = sb;
+  /* max 20 minutes */
+  uisbnumSetTime (sb, 0.0, 20.0 * 60.0, SBNUM_TIME_PRECISE);
+  /* 2:05.2 */
+  uisbnumSetValue (sb, 125.2 * 1000.0);
+  uitest->sbnum [UITEST_SB_TM_MSD] = sb;
 
   uiBoxPostProcess (hbox);
   uiBoxPostProcess (vbox);

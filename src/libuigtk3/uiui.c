@@ -52,12 +52,6 @@ int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 int uiTextDirection = TEXT_DIR_DEFAULT;
 static bool inprocess = false;
 
-const char *
-uiBackend (void)
-{
-  return "gtk3";
-}
-
 void
 uiUIInitialize (int direction)
 {

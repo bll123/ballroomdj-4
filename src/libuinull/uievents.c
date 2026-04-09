@@ -167,18 +167,6 @@ uiEventIsNavKey (uiwcont_t *uiwidget)
 }
 
 bool
-uiEventIsPasteCutKey (uiwcont_t *uiwidget)
-{
-  return false;
-}
-
-bool
-uiEventIsMaskedKey (uiwcont_t *uiwidget)
-{
-  return false;
-}
-
-bool
 uiEventIsAltPressed (uiwcont_t *uiwidget)
 {
   return false;

@@ -1917,7 +1917,9 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       case VL_TYPE_SPINBOX_TIME: {
         col->uiwidget = uiCreateHorizBox ();
         col->sbnum = uisbnumCreate (col->uiwidget, "", 2);
-        uisbnumSetTime (col->sbnum, 0.0, 7200000.0, SBNUM_TIME_BASIC);
+        /* this is usually mm:ss, currently only used in pl-mgmt-dance */
+        /* max 2 hours */
+        uisbnumSetTime (col->sbnum, 0.0, 3600.0 * 2.0, coldata->sbtype);
         uisbnumSetFocusCallback (col->sbnum, row->rowcb->focuscb);
         if (coldata->spinboxcb != NULL) {
           uisbnumSetChangeCallback (col->sbnum, coldata->spinboxcb);

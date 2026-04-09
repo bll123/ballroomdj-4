@@ -2958,9 +2958,9 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (szgrp, uiwidgetp);
 
-  /* FIX: no validation! */
   sb = uisbnumCreate (hbox, tlabel, 2);
-  uisbnumSetTime (sb, 0.0, 600000.0, SBNUM_TIME_BASIC);
+  /* max 4 hours */
+  uisbnumSetTime (sb, 0.0, 3600.0 * 4.0, SBNUM_TIME_HM);
   uisbnumSetValue (sb, 3.0 * 60.0 * 1000.0);
   manage->sbnum [MANAGE_SB_CFPL_TM_LIMIT] = sb;
 

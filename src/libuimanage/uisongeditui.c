@@ -1362,7 +1362,8 @@ uisongeditAddSpinboxTime (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
       uisongeditValTimeCallback, &seint->items [seint->itemcount], NULL);
 
   sb = uisbnumCreate (hbox, tagdefs [tagkey].displayname, 2);
-  uisbnumSetTime (sb, 0.0, 1200000.0, SBNUM_TIME_PRECISE);
+  /* mm:ss.d max 2 hours */
+  uisbnumSetTime (sb, 0.0, 3600.0 * 2.0, SBNUM_TIME_PRECISE);
   uisbnumSetValue (sb, 0);
   uisbnumSetChangeCallback (sb, seint->callbacks [cbidx]);
   uisbnumSizeGroupAdd (sb, seint->szgrp [UISE_SZGRP_SPIN_TIME]);
@@ -2041,38 +2042,6 @@ uisongeditSetBPMIncrement (se_internal_t *seint, ilistidx_t danceidx)
         (double) danceTimesigValues [timesig] * 5.0);
   }
 }
-
-#if 0
-static int32_t
-uisongeditValHMSPCallback (void *udata, const char *label, const char *txt)
-{
-  uisongedititem_t *item = udata;
-  uisongedit_t  *uisongedit;
-  se_internal_t *seint;
-  char          tbuff [200];
-  int32_t       value;
-  bool          val;
-
-  logProcBegin ();
-
-  seint = item->seint;
-  uisongedit = seint->uisongedit;
-
-  uiLabelSetText (uisongedit->statusMsg, "");
-  val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HMS_PRECISE);
-  if (val == false) {
-    int32_t oval;
-
-    oval = uiSpinboxTimeGetValue (item->uiwidgetp);
-    uiLabelSetText (uisongedit->statusMsg, tbuff);
-    return oval;
-  }
-
-  value = tmutilStrToMS (txt);
-  logProcEnd ("");
-  return value;
-}
-#endif
 
 static bool
 uisongeditValTimeCallback (void *udata)

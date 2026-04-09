@@ -169,21 +169,29 @@ uisbnumSetTime (uisbnum_t *sbnum, double min, double max, int timetype)
     return;
   }
 
-  sbnum->min = min;
-  sbnum->max = max;
+  sbnum->min = min * 1000.0;
+  sbnum->max = max * 1000.0;
   sbnum->type = timetype;
-  if (timetype == SBNUM_TIME_BASIC) {
+  if (timetype == SBNUM_TIME_HM) {
     sbnum->valtype = VAL_HMS | VAL_NOT_EMPTY;
+    sbnum->incr = 5000.0 * 60.0;
+    sbnum->pageincr = 60000.0 * 60.0;
+    /* hh:mm */
+    uiEntrySetWidth (sbnum->entry, 7);
+  }
+  if (timetype == SBNUM_TIME_MS) {
+    sbnum->valtype = VAL_MIN_SEC | VAL_NOT_EMPTY;
     sbnum->incr = 5000.0;
     sbnum->pageincr = 60000.0;
+    /* mm:ss */
     /* h:mm:ss */
     uiEntrySetWidth (sbnum->entry, 7);
   }
   if (timetype == SBNUM_TIME_PRECISE) {
     sbnum->valtype = VAL_HMS_PRECISE | VAL_NOT_EMPTY;
     sbnum->incr = 100.0;
-    sbnum->pageincr = 30000.0;
-    /* mm:ss.v */
+    sbnum->pageincr = 10000.0;
+    /* mm:ss.d */
     uiEntrySetWidth (sbnum->entry, 7);
   }
 }
@@ -482,9 +490,12 @@ uisbnumEntryValidate (uiwcont_t *entry, const char *label, void *udata)
         sbnum->value = atof (str);
       }
     }
-    if (sbnum->type == SBNUM_TIME_BASIC ||
+    if (sbnum->type == SBNUM_TIME_MS ||
         sbnum->type == SBNUM_TIME_PRECISE) {
       sbnum->value = tmutilStrToMS (str);
+    }
+    if (sbnum->type == SBNUM_TIME_HM) {
+      sbnum->value = tmutilStrToHM (str);
     }
     sbnum->changed = true;
     uisbnumSetValid (sbnum, true);
@@ -509,7 +520,10 @@ uisbnumValueToStr (uisbnum_t *sbnum, char *tbuff, size_t sz)
   if (sbnum->type == SBNUM_NUMERIC) {
     snprintf (tbuff, sz, sbnum->fmt, sbnum->value);
   }
-  if (sbnum->type == SBNUM_TIME_BASIC) {
+  if (sbnum->type == SBNUM_TIME_HM) {
+    tmutilToHM ((time_t) sbnum->value, tbuff, sz);
+  }
+  if (sbnum->type == SBNUM_TIME_MS) {
     tmutilToMS ((time_t) sbnum->value, tbuff, sz);
   }
   if (sbnum->type == SBNUM_TIME_PRECISE) {

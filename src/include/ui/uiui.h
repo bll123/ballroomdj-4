@@ -29,7 +29,6 @@ enum {
 extern int uiBaseMarginSz;
 extern int uiTextDirection;
 
-const char * uiBackend (void);
 void  uiUIInitialize (int direction);
 void  uiUIProcessEvents (void);
 void  uiUIProcessWaitEvents (void);     // a small delay

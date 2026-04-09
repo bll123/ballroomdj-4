@@ -301,6 +301,7 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp,
 {
   uiwcont_t   *hbox;
   uisbnum_t   *sb;
+  int         sbtype;
   double      maxlimit;
 
   logProcBegin ();
@@ -322,12 +323,15 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp,
 
   sb = uisbnumCreate (hbox, gui->uiitem [widx].labeltxt, 4);
   /* the default increments are set in uisbnumSetTime() */
-  /* 7200000 = 120 minutes */
-  maxlimit = 7200000.0;
+  /* two hours */
+  maxlimit = 3600 * 2.0;
+  sbtype = SBNUM_TIME_MS;
   if (bdjoptIdx == OPT_Q_STOP_AT_TIME) {
-    maxlimit = 1440000.0;
+    /* stop-at : 24 hours max */
+    maxlimit = 3600 * 24.0;
+    sbtype = SBNUM_TIME_HM;
   }
-  uisbnumSetTime (sb, 0.0, maxlimit, SBNUM_TIME_BASIC);
+  uisbnumSetTime (sb, 0.0, maxlimit, sbtype);
   uisbnumSetChangeCallback (sb, gui->uiitem [widx].sbcallback);
   gui->uiitem [widx].sbnum = sb;
   uisbnumSetValue (sb, value);

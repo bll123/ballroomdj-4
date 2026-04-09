@@ -50,37 +50,10 @@ uiBoxFree (uiwcont_t *uibox)
   uiboxbase_t *boxbase;
   nlist_t     *wlist;
   nlist_t     *rlist;
-  nlistidx_t  iteridx;
-  int         key;
-  int32_t     tid;
-
-  if (! uiwcontValid (uibox, WCONT_T_BOX, "box-free")) {
-    return;
-  }
 
   boxbase = &uibox->uiint.uiboxbase;
-  tid = uibox->id;
-
-  if (! boxbase->postprocess) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: box %d-%d not post-process", uibox->ui_id, tid);
-    fprintf (stderr, "ERR: box %d-%d not post-process\n", uibox->ui_id, tid);
-  }
-
-  // fprintf (stderr, "   free %d-%d \n", uibox->ui_id, tid);
   wlist = boxbase->widgetlist;
   rlist = boxbase->releaselist;
-  nlistStartIterator (wlist, &iteridx);
-  while ((key = nlistIterateKey (wlist, &iteridx)) >= 0) {
-    uiwcontrls_t    release;
-
-    release = nlistGetNum (rlist, key);
-    if (release == WCONT_FREE) {
-      uiwcont_t     *uiwidgetp;
-
-      uiwidgetp = nlistGetData (wlist, key);
-      uiwcontFree (uiwidgetp);
-    }
-  }
   nlistFree (wlist);
   nlistFree (rlist);
   uibox->uiint.uiboxbase.widgetlist = NULL;

@@ -533,54 +533,6 @@ uiEventIsNavKey (uiwcont_t *uiwidget)
 }
 
 bool
-uiEventIsPasteCutKey (uiwcont_t *uiwidget)
-{
-  uievent_t   *uievent;
-  bool      rc = false;
-
-  if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-paste-cut")) {
-    return rc;
-  }
-
-  uievent = uiwidget->uiint.uievent;
-
-  if (! uievent->controlpressed) {
-    return rc;
-  }
-
-  if (uievent->keyval == GDK_KEY_V ||
-      uievent->keyval == GDK_KEY_v ||
-      uievent->keyval == GDK_KEY_X ||
-      uievent->keyval == GDK_KEY_x) {
-    rc = true;
-  }
-
-  if (uievent->shiftpressed) {
-    if (uievent->keyval == GDK_KEY_Insert ||
-        uievent->keyval == GDK_KEY_KP_Insert ||
-        uievent->keyval == GDK_KEY_Delete ||
-        uievent->keyval == GDK_KEY_KP_Delete) {
-      rc = true;
-    }
-  }
-
-  return rc;
-}
-
-bool
-uiEventIsMaskedKey (uiwcont_t *uiwidget)
-{
-  uievent_t   *uievent;
-
-  if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-masked")) {
-    return false;
-  }
-
-  uievent = uiwidget->uiint.uievent;
-  return uievent->ismaskedkey;
-}
-
-bool
 uiEventIsAltPressed (uiwcont_t *uiwidget)     /* KEEP */
 {
   uievent_t   *uievent;

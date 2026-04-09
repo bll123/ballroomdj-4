@@ -48,12 +48,6 @@ int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 - (BOOL)canBecomeMainWindow { return YES; }
 @end
 
-const char *
-uiBackend (void)
-{
-  return "macos";
-}
-
 void
 uiUIInitialize (int direction)
 {

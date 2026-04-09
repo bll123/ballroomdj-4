@@ -308,6 +308,14 @@ tmutilShortTstamp (char *buff, size_t sz)
 }
 
 char *
+tmutilToHM (time_t ms, char *buff, size_t sz)
+{
+  ms /= 60;
+  tmutilToMS (ms, buff, sz);
+  return buff;
+}
+
+char *
 tmutilToMS (time_t ms, char *buff, size_t sz)
 {
   time_t     h, m, s;

@@ -17,7 +17,8 @@ extern "C" {
 enum {
   SBNUM_NUMERIC,
   SBNUM_NUM_DEFAULT,
-  SBNUM_TIME_BASIC,
+  SBNUM_TIME_MS,
+  SBNUM_TIME_HM,
   SBNUM_TIME_PRECISE,
 };
 
@@ -26,8 +27,11 @@ typedef struct uisbnum uisbnum_t;
 
 uisbnum_t * uisbnumCreate (uiwcont_t *box, const char *label, int margin);
 void uisbnumFree (uisbnum_t *sbnum);
+/* for time, the increment and page-increment are in milliseconds */
 void uisbnumSetIncrements (uisbnum_t *sbnum, double incr, double pageincr);
 void uisbnumSetLimits (uisbnum_t *sbnum, double min, double max, int digits);
+/* min and max are in seconds, not milliseconds */
+/* 7200 = 120 minutes */
 void uisbnumSetTime (uisbnum_t *sbnum, double min, double max, int timetype);
 void uisbnumSetType (uisbnum_t *sbnum, int type);
 
