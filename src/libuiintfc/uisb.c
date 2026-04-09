@@ -290,6 +290,9 @@ uisbKeyEvent (void *udata)
       int   rc;
 
       rc = callbackHandlerI (sb->cb, SB_VAL_FORCE);
+      if (uiEventIsNavKey (sb->wcont [SB_W_VAL_EVENTH])) {
+        return UICB_CONT;
+      }
       return rc;
     }
   }
