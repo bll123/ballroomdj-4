@@ -39,3 +39,11 @@ uiColorButtonGetColor (uiwcont_t *uiwidget, char *tbuff, size_t sz)
 {
   return;
 }
+
+void
+uiColorButtonSetColor (uiwcont_t *uiwidget, const char *color)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_COLOR, "col-button-get")) {
+    return;
+  }
+}

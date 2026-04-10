@@ -27,7 +27,7 @@ uiCreateNotebook (void)
 
 void
 uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uiwidget,
-    const char *label, uiwcont_t *image)
+    uiwcont_t *label)
 {
   return;
 }
@@ -42,13 +42,5 @@ void
 uiNotebookSetCallback (uiwcont_t *uinotebook, callback_t *uicb)
 {
   return;
-}
-
-void
-uiNotebookHideTabs (uiwcont_t *uinotebook)
-{
-  if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-tabs")) {
-    return;
-  }
 }
 

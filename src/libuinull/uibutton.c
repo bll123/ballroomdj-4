@@ -39,16 +39,6 @@ uiButtonFree (uiwcont_t *uiwidget)
 }
 
 void
-uiButtonSetImagePosRight (uiwcont_t *uiwidget)
-{
-  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-image-pos-r")) {
-    return;
-  }
-
-  return;
-}
-
-void
 uiButtonSetImageMarginTop (uiwcont_t *uiwidget, int margin)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-image-margin-top")) {
@@ -66,6 +56,41 @@ uiButtonSetImageIcon (uiwcont_t *uiwidget, const char *nm)
   }
 
   return;
+}
+
+void
+uiButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
+{
+  uibutton_t      *uibutton;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-alt-image")) {
+    return;
+  }
+
+  uibutton = uiwidget->uiint.uibutton;
+  if (uibutton == NULL) {
+    return;
+  }
+
+  if (imagenm != NULL) {
+    ;
+  }
+}
+
+void
+uiButtonSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-focus-cb")) {
+    return;
+  }
+}
+
+void
+uiButtonSetState (uiwcont_t *uiwidget, uibuttonstate_t newstate)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-focus-cb")) {
+    return;
+  }
 }
 
 void

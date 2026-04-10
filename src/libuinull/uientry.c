@@ -38,6 +38,19 @@ uiEntryFree (uiwcont_t *uiwidget)
 }
 
 void
+uiEntrySetWidth (uiwcont_t *uiwidget, int maxWidth)
+{
+  uientrybase_t *ebase;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-width")) {
+    return;
+  }
+
+  ebase = &uiwidget->uiint.uientrybase;
+  ebase->entrySize = maxWidth;
+}
+
+void
 uiEntrySetIcon (uiwcont_t *uiwidget, const char *name)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-icon")) {
@@ -78,6 +91,22 @@ uiEntrySetValue (uiwcont_t *uiwidget, const char *value)
 }
 
 void
+uiEntrySetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-focus-in-cb")) {
+    return;
+  }
+}
+
+void
+uiEntrySetFocusOutCallback (uiwcont_t *uiwidget, callback_t *uicb)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-focus-out-cb")) {
+    return;
+  }
+}
+
+void
 uiEntrySetState (uiwcont_t *uiwidget, int state)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-state")) {
@@ -111,6 +140,14 @@ void
 uiEntryClearChanged (uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-changed")) {
+    return;
+  }
+}
+
+void
+uiEntryAlignEnd (uiwcont_t *uiwidget)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-align-end")) {
     return;
   }
 }

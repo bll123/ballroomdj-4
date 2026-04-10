@@ -45,6 +45,22 @@ uiToggleButtonFree (uiwcont_t *uiwidget)
 }
 
 void
+uiToggleButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
+{
+  uitoggle_t      *uitoggle;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_TOGGLE, "toggle-set-alt-image")) {
+    return;
+  }
+
+  uitoggle = uiwidget->uiint.uitoggle;
+
+  if (imagenm != NULL) {
+    ;
+  }
+}
+
+void
 uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
   return;
@@ -54,6 +70,14 @@ void
 uiToggleButtonSetImage (uiwcont_t *uiwidget, uiwcont_t *image)
 {
   return;
+}
+
+void
+uiToggleButtonSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_TOGGLE, "tb-set-cb")) {
+    return;
+  }
 }
 
 void
