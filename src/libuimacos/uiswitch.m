@@ -61,7 +61,7 @@ uiCreateSwitch (int value)
       [NSString stringWithUTF8String : tbuff]];
   [widget setAlternateImage : nsimage];
 
-  uiwidget = uiwcontAlloc (WCONT_T_TOGGLE_BUTTON, WCONT_T_RADIO_BUTTON);
+  uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_RADIO);
   uiwcontSetWidget (uiwidget, widget, NULL);
 
   widget.ButtonType = NSButtonTypeToggle;

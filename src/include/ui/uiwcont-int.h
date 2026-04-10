@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <inttypes.h>
 
 #include "nlist.h"
 #include "tmutil.h"

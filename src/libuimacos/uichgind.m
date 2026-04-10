@@ -38,7 +38,7 @@ uiCreateChangeIndicator (uiwcont_t *boxp)
 
   uiwidget = uiwcontAlloc (WCONT_T_CHGIND, WCONT_T_CHGIND);
   uiwcontSetWidget (uiwidget, widget, NULL);
-  uiBoxPackStart (boxp, uiwidget);
+  uiBoxPackStart (boxp, uiwidget, WCONT_KEEP);
 
   [widget setIdentifier :
       [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];

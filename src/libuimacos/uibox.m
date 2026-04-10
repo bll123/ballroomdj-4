@@ -35,13 +35,6 @@
 }
 @end
 
-typedef struct uibox {
-  long        ident;
-  int         count;
-  int         endcount;
-  bool        expandchildren;
-} uibox_t;
-
 static long     gident = 0;
 
 static uiwcont_t * uiCreateBox (int orientation);
@@ -74,35 +67,29 @@ static dbgcol_t dbgcols [MACOS_UI_DBG_COLS] = {
 #endif
 
 uiwcont_t *
-ruiCreateVertBox (void)
+uiCreateVertBox_r (void)
 {
   return uiCreateBox (NSUserInterfaceLayoutOrientationVertical);
 }
 
 uiwcont_t *
-ruiCreateHorizBox (void)
+uiCreateHorizBox_r (void)
 {
   return uiCreateBox (NSUserInterfaceLayoutOrientationHorizontal);
 }
 
 void
-uiBoxPostProcess (uiwcont_t *uibox)
+uiBoxPostProcess_r (uiwcont_t *uibox, uiwcont_t *prev, uiwcont_t *curr, uiwcont_t *next)
 {
   uiboxbase_t *boxbase = NULL;
-  uibox_t     *uiboxint = NULL;
-  nlist_t     *wlist = NULL;
-  nlistidx_t  iteridx;
-  nlistidx_t  key;
-  uiwcont_t   *prioruiwidget = NULL;
   NSView      *box = NULL;
 
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-post-process")) {
     return;
   }
 
-  uiboxint = uibox->uiint.uibox;
   boxbase = &uibox->uiint.uiboxbase;
-fprintf (stderr, "    post-process %d count: %d %d/%s\n", uiboxint->ident, (int) nlistGetCount (wlist), uibox->wtype, uiwcontDesc (uibox->wtype));
+fprintf (stderr, "    post-process %d-%d count: %d/%s\n", uibox->ui_id, uibox->id, uibox->wtype, uiwcontDesc (uibox->wtype));
 
   if (boxbase->startcount == 0 && boxbase->endcount == 0) {
     return;
@@ -113,13 +100,9 @@ fprintf (stderr, "    post-process %d count: %d %d/%s\n", uiboxint->ident, (int)
     return;
   }
 
-  wlist = boxbase->startlist;
-
   box = uibox->uidata.widget;
 
-  nlistStartIterator (wlist, &iteridx);
-  while ((key = nlistIterateKey (wlist, &iteridx)) >= 0) {
-    uiwcont_t       *uiwidget;
+  {
     NSView          *widget;
     NSView          *container;
     macoslayout_t   *layout;
@@ -127,29 +110,22 @@ fprintf (stderr, "    post-process %d count: %d %d/%s\n", uiboxint->ident, (int)
     NSView          *pcont = NULL;
     macoslayout_t   *playout = NULL;
 
-fprintf (stderr, "    pp: key: %d\n", key);
-    uiwidget = nlistGetData (wlist, key);
-    if (uiwidget == NULL) {
-fprintf (stderr, "    pp: null\n");
-      continue;
-    }
-
-    widget = uiwidget->uidata.widget;
+    widget = curr->uidata.widget;
     container = [widget superview];
-    layout = uiwidget->uidata.layout;
-fprintf (stderr, "    pp: %d/%s\n", uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
+    layout = curr->uidata.layout;
+fprintf (stderr, "    pp: %d/%s\n", curr->wtype, uiwcontDesc (curr->wtype));
 
-    if (prioruiwidget != NULL) {
-fprintf (stderr, "    pp: prior: %d/%s\n", prioruiwidget->wtype, uiwcontDesc (prioruiwidget->wtype));
-      pwidget = prioruiwidget->uidata.widget;
-      playout = prioruiwidget->uidata.layout;
+    if (prev != NULL) {
+fprintf (stderr, "    pp: prior: %d/%s\n", prev->wtype, uiwcontDesc (prev->wtype));
+      pwidget = prev->uidata.widget;
+      playout = prev->uidata.layout;
       pcont = playout->container;
     }
 
     if (uibox->wtype == WCONT_T_VBOX) {
 fprintf (stderr, "    pp: in-vbox\n");
 fprintf (stderr, "    pp: v: lead/trail\n");
-      if (uiboxint->expandchildren) {
+      if (layout->expandchildren) {
         widget.autoresizingMask |= NSViewHeightSizable;
       }
       if (layout->expandhoriz) {
@@ -184,7 +160,7 @@ fprintf (stderr, "    pp: v: prior expand-vert\n");
     if (uibox->wtype == WCONT_T_HBOX) {
 fprintf (stderr, "    pp: in-hbox\n");
 fprintf (stderr, "    pp: h: top/bottom\n");
-      if (uiboxint->expandchildren) {
+      if (layout->expandchildren) {
         widget.autoresizingMask |= NSViewWidthSizable;
       }
       if (layout->expandvert) {
@@ -217,17 +193,15 @@ fprintf (stderr, "    pp: h: prior: expand-horiz\n");
             constraintEqualToAnchor: container.leadingAnchor].active = YES;
       }
     }
-
-    prioruiwidget = uiwidget;
   }
 
-  if (prioruiwidget != NULL) {
+  if (prev != NULL) {
     NSView        *pwidget = NULL;
     macoslayout_t *playout = NULL;
 
 fprintf (stderr, "    pp: last\n");
-    pwidget = prioruiwidget->uidata.widget;
-    playout = prioruiwidget->uidata.layout;
+    pwidget = prev->uidata.widget;
+    playout = prev->uidata.layout;
 
     if (playout->expandhoriz) {
       /* attach to the box */
@@ -249,12 +223,11 @@ fprintf (stderr, "    pp: l: expand-vert\n");
 }
 
 void
-ruiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
+uiBoxPackStart_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   IBox          *box;
   NSView        *widget = NULL;
   int           grav = NSStackViewGravityLeading;
-  uibox_t       *uiboxint = NULL;
 
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start")) {
     return;
@@ -265,7 +238,6 @@ ruiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
 
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.packwidget;
-  uiboxint = uibox->uiint.uibox;
 
   if (uibox->wtype == WCONT_T_VBOX) {
     grav = NSStackViewGravityTop;
@@ -274,20 +246,17 @@ ruiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
 
   uiWidgetSetMarginTop (uiwidget, 1);
   uiWidgetSetMarginStart (uiwidget, 1);
-fprintf (stderr, "box: %ld p-st: %d %d/%s\n", uiboxint->ident, uiboxint->count, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
-  nlistSetData (uiboxint->widgetlist, uiboxint->count, uiwidget);
-  uiboxint->count += 1;
+fprintf (stderr, "box: %d p-st: %d/%s\n", uibox->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   uiwidget->packed = true;
   return;
 }
 
 void
-ruiBoxPackStartExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget)
+uiBoxPackStartExpandChildren_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   IBox          *box;
   NSView        *widget = NULL;
   int           grav = NSStackViewGravityLeading;
-  uibox_t       *uiboxint;
 
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start-exp")) {
     return;
@@ -296,7 +265,6 @@ ruiBoxPackStartExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget)
     return;
   }
 
-  uiboxint = uibox->uiint.uibox;
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.packwidget;
 
@@ -330,10 +298,8 @@ fprintf (stderr, "c-box: %d pack into w\n", uiwidget->id);
   return;
 }
 
-/* this uses the GTK terminology */
-/* expand allows any children to expand to fill the space */
 void
-ruiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
+uiBoxPackEnd_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   IBox          *box;
   NSView        *widget = NULL;
@@ -348,7 +314,11 @@ ruiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
 
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.packwidget;
-  [box addView : widget inGravity : grav];
+  if (uibox->wtype == WCONT_T_VBOX) {
+    grav = NSStackViewGravityBottom;
+  }
+  [box insertView : widget atIndex : 0 inGravity : grav];
+//  [box addView : widget inGravity : grav];
 
   if (uibox->uidata.layout->expandchildren &&
       uibox->wtype == WCONT_T_VBOX) {
@@ -369,9 +339,9 @@ fprintf (stderr, "c-box: %d pack into w-e\n", uiwidget->id);
 #endif
   }
 
-  if (uiwidget->wbasetype == WCONT_T_BOX) {
-    uiwidget->uidata.layout->expandchildren = true;
-  }
+//  if (uiwidget->wbasetype == WCONT_T_BOX) {
+//    uiwidget->uidata.layout->expandchildren = true;
+//  }
 
   uiwidget->packed = true;
   uiWidgetUpdateLayout (uiwidget);
@@ -379,6 +349,7 @@ fprintf (stderr, "c-box: %d pack into w-e\n", uiwidget->id);
   return;
 }
 
+#if 0
 void
 uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
@@ -393,7 +364,6 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
     return;
   }
 
-  uiboxint = uibox->uiint.uibox;
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.packwidget;
   if (uibox->wtype == WCONT_T_VBOX) {
@@ -425,16 +395,16 @@ fprintf (stderr, "c-box: %d pack into h\n", uiwidget->id);
 
   return;
 }
+#endif
 
 /* this uses the GTK terminology */
 /* expand allows any children to expand to fill the space */
 void
-ruiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget)
+uiBoxPackEndExpandChildren_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   IBox        *box;
   NSView      *widget = NULL;
   int         grav = NSStackViewGravityTrailing;
-  uibox_t     *uiboxint = NULL;
 
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end-exp")) {
     return;
@@ -443,7 +413,6 @@ ruiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget)
     return;
   }
 
-  uiboxint = uibox->uiint.uibox;
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.packwidget;
 
@@ -498,18 +467,8 @@ static uiwcont_t *
 uiCreateBox (int orientation)
 {
   uiwcont_t   *uiwidget = NULL;
-  uibox_t     *uiboxint = NULL;
   IBox        *box = NULL;
   char        tmp [40];
-
-  uiboxint = mdmalloc (sizeof (uibox_t));
-  uiboxint->widgetlist = nlistAlloc ("box", LIST_UNORDERED, NULL);
-  uiboxint->expandchildren = false;
-  uiboxint->postprocess = false;
-  uiboxint->count = 0;
-  /* the number of widgets in a box is fairly small */
-  /* this needs to a be larger value than the widgets packed into the start */
-  uiboxint->endcount = 100;
 
   box = [[IBox alloc] init];
   [box setOrientation : orientation];
@@ -522,9 +481,6 @@ uiCreateBox (int orientation)
 
   snprintf (tmp, sizeof (tmp), "box-%ld\n", gident);
   box.identifier = [NSString stringWithUTF8String: tmp];
-  uiboxint->ident = gident;
-fprintf (stderr, "  c-box %ld\n", gident);
-  ++gident;
 
 #if MACOS_UI_DEBUG
   [box setFocusRingType : NSFocusRingTypeExterior];
@@ -547,7 +503,6 @@ fprintf (stderr, "  c-box %ld\n", gident);
   }
 
   uiwcontSetWidget (uiwidget, box, NULL);
-  uiwidget->uiint.uibox = uiboxint;
 
   [box setIdentifier :
       [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];

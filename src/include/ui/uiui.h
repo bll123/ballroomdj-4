@@ -10,16 +10,17 @@ extern "C" {
 #endif
 
 typedef struct {
-  const char *uifont;
-  const char *listingfont;
-  const char *accentColor;
-  const char *errorColor;
-  const char *markColor;
-  const char *changedColor;
-  const char *rowselColor;
-  const char *rowhlColor;
-  const char *mqbgColor;
-  bool        is_dark;
+  const char * uifont;
+  const char * listingfont;
+  const char * accentColor;
+  const char * errorColor;
+  const char * markColor;
+  const char * changedColor;
+  const char * rowselColor;
+  const char * rowhlColor;
+  const char * mqbgColor;
+  int        direction;       // for macos
+  bool       is_dark;
 } uisetup_t;
 
 enum {

@@ -23,8 +23,6 @@
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 
-static void uiWidgetUpdateLayout (uiwcont_t *uiwidget);
-
 /* widget interface */
 
 void
@@ -39,6 +37,7 @@ void
 uiWidgetExpandHoriz (uiwcont_t *uiwidget)
 {
   NSView          *widget;
+  macoslayout_t   *layout;
 
   widget = uiwidget->uidata.packwidget;
   [widget.widthAnchor
@@ -56,6 +55,7 @@ void
 uiWidgetExpandVert (uiwcont_t *uiwidget)
 {
   NSView          *widget;
+  macoslayout_t   *layout;
 
   widget = uiwidget->uidata.packwidget;
   [widget.heightAnchor
@@ -359,13 +359,13 @@ uiWidgetGetPosition (uiwcont_t *uiwidget, int *x, int *y)
 }
 
 void
-uiWidgetAddClass (uiwcont_t *uiwidget, const char *class)
+uiWidgetSetClass (uiwcont_t *uiwidget, const char *class)
 {
   return;
 }
 
 void
-uiWidgetRemoveClass (uiwcont_t *uiwidget, const char *class)
+uiWidgetClearClass (uiwcont_t *uiwidget, const char *class)
 {
   return;
 }

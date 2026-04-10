@@ -54,9 +54,6 @@ typedef struct uibutton {
 
 @end
 
-static long   gident = 0;
-
-
 uiwcont_t *
 uiCreateButton (callback_t *uicb, const char *title,
     const char *imagenm, const char *tooltiptxt)
@@ -65,7 +62,6 @@ uiCreateButton (callback_t *uicb, const char *title,
   uibutton_t      *uibutton;
   uibuttonbase_t  *bbase;
   IButton         *widget = nil;
-  char            tmp [40];
 
   uibutton = mdmalloc (sizeof (uibutton_t));
   uibutton->image = NULL;
@@ -201,6 +197,15 @@ uiButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
     image = [[NSImage alloc] initWithContentsOfFile: ns];
     uibutton->altimage = image;
   }
+}
+
+void
+uiButtonSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-focus-cb")) {
+    return;
+  }
+
 }
 
 void

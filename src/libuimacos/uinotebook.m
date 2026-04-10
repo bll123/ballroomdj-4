@@ -49,39 +49,31 @@ fprintf (stderr, "c-nb\n");
 
 void
 uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
-    const char *label, uiwcont_t *image)
+    uiwcont_t *uilabel)
 {
   NSTabView       *nb;
-  NSTabViewItem   *tabv;
 
   if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-append-page")) {
     return;
   }
-  if (uibox->wbasetype != WCONT_T_BOX && uibox->wtype != WCONT_T_BOX &&
-      uibox->wtype != WCONT_T_SCROLL_WINDOW) {
-    fprintf (stderr, "ERR: %s incorrect type exp:%d/%s actual:%d/%s\n",
-        "nb-append-page-box",
-        WCONT_T_BOX, uiwcontDesc (WCONT_T_BOX),
-        uibox->wbasetype, uiwcontDesc (uibox->wbasetype));
+
+  if (uibox == NULL) {
     return;
   }
-  if (uibox == NULL) {
+  if (uibox->wbasetype != WCONT_T_BOX &&
+      uibox->wtype != WCONT_T_WINDOW_SCROLL) {
+    fprintf (stderr, "ERR: %s incorrect type actual:%d/%s\n",
+        "nb-append-page-box",
+        uibox->wbasetype, uiwcontDesc (uibox->wbasetype));
     return;
   }
 
   nb = uinotebook->uidata.widget;
-  tabv = [[NSTabViewItem alloc] init];
-// ### will need to change to draw-label so that a custom tab w/pic can
-// be displayed.
-// or rather, just re-implement as uivnb was done
-  if (label != NULL) {
-    tabv.label = [NSString stringWithUTF8String : label];
-  } else {
-    [nb setTabViewType : NSNoTabsNoBorder];
-  }
+//  tabv = [[NSTabViewItem alloc] init];
+  [nb setTabViewType : NSNoTabsNoBorder];
 
-  [tabv setView : uibox->uidata.widget];
-  [nb addTabViewItem : tabv];
+//  [tabv setView : uibox->uidata.widget];
+//  [nb addTabViewItem : tabv];
   uibox->packed = true;
 
   nb.needsDisplay = true;
@@ -116,16 +108,3 @@ uiNotebookSetCallback (uiwcont_t *uinotebook, callback_t *uicb)
   return;
 }
 
-void
-uiNotebookHideTabs (uiwcont_t *uinotebook)
-{
-  NSTabView   *nb;
-
-  if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-tabs")) {
-    return;
-  }
-
-  nb = uinotebook->uidata.widget;
-  [nb setTabViewType : NSNoTabsBezelBorder];
-  [nb setTabPosition : NSTabPositionNone];
-}

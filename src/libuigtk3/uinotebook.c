@@ -52,8 +52,12 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
   if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-append-page")) {
     return;
   }
+
   /* at this time, only boxes and scrolled-windows are stored in nb pages */
-  if (uibox->wbasetype != WCONT_T_BOX && uibox->wtype != WCONT_T_BOX &&
+  if (uibox == NULL) {
+    return;
+  }
+  if (uibox->wbasetype != WCONT_T_BOX &&
       uibox->wtype != WCONT_T_WINDOW_SCROLL) {
     fprintf (stderr, "ERR: %s incorrect type in nb actual: %d %d/%s\n",
         "nb-append-page-box",

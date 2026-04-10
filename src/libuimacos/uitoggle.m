@@ -133,9 +133,6 @@ uiCreateToggleButton (const char *txt,
     nsimage = [[NSImage alloc] initWithContentsOfFile : ns];
     [widget setImage : nsimage];
   }
-  if (image != NULL) {
-    [widget setImage : image->uidata.widget];
-  }
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_RADIO);
   uiwcontSetWidget (uiwidget, widget, NULL);
@@ -196,6 +193,14 @@ void
 uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
   return;
+}
+
+void
+uiToggleButtonSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_TOGGLE, "tb-set-cb")) {
+    return;
+  }
 }
 
 void

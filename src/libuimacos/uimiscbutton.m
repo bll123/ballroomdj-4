@@ -51,7 +51,7 @@ uiCreateColorButton (const char *colortxt)
   widget.color = color;
   widget.needsDisplay = true;
 
-  uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_COLOR_BUTTON);
+  uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_BUTTON_COLOR);
   uiwcontSetWidget (uiwidget, widget, NULL);
 
   [widget setIdentifier :
@@ -64,4 +64,16 @@ void
 uiColorButtonGetColor (uiwcont_t *uiwidget, char *tbuff, size_t sz)
 {
   return;
+}
+
+void
+uiColorButtonSetColor (uiwcont_t *uiwidget, const char *color)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_COLOR, "col-button-get")) {
+    return;
+  }
+
+  //gdk_rgba_parse (&rgba, color);
+  //gtk_color_chooser_set_rgba (
+  //    GTK_COLOR_CHOOSER (uiwidget->uidata.widget), &rgba);
 }

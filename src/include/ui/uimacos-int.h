@@ -45,11 +45,11 @@ void uiWidgetUpdateLayout (uiwcont_t *uiwidget);
 typedef struct macoslayout {
   NSStackView   *container;
   NSEdgeInsets  margins;
-  NSStackView   *container;
   bool          centered;
   bool          expandvert;
   bool          expandhoriz;
   bool          alignright;
+  bool          expandchildren;
 } macoslayout_t;
 
 #define MACOS_UI_DEBUG 1

@@ -128,11 +128,14 @@ NSLog (@"Window : call close-cb");
 uiwcont_t *
 uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
 {
-  uiwcont_t     *uiwin;
+  uiwcont_t     *uiwin = NULL;
+  uiwcont_t     *uibox = NULL;
   IWindow       *win = NULL;
+  NSStackView   *box = NULL;
   id            windowDelegate;
 
   win = [[IWindow alloc] init];
+  uibox = uiCreateVertBox ();
   if (title != NULL) {
     NSString  *nstitle;
 
@@ -367,7 +370,7 @@ uiCreateScrolledWindow (int minheight)
   win.hasHorizontalScroller = NO;
   win.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
 
-  uiscwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_SCROLL_WINDOW);
+  uiscwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_WINDOW_SCROLL);
   uiwcontSetWidget (uiscwin, win, NULL);
 
   [win setIdentifier :
@@ -499,7 +502,7 @@ fprintf (stderr, "  pack-in-win: %d/%s\n", uiwidget->wtype, uiwcontDesc (uiwidge
   container = uiwidget->uidata.packwidget;
   widget = uiwidget->uidata.widget;
 
-  if (uiwindow->wtype == WCONT_T_SCROLL_WINDOW) {
+  if (uiwindow->wtype == WCONT_T_WINDOW_SCROLL) {
     NSScrollView  *scv;
 
     scv = uiwindow->uidata.widget;
@@ -528,7 +531,6 @@ fprintf (stderr, "  pack-in-win: %d/%s\n", uiwidget->wtype, uiwcontDesc (uiwidge
   layout->expandchildren = true;
 
   winbox.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
-  widget.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
 
   return;
 }
