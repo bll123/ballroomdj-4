@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include <gtk/gtk.h>
 
@@ -203,7 +204,7 @@ uiMenuAddMainItem (uiwcont_t *uimenubar, uiwcont_t *uimenu, const char *txt)
   menu = uimenu->uiint.uimenu;
 
   if (menu->menucount >= UIUTILS_MENU_MAX) {
-    fprintf (stderr, "ERR: %d-%d exceeds menu max\n", uimenu->ui_id, uimenu->id);
+    fprintf (stderr, "ERR: %" PRIu32 "-%" PRIu32 " exceeds menu max\n", uimenu->ui_id, uimenu->id);
     return NULL;
   }
 

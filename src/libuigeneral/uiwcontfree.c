@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "log.h"
 #include "mdebug.h"
@@ -40,8 +41,8 @@ uiwcontFree (uiwcont_t *uiwidget)
 
   switch (uiwidget->wtype) {
     case WCONT_T_UNKNOWN: {
-      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: trying to free %d-%d twice", uiwidget->ui_id, uiwidget->id);
-      fprintf (stderr, "ERR: trying to free %d-%d twice\n", uiwidget->ui_id, uiwidget->id);
+      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: trying to free %" PRIu32 "-%" PRIu32 " twice", uiwidget->ui_id, uiwidget->id);
+      fprintf (stderr, "ERR: trying to free %" PRIu32 "-%" PRIu32 " twice\n", uiwidget->ui_id, uiwidget->id);
       break;
     }
     case WCONT_T_HBOX:
@@ -119,11 +120,11 @@ uiwcontBoxFree (uiwcont_t *uibox)
   tid = uibox->id;
 
   if (! boxbase->postprocess) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: box %d-%d not post-process", uibox->ui_id, tid);
-    fprintf (stderr, "ERR: box %d-%d not post-process\n", uibox->ui_id, tid);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: box %" PRIu32 "-%" PRIu32 " not post-process", uibox->ui_id, tid);
+    fprintf (stderr, "ERR: box %" PRIu32 "-%" PRIu32 " not post-process\n", uibox->ui_id, tid);
   }
 
-fprintf (stderr, "   free %d-%d \n", uibox->ui_id, tid);
+  // fprintf (stderr, "   free %" PRIu32 "-%" PRIu32 " \n", uibox->ui_id, tid);
   wlist = boxbase->widgetlist;
   rlist = boxbase->releaselist;
   nlistStartIterator (wlist, &iteridx);

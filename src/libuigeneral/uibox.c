@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "callback.h"
 #include "log.h"
@@ -79,8 +80,8 @@ uiBoxPostProcess (uiwcont_t *uibox)
   boxbase = &uibox->uiint.uiboxbase;
 
   if (boxbase->postprocess) {
-    logMsg (LOG_DBG, LOG_UI, "INFO: box %d-%d post-process twice\n", uibox->ui_id, uibox->id);
-    fprintf (stderr, "INFO: box %d-%d post-process twice\n", uibox->ui_id, uibox->id);
+    logMsg (LOG_DBG, LOG_UI, "INFO: box %" PRIu32 "-%" PRIu32 " post-process twice\n", uibox->ui_id, uibox->id);
+    fprintf (stderr, "INFO: box %" PRIu32 "-%" PRIu32 " post-process twice\n", uibox->ui_id, uibox->id);
   }
 
   wlist = boxbase->widgetlist;
@@ -224,8 +225,8 @@ uiBoxListAdd (uiwcont_t *uibox, uiwcont_t *uiwidget,
       uiwidget->wbasetype != WCONT_T_WINDOW) {
     uiwidget->id = uibox->id + nlistGetCount (wlist);
   }
-  logMsg (LOG_DBG, LOG_UI, "wcont: pack: %d-%d %s box: %d-%d", uiwidget->ui_id, uiwidget->id, uiwcontDesc (uiwidget->wtype), uibox->ui_id, uibox->id);
-fprintf (stderr, "wcont: pack: %d-%d %s box: %d-%d\n", uiwidget->ui_id, uiwidget->id, uiwcontDesc (uiwidget->wtype), uibox->ui_id, uibox->id);
+  logMsg (LOG_DBG, LOG_UI, "wcont: pack: %" PRIu32 "-%" PRIu32 " %s box: %" PRIu32 "-%" PRIu32, uiwidget->ui_id, uiwidget->id, uiwcontDesc (uiwidget->wtype), uibox->ui_id, uibox->id);
+fprintf (stderr, "wcont: pack: %" PRIu32 "-%" PRIu32 " %s box: %" PRIu32 "-%" PRIu32 "\n", uiwidget->ui_id, uiwidget->id, uiwcontDesc (uiwidget->wtype), uibox->ui_id, uibox->id);
   uiwidget->parentid = uibox->id;
   uiwidget->packed = true;
 }

@@ -186,14 +186,20 @@ if [[ $DEVELOPMENT != dev ]]; then
     grc=1
   fi
 
-  wc=$(grep '^logBasic' src/*/*.c src/*/*.cpp src/*/*.m | grep -v KEEP | wc -l)
-  if [[ $wc -ne 0 ]]; then
+  wc=$(grep '^uiwcontDebugDisp' src/*/*.c src/*/*.cpp src/*/*.m | wc -l)
+  if [[ $wc -gt 1 ]]; then
+    echo "uiwcontDebugDisp found"
+    grc=1
+  fi
+
+  wc=$(grep '^logBasic' src/*/*.c src/*/*.cpp src/*/*.m | wc -l)
+  if [[ $wc -gt 1 ]]; then
     echo "logBasic debugging found"
     grc=1
   fi
 
-  wc=$(grep '^logStderr' src/*/*.c src/*/*.cpp src/*/*.m | grep -v KEEP | wc -l)
-  if [[ $wc -ne 0 ]]; then
+  wc=$(grep '^logStderr' src/*/*.c src/*/*.cpp src/*/*.m | wc -l)
+  if [[ $wc -gt 1 ]]; then
     echo "logStderr debugging found"
     grc=1
   fi

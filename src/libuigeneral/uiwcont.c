@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <inttypes.h>
 #include <string.h>
 #include <assert.h>
 #include <stdatomic.h>
@@ -142,6 +143,20 @@ static_assert (sizeof (uiwcontdesc) / sizeof (const char *) == WCONT_T_MAX,
     "missing wcont type");
 
 /* for debugging */
+void
+uiwcontDebugDisp (uiwcont_t *uiwidget, const char *tag)   /* KEEP */
+{
+  if (uiwidget == NULL) {
+    fprintf (stderr, "-- wcont: %s null\n", tag);
+    return;
+  }
+  if (tag == NULL) {
+    tag = "";
+  }
+  fprintf (stderr, "-- wcont: %s %" PRIu32 "-%" PRIu32 " %d/%s\n",
+      tag, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
+}
+
 const char *
 uiwcontDesc (int wtype)   /* KEEP */
 {

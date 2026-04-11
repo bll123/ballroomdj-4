@@ -28,6 +28,9 @@ uiwcont_t *uiwcontAlloc_r (int basetype, int type, const char *, int);
 /* basefree only frees the uiwidget, not any internals */
 void uiwcontBaseFree (uiwcont_t *uiwidget);
 void uiwcontSetWidget (uiwcont_t *uiwidget, void *widget, void *packwidget);
+
+/* for debugging */
+void uiwcontDebugDisp (uiwcont_t *uiwidget, const char *tag);
 const char * uiwcontDesc (int wtype);
 
 /* uiwcontfree.c */

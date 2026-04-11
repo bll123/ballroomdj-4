@@ -58,7 +58,6 @@ enum {
 
 typedef struct {
   int           tagkey;
-  uiwcont_t     *label;
   uiwcont_t     *scale;
   uiwcont_t     *scaledisp;
   callback_t    *scalecb;
@@ -101,7 +100,6 @@ uiqeInit (uiwcont_t *windowp, musicdb_t *musicdb, nlist_t *opts)
   }
   for (int i = 0; i < UIQE_SCALE_MAX; ++i) {
     uiqe->scaledata [i].tagkey = -1;
-    uiqe->scaledata [i].label = NULL;
     uiqe->scaledata [i].scale = NULL;
     uiqe->scaledata [i].scaledisp = NULL;
     uiqe->scaledata [i].scalecb = NULL;
@@ -148,11 +146,9 @@ uiqeFree (uiqe_t *uiqe)
     uiqe->wcont [i] = NULL;
   }
   for (int i = 0; i < UIQE_SCALE_MAX; ++i) {
-    uiwcontFree (uiqe->scaledata [i].label);
     uiwcontFree (uiqe->scaledata [i].scale);
     uiwcontFree (uiqe->scaledata [i].scaledisp);
     callbackFree (uiqe->scaledata [i].scalecb);
-    uiqe->scaledata [i].label = NULL;
     uiqe->scaledata [i].scale = NULL;
     uiqe->scaledata [i].scaledisp = NULL;
   }
@@ -373,7 +369,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
     uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
-    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
     uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
 
     uiqe->uirating = uiratingSpinboxCreate (hbox, UIRATING_NORM);
@@ -387,7 +383,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
     uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCELEVEL].displayname);
-    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
     uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
 
     uiqe->uilevel = uilevelSpinboxCreate (hbox, UIRATING_NORM);
@@ -401,7 +397,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
     uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_FAVORITE].displayname);
-    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+    uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
     uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
 
     uiqe->uifavorite = uifavoriteSpinboxCreate (hbox);
@@ -506,20 +502,18 @@ uiqeAddScale (uiqe_t *uiqe, uiwcont_t *hbox, int scidx)
   uiqe->scaledata [scidx].tagkey = tagkey;
 
   uiwidgetp = uiCreateColonLabel (tagdefs [tagkey].displayname);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
-  uiqe->scaledata [scidx].label = uiwidgetp;
 
   uiwidgetp = uiCreateScale (lower, upper, inca, incb, 0.0, digits);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiWidgetSetMarginStart (uiwidgetp, 2);
+  uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_SCALE], uiwidgetp);
+
   uiqe->scaledata [scidx].scale = uiwidgetp;
   uiqe->scaledata [scidx].scalecb = callbackInitD (
       uiqeScaleDisplayCallback, &uiqe->scaledata [scidx]);
   uiScaleSetCallback (uiwidgetp, uiqe->scaledata [scidx].scalecb);
-
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
-  uiWidgetSetMarginStart (uiwidgetp, 2);
-
-  uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_SCALE], uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("100%");
   uiLabelAlignEnd (uiwidgetp);
@@ -527,6 +521,7 @@ uiqeAddScale (uiqe_t *uiqe, uiwcont_t *hbox, int scidx)
   uiWidgetSetMarginStart (uiwidgetp, 2);
   uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_SCALE_DISP], uiwidgetp);
   uiqe->scaledata [scidx].scaledisp = uiwidgetp;
+
   logProcEnd ("");
 }
 

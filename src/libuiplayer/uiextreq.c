@@ -254,6 +254,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
       _("Audio File"));
   uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiSizeGroupAdd (szgrp, uiwidgetp);
+uiwcontDebugDisp (uiwidgetp, "aud-file");
 
   uiwidgetp = uiEntryInit (50, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
@@ -282,7 +283,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
 
   /* artist display */
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_KEEP);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_ARTIST].displayname);
   uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
@@ -298,7 +299,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
 
   /* title display */
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_KEEP);
+  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_TITLE].displayname);
   uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);

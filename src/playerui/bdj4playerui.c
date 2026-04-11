@@ -1601,8 +1601,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
   uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   uiwidgetp = uiCreateLabel ("");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
-  uiwcontFree (uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   plui->fontszdialogcreated = true;
 
   uiBoxPostProcess (hbox);
