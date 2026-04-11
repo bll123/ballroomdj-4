@@ -2961,7 +2961,8 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   sb = uisbnumCreate (hbox, tlabel, 2);
   /* max 4 hours */
   uisbnumSetTime (sb, 0.0, 3600.0 * 4.0, SBNUM_TIME_HM);
-  uisbnumSetValue (sb, 3.0 * 60.0 * 1000.0);
+  /* 3 hours */
+  uisbnumSetValue (sb, 3.0 * 3600.0 * 1000.0);
   manage->sbnum [MANAGE_SB_CFPL_TM_LIMIT] = sb;
 
   uiBoxPostProcess (hbox);

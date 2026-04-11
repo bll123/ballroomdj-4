@@ -190,7 +190,7 @@ uisbnumSetTime (uisbnum_t *sbnum, double min, double max, int timetype)
   if (timetype == SBNUM_TIME_PRECISE) {
     sbnum->valtype = VAL_HMS_PRECISE | VAL_NOT_EMPTY;
     sbnum->incr = 100.0;
-    sbnum->pageincr = 10000.0;
+    sbnum->pageincr = 60000.0;
     /* mm:ss.d */
     uiEntrySetWidth (sbnum->entry, 7);
   }
