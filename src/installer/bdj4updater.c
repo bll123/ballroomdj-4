@@ -587,13 +587,6 @@ main (int argc, char *argv [])
   }
 
   {
-    /* 4.12.1 2024-9-12 new file bdjuri.txt */
-    /* 4.12.8 2024-12-5 updated bdjuri.txt */
-    updaterCopyIfNotPresent (BDJ_URIFN, BDJ4_CONFIG_EXT, NULL);
-    updaterCopyVersionCheck (NULL, BDJ_URIFN, BDJ4_CONFIG_EXT, 3);
-  }
-
-  {
     /* 4.14.0 2025-3-26 new file audiosrc.txt */
     updaterCopyIfNotPresent (ASCONF_FN, BDJ4_CONFIG_EXT, NULL);
     /* 4.15.0 2025-5-1 update audiosrc.txt */

@@ -523,3 +523,7 @@ img/profile\d\d/switch-on-col-circ\.svg$
 img/profile\d\d/switch-off-col-circ\.svg$
 img/profile\d\d/switch-on-marks\.svg$
 img/profile\d\d/switch-off-marks\.svg$
+
+# 4.19.0 2026-9-11 bdjuri is never changed, use it from templates/
+data/bdjuri\.txt$
+data/bdjuri\.txt\.bak\.1$
