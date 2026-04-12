@@ -38,6 +38,7 @@ enum {
   MPL_CB_MENU_PL_LOAD,
   MPL_CB_MENU_PL_COPY,
   MPL_CB_MENU_PL_NEW,
+  MPL_CB_MENU_PL_NEW_PODCAST,
   MPL_CB_MENU_PL_DELETE,
   MPL_CB_MAXPLAYTIME,
   MPL_CB_STOPAT,
@@ -602,11 +603,11 @@ managePlaylistMenu (managepl_t *managepl, uiwcont_t *uimenubar)
       managepl->callbacks [MPL_CB_MENU_PL_NEW]);
   uiwcontFree (menuitem);
 
-  managepl->callbacks [MPL_CB_MENU_PL_NEW] = callbackInit (
+  managepl->callbacks [MPL_CB_MENU_PL_NEW_PODCAST] = callbackInit (
       managePlaylistNewPodcastCB, managepl, NULL);
   /* CONTEXT: playlist management: menu selection: playlist: edit menu: new podcast */
   menuitem = uiMenuCreateItem (menu, _("New Podcast"),
-      managepl->callbacks [MPL_CB_MENU_PL_NEW]);
+      managepl->callbacks [MPL_CB_MENU_PL_NEW_PODCAST]);
   uiwcontFree (menuitem);
 
   managepl->callbacks [MPL_CB_MENU_PL_COPY] = callbackInit (
