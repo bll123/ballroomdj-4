@@ -8,6 +8,7 @@
 
 * Bug Fixes:
     * Configuration: Fix display of validation messages.
+    * User Interface: Fix some issues with scrolling areas.
     * User Interface: Clean up theme colors.
     * User Interface: Minor interface fixes.
 * Changes:
