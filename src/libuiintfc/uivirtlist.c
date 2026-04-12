@@ -193,6 +193,7 @@ typedef struct uivirtlist {
   uivlcoldata_t *coldata;
   uivlrow_t     *rows;
   /* the actual number of rows that can be displayed */
+  int           old_dispsize;
   int           dispsize;
   int           dispalloc;
   int           lastdisphighlight;
@@ -303,6 +304,7 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
 
   vl->dispalloc = 0;
   vl->lastdisphighlight = VL_UNK_ROW;
+  vl->old_dispsize = 0;
   /* display size is set to the number of rows that can be displayed */
   /* it includes the heading row if headings are on */
   vl->dispsize = dispsize;
@@ -1641,13 +1643,13 @@ uivlProcess (uivirtlist_t *vl)
 void
 uivlPopulate (uivirtlist_t *vl)
 {
+  bool      chg = false;
+
   logProcBegin ();
   if (! uivlValidateColumn (vl, VL_INIT_DISP, 0, __func__)) {
     logProcEnd ("not-valid");
     return;
   }
-
-  uiBoxPostProcess (vl->wcont [VL_W_MAIN_VBOX]);
 
   for (int dispidx = vl->dispsize; dispidx < vl->dispalloc; ++dispidx) {
     if (vl->rows [dispidx].offscreen) {
@@ -1655,6 +1657,7 @@ uivlPopulate (uivirtlist_t *vl)
     }
     vl->rows [dispidx].offscreen = true;
     uiWidgetHide (vl->rows [dispidx].hbox);
+    chg = true;
   }
 
   uivlCheckDisplay (vl);
@@ -1715,11 +1718,18 @@ uivlPopulate (uivirtlist_t *vl)
 
     if (row->offscreen) {
       uivlShowRow (vl, row);
+      chg = true;
     }
   }
 
   uivlClearDisplaySelections (vl);
   uivlSetDisplaySelections (vl);
+
+  if (vl->old_dispsize != vl->dispsize || chg) {
+    uiBoxPostProcess (vl->wcont [VL_W_MAIN_VBOX]);
+    vl->old_dispsize = vl->dispsize;
+  }
+
   logProcEnd ("");
 }
 
@@ -2501,6 +2511,8 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
   }
 
   theight = vl->vboxheight - vl->headingheight;
+  /* I don't think the margins are included in the rowheight... */
+  theight -= (vl->dispsize - 1) * (uiBaseMarginSz * 1);
   calcrows = theight / vl->rowheight;
   if (vl->dispheading) {
     /* must include the heading as a row */
@@ -2508,12 +2520,7 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
   }
 
   if (calcrows != vl->dispsize) {
-    /* i don't recall why these were put in */
-    /* i don't think they're needed */
-    /* will leave them here, commented out for now */
-    // uiWidgetSetSizeRequest (vl->wcont [VL_W_MAIN_VBOX], -1, height - 10);
     uivlChangeDisplaySize (vl, calcrows);
-    // uiWidgetSetSizeRequest (vl->wcont [VL_W_MAIN_VBOX], -1, -1);
   }
 
   logProcEnd ("");
