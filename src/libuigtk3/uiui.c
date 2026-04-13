@@ -514,15 +514,7 @@ uiwcontUIInit (uiwcont_t *uiwidget)
 void
 uiwcontUIWidgetInit (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
-    return;
-  }
-  if (uiwidget->uidata.widget == (void *) WCONT_EMPTY_WIDGET) {
-    return;
-  }
-
-  gtk_widget_set_margin_top (uiwidget->uidata.widget, uiBaseMarginSz);
-  gtk_widget_set_margin_start (uiwidget->uidata.widget, uiBaseMarginSz);
+  return;
 }
 
 void

@@ -228,6 +228,7 @@ typedef struct uivirtlist {
   bool          keyhandling;
   bool          uselistingfont;
   bool          numrowchg;
+  bool          hassbnum;
 } uivirtlist_t;
 
 static void uivlFreeRow (uivirtlist_t *vl, uivlrow_t *row);
@@ -323,6 +324,7 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   vl->darkbg = false;
   vl->uselistingfont = false;
   vl->numrowchg = false;
+  vl->hassbnum = false;
   vl->vboxheight = 0;
   vl->headingheight = 0;
   vl->rowheight = 0;
@@ -1608,6 +1610,10 @@ uivlUpdateDisplay (uivirtlist_t *vl)
 void
 uivlProcess (uivirtlist_t *vl)
 {
+  if (vl->hassbnum == false) {
+    return;
+  }
+
   for (int dispidx = vl->headingoffset; dispidx < vl->dispsize; ++dispidx) {
     uivlrow_t   *row;
 
@@ -1916,6 +1922,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
           uisbnumSetChangeCallback (col->sbnum, coldata->spinboxcb);
         }
         uiBoxPostProcess (col->uiwidget);
+        vl->hassbnum = true;
         break;
       }
       case VL_TYPE_SPINBOX_TIME: {
@@ -1929,6 +1936,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
           uisbnumSetChangeCallback (col->sbnum, coldata->spinboxcb);
         }
         uiBoxPostProcess (col->uiwidget);
+        vl->hassbnum = true;
         break;
       }
       case VL_TYPE_INTERNAL_NUMERIC: {
@@ -2505,9 +2513,7 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
   }
 
   theight = vl->vboxheight - vl->headingheight;
-// ###
-//  /* I don't think the margins are included in the rowheight... */
-//  theight -= (vl->dispsize - 1) * (uiBaseMarginSz * 1);
+  /* there should be no margin for the row-hbox's */
   calcrows = theight / vl->rowheight;
   if (vl->dispheading) {
     /* must include the heading as a row */
