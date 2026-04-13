@@ -8,7 +8,11 @@
 
 * Bug Fixes:
     * Configuration: Fix a memory leak.
+    * PENDING Configuration: Fix validation message display.
+    * Configuration: Music Queues: Fix disabled switch display.
     * Playlist Management: Fix "new automatic playlist/podcast".
+* Internal:
+    * Minor cleanup.
 
 -->
 

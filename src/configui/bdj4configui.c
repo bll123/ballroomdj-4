@@ -128,7 +128,9 @@ main (int argc, char *argv[])
   confui.gui.marqueetaglist = NULL;
   confui.gui.pluitaglist = NULL;
   confui.gui.inbuild = false;
-  confui.gui.valid = 0;
+  confui.gui.invalid_count = 0;
+  confui.gui.validate_check = false;
+  confui.gui.reset_validation = false;
   confui.gui.changed = false;
   confui.gui.dancedkey = LIST_VALUE_INVALID;
   confui.gui.inchange = false;
@@ -561,6 +563,19 @@ confuiMainLoop (void *tconfui)
   }
   for (int i = CONFUI_ENTRY_CHOOSE_BEGIN + 1; i < CONFUI_ENTRY_CHOOSE_MAX; ++i) {
     uiEntryValidate (confui->gui.uiitem [i].uiwidgetp, false);
+  }
+  for (int i = CONFUI_SPINBOX_BEGIN + 1; i < CONFUI_SPINBOX_MAX; ++i) {
+    confuibasetype_t basetype;
+
+    basetype = confui->gui.uiitem [i].basetype;
+    if (basetype == CONFUI_SPINBOX_TIME && confui->gui.reset_validation) {
+      confuiMarkValid (&confui->gui, i);
+    }
+  }
+
+  if (confui->gui.validate_check) {
+    /* no processing -- this changes in a future release */
+    confui->gui.validate_check = false;
   }
 
   confuiAudioSrcProcess (&confui->gui);

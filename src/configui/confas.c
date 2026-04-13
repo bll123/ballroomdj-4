@@ -348,7 +348,7 @@ confuiAudioSrcEntryChg (void *udata, const char *label, int widx)
   mode = asconfGetNum (gui->asconf, gui->asconfkey, ASCONF_MODE);
   if (mode == ASCONF_MODE_OFF) {
     confuiMarkValid (gui, widx);
-    if (gui->valid == 0) {
+    if (gui->invalid_count == 0) {
       confuiSetErrorMsg (gui, "");
     }
     return UIENTRY_OK;
@@ -356,7 +356,7 @@ confuiAudioSrcEntryChg (void *udata, const char *label, int widx)
   if (mode == ASCONF_MODE_SERVER &&
       widx == CONFUI_ENTRY_AUDIOSRC_URI) {
     confuiMarkValid (gui, widx);
-    if (gui->valid == 0) {
+    if (gui->invalid_count == 0) {
       confuiSetErrorMsg (gui, "");
     }
     return UIENTRY_OK;
@@ -388,7 +388,7 @@ confuiAudioSrcEntryChg (void *udata, const char *label, int widx)
   }
 
   confuiMarkValid (gui, widx);
-  if (gui->valid == 0) {
+  if (gui->invalid_count == 0) {
     confuiSetErrorMsg (gui, "");
   }
 
@@ -516,7 +516,7 @@ confuiAudioSrcSave (confuigui_t *gui)
     return;
   }
 
-  if (gui->valid != 0) {
+  if (gui->invalid_count != 0) {
     logProcEnd ("not-valid");
     return;
   }
@@ -672,7 +672,7 @@ confuiAudioSrcChkConn (void *udata)
   bool          rc = false;
   int           widx;
 
-  if (gui->valid != 0) {
+  if (gui->invalid_count != 0) {
     return UICB_CONT;
   }
 
@@ -697,7 +697,7 @@ confuiAudioSrcValidateAll (confuigui_t *gui, bool forceflag)
 {
   int         widx;
 
-  gui->valid = 0;
+  gui->invalid_count = 0;
   widx = CONFUI_ENTRY_AUDIOSRC_NAME;
   confuiMarkValid (gui, widx);
   uiEntryValidate (gui->uiitem [widx].uiwidgetp, forceflag);

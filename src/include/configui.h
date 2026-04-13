@@ -109,15 +109,15 @@ enum {
   CONFUI_SPINBOX_ITUNES_STARS_80,
   CONFUI_SPINBOX_ITUNES_STARS_90,
   CONFUI_SPINBOX_MARQUEE_SHOW,
-  CONFUI_SPINBOX_Q_MAX_PLAY_TIME,
   CONFUI_SPINBOX_PLI,
   CONFUI_SPINBOX_MOBMQ_TYPE,
   CONFUI_SPINBOX_MUSIC_QUEUE,
   CONFUI_SPINBOX_PLAYER_FADE_TYPE,
   CONFUI_SPINBOX_PLAYER_CLOCK,
-  CONFUI_SPINBOX_Q_STOP_AT_TIME,
   CONFUI_SPINBOX_VOL_INTFC,
   CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
+  CONFUI_SPINBOX_Q_MAX_PLAY_TIME,
+  CONFUI_SPINBOX_Q_STOP_AT_TIME,
   CONFUI_SPINBOX_MAX,
   CONFUI_WIDGET_BEGIN,
   CONFUI_SWITCH_AUTO_ORGANIZE,
@@ -453,10 +453,12 @@ typedef struct confuigui {
   asconf_t          *asconf;
   confuiitem_t      uiitem [CONFUI_ITEM_MAX];
   char              *localip;
-  int               valid;
+  int               invalid_count;
   int               haveerrors;
   bool              inbuild;
   bool              changed;      // currently only confas uses this
+  bool              validate_check;
+  bool              reset_validation;
   /* main window */
   uiwcont_t         *window;
   callback_t        *closecb;
