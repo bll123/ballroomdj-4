@@ -636,7 +636,6 @@ confuiValHMCallback (void *udata, const char *label, const char *txt)
   logProcBegin ();
 
   val = validate (tbuff, sizeof (tbuff), label, txt, VAL_HOUR_MIN);
-fprintf (stderr, "valhm: %s %s\n", txt, tbuff);
   if (val == false) {
     int32_t oval;
 
@@ -645,6 +644,7 @@ fprintf (stderr, "valhm: %s %s\n", txt, tbuff);
     confuiMarkNotValid (gui, uiitem->widx);
     return oval;
   }
+  confuiSetErrorMsg (gui, "");
   confuiMarkValid (gui, uiitem->widx);
 
   value = tmutilStrToHM (txt);

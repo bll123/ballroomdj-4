@@ -572,10 +572,10 @@ confuiMainLoop (void *tconfui)
       confuiMarkValid (&confui->gui, i);
     }
   }
+  confui->gui.reset_validation = false;
 
   if (confui->gui.validate_check) {
     /* no processing -- this changes in a future release */
-    confuiSetErrorMsg (&confui->gui, "");
     confui->gui.validate_check = false;
   }
 
