@@ -2472,12 +2472,7 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
   }
 
   if (calcrows != vl->dispsize) {
-    /* i don't recall why these were put in */
-    /* i don't think they're needed */
-    /* will leave them here, commented out for now */
-    // uiWidgetSetSizeRequest (vl->wcont [VL_W_MAIN_VBOX], -1, height - 10);
     uivlChangeDisplaySize (vl, calcrows);
-    // uiWidgetSetSizeRequest (vl->wcont [VL_W_MAIN_VBOX], -1, -1);
   }
 
   logProcEnd ("");
