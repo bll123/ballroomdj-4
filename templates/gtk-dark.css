@@ -33,7 +33,7 @@ notebook.bdj-horiz-nb > stack {
 }
 
 .bdj-vert-nb-bg {
-  background-color: shade(@theme_base_color,0.8);
+  background-color: shade(@theme_base_color,0.7);
 }
 
 button.bdj-horiz-nb {
