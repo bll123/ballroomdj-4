@@ -4,17 +4,19 @@
 
 <!--
 
-**4.18.2 2026-4---**
+**4.18.3 2026-4---**
+
+-->
+
+**4.18.2 2026-4-13**
 
 * Bug Fixes:
     * Configuration: Fix a memory leak.
-    * PENDING Configuration: Fix validation message display.
+    * Configuration: Fix validation message display.
     * Configuration: Music Queues: Fix disabled switch display.
     * Playlist Management: Fix "new automatic playlist/podcast".
 * Internal:
     * Minor cleanup.
-
--->
 
 **4.18.1 2026-3-17**
 
@@ -1514,4 +1516,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2026-03-16 11:13:14; BDJ4 version 4.18.0)_
+<br>_(Updated 2026-04-13 13:21:58; BDJ4 version 4.18.2)_
