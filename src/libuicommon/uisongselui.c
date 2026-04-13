@@ -296,9 +296,6 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
 
   uiwcontFree (hbox);
 
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpand (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox);
-
   sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
   ssint->sellist = sellist;
 
@@ -312,7 +309,8 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     ++colidx;
   }
 
-  uivl = uivlCreate (uisongsel->tag, NULL, hbox, 7, 300, VL_ENABLE_KEYS);
+  uivl = uivlCreate (uisongsel->tag, NULL,
+      ssint->wcont [SONGSEL_W_MAIN_VBOX], 7, 300, VL_ENABLE_KEYS);
   ssint->uivl = uivl;
   uivlSetUseListingFont (uivl);
   uivlSetAllowMultiple (uivl);
@@ -340,8 +338,6 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
 
   uisongselApplySongFilter (uisongsel);
   uidanceSetKey (uisongsel->uidance, -1);
-
-  uiwcontFree (hbox);
 
   logProcEnd ("");
   return ssint->wcont [SONGSEL_W_MAIN_VBOX];

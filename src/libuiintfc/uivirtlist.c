@@ -50,7 +50,6 @@ enum {
 
 
 enum {
-  VL_W_VBOX,            // contains scroll-win
   VL_W_SCROLL_WIN,      // contains hbox-cont
   VL_W_HBOX_CONT,       // contains event-box and scrollbar
   VL_W_EVENT_BOX,       // contains main-vbox
@@ -358,16 +357,12 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   vl->callbacks [VL_CB_ENTER_WIN] = callbackInit (uivlEnterEvent, vl, NULL);
   vl->callbacks [VL_CB_MOTION_WIN] = callbackInitI (uivlMotionEvent, vl);
 
-  vl->wcont [VL_W_VBOX] = uiCreateVertBox ();
-  uiBoxPackStartExpand  (boxp, vl->wcont [VL_W_VBOX]);
-  uiWidgetAlignHorizFill (vl->wcont [VL_W_VBOX]);
-
   /* a scrolled window is necessary to allow the window to shrink */
   /* keep the minimum height very small so that drop-downs do not get */
   /* created with extra space */
   vl->wcont [VL_W_SCROLL_WIN] = uiCreateScrolledWindow (50);
   uiWindowSetPolicyExternal (vl->wcont [VL_W_SCROLL_WIN]);
-  uiBoxPackStartExpand (vl->wcont [VL_W_VBOX], vl->wcont [VL_W_SCROLL_WIN]);
+  uiBoxPackStartExpand (boxp, vl->wcont [VL_W_SCROLL_WIN]);
 
   vl->wcont [VL_W_HBOX_CONT] = uiCreateHorizBox ();
   uiWindowPackInWindow (vl->wcont [VL_W_SCROLL_WIN], vl->wcont [VL_W_HBOX_CONT]);
