@@ -240,7 +240,7 @@ bdjoptInit (void)
 
   /* uri */
   pathbldMakePath (path, sizeof (path), BDJ_URIFN,
-      BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+      BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_TEMPLATE);
   bdjopt->fname [OPTTYPE_URI] = mdstrdup (path);
 
   /* global */

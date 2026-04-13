@@ -167,7 +167,10 @@ for f in templates/ds-*.txt; do
 done
 for f in templates/*.txt; do
   case $f in
-    *bdjconfig.txt*)
+    *bdjuri.txt)
+      continue
+      ;;
+    *bdjconfig.txt)
       continue
       ;;
     *bdjconfig.q?.txt)
