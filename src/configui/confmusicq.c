@@ -188,9 +188,9 @@ confuiMusicQActiveChg (void *udata)
   if (gui->inbuild) {
     return UICB_CONT;
   }
-  if (gui->inchange) {
-    return UICB_CONT;
-  }
+//  if (gui->inchange) {
+//    return UICB_CONT;
+//  }
 
   tval = uiSwitchGetValue (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiwidgetp);
 
@@ -277,11 +277,6 @@ confuiMusicQChg (void *udata)
   }
   gui->uiitem [widx].listidx = nselidx;
 
-  /* enable these now before the change, otherwise the images */
-  /* get stuck as disabled */
-  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiwidgetp, UIWIDGET_ENABLE);
-  uiWidgetSetState (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiwidgetp, UIWIDGET_ENABLE);
-
   /* set all of the display values for the queue specific items */
   uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_QUEUE_NM].uiwidgetp,
       bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, nselidx));
@@ -314,7 +309,7 @@ confuiMusicQChg (void *udata)
       bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, nselidx));
 
   gui->inchange = false;
-
+  /* set the states after setting the values */
   confuiMusicQActiveChg (gui);
   confuiMusicQUpdateState (gui, nselidx);
 

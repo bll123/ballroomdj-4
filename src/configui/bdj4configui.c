@@ -575,6 +575,7 @@ confuiMainLoop (void *tconfui)
 
   if (confui->gui.validate_check) {
     /* no processing -- this changes in a future release */
+    confuiSetErrorMsg (&confui->gui, "");
     confui->gui.validate_check = false;
   }
 
