@@ -31,23 +31,25 @@ endif()
 
 if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
   add_compile_options (-DBDJ4_UI_GTK3=1)
-  set (BDJ4_UI_LIB libuigtk3)
+  set (BDJ4_UI_LIB_NAME libuigtk3)
 endif()
 
 if (BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
   add_compile_options (-DBDJ4_UI_GTK4=1)
-  set (BDJ4_UI_LIB libuigtk4)
+  set (BDJ4_UI_LIB_NAME libuigtk4)
 endif()
 
 if (BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null")
   add_compile_options (-DBDJ4_UI_NULL=1)
-  set (BDJ4_UI_LIB libuinull)
+  set (BDJ4_UI_LIB_NAME libuinull)
 endif()
 
 if (BDJ4_UI STREQUAL "macos" OR BDJ4_UI STREQUAL "MacOS" OR BDJ4_UI STREQUAL "Macos")
   add_compile_options (-DBDJ4_UI_MACOS=1)
-  set (BDJ4_UI_LIB libuimacos)
+  set (BDJ4_UI_LIB_NAME libuimacos)
 endif()
+
+set (BDJ4_UI_LIB libbdj4ui)
 
 #### bits / check supported platforms
 

@@ -5,7 +5,7 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
-add_library (libuigtk3 SHARED
+add_library (${BDJ4_UI_LIB} SHARED
   uibox.c
   uibutton.c
   uichgind.c
@@ -34,17 +34,20 @@ add_library (libuigtk3 SHARED
   uiwidget.c
   uiwindow.c
 )
-addUIInclude (libuigtk3)
-target_link_libraries (libuigtk3 PRIVATE
+addUIInclude (${BDJ4_UI_LIB})
+target_link_libraries (${BDJ4_UI_LIB} PRIVATE
   objuigeneral libbdj4basic libbdj4common
 )
-addUILibrary (libuigtk3)
-addIntlLibrary (libuigtk3)
-addWinSockLibrary (libuigtk3)
+addUILibrary (${BDJ4_UI_LIB})
+addIntlLibrary (${BDJ4_UI_LIB})
+addWinSockLibrary (${BDJ4_UI_LIB})
+
+uilibPreSymlink ()
 
 install (TARGETS
-  libuigtk3
+  ${BDJ4_UI_LIB}
   DESTINATION ${DEST_BIN}
 )
 
-updateRPath (libuigtk3)
+updateRPath (${BDJ4_UI_LIB})
+uilibSymlink ()

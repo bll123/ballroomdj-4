@@ -5,7 +5,7 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
-add_library (libuimacos SHARED
+add_library (${BDJ4_UI_LIB} SHARED
   uibox.m
   uibutton.m
   uichgind.m
@@ -33,18 +33,22 @@ add_library (libuimacos SHARED
   uiwidget.m
   uiwindow.m
 )
-target_link_libraries (libuimacos PRIVATE
+target_link_libraries (${BDJ4_UI_LIB} PRIVATE
   objuigeneral libbdj4basic libbdj4common
 )
-target_link_options (libuimacos PRIVATE
+target_link_options (${BDJ4_UI_LIB} PRIVATE
   -framework Cocoa
 )
-addIntlLibrary (libuimacos)
-addWinSockLibrary (libuimacos)
+addIntlLibrary (${BDJ4_UI_LIB})
+addWinSockLibrary (${BDJ4_UI_LIB})
+
+uilibPreSymlink ()
 
 install (TARGETS
-  libuimacos
+  ${BDJ4_UI_LIB}
   DESTINATION ${DEST_BIN}
 )
 
-updateRPath (libuimacos)
+updateRPath (${BDJ4_UI_LIB})
+
+uilibSymlink ()

@@ -218,7 +218,7 @@ add_subdirectory (utility)
 
 # ui libraries
 add_subdirectory (libuigeneral)
-add_subdirectory (${BDJ4_UI_LIB})
+add_subdirectory (${BDJ4_UI_LIB_NAME})
 add_subdirectory (libuibase)
 add_subdirectory (libuiintfc)
 add_subdirectory (libuicommon)

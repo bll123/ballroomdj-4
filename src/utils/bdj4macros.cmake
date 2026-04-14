@@ -134,3 +134,28 @@ macro (updateRPath name)
     )
   endif()
 endmacro()
+
+macro (uilibPreSymlink)
+  if (SYSLINUX OR SYSMACOS)
+    install (
+      CODE "file (REMOVE ${DEST_BIN}/$<TARGET_FILE_NAME:${BDJ4_UI_LIB}>)"
+    )
+  endif()
+endmacro()
+
+macro (uilibSymlink)
+  if (SYSLINUX OR SYSMACOS)
+    install (
+      CODE "message (\"RENAME ${DEST_BIN}/$<TARGET_FILE_NAME:${BDJ4_UI_LIB}>
+          ${DEST_BIN}/${BDJ4_UI_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}\")"
+      CODE "file (RENAME ${DEST_BIN}/$<TARGET_FILE_NAME:${BDJ4_UI_LIB}>
+          ${DEST_BIN}/${BDJ4_UI_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX})"
+      CODE "message (\"CREATE_LINK
+          ${DEST_BIN}/${BDJ4_UI_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
+          ${DEST_BIN}/$<TARGET_FILE_NAME:${BDJ4_UI_LIB}> SYMBOLIC\")"
+      CODE "file (CREATE_LINK
+          ${DEST_BIN}/${BDJ4_UI_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
+          ${DEST_BIN}/$<TARGET_FILE_NAME:${BDJ4_UI_LIB}> SYMBOLIC)"
+    )
+  endif()
+endmacro()
