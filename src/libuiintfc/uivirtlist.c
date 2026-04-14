@@ -111,7 +111,6 @@ typedef struct uivlcoldata {
   void          *entryudata;
   callback_t    *togglecb;      // radio buttons and check buttons
   callback_t    *spinboxcb;
-  callback_t    *spinboxtimecb;
   callback_t    *colgrowonlycb;
   uiwcont_t     *extrarb;
   uivlcol_t     *col0;
@@ -514,7 +513,6 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
     coldata->entryudata = NULL;
     coldata->togglecb = NULL;
     coldata->spinboxcb = NULL;
-    coldata->spinboxtimecb = NULL;
     coldata->colgrowonlycb = NULL;
     coldata->extrarb = NULL;
     coldata->colidx = colidx;
@@ -1288,23 +1286,6 @@ uivlSetCheckboxChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb)
 {
   logProcBegin ();
   uivlSetToggleChangeCallback (vl, colidx, cb);
-  logProcEnd ("");
-}
-
-void
-uivlSetSpinboxTimeChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb)
-{
-  logProcBegin ();
-  if (! uivlValidateColumn (vl, VL_INIT_BASIC, colidx, __func__)) {
-    logProcEnd ("not-valid");
-    return;
-  }
-  if (vl->coldata [colidx].type != VL_TYPE_SPINBOX_TIME) {
-    logProcEnd ("not-spinbox-time");
-    return;
-  }
-
-  vl->coldata [colidx].spinboxtimecb = cb;
   logProcEnd ("");
 }
 

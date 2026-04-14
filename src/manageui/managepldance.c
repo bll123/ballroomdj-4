@@ -165,7 +165,7 @@ manageplDanceBuildUI (mpldance_t *mpldnc, uiwcont_t *vboxp)
       mpldnc->callbacks [MPLDNC_CB_CHANGED]);
   uivlSetSpinboxChangeCallback (mpldnc->uivl, MPLDNC_COL_COUNT,
       mpldnc->callbacks [MPLDNC_CB_CHANGED]);
-  uivlSetSpinboxTimeChangeCallback (mpldnc->uivl, MPLDNC_COL_MAXPLAYTIME,
+  uivlSetSpinboxChangeCallback (mpldnc->uivl, MPLDNC_COL_MAXPLAYTIME,
       mpldnc->callbacks [MPLDNC_CB_CHANGED]);
   uivlSetSpinboxChangeCallback (mpldnc->uivl, MPLDNC_COL_LOWMPM,
       mpldnc->callbacks [MPLDNC_CB_CHANGED]);
