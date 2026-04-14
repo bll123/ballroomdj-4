@@ -622,6 +622,7 @@ confuiValidateCallback (void *udata)
     confuiMarkNotValid (gui, uiitem->widx);
     return UICB_STOP;
   }
+  confuiSetErrorMsg (gui, "");
   confuiMarkValid (gui, uiitem->widx);
 
   logProcEnd ("");

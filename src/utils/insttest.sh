@@ -116,8 +116,6 @@ LOG="${DEVTMP}/insttest-log.txt"
 
 fn="templates/ds-audioid-list.txt"
 AUDIOIDLISTVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
-fn="templates/bdjuri.txt"
-BDJURIVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
 fn="templates/itunes-fields.txt"
 ITUNESFIELDSVER=$(grep "^# version [1-9]" "${fn}" | sed 's,[^0-9],,g')
 fn="templates/sortopt.txt"
@@ -555,22 +553,6 @@ function checkInstallation {
         chk=$(($chk+1))
       else
         echo "  incorrect version in ${hostname}/profile00/bdjconfig.txt"
-      fi
-    else
-      echo "  no ${fn}"
-    fi
-
-    fn=${DATADIR}/bdjuri.txt
-    res=$(($res+1))
-    if [[ $fin == T && -f ${fn} ]]; then
-      chk=$(($chk+1))
-      res=$(($res+1))
-      grep "version ${BDJURIVER}" "${fn}" > /dev/null 2>&1
-      rc=$?
-      if [[ $rc -eq 0 ]]; then
-        chk=$(($chk+1))
-      else
-        echo "  incorrect version in bdjuri.txt"
       fi
     else
       echo "  no ${fn}"

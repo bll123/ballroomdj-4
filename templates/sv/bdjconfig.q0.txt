@@ -1,10 +1,12 @@
 # bdjopt-q
-# 2022-11-26
+# 2026-4-13
 # version 1
 version
 ..1
 ACTIVE
 ..yes
+CROSSFADE
+..0
 DISPLAY
 ..yes
 FADEINTIME

@@ -185,6 +185,11 @@ uiSwitchSetImage (void *udata)
   w = uiwidget->uidata.widget;
   sw = uiwidget->uiint.uiswitch;
 
+  /* reset the sensitive state before setting the image, */
+  /* otherwise the image gets stuck in the wrong state */
+  /* the caller must set the widget state after setting the value */
+  gtk_widget_set_sensitive (uiwidget->uidata.widget, UIWIDGET_ENABLE);
+
   value = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiwidget->uidata.widget));
   gtk_image_clear (GTK_IMAGE (sw->currimage));
   if (value) {

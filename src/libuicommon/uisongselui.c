@@ -312,7 +312,8 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     ++colidx;
   }
 
-  uivl = uivlCreate (uisongsel->tag, NULL, ssint->mainvbox, 7, 300, VL_ENABLE_KEYS);
+  uivl = uivlCreate (uisongsel->tag, NULL,
+      ssint->mainvbox, 7, 300, VL_ENABLE_KEYS);
   ssint->uivl = uivl;
   uivlSetUseListingFont (uivl);
   uivlSetAllowMultiple (uivl);

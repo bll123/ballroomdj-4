@@ -15,9 +15,9 @@
       The `$HOME/Library/Application&nbsp;Support/BDJ4/data/<computer-name>/bdjconfig.txt`
       file may be manually edited and the `LISTING_FONT` and `UI_FONT` settings may be changed.
       This is not a problem on my end, I will post a message on the forum when this is fixed.
-    * 2025-8 In certain situations, the scrollbar stops working correctly
-      when the cursor is moved past the bottom of the scrollbar.
-      Try resizing the window.
+    * 2025-8 In certain situations, the scrollbar stops working correctly.
+      Clicking outside the window, the clicking in the window will
+      reset the scrollbar.
 * Windows
     * The marquee position is not saved when it is iconified (close
       the window instead).
@@ -30,4 +30,4 @@
       library (Debian 12).  An issue with ICU version 72 library.
 
 [Wiki Home](Home)
-<br>_(Updated 2026-03-13 07:53:37; BDJ4 version 4.17.14)_
+<br>_(Updated 2026-04-13 13:21:58; BDJ4 version 4.18.2)_
