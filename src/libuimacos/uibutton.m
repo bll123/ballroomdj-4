@@ -112,7 +112,7 @@ uiCreateButton (callback_t *uicb, const char *title,
   [widget setUIWidget : uiwidget];
   [widget setCallback : uicb];
   [widget setAction : @selector(OnButton1Click : )];
-//  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
   widget.bordered = YES;
   widget.needsDisplay = true;
 

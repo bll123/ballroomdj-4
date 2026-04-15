@@ -238,7 +238,7 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
         forOrientation : NSLayoutConstraintOrientationVertical];
 
 //    view.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
-    layout->container.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
+//    layout->container.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
   }
 
 // ### this situation needs to be handled

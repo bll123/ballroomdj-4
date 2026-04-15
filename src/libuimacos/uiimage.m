@@ -81,7 +81,7 @@ uiImageScaledFromFile (const char *fn, int scale)
   /* used for the starter icon image */
   /* wrap in an image-view */
   [imgv setImage : image];
-//  [imgv setTranslatesAutoresizingMaskIntoConstraints : NO];
+  [imgv setTranslatesAutoresizingMaskIntoConstraints : NO];
   imgv.imageScaling = NSImageScaleProportionallyDown;
   [imgv.widthAnchor constraintEqualToConstant : scale + 4].active = YES;
   [imgv.heightAnchor constraintEqualToConstant : scale + 4].active = YES;

@@ -34,7 +34,7 @@ fprintf (stderr, "c-nb\n");
 //  gtk_notebook_set_show_border (GTK_NOTEBOOK (nb), TRUE);
 //  gtk_widget_set_hexpand (nb, TRUE);
 //  gtk_widget_set_vexpand (nb, FALSE);
-  [nb setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
+//  [nb setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
 
   uiwidget = uiwcontAlloc (WCONT_T_NOTEBOOK, WCONT_T_NOTEBOOK);
   uiwcontSetWidget (uiwidget, nb, NULL);
