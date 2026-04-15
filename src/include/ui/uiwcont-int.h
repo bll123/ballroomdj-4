@@ -32,7 +32,6 @@ typedef enum {
   WCONT_T_EVENT_BOX,
   WCONT_T_HBOX,
   WCONT_T_IMAGE,
-  WCONT_T_IMAGE_VIEW,       // used by macos
   WCONT_T_KEY,
   WCONT_T_LABEL,
   WCONT_T_LINK,

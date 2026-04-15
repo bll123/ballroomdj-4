@@ -406,7 +406,19 @@ uiWidgetSetEnterCallback (uiwcont_t *uiwidget, callback_t *uicb)
   return;
 }
 
-/* internal routines */
+/* support routines */
+
+void
+uiWidgetSetIdentifier (uiwcont_t *uiwidget, const char *tag)
+{
+  NSView    *widget;
+  char      tmp [40];
+
+  snprintf (tmp, sizeof (tmp), "%s-%" PRIu32 "-%" PRIu32 "\n",
+      tag, uiwidget->ui_id, uiwidget->id);
+  widget = uiwidget->uidata.widget;
+  widget.identifier = [NSString stringWithUTF8String: tmp];
+}
 
 void
 uiWidgetUpdateLayout (uiwcont_t *uiwidget)

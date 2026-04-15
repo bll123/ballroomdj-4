@@ -156,8 +156,7 @@ uiwcontUIInit (uiwcont_t *uiwidget)
     return;
   }
 
-  layout = mdmalloc (sizeof (macoslayout_t));
-  uiwidget->uidata.layout = layout;
+  layout = uiwidget->uidata.layout;
 
   /* default margins */
   /* top left bottom right */
@@ -168,7 +167,8 @@ uiwcontUIInit (uiwcont_t *uiwidget)
   }
 
   layout->container = NULL;
-  layout->centered = false;
+  layout->centerhoriz = false;
+  layout->centervert = false;
   layout->expandhoriz = false;
   layout->expandvert = false;
   layout->alignright = false;
@@ -183,10 +183,14 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
 {
   macoslayout_t *layout;
 
+  if (uiwidget == NULL) {
+    return;
+  }
   if (uiwidget->wbasetype == WCONT_T_WINDOW) {
     return;
   }
 
+  uiwidget->uidata.layout = mdmalloc (sizeof (macoslayout_t));
   layout = uiwidget->uidata.layout;
 
   /* on macos, there are standard images, and an image view */
@@ -236,9 +240,6 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
     [view setContentCompressionResistancePriority :
         NSLayoutPriorityRequired
         forOrientation : NSLayoutConstraintOrientationVertical];
-
-//    view.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
-//    layout->container.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
   }
 
 // ### this situation needs to be handled

@@ -31,7 +31,6 @@ uiCreateLabel (const char *label)
 {
   uiwcont_t   *uiwidget;
   ILabel      *widget;
-  char        tmp [40];
 
   widget = [[ILabel alloc] init];
   [widget setBezeled : NO];
@@ -39,15 +38,13 @@ uiCreateLabel (const char *label)
   [widget setEditable : NO];
   [widget setSelectable : NO];
   [widget setStringValue : [NSString stringWithUTF8String : label]];
-  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+  widget.translatesAutoresizingMaskIntoConstraints = NO;
   widget.needsDisplay = true;
 
   uiwidget = uiwcontAlloc (WCONT_T_LABEL, WCONT_T_LABEL);
   uiwcontSetWidget (uiwidget, widget, NULL);
 
-  snprintf (tmp, sizeof (tmp), "lab-%" PRIu32 "-%" PRIu32 "\n",
-      uiwidget->ui_id, uiwidget->id);
-  widget.identifier = [NSString stringWithUTF8String: tmp];
+  uiWidgetSetIdentifier (uiwidget, "lab");
 
   return uiwidget;
 }

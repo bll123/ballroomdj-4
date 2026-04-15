@@ -17,6 +17,7 @@
 #include "callback.h"
 #include "uiwcont.h"
 
+#include "ui/uimacos-int.h"
 #include "ui/uiwcont-int.h"
 
 #include "ui/uiwidget.h"
@@ -28,7 +29,6 @@ uiCreateScale (double lower, double upper,
 {
   NSSlider    *widget;
   uiwcont_t   *uiwidget;
-  char        tmp [40];
 
   widget = [NSSlider sliderWithValue : initvalue
       minValue : lower
@@ -37,15 +37,13 @@ uiCreateScale (double lower, double upper,
       action : nil];
 
   widget.altIncrementValue = stepinc;
-  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+  widget.translatesAutoresizingMaskIntoConstraints = NO;
   widget.needsDisplay = true;
 
   uiwidget = uiwcontAlloc (WCONT_T_SCALE, WCONT_T_SCALE);
   uiwcontSetWidget (uiwidget, widget, NULL);
 
-  snprintf (tmp, sizeof (tmp), "scale-%" PRIu32 "-%" PRIu32 "\n",
-      uiwidget->ui_id, uiwidget->id);
-  widget.identifier = [NSString stringWithUTF8String: tmp];
+  uiWidgetSetIdentifier (uiwidget, "scale");
 
   return NULL;
 }

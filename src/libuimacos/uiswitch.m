@@ -46,7 +46,7 @@ uiCreateSwitch (int value)
   if (value) {
     [widget setState : NSControlStateValueOn];
   }
-  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+  widget.translatesAutoresizingMaskIntoConstraints = NO;
 
   /* relative path */
   pathbldMakePath (tbuff, sizeof (tbuff), "switch-off", BDJ4_IMG_SVG_EXT,
@@ -67,9 +67,7 @@ uiCreateSwitch (int value)
   widget.ButtonType = NSButtonTypeToggle;
   widget.bezelStyle = NSBezelStyleToolbar;
   [widget setUIWidget : uiwidget];
-  snprintf (tbuff, sizeof (tbuff), "switch-%" PRIu32 "-%" PRIu32 "\n",
-      uiwidget->ui_id, uiwidget->id);
-  widget.identifier = [NSString stringWithUTF8String: tbuff];
+  uiWidgetSetIdentifier (uiwidget, "switch");
 
   return uiwidget;
 }

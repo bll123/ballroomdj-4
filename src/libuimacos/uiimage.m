@@ -14,6 +14,7 @@
 
 #include "uiwcont.h"
 
+#include "ui/uimacos-int.h"
 #include "ui/uiwcont-int.h"
 
 #include "ui/uiimage.h"
@@ -27,8 +28,10 @@ uiImageNew (void)
   NSImageView   *imgv;
 
   image = [[NSImage alloc] init];
+
   imgv = [[NSImageView alloc] init];
-  [imgv setImage: image];
+  imgv.translatesAutoresizingMaskIntoConstraints = NO;
+  imgv.image = image;
   imgv.imageScaling = NSImageScaleProportionallyDown;
 
   uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
@@ -36,6 +39,8 @@ uiImageNew (void)
 
   uiWidgetAlignHorizCenter (uiwidget);
   uiWidgetAlignVertCenter (uiwidget);
+
+  uiWidgetSetIdentifier (uiwidget, "image");
 
   return uiwidget;
 }
@@ -55,13 +60,21 @@ uiImageFromFile (const char *fn)
 {
   uiwcont_t   *uiwidget = NULL;
   NSImage     *image;
+  NSImageView *imgv;
   NSString    *ns;
 
   ns = [NSString stringWithUTF8String : fn];
   image = [[NSImage alloc] initWithContentsOfFile : ns];
 
+  imgv = [[NSImageView alloc] init];
+  imgv.image = image;
+  imgv.translatesAutoresizingMaskIntoConstraints = NO;
+  imgv.imageScaling = NSImageScaleProportionallyDown;
+
   uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
-  uiwcontSetWidget (uiwidget, image, NULL);
+  uiwcontSetWidget (uiwidget, imgv, NULL);
+
+  uiWidgetSetIdentifier (uiwidget, "image");
 
   return uiwidget;
 }
@@ -73,26 +86,21 @@ uiImageScaledFromFile (const char *fn, int scale)
   NSImageView *imgv;
   NSImage     *image;
   NSString    *ns;
-  char        tmp [40];
 
   ns = [NSString stringWithUTF8String : fn];
   image = [[NSImage alloc] initWithContentsOfFile : ns];
-  imgv = [[NSImageView alloc] init];
 
-  /* used for the starter icon image */
-  /* wrap in an image-view */
-  [imgv setImage : image];
-  [imgv setTranslatesAutoresizingMaskIntoConstraints : NO];
+  imgv = [[NSImageView alloc] init];
+  imgv.image = image;
+  imgv.translatesAutoresizingMaskIntoConstraints = NO;
   imgv.imageScaling = NSImageScaleProportionallyDown;
   [imgv.widthAnchor constraintEqualToConstant : scale + 4].active = YES;
   [imgv.heightAnchor constraintEqualToConstant : scale + 4].active = YES;
 
-  uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE_VIEW);
+  uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
   uiwcontSetWidget (uiwidget, imgv, NULL);
 
-  snprintf (tmp, sizeof (tmp), "image-%" PRIu32 "-%" PRIu32 "\n",
-      uiwidget->ui_id, uiwidget->id);
-  imgv.identifier = [NSString stringWithUTF8String: tmp];
+  uiWidgetSetIdentifier (uiwidget, "image");
 
   return uiwidget;
 }
@@ -108,14 +116,22 @@ uiImageClear (uiwcont_t *uiwidget)
   }
 
   image = [[NSImage alloc] initWithSize : NSZeroSize];
-  imgv = [[NSImageView alloc] init];
-  [imgv setImage : image];
-  uiwcontSetWidget (uiwidget, imgv, NULL);
+  imgv = uiwidget->uidata.widget;
+  imgv.image = image;
+
   return;
 }
 
 void
 uiImageCopy (uiwcont_t *toimg, uiwcont_t *fromimg)
 {
+  NSImageView *imgv;
+  NSImage     *image;
+
+  imgv = fromimg->uidata.widget;
+  image = imgv.image;
+  imgv = toimg->uidata.widget;
+  imgv.image = image;
+
   return;
 }

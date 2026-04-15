@@ -102,7 +102,7 @@ uiBoxPostProcess (uiwcont_t *uibox)
     curr = next;
     next = uiwidgetp;
     if (curr != NULL) {
-fprintf (stderr, "    post-process %d-%d %d/%s\n", uibox->ui_id, uibox->id, uibox->wtype, uiwcontDesc (uibox->wtype));
+fprintf (stderr, "  post-process %d-%d %d/%s\n", uibox->ui_id, uibox->id, uibox->wtype, uiwcontDesc (uibox->wtype));
       uiBoxPostProcess_r (uibox, prev, curr, next);
     }
   }

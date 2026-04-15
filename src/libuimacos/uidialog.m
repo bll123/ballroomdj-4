@@ -117,7 +117,6 @@ uiCreateDialog (uiwcont_t *window,
   uiwcont_t     *uibox;
   NSStackView   *box;
   id            windowDelegate;
-  char          tmp [40];
 
   win = [[IDWindow alloc] init];
   uibox = uiCreateVertBox ();
@@ -140,9 +139,7 @@ uiCreateDialog (uiwcont_t *window,
   uiwcontSetWidget (uiwin, win, NULL);
   uiwin->packed = true;
 
-  snprintf (tmp, sizeof (tmp), "chgind-%" PRIu32 "-%" PRIu32 "\n",
-      uiwin->ui_id, uiwin->id);
-  win.identifier = [NSString stringWithUTF8String: tmp];
+  uiWidgetSetIdentifier (uiwin, "dialog");
 
   uiWidgetSetAllMargins (uibox, 2);
 //  uiWidgetExpandHoriz (uibox);

@@ -55,14 +55,13 @@ typedef struct uibutton {
 @end
 
 uiwcont_t *
-uiCreateButton (callback_t *uicb, const char *title,
+uiCreateButton (callback_t *uicb, const char *txt,
     const char *imagenm, const char *tooltiptxt)
 {
   uiwcont_t       *uiwidget;
   uibutton_t      *uibutton;
   uibuttonbase_t  *bbase;
   IButton         *widget = nil;
-  char            tmp [40];
 
   uibutton = mdmalloc (sizeof (uibutton_t));
   uibutton->image = NULL;
@@ -70,11 +69,11 @@ uiCreateButton (callback_t *uicb, const char *title,
 
   widget = [[IButton alloc] init];
 
-  if (tooltiptxt != NULL) {
-    ;
+  if (txt != NULL) {
+    [widget setTitle: [NSString stringWithUTF8String: txt]];
   }
-  if (title != NULL) {
-    [widget setTitle: [NSString stringWithUTF8String: title]];
+  if (tooltiptxt != NULL) {
+    [widget setToolTip: [NSString stringWithUTF8String : tooltiptxt]];
   }
   if (imagenm != NULL) {
     NSString    *ns;
@@ -90,39 +89,29 @@ uiCreateButton (callback_t *uicb, const char *title,
     image = [[NSImage alloc] initWithContentsOfFile : ns];
     uibutton->image = image;
     [widget setImage : image];
-    [widget setImagePosition : NSImageOnly];
-    if (title != NULL) {
-      /* if the image is set, the title text is used for the tooltip */
-      [widget setToolTip : [NSString stringWithUTF8String : title]];
+    if (txt == NULL) {
+      widget.imagePosition = NSImageOnly;
+    } else {
+      widget.imagePosition = NSImageTrailing;
     }
   } else {
-    /* if the image is set, no label is set for the button */
-    [widget setTitle : [NSString stringWithUTF8String : title]];
-    [widget setImagePosition : NSNoImage];
+    widget.imagePosition = NSNoImage;
   }
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_BUTTON);
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uibutton = uibutton;
 
-  snprintf (tmp, sizeof (tmp), "button-%" PRIu32 "-%" PRIu32 "\n",
-      uiwidget->ui_id, uiwidget->id);
-  widget.identifier = [NSString stringWithUTF8String: tmp];
+  uiWidgetSetIdentifier (uiwidget, "button");
 
 //  [widget setBezelStyle : NSBezelStyleRounded];
-  [widget setTarget : widget];
-  [widget setUIWidget : uiwidget];
+  widget.target = widget;
+  widget.uIWidget = uiwidget;
   [widget setCallback : uicb];
   [widget setAction : @selector(OnButton1Click : )];
-  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+  widget.translatesAutoresizingMaskIntoConstraints = NO;
   widget.bordered = YES;
   widget.needsDisplay = true;
-
-#if MACOS_UI_DEBUG
-  [widget setFocusRingType : NSFocusRingTypeExterior];
-  [widget setWantsLayer : YES];
-  [[widget layer] setBorderWidth : 2.0];
-#endif
 
   bbase = &uiwidget->uiint.uibuttonbase;
   bbase->cb = uicb;

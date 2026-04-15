@@ -15,6 +15,7 @@
 
 #include "uiwcont.h"
 
+#include "ui/uimacos-int.h"
 #include "ui/uiwcont-int.h"
 
 #include "ui/uimiscbutton.h"
@@ -38,11 +39,10 @@ uiCreateColorButton (const char *colortxt)
   NSColor         *color;
   uiwcont_t       *uiwidget;
   int             r, g, b;
-  char            tmp [40];
 
   widget = [[NSColorWell alloc] init];
 //  [widget setAction : @selector(OnButton1Click : )];
-  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+  widget.translatesAutoresizingMaskIntoConstraints = NO;
 
   sscanf (colortxt, "#%2x%2x%2x", &r, &g, &b);
   color = [NSColor colorWithRed : (CGFloat) r
@@ -55,9 +55,7 @@ uiCreateColorButton (const char *colortxt)
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_BUTTON_COLOR);
   uiwcontSetWidget (uiwidget, widget, NULL);
 
-  snprintf (tmp, sizeof (tmp), "color-%" PRIu32 "-%" PRIu32 "\n",
-      uiwidget->ui_id, uiwidget->id);
-  widget.identifier = [NSString stringWithUTF8String: tmp];
+  uiWidgetSetIdentifier (uiwidget, "color");
 
   return NULL;
 }

@@ -39,7 +39,6 @@ uiCreateCheckButton (const char *txt, int value)
   uiwcont_t   *uiwidget;
   uitoggle_t  *uitoggle;
   IButton     *widget = nil;
-  char        tmp [40];
 
   uitoggle = uiToggleButtonInit ();
 
@@ -52,16 +51,14 @@ uiCreateCheckButton (const char *txt, int value)
   if (txt != NULL) {
     [widget setTitle : [NSString stringWithUTF8String : txt]];
   }
-  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+  widget.translatesAutoresizingMaskIntoConstraints = NO;
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_CHKBOX);
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uitoggle = uitoggle;
 
   [widget setUIWidget : uiwidget];
-  snprintf (tmp, sizeof (tmp), "check-%" PRIu32 "-%" PRIu32 "\n",
-      uiwidget->ui_id, uiwidget->id);
-  widget.identifier = [NSString stringWithUTF8String: tmp];
+  uiWidgetSetIdentifier (uiwidget, "chkbox");
 
   return uiwidget;
 }
@@ -72,7 +69,6 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
   uiwcont_t   *uiwidget;
   IButton     *widget = nil;
   uitoggle_t  *uitoggle;
-  char        tmp [40];
 
   uitoggle = uiToggleButtonInit ();
 
@@ -85,16 +81,14 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
   if (txt != NULL) {
     [widget setTitle : [NSString stringWithUTF8String : txt]];
   }
-  [widget setTranslatesAutoresizingMaskIntoConstraints: NO];
+  widget.translatesAutoresizingMaskIntoConstraints= NO;
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_RADIO);
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uitoggle = uitoggle;
 
   [widget setUIWidget : uiwidget];
-  snprintf (tmp, sizeof (tmp), "radio-%" PRIu32 "-%" PRIu32 "\n",
-      uiwidget->ui_id, uiwidget->id);
-  widget.identifier = [NSString stringWithUTF8String: tmp];
+  uiWidgetSetIdentifier (uiwidget, "radio");
 
   return uiwidget;
 }
@@ -106,7 +100,6 @@ uiCreateToggleButton (const char *txt,
   uiwcont_t   *uiwidget;
   IButton     *widget = nil;
   uitoggle_t  *uitoggle;
-  char        tmp [40];
 
   uitoggle = uiToggleButtonInit ();
 
@@ -120,7 +113,7 @@ uiCreateToggleButton (const char *txt,
     [widget setTitle : [NSString stringWithUTF8String : txt]];
     widget.imagePosition = NSImageRight;
   }
-  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+  widget.translatesAutoresizingMaskIntoConstraints = NO;
 
   if (tooltiptxt != NULL) {
     [widget setToolTip : [NSString stringWithUTF8String : tooltiptxt]];
@@ -144,9 +137,7 @@ uiCreateToggleButton (const char *txt,
   uiwidget->uiint.uitoggle = uitoggle;
 
   [widget setUIWidget : uiwidget];
-  snprintf (tmp, sizeof (tmp), "toggle-%" PRIu32 "-%" PRIu32 "\n",
-      uiwidget->ui_id, uiwidget->id);
-  widget.identifier = [NSString stringWithUTF8String: tmp];
+  uiWidgetSetIdentifier (uiwidget, "toggle");
 
   return uiwidget;
 }

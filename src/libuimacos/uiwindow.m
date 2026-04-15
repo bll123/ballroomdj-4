@@ -133,7 +133,6 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   IWindow       *win = NULL;
   NSStackView   *box = NULL;
   id            windowDelegate;
-  char          tmp [40];
 
   win = [[IWindow alloc] init];
   uibox = uiCreateVertBox ();
@@ -145,7 +144,6 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   }
 
   box = uibox->uidata.widget;
-//  box.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
 
   [win setContentView : box];
   [win makeMainWindow];
@@ -153,9 +151,7 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   uibox->packed = true;
   uibox->uidata.layout->expandchildren = true;
 
-  snprintf (tmp, sizeof (tmp), "wbox-%" PRIu32 "-%" PRIu32 "\n",
-      uibox->ui_id, uibox->id);
-  box.identifier = [NSString stringWithUTF8String: tmp];
+  uiWidgetSetIdentifier (uibox, "wbox");
 
   if (imagenm != NULL) {
     NSImage *image = nil;
@@ -175,9 +171,7 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   uiwcontSetWidget (uiwin, win, NULL);
   uiwin->packed = true;
 
-  snprintf (tmp, sizeof (tmp), "win-%" PRIu32 "-%" PRIu32 "\n",
-      uiwin->ui_id, uiwin->id);
-  win.identifier = [NSString stringWithUTF8String: tmp];
+  uiWidgetSetIdentifier (uiwin, "win");
 
   uiWidgetSetAllMargins (uibox, 2);
 
@@ -367,20 +361,18 @@ uiCreateScrolledWindow (int minheight)
 {
   uiwcont_t     *uiscwin;
   NSScrollView  *win = NULL;
-  char          tmp [40];
 
   win = [[NSScrollView alloc] init];
   win.autohidesScrollers = YES;
   win.hasVerticalScroller = YES;
   win.hasHorizontalScroller = NO;
+  win.drawsBackground = NO;
 //  win.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
 
   uiscwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_WINDOW_SCROLL);
   uiwcontSetWidget (uiscwin, win, NULL);
 
-  snprintf (tmp, sizeof (tmp), "sw-%" PRIu32 "-%" PRIu32 "\n",
-      uiscwin->ui_id, uiscwin->id);
-  win.identifier = [NSString stringWithUTF8String: tmp];
+  uiWidgetSetIdentifier (uiscwin, "sw");
 
   return uiscwin;
 }

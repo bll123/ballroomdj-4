@@ -28,22 +28,19 @@ uiCreateChangeIndicator (uiwcont_t *boxp)
 {
   uiwcont_t   *uiwidget;
   ILabel      *widget;
-  char        tmp [40];
 
   widget = [[ILabel alloc] init];
   [widget setBezeled : NO];
   [widget setDrawsBackground : NO];
   [widget setEditable : NO];
   [widget setStringValue : [NSString stringWithUTF8String : " "]];
-  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+  widget.translatesAutoresizingMaskIntoConstraints = NO;
 
   uiwidget = uiwcontAlloc (WCONT_T_CHGIND, WCONT_T_CHGIND);
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiBoxPackStart (boxp, uiwidget, WCONT_KEEP);
 
-  snprintf (tmp, sizeof (tmp), "chgind-%" PRIu32 "-%" PRIu32 "\n",
-      uiwidget->ui_id, uiwidget->id);
-  widget.identifier = [NSString stringWithUTF8String: tmp];
+  uiWidgetSetIdentifier (uiwidget, "chgind");
 
   return uiwidget;
 }

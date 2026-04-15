@@ -112,7 +112,6 @@ static const char *uiwcontdesc [WCONT_T_MAX] = {
   [WCONT_T_EVENT_BOX] = "EVENT_BOX",
   [WCONT_T_HBOX] = "H-BOX",
   [WCONT_T_IMAGE] = "IMAGE",
-  [WCONT_T_IMAGE_VIEW] = "IMAGE_VIEW",
   [WCONT_T_KEY] = "KEY",
   [WCONT_T_LABEL] = "LABEL",
   [WCONT_T_LINK] = "LINK",

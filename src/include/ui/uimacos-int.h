@@ -5,6 +5,9 @@
 
 #include <Cocoa/Cocoa.h>
 
+#include "callback.h"
+#include "uiwcont.h"
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
@@ -38,6 +41,7 @@ extern "C" {
 
 /* additional routines */
 
+void uiWidgetSetIdentifier (uiwcont_t *uiwidget, const char *tag);
 void uiWidgetUpdateLayout (uiwcont_t *uiwidget);
 
 /* structures */
@@ -45,9 +49,10 @@ void uiWidgetUpdateLayout (uiwcont_t *uiwidget);
 typedef struct macoslayout {
   NSStackView   *container;
   NSEdgeInsets  margins;
-  bool          centered;
-  bool          expandvert;
+  bool          centerhoriz;
+  bool          centervert;
   bool          expandhoriz;
+  bool          expandvert;
   bool          alignright;
   bool          expandchildren;
 } macoslayout_t;
@@ -57,4 +62,3 @@ typedef struct macoslayout {
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
 #endif
-

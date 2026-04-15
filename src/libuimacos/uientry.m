@@ -16,6 +16,7 @@
 
 #include "mdebug.h"
 
+#include "ui/uimacos-int.h"
 #include "ui/uiwcont-int.h"
 
 #include "ui/uiui.h"
@@ -33,7 +34,6 @@ uiEntryInit (int entrySize, int maxSize)
   uiwcont_t       *uiwidget;
   NSTextField     *widget;
   uientrybase_t   *ebase;
-  char            tmp [40];
 
   uientry = mdmalloc (sizeof (uientry_t));
   uientry->changed = false;
@@ -43,16 +43,14 @@ uiEntryInit (int entrySize, int maxSize)
   [widget setDrawsBackground : YES];
   [widget setEditable : YES];
   [widget setSelectable : YES];
-  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+  widget.translatesAutoresizingMaskIntoConstraints = NO;
   widget.needsDisplay = true;
 
   uiwidget = uiwcontAlloc (WCONT_T_ENTRY, WCONT_T_ENTRY);
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uientry = uientry;
 
-  snprintf (tmp, sizeof (tmp), "entry-%" PRIu32 "-%" PRIu32 "\n",
-      uiwidget->ui_id, uiwidget->id);
-  widget.identifier = [NSString stringWithUTF8String: tmp];
+  uiWidgetSetIdentifier (uiwidget, "entry");
 
   ebase = &uiwidget->uiint.uientrybase;
   ebase->entrySize = entrySize;

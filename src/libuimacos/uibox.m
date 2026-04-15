@@ -35,7 +35,8 @@
 }
 @end
 
-static uiwcont_t * uiCreateBox (int orientation);
+static uiwcont_t * uiCreateBox (uiwconttype_t wtype);
+static void uiBoxMacOSDebug (uiwcont_t *uiwidget);
 
 #if MACOS_UI_DEBUG
 
@@ -64,30 +65,35 @@ static dbgcol_t dbgcols [MACOS_UI_DBG_COLS] = {
 
 #endif
 
-static void uiBoxProcessExpandHoriz (NSView *box, NSView *prevcont, NSView *container, NSView *nextcont);
-static void uiBoxProcessExpandVert (NSView *box, NSView *prevcont, NSView *container, NSView *nextcont);
-static void uiBoxProcessCenter (NSView *box, NSView *prevcont, NSView *container, NSView *nextcont);
+static void uiBoxProcessExpandHoriz (NSView *box, NSView *prevcont, NSView *currcont, NSView *nextcont);
+static void uiBoxProcessExpandVert (NSView *box, NSView *prevcont, NSView *currcont, NSView *nextcont);
+static void uiBoxProcessCenter (macoslayout_t *layout, NSView *box, NSView *prevcont, NSView *currcont, NSView *nextcont);
 
 uiwcont_t *
 uiCreateVertBox_r (void)
 {
-  return uiCreateBox (NSUserInterfaceLayoutOrientationVertical);
+  return uiCreateBox (WCONT_T_VBOX);
 }
 
 uiwcont_t *
 uiCreateHorizBox_r (void)
 {
-  return uiCreateBox (NSUserInterfaceLayoutOrientationHorizontal);
+  return uiCreateBox (WCONT_T_HBOX);
 }
 
 void
 uiBoxPostProcess_r (uiwcont_t *uibox,
     uiwcont_t *prev, uiwcont_t *curr, uiwcont_t *next)
 {
-  uiboxbase_t *boxbase = NULL;
-  NSView      *box = NULL;
+  uiboxbase_t   *boxbase = NULL;
+  NSView        *box = NULL;
+  macoslayout_t *boxlayout;
 
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-post-process")) {
+    return;
+  }
+  if (curr == NULL) {
+fprintf (stderr, "    pp: null-curr\n");
     return;
   }
 
@@ -104,10 +110,11 @@ fprintf (stderr, "    pp: no-children\n");
   }
 
   box = uibox->uidata.widget;
+  boxlayout = uibox->uidata.layout;
 
   {
     NSView          *widget;
-    NSView          *container;
+    NSView          *currcont;
     macoslayout_t   *layout;
     NSView          *pwidget = NULL;
     NSView          *prevcont = NULL;
@@ -116,10 +123,10 @@ fprintf (stderr, "    pp: no-children\n");
     macoslayout_t   *nlayout = NULL;
     NSView          *nextcont = NULL;
 
-fprintf (stderr, "    pp: %d/%s\n", curr->wtype, uiwcontDesc (curr->wtype));
+fprintf (stderr, "    pp: curr: %d/%s\n", curr->wtype, uiwcontDesc (curr->wtype));
     widget = curr->uidata.widget;
     layout = curr->uidata.layout;
-    container = layout->container;
+    currcont = layout->container;
 
     if (prev != NULL) {
 fprintf (stderr, "    pp: prev: %d/%s\n", prev->wtype, uiwcontDesc (prev->wtype));
@@ -135,17 +142,17 @@ fprintf (stderr, "    pp: next: %d/%s\n", next->wtype, uiwcontDesc (next->wtype)
       nextcont = nlayout->container;
     }
 
-    if (layout->expandhoriz) {
+    if (layout->expandhoriz || boxlayout->expandchildren) {
 fprintf (stderr, "    pp: expand-horiz\n");
-      uiBoxProcessExpandHoriz (box, prevcont, container, nextcont);
+      uiBoxProcessExpandHoriz (box, prevcont, currcont, nextcont);
     }
-    if (layout->expandvert) {
+    if (layout->expandvert || boxlayout->expandchildren) {
 fprintf (stderr, "    pp: expand-vert\n");
-      uiBoxProcessExpandVert (box, prevcont, container, nextcont);
+      uiBoxProcessExpandVert (box, prevcont, currcont, nextcont);
     }
-    if (layout->centered) {
+    if (layout->centerhoriz || layout->centervert) {
 fprintf (stderr, "    pp: center\n");
-      uiBoxProcessCenter (box, prevcont, container, nextcont);
+      uiBoxProcessCenter (layout, box, prevcont, currcont, nextcont);
     }
   }
 
@@ -199,30 +206,10 @@ uiBoxPackStartExpandChildren_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
   widget = uiwidget->uidata.packwidget;
   layout = uiwidget->uidata.layout;
 
-  if (uibox->wtype == WCONT_T_VBOX) {
-    [box.widthAnchor constraintEqualToAnchor :
-        widget.widthAnchor].active = YES;
-  }
-  if (uibox->wtype == WCONT_T_HBOX) {
-    [box.heightAnchor constraintEqualToAnchor :
-        widget.heightAnchor].active = YES;
-  }
-#if MACOS_UI_DEBUG
-  if (uiwidget->wbasetype == WCONT_T_BOX) {
-fprintf (stderr, "c-box: %d pack into w\n", uiwidget->id);
-    widget = uiwidget->uidata.widget;
-    [[widget layer] setBorderColor :
-        [NSColor colorWithRed : dbgcols [MACOS_UI_DBG_NORM].r
-        green : dbgcols [MACOS_UI_DBG_NORM].g
-        blue : dbgcols [MACOS_UI_DBG_NORM].b
-        alpha:1.0].CGColor];
-    widget.needsDisplay = YES;
-  }
-#endif
-
-  uiwidget->packed = true;
   layout->expandchildren = true;
   uiWidgetUpdateLayout (uiwidget);
+
+  uiBoxMacOSDebug (uiwidget);
 
   return;
 }
@@ -232,7 +219,7 @@ uiBoxPackEnd_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   IBox          *box;
   NSView        *widget = NULL;
-  int           grav = NSStackViewGravityLeading;
+  int           grav = NSStackViewGravityTrailing;
 
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start-exp")) {
     return;
@@ -247,84 +234,19 @@ uiBoxPackEnd_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
     grav = NSStackViewGravityBottom;
   }
   [box insertView : widget atIndex : 0 inGravity : grav];
-//  [box addView : widget inGravity : grav];
-
-  if (uibox->uidata.layout->expandchildren &&
-      uibox->wtype == WCONT_T_VBOX) {
-    [box.widthAnchor constraintEqualToAnchor :
-        widget.widthAnchor].active = YES;
-//    widget.autoresizingMask |= NSViewWidthSizable;
-#if MACOS_UI_DEBUG
-    if (uiwidget->wbasetype == WCONT_T_BOX) {
-fprintf (stderr, "c-box: %d pack into w-e\n", uiwidget->id);
-      widget = uiwidget->uidata.widget;
-      [[widget layer] setBorderColor :
-          [NSColor colorWithRed : dbgcols [MACOS_UI_DBG_EXP_WIDTH].r
-          green : dbgcols [MACOS_UI_DBG_EXP_WIDTH].g
-          blue : dbgcols [MACOS_UI_DBG_EXP_WIDTH].b
-          alpha:1.0].CGColor];
-      widget.needsDisplay = YES;
-    }
-#endif
-  }
 
 //  if (uiwidget->wbasetype == WCONT_T_BOX) {
 //    uiwidget->uidata.layout->expandchildren = true;
 //  }
 
+fprintf (stderr, "box: %d p-end: %d/%s\n", uibox->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   uiwidget->packed = true;
   uiWidgetUpdateLayout (uiwidget);
 
-  return;
-}
-
-#if 0
-void
-uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
-{
-  IBox          *box;
-  NSView        *widget = NULL;
-  int           grav = NSStackViewGravityTrailing;
-
-  if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end")) {
-    return;
-  }
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
-    return;
-  }
-
-  box = uibox->uidata.widget;
-  widget = uiwidget->uidata.packwidget;
-  if (uibox->wtype == WCONT_T_VBOX) {
-    grav = NSStackViewGravityBottom;
-  }
-  [box insertView : widget atIndex : 0 inGravity : grav];
-
-  if (uibox->uidata.layout->expandchildren &&
-      uibox->wtype == WCONT_T_HBOX) {
-    [box.heightAnchor constraintEqualToAnchor :
-        widget.heightAnchor].active = YES;
-//    widget.autoresizingMask |= NSViewHeightSizable;
-#if MACOS_UI_DEBUG
-    if (uiwidget->wbasetype == WCONT_T_BOX) {
-fprintf (stderr, "c-box: %d pack into h\n", uiwidget->id);
-      widget = uiwidget->uidata.widget;
-      [[widget layer] setBorderColor :
-          [NSColor colorWithRed : dbgcols [MACOS_UI_DBG_NORM].r
-          green : dbgcols [MACOS_UI_DBG_NORM].g
-          blue : dbgcols [MACOS_UI_DBG_NORM].b
-          alpha:1.0].CGColor];
-      widget.needsDisplay = YES;
-    }
-#endif
-  }
-
-  uiwidget->packed = true;
-  uiWidgetUpdateLayout (uiwidget);
+  uiBoxMacOSDebug (uiwidget);
 
   return;
 }
-#endif
 
 /* this uses the GTK terminology */
 /* expand allows any children to expand to fill the space */
@@ -347,28 +269,10 @@ uiBoxPackEndExpandChildren_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
   widget = uiwidget->uidata.packwidget;
   layout = uiwidget->uidata.layout;
 
-  if (uibox->uidata.layout->expandchildren &&
-      uibox->wtype == WCONT_T_HBOX) {
-    [box.heightAnchor constraintEqualToAnchor :
-        widget.heightAnchor].active = YES;
-  }
-
-#if MACOS_UI_DEBUG
-  if (uiwidget->wbasetype == WCONT_T_BOX) {
-fprintf (stderr, "c-box: %d pack into h-e\n", uiwidget->id);
-    widget = uiwidget->uidata.widget;
-    [[widget layer] setBorderColor :
-        [NSColor colorWithRed : dbgcols [MACOS_UI_DBG_EXP_HEIGHT].r
-        green : dbgcols [MACOS_UI_DBG_EXP_HEIGHT].g
-        blue : dbgcols [MACOS_UI_DBG_EXP_HEIGHT].b
-        alpha:1.0].CGColor];
-    widget.needsDisplay = YES;
-  }
-#endif
-
-  uiwidget->packed = true;
   layout->expandchildren = true;
   uiWidgetUpdateLayout (uiwidget);
+
+  uiBoxMacOSDebug (uiwidget);
 
   return;
 }
@@ -386,109 +290,137 @@ uiBoxSetSizeChgCallback (uiwcont_t *uiwindow, callback_t *uicb)
 /* internal routines */
 
 static uiwcont_t *
-uiCreateBox (int orientation)
+uiCreateBox (uiwconttype_t wtype)
 {
   uiwcont_t   *uiwidget = NULL;
   IBox        *box = NULL;
-  char        tmp [40];
 
   box = [[IBox alloc] init];
-  [box setOrientation : orientation];
-  [box setTranslatesAutoresizingMaskIntoConstraints : NO];
-  [box setDistribution : NSStackViewDistributionGravityAreas];
-//  box.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
+  if (wtype == WCONT_T_VBOX) {
+    box.orientation = NSUserInterfaceLayoutOrientationVertical;
+    box.alignment = NSLayoutAttributeTop;
+  }
+  if (wtype == WCONT_T_HBOX) {
+    box.orientation = NSUserInterfaceLayoutOrientationHorizontal;
+    box.alignment = NSLayoutAttributeLeading;
+  }
+  box.translatesAutoresizingMaskIntoConstraints = NO;
+  box.distribution = NSStackViewDistributionGravityAreas;
   box.needsDisplay = true;
   box.spacing = 1.0;
   box.layerContentsRedrawPolicy = NSViewLayerContentsRedrawBeforeViewResize;
 
 #if MACOS_UI_DEBUG
-  [box setFocusRingType : NSFocusRingTypeExterior];
-  [box setWantsLayer : YES];
-  [[box layer] setBorderColor :
-      [NSColor colorWithRed : dbgcols [MACOS_UI_DBG_WINDOW].r
-      green : dbgcols [MACOS_UI_DBG_WINDOW].g
-      blue : dbgcols [MACOS_UI_DBG_WINDOW].b
-      alpha:1.0].CGColor];
-  [[box layer] setBorderWidth : 2.0];
+  box.focusRingType = NSFocusRingTypeExterior;
+  box.wantsLayer = YES;
+  [box layer].borderWidth = 2.0;
 #endif
 
-  if (orientation == NSUserInterfaceLayoutOrientationHorizontal) {
-    uiwidget = uiwcontAlloc (WCONT_T_BOX, WCONT_T_HBOX);
-    box.alignment = NSLayoutAttributeTop;
-  }
-  if (orientation == NSUserInterfaceLayoutOrientationVertical) {
-    uiwidget = uiwcontAlloc (WCONT_T_BOX, WCONT_T_VBOX);
-    box.alignment = NSLayoutAttributeTop;
-  }
-
+  uiwidget = uiwcontAlloc (WCONT_T_BOX, wtype);
   uiwcontSetWidget (uiwidget, box, NULL);
 
-  snprintf (tmp, sizeof (tmp), "box-%" PRIu32 "-%" PRIu32 "\n",
-      uiwidget->ui_id, uiwidget->id);
-  box.identifier = [NSString stringWithUTF8String: tmp];
+  if (wtype == WCONT_T_HBOX) {
+    uiWidgetSetIdentifier (uiwidget, "hbox");
+  }
+  if (wtype == WCONT_T_VBOX) {
+    uiWidgetSetIdentifier (uiwidget, "vbox");
+  }
+
+  uiBoxMacOSDebug (uiwidget);
 
   return uiwidget;
 }
 
 static void
 uiBoxProcessExpandHoriz (NSView *box,
-    NSView *prevcont, NSView *container, NSView *nextcont)
+    NSView *prevcont, NSView *currcont, NSView *nextcont)
 {
   if (prevcont != NULL) {
-    [container.leadingAnchor
+    [currcont.leadingAnchor
         constraintEqualToAnchor: prevcont.trailingAnchor].active = YES;
   } else {
     /* attach to the box */
-    [container.leadingAnchor
+    [currcont.leadingAnchor
         constraintEqualToAnchor: box.leadingAnchor].active = YES;
   }
+
   if (nextcont != NULL) {
-    [container.trailingAnchor
+    [currcont.trailingAnchor
         constraintEqualToAnchor: nextcont.leadingAnchor].active = YES;
   } else {
     /* attach to the box */
-    [container.trailingAnchor
+    [currcont.trailingAnchor
         constraintEqualToAnchor: box.trailingAnchor].active = YES;
   }
 }
 
 static void
 uiBoxProcessExpandVert (NSView *box,
-    NSView *prevcont, NSView *container, NSView *nextcont)
+    NSView *prevcont, NSView *currcont, NSView *nextcont)
 {
   if (prevcont != NULL) {
-    [container.topAnchor
+    [currcont.topAnchor
         constraintEqualToAnchor: prevcont.bottomAnchor].active = YES;
   } else {
     /* attach to the box */
-    [container.topAnchor
+    [currcont.topAnchor
         constraintEqualToAnchor: box.topAnchor].active = YES;
   }
 
   if (nextcont != NULL) {
-    [container.bottomAnchor
+    [currcont.bottomAnchor
         constraintEqualToAnchor: nextcont.topAnchor].active = YES;
   } else {
     /* attach to the box */
-    [container.bottomAnchor
+    [currcont.bottomAnchor
         constraintEqualToAnchor: box.bottomAnchor].active = YES;
   }
 }
 
 static void
-uiBoxProcessCenter (NSView *box,
-    NSView *prevcont, NSView *container, NSView *nextcont)
+uiBoxProcessCenter (macoslayout_t *layout, NSView *box,
+    NSView *prevcont, NSView *currcont, NSView *nextcont)
 {
-  if (prevcont != NULL) {
-    ;
-  } else {
-    ;
+// ### this is not correct...
+  if (layout->centervert) {
+    [currcont.centerYAnchor
+        constraintEqualToAnchor: box.centerYAnchor].active = YES;
   }
-
-  if (nextcont != NULL) {
-    ;
-  } else {
-    ;
+  if (layout->centerhoriz) {
+    [currcont.centerXAnchor
+        constraintEqualToAnchor: box.centerXAnchor].active = YES;
   }
 }
 
+static void
+uiBoxMacOSDebug (uiwcont_t *uiwidget)
+{
+  NSView          *widget;
+  macoslayout_t   *layout;
+  int             idx = MACOS_UI_DBG_NORM;
+
+#if MACOS_UI_DEBUG
+  if (uiwidget->wbasetype != WCONT_T_BOX) {
+    return;
+  }
+
+  widget = uiwidget->uidata.widget;
+  layout = uiwidget->uidata.layout;
+  if (layout->expandchildren) {
+    idx = MACOS_UI_DBG_EXP_CHILDREN;
+  }
+  if (layout->expandhoriz) {
+    idx = MACOS_UI_DBG_EXP_WIDTH;
+  }
+  if (layout->expandvert) {
+    idx = MACOS_UI_DBG_EXP_HEIGHT;
+  }
+
+  [[widget layer] setBorderColor :
+      [NSColor colorWithRed : dbgcols [idx].r
+      green : dbgcols [idx].g
+      blue : dbgcols [idx].b
+      alpha:1.0].CGColor];
+  widget.needsDisplay = YES;
+#endif
+}

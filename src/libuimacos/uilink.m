@@ -24,7 +24,6 @@ uiCreateLink (const char *label, const char *uri)
 {
   uiwcont_t   *uiwidget;
   ILabel      *widget;
-  char        tmp [40];
 
   widget = [[ILabel alloc] init];
   [widget setBezeled : NO];
@@ -32,14 +31,12 @@ uiCreateLink (const char *label, const char *uri)
   [widget setEditable : NO];
   [widget setSelectable : NO];
   [widget setStringValue : [NSString stringWithUTF8String : label]];
-  [widget setTranslatesAutoresizingMaskIntoConstraints : NO];
+  widget.translatesAutoresizingMaskIntoConstraints = NO;
 
   uiwidget = uiwcontAlloc (WCONT_T_LINK, WCONT_T_LINK);
   uiwcontSetWidget (uiwidget, widget, NULL);
 
-  snprintf (tmp, sizeof (tmp), "link-%" PRIu32 "-%" PRIu32 "\n",
-      uiwidget->ui_id, uiwidget->id);
-  widget.identifier = [NSString stringWithUTF8String: tmp];
+  uiWidgetSetIdentifier (uiwidget, "link");
 
   return NULL;
 }
