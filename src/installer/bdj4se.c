@@ -62,9 +62,7 @@ main (int argc, char *argv [])
 #if _WIN32
   isWindows = true;
   archivenm = "bdj4-install.cab";
-# if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
   osSetEnv ("GTK_THEME", "Adwaita:dark");
-# endif
 #endif
 
   buff = malloc (BUFFSZ);

@@ -42,9 +42,7 @@
 #include "webclient.h"
 
 static nlist_t * confuiGetThemeList (void);
-#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
 static slist_t * confuiGetThemeNames (slist_t *themelist, slist_t *filelist);
-#endif
 static void confuiMakeQRCodeFile (const char *tag, const char *title, const char *disp, char *uri, size_t sz);
 static void confuiUpdateOrgExample (org_t *org, const char *data, uiwcont_t *uiwidgetp);
 static bool confuiSearchDispSel (confuigui_t *gui, int selidx, const char *disp);
@@ -475,18 +473,18 @@ confuiGetThemeList (void)
   slistidx_t  iteridx;
   const char  *nm;
   int         count;
-#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
   char        tbuff [BDJ4_PATH_MAX];
   slist_t     *filelist = NULL;
-#endif
+  int         uitype;
 
 
   logProcBegin ();
   sthemelist = slistAlloc ("cu-themes-s", LIST_ORDERED, NULL);
   themelist = nlistAlloc ("cu-themes", LIST_ORDERED, NULL);
 
-#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
-  if (isWindows ()) {
+  uitype = uiBackend ();
+  if ((uitype == BDJ4_UI_ID_GTK3 || uitype == BDJ4_UI_ID_GTK4) &&
+      isWindows ()) {
     snprintf (tbuff, sizeof (tbuff), "%s/plocal/share/themes",
         sysvarsGetStr (SV_BDJ4_DIR_MAIN));
     filelist = dirlistRecursiveDirList (tbuff, DIRLIST_DIRS);
@@ -534,7 +532,6 @@ confuiGetThemeList (void)
   slistSetStr (sthemelist, "Adwaita:dark", 0);
   slistSetStr (sthemelist, "HighContrast", 0);
   slistSetStr (sthemelist, "HighContrastInverse", 0);
-#endif   /* gtk3 or gtk4 */
 
   slistSort (sthemelist);
 
@@ -550,25 +547,25 @@ confuiGetThemeList (void)
   return themelist;
 }
 
-/* ui-macos and ui-null do not have themes */
-#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
-
 static slist_t *
 confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
 {
   slistidx_t    iteridx;
   const char    *fn;
-# if BDJ4_UI_GTK3
   static char   *srchdir = "gtk-3.0";
-# endif
-# if BDJ4_UI_GTK4
-  static char   *srchdir = "gtk-4.0";
-# endif
-# if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
   static char   *srchfn = "gtk.css";
-# endif
+  int           uitype;
 
   logProcBegin ();
+  uitype = uiBackend ();
+  if (uitype == BDJ4_UI_ID_GTK3) {
+    srchdir = "gtk-3.0";
+  } else if (uitype == BDJ4_UI_ID_GTK4) {
+    srchdir = "gtk-4.0";
+  } else {
+    return themelist;
+  }
+
   if (filelist == NULL) {
     logProcEnd ("no-filelist");
     return NULL;
@@ -619,7 +616,6 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
   logProcEnd ("");
   return themelist;
 }
-#endif  /* ui-gtk3 or ui-gtk4 */
 
 static void
 confuiMakeQRCodeFile (const char *tag, const char *title,

@@ -48,6 +48,12 @@ int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 - (BOOL)canBecomeMainWindow { return YES; }
 @end
 
+bdj4uitype_t
+uiBackend (void)
+{
+  return BDJ4_UI_ID_MACOS;
+}
+
 void
 uiUIInitialize (int direction)
 {

@@ -52,6 +52,12 @@ int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 int uiTextDirection = TEXT_DIR_DEFAULT;
 static bool inprocess = false;
 
+bdj4uitype_t
+uiBackend (void)
+{
+  return BDJ4_UI_ID_GTK3;
+}
+
 void
 uiUIInitialize (int direction)
 {

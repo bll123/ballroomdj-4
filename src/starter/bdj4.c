@@ -161,14 +161,12 @@ main (int argc, char * argv[])
 
   targ = bdj4argGet (bdj4arg, 0, argv [0]);
   sysvarsInit (targ, SYSVARS_FLAG_BASIC);
-#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
   if (getenv ("GTK_THEME") != NULL) {
     havetheme = true;
   }
   if (getenv ("GDK_SCALE") != NULL) {
     havescale = true;
   }
-#endif
 
   while ((c = getopt_long_only (argc, bdj4argGetArgv (bdj4arg),
       "p:d:t:", bdj_options, &option_index)) != -1) {
@@ -340,17 +338,13 @@ main (int argc, char * argv[])
       case 'T': {
         if (optarg != NULL) {
           targ = bdj4argGet (bdj4arg, optind - 1, optarg);
-#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
           osSetEnv ("GTK_THEME", targ);
-#endif
         }
         havetheme = true;
         break;
       }
       case 'S': {
-#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
         osSetEnv ("GDK_SCALE", optarg);
-#endif
         havescale = true;
         break;
       }
@@ -391,9 +385,7 @@ main (int argc, char * argv[])
     }
   }
 
-#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
   osSetEnv ("GTK_CSD", "0");
-#endif
 
   if (isMacOS ()) {
     char      pbuff [BDJ4_PATH_MAX];
@@ -546,9 +538,8 @@ main (int argc, char * argv[])
       fprintf (stderr, "final PATH=%s\n", pbuff);
     }
 
-#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
+    /* use fontconfig: otherwise the text doesn't work right on windows */
     osSetEnv ("PANGOCAIRO_BACKEND", "fc");
-#endif
 
     dataFree (pbuff);
     dataFree (path);
@@ -563,9 +554,7 @@ main (int argc, char * argv[])
       mdextfclose (fh);
       fclose (fh);
       stringTrim (buff);
-#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
       osSetEnv ("GTK_THEME", buff);
-#endif
       havetheme = true;
     }
   }
@@ -581,30 +570,24 @@ main (int argc, char * argv[])
       mdextfclose (fh);
       fclose (fh);
       stringTrim (buff);
-#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
       osSetEnv ("GDK_SCALE", buff);
-#endif
       havescale = true;
     }
   }
 
-#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
   if (! havetheme && isWindows ()) {
     osSetEnv ("GTK_THEME", "Adwaita:dark");
   }
   if (! havetheme && isMacOS ()) {
     osSetEnv ("GTK_THEME", "Adwaita:dark");
   }
-#endif
 
   /* launch the program */
 
   if (debugself) {
-#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
     fprintf (stderr, "GTK_THEME=%s\n", getenv ("GTK_THEME"));
     fprintf (stderr, "GTK_CSD=%s\n", getenv ("GTK_CSD"));
     fprintf (stderr, "PANGOCAIRO_BACKEND=%s\n", getenv ("PANGOCAIRO_BACKEND"));
-#endif
     fprintf (stderr, "LC_ALL=%s\n", getenv ("LC_ALL"));
   }
 

@@ -504,8 +504,7 @@ confuiBuildUI (configui_t *confui)
   y = nlistGetNum (confui->options, CONFUI_POSITION_Y);
   uiWindowMove (confui->gui.window, x, y, -1);
 
-#if BDJ4_UI_GTK3
-  {
+  if (uiBackend () == BDJ4_UI_ID_GTK3) {
     int ax, ay;
     int bx, by;
     int bugxoffset;
@@ -525,7 +524,6 @@ confuiBuildUI (configui_t *confui)
     bugyoffset = by - ay;
     uiddSetOffset (confui->gui.uiitem [CONFUI_DD_LOCALE].uidd, bugxoffset, bugyoffset);
   }
-#endif
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_config", ".png", PATHBLD_MP_DIR_IMG);

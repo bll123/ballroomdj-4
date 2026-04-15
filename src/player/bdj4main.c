@@ -887,14 +887,12 @@ mainStartMarquee (maindata_t *mainData)
     return;
   }
 
-#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
   /* set the theme for the marquee */
   {
     const char *theme;
     theme = bdjoptGetStr (OPT_M_MQ_THEME);
     osSetEnv ("GTK_THEME", theme);
   }
-#endif
 
   targv [idx++] = NULL;
 

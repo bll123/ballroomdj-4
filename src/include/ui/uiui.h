@@ -23,6 +23,13 @@ typedef struct {
   bool       is_dark;
 } uisetup_t;
 
+typedef enum {
+  BDJ4_UI_ID_GTK3,
+  BDJ4_UI_ID_GTK4,
+  BDJ4_UI_ID_MACOS,
+  BDJ4_UI_ID_NULL,
+} bdj4uitype_t;
+
 enum {
   UIUTILS_BASE_MARGIN_SZ = 2,
 };
@@ -30,6 +37,7 @@ enum {
 extern int uiBaseMarginSz;
 extern int uiTextDirection;
 
+bdj4uitype_t uiBackend (void);
 void  uiUIInitialize (int direction);
 void  uiUIProcessEvents (void);
 void  uiUIProcessWaitEvents (void);     // a small delay

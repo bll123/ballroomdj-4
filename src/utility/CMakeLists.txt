@@ -11,8 +11,12 @@ include (../utils/bdj4macros.cmake)
 add_executable (bdj4info bdj4info.c)
 addUIInclude (bdj4info)
 target_link_libraries (bdj4info PRIVATE
+  ${BDJ4_UI_LIB}
   libbdj4basic libbdj4common
 )
+# the ui library is required so that bdj4info can print the
+# ui backend.  this could be changed in the future.
+addUILibrary (bdj4info)
 addIntlLibrary (bdj4info)
 addWinVersionInfo (bdj4info)
 addWinManifest (bdj4info)

@@ -31,13 +31,13 @@
 #include "mdebug.h"
 #include "osenv.h"
 #include "sysvars.h"
+#include "ui/uiui.h"
 
 static const char *envitems [] = {
   "DESKTOP_SESSION",
   "DYLD_FALLBACK_LIBRARY_PATH",
   "GDK_BACKEND",
   "GDK_SCALE",
-  "GTK_BACKEND",
   "GTK_CSD",
   "GTK_THEME",
   "HOME",
@@ -191,22 +191,28 @@ main (int argc, char *argv [])
   fprintf (stdout, "bdj: BDJ4_PATH_MAX %d\n", BDJ4_PATH_MAX);
 
   /* UI */
-#if BDJ4_UI_GTK3
-  fprintf (stdout, " ui: GTK3\n");
-#endif
-#if BDJ4_UI_GTK4
-  fprintf (stdout, " ui: GTK4\n");
-#endif
+  switch (uiBackend ()) {
+    case BDJ4_UI_ID_GTK3: {
+      fprintf (stdout, " ui: gtk3\n");
+      break;
+    }
+    case BDJ4_UI_ID_GTK4: {
+      fprintf (stdout, " ui: gtk4\n");
+      break;
+    }
+    case BDJ4_UI_ID_NULL: {
+      fprintf (stdout, " ui: null\n");
+      break;
+    }
+    case BDJ4_UI_ID_MACOS: {
+      fprintf (stdout, " ui: macos\n");
+      break;
+    }
+  }
 #if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
   fprintf (stdout, "  i: gboolean %d\n", (int) sizeof (gboolean));
   fprintf (stdout, "  i: gint     %d\n", (int) sizeof (gint));
   fprintf (stdout, "  i: glong    %d\n", (int) sizeof (glong));
-#endif
-#if BDJ4_UI_NULL
-  fprintf (stdout, "ui: null\n");
-#endif
-#if BDJ4_UI_MACOS
-  fprintf (stdout, "ui: macos\n");
 #endif
 
   /* environment */

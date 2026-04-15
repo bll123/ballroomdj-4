@@ -19,6 +19,12 @@
 
 int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 
+bdj4uitype_t
+uiBackend (void)
+{
+  return BDJ4_UI_ID_NULL;
+}
+
 void
 uiUIInitialize (int direction)
 {
