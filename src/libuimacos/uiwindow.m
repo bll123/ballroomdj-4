@@ -133,6 +133,7 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   IWindow       *win = NULL;
   NSStackView   *box = NULL;
   id            windowDelegate;
+  char          tmp [40];
 
   win = [[IWindow alloc] init];
   uibox = uiCreateVertBox ();
@@ -151,8 +152,10 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
 
   uibox->packed = true;
   uibox->uidata.layout->expandchildren = true;
-  [box setIdentifier :
-      [[NSNumber numberWithUnsignedInt : uibox->id] stringValue]];
+
+  snprintf (tmp, sizeof (tmp), "wbox-%" PRIu32 "-%" PRIu32 "\n",
+      uibox->ui_id, uibox->id);
+  box.identifier = [NSString stringWithUTF8String: tmp];
 
   if (imagenm != NULL) {
     NSImage *image = nil;
@@ -172,8 +175,9 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   uiwcontSetWidget (uiwin, win, NULL);
   uiwin->packed = true;
 
-  [win setIdentifier :
-      [[NSNumber numberWithUnsignedInt : uiwin->id] stringValue]];
+  snprintf (tmp, sizeof (tmp), "win-%" PRIu32 "-%" PRIu32 "\n",
+      uiwin->ui_id, uiwin->id);
+  win.identifier = [NSString stringWithUTF8String: tmp];
 
   uiWidgetSetAllMargins (uibox, 2);
 
@@ -363,6 +367,7 @@ uiCreateScrolledWindow (int minheight)
 {
   uiwcont_t     *uiscwin;
   NSScrollView  *win = NULL;
+  char          tmp [40];
 
   win = [[NSScrollView alloc] init];
   win.autohidesScrollers = YES;
@@ -373,8 +378,10 @@ uiCreateScrolledWindow (int minheight)
   uiscwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_WINDOW_SCROLL);
   uiwcontSetWidget (uiscwin, win, NULL);
 
-  [win setIdentifier :
-      [[NSNumber numberWithUnsignedInt : uiscwin->id] stringValue]];
+  snprintf (tmp, sizeof (tmp), "sw-%" PRIu32 "-%" PRIu32 "\n",
+      uiscwin->ui_id, uiscwin->id);
+  win.identifier = [NSString stringWithUTF8String: tmp];
+
   return uiscwin;
 }
 

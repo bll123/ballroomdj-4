@@ -39,6 +39,7 @@ uiCreateCheckButton (const char *txt, int value)
   uiwcont_t   *uiwidget;
   uitoggle_t  *uitoggle;
   IButton     *widget = nil;
+  char        tmp [40];
 
   uitoggle = uiToggleButtonInit ();
 
@@ -58,8 +59,9 @@ uiCreateCheckButton (const char *txt, int value)
   uiwidget->uiint.uitoggle = uitoggle;
 
   [widget setUIWidget : uiwidget];
-  [widget setIdentifier :
-      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+  snprintf (tmp, sizeof (tmp), "check-%" PRIu32 "-%" PRIu32 "\n",
+      uiwidget->ui_id, uiwidget->id);
+  widget.identifier = [NSString stringWithUTF8String: tmp];
 
   return uiwidget;
 }
@@ -70,6 +72,7 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
   uiwcont_t   *uiwidget;
   IButton     *widget = nil;
   uitoggle_t  *uitoggle;
+  char        tmp [40];
 
   uitoggle = uiToggleButtonInit ();
 
@@ -89,8 +92,9 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
   uiwidget->uiint.uitoggle = uitoggle;
 
   [widget setUIWidget : uiwidget];
-  [widget setIdentifier :
-      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+  snprintf (tmp, sizeof (tmp), "radio-%" PRIu32 "-%" PRIu32 "\n",
+      uiwidget->ui_id, uiwidget->id);
+  widget.identifier = [NSString stringWithUTF8String: tmp];
 
   return uiwidget;
 }
@@ -102,6 +106,7 @@ uiCreateToggleButton (const char *txt,
   uiwcont_t   *uiwidget;
   IButton     *widget = nil;
   uitoggle_t  *uitoggle;
+  char        tmp [40];
 
   uitoggle = uiToggleButtonInit ();
 
@@ -134,13 +139,14 @@ uiCreateToggleButton (const char *txt,
     [widget setImage : nsimage];
   }
 
-  uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_RADIO);
+  uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_TOGGLE);
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uitoggle = uitoggle;
 
   [widget setUIWidget : uiwidget];
-  [widget setIdentifier :
-      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+  snprintf (tmp, sizeof (tmp), "toggle-%" PRIu32 "-%" PRIu32 "\n",
+      uiwidget->ui_id, uiwidget->id);
+  widget.identifier = [NSString stringWithUTF8String: tmp];
 
   return uiwidget;
 }

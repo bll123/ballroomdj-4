@@ -62,6 +62,7 @@ uiCreateButton (callback_t *uicb, const char *title,
   uibutton_t      *uibutton;
   uibuttonbase_t  *bbase;
   IButton         *widget = nil;
+  char            tmp [40];
 
   uibutton = mdmalloc (sizeof (uibutton_t));
   uibutton->image = NULL;
@@ -104,8 +105,9 @@ uiCreateButton (callback_t *uicb, const char *title,
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uibutton = uibutton;
 
-  [widget setIdentifier :
-      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+  snprintf (tmp, sizeof (tmp), "button-%" PRIu32 "-%" PRIu32 "\n",
+      uiwidget->ui_id, uiwidget->id);
+  widget.identifier = [NSString stringWithUTF8String: tmp];
 
 //  [widget setBezelStyle : NSBezelStyleRounded];
   [widget setTarget : widget];

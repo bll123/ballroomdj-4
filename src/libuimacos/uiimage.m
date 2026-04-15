@@ -73,6 +73,7 @@ uiImageScaledFromFile (const char *fn, int scale)
   NSImageView *imgv;
   NSImage     *image;
   NSString    *ns;
+  char        tmp [40];
 
   ns = [NSString stringWithUTF8String : fn];
   image = [[NSImage alloc] initWithContentsOfFile : ns];
@@ -89,8 +90,9 @@ uiImageScaledFromFile (const char *fn, int scale)
   uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE_VIEW);
   uiwcontSetWidget (uiwidget, imgv, NULL);
 
-  [imgv setIdentifier :
-      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+  snprintf (tmp, sizeof (tmp), "image-%" PRIu32 "-%" PRIu32 "\n",
+      uiwidget->ui_id, uiwidget->id);
+  imgv.identifier = [NSString stringWithUTF8String: tmp];
 
   return uiwidget;
 }

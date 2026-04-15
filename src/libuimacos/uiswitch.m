@@ -67,8 +67,9 @@ uiCreateSwitch (int value)
   widget.ButtonType = NSButtonTypeToggle;
   widget.bezelStyle = NSBezelStyleToolbar;
   [widget setUIWidget : uiwidget];
-  [widget setIdentifier :
-      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+  snprintf (tbuff, sizeof (tbuff), "switch-%" PRIu32 "-%" PRIu32 "\n",
+      uiwidget->ui_id, uiwidget->id);
+  widget.identifier = [NSString stringWithUTF8String: tbuff];
 
   return uiwidget;
 }

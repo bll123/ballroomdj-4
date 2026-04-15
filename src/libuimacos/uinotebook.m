@@ -27,6 +27,7 @@ uiCreateNotebook (void)
 {
   uiwcont_t   *uiwidget;
   NSTabView   *nb;
+  char        tmp [40];
 
 fprintf (stderr, "c-nb\n");
   nb = [[NSTabView alloc] init];
@@ -39,8 +40,9 @@ fprintf (stderr, "c-nb\n");
   uiwidget = uiwcontAlloc (WCONT_T_NOTEBOOK, WCONT_T_NOTEBOOK);
   uiwcontSetWidget (uiwidget, nb, NULL);
 
-  [nb setIdentifier :
-      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+  snprintf (tmp, sizeof (tmp), "nb-%" PRIu32 "-%" PRIu32 "\n",
+      uiwidget->ui_id, uiwidget->id);
+  nb.identifier = [NSString stringWithUTF8String: tmp];
 
   nb.needsDisplay = true;
 

@@ -28,6 +28,7 @@ uiCreateScale (double lower, double upper,
 {
   NSSlider    *widget;
   uiwcont_t   *uiwidget;
+  char        tmp [40];
 
   widget = [NSSlider sliderWithValue : initvalue
       minValue : lower
@@ -42,8 +43,10 @@ uiCreateScale (double lower, double upper,
   uiwidget = uiwcontAlloc (WCONT_T_SCALE, WCONT_T_SCALE);
   uiwcontSetWidget (uiwidget, widget, NULL);
 
-  [widget setIdentifier :
-      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+  snprintf (tmp, sizeof (tmp), "scale-%" PRIu32 "-%" PRIu32 "\n",
+      uiwidget->ui_id, uiwidget->id);
+  widget.identifier = [NSString stringWithUTF8String: tmp];
+
   return NULL;
 }
 

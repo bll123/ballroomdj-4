@@ -28,6 +28,7 @@ uiCreateChangeIndicator (uiwcont_t *boxp)
 {
   uiwcont_t   *uiwidget;
   ILabel      *widget;
+  char        tmp [40];
 
   widget = [[ILabel alloc] init];
   [widget setBezeled : NO];
@@ -40,8 +41,9 @@ uiCreateChangeIndicator (uiwcont_t *boxp)
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiBoxPackStart (boxp, uiwidget, WCONT_KEEP);
 
-  [widget setIdentifier :
-      [[NSNumber numberWithUnsignedInt : uiwidget->id] stringValue]];
+  snprintf (tmp, sizeof (tmp), "chgind-%" PRIu32 "-%" PRIu32 "\n",
+      uiwidget->ui_id, uiwidget->id);
+  widget.identifier = [NSString stringWithUTF8String: tmp];
 
   return uiwidget;
 }
