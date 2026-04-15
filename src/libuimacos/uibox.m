@@ -173,15 +173,17 @@ uiBoxPackStart_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
     return;
   }
 
+fprintf (stderr, "box: %d-%d p-st: %d-%d %d/%s\n", uibox->ui_id, uibox->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   box = uibox->uidata.widget;
   widget = uiwidget->uidata.packwidget;
+fprintf (stderr, "  bbb %d %d\n", box != NULL, widget != NULL);
 
   if (uibox->wtype == WCONT_T_VBOX) {
     grav = NSStackViewGravityTop;
   }
   [box addView: widget inGravity: grav];
+fprintf (stderr, "  ccc\n");
 
-fprintf (stderr, "box: %d p-st: %d/%s\n", uibox->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   uiwidget->packed = true;
   return;
 }
@@ -239,7 +241,7 @@ uiBoxPackEnd_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
 //    uiwidget->uidata.layout->expandchildren = true;
 //  }
 
-fprintf (stderr, "box: %d p-end: %d/%s\n", uibox->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
+fprintf (stderr, "box: %d-%d p-end: %d-%d %d/%s\n", uibox->ui_id, uibox->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   uiwidget->packed = true;
   uiWidgetUpdateLayout (uiwidget);
 
@@ -416,11 +418,11 @@ uiBoxMacOSDebug (uiwcont_t *uiwidget)
     idx = MACOS_UI_DBG_EXP_HEIGHT;
   }
 
-  [[widget layer] setBorderColor :
+  [widget layer].borderColor =
       [NSColor colorWithRed : dbgcols [idx].r
-      green : dbgcols [idx].g
-      blue : dbgcols [idx].b
-      alpha:1.0].CGColor];
+          green : dbgcols [idx].g
+          blue : dbgcols [idx].b
+          alpha : 1.0].CGColor;
   widget.needsDisplay = YES;
 #endif
 }

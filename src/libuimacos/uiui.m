@@ -182,6 +182,7 @@ void
 uiwcontUIWidgetInit (uiwcont_t *uiwidget)
 {
   macoslayout_t *layout;
+  NSView        *view;
 
   if (uiwidget == NULL) {
     return;
@@ -193,54 +194,49 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
   uiwidget->uidata.layout = mdmalloc (sizeof (macoslayout_t));
   layout = uiwidget->uidata.layout;
 
-  /* on macos, there are standard images, and an image view */
-  if (uiwidget->wtype != WCONT_T_IMAGE) {
-    NSView        *view;
+  view = uiwidget->uidata.widget;
 
-    view = uiwidget->uidata.widget;
-
-    layout->container = [[NSStackView alloc] init];
-    layout->container.spacing = 0.0;
-    layout->container.edgeInsets = layout->margins;
-    [layout->container addView : view inGravity : NSStackViewGravityCenter];
+  layout->container = [[NSStackView alloc] init];
+  layout->container.spacing = 0.0;
+  layout->container.edgeInsets = layout->margins;
+  [layout->container addView : view inGravity : NSStackViewGravityCenter];
 //    layout->container.needsDisplay = YES;
 //    view.needsDisplay = YES;
 
-    [layout->container setHuggingPriority :
-        NSLayoutPriorityRequired
-        forOrientation : NSLayoutConstraintOrientationHorizontal];
-    [layout->container setHuggingPriority :
-        NSLayoutPriorityRequired
-        forOrientation : NSLayoutConstraintOrientationVertical];
-    [layout->container setContentHuggingPriority :
-        NSLayoutPriorityRequired
-        forOrientation : NSLayoutConstraintOrientationHorizontal];
-    [layout->container setContentHuggingPriority :
-        NSLayoutPriorityRequired
-        forOrientation : NSLayoutConstraintOrientationVertical];
-    /* otherwise everything gets shrunk to a minimal size */
-    [layout->container setContentCompressionResistancePriority :
-        NSLayoutPriorityRequired
-        forOrientation : NSLayoutConstraintOrientationHorizontal];
-    [layout->container setContentCompressionResistancePriority :
-        NSLayoutPriorityRequired
-        forOrientation : NSLayoutConstraintOrientationVertical];
+  [layout->container setHuggingPriority :
+      NSLayoutPriorityRequired
+      forOrientation : NSLayoutConstraintOrientationHorizontal];
+  [layout->container setHuggingPriority :
+      NSLayoutPriorityRequired
+      forOrientation : NSLayoutConstraintOrientationVertical];
+  [layout->container setContentHuggingPriority :
+      NSLayoutPriorityRequired
+      forOrientation : NSLayoutConstraintOrientationHorizontal];
+  [layout->container setContentHuggingPriority :
+      NSLayoutPriorityRequired
+      forOrientation : NSLayoutConstraintOrientationVertical];
+  /* otherwise everything gets shrunk to a minimal size */
+  [layout->container setContentCompressionResistancePriority :
+      NSLayoutPriorityRequired
+      forOrientation : NSLayoutConstraintOrientationHorizontal];
+  [layout->container setContentCompressionResistancePriority :
+      NSLayoutPriorityRequired
+      forOrientation : NSLayoutConstraintOrientationVertical];
 
-    [view setContentHuggingPriority :
-        NSLayoutPriorityRequired
-        forOrientation : NSLayoutConstraintOrientationHorizontal];
-    [view setContentHuggingPriority :
-        NSLayoutPriorityRequired
-        forOrientation : NSLayoutConstraintOrientationVertical];
+  [view setContentHuggingPriority :
+      NSLayoutPriorityRequired
+      forOrientation : NSLayoutConstraintOrientationHorizontal];
+  [view setContentHuggingPriority :
+      NSLayoutPriorityRequired
+      forOrientation : NSLayoutConstraintOrientationVertical];
 
-    /* otherwise everything gets shrunk to a minimal size */
-    [view setContentCompressionResistancePriority :
-        NSLayoutPriorityRequired
-        forOrientation : NSLayoutConstraintOrientationHorizontal];
-    [view setContentCompressionResistancePriority :
-        NSLayoutPriorityRequired
-        forOrientation : NSLayoutConstraintOrientationVertical];
-  }
+  /* otherwise everything gets shrunk to a minimal size */
+  [view setContentCompressionResistancePriority :
+      NSLayoutPriorityRequired
+      forOrientation : NSLayoutConstraintOrientationHorizontal];
+  [view setContentCompressionResistancePriority :
+      NSLayoutPriorityRequired
+      forOrientation : NSLayoutConstraintOrientationVertical];
 
 // ### this situation needs to be handled
   if (uiwidget->uidata.packwidget == uiwidget->uidata.widget) {

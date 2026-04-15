@@ -109,7 +109,7 @@ fprintf (stderr, "  post-process %d-%d %d/%s\n", uibox->ui_id, uibox->id, uibox-
   prev = curr;
   curr = next;
   next = NULL;
-fprintf (stderr, "    post-process (last) %d-%d %d/%s\n", uibox->ui_id, uibox->id, uibox->wtype, uiwcontDesc (uibox->wtype));
+fprintf (stderr, "  post-process (last) %d-%d %d/%s\n", uibox->ui_id, uibox->id, uibox->wtype, uiwcontDesc (uibox->wtype));
   uiBoxPostProcess_r (uibox, prev, curr, next);
 
   boxbase->postprocess = true;
@@ -125,8 +125,8 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release)
     return;
   }
 
-  uiBoxPackStart_r (uibox, uiwidget);
   uiBoxStartListAdd (uibox, uiwidget, release);
+  uiBoxPackStart_r (uibox, uiwidget);
 }
 
 void
@@ -139,8 +139,8 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release)
     return;
   }
 
-  uiBoxPackEnd_r (uibox, uiwidget);
   uiBoxEndListAdd (uibox, uiwidget, release);
+  uiBoxPackEnd_r (uibox, uiwidget);
 }
 
 void
@@ -154,8 +154,8 @@ uiBoxPackStartExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget,
     return;
   }
 
-  uiBoxPackStartExpandChildren_r (uibox, uiwidget);
   uiBoxStartListAdd (uibox, uiwidget, release);
+  uiBoxPackStartExpandChildren_r (uibox, uiwidget);
 }
 
 void
@@ -169,8 +169,8 @@ uiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget,
     return;
   }
 
-  uiBoxPackEndExpandChildren_r (uibox, uiwidget);
   uiBoxEndListAdd (uibox, uiwidget, release);
+  uiBoxPackEndExpandChildren_r (uibox, uiwidget);
 }
 
 /* internal routines */

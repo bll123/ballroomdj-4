@@ -29,10 +29,12 @@ uiImageNew (void)
 
   image = [[NSImage alloc] init];
 
+fprintf (stderr, "image-new\n");
   imgv = [[NSImageView alloc] init];
-  imgv.translatesAutoresizingMaskIntoConstraints = NO;
   imgv.image = image;
   imgv.imageScaling = NSImageScaleProportionallyDown;
+  imgv.translatesAutoresizingMaskIntoConstraints = NO;
+  imgv.needsDisplay = true;
 
   uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
   uiwcontSetWidget (uiwidget, imgv, NULL);
@@ -63,13 +65,15 @@ uiImageFromFile (const char *fn)
   NSImageView *imgv;
   NSString    *ns;
 
+fprintf (stderr, "image: %s\n", fn);
   ns = [NSString stringWithUTF8String : fn];
   image = [[NSImage alloc] initWithContentsOfFile : ns];
 
   imgv = [[NSImageView alloc] init];
   imgv.image = image;
-  imgv.translatesAutoresizingMaskIntoConstraints = NO;
   imgv.imageScaling = NSImageScaleProportionallyDown;
+  imgv.translatesAutoresizingMaskIntoConstraints = NO;
+  imgv.needsDisplay = true;
 
   uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
   uiwcontSetWidget (uiwidget, imgv, NULL);
@@ -87,13 +91,18 @@ uiImageScaledFromFile (const char *fn, int scale)
   NSImage     *image;
   NSString    *ns;
 
+fprintf (stderr, "image-scaled: %s\n", fn);
   ns = [NSString stringWithUTF8String : fn];
   image = [[NSImage alloc] initWithContentsOfFile : ns];
+fprintf (stderr, "  ok: %d\n", image != NULL);
 
   imgv = [[NSImageView alloc] init];
+fprintf (stderr, "  imgv: %d\n", imgv != NULL);
   imgv.image = image;
-  imgv.translatesAutoresizingMaskIntoConstraints = NO;
   imgv.imageScaling = NSImageScaleProportionallyDown;
+  imgv.translatesAutoresizingMaskIntoConstraints = NO;
+  imgv.needsDisplay = true;
+
   [imgv.widthAnchor constraintEqualToConstant : scale + 4].active = YES;
   [imgv.heightAnchor constraintEqualToConstant : scale + 4].active = YES;
 
@@ -118,6 +127,7 @@ uiImageClear (uiwcont_t *uiwidget)
   image = [[NSImage alloc] initWithSize : NSZeroSize];
   imgv = uiwidget->uidata.widget;
   imgv.image = image;
+  imgv.needsDisplay = true;
 
   return;
 }
@@ -132,6 +142,7 @@ uiImageCopy (uiwcont_t *toimg, uiwcont_t *fromimg)
   image = imgv.image;
   imgv = toimg->uidata.widget;
   imgv.image = image;
+  imgv.needsDisplay = true;
 
   return;
 }

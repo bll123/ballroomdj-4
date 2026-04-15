@@ -726,10 +726,10 @@ starterBuildUI (startui_t  *starter)
   pathbldMakePath (tbuff, sizeof (tbuff),
      "bdj4_icon_sq", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   uiwidgetp = uiImageScaledFromFile (tbuff, 128);
-//  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-//  uiWidgetSetAllMargins (uiwidgetp, 10);
-//  uiWidgetExpandHoriz (uiwidgetp);
-//  uiWidgetExpandVert (uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiWidgetSetAllMargins (uiwidgetp, 10);
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiWidgetExpandVert (uiwidgetp);
 
   uiBoxPostProcess (hbox);
 
