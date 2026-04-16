@@ -40,8 +40,8 @@ uiWidgetExpandHoriz (uiwcont_t *uiwidget)
   macoslayout_t   *layout;
 
   widget = uiwidget->uidata.packwidget;
-  [widget.widthAnchor
-      constraintLessThanOrEqualToConstant : 600.0].active = YES;
+//  [widget.widthAnchor
+//      constraintLessThanOrEqualToConstant : 600.0].active = YES;
 
   layout = uiwidget->uidata.layout;
   layout->expandhoriz = true;
@@ -57,8 +57,8 @@ uiWidgetExpandVert (uiwcont_t *uiwidget)
   macoslayout_t   *layout;
 
   widget = uiwidget->uidata.packwidget;
-  [widget.heightAnchor
-      constraintLessThanOrEqualToConstant : 600.0].active = YES;
+//  [widget.heightAnchor
+//      constraintLessThanOrEqualToConstant : 600.0].active = YES;
 
   layout = uiwidget->uidata.layout;
   layout->expandvert = true;
@@ -198,8 +198,8 @@ uiWidgetAlignHorizFill (uiwcont_t *uiwidget)
   }
 
   widget = uiwidget->uidata.packwidget;
-  [widget.widthAnchor
-      constraintLessThanOrEqualToConstant : 600.0].active = YES;
+//  [widget.widthAnchor
+//      constraintLessThanOrEqualToConstant : 600.0].active = YES;
 
   return;
 }
@@ -261,8 +261,8 @@ uiWidgetAlignVertFill (uiwcont_t *uiwidget)
   }
 
   widget = uiwidget->uidata.packwidget;
-  [widget.heightAnchor
-      constraintLessThanOrEqualToConstant : 600.0].active = YES;
+//  [widget.heightAnchor
+//      constraintLessThanOrEqualToConstant : 600.0].active = YES;
 // ###
 
   return;
@@ -431,20 +431,6 @@ uiWidgetUpdateLayout (uiwcont_t *uiwidget)
   if (container == NULL) {
     return;
   }
-
-fprintf (stderr, "  set margin constraints\n");
-  [container.leadingAnchor
-      constraintEqualToAnchor: container.leadingAnchor
-      constant: layout->margins.left].active = YES;
-  [container.trailingAnchor
-      constraintEqualToAnchor: container.trailingAnchor
-      constant: layout->margins.right].active = YES;
-  [container.topAnchor
-      constraintEqualToAnchor: container.topAnchor
-      constant: layout->margins.top].active = YES;
-  [container.bottomAnchor
-      constraintEqualToAnchor: container.bottomAnchor
-      constant: layout->margins.bottom].active = YES;
 
   container.edgeInsets = layout->margins;
   container.needsDisplay = YES;

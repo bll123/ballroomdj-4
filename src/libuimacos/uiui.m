@@ -175,9 +175,7 @@ uiwcontUIInit (uiwcont_t *uiwidget)
 }
 
 /* on macos, every view is wrapped in a NSStackView so that the margins */
-/* can be set.  */
-/* Supposedly a layoutguide can be used as a container, but */
-/* it is not a view, and I'm not sure how to make it work */
+/* can be set using edge-insets */
 void
 uiwcontUIWidgetInit (uiwcont_t *uiwidget)
 {
@@ -240,6 +238,7 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
 
 // ### this situation needs to be handled
   if (uiwidget->uidata.packwidget == uiwidget->uidata.widget) {
+fprintf (stderr, "INFO: %d-%d %s packwidget and widget are the same\n", uiwidget->ui_id, uiwidget->id, uiwcontDesc (uiwidget->wtype));
     uiwidget->uidata.packwidget = layout->container;
   }
 

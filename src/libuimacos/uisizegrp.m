@@ -30,19 +30,19 @@ uiCreateSizeGroupHoriz (void)
 void
 uiSizeGroupAdd (uiwcont_t *uisg, uiwcont_t *uiwidget)
 {
-  NSView    *widget;
-  NSView    *first;
+  NSView          *prior;
+  NSView          *widget;
 
   if (uisg == NULL || uiwidget == NULL) {
     return;
   }
 
-  first = uisg->uidata.packwidget;
+  prior = uisg->uidata.packwidget;
   widget = uiwidget->uidata.packwidget;
 
-  if (first == NULL) {
+  if (prior == NULL) {
     uisg->uidata.widget = uiwidget->uidata.widget;
-    uisg->uidata.packwidget = widget;
+    uisg->uidata.packwidget = uiwidget->uidata.packwidget;
     uisg->packed = uiwidget->packed;
     return;
   }
@@ -52,7 +52,7 @@ uiSizeGroupAdd (uiwcont_t *uisg, uiwcont_t *uiwidget)
   }
 
   if (! uisg->packed) {
-    fprintf (stderr, "ERR : first widget %d/%s not packed\n", uisg->wtype, uiwcontDesc (uisg->wtype));
+    fprintf (stderr, "ERR : prior widget %d/%s not packed\n", uisg->wtype, uiwcontDesc (uisg->wtype));
   }
   if (! uiwidget->packed) {
     fprintf (stderr, "ERR : widget %d/%s not packed\n", uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
@@ -61,14 +61,22 @@ uiSizeGroupAdd (uiwcont_t *uisg, uiwcont_t *uiwidget)
     return;
   }
 
-//  [widget.widthAnchor
-//      constraintEqualToAnchor : first.widthAnchor].active = YES;
+  prior = uisg->uidata.packwidget;
+  widget = uiwidget->uidata.packwidget;
 
-  first = uisg->uidata.widget;
-  widget = uiwidget->uidata.widget;
+// ### constraining the width ends up with the width equal to
+// the max width of the first two views
+// constraining the leading and trailing anchors to be equal does nothing.
+  [prior.widthAnchor
+      constraintEqualToAnchor : widget.widthAnchor
+      multiplier : 1.0
+      ].active = YES;
+//  widget.needsDisplay = YES;
+//  prior.needsDisplay = YES;
 
-  [widget.widthAnchor
-      constraintEqualToAnchor : first.widthAnchor].active = YES;
+  uisg->uidata.widget = uiwidget->uidata.widget;
+  uisg->uidata.packwidget = uiwidget->uidata.packwidget;
+  uisg->packed = uiwidget->packed;
 
   return;
 }

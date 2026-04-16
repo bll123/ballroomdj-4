@@ -144,6 +144,7 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   }
 
   box = uibox->uidata.widget;
+//  box.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
 
   [win setContentView : box];
   [win makeMainWindow];
@@ -367,7 +368,6 @@ uiCreateScrolledWindow (int minheight)
   win.hasVerticalScroller = YES;
   win.hasHorizontalScroller = NO;
   win.drawsBackground = NO;
-//  win.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
 
   uiscwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_WINDOW_SCROLL);
   uiwcontSetWidget (uiscwin, win, NULL);
@@ -507,6 +507,7 @@ fprintf (stderr, "  pack-in-win: %d/%s\n", uiwidget->wtype, uiwcontDesc (uiwidge
     scv = uiwindow->uidata.widget;
     [scv setDocumentView : container];
     winbox = uiwindow->uidata.packwidget;
+//    winbox.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
   }
   if (uiwindow->wtype == WCONT_T_WINDOW) {
     NSWindow    *win;
@@ -528,8 +529,6 @@ fprintf (stderr, "  pack-in-win: %d/%s\n", uiwidget->wtype, uiwcontDesc (uiwidge
   uiwidget->packed = true;
   layout = uiwidget->uidata.layout;
   layout->expandchildren = true;
-
-//  winbox.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
 
   return;
 }
