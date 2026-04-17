@@ -2917,7 +2917,7 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
     return;
   }
 
-  szgrp = uiCreateSizeGroupHoriz ();
+  szgrp = uiCreateSizeGroupHoriz (NULL);
 
   manage->wcont [MANAGE_W_CFPL_DIALOG] = uiCreateDialog (manage->minfo.window,
       manage->callbacks [MANAGE_CB_CFPL_DIALOG],

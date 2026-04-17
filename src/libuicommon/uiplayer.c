@@ -273,13 +273,13 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   showspd = bdjoptGetNum (OPT_P_SHOW_SPD_CONTROL);
   if (showspd) {
-    szgrpScaleButton = uiCreateSizeGroupHoriz ();
+    szgrpScaleButton = uiCreateSizeGroupHoriz (NULL);
   }
-  szgrpScalePerc = uiCreateSizeGroupHoriz ();
-  szgrpScaleDisp = uiCreateSizeGroupHoriz ();
-  szgrpScale = uiCreateSizeGroupHoriz ();
-  szgrpScaleLabel = uiCreateSizeGroupHoriz ();
-  szgrpStatus = uiCreateSizeGroupHoriz ();
+  szgrpScalePerc = uiCreateSizeGroupHoriz (NULL);
+  szgrpScaleDisp = uiCreateSizeGroupHoriz (NULL);
+  szgrpScale = uiCreateSizeGroupHoriz (NULL);
+  szgrpScaleLabel = uiCreateSizeGroupHoriz (NULL);
+  szgrpStatus = uiCreateSizeGroupHoriz (NULL);
 
   uiplayer->wcont [UIPL_W_MAIN_VBOX] = uiCreateVertBox ();
   uiWidgetExpandHoriz (uiplayer->wcont [UIPL_W_MAIN_VBOX]);

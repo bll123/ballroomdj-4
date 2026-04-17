@@ -99,9 +99,9 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
   gui->inchange = true;
   vbox = uiCreateVertBox ();
 
-  szgrp = uiCreateSizeGroupHoriz ();
-  szgrpB = uiCreateSizeGroupHoriz ();
-  szgrpC = uiCreateSizeGroupHoriz ();
+  szgrp = uiCreateSizeGroupHoriz (NULL);
+  szgrpB = uiCreateSizeGroupHoriz (NULL);
+  szgrpC = uiCreateSizeGroupHoriz (NULL);
 
   confuiMakeNotebookTab (vbox, gui,
       /* CONTEXT: configuration: audio sources */

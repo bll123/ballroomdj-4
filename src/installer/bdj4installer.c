@@ -655,7 +655,7 @@ installerBuildUI (installer_t *installer)
 
   uiwcontInitID (UI_INSTALL_ID);
 
-  szgrp = uiCreateSizeGroupHoriz ();
+  szgrp = uiCreateSizeGroupHoriz (NULL);
 
   uiLabelAddClass (INST_HL_CLASS, INST_HL_COLOR);
   uiSeparatorAddClass (INST_SEP_CLASS, INST_SEP_COLOR);

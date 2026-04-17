@@ -469,7 +469,7 @@ uitestUIButtons (uitest_t *uitest)
   uiwcont_t   *uiwidgetp;
 
 fprintf (stderr, "Buttons\n");
-  sg = uiCreateSizeGroupHoriz ();
+  sg = uiCreateSizeGroupHoriz (NULL);
 
   /* buttons */
 
@@ -633,7 +633,7 @@ uitestUIToggleButtons (uitest_t *uitest)
   uiwcont_t   *twidgetp;
 
 fprintf (stderr, "ToggleButtons\n");
-  sg = uiCreateSizeGroupHoriz ();
+  sg = uiCreateSizeGroupHoriz (NULL);
 
   /* toggle buttons */
 
@@ -744,7 +744,7 @@ uitestUIMiscButtons (uitest_t *uitest)
   uiwcont_t   *uiwidgetp;
 
 fprintf (stderr, "MiscButtons\n");
-  sg = uiCreateSizeGroupHoriz ();
+  sg = uiCreateSizeGroupHoriz (NULL);
 
   /* misc buttons */
 
@@ -1430,7 +1430,7 @@ fprintf (stderr, "SizeGroup\n");
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Size Group", VNB_NO_ID);
 
-  sg = uiCreateSizeGroupHoriz ();
+  sg = uiCreateSizeGroupHoriz (NULL);
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox, WCONT_FREE);

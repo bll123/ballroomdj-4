@@ -421,7 +421,7 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
     return;
   }
 
-  szgrp = uiCreateSizeGroupHoriz ();
+  szgrp = uiCreateSizeGroupHoriz (NULL);
 
   uiimppl->wcont [UIIMPPL_W_DIALOG] =
       uiCreateDialog (uiimppl->parentwin,

@@ -157,8 +157,8 @@ confuiBuildUIiTunes (confuigui_t *gui)
   uiWidgetExpandHoriz (mvbox);
   uiWidgetAlignHorizFill (mvbox);
 
-  szgrp = uiCreateSizeGroupHoriz ();
-  szgrpr = uiCreateSizeGroupHoriz ();
+  szgrp = uiCreateSizeGroupHoriz (NULL);
+  szgrpr = uiCreateSizeGroupHoriz (NULL);
 
   /* itunes */
   confuiMakeNotebookTab (sw, gui, ITUNES_NAME, CONFUI_ID_NONE);

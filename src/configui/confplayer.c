@@ -93,8 +93,8 @@ confuiBuildUIPlayer (confuigui_t *gui)
   logProcBegin ();
   vbox = uiCreateVertBox ();
 
-  szgrp = uiCreateSizeGroupHoriz ();
-  szgrpB = uiCreateSizeGroupHoriz ();
+  szgrp = uiCreateSizeGroupHoriz (NULL);
+  szgrpB = uiCreateSizeGroupHoriz (NULL);
 
   /* player */
   confuiMakeNotebookTab (vbox, gui,

@@ -201,7 +201,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   char          tbuff [BDJ4_PATH_MAX];
 
 
-  szgrp = uiCreateSizeGroupHoriz ();   // labels
+  szgrp = uiCreateSizeGroupHoriz (NULL);   // labels
 
   /* action selection */
   hbox = uiCreateHorizBox ();

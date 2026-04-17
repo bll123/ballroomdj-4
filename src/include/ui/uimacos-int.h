@@ -43,10 +43,12 @@ extern "C" {
 
 void uiWidgetSetIdentifier (uiwcont_t *uiwidget, const char *tag);
 void uiWidgetUpdateLayout (uiwcont_t *uiwidget);
+void uiWidgetUpdateConstraint (const char *tag, NSLayoutConstraint *c, NSView *va, NSView *vb);
 
 /* structures */
 
 typedef struct macoslayout {
+  NSLayoutGuide *sizegroup;
   NSStackView   *container;
   NSEdgeInsets  margins;
   bool          centerhoriz;

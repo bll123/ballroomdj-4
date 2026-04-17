@@ -144,6 +144,7 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   }
 
   box = uibox->uidata.widget;
+  box.translatesAutoresizingMaskIntoConstraints = NO;
 //  box.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
 
   [win setContentView : box];

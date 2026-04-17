@@ -229,7 +229,7 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
     return;
   }
 
-  szgrp = uiCreateSizeGroupHoriz ();
+  szgrp = uiCreateSizeGroupHoriz (NULL);
 
   uiexppl->wcont [UIEXPPL_W_DIALOG] =
       uiCreateDialog (uiexppl->parentwin,

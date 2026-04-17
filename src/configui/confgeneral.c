@@ -84,7 +84,7 @@ confuiBuildUIGeneral (confuigui_t *gui)
   uiWidgetExpandHoriz (vbox);
   uiWidgetAlignHorizFill (vbox);
 
-  szgrp = uiCreateSizeGroupHoriz ();
+  szgrp = uiCreateSizeGroupHoriz (NULL);
 
   /* general */
   confuiMakeNotebookTab (sw, gui,

@@ -31,7 +31,7 @@ confuiBuildUIDebug (confuigui_t *gui)
   logProcBegin ();
   hbox = uiCreateHorizBox ();
 
-  szgrp = uiCreateSizeGroupHoriz ();
+  szgrp = uiCreateSizeGroupHoriz (NULL);
 
   /* debug */
   confuiMakeNotebookTab (hbox, gui,

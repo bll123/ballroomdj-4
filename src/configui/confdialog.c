@@ -73,7 +73,7 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
   vbox = uiCreateVertBox ();
   uiBoxPackStart (hbox, vbox, WCONT_FREE);
 
-  szgrp = uiCreateSizeGroupHoriz ();
+  szgrp = uiCreateSizeGroupHoriz (NULL);
 
   /* CONTEXT: configuration: filter display: song selection filters */
   uiwidgetp = uiCreateLabel (_("Filter Songs"));
@@ -113,7 +113,7 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
   vbox = uiCreateVertBox ();
   uiBoxPackStart (hbox, vbox, WCONT_FREE);
 
-  szgrp = uiCreateSizeGroupHoriz ();
+  szgrp = uiCreateSizeGroupHoriz (NULL);
 
   /* CONTEXT: configuration: filter display: quick edit filters */
   uiwidgetp = uiCreateLabel (_("Quick Edit"));

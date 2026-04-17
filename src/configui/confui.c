@@ -32,7 +32,7 @@ confuiBuildUIUserInterface (confuigui_t *gui)
   logProcBegin ();
   vbox = uiCreateVertBox ();
 
-  szgrp = uiCreateSizeGroupHoriz ();
+  szgrp = uiCreateSizeGroupHoriz (NULL);
 
   /* user interface */
   confuiMakeNotebookTab (vbox, gui,

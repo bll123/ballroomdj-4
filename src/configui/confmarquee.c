@@ -43,7 +43,7 @@ confuiBuildUIMarquee (confuigui_t *gui)
   logProcBegin ();
   vbox = uiCreateVertBox ();
 
-  szgrp = uiCreateSizeGroupHoriz ();
+  szgrp = uiCreateSizeGroupHoriz (NULL);
 
   /* marquee */
   confuiMakeNotebookTab (vbox, gui,

@@ -85,7 +85,7 @@ confuiBuildUIOrganization (confuigui_t *gui)
   logProcBegin ();
   vbox = uiCreateVertBox ();
 
-  szgrp = uiCreateSizeGroupHoriz ();
+  szgrp = uiCreateSizeGroupHoriz (NULL);
 
   /* organization */
   confuiMakeNotebookTab (vbox, gui,

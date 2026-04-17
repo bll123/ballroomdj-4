@@ -16,7 +16,7 @@
 #include "ui/uisizegrp.h"
 
 uiwcont_t *
-uiCreateSizeGroupHoriz (void)
+uiCreateSizeGroupHoriz (uiwcont_t *box)
 {
   return NULL;
 }

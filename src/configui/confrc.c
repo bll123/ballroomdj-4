@@ -60,7 +60,7 @@ confuiBuildUIMobileRemoteControl (confuigui_t *gui)
   logProcBegin ();
   vbox = uiCreateVertBox ();
 
-  szgrp = uiCreateSizeGroupHoriz ();
+  szgrp = uiCreateSizeGroupHoriz (NULL);
 
   /* mobile remote control */
   confuiMakeNotebookTab (vbox, gui,

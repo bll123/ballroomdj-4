@@ -504,7 +504,7 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
     uivlcoldata_t *coldata = &vl->coldata [colidx];
 
     coldata->vl = vl;
-    coldata->szgrp = uiCreateSizeGroupHoriz ();
+    coldata->szgrp = uiCreateSizeGroupHoriz (NULL);
     coldata->ident = VL_IDENT_COLDATA;
     coldata->tag = "unk";
     coldata->heading = NULL;
@@ -1801,7 +1801,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     }
   }
   if (found) {
-    row->szgrp = uiCreateSizeGroupHoriz ();
+    row->szgrp = uiCreateSizeGroupHoriz (NULL);
   }
 
   row->offscreen = false;

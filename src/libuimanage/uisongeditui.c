@@ -212,7 +212,7 @@ uisongeditUIInit (uisongedit_t *uisongedit)
     seint->callbacks [i] = NULL;
   }
   for (int i = 0; i < UISE_SZGRP_MAX; ++i) {
-    seint->szgrp [i] = uiCreateSizeGroupHoriz ();
+    seint->szgrp [i] = uiCreateSizeGroupHoriz (NULL);
   }
   for (int i = 0; i < UISE_W_MAX; ++i) {
     seint->wcont [i] = NULL;

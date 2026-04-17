@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-uiwcont_t *uiCreateSizeGroupHoriz (void);
+uiwcont_t *uiCreateSizeGroupHoriz (uiwcont_t *box);
 void uiSizeGroupAdd (uiwcont_t *uisg, uiwcont_t *uiwidget);
 
 #if defined (__cplusplus) || defined (c_plusplus)

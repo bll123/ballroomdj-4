@@ -70,8 +70,8 @@ confuiBuildUIMusicQs (confuigui_t *gui)
   uiWidgetExpandHoriz (vbox);
   uiWidgetAlignHorizFill (vbox);
 
-  szgrp = uiCreateSizeGroupHoriz ();
-  szgrpB = uiCreateSizeGroupHoriz ();
+  szgrp = uiCreateSizeGroupHoriz (NULL);
+  szgrpB = uiCreateSizeGroupHoriz (NULL);
 
   confuiMakeNotebookTab (sw, gui,
       /* CONTEXT: configuration: music queue configuration*/

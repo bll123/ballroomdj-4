@@ -185,7 +185,7 @@ uiaudioidUIInit (uiaudioid_t *uiaudioid)
     audioidint->callbacks [i] = NULL;
   }
   for (int i = 0; i < UIAUDID_SZGRP_MAX; ++i) {
-    audioidint->szgrp [i] = uiCreateSizeGroupHoriz ();
+    audioidint->szgrp [i] = uiCreateSizeGroupHoriz (NULL);
   }
   for (int i = 0; i < UIAUDID_W_MAX; ++i) {
     audioidint->wcont [i] = NULL;

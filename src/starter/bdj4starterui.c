@@ -630,7 +630,6 @@ starterBuildUI (startui_t  *starter)
   logProcBegin ();
 
   uiwcontInitID (UI_STARTER_ID);
-  szgrp = uiCreateSizeGroupHoriz ();
 
   starter->callbacks [START_CB_EXIT] = callbackInit (
       starterCloseCallback, starter, NULL);
@@ -732,6 +731,8 @@ starterBuildUI (startui_t  *starter)
   uiWidgetExpandVert (uiwidgetp);
 
   uiBoxPostProcess (hbox);
+
+  szgrp = uiCreateSizeGroupHoriz (bvbox);
 
   starter->callbacks [START_CB_PLAYER] = callbackInit (
       starterStartPlayerui, starter, NULL);
@@ -1458,11 +1459,11 @@ starterProcessSupport (void *udata)
       );
   uiWindowSetNoMaximize (uidialog);
 
-  szgrp = uiCreateSizeGroupHoriz ();
-
   vbox = uiCreateVertBox ();
   uiDialogPackInDialog (uidialog, vbox);
   uiWidgetSetAllMargins (vbox, 2);
+
+  szgrp = uiCreateSizeGroupHoriz (vbox);
 
   /* status message line */
   hdrline = uiutilsHeaderLineSetup (vbox);
@@ -1979,11 +1980,11 @@ starterCreateSupportMsgDialog (void *udata)
       );
   uiWindowSetDefaultSize (uidialog, -1, 400);
 
-  szgrp = uiCreateSizeGroupHoriz ();
-
   vbox = uiCreateVertBox ();
   uiDialogPackInDialog (uidialog, vbox);
   uiWidgetSetAllMargins (vbox, 2);
+
+  szgrp = uiCreateSizeGroupHoriz (vbox);
 
   /* profile color line */
   hdrline = uiutilsHeaderLineSetup (vbox);

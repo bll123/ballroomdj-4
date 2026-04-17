@@ -209,9 +209,9 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   logProcBegin ();
 
-  szgrp = uiCreateSizeGroupHoriz ();          // labels
-  szgrpSpin = uiCreateSizeGroupHoriz ();  // time widgets + gap widget
-  szgrpText = uiCreateSizeGroupHoriz ();      // text widgets
+  szgrp = uiCreateSizeGroupHoriz (NULL);      // labels
+  szgrpSpin = uiCreateSizeGroupHoriz (NULL);  // time widgets + gap widget
+  szgrpText = uiCreateSizeGroupHoriz (NULL);  // text widgets
 
   tophbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxp, tophbox, WCONT_FREE);

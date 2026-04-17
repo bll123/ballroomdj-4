@@ -90,7 +90,7 @@ uivnbCreate (uiwcont_t *box, const char *tag)
   }
 
   /* the size group is needed for macos */
-  vnb->sg = uiCreateSizeGroupHoriz ();
+  vnb->sg = uiCreateSizeGroupHoriz (NULL);
 
   vnb->pagecount = 0;
   vnb->selected = -1;

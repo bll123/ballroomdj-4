@@ -492,10 +492,10 @@ uisfCreateDialog (uisongfilter_t *uisf)
     return;
   }
 
-  szgrp = uiCreateSizeGroupHoriz ();
-  szgrpEntry = uiCreateSizeGroupHoriz ();
-  szgrpDD = uiCreateSizeGroupHoriz ();
-  szgrpSpinText = uiCreateSizeGroupHoriz ();
+  szgrp = uiCreateSizeGroupHoriz (NULL);
+  szgrpEntry = uiCreateSizeGroupHoriz (NULL);
+  szgrpDD = uiCreateSizeGroupHoriz (NULL);
+  szgrpSpinText = uiCreateSizeGroupHoriz (NULL);
 
   uisf->callbacks [UISF_CB_FILTER] = callbackInitI (
       uisfResponseHandler, uisf);

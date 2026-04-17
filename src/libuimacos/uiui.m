@@ -83,6 +83,10 @@ uiUIProcessEvents (void)
   NSEvent *currev = nil;
   bool    haveev = false;
 
+#if MACOS_UI_DEBUG
+  [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints"];
+#endif
+
   while ((currev = [NSApp nextEventMatchingMask : NSEventMaskAny
         untilDate : [NSDate distantPast]
         inMode : NSDefaultRunLoopMode
@@ -156,6 +160,10 @@ uiwcontUIInit (uiwcont_t *uiwidget)
     return;
   }
 
+fprintf (stderr, "ui-init: %s %d-%d\n", uiwcontDesc (uiwidget->wtype), uiwidget->ui_id, uiwidget->id);
+  if (uiwidget->uidata.layout == NULL) {
+    uiwidget->uidata.layout = mdmalloc (sizeof (macoslayout_t));
+  }
   layout = uiwidget->uidata.layout;
 
   /* default margins */
@@ -166,6 +174,7 @@ uiwcontUIInit (uiwcont_t *uiwidget)
     layout->margins = NSEdgeInsetsMake ((CGFloat) uiBaseMarginSz, (CGFloat) uiBaseMarginSz, 0.0, 0.0);
   }
 
+  layout->sizegroup = NULL;
   layout->container = NULL;
   layout->centerhoriz = false;
   layout->centervert = false;
@@ -189,17 +198,18 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
     return;
   }
 
-  uiwidget->uidata.layout = mdmalloc (sizeof (macoslayout_t));
-  layout = uiwidget->uidata.layout;
+  if (uiwidget->uidata.layout == NULL) {
+    uiwidget->uidata.layout = mdmalloc (sizeof (macoslayout_t));
+  }
 
-  view = uiwidget->uidata.widget;
+fprintf (stderr, "ui-widget-init: %s %d-%d\n", uiwcontDesc (uiwidget->wtype), uiwidget->ui_id, uiwidget->id);
+  view = uiwidget->uidata.packwidget;
+  layout = uiwidget->uidata.layout;
 
   layout->container = [[NSStackView alloc] init];
   layout->container.spacing = 0.0;
   layout->container.edgeInsets = layout->margins;
   [layout->container addView : view inGravity : NSStackViewGravityCenter];
-//    layout->container.needsDisplay = YES;
-//    view.needsDisplay = YES;
 
   [layout->container setHuggingPriority :
       NSLayoutPriorityRequired
@@ -236,11 +246,22 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
       NSLayoutPriorityRequired
       forOrientation : NSLayoutConstraintOrientationVertical];
 
-// ### this situation needs to be handled
-  if (uiwidget->uidata.packwidget == uiwidget->uidata.widget) {
-fprintf (stderr, "INFO: %d-%d %s packwidget and widget are the same\n", uiwidget->ui_id, uiwidget->id, uiwcontDesc (uiwidget->wtype));
-    uiwidget->uidata.packwidget = layout->container;
-  }
+  view = uiwidget->uidata.widget;
+
+  [view setContentHuggingPriority :
+      NSLayoutPriorityRequired
+      forOrientation : NSLayoutConstraintOrientationHorizontal];
+  [view setContentHuggingPriority :
+      NSLayoutPriorityRequired
+      forOrientation : NSLayoutConstraintOrientationVertical];
+
+  /* otherwise everything gets shrunk to a minimal size */
+  [view setContentCompressionResistancePriority :
+      NSLayoutPriorityRequired
+      forOrientation : NSLayoutConstraintOrientationHorizontal];
+  [view setContentCompressionResistancePriority :
+      NSLayoutPriorityRequired
+      forOrientation : NSLayoutConstraintOrientationVertical];
 
   return;
 }
@@ -248,5 +269,6 @@ fprintf (stderr, "INFO: %d-%d %s packwidget and widget are the same\n", uiwidget
 void
 uiwcontUIFree (uiwcont_t *uiwidget)
 {
+  mdfree (uiwidget->uidata.layout);
   return;
 }

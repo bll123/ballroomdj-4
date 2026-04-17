@@ -298,9 +298,9 @@ uiqeCreateDialog (uiqe_t *uiqe)
   }
 
 
-  uiqe->wcont [UIQE_W_SZGRP_LABEL] = uiCreateSizeGroupHoriz ();
-  uiqe->wcont [UIQE_W_SZGRP_SCALE] = uiCreateSizeGroupHoriz ();
-  uiqe->wcont [UIQE_W_SZGRP_SCALE_DISP] = uiCreateSizeGroupHoriz ();
+  uiqe->wcont [UIQE_W_SZGRP_LABEL] = uiCreateSizeGroupHoriz (NULL);
+  uiqe->wcont [UIQE_W_SZGRP_SCALE] = uiCreateSizeGroupHoriz (NULL);
+  uiqe->wcont [UIQE_W_SZGRP_SCALE_DISP] = uiCreateSizeGroupHoriz (NULL);
 
   uiqe->wcont [UIQE_W_DIALOG] =
       uiCreateDialog (uiqe->parentwin,

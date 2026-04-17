@@ -216,8 +216,8 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
     return;
   }
 
-  szgrp = uiCreateSizeGroupHoriz ();
-  szgrpEntry = uiCreateSizeGroupHoriz ();
+  szgrp = uiCreateSizeGroupHoriz (NULL);
+  szgrpEntry = uiCreateSizeGroupHoriz (NULL);
 
   uiextreq->callbacks [UIEXTREQ_CB_DIALOG] = callbackInitI (
       uiextreqResponseHandler, uiextreq);

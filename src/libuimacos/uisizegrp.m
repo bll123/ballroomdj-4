@@ -12,38 +12,58 @@
 #include <Cocoa/Cocoa.h>
 #import <Foundation/NSObject.h>
 
+#include "mdebug.h"
 #include "uiwcont.h"
 
+#include "ui/uimacos-int.h"
 #include "ui/uiwcont-int.h"
 
 #include "ui/uisizegrp.h"
 
 uiwcont_t *
-uiCreateSizeGroupHoriz (void)
+uiCreateSizeGroupHoriz (uiwcont_t *box)
 {
-  uiwcont_t   *uiwidget;
+  uiwcont_t           *uiwidget;
+  macoslayout_t       *layout;
+  NSView              *boxview;
+  NSLayoutConstraint  *c;
+
+  boxview = box->uidata.packwidget;
 
   uiwidget = uiwcontAlloc (WCONT_T_SIZE_GROUP, WCONT_T_SIZE_GROUP);
+  uiwidget->uidata.widget = box;
+
+  /* there is no actual widget associated with a size group on macos */
+  /* only an nslayoutguide is needed */
+  layout = uiwidget->uidata.layout;
+  layout->sizegroup = [[NSLayoutGuide alloc] init];
+
+fprintf (stderr, "sg: create\n");
+  [boxview addLayoutGuide : layout->sizegroup];
+  c = [layout->sizegroup.topAnchor
+      constraintEqualToAnchor : boxview.topAnchor];
+  uiWidgetUpdateConstraint ("sg_a", c, boxview, boxview);
+  c = [layout->sizegroup.bottomAnchor
+      constraintEqualToAnchor : boxview.bottomAnchor];
+  uiWidgetUpdateConstraint ("sg_b", c, boxview, boxview);
+  c = [layout->sizegroup.leadingAnchor
+      constraintEqualToAnchor : boxview.leadingAnchor];
+  uiWidgetUpdateConstraint ("sg_c", c, boxview, boxview);
+  c = [layout->sizegroup.trailingAnchor
+      constraintLessThanOrEqualToAnchor : boxview.trailingAnchor];
+  uiWidgetUpdateConstraint ("sg_d", c, boxview, boxview);
+
   return uiwidget;
 }
 
 void
 uiSizeGroupAdd (uiwcont_t *uisg, uiwcont_t *uiwidget)
 {
-  NSView          *prior;
-  NSView          *widget;
+  NSView              *container;
+  macoslayout_t       *layout;
+  NSLayoutConstraint  *c;
 
   if (uisg == NULL || uiwidget == NULL) {
-    return;
-  }
-
-  prior = uisg->uidata.packwidget;
-  widget = uiwidget->uidata.packwidget;
-
-  if (prior == NULL) {
-    uisg->uidata.widget = uiwidget->uidata.widget;
-    uisg->uidata.packwidget = uiwidget->uidata.packwidget;
-    uisg->packed = uiwidget->packed;
     return;
   }
 
@@ -51,32 +71,27 @@ uiSizeGroupAdd (uiwcont_t *uisg, uiwcont_t *uiwidget)
     return;
   }
 
-  if (! uisg->packed) {
-    fprintf (stderr, "ERR : prior widget %d/%s not packed\n", uisg->wtype, uiwcontDesc (uisg->wtype));
-  }
   if (! uiwidget->packed) {
     fprintf (stderr, "ERR : widget %d/%s not packed\n", uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
-  }
-  if (! uisg->packed || ! uiwidget->packed) {
     return;
   }
 
-  prior = uisg->uidata.packwidget;
-  widget = uiwidget->uidata.packwidget;
+fprintf (stderr, "sg: set constraints\n");
+  layout = uiwidget->uidata.layout;
+  container = layout->container;
+fprintf (stderr, "  l:%d c:%d\n", layout != NULL, container != NULL);
 
-// ### constraining the width ends up with the width equal to
-// the max width of the first two views
-// constraining the leading and trailing anchors to be equal does nothing.
-  [prior.widthAnchor
-      constraintEqualToAnchor : widget.widthAnchor
-      multiplier : 1.0
-      ].active = YES;
-//  widget.needsDisplay = YES;
-//  prior.needsDisplay = YES;
+  layout = uisg->uidata.layout;
+fprintf (stderr, "  l:%d\n", layout != NULL);
+fprintf (stderr, "  sg:%d\n", uisg != NULL);
 
-  uisg->uidata.widget = uiwidget->uidata.widget;
-  uisg->uidata.packwidget = uiwidget->uidata.packwidget;
-  uisg->packed = uiwidget->packed;
+// ### this only works for widgets that are distributed vertically
+  c = [container.leadingAnchor
+      constraintEqualToAnchor : layout->sizegroup.leadingAnchor];
+  uiWidgetUpdateConstraint ("sg_e", c, container, uisg->uidata.widget);
+  c = [container.trailingAnchor
+      constraintEqualToAnchor : layout->sizegroup.trailingAnchor];
+  uiWidgetUpdateConstraint ("sg_f", c, container, uisg->uidata.widget);
 
   return;
 }

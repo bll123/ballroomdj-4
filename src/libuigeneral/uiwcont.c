@@ -50,17 +50,17 @@ uiwcontAlloc_r (int basetype, int type, const char *fn, int lineno)
   uiwidget = mdmalloc (sizeof (uiwcont_t));
   uiwidget->wbasetype = basetype;
   uiwidget->wtype = type;
-  uiwidget->uidata.widget = NULL;
-  uiwidget->uidata.packwidget = NULL;          // often the same as widget
+  memset (&uiwidget->uidata, 0, sizeof (uispecific_t));
   uiwidget->packed = false;
   uiwidget->ui_id = gbdj4id;
+  uiwidget->id = 0;
   if (uiwidget->wbasetype == WCONT_T_BOX ||
       uiwidget->wbasetype == WCONT_T_WINDOW) {
     uiwidget->id = gboxcount;
-    // fprintf (stderr, "wcont: %s %d-%d\n", uiwcontDesc (uiwidget->wtype), uiwidget->ui_id, uiwidget->id);
     gboxcount += 100;
   }
 
+fprintf (stderr, "wcont: %s %d-%d\n", uiwcontDesc (uiwidget->wtype), uiwidget->ui_id, uiwidget->id);
   memset (&uiwidget->uiint, 0, sizeof (uiwcontint_t));
   uiwcontUIInit (uiwidget);                     // ui interface specific
   return uiwidget;

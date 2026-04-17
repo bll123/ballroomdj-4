@@ -334,8 +334,8 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   uiwcontInitID (UI_BPMCOUNTER_ID);
 
-  szgrp = uiCreateSizeGroupHoriz ();      // labels
-  szgrpDisp = uiCreateSizeGroupHoriz ();     // display
+  szgrp = uiCreateSizeGroupHoriz (NULL);      // labels
+  szgrpDisp = uiCreateSizeGroupHoriz (NULL);     // display
 
   bpmcounter->callbacks [BPMCOUNT_CB_EXIT] = callbackInit (
       bpmcounterCloseCallback, bpmcounter, NULL);

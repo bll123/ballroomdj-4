@@ -330,19 +330,35 @@ uiWidgetDisableFocus (uiwcont_t *uiwidget)
 void
 uiWidgetHide (uiwcont_t *uiwidget)
 {
-  return;
+  NSStackView   *container = NULL;
+  macoslayout_t *layout = NULL;
+
+  layout = uiwidget->uidata.layout;
+  container = layout->container;
+  container.hidden = true;
 }
 
 void
 uiWidgetShow (uiwcont_t *uiwidget)
 {
-  return;
+  NSStackView   *container = NULL;
+  macoslayout_t *layout = NULL;
+
+  layout = uiwidget->uidata.layout;
+  container = layout->container;
+  container.hidden = false;
 }
 
 void
 uiWidgetShowAll (uiwcont_t *uiwidget)
 {
-  return;
+  NSStackView   *container = NULL;
+  macoslayout_t *layout = NULL;
+
+  layout = uiwidget->uidata.layout;
+  container = layout->container;
+  container.hidden = false;
+  container.needsDisplay = true;
 }
 
 void
@@ -417,6 +433,12 @@ uiWidgetSetIdentifier (uiwcont_t *uiwidget, const char *tag)
       tag, uiwidget->ui_id, uiwidget->id);
   widget = uiwidget->uidata.widget;
   widget.identifier = [NSString stringWithUTF8String: tmp];
+  if (uiwidget->uidata.packwidget != uiwidget->uidata.widget) {
+    widget = uiwidget->uidata.packwidget;
+    snprintf (tmp, sizeof (tmp), "p-%s-%" PRIu32 "-%" PRIu32 "\n",
+        tag, uiwidget->ui_id, uiwidget->id);
+    widget.identifier = [NSString stringWithUTF8String: tmp];
+  }
 }
 
 void
@@ -424,8 +446,10 @@ uiWidgetUpdateLayout (uiwcont_t *uiwidget)
 {
   macoslayout_t *layout = NULL;
   NSStackView   *container = NULL;
+  NSView        *widget = NULL;
 
   layout = uiwidget->uidata.layout;
+  widget = uiwidget->uidata.packwidget;
   container = layout->container;
 
   if (container == NULL) {
@@ -436,3 +460,15 @@ uiWidgetUpdateLayout (uiwcont_t *uiwidget)
   container.needsDisplay = YES;
 }
 
+void
+uiWidgetUpdateConstraint (const char *tag,
+    NSLayoutConstraint *c, NSView *va, NSView *vb)
+{
+  char                  tmp [200];
+
+fprintf (stderr, "upd-c: %s\n", tag);
+  c.active = YES;
+  snprintf (tmp, sizeof (tmp), "%s:%s:%s", tag,
+      [va.identifier UTF8String], [vb.identifier UTF8String]);
+  c.identifier = [NSString stringWithUTF8String: tmp];
+}
