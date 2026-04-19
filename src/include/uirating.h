@@ -19,7 +19,7 @@ enum {
 
 uirating_t * uiratingSpinboxCreate (uiwcont_t *boxp, bool allflag);
 void uiratingFree (uirating_t *uirating);
-void uiratingPackGrid (uirating_t *uirating, uiwcont_t *grid, int row, int col);
+void uiratingPackGrid (uirating_t *uirating, uiwcont_t *grid);
 int uiratingGetValue (uirating_t *uirating);
 void uiratingSetValue (uirating_t *uirating, int value);
 void uiratingSetState (uirating_t *uirating, int state);

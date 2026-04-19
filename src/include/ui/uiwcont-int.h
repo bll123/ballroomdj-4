@@ -103,6 +103,7 @@ typedef struct uibox uibox_t;
 typedef struct uibutton uibutton_t;
 typedef struct uientry uientry_t;
 typedef struct uievent uievent_t;
+typedef struct uigrid uigrid_t;
 typedef struct uiimage uiimage_t;
 typedef struct uimenu uimenu_t;
 typedef struct uiscrollbar uiscrollbar_t;
@@ -111,7 +112,6 @@ typedef struct uiswitch uiswitch_t;
 typedef struct uitextbox uitextbox_t;
 typedef struct uitoggle uitoggle_t;
 typedef struct uivirtlist uivirtlist_t;
-typedef struct uibox uibox_t;
 typedef struct uiwindow uiwindow_t;
 
 /* data internal to each widget type */
@@ -130,6 +130,7 @@ typedef union {
       uientry_t       *uientry;
     };
     uievent_t     *uievent;
+    uigrid_t      *uigrid;
     uiimage_t     *uiimage;
     uimenu_t      *uimenu;
     uiscrollbar_t *uiscrollbar;

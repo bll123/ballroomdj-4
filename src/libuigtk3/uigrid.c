@@ -13,32 +13,43 @@
 
 #include <gtk/gtk.h>
 
-#include "callback.h"
-#include "oslocale.h"
+#include "mdebug.h"
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"
 
 #include "ui/uigrid.h"
 #include "ui/uiui.h"
+#include "ui/uiwidget.h"
+
+typedef struct uigrid {
+  int     row;
+  int     col;
+} uigrid_t;
 
 uiwcont_t *
 uiCreateGrid (void)
 {
   uiwcont_t   *uiwidget;
   GtkWidget   *grid;
+  uigrid_t    *uigrid;
+
+  uigrid = mdmalloc (sizeof (uigrid_t));
+  uigrid->row = 0;
+  uigrid->col = 0;
 
   grid = gtk_grid_new ();
   gtk_grid_set_column_spacing (GTK_GRID (grid), uiBaseMarginSz * 2);
   uiwidget = uiwcontAlloc (WCONT_T_GRID, WCONT_T_GRID);
   uiwcontSetWidget (uiwidget, grid, NULL);
+  uiwidget->uiint.uigrid = uigrid;
 
   return uiwidget;
 }
 
 #if 0
 void
-uiGridPostProcess_r (uiwcont_t *uibox, uiwcont_t *prev,
+uiGridPostProcess_r (uiwcont_t *uigrid, uiwcont_t *prev,
     uiwcont_t *curr, uiwcont_t *next)
 {
   return;
@@ -46,7 +57,20 @@ uiGridPostProcess_r (uiwcont_t *uibox, uiwcont_t *prev,
 #endif
 
 void
-uiGridPack (uiwcont_t *uigrid, uiwcont_t *uiwidget, int row, int col)
+uiGridFree (uiwcont_t *uiwidget)
+{
+  uigrid_t    *uigrid;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_GRID, "grid-free")) {
+    return;
+  }
+
+  uigrid = uiwidget->uiint.uigrid;
+  mdfree (uigrid);
+}
+
+void
+uiGridPack (uiwcont_t *uigrid, uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack")) {
     return;
@@ -55,13 +79,29 @@ uiGridPack (uiwcont_t *uigrid, uiwcont_t *uiwidget, int row, int col)
     return;
   }
 
-  uiGridPackSize (uigrid, uiwidget, row, col, 1, 1);
+  uiGridPackSize (uigrid, uiwidget, 1, 1);
+}
+
+void
+uiGridPackNoExpand (uiwcont_t *uigrid, uiwcont_t *uiwidget)
+{
+  if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack")) {
+    return;
+  }
+  if (uiwidget == NULL || uiwidget->uidata.packwidget == NULL) {
+    return;
+  }
+
+  uiWidgetAlignHorizStart (uiwidget);
+  uiGridPackSize (uigrid, uiwidget, 1, 1);
 }
 
 void
 uiGridPackSize (uiwcont_t *uigrid, uiwcont_t *uiwidget,
-    int row, int col, int numrows, int numcols)
+    int numrows, int numcols)
 {
+  uigrid_t    *uigridint;
+
   if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-size")) {
     return;
   }
@@ -69,6 +109,23 @@ uiGridPackSize (uiwcont_t *uigrid, uiwcont_t *uiwidget,
     return;
   }
 
+  uigridint = uigrid->uiint.uigrid;
   gtk_grid_attach (GTK_GRID (uigrid->uidata.widget),
-      uiwidget->uidata.packwidget, col, row, numcols, numrows);
+      uiwidget->uidata.packwidget, uigridint->col, uigridint->row,
+      numcols, numrows);
+  uigridint->col += 1;
+}
+
+void
+uiGridNewRow (uiwcont_t *uiwidget)
+{
+  uigrid_t    *uigrid;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_GRID, "grid-pack-size")) {
+    return;
+  }
+
+  uigrid = uiwidget->uiint.uigrid;
+  uigrid->row += 1;
+  uigrid->col = 0;
 }

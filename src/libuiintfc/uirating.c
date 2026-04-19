@@ -75,13 +75,13 @@ uiratingFree (uirating_t *uirating)
 }
 
 void
-uiratingPackGrid (uirating_t *uirating, uiwcont_t *grid, int row, int col)
+uiratingPackGrid (uirating_t *uirating, uiwcont_t *grid)
 {
   if (uirating == NULL || grid == NULL) {
     return;
   }
 
-  uisbtextPackGrid (uirating->sb, grid, row, col);
+  uisbtextPackGrid (uirating->sb, grid);
 }
 
 int

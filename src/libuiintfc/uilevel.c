@@ -76,13 +76,13 @@ uilevelFree (uilevel_t *uilevel)
 }
 
 void
-uilevelPackGrid (uilevel_t *uilevel, uiwcont_t *grid, int row, int col)
+uilevelPackGrid (uilevel_t *uilevel, uiwcont_t *grid)
 {
   if (uilevel == NULL || grid == NULL) {
     return;
   }
 
-  uisbtextPackGrid (uilevel->sb, grid, row, col);
+  uisbtextPackGrid (uilevel->sb, grid);
 }
 
 int

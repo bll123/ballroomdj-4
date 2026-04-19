@@ -97,13 +97,13 @@ uisbtextPackBox (uisbtext_t *sbtext, uiwcont_t *box)
 }
 
 void
-uisbtextPackGrid (uisbtext_t *sbtext, uiwcont_t *grid, int row, int col)
+uisbtextPackGrid (uisbtext_t *sbtext, uiwcont_t *grid)
 {
   if (sbtext == NULL || grid == NULL) {
     return;
   }
 
-  uisbPackGrid (sbtext->sb, grid, row, col);
+  uisbPackGrid (sbtext->sb, grid);
 }
 
 void

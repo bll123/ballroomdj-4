@@ -144,13 +144,23 @@ uisbnumPackBox (uisbnum_t *sbnum, uiwcont_t *box)
 }
 
 void
-uisbnumPackGrid (uisbnum_t *sbnum, uiwcont_t *grid, int row, int col)
+uisbnumPackGrid (uisbnum_t *sbnum, uiwcont_t *grid)
 {
   if (sbnum == NULL || grid == NULL) {
     return;
   }
 
-  uisbPackGrid (sbnum->sb, grid, row, col);
+  uisbPackGrid (sbnum->sb, grid);
+}
+
+void
+uisbnumPackGridNoExpand (uisbnum_t *sbnum, uiwcont_t *grid)
+{
+  if (sbnum == NULL || grid == NULL) {
+    return;
+  }
+
+  uisbPackGridNoExpand (sbnum->sb, grid);
 }
 
 void

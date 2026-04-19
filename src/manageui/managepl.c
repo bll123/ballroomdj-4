@@ -204,8 +204,6 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiwcont_t         *uiwidgetp;
   uisbnum_t         *sb;
   const char        *tlabel;
-  int               row = 0;
-  int               col = 0;
 
   logProcBegin ();
 
@@ -275,15 +273,13 @@ fprintf (stderr, "mpl: mpt\n");
   /* CONTEXT: playlist management: maximum play time */
   tlabel = _("Maximum Play Time");
   uiwidgetp = uiCreateColonLabel (tlabel);
-  col = 0;
-  row = 0;
-  uiGridPack (grid, uiwidgetp, row, col++);
+  uiGridPack (grid, uiwidgetp);
 
 fprintf (stderr, "mpl: mpt-sb\n");
   managepl->callbacks [MPL_CB_MAXPLAYTIME] = callbackInit (
       managePlaylistValMaxPlayTimeCallback, managepl, NULL);
   sb = uisbnumCreate (NULL, tlabel, 2);
-  uisbnumPackGrid (sb, grid, row, col++);
+  uisbnumPackGrid (sb, grid);
   /* max 2 hours */
   uisbnumSetTime (sb, 0.0, 3600.0 * 2.0, SBNUM_TIME_MS);
   uisbnumSetChangeCallback (sb, managepl->callbacks [MPL_CB_MAXPLAYTIME]);
@@ -295,14 +291,13 @@ fprintf (stderr, "mpl: stop-at\n");
   /* CONTEXT: playlist management: stop at */
   tlabel = _("Stop At");
   uiwidgetp = uiCreateColonLabel (tlabel);
-  col = 0;
-  row += 1;
-  uiGridPack (grid, uiwidgetp, row, col++);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp);
 
   managepl->callbacks [MPL_CB_STOPAT] = callbackInit (
       managePlaylistValStopAtCallback, managepl, NULL);
   sb = uisbnumCreate (NULL, tlabel, 2);
-  uisbnumPackGrid (sb, grid, row, col++);
+  uisbnumPackGrid (sb, grid);
   /* max 24 hours */
   uisbnumSetTime (sb, 0.0, 3600.0 * 24.0, SBNUM_TIME_HM);
   managepl->sbnum [MPL_SB_STOP_AT] = sb;
@@ -314,12 +309,11 @@ fprintf (stderr, "mpl: stop-after\n");
   /* CONTEXT: playlist management: stop after */
   tlabel = _("Stop After");
   uiwidgetp = uiCreateColonLabel (tlabel);
-  col = 0;
-  row += 1;
-  uiGridPack (grid, uiwidgetp, row, col++);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp);
 
   sb = uisbnumCreate (NULL, tlabel, 2);
-  uisbnumPackGrid (sb, grid, row, col++);
+  uisbnumPackGrid (sb, grid);
   uisbnumSetLimits (sb, 0.0, 500.0, 0);
   managepl->sbnum [MPL_SB_STOP_AFTER] = sb;
 
@@ -329,12 +323,11 @@ fprintf (stderr, "mpl: gap\n");
   /* CONTEXT: playlist management: Gap between songs */
   tlabel = _("Gap Between Songs");
   uiwidgetp = uiCreateColonLabel (tlabel);
-  col = 0;
-  row += 1;
-  uiGridPack (grid, uiwidgetp, row, col++);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp);
 
   sb = uisbnumCreate (NULL, tlabel, 2);
-  uisbnumPackGrid (sb, grid, row, col++);
+  uisbnumPackGrid (sb, grid);
   uisbnumSetLimits (sb, 0.0, 60.0, 1);
   uisbnumSetIncrements (sb, 0.1, 5.0);
   /* must come after limits are set */
@@ -345,13 +338,11 @@ fprintf (stderr, "mpl: gap\n");
 
   /* CONTEXT: playlist management: Play Announcements */
   uiwidgetp = uiCreateColonLabel (_("Play Announcements"));
-  col = 0;
-  row += 1;
-  uiGridPack (grid, uiwidgetp, row, col++);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp);
 
   uiwidgetp = uiCreateSwitch (0);
-  uiWidgetAlignHorizStart (uiwidgetp);
-  uiGridPack (grid, uiwidgetp, row, col++);
+  uiGridPackNoExpand (grid, uiwidgetp);
   managepl->wcont [MPL_W_PLAY_ANN] = uiwidgetp;
 
   uiBoxPostProcess (vbox);
@@ -370,53 +361,47 @@ fprintf (stderr, "mpl: gap\n");
 
   /* add a blank line between the playlist controls and song selection */
   uiwidgetp = uiCreateLabel ("");
-  col = 0;
-  row = 0;
-  uiGridPack (grid, uiwidgetp, row, col++);
+  uiGridPack (grid, uiwidgetp);
 
   /* new line : dance-rating */
 
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
-  col = 0;
-  row += 1;
-  uiGridPack (grid, uiwidgetp, row, col++);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp);
 
   managepl->uirating = uiratingSpinboxCreate (NULL, UIRATING_NORM);
-  uiratingPackGrid (managepl->uirating, grid, row, col++);
+  uiratingPackGrid (managepl->uirating, grid);
 
   /* new line : low dance-level */
 
   /* CONTEXT: playlist management: Low Dance Level */
   uiwidgetp = uiCreateColonLabel (_("Low Dance Level"));
-  col = 0;
-  row += 1;
-  uiGridPack (grid, uiwidgetp, row, col++);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp);
 
   managepl->uilowlevel = uilevelSpinboxCreate (NULL, false);
-  uilevelPackGrid (managepl->uilowlevel, grid, row, col++);
+  uilevelPackGrid (managepl->uilowlevel, grid);
 
   /* new line : high dance-level */
 
   /* CONTEXT: playlist management: High Dance Level */
   uiwidgetp = uiCreateColonLabel (_("High Dance Level"));
-  col = 0;
-  row += 1;
-  uiGridPack (grid, uiwidgetp, row, col++);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp);
 
   managepl->uihighlevel = uilevelSpinboxCreate (NULL, false);
-  uilevelPackGrid (managepl->uihighlevel, grid, row, col++);
+  uilevelPackGrid (managepl->uihighlevel, grid);
 
   /* new line : allowed-keywords */
 
   /* CONTEXT: playlist management: allowed keywords */
   uiwidgetp = uiCreateColonLabel (_("Allowed Keywords"));
-  col = 0;
-  row += 1;
-  uiGridPack (grid, uiwidgetp, row, col++);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp);
 
   uiwidgetp = uiEntryInit (15, 80);
   uiWidgetSetMarginStart (uiwidgetp, 2);
-  uiGridPack (grid, uiwidgetp, row, col++);
+  uiGridPack (grid, uiwidgetp);
   uiEntrySetValidate (uiwidgetp, "",
       managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
   managepl->wcont [MPL_W_ALLOWED_KEYWORDS] = uiwidgetp;
@@ -425,26 +410,25 @@ fprintf (stderr, "mpl: gap\n");
 
   /* CONTEXT: playlist management: tags */
   uiwidgetp = uiCreateColonLabel (_("Tags"));
-  col = 0;
-  row += 1;
-  uiGridPack (grid, uiwidgetp, row, col++);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp);
 
   uiwidgetp = uiEntryInit (15, 100);
   uiWidgetSetMarginStart (uiwidgetp, 2);
   uiEntrySetValidate (uiwidgetp, "",
       managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
-  uiGridPack (grid, uiwidgetp, row, col++);
+  uiGridPack (grid, uiwidgetp);
   managepl->wcont [MPL_W_TAGS] = uiwidgetp;
 
 fprintf (stderr, "mpl: tag-weight\n");
   /* CONTEXT: playlist management: tag weight */
   tlabel = _("Weight");
   uiwidgetp = uiCreateColonLabel (tlabel);
-  uiGridPack (grid, uiwidgetp, row, col++);
+  uiGridPack (grid, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 2);
 
   sb = uisbnumCreate (NULL, tlabel, 2);
-  uisbnumPackGrid (sb, grid, row, col++);
+  uisbnumPackGrid (sb, grid);
   uisbnumSetLimits (sb, 5.0, 100.0, 0);
   uisbnumSetValue (sb, BDJ4_DFLT_TAG_WEIGHT);
   managepl->sbnum [MPL_SB_TAG_WEIGHT] = sb;
@@ -464,13 +448,11 @@ fprintf (stderr, "mpl: tag-weight\n");
 
   /* CONTEXT: playlist management: podcast URL */
   uiwidgetp = uiCreateColonLabel (_("URL"));
-  col = 0;
-  row = 0;
-  uiGridPack (grid, uiwidgetp, row, col++);
+  uiGridPack (grid, uiwidgetp);
 
   uiwidgetp = uiEntryInit (40, 500);
   uiWidgetSetMarginStart (uiwidgetp, 2);
-  uiGridPack (grid, uiwidgetp, row, col++);
+  uiGridPack (grid, uiwidgetp);
   uiEntrySetValidate (uiwidgetp, "",
       managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
   managepl->wcont [MPL_W_URI] = uiwidgetp;
@@ -479,13 +461,12 @@ fprintf (stderr, "mpl: tag-weight\n");
 
   /* CONTEXT: playlist management: podcast title */
   uiwidgetp = uiCreateColonLabel (_("Title"));
-  col = 0;
-  row += 1;
-  uiGridPack (grid, uiwidgetp, row, col++);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp);
 
   uiwidgetp = uiEntryInit (50, 300);
   uiWidgetSetMarginStart (uiwidgetp, 2);
-  uiGridPack (grid, uiwidgetp, row, col++);
+  uiGridPack (grid, uiwidgetp);
   uiEntrySetValidate (uiwidgetp, "",
       managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
   managepl->wcont [MPL_W_TITLE] = uiwidgetp;
@@ -498,13 +479,11 @@ fprintf (stderr, "mpl: retain\n");
   /* CONTEXT: playlist management: how many days to keep the podcast */
   tlabel = _("Days to Keep");
   uiwidgetp = uiCreateColonLabel (tlabel);
-  col = 0;
-  row += 1;
-  uiGridPack (grid, uiwidgetp, row, col++);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp);
 
   sb = uisbnumCreate (NULL, tlabel, 2);
-  uisbnumPackGrid (sb, grid, row, col++);
-// ### set align-horiz-start for sbnum
+  uisbnumPackGridNoExpand (sb, grid);
   uisbnumSetLimits (sb, 0.0, 720.0, 0);
   managepl->sbnum [MPL_SB_RETAIN] = sb;
 
