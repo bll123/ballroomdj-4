@@ -74,6 +74,16 @@ uiratingFree (uirating_t *uirating)
   mdfree (uirating);
 }
 
+void
+uiratingPackGrid (uirating_t *uirating, uiwcont_t *grid, int row, int col)
+{
+  if (uirating == NULL || grid == NULL) {
+    return;
+  }
+
+  uisbtextPackGrid (uirating->sb, grid, row, col);
+}
+
 int
 uiratingGetValue (uirating_t *uirating)
 {

@@ -14,6 +14,7 @@ add_library (${BDJ4_UI_LIB} SHARED
   uidragdrop.c
   uientry.c
   uievents.c
+  uigrid.c
   uiimage.c
   uilabel.c
   uilink.c

@@ -87,6 +87,26 @@ uisbtextFree (uisbtext_t *sbtext)
 }
 
 void
+uisbtextPackBox (uisbtext_t *sbtext, uiwcont_t *box)
+{
+  if (sbtext == NULL || box == NULL) {
+    return;
+  }
+
+  uisbPackBox (sbtext->sb, box);
+}
+
+void
+uisbtextPackGrid (uisbtext_t *sbtext, uiwcont_t *grid, int row, int col)
+{
+  if (sbtext == NULL || grid == NULL) {
+    return;
+  }
+
+  uisbPackGrid (sbtext->sb, grid, row, col);
+}
+
+void
 uisbtextPrependList (uisbtext_t *sbtext, const char *txt)
 {
   if (sbtext == NULL) {

@@ -43,7 +43,7 @@ uiwcontFree (uiwcont_t *uiwidget)
     case WCONT_T_UNKNOWN: {
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: trying to free %" PRIu32 "-%" PRIu32 " twice", uiwidget->ui_id, uiwidget->id);
       fprintf (stderr, "ERR: trying to free %" PRIu32 "-%" PRIu32 " twice\n", uiwidget->ui_id, uiwidget->id);
-      break;
+      return;
     }
     case WCONT_T_HBOX:
     case WCONT_T_VBOX: {

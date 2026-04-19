@@ -727,6 +727,7 @@ starterBuildUI (startui_t  *starter)
   uiwidgetp = uiImageScaledFromFile (tbuff, 128);
   uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetAllMargins (uiwidgetp, 10);
+  uiWidgetSetMarginEnd (uiwidgetp, 4);
   uiWidgetExpandHoriz (uiwidgetp);
   uiWidgetExpandVert (uiwidgetp);
 
@@ -743,9 +744,9 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (bvbox, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_PLAYER] = uiwidgetp;
+  uiWidgetAlignHorizFill (uiwidgetp);
 
   starter->callbacks [START_CB_MANAGE] = callbackInit (
       starterStartManageui, starter, NULL);
@@ -756,9 +757,9 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (bvbox, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_MANAGE] = uiwidgetp;
+  uiWidgetAlignHorizFill (uiwidgetp);
 
   starter->callbacks [START_CB_CONFIG] = callbackInit (
       starterStartConfig, starter, NULL);
@@ -769,9 +770,9 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (bvbox, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_CONFIG] = uiwidgetp;
+  uiWidgetAlignHorizFill (uiwidgetp);
 
   starter->callbacks [START_CB_SUPPORT] = callbackInit (
       starterProcessSupport, starter, NULL);
@@ -782,9 +783,9 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (bvbox, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_SUPPORT] = uiwidgetp;
+  uiWidgetAlignHorizFill (uiwidgetp);
 
   uiwidgetp = uiCreateButton (
       starter->callbacks [START_CB_EXIT],
@@ -793,9 +794,9 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (bvbox, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_EXIT] = uiwidgetp;
+  uiWidgetAlignHorizFill (uiwidgetp);
 
   starterSetWindowPosition (starter);
 

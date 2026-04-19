@@ -75,6 +75,16 @@ uilevelFree (uilevel_t *uilevel)
   mdfree (uilevel);
 }
 
+void
+uilevelPackGrid (uilevel_t *uilevel, uiwcont_t *grid, int row, int col)
+{
+  if (uilevel == NULL || grid == NULL) {
+    return;
+  }
+
+  uisbtextPackGrid (uilevel->sb, grid, row, col);
+}
+
 int
 uilevelGetValue (uilevel_t *uilevel)
 {

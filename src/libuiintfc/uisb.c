@@ -109,7 +109,9 @@ uisbCreate (uiwcont_t *box, uiwcont_t *disp, bool istext, int margin)
   uiBoxPackStartExpandChildren (sb->wcont [SB_W_HBOX], sb->display, WCONT_KEEP);
 
   uiBoxPostProcess (sb->wcont [SB_W_HBOX]);
-  uiBoxPackStart (box, sb->wcont [SB_W_HBOX], WCONT_KEEP);
+  if (box != NULL) {
+    uiBoxPackStart (box, sb->wcont [SB_W_HBOX], WCONT_KEEP);
+  }
 
   if (sb->istext == SB_IS_TEXT) {
     uiEventSetKeyCallback (sb->wcont [SB_W_VAL_EVENTH], sb->wcont [SB_W_HBOX],
@@ -136,6 +138,26 @@ uisbFree (uisb_t *sb)
     callbackFree (sb->callbacks [i]);
   }
   mdfree (sb);
+}
+
+void
+uisbPackBox (uisb_t *sb, uiwcont_t *box)
+{
+  if (sb == NULL || box == NULL) {
+    return;
+  }
+
+  uiBoxPackStart (box, sb->wcont [SB_W_HBOX], WCONT_KEEP);
+}
+
+void
+uisbPackGrid (uisb_t *sb, uiwcont_t *grid, int row, int col)
+{
+  if (sb == NULL || grid == NULL) {
+    return;
+  }
+
+  uiGridPack (grid, sb->wcont [SB_W_HBOX], row, col);
 }
 
 void

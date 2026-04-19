@@ -134,6 +134,26 @@ uisbnumFree (uisbnum_t *sbnum)
 }
 
 void
+uisbnumPackBox (uisbnum_t *sbnum, uiwcont_t *box)
+{
+  if (sbnum == NULL || box == NULL) {
+    return;
+  }
+
+  uisbPackBox (sbnum->sb, box);
+}
+
+void
+uisbnumPackGrid (uisbnum_t *sbnum, uiwcont_t *grid, int row, int col)
+{
+  if (sbnum == NULL || grid == NULL) {
+    return;
+  }
+
+  uisbPackGrid (sbnum->sb, grid, row, col);
+}
+
+void
 uisbnumSetIncrements (uisbnum_t *sbnum, double incr, double pageincr)
 {
   if (sbnum == NULL) {

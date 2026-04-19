@@ -333,6 +333,7 @@ uiWidgetHide (uiwcont_t *uiwidget)
   NSStackView   *container = NULL;
   macoslayout_t *layout = NULL;
 
+// ### see also nsstackview / viet detachment and hiding
   layout = uiwidget->uidata.layout;
   container = layout->container;
   container.hidden = true;
@@ -344,6 +345,7 @@ uiWidgetShow (uiwcont_t *uiwidget)
   NSStackView   *container = NULL;
   macoslayout_t *layout = NULL;
 
+// ### see also nsstackview / viet detachment and hiding
   layout = uiwidget->uidata.layout;
   container = layout->container;
   container.hidden = false;

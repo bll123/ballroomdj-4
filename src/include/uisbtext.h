@@ -19,6 +19,8 @@ typedef struct uisbtext uisbtext_t;
 
 uisbtext_t * uisbtextCreate (uiwcont_t *box, int margin);
 void uisbtextFree (uisbtext_t *sbtext);
+void uisbtextPackBox (uisbtext_t *sbtext, uiwcont_t *box);
+void uisbtextPackGrid (uisbtext_t *sbtext, uiwcont_t *grid, int row, int col);
 void uisbtextSetDisplayCallback (uisbtext_t *sbtext, uisbtextdisp_t cb, void *udata);
 void uisbtextSetChangeCallback (uisbtext_t *sbtext, callback_t *cb);
 void uisbtextPrependList (uisbtext_t *sbtext, const char *txt);

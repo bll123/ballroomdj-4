@@ -30,6 +30,8 @@ extern "C" {
 
 uisb_t * uisbCreate (uiwcont_t *box, uiwcont_t *disp, bool istext, int margin);
 void uisbFree (uisb_t *sb);
+void uisbPackBox (uisb_t *sb, uiwcont_t *box);
+void uisbPackGrid (uisb_t *sb, uiwcont_t *grid, int row, int col);
 void uisbSetCallback (uisb_t *sb, callback_t *uicb);
 void uisbSetFocusCallback (uisb_t *sb, callback_t *cb);
 void uisbSetState (uisb_t *sb, int state);

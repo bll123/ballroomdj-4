@@ -24,6 +24,7 @@
 #include "ui/uidragdrop.h"
 #include "ui/uientry.h"
 #include "ui/uievents.h"
+#include "ui/uigrid.h"
 #include "ui/uiimage.h"
 #include "ui/uilabel.h"
 #include "ui/uilink.h"
