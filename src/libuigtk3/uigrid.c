@@ -25,6 +25,7 @@
 typedef struct uigrid {
   int     row;
   int     col;
+  bool    new;
 } uigrid_t;
 
 uiwcont_t *
@@ -37,6 +38,7 @@ uiCreateGrid (void)
   uigrid = mdmalloc (sizeof (uigrid_t));
   uigrid->row = 0;
   uigrid->col = 0;
+  uigrid->new = true;
 
   grid = gtk_grid_new ();
   gtk_grid_set_column_spacing (GTK_GRID (grid), uiBaseMarginSz * 2);
@@ -114,6 +116,8 @@ uiGridPackSize (uiwcont_t *uigrid, uiwcont_t *uiwidget,
       uiwidget->uidata.packwidget, uigridint->col, uigridint->row,
       numcols, numrows);
   uigridint->col += 1;
+  uigridint = uigrid->uiint.uigrid;
+  uigridint->new = false;
 }
 
 void
@@ -126,6 +130,9 @@ uiGridNewRow (uiwcont_t *uiwidget)
   }
 
   uigrid = uiwidget->uiint.uigrid;
+  if (uigrid->new) {
+    return;
+  }
   uigrid->row += 1;
   uigrid->col = 0;
 }

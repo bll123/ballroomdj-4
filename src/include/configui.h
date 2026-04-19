@@ -558,22 +558,28 @@ void confuiCreateGenreTable (confuigui_t *gui);
 /* confgui.c */
 void confuiEntrySetSize (confuigui_t *gui, int widx, int sz, int maxsz);
 void confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, int);
+void confuiMakeNotebookTabG (uiwcont_t *grid, confuigui_t *gui, const char *txt, int);
 void confuiMakeItemEntry (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
 void confuiMakeItemEntryEncrypt (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
 void confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, void *dialogFunc);
 void confuiMakeItemDropdown (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, callbackFuncS ddcb);
+void confuiMakeItemDropdownG (confuigui_t *gui, uiwcont_t *grid, const char *txt, int widx, int bdjoptIdx, callbackFuncS ddcb);
 void confuiMakeItemLink (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, const char *disp);
 void confuiMakeItemFontButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *fontname);
+void confuiMakeItemFontButtonG (confuigui_t *gui, uiwcont_t *grid, const char *txt, int widx, int bdjoptIdx, const char *fontname);
 void confuiMakeItemColorButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *color);
+void confuiMakeItemColorButtonG (confuigui_t *gui, uiwcont_t *grid, const char *txt, int widx, int bdjoptIdx, const char *color);
 void confuiMakeItemButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp, const char *txt, int widx, int bdjoptIdx, callbackFunc cb);
 void confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, uiwcont_t *sgB, const char *txt, int widx, int bdjoptIdx, confuiouttype_t outtype, ssize_t value, void *cb);
 void confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, uiwcont_t *sgB, const char *txt, int widx, int bdjoptIdx, ssize_t value, int indent);
 void confuiMakeItemSpinboxNum (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, uiwcont_t *sgB, const char *txt, int widx, int bdjoptIdx, int min, int max, int value, void *cb);
+void confuiMakeItemSpinboxNumG (confuigui_t *gui, uiwcont_t *grid, const char *txt, int widx, int bdjoptIdx, int min, int max, int value, void *cb);
 void confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, uiwcont_t *sgB, const char *txt, int widx, int bdjoptIdx, double min, double max, double value, int indent);
 void confuiMakeItemSwitch (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, int value, void *cb, int indent);
 void confuiMakeItemLabelDisp (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int indent);
 void confuiMakeItemCheckButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, int value);
 void confuiMakeItemLabel (confuigui_t *gui, int widx, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int indent);
+void confuiMakeItemLabelG (confuigui_t *gui, int widx, uiwcont_t *grid, const char *txt, int indent);
 void confuiSBTextInitDataNum (confuigui_t *gui, char *tag, int widx, ...);
 
 /* confitunes.c */

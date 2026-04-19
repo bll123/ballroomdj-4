@@ -130,10 +130,10 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
   uiwidget = uiCreateButton (
       dd->callbacks [DD_CB_BUTTON], "", "button_down_small", NULL);
 
-  if (where == DD_PACK_START) {
+  if (boxp != NULL && where == DD_PACK_START) {
     uiBoxPackStart (boxp, uiwidget, WCONT_KEEP);
   }
-  if (where == DD_PACK_END) {
+  if (boxp != NULL && where == DD_PACK_END) {
     uiBoxPackEnd (boxp, uiwidget, WCONT_KEEP);
   }
   if (uiBackend () == BDJ4_UI_ID_GTK3 &&
@@ -178,6 +178,16 @@ uiddFree (uidd_t *dd)
 
   dd->ident = BDJ4_IDENT_FREE;
   mdfree (dd);
+}
+
+void
+uiddPackGrid (uidd_t *dd, uiwcont_t *grid)
+{
+  if (dd == NULL || grid == NULL) {
+    return;
+  }
+
+  uiGridPack (grid, dd->wcont [DD_W_BUTTON]);
 }
 
 void

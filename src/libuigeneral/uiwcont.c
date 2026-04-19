@@ -55,7 +55,8 @@ uiwcontAlloc_r (int basetype, int type, const char *fn, int lineno)
   uiwidget->ui_id = gbdj4id;
   uiwidget->id = 0;
   if (uiwidget->wbasetype == WCONT_T_BOX ||
-      uiwidget->wbasetype == WCONT_T_WINDOW) {
+      uiwidget->wbasetype == WCONT_T_WINDOW ||
+      uiwidget->wbasetype == WCONT_T_GRID) {
     uiwidget->id = gboxcount;
     gboxcount += 100;
   }
@@ -110,6 +111,7 @@ static const char *uiwcontdesc [WCONT_T_MAX] = {
   [WCONT_T_DIALOG_WINDOW] = "DIALOG_WINDOW",
   [WCONT_T_ENTRY] = "ENTRY",
   [WCONT_T_EVENT_BOX] = "EVENT_BOX",
+  [WCONT_T_GRID] = "GRID",
   [WCONT_T_HBOX] = "H-BOX",
   [WCONT_T_IMAGE] = "IMAGE",
   [WCONT_T_KEY] = "KEY",

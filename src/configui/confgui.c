@@ -58,6 +58,14 @@ confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, int i
 }
 
 void
+confuiMakeNotebookTabG (uiwcont_t *grid, confuigui_t *gui, const char *txt, int id)
+{
+fprintf (stderr, "cgui: tab-g %s\n", txt);
+  uivnbAppendPage (gui->mainvnb, grid, txt, id);
+  uiWidgetSetAllMargins (grid, 2);
+}
+
+void
 confuiEntrySetSize (confuigui_t *gui, int widx, int sz, int maxsz)
 {
   gui->uiitem [widx].entrysz = sz;
@@ -149,6 +157,33 @@ confuiMakeItemDropdown (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 }
 
 void
+confuiMakeItemDropdownG (confuigui_t *gui, uiwcont_t *grid,
+    const char *txt, int widx, int bdjoptIdx, callbackFuncS ddcb)
+{
+  logProcBegin ();
+  gui->uiitem [widx].basetype = CONFUI_DD;
+  /* the selection handler sets bdjopt to the appropriate value */
+  /* and also listidx is not set */
+  gui->uiitem [widx].outtype = CONFUI_OUT_NONE;
+
+  confuiMakeItemLabelG (gui, widx, grid, txt, CONFUI_NO_INDENT);
+
+  gui->uiitem [widx].callback = callbackInitS (ddcb, gui);
+  gui->uiitem [widx].uidd = uiddCreate ("confgui",
+      gui->window, NULL, DD_PACK_START,
+      gui->uiitem [widx].ddlist, DD_LIST_TYPE_STR,
+      NULL, DD_REPLACE_TITLE, gui->uiitem [widx].callback);
+  uiddPackGrid (gui->uiitem [widx].uidd, grid);
+  /* this is the only time the index is used */
+  uiddSetSelection (gui->uiitem [widx].uidd, gui->uiitem [widx].listidx);
+
+  uiddSetMarginStart (gui->uiitem [widx].uidd, 4);
+
+  gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  logProcEnd ("");
+}
+
+void
 confuiMakeItemLink (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     const char *txt, int widx, const char *disp)
 {
@@ -199,6 +234,27 @@ confuiMakeItemFontButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 }
 
 void
+confuiMakeItemFontButtonG (confuigui_t *gui, uiwcont_t *grid,
+    const char *txt, int widx, int bdjoptIdx, const char *fontname)
+{
+  uiwcont_t  *uiwidgetp;
+
+  logProcBegin ();
+  gui->uiitem [widx].basetype = CONFUI_FONT;
+  gui->uiitem [widx].outtype = CONFUI_OUT_STR;
+
+  confuiMakeItemLabelG (gui, widx, grid, txt, CONFUI_NO_INDENT);
+
+  uiwidgetp = uiCreateFontButton (fontname);
+  uiGridPackNoExpand (grid, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
+
+  gui->uiitem [widx].uiwidgetp = uiwidgetp;
+  gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  logProcEnd ("");
+}
+
+void
 confuiMakeItemColorButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     const char *txt, int widx, int bdjoptIdx, const char *color)
 {
@@ -222,6 +278,28 @@ confuiMakeItemColorButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   uiBoxPostProcess (hbox);
+  logProcEnd ("");
+}
+
+void
+confuiMakeItemColorButtonG (confuigui_t *gui, uiwcont_t *grid,
+    const char *txt, int widx, int bdjoptIdx, const char *color)
+{
+  uiwcont_t  *uiwidgetp;
+
+  logProcBegin ();
+
+  gui->uiitem [widx].basetype = CONFUI_COLOR;
+  gui->uiitem [widx].outtype = CONFUI_OUT_STR;
+
+  confuiMakeItemLabelG (gui, widx, grid, txt, CONFUI_NO_INDENT);
+
+  uiwidgetp = uiCreateColorButton (color);
+  uiGridPackNoExpand (grid, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
+
+  gui->uiitem [widx].uiwidgetp = uiwidgetp;
+  gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd ("");
 }
 
@@ -382,6 +460,37 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 }
 
 void
+confuiMakeItemSpinboxNumG (confuigui_t *gui, uiwcont_t *grid,
+    const char *txt, int widx, int bdjoptIdx,
+    int min, int max, int value, void *cb)
+{
+  uisbnum_t   *sb;
+
+  logProcBegin ();
+
+  gui->uiitem [widx].basetype = CONFUI_SB_NUM;
+  gui->uiitem [widx].outtype = CONFUI_OUT_NUM;
+
+  confuiMakeItemLabelG (gui, widx, grid, txt, CONFUI_NO_INDENT);
+
+  gui->uiitem [widx].sbcallback = callbackInit (
+      confuiValidateCallback, &gui->uiitem [widx], NULL);
+  sb = uisbnumCreate (NULL, gui->uiitem [widx].labeltxt, 4);
+  uisbnumPackGridNoExpand (sb, grid);
+  uisbnumSetLimits (sb, (double) min, (double) max, 0);
+  uisbnumSetValue (sb, (double) value);
+  uisbnumSetChangeCallback (sb, gui->uiitem [widx].sbcallback);
+  gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  if (cb != NULL) {
+    gui->uiitem [widx].callback = callbackInit (cb, gui, NULL);
+    uisbnumSetChangeCallback (sb, gui->uiitem [widx].callback);
+  }
+  gui->uiitem [widx].sbnum = sb;
+
+  logProcEnd ("");
+}
+
+void
 confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     uiwcont_t *szgrpB, const char *txt, int widx, int bdjoptIdx,
     double min, double max, double value, int indent)
@@ -527,6 +636,48 @@ confuiMakeItemLabel (confuigui_t *gui, int widx,
     stpecpy (ntxt, ntxt + sizeof (ntxt), INDENT_STR);
     uiwidgetp = uiCreateLabel (ntxt);
     uiBoxPackStart (boxp, uiwidgetp, WCONT_FREE);
+  }
+  logProcEnd ("");
+}
+
+void
+confuiMakeItemLabelG (confuigui_t *gui, int widx,
+    uiwcont_t *grid, const char *txt, int indent)
+{
+  uiwcont_t   *uiwidgetp;
+  char        ntxt [300];
+  const char  *ttxt;
+
+  logProcBegin ();
+  *ntxt = '\0';
+  ttxt = txt;
+  if (indent == CONFUI_INDENT) {
+    char    *p = ntxt;
+    char    *end = ntxt + sizeof (ntxt);
+
+    *ntxt = '\0';
+    p = stpecpy (p, end, "   ");
+    p = stpecpy (p, end, txt);
+    ttxt = ntxt;
+  }
+
+  if (*txt == '\0') {
+    uiwidgetp = uiCreateLabel (ttxt);
+  } else {
+    uiwidgetp = uiCreateColonLabel (ttxt);
+  }
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp);
+
+  gui->uiitem [widx].uilabelp = uiwidgetp;
+  /* the labeltxt may not necessarily be static (low/high bpm) */
+  gui->uiitem [widx].labeltxt = mdstrdup (txt);
+
+  if (indent == CONFUI_INDENT || indent == CONFUI_INDENT_FIELD) {
+    *ntxt = '\0';
+    stpecpy (ntxt, ntxt + sizeof (ntxt), INDENT_STR);
+    uiwidgetp = uiCreateLabel (ntxt);
+    uiGridPack (grid, uiwidgetp);
   }
   logProcEnd ("");
 }

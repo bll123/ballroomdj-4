@@ -44,8 +44,8 @@ uiCreateNotebook (void)
 }
 
 void
-uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
-    uiwcont_t *uiwidget)
+uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uiwidget,
+    uiwcont_t *uilabel)
 {
   GtkWidget   *nbtitle;
 
@@ -53,24 +53,26 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
     return;
   }
 
-  /* at this time, only boxes and scrolled-windows are stored in nb pages */
-  if (uibox == NULL) {
+  /* at this time, only boxes, scrolled-windows and grids */
+  /* are stored in nb pages */
+  if (uiwidget == NULL) {
     return;
   }
-  if (uibox->wbasetype != WCONT_T_BOX &&
-      uibox->wtype != WCONT_T_WINDOW_SCROLL) {
+  if (uiwidget->wbasetype != WCONT_T_BOX &&
+      uiwidget->wtype != WCONT_T_WINDOW_SCROLL &&
+      uiwidget->wtype != WCONT_T_GRID) {
     fprintf (stderr, "ERR: %s incorrect type in nb actual: %d %d/%s\n",
         "nb-append-page-box",
-        uibox->id, uibox->wbasetype, uiwcontDesc (uibox->wbasetype));
+        uiwidget->id, uiwidget->wbasetype, uiwcontDesc (uiwidget->wbasetype));
     return;
   }
   nbtitle = NULL;
-  if (uiwidget != NULL) {
-    nbtitle = uiwidget->uidata.widget;
+  if (uilabel != NULL) {
+    nbtitle = uilabel->uidata.widget;
   }
 
   gtk_notebook_append_page (GTK_NOTEBOOK (uinotebook->uidata.widget),
-      uibox->uidata.widget, nbtitle);
+      uiwidget->uidata.widget, nbtitle);
 }
 
 void

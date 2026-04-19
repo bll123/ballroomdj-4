@@ -119,7 +119,7 @@ uivnbFree (uivnb_t *vnb)
 }
 
 void
-uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uibox, const char *nbtxt, int id)
+uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *nbtxt, int id)
 {
   uiwcont_t   *hbox;
   uiwcont_t   *button;
@@ -135,10 +135,10 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uibox, const char *nbtxt, int id)
     return;
   }
 
-  uiNotebookAppendPage (vnb->nb, uibox, NULL);
+  uiNotebookAppendPage (vnb->nb, uiwidget, NULL);
 
   pagenum = vnb->pagecount;
-  vnb->boxlist [pagenum] = uibox;
+  vnb->boxlist [pagenum] = uiwidget;
 
   cb = callbackInit (uivnbSetPageCallback, &vnb->cbdata [pagenum], NULL);
   vnb->tabcblist [pagenum] = cb;
