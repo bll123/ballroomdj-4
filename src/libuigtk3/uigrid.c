@@ -22,12 +22,6 @@
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 
-typedef struct uigrid {
-  int     row;
-  int     col;
-  bool    new;
-} uigrid_t;
-
 uiwcont_t *
 uiCreateGrid (void)
 {

@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <inttypes.h>
 
 #include "nlist.h"
@@ -103,7 +104,12 @@ typedef struct uibox uibox_t;
 typedef struct uibutton uibutton_t;
 typedef struct uientry uientry_t;
 typedef struct uievent uievent_t;
-typedef struct uigrid uigrid_t;
+/* uigrid_t is use in all ui interfaces */
+typedef struct uigrid {
+  int     row;
+  int     col;
+  bool    new;
+} uigrid_t;
 typedef struct uiimage uiimage_t;
 typedef struct uimenu uimenu_t;
 typedef struct uiscrollbar uiscrollbar_t;
