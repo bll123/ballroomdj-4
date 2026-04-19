@@ -40,7 +40,6 @@ typedef struct {
 typedef struct uivnb {
   const char  *tag;
   uiwcont_t   *nb;
-  uiwcont_t   *sg;
   uiwcont_t   *vlist;
   uiwcont_t   *boxlist [VNB_MAX_PAGECOUNT];
   uiwcont_t   *tablist [VNB_MAX_PAGECOUNT];
@@ -72,7 +71,7 @@ uivnbCreate (uiwcont_t *box, const char *tag)
   sw = uiCreateScrolledWindow (50);
   uiBoxPackStart (hbox, sw, WCONT_FREE);
 
-  vnb->vlist = uiCreateVertBox ();
+  vnb->vlist = uiCreateGrid ();
   uiWidgetSetClass (vnb->vlist, VERTNB_BG_CLASS);
   uiWindowPackInWindow (sw, vnb->vlist);
 
@@ -88,9 +87,6 @@ uivnbCreate (uiwcont_t *box, const char *tag)
     vnb->cbdata [i].vnb = vnb;
     vnb->idlist [i] = VNB_NO_ID;
   }
-
-  /* the size group is needed for macos */
-  vnb->sg = uiCreateSizeGroupHoriz (NULL);
 
   vnb->pagecount = 0;
   vnb->selected = -1;
@@ -119,7 +115,6 @@ uivnbFree (uivnb_t *vnb)
 
   uiwcontFree (vnb->vlist);
   uiwcontFree (vnb->nb);
-  uiwcontFree (vnb->sg);
   mdfree (vnb);
 }
 
@@ -149,7 +144,9 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uibox, const char *nbtxt, int id)
   vnb->tabcblist [pagenum] = cb;
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vnb->vlist, hbox, WCONT_FREE);
+//  uiBoxPackStart (vnb->vlist, hbox, WCONT_FREE);
+  uiGridNewRow (vnb->vlist);
+  uiGridPack (vnb->vlist, hbox);
   uiWidgetSetClass (hbox, NB_CLASS);
   uiWidgetSetClass (hbox, NB_VERT_CLASS);
 
@@ -159,8 +156,6 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uibox, const char *nbtxt, int id)
   uiBoxPackStartExpandChildren (hbox, button, WCONT_FREE);
   uiWidgetSetClass (button, NB_CLASS);
   uiWidgetSetClass (button, NB_VERT_CLASS);
-
-  uiSizeGroupAdd (vnb->sg, button);
 
   label = uiCreateLabel ("");
   uiBoxPackStart (hbox, label, WCONT_FREE);
@@ -184,7 +179,7 @@ uivnbPostProcess (uivnb_t *vnb)
     return;
   }
 
-  uiBoxPostProcess (vnb->vlist);
+//  uiBoxPostProcess (vnb->vlist);
   uivnbSetPage (vnb, 0);
 }
 
