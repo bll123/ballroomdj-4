@@ -191,15 +191,14 @@ uiWidgetSetMarginEnd (uiwcont_t *uiwidget, int mult)
 void
 uiWidgetAlignHorizFill (uiwcont_t *uiwidget)
 {
-  NSView    *widget;
+  macoslayout_t *layout;
 
   if (uiwidget == NULL) {
     return;
   }
 
-  widget = uiwidget->uidata.packwidget;
-//  [widget.widthAnchor
-//      constraintLessThanOrEqualToConstant : 600.0].active = YES;
+  layout = uiwidget->uidata.layout;
+  layout->horizfill = true;
 
   return;
 }
@@ -207,15 +206,14 @@ uiWidgetAlignHorizFill (uiwcont_t *uiwidget)
 void
 uiWidgetAlignHorizStart (uiwcont_t *uiwidget)
 {
-  NSView    *view;
+  macoslayout_t *layout;
 
   if (uiwidget == NULL) {
     return;
   }
 
-  view = uiwidget->uidata.widget;
-  view.needsDisplay = true;
-// ###
+  layout = uiwidget->uidata.layout;
+  layout->horizstart = true;
 
   return;
 }
@@ -223,15 +221,14 @@ uiWidgetAlignHorizStart (uiwcont_t *uiwidget)
 void
 uiWidgetAlignHorizEnd (uiwcont_t *uiwidget)
 {
-  NSView    *view;
+  macoslayout_t *layout;
 
   if (uiwidget == NULL) {
     return;
   }
 
-  view = uiwidget->uidata.widget;
-  view.needsDisplay = YES;
-// ###
+  layout = uiwidget->uidata.layout;
+  layout->horizend = true;
 
   return;
 }
@@ -246,7 +243,7 @@ uiWidgetAlignHorizCenter (uiwcont_t *uiwidget)
   }
 
   layout = uiwidget->uidata.layout;
-  layout->centerhoriz = true;
+  layout->horizcenter = true;
 
   return;
 }
@@ -254,16 +251,14 @@ uiWidgetAlignHorizCenter (uiwcont_t *uiwidget)
 void
 uiWidgetAlignVertFill (uiwcont_t *uiwidget)
 {
-  NSView        *widget;
+  macoslayout_t *layout;
 
   if (uiwidget == NULL) {
     return;
   }
 
-  widget = uiwidget->uidata.packwidget;
-//  [widget.heightAnchor
-//      constraintLessThanOrEqualToConstant : 600.0].active = YES;
-// ###
+  layout = uiwidget->uidata.layout;
+  layout->vertfill = true;
 
   return;
 }
@@ -271,15 +266,14 @@ uiWidgetAlignVertFill (uiwcont_t *uiwidget)
 void
 uiWidgetAlignVertStart (uiwcont_t *uiwidget)
 {
-  NSView    *view;
+  macoslayout_t *layout;
 
   if (uiwidget == NULL) {
     return;
   }
 
-  view = uiwidget->uidata.widget;
-  view.needsDisplay = true;
-// ###
+  layout = uiwidget->uidata.layout;
+  layout->vertstart = true;
 
   return;
 }
@@ -294,7 +288,7 @@ uiWidgetAlignVertCenter (uiwcont_t *uiwidget)
   }
 
   layout = uiwidget->uidata.layout;
-  layout->centerhoriz = true;
+  layout->vertcenter = true;
 
   return;
 }
@@ -302,23 +296,29 @@ uiWidgetAlignVertCenter (uiwcont_t *uiwidget)
 void
 uiWidgetAlignVertBaseline (uiwcont_t *uiwidget)
 {
+  macoslayout_t   *layout;
+
+  if (uiwidget == NULL) {
+    return;
+  }
+
+  layout = uiwidget->uidata.layout;
+  layout->vertbaseline = true;
+
   return;
 }
 
 void
 uiWidgetAlignVertEnd (uiwcont_t *uiwidget)
 {
-  NSView    *widget;
+  macoslayout_t   *layout;
 
   if (uiwidget == NULL) {
     return;
   }
 
-  widget = uiwidget->uidata.widget;
-  widget.needsDisplay = true;
-// ###
-
-  return;
+  layout = uiwidget->uidata.layout;
+  layout->vertend = true;
 }
 
 void
@@ -330,96 +330,140 @@ uiWidgetDisableFocus (uiwcont_t *uiwidget)
 void
 uiWidgetHide (uiwcont_t *uiwidget)
 {
-  NSStackView   *container = NULL;
-  macoslayout_t *layout = NULL;
+  NSView        *widget = NULL;
 
-// ### see also nsstackview / viet detachment and hiding
-  layout = uiwidget->uidata.layout;
-  container = layout->container;
-  container.hidden = true;
+  if (uiwidget == NULL) {
+    return;
+  }
+
+  widget = uiwidget->uidata.packwidget;
+//  widget.hidden = true;
 }
 
 void
 uiWidgetShow (uiwcont_t *uiwidget)
 {
-  NSStackView   *container = NULL;
-  macoslayout_t *layout = NULL;
+  NSView        *widget = NULL;
 
-// ### see also nsstackview / viet detachment and hiding
-  layout = uiwidget->uidata.layout;
-  container = layout->container;
-  container.hidden = false;
+// ### see also nsstackview / view detachment and hiding
+  widget = uiwidget->uidata.packwidget;
+  widget.hidden = false;
 }
 
 void
 uiWidgetShowAll (uiwcont_t *uiwidget)
 {
-  NSStackView   *container = NULL;
-  macoslayout_t *layout = NULL;
+  NSView        *widget = NULL;
 
-  layout = uiwidget->uidata.layout;
-  container = layout->container;
-  container.hidden = false;
-  container.needsDisplay = true;
+  if (uiwidget == NULL) {
+    return;
+  }
+  if (uiwidget->wbasetype == WCONT_T_WINDOW) {
+    return;
+  }
+
+  widget = uiwidget->uidata.packwidget;
+  widget.hidden = false;
+  widget.needsDisplay = true;
 }
 
 void
 uiWidgetSetSizeRequest (uiwcont_t *uiwidget, int width, int height)
 {
+  if (uiwidget == NULL) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWidgetGetPosition (uiwcont_t *uiwidget, int *x, int *y)
 {
+  if (uiwidget == NULL) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWidgetSetClass (uiwcont_t *uiwidget, const char *class)
 {
+  if (uiwidget == NULL) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWidgetClearClass (uiwcont_t *uiwidget, const char *class)
 {
+  if (uiwidget == NULL) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWidgetSetTooltip (uiwcont_t *uiwidget, const char *tooltip)
 {
+  if (uiwidget == NULL) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWidgetEnableFocus (uiwcont_t *uiwidget)
 {
+  if (uiwidget == NULL) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWidgetGrabFocus (uiwcont_t *uiwidget)
 {
+  if (uiwidget == NULL) {
+    return;
+  }
+
   return;
 }
 
 bool
 uiWidgetIsMapped (uiwcont_t *uiwidget)
 {
-  return false;
+  if (uiwidget == NULL) {
+    return false;
+  }
+
+  return true;
 }
 
 void
 uiWidgetSetSizeChgCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
+  if (uiwidget == NULL) {
+    return;
+  }
+
   return;
 }
 
 void
 uiWidgetSetEnterCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
+  if (uiwidget == NULL) {
+    return;
+  }
+
   return;
 }
 
@@ -446,20 +490,9 @@ uiWidgetSetIdentifier (uiwcont_t *uiwidget, const char *tag)
 void
 uiWidgetUpdateLayout (uiwcont_t *uiwidget)
 {
-  macoslayout_t *layout = NULL;
-  NSStackView   *container = NULL;
-  NSView        *widget = NULL;
-
-  layout = uiwidget->uidata.layout;
-  widget = uiwidget->uidata.packwidget;
-  container = layout->container;
-
-  if (container == NULL) {
+  if (uiwidget == NULL) {
     return;
   }
-
-  container.edgeInsets = layout->margins;
-  container.needsDisplay = YES;
 }
 
 void

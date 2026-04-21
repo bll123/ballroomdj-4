@@ -174,13 +174,18 @@ fprintf (stderr, "ui-init: %s %d-%d\n", uiwcontDesc (uiwidget->wtype), uiwidget-
     layout->margins = NSEdgeInsetsMake ((CGFloat) uiBaseMarginSz, (CGFloat) uiBaseMarginSz, 0.0, 0.0);
   }
 
-  layout->sizegroup = NULL;
-  layout->container = NULL;
-  layout->centerhoriz = false;
-  layout->centervert = false;
   layout->expandhoriz = false;
   layout->expandvert = false;
-  layout->alignright = false;
+  layout->horizcenter = false;
+  layout->horizend = false;
+  layout->horizfill = false;
+  layout->horizright = false;
+  layout->horizstart = true;      /* default */
+  layout->vertbaseline = false;
+  layout->vertcenter = false;
+  layout->vertend = false;
+  layout->vertfill = false;
+  layout->vertstart = true;       /* default */
 }
 
 /* on macos, every view is wrapped in a NSStackView so that the margins */
@@ -206,36 +211,11 @@ fprintf (stderr, "ui-widget-init: %s %d-%d\n", uiwcontDesc (uiwidget->wtype), ui
   view = uiwidget->uidata.packwidget;
   layout = uiwidget->uidata.layout;
 
-  layout->container = [[NSStackView alloc] init];
-  layout->container.spacing = 0.0;
-  layout->container.edgeInsets = layout->margins;
-  [layout->container addView : view inGravity : NSStackViewGravityCenter];
-
-  [layout->container setHuggingPriority :
-      NSLayoutPriorityRequired
-      forOrientation : NSLayoutConstraintOrientationHorizontal];
-  [layout->container setHuggingPriority :
-      NSLayoutPriorityRequired
-      forOrientation : NSLayoutConstraintOrientationVertical];
-  [layout->container setContentHuggingPriority :
-      NSLayoutPriorityRequired
-      forOrientation : NSLayoutConstraintOrientationHorizontal];
-  [layout->container setContentHuggingPriority :
-      NSLayoutPriorityRequired
-      forOrientation : NSLayoutConstraintOrientationVertical];
-  /* otherwise everything gets shrunk to a minimal size */
-  [layout->container setContentCompressionResistancePriority :
-      NSLayoutPriorityRequired
-      forOrientation : NSLayoutConstraintOrientationHorizontal];
-  [layout->container setContentCompressionResistancePriority :
-      NSLayoutPriorityRequired
-      forOrientation : NSLayoutConstraintOrientationVertical];
-
   [view setContentHuggingPriority :
-      NSLayoutPriorityRequired
+      NSLayoutPriorityDefaultHigh
       forOrientation : NSLayoutConstraintOrientationHorizontal];
   [view setContentHuggingPriority :
-      NSLayoutPriorityRequired
+      NSLayoutPriorityDefaultHigh
       forOrientation : NSLayoutConstraintOrientationVertical];
 
   /* otherwise everything gets shrunk to a minimal size */
@@ -249,10 +229,10 @@ fprintf (stderr, "ui-widget-init: %s %d-%d\n", uiwcontDesc (uiwidget->wtype), ui
   view = uiwidget->uidata.widget;
 
   [view setContentHuggingPriority :
-      NSLayoutPriorityRequired
+      NSLayoutPriorityDefaultHigh
       forOrientation : NSLayoutConstraintOrientationHorizontal];
   [view setContentHuggingPriority :
-      NSLayoutPriorityRequired
+      NSLayoutPriorityDefaultHigh
       forOrientation : NSLayoutConstraintOrientationVertical];
 
   /* otherwise everything gets shrunk to a minimal size */

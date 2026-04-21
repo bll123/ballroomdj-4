@@ -48,14 +48,19 @@ void uiWidgetUpdateConstraint (const char *tag, NSLayoutConstraint *c, NSView *v
 /* structures */
 
 typedef struct macoslayout {
-  NSLayoutGuide *sizegroup;
-  NSStackView   *container;
   NSEdgeInsets  margins;
-  bool          centerhoriz;
-  bool          centervert;
   bool          expandhoriz;
   bool          expandvert;
-  bool          alignright;
+  bool          horizcenter;
+  bool          horizend;
+  bool          horizfill;
+  bool          horizright;
+  bool          horizstart;
+  bool          vertbaseline;
+  bool          vertcenter;
+  bool          vertend;
+  bool          vertfill;
+  bool          vertstart;
   bool          expandchildren;
 } macoslayout_t;
 

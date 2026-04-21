@@ -74,20 +74,12 @@ uisbnumCreate (uiwcont_t *box, const char *label, int margin)
   uisbnum_t  *sbnum;
 
   sbnum = mdmalloc (sizeof (uisbnum_t));
-  sbnum->entry = uiEntryInit (6, 10);
-  uiWidgetAlignHorizFill (sbnum->entry);
-  uiEntryAlignEnd (sbnum->entry);
-  uiWidgetSetAllMargins (sbnum->entry, 0);
-  sbnum->sb = uisbCreate (box, sbnum->entry, SB_IS_NUM, margin);
-  uisbSetRepeat (sbnum->sb, 50);
-  for (int i = 0; i < SBNUM_CB_MAX; ++i) {
-    sbnum->callbacks [i] = NULL;
-  }
-  sbnum->chgcb = NULL;
-  sbnum->label = label;
+
   /* CONTEXT: user interface: default setting display */
   sbnum->dfltstr = _("Default");
   sbnum->dfltlen = istrlen (sbnum->dfltstr);
+  sbnum->chgcb = NULL;
+  sbnum->label = label;
   sbnum->min = 1.0;
   sbnum->max = 100.0;
   sbnum->old_value = SB_INVALID;
@@ -100,8 +92,18 @@ uisbnumCreate (uiwcont_t *box, const char *label, int margin)
   sbnum->changed = false;
   sbnum->set_value = false;
   sbnum->isvalid = true;
-  uisbnumSetFormat (sbnum);
+  for (int i = 0; i < SBNUM_CB_MAX; ++i) {
+    sbnum->callbacks [i] = NULL;
+  }
   sbnum->valmsg [0] = '\0';
+
+  sbnum->entry = uiEntryInit (sbnum->dfltlen, 10);
+  uiWidgetAlignHorizFill (sbnum->entry);
+  uiEntryAlignEnd (sbnum->entry);
+  uiWidgetSetAllMargins (sbnum->entry, 0);
+  sbnum->sb = uisbCreate (box, sbnum->entry, SB_IS_NUM, margin);
+  uisbSetRepeat (sbnum->sb, 50);
+  uisbnumSetFormat (sbnum);
 
   sbnum->callbacks [SBNUM_CB_MAIN] = callbackInitI (uisbnumCBHandler, sbnum);
   uisbSetCallback (sbnum->sb, sbnum->callbacks [SBNUM_CB_MAIN]);
@@ -544,12 +546,13 @@ uisbnumValueToStr (uisbnum_t *sbnum, char *tbuff, size_t sz)
   if (sbnum->type == SBNUM_NUM_DEFAULT) {
     if (sbnum->value < 0) {
       stpecpy (tbuff, tbuff + sz, sbnum->dfltstr);
-      uiEntrySetWidth (sbnum->entry, sbnum->dfltlen + 1);
+//      uiEntrySetWidth (sbnum->entry, sbnum->dfltlen);
     } else {
       snprintf (tbuff, sz, sbnum->fmt, sbnum->value);
     }
   }
   if (sbnum->type == SBNUM_NUMERIC) {
+//    uiEntrySetWidth (sbnum->entry, sbnum->dfltlen);
     snprintf (tbuff, sz, sbnum->fmt, sbnum->value);
   }
   if (sbnum->type == SBNUM_TIME_HM) {

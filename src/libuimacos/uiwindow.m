@@ -484,9 +484,7 @@ uiWindowSetNoMaximize (uiwcont_t *uiwindow)
 void
 uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
 {
-  NSStackView   *container = NULL;
   NSView        *widget = NULL;
-  NSStackView   *winbox = NULL;
   int           grav = NSStackViewGravityTop;
   macoslayout_t *layout = NULL;
 
@@ -499,32 +497,30 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   }
 fprintf (stderr, "  pack-in-win: %d/%s\n", uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
 
-  container = uiwidget->uidata.packwidget;
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->uidata.packwidget;
 
   if (uiwindow->wtype == WCONT_T_WINDOW_SCROLL) {
     NSScrollView  *scv;
 
     scv = uiwindow->uidata.widget;
-    [scv setDocumentView : container];
-    winbox = uiwindow->uidata.packwidget;
-//    winbox.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
+    [scv setDocumentView : widget];
   }
   if (uiwindow->wtype == WCONT_T_WINDOW) {
-    NSWindow    *win;
+    NSWindow      *win;
+    NSStackView   *winbox = NULL;
 
     win = uiwindow->uidata.widget;
     winbox = [win contentView];
-    [winbox addView : container inGravity : grav];
+    [winbox addView : widget inGravity : grav];
 
     [winbox.safeAreaLayoutGuide.leadingAnchor
-        constraintEqualToAnchor : container.leadingAnchor].active = YES;
+        constraintEqualToAnchor : widget.leadingAnchor].active = YES;
     [winbox.safeAreaLayoutGuide.trailingAnchor
-        constraintEqualToAnchor : container.trailingAnchor].active = YES;
+        constraintEqualToAnchor : widget.trailingAnchor].active = YES;
     [winbox.safeAreaLayoutGuide.topAnchor
-        constraintEqualToAnchor : container.topAnchor].active = YES;
+        constraintEqualToAnchor : widget.topAnchor].active = YES;
     [winbox.safeAreaLayoutGuide.bottomAnchor
-        constraintEqualToAnchor : container.bottomAnchor].active = YES;
+        constraintEqualToAnchor : widget.bottomAnchor].active = YES;
   }
 
   uiwidget->packed = true;

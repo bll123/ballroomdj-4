@@ -1546,7 +1546,7 @@ fprintf (stderr, "Spinbox\n");
   nlistSetStr (uitest->sbtxtlist, 2, "ccc");
   nlistSetStr (uitest->sbtxtlist, 3, "ddddddddd");
 
-  uitest->sbtext = uisbtextCreate (hbox, 4);
+  uitest->sbtext = uisbtextCreate (hbox, 0);
   uisbtextSetList (uitest->sbtext, uitest->sbtxtlist);
   uisbtextSetValue (uitest->sbtext, 0);
 
@@ -1559,7 +1559,7 @@ fprintf (stderr, "Spinbox\n");
   uiWidgetSetAllMargins (hbox, 1);
   uiWidgetExpandHoriz (hbox);
 
-  uitest->sbtextb = uisbtextCreate (hbox, 4);
+  uitest->sbtextb = uisbtextCreate (hbox, 0);
   uisbtextPrependList (uitest->sbtextb, "All");
   uisbtextSetList (uitest->sbtextb, uitest->sbtxtlist);
   uisbtextSetValue (uitest->sbtextb, -1);

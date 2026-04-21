@@ -106,6 +106,7 @@ uisbCreate (uiwcont_t *box, uiwcont_t *disp, bool istext, int margin)
 
   sb->display = disp;
   uiWidgetSetClass (sb->display, SB_CLASS);
+  /* gtk requires an expand-children */
   uiBoxPackStartExpandChildren (sb->wcont [SB_W_HBOX], sb->display, WCONT_KEEP);
 
   uiBoxPostProcess (sb->wcont [SB_W_HBOX]);
