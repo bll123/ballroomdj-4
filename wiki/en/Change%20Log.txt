@@ -6,6 +6,12 @@
 
 **4.18.3 2026-4---**
 
+* Bug Fixes:
+    * Music Manager: Fix enabled/disabled state of 'Remove Song' menu items.
+* Changes:
+    * Song Editor: Added 'Remove Song' items to the song editor menu.
+    * Song Editor: Added a notification in the heading for removed songs.
+
 -->
 
 **4.18.2 2026-4-13**

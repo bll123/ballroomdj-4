@@ -652,7 +652,7 @@ pluiBuildUI (playerui_t *plui)
 
   plui->callbacks [PLUI_MENU_CB_MQ_FIND] = callbackInit (
       pluiMarqueeRecover, plui, NULL);
-  /* CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen */
+  /* CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen (Retrieve Marquee) */
   menuitem = uiMenuCreateItem (menu, _("Recover Marquee"),
       plui->callbacks [PLUI_MENU_CB_MQ_FIND]);
   uiwcontFree (menuitem);

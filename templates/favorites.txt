@@ -1,6 +1,6 @@
 # favorites
-# 2025-6-8
-# version 2
+# 2026-4-21
+# version 3
 #
 #   There is no configuration tool to change the favorites, but they
 #     may be changed manually.
@@ -15,7 +15,6 @@
 #   heart ♥           (itunes)
 #   broken-heart 💔   (itunes)
 #   imported ⭹        (internal use)
-#   removed ✖         (internal use)
 # Other possibilities if people want more variety:
 #   arrowhead ⮞
 #   checkmark ✔
@@ -135,19 +134,5 @@ DISPLAY
 ..⭹
 COLOR
 ..
-USERSEL
-..no
-# 'removed' is used to display a symbol for song removal.
-# it is not user-selectable.
-# the name may not be changed.
-# the display symbol and color may be changed
-KEY
-..9
-NAME
-..removed
-DISPLAY
-..✖
-COLOR
-..#ff2222
 USERSEL
 ..no

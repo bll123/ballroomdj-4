@@ -458,7 +458,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
       managePlaylistTextEntryChg, managepl, UIENTRY_IMMEDIATE);
   managepl->wcont [MPL_W_TAGS] = uiwidgetp;
 
-  /* CONTEXT: playlist management: tag weight */
+  /* CONTEXT: playlist management: tag weight (emphasis) */
   uiwidgetp = uiCreateColonLabel (_("Weight"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 2);
