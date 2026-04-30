@@ -19,10 +19,10 @@ The defaults are standard, latin and other.
 
   * MQ_INFO_SEP
     Separator character(s) for the marquee information display.
-    The default is a slash&nbsp;(**/**).
+    The default is a slash&nbsp;(__/__).
   * PLAYER_UI_SEP
     Separator character(s) for the player song display.
-    The default is a colon&nbsp;(**:**).
+    The default is a colon&nbsp;(__:__).
   * UI_MARK_TEXT
     The character(s) to use to display the mark.
     The default is a left-five-eights box.

@@ -475,7 +475,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       uiplayerFadeProcess, uiplayer, "fade");
   uiwidgetp = uiCreateButton (
       uiplayer->callbacks [UIPL_CB_FADE],
-      /* CONTEXT: playerui: button: fade out the song and stop playing it */
+      /* CONTEXT: playerui: button: fade out the song and continue to the next song*/
       _("Fade"), NULL, NULL);
   uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiplayer->wcont [UIPL_W_BUTTON_FADE] = uiwidgetp;

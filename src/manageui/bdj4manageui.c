@@ -127,9 +127,9 @@ enum {
   /* music manager */
   MANAGE_MENU_CB_MM_CLEAR_MARK,
   MANAGE_MENU_CB_MM_SET_MARK,
-  MANAGE_MENU_CB_MM_REMOVE_SONG,
-  MANAGE_MENU_CB_MM_UNDO_REMOVE,
-  MANAGE_MENU_CB_MM_UNDO_ALL_REMOVE,
+  MANAGE_MENU_CB_REMOVE_SONG,
+  MANAGE_MENU_CB_UNDO_REMOVE,
+  MANAGE_MENU_CB_UNDO_ALL_REMOVE,
   MANAGE_MENU_CB_MM_IMPORT,
   /* song editor */
   MANAGE_MENU_CB_SE_BPM,
@@ -215,7 +215,9 @@ enum {
   MANAGE_W_MENUBAR,
   MANAGE_W_MENUITEM_RESTORE_ORIG,
   MANAGE_W_MENUITEM_UNDO_REMOVE,
-  MANAGE_W_MENUITEM_UNDO_ALL_REMOVE,
+  MANAGE_W_MENUITEM_UNDO_ALL_REMOVE,      // must follow undo-remove
+  MANAGE_W_MENUITEM_SE_UNDO_REMOVE,
+  MANAGE_W_MENUITEM_SE_UNDO_ALL_REMOVE,   // must follow se-undo-remove
   MANAGE_W_MENU_MM,
   MANAGE_W_MENU_SL,
   MANAGE_W_MENU_SONGEDIT,
@@ -402,6 +404,7 @@ static bool     manageCloseWin (void *udata);
 static void     manageSigHandler (int sig);
 /* song editor */
 static void     manageSongEditMenu (manageui_t *manage);
+static void     manageMenuAddRemoveSong (manageui_t *manage, uiwcont_t *menu, int widx);
 static bool     manageNewSelectionSongSel (void *udata, int32_t dbidx);
 static bool     manageNewSelectionSonglist (void *udata, int32_t dbidx);
 static bool     manageSwitchToSongEditorSS (void *udata);
@@ -481,7 +484,7 @@ static bool     manageSwitchPageSonglist (void *udata, int32_t pagenum);
 static bool     manageSwitchPageMM (void *udata, int32_t pagenum);
 static void     manageSwitchPage (manageui_t *manage, int pagenum, int which);
 static void     manageSetDisplayPerSelection (manageui_t *manage, int lastmaintab);
-static void     manageSetMenuCallback (manageui_t *manage, int midx, callbackFunc cb);
+static void     manageSetStdCallback (manageui_t *manage, int midx, callbackFunc cb);
 static void     manageSonglistLoadCheck (manageui_t *manage);
 static void     manageProcessDatabaseUpdate (manageui_t *manage);
 static void     manageUpdateDBPointers (manageui_t *manage);
@@ -863,8 +866,8 @@ manageBuildUI (manageui_t *manage)
   snprintf (tbuff, sizeof (tbuff), _("%s Management"),
       bdjoptGetStr (OPT_P_PROFILENAME));
 
-  manage->callbacks [MANAGE_CB_CLOSE] = callbackInit (
-      manageCloseWin, manage, NULL);
+  manageSetStdCallback (manage, MANAGE_CB_CLOSE,
+      manageCloseWin);
   manage->minfo.window = uiCreateMainWindow (
       manage->callbacks [MANAGE_CB_CLOSE], tbuff, "bdj4_icon_manage");
   manage->wcont [MANAGE_W_WINDOW] = manage->minfo.window;
@@ -975,8 +978,8 @@ manageBuildUI (manageui_t *manage)
   manageSequenceSetLoadCallback (manage->manageseq,
       manage->callbacks [MANAGE_CB_SEQ_LOAD]);
 
-  manage->callbacks [MANAGE_CB_SEQ_NEW] = callbackInit (
-      manageNewPlaylistCB, manage, NULL);
+  manageSetStdCallback (manage, MANAGE_CB_SEQ_NEW,
+      manageNewPlaylistCB);
   manageSequenceSetNewCallback (manage->manageseq,
       manage->callbacks [MANAGE_CB_SEQ_NEW]);
 
@@ -1065,10 +1068,10 @@ manageInitializeUI (manageui_t *manage)
   manage->mmsongedit = uisongeditInit (manage->conn,
       manage->musicdb, manage->minfo.dispsel, manage->minfo.options);
 
-  manage->callbacks [MANAGE_CB_EDIT_SL] = callbackInit (
-      manageSwitchToSongEditorSL, manage, NULL);
-  manage->callbacks [MANAGE_CB_EDIT_SS] = callbackInit (
-      manageSwitchToSongEditorSS, manage, NULL);
+  manageSetStdCallback (manage, MANAGE_CB_EDIT_SL,
+      manageSwitchToSongEditorSL);
+  manageSetStdCallback (manage, MANAGE_CB_EDIT_SS,
+      manageSwitchToSongEditorSS);
   uisongselSetEditCallback (manage->slsongsel, manage->callbacks [MANAGE_CB_EDIT_SS]);
   uisongselSetEditCallback (manage->slsbssongsel, manage->callbacks [MANAGE_CB_EDIT_SS]);
   uisongselSetEditCallback (manage->mmsongsel, manage->callbacks [MANAGE_CB_EDIT_SS]);
@@ -1695,10 +1698,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           msgparseDBEntryUpdate (args, &dbidx);
           dbLoadEntry (manage->musicdb, dbidx);
           manageRePopulateData (manage);
-          if (manage->maincurrtab == MANAGE_TAB_MAIN_MM &&
-              manage->mmcurrtab == MANAGE_TAB_SONGEDIT) {
-            manageReloadSongData (manage);
-          }
+          manageReloadSongData (manage);
           break;
         }
         case MSG_PROCESSING_FAIL: {
@@ -1780,21 +1780,21 @@ manageSongEditMenu (manageui_t *manage)
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
-  manage->callbacks [MANAGE_MENU_CB_SE_BPM] = callbackInit (
-      manageStartBPMCounter, manage, NULL);
+  manageSetStdCallback (manage, MANAGE_MENU_CB_SE_BPM,
+      manageStartBPMCounter);
   menuitem = uiMenuCreateItem (menu, tagdefs [TAG_BPM].displayname,
       manage->callbacks [MANAGE_MENU_CB_SE_BPM]);
   uiwcontFree (menuitem);
 
-  manage->callbacks [MANAGE_MENU_CB_SE_COPY_TAGS] = callbackInit (
-      manageCopyTagsStart, manage, NULL);
+  manageSetStdCallback (manage, MANAGE_MENU_CB_SE_COPY_TAGS,
+      manageCopyTagsStart);
   /* CONTEXT: manage-ui: song editor menu: copy audio tags */
   menuitem = uiMenuCreateItem (menu, _("Copy Audio Tags"),
       manage->callbacks [MANAGE_MENU_CB_SE_COPY_TAGS]);
   uiwcontFree (menuitem);
 
-  manage->callbacks [MANAGE_MENU_CB_SE_WRITE_AUDIO_TAGS] = callbackInit (
-      manageWriteAudioTags, manage, NULL);
+  manageSetStdCallback (manage, MANAGE_MENU_CB_SE_WRITE_AUDIO_TAGS,
+      manageWriteAudioTags);
   /* CONTEXT: manage-ui: song editor menu: write audio tags*/
   menuitem = uiMenuCreateItem (menu, _("Write Audio Tags"),
       manage->callbacks [MANAGE_MENU_CB_SE_WRITE_AUDIO_TAGS]);
@@ -1802,22 +1802,22 @@ manageSongEditMenu (manageui_t *manage)
 
   uiMenuAddSeparator (menu);
 
-  manage->callbacks [MANAGE_MENU_CB_SE_START_EDIT_ALL] = callbackInit (
-      manageEditAllStart, manage, NULL);
+  manageSetStdCallback (manage, MANAGE_MENU_CB_SE_START_EDIT_ALL,
+      manageEditAllStart);
   /* CONTEXT: manage-ui: song editor menu: edit all */
   menuitem = uiMenuCreateItem (menu, _("Edit All"),
       manage->callbacks [MANAGE_MENU_CB_SE_START_EDIT_ALL]);
   uiwcontFree (menuitem);
 
-  manage->callbacks [MANAGE_MENU_CB_SE_APPLY_EDIT_ALL] = callbackInit (
-      manageEditAllApply, manage, NULL);
+  manageSetStdCallback (manage, MANAGE_MENU_CB_SE_APPLY_EDIT_ALL,
+      manageEditAllApply);
   /* CONTEXT: manage-ui: song editor menu: apply edit all */
   menuitem = uiMenuCreateItem (menu, _("Apply Edit All"),
       manage->callbacks [MANAGE_MENU_CB_SE_APPLY_EDIT_ALL]);
   uiwcontFree (menuitem);
 
-  manage->callbacks [MANAGE_MENU_CB_SE_CANCEL_EDIT_ALL] = callbackInit (
-      manageEditAllCancel, manage, NULL);
+  manageSetStdCallback (manage, MANAGE_MENU_CB_SE_CANCEL_EDIT_ALL,
+      manageEditAllCancel);
   /* CONTEXT: manage-ui: song editor menu: cancel edit all */
   menuitem = uiMenuCreateItem (menu, _("Cancel Edit All"),
       manage->callbacks [MANAGE_MENU_CB_SE_CANCEL_EDIT_ALL]);
@@ -1825,8 +1825,8 @@ manageSongEditMenu (manageui_t *manage)
 
   uiMenuAddSeparator (menu);
 
-  manage->callbacks [MANAGE_MENU_CB_SE_TRIM_SILENCE] = callbackInit (
-      manageTrimSilence, manage, NULL);
+  manageSetStdCallback (manage, MANAGE_MENU_CB_SE_TRIM_SILENCE,
+      manageTrimSilence);
   /* CONTEXT: manage-ui: song editor menu: trim silence */
   menuitem = uiMenuCreateItem (menu, _("Trim Silence"),
       manage->callbacks [MANAGE_MENU_CB_SE_TRIM_SILENCE]);
@@ -1837,8 +1837,8 @@ manageSongEditMenu (manageui_t *manage)
   uiwcontFree (menuitem);
 
   if (bdjoptGetNum (OPT_G_AUD_ADJ_DISP)) {
-    manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ] = callbackInit (
-        manageApplyAdjDialog, manage, NULL);
+    manageSetStdCallback (manage, MANAGE_MENU_CB_SE_APPLY_ADJ,
+        manageApplyAdjDialog);
     uisongeditSetApplyAdjCallback (manage->mmsongedit, manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
     /* CONTEXT: manage-ui: song editor menu: apply adjustments */
     menuitem = uiMenuCreateItem (menu, _("Apply Adjustments"),
@@ -1849,8 +1849,8 @@ manageSongEditMenu (manageui_t *manage)
     }
     uiwcontFree (menuitem);
 
-    manage->callbacks [MANAGE_MENU_CB_SE_RESTORE_ORIG] = callbackInit (
-        manageRestoreOrigCallback, manage, NULL);
+    manageSetStdCallback (manage, MANAGE_MENU_CB_SE_RESTORE_ORIG,
+        manageRestoreOrigCallback);
     /* CONTEXT: manage-ui: song editor menu: restore original */
     menuitem = uiMenuCreateItem (menu, _("Restore Original"),
         manage->callbacks [MANAGE_MENU_CB_SE_RESTORE_ORIG]);
@@ -1868,6 +1868,8 @@ manageSongEditMenu (manageui_t *manage)
     /* do not free this menu item here */
   }
 
+  manageMenuAddRemoveSong (manage, menu, MANAGE_W_MENUITEM_SE_UNDO_REMOVE);
+
   uiMenuSetInitialized (manage->wcont [MANAGE_W_MENU_SONGEDIT]);
   uiwcontFree (menu);
 
@@ -1875,6 +1877,37 @@ manageSongEditMenu (manageui_t *manage)
   manage->currmenu = manage->wcont [MANAGE_W_MENU_SONGEDIT];
 
   logProcEnd ("");
+}
+
+static void
+manageMenuAddRemoveSong (manageui_t *manage, uiwcont_t *menu, int widx)
+{
+  uiwcont_t   *menuitem;
+
+  uiMenuAddSeparator (menu);
+
+  manageSetStdCallback (manage, MANAGE_MENU_CB_REMOVE_SONG,
+      manageMarkSongRemoved);
+  /* CONTEXT: manage-ui: menu selection: music manager: remove song */
+  menuitem = uiMenuCreateItem (menu, _("Remove Song"),
+      manage->callbacks [MANAGE_MENU_CB_REMOVE_SONG]);
+  uiwcontFree (menuitem);
+
+  manageSetStdCallback (manage, MANAGE_MENU_CB_UNDO_REMOVE,
+      manageUndoRemove);
+  /* CONTEXT: manage-ui: menu selection: music manager: undo song removal */
+  menuitem = uiMenuCreateItem (menu, _("Undo Song Removal"),
+      manage->callbacks [MANAGE_MENU_CB_UNDO_REMOVE]);
+  manage->wcont [widx] = menuitem;
+  uiWidgetSetState (manage->wcont [widx], UIWIDGET_DISABLE);
+
+  manageSetStdCallback (manage, MANAGE_MENU_CB_UNDO_ALL_REMOVE,
+      manageUndoRemoveAll);
+  /* CONTEXT: manage-ui: menu selection: music manager: undo all song removals */
+  menuitem = uiMenuCreateItem (menu, _("Undo All Song Removals"),
+      manage->callbacks [MANAGE_MENU_CB_UNDO_ALL_REMOVE]);
+  manage->wcont [widx + 1] = menuitem;
+  uiWidgetSetState (manage->wcont [widx + 1], UIWIDGET_DISABLE);
 }
 
 static bool
@@ -1907,6 +1940,7 @@ manageNewSelectionSongSel (void *udata, int32_t dbidx)
       state = UIWIDGET_ENABLE;
     }
     uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_UNDO_REMOVE], state);
+    uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_SE_UNDO_REMOVE], state);
   } else {
     logMsg (LOG_DBG, LOG_INFO, "new-selection: other set sel-dbidx");
     manage->seldbidx = dbidx;
@@ -2550,44 +2584,21 @@ manageMusicManagerMenu (manageui_t *manage)
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_SET_MARK,
+  manageSetStdCallback (manage, MANAGE_MENU_CB_MM_SET_MARK,
       manageSameSongSetMark);
   /* CONTEXT: manage-ui: menu selection: music manager: set same-song mark */
   menuitem = uiMenuCreateItem (menu, _("Mark as Same Song"),
       manage->callbacks [MANAGE_MENU_CB_MM_SET_MARK]);
   uiwcontFree (menuitem);
 
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_CLEAR_MARK,
+  manageSetStdCallback (manage, MANAGE_MENU_CB_MM_CLEAR_MARK,
       manageSameSongClearMark);
   /* CONTEXT: manage-ui: menu selection: music manager: clear same-song mark */
   menuitem = uiMenuCreateItem (menu, _("Clear Same Song Mark"),
       manage->callbacks [MANAGE_MENU_CB_MM_CLEAR_MARK]);
   uiwcontFree (menuitem);
 
-  uiMenuAddSeparator (menu);
-
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_REMOVE_SONG,
-      manageMarkSongRemoved);
-  /* CONTEXT: manage-ui: menu selection: music manager: remove song */
-  menuitem = uiMenuCreateItem (menu, _("Remove Song"),
-      manage->callbacks [MANAGE_MENU_CB_MM_REMOVE_SONG]);
-  uiwcontFree (menuitem);
-
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_UNDO_REMOVE,
-      manageUndoRemove);
-  /* CONTEXT: manage-ui: menu selection: music manager: undo song removal */
-  menuitem = uiMenuCreateItem (menu, _("Undo Song Removal"),
-      manage->callbacks [MANAGE_MENU_CB_MM_UNDO_REMOVE]);
-  uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
-  manage->wcont [MANAGE_W_MENUITEM_UNDO_REMOVE] = menuitem;
-
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_UNDO_ALL_REMOVE,
-      manageUndoRemoveAll);
-  /* CONTEXT: manage-ui: menu selection: music manager: undo all song removals */
-  menuitem = uiMenuCreateItem (menu, _("Undo All Song Removals"),
-      manage->callbacks [MANAGE_MENU_CB_MM_UNDO_ALL_REMOVE]);
-  uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
-  manage->wcont [MANAGE_W_MENUITEM_UNDO_ALL_REMOVE] = menuitem;
+  manageMenuAddRemoveSong (manage, menu, MANAGE_W_MENUITEM_UNDO_REMOVE);
 
   uiMenuSetInitialized (manage->wcont [MANAGE_W_MENU_MM]);
   uiwcontFree (menu);
@@ -2622,25 +2633,25 @@ manageSonglistMenu (manageui_t *manage)
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_LOAD, manageSonglistLoad);
+  manageSetStdCallback (manage, MANAGE_MENU_CB_SL_LOAD, manageSonglistLoad);
   /* CONTEXT: manage-ui: menu selection: song list: edit menu: load */
   menuitem = uiMenuCreateItem (menu, _("Load"),
       manage->callbacks [MANAGE_MENU_CB_SL_LOAD]);
   uiwcontFree (menuitem);
 
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_NEW, manageSonglistNew);
+  manageSetStdCallback (manage, MANAGE_MENU_CB_SL_NEW, manageSonglistNew);
   /* CONTEXT: manage-ui: menu selection: song list: edit menu: start new song list */
   menuitem = uiMenuCreateItem (menu, _("Start New Song List"),
       manage->callbacks [MANAGE_MENU_CB_SL_NEW]);
   uiwcontFree (menuitem);
 
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_COPY, manageSonglistCopy);
+  manageSetStdCallback (manage, MANAGE_MENU_CB_SL_COPY, manageSonglistCopy);
   /* CONTEXT: manage-ui: menu selection: song list: edit menu: create copy */
   menuitem = uiMenuCreateItem (menu, _("Create Copy"),
       manage->callbacks [MANAGE_MENU_CB_SL_COPY]);
   uiwcontFree (menuitem);
 
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_DELETE, manageSonglistDelete);
+  manageSetStdCallback (manage, MANAGE_MENU_CB_SL_DELETE, manageSonglistDelete);
   /* CONTEXT: manage-ui: menu selection: song list: edit menu: delete song list */
   menuitem = uiMenuCreateItem (menu, _("Delete"),
       manage->callbacks [MANAGE_MENU_CB_SL_DELETE]);
@@ -2654,26 +2665,26 @@ manageSonglistMenu (manageui_t *manage)
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_MIX, manageSonglistMix);
+  manageSetStdCallback (manage, MANAGE_MENU_CB_SL_MIX, manageSonglistMix);
   /* CONTEXT: manage-ui: menu selection: song list: actions menu: rearrange the songs and create a new mix */
   menuitem = uiMenuCreateItem (menu, _("Mix"),
       manage->callbacks [MANAGE_MENU_CB_SL_MIX]);
   uiwcontFree (menuitem);
 
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_SWAP, manageSonglistSwap);
+  manageSetStdCallback (manage, MANAGE_MENU_CB_SL_SWAP, manageSonglistSwap);
   /* CONTEXT: manage-ui: menu selection: song list: actions menu: swap two songs */
   menuitem = uiMenuCreateItem (menu, _("Swap"),
       manage->callbacks [MANAGE_MENU_CB_SL_SWAP]);
   uiwcontFree (menuitem);
 
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_TRUNCATE,
+  manageSetStdCallback (manage, MANAGE_MENU_CB_SL_TRUNCATE,
       manageSonglistTruncate);
   /* CONTEXT: manage-ui: menu selection: song list: actions menu: truncate the song list */
   menuitem = uiMenuCreateItem (menu, _("Truncate"),
       manage->callbacks [MANAGE_MENU_CB_SL_TRUNCATE]);
   uiwcontFree (menuitem);
 
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_MK_FROM_PL,
+  manageSetStdCallback (manage, MANAGE_MENU_CB_SL_MK_FROM_PL,
       manageSonglistCreateFromPlaylist);
   /* CONTEXT: manage-ui: menu selection: song list: actions menu: create a song list from a playlist */
   menuitem = uiMenuCreateItem (menu, _("Create from Playlist"),
@@ -2688,14 +2699,14 @@ manageSonglistMenu (manageui_t *manage)
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_EXPORT,
+  manageSetStdCallback (manage, MANAGE_MENU_CB_SL_EXPORT,
       managePlaylistExport);
   /* CONTEXT: manage-ui: menu selection: song list: export */
   menuitem = uiMenuCreateItem (menu, _("Export Playlist"),
       manage->callbacks [MANAGE_MENU_CB_SL_EXPORT]);
   uiwcontFree (menuitem);
 
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_BDJ4_EXP,
+  manageSetStdCallback (manage, MANAGE_MENU_CB_SL_BDJ4_EXP,
       managePlaylistExportBDJ4);
   /* CONTEXT: manage-ui: menu selection: song list: export: export for ballroomdj */
   snprintf (tbuff, sizeof (tbuff), _("Export for %s"), BDJ4_NAME);
@@ -2711,14 +2722,14 @@ manageSonglistMenu (manageui_t *manage)
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_IMPORT,
+  manageSetStdCallback (manage, MANAGE_MENU_CB_SL_IMPORT,
       managePlaylistImport);
   /* CONTEXT: manage-ui: menu selection: song list: import */
   menuitem = uiMenuCreateItem (menu, _("Import Playlist"),
       manage->callbacks [MANAGE_MENU_CB_SL_IMPORT]);
   uiwcontFree (menuitem);
 
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_BDJ4_IMP,
+  manageSetStdCallback (manage, MANAGE_MENU_CB_SL_BDJ4_IMP,
       managePlaylistImportBDJ4);
   /* CONTEXT: manage-ui: menu selection: song list: import: import from ballroomdj */
   snprintf (tbuff, sizeof (tbuff), _("Import from %s"), BDJ4_NAME);
@@ -2726,7 +2737,7 @@ manageSonglistMenu (manageui_t *manage)
       manage->callbacks [MANAGE_MENU_CB_SL_BDJ4_IMP]);
   uiwcontFree (menuitem);
 
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_ITUNES_IMP,
+  manageSetStdCallback (manage, MANAGE_MENU_CB_SL_ITUNES_IMP,
       managePlaylistImportiTunes);
   /* CONTEXT: manage-ui: menu selection: song list: import: import from itunes */
   snprintf (tbuff, sizeof (tbuff), _("Import from %s"), ITUNES_NAME);
@@ -2742,7 +2753,7 @@ manageSonglistMenu (manageui_t *manage)
   menu = uiCreateSubMenu (menuitem);
   uiwcontFree (menuitem);
 
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_SBS_EDIT,
+  manageSetStdCallback (manage, MANAGE_MENU_CB_SL_SBS_EDIT,
       manageToggleSBSSonglist);
   /* CONTEXT: manage-ui: menu checkbox: side-by-side view (suggestion: combined view) */
   menuitem = uiMenuCreateCheckbox (menu, _("Side-by-Side View"),
@@ -4044,11 +4055,9 @@ manageSetDisplayPerSelection (manageui_t *manage, int mainlasttab)
 }
 
 static void
-manageSetMenuCallback (manageui_t *manage, int midx, callbackFunc cb)
+manageSetStdCallback (manageui_t *manage, int midx, callbackFunc cb)
 {
-  logProcBegin ();
   manage->callbacks [midx] = callbackInit (cb, manage, NULL);
-  logProcEnd ("");
 }
 
 /* the current songlist may be renamed or deleted. */
@@ -4273,9 +4282,12 @@ manageMarkSongRemoved (void *udata)
   }
 
   manageRePopulateData (manage);
+  manageReloadSongData (manage);
 
   uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_UNDO_REMOVE], UIWIDGET_ENABLE);
   uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_UNDO_ALL_REMOVE], UIWIDGET_ENABLE);
+  uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_SE_UNDO_REMOVE], UIWIDGET_ENABLE);
+  uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_SE_UNDO_ALL_REMOVE], UIWIDGET_ENABLE);
 
   nlistFree (sellist);
   logProcEnd ("");
@@ -4290,7 +4302,6 @@ manageUndoRemove (void *udata)
   nlist_t     *trmlist;
   nlistidx_t  iteridx;
   dbidx_t     dbidx;
-  dbidx_t     tdbidx;
 
   sellist = uisongselGetSelectedList (manage->mmsongsel);
 
@@ -4303,17 +4314,10 @@ manageUndoRemove (void *udata)
       continue;
     }
     dbClearEntryRemoved (manage->musicdb, dbidx);
+    nlistSetStr (manage->removelist, dbidx, NULL);
   }
 
   trmlist = nlistAlloc ("remove-list", LIST_ORDERED, NULL);
-
-  nlistStartIterator (sellist, &iteridx);
-  while ((tdbidx = nlistIterateKey (sellist, &iteridx)) >= 0) {
-    if (nlistGetStr (manage->removelist, dbidx) != NULL) {
-      /* set entry in removelist to null */
-      nlistSetStr (manage->removelist, dbidx, NULL);
-    }
-  }
 
   /* rebuild the removelist, skipping those entries that were set to null */
   nlistStartIterator (manage->removelist, &iteridx);
@@ -4328,10 +4332,13 @@ manageUndoRemove (void *udata)
   manage->removelist = trmlist;
 
   manageRePopulateData (manage);
+  manageReloadSongData (manage);
 
-  uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_UNDO_REMOVE], UIWIDGET_ENABLE);
+  uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_UNDO_REMOVE], UIWIDGET_DISABLE);
+  uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_SE_UNDO_REMOVE], UIWIDGET_DISABLE);
   if (nlistGetCount (manage->removelist) == 0) {
-    uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_UNDO_ALL_REMOVE], UIWIDGET_ENABLE);
+    uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_UNDO_ALL_REMOVE], UIWIDGET_DISABLE);
+    uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_SE_UNDO_ALL_REMOVE], UIWIDGET_DISABLE);
   }
 
   nlistFree (sellist);
@@ -4355,8 +4362,11 @@ manageUndoRemoveAll (void *udata)
   manage->removelist = nlistAlloc ("remove-list", LIST_ORDERED, NULL);
   uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_UNDO_REMOVE], UIWIDGET_DISABLE);
   uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_UNDO_ALL_REMOVE], UIWIDGET_DISABLE);
+  uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_SE_UNDO_REMOVE], UIWIDGET_DISABLE);
+  uiWidgetSetState (manage->wcont [MANAGE_W_MENUITEM_SE_UNDO_ALL_REMOVE], UIWIDGET_DISABLE);
 
   manageRePopulateData (manage);
+  manageReloadSongData (manage);
 
   return UICB_CONT;
 }
@@ -4380,6 +4390,9 @@ manageRemoveSongs (manageui_t *manage)
     const char  *songfn;
 
     songfn = nlistGetStr (manage->removelist, dbidx);
+    if (songfn == NULL) {
+      continue;
+    }
     if (! audiosrcRemove (songfn)) {
       /* only need to know if file-type */
       if (audiosrcGetType (songfn) != AUDIOSRC_TYPE_FILE) {

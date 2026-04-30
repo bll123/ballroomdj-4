@@ -420,8 +420,7 @@ fprintf (stderr, "mpl: gap\n");
   uiGridPack (grid, uiwidgetp);
   managepl->wcont [MPL_W_TAGS] = uiwidgetp;
 
-fprintf (stderr, "mpl: tag-weight\n");
-  /* CONTEXT: playlist management: tag weight */
+  /* CONTEXT: playlist management: tag weight (emphasis) */
   tlabel = _("Weight");
   uiwidgetp = uiCreateColonLabel (tlabel);
   uiGridPack (grid, uiwidgetp);

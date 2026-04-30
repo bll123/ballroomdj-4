@@ -85,7 +85,7 @@ confuiCreateRatingTable (confuigui_t *gui)
   uivlSetColumnHeading (uivl, CONFUI_RATING_COL_RATING,
       tagdefs [TAG_DANCERATING].shortdisplayname);
   uivlMakeColumnSpinboxNum (uivl, "rweight", CONFUI_RATING_COL_WEIGHT, 0.0, 100.0, 1.0, 5.0);
-  /* CONTEXT: configuration: rating: title of the weight column */
+  /* CONTEXT: configuration: rating: title of the weight column (emphasis) */
   uivlSetColumnHeading (uivl, CONFUI_RATING_COL_WEIGHT, _("Weight"));
 
   uivlSetNumRows (uivl, ratingGetCount (ratings));

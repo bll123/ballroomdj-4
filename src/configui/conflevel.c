@@ -87,7 +87,7 @@ confuiCreateLevelTable (confuigui_t *gui)
       tagdefs [TAG_DANCELEVEL].shortdisplayname);
 
   uivlMakeColumnSpinboxNum (uivl, "lweight", CONFUI_LEVEL_COL_WEIGHT, 0.0, 100.0, 1.0, 5.0);
-  /* CONTEXT: configuration: level: title of the weight column */
+  /* CONTEXT: configuration: level: title of the weight column (emphasis) */
   uivlSetColumnHeading (uivl, CONFUI_LEVEL_COL_WEIGHT, _("Weight"));
 
   uivlMakeColumn (uivl, "ldflt", CONFUI_LEVEL_COL_DEFAULT, VL_TYPE_RADIO_BUTTON);

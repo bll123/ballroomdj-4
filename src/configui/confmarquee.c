@@ -64,7 +64,7 @@ confuiBuildUIMarquee (confuigui_t *gui)
       CONFUI_WIDGET_MQ_FONT, OPT_M_MQ_FONT,
       bdjoptGetStr (OPT_M_MQ_FONT));
 
-  /* CONTEXT: (noun) configuration: the length of the queue displayed on the marquee */
+  /* CONTEXT: (noun) configuration: the length of the queue displayed on the marquee (or Queue Limit) */
   confuiMakeItemSpinboxNum (gui, vbox, szgrp, NULL, _("Queue Length"),
       CONFUI_SB_NUM_MQ_QUEUE_LEN, OPT_P_MQ_QLEN,
       0, 20, bdjoptGetNum (OPT_P_MQ_QLEN), NULL);

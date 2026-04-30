@@ -58,9 +58,9 @@ confuiInitGeneral (confuigui_t *gui)
   confuiSBTextInitDataNum (gui, "cu-bpm",
       CONFUI_SB_TXT_BPM,
       /* CONTEXT: configuration: BPM: beats per minute (not bars per minute) */
-      BPM_BPM, "BPM",
-      /* CONTEXT: configuration: MPM: measures per minute (aka bars per minute) */
-      BPM_MPM, "MPM",
+      BPM_BPM, _("BPM"),
+      /* CONTEXT: configuration: MPM: measures per minute */
+      BPM_MPM, _("MPM"),
       -1);
 }
 

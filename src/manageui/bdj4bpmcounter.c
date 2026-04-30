@@ -130,9 +130,9 @@ main (int argc, char *argv[])
   bpmcounter.disptxt [BPMCOUNT_DISP_BEATS] = _("Beats");
   /* CONTEXT: bpm counter: number of seconds */
   bpmcounter.disptxt [BPMCOUNT_DISP_SECONDS] = _("Seconds");
-  /* CONTEXT: bpm counter: BPM */
+  /* CONTEXT: bpm counter: BPM (musical term: beats per minute) */
   bpmcounter.disptxt [BPMCOUNT_DISP_BPM] = _("BPM");
-  /* CONTEXT: bpm counter: MPM  */
+  /* CONTEXT: bpm counter: MPM (musical term: measures per minute) */
   bpmcounter.disptxt [BPMCOUNT_DISP_MPM] = _("MPM");
 
   bpmcounter.hdrline = NULL;

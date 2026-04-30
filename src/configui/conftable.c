@@ -106,7 +106,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
       confuiTableAdd, gui, NULL);
   uiwidgetp = uiCreateButton (
       gui->tables [id].callbacks [CONFUI_TABLE_CB_ADD],
-      /* CONTEXT: configuration: table edit: button: add new selection */
+      /* CONTEXT: configuration: table edit: button: add new entry */
       NULL, "button_add", _("Add New"));
   uiBoxPackStart (bvbox, uiwidgetp, WCONT_KEEP);
   gui->tables [id].buttons [CONFUI_BUTTON_TABLE_ADD] = uiwidgetp;

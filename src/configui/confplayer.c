@@ -132,7 +132,7 @@ confuiBuildUIPlayer (confuigui_t *gui)
       CONFUI_SB_NUM_DEFAULT_VOL, OPT_P_DEFAULTVOLUME,
       1, 100, bdjoptGetNum (OPT_P_DEFAULTVOLUME), NULL);
 
-  /* CONTEXT: (noun) configuration: the number of items loaded into the music queue */
+  /* CONTEXT: (noun) configuration: the number of items loaded into the music queue (or: Queue Limit) */
   confuiMakeItemSpinboxNum (gui, vbox, szgrp, szgrpB, _("Queue Length"),
       CONFUI_SB_NUM_PL_QUEUE_LEN, OPT_G_PLAYERQLEN,
       20, 400, bdjoptGetNum (OPT_G_PLAYERQLEN), NULL);
@@ -142,7 +142,7 @@ confuiBuildUIPlayer (confuigui_t *gui)
       CONFUI_ENTRY_COMPLETE_MSG, OPT_P_COMPLETE_MSG,
       bdjoptGetStr (OPT_P_COMPLETE_MSG), CONFUI_NO_INDENT);
 
-  /* CONTEXT: configuration: type of fade to apply */
+  /* CONTEXT: configuration: type of fade-out to use (triangle, half-sine, etc.)*/
   confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Fade Type"),
       CONFUI_SB_TXT_PLAYER_FADE_TYPE, OPT_P_FADETYPE, CONFUI_OUT_NUM,
       bdjoptGetNum (OPT_P_FADETYPE), NULL);
@@ -277,8 +277,8 @@ confuiLoadControllerIntfcList (confuigui_t *gui)
       CONFUI_OPT_NONE, CONFUI_SB_TXT_CONTROLLER, 1);
   ilistFree (interfaces);
 
-  nlistSetStr (gui->uiitem [CONFUI_SB_TXT_CONTROLLER].displist, 0,
-      /* CONTEXT: configuration: controller: no controller */
+  nlistSetStr (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].displist, 0,
+      /* CONTEXT: configuration: controller: no controller ('Disabled' may be used) */
       C_("Controller","None"));
   nlistSetStr (gui->uiitem [CONFUI_SB_TXT_CONTROLLER].sbkeylist, 0, "");
 }

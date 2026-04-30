@@ -126,7 +126,7 @@ enum {
   UISE_W_EDIT_ALL,
   UISE_W_PARENT_WIN,
   UISE_W_MUSICBRAINZ,
-  UISE_W_MODIFIED,
+  UISE_W_SE_STATE,
   UISE_W_AUDIOID_IMG,
   UISE_W_FILE_DISP,
   UISE_W_KEY_HNDLR,
@@ -420,12 +420,10 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiWidgetAlignVertCenter (seint->wcont [UISE_W_AUDIOID_IMG]);
   uiWidgetSetMarginStart (seint->wcont [UISE_W_AUDIOID_IMG], 1);
 
-  if (bdjoptGetNum (OPT_G_AUD_ADJ_DISP)) {
-    uiwidgetp = uiCreateLabel (" ");
-    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
-    uiWidgetSetClass (uiwidgetp, DARKACCENT_CLASS);
-    seint->wcont [UISE_W_MODIFIED] = uiwidgetp;
-  }
+  uiwidgetp = uiCreateLabel (" ");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAlignVertBaseline (uiwidgetp);
+  seint->wcont [UISE_W_SE_STATE] = uiwidgetp;
 
   seint->callbacks [UISE_CB_COPY_TEXT] = callbackInit (
       uisongeditCopyPath, uisongedit, "songedit: copy-text");
@@ -435,17 +433,29 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiButtonSetImageIcon (uiwidgetp, "edit-copy");
   uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 1);
+  uiWidgetAlignVertBaseline (uiwidgetp);
   seint->wcont [UISE_W_BUTTON_COPY_TEXT] = uiwidgetp;
 
   /* CONTEXT: song editor: label for displaying the audio file path */
   uiwidgetp = uiCreateColonLabel (_("File"));
   uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);
+<<<<<<< working copy
+=======
+  uiWidgetAlignVertBaseline (uiwidgetp);
+  uiwcontFree (uiwidgetp);
+>>>>>>> merge rev
 
   uiwidgetp = uiCreateLabel ("");
   uiLabelEllipsizeOn (uiwidgetp);
+<<<<<<< working copy
   uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetClass (uiwidgetp, DARKACCENT_CLASS);
+=======
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetAddClass (uiwidgetp, DARKACCENT_CLASS);
+  uiWidgetAlignVertBaseline (uiwidgetp);
+>>>>>>> merge rev
   uiLabelSetSelectable (uiwidgetp);
   seint->wcont [UISE_W_FILE_DISP] = uiwidgetp;
 
@@ -547,13 +557,19 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
     uiImageCopy (seint->wcont [UISE_W_AUDIOID_IMG], seint->wcont [UISE_W_MUSICBRAINZ]);
   }
 
-  if (seint->wcont [UISE_W_MODIFIED] != NULL) {
-    val = songGetNum (song, TAG_ADJUSTFLAGS);
+  uiLabelSetText (seint->wcont [UISE_W_SE_STATE], " ");
 
-    uiLabelSetText (seint->wcont [UISE_W_MODIFIED], " ");
-    if (val != SONG_ADJUST_NONE) {
-      uiLabelSetText (seint->wcont [UISE_W_MODIFIED], "*");
-    }
+  /* this will go away someday */
+  val = songGetNum (song, TAG_ADJUSTFLAGS);
+  if (val != SONG_ADJUST_NONE) {
+    uiLabelSetText (seint->wcont [UISE_W_SE_STATE], "*");
+    uiWidgetAddClass (seint->wcont [UISE_W_SE_STATE], ACCENT_CLASS);
+  }
+
+  if (songGetNum (song, TAG_DB_FLAGS) == MUSICDB_REMOVE_MARK) {
+    /* heavy-multiplication ✖ \xe2\x9c\x96 */
+    uiLabelSetText (seint->wcont [UISE_W_SE_STATE], "\xe2\x9c\x96");
+    uiWidgetAddClass (seint->wcont [UISE_W_SE_STATE], ERROR_CLASS);
   }
 
   for (int count = 0; count < seint->itemcount; ++count) {

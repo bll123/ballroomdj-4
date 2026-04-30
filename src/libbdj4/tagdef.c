@@ -1753,17 +1753,17 @@ tagdefInit (void)
   tagdefs [TAG_ALBUMARTIST].displayname = _("Album Artist");
   /* CONTEXT: label: artist */
   tagdefs [TAG_ARTIST].displayname = _("Artist");
-  /* CONTEXT: audio identification: the score or rating of each match */
+  /* CONTEXT: audio identification: percentage-match rating returned by an audio identification service */
   tagdefs [TAG_AUDIOID_SCORE].displayname = _("Score");
   /* CONTEXT: audio identification: the audio identification source */
   tagdefs [TAG_AUDIOID_IDENT].displayname = _("Source");
 
   if (bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
-    /* CONTEXT: label: beats per minute */
+    /* CONTEXT: label: beats per minute (musical term) */
     tagdefs [TAG_BPM].displayname = _("BPM");
   }
   if (bdjoptGetNum (OPT_G_BPM) == BPM_MPM) {
-    /* CONTEXT: label: measures per minute */
+    /* CONTEXT: label: measures per minute (musical term) */
     tagdefs [TAG_BPM].displayname = _("MPM");
   }
   /* CONTEXT: label: comment */

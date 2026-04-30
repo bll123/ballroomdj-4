@@ -551,6 +551,7 @@ main (int argc, char *argv [])
     /* 4.1.0 2023-2-9 nl renamed, just re-install if not there */
     /* 4.4.1.2 2023-10-5 nl renamed, just re-install if not there */
     /* 4.17.14 2026-3-2 de renamed, just re-install if not there */
+    /* CONTEXT: This is the name of a special playlist. Queue is a verb.  It can be simplified and shortened. */
     updaterCopyIfNotPresent ("QueueDance", BDJ4_PLAYLIST_EXT, _("QueueDance"));
     updaterCopyIfNotPresent ("QueueDance", BDJ4_PL_DANCE_EXT, _("QueueDance"));
   }
@@ -568,6 +569,7 @@ main (int argc, char *argv [])
     /* 2026-2-25 : fix */
     updaterCopyVersionCheck ("QueueDance", _("QueueDance"), BDJ4_PLAYLIST_EXT, 3);
     updaterCopyVersionCheck ("QueueDance", _("QueueDance"), BDJ4_PL_DANCE_EXT, 5);
+    /* CONTEXT: This is the name of a example playlist. 'Standard Rounds' is a ballroom term used in the US.  It can be simplified and shortened. */
     updaterCopyVersionCheck ("standardrounds", _("standardrounds"), BDJ4_PLAYLIST_EXT, 3);
     updaterCopyVersionCheck ("standardrounds", _("standardrounds"), BDJ4_PL_DANCE_EXT, 4);
   }
@@ -592,7 +594,8 @@ main (int argc, char *argv [])
     /* 4.15.0 2025-5-1 update audiosrc.txt */
     updaterCopyVersionCheck (NULL, ASCONF_FN, BDJ4_CONFIG_EXT, 2);
     /* 4.15.0 2025-6-8 update favorites.txt */
-    updaterCopyVersionCheck (NULL, "favorites", BDJ4_CONFIG_EXT, 2);
+    /* 4.18.2.1 2026-4-21 update favorites.txt */
+    updaterCopyVersionCheck (NULL, "favorites", BDJ4_CONFIG_EXT, 3);
   }
 
   {
