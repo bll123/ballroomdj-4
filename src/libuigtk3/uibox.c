@@ -38,6 +38,12 @@ uiCreateHorizBox_r (void)
 }
 
 void
+uiBoxFree_r (uiwcont_t *uibox)
+{
+  return;
+}
+
+void
 uiBoxPostProcess_r (uiwcont_t *uibox, uiwcont_t *prev,
     uiwcont_t *curr, uiwcont_t *next)
 {

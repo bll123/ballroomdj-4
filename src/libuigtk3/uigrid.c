@@ -27,9 +27,9 @@ uiCreateGrid (void)
 {
   uiwcont_t   *uiwidget;
   GtkWidget   *grid;
-  uigrid_t    *uigrid;
+  uigridint_t    *uigrid;
 
-  uigrid = mdmalloc (sizeof (uigrid_t));
+  uigrid = mdmalloc (sizeof (uigridint_t));
   uigrid->row = 0;
   uigrid->col = 0;
   uigrid->new = true;
@@ -55,7 +55,7 @@ uiGridPostProcess_r (uiwcont_t *uigrid, uiwcont_t *prev,
 void
 uiGridFree (uiwcont_t *uiwidget)
 {
-  uigrid_t    *uigrid;
+  uigridint_t    *uigrid;
 
   if (! uiwcontValid (uiwidget, WCONT_T_GRID, "grid-free")) {
     return;
@@ -96,7 +96,7 @@ void
 uiGridPackSize (uiwcont_t *uigrid, uiwcont_t *uiwidget,
     int numrows, int numcols)
 {
-  uigrid_t    *uigridint;
+  uigridint_t    *uigridint;
 
   if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-size")) {
     return;
@@ -117,7 +117,7 @@ uiGridPackSize (uiwcont_t *uigrid, uiwcont_t *uiwidget,
 void
 uiGridNewRow (uiwcont_t *uiwidget)
 {
-  uigrid_t    *uigrid;
+  uigridint_t    *uigrid;
 
   if (! uiwcontValid (uiwidget, WCONT_T_GRID, "grid-pack-size")) {
     return;

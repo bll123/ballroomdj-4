@@ -23,6 +23,7 @@
 #include "ui/uiwcont-int.h"
 
 #include "ui/uibox.h"
+#include "ui/uigrid.h"
 #include "ui/uiwidget.h"
 
 @interface IBox : NSStackView {}
@@ -65,6 +66,11 @@ static dbgcol_t dbgcols [MACOS_UI_DBG_COLS] = {
 
 #endif
 
+typedef struct uibox {
+  uiwcont_t *grid_s;
+  uiwcont_t *grid_t;
+} uibox_t;
+
 static void uiBoxProcessExpandHoriz (uiwconttype_t wtype, NSView *box, NSView *pview, NSView *cview, NSView *nview);
 static void uiBoxProcessExpandVert (uiwconttype_t wtype, NSView *box, NSView *pview, NSView *cview, NSView *nview);
 static void uiBoxProcessCenter (uiwconttype_t wtype, macoslayout_t *layout, NSView *box, NSView *pview, NSView *cview, NSView *nview);
@@ -79,6 +85,15 @@ uiwcont_t *
 uiCreateHorizBox_r (void)
 {
   return uiCreateBox (WCONT_T_HBOX);
+}
+
+void
+uiBoxFree_r (uiwcont_t *uiwidget)
+{
+  uibox_t   *uibox;
+
+  uibox = uiwidget->uiint.uibox;
+  mdfree (uibox);
 }
 
 void
@@ -167,8 +182,7 @@ void
 uiBoxPackStart_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   IBox          *box;
-  NSView        *view;
-  int           grav = NSStackViewGravityLeading;
+  uibox_t       *uiboxint;
 
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start")) {
     return;
@@ -179,12 +193,12 @@ uiBoxPackStart_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
 
 fprintf (stderr, "box: %d-%d p-st: %d-%d %d/%s\n", uibox->ui_id, uibox->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   box = uibox->uidata.widget;
-  view = uiwidget->uidata.packwidget;
 
+  uiboxint = uibox->uiint.uibox;
   if (uibox->wtype == WCONT_T_VBOX) {
-    grav = NSStackViewGravityTop;
+    uiGridNewRow (uiboxint->grid_s);
   }
-  [box addView: view inGravity: grav];
+  uiGridPack (uiboxint->grid_s, uiwidget);
 
   uiwidget->packed = true;
   return;
@@ -213,9 +227,9 @@ uiBoxPackStartExpandChildren_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
 void
 uiBoxPackEnd_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
-  IBox          *box;
-  NSView        *view;
   int           grav = NSStackViewGravityTrailing;
+  uibox_t       *uiboxint;
+  IBox          *box;
 
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start-exp")) {
     return;
@@ -225,18 +239,26 @@ uiBoxPackEnd_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
   }
 
   box = uibox->uidata.widget;
-  view = uiwidget->uidata.packwidget;
+  uiboxint = uibox->uiint.uibox;
 
+  if (uiboxint->grid_t == NULL) {
+    uiboxint->grid_t = uiCreateGrid ();
+    if (uibox->wtype == WCONT_T_VBOX) {
+      grav = NSStackViewGravityBottom;
+    }
+    [box insertView : uiboxint->grid_t->uidata.packwidget
+        atIndex : 0 inGravity : grav];
+  }
+
+fprintf (stderr, "box: %d-%d p-end: %d-%d %d/%s\n", uibox->ui_id, uibox->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   if (uibox->wtype == WCONT_T_VBOX) {
     grav = NSStackViewGravityBottom;
   }
-  [box insertView : view atIndex : 0 inGravity : grav];
+  if (uibox->wtype == WCONT_T_VBOX) {
+    uiGridNewRow (uiboxint->grid_t);
+  }
+  uiGridPack (uiboxint->grid_t, uiwidget);
 
-//  if (uiwidget->wbasetype == WCONT_T_BOX) {
-//    uiwidget->uidata.layout->expandchildren = true;
-//  }
-
-fprintf (stderr, "box: %d-%d p-end: %d-%d %d/%s\n", uibox->ui_id, uibox->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   uiwidget->packed = true;
 
   return;
@@ -281,11 +303,14 @@ uiCreateBox (uiwconttype_t wtype)
 {
   uiwcont_t   *uiwidget = NULL;
   IBox        *box = NULL;
+  int         grav = NSStackViewGravityLeading;
+  uibox_t     *uiboxint;
 
   box = [[IBox alloc] init];
   if (wtype == WCONT_T_VBOX) {
     box.orientation = NSUserInterfaceLayoutOrientationVertical;
     box.alignment = NSLayoutAttributeLeading;
+    grav = NSStackViewGravityTop;
   }
   if (wtype == WCONT_T_HBOX) {
     box.orientation = NSUserInterfaceLayoutOrientationHorizontal;
@@ -313,6 +338,12 @@ uiCreateBox (uiwconttype_t wtype)
     uiWidgetSetIdentifier (uiwidget, "vbox");
   }
 
+  uiwidget->uiint.uibox = mdmalloc (sizeof (uibox_t));
+  uiboxint = uiwidget->uiint.uibox;
+  uiboxint->grid_s = uiCreateGrid ();
+  uiboxint->grid_t = NULL;
+  [box addView: uiboxint->grid_s->uidata.widget inGravity: grav];
+
   return uiwidget;
 }
 
@@ -327,6 +358,7 @@ uiBoxProcessExpandHoriz (uiwconttype_t wtype, NSView *box,
   /* a widget that is set to expand horizontally within a hbox */
   /* is attached to its neighboring widgets */
 
+#if 0
   if (wtype == WCONT_T_HBOX) {
 fprintf (stderr, "    pp: eh: hbox\n");
     if (pview != NULL) {
@@ -362,6 +394,7 @@ fprintf (stderr, "    pp: eh: vbox\n");
         constraintEqualToAnchor: box.trailingAnchor];
     uiWidgetUpdateConstraint ("eh_vbox_b", c, cview, box);
   }
+#endif
 
   pview.needsDisplay = YES;
   nview.needsDisplay = YES;
@@ -380,6 +413,7 @@ uiBoxProcessExpandVert (uiwconttype_t wtype, NSView *box,
   /* a widget that is set to expand vertically within a hbox */
   /* is attached to both edges of the box */
 
+#if 0
   if (wtype == WCONT_T_VBOX) {
 fprintf (stderr, "    pp: ev: vbox\n");
     if (pview != NULL) {
@@ -416,6 +450,7 @@ fprintf (stderr, "    pp: ev: hbox\n");
         constraintEqualToAnchor: box.bottomAnchor];
     uiWidgetUpdateConstraint ("ev_hbox_b", c, cview, box);
   }
+#endif
 
   pview.needsDisplay = YES;
   nview.needsDisplay = YES;

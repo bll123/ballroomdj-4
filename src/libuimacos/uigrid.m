@@ -17,15 +17,12 @@
 #include "mdebug.h"
 #include "uiwcont.h"
 
+#include "ui/uimacos-int.h"
 #include "ui/uiwcont-int.h"
 
 #include "ui/uigrid.h"
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
-
-@interface IGrid : NSGridView {}
-- (BOOL) isFlipped;
-@end
 
 @implementation IGrid
 - (BOOL) isFlipped {
@@ -38,19 +35,21 @@ uiCreateGrid (void)
 {
   uiwcont_t   *uiwidget;
   IGrid       *grid;
-  uigrid_t    *uigrid;
+  uigridint_t *uigridint;
 
-  uigrid = mdmalloc (sizeof (uigrid_t));
-  uigrid->row = 0;
-  uigrid->col = 0;
-  uigrid->new = true;
+  uigridint = mdmalloc (sizeof (uigridint_t));
+  uigridint->row = 0;
+  uigridint->col = 0;
+  uigridint->new = true;
 
   grid = [[IGrid alloc] init];
   grid.columnSpacing = uiBaseMarginSz * 2;
 
   uiwidget = uiwcontAlloc (WCONT_T_GRID, WCONT_T_GRID);
   uiwcontSetWidget (uiwidget, grid, NULL);
-  uiwidget->uiint.uigrid = uigrid;
+  uiwidget->uiint.uigrid = uigridint;
+
+  uiWidgetSetIdentifier (uiwidget, "grid");
 
   return uiwidget;
 }
@@ -67,14 +66,14 @@ uiGridPostProcess_r (uiwcont_t *uigrid, uiwcont_t *prev,
 void
 uiGridFree (uiwcont_t *uiwidget)
 {
-  uigrid_t    *uigrid;
+  uigridint_t    *uigridint;
 
   if (! uiwcontValid (uiwidget, WCONT_T_GRID, "grid-free")) {
     return;
   }
 
-  uigrid = uiwidget->uiint.uigrid;
-  mdfree (uigrid);
+  uigridint = uiwidget->uiint.uigrid;
+  mdfree (uigridint);
 }
 
 void
@@ -93,7 +92,7 @@ uiGridPack (uiwcont_t *uigrid, uiwcont_t *uiwidget)
 void
 uiGridPackNoExpand (uiwcont_t *uigrid, uiwcont_t *uiwidget)
 {
-  uigrid_t      *uigridint;
+  uigridint_t   *uigridint;
   IGrid         *grid;
   NSGridColumn  *col;
   NSGridCell    *cell;
@@ -109,6 +108,7 @@ uiGridPackNoExpand (uiwcont_t *uigrid, uiwcont_t *uiwidget)
 
   uigridint = uigrid->uiint.uigrid;
   grid = uigrid->uidata.widget;
+fprintf (stderr, "grid: %d-%d p-no-exp: %d-%d %d/%s\n", uigrid->ui_id, uigrid->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   col = [grid columnAtIndex : uigridint->col];
   if (col == nil) {
     fprintf (stderr, "ERR: no column at %d\n", uigridint->col);
@@ -131,10 +131,8 @@ void
 uiGridPackSize (uiwcont_t *uigrid, uiwcont_t *uiwidget,
     int numrows, int numcols)
 {
-  uigrid_t      *uigridint;
+  uigridint_t   *uigridint;
   IGrid         *grid;
-  NSGridColumn  *col;
-  NSGridCell    *cell;
 
   if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-size")) {
     return;
@@ -146,29 +144,19 @@ uiGridPackSize (uiwcont_t *uigrid, uiwcont_t *uiwidget,
   uigridint = uigrid->uiint.uigrid;
   grid = uigrid->uidata.widget;
 
+fprintf (stderr, "grid: %d-%d p: %d-%d %d/%s\n", uigrid->ui_id, uigrid->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
+fprintf (stderr, "   col: %d row: %d\n", uigridint->col, uigridint->row);
+fprintf (stderr, "   cols: %d rows: %d\n", grid.numberOfColumns, grid.numberOfRows);
   if (uigridint->col == 0) {
     NSView    *view;
-//    NSGridRow *row;
 
     view = uiwidget->uidata.widget;
     [grid addRowWithViews : @[view]];
-//    row = [grid rowAtIndex : uigridint->row];
-//    row.
   } else {
-    col = [grid columnAtIndex : uigridint->col];
-    if (col == nil) {
-      fprintf (stderr, "ERR: no column at %d\n", uigridint->col);
-    } else {
-      cell = [col cellAtIndex: uigridint->row];
-      if (cell == nil) {
-        fprintf (stderr, "ERR: no cell at %d/%d\n", uigridint->row, uigridint->col);
-      } else {
-        NSView    *view;
+    NSView        *view;
 
-        view = uiwidget->uidata.widget;
-        cell.contentView = view;
-      }
-    }
+    view = uiwidget->uidata.widget;
+    [grid addColumnWithViews : @[view]];
   }
   if (numcols > 1 || numrows > 1) {
     [grid
@@ -176,14 +164,15 @@ uiGridPackSize (uiwcont_t *uigrid, uiwcont_t *uiwidget,
         verticalRange: NSMakeRange (uigridint->col, numrows)];
   }
 
-  uigridint->col += 1;
+  /* numrows is not handled properly */
+  uigridint->col += numcols;
   uigridint->new = false;
 }
 
 void
 uiGridNewRow (uiwcont_t *uiwidget)
 {
-  uigrid_t    *uigrid;
+  uigridint_t    *uigrid;
 
   if (! uiwcontValid (uiwidget, WCONT_T_GRID, "grid-pack-size")) {
     return;

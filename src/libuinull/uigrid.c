@@ -67,7 +67,7 @@ void
 uiGridPackSize (uiwcont_t *uigrid, uiwcont_t *uiwidget,
     int numrows, int numcols)
 {
-  uigrid_t    *uigridint;
+  uigridint_t    *uigridint;
 
   if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-size")) {
     return;
@@ -88,7 +88,7 @@ uiGridPackSize (uiwcont_t *uigrid, uiwcont_t *uiwidget,
 void
 uiGridNewRow (uiwcont_t *uiwidget)
 {
-  uigrid_t    *uigrid;
+  uigridint_t    *uigrid;
 
   if (! uiwcontValid (uiwidget, WCONT_T_GRID, "grid-pack-size")) {
     return;

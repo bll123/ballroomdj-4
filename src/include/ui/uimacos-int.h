@@ -39,6 +39,10 @@ extern "C" {
 - (BOOL) isFlipped;
 @end
 
+@interface IGrid : NSGridView {}
+- (BOOL) isFlipped;
+@end
+
 /* additional routines */
 
 void uiWidgetSetIdentifier (uiwcont_t *uiwidget, const char *tag);

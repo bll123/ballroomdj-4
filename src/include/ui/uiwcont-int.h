@@ -104,12 +104,12 @@ typedef struct uibox uibox_t;
 typedef struct uibutton uibutton_t;
 typedef struct uientry uientry_t;
 typedef struct uievent uievent_t;
-/* uigrid_t is use in all ui interfaces */
+/* uigridint_t is use in all ui interfaces */
 typedef struct uigrid {
   int     row;
   int     col;
   bool    new;
-} uigrid_t;
+} uigridint_t;
 typedef struct uiimage uiimage_t;
 typedef struct uimenu uimenu_t;
 typedef struct uiscrollbar uiscrollbar_t;
@@ -136,7 +136,7 @@ typedef union {
       uientry_t       *uientry;
     };
     uievent_t     *uievent;
-    uigrid_t      *uigrid;
+    uigridint_t      *uigrid;
     uiimage_t     *uiimage;
     uimenu_t      *uimenu;
     uiscrollbar_t *uiscrollbar;

@@ -59,6 +59,7 @@ uiBoxFree (uiwcont_t *uibox)
   nlistFree (rlist);
   uibox->uiint.uiboxbase.widgetlist = NULL;
   uibox->uiint.uiboxbase.releaselist = NULL;
+  uiBoxFree_r (uibox);
 }
 
 void
