@@ -484,9 +484,9 @@ uiWindowSetNoMaximize (uiwcont_t *uiwindow)
 void
 uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
 {
-  NSView        *widget = NULL;
   int           grav = NSStackViewGravityTop;
   macoslayout_t *layout = NULL;
+  NSView        *container;
 
   if (! uiwcontValid (uiwindow, WCONT_T_WINDOW, "win-pack-in-win-win")) {
     return;
@@ -497,13 +497,14 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   }
 fprintf (stderr, "  pack-in-win: %d/%s\n", uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
 
-  widget = uiwidget->uidata.packwidget;
+  layout = uiwidget->uidata.layout;
+  container = layout->container;
 
   if (uiwindow->wtype == WCONT_T_WINDOW_SCROLL) {
     NSScrollView  *scv;
 
     scv = uiwindow->uidata.widget;
-    [scv setDocumentView : widget];
+    [scv setDocumentView : container];
   }
   if (uiwindow->wtype == WCONT_T_WINDOW) {
     NSWindow      *win;
@@ -511,20 +512,19 @@ fprintf (stderr, "  pack-in-win: %d/%s\n", uiwidget->wtype, uiwcontDesc (uiwidge
 
     win = uiwindow->uidata.widget;
     winbox = [win contentView];
-    [winbox addView : widget inGravity : grav];
+    [winbox addView : container inGravity : grav];
 
     [winbox.safeAreaLayoutGuide.leadingAnchor
-        constraintEqualToAnchor : widget.leadingAnchor].active = YES;
+        constraintEqualToAnchor : container.leadingAnchor].active = YES;
     [winbox.safeAreaLayoutGuide.trailingAnchor
-        constraintEqualToAnchor : widget.trailingAnchor].active = YES;
+        constraintEqualToAnchor : container.trailingAnchor].active = YES;
     [winbox.safeAreaLayoutGuide.topAnchor
-        constraintEqualToAnchor : widget.topAnchor].active = YES;
+        constraintEqualToAnchor : container.topAnchor].active = YES;
     [winbox.safeAreaLayoutGuide.bottomAnchor
-        constraintEqualToAnchor : widget.bottomAnchor].active = YES;
+        constraintEqualToAnchor : container.bottomAnchor].active = YES;
   }
 
   uiwidget->packed = true;
-  layout = uiwidget->uidata.layout;
   layout->expandchildren = true;
 
   return;

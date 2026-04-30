@@ -246,7 +246,7 @@ confuiMakeItemFontButtonG (confuigui_t *gui, uiwcont_t *grid,
   confuiMakeItemLabelG (gui, widx, grid, txt, CONFUI_NO_INDENT);
 
   uiwidgetp = uiCreateFontButton (fontname);
-  uiGridPackNoExpand (grid, uiwidgetp);
+  uiGridPack (grid, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 4);
 
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
@@ -295,7 +295,7 @@ confuiMakeItemColorButtonG (confuigui_t *gui, uiwcont_t *grid,
   confuiMakeItemLabelG (gui, widx, grid, txt, CONFUI_NO_INDENT);
 
   uiwidgetp = uiCreateColorButton (color);
-  uiGridPackNoExpand (grid, uiwidgetp);
+  uiGridPack (grid, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 4);
 
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
@@ -476,7 +476,7 @@ confuiMakeItemSpinboxNumG (confuigui_t *gui, uiwcont_t *grid,
   gui->uiitem [widx].sbcallback = callbackInit (
       confuiValidateCallback, &gui->uiitem [widx], NULL);
   sb = uisbnumCreate (NULL, gui->uiitem [widx].labeltxt, 4);
-  uisbnumPackGridNoExpand (sb, grid);
+  uisbnumPackGrid (sb, grid);
   uisbnumSetLimits (sb, (double) min, (double) max, 0);
   uisbnumSetValue (sb, (double) value);
   uisbnumSetChangeCallback (sb, gui->uiitem [widx].sbcallback);

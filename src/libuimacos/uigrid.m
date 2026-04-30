@@ -30,6 +30,9 @@
 }
 @end
 
+static void uiGridSetHorizAlignment (NSGridView *grid, int row, int col, int alignment);
+static void uiGridSetVertAlignment (NSGridView *grid, int row, int col, int alignment);
+
 uiwcont_t *
 uiCreateGrid (void)
 {
@@ -90,12 +93,9 @@ uiGridPack (uiwcont_t *uigrid, uiwcont_t *uiwidget)
 }
 
 void
-uiGridPackNoExpand (uiwcont_t *uigrid, uiwcont_t *uiwidget)
+uiGridPackFill (uiwcont_t *uigrid, uiwcont_t *uiwidget)
 {
-  uigridint_t   *uigridint;
-  IGrid         *grid;
-  NSGridColumn  *col;
-  NSGridCell    *cell;
+  macoslayout_t   *layout;
 
   if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack")) {
     return;
@@ -104,26 +104,29 @@ uiGridPackNoExpand (uiwcont_t *uigrid, uiwcont_t *uiwidget)
     return;
   }
 
-  /* pack-size will update the column number, do this first */
+  layout = uiwidget->uidata.layout;
+  layout->horizfill = true;
 
-  uigridint = uigrid->uiint.uigrid;
-  grid = uigrid->uidata.widget;
-fprintf (stderr, "grid: %d-%d p-no-exp: %d-%d %d/%s\n", uigrid->ui_id, uigrid->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
-  col = [grid columnAtIndex : uigridint->col];
-  if (col == nil) {
-    fprintf (stderr, "ERR: no column at %d\n", uigridint->col);
-  } else {
-    cell = [col cellAtIndex: uigridint->row];
-    if (cell == nil) {
-      fprintf (stderr, "ERR: no cell at %d/%d\n", uigridint->row, uigridint->col);
-    } else {
-      NSView    *view;
+  /* pack-size will create the cell, do this first */
+  uiGridPackSize (uigrid, uiwidget, 1, 1);
+}
 
-      view = uiwidget->uidata.widget;
-      cell.xPlacement = NSGridCellPlacementLeading;
-    }
+void
+uiGridPackHorizCenter (uiwcont_t *uigrid, uiwcont_t *uiwidget)
+{
+  macoslayout_t   *layout;
+
+  if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack")) {
+    return;
+  }
+  if (uiwidget == NULL || uiwidget->uidata.packwidget == NULL) {
+    return;
   }
 
+  layout = uiwidget->uidata.layout;
+  layout->horizcenter = true;
+
+  /* pack-size will create the cell, do this first */
   uiGridPackSize (uigrid, uiwidget, 1, 1);
 }
 
@@ -133,6 +136,8 @@ uiGridPackSize (uiwcont_t *uigrid, uiwcont_t *uiwidget,
 {
   uigridint_t   *uigridint;
   IGrid         *grid;
+  macoslayout_t *layout;
+  int           alignment;
 
   if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-size")) {
     return;
@@ -143,26 +148,50 @@ uiGridPackSize (uiwcont_t *uigrid, uiwcont_t *uiwidget,
 
   uigridint = uigrid->uiint.uigrid;
   grid = uigrid->uidata.widget;
+  layout = uiwidget->uidata.layout;
 
 fprintf (stderr, "grid: %d-%d p: %d-%d %d/%s\n", uigrid->ui_id, uigrid->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
 fprintf (stderr, "   col: %d row: %d\n", uigridint->col, uigridint->row);
-fprintf (stderr, "   cols: %d rows: %d\n", grid.numberOfColumns, grid.numberOfRows);
+fprintf (stderr, "   cols: %ld rows: %ld\n", grid.numberOfColumns, grid.numberOfRows);
   if (uigridint->col == 0) {
-    NSView    *view;
-
-    view = uiwidget->uidata.widget;
-    [grid addRowWithViews : @[view]];
+    [grid addRowWithViews : @[layout->container]];
   } else {
-    NSView        *view;
-
-    view = uiwidget->uidata.widget;
-    [grid addColumnWithViews : @[view]];
+    [grid addColumnWithViews : @[layout->container]];
   }
   if (numcols > 1 || numrows > 1) {
     [grid
         mergeCellsInHorizontalRange : NSMakeRange (uigridint->row, numcols)
         verticalRange: NSMakeRange (uigridint->col, numrows)];
   }
+
+fprintf (stderr, "   row: %d col: %d leading\n", uigridint->row, uigridint->col);
+  alignment = NSGridCellPlacementLeading;
+  layout = uiwidget->uidata.layout;
+  if (layout->horizend) {
+    alignment = NSGridCellPlacementTrailing;
+  }
+  if (layout->expandhoriz || layout->horizfill) {
+    alignment = NSGridCellPlacementFill;
+  }
+  if (layout->horizcenter) {
+    alignment = NSGridCellPlacementCenter;
+  }
+
+  uiGridSetHorizAlignment (grid, uigridint->row, uigridint->col, alignment);
+
+  alignment = NSGridCellPlacementCenter;
+  layout = uiwidget->uidata.layout;
+  if (layout->vertend) {
+    alignment = NSGridCellPlacementTrailing;
+  }
+  if (layout->expandvert || layout->vertfill) {
+    alignment = NSGridCellPlacementFill;
+  }
+  if (layout->vertstart) {
+    alignment = NSGridCellPlacementLeading;
+  }
+
+  uiGridSetVertAlignment (grid, uigridint->row, uigridint->col, alignment);
 
   /* numrows is not handled properly */
   uigridint->col += numcols;
@@ -185,3 +214,46 @@ uiGridNewRow (uiwcont_t *uiwidget)
   uigrid->row += 1;
   uigrid->col = 0;
 }
+
+static void
+uiGridSetHorizAlignment (NSGridView *grid, int row, int col, int alignment)
+{
+  NSGridColumn  *gcol;
+  NSGridCell    *gcell;
+
+  gcol = [grid columnAtIndex : col];
+  if (gcol == nil) {
+    fprintf (stderr, "ERR: no column at %d\n", col);
+    return;
+  }
+
+  gcell = [gcol cellAtIndex : row];
+  if (gcell == nil) {
+    fprintf (stderr, "ERR: no cell at %d/%d\n", row, col);
+    return;
+  }
+
+  gcell.xPlacement = alignment;
+}
+
+static void
+uiGridSetVertAlignment (NSGridView *grid, int row, int col, int alignment)
+{
+  NSGridColumn  *gcol;
+  NSGridCell    *gcell;
+
+  gcol = [grid columnAtIndex : col];
+  if (gcol == nil) {
+    fprintf (stderr, "ERR: no column at %d\n", col);
+    return;
+  }
+
+  gcell = [gcol cellAtIndex : row];
+  if (gcell == nil) {
+    fprintf (stderr, "ERR: no cell at %d/%d\n", row, col);
+    return;
+  }
+
+  gcell.yPlacement = alignment;
+}
+

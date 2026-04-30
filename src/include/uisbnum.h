@@ -29,7 +29,7 @@ uisbnum_t * uisbnumCreate (uiwcont_t *box, const char *label, int margin);
 void uisbnumFree (uisbnum_t *sbnum);
 void uisbnumPackBox (uisbnum_t *sbnum, uiwcont_t *box);
 void uisbnumPackGrid (uisbnum_t *sbnum, uiwcont_t *grid);
-void uisbnumPackGridNoExpand (uisbnum_t *sbnum, uiwcont_t *grid);
+void uisbnumPackGridFill (uisbnum_t *sbnum, uiwcont_t *grid);
 /* for time, the increment and page-increment are in milliseconds */
 void uisbnumSetIncrements (uisbnum_t *sbnum, double incr, double pageincr);
 void uisbnumSetLimits (uisbnum_t *sbnum, double min, double max, int digits);

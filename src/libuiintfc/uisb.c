@@ -162,13 +162,13 @@ uisbPackGrid (uisb_t *sb, uiwcont_t *grid)
 }
 
 void
-uisbPackGridNoExpand (uisb_t *sb, uiwcont_t *grid)
+uisbPackGridFill (uisb_t *sb, uiwcont_t *grid)
 {
   if (sb == NULL || grid == NULL) {
     return;
   }
 
-  uiGridPackNoExpand (grid, sb->wcont [SB_W_HBOX]);
+  uiGridPackFill (grid, sb->wcont [SB_W_HBOX]);
 }
 
 void

@@ -342,7 +342,7 @@ fprintf (stderr, "mpl: gap\n");
   uiGridPack (grid, uiwidgetp);
 
   uiwidgetp = uiCreateSwitch (0);
-  uiGridPackNoExpand (grid, uiwidgetp);
+  uiGridPack (grid, uiwidgetp);
   managepl->wcont [MPL_W_PLAY_ANN] = uiwidgetp;
 
   uiBoxPostProcess (vbox);
@@ -482,7 +482,7 @@ fprintf (stderr, "mpl: retain\n");
   uiGridPack (grid, uiwidgetp);
 
   sb = uisbnumCreate (NULL, tlabel, 2);
-  uisbnumPackGridNoExpand (sb, grid);
+  uisbnumPackGrid (sb, grid);
   uisbnumSetLimits (sb, 0.0, 720.0, 0);
   managepl->sbnum [MPL_SB_RETAIN] = sb;
 

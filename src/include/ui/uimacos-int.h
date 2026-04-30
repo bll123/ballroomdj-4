@@ -52,6 +52,7 @@ void uiWidgetUpdateConstraint (const char *tag, NSLayoutConstraint *c, NSView *v
 /* structures */
 
 typedef struct macoslayout {
+  NSStackView   *container;
   NSEdgeInsets  margins;
   bool          expandhoriz;
   bool          expandvert;

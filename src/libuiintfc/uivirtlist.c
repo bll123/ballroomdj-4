@@ -1936,6 +1936,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     } else if (coldata->aligncenter) {
       /* this works if the widget is set to expand-horiz, and */
       /* it is not part of a size group */
+      uiWidgetExpandHoriz (col->uiwidget);
       uiWidgetAlignHorizCenter (col->uiwidget);
     } else {
       uiWidgetAlignHorizStart (col->uiwidget);

@@ -146,7 +146,7 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *nbtxt, int id)
   hbox = uiCreateHorizBox ();
 //  uiBoxPackStart (vnb->vlist, hbox, WCONT_FREE);
   uiGridNewRow (vnb->vlist);
-  uiGridPack (vnb->vlist, hbox);
+  uiGridPackFill (vnb->vlist, hbox);
   uiWidgetSetClass (hbox, NB_CLASS);
   uiWidgetSetClass (hbox, NB_VERT_CLASS);
 

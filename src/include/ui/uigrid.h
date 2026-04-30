@@ -12,7 +12,8 @@ extern "C" {
 uiwcont_t * uiCreateGrid (void);
 void uiGridFree (uiwcont_t *uigrid);
 void uiGridPack (uiwcont_t *uigrid, uiwcont_t *uiwidget);
-void uiGridPackNoExpand (uiwcont_t *uigrid, uiwcont_t *uiwidget);
+void uiGridPackFill (uiwcont_t *uigrid, uiwcont_t *uiwidget);
+void uiGridPackHorizCenter (uiwcont_t *uigrid, uiwcont_t *uiwidget);
 void uiGridPackSize (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numrows, int numcols);
 void uiGridNewRow (uiwcont_t *uigrid);
 

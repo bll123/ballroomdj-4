@@ -75,11 +75,12 @@ uiGridPack (uiwcont_t *uigrid, uiwcont_t *uiwidget)
     return;
   }
 
+  uiWidgetAlignHorizStart (uiwidget);
   uiGridPackSize (uigrid, uiwidget, 1, 1);
 }
 
 void
-uiGridPackNoExpand (uiwcont_t *uigrid, uiwcont_t *uiwidget)
+uiGridPackFill (uiwcont_t *uigrid, uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack")) {
     return;
@@ -88,7 +89,21 @@ uiGridPackNoExpand (uiwcont_t *uigrid, uiwcont_t *uiwidget)
     return;
   }
 
-  uiWidgetAlignHorizStart (uiwidget);
+  uiWidgetAlignHorizFill (uiwidget);
+  uiGridPackSize (uigrid, uiwidget, 1, 1);
+}
+
+void
+uiGridPackHorizCenter (uiwcont_t *uigrid, uiwcont_t *uiwidget)
+{
+  if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack")) {
+    return;
+  }
+  if (uiwidget == NULL || uiwidget->uidata.packwidget == NULL) {
+    return;
+  }
+
+  uiWidgetAlignHorizCenter (uiwidget);
   uiGridPackSize (uigrid, uiwidget, 1, 1);
 }
 
