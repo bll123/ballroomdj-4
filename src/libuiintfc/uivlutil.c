@@ -84,7 +84,6 @@ uivlAddDisplayColumns (uivirtlist_t *vl, slist_t *sellist, int startcol)
     uivlSetColumnHeading (vl, colidx, title);
     if (tagidx == TAG_FAVORITE) {
       uivlSetColumnClass (vl, colidx, LIST_FAV_CLASS);
-      uivlSetColumnAlignCenter (vl, colidx);
       uivlSetColumnGrow (vl, colidx, VL_COL_WIDTH_FIXED);
     }
 

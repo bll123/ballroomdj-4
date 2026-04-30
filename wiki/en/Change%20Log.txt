@@ -8,9 +8,10 @@
 
 * Bug Fixes:
     * Music Manager: Fix enabled/disabled state of 'Remove Song' menu items.
+    * Configuration: UI: Fix some alignment issues.
 * Changes:
     * Song Editor: Added 'Remove Song' items to the song editor menu.
-    * Song Editor: Added a notification in the heading for removed songs.
+    * Song Editor: Added a display in the heading for removed songs.
 
 -->
 
