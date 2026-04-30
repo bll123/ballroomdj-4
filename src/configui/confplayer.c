@@ -277,7 +277,7 @@ confuiLoadControllerIntfcList (confuigui_t *gui)
       CONFUI_OPT_NONE, CONFUI_SB_TXT_CONTROLLER, 1);
   ilistFree (interfaces);
 
-  nlistSetStr (gui->uiitem [CONFUI_SPINBOX_CONTROLLER].displist, 0,
+  nlistSetStr (gui->uiitem [CONFUI_SB_TXT_CONTROLLER].displist, 0,
       /* CONTEXT: configuration: controller: no controller ('Disabled' may be used) */
       C_("Controller","None"));
   nlistSetStr (gui->uiitem [CONFUI_SB_TXT_CONTROLLER].sbkeylist, 0, "");

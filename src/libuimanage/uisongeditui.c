@@ -421,7 +421,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiWidgetSetMarginStart (seint->wcont [UISE_W_AUDIOID_IMG], 1);
 
   uiwidgetp = uiCreateLabel (" ");
-  uiBoxPackStart (hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetAlignVertBaseline (uiwidgetp);
   seint->wcont [UISE_W_SE_STATE] = uiwidgetp;
 
@@ -440,22 +440,12 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiwidgetp = uiCreateColonLabel (_("File"));
   uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);
-<<<<<<< working copy
-=======
   uiWidgetAlignVertBaseline (uiwidgetp);
-  uiwcontFree (uiwidgetp);
->>>>>>> merge rev
 
   uiwidgetp = uiCreateLabel ("");
   uiLabelEllipsizeOn (uiwidgetp);
-<<<<<<< working copy
   uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetSetClass (uiwidgetp, DARKACCENT_CLASS);
-=======
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiWidgetAddClass (uiwidgetp, DARKACCENT_CLASS);
-  uiWidgetAlignVertBaseline (uiwidgetp);
->>>>>>> merge rev
   uiLabelSetSelectable (uiwidgetp);
   seint->wcont [UISE_W_FILE_DISP] = uiwidgetp;
 
@@ -563,13 +553,13 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
   val = songGetNum (song, TAG_ADJUSTFLAGS);
   if (val != SONG_ADJUST_NONE) {
     uiLabelSetText (seint->wcont [UISE_W_SE_STATE], "*");
-    uiWidgetAddClass (seint->wcont [UISE_W_SE_STATE], ACCENT_CLASS);
+    uiWidgetSetClass (seint->wcont [UISE_W_SE_STATE], ACCENT_CLASS);
   }
 
   if (songGetNum (song, TAG_DB_FLAGS) == MUSICDB_REMOVE_MARK) {
     /* heavy-multiplication ✖ \xe2\x9c\x96 */
     uiLabelSetText (seint->wcont [UISE_W_SE_STATE], "\xe2\x9c\x96");
-    uiWidgetAddClass (seint->wcont [UISE_W_SE_STATE], ERROR_CLASS);
+    uiWidgetSetClass (seint->wcont [UISE_W_SE_STATE], ERROR_CLASS);
   }
 
   for (int count = 0; count < seint->itemcount; ++count) {
