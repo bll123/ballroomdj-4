@@ -17,10 +17,10 @@ extern "C" {
 
 /* taken from vlc/plugins/vlc_common.h */
 static inline const char *
-bdj4_pgettext (const char *ctx, const char *str)
+bdj4_pgettext (const char *ctx_str, const char *str)
 {
-  const char *tr = _(ctx);
-  return (tr == ctx) ? str : tr;
+  const char *tr = _(ctx_str);
+  return (tr == ctx_str) ? str : tr;
 }
 
 #if defined (__cplusplus) || defined (c_plusplus)
