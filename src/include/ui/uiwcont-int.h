@@ -100,16 +100,22 @@ typedef struct uientrybase {
   bool            useicon;
 } uientrybase_t;
 
+/* used in all ui interfaces */
+typedef struct uigridint {
+  nlist_t         *widgetlist;
+  int             count;
+  int             row;
+  int             col;
+  int             nrows;
+  int             ncols;
+  bool            postprocess;
+  bool            new;
+} uigridint_t;
+
 typedef struct uibox uibox_t;
 typedef struct uibutton uibutton_t;
 typedef struct uientry uientry_t;
 typedef struct uievent uievent_t;
-/* uigridint_t is use in all ui interfaces */
-typedef struct uigrid {
-  int     row;
-  int     col;
-  bool    new;
-} uigridint_t;
 typedef struct uiimage uiimage_t;
 typedef struct uimenu uimenu_t;
 typedef struct uiscrollbar uiscrollbar_t;
@@ -136,7 +142,7 @@ typedef union {
       uientry_t       *uientry;
     };
     uievent_t     *uievent;
-    uigridint_t      *uigrid;
+    uigridint_t   *uigridint;
     uiimage_t     *uiimage;
     uimenu_t      *uimenu;
     uiscrollbar_t *uiscrollbar;

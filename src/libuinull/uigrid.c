@@ -18,56 +18,15 @@
 
 #include "ui/uigrid.h"
 #include "ui/uiui.h"
-#include "ui/uiwidget.h"
 
 uiwcont_t *
-uiCreateGrid (void)
+uiCreateGrid_r (void)
 {
   return NULL;
 }
 
 void
-uiGridFree (uiwcont_t *uiwidget)
-{
-  if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack")) {
-    return;
-  }
-
-  return;
-}
-
-void
-uiGridPack (uiwcont_t *uigrid, uiwcont_t *uiwidget)
-{
-  if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack")) {
-    return;
-  }
-  if (uiwidget == NULL || uiwidget->uidata.packwidget == NULL) {
-    return;
-  }
-
-  uiWidgetAlignHorizStart (uiwidget);
-  uiGridPackSize (uigrid, uiwidget, 1, 1);
-  return;
-}
-
-void
-uiGridPackFill (uiwcont_t *uigrid, uiwcont_t *uiwidget)
-{
-  if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack")) {
-    return;
-  }
-  if (uiwidget == NULL || uiwidget->uidata.packwidget == NULL) {
-    return;
-  }
-
-  uiWidgetAlignHorizFill (uiwidget);
-  uiGridPackSize (uigrid, uiwidget, 1, 1);
-}
-
-void
-uiGridPackSize (uiwcont_t *uigrid, uiwcont_t *uiwidget,
-    int numrows, int numcols)
+uiGridPackSize_r (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numcols)
 {
   uigridint_t    *uigridint;
 
@@ -78,28 +37,12 @@ uiGridPackSize (uiwcont_t *uigrid, uiwcont_t *uiwidget,
     return;
   }
 
-  uigridint = uigrid->uiint.uigrid;
-
-
-  uigridint->col += 1;
-  uigridint = uigrid->uiint.uigrid;
-  uigridint->new = false;
   return;
 }
 
 void
-uiGridNewRow (uiwcont_t *uiwidget)
+uiGridPostProcess_r (uiwcont_t *uigrid, int row, int col, uiwcont_t *uiwidget)
 {
-  uigridint_t    *uigrid;
-
-  if (! uiwcontValid (uiwidget, WCONT_T_GRID, "grid-pack-size")) {
-    return;
-  }
-
-  uigrid = uiwidget->uiint.uigrid;
-  if (uigrid->new) {
-    return;
-  }
-  uigrid->row += 1;
-  uigrid->col = 0;
+  return;
 }
+

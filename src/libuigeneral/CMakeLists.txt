@@ -11,6 +11,7 @@ add_library (objuigeneral OBJECT
   uibutton.c
   uientry.c
   uientryval.c
+  uigrid.c
   uilabel.c
   uiwcont.c
   uiwcontfree.c

@@ -221,11 +221,12 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
   [layout->container setHuggingPriority :
       NSLayoutPriorityRequired
       forOrientation : NSLayoutConstraintOrientationVertical];
+
   [layout->container setContentHuggingPriority :
-      NSLayoutPriorityRequired
+      NSLayoutPriorityDefaultHigh
       forOrientation : NSLayoutConstraintOrientationHorizontal];
   [layout->container setContentHuggingPriority :
-      NSLayoutPriorityRequired
+      NSLayoutPriorityDefaultHigh
       forOrientation : NSLayoutConstraintOrientationVertical];
 
   /* otherwise everything gets shrunk to a minimal size */
@@ -237,6 +238,23 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
       forOrientation : NSLayoutConstraintOrientationVertical];
 
 fprintf (stderr, "ui-widget-init: %s %d-%d\n", uiwcontDesc (uiwidget->wtype), uiwidget->ui_id, uiwidget->id);
+  [view setContentHuggingPriority :
+      NSLayoutPriorityDefaultHigh
+      forOrientation : NSLayoutConstraintOrientationHorizontal];
+  [view setContentHuggingPriority :
+      NSLayoutPriorityDefaultHigh
+      forOrientation : NSLayoutConstraintOrientationVertical];
+
+  /* otherwise everything gets shrunk to a minimal size */
+  [view setContentCompressionResistancePriority :
+      NSLayoutPriorityRequired
+      forOrientation : NSLayoutConstraintOrientationHorizontal];
+  [view setContentCompressionResistancePriority :
+      NSLayoutPriorityRequired
+      forOrientation : NSLayoutConstraintOrientationVertical];
+
+  view = uiwidget->uidata.widget;
+
   [view setContentHuggingPriority :
       NSLayoutPriorityDefaultHigh
       forOrientation : NSLayoutConstraintOrientationHorizontal];

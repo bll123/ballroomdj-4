@@ -490,9 +490,22 @@ uiWidgetSetIdentifier (uiwcont_t *uiwidget, const char *tag)
 void
 uiWidgetUpdateLayout (uiwcont_t *uiwidget)
 {
+  macoslayout_t *layout = NULL;
+  NSStackView   *container = NULL;
+
   if (uiwidget == NULL) {
     return;
   }
+
+  layout = uiwidget->uidata.layout;
+  container = layout->container;
+
+  if (container == NULL) {
+    return;
+  }
+
+  container.edgeInsets = layout->margins;
+  container.needsDisplay = YES;
 }
 
 void

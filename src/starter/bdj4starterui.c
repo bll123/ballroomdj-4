@@ -742,8 +742,8 @@ starterBuildUI (startui_t  *starter)
       /* CONTEXT: starterui: button: starts the player user interface */
       _("Player"), NULL, NULL);
 //  uiBoxPackStart (bvbox, uiwidgetp, WCONT_KEEP);
-  uiGridPackFill (bgrid, uiwidgetp);
-  uiWidgetAlignHorizStart (uiwidgetp);
+  uiGridPack (bgrid, uiwidgetp);
+  uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_PLAYER] = uiwidgetp;
@@ -757,8 +757,8 @@ starterBuildUI (startui_t  *starter)
       _("Manage"), NULL, NULL);
 //  uiBoxPackStart (bvbox, uiwidgetp, WCONT_KEEP);
   uiGridNewRow (bgrid);
-  uiGridPackFill (bgrid, uiwidgetp);
-  uiWidgetAlignHorizStart (uiwidgetp);
+  uiGridPack (bgrid, uiwidgetp);
+  uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_MANAGE] = uiwidgetp;
@@ -772,8 +772,8 @@ starterBuildUI (startui_t  *starter)
       _("Configure"), NULL, NULL);
 //  uiBoxPackStart (bvbox, uiwidgetp, WCONT_KEEP);
   uiGridNewRow (bgrid);
-  uiGridPackFill (bgrid, uiwidgetp);
-  uiWidgetAlignHorizStart (uiwidgetp);
+  uiGridPack (bgrid, uiwidgetp);
+  uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_CONFIG] = uiwidgetp;
@@ -787,8 +787,8 @@ starterBuildUI (startui_t  *starter)
       _("Support"), NULL, NULL);
 //  uiBoxPackStart (bvbox, uiwidgetp, WCONT_KEEP);
   uiGridNewRow (bgrid);
-  uiGridPackFill (bgrid, uiwidgetp);
-  uiWidgetAlignHorizStart (uiwidgetp);
+  uiGridPack (bgrid, uiwidgetp);
+  uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_SUPPORT] = uiwidgetp;
@@ -800,12 +800,14 @@ starterBuildUI (startui_t  *starter)
       _("Exit"), NULL, NULL);
 //  uiBoxPackStart (bvbox, uiwidgetp, WCONT_KEEP);
   uiGridNewRow (bgrid);
-  uiGridPackFill (bgrid, uiwidgetp);
-  uiWidgetAlignHorizStart (uiwidgetp);
+  uiGridPack (bgrid, uiwidgetp);
+  uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_EXIT] = uiwidgetp;
   uiWidgetAlignHorizFill (uiwidgetp);
+
+  uiGridPostProcess (bgrid);
 
   starterSetWindowPosition (starter);
 

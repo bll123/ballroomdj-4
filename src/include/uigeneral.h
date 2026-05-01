@@ -44,6 +44,16 @@ bool uiButtonPressCallback (void *udata);
 bool uiButtonReleaseCallback (void *udata);
 uibuttonstate_t uiButtonGetState (uiwcont_t *uiwidget);
 
+/* uigrid.c */
+uiwcont_t *uiCreateGrid (void);
+void uiGridFree (uiwcont_t *uigrid);
+/* gtk3 defaults to fill mode, so create two routines to handle the pack */
+void uiGridPack (uiwcont_t *uigrid, uiwcont_t *uiwidget);
+void uiGridPackFill (uiwcont_t *uigrid, uiwcont_t *uiwidget);
+void uiGridPackSize (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numcols);
+void uiGridPostProcess (uiwcont_t *uigrid);
+void uiGridNewRow (uiwcont_t *uigrid);
+
 /* uilabel.c */
 uiwcont_t * uiCreateColonLabel (const char *txt);
 

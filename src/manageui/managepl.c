@@ -345,6 +345,7 @@ fprintf (stderr, "mpl: gap\n");
   uiGridPack (grid, uiwidgetp);
   managepl->wcont [MPL_W_PLAY_ANN] = uiwidgetp;
 
+  uiGridPostProcess (grid);
   uiBoxPostProcess (vbox);
 
   /* automatic and sequenced playlists; keep the widget so these */
@@ -432,6 +433,7 @@ fprintf (stderr, "mpl: gap\n");
   uisbnumSetValue (sb, BDJ4_DFLT_TAG_WEIGHT);
   managepl->sbnum [MPL_SB_TAG_WEIGHT] = sb;
 
+  uiGridPostProcess (grid);
   uiBoxPostProcess (vbox);
 
   /* settings for podcasts */
@@ -486,6 +488,7 @@ fprintf (stderr, "mpl: retain\n");
   uisbnumSetLimits (sb, 0.0, 720.0, 0);
   managepl->sbnum [MPL_SB_RETAIN] = sb;
 
+  uiGridPostProcess (grid);
   uiBoxPostProcess (vbox);
   uiBoxPostProcess (mvbox);
 

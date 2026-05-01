@@ -168,7 +168,8 @@ uisbPackGridFill (uisb_t *sb, uiwcont_t *grid)
     return;
   }
 
-  uiGridPackFill (grid, sb->wcont [SB_W_HBOX]);
+  uiWidgetAlignHorizFill (sb->wcont [SB_W_HBOX]);
+  uisbPackGrid (sb, grid);
 }
 
 void
