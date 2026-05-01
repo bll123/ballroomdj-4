@@ -54,53 +54,48 @@ confuiInitMobileRemoteControl (confuigui_t *gui)
 void
 confuiBuildUIMobileRemoteControl (confuigui_t *gui)
 {
-  uiwcont_t   *vbox;
-  uiwcont_t   *szgrp;
+  uiwcont_t   *grid;
 
   logProcBegin ();
-  vbox = uiCreateVertBox ();
-
-  szgrp = uiCreateSizeGroupHoriz (NULL);
+  grid = uiCreateGrid ();
 
   /* mobile remote control */
-  confuiMakeNotebookTab (vbox, gui,
+  confuiMakeNotebookTab (grid, gui,
       /* CONTEXT: configuration: options associated with mobile remote control */
       _("Mobile Remote Control"), CONFUI_ID_REM_CONTROL);
 
   /* CONTEXT: configuration: remote control: checkbox: enable/disable */
-  confuiMakeItemSwitch (gui, vbox, szgrp, _("Enable Remote Control"),
+  confuiMakeItemSwitchG (gui, grid, _("Enable Remote Control"),
       CONFUI_SWITCH_RC_ENABLE, OPT_P_REMOTECONTROL,
       bdjoptGetNum (OPT_P_REMOTECONTROL),
       confuiRemctrlChg, CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: remote control: the HTML template to use */
-  confuiMakeItemDropdown (gui, vbox, szgrp, _("HTML Template"),
+  confuiMakeItemDropdownG (gui, grid, _("HTML Template"),
       CONFUI_DD_RC_HTML_TEMPLATE, OPT_G_REMCONTROLHTML, confuiUIHTMLSelect);
 
   /* CONTEXT: configuration: remote control: the user ID for sign-on to remote control */
-  confuiMakeItemEntry (gui, vbox, szgrp, _("User ID"),
+  confuiMakeItemEntryG (gui, grid, _("User ID"),
       CONFUI_ENTRY_RC_USER_ID,  OPT_P_REMCONTROLUSER,
       bdjoptGetStr (OPT_P_REMCONTROLUSER), CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: remote control: the password for sign-on to remote control */
-  confuiMakeItemEntry (gui, vbox, szgrp, _("Password"),
+  confuiMakeItemEntryG (gui, grid, _("Password"),
       CONFUI_ENTRY_RC_PASS, OPT_P_REMCONTROLPASS,
       bdjoptGetStr (OPT_P_REMCONTROLPASS), CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: remote control: the port to use for remote control */
-  confuiMakeItemSpinboxNum (gui, vbox, szgrp, NULL, _("Port"),
+  confuiMakeItemSpinboxNumG (gui, grid, _("Port"),
       CONFUI_SB_NUM_RC_PORT, OPT_P_REMCONTROLPORT,
       8000, 30000, bdjoptGetNum (OPT_P_REMCONTROLPORT),
       confuiRemctrlPortChg);
 
   /* CONTEXT: configuration: remote control: the link to display the QR code for remote control */
-  confuiMakeItemLink (gui, vbox, szgrp, _("QR Code"),
+  confuiMakeItemLinkG (gui, grid, _("QR Code"),
       CONFUI_WIDGET_RC_QR_CODE, "");
-  confuiMakeItemLink (gui, vbox, szgrp, "",
-      CONFUI_WIDGET_RC_QR_CODE_B, "");
+  confuiMakeItemLinkG (gui, grid, "", CONFUI_WIDGET_RC_QR_CODE_B, "");
 
-  uiBoxPostProcess (vbox);
-  uiwcontFree (szgrp);
+  uiGridPostProcess (grid);
 
   logProcEnd ("");
 }

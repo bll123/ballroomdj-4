@@ -37,70 +37,66 @@ confuiInitMarquee (confuigui_t *gui)
 void
 confuiBuildUIMarquee (confuigui_t *gui)
 {
-  uiwcont_t    *vbox;
-  uiwcont_t    *szgrp;
+  uiwcont_t    *grid;
 
   logProcBegin ();
-  vbox = uiCreateVertBox ();
-
-  szgrp = uiCreateSizeGroupHoriz (NULL);
+  grid = uiCreateGrid ();
 
   /* marquee */
-  confuiMakeNotebookTab (vbox, gui,
+  confuiMakeNotebookTab (grid, gui,
       /* CONTEXT: configuration: options associated with the marquee (suggested: song display) */
       _("Marquee"), CONFUI_ID_NONE);
 
   /* CONTEXT: configuration: show-marquee: selection */
-  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Show Marquee"),
+  confuiMakeItemSpinboxTextG (gui, grid, _("Show Marquee"),
       CONFUI_SB_TXT_MARQUEE_SHOW, OPT_P_MARQUEE_SHOW,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_P_MARQUEE_SHOW), NULL);
 
   /* CONTEXT: configuration: The theme to use for the marquee display */
-  confuiMakeItemDropdown (gui, vbox, szgrp, _("Marquee Theme"),
+  confuiMakeItemDropdownG (gui, grid, _("Marquee Theme"),
       CONFUI_DD_MQ_THEME, OPT_M_MQ_THEME, confuiMQThemeSelect);
 
   /* CONTEXT: configuration: The font to use for the marquee display */
-  confuiMakeItemFontButton (gui, vbox, szgrp, _("Marquee Font"),
+  confuiMakeItemFontButtonG (gui, grid, _("Marquee Font"),
       CONFUI_WIDGET_MQ_FONT, OPT_M_MQ_FONT,
       bdjoptGetStr (OPT_M_MQ_FONT));
 
   /* CONTEXT: (noun) configuration: the length of the queue displayed on the marquee (or Queue Limit) */
-  confuiMakeItemSpinboxNum (gui, vbox, szgrp, NULL, _("Queue Length"),
+  confuiMakeItemSpinboxNumG (gui, grid, _("Queue Length"),
       CONFUI_SB_NUM_MQ_QUEUE_LEN, OPT_P_MQ_QLEN,
       0, 20, bdjoptGetNum (OPT_P_MQ_QLEN), NULL);
 
   /* CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee */
-  confuiMakeItemSwitch (gui, vbox, szgrp, _("Show Song Information"),
+  confuiMakeItemSwitchG (gui, grid, _("Show Song Information"),
       CONFUI_SWITCH_MQ_SHOW_SONG_INFO, OPT_P_MQ_SHOW_INFO,
       bdjoptGetNum (OPT_P_MQ_SHOW_INFO), NULL, CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: marquee: only show the song information (artist/title) on the marquee */
-  confuiMakeItemSwitch (gui, vbox, szgrp, _("Song Information Only"),
+  confuiMakeItemSwitchG (gui, grid, _("Song Information Only"),
       CONFUI_SWITCH_MQ_SONG_INFO_ONLY, OPT_P_MQ_INFO_ONLY,
       bdjoptGetNum (OPT_P_MQ_INFO_ONLY), NULL, CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: marquee: the background color */
-  confuiMakeItemColorButton (gui, vbox, szgrp, _("Background Colour"),
+  confuiMakeItemColorButtonG (gui, grid, _("Background Colour"),
       CONFUI_WIDGET_MQ_BG_COLOR, OPT_P_MQ_BG_COL,
       bdjoptGetStr (OPT_P_MQ_BG_COL));
 
   /* CONTEXT: configuration: marquee: the accent color */
-  confuiMakeItemColorButton (gui, vbox, szgrp, _("Accent Colour"),
+  confuiMakeItemColorButtonG (gui, grid, _("Accent Colour"),
       CONFUI_WIDGET_MQ_ACCENT_COLOR, OPT_P_MQ_ACCENT_COL,
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
 
   /* CONTEXT: configuration: marquee: dance information color */
-  confuiMakeItemColorButton (gui, vbox, szgrp, _("Information Colour"),
+  confuiMakeItemColorButtonG (gui, grid, _("Information Colour"),
       CONFUI_WIDGET_MQ_INFO_COLOR, OPT_P_MQ_INFO_COL,
       bdjoptGetStr (OPT_P_MQ_INFO_COL));
 
   /* CONTEXT: configuration: marquee: upcoming dance color */
-  confuiMakeItemColorButton (gui, vbox, szgrp, _("Upcoming Dance Colour"),
+  confuiMakeItemColorButtonG (gui, grid, _("Upcoming Dance Colour"),
       CONFUI_WIDGET_MQ_TEXT_COLOR, OPT_P_MQ_TEXT_COL,
       bdjoptGetStr (OPT_P_MQ_TEXT_COL));
 
-  uiBoxPostProcess (vbox);
-  uiwcontFree (szgrp);
+  uiGridPostProcess (grid);
 
   logProcEnd ("");
 }

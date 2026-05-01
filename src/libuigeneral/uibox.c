@@ -103,14 +103,14 @@ uiBoxPostProcess (uiwcont_t *uibox)
     curr = next;
     next = uiwidgetp;
     if (curr != NULL) {
-fprintf (stderr, "  post-process %d-%d %d/%s\n", uibox->ui_id, uibox->id, uibox->wtype, uiwcontDesc (uibox->wtype));
+//fprintf (stderr, "  post-process %d-%d %d/%s\n", uibox->ui_id, uibox->id, uibox->wtype, uiwcontDesc (uibox->wtype));
       uiBoxPostProcess_r (uibox, prev, curr, next, false);
     }
   }
   prev = curr;
   curr = next;
   next = NULL;
-fprintf (stderr, "  post-process (last) %d-%d %d/%s\n", uibox->ui_id, uibox->id, uibox->wtype, uiwcontDesc (uibox->wtype));
+//fprintf (stderr, "  post-process (last) %d-%d %d/%s\n", uibox->ui_id, uibox->id, uibox->wtype, uiwcontDesc (uibox->wtype));
   uiBoxPostProcess_r (uibox, prev, curr, next, true);
 
   boxbase->postprocess = true;
@@ -229,7 +229,7 @@ uiBoxListAdd (uiwcont_t *uibox, uiwcont_t *uiwidget,
     uiwidget->id = uibox->id + nlistGetCount (wlist);
   }
   logMsg (LOG_DBG, LOG_UI, "wcont: pack: %" PRIu32 "-%" PRIu32 " %s box: %" PRIu32 "-%" PRIu32, uiwidget->ui_id, uiwidget->id, uiwcontDesc (uiwidget->wtype), uibox->ui_id, uibox->id);
-fprintf (stderr, "wcont: pack: %" PRIu32 "-%" PRIu32 " %s box: %" PRIu32 "-%" PRIu32 "\n", uiwidget->ui_id, uiwidget->id, uiwcontDesc (uiwidget->wtype), uibox->ui_id, uibox->id);
+//fprintf (stderr, "wcont: pack: %" PRIu32 "-%" PRIu32 " %s box: %" PRIu32 "-%" PRIu32 "\n", uiwidget->ui_id, uiwidget->id, uiwcontDesc (uiwidget->wtype), uibox->ui_id, uibox->id);
   uiwidget->parentid = uibox->id;
   uiwidget->packed = true;
 }

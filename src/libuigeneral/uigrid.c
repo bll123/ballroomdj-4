@@ -57,7 +57,6 @@ uiGridFree (uiwcont_t *uigrid)
   nlistFree (uigridint->widgetlist);
 }
 
-/* gtk3 defaults to fill mode, so create two routines to handle the pack */
 void
 uiGridPack (uiwcont_t *uigrid, uiwcont_t *uiwidget)
 {
@@ -65,37 +64,50 @@ uiGridPack (uiwcont_t *uigrid, uiwcont_t *uiwidget)
     return;
   }
 
-  uiWidgetAlignHorizStart (uiwidget);
-  uiGridPackSize (uigrid, uiwidget, 1);
+  uiGridPackColumn (uigrid, uiwidget, 1);
 }
 
 void
-uiGridPackFill (uiwcont_t *uigrid, uiwcont_t *uiwidget)
-{
-  if (uigrid == NULL || uiwidget == NULL) {
-    return;
-  }
-
-  uiWidgetAlignHorizFill (uiwidget);
-  uiGridPackSize (uigrid, uiwidget, 1);
-}
-
-void
-uiGridPackSize (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numcols)
+uiGridPackColumn (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numcols)
 {
   uigridint_t   *uigridint;
   nlist_t       *wlist;
 
-  uiGridPackSize_r (uigrid, uiwidget, numcols);
-
   uigridint = uigrid->uiint.uigridint;
+
+  uiWidgetAlignHorizStart (uiwidget);
+  uiGridPackLoc_r (uigrid, uiwidget, uigridint->row, uigridint->col, numcols);
 
   wlist = uigridint->widgetlist;
   nlistSetData (wlist, uigridint->count, uiwidget);
   uigridint->count += 1;
 
   uigridint->col += numcols;
-  uigridint->ncols = uigridint->col;
+  if (uigridint->col > uigridint->ncols) {
+    uigridint->ncols = uigridint->col;
+  }
+  uigridint->new = false;
+}
+
+void
+uiGridPackRow (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numcols)
+{
+  uigridint_t   *uigridint;
+  nlist_t       *wlist;
+
+  uigridint = uigrid->uiint.uigridint;
+
+  uiWidgetAlignHorizStart (uiwidget);
+  uiGridPackLoc_r (uigrid, uiwidget, uigridint->row, uigridint->col, numcols);
+
+  wlist = uigridint->widgetlist;
+  nlistSetData (wlist, uigridint->count, uiwidget);
+  uigridint->count += 1;
+
+  uigridint->row += 1;
+  if (uigridint->row > uigridint->nrows) {
+    uigridint->nrows = uigridint->row;
+  }
   uigridint->new = false;
 }
 
@@ -114,10 +126,33 @@ uiGridNewRow (uiwcont_t *uigrid)
     return;
   }
 
-  uigridint->ncols = uigridint->col;
   uigridint->row += 1;
   uigridint->col = 0;
-  uigridint->nrows = uigridint->row;
+  if (uigridint->row > uigridint->nrows) {
+    uigridint->nrows = uigridint->row;
+  }
+}
+
+void
+uiGridNewCol (uiwcont_t *uigrid)
+{
+  uigridint_t    *uigridint;
+
+  if (uigrid == NULL) {
+    return;
+  }
+
+  uigridint = uigrid->uiint.uigridint;
+
+  if (uigridint->new) {
+    return;
+  }
+
+  uigridint->row = 0;
+  uigridint->col += 1;
+  if (uigridint->col > uigridint->ncols) {
+    uigridint->ncols = uigridint->col;
+  }
 }
 
 void

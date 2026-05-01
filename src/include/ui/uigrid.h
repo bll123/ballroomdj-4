@@ -11,7 +11,7 @@ extern "C" {
 
 uiwcont_t * uiCreateGrid_r (void);
 void uiGridFree_r (uiwcont_t *uigrid);
-void uiGridPackSize_r (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numcols);
+void uiGridPackLoc_r (uiwcont_t *uigrid, uiwcont_t *uiwidget, int row, int col, int numcols);
 void uiGridPostProcess_r (uiwcont_t *uigrid, int row, int col, uiwcont_t *uiwidget);
 
 #if defined (__cplusplus) || defined (c_plusplus)

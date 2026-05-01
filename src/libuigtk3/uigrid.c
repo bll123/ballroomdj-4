@@ -36,7 +36,8 @@ uiCreateGrid_r (void)
 }
 
 void
-uiGridPackSize_r (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numcols)
+uiGridPackLoc_r (uiwcont_t *uigrid, uiwcont_t *uiwidget,
+    int row, int col, int numcols)
 {
   uigridint_t    *uigridint;
 
@@ -49,8 +50,7 @@ uiGridPackSize_r (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numcols)
 
   uigridint = uigrid->uiint.uigridint;
   gtk_grid_attach (GTK_GRID (uigrid->uidata.widget),
-      uiwidget->uidata.packwidget, uigridint->col, uigridint->row,
-      numcols, 1);
+      uiwidget->uidata.packwidget, col, row, numcols, 1);
 }
 
 void

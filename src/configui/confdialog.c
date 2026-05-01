@@ -22,6 +22,7 @@
 #include "songfilter.h"
 #include "tagdef.h"
 #include "ui.h"
+#include "uigeneral.h"
 
 static int sftags [FILTER_DISP_MAX] = {
   [FILTER_DISP_GENRE] = TAG_GENRE,
@@ -50,34 +51,23 @@ static_assert (sizeof (qetags) / sizeof (int) == QUICKEDIT_DISP_MAX,
 void
 confuiBuildUIDialogDisplay (confuigui_t *gui)
 {
-  uiwcont_t     *vbox;
-  uiwcont_t     *szgrp;
-  uiwcont_t     *hbox;
+  uiwcont_t     *grid;
   uiwcont_t     *uiwidgetp;
   nlistidx_t    val;
 
   logProcBegin ();
-  vbox = uiCreateVertBox ();
+  grid = uiCreateGrid ();
 
   /* filter display */
-  confuiMakeNotebookTab (vbox, gui,
+  confuiMakeNotebookTab (grid, gui,
       /* CONTEXT: configuration: dialog display settings */
       _("Dialogs"), CONFUI_ID_NONE);
 
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiBoxPostProcess (vbox);
-
   /* column 1 */
-
-  vbox = uiCreateVertBox ();
-  uiBoxPackStart (hbox, vbox, WCONT_FREE);
-
-  szgrp = uiCreateSizeGroupHoriz (NULL);
 
   /* CONTEXT: configuration: filter display: song selection filters */
   uiwidgetp = uiCreateLabel (_("Filter Songs"));
-  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
+  uiGridPackRow (grid, uiwidgetp, 1);
 
   for (int i = 0; i < FILTER_DISP_MAX; ++i) {
     int         j;
@@ -92,32 +82,24 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
     } else {
       txt = tagdefs [sftags [i]].displayname;
     }
-    confuiMakeItemCheckButton (gui, vbox, szgrp, txt, j, -1, val);
+    confuiMakeItemCheckButtonG (gui, grid, txt, j, -1, val);
     gui->uiitem [j].outtype = CONFUI_OUT_CB;
   }
 
-  uiwcontFree (szgrp);
-  uiBoxPostProcess (vbox);
-
   /* column 2 */
 
-  vbox = uiCreateVertBox ();
-  uiBoxPackStart (hbox, vbox, WCONT_FREE);
   uiwidgetp = uiCreateLabel ("   ");
-  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
 
-  uiBoxPostProcess (vbox);
+  uiGridNewCol (grid);
+  uiGridPackRow (grid, uiwidgetp, 1);
 
   /* column 3 */
 
-  vbox = uiCreateVertBox ();
-  uiBoxPackStart (hbox, vbox, WCONT_FREE);
-
-  szgrp = uiCreateSizeGroupHoriz (NULL);
-
   /* CONTEXT: configuration: filter display: quick edit filters */
   uiwidgetp = uiCreateLabel (_("Quick Edit"));
-  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
+
+  uiGridNewCol (grid);
+  uiGridPackRow (grid, uiwidgetp, 1);
 
   for (int i = 0; i < QUICKEDIT_DISP_MAX; ++i) {
     int     j;
@@ -125,14 +107,10 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
     j = CONFUI_WIDGET_QUICKEDIT_START + 1 + i;
 
     val = nlistGetNum (gui->quickeditDisplaySel, i);
-    confuiMakeItemCheckButton (gui, vbox, szgrp,
+    confuiMakeItemCheckButtonG (gui, grid,
         tagdefs [qetags [i]].displayname, j, -1, val);
     gui->uiitem [j].outtype = CONFUI_OUT_CB;
   }
-
-  uiBoxPostProcess (hbox);
-  uiBoxPostProcess (vbox);
-  uiwcontFree (szgrp);
 
   logProcEnd ("");
 }

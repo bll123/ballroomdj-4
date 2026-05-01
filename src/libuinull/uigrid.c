@@ -26,7 +26,8 @@ uiCreateGrid_r (void)
 }
 
 void
-uiGridPackSize_r (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numcols)
+uiGridPackLoc_r (uiwcont_t *uigrid, uiwcont_t *uiwidget,
+    int row, int col, int numcols)
 {
   uigridint_t    *uigridint;
 

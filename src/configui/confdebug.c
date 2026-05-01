@@ -23,95 +23,81 @@
 void
 confuiBuildUIDebug (confuigui_t *gui)
 {
-  uiwcont_t     *vbox;
-  uiwcont_t     *hbox;
-  uiwcont_t     *szgrp;
+  uiwcont_t     *grid;
   nlistidx_t    val;
 
   logProcBegin ();
-  hbox = uiCreateHorizBox ();
 
-  szgrp = uiCreateSizeGroupHoriz (NULL);
+  grid = uiCreateGrid ();
 
   /* debug */
-  confuiMakeNotebookTab (hbox, gui,
+  confuiMakeNotebookTab (grid, gui,
       /* CONTEXT: configuration: debug options that can be turned on and off */
       _("Debug"), CONFUI_ID_NONE);
 
   val = bdjoptGetNum (OPT_G_DEBUGLVL);
 
-  vbox = uiCreateVertBox ();
-  uiBoxPackStart (hbox, vbox, WCONT_FREE);
-
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Important",
+  confuiMakeItemCheckButtonG (gui, grid, "Important",
       CONFUI_DBG_IMPORTANT, -1, (val & LOG_IMPORTANT));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Basic",
+  confuiMakeItemCheckButtonG (gui, grid, "Basic",
       CONFUI_DBG_BASIC, -1, (val & LOG_BASIC));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Messages",
+  confuiMakeItemCheckButtonG (gui, grid, "Messages",
       CONFUI_DBG_MSGS, -1, (val & LOG_MSGS));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Informational",
+  confuiMakeItemCheckButtonG (gui, grid, "Informational",
       CONFUI_DBG_INFO, -1, (val & LOG_INFO));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Actions",
+  confuiMakeItemCheckButtonG (gui, grid, "Actions",
       CONFUI_DBG_ACTIONS, -1, (val & LOG_ACTIONS));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Audio Adjust",
+  confuiMakeItemCheckButtonG (gui, grid, "Audio Adjust",
       CONFUI_DBG_AUDIO_ADJUST, -1, (val & LOG_AUDIO_ADJUST));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Audio ID",
+  confuiMakeItemCheckButtonG (gui, grid, "Audio ID",
       CONFUI_DBG_AUDIO_ID, -1, (val & LOG_AUDIO_ID));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Audio ID Dump",
+  confuiMakeItemCheckButtonG (gui, grid, "Audio ID Dump",
       CONFUI_DBG_AUDIOID_DUMP, -1, (val & LOG_AUDIOID_DUMP));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Audio Source",
+  confuiMakeItemCheckButtonG (gui, grid, "Audio Source",
       CONFUI_DBG_AUDIOSRC, -1, (val & LOG_AUDIOSRC));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Audio Tags",
+  confuiMakeItemCheckButtonG (gui, grid, "Audio Tags",
       CONFUI_DBG_AUDIO_TAG, -1, (val & LOG_AUDIO_TAG));
 
-  uiBoxPostProcess (vbox);
-
-  vbox = uiCreateVertBox ();
-  uiBoxPackStart (hbox, vbox, WCONT_FREE);
-
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Dance Selection",
+  uiGridNewCol (grid);
+  confuiMakeItemCheckButtonG (gui, grid, "Dance Selection",
       CONFUI_DBG_DANCESEL, -1, (val & LOG_DANCESEL));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Database",
+  confuiMakeItemCheckButtonG (gui, grid, "Database",
       CONFUI_DBG_DB, -1, (val & LOG_DB));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Database Update",
+  confuiMakeItemCheckButtonG (gui, grid, "Database Update",
       CONFUI_DBG_DBUPDATE, -1, (val & LOG_DBUPDATE));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Datafile",
+  confuiMakeItemCheckButtonG (gui, grid, "Datafile",
       CONFUI_DBG_DATAFILE, -1, (val & LOG_DATAFILE));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Grouping",
+  confuiMakeItemCheckButtonG (gui, grid, "Grouping",
       CONFUI_DBG_GROUPING, -1, (val & LOG_GROUPING));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "iTunes",
+  confuiMakeItemCheckButtonG (gui, grid, "iTunes",
       CONFUI_DBG_ITUNES, -1, (val & LOG_ITUNES));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "List",
+  confuiMakeItemCheckButtonG (gui, grid, "List",
       CONFUI_DBG_LIST, -1, (val & LOG_LIST));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Player",
+  confuiMakeItemCheckButtonG (gui, grid, "Player",
       CONFUI_DBG_PLAYER, -1, (val & LOG_PLAYER));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Procedures",
+  confuiMakeItemCheckButtonG (gui, grid, "Procedures",
       CONFUI_DBG_PROC, -1, (val & LOG_PROC));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Process",
+  confuiMakeItemCheckButtonG (gui, grid, "Process",
       CONFUI_DBG_PROCESS, -1, (val & LOG_PROCESS));
 
-  uiBoxPostProcess (vbox);
-
-  vbox = uiCreateVertBox ();
-  uiBoxPackStart (hbox, vbox, WCONT_FREE);
-
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Program State",
+  uiGridNewCol (grid);
+  confuiMakeItemCheckButtonG (gui, grid, "Program State",
       CONFUI_DBG_PROGSTATE, -1, (val & LOG_PROGSTATE));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Random Access File",
+  confuiMakeItemCheckButtonG (gui, grid, "Random Access File",
       CONFUI_DBG_RAFILE, -1, (val & LOG_RAFILE));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Socket",
+  confuiMakeItemCheckButtonG (gui, grid, "Socket",
       CONFUI_DBG_SOCKET, -1, (val & LOG_SOCKET));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Song Selection",
+  confuiMakeItemCheckButtonG (gui, grid, "Song Selection",
       CONFUI_DBG_SONGSEL, -1, (val & LOG_SONGSEL));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "User Interface",
+  confuiMakeItemCheckButtonG (gui, grid, "User Interface",
       CONFUI_DBG_UI, -1, (val & LOG_UI));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Virtual List",
+  confuiMakeItemCheckButtonG (gui, grid, "Virtual List",
       CONFUI_DBG_VIRTLIST, -1, (val & LOG_VIRTLIST));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Volume",
+  confuiMakeItemCheckButtonG (gui, grid, "Volume",
       CONFUI_DBG_VOLUME, -1, (val & LOG_VOLUME));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Web Client",
+  confuiMakeItemCheckButtonG (gui, grid, "Web Client",
       CONFUI_DBG_WEBCLIENT, -1, (val & LOG_WEBCLIENT));
-  confuiMakeItemCheckButton (gui, vbox, szgrp, "Web Server",
+  confuiMakeItemCheckButtonG (gui, grid, "Web Server",
       CONFUI_DBG_WEBSRV, -1, (val & LOG_WEBSRV));
 
   for (int i = CONFUI_DBG_IMPORTANT; i < CONFUI_DBG_MAX; ++i) {
@@ -124,9 +110,7 @@ confuiBuildUIDebug (confuigui_t *gui)
     gui->uiitem [i].debuglvl = bitval;
   }
 
-  uiBoxPostProcess (vbox);
-  uiBoxPostProcess (hbox);
-  uiwcontFree (szgrp);
+  uiGridPostProcess (grid);
 
   logProcEnd ("");
 }

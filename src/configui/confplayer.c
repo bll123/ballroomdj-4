@@ -86,80 +86,73 @@ confuiInitPlayer (confuigui_t *gui)
 void
 confuiBuildUIPlayer (confuigui_t *gui)
 {
-  uiwcont_t    *vbox;
-  uiwcont_t    *szgrp;
-  uiwcont_t    *szgrpB;
+  uiwcont_t    *grid;
 
   logProcBegin ();
-  vbox = uiCreateVertBox ();
-
-  szgrp = uiCreateSizeGroupHoriz (NULL);
-  szgrpB = uiCreateSizeGroupHoriz (NULL);
+  grid = uiCreateGrid ();
 
   /* player */
-  confuiMakeNotebookTab (vbox, gui,
+  confuiMakeNotebookTab (grid, gui,
       /* CONTEXT: configuration: options associated with the player */
       _("Player"), CONFUI_ID_NONE);
 
   /* CONTEXT: configuration: which player interface to use */
-  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Player"),
+  confuiMakeItemSpinboxTextG (gui, grid, _("Player"),
       CONFUI_SB_TXT_PLI, OPT_M_PLAYER_INTFC,
       CONFUI_OUT_STR, gui->uiitem [CONFUI_SB_TXT_PLI].listidx, NULL);
 
   /* CONTEXT: configuration: additional arguments for player */
-  confuiMakeItemEntry (gui, vbox, szgrp, _("Player Arguments"),
+  confuiMakeItemEntryG (gui, grid, _("Player Arguments"),
       CONFUI_ENTRY_PLAYER_ARGS, OPT_M_PLAYER_ARGS,
       bdjoptGetStr (OPT_M_PLAYER_ARGS), CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: which audio interface to use */
-  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Audio"),
+  confuiMakeItemSpinboxTextG (gui, grid, _("Audio"),
       CONFUI_SB_TXT_VOL_INTFC, OPT_M_VOLUME_INTFC,
       CONFUI_OUT_STR, gui->uiitem [CONFUI_SB_TXT_VOL_INTFC].listidx,
       confuiPlayerAudioSinkChg);
 
   /* CONTEXT: configuration: which audio sink (output) to use */
-  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Audio Output"),
+  confuiMakeItemSpinboxTextG (gui, grid, _("Audio Output"),
       CONFUI_SB_TXT_AUDIO_OUTPUT, OPT_MP_AUDIOSINK,
       CONFUI_OUT_STR, gui->uiitem [CONFUI_SB_TXT_AUDIO_OUTPUT].listidx, NULL);
 
   /* CONTEXT: configuration: which controller to use */
-  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Controller"),
+  confuiMakeItemSpinboxTextG (gui, grid, _("Controller"),
       CONFUI_SB_TXT_CONTROLLER, OPT_M_CONTROLLER_INTFC,
       CONFUI_OUT_STR, gui->uiitem [CONFUI_SB_TXT_CONTROLLER].listidx, NULL);
 
   /* CONTEXT: configuration: the volume used when starting the player */
-  confuiMakeItemSpinboxNum (gui, vbox, szgrp, szgrpB, _("Default Volume"),
+  confuiMakeItemSpinboxNumG (gui, grid, _("Default Volume"),
       CONFUI_SB_NUM_DEFAULT_VOL, OPT_P_DEFAULTVOLUME,
       1, 100, bdjoptGetNum (OPT_P_DEFAULTVOLUME), NULL);
 
   /* CONTEXT: (noun) configuration: the number of items loaded into the music queue (or: Queue Limit) */
-  confuiMakeItemSpinboxNum (gui, vbox, szgrp, szgrpB, _("Queue Length"),
+  confuiMakeItemSpinboxNumG (gui, grid, _("Queue Length"),
       CONFUI_SB_NUM_PL_QUEUE_LEN, OPT_G_PLAYERQLEN,
       20, 400, bdjoptGetNum (OPT_G_PLAYERQLEN), NULL);
 
   /* CONTEXT: configuration: The completion message displayed on the marquee when a playlist is finished */
-  confuiMakeItemEntry (gui, vbox, szgrp, _("Completion Message"),
+  confuiMakeItemEntryG (gui, grid, _("Completion Message"),
       CONFUI_ENTRY_COMPLETE_MSG, OPT_P_COMPLETE_MSG,
       bdjoptGetStr (OPT_P_COMPLETE_MSG), CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: type of fade-out to use (triangle, half-sine, etc.)*/
-  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Fade Type"),
+  confuiMakeItemSpinboxTextG (gui, grid, _("Fade Type"),
       CONFUI_SB_TXT_PLAYER_FADE_TYPE, OPT_P_FADETYPE, CONFUI_OUT_NUM,
       bdjoptGetNum (OPT_P_FADETYPE), NULL);
 
   /* CONTEXT: configuration: whether or not to show the speed reset button */
-  confuiMakeItemSwitch (gui, vbox, szgrp, _("Show Speed Reset"),
+  confuiMakeItemSwitchG (gui, grid, _("Show Speed Reset"),
       CONFUI_SWITCH_SHOW_SPD_CONTROL, OPT_P_SHOW_SPD_CONTROL,
       bdjoptGetNum (OPT_P_SHOW_SPD_CONTROL), NULL, 0);
 
   /* CONTEXT: configuration: the clock format */
-  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Clock"),
+  confuiMakeItemSpinboxTextG (gui, grid, _("Clock"),
       CONFUI_SB_TXT_PLAYER_CLOCK, OPT_G_CLOCK_DISP, CONFUI_OUT_NUM,
       bdjoptGetNum (OPT_G_CLOCK_DISP), NULL);
 
-  uiBoxPostProcess (vbox);
-  uiwcontFree (szgrp);
-  uiwcontFree (szgrpB);
+  uiGridPostProcess (grid);
 
   logProcEnd ("");
 }

@@ -54,11 +54,15 @@ uiCreateGrid_r (void)
 }
 
 void
-uiGridPackSize_r (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numcols)
+uiGridPackLoc_r (uiwcont_t *uigrid, uiwcont_t *uiwidget,
+    int row, int col, int numcols)
 {
   uigridint_t   *uigridint;
   IGrid         *grid;
   macoslayout_t *layout;
+  int           ncols, nrows;
+  NSGridColumn  *gcol;
+  NSGridCell    *gcell;
 
   if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-size")) {
     return;
@@ -73,11 +77,35 @@ uiGridPackSize_r (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numcols)
 
 //fprintf (stderr, "grid: %d-%d p: %d-%d %d/%s\n", uigrid->ui_id, uigrid->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
 //fprintf (stderr, "   col: %d row: %d\n", uigridint->col, uigridint->row);
-  if (uigridint->col == 0) {
-    [grid addRowWithViews : @[layout->container]];
-  } else {
-    [grid addColumnWithViews : @[layout->container]];
+
+  ncols = grid.numberOfColumns;
+  nrows = grid.numberOfRows;
+
+  while (row > nrows) {
+    [grid addRowWithViews : @[]];
+//    [grid addRowWithViews : @[layout->container]];
+    nrows = grid.numberOfRows;
   }
+  while (col + numcols - 1 > ncols) {
+    [grid addColumnWithViews : @[]];
+//    [grid addColumnWithViews : @[layout->container]];
+    ncols = grid.numberOfColumns;
+  }
+
+  gcol = [grid columnAtIndex : col];
+  if (gcol == nil) {
+    fprintf (stderr, "ERR: no column at %d\n", col);
+    return;
+  }
+
+  gcell = [gcol cellAtIndex : row];
+  if (gcell == nil) {
+    fprintf (stderr, "ERR: no cell at %d/%d\n", row, col);
+    return;
+  }
+
+  gcell.contentView = layout->container;
+
   if (numcols > 1) {
     [grid
         mergeCellsInHorizontalRange : NSMakeRange (uigridint->row, numcols)

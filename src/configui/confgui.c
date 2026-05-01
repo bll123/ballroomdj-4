@@ -39,8 +39,8 @@ enum {
 
 static const char * INDENT_STR = "      ";
 
-
 static void confuiMakeItemEntryBasic (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent, int expand);
+static void confuiMakeItemEntryBasicG (confuigui_t *gui, uiwcont_t *grid, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent, int expand);
 static bool confuiLinkCallback (void *udata);
 static bool confuiValidateCallback (void *udata);
 
@@ -87,6 +87,13 @@ confuiMakeItemEntry (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 }
 
 void
+confuiMakeItemEntryG (confuigui_t *gui, uiwcont_t *grid,
+    const char *txt, int widx, int bdjoptIdx, const char *disp, int indent)
+{
+  confuiMakeItemEntryBasicG (gui, grid, txt, widx, bdjoptIdx, disp, indent, CONFUI_NO_EXPAND);
+}
+
+void
 confuiMakeItemEntryEncrypt (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     const char *txt, int widx, int bdjoptIdx, const char *disp, int indent)
 {
@@ -94,6 +101,14 @@ confuiMakeItemEntryEncrypt (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   confuiMakeItemEntry (gui, boxp, szgrp, txt, widx, bdjoptIdx, disp, indent);
   gui->uiitem [widx].basetype = CONFUI_ENTRY_ENCRYPT;
   logProcEnd ("");
+}
+
+void
+confuiMakeItemEntryEncryptG (confuigui_t *gui, uiwcont_t *grid,
+    const char *txt, int widx, int bdjoptIdx, const char *disp, int indent)
+{
+  confuiMakeItemEntryG (gui, grid, txt, widx, bdjoptIdx, disp, indent);
+  gui->uiitem [widx].basetype = CONFUI_ENTRY_ENCRYPT;
 }
 
 void
@@ -122,6 +137,27 @@ confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp,
 
   uiBoxPostProcess (hbox);
   logProcEnd ("");
+}
+
+void
+confuiMakeItemEntryChooserG (confuigui_t *gui, uiwcont_t *grid,
+    const char *txt, int widx, int bdjoptIdx,
+    const char *disp, void *dialogFunc)
+{
+  uiwcont_t  *uiwidgetp;
+
+//  uiWidgetExpandHoriz (hbox);
+  confuiMakeItemEntryBasicG (gui, grid, txt, widx, bdjoptIdx, disp, CONFUI_NO_INDENT, CONFUI_EXPAND);
+  gui->uiitem [widx].sfcb.entry = gui->uiitem [widx].uiwidgetp;
+  gui->uiitem [widx].sfcb.window = gui->window;
+  gui->uiitem [widx].callback = callbackInit (dialogFunc, &gui->uiitem [widx].sfcb, NULL);
+
+  uiwidgetp = uiCreateButton (
+      gui->uiitem [widx].callback, NULL, NULL, NULL);
+  uiButtonSetImageIcon (uiwidgetp, "folder");
+  uiGridPack (grid, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 0);
+  gui->uiitem [widx].uibutton = uiwidgetp;
 }
 
 void
@@ -206,6 +242,24 @@ confuiMakeItemLink (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   uiBoxPostProcess (hbox);
   logProcEnd ("");
+}
+
+void
+confuiMakeItemLinkG (confuigui_t *gui, uiwcont_t *grid,
+    const char *txt, int widx, const char *disp)
+{
+  uiwcont_t  *uiwidgetp = NULL;
+
+  confuiMakeItemLabelG (gui, widx, grid, txt, CONFUI_NO_INDENT);
+  uiwidgetp = uiCreateLink (disp, NULL);
+  if (isMacOS ()) {
+    gui->uiitem [widx].callback = callbackInit (
+        confuiLinkCallback, gui, NULL);
+    gui->uiitem [widx].uri = NULL;
+    uiLinkSetActivateCallback (uiwidgetp, gui->uiitem [widx].callback);
+  }
+  uiGridPack (grid, uiwidgetp);
+  gui->uiitem [widx].uiwidgetp = uiwidgetp;
 }
 
 void
@@ -369,6 +423,38 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     uisbtextSetChangeCallback (sb, gui->uiitem [widx].sbcallback);
   }
   uiBoxPostProcess (hbox);
+  logProcEnd ("");
+}
+
+void
+confuiMakeItemSpinboxTextG (confuigui_t *gui, uiwcont_t *grid,
+    const char *txt, int widx, int bdjoptIdx,
+    confuiouttype_t outtype, ssize_t value, void *cb)
+{
+  uisbtext_t  *sb;
+  nlist_t     *list;
+
+  logProcBegin ();
+
+  gui->uiitem [widx].basetype = CONFUI_SB_TXT;
+  gui->uiitem [widx].outtype = outtype;
+
+  confuiMakeItemLabelG (gui, widx, grid, txt, CONFUI_NO_INDENT);
+
+  sb = uisbtextCreate (NULL, 4);
+  uisbtextPackGrid (sb, grid);
+  gui->uiitem [widx].sbtxt = sb;
+  list = gui->uiitem [widx].displist;
+
+  uisbtextSetList (sb, list);
+  uisbtextSetValue (sb, value);
+
+  gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+
+  if (cb != NULL) {
+    gui->uiitem [widx].sbcallback = callbackInit (cb, gui, NULL);
+    uisbtextSetChangeCallback (sb, gui->uiitem [widx].sbcallback);
+  }
   logProcEnd ("");
 }
 
@@ -555,6 +641,34 @@ confuiMakeItemSwitch (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 }
 
 void
+confuiMakeItemSwitchG (confuigui_t *gui, uiwcont_t *grid,
+    const char *txt, int widx, int bdjoptIdx, int value, void *cb, int indent)
+{
+  uiwcont_t  *uiwidgetp;
+
+  logProcBegin ();
+
+  gui->uiitem [widx].basetype = CONFUI_SWITCH;
+  gui->uiitem [widx].outtype = CONFUI_OUT_BOOL;
+
+  confuiMakeItemLabelG (gui, widx, grid, txt, indent);
+
+  uiwidgetp = uiCreateSwitch (value);
+  uiGridPack (grid, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
+  gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  gui->uiitem [widx].uiwidgetp = uiwidgetp;
+
+  if (cb != NULL) {
+    gui->uiitem [widx].callback = callbackInitI (cb, gui);
+    uiSwitchSetCallback (gui->uiitem [widx].uiwidgetp,
+        gui->uiitem [widx].callback);
+  }
+
+  logProcEnd ("");
+}
+
+void
 confuiMakeItemLabelDisp (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     const char *txt, int widx, int indent)
 {
@@ -580,6 +694,24 @@ confuiMakeItemLabelDisp (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 }
 
 void
+confuiMakeItemLabelDispG (confuigui_t *gui, uiwcont_t *grid,
+    const char *txt, int widx, int indent)
+{
+  uiwcont_t   *uiwidgetp;
+
+  gui->uiitem [widx].basetype = CONFUI_NONE;
+  gui->uiitem [widx].outtype = CONFUI_OUT_NONE;
+
+  confuiMakeItemLabelG (gui, widx, grid, txt, indent);
+  uiwidgetp = uiCreateLabel ("");
+  uiGridPack (grid, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
+
+  gui->uiitem [widx].uiwidgetp = uiwidgetp;
+  gui->uiitem [widx].bdjoptIdx = -1;
+}
+
+void
 confuiMakeItemCheckButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     const char *txt, int widx, int bdjoptIdx, int value)
 {
@@ -591,6 +723,24 @@ confuiMakeItemCheckButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   gui->uiitem [widx].outtype = CONFUI_OUT_BOOL;
   uiwidgetp = uiCreateCheckButton (txt, value);
   uiBoxPackStart (boxp, uiwidgetp, WCONT_KEEP);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
+  gui->uiitem [widx].uiwidgetp = uiwidgetp;
+  gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  logProcEnd ("");
+}
+
+void
+confuiMakeItemCheckButtonG (confuigui_t *gui, uiwcont_t *grid,
+    const char *txt, int widx, int bdjoptIdx, int value)
+{
+  uiwcont_t  *uiwidgetp;
+
+  logProcBegin ();
+
+  gui->uiitem [widx].basetype = CONFUI_CHECK_BUTTON;
+  gui->uiitem [widx].outtype = CONFUI_OUT_BOOL;
+  uiwidgetp = uiCreateCheckButton (txt, value);
+  uiGridPackRow (grid, uiwidgetp, 1);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
@@ -723,6 +873,34 @@ confuiMakeItemEntryBasic (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   }
   if (expand == CONFUI_NO_EXPAND) {
     uiBoxPackStart (boxp, uiwidgetp, WCONT_KEEP);
+  }
+  uiWidgetSetMarginStart (uiwidgetp, 4);
+
+  if (disp != NULL) {
+    uiEntrySetValue (gui->uiitem [widx].uiwidgetp, disp);
+  } else {
+    uiEntrySetValue (gui->uiitem [widx].uiwidgetp, "");
+  }
+  gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+}
+
+static void
+confuiMakeItemEntryBasicG (confuigui_t *gui, uiwcont_t *grid,
+    const char *txt, int widx, int bdjoptIdx, const char *disp,
+    int indent, int expand)
+{
+  uiwcont_t   *uiwidgetp;
+
+  gui->uiitem [widx].basetype = CONFUI_ENTRY;
+  gui->uiitem [widx].outtype = CONFUI_OUT_STR;
+  confuiMakeItemLabelG (gui, widx, grid, txt, indent);
+  uiwidgetp = uiEntryInit (gui->uiitem [widx].entrysz, gui->uiitem [widx].entrymaxsz);
+  gui->uiitem [widx].uiwidgetp = uiwidgetp;
+  uiGridPack (grid, uiwidgetp);
+  if (expand == CONFUI_EXPAND) {
+//    uiBoxPackStartExpandChildren (boxp, uiwidgetp, WCONT_KEEP);
+    uiWidgetAlignHorizFill (uiwidgetp);
+    uiWidgetExpandHoriz (uiwidgetp);
   }
   uiWidgetSetMarginStart (uiwidgetp, 4);
 

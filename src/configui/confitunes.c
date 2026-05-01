@@ -132,19 +132,15 @@ confuiBuildUIiTunes (confuigui_t *gui)
   char          tmp [200];
   char          tbuff [BDJ4_PATH_MAX];
   const char    *tdata;
-  uiwcont_t     *mvbox = NULL;
-  uiwcont_t     *vbox [3] = { NULL, NULL, NULL };
-  uiwcont_t     *mhbox;
-  uiwcont_t     *hbox;
+  uiwcont_t     *mgrid = NULL;
+  uiwcont_t     *dgrid = NULL;
   uiwcont_t     *uiwidgetp;
-  uiwcont_t     *vboxp = NULL;
-  uiwcont_t     *szgrp;
-  uiwcont_t     *szgrpr;
+  uiwcont_t     *rgrid = NULL;
+  uiwcont_t     *fgrid = NULL;
   int           count;
   int           gcount;
   const char    *itunesName;
   int           tagidx;
-  int           cidx;
 
   logProcBegin ();
 
@@ -152,13 +148,10 @@ confuiBuildUIiTunes (confuigui_t *gui)
   uiWidgetExpandHoriz (sw);
   uiWidgetExpandVert (sw);
 
-  mvbox = uiCreateVertBox ();
-  uiWindowPackInWindow (sw, mvbox);
-  uiWidgetExpandHoriz (mvbox);
-  uiWidgetAlignHorizFill (mvbox);
-
-  szgrp = uiCreateSizeGroupHoriz (NULL);
-  szgrpr = uiCreateSizeGroupHoriz (NULL);
+  mgrid = uiCreateGrid ();
+  uiWindowPackInWindow (sw, mgrid);
+//  uiWidgetExpandHoriz (mvbox);
+//  uiWidgetAlignHorizFill (mvbox);
 
   /* itunes */
   confuiMakeNotebookTab (sw, gui, ITUNES_NAME, CONFUI_ID_NONE);
@@ -171,7 +164,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
 
   /* CONTEXT: configuration: itunes: the itunes media folder */
   snprintf (tmp, sizeof (tmp), _("%s Media Folder"), ITUNES_NAME);
-  confuiMakeItemEntryChooser (gui, mvbox, szgrp, tmp,
+  confuiMakeItemEntryChooserG (gui, mgrid, tmp,
       CONFUI_ENTRY_CHOOSE_ITUNES_DIR, OPT_M_DIR_ITUNES_MEDIA,
       tbuff, confuiSelectiTunesDir);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_DIR].uiwidgetp,
@@ -185,22 +178,25 @@ confuiBuildUIiTunes (confuigui_t *gui)
 
   /* CONTEXT: configuration: itunes: the itunes xml file */
   snprintf (tmp, sizeof (tmp), _("%s XML File"), ITUNES_NAME);
-  confuiMakeItemEntryChooser (gui, mvbox, szgrp, tmp,
+  confuiMakeItemEntryChooserG (gui, mgrid, tmp,
       CONFUI_ENTRY_CHOOSE_ITUNES_XML, OPT_M_ITUNES_XML_FILE,
       tbuff, confuiSelectiTunesFile);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].uiwidgetp,
       "", uiEntryValidateFile, NULL, UIENTRY_DELAYED);
 
-  mhbox = uiCreateHorizBox ();
-  uiBoxPackStart (mvbox, mhbox, WCONT_FREE);
+  dgrid = uiCreateGrid ();
+  uiGridNewRow (mgrid);
+  uiGridPackColumn (mgrid, dgrid, 3);
 
-  vboxp = uiCreateVertBox ();
-  uiBoxPackStart (mhbox, vboxp, WCONT_FREE);
-  uiWidgetSetAllMargins (vboxp, 2);
+  /* left side: ratings */
 
   /* CONTEXT: configuration: itunes: label for itunes rating conversion */
   uiwidgetp = uiCreateLabel (_("Rating"));
-  uiBoxPackStart (vboxp, uiwidgetp, WCONT_FREE);
+  uiGridPackRow (dgrid, uiwidgetp, 1);
+
+  rgrid = uiCreateGrid ();
+  uiGridPackRow (dgrid, rgrid, 1);
+  uiWidgetSetAllMargins (rgrid, 2);
 
   /* itunes uses 10..100 mapping to 0.5,1,1.5,...,4.5,5 stars */
   for (int i = 0; i < ITUNES_STARS_MAX; ++i) {
@@ -219,45 +215,32 @@ confuiBuildUIiTunes (confuigui_t *gui)
       p = stpecpy (p, end, "\xc2\xbd");
     }
 
-    hbox = uiCreateHorizBox ();
-    uiBoxPackStart (vboxp, hbox, WCONT_FREE);
-
     uiwidgetp = uiCreateLabel (tbuff);
-    uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-    uiSizeGroupAdd (szgrpr, uiwidgetp);
+    uiGridNewRow (rgrid);
+    uiGridPack (rgrid, uiwidgetp);
 
-    gui->itunes->uirating [i] = uiratingSpinboxCreate (hbox, UIRATING_NORM);
+    gui->itunes->uirating [i] = uiratingSpinboxCreate (NULL, UIRATING_NORM);
+    uiratingPackGrid (gui->itunes->uirating [i], rgrid);
 
     uiratingSetValue (gui->itunes->uirating [i],
         itunesGetStars (gui->itunes->itunes, ITUNES_STARS_10 + i));
-    uiBoxPostProcess (hbox);
   }
 
-  uiBoxPostProcess (vboxp);
+  uiGridPostProcess (rgrid);
 
-  vboxp = uiCreateVertBox ();
-  uiBoxPackStart (mhbox, vboxp, WCONT_FREE);
-  uiWidgetSetAllMargins (vboxp, 2);
+  /* right side: fields to import */
 
   /* CONTEXT: configuration: itunes: which fields should be imported from itunes */
   uiwidgetp = uiCreateLabel (_("Fields to Import"));
-  uiBoxPackStart (vboxp, uiwidgetp, WCONT_FREE);
+  uiGridNewCol (dgrid);
+  uiGridPackRow (dgrid, uiwidgetp, 1);
 
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vboxp, hbox, WCONT_FREE);
-
-  uiBoxPostProcess (vboxp);
-
-  for (int i = 0; i < ITUNES_FIELD_COL_MAX; ++i) {
-    vbox [i] = uiCreateVertBox ();
-    uiBoxPackStart (hbox, vbox [i], WCONT_FREE);
-    uiWidgetSetAllMargins (vbox [i], 2);
-  }
+  fgrid = uiCreateGrid ();
+  uiGridPackRow (dgrid, fgrid, 1);
+  uiWidgetSetAllMargins (fgrid, 2);
 
   count = 0;
   gcount = 0;
-  cidx = 0;
-  vboxp = vbox [cidx];
   itunesStartIterateAvailFields (gui->itunes->itunes);
   while ((itunesName = itunesIterateAvailFields (gui->itunes->itunes, &tagidx)) != NULL) {
     bool   tval;
@@ -270,26 +253,19 @@ confuiBuildUIiTunes (confuigui_t *gui)
     if (itunesGetField (gui->itunes->itunes, tagidx) >= 0) {
       tval = true;
     }
-    confuiMakeItemCheckButton (gui, vboxp, szgrp, tagdefs [tagidx].displayname,
+    confuiMakeItemCheckButtonG (gui, fgrid, tagdefs [tagidx].displayname,
         CONFUI_WIDGET_ITUNES_FIELD_1 + gcount, -1, tval);
     ++count;
     ++gcount;
     if (count >= ITUNES_MAX_PER_COL) {
-      ++cidx;
-      vboxp = vbox [cidx];
+      uiGridNewCol (fgrid);
       count = 0;
     }
   }
 
-  for (int i = 0; i < ITUNES_FIELD_COL_MAX; ++i) {
-    uiBoxPostProcess (vbox [i]);
-  }
-  uiBoxPostProcess (hbox);
-  uiBoxPostProcess (mvbox);
-  uiBoxPostProcess (mhbox);
-  uiwcontFree (mvbox);
-  uiwcontFree (szgrp);
-  uiwcontFree (szgrpr);
+  uiGridPostProcess (fgrid);
+  uiGridPostProcess (mgrid);
+  uiGridPostProcess (dgrid);
 
   logProcEnd ("");
 }

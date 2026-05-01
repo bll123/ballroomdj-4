@@ -47,58 +47,53 @@ confuiInitMobileMarquee (confuigui_t *gui)
 void
 confuiBuildUIMobileMarquee (confuigui_t *gui)
 {
-  uiwcont_t   *vbox;
-  uiwcont_t   *szgrp;
+  uiwcont_t   *grid;
 
-  logProcBegin ();
-  vbox = uiCreateVertBox ();
-
-  szgrp = uiCreateSizeGroupHoriz (NULL);
+  grid = uiCreateGrid ();
 
   /* mobile marquee */
-  confuiMakeNotebookTab (vbox, gui,
+  confuiMakeNotebookTab (grid, gui,
       /* CONTEXT: configuration: options associated with the mobile marquee */
       _("Mobile Marquee"), CONFUI_ID_MOBILE_MQ);
 
   /* CONTEXT: configuration: mobile marquee: mode: (off/local/internet)*/
-  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Mode"),
+  confuiMakeItemSpinboxTextG (gui, grid, _("Mode"),
       CONFUI_SB_TXT_MOBMQ_TYPE, OPT_P_MOBMQ_TYPE,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_P_MOBMQ_TYPE),
       confuiMobmqTypeChg);
 
   /* CONTEXT: configuration: mobile marquee: internet: tag */
-  confuiMakeItemEntry (gui, vbox, szgrp, _("Tag"),
+  confuiMakeItemEntryG (gui, grid, _("Tag"),
       CONFUI_ENTRY_MOBMQ_TAG, OPT_P_MOBMQ_TAG,
       bdjoptGetStr (OPT_P_MOBMQ_TAG), CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_MOBMQ_TAG].uiwidgetp,
       _("Tag"), confuiMobmqTagChg, gui, UIENTRY_IMMEDIATE);
 
   /* CONTEXT: configuration: mobile marquee: internet: password */
-  confuiMakeItemEntry (gui, vbox, szgrp, _("Password"),
+  confuiMakeItemEntryG (gui, grid, _("Password"),
       CONFUI_ENTRY_MOBMQ_KEY, OPT_P_MOBMQ_KEY,
       bdjoptGetStr (OPT_P_MOBMQ_KEY), CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_MOBMQ_KEY].uiwidgetp,
       _("Password"), confuiMobmqKeyChg, gui, UIENTRY_IMMEDIATE);
 
   /* CONTEXT: configuration: the port to use for the mobile marquee */
-  confuiMakeItemSpinboxNum (gui, vbox, szgrp, NULL, _("Port"),
+  confuiMakeItemSpinboxNumG (gui, grid, _("Port"),
       CONFUI_SB_NUM_MOBMQ_PORT, OPT_P_MOBMQ_PORT,
       8000, 30000, bdjoptGetNum (OPT_P_MOBMQ_PORT),
       confuiMobmqPortChg);
 
   /* CONTEXT: configuration: the title to display on the mobile marquee */
-  confuiMakeItemEntry (gui, vbox, szgrp, _("Title"),
+  confuiMakeItemEntryG (gui, grid, _("Title"),
       CONFUI_ENTRY_MOBMQ_TITLE, OPT_P_MOBMQ_TITLE,
       bdjoptGetStr (OPT_P_MOBMQ_TITLE), CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_MOBMQ_TITLE].uiwidgetp,
       _("Title"), confuiMobmqTitleChg, gui, UIENTRY_IMMEDIATE);
 
   /* CONTEXT: configuration: mobile marquee: the link to display the QR code for the mobile marquee */
-  confuiMakeItemLink (gui, vbox, szgrp, _("QR Code"),
+  confuiMakeItemLinkG (gui, grid, _("QR Code"),
       CONFUI_WIDGET_MOBMQ_QR_CODE, "");
 
-  uiBoxPostProcess (vbox);
-  uiwcontFree (szgrp);
+  uiGridPostProcess (grid);
 
   confuiMobmqSetWidgetStates (gui, bdjoptGetNum (OPT_P_MOBMQ_TYPE));
 
