@@ -269,13 +269,13 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   grid = uiCreateGrid ();
   uiBoxPackStart (vbox, grid, WCONT_FREE);
 
-fprintf (stderr, "mpl: mpt\n");
+//fprintf (stderr, "mpl: mpt\n");
   /* CONTEXT: playlist management: maximum play time */
   tlabel = _("Maximum Play Time");
   uiwidgetp = uiCreateColonLabel (tlabel);
   uiGridPack (grid, uiwidgetp);
 
-fprintf (stderr, "mpl: mpt-sb\n");
+//fprintf (stderr, "mpl: mpt-sb\n");
   managepl->callbacks [MPL_CB_MAXPLAYTIME] = callbackInit (
       managePlaylistValMaxPlayTimeCallback, managepl, NULL);
   sb = uisbnumCreate (NULL, tlabel, 2);
@@ -287,7 +287,7 @@ fprintf (stderr, "mpl: mpt-sb\n");
 
   /* new line : stop-at */
 
-fprintf (stderr, "mpl: stop-at\n");
+//fprintf (stderr, "mpl: stop-at\n");
   /* CONTEXT: playlist management: stop at */
   tlabel = _("Stop At");
   uiwidgetp = uiCreateColonLabel (tlabel);
@@ -305,7 +305,7 @@ fprintf (stderr, "mpl: stop-at\n");
 
   /* new line : stop-after */
 
-fprintf (stderr, "mpl: stop-after\n");
+//fprintf (stderr, "mpl: stop-after\n");
   /* CONTEXT: playlist management: stop after */
   tlabel = _("Stop After");
   uiwidgetp = uiCreateColonLabel (tlabel);
@@ -319,7 +319,7 @@ fprintf (stderr, "mpl: stop-after\n");
 
   /* new line: gap */
 
-fprintf (stderr, "mpl: gap\n");
+//fprintf (stderr, "mpl: gap\n");
   /* CONTEXT: playlist management: Gap between songs */
   tlabel = _("Gap Between Songs");
   uiwidgetp = uiCreateColonLabel (tlabel);
@@ -476,7 +476,7 @@ fprintf (stderr, "mpl: gap\n");
 
   /* new line : retain */
 
-fprintf (stderr, "mpl: retain\n");
+//fprintf (stderr, "mpl: retain\n");
   /* CONTEXT: playlist management: how many days to keep the podcast */
   tlabel = _("Days to Keep");
   uiwidgetp = uiCreateColonLabel (tlabel);

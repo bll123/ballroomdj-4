@@ -60,7 +60,7 @@ confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, int i
 void
 confuiMakeNotebookTabG (uiwcont_t *grid, confuigui_t *gui, const char *txt, int id)
 {
-fprintf (stderr, "cgui: tab-g %s\n", txt);
+//fprintf (stderr, "cgui: tab-g %s\n", txt);
   uivnbAppendPage (gui->mainvnb, grid, txt, id);
   uiWidgetSetAllMargins (grid, 2);
 }

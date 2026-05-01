@@ -36,7 +36,8 @@ uiBoxFree_r (uiwcont_t *uibox)
 }
 
 void
-uiBoxPostProcess_r (uiwcont_t *uibox, uiwcont_t *prev, uiwcont_t *curr, uiwcont_t *next)
+uiBoxPostProcess_r (uiwcont_t *uibox,
+    uiwcont_t *prev, uiwcont_t *curr, uiwcont_t *next, bool last)
 {
   return;
 }

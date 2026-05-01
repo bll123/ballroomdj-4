@@ -16,7 +16,7 @@ uiwcont_t *uiCreateHorizBox_r (void);
 void uiBoxFree_r (uiwcont_t *uibox);
 void uiBoxSetSizeChgCallback (uiwcont_t *uiwidget, callback_t *uicb);
 
-void uiBoxPostProcess_r (uiwcont_t *uibox, uiwcont_t *prev, uiwcont_t *curr, uiwcont_t *next);
+void uiBoxPostProcess_r (uiwcont_t *uibox, uiwcont_t *prev, uiwcont_t *curr, uiwcont_t *next, bool last);
 
 /* real box pack */
 void uiBoxPackStart_r (uiwcont_t *uibox, uiwcont_t *uiwidget);

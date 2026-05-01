@@ -337,7 +337,13 @@ uiWidgetHide (uiwcont_t *uiwidget)
   }
 
   widget = uiwidget->uidata.packwidget;
-//  widget.hidden = true;
+  if (widget == NULL) {
+    widget = uiwidget->uidata.widget;
+  }
+  if (widget == NULL) {
+    return;
+  }
+  widget.hidden = true;
 }
 
 void
@@ -345,8 +351,18 @@ uiWidgetShow (uiwcont_t *uiwidget)
 {
   NSView        *widget = NULL;
 
+  if (uiwidget == NULL) {
+    return;
+  }
+
 // ### see also nsstackview / view detachment and hiding
   widget = uiwidget->uidata.packwidget;
+  if (widget == NULL) {
+    widget = uiwidget->uidata.widget;
+  }
+  if (widget == NULL) {
+    return;
+  }
   widget.hidden = false;
 }
 
@@ -472,18 +488,30 @@ uiWidgetSetEnterCallback (uiwcont_t *uiwidget, callback_t *uicb)
 void
 uiWidgetSetIdentifier (uiwcont_t *uiwidget, const char *tag)
 {
-  NSView    *widget;
-  char      tmp [40];
+  NSView          *widget;
+  macoslayout_t   *layout;
+  char            tmp [40];
 
-  snprintf (tmp, sizeof (tmp), "%s-%" PRIu32 "-%" PRIu32 "\n",
+  snprintf (tmp, sizeof (tmp), "w-%s-%" PRIu32 "-%" PRIu32,
       tag, uiwidget->ui_id, uiwidget->id);
   widget = uiwidget->uidata.widget;
   widget.identifier = [NSString stringWithUTF8String: tmp];
+
   if (uiwidget->uidata.packwidget != uiwidget->uidata.widget) {
     widget = uiwidget->uidata.packwidget;
-    snprintf (tmp, sizeof (tmp), "p-%s-%" PRIu32 "-%" PRIu32 "\n",
+    snprintf (tmp, sizeof (tmp), "p-%s-%" PRIu32 "-%" PRIu32,
         tag, uiwidget->ui_id, uiwidget->id);
     widget.identifier = [NSString stringWithUTF8String: tmp];
+  }
+
+  if (uiwidget->wtype != WCONT_T_WINDOW) {
+    snprintf (tmp, sizeof (tmp), "c-%s-%" PRIu32 "-%" PRIu32,
+        tag, uiwidget->ui_id, uiwidget->id);
+    layout = uiwidget->uidata.layout;
+    widget = layout->container;
+    if (widget != NULL) {
+      widget.identifier = [NSString stringWithUTF8String: tmp];
+    }
   }
 }
 
@@ -514,7 +542,7 @@ uiWidgetUpdateConstraint (const char *tag,
 {
   char                  tmp [200];
 
-fprintf (stderr, "upd-c: %s\n", tag);
+// fprintf (stderr, "upd-c: %s\n", tag);
   c.active = YES;
   snprintf (tmp, sizeof (tmp), "%s:%s:%s", tag,
       [va.identifier UTF8String], [vb.identifier UTF8String]);

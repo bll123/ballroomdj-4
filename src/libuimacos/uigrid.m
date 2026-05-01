@@ -71,9 +71,8 @@ uiGridPackSize_r (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numcols)
   grid = uigrid->uidata.widget;
   layout = uiwidget->uidata.layout;
 
-fprintf (stderr, "grid: %d-%d p: %d-%d %d/%s\n", uigrid->ui_id, uigrid->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
-fprintf (stderr, "   col: %d row: %d\n", uigridint->col, uigridint->row);
-fprintf (stderr, "   cols: %ld rows: %ld\n", grid.numberOfColumns, grid.numberOfRows);
+//fprintf (stderr, "grid: %d-%d p: %d-%d %d/%s\n", uigrid->ui_id, uigrid->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
+//fprintf (stderr, "   col: %d row: %d\n", uigridint->col, uigridint->row);
   if (uigridint->col == 0) {
     [grid addRowWithViews : @[layout->container]];
   } else {
@@ -93,6 +92,7 @@ uiGridPostProcess_r (uiwcont_t *uigrid, int row, int col, uiwcont_t *uiwidget)
   macoslayout_t *layout;
   int           alignment;
 
+//fprintf (stderr, "grid: post: %d-%d %d %d : %d-%d %d/%s\n", uigrid->ui_id, uigrid->id, row, col, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   grid = uigrid->uidata.widget;
   layout = uiwidget->uidata.layout;
 

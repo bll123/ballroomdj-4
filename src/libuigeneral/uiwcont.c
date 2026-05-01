@@ -61,7 +61,7 @@ uiwcontAlloc_r (int basetype, int type, const char *fn, int lineno)
     gboxcount += 100;
   }
 
-fprintf (stderr, "wcont: %s %d-%d\n", uiwcontDesc (uiwidget->wtype), uiwidget->ui_id, uiwidget->id);
+//fprintf (stderr, "wcont: %s %d-%d\n", uiwcontDesc (uiwidget->wtype), uiwidget->ui_id, uiwidget->id);
   memset (&uiwidget->uiint, 0, sizeof (uiwcontint_t));
   uiwcontUIInit (uiwidget);                     // ui interface specific
   return uiwidget;

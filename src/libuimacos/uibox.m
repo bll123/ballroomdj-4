@@ -89,7 +89,7 @@ uiBoxFree_r (uiwcont_t *uiwidget)
 
 void
 uiBoxPostProcess_r (uiwcont_t *uibox,
-    uiwcont_t *prev, uiwcont_t *curr, uiwcont_t *next)
+    uiwcont_t *prev, uiwcont_t *curr, uiwcont_t *next, bool last)
 {
   uiboxbase_t   *boxbase = NULL;
   NSView        *box = NULL;
@@ -99,14 +99,12 @@ uiBoxPostProcess_r (uiwcont_t *uibox,
     return;
   }
   if (curr == NULL) {
-fprintf (stderr, "    pp: null-curr\n");
     return;
   }
 
   boxbase = &uibox->uiint.uiboxbase;
 
   if (boxbase->startcount == 0 && boxbase->endcount == 0) {
-fprintf (stderr, "    pp: no-children\n");
     return;
   }
 
@@ -134,28 +132,27 @@ fprintf (stderr, "    pp: no-children\n");
     currcont = clayout->container;
 
     if (clayout == NULL) {
-fprintf (stderr, "    pp: null-layout\n");
       return;
     }
 
     if (prev != NULL) {
-fprintf (stderr, "    pp: prev: %d/%s\n", prev->wtype, uiwcontDesc (prev->wtype));
       pwidget = prev->uidata.packwidget;
       playout = prev->uidata.layout;
       prevcont = playout->container;
+fprintf (stderr, "%d-%d pp: prev: %d-%d %d/%s\n", uibox->ui_id, uibox->id, prev->ui_id, prev->id, prev->wtype, uiwcontDesc (prev->wtype));
     }
 
-fprintf (stderr, "    pp: curr: %d/%s\n", curr->wtype, uiwcontDesc (curr->wtype));
+fprintf (stderr, "%d-%d pp: curr: %d-%d %d/%s\n", uibox->ui_id, uibox->id, curr->ui_id, curr->id, curr->wtype, uiwcontDesc (curr->wtype));
 
     if (next != NULL) {
-fprintf (stderr, "    pp: next: %d/%s\n", next->wtype, uiwcontDesc (next->wtype));
+fprintf (stderr, "%d-%d pp: next: %d-%d %d/%s\n", uibox->ui_id, uibox->id, next->ui_id, next->id, next->wtype, uiwcontDesc (next->wtype));
       nwidget = next->uidata.packwidget;
       nlayout = next->uidata.layout;
       nextcont = nlayout->container;
     }
 
     if (clayout->expandhoriz || boxlayout->expandchildren) {
-fprintf (stderr, "    pp: expand-horiz\n");
+//fprintf (stderr, "    pp: expand-horiz\n");
       uiBoxProcessExpandHoriz (uibox->wtype, box, prevcont, currcont, nextcont);
       if (curr->wbasetype == WCONT_T_BOX) {
 //        NSStackView     *currbox;
@@ -166,7 +163,7 @@ fprintf (stderr, "    pp: expand-horiz\n");
     }
 
     if (clayout->expandvert || boxlayout->expandchildren) {
-fprintf (stderr, "    pp: expand-vert\n");
+//fprintf (stderr, "    pp: expand-vert\n");
       uiBoxProcessExpandVert (uibox->wtype, box, prevcont, currcont, nextcont);
       if (curr->wbasetype == WCONT_T_BOX) {
 //        NSStackView     *currbox;
@@ -177,7 +174,7 @@ fprintf (stderr, "    pp: expand-vert\n");
     }
 
     if (clayout->horizcenter || clayout->vertcenter) {
-fprintf (stderr, "    pp: center\n");
+//fprintf (stderr, "    pp: center\n");
       uiBoxProcessCenter (uibox->wtype, clayout, box, prevcont, currcont, nextcont);
     }
 
@@ -201,9 +198,13 @@ uiBoxPackStart_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
     return;
   }
 
-fprintf (stderr, "box: %d-%d p-st: %d-%d %d/%s\n", uibox->ui_id, uibox->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
+//fprintf (stderr, "box: %d-%d p-st: %d-%d %d/%s\n", uibox->ui_id, uibox->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   box = uibox->uidata.widget;
   layout = uiwidget->uidata.layout;
+  if (layout == NULL || layout->container == NULL) {
+    fprintf (stderr, "ERR: null container %d-%d\n", uibox->ui_id, uibox->id);
+    return;
+  }
 
   if (uibox->wtype == WCONT_T_VBOX) {
     grav = NSStackViewGravityTop;
@@ -260,7 +261,7 @@ uiBoxPackEnd_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
 //    uiwidget->uidata.layout->expandchildren = true;
 //  }
 
-fprintf (stderr, "box: %d-%d p-end: %d-%d %d/%s\n", uibox->ui_id, uibox->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
+//fprintf (stderr, "box: %d-%d p-end: %d-%d %d/%s\n", uibox->ui_id, uibox->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   uiwidget->packed = true;
 
   return;
@@ -352,38 +353,43 @@ uiBoxProcessExpandHoriz (uiwconttype_t wtype, NSView *box,
   /* is attached to its neighboring widgets */
 
   if (wtype == WCONT_T_HBOX) {
-fprintf (stderr, "    pp: eh: hbox\n");
+//fprintf (stderr, "    pp: eh: hbox\n");
     if (prevcont != NULL) {
+fprintf (stderr, "   eh-h: p-t <= c-l\n");
       c = [prevcont.trailingAnchor
-          constraintEqualToAnchor: currcont.leadingAnchor
-          constant : 1.0];
+          constraintLessThanOrEqualToAnchor : currcont.leadingAnchor];
       uiWidgetUpdateConstraint ("eh_hbox_a", c, prevcont, currcont);
     } else {
       /* attach to the box */
+fprintf (stderr, "   eh-h: b-l = c-l\n");
       c = [box.leadingAnchor
-          constraintEqualToAnchor: currcont.leadingAnchor];
+          constraintEqualToAnchor : currcont.leadingAnchor];
       uiWidgetUpdateConstraint ("eh_hbox_b", c, box, currcont);
     }
 
     if (nextcont != NULL) {
+fprintf (stderr, "   eh-h: c-t = n-l\n");
       c = [currcont.trailingAnchor
-          constraintEqualToAnchor: nextcont.leadingAnchor];
+          constraintLessThanOrEqualToAnchor : nextcont.leadingAnchor];
       uiWidgetUpdateConstraint ("eh_hbox_c", c, currcont, nextcont);
     } else {
       /* attach to the box */
+fprintf (stderr, "   eh-h: c-t = b-t\n");
       c = [currcont.trailingAnchor
-          constraintEqualToAnchor: box.trailingAnchor];
+          constraintEqualToAnchor : box.trailingAnchor];
       uiWidgetUpdateConstraint ("eh_hbox_d", c, currcont, box);
     }
   }
 
   if (wtype == WCONT_T_VBOX) {
-fprintf (stderr, "    pp: eh: vbox\n");
+//fprintf (stderr, "    pp: eh: vbox\n");
+fprintf (stderr, "   eh-v: c-l = b-l\n");
     c = [box.leadingAnchor
-        constraintEqualToAnchor: currcont.leadingAnchor];
+        constraintEqualToAnchor : currcont.leadingAnchor];
     uiWidgetUpdateConstraint ("eh_vbox_a", c, box, currcont);
+fprintf (stderr, "   eh-v: c-t = b-t\n");
     c = [currcont.trailingAnchor
-        constraintEqualToAnchor: box.trailingAnchor];
+        constraintEqualToAnchor : box.trailingAnchor];
     uiWidgetUpdateConstraint ("eh_vbox_b", c, currcont, box);
   }
 
@@ -405,26 +411,28 @@ uiBoxProcessExpandVert (uiwconttype_t wtype, NSView *box,
   /* is attached to both edges of the box */
 
   if (wtype == WCONT_T_VBOX) {
-fprintf (stderr, "    pp: ev: vbox\n");
+//fprintf (stderr, "    pp: ev: vbox\n");
     if (prevcont != NULL) {
+fprintf (stderr, "   ev-v: p-b <= c-t\n");
       c = [prevcont.bottomAnchor
-          constraintEqualToAnchor: currcont.topAnchor
-          constant : 1.0];
+          constraintLessThanOrEqualToAnchor: currcont.topAnchor];
       uiWidgetUpdateConstraint ("ev_vbox_a", c, prevcont, currcont);
     } else {
       /* attach to the box */
+fprintf (stderr, "   ev-v: b-t = c-t\n");
       c = [box.topAnchor
           constraintEqualToAnchor: currcont.topAnchor];
       uiWidgetUpdateConstraint ("ev_vbox_b", c, box, currcont);
     }
 
     if (nextcont != NULL) {
+fprintf (stderr, "   ev-v: c-b <= n-t\n");
       c = [currcont.bottomAnchor
-          constraintEqualToAnchor: nextcont.topAnchor
-          constant : -1.0];
+          constraintLessThanOrEqualToAnchor: nextcont.topAnchor];
       uiWidgetUpdateConstraint ("ev_vbox_c", c, currcont, nextcont);
     } else {
       /* attach to the box */
+fprintf (stderr, "   ev-v: b-b = c-b\n");
       c = [currcont.bottomAnchor
           constraintEqualToAnchor: box.bottomAnchor];
       uiWidgetUpdateConstraint ("ev_vbox_d", c, currcont, box);
@@ -432,10 +440,12 @@ fprintf (stderr, "    pp: ev: vbox\n");
   }
 
   if (wtype == WCONT_T_HBOX) {
-fprintf (stderr, "    pp: ev: hbox\n");
+//fprintf (stderr, "    pp: ev: hbox\n");
+fprintf (stderr, "   ev-h: b-t = c-t\n");
     c = [box.topAnchor
         constraintEqualToAnchor: currcont.topAnchor];
     uiWidgetUpdateConstraint ("ev_hbox_a", c, box, currcont);
+fprintf (stderr, "   ev-h: c-b = b-b\n");
     c = [currcont.bottomAnchor
         constraintEqualToAnchor: box.bottomAnchor];
     uiWidgetUpdateConstraint ("ev_hbox_b", c, currcont, box);

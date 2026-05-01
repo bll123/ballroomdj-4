@@ -29,7 +29,7 @@ uiCreateNotebook (void)
   uiwcont_t   *uiwidget;
   NSTabView   *nb;
 
-fprintf (stderr, "c-nb\n");
+// fprintf (stderr, "c-nb\n");
   nb = [[NSTabView alloc] init];
   [nb setTabPosition : NSTabPositionTop];
 //  gtk_notebook_set_show_border (GTK_NOTEBOOK (nb), TRUE);
@@ -69,11 +69,8 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
   }
 
   nb = uinotebook->uidata.widget;
-//  tabv = [[NSTabViewItem alloc] init];
   [nb setTabViewType : NSNoTabsNoBorder];
 
-//  [tabv setView : uibox->uidata.widget];
-//  [nb addTabViewItem : tabv];
   uibox->packed = true;
 
   nb.needsDisplay = true;
@@ -91,7 +88,11 @@ uiNotebookSetPage (uiwcont_t *uinotebook, int pagenum)
   }
 
   nb = uinotebook->uidata.widget;
-  [nb selectTabViewItemAtIndex : pagenum];
+  if (pagenum < nb.numberOfTabViewItems) {
+    [nb selectTabViewItemAtIndex : pagenum];
+  } else {
+    fprintf (stderr, "ERR: nb-set-page: %d pages: %ld\n", pagenum, nb.numberOfTabViewItems);
+  }
   return;
 }
 

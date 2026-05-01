@@ -144,7 +144,6 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *nbtxt, int id)
   vnb->tabcblist [pagenum] = cb;
 
   hbox = uiCreateHorizBox ();
-//  uiBoxPackStart (vnb->vlist, hbox, WCONT_FREE);
   uiGridNewRow (vnb->vlist);
   uiGridPackFill (vnb->vlist, hbox);
   uiWidgetSetClass (hbox, NB_CLASS);
@@ -179,7 +178,7 @@ uivnbPostProcess (uivnb_t *vnb)
     return;
   }
 
-//  uiBoxPostProcess (vnb->vlist);
+  uiGridPostProcess (vnb->vlist);
   uivnbSetPage (vnb, 0);
 }
 

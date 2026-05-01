@@ -25,6 +25,7 @@
 #include "ui/uimacos-int.h"
 
 #include "ui/uiui.h"
+#include "ui/uiwidget.h"
 
 uisetup_t   guisetup;
 
@@ -160,7 +161,7 @@ uiwcontUIInit (uiwcont_t *uiwidget)
     return;
   }
 
-fprintf (stderr, "ui-init: %s %d-%d\n", uiwcontDesc (uiwidget->wtype), uiwidget->ui_id, uiwidget->id);
+// fprintf (stderr, "ui-init: %s %d-%d\n", uiwcontDesc (uiwidget->wtype), uiwidget->ui_id, uiwidget->id);
   if (uiwidget->uidata.layout == NULL) {
     uiwidget->uidata.layout = mdmalloc (sizeof (macoslayout_t));
   }
@@ -193,13 +194,14 @@ fprintf (stderr, "ui-init: %s %d-%d\n", uiwcontDesc (uiwidget->wtype), uiwidget-
 void
 uiwcontUIWidgetInit (uiwcont_t *uiwidget)
 {
-  macoslayout_t *layout;
-  NSView        *view;
+  macoslayout_t       *layout;
+  NSView              *view;
+//  NSLayoutConstraint  *c;
 
   if (uiwidget == NULL) {
     return;
   }
-  if (uiwidget->wbasetype == WCONT_T_WINDOW) {
+  if (uiwidget->wtype == WCONT_T_WINDOW) {
     return;
   }
 
@@ -215,6 +217,25 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
   layout->container.edgeInsets = layout->margins;
   [layout->container addView : view inGravity : NSStackViewGravityCenter];
 
+#if 0
+  c = [layout->container.leadingAnchor
+      constraintLessThanOrEqualToAnchor : view.leadingAnchor];
+  uiWidgetUpdateConstraint ("c_hl", c, layout->container, view);
+  c = [layout->container.trailingAnchor
+      constraintGreaterThanOrEqualToAnchor : view.trailingAnchor];
+  uiWidgetUpdateConstraint ("c_ht", c, layout->container, view);
+  c = [layout->container.topAnchor
+      constraintLessThanOrEqualToAnchor : view.topAnchor];
+  uiWidgetUpdateConstraint ("c_vt", c, layout->container, view);
+  c = [layout->container.bottomAnchor
+      constraintGreaterThanOrEqualToAnchor : view.bottomAnchor];
+  uiWidgetUpdateConstraint ("c_vb", c, layout->container, view);
+#endif
+
+  [layout->container setHuggingPriority :
+      NSLayoutPriorityRequired
+      forOrientation : NSLayoutConstraintOrientationHorizontal];
+
   [layout->container setHuggingPriority :
       NSLayoutPriorityRequired
       forOrientation : NSLayoutConstraintOrientationHorizontal];
@@ -223,10 +244,10 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
       forOrientation : NSLayoutConstraintOrientationVertical];
 
   [layout->container setContentHuggingPriority :
-      NSLayoutPriorityDefaultHigh
+      NSLayoutPriorityRequired
       forOrientation : NSLayoutConstraintOrientationHorizontal];
   [layout->container setContentHuggingPriority :
-      NSLayoutPriorityDefaultHigh
+      NSLayoutPriorityRequired
       forOrientation : NSLayoutConstraintOrientationVertical];
 
   /* otherwise everything gets shrunk to a minimal size */
@@ -237,7 +258,7 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
       NSLayoutPriorityRequired
       forOrientation : NSLayoutConstraintOrientationVertical];
 
-fprintf (stderr, "ui-widget-init: %s %d-%d\n", uiwcontDesc (uiwidget->wtype), uiwidget->ui_id, uiwidget->id);
+// fprintf (stderr, "ui-widget-init: %s %d-%d\n", uiwcontDesc (uiwidget->wtype), uiwidget->ui_id, uiwidget->id);
   [view setContentHuggingPriority :
       NSLayoutPriorityDefaultHigh
       forOrientation : NSLayoutConstraintOrientationHorizontal];

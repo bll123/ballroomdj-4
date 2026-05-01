@@ -29,7 +29,7 @@ uiImageNew (void)
 
   image = [[NSImage alloc] init];
 
-fprintf (stderr, "image-new\n");
+// fprintf (stderr, "image-new\n");
   imgv = [[NSImageView alloc] init];
   imgv.image = image;
   imgv.imageScaling = NSImageScaleProportionallyDown;
@@ -65,7 +65,7 @@ uiImageFromFile (const char *fn)
   NSImageView *imgv;
   NSString    *ns;
 
-fprintf (stderr, "image: %s\n", fn);
+// fprintf (stderr, "image: %s\n", fn);
   ns = [NSString stringWithUTF8String : fn];
   image = [[NSImage alloc] initWithContentsOfFile : ns];
 
@@ -91,13 +91,13 @@ uiImageScaledFromFile (const char *fn, int scale)
   NSImage     *image;
   NSString    *ns;
 
-fprintf (stderr, "image-scaled: %s\n", fn);
+//fprintf (stderr, "image-scaled: %s\n", fn);
   ns = [NSString stringWithUTF8String : fn];
   image = [[NSImage alloc] initWithContentsOfFile : ns];
-fprintf (stderr, "  ok: %d\n", image != NULL);
+//fprintf (stderr, "  ok: %d\n", image != NULL);
 
   imgv = [[NSImageView alloc] init];
-fprintf (stderr, "  imgv: %d\n", imgv != NULL);
+//fprintf (stderr, "  imgv: %d\n", imgv != NULL);
   imgv.image = image;
   imgv.imageScaling = NSImageScaleProportionallyDown;
   imgv.translatesAutoresizingMaskIntoConstraints = NO;

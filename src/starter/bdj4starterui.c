@@ -622,7 +622,6 @@ starterBuildUI (startui_t  *starter)
   uiwcont_t   *menuitem;
   uiwcont_t   *vbox;
   uiwcont_t   *hbox;
-//  uiwcont_t   *szgrp;
   char        imgbuff [BDJ4_PATH_MAX];
   char        tbuff [BDJ4_PATH_MAX];
   int         dispidx;
@@ -733,21 +732,17 @@ starterBuildUI (startui_t  *starter)
 
   uiBoxPostProcess (hbox);
 
-//  szgrp = uiCreateSizeGroupHoriz (bvbox);
-
   starter->callbacks [START_CB_PLAYER] = callbackInit (
       starterStartPlayerui, starter, NULL);
   uiwidgetp = uiCreateButton (
       starter->callbacks [START_CB_PLAYER],
       /* CONTEXT: starterui: button: starts the player user interface */
       _("Player"), NULL, NULL);
-//  uiBoxPackStart (bvbox, uiwidgetp, WCONT_KEEP);
   uiGridPack (bgrid, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_PLAYER] = uiwidgetp;
-  uiWidgetAlignHorizFill (uiwidgetp);
 
   starter->callbacks [START_CB_MANAGE] = callbackInit (
       starterStartManageui, starter, NULL);
@@ -755,14 +750,12 @@ starterBuildUI (startui_t  *starter)
       starter->callbacks [START_CB_MANAGE],
       /* CONTEXT: starterui: button: starts the management user interface */
       _("Manage"), NULL, NULL);
-//  uiBoxPackStart (bvbox, uiwidgetp, WCONT_KEEP);
   uiGridNewRow (bgrid);
   uiGridPack (bgrid, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_MANAGE] = uiwidgetp;
-  uiWidgetAlignHorizFill (uiwidgetp);
 
   starter->callbacks [START_CB_CONFIG] = callbackInit (
       starterStartConfig, starter, NULL);
@@ -770,14 +763,12 @@ starterBuildUI (startui_t  *starter)
       starter->callbacks [START_CB_CONFIG],
       /* CONTEXT: starterui: button: starts the configuration user interface */
       _("Configure"), NULL, NULL);
-//  uiBoxPackStart (bvbox, uiwidgetp, WCONT_KEEP);
   uiGridNewRow (bgrid);
   uiGridPack (bgrid, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_CONFIG] = uiwidgetp;
-  uiWidgetAlignHorizFill (uiwidgetp);
 
   starter->callbacks [START_CB_SUPPORT] = callbackInit (
       starterProcessSupport, starter, NULL);
@@ -785,42 +776,36 @@ starterBuildUI (startui_t  *starter)
       starter->callbacks [START_CB_SUPPORT],
       /* CONTEXT: starterui: button: support : support information */
       _("Support"), NULL, NULL);
-//  uiBoxPackStart (bvbox, uiwidgetp, WCONT_KEEP);
   uiGridNewRow (bgrid);
   uiGridPack (bgrid, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_SUPPORT] = uiwidgetp;
-  uiWidgetAlignHorizFill (uiwidgetp);
 
   uiwidgetp = uiCreateButton (
       starter->callbacks [START_CB_EXIT],
       /* CONTEXT: starterui: button: exits BDJ4 (exits everything) */
       _("Exit"), NULL, NULL);
-//  uiBoxPackStart (bvbox, uiwidgetp, WCONT_KEEP);
   uiGridNewRow (bgrid);
   uiGridPack (bgrid, uiwidgetp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiButtonAlignLeft (uiwidgetp);
   starter->buttons [START_BUTTON_EXIT] = uiwidgetp;
-  uiWidgetAlignHorizFill (uiwidgetp);
 
   uiGridPostProcess (bgrid);
+
+  uiBoxPostProcess (vbox);
+  uiwcontFree (vbox);
+  uiwcontFree (menu);
+  uiwcontFree (menubar);
 
   starterSetWindowPosition (starter);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
-
-//  uiBoxPostProcess (bvbox);
-  uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
-//  uiwcontFree (szgrp);
-  uiwcontFree (menu);
-  uiwcontFree (menubar);
 
   uiWidgetShowAll (starter->wcont [START_W_WINDOW]);
 

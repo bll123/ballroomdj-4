@@ -495,7 +495,7 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
     return;
   }
-fprintf (stderr, "  pack-in-win: %d/%s\n", uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
+// fprintf (stderr, "  pack-in-win: %d/%s\n", uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
 
   layout = uiwidget->uidata.layout;
   container = layout->container;

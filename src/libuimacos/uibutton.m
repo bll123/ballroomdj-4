@@ -85,7 +85,7 @@ uiCreateButton (callback_t *uicb, const char *txt,
         PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
 // why is this not working?
 // the toggle button handles a .svg
-fprintf (stderr, "button-image: %s\n", tbuff);
+//fprintf (stderr, "button-image: %s\n", tbuff);
     ns = [NSString stringWithUTF8String : imagenm];
     image = [[NSImage alloc] initWithContentsOfFile : ns];
     uibutton->image = image;
@@ -185,7 +185,7 @@ uiButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
     /* relative path */
     pathbldMakePath (tbuff, sizeof (tbuff), imagenm, BDJ4_IMG_SVG_EXT,
         PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-fprintf (stderr, "button-alt-image: %s\n", tbuff);
+//fprintf (stderr, "button-alt-image: %s\n", tbuff);
     ns = [NSString stringWithUTF8String: imagenm];
     image = [[NSImage alloc] initWithContentsOfFile: ns];
     uibutton->altimage = image;
