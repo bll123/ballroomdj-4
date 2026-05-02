@@ -47,9 +47,9 @@ uibuttonstate_t uiButtonGetState (uiwcont_t *uiwidget);
 /* uigrid.c */
 uiwcont_t *uiCreateGrid (void);
 void uiGridFree (uiwcont_t *uigrid);
-void uiGridPack (uiwcont_t *uigrid, uiwcont_t *uiwidget);
-void uiGridPackColumn (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numcols);
-void uiGridPackRow (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numcols);
+void uiGridPack (uiwcont_t *uigrid, uiwcont_t *uiwidget, uiwcontrls_t release);
+void uiGridPackColumn (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numcols, uiwcontrls_t release);
+void uiGridPackRow (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numcols, uiwcontrls_t release);
 void uiGridPostProcess (uiwcont_t *uigrid);
 void uiGridNewRow (uiwcont_t *uigrid);
 void uiGridNewCol (uiwcont_t *uigrid);

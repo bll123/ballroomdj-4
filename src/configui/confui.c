@@ -28,9 +28,9 @@ confuiBuildUIUserInterface (confuigui_t *gui)
   uiwcont_t     *grid;
   const char    *tstr;
 
-  logProcBegin ();
   grid = uiCreateGrid ();
 
+  logMsg (LOG_DBG, LOG_INFO, "conf: build-ui: ui");
   /* user interface */
   confuiMakeNotebookTabG (grid, gui,
       /* CONTEXT: configuration: options associated with the user interface */
@@ -84,7 +84,5 @@ confuiBuildUIUserInterface (confuigui_t *gui)
       bdjoptGetStr (OPT_P_UI_MARK_COL));
 
   uiGridPostProcess (grid);
-
-  logProcEnd ("");
 }
 

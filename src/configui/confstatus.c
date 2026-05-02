@@ -39,7 +39,7 @@ confuiBuildUIEditStatus (confuigui_t *gui)
   uiwcont_t    *vbox;
   uiwcont_t    *hbox;
 
-  logProcBegin ();
+  logMsg (LOG_DBG, LOG_INFO, "conf: build-ui: status");
   vbox = uiCreateVertBox ();
 
   /* edit status */
@@ -62,7 +62,6 @@ confuiBuildUIEditStatus (confuigui_t *gui)
   uiBoxPostProcess (hbox);
   uiBoxPostProcess (vbox);
 
-  logProcEnd ("");
 }
 
 void
@@ -71,7 +70,6 @@ confuiCreateStatusTable (confuigui_t *gui)
   status_t          *status;
   uivirtlist_t      *uivl;
 
-  logProcBegin ();
 
   status = bdjvarsdfGet (BDJVDF_STATUS);
 
@@ -99,7 +97,6 @@ confuiCreateStatusTable (confuigui_t *gui)
   uivlSetRowFillCallback (uivl, confuiStatusFillRow, gui);
   uivlDisplay (uivl);
 
-  logProcEnd ("");
 }
 
 /* internal routines */
@@ -111,7 +108,6 @@ confuiStatusSave (confuigui_t *gui)
   ilist_t       *statuslist;
   ilistidx_t    count;
 
-  logProcBegin ();
 
   if (gui->tables [CONFUI_ID_STATUS].changed == false) {
     return;
@@ -133,7 +129,6 @@ confuiStatusSave (confuigui_t *gui)
 
   statusSave (status, statuslist);
   ilistFree (statuslist);
-  logProcEnd ("");
 }
 
 static void

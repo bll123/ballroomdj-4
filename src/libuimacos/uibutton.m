@@ -60,7 +60,7 @@ uiCreateButton (callback_t *uicb, const char *txt,
 {
   uiwcont_t       *uiwidget;
   uibutton_t      *uibutton;
-  uibuttonbase_t  *bbase;
+  uibuttonint_t  *bbase;
   IButton         *widget = nil;
 
   uibutton = mdmalloc (sizeof (uibutton_t));
@@ -114,7 +114,7 @@ uiCreateButton (callback_t *uicb, const char *txt,
   widget.bordered = YES;
   widget.needsDisplay = true;
 
-  bbase = &uiwidget->uiint.uibuttonbase;
+  bbase = &uiwidget->uiint.uibuttonint;
   bbase->cb = uicb;
   bbase->presscb = callbackInit (uiButtonPressCallback,
       uiwidget, "button-repeat-press");
@@ -206,7 +206,7 @@ uiButtonSetState (uiwcont_t *uiwidget, uibuttonstate_t newstate)
 {
   uibutton_t      *uibutton;
   IButton         *widget = nil;
-  uibuttonbase_t  *bbase;
+  uibuttonint_t  *bbase;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-alt-image")) {
     return;
@@ -220,7 +220,7 @@ uiButtonSetState (uiwcont_t *uiwidget, uibuttonstate_t newstate)
     return;
   }
 
-  bbase = &uiwidget->uiint.uibuttonbase;
+  bbase = &uiwidget->uiint.uibuttonint;
   if (bbase == NULL) {
     return;
   }

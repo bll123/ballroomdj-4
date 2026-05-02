@@ -95,7 +95,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
   char          tbuff [BDJ4_PATH_MAX];
   uivirtlist_t  *uivl;
 
-  logProcBegin ();
+  logMsg (LOG_DBG, LOG_INFO, "conf: build-ui: dance");
   gui->inchange = true;
   vbox = uiCreateVertBox ();
 
@@ -185,7 +185,6 @@ confuiBuildUIEditDances (confuigui_t *gui)
   uivl = gui->tables [CONFUI_ID_DANCE].uivl;
   confuiDanceSelect (gui, uivl, 0, CONFUI_DANCE_COL_DANCE);
 
-  logProcEnd ("");
 }
 
 void
@@ -295,7 +294,6 @@ confuiCreateDanceTable (confuigui_t *gui)
   ilistidx_t        count;
 
 
-  logProcBegin ();
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   uivl = gui->tables [CONFUI_ID_DANCE].uivl;
@@ -310,7 +308,6 @@ confuiCreateDanceTable (confuigui_t *gui)
   uivlSetRowFillCallback (uivl, confuiDanceFillRow, gui);
   uivlDisplay (uivl);
 
-  logProcEnd ("");
 }
 
 static int
@@ -344,13 +341,10 @@ confuiDanceEntryChg (uiwcont_t *entry, const char *label, void *udata, int widx)
   datafileconv_t  conv;
   int             entryrc = UIENTRY_ERROR;
 
-  logProcBegin ();
   if (gui->inchange) {
-    logProcEnd ("in-dance-select");
     return UIENTRY_OK;
   }
   if (gui->tablecurr != CONFUI_ID_DANCE) {
-    logProcEnd ("not-table-dance");
     return UIENTRY_OK;
   }
 
@@ -358,7 +352,6 @@ confuiDanceEntryChg (uiwcont_t *entry, const char *label, void *udata, int widx)
   /* and the value changes due to the validation */
   str = uiEntryGetValue (entry);
   if (str == NULL) {
-    logProcEnd ("null-string");
     return UIENTRY_OK;
   }
 
@@ -367,7 +360,6 @@ confuiDanceEntryChg (uiwcont_t *entry, const char *label, void *udata, int widx)
   uivl = gui->tables [CONFUI_ID_DANCE].uivl;
   count = uivlSelectionCount (uivl);
   if (count != 1) {
-    logProcEnd ("no-selection");
     return UIENTRY_OK;
   }
 
@@ -407,7 +399,6 @@ confuiDanceEntryChg (uiwcont_t *entry, const char *label, void *udata, int widx)
     gui->tables [gui->tablecurr].changed = true;
   }
 
-  logProcEnd ("");
   return entryrc;
 }
 
@@ -457,13 +448,10 @@ confuiDanceSpinboxChg (void *udata, int widx)
   ilistidx_t      dkey;
   nlistidx_t      itemidx;
 
-  logProcBegin ();
   if (gui->inchange) {
-    logProcEnd ("in-dance-select");
     return;
   }
   if (gui->tablecurr != CONFUI_ID_DANCE) {
-    logProcEnd ("not-table-dance");
     return;
   }
 
@@ -483,7 +471,6 @@ confuiDanceSpinboxChg (void *udata, int widx)
   uivl = gui->tables [CONFUI_ID_DANCE].uivl;
   count = uivlSelectionCount (uivl);
   if (count != 1) {
-    logProcEnd ("no-selection");
     return;
   }
 
@@ -494,7 +481,6 @@ confuiDanceSpinboxChg (void *udata, int widx)
   }
   danceSetNum (dances, dkey, itemidx, nval);
   gui->tables [gui->tablecurr].changed = true;
-  logProcEnd ("");
 }
 
 static int
@@ -504,9 +490,7 @@ confuiDanceValidateAnnouncement (uiwcont_t *entry, confuigui_t *gui)
   const char  *fn;
   char        nfn [BDJ4_PATH_MAX];
 
-  logProcBegin ();
   if (gui->inchange) {
-    logProcEnd ("in-dance-select");
     return UIENTRY_OK;
   }
 
@@ -514,7 +498,6 @@ confuiDanceValidateAnnouncement (uiwcont_t *entry, confuigui_t *gui)
 
   fn = uiEntryGetValue (entry);
   if (fn == NULL) {
-    logProcEnd ("bad-fn");
     gui->inchange = false;
     return UIENTRY_ERROR;
   }
@@ -547,7 +530,6 @@ confuiDanceValidateAnnouncement (uiwcont_t *entry, confuigui_t *gui)
   }
 
   gui->inchange = false;
-  logProcEnd ("");
   return rc;
 }
 
@@ -556,17 +538,14 @@ confuiDanceSave (confuigui_t *gui)
 {
   dance_t   *dances;
 
-  logProcBegin ();
 
   if (gui->tables [CONFUI_ID_DANCE].changed == false) {
-    logProcEnd ("not-changed");
     return;
   }
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   /* the data is already saved in the dance list; just re-use it */
   danceSave (dances, NULL, -1);
-  logProcEnd ("");
 }
 
 static void
@@ -578,7 +557,6 @@ confuiLoadDanceTypeList (confuigui_t *gui)
   const char    *key;
   int           count;
 
-  logProcBegin ();
 
   tlist = nlistAlloc ("cu-dance-type", LIST_ORDERED, NULL);
 
@@ -591,7 +569,6 @@ confuiLoadDanceTypeList (confuigui_t *gui)
   }
 
   gui->uiitem [CONFUI_SB_TXT_DANCE_TYPE].displist = tlist;
-  logProcEnd ("");
 }
 
 static void
@@ -626,7 +603,6 @@ confuiDanceSelect (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
   ilistidx_t    dkey;
 
   if (gui->inchange) {
-    logProcEnd ("in-dance-select");
     return;
   }
 

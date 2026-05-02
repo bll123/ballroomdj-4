@@ -64,6 +64,12 @@ uigenreDropDownCreate (uiwcont_t *boxp, uiwcont_t *parentwin, bool allflag)
 }
 
 void
+uigenrePackGrid (uigenre_t *uigenre, uiwcont_t *grid)
+{
+  uiddPackGrid (uigenre->uidd, grid);
+}
+
+void
 uigenreFree (uigenre_t *uigenre)
 {
   if (uigenre == NULL) {

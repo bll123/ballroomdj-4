@@ -49,6 +49,11 @@ uifavoriteSpinboxCreate (uiwcont_t *boxp)
   return uifavorite;
 }
 
+void
+uifavoritePackGrid (uifavorite_t *uifavorite, uiwcont_t *grid)
+{
+  uisbtextPackGrid (uifavorite->sb, grid);
+}
 
 void
 uifavoriteFree (uifavorite_t *uifavorite)

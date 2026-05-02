@@ -88,7 +88,7 @@ confuiBuildUIPlayer (confuigui_t *gui)
 {
   uiwcont_t    *grid;
 
-  logProcBegin ();
+  logMsg (LOG_DBG, LOG_INFO, "conf: build-ui: player");
   grid = uiCreateGrid ();
 
   /* player */
@@ -154,7 +154,6 @@ confuiBuildUIPlayer (confuigui_t *gui)
 
   uiGridPostProcess (grid);
 
-  logProcEnd ("");
 }
 
 static void

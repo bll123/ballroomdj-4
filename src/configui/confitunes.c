@@ -142,8 +142,8 @@ confuiBuildUIiTunes (confuigui_t *gui)
   const char    *itunesName;
   int           tagidx;
 
-  logProcBegin ();
 
+  logMsg (LOG_DBG, LOG_INFO, "conf: build-ui: itunes");
   sw = uiCreateScrolledWindow (200);
   uiWidgetExpandHoriz (sw);
   uiWidgetExpandVert (sw);
@@ -186,16 +186,16 @@ confuiBuildUIiTunes (confuigui_t *gui)
 
   dgrid = uiCreateGrid ();
   uiGridNewRow (mgrid);
-  uiGridPackColumn (mgrid, dgrid, 3);
+  uiGridPackColumn (mgrid, dgrid, 3, WCONT_FREE);
 
   /* left side: ratings */
 
   /* CONTEXT: configuration: itunes: label for itunes rating conversion */
   uiwidgetp = uiCreateLabel (_("Rating"));
-  uiGridPackRow (dgrid, uiwidgetp, 1);
+  uiGridPackRow (dgrid, uiwidgetp, 1, WCONT_FREE);
 
   rgrid = uiCreateGrid ();
-  uiGridPackRow (dgrid, rgrid, 1);
+  uiGridPackRow (dgrid, rgrid, 1, WCONT_FREE);
   uiWidgetSetAllMargins (rgrid, 2);
 
   /* itunes uses 10..100 mapping to 0.5,1,1.5,...,4.5,5 stars */
@@ -217,7 +217,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
 
     uiwidgetp = uiCreateLabel (tbuff);
     uiGridNewRow (rgrid);
-    uiGridPack (rgrid, uiwidgetp);
+    uiGridPack (rgrid, uiwidgetp, WCONT_FREE);
 
     gui->itunes->uirating [i] = uiratingSpinboxCreate (NULL, UIRATING_NORM);
     uiratingPackGrid (gui->itunes->uirating [i], rgrid);
@@ -233,10 +233,10 @@ confuiBuildUIiTunes (confuigui_t *gui)
   /* CONTEXT: configuration: itunes: which fields should be imported from itunes */
   uiwidgetp = uiCreateLabel (_("Fields to Import"));
   uiGridNewCol (dgrid);
-  uiGridPackRow (dgrid, uiwidgetp, 1);
+  uiGridPackRow (dgrid, uiwidgetp, 1, WCONT_FREE);
 
   fgrid = uiCreateGrid ();
-  uiGridPackRow (dgrid, fgrid, 1);
+  uiGridPackRow (dgrid, fgrid, 1, WCONT_FREE);
   uiWidgetSetAllMargins (fgrid, 2);
 
   count = 0;
@@ -266,8 +266,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
   uiGridPostProcess (fgrid);
   uiGridPostProcess (mgrid);
   uiGridPostProcess (dgrid);
-
-  logProcEnd ("");
+  uiwcontFree (mgrid);
 }
 
 /* internal routines */
@@ -278,11 +277,9 @@ confuiSelectiTunesDir (void *udata)
   uisfcb_t    *sfcb = udata;
   char        tbuff [BDJ4_PATH_MAX];
 
-  logProcBegin ();
   /* CONTEXT: configuration: itunes media folder selection dialog: window title */
   snprintf (tbuff, sizeof (tbuff), _("Select %s Media Location"), ITUNES_NAME);
   confuiSelectDirDialog (sfcb, bdjoptGetStr (OPT_M_DIR_ITUNES_MEDIA), tbuff);
-  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -296,7 +293,6 @@ confuiSelectiTunesFile (void *udata)
   char        dirbuff [BDJ4_PATH_MAX];
   pathinfo_t  *pi;
 
-  logProcBegin ();
   /* CONTEXT: configuration: itunes xml file selection dialog: window title */
   snprintf (tbuff, sizeof (tbuff), _("Select %s XML File"), ITUNES_NAME);
   stpecpy (dirbuff, dirbuff + sizeof (dirbuff), bdjoptGetStr (OPT_M_ITUNES_XML_FILE));
@@ -315,7 +311,6 @@ confuiSelectiTunesFile (void *udata)
     mdfree (fn);
   }
   uiSelectFree (selectdata);
-  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -327,7 +322,6 @@ confuiValidateMediaDir (uiwcont_t *entry, const char *label, void *udata)
   char        tbuff [BDJ4_PATH_MAX];
   pathinfo_t  *pi;
 
-  logProcBegin ();
   sval = uiEntryGetValue (entry);
   if (! fileopIsDirectory (sval)) {
     return UIENTRY_ERROR;
@@ -343,7 +337,6 @@ confuiValidateMediaDir (uiwcont_t *entry, const char *label, void *udata)
     }
   }
   pathInfoFree (pi);
-  logProcEnd ("");
   return UIENTRY_OK;
 }
 

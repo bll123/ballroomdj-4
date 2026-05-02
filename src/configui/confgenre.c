@@ -39,7 +39,7 @@ confuiBuildUIEditGenres (confuigui_t *gui)
   uiwcont_t    *vbox;
   uiwcont_t    *hbox;
 
-  logProcBegin ();
+  logMsg (LOG_DBG, LOG_INFO, "conf: build-ui: genre");
   vbox = uiCreateVertBox ();
 
   /* edit genre */
@@ -61,7 +61,6 @@ confuiBuildUIEditGenres (confuigui_t *gui)
   uiBoxPostProcess (hbox);
   uiBoxPostProcess (vbox);
 
-  logProcEnd ("");
 }
 
 void
@@ -70,7 +69,6 @@ confuiCreateGenreTable (confuigui_t *gui)
   genre_t           *genres;
   uivirtlist_t      *uivl;
 
-  logProcBegin ();
 
   genres = bdjvarsdfGet (BDJVDF_GENRES);
 
@@ -99,7 +97,6 @@ confuiCreateGenreTable (confuigui_t *gui)
   uivlSetRowFillCallback (uivl, confuiGenreFillRow, gui);
   uivlDisplay (uivl);
 
-  logProcEnd ("");
 }
 
 /* internal routines */
@@ -111,7 +108,6 @@ confuiGenreSave (confuigui_t *gui)
   ilist_t       *genrelist;
   ilistidx_t    count;
 
-  logProcBegin ();
 
   if (gui->tables [CONFUI_ID_GENRES].changed == false) {
     return;
@@ -133,7 +129,6 @@ confuiGenreSave (confuigui_t *gui)
 
   genreSave (genres, genrelist);
   ilistFree (genrelist);
-  logProcEnd ("");
 }
 
 static void

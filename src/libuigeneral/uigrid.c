@@ -22,6 +22,8 @@
 #include "ui/uigrid.h"
 #include "ui/uiwidget.h"
 
+static void uiGridUpdateInternals (uiwcont_t *uigrid, uiwcont_t *uiwidget, uiwcontrls_t release);
+
 uiwcont_t *
 uiCreateGrid (void)
 {
@@ -33,6 +35,7 @@ uiCreateGrid (void)
   uigrid->uiint.uigridint = uigridint;
 
   uigridint->widgetlist = nlistAlloc ("grid-widget", LIST_UNORDERED, NULL);
+  uigridint->releaselist = nlistAlloc ("grid-release", LIST_UNORDERED, NULL);
   uigridint->count = 0;
   uigridint->nrows = 0;
   uigridint->ncols = 0;
@@ -55,32 +58,38 @@ uiGridFree (uiwcont_t *uigrid)
 
   uigridint = uigrid->uiint.uigridint;
   nlistFree (uigridint->widgetlist);
+  nlistFree (uigridint->releaselist);
+  uigridint->widgetlist = NULL;
+  uigridint->releaselist = NULL;
+  mdfree (uigridint);
+  uigrid->uiint.uigridint = NULL;
 }
 
 void
-uiGridPack (uiwcont_t *uigrid, uiwcont_t *uiwidget)
+uiGridPack (uiwcont_t *uigrid, uiwcont_t *uiwidget, uiwcontrls_t release)
 {
   if (uigrid == NULL || uiwidget == NULL) {
     return;
   }
 
-  uiGridPackColumn (uigrid, uiwidget, 1);
+  uiGridPackColumn (uigrid, uiwidget, 1, release);
 }
 
 void
-uiGridPackColumn (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numcols)
+uiGridPackColumn (uiwcont_t *uigrid, uiwcont_t *uiwidget,
+    int numcols, uiwcontrls_t release)
 {
   uigridint_t   *uigridint;
-  nlist_t       *wlist;
 
   uigridint = uigrid->uiint.uigridint;
 
+  logMsg (LOG_DBG, LOG_UI | LOG_BACKTRACE,
+      "  grid-pack-c %" PRIu32 "-%" PRIu32 " %d/%d : %" PRIu32 "-%" PRIu32 " %d/%s",
+      uigrid->ui_id, uigrid->id, uigridint->row, uigridint->col,
+      uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   uiWidgetAlignHorizStart (uiwidget);
   uiGridPackLoc_r (uigrid, uiwidget, uigridint->row, uigridint->col, numcols);
-
-  wlist = uigridint->widgetlist;
-  nlistSetData (wlist, uigridint->count, uiwidget);
-  uigridint->count += 1;
+  uiGridUpdateInternals (uigrid, uiwidget, release);
 
   uigridint->col += numcols;
   if (uigridint->col > uigridint->ncols) {
@@ -90,19 +99,20 @@ uiGridPackColumn (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numcols)
 }
 
 void
-uiGridPackRow (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numcols)
+uiGridPackRow (uiwcont_t *uigrid, uiwcont_t *uiwidget,
+    int numcols, uiwcontrls_t release)
 {
   uigridint_t   *uigridint;
-  nlist_t       *wlist;
 
   uigridint = uigrid->uiint.uigridint;
 
   uiWidgetAlignHorizStart (uiwidget);
+  logMsg (LOG_DBG, LOG_UI | LOG_BACKTRACE,
+      "  grid-pack-r %" PRIu32 "-%" PRIu32 " %d/%d : %" PRIu32 "-%" PRIu32 " %d/%s",
+      uigrid->ui_id, uigrid->id, uigridint->row, uigridint->col,
+      uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   uiGridPackLoc_r (uigrid, uiwidget, uigridint->row, uigridint->col, numcols);
-
-  wlist = uigridint->widgetlist;
-  nlistSetData (wlist, uigridint->count, uiwidget);
-  uigridint->count += 1;
+  uiGridUpdateInternals (uigrid, uiwidget, release);
 
   uigridint->row += 1;
   if (uigridint->row > uigridint->nrows) {
@@ -161,6 +171,7 @@ uiGridPostProcess (uiwcont_t *uigrid)
   uigridint_t *uigridint;
   int         row, col;
   nlist_t     *wlist;
+  nlist_t     *rlist;
   nlistidx_t  iteridx;
   nlistidx_t  key;
 
@@ -173,11 +184,14 @@ uiGridPostProcess (uiwcont_t *uigrid)
   col = 0;
 
   if (uigridint->postprocess) {
-    logMsg (LOG_DBG, LOG_UI, "INFO: grid %" PRIu32 "-%" PRIu32 " post-process twice\n", uigrid->ui_id, uigrid->id);
-    // fprintf (stderr, "INFO: grid %" PRIu32 "-%" PRIu32 " post-process twice\n", uigrid->ui_id, uigrid->id);
+    logMsg (LOG_DBG, LOG_UI | LOG_BACKTRACE,
+        "INFO: grid %" PRIu32 "-%" PRIu32 " twice", uigrid->ui_id, uigrid->id);
   }
 
   wlist = uigridint->widgetlist;
+  rlist = uigridint->releaselist;
+  nlistSort (wlist);
+  nlistSort (rlist);
 
   nlistStartIterator (wlist, &iteridx);
   while ((key = nlistIterateKey (wlist, &iteridx)) >= 0) {
@@ -188,6 +202,9 @@ uiGridPostProcess (uiwcont_t *uigrid)
       break;
     }
 
+    logMsg (LOG_DBG, LOG_UI | LOG_BACKTRACE,
+        "grid-pp %" PRIu32 "-%" PRIu32,
+        uigrid->ui_id, uigrid->id);
     uiGridPostProcess_r (uigrid, row, col, uiwidgetp);
     ++col;
     if (col >= uigridint->ncols) {
@@ -202,3 +219,23 @@ uiGridPostProcess (uiwcont_t *uigrid)
   uigridint->postprocess = true;
 }
 
+/* internal routines */
+
+static void
+uiGridUpdateInternals (uiwcont_t *uigrid, uiwcont_t *uiwidget,
+    uiwcontrls_t release)
+{
+  nlist_t     *wlist;
+  nlist_t     *rlist;
+  uigridint_t *uigridint;
+
+  uigridint = uigrid->uiint.uigridint;
+  wlist = uigridint->widgetlist;
+  rlist = uigridint->releaselist;
+  nlistSetData (wlist, uigridint->count, uiwidget);
+  nlistSetNum (rlist, uigridint->count, release);
+  uigridint->count += 1;
+
+  uiwcontSetID (uigrid, uiwidget, nlistGetCount (wlist));
+  uiwidget->packed = true;
+}

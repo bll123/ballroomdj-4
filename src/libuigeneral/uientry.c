@@ -27,13 +27,13 @@ void
 uiEntrySetValidate (uiwcont_t *uiwidget, const char *label,
     uientryval_t valfunc, void *udata, int valdelay)
 {
-  uientrybase_t   *ebase;
+  uientryint_t   *ebase;
 
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-validate")) {
     return;
   }
 
-  ebase = &uiwidget->uiint.uientrybase;
+  ebase = &uiwidget->uiint.uientryint;
 
   ebase->validateFunc = valfunc;
   ebase->label = label;
@@ -58,13 +58,13 @@ int
 uiEntryValidate (uiwcont_t *uiwidget, bool forceflag)
 {
   int             rc;
-  uientrybase_t   *ebase;
+  uientryint_t   *ebase;
 
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-validate")) {
     return UIENTRY_OK;
   }
 
-  ebase = &uiwidget->uiint.uientrybase;
+  ebase = &uiwidget->uiint.uientryint;
 
   if (ebase->validateFunc == NULL) {
     return UIENTRY_OK;
@@ -102,13 +102,13 @@ uiEntryValidate (uiwcont_t *uiwidget, bool forceflag)
 void
 uiEntryValidateClear (uiwcont_t *uiwidget)
 {
-  uientrybase_t   *ebase;
+  uientryint_t   *ebase;
 
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-validate-clear")) {
     return;
   }
 
-  ebase = &uiwidget->uiint.uientrybase;
+  ebase = &uiwidget->uiint.uientryint;
 
   if (ebase->validateFunc != NULL) {
     mstimeset (&ebase->validateTimer, TM_TIMER_OFF);
@@ -124,13 +124,13 @@ uiEntryValidateDir (uiwcont_t *uiwidget, const char *label, void *udata)
   int             rc;
   const char      *dir;
   char            tbuff [BDJ4_PATH_MAX];
-  uientrybase_t   *ebase;
+  uientryint_t   *ebase;
 
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-validate-dir")) {
     return UIENTRY_OK;
   }
 
-  ebase = &uiwidget->uiint.uientrybase;
+  ebase = &uiwidget->uiint.uientryint;
 
   rc = UIENTRY_ERROR;
   dir = uiEntryGetValue (uiwidget);
@@ -153,13 +153,13 @@ uiEntryValidateFile (uiwcont_t *uiwidget, const char *label, void *udata)
   int             rc;
   const char      *fn;
   char            tbuff [BDJ4_PATH_MAX];
-  uientrybase_t   *ebase;
+  uientryint_t   *ebase;
 
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-validate-file")) {
     return UIENTRY_OK;
   }
 
-  ebase = &uiwidget->uiint.uientrybase;
+  ebase = &uiwidget->uiint.uientryint;
 
   rc = UIENTRY_ERROR;
   fn = uiEntryGetValue (uiwidget);
@@ -184,13 +184,13 @@ uiEntryValidateFile (uiwcont_t *uiwidget, const char *label, void *udata)
 bool
 uiEntryIsNotValid (uiwcont_t *uiwidget)
 {
-  uientrybase_t   *ebase;
+  uientryint_t   *ebase;
 
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-not-valid")) {
     return false;
   }
 
-  ebase = &uiwidget->uiint.uientrybase;
+  ebase = &uiwidget->uiint.uientryint;
   return ! ebase->valid;
 }
 

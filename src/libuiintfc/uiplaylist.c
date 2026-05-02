@@ -76,6 +76,12 @@ uiplaylistCreate (uiwcont_t *parentwin, uiwcont_t *hbox, int type,
 }
 
 void
+uiplaylistPackGrid (uiplaylist_t *uiplaylist, uiwcont_t *grid)
+{
+  uiddPackGrid (uiplaylist->uidd, grid);
+}
+
+void
 uiplaylistFree (uiplaylist_t *uiplaylist)
 {
   if (uiplaylist == NULL) {
@@ -86,6 +92,18 @@ uiplaylistFree (uiplaylist_t *uiplaylist)
   uiddFree (uiplaylist->uidd);
   ilistFree (uiplaylist->ddlist);
   mdfree (uiplaylist);
+}
+
+void
+uiplaylistShow (uiplaylist_t *uiplaylist)
+{
+  uiddShow (uiplaylist->uidd);
+}
+
+void
+uiplaylistHide (uiplaylist_t *uiplaylist)
+{
+  uiddHide (uiplaylist->uidd);
 }
 
 void

@@ -82,6 +82,12 @@ uidanceCreate (uiwcont_t *boxp, uiwcont_t *parentwin, int flags,
 }
 
 void
+uidancePackGrid (uidance_t *uidance, uiwcont_t *grid)
+{
+  uiddPackGrid (uidance->uidd, grid);
+}
+
+void
 uidanceFree (uidance_t *uidance)
 {
   if (uidance == NULL) {

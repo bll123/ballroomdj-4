@@ -40,7 +40,7 @@ confuiBuildUIEditRatings (confuigui_t *gui)
   uiwcont_t    *hbox;
   uiwcont_t    *uiwidgetp;
 
-  logProcBegin ();
+  logMsg (LOG_DBG, LOG_INFO, "conf: build-ui: rating");
   vbox = uiCreateVertBox ();
 
   /* edit ratings */
@@ -66,7 +66,6 @@ confuiBuildUIEditRatings (confuigui_t *gui)
   uiBoxPostProcess (hbox);
   uiBoxPostProcess (vbox);
 
-  logProcEnd ("");
 }
 
 void
@@ -75,7 +74,6 @@ confuiCreateRatingTable (confuigui_t *gui)
   rating_t          *ratings;
   uivirtlist_t      *uivl;
 
-  logProcBegin ();
 
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
 
@@ -101,7 +99,6 @@ confuiCreateRatingTable (confuigui_t *gui)
   uivlSetRowFillCallback (uivl, confuiRatingFillRow, gui);
   uivlDisplay (uivl);
 
-  logProcEnd ("");
 }
 
 /* internal routines */
@@ -113,7 +110,6 @@ confuiRatingSave (confuigui_t *gui)
   ilist_t       *ratinglist;
   ilistidx_t    count;
 
-  logProcBegin ();
 
   if (gui->tables [CONFUI_ID_RATINGS].changed == false) {
     return;
@@ -135,7 +131,6 @@ confuiRatingSave (confuigui_t *gui)
 
   ratingSave (ratings, ratinglist);
   ilistFree (ratinglist);
-  logProcEnd ("");
 }
 
 static void

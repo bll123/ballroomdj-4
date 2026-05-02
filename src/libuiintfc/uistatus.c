@@ -63,6 +63,12 @@ uistatusSpinboxCreate (uiwcont_t *boxp, bool allflag)
 
 
 void
+uistatusPackGrid (uistatus_t *uistatus, uiwcont_t *grid)
+{
+  uisbtextPackGrid (uistatus->sb, grid);
+}
+
+void
 uistatusFree (uistatus_t *uistatus)
 {
   if (uistatus == NULL) {

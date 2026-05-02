@@ -91,7 +91,7 @@ void
 uiBoxPostProcess_r (uiwcont_t *uibox,
     uiwcont_t *prev, uiwcont_t *curr, uiwcont_t *next, bool last)
 {
-  uiboxbase_t   *boxbase = NULL;
+  uiboxint_t   *boxbase = NULL;
   NSView        *box = NULL;
   macoslayout_t *boxlayout;
 
@@ -102,7 +102,7 @@ uiBoxPostProcess_r (uiwcont_t *uibox,
     return;
   }
 
-  boxbase = &uibox->uiint.uiboxbase;
+  boxbase = &uibox->uiint.uiboxint;
 
   if (boxbase->startcount == 0 && boxbase->endcount == 0) {
     return;

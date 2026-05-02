@@ -40,7 +40,7 @@ typedef struct {
 typedef struct uivnb {
   const char  *tag;
   uiwcont_t   *nb;
-  uiwcont_t   *vlist;
+  uiwcont_t   *vgrid;
   uiwcont_t   *boxlist [VNB_MAX_PAGECOUNT];
   uiwcont_t   *tablist [VNB_MAX_PAGECOUNT];
   uiwcont_t   *indlist [VNB_MAX_PAGECOUNT];
@@ -71,9 +71,9 @@ uivnbCreate (uiwcont_t *box, const char *tag)
   sw = uiCreateScrolledWindow (50);
   uiBoxPackStart (hbox, sw, WCONT_FREE);
 
-  vnb->vlist = uiCreateGrid ();
-  uiWidgetSetClass (vnb->vlist, VERTNB_BG_CLASS);
-  uiWindowPackInWindow (sw, vnb->vlist);
+  vnb->vgrid = uiCreateGrid ();
+  uiWidgetSetClass (vnb->vgrid, VERTNB_BG_CLASS);
+  uiWindowPackInWindow (sw, vnb->vgrid);
 
   vnb->nb = uiCreateNotebook ();
   uiBoxPackStartExpandChildren (hbox, vnb->nb, WCONT_KEEP);
@@ -109,11 +109,12 @@ uivnbFree (uivnb_t *vnb)
     if (vnb->boxlist [i] == NULL) {
       break;
     }
+    logMsg (LOG_DBG, LOG_UI, "vnb: free box/tab %d", i);
     uiwcontFree (vnb->boxlist [i]);
     callbackFree (vnb->tabcblist [i]);
   }
 
-  uiwcontFree (vnb->vlist);
+  uiwcontFree (vnb->vgrid);
   uiwcontFree (vnb->nb);
   mdfree (vnb);
 }
@@ -144,8 +145,8 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *nbtxt, int id)
   vnb->tabcblist [pagenum] = cb;
 
   hbox = uiCreateHorizBox ();
-  uiGridNewRow (vnb->vlist);
-  uiGridPack (vnb->vlist, hbox);
+  uiGridNewRow (vnb->vgrid);
+  uiGridPack (vnb->vgrid, hbox, WCONT_FREE);
   uiWidgetAlignHorizFill (hbox);
   uiWidgetSetClass (hbox, NB_CLASS);
   uiWidgetSetClass (hbox, NB_VERT_CLASS);
@@ -179,7 +180,7 @@ uivnbPostProcess (uivnb_t *vnb)
     return;
   }
 
-  uiGridPostProcess (vnb->vlist);
+  uiGridPostProcess (vnb->vgrid);
   uivnbSetPage (vnb, 0);
 }
 

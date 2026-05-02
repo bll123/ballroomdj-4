@@ -48,24 +48,24 @@ uiCreateHorizBox (void)
 void
 uiBoxFree (uiwcont_t *uibox)
 {
-  uiboxbase_t *boxbase;
+  uiboxint_t *boxint;
   nlist_t     *wlist;
   nlist_t     *rlist;
 
-  boxbase = &uibox->uiint.uiboxbase;
-  wlist = boxbase->widgetlist;
-  rlist = boxbase->releaselist;
+  boxint = &uibox->uiint.uiboxint;
+  wlist = boxint->widgetlist;
+  rlist = boxint->releaselist;
   nlistFree (wlist);
   nlistFree (rlist);
-  uibox->uiint.uiboxbase.widgetlist = NULL;
-  uibox->uiint.uiboxbase.releaselist = NULL;
+  uibox->uiint.uiboxint.widgetlist = NULL;
+  uibox->uiint.uiboxint.releaselist = NULL;
   uiBoxFree_r (uibox);
 }
 
 void
 uiBoxPostProcess (uiwcont_t *uibox)
 {
-  uiboxbase_t *boxbase;
+  uiboxint_t *boxint;
   nlist_t     *wlist;
   nlist_t     *rlist;
   nlistidx_t  iteridx;
@@ -78,15 +78,15 @@ uiBoxPostProcess (uiwcont_t *uibox)
     return;
   }
 
-  boxbase = &uibox->uiint.uiboxbase;
+  boxint = &uibox->uiint.uiboxint;
 
-  if (boxbase->postprocess) {
-    logMsg (LOG_DBG, LOG_UI, "INFO: box %" PRIu32 "-%" PRIu32 " post-process twice\n", uibox->ui_id, uibox->id);
-    // fprintf (stderr, "INFO: box %" PRIu32 "-%" PRIu32 " post-process twice\n", uibox->ui_id, uibox->id);
+  if (boxint->postprocess) {
+    logMsg (LOG_DBG, LOG_UI | LOG_BACKTRACE,
+        "INFO: box %" PRIu32 "-%" PRIu32 " twice", uibox->ui_id, uibox->id);
   }
 
-  wlist = boxbase->widgetlist;
-  rlist = boxbase->releaselist;
+  wlist = boxint->widgetlist;
+  rlist = boxint->releaselist;
   nlistSort (wlist);
   nlistSort (rlist);
 
@@ -103,17 +103,22 @@ uiBoxPostProcess (uiwcont_t *uibox)
     curr = next;
     next = uiwidgetp;
     if (curr != NULL) {
-//fprintf (stderr, "  post-process %d-%d %d/%s\n", uibox->ui_id, uibox->id, uibox->wtype, uiwcontDesc (uibox->wtype));
+      logMsg (LOG_DBG, LOG_UI | LOG_BACKTRACE,
+          "box-pp %" PRIu32 "-%" PRIu32 " %d/%s",
+          uibox->ui_id, uibox->id, uibox->wtype, uiwcontDesc (uibox->wtype));
       uiBoxPostProcess_r (uibox, prev, curr, next, false);
     }
   }
   prev = curr;
   curr = next;
   next = NULL;
-//fprintf (stderr, "  post-process (last) %d-%d %d/%s\n", uibox->ui_id, uibox->id, uibox->wtype, uiwcontDesc (uibox->wtype));
+  logMsg (LOG_DBG, LOG_UI | LOG_BACKTRACE,
+      "box-pp (last) %" PRIu32 "-%" PRIu32 " %d/%s",
+      uibox->ui_id, uibox->id, uibox->wtype, uiwcontDesc
+      (uibox->wtype));
   uiBoxPostProcess_r (uibox, prev, curr, next, true);
 
-  boxbase->postprocess = true;
+  boxint->postprocess = true;
 }
 
 void
@@ -179,57 +184,56 @@ uiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget,
 static void
 uiBoxCreateBase (uiwcont_t *uibox)
 {
-  uiboxbase_t   *boxbase;
+  uiboxint_t   *boxint;
 
-  boxbase = &uibox->uiint.uiboxbase;
-  boxbase->widgetlist = nlistAlloc ("box-widget", LIST_UNORDERED, NULL);
-  boxbase->releaselist = nlistAlloc ("box-release", LIST_UNORDERED, NULL);
-  boxbase->startcount = 0;
-  boxbase->endcount = 100;
-  boxbase->postprocess = false;
+  boxint = &uibox->uiint.uiboxint;
+  boxint->widgetlist = nlistAlloc ("box-widget", LIST_UNORDERED, NULL);
+  boxint->releaselist = nlistAlloc ("box-release", LIST_UNORDERED, NULL);
+  boxint->startcount = 0;
+  boxint->endcount = 100;
+  boxint->postprocess = false;
 }
 
 static void
 uiBoxStartListAdd (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release)
 {
-  uiboxbase_t *boxbase;
+  uiboxint_t *boxint;
 
-  boxbase = &uibox->uiint.uiboxbase;
-  uiBoxListAdd (uibox, uiwidget, release, boxbase->startcount);
-  boxbase->startcount += 1;
+  boxint = &uibox->uiint.uiboxint;
+  uiBoxListAdd (uibox, uiwidget, release, boxint->startcount);
+  boxint->startcount += 1;
 }
 
 static void
 uiBoxEndListAdd (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release)
 {
-  uiboxbase_t *boxbase;
+  uiboxint_t *boxint;
 
-  boxbase = &uibox->uiint.uiboxbase;
-  uiBoxListAdd (uibox, uiwidget, release, boxbase->endcount);
-  boxbase->endcount -= 1;
+  boxint = &uibox->uiint.uiboxint;
+  uiBoxListAdd (uibox, uiwidget, release, boxint->endcount);
+  boxint->endcount -= 1;
 }
 
 static void
 uiBoxListAdd (uiwcont_t *uibox, uiwcont_t *uiwidget,
     uiwcontrls_t release, int32_t idx)
 {
-  uiboxbase_t *boxbase;
+  uiboxint_t  *boxint;
   nlist_t     *wlist;
   nlist_t     *rlist;
 
 
-  boxbase = &uibox->uiint.uiboxbase;
-  wlist = boxbase->widgetlist;
+  boxint = &uibox->uiint.uiboxint;
+  wlist = boxint->widgetlist;
   nlistSetData (wlist, idx, uiwidget);
-  rlist = boxbase->releaselist;
+  rlist = boxint->releaselist;
   nlistSetNum (rlist, idx, release);
 
-  if (uiwidget->wbasetype != WCONT_T_BOX &&
-      uiwidget->wbasetype != WCONT_T_WINDOW) {
-    uiwidget->id = uibox->id + nlistGetCount (wlist);
-  }
-  logMsg (LOG_DBG, LOG_UI, "wcont: pack: %" PRIu32 "-%" PRIu32 " %s box: %" PRIu32 "-%" PRIu32, uiwidget->ui_id, uiwidget->id, uiwcontDesc (uiwidget->wtype), uibox->ui_id, uibox->id);
-//fprintf (stderr, "wcont: pack: %" PRIu32 "-%" PRIu32 " %s box: %" PRIu32 "-%" PRIu32 "\n", uiwidget->ui_id, uiwidget->id, uiwcontDesc (uiwidget->wtype), uibox->ui_id, uibox->id);
+  uiwcontSetID (uibox, uiwidget, nlistGetCount (wlist));
+  logMsg (LOG_DBG, LOG_UI | LOG_BACKTRACE,
+      "wcont: pack: %" PRIu32 "-%" PRIu32 " %s box: %" PRIu32 "-%" PRIu32,
+      uiwidget->ui_id, uiwidget->id, uiwcontDesc (uiwidget->wtype),
+      uibox->ui_id, uibox->id);
   uiwidget->parentid = uibox->id;
   uiwidget->packed = true;
 }

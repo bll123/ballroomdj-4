@@ -158,7 +158,7 @@ uisbPackGrid (uisb_t *sb, uiwcont_t *grid)
     return;
   }
 
-  uiGridPack (grid, sb->wcont [SB_W_HBOX]);
+  uiGridPack (grid, sb->wcont [SB_W_HBOX], WCONT_KEEP);
 }
 
 void

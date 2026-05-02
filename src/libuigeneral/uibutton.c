@@ -22,14 +22,14 @@
 bool
 uiButtonCheckRepeat (uiwcont_t *uiwidget)
 {
-  uibuttonbase_t  *bbase;
+  uibuttonint_t  *bbase;
   bool            rc = false;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-repeat")) {
     return rc;
   }
 
-  bbase = &uiwidget->uiint.uibuttonbase;
+  bbase = &uiwidget->uiint.uibuttonint;
 
   if (bbase->repeating) {
     if (mstimeCheck (&bbase->repeatTimer)) {
@@ -50,14 +50,14 @@ bool
 uiButtonPressCallback (void *udata)
 {
   uiwcont_t       *uiwidget = udata;
-  uibuttonbase_t  *bbase;
+  uibuttonint_t  *bbase;
   callback_t      *uicb;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-state")) {
     return UICB_CONT;
   }
 
-  bbase = &uiwidget->uiint.uibuttonbase;
+  bbase = &uiwidget->uiint.uibuttonint;
   uicb = bbase->cb;
 
   bbase->repeating = false;
@@ -80,13 +80,13 @@ bool
 uiButtonReleaseCallback (void *udata)
 {
   uiwcont_t       *uiwidget = udata;
-  uibuttonbase_t  *bbase;
+  uibuttonint_t  *bbase;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-state")) {
     return UICB_CONT;
   }
 
-  bbase = &uiwidget->uiint.uibuttonbase;
+  bbase = &uiwidget->uiint.uibuttonint;
 
   bbase->repeating = false;
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: button-release");
@@ -96,13 +96,13 @@ uiButtonReleaseCallback (void *udata)
 uibuttonstate_t
 uiButtonGetState (uiwcont_t *uiwidget)
 {
-  uibuttonbase_t  *bbase;
+  uibuttonint_t  *bbase;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-repeat")) {
     return BUTTON_OFF;
   }
 
-  bbase = &uiwidget->uiint.uibuttonbase;
+  bbase = &uiwidget->uiint.uibuttonint;
   if (bbase == NULL) {
     return BUTTON_OFF;
   }

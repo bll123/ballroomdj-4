@@ -187,7 +187,24 @@ uiddPackGrid (uidd_t *dd, uiwcont_t *grid)
     return;
   }
 
-  uiGridPack (grid, dd->wcont [DD_W_BUTTON]);
+  uiGridPack (grid, dd->wcont [DD_W_BUTTON], WCONT_KEEP);
+}
+
+void
+uiddShow (uidd_t *dd)
+{
+  uiWidgetShow (dd->wcont [DD_W_BUTTON]);
+}
+
+void
+uiddHide (uidd_t *dd)
+{
+  uiWidgetHide (dd->wcont [DD_W_BUTTON]);
+  if (dd->open) {
+    uiWidgetHide (dd->wcont [DD_W_DIALOG_WIN]);
+    dd->open = false;
+  }
+  uiWindowPresent (dd->parentwin);
 }
 
 void

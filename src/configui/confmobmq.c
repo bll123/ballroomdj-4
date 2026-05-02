@@ -49,6 +49,7 @@ confuiBuildUIMobileMarquee (confuigui_t *gui)
 {
   uiwcont_t   *grid;
 
+  logMsg (LOG_DBG, LOG_INFO, "conf: build-ui: mobmq");
   grid = uiCreateGrid ();
 
   /* mobile marquee */
@@ -96,8 +97,6 @@ confuiBuildUIMobileMarquee (confuigui_t *gui)
   uiGridPostProcess (grid);
 
   confuiMobmqSetWidgetStates (gui, bdjoptGetNum (OPT_P_MOBMQ_TYPE));
-
-  logProcEnd ("");
 }
 
 /* internal routines */
@@ -108,9 +107,7 @@ confuiMobmqTypeChg (void *udata)
   confuigui_t   *gui = udata;
   int           type;
 
-  logProcBegin ();
   if (gui->tablecurr != CONFUI_ID_MOBILE_MQ) {
-    logProcEnd ("not-table-mobmq");
     return UIENTRY_OK;
   }
   type = uisbtextGetValue (gui->uiitem [CONFUI_SB_TXT_MOBMQ_TYPE].sbtxt);
@@ -122,7 +119,6 @@ confuiMobmqTypeChg (void *udata)
 
   confuiMobmqSetWidgetStates (gui, type);
   confuiUpdateMobmqQrcode (gui);
-  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -133,16 +129,13 @@ confuiMobmqPortChg (void *udata)
   double        value;
   long          nval;
 
-  logProcBegin ();
   if (gui->tablecurr != CONFUI_ID_MOBILE_MQ) {
-    logProcEnd ("not-table-mobmq");
     return UIENTRY_OK;
   }
   value = uisbnumGetValue (gui->uiitem [CONFUI_SB_NUM_MOBMQ_PORT].sbnum);
   nval = (long) value;
   bdjoptSetNum (OPT_P_MOBMQ_PORT, nval);
   confuiUpdateMobmqQrcode (gui);
-  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -152,15 +145,12 @@ confuiMobmqTitleChg (uiwcont_t *entry, const char *label, void *udata)
   confuigui_t     *gui = udata;
   const char      *sval;
 
-  logProcBegin ();
   if (gui->tablecurr != CONFUI_ID_MOBILE_MQ) {
-    logProcEnd ("not-table-mobmq");
     return UIENTRY_OK;
   }
   sval = uiEntryGetValue (entry);
   bdjoptSetStr (OPT_P_MOBMQ_TITLE, sval);
   confuiUpdateMobmqQrcode (gui);
-  logProcEnd ("");
   return UIENTRY_OK;
 }
 
@@ -174,9 +164,7 @@ confuiMobmqTagChg (uiwcont_t *entry, const char *label, void *udata)
   int             type;
   int             widx;
 
-  logProcBegin ();
   if (gui->tablecurr != CONFUI_ID_MOBILE_MQ) {
-    logProcEnd ("not-table-mobmq");
     return UIENTRY_OK;
   }
   type = bdjoptGetNum (OPT_P_MOBMQ_TYPE);
@@ -196,7 +184,6 @@ confuiMobmqTagChg (uiwcont_t *entry, const char *label, void *udata)
   confuiMarkValid (gui, widx);
   bdjoptSetStr (OPT_P_MOBMQ_TAG, sval);
   confuiUpdateMobmqQrcode (gui);
-  logProcEnd ("");
   return UIENTRY_OK;
 }
 
@@ -210,9 +197,7 @@ confuiMobmqKeyChg (uiwcont_t *entry, const char *label, void *udata)
   int             type;
   int             widx;
 
-  logProcBegin ();
   if (gui->tablecurr != CONFUI_ID_MOBILE_MQ) {
-    logProcEnd ("not-table-mobmq");
     return UIENTRY_OK;
   }
   type = bdjoptGetNum (OPT_P_MOBMQ_TYPE);
@@ -231,7 +216,6 @@ confuiMobmqKeyChg (uiwcont_t *entry, const char *label, void *udata)
   }
   confuiMarkValid (gui, widx);
   bdjoptSetStr (OPT_P_MOBMQ_KEY, sval);
-  logProcEnd ("");
   return UIENTRY_OK;
 }
 

@@ -40,7 +40,7 @@ confuiBuildUIEditLevels (confuigui_t *gui)
   uiwcont_t    *hbox;
   uiwcont_t    *uiwidgetp;
 
-  logProcBegin ();
+  logMsg (LOG_DBG, LOG_INFO, "conf: build-ui: level");
   vbox = uiCreateVertBox ();
 
   /* edit levels */
@@ -66,7 +66,6 @@ confuiBuildUIEditLevels (confuigui_t *gui)
   uiBoxPostProcess (hbox);
   uiBoxPostProcess (vbox);
 
-  logProcEnd ("");
 }
 
 void
@@ -75,7 +74,6 @@ confuiCreateLevelTable (confuigui_t *gui)
   level_t           *levels;
   uivirtlist_t      *uivl;
 
-  logProcBegin ();
 
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
@@ -111,7 +109,6 @@ confuiCreateLevelTable (confuigui_t *gui)
   uivlSetRowFillCallback (uivl, confuiLevelFillRow, gui);
   uivlDisplay (uivl);
 
-  logProcEnd ("");
 }
 
 /* internal routines */
@@ -123,7 +120,6 @@ confuiLevelSave (confuigui_t *gui)
   ilist_t       *levellist;
   ilistidx_t    count;
 
-  logProcBegin ();
 
   if (gui->tables [CONFUI_ID_LEVELS].changed == false) {
     return;
@@ -148,7 +144,6 @@ confuiLevelSave (confuigui_t *gui)
 
   levelSave (levels, levellist);
   ilistFree (levellist);
-  logProcEnd ("");
 }
 
 static void

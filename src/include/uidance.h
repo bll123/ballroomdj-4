@@ -22,6 +22,7 @@ enum {
 typedef struct uidance uidance_t;
 
 uidance_t * uidanceCreate (uiwcont_t *boxp, uiwcont_t *parentwin, int flags, const char *label, int where, int count);
+void uidancePackGrid (uidance_t *uidance, uiwcont_t *grid);
 uiwcont_t * uidanceGetButton (uidance_t *uidance);
 void uidanceFree (uidance_t *uidance);
 ilistidx_t uidanceGetKey (uidance_t *uidance);

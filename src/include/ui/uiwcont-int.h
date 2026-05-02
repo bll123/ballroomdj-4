@@ -66,16 +66,16 @@ enum {
 };
 
 /* used in all ui interfaces */
-typedef struct uiboxbase {
+typedef struct uiboxint {
   nlist_t         *widgetlist;
   nlist_t         *releaselist;
   int             startcount;
   int             endcount;
   bool            postprocess;
-} uiboxbase_t;
+} uiboxint_t;
 
 /* used in all ui interfaces */
-typedef struct uibuttonbase {
+typedef struct uibuttonint {
   callback_t      *cb;
   callback_t      *presscb;
   callback_t      *releasecb;
@@ -84,10 +84,10 @@ typedef struct uibuttonbase {
   uibuttonstate_t state;
   bool            repeatOn;
   bool            repeating;
-} uibuttonbase_t;
+} uibuttonint_t;
 
 /* used in all ui interfaces */
-typedef struct uientrybase {
+typedef struct uientryint {
   const char      *label;
   void            *udata;
   uientryval_t    validateFunc;
@@ -98,11 +98,12 @@ typedef struct uientrybase {
   bool            valdelay;
   bool            valid;
   bool            useicon;
-} uientrybase_t;
+} uientryint_t;
 
 /* used in all ui interfaces */
 typedef struct uigridint {
   nlist_t         *widgetlist;
+  nlist_t         *releaselist;
   int             count;
   int             row;
   int             col;
@@ -130,15 +131,15 @@ typedef struct uiwindow uiwindow_t;
 typedef union {
     void          *voidwidget;
     struct {
-      uiboxbase_t     uiboxbase;
+      uiboxint_t      uiboxint;
       uibox_t         *uibox;
     };
     struct {
-      uibuttonbase_t  uibuttonbase;
+      uibuttonint_t   uibuttonint;
       uibutton_t      *uibutton;
     };
     struct {
-      uientrybase_t   uientrybase;
+      uientryint_t    uientryint;
       uientry_t       *uientry;
     };
     uievent_t     *uievent;

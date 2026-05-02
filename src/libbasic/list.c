@@ -106,7 +106,7 @@ listAlloc (const char *name, keytype_t keytype, listorder_t ordered, listFree_t 
   list->readCacheHits = 0;
   list->writeCacheHits = 0;
 
-  logMsg (LOG_DBG, LOG_LIST, "list alloc %s", name);
+  logMsg (LOG_DBG, LOG_LIST | LOG_BACKTRACE, "list alloc %s", name);
   return list;
 }
 
@@ -119,9 +119,9 @@ listFree (keytype_t keytype, void *tlist)
     return;
   }
 
-  logMsg (LOG_DBG, LOG_LIST, "list free %s", list->name);
+  logMsg (LOG_DBG, LOG_LIST | LOG_BACKTRACE, "list free %s", list->name);
   if (list->readCacheHits > 0 || list->writeCacheHits > 0) {
-    logMsg (LOG_DBG, LOG_LIST,
+    logMsg (LOG_DBG, LOG_LIST | LOG_BACKTRACE,
         "list %s: cache read:%ld write:%ld",
         list->name, list->readCacheHits, list->writeCacheHits);
   }
@@ -177,7 +177,7 @@ listSort (keytype_t keytype, list_t *list)
   swaps = mergeSort (list, 0, list->count - 1);
   elapsed = mstimeend (&tm);
   if (elapsed > 0) {
-    logMsg (LOG_DBG, LOG_LIST, "sort of %s took %" PRId64 " ms with %ld swaps", list->name, (int64_t) elapsed, swaps);
+    logMsg (LOG_DBG, LOG_LIST | LOG_BACKTRACE, "list: sort of %s took %" PRId64 " ms with %ld swaps", list->name, (int64_t) elapsed, swaps);
   }
 }
 
@@ -420,7 +420,7 @@ listGetDataByIdx (keytype_t keytype, list_t *list, listidx_t idx)
     value = list->data [idx].value.data;
   }
 
-  logMsg (LOG_DBG, LOG_LIST, "list:gdatabi:%s idx:%" PRId32 " ?/%d", list->name, idx, value == NULL);
+  logMsg (LOG_DBG, LOG_LIST | LOG_BACKTRACE, "list:gdatabi:%s idx:%" PRId32 " ?/%d", list->name, idx, value == NULL);
   return value;
 }
 
@@ -437,7 +437,7 @@ listGetStrByIdx (keytype_t keytype, list_t *list, listidx_t idx)
   }
 
   value = listGetDataByIdx (keytype, list, idx);
-  logMsg (LOG_DBG, LOG_LIST, "list:gsbi:%s idx:%" PRId32 " %s/%d", list->name, idx, value, value == NULL);
+  logMsg (LOG_DBG, LOG_LIST | LOG_BACKTRACE, "list:gsbi:%s idx:%" PRId32 " %s/%d", list->name, idx, value, value == NULL);
   return value;
 }
 
@@ -452,7 +452,7 @@ listGetNumByIdx (keytype_t keytype, list_t *list, listidx_t idx)
   if (idx >= 0 && idx < list->count) {
     value = list->data [idx].value.num;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:gnbi:%s idx:%" PRId32 " %" PRId64, list->name, idx, value);
+  logMsg (LOG_DBG, LOG_LIST | LOG_BACKTRACE, "list:gnbi:%s idx:%" PRId32 " %" PRId64, list->name, idx, value);
   return value;
 }
 
@@ -468,7 +468,7 @@ listGetDoubleByIdx (keytype_t keytype, list_t *list, listidx_t idx)
     value = list->data [idx].value.dval;
   }
 
-  logMsg (LOG_DBG, LOG_LIST, "list:gdbi:%s idx:%" PRId32 " %.2f", list->name, idx, value);
+  logMsg (LOG_DBG, LOG_LIST | LOG_BACKTRACE, "list:gdbi:%s idx:%" PRId32 " %.2f", list->name, idx, value);
   return value;
 }
 
@@ -496,7 +496,7 @@ listDeleteByIdx (keytype_t keytype, list_t *list, listidx_t idx)
        memcpy (list->data + i, list->data + i + 1, sizeof (listitem_t));
     }
   }
-  logMsg (LOG_DBG, LOG_LIST, "list-del:%s idx:%" PRId32, list->name, idx);
+  logMsg (LOG_DBG, LOG_LIST | LOG_BACKTRACE, "list-del:%s idx:%" PRId32, list->name, idx);
 }
 
 void
@@ -647,11 +647,11 @@ listDumpInfo (keytype_t keytype, list_t *list)
 {
   if (! listCheckIfValid (list, keytype)) {
     if (list == NULL) {
-      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: list: null");
+      logMsg (LOG_ERR, LOG_IMPORTANT | LOG_BACKTRACE, "ERR: list: null");
     }
     return;
   }
-  logMsg (LOG_DBG, LOG_DATAFILE, "list: %s count: %" PRId32 " key:%d ordered:%d",
+  logMsg (LOG_DBG, LOG_DATAFILE | LOG_BACKTRACE, "list: %s count: %" PRId32 " key:%d ordered:%d",
       list->name, list->count, list->keytype, list->ordered);
 }
 
@@ -798,12 +798,12 @@ listCheckIfValid (list_t *list, keytype_t keytype)
   }
 
   if (list->listident != LIST_IDENT) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: list: bad ident");
+    logMsg (LOG_ERR, LOG_IMPORTANT | LOG_BACKTRACE, "ERR: list: bad ident");
     return false;
   }
 
   if (list->keytype != keytype) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: list: mismatched key %s have:%d got:%d", list->name, list->keytype, keytype);
+    logMsg (LOG_ERR, LOG_IMPORTANT | LOG_BACKTRACE, "ERR: list: mismatched key %s have:%d got:%d", list->name, list->keytype, keytype);
     return false;
   }
 

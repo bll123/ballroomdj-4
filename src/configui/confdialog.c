@@ -55,7 +55,7 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
   uiwcont_t     *uiwidgetp;
   nlistidx_t    val;
 
-  logProcBegin ();
+  logMsg (LOG_DBG, LOG_INFO, "conf: build-ui: dialog");
   grid = uiCreateGrid ();
 
   /* filter display */
@@ -67,7 +67,7 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
 
   /* CONTEXT: configuration: filter display: song selection filters */
   uiwidgetp = uiCreateLabel (_("Filter Songs"));
-  uiGridPackRow (grid, uiwidgetp, 1);
+  uiGridPackRow (grid, uiwidgetp, 1, WCONT_FREE);
 
   for (int i = 0; i < FILTER_DISP_MAX; ++i) {
     int         j;
@@ -91,7 +91,7 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
   uiwidgetp = uiCreateLabel ("   ");
 
   uiGridNewCol (grid);
-  uiGridPackRow (grid, uiwidgetp, 1);
+  uiGridPackRow (grid, uiwidgetp, 1, WCONT_FREE);
 
   /* column 3 */
 
@@ -99,7 +99,7 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
   uiwidgetp = uiCreateLabel (_("Quick Edit"));
 
   uiGridNewCol (grid);
-  uiGridPackRow (grid, uiwidgetp, 1);
+  uiGridPackRow (grid, uiwidgetp, 1, WCONT_FREE);
 
   for (int i = 0; i < QUICKEDIT_DISP_MAX; ++i) {
     int     j;
@@ -112,6 +112,6 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
     gui->uiitem [j].outtype = CONFUI_OUT_CB;
   }
 
-  logProcEnd ("");
+  uiGridPostProcess (grid);
 }
 

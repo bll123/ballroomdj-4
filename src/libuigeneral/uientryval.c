@@ -29,9 +29,9 @@ void
 uiEntryValidateHandler (uiwcont_t *uiwidget)
 {
   int           rc;
-  uientrybase_t *ebase;
+  uientryint_t *ebase;
 
-  ebase = &uiwidget->uiint.uientrybase;
+  ebase = &uiwidget->uiint.uientryint;
 
   if (ebase->valdelay) {
     uiEntryValidateStart (uiwidget);
@@ -54,9 +54,9 @@ uiEntryValidateHandler (uiwcont_t *uiwidget)
 static void
 uiEntryValidateStart (uiwcont_t *uiwidget)
 {
-  uientrybase_t   *ebase;
+  uientryint_t   *ebase;
 
-  ebase = &uiwidget->uiint.uientrybase;
+  ebase = &uiwidget->uiint.uientryint;
   if (ebase->validateFunc != NULL) {
     mstimeset (&ebase->validateTimer, ebase->valdelaytime);
   }

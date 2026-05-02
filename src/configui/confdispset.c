@@ -73,6 +73,7 @@ confuiBuildUIDispSettings (confuigui_t *gui)
   uiwcont_t    *vbox;
   uiwcont_t    *grid;
 
+  logMsg (LOG_DBG, LOG_INFO, "conf: build-ui: dispset");
   vbox = uiCreateVertBox ();
 
   /* display settings */
@@ -109,10 +110,8 @@ confuiDispSaveTable (confuigui_t *gui, int selidx)
   slistidx_t    iteridx;
   const char    *tstr;
 
-  logProcBegin ();
 
   if (! uiduallistIsChanged (gui->dispselduallist)) {
-    logProcEnd ("not-changed");
     return;
   }
 
@@ -131,7 +130,6 @@ confuiDispSaveTable (confuigui_t *gui, int selidx)
 
   slistFree (tlist);
   slistFree (nlist);
-  logProcEnd ("");
 }
 
 /* internal routines */
@@ -144,7 +142,6 @@ confuiDispSettingChg (void *udata)
   int         nselidx;
   int         widx = CONFUI_SB_TXT_DISP_SEL;
 
-  logProcBegin ();
 
 
   oselidx = gui->uiitem [widx].listidx;
@@ -155,6 +152,5 @@ confuiDispSettingChg (void *udata)
   /* be sure to create the selected list (target) first */
   confuiCreateTagSelectedDisp (gui);
   confuiCreateTagListingDisp (gui);
-  logProcEnd ("");
   return UICB_CONT;
 }

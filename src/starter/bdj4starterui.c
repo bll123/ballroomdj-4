@@ -738,7 +738,7 @@ starterBuildUI (startui_t  *starter)
       starter->callbacks [START_CB_PLAYER],
       /* CONTEXT: starterui: button: starts the player user interface */
       _("Player"), NULL, NULL);
-  uiGridPack (bgrid, uiwidgetp);
+  uiGridPack (bgrid, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiButtonAlignLeft (uiwidgetp);
@@ -751,7 +751,7 @@ starterBuildUI (startui_t  *starter)
       /* CONTEXT: starterui: button: starts the management user interface */
       _("Manage"), NULL, NULL);
   uiGridNewRow (bgrid);
-  uiGridPack (bgrid, uiwidgetp);
+  uiGridPack (bgrid, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiButtonAlignLeft (uiwidgetp);
@@ -764,7 +764,7 @@ starterBuildUI (startui_t  *starter)
       /* CONTEXT: starterui: button: starts the configuration user interface */
       _("Configure"), NULL, NULL);
   uiGridNewRow (bgrid);
-  uiGridPack (bgrid, uiwidgetp);
+  uiGridPack (bgrid, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiButtonAlignLeft (uiwidgetp);
@@ -777,7 +777,7 @@ starterBuildUI (startui_t  *starter)
       /* CONTEXT: starterui: button: support : support information */
       _("Support"), NULL, NULL);
   uiGridNewRow (bgrid);
-  uiGridPack (bgrid, uiwidgetp);
+  uiGridPack (bgrid, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiButtonAlignLeft (uiwidgetp);
@@ -788,7 +788,7 @@ starterBuildUI (startui_t  *starter)
       /* CONTEXT: starterui: button: exits BDJ4 (exits everything) */
       _("Exit"), NULL, NULL);
   uiGridNewRow (bgrid);
-  uiGridPack (bgrid, uiwidgetp);
+  uiGridPack (bgrid, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiButtonAlignLeft (uiwidgetp);

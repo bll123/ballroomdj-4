@@ -33,7 +33,7 @@ uiEntryInit (int entrySize, int maxSize)
   uientry_t       *uientry;
   uiwcont_t       *uiwidget;
   NSTextField     *widget;
-  uientrybase_t   *ebase;
+  uientryint_t   *ebase;
 
   uientry = mdmalloc (sizeof (uientry_t));
   uientry->changed = false;
@@ -52,7 +52,7 @@ uiEntryInit (int entrySize, int maxSize)
 
   uiWidgetSetIdentifier (uiwidget, "entry");
 
-  ebase = &uiwidget->uiint.uientrybase;
+  ebase = &uiwidget->uiint.uientryint;
   ebase->entrySize = entrySize;
   ebase->maxSize = maxSize;
   ebase->validateFunc = NULL;
@@ -88,14 +88,14 @@ uiEntryFree (uiwcont_t *uiwidget)
 void
 uiEntrySetWidth (uiwcont_t *uiwidget, int maxWidth)
 {
-  uientrybase_t *ebase;
+  uientryint_t *ebase;
 
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-width")) {
     return;
   }
 
   // set-max-width
-  ebase = &uiwidget->uiint.uientrybase;
+  ebase = &uiwidget->uiint.uientryint;
   ebase->entrySize = maxWidth;
 }
 

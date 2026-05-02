@@ -32,6 +32,8 @@
 #include "ui/uiwindow.h"
 
 static void uiwcontBoxFree (uiwcont_t *uibox);
+static void uiwcontGridFree (uiwcont_t *uigrid);
+static void uiwcontFreeInternals (nlist_t *wlist, nlist_t *rlist);
 
 void
 uiwcontFree (uiwcont_t *uiwidget)
@@ -40,10 +42,17 @@ uiwcontFree (uiwcont_t *uiwidget)
     return;
   }
 
+  logMsg (LOG_DBG, LOG_UI | LOG_BACKTRACE,
+      "wcont-free: %d-%d %d/%s",
+      uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
+
   switch (uiwidget->wtype) {
     case WCONT_T_UNKNOWN: {
-      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: trying to free %" PRIu32 "-%" PRIu32 " twice", uiwidget->ui_id, uiwidget->id);
-      fprintf (stderr, "ERR: trying to free %" PRIu32 "-%" PRIu32 " twice\n", uiwidget->ui_id, uiwidget->id);
+      logMsg (LOG_ERR, LOG_IMPORTANT | LOG_BACKTRACE,
+          "ERR: trying to free %" PRIu32 "-%" PRIu32 " twice",
+          uiwidget->ui_id, uiwidget->id);
+      fprintf (stderr, "ERR: trying to free %" PRIu32 "-%" PRIu32 " twice\n",
+          uiwidget->ui_id, uiwidget->id);
       return;
     }
     case WCONT_T_HBOX:
@@ -60,7 +69,7 @@ uiwcontFree (uiwcont_t *uiwidget)
       break;
     }
     case WCONT_T_GRID: {
-      uiGridFree (uiwidget);
+      uiwcontGridFree (uiwidget);
       break;
     }
     case WCONT_T_IMAGE: {
@@ -110,28 +119,60 @@ uiwcontFree (uiwcont_t *uiwidget)
 static void
 uiwcontBoxFree (uiwcont_t *uibox)
 {
-  uiboxbase_t *boxbase;
+  uiboxint_t *boxbase;
   nlist_t     *wlist;
   nlist_t     *rlist;
-  nlistidx_t  iteridx;
-  int         key;
   int32_t     tid;
 
-  if (! uiwcontValid (uibox, WCONT_T_BOX, "wcont-box-free")) {
-    return;
-  }
-
-  boxbase = &uibox->uiint.uiboxbase;
+  boxbase = &uibox->uiint.uiboxint;
   tid = uibox->id;
 
   if (! boxbase->postprocess) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: box %" PRIu32 "-%" PRIu32 " not post-process", uibox->ui_id, tid);
-    fprintf (stderr, "ERR: box %" PRIu32 "-%" PRIu32 " not post-process\n", uibox->ui_id, tid);
+    logMsg (LOG_ERR, LOG_IMPORTANT | LOG_BACKTRACE,
+        "ERR: box %" PRIu32 "-%" PRIu32 " not post-process",
+        uibox->ui_id, tid);
+    fprintf (stderr, "ERR: box %" PRIu32 "-%" PRIu32 " not post-process\n",
+        uibox->ui_id, tid);
   }
 
   // fprintf (stderr, "   free %" PRIu32 "-%" PRIu32 " \n", uibox->ui_id, tid);
   wlist = boxbase->widgetlist;
   rlist = boxbase->releaselist;
+  uiwcontFreeInternals (wlist, rlist);
+  uiBoxFree (uibox);
+}
+
+static void
+uiwcontGridFree (uiwcont_t *uigrid)
+{
+  uigridint_t *uigridint;
+  nlist_t     *wlist;
+  nlist_t     *rlist;
+  int32_t     tid;
+
+  uigridint = uigrid->uiint.uigridint;
+  tid = uigrid->id;
+
+  if (! uigridint->postprocess) {
+    logMsg (LOG_ERR, LOG_IMPORTANT | LOG_BACKTRACE,
+        "ERR: grid %" PRIu32 "-%" PRIu32 " not post-process",
+        uigrid->ui_id, tid);
+    fprintf (stderr, "ERR: grid %" PRIu32 "-%" PRIu32 " not post-process\n",
+        uigrid->ui_id, tid);
+  }
+
+  wlist = uigridint->widgetlist;
+  rlist = uigridint->releaselist;
+  uiwcontFreeInternals (wlist, rlist);
+  uiGridFree (uigrid);
+}
+
+static void
+uiwcontFreeInternals (nlist_t *wlist, nlist_t *rlist)
+{
+  nlistidx_t      iteridx;
+  nlistidx_t      key;
+
   nlistStartIterator (wlist, &iteridx);
   while ((key = nlistIterateKey (wlist, &iteridx)) >= 0) {
     uiwcontrls_t    release;
@@ -140,10 +181,9 @@ uiwcontBoxFree (uiwcont_t *uibox)
     if (release == WCONT_FREE) {
       uiwcont_t     *uiwidgetp;
 
+      logMsg (LOG_DBG, LOG_UI, "  int-free: %d", key);
       uiwidgetp = nlistGetData (wlist, key);
       uiwcontFree (uiwidgetp);
     }
   }
-
-  uiBoxFree (uibox);
 }

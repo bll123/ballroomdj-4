@@ -26,8 +26,8 @@ confuiBuildUIDebug (confuigui_t *gui)
   uiwcont_t     *grid;
   nlistidx_t    val;
 
-  logProcBegin ();
 
+  logMsg (LOG_DBG, LOG_INFO, "conf: build-ui: debug");
   grid = uiCreateGrid ();
 
   /* debug */
@@ -99,19 +99,23 @@ confuiBuildUIDebug (confuigui_t *gui)
       CONFUI_DBG_WEBCLIENT, -1, (val & LOG_WEBCLIENT));
   confuiMakeItemCheckButtonG (gui, grid, "Web Server",
       CONFUI_DBG_WEBSRV, -1, (val & LOG_WEBSRV));
+  confuiMakeItemCheckButtonG (gui, grid, "Backtrace",
+      CONFUI_DBG_BACKTRACE, -1, (val & LOG_BACKTRACE));
 
   for (int i = CONFUI_DBG_IMPORTANT; i < CONFUI_DBG_MAX; ++i) {
-    long    idx;
-    long    bitval;
-
     gui->uiitem [i].outtype = CONFUI_OUT_DEBUG;
-    idx = i - CONFUI_DBG_IMPORTANT;
-    bitval = 1 << idx;
-    gui->uiitem [i].debuglvl = bitval;
+    if (i == CONFUI_DBG_BACKTRACE) {
+      gui->uiitem [i].debuglvl = LOG_BACKTRACE;
+    } else {
+      int         idx;
+      loglevel_t  bitval;
+
+      idx = i - CONFUI_DBG_IMPORTANT;
+      bitval = 1 << idx;
+      gui->uiitem [i].debuglvl = bitval;
+    }
   }
 
   uiGridPostProcess (grid);
-
-  logProcEnd ("");
 }
 

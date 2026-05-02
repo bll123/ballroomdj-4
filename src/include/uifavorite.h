@@ -14,6 +14,7 @@ extern "C" {
 typedef struct uifavorite uifavorite_t;
 
 uifavorite_t * uifavoriteSpinboxCreate (uiwcont_t *boxp);
+void uifavoritePackGrid (uifavorite_t *uifavorite, uiwcont_t *grid);
 void uifavoriteFree (uifavorite_t *uifavorite);
 int uifavoriteGetValue (uifavorite_t *uifavorite);
 void uifavoriteSetValue (uifavorite_t *uifavorite, int value);

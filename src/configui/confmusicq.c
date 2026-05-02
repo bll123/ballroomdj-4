@@ -55,8 +55,8 @@ confuiBuildUIMusicQs (confuigui_t *gui)
   uiwcont_t     *grid;
   int           widx;
 
-  logProcBegin ();
 
+  logMsg (LOG_DBG, LOG_INFO, "conf: build-ui: musicq");
   gui->inbuild = true;
 
   sw = uiCreateScrolledWindow (200);
@@ -155,6 +155,7 @@ confuiBuildUIMusicQs (confuigui_t *gui)
       bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, 0), NULL, CONFUI_INDENT);
 
   uiGridPostProcess (grid);
+  uiwcontFree (grid);
 
   widx = CONFUI_SB_NUM_Q_CROSSFADE;
   gui->uiitem [widx].callback = callbackInit (
@@ -165,7 +166,6 @@ confuiBuildUIMusicQs (confuigui_t *gui)
   gui->inbuild = false;
   confuiMusicQChg (gui);   // calls active-chg
 
-  logProcEnd ("");
 }
 
 static bool
@@ -244,7 +244,6 @@ confuiMusicQChg (void *udata)
   int         nselidx;
   int         widx;
 
-  logProcBegin ();
 
   if (gui->inbuild) {
     return UICB_CONT;
@@ -304,7 +303,6 @@ confuiMusicQChg (void *udata)
   confuiMusicQActiveChg (gui);
   confuiMusicQUpdateState (gui, nselidx);
 
-  logProcEnd ("");
   return UICB_CONT;
 }
 

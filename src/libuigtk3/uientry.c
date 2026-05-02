@@ -37,7 +37,7 @@ uiEntryInit (int entrySize, int maxSize)
 {
   uiwcont_t     *uiwidget;
   uientry_t     *uientry;
-  uientrybase_t *ebase;
+  uientryint_t *ebase;
   GtkWidget     *widget;
 
   uientry = mdmalloc (sizeof (uientry_t));
@@ -50,7 +50,7 @@ uiEntryInit (int entrySize, int maxSize)
   uiwidget->uiint.uientry = uientry;
   uientry->changed = false;
 
-  ebase = &uiwidget->uiint.uientrybase;
+  ebase = &uiwidget->uiint.uientryint;
   ebase->entrySize = entrySize;
   ebase->maxSize = maxSize;
   ebase->validateFunc = NULL;
@@ -87,14 +87,14 @@ uiEntryFree (uiwcont_t *uiwidget)
 void
 uiEntrySetWidth (uiwcont_t *uiwidget, int maxWidth)
 {
-  uientrybase_t *ebase;
+  uientryint_t *ebase;
 
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-width")) {
     return;
   }
 
   gtk_entry_set_width_chars (GTK_ENTRY (uiwidget->uidata.widget), maxWidth);
-  ebase = &uiwidget->uiint.uientrybase;
+  ebase = &uiwidget->uiint.uientryint;
   ebase->entrySize = maxWidth;
 }
 

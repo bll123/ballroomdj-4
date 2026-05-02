@@ -92,7 +92,7 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
   uivirtlist_t  *uivl;
   const char    *label;
 
-  logProcBegin ();
+  logMsg (LOG_DBG, LOG_INFO, "conf: build-ui: as");
   gui->inchange = true;
   vbox = uiCreateVertBox ();
 
@@ -182,7 +182,6 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
   uivlSetSelectChgCallback (gui->tables [CONFUI_ID_AUDIOSRC].uivl,
       confuiAudioSrcSelect, gui);
 
-  logProcEnd ("");
 }
 
 void
@@ -260,7 +259,6 @@ confuiAudioSrcCreateTable (confuigui_t *gui)
   ilistidx_t        count;
 
 
-  logProcBegin ();
 
   uivl = gui->tables [CONFUI_ID_AUDIOSRC].uivl;
   uivlSetDarkBackground (uivl);
@@ -274,7 +272,6 @@ confuiAudioSrcCreateTable (confuigui_t *gui)
   uivlSetRowFillCallback (uivl, confuiAudioSrcFillRow, gui);
   uivlDisplay (uivl);
 
-  logProcEnd ("");
 }
 
 static int
@@ -318,13 +315,10 @@ confuiAudioSrcEntryChg (void *udata, const char *label, int widx)
   int             type;
   int             flags;
 
-  logProcBegin ();
   if (gui->inchange) {
-    logProcEnd ("in-asconf-select");
     return UIENTRY_OK;
   }
   if (gui->tablecurr != CONFUI_ID_AUDIOSRC) {
-    logProcEnd ("not-table-asconf");
     return UIENTRY_OK;
   }
 
@@ -379,7 +373,6 @@ confuiAudioSrcEntryChg (void *udata, const char *label, int widx)
   uivl = gui->tables [CONFUI_ID_AUDIOSRC].uivl;
   count = uivlSelectionCount (uivl);
   if (count != 1) {
-    logProcEnd ("no-selection");
     return UIENTRY_OK;
   }
 
@@ -393,7 +386,6 @@ confuiAudioSrcEntryChg (void *udata, const char *label, int widx)
   gui->tables [gui->tablecurr].changed = true;
   gui->changed = true;
 
-  logProcEnd ("");
   return entryrc;
 }
 
@@ -428,13 +420,10 @@ confuiAudioSrcSpinboxChg (void *udata, int widx)
   ilistidx_t      askey;
   nlistidx_t      itemidx;
 
-  logProcBegin ();
   if (gui->inchange) {
-    logProcEnd ("in-asconf-select");
     return;
   }
   if (gui->tablecurr != CONFUI_ID_AUDIOSRC) {
-    logProcEnd ("not-table-asconf");
     return;
   }
 
@@ -454,7 +443,6 @@ confuiAudioSrcSpinboxChg (void *udata, int widx)
   uivl = gui->tables [CONFUI_ID_AUDIOSRC].uivl;
   count = uivlSelectionCount (uivl);
   if (count != 1) {
-    logProcEnd ("no-selection");
     return;
   }
 
@@ -490,21 +478,17 @@ confuiAudioSrcSpinboxChg (void *udata, int widx)
     confuiAudioSrcValidateAll (gui, true);
   }
 
-  logProcEnd ("");
 }
 
 static void
 confuiAudioSrcSave (confuigui_t *gui)
 {
-  logProcBegin ();
 
   if (gui->tables [CONFUI_ID_AUDIOSRC].changed == false) {
-    logProcEnd ("not-changed");
     return;
   }
 
   if (gui->invalid_count != 0) {
-    logProcEnd ("not-valid");
     return;
   }
   confuiSetErrorMsg (gui, "");
@@ -512,7 +496,6 @@ confuiAudioSrcSave (confuigui_t *gui)
 
   /* the data is already saved in the list; just re-use it */
   asconfSave (gui->asconf, NULL, -1);
-  logProcEnd ("");
 }
 
 static void
@@ -542,7 +525,6 @@ confuiAudioSrcSelect (void *udata, uivirtlist_t *vl, int32_t rownum, int colidx)
   ilistidx_t    askey;
 
   if (gui->inchange) {
-    logProcEnd ("in-asconf-select");
     return;
   }
 

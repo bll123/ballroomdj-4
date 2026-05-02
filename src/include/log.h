@@ -81,9 +81,10 @@ enum {
   LOG_GROUPING        = (1 << 26), // 67108864  0x04000000
   LOG_AUDIOSRC        = (1 << 27), // 134217728 0x08000000
   LOG_UI              = (1 << 28), // 268435456 0x10000000
-  /* insert new values here, push redir_inst down */
+  /* insert new values here */
+  LOG_BACKTRACE       = 0x40000000,
   LOG_REDIR_INST      = 0x80000000,
-  LOG_ALL             = ~LOG_REDIR_INST,
+  LOG_ALL             = ~(LOG_REDIR_INST | LOG_BACKTRACE),
 };
 
 typedef enum {
@@ -123,8 +124,6 @@ void logSetLevel (logidx_t idx, loglevel_t level, const char *processtag);
 void logStart (const char *processnm, const char *processtag, loglevel_t level);
 void logStartAppend (const char *processnm, const char *processtag, loglevel_t level);
 void logEnd (void);
-void logBacktraceHandler (int sig);
-void logBacktrace (void);
 const char * logPlayerState (playerstate_t plstate);
 const char * logStateDebugText (int state);
 void logBasic (const char *fmt, ...)

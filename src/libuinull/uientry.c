@@ -40,13 +40,13 @@ uiEntryFree (uiwcont_t *uiwidget)
 void
 uiEntrySetWidth (uiwcont_t *uiwidget, int maxWidth)
 {
-  uientrybase_t *ebase;
+  uientryint_t *ebase;
 
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-width")) {
     return;
   }
 
-  ebase = &uiwidget->uiint.uientrybase;
+  ebase = &uiwidget->uiint.uientryint;
   ebase->entrySize = maxWidth;
 }
 

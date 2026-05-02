@@ -13,6 +13,7 @@
 #include <stdatomic.h>
 
 #include "bdjstring.h"
+#include "log.h"
 #include "mdebug.h"
 #include "uiwcont.h"
 
@@ -21,7 +22,7 @@
 
 static _Atomic(int32_t) gbdj4id_old = 0;
 static _Atomic(int32_t) gbdj4id = 0;
-static _Atomic(int32_t) gboxcount = 100;
+static _Atomic(int32_t) gwidgetid = 100;
 
 void
 uiwcontInitID (int32_t id)
@@ -57,11 +58,11 @@ uiwcontAlloc_r (int basetype, int type, const char *fn, int lineno)
   if (uiwidget->wbasetype == WCONT_T_BOX ||
       uiwidget->wbasetype == WCONT_T_WINDOW ||
       uiwidget->wbasetype == WCONT_T_GRID) {
-    uiwidget->id = gboxcount;
-    gboxcount += 100;
+    uiwidget->id = gwidgetid;
+    gwidgetid += 100;
   }
 
-//fprintf (stderr, "wcont: %s %d-%d\n", uiwcontDesc (uiwidget->wtype), uiwidget->ui_id, uiwidget->id);
+  logMsg (LOG_DBG, LOG_UI, "wcont: %s %d-%d", uiwcontDesc (uiwidget->wtype), uiwidget->ui_id, uiwidget->id);
   memset (&uiwidget->uiint, 0, sizeof (uiwcontint_t));
   uiwcontUIInit (uiwidget);                     // ui interface specific
   return uiwidget;
@@ -95,6 +96,17 @@ uiwcontSetWidget (uiwcont_t *uiwidget, void *widget, void *packwidget)
     uiwidget->uidata.packwidget = widget;
   }
   uiwcontUIWidgetInit (uiwidget);
+}
+
+void
+uiwcontSetID (uiwcont_t *parent, uiwcont_t *uiwidget, int count)
+{
+  if (uiwidget->wbasetype != WCONT_T_BOX &&
+      uiwidget->wbasetype != WCONT_T_GRID &&
+      uiwidget->wbasetype != WCONT_T_WINDOW) {
+    uiwidget->id = parent->id + count;
+  }
+  uiwidget->parentid = parent->id;
 }
 
 /* for debugging */

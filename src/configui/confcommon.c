@@ -138,7 +138,6 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
   int           type;
   uiwcont_t     *uiwidgetp = NULL;
 
-  logProcBegin ();
 
   type = bdjoptGetNum (OPT_P_MOBMQ_TYPE);
 
@@ -168,7 +167,6 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
   uiLinkSet (uiwidgetp, uridisp, qruri);
   dataFree (gui->uiitem [CONFUI_WIDGET_MOBMQ_QR_CODE].uri);
   gui->uiitem [CONFUI_WIDGET_MOBMQ_QR_CODE].uri = mdstrdup (qruri);
-  logProcEnd ("");
 }
 
 void
@@ -182,7 +180,6 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
   bool          enabled;
   uiwcont_t    *uiwidgetp;
 
-  logProcBegin ();
 
   enabled = bdjoptGetNum (OPT_P_REMOTECONTROL);
 
@@ -226,7 +223,6 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
   dataFree (gui->uiitem [CONFUI_WIDGET_RC_QR_CODE_B].uri);
   gui->uiitem [CONFUI_WIDGET_RC_QR_CODE_B].uri = mdstrdup (qrurib);
 
-  logProcEnd ("");
 }
 
 void
@@ -244,7 +240,6 @@ confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath)
     return;
   }
 
-  logProcBegin ();
   org = orgAlloc (orgpath);
 
   /* the only genres that are shipped are : */
@@ -280,7 +275,6 @@ confuiUpdateOrgExamples (confuigui_t *gui, const char *orgpath)
   regexFree (rxwaltz);
   regexFree (rxgenre);
   orgFree (org);
-  logProcEnd ("");
 }
 
 void
@@ -331,7 +325,6 @@ confuiSelectDirDialog (uisfcb_t *sfcb, const char *startpath,
   char        *fn = NULL;
   uiselect_t  *selectdata;
 
-  logProcBegin ();
   selectdata = uiSelectInit (sfcb->window, title, startpath, NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
@@ -340,7 +333,6 @@ confuiSelectDirDialog (uisfcb_t *sfcb, const char *startpath,
     mdfree (fn);
   }
   uiSelectFree (selectdata);
-  logProcEnd ("");
 }
 
 void
@@ -350,7 +342,6 @@ confuiSelectFileDialog (uisfcb_t *sfcb, const char *startpath,
   char        *fn = NULL;
   uiselect_t  *selectdata;
 
-  logProcBegin ();
   selectdata = uiSelectInit (sfcb->window,
       /* CONTEXT: configuration: file selection dialog: window title */
       _("Select File"), startpath, NULL, mimefiltername, mimetype);
@@ -361,7 +352,6 @@ confuiSelectFileDialog (uisfcb_t *sfcb, const char *startpath,
     mdfree (fn);
   }
   uiSelectFree (selectdata);
-  logProcEnd ("");
 }
 
 void
@@ -370,7 +360,6 @@ confuiCreateTagListingDisp (confuigui_t *gui)
   dispselsel_t  selidx;
   int           widx = CONFUI_SB_TXT_DISP_SEL;
 
-  logProcBegin ();
 
   selidx = uisbtextGetValue (gui->uiitem [widx].sbtxt);
 
@@ -389,7 +378,6 @@ confuiCreateTagListingDisp (confuigui_t *gui)
   } else {
     uiduallistSet (gui->dispselduallist, gui->listingtaglist, DL_LIST_SOURCE);
   }
-  logProcEnd ("");
 }
 
 void
@@ -400,7 +388,6 @@ confuiCreateTagSelectedDisp (confuigui_t *gui)
   dispsel_t     *dispsel;
   int           widx = CONFUI_SB_TXT_DISP_SEL;
 
-  logProcBegin ();
 
   selidx = uisbtextGetValue (gui->uiitem [widx].sbtxt);
 
@@ -408,7 +395,6 @@ confuiCreateTagSelectedDisp (confuigui_t *gui)
   sellist = dispselGetList (dispsel, selidx);
 
   uiduallistSet (gui->dispselduallist, sellist, DL_LIST_TARGET);
-  logProcEnd ("");
 }
 
 void
@@ -478,7 +464,6 @@ confuiGetThemeList (void)
   int         uitype;
 
 
-  logProcBegin ();
   sthemelist = slistAlloc ("cu-themes-s", LIST_ORDERED, NULL);
   themelist = nlistAlloc ("cu-themes", LIST_ORDERED, NULL);
 
@@ -543,7 +528,6 @@ confuiGetThemeList (void)
 
   slistFree (sthemelist);
 
-  logProcEnd ("");
   return themelist;
 }
 
@@ -556,7 +540,6 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
   static char   *srchfn = "gtk.css";
   int           uitype;
 
-  logProcBegin ();
   uitype = uiBackend ();
   if (uitype == BDJ4_UI_ID_GTK3) {
     srchdir = "gtk-3.0";
@@ -567,7 +550,6 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
   }
 
   if (filelist == NULL) {
-    logProcEnd ("no-filelist");
     return NULL;
   }
 
@@ -613,7 +595,6 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
     } /* is directory */
   } /* for each file */
 
-  logProcEnd ("");
   return themelist;
 }
 
@@ -629,7 +610,6 @@ confuiMakeQRCodeFile (const char *tag, const char *title,
   FILE          *fh;
   size_t        dlen;
 
-  logProcBegin ();
 
   snprintf (tname, sizeof (tname), "qrcode%s", tag);
   pathbldMakePath (baseuri, sizeof (baseuri),
@@ -659,7 +639,6 @@ confuiMakeQRCodeFile (const char *tag, const char *title,
       AS_FILE_PFX, sysvarsGetStr (SV_BDJ4_DIR_DATATOP), tbuff);
 
   mdfree (ndata);
-  logProcEnd ("");
 }
 
 static void
@@ -673,7 +652,6 @@ confuiUpdateOrgExample (org_t *org, const char *data, uiwcont_t *uiwidgetp)
     return;
   }
 
-  logProcBegin ();
   tdata = mdstrdup (data);
   song = songAlloc ();
   songParse (song, tdata, 0);
@@ -683,7 +661,6 @@ confuiUpdateOrgExample (org_t *org, const char *data, uiwcont_t *uiwidgetp)
   songFree (song);
   mdfree (disp);
   mdfree (tdata);
-  logProcEnd ("");
 }
 
 int32_t
@@ -691,12 +668,10 @@ confuiOrgPathSelect (void *udata, const char *sval)
 {
   confuigui_t *gui = udata;
 
-  logProcBegin ();
   if (sval != NULL && *sval) {
     bdjoptSetStr (OPT_G_ORGPATH, sval);
     confuiUpdateOrgExamples (gui, sval);
   }
-  logProcEnd ("");
   return UICB_CONT;
 }
 

@@ -62,7 +62,6 @@ uiratingSpinboxCreate (uiwcont_t *boxp, bool allflag)
   return uirating;
 }
 
-
 void
 uiratingFree (uirating_t *uirating)
 {

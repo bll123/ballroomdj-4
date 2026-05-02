@@ -73,7 +73,7 @@ confuiBuildUIGeneral (confuigui_t *gui)
   char          tbuff [BDJ4_PATH_MAX];
   char          ebuff [BDJ4_PATH_MAX];
 
-  logProcBegin ();
+  logMsg (LOG_DBG, LOG_INFO, "conf: build-ui: general");
   sw = uiCreateScrolledWindow (200);
   uiWidgetExpandHoriz (sw);
   uiWidgetExpandVert (sw);
@@ -187,8 +187,7 @@ confuiBuildUIGeneral (confuigui_t *gui)
       bdjoptGetStr (OPT_G_ACRCLOUD_API_HOST), CONFUI_NO_INDENT);
 
   uiGridPostProcess (grid);
-
-  logProcEnd ("");
+  uiwcontFree (grid);
 }
 
 
@@ -199,11 +198,9 @@ confuiSelectMusicDir (void *udata)
 {
   uisfcb_t    *sfcb = udata;
 
-  logProcBegin ();
   confuiSelectDirDialog (sfcb, bdjoptGetStr (OPT_M_DIR_MUSIC),
       /* CONTEXT: configuration: folder selection dialog: window title */
       _("Select Music Folder Location"));
-  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -212,9 +209,7 @@ confuiSelectStartup (void *udata)
 {
   uisfcb_t    *sfcb = udata;
 
-  logProcBegin ();
   confuiSelectFileDialog (sfcb, sysvarsGetStr (SV_BDJ4_DIR_SCRIPT), NULL, NULL);
-  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -223,9 +218,7 @@ confuiSelectShutdown (void *udata)
 {
   uisfcb_t    *sfcb = udata;
 
-  logProcBegin ();
   confuiSelectFileDialog (sfcb, sysvarsGetStr (SV_BDJ4_DIR_SCRIPT), NULL, NULL);
-  logProcEnd ("");
   return UICB_CONT;
 }
 

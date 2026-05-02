@@ -51,7 +51,7 @@ uiCreateButton (callback_t *uicb, const char *txt,
 {
   uiwcont_t       *uiwidget;
   uibutton_t      *uibutton;
-  uibuttonbase_t  *bbase;
+  uibuttonint_t  *bbase;
   GtkWidget       *widget;
 
   uibutton = mdmalloc (sizeof (uibutton_t));
@@ -94,7 +94,7 @@ uiCreateButton (callback_t *uicb, const char *txt,
   uiwcontSetWidget (uiwidget, widget, NULL);
   uiwidget->uiint.uibutton = uibutton;
 
-  bbase = &uiwidget->uiint.uibuttonbase;
+  bbase = &uiwidget->uiint.uibuttonint;
   bbase->cb = uicb;
   bbase->presscb = callbackInit (uiButtonPressCallback,
       uiwidget, "button-repeat-press");
@@ -127,14 +127,14 @@ void
 uiButtonFree (uiwcont_t *uiwidget)
 {
   uibutton_t      *uibutton;
-  uibuttonbase_t  *bbase;
+  uibuttonint_t  *bbase;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-free")) {
     return;
   }
 
   uibutton = uiwidget->uiint.uibutton;
-  bbase = &uiwidget->uiint.uibuttonbase;
+  bbase = &uiwidget->uiint.uibuttonint;
 
   callbackFree (bbase->presscb);
   callbackFree (bbase->releasecb);
@@ -213,7 +213,7 @@ void
 uiButtonSetState (uiwcont_t *uiwidget, uibuttonstate_t newstate)
 {
   uibutton_t      *uibutton;
-  uibuttonbase_t  *bbase;
+  uibuttonint_t  *bbase;
   GtkWidget       *widget;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-alt-image")) {
@@ -228,7 +228,7 @@ uiButtonSetState (uiwcont_t *uiwidget, uibuttonstate_t newstate)
     return;
   }
 
-  bbase = &uiwidget->uiint.uibuttonbase;
+  bbase = &uiwidget->uiint.uibuttonint;
   if (bbase == NULL) {
     return;
   }
@@ -308,13 +308,13 @@ uiButtonSetText (uiwcont_t *uiwidget, const char *txt)
 void
 uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms)
 {
-  uibuttonbase_t    *bbase;
+  uibuttonint_t    *bbase;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-repeat")) {
     return;
   }
 
-  bbase = &uiwidget->uiint.uibuttonbase;
+  bbase = &uiwidget->uiint.uibuttonint;
 
   bbase->repeatMS = repeatms;
   bbase->repeatOn = true;
@@ -330,7 +330,7 @@ static void
 uiButtonSignalHandler (GtkButton *b, gpointer udata)
 {
   uiwcont_t       *uiwidget = udata;
-  uibuttonbase_t  *bbase;
+  uibuttonint_t  *bbase;
 
   if (uiwidget == NULL) {
     return;
@@ -340,7 +340,7 @@ uiButtonSignalHandler (GtkButton *b, gpointer udata)
     return;
   }
 
-  bbase = &uiwidget->uiint.uibuttonbase;
+  bbase = &uiwidget->uiint.uibuttonint;
 
   if (bbase->repeatOn) {
     return;

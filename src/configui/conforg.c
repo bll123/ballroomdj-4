@@ -81,7 +81,7 @@ confuiBuildUIOrganization (confuigui_t *gui)
 {
   uiwcont_t    *grid;
 
-  logProcBegin ();
+  logMsg (LOG_DBG, LOG_INFO, "conf: build-ui: org");
   grid = uiCreateGrid ();
 
   /* organization */
@@ -114,6 +114,5 @@ confuiBuildUIOrganization (confuigui_t *gui)
 
   uiGridPostProcess (grid);
 
-  logProcEnd ("");
 }
 

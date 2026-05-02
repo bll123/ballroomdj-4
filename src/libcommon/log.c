@@ -64,10 +64,19 @@ static_assert (sizeof (stateTxt) / sizeof (const char *) == BDJ4_STATE_MAX,
 typedef struct bdjlog {
   fileshared_t  *fhandle;
   const char    *processTag;
-  ssize_t       level;
-  int           indent;
+  loglevel_t    level;
   bool          opened;
 } bdjlog_t;
+
+enum {
+  LOG_MAX_STACK = 40,
+  LOG_FUNC_NM_SZ = 60,
+};
+
+typedef struct {
+  char        func [LOG_FUNC_NM_SZ];
+  int         line;
+} logfuncstack_t;
 
 static void rlogStart (const char *processnm, const char *processtag, int truncflag, loglevel_t level);
 static void rlogOpen (logidx_t idx, const char *fn, const char *processtag, int truncflag);
@@ -75,8 +84,10 @@ static void logInit (void);
 static void logAlloc (void);
 static const char * logTail (const char *fn);
 
-static bdjlog_t *syslogs [LOG_MAX];
-static char * logbasenm [LOG_MAX];
+static _Atomic(int)   stacksz = 0;
+static logfuncstack_t logfuncstack [LOG_MAX_STACK];
+static bdjlog_t       * syslogs [LOG_MAX];
+static char           * logbasenm [LOG_MAX];
 static volatile atomic_flag initialized = ATOMIC_FLAG_INIT;
 static volatile _Atomic(int) logsallocated = 0;
 
@@ -113,25 +124,28 @@ rlogStartProgram (logidx_t idx, const char *prog, const char *fn, int32_t line, 
 void
 rlogProcBegin (const char *fn, int32_t line, const char *func)
 {
-  if (! logCheck (LOG_DBG, LOG_PROC)) {
-    return;
+  char    *p;
+
+  logInit ();
+
+  if (stacksz < LOG_MAX_STACK) {
+    p = logfuncstack [stacksz].func;
+    stpecpy (p, p + LOG_FUNC_NM_SZ, func);
+    logfuncstack [stacksz].line = line;
+    stacksz += 1;
   }
-  rlogVarMsg (LOG_DBG, LOG_PROC, fn, line, func, "- %s begin", func);
-  syslogs [LOG_DBG]->indent += 2;
 }
 
 void
 rlogProcEnd (const char *suffix,
     const char *fn, int32_t line, const char *func)
 {
-  if (! logCheck (LOG_DBG, LOG_PROC)) {
-    return;
+  logInit ();
+
+  stacksz -= 1;
+  if (stacksz < 0) {
+    stacksz = 0;
   }
-  syslogs [LOG_DBG]->indent -= 2;
-  if (syslogs [LOG_DBG]->indent < 0) {
-    syslogs [LOG_DBG]->indent = 0;
-  }
-  rlogVarMsg (LOG_DBG, LOG_PROC, fn, line, func, "- %s end %s", func, suffix);
 }
 
 void
@@ -190,12 +204,21 @@ rlogVarMsg (logidx_t idx, loglevel_t level,
     snprintf (tfn, sizeof (tfn), "(%s: %s(): %d)", logTail (fn), func, line);
   }
   wlen = (size_t) snprintf (wbuff, sizeof (wbuff),
-      "%s: %-4s %*s%s %s\n", ttm, l->processTag, l->indent, "", tbuff, tfn);
+      "%s: %-4s %s %s\n", ttm, l->processTag, tbuff, tfn);
   wlen = wlen > LOG_MAX_BUFF ? LOG_MAX_BUFF - 1 : wlen;
   fileSharedWrite (l->fhandle, wbuff, wlen);
   if (idx == LOG_ERR) {
     l = syslogs [LOG_DBG];
     if (l->opened) {
+      fileSharedWrite (l->fhandle, wbuff, wlen);
+    }
+  }
+
+  if (logCheck (LOG_DBG, LOG_BACKTRACE) &&
+      (level & LOG_BACKTRACE) == LOG_BACKTRACE) {
+    for (int i = 0; i < stacksz; ++i) {
+      wlen = (size_t) snprintf (wbuff, sizeof (wbuff),
+          "%*s  %-4s %s\n", (int) strlen (ttm), "", "", logfuncstack [i].func);
       fileSharedWrite (l->fhandle, wbuff, wlen);
     }
   }
@@ -265,6 +288,9 @@ logCheck (logidx_t idx, loglevel_t level)
   if (! l->opened) {
     return false;
   }
+  if (level != LOG_BACKTRACE) {
+    level &= LOG_ALL;
+  }
   if (! (level & l->level)) {
     return false;
   }
@@ -291,43 +317,6 @@ logStateDebugText (int state)
 
   return stateTxt [state];
 }
-
-enum {
-  LOG_BACKTRACE_SIZE = 30,
-};
-
-#if 0 /* for debugging */
-void
-logBacktraceHandler (int sig)     /* KEEP */
-{
-  logBacktrace ();
-  exit (1);
-}
-#endif
-
-#if 0 /* for debugging */
-void
-logBacktrace (void) /* KEEP */
-{
-#if _lib_backtrace
-  void    *array [LOG_BACKTRACE_SIZE];
-  char    **out;
-  size_t  size;
-
-  size = backtrace (array, LOG_BACKTRACE_SIZE);
-  out = backtrace_symbols (array, size);
-  for (size_t i = 0; i < size; ++i) {
-    if (syslogs [LOG_ERR] != NULL) {
-      syslogs [LOG_ERR]->level |= LOG_IMPORTANT;
-      rlogVarMsg (LOG_ERR, LOG_IMPORTANT, "bt", 0, "", "bt: %2ld: %s", i, out [i]);
-    } else {
-      fprintf (stderr, "bt: %2ld: %s\n", i, out [i]);
-    }
-  }
-  mdfree (out);
-#endif
-}
-#endif
 
 void
 logBasic (const char *fmt, ...)    /* KEEP */
@@ -430,6 +419,10 @@ logInit (void)
     return;
   }
 
+  for (int i = 0; i < LOG_MAX_STACK; ++i) {
+    logfuncstack [i].func [0] = '\0';
+  }
+
   logbasenm [LOG_ERR] = LOG_ERROR_NAME;
   logbasenm [LOG_SESS] = LOG_SESSION_NAME;
   logbasenm [LOG_DBG] = LOG_DEBUG_NAME;
@@ -453,7 +446,6 @@ logAlloc (void)
 
       l = mdmalloc (sizeof (bdjlog_t));
       l->opened = false;
-      l->indent = 0;
       l->level = 0;
       l->processTag = "unkn";
       syslogs [idx] = l;
@@ -486,3 +478,4 @@ logTail (const char *fn)
   }
   return p;
 }
+

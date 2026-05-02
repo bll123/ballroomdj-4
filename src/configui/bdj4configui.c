@@ -218,7 +218,6 @@ main (int argc, char *argv[])
 
   confui.dbgflags = BDJ4_INIT_NO_DB_LOAD;
   bdj4startup (argc, argv, NULL, "cfui", ROUTE_CONFIGUI, &confui.dbgflags);
-  logProcBegin ();
 
   confui.gui.dispsel = dispselAlloc (DISP_SEL_LOAD_ALL);
 
@@ -303,7 +302,6 @@ main (int argc, char *argv[])
   confuiCleanOrganization (&confui.gui);
   confuiCleaniTunes (&confui.gui);
 
-  logProcEnd ("");
   logEnd ();
   mdebugReport ();
   mdebugCleanup ();
@@ -319,7 +317,6 @@ confuiStoppingCallback (void *udata, programstate_t programState)
   int           x, y, ws;
   char          tmp [40];
 
-  logProcBegin ();
 
   confuiPopulateOptions (&confui->gui);
 
@@ -346,7 +343,6 @@ confuiStoppingCallback (void *udata, programstate_t programState)
 
   connDisconnect (confui->conn, ROUTE_STARTERUI);
 
-  logProcEnd ("");
   return STATE_FINISHED;
 }
 
@@ -365,7 +361,6 @@ confuiClosingCallback (void *udata, programstate_t programState)
 {
   configui_t    *confui = udata;
 
-  logProcBegin ();
 
   uiCloseWindow (confui->gui.window);
   uiCleanup ();
@@ -434,7 +429,6 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   bdj4shutdown (ROUTE_CONFIGUI, NULL);
 
-  logProcEnd ("");
   return STATE_FINISHED;
 }
 
@@ -445,7 +439,6 @@ confuiBuildUI (configui_t *confui)
   char          tbuff [BDJ4_PATH_MAX];
   int           x, y;
 
-  logProcBegin ();
 
   uiwcontInitID (UI_CONFIG_ID);
 
@@ -529,7 +522,6 @@ confuiBuildUI (configui_t *confui)
       "bdj4_icon_config", ".png", PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
 
-  logProcEnd ("");
 }
 
 
@@ -609,11 +601,9 @@ confuiHandshakeCallback (void *udata, programstate_t programState)
 {
   configui_t   *confui = udata;
 
-  logProcBegin ();
   connProcessUnconnected (confui->conn);
 
   progstateLogTime (confui->progstate, "time-to-start-gui");
-  logProcEnd ("");
   return STATE_FINISHED;
 }
 
@@ -623,7 +613,6 @@ confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 {
   configui_t       *confui = udata;
 
-  logProcBegin ();
 
   logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
       routefrom, msgRouteDebugText (routefrom),
@@ -667,7 +656,6 @@ confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
   }
-  logProcEnd ("");
   return gKillReceived;
 }
 
@@ -677,15 +665,12 @@ confuiCloseWin (void *udata)
 {
   configui_t   *confui = udata;
 
-  logProcBegin ();
   if (progstateCurrState (confui->progstate) <= PROGSTATE_RUNNING) {
     progstateShutdownProcess (confui->progstate);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
-    logProcEnd ("not-done");
     return UICB_STOP;
   }
 
-  logProcEnd ("");
   return UICB_STOP;
 }
 
@@ -706,7 +691,6 @@ confuiLoadTagList (configui_t *confui)
   slist_t       *mlist = NULL;
   slist_t       *pluilist = NULL;
 
-  logProcBegin ();
 
   llist = slistAlloc ("cu-list-tag-list", LIST_ORDERED, NULL);
   elist = slistAlloc ("cu-edit-tag-list", LIST_ORDERED, NULL);
@@ -738,6 +722,5 @@ confuiLoadTagList (configui_t *confui)
   confui->gui.audioidtaglist = aidlist;
   confui->gui.marqueetaglist = mlist;
   confui->gui.pluitaglist = pluilist;
-  logProcEnd ("");
 }
 

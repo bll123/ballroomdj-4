@@ -44,14 +44,12 @@ static bool confuiValidateCallback (void *udata);
 void
 confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, int id)
 {
-  logProcBegin ();
   uivnbAppendPage (gui->mainvnb, boxp, txt, id);
 
   uiWidgetExpandHoriz (boxp);
   uiWidgetExpandVert (boxp);
   uiWidgetSetAllMargins (boxp, 2);
 
-  logProcEnd ("");
 }
 
 void
@@ -100,7 +98,7 @@ confuiMakeItemEntryChooserG (confuigui_t *gui, uiwcont_t *grid,
   uiwidgetp = uiCreateButton (
       gui->uiitem [widx].callback, NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
-  uiGridPack (grid, uiwidgetp);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 0);
   gui->uiitem [widx].uibutton = uiwidgetp;
 }
@@ -109,7 +107,6 @@ void
 confuiMakeItemDropdownG (confuigui_t *gui, uiwcont_t *grid,
     const char *txt, int widx, int bdjoptIdx, callbackFuncS ddcb)
 {
-  logProcBegin ();
   gui->uiitem [widx].basetype = CONFUI_DD;
   /* the selection handler sets bdjopt to the appropriate value */
   /* and also listidx is not set */
@@ -129,7 +126,6 @@ confuiMakeItemDropdownG (confuigui_t *gui, uiwcont_t *grid,
   uiddSetMarginStart (gui->uiitem [widx].uidd, 4);
 
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
-  logProcEnd ("");
 }
 
 void
@@ -146,7 +142,7 @@ confuiMakeItemLinkG (confuigui_t *gui, uiwcont_t *grid,
     gui->uiitem [widx].uri = NULL;
     uiLinkSetActivateCallback (uiwidgetp, gui->uiitem [widx].callback);
   }
-  uiGridPack (grid, uiwidgetp);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
 }
 
@@ -156,19 +152,17 @@ confuiMakeItemFontButtonG (confuigui_t *gui, uiwcont_t *grid,
 {
   uiwcont_t  *uiwidgetp;
 
-  logProcBegin ();
   gui->uiitem [widx].basetype = CONFUI_FONT;
   gui->uiitem [widx].outtype = CONFUI_OUT_STR;
 
   confuiMakeItemLabelG (gui, widx, grid, txt, CONFUI_NO_INDENT);
 
   uiwidgetp = uiCreateFontButton (fontname);
-  uiGridPack (grid, uiwidgetp);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 4);
 
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
-  logProcEnd ("");
 }
 
 void
@@ -177,7 +171,6 @@ confuiMakeItemColorButtonG (confuigui_t *gui, uiwcont_t *grid,
 {
   uiwcont_t  *uiwidgetp;
 
-  logProcBegin ();
 
   gui->uiitem [widx].basetype = CONFUI_COLOR;
   gui->uiitem [widx].outtype = CONFUI_OUT_STR;
@@ -185,12 +178,11 @@ confuiMakeItemColorButtonG (confuigui_t *gui, uiwcont_t *grid,
   confuiMakeItemLabelG (gui, widx, grid, txt, CONFUI_NO_INDENT);
 
   uiwidgetp = uiCreateColorButton (color);
-  uiGridPack (grid, uiwidgetp);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 4);
 
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
-  logProcEnd ("");
 }
 
 void
@@ -209,7 +201,7 @@ confuiMakeItemButtonG (confuigui_t *gui, uiwcont_t *grid,
 
   uiwidgetp = uiCreateButton (
       gui->uiitem [widx].callback, txt, NULL, NULL);
-  uiGridPack (grid, uiwidgetp);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 4);
 
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
@@ -224,7 +216,6 @@ confuiMakeItemSpinboxTextG (confuigui_t *gui, uiwcont_t *grid,
   uisbtext_t  *sb;
   nlist_t     *list;
 
-  logProcBegin ();
 
   gui->uiitem [widx].basetype = CONFUI_SB_TXT;
   gui->uiitem [widx].outtype = outtype;
@@ -245,7 +236,6 @@ confuiMakeItemSpinboxTextG (confuigui_t *gui, uiwcont_t *grid,
     gui->uiitem [widx].sbcallback = callbackInit (cb, gui, NULL);
     uisbtextSetChangeCallback (sb, gui->uiitem [widx].sbcallback);
   }
-  logProcEnd ("");
 }
 
 void
@@ -295,7 +285,6 @@ confuiMakeItemSpinboxNumG (confuigui_t *gui, uiwcont_t *grid,
 {
   uisbnum_t   *sb;
 
-  logProcBegin ();
 
   gui->uiitem [widx].basetype = CONFUI_SB_NUM;
   gui->uiitem [widx].outtype = CONFUI_OUT_NUM;
@@ -316,7 +305,6 @@ confuiMakeItemSpinboxNumG (confuigui_t *gui, uiwcont_t *grid,
   }
   gui->uiitem [widx].sbnum = sb;
 
-  logProcEnd ("");
 }
 
 void
@@ -348,7 +336,6 @@ confuiMakeItemSwitchG (confuigui_t *gui, uiwcont_t *grid,
 {
   uiwcont_t  *uiwidgetp;
 
-  logProcBegin ();
 
   gui->uiitem [widx].basetype = CONFUI_SWITCH;
   gui->uiitem [widx].outtype = CONFUI_OUT_BOOL;
@@ -356,7 +343,7 @@ confuiMakeItemSwitchG (confuigui_t *gui, uiwcont_t *grid,
   confuiMakeItemLabelG (gui, widx, grid, txt, indent);
 
   uiwidgetp = uiCreateSwitch (value);
-  uiGridPack (grid, uiwidgetp);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
@@ -367,7 +354,6 @@ confuiMakeItemSwitchG (confuigui_t *gui, uiwcont_t *grid,
         gui->uiitem [widx].callback);
   }
 
-  logProcEnd ("");
 }
 
 void
@@ -381,7 +367,7 @@ confuiMakeItemLabelDispG (confuigui_t *gui, uiwcont_t *grid,
 
   confuiMakeItemLabelG (gui, widx, grid, txt, indent);
   uiwidgetp = uiCreateLabel ("");
-  uiGridPack (grid, uiwidgetp);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 4);
 
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
@@ -394,16 +380,14 @@ confuiMakeItemCheckButtonG (confuigui_t *gui, uiwcont_t *grid,
 {
   uiwcont_t  *uiwidgetp;
 
-  logProcBegin ();
 
   gui->uiitem [widx].basetype = CONFUI_CHECK_BUTTON;
   gui->uiitem [widx].outtype = CONFUI_OUT_BOOL;
   uiwidgetp = uiCreateCheckButton (txt, value);
-  uiGridPackRow (grid, uiwidgetp, 1);
+  uiGridPackRow (grid, uiwidgetp, 1, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
-  logProcEnd ("");
 }
 
 void
@@ -428,7 +412,7 @@ confuiMakeItemLabelG (confuigui_t *gui, int widx,
     uiwidgetp = uiCreateColonLabel (ntxt);
   }
   uiGridNewRow (grid);
-  uiGridPack (grid, uiwidgetp);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
 
   gui->uiitem [widx].uilabelp = uiwidgetp;
   /* the labeltxt may not necessarily be static (low/high bpm) */
@@ -469,7 +453,7 @@ confuiMakeItemEntryBasic (confuigui_t *gui, uiwcont_t *grid,
   confuiMakeItemLabelG (gui, widx, grid, txt, indent);
   uiwidgetp = uiEntryInit (gui->uiitem [widx].entrysz, gui->uiitem [widx].entrymaxsz);
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
-  uiGridPack (grid, uiwidgetp);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   if (expand == CONFUI_EXPAND) {
 //    uiBoxPackStartExpandChildren (boxp, uiwidgetp, WCONT_KEEP);
     uiWidgetAlignHorizFill (uiwidgetp);
@@ -518,7 +502,6 @@ confuiValidateCallback (void *udata)
   confuiitem_t  *uiitem = udata;
   confuigui_t   *gui = uiitem->gui;
 
-  logProcBegin ();
 
   if (! uisbnumIsValid (uiitem->sbnum)) {
     confuiMarkNotValid (gui, uiitem->widx);
@@ -527,7 +510,6 @@ confuiValidateCallback (void *udata)
   confuiSetErrorMsg (gui, "");
   confuiMarkValid (gui, uiitem->widx);
 
-  logProcEnd ("");
   return UICB_CONT;
 }
 

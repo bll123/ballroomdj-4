@@ -56,7 +56,7 @@ confuiBuildUIMobileRemoteControl (confuigui_t *gui)
 {
   uiwcont_t   *grid;
 
-  logProcBegin ();
+  logMsg (LOG_DBG, LOG_INFO, "conf: build-ui: rc");
   grid = uiCreateGrid ();
 
   /* mobile remote control */
@@ -97,7 +97,6 @@ confuiBuildUIMobileRemoteControl (confuigui_t *gui)
 
   uiGridPostProcess (grid);
 
-  logProcEnd ("");
 }
 
 /* internal routines */
@@ -107,10 +106,8 @@ confuiRemctrlChg (void *udata, int value)
 {
   confuigui_t *gui = udata;
 
-  logProcBegin ();
   bdjoptSetNum (OPT_P_REMOTECONTROL, value);
   confuiUpdateRemctrlQrcode (gui);
-  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -121,12 +118,10 @@ confuiRemctrlPortChg (void *udata)
   double        value;
   long          nval;
 
-  logProcBegin ();
   value = uisbnumGetValue (gui->uiitem [CONFUI_SB_NUM_RC_PORT].sbnum);
   nval = (long) value;
   bdjoptSetNum (OPT_P_REMCONTROLPORT, nval);
   confuiUpdateRemctrlQrcode (gui);
-  logProcEnd ("");
   return UICB_CONT;
 }
 
@@ -146,7 +141,6 @@ confuiLoadHTMLList (confuigui_t *gui)
   int           count;
   ilist_t       *ddlist;
 
-  logProcBegin ();
 
   origlocale = sysvarsGetStr (SV_LOCALE_ORIG);
   origlocaleshort = sysvarsGetStr (SV_LOCALE_ORIG_SHORT);
@@ -202,7 +196,6 @@ confuiLoadHTMLList (confuigui_t *gui)
   datafileFree (df);
 
   gui->uiitem [CONFUI_DD_RC_HTML_TEMPLATE].ddlist = ddlist;
-  logProcEnd ("");
 }
 
 static int32_t

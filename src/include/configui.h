@@ -9,6 +9,7 @@
 #include "callback.h"
 #include "dispsel.h"
 #include "ilist.h"
+#include "log.h"
 #include "nlist.h"
 #include "orgutil.h"
 #include "uidd.h"
@@ -188,6 +189,7 @@ enum {
   CONFUI_DBG_GROUPING,
   CONFUI_DBG_AUDIOSRC,
   CONFUI_DBG_UI,
+  CONFUI_DBG_BACKTRACE,
   CONFUI_DBG_MAX,
   /* should be in the same order as in songfilter.h */
   CONFUI_WIDGET_FILTER_START,
@@ -274,7 +276,7 @@ typedef struct {
   confuigui_t       *gui;
   confuibasetype_t  basetype;
   confuiouttype_t   outtype;
-  long              debuglvl;
+  loglevel_t        debuglvl;
   int               bdjoptIdx;
   uiwcont_t         *uibutton;      // for entry chooser
   uisfcb_t          sfcb;           // for entry chooser, combobox
