@@ -192,7 +192,7 @@ main (int argc, char *argv[])
   }
 
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_ACRCLOUD_API_HOST, 45, 100);
-  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_ACRCLOUD_API_KEY, 40, 40);
+  confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_ACRCLOUD_API_KEY, 45, 45);
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_ACRCLOUD_API_SECRET, 45, 45);
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_AUDIOSRC_PASS, 10, 30);
   confuiEntrySetSize (&confui.gui, CONFUI_ENTRY_AUDIOSRC_URI, 45, 200);

@@ -71,8 +71,7 @@ void
 confuiBuildUIDispSettings (confuigui_t *gui)
 {
   uiwcont_t    *vbox;
-
-  logProcBegin ();
+  uiwcont_t    *grid;
 
   vbox = uiCreateVertBox ();
 
@@ -81,11 +80,16 @@ confuiBuildUIDispSettings (confuigui_t *gui)
       /* CONTEXT: configuration: change which fields are displayed in different contexts */
       _("Display Settings"), CONFUI_ID_DISP_SEL_LIST);
 
+  grid = uiCreateGrid ();
+  uiBoxPackStart (vbox, grid, WCONT_FREE);
+
   /* CONTEXT: configuration: display settings: which set of display settings to update */
-  confuiMakeItemSpinboxText (gui, vbox, NULL, NULL, _("Display"),
+  confuiMakeItemSpinboxTextG (gui, grid, _("Display"),
       CONFUI_SB_TXT_DISP_SEL, -1, CONFUI_OUT_NUM,
       gui->uiitem [CONFUI_SB_TXT_DISP_SEL].listidx,
       confuiDispSettingChg);
+
+  uiGridPostProcess (grid);
 
   gui->tables [CONFUI_ID_DISP_SEL_LIST].flags = CONFUI_TABLE_NONE;
   gui->tables [CONFUI_ID_DISP_SEL_TABLE].flags = CONFUI_TABLE_NONE;
@@ -94,7 +98,6 @@ confuiBuildUIDispSettings (confuigui_t *gui)
       DL_FLAGS_NONE, NULL, NULL);
 
   uiBoxPostProcess (vbox);
-  logProcEnd ("");
 }
 
 void

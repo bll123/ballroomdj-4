@@ -325,7 +325,6 @@ enum {
   CONFUI_TABLE_NUM,
   CONFUI_NO_INDENT,
   CONFUI_INDENT,
-  CONFUI_INDENT_FIELD,
 };
 
 enum {
@@ -574,12 +573,15 @@ void confuiMakeItemFontButtonG (confuigui_t *gui, uiwcont_t *grid, const char *t
 void confuiMakeItemColorButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *color);
 void confuiMakeItemColorButtonG (confuigui_t *gui, uiwcont_t *grid, const char *txt, int widx, int bdjoptIdx, const char *color);
 void confuiMakeItemButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp, const char *txt, int widx, int bdjoptIdx, callbackFunc cb);
+void confuiMakeItemButtonG (confuigui_t *gui, uiwcont_t *grid, const char *txt, int widx, int bdjoptIdx, callbackFunc cb);
 void confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, uiwcont_t *sgB, const char *txt, int widx, int bdjoptIdx, confuiouttype_t outtype, ssize_t value, void *cb);
 void confuiMakeItemSpinboxTextG (confuigui_t *gui, uiwcont_t *grid, const char *txt, int widx, int bdjoptIdx, confuiouttype_t outtype, ssize_t value, void *cb);
 void confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, uiwcont_t *sgB, const char *txt, int widx, int bdjoptIdx, ssize_t value, int indent);
+void confuiMakeItemSpinboxTimeG (confuigui_t *gui, uiwcont_t *grid, const char *txt, int widx, int bdjoptIdx, ssize_t value, int indent);
 void confuiMakeItemSpinboxNum (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, uiwcont_t *sgB, const char *txt, int widx, int bdjoptIdx, int min, int max, int value, void *cb);
 void confuiMakeItemSpinboxNumG (confuigui_t *gui, uiwcont_t *grid, const char *txt, int widx, int bdjoptIdx, int min, int max, int value, void *cb);
 void confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, uiwcont_t *sgB, const char *txt, int widx, int bdjoptIdx, double min, double max, double value, int indent);
+void confuiMakeItemSpinboxDoubleG (confuigui_t *gui, uiwcont_t *grid, const char *txt, int widx, int bdjoptIdx, double min, double max, double value, int indent);
 void confuiMakeItemSwitch (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, int value, void *cb, int indent);
 void confuiMakeItemSwitchG (confuigui_t *gui, uiwcont_t *grid, const char *txt, int widx, int bdjoptIdx, int value, void *cb, int indent);
 void confuiMakeItemLabelDisp (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int indent);
