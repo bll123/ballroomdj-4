@@ -73,6 +73,7 @@ manageplDanceAlloc (manageinfo_t *minfo)
 {
   mpldance_t     *mpldnc;
 
+  logProcBegin ();
   mpldnc = mdmalloc (sizeof (mpldance_t));
   mpldnc->minfo = minfo;
   mpldnc->uivl = NULL;
@@ -87,6 +88,7 @@ manageplDanceAlloc (manageinfo_t *minfo)
     mpldnc->callbacks [i] = NULL;
   }
 
+  logProcEnd ("");
   return mpldnc;
 }
 
@@ -97,6 +99,7 @@ manageplDanceFree (mpldance_t *mpldnc)
     return;
   }
 
+  logProcBegin ();
   uiwcontFree (mpldnc->uihideunsel);
   nlistFree (mpldnc->currlist);
   uivlFree (mpldnc->uivl);
@@ -114,6 +117,7 @@ manageplDanceBuildUI (mpldance_t *mpldnc, uiwcont_t *vboxp)
   const char  *bpmstr;
   char        tbuff [100];
 
+  logProcBegin ();
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxp, hbox, WCONT_FREE);
   uiWidgetSetAllMargins (hbox, 2);
@@ -176,6 +180,7 @@ manageplDanceBuildUI (mpldance_t *mpldnc, uiwcont_t *vboxp)
 
   manageplDanceRebuildCurrList (mpldnc);
   uivlDisplay (mpldnc->uivl);
+  logProcEnd ("");
 }
 
 void
@@ -185,6 +190,7 @@ manageplDanceSetPlaylist (mpldance_t *mpldnc, playlist_t *pl)
   int     hideunselstate = UI_TOGGLE_BUTTON_OFF;
   int     widgetstate = UIWIDGET_DISABLE;
 
+  logProcBegin ();
   mpldnc->playlist = pl;
   mpldnc->inchange = true;
   pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
@@ -217,6 +223,7 @@ manageplDanceSetPlaylist (mpldance_t *mpldnc, playlist_t *pl)
   mpldnc->inchange = false;
 
   manageplDancePopulate (mpldnc);
+  logProcEnd ("");
 }
 
 bool

@@ -524,7 +524,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   /* CONTEXT: song selection filter: a filter: select a playlist to work with (music manager) */
   uiwidgetp = uiCreateColonLabel (_("Playlist"));
-  uiGridPack (grid, uiwidgetp, WCONT_FREE);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uisf->wcont [UISF_W_PLAYLIST] = uiwidgetp;
 
   uisf->callbacks [UISF_CB_PLAYLIST_SEL] = callbackInitS (
@@ -540,7 +540,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   /* CONTEXT: song selection filter: a filter: select the method to sort the song selection display */
   uiwidgetp = uiCreateColonLabel (_("Sort by"));
   uiGridNewRow (grid);
-  uiGridPack (grid, uiwidgetp, WCONT_FREE);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uisf->labels [UISF_LABEL_SORTBY] = uiwidgetp;
 
   uisfCreateSortByList (uisf);
@@ -560,11 +560,11 @@ uisfCreateDialog (uisongfilter_t *uisf)
   /* CONTEXT: song selection filter: a filter: filter the song selection with a search for text */
   uiwidgetp = uiCreateColonLabel (_("Search"));
   uiGridNewRow (grid);
-  uiGridPack (grid, uiwidgetp, WCONT_FREE);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uisf->labels [UISF_LABEL_SEARCH] = uiwidgetp;
 
   uiwidgetp = uiEntryInit (20, 100);
-  uiGridPack (grid, uiwidgetp, WCONT_FREE);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizStart (uiwidgetp);
   uisf->wcont [UISF_W_SEARCH] = uiwidgetp;
 
@@ -573,7 +573,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_GENRE)) {
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_GENRE].displayname);
     uiGridNewRow (grid);
-    uiGridPack (grid, uiwidgetp, WCONT_FREE);
+    uiGridPack (grid, uiwidgetp, WCONT_KEEP);
     uisf->labels [UISF_LABEL_GENRE] = uiwidgetp;
 
     uisf->callbacks [UISF_CB_GENRE_SEL] = callbackInitI (
@@ -588,7 +588,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_DANCE)) {
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCE].displayname);
     uiGridNewRow (grid);
-    uiGridPack (grid, uiwidgetp, WCONT_FREE);
+    uiGridPack (grid, uiwidgetp, WCONT_KEEP);
     uisf->labels [UISF_LABEL_DANCE] = uiwidgetp;
 
     uisf->callbacks [UISF_CB_DANCE_SEL] = callbackInitII (
@@ -605,7 +605,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_DANCERATING)) {
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
     uiGridNewRow (grid);
-    uiGridPack (grid, uiwidgetp, WCONT_FREE);
+    uiGridPack (grid, uiwidgetp, WCONT_KEEP);
     uisf->labels [UISF_LABEL_DANCE_RATING] = uiwidgetp;
 
     uisf->uirating = uiratingSpinboxCreate (NULL, UIRATING_ALL);
@@ -617,7 +617,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_DANCELEVEL)) {
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCELEVEL].displayname);
     uiGridNewRow (grid);
-    uiGridPack (grid, uiwidgetp, WCONT_FREE);
+    uiGridPack (grid, uiwidgetp, WCONT_KEEP);
     uisf->labels [UISF_LABEL_DANCE_LEVEL] = uiwidgetp;
 
     uisf->uilevel = uilevelSpinboxCreate (NULL, true);
@@ -629,7 +629,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_STATUS)) {
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_STATUS].displayname);
     uiGridNewRow (grid);
-    uiGridPack (grid, uiwidgetp, WCONT_FREE);
+    uiGridPack (grid, uiwidgetp, WCONT_KEEP);
     uisf->labels [UISF_LABEL_STATUS] = uiwidgetp;
 
     uisf->uistatus = uistatusSpinboxCreate (NULL, true);
@@ -641,7 +641,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_FAVORITE)) {
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_FAVORITE].displayname);
     uiGridNewRow (grid);
-    uiGridPack (grid, uiwidgetp, WCONT_FREE);
+    uiGridPack (grid, uiwidgetp, WCONT_KEEP);
     uisf->labels [UISF_LABEL_FAVORITE] = uiwidgetp;
 
     uisf->uifavorite = uifavoriteSpinboxCreate (NULL);
@@ -654,7 +654,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     /* CONTEXT: song selection filter: a filter: the song status is marked as playable */
     uiwidgetp = uiCreateColonLabel (_("Playable Status"));
     uiGridNewRow (grid);
-    uiGridPack (grid, uiwidgetp, WCONT_FREE);
+    uiGridPack (grid, uiwidgetp, WCONT_KEEP);
     uiWidgetSetMarginStart (uiwidgetp, 2);
     uisf->labels [UISF_LABEL_PLAY_STATUS] = uiwidgetp;
 

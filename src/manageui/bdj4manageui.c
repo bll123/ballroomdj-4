@@ -1004,6 +1004,7 @@ manageBuildUI (manageui_t *manage)
 static void
 manageInitializeUI (manageui_t *manage)
 {
+  logProcBegin ();
   manage->callbacks [MANAGE_CB_SL_SEL_FILE] =
       callbackInitS (manageSonglistLoadCB, manage);
   manage->callbacks [MANAGE_CB_CFPL_DIALOG] = callbackInitI (
@@ -1109,6 +1110,7 @@ manageInitializeUI (manageui_t *manage)
       managePlaylistExportRespHandler, manage);
   uiexpplSetResponseCallback (manage->uiexppl,
       manage->callbacks [MANAGE_CB_EXP_PL]);
+  logProcEnd ("");
 }
 
 static void

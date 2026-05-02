@@ -62,7 +62,7 @@ uiwcontAlloc_r (int basetype, int type, const char *fn, int lineno)
     gwidgetid += 100;
   }
 
-  logMsg (LOG_DBG, LOG_UI, "wcont: %s %d-%d", uiwcontDesc (uiwidget->wtype), uiwidget->ui_id, uiwidget->id);
+  logMsg (LOG_DBG, LOG_UI | LOG_BACKTRACE, "wcont: %s %d-%d", uiwcontDesc (uiwidget->wtype), uiwidget->ui_id, uiwidget->id);
   memset (&uiwidget->uiint, 0, sizeof (uiwcontint_t));
   uiwcontUIInit (uiwidget);                     // ui interface specific
   return uiwidget;

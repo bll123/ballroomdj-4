@@ -500,7 +500,6 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   manageplDanceBuildUI (managepl->mpldnc, vbox);
 
   uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
   uiBoxPostProcess (tophbox);
   uihnbPostProcess (managepl->hnb);
 

@@ -218,7 +218,8 @@ rlogVarMsg (logidx_t idx, loglevel_t level,
       (level & LOG_BACKTRACE) == LOG_BACKTRACE) {
     for (int i = 0; i < stacksz; ++i) {
       wlen = (size_t) snprintf (wbuff, sizeof (wbuff),
-          "%*s  %-4s %s\n", (int) strlen (ttm), "", "", logfuncstack [i].func);
+          "%*s  %-4s %s: %d\n", (int) strlen (ttm),
+          "", "", logfuncstack [i].func, logfuncstack [i].line);
       fileSharedWrite (l->fhandle, wbuff, wlen);
     }
   }

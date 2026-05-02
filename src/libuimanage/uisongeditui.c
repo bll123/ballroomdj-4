@@ -421,7 +421,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiWidgetSetMarginStart (seint->wcont [UISE_W_AUDIOID_IMG], 1);
 
   uiwidgetp = uiCreateLabel (" ");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignVertBaseline (uiwidgetp);
   seint->wcont [UISE_W_SE_STATE] = uiwidgetp;
 

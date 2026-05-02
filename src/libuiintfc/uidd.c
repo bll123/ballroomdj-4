@@ -93,6 +93,7 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
   uidd_t      *dd = NULL;
   uiwcont_t   *uiwidget;
 
+  logProcBegin ();
   dd = mdmalloc (sizeof (uidd_t));
   dd->ident = DD_IDENT;
   dd->tag = tag;
@@ -150,13 +151,16 @@ uiddCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp, int where,
 
   dd->callbacks [DD_CB_WIN_CLOSE] = callbackInit (uiddWinClose, dd, NULL);
 
+  logProcEnd ("");
   return dd;
 }
 
 void
 uiddFree (uidd_t *dd)
 {
+  logProcBegin ();
   if (dd == NULL || dd->ident != DD_IDENT) {
+    logProcEnd ("null");
     return;
   }
 
@@ -178,6 +182,7 @@ uiddFree (uidd_t *dd)
 
   dd->ident = BDJ4_IDENT_FREE;
   mdfree (dd);
+  logProcEnd ("");
 }
 
 void
@@ -321,6 +326,7 @@ uiddCreateDialog (uidd_t *dd)
     return;
   }
 
+  logProcBegin ();
   dd->wcont [DD_W_DIALOG_WIN] = uiCreateDialogWindow (dd->parentwin,
       dd->wcont [DD_W_BUTTON], dd->callbacks [DD_CB_WIN_CLOSE], "");
   uiWidgetSetClass (dd->wcont [DD_W_DIALOG_WIN], DD_DARKBG_CLASS);
@@ -352,6 +358,7 @@ uiddCreateDialog (uidd_t *dd)
   uiddSetSelectionInternal (dd, dd->selectedidx);
 
   dd->dialogcreated = true;
+  logProcEnd ("");
 }
 
 
