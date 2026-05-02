@@ -247,8 +247,8 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
 {
   uiwcont_t     *vbox;
   uiwcont_t     *hbox;
+  uiwcont_t     *grid;
   uiwcont_t     *uiwidgetp = NULL;
-  uiwcont_t     *szgrp;  // labels
   const char    *buttontext;
   char          tbuff [100];
   int           currtype;
@@ -279,8 +279,6 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   if (uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_DIALOG] != NULL) {
     return;
   }
-
-  szgrp = uiCreateSizeGroupHoriz (NULL);
 
   uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_DIALOG] =
       uiCreateDialog (uieibdj4->parentwin,
@@ -319,11 +317,10 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
 
   uiBoxPostProcess (hbox);
 
-  /* target folder */
-  hbox = uiCreateHorizBox ();
-  uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
+  grid = uiCreateGrid ();
+  uiBoxPackStart (vbox, grid, WCONT_FREE);
 
+  /* target folder */
   if (currtype == UIEIBDJ4_EXPORT) {
     uiwidgetp = uiCreateColonLabel (
         /* CONTEXT: export/import bdj4: export folder location */
@@ -334,14 +331,12 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
         /* CONTEXT: export/import bdj4: import folder location */
         _("Import from"));
   }
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiEntryInit (50, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
-  uiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizFill (uiwidgetp);
-  uiWidgetExpandHoriz (uiwidgetp);
   uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_TARGET] = uiwidgetp;
 
   if (uieibdj4->currtype == UIEIBDJ4_EXPORT) {
@@ -363,55 +358,44 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
       uieibdj4->callbacks [UIEIBDJ4_CB_TARGET],
       NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uieibdj4->dialog [currtype].targetButton = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
-
   if (currtype == UIEIBDJ4_IMPORT) {
     /* playlist selector */
-    hbox = uiCreateHorizBox ();
-    uiBoxPackStart (vbox, hbox, WCONT_FREE);
-
     /* CONTEXT: export/import bdj4: playlist: select the song list */
     uiwidgetp = uiCreateColonLabel (_("Song List"));
-    uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-    uiSizeGroupAdd (szgrp, uiwidgetp);
+    uiGridNewRow (grid);
+    uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
     uieibdj4->dialog [currtype].uiplaylist = uiplaylistCreate (
         uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_DIALOG],
-        hbox, PL_LIST_NORMAL, NULL, UIPL_PACK_START, UIPL_FLAG_NONE);
+        NULL, PL_LIST_NORMAL, NULL, UIPL_PACK_START, UIPL_FLAG_NONE);
+    uiplaylistPackGrid (uieibdj4->dialog [currtype].uiplaylist, grid);
     uiplaylistSetSelectCallback (uieibdj4->dialog [currtype].uiplaylist,
         uieibdj4->callbacks [UIEIBDJ4_CB_SEL]);
 
-    uiBoxPostProcess (hbox);
-
     /* new name */
-    hbox = uiCreateHorizBox ();
-    uiBoxPackStart (vbox, hbox, WCONT_FREE);
-
     uiwidgetp = uiCreateColonLabel (
         /* CONTEXT: export/import bdj4: new song list name */
         _("New Song List Name"));
-    uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-    uiSizeGroupAdd (szgrp, uiwidgetp);
+    uiGridNewRow (grid);
+    uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
     uiwidgetp = uiEntryInit (30, MAX_PL_NM_LEN);
     uiEntrySetValue (uiwidgetp, "");
-    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+    uiGridPack (grid, uiwidgetp, WCONT_KEEP);
     uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_NEWNAME] = uiwidgetp;
 
     /* CONTEXT: export/import bdj4: playlist: select the song list */
     uiEntrySetValidate (uiwidgetp, _("Song List"),
         uieibdj4ValidateNewName, uieibdj4, UIENTRY_IMMEDIATE);
-
-    uiBoxPostProcess (hbox);
   }
 
+  uiGridPostProcess (grid);
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
-  uiwcontFree (szgrp);
 
   logProcEnd ("");
 }
