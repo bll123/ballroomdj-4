@@ -216,8 +216,8 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
 {
   uiwcont_t     *vbox;
   uiwcont_t     *hbox;
+  uiwcont_t     *grid;
   uiwcont_t     *uiwidgetp = NULL;
-  uiwcont_t     *szgrp;  // labels
 
   logProcBegin ();
 
@@ -228,8 +228,6 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   if (uiexppl->wcont [UIEXPPL_W_DIALOG] != NULL) {
     return;
   }
-
-  szgrp = uiCreateSizeGroupHoriz (NULL);
 
   uiexppl->wcont [UIEXPPL_W_DIALOG] =
       uiCreateDialog (uiexppl->parentwin,
@@ -270,37 +268,31 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
 
   uiBoxPostProcess (hbox);
 
-  /* text-spinbox for export type */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetExpandHoriz (hbox);
+  grid = uiCreateGrid ();
+  uiBoxPackStart (vbox, grid, WCONT_FREE);
 
+  /* text-spinbox for export type */
   uiwidgetp = uiCreateColonLabel (
       /* CONTEXT: export playlist: type of export*/
       _("Export Type"));
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  uiexppl->sb = uisbtextCreate (hbox, 2);
+  uiexppl->sb = uisbtextCreate (NULL, 2);
+  uisbtextPackGrid (uiexppl->sb, grid);
   uisbtextSetList (uiexppl->sb, uiexppl->typelist);
   uisbtextSetValue (uiexppl->sb, uiexppl->exptype);
 
-  uiBoxPostProcess (hbox);
-
   /* target folder */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetExpandHoriz (hbox);
-
   uiwidgetp = uiCreateColonLabel (
       /* CONTEXT: export playlist: export folder location */
       _("Export to"));
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiEntryInit (50, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
-  uiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
+//  uiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiexppl->wcont [UIEXPPL_W_TARGET] = uiwidgetp;
@@ -312,15 +304,13 @@ uiexpplCreateDialog (uiexppl_t *uiexppl)
   uiwidgetp = uiCreateButton (
       uiexppl->callbacks [UIEXPPL_CB_TARGET], NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiexppl->wcont [UIEXPPL_W_TGT_BUTTON] = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
-
+  uiGridPostProcess (grid);
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
-  uiwcontFree (szgrp);
 
   uisbtextSetChangeCallback (uiexppl->sb,
       uiexppl->callbacks [UIEXPPL_CB_EXP_TYPE]);

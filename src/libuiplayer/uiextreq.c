@@ -199,11 +199,8 @@ uiextreqProcess (uiextreq_t *uiextreq)
 static void
 uiextreqCreateDialog (uiextreq_t *uiextreq)
 {
-  uiwcont_t     *vbox;
-  uiwcont_t     *hbox;
+  uiwcont_t     *grid;
   uiwcont_t     *uiwidgetp;
-  uiwcont_t     *szgrp;  // labels
-  uiwcont_t     *szgrpEntry; // title, artist, mq-display
   const char    *tstr;
 
   logProcBegin ();
@@ -215,9 +212,6 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   if (uiextreq->wcont [UIEXTREQ_W_DIALOG] != NULL) {
     return;
   }
-
-  szgrp = uiCreateSizeGroupHoriz (NULL);
-  szgrpEntry = uiCreateSizeGroupHoriz (NULL);
 
   uiextreq->callbacks [UIEXTREQ_CB_DIALOG] = callbackInitI (
       uiextreqResponseHandler, uiextreq);
@@ -239,27 +233,20 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiDragDropSetDestURICallback (uiextreq->wcont [UIEXTREQ_W_DIALOG],
       uiextreq->callbacks [UIEXTREQ_CB_DRAG_DROP]);
 
-  vbox = uiCreateVertBox ();
-  uiWidgetExpandHoriz (vbox);
-  uiWidgetExpandVert (vbox);
-  uiDialogPackInDialog (uiextreq->wcont [UIEXTREQ_W_DIALOG], vbox);
-  uiWidgetSetAllMargins (vbox, 4);
-
-  hbox = uiCreateHorizBox ();
-  uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
+  grid = uiCreateGrid ();
+  uiDialogPackInDialog (uiextreq->wcont [UIEXTREQ_W_DIALOG], grid);
+  uiWidgetSetAllMargins (grid, 4);
 
   uiwidgetp = uiCreateColonLabel (
       /* CONTEXT: external request: enter the audio file location */
       _("Audio File"));
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
-uiwcontDebugDisp (uiwidgetp, "aud-file");
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiEntryInit (50, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
-  uiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizFill (uiwidgetp);
+//  uiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
   uiWidgetExpandHoriz (uiwidgetp);
   uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE] = uiwidgetp;
 
@@ -275,95 +262,64 @@ uiwcontDebugDisp (uiwidgetp, "aud-file");
       uiextreq->callbacks [UIEXTREQ_CB_AUDIO_FILE],
       NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE_CHOOSER] = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
-
   /* artist display */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_ARTIST].displayname);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiEntryInit (40, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
-  uiWidgetAlignHorizFill (uiwidgetp);
+  uiGridPack (grid,uiwidgetp, WCONT_KEEP);
   uiextreq->wcont [UIEXTREQ_W_ARTIST] = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
-
   /* title display */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_TITLE].displayname);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiEntryInit (40, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
-  uiWidgetAlignHorizFill (uiwidgetp);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiextreq->wcont [UIEXTREQ_W_TITLE] = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
-
   /* dance : always available */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCE].displayname);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   uiextreq->callbacks [UIEXTREQ_CB_DANCE] = callbackInitII (
       uiextreqDanceSelectHandler, uiextreq);
-  uiextreq->uidance = uidanceCreate (hbox, uiextreq->wcont [UIEXTREQ_W_DIALOG],
+  uiextreq->uidance = uidanceCreate (NULL, uiextreq->wcont [UIEXTREQ_W_DIALOG],
       /* CONTEXT: external request: dance drop-down */
       UIDANCE_EMPTY_DANCE, _("Select Dance"), UIDANCE_PACK_START, 1);
+  uidancePackGrid (uiextreq->uidance, grid);
   uidanceSetCallback (uiextreq->uidance, uiextreq->callbacks [UIEXTREQ_CB_DANCE]);
 
-  uiBoxPostProcess (hbox);
-
   /* marquee display */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_MQDISPLAY].displayname);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiEntryInit (40, BDJ4_PATH_MAX);
   uiEntrySetValue (uiwidgetp, "");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
-  uiWidgetAlignHorizFill (uiwidgetp);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiextreq->wcont [UIEXTREQ_W_MQ_DISP] = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
-
   /* no play tm limit */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-
   uiwidgetp = uiCreateColonLabel (tagdefs [TAG_NO_PLAY_TM_LIMIT].displayname);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiCreateSwitch (0);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiextreq->wcont [UIEXTREQ_W_NO_PLAY_TM_LIMIT] = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
-
-  uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
-  uiwcontFree (szgrp);
-  uiwcontFree (szgrpEntry);
+  uiGridPostProcess (grid);
+  uiwcontFree (grid);
 
   uiEntrySetValidate (uiextreq->wcont [UIEXTREQ_W_AUDIO_FILE], "",
       uiextreqValidateAudioFile, uiextreq, UIENTRY_DELAYED);

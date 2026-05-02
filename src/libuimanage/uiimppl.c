@@ -409,8 +409,8 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
 {
   uiwcont_t     *vbox;
   uiwcont_t     *hbox;
+  uiwcont_t     *grid;
   uiwcont_t     *uiwidgetp = NULL;
-  uiwcont_t     *szgrp;  // labels
 
   logProcBegin ();
 
@@ -420,8 +420,6 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
   if (uiimppl->wcont [UIIMPPL_W_DIALOG] != NULL) {
     return;
   }
-
-  szgrp = uiCreateSizeGroupHoriz (NULL);
 
   uiimppl->wcont [UIIMPPL_W_DIALOG] =
       uiCreateDialog (uiimppl->parentwin,
@@ -469,59 +467,49 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
 
   uiBoxPostProcess (hbox);
 
-  /* type */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
+  grid = uiCreateGrid ();
+  uiBoxPackStart (vbox, grid, WCONT_FREE);
 
+  /* type */
   uiwidgetp = uiCreateColonLabel (
       /* CONTEXT: import playlist: import-from selection */
       _("Import From"));
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  uiimppl->sb = uisbtextCreate (hbox, 2);
+  uiimppl->sb = uisbtextCreate (NULL, 2);
+  uisbtextPackGrid (uiimppl->sb, grid);
   uisbtextSetList (uiimppl->sb, uiimppl->aslist);
   uisbtextSetWidth (uiimppl->sb, uiimppl->asmaxwidth);
   uisbtextSetValue (uiimppl->sb, uiimppl->askey);
   uisbtextSetChangeCallback (uiimppl->sb,
       uiimppl->callbacks [UIIMPPL_CB_TYPE_SEL]);
 
-  uiBoxPostProcess (hbox);
-
   /* playlist selector */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   /* CONTEXT: import playlist: select the song list */
   uiwidgetp = uiCreateColonLabel (_("Playlist"));
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiimppl->wcont [UIIMPPL_W_PL_SEL_LABEL] = uiwidgetp;
 
   uiimppl->plselect = uiddCreate ("imppl-plsel",
-      uiimppl->wcont [UIIMPPL_W_DIALOG], hbox,
+      uiimppl->wcont [UIIMPPL_W_DIALOG], NULL,
       /* CONTEXT: import playlist: select the playlist */
       DD_PACK_START, NULL, DD_LIST_TYPE_NUM, "", DD_REPLACE_TITLE,
       uiimppl->callbacks [UIIMPPL_CB_PL_SEL]);
-
-  uiBoxPostProcess (hbox);
+  uiddPackGrid (uiimppl->plselect, grid);
 
   /* target folder / URI */
-  hbox = uiCreateHorizBox ();
-  uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-
   uiwidgetp = uiCreateColonLabel (
       /* CONTEXT: import playlist: import location */
       _("File"));
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiimppl->wcont [UIIMPPL_W_URI_LABEL] = uiwidgetp;
 
   uiwidgetp = uiEntryInit (50, BDJ4_PATH_MAX);
-  uiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizFill (uiwidgetp);
-  uiWidgetExpandHoriz (uiwidgetp);
   uiEntrySetValue (uiwidgetp, "");
   uiimppl->wcont [UIIMPPL_W_URI] = uiwidgetp;
 
@@ -529,32 +517,26 @@ uiimpplCreateDialog (uiimppl_t *uiimppl)
       uiimppl->callbacks [UIIMPPL_CB_TARGET],
       NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiimppl->wcont [UIIMPPL_W_URI_BUTTON] = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
-
   /* new name */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
 
   /* CONTEXT: import playlist: new song list name */
   uiimppl->newnamelabel = _("New Song List Name");
   uiwidgetp = uiCreateColonLabel (uiimppl->newnamelabel);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiEntryInit (30, MAX_PL_NM_LEN);
   uiEntrySetValue (uiwidgetp, "");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiimppl->wcont [UIIMPPL_W_NEWNAME] = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
-
+  uiGridPostProcess (grid);
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
-  uiwcontFree (szgrp);
 
   uiEntrySetValidate (uiimppl->wcont [UIIMPPL_W_URI], "",
       uiimpplValidateURIEntry, uiimppl, UIENTRY_DELAYED);
