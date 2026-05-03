@@ -1328,6 +1328,15 @@ fprintf (stderr, "Grid\n");
   uiwidgetp = uiCreateLabel ("e-2");
   uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
+  /* next line */
+  uiwidgetp = uiCreateLabel ("f-1");
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
+
+  uiGridSkipColumn (grid, 1);
+  uiwidgetp = uiCreateLabel ("f-3");
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
+
   uiGridPostProcess (grid);
 
   /* grid by-row */

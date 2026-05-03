@@ -73,6 +73,7 @@ uihnbCreate (uiwcont_t *box, const char *tag)
   uiBoxPackStart (vbox, hnb->hlist, WCONT_KEEP);
 
   hnb->nb = uiCreateNotebook ();
+  uiWidgetSetMarginTop (hnb->nb, 0);
   uiWidgetSetClass (hnb->nb, NB_HORIZ_CLASS);
   uiBoxPackStartExpandChildren (vbox, hnb->nb, WCONT_KEEP);
 

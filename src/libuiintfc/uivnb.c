@@ -66,7 +66,7 @@ uivnbCreate (uiwcont_t *box, const char *tag)
   vnb->tag = tag;
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpandChildren (box, hbox, WCONT_FREE);
+  uiBoxPackStart (box, hbox, WCONT_FREE);
 
   sw = uiCreateScrolledWindow (50);
   uiBoxPackStart (hbox, sw, WCONT_FREE);
@@ -76,6 +76,7 @@ uivnbCreate (uiwcont_t *box, const char *tag)
   uiWindowPackInWindow (sw, vnb->vgrid);
 
   vnb->nb = uiCreateNotebook ();
+  uiWidgetSetMarginTop (vnb->nb, 0);
   uiBoxPackStartExpandChildren (hbox, vnb->nb, WCONT_KEEP);
 
   for (int i = 0; i < VNB_MAX_PAGECOUNT; ++i) {
@@ -147,6 +148,7 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *nbtxt, int id)
   hbox = uiCreateHorizBox ();
   uiGridNewRow (vnb->vgrid);
   uiGridPack (vnb->vgrid, hbox, WCONT_FREE);
+  uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
   uiWidgetSetClass (hbox, NB_CLASS);
   uiWidgetSetClass (hbox, NB_VERT_CLASS);
