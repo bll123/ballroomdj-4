@@ -8,7 +8,7 @@
    version="1.1"
    inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
    viewBox="0 0 50 26"
-   sodipodi:docname="switch-off-col-circ.svg"
+   sodipodi:docname="switch-off.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -29,7 +29,7 @@
        fy="26.995226"
        r="26.999996"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.48309778,0.42825738,-0.31156376,0.34689405,-3.13957,-16.925553)" />
+       gradientTransform="matrix(0.48382996,0.43684668,-0.31203597,0.3538515,-3.1443283,-17.525752)" />
     <linearGradient
        inkscape:collect="always"
        id="linearGradient907">
@@ -50,9 +50,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="12.610531"
-     inkscape:cx="25.296318"
-     inkscape:cy="13.044653"
+     inkscape:zoom="13.3"
+     inkscape:cx="25"
+     inkscape:cy="12.969925"
      inkscape:current-layer="svg4168"
      showgrid="true"
      inkscape:document-units="px"
@@ -105,11 +105,10 @@
      y="0"
      ry="13"
      inkscape:label="rect1" />
-  <ellipse
+  <circle
      style="fill:url(#radialGradient909);fill-opacity:1;stroke:#c8c8c8;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      id="path4754"
-     cx="12.980327"
+     cx="13"
      cy="13"
-     rx="12.980327"
-     ry="12.744393" />
+     r="13" />
 </svg>

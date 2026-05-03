@@ -8,7 +8,7 @@
    version="1.1"
    inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
    viewBox="0 0 50.000001 26"
-   sodipodi:docname="switch-on-col-circ.svg"
+   sodipodi:docname="switch-on.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -41,7 +41,7 @@
        fy="26.995226"
        r="26.999996"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.48309778,0.42825738,-0.31156376,0.34689405,-20.089954,17.128986)" />
+       gradientTransform="matrix(0.48382996,0.43684668,-0.31203597,0.3538515,-20.134059,16.52879)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -50,9 +50,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="12.96"
+     inkscape:zoom="12.62"
      inkscape:cx="25"
-     inkscape:cy="12.962963"
+     inkscape:cy="12.995246"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:document-units="px"
@@ -110,12 +110,11 @@
        y="34.054539"
        ry="13"
        inkscape:label="rect1" />
-    <ellipse
+    <circle
        style="fill:url(#radialGradient909);fill-opacity:1;stroke:#c8c8c8;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path4754"
-       cx="-3.9700577"
+       cx="-3.9897311"
        cy="47.054539"
-       rx="12.980327"
-       ry="12.744393" />
+       r="13" />
   </g>
 </svg>

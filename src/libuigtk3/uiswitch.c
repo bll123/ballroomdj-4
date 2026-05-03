@@ -20,6 +20,7 @@
 #include "bdj4.h"
 #include "callback.h"
 #include "mdebug.h"
+#include "oslocale.h"
 #include "pathbld.h"
 #include "uiclass.h"
 #include "uiwcont.h"
@@ -51,6 +52,8 @@ uiCreateSwitch (int value)
   uiswitch_t  *uiswitch;
   GtkWidget   *widget;
   GtkWidget   *image;
+  char        *sfx = "";
+  char        fbuff [BDJ4_PATH_MAX];
   char        tbuff [BDJ4_PATH_MAX];
 
   /* the gtk switch is different in every theme, some of which are not */
@@ -65,7 +68,12 @@ uiCreateSwitch (int value)
   uiswitch->altimage = NULL;
   uiswitch->altimageraw = NULL;
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "switch-off", BDJ4_IMG_SVG_EXT,
+  if (uiTextDirection == TEXT_DIR_RTL) {
+    sfx = "-rtl";
+  }
+
+  snprintf (fbuff, sizeof (fbuff), "switch-off%s", sfx);
+  pathbldMakePath (tbuff, sizeof (tbuff), fbuff, BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
   image = uiImageWidget (tbuff);
   uiswitch->image = image;
@@ -73,7 +81,8 @@ uiCreateSwitch (int value)
     uiswitch->imageraw = gtk_image_get_pixbuf (GTK_IMAGE (image));
   }
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "switch-on", BDJ4_IMG_SVG_EXT,
+  snprintf (fbuff, sizeof (fbuff), "switch-on%s", sfx);
+  pathbldMakePath (tbuff, sizeof (tbuff), fbuff, BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
   image = uiImageWidget (tbuff);
   uiswitch->altimage = image;
