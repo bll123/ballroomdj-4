@@ -2917,10 +2917,8 @@ manageSonglistCreateFromPlaylist (void *udata)
 static void
 manageSongListCFPLCreateDialog (manageui_t *manage)
 {
-  uiwcont_t   *vbox;
-  uiwcont_t   *hbox;
+  uiwcont_t   *grid;
   uiwcont_t   *uiwidgetp;
-  uiwcont_t   *szgrp;  // labels
   uisbnum_t   *sb;
   const char  *tlabel;
 
@@ -2929,8 +2927,6 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
     logProcEnd ("already");
     return;
   }
-
-  szgrp = uiCreateSizeGroupHoriz (NULL);
 
   manage->wcont [MANAGE_W_CFPL_DIALOG] = uiCreateDialog (manage->minfo.window,
       manage->callbacks [MANAGE_CB_CFPL_DIALOG],
@@ -2945,43 +2941,35 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
       NULL
       );
 
-  vbox = uiCreateVertBox ();
-  uiDialogPackInDialog (manage->wcont [MANAGE_W_CFPL_DIALOG], vbox);
-  uiWidgetSetAllMargins (vbox, 4);
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
+  grid = uiCreateGrid ();
+  uiDialogPackInDialog (manage->wcont [MANAGE_W_CFPL_DIALOG], grid);
+  uiWidgetSetAllMargins (grid, 4);
 
   /* CONTEXT: create from playlist: select the playlist to use */
   uiwidgetp = uiCreateColonLabel (_("Playlist"));
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   manage->cfpl = uiplaylistCreate (manage->wcont [MANAGE_W_CFPL_DIALOG],
-      hbox, PL_LIST_AUTO_SEQ, NULL, UIPL_PACK_START, UIPL_FLAG_NONE);
+      NULL, PL_LIST_AUTO_SEQ, NULL, UIPL_PACK_START, UIPL_FLAG_NONE);
+  uiplaylistPackGrid (manage->cfpl, grid);
 
-  uiBoxPostProcess (hbox);
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-
+  /* next line */
   /* CONTEXT: create from playlist: set the maximum time for the song list */
   tlabel = _("Time Limit");
   uiwidgetp = uiCreateColonLabel (tlabel);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  sb = uisbnumCreate (hbox, tlabel, 2);
+  sb = uisbnumCreate (NULL, tlabel, 2);
+  uisbnumPackGrid (sb, grid);
   /* max 4 hours */
   uisbnumSetTime (sb, 0.0, 3600.0 * 4.0, SBNUM_TIME_HM);
   /* 3 hours */
   uisbnumSetValue (sb, 3.0 * 3600.0 * 1000.0);
   manage->sbnum [MANAGE_SB_CFPL_TM_LIMIT] = sb;
 
-  uiBoxPostProcess (hbox);
-  uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
-  uiwcontFree (szgrp);
+  uiGridPostProcess (grid);
+  uiwcontFree (grid);
 
   logProcEnd ("");
 }
