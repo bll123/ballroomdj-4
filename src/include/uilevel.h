@@ -12,9 +12,8 @@ extern "C" {
 
 typedef struct uilevel uilevel_t;
 
-uilevel_t * uilevelSpinboxCreate (uiwcont_t *boxp, bool allflag);
+uilevel_t * uilevelCreate (uiwcont_t *grid, bool allflag);
 void uilevelFree (uilevel_t *uilevel);
-void uilevelPackGrid (uilevel_t *uilevel, uiwcont_t *grid);
 int uilevelGetValue (uilevel_t *uilevel);
 void uilevelSetValue (uilevel_t *uilevel, int value);
 void uilevelSetState (uilevel_t *uilevel, int state);

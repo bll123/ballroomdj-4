@@ -13,8 +13,7 @@ extern "C" {
 
 typedef struct uigenre uigenre_t;
 
-uigenre_t * uigenreDropDownCreate (uiwcont_t *boxp, uiwcont_t *parentwin, bool allflag);
-void uigenrePackGrid (uigenre_t *uigenre, uiwcont_t *grid);
+uigenre_t * uigenreCreate (uiwcont_t *grid, uiwcont_t *parentwin, bool allflag);
 uiwcont_t * uigenreGetButton (uigenre_t *uigenre);
 void uigenreFree (uigenre_t *uigenre);
 ilistidx_t uigenreGetKey (uigenre_t *uigenre);

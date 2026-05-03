@@ -37,7 +37,7 @@ static bool uigenreSelectHandler (void *udata, int32_t idx);
 static void uigenreCreateGenreList (uigenre_t *uigenre);
 
 uigenre_t *
-uigenreDropDownCreate (uiwcont_t *boxp, uiwcont_t *parentwin, bool allflag)
+uigenreCreate (uiwcont_t *grid, uiwcont_t *parentwin, bool allflag)
 {
   uigenre_t  *uigenre;
 
@@ -55,18 +55,13 @@ uigenreDropDownCreate (uiwcont_t *boxp, uiwcont_t *parentwin, bool allflag)
   uigenreCreateGenreList (uigenre);
   uigenre->internalselcb = callbackInitI (uigenreSelectHandler, uigenre);
   uigenre->uidd = uiddCreate ("uigenre",
-      parentwin, boxp, DD_PACK_START,
+      parentwin, NULL, DD_PACK_START,
       uigenre->ddlist, DD_LIST_TYPE_NUM,
       "", DD_REPLACE_TITLE, uigenre->internalselcb);
+  uiddPackGrid (uigenre->uidd, grid);
   uiddSetMarginStart (uigenre->uidd, 2);
 
   return uigenre;
-}
-
-void
-uigenrePackGrid (uigenre_t *uigenre, uiwcont_t *grid)
-{
-  uiddPackGrid (uigenre->uidd, grid);
 }
 
 void

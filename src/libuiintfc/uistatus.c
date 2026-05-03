@@ -31,7 +31,7 @@ typedef struct uistatus {
 static const char *uistatusStatusGet (void *udata, int idx);
 
 uistatus_t *
-uistatusSpinboxCreate (uiwcont_t *boxp, bool allflag)
+uistatusCreate (uiwcont_t *grid, bool allflag)
 {
   uistatus_t  *uistatus;
   int         maxw;
@@ -40,7 +40,8 @@ uistatusSpinboxCreate (uiwcont_t *boxp, bool allflag)
   uistatus = mdmalloc (sizeof (uistatus_t));
   uistatus->status = bdjvarsdfGet (BDJVDF_STATUS);
   uistatus->allflag = allflag;
-  uistatus->sb = uisbtextCreate (boxp, 2);
+  uistatus->sb = uisbtextCreate (NULL, 2);
+  uisbtextPackGrid (uistatus->sb, grid);
 
   maxw = statusGetMaxWidth (uistatus->status);
   if (allflag) {
@@ -59,13 +60,6 @@ uistatusSpinboxCreate (uiwcont_t *boxp, bool allflag)
   uisbtextSetCount (uistatus->sb, statusGetCount (uistatus->status));
 
   return uistatus;
-}
-
-
-void
-uistatusPackGrid (uistatus_t *uistatus, uiwcont_t *grid)
-{
-  uisbtextPackGrid (uistatus->sb, grid);
 }
 
 void

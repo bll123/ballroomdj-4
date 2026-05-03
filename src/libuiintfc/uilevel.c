@@ -31,7 +31,7 @@ typedef struct uilevel {
 static const char *uilevelLevelGet (void *udata, int idx);
 
 uilevel_t *
-uilevelSpinboxCreate (uiwcont_t *boxp, bool allflag)
+uilevelCreate (uiwcont_t *grid, bool allflag)
 {
   uilevel_t  *uilevel;
   int         maxw;
@@ -41,7 +41,8 @@ uilevelSpinboxCreate (uiwcont_t *boxp, bool allflag)
   uilevel->levels = bdjvarsdfGet (BDJVDF_LEVELS);
   uilevel->allflag = allflag;
 
-  uilevel->sb = uisbtextCreate (boxp, 2);
+  uilevel->sb = uisbtextCreate (NULL, 2);
+  uisbtextPackGrid (uilevel->sb, grid);
 
   maxw = levelGetMaxWidth (uilevel->levels);
   if (allflag) {
@@ -73,16 +74,6 @@ uilevelFree (uilevel_t *uilevel)
 
   uisbtextFree (uilevel->sb);
   mdfree (uilevel);
-}
-
-void
-uilevelPackGrid (uilevel_t *uilevel, uiwcont_t *grid)
-{
-  if (uilevel == NULL || grid == NULL) {
-    return;
-  }
-
-  uisbtextPackGrid (uilevel->sb, grid);
 }
 
 int

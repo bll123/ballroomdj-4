@@ -1166,8 +1166,7 @@ uisongeditAddItem (uisongedit_t *uisongedit, uiwcont_t *grid, int tagkey)
       }
       if (tagkey == TAG_GENRE) {
         seint->items [seint->itemcount].uigenre =
-            uigenreDropDownCreate (NULL, seint->wcont [UISE_W_PARENT_WIN], false);
-        uigenrePackGrid (seint->items [seint->itemcount].uigenre, grid);
+            uigenreCreate (grid, seint->wcont [UISE_W_PARENT_WIN], false);
         uigenreSetCallback (seint->items [seint->itemcount].uigenre,
             seint->callbacks [UISE_CB_GENRE_CHG]);
       }
@@ -1175,30 +1174,25 @@ uisongeditAddItem (uisongedit_t *uisongedit, uiwcont_t *grid, int tagkey)
     }
     case ET_SPINBOX_TEXT: {
       if (tagkey == TAG_FAVORITE) {
-        seint->items [seint->itemcount].uifavorite =
-            uifavoriteSpinboxCreate (NULL);
-        uifavoritePackGrid (seint->items [seint->itemcount].uifavorite, grid);
+        seint->items [seint->itemcount].uifavorite = uifavoriteCreate (grid);
         uifavoriteSetChangedCallback (seint->items [seint->itemcount].uifavorite,
             seint->callbacks [UISE_CB_CHANGED]);
       }
       if (tagkey == TAG_DANCELEVEL) {
         seint->items [seint->itemcount].uilevel =
-            uilevelSpinboxCreate (NULL, false);
-        uilevelPackGrid (seint->items [seint->itemcount].uilevel, grid);
+            uilevelCreate (grid, false);
         uilevelSetChangedCallback (seint->items [seint->itemcount].uilevel,
             seint->callbacks [UISE_CB_CHANGED]);
       }
       if (tagkey == TAG_DANCERATING) {
         seint->items [seint->itemcount].uirating =
-            uiratingSpinboxCreate (NULL, UIRATING_NORM);
-        uiratingPackGrid (seint->items [seint->itemcount].uirating, grid);
+            uiratingCreate (grid, UIRATING_NORM);
         uiratingSetChangedCallback (seint->items [seint->itemcount].uirating,
             seint->callbacks [UISE_CB_CHANGED]);
       }
       if (tagkey == TAG_STATUS) {
         seint->items [seint->itemcount].uistatus =
-            uistatusSpinboxCreate (NULL, false);
-        uistatusPackGrid (seint->items [seint->itemcount].uistatus, grid);
+            uistatusCreate (grid, false);
         uistatusSetChangedCallback (seint->items [seint->itemcount].uistatus,
             seint->callbacks [UISE_CB_CHANGED]);
       }

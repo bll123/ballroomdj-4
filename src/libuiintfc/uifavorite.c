@@ -32,13 +32,14 @@ typedef struct uifavorite {
 static const char *uifavoriteCBHandler (void *udata, int idx);
 
 uifavorite_t *
-uifavoriteSpinboxCreate (uiwcont_t *boxp)
+uifavoriteCreate (uiwcont_t *grid)
 {
   uifavorite_t  *uifavorite;
 
   uifavorite = mdmalloc (sizeof (uifavorite_t));
   uifavorite->songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
-  uifavorite->sb = uisbtextCreate (boxp, 2);
+  uifavorite->sb = uisbtextCreate (NULL, 2);
+  uisbtextPackGrid (uifavorite->sb, grid);
 
   uiutilsAddFavoriteClasses ();
 
@@ -47,12 +48,6 @@ uifavoriteSpinboxCreate (uiwcont_t *boxp)
   uisbtextSetWidth (uifavorite->sb, 3);
 
   return uifavorite;
-}
-
-void
-uifavoritePackGrid (uifavorite_t *uifavorite, uiwcont_t *grid)
-{
-  uisbtextPackGrid (uifavorite->sb, grid);
 }
 
 void

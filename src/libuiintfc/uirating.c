@@ -31,7 +31,7 @@ typedef struct uirating {
 static const char *uiratingRatingGet (void *udata, int idx);
 
 uirating_t *
-uiratingSpinboxCreate (uiwcont_t *boxp, bool allflag)
+uiratingCreate (uiwcont_t *grid, bool allflag)
 {
   uirating_t  *uirating;
   int         maxw;
@@ -40,7 +40,8 @@ uiratingSpinboxCreate (uiwcont_t *boxp, bool allflag)
   uirating = mdmalloc (sizeof (uirating_t));
   uirating->ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   uirating->allflag = allflag;
-  uirating->sb = uisbtextCreate (boxp, 2);
+  uirating->sb = uisbtextCreate (NULL, 2);
+  uisbtextPackGrid (uirating->sb, grid);
 
   maxw = ratingGetMaxWidth (uirating->ratings);
   if (allflag == UIRATING_ALL) {
@@ -71,16 +72,6 @@ uiratingFree (uirating_t *uirating)
 
   uisbtextFree (uirating->sb);
   mdfree (uirating);
-}
-
-void
-uiratingPackGrid (uirating_t *uirating, uiwcont_t *grid)
-{
-  if (uirating == NULL || grid == NULL) {
-    return;
-  }
-
-  uisbtextPackGrid (uirating->sb, grid);
 }
 
 int

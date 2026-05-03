@@ -578,8 +578,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
     uisf->callbacks [UISF_CB_GENRE_SEL] = callbackInitI (
         uisfGenreSelectHandler, uisf);
-    uisf->uigenre = uigenreDropDownCreate (NULL, uisf->wcont [UISF_W_DIALOG], true);
-    uigenrePackGrid (uisf->uigenre, grid);
+    uisf->uigenre = uigenreCreate (grid, uisf->wcont [UISF_W_DIALOG], true);
     uigenreSetCallback (uisf->uigenre, uisf->callbacks [UISF_CB_GENRE_SEL]);
   }
 
@@ -608,8 +607,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiGridPack (grid, uiwidgetp, WCONT_KEEP);
     uisf->labels [UISF_LABEL_DANCE_RATING] = uiwidgetp;
 
-    uisf->uirating = uiratingSpinboxCreate (NULL, UIRATING_ALL);
-    uiratingPackGrid (uisf->uirating, grid);
+    uisf->uirating = uiratingCreate (grid, UIRATING_ALL);
   }
 
   /* begin line */
@@ -620,8 +618,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiGridPack (grid, uiwidgetp, WCONT_KEEP);
     uisf->labels [UISF_LABEL_DANCE_LEVEL] = uiwidgetp;
 
-    uisf->uilevel = uilevelSpinboxCreate (NULL, true);
-    uilevelPackGrid (uisf->uilevel, grid);
+    uisf->uilevel = uilevelCreate (grid, true);
   }
 
   /* begin line */
@@ -632,8 +629,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiGridPack (grid, uiwidgetp, WCONT_KEEP);
     uisf->labels [UISF_LABEL_STATUS] = uiwidgetp;
 
-    uisf->uistatus = uistatusSpinboxCreate (NULL, true);
-    uistatusPackGrid (uisf->uistatus, grid);
+    uisf->uistatus = uistatusCreate (grid, true);
   }
 
   /* begin line */
@@ -644,8 +640,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiGridPack (grid, uiwidgetp, WCONT_KEEP);
     uisf->labels [UISF_LABEL_FAVORITE] = uiwidgetp;
 
-    uisf->uifavorite = uifavoriteSpinboxCreate (NULL);
-    uifavoritePackGrid (uisf->uifavorite, grid);
+    uisf->uifavorite = uifavoriteCreate (grid);
   }
 
   /* begin line */

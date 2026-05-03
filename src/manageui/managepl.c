@@ -365,8 +365,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiGridNewRow (grid);
   uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  managepl->uirating = uiratingSpinboxCreate (NULL, UIRATING_NORM);
-  uiratingPackGrid (managepl->uirating, grid);
+  managepl->uirating = uiratingCreate (grid, UIRATING_NORM);
 
   /* new line : low dance-level */
 
@@ -375,8 +374,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiGridNewRow (grid);
   uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  managepl->uilowlevel = uilevelSpinboxCreate (NULL, false);
-  uilevelPackGrid (managepl->uilowlevel, grid);
+  managepl->uilowlevel = uilevelCreate (grid, false);
 
   /* new line : high dance-level */
 
@@ -385,8 +383,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiGridNewRow (grid);
   uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  managepl->uihighlevel = uilevelSpinboxCreate (NULL, false);
-  uilevelPackGrid (managepl->uihighlevel, grid);
+  managepl->uihighlevel = uilevelCreate (grid, false);
 
   /* new line : allowed-keywords */
 

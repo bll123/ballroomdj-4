@@ -353,8 +353,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
     uiGridNewRow (grid);
     uiGridPack (grid, uiwidgetp, WCONT_FREE);
-    uiqe->uirating = uiratingSpinboxCreate (NULL, UIRATING_NORM);
-    uiratingPackGrid (uiqe->uirating, grid);
+    uiqe->uirating = uiratingCreate (grid, UIRATING_NORM);
   }
 
   /* begin line: level */
@@ -363,8 +362,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
     uiGridNewRow (grid);
     uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-    uiqe->uilevel = uilevelSpinboxCreate (NULL, UIRATING_NORM);
-    uilevelPackGrid (uiqe->uilevel, grid);
+    uiqe->uilevel = uilevelCreate (grid, UIRATING_NORM);
   }
 
   /* begin line: favorite */
@@ -373,8 +371,7 @@ uiqeCreateDialog (uiqe_t *uiqe)
     uiGridNewRow (grid);
     uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-    uiqe->uifavorite = uifavoriteSpinboxCreate (NULL);
-    uifavoritePackGrid (uiqe->uifavorite, grid);
+    uiqe->uifavorite = uifavoriteCreate (grid);
   }
 
   uiGridPostProcess (grid);

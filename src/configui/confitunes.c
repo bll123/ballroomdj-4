@@ -219,8 +219,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
     uiGridNewRow (rgrid);
     uiGridPack (rgrid, uiwidgetp, WCONT_FREE);
 
-    gui->itunes->uirating [i] = uiratingSpinboxCreate (NULL, UIRATING_NORM);
-    uiratingPackGrid (gui->itunes->uirating [i], rgrid);
+    gui->itunes->uirating [i] = uiratingCreate (rgrid, UIRATING_NORM);
 
     uiratingSetValue (gui->itunes->uirating [i],
         itunesGetStars (gui->itunes->itunes, ITUNES_STARS_10 + i));
