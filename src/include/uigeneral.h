@@ -52,7 +52,7 @@ void uiGridPackColumn (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numcols, uiwc
 void uiGridPackRow (uiwcont_t *uigrid, uiwcont_t *uiwidget, int numcols, uiwcontrls_t release);
 void uiGridPostProcess (uiwcont_t *uigrid);
 void uiGridNewRow (uiwcont_t *uigrid);
-void uiGridNewCol (uiwcont_t *uigrid);
+void uiGridNewColumn (uiwcont_t *uigrid);
 
 /* uilabel.c */
 uiwcont_t * uiCreateColonLabel (const char *txt);

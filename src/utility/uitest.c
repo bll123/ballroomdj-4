@@ -19,6 +19,7 @@
 #include "bdj4arg.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
+#include "bdjstring.h"
 #include "callback.h"
 #include "localeutil.h"
 #include "mdebug.h"
@@ -179,7 +180,7 @@ static void uitestUILink (uitest_t *uitest);
 static void uitestUINotebook (uitest_t *uitest);
 static void uitestUIPanedWin (uitest_t *uitest);
 static void uitestUIMisc (uitest_t *uitest);
-static void uitestUISizeGroup (uitest_t *uitest);
+static void uitestUIGrid (uitest_t *uitest);
 static void uitestUISpinbox (uitest_t *uitest);
 static void uitestUITextBox (uitest_t *uitest);
 static void uitestUIVirtList (uitest_t *uitest);
@@ -449,7 +450,7 @@ uitestBuildUI (uitest_t *uitest)
   uitestUINotebook (uitest);
   uitestUIPanedWin (uitest);
   uitestUIMisc (uitest);
-  uitestUISizeGroup (uitest);
+  uitestUIGrid (uitest);
   uitestUISpinbox (uitest);
   uitestUITextBox (uitest);
   uitestUIVirtList (uitest);
@@ -463,375 +464,228 @@ uitestBuildUI (uitest_t *uitest)
 void
 uitestUIButtons (uitest_t *uitest)
 {
-  uiwcont_t   *vbox;
-  uiwcont_t   *hbox;
-  uiwcont_t   *sg;
+  uiwcont_t   *grid;
   uiwcont_t   *uiwidgetp;
 
 fprintf (stderr, "Buttons\n");
-  sg = uiCreateSizeGroupHoriz (NULL);
 
   /* buttons */
 
-  vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 4);
+  grid = uiCreateGrid ();
+  uiWidgetSetAllMargins (grid, 4);
 
-  uivnbAppendPage (uitest->mainvnb, vbox, "Buttons", VNB_NO_ID);
+  uivnbAppendPage (uitest->mainvnb, grid, "Buttons", VNB_NO_ID);
 
   /* button: normal */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
   uiwidgetp = uiCreateButton (
       uitest->callbacks [UITEST_CB_B], "button", NULL, NULL);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
-  uiSizeGroupAdd (sg, uiwidgetp);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uitest->wcont [UITEST_W_B] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   uitest->wcont [UITEST_W_B_MSG] = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
-
   /* button: align-left */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
   uiwidgetp = uiCreateButton (
       uitest->callbacks [UITEST_CB_B], "button-left", NULL, NULL);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
-  uiSizeGroupAdd (sg, uiwidgetp);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiButtonAlignLeft (uiwidgetp);
   uitest->wcont [UITEST_W_B_LEFT] = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
-
   /* button: long text */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
   uiwidgetp = uiCreateButton (
       uitest->callbacks [UITEST_CB_B], "button long text", NULL, NULL);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
-  uiSizeGroupAdd (sg, uiwidgetp);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uitest->wcont [UITEST_W_B_LONG] = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
-
   /* button: flat */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
   uiwidgetp = uiCreateButton (
       uitest->callbacks [UITEST_CB_B], "button-flat", NULL, NULL);
   uiButtonSetFlat (uiwidgetp);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
-  uiSizeGroupAdd (sg, uiwidgetp);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiButtonAlignLeft (uiwidgetp);
   uitest->wcont [UITEST_W_B_FLAT] = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
-
   /* button: image */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
   uiwidgetp = uiCreateButton (
       uitest->callbacks [UITEST_CB_B_IMG_A], NULL, "button_pause", NULL);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uitest->wcont [UITEST_W_B_IMG_A] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   uitest->wcont [UITEST_W_B_IMG_A_MSG] = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
-
   /* button: image, tooltip */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
   uiwidgetp = uiCreateButton (
       uitest->callbacks [UITEST_CB_B_IMG_B], NULL, "button_play", "img-tooltip");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uitest->wcont [UITEST_W_B_IMG_B] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   uitest->wcont [UITEST_W_B_IMG_B_MSG] = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
-
   /* button: image, text, tooltip, chg-state */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
   uiwidgetp = uiCreateButton (
       uitest->callbacks [UITEST_CB_B_IMG_C], "Image-toggle",
       uitest->images [UITEST_LED_OFF], "img-tooltip");
   uiButtonSetAltImage (uiwidgetp, uitest->images [UITEST_LED_ON]);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uitest->wcont [UITEST_W_B_IMG_C] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   uitest->wcont [UITEST_W_B_IMG_C_MSG] = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
-
   /* button w/image icon */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
   uiwidgetp = uiCreateButton (
       uitest->callbacks [UITEST_CB_B], NULL, NULL, NULL);
   uiButtonSetImageIcon (uiwidgetp, "folder");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uitest->wcont [UITEST_W_B_IMG_D] = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
-  uiBoxPostProcess (vbox);
-  uiwcontFree (sg);
+  uiGridPostProcess (grid);
 }
 
 void
 uitestUIToggleButtons (uitest_t *uitest)
 {
-  uiwcont_t   *vbox;
-  uiwcont_t   *hbox;
-  uiwcont_t   *sg;
+  uiwcont_t   *grid;
   uiwcont_t   *uiwidgetp;
   uiwcont_t   *twidgetp;
 
 fprintf (stderr, "ToggleButtons\n");
-  sg = uiCreateSizeGroupHoriz (NULL);
-
   /* toggle buttons */
 
-  vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 4);
+  grid = uiCreateGrid ();
+  uiWidgetSetAllMargins (grid, 4);
 
-  uivnbAppendPage (uitest->mainvnb, vbox, "Toggle Buttons", VNB_NO_ID);
+  uivnbAppendPage (uitest->mainvnb, grid, "Toggle Buttons", VNB_NO_ID);
 
   /* toggle button: normal */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
   uiwidgetp = uiCreateToggleButton ("toggle button", NULL, NULL, 0);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-
-  uiBoxPostProcess (hbox);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   /* toggle button: tooltip */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
   uiwidgetp = uiCreateToggleButton ("toggle tooltip", NULL, "tool-tip", 0);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-
-  uiBoxPostProcess (hbox);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   /* toggle button: with image */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
   uiwidgetp = uiCreateToggleButton (
       "toggle image", uitest->images [UITEST_LED_OFF], "tool-tip", 0);
   uiToggleButtonSetCallback (uiwidgetp, uitest->callbacks [UITEST_CB_TOGGLE]);
   uiToggleButtonSetAltImage (uiwidgetp, uitest->images [UITEST_LED_ON]);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetAlignHorizCenter (uiwidgetp);
   uiWidgetAlignVertCenter (uiwidgetp);
   uitest->wcont [UITEST_W_TOGGLE_C] = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
-
   /* switch */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
   uitest->wcont [UITEST_W_SW] = uiCreateSwitch (1);
-  uiBoxPackStart (hbox, uitest->wcont [UITEST_W_SW], WCONT_KEEP);
-
-  uiBoxPostProcess (hbox);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uitest->wcont [UITEST_W_SW], WCONT_KEEP);
 
   /* radio button */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
   uiwidgetp = uiCreateRadioButton (NULL, "radio a", UI_TOGGLE_BUTTON_ON);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   twidgetp = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
+  /* radio button : next line */
   uiwidgetp = uiCreateRadioButton (twidgetp, "radio b", UI_TOGGLE_BUTTON_OFF);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  uiBoxPostProcess (hbox);
   uiwcontFree (twidgetp);
 
   /* check button */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
   uiwidgetp = uiCreateCheckButton ("check button", UI_TOGGLE_BUTTON_OFF);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  uiBoxPostProcess (hbox);
-  uiBoxPostProcess (vbox);
-  uiwcontFree (sg);
+  uiGridPostProcess (grid);
 }
 
 void
 uitestUIMiscButtons (uitest_t *uitest)
 {
-  uiwcont_t   *vbox;
-  uiwcont_t   *hbox;
-  uiwcont_t   *sg;
+  uiwcont_t   *grid;
   uiwcont_t   *uiwidgetp;
 
 fprintf (stderr, "MiscButtons\n");
-  sg = uiCreateSizeGroupHoriz (NULL);
 
   /* misc buttons */
+  grid = uiCreateGrid ();
+  uiWidgetSetAllMargins (grid, 4);
 
-  vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 4);
-
-  uivnbAppendPage (uitest->mainvnb, vbox, "Misc Buttons", VNB_NO_ID);
+  uivnbAppendPage (uitest->mainvnb, grid, "Misc Buttons", VNB_NO_ID);
 
   /* font button */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
   uiwidgetp = uiCreateFontButton ("Sans Bold 10");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-
-  uiBoxPostProcess (hbox);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   /* color button */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
   uiwidgetp = uiCreateColorButton ("#aacc00");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  uiBoxPostProcess (hbox);
-
-  uiBoxPostProcess (vbox);
-  uiwcontFree (sg);
+  uiGridPostProcess (grid);
 }
 
 void
 uitestUIChgInd (uitest_t *uitest)
 {
-  uiwcont_t   *vbox;
-  uiwcont_t   *hbox;
+  uiwcont_t   *grid;
   uiwcont_t   *uiwidgetp;
 
 fprintf (stderr, "ChgInd\n");
   /* change indicator */
-
   uitest->callbacks [UITEST_CB_CHG_IND] = callbackInit (
       uitestCBchgind, uitest, NULL);
 
-  vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 4);
+  grid = uiCreateGrid ();
+  uiWidgetSetAllMargins (grid, 4);
 
-  uivnbAppendPage (uitest->mainvnb, vbox, "Change Indicator", VNB_NO_ID);
+  uivnbAppendPage (uitest->mainvnb, grid, "Change Indicator", VNB_NO_ID);
 
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
-  uiwidgetp = uiCreateChangeIndicator (hbox);
+  uiwidgetp = uiCreateChangeIndicator (NULL);
+  uichgindPackGrid (uiwidgetp, grid);
   uichgindMarkNormal (uiwidgetp);
   uitest->wcont [UITEST_W_CI_A] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("aaa");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiCreateButton (
       uitest->callbacks [UITEST_CB_CHG_IND], "switch", NULL, NULL);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uitest->wcont [UITEST_W_CI_BUTTON] = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
-  uiwidgetp = uiCreateChangeIndicator (hbox);
+  /* next line */
+  uiwidgetp = uiCreateChangeIndicator (NULL);
+  uiGridNewRow (grid);
+  uichgindPackGrid (uiwidgetp, grid);
   uichgindMarkChanged (uiwidgetp);
   uitest->wcont [UITEST_W_CI_B] = uiwidgetp;
 
   uiwidgetp = uiCreateLabel ("bbb");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  uiBoxPostProcess (hbox);
-  uiBoxPostProcess (vbox);
+  uiGridPostProcess (grid);
 }
 
 void
@@ -1193,7 +1047,6 @@ void
 uitestUILink (uitest_t *uitest)
 {
   uiwcont_t   *vbox;
-  uiwcont_t   *hbox;
   uiwcont_t   *uiwidgetp;
 
 fprintf (stderr, "Link\n");
@@ -1207,19 +1060,13 @@ fprintf (stderr, "Link\n");
 
   uivnbAppendPage (uitest->mainvnb, vbox, "Link", VNB_NO_ID);
 
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
   uiwidgetp = uiCreateLink ("bdj", "https://ballroomdj.org");
   if (isMacOS ()) {
     uiLinkSetActivateCallback (uiwidgetp, uitest->callbacks [UITEST_CB_LINK_A]);
   }
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiBoxPackStart (vbox, uiwidgetp, WCONT_KEEP);
   uitest->wcont [UITEST_W_LINK_A] = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
   uiBoxPostProcess (vbox);
 }
 
@@ -1415,109 +1262,97 @@ fprintf (stderr, "Misc\n");
 }
 
 void
-uitestUISizeGroup (uitest_t *uitest)
+uitestUIGrid (uitest_t *uitest)
 {
   uiwcont_t   *vbox;
-  uiwcont_t   *hbox;
-  uiwcont_t   *sg;
+  uiwcont_t   *grid;
   uiwcont_t   *uiwidgetp;
 
-fprintf (stderr, "SizeGroup\n");
-  /* size group */
+fprintf (stderr, "Grid\n");
+  /* grid */
 
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 4);
+  uivnbAppendPage (uitest->mainvnb, vbox, "Grid", VNB_NO_ID);
 
-  uivnbAppendPage (uitest->mainvnb, vbox, "Size Group", VNB_NO_ID);
+  grid = uiCreateGrid ();
+  uiBoxPackStart (vbox, grid, WCONT_FREE);
+  uiWidgetSetAllMargins (grid, 4);
 
-  sg = uiCreateSizeGroupHoriz (NULL);
+  uiwidgetp = uiCreateLabel ("by-col");
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
+  uiwidgetp = uiCreateLabel ("aaa-2");
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  uiwidgetp = uiCreateLabel ("aaa");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (sg, uiwidgetp);
+  uiwidgetp = uiCreateLabel ("aaa-3");
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  uiwidgetp = uiCreateLabel ("aaa");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  /* next line */
+  uiwidgetp = uiCreateLabel ("bbbb-1");
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  uiwidgetp = uiCreateLabel ("aaa");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiwidgetp = uiCreateLabel ("bbbb-2");
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  uiBoxPostProcess (hbox);
+  uiwidgetp = uiCreateLabel ("bbbb-3");
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
+  /* next line */
+  uiwidgetp = uiCreateLabel ("c-1");
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  uiwidgetp = uiCreateLabel ("bbbb");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (sg, uiwidgetp);
+  uiwidgetp = uiCreateLabel ("c-2");
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  uiwidgetp = uiCreateLabel ("bbbb");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiwidgetp = uiCreateLabel ("c-3");
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  uiwidgetp = uiCreateLabel ("bbbb");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  /* next line */
+  uiwidgetp = uiCreateLabel ("ddddddd-1");
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  uiBoxPostProcess (hbox);
+  uiwidgetp = uiCreateLabel ("ddddddd-2");
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
+  uiwidgetp = uiCreateLabel ("dddddddd-3");
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  uiwidgetp = uiCreateLabel ("c");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (sg, uiwidgetp);
+  /* next line */
+  uiwidgetp = uiCreateLabel ("eeeeee eeeeee eeeeee");
+  uiGridNewRow (grid);
+  uiGridPackColumn (grid, uiwidgetp, 2, WCONT_FREE);
 
-  uiwidgetp = uiCreateLabel ("c");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiwidgetp = uiCreateLabel ("e-2");
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-  uiwidgetp = uiCreateLabel ("c");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiGridPostProcess (grid);
 
-  uiBoxPostProcess (hbox);
+  /* grid by-row */
+  grid = uiCreateGrid ();
+  uiBoxPackStart (vbox, grid, WCONT_FREE);
+  uiWidgetSetAllMargins (grid, 4);
 
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
+  for (int i = 1; i < 10; ++i) {
+    char    tmp [40];
 
-  uiwidgetp = uiCreateLabel ("ddddddd");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (sg, uiwidgetp);
+    if (i == 1) {
+      stpecpy (tmp, tmp + sizeof (tmp), "by-row");
+    } else {
+      snprintf (tmp, sizeof (tmp), "%d", i);
+    }
+    uiwidgetp = uiCreateLabel (tmp);
+    if ((i - 1) % 3 == 0) {
+      uiGridNewColumn (grid);
+    }
+    uiGridPackRow (grid, uiwidgetp, 1, WCONT_FREE);
+  }
 
-  uiwidgetp = uiCreateLabel ("ddddddd");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
+  uiGridPostProcess (grid);
 
-  uiwidgetp = uiCreateLabel ("ddddddd");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-
-  uiBoxPostProcess (hbox);
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-  uiWidgetSetAllMargins (hbox, 1);
-  uiWidgetExpandHoriz (hbox);
-
-  uiwidgetp = uiCreateLabel ("eeeeee");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (sg, uiwidgetp);
-
-  uiwidgetp = uiCreateLabel ("eeeeee");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-
-  uiwidgetp = uiCreateLabel ("eeeeee");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-
-  uiBoxPostProcess (hbox);
   uiBoxPostProcess (vbox);
-  uiwcontFree (sg);
 }
 
 void

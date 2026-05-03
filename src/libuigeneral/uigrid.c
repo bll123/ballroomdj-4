@@ -154,7 +154,7 @@ uiGridNewRow (uiwcont_t *uigrid)
 }
 
 void
-uiGridNewCol (uiwcont_t *uigrid)
+uiGridNewColumn (uiwcont_t *uigrid)
 {
   uigridint_t    *uigridint;
 

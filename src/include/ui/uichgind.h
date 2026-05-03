@@ -10,6 +10,7 @@ extern "C" {
 #endif
 
 uiwcont_t *uiCreateChangeIndicator (uiwcont_t *boxp);
+void  uichgindPackGrid (uiwcont_t *chgind, uiwcont_t *grid);
 void  uichgindMarkNormal (uiwcont_t *uiwidget);
 void  uichgindMarkChanged (uiwcont_t *uiwidget);
 

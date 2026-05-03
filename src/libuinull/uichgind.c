@@ -11,16 +11,29 @@
 
 #include "ui/uiwcont-int.h"
 
-#include "ui/uiui.h"
 #include "ui/uibox.h"
-#include "ui/uiwidget.h"
 #include "ui/uichgind.h"
-
+#include "ui/uigrid.h"
+#include "ui/uiui.h"
+#include "ui/uiwidget.h"
 
 uiwcont_t *
 uiCreateChangeIndicator (uiwcont_t *boxp)
 {
   return NULL;
+}
+
+void
+uichgindPackGrid (uiwcont_t *uiwidget, uiwcont_t *grid)
+{
+  if (! uiwcontValid (uiwidget, WCONT_T_CHGIND, "ci-pack-grid")) {
+    return;
+  }
+  if (! uiwcontValid (grid, WCONT_T_GRID, "ci-pack-grid")) {
+    return;
+  }
+
+  uiGridPack (grid, uiwidget, WCONT_KEEP);
 }
 
 void

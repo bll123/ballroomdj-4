@@ -58,7 +58,7 @@ confuiBuildUIDebug (confuigui_t *gui)
   confuiMakeItemCheckButtonG (gui, grid, "Audio Tags",
       CONFUI_DBG_AUDIO_TAG, -1, (val & LOG_AUDIO_TAG));
 
-  uiGridNewCol (grid);
+  uiGridNewColumn (grid);
   confuiMakeItemCheckButtonG (gui, grid, "Dance Selection",
       CONFUI_DBG_DANCESEL, -1, (val & LOG_DANCESEL));
   confuiMakeItemCheckButtonG (gui, grid, "Database",
@@ -80,7 +80,7 @@ confuiBuildUIDebug (confuigui_t *gui)
   confuiMakeItemCheckButtonG (gui, grid, "Process",
       CONFUI_DBG_PROCESS, -1, (val & LOG_PROCESS));
 
-  uiGridNewCol (grid);
+  uiGridNewColumn (grid);
   confuiMakeItemCheckButtonG (gui, grid, "Program State",
       CONFUI_DBG_PROGSTATE, -1, (val & LOG_PROGSTATE));
   confuiMakeItemCheckButtonG (gui, grid, "Random Access File",

@@ -232,7 +232,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
 
   /* CONTEXT: configuration: itunes: which fields should be imported from itunes */
   uiwidgetp = uiCreateLabel (_("Fields to Import"));
-  uiGridNewCol (dgrid);
+  uiGridNewColumn (dgrid);
   uiGridPackRow (dgrid, uiwidgetp, 1, WCONT_FREE);
 
   fgrid = uiCreateGrid ();
@@ -258,7 +258,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
     ++count;
     ++gcount;
     if (count >= ITUNES_MAX_PER_COL) {
-      uiGridNewCol (fgrid);
+      uiGridNewColumn (fgrid);
       count = 0;
     }
   }

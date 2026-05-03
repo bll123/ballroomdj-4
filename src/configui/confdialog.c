@@ -90,7 +90,7 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
 
   uiwidgetp = uiCreateLabel ("   ");
 
-  uiGridNewCol (grid);
+  uiGridNewColumn (grid);
   uiGridPackRow (grid, uiwidgetp, 1, WCONT_FREE);
 
   /* column 3 */
@@ -98,7 +98,7 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
   /* CONTEXT: configuration: filter display: quick edit filters */
   uiwidgetp = uiCreateLabel (_("Quick Edit"));
 
-  uiGridNewCol (grid);
+  uiGridNewColumn (grid);
   uiGridPackRow (grid, uiwidgetp, 1, WCONT_FREE);
 
   for (int i = 0; i < QUICKEDIT_DISP_MAX; ++i) {
