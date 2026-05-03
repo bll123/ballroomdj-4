@@ -176,6 +176,28 @@ uiGridNewColumn (uiwcont_t *uigrid)
 }
 
 void
+uiGridSkipColumn (uiwcont_t *uigrid, int numcols)
+{
+  uigridint_t    *uigridint;
+
+  if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-row")) {
+    return;
+  }
+
+  uigridint = uigrid->uiint.uigridint;
+
+  if (uigridint->new) {
+    return;
+  }
+
+  uigridint->col += numcols;
+  if (uigridint->col > uigridint->ncols) {
+    uigridint->ncols = uigridint->col;
+  }
+  uigridint->new = false;
+}
+
+void
 uiGridPostProcess (uiwcont_t *uigrid)
 {
   uigridint_t *uigridint;

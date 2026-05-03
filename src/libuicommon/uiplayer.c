@@ -82,7 +82,7 @@ enum {
   UIPL_W_BUTTON_BEGSONG,
   UIPL_W_BUTTON_NEXTSONG,
   UIPL_W_BUTTON_SPD_RESET,
-  UIPL_W_MAIN_VBOX,
+  UIPL_W_MAIN_GRID,
   /* the info display must have enough labels for both the display */
   /* and the separators */
   UIPL_W_INFO_DISP_A,
@@ -253,15 +253,10 @@ uiwcont_t *
 uiplayerBuildUI (uiplayer_t *uiplayer)
 {
   char            tbuff [BDJ4_PATH_MAX];
+  uiwcont_t       *grid = NULL;
   uiwcont_t       *uiwidgetp = NULL;
   uiwcont_t       *hbox = NULL;
   uiwcont_t       *statusbox = NULL;
-  uiwcont_t       *szgrpScalePerc = NULL;
-  uiwcont_t       *szgrpScaleDisp = NULL;
-  uiwcont_t       *szgrpScale = NULL;
-  uiwcont_t       *szgrpScaleLabel = NULL;
-  uiwcont_t       *szgrpScaleButton = NULL;
-  uiwcont_t       *szgrpStatus = NULL;
   bool            showspd = false;
 
   if (uiplayer == NULL) {
@@ -272,30 +267,12 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiwcontPushID (UI_UIPLAYER_ID);
 
   showspd = bdjoptGetNum (OPT_P_SHOW_SPD_CONTROL);
-  if (showspd) {
-    szgrpScaleButton = uiCreateSizeGroupHoriz (NULL);
-  }
-  szgrpScalePerc = uiCreateSizeGroupHoriz (NULL);
-  szgrpScaleDisp = uiCreateSizeGroupHoriz (NULL);
-  szgrpScale = uiCreateSizeGroupHoriz (NULL);
-  szgrpScaleLabel = uiCreateSizeGroupHoriz (NULL);
-  szgrpStatus = uiCreateSizeGroupHoriz (NULL);
 
-  uiplayer->wcont [UIPL_W_MAIN_VBOX] = uiCreateVertBox ();
-  uiWidgetExpandHoriz (uiplayer->wcont [UIPL_W_MAIN_VBOX]);
+  grid = uiCreateGrid ();
+  uiWidgetExpandHoriz (grid);
 
   /* song display */
-
-  hbox = uiCreateHorizBox ();
-  uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (uiplayer->wcont [UIPL_W_MAIN_VBOX], hbox, WCONT_FREE);
-
-  /* size group E */
-  statusbox = uiCreateHorizBox ();
-  uiBoxPackStart (hbox, statusbox, WCONT_FREE);
-  uiWidgetAlignVertCenter (statusbox);
-  uiSizeGroupAdd (szgrpStatus, statusbox);
-
+  /* column 0 */
   uiplayer->images [UIPL_IMG_DISP_STATUS] = uiImageNew ();
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_stop", BDJ4_IMG_SVG_EXT,
@@ -304,11 +281,12 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiImageCopy (uiplayer->images [UIPL_IMG_DISP_STATUS], uiplayer->images [UIPL_IMG_STOP]);
   uiWidgetSetSizeRequest (uiplayer->images [UIPL_IMG_DISP_STATUS], 18, -1);
-  uiBoxPackStart (statusbox, uiplayer->images [UIPL_IMG_DISP_STATUS], WCONT_KEEP);
+  uiGridPack (grid, uiplayer->images [UIPL_IMG_DISP_STATUS], WCONT_KEEP);
   uiWidgetAlignHorizCenter (uiplayer->images [UIPL_IMG_DISP_STATUS]);
   uiWidgetAlignVertCenter (uiplayer->images [UIPL_IMG_DISP_STATUS]);
   uiWidgetSetMarginStart (uiplayer->images [UIPL_IMG_DISP_STATUS], 1);
 
+  /* column 1 */
   pathbldMakePath (tbuff, sizeof (tbuff), "button_play", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   uiplayer->images [UIPL_IMG_PLAY] = uiImageFromFile (tbuff);
@@ -328,10 +306,14 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiplayer->images [UIPL_IMG_DISP_REPEAT] = uiImageNew ();
   uiImageClear (uiplayer->images [UIPL_IMG_DISP_REPEAT]);
   uiWidgetSetSizeRequest (uiplayer->images [UIPL_IMG_DISP_REPEAT], 18, -1);
-  uiBoxPackStart (statusbox, uiplayer->images [UIPL_IMG_DISP_REPEAT], WCONT_KEEP);
+  uiGridPack (grid, uiplayer->images [UIPL_IMG_DISP_REPEAT], WCONT_KEEP);
   uiWidgetAlignHorizCenter (uiplayer->images [UIPL_IMG_DISP_REPEAT]);
   uiWidgetAlignVertCenter (uiplayer->images [UIPL_IMG_DISP_REPEAT]);
   uiWidgetSetMarginStart (uiplayer->images [UIPL_IMG_DISP_REPEAT], 1);
+
+  /* column 2 */
+  hbox = uiCreateHorizBox ();
+  uiWidgetAlignHorizFill (hbox);
 
   for (int i = UIPL_W_INFO_DISP_A; i <= UIPL_W_INFO_DISP_I; ++i) {
     uiwidgetp = uiCreateLabel ("");
@@ -346,14 +328,37 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
     uiWidgetAlignHorizStart (uiwidgetp);
     uiplayer->wcont [i] = uiwidgetp;
   }
+  uiBoxPostProcess (hbox);
+  uiGridPack (grid, hbox, WCONT_FREE);
 
-  /* expanding label to take space */
-  uiwidgetp = uiCreateLabel ("");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiWidgetExpandHoriz (uiwidgetp);
+  /* speed display, 5 columns (3-7) */
+  /* column 3 */
+  /* CONTEXT: playerui: the current speed for song playback */
+  uiwidgetp = uiCreateColonLabel (_("Speed"));
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
+  uiWidgetAlignHorizEnd (uiwidgetp);
+  uiWidgetSetMarginEnd (uiwidgetp, 1);
+
+  /* column 4 */
+  uiplayer->wcont [UIPL_W_SPEED] = uiCreateScale (
+      SPD_LOWER, SPD_UPPER, SPD_INCA, SPD_INCB, 100.0, SPD_DIGITS);
+  uiGridPack (grid, uiplayer->wcont [UIPL_W_SPEED], WCONT_KEEP);
+  uiWidgetSetMarginStart (uiplayer->wcont [UIPL_W_SPEED], 2);
+  uiplayer->callbacks [UIPL_CB_SPEED] = callbackInitD (
+      uiplayerSpeedCallback, uiplayer);
+  uiScaleSetCallback (uiplayer->wcont [UIPL_W_SPEED], uiplayer->callbacks [UIPL_CB_SPEED]);
+
+  /* column 5 */
+  uiplayer->wcont [UIPL_W_SPEED_DISP] = uiCreateLabel ("100");
+  uiGridPack (grid, uiplayer->wcont [UIPL_W_SPEED_DISP], WCONT_KEEP);
+  uiWidgetAlignHorizEnd (uiplayer->wcont [UIPL_W_SPEED_DISP]);
+
+  /* column 6 */
+  uiwidgetp = uiCreateLabel ("%");
+  uiGridPack (grid,uiwidgetp, WCONT_FREE);
 
   if (showspd) {
-    /* size group F */
+    /* column 7 */
     uiplayer->callbacks [UIPL_CB_SPD_RESET] = callbackInit (
         uiplayerSpdResetCallback, uiplayer, "spd-reset");
     uiwidgetp = uiCreateButton (
@@ -361,55 +366,22 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
         /* CONTEXT: playerui: button: reset speed to 100% */
         _("100%"), NULL, NULL);
     uiWidgetSetClass (uiwidgetp, "bdj-spd-reset");
-    uiBoxPackEnd (hbox, uiwidgetp, WCONT_KEEP);
-    uiSizeGroupAdd (szgrpScaleButton, uiwidgetp);
+    uiGridPack (grid, uiwidgetp, WCONT_KEEP);
     uiplayer->wcont [UIPL_W_BUTTON_SPD_RESET] = uiwidgetp;
   }
 
-  /* size group A */
-  uiwidgetp = uiCreateLabel ("%");
-  uiBoxPackEnd (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrpScalePerc, uiwidgetp);
-
-  /* size group B */
-  uiplayer->wcont [UIPL_W_SPEED_DISP] = uiCreateLabel ("100");
-  uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SPEED_DISP], WCONT_KEEP);
-  uiLabelAlignEnd (uiplayer->wcont [UIPL_W_SPEED_DISP]);
-  uiSizeGroupAdd (szgrpScaleDisp, uiplayer->wcont [UIPL_W_SPEED_DISP]);
-
-  /* size group C */
-  uiplayer->wcont [UIPL_W_SPEED] = uiCreateScale (
-      SPD_LOWER, SPD_UPPER, SPD_INCA, SPD_INCB, 100.0, SPD_DIGITS);
-  uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SPEED], WCONT_KEEP);
-  uiWidgetSetMarginStart (uiplayer->wcont [UIPL_W_SPEED], 2);
-  uiSizeGroupAdd (szgrpScale, uiplayer->wcont [UIPL_W_SPEED]);
-  uiplayer->callbacks [UIPL_CB_SPEED] = callbackInitD (
-      uiplayerSpeedCallback, uiplayer);
-  uiScaleSetCallback (uiplayer->wcont [UIPL_W_SPEED], uiplayer->callbacks [UIPL_CB_SPEED]);
-
-  /* size group D */
-  /* CONTEXT: playerui: the current speed for song playback */
-  uiwidgetp = uiCreateColonLabel (_("Speed"));
-  uiLabelAlignEnd (uiwidgetp);
-  uiBoxPackEnd (hbox, uiwidgetp, WCONT_FREE);
-  uiWidgetSetMarginEnd (uiwidgetp, 1);
-  uiSizeGroupAdd (szgrpScaleLabel, uiwidgetp);
-
-  uiBoxPostProcess (hbox);
-
-  /* position controls / display */
+  /* next line */
+  /* position display */
   hbox = uiCreateHorizBox ();
-  uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (uiplayer->wcont [UIPL_W_MAIN_VBOX], hbox, WCONT_FREE);
-
-  /* size group E */
-  uiwidgetp = uiCreateLabel ("");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrpStatus, uiwidgetp);
+  uiWidgetAlignHorizFill (hbox);
+  uiGridNewRow (grid);
+  uiGridSkipColumn (grid, 2);
+  /* column 2 */
+  uiGridPack (grid, hbox, WCONT_FREE);
 
   uiplayer->wcont [UIPL_W_COUNTDOWN_TIMER] = uiCreateLabel (" 0:00");
   uiBoxPackStart (hbox, uiplayer->wcont [UIPL_W_COUNTDOWN_TIMER], WCONT_KEEP);
-  uiLabelAlignEnd (uiplayer->wcont [UIPL_W_COUNTDOWN_TIMER]);
+  uiWidgetAlignHorizEnd (uiplayer->wcont [UIPL_W_COUNTDOWN_TIMER]);
 
   uiwidgetp = uiCreateLabel (" / ");
   uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
@@ -417,59 +389,36 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiplayer->wcont [UIPL_W_DURATION] = uiCreateLabel (" 0:00");
   uiBoxPackStart (hbox, uiplayer->wcont [UIPL_W_DURATION], WCONT_KEEP);
-  uiLabelAlignEnd (uiplayer->wcont [UIPL_W_DURATION]);
+  uiWidgetAlignHorizEnd (uiplayer->wcont [UIPL_W_DURATION]);
 
-  uiwidgetp = uiCreateLabel ("");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiWidgetExpandHoriz (uiwidgetp);
+  uiBoxPostProcess (hbox);
 
-  if (showspd) {
-    /* size group F */
-    uiwidgetp = uiCreateLabel ("");
-    uiBoxPackEnd (hbox, uiwidgetp, WCONT_FREE);
-    uiSizeGroupAdd (szgrpScaleButton, uiwidgetp);
-  }
+  /* position controls, 3 columns (3-5) */
+  /* column 3 */
+  /* CONTEXT: playerui: the current position of the song during song playback */
+  uiwidgetp = uiCreateColonLabel (_("Position"));
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
+  uiWidgetAlignHorizEnd (uiwidgetp);
+  uiWidgetSetMarginEnd (uiwidgetp, 1);
 
-  /* size group A */
-  uiwidgetp = uiCreateLabel ("");
-  uiBoxPackEnd (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrpScalePerc, uiwidgetp);
-
-  /* size group B */
-  uiplayer->wcont [UIPL_W_SEEK_DISP] = uiCreateLabel ("0:00");
-  uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SEEK_DISP], WCONT_KEEP);
-  uiSizeGroupAdd (szgrpScaleDisp, uiplayer->wcont [UIPL_W_SEEK_DISP]);
-  uiLabelAlignEnd (uiplayer->wcont [UIPL_W_SEEK_DISP]);
-
-  /* size group C */
   uiplayer->wcont [UIPL_W_SEEK] = uiCreateScale (
       0.0, 180000.0, 1000.0, 10000.0, 0.0, 0);
-  uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SEEK], WCONT_KEEP);
+  uiGridPack (grid, uiplayer->wcont [UIPL_W_SEEK], WCONT_KEEP);
   uiWidgetSetMarginStart (uiplayer->wcont [UIPL_W_SEEK], 2);
-  uiSizeGroupAdd (szgrpScale, uiplayer->wcont [UIPL_W_SEEK]);
   uiplayer->callbacks [UIPL_CB_SEEK] = callbackInitD (
       uiplayerSeekCallback, uiplayer);
   uiScaleSetCallback (uiplayer->wcont [UIPL_W_SEEK], uiplayer->callbacks [UIPL_CB_SEEK]);
 
-  /* size group D */
-  /* CONTEXT: playerui: the current position of the song during song playback */
-  uiwidgetp = uiCreateColonLabel (_("Position"));
-  uiBoxPackEnd (hbox, uiwidgetp, WCONT_FREE);
-  uiLabelAlignEnd (uiwidgetp);
-  uiWidgetSetMarginEnd (uiwidgetp, 1);
-  uiSizeGroupAdd (szgrpScaleLabel, uiwidgetp);
-
-  uiBoxPostProcess (hbox);
+  uiplayer->wcont [UIPL_W_SEEK_DISP] = uiCreateLabel ("0:00");
+  uiGridPack (grid, uiplayer->wcont [UIPL_W_SEEK_DISP], WCONT_KEEP);
+  uiWidgetAlignHorizEnd (uiplayer->wcont [UIPL_W_SEEK_DISP]);
 
   /* main controls */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (uiplayer->wcont [UIPL_W_MAIN_VBOX], hbox, WCONT_FREE);
-
-  /* size group E */
-  uiwidgetp = uiCreateLabel ("");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrpStatus, uiwidgetp);
+  uiGridNewRow (grid);
+  uiGridSkipColumn (grid, 2);
+  uiGridPack (grid, hbox, WCONT_FREE);
 
   uiplayer->callbacks [UIPL_CB_FADE] = callbackInit (
       uiplayerFadeProcess, uiplayer, "fade");
@@ -532,62 +481,41 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiToggleButtonSetCallback (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B],
       uiplayer->callbacks [UIPL_CB_PAUSEATEND]);
 
-  /* volume controls / display */
+  uiBoxPostProcess (hbox);
 
-  if (showspd) {
-    /* size group F */
-    uiwidgetp = uiCreateLabel ("");
-    uiBoxPackEnd (hbox, uiwidgetp, WCONT_FREE);
-    uiSizeGroupAdd (szgrpScaleButton, uiwidgetp);
-  }
+  /* volume controls, 4 columns (3-6) */
+  /* column 3 */
+  /* CONTEXT: playerui: The current volume of the song */
+  uiwidgetp = uiCreateColonLabel (_("Volume"));
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
+  uiWidgetAlignHorizEnd (uiwidgetp);
+  uiWidgetSetMarginEnd (uiwidgetp, 1);
 
-  /* size group A */
-  uiwidgetp = uiCreateLabel ("%");
-  uiBoxPackEnd (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrpScalePerc, uiwidgetp);
-
-  /* size group B */
-  uiplayer->wcont [UIPL_W_VOLUME_DISP] = uiCreateLabel ("100");
-  uiLabelAlignEnd (uiplayer->wcont [UIPL_W_VOLUME_DISP]);
-  uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_VOLUME_DISP], WCONT_KEEP);
-  uiSizeGroupAdd (szgrpScaleDisp, uiplayer->wcont [UIPL_W_VOLUME_DISP]);
-
-  /* size group C */
   uiplayer->wcont [UIPL_W_VOLUME] = uiCreateScale (
       VOL_LOWER, VOL_UPPER, VOL_INCA, VOL_INCB, 0.0, VOL_DIGITS);
-  uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_VOLUME], WCONT_KEEP);
+  uiGridPack (grid, uiplayer->wcont [UIPL_W_VOLUME], WCONT_KEEP);
   uiWidgetSetMarginStart (uiplayer->wcont [UIPL_W_VOLUME], 2);
-  uiSizeGroupAdd (szgrpScale, uiplayer->wcont [UIPL_W_VOLUME]);
   uiplayer->callbacks [UIPL_CB_VOLUME] = callbackInitD (
       uiplayerVolumeCallback, uiplayer);
   uiScaleSetCallback (uiplayer->wcont [UIPL_W_VOLUME], uiplayer->callbacks [UIPL_CB_VOLUME]);
 
-  /* size group D */
-  /* CONTEXT: playerui: The current volume of the song */
-  uiwidgetp = uiCreateColonLabel (_("Volume"));
-  uiLabelAlignEnd (uiwidgetp);
-  uiBoxPackEnd (hbox, uiwidgetp, WCONT_FREE);
-  uiWidgetSetMarginEnd (uiwidgetp, 1);
-  uiSizeGroupAdd (szgrpScaleLabel, uiwidgetp);
+  uiplayer->wcont [UIPL_W_VOLUME_DISP] = uiCreateLabel ("100");
+  uiGridPack (grid, uiplayer->wcont [UIPL_W_VOLUME_DISP], WCONT_KEEP);
+  uiWidgetAlignHorizEnd (uiplayer->wcont [UIPL_W_VOLUME_DISP]);
+
+  uiwidgetp = uiCreateLabel ("%");
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   uiplayer->uibuilt = true;
 
   uiBoxPostProcess (statusbox);
-  uiBoxPostProcess (hbox);
-  if (showspd) {
-    uiwcontFree (szgrpScaleButton);
-  }
-  uiwcontFree (szgrpScalePerc);
-  uiwcontFree (szgrpScaleDisp);
-  uiwcontFree (szgrpScale);
-  uiwcontFree (szgrpScaleLabel);
-  uiwcontFree (szgrpStatus);
-
-  uiBoxPostProcess (uiplayer->wcont [UIPL_W_MAIN_VBOX]);
+  uiGridPostProcess (grid);
   uiwcontPopID ();
 
+  uiplayer->wcont [UIPL_W_MAIN_GRID] = grid;
+
   logProcEnd ("");
-  return uiplayer->wcont [UIPL_W_MAIN_VBOX];
+  return uiplayer->wcont [UIPL_W_MAIN_GRID];
 }
 
 void
@@ -976,7 +904,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
 
   /* current vol */
   if (! uiplayer->volumeLock) {
-    snprintf (tbuff, sizeof (tbuff), "%3d", ps->currentVolume);
+    snprintf (tbuff, sizeof (tbuff), "%d", ps->currentVolume);
     uiLabelSetText (uiplayer->wcont [UIPL_W_VOLUME_DISP], tbuff);
     dval = (double) ps->currentVolume;
     uiScaleSetValue (uiplayer->wcont [UIPL_W_VOLUME], dval);
@@ -985,7 +913,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
 
   /* speed */
   if (! uiplayer->speedLock) {
-    snprintf (tbuff, sizeof (tbuff), "%3d", ps->currentSpeed);
+    snprintf (tbuff, sizeof (tbuff), "%d", ps->currentSpeed);
     uiLabelSetText (uiplayer->wcont [UIPL_W_SPEED_DISP], tbuff);
     dval = (double) ps->currentSpeed;
     uiScaleSetValue (uiplayer->wcont [UIPL_W_SPEED], dval);
@@ -1239,7 +1167,7 @@ uiplayerSpeedCallback (void *udata, double value)
   mstimeset (&uiplayer->speedLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
 
   value = uiScaleEnforceMax (uiplayer->wcont [UIPL_W_SPEED], value);
-  snprintf (tbuff, sizeof (tbuff), "%3.0f", value);
+  snprintf (tbuff, sizeof (tbuff), "%.0f", value);
   uiLabelSetText (uiplayer->wcont [UIPL_W_SPEED_DISP], tbuff);
   logProcEnd ("");
   return UICB_CONT;
@@ -1291,7 +1219,7 @@ uiplayerVolumeCallback (void *udata, double value)
   mstimeset (&uiplayer->volumeLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
 
   value = uiScaleEnforceMax (uiplayer->wcont [UIPL_W_VOLUME], value);
-  snprintf (tbuff, sizeof (tbuff), "%3.0f", value);
+  snprintf (tbuff, sizeof (tbuff), "%.0f", value);
   uiLabelSetText (uiplayer->wcont [UIPL_W_VOLUME_DISP], tbuff);
   logProcEnd ("");
   return UICB_CONT;
