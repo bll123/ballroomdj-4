@@ -9,9 +9,12 @@
 * Bug Fixes:
     * Music Manager: Fix enabled/disabled state of 'Remove Song' menu items.
     * Configuration: UI: Fix some alignment issues.
+    * UI: Fix switch display for RTL languages.
 * Changes:
     * Song Editor: Added 'Remove Song' items to the song editor menu.
     * Song Editor: Added a display in the heading for removed songs.
+* Translations:
+    * PENDING: Japanese (日本語) is now professionally translated by ...
 
 -->
 
