@@ -86,7 +86,7 @@ typedef struct uiqe {
 static void   uiqeCreateDialog (uiqe_t *uiqe);
 static void   uiqeInitDisplay (uiqe_t *uiqe);
 static bool   uiqeResponseHandler (void *udata, int32_t responseid);
-static void   uiqeAddScale (uiqe_t *uiqe, uiwcont_t *hbox, int scidx);
+static void   uiqeAddScale (uiqe_t *uiqe, uiwcont_t *grid, int scidx);
 static bool   uiqeScaleDisplayCallback (void *udata, double value);
 
 uiqe_t *
@@ -283,7 +283,7 @@ uiqeGetResponseData (uiqe_t *uiqe)
 static void
 uiqeCreateDialog (uiqe_t *uiqe)
 {
-  uiwcont_t     *vbox;
+  uiwcont_t     *grid;
   uiwcont_t     *hbox;
   uiwcont_t     *uiwidgetp = NULL;
 
@@ -296,11 +296,6 @@ uiqeCreateDialog (uiqe_t *uiqe)
   if (uiqe->wcont [UIQE_W_DIALOG] != NULL) {
     return;
   }
-
-
-  uiqe->wcont [UIQE_W_SZGRP_LABEL] = uiCreateSizeGroupHoriz (NULL);
-  uiqe->wcont [UIQE_W_SZGRP_SCALE] = uiCreateSizeGroupHoriz (NULL);
-  uiqe->wcont [UIQE_W_SZGRP_SCALE_DISP] = uiCreateSizeGroupHoriz (NULL);
 
   uiqe->wcont [UIQE_W_DIALOG] =
       uiCreateDialog (uiqe->parentwin,
@@ -316,16 +311,13 @@ uiqeCreateDialog (uiqe_t *uiqe)
       NULL
       );
 
-  vbox = uiCreateVertBox ();
-  uiWidgetExpandHoriz (vbox);
-  uiWidgetExpandVert (vbox);
-  uiDialogPackInDialog (uiqe->wcont [UIQE_W_DIALOG], vbox);
-  uiWidgetSetAllMargins (vbox, 4);
+  grid = uiCreateGrid ();
+  uiDialogPackInDialog (uiqe->wcont [UIQE_W_DIALOG], grid);
+  uiWidgetSetAllMargins (grid, 4);
 
   /* begin line: title display */
   hbox = uiCreateHorizBox ();
-  uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
+  uiGridPackColumn (grid, hbox, 3, WCONT_FREE);
 
   uiwidgetp = uiCreateLabel ("");
   uiLabelEllipsizeOn (uiwidgetp);
@@ -346,66 +338,46 @@ uiqeCreateDialog (uiqe_t *uiqe)
 
   /* begin line: speed scale */
   if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_SPEED) == 1) {
-    hbox = uiCreateHorizBox ();
-    uiWidgetExpandHoriz (hbox);
-    uiBoxPackStart (vbox, hbox, WCONT_FREE);
-    uiqeAddScale (uiqe, hbox, UIQE_SCALE_SPD);
-    uiBoxPostProcess (hbox);
+    uiGridNewRow (grid);
+    uiqeAddScale (uiqe, grid, UIQE_SCALE_SPD);
   }
 
   /* begin line: vol-adj scale */
   if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_VOLUME) == 1) {
-    hbox = uiCreateHorizBox ();
-    uiWidgetExpandHoriz (hbox);
-    uiBoxPackStart (vbox, hbox, WCONT_FREE);
-    uiqeAddScale (uiqe, hbox, UIQE_SCALE_VOLADJ);
-    uiBoxPostProcess (hbox);
+    uiGridNewRow (grid);
+    uiqeAddScale (uiqe, grid, UIQE_SCALE_VOLADJ);
   }
 
   /* begin line: rating */
   if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_DANCERATING) == 1) {
-    hbox = uiCreateHorizBox ();
-    uiWidgetExpandHoriz (hbox);
-    uiBoxPackStart (vbox, hbox, WCONT_FREE);
-
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
-    uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-    uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
-
-    uiqe->uirating = uiratingSpinboxCreate (hbox, UIRATING_NORM);
-    uiBoxPostProcess (hbox);
+    uiGridNewRow (grid);
+    uiGridPack (grid, uiwidgetp, WCONT_FREE);
+    uiqe->uirating = uiratingSpinboxCreate (NULL, UIRATING_NORM);
+    uiratingPackGrid (uiqe->uirating, grid);
   }
 
   /* begin line: level */
   if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_DANCELEVEL) == 1) {
-    hbox = uiCreateHorizBox ();
-    uiWidgetExpandHoriz (hbox);
-    uiBoxPackStart (vbox, hbox, WCONT_FREE);
-
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCELEVEL].displayname);
-    uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-    uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
+    uiGridNewRow (grid);
+    uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-    uiqe->uilevel = uilevelSpinboxCreate (hbox, UIRATING_NORM);
-    uiBoxPostProcess (hbox);
+    uiqe->uilevel = uilevelSpinboxCreate (NULL, UIRATING_NORM);
+    uilevelPackGrid (uiqe->uilevel, grid);
   }
 
   /* begin line: favorite */
   if (nlistGetNum (uiqe->qedispsel, QUICKEDIT_DISP_FAVORITE) == 1) {
-    hbox = uiCreateHorizBox ();
-    uiWidgetExpandHoriz (hbox);
-    uiBoxPackStart (vbox, hbox, WCONT_FREE);
-
     uiwidgetp = uiCreateColonLabel (tagdefs [TAG_FAVORITE].displayname);
-    uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-    uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
+    uiGridNewRow (grid);
+    uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
-    uiqe->uifavorite = uifavoriteSpinboxCreate (hbox);
-    uiBoxPostProcess (hbox);
+    uiqe->uifavorite = uifavoriteSpinboxCreate (NULL);
+    uifavoritePackGrid (uiqe->uifavorite, grid);
   }
 
-  uiBoxPostProcess (vbox);
-  uiwcontFree (vbox);
+  uiGridPostProcess (grid);
 
   logProcEnd ("");
 }
@@ -474,7 +446,7 @@ uiqeResponseHandler (void *udata, int32_t responseid)
 }
 
 static void
-uiqeAddScale (uiqe_t *uiqe, uiwcont_t *hbox, int scidx)
+uiqeAddScale (uiqe_t *uiqe, uiwcont_t *grid, int scidx)
 {
   uiwcont_t       *uiwidgetp;
   double          lower, upper;
@@ -502,13 +474,11 @@ uiqeAddScale (uiqe_t *uiqe, uiwcont_t *hbox, int scidx)
   uiqe->scaledata [scidx].tagkey = tagkey;
 
   uiwidgetp = uiCreateColonLabel (tagdefs [tagkey].displayname);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_LABEL], uiwidgetp);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiCreateScale (lower, upper, inca, incb, 0.0, digits);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 2);
-  uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_SCALE], uiwidgetp);
 
   uiqe->scaledata [scidx].scale = uiwidgetp;
   uiqe->scaledata [scidx].scalecb = callbackInitD (
@@ -517,9 +487,8 @@ uiqeAddScale (uiqe_t *uiqe, uiwcont_t *hbox, int scidx)
 
   uiwidgetp = uiCreateLabel ("100%");
   uiLabelAlignEnd (uiwidgetp);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 2);
-  uiSizeGroupAdd (uiqe->wcont [UIQE_W_SZGRP_SCALE_DISP], uiwidgetp);
   uiqe->scaledata [scidx].scaledisp = uiwidgetp;
 
   logProcEnd ("");
