@@ -52,7 +52,7 @@ uiGridFree (uiwcont_t *uigrid)
 {
   uigridint_t   *uigridint;
 
-  if (uigrid == NULL) {
+  if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-free")) {
     return;
   }
 
@@ -68,10 +68,6 @@ uiGridFree (uiwcont_t *uigrid)
 void
 uiGridPack (uiwcont_t *uigrid, uiwcont_t *uiwidget, uiwcontrls_t release)
 {
-  if (uigrid == NULL || uiwidget == NULL) {
-    return;
-  }
-
   uiGridPackColumn (uigrid, uiwidget, 1, release);
 }
 
@@ -80,6 +76,13 @@ uiGridPackColumn (uiwcont_t *uigrid, uiwcont_t *uiwidget,
     int numcols, uiwcontrls_t release)
 {
   uigridint_t   *uigridint;
+
+  if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-column")) {
+    return;
+  }
+  if (uiwidget == NULL) {
+    return;
+  }
 
   uigridint = uigrid->uiint.uigridint;
 
@@ -104,6 +107,13 @@ uiGridPackRow (uiwcont_t *uigrid, uiwcont_t *uiwidget,
 {
   uigridint_t   *uigridint;
 
+  if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-row")) {
+    return;
+  }
+  if (uiwidget == NULL) {
+    return;
+  }
+
   uigridint = uigrid->uiint.uigridint;
 
   uiWidgetAlignHorizStart (uiwidget);
@@ -126,7 +136,7 @@ uiGridNewRow (uiwcont_t *uigrid)
 {
   uigridint_t    *uigridint;
 
-  if (uigrid == NULL) {
+  if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-row")) {
     return;
   }
 
@@ -148,7 +158,7 @@ uiGridNewCol (uiwcont_t *uigrid)
 {
   uigridint_t    *uigridint;
 
-  if (uigrid == NULL) {
+  if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-row")) {
     return;
   }
 

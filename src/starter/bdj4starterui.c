@@ -302,6 +302,7 @@ static void     starterLoadOptions (startui_t *starter);
 static bool     starterStartAltInst (void *udata);
 static void     starterSendProcessActive (startui_t *starter, bdjmsgroute_t routefrom, int routeto);
 static int      starterValidateEmail (uiwcont_t *entry, const char *label, void *udata);
+static void     starterPopulateLatestVersion (startui_t *starter);
 
 static bool gKillReceived = false;
 static bool gStopProgram = false;
@@ -1426,10 +1427,10 @@ starterProcessSupport (void *udata)
 {
   startui_t     *starter = udata;
   uiwcont_t     *vbox = NULL;
-  uiwcont_t     *hbox = NULL;
+  uiwcont_t     *grid = NULL;
   uiwcont_t     *uiwidgetp = NULL;
+  uiwcont_t     *latestversionlabel = NULL;
   uiwcont_t     *uidialog = NULL;
-  uiwcont_t     *szgrp = NULL;
   char          tbuff [BDJ4_PATH_MAX];
   const char    *builddate;
   const char    *devmode;
@@ -1460,8 +1461,6 @@ starterProcessSupport (void *udata)
   uiDialogPackInDialog (uidialog, vbox);
   uiWidgetSetAllMargins (vbox, 2);
 
-  szgrp = uiCreateSizeGroupHoriz (vbox);
-
   /* status message line */
   hdrline = uiutilsHeaderLineSetup (vbox);
   starter->wcont [START_W_DIALOG_STATUS_MSG] =
@@ -1469,15 +1468,14 @@ starterProcessSupport (void *udata)
   uiutilsHeaderLinePostProcess (hdrline);
   starter->dialoghdr = hdrline;
 
-  /* begin line */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
+  grid = uiCreateGrid ();
+  uiBoxPackStart (vbox, grid, WCONT_FREE);
 
+  /* begin line */
   /* CONTEXT: starterui: basic support dialog, version display */
   snprintf (tbuff, sizeof (tbuff), _("%s Version"), BDJ4_NAME);
   uiwidgetp = uiCreateColonLabel (tbuff);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   builddate = sysvarsGetStr (SV_BDJ4_BUILDDATE);
   devmode = sysvarsGetStr (SV_BDJ4_DEVELOPMENT);
@@ -1485,78 +1483,20 @@ starterProcessSupport (void *udata)
       sysvarsGetStr (SV_BDJ4_VERSION), builddate, devmode);
 
   uiwidgetp = uiCreateLabel (tbuff);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-
-  uiBoxPostProcess (hbox);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   /* begin line */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-
   /* CONTEXT: starterui: basic support dialog, latest version display */
   uiwidgetp = uiCreateColonLabel (_("Latest Version"));
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiCreateLabel ("");
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-
-  if (*starter->latestversiondisp == '\0') {
-    starterSupportInit (starter);
-    supportGetLatestVersion (starter->support, starter->latestversiondisp, sizeof (starter->latestversiondisp));
-    if (*starter->latestversiondisp == '\0') {
-      /* CONTEXT: starterui: no internet connection */
-      uiLabelSetText (starter->wcont [START_W_DIALOG_STATUS_MSG], _("No internet connection"));
-      for (int i = 0; i < START_LINK_CB_MAX; ++i) {
-        uiWidgetSetState (starter->linkinfo [i].uiwidgetp, UIWIDGET_DISABLE);
-      }
-    } else {
-      char        *p;
-      char        uri [BDJ4_PATH_MAX];
-      char        *nuri;
-      bdjregex_t  *vrx;
-
-      stpecpy (starter->latestversion, starter->latestversion + sizeof (starter->latestversion), starter->latestversiondisp);
-      p = strchr (starter->latestversion, ' ');
-      if (p != NULL) {
-        *p = '\0';
-      }
-
-      /* the {VERSION} string appears in URI_DOWNLOAD string */
-      vrx = regexInit ("{VERSION}");
-
-      /* sourceforge: .../v%s/... */
-      /* github .../download/%s/... */
-      snprintf (uri, sizeof (uri), "%s%s/%s/bdj4-installer-%s%s%s%s-%s%s",
-          bdjoptGetStr (OPT_HOST_DOWNLOAD),
-          bdjoptGetStr (OPT_URI_DOWNLOAD),
-          bdjoptGetStr (OPT_DOWNLOAD_SUFFIX),
-          sysvarsGetStr (SV_OS_PLATFORM),   // linux, macos, win64
-          sysvarsGetStr (SV_OS_DIST_TAG),   // debian13
-          sysvarsGetStr (SV_OS_ARCH_TAG),   // intel, applesilicon
-          sysvarsGetStr (SV_OS_PKG_SYS),    // homebrew, macports
-          starter->latestversion,
-          sysvarsGetStr (SV_OS_EXEC_EXT));
-      nuri = regexReplace (vrx, uri, starter->latestversion);
-      stpecpy (uri, uri + sizeof (uri), nuri);
-      mdfree (nuri);
-      starter->linkinfo [START_LINK_CB_DL_LATEST].uri = mdstrdup (uri);
-      if (isMacOS ()) {
-        starter->linkinfo [START_LINK_CB_DL_LATEST].macoscb = callbackInit (
-            starterDLLatestLinkHandler, starter, NULL);
-      }
-
-      for (int i = 0; i < START_LINK_CB_MAX; ++i) {
-        uiWidgetSetState (starter->linkinfo [i].uiwidgetp, UIWIDGET_ENABLE);
-      }
-
-      regexFree (vrx);
-    }
-  }
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
   uiLabelSetText (uiwidgetp, starter->latestversiondisp);
+  latestversionlabel = uiwidgetp;
 
   /* begin line */
-
   /* CONTEXT: starterui: basic support dialog: support option (download latest version) */
   uiwidgetp = uiCreateLink (_("Download Latest Version"),
       starter->linkinfo [START_LINK_CB_DL_LATEST].uri);
@@ -1564,18 +1504,17 @@ starterProcessSupport (void *udata)
     uiLinkSetActivateCallback (uiwidgetp,
         starter->linkinfo [START_LINK_CB_DL_LATEST].macoscb);
   }
-  uiBoxPackStart (vbox, uiwidgetp, WCONT_KEEP);
+  uiGridNewRow (grid);
+  uiGridPackColumn (grid, uiwidgetp, 2, WCONT_KEEP);
   starter->linkinfo [START_LINK_CB_DL_LATEST].uiwidgetp = uiwidgetp;
 
   /* begin line */
-
   /* CONTEXT: starterui: basic support dialog, list of support options */
   uiwidgetp = uiCreateColonLabel (_("Support options"));
-  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiGridNewRow (grid);
+  uiGridPackColumn (grid, uiwidgetp, 2, WCONT_FREE);
 
   /* begin line */
-
   /* CONTEXT: starterui: basic support dialog: support option (bdj4 download) */
   snprintf (tbuff, sizeof (tbuff), _("%s Download"), BDJ4_NAME);
   uiwidgetp = uiCreateLink (tbuff,
@@ -1584,11 +1523,11 @@ starterProcessSupport (void *udata)
     uiLinkSetActivateCallback (uiwidgetp,
         starter->linkinfo [START_LINK_CB_DOWNLOAD].macoscb);
   }
-  uiBoxPackStart (vbox, uiwidgetp, WCONT_KEEP);
+  uiGridNewRow (grid);
+  uiGridPackColumn (grid, uiwidgetp, 2, WCONT_KEEP);
   starter->linkinfo [START_LINK_CB_DOWNLOAD].uiwidgetp = uiwidgetp;
 
   /* begin line */
-
   /* CONTEXT: starterui: basic support dialog: support option (bdj4 wiki) */
   snprintf (tbuff, sizeof (tbuff), _("%s Wiki"), BDJ4_NAME);
   uiwidgetp = uiCreateLink (tbuff,
@@ -1597,11 +1536,11 @@ starterProcessSupport (void *udata)
     uiLinkSetActivateCallback (uiwidgetp,
         starter->linkinfo [START_LINK_CB_WIKI].macoscb);
   }
-  uiBoxPackStart (vbox, uiwidgetp, WCONT_KEEP);
+  uiGridNewRow (grid);
+  uiGridPackColumn (grid, uiwidgetp, 2, WCONT_KEEP);
   starter->linkinfo [START_LINK_CB_WIKI].uiwidgetp = uiwidgetp;
 
   /* begin line */
-
   /* CONTEXT: starterui: basic support dialog: support option (bdj4 forums) */
   snprintf (tbuff, sizeof (tbuff), _("%s Forums"), BDJ4_NAME);
   uiwidgetp = uiCreateLink (tbuff,
@@ -1610,11 +1549,11 @@ starterProcessSupport (void *udata)
     uiLinkSetActivateCallback (uiwidgetp,
         starter->linkinfo [START_LINK_CB_FORUM].macoscb);
   }
-  uiBoxPackStart (vbox, uiwidgetp, WCONT_KEEP);
+  uiGridNewRow (grid);
+  uiGridPackColumn (grid, uiwidgetp, 2, WCONT_KEEP);
   starter->linkinfo [START_LINK_CB_FORUM].uiwidgetp = uiwidgetp;
 
   /* begin line */
-
   /* CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets) */
   snprintf (tbuff, sizeof (tbuff), _("%s Support Tickets"), BDJ4_NAME);
   uiwidgetp = uiCreateLink (tbuff,
@@ -1623,31 +1562,31 @@ starterProcessSupport (void *udata)
     uiLinkSetActivateCallback (uiwidgetp,
         starter->linkinfo [START_LINK_CB_TICKETS].macoscb);
   }
-  uiBoxPackStart (vbox, uiwidgetp, WCONT_KEEP);
+  uiGridNewRow (grid);
+  uiGridPackColumn (grid, uiwidgetp, 2, WCONT_KEEP);
   starter->linkinfo [START_LINK_CB_TICKETS].uiwidgetp = uiwidgetp;
 
-  uiBoxPostProcess (hbox);
-
   /* begin line */
-
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-
   uiwidgetp = uiCreateButton (
       starter->callbacks [START_CB_SEND_SUPPORT],
       /* CONTEXT: starterui: basic support dialog: button: support option */
       _("Send Support Message"), NULL, NULL);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridNewRow (grid);
+  uiGridPackColumn (grid, uiwidgetp, 2, WCONT_KEEP);
   starter->buttons [START_BUTTON_SEND_SUPPORT] = uiwidgetp;
-
-  uiBoxPostProcess (hbox);
 
   starter->wcont [START_W_DIALOG] = uidialog;
   uiDialogShow (uidialog);
 
+  if (*starter->latestversiondisp == '\0') {
+    /* do this before the label is freed */
+    starterPopulateLatestVersion (starter);
+    uiLabelSetText (latestversionlabel, starter->latestversiondisp);
+  }
+
+  uiGridPostProcess (grid);
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
-  uiwcontFree (szgrp);
 
   return UICB_CONT;
 }
@@ -1951,9 +1890,8 @@ starterCreateSupportMsgDialog (void *udata)
   startui_t     *starter = udata;
   uiwcont_t     *uiwidgetp;
   uiwcont_t     *vbox;
-  uiwcont_t     *hbox;
+  uiwcont_t     *grid;
   uiwcont_t     *uidialog;
-  uiwcont_t     *szgrp;
   uihdrline_t   *hdrline;
   uiwcont_t     *tb;
 
@@ -1981,8 +1919,6 @@ starterCreateSupportMsgDialog (void *udata)
   uiDialogPackInDialog (uidialog, vbox);
   uiWidgetSetAllMargins (vbox, 2);
 
-  szgrp = uiCreateSizeGroupHoriz (vbox);
-
   /* profile color line */
   hdrline = uiutilsHeaderLineSetup (vbox);
   uiutilsHeaderLinePostProcess (hdrline);
@@ -1990,49 +1926,42 @@ starterCreateSupportMsgDialog (void *udata)
       uiutilsHeaderLineAddLabel (hdrline, ERROR_CLASS);
   starter->supporthdr = hdrline;
 
-  /* line 2 */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
+  grid = uiCreateGrid ();
+  uiBoxPackStart (vbox, grid, WCONT_FREE);
 
+  /* line 2 */
   /* CONTEXT: starterui: sending support message: user's e-mail address */
   uiwidgetp = uiCreateColonLabel (_("E-Mail Address"));
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiGridPack (grid,uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiEntryInit (50, 200);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   starter->wcont [START_W_SUPPORT_EMAIL] = uiwidgetp;
   /* CONTEXT: starterui: sending support message: user's e-mail address */
   uiEntrySetValidate (uiwidgetp, _("E-Mail Address"),
       starterValidateEmail, starter, UIENTRY_DELAYED);
 
-  uiBoxPostProcess (hbox);
-
   /* line 2 */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox, WCONT_FREE);
-
   /* CONTEXT: starterui: sending support message: subject of message */
   uiwidgetp = uiCreateColonLabel (_("Subject"));
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   uiwidgetp = uiEntryInit (50, 200);
-  uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   starter->wcont [START_W_SUPPORT_SUBJECT] = uiwidgetp;
-
-  uiBoxPostProcess (hbox);
 
   /* line 3 */
   /* CONTEXT: starterui: sending support message: message text */
   uiwidgetp = uiCreateColonLabel (_("Message"));
-  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
+  uiGridNewRow (grid);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   /* line 4 */
   tb = uiTextBoxCreate (200, NULL);
   uiTextBoxHorizExpand (tb);
   uiTextBoxVertExpand (tb);
-  uiBoxPackStartExpandChildren (vbox, tb, WCONT_KEEP);
+  uiBoxPackStart (vbox, tb, WCONT_KEEP);
   starter->wcont [START_W_SUPPORT_TEXTBOX] = tb;
 
   /* line 5 */
@@ -2055,9 +1984,9 @@ starterCreateSupportMsgDialog (void *udata)
   starter->wcont [START_W_SUPPORT_MSG_DIALOG] = uidialog;
   uiDialogShow (uidialog);
 
+  uiGridPostProcess (grid);
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
-  uiwcontFree (szgrp);
 
   return UICB_CONT;
 }
@@ -2393,4 +2322,61 @@ starterValidateEmail (uiwcont_t *entry, const char *label, void *udata)
   }
 
   return UIENTRY_OK;
+}
+
+static void
+starterPopulateLatestVersion (startui_t *starter)
+{
+  starterSupportInit (starter);
+  supportGetLatestVersion (starter->support, starter->latestversiondisp,
+      sizeof (starter->latestversiondisp));
+  if (*starter->latestversiondisp == '\0') {
+    uiLabelSetText (starter->wcont [START_W_DIALOG_STATUS_MSG],
+        /* CONTEXT: starterui: no internet connection */
+        _("No internet connection"));
+    for (int i = 0; i < START_LINK_CB_MAX; ++i) {
+      uiWidgetSetState (starter->linkinfo [i].uiwidgetp, UIWIDGET_DISABLE);
+    }
+  } else {
+    char        *p;
+    char        uri [BDJ4_PATH_MAX];
+    char        *nuri;
+    bdjregex_t  *vrx;
+
+    stpecpy (starter->latestversion, starter->latestversion + sizeof (starter->latestversion), starter->latestversiondisp);
+    p = strchr (starter->latestversion, ' ');
+    if (p != NULL) {
+      *p = '\0';
+    }
+
+    /* the {VERSION} string appears in URI_DOWNLOAD string */
+    vrx = regexInit ("{VERSION}");
+
+    /* sourceforge: .../v%s/... */
+    /* github .../download/%s/... */
+    snprintf (uri, sizeof (uri), "%s%s/%s/bdj4-installer-%s%s%s%s-%s%s",
+        bdjoptGetStr (OPT_HOST_DOWNLOAD),
+        bdjoptGetStr (OPT_URI_DOWNLOAD),
+        bdjoptGetStr (OPT_DOWNLOAD_SUFFIX),
+        sysvarsGetStr (SV_OS_PLATFORM),   // linux, macos, win64
+        sysvarsGetStr (SV_OS_DIST_TAG),   // debian13
+        sysvarsGetStr (SV_OS_ARCH_TAG),   // intel, applesilicon
+        sysvarsGetStr (SV_OS_PKG_SYS),    // homebrew, macports
+        starter->latestversion,
+        sysvarsGetStr (SV_OS_EXEC_EXT));
+    nuri = regexReplace (vrx, uri, starter->latestversion);
+    stpecpy (uri, uri + sizeof (uri), nuri);
+    mdfree (nuri);
+    starter->linkinfo [START_LINK_CB_DL_LATEST].uri = mdstrdup (uri);
+    if (isMacOS ()) {
+      starter->linkinfo [START_LINK_CB_DL_LATEST].macoscb = callbackInit (
+          starterDLLatestLinkHandler, starter, NULL);
+    }
+
+    for (int i = 0; i < START_LINK_CB_MAX; ++i) {
+      uiWidgetSetState (starter->linkinfo [i].uiwidgetp, UIWIDGET_ENABLE);
+    }
+
+    regexFree (vrx);
+  }
 }
