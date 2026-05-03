@@ -323,19 +323,15 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiwcont_t   *uiwidgetp = NULL;
   uiwcont_t   *vboxmain;
   uiwcont_t   *vbox;
+  uiwcont_t   *grid;
   uiwcont_t   *hboxbpm;
   uiwcont_t   *hbox;
-  uiwcont_t   *szgrp;
-  uiwcont_t   *szgrpDisp;
   char        imgbuff [BDJ4_PATH_MAX];
   int         x, y;
 
   logProcBegin ();
 
   uiwcontInitID (UI_BPMCOUNTER_ID);
-
-  szgrp = uiCreateSizeGroupHoriz (NULL);      // labels
-  szgrpDisp = uiCreateSizeGroupHoriz (NULL);     // display
 
   bpmcounter->callbacks [BPMCOUNT_CB_EXIT] = callbackInit (
       bpmcounterCloseCallback, bpmcounter, NULL);
@@ -351,8 +347,8 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   bpmcounter->hdrline = uiutilsHeaderLineSetup (vboxmain);
   uiutilsHeaderLinePostProcess (bpmcounter->hdrline);
 
+  /* line 1 */
   /* instructions */
-
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxmain, hbox, WCONT_FREE);
 
@@ -365,6 +361,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxmain, hbox, WCONT_FREE);
 
+  /* new line */
   /* CONTEXT: bpm counter: instructions, line 2 */
   uiwidgetp = uiCreateLabel (_("When the BPM value is stable, select the Save button."));
   uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
@@ -376,39 +373,32 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiBoxPackStartExpandChildren (vboxmain, hboxbpm, WCONT_FREE);
 
   /* left side */
-  vbox = uiCreateVertBox ();
-  uiBoxPackStartExpandChildren (hboxbpm, vbox, WCONT_FREE);
+  grid = uiCreateGrid ();
+  uiBoxPackStart (hboxbpm, grid, WCONT_FREE);
 
+  /* left side : new line */
   /* some spacing */
   uiwidgetp = uiCreateLabel ("");
-  uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
+  uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
   for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
-    hbox = uiCreateHorizBox ();
-    uiBoxPackStart (vbox, hbox, WCONT_FREE);
-
     uiwidgetp = uiCreateColonLabel (bpmcounter->disptxt [i]);
-    uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
-    uiSizeGroupAdd (szgrp, uiwidgetp);
+    uiGridNewRow (grid);
+    uiGridPack (grid, uiwidgetp, WCONT_KEEP);
     bpmcounter->dispwidget [i] = uiwidgetp;
 
     bpmcounter->dispvalue [i] = uiCreateLabel ("");
     uiLabelAlignEnd (bpmcounter->dispvalue [i]);
-    uiBoxPackStart (hbox, bpmcounter->dispvalue [i], WCONT_KEEP);
-    uiSizeGroupAdd (szgrpDisp, bpmcounter->dispvalue [i]);
-
-    uiBoxPostProcess (hbox);
+    uiGridPack (grid, bpmcounter->dispvalue [i], WCONT_KEEP);
   }
 
-  uiBoxPostProcess (vbox);
+  uiGridPostProcess (grid);
 
   /* right side */
   vbox = uiCreateVertBox ();
   uiBoxPackStartExpandChildren (hboxbpm, vbox, WCONT_FREE);
   uiWidgetAlignHorizCenter (vbox);
   uiWidgetAlignVertCenter (vbox);
-
-  uiBoxPostProcess (hboxbpm);
 
   /* blue box */
   hbox = uiCreateHorizBox ();
@@ -428,6 +418,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   uiBoxPostProcess (hbox);
   uiBoxPostProcess (vbox);
+  uiBoxPostProcess (hboxbpm);
 
   /* buttons */
   hbox = uiCreateHorizBox ();
@@ -475,8 +466,6 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiWidgetShowAll (bpmcounter->wcont [BPM_W_WINDOW]);
 
   uiwcontFree (vboxmain);
-  uiwcontFree (szgrp);
-  uiwcontFree (szgrpDisp);
 
   logProcEnd ("");
 }
