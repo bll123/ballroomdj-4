@@ -11,9 +11,11 @@
     * User Interface: Clean up theme colors.
     * User Interface: Minor interface fixes.
 * Changes:
-    * User Interface: Re-write of horizontal notebooks.
-    * User Interface: Re-write of text spin-boxes.
-    * User Interface: Re-write of numeric spin-boxes.
+    * User Interface: Re-work of horizontal notebooks.
+    * User Interface: Re-work of text spin-boxes.
+    * User Interface: Re-work of numeric spin-boxes.
+* Internal:
+    * User Interface: Re-work internals to use grid.
 
 **4.18.3 2026-4---**
 
