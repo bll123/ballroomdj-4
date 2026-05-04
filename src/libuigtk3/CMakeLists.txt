@@ -26,7 +26,6 @@ add_library (${BDJ4_UI_LIB} SHARED
   uiscale.c
   uiscrollbar.c
   uisep.c
-  uisizegrp.c
   uispecific.c
   uiswitch.c
   uitextbox.c
