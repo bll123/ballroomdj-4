@@ -259,7 +259,7 @@ static void uivlRowClickHandler (uivirtlist_t *vl, int32_t rownum, int32_t colid
 static void uivlDoubleClickHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx);
 static void uivlRightClickHandler (uivirtlist_t *vl, int32_t rownum, int32_t colidx);
 static void uivlSetToggleChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb);
-static void uivlClearRowDisp (uivirtlist_t *vl, int dispidx);
+static void uivlClearRowDisp (uivirtlist_t *vl, int dispidx, bool forceflag);
 static bool uivlValidateColumn (uivirtlist_t *vl, int initstate, int colidx, const char *func);
 static bool uivlValidateRowColumn (uivirtlist_t *vl, int initstate, int32_t rownum, int colidx, const char *func);
 static void uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize);
@@ -1610,6 +1610,11 @@ uivlPopulate (uivirtlist_t *vl)
     if (vl->rows [dispidx].offscreen) {
       continue;
     }
+    /* force this row to be cleared */
+    /* on first display, gtk will display everything */
+    /* rows that are off-screen are marked as cleared, even though */
+    /* they are displayed */
+    uivlClearRowDisp (vl, dispidx, true);
     vl->rows [dispidx].offscreen = true;
     chg = true;
   }
@@ -1771,8 +1776,6 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
 
   /* create a label so that cleared rows with only widgets will still */
   /* have a height (hair space = \xe2\x80\x8a) */
-  /* note that this changes the mouse-button column return */
-  /* the mouse button event handler adjusts for this column */
   uiwidget = uiCreateLabel ("\xe2\x80\x8a");
   uiGridNewRow (vl->wcont [VL_W_GRID]);
   rlstype = WCONT_FREE;
@@ -1963,6 +1966,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     }
 
     /* when a row is first created, it is in the cleared state */
+    uiWidgetHide (col->hbox);
     uiWidgetHide (col->uiwidget);
   }
 
@@ -2038,7 +2042,7 @@ uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
   }
 
   /* any initial pack should be cleared */
-  uivlClearRowDisp (vl, row->dispidx);
+  uivlClearRowDisp (vl, row->dispidx, false);
 }
 
 static bool
@@ -2736,7 +2740,7 @@ uivlSetToggleChangeCallback (uivirtlist_t *vl, int colidx, callback_t *cb)
 }
 
 static void
-uivlClearRowDisp (uivirtlist_t *vl, int dispidx)
+uivlClearRowDisp (uivirtlist_t *vl, int dispidx, bool forceflag)
 {
   uivlrow_t   *row;
 
@@ -2745,7 +2749,7 @@ uivlClearRowDisp (uivirtlist_t *vl, int dispidx)
     logProcEnd ("bad-vl");
     return;
   }
-  if (dispidx < 0 || dispidx >= vl->dispsize) {
+  if (forceflag == false && (dispidx < 0 || dispidx >= vl->dispsize)) {
     logProcEnd ("bad-dispidx");
     return;
   }
@@ -2755,7 +2759,7 @@ uivlClearRowDisp (uivirtlist_t *vl, int dispidx)
     logProcEnd ("not-created");
     return;
   }
-  if (row->cleared) {
+  if (row->cleared && forceflag == false) {
     logProcEnd ("cleared");
     return;
   }
@@ -2837,7 +2841,7 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
   if (newdispsize < vl->dispsize) {
     logMsg (LOG_DBG, LOG_VIRTLIST, "vl: %s disp-size-decrease %d < %d", vl->tag, newdispsize, vl->dispsize);
     for (int dispidx = newdispsize; dispidx < vl->dispsize; ++dispidx) {
-      uivlClearRowDisp (vl, dispidx);
+      uivlClearRowDisp (vl, dispidx, false);
     }
   }
 
@@ -2871,7 +2875,7 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
       /* and the rows must be cleared. */
       row = &vl->rows [dispidx];
       row->cleared = false;
-      uivlClearRowDisp (vl, dispidx);
+      uivlClearRowDisp (vl, dispidx, false);
     }
   }
 
@@ -3050,7 +3054,7 @@ uivlCheckDisplay (uivirtlist_t *vl)
   /* the extra rows must have their display cleared */
   if ((vl->dispsize - vl->headingoffset) > vl->numrows) {
     for (int dispidx = vl->numrows + vl->headingoffset; dispidx < vl->dispsize; ++dispidx) {
-      uivlClearRowDisp (vl, dispidx);
+      uivlClearRowDisp (vl, dispidx, false);
     }
   }
 
