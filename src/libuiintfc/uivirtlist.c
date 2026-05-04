@@ -54,10 +54,13 @@ enum {
   VL_W_SCROLL_WIN,      // contains hbox-cont
   VL_W_HBOX_CONT,       // contains event-box and scrollbar
   VL_W_EVENT_BOX,       // contains main-vbox
-  VL_W_MAIN_VBOX,       // has all the rows
   VL_W_SB_VBOX,         // contains optional head-filler, scrollbar
   VL_W_SB,
   VL_W_EVENTH,
+  VL_W_GRID,
+  VL_W_HEADING_HS,
+  VL_W_FIRST_HS,
+  VL_W_SECOND_HS,
   VL_W_MAX,
 };
 
@@ -103,7 +106,6 @@ typedef struct {
 typedef struct uivlcoldata {
   uint64_t      ident;
   uivirtlist_t  *vl;
-  uiwcont_t     *szgrp;
   /* the following data is specific to a column */
   vltype_t      type;
   /* the baseclass is always applied */
@@ -123,7 +125,6 @@ typedef struct uivlcoldata {
   int           sbtype;
   int           colidx;
   int           colwidth;
-  int           clickmap;
   callback_t    *sbcb;
   double        sbmin;
   double        sbmax;
@@ -140,6 +141,7 @@ typedef struct uivlcoldata {
 
 typedef struct uivlcol {
   uint64_t    ident;
+  uiwcont_t   *hbox;
   uiwcont_t   *uiwidget;
   uisbnum_t   *sbnum;
   /* class needs to be held temporarily so it can be removed */
@@ -151,11 +153,9 @@ typedef struct uivlcol {
 typedef struct uivlrow {
   uint64_t      ident;
   uivirtlist_t  *vl;
-  uiwcont_t     *hbox;
   /* the row size-group is used to set all of the ellipsized columns */
   /* in a row to the same size so that their widths don't bounce */
   /* around when scrolling */
-  uiwcont_t     *szgrp;
   uivlcol_t     *cols;
   uivlrowcb_t   *rowcb;             // must have a stable address
   /* applied to every column in the row */
@@ -196,7 +196,7 @@ typedef struct uivirtlist {
   int           dispalloc;
   int           lastdisphighlight;
   int           headingoffset;
-  int           vboxheight;
+  int           gridheight;
   int           headingheight;
   int           rowheight;
   int           lastselidx;       // used to know when to clear the focus
@@ -237,9 +237,9 @@ static uivlrow_t * uivlGetRow (uivirtlist_t *vl, int32_t rownum);
 static void uivlPackRow (uivirtlist_t *vl, uivlrow_t *row);
 static bool uivlScrollbarCallback (void *udata, double value);
 static bool uivlKeyEvent (void *udata);
-static bool uivlMButtonEvent (void *udata, int32_t dispidx, int32_t colidx);
+static bool uivlMButtonEvent (void *udata, int32_t xoffset, int32_t yoffset);
 static bool uivlScrollEvent (void *udata, int32_t dir);
-static bool uivlMotionEvent (void *udata, int32_t dispidx);
+static bool uivlMotionEvent (void *udata, int32_t xoffset, int32_t yoffset);
 static void uivlClearDisplaySelections (uivirtlist_t *vl);
 static void uivlSetDisplaySelections (uivirtlist_t *vl);
 static void uivlClearAllSelections (uivirtlist_t *vl);
@@ -247,8 +247,6 @@ static void uivlClearSelection (uivirtlist_t *vl, int32_t rownum);
 static void uivlAddSelection (uivirtlist_t *vl, uint32_t rownum);
 static void uivlProcessScroll (uivirtlist_t *vl, int32_t start, int sctype);
 static bool uivlVertSizeChg (void *udata, int32_t width, int32_t height);
-static bool uivlHeadingSizeChg (void *udata, int32_t width, int32_t height);
-static bool uivlRowSizeChg (void *udata, int32_t width, int32_t height);
 static bool uivlColGrowOnlyChg (void *udata, int32_t width, int32_t height);
 static void uivlRowBasicInit (uivirtlist_t *vl, uivlrow_t *row, int dispidx);
 static bool uivlFocusCallback (void *udata);
@@ -324,7 +322,7 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   vl->uselistingfont = false;
   vl->numrowchg = false;
   vl->hassbnum = false;
-  vl->vboxheight = 0;
+  vl->gridheight = 0;
   vl->headingheight = 0;
   vl->rowheight = 0;
   vl->lastselidx = 0;
@@ -357,10 +355,8 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   vl->callbacks [VL_CB_MBUTTON] = callbackInitII (uivlMButtonEvent, vl);
   vl->callbacks [VL_CB_SCROLL] = callbackInitI (uivlScrollEvent, vl);
   vl->callbacks [VL_CB_VERT_SZ_CHG] = callbackInitII (uivlVertSizeChg, vl);
-  vl->callbacks [VL_CB_HEADING_SZ_CHG] = callbackInitII (uivlHeadingSizeChg, vl);
-  vl->callbacks [VL_CB_ROW_SZ_CHG] = callbackInitII (uivlRowSizeChg, vl);
   vl->callbacks [VL_CB_ENTER_WIN] = callbackInit (uivlEnterEvent, vl, NULL);
-  vl->callbacks [VL_CB_MOTION_WIN] = callbackInitI (uivlMotionEvent, vl);
+  vl->callbacks [VL_CB_MOTION_WIN] = callbackInitII (uivlMotionEvent, vl);
 
   /* a scrolled window is necessary to allow the window to shrink */
   /* keep the minimum height very small so that drop-downs do not get */
@@ -376,14 +372,15 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
     uiWidgetSetSizeRequest (vl->wcont [VL_W_HBOX_CONT], minwidth, -1);
   }
 
-  vl->wcont [VL_W_MAIN_VBOX] = uiCreateVertBox ();
+  vl->wcont [VL_W_GRID] = uiCreateGrid ();
+  uiGridSetColumnSpacing (vl->wcont [VL_W_GRID], 0);
   if (vl->keyhandling) {
     /* in order to handle key events */
-    uiWidgetEnableFocus (vl->wcont [VL_W_MAIN_VBOX]);
+    uiWidgetEnableFocus (vl->wcont [VL_W_GRID]);
   }
 
   /* the event box is necessary to receive mouse clicks */
-  vl->wcont [VL_W_EVENT_BOX] = uiEventCreateEventBox (vl->wcont [VL_W_MAIN_VBOX]);
+  vl->wcont [VL_W_EVENT_BOX] = uiEventCreateEventBox (vl->wcont [VL_W_GRID]);
   uiBoxPackStartExpandChildren (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_EVENT_BOX], WCONT_KEEP);
   uiWidgetSetEnterCallback (vl->wcont [VL_W_EVENT_BOX], vl->callbacks [VL_CB_ENTER_WIN]);
 
@@ -415,16 +412,16 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   uiBoxPostProcess (vl->wcont [VL_W_HBOX_CONT]);
 
   if (vl->keyhandling) {
-    uiEventSetKeyCallback (vl->wcont [VL_W_EVENTH], vl->wcont [VL_W_MAIN_VBOX],
+    uiEventSetKeyCallback (vl->wcont [VL_W_EVENTH], vl->wcont [VL_W_GRID],
         vl->callbacks [VL_CB_KEY]);
   }
   uiEventSetButtonCallback (vl->wcont [VL_W_EVENTH], vl->wcont [VL_W_EVENT_BOX],
       vl->callbacks [VL_CB_MBUTTON]);
   uiEventSetScrollCallback (vl->wcont [VL_W_EVENTH], vl->wcont [VL_W_EVENT_BOX],
       vl->callbacks [VL_CB_SCROLL]);
-  uiEventSetButtonCallback (vl->wcont [VL_W_EVENTH], vl->wcont [VL_W_MAIN_VBOX],
+  uiEventSetButtonCallback (vl->wcont [VL_W_EVENTH], vl->wcont [VL_W_GRID],
       vl->callbacks [VL_CB_MBUTTON]);
-  uiEventSetScrollCallback (vl->wcont [VL_W_EVENTH], vl->wcont [VL_W_MAIN_VBOX],
+  uiEventSetScrollCallback (vl->wcont [VL_W_EVENTH], vl->wcont [VL_W_GRID],
       vl->callbacks [VL_CB_SCROLL]);
   uiEventSetMotionCallback (vl->wcont [VL_W_EVENTH], vl->wcont [VL_W_EVENT_BOX],
       vl->callbacks [VL_CB_MOTION_WIN]);
@@ -454,7 +451,6 @@ uivlFree (uivirtlist_t *vl)
     dataFree (vl->coldata [colidx].baseclass);
     dataFree (vl->coldata [colidx].heading);
     callbackFree (vl->coldata [colidx].colgrowonlycb);
-    uiwcontFree (vl->coldata [colidx].szgrp);
     uiwcontFree (vl->coldata [colidx].extrarb);
   }
   dataFree (vl->coldata);
@@ -504,7 +500,6 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
     uivlcoldata_t *coldata = &vl->coldata [colidx];
 
     coldata->vl = vl;
-    coldata->szgrp = uiCreateSizeGroupHoriz (NULL);
     coldata->ident = VL_IDENT_COLDATA;
     coldata->tag = "unk";
     coldata->heading = NULL;
@@ -532,7 +527,6 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
     coldata->ellipsize = false;
     coldata->grow = VL_COL_WIDTH_FIXED;
     coldata->hidden = VL_COL_SHOW;
-    coldata->clickmap = VL_UNK_ROW;
   }
 
   vl->initialized = VL_INIT_BASIC;
@@ -563,7 +557,7 @@ uivlSetDropdownBackground (uivirtlist_t *vl)
     return;
   }
 
-  uiWidgetSetClass (vl->wcont [VL_W_MAIN_VBOX], NORMBG_CLASS);
+  uiWidgetSetClass (vl->wcont [VL_W_GRID], NORMBG_CLASS);
   logProcEnd ("");
 }
 
@@ -1505,7 +1499,6 @@ void
 uivlDisplay (uivirtlist_t *vl)
 {
   uivlrow_t   *row;
-  int         clickmap;
 
   logProcBegin ();
   if (! uivlValidateColumn (vl, VL_INIT_BASIC, 0, __func__)) {
@@ -1533,25 +1526,6 @@ uivlDisplay (uivirtlist_t *vl)
   for (int dispidx = 0; dispidx < vl->dispsize; ++dispidx) {
     row = &vl->rows [dispidx];
     uivlPackRow (vl, row);
-    /* the size change callback is based on the first data row */
-    if (vl->dispheading && dispidx == VL_ROW_HEADING_IDX) {
-      uiBoxSetSizeChgCallback (row->hbox, vl->callbacks [VL_CB_HEADING_SZ_CHG]);
-    }
-    if (dispidx == vl->headingoffset) {
-      uiBoxSetSizeChgCallback (row->hbox, vl->callbacks [VL_CB_ROW_SZ_CHG]);
-    }
-  }
-
-  clickmap = 0;
-  for (int colidx = 0; colidx < vl->numcols; ++colidx) {
-    int     hidden;
-
-    hidden = vl->coldata [colidx].hidden;
-    if (hidden == VL_COL_HIDE || hidden == VL_COL_DISABLE) {
-      continue;
-    }
-    vl->coldata [colidx].clickmap = clickmap;
-    ++clickmap;
   }
 
   /* load the headings */
@@ -1637,7 +1611,6 @@ uivlPopulate (uivirtlist_t *vl)
       continue;
     }
     vl->rows [dispidx].offscreen = true;
-    uiWidgetHide (vl->rows [dispidx].hbox);
     chg = true;
   }
 
@@ -1707,7 +1680,7 @@ uivlPopulate (uivirtlist_t *vl)
   uivlSetDisplaySelections (vl);
 
   if (vl->old_dispsize != vl->dispsize || chg) {
-    uiBoxPostProcess (vl->wcont [VL_W_MAIN_VBOX]);
+    uiGridPostProcess (vl->wcont [VL_W_GRID]);
     vl->old_dispsize = vl->dispsize;
   }
 
@@ -1741,8 +1714,6 @@ uivlFreeRow (uivirtlist_t *vl, uivlrow_t *row)
     dataFree (row->rowcb);
   }
 
-  uiwcontFree (row->szgrp);
-
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
     if (row->cols != NULL) {
       uivlFreeCol (&row->cols [colidx]);
@@ -1773,8 +1744,8 @@ uivlFreeCol (uivlcol_t *col)
 static void
 uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
 {
-  uiwcont_t   *uiwidget;
-  bool        found = false;
+  uiwcont_t     *uiwidget;
+  uiwcontrls_t  rlstype;
 
   logProcBegin ();
   if (vl == NULL || row == NULL) {
@@ -1791,19 +1762,6 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     return;
   }
 
-  row->hbox = uiCreateHorizBox ();
-
-  found = false;
-  for (int colidx = 0; colidx < vl->numcols; ++colidx) {
-    if (vl->coldata [colidx].ellipsize) {
-      found = true;
-      break;
-    }
-  }
-  if (found) {
-    row->szgrp = uiCreateSizeGroupHoriz (NULL);
-  }
-
   row->offscreen = false;
   row->selected = false;
   row->created = true;
@@ -1812,11 +1770,25 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
   row->cols = mdmalloc (sizeof (uivlcol_t) * vl->numcols);
 
   /* create a label so that cleared rows with only widgets will still */
-  /* have a height (hair space) */
+  /* have a height (hair space = \xe2\x80\x8a) */
   /* note that this changes the mouse-button column return */
   /* the mouse button event handler adjusts for this column */
   uiwidget = uiCreateLabel ("\xe2\x80\x8a");
-  uiBoxPackStart (row->hbox, uiwidget, WCONT_FREE);
+  uiGridNewRow (vl->wcont [VL_W_GRID]);
+  rlstype = WCONT_FREE;
+  if (isheading) {
+    vl->wcont [VL_W_HEADING_HS] = uiwidget;
+    rlstype = WCONT_KEEP;
+  }
+  if (row->dispidx == vl->headingoffset) {
+    vl->wcont [VL_W_FIRST_HS] = uiwidget;
+    rlstype = WCONT_KEEP;
+  }
+  if (row->dispidx == vl->headingoffset + 1) {
+    vl->wcont [VL_W_SECOND_HS] = uiwidget;
+    rlstype = WCONT_KEEP;
+  }
+  uiGridPack (vl->wcont [VL_W_GRID], uiwidget, rlstype);
   uiWidgetAlignVertBaseline (uiwidget);
   if (vl->uselistingfont) {
     /* setting this to list-fav-class allows gtk to calculate the */
@@ -1836,6 +1808,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     coldata = &vl->coldata [colidx];
 
     col->ident = VL_IDENT_COL;
+    col->hbox = uiCreateHorizBox ();
     col->uiwidget = NULL;
     col->sbnum = NULL;
     col->class = NULL;
@@ -1931,8 +1904,13 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       continue;
     }
 
+    uiBoxPackStart (col->hbox, col->uiwidget, WCONT_KEEP);
+    uiGridPack (vl->wcont [VL_W_GRID], col->hbox, WCONT_KEEP);
+
+    uiWidgetAlignHorizFill (col->hbox);
+
     if (coldata->alignend) {
-      uiLabelAlignEnd (col->uiwidget);
+      uiWidgetAlignHorizEnd (col->uiwidget);
     } else if (coldata->aligncenter) {
       /* this works if the widget is set to expand-horiz, and */
       /* it is not part of a size group */
@@ -1944,13 +1922,8 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
 
     if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK &&
         origtype == VL_TYPE_ENTRY) {
+      uiWidgetExpandHoriz (col->hbox);
       uiWidgetExpandHoriz (col->uiwidget);
-    }
-
-    if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK) {
-      uiBoxPackStartExpandChildren (row->hbox, col->uiwidget, WCONT_KEEP);
-    } else {
-      uiBoxPackStart (row->hbox, col->uiwidget, WCONT_KEEP);
     }
 
     if (row->dispidx == vl->headingoffset &&
@@ -1962,7 +1935,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       if (coldata->grow == VL_COL_WIDTH_GROW_ONLY &&
           (type == VL_TYPE_LABEL || type == VL_TYPE_IMAGE)) {
         coldata->colgrowonlycb = callbackInitII (uivlColGrowOnlyChg, coldata);
-        uiWidgetSetSizeChgCallback (col->uiwidget, coldata->colgrowonlycb);
+        uiWidgetSetSizeChgCallback (col->hbox, coldata->colgrowonlycb);
       }
     }
 
@@ -1992,8 +1965,6 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     /* when a row is first created, it is in the cleared state */
     uiWidgetHide (col->uiwidget);
   }
-
-  uiBoxPostProcess (row->hbox);
 
   logProcEnd ("");
 }
@@ -2029,13 +2000,6 @@ uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
     return;
   }
 
-  uiBoxPackStart (vl->wcont [VL_W_MAIN_VBOX], row->hbox, WCONT_FREE);
-  uiWidgetExpandHoriz (vl->wcont [VL_W_MAIN_VBOX]);
-
-  uiWidgetAlignHorizFill (row->hbox);
-  uiWidgetAlignVertStart (row->hbox);   // no vertical growth
-  uiWidgetExpandHoriz (row->hbox);
-
   if (vl->dispheading && row->dispidx == VL_ROW_HEADING_IDX) {
     isheading = true;
   }
@@ -2059,13 +2023,6 @@ uivlPackRow (uivirtlist_t *vl, uivlrow_t *row)
         uiWidgetAlignVertBaseline (col->uiwidget);
         break;
       }
-    }
-
-    if (! coldata->aligncenter) {
-      uiSizeGroupAdd (coldata->szgrp, col->uiwidget);
-    }
-    if (coldata->ellipsize) {
-      uiSizeGroupAdd (row->szgrp, col->uiwidget);
     }
 
     uiWidgetSetAllMargins (col->uiwidget, 0);
@@ -2169,11 +2126,14 @@ uivlKeyEvent (void *udata)
 }
 
 static bool
-uivlMButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
+uivlMButtonEvent (void *udata, int32_t xoffset, int32_t yoffset)
 {
   uivirtlist_t  *vl = udata;
   int           button;
+  int           colidx = -1;
   int32_t       rownum = VL_UNK_ROW;
+  int           dispidx = -1;
+  uivlrow_t     *row;
 
   logProcBegin ();
   if (vl == NULL || vl->ident != VL_IDENT) {
@@ -2221,6 +2181,14 @@ uivlMButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
 
   /* all other buttons (1-3) cause a selection */
 
+  yoffset -= vl->headingheight;
+  if (yoffset > 0) {
+    dispidx = yoffset / vl->rowheight;
+    if (vl->dispheading) {
+      dispidx += 1;
+    }
+  }
+
   if (dispidx >= 0) {
     rownum = uivlCalcRownum (vl, dispidx);
   }
@@ -2235,19 +2203,20 @@ uivlMButtonEvent (void *udata, int32_t dispidx, int32_t colidx)
     return UICB_CONT;
   }
 
-  /* the mouse button event handler returns the real column that */
-  /* is displayed, search the column data to find the correct */
-  /* column index. the hair space label is at index 0. */
-  if (colidx >= 1) {
-    /* adjust for the hair space label that is displayed */
-    /* at the beginning of the row */
-    --colidx;
-    for (int tcolidx = 0; tcolidx < vl->numcols; ++tcolidx) {
-      if (vl->coldata [tcolidx].clickmap == colidx) {
-        colidx = tcolidx;
-        break;
-      }
+  row = &vl->rows [dispidx];
+  for (int tcolidx = 0; tcolidx < vl->numcols; ++tcolidx) {
+    int     hidden;
+    int     wx, wy;
+
+    hidden = vl->coldata [tcolidx].hidden;
+    if (hidden == VL_COL_HIDE || hidden == VL_COL_DISABLE) {
+      continue;
     }
+    uiWidgetGetPosition (row->cols [tcolidx].hbox, &wx, &wy);
+    if (xoffset < wx) {
+      break;
+    }
+    colidx = tcolidx;
   }
 
   uivlUpdateSelections (vl, rownum);
@@ -2306,11 +2275,9 @@ uivlClearDisplaySelections (uivirtlist_t *vl)
     uivlrow_t   *row = &vl->rows [dispidx];
 
     if (row->selected) {
-      uiWidgetClearClass (row->hbox, SELECTED_CLASS);
-
       for (int colidx = 0; colidx < vl->numcols; ++colidx) {
         if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
-          uiWidgetClearClass (row->cols [colidx].uiwidget, SELECTED_CLASS);
+          uiWidgetClearClass (row->cols [colidx].hbox, SELECTED_CLASS);
         }
       }
       row->selected = false;
@@ -2349,11 +2316,10 @@ uivlSetDisplaySelections (uivirtlist_t *vl)
     vl->lastselidx = row->dispidx;
 
     uivlRemoveLastHighlight (vl);
-    uiWidgetSetClass (row->hbox, SELECTED_CLASS);
     row->selected = true;
     for (int colidx = 0; colidx < vl->numcols; ++colidx) {
       if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
-        uiWidgetSetClass (row->cols [colidx].uiwidget, SELECTED_CLASS);
+        uiWidgetSetClass (row->cols [colidx].hbox, SELECTED_CLASS);
       }
     }
   }
@@ -2477,24 +2443,47 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
   int           theight;
 
   logProcBegin ();
-  if (uiWidgetIsMapped (vl->wcont [VL_W_MAIN_VBOX]) &&
-      vl->vboxheight == height) {
+  if (uiWidgetIsMapped (vl->wcont [VL_W_GRID]) &&
+      vl->gridheight == height && vl->rowheight > 2) {
     logProcEnd ("same-height");
     return UICB_CONT;
   }
 
   if (height == VL_REUSE_HEIGHT) {
-    height = vl->vboxheight;
+    height = vl->gridheight;
   }
 
-  vl->vboxheight = height;
+  vl->gridheight = height;
 
-  if (vl->vboxheight < 2 || vl->rowheight < 2) {
+  if (vl->wcont [VL_W_FIRST_HS] != NULL) {
+    int     gx, gy;
+    int     fx, fy;
+    int     diff;
+
+    uiWidgetGetPosition (vl->wcont [VL_W_GRID], &gx, &gy);
+    uiWidgetGetPosition (vl->wcont [VL_W_FIRST_HS], &fx, &fy);
+    diff = fy - gy;
+    vl->headingheight = diff;
+  }
+
+  if (vl->wcont [VL_W_FIRST_HS] != NULL &&
+      vl->wcont [VL_W_SECOND_HS] != NULL) {
+    int     gx, gy;
+    int     fx, fy;
+    int     diff;
+
+    uiWidgetGetPosition (vl->wcont [VL_W_FIRST_HS], &gx, &gy);
+    uiWidgetGetPosition (vl->wcont [VL_W_SECOND_HS], &fx, &fy);
+    diff = fy - gy;
+    vl->rowheight = diff;
+  }
+
+  if (vl->gridheight < 2 || vl->rowheight < 2) {
     logProcEnd ("no-height");
     return UICB_CONT;
   }
 
-  theight = vl->vboxheight - vl->headingheight;
+  theight = vl->gridheight - vl->headingheight;
   /* there should be no margin for the row-hbox's */
   calcrows = theight / vl->rowheight;
   if (vl->dispheading) {
@@ -2510,46 +2499,6 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
   return UICB_CONT;
 }
 
-static bool
-uivlHeadingSizeChg (void *udata, int32_t width, int32_t height)
-{
-  uivirtlist_t  *vl = udata;
-  bool          force = false;
-
-  logProcBegin ();
-  /* force a re-calculation */
-  if (vl->headingheight != height && vl->vboxheight > 2) {
-    force = true;
-  }
-  vl->headingheight = height;
-  if (force) {
-    vl->vboxheight = -1;
-    uivlVertSizeChg (vl, VL_REUSE_HEIGHT, VL_REUSE_HEIGHT);
-  }
-  logProcEnd ("");
-  return UICB_CONT;
-}
-
-static bool
-uivlRowSizeChg (void *udata, int32_t width, int32_t height)
-{
-  uivirtlist_t  *vl = udata;
-  bool          force = false;
-
-  logProcBegin ();
-  /* force a re-calculation */
-  if (vl->rowheight != height && vl->vboxheight > 2) {
-    force = true;
-  }
-  vl->rowheight = height;
-  if (force) {
-    vl->vboxheight = -1;
-    uivlVertSizeChg (vl, VL_REUSE_HEIGHT, VL_REUSE_HEIGHT);
-  }
-  logProcEnd ("");
-  return UICB_CONT;
-}
-
 /* the intention of the column size change is to prevent */
 /* grow-only columns from shrinking */
 static bool
@@ -2559,11 +2508,11 @@ uivlColGrowOnlyChg (void *udata, int32_t width, int32_t height)
 
   logProcBegin ();
   if (width > 0 && width > coldata->colwidth) {
-    if (uiWidgetIsMapped (coldata->col0->uiwidget)) {
+    if (uiWidgetIsMapped (coldata->col0->hbox)) {
       coldata->colwidth = width;
       width -= 1;
       if (width > 5) {
-        uiWidgetSetSizeRequest (coldata->col0->uiwidget, width, -1);
+        uiWidgetSetSizeRequest (coldata->col0->hbox, width, -1);
       }
     }
   }
@@ -2577,8 +2526,6 @@ uivlRowBasicInit (uivirtlist_t *vl, uivlrow_t *row, int dispidx)
 {
   row->vl = vl;
   row->ident = VL_IDENT_ROW;
-  row->hbox = NULL;
-  row->szgrp = NULL;
   row->cols = NULL;
   row->created = false;
   row->cleared = false;
@@ -2823,6 +2770,7 @@ uivlClearRowDisp (uivirtlist_t *vl, int dispidx)
       continue;
     }
 
+    uiWidgetHide (row->cols [colidx].hbox);
     uiWidgetHide (row->cols [colidx].uiwidget);
   }
   logProcEnd ("");
@@ -2878,7 +2826,6 @@ uivlChangeDisplaySize (uivirtlist_t *vl, int newdispsize)
       uivlPackRow (vl, row);
       /* rows packed after the initial display need */
       /* to have their contents shown */
-      uiWidgetShowAll (row->hbox);
       uivlShowRow (vl, row);
     }
 
@@ -2977,7 +2924,6 @@ uivlShowRow (uivirtlist_t *vl, uivlrow_t *row)
 {
   logProcEnd ("");
   if (row->offscreen) {
-    uiWidgetShow (row->hbox);
     row->offscreen = false;
   }
 
@@ -2990,9 +2936,11 @@ uivlShowRow (uivirtlist_t *vl, uivlrow_t *row)
     hidden = vl->coldata [colidx].hidden;
 
     if (hidden == VL_COL_HIDE) {
+      uiWidgetHide (row->cols [colidx].hbox);
       uiWidgetHide (row->cols [colidx].uiwidget);
     }
     if (hidden == VL_COL_SHOW) {
+      uiWidgetShow (row->cols [colidx].hbox);
       uiWidgetShow (row->cols [colidx].uiwidget);
     }
   }
@@ -3010,7 +2958,7 @@ uivlEnterEvent (void *udata)
   /* listing, the user can continue to work with the selections */
   /* without resetting them. */
   if (vl->keyhandling) {
-    uiWidgetGrabFocus (vl->wcont [VL_W_MAIN_VBOX]);
+    uiWidgetGrabFocus (vl->wcont [VL_W_GRID]);
   }
   uivlRemoveLastHighlight (vl);
 
@@ -3021,10 +2969,11 @@ uivlEnterEvent (void *udata)
 /* the motion event handler handles highlighting the row as the mouse */
 /* moves over it */
 static bool
-uivlMotionEvent (void *udata, int32_t dispidx)
+uivlMotionEvent (void *udata, int32_t xoffset, int32_t yoffset)
 {
   uivirtlist_t  *vl = udata;
   uivlrow_t     *row;
+  int           dispidx = -1;
 
   logProcBegin ();
   if (vl == NULL || vl->ident != VL_IDENT) {
@@ -3034,6 +2983,16 @@ uivlMotionEvent (void *udata, int32_t dispidx)
 
   /* always remove the last highlight */
   uivlRemoveLastHighlight (vl);
+
+  if (yoffset < vl->headingheight) {
+    return UICB_CONT;
+  }
+
+  yoffset -= vl->headingheight;
+  dispidx = yoffset / vl->rowheight;
+  if (vl->dispheading) {
+    dispidx += 1;
+  }
 
   if (dispidx < 0 || dispidx >= vl->dispsize) {
     return UICB_CONT;
@@ -3053,7 +3012,11 @@ uivlMotionEvent (void *udata, int32_t dispidx)
     return UICB_CONT;
   }
 
-  uiWidgetSetClass (row->hbox, ROW_HL_CLASS);
+  for (int colidx = 0; colidx < vl->numcols; ++colidx) {
+    if (vl->coldata [colidx].hidden == VL_COL_SHOW) {
+      uiWidgetSetClass (row->cols [colidx].hbox, ROW_HL_CLASS);
+    }
+  }
   vl->lastdisphighlight = dispidx;
 
   logProcEnd ("");
@@ -3118,7 +3081,9 @@ uivlRemoveLastHighlight (uivirtlist_t *vl)
 
   if (vl->lastdisphighlight >= 0) {
     row = &vl->rows [vl->lastdisphighlight];
-    uiWidgetClearClass (row->hbox, ROW_HL_CLASS);
+    for (int colidx = 0; colidx < vl->numcols; ++colidx) {
+      uiWidgetClearClass (row->cols [colidx].hbox, ROW_HL_CLASS);
+    }
     vl->lastdisphighlight = VL_UNK_ROW;
   }
 }

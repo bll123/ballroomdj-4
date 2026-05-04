@@ -20,6 +20,7 @@
 
 #include "ui/uigrid.h"
 #include "ui/uiui.h"
+#include "ui/uiwidget.h"
 
 uiwcont_t *
 uiCreateGrid_r (void)
@@ -59,3 +60,13 @@ uiGridPostProcess_r (uiwcont_t *uigrid, int row, int col, uiwcont_t *uiwidget)
   return;
 }
 
+void
+uiGridSetColumnSpacing (uiwcont_t *uigrid, int sz)
+{
+  if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-rm-row")) {
+    return;
+  }
+
+  gtk_grid_set_column_spacing (GTK_GRID (uigrid->uidata.widget),
+      uiBaseMarginSz * sz);
+}

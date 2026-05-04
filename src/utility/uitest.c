@@ -162,7 +162,7 @@ static const int vlmaxrows [UITEST_VL_MAX] = {
 static const char * vllabs [UITEST_VL_MAX][UITEST_VL_COL_MAX] = {
   { "One", "Two", "☆", NULL, NULL, NULL },
   { "A", "B", NULL, NULL, NULL, NULL },
-  { "Hidden", "Three", "Four", NULL, NULL, NULL },
+  { "Hidden", "Three\nThree", "Four", NULL, NULL, NULL },
 };
 static uitestvl_t vlcb [UITEST_VL_MAX];
 

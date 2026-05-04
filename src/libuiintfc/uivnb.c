@@ -66,10 +66,10 @@ uivnbCreate (uiwcont_t *box, const char *tag)
   vnb->tag = tag;
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStart (box, hbox, WCONT_FREE);
+  uiBoxPackStartExpandChildren (box, hbox, WCONT_FREE);
 
   sw = uiCreateScrolledWindow (50);
-  uiBoxPackStart (hbox, sw, WCONT_FREE);
+  uiBoxPackStartExpandChildren (hbox, sw, WCONT_FREE);
 
   vnb->vgrid = uiCreateGrid ();
   uiWidgetSetClass (vnb->vgrid, VERTNB_BG_CLASS);

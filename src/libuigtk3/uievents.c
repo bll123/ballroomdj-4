@@ -51,7 +51,6 @@ static gboolean uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpoin
 static gboolean uiEventScrollHandler (GtkWidget *w, GdkEventScroll *event, gpointer udata);
 static gboolean uiEventMotionHandler (GtkWidget *w, GdkEventMotion *event, gpointer udata);
 static gboolean uiEventLeaveHandler (GtkWidget *w, GdkEventCrossing *event, gpointer udata);
-static void uiEventGetRowColumnIdx (GtkWidget *w, GdkEvent *event, int *rowidx, int *colidx);
 
 uiwcont_t *
 uiEventAlloc (void)
@@ -727,8 +726,9 @@ uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpointer udata)
   guint     button;
   guint     ttype;
   int       rc = UICB_CONT;
-  int       rowidx = -1;
-  int       colidx = -1;
+  double    x, y;
+  int       xoffset = -1;
+  int       yoffset = -1;
 
   uievent = uiwidget->uiint.uievent;
 
@@ -759,7 +759,9 @@ uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpointer udata)
   /* it's relatively easy to figure out the row and the column. */
   /* only do this for press events. */
   if (ttype == GDK_BUTTON_PRESS || ttype == GDK_2BUTTON_PRESS) {
-    uiEventGetRowColumnIdx (w, (GdkEvent *) event, &rowidx, &colidx);
+    gdk_event_get_coords ((GdkEvent *) event, &x, &y);
+    xoffset = round (x);
+    yoffset = round (y);
   }
 
   uievent->buttonpressed = false;
@@ -769,12 +771,12 @@ uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpointer udata)
       ttype == GDK_2BUTTON_PRESS) &&
       uievent->mbuttonpresscb != NULL) {
     uievent->buttonpressed = true;
-    rc = callbackHandlerII (uievent->mbuttonpresscb, rowidx, colidx);
+    rc = callbackHandlerII (uievent->mbuttonpresscb, xoffset, yoffset);
   }
   if (ttype == GDK_BUTTON_RELEASE &&
       uievent->mbuttonreleasecb != NULL) {
     uievent->buttonreleased = true;
-    rc = callbackHandlerII (uievent->mbuttonreleasecb, rowidx, colidx);
+    rc = callbackHandlerII (uievent->mbuttonreleasecb, xoffset, yoffset);
   }
 
   return rc;
@@ -825,14 +827,18 @@ uiEventMotionHandler (GtkWidget *w, GdkEventMotion *event, gpointer udata)
 {
   uiwcont_t *uiwidget = udata;
   uievent_t *uievent;
-  int       rowidx = -1;
+  double    x, y;
+  int       yoffset = -1;
+  int       xoffset = -1;
   int       rc = UICB_CONT;
 
   uievent = uiwidget->uiint.uievent;
 
-  uiEventGetRowColumnIdx (w, (GdkEvent *) event, &rowidx, NULL);
+  gdk_event_get_coords ((GdkEvent *) event, &x, &y);
   if (uievent->motioncb != NULL) {
-    rc = callbackHandlerI (uievent->motioncb, rowidx);
+    xoffset = round (x);
+    yoffset = round (y);
+    rc = callbackHandlerII (uievent->motioncb, xoffset, yoffset);
   }
 
   return rc;
@@ -847,75 +853,9 @@ uiEventLeaveHandler (GtkWidget *w, GdkEventCrossing *event, gpointer udata)
 
   uievent = uiwidget->uiint.uievent;
   if (uievent->motioncb != NULL) {
-    rc = callbackHandlerI (uievent->motioncb, -1);
+    rc = callbackHandlerII (uievent->motioncb, -1, -1);
   }
 
   return rc;
 }
 
-static void
-uiEventGetRowColumnIdx (GtkWidget *w, GdkEvent *event, int *rowidx, int *colidx)
-{
-  double        x, y;
-  GtkWidget     *tw;
-  GtkAllocation eba;
-  GtkAllocation rowa;
-  GList         *list, *elem;
-
-
-  *rowidx = -1;
-  if (colidx != NULL) {
-    *colidx = -1;
-  }
-
-  gdk_event_get_coords ((GdkEvent *) event, &x, &y);
-  /* the coordinates of the event box or container */
-  gtk_widget_get_allocation (w, &eba);
-
-  /* event-box    */
-  /*  vbox        */
-  /*   hbox (row) */
-  /*    col...    */
-
-  tw = w;
-  while (GTK_IS_BIN (tw)) {
-    tw = gtk_bin_get_child (GTK_BIN (w));
-  }
-  if (! GTK_IS_CONTAINER (tw)) {
-    return;
-  }
-
-  list = gtk_container_get_children (GTK_CONTAINER (tw));
-  for (elem = list; elem != NULL; elem = elem->next) {
-    tw = elem->data;
-    gtk_widget_get_allocation (tw, &rowa);
-    /* note that rowidx starts at -1, so the first increment points */
-    /* at row 0 */
-    if (eba.y + (int) y > rowa.y) {
-      *rowidx += 1;
-    } else {
-      break;
-    }
-
-    /* process the x coordinates (only once) to get the column number */
-    /* the tw gtk-widget should be pointing at a row-hbox */
-    if (colidx != NULL && elem == list) {
-      GList         *clist, *celem;
-      GtkWidget     *tcol;
-      GtkAllocation cola;
-
-      clist = gtk_container_get_children (GTK_CONTAINER (tw));
-      for (celem = clist; celem != NULL; celem = celem->next) {
-        tcol = celem->data;
-        gtk_widget_get_allocation (tcol, &cola);
-        /* note that colidx starts at -1, so the first increment points */
-        /* at column 0 */
-        if (eba.x + (int) x > cola.x) {
-          *colidx += 1;
-        } else {
-          break;
-        }
-      }
-    } /* is this the first element? */
-  } /* for each child element */
-}
