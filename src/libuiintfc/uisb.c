@@ -202,16 +202,6 @@ uisbSetState (uisb_t *sb, int state)
 }
 
 void
-uisbSizeGroupAdd (uisb_t *sb, uiwcont_t *sg)
-{
-  if (sb == NULL || sg == NULL) {
-    return;
-  }
-
-  uiSizeGroupAdd (sg, sb->wcont [SB_W_HBOX]);
-}
-
-void
 uisbSetRepeat (uisb_t *sb, int repeatms)
 {
   if (sb == NULL) {

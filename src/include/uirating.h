@@ -22,7 +22,6 @@ void uiratingFree (uirating_t *uirating);
 int uiratingGetValue (uirating_t *uirating);
 void uiratingSetValue (uirating_t *uirating, int value);
 void uiratingSetState (uirating_t *uirating, int state);
-void uiratingSizeGroupAdd (uirating_t *uirating, uiwcont_t *sg);
 void uiratingSetChangedCallback (uirating_t *uirating, callback_t *cb);
 
 #if defined (__cplusplus) || defined (c_plusplus)

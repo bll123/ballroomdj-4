@@ -647,15 +647,12 @@ installerBuildUI (installer_t *installer)
   uiwcont_t     *vbox;
   uiwcont_t     *hbox;
   uiwcont_t     *uiwidgetp;
-  uiwcont_t     *szgrp;
   char          tbuff [100];
   char          imgbuff [BDJ4_PATH_MAX];
   ilist_t       *ddlist;
   int           langidx;
 
   uiwcontInitID (UI_INSTALL_ID);
-
-  szgrp = uiCreateSizeGroupHoriz (NULL);
 
   uiLabelAddClass (INST_HL_CLASS, INST_HL_COLOR);
   uiSeparatorAddClass (INST_SEP_CLASS, INST_SEP_COLOR);
@@ -868,7 +865,6 @@ installerBuildUI (installer_t *installer)
 
   uiwidgetp = uiCreateColonLabel (VLCName);
   uiBoxPackStart (hbox, uiwidgetp, WCONT_FREE);
-  uiSizeGroupAdd (szgrp, uiwidgetp);
 
   installer->wcont [INST_W_VLC_MSG] = uiCreateLabel ("");
   uiWidgetSetClass (installer->wcont [INST_W_VLC_MSG], INST_HL_CLASS);
@@ -913,7 +909,6 @@ installerBuildUI (installer_t *installer)
 
   uiBoxPostProcess (vbox);
   uiwcontFree (vbox);
-  uiwcontFree (szgrp);
 
   uiEntrySetValidate (installer->wcont [INST_W_TARGET], "",
       installerValidateTarget, installer, UIENTRY_DELAYED);

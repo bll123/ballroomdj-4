@@ -235,16 +235,6 @@ uisbtextSetState (uisbtext_t *sbtext, int state)
 }
 
 void
-uisbtextSizeGroupAdd (uisbtext_t *sbtext, uiwcont_t *sg)
-{
-  if (sbtext == NULL || sg == NULL) {
-    return;
-  }
-
-  uisbSizeGroupAdd (sbtext->sb, sg);
-}
-
-void
 uisbtextSetValueForce (uisbtext_t *sbtext, int value)
 {
   if (sbtext == NULL) {

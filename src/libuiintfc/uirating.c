@@ -107,12 +107,6 @@ uiratingSetState (uirating_t *uirating, int state)
 }
 
 void
-uiratingSizeGroupAdd (uirating_t *uirating, uiwcont_t *sg)
-{
-  uisbtextSizeGroupAdd (uirating->sb, sg);
-}
-
-void
 uiratingSetChangedCallback (uirating_t *uirating, callback_t *cb)
 {
   uisbtextSetChangeCallback (uirating->sb, cb);

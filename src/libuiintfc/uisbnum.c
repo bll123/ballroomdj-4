@@ -320,16 +320,6 @@ uisbnumSetState (uisbnum_t *sbnum, int state)
 }
 
 void
-uisbnumSizeGroupAdd (uisbnum_t *sbnum, uiwcont_t *sg)
-{
-  if (sbnum == NULL || sg == NULL) {
-    return;
-  }
-
-  uisbSizeGroupAdd (sbnum->sb, sg);
-}
-
-void
 uisbnumSetValue (uisbnum_t *sbnum, double value)
 {
   if (sbnum == NULL) {

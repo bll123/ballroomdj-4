@@ -36,7 +36,6 @@ void uisbPackGridFill (uisb_t *sb, uiwcont_t *grid);
 void uisbSetCallback (uisb_t *sb, callback_t *uicb);
 void uisbSetFocusCallback (uisb_t *sb, callback_t *cb);
 void uisbSetState (uisb_t *sb, int state);
-void uisbSizeGroupAdd (uisb_t *sb, uiwcont_t *sg);
 void uisbSetRepeat (uisb_t *sb, int repeatms);
 void uisbCheck (uisb_t *sb);
 void uisbSetFocusHighlight (uisb_t *sb);

@@ -17,7 +17,6 @@ void uistatusFree (uistatus_t *uistatus);
 int uistatusGetValue (uistatus_t *uistatus);
 void uistatusSetValue (uistatus_t *uistatus, int value);
 void uistatusSetState (uistatus_t *uistatus, int state);
-void uistatusSizeGroupAdd (uistatus_t *uistatus, uiwcont_t *sg);
 void uistatusSetChangedCallback (uistatus_t *uistatus, callback_t *cb);
 
 #if defined (__cplusplus) || defined (c_plusplus)

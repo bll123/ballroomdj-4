@@ -46,7 +46,6 @@ void uisbnumValidate (uisbnum_t *sbnum);
 
 void uisbnumSetFocusCallback (uisbnum_t *sb, callback_t *cb);
 void uisbnumSetState (uisbnum_t *sbnum, int state);
-void uisbnumSizeGroupAdd (uisbnum_t *sbnum, uiwcont_t *sg);
 void uisbnumSetValue (uisbnum_t *sbnum, double value);
 
 double uisbnumGetValue (uisbnum_t *sbnum);

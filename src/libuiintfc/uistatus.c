@@ -106,16 +106,6 @@ uistatusSetState (uistatus_t *uistatus, int state)
 }
 
 void
-uistatusSizeGroupAdd (uistatus_t *uistatus, uiwcont_t *sg)
-{
-  if (uistatus == NULL || uistatus->sb == NULL) {
-    return;
-  }
-
-  uisbtextSizeGroupAdd (uistatus->sb, sg);
-}
-
-void
 uistatusSetChangedCallback (uistatus_t *uistatus, callback_t *cb)
 {
   uisbtextSetChangeCallback (uistatus->sb, cb);

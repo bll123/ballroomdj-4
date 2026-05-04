@@ -109,12 +109,6 @@ uilevelSetState (uilevel_t *uilevel, int state)
 }
 
 void
-uilevelSizeGroupAdd (uilevel_t *uilevel, uiwcont_t *sg)
-{
-  uisbtextSizeGroupAdd (uilevel->sb, sg);
-}
-
-void
 uilevelSetChangedCallback (uilevel_t *uilevel, callback_t *cb)
 {
   uisbtextSetChangeCallback (uilevel->sb, cb);
