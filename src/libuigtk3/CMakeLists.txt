@@ -56,6 +56,6 @@ install (TARGETS
   libbdj4ui
   DESTINATION ${DEST_BIN}
 )
-
 updateRPath (libbdj4ui)
+
 uilibSymlink (libbdj4ui libuigtk3)
