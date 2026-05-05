@@ -50,7 +50,7 @@ target_link_libraries (libbdj4ui PRIVATE ${PKG_GTK_LDFLAGS})
 addIntlLibrary (libbdj4ui)
 addWinSockLibrary (libbdj4ui)
 
-uilibPreSymlink (libuigtk3)
+uilibPreSymlink (libbdj4ui)
 
 install (TARGETS
   libbdj4ui

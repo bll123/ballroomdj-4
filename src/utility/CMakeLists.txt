@@ -10,7 +10,6 @@ include (../utils/bdj4macros.cmake)
 
 add_executable (bdj4info bdj4info.c)
 target_link_libraries (bdj4info PRIVATE
-  libbdj4ui
   libbdj4basic libbdj4common
 )
 # the ui library is required so that bdj4info can print the
@@ -119,7 +118,7 @@ add_executable (uitest
   uitest.c
 )
 target_link_libraries (uitest PRIVATE
-  libbdj4uii libbdj4ui
+  libbdj4uii libbdj4uig libbdj4ui
   libbdj4 libbdj4basic libbdj4common
 )
 addIntlLibrary (uitest)

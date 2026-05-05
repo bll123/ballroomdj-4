@@ -154,6 +154,7 @@ typedef struct uiwcont {
   };
   void            *packwidget;
   void            *widget;
+  /* any data needed in the widget container by the ui toolkit */
   uiwcontdata_t   *uidata;
   /* data internal to each widget type */
   /* this is ui toolkit specific data */

@@ -31,7 +31,7 @@ add_executable (bdj4configui
   confui.c
 )
 target_link_libraries (bdj4configui PRIVATE
-  libbdj4uii libbdj4ui
+  libbdj4uii libbdj4uig libbdj4ui
   libbdj4ati libbdj4pli libbdj4vol libbdj4cont
   libwebclient libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
   m

@@ -191,6 +191,7 @@ main (int argc, char *argv [])
   fprintf (stdout, "  c: PATH_MAX %d\n", PATH_MAX);
   fprintf (stdout, "bdj: BDJ4_PATH_MAX %d\n", BDJ4_PATH_MAX);
 
+#if 0
   /* UI */
   switch (uiBackend ()) {
     case BDJ4_UI_ID_GTK3: {
@@ -210,6 +211,7 @@ main (int argc, char *argv [])
       break;
     }
   }
+#endif
 #if HAS_GTK_INC
   fprintf (stdout, "  i: gboolean %d\n", (int) sizeof (gboolean));
   fprintf (stdout, "  i: gint     %d\n", (int) sizeof (gint));

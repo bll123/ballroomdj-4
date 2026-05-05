@@ -98,11 +98,6 @@ uiCreateButton_r (callback_t *uicb, const char *txt,
         G_CALLBACK (uiButtonGTKSignalHandler), uiwidget);
   }
 
-  if (imagenm != NULL) {
-    uiwidget->uibuttongen->state = BUTTON_ON;    // force set of image
-    uiButtonSetState (uiwidget, BUTTON_OFF);
-  }
-
   if (txt != NULL && imagenm != NULL) {
     gtk_button_set_image_position (GTK_BUTTON (widget), GTK_POS_RIGHT);
     gtk_widget_set_margin_start (uibutton->currimage, 2);

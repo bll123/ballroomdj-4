@@ -51,6 +51,7 @@ uiwcontAlloc_r (int basetype, int type, const char *fn, int lineno)
   uiwidget->wbasetype = basetype;
   uiwidget->wtype = type;
   memset (&uiwidget->uiint, 0, sizeof (uiwcontint_t));
+  uiwidget->voidgen = NULL;
   uiwidget->uidata = NULL;
   uiwidget->packed = false;
   uiwidget->ui_id = gbdj4id;

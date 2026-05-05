@@ -68,7 +68,7 @@ add_executable (bdj4starterui
   support.c
 )
 target_link_libraries (bdj4starterui PRIVATE
-  libbdj4uii libbdj4ui
+  libbdj4uii libbdj4uig libbdj4ui
   libwebclient libbdj4 libbdj4basic libbdj4common
 )
 addIntlLibrary (bdj4starterui)
@@ -79,7 +79,7 @@ updateRPath (bdj4starterui)
 
 add_executable (bdj4helperui bdj4helperui.c)
 target_link_libraries (bdj4helperui PRIVATE
-  libbdj4ui
+  libbdj4uig libbdj4ui
   libbdj4 libbdj4basic libbdj4common
 )
 addIntlLibrary (bdj4helperui)

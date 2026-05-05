@@ -28,7 +28,7 @@ add_library (libbdj4uii SHARED
 )
 #addUIInclude (libbdj4uii)
 target_link_libraries (libbdj4uii PRIVATE
-  libbdj4ui
+  libbdj4uig libbdj4ui
   libbdj4 libbdj4basic libbdj4common
 )
 #addUILibrary (libbdj4uii)

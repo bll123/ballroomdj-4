@@ -30,7 +30,7 @@ add_executable (bdj4bpmcounter
   bdj4bpmcounter.c
 )
 target_link_libraries (bdj4bpmcounter PRIVATE
-  libbdj4ui libbdj4 libbdj4basic libbdj4common
+  libbdj4uig libbdj4ui libbdj4 libbdj4basic libbdj4common
   m
 )
 #addUILibrary (bdj4bpmcounter)
