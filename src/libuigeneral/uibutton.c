@@ -132,3 +132,20 @@ uiButtonReleaseCallback (void *udata)
   return UICB_CONT;
 }
 
+uibuttonstate_t
+uiButtonGetState (uiwcont_t *uiwidget)
+{
+  uibuttongeneric_t *bgen;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-repeat")) {
+    return BUTTON_OFF;
+  }
+
+  bgen = uiwidget->uibuttongen;
+  if (bgen == NULL) {
+    return BUTTON_OFF;
+  }
+
+  return bgen->state;
+}
+

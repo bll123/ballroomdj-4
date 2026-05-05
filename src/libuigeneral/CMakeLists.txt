@@ -20,7 +20,7 @@ target_link_libraries (libbdj4uig PRIVATE
   libbdj4ui
   libbdj4 libbdj4basic libbdj4common
 )
-#addIntlLibrary (libbdj4uig)
+addIntlLibrary (libbdj4uig)
 install (TARGETS
   libbdj4uig
   DESTINATION ${DEST_BIN}
