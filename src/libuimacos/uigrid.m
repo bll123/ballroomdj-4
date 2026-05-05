@@ -53,6 +53,8 @@ uiCreateGrid_r (void)
   return uiwidget;
 }
 
+/* this is a little more complex, as there is a need to both */
+/* add an item by row, and add an item by column */
 void
 uiGridPackLoc_r (uiwcont_t *uigrid, uiwcont_t *uiwidget,
     int row, int col, int numcols)
@@ -81,15 +83,18 @@ uiGridPackLoc_r (uiwcont_t *uigrid, uiwcont_t *uiwidget,
   ncols = grid.numberOfColumns;
   nrows = grid.numberOfRows;
 
-  while (row > nrows) {
+  while (row >= nrows) {
     [grid addRowWithViews : @[]];
-//    [grid addRowWithViews : @[layout->container]];
     nrows = grid.numberOfRows;
   }
-  while (col + numcols - 1 > ncols) {
+  while (col + numcols > ncols) {
     [grid addColumnWithViews : @[]];
-//    [grid addColumnWithViews : @[layout->container]];
     ncols = grid.numberOfColumns;
+  }
+
+  if (row >= grid.numberOfRows || col >= grid.numberOfColumns) {
+    fprintf (stderr, "ERR: tried to set cell at %d/%d limit %ld/%ld\n", row, col, grid.numberOfRows, grid.numberOfColumns);
+    return;
   }
 
   gcol = [grid columnAtIndex : col];
@@ -124,6 +129,7 @@ uiGridPostProcess_r (uiwcont_t *uigrid, int row, int col, uiwcont_t *uiwidget)
   grid = uigrid->uidata.widget;
   layout = uiwidget->uidata.layout;
 
+  /* align-horiz-start is the default */
   alignment = NSGridCellPlacementLeading;
   if (layout->horizend) {
     alignment = NSGridCellPlacementTrailing;
@@ -152,6 +158,21 @@ uiGridPostProcess_r (uiwcont_t *uigrid, int row, int col, uiwcont_t *uiwidget)
 
   return;
 }
+
+void
+uiGridSetColumnSpacing (uiwcont_t *uigrid, int sz)
+{
+  IGrid         *grid;
+
+  if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-rm-row")) {
+    return;
+  }
+
+  grid = uigrid->uidata.widget;
+  grid.columnSpacing = uiBaseMarginSz * sz;
+}
+
+/* internal routines */
 
 static void
 uiGridSetHorizAlignment (NSGridView *grid, int row, int col, int alignment)

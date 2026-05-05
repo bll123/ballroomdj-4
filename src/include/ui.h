@@ -44,6 +44,7 @@
 #include "ui/uiwidget.h"
 #include "ui/uiwindow.h"
 #include "uigeneral.h"
+#include "osuiutils.h"
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

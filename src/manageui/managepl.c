@@ -26,12 +26,13 @@
 #include "tmutil.h"
 #include "tagdef.h"
 #include "ui.h"
+#include "uicommon.h"
 #include "uihnb.h"
 #include "uilevel.h"
 #include "uirating.h"
 #include "uisbnum.h"
 #include "uiselectfile.h"
-#include "uiutils.h"
+#include "uiheadline.h"
 #include "validate.h"
 
 enum {
@@ -225,7 +226,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   managepl->wcont [MPL_W_PL_NAME] = uiwidgetp;
   /* CONTEXT: playlist management: label for playlist name */
   uiEntrySetValidate (uiwidgetp, _("Playlist"),
-      uiutilsValidatePlaylistNameClr,
+      uicommonValidatePlaylistNameClr,
       managepl->minfo->errorMsg, UIENTRY_IMMEDIATE);
 
   uiBoxPostProcess (hbox);

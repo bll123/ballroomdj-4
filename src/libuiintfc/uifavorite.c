@@ -20,9 +20,9 @@
 #include "song.h"
 #include "songfav.h"
 #include "ui.h"
+#include "uicommon.h"
 #include "uifavorite.h"
 #include "uisbtext.h"
-#include "uiutils.h"
 
 typedef struct uifavorite {
   uisbtext_t  *sb;
@@ -41,7 +41,7 @@ uifavoriteCreate (uiwcont_t *grid)
   uifavorite->sb = uisbtextCreate (NULL, 2);
   uisbtextPackGrid (uifavorite->sb, grid);
 
-  uiutilsAddFavoriteClasses ();
+  uicommonAddFavoriteClasses ();
 
   uisbtextSetDisplayCallback (uifavorite->sb, uifavoriteCBHandler, uifavorite);
   uisbtextSetCount (uifavorite->sb, songFavoriteGetCount (uifavorite->songfav));

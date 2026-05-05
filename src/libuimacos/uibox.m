@@ -25,10 +25,6 @@
 #include "ui/uibox.h"
 #include "ui/uiwidget.h"
 
-@interface IBox : NSStackView {}
-- (BOOL) isFlipped;
-@end
-
 @implementation IBox
 - (BOOL) isFlipped {
   return YES;
@@ -46,6 +42,7 @@ enum {
   MACOS_UI_DBG_NORM,
   MACOS_UI_DBG_EXP_HORIZ,
   MACOS_UI_DBG_EXP_VERT,
+  MACOS_UI_DBG_EXP_BOTH,
   MACOS_UI_DBG_COLS,
 };
 
@@ -56,17 +53,18 @@ typedef struct dbgcol {
 } dbgcol_t;
 
 static dbgcol_t dbgcols [MACOS_UI_DBG_COLS] = {
-  { 150.0 / 255.0,   0.0 / 255.0,   0.0 / 255.0 },
-  {   0.0 / 255.0, 150.0 / 255.0,   0.0 / 255.0 },
-  {  20.0 / 255.0,  20.0 / 255.0, 150.0 / 255.0 },
-  { 150.0 / 255.0, 150.0 / 255.0,   0.0 / 255.0 },
-  {   0.0 / 255.0, 150.0 / 255.0, 150.0 / 255.0 },
+  { 150.0 / 255.0,   0.0 / 255.0,   0.0 / 255.0 },  // r  win
+  {   0.0 / 255.0, 150.0 / 255.0,   0.0 / 255.0 },  // g  children
+  {  20.0 / 255.0,  20.0 / 255.0, 150.0 / 255.0 },  // b  norm
+  { 150.0 / 255.0, 150.0 / 255.0,   0.0 / 255.0 },  // y  horiz
+  {   0.0 / 255.0, 150.0 / 255.0, 150.0 / 255.0 },  // lb  vert
+  { 150.0 / 255.0,   0.0 / 255.0, 150.0 / 255.0 },  // magenta both
 };
 
 #endif
 
-static void uiBoxProcessExpandHoriz (uiwconttype_t wtype, NSView *box, NSView *prevcont, NSView *currcont, NSView *nextcont);
-static void uiBoxProcessExpandVert (uiwconttype_t wtype, NSView *box, NSView *prevcont, NSView *currcont, NSView *nextcont);
+static void uiBoxProcessExpandHoriz (uiwcont_t *uibox, NSView *prevcont, NSView *currcont, NSView *nextcont);
+static void uiBoxProcessExpandVert (uiwcont_t *uibox, NSView *prevcont, NSView *currcont, NSView *nextcont);
 static void uiBoxProcessCenter (uiwconttype_t wtype, macoslayout_t *layout, NSView *box, NSView *prevcont, NSView *currcont, NSView *nextcont);
 
 uiwcont_t *
@@ -153,7 +151,7 @@ fprintf (stderr, "%d-%d pp: next: %d-%d %d/%s\n", uibox->ui_id, uibox->id, next-
 
     if (clayout->expandhoriz || boxlayout->expandchildren) {
 //fprintf (stderr, "    pp: expand-horiz\n");
-      uiBoxProcessExpandHoriz (uibox->wtype, box, prevcont, currcont, nextcont);
+      uiBoxProcessExpandHoriz (uibox, prevcont, currcont, nextcont);
       if (curr->wbasetype == WCONT_T_BOX) {
 //        NSStackView     *currbox;
 
@@ -164,7 +162,7 @@ fprintf (stderr, "%d-%d pp: next: %d-%d %d/%s\n", uibox->ui_id, uibox->id, next-
 
     if (clayout->expandvert || boxlayout->expandchildren) {
 //fprintf (stderr, "    pp: expand-vert\n");
-      uiBoxProcessExpandVert (uibox->wtype, box, prevcont, currcont, nextcont);
+      uiBoxProcessExpandVert (uibox, prevcont, currcont, nextcont);
       if (curr->wbasetype == WCONT_T_BOX) {
 //        NSStackView     *currbox;
 
@@ -257,10 +255,6 @@ uiBoxPackEnd_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
   }
   [box insertView : layout->container atIndex : 0 inGravity : grav];
 
-//  if (uiwidget->wbasetype == WCONT_T_BOX) {
-//    uiwidget->uidata.layout->expandchildren = true;
-//  }
-
 //fprintf (stderr, "box: %d-%d p-end: %d-%d %d/%s\n", uibox->ui_id, uibox->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   uiwidget->packed = true;
 
@@ -342,15 +336,26 @@ uiCreateBox (uiwconttype_t wtype)
 }
 
 static void
-uiBoxProcessExpandHoriz (uiwconttype_t wtype, NSView *box,
+uiBoxProcessExpandHoriz (uiwcont_t *uibox,
     NSView *prevcont, NSView *currcont, NSView *nextcont)
 {
   NSLayoutConstraint    *c;
+  NSView                *box;
+  macoslayout_t         *layout;
+  uiwconttype_t         wtype;
 
   /* a widget that is set to expand horizontally within a vbox */
   /* is attached to both edges of the box */
   /* a widget that is set to expand horizontally within a hbox */
   /* is attached to its neighboring widgets */
+
+  wtype = uibox->wtype;
+  box = uibox->uidata.widget;
+  layout = uibox->uidata.layout;
+
+  [layout->container setHuggingPriority :
+      NSLayoutPriorityDefaultLow
+      forOrientation : NSLayoutConstraintOrientationHorizontal];
 
   if (wtype == WCONT_T_HBOX) {
 //fprintf (stderr, "    pp: eh: hbox\n");
@@ -400,17 +405,32 @@ fprintf (stderr, "   eh-v: c-t = b-t\n");
 }
 
 static void
-uiBoxProcessExpandVert (uiwconttype_t wtype, NSView *box,
+uiBoxProcessExpandVert (uiwcont_t *uibox,
     NSView *prevcont, NSView *currcont, NSView *nextcont)
 {
   NSLayoutConstraint    *c;
+  NSView                *box;
+  macoslayout_t         *layout;
+  uiwconttype_t         wtype;
 
   /* a widget that is set to expand vertically within a vbox */
   /* is attached to its neighboring widgets */
   /* a widget that is set to expand vertically within a hbox */
   /* is attached to both edges of the box */
 
+  wtype = uibox->wtype;
+  box = uibox->uidata.widget;
+  layout = uibox->uidata.layout;
+
+  [layout->container setHuggingPriority :
+      NSLayoutPriorityDefaultLow
+      forOrientation : NSLayoutConstraintOrientationVertical];
+
   if (wtype == WCONT_T_VBOX) {
+    [layout->container setHuggingPriority :
+        NSLayoutPriorityDefaultLow
+        forOrientation : NSLayoutConstraintOrientationVertical];
+
 //fprintf (stderr, "    pp: ev: vbox\n");
     if (prevcont != NULL) {
 fprintf (stderr, "   ev-v: p-b <= c-t\n");
@@ -488,6 +508,7 @@ uiBoxMacOSDebug (uiwcont_t *uiwidget)
   widget = uiwidget->uidata.widget;
   layout = uiwidget->uidata.layout;
   if (layout->expandchildren) {
+fprintf (stderr, "exp-ch: %d-%d %d/%s\n", uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
     idx = MACOS_UI_DBG_EXP_CHILDREN;
   }
   if (layout->expandhoriz) {
@@ -495,6 +516,9 @@ uiBoxMacOSDebug (uiwcont_t *uiwidget)
   }
   if (layout->expandvert) {
     idx = MACOS_UI_DBG_EXP_VERT;
+  }
+  if (layout->expandhoriz && layout->expandvert) {
+    idx = MACOS_UI_DBG_EXP_BOTH;
   }
 
   [widget layer].borderColor =

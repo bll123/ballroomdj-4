@@ -11,7 +11,7 @@ add_library (libbdj4uip SHARED
 )
 addUIInclude (libbdj4uip)
 target_link_libraries (libbdj4uip PRIVATE
-  libbdj4uii libbdj4uib ${BDJ4_UI_LIB}
+  libbdj4uii ${BDJ4_UI_LIB}
   libbdj4audiosrc
   libbdj4 libbdj4basic libbdj4common
 )

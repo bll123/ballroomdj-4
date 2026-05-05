@@ -35,7 +35,6 @@
 #include "osdirutil.h"
 #include "osprocess.h"
 #include "ossignal.h"
-#include "osuiutils.h"
 #include "pathbld.h"
 #include "pathdisp.h"
 #include "pathinfo.h"
@@ -46,6 +45,7 @@
 #include "tmutil.h"
 #include "ui.h"
 #include "uiclass.h"
+#include "uiheadline.h"
 #include "uiutils.h"
 #include "validate.h"
 

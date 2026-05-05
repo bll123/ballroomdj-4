@@ -217,25 +217,6 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
   layout->container.edgeInsets = layout->margins;
   [layout->container addView : view inGravity : NSStackViewGravityCenter];
 
-#if 0
-  c = [layout->container.leadingAnchor
-      constraintLessThanOrEqualToAnchor : view.leadingAnchor];
-  uiWidgetUpdateConstraint ("c_hl", c, layout->container, view);
-  c = [layout->container.trailingAnchor
-      constraintGreaterThanOrEqualToAnchor : view.trailingAnchor];
-  uiWidgetUpdateConstraint ("c_ht", c, layout->container, view);
-  c = [layout->container.topAnchor
-      constraintLessThanOrEqualToAnchor : view.topAnchor];
-  uiWidgetUpdateConstraint ("c_vt", c, layout->container, view);
-  c = [layout->container.bottomAnchor
-      constraintGreaterThanOrEqualToAnchor : view.bottomAnchor];
-  uiWidgetUpdateConstraint ("c_vb", c, layout->container, view);
-#endif
-
-  [layout->container setHuggingPriority :
-      NSLayoutPriorityRequired
-      forOrientation : NSLayoutConstraintOrientationHorizontal];
-
   [layout->container setHuggingPriority :
       NSLayoutPriorityRequired
       forOrientation : NSLayoutConstraintOrientationHorizontal];
@@ -244,10 +225,10 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
       forOrientation : NSLayoutConstraintOrientationVertical];
 
   [layout->container setContentHuggingPriority :
-      NSLayoutPriorityRequired
+      NSLayoutPriorityDefaultHigh
       forOrientation : NSLayoutConstraintOrientationHorizontal];
   [layout->container setContentHuggingPriority :
-      NSLayoutPriorityRequired
+      NSLayoutPriorityDefaultHigh
       forOrientation : NSLayoutConstraintOrientationVertical];
 
   /* otherwise everything gets shrunk to a minimal size */

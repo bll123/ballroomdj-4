@@ -5,7 +5,7 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
-add_library (libbdj4uic SHARED
+add_library (libbdj4uimp SHARED
   continst.c
   uimusicq.c
   uimusicqcommon.c
@@ -16,19 +16,19 @@ add_library (libbdj4uic SHARED
   uisongselcommon.c
   uisongselui.c
 )
-addUIInclude (libbdj4uic)
-target_link_libraries (libbdj4uic PRIVATE
-  libbdj4uii libbdj4uib ${BDJ4_UI_LIB} libbdj4cont
+addUIInclude (libbdj4uimp)
+target_link_libraries (libbdj4uimp PRIVATE
+  libbdj4uii ${BDJ4_UI_LIB} libbdj4cont
   libbdj4audiosrc
   libbdj4 libbdj4basic libbdj4common
 )
-addUILibrary (libbdj4uic)
-addIntlLibrary (libbdj4uic)
-addWinSockLibrary (libbdj4uic)
+addUILibrary (libbdj4uimp)
+addIntlLibrary (libbdj4uimp)
+addWinSockLibrary (libbdj4uimp)
 
 install (TARGETS
-  libbdj4uic
+  libbdj4uimp
   DESTINATION ${DEST_BIN}
 )
 
-updateRPath (libbdj4uic)
+updateRPath (libbdj4uimp)

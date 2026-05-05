@@ -29,7 +29,7 @@
 #include "uiduallist.h"
 #include "uisbnum.h"
 #include "uisbtext.h"
-#include "uiutils.h"
+#include "uiheadline.h"
 #include "validate.h"
 
 enum {

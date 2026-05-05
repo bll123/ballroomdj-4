@@ -27,9 +27,10 @@
 #include "playlist.h"
 #include "sysvars.h"
 #include "ui.h"
+#include "uicommon.h"
 #include "uiexpimpbdj4.h"
 #include "uiplaylist.h"
-#include "uiutils.h"
+#include "uiheadline.h"
 #include "validate.h"
 
 enum {
@@ -235,7 +236,7 @@ uieibdj4UpdateStatus (uieibdj4_t *uieibdj4, int count, int tot)
     return;
   }
 
-  uiutilsProgressStatus (
+  uicommonProgressStatus (
       uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_STATUS_MSG],
       count, tot);
 }
@@ -562,7 +563,7 @@ uieibdj4ValidateNewName (uiwcont_t *entry, const char *label, void *udata)
   errorMsg = uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_ERROR_MSG];
   uiLabelSetText (statusMsg, "");
   uiLabelSetText (errorMsg, "");
-  rc = uiutilsValidatePlaylistName (entry, label, errorMsg);
+  rc = uicommonValidatePlaylistName (entry, label, errorMsg);
 
   if (rc == UIENTRY_OK) {
     str = uiEntryGetValue (entry);

@@ -31,7 +31,7 @@ add_executable (bdj4installer bdj4installer.c locatebdj3.c)
 # as that's been tested better, and the command windows
 # that pop up are not so random.
 target_link_libraries (bdj4installer PRIVATE
-  libbdj4uii libbdj4uib ${BDJ4_UI_LIB}
+  libbdj4uii ${BDJ4_UI_LIB}
   libwebclient libbdj4 libbdj4basic libbdj4common
 )
 addUILibrary (bdj4installer)
@@ -41,7 +41,7 @@ addWinManifest (bdj4installer)
 
 add_executable (bdj4cleaninst bdj4cleaninst.c)
 target_link_libraries (bdj4cleaninst PRIVATE
-  libbdj4uib ${BDJ4_UI_LIB}
+  ${BDJ4_UI_LIB}
   libwebclient libbdj4 libbdj4basic libbdj4common
 )
 addWinVersionInfo (bdj4cleaninst)
@@ -49,7 +49,7 @@ addWinManifest (bdj4cleaninst)
 
 add_executable (bdj4altinst bdj4altinst.c)
 target_link_libraries (bdj4altinst PRIVATE
-  libbdj4uib ${BDJ4_UI_LIB}
+  ${BDJ4_UI_LIB}
   libwebclient libbdj4 libbdj4basic libbdj4common
 )
 addUILibrary (bdj4altinst)

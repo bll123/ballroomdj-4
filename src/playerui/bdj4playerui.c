@@ -39,7 +39,6 @@
 #include "msgparse.h"
 #include "musicq.h"
 #include "ossignal.h"
-#include "osuiutils.h"
 #include "pathbld.h"
 #include "playlist.h"
 #include "pli.h"
@@ -55,6 +54,7 @@
 #include "uiexppl.h"
 #include "uiextreq.h"
 #include "ui.h"
+#include "uicommon.h"
 #include "uihnb.h"
 #include "uimusicq.h"
 #include "uiplayer.h"
@@ -62,6 +62,7 @@
 #include "uisbnum.h"
 #include "uisongfilter.h"
 #include "uisongsel.h"
+#include "uiheadline.h"
 #include "uiutils.h"
 
 enum {
@@ -863,12 +864,12 @@ pluiMainLoop (void *tplui)
       int   count, tot;
 
       mp3ExportGetCount (plui->mp3exp, &count, &tot);
-      uiutilsProgressStatus (plui->wcont [PLUI_W_STATUS_MSG], count, tot);
+      uicommonProgressStatus (plui->wcont [PLUI_W_STATUS_MSG], count, tot);
       mstimeset (&plui->expmp3chkTime, 500);
     }
 
     if (mp3ExportQueue (plui->mp3exp)) {
-      uiutilsProgressStatus (plui->wcont [PLUI_W_STATUS_MSG], -1, -1);
+      uicommonProgressStatus (plui->wcont [PLUI_W_STATUS_MSG], -1, -1);
       mp3ExportFree (plui->mp3exp);
       plui->expmp3state = BDJ4_STATE_OFF;
     }

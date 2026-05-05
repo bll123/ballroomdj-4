@@ -12,7 +12,9 @@ add_library (objuigeneral OBJECT
   uientry.c
   uientryval.c
   uigrid.c
+  uiheadline.c
   uilabel.c
+  uiutils.c
   uiwcont.c
   uiwcontfree.c
 )

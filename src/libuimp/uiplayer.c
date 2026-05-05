@@ -38,7 +38,7 @@
 #include "tagdef.h"
 #include "ui.h"
 #include "uiplayer.h"
-#include "uiutils.h"
+#include "uiheadline.h"
 
 enum {
   /* for volume and speed */

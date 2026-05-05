@@ -47,3 +47,11 @@ uiGridPostProcess_r (uiwcont_t *uigrid, int row, int col, uiwcont_t *uiwidget)
   return;
 }
 
+void
+uiGridSetColumnSpacing (uiwcont_t *uigrid, int sz)
+{
+  if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-rm-row")) {
+    return;
+  }
+
+}

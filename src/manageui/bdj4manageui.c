@@ -48,7 +48,6 @@
 #include "musicq.h"
 #include "oslocale.h"
 #include "ossignal.h"
-#include "osuiutils.h"
 #include "pathbld.h"
 #include "pathdisp.h"
 #include "pathinfo.h"
@@ -68,6 +67,7 @@
 #include "tmutil.h"
 #include "ui.h"
 #include "uiapplyadj.h"
+#include "uicommon.h"
 #include "uicopytags.h"
 #include "uidd.h"
 #include "uiexppl.h"
@@ -82,6 +82,7 @@
 #include "uisongedit.h"
 #include "uisongfilter.h"
 #include "uisongsel.h"
+#include "uiheadline.h"
 #include "uiutils.h"
 #include "uivnb.h"
 
@@ -1150,7 +1151,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   uiwidgetp = uimusicqBuildUI (manage->slsbsmusicq, manage->minfo.window,
       MUSICQ_SL, manage->minfo.errorMsg,
-      manage->minfo.statusMsg, uiutilsValidatePlaylistNameClr);
+      manage->minfo.statusMsg, uicommonValidatePlaylistNameClr);
   uiBoxPackStartExpandChildren (hbox, uiwidgetp, WCONT_KEEP);
   uiwcontFree (uiwidgetp);
 
@@ -1183,7 +1184,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   /* song list: music queue tab */
   uip = uimusicqBuildUI (manage->slmusicq, manage->minfo.window,
       MUSICQ_SL, manage->minfo.errorMsg,
-      manage->minfo.statusMsg, uiutilsValidatePlaylistNameClr);
+      manage->minfo.statusMsg, uicommonValidatePlaylistNameClr);
   uihnbAppendPage (manage->slhnb, uip,
       /* CONTEXT: manage-ui: name of song list notebook tab */
       _("Song List"), NULL, NULL, MANAGE_TAB_SONGLIST);
@@ -1245,13 +1246,13 @@ manageMainLoop (void *tmanage)
       int   count, tot;
 
       impplGetCount (manage->imppl, &count, &tot);
-      uiutilsProgressStatus (manage->minfo.statusMsg, count, tot);
+      uicommonProgressStatus (manage->minfo.statusMsg, count, tot);
       uiimpplUpdateStatus (manage->uiimppl, count, tot);
       mstimeset (&manage->impplChkTime, 200);
     }
 
     if (impplProcess (manage->imppl)) {
-      uiutilsProgressStatus (manage->minfo.statusMsg, 0, 0);
+      uicommonProgressStatus (manage->minfo.statusMsg, 0, 0);
       uiimpplUpdateStatus (manage->uiimppl, 0, 0);
       manage->impplstate = BDJ4_STATE_FINISH;
       if (impplIsDBChanged (manage->imppl)) {
@@ -1270,7 +1271,7 @@ manageMainLoop (void *tmanage)
 
   if (manage->impplstate == BDJ4_STATE_FINISH) {
     managePlaylistImportFinalize (manage);
-    uiutilsProgressStatus (manage->minfo.statusMsg, -1, -1);
+    uicommonProgressStatus (manage->minfo.statusMsg, -1, -1);
     uiimpplUpdateStatus (manage->uiimppl, -1, -1);
     manage->impplstate = BDJ4_STATE_OFF;
     uiimpplDialogClear (manage->uiimppl);
@@ -1294,7 +1295,7 @@ manageMainLoop (void *tmanage)
       int   count, tot;
 
       eibdj4GetCount (manage->eibdj4, &count, &tot);
-      uiutilsProgressStatus (manage->minfo.statusMsg, count, tot);
+      uicommonProgressStatus (manage->minfo.statusMsg, count, tot);
       uieibdj4UpdateStatus (manage->uieibdj4, count, tot);
       mstimeset (&manage->eibdj4ChkTime, 200);
     }
@@ -1305,7 +1306,7 @@ manageMainLoop (void *tmanage)
         manage->expimpbdj4state = BDJ4_STATE_WAIT;
         return stop;
       }
-      uiutilsProgressStatus (manage->minfo.statusMsg, -1, -1);
+      uicommonProgressStatus (manage->minfo.statusMsg, -1, -1);
       uieibdj4UpdateStatus (manage->uieibdj4, -1, -1);
       manageSonglistLoadFile (manage,
           uieibdj4GetNewName (manage->uieibdj4), MANAGE_STD);
@@ -1315,7 +1316,7 @@ manageMainLoop (void *tmanage)
   }
 
   if (manage->expimpbdj4state == BDJ4_STATE_START) {
-    uiutilsProgressStatus (manage->minfo.statusMsg, 0, 0);
+    uicommonProgressStatus (manage->minfo.statusMsg, 0, 0);
     uieibdj4UpdateStatus (manage->uieibdj4, 0, 0);
     manage->expimpbdj4state = BDJ4_STATE_PROCESS;
   }
@@ -3590,7 +3591,7 @@ managePlaylistImportRespHandler (void *udata)
   /* clear the entire queue */
   uimusicqTruncateQueueCallback (manage->currmusicq);
 
-  uiutilsProgressStatus (manage->minfo.statusMsg, 0, 0);
+  uicommonProgressStatus (manage->minfo.statusMsg, 0, 0);
   uiimpplUpdateStatus (manage->uiimppl, 0, 0);
   uiUIProcessWaitEvents ();
 

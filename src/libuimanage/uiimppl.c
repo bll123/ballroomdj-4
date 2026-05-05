@@ -34,10 +34,11 @@
 #include "slist.h"
 #include "sysvars.h"
 #include "ui.h"
+#include "uicommon.h"
 #include "uidd.h"
 #include "uiimppl.h"
 #include "uisbtext.h"
-#include "uiutils.h"
+#include "uiheadline.h"
 #include "validate.h"
 
 enum {
@@ -399,7 +400,7 @@ uiimpplUpdateStatus (uiimppl_t *uiimppl, int count, int tot)
     return;
   }
 
-  uiutilsProgressStatus (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], count, tot);
+  uicommonProgressStatus (uiimppl->wcont [UIIMPPL_W_STATUS_MSG], count, tot);
 }
 
 /* internal routines */
@@ -885,7 +886,7 @@ uiimpplValidateNewName (uiimppl_t *uiimppl)
   }
   uiimppl->haveerrors &= ~ UIIMPPL_ERR_NEWNAME;
 
-  rc = uiutilsValidatePlaylistName (entry, uiimppl->newnamelabel,
+  rc = uicommonValidatePlaylistName (entry, uiimppl->newnamelabel,
       uiimppl->wcont [UIIMPPL_W_ERROR_MSG]);
 
   if (rc == UIENTRY_ERROR) {

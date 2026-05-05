@@ -12,6 +12,7 @@
 #include <getopt.h>
 #include <unistd.h>
 #include <math.h>
+#include <ctype.h>
 
 #include "bdj4.h"
 #include "bdj4init.h"
@@ -28,7 +29,6 @@
 #include "lock.h"
 #include "log.h"
 #include "mdebug.h"
-#include "osuiutils.h"
 #include "ossignal.h"
 #include "pathbld.h"
 #include "progstate.h"
@@ -38,6 +38,7 @@
 #include "tagdef.h"
 #include "ui.h"
 #include "uiclass.h"
+#include "uicommon.h"
 #include "uiutils.h"
 
 enum {
@@ -149,6 +150,7 @@ static void marqueeDisplayCompletion (marquee_t *marquee);
 static void marqueeSendFontSizes (marquee_t *marquee);
 static void marqueeClearInfoDisplay (marquee_t *marquee);
 static void marqueeSendStatus (marquee_t *marquee);
+static void marqueeNewFontSize (char *buff, size_t sz, const char *font, const char *style, int newsz);
 
 static int gKillReceived = 0;
 
@@ -990,7 +992,7 @@ marqueeSetFont (marquee_t *marquee, int sz)
   if (f == NULL) {
     f = "";
   }
-  uiutilsNewFontSize (newfont, sizeof (newfont), f, "bold", sz);
+  marqueeNewFontSize (newfont, sizeof (newfont), f, "bold", sz);
 
   if (marquee->ismaximized) {
     nlistSetNum (marquee->options, MQ_FONT_SZ_FS, sz);
@@ -1003,7 +1005,7 @@ marqueeSetFont (marquee_t *marquee, int sz)
     marqueeSetFontSize (marquee, marquee->wcont [MQ_W_COUNTDOWN_TIMER], newfont);
 
     /* not bold */
-    uiutilsNewFontSize (newfont, sizeof (newfont), f, NULL, sz);
+    marqueeNewFontSize (newfont, sizeof (newfont), f, NULL, sz);
     for (int i = 0; i < marquee->mqLen; ++i) {
       marqueeSetFontSize (marquee, marquee->marqueeLabs [i], newfont);
       uiWidgetSetClass (marquee->marqueeLabs [i], MQ_TEXT_CLASS);
@@ -1011,7 +1013,7 @@ marqueeSetFont (marquee_t *marquee, int sz)
   }
 
   sz = (int) round ((double) sz * 0.7);
-  uiutilsNewFontSize (newfont, sizeof (newfont), f, NULL, sz);
+  marqueeNewFontSize (newfont, sizeof (newfont), f, NULL, sz);
   for (int i = MQ_W_INFO_DISP_A; i <= MQ_W_INFO_DISP_E; ++i) {
     marqueeSetFontSize (marquee, marquee->wcont [i], newfont);
   }
@@ -1096,4 +1098,25 @@ marqueeSendStatus (marquee_t *marquee)
       marquee->isiconified, MSG_ARGS_RS, marquee->ismaximized);
   connSendMessage (marquee->conn, ROUTE_PLAYERUI, MSG_MARQUEE_STATUS,
       tbuff);
+}
+
+static void
+marqueeNewFontSize (char *buff, size_t sz, const char *font, const char *style, int newsz)
+{
+  char        fontname [200];
+  size_t      i;
+
+  stpecpy (fontname, fontname + sizeof (fontname), font);
+
+  i = strlen (fontname) - 1;
+  while (i != 0 && (isdigit (fontname [i]) || isspace (fontname [i]))) {
+    --i;
+  }
+  ++i;
+  fontname [i] = '\0';
+
+  if (style == NULL) {
+    style = "";
+  }
+  snprintf (buff, sz, "%s %s %d", fontname, style, newsz);
 }

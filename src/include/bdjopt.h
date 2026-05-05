@@ -190,6 +190,8 @@ void    bdjoptSave (void);
 void    bdjoptDump (void);
 bool    bdjoptProfileExists (void);
 char    * bdjoptGetProfileName (void);
+const char * bdjoptGetCurrentFont (void);
+const char * bdjoptGetListingFont (void);
 
 /* the conversion routines are public so that the check suite can test them */
 void    bdjoptConvBPM (datafileconv_t *conv);

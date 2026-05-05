@@ -21,6 +21,7 @@
 #include "bdjmsg.h"
 #include "bdjopt.h"
 #include "bdjvars.h"
+#include "callback.h"
 #include "configui.h"
 #include "conn.h"
 #include "dance.h"
@@ -30,7 +31,6 @@
 #include "mdebug.h"
 #include "nlist.h"
 #include "ossignal.h"
-#include "osuiutils.h"
 #include "pathbld.h"
 #include "pathutil.h"
 #include "pli.h"
@@ -40,7 +40,7 @@
 #include "songfilter.h"
 #include "sysvars.h"
 #include "ui.h"
-#include "callback.h"
+#include "uiheadline.h"
 #include "uiutils.h"
 
 typedef struct configui {

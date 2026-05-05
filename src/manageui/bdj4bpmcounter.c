@@ -25,7 +25,6 @@
 #include "log.h"
 #include "mdebug.h"
 #include "ossignal.h"
-#include "osuiutils.h"
 #include "pathbld.h"
 #include "procutil.h"
 #include "progstate.h"
@@ -33,6 +32,7 @@
 #include "sysvars.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "uiheadline.h"
 #include "uiutils.h"
 
 enum {

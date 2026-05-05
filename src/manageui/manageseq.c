@@ -27,9 +27,10 @@
 #include "playlist.h"
 #include "tagdef.h"
 #include "ui.h"
+#include "uicommon.h"
 #include "uiduallist.h"
 #include "uiselectfile.h"
-#include "uiutils.h"
+#include "uiheadline.h"
 
 enum {
   MSEQ_MENU_CB_SEQ_LOAD,
@@ -151,7 +152,7 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
   uiBoxPackStart (hbox, uiwidgetp, WCONT_KEEP);
   /* CONTEXT: sequence editor: sequence name */
   uiEntrySetValidate (manageseq->seqname, _("Sequence"),
-      uiutilsValidatePlaylistNameClr,
+      uicommonValidatePlaylistNameClr,
       manageseq->minfo->errorMsg, UIENTRY_IMMEDIATE);
 
   manageseq->seqduallist = uiCreateDualList (vboxp,

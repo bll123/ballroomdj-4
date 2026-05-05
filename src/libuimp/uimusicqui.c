@@ -24,12 +24,12 @@
 #include "playlist.h"
 #include "songfav.h"
 #include "ui.h"
+#include "uicommon.h"
 #include "uidance.h"
 #include "uifavorite.h"
 #include "uimusicq.h"
 #include "uiplaylist.h"
 #include "uisong.h"
-#include "uiutils.h"
 #include "uivirtlist.h"
 #include "uivlutil.h"
 
@@ -146,7 +146,7 @@ uimusicqUIInit (uimusicq_t *uimusicq)
     snprintf (mqint->tag, sizeof (mqint->tag), "%s-mq-%d", uimusicq->tag, i);
   }
 
-  uiutilsAddFavoriteClasses ();
+  uicommonAddFavoriteClasses ();
 }
 
 void

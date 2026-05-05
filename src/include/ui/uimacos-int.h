@@ -14,6 +14,10 @@ extern "C" {
 
 /* interfaces */
 
+@interface IBox : NSStackView {}
+- (BOOL) isFlipped;
+@end
+
 @interface ILabel : NSTextField {}
 - (BOOL) isFlipped;
 @end

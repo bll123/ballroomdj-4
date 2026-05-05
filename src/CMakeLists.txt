@@ -217,11 +217,11 @@ add_subdirectory (libcont)
 add_subdirectory (utility)
 
 # ui libraries
+add_subdirectory (libuios)
 add_subdirectory (libuigeneral)
 add_subdirectory (${BDJ4_UI_LIB_NAME})
-add_subdirectory (libuibase)
 add_subdirectory (libuiintfc)
-add_subdirectory (libuicommon)
+add_subdirectory (libuimp)
 add_subdirectory (libuimanage)
 add_subdirectory (libuiplayer)
 

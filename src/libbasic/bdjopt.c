@@ -785,6 +785,33 @@ bdjoptGetProfileName (void)
   return pname;
 }
 
+const char *
+bdjoptGetCurrentFont (void)
+{
+  const char  *tstr;
+
+  tstr = bdjoptGetStr (OPT_M_UI_FONT);
+  if (tstr == NULL || ! *tstr) {
+    tstr = sysvarsGetStr (SV_FONT_DEFAULT);
+  }
+  return tstr;
+}
+
+const char *
+bdjoptGetListingFont (void)
+{
+  const char  *tstr;
+
+  tstr = bdjoptGetStr (OPT_M_LISTING_FONT);
+  if (tstr == NULL || ! *tstr) {
+    tstr = bdjoptGetStr (OPT_M_UI_FONT);
+    if (tstr == NULL || ! *tstr) {
+      tstr = sysvarsGetStr (SV_FONT_DEFAULT);
+    }
+  }
+  return tstr;
+}
+
 /* the conversion routines are public so that the check suite can test them */
 
 void
@@ -1007,7 +1034,6 @@ bdjoptConvMobMQType (datafileconv_t *conv)
     conv->str = sval;
   }
 }
-
 
 /* internal routines */
 

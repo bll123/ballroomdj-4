@@ -32,10 +32,10 @@
 #include "uidance.h"
 #include "uifavorite.h"
 #include "ui.h"
+#include "uicommon.h"
 #include "uisongfilter.h"
 #include "uisong.h"
 #include "uisongsel.h"
-#include "uiutils.h"
 #include "uivirtlist.h"
 #include "uivlutil.h"
 
@@ -149,7 +149,7 @@ uisongselUIInit (uisongsel_t *uisongsel)
 
   uisongsel->ssInternalData = ssint;
 
-  uiutilsAddFavoriteClasses ();
+  uicommonAddFavoriteClasses ();
 
   logProcEnd ("");
 }

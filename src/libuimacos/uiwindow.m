@@ -24,6 +24,7 @@
 #include "ui/uibox.h"
 #include "ui/uiwidget.h"
 #include "ui/uiwindow.h"
+#include "uigeneral.h"    // debug flag
 
 @interface IWindow : NSWindow { }
 @property callback_t  *closecb;
@@ -129,31 +130,34 @@ uiwcont_t *
 uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
 {
   uiwcont_t     *uiwin = NULL;
-  uiwcont_t     *uibox = NULL;
   IWindow       *win = NULL;
   NSStackView   *box = NULL;
   id            windowDelegate;
 
   win = [[IWindow alloc] init];
-  uibox = uiCreateVertBox ();
+  box = [[IBox alloc] init];
   if (title != NULL) {
     NSString  *nstitle;
 
     nstitle = [NSString stringWithUTF8String : title];
-    [win setTitle : nstitle];
+    win.title = nstitle;
   }
 
-  box = uibox->uidata.widget;
+#if MACOS_UI_DEBUG
+  box.focusRingType = NSFocusRingTypeExterior;
+  box.wantsLayer = YES;
+  [box layer].borderWidth = 2.0;
+  [box layer].borderColor =
+      [NSColor colorWithRed : 150.0 / 255.0
+          green : 0.0
+          blue : 0.0
+          alpha : 1.0].CGColor;
+  box.needsDisplay = YES;
+#endif
   box.translatesAutoresizingMaskIntoConstraints = NO;
-//  box.autoresizingMask |= NSViewWidthSizable | NSViewHeightSizable;
 
   [win setContentView : box];
   [win makeMainWindow];
-
-  uibox->packed = true;
-  uibox->uidata.layout->expandchildren = true;
-
-  uiWidgetSetIdentifier (uibox, "wbox");
 
   if (imagenm != NULL) {
     NSImage *image = nil;
@@ -165,17 +169,15 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   }
 
   windowDelegate = [[IWindowDelegate alloc] init];
-  [win setDelegate : windowDelegate];
+  win.delegate = windowDelegate;
 
-  [win setCloseCallback : uicb];
+  win.closeCallback = uicb;
 
   uiwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_WINDOW);
   uiwcontSetWidget (uiwin, win, NULL);
   uiwin->packed = true;
 
   uiWidgetSetIdentifier (uiwin, "win");
-
-  uiWidgetSetAllMargins (uibox, 2);
 
   return uiwin;
 }
@@ -524,9 +526,8 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
         constraintEqualToAnchor : container.bottomAnchor].active = YES;
   }
 
+//  layout->expandchildren = true;
   uiwidget->packed = true;
-  layout->expandchildren = true;
-
   return;
 }
 

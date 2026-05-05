@@ -208,6 +208,9 @@ img/switch-on-col-bg\.svg$
 img/switch-on-col-circ\.svg$
 img/switch-on-marks\.svg$
 
+# 2026-5-5 re-arranged libs
+bin/libbdj4uib\.(so|dylib|dll)$
+
 ####
 # mac-os
 

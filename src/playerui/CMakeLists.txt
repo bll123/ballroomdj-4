@@ -7,7 +7,7 @@ include (../utils/bdj4macros.cmake)
 
 add_executable (bdj4playerui bdj4playerui.c)
 target_link_libraries (bdj4playerui PRIVATE
-  libbdj4uip libbdj4uic libbdj4uii libbdj4uib ${BDJ4_UI_LIB} libbdj4cont
+  libbdj4uip libbdj4uimp libbdj4uii ${BDJ4_UI_LIB} libbdj4cont
   libbdj4audiosrc
   libbdj4 libbdj4basic libbdj4common
   m

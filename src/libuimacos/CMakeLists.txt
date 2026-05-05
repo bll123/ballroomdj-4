@@ -34,7 +34,7 @@ add_library (${BDJ4_UI_LIB} SHARED
   uiwindow.m
 )
 target_link_libraries (${BDJ4_UI_LIB} PRIVATE
-  objuigeneral libbdj4basic libbdj4common
+  objuigeneral objuios libbdj4basic libbdj4common
 )
 target_link_options (${BDJ4_UI_LIB} PRIVATE
   -framework Cocoa

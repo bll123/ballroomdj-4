@@ -31,7 +31,7 @@ addWinManifest (bdj4player)
 
 add_executable (bdj4marquee bdj4marquee.c)
 target_link_libraries (bdj4marquee PRIVATE
-  libbdj4uib ${BDJ4_UI_LIB}
+  ${BDJ4_UI_LIB}
   libbdj4 libbdj4basic libbdj4common
   m
 )

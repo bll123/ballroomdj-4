@@ -41,7 +41,6 @@
 #include "osdirutil.h"
 #include "osprocess.h"
 #include "ossignal.h"
-#include "osuiutils.h"
 #include "osutils.h"
 #include "pathbld.h"
 #include "pathdisp.h"
@@ -53,7 +52,7 @@
 #include "templateutil.h"
 #include "ui.h"
 #include "uidd.h"
-#include "uiutils.h"
+#include "uiheadline.h"
 #include "webclient.h"
 
 /* installation states */

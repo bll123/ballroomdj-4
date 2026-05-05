@@ -121,7 +121,7 @@ add_executable (uitest
   uitest.c
 )
 target_link_libraries (uitest PRIVATE
-  libbdj4uii libbdj4uib ${BDJ4_UI_LIB}
+  libbdj4uii ${BDJ4_UI_LIB}
   libbdj4 libbdj4basic libbdj4common
 )
 addUILibrary (uitest)
