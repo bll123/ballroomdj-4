@@ -113,9 +113,9 @@ typedef struct uivlcoldata {
   void          *entryudata;
   callback_t    *togglecb;      // radio buttons and check buttons
   callback_t    *spinboxcb;
-  callback_t    *colgrowonlycb;
+  callback_t    *colgrowcb;
   uiwcont_t     *extrarb;
-  uivlcol_t     *col0;
+  uivlcol_t     *row0col;
   const char    *tag;
   char          *heading;
   char          *baseclass;
@@ -247,7 +247,7 @@ static void uivlClearSelection (uivirtlist_t *vl, int32_t rownum);
 static void uivlAddSelection (uivirtlist_t *vl, uint32_t rownum);
 static void uivlProcessScroll (uivirtlist_t *vl, int32_t start, int sctype);
 static bool uivlVertSizeChg (void *udata, int32_t width, int32_t height);
-static bool uivlColGrowOnlyChg (void *udata, int32_t width, int32_t height);
+static bool uivlColGrowChg (void *udata, int32_t width, int32_t height);
 static void uivlRowBasicInit (uivirtlist_t *vl, uivlrow_t *row, int dispidx);
 static bool uivlFocusCallback (void *udata);
 static void uivlUpdateSelections (uivirtlist_t *vl, int32_t rownum);
@@ -450,7 +450,7 @@ uivlFree (uivirtlist_t *vl)
   for (int colidx = 0; colidx < vl->numcols; ++colidx) {
     dataFree (vl->coldata [colidx].baseclass);
     dataFree (vl->coldata [colidx].heading);
-    callbackFree (vl->coldata [colidx].colgrowonlycb);
+    callbackFree (vl->coldata [colidx].colgrowcb);
     uiwcontFree (vl->coldata [colidx].extrarb);
   }
   dataFree (vl->coldata);
@@ -508,7 +508,7 @@ uivlSetNumColumns (uivirtlist_t *vl, int numcols)
     coldata->entryudata = NULL;
     coldata->togglecb = NULL;
     coldata->spinboxcb = NULL;
-    coldata->colgrowonlycb = NULL;
+    coldata->colgrowcb = NULL;
     coldata->extrarb = NULL;
     coldata->colidx = colidx;
     coldata->colwidth = -1;
@@ -1811,6 +1811,7 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
     coldata = &vl->coldata [colidx];
 
     col->ident = VL_IDENT_COL;
+    /* for use with grid, an hbox is needed to fill the space. */
     col->hbox = uiCreateHorizBox ();
     col->uiwidget = NULL;
     col->sbnum = NULL;
@@ -1923,9 +1924,11 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       uiWidgetAlignHorizStart (col->uiwidget);
     }
 
+    if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK) {
+      uiWidgetExpandHoriz (col->hbox);
+    }
     if (coldata->grow == VL_COL_WIDTH_GROW_SHRINK &&
         origtype == VL_TYPE_ENTRY) {
-      uiWidgetExpandHoriz (col->hbox);
       uiWidgetExpandHoriz (col->uiwidget);
     }
 
@@ -1934,11 +1937,11 @@ uivlCreateRow (uivirtlist_t *vl, uivlrow_t *row, int dispidx, bool isheading)
       /* set up the size change callback so that grow-only columns */
       /* can be made to only grow, and never shrink on their own */
       /* only need this on labels and images. */
-      coldata->col0 = col;
+      coldata->row0col = col;
       if (coldata->grow == VL_COL_WIDTH_GROW_ONLY &&
           (type == VL_TYPE_LABEL || type == VL_TYPE_IMAGE)) {
-        coldata->colgrowonlycb = callbackInitII (uivlColGrowOnlyChg, coldata);
-        uiWidgetSetSizeChgCallback (col->hbox, coldata->colgrowonlycb);
+        coldata->colgrowcb = callbackInitII (uivlColGrowChg, coldata);
+        uiWidgetSetSizeChgCallback (col->hbox, coldata->colgrowcb);
       }
     }
 
@@ -2505,18 +2508,24 @@ uivlVertSizeChg (void *udata, int32_t width, int32_t height)
 
 /* the intention of the column size change is to prevent */
 /* grow-only columns from shrinking */
+/* if a column has a grow-shrink column (ellipsized), and if */
+/* the display has an excess of room, then the column width will */
+/* bounce around.  The way to solve this would be to set the */
+/* minimum column width for the grow-shrink columns */
+/* but I have no way of knowing how much space is available, nor */
+/* how the space should allocated to the grow-shrink columns */
 static bool
-uivlColGrowOnlyChg (void *udata, int32_t width, int32_t height)
+uivlColGrowChg (void *udata, int32_t width, int32_t height)
 {
   uivlcoldata_t   *coldata = udata;
 
   logProcBegin ();
   if (width > 0 && width > coldata->colwidth) {
-    if (uiWidgetIsMapped (coldata->col0->hbox)) {
+    if (uiWidgetIsMapped (coldata->row0col->hbox)) {
       coldata->colwidth = width;
       width -= 1;
       if (width > 5) {
-        uiWidgetSetSizeRequest (coldata->col0->hbox, width, -1);
+        uiWidgetSetSizeRequest (coldata->row0col->hbox, width, -1);
       }
     }
   }
