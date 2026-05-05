@@ -53,26 +53,6 @@ void uiWidgetSetIdentifier (uiwcont_t *uiwidget, const char *tag);
 void uiWidgetUpdateLayout (uiwcont_t *uiwidget);
 void uiWidgetUpdateConstraint (const char *tag, NSLayoutConstraint *c, NSView *va, NSView *vb);
 
-/* structures */
-
-typedef struct macoslayout {
-  NSStackView   *container;
-  NSEdgeInsets  margins;
-  bool          expandhoriz;
-  bool          expandvert;
-  bool          horizcenter;
-  bool          horizend;
-  bool          horizfill;
-  bool          horizright;
-  bool          horizstart;
-  bool          vertbaseline;
-  bool          vertcenter;
-  bool          vertend;
-  bool          vertfill;
-  bool          vertstart;
-  bool          expandchildren;
-} macoslayout_t;
-
 #define MACOS_UI_DEBUG 1
 
 #if defined (__cplusplus) || defined (c_plusplus)

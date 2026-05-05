@@ -7,8 +7,6 @@
 #include <stdbool.h>
 #include <inttypes.h>
 
-#include "ui/uidialog.h"
-
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif
@@ -41,8 +39,6 @@ GtkWidget * uiImageWidget (const char *imagenm);
 # if BDJ4_UI_MACOS
 #  include "ui/uimacos-wcont.h"
 # endif /* BDJ4_UI_MACOS */
-
-/* ---------------------- */
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

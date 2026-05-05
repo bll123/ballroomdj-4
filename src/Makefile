@@ -43,23 +43,23 @@ singlecpu:
 
 .PHONY: debug
 debug:
-	$(MAKE) BDJ4_BUILD=Debug cmake
+	$(MAKE) BDJ4_BUILD=Debug cmak-build cmake-install
 
 .PHONY: profile
 profile:
-	$(MAKE) BDJ4_BUILD=Profile cmake
+	$(MAKE) BDJ4_BUILD=Profile cmake-build cmake-install
 
 .PHONY: debug-clang
 debug-clang:
-	$(MAKE) BDJ4_BUILD=Debug cmakeclang
+	$(MAKE) BDJ4_BUILD=Debug cmakeclang cmake-install
 
 .PHONY: sanitizeaddress
 sanitizeaddress:
-	$(MAKE) BDJ4_BUILD=SanitizeAddress cmake
+	$(MAKE) BDJ4_BUILD=SanitizeAddress cmake-build cmake-install
 
 .PHONY: sanitizethread
 sanitizethread:
-	$(MAKE) BDJ4_BUILD=SanitizeThread cmake
+	$(MAKE) BDJ4_BUILD=SanitizeThread cmake-build cmake-install
 
 .PHONY: sanitizeaddressclang
 sanitizeaddressclang:

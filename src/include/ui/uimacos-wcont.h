@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include <Cocoa/Cocoa.h>
+
 #include "ui/uiui.h"      // for uisetup_t
 
 #if defined (__cplusplus) || defined (c_plusplus)
@@ -14,9 +16,26 @@ extern uisetup_t   guisetup;
 /* to hold the margin information for the widget */
 typedef struct macoslayout macoslayout_t;
 
+typedef struct macoslayout {
+  NSStackView   *container;
+  NSEdgeInsets  margins;
+  bool          expandhoriz;
+  bool          expandvert;
+  bool          horizcenter;
+  bool          horizend;
+  bool          horizfill;
+  bool          horizright;
+  bool          horizstart;
+  bool          vertbaseline;
+  bool          vertcenter;
+  bool          vertend;
+  bool          vertfill;
+  bool          vertstart;
+  bool          expandchildren;
+} macoslayout_t;
+
 typedef struct uispecific {
-  /* to hold the margin information and margin constraints for the widget */
-  macoslayout_t     *layout;
+  macoslayout_t   layout;
 } uispecific_t;
 
 #if defined (__cplusplus) || defined (c_plusplus)
