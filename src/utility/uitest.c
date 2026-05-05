@@ -29,7 +29,6 @@
 #include "tmutil.h"
 #include "uidd.h"
 #include "ui.h"
-#include "uiclass.h"
 #include "uiheadline.h"
 #include "uihnb.h"
 #include "uisbnum.h"
@@ -37,7 +36,6 @@
 #include "uiutils.h"
 #include "uivirtlist.h"
 #include "uivnb.h"
-#include "uiwcont.h"
 
 enum {
   UITEST_W_B,
@@ -662,8 +660,8 @@ fprintf (stderr, "ChgInd\n");
 
   uivnbAppendPage (uitest->mainvnb, grid, "Change Indicator", VNB_NO_ID);
 
-  uiwidgetp = uiCreateChangeIndicator (NULL);
-  uichgindPackGrid (uiwidgetp, grid);
+  uiwidgetp = uiCreateChangeIndicator ();
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uichgindMarkNormal (uiwidgetp);
   uitest->wcont [UITEST_W_CI_A] = uiwidgetp;
 
@@ -676,9 +674,9 @@ fprintf (stderr, "ChgInd\n");
   uitest->wcont [UITEST_W_CI_BUTTON] = uiwidgetp;
 
   /* next line */
-  uiwidgetp = uiCreateChangeIndicator (NULL);
+  uiwidgetp = uiCreateChangeIndicator ();
   uiGridNewRow (grid);
-  uichgindPackGrid (uiwidgetp, grid);
+  uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uichgindMarkChanged (uiwidgetp);
   uitest->wcont [UITEST_W_CI_B] = uiwidgetp;
 

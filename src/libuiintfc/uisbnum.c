@@ -22,7 +22,6 @@
 #include "ui.h"
 #include "uisb.h"
 #include "uisbnum.h"
-#include "uiwcont.h"
 #include "validate.h"
 
 static double SB_INVALID = -65534.0;
@@ -136,7 +135,7 @@ uisbnumFree (uisbnum_t *sbnum)
 }
 
 void
-uisbnumPackBox (uisbnum_t *sbnum, uiwcont_t *box)
+uisbnumPackBox (uisbnum_t *sbnum, uiwcont_t *box) /* KEEP */
 {
   if (sbnum == NULL || box == NULL) {
     return;
@@ -156,7 +155,7 @@ uisbnumPackGrid (uisbnum_t *sbnum, uiwcont_t *grid)
 }
 
 void
-uisbnumPackGridFill (uisbnum_t *sbnum, uiwcont_t *grid)
+uisbnumPackGridFill (uisbnum_t *sbnum, uiwcont_t *grid) /* KEEP */
 {
   if (sbnum == NULL || grid == NULL) {
     return;

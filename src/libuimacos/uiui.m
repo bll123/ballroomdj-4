@@ -159,15 +159,15 @@ uiwcontUIInit (uiwcont_t *uiwidget)
 
   uiwidget->uidata = mdmalloc (sizeof (uispecific_t));
 
-  if (uiwidget->uidata.layout != NULL) {
+  if (uiwidget->uidata->layout != NULL) {
     return;
   }
 
 // fprintf (stderr, "ui-init: %s %d-%d\n", uiwcontDesc (uiwidget->wtype), uiwidget->ui_id, uiwidget->id);
-  if (uiwidget->uidata.layout == NULL) {
-    uiwidget->uidata.layout = mdmalloc (sizeof (macoslayout_t));
+  if (uiwidget->uidata->layout == NULL) {
+    uiwidget->uidata->layout = mdmalloc (sizeof (macoslayout_t));
   }
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
 
   /* default margins */
   /* top left bottom right */
@@ -207,12 +207,12 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
     return;
   }
 
-  if (uiwidget->uidata.layout == NULL) {
-    uiwidget->uidata.layout = mdmalloc (sizeof (macoslayout_t));
+  if (uiwidget->uidata->layout == NULL) {
+    uiwidget->uidata->layout = mdmalloc (sizeof (macoslayout_t));
   }
 
   view = uiwidget->packwidget;
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
 
   layout->container = [[NSStackView alloc] init];
   layout->container.spacing = 0.0;
@@ -280,7 +280,7 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
 void
 uiwcontUIFree (uiwcont_t *uiwidget)
 {
-  mdfree (uiwidget->uidata.layout);
+  mdfree (uiwidget->uidata->layout);
   mdfree (uiwidget->uidata);
   return;
 }

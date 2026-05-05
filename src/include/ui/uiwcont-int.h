@@ -44,12 +44,6 @@ GtkWidget * uiImageWidget (const char *imagenm);
 
 /* ---------------------- */
 
-/* ui specific widget container */
-typedef struct uiwcontdata {
-  /* widget data specific to the interface */
-  uispecific_t    uidata;
-} uiwcontdata_t;
-
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
 #endif

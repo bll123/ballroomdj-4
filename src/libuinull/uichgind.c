@@ -18,7 +18,7 @@
 #include "ui/uiwidget.h"
 
 uiwcont_t *
-uiCreateChangeIndicator (uiwcont_t *boxp)
+uiCreateChangeIndicator (void)
 {
   return NULL;
 }

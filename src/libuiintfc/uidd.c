@@ -24,7 +24,6 @@
 #include "ui.h"
 #include "uidd.h"
 #include "uivirtlist.h"
-#include "uiwcont.h"
 
 enum {
   DD_IDENT = 0xeeddccbbaa006464,

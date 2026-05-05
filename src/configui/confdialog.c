@@ -22,7 +22,6 @@
 #include "songfilter.h"
 #include "tagdef.h"
 #include "ui.h"
-#include "uigeneral.h"
 
 static int sftags [FILTER_DISP_MAX] = {
   [FILTER_DISP_GENRE] = TAG_GENRE,

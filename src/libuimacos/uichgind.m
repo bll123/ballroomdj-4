@@ -25,7 +25,7 @@
 #include "ui/uiwidget.h"
 
 uiwcont_t *
-uiCreateChangeIndicator (uiwcont_t *boxp)
+uiCreateChangeIndicator (void)
 {
   uiwcont_t   *uiwidget;
   ILabel      *widget;
@@ -39,24 +39,10 @@ uiCreateChangeIndicator (uiwcont_t *boxp)
 
   uiwidget = uiwcontAlloc (WCONT_T_CHGIND, WCONT_T_CHGIND);
   uiwcontSetWidget (uiwidget, widget, NULL);
-  uiBoxPackStart (boxp, uiwidget, WCONT_KEEP);
 
   uiWidgetSetIdentifier (uiwidget, "chgind");
 
   return uiwidget;
-}
-
-void
-uichgindPackGrid (uiwcont_t *uiwidget, uiwcont_t *grid)
-{
-  if (! uiwcontValid (uiwidget, WCONT_T_CHGIND, "ci-pack-grid")) {
-    return;
-  }
-  if (! uiwcontValid (grid, WCONT_T_GRID, "ci-pack-grid")) {
-    return;
-  }
-
-  uiGridPack (grid, uiwidget, WCONT_KEEP);
 }
 
 void

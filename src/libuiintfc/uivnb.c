@@ -23,10 +23,7 @@
 #include "sysvars.h"
 #include "tmutil.h"
 #include "ui.h"
-#include "uiclass.h"
 #include "uivnb.h"
-#include "uigeneral.h"
-#include "uiwcont.h"
 
 enum {
   VNB_MAX_PAGECOUNT = 40,

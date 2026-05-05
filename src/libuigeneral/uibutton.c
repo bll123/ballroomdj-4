@@ -13,7 +13,6 @@
 #include "log.h"
 #include "mdebug.h"
 #include "tmutil.h"
-#include "uigeneral.h"
 #include "ui.h"
 
 uiwcont_t *
@@ -131,43 +130,5 @@ uiButtonReleaseCallback (void *udata)
   bgen->repeating = false;
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: button-release");
   return UICB_CONT;
-}
-
-void
-uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms)
-{
-  uibuttongeneric_t    *bgen;
-
-  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-repeat")) {
-    return;
-  }
-
-  bgen = uiwidget->uibuttongen;
-
-  bgen->repeatMS = repeatms;
-  bgen->repeatOn = true;
-  uiButtonSetRepeat_r (uiwidget, bgen->presscb, bgen->releasecb);
-}
-
-
-void
-uiButtonSignalHandler (uiwcont_t *uiwidget)
-{
-  uibuttongeneric_t *bgen;
-
-  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-signal")) {
-    return;
-  }
-
-  bgen = uiwidget->uibuttongen;
-
-  if (bgen->repeatOn) {
-    return;
-  }
-  if (bgen->cb == NULL) {
-    return;
-  }
-
-  callbackHandler (bgen->cb);
 }
 

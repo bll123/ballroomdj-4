@@ -18,7 +18,7 @@
 #include "callback.h"
 #include "mdebug.h"
 #include "pathbld.h"
-#include "uigeneral.h"
+#include "uiwcont.h"
 
 #include "ui/uimacos-int.h"
 #include "ui/uiwcont-int.h"
@@ -55,7 +55,7 @@ typedef struct uibuttonint {
 @end
 
 uiwcont_t *
-uiCreateButton (callback_t *uicb, const char *txt,
+uiCreateButton_r (callback_t *uicb, const char *txt,
     const char *imagenm, const char *tooltiptxt)
 {
   uiwcont_t       *uiwidget;
@@ -117,7 +117,7 @@ uiCreateButton (callback_t *uicb, const char *txt,
 }
 
 void
-uiButtonFree (uiwcont_t *uiwidget)
+uiButtonFree_r (uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-free")) {
     return;
@@ -188,7 +188,7 @@ void
 uiButtonSetState (uiwcont_t *uiwidget, uibuttonstate_t newstate)
 {
   uibuttonint_t   *uibutton;
-  uibuttongen_t   *bgen;
+  uibuttongeneric_t   *bgen;
   IButton         *widget = nil;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-alt-image")) {
@@ -272,12 +272,18 @@ uiButtonSetText (uiwcont_t *uiwidget, const char *txt)
 }
 
 void
-uiButtonSetRepeat_r (uiwcont_t *uiwidget,
-    callback_t *presscb, callback_t *releasecb)
+uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms)
 {
+  uibuttongeneric_t    *bgen;
+
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-repeat")) {
     return;
   }
+
+  bgen = uiwidget->uibuttongen;
+
+  bgen->repeatMS = repeatms;
+  bgen->repeatOn = true;
 
   return;
 }

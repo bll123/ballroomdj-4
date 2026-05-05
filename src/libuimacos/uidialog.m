@@ -114,12 +114,10 @@ uiCreateDialog (uiwcont_t *window,
 {
   uiwcont_t     *uiwin;
   IDWindow      *win = NULL;
-  uiwcont_t     *uibox;
   NSStackView   *box;
   id            windowDelegate;
 
   win = [[IDWindow alloc] init];
-  uibox = uiCreateVertBox ();
   if (title != NULL) {
     NSString  *nstitle;
 
@@ -127,10 +125,8 @@ uiCreateDialog (uiwcont_t *window,
     [win setTitle : nstitle];
   }
 
-  box = uibox->widget;
+  box = [[IBox alloc] init];
   [win setContentView : box];
-
-  uibox->packed = true;
 
   windowDelegate = [[IWindowDelegate alloc] init];
   [win setDelegate : windowDelegate];
@@ -140,10 +136,6 @@ uiCreateDialog (uiwcont_t *window,
   uiwin->packed = true;
 
   uiWidgetSetIdentifier (uiwin, "dialog");
-
-  uiWidgetSetAllMargins (uibox, 2);
-//  uiWidgetExpandHoriz (uibox);
-//  uiWidgetExpandVert (uibox);
 
   return uiwin;
 }

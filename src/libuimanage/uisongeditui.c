@@ -1135,8 +1135,8 @@ uisongeditAddItem (uisongedit_t *uisongedit, uiwcont_t *grid, int tagkey)
   seint = uisongedit->seInternalData;
 
   if (! tagdefs [tagkey].secondaryDisplay) {
-    seint->items [seint->itemcount].chgind = uiCreateChangeIndicator (NULL);
-    uichgindPackGrid (seint->items [seint->itemcount].chgind, grid);
+    seint->items [seint->itemcount].chgind = uiCreateChangeIndicator ();
+    uiGridPack (grid, seint->items [seint->itemcount].chgind, WCONT_KEEP);
     uichgindMarkNormal (seint->items [seint->itemcount].chgind);
     seint->items [seint->itemcount].changed = false;
     seint->items [seint->itemcount].lastchanged = false;

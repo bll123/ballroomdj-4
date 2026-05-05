@@ -7,13 +7,8 @@
 extern "C" {
 #endif
 
-/* the structure must contain a member named widget */
-/* and a member named packwidget */
 typedef struct uispecific {
-  void      *packwidget;
-  union {
-    void    *widget;
-  };
+  void      *junk;
 } uispecific_t;
 
 #if defined (__cplusplus) || defined (c_plusplus)

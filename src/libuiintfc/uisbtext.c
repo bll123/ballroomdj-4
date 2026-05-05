@@ -20,7 +20,6 @@
 #include "ui.h"
 #include "uisb.h"
 #include "uisbtext.h"
-#include "uiwcont.h"
 
 typedef struct uisbtext {
   uisb_t          *sb;
@@ -87,7 +86,7 @@ uisbtextFree (uisbtext_t *sbtext)
 }
 
 void
-uisbtextPackBox (uisbtext_t *sbtext, uiwcont_t *box)
+uisbtextPackBox (uisbtext_t *sbtext, uiwcont_t *box)  /* KEEP */
 {
   if (sbtext == NULL || box == NULL) {
     return;

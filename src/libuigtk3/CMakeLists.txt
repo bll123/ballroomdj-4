@@ -42,8 +42,7 @@ target_include_directories (libbdj4ui PRIVATE
   ${PKG_GTK_INCLUDE_DIRS}
 )
 target_link_libraries (libbdj4ui PRIVATE
-# objuigeneral
-  objuios libbdj4basic libbdj4common
+  objuigeneral objuios libbdj4basic libbdj4common
 )
 target_link_libraries (libbdj4ui PRIVATE ${PKG_GTK_LDFLAGS})
 

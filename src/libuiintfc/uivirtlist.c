@@ -19,10 +19,8 @@
 #include "nlist.h"
 #include "tmutil.h"
 #include "ui.h"
-#include "uiclass.h"
 #include "uisbnum.h"
 #include "uivirtlist.h"
-#include "uiwcont.h"
 
 /* initialization states */
 enum {

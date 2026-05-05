@@ -37,7 +37,6 @@
 #include "sysvars.h"
 #include "tagdef.h"
 #include "ui.h"
-#include "uiclass.h"
 #include "uicommon.h"
 #include "uiutils.h"
 

@@ -21,7 +21,8 @@ void uiButtonAlignLeft (uiwcont_t *uiwidget);
 void uiButtonSetText (uiwcont_t *uiwidget, const char *txt);
 void uiButtonSetReliefNone (uiwcont_t *uiwidget);
 void uiButtonSetFlat (uiwcont_t *uiwidget);
-void uiButtonSetRepeat_r (uiwcont_t *uiwidget, callback_t *presscb, callback_t *releasecb);
+void uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms);
+uibuttonstate_t uiButtonGetState (uiwcont_t *uiwidget);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

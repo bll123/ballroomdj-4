@@ -15,7 +15,14 @@
 extern "C" {
 #endif
 
+/* general routines that are called by the ui specific code */
+
 typedef struct uiwcont uiwcont_t;
+
+/* uientryval.c */
+void  uiEntryValidateHandler (uiwcont_t *uiwidget);
+
+/* uiwcont.c */
 
 typedef enum {
   WCONT_T_UNKNOWN,
@@ -143,7 +150,7 @@ typedef union {
     uiwindowint_t     *uiwindow;
 } uiwcontint_t;
 
-typedef struct uiwcontdata uiwcontdata_t;
+typedef struct uispecific uispecific_t;
 typedef struct uiwcont {
   union {
     void              *voidgen;
@@ -155,7 +162,7 @@ typedef struct uiwcont {
   void            *packwidget;
   void            *widget;
   /* any data needed in the widget container by the ui toolkit */
-  uiwcontdata_t   *uidata;
+  uispecific_t    *uidata;
   /* data internal to each widget type */
   /* this is ui toolkit specific data */
   uiwcontint_t    uiint;
@@ -166,10 +173,6 @@ typedef struct uiwcont {
   uiwconttype_t   wtype;
   bool            packed;
 } uiwcont_t;
-
-/* general routines that are called by the ui specific code */
-
-/* uiwcont.c */
 
 #define uiwcontAlloc(bt,t) uiwcontAlloc_r (bt,t, __FILE__, __LINE__)
 

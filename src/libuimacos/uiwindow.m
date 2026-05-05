@@ -499,7 +499,7 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   }
 // fprintf (stderr, "  pack-in-win: %d/%s\n", uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
 
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   container = layout->container;
 
   if (uiwindow->wtype == WCONT_T_WINDOW_SCROLL) {

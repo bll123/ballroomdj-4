@@ -134,8 +134,7 @@ uiButtonSetText (uiwcont_t *uiwidget, const char *txt)
 }
 
 void
-uiButtonSetRepeat_r (uiwcont_t *uiwidget,
-    callback_t *presscb, callback_t *releasecb)
+uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-repeat")) {
     return;

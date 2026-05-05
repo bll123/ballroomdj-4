@@ -37,7 +37,7 @@ target_compile_options (libbdj4ui PRIVATE
 )
 addUIInclude (libbdj4ui)
 target_link_libraries (libbdj4ui PRIVATE
-  objuigeneral libbdj4basic libbdj4common
+  objuigeneral objuios libbdj4basic libbdj4common
 )
 addUILibrary (libbdj4ui)
 addIntlLibrary (libbdj4ui)

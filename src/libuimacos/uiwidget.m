@@ -43,7 +43,7 @@ uiWidgetExpandHoriz (uiwcont_t *uiwidget)
 //  [widget.widthAnchor
 //      constraintLessThanOrEqualToConstant : 600.0].active = YES;
 
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   layout->expandhoriz = true;
   return;
 }
@@ -60,7 +60,7 @@ uiWidgetExpandVert (uiwcont_t *uiwidget)
 //  [widget.heightAnchor
 //      constraintLessThanOrEqualToConstant : 600.0].active = YES;
 
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   layout->expandvert = true;
   return;
 }
@@ -80,7 +80,7 @@ uiWidgetSetAllMargins (uiwcont_t *uiwidget, int mult)
 
   val = (double) (uiBaseMarginSz * mult);
 
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   layout->margins.left = (CGFloat) val;
   layout->margins.right = (CGFloat) val;
   layout->margins.top = (CGFloat) val;
@@ -105,7 +105,7 @@ uiWidgetSetMarginTop (uiwcont_t *uiwidget, int mult)
 
   val = (double) (uiBaseMarginSz * mult);
 
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   layout->margins.top = (CGFloat) val;
   uiWidgetUpdateLayout (uiwidget);
 
@@ -127,7 +127,7 @@ uiWidgetSetMarginBottom (uiwcont_t *uiwidget, int mult)
 
   val = (double) (uiBaseMarginSz * mult);
 
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   layout->margins.bottom = (CGFloat) val;
   uiWidgetUpdateLayout (uiwidget);
 
@@ -149,7 +149,7 @@ uiWidgetSetMarginStart (uiwcont_t *uiwidget, int mult)
 
   val = (double) (uiBaseMarginSz * mult);
 
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   if (guisetup.direction == TEXT_DIR_RTL) {
     layout->margins.right = (CGFloat) val;
   } else {
@@ -175,7 +175,7 @@ uiWidgetSetMarginEnd (uiwcont_t *uiwidget, int mult)
 
   val = uiBaseMarginSz * mult;
 
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   if (guisetup.direction == TEXT_DIR_RTL) {
     layout->margins.left = (CGFloat) val;
   } else {
@@ -197,7 +197,7 @@ uiWidgetAlignHorizFill (uiwcont_t *uiwidget)
     return;
   }
 
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   layout->horizfill = true;
 
   return;
@@ -212,7 +212,7 @@ uiWidgetAlignHorizStart (uiwcont_t *uiwidget)
     return;
   }
 
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   layout->horizstart = true;
 
   return;
@@ -227,7 +227,7 @@ uiWidgetAlignHorizEnd (uiwcont_t *uiwidget)
     return;
   }
 
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   layout->horizend = true;
 
   return;
@@ -242,7 +242,7 @@ uiWidgetAlignHorizCenter (uiwcont_t *uiwidget)
     return;
   }
 
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   layout->horizcenter = true;
 
   return;
@@ -257,7 +257,7 @@ uiWidgetAlignVertFill (uiwcont_t *uiwidget)
     return;
   }
 
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   layout->vertfill = true;
 
   return;
@@ -272,7 +272,7 @@ uiWidgetAlignVertStart (uiwcont_t *uiwidget)
     return;
   }
 
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   layout->vertstart = true;
 
   return;
@@ -287,7 +287,7 @@ uiWidgetAlignVertCenter (uiwcont_t *uiwidget)
     return;
   }
 
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   layout->vertcenter = true;
 
   return;
@@ -302,7 +302,7 @@ uiWidgetAlignVertBaseline (uiwcont_t *uiwidget)
     return;
   }
 
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   layout->vertbaseline = true;
 
   return;
@@ -317,7 +317,7 @@ uiWidgetAlignVertEnd (uiwcont_t *uiwidget)
     return;
   }
 
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   layout->vertend = true;
 }
 
@@ -507,7 +507,7 @@ uiWidgetSetIdentifier (uiwcont_t *uiwidget, const char *tag)
   if (uiwidget->wtype != WCONT_T_WINDOW) {
     snprintf (tmp, sizeof (tmp), "c-%s-%" PRIu32 "-%" PRIu32,
         tag, uiwidget->ui_id, uiwidget->id);
-    layout = uiwidget->uidata.layout;
+    layout = uiwidget->uidata->layout;
     widget = layout->container;
     if (widget != NULL) {
       widget.identifier = [NSString stringWithUTF8String: tmp];
@@ -525,7 +525,7 @@ uiWidgetUpdateLayout (uiwcont_t *uiwidget)
     return;
   }
 
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   container = layout->container;
 
   if (container == NULL) {

@@ -33,8 +33,6 @@ bool uiButtonCheckRepeat (uiwcont_t *uiwidget);
 bool uiButtonPressCallback (void *udata);
 bool uiButtonReleaseCallback (void *udata);
 uibuttonstate_t uiButtonGetState (uiwcont_t *uiwidget);
-void uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms);
-void uiButtonSignalHandler (uiwcont_t *uiwidget);
 
 /* uigrid.c */
 uiwcont_t *uiCreateGrid (void);
@@ -64,9 +62,6 @@ void  uiEntryValidateClear (uiwcont_t *uiwidget);
 int   uiEntryValidateDir (uiwcont_t *uiwidget, const char *label, void *udata);
 int   uiEntryValidateFile (uiwcont_t *uiwidget, const char *label, void *udata);
 bool  uiEntryIsNotValid (uiwcont_t *uiwidget);
-
-/* uientryval.c */
-void  uiEntryValidateHandler (uiwcont_t *uiwidget);
 
 /* uifont.c */
 void uiFontInfo (const char *font, char *buff, size_t sz, int *fontsz);

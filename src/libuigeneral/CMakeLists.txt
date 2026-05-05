@@ -9,12 +9,10 @@ add_library (libbdj4uig SHARED
   uibox.c
   uibutton.c
   uientry.c
-  uientryval.c
   uigrid.c
   uiheadline.c
   uilabel.c
   uiutils.c
-  uiwcont.c
   uiwcontfree.c
 )
 #addUIInclude (libbdj4uig)
@@ -29,3 +27,9 @@ install (TARGETS
 )
 
 updateRPath (libbdj4uig)
+
+# the various main ui libraries (libuigtk3, libuimacos) will link this in
+add_library (objuigeneral
+  uientryval.c
+  uiwcont.c
+)

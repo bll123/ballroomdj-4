@@ -14,7 +14,6 @@
 #include <gtk/gtk.h>
 
 #include "mdebug.h"
-#include "uigeneral.h"
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"

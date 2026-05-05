@@ -70,7 +70,7 @@ uiEntryFree_r (uiwcont_t *uiwidget)
   }
 
   uientry = uiwidget->uiint.uientry;
-  mdfree (uiwidget->uiint.uientrygen);
+  mdfree (uiwidget->uientrygen);
   mdfree (uientry);
   /* the container is freed by uiwcontFree() */
 }

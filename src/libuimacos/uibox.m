@@ -100,7 +100,7 @@ uiBoxPostProcess_r (uiwcont_t *uibox,
     return;
   }
 
-  boxint = uibox->uiint.uiboxgen;
+  boxint = uibox->uiboxgen;
 
   if (boxint->startcount == 0 && boxint->endcount == 0) {
     return;
@@ -112,7 +112,7 @@ uiBoxPostProcess_r (uiwcont_t *uibox,
   }
 
   box = uibox->widget;
-  boxlayout = uibox->uidata.layout;
+  boxlayout = uibox->uidata->layout;
 
   {
     NSView          *cwidget;
@@ -126,7 +126,7 @@ uiBoxPostProcess_r (uiwcont_t *uibox,
     NSView          *nextcont = NULL;
 
     cwidget = curr->packwidget;
-    clayout = curr->uidata.layout;
+    clayout = curr->uidata->layout;
     currcont = clayout->container;
 
     if (clayout == NULL) {
@@ -135,7 +135,7 @@ uiBoxPostProcess_r (uiwcont_t *uibox,
 
     if (prev != NULL) {
       pwidget = prev->packwidget;
-      playout = prev->uidata.layout;
+      playout = prev->uidata->layout;
       prevcont = playout->container;
 fprintf (stderr, "%d-%d pp: prev: %d-%d %d/%s\n", uibox->ui_id, uibox->id, prev->ui_id, prev->id, prev->wtype, uiwcontDesc (prev->wtype));
     }
@@ -145,7 +145,7 @@ fprintf (stderr, "%d-%d pp: curr: %d-%d %d/%s\n", uibox->ui_id, uibox->id, curr-
     if (next != NULL) {
 fprintf (stderr, "%d-%d pp: next: %d-%d %d/%s\n", uibox->ui_id, uibox->id, next->ui_id, next->id, next->wtype, uiwcontDesc (next->wtype));
       nwidget = next->packwidget;
-      nlayout = next->uidata.layout;
+      nlayout = next->uidata->layout;
       nextcont = nlayout->container;
     }
 
@@ -198,7 +198,7 @@ uiBoxPackStart_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
 
 //fprintf (stderr, "box: %d-%d p-st: %d-%d %d/%s\n", uibox->ui_id, uibox->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   box = uibox->widget;
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   if (layout == NULL || layout->container == NULL) {
     fprintf (stderr, "ERR: null container %d-%d\n", uibox->ui_id, uibox->id);
     return;
@@ -227,7 +227,7 @@ uiBoxPackStartExpandChildren_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
 
   uiBoxPackStart_r (uibox, uiwidget);
 
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   layout->expandchildren = true;
 
   return;
@@ -248,7 +248,7 @@ uiBoxPackEnd_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
   }
 
   box = uibox->widget;
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
 
   if (uibox->wtype == WCONT_T_VBOX) {
     grav = NSStackViewGravityBottom;
@@ -277,7 +277,7 @@ uiBoxPackEndExpandChildren_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
 
   uiBoxPackEnd_r (uibox, uiwidget);
 
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   layout->expandchildren = true;
 
   return;
@@ -341,7 +341,7 @@ uiBoxProcessExpandHoriz (uiwcont_t *uibox,
 
   wtype = uibox->wtype;
   box = uibox->widget;
-  layout = uibox->uidata.layout;
+  layout = uibox->uidata->layout;
 
   [layout->container setHuggingPriority :
       NSLayoutPriorityDefaultLow
@@ -410,7 +410,7 @@ uiBoxProcessExpandVert (uiwcont_t *uibox,
 
   wtype = uibox->wtype;
   box = uibox->widget;
-  layout = uibox->uidata.layout;
+  layout = uibox->uidata->layout;
 
   [layout->container setHuggingPriority :
       NSLayoutPriorityDefaultLow
@@ -496,7 +496,7 @@ uiBoxMacOSDebug (uiwcont_t *uiwidget)
   }
 
   widget = uiwidget->widget;
-  layout = uiwidget->uidata.layout;
+  layout = uiwidget->uidata->layout;
   if (layout->expandchildren) {
 fprintf (stderr, "exp-ch: %d-%d %d/%s\n", uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
     idx = MACOS_UI_DBG_EXP_CHILDREN;

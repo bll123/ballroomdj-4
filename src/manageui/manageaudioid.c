@@ -20,7 +20,6 @@
 #include "ui.h"
 #include "uiaudioid.h"
 #include "uisongsel.h"
-#include "uiwcont.h"
 
 typedef struct manageaudioid {
   manageinfo_t      *minfo;

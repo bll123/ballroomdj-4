@@ -21,7 +21,6 @@
 #include "pathbld.h"
 #include "tmutil.h"
 #include "uiclass.h"
-#include "uigeneral.h"
 #include "uiwcont.h"
 
 #include "ui/uidef.h"
@@ -33,7 +32,7 @@
 #include "ui/uispecific.h"
 #include "ui/uiwidget.h"
 
-static void uiButtonGTKSignalHandler (GtkButton *b, gpointer udata);
+static void uiButtonSignalHandler (GtkButton *b, gpointer udata);
 static void uiButtonRepeatSignalHandler (GtkButton *b, gpointer udata);
 static gboolean uiButtonFocusHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata);
 
@@ -95,7 +94,7 @@ uiCreateButton_r (callback_t *uicb, const char *txt,
 
   if (uicb != NULL) {
     g_signal_connect (widget, "clicked",
-        G_CALLBACK (uiButtonGTKSignalHandler), uiwidget);
+        G_CALLBACK (uiButtonSignalHandler), uiwidget);
   }
 
   if (txt != NULL && imagenm != NULL) {
@@ -279,17 +278,23 @@ uiButtonSetText (uiwcont_t *uiwidget, const char *txt)
 }
 
 void
-uiButtonSetRepeat_r (uiwcont_t *uiwidget,
-    callback_t *presscb, callback_t *releasecb)
+uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms)
 {
+  uibuttongeneric_t    *bgen;
+
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-repeat")) {
     return;
   }
 
+  bgen = uiwidget->uibuttongen;
+
+  bgen->repeatMS = repeatms;
+  bgen->repeatOn = true;
+
   g_signal_connect (uiwidget->widget, "pressed",
-      G_CALLBACK (uiButtonRepeatSignalHandler), presscb);
+      G_CALLBACK (uiButtonRepeatSignalHandler), bgen->presscb);
   g_signal_connect (uiwidget->widget, "released",
-      G_CALLBACK (uiButtonRepeatSignalHandler), releasecb);
+      G_CALLBACK (uiButtonRepeatSignalHandler), bgen->releasecb);
 }
 
 uibuttonstate_t
@@ -313,19 +318,25 @@ uiButtonGetState (uiwcont_t *uiwidget)
 /* internal routines */
 
 static void
-uiButtonGTKSignalHandler (GtkButton *b, gpointer udata)
+uiButtonSignalHandler (GtkButton *b, gpointer udata)
 {
   uiwcont_t         *uiwidget = udata;
+  uibuttongeneric_t *bgen;
 
-  if (uiwidget == NULL) {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-signal-handler")) {
     return;
   }
 
-  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-signal")) {
+  bgen = uiwidget->uibuttongen;
+
+  if (bgen->repeatOn) {
+    return;
+  }
+  if (bgen->cb == NULL) {
     return;
   }
 
-  uiButtonSignalHandler (uiwidget);
+  callbackHandler (bgen->cb);
 }
 
 static void

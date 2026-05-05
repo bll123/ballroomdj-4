@@ -23,10 +23,7 @@
 #include "sysvars.h"
 #include "tmutil.h"
 #include "ui.h"
-#include "uiclass.h"
 #include "uihnb.h"
-#include "uigeneral.h"
-#include "uiwcont.h"
 
 enum {
   HNB_MAX_PAGECOUNT = 40,

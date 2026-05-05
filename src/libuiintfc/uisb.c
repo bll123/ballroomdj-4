@@ -21,10 +21,8 @@
 #include "slist.h"
 #include "sysvars.h"
 #include "ui.h"
-#include "uiclass.h"
 #include "uisb.h"
 #include "uisbtext.h"
-#include "uiwcont.h"
 
 enum {
   SB_W_HBOX,

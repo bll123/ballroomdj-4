@@ -44,7 +44,6 @@
 #include "templateutil.h"
 #include "tmutil.h"
 #include "ui.h"
-#include "uiclass.h"
 #include "uiheadline.h"
 #include "uiutils.h"
 #include "validate.h"
