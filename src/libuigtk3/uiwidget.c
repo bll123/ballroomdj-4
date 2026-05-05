@@ -27,12 +27,12 @@ static gboolean uiWidgetEnterHandler (GtkWidget *w, GdkEventCrossing *event, gpo
 void
 uiWidgetSetState (uiwcont_t *uiwidget, int state)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  if (GTK_IS_WIDGET (uiwidget->uidata.widget)) {
-    gtk_widget_set_sensitive (uiwidget->uidata.widget, state);
+  if (GTK_IS_WIDGET (uiwidget->widget)) {
+    gtk_widget_set_sensitive (uiwidget->widget, state);
   }
 }
 
@@ -41,12 +41,12 @@ uiWidgetSetState (uiwcont_t *uiwidget, int state)
 void
 uiWidgetExpandHoriz (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  if (GTK_IS_WIDGET (uiwidget->uidata.widget)) {
-    gtk_widget_set_hexpand (uiwidget->uidata.widget, TRUE);
+  if (GTK_IS_WIDGET (uiwidget->widget)) {
+    gtk_widget_set_hexpand (uiwidget->widget, TRUE);
   }
 }
 
@@ -55,65 +55,65 @@ uiWidgetExpandHoriz (uiwcont_t *uiwidget)
 void
 uiWidgetExpandVert (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_vexpand (uiwidget->uidata.widget, TRUE);
+  gtk_widget_set_vexpand (uiwidget->widget, TRUE);
 }
 
 void
 uiWidgetSetAllMargins (uiwcont_t *uiwidget, int mult)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_margin_top (uiwidget->uidata.widget, uiBaseMarginSz * mult);
-  gtk_widget_set_margin_bottom (uiwidget->uidata.widget, uiBaseMarginSz * mult);
-  gtk_widget_set_margin_start (uiwidget->uidata.widget, uiBaseMarginSz * mult);
-  gtk_widget_set_margin_end (uiwidget->uidata.widget, uiBaseMarginSz * mult);
+  gtk_widget_set_margin_top (uiwidget->widget, uiBaseMarginSz * mult);
+  gtk_widget_set_margin_bottom (uiwidget->widget, uiBaseMarginSz * mult);
+  gtk_widget_set_margin_start (uiwidget->widget, uiBaseMarginSz * mult);
+  gtk_widget_set_margin_end (uiwidget->widget, uiBaseMarginSz * mult);
 }
 
 void
 uiWidgetSetMarginTop (uiwcont_t *uiwidget, int mult)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_margin_top (uiwidget->uidata.widget, uiBaseMarginSz * mult);
+  gtk_widget_set_margin_top (uiwidget->widget, uiBaseMarginSz * mult);
 }
 
 void
 uiWidgetSetMarginBottom (uiwcont_t *uiwidget, int mult)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_margin_bottom (uiwidget->uidata.widget, uiBaseMarginSz * mult);
+  gtk_widget_set_margin_bottom (uiwidget->widget, uiBaseMarginSz * mult);
 }
 
 void
 uiWidgetSetMarginStart (uiwcont_t *uiwidget, int mult)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_margin_start (uiwidget->uidata.widget, uiBaseMarginSz * mult);
+  gtk_widget_set_margin_start (uiwidget->widget, uiBaseMarginSz * mult);
 }
 
 
 void
 uiWidgetSetMarginEnd (uiwcont_t *uiwidget, int mult)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_margin_end (uiwidget->uidata.widget, uiBaseMarginSz * mult);
+  gtk_widget_set_margin_end (uiwidget->widget, uiBaseMarginSz * mult);
 }
 
 /* this uses the GTK terminology */
@@ -121,152 +121,152 @@ uiWidgetSetMarginEnd (uiwcont_t *uiwidget, int mult)
 void
 uiWidgetAlignHorizFill (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_halign (uiwidget->uidata.widget, GTK_ALIGN_FILL);
+  gtk_widget_set_halign (uiwidget->widget, GTK_ALIGN_FILL);
 }
 
 void
 uiWidgetAlignHorizStart (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_halign (uiwidget->uidata.widget, GTK_ALIGN_START);
+  gtk_widget_set_halign (uiwidget->widget, GTK_ALIGN_START);
 }
 
 void
 uiWidgetAlignHorizEnd (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_halign (uiwidget->uidata.widget, GTK_ALIGN_END);
+  gtk_widget_set_halign (uiwidget->widget, GTK_ALIGN_END);
 }
 
 void
 uiWidgetAlignHorizCenter (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_halign (uiwidget->uidata.widget, GTK_ALIGN_CENTER);
+  gtk_widget_set_halign (uiwidget->widget, GTK_ALIGN_CENTER);
 }
 
 void
 uiWidgetAlignVertFill (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_valign (uiwidget->uidata.widget, GTK_ALIGN_FILL);
+  gtk_widget_set_valign (uiwidget->widget, GTK_ALIGN_FILL);
 }
 
 void
 uiWidgetAlignVertStart (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_valign (uiwidget->uidata.widget, GTK_ALIGN_START);
+  gtk_widget_set_valign (uiwidget->widget, GTK_ALIGN_START);
 }
 
 void
 uiWidgetAlignVertCenter (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_valign (uiwidget->uidata.widget, GTK_ALIGN_CENTER);
+  gtk_widget_set_valign (uiwidget->widget, GTK_ALIGN_CENTER);
 }
 
 void
 uiWidgetAlignVertEnd (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_valign (uiwidget->uidata.widget, GTK_ALIGN_END);
+  gtk_widget_set_valign (uiwidget->widget, GTK_ALIGN_END);
 }
 
 void
 uiWidgetAlignVertBaseline (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_valign (uiwidget->uidata.widget, GTK_ALIGN_BASELINE);
+  gtk_widget_set_valign (uiwidget->widget, GTK_ALIGN_BASELINE);
 }
 
 void
 uiWidgetDisableFocus (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_can_focus (uiwidget->uidata.widget, FALSE);
+  gtk_widget_set_can_focus (uiwidget->widget, FALSE);
 }
 
 void
 uiWidgetEnableFocus (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_can_focus (uiwidget->uidata.widget, TRUE);
-  gtk_widget_set_focus_on_click (uiwidget->uidata.widget, TRUE);
+  gtk_widget_set_can_focus (uiwidget->widget, TRUE);
+  gtk_widget_set_focus_on_click (uiwidget->widget, TRUE);
 }
 
 void
 uiWidgetGrabFocus (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_grab_focus (uiwidget->uidata.widget);
+  gtk_widget_grab_focus (uiwidget->widget);
 }
 
 void
 uiWidgetHide (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_hide (uiwidget->uidata.widget);
+  gtk_widget_hide (uiwidget->widget);
 }
 
 void
 uiWidgetShow (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_show (uiwidget->uidata.widget);
+  gtk_widget_show (uiwidget->widget);
 }
 
 void
 uiWidgetShowAll (uiwcont_t *uiwidget)
 {
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_show_all (uiwidget->uidata.widget);
+  gtk_widget_show_all (uiwidget->widget);
 }
 
 void
@@ -275,11 +275,11 @@ uiWidgetSetSizeRequest (uiwcont_t *uiwidget, int width, int height)
   if (uiwidget == NULL) {
     return;
   }
-  if (uiwidget->uidata.widget == NULL) {
+  if (uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_size_request (uiwidget->uidata.widget, width, height);
+  gtk_widget_set_size_request (uiwidget->widget, width, height);
 }
 
 bool
@@ -290,11 +290,11 @@ uiWidgetIsMapped (uiwcont_t *uiwidget)
   if (uiwidget == NULL) {
     return rc;
   }
-  if (uiwidget->uidata.widget == NULL) {
+  if (uiwidget->widget == NULL) {
     return rc;
   }
 
-  rc = gtk_widget_get_mapped (uiwidget->uidata.widget);
+  rc = gtk_widget_get_mapped (uiwidget->widget);
   return rc;
 }
 
@@ -307,11 +307,11 @@ uiWidgetGetPosition (uiwcont_t *uiwidget, int *x, int *y)
   if (uiwidget == NULL) {
     return;
   }
-  if (uiwidget->uidata.widget == NULL) {
+  if (uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_get_allocation (uiwidget->uidata.widget, &alloc);
+  gtk_widget_get_allocation (uiwidget->widget, &alloc);
   *x = alloc.x;
   *y = alloc.y;
 }
@@ -323,7 +323,7 @@ uiWidgetSetClass (uiwcont_t *uiwidget, const char *class)
   if (uiwidget == NULL) {
     return;
   }
-  if (uiwidget->uidata.widget == NULL) {
+  if (uiwidget->widget == NULL) {
     return;
   }
   if (class == NULL) {
@@ -331,7 +331,7 @@ uiWidgetSetClass (uiwcont_t *uiwidget, const char *class)
   }
 
   gtk_style_context_add_class (
-     gtk_widget_get_style_context (uiwidget->uidata.widget), class);
+     gtk_widget_get_style_context (uiwidget->widget), class);
 }
 
 void
@@ -340,12 +340,12 @@ uiWidgetClearClass (uiwcont_t *uiwidget, const char *class)
   if (uiwidget == NULL) {
     return;
   }
-  if (uiwidget->uidata.widget == NULL) {
+  if (uiwidget->widget == NULL) {
     return;
   }
 
   gtk_style_context_remove_class (
-      gtk_widget_get_style_context (uiwidget->uidata.widget), class);
+      gtk_widget_get_style_context (uiwidget->widget), class);
 }
 
 void
@@ -354,11 +354,11 @@ uiWidgetSetTooltip (uiwcont_t *uiwidget, const char *tooltip)
   if (uiwidget == NULL) {
     return;
   }
-  if (uiwidget->uidata.widget == NULL) {
+  if (uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_tooltip_text (uiwidget->uidata.widget, tooltip);
+  gtk_widget_set_tooltip_text (uiwidget->widget, tooltip);
 }
 
 void
@@ -367,11 +367,11 @@ uiWidgetSetSizeChgCallback (uiwcont_t *uiwidget, callback_t *uicb)
   if (uiwidget == NULL) {
     return;
   }
-  if (uiwidget->uidata.widget == NULL) {
+  if (uiwidget->widget == NULL) {
     return;
   }
 
-  g_signal_connect (uiwidget->uidata.widget, "size-allocate",
+  g_signal_connect (uiwidget->widget, "size-allocate",
       G_CALLBACK (uiWidgetSizeChgHandler), uicb);
 }
 
@@ -381,12 +381,12 @@ uiWidgetSetEnterCallback (uiwcont_t *uiwidget, callback_t *uicb)
   if (uiwidget == NULL) {
     return;
   }
-  if (uiwidget->uidata.widget == NULL) {
+  if (uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_add_events (uiwidget->uidata.widget, GDK_ENTER_NOTIFY_MASK);
-  g_signal_connect (uiwidget->uidata.widget, "enter-notify-event",
+  gtk_widget_add_events (uiwidget->widget, GDK_ENTER_NOTIFY_MASK);
+  g_signal_connect (uiwidget->widget, "enter-notify-event",
       G_CALLBACK (uiWidgetEnterHandler), uicb);
 }
 

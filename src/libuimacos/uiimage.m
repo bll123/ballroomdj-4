@@ -125,7 +125,7 @@ uiImageClear (uiwcont_t *uiwidget)
   }
 
   image = [[NSImage alloc] initWithSize : NSZeroSize];
-  imgv = uiwidget->uidata.widget;
+  imgv = uiwidget->widget;
   imgv.image = image;
   imgv.needsDisplay = true;
 
@@ -138,9 +138,9 @@ uiImageCopy (uiwcont_t *toimg, uiwcont_t *fromimg)
   NSImageView *imgv;
   NSImage     *image;
 
-  imgv = fromimg->uidata.widget;
+  imgv = fromimg->widget;
   image = imgv.image;
-  imgv = toimg->uidata.widget;
+  imgv = toimg->widget;
   imgv.image = image;
   imgv.needsDisplay = true;
 

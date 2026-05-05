@@ -13,32 +13,33 @@ CLANGDIR = ucrt64
 CMAKE = cmake
 CMAKEWIN = ../packages/cmake-3/bin/cmake
 
-# bdj4 options
-BDJ4_UI = GTK3
-
 .PHONY: release
 release:
-	$(MAKE) BDJ4_BUILD=Release cmake
+	$(MAKE) BDJ4_BUILD=Release cmake-build cmake-install
+
+.PHONY: build-only
+build-only:
+	$(MAKE) BDJ4_BUILD=Release cmake-build
 
 .PHONY: memdebug
 memdebug:
-	$(MAKE) BDJ4_BUILD=Memdebug cmake
+	$(MAKE) BDJ4_BUILD=Memdebug cmake-build cmake-install
 
 .PHONY: memwatch
 memwatch:
-	$(MAKE) BDJ4_BUILD=Memwatch cmake
+	$(MAKE) BDJ4_BUILD=Memwatch cmake-build cmake-install
 
 .PHONY: memwatch-sanitize
 memwatch-sanitize:
-	$(MAKE) BDJ4_BUILD=Memwatch-Sanitize cmake
+	$(MAKE) BDJ4_BUILD=Memwatch-Sanitize cmake-build cmake-install
 
 .PHONY: memdebug-sanitize
 memdebug-sanitize:
-	$(MAKE) BDJ4_BUILD=Memdebug-Sanitize cmake
+	$(MAKE) BDJ4_BUILD=Memdebug-Sanitize cmake-build cmake-install
 
 .PHONY: singlecpu
 singlecpu:
-	$(MAKE) BDJ4_BUILD=Release cmakesinglecpu
+	$(MAKE) BDJ4_BUILD=Release cmakesinglecpu cmake-install
 
 .PHONY: debug
 debug:
@@ -72,8 +73,8 @@ sanitizeaddressclang64:
 .PHONY: cmakeclang cmake-unix cmake-windows
 
 # parallel doesn't seem to work under msys2
-.PHONY: cmake
-cmake:
+.PHONY: cmake-build
+cmake-build:
 	@if test $$(uname -s) = Linux; then \
 	  $(MAKE) CC=$(CC) CXX=$(CXX) cmake-unix; \
 	  pmode=--parallel $(MAKE) build; \
@@ -83,6 +84,16 @@ cmake:
 	else \
 	  $(MAKE) CC=$(CC) CXX=$(CXX) CMAKE=$(CMAKEWIN) cmake-windows; \
 	  $(MAKE) CMAKE=$(CMAKEWIN) build; \
+	fi
+
+.PHONY: cmake-install
+cmake-install:
+	@if test $$(uname -s) = Linux; then \
+	  pmode=--parallel $(MAKE) install; \
+	elif test $$(uname -s) = Darwin; then \
+	  pmode=--parallel $(MAKE) install; \
+	else \
+	  $(MAKE) CMAKE=$(CMAKEWIN) install; \
 	fi
 
 .PHONY: cmakesinglecpu
@@ -144,7 +155,6 @@ cmake-unix:
 		-DCMAKE_C_COMPILER=$(CC) \
 		-DCMAKE_CXX_COMPILER=$(CXX) \
 		-DBDJ4_BUILD:STATIC=$(BDJ4_BUILD) \
-		-DBDJ4_UI=$(BDJ4_UI) \
 		-S . -B $(BUILDDIR) -Werror=deprecated
 
 .PHONY: cmake-windows
@@ -155,17 +165,23 @@ cmake-windows:
 		-DCMAKE_C_COMPILER="$(CC)" \
 		-DCMAKE_CXX_COMPILER="$(CXX)" \
 		-DBDJ4_BUILD:STATIC=$(BDJ4_BUILD) \
-		-DBDJ4_UI=$(BDJ4_UI) \
 		-G "MSYS Makefiles" \
 		-S . -B $(BUILDDIR) -Werror=deprecated
 
-# cmake on windows installs extra unneeded crap
 # --parallel does not work correctly on msys2
 .PHONY: build
 build:
 	$(CMAKE) --build $(BUILDDIR) $(pmode)
+
+# cmake on windows installs extra unneeded crap
+.PHONY: install
+install:
 	$(CMAKE) --install $(BUILDDIR)
 	@-rm -f ../bin/liblib*.a
+
+.PHONY: install-target
+install-target:
+	$(CMAKE) --install $(BUILDDIR) --target $(target)
 
 # testing
 

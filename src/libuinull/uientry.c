@@ -17,18 +17,18 @@
 #include "ui/uiwidget.h"
 #include "ui/uientry.h"
 
-typedef struct uientry {
+typedef struct uientryint {
   int         junk;
-} uientry_t;
+} uientryint_t;
 
 uiwcont_t *
-uiEntryInit (int entrySize, int maxSize)
+uiEntryInit_r (int entrySize, int maxSize)
 {
   return NULL;
 }
 
 void
-uiEntryFree (uiwcont_t *uiwidget)
+uiEntryFree_r (uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-free")) {
     return;
@@ -40,13 +40,13 @@ uiEntryFree (uiwcont_t *uiwidget)
 void
 uiEntrySetWidth (uiwcont_t *uiwidget, int maxWidth)
 {
-  uientryint_t *ebase;
+  uientrygeneric_t *ebase;
 
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-width")) {
     return;
   }
 
-  ebase = &uiwidget->uiint.uientryint;
+  ebase = uiwidget->uientrygen;
   ebase->entrySize = maxWidth;
 }
 

@@ -17,8 +17,9 @@
 #include <limits.h>
 #include <sys/param.h>
 
-#if BDJ4_UI_GTK3
+#if __has_include (<gtk/gtk.h>)
 # include <gtk/gtk.h>
+# define HAS_GTK_INC
 #endif
 
 #include "bdj4.h"
@@ -209,7 +210,7 @@ main (int argc, char *argv [])
       break;
     }
   }
-#if BDJ4_UI_GTK3 || BDJ4_UI_GTK4
+#if HAS_GTK_INC
   fprintf (stdout, "  i: gboolean %d\n", (int) sizeof (gboolean));
   fprintf (stdout, "  i: gint     %d\n", (int) sizeof (gint));
   fprintf (stdout, "  i: glong    %d\n", (int) sizeof (glong));

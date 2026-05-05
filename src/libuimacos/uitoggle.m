@@ -24,20 +24,20 @@
 #include "ui/uiui.h"
 #include "ui/uitoggle.h"
 
-typedef struct uitoggle {
+typedef struct uitoggleint {
   callback_t      *cb;
   NSImage         *image;
   NSImage         *altimage;
-} uitoggle_t;
+} uitoggleint_t;
 
 static void uiToggleButtonSetImage (uiwcont_t *uiwidget);
-static uitoggle_t * uiToggleButtonInit (void);
+static uitoggleint_t * uiToggleButtonInit (void);
 
 uiwcont_t *
 uiCreateCheckButton (const char *txt, int value)
 {
   uiwcont_t   *uiwidget;
-  uitoggle_t  *uitoggle;
+  uitoggleint_t  *uitoggle;
   IButton     *widget = nil;
 
   uitoggle = uiToggleButtonInit ();
@@ -68,7 +68,7 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
 {
   uiwcont_t   *uiwidget;
   IButton     *widget = nil;
-  uitoggle_t  *uitoggle;
+  uitoggleint_t  *uitoggle;
 
   uitoggle = uiToggleButtonInit ();
 
@@ -99,7 +99,7 @@ uiCreateToggleButton (const char *txt,
 {
   uiwcont_t   *uiwidget;
   IButton     *widget = nil;
-  uitoggle_t  *uitoggle;
+  uitoggleint_t  *uitoggle;
 
   uitoggle = uiToggleButtonInit ();
 
@@ -145,7 +145,7 @@ uiCreateToggleButton (const char *txt,
 void
 uiToggleButtonFree (uiwcont_t *uiwidget)
 {
-  uitoggle_t    *uitoggle;
+  uitoggleint_t    *uitoggle;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_TOGGLE, "toggle-free")) {
     return;
@@ -159,7 +159,7 @@ uiToggleButtonFree (uiwcont_t *uiwidget)
 void
 uiToggleButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
 {
-  uitoggle_t  *uitoggle;
+  uitoggleint_t  *uitoggle;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_TOGGLE, "toggle-set-alt-image")) {
     return;
@@ -173,7 +173,7 @@ uiToggleButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
     NSImage     *nsimage;
     char        tbuff [BDJ4_PATH_MAX];
 
-    widget = uiwidget->uidata.widget;
+    widget = uiwidget->widget;
 
     /* relative path */
     pathbldMakePath (tbuff, sizeof (tbuff), imagenm, BDJ4_IMG_SVG_EXT,
@@ -212,7 +212,7 @@ uiToggleButtonIsActive (uiwcont_t *uiwidget)
   NSButton  *widget = nil;
   bool      active;
 
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->widget;
   active = false;
   if (widget.state == NSControlStateValueOn) {
     active = true;
@@ -225,7 +225,7 @@ uiToggleButtonSetValue (uiwcont_t *uiwidget, int state)
 {
   NSButton    *widget = nil;
 
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->widget;
   widget.state = NSControlStateValueOff;
   if (state) {
     widget.state = NSControlStateValueOn;
@@ -244,10 +244,10 @@ static void
 uiToggleButtonSetImage (uiwcont_t *uiwidget)
 {
   NSButton    *widget = nil;
-  uitoggle_t  *uitoggle;
+  uitoggleint_t  *uitoggle;
   bool        active;
 
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->widget;
   uitoggle = uiwidget->uiint.uitoggle;
   if (uitoggle == NULL) {
     return;
@@ -267,12 +267,12 @@ uiToggleButtonSetImage (uiwcont_t *uiwidget)
   }
 }
 
-static uitoggle_t *
+static uitoggleint_t *
 uiToggleButtonInit (void)
 {
-  uitoggle_t    *uitoggle;
+  uitoggleint_t    *uitoggle;
 
-  uitoggle = mdmalloc (sizeof (uitoggle_t));
+  uitoggle = mdmalloc (sizeof (uitoggleint_t));
   uitoggle->image = NULL;
   uitoggle->altimage = NULL;
 

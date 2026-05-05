@@ -40,18 +40,18 @@ void
 uiGridPackLoc_r (uiwcont_t *uigrid, uiwcont_t *uiwidget,
     int row, int col, int numcols)
 {
-  uigridint_t    *uigridint;
+  uigridgeneric_t    *uigridgen;
 
   if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-size")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->uidata.packwidget == NULL) {
+  if (uiwidget == NULL || uiwidget->packwidget == NULL) {
     return;
   }
 
-  uigridint = uigrid->uiint.uigridint;
-  gtk_grid_attach (GTK_GRID (uigrid->uidata.widget),
-      uiwidget->uidata.packwidget, col, row, numcols, 1);
+  uigridgen = uigrid->uigridgen;
+  gtk_grid_attach (GTK_GRID (uigrid->widget),
+      uiwidget->packwidget, col, row, numcols, 1);
 }
 
 void
@@ -67,6 +67,6 @@ uiGridSetColumnSpacing (uiwcont_t *uigrid, int sz)
     return;
   }
 
-  gtk_grid_set_column_spacing (GTK_GRID (uigrid->uidata.widget),
+  gtk_grid_set_column_spacing (GTK_GRID (uigrid->widget),
       uiBaseMarginSz * sz);
 }

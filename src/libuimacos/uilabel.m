@@ -65,7 +65,7 @@ uiLabelSetTooltip (uiwcont_t *uiwidget, const char *txt)
   }
 
   if (txt != NULL) {
-    lab = uiwidget->uidata.widget;
+    lab = uiwidget->widget;
     [lab setToolTip : [NSString stringWithUTF8String : txt]];
     lab.needsDisplay = true;
   }
@@ -87,7 +87,7 @@ uiLabelSetText (uiwcont_t *uiwidget, const char *text)
     return;
   }
 
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->widget;
   [widget setStringValue : [NSString stringWithUTF8String : text]];
   widget.needsDisplay = true;
   return;
@@ -110,7 +110,7 @@ uiLabelWrapOn (uiwcont_t *uiwidget)
 {
   ILabel *widget;
 
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->widget;
   [widget setMaximumNumberOfLines : 3];
   return;
 }
@@ -120,7 +120,7 @@ uiLabelSetSelectable (uiwcont_t *uiwidget)
 {
   ILabel *widget;
 
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->widget;
   [widget setSelectable : YES];
   return;
 }

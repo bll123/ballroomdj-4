@@ -16,12 +16,7 @@
 #include "log.h"
 #include "pathutil.h"
 #include "tmutil.h"
-#include "uigeneral.h"
-#include "uiwcont.h"
-
-#include "ui/uiwcont-int.h"
-
-#include "ui/uientry.h"
+#include "ui.h"
 
 static void uiEntryValidateStart (uiwcont_t *uiwidget);
 
@@ -29,9 +24,9 @@ void
 uiEntryValidateHandler (uiwcont_t *uiwidget)
 {
   int           rc;
-  uientryint_t *ebase;
+  uientrygeneric_t  *ebase;
 
-  ebase = &uiwidget->uiint.uientryint;
+  ebase = uiwidget->uientrygen;
 
   if (ebase->valdelay) {
     uiEntryValidateStart (uiwidget);
@@ -54,9 +49,9 @@ uiEntryValidateHandler (uiwcont_t *uiwidget)
 static void
 uiEntryValidateStart (uiwcont_t *uiwidget)
 {
-  uientryint_t   *ebase;
+  uientrygeneric_t   *ebase;
 
-  ebase = &uiwidget->uiint.uientryint;
+  ebase = uiwidget->uientrygen;
   if (ebase->validateFunc != NULL) {
     mstimeset (&ebase->validateTimer, ebase->valdelaytime);
   }

@@ -5,7 +5,7 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
-add_library (${BDJ4_UI_LIB} SHARED
+add_library (libbdj4ui SHARED
   uibox.c
   uibutton.c
   uichgind.c
@@ -32,20 +32,23 @@ add_library (${BDJ4_UI_LIB} SHARED
   uiwidget.c
   uiwindow.c
 )
-addUIInclude (${BDJ4_UI_LIB})
-target_link_libraries (${BDJ4_UI_LIB} PRIVATE
+target_compile_options (libbdj4ui PRIVATE
+  -DBDJ4_UI_NULL=1
+)
+addUIInclude (libbdj4ui)
+target_link_libraries (libbdj4ui PRIVATE
   objuigeneral libbdj4basic libbdj4common
 )
-addUILibrary (${BDJ4_UI_LIB})
-addIntlLibrary (${BDJ4_UI_LIB})
-addWinSockLibrary (${BDJ4_UI_LIB})
+addUILibrary (libbdj4ui)
+addIntlLibrary (libbdj4ui)
+addWinSockLibrary (libbdj4ui)
 
-uilibPreSymlink ()
+uilibPreSymlink (libuinull)
 
 install (TARGETS
-  ${BDJ4_UI_LIB}
+  libbdj4ui
   DESTINATION ${DEST_BIN}
 )
 
-updateRPath (${BDJ4_UI_LIB})
-uilibSymlink ()
+updateRPath (libbdj4ui)
+uilibSymlink (libbdj4ui libuinull)

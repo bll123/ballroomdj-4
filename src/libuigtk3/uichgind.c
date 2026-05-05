@@ -13,6 +13,7 @@
 
 #include "mdebug.h"
 #include "uiclass.h"
+#include "uigeneral.h"
 #include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"

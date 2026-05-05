@@ -13,7 +13,7 @@
 
 #include "uiwcont.h"
 
-#include "ui-gtk3.h"
+#include "ui/uidef.h"
 
 #include "ui/uiwcont-int.h"
 
@@ -55,7 +55,7 @@ uiLabelSetTooltip (uiwcont_t *uiwidget, const char *txt)
     return;
   }
 
-  gtk_widget_set_tooltip_text (uiwidget->uidata.widget, txt);
+  gtk_widget_set_tooltip_text (uiwidget->widget, txt);
 }
 
 void
@@ -73,7 +73,7 @@ uiLabelSetFont (uiwcont_t *uiwidget, const char *font)
   font_desc = pango_font_description_from_string (font);
   attr = pango_attr_font_desc_new (font_desc);
   pango_attr_list_insert (attrlist, attr);
-  gtk_label_set_attributes (GTK_LABEL (uiwidget->uidata.widget), attrlist);
+  gtk_label_set_attributes (GTK_LABEL (uiwidget->widget), attrlist);
   pango_attr_list_unref (attrlist);
 }
 
@@ -84,7 +84,7 @@ uiLabelSetText (uiwcont_t *uiwidget, const char *text)
     return;
   }
 
-  gtk_label_set_text (GTK_LABEL (uiwidget->uidata.widget), text);
+  gtk_label_set_text (GTK_LABEL (uiwidget->widget), text);
 }
 
 const char *
@@ -96,7 +96,7 @@ uiLabelGetText (uiwcont_t *uiwidget)
     return NULL;
   }
 
-  txt = gtk_label_get_text (GTK_LABEL (uiwidget->uidata.widget));
+  txt = gtk_label_get_text (GTK_LABEL (uiwidget->widget));
   return txt;
 }
 
@@ -107,7 +107,7 @@ uiLabelEllipsizeOn (uiwcont_t *uiwidget)
     return;
   }
 
-  gtk_label_set_ellipsize (GTK_LABEL (uiwidget->uidata.widget), PANGO_ELLIPSIZE_END);
+  gtk_label_set_ellipsize (GTK_LABEL (uiwidget->widget), PANGO_ELLIPSIZE_END);
 }
 
 void
@@ -117,7 +117,7 @@ uiLabelWrapOn (uiwcont_t *uiwidget)
     return;
   }
 
-  gtk_label_set_line_wrap (GTK_LABEL (uiwidget->uidata.widget), TRUE);
+  gtk_label_set_line_wrap (GTK_LABEL (uiwidget->widget), TRUE);
 }
 
 void
@@ -127,7 +127,7 @@ uiLabelSetSelectable (uiwcont_t *uiwidget)
     return;
   }
 
-  gtk_label_set_selectable (GTK_LABEL (uiwidget->uidata.widget), TRUE);
+  gtk_label_set_selectable (GTK_LABEL (uiwidget->widget), TRUE);
 }
 
 void
@@ -137,7 +137,7 @@ uiLabelSetMinWidth (uiwcont_t *uiwidget, int width)
     return;
   }
 
-  gtk_label_set_width_chars (GTK_LABEL (uiwidget->uidata.widget), width);
+  gtk_label_set_width_chars (GTK_LABEL (uiwidget->widget), width);
 }
 
 void
@@ -147,7 +147,7 @@ uiLabelSetMaxWidth (uiwcont_t *uiwidget, int width)
     return;
   }
 
-  gtk_label_set_max_width_chars (GTK_LABEL (uiwidget->uidata.widget), width);
+  gtk_label_set_max_width_chars (GTK_LABEL (uiwidget->widget), width);
 }
 
 void
@@ -157,6 +157,6 @@ uiLabelAlignEnd (uiwcont_t *uiwidget)
     return;
   }
 
-  gtk_label_set_xalign (GTK_LABEL (uiwidget->uidata.widget), 1.0);
+  gtk_label_set_xalign (GTK_LABEL (uiwidget->widget), 1.0);
 }
 

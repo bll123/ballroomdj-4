@@ -14,35 +14,29 @@
 #include "log.h"
 #include "mdebug.h"
 #include "tmutil.h"
-#include "uigeneral.h"
-#include "uiwcont.h"
-
-#include "ui/uiwcont-int.h"
-
-#include "ui/uigrid.h"
-#include "ui/uiwidget.h"
+#include "ui.h"
 
 static void uiGridUpdateInternals (uiwcont_t *uigrid, uiwcont_t *uiwidget, uiwcontrls_t release);
 
 uiwcont_t *
 uiCreateGrid (void)
 {
-  uiwcont_t     *uigrid;
-  uigridint_t   *uigridint;
+  uiwcont_t       *uigrid;
+  uigridgeneric_t *uigridgen;
 
   uigrid = uiCreateGrid_r ();
-  uigridint = mdmalloc (sizeof (uigridint_t));
-  uigrid->uiint.uigridint = uigridint;
+  uigridgen = mdmalloc (sizeof (uigridgeneric_t));
+  uigrid->uigridgen = uigridgen;
 
-  uigridint->widgetlist = nlistAlloc ("grid-widget", LIST_UNORDERED, NULL);
-  uigridint->releaselist = nlistAlloc ("grid-release", LIST_UNORDERED, NULL);
-  uigridint->count = 0;
-  uigridint->nrows = 0;
-  uigridint->ncols = 0;
-  uigridint->row = 0;
-  uigridint->col = 0;
-  uigridint->new = true;
-  uigridint->postprocess = false;
+  uigridgen->widgetlist = nlistAlloc ("grid-widget", LIST_UNORDERED, NULL);
+  uigridgen->releaselist = nlistAlloc ("grid-release", LIST_UNORDERED, NULL);
+  uigridgen->count = 0;
+  uigridgen->nrows = 0;
+  uigridgen->ncols = 0;
+  uigridgen->row = 0;
+  uigridgen->col = 0;
+  uigridgen->new = true;
+  uigridgen->postprocess = false;
 
   return uigrid;
 }
@@ -50,19 +44,19 @@ uiCreateGrid (void)
 void
 uiGridFree (uiwcont_t *uigrid)
 {
-  uigridint_t   *uigridint;
+  uigridgeneric_t   *uigridgen;
 
   if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-free")) {
     return;
   }
 
-  uigridint = uigrid->uiint.uigridint;
-  nlistFree (uigridint->widgetlist);
-  nlistFree (uigridint->releaselist);
-  uigridint->widgetlist = NULL;
-  uigridint->releaselist = NULL;
-  mdfree (uigridint);
-  uigrid->uiint.uigridint = NULL;
+  uigridgen = uigrid->uigridgen;
+  nlistFree (uigridgen->widgetlist);
+  nlistFree (uigridgen->releaselist);
+  uigridgen->widgetlist = NULL;
+  uigridgen->releaselist = NULL;
+  mdfree (uigridgen);
+  uigrid->uigridgen = NULL;
 }
 
 void
@@ -75,7 +69,7 @@ void
 uiGridPackColumn (uiwcont_t *uigrid, uiwcont_t *uiwidget,
     int numcols, uiwcontrls_t release)
 {
-  uigridint_t   *uigridint;
+  uigridgeneric_t   *uigridgen;
 
   if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-column")) {
     return;
@@ -84,28 +78,28 @@ uiGridPackColumn (uiwcont_t *uigrid, uiwcont_t *uiwidget,
     return;
   }
 
-  uigridint = uigrid->uiint.uigridint;
+  uigridgen = uigrid->uigridgen;
 
   logMsg (LOG_DBG, LOG_UI | LOG_BACKTRACE,
       "  grid-pack-c %" PRIu32 "-%" PRIu32 " %d/%d : %" PRIu32 "-%" PRIu32 " %d/%s",
-      uigrid->ui_id, uigrid->id, uigridint->row, uigridint->col,
+      uigrid->ui_id, uigrid->id, uigridgen->row, uigridgen->col,
       uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   uiWidgetAlignHorizStart (uiwidget);
-  uiGridPackLoc_r (uigrid, uiwidget, uigridint->row, uigridint->col, numcols);
+  uiGridPackLoc_r (uigrid, uiwidget, uigridgen->row, uigridgen->col, numcols);
   uiGridUpdateInternals (uigrid, uiwidget, release);
 
-  uigridint->col += numcols;
-  if (uigridint->col > uigridint->ncols) {
-    uigridint->ncols = uigridint->col;
+  uigridgen->col += numcols;
+  if (uigridgen->col > uigridgen->ncols) {
+    uigridgen->ncols = uigridgen->col;
   }
-  uigridint->new = false;
+  uigridgen->new = false;
 }
 
 void
 uiGridPackRow (uiwcont_t *uigrid, uiwcont_t *uiwidget,
     int numcols, uiwcontrls_t release)
 {
-  uigridint_t   *uigridint;
+  uigridgeneric_t   *uigridgen;
 
   if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-row")) {
     return;
@@ -114,93 +108,93 @@ uiGridPackRow (uiwcont_t *uigrid, uiwcont_t *uiwidget,
     return;
   }
 
-  uigridint = uigrid->uiint.uigridint;
+  uigridgen = uigrid->uigridgen;
 
   uiWidgetAlignHorizStart (uiwidget);
   logMsg (LOG_DBG, LOG_UI | LOG_BACKTRACE,
       "  grid-pack-r %" PRIu32 "-%" PRIu32 " %d/%d : %" PRIu32 "-%" PRIu32 " %d/%s",
-      uigrid->ui_id, uigrid->id, uigridint->row, uigridint->col,
+      uigrid->ui_id, uigrid->id, uigridgen->row, uigridgen->col,
       uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
-  uiGridPackLoc_r (uigrid, uiwidget, uigridint->row, uigridint->col, numcols);
+  uiGridPackLoc_r (uigrid, uiwidget, uigridgen->row, uigridgen->col, numcols);
   uiGridUpdateInternals (uigrid, uiwidget, release);
 
-  uigridint->row += 1;
-  if (uigridint->row > uigridint->nrows) {
-    uigridint->nrows = uigridint->row;
+  uigridgen->row += 1;
+  if (uigridgen->row > uigridgen->nrows) {
+    uigridgen->nrows = uigridgen->row;
   }
-  uigridint->new = false;
+  uigridgen->new = false;
 }
 
 void
 uiGridNewRow (uiwcont_t *uigrid)
 {
-  uigridint_t    *uigridint;
+  uigridgeneric_t    *uigridgen;
 
   if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-row")) {
     return;
   }
 
-  uigridint = uigrid->uiint.uigridint;
+  uigridgen = uigrid->uigridgen;
 
-  if (uigridint->new) {
+  if (uigridgen->new) {
     return;
   }
 
-  uigridint->row += 1;
-  uigridint->col = 0;
-  if (uigridint->row > uigridint->nrows) {
-    uigridint->nrows = uigridint->row;
+  uigridgen->row += 1;
+  uigridgen->col = 0;
+  if (uigridgen->row > uigridgen->nrows) {
+    uigridgen->nrows = uigridgen->row;
   }
 }
 
 void
 uiGridNewColumn (uiwcont_t *uigrid)
 {
-  uigridint_t    *uigridint;
+  uigridgeneric_t    *uigridgen;
 
   if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-row")) {
     return;
   }
 
-  uigridint = uigrid->uiint.uigridint;
+  uigridgen = uigrid->uigridgen;
 
-  if (uigridint->new) {
+  if (uigridgen->new) {
     return;
   }
 
-  uigridint->row = 0;
-  uigridint->col += 1;
-  if (uigridint->col > uigridint->ncols) {
-    uigridint->ncols = uigridint->col;
+  uigridgen->row = 0;
+  uigridgen->col += 1;
+  if (uigridgen->col > uigridgen->ncols) {
+    uigridgen->ncols = uigridgen->col;
   }
 }
 
 void
 uiGridSkipColumn (uiwcont_t *uigrid, int numcols)
 {
-  uigridint_t    *uigridint;
+  uigridgeneric_t    *uigridgen;
 
   if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-row")) {
     return;
   }
 
-  uigridint = uigrid->uiint.uigridint;
+  uigridgen = uigrid->uigridgen;
 
-  if (uigridint->new) {
+  if (uigridgen->new) {
     return;
   }
 
-  uigridint->col += numcols;
-  if (uigridint->col > uigridint->ncols) {
-    uigridint->ncols = uigridint->col;
+  uigridgen->col += numcols;
+  if (uigridgen->col > uigridgen->ncols) {
+    uigridgen->ncols = uigridgen->col;
   }
-  uigridint->new = false;
+  uigridgen->new = false;
 }
 
 void
 uiGridPostProcess (uiwcont_t *uigrid)
 {
-  uigridint_t *uigridint;
+  uigridgeneric_t *uigridgen;
   int         row, col;
   nlist_t     *wlist;
   nlist_t     *rlist;
@@ -211,17 +205,17 @@ uiGridPostProcess (uiwcont_t *uigrid)
     return;
   }
 
-  uigridint = uigrid->uiint.uigridint;
+  uigridgen = uigrid->uigridgen;
   row = 0;
   col = 0;
 
-  if (uigridint->postprocess) {
+  if (uigridgen->postprocess) {
     logMsg (LOG_DBG, LOG_UI | LOG_BACKTRACE,
         "INFO: grid %" PRIu32 "-%" PRIu32 " twice", uigrid->ui_id, uigrid->id);
   }
 
-  wlist = uigridint->widgetlist;
-  rlist = uigridint->releaselist;
+  wlist = uigridgen->widgetlist;
+  rlist = uigridgen->releaselist;
   nlistSort (wlist);
   nlistSort (rlist);
 
@@ -230,7 +224,7 @@ uiGridPostProcess (uiwcont_t *uigrid)
     uiwcont_t       *uiwidgetp;
 
     uiwidgetp = nlistGetData (wlist, key);
-    if (uiwidgetp == NULL || uiwidgetp->uidata.widget == NULL) {
+    if (uiwidgetp == NULL || uiwidgetp->widget == NULL) {
       break;
     }
 
@@ -239,16 +233,16 @@ uiGridPostProcess (uiwcont_t *uigrid)
         uigrid->ui_id, uigrid->id);
     uiGridPostProcess_r (uigrid, row, col, uiwidgetp);
     ++col;
-    if (col >= uigridint->ncols) {
+    if (col >= uigridgen->ncols) {
       ++row;
       col = 0;
     }
-    if (row >= uigridint->nrows) {
+    if (row >= uigridgen->nrows) {
       break;
     }
   }
 
-  uigridint->postprocess = true;
+  uigridgen->postprocess = true;
 }
 
 /* internal routines */
@@ -259,14 +253,14 @@ uiGridUpdateInternals (uiwcont_t *uigrid, uiwcont_t *uiwidget,
 {
   nlist_t     *wlist;
   nlist_t     *rlist;
-  uigridint_t *uigridint;
+  uigridgeneric_t *uigridgen;
 
-  uigridint = uigrid->uiint.uigridint;
-  wlist = uigridint->widgetlist;
-  rlist = uigridint->releaselist;
-  nlistSetData (wlist, uigridint->count, uiwidget);
-  nlistSetNum (rlist, uigridint->count, release);
-  uigridint->count += 1;
+  uigridgen = uigrid->uigridgen;
+  wlist = uigridgen->widgetlist;
+  rlist = uigridgen->releaselist;
+  nlistSetData (wlist, uigridgen->count, uiwidget);
+  nlistSetNum (rlist, uigridgen->count, release);
+  uigridgen->count += 1;
 
   uiwcontSetID (uigrid, uiwidget, nlistGetCount (wlist));
   uiwidget->packed = true;

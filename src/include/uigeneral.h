@@ -3,19 +3,7 @@
  */
 #pragma once
 
-#if BDJ4_UI_GTK3
-# include "ui-gtk3.h"
-#endif
-#if BDJ4_UI_NULL
-# include "ui-null.h"
-#endif
-#if BDJ4_UI_MACOS
-# include "ui-macos.h"
-#endif
-#if BDJ4_UI_NCURSES
-# include "ui-ncurses.h"
-#endif
-
+#include "callback.h"
 #include "uiwcont.h"
 
 #if defined (__cplusplus) || defined (c_plusplus)
@@ -39,10 +27,14 @@ void uiBoxPackStartExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcon
 void uiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release);
 
 /* uibutton.c */
+uiwcont_t *uiCreateButton (callback_t *uicb, const char *title, const char *imagenm, const char *tooltiptxt);
+void uiButtonFree (uiwcont_t *uiwidget);
 bool uiButtonCheckRepeat (uiwcont_t *uiwidget);
 bool uiButtonPressCallback (void *udata);
 bool uiButtonReleaseCallback (void *udata);
 uibuttonstate_t uiButtonGetState (uiwcont_t *uiwidget);
+void uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms);
+void uiButtonSignalHandler (uiwcont_t *uiwidget);
 
 /* uigrid.c */
 uiwcont_t *uiCreateGrid (void);
@@ -64,8 +56,8 @@ enum {
   UIENTRY_VAL_TIMER = 400,
 };
 
-typedef int (*uientryval_t)(uiwcont_t *uiwidget, const char *label, void *udata);
-
+uiwcont_t *uiEntryInit (int entrySize, int maxSize);
+void  uiEntryFree (uiwcont_t *uientry);
 void  uiEntrySetValidate (uiwcont_t *uiwidget, const char *label, uientryval_t valfunc, void *udata, int valdelay);
 int   uiEntryValidate (uiwcont_t *uiwidget, bool forceflag);
 void  uiEntryValidateClear (uiwcont_t *uiwidget);

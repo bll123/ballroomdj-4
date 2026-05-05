@@ -20,10 +20,10 @@
 #include "ui/uiwidget.h"
 #include "ui/uiscrollbar.h"
 
-typedef struct uiscrollbar {
+typedef struct uiscrollbarint {
   callback_t      *changecb;
   GtkAdjustment   *adjustment;
-} uiscrollbar_t;
+} uiscrollbarint_t;
 
 static gboolean uiScrollbarChangeHandler (GtkRange *range, GtkScrollType scrolltype, gdouble value, gpointer udata);
 
@@ -31,11 +31,11 @@ uiwcont_t *
 uiCreateVerticalScrollbar (double upper)
 {
   uiwcont_t     *uiwidget;
-  uiscrollbar_t *sb;
+  uiscrollbarint_t *sb;
   GtkWidget     *widget;
   GtkAdjustment *adjustment;
 
-  sb = mdmalloc (sizeof (uiscrollbar_t));
+  sb = mdmalloc (sizeof (uiscrollbarint_t));
   sb->changecb = NULL;
 
   adjustment = gtk_adjustment_new (0.0, 0.0, upper, 1.0, 10.0, 10.0);
@@ -66,7 +66,7 @@ uiScrollbarFree (uiwcont_t *uiwidget)
 void
 uiScrollbarSetChangeCallback (uiwcont_t *uiwidget, callback_t *cb)
 {
-  uiscrollbar_t   *sb;
+  uiscrollbarint_t   *sb;
 
   if (! uiwcontValid (uiwidget, WCONT_T_SCROLLBAR, "sb-set-chg-cb")) {
     return;
@@ -74,14 +74,14 @@ uiScrollbarSetChangeCallback (uiwcont_t *uiwidget, callback_t *cb)
 
   sb = uiwidget->uiint.uiscrollbar;
   sb->changecb = cb;
-  g_signal_connect (uiwidget->uidata.widget, "change-value",
+  g_signal_connect (uiwidget->widget, "change-value",
       G_CALLBACK (uiScrollbarChangeHandler), cb);
 }
 
 void
 uiScrollbarSetUpper (uiwcont_t *uiwidget, double upper)
 {
-  uiscrollbar_t   *sb;
+  uiscrollbarint_t   *sb;
 
   if (! uiwcontValid (uiwidget, WCONT_T_SCROLLBAR, "sb-set-upper")) {
     return;
@@ -94,7 +94,7 @@ uiScrollbarSetUpper (uiwcont_t *uiwidget, double upper)
 void
 uiScrollbarSetPosition (uiwcont_t *uiwidget, double pos)
 {
-  uiscrollbar_t   *sb;
+  uiscrollbarint_t   *sb;
 
   if (! uiwcontValid (uiwidget, WCONT_T_SCROLLBAR, "sb-set-pos")) {
     return;
@@ -107,7 +107,7 @@ uiScrollbarSetPosition (uiwcont_t *uiwidget, double pos)
 void
 uiScrollbarSetStepIncrement (uiwcont_t *uiwidget, double step)
 {
-  uiscrollbar_t   *sb;
+  uiscrollbarint_t   *sb;
 
   if (! uiwcontValid (uiwidget, WCONT_T_SCROLLBAR, "sb-set-step-inc")) {
     return;
@@ -124,7 +124,7 @@ uiScrollbarSetStepIncrement (uiwcont_t *uiwidget, double step)
 void
 uiScrollbarSetPageIncrement (uiwcont_t *uiwidget, double page)
 {
-  uiscrollbar_t   *sb;
+  uiscrollbarint_t   *sb;
 
   if (! uiwcontValid (uiwidget, WCONT_T_SCROLLBAR, "sb-set-page-inc")) {
     return;
@@ -137,7 +137,7 @@ uiScrollbarSetPageIncrement (uiwcont_t *uiwidget, double page)
 void
 uiScrollbarSetPageSize (uiwcont_t *uiwidget, double sz)
 {
-  uiscrollbar_t   *sb;
+  uiscrollbarint_t   *sb;
 
   if (! uiwcontValid (uiwidget, WCONT_T_SCROLLBAR, "sb-set-page-sz")) {
     return;

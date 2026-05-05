@@ -51,26 +51,16 @@ uiBoxPostProcess_r (uiwcont_t *uibox, uiwcont_t *prev,
 }
 
 void
-uiBoxSetSizeChgCallback (uiwcont_t *uiwindow, callback_t *uicb)
-{
-  if (! uiwcontValid (uiwindow, WCONT_T_BOX, "box-set-size-chg-cb")) {
-    return;
-  }
-
-  uiWidgetSetSizeChgCallback (uiwindow, uicb);
-}
-
-void
 uiBoxPackStart_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->uidata.packwidget == NULL) {
+  if (uiwidget == NULL || uiwidget->packwidget == NULL) {
     return;
   }
 
-  gtk_box_pack_start (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (uibox->widget), uiwidget->packwidget, FALSE, FALSE, 0);
 }
 
 void
@@ -79,11 +69,11 @@ uiBoxPackStartExpandChildren_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start-exp")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->uidata.packwidget == NULL) {
+  if (uiwidget == NULL || uiwidget->packwidget == NULL) {
     return;
   }
 
-  gtk_box_pack_start (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (uibox->widget), uiwidget->packwidget, TRUE, TRUE, 0);
 }
 
 void
@@ -92,11 +82,11 @@ uiBoxPackEnd_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->uidata.packwidget == NULL) {
+  if (uiwidget == NULL || uiwidget->packwidget == NULL) {
     return;
   }
 
-  gtk_box_pack_end (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, FALSE, FALSE, 0);
+  gtk_box_pack_end (GTK_BOX (uibox->widget), uiwidget->packwidget, FALSE, FALSE, 0);
 }
 
 void
@@ -105,11 +95,11 @@ uiBoxPackEndExpandChildren_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end-exp")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->uidata.packwidget == NULL) {
+  if (uiwidget == NULL || uiwidget->packwidget == NULL) {
     return;
   }
 
-  gtk_box_pack_end (GTK_BOX (uibox->uidata.widget), uiwidget->uidata.packwidget, TRUE, TRUE, 0);
+  gtk_box_pack_end (GTK_BOX (uibox->widget), uiwidget->packwidget, TRUE, TRUE, 0);
 }
 
 /* internal routines */

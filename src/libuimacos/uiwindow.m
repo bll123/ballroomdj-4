@@ -207,7 +207,7 @@ uiWindowSetTitle (uiwcont_t *uiwindow, const char *title)
 
   nstitle = [NSString stringWithUTF8String : title];
 
-  win = uiwindow->uidata.widget;
+  win = uiwindow->widget;
   [win setTitle : nstitle];
   return;
 }
@@ -312,7 +312,7 @@ uiWindowSetDefaultSize (uiwcont_t *uiwindow, int x, int y)
     return;
   }
 
-  win = uiwindow->uidata.widget;
+  win = uiwindow->widget;
   nssz.width = (CGFloat) x;
   nssz.height = (CGFloat) y;
   [win setContentSize : nssz];
@@ -410,7 +410,7 @@ uiWindowSetDoubleClickCallback (uiwcont_t *uiwindow, callback_t *uicb)
     return;
   }
 
-  win = uiwindow->uidata.widget;
+  win = uiwindow->widget;
   [win setCloseCallback : uicb];
 
   return;
@@ -476,7 +476,7 @@ uiWindowSetNoMaximize (uiwcont_t *uiwindow)
     return;
   }
 
-//  win = uiwindow->uidata.widget;
+//  win = uiwindow->widget;
 //  sm = win.styleMask;
 //  sm &= ~NSWindowStyleMaskResizable;
 //  win.styleMask = sm;
@@ -494,7 +494,7 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
     return;
   }
   /* the type of the uiwidget is not known */
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 // fprintf (stderr, "  pack-in-win: %d/%s\n", uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
@@ -505,14 +505,14 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   if (uiwindow->wtype == WCONT_T_WINDOW_SCROLL) {
     NSScrollView  *scv;
 
-    scv = uiwindow->uidata.widget;
+    scv = uiwindow->widget;
     [scv setDocumentView : container];
   }
   if (uiwindow->wtype == WCONT_T_WINDOW) {
     NSWindow      *win;
     NSStackView   *winbox = NULL;
 
-    win = uiwindow->uidata.widget;
+    win = uiwindow->widget;
     winbox = [win contentView];
     [winbox addView : container inGravity : grav];
 

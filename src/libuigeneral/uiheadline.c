@@ -14,6 +14,7 @@
 #include "bdjopt.h"
 #include "bdjstring.h"      // needed for snprintf macro
 #include "mdebug.h"
+#include "tmutil.h"
 #include "ui.h"
 #include "uiheadline.h"
 

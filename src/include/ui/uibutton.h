@@ -10,8 +10,8 @@
 extern "C" {
 #endif
 
-uiwcont_t *uiCreateButton (callback_t *uicb, const char *title, const char *imagenm, const char *tooltiptxt);
-void uiButtonFree (uiwcont_t *uiwidget);
+uiwcont_t *uiCreateButton_r (callback_t *uicb, const char *title, const char *imagenm, const char *tooltiptxt);
+void uiButtonFree_r (uiwcont_t *uiwidget);
 void uiButtonSetImageMarginTop (uiwcont_t *uiwidget, int margin);
 void uiButtonSetImageIcon (uiwcont_t *uiwidget, const char *nm);
 void uiButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm);
@@ -21,7 +21,7 @@ void uiButtonAlignLeft (uiwcont_t *uiwidget);
 void uiButtonSetText (uiwcont_t *uiwidget, const char *txt);
 void uiButtonSetReliefNone (uiwcont_t *uiwidget);
 void uiButtonSetFlat (uiwcont_t *uiwidget);
-void uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms);
+void uiButtonSetRepeat_r (uiwcont_t *uiwidget, callback_t *presscb, callback_t *releasecb);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

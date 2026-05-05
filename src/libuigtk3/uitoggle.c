@@ -21,28 +21,28 @@
 #include "ui/uispecific.h"
 #include "ui/uitoggle.h"
 
-typedef struct uitoggle {
+typedef struct uitoggleint {
   callback_t      *cb;
   GtkWidget       *currimage;
   GtkWidget       *image;
   GdkPixbuf       *imageraw;
   GtkWidget       *altimage;
   GdkPixbuf       *altimageraw;
-} uitoggle_t;
+} uitoggleint_t;
 
 static void uiToggleButtonToggleHandler (GtkButton *b, gpointer udata);
 static void uiToggleButtonSetImageAlignment (GtkWidget *widget, void *udata);
 static void uiToggleButtonSIACallback (GtkWidget *widget, void *udata);
 static gboolean uiToggleButtonFocusHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata);
 static void uiToggleButtonSetImage (uiwcont_t *uiwidget);
-static uitoggle_t * uiToggleButtonInit (void);
+static uitoggleint_t * uiToggleButtonInit (void);
 
 uiwcont_t *
 uiCreateCheckButton (const char *txt, int value)
 {
   uiwcont_t   *uiwidget;
   GtkWidget   *widget;
-  uitoggle_t  *uitoggle;
+  uitoggleint_t  *uitoggle;
 
   uitoggle = uiToggleButtonInit ();
 
@@ -61,12 +61,12 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
   uiwcont_t   *uiwidget = NULL;
   GtkWidget   *widget = NULL;
   GtkWidget   *gwidget = NULL;
-  uitoggle_t  *uitoggle;
+  uitoggleint_t  *uitoggle;
 
   uitoggle = uiToggleButtonInit ();
 
   if (widgetgrp != NULL) {
-    gwidget = widgetgrp->uidata.widget;
+    gwidget = widgetgrp->widget;
   }
   widget = gtk_radio_button_new_with_label_from_widget (
       GTK_RADIO_BUTTON (gwidget), txt);
@@ -83,7 +83,7 @@ uiCreateToggleButton (const char *txt,
 {
   uiwcont_t   *uiwidget;
   GtkWidget   *widget;
-  uitoggle_t  *uitoggle;
+  uitoggleint_t  *uitoggle;
 
   uitoggle = uiToggleButtonInit ();
 
@@ -137,7 +137,7 @@ uiCreateToggleButton (const char *txt,
 void
 uiToggleButtonFree (uiwcont_t *uiwidget)
 {
-  uitoggle_t      *uitoggle;
+  uitoggleint_t      *uitoggle;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_TOGGLE, "toggle-free")) {
     return;
@@ -151,7 +151,7 @@ uiToggleButtonFree (uiwcont_t *uiwidget)
 void
 uiToggleButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
 {
-  uitoggle_t      *uitoggle;
+  uitoggleint_t      *uitoggle;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_TOGGLE, "toggle-set-alt-image")) {
     return;
@@ -175,7 +175,7 @@ uiToggleButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
 void
 uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
-  uitoggle_t    *uitoggle;
+  uitoggleint_t    *uitoggle;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_TOGGLE, "tb-set-cb")) {
     return;
@@ -188,7 +188,7 @@ uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
 
   uitoggle->cb = uicb;
 
-  g_signal_connect (uiwidget->uidata.widget, "toggled",
+  g_signal_connect (uiwidget->widget, "toggled",
       G_CALLBACK (uiToggleButtonToggleHandler), uiwidget);
   uiToggleButtonSetImage (uiwidget);
 }
@@ -200,7 +200,7 @@ uiToggleButtonSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-  g_signal_connect_after (uiwidget->uidata.widget, "focus-in-event",
+  g_signal_connect_after (uiwidget->widget, "focus-in-event",
       G_CALLBACK (uiToggleButtonFocusHandler), uicb);
 }
 
@@ -211,7 +211,7 @@ uiToggleButtonSetText (uiwcont_t *uiwidget, const char *txt)
     return;
   }
 
-  gtk_button_set_label (GTK_BUTTON (uiwidget->uidata.widget), txt);
+  gtk_button_set_label (GTK_BUTTON (uiwidget->widget), txt);
 }
 
 bool
@@ -221,7 +221,7 @@ uiToggleButtonIsActive (uiwcont_t *uiwidget)
     return 0;
   }
 
-  return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiwidget->uidata.widget));
+  return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiwidget->widget));
 }
 
 void
@@ -231,7 +231,7 @@ uiToggleButtonSetValue (uiwcont_t *uiwidget, int state)
     return;
   }
 
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (uiwidget->uidata.widget), state);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (uiwidget->widget), state);
   uiToggleButtonSetImage (uiwidget);
 }
 
@@ -249,7 +249,7 @@ uiToggleButtonEllipsize (uiwcont_t *uiwidget)
   /* this seems to work for radio buttons. */
   /* for other buttons, a recursive child descent like the image alignment */
   /* may be necessary */
-  widget = gtk_bin_get_child (GTK_BIN (uiwidget->uidata.widget));
+  widget = gtk_bin_get_child (GTK_BIN (uiwidget->widget));
   if (GTK_IS_LABEL (widget)) {
     gtk_label_set_ellipsize (GTK_LABEL (widget), PANGO_ELLIPSIZE_END);
   }
@@ -261,7 +261,7 @@ static void
 uiToggleButtonToggleHandler (GtkButton *b, gpointer udata)
 {
   uiwcont_t   *uiwidget = udata;
-  uitoggle_t  *uitoggle;
+  uitoggleint_t  *uitoggle;
   callback_t  *uicb;
 
   uitoggle = uiwidget->uiint.uitoggle;
@@ -318,14 +318,14 @@ static void
 uiToggleButtonSetImage (uiwcont_t *uiwidget)
 {
   GtkWidget   *widget;
-  uitoggle_t  *uitoggle;
+  uitoggleint_t  *uitoggle;
   int         active;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_TOGGLE, "tb-set-img")) {
     return;
   }
 
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->widget;
   uitoggle = uiwidget->uiint.uitoggle;
   if (uitoggle == NULL) {
     return;
@@ -345,15 +345,15 @@ uiToggleButtonSetImage (uiwcont_t *uiwidget)
   if (active && uitoggle->altimageraw != NULL) {
     gtk_image_set_from_pixbuf (GTK_IMAGE (uitoggle->currimage), uitoggle->altimageraw);
   }
-  gtk_widget_show_all (uiwidget->uidata.widget);
+  gtk_widget_show_all (uiwidget->widget);
 }
 
-static uitoggle_t *
+static uitoggleint_t *
 uiToggleButtonInit (void)
 {
-  uitoggle_t    *uitoggle;
+  uitoggleint_t    *uitoggle;
 
-  uitoggle = mdmalloc (sizeof (uitoggle_t));
+  uitoggle = mdmalloc (sizeof (uitoggleint_t));
   uitoggle->currimage = NULL;
   uitoggle->image = NULL;
   uitoggle->imageraw = NULL;

@@ -41,5 +41,5 @@ uiProgressBarSet (uiwcont_t *uipb, double val)
     return;
   }
 
-  gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (uipb->uidata.widget), val);
+  gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (uipb->widget), val);
 }

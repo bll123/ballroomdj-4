@@ -28,9 +28,9 @@
 #include "ui/uiwidget.h"
 #include "ui/uiswitch.h"
 
-typedef struct uiswitch {
+typedef struct uiswitchint {
   int       junk;
-} uiswitch_t;
+} uiswitchint_t;
 
 uiwcont_t *
 uiCreateSwitch (int value)
@@ -99,7 +99,7 @@ uiSwitchSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->widget;
   [widget setCallback : uicb];
   return;
 }

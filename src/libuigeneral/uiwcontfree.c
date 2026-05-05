@@ -12,24 +12,7 @@
 
 #include "log.h"
 #include "mdebug.h"
-#include "uiwcont.h"
-
-#include "ui/uiwcont-int.h"
-
-/* the includes are needed to get the declaration of ...Free() */
-#include "ui/uibox.h"
-#include "ui/uibutton.h"
-#include "ui/uientry.h"
-#include "ui/uievents.h"
-#include "ui/uigrid.h"
-#include "ui/uiimage.h"
-#include "ui/uimenu.h"
-#include "ui/uiscrollbar.h"
-#include "ui/uiswitch.h"
-#include "ui/uitextbox.h"
-#include "ui/uitoggle.h"
-#include "ui/uiui.h"
-#include "ui/uiwindow.h"
+#include "ui.h"
 
 static void uiwcontBoxFree (uiwcont_t *uibox);
 static void uiwcontGridFree (uiwcont_t *uigrid);
@@ -119,12 +102,12 @@ uiwcontFree (uiwcont_t *uiwidget)
 static void
 uiwcontBoxFree (uiwcont_t *uibox)
 {
-  uiboxint_t *boxbase;
+  uiboxgeneric_t *boxbase;
   nlist_t     *wlist;
   nlist_t     *rlist;
   int32_t     tid;
 
-  boxbase = &uibox->uiint.uiboxint;
+  boxbase = uibox->uiboxgen;
   tid = uibox->id;
 
   if (! boxbase->postprocess) {
@@ -145,15 +128,15 @@ uiwcontBoxFree (uiwcont_t *uibox)
 static void
 uiwcontGridFree (uiwcont_t *uigrid)
 {
-  uigridint_t *uigridint;
+  uigridgeneric_t *uigridgen;
   nlist_t     *wlist;
   nlist_t     *rlist;
   int32_t     tid;
 
-  uigridint = uigrid->uiint.uigridint;
+  uigridgen = uigrid->uigridgen;
   tid = uigrid->id;
 
-  if (! uigridint->postprocess) {
+  if (! uigridgen->postprocess) {
     logMsg (LOG_ERR, LOG_IMPORTANT | LOG_BACKTRACE,
         "ERR: grid %" PRIu32 "-%" PRIu32 " not post-process",
         uigrid->ui_id, tid);
@@ -161,8 +144,8 @@ uiwcontGridFree (uiwcont_t *uigrid)
         uigrid->ui_id, tid);
   }
 
-  wlist = uigridint->widgetlist;
-  rlist = uigridint->releaselist;
+  wlist = uigridgen->widgetlist;
+  rlist = uigridgen->releaselist;
   uiwcontFreeInternals (wlist, rlist);
   uiGridFree (uigrid);
 }

@@ -27,10 +27,10 @@
 #include "ui/uiwidget.h"
 #include "ui/uibutton.h"
 
-typedef struct uibutton {
+typedef struct uibuttonint {
   NSImage         *image;
   NSImage         *altimage;
-} uibutton_t;
+} uibuttonint_t;
 
 @implementation IButton
 
@@ -59,11 +59,10 @@ uiCreateButton (callback_t *uicb, const char *txt,
     const char *imagenm, const char *tooltiptxt)
 {
   uiwcont_t       *uiwidget;
-  uibutton_t      *uibutton;
-  uibuttonint_t  *bbase;
+  uibuttonint_t    *uibutton;
   IButton         *widget = nil;
 
-  uibutton = mdmalloc (sizeof (uibutton_t));
+  uibutton = mdmalloc (sizeof (uibuttonint_t));
   uibutton->image = NULL;
   uibutton->altimage = NULL;
 
@@ -114,22 +113,6 @@ uiCreateButton (callback_t *uicb, const char *txt,
   widget.bordered = YES;
   widget.needsDisplay = true;
 
-  bbase = &uiwidget->uiint.uibuttonint;
-  bbase->cb = uicb;
-  bbase->presscb = callbackInit (uiButtonPressCallback,
-      uiwidget, "button-repeat-press");
-  bbase->releasecb = callbackInit (uiButtonReleaseCallback,
-      uiwidget, "button-repeat-release");
-  bbase->repeating = false;
-  bbase->repeatOn = false;
-  bbase->repeatMS = 250;
-  bbase->state = BUTTON_OFF;
-
-  if (imagenm != NULL) {
-    bbase->state = BUTTON_ON;    // force set of image
-    uiButtonSetState (uiwidget, BUTTON_OFF);
-  }
-
   return uiwidget;
 }
 
@@ -166,7 +149,7 @@ uiButtonSetImageIcon (uiwcont_t *uiwidget, const char *nm)
 void
 uiButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
 {
-  uibutton_t      *uibutton;
+  uibuttonint_t      *uibutton;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-alt-image")) {
     return;
@@ -204,15 +187,16 @@ uiButtonSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
 void
 uiButtonSetState (uiwcont_t *uiwidget, uibuttonstate_t newstate)
 {
-  uibutton_t      *uibutton;
+  uibuttonint_t   *uibutton;
+  uibuttongen_t   *bgen;
   IButton         *widget = nil;
-  uibuttonint_t  *bbase;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-alt-image")) {
     return;
   }
 
   uibutton = uiwidget->uiint.uibutton;
+  bgen = uiwidget->uibuttongen;
   if (uibutton == NULL) {
     return;
   }
@@ -220,22 +204,17 @@ uiButtonSetState (uiwcont_t *uiwidget, uibuttonstate_t newstate)
     return;
   }
 
-  bbase = &uiwidget->uiint.uibuttonint;
-  if (bbase == NULL) {
+  if (bgen->state == newstate) {
     return;
   }
 
-  if (bbase->state == newstate) {
-    return;
-  }
+  bgen->state = newstate;
+  widget = uiwidget->widget;
 
-  bbase->state = newstate;
-  widget = uiwidget->uidata.widget;
-
-  if (bbase->state == BUTTON_OFF && uibutton->image != NULL) {
+  if (bgen->state == BUTTON_OFF && uibutton->image != NULL) {
     [widget setImage: uibutton->image];
   }
-  if (bbase->state == BUTTON_ON && uibutton->altimage != NULL) {
+  if (bgen->state == BUTTON_ON && uibutton->altimage != NULL) {
     [widget setImage: uibutton->altimage];
   }
 }
@@ -249,7 +228,7 @@ uiButtonAlignLeft (uiwcont_t *uiwidget)
     return;
   }
 
-  button = uiwidget->uidata.widget;
+  button = uiwidget->widget;
   [button setAlignment : NSTextAlignmentNatural];
   return;
 }
@@ -273,7 +252,7 @@ uiButtonSetFlat (uiwcont_t *uiwidget)
     return;
   }
 
-  button = uiwidget->uidata.widget;
+  button = uiwidget->widget;
 
   button.bordered = NO;
   button.bezelStyle = NSBezelStyleToolbar;
@@ -293,7 +272,8 @@ uiButtonSetText (uiwcont_t *uiwidget, const char *txt)
 }
 
 void
-uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms)
+uiButtonSetRepeat_r (uiwcont_t *uiwidget,
+    callback_t *presscb, callback_t *releasecb)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-repeat")) {
     return;

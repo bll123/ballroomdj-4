@@ -12,13 +12,10 @@
 
 #include "callback.h"
 #include "log.h"
+#include "mdebug.h"
+#include "nlist.h"
 #include "tmutil.h"
-#include "uigeneral.h"
-#include "uiwcont.h"
-
-#include "ui/uiwcont-int.h"
-
-#include "ui/uibox.h"
+#include "ui.h"
 
 static void uiBoxCreateBase (uiwcont_t *uibox);
 static void uiBoxStartListAdd (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release);
@@ -48,24 +45,25 @@ uiCreateHorizBox (void)
 void
 uiBoxFree (uiwcont_t *uibox)
 {
-  uiboxint_t *boxint;
+  uiboxgeneric_t  *boxint;
   nlist_t     *wlist;
   nlist_t     *rlist;
 
-  boxint = &uibox->uiint.uiboxint;
+  boxint = uibox->uiboxgen;
   wlist = boxint->widgetlist;
   rlist = boxint->releaselist;
   nlistFree (wlist);
   nlistFree (rlist);
-  uibox->uiint.uiboxint.widgetlist = NULL;
-  uibox->uiint.uiboxint.releaselist = NULL;
+  uibox->uiboxgen->widgetlist = NULL;
+  uibox->uiboxgen->releaselist = NULL;
+  mdfree (boxint);
   uiBoxFree_r (uibox);
 }
 
 void
 uiBoxPostProcess (uiwcont_t *uibox)
 {
-  uiboxint_t *boxint;
+  uiboxgeneric_t *boxint;
   nlist_t     *wlist;
   nlist_t     *rlist;
   nlistidx_t  iteridx;
@@ -78,7 +76,7 @@ uiBoxPostProcess (uiwcont_t *uibox)
     return;
   }
 
-  boxint = &uibox->uiint.uiboxint;
+  boxint = uibox->uiboxgen;
 
   if (boxint->postprocess) {
     logMsg (LOG_DBG, LOG_UI | LOG_BACKTRACE,
@@ -95,7 +93,7 @@ uiBoxPostProcess (uiwcont_t *uibox)
     uiwcont_t       *uiwidgetp;
 
     uiwidgetp = nlistGetData (wlist, key);
-    if (uiwidgetp == NULL || uiwidgetp->uidata.widget == NULL) {
+    if (uiwidgetp == NULL || uiwidgetp->widget == NULL) {
       break;
     }
 
@@ -127,7 +125,7 @@ uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release)
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
@@ -141,7 +139,7 @@ uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release)
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
@@ -156,7 +154,7 @@ uiBoxPackStartExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget,
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start-ec")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
@@ -171,7 +169,7 @@ uiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget,
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end-ec")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
@@ -184,9 +182,10 @@ uiBoxPackEndExpandChildren (uiwcont_t *uibox, uiwcont_t *uiwidget,
 static void
 uiBoxCreateBase (uiwcont_t *uibox)
 {
-  uiboxint_t   *boxint;
+  uiboxgeneric_t   *boxint;
 
-  boxint = &uibox->uiint.uiboxint;
+  boxint = mdmalloc (sizeof (uiboxgeneric_t));
+  uibox->uiboxgen = boxint;
   boxint->widgetlist = nlistAlloc ("box-widget", LIST_UNORDERED, NULL);
   boxint->releaselist = nlistAlloc ("box-release", LIST_UNORDERED, NULL);
   boxint->startcount = 0;
@@ -197,9 +196,9 @@ uiBoxCreateBase (uiwcont_t *uibox)
 static void
 uiBoxStartListAdd (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release)
 {
-  uiboxint_t *boxint;
+  uiboxgeneric_t *boxint;
 
-  boxint = &uibox->uiint.uiboxint;
+  boxint = uibox->uiboxgen;
   uiBoxListAdd (uibox, uiwidget, release, boxint->startcount);
   boxint->startcount += 1;
 }
@@ -207,9 +206,9 @@ uiBoxStartListAdd (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release)
 static void
 uiBoxEndListAdd (uiwcont_t *uibox, uiwcont_t *uiwidget, uiwcontrls_t release)
 {
-  uiboxint_t *boxint;
+  uiboxgeneric_t *boxint;
 
-  boxint = &uibox->uiint.uiboxint;
+  boxint = uibox->uiboxgen;
   uiBoxListAdd (uibox, uiwidget, release, boxint->endcount);
   boxint->endcount -= 1;
 }
@@ -218,12 +217,12 @@ static void
 uiBoxListAdd (uiwcont_t *uibox, uiwcont_t *uiwidget,
     uiwcontrls_t release, int32_t idx)
 {
-  uiboxint_t  *boxint;
+  uiboxgeneric_t  *boxint;
   nlist_t     *wlist;
   nlist_t     *rlist;
 
 
-  boxint = &uibox->uiint.uiboxint;
+  boxint = uibox->uiboxgen;
   wlist = boxint->widgetlist;
   nlistSetData (wlist, idx, uiwidget);
   rlist = boxint->releaselist;

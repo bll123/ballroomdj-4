@@ -18,7 +18,7 @@
 #include "mdebug.h"
 #include "uiwcont.h"
 
-#include "ui-gtk3.h"
+#include "ui/uidef.h"
 
 #include "ui/uiwcont-int.h"
 
@@ -34,15 +34,15 @@ uiDragDropSetDestURICallback (uiwcont_t *uiwidget, callback_t *cb)
   if (uiwidget == NULL) {
     return;
   }
-  if (uiwidget->uidata.widget == NULL) {
+  if (uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_drag_dest_set (uiwidget->uidata.widget, GTK_DEST_DEFAULT_ALL,
+  gtk_drag_dest_set (uiwidget->widget, GTK_DEST_DEFAULT_ALL,
       NULL, 0, GDK_ACTION_COPY);
-  gtk_drag_dest_add_uri_targets (uiwidget->uidata.widget);
-  gtk_drag_dest_add_text_targets (uiwidget->uidata.widget);
-  g_signal_connect (GTK_WIDGET (uiwidget->uidata.widget), "drag-data-received",
+  gtk_drag_dest_add_uri_targets (uiwidget->widget);
+  gtk_drag_dest_add_text_targets (uiwidget->widget);
+  g_signal_connect (GTK_WIDGET (uiwidget->widget), "drag-data-received",
       G_CALLBACK (uiDragDropDestHandler), cb);
 }
 

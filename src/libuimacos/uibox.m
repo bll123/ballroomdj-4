@@ -89,7 +89,7 @@ void
 uiBoxPostProcess_r (uiwcont_t *uibox,
     uiwcont_t *prev, uiwcont_t *curr, uiwcont_t *next, bool last)
 {
-  uiboxint_t   *boxbase = NULL;
+  uiboxgeneric_t    *boxint = NULL;
   NSView        *box = NULL;
   macoslayout_t *boxlayout;
 
@@ -100,18 +100,18 @@ uiBoxPostProcess_r (uiwcont_t *uibox,
     return;
   }
 
-  boxbase = &uibox->uiint.uiboxint;
+  boxint = uibox->uiint.uiboxgen;
 
-  if (boxbase->startcount == 0 && boxbase->endcount == 0) {
+  if (boxint->startcount == 0 && boxint->endcount == 0) {
     return;
   }
 
-  if (boxbase->postprocess) {
+  if (boxint->postprocess) {
     fprintf (stderr, "ERR: box post-process twice\n");
     return;
   }
 
-  box = uibox->uidata.widget;
+  box = uibox->widget;
   boxlayout = uibox->uidata.layout;
 
   {
@@ -125,7 +125,7 @@ uiBoxPostProcess_r (uiwcont_t *uibox,
     macoslayout_t   *nlayout = NULL;
     NSView          *nextcont = NULL;
 
-    cwidget = curr->uidata.packwidget;
+    cwidget = curr->packwidget;
     clayout = curr->uidata.layout;
     currcont = clayout->container;
 
@@ -134,7 +134,7 @@ uiBoxPostProcess_r (uiwcont_t *uibox,
     }
 
     if (prev != NULL) {
-      pwidget = prev->uidata.packwidget;
+      pwidget = prev->packwidget;
       playout = prev->uidata.layout;
       prevcont = playout->container;
 fprintf (stderr, "%d-%d pp: prev: %d-%d %d/%s\n", uibox->ui_id, uibox->id, prev->ui_id, prev->id, prev->wtype, uiwcontDesc (prev->wtype));
@@ -144,7 +144,7 @@ fprintf (stderr, "%d-%d pp: curr: %d-%d %d/%s\n", uibox->ui_id, uibox->id, curr-
 
     if (next != NULL) {
 fprintf (stderr, "%d-%d pp: next: %d-%d %d/%s\n", uibox->ui_id, uibox->id, next->ui_id, next->id, next->wtype, uiwcontDesc (next->wtype));
-      nwidget = next->uidata.packwidget;
+      nwidget = next->packwidget;
       nlayout = next->uidata.layout;
       nextcont = nlayout->container;
     }
@@ -192,12 +192,12 @@ uiBoxPackStart_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
 //fprintf (stderr, "box: %d-%d p-st: %d-%d %d/%s\n", uibox->ui_id, uibox->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
-  box = uibox->uidata.widget;
+  box = uibox->widget;
   layout = uiwidget->uidata.layout;
   if (layout == NULL || layout->container == NULL) {
     fprintf (stderr, "ERR: null container %d-%d\n", uibox->ui_id, uibox->id);
@@ -221,7 +221,7 @@ uiBoxPackStartExpandChildren_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start-exp")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
@@ -243,11 +243,11 @@ uiBoxPackEnd_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start-exp")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  box = uibox->uidata.widget;
+  box = uibox->widget;
   layout = uiwidget->uidata.layout;
 
   if (uibox->wtype == WCONT_T_VBOX) {
@@ -271,7 +271,7 @@ uiBoxPackEndExpandChildren_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end-exp")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
@@ -279,16 +279,6 @@ uiBoxPackEndExpandChildren_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
 
   layout = uiwidget->uidata.layout;
   layout->expandchildren = true;
-
-  return;
-}
-
-void
-uiBoxSetSizeChgCallback (uiwcont_t *uiwindow, callback_t *uicb)
-{
-  if (! uiwcontValid (uiwindow, WCONT_T_BOX, "box-set-size-chg-cb")) {
-    return;
-  }
 
   return;
 }
@@ -350,7 +340,7 @@ uiBoxProcessExpandHoriz (uiwcont_t *uibox,
   /* is attached to its neighboring widgets */
 
   wtype = uibox->wtype;
-  box = uibox->uidata.widget;
+  box = uibox->widget;
   layout = uibox->uidata.layout;
 
   [layout->container setHuggingPriority :
@@ -419,7 +409,7 @@ uiBoxProcessExpandVert (uiwcont_t *uibox,
   /* is attached to both edges of the box */
 
   wtype = uibox->wtype;
-  box = uibox->uidata.widget;
+  box = uibox->widget;
   layout = uibox->uidata.layout;
 
   [layout->container setHuggingPriority :
@@ -505,7 +495,7 @@ uiBoxMacOSDebug (uiwcont_t *uiwidget)
     return;
   }
 
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->widget;
   layout = uiwidget->uidata.layout;
   if (layout->expandchildren) {
 fprintf (stderr, "exp-ch: %d-%d %d/%s\n", uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));

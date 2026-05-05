@@ -21,7 +21,7 @@ uiDragDropSetDestURICallback (uiwcont_t *uiwcont, callback_t *cb)
   if (uiwcont == NULL) {
     return;
   }
-  if (uiwcont->uidata.widget == NULL) {
+  if (uiwcont->widget == NULL) {
     return;
   }
 }

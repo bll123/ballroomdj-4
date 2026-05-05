@@ -43,7 +43,7 @@ uiPanedWindowPackStart (uiwcont_t *panedwin, uiwcont_t *box)
     return;
   }
 
-  gtk_paned_pack1 (GTK_PANED (panedwin->uidata.widget), box->uidata.widget, true, true);
+  gtk_paned_pack1 (GTK_PANED (panedwin->widget), box->widget, true, true);
 }
 
 void
@@ -59,7 +59,7 @@ uiPanedWindowPackEnd (uiwcont_t *panedwin, uiwcont_t *box)
     return;
   }
 
-  gtk_paned_pack2 (GTK_PANED (panedwin->uidata.widget), box->uidata.widget, true, true);
+  gtk_paned_pack2 (GTK_PANED (panedwin->widget), box->widget, true, true);
 }
 
 int
@@ -69,7 +69,7 @@ uiPanedWindowGetPosition (uiwcont_t *panedwin)
     return -1;
   }
 
-  return gtk_paned_get_position (GTK_PANED (panedwin->uidata.widget));
+  return gtk_paned_get_position (GTK_PANED (panedwin->widget));
 }
 
 void
@@ -79,7 +79,7 @@ uiPanedWindowSetPosition (uiwcont_t *panedwin, int position)
     return;
   }
 
-  gtk_paned_set_position (GTK_PANED (panedwin->uidata.widget), position);
+  gtk_paned_set_position (GTK_PANED (panedwin->widget), position);
 }
 
 /* internal routines */

@@ -16,7 +16,7 @@
 #include "callback.h"
 #include "uiwcont.h"
 
-#include "ui-gtk3.h"
+#include "ui/uidef.h"
 
 #include "ui/uiwcont-int.h"
 
@@ -59,7 +59,7 @@ uiScaleSetCallback (uiwcont_t *uiscale, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uiscale->uidata.widget, "change-value",
+  g_signal_connect (uiscale->widget, "change-value",
       G_CALLBACK (uiScaleChangeValueHandler), uicb);
 }
 
@@ -74,7 +74,7 @@ uiScaleEnforceMax (uiwcont_t *uiscale, double value)
   }
 
   /* gtk scale's lower limit works, but upper limit is not respected */
-  adjustment = gtk_range_get_adjustment (GTK_RANGE (uiscale->uidata.widget));
+  adjustment = gtk_range_get_adjustment (GTK_RANGE (uiscale->widget));
   max = gtk_adjustment_get_upper (adjustment);
   if (value > max) {
     value = max;
@@ -92,7 +92,7 @@ uiScaleGetValue (uiwcont_t *uiscale)
     return value;
   }
 
-  value = gtk_range_get_value (GTK_RANGE (uiscale->uidata.widget));
+  value = gtk_range_get_value (GTK_RANGE (uiscale->widget));
   return value;
 }
 
@@ -105,7 +105,7 @@ uiScaleGetDigits (uiwcont_t *uiscale)
     return value;
   }
 
-  value = gtk_scale_get_digits (GTK_SCALE (uiscale->uidata.widget));
+  value = gtk_scale_get_digits (GTK_SCALE (uiscale->widget));
   return value;
 }
 
@@ -116,7 +116,7 @@ uiScaleSetValue (uiwcont_t *uiscale, double value)
     return;
   }
 
-  gtk_range_set_value (GTK_RANGE (uiscale->uidata.widget), value);
+  gtk_range_set_value (GTK_RANGE (uiscale->widget), value);
 }
 
 void
@@ -126,7 +126,7 @@ uiScaleSetRange (uiwcont_t *uiscale, double start, double end)
     return;
   }
 
-  gtk_range_set_range (GTK_RANGE (uiscale->uidata.widget), start, end);
+  gtk_range_set_range (GTK_RANGE (uiscale->widget), start, end);
 }
 
 

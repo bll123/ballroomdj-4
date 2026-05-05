@@ -25,9 +25,9 @@
 #include "ui/uiwidget.h"
 #include "ui/uiswitch.h"
 
-typedef struct uiswitch {
+typedef struct uiswitchint {
   int       junk;
-} uiswitch_t;
+} uiswitchint_t;
 
 uiwcont_t *
 uiCreateSwitch (int value)

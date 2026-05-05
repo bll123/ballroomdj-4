@@ -17,9 +17,9 @@
 #include "ui/uiwidget.h"
 #include "ui/uibutton.h"
 
-typedef struct uibutton {
+typedef struct uibuttonint {
   int         junk;
-} uibutton_t;
+} uibuttonint_t;
 
 uiwcont_t *
 uiCreateButton (callback_t *uicb, const char *title,
@@ -61,7 +61,7 @@ uiButtonSetImageIcon (uiwcont_t *uiwidget, const char *nm)
 void
 uiButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
 {
-  uibutton_t      *uibutton;
+  uibuttonint_t      *uibutton;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-alt-image")) {
     return;
@@ -134,7 +134,8 @@ uiButtonSetText (uiwcont_t *uiwidget, const char *txt)
 }
 
 void
-uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms)
+uiButtonSetRepeat_r (uiwcont_t *uiwidget,
+    callback_t *presscb, callback_t *releasecb)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-repeat")) {
     return;

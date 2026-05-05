@@ -23,9 +23,9 @@
 #include "ui/uiwidget.h"
 #include "ui/uiwindow.h"
 
-typedef struct uitextbox {
+typedef struct uitextboxint {
   int       junk;
-} uitextbox_t;
+} uitextboxint_t;
 
 uiwcont_t *
 uiTextBoxCreate (int height, const char *hlcolor)

@@ -21,7 +21,7 @@
 #include "ui/uiimage.h"
 #include "ui/uiwidget.h"
 
-typedef struct uiimage {
+typedef struct uiimageint {
   GdkPixbuf *pixbuf;
 } uimage_t;
 
@@ -30,9 +30,9 @@ uiImageNew (void)
 {
   uiwcont_t *uiwidget;
   GtkWidget *image;
-  uiimage_t *uiimage;
+  uiimageint_t *uiimage;
 
-  uiimage = mdmalloc (sizeof (uiimage_t));
+  uiimage = mdmalloc (sizeof (uiimageint_t));
   uiimage->pixbuf = NULL;
 
   image = gtk_image_new ();
@@ -46,7 +46,7 @@ uiImageNew (void)
 void
 uiImageFree (uiwcont_t *uiwidget)
 {
-  uiimage_t   *uiimage;
+  uiimageint_t   *uiimage;
 
   if (! uiwcontValid (uiwidget, WCONT_T_IMAGE, "image-free")) {
     return;
@@ -66,9 +66,9 @@ uiImageFromFile (const char *fn)
   uiwcont_t   *uiwidget = NULL;
   GtkWidget   *image;
   GdkPixbuf   *pixbuf;
-  uiimage_t   *uiimage;
+  uiimageint_t   *uiimage;
 
-  uiimage = mdmalloc (sizeof (uiimage_t));
+  uiimage = mdmalloc (sizeof (uiimageint_t));
   uiimage->pixbuf = NULL;
 
   pixbuf = gdk_pixbuf_new_from_file (fn, NULL);
@@ -76,8 +76,8 @@ uiImageFromFile (const char *fn)
     image = gtk_image_new_from_pixbuf (pixbuf);
 
     uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
-    uiwidget->uidata.widget = image;
-    uiwidget->uidata.packwidget = image;
+    uiwidget->widget = image;
+    uiwidget->packwidget = image;
     uiwidget->uiint.uiimage = uiimage;
     uiimage->pixbuf = pixbuf;
   }
@@ -94,9 +94,9 @@ uiImageScaledFromFile (const char *fn, int scale)
   uiwcont_t *uiwidget = NULL;
   GdkPixbuf *pixbuf;
   GtkWidget *image = NULL;
-  uiimage_t *uiimage;
+  uiimageint_t *uiimage;
 
-  uiimage = mdmalloc (sizeof (uiimage_t));
+  uiimage = mdmalloc (sizeof (uiimageint_t));
   uiimage->pixbuf = NULL;
 
   pixbuf = gdk_pixbuf_new_from_file_at_scale (fn, scale, -1, TRUE, NULL);
@@ -104,8 +104,8 @@ uiImageScaledFromFile (const char *fn, int scale)
     image = gtk_image_new ();
     gtk_image_set_from_pixbuf (GTK_IMAGE (image), pixbuf);
     uiwidget = uiwcontAlloc (WCONT_T_IMAGE, WCONT_T_IMAGE);
-    uiwidget->uidata.widget = image;
-    uiwidget->uidata.packwidget = image;
+    uiwidget->widget = image;
+    uiwidget->packwidget = image;
     uiwidget->uiint.uiimage = uiimage;
     uiimage->pixbuf = pixbuf;
   }
@@ -120,11 +120,11 @@ uiImageClear (uiwcont_t *uiwidget)
     return;
   }
 
-  if (GTK_IS_IMAGE (uiwidget->uidata.widget)) {
-    uiimage_t   *uiimage;
+  if (GTK_IS_IMAGE (uiwidget->widget)) {
+    uiimageint_t   *uiimage;
 
     uiimage = uiwidget->uiint.uiimage;
-    gtk_image_clear (GTK_IMAGE (uiwidget->uidata.widget));
+    gtk_image_clear (GTK_IMAGE (uiwidget->widget));
     if (uiimage->pixbuf != NULL) {
       g_object_unref (uiimage->pixbuf);
     }
@@ -135,8 +135,8 @@ uiImageClear (uiwcont_t *uiwidget)
 void
 uiImageCopy (uiwcont_t *toimg, uiwcont_t *fromimg)
 {
-  uiimage_t   *from;
-  uiimage_t   *to;
+  uiimageint_t   *from;
+  uiimageint_t   *to;
 
   if (! uiwcontValid (toimg, WCONT_T_IMAGE, "image-copy-to")) {
     return;
@@ -156,7 +156,7 @@ uiImageCopy (uiwcont_t *toimg, uiwcont_t *fromimg)
     to->pixbuf = from->pixbuf;
     if (from->pixbuf != NULL) {
       g_object_ref_sink (G_OBJECT (from->pixbuf));
-      gtk_image_set_from_pixbuf (GTK_IMAGE (toimg->uidata.widget), from->pixbuf);
+      gtk_image_set_from_pixbuf (GTK_IMAGE (toimg->widget), from->pixbuf);
     }
   }
 }

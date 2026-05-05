@@ -6,16 +6,7 @@
 #include "uiclass.h"
 #include "uiwcont.h"
 
-#if BDJ4_UI_GTK3
-# include "ui-gtk3.h"
-#endif
-#if BDJ4_UI_NULL
-# include "ui-null.h"
-#endif
-#if BDJ4_UI_MACOS
-# include "ui-macos.h"
-#endif
-
+#include "ui/uidef.h"
 #include "ui/uibox.h"
 #include "ui/uibutton.h"
 #include "ui/uichgind.h"

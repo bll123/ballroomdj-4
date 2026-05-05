@@ -514,7 +514,7 @@ uiSetRowHighlight (char *tp, char *tend,
 void
 uiwcontUIInit (uiwcont_t *uiwidget)
 {
-  return;
+  uiwidget->uidata = mdmalloc (sizeof (uispecific_t));
 }
 
 void
@@ -526,6 +526,7 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
 void
 uiwcontUIFree (uiwcont_t *uiwidget)
 {
+  mdfree (uiwidget->uidata);
   return;
 }
 

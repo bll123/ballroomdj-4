@@ -68,10 +68,9 @@ add_executable (bdj4starterui
   support.c
 )
 target_link_libraries (bdj4starterui PRIVATE
-  libbdj4uii ${BDJ4_UI_LIB}
+  libbdj4uii libbdj4ui
   libwebclient libbdj4 libbdj4basic libbdj4common
 )
-addUILibrary (bdj4starterui)
 addIntlLibrary (bdj4starterui)
 addWinSockLibrary (bdj4starterui)
 addWinVersionInfo (bdj4starterui)
@@ -80,10 +79,9 @@ updateRPath (bdj4starterui)
 
 add_executable (bdj4helperui bdj4helperui.c)
 target_link_libraries (bdj4helperui PRIVATE
-  ${BDJ4_UI_LIB}
+  libbdj4ui
   libbdj4 libbdj4basic libbdj4common
 )
-addUILibrary (bdj4helperui)
 addIntlLibrary (bdj4helperui)
 addWinSockLibrary (bdj4helperui)
 addWinVersionInfo (bdj4helperui)

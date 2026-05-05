@@ -82,7 +82,7 @@ uiSelectDirDialog (uiselect_t *selectdata)
 
   widget = gtk_file_chooser_native_new (
       selectdata->label,
-      GTK_WINDOW (selectdata->window->uidata.widget),
+      GTK_WINDOW (selectdata->window->widget),
       GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
       /* CONTEXT: select folder dialog: select folder */
       _("Select"),
@@ -121,7 +121,7 @@ uiSelectFileDialog (uiselect_t *selectdata)
 
   widget = gtk_file_chooser_native_new (
       selectdata->label,
-      GTK_WINDOW (selectdata->window->uidata.widget),
+      GTK_WINDOW (selectdata->window->widget),
       GTK_FILE_CHOOSER_ACTION_OPEN,
       /* CONTEXT: select file dialog: select file */
       _("Select"),
@@ -156,7 +156,7 @@ uiCreateDialog (uiwcont_t *window,
   dialog = gtk_dialog_new ();
   gtk_window_set_title (GTK_WINDOW (dialog), title);
   gtk_window_set_destroy_with_parent (GTK_WINDOW (dialog), TRUE);
-  gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (window->uidata.widget));
+  gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (window->widget));
 
   uiwidget = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_DIALOG_WINDOW);
   uiwcontSetWidget (uiwidget, dialog, NULL);
@@ -207,8 +207,8 @@ uiDialogPackInDialog (uiwcont_t *uidialog, uiwcont_t *boxp)
     return;
   }
 
-  content = gtk_dialog_get_content_area (GTK_DIALOG (uidialog->uidata.widget));
-  gtk_container_add (GTK_CONTAINER (content), boxp->uidata.widget);
+  content = gtk_dialog_get_content_area (GTK_DIALOG (uidialog->widget));
+  gtk_container_add (GTK_CONTAINER (content), boxp->widget);
 }
 
 void
@@ -218,11 +218,11 @@ uiDialogDestroy (uiwcont_t *uidialog)
     return;
   }
 
-  if (GTK_IS_WIDGET (uidialog->uidata.widget)) {
-    gtk_widget_destroy (GTK_WIDGET (uidialog->uidata.widget));
+  if (GTK_IS_WIDGET (uidialog->widget)) {
+    gtk_widget_destroy (GTK_WIDGET (uidialog->widget));
   }
-  uidialog->uidata.widget = NULL;
-  uidialog->uidata.packwidget = NULL;
+  uidialog->widget = NULL;
+  uidialog->packwidget = NULL;
 }
 
 /* internal routines */
@@ -256,7 +256,7 @@ uiDialogAddButtonsInternal (uiwcont_t *uiwidget, va_list valist)
   char      *label;
   int       resp;
 
-  dialog = uiwidget->uidata.widget;
+  dialog = uiwidget->widget;
   while ((label = va_arg (valist, char *)) != NULL) {
     resp = va_arg (valist, int);
     gtk_dialog_add_button (GTK_DIALOG (dialog), label, resp);

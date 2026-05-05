@@ -21,11 +21,11 @@
 #include "ui/uiwidget.h"
 #include "ui/uimenu.h"
 
-typedef struct uimenu {
+typedef struct uimenuint {
   int             menucount;
   uiwcont_t       *menuitem [UIUTILS_MENU_MAX];
   bool            initialized;
-} uimenu_t;
+} uimenuint_t;
 
 static void uiMenuActivateHandler (GtkMenuItem *mi, gpointer udata);
 static void uiMenuToggleHandler (GtkWidget *mi, gpointer udata);
@@ -53,7 +53,7 @@ uiCreateSubMenu (uiwcont_t *uimenuitem)
   }
 
   menu = gtk_menu_new ();
-  gtk_menu_item_set_submenu (GTK_MENU_ITEM (uimenuitem->uidata.widget), menu);
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (uimenuitem->widget), menu);
   uimenu = uiwcontAlloc (WCONT_T_MENU, WCONT_T_MENU_SUB);
   uiwcontSetWidget (uimenu, menu, NULL);
   return uimenu;
@@ -70,7 +70,7 @@ uiMenuCreateItem (uiwcont_t *uimenu, const char *txt, callback_t *uicb)
   }
 
   menuitem = gtk_menu_item_new_with_label (txt);
-  gtk_menu_shell_append (GTK_MENU_SHELL (uimenu->uidata.widget), menuitem);
+  gtk_menu_shell_append (GTK_MENU_SHELL (uimenu->widget), menuitem);
 
   uimenuitem = uiwcontAlloc (WCONT_T_MENU_ITEM, WCONT_T_MENU_ITEM);
   uiwcontSetWidget (uimenuitem, menuitem, NULL);
@@ -93,7 +93,7 @@ uiMenuAddSeparator (uiwcont_t *uimenu)
   }
 
   menuitem = gtk_separator_menu_item_new ();
-  gtk_menu_shell_append (GTK_MENU_SHELL (uimenu->uidata.widget), menuitem);
+  gtk_menu_shell_append (GTK_MENU_SHELL (uimenu->widget), menuitem);
 }
 
 uiwcont_t *
@@ -109,7 +109,7 @@ uiMenuCreateCheckbox (uiwcont_t *uimenu,
 
   menuitem = gtk_check_menu_item_new_with_label (txt);
   gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem), active);
-  gtk_menu_shell_append (GTK_MENU_SHELL (uimenu->uidata.widget), menuitem);
+  gtk_menu_shell_append (GTK_MENU_SHELL (uimenu->widget), menuitem);
 
   uimenuitem = uiwcontAlloc (WCONT_T_MENU_ITEM, WCONT_T_MENU_CHECK_BOX);
   uiwcontSetWidget (uimenuitem, menuitem, NULL);
@@ -126,9 +126,9 @@ uiwcont_t *
 uiMenuAlloc (void)
 {
   uiwcont_t  *uiwidget;
-  uimenu_t    *menu;
+  uimenuint_t    *menu;
 
-  menu = mdmalloc (sizeof (uimenu_t));
+  menu = mdmalloc (sizeof (uimenuint_t));
   menu->initialized = false;
   menu->menucount = 0;
   for (int i = 0; i < UIUTILS_MENU_MAX; ++i) {
@@ -145,7 +145,7 @@ uiMenuAlloc (void)
 void
 uiMenuFree (uiwcont_t *uiwidget)
 {
-  uimenu_t    *menu;
+  uimenuint_t    *menu;
 
   if (! uiwcontValid (uiwidget, WCONT_T_MENU, "menu-free")) {
     return;
@@ -163,7 +163,7 @@ uiMenuFree (uiwcont_t *uiwidget)
 bool
 uiMenuIsInitialized (uiwcont_t *uiwidget)
 {
-  uimenu_t    *menu;
+  uimenuint_t    *menu;
 
   if (! uiwcontValid (uiwidget, WCONT_T_MENU, "menu-is-init")) {
     return false;
@@ -176,7 +176,7 @@ uiMenuIsInitialized (uiwcont_t *uiwidget)
 void
 uiMenuSetInitialized (uiwcont_t *uiwidget)
 {
-  uimenu_t    *menu;
+  uimenuint_t    *menu;
 
   if (! uiwcontValid (uiwidget, WCONT_T_MENU, "menu-set-init")) {
     return;
@@ -190,7 +190,7 @@ uiwcont_t *
 uiMenuAddMainItem (uiwcont_t *uimenubar, uiwcont_t *uimenu, const char *txt)
 {
   uiwcont_t *uimenuitem;
-  uimenu_t  *menu;
+  uimenuint_t  *menu;
   int       i;
   GtkWidget *widget;
 
@@ -216,8 +216,8 @@ uiMenuAddMainItem (uiwcont_t *uimenubar, uiwcont_t *uimenu, const char *txt)
   uimenuitem = uiwcontAlloc (WCONT_T_MENU_ITEM, WCONT_T_MENU_MENUBAR_ITEM);
   uiwcontSetWidget (uimenuitem, widget, NULL);
 
-  gtk_menu_shell_append (GTK_MENU_SHELL (uimenubar->uidata.widget),
-      uimenuitem->uidata.widget);
+  gtk_menu_shell_append (GTK_MENU_SHELL (uimenubar->widget),
+      uimenuitem->widget);
   uiWidgetHide (uimenuitem);
 
   /* create our own copy here */
@@ -230,7 +230,7 @@ uiMenuAddMainItem (uiwcont_t *uimenubar, uiwcont_t *uimenu, const char *txt)
 void
 uiMenuDisplay (uiwcont_t *uiwidget)
 {
-  uimenu_t    *menu;
+  uimenuint_t    *menu;
 
   if (! uiwcontValid (uiwidget, WCONT_T_MENU, "menu-disp")) {
     return;
@@ -245,7 +245,7 @@ uiMenuDisplay (uiwcont_t *uiwidget)
 void
 uiMenuClear (uiwcont_t *uiwidget)
 {
-  uimenu_t    *menu;
+  uimenuint_t    *menu;
 
   if (! uiwcontValid (uiwidget, WCONT_T_MENU, "menu-clear")) {
     return;
@@ -266,7 +266,7 @@ uiMenuItemSetText (uiwcont_t *uiwidget, const char *txt)
     return;
   }
 
-  menuitem = uiwidget->uidata.widget;
+  menuitem = uiwidget->widget;
   gtk_menu_item_set_label (GTK_MENU_ITEM (menuitem), txt);
 }
 

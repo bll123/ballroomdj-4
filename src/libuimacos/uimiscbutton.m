@@ -75,5 +75,5 @@ uiColorButtonSetColor (uiwcont_t *uiwidget, const char *color)
 
   //gdk_rgba_parse (&rgba, color);
   //gtk_color_chooser_set_rgba (
-  //    GTK_COLOR_CHOOSER (uiwidget->uidata.widget), &rgba);
+  //    GTK_COLOR_CHOOSER (uiwidget->widget), &rgba);
 }

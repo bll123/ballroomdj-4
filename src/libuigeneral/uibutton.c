@@ -11,33 +11,73 @@
 
 #include "callback.h"
 #include "log.h"
+#include "mdebug.h"
 #include "tmutil.h"
 #include "uigeneral.h"
-#include "uiwcont.h"
+#include "ui.h"
 
-#include "ui/uiwcont-int.h"
+uiwcont_t *
+uiCreateButton (callback_t *uicb, const char *title, const char *imagenm, const char *tooltiptxt)
+{
+  uiwcont_t       *uiwidget;
+  uibuttongeneric_t   *bgen;
 
-#include "ui/uibutton.h"
+  uiwidget = uiCreateButton_r (uicb, title, imagenm, tooltiptxt);
+
+  bgen = mdmalloc (sizeof (uibuttongeneric_t));
+  uiwidget->uibuttongen = bgen;
+  bgen->cb = uicb;
+  bgen->presscb = callbackInit (uiButtonPressCallback,
+      uiwidget, "button-repeat-press");
+  bgen->releasecb = callbackInit (uiButtonReleaseCallback,
+      uiwidget, "button-repeat-release");
+  bgen->repeating = false;
+  bgen->repeatOn = false;
+  bgen->repeatMS = 250;
+  bgen->state = BUTTON_OFF;
+
+  if (imagenm != NULL) {
+    bgen->state = BUTTON_ON;    // force set of image
+    uiButtonSetState (uiwidget, BUTTON_OFF);
+  }
+
+  return uiwidget;
+}
+
+void
+uiButtonFree (uiwcont_t *uiwidget)
+{
+  uibuttongeneric_t  *bgen;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-repeat")) {
+    return;
+  }
+
+  bgen = uiwidget->uibuttongen;
+  callbackFree (bgen->presscb);
+  callbackFree (bgen->releasecb);
+  mdfree (bgen);
+}
 
 bool
 uiButtonCheckRepeat (uiwcont_t *uiwidget)
 {
-  uibuttonint_t  *bbase;
+  uibuttongeneric_t  *bgen;
   bool            rc = false;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-repeat")) {
     return rc;
   }
 
-  bbase = &uiwidget->uiint.uibuttonint;
+  bgen = uiwidget->uibuttongen;
 
-  if (bbase->repeating) {
-    if (mstimeCheck (&bbase->repeatTimer)) {
-      if (bbase->cb != NULL) {
-        bbase->repeating = false;
-        callbackHandler (bbase->cb);
-        mstimeset (&bbase->repeatTimer, bbase->repeatMS);
-        bbase->repeating = true;
+  if (bgen->repeating) {
+    if (mstimeCheck (&bgen->repeatTimer)) {
+      if (bgen->cb != NULL) {
+        bgen->repeating = false;
+        callbackHandler (bgen->cb);
+        mstimeset (&bgen->repeatTimer, bgen->repeatMS);
+        bgen->repeating = true;
       }
     }
     rc = true;
@@ -49,19 +89,19 @@ uiButtonCheckRepeat (uiwcont_t *uiwidget)
 bool
 uiButtonPressCallback (void *udata)
 {
-  uiwcont_t       *uiwidget = udata;
-  uibuttonint_t  *bbase;
-  callback_t      *uicb;
+  uiwcont_t         *uiwidget = udata;
+  uibuttongeneric_t *bgen;
+  callback_t        *uicb;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-state")) {
     return UICB_CONT;
   }
 
-  bbase = &uiwidget->uiint.uibuttonint;
-  uicb = bbase->cb;
+  bgen = uiwidget->uibuttongen;
+  uicb = bgen->cb;
 
-  bbase->repeating = false;
-  uicb = bbase->cb;
+  bgen->repeating = false;
+  uicb = bgen->cb;
   if (uicb == NULL) {
     return UICB_CONT;
   }
@@ -71,8 +111,8 @@ uiButtonPressCallback (void *udata)
   }
   /* the first time the button is pressed, the repeat timer should have */
   /* a longer initial delay. */
-  mstimeset (&bbase->repeatTimer, bbase->repeatMS * 3);
-  bbase->repeating = true;
+  mstimeset (&bgen->repeatTimer, bgen->repeatMS * 3);
+  bgen->repeating = true;
   return UICB_CONT;
 }
 
@@ -80,33 +120,54 @@ bool
 uiButtonReleaseCallback (void *udata)
 {
   uiwcont_t       *uiwidget = udata;
-  uibuttonint_t  *bbase;
+  uibuttongeneric_t  *bgen;
 
-  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-state")) {
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-release-cb")) {
     return UICB_CONT;
   }
 
-  bbase = &uiwidget->uiint.uibuttonint;
+  bgen = uiwidget->uibuttongen;
 
-  bbase->repeating = false;
+  bgen->repeating = false;
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: button-release");
   return UICB_CONT;
 }
 
-uibuttonstate_t
-uiButtonGetState (uiwcont_t *uiwidget)
+void
+uiButtonSetRepeat (uiwcont_t *uiwidget, int repeatms)
 {
-  uibuttonint_t  *bbase;
+  uibuttongeneric_t    *bgen;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-repeat")) {
-    return BUTTON_OFF;
+    return;
   }
 
-  bbase = &uiwidget->uiint.uibuttonint;
-  if (bbase == NULL) {
-    return BUTTON_OFF;
+  bgen = uiwidget->uibuttongen;
+
+  bgen->repeatMS = repeatms;
+  bgen->repeatOn = true;
+  uiButtonSetRepeat_r (uiwidget, bgen->presscb, bgen->releasecb);
+}
+
+
+void
+uiButtonSignalHandler (uiwcont_t *uiwidget)
+{
+  uibuttongeneric_t *bgen;
+
+  if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-signal")) {
+    return;
   }
 
-  return bbase->state;
+  bgen = uiwidget->uibuttongen;
+
+  if (bgen->repeatOn) {
+    return;
+  }
+  if (bgen->cb == NULL) {
+    return;
+  }
+
+  callbackHandler (bgen->cb);
 }
 

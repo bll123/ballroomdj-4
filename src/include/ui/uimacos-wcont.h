@@ -15,10 +15,6 @@ extern uisetup_t   guisetup;
 typedef struct macoslayout macoslayout_t;
 
 typedef struct uispecific {
-  void              *packwidget;
-  union {
-    void            *widget;
-  };
   /* to hold the margin information and margin constraints for the widget */
   macoslayout_t     *layout;
 } uispecific_t;

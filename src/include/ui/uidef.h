@@ -7,6 +7,8 @@
 extern "C" {
 #endif
 
+/* these are defined based on the gtk values */
+/* other ui interfaces may need to check these value and adjust accordingly */
 enum {
   UICB_STOP = true,
   UICB_CONT = false,
@@ -14,6 +16,7 @@ enum {
   UICB_DISPLAY_OFF = false,
   UICB_CONVERTED = true,
   UICB_NOT_CONVERTED = false,
+  UICB_CONVERT_FAIL = -1,       // GTK_INPUT_ERROR
   UICB_SUPPORTED = true,
   UICB_NOT_SUPPORTED = false,
   UIWIDGET_DISABLE = false,

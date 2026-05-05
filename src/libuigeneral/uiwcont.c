@@ -17,7 +17,6 @@
 #include "mdebug.h"
 #include "uiwcont.h"
 
-#include "ui/uiwcont-int.h"
 #include "ui/uiui.h"
 
 static _Atomic(int32_t) gbdj4id_old = 0;
@@ -51,7 +50,8 @@ uiwcontAlloc_r (int basetype, int type, const char *fn, int lineno)
   uiwidget = mdmalloc (sizeof (uiwcont_t));
   uiwidget->wbasetype = basetype;
   uiwidget->wtype = type;
-  memset (&uiwidget->uidata, 0, sizeof (uispecific_t));
+  memset (&uiwidget->uiint, 0, sizeof (uiwcontint_t));
+  uiwidget->uidata = NULL;
   uiwidget->packed = false;
   uiwidget->ui_id = gbdj4id;
   uiwidget->id = 0;
@@ -63,7 +63,6 @@ uiwcontAlloc_r (int basetype, int type, const char *fn, int lineno)
   }
 
   logMsg (LOG_DBG, LOG_UI | LOG_BACKTRACE, "wcont: %s %d-%d", uiwcontDesc (uiwidget->wtype), uiwidget->ui_id, uiwidget->id);
-  memset (&uiwidget->uiint, 0, sizeof (uiwcontint_t));
   uiwcontUIInit (uiwidget);                     // ui interface specific
   return uiwidget;
 }
@@ -78,8 +77,8 @@ uiwcontBaseFree (uiwcont_t *uiwidget)
   uiwcontUIFree (uiwidget);                     // ui interface specific
   uiwidget->wbasetype = WCONT_T_UNKNOWN;
   uiwidget->wtype = WCONT_T_UNKNOWN;
-  uiwidget->uidata.widget = NULL;
-  uiwidget->uidata.packwidget = NULL;
+  uiwidget->widget = NULL;
+  uiwidget->packwidget = NULL;
   mdfree (uiwidget);
 }
 
@@ -90,10 +89,10 @@ uiwcontSetWidget (uiwcont_t *uiwidget, void *widget, void *packwidget)
     return;
   }
 
-  uiwidget->uidata.widget = widget;
-  uiwidget->uidata.packwidget = packwidget;
+  uiwidget->widget = widget;
+  uiwidget->packwidget = packwidget;
   if (packwidget == NULL) {
-    uiwidget->uidata.packwidget = widget;
+    uiwidget->packwidget = widget;
   }
   uiwcontUIWidgetInit (uiwidget);
 }

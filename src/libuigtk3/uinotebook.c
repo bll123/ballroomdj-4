@@ -68,11 +68,11 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uiwidget,
   }
   nbtitle = NULL;
   if (uilabel != NULL) {
-    nbtitle = uilabel->uidata.widget;
+    nbtitle = uilabel->widget;
   }
 
-  gtk_notebook_append_page (GTK_NOTEBOOK (uinotebook->uidata.widget),
-      uiwidget->uidata.widget, nbtitle);
+  gtk_notebook_append_page (GTK_NOTEBOOK (uinotebook->widget),
+      uiwidget->widget, nbtitle);
 }
 
 void
@@ -82,7 +82,7 @@ uiNotebookSetPage (uiwcont_t *uinotebook, int pagenum)
     return;
   }
 
-  gtk_notebook_set_current_page (GTK_NOTEBOOK (uinotebook->uidata.widget), pagenum);
+  gtk_notebook_set_current_page (GTK_NOTEBOOK (uinotebook->widget), pagenum);
 }
 
 void
@@ -95,7 +95,7 @@ uiNotebookSetCallback (uiwcont_t *uinotebook, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uinotebook->uidata.widget, "switch-page",
+  g_signal_connect (uinotebook->widget, "switch-page",
       G_CALLBACK (uiNotebookSwitchPageHandler), uicb);
 }
 

@@ -39,7 +39,7 @@ uiWidgetExpandHoriz (uiwcont_t *uiwidget)
   NSView          *widget;
   macoslayout_t   *layout;
 
-  widget = uiwidget->uidata.packwidget;
+  widget = uiwidget->packwidget;
 //  [widget.widthAnchor
 //      constraintLessThanOrEqualToConstant : 600.0].active = YES;
 
@@ -56,7 +56,7 @@ uiWidgetExpandVert (uiwcont_t *uiwidget)
   NSView          *widget;
   macoslayout_t   *layout;
 
-  widget = uiwidget->uidata.packwidget;
+  widget = uiwidget->packwidget;
 //  [widget.heightAnchor
 //      constraintLessThanOrEqualToConstant : 600.0].active = YES;
 
@@ -72,11 +72,11 @@ uiWidgetSetAllMargins (uiwcont_t *uiwidget, int mult)
   double        val;
   macoslayout_t *layout;
 
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->widget;
 
   val = (double) (uiBaseMarginSz * mult);
 
@@ -97,11 +97,11 @@ uiWidgetSetMarginTop (uiwcont_t *uiwidget, int mult)
   double        val;
   macoslayout_t *layout;
 
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->widget;
 
   val = (double) (uiBaseMarginSz * mult);
 
@@ -119,11 +119,11 @@ uiWidgetSetMarginBottom (uiwcont_t *uiwidget, int mult)
   double        val;
   macoslayout_t *layout;
 
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->widget;
 
   val = (double) (uiBaseMarginSz * mult);
 
@@ -141,11 +141,11 @@ uiWidgetSetMarginStart (uiwcont_t *uiwidget, int mult)
   double        val;
   macoslayout_t *layout;
 
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->widget;
 
   val = (double) (uiBaseMarginSz * mult);
 
@@ -167,11 +167,11 @@ uiWidgetSetMarginEnd (uiwcont_t *uiwidget, int mult)
   int           val;
   macoslayout_t *layout;
 
-  if (uiwidget == NULL || uiwidget->uidata.widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->widget;
 
   val = uiBaseMarginSz * mult;
 
@@ -336,9 +336,9 @@ uiWidgetHide (uiwcont_t *uiwidget)
     return;
   }
 
-  widget = uiwidget->uidata.packwidget;
+  widget = uiwidget->packwidget;
   if (widget == NULL) {
-    widget = uiwidget->uidata.widget;
+    widget = uiwidget->widget;
   }
   if (widget == NULL) {
     return;
@@ -356,9 +356,9 @@ uiWidgetShow (uiwcont_t *uiwidget)
   }
 
 // ### see also nsstackview / view detachment and hiding
-  widget = uiwidget->uidata.packwidget;
+  widget = uiwidget->packwidget;
   if (widget == NULL) {
-    widget = uiwidget->uidata.widget;
+    widget = uiwidget->widget;
   }
   if (widget == NULL) {
     return;
@@ -378,7 +378,7 @@ uiWidgetShowAll (uiwcont_t *uiwidget)
     return;
   }
 
-  widget = uiwidget->uidata.packwidget;
+  widget = uiwidget->packwidget;
   widget.hidden = false;
   widget.needsDisplay = true;
 }
@@ -494,11 +494,11 @@ uiWidgetSetIdentifier (uiwcont_t *uiwidget, const char *tag)
 
   snprintf (tmp, sizeof (tmp), "w-%s-%" PRIu32 "-%" PRIu32,
       tag, uiwidget->ui_id, uiwidget->id);
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->widget;
   widget.identifier = [NSString stringWithUTF8String: tmp];
 
-  if (uiwidget->uidata.packwidget != uiwidget->uidata.widget) {
-    widget = uiwidget->uidata.packwidget;
+  if (uiwidget->packwidget != uiwidget->widget) {
+    widget = uiwidget->packwidget;
     snprintf (tmp, sizeof (tmp), "p-%s-%" PRIu32 "-%" PRIu32,
         tag, uiwidget->ui_id, uiwidget->id);
     widget.identifier = [NSString stringWithUTF8String: tmp];

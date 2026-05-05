@@ -19,9 +19,9 @@
 
 #include "ui/uievents.h"
 
-typedef struct uievent {
+typedef struct uieventint {
   int         junk;
-} uievent_t;
+} uieventint_t;
 
 uiwcont_t *
 uiEventAlloc (void)

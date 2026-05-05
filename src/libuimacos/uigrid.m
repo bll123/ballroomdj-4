@@ -59,7 +59,7 @@ void
 uiGridPackLoc_r (uiwcont_t *uigrid, uiwcont_t *uiwidget,
     int row, int col, int numcols)
 {
-  uigridint_t   *uigridint;
+  uigridgeneric_t   *uigridgen;
   IGrid         *grid;
   macoslayout_t *layout;
   int           ncols, nrows;
@@ -69,16 +69,16 @@ uiGridPackLoc_r (uiwcont_t *uigrid, uiwcont_t *uiwidget,
   if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-size")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->uidata.packwidget == NULL) {
+  if (uiwidget == NULL || uiwidget->packwidget == NULL) {
     return;
   }
 
-  uigridint = uigrid->uiint.uigridint;
-  grid = uigrid->uidata.widget;
+  uigridgen = uigrid->uiint.uigridgen;
+  grid = uigrid->widget;
   layout = uiwidget->uidata.layout;
 
 //fprintf (stderr, "grid: %d-%d p: %d-%d %d/%s\n", uigrid->ui_id, uigrid->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
-//fprintf (stderr, "   col: %d row: %d\n", uigridint->col, uigridint->row);
+//fprintf (stderr, "   col: %d row: %d\n", uigridgen->col, uigridgen->row);
 
   ncols = grid.numberOfColumns;
   nrows = grid.numberOfRows;
@@ -113,8 +113,8 @@ uiGridPackLoc_r (uiwcont_t *uigrid, uiwcont_t *uiwidget,
 
   if (numcols > 1) {
     [grid
-        mergeCellsInHorizontalRange : NSMakeRange (uigridint->row, numcols)
-        verticalRange: NSMakeRange (uigridint->col, 1)];
+        mergeCellsInHorizontalRange : NSMakeRange (uigridgen->row, numcols)
+        verticalRange: NSMakeRange (uigridgen->col, 1)];
   }
 }
 
@@ -126,7 +126,7 @@ uiGridPostProcess_r (uiwcont_t *uigrid, int row, int col, uiwcont_t *uiwidget)
   int           alignment;
 
 //fprintf (stderr, "grid: post: %d-%d %d %d : %d-%d %d/%s\n", uigrid->ui_id, uigrid->id, row, col, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
-  grid = uigrid->uidata.widget;
+  grid = uigrid->widget;
   layout = uiwidget->uidata.layout;
 
   /* align-horiz-start is the default */
@@ -168,7 +168,7 @@ uiGridSetColumnSpacing (uiwcont_t *uigrid, int sz)
     return;
   }
 
-  grid = uigrid->uidata.widget;
+  grid = uigrid->widget;
   grid.columnSpacing = uiBaseMarginSz * sz;
 }
 

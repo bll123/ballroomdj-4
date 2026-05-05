@@ -29,12 +29,12 @@ void
 uiGridPackLoc_r (uiwcont_t *uigrid, uiwcont_t *uiwidget,
     int row, int col, int numcols)
 {
-  uigridint_t    *uigridint;
+  uigridgeneric_t    *uigridgen;
 
   if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-size")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->uidata.packwidget == NULL) {
+  if (uiwidget == NULL || uiwidget->packwidget == NULL) {
     return;
   }
 

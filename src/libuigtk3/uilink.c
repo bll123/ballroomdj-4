@@ -53,10 +53,10 @@ uiLinkSet (uiwcont_t *uilink, const char *label, const char *uri)
   }
 
   if (uri != NULL) {
-    gtk_link_button_set_uri (GTK_LINK_BUTTON (uilink->uidata.widget), uri);
+    gtk_link_button_set_uri (GTK_LINK_BUTTON (uilink->widget), uri);
   }
   if (label != NULL) {
-    gtk_button_set_label (GTK_BUTTON (uilink->uidata.widget), label);
+    gtk_button_set_label (GTK_BUTTON (uilink->widget), label);
   }
 }
 
@@ -67,7 +67,7 @@ uiLinkSetActivateCallback (uiwcont_t *uilink, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uilink->uidata.widget, "activate-link",
+  g_signal_connect (uilink->widget, "activate-link",
       G_CALLBACK (uiLinkCallback), uicb);
 }
 

@@ -9,14 +9,12 @@ include (../utils/bdj4macros.cmake)
 # the executables starting with 'd' are used for debug purposes.
 
 add_executable (bdj4info bdj4info.c)
-addUIInclude (bdj4info)
 target_link_libraries (bdj4info PRIVATE
-  ${BDJ4_UI_LIB}
+  libbdj4ui
   libbdj4basic libbdj4common
 )
 # the ui library is required so that bdj4info can print the
 # ui backend.  this could be changed in the future.
-addUILibrary (bdj4info)
 addIntlLibrary (bdj4info)
 addWinVersionInfo (bdj4info)
 addWinManifest (bdj4info)
@@ -121,10 +119,9 @@ add_executable (uitest
   uitest.c
 )
 target_link_libraries (uitest PRIVATE
-  libbdj4uii ${BDJ4_UI_LIB}
+  libbdj4uii libbdj4ui
   libbdj4 libbdj4basic libbdj4common
 )
-addUILibrary (uitest)
 addIntlLibrary (uitest)
 
 # want to always build this

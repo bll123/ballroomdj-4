@@ -47,7 +47,7 @@ uiToggleButtonFree (uiwcont_t *uiwidget)
 void
 uiToggleButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
 {
-  uitoggle_t      *uitoggle;
+  uitoggleint_t      *uitoggle;
 
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON_TOGGLE, "toggle-set-alt-image")) {
     return;

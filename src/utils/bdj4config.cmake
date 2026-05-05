@@ -17,40 +17,6 @@ find_package (PkgConfig REQUIRED)
 find_package (Intl REQUIRED)
 find_package (Iconv)
 
-#### BDJ4 UI type
-
-# check for all supported ui interfaces
-if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3" OR
-    BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4" OR
-    BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null" OR
-    BDJ4_UI STREQUAL "macos" OR BDJ4_UI STREQUAL "MacOS" OR
-        BDJ4_UI STREQUAL "Macos")
-else()
-  message (FATAL_ERROR "BDJ4_UI (${BDJ4_UI}) not supported")
-endif()
-
-if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
-  add_compile_options (-DBDJ4_UI_GTK3=1)
-  set (BDJ4_UI_LIB_NAME libuigtk3)
-endif()
-
-if (BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
-  add_compile_options (-DBDJ4_UI_GTK4=1)
-  set (BDJ4_UI_LIB_NAME libuigtk4)
-endif()
-
-if (BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null")
-  add_compile_options (-DBDJ4_UI_NULL=1)
-  set (BDJ4_UI_LIB_NAME libuinull)
-endif()
-
-if (BDJ4_UI STREQUAL "macos" OR BDJ4_UI STREQUAL "MacOS" OR BDJ4_UI STREQUAL "Macos")
-  add_compile_options (-DBDJ4_UI_MACOS=1)
-  set (BDJ4_UI_LIB_NAME libuimacos)
-endif()
-
-set (BDJ4_UI_LIB libbdj4ui)
-
 #### bits / check supported platforms
 
 if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
@@ -82,12 +48,8 @@ find_program (GDBUSCODEGEN NAMES gdbus-codegen)
 
 #### UI packages
 
-if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
-  pkg_check_modules (PKG_GTK gtk+-3.0)
-endif()
-if (BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
-  pkg_check_modules (PKG_GTK libgtk-4-1)
-endif()
+pkg_check_modules (PKG_GTK gtk+-3.0)
+pkg_check_modules (PKG_GTK4 libgtk-4-1)
 
 #### volume
 
@@ -264,8 +226,7 @@ macro (checkAddLinkFlag flag)
   endif()
 endmacro()
 
-if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3" OR
-    BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
+if (PKG_GTK_FOUND)
   add_compile_options (-DGDK_DISABLE_DEPRECATED)
   add_compile_options (-DGTK_DISABLE_DEPRECATED)
 endif()

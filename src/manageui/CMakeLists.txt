@@ -16,11 +16,11 @@ add_executable (bdj4manageui
   managestats.c
 )
 target_link_libraries (bdj4manageui PRIVATE
-  libbdj4uim libbdj4uimp libbdj4uii ${BDJ4_UI_LIB}
+  libbdj4uim libbdj4uimp libbdj4uii libbdj4uig libbdj4ui
   libbdj4cont libbdj4audioid
   libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
 )
-addUILibrary (bdj4manageui)
+#addUILibrary (bdj4manageui)
 addIntlLibrary (bdj4manageui)
 addWinSockLibrary (bdj4manageui)
 addWinVersionInfo (bdj4manageui)
@@ -30,10 +30,10 @@ add_executable (bdj4bpmcounter
   bdj4bpmcounter.c
 )
 target_link_libraries (bdj4bpmcounter PRIVATE
-  ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
+  libbdj4ui libbdj4 libbdj4basic libbdj4common
   m
 )
-addUILibrary (bdj4bpmcounter)
+#addUILibrary (bdj4bpmcounter)
 addIntlLibrary (bdj4bpmcounter)
 addWinSockLibrary (bdj4bpmcounter)
 addWinVersionInfo (bdj4bpmcounter)

@@ -127,7 +127,7 @@ uiCreateDialog (uiwcont_t *window,
     [win setTitle : nstitle];
   }
 
-  box = uibox->uidata.widget;
+  box = uibox->widget;
   [win setContentView : box];
 
   uibox->packed = true;

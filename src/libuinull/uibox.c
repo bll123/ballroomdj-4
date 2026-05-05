@@ -48,7 +48,7 @@ uiBoxPackStart_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->uidata.packwidget == NULL) {
+  if (uiwidget == NULL || uiwidget->packwidget == NULL) {
     return;
   }
 
@@ -61,7 +61,7 @@ uiBoxPackStartExpandChildren_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-start-exp")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->uidata.packwidget == NULL) {
+  if (uiwidget == NULL || uiwidget->packwidget == NULL) {
     return;
   }
 
@@ -74,7 +74,7 @@ uiBoxPackEnd_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->uidata.packwidget == NULL) {
+  if (uiwidget == NULL || uiwidget->packwidget == NULL) {
     return;
   }
 
@@ -87,19 +87,10 @@ uiBoxPackEndExpandChildren_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
   if (! uiwcontValid (uibox, WCONT_T_BOX, "box-pack-end-exp")) {
     return;
   }
-  if (uiwidget == NULL || uiwidget->uidata.packwidget == NULL) {
+  if (uiwidget == NULL || uiwidget->packwidget == NULL) {
     return;
   }
 
   return;
 }
 
-void
-uiBoxSetSizeChgCallback (uiwcont_t *uiwindow, callback_t *uicb)
-{
-  if (! uiwcontValid (uiwindow, WCONT_T_BOX, "box-set-size-chg-cb")) {
-    return;
-  }
-
-  return;
-}

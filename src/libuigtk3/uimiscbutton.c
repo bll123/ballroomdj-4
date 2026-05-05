@@ -43,7 +43,7 @@ uiFontButtonGetFont (uiwcont_t *uiwidget)
     return NULL;
   }
 
-  sval = gtk_font_chooser_get_font (GTK_FONT_CHOOSER (uiwidget->uidata.widget));
+  sval = gtk_font_chooser_get_font (GTK_FONT_CHOOSER (uiwidget->widget));
   return sval;
 }
 
@@ -77,7 +77,7 @@ uiColorButtonGetColor (uiwcont_t *uiwidget, char *tbuff, size_t sz)
   }
 
   gtk_color_chooser_get_rgba (
-      GTK_COLOR_CHOOSER (uiwidget->uidata.widget), &gcolor);
+      GTK_COLOR_CHOOSER (uiwidget->widget), &gcolor);
   snprintf (tbuff, sz, "#%02x%02x%02x",
       (int) round (gcolor.red * 255.0),
       (int) round (gcolor.green * 255.0),
@@ -95,5 +95,5 @@ uiColorButtonSetColor (uiwcont_t *uiwidget, const char *color)
 
   gdk_rgba_parse (&rgba, color);
   gtk_color_chooser_set_rgba (
-      GTK_COLOR_CHOOSER (uiwidget->uidata.widget), &rgba);
+      GTK_COLOR_CHOOSER (uiwidget->widget), &rgba);
 }

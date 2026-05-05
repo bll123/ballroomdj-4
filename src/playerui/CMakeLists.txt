@@ -7,12 +7,12 @@ include (../utils/bdj4macros.cmake)
 
 add_executable (bdj4playerui bdj4playerui.c)
 target_link_libraries (bdj4playerui PRIVATE
-  libbdj4uip libbdj4uimp libbdj4uii ${BDJ4_UI_LIB} libbdj4cont
+  libbdj4uip libbdj4uimp libbdj4uii libbdj4uig libbdj4ui libbdj4cont
   libbdj4audiosrc
   libbdj4 libbdj4basic libbdj4common
   m
 )
-addUILibrary (bdj4playerui)
+#addUILibrary (bdj4playerui)
 addIntlLibrary (bdj4playerui)
 addWinSockLibrary (bdj4playerui)
 addWinVersionInfo (bdj4playerui)

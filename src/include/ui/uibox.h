@@ -14,7 +14,6 @@ extern "C" {
 uiwcont_t *uiCreateVertBox_r (void);
 uiwcont_t *uiCreateHorizBox_r (void);
 void uiBoxFree_r (uiwcont_t *uibox);
-void uiBoxSetSizeChgCallback (uiwcont_t *uiwidget, callback_t *uicb);
 
 void uiBoxPostProcess_r (uiwcont_t *uibox, uiwcont_t *prev, uiwcont_t *curr, uiwcont_t *next, bool last);
 

@@ -69,7 +69,7 @@ uichgindMarkNormal (uiwcont_t *uiwidget)
     return;
   }
 
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->widget;
   col = [NSColor colorWithCalibratedWhite : 0.0 alpha : 0.0];
   [widget setTextColor : col];
 
@@ -87,7 +87,7 @@ uichgindMarkChanged (uiwcont_t *uiwidget)
     return;
   }
 
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->widget;
   colorValues (guisetup.changedColor, &r, &g, &b);
   col = [NSColor colorWithCalibratedRed : r green : g blue : b alpha : 1.0];
   [widget setTextColor : col];

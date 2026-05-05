@@ -17,13 +17,13 @@
 #include "callback.h"
 #include "uiwcont.h"
 
-#include "ui-gtk3.h"
+#include "ui/uidef.h"
 
 #include "ui/uiwcont-int.h"
 
 #include "ui/uievents.h"
 
-typedef struct uievent {
+typedef struct uieventint {
   callback_t    *keypresscb;
   callback_t    *keyreleasecb;
   callback_t    *mbuttonpresscb;
@@ -44,7 +44,7 @@ typedef struct uievent {
   bool          ismaskedkey;
   bool          buttonpressed;
   bool          buttonreleased;
-} uievent_t;
+} uieventint_t;
 
 static gboolean uiEventKeyHandler (GtkWidget *w, GdkEventKey *event, gpointer udata);
 static gboolean uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpointer udata);
@@ -56,11 +56,11 @@ uiwcont_t *
 uiEventAlloc (void)
 {
   uiwcont_t   *uiwidget;
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
 
   uiwidget = uiwcontAlloc (WCONT_T_KEY, WCONT_T_KEY);
 
-  uievent = mdmalloc (sizeof (uievent_t));
+  uievent = mdmalloc (sizeof (uieventint_t));
   uievent->keypresscb = NULL;
   uievent->keyreleasecb = NULL;
   uievent->mbuttonpresscb = NULL;
@@ -89,7 +89,7 @@ uiEventAlloc (void)
 void
 uiEventFree (uiwcont_t *uiwidget)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
 
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-free")) {
     return;
@@ -107,7 +107,7 @@ uiEventCreateEventBox (uiwcont_t *uiwidgetp)
   uiwcont_t *wcont;
 
   widget = gtk_event_box_new ();
-  gtk_container_add (GTK_CONTAINER (widget), uiwidgetp->uidata.widget);
+  gtk_container_add (GTK_CONTAINER (widget), uiwidgetp->widget);
   /* the uivirtlist module creates an event box overlaying the */
   /* entire listing. */
   /* the event box must be below the children so that */
@@ -128,7 +128,7 @@ void
 uiEventSetKeyCallback (uiwcont_t *uieventwidget,
     uiwcont_t *uiwidgetp, callback_t *uicb)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
 
   if (! uiwcontValid (uieventwidget, WCONT_T_KEY, "key-set-cb")) {
     return;
@@ -139,11 +139,11 @@ uiEventSetKeyCallback (uiwcont_t *uieventwidget,
   uievent->keypresscb = uicb;
   uievent->keyreleasecb = uicb;
   /* usually, the key masks are already present */
-  gtk_widget_add_events (uiwidgetp->uidata.widget,
+  gtk_widget_add_events (uiwidgetp->widget,
       GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK);
-  g_signal_connect (uiwidgetp->uidata.widget, "key-press-event",
+  g_signal_connect (uiwidgetp->widget, "key-press-event",
       G_CALLBACK (uiEventKeyHandler), uieventwidget);
-  g_signal_connect (uiwidgetp->uidata.widget, "key-release-event",
+  g_signal_connect (uiwidgetp->widget, "key-release-event",
       G_CALLBACK (uiEventKeyHandler), uieventwidget);
 }
 
@@ -151,7 +151,7 @@ void
 uiEventSetButtonCallback (uiwcont_t *uieventwidget,
     uiwcont_t *uiwidgetp, callback_t *uicb)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
 
   if (! uiwcontValid (uieventwidget, WCONT_T_KEY, "key-set-button-cb")) {
     return;
@@ -161,11 +161,11 @@ uiEventSetButtonCallback (uiwcont_t *uieventwidget,
 
   uievent->mbuttonpresscb = uicb;
   uievent->mbuttonreleasecb = uicb;
-  gtk_widget_add_events (uiwidgetp->uidata.widget,
+  gtk_widget_add_events (uiwidgetp->widget,
       GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
-  g_signal_connect (uiwidgetp->uidata.widget, "button-press-event",
+  g_signal_connect (uiwidgetp->widget, "button-press-event",
       G_CALLBACK (uiEventButtonHandler), uieventwidget);
-  g_signal_connect (uiwidgetp->uidata.widget, "button-release-event",
+  g_signal_connect (uiwidgetp->widget, "button-release-event",
       G_CALLBACK (uiEventButtonHandler), uieventwidget);
 }
 
@@ -173,7 +173,7 @@ void
 uiEventSetScrollCallback (uiwcont_t *uieventwidget,
     uiwcont_t *uiwidgetp, callback_t *uicb)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
 
   if (! uiwcontValid (uieventwidget, WCONT_T_KEY, "key-set-scroll-cb")) {
     return;
@@ -182,8 +182,8 @@ uiEventSetScrollCallback (uiwcont_t *uieventwidget,
   uievent = uieventwidget->uiint.uievent;
 
   uievent->scrollcb = uicb;
-  gtk_widget_add_events (uiwidgetp->uidata.widget, GDK_SCROLL_MASK);
-  g_signal_connect (uiwidgetp->uidata.widget, "scroll-event",
+  gtk_widget_add_events (uiwidgetp->widget, GDK_SCROLL_MASK);
+  g_signal_connect (uiwidgetp->widget, "scroll-event",
       G_CALLBACK (uiEventScrollHandler), uieventwidget);
 }
 
@@ -191,7 +191,7 @@ void
 uiEventSetMotionCallback (uiwcont_t *uieventwidget,
     uiwcont_t *uiwidgetp, callback_t *uicb)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
 
   if (! uiwcontValid (uieventwidget, WCONT_T_KEY, "key-set-button-cb")) {
     return;
@@ -200,11 +200,11 @@ uiEventSetMotionCallback (uiwcont_t *uieventwidget,
   uievent = uieventwidget->uiint.uievent;
 
   uievent->motioncb = uicb;
-  gtk_widget_add_events (uiwidgetp->uidata.widget,
+  gtk_widget_add_events (uiwidgetp->widget,
       GDK_POINTER_MOTION_MASK | GDK_LEAVE_NOTIFY_MASK);
-  g_signal_connect (uiwidgetp->uidata.widget, "motion-notify-event",
+  g_signal_connect (uiwidgetp->widget, "motion-notify-event",
       G_CALLBACK (uiEventMotionHandler), uieventwidget);
-  g_signal_connect (uiwidgetp->uidata.widget, "leave-notify-event",
+  g_signal_connect (uiwidgetp->widget, "leave-notify-event",
       G_CALLBACK (uiEventLeaveHandler), uieventwidget);
 }
 
@@ -212,7 +212,7 @@ uiEventSetMotionCallback (uiwcont_t *uieventwidget,
 bool
 uiEventIsKeyPressEvent (uiwcont_t *uiwidget)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
   bool      rc = false;
 
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-key-press")) {
@@ -227,7 +227,7 @@ uiEventIsKeyPressEvent (uiwcont_t *uiwidget)
 bool
 uiEventIsKeyReleaseEvent (uiwcont_t *uiwidget)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
   bool      rc = false;
 
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-key-release")) {
@@ -242,7 +242,7 @@ uiEventIsKeyReleaseEvent (uiwcont_t *uiwidget)
 bool
 uiEventIsButtonPressEvent (uiwcont_t *uiwidget)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
   bool      rc = false;
 
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-button-press")) {
@@ -257,7 +257,7 @@ uiEventIsButtonPressEvent (uiwcont_t *uiwidget)
 bool
 uiEventIsButtonDoublePressEvent (uiwcont_t *uiwidget)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
   bool      rc = false;
 
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-button-press")) {
@@ -272,7 +272,7 @@ uiEventIsButtonDoublePressEvent (uiwcont_t *uiwidget)
 bool
 uiEventIsButtonReleaseEvent (uiwcont_t *uiwidget)   /* KEEP */
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
   bool      rc = false;
 
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-button-release")) {
@@ -287,7 +287,7 @@ uiEventIsButtonReleaseEvent (uiwcont_t *uiwidget)   /* KEEP */
 bool
 uiEventIsMovementKey (uiwcont_t *uiwidget)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
   bool      rc = false;
 
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-move")) {
@@ -317,7 +317,7 @@ uiEventIsMovementKey (uiwcont_t *uiwidget)
 bool
 uiEventIsKey (uiwcont_t *uiwidget, unsigned char keyval)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
   bool      rc = false;
   guint     tval1, tval2;
 
@@ -340,7 +340,7 @@ uiEventIsKey (uiwcont_t *uiwidget, unsigned char keyval)
 bool
 uiEventIsEnterKey (uiwcont_t *uiwidget)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
   bool      rc = false;
 
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-enter")) {
@@ -361,7 +361,7 @@ uiEventIsEnterKey (uiwcont_t *uiwidget)
 bool
 uiEventIsAudioPlayKey (uiwcont_t *uiwidget)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
   bool      rc = false;
 
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-aud-play")) {
@@ -380,7 +380,7 @@ uiEventIsAudioPlayKey (uiwcont_t *uiwidget)
 bool
 uiEventIsAudioPauseKey (uiwcont_t *uiwidget)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
   bool      rc = false;
 
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-aud-pause")) {
@@ -402,7 +402,7 @@ uiEventIsAudioPauseKey (uiwcont_t *uiwidget)
 bool
 uiEventIsAudioNextKey (uiwcont_t *uiwidget)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
   bool      rc = false;
 
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-aud-next")) {
@@ -421,7 +421,7 @@ uiEventIsAudioNextKey (uiwcont_t *uiwidget)
 bool
 uiEventIsAudioPrevKey (uiwcont_t *uiwidget)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
   bool      rc = false;
 
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-aud-prev")) {
@@ -441,7 +441,7 @@ uiEventIsAudioPrevKey (uiwcont_t *uiwidget)
 bool
 uiEventIsUpKey (uiwcont_t *uiwidget)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
   bool      rc = false;
 
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-up")) {
@@ -465,7 +465,7 @@ uiEventIsUpKey (uiwcont_t *uiwidget)
 bool
 uiEventIsDownKey (uiwcont_t *uiwidget)    /* KEEP */
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
   bool      rc = false;
 
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-down")) {
@@ -488,7 +488,7 @@ uiEventIsDownKey (uiwcont_t *uiwidget)    /* KEEP */
 bool
 uiEventIsPageUpDownKey (uiwcont_t *uiwidget)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
   bool      rc = false;
 
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-page-updown")) {
@@ -511,7 +511,7 @@ uiEventIsPageUpDownKey (uiwcont_t *uiwidget)
 bool
 uiEventIsNavKey (uiwcont_t *uiwidget)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
   bool      rc = false;
 
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-nav")) {
@@ -534,7 +534,7 @@ uiEventIsNavKey (uiwcont_t *uiwidget)
 bool
 uiEventIsAltPressed (uiwcont_t *uiwidget)     /* KEEP */
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
 
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-alt")) {
     return false;
@@ -547,7 +547,7 @@ uiEventIsAltPressed (uiwcont_t *uiwidget)     /* KEEP */
 bool
 uiEventIsControlPressed (uiwcont_t *uiwidget)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
 
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-control")) {
     return false;
@@ -560,7 +560,7 @@ uiEventIsControlPressed (uiwcont_t *uiwidget)
 bool
 uiEventIsShiftPressed (uiwcont_t *uiwidget)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
 
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-is-shift")) {
     return false;
@@ -573,7 +573,7 @@ uiEventIsShiftPressed (uiwcont_t *uiwidget)
 int
 uiEventGetButton (uiwcont_t *uiwidget)
 {
-  uievent_t   *uievent;
+  uieventint_t   *uievent;
   int       rc = -1;
 
   if (! uiwcontValid (uiwidget, WCONT_T_KEY, "key-button-pressed")) {
@@ -598,7 +598,7 @@ static gboolean
 uiEventKeyHandler (GtkWidget *w, GdkEventKey *event, gpointer udata)
 {
   uiwcont_t *uiwidget = udata;
-  uievent_t *uievent;
+  uieventint_t *uievent;
   guint     keyval;
   guint     ttype;
   int       rc = UICB_CONT;
@@ -722,7 +722,7 @@ static gboolean
 uiEventButtonHandler (GtkWidget *w, GdkEventButton *event, gpointer udata)
 {
   uiwcont_t *uiwidget = udata;
-  uievent_t *uievent;
+  uieventint_t *uievent;
   guint     button;
   guint     ttype;
   int       rc = UICB_CONT;
@@ -786,7 +786,7 @@ static gboolean
 uiEventScrollHandler (GtkWidget *w, GdkEventScroll *event, gpointer udata)
 {
   uiwcont_t *uiwidget = udata;
-  uievent_t *uievent;
+  uieventint_t *uievent;
   guint     ttype;
   int       rc = UICB_STOP;
   GdkScrollDirection gdir;
@@ -826,7 +826,7 @@ static gboolean
 uiEventMotionHandler (GtkWidget *w, GdkEventMotion *event, gpointer udata)
 {
   uiwcont_t *uiwidget = udata;
-  uievent_t *uievent;
+  uieventint_t *uievent;
   double    x, y;
   int       yoffset = -1;
   int       xoffset = -1;
@@ -848,7 +848,7 @@ static gboolean
 uiEventLeaveHandler (GtkWidget *w, GdkEventCrossing *event, gpointer udata)
 {
   uiwcont_t *uiwidget = udata;
-  uievent_t *uievent;
+  uieventint_t *uievent;
   int       rc = UICB_CONT;
 
   uievent = uiwidget->uiint.uievent;

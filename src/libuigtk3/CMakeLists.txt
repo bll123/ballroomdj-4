@@ -5,7 +5,8 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
-add_library (${BDJ4_UI_LIB} SHARED
+add_library (libbdj4ui SHARED
+CMakeLists.txt
   uibox.c
   uibutton.c
   uichgind.c
@@ -34,20 +35,27 @@ add_library (${BDJ4_UI_LIB} SHARED
   uiwidget.c
   uiwindow.c
 )
-addUIInclude (${BDJ4_UI_LIB})
-target_link_libraries (${BDJ4_UI_LIB} PRIVATE
-  objuigeneral objuios libbdj4basic libbdj4common
+target_compile_options (libbdj4ui PRIVATE
+  -DBDJ4_UI_GTK3=1
 )
-addUILibrary (${BDJ4_UI_LIB})
-addIntlLibrary (${BDJ4_UI_LIB})
-addWinSockLibrary (${BDJ4_UI_LIB})
+target_include_directories (libbdj4ui PRIVATE
+  ${PKG_GTK_INCLUDE_DIRS}
+)
+target_link_libraries (libbdj4ui PRIVATE
+# objuigeneral
+  objuios libbdj4basic libbdj4common
+)
+target_link_libraries (libbdj4ui PRIVATE ${PKG_GTK_LDFLAGS})
 
-uilibPreSymlink ()
+addIntlLibrary (libbdj4ui)
+addWinSockLibrary (libbdj4ui)
+
+uilibPreSymlink (libuigtk3)
 
 install (TARGETS
-  ${BDJ4_UI_LIB}
+  libbdj4ui
   DESTINATION ${DEST_BIN}
 )
 
-updateRPath (${BDJ4_UI_LIB})
-uilibSymlink ()
+updateRPath (libbdj4ui)
+uilibSymlink (libbdj4ui libuigtk3)

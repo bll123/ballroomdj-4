@@ -25,6 +25,7 @@
 #include "uiclass.h"
 #include "uiwcont.h"
 
+#include "ui/uidef.h"
 #include "ui/uiwcont-int.h"
 
 #include "ui/uiimage.h"
@@ -33,13 +34,13 @@
 #include "ui/uispecific.h"
 #include "ui/uiswitch.h"
 
-typedef struct uiswitch {
+typedef struct uiswitchint {
   GtkWidget   *currimage;
   GtkWidget   *image;
   GdkPixbuf   *imageraw;
   GtkWidget   *altimage;
   GdkPixbuf   *altimageraw;
-} uiswitch_t;
+} uiswitchint_t;
 
 static void uiSwitchImageHandler (GtkButton *b, gpointer udata);
 static void uiSwitchToggleHandler (GtkButton *b, gpointer udata);
@@ -49,7 +50,7 @@ uiwcont_t *
 uiCreateSwitch (int value)
 {
   uiwcont_t   *uiwidget;
-  uiswitch_t  *uiswitch;
+  uiswitchint_t  *uiswitch;
   GtkWidget   *widget;
   GtkWidget   *image;
   const char  *sfx = "";
@@ -61,7 +62,7 @@ uiCreateSwitch (int value)
 
   uiwidget = uiwcontAlloc (WCONT_T_SWITCH, WCONT_T_SWITCH);
 
-  uiswitch = mdmalloc (sizeof (uiswitch_t));
+  uiswitch = mdmalloc (sizeof (uiswitchint_t));
   uiswitch->currimage = NULL;
   uiswitch->image = NULL;
   uiswitch->imageraw = NULL;
@@ -118,7 +119,7 @@ uiCreateSwitch (int value)
 void
 uiSwitchFree (uiwcont_t *uiwidget)
 {
-  uiswitch_t    *sw;
+  uiswitchint_t    *sw;
 
   if (! uiwcontValid (uiwidget, WCONT_T_SWITCH, "switch-free")) {
     return;
@@ -135,7 +136,7 @@ uiSwitchSetValue (uiwcont_t *uiwidget, int value)
     return;
   }
 
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (uiwidget->uidata.widget), value);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (uiwidget->widget), value);
   uiSwitchSetImage (uiwidget);
 }
 
@@ -146,7 +147,7 @@ uiSwitchGetValue (uiwcont_t *uiwidget)
     return false;
   }
 
-  return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiwidget->uidata.widget));
+  return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiwidget->widget));
 }
 
 void
@@ -156,7 +157,7 @@ uiSwitchSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uiwidget->uidata.widget, "toggled",
+  g_signal_connect (uiwidget->widget, "toggled",
       G_CALLBACK (uiSwitchToggleHandler), uicb);
 }
 
@@ -185,21 +186,21 @@ uiSwitchSetImage (void *udata)
   GtkWidget     *w;
   uiwcont_t     *uiwidget = udata;
   int           value;
-  uiswitch_t    *sw;
+  uiswitchint_t    *sw;
 
   if (uiwidget == NULL || uiwidget->wtype != WCONT_T_SWITCH) {
     return;
   }
 
-  w = uiwidget->uidata.widget;
+  w = uiwidget->widget;
   sw = uiwidget->uiint.uiswitch;
 
   /* reset the sensitive state before setting the image, */
   /* otherwise the image gets stuck in the wrong state */
   /* the caller must set the widget state after setting the value */
-  gtk_widget_set_sensitive (uiwidget->uidata.widget, UIWIDGET_ENABLE);
+  gtk_widget_set_sensitive (uiwidget->widget, UIWIDGET_ENABLE);
 
-  value = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiwidget->uidata.widget));
+  value = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiwidget->widget));
   gtk_image_clear (GTK_IMAGE (sw->currimage));
   if (value) {
     gtk_image_set_from_pixbuf (GTK_IMAGE (sw->currimage), sw->altimageraw);

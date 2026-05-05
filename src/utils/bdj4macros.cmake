@@ -24,8 +24,7 @@ macro (addIOKitFramework name)
 endmacro()
 
 macro (addUIInclude name)
-  if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3" OR
-      BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
+  if (PKG_GTK_FOUND)
     target_include_directories (${name} PRIVATE
       ${PKG_GTK_INCLUDE_DIRS}
     )
@@ -33,12 +32,9 @@ macro (addUIInclude name)
 endmacro()
 
 macro (addUILibrary name)
-  if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3" OR
-      BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
+  if (PKG_GTK_FOUND)
     target_link_libraries (${name} PRIVATE ${PKG_GTK_LDFLAGS})
-  endif()
-  if (BDJ4_UI STREQUAL "macos" OR BDJ4_UI STREQUAL "MacOS" OR
-      BDJ4_UI STREQUAL "Macos")
+  else()
     target_link_options (${name} PRIVATE
       -framework Cocoa
     )
@@ -135,27 +131,28 @@ macro (updateRPath name)
   endif()
 endmacro()
 
-macro (uilibPreSymlink)
+macro (uilibPreSymlink target)
   if (SYSLINUX OR SYSMACOS)
     install (
-      CODE "file (REMOVE ${DEST_BIN}/$<TARGET_FILE_NAME:${BDJ4_UI_LIB}>)"
+      CODE "message (\"REMOVE ${DEST_BIN}/${name}${CMAKE_SHARED_LIBRARY_SUFFIX}>\")"
+      CODE "file (REMOVE ${DEST_BIN}/${name}${CMAKE_SHARED_LIBRARY_SUFFIX}>)"
     )
   endif()
 endmacro()
 
-macro (uilibSymlink)
+macro (uilibSymlink name target)
   if (SYSLINUX OR SYSMACOS)
     install (
-#      CODE "message (\"RENAME ${DEST_BIN}/$<TARGET_FILE_NAME:${BDJ4_UI_LIB}>
-#          ${DEST_BIN}/${BDJ4_UI_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}\")"
-      CODE "file (RENAME ${DEST_BIN}/$<TARGET_FILE_NAME:${BDJ4_UI_LIB}>
-          ${DEST_BIN}/${BDJ4_UI_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX})"
+      CODE "message (\"RENAME ${DEST_BIN}/$<TARGET_FILE_NAME:${name}>
+          ${DEST_BIN}/${BDJ4_UI_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}\")"
+      CODE "file (RENAME ${DEST_BIN}/${name}.*>
+          ${DEST_BIN}/${name}${CMAKE_SHARED_LIBRARY_SUFFIX})"
 #      CODE "message (\"CREATE_LINK
-#          ${DEST_BIN}/${BDJ4_UI_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
-#          ${DEST_BIN}/$<TARGET_FILE_NAME:${BDJ4_UI_LIB}> SYMBOLIC\")"
+#          ${DEST_BIN}/${name}${CMAKE_SHARED_LIBRARY_SUFFIX}
+#          ${DEST_BIN}/${name}> SYMBOLIC\")"
       CODE "file (CREATE_LINK
           ${DEST_BIN}/${BDJ4_UI_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
-          ${DEST_BIN}/$<TARGET_FILE_NAME:${BDJ4_UI_LIB}> SYMBOLIC)"
+          ${DEST_BIN}/$<TARGET_FILE_NAME:${name}> SYMBOLIC)"
     )
   endif()
 endmacro()

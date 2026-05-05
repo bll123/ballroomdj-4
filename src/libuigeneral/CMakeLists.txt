@@ -5,8 +5,7 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
-# the various main ui libraries (libuigtk3, libuimacos) will link this in
-add_library (objuigeneral OBJECT
+add_library (libbdj4uig SHARED
   uibox.c
   uibutton.c
   uientry.c
@@ -18,4 +17,15 @@ add_library (objuigeneral OBJECT
   uiwcont.c
   uiwcontfree.c
 )
-addUIInclude (objuigeneral)
+#addUIInclude (libbdj4uig)
+target_link_libraries (libbdj4uig PRIVATE
+  libbdj4ui
+  libbdj4 libbdj4basic libbdj4common
+)
+#addIntlLibrary (libbdj4uig)
+install (TARGETS
+  libbdj4uig
+  DESTINATION ${DEST_BIN}
+)
+
+updateRPath (libbdj4uig)

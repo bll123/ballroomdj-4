@@ -23,24 +23,23 @@
 #include "ui/uiwidget.h"
 #include "ui/uientry.h"
 
-typedef struct uientry {
+typedef struct uientryint {
   GtkEntryBuffer  *buffer;
   bool            changed;
-} uientry_t;
+} uientryint_t;
 
 static void uigtkEntryValidateHandler (GtkEditable *e, gpointer udata);
 static gboolean uiEntryFocusInHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata);
 static gboolean uiEntryFocusOutHandler (GtkWidget* w, GdkEventFocus *event, gpointer udata);
 
 uiwcont_t *
-uiEntryInit (int entrySize, int maxSize)
+uiEntryInit_r (int entrySize, int maxSize)
 {
   uiwcont_t     *uiwidget;
-  uientry_t     *uientry;
-  uientryint_t *ebase;
+  uientryint_t     *uientry;
   GtkWidget     *widget;
 
-  uientry = mdmalloc (sizeof (uientry_t));
+  uientry = mdmalloc (sizeof (uientryint_t));
   uientry->buffer = gtk_entry_buffer_new (NULL, -1);
 
   widget = gtk_entry_new_with_buffer (uientry->buffer);
@@ -50,30 +49,20 @@ uiEntryInit (int entrySize, int maxSize)
   uiwidget->uiint.uientry = uientry;
   uientry->changed = false;
 
-  ebase = &uiwidget->uiint.uientryint;
-  ebase->entrySize = entrySize;
-  ebase->maxSize = maxSize;
-  ebase->validateFunc = NULL;
-  ebase->label = "";
-  ebase->udata = NULL;
-  mstimeset (&ebase->validateTimer, TM_TIMER_OFF);
-  ebase->valdelay = false;
-  ebase->valid = true;
-
-  gtk_entry_set_width_chars (GTK_ENTRY (uiwidget->uidata.widget), ebase->entrySize);
-  gtk_entry_set_max_length (GTK_ENTRY (uiwidget->uidata.widget), ebase->maxSize);
-  gtk_entry_set_input_purpose (GTK_ENTRY (uiwidget->uidata.widget), GTK_INPUT_PURPOSE_FREE_FORM);
-  gtk_widget_set_halign (uiwidget->uidata.widget, GTK_ALIGN_START);
-  gtk_widget_set_hexpand (uiwidget->uidata.widget, FALSE);
+  gtk_entry_set_width_chars (GTK_ENTRY (uiwidget->widget), entrySize);
+  gtk_entry_set_max_length (GTK_ENTRY (uiwidget->widget), maxSize);
+  gtk_entry_set_input_purpose (GTK_ENTRY (uiwidget->widget), GTK_INPUT_PURPOSE_FREE_FORM);
+  gtk_widget_set_halign (uiwidget->widget, GTK_ALIGN_START);
+  gtk_widget_set_hexpand (uiwidget->widget, FALSE);
 
   return uiwidget;
 }
 
 
 void
-uiEntryFree (uiwcont_t *uiwidget)
+uiEntryFree_r (uiwcont_t *uiwidget)
 {
-  uientry_t   *uientry;
+  uientryint_t   *uientry;
 
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-free")) {
     return;
@@ -87,15 +76,11 @@ uiEntryFree (uiwcont_t *uiwidget)
 void
 uiEntrySetWidth (uiwcont_t *uiwidget, int maxWidth)
 {
-  uientryint_t *ebase;
-
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-width")) {
     return;
   }
 
-  gtk_entry_set_width_chars (GTK_ENTRY (uiwidget->uidata.widget), maxWidth);
-  ebase = &uiwidget->uiint.uientryint;
-  ebase->entrySize = maxWidth;
+  gtk_entry_set_width_chars (GTK_ENTRY (uiwidget->widget), maxWidth);
 }
 
 void
@@ -105,7 +90,7 @@ uiEntrySetIcon (uiwcont_t *uiwidget, const char *name)
     return;
   }
 
-  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (uiwidget->uidata.widget),
+  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (uiwidget->widget),
       GTK_ENTRY_ICON_SECONDARY, name);
 }
 
@@ -116,14 +101,14 @@ uiEntryClearIcon (uiwcont_t *uiwidget)
     return;
   }
 
-  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (uiwidget->uidata.widget),
+  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (uiwidget->widget),
       GTK_ENTRY_ICON_SECONDARY, NULL);
 }
 
 const char *
 uiEntryGetValue (uiwcont_t *uiwidget)
 {
-  uientry_t   *uientry;
+  uientryint_t   *uientry;
   const char  *value;
 
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-get-value")) {
@@ -143,7 +128,7 @@ uiEntryGetValue (uiwcont_t *uiwidget)
 void
 uiEntrySetValue (uiwcont_t *uiwidget, const char *value)
 {
-  uientry_t   *uientry;
+  uientryint_t   *uientry;
 
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-value")) {
     return;
@@ -169,7 +154,7 @@ uiEntrySetInternalValidate (uiwcont_t *uiwidget)
     return;
   }
 
-  g_signal_connect (uiwidget->uidata.widget, "changed",
+  g_signal_connect (uiwidget->widget, "changed",
       G_CALLBACK (uigtkEntryValidateHandler), uiwidget);
 }
 
@@ -180,7 +165,7 @@ uiEntrySetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uiwidget->uidata.widget, "focus-in-event",
+  g_signal_connect (uiwidget->widget, "focus-in-event",
       G_CALLBACK (uiEntryFocusInHandler), uicb);
 }
 
@@ -191,7 +176,7 @@ uiEntrySetFocusOutCallback (uiwcont_t *uiwidget, callback_t *uicb)
     return;
   }
 
-  g_signal_connect (uiwidget->uidata.widget, "focus-out-event",
+  g_signal_connect (uiwidget->widget, "focus-out-event",
       G_CALLBACK (uiEntryFocusOutHandler), uicb);
 }
 
@@ -208,7 +193,7 @@ uiEntrySetState (uiwcont_t *uiwidget, int state)
 bool
 uiEntryChanged (uiwcont_t *uiwidget)
 {
-  uientry_t   *uientry;
+  uientryint_t   *uientry;
 
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-changed")) {
     return false;
@@ -221,7 +206,7 @@ uiEntryChanged (uiwcont_t *uiwidget)
 void
 uiEntryClearChanged (uiwcont_t *uiwidget)
 {
-  uientry_t   *uientry;
+  uientryint_t   *uientry;
 
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-changed")) {
     return;
@@ -238,7 +223,7 @@ uiEntryAlignEnd (uiwcont_t *uiwidget)
     return;
   }
 
-  gtk_entry_set_alignment (GTK_ENTRY (uiwidget->uidata.widget), 1.0);
+  gtk_entry_set_alignment (GTK_ENTRY (uiwidget->widget), 1.0);
 }
 
 /* internal routines */
@@ -247,7 +232,7 @@ static void
 uigtkEntryValidateHandler (GtkEditable *e, gpointer udata)
 {
   uiwcont_t     *uiwidget = udata;
-  uientry_t   *uientry;
+  uientryint_t   *uientry;
 
   uientry = uiwidget->uiint.uientry;
   uientry->changed = true;

@@ -23,19 +23,18 @@
 #include "ui/uiwidget.h"
 #include "ui/uientry.h"
 
-typedef struct uientry {
+typedef struct uientryint {
   bool            changed;
-} uientry_t;
+} uientryint_t;
 
 uiwcont_t *
-uiEntryInit (int entrySize, int maxSize)
+uiEntryInit_r (int entrySize, int maxSize)
 {
-  uientry_t       *uientry;
+  uientryint_t       *uientry;
   uiwcont_t       *uiwidget;
   NSTextField     *widget;
-  uientryint_t   *ebase;
 
-  uientry = mdmalloc (sizeof (uientry_t));
+  uientry = mdmalloc (sizeof (uientryint_t));
   uientry->changed = false;
 
   widget = [[NSTextField alloc] init];
@@ -52,35 +51,26 @@ uiEntryInit (int entrySize, int maxSize)
 
   uiWidgetSetIdentifier (uiwidget, "entry");
 
-  ebase = &uiwidget->uiint.uientryint;
-  ebase->entrySize = entrySize;
-  ebase->maxSize = maxSize;
-  ebase->validateFunc = NULL;
-  ebase->label = "";
-  ebase->udata = NULL;
-  mstimeset (&ebase->validateTimer, TM_TIMER_OFF);
-  ebase->valdelay = false;
-  ebase->valid = true;
-
-//  gtk_entry_set_width_chars (GTK_ENTRY (uiwidget->uidata.widget), uientry->entrySize);
-//  gtk_entry_set_max_length (GTK_ENTRY (uiwidget->uidata.widget), uientry->maxSize);
-//  gtk_entry_set_input_purpose (GTK_ENTRY (uiwidget->uidata.widget), GTK_INPUT_PURPOSE_FREE_FORM);
-//  gtk_widget_set_halign (uiwidget->uidata.widget, GTK_ALIGN_START);
-//  gtk_widget_set_hexpand (uiwidget->uidata.widget, FALSE);
+//  gtk_entry_set_width_chars (GTK_ENTRY (uiwidget->widget), uientry->entrySize);
+//  gtk_entry_set_max_length (GTK_ENTRY (uiwidget->widget), uientry->maxSize);
+//  gtk_entry_set_input_purpose (GTK_ENTRY (uiwidget->widget), GTK_INPUT_PURPOSE_FREE_FORM);
+//  gtk_widget_set_halign (uiwidget->widget, GTK_ALIGN_START);
+//  gtk_widget_set_hexpand (uiwidget->widget, FALSE);
 
   return uiwidget;
 }
 
 void
-uiEntryFree (uiwcont_t *uiwidget)
+uiEntryFree_r (uiwcont_t *uiwidget)
 {
-  uientry_t   *uientry;
+  uientryint_t   *uientry;
 
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-free")) {
     return;
   }
 
   uientry = uiwidget->uiint.uientry;
+  mdfree (uiwidget->uiint.uientrygen);
   mdfree (uientry);
   /* the container is freed by uiwcontFree() */
 }
@@ -88,15 +78,11 @@ uiEntryFree (uiwcont_t *uiwidget)
 void
 uiEntrySetWidth (uiwcont_t *uiwidget, int maxWidth)
 {
-  uientryint_t *ebase;
-
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-set-width")) {
     return;
   }
 
   // set-max-width
-  ebase = &uiwidget->uiint.uientryint;
-  ebase->entrySize = maxWidth;
 }
 
 void
@@ -142,7 +128,7 @@ uiEntrySetValue (uiwcont_t *uiwidget, const char *value)
     value = "";
   }
 
-  widget = uiwidget->uidata.widget;
+  widget = uiwidget->widget;
   [widget setStringValue : [NSString stringWithUTF8String : value]];
 
   return;
@@ -190,7 +176,7 @@ uiEntrySetState (uiwcont_t *uiwidget, int state)
 bool
 uiEntryChanged (uiwcont_t *uiwidget)
 {
-  uientry_t   *uientry;
+  uientryint_t   *uientry;
 
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-changed")) {
     return false;
@@ -203,7 +189,7 @@ uiEntryChanged (uiwcont_t *uiwidget)
 void
 uiEntryClearChanged (uiwcont_t *uiwidget)
 {
-  uientry_t   *uientry;
+  uientryint_t   *uientry;
 
   if (! uiwcontValid (uiwidget, WCONT_T_ENTRY, "entry-changed")) {
     return;
@@ -220,7 +206,7 @@ uiEntryAlignEnd (uiwcont_t *uiwidget)
     return;
   }
 
-  // gtk_entry_set_alignment (GTK_ENTRY (uiwidget->uidata.widget), 1.0);
+  // gtk_entry_set_alignment (GTK_ENTRY (uiwidget->widget), 1.0);
 }
 
 

@@ -18,9 +18,9 @@
 #include "ui/uiwidget.h"
 #include "ui/uimenu.h"
 
-typedef struct uimenu {
+typedef struct uimenuint {
   int         junk;
-} uimenu_t;
+} uimenuint_t;
 
 uiwcont_t *
 uiCreateMenubar (void)

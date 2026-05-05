@@ -18,9 +18,9 @@
 #include "ui/uiwidget.h"
 #include "ui/uiscrollbar.h"
 
-typedef struct uiscrollbar {
+typedef struct uiscrollbarint {
   int         junk;
-} uiscrollbar_t;
+} uiscrollbarint_t;
 
 uiwcont_t *
 uiCreateVerticalScrollbar (double upper)

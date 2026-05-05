@@ -157,6 +157,8 @@ uiwcontUIInit (uiwcont_t *uiwidget)
 {
   macoslayout_t *layout;
 
+  uiwidget->uidata = mdmalloc (sizeof (uispecific_t));
+
   if (uiwidget->uidata.layout != NULL) {
     return;
   }
@@ -209,7 +211,7 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
     uiwidget->uidata.layout = mdmalloc (sizeof (macoslayout_t));
   }
 
-  view = uiwidget->uidata.packwidget;
+  view = uiwidget->packwidget;
   layout = uiwidget->uidata.layout;
 
   layout->container = [[NSStackView alloc] init];
@@ -255,7 +257,7 @@ uiwcontUIWidgetInit (uiwcont_t *uiwidget)
       NSLayoutPriorityRequired
       forOrientation : NSLayoutConstraintOrientationVertical];
 
-  view = uiwidget->uidata.widget;
+  view = uiwidget->widget;
 
   [view setContentHuggingPriority :
       NSLayoutPriorityDefaultHigh
@@ -279,5 +281,6 @@ void
 uiwcontUIFree (uiwcont_t *uiwidget)
 {
   mdfree (uiwidget->uidata.layout);
+  mdfree (uiwidget->uidata);
   return;
 }

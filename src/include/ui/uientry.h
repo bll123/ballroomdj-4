@@ -22,8 +22,8 @@ enum {
   UIENTRY_OK,
 };
 
-uiwcont_t *uiEntryInit (int entrySize, int maxSize);
-void uiEntryFree (uiwcont_t *entry);
+uiwcont_t *uiEntryInit_r (int entrySize, int maxSize);
+void uiEntryFree_r (uiwcont_t *entry);
 void uiEntrySetWidth (uiwcont_t *uiwidget, int maxWidth);
 void uiEntrySetIcon (uiwcont_t *entry, const char *name);
 void uiEntryClearIcon (uiwcont_t *entry);

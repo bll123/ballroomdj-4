@@ -10,13 +10,7 @@ extern "C" {
 #endif
 
 typedef struct uispecific {
-  GtkWidget       *packwidget;
-  union {
-    GtkWidget     *widget;
-    GtkSizeGroup  *sg;
-    GtkTextBuffer *buffer;
-    GtkAdjustment *adjustment;
-  };
+  void    *junk;
 } uispecific_t;
 
 #if defined (__cplusplus) || defined (c_plusplus)

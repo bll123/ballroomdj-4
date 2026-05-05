@@ -68,7 +68,7 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
     return;
   }
 
-  nb = uinotebook->uidata.widget;
+  nb = uinotebook->widget;
   [nb setTabViewType : NSNoTabsNoBorder];
 
   uibox->packed = true;
@@ -87,7 +87,7 @@ uiNotebookSetPage (uiwcont_t *uinotebook, int pagenum)
     return;
   }
 
-  nb = uinotebook->uidata.widget;
+  nb = uinotebook->widget;
   if (pagenum < nb.numberOfTabViewItems) {
     [nb selectTabViewItemAtIndex : pagenum];
   } else {
