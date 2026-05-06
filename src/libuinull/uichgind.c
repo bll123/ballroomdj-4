@@ -24,19 +24,6 @@ uiCreateChangeIndicator (void)
 }
 
 void
-uichgindPackGrid (uiwcont_t *uiwidget, uiwcont_t *grid)
-{
-  if (! uiwcontValid (uiwidget, WCONT_T_CHGIND, "ci-pack-grid")) {
-    return;
-  }
-  if (! uiwcontValid (grid, WCONT_T_GRID, "ci-pack-grid")) {
-    return;
-  }
-
-  uiGridPack (grid, uiwidget, WCONT_KEEP);
-}
-
-void
 uichgindMarkNormal (uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_CHGIND, "ci-mark-norm")) {

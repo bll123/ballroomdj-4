@@ -15,7 +15,6 @@ add_library (libbdj4uig SHARED
   uiutils.c
   uiwcontfree.c
 )
-#addUIInclude (libbdj4uig)
 target_link_libraries (libbdj4uig PRIVATE
   libbdj4ui
   libbdj4 libbdj4basic libbdj4common

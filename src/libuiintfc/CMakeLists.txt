@@ -26,12 +26,10 @@ add_library (libbdj4uii SHARED
   uivlutil.c
   uivnb.c
 )
-#addUIInclude (libbdj4uii)
 target_link_libraries (libbdj4uii PRIVATE
   libbdj4uig libbdj4ui
   libbdj4 libbdj4basic libbdj4common
 )
-#addUILibrary (libbdj4uii)
 addIntlLibrary (libbdj4uii)
 addWinSockLibrary (libbdj4uii)
 

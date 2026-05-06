@@ -57,4 +57,4 @@ install (TARGETS
 )
 updateRPath (libbdj4ui)
 
-uilibSymlink (libbdj4ui libuigtk3)
+uilibSymlink (libbdj4ui ${BDJ4_UI_LIB_NAME})

@@ -17,6 +17,45 @@ find_package (PkgConfig REQUIRED)
 find_package (Intl REQUIRED)
 find_package (Iconv)
 
+#### BDJ4 UI type
+
+# check for all supported ui interfaces
+if (NOT BDJ4_UI OR BDJ4_UI STREQUAL "")
+  set (BDJ4_UI "GTK3")
+endif()
+
+if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3" OR
+    BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4" OR
+    BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null" OR
+    BDJ4_UI STREQUAL "macos" OR BDJ4_UI STREQUAL "MacOS" OR
+        BDJ4_UI STREQUAL "Macos")
+else()
+  message (FATAL_ERROR "BDJ4_UI (${BDJ4_UI}) not supported")
+endif()
+
+if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
+  set (BDJ4_UI_LIB_NAME "libuigtk3")
+  set (BDJ4_UI_GTK3 TRUE)
+endif()
+
+if (BDJ4_UI STREQUAL "GTK4" OR BDJ4_UI STREQUAL "gtk4")
+  message (FATAL_ERROR "BDJ4_UI (${BDJ4_UI}) not implemented")
+  set (BDJ4_UI_LIB_NAME "libuigtk4")
+  set (BDJ4_UI_GTK4 TRUE)
+endif()
+
+if (BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null")
+  set (BDJ4_UI_LIB_NAME "libuinull")
+  set (BDJ4_UI_NULL TRUE)
+endif()
+
+if (BDJ4_UI STREQUAL "macos" OR BDJ4_UI STREQUAL "MacOS" OR BDJ4_UI STREQUAL "Macos")
+  set (BDJ4_UI_LIB_NAME "libuimacos")
+  set (BDJ4_UI_MACOS TRUE)
+endif()
+
+message ("lib-name ${BDJ4_UI_LIB_NAME}")
+
 #### bits / check supported platforms
 
 if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")

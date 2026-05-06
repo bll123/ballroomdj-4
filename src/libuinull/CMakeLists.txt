@@ -14,6 +14,7 @@ add_library (libbdj4ui SHARED
   uidragdrop.c
   uientry.c
   uievents.c
+  uigrid.c
   uiimage.c
   uilabel.c
   uilink.c
@@ -43,7 +44,7 @@ addUILibrary (libbdj4ui)
 addIntlLibrary (libbdj4ui)
 addWinSockLibrary (libbdj4ui)
 
-uilibPreSymlink (libuinull)
+uilibPreSymlink (libbdj4ui)
 
 install (TARGETS
   libbdj4ui
@@ -51,4 +52,4 @@ install (TARGETS
 )
 
 updateRPath (libbdj4ui)
-uilibSymlink (libbdj4ui libuinull)
+uilibSymlink (libbdj4ui ${BDJ4_UI_LIB_NAME})

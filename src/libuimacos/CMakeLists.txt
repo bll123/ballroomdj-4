@@ -45,7 +45,7 @@ target_link_options (libbdj4ui PRIVATE
 addIntlLibrary (libbdj4ui)
 addWinSockLibrary (libbdj4ui)
 
-uilibPreSymlink (libuimacos)
+uilibPreSymlink (libbdj4ui)
 
 install (TARGETS
   libbdj4ui
@@ -54,4 +54,4 @@ install (TARGETS
 
 updateRPath (libbdj4ui)
 
-uilibSymlink (libbdj4ui libuimacos)
+uilibSymlink (libbdj4ui ${BDJ4_UI_LIB_NAME})

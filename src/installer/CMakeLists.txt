@@ -34,7 +34,6 @@ target_link_libraries (bdj4installer PRIVATE
   libbdj4uii libbdj4uig libbdj4ui
   libwebclient libbdj4 libbdj4basic libbdj4common
 )
-#addUILibrary (bdj4installer)
 addIntlLibrary (bdj4installer)
 addWinVersionInfo (bdj4installer)
 addWinManifest (bdj4installer)
@@ -53,7 +52,6 @@ target_link_libraries (bdj4altinst PRIVATE
   libbdj4uig libbdj4ui
   libwebclient libbdj4 libbdj4basic libbdj4common
 )
-#addUILibrary (bdj4altinst)
 addIntlLibrary (bdj4altinst)
 addWinVersionInfo (bdj4altinst)
 addWinManifest (bdj4altinst)

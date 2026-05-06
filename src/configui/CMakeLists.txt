@@ -36,7 +36,6 @@ target_link_libraries (bdj4configui PRIVATE
   libwebclient libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
   m
 )
-#addUILibrary (bdj4configui)
 addIntlLibrary (bdj4configui)
 addWinSockLibrary (bdj4configui)
 addWinVersionInfo (bdj4configui)

@@ -29,8 +29,6 @@ void
 uiGridPackLoc_r (uiwcont_t *uigrid, uiwcont_t *uiwidget,
     int row, int col, int numcols)
 {
-  uigridgeneric_t    *uigridgen;
-
   if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-size")) {
     return;
   }

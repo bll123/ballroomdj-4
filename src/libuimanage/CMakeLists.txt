@@ -16,13 +16,11 @@ add_library (libbdj4uim SHARED
   uisongedit.c
   uisongeditui.c
 )
-#addUIInclude (libbdj4uim)
 target_link_libraries (libbdj4uim PRIVATE
   libbdj4uimp libbdj4uii libbdj4uig libbdj4ui
   libbdj4audiosrc
   libbdj4 libbdj4basic libbdj4common
 )
-#addUILibrary (libbdj4uim)
 addIntlLibrary (libbdj4uim)
 addWinSockLibrary (libbdj4uim)
 

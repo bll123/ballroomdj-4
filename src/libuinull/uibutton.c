@@ -22,14 +22,14 @@ typedef struct uibuttonint {
 } uibuttonint_t;
 
 uiwcont_t *
-uiCreateButton (callback_t *uicb, const char *title,
+uiCreateButton_r (callback_t *uicb, const char *title,
     const char *imagenm, const char *tooltiptxt)
 {
   return NULL;
 }
 
 void
-uiButtonFree (uiwcont_t *uiwidget)
+uiButtonFree_r (uiwcont_t *uiwidget)
 {
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-free")) {
     return;

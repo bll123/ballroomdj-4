@@ -20,7 +20,6 @@ target_link_libraries (bdj4manageui PRIVATE
   libbdj4cont libbdj4audioid
   libbdj4 libbdj4audiosrc libbdj4basic libbdj4common
 )
-#addUILibrary (bdj4manageui)
 addIntlLibrary (bdj4manageui)
 addWinSockLibrary (bdj4manageui)
 addWinVersionInfo (bdj4manageui)
@@ -33,7 +32,6 @@ target_link_libraries (bdj4bpmcounter PRIVATE
   libbdj4uig libbdj4ui libbdj4 libbdj4basic libbdj4common
   m
 )
-#addUILibrary (bdj4bpmcounter)
 addIntlLibrary (bdj4bpmcounter)
 addWinSockLibrary (bdj4bpmcounter)
 addWinVersionInfo (bdj4bpmcounter)

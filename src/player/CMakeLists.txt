@@ -35,7 +35,6 @@ target_link_libraries (bdj4marquee PRIVATE
   libbdj4 libbdj4basic libbdj4common
   m
 )
-#addUILibrary (bdj4marquee)
 addIntlLibrary (bdj4marquee)
 addWinSockLibrary (bdj4marquee)
 addWinVersionInfo (bdj4marquee)

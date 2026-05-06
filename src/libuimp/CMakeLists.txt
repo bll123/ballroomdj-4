@@ -16,13 +16,11 @@ add_library (libbdj4uimp SHARED
   uisongselcommon.c
   uisongselui.c
 )
-#addUIInclude (libbdj4uimp)
 target_link_libraries (libbdj4uimp PRIVATE
   libbdj4uii libbdj4uig libbdj4ui libbdj4cont
   libbdj4audiosrc
   libbdj4 libbdj4basic libbdj4common
 )
-#addUILibrary (libbdj4uimp)
 addIntlLibrary (libbdj4uimp)
 addWinSockLibrary (libbdj4uimp)
 

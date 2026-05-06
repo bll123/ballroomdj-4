@@ -12,7 +12,6 @@ target_link_libraries (bdj4playerui PRIVATE
   libbdj4 libbdj4basic libbdj4common
   m
 )
-#addUILibrary (bdj4playerui)
 addIntlLibrary (bdj4playerui)
 addWinSockLibrary (bdj4playerui)
 addWinVersionInfo (bdj4playerui)
