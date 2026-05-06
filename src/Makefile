@@ -181,10 +181,6 @@ install:
 	$(CMAKE) --install $(BUILDDIR)
 	@-rm -f ../bin/liblib*.a
 
-.PHONY: install-target
-install-target:
-	$(CMAKE) --install $(BUILDDIR) --target $(target)
-
 # testing
 
 .PHONY: check
