@@ -81,7 +81,7 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
     } else {
       txt = tagdefs [sftags [i]].displayname;
     }
-    confuiMakeItemCheckButtonG (gui, grid, txt, j, -1, val);
+    confuiMakeItemCheckButton (gui, grid, txt, j, -1, val);
     gui->uiitem [j].outtype = CONFUI_OUT_CB;
   }
 
@@ -106,7 +106,7 @@ confuiBuildUIDialogDisplay (confuigui_t *gui)
     j = CONFUI_WIDGET_QUICKEDIT_START + 1 + i;
 
     val = nlistGetNum (gui->quickeditDisplaySel, i);
-    confuiMakeItemCheckButtonG (gui, grid,
+    confuiMakeItemCheckButton (gui, grid,
         tagdefs [qetags [i]].displayname, j, -1, val);
     gui->uiitem [j].outtype = CONFUI_OUT_CB;
   }

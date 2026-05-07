@@ -112,9 +112,10 @@ uiGridPackLoc_r (uiwcont_t *uigrid, uiwcont_t *uiwidget,
   gcell.contentView = layout->container;
 
   if (numcols > 1) {
-    [grid
-        mergeCellsInHorizontalRange : NSMakeRange (uigridgen->row, numcols)
-        verticalRange: NSMakeRange (uigridgen->col, 1)];
+fprintf (stderr, "row: %d col: %d numcols: %d limit: %d/%d\n", row, col, numcols, grid.numberOfRows, grid.numberOfColumns);
+//    [grid
+//        mergeCellsInHorizontalRange : NSMakeRange (row, numcols)
+//        verticalRange : NSMakeRange (col, 1)];
   }
 }
 

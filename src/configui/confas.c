@@ -114,14 +114,14 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
   uiWidgetSetMarginStart (grid, 8);
 
   /* CONTEXT: configuration: audio source: mode (off/client/server) */
-  confuiMakeItemSpinboxTextG (gui, grid, _("Mode"),
+  confuiMakeItemSpinboxText (gui, grid, _("Mode"),
       CONFUI_SB_TXT_AUDIOSRC_MODE, -1, CONFUI_OUT_NUM, CONFUI_NO_INDENT,
       confuiAudioSrcModeChg);
   gui->uiitem [CONFUI_SB_TXT_AUDIOSRC_MODE].audiosrcitemidx = ASCONF_MODE;
 
   /* CONTEXT: configuration: audio source: the client or server name */
   label = _("Name");
-  confuiMakeItemEntryG (gui, grid, label,
+  confuiMakeItemEntry (gui, grid, label,
       CONFUI_ENTRY_AUDIOSRC_NAME, -1, "", CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_NAME].uiwidgetp,
       label, confuiAudioSrcNameChg, gui, UIENTRY_IMMEDIATE);
@@ -129,14 +129,14 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
 
   /* CONTEXT: configuration: audio source: type of source */
   label = C_("AudioSource","Type");
-  confuiMakeItemSpinboxTextG (gui, grid, label,
+  confuiMakeItemSpinboxText (gui, grid, label,
       CONFUI_SB_TXT_AUDIOSRC_TYPE, -1, CONFUI_OUT_NUM, CONFUI_NO_INDENT,
       confuiAudioSrcTypeChg);
   gui->uiitem [CONFUI_SB_TXT_AUDIOSRC_TYPE].audiosrcitemidx = ASCONF_TYPE;
 
   /* CONTEXT: configuration: audio source: the remote client URL */
   label = _("URL");
-  confuiMakeItemEntryG (gui, grid, label,
+  confuiMakeItemEntry (gui, grid, label,
       CONFUI_ENTRY_AUDIOSRC_URI, -1, "", CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_URI].uiwidgetp,
       label, confuiAudioSrcURIChg, gui, UIENTRY_IMMEDIATE);
@@ -144,7 +144,7 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
 
   /* CONTEXT: configuration: audio source: the port to use for the client or server */
   label = _("Port");
-  confuiMakeItemSpinboxNumG (gui, grid, label,
+  confuiMakeItemSpinboxNum (gui, grid, label,
       CONFUI_SB_NUM_AUDIOSRC_PORT, -1,
       443, 30000, 0, confuiAudioSrcPortChg);
   gui->uiitem [CONFUI_SB_NUM_AUDIOSRC_PORT].audiosrcitemidx = ASCONF_PORT;
@@ -152,7 +152,7 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
 
   /* CONTEXT: configuration: audio source: the client or server user */
   label = _("User");
-  confuiMakeItemEntryG (gui, grid, label,
+  confuiMakeItemEntry (gui, grid, label,
       CONFUI_ENTRY_AUDIOSRC_USER, -1, "", CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_USER].uiwidgetp,
       label, confuiAudioSrcUserChg, gui, UIENTRY_IMMEDIATE);
@@ -160,14 +160,14 @@ confuiAudioSourceBuildUI (confuigui_t *gui)
 
   /* CONTEXT: configuration: audio source: the client or server password */
   label = _("Password"),
-  confuiMakeItemEntryG (gui, grid, label,
+  confuiMakeItemEntry (gui, grid, label,
       CONFUI_ENTRY_AUDIOSRC_PASS, -1, "", CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_AUDIOSRC_PASS].uiwidgetp,
       label, confuiAudioSrcPassChg, gui, UIENTRY_IMMEDIATE);
   gui->uiitem [CONFUI_ENTRY_AUDIOSRC_PASS].audiosrcitemidx = ASCONF_PASS;
 
   /* CONTEXT: configuration: check connection for audio source */
-  confuiMakeItemButtonG (gui, grid, _("Check Connection"),
+  confuiMakeItemButton (gui, grid, _("Check Connection"),
       CONFUI_WIDGET_AUDIOSRC_CHK_CONN, -1, confuiAudioSrcChkConn);
 
   gui->inchange = false;

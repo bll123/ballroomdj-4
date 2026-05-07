@@ -61,6 +61,7 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
     return;
   }
   if (uibox->wbasetype != WCONT_T_BOX &&
+      uibox->wtype != WCONT_T_GRID &&
       uibox->wtype != WCONT_T_WINDOW_SCROLL) {
     fprintf (stderr, "ERR: %s incorrect type actual:%d/%s\n",
         "nb-append-page-box",

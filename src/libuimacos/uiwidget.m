@@ -28,6 +28,10 @@
 void
 uiWidgetSetState (uiwcont_t *uiwidget, int state)
 {
+  if (uiwidget == NULL || uiwidget->widget) {
+    return;
+  }
+
   return;
 }
 
@@ -38,6 +42,10 @@ uiWidgetExpandHoriz (uiwcont_t *uiwidget)
 {
   NSView          *widget;
   macoslayout_t   *layout;
+
+  if (uiwidget == NULL || uiwidget->widget) {
+    return;
+  }
 
   widget = uiwidget->packwidget;
 //  [widget.widthAnchor
@@ -55,6 +63,10 @@ uiWidgetExpandVert (uiwcont_t *uiwidget)
 {
   NSView          *widget;
   macoslayout_t   *layout;
+
+  if (uiwidget == NULL || uiwidget->widget) {
+    return;
+  }
 
   widget = uiwidget->packwidget;
 //  [widget.heightAnchor

@@ -339,6 +339,10 @@ uiBoxProcessExpandHoriz (uiwcont_t *uibox,
   /* a widget that is set to expand horizontally within a hbox */
   /* is attached to its neighboring widgets */
 
+  if (uibox == NULL || currcont == NULL) {
+    return;
+  }
+
   wtype = uibox->wtype;
   box = uibox->widget;
   layout = &uibox->uidata->layout;
@@ -408,6 +412,10 @@ uiBoxProcessExpandVert (uiwcont_t *uibox,
   /* a widget that is set to expand vertically within a hbox */
   /* is attached to both edges of the box */
 
+  if (uibox == NULL || currcont == NULL) {
+    return;
+  }
+
   wtype = uibox->wtype;
   box = uibox->widget;
   layout = &uibox->uidata->layout;
@@ -471,6 +479,10 @@ static void
 uiBoxProcessCenter (uiwconttype_t wtype, macoslayout_t *layout, NSView *box,
     NSView *prevcont, NSView *currcont, NSView *nextcont)
 {
+  if (layout == NULL || box == NULL || currcont == NULL) {
+    return;
+  }
+
 // ### this is not correct...
 // this probably should be in widget-update-layout
   if (layout->vertcenter) {

@@ -59,22 +59,22 @@ confuiEntrySetSize (confuigui_t *gui, int widx, int sz, int maxsz)
 }
 
 void
-confuiMakeItemEntryG (confuigui_t *gui, uiwcont_t *grid,
+confuiMakeItemEntry (confuigui_t *gui, uiwcont_t *grid,
     const char *txt, int widx, int bdjoptIdx, const char *disp, int indent)
 {
   confuiMakeItemEntryBasic (gui, grid, txt, widx, bdjoptIdx, disp, indent, CONFUI_NO_EXPAND);
 }
 
 void
-confuiMakeItemEntryEncryptG (confuigui_t *gui, uiwcont_t *grid,
+confuiMakeItemEntryEncrypt (confuigui_t *gui, uiwcont_t *grid,
     const char *txt, int widx, int bdjoptIdx, const char *disp, int indent)
 {
-  confuiMakeItemEntryG (gui, grid, txt, widx, bdjoptIdx, disp, indent);
+  confuiMakeItemEntry (gui, grid, txt, widx, bdjoptIdx, disp, indent);
   gui->uiitem [widx].basetype = CONFUI_ENTRY_ENCRYPT;
 }
 
 void
-confuiMakeItemEntryChooserG (confuigui_t *gui, uiwcont_t *grid,
+confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *grid,
     const char *txt, int widx, int bdjoptIdx,
     const char *disp, void *dialogFunc)
 {
@@ -95,7 +95,7 @@ confuiMakeItemEntryChooserG (confuigui_t *gui, uiwcont_t *grid,
 }
 
 void
-confuiMakeItemDropdownG (confuigui_t *gui, uiwcont_t *grid,
+confuiMakeItemDropdown (confuigui_t *gui, uiwcont_t *grid,
     const char *txt, int widx, int bdjoptIdx, void *ddcb)
 {
   int     type;
@@ -105,7 +105,7 @@ confuiMakeItemDropdownG (confuigui_t *gui, uiwcont_t *grid,
   /* and also listidx is not set */
   gui->uiitem [widx].outtype = CONFUI_OUT_NONE;
 
-  confuiMakeItemLabelG (gui, widx, grid, txt, CONFUI_NO_INDENT);
+  confuiMakeItemLabel (gui, widx, grid, txt, CONFUI_NO_INDENT);
 
   type = DD_LIST_TYPE_STR;
   if (widx == CONFUI_DD_FADE_TYPE || widx == CONFUI_DD_CLOCK) {
@@ -131,12 +131,12 @@ confuiMakeItemDropdownG (confuigui_t *gui, uiwcont_t *grid,
 }
 
 void
-confuiMakeItemLinkG (confuigui_t *gui, uiwcont_t *grid,
+confuiMakeItemLink (confuigui_t *gui, uiwcont_t *grid,
     const char *txt, int widx, const char *disp)
 {
   uiwcont_t  *uiwidgetp = NULL;
 
-  confuiMakeItemLabelG (gui, widx, grid, txt, CONFUI_NO_INDENT);
+  confuiMakeItemLabel (gui, widx, grid, txt, CONFUI_NO_INDENT);
   uiwidgetp = uiCreateLink (disp, NULL);
   if (isMacOS ()) {
     gui->uiitem [widx].callback = callbackInit (
@@ -149,7 +149,7 @@ confuiMakeItemLinkG (confuigui_t *gui, uiwcont_t *grid,
 }
 
 void
-confuiMakeItemFontButtonG (confuigui_t *gui, uiwcont_t *grid,
+confuiMakeItemFontButton (confuigui_t *gui, uiwcont_t *grid,
     const char *txt, int widx, int bdjoptIdx, const char *fontname)
 {
   uiwcont_t  *uiwidgetp;
@@ -157,7 +157,7 @@ confuiMakeItemFontButtonG (confuigui_t *gui, uiwcont_t *grid,
   gui->uiitem [widx].basetype = CONFUI_FONT;
   gui->uiitem [widx].outtype = CONFUI_OUT_STR;
 
-  confuiMakeItemLabelG (gui, widx, grid, txt, CONFUI_NO_INDENT);
+  confuiMakeItemLabel (gui, widx, grid, txt, CONFUI_NO_INDENT);
 
   uiwidgetp = uiCreateFontButton (fontname);
   uiGridPack (grid, uiwidgetp, WCONT_KEEP);
@@ -168,7 +168,7 @@ confuiMakeItemFontButtonG (confuigui_t *gui, uiwcont_t *grid,
 }
 
 void
-confuiMakeItemColorButtonG (confuigui_t *gui, uiwcont_t *grid,
+confuiMakeItemColorButton (confuigui_t *gui, uiwcont_t *grid,
     const char *txt, int widx, int bdjoptIdx, const char *color)
 {
   uiwcont_t  *uiwidgetp;
@@ -177,7 +177,7 @@ confuiMakeItemColorButtonG (confuigui_t *gui, uiwcont_t *grid,
   gui->uiitem [widx].basetype = CONFUI_COLOR;
   gui->uiitem [widx].outtype = CONFUI_OUT_STR;
 
-  confuiMakeItemLabelG (gui, widx, grid, txt, CONFUI_NO_INDENT);
+  confuiMakeItemLabel (gui, widx, grid, txt, CONFUI_NO_INDENT);
 
   uiwidgetp = uiCreateColorButton (color);
   uiGridPack (grid, uiwidgetp, WCONT_KEEP);
@@ -188,7 +188,7 @@ confuiMakeItemColorButtonG (confuigui_t *gui, uiwcont_t *grid,
 }
 
 void
-confuiMakeItemButtonG (confuigui_t *gui, uiwcont_t *grid,
+confuiMakeItemButton (confuigui_t *gui, uiwcont_t *grid,
     const char *txt, int widx, int bdjoptIdx, callbackFunc cb)
 {
   uiwcont_t  *uiwidgetp;
@@ -199,7 +199,7 @@ confuiMakeItemButtonG (confuigui_t *gui, uiwcont_t *grid,
     gui->uiitem [widx].callback = callbackInit (cb, gui, NULL);
   }
 
-  confuiMakeItemLabelG (gui, widx, grid, "", CONFUI_NO_INDENT);
+  confuiMakeItemLabel (gui, widx, grid, "", CONFUI_NO_INDENT);
 
   uiwidgetp = uiCreateButton (
       gui->uiitem [widx].callback, txt, NULL, NULL);
@@ -211,7 +211,7 @@ confuiMakeItemButtonG (confuigui_t *gui, uiwcont_t *grid,
 }
 
 void
-confuiMakeItemSpinboxTextG (confuigui_t *gui, uiwcont_t *grid,
+confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *grid,
     const char *txt, int widx, int bdjoptIdx,
     confuiouttype_t outtype, ssize_t value, void *cb)
 {
@@ -222,7 +222,7 @@ confuiMakeItemSpinboxTextG (confuigui_t *gui, uiwcont_t *grid,
   gui->uiitem [widx].basetype = CONFUI_SB_TXT;
   gui->uiitem [widx].outtype = outtype;
 
-  confuiMakeItemLabelG (gui, widx, grid, txt, CONFUI_NO_INDENT);
+  confuiMakeItemLabel (gui, widx, grid, txt, CONFUI_NO_INDENT);
 
   sb = uisbtextCreate (NULL, 4);
   uisbtextPackGrid (sb, grid);
@@ -241,7 +241,7 @@ confuiMakeItemSpinboxTextG (confuigui_t *gui, uiwcont_t *grid,
 }
 
 void
-confuiMakeItemSpinboxTimeG (confuigui_t *gui, uiwcont_t *grid,
+confuiMakeItemSpinboxTime (confuigui_t *gui, uiwcont_t *grid,
     const char *txt, int widx,
     int bdjoptIdx, ssize_t value, int indent)
 {
@@ -252,7 +252,7 @@ confuiMakeItemSpinboxTimeG (confuigui_t *gui, uiwcont_t *grid,
   gui->uiitem [widx].basetype = CONFUI_SB_TIME;
   gui->uiitem [widx].outtype = CONFUI_OUT_NUM;
 
-  confuiMakeItemLabelG (gui, widx, grid, txt, indent);
+  confuiMakeItemLabel (gui, widx, grid, txt, indent);
 
   gui->uiitem [widx].sbcallback = callbackInit (
       confuiValidateCallback, &gui->uiitem [widx], NULL);
@@ -281,7 +281,7 @@ confuiMakeItemSpinboxTimeG (confuigui_t *gui, uiwcont_t *grid,
 }
 
 void
-confuiMakeItemSpinboxNumG (confuigui_t *gui, uiwcont_t *grid,
+confuiMakeItemSpinboxNum (confuigui_t *gui, uiwcont_t *grid,
     const char *txt, int widx, int bdjoptIdx,
     int min, int max, int value, void *cb)
 {
@@ -291,7 +291,7 @@ confuiMakeItemSpinboxNumG (confuigui_t *gui, uiwcont_t *grid,
   gui->uiitem [widx].basetype = CONFUI_SB_NUM;
   gui->uiitem [widx].outtype = CONFUI_OUT_NUM;
 
-  confuiMakeItemLabelG (gui, widx, grid, txt, CONFUI_NO_INDENT);
+  confuiMakeItemLabel (gui, widx, grid, txt, CONFUI_NO_INDENT);
 
   gui->uiitem [widx].sbcallback = callbackInit (
       confuiValidateCallback, &gui->uiitem [widx], NULL);
@@ -310,7 +310,7 @@ confuiMakeItemSpinboxNumG (confuigui_t *gui, uiwcont_t *grid,
 }
 
 void
-confuiMakeItemSpinboxDoubleG (confuigui_t *gui, uiwcont_t *grid,
+confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwcont_t *grid,
     const char *txt, int widx, int bdjoptIdx,
     double min, double max, double value, int indent)
 {
@@ -321,7 +321,7 @@ confuiMakeItemSpinboxDoubleG (confuigui_t *gui, uiwcont_t *grid,
 
   gui->uiitem [widx].sbcallback = callbackInit (
       confuiValidateCallback, &gui->uiitem [widx], NULL);
-  confuiMakeItemLabelG (gui, widx, grid, txt, indent);
+  confuiMakeItemLabel (gui, widx, grid, txt, indent);
   sb = uisbnumCreate (NULL, gui->uiitem [widx].labeltxt, 4);
   uisbnumPackGrid (sb, grid);
   uisbnumSetLimits (sb, min, max, 1);
@@ -333,7 +333,7 @@ confuiMakeItemSpinboxDoubleG (confuigui_t *gui, uiwcont_t *grid,
 }
 
 void
-confuiMakeItemSwitchG (confuigui_t *gui, uiwcont_t *grid,
+confuiMakeItemSwitch (confuigui_t *gui, uiwcont_t *grid,
     const char *txt, int widx, int bdjoptIdx, int value, void *cb, int indent)
 {
   uiwcont_t  *uiwidgetp;
@@ -342,7 +342,7 @@ confuiMakeItemSwitchG (confuigui_t *gui, uiwcont_t *grid,
   gui->uiitem [widx].basetype = CONFUI_SWITCH;
   gui->uiitem [widx].outtype = CONFUI_OUT_BOOL;
 
-  confuiMakeItemLabelG (gui, widx, grid, txt, indent);
+  confuiMakeItemLabel (gui, widx, grid, txt, indent);
 
   uiwidgetp = uiCreateSwitch (value);
   uiGridPack (grid, uiwidgetp, WCONT_KEEP);
@@ -359,7 +359,7 @@ confuiMakeItemSwitchG (confuigui_t *gui, uiwcont_t *grid,
 }
 
 void
-confuiMakeItemLabelDispG (confuigui_t *gui, uiwcont_t *grid,
+confuiMakeItemLabelDisp (confuigui_t *gui, uiwcont_t *grid,
     const char *txt, int widx, int indent)
 {
   uiwcont_t   *uiwidgetp;
@@ -367,7 +367,7 @@ confuiMakeItemLabelDispG (confuigui_t *gui, uiwcont_t *grid,
   gui->uiitem [widx].basetype = CONFUI_NONE;
   gui->uiitem [widx].outtype = CONFUI_OUT_NONE;
 
-  confuiMakeItemLabelG (gui, widx, grid, txt, indent);
+  confuiMakeItemLabel (gui, widx, grid, txt, indent);
   uiwidgetp = uiCreateLabel ("");
   uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   uiWidgetSetMarginStart (uiwidgetp, 4);
@@ -377,7 +377,7 @@ confuiMakeItemLabelDispG (confuigui_t *gui, uiwcont_t *grid,
 }
 
 void
-confuiMakeItemCheckButtonG (confuigui_t *gui, uiwcont_t *grid,
+confuiMakeItemCheckButton (confuigui_t *gui, uiwcont_t *grid,
     const char *txt, int widx, int bdjoptIdx, int value)
 {
   uiwcont_t  *uiwidgetp;
@@ -393,7 +393,7 @@ confuiMakeItemCheckButtonG (confuigui_t *gui, uiwcont_t *grid,
 }
 
 void
-confuiMakeItemLabelG (confuigui_t *gui, int widx,
+confuiMakeItemLabel (confuigui_t *gui, int widx,
     uiwcont_t *grid, const char *txt, int indent)
 {
   uiwcont_t   *uiwidgetp;
@@ -452,7 +452,7 @@ confuiMakeItemEntryBasic (confuigui_t *gui, uiwcont_t *grid,
 
   gui->uiitem [widx].basetype = CONFUI_ENTRY;
   gui->uiitem [widx].outtype = CONFUI_OUT_STR;
-  confuiMakeItemLabelG (gui, widx, grid, txt, indent);
+  confuiMakeItemLabel (gui, widx, grid, txt, indent);
   uiwidgetp = uiEntryInit (gui->uiitem [widx].entrysz, gui->uiitem [widx].entrymaxsz);
   gui->uiitem [widx].uiwidgetp = uiwidgetp;
   uiGridPack (grid, uiwidgetp, WCONT_KEEP);

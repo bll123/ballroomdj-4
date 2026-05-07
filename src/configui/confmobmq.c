@@ -58,40 +58,40 @@ confuiBuildUIMobileMarquee (confuigui_t *gui)
       _("Mobile Marquee"), CONFUI_ID_MOBILE_MQ);
 
   /* CONTEXT: configuration: mobile marquee: mode: (off/local/internet)*/
-  confuiMakeItemSpinboxTextG (gui, grid, _("Mode"),
+  confuiMakeItemSpinboxText (gui, grid, _("Mode"),
       CONFUI_SB_TXT_MOBMQ_TYPE, OPT_P_MOBMQ_TYPE,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_P_MOBMQ_TYPE),
       confuiMobmqTypeChg);
 
   /* CONTEXT: configuration: mobile marquee: internet: tag */
-  confuiMakeItemEntryG (gui, grid, _("Tag"),
+  confuiMakeItemEntry (gui, grid, _("Tag"),
       CONFUI_ENTRY_MOBMQ_TAG, OPT_P_MOBMQ_TAG,
       bdjoptGetStr (OPT_P_MOBMQ_TAG), CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_MOBMQ_TAG].uiwidgetp,
       _("Tag"), confuiMobmqTagChg, gui, UIENTRY_IMMEDIATE);
 
   /* CONTEXT: configuration: mobile marquee: internet: password */
-  confuiMakeItemEntryG (gui, grid, _("Password"),
+  confuiMakeItemEntry (gui, grid, _("Password"),
       CONFUI_ENTRY_MOBMQ_KEY, OPT_P_MOBMQ_KEY,
       bdjoptGetStr (OPT_P_MOBMQ_KEY), CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_MOBMQ_KEY].uiwidgetp,
       _("Password"), confuiMobmqKeyChg, gui, UIENTRY_IMMEDIATE);
 
   /* CONTEXT: configuration: the port to use for the mobile marquee */
-  confuiMakeItemSpinboxNumG (gui, grid, _("Port"),
+  confuiMakeItemSpinboxNum (gui, grid, _("Port"),
       CONFUI_SB_NUM_MOBMQ_PORT, OPT_P_MOBMQ_PORT,
       8000, 30000, bdjoptGetNum (OPT_P_MOBMQ_PORT),
       confuiMobmqPortChg);
 
   /* CONTEXT: configuration: the title to display on the mobile marquee */
-  confuiMakeItemEntryG (gui, grid, _("Title"),
+  confuiMakeItemEntry (gui, grid, _("Title"),
       CONFUI_ENTRY_MOBMQ_TITLE, OPT_P_MOBMQ_TITLE,
       bdjoptGetStr (OPT_P_MOBMQ_TITLE), CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_MOBMQ_TITLE].uiwidgetp,
       _("Title"), confuiMobmqTitleChg, gui, UIENTRY_IMMEDIATE);
 
   /* CONTEXT: configuration: mobile marquee: the link to display the QR code for the mobile marquee */
-  confuiMakeItemLinkG (gui, grid, _("QR Code"),
+  confuiMakeItemLink (gui, grid, _("QR Code"),
       CONFUI_WIDGET_MOBMQ_QR_CODE, "");
 
   uiGridPostProcess (grid);

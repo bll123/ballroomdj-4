@@ -16,34 +16,48 @@
 #include "ui/uiui.h"
 #include "ui/uipanedwindow.h"
 
-static uiwcont_t * uiPanedWindowCreate (int orientation);
-
 uiwcont_t *
 uiPanedWindowCreateVert (void)
 {
-  uiwcont_t *uiwidget;
+  uiwcont_t   *uiwidget;
+  NSSplitView *widget;
 
-  uiwidget = uiPanedWindowCreate (0);
+  widget = [[NSSplitView alloc] init];
+  widget.vertical = true;
+  widget.dividerStyle = NSSplitViewDividerStyleThick;
+  // dividerColor
+
+  uiwidget = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_PANED_WINDOW);
+  uiwcontSetWidget (uiwidget, widget, NULL);
   return uiwidget;
 }
 
 void
 uiPanedWindowPackStart (uiwcont_t *panedwin, uiwcont_t *box)
 {
-  if (panedwin == NULL || box == NULL) {
+  NSSplitView *widget;
+
+  if (! uiwcontValid (panedwin, WCONT_T_PANED_WINDOW, "paned-pack-start")) {
     return;
   }
-  if (panedwin->wtype != WCONT_T_PANED_WINDOW) {
+  if (box == NULL) {
     return;
   }
 
+  widget = panedwin->widget;
+  [widget addArrangedSubview : box->widget];
   return;
 }
 
 void
 uiPanedWindowPackEnd (uiwcont_t *panedwin, uiwcont_t *box)
 {
-  if (panedwin == NULL || box == NULL) {
+  NSSplitView *widget;
+
+  if (! uiwcontValid (panedwin, WCONT_T_PANED_WINDOW, "paned-pack-start")) {
+    return;
+  }
+  if (box == NULL) {
     return;
   }
 
@@ -51,6 +65,8 @@ uiPanedWindowPackEnd (uiwcont_t *panedwin, uiwcont_t *box)
     return;
   }
 
+  widget = panedwin->widget;
+  [widget addArrangedSubview : box->widget];
   return;
 }
 
@@ -83,9 +99,3 @@ uiPanedWindowSetPosition (uiwcont_t *panedwin, int position)
 }
 
 /* internal routines */
-
-static uiwcont_t *
-uiPanedWindowCreate (int orientation)
-{
-  return NULL;
-}

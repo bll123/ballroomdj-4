@@ -117,7 +117,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
   uiBoxPackStart (hbox, dgrid, WCONT_FREE);
   uiWidgetSetMarginStart (dgrid, 8);
 
-  confuiMakeItemEntryG (gui, dgrid, tagdefs [TAG_DANCE].displayname,
+  confuiMakeItemEntry (gui, dgrid, tagdefs [TAG_DANCE].displayname,
       CONFUI_ENTRY_DANCE_DANCE, -1, "", CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_DANCE_DANCE].uiwidgetp,
       tagdefs [TAG_DANCE].displayname,
@@ -125,18 +125,18 @@ confuiBuildUIEditDances (confuigui_t *gui)
   gui->uiitem [CONFUI_ENTRY_DANCE_DANCE].danceitemidx = DANCE_DANCE;
 
   /* CONTEXT: configuration: dances: the type of the dance (club/latin/standard) */
-  confuiMakeItemSpinboxTextG (gui, dgrid, C_("Dance","Type"),
+  confuiMakeItemSpinboxText (gui, dgrid, C_("Dance","Type"),
       CONFUI_SB_TXT_DANCE_TYPE, -1, CONFUI_OUT_NUM, 0,
       confuiDanceSpinboxTypeChg);
   gui->uiitem [CONFUI_SB_TXT_DANCE_TYPE].danceitemidx = DANCE_TYPE;
 
   /* CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow) */
-  confuiMakeItemSpinboxTextG (gui, dgrid, _("Speed"),
+  confuiMakeItemSpinboxText (gui, dgrid, _("Speed"),
       CONFUI_SB_TXT_DANCE_SPEED, -1, CONFUI_OUT_NUM, 0,
       confuiDanceSpinboxSpeedChg);
   gui->uiitem [CONFUI_SB_TXT_DANCE_SPEED].danceitemidx = DANCE_SPEED;
 
-  confuiMakeItemEntryG (gui, dgrid, tagdefs [TAG_TAGS].displayname,
+  confuiMakeItemEntry (gui, dgrid, tagdefs [TAG_TAGS].displayname,
       CONFUI_ENTRY_DANCE_TAGS, -1, "", CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_DANCE_TAGS].uiwidgetp,
       tagdefs [TAG_TAGS].displayname,
@@ -144,7 +144,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
   gui->uiitem [CONFUI_ENTRY_DANCE_TAGS].danceitemidx = DANCE_TAGS;
 
   /* CONTEXT: configuration: dances: play the selected announcement before the dance is played */
-  confuiMakeItemEntryChooserG (gui, dgrid, _("Announcement"),
+  confuiMakeItemEntryChooser (gui, dgrid, _("Announcement"),
       CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT, -1, "",
       selectAudioFileCallback);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT].uiwidgetp,
@@ -155,20 +155,20 @@ confuiBuildUIEditDances (confuigui_t *gui)
   bpmstr = tagdefs [TAG_BPM].displayname;
   /* CONTEXT: configuration: dances: low BPM (or MPM) setting */
   snprintf (tbuff, sizeof (tbuff), _("Low %s"), bpmstr);
-  confuiMakeItemSpinboxNumG (gui, dgrid, tbuff,
+  confuiMakeItemSpinboxNum (gui, dgrid, tbuff,
       CONFUI_SB_NUM_DANCE_MPM_LOW, -1, 10, 500, 0,
       confuiDanceSpinboxLowMPMChg);
   gui->uiitem [CONFUI_SB_NUM_DANCE_MPM_LOW].danceitemidx = DANCE_MPM_LOW;
 
   /* CONTEXT: configuration: dances: high BPM (or MPM) setting */
   snprintf (tbuff, sizeof (tbuff), _("High %s"), bpmstr);
-  confuiMakeItemSpinboxNumG (gui, dgrid, tbuff,
+  confuiMakeItemSpinboxNum (gui, dgrid, tbuff,
       CONFUI_SB_NUM_DANCE_MPM_HIGH, -1, 10, 500, 0,
       confuiDanceSpinboxHighMPMChg);
   gui->uiitem [CONFUI_SB_NUM_DANCE_MPM_HIGH].danceitemidx = DANCE_MPM_HIGH;
 
   /* CONTEXT: configuration: dances: time signature for the dance */
-  confuiMakeItemSpinboxTextG (gui, dgrid, _("Time Signature"),
+  confuiMakeItemSpinboxText (gui, dgrid, _("Time Signature"),
       CONFUI_SB_TXT_DANCE_TIME_SIG, -1, CONFUI_OUT_NUM, 0,
       confuiDanceSpinboxTimeSigChg);
   gui->uiitem [CONFUI_SB_TXT_DANCE_TIME_SIG].danceitemidx = DANCE_TIMESIG;

@@ -577,11 +577,13 @@ fprintf (stderr, "ToggleButtons\n");
   uiwidgetp = uiCreateToggleButton ("toggle button", NULL, NULL, 0);
   uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
+fprintf (stderr, "  aa\n");
   /* toggle button: tooltip */
   uiwidgetp = uiCreateToggleButton ("toggle tooltip", NULL, "tool-tip", 0);
   uiGridNewRow (grid);
   uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
+fprintf (stderr, "  bb\n");
   /* toggle button: with image */
   uiwidgetp = uiCreateToggleButton (
       "toggle image", uitest->images [UITEST_LED_OFF], "tool-tip", 0);
@@ -593,17 +595,20 @@ fprintf (stderr, "ToggleButtons\n");
   uiWidgetAlignVertCenter (uiwidgetp);
   uitest->wcont [UITEST_W_TOGGLE_C] = uiwidgetp;
 
+fprintf (stderr, "  cc\n");
   /* switch */
   uitest->wcont [UITEST_W_SW] = uiCreateSwitch (1);
   uiGridNewRow (grid);
   uiGridPack (grid, uitest->wcont [UITEST_W_SW], WCONT_KEEP);
 
+fprintf (stderr, "  dd\n");
   /* radio button */
   uiwidgetp = uiCreateRadioButton (NULL, "radio a", UI_TOGGLE_BUTTON_ON);
   uiGridNewRow (grid);
   uiGridPack (grid, uiwidgetp, WCONT_KEEP);
   twidgetp = uiwidgetp;
 
+fprintf (stderr, "  ee\n");
   /* radio button : next line */
   uiwidgetp = uiCreateRadioButton (twidgetp, "radio b", UI_TOGGLE_BUTTON_OFF);
   uiGridNewRow (grid);
@@ -611,11 +616,13 @@ fprintf (stderr, "ToggleButtons\n");
 
   uiwcontFree (twidgetp);
 
+fprintf (stderr, "  ff\n");
   /* check button */
   uiwidgetp = uiCreateCheckButton ("check button", UI_TOGGLE_BUTTON_OFF);
   uiGridNewRow (grid);
   uiGridPack (grid, uiwidgetp, WCONT_FREE);
 
+fprintf (stderr, "  gg\n");
   uiGridPostProcess (grid);
 }
 
@@ -1237,17 +1244,20 @@ fprintf (stderr, "Misc\n");
   uivnbAppendPage (uitest->mainvnb, vbox, "Misc", VNB_NO_ID);
 
   /* progress bar */
+fprintf (stderr, "  pbar\n");
   uiwidgetp = uiCreateProgressBar ();
   uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
   uiProgressBarSet (uiwidgetp, 0.33);
   uiWidgetSetMarginTop (uiwidgetp, 4);
 
   /* scale */
+fprintf (stderr, "  scale\n");
   uiwidgetp = uiCreateScale (0.0, 100.0, 1.0, 10.0, 33.0, 0);
   uiBoxPackStart (vbox, uiwidgetp, WCONT_FREE);
   uiWidgetSetMarginTop (uiwidgetp, 4);
 
   /* separator */
+fprintf (stderr, "  sep\n");
   uiSeparatorAddClass (ACCENT_CLASS, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
 
   uiwidgetp = uiCreateHorizSeparator ();
@@ -1256,7 +1266,9 @@ fprintf (stderr, "Misc\n");
   uiWidgetExpandHoriz (uiwidgetp);
   uiWidgetSetMarginTop (uiwidgetp, 4);
 
+fprintf (stderr, "  pp\n");
   uiBoxPostProcess (vbox);
+fprintf (stderr, "  post-pp\n");
 }
 
 void

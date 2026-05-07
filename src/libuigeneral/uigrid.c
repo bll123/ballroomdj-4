@@ -74,7 +74,7 @@ uiGridPackColumn (uiwcont_t *uigrid, uiwcont_t *uiwidget,
   if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-column")) {
     return;
   }
-  if (uiwidget == NULL) {
+  if (uiwidget == NULL || uiwidget->packwidget == NULL) {
     return;
   }
 
@@ -104,7 +104,7 @@ uiGridPackRow (uiwcont_t *uigrid, uiwcont_t *uiwidget,
   if (! uiwcontValid (uigrid, WCONT_T_GRID, "grid-pack-row")) {
     return;
   }
-  if (uiwidget == NULL) {
+  if (uiwidget == NULL || uiwidget->packwidget == NULL) {
     return;
   }
 

@@ -164,7 +164,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
 
   /* CONTEXT: configuration: itunes: the itunes media folder */
   snprintf (tmp, sizeof (tmp), _("%s Media Folder"), ITUNES_NAME);
-  confuiMakeItemEntryChooserG (gui, mgrid, tmp,
+  confuiMakeItemEntryChooser (gui, mgrid, tmp,
       CONFUI_ENTRY_CHOOSE_ITUNES_DIR, OPT_M_DIR_ITUNES_MEDIA,
       tbuff, confuiSelectiTunesDir);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_DIR].uiwidgetp,
@@ -178,7 +178,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
 
   /* CONTEXT: configuration: itunes: the itunes xml file */
   snprintf (tmp, sizeof (tmp), _("%s XML File"), ITUNES_NAME);
-  confuiMakeItemEntryChooserG (gui, mgrid, tmp,
+  confuiMakeItemEntryChooser (gui, mgrid, tmp,
       CONFUI_ENTRY_CHOOSE_ITUNES_XML, OPT_M_ITUNES_XML_FILE,
       tbuff, confuiSelectiTunesFile);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].uiwidgetp,
@@ -252,7 +252,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
     if (itunesGetField (gui->itunes->itunes, tagidx) >= 0) {
       tval = true;
     }
-    confuiMakeItemCheckButtonG (gui, fgrid, tagdefs [tagidx].displayname,
+    confuiMakeItemCheckButton (gui, fgrid, tagdefs [tagidx].displayname,
         CONFUI_WIDGET_ITUNES_FIELD_1 + gcount, -1, tval);
     ++count;
     ++gcount;

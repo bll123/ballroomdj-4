@@ -98,40 +98,40 @@ confuiBuildUIGeneral (confuigui_t *gui)
   pathDisplayPath (tbuff, sizeof (tbuff));
 
   /* CONTEXT: configuration: the music folder where the user stores their music */
-  confuiMakeItemEntryChooserG (gui, grid, _("Music Folder"),
+  confuiMakeItemEntryChooser (gui, grid, _("Music Folder"),
       CONFUI_ENTRY_CHOOSE_MUSIC_DIR, OPT_M_DIR_MUSIC,
       tbuff, confuiSelectMusicDir);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_MUSIC_DIR].uiwidgetp,
       "", uiEntryValidateDir, NULL, UIENTRY_DELAYED);
 
   /* CONTEXT: configuration: the name of this profile */
-  confuiMakeItemEntryG (gui, grid, _("Profile Name"),
+  confuiMakeItemEntry (gui, grid, _("Profile Name"),
       CONFUI_ENTRY_PROFILE_NAME, OPT_P_PROFILENAME,
       bdjoptGetStr (OPT_P_PROFILENAME), CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: the profile accent color (identifies profile) */
-  confuiMakeItemColorButtonG (gui, grid, _("Profile Colour"),
+  confuiMakeItemColorButton (gui, grid, _("Profile Colour"),
       CONFUI_WIDGET_UI_PROFILE_COLOR, OPT_P_UI_PROFILE_COL,
       bdjoptGetStr (OPT_P_UI_PROFILE_COL));
 
   /* CONTEXT: configuration: Whether to display BPM as BPM or MPM */
-  confuiMakeItemSpinboxTextG (gui, grid, _("BPM"),
+  confuiMakeItemSpinboxText (gui, grid, _("BPM"),
       CONFUI_SB_TXT_BPM, OPT_G_BPM,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_BPM), NULL);
 
   /* CONTEXT: configuration: the languages for the user interface */
-  confuiMakeItemDropdownG (gui, grid, _("Display Language"),
+  confuiMakeItemDropdown (gui, grid, _("Display Language"),
       CONFUI_DD_LOCALE, -1, confuiLocaleSelect);
 
   /* CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux. */
-  confuiMakeItemEntryChooserG (gui, grid, _("Startup Script"),
+  confuiMakeItemEntryChooser (gui, grid, _("Startup Script"),
       CONFUI_ENTRY_CHOOSE_STARTUP, OPT_M_STARTUP_SCRIPT,
       bdjoptGetStr (OPT_M_STARTUP_SCRIPT), confuiSelectStartup);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_STARTUP].uiwidgetp,
       "", uiEntryValidateFile, NULL, UIENTRY_DELAYED);
 
   /* CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux. */
-  confuiMakeItemEntryChooserG (gui, grid, _("Shutdown Script"),
+  confuiMakeItemEntryChooser (gui, grid, _("Shutdown Script"),
       CONFUI_ENTRY_CHOOSE_SHUTDOWN, OPT_M_SHUTDOWN_SCRIPT,
       bdjoptGetStr (OPT_M_SHUTDOWN_SCRIPT), confuiSelectShutdown);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_SHUTDOWN].uiwidgetp,
@@ -140,12 +140,12 @@ confuiBuildUIGeneral (confuigui_t *gui)
   /* audio tag stuff */
 
   /* CONTEXT: configuration: which audio tags will be written to the audio file */
-  confuiMakeItemSpinboxTextG (gui, grid, _("Write Audio File Tags"),
+  confuiMakeItemSpinboxText (gui, grid, _("Write Audio File Tags"),
       CONFUI_SB_TXT_WRITE_AUDIO_FILE_TAGS, OPT_G_WRITETAGS,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_WRITETAGS), NULL);
 
   /* CONTEXT: configuration: classical music: use work/movement */
-  confuiMakeItemSwitchG (gui, grid, _("Use Work and Movement"),
+  confuiMakeItemSwitch (gui, grid, _("Use Work and Movement"),
       CONFUI_SWITCH_USE_WORK_MOVEMENT, OPT_G_USE_WORK_MOVEMENT,
       bdjoptGetNum (OPT_G_USE_WORK_MOVEMENT), NULL, 0);
 
@@ -161,7 +161,7 @@ confuiBuildUIGeneral (confuigui_t *gui)
 
   /* CONTEXT: configuration: the ACRCloud API Key */
   snprintf (tbuff, sizeof (tbuff), _("%s API Key"), ACRCLOUD_NAME);
-  confuiMakeItemEntryEncryptG (gui, grid, tbuff,
+  confuiMakeItemEntryEncrypt (gui, grid, tbuff,
       CONFUI_ENTRY_ACRCLOUD_API_KEY, OPT_G_ACRCLOUD_API_KEY,
       ebuff, CONFUI_NO_INDENT);
 
@@ -176,13 +176,13 @@ confuiBuildUIGeneral (confuigui_t *gui)
   }
   /* CONTEXT: configuration: the ACRCloud API Secret Key */
   snprintf (tbuff, sizeof (tbuff), _("%s API Secret Key"), ACRCLOUD_NAME);
-  confuiMakeItemEntryEncryptG (gui, grid, tbuff,
+  confuiMakeItemEntryEncrypt (gui, grid, tbuff,
       CONFUI_ENTRY_ACRCLOUD_API_SECRET, OPT_G_ACRCLOUD_API_SECRET,
       ebuff, CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: the ACRCloud API Host */
   snprintf (tbuff, sizeof (tbuff), _("%s API Host"), ACRCLOUD_NAME);
-  confuiMakeItemEntryG (gui, grid, tbuff,
+  confuiMakeItemEntry (gui, grid, tbuff,
       CONFUI_ENTRY_ACRCLOUD_API_HOST, OPT_G_ACRCLOUD_API_HOST,
       bdjoptGetStr (OPT_G_ACRCLOUD_API_HOST), CONFUI_NO_INDENT);
 

@@ -73,84 +73,84 @@ confuiBuildUIMusicQs (confuigui_t *gui)
       _("Music Queues"), CONFUI_ID_NONE);
 
   /* CONTEXT: (noun) configuration: queue: select which queue to configure */
-  confuiMakeItemSpinboxTextG (gui, grid, C_("Noun","Queue"),
+  confuiMakeItemSpinboxText (gui, grid, C_("Noun","Queue"),
       CONFUI_SB_TXT_MUSIC_QUEUE, -1, CONFUI_OUT_NUM,
       gui->uiitem [CONFUI_SB_TXT_MUSIC_QUEUE].listidx, confuiMusicQChg);
 
   /* CONTEXT: (noun) configuration: queue: the name of the music queue */
-  confuiMakeItemEntryG (gui, grid, _("Queue Name"),
+  confuiMakeItemEntry (gui, grid, _("Queue Name"),
       CONFUI_ENTRY_QUEUE_NM, OPT_Q_QUEUE_NAME,
       bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, 0), CONFUI_INDENT);
 
   /* CONTEXT: configuration: queue: whether the queue is active */
-  confuiMakeItemSwitchG (gui, grid, _("Active"),
+  confuiMakeItemSwitch (gui, grid, _("Active"),
       CONFUI_SWITCH_Q_ACTIVE, OPT_Q_ACTIVE,
       bdjoptGetNumPerQueue (OPT_Q_ACTIVE, 0),
       confuiMusicQActiveChg, CONFUI_INDENT);
 
   /* CONTEXT: configuration: queue: whether to display the queue */
-  confuiMakeItemSwitchG (gui, grid, _("Display"),
+  confuiMakeItemSwitch (gui, grid, _("Display"),
       CONFUI_SWITCH_Q_DISPLAY, OPT_Q_DISPLAY,
       bdjoptGetNumPerQueue (OPT_Q_DISPLAY, 0),
       NULL, CONFUI_INDENT);
 
   /* CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song */
-  confuiMakeItemSpinboxDoubleG (gui, grid, _("Start Wait Time"),
+  confuiMakeItemSpinboxDouble (gui, grid, _("Start Wait Time"),
       CONFUI_SB_NUM_Q_START_WAIT_TIME, OPT_Q_START_WAIT_TIME,
       0.0, 20.0, (double) bdjoptGetNumPerQueue (OPT_Q_START_WAIT_TIME, 0) / 1000.0,
       CONFUI_INDENT);
 
   /* CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song */
-  confuiMakeItemSpinboxDoubleG (gui, grid, _("Fade In Time"),
+  confuiMakeItemSpinboxDouble (gui, grid, _("Fade In Time"),
       CONFUI_SB_NUM_Q_FADE_IN_TIME, OPT_Q_FADEINTIME,
       0.0, 2.0, (double) bdjoptGetNumPerQueue (OPT_Q_FADEINTIME, 0) / 1000.0,
       CONFUI_INDENT);
 
   /* CONTEXT: configuration: queue: the amount of time to do a volume fade-out when playing a song */
-  confuiMakeItemSpinboxDoubleG (gui, grid, _("Fade Out Time"),
+  confuiMakeItemSpinboxDouble (gui, grid, _("Fade Out Time"),
       CONFUI_SB_NUM_Q_FADE_OUT_TIME, OPT_Q_FADEOUTTIME,
       0.0, 10.0, (double) bdjoptGetNumPerQueue (OPT_Q_FADEOUTTIME, 0) / 1000.0,
       CONFUI_INDENT);
 
   /* CONTEXT: configuration: queue: the amount of time to wait inbetween songs */
-  confuiMakeItemSpinboxDoubleG (gui, grid, _("Gap Between Songs"),
+  confuiMakeItemSpinboxDouble (gui, grid, _("Gap Between Songs"),
       CONFUI_SB_NUM_Q_GAP, OPT_Q_GAP,
       0.0, 60.0, (double) bdjoptGetNumPerQueue (OPT_Q_GAP, 0) / 1000.0,
       CONFUI_INDENT);
 
   /* CONTEXT: configuration: queue: the amount of time to cross-fade the songs */
-  confuiMakeItemSpinboxDoubleG (gui, grid, _("Cross Fade Time"),
+  confuiMakeItemSpinboxDouble (gui, grid, _("Cross Fade Time"),
       CONFUI_SB_NUM_Q_CROSSFADE, OPT_Q_CROSSFADE,
       0.0, 60.0, (double) bdjoptGetNumPerQueue (OPT_Q_CROSSFADE, 0) / 1000.0,
       CONFUI_INDENT);
 
   /* CONTEXT: configuration: queue: the maximum amount of time to play a song */
-  confuiMakeItemSpinboxTimeG (gui, grid, _("Maximum Play Time"),
+  confuiMakeItemSpinboxTime (gui, grid, _("Maximum Play Time"),
       CONFUI_SB_TIME_Q_MAX_PLAY_TIME, OPT_Q_MAXPLAYTIME,
       bdjoptGetNumPerQueue (OPT_Q_MAXPLAYTIME, 0), CONFUI_INDENT);
 
   /* CONTEXT: configuration: queue: the time when playback will stop */
-  confuiMakeItemSpinboxTimeG (gui, grid, _("Stop At"),
+  confuiMakeItemSpinboxTime (gui, grid, _("Stop At"),
       CONFUI_SB_TIME_Q_STOP_AT_TIME, OPT_Q_STOP_AT_TIME,
       bdjoptGetNum (OPT_Q_STOP_AT_TIME), CONFUI_INDENT);
 
   /* CONTEXT: configuration: queue: pause each song */
-  confuiMakeItemSwitchG (gui, grid, _("Pause Each Song"),
+  confuiMakeItemSwitch (gui, grid, _("Pause Each Song"),
       CONFUI_SWITCH_Q_PAUSE_EACH_SONG, OPT_Q_PAUSE_EACH_SONG,
       bdjoptGetNumPerQueue (OPT_Q_PAUSE_EACH_SONG, 0), NULL, CONFUI_INDENT);
 
   /* CONTEXT: configuration: queue: whether to play announcements */
-  confuiMakeItemSwitchG (gui, grid, _("Play Announcements"),
+  confuiMakeItemSwitch (gui, grid, _("Play Announcements"),
       CONFUI_SWITCH_Q_PLAY_ANNOUNCE, OPT_Q_PLAY_ANNOUNCE,
       bdjoptGetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, 0), NULL, CONFUI_INDENT);
 
   /* CONTEXT: configuration: queue: play when queued (verb) */
-  confuiMakeItemSwitchG (gui, grid, _("Play When Queued"),
+  confuiMakeItemSwitch (gui, grid, _("Play When Queued"),
       CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED, OPT_Q_PLAY_WHEN_QUEUED,
       bdjoptGetNumPerQueue (OPT_Q_PLAY_WHEN_QUEUED, 0), NULL, CONFUI_INDENT);
 
   /* CONTEXT: configuration: queue: whether to show the extra queue buttons (queue dance, queue 5) */
-  confuiMakeItemSwitchG (gui, grid, _("Show Extra Queue Buttons"),
+  confuiMakeItemSwitch (gui, grid, _("Show Extra Queue Buttons"),
       CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE, OPT_Q_SHOW_QUEUE_DANCE,
       bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, 0), NULL, CONFUI_INDENT);
 

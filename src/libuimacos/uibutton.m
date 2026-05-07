@@ -181,7 +181,6 @@ uiButtonSetFocusCallback (uiwcont_t *uiwidget, callback_t *uicb)
   if (! uiwcontValid (uiwidget, WCONT_T_BUTTON, "button-set-focus-cb")) {
     return;
   }
-
 }
 
 void
@@ -217,6 +216,7 @@ uiButtonSetState (uiwcont_t *uiwidget, uibuttonstate_t newstate)
   if (bgen->state == BUTTON_ON && uibutton->altimage != NULL) {
     [widget setImage: uibutton->altimage];
   }
+  widget.needsDisplay = true;
 }
 
 void

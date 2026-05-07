@@ -85,7 +85,7 @@ confuiBuildUIDispSettings (confuigui_t *gui)
   uiBoxPackStart (vbox, grid, WCONT_FREE);
 
   /* CONTEXT: configuration: display settings: which set of display settings to update */
-  confuiMakeItemSpinboxTextG (gui, grid, _("Display"),
+  confuiMakeItemSpinboxText (gui, grid, _("Display"),
       CONFUI_SB_TXT_DISP_SEL, -1, CONFUI_OUT_NUM,
       gui->uiitem [CONFUI_SB_TXT_DISP_SEL].listidx,
       confuiDispSettingChg);

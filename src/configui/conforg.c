@@ -90,25 +90,25 @@ confuiBuildUIOrganization (confuigui_t *gui)
       _("Organisation"), CONFUI_ID_ORGANIZATION);
 
   /* CONTEXT: configuration: the audio file organization path */
-  confuiMakeItemDropdownG (gui, grid, _("Organisation Path"),
+  confuiMakeItemDropdown (gui, grid, _("Organisation Path"),
       CONFUI_DD_ORGPATH, OPT_G_ORGPATH,
       confuiOrgPathSelect);
 
   /* CONTEXT: configuration: examples displayed for the audio file organization path */
-  confuiMakeItemLabelDispG (gui, grid, _("Examples"),
+  confuiMakeItemLabelDisp (gui, grid, _("Examples"),
       CONFUI_WIDGET_AO_EXAMPLE_1, CONFUI_NO_INDENT);
   for (int i = CONFUI_WIDGET_AO_EXAMPLE_2; i < CONFUI_WIDGET_AO_EXAMPLE_MAX; ++i) {
-    confuiMakeItemLabelDispG (gui, grid, "", i, CONFUI_NO_INDENT);
+    confuiMakeItemLabelDisp (gui, grid, "", i, CONFUI_NO_INDENT);
   }
 
-  confuiMakeItemSwitchG (gui, grid,
+  confuiMakeItemSwitch (gui, grid,
       /* CONTEXT: configuration: checkbox: the database will load the dance from the audio file genre tag */
       _("Database Loads Dance From Genre"),
       CONFUI_SWITCH_DB_LOAD_FROM_GENRE, OPT_G_LOADDANCEFROMGENRE,
       bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE), NULL, CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: checkbox: is automatic organization enabled */
-  confuiMakeItemSwitchG (gui, grid, _("Auto Organise"),
+  confuiMakeItemSwitch (gui, grid, _("Auto Organise"),
       CONFUI_SWITCH_AUTO_ORGANIZE, OPT_G_AUTOORGANIZE,
       bdjoptGetNum (OPT_G_AUTOORGANIZE), NULL, CONFUI_NO_INDENT);
 

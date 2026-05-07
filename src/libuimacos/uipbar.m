@@ -21,11 +21,22 @@
 uiwcont_t *
 uiCreateProgressBar (void)
 {
-  return NULL;
+  uiwcont_t           *uiwidget;
+  NSProgressIndicator *pbar;
+
+  pbar = [[NSProgressIndicator alloc] init];
+
+  uiwidget = uiwcontAlloc (WCONT_T_PROGRESS_BAR, WCONT_T_PROGRESS_BAR);
+  uiwcontSetWidget (uiwidget, pbar, NULL);
+
+  return uiwidget;
 }
 
 void
 uiProgressBarSet (uiwcont_t *uipb, double val)
 {
-  return;
+  NSProgressIndicator *pbar;
+
+  pbar = uipb->widget;
+  pbar.doubleValue = val;
 }
