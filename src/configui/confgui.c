@@ -134,7 +134,7 @@ confuiMakeItemDropdown (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, CONFUI_NO_INDENT);
 
   type = DD_LIST_TYPE_STR;
-  if (widx == CONFUI_DD_FADE_TYPE) {
+  if (widx == CONFUI_DD_FADE_TYPE || widx == CONFUI_DD_CLOCK) {
     type = DD_LIST_TYPE_NUM;
   }
   if (type == DD_LIST_TYPE_STR) {

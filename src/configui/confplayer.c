@@ -42,22 +42,45 @@ confuiInitPlayer (confuigui_t *gui)
 {
   char        *volintfc;
   ilist_t     *fadeddlist;
+  ilist_t     *clockddlist;
   int         idx;
   const char  *p;
 
-  confuiSpinboxTextInitDataNum (gui, "cu-player-clock",
-      CONFUI_SPINBOX_PLAYER_CLOCK,
-      /* CONTEXT: configuration: player: clock: off */
-      TM_CLOCK_OFF, _("Off"),
-      /* CONTEXT: configuration: player: clock: local */
-      TM_CLOCK_LOCAL, _("Local"),
-      /* CONTEXT: configuration: player: clock: ISO */
-      TM_CLOCK_ISO, _("ISO"),
-      /* CONTEXT: configuration: player: clock: 12-hour time */
-      TM_CLOCK_TIME_12, _("12-Hour Clock"),
-      /* CONTEXT: configuration: player: clock: 24-hour time */
-      TM_CLOCK_TIME_24, _("24-Hour Clock"),
-      -1);
+  clockddlist = ilistAlloc ("c-clock-dd", LIST_ORDERED);
+
+  /* CONTEXT: configuration: player: clock: off */
+  p = _("Off");
+  idx = TM_CLOCK_OFF;
+  ilistSetStr (clockddlist, idx, DD_LIST_DISP, p);
+  ilistSetStr (clockddlist, idx, DD_LIST_KEY_STR, "off");
+  ilistSetNum (clockddlist, idx, DD_LIST_KEY_NUM, idx);
+  /* CONTEXT: configuration: player: clock: local */
+  p = _("Local");
+  idx = TM_CLOCK_LOCAL;
+  ilistSetStr (clockddlist, idx, DD_LIST_DISP, p);
+  ilistSetStr (clockddlist, idx, DD_LIST_KEY_STR, "local");
+  ilistSetNum (clockddlist, idx, DD_LIST_KEY_NUM, idx);
+  /* CONTEXT: configuration: player: clock: ISO */
+  p = _("ISO");
+  idx = TM_CLOCK_ISO;
+  ilistSetStr (clockddlist, idx, DD_LIST_DISP, p);
+  ilistSetStr (clockddlist, idx, DD_LIST_KEY_STR, "iso");
+  ilistSetNum (clockddlist, idx, DD_LIST_KEY_NUM, idx);
+  /* CONTEXT: configuration: player: clock: 12-hour time */
+  p = _("12-Hour Clock");
+  idx = TM_CLOCK_TIME_12;
+  ilistSetStr (clockddlist, idx, DD_LIST_DISP, p);
+  ilistSetStr (clockddlist, idx, DD_LIST_KEY_STR, "time12");
+  ilistSetNum (clockddlist, idx, DD_LIST_KEY_NUM, idx);
+  /* CONTEXT: configuration: player: clock: 24-hour time */
+  p = _("24-Hour Clock");
+  idx = TM_CLOCK_TIME_24;
+  ilistSetStr (clockddlist, idx, DD_LIST_DISP, p);
+  ilistSetStr (clockddlist, idx, DD_LIST_KEY_STR, "time24");
+  ilistSetNum (clockddlist, idx, DD_LIST_KEY_NUM, idx);
+
+  gui->uiitem [CONFUI_DD_CLOCK].ddlist = clockddlist;
+  gui->uiitem [CONFUI_DD_CLOCK].listidx = bdjoptGetNum (OPT_G_CLOCK_DISP);
 
   fadeddlist = ilistAlloc ("c-fade-type-dd", LIST_ORDERED);
 
@@ -181,9 +204,8 @@ confuiBuildUIPlayer (confuigui_t *gui)
       bdjoptGetNum (OPT_P_SHOW_SPD_CONTROL), NULL, 0);
 
   /* CONTEXT: configuration: the clock format */
-  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Clock"),
-      CONFUI_SPINBOX_PLAYER_CLOCK, OPT_G_CLOCK_DISP, CONFUI_OUT_NUM,
-      bdjoptGetNum (OPT_G_CLOCK_DISP), NULL);
+  confuiMakeItemDropdown (gui, vbox, szgrp, _("Clock"),
+      CONFUI_DD_CLOCK, OPT_G_CLOCK_DISP, confuiClockSelect);
 
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
