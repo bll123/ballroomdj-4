@@ -11,8 +11,8 @@
 #include <getopt.h>
 #include <unistd.h>
 
-#if BDJ4_GUI_LAUNCHER && BDJ4_UI_GTK3
-# include <gtk/gtk.h>
+#if BDJ4_GUI_LAUNCHER
+# include "ui/uiui.h"
 #endif
 
 #include "bdj4.h"
@@ -150,11 +150,8 @@ main (int argc, char * argv[])
 
   bdj4arg = bdj4argInit (argc, argv);
 
-#if BDJ4_GUI_LAUNCHER && (BDJ4_UI_GTK3 || BDJ4_UI_GTK4)
-  /* for macos; turns the launcher into a gui program, then the icon */
-  /* shows up in the dock */
-  gtk_disable_setlocale ();
-  gtk_init (&argc, NULL);
+#if BDJ4_GUI_LAUNCHER
+  uiUIBasicInit ();
 #endif
 
   prog = "bdj4starterui";  // default

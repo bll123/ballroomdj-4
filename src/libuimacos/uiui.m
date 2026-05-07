@@ -65,15 +65,17 @@ uiUIInitialize (int direction)
   [NSApp setPresentationOptions : NSApplicationPresentationDefault];
   [NSApp activateIgnoringOtherApps : YES];
 
+  uiUIBasicInit ();
+
   appDelegate = [[AppDelegate alloc] init];
   [NSApp setDelegate : appDelegate];
 
   NSDebugEnabled = YES;
   NSZombieEnabled = YES;
 
-//  if (direction == TEXT_DIR_RTL) {
-//    [NSApp userInterfaceLayoutDirection : rightToLeft];
-//  }
+  if (direction == TEXT_DIR_RTL) {
+    ;
+  }
   guisetup.direction = direction;
   return;
 }

@@ -5,6 +5,17 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
+add_library (objuiinit OBJECT
+  uiinit.m
+)
+target_compile_options (objuiinit PRIVATE
+  -DBDJ4_UI_GTK3=1
+)
+target_include_directories (objuiinit PRIVATE
+  ${PKG_GTK_INCLUDE_DIRS}
+)
+target_link_libraries (objuiinit PRIVATE ${PKG_GTK_LDFLAGS})
+
 add_library (libbdj4ui SHARED
   uibox.m
   uibutton.m
@@ -37,7 +48,7 @@ target_compile_options (libbdj4ui PRIVATE
   -DBDJ4_UI_MACOS=1
 )
 target_link_libraries (libbdj4ui PRIVATE
-  objuigeneral objuios libbdj4basic libbdj4common
+  objuigeneral objuios objuiinit libbdj4basic libbdj4common
 )
 target_link_options (libbdj4ui PRIVATE
   -framework Cocoa

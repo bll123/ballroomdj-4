@@ -28,6 +28,7 @@ uiBackend (void)
 void
 uiUIInitialize (int direction)
 {
+  uiUIBasicInit ();
   return;
 }
 

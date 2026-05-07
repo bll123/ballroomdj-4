@@ -9,6 +9,12 @@
 extern "C" {
 #endif
 
+/* uiinit.c */
+
+void  uiUIBasicInit (void);
+
+/* uiui.c */
+
 typedef struct {
   const char * uifont;
   const char * listingfont;

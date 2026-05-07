@@ -61,7 +61,6 @@ uiBackend (void)
 void
 uiUIInitialize (int direction)
 {
-  int   argc = 0;
   int   gtdir = GTK_TEXT_DIR_LTR;
 
   if (initialized) {
@@ -69,13 +68,7 @@ uiUIInitialize (int direction)
   }
 
   uiInitUILog ();
-
-  /* gtk's gtk_get_locale_direction() gets very confused if the locale */
-  /* settings are changed before gtk_init() is called. */
-
-  /* the locale has already been set */
-  gtk_disable_setlocale ();
-  gtk_init (&argc, NULL);
+  uiUIBasicInit ();
 
   uiTextDirection = direction;
   if (direction == TEXT_DIR_RTL) {

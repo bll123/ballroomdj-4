@@ -67,7 +67,7 @@ uiToggleButtonSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
 }
 
 void
-uiToggleButtonSetImage (uiwcont_t *uiwidget, uiwcont_t *image)
+uiToggleButtonSetImage (uiwcont_t *uiwidget)
 {
   return;
 }
