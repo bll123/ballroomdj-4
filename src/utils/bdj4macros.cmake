@@ -134,8 +134,8 @@ endmacro()
 macro (uilibPreSymlink name)
   if (SYSLINUX OR SYSMACOS)
     install (
-#      CODE "message (\"REMOVE ${DEST_BIN}/${name}${CMAKE_SHARED_LIBRARY_SUFFIX}>\")"
-      CODE "file (REMOVE ${DEST_BIN}/${name}${CMAKE_SHARED_LIBRARY_SUFFIX}>)"
+#      CODE "message (\"REMOVE ${DEST_BIN}/${name}${CMAKE_SHARED_LIBRARY_SUFFIX}\")"
+      CODE "file (REMOVE ${DEST_BIN}/${name}${CMAKE_SHARED_LIBRARY_SUFFIX})"
     )
   endif()
 endmacro()
@@ -144,7 +144,7 @@ macro (uilibSymlink name target)
   if (SYSLINUX OR SYSMACOS)
     install (
 #      CODE "message (\"RENAME ${DEST_BIN}/$<TARGET_FILE_NAME:${name}>
-#          ${DEST_BIN}/${target}${CMAKE_SHARED_LIBRARY_SUFFIX}\")"
+#         ${DEST_BIN}/${target}${CMAKE_SHARED_LIBRARY_SUFFIX}\")"
       CODE "file (RENAME ${DEST_BIN}/$<TARGET_FILE_NAME:${name}>
           ${DEST_BIN}/${target}${CMAKE_SHARED_LIBRARY_SUFFIX})"
 #      CODE "message (\"CREATE_LINK
