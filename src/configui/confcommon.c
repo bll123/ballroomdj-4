@@ -768,6 +768,16 @@ confuiMQThemeSelect (void *udata, const char *sval)
   return UICB_CONT;
 }
 
+int32_t
+confuiFadeTypeSelect (void *udata, int32_t idx)
+{
+  if (idx >= 0) {
+    bdjoptSetNum (OPT_P_FADETYPE, idx);
+  }
+
+  return UICB_CONT;
+}
+
 static bool
 confuiSearchDispSel (confuigui_t *gui, int selidx, const char *disp)
 {

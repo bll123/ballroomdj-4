@@ -42,21 +42,12 @@ static bool confuiLinkCallback (void *udata);
 static bool confuiValidateCallback (void *udata);
 
 void
-confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, int id)
+confuiMakeNotebookTab (uiwcont_t *grid, confuigui_t *gui, const char *txt, int id)
 {
-  uivnbAppendPage (gui->mainvnb, boxp, txt, id);
-
-  uiWidgetExpandHoriz (boxp);
-  uiWidgetExpandVert (boxp);
-  uiWidgetSetAllMargins (boxp, 2);
-
-}
-
-void
-confuiMakeNotebookTabG (uiwcont_t *grid, confuigui_t *gui, const char *txt, int id)
-{
-//fprintf (stderr, "cgui: tab-g %s\n", txt);
   uivnbAppendPage (gui->mainvnb, grid, txt, id);
+
+  uiWidgetExpandHoriz (grid);
+  uiWidgetExpandVert (grid);
   uiWidgetSetAllMargins (grid, 2);
 }
 
@@ -105,8 +96,10 @@ confuiMakeItemEntryChooserG (confuigui_t *gui, uiwcont_t *grid,
 
 void
 confuiMakeItemDropdownG (confuigui_t *gui, uiwcont_t *grid,
-    const char *txt, int widx, int bdjoptIdx, callbackFuncS ddcb)
+    const char *txt, int widx, int bdjoptIdx, void *ddcb)
 {
+  int     type;
+
   gui->uiitem [widx].basetype = CONFUI_DD;
   /* the selection handler sets bdjopt to the appropriate value */
   /* and also listidx is not set */
@@ -114,10 +107,19 @@ confuiMakeItemDropdownG (confuigui_t *gui, uiwcont_t *grid,
 
   confuiMakeItemLabelG (gui, widx, grid, txt, CONFUI_NO_INDENT);
 
-  gui->uiitem [widx].callback = callbackInitS (ddcb, gui);
+  type = DD_LIST_TYPE_STR;
+  if (widx == CONFUI_DD_FADE_TYPE) {
+    type = DD_LIST_TYPE_NUM;
+  }
+  if (type == DD_LIST_TYPE_STR) {
+    gui->uiitem [widx].callback = callbackInitS (ddcb, gui);
+  }
+  if (type == DD_LIST_TYPE_NUM) {
+    gui->uiitem [widx].callback = callbackInitI (ddcb, gui);
+  }
   gui->uiitem [widx].uidd = uiddCreate ("confgui",
       gui->window, NULL, DD_PACK_START,
-      gui->uiitem [widx].ddlist, DD_LIST_TYPE_STR,
+      gui->uiitem [widx].ddlist, type,
       NULL, DD_REPLACE_TITLE, gui->uiitem [widx].callback);
   uiddPackGrid (gui->uiitem [widx].uidd, grid);
   /* this is the only time the index is used */

@@ -32,7 +32,7 @@ confuiBuildUIUserInterface (confuigui_t *gui)
 
   logMsg (LOG_DBG, LOG_INFO, "conf: build-ui: ui");
   /* user interface */
-  confuiMakeNotebookTabG (grid, gui,
+  confuiMakeNotebookTab (grid, gui,
       /* CONTEXT: configuration: options associated with the user interface */
       _("User Interface"), CONFUI_ID_NONE);
 
