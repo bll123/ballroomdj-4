@@ -29,13 +29,10 @@ uiCreateNotebook (void)
   uiwcont_t   *uiwidget;
   NSTabView   *nb;
 
-// fprintf (stderr, "c-nb\n");
+ fprintf (stderr, "c-nb\n");
   nb = [[NSTabView alloc] init];
   [nb setTabPosition : NSTabPositionTop];
-//  gtk_notebook_set_show_border (GTK_NOTEBOOK (nb), TRUE);
-//  gtk_widget_set_hexpand (nb, TRUE);
-//  gtk_widget_set_vexpand (nb, FALSE);
-//  [nb setAutoresizingMask : NSViewWidthSizable | NSViewHeightSizable];
+  [nb setTabViewType : NSNoTabsLineBorder];
 
   uiwidget = uiwcontAlloc (WCONT_T_NOTEBOOK, WCONT_T_NOTEBOOK);
   uiwcontSetWidget (uiwidget, nb, NULL);
@@ -51,15 +48,17 @@ void
 uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
     uiwcont_t *uilabel)
 {
-  NSTabView       *nb;
+  NSTabView     *nb;
+  NSTabViewItem *tabv;
+  NSString      *lab;
 
   if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-append-page")) {
     return;
   }
-
-  if (uibox == NULL) {
+  if (uibox == NULL || uibox->packwidget == NULL) {
     return;
   }
+
   if (uibox->wbasetype != WCONT_T_BOX &&
       uibox->wtype != WCONT_T_GRID &&
       uibox->wtype != WCONT_T_WINDOW_SCROLL) {
@@ -70,11 +69,15 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
   }
 
   nb = uinotebook->widget;
-  [nb setTabViewType : NSNoTabsNoBorder];
+  tabv = [[NSTabViewItem alloc] init];
+  if (uilabel != NULL && uilabel->widget != NULL) {
+    lab = uilabel->widget;
+    tabv.label = [lab stringValue];
+  }
+  [tabv setView : uibox->packwidget];
+  [nb addTabViewItem : tabv];
 
   uibox->packed = true;
-
-  nb.needsDisplay = true;
 
   return;
 }
