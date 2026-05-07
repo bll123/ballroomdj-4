@@ -117,9 +117,10 @@ confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp,
 
 void
 confuiMakeItemDropdown (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
-    const char *txt, int widx, int bdjoptIdx, callbackFuncS ddcb)
+    const char *txt, int widx, int bdjoptIdx, void *ddcb)
 {
   uiwcont_t   *hbox;
+  int         type;
 
   logProcBegin ();
   gui->uiitem [widx].basetype = CONFUI_DD;
@@ -132,10 +133,19 @@ confuiMakeItemDropdown (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 
   confuiMakeItemLabel (gui, widx, hbox, szgrp, txt, CONFUI_NO_INDENT);
 
-  gui->uiitem [widx].callback = callbackInitS (ddcb, gui);
+  type = DD_LIST_TYPE_STR;
+  if (widx == CONFUI_DD_FADE_TYPE) {
+    type = DD_LIST_TYPE_NUM;
+  }
+  if (type == DD_LIST_TYPE_STR) {
+    gui->uiitem [widx].callback = callbackInitS (ddcb, gui);
+  }
+  if (type == DD_LIST_TYPE_NUM) {
+    gui->uiitem [widx].callback = callbackInitI (ddcb, gui);
+  }
   gui->uiitem [widx].uidd = uiddCreate ("confgui",
       gui->window, hbox, DD_PACK_START,
-      gui->uiitem [widx].ddlist, DD_LIST_TYPE_STR,
+      gui->uiitem [widx].ddlist, type,
       NULL, DD_REPLACE_TITLE, gui->uiitem [widx].callback);
   /* this is the only time the index is used */
   uiddSetSelection (gui->uiitem [widx].uidd, gui->uiitem [widx].listidx);

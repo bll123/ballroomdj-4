@@ -58,6 +58,7 @@ enum {
   CONFUI_DD_UI_THEME,
   CONFUI_DD_MQ_THEME,
   CONFUI_DD_RC_HTML_TEMPLATE,
+  CONFUI_DD_FADE_TYPE,
   CONFUI_DD_MAX,
   CONFUI_ENTRY_BEGIN,
   CONFUI_ENTRY_ACRCLOUD_API_HOST,
@@ -97,7 +98,6 @@ enum {
   CONFUI_SPINBOX_DANCE_TIME_SIG,
   CONFUI_SPINBOX_DANCE_TYPE,
   CONFUI_SPINBOX_DISP_SEL,
-  CONFUI_SPINBOX_FADE_TYPE,
   CONFUI_SPINBOX_ITUNES_STARS_10,
   CONFUI_SPINBOX_ITUNES_STARS_100,
   CONFUI_SPINBOX_ITUNES_STARS_20,
@@ -515,6 +515,7 @@ int32_t confuiOrgPathSelect (void *udata, const char *sval);
 int32_t confuiLocaleSelect (void *udata, const char *sval);
 int32_t confuiUIThemeSelect (void *udata, const char *sval);
 int32_t confuiMQThemeSelect (void *udata, const char *sval);
+int32_t confuiFadeTypeSelect (void *udata, int32_t idx);
 void confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces, int optidx, int opnmidx, int spinboxidx, int offset);
 
 /* confas.c */
@@ -554,7 +555,7 @@ void confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, 
 void confuiMakeItemEntry (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
 void confuiMakeItemEntryEncrypt (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
 void confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, void *dialogFunc);
-void confuiMakeItemDropdown (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, callbackFuncS ddcb);
+void confuiMakeItemDropdown (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, void *ddcb);
 void confuiMakeItemLink (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, const char *disp);
 void confuiMakeItemFontButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *fontname);
 void confuiMakeItemColorButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg, const char *txt, int widx, int bdjoptIdx, const char *color);

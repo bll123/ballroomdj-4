@@ -40,7 +40,10 @@ static void confuiPlayerLoadSinkList (confuigui_t *gui, const char *intfc);
 void
 confuiInitPlayer (confuigui_t *gui)
 {
-  char            *volintfc;
+  char        *volintfc;
+  ilist_t     *fadeddlist;
+  int         idx;
+  const char  *p;
 
   confuiSpinboxTextInitDataNum (gui, "cu-player-clock",
       CONFUI_SPINBOX_PLAYER_CLOCK,
@@ -56,21 +59,47 @@ confuiInitPlayer (confuigui_t *gui)
       TM_CLOCK_TIME_24, _("24-Hour Clock"),
       -1);
 
-  confuiSpinboxTextInitDataNum (gui, "cu-player-fade-type",
-      CONFUI_SPINBOX_PLAYER_FADE_TYPE,
-      /* CONTEXT: configuration: player: fade-type: exponential sine */
-      FADETYPE_EXPONENTIAL_SINE, _("Exponential Sine"),
-      /* CONTEXT: configuration: player: fade-type: half sine */
-      FADETYPE_HALF_SINE, _("Half Sine"),
-      /* CONTEXT: configuration: player: fade-type: inverted parabola */
-      FADETYPE_INVERTED_PARABOLA, _("Inverted Parabola"),
-      /* CONTEXT: configuration: player: fade-type: quadratic */
-      FADETYPE_QUADRATIC, _("Quadratic"),
-      /* CONTEXT: configuration: player: fade-type: quarter sine */
-      FADETYPE_QUARTER_SINE, _("Quarter Sine"),
-      /* CONTEXT: configuration: player: fade-type: triangle */
-      FADETYPE_TRIANGLE, _("Triangle"),
-      -1);
+  fadeddlist = ilistAlloc ("c-fade-type-dd", LIST_ORDERED);
+
+  idx = FADETYPE_EXPONENTIAL_SINE;
+  /* CONTEXT: configuration: player: fade-type: exponential sine */
+  p = _("Exponential Sine");
+  ilistSetStr (fadeddlist, idx, DD_LIST_DISP, p);
+  ilistSetStr (fadeddlist, idx, DD_LIST_KEY_STR, "exponentialsine");
+  ilistSetNum (fadeddlist, idx, DD_LIST_KEY_NUM, idx);
+  idx = FADETYPE_HALF_SINE;
+  /* CONTEXT: configuration: player: fade-type: half sine */
+  p = _("Half Sine");
+  ilistSetStr (fadeddlist, idx, DD_LIST_DISP, p);
+  ilistSetStr (fadeddlist, idx, DD_LIST_KEY_STR, "halfsine");
+  ilistSetNum (fadeddlist, idx, DD_LIST_KEY_NUM, idx);
+  idx = FADETYPE_INVERTED_PARABOLA;
+  /* CONTEXT: configuration: player: fade-type: inverted parabola */
+  p = _("Inverted Parabola");
+  ilistSetStr (fadeddlist, idx, DD_LIST_DISP, p);
+  ilistSetStr (fadeddlist, idx, DD_LIST_KEY_STR, "invertedparabola");
+  ilistSetNum (fadeddlist, idx, DD_LIST_KEY_NUM, idx);
+  idx = FADETYPE_QUADRATIC;
+  /* CONTEXT: configuration: player: fade-type: quadratic */
+  p = _("Quadratic");
+  ilistSetStr (fadeddlist, idx, DD_LIST_DISP, p);
+  ilistSetStr (fadeddlist, idx, DD_LIST_KEY_STR, "quadratic");
+  ilistSetNum  (fadeddlist, idx, DD_LIST_KEY_NUM, idx);
+  idx = FADETYPE_QUARTER_SINE;
+  /* CONTEXT: configuration: player: fade-type: quarter sine */
+  p = _("Quarter Sine");
+  ilistSetStr (fadeddlist, idx, DD_LIST_DISP, p);
+  ilistSetStr (fadeddlist, idx, DD_LIST_KEY_STR, "quartersine");
+  ilistSetNum (fadeddlist, idx, DD_LIST_KEY_NUM, idx);
+  idx = FADETYPE_TRIANGLE;
+  /* CONTEXT: configuration: player: fade-type: triangle */
+  p = _("Triangle");
+  ilistSetStr (fadeddlist, idx, DD_LIST_DISP, p);
+  ilistSetStr (fadeddlist, idx, DD_LIST_KEY_STR, "triangle");
+  ilistSetNum (fadeddlist, idx, DD_LIST_KEY_NUM, idx);
+
+  gui->uiitem [CONFUI_DD_FADE_TYPE].ddlist = fadeddlist;
+  gui->uiitem [CONFUI_DD_FADE_TYPE].listidx = bdjoptGetNum (OPT_P_FADETYPE);
 
   confuiLoadPlayerIntfcList (gui);
   confuiLoadControllerIntfcList (gui);
@@ -143,9 +172,8 @@ confuiBuildUIPlayer (confuigui_t *gui)
       bdjoptGetStr (OPT_P_COMPLETE_MSG), CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: type of fade-out to use (triangle, half-sine, etc.)*/
-  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Fade Type"),
-      CONFUI_SPINBOX_PLAYER_FADE_TYPE, OPT_P_FADETYPE, CONFUI_OUT_NUM,
-      bdjoptGetNum (OPT_P_FADETYPE), NULL);
+  confuiMakeItemDropdown (gui, vbox, szgrp, _("Fade Type"),
+      CONFUI_DD_FADE_TYPE, OPT_P_FADETYPE, confuiFadeTypeSelect);
 
   /* CONTEXT: configuration: whether or not to show the speed reset button */
   confuiMakeItemSwitch (gui, vbox, szgrp, _("Show Speed Reset"),
