@@ -778,6 +778,16 @@ confuiFadeTypeSelect (void *udata, int32_t idx)
   return UICB_CONT;
 }
 
+int32_t
+confuiClockSelect (void *udata, int32_t idx)
+{
+  if (idx >= 0) {
+    bdjoptSetNum (OPT_G_CLOCK_DISP, idx);
+  }
+
+  return UICB_CONT;
+}
+
 static bool
 confuiSearchDispSel (confuigui_t *gui, int selidx, const char *disp)
 {

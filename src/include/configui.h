@@ -55,12 +55,13 @@ typedef enum {
 enum {
   CONFUI_BEGIN,
   CONFUI_DD_BEGIN,
+  CONFUI_DD_CLOCK,
   CONFUI_DD_ORGPATH,
+  CONFUI_DD_FADE_TYPE,
   CONFUI_DD_LOCALE,
   CONFUI_DD_UI_THEME,
   CONFUI_DD_MQ_THEME,
   CONFUI_DD_RC_HTML_TEMPLATE,
-  CONFUI_DD_FADE_TYPE,
   CONFUI_DD_MAX,
   CONFUI_ENTRY_BEGIN,
   CONFUI_ENTRY_ACRCLOUD_API_HOST,
@@ -525,6 +526,7 @@ int32_t confuiLocaleSelect (void *udata, const char *sval);
 int32_t confuiUIThemeSelect (void *udata, const char *sval);
 int32_t confuiMQThemeSelect (void *udata, const char *sval);
 int32_t confuiFadeTypeSelect (void *udata, int32_t idx);
+int32_t confuiClockSelect (void *udata, int32_t idx);
 void confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces, int optidx, int opnmidx, int spinboxidx, int offset);
 
 /* confas.c */
