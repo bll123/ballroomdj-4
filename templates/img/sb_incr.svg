@@ -56,9 +56,9 @@
      inkscape:window-height="983"
      id="namedview1675"
      showgrid="false"
-     inkscape:zoom="14.82505"
-     inkscape:cx="8.3304947"
-     inkscape:cy="9.0387553"
+     inkscape:zoom="14.757356"
+     inkscape:cx="8.5042335"
+     inkscape:cy="9.0124546"
      inkscape:window-x="386"
      inkscape:window-y="256"
      inkscape:window-maximized="0"
@@ -75,15 +75,15 @@
      style="opacity:0.996;fill:#ffa600;fill-opacity:1;stroke:#ffffff;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke"
      id="rect1"
      width="2.4283223"
-     height="14.772294"
+     height="13"
      x="7.2858391"
-     y="1.613853" />
+     y="2.5" />
   <rect
      style="opacity:0.996;fill:#ffa600;fill-opacity:1;stroke:#ffffff;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke"
      id="rect1-6"
      width="2.4283223"
-     height="14.772294"
+     height="13"
      x="7.7858391"
-     y="-15.886147"
+     y="-15"
      transform="rotate(90)" />
 </svg>
