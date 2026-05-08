@@ -49,7 +49,7 @@ uiCreateCheckButton (const char *txt, int value)
   }
   widget.buttonType = NSButtonTypeSwitch;
   if (txt != NULL) {
-    widget.title = [NSString stringWithUTF8String : txt];
+    widget.attributedTitle = uiAttrString (txt);
   }
   widget.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -79,7 +79,7 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
     widget.state = NSControlStateValueOn;
   }
   if (txt != NULL) {
-    widget.title = [NSString stringWithUTF8String : txt];
+    widget.attributedTitle = uiAttrString (txt);
   }
   widget.translatesAutoresizingMaskIntoConstraints= NO;
 
@@ -110,8 +110,8 @@ uiCreateToggleButton (const char *txt,
     widget.state = NSControlStateValueOn;
   }
   if (txt != NULL) {
-    widget.title = [NSString stringWithUTF8String : txt];
-    widget.imagePosition = NSImageRight;
+    widget.attributedTitle = uiAttrString (txt);
+    widget.imagePosition = NSImageTrailing;
   }
   widget.translatesAutoresizingMaskIntoConstraints = NO;
 

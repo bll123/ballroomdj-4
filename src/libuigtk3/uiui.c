@@ -8,7 +8,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include <math.h>
 
 #include <gtk/gtk.h>
@@ -26,6 +25,8 @@
 #include "sysvars.h"
 #include "tmutil.h"
 #include "uiclass.h"
+#include "uiutils.h"
+#include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"
 
@@ -117,7 +118,7 @@ uiCleanup (void)
 }
 
 void
-uiSetUICSS (uisetup_t *uisetup)
+uiUIPostInit (uisetup_t *uisetup)
 {
   char            *cssbuff;
   char            tbuff [BDJ4_PATH_MAX];
@@ -165,38 +166,19 @@ uiSetUICSS (uisetup_t *uisetup)
 
   if (uisetup->uifont != NULL && *uisetup->uifont) {
     char  tmp [100];
+    char  weight [20];
 
-    stpecpy (tmp, tmp + sizeof (tmp), uisetup->uifont);
-    p = strrchr (tmp, ' ');
-    if (p != NULL) {
-      ++p;
-      if (isdigit (*p)) {
-        --p;
-        *p = '\0';
-        ++p;
-        sz = atoi (p);
-      }
-    }
-
+    sz = uiParseFont (uisetup->uifont, tmp, sizeof (tmp), weight, sizeof (weight));
     snprintf (wbuff, sizeof (wbuff), "* { font-family: '%s'; }\n", tmp);
     tp = stpecpy (tp, tend, wbuff);
   }
 
   if (uisetup->listingfont != NULL && *uisetup->listingfont) {
     char  tmp [100];
+    char  weight [20];
     int   listingsz = 0;
 
-    stpecpy (tmp, tmp + sizeof (tmp), uisetup->listingfont);
-    p = strrchr (tmp, ' ');
-    if (p != NULL) {
-      ++p;
-      if (isdigit (*p)) {
-        --p;
-        *p = '\0';
-        ++p;
-        listingsz = atoi (p);
-      }
-    }
+    listingsz = uiParseFont (uisetup->listingfont, tmp, sizeof (tmp), weight, sizeof (weight));
 
     if (listingsz > 0) {
       /* the largest size w/o messing up the display too much */

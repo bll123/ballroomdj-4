@@ -350,9 +350,9 @@ if [[ $CHANGES == T ]]; then
   if [[ $os == macos ]]; then
     tfn=data/${hostname}/bdjconfig.txt
     sed -e '/^UI_THEME/ { n ; s/.*/..Mojave-dark-solid/ ; }' \
-        -e '/^MQ_FONT/ { n ; s/.*/..Arial Narrow Regular 17/ ; }' \
-        -e '/^UI_FONT/ { n ; s/.*/..Arial Regular 17/ ; }' \
-        -e '/^LISTING_FONT/ { n ; s/.*/..Arial Regular 16/ ; }' \
+        -e '/^MQ_FONT/ { n ; s/.*/..Arial Narrow 17/ ; }' \
+        -e '/^UI_FONT/ { n ; s/.*/..Arial 17/ ; }' \
+        -e '/^LISTING_FONT/ { n ; s/.*/..Arial 16/ ; }' \
         ${tfn} > ${tfn}.n
     mv -f ${tfn}.n ${tfn}
   fi

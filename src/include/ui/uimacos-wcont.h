@@ -38,6 +38,26 @@ typedef struct uispecific {
   macoslayout_t   layout;
 } uispecific_t;
 
+static inline NSAttributedString *
+uiAttrString (const char *txt)
+{
+  NSAttributedString  *astr = NULL;
+  NSString            *tstr;
+
+NSLog(@"%@",[[[NSFontManager sharedFontManager] availableFontFamilies] description]);
+  if (txt == NULL) {
+    txt = "";
+  }
+  tstr = [NSString stringWithUTF8String : txt];
+  if (guisetup.uifontattr != NULL) {
+    astr = [[NSAttributedString alloc] initWithString : tstr
+          attributes : guisetup.uifontattr];
+  } else {
+    astr = [[NSAttributedString alloc] initWithString : tstr];
+  }
+  return astr;
+}
+
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
 #endif

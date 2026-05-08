@@ -51,7 +51,7 @@ uiCleanup (void)
 }
 
 void
-uiSetUICSS (uisetup_t *uisetup)
+uiUIPostInit (uisetup_t *uisetup)
 {
   return;
 }

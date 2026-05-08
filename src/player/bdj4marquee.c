@@ -149,7 +149,7 @@ static void marqueeDisplayCompletion (marquee_t *marquee);
 static void marqueeSendFontSizes (marquee_t *marquee);
 static void marqueeClearInfoDisplay (marquee_t *marquee);
 static void marqueeSendStatus (marquee_t *marquee);
-static void marqueeNewFontSize (char *buff, size_t sz, const char *font, const char *style, int newsz);
+static void marqueeNewFontSize (char *buff, size_t sz, const char *font, const char *weight, int newfontsz);
 
 static int gKillReceived = 0;
 
@@ -241,7 +241,7 @@ main (int argc, char *argv[])
 
   uiUIInitialize (sysvarsGetNum (SVL_LOCALE_TEXT_DIR));
   uiutilsInitSetup (&uisetup);
-  uiSetUICSS (&uisetup);
+  uiUIPostInit (&uisetup);
 
   marqueeBuildUI (&marquee);
   osuiFinalize ();
@@ -1100,22 +1100,15 @@ marqueeSendStatus (marquee_t *marquee)
 }
 
 static void
-marqueeNewFontSize (char *buff, size_t sz, const char *font, const char *style, int newsz)
+marqueeNewFontSize (char *buff, size_t sz, const char *font, const char *weight, int newfontsz)
 {
   char        fontname [200];
-  size_t      i;
+  char        tweight [20];
+  int         osz;
 
-  stpecpy (fontname, fontname + sizeof (fontname), font);
-
-  i = strlen (fontname) - 1;
-  while (i != 0 && (isdigit (fontname [i]) || isspace (fontname [i]))) {
-    --i;
+  osz = uiParseFont (font, fontname, sizeof (fontname), tweight, sizeof (tweight));
+  if (weight == NULL) {
+    weight = "";
   }
-  ++i;
-  fontname [i] = '\0';
-
-  if (style == NULL) {
-    style = "";
-  }
-  snprintf (buff, sz, "%s %s %d", fontname, style, newsz);
+  snprintf (buff, sz, "%s %s %d", fontname, weight, newfontsz);
 }

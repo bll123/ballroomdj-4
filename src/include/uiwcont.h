@@ -193,6 +193,7 @@ uiwcont_t *uiwcontAlloc_r (int basetype, int type, const char *, int);
 void uiwcontBaseFree (uiwcont_t *uiwidget);
 void uiwcontSetWidget (uiwcont_t *uiwidget, void *widget, void *packwidget);
 void uiwcontSetID (uiwcont_t *parent, uiwcont_t *uiwidget, int count);
+int uiParseFont (const char *fontnm, char *buff, size_t buffsz, char *style, size_t stylesz);
 
 /* for debugging */
 void uiwcontDebugDisp (uiwcont_t *uiwidget, const char *tag);

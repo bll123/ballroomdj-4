@@ -20,6 +20,7 @@
 #include "tmutil.h"
 #include "uiclass.h"
 #include "uigeneral.h"
+#include "uiwcont.h"
 
 #include "ui/uiwcont-int.h"
 #include "ui/uimacos-int.h"
@@ -58,7 +59,7 @@ uiBackend (void)
 void
 uiUIInitialize (int direction)
 {
-  id  appDelegate;
+  id        appDelegate;
 
   [NSApplication sharedApplication];
   NSApp.activationPolicy = NSApplicationActivationPolicyRegular;
@@ -77,6 +78,7 @@ uiUIInitialize (int direction)
     ;
   }
   guisetup.direction = direction;
+
   return;
 }
 
@@ -120,13 +122,44 @@ uiCleanup (void)
 }
 
 void
-uiSetUICSS (uisetup_t *uisetup)
+uiUIPostInit (uisetup_t *uisetup)
 {
-  int       tdir;
+  int           tdir;
+  char          tmp [150];
+  char          weight [20];
+  int           sz;
+  NSString      *tstr;
+  NSFont        *font;
+  NSDictionary  *attr;
 
   tdir = guisetup.direction;
   memcpy (&guisetup, uisetup, sizeof (uisetup_t));
   guisetup.direction = tdir;
+
+  sz = uiParseFont (guisetup.uifont, tmp, sizeof (tmp), weight, sizeof (weight));
+  tstr = [NSString stringWithUTF8String : tmp];
+  font = [NSFont fontWithName : tstr size: sz];
+if (font == NULL) {
+fprintf (stderr, "a: font-fail %s\n", guisetup.uifont);
+}
+  if (font != NULL) {
+    attr = [NSDictionary dictionaryWithObject : font
+        forKey : NSFontAttributeName];
+    guisetup.uifontattr = attr;
+  }
+
+  sz = uiParseFont (guisetup.listingfont, tmp, sizeof (tmp), weight, sizeof (weight));
+  tstr = [NSString stringWithUTF8String : tmp];
+  font = [NSFont fontWithName : tstr size: sz];
+  if (font != NULL) {
+    attr = [NSDictionary dictionaryWithObject : font
+        forKey : NSFontAttributeName];
+    guisetup.listingfontattr = attr;
+  }
+if (font == NULL) {
+fprintf (stderr, "b: font-fail %s\n", guisetup.listingfont);
+}
+
   return;
 }
 

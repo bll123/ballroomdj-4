@@ -37,7 +37,7 @@ uiCreateLabel (const char *label)
   widget.drawsBackground = NO;
   widget.editable = NO;
   widget.selectable = NO;
-  widget.stringValue = [NSString stringWithUTF8String : label];
+  widget.attributedStringValue = uiAttrString (label);
   widget.translatesAutoresizingMaskIntoConstraints = NO;
   widget.needsDisplay = true;
 

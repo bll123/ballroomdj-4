@@ -56,10 +56,11 @@ typedef struct uibuttonint {
 
 uiwcont_t *
 uiCreateButton_r (callback_t *uicb, const char *txt,
+
     const char *imagenm, const char *tooltiptxt)
 {
   uiwcont_t       *uiwidget;
-  uibuttonint_t    *uibutton;
+  uibuttonint_t   *uibutton;
   IButton         *widget = nil;
 
   uibutton = mdmalloc (sizeof (uibuttonint_t));
@@ -71,7 +72,7 @@ uiCreateButton_r (callback_t *uicb, const char *txt,
 
 
   if (txt != NULL) {
-    widget.title = [NSString stringWithUTF8String: txt];
+    widget.attributedTitle = uiAttrString (txt);
   }
   if (tooltiptxt != NULL) {
     widget.toolTip = [NSString stringWithUTF8String : tooltiptxt];
@@ -84,17 +85,16 @@ uiCreateButton_r (callback_t *uicb, const char *txt,
     /* relative path */
     pathbldMakePath (tbuff, sizeof (tbuff), imagenm, BDJ4_IMG_SVG_EXT,
         PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-// why is this not working?
-// the toggle button handles a .svg
-//fprintf (stderr, "button-image: %s\n", tbuff);
     nsnm = [NSString stringWithUTF8String : imagenm];
     image = [[NSImage alloc] initWithContentsOfFile : nsnm];
     uibutton->image = image;
     widget.image = image;
+    widget.imageScaling = NSImageScaleProportionallyDown;
     if (txt == NULL) {
+// why is this not working?  the image/alt-image button is working now.
 //      widget.title = @"";
-      widget.imagePosition = NSImageOnly;
 //      widget.imagePosition = NSImageTrailing;
+      widget.imagePosition = NSImageOnly;
     } else {
       widget.imagePosition = NSImageTrailing;
     }

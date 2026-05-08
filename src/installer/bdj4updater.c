@@ -295,20 +295,20 @@ main (int argc, char *argv [])
       if (isWindows () || isMacOS ()) {
         uifont = "Arial Regular 12";
         if (isMacOS ()) {
-          uifont = "Arial Regular 16";
+          uifont = "Arial 16";
         }
         bdjoptSetStr (OPT_M_UI_FONT, uifont);
 
         /* windows does not have a narrow font pre-installed */
         uifont = "Arial Regular 11";
         if (isMacOS ()) {
-          uifont = "Arial Narrow Regular 15";
+          uifont = "Arial Narrow 15";
         }
         bdjoptSetStr (OPT_M_MQ_FONT, uifont);
 
         uifont = "Arial Regular 11";
         if (isMacOS ()) {
-          uifont = "Arial Regular 15";
+          uifont = "Arial 15";
         }
         bdjoptSetStr (OPT_M_LISTING_FONT, uifont);
 

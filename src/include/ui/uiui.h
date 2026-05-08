@@ -16,17 +16,19 @@ void  uiUIBasicInit (void);
 /* uiui.c */
 
 typedef struct {
-  const char * uifont;
-  const char * listingfont;
-  const char * accentColor;
-  const char * errorColor;
-  const char * markColor;
-  const char * changedColor;
-  const char * rowselColor;
-  const char * rowhlColor;
-  const char * mqbgColor;
-  int        direction;       // for macos
-  bool       is_dark;
+  const char  * uifont;
+  const char  * listingfont;
+  const char  * accentColor;
+  const char  * errorColor;
+  const char  * markColor;
+  const char  * changedColor;
+  const char  * rowselColor;
+  const char  * rowhlColor;
+  const char  * mqbgColor;
+  void        * uifontattr;
+  void        * listingfontattr;
+  int         direction;       // for macos
+  bool        is_dark;
 } uisetup_t;
 
 typedef enum {
@@ -48,7 +50,7 @@ void  uiUIInitialize (int direction);
 void  uiUIProcessEvents (void);
 void  uiUIProcessWaitEvents (void);     // a small delay
 void  uiCleanup (void);
-void  uiSetUICSS (uisetup_t *uisetup);
+void  uiUIPostInit (uisetup_t *uisetup);
 void  uiAddColorClass (const char *classnm, const char *color);
 void  uiAddBGColorClass (const char *classnm, const char *color);
 void  uiAddProgressbarClass (const char *classnm, const char *color);

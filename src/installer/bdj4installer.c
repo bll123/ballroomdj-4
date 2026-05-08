@@ -576,7 +576,7 @@ main (int argc, char *argv[])
     if (uifont == NULL || ! *uifont) {
       uifont = "Arial Regular 11";
       if (isMacOS ()) {
-        uifont = "Arial Regular 14";
+        uifont = "Arial 14";
       }
     }
     uisetup.uifont = uifont;
@@ -587,7 +587,7 @@ main (int argc, char *argv[])
     uisetup.rowselColor = NULL;
     uisetup.rowhlColor = NULL;
     uisetup.mqbgColor = NULL;
-    uiSetUICSS (&uisetup);
+    uiUIPostInit (&uisetup);
   }
 
   if (installer.guienabled) {

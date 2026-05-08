@@ -11,6 +11,7 @@
 #include <string.h>
 #include <assert.h>
 #include <stdatomic.h>
+#include <ctype.h>
 
 #include "bdjstring.h"
 #include "log.h"
@@ -109,6 +110,40 @@ uiwcontSetID (uiwcont_t *parent, uiwcont_t *uiwidget, int count)
   uiwidget->parentid = parent->id;
 }
 
+int
+uiParseFont (const char *fontnm, char *buff, size_t buffsz,
+    char *style, size_t stylesz)
+{
+  char  *p;
+  int   fontsz;
+
+  *style = '\0';
+
+  fontsz = 12;
+  stpecpy (buff, buff + buffsz, fontnm);
+  p = strrchr (buff, ' ');
+  if (p != NULL) {
+    ++p;
+    if (isdigit (*p)) {
+      --p;
+      *p = '\0';
+      ++p;
+      fontsz = atoi (p);
+    }
+  }
+  p = strrchr (buff, ' ');
+  if (p != NULL) {
+    ++p;
+    if (strcmp (p, "bold") == 0) {
+      --p;
+      *p = '\0';
+      stpecpy (style, style + stylesz, "bold");
+    }
+  }
+
+  return fontsz;
+}
+
 /* for debugging */
 static const char *uiwcontdesc [WCONT_T_MAX] = {
   [WCONT_T_ADJUSTMENT] = "ADJUSTMENT",
@@ -178,3 +213,4 @@ uiwcontDesc (int wtype)   /* KEEP */
   }
   return uiwcontdesc [wtype];
 }
+

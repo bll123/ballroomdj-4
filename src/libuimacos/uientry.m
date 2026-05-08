@@ -129,7 +129,7 @@ uiEntrySetValue (uiwcont_t *uiwidget, const char *value)
   }
 
   widget = uiwidget->widget;
-  widget.stringValue = [NSString stringWithUTF8String : value];
+  widget.attributedStringValue = uiAttrString (value);
 
   return;
 }

@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "bdjopt.h"
+#include "bdjstring.h"
 #include "uiutils.h"
 
 #include "ui/uiui.h"      // for uisetup_t
@@ -29,5 +30,8 @@ uiutilsInitSetup (uisetup_t *uisetup)
   uisetup->rowhlColor = bdjoptGetStr (OPT_P_UI_ROW_HL_COL);
   uisetup->mqbgColor = bdjoptGetStr (OPT_P_MQ_BG_COL);
   uisetup->changedColor = "#11ff11";
+  uisetup->uifontattr = NULL;
+  uisetup->listingfontattr = NULL;
   uisetup->is_dark = bdjoptGetNum (OPT_M_UI_DARK);
 }
+
