@@ -392,7 +392,6 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
 
   vl->wcont [VL_W_SB] = uiCreateVerticalScrollbar (10.0);
   uiBoxPackEndExpandChildren (vl->wcont [VL_W_SB_VBOX], vl->wcont [VL_W_SB], WCONT_KEEP);
-  uiBoxPostProcess (vl->wcont [VL_W_SB_VBOX]);
 
   vl->callbacks [VL_CB_SB] = callbackInitD (uivlScrollbarCallback, vl);
   uiScrollbarSetStepIncrement (vl->wcont [VL_W_SB], 1.0);
@@ -1536,7 +1535,6 @@ uivlDisplay (uivirtlist_t *vl)
     }
     uiBoxPackStart (vl->wcont [VL_W_SB_VBOX], uiwidget, WCONT_FREE);
     uiWidgetAlignVertBaseline (uiwidget);
-    uiBoxPostProcess (vl->wcont [VL_W_SB_VBOX]);
 
     for (int colidx = 0; colidx < vl->numcols; ++colidx) {
       if (vl->coldata [colidx].heading == NULL) {
@@ -1683,6 +1681,7 @@ uivlPopulate (uivirtlist_t *vl)
   uivlSetDisplaySelections (vl);
 
   if (vl->old_dispsize != vl->dispsize || chg) {
+    uiBoxPostProcess (vl->wcont [VL_W_SB_VBOX]);
     uiGridPostProcess (vl->wcont [VL_W_GRID]);
     vl->old_dispsize = vl->dispsize;
   }

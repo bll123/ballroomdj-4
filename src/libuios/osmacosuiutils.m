@@ -23,9 +23,9 @@ osuiSetIcon (const char *fname)
   NSImage   *image = nil;
   NSString  *ns = nil;
 
-  ns = [NSString stringWithUTF8String: fname];
-  image = [[NSImage alloc] initWithContentsOfFile: ns];
-  [[NSApplication sharedApplication] setApplicationIconImage:image];
+  ns = [NSString stringWithUTF8String : fname];
+  image = [[NSImage alloc] initWithContentsOfFile : ns];
+  [[NSApplication sharedApplication] setApplicationIconImage : image];
 }
 
 void

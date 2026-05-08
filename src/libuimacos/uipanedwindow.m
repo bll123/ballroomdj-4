@@ -27,6 +27,7 @@ uiPanedWindowCreateVert (void)
   widget.dividerStyle = NSSplitViewDividerStyleThick;
   // dividerColor
 
+  /* on macos, a paned window is not a window, but a view */
   uiwidget = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_PANED_WINDOW);
   uiwcontSetWidget (uiwidget, widget, NULL);
   return uiwidget;

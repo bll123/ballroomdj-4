@@ -106,11 +106,6 @@ uiBoxPostProcess_r (uiwcont_t *uibox,
     return;
   }
 
-  if (boxint->postprocess) {
-    fprintf (stderr, "ERR: box post-process twice\n");
-    return;
-  }
-
   box = uibox->widget;
   boxlayout = &uibox->uidata->layout;
 
@@ -133,21 +128,27 @@ uiBoxPostProcess_r (uiwcont_t *uibox,
       return;
     }
 
+fprintf (stderr, "%d-%d box-pp: ", uibox->ui_id, uibox->id);
     if (prev != NULL) {
       pwidget = prev->packwidget;
       playout = &prev->uidata->layout;
       prevcont = playout->container;
-fprintf (stderr, "%d-%d pp: prev: %d-%d %d/%s\n", uibox->ui_id, uibox->id, prev->ui_id, prev->id, prev->wtype, uiwcontDesc (prev->wtype));
+fprintf (stderr, "prev: %d-%d %s ", prev->ui_id, prev->id, uiwcontDesc (prev->wtype));
+    } else {
+fprintf (stderr, "prev: null ");
     }
 
-fprintf (stderr, "%d-%d pp: curr: %d-%d %d/%s\n", uibox->ui_id, uibox->id, curr->ui_id, curr->id, curr->wtype, uiwcontDesc (curr->wtype));
+fprintf (stderr, "curr: %d-%d %s ", curr->ui_id, curr->id, uiwcontDesc (curr->wtype));
 
     if (next != NULL) {
-fprintf (stderr, "%d-%d pp: next: %d-%d %d/%s\n", uibox->ui_id, uibox->id, next->ui_id, next->id, next->wtype, uiwcontDesc (next->wtype));
       nwidget = next->packwidget;
       nlayout = &next->uidata->layout;
       nextcont = nlayout->container;
+fprintf (stderr, "next: %d-%d %s ", next->ui_id, next->id, uiwcontDesc (next->wtype));
+    } else {
+fprintf (stderr, "next: null ");
     }
+fprintf (stderr, "\n");
 
     if (clayout->expandhoriz || boxlayout->expandchildren) {
 //fprintf (stderr, "    pp: expand-horiz\n");
@@ -196,7 +197,7 @@ uiBoxPackStart_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
     return;
   }
 
-//fprintf (stderr, "box: %d-%d p-st: %d-%d %d/%s\n", uibox->ui_id, uibox->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
+fprintf (stderr, "-- box: %d-%d p-st: %d-%d %d/%s\n", uibox->ui_id, uibox->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   box = uibox->widget;
   layout = &uiwidget->uidata->layout;
   if (layout == NULL || layout->container == NULL) {
@@ -255,7 +256,7 @@ uiBoxPackEnd_r (uiwcont_t *uibox, uiwcont_t *uiwidget)
   }
   [box insertView : layout->container atIndex : 0 inGravity : grav];
 
-//fprintf (stderr, "box: %d-%d p-end: %d-%d %d/%s\n", uibox->ui_id, uibox->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
+fprintf (stderr, "-- box: %d-%d p-end: %d-%d %d/%s\n", uibox->ui_id, uibox->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   uiwidget->packed = true;
 
   return;
@@ -321,6 +322,7 @@ uiCreateBox (uiwconttype_t wtype)
   if (wtype == WCONT_T_VBOX) {
     uiWidgetSetIdentifier (uiwidget, "vbox");
   }
+fprintf (stderr, "== box: %d-%d %s\n", uiwidget->ui_id, uiwidget->id, uiwcontDesc (wtype));
 
   return uiwidget;
 }
@@ -354,42 +356,42 @@ uiBoxProcessExpandHoriz (uiwcont_t *uibox,
   if (wtype == WCONT_T_HBOX) {
 //fprintf (stderr, "    pp: eh: hbox\n");
     if (prevcont != NULL) {
-fprintf (stderr, "   eh-h: p-t <= c-l\n");
+fprintf (stderr, "   eh-h: p-t <= c-ld\n");
       c = [prevcont.trailingAnchor
           constraintLessThanOrEqualToAnchor : currcont.leadingAnchor];
-      uiWidgetUpdateConstraint ("eh_hbox_a", c, prevcont, currcont);
+      uiWidgetUpdateConstraint ("eh_hbox_p_trld", c, prevcont, currcont);
     } else {
       /* attach to the box */
-fprintf (stderr, "   eh-h: b-l = c-l\n");
+fprintf (stderr, "   eh-h: b-l = c-ld\n");
       c = [box.leadingAnchor
           constraintEqualToAnchor : currcont.leadingAnchor];
-      uiWidgetUpdateConstraint ("eh_hbox_b", c, box, currcont);
+      uiWidgetUpdateConstraint ("eh_hbox_b_ldld", c, box, currcont);
     }
 
     if (nextcont != NULL) {
-fprintf (stderr, "   eh-h: c-t = n-l\n");
+fprintf (stderr, "   eh-h: c-tr = n-ld\n");
       c = [currcont.trailingAnchor
           constraintLessThanOrEqualToAnchor : nextcont.leadingAnchor];
-      uiWidgetUpdateConstraint ("eh_hbox_c", c, currcont, nextcont);
+      uiWidgetUpdateConstraint ("eh_hbox_trld_n", c, currcont, nextcont);
     } else {
       /* attach to the box */
-fprintf (stderr, "   eh-h: c-t = b-t\n");
+fprintf (stderr, "   eh-h: c-tr = b-tr\n");
       c = [currcont.trailingAnchor
           constraintEqualToAnchor : box.trailingAnchor];
-      uiWidgetUpdateConstraint ("eh_hbox_d", c, currcont, box);
+      uiWidgetUpdateConstraint ("eh_hbox_b_trtr", c, currcont, box);
     }
   }
 
   if (wtype == WCONT_T_VBOX) {
 //fprintf (stderr, "    pp: eh: vbox\n");
-fprintf (stderr, "   eh-v: c-l = b-l\n");
+fprintf (stderr, "   eh-v: c-ld = b-ld\n");
     c = [box.leadingAnchor
         constraintEqualToAnchor : currcont.leadingAnchor];
-    uiWidgetUpdateConstraint ("eh_vbox_a", c, box, currcont);
-fprintf (stderr, "   eh-v: c-t = b-t\n");
+    uiWidgetUpdateConstraint ("eh_vbox_ldld", c, box, currcont);
+fprintf (stderr, "   eh-v: c-tr = b-tr\n");
     c = [currcont.trailingAnchor
         constraintEqualToAnchor : box.trailingAnchor];
-    uiWidgetUpdateConstraint ("eh_vbox_b", c, currcont, box);
+    uiWidgetUpdateConstraint ("eh_vbox_trtr", c, currcont, box);
   }
 
   prevcont.needsDisplay = YES;
@@ -434,26 +436,26 @@ uiBoxProcessExpandVert (uiwcont_t *uibox,
 fprintf (stderr, "   ev-v: p-b <= c-t\n");
       c = [prevcont.bottomAnchor
           constraintLessThanOrEqualToAnchor: currcont.topAnchor];
-      uiWidgetUpdateConstraint ("ev_vbox_a", c, prevcont, currcont);
+      uiWidgetUpdateConstraint ("ev_vbox_p_bt", c, prevcont, currcont);
     } else {
       /* attach to the box */
 fprintf (stderr, "   ev-v: b-t = c-t\n");
       c = [box.topAnchor
           constraintEqualToAnchor: currcont.topAnchor];
-      uiWidgetUpdateConstraint ("ev_vbox_b", c, box, currcont);
+      uiWidgetUpdateConstraint ("ev_vbox_b_tt", c, box, currcont);
     }
 
     if (nextcont != NULL) {
 fprintf (stderr, "   ev-v: c-b <= n-t\n");
       c = [currcont.bottomAnchor
           constraintLessThanOrEqualToAnchor: nextcont.topAnchor];
-      uiWidgetUpdateConstraint ("ev_vbox_c", c, currcont, nextcont);
+      uiWidgetUpdateConstraint ("ev_vbox_bt_n", c, currcont, nextcont);
     } else {
       /* attach to the box */
 fprintf (stderr, "   ev-v: b-b = c-b\n");
       c = [currcont.bottomAnchor
           constraintEqualToAnchor: box.bottomAnchor];
-      uiWidgetUpdateConstraint ("ev_vbox_d", c, currcont, box);
+      uiWidgetUpdateConstraint ("ev_vbox_b_bb", c, currcont, box);
     }
   }
 
@@ -462,11 +464,11 @@ fprintf (stderr, "   ev-v: b-b = c-b\n");
 fprintf (stderr, "   ev-h: b-t = c-t\n");
     c = [box.topAnchor
         constraintEqualToAnchor: currcont.topAnchor];
-    uiWidgetUpdateConstraint ("ev_hbox_a", c, box, currcont);
+    uiWidgetUpdateConstraint ("ev_hbox_tt", c, box, currcont);
 fprintf (stderr, "   ev-h: c-b = b-b\n");
     c = [currcont.bottomAnchor
         constraintEqualToAnchor: box.bottomAnchor];
-    uiWidgetUpdateConstraint ("ev_hbox_b", c, currcont, box);
+    uiWidgetUpdateConstraint ("ev_hbox_bb", c, currcont, box);
   }
 
   prevcont.needsDisplay = YES;
@@ -510,7 +512,6 @@ uiBoxMacOSDebug (uiwcont_t *uiwidget)
   widget = uiwidget->widget;
   layout = &uiwidget->uidata->layout;
   if (layout->expandchildren) {
-fprintf (stderr, "exp-ch: %d-%d %d/%s\n", uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
     idx = MACOS_UI_DBG_EXP_CHILDREN;
   }
   if (layout->expandhoriz) {

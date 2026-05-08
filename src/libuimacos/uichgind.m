@@ -31,10 +31,10 @@ uiCreateChangeIndicator (void)
   ILabel      *widget;
 
   widget = [[ILabel alloc] init];
-  [widget setBezeled : NO];
-  [widget setDrawsBackground : NO];
-  [widget setEditable : NO];
-  [widget setStringValue : [NSString stringWithUTF8String : " "]];
+  widget.bezeled = NO;
+  widget.drawsBackground = NO;
+  widget.editable = NO;
+  widget.stringValue = [NSString stringWithUTF8String : " "];
   widget.translatesAutoresizingMaskIntoConstraints = NO;
 
   uiwidget = uiwcontAlloc (WCONT_T_CHGIND, WCONT_T_CHGIND);
@@ -57,7 +57,7 @@ uichgindMarkNormal (uiwcont_t *uiwidget)
 
   widget = uiwidget->widget;
   col = [NSColor colorWithCalibratedWhite : 0.0 alpha : 0.0];
-  [widget setTextColor : col];
+  widget.textColor = col;
 
   return;
 }
@@ -76,7 +76,7 @@ uichgindMarkChanged (uiwcont_t *uiwidget)
   widget = uiwidget->widget;
   colorValues (guisetup.changedColor, &r, &g, &b);
   col = [NSColor colorWithCalibratedRed : r green : g blue : b alpha : 1.0];
-  [widget setTextColor : col];
+  widget.textColor = col;
 
   return;
 }

@@ -55,8 +55,12 @@ uiGridPackLoc_r (uiwcont_t *uigrid, uiwcont_t *uiwidget,
 }
 
 void
-uiGridPostProcess_r (uiwcont_t *uigrid, int row, int col, uiwcont_t *uiwidget)
+uiGridPostProcess_r (uiwcont_t *uigrid, int row, int col,
+    int numcols, uiwcont_t *uiwidget)
 {
+  //uigridgeneric_t *uigridgen;
+  //uigridgen = uigrid->uigridgen;
+  //fprintf (stderr, "grid-pp: r:%d c:%d nc:%d  nrows:%d ncols:%d\n", row, col, numcols, uigridgen->nrows, uigridgen->ncols);
   return;
 }
 

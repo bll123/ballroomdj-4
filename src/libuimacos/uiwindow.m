@@ -45,7 +45,7 @@
           NSWindowStyleMaskFullSizeContentView
       backing : NSBackingStoreBuffered
       defer : NO];
-  [self setIsVisible : YES];
+  self.isVisible = YES;
   self.closecb = NULL;
   self.doubleclickcb = NULL;
   return self;
@@ -156,7 +156,7 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
 #endif
   box.translatesAutoresizingMaskIntoConstraints = NO;
 
-  [win setContentView : box];
+  win.contentView = box;
   [win makeMainWindow];
 
   if (imagenm != NULL) {
@@ -208,7 +208,7 @@ uiWindowSetTitle (uiwcont_t *uiwindow, const char *title)
   nstitle = [NSString stringWithUTF8String : title];
 
   win = uiwindow->widget;
-  [win setTitle : nstitle];
+  win.title = nstitle;
   return;
 }
 
@@ -315,7 +315,7 @@ uiWindowSetDefaultSize (uiwcont_t *uiwindow, int x, int y)
   win = uiwindow->widget;
   nssz.width = (CGFloat) x;
   nssz.height = (CGFloat) y;
-  [win setContentSize : nssz];
+  win.contentSize = nssz;
 
   return;
 }
@@ -371,7 +371,9 @@ uiCreateScrolledWindow (int minheight)
   win.hasVerticalScroller = YES;
   win.hasHorizontalScroller = NO;
   win.drawsBackground = NO;
+  win.scrollerStyle = NSScrollerStyleLegacy;
 
+  /* on macos, the scroll-window is a standard view */
   uiscwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_WINDOW_SCROLL);
   uiwcontSetWidget (uiscwin, win, NULL);
 
@@ -411,7 +413,7 @@ uiWindowSetDoubleClickCallback (uiwcont_t *uiwindow, callback_t *uicb)
   }
 
   win = uiwindow->widget;
-  [win setCloseCallback : uicb];
+  win.closeCallback = uicb;
 
   return;
 }
@@ -497,33 +499,54 @@ uiWindowPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uiwidget)
   if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
-// fprintf (stderr, "  pack-in-win: %d/%s\n", uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
+fprintf (stderr, "-- win: %d-%d pack: %d-%d %d/%s\n", uiwindow->ui_id, uiwindow->id, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
 
   layout = &uiwidget->uidata->layout;
   container = layout->container;
 
   if (uiwindow->wtype == WCONT_T_WINDOW_SCROLL) {
     NSScrollView  *scv;
+//    NSLayoutConstraint    *c;
 
     scv = uiwindow->widget;
-    [scv setDocumentView : container];
+    scv.documentView = container;
+#if 0
+    c = [scv.leadingAnchor
+        constraintEqualToAnchor : container.leadingAnchor];
+    uiWidgetUpdateConstraint ("sw_l", c, scv, container);
+    c = [scv.trailingAnchor
+        constraintEqualToAnchor : container.trailingAnchor];
+    uiWidgetUpdateConstraint ("sw_tr", c, scv, container);
+    c = [scv.topAnchor
+        constraintEqualToAnchor : container.topAnchor];
+    uiWidgetUpdateConstraint ("sw_t", c, scv, container);
+    c = [scv.bottomAnchor
+        constraintEqualToAnchor : container.bottomAnchor];
+    uiWidgetUpdateConstraint ("sw_b", c, scv, container);
+#endif
   }
   if (uiwindow->wtype == WCONT_T_WINDOW) {
     NSWindow      *win;
     NSStackView   *winbox = NULL;
+    NSLayoutConstraint    *c;
 
     win = uiwindow->widget;
     winbox = [win contentView];
     [winbox addView : container inGravity : grav];
 
-    [winbox.safeAreaLayoutGuide.leadingAnchor
-        constraintEqualToAnchor : container.leadingAnchor].active = YES;
-    [winbox.safeAreaLayoutGuide.trailingAnchor
-        constraintEqualToAnchor : container.trailingAnchor].active = YES;
-    [winbox.safeAreaLayoutGuide.topAnchor
-        constraintEqualToAnchor : container.topAnchor].active = YES;
-    [winbox.safeAreaLayoutGuide.bottomAnchor
-        constraintEqualToAnchor : container.bottomAnchor].active = YES;
+fprintf (stderr, "win: %d-%d mk-constraints\n", uiwindow->ui_id, uiwindow->id);
+    c = [winbox.safeAreaLayoutGuide.leadingAnchor
+        constraintEqualToAnchor : container.leadingAnchor];
+    uiWidgetUpdateConstraint ("w_ld", c, winbox, container);
+    c = [winbox.safeAreaLayoutGuide.trailingAnchor
+        constraintEqualToAnchor : container.trailingAnchor];
+    uiWidgetUpdateConstraint ("w_tr", c, winbox, container);
+    c = [winbox.safeAreaLayoutGuide.topAnchor
+        constraintEqualToAnchor : container.topAnchor];
+    uiWidgetUpdateConstraint ("w_t", c, winbox, container);
+    c = [winbox.safeAreaLayoutGuide.bottomAnchor
+        constraintEqualToAnchor : container.bottomAnchor];
+    uiWidgetUpdateConstraint ("w_b", c, winbox, container);
   }
 
 //  layout->expandchildren = true;

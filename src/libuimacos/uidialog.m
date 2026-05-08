@@ -50,7 +50,7 @@ typedef struct uiselect {
           NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable
       backing : NSBackingStoreBuffered
       defer : NO];
-  [self setIsVisible : YES];
+  self.isVisible = YES;
   return self;
 }
 
@@ -122,14 +122,14 @@ uiCreateDialog (uiwcont_t *window,
     NSString  *nstitle;
 
     nstitle = [NSString stringWithUTF8String : title];
-    [win setTitle : nstitle];
+    win.title = nstitle;
   }
 
   box = [[IBox alloc] init];
-  [win setContentView : box];
+  win.contentView = box;
 
   windowDelegate = [[IWindowDelegate alloc] init];
-  [win setDelegate : windowDelegate];
+  win.delegate = windowDelegate;
 
   uiwin = uiwcontAlloc (WCONT_T_WINDOW, WCONT_T_DIALOG_WINDOW);
   uiwcontSetWidget (uiwin, win, NULL);

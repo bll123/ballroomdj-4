@@ -69,10 +69,10 @@ uiCreateButton_r (callback_t *uicb, const char *txt,
   widget = [[IButton alloc] init];
 
   if (txt != NULL) {
-    [widget setTitle: [NSString stringWithUTF8String: txt]];
+    widget.title= [NSString stringWithUTF8String: txt];
   }
   if (tooltiptxt != NULL) {
-    [widget setToolTip: [NSString stringWithUTF8String : tooltiptxt]];
+    widget.toolTip= [NSString stringWithUTF8String : tooltiptxt];
   }
   if (imagenm != NULL) {
     NSString    *ns;
@@ -88,7 +88,7 @@ uiCreateButton_r (callback_t *uicb, const char *txt,
     ns = [NSString stringWithUTF8String : imagenm];
     image = [[NSImage alloc] initWithContentsOfFile : ns];
     uibutton->image = image;
-    [widget setImage : image];
+    widget.image = image;
     if (txt == NULL) {
       widget.imagePosition = NSImageOnly;
     } else {
@@ -104,10 +104,10 @@ uiCreateButton_r (callback_t *uicb, const char *txt,
 
   uiWidgetSetIdentifier (uiwidget, "button");
 
-//  [widget setBezelStyle : NSBezelStyleRounded];
+//  widget.bezelStyle = NSBezelStyleRounded;
   widget.target = widget;
   widget.uIWidget = uiwidget;
-  [widget setCallback : uicb];
+  widget.callback = uicb;
   [widget setAction : @selector(OnButton1Click : )];
   widget.translatesAutoresizingMaskIntoConstraints = NO;
   widget.bordered = YES;
@@ -211,10 +211,10 @@ uiButtonSetState (uiwcont_t *uiwidget, uibuttonstate_t newstate)
   widget = uiwidget->widget;
 
   if (bgen->state == BUTTON_OFF && uibutton->image != NULL) {
-    [widget setImage: uibutton->image];
+    widget.image= uibutton->image;
   }
   if (bgen->state == BUTTON_ON && uibutton->altimage != NULL) {
-    [widget setImage: uibutton->altimage];
+    widget.image= uibutton->altimage;
   }
   widget.needsDisplay = true;
 }
@@ -229,7 +229,7 @@ uiButtonAlignLeft (uiwcont_t *uiwidget)
   }
 
   button = uiwidget->widget;
-  [button setAlignment : NSTextAlignmentNatural];
+  button.alignment = NSTextAlignmentNatural;
   return;
 }
 

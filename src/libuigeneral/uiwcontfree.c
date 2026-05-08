@@ -16,7 +16,6 @@
 
 static void uiwcontBoxFree (uiwcont_t *uibox);
 static void uiwcontGridFree (uiwcont_t *uigrid);
-static void uiwcontFreeInternals (nlist_t *wlist, nlist_t *rlist);
 
 void
 uiwcontFree (uiwcont_t *uiwidget)
@@ -105,6 +104,8 @@ uiwcontBoxFree (uiwcont_t *uibox)
   uiboxgeneric_t *boxbase;
   nlist_t     *wlist;
   nlist_t     *rlist;
+  nlistidx_t  iteridx;
+  nlistidx_t  key;
   int32_t     tid;
 
   boxbase = uibox->uiboxgen;
@@ -121,40 +122,6 @@ uiwcontBoxFree (uiwcont_t *uibox)
   // fprintf (stderr, "   free %" PRIu32 "-%" PRIu32 " \n", uibox->ui_id, tid);
   wlist = boxbase->widgetlist;
   rlist = boxbase->releaselist;
-  uiwcontFreeInternals (wlist, rlist);
-  uiBoxFree (uibox);
-}
-
-static void
-uiwcontGridFree (uiwcont_t *uigrid)
-{
-  uigridgeneric_t *uigridgen;
-  nlist_t     *wlist;
-  nlist_t     *rlist;
-  int32_t     tid;
-
-  uigridgen = uigrid->uigridgen;
-  tid = uigrid->id;
-
-  if (! uigridgen->postprocess) {
-    logMsg (LOG_ERR, LOG_IMPORTANT | LOG_BACKTRACE,
-        "ERR: grid %" PRIu32 "-%" PRIu32 " not post-process",
-        uigrid->ui_id, tid);
-    fprintf (stderr, "ERR: grid %" PRIu32 "-%" PRIu32 " not post-process\n",
-        uigrid->ui_id, tid);
-  }
-
-  wlist = uigridgen->widgetlist;
-  rlist = uigridgen->releaselist;
-  uiwcontFreeInternals (wlist, rlist);
-  uiGridFree (uigrid);
-}
-
-static void
-uiwcontFreeInternals (nlist_t *wlist, nlist_t *rlist)
-{
-  nlistidx_t      iteridx;
-  nlistidx_t      key;
 
   nlistStartIterator (wlist, &iteridx);
   while ((key = nlistIterateKey (wlist, &iteridx)) >= 0) {
@@ -169,4 +136,45 @@ uiwcontFreeInternals (nlist_t *wlist, nlist_t *rlist)
       uiwcontFree (uiwidgetp);
     }
   }
+
+  uiBoxFree (uibox);
+}
+
+static void
+uiwcontGridFree (uiwcont_t *uigrid)
+{
+  uigridgeneric_t *uigridgen;
+  ilist_t     *wlist;
+  ilistidx_t  iteridx;
+  ilistidx_t  key;
+  int32_t     tid;
+
+  uigridgen = uigrid->uigridgen;
+  tid = uigrid->id;
+
+  if (! uigridgen->postprocess) {
+    logMsg (LOG_ERR, LOG_IMPORTANT | LOG_BACKTRACE,
+        "ERR: grid %" PRIu32 "-%" PRIu32 " not post-process",
+        uigrid->ui_id, tid);
+    fprintf (stderr, "ERR: grid %" PRIu32 "-%" PRIu32 " not post-process\n",
+        uigrid->ui_id, tid);
+  }
+
+  wlist = uigridgen->widgetlist;
+
+  ilistStartIterator (wlist, &iteridx);
+  while ((key = ilistIterateKey (wlist, &iteridx)) >= 0) {
+    uiwcontrls_t    release;
+
+    release = ilistGetNum (wlist, key, UIGRID_RLS_TYPE);
+    if (release == WCONT_FREE) {
+      uiwcont_t     *uiwidgetp;
+
+      logMsg (LOG_DBG, LOG_UI, "  int-free: %d", key);
+      uiwidgetp = ilistGetData (wlist, key, UIGRID_WIDGET);
+      uiwcontFree (uiwidgetp);
+    }
+  }
+
+  uiGridFree (uigrid);
 }

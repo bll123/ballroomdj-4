@@ -38,10 +38,10 @@ uiEntryInit_r (int entrySize, int maxSize)
   uientry->changed = false;
 
   widget = [[NSTextField alloc] init];
-  [widget setBezeled : YES];
-  [widget setDrawsBackground : YES];
-  [widget setEditable : YES];
-  [widget setSelectable : YES];
+  widget.bezeled = YES;
+  widget.drawsBackground = YES;
+  widget.editable = YES;
+  widget.selectable = YES;
   widget.translatesAutoresizingMaskIntoConstraints = NO;
   widget.needsDisplay = true;
 
@@ -129,7 +129,7 @@ uiEntrySetValue (uiwcont_t *uiwidget, const char *value)
   }
 
   widget = uiwidget->widget;
-  [widget setStringValue : [NSString stringWithUTF8String : value]];
+  widget.stringValue = [NSString stringWithUTF8String : value];
 
   return;
 }

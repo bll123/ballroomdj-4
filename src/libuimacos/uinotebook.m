@@ -31,8 +31,8 @@ uiCreateNotebook (void)
 
  fprintf (stderr, "c-nb\n");
   nb = [[NSTabView alloc] init];
-  [nb setTabPosition : NSTabPositionTop];
-  [nb setTabViewType : NSNoTabsLineBorder];
+  nb.tabPosition = NSTabPositionTop;
+  nb.tabViewType = NSNoTabsLineBorder;
 
   uiwidget = uiwcontAlloc (WCONT_T_NOTEBOOK, WCONT_T_NOTEBOOK);
   uiwcontSetWidget (uiwidget, nb, NULL);
@@ -50,7 +50,7 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
 {
   NSTabView     *nb;
   NSTabViewItem *tabv;
-  NSString      *lab;
+  ILabel        *lab;
 
   if (! uiwcontValid (uinotebook, WCONT_T_NOTEBOOK, "nb-append-page")) {
     return;
@@ -74,7 +74,7 @@ uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uibox,
     lab = uilabel->widget;
     tabv.label = [lab stringValue];
   }
-  [tabv setView : uibox->packwidget];
+  tabv.view = uibox->packwidget;
   [nb addTabViewItem : tabv];
 
   uibox->packed = true;

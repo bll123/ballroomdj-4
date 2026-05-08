@@ -61,14 +61,14 @@ uiUIInitialize (int direction)
   id  appDelegate;
 
   [NSApplication sharedApplication];
-  [NSApp setActivationPolicy : NSApplicationActivationPolicyRegular];
-  [NSApp setPresentationOptions : NSApplicationPresentationDefault];
+  NSApp.activationPolicy = NSApplicationActivationPolicyRegular;
+  NSApp.presentationOptions = NSApplicationPresentationDefault;
   [NSApp activateIgnoringOtherApps : YES];
 
   uiUIBasicInit ();
 
   appDelegate = [[AppDelegate alloc] init];
-  [NSApp setDelegate : appDelegate];
+  NSApp.delegate = appDelegate;
 
   NSDebugEnabled = YES;
   NSZombieEnabled = YES;

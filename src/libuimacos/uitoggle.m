@@ -43,13 +43,13 @@ uiCreateCheckButton (const char *txt, int value)
   uitoggle = uiToggleButtonInit ();
 
   widget = [[IButton alloc] init];
-  [widget setState : NSControlStateValueOff];
+  widget.state = NSControlStateValueOff;
   if (value) {
-    [widget setState : NSControlStateValueOn];
+    widget.state = NSControlStateValueOn;
   }
-  [widget setButtonType : NSButtonTypeSwitch];
+  widget.buttonType = NSButtonTypeSwitch;
   if (txt != NULL) {
-    [widget setTitle : [NSString stringWithUTF8String : txt]];
+    widget.title = [NSString stringWithUTF8String : txt];
   }
   widget.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -73,13 +73,13 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
   uitoggle = uiToggleButtonInit ();
 
   widget = [[IButton alloc] init];
-  [widget setButtonType : NSButtonTypeRadio];
-  [widget setState : NSControlStateValueOff];
+  widget.buttonType = NSButtonTypeRadio;
+  widget.state = NSControlStateValueOff;
   if (value) {
-    [widget setState : NSControlStateValueOn];
+    widget.state = NSControlStateValueOn;
   }
   if (txt != NULL) {
-    [widget setTitle : [NSString stringWithUTF8String : txt]];
+    widget.title = [NSString stringWithUTF8String : txt];
   }
   widget.translatesAutoresizingMaskIntoConstraints= NO;
 
@@ -104,19 +104,19 @@ uiCreateToggleButton (const char *txt,
   uitoggle = uiToggleButtonInit ();
 
   widget = [[IButton alloc] init];
-  [widget setButtonType : NSButtonTypePushOnPushOff];
-  [widget setState : NSControlStateValueOff];
+  widget.buttonType = NSButtonTypePushOnPushOff;
+  widget.state = NSControlStateValueOff;
   if (value) {
-    [widget setState : NSControlStateValueOn];
+    widget.state = NSControlStateValueOn;
   }
   if (txt != NULL) {
-    [widget setTitle : [NSString stringWithUTF8String : txt]];
+    widget.title = [NSString stringWithUTF8String : txt];
     widget.imagePosition = NSImageRight;
   }
   widget.translatesAutoresizingMaskIntoConstraints = NO;
 
   if (tooltiptxt != NULL) {
-    [widget setToolTip : [NSString stringWithUTF8String : tooltiptxt]];
+    widget.toolTip = [NSString stringWithUTF8String : tooltiptxt];
   }
 
   if (imagenm != NULL) {
@@ -129,7 +129,7 @@ uiCreateToggleButton (const char *txt,
         PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
     ns = [NSString stringWithUTF8String : imagenm];
     nsimage = [[NSImage alloc] initWithContentsOfFile : ns];
-    [widget setImage : nsimage];
+    widget.image = nsimage;
   }
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_TOGGLE);
@@ -180,7 +180,7 @@ uiToggleButtonSetAltImage (uiwcont_t *uiwidget, const char *imagenm)
         PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
     ns = [NSString stringWithUTF8String: imagenm];
     nsimage = [[NSImage alloc] initWithContentsOfFile: ns];
-    [widget setAlternateImage: nsimage];
+    widget.alternateImage= nsimage;
   }
 
   uiToggleButtonSetImage (uiwidget);
@@ -260,10 +260,10 @@ uiToggleButtonSetImage (uiwcont_t *uiwidget)
 
   if ((! active || uitoggle->altimage == NULL) &&
       uitoggle->image != NULL) {
-    [widget setImage: uitoggle->image];
+    widget.image= uitoggle->image;
   }
   if (active && uitoggle->altimage != NULL) {
-    [widget setImage: uitoggle->altimage];
+    widget.image= uitoggle->altimage;
   }
 }
 

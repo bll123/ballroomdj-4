@@ -33,11 +33,11 @@ uiCreateLabel (const char *label)
   ILabel      *widget;
 
   widget = [[ILabel alloc] init];
-  [widget setBezeled : NO];
-  [widget setDrawsBackground : NO];
-  [widget setEditable : NO];
-  [widget setSelectable : NO];
-  [widget setStringValue : [NSString stringWithUTF8String : label]];
+  widget.bezeled = NO;
+  widget.drawsBackground = NO;
+  widget.editable = NO;
+  widget.selectable = NO;
+  widget.stringValue = [NSString stringWithUTF8String : label];
   widget.translatesAutoresizingMaskIntoConstraints = NO;
   widget.needsDisplay = true;
 
@@ -66,7 +66,7 @@ uiLabelSetTooltip (uiwcont_t *uiwidget, const char *txt)
 
   if (txt != NULL) {
     lab = uiwidget->widget;
-    [lab setToolTip : [NSString stringWithUTF8String : txt]];
+    lab.toolTip = [NSString stringWithUTF8String : txt];
     lab.needsDisplay = true;
   }
   return;
@@ -88,7 +88,7 @@ uiLabelSetText (uiwcont_t *uiwidget, const char *text)
   }
 
   widget = uiwidget->widget;
-  [widget setStringValue : [NSString stringWithUTF8String : text]];
+  widget.stringValue = [NSString stringWithUTF8String : text];
   widget.needsDisplay = true;
   return;
 }
@@ -111,7 +111,7 @@ uiLabelWrapOn (uiwcont_t *uiwidget)
   ILabel *widget;
 
   widget = uiwidget->widget;
-  [widget setMaximumNumberOfLines : 3];
+  widget.maximumNumberOfLines = 3;
   return;
 }
 
@@ -121,7 +121,7 @@ uiLabelSetSelectable (uiwcont_t *uiwidget)
   ILabel *widget;
 
   widget = uiwidget->widget;
-  [widget setSelectable : YES];
+  widget.selectable = YES;
   return;
 }
 

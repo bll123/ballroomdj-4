@@ -79,8 +79,11 @@ uiBoxPostProcess (uiwcont_t *uibox)
   boxint = uibox->uiboxgen;
 
   if (boxint->postprocess) {
+fprintf (stderr,
+        "INFO: box %" PRIu32 "-%" PRIu32 " pp twice\n", uibox->ui_id, uibox->id);
     logMsg (LOG_DBG, LOG_UI | LOG_BACKTRACE,
-        "INFO: box %" PRIu32 "-%" PRIu32 " twice", uibox->ui_id, uibox->id);
+        "INFO: box %" PRIu32 "-%" PRIu32 " pp twice", uibox->ui_id, uibox->id);
+    return;
   }
 
   wlist = boxint->widgetlist;

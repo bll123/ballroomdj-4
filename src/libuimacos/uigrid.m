@@ -110,23 +110,20 @@ uiGridPackLoc_r (uiwcont_t *uigrid, uiwcont_t *uiwidget,
   }
 
   gcell.contentView = layout->container;
-
-  if (numcols > 1) {
-fprintf (stderr, "row: %d col: %d numcols: %d limit: %d/%d\n", row, col, numcols, grid.numberOfRows, grid.numberOfColumns);
-//    [grid
-//        mergeCellsInHorizontalRange : NSMakeRange (row, numcols)
-//        verticalRange : NSMakeRange (col, 1)];
-  }
 }
 
 void
-uiGridPostProcess_r (uiwcont_t *uigrid, int row, int col, uiwcont_t *uiwidget)
+uiGridPostProcess_r (uiwcont_t *uigrid, int row, int col,
+    int numcols, uiwcont_t *uiwidget)
 {
+  uigridgeneric_t *uigridgen;
   IGrid         *grid;
   macoslayout_t *layout;
   int           alignment;
 
-//fprintf (stderr, "grid: post: %d-%d %d %d : %d-%d %d/%s\n", uigrid->ui_id, uigrid->id, row, col, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
+  uigridgen = uigrid->uigridgen;
+
+fprintf (stderr, "grid: post: %d-%d [%d %d] : %d-%d %d/%s\n", uigrid->ui_id, uigrid->id, row, col, uiwidget->ui_id, uiwidget->id, uiwidget->wtype, uiwcontDesc (uiwidget->wtype));
   grid = uigrid->widget;
   layout = &uiwidget->uidata->layout;
 
@@ -156,6 +153,13 @@ uiGridPostProcess_r (uiwcont_t *uigrid, int row, int col, uiwcont_t *uiwidget)
   }
 
   uiGridSetVertAlignment (grid, row, col, alignment);
+
+//  if (numcols > 1) {
+//fprintf (stderr, "row: %d col: %d numcols: %d limit: %ld/%ld\n", row, col, numcols, grid.numberOfRows, grid.numberOfColumns);
+//    [grid
+//        mergeCellsInHorizontalRange : NSMakeRange (row, numcols)
+//        verticalRange : NSMakeRange (col, 1)];
+//  }
 
   return;
 }

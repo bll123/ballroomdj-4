@@ -8,6 +8,7 @@
 #include <inttypes.h>
 
 #include "callback.h"
+#include "ilist.h"
 #include "nlist.h"
 #include "tmutil.h"
 
@@ -73,7 +74,7 @@ typedef enum {
 } uibuttonstate_t;
 
 /* used in all ui interfaces */
-typedef struct uiboxintgen {
+typedef struct uiboxgeneric {
   nlist_t         *widgetlist;
   nlist_t         *releaselist;
   int             startcount;
@@ -82,7 +83,7 @@ typedef struct uiboxintgen {
 } uiboxgeneric_t;
 
 /* used in all ui interfaces */
-typedef struct uibuttonintgen {
+typedef struct uibuttongeneric {
   callback_t      *cb;
   callback_t      *presscb;
   callback_t      *releasecb;
@@ -96,7 +97,7 @@ typedef struct uibuttonintgen {
 typedef int (*uientryval_t)(uiwcont_t *uiwidget, const char *label, void *udata);
 
 /* used in all ui interfaces */
-typedef struct uientryintgen {
+typedef struct uientrygeneric {
   const char      *label;
   void            *udata;
   uientryval_t    validateFunc;
@@ -107,13 +108,20 @@ typedef struct uientryintgen {
   bool            useicon;
 } uientrygeneric_t;
 
+enum {
+  UIGRID_WIDGET,
+  UIGRID_ROW,
+  UIGRID_COL,
+  UIGRID_NUMCOLS,
+  UIGRID_RLS_TYPE,
+};
+
 /* used in all ui interfaces */
-typedef struct uigridgen {
-  nlist_t         *widgetlist;
-  nlist_t         *releaselist;
+typedef struct uigridgeneric {
+  ilist_t         *widgetlist;
   int             count;
-  int             row;
-  int             col;
+  int             row;            // the row index for the next value
+  int             col;            // the column index for the next value
   int             nrows;
   int             ncols;
   bool            postprocess;

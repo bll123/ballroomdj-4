@@ -40,7 +40,8 @@ uiGridPackLoc_r (uiwcont_t *uigrid, uiwcont_t *uiwidget,
 }
 
 void
-uiGridPostProcess_r (uiwcont_t *uigrid, int row, int col, uiwcont_t *uiwidget)
+uiGridPostProcess_r (uiwcont_t *uigrid, int row, int col,
+    int numcols, uiwcont_t *uiwidget)
 {
   return;
 }

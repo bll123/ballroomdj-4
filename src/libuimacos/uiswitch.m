@@ -41,10 +41,10 @@ uiCreateSwitch (int value)
   char        tbuff [BDJ4_PATH_MAX];
 
   widget = [[IButton alloc] init];
-  [widget setButtonType : NSButtonTypePushOnPushOff];
-  [widget setState : NSControlStateValueOff];
+  widget.buttonType = NSButtonTypePushOnPushOff;
+  widget.state = NSControlStateValueOff;
   if (value) {
-    [widget setState : NSControlStateValueOn];
+    widget.state = NSControlStateValueOn;
   }
   widget.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -53,13 +53,13 @@ uiCreateSwitch (int value)
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   nsimage = [[NSImage alloc] initWithContentsOfFile :
       [NSString stringWithUTF8String : tbuff]];
-  [widget setImage : nsimage];
+  widget.image = nsimage;
 
   pathbldMakePath (tbuff, sizeof (tbuff), "switch-on", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   nsimage = [[NSImage alloc] initWithContentsOfFile :
       [NSString stringWithUTF8String : tbuff]];
-  [widget setAlternateImage : nsimage];
+  widget.alternateImage = nsimage;
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON_TOGGLE, WCONT_T_BUTTON_RADIO);
   uiwcontSetWidget (uiwidget, widget, NULL);
@@ -100,6 +100,6 @@ uiSwitchSetCallback (uiwcont_t *uiwidget, callback_t *uicb)
   }
 
   widget = uiwidget->widget;
-  [widget setCallback : uicb];
+  widget.callback = uicb;
   return;
 }
