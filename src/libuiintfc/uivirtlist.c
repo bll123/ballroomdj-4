@@ -362,6 +362,7 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   vl->wcont [VL_W_SCROLL_WIN] = uiCreateScrolledWindow (50);
   uiWindowSetPolicyExternal (vl->wcont [VL_W_SCROLL_WIN]);
   uiBoxPackStartExpandChildren  (boxp, vl->wcont [VL_W_SCROLL_WIN], WCONT_KEEP);
+//  uiBoxPackStart (boxp, vl->wcont [VL_W_SCROLL_WIN], WCONT_KEEP);
 
   vl->wcont [VL_W_HBOX_CONT] = uiCreateHorizBox ();
   uiWindowPackInWindow (vl->wcont [VL_W_SCROLL_WIN], vl->wcont [VL_W_HBOX_CONT]);
@@ -379,7 +380,8 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
 
   /* the event box is necessary to receive mouse clicks */
   vl->wcont [VL_W_EVENT_BOX] = uiEventCreateEventBox (vl->wcont [VL_W_GRID]);
-  uiBoxPackStartExpandChildren (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_EVENT_BOX], WCONT_KEEP);
+  uiBoxPackStart (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_EVENT_BOX], WCONT_KEEP);
+//  uiBoxPackStartExpandChildren (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_EVENT_BOX], WCONT_KEEP);
   uiWidgetSetEnterCallback (vl->wcont [VL_W_EVENT_BOX], vl->callbacks [VL_CB_ENTER_WIN]);
 
   /* important */
@@ -391,6 +393,7 @@ uivlCreate (const char *tag, uiwcont_t *parentwin, uiwcont_t *boxp,
   uiBoxPackEnd (vl->wcont [VL_W_HBOX_CONT], vl->wcont [VL_W_SB_VBOX], WCONT_KEEP);
 
   vl->wcont [VL_W_SB] = uiCreateVerticalScrollbar (10.0);
+//  uiBoxPackEnd (vl->wcont [VL_W_SB_VBOX], vl->wcont [VL_W_SB], WCONT_KEEP);
   uiBoxPackEndExpandChildren (vl->wcont [VL_W_SB_VBOX], vl->wcont [VL_W_SB], WCONT_KEEP);
 
   vl->callbacks [VL_CB_SB] = callbackInitD (uivlScrollbarCallback, vl);

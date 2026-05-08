@@ -67,15 +67,17 @@ uiCreateButton_r (callback_t *uicb, const char *txt,
   uibutton->altimage = NULL;
 
   widget = [[IButton alloc] init];
+  widget.imagePosition = NSNoImage;
+
 
   if (txt != NULL) {
-    widget.title= [NSString stringWithUTF8String: txt];
+    widget.title = [NSString stringWithUTF8String: txt];
   }
   if (tooltiptxt != NULL) {
-    widget.toolTip= [NSString stringWithUTF8String : tooltiptxt];
+    widget.toolTip = [NSString stringWithUTF8String : tooltiptxt];
   }
   if (imagenm != NULL) {
-    NSString    *ns;
+    NSString    *nsnm;
     NSImage     *image;
     char        tbuff [BDJ4_PATH_MAX];
 
@@ -85,17 +87,17 @@ uiCreateButton_r (callback_t *uicb, const char *txt,
 // why is this not working?
 // the toggle button handles a .svg
 //fprintf (stderr, "button-image: %s\n", tbuff);
-    ns = [NSString stringWithUTF8String : imagenm];
-    image = [[NSImage alloc] initWithContentsOfFile : ns];
+    nsnm = [NSString stringWithUTF8String : imagenm];
+    image = [[NSImage alloc] initWithContentsOfFile : nsnm];
     uibutton->image = image;
     widget.image = image;
     if (txt == NULL) {
+//      widget.title = @"";
       widget.imagePosition = NSImageOnly;
+//      widget.imagePosition = NSImageTrailing;
     } else {
       widget.imagePosition = NSImageTrailing;
     }
-  } else {
-    widget.imagePosition = NSNoImage;
   }
 
   uiwidget = uiwcontAlloc (WCONT_T_BUTTON, WCONT_T_BUTTON);
@@ -108,10 +110,12 @@ uiCreateButton_r (callback_t *uicb, const char *txt,
   widget.target = widget;
   widget.uIWidget = uiwidget;
   widget.callback = uicb;
+  widget.buttonType = NSButtonTypeMomentaryChange;
   [widget setAction : @selector(OnButton1Click : )];
   widget.translatesAutoresizingMaskIntoConstraints = NO;
   widget.bordered = YES;
   widget.needsDisplay = true;
+  widget.state = NSControlStateValueOn;
 
   return uiwidget;
 }
@@ -211,10 +215,12 @@ uiButtonSetState (uiwcont_t *uiwidget, uibuttonstate_t newstate)
   widget = uiwidget->widget;
 
   if (bgen->state == BUTTON_OFF && uibutton->image != NULL) {
-    widget.image= uibutton->image;
+//    widget.state = NSControlStateValueOn;
+    widget.image = uibutton->image;
   }
   if (bgen->state == BUTTON_ON && uibutton->altimage != NULL) {
-    widget.image= uibutton->altimage;
+//    widget.state = NSControlStateValueOff;
+    widget.image = uibutton->altimage;
   }
   widget.needsDisplay = true;
 }

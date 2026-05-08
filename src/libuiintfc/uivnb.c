@@ -63,10 +63,12 @@ uivnbCreate (uiwcont_t *box, const char *tag)
   vnb->tag = tag;
 
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpandChildren (box, hbox, WCONT_FREE);
+  uiBoxPackStart (box, hbox, WCONT_FREE);
+//  uiBoxPackStartExpandChildren (box, hbox, WCONT_FREE);
 
   sw = uiCreateScrolledWindow (50);
-  uiBoxPackStartExpandChildren (hbox, sw, WCONT_FREE);
+  uiBoxPackStart (hbox, sw, WCONT_FREE);
+//  uiBoxPackStartExpandChildren (hbox, sw, WCONT_FREE);
 
   vnb->vgrid = uiCreateGrid ();
   uiWidgetSetClass (vnb->vgrid, VERTNB_BG_CLASS);
@@ -74,6 +76,7 @@ uivnbCreate (uiwcont_t *box, const char *tag)
 
   vnb->nb = uiCreateNotebook ();
   uiWidgetSetMarginTop (vnb->nb, 0);
+//  uiBoxPackStart (hbox, vnb->nb, WCONT_KEEP);
   uiBoxPackStartExpandChildren (hbox, vnb->nb, WCONT_KEEP);
 
   for (int i = 0; i < VNB_MAX_PAGECOUNT; ++i) {
@@ -153,6 +156,7 @@ uivnbAppendPage (uivnb_t *vnb, uiwcont_t *uiwidget, const char *nbtxt, int id)
   button = uiCreateButton (cb, nbtxt, NULL, NULL);
   uiButtonSetReliefNone (button);
   uiButtonAlignLeft (button);
+//  uiBoxPackStart (hbox, button, WCONT_FREE);
   uiBoxPackStartExpandChildren (hbox, button, WCONT_FREE);
   uiWidgetSetClass (button, NB_CLASS);
   uiWidgetSetClass (button, NB_VERT_CLASS);

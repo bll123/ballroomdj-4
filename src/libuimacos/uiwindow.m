@@ -506,24 +506,9 @@ fprintf (stderr, "-- win: %d-%d pack: %d-%d %d/%s\n", uiwindow->ui_id, uiwindow-
 
   if (uiwindow->wtype == WCONT_T_WINDOW_SCROLL) {
     NSScrollView  *scv;
-//    NSLayoutConstraint    *c;
 
     scv = uiwindow->widget;
     scv.documentView = container;
-#if 0
-    c = [scv.leadingAnchor
-        constraintEqualToAnchor : container.leadingAnchor];
-    uiWidgetUpdateConstraint ("sw_l", c, scv, container);
-    c = [scv.trailingAnchor
-        constraintEqualToAnchor : container.trailingAnchor];
-    uiWidgetUpdateConstraint ("sw_tr", c, scv, container);
-    c = [scv.topAnchor
-        constraintEqualToAnchor : container.topAnchor];
-    uiWidgetUpdateConstraint ("sw_t", c, scv, container);
-    c = [scv.bottomAnchor
-        constraintEqualToAnchor : container.bottomAnchor];
-    uiWidgetUpdateConstraint ("sw_b", c, scv, container);
-#endif
   }
   if (uiwindow->wtype == WCONT_T_WINDOW) {
     NSWindow      *win;
