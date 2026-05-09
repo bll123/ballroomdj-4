@@ -238,6 +238,7 @@ licenses/flac\.LICENSE$
 # 2023-11-7
 # 2024-6-9
 # 2024-12-19
+# 2026-5-9
 # make sure some old libraries are gone
 plocal/lib/libvorbis\.0\.dylib$
 plocal/lib/libvorbisenc\.2\.dylib$
@@ -245,7 +246,7 @@ plocal/lib/libvorbisfile\.3\.dylib$
 plocal/lib/libmp4tag-1\.2\.[3456789]\.dylib$
 plocal/lib/libmp4tag-1\.2\.1[0123]\.dylib$
 plocal/lib/libmp4tag-1\.3\.[0-9]\.dylib$
-plocal/lib/libmp4tag-2\.0\.[012]\.dylib$
+plocal/lib/libmp4tag-2\.0\.[0123]\.dylib$
 plocal/lib/libmp4tag-2\.0\.0\.1\.dylib$
 
 # 2023-11-13 bdj4winmksc is only used by windows
@@ -295,16 +296,17 @@ licenses/flac\.LICENSE$
 # 2023-11-7
 # 2024-6-9
 # 2024-12-19
+# 2026-5-9
 # make sure some old libraries are gone
 plocal/lib64/libmp4tag\.so\.1\.2\.[3456789]$
 plocal/lib64/libmp4tag\.so\.1\.2\.1[0123]$
 plocal/lib64/libmp4tag\.so\.1\.3\.[0-9]$
-plocal/lib64/libmp4tag\.so\.2\.0\.0$
+plocal/lib64/libmp4tag\.so\.2\.0\.[0123]$
 plocal/lib64/libmp4tag\.so\.2\.0\.0\.1$
 plocal/lib/libmp4tag\.so\.1\.2\.[3456789]$
 plocal/lib/libmp4tag\.so\.1\.2\.1[0123]$
 plocal/lib/libmp4tag\.so\.1\.3\.[0-9]$
-plocal/lib/libmp4tag\.so\.2\.0\.[012]$
+plocal/lib/libmp4tag\.so\.2\.0\.[0123]$
 plocal/lib/libmp4tag\.so\.2\.0\.0\.1$
 
 # 2023-11-13 bdj4winmksc is only used by windows
