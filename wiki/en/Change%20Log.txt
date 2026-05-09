@@ -17,6 +17,8 @@
     * Song Editor: Added a display in the heading for removed songs.
 * Translations:
     * PENDING: Japanese (日本語) is now professionally translated by ...
+* Internal:
+    * Update libmp4tag to version 2.0.4.
 
 -->
 
