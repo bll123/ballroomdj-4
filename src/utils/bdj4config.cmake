@@ -290,6 +290,7 @@ checkAddCompileFlag ("-Werror=format-security")
 checkAddCompileFlag ("-Werror=return-type")
 checkAddCompileFlag ("-Wdeprecated-declarations")
 checkAddCompileFlag ("-Wunreachable-code")
+checkAddCompileFlag ("-Wdiscarded-qualifiers")
 
 #### compiler-specific compile options
 
