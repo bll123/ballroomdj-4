@@ -7,10 +7,11 @@
 **4.18.3 2026-4---**
 
 * Bug Fixes:
-    * Music Manager: Fix enabled/disabled state of 'Remove Song' menu items.
     * Configuration: UI: Fix some alignment issues.
     * HTML templates: Fix HTML templates not being translated.
+    * Music Manager: Fix enabled/disabled state of 'Remove Song' menu items.
     * UI: Fix switch display for RTL languages.
+    * Windows: Fixed incorrect version of libicu being loaded.
 * Changes:
     * Configuration: Player: Change clock-display to be a drop-down.
     * Configuration: Player: Change fade-type to be a drop-down.
@@ -20,6 +21,7 @@
     * Japanese (日本語) is now professionally translated by Kazu Ishihara
 * Internal:
     * Update libmp4tag to version 2.0.4.
+    * Update chromaprint to version 1.6.0 (windows).
 
 -->
 

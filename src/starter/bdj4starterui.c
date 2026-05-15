@@ -1430,6 +1430,7 @@ starterProcessSupport (void *udata)
   char          tbuff [BDJ4_PATH_MAX];
   const char    *builddate;
   const char    *devmode;
+  const char    *rlslevel;
   uiutilsaccent_t accent;
 
   if (starter->supportactive) {
@@ -1483,9 +1484,13 @@ starterProcessSupport (void *udata)
   uiwcontFree (uiwidgetp);
 
   builddate = sysvarsGetStr (SV_BDJ4_BUILDDATE);
+  rlslevel = sysvarsGetStr (SV_BDJ4_RELEASELEVEL);
+  if (strcmp (rlslevel, "production") == 0) {
+    rlslevel = "";
+  }
   devmode = sysvarsGetStr (SV_BDJ4_DEVELOPMENT);
-  snprintf (tbuff, sizeof (tbuff), "%s (%s) %s",
-      sysvarsGetStr (SV_BDJ4_VERSION), builddate, devmode);
+  snprintf (tbuff, sizeof (tbuff), "%s (%s) %s %s",
+      sysvarsGetStr (SV_BDJ4_VERSION), builddate, rlslevel, devmode);
 
   uiwidgetp = uiCreateLabel (tbuff);
   uiBoxPackStart (hbox, uiwidgetp);

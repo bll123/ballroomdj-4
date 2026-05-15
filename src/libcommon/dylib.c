@@ -90,7 +90,7 @@ dylibLoad (const char *path, dlopt_t opt)
       (opt & DYLIB_OPT_MAC_PREFIX) == DYLIB_OPT_MAC_PREFIX) {
     const char  *tdir;
 
-    for (int i = 5; i < 9; ++i) {
+    for (int i = 10; i >= 5; --i) {
       char      tbuff [BDJ4_PATH_MAX];
 
       /* must have trailing slash */
@@ -118,7 +118,8 @@ dylibLoad (const char *path, dlopt_t opt)
 
       /* ubuntu(?) does not use plain .so links */
       /* there was some version of linux that did not */
-      for (int i = beg; i < end; ++i) {
+      /* 2026-5-15: need to work backwards to find the latest version */
+      for (int i = end; i >= beg; --i) {
         if (isWindows ()) {
           snprintf (npath, sizeof (npath), "%s%s%d%s", pfx, path, i, shlibext);
         } else {
@@ -221,7 +222,7 @@ dylibCheckVersion (dlhandle_t *handle, const char *funcname, dlopt_t opt)
     int   end = DYLIB_ICU_END_VERS;
 
     /* the ICU library versions the linkage... */
-    for (int i = beg; i < end; ++i) {
+    for (int i = end; i >= beg; --i) {
       snprintf (tbuff, sizeof (tbuff), "%s_%d", funcname, i);
       addr = dylibLookup (handle, tbuff);
       if (addr != NULL) {
