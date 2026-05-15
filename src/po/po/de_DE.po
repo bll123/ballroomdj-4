@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2026-03-02\n"
-"PO-Revision-Date: 2026-03-05 19:47\n"
+"POT-Creation-Date: 2026-04-23\n"
+"PO-Revision-Date: 2026-05-15 01:09\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: German\n"
 "Language: de\n"
@@ -87,6 +87,7 @@ msgid "latin"
 msgstr "Latein"
 
 #. CONTEXT: configuration file: dance type
+#. CONTEXT: dance type: 'other'
 msgid "other"
 msgstr "Andere"
 
@@ -185,7 +186,7 @@ msgid "Clear Queue"
 msgstr "Warteschlange löschen"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: playerui: button: fade out the song and stop playing it
+#. CONTEXT: playerui: button: fade out the song and continue to the next song
 msgid "Fade"
 msgstr "Ausblenden"
 
@@ -247,10 +248,12 @@ msgid "Volume"
 msgstr "Lautstärke"
 
 #. CONTEXT: The name of the 'standardrounds' playlist file
+#. CONTEXT: This is the name of a example playlist. 'Standard Rounds' is a ballroom term used in the US.  It can be simplified and shortened.
 msgid "standardrounds"
 msgstr "Standardrunden"
 
 #. CONTEXT: The name of the 'queuedance' playlist file
+#. CONTEXT: This is the name of a special playlist. Queue is a verb.  It can be simplified and shortened.
 #. CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: player: the name of the special playlist for queueing a dance
@@ -482,7 +485,7 @@ msgstr "Nebeneinanderliegende Songauswahl"
 msgid "Music Manager"
 msgstr "Musik-Manager"
 
-#. CONTEXT: configuration: display settings for: Audio ID match listing
+#. CONTEXT: configuration: display settings for: Audio Identification list of matching songs
 msgid "Audio ID Match List"
 msgstr "Audio-ID-Übereinstimmungsliste"
 
@@ -524,6 +527,19 @@ msgstr "Nein"
 msgid "All Tags"
 msgstr "Alle Tags"
 
+#. CONTEXT: configuration: BPM: beats per minute (not bars per minute)
+#. CONTEXT: configuration: Whether to display BPM as BPM or MPM
+#. CONTEXT: label: beats per minute (musical term)
+#. CONTEXT: bpm counter: BPM (musical term: beats per minute)
+msgid "BPM"
+msgstr "BPM"
+
+#. CONTEXT: configuration: MPM: measures per minute
+#. CONTEXT: label: measures per minute (musical term)
+#. CONTEXT: bpm counter: MPM (musical term: measures per minute)
+msgid "MPM"
+msgstr "MPM"
+
 #. CONTEXT: configuration: general options that apply to everything
 msgid "General"
 msgstr "Allgemein"
@@ -540,12 +556,6 @@ msgstr "Profilname"
 #. CONTEXT: configuration: the profile accent color (identifies profile)
 msgid "Profile Colour"
 msgstr "Profilfarbe"
-
-#. CONTEXT: configuration: Whether to display BPM as BPM or MPM
-#. CONTEXT: label: beats per minute
-#. CONTEXT: bpm counter: BPM
-msgid "BPM"
-msgstr "BPM"
 
 #. CONTEXT: configuration: the languages for the user interface
 msgid "Display Language"
@@ -641,9 +651,9 @@ msgstr "Niveaus bearbeiten"
 msgid "Order from easiest to most advanced."
 msgstr "Von einfach bis fortgeschritten sortieren."
 
-#. CONTEXT: configuration: level: title of the weight column
-#. CONTEXT: configuration: rating: title of the weight column
-#. CONTEXT: playlist management: tag weight
+#. CONTEXT: configuration: level: title of the weight column (emphasis)
+#. CONTEXT: configuration: rating: title of the weight column (emphasis)
+#. CONTEXT: playlist management: tag weight (emphasis)
 msgid "Weight"
 msgstr "Gewichtung"
 
@@ -677,8 +687,8 @@ msgstr "Design der Wiedergabeanzeige"
 msgid "Marquee Font"
 msgstr "Schriftart der Wiedergabeanzeige"
 
-#. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee
-#. CONTEXT: (noun) configuration: the number of items loaded into the music queue
+#. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee (or Queue Limit)
+#. CONTEXT: (noun) configuration: the number of items loaded into the music queue (or: Queue Limit)
 msgid "Queue Length"
 msgstr "Länge der Warteschlange"
 
@@ -882,9 +892,9 @@ msgstr "Standardlautstärke"
 msgid "Completion Message"
 msgstr "Abschlussmeldung"
 
-#. CONTEXT: configuration: type of fade to apply
+#. CONTEXT: configuration: type of fade-out to use (triangle, half-sine, etc.)
 msgid "Fade Type"
-msgstr "Art der Ein-/Ausblendung"
+msgstr "Art der Ausblendung"
 
 #. CONTEXT: configuration: whether or not to show the speed reset button
 msgid "Show Speed Reset"
@@ -894,7 +904,7 @@ msgstr "„Geschwindigkeit zurücksetzen“ anzeigen"
 msgid "Clock"
 msgstr "Uhrzeitformat"
 
-#. CONTEXT: configuration: controller: no controller
+#. CONTEXT: configuration: controller: no controller ('Disabled' may be used)
 msgctxt "Controller"
 msgid "None"
 msgstr "Deaktiviert"
@@ -954,7 +964,7 @@ msgstr "Nach unten"
 msgid "Delete"
 msgstr "Löschen"
 
-#. CONTEXT: configuration: table edit: button: add new selection
+#. CONTEXT: configuration: table edit: button: add new entry
 msgid "Add New"
 msgstr "Neuer Eintrag"
 
@@ -1300,7 +1310,7 @@ msgstr "Album-Interpret"
 msgid "Artist"
 msgstr "Interpret"
 
-#. CONTEXT: audio identification: the score or rating of each match
+#. CONTEXT: audio identification: percentage-match rating returned by an audio identification service
 msgid "Score"
 msgstr "Übereinstimmung"
 
@@ -1308,11 +1318,6 @@ msgstr "Übereinstimmung"
 #. CONTEXT: song editor: copy tags: source file
 msgid "Source"
 msgstr "Quelle"
-
-#. CONTEXT: label: measures per minute
-#. CONTEXT: bpm counter: MPM
-msgid "MPM"
-msgstr "MPM"
 
 #. CONTEXT: label: comment
 msgid "Comment"
@@ -2017,6 +2022,18 @@ msgstr "Alle Änderungen übernehmen"
 msgid "Cancel Edit All"
 msgstr "Bearbeitung für alle abbrechen"
 
+#. CONTEXT: manage-ui: menu selection: music manager: remove song
+msgid "Remove Song"
+msgstr "Song entfernen"
+
+#. CONTEXT: manage-ui: menu selection: music manager: undo song removal
+msgid "Undo Song Removal"
+msgstr "Song-Entfernung rückgängig machen"
+
+#. CONTEXT: manage-ui: menu selection: music manager: undo all song removals
+msgid "Undo All Song Removals"
+msgstr "Alle Song-Entfernungen rückgängig machen"
+
 #. CONTEXT: manage ui: status message: itunes is not configured
 #, c-format
 msgid "%s is not configured."
@@ -2038,18 +2055,6 @@ msgstr "„Gleicher Song“-Markierung setzen"
 #. CONTEXT: manage-ui: menu selection: music manager: clear same-song mark
 msgid "Clear Same Song Mark"
 msgstr "„Gleicher Song“-Markierung entfernen"
-
-#. CONTEXT: manage-ui: menu selection: music manager: remove song
-msgid "Remove Song"
-msgstr "Song entfernen"
-
-#. CONTEXT: manage-ui: menu selection: music manager: undo song removal
-msgid "Undo Song Removal"
-msgstr "Song-Entfernung rückgängig machen"
-
-#. CONTEXT: manage-ui: menu selection: music manager: undo all song removals
-msgid "Undo All Song Removals"
-msgstr "Alle Song-Entfernungen rückgängig machen"
 
 #. CONTEXT: manage-ui: menu selection: song list: edit menu: load
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: load
@@ -2306,7 +2311,7 @@ msgstr "Anzeigen"
 msgid "Font Size"
 msgstr "Schriftgröße"
 
-#. CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen
+#. CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen (Retrieve Marquee)
 msgid "Recover Marquee"
 msgstr " Wiedergabeanzeige wiederherstellen"
 

@@ -8,12 +8,12 @@ count
 KEY
 ..0
 STATUS
-..新しい
+..新規
 PLAYFLAG
 ..1
 KEY
 ..1
 STATUS
-..完全
+..完了
 PLAYFLAG
 ..1

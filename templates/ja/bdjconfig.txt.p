@@ -6,7 +6,7 @@ version
 DEFAULTVOLUME
 ..30
 COMPLETEMSG
-..ありがとうダンサーズ
+..ダンサーの皆様、ありがとうございました
 FADETYPE
 ..triangle
 MARQUEE_SHOW

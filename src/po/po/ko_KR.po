@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
-"POT-Creation-Date: 2026-03-02\n"
-"PO-Revision-Date: 2026-03-05 17:19\n"
+"POT-Creation-Date: 2026-04-23\n"
+"PO-Revision-Date: 2026-05-15 01:09\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Korean\n"
 "Language: ko\n"
@@ -87,6 +87,7 @@ msgid "latin"
 msgstr "라틴어"
 
 #. CONTEXT: configuration file: dance type
+#. CONTEXT: dance type: 'other'
 msgid "other"
 msgstr ""
 
@@ -185,7 +186,7 @@ msgid "Clear Queue"
 msgstr "대기열 지우기"
 
 #. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
-#. CONTEXT: playerui: button: fade out the song and stop playing it
+#. CONTEXT: playerui: button: fade out the song and continue to the next song
 msgid "Fade"
 msgstr "페이드"
 
@@ -247,10 +248,12 @@ msgid "Volume"
 msgstr "볼륨"
 
 #. CONTEXT: The name of the 'standardrounds' playlist file
+#. CONTEXT: This is the name of a example playlist. 'Standard Rounds' is a ballroom term used in the US.  It can be simplified and shortened.
 msgid "standardrounds"
 msgstr "표준 라운드"
 
 #. CONTEXT: The name of the 'queuedance' playlist file
+#. CONTEXT: This is the name of a special playlist. Queue is a verb.  It can be simplified and shortened.
 #. CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: player: the name of the special playlist for queueing a dance
@@ -482,7 +485,7 @@ msgstr "나란히 노래 선택"
 msgid "Music Manager"
 msgstr "음악 관리자"
 
-#. CONTEXT: configuration: display settings for: Audio ID match listing
+#. CONTEXT: configuration: display settings for: Audio Identification list of matching songs
 msgid "Audio ID Match List"
 msgstr "오디오 ID 일치 목록"
 
@@ -524,6 +527,19 @@ msgstr "쓰지 않기"
 msgid "All Tags"
 msgstr "모든 태그"
 
+#. CONTEXT: configuration: BPM: beats per minute (not bars per minute)
+#. CONTEXT: configuration: Whether to display BPM as BPM or MPM
+#. CONTEXT: label: beats per minute (musical term)
+#. CONTEXT: bpm counter: BPM (musical term: beats per minute)
+msgid "BPM"
+msgstr "BPM"
+
+#. CONTEXT: configuration: MPM: measures per minute
+#. CONTEXT: label: measures per minute (musical term)
+#. CONTEXT: bpm counter: MPM (musical term: measures per minute)
+msgid "MPM"
+msgstr "MPM"
+
 #. CONTEXT: configuration: general options that apply to everything
 msgid "General"
 msgstr "일반"
@@ -540,12 +556,6 @@ msgstr "프로필 이름"
 #. CONTEXT: configuration: the profile accent color (identifies profile)
 msgid "Profile Colour"
 msgstr "프로필 색상"
-
-#. CONTEXT: configuration: Whether to display BPM as BPM or MPM
-#. CONTEXT: label: beats per minute
-#. CONTEXT: bpm counter: BPM
-msgid "BPM"
-msgstr "BPM"
 
 #. CONTEXT: configuration: the languages for the user interface
 msgid "Display Language"
@@ -641,9 +651,9 @@ msgstr "레벨 편집"
 msgid "Order from easiest to most advanced."
 msgstr "가장 쉬운 것부터 가장 고급까지 주문하세요."
 
-#. CONTEXT: configuration: level: title of the weight column
-#. CONTEXT: configuration: rating: title of the weight column
-#. CONTEXT: playlist management: tag weight
+#. CONTEXT: configuration: level: title of the weight column (emphasis)
+#. CONTEXT: configuration: rating: title of the weight column (emphasis)
+#. CONTEXT: playlist management: tag weight (emphasis)
 msgid "Weight"
 msgstr "무게"
 
@@ -677,8 +687,8 @@ msgstr "마키 테마"
 msgid "Marquee Font"
 msgstr "마키 글꼴"
 
-#. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee
-#. CONTEXT: (noun) configuration: the number of items loaded into the music queue
+#. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee (or Queue Limit)
+#. CONTEXT: (noun) configuration: the number of items loaded into the music queue (or: Queue Limit)
 msgid "Queue Length"
 msgstr "대기열 길이"
 
@@ -882,7 +892,7 @@ msgstr "기본 볼륨"
 msgid "Completion Message"
 msgstr "완료 메시지"
 
-#. CONTEXT: configuration: type of fade to apply
+#. CONTEXT: configuration: type of fade-out to use (triangle, half-sine, etc.)
 msgid "Fade Type"
 msgstr ""
 
@@ -894,7 +904,7 @@ msgstr "속도 초기화 표시"
 msgid "Clock"
 msgstr ""
 
-#. CONTEXT: configuration: controller: no controller
+#. CONTEXT: configuration: controller: no controller ('Disabled' may be used)
 msgctxt "Controller"
 msgid "None"
 msgstr ""
@@ -954,7 +964,7 @@ msgstr "아래로 이동"
 msgid "Delete"
 msgstr "삭제"
 
-#. CONTEXT: configuration: table edit: button: add new selection
+#. CONTEXT: configuration: table edit: button: add new entry
 msgid "Add New"
 msgstr "신규 추가"
 
@@ -1300,7 +1310,7 @@ msgstr "앨범 아티스트"
 msgid "Artist"
 msgstr "아티스트"
 
-#. CONTEXT: audio identification: the score or rating of each match
+#. CONTEXT: audio identification: percentage-match rating returned by an audio identification service
 msgid "Score"
 msgstr "점수"
 
@@ -1308,11 +1318,6 @@ msgstr "점수"
 #. CONTEXT: song editor: copy tags: source file
 msgid "Source"
 msgstr "출처"
-
-#. CONTEXT: label: measures per minute
-#. CONTEXT: bpm counter: MPM
-msgid "MPM"
-msgstr "MPM"
 
 #. CONTEXT: label: comment
 msgid "Comment"
@@ -2017,6 +2022,18 @@ msgstr "모두 편집 적용"
 msgid "Cancel Edit All"
 msgstr "모두 편집 취소"
 
+#. CONTEXT: manage-ui: menu selection: music manager: remove song
+msgid "Remove Song"
+msgstr "노래 제거"
+
+#. CONTEXT: manage-ui: menu selection: music manager: undo song removal
+msgid "Undo Song Removal"
+msgstr "노래 제거 실행 취소"
+
+#. CONTEXT: manage-ui: menu selection: music manager: undo all song removals
+msgid "Undo All Song Removals"
+msgstr ""
+
 #. CONTEXT: manage ui: status message: itunes is not configured
 #, c-format
 msgid "%s is not configured."
@@ -2038,18 +2055,6 @@ msgstr "같은 곡으로 표시"
 #. CONTEXT: manage-ui: menu selection: music manager: clear same-song mark
 msgid "Clear Same Song Mark"
 msgstr "동일한 노래 마크 지우기"
-
-#. CONTEXT: manage-ui: menu selection: music manager: remove song
-msgid "Remove Song"
-msgstr "노래 제거"
-
-#. CONTEXT: manage-ui: menu selection: music manager: undo song removal
-msgid "Undo Song Removal"
-msgstr "노래 제거 실행 취소"
-
-#. CONTEXT: manage-ui: menu selection: music manager: undo all song removals
-msgid "Undo All Song Removals"
-msgstr ""
 
 #. CONTEXT: manage-ui: menu selection: song list: edit menu: load
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: load
@@ -2306,7 +2311,7 @@ msgstr ""
 msgid "Font Size"
 msgstr "글꼴 크기"
 
-#. CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen
+#. CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen (Retrieve Marquee)
 msgid "Recover Marquee"
 msgstr "마키 복구"
 

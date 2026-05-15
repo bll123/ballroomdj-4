@@ -1,5 +1,5 @@
 # localization
-# generated 2026-04-23
+# generated 2026-05-14
 KEY
 ..0
 LONG
@@ -141,9 +141,9 @@ SHORT
 DISPLAY
 ..日本語
 STDROUNDS
-..スタンダードラウンド
+..スタンダード
 QDANCE
-..キューダンス
+..ダンス追加
 KEY
 ..12
 LONG

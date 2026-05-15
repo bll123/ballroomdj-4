@@ -1,6 +1,6 @@
 # dance-types
 # 2026-2-25
 # version 2
-標準
+スタンダード
 ラテン
-other
+その他

@@ -8,7 +8,7 @@ count
 KEY
 ..0
 LEVEL
-..簡単
+..初級
 DEFAULT
 ..0
 WEIGHT
@@ -16,7 +16,7 @@ WEIGHT
 KEY
 ..1
 LEVEL
-..ノーマル
+..中級
 DEFAULT
 ..1
 WEIGHT
