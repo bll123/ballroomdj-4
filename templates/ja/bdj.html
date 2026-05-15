@@ -314,7 +314,7 @@ http://danielstern.ca/range.css/#/
         </td>
         <td class="vcenter txtcenter tdnopad">
             <img id="nextpagei" onclick="javascript:bdj.nextPage();"
-              src="mrc/light/nextpage.svg" alt="次のページ">
+              src="mrc/light/nextpage.svg" alt="次へ">
         </td>
       </tr>
     </table>
@@ -323,7 +323,7 @@ http://danielstern.ca/range.css/#/
     <table class="table">
       <tr>
         <td class="tdnarrow">
-          <p>ボリューム</p>
+          <p>音量</p>
         </td>
         <td class="txtcenter" colspan="3">
           <input class="vcenter" id="volumeb" type="range"
@@ -335,7 +335,7 @@ http://danielstern.ca/range.css/#/
         <td class="vcenter tdnopad">
           <button class="mutebutton" id="muteb" type="button"
             onclick="javascript:bdj.chgMute();"><img
-            id="mutei" src="mrc/light/mute.svg" alt="ミュート"></button>
+            id="mutei" src="mrc/light/mute.svg" alt="消音"></button>
         </td>
         <td colspan="2">
           <p class="vcenter txtleft" id="vold">70%</p>
@@ -380,11 +380,11 @@ http://danielstern.ca/range.css/#/
         <td colspan="4">
           <input class="wb" type="submit"
             onclick="javascript:bdj.sendCmd('pauseatend');"
-            name="pauseatend" value="終了時のポーズ">
+            name="pauseatend" value="終了時に一時停止">
         </td>
         <td class="vcenter" colspan="2">
           <img class="vcenter" id="pauseatendi"
-            src="led_off.svg" alt="終了時のポーズ">
+            src="led_off.svg" alt="終了時に一時停止">
         </td>
       </tr>
       <tr>
@@ -432,21 +432,21 @@ http://danielstern.ca/range.css/#/
     <select id="dancelist" name="dancelist"></select>
     <input class="wb" type="submit"
       onclick="javascript:bdj.sendDanceCmd('queue');"
-      name="queue" value="キュー">
+      name="queue" value="キューに追加">
     <input class="wb" type="submit"
       onclick="javascript:bdj.sendDanceCmd('queue5');"
-      name="queue5" value="キュー5">
+      name="queue5" value="5件をキューに追加">
     <input class="wb" type="submit"
       onclick="javascript:bdj.sendDanceCmd('clear');"
-      name="clear" value="クリアキュー">
+      name="clear" value="キューを削除">
     <hr>
     <select id="playlistsel" name="playlistsel"></select>
     <input class="wb" type="submit"
       onclick="javascript:bdj.sendPLCmd('playlistclearplay');"
-      name="plclearplay" value="クリア＆プレイ">
+      name="plclearplay" value="クリア &amp; 再生">
     <input class="wb" type="submit"
       onclick="javascript:bdj.sendPLCmd('playlistqueue');"
-      name="plqueue" value="キュー">
+      name="plqueue" value="キューに追加">
   </div>
   <script type="text/javascript">
 var bdj = {};

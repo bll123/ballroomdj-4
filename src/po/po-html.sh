@@ -89,6 +89,8 @@ done < $TMP
 
 sedcmd+="-e \"s,!!!,',g\""
 
+set +o noglob
+
 for fn in ${TMPLDIR}/*.html; do
   case $fn in
     *qrcode.html)
@@ -100,6 +102,7 @@ for fn in ${TMPLDIR}/*.html; do
       ;;
   esac
 
+  set -o noglob
   outfn="${TMPLDIR}/${uselocale}/$(basename ${fn})"
 
   eval sed ${sedcmd} "$fn" > "$outfn"
@@ -112,8 +115,8 @@ for fn in ${TMPLDIR}/*.html; do
 
   sed -e "s/English/${langdesc}/" "$outfn" > "$outfn.n"
   mv -f "$outfn.n" "$outfn"
+  set +o noglob
 done
-set +o noglob
 
 test -f $TMP && rm -f $TMP
 exit 0

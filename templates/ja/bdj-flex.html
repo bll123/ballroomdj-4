@@ -344,12 +344,12 @@ http://danielstern.ca/range.css/#/
           <p><img
             src="ballroomdj4.svg" width="200" alt="BDJ4"></p>
           <img id="nextpagei" onclick="javascript:bdj.nextPage();"
-            src="mrc/light/nextpage.svg" alt="次のページ">
+            src="mrc/light/nextpage.svg" alt="次へ">
         </div>
       </div>
       <div id="controlspage1" class="dispbox">
         <div class="linebox">
-          <p class="vcenter">ボリューム</p>
+          <p class="vcenter">音量</p>
           <input class="stretch grow padlr"
               id="volumeb" type="range"
               onmousedown="javascript:bdj.chgStart();"
@@ -361,7 +361,7 @@ http://danielstern.ca/range.css/#/
             <button class="muteb" id="muteb" type="button"
                 onclick="javascript:bdj.chgMute();"><img
                 id="mutei" align="middle" src="mrc/light/mute.svg"
-                alt="ミュート"></button>
+                alt="消音"></button>
           </div>
         </div>
         <div class="linebox">
@@ -393,10 +393,10 @@ http://danielstern.ca/range.css/#/
         <div class="linebox">
           <input class="stretch grow wb" type="submit"
               onclick="javascript:bdj.sendCmd('pauseatend');"
-              name="pauseatend" value="終了時のポーズ">
+              name="pauseatend" value="終了時に一時停止">
           <div class="rightbox vcenter">
             <img class="mpad" id="pauseatendi"
-                src="led_off.svg" alt="終了時のポーズ">
+                src="led_off.svg" alt="終了時に一時停止">
           </div>
         </div>
         <div class="linebox">
@@ -440,17 +440,17 @@ http://danielstern.ca/range.css/#/
         <div class="linebox">
           <input class="stretch grow wb" type="submit"
               onclick="javascript:bdj.sendDanceCmd('queue');"
-              name="queue" value="キュー">
+              name="queue" value="キューに追加">
         </div>
         <div class="linebox">
           <input class="stretch grow wb" type="submit"
               onclick="javascript:bdj.sendDanceCmd('queue5');"
-              name="queue5" value="キュー5">
+              name="queue5" value="5件をキューに追加">
         </div>
         <div class="linebox">
           <input class="stretch grow wb" type="submit"
               onclick="javascript:bdj.sendDanceCmd('clear');"
-              name="clear" value="クリアキュー">
+              name="clear" value="キューを削除">
         </div>
         <div class="linebox">
           <p class="stretch grow wb withborder"></p>
@@ -461,10 +461,10 @@ http://danielstern.ca/range.css/#/
         <div class="linebox">
           <input class="stretch grow wb" type="submit"
             onclick="javascript:bdj.sendPLCmd('playlistclearplay');"
-            name="plclearplay" value="クリア＆プレイ">
+            name="plclearplay" value="クリア &amp; 再生">
           <input class="stretch grow wb" type="submit"
             onclick="javascript:bdj.sendPLCmd('playlistqueue');"
-            name="plqueue" value="キュー">
+            name="plqueue" value="キューに追加">
         </div>
     </div>
   </div>

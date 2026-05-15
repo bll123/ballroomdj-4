@@ -345,18 +345,18 @@ http://danielstern.ca/range.css/#/
         <td colspan="4">
           <input class="wb" type="submit"
             onclick="javascript:bdj.sendCmd('play');"
-            name="playpause" value="Reproducir / Pausa">
+            name="playpause" value="Reproducir / Pausar">
         </td>
         <td class="vcenter">
           <img class="vcenter" id="playstatusi"
-            src="mrc/light/stop.svg" alt="Stop">
+            src="mrc/light/stop.svg" alt="Detener">
         </td>
       </tr>
       <tr>
         <td colspan="4">
           <input class="wb" type="submit" id="fadeb"
             onclick="javascript:bdj.sendCmd('fade');"
-            name="fade" value="Desvanecer">
+            name="fade" value="Desvanecer y detener">
         </td>
         <td colspan="2"></td>
       </tr>
@@ -364,12 +364,12 @@ http://danielstern.ca/range.css/#/
         <td colspan="4">
           <input class="wb" type="submit"
             onclick="javascript:bdj.sendCmd('repeat');"
-            name="repeat" value="Repita">
+            name="repeat" value="Repetir">
         </td>
         <td class="vcenter" colspan="2">
           <div class="divnone" id="repeatstatusd">
             <img class="vcenter" id="repeatstatusi"
-              src="mrc/light/repeat.svg" alt="Repita">
+              src="mrc/light/repeat.svg" alt="Repetir">
           </div>
           <div class="divinline" id="repeatblankd">
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -380,18 +380,18 @@ http://danielstern.ca/range.css/#/
         <td colspan="4">
           <input class="wb" type="submit"
             onclick="javascript:bdj.sendCmd('pauseatend');"
-            name="pauseatend" value="Pausa al final">
+            name="pauseatend" value="Pausar al final">
         </td>
         <td class="vcenter" colspan="2">
           <img class="vcenter" id="pauseatendi"
-            src="led_off.svg" alt="Pausa al final">
+            src="led_off.svg" alt="Pausar al final">
         </td>
       </tr>
       <tr>
         <td colspan="4">
           <input class="wb" type="submit"
             onclick="javascript:bdj.sendCmd('nextsong');"
-            name="nextsong" value="Próxima canción">
+            name="nextsong" value="Siguiente canción">
         </td>
       </tr>
       <tr>
@@ -432,21 +432,21 @@ http://danielstern.ca/range.css/#/
     <select id="dancelist" name="dancelist"></select>
     <input class="wb" type="submit"
       onclick="javascript:bdj.sendDanceCmd('queue');"
-      name="queue" value="Cola">
+      name="queue" value="Poner en cola">
     <input class="wb" type="submit"
       onclick="javascript:bdj.sendDanceCmd('queue5');"
-      name="queue5" value="Cola 5">
+      name="queue5" value="Poner 5 en cola">
     <input class="wb" type="submit"
       onclick="javascript:bdj.sendDanceCmd('clear');"
-      name="clear" value="Borrar cola">
+      name="clear" value="Vaciar cola">
     <hr>
     <select id="playlistsel" name="playlistsel"></select>
     <input class="wb" type="submit"
       onclick="javascript:bdj.sendPLCmd('playlistclearplay');"
-      name="plclearplay" value="Limpiar y jugar">
+      name="plclearplay" value="Limpiar y reproducir">
     <input class="wb" type="submit"
       onclick="javascript:bdj.sendPLCmd('playlistqueue');"
-      name="plqueue" value="Cola">
+      name="plqueue" value="Poner en cola">
   </div>
   <script type="text/javascript">
 var bdj = {};
