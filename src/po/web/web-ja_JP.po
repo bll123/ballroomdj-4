@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2023-09-27\n"
-"PO-Revision-Date: 2026-05-15 01:09\n"
+"PO-Revision-Date: 2026-05-15 12:44\n"
 "Last-Translator: manually generated\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
@@ -85,7 +85,7 @@ msgstr "BallroomDJ 3をダウンロード"
 
 #. CONTEXT: website : link
 msgid "Download BallroomDJ 4"
-msgstr "Download BallroomDJ 4"
+msgstr "BallroomDJ 4をダウンロード"
 
 #. CONTEXT: website : link to crowdin
 msgid "Help Translate BallroomDJ 4"

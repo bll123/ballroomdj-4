@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2026-04-23\n"
-"PO-Revision-Date: 2026-05-15 01:09\n"
+"PO-Revision-Date: 2026-05-15 12:44\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
@@ -473,11 +473,11 @@ msgstr "選曲"
 
 #. CONTEXT: configuration: display settings for: side-by-side song list (suggestion: combined view: song list)
 msgid "Side-by-Side Song List"
-msgstr "分割表示：曲リスト"
+msgstr "並列表示：曲リスト"
 
 #. CONTEXT: configuration: display settings for: side-by-side song selection (suggestion: combined view: song selection)
 msgid "Side-by-Side Song Selection"
-msgstr "分割表示：選曲"
+msgstr "並列表示：選曲"
 
 #. CONTEXT: configuration: display settings for: music manager
 #. CONTEXT: manage-ui: name of music manager notebook tab
@@ -1046,7 +1046,7 @@ msgstr "既存の %s インストールを更新する。"
 #. CONTEXT: installer: message indicating the action that will be taken
 #, c-format
 msgid "New %s installation."
-msgstr "新規 %sインストール"
+msgstr "新規 %sインストール。"
 
 #. CONTEXT: alternate installation: the selected folder exists and is not a BDJ4 installation
 #. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
@@ -1188,7 +1188,7 @@ msgstr "インストール内容を確認しています。"
 
 #. CONTEXT: installer: status message
 msgid "Verification complete."
-msgstr "確認が完了しました"
+msgstr "確認が完了しました。"
 
 #. CONTEXT: installer: status message
 msgid "Verification failed."
@@ -1361,7 +1361,7 @@ msgstr "名前の変更を防止する"
 
 #. CONTEXT: label: disc number (Audio Tag: The disc number of a disc in a collection)
 msgid "Disc"
-msgstr "ディスク"
+msgstr "ディスク数"
 
 #. CONTEXT: label: disc number (short name for listing)
 msgctxt "Short"
@@ -1374,7 +1374,7 @@ msgstr "合計ディスク数"
 
 #. CONTEXT: label: total disc count (short name for listing)
 msgid "Tot. Discs"
-msgstr "合計"
+msgstr "合計ディスク数"
 
 #. CONTEXT: label: duration of the song
 msgid "Duration"
@@ -1552,11 +1552,11 @@ msgstr "お待ちください… (%1$d/%2$d)"
 
 #. CONTEXT: (verb) music queue: button: queue a playlist for playback: suggested 'put playlist in queue'
 msgid "Queue Playlist"
-msgstr "プレイリスト追加"
+msgstr "プレイリストをキューに追加"
 
 #. CONTEXT: (verb) music queue: button: queue a dance for playback: suggested: put dance in queue
 msgid "Queue Dance"
-msgstr "ダンス追加"
+msgstr "ダンスをキューに追加"
 
 #. CONTEXT: music queue: button: move the selected song to the top of the queue
 msgid "Move to Top"
@@ -1963,7 +1963,7 @@ msgstr "その他のファイル"
 
 #. CONTEXT: colon character with trailing space
 msgid ": "
-msgstr "："
+msgstr "： "
 
 #. CONTEXT: database update: status message
 msgid "Stopped by User"

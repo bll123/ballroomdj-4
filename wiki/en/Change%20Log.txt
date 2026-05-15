@@ -9,7 +9,7 @@
 * Bug Fixes:
     * Music Manager: Fix enabled/disabled state of 'Remove Song' menu items.
     * Configuration: UI: Fix some alignment issues.
-    * HTML templates: Fix a problem translating the HTML templates.
+    * HTML templates: Fix HTML templates not being translated.
     * UI: Fix switch display for RTL languages.
 * Changes:
     * Configuration: Player: Change clock-display to be a drop-down.
