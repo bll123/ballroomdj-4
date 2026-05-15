@@ -35,6 +35,7 @@ dylibLoad (const char *path, dlopt_t opt)
 {
   void        *handle = NULL;
   char        npath [BDJ4_PATH_MAX];
+  char        tpath [BDJ4_PATH_MAX];
   const char  *shlibext;
   const char  *pfx = "";
 
@@ -74,6 +75,16 @@ dylibLoad (const char *path, dlopt_t opt)
     if (! found && fileopIsDirectory (tdir)) {
       pfx = tdir;
     }
+  }
+  if (isWindows () &&
+      ((opt & DYLIB_OPT_ICU) == DYLIB_OPT_ICU ||
+      (opt & DYLIB_OPT_AV) == DYLIB_OPT_AV)) {
+    /* 2026-5-15 windows: only look in the plocal/bin dir */
+    /*    to prevent picking up other installed icu libraries */
+    /*    must have trailing slash */
+    snprintf (tpath, sizeof (tpath), "%s/plocal/bin/",
+        sysvarsGetStr (SV_BDJ4_DIR_MAIN));
+    pfx = tpath;
   }
 
   if (fileopIsAbsolutePath (path)) {

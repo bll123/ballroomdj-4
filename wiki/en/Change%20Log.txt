@@ -11,7 +11,7 @@
     * HTML templates: Fix HTML templates not being translated.
     * Music Manager: Fix enabled/disabled state of 'Remove Song' menu items.
     * UI: Fix switch display for RTL languages.
-    * Windows: Fixed incorrect version of libicu being loaded.
+    * Windows: Fixed problems loading incorrect libraries when present.
 * Changes:
     * Configuration: Player: Change clock-display to be a drop-down.
     * Configuration: Player: Change fade-type to be a drop-down.
