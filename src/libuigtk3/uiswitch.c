@@ -47,7 +47,7 @@ uiCreateSwitch (int value)
   uiwcont_t   *uiwidget;
   uiswitch_t  *uiswitch;
   GtkWidget   *widget;
-  const char  *sfx;
+  const char  *sfx = "";
   char        fbuff [BDJ4_PATH_MAX];
   char        tbuff [BDJ4_PATH_MAX];
 

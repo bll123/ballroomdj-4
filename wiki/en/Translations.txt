@@ -20,7 +20,7 @@ Current Translations and Status:
  Français|Machine Translated<br>Very poor quality|
  magyar|Machine Translated<br>Very poor quality|
  Italiano|Machine Translated<br>Very poor quality|
- 日本語|Machine Translated<br>Very poor quality|
+ 日本語|Professionally<br>Translated|Kazu Ishihara
  한국어‬|Machine Translated<br>Very poor quality|
  Nederlands|Mostly complete, needs final QA|marimo
  norsk|Machine Translated<br>Very poor quality|
