@@ -16,6 +16,7 @@
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "istring.h"
+#include "localeutil.h"
 #include "level.h"
 #include "mdebug.h"
 #include "ui.h"
@@ -49,6 +50,7 @@ uilevelSpinboxCreate (uiwcont_t *boxp, bool allflag)
   if (allflag) {
     /* CONTEXT: level: a filter: all dance levels will be listed */
     len = istrlen (_("All Levels"));
+    len = localeWidthAdjust (len);
     if (len > maxw) {
       maxw = len;
     }

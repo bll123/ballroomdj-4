@@ -7,11 +7,12 @@
 **4.18.3 2026-4---**
 
 * Bug Fixes:
+    * BPM Counter: Fixed some strings that were not being translated.
     * Configuration: UI: Fix some alignment issues.
     * HTML templates: Fix HTML templates not being translated.
     * Music Manager: Fix enabled/disabled state of 'Remove Song' menu items.
     * UI: Fix switch display for RTL languages.
-    * UI: Fix text spinbox width calculation for Japanese/Korean/Chinese.
+    * UI: Fix text width calculation for Japanese/Korean/Chinese.
     * Windows: Fixed problems loading incorrect libraries.
 * Changes:
     * Configuration: Player: Change clock-display to be a drop-down.
@@ -19,7 +20,7 @@
     * Song Editor: Added 'Remove Song' items to the song editor menu.
     * Song Editor: Added a display in the heading for removed songs.
 * Translations:
-    * Japanese (日本語) is now professionally translated by Kazu Ishihara
+    * Japanese (日本語) is now professionally translated by Kazu Ishihara.
 * Internal:
     * Update libmp4tag to version 2.0.4.
     * Update chromaprint to version 1.6.0 (windows).

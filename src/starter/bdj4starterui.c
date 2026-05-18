@@ -29,6 +29,7 @@
 #include "ilist.h"
 #include "instutil.h"
 #include "istring.h"
+#include "localeutil.h"
 #include "lock.h"
 #include "log.h"
 #include "mdebug.h"
@@ -1749,6 +1750,7 @@ starterGetProfiles (startui_t *starter)
       pname = bdjoptGetProfileName ();
       if (pname != NULL) {
         len = istrlen (pname);
+        len = localeWidthAdjust (len);
         max = len > max ? len : max;
         nlistSetStr (proflist, count, pname);
         nlistSetNum (profidxlist, count, i);
@@ -1769,6 +1771,7 @@ starterGetProfiles (startui_t *starter)
     nlistSetNum (profidxlist, count, availprof);
     starter->newprofile = availprof;
     len = istrlen (nlistGetStr (proflist, count));
+    len = localeWidthAdjust (len);
     max = len > max ? len : max;
   }
 

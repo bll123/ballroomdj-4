@@ -260,6 +260,8 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
       qdancelen += istrlen (q5dancetxt) + istrlen (qdancetxt);
 
       if (qdancelen > UIMUSICQ_MAX_QDANCE_LEN) {
+        /* this may not work correctly for ja (ok)/ko/zh */
+        /* the lengths are not adjusted */
         hbox = uiCreateHorizBox ();
         uiWidgetExpandHoriz (hbox);
         uiBoxPackStart (uimusicq->ui [ci].mainbox, hbox);

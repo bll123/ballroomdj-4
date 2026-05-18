@@ -16,6 +16,7 @@
 #include "callback.h"
 #include "ilist.h"
 #include "istring.h"
+#include "localeutil.h"
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
@@ -443,7 +444,7 @@ uiddSetButtonText (uidd_t *dd, const char *str)
 {
   char    tbuff [100];
 
-  snprintf (tbuff, sizeof (tbuff), "%-*s", (int) (dd->dispwidth), str);
+  snprintf (tbuff, sizeof (tbuff), "%-*s", (int) (dd->dispwidth) + 1, str);
   uiButtonSetText (dd->wcont [DD_W_BUTTON], tbuff);
 }
 
@@ -471,6 +472,7 @@ uiddProcessList (uidd_t *dd)
 
     disp = ilistGetStr (dd->ddlist, key, DD_LIST_DISP);
     len = istrlen (disp);
+    len = localeWidthAdjust (len);
     if (len > dd->dispwidth) {
       dd->dispwidth = len;
     }

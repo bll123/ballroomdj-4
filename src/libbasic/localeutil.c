@@ -40,6 +40,11 @@
 
 #define LOCALE_DEBUG 0
 
+/* the font width adjustment is used for ja/ko/zh */
+/* the text spinbox width is set in characters, */
+/* and the calculation does not work for ja/ko/zh */
+#define FONT_WIDTH_ADJUST 1.72
+
 static const char *BDJ4_TEXT_DOMAIN = "bdj4";
 
 /* must be sorted in ascii order */
@@ -384,6 +389,41 @@ localeCreateDropDownList (int *idx, bool uselocale)
 
   logProcEnd ("");
   return ddlist;
+}
+
+size_t
+localeWidthAdjust (size_t len)
+{
+  const char  *slocale;
+  double      dlen;
+
+  slocale = sysvarsGetStr (SV_LOCALE_SHORT);
+  if (strcmp (slocale, "ja") == 0 ||
+      strcmp (slocale, "ko") == 0 ||
+      strcmp (slocale, "zh") == 0) {
+    dlen = round (len * FONT_WIDTH_ADJUST);
+    len = dlen;
+  }
+
+  return len;
+}
+
+/* used by confgui.c */
+size_t
+localeUndoWidthAdjust (size_t len)
+{
+  const char  *slocale;
+  double      dlen;
+
+  slocale = sysvarsGetStr (SV_LOCALE_SHORT);
+  if (strcmp (slocale, "ja") == 0 ||
+      strcmp (slocale, "ko") == 0 ||
+      strcmp (slocale, "zh") == 0) {
+    dlen = round (len / FONT_WIDTH_ADJUST);
+    len = dlen;
+  }
+
+  return len;
 }
 
 /* internal routines */

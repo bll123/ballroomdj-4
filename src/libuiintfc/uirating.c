@@ -16,6 +16,7 @@
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "istring.h"
+#include "localeutil.h"
 #include "mdebug.h"
 #include "rating.h"
 #include "ui.h"
@@ -48,6 +49,7 @@ uiratingSpinboxCreate (uiwcont_t *boxp, bool allflag)
   if (allflag == UIRATING_ALL) {
     /* CONTEXT: rating: a filter: all dance ratings will be listed */
     len = istrlen (_("All Ratings"));
+    len = localeWidthAdjust (len);
     if (len > maxw) {
       maxw = len;
     }
