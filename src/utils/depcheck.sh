@@ -176,6 +176,9 @@ for fn in */*.c */*/*.c */*.cpp */*.m */*.h */ui/*.h \
       # temporary file
       continue
       ;;
+    *gtk-user.css)
+      continue
+      ;;
     ../dev/*)
       continue
       ;;

@@ -297,8 +297,11 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   if (list != NULL) {
     nlistCalcMaxValueWidth (list);
     maxWidth = nlistGetMaxValueWidth (list);
+    if (widx == CONFUI_SPINBOX_AUDIO_OUTPUT) {
+      /* The spinbox audio-output box is already very wide. */
+      maxWidth /= 1.75;
+    }
   }
-
   uiSpinboxTextSet (uiwidgetp, 0,
       nlistGetCount (list), maxWidth, list, keylist, NULL);
   uiSpinboxTextSetValue (uiwidgetp, value);

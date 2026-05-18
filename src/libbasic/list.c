@@ -16,6 +16,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "nodiscard.h"
+#include "sysvars.h"
 #include "tmutil.h"
 
 enum {
@@ -194,9 +195,16 @@ listCalcMaxValueWidth (keytype_t keytype, list_t *list)
     listitem_t    *item = &list->data [i];
 
     if (item->valuetype == VALUE_STR) {
-      size_t    len;
+      size_t      len;
+      const char  *slocale;
 
       len = istrlen ((const char *) list->data [i].value.data);
+      slocale = sysvarsGetStr (SV_LOCALE_SHORT);
+      if (strcmp (slocale, "ja") == 0 ||
+          strcmp (slocale, "ko") == 0 ||
+          strcmp (slocale, "zh") == 0) {
+        len *= 1.75;
+      }
       if ((int) len > maxlen) {
         maxlen = len;
       }
