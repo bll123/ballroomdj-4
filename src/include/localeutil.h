@@ -33,8 +33,6 @@ const char *localeGetStr (int key);
 slist_t *localeGetDisplayList (void);
 void  localeDebug (const char *tag);
 ilist_t * localeCreateDropDownList (int *idx, bool uselocale);
-size_t  localeWidthAdjust (size_t len);
-size_t  localeUndoWidthAdjust (size_t len);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

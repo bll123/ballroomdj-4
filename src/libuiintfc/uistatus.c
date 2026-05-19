@@ -16,7 +16,6 @@
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "istring.h"
-#include "localeutil.h"
 #include "mdebug.h"
 #include "status.h"
 #include "ui.h"
@@ -49,7 +48,7 @@ uistatusSpinboxCreate (uiwcont_t *boxp, bool allflag)
   if (allflag) {
     /* CONTEXT: status: a filter: all dance status will be listed */
     len = istrlen (_("Any Status"));
-    len = localeWidthAdjust (len);
+    len = istringWidthAdjust (len);
     if (len > maxw) {
       maxw = len;
     }

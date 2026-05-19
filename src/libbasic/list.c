@@ -13,7 +13,6 @@
 #include "bdjstring.h"
 #include "istring.h"
 #include "listmodule.h"
-#include "localeutil.h"
 #include "log.h"
 #include "mdebug.h"
 #include "nodiscard.h"
@@ -199,7 +198,7 @@ listCalcMaxValueWidth (keytype_t keytype, list_t *list)
       size_t      len;
 
       len = istrlen ((const char *) list->data [i].value.data);
-      len = localeWidthAdjust (len);
+      len = istringWidthAdjust (len);
       if ((int) len > maxlen) {
         maxlen = len;
       }

@@ -13,7 +13,6 @@
 #include "bdjstring.h"
 #include "ilist.h"
 #include "istring.h"
-#include "localeutil.h"
 #include "listmodule.h"
 #include "log.h"
 #include "mdebug.h"
@@ -86,7 +85,7 @@ ilistGetMaxValueWidth (ilist_t *list, ilistidx_t lidx)
     }
   }
 
-  maxWidth = localeWidthAdjust (maxWidth);
+  maxWidth = istringWidthAdjust (maxWidth);
   return (int) maxWidth;
 }
 

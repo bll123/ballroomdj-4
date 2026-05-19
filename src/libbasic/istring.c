@@ -10,6 +10,7 @@
 #include <errno.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
 #define U_CHARSET_IS_UTF8 1
 
@@ -32,6 +33,11 @@
 #include "mdebug.h"
 #include "sysvars.h"
 #include "tmutil.h"
+
+/* the font width adjustment is used for ja/ko/zh */
+/* the text spinbox width is set in characters, */
+/* and the calculation does not work for ja/ko/zh */
+#define FONT_WIDTH_ADJUST 1.72
 
 typedef struct {
   dlhandle_t      *i18ndlh;
@@ -348,3 +354,39 @@ istring16ToUTF8 (const unsigned char *instr)
   }
   return result;
 }
+
+size_t
+istringWidthAdjust (size_t len)
+{
+  const char  *slocale;
+  double      dlen;
+
+  slocale = sysvarsGetStr (SV_LOCALE_SHORT);
+  if (strcmp (slocale, "ja") == 0 ||
+      strcmp (slocale, "ko") == 0 ||
+      strcmp (slocale, "zh") == 0) {
+    dlen = round (len * FONT_WIDTH_ADJUST);
+    len = dlen;
+  }
+
+  return len;
+}
+
+/* used by confgui.c */
+size_t
+istringUndoWidthAdjust (size_t len)
+{
+  const char  *slocale;
+  double      dlen;
+
+  slocale = sysvarsGetStr (SV_LOCALE_SHORT);
+  if (strcmp (slocale, "ja") == 0 ||
+      strcmp (slocale, "ko") == 0 ||
+      strcmp (slocale, "zh") == 0) {
+    dlen = round (len / FONT_WIDTH_ADJUST);
+    len = dlen;
+  }
+
+  return len;
+}
+

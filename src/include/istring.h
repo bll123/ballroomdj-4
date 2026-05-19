@@ -3,6 +3,7 @@
  */
 #pragma once
 
+#include <stddef.h>
 #include <stdbool.h>
 
 #if defined (__cplusplus) || defined (c_plusplus)
@@ -17,6 +18,9 @@ size_t    istrlen (const char *);
 void      istringToLower (char *str);
 const char * istring639_2 (const char *locale);
 char *    istring16ToUTF8 (const unsigned char *instr);
+
+size_t  istringWidthAdjust (size_t len);
+size_t  istringUndoWidthAdjust (size_t len);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

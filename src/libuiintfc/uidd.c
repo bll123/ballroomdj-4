@@ -16,7 +16,6 @@
 #include "callback.h"
 #include "ilist.h"
 #include "istring.h"
-#include "localeutil.h"
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
@@ -472,7 +471,7 @@ uiddProcessList (uidd_t *dd)
 
     disp = ilistGetStr (dd->ddlist, key, DD_LIST_DISP);
     len = istrlen (disp);
-    len = localeWidthAdjust (len);
+    len = istringWidthAdjust (len);
     if (len > dd->dispwidth) {
       dd->dispwidth = len;
     }

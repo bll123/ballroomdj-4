@@ -20,7 +20,6 @@
 #include "callback.h"
 #include "configui.h"
 #include "istring.h"
-#include "localeutil.h"
 #include "log.h"
 #include "sysvars.h"
 #include "tmutil.h"
@@ -300,7 +299,7 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     maxWidth = nlistGetMaxValueWidth (list);
     if (widx == CONFUI_SPINBOX_AUDIO_OUTPUT) {
       /* The spinbox audio-output box is already very wide. */
-      maxWidth = localeUndoWidthAdjust (maxWidth);
+      maxWidth = istringUndoWidthAdjust (maxWidth);
     }
   }
   uiSpinboxTextSet (uiwidgetp, 0,

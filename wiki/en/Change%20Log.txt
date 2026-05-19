@@ -4,7 +4,7 @@
 
 <!--
 
-**4.18.3 2026-4---**
+**4.18.3.2 2026-5---**
 
 * Bug Fixes:
     * BPM Counter: Fixed some strings that were not being translated.
