@@ -219,7 +219,7 @@ function checkUpdaterClean {
     fn="${DATADIR}/giri standard.pldances"
   fi
   if [[ $section == ja_JP ]]; then
-    fn="${DATADIR}/スタンダードラウンド.pldances"
+    fn="${DATADIR}/スタンダード.pldances"
   fi
   if [[ $section == nl_BE || $section == nl_NL ]]; then
     fn="$DATADIR/Standaardrondes.pldances"
@@ -258,7 +258,7 @@ function checkUpdaterClean {
     fn="${DATADIR}/Ballo in coda.pldances"
   fi
   if [[ $section == ja_JP ]]; then
-    fn="${DATADIR}/キューダンス.pldances"
+    fn="${DATADIR}/ダンスをキュー.pldances"
   fi
   if [[ $section == nl_BE || $section == nl_NL ]]; then
     fn="$DATADIR/Dans In Wachtrij.pldances"
@@ -750,7 +750,7 @@ function checkInstallation {
       fnb="${DATADIR}/QueueDance.pldances"
     fi
     if [[ $section == ja_JP ]]; then
-      fna="${DATADIR}/キューダンス.pldances"
+      fna="${DATADIR}/ダンスをキュー.pldances"
       fnb="${DATADIR}/QueueDance.pldances"
     fi
     if [[ $section == nl_BE || $section == nl_NL ]]; then
@@ -812,7 +812,7 @@ function checkInstallation {
       fnb="${DATADIR}/QueueDance.pl"
     fi
     if [[ $section == ja_JP ]]; then
-      fna="${DATADIR}/キューダンス.pl"
+      fna="${DATADIR}/ダンスをキュー.pl"
       fnb="${DATADIR}/QueueDance.pl"
     fi
     if [[ $section == nl_BE || $section == nl_NL ]]; then
@@ -856,7 +856,7 @@ function checkInstallation {
       fn="${DATADIR}/giri standard.pldances"
     fi
     if [[ $section == ja_JP ]]; then
-      fn="${DATADIR}/スタンダードラウンド.pldances"
+      fn="${DATADIR}/スタンダード.pldances"
     fi
     if [[ $section == nl_BE || $section == nl_NL ]]; then
       fn="${DATADIR}/Standaardrondes.pldances"

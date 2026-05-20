@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.di@gmail.com\n"
 "POT-Creation-Date: 2026-04-23\n"
-"PO-Revision-Date: 2026-05-20 14:12\n"
+"PO-Revision-Date: 2026-05-20 15:02\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
@@ -258,7 +258,7 @@ msgstr "スタンダード"
 #. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: player: the name of the special playlist for queueing a dance
 msgid "QueueDance"
-msgstr "ダンス追加"
+msgstr "ダンスをキュー"
 
 #. CONTEXT: tooltip for desktop icon
 msgid "Ballroom Music Player"

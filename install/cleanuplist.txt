@@ -514,6 +514,16 @@ data/Danza en cola\.pl\.bak\.1$
 data/Danza en cola\.pldances$
 data/Danza en cola\.pldances\.bak\.1$
 
+# 2026-5-20 name change for the special playlists (ja).
+data/スタンダードラウンド\.pldances$
+data/スタンダードラウンド\.pldances\.bak\.1$
+data/スタンダードラウンド\.pl$
+data/スタンダードラウンド\.pl\.bak\.1$
+data/キューダンス\.pldances$
+data/キューダンス\.pldances\.bak\.1$
+data/キューダンス\.pl$
+data/キューダンス\.pl\.bak\.1$
+
 # 4.18.0 2026-3-11 remove old switch-on/off; now lives in base img/ dir.
 img/profile\d\d/switch-on\.svg$
 img/profile\d\d/switch-on\.svg\.bak\.1$

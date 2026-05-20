@@ -8,6 +8,7 @@
 #
 # de_DE translated by Simon Thomas https://www.proz.com/translator/2935381
 # es_ES translated by Daniel de la Nava https://www.proz.com/translator/4555219
+# ja_JP translated by Kazu Ishihara
 #
 af_ZA af af afrikaans Afrikaans
 cs_CZ cs cs czech čeština

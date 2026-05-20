@@ -175,4 +175,4 @@ queue, and the queue was empty.
 <br>[Subjects / Running a Showcase](en-HowTo-Running%20a%20Showcase)
 
 [Wiki Home](Home)
-<br>_(Updated 2026-04-13 13:21:58; BDJ4 version 4.18.2)_
+<br>_(Updated 2026-05-20 16:20:54; BDJ4 version 4.18.3.2)_

@@ -4,7 +4,11 @@
 
 <!--
 
-**4.18.3.2 2026-5---**
+**4.18.3.2 2026-5-20**
+
+-->
+
+**4.18.3.2 2026-5-20**
 
 * Bug Fixes:
     * BPM Counter: Fixed some strings that were not being translated.
@@ -25,7 +29,11 @@
     * Update libmp4tag to version 2.0.4.
     * Update chromaprint to version 1.6.0 (windows).
 
--->
+**4.18.3.1**
+  * Internal beta release.
+
+**4.18.3**
+  * Internal beta release.
 
 **4.18.2 2026-4-13**
 
@@ -1535,4 +1543,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2026-04-13 13:21:58; BDJ4 version 4.18.2)_
+<br>_(Updated 2026-05-20 16:20:54; BDJ4 version 4.18.3.2)_

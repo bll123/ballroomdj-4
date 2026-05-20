@@ -85,4 +85,4 @@ configured, and turn on the __Play&nbsp;Announcements__ switch.
 <br><span id="caption" style="color:#4559bf;">__Manage / Playlist Management__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2026-04-13 13:21:58; BDJ4 version 4.18.2)_
+<br>_(Updated 2026-05-20 16:20:54; BDJ4 version 4.18.3.2)_
