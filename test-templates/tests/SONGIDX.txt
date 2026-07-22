@@ -138,14 +138,15 @@
 134    046-all-tags-opus-j      songstart songend
 135    047-waltz-opus-ogx       noplaymac
 136    048-waltz-ogg-ogx        noplaymac
-137    900-ZZZZ
-138    900-ÄÄÄÄ
-139    900-ÖÖÖÖ
-140    ann-foxtrot
-141    ann-quickstep
-142    ann-samba
-143    ann-tango
-144    ann-waltz
-145    b-tango-wav
-146    b-tango-wma              noplaymac
-147    c-tango-mkv              noplaymac
+137    049-waltz-vol            kw voltest
+138    900-ZZZZ
+139    900-ÄÄÄÄ
+140    900-ÖÖÖÖ
+141    ann-foxtrot
+142    ann-quickstep
+143    ann-samba
+144    ann-tango
+145    ann-waltz
+146    b-tango-wav
+147    b-tango-wma              noplaymac
+148    c-tango-mka              noplaymac

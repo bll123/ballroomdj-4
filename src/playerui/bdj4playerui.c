@@ -2071,6 +2071,11 @@ pluiReloadSave (playerui_t *plui, int mqidx)
     }
   }
 
+  if (plui->reloadchk) {
+    plui->reloadchk = false;
+    return;
+  }
+
   plui->reloadchk = false;
 
   /* any time any music queue data is received, disable the */

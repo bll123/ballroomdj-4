@@ -22,7 +22,7 @@ stpecpy (char *dst, char *end, const char *restrict src)
 {
   char  *p;
 
-#if defined STEPCPY_DEBUG
+#if STEPCPY_DEBUG
   if (end - dst == sizeof (char *)) {
     fprintf (stderr, "WARN: stpecpy: length set to sizeof (char *)\n");
   }

@@ -73,7 +73,7 @@ pathRealPath (char *path, size_t sz)
   (void) ! realpath (path, tbuff);
   stpecpy (path, path + sz, tbuff);
 #endif
-#if ! lib_realpath && _lib_GetFullPathNameW
+#if ! _lib_realpath && _lib_GetFullPathNameW
   wchar_t   *wfrom;
   wchar_t   wto [BDJ4_PATH_MAX];
   char      *tto;

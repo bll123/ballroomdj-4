@@ -14,7 +14,7 @@ msg main MUSICQ_INSERT 0~999~90
 # ogg
 msg main MUSICQ_INSERT 0~999~110
 # wav
-msg main MUSICQ_INSERT 0~999~145
+msg main MUSICQ_INSERT 0~999~146
 #
 # mp3
 mssleep 350
@@ -115,7 +115,7 @@ msg main MUSICQ_INSERT 0~999~136
 # opus-ogx
 msg main MUSICQ_INSERT 0~999~135
 # wma
-msg main MUSICQ_INSERT 0~999~146
+msg main MUSICQ_INSERT 0~999~147
 #
 # ogg-ogx
 mssleep 20
@@ -173,7 +173,7 @@ macosavchk
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
 # mka
-msg main MUSICQ_INSERT 0~999~147
+msg main MUSICQ_INSERT 0~999~148
 #
 # mka
 mssleep 20

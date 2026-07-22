@@ -16,7 +16,7 @@
 version
 ..1
 count
-..148
+..150
 
 # standard dances
 
@@ -5909,3 +5909,43 @@ TITLE
 ..c-tango-mka
 DEST
 ..c-tango-mka
+
+# volume test
+
+KEY
+..148
+FSOURCE
+..waltz.mp3
+DURATION
+..30630
+NOTES
+..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
+TAGS
+..tag4 TAG5 kw
+KEYWORD
+..voltest
+STATUS
+..Complete
+DANCELEVEL
+..Normal
+GENRE
+..Rock
+ALBUMARTIST
+..%03d-utf8-albartist
+ARTIST
+..%03d-utf8-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Waltz
+DANCERATING
+..Great
+TITLE
+..%03d-waltz-vol
+VOLUMEADJUSTPERC
+..40000
+DEST
+..%03d-waltz-vol
+
