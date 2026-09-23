@@ -4,11 +4,15 @@
 
 <!--
 
-**4.18.4 2026-7---**
+**4.18.4 2026-9---**
 
 * Bug Fixes:
     * Player: Reload: Do not immediately remove reload playlists.
     * Minor configuration fixes.
+    * PENDING: Automatic Playlists: Improve dance selection.
+* Internal:
+    * Update libopus to version 1.6.1 (Windows).
+    * Update mongoose to version 7.22.
 
 -->
 
@@ -1547,4 +1551,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2026-05-20 16:20:54; BDJ4 version 4.18.3.2)_
+<br>_(Updated 2026-09-23 11:05:40; BDJ4 version 4.18.3.2)_

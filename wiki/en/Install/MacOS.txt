@@ -53,7 +53,7 @@ MacPorts package management system.
 
 __MacPorts__ package management system:
 <br>
-Download the macos-pre-install-macports-v24.sh script.
+Download the macos-pre-install-macports-v25.sh script.
 
 If you wish to use the __homebrew__ package management system,
 <br>
@@ -69,7 +69,7 @@ than once during the installation process.
 If you are using the _MacPorts_ package management system, use:
 
     cd Downloads
-    bash macos-pre-install-macports-v24.sh
+    bash macos-pre-install-macports-v25.sh
 
 If you are using the _homebrew_ package management system, use:
 
@@ -178,4 +178,4 @@ also make a pre-built BDJ4 virtually impossible to run, as users may
 have different versions of these required libraries.
 
 [Wiki Home](Home)
-<br>_(Updated 2026-05-20 16:20:54; BDJ4 version 4.18.3.2)_
+<br>_(Updated 2026-09-23 11:05:40; BDJ4 version 4.18.3.2)_

@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2026 Brad Lanam Pleasant Hill CA
 #
-ver=24
+ver=25
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -119,12 +119,10 @@ if [[ $skipmpinst == F ]]; then
 
   if [[ $mp_installed == F ]]; then
     # grab the latest version number
-    rsync -q rsync://rsync.macports.org/release/base/config/${MPVERS} .
-    if [[ -f ${MPVERS} ]]; then
-      mp_vers=$(cat ${MPVERS})
-      rm -f ${MPVERS}
-    else
-      echo "Unable to connect to macports.org"
+    mp_vers=$(curl --silent -L https://raw.githubusercontent.com/macports/macports-base/master/config/RELEASE_URL |
+        sed 's,.*/v,,')
+    if [[ ${mp_vers} == "" ]]; then
+      echo "Unable to locate MacPorts version"
       exit 1
     fi
 
