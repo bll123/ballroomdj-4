@@ -42,3 +42,10 @@ button.bdj-leftnotebook:hover {
 button.bdj-switch:hover {
   background-color: shade(@theme_base_color,0.7);
 }
+
+label.bdj-chgindchanged {
+  border-left-color: #11ff11;
+}
+label.bdj-chginderror {
+  border-left-color: #ff1111;
+}

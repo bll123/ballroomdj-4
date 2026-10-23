@@ -38,3 +38,9 @@ button.bdj-switch:hover {
   background-color: shade(@theme_base_color,0.9);
 }
 
+label.bdj-chgindchanged {
+  border-left-color: #228811;
+}
+label.bdj-chginderror {
+  border-left-color: #881111;
+}
