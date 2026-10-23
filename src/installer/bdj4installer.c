@@ -2844,9 +2844,9 @@ installerVLCGetVersion (installer_t *installer)
     }
 
     /* for the time being, until VLC version 4 is fixed on windows, */
-    /* hard-code the downloaded version to 3.0.23 */
+    /* hard-code the downloaded version to 3.0.24 */
     stpecpy (installer->vlcversion,
-        installer->vlcversion + sizeof (installer->vlcversion), "3.0.23");
+        installer->vlcversion + sizeof (installer->vlcversion), "3.0.24");
     return;
   }
 
