@@ -25,6 +25,7 @@
 
 enum {
   SELFILE_COL_DISP,
+  SELFILE_COL_PLTYPE,
   SELFILE_COL_MAX,
 };
 
@@ -41,6 +42,7 @@ typedef struct uiselectfile {
   nlist_t           *options;
   slist_t           *filelist;
   bool              inchange;
+  int               type;
 } uiselectfile_t;
 
 static void selectFileCreateDialog (uiselectfile_t *selectfile,
@@ -78,6 +80,7 @@ selectFileDialog (int type, uiwcont_t *window, nlist_t *options,
   selectfile->options = options;
   selectfile->filelist = NULL;
   selectfile->inchange = false;
+  selectfile->type = type;
 
   selectfile->respcb = callbackInitI (
       selectFileResponseHandler, selectfile);
@@ -163,7 +166,6 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   int           dispsize;
   slistidx_t    count;
 
-
   selectfile->selfilecb = cb;
 
   /* CONTEXT: select file: title of window: select <file-type> */
@@ -195,6 +197,9 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   uivlSetNumColumns (uivl, SELFILE_COL_MAX);
   uivlMakeColumn (uivl, "disp", SELFILE_COL_DISP, VL_TYPE_LABEL);
   uivlSetColumnMinWidth (uivl, SELFILE_COL_DISP, 10);
+  uivlSetColumnGrow (uivl, SELFILE_COL_DISP, VL_COL_WIDTH_GROW_ONLY);
+  uivlMakeColumn (uivl, "pltype", SELFILE_COL_PLTYPE, VL_TYPE_LABEL);
+  uivlSetColumnGrow (uivl, SELFILE_COL_PLTYPE, VL_COL_WIDTH_GROW_ONLY);
   uivlSetNumRows (uivl, count);
   uivlSetRowFillCallback (uivl, selectfileFillRow, selectfile);
   uivlSetAllowDoubleClick (uivl);
@@ -219,7 +224,7 @@ selectFileResponseHandler (void *udata, int32_t responseid)
 {
   uiselectfile_t  *selectfile = udata;
   int             x, y, ws;
-  char            *str = NULL;
+  const char      *str = NULL;
   int             count;
 
   uiWindowGetPosition (selectfile->selfileDialog, &x, &y, &ws);
@@ -249,7 +254,7 @@ selectFileResponseHandler (void *udata, int32_t responseid)
       }
 
       sel = uivlGetCurrSelection (selectfile->uivl);
-      str = slistGetDataByIdx (selectfile->filelist, sel);
+      str = slistGetKeyByIdx (selectfile->filelist, sel);
       uiDialogDestroy (selectfile->selfileDialog);
       uiwcontFree (selectfile->selfileDialog);
       selectfile->selfileDialog = NULL;
@@ -302,10 +307,46 @@ selectfileFillRow (void *udata, uivirtlist_t *uivl, int32_t rownum)
 {
   uiselectfile_t  *selectfile = udata;
   const char      *str;
+  const char      *typedisp;
 
   selectfile->inchange = true;
-  str = slistGetDataByIdx (selectfile->filelist, rownum);
+  str = slistGetKeyByIdx (selectfile->filelist, rownum);
+
   uivlSetRowColumnStr (selectfile->uivl, rownum, SELFILE_COL_DISP, str);
+
+  typedisp = "";
+  if (selectfile->type != SELFILE_SONGLIST &&
+      selectfile->type != SELFILE_SEQUENCE) {
+    int       pltype;
+
+    pltype = (int) slistGetNumByIdx (selectfile->filelist, rownum);
+
+    switch (pltype) {
+      case PLTYPE_SONGLIST: {
+        /* CONTEXT: select file: file type for the file selection dialog (song list) */
+        typedisp = _("Song List");
+        break;
+      }
+      case PLTYPE_SEQUENCE: {
+        /* CONTEXT: select file: file type for the file selection dialog (sequence) */
+        typedisp = _("Sequence");
+        break;
+      }
+      case PLTYPE_AUTO: {
+        /* CONTEXT: select file: file type for the file selection dialog (automatic) */
+        typedisp = _("Automatic");
+        break;
+      }
+      case PLTYPE_PODCAST: {
+        /* CONTEXT: select file: file type for the file selection dialog (podcast) */
+        typedisp = _("Podcast");
+        break;
+      }
+    }
+  }
+
+  uivlSetRowColumnStr (selectfile->uivl, rownum, SELFILE_COL_PLTYPE, typedisp);
+
   selectfile->inchange = false;
 }
 

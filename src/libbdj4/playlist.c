@@ -856,6 +856,7 @@ playlistGetPlaylistNames (int flag, const char *dir)
   slistStartIterator (filelist, &iteridx);
   while ((tplfnm = slistIterateKey (filelist, &iteridx)) != NULL) {
     size_t    len;
+    pltype_t  type = PLTYPE_SONGLIST;
 
     pi = pathInfo (tplfnm);
     len = pi->blen + 1;
@@ -871,7 +872,6 @@ playlistGetPlaylistNames (int flag, const char *dir)
       continue;
     }
 
-// ### this needs to be fetched using the data locale
     /* check for the special 'QueueDance' playlist */
     if ((flag == PL_LIST_NORMAL || flag == PL_LIST_AUTO_SEQ) &&
         /* CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button */
@@ -892,8 +892,22 @@ playlistGetPlaylistNames (int flag, const char *dir)
         continue;
       }
     }
-    /* the data duplicates the key for use in uidropdrown */
-    slistSetStr (pnlist, tfn, tfn);
+
+    if (flag == PL_LIST_PODCAST) {
+      type = PLTYPE_PODCAST;
+    } else if (flag == PL_LIST_SEQUENCE) {
+      type = PLTYPE_SEQUENCE;
+    } else if (flag == PL_LIST_SONGLIST) {
+      type = PLTYPE_SONGLIST;
+    } else {
+      playlist_t      *pl;
+
+      pl = playlistLoad (tfn, NULL, NULL);
+      type = (pltype_t) nlistGetNum (pl->plinfo, PLAYLIST_TYPE);
+      playlistFree (pl);
+    }
+
+    slistSetNum (pnlist, tfn, type);
   }
 
   slistSort (pnlist);

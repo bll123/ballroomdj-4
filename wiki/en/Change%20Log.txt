@@ -4,12 +4,16 @@
 
 <!--
 
-**4.18.4 2026-9---**
+**4.18.4 2026-10---**
 
 * Bug Fixes:
     * Player: Reload: Do not immediately remove reload playlists.
     * Minor configuration fixes.
-    * PENDING: Automatic Playlists: Improve dance selection.
+    * User Interface: Adjust vertical notebook colors.
+    * User Interface: Adjust light theme colors.
+    * PENDING: Update Database: Fix compact database.
+* Changes:
+    * Playlist Management: Also display playlist type when selecting a playlist.
 * Internal:
     * Update libopus to version 1.6.1 (Windows).
     * Update mongoose to version 7.22.

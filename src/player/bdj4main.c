@@ -2405,7 +2405,6 @@ static void
 mainSendPlaylistNames (maindata_t *mainData, bdjmsgroute_t route)
 {
   slist_t       *plNames = NULL;
-  const char    *plfnm = NULL;
   const char    *plnm = NULL;
   char          tbuff [200];
   char          *rbuff = NULL;
@@ -2423,9 +2422,8 @@ mainSendPlaylistNames (maindata_t *mainData, bdjmsgroute_t route)
   rend = rbuff + BDJMSG_MAX;
   slistStartIterator (plNames, &iteridx);
   while ((plnm = slistIterateKey (plNames, &iteridx)) != NULL) {
-    plfnm = slistGetStr (plNames, plnm);
     snprintf (tbuff, sizeof (tbuff), "%s%c%s%c",
-        plfnm, MSG_ARGS_RS, plnm, MSG_ARGS_RS);
+        plnm, MSG_ARGS_RS, plnm, MSG_ARGS_RS);
     rp = stpecpy (rp, rend, tbuff);
   }
 

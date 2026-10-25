@@ -325,7 +325,7 @@ done
 DBG=1
 
 # norm
-NUMNORM=148
+NUMNORM=149
 # cha cha
 NUMCC=18
 # regex

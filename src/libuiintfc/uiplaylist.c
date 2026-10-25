@@ -94,7 +94,6 @@ uiplaylistSetList (uiplaylist_t *uiplaylist, int type, const char *dir)
   slistidx_t  iteridx;
   ilist_t     *ddlist;
   const char  *disp;
-  const char  *plkey;
   int         count;
   int         idx;
 
@@ -115,8 +114,7 @@ uiplaylistSetList (uiplaylist_t *uiplaylist, int type, const char *dir)
 
   slistStartIterator (pllist, &iteridx);
   while ((disp = slistIterateKey (pllist, &iteridx)) != NULL) {
-    plkey = slistGetStr (pllist, disp);
-    ilistSetStr (ddlist, idx, DD_LIST_KEY_STR, plkey);
+    ilistSetStr (ddlist, idx, DD_LIST_KEY_STR, disp);
     ilistSetStr (ddlist, idx, DD_LIST_DISP, disp);
     ++idx;
   }
