@@ -803,7 +803,7 @@ START_TEST(playlist_get_pl_list)
 {
   slist_t     *pllist;
   int         val;
-  const char  *sval;
+  int         pltype;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- playlist_get_pl_list");
   mdebugSubTag ("playlist_get_pl_list");
@@ -814,31 +814,31 @@ START_TEST(playlist_get_pl_list)
   pllist = playlistGetPlaylistNames (PL_LIST_ALL, NULL);
   val = slistGetCount (pllist);
   ck_assert_int_eq (val, 20);
-  sval = slistGetStr (pllist, _("QueueDance"));
-  ck_assert_str_eq (sval, _("QueueDance"));
+  pltype = slistGetNum (pllist, _("QueueDance"));
+  ck_assert_int_eq (pltype, PLTYPE_AUTO);
   slistFree (pllist);
 
   /* does not include the special queuedance playlist */
   pllist = playlistGetPlaylistNames (PL_LIST_AUTO_SEQ, NULL);
   val = slistGetCount (pllist);
   ck_assert_int_eq (val, 11);
-  sval = slistGetStr (pllist, _("QueueDance"));
-  ck_assert_ptr_null (sval);
+  pltype = slistGetNum (pllist, _("QueueDance"));
+  ck_assert_int_lt (pltype, 0);
   slistFree (pllist);
 
   /* does not include the special queuedance playlist */
   pllist = playlistGetPlaylistNames (PL_LIST_NORMAL, NULL);
   val = slistGetCount (pllist);
   ck_assert_int_eq (val, 19);
-  sval = slistGetStr (pllist, _("QueueDance"));
-  ck_assert_ptr_null (sval);
+  pltype = slistGetNum (pllist, _("QueueDance"));
+  ck_assert_int_lt (pltype, 0);
   slistFree (pllist);
 
   pllist = playlistGetPlaylistNames (PL_LIST_SEQUENCE, NULL);
   val = slistGetCount (pllist);
   ck_assert_int_eq (val, 6);
-  sval = slistGetStr (pllist, _("QueueDance"));
-  ck_assert_ptr_null (sval);
+  pltype = slistGetNum (pllist, _("QueueDance"));
+  ck_assert_int_lt (pltype, 0);
   slistFree (pllist);
 
   /* includes the podcast songlist */
@@ -850,8 +850,8 @@ START_TEST(playlist_get_pl_list)
   pllist = playlistGetPlaylistNames (PL_LIST_DIR, "data");
   val = slistGetCount (pllist);
   ck_assert_int_eq (val, 20);
-  sval = slistGetStr (pllist, _("QueueDance"));
-  ck_assert_ptr_nonnull (sval);
+  pltype = slistGetNum (pllist, _("QueueDance"));
+  ck_assert_int_eq (pltype, PLTYPE_AUTO);
   slistFree (pllist);
 }
 END_TEST

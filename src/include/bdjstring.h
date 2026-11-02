@@ -5,6 +5,11 @@
 
 #include "config.h"
 
+/* windows sprintf_p */
+#if __has_include (<tchar.h>)
+# include <tchar.h>
+#endif
+
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
 #endif

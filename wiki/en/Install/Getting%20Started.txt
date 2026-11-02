@@ -73,6 +73,11 @@ organization path is _Dance/Artist&nbsp;-&nbsp;Title_.
 If you have iTunes installed, the organization path will be set to
 _Album&nbsp;Artist/Album/Disc&nbsp;-&nbsp;Track0&nbsp;Title_.
 
+Note that BallroomDJ&nbsp;4 can access the iTunes files if they have
+been downloaded.  If an Apple Music subscription is used with iTunes,
+and the music is not downloaded to your computer, then BDJ4 will not
+work with iTunes.
+
 Select the organization method you use for your songs in the
 __Organization&nbsp;Path__ drop-down.
 

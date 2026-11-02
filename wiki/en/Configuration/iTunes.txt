@@ -7,6 +7,11 @@ is found and what fields to import._</span>
 
 #### Configuring iTunes
 
+BallroomDJ&nbsp;4 can access the iTunes files if they have been
+downloaded.  If an Apple Music subscription is used with iTunes, and
+the music is not downloaded to your computer, then BDJ4 will not work
+with iTunes.
+
 To allow BallroomDJ&nbsp;4 to access the iTunes information, iTunes
 must be configured to share the iTunes library information.  In iTunes,
 select the __Edit&nbsp;/&nbsp;Preferences__ menu item.  In the

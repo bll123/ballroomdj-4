@@ -509,7 +509,7 @@ dbStartIterator (musicdb_t *musicdb, slistidx_t *iteridx)
 song_t *
 dbIterate (musicdb_t *musicdb, dbidx_t *dbidx, slistidx_t *iteridx)
 {
-  song_t    *song;
+  song_t    *song = NULL;
   int       dbflags;
 
   if (musicdb == NULL || musicdb->ident != MUSICDB_IDENT) {
@@ -517,6 +517,9 @@ dbIterate (musicdb_t *musicdb, dbidx_t *dbidx, slistidx_t *iteridx)
   }
 
   *dbidx = nlistIterateKey (musicdb->songbyidx, iteridx);
+  if (*dbidx < 0) {
+    return NULL;
+  }
   song = nlistGetData (musicdb->songbyidx, *dbidx);
   dbflags = songGetNum (song, TAG_DB_FLAGS);
   while (dbflags == MUSICDB_REMOVED) {

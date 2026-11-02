@@ -612,6 +612,7 @@ dbupdateProcessing (void *udata)
             puri = songGetStr (prevsong, TAG_URI);
             if (strcmp (curi, puri) == 0) {
               /* skip any duplicates */
+              dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
               dbupdateOutputProgress (dbupdate);
               prevsong = song;
               continue;
@@ -665,10 +666,10 @@ dbupdateProcessing (void *udata)
     }
 
     if (fn == NULL) {
+      dbupdate->state = DB_UPD_PROCESS;
       logMsg (LOG_DBG, LOG_IMPORTANT, "-- skipped (%" PRId32 ")", dbupdate->counts [C_FILE_SKIPPED]);
       logMsg (LOG_DBG, LOG_IMPORTANT, "-- all filenames sent (%" PRId32 "): %" PRId64 " ms",
           dbupdate->counts [C_FILE_QUEUED], (int64_t) mstimeend (&dbupdate->starttm));
-      dbupdate->state = DB_UPD_PROCESS;
     }
   }
 
@@ -1371,6 +1372,7 @@ dbupdateWriteSong (dbupdate_t *dbupdate, song_t *song,
     int32_t *songdbflags, dbidx_t rrn)
 {
   songSetChanged (song);
+
   songdbWriteDBSong (dbupdate->songdb, song, songdbflags, rrn);
 
   if ((*songdbflags & SONGDB_RET_NULL) == SONGDB_RET_NULL) {

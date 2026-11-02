@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-23 09:50-0700\n"
+"POT-Creation-Date: 2026-10-25 11:16-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,6 +20,7 @@ msgstr ""
 #. CONTEXT: configuration file: audio source name
 #. CONTEXT: configuration file: audio source name
 #. CONTEXT: audio source: podcast
+#. CONTEXT: select file: file type for the file selection dialog (podcast)
 #. CONTEXT: playlist management: type of playlist
 msgid "Podcast"
 msgstr ""
@@ -1705,6 +1706,12 @@ msgstr ""
 msgid "Select Audio File"
 msgstr ""
 
+#. CONTEXT: select file: file type for the file selection dialog (automatic)
+#. CONTEXT: playlist management: default playlist type
+#. CONTEXT: playlist management: type of playlist
+msgid "Automatic"
+msgstr ""
+
 #. CONTEXT: status: a filter: all dance status will be listed
 #. CONTEXT: status: a filter: all dance status are displayed in the song selection
 msgid "Any Status"
@@ -2209,11 +2216,6 @@ msgstr ""
 
 #. CONTEXT: playlist management: label for playlist name
 msgid "Playlist Type"
-msgstr ""
-
-#. CONTEXT: playlist management: default playlist type
-#. CONTEXT: playlist management: type of playlist
-msgid "Automatic"
 msgstr ""
 
 #. CONTEXT: playlist management: notebook tab title: settings
