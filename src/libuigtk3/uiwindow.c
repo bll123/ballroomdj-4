@@ -29,6 +29,8 @@
 #include "ui/uiwidget.h"
 #include "ui/uiwindow.h"
 
+#include "log.h" // remove
+
 static gboolean uiWindowFocusOutCallback (GtkWidget *w, GdkEventFocus *event, gpointer udata);
 static gboolean uiWindowCloseCallback (GtkWidget *window, GdkEvent *event, gpointer udata);
 static gboolean uiWindowDoubleClickHandler (GtkWidget *window, GdkEventButton *event, gpointer udata);
@@ -539,6 +541,14 @@ uiWindowWinStateHandler (GtkWidget *window, GdkEventWindowState *event, gpointer
     }
     process = true;
   }
+  if ((event->changed_mask & GDK_WINDOW_STATE_FULLSCREEN) == GDK_WINDOW_STATE_FULLSCREEN) {
+    ismax = false;
+    if ((event->new_window_state & GDK_WINDOW_STATE_FULLSCREEN) ==
+        GDK_WINDOW_STATE_FULLSCREEN) {
+      ismax = true;
+    }
+    process = true;
+  }
 
   if (! process) {
     return UICB_CONT;
@@ -556,4 +566,3 @@ uiWindowNoDimHandler (GtkWidget *window, GtkStateType flags, gpointer udata)
   /* never in a backdrop state */
   gtk_widget_unset_state_flags (GTK_WIDGET (window), GTK_STATE_FLAG_BACKDROP);
 }
-

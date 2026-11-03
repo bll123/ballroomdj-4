@@ -116,7 +116,7 @@ typedef struct {
 } marquee_t;
 
 enum {
-  MARQUEE_UNMAX_WAIT_COUNT = 3,
+  MARQUEE_UNMAX_WAIT_COUNT = 6,
 };
 #define INFO_LAB_HEIGHT_ADJUST  0.85
 static const char * const MQ_TEXT_CLASS = "mqtext";
@@ -713,11 +713,11 @@ marqueeToggleFullscreen (void *udata)
 static void
 marqueeSetMaximized (marquee_t *marquee)
 {
-  if (marquee->ismaximized) {
+  if (! marquee->uibuilt) {
     return;
   }
 
-  if (! marquee->uibuilt) {
+  if (marquee->ismaximized) {
     return;
   }
 
@@ -799,6 +799,8 @@ marqueeWinState (void *udata, int isiconified, int ismaximized)
     /* user selected the maximize button */
     if (ismaximized) {
       marqueeSetMaximized (marquee);
+    } else {
+      marqueeSetNotMaximized (marquee);
     }
   }
 

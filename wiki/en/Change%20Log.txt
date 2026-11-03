@@ -7,7 +7,8 @@
 **4.18.4 2026-11---**
 
 * Bug Fixes:
-    * Minor internal configuration fixes.
+    * Marquee: Improve font handling for maximized/not-maximized switch.
+    * Minor internal fixes.
     * Player: Reload: Do not immediately remove reload playlists.
     * Update Database: Compact database: Fixed issue when duplicates were present.
     * User Interface: Adjust light theme colors.
