@@ -87,7 +87,7 @@ end
 
 # check playback with no fade-in set
 test 90-20 No-Fade-In-Basic
-msg player PLAYER_VOLUME 30
+msg player PLAYER_VOLUME 15
 msg main CHK_MAIN_SET_FADEIN 0
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
@@ -100,13 +100,13 @@ msg main CMD_PLAY
 resptimeout 3000
 get player CHK_PLAYER_STATUS
 wait playstate playing
-chk actualvolume 30
+chk actualvolume 15
 mssleep 1500
 resptimeout 7500
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-chk actualvolume 30
+chk actualvolume 15
 mssleep 1500
 reset
 msg main CHK_MAIN_SET_FADEIN 400

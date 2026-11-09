@@ -185,8 +185,9 @@ main (int argc, char *argv [])
 
   logStartAppend ("testsuite", "ts",
       LOG_IMPORTANT
- //     LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_MSGS | LOG_ACTIONS
- //     | LOG_SOCKET | LOG_PROCESS | LOG_PROGSTATE /* ### */
+  //    | LOG_BASIC | LOG_INFO | LOG_MSGS | LOG_ACTIONS
+  //    | LOG_SOCKET | LOG_PROCESS | LOG_PROGSTATE
+  //    | LOG_PROC
       );
 
   pathbldMakePath (tbuff, sizeof (tbuff),
@@ -327,12 +328,6 @@ main (int argc, char *argv [])
   slistFree (testsuite.failedlist);
   progstateFree (testsuite.progstate);
   logEnd ();
-
-  if (fileopFileExists ("core")) {
-    fprintf (stdout, "core dumped\n");
-    fflush (stdout);
-    rc = 1;
-  }
 
 #if BDJ4_MEM_DEBUG
   mdebugReport ();

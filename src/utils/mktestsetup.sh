@@ -271,7 +271,7 @@ if [[ $CHANGES == T ]]; then
   done
 
   tfn=data/profile00/bdjconfig.txt
-  sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..20/ ; }' \
+  sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..10/ ; }' \
       -e '/^MARQUEE_SHOW/ { n ; s/.*/..minimize/ ; }' \
       -e '/^PROFILENAME/ { n ; s/.*/..Test-Setup/ ; }' \
       -e '/^UI_PROFILE_COL/ { n ; s/.*/..#0797ff/ ; }' \

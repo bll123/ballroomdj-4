@@ -39,7 +39,8 @@ function checkres {
     echo "    Expected: $e"
     trc=1
   fi
-  if [[ -f core ]]; then
+  c=$(ls -1 "core*" 2>/dev/null | wc -l)
+  if [[ $c -ne 0 ]]; then
     echo "   core dump"
     trc=1
   fi

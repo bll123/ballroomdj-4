@@ -496,7 +496,7 @@ end
 
 # check playback with no fade-in set
 test 150-30 Fade-In-None
-msg player PLAYER_VOLUME 30
+msg player PLAYER_VOLUME 15
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 1
 msg main CHK_MAIN_SET_FADEIN 0
@@ -511,40 +511,40 @@ msg main CMD_PLAY
 resptimeout 3000
 get player CHK_PLAYER_STATUS
 wait playstate playing
-chk-lt actualvolume 30
+chk-lt actualvolume 15
 mssleep 1500
 get player CHK_PLAYER_STATUS
-chk actualvolume 30
+chk actualvolume 15
 #
 msg main MUSICQ_SET_PLAYBACK 1
 resptimeout 7500
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-chk actualvolume 30
+chk actualvolume 15
 mssleep 1500
 get player CHK_PLAYER_STATUS
-chk actualvolume 30
+chk actualvolume 15
 #
 msg main MUSICQ_SET_PLAYBACK 0
 resptimeout 7500
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-chk-lt actualvolume 30
+chk-lt actualvolume 15
 mssleep 1500
 get player CHK_PLAYER_STATUS
-chk actualvolume 30
+chk actualvolume 15
 #
 msg main MUSICQ_SET_PLAYBACK 1
 resptimeout 7500
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-chk actualvolume 30
+chk actualvolume 15
 mssleep 1500
 get player CHK_PLAYER_STATUS
-chk actualvolume 30
+chk actualvolume 15
 #
 reset
 msg main MUSICQ_SET_PLAYBACK 1
@@ -556,7 +556,6 @@ end
 
 # check playback with no fade-out set
 test 150-40 Fade-Out-None
-msg player PLAYER_VOLUME 30
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 1
 msg main CHK_MAIN_SET_FADEOUT 0
@@ -619,7 +618,6 @@ end
 
 # check playback fade-out with switch-q-when-empty
 test 150-41 Fade-Out-Switch-When-Empty
-msg player PLAYER_VOLUME 30
 msg main QUEUE_SWITCH_EMPTY 1
 msg main MUSICQ_SET_PLAYBACK 1
 msg main MUSICQ_INSERT 1~999~6

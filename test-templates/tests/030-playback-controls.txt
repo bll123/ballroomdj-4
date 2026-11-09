@@ -3,7 +3,7 @@ section 30 Playback-Controls
 # test the fade function
 test 30-10 Fade
 # a minimum volume is required to check fade-in/out
-msg player PLAYER_VOLUME 20
+msg player PLAYER_VOLUME 15
 msg main MUSICQ_INSERT 0~999~9
 mssleep 50
 get player CHK_WAIT_PREP
@@ -14,21 +14,21 @@ resptimeout 1000
 wait playstate playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
-chk currvolume 20 actualvolume 20 plivolume 100
+chk currvolume 15 actualvolume 15 plivolume 100
 msg player PLAY_FADE
 resptimeout 5000
 get player CHK_PLAYER_STATUS
 chk playstate in-fadeout
 mssleep 200
 get player CHK_PLAYER_STATUS
-chk-not actualvolume 20
+chk-not actualvolume 15
 # a fade during in-fadeout does nothing
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 chk playstate in-fadeout
 mssleep 200
 get player CHK_PLAYER_STATUS
-chk-not actualvolume 20
+chk-not actualvolume 15
 resptimeout 7500
 wait playstate stopped
 msg player PLAYER_VOLUME defaultvol
@@ -529,7 +529,7 @@ end
 
 # test volume and volume-mute
 test 30-80 Volume
-msg player PLAYER_VOLUME 20
+msg player PLAYER_VOLUME 15
 msg main MUSICQ_INSERT 0~999~14
 mssleep 50
 get player CHK_WAIT_PREP
@@ -540,24 +540,24 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
-chk currvolume 20 realvolume 20 actualvolume 20 plivolume 100
-msg player PLAYER_VOLUME 30
-get player CHK_PLAYER_STATUS
-chk currvolume 30 realvolume 30 actualvolume 30 plivolume 100
-msg player PLAYER_VOLUME 40
-get player CHK_PLAYER_STATUS
-chk currvolume 40 realvolume 40 actualvolume 40 plivolume 100
+chk currvolume 15 realvolume 15 actualvolume 15 plivolume 100
 msg player PLAYER_VOLUME 20
 get player CHK_PLAYER_STATUS
 chk currvolume 20 realvolume 20 actualvolume 20 plivolume 100
+msg player PLAYER_VOLUME 25
+get player CHK_PLAYER_STATUS
+chk currvolume 25 realvolume 25 actualvolume 25 plivolume 100
+msg player PLAYER_VOLUME 15
+get player CHK_PLAYER_STATUS
+chk currvolume 15 realvolume 15 actualvolume 15 plivolume 100
 # toggle mute on
 msg player PLAYER_VOL_MUTE
 get player CHK_PLAYER_STATUS
-chk currvolume 20 realvolume 20 actualvolume 0 plivolume 100
+chk currvolume 15 realvolume 15 actualvolume 0 plivolume 100
 # toggle mute back off
 msg player PLAYER_VOL_MUTE
 get player CHK_PLAYER_STATUS
-chk currvolume 20 realvolume 20 actualvolume 20 plivolume 100
+chk currvolume 15 realvolume 15 actualvolume 15 plivolume 100
 msg player PLAYER_VOLUME defaultvol
 end
 

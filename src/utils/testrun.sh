@@ -115,6 +115,11 @@ function runTestSuite {
     volargs="--vol $vol"
   fi
   ./src/utils/mktestsetup.sh --force $pliargs $volargs >> $LOG 2>&1
+  c=$(ls -1 "${target}/core*" 2>/dev/null | wc -l)
+  if [[ $c -ne 0 ]]; then
+    echo "core dumped"
+    exit 1
+  fi
   echo "-- $(date +%T) testsuite $pli $vol" >> $LOG
   echo "-- $(date +%T) testsuite $pli $vol"
   if [[ $os == macos ]]; then
@@ -130,6 +135,11 @@ function runTestSuite {
     echo "-- $(date +%T) testsuite $pli $vol FAIL"
   else
     echo "-- $(date +%T) testsuite $pli $vol OK"
+  fi
+  c=$(ls -1 "core*" 2>/dev/null | wc -l)
+  if [[ $c -ne 0 ]]; then
+    echo "core dumped"
+    exit 1
   fi
   return $rc
 }

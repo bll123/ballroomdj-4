@@ -1020,12 +1020,12 @@ function checkInstallation {
     fi
   fi
 
-  c=$(ls -1 "${target}/core" 2>/dev/null | wc -l)
+  c=$(ls -1 "${target}/core*" 2>/dev/null | wc -l)
   if [[ $c -ne 0 ]]; then
     echo "core file found (tgt)"
     exit 1
   fi
-  c=$(ls -1 "${datatop}/core" 2>/dev/null | wc -l)
+  c=$(ls -1 "${datatop}/core*" 2>/dev/null | wc -l)
   if [[ $c -ne 0 ]]; then
     echo "core file found (data)"
     exit 1

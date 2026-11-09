@@ -353,10 +353,10 @@ licenses/icu\.LICENSE$
 licenses/icu\.LICENCE$
 
 # 2024-5-5 windows library updates
+# 2026-11-9 swscale-10, swresample-7
 plocal/bin/postproc-57\.dll$
-plocal/bin/swresample-3\.dll$
-plocal/bin/swresample-4\.dll$
-plocal/bin/swscale-7\.dll$
+plocal/bin/swresample-[23456]\.dll$
+plocal/bin/swscale-[56789]\.dll$
 
 # 2023-6 windows msys2 library updates
 # 2024-5-5 windows library updates, 2026-2-3
@@ -396,6 +396,13 @@ plocal/bin/avdevice-61\.dll$
 plocal/bin/avfilter-10\.dll$
 plocal/bin/avformat-61\.dll$
 plocal/bin/avutil-59\.dll$
+# 2026-11-9
+# ffmpeg updated to version 9
+plocal/bin/avcodex-62\.dll$
+plocal/bin/avdevice-62\.dll$
+plocal/bin/avfilter-11\.dll$
+plocal/bin/avformat-62\.dll$
+plocal/bin/avutil-60\.dll$
 
 # 2026-1-5
 # replaced with utility/bdj4winstartup

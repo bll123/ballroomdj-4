@@ -65,6 +65,7 @@ START_TEST(webclient_get)
   webclient_t   *wc;
   char          tbuff [200];
   checkwc_t     r = { NULL, 0 };
+  int           rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- webclient_get");
   mdebugSubTag ("webclient_get");
@@ -72,9 +73,10 @@ START_TEST(webclient_get)
   wc = webclientAlloc (&r, checkWebclientCB);
   snprintf (tbuff, sizeof (tbuff), "%s%s",
       bdjoptGetStr (OPT_HOST_VERSION), bdjoptGetStr (OPT_URI_VERSION));
-  webclientGet (wc, tbuff);
+  rc = webclientGet (wc, tbuff);
   ck_assert_ptr_nonnull (r.resp);
   ck_assert_int_ge (r.len, 5);
+  ck_assert_int_eq (rc, 200);
   webclientClose (wc);
 }
 END_TEST
@@ -87,6 +89,7 @@ START_TEST(webclient_dl)
   FILE          *fh;
   bool          exists;
   size_t        sz;
+  int           rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- webclient_dl");
   mdebugSubTag ("webclient_dl");
@@ -94,9 +97,10 @@ START_TEST(webclient_dl)
   wc = webclientAlloc (&r, checkWebclientCB);
   snprintf (tbuff, sizeof (tbuff), "%s%s",
       bdjoptGetStr (OPT_HOST_VERSION), bdjoptGetStr (OPT_URI_VERSION));
-  webclientGet (wc, tbuff);
+  rc = webclientGet (wc, tbuff);
   ck_assert_ptr_nonnull (r.resp);
   ck_assert_int_ge (r.len, 5);
+  ck_assert_int_eq (rc, 200);
   webclientDownload (wc, tbuff, DLFILE);
   exists = fileopFileExists (DLFILE);
   sz = fileopSize (DLFILE);
@@ -119,6 +123,7 @@ START_TEST(webclient_post)
   char          tbuff [200];
   char          query [200];
   checkwc_t     r = { NULL, 0 };
+  int           rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- webclient_post");
   mdebugSubTag ("webclient_post");
@@ -127,10 +132,11 @@ START_TEST(webclient_post)
   snprintf (tbuff, sizeof (tbuff), "%s/%s",
       bdjoptGetStr (OPT_HOST_SUPPORT), "bdj4tester.php");
   snprintf (query, sizeof (query), "key=8634556&testdata=abc123");
-  webclientPost (wc, tbuff, query);
+  rc = webclientPost (wc, tbuff, query);
   ck_assert_ptr_nonnull (r.resp);
   ck_assert_int_ge (r.len, 9);
   ck_assert_str_eq (r.resp, "OK abc123");
+  ck_assert_int_eq (rc, 200);
   webclientClose (wc);
 }
 END_TEST
@@ -146,6 +152,7 @@ START_TEST(webclient_upload_plain)
   bool          exists = false;
   size_t        sz;
   const char    *tdata = "def456";
+  int           rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- webclient_upload_plain");
   mdebugSubTag ("webclient_upload_plain");
@@ -165,19 +172,20 @@ START_TEST(webclient_upload_plain)
   query [qc++] = "origfn";
   query [qc++] = UPFILE;
   query [qc++] = NULL;
-  webclientUploadFile (wc, tbuff, query, UPFILE, "upfile");
+  rc = webclientUploadFile (wc, tbuff, query, UPFILE, "upfile");
 
   ck_assert_ptr_nonnull (r.resp);
   ck_assert_int_ge (r.len, 2);
   ck_assert_str_eq (r.resp, "OK");
-
+  ck_assert_int_eq (rc, 200);
 
   snprintf (tbuff, sizeof (tbuff), "%s/tmptest/%s",
       bdjoptGetStr (OPT_HOST_SUPPORT), UPFILE);
-  webclientDownload (wc, tbuff, DLFILE);
+  rc = webclientDownload (wc, tbuff, DLFILE);
   exists = fileopFileExists (DLFILE);
   sz = fileopSize (DLFILE);
   ck_assert_int_eq (exists, 1);
+  ck_assert_int_eq (rc, 200);
   fh = fileopOpen (DLFILE, "r");
   (void) ! fgets (tbuff, sizeof (tbuff), fh);
   ck_assert_str_eq (tbuff, tdata);
@@ -200,6 +208,7 @@ START_TEST(webclient_upload_gzip)
   bool          exists = false;
   size_t        sz;
   const char    *tdata = "ghi789";
+  int           rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- webclient_upload_gzip");
   mdebugSubTag ("webclient_upload_gzip");
@@ -222,15 +231,16 @@ START_TEST(webclient_upload_gzip)
   query [qc++] = "origfn";
   query [qc++] = UPFILE;
   query [qc++] = NULL;
-  webclientUploadFile (wc, tbuff, query, UPFILE, "upfile");
+  rc = webclientUploadFile (wc, tbuff, query, UPFILE, "upfile");
 
   ck_assert_ptr_nonnull (r.resp);
   ck_assert_int_ge (r.len, 2);
   ck_assert_str_eq (r.resp, "OK");
+  ck_assert_int_eq (rc, 200);
 
   snprintf (tbuff, sizeof (tbuff), "%s/tmptest/%s",
       bdjoptGetStr (OPT_HOST_SUPPORT), UPFILE);
-  webclientDownload (wc, tbuff, DLFILE);
+  rc = webclientDownload (wc, tbuff, DLFILE);
   exists = fileopFileExists (DLFILE);
   sz = fileopSize (DLFILE);
   ck_assert_int_eq (exists, 1);
@@ -238,6 +248,7 @@ START_TEST(webclient_upload_gzip)
   (void) ! fgets (tbuff, sizeof (tbuff), fh);
   ck_assert_str_eq (tbuff, tdata);
   ck_assert_int_eq (sz, 6);
+  ck_assert_int_eq (rc, 200);
   mdextfclose (fh);
   fclose (fh);
 

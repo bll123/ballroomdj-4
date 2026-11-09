@@ -73,7 +73,7 @@ START_TEST(autosel_get)
   dval = autoselGetDouble (autosel, AUTOSEL_TYPE_MATCH);
   ck_assert_float_eq (dval, 50.0);
   dval = autoselGetDouble (autosel, AUTOSEL_TAGMATCH);
-  ck_assert_float_eq (dval, 20.0);
+  ck_assert_float_eq (dval, 10.0);
   dval = autoselGetDouble (autosel, AUTOSEL_PRIOR_EXP);
   ck_assert_float_eq (dval, 1.3);
 

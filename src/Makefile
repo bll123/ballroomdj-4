@@ -128,6 +128,7 @@ cmakeclang:
 	  $(MAKE) CMAKE=$(CMAKEWIN) build; \
 	fi
 
+# --debug-trycompile
 .PHONY: cmake-unix
 cmake-unix:
 	. ../VERSION.txt; \
@@ -139,6 +140,7 @@ cmake-unix:
 		-DBDJ4_UI=$(BDJ4_UI) \
 		-S . -B $(BUILDDIR) -Werror=deprecated
 
+# --debug-trycompile
 .PHONY: cmake-windows
 cmake-windows:
 	. ../VERSION.txt; \

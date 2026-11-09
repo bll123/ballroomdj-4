@@ -533,7 +533,9 @@ main (int argc, char *argv [])
     /* added fastprior (version 5) */
     /* 4.6.0 2024-2-18 */
     /* added tagweight (version 6) */
-    updaterCopyVersionCheck (NULL, AUTOSEL_FN, BDJ4_CONFIG_EXT, 6);
+    /* 4.18.4 2026-11-9 autoselection.txt */
+    /* reduced tagweight (version 7) */
+    updaterCopyVersionCheck (NULL, AUTOSEL_FN, BDJ4_CONFIG_EXT, 7);
   }
 
   {

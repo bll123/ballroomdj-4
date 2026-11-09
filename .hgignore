@@ -78,6 +78,7 @@ syntax: regexp
 ^src/po/.*\.backup$
 ^src/po/.*\.debug$
 ^src/w$
+^src/x/
 ^test-files/
 ^test-music/
 ^test-music-org/

@@ -420,7 +420,8 @@ if (NOT SYSWIN)
   endif()
   if (SYSMACOS)
     # 10.14 = Mojave, 10.15 = Catalina 11 = Big Sur, 12 = Monterey,
-    # 13 = Ventura, 14 = Sonoma, 15 = Sequoia, 26 = Tahoe
+    # 13 = Ventura, 14 = Sonoma, 15 = Sequoia, 26 = Tahoe,
+    # 27 = Golden Gate
     # IMPORTANT: update this in:
     #     pkg/macos/Info.plist
     #     pkg/build/050-id3tag-build.sh
@@ -444,7 +445,7 @@ add_compile_options (-DMG_TLS=MG_TLS_OPENSSL)
 
 check_function_exists (__cpuid _lib___cpuid)
 set (CMAKE_REQUIRED_LIBRARIES Bcrypt)
-check_symbol_exists (BCryptGenRandom "windows.h bcrypt.h" _lib_BCryptGenRandom)
+check_symbol_exists (BCryptGenRandom "windows.h;bcrypt.h" _lib_BCryptGenRandom)
 unset (CMAKE_REQUIRED_LIBRARIES)
 check_function_exists (CloseHandle _lib_CloseHandle)
 check_function_exists (CompareStringEx _lib_CompareStringEx)
@@ -477,7 +478,7 @@ check_function_exists (WideCharToMultiByte _lib_WideCharToMultiByte)
 check_function_exists (WriteFile _lib_WriteFile)
 check_symbol_exists (gmtime_s "time.h" _lib_gmtime_s)
 check_symbol_exists (localtime_s "time.h" _lib_localtime_s)
-check_symbol_exists (_sprintf_p "tchar.h" _lib__sprintf_p)
+check_symbol_exists (_sprintf_p "stdio.h;tchar.h" _lib__sprintf_p)
 check_function_exists (_wchdir _lib__wchdir)
 check_function_exists (_wfopen_s _lib__wfopen_s)
 check_function_exists (_wgetcwd _lib__wgetcwd)
